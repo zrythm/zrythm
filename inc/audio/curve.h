@@ -75,6 +75,13 @@ typedef enum CurveAlgorithm
    * See https://www.desmos.com/calculator/2dnuiptiqc.
    */
   CURVE_ALGORITHM_VITAL,
+
+  /**
+   * Pulse (square).
+   */
+  CURVE_ALGORITHM_PULSE,
+
+  NUM_CURVE_ALGORITHMS,
 } CurveAlgorithm;
 
 static const cyaml_strval_t
@@ -86,6 +93,8 @@ static const cyaml_strval_t
     CURVE_ALGORITHM_SUPERELLIPSE },
   { "vital",
     CURVE_ALGORITHM_VITAL },
+  { "pulse",
+    CURVE_ALGORITHM_PULSE },
 };
 
 /**
@@ -121,6 +130,15 @@ static const cyaml_schema_value_t
     CYAML_FLAG_POINTER,
     CurveOptions, curve_options_fields_schema),
 };
+
+/**
+ * Stores the localized name of the algorithm in
+ * \ref buf.
+ */
+void
+curve_algorithm_get_localized_name (
+  CurveAlgorithm algo,
+  char *         buf);
 
 /**
  * Returns the Y value on a curve spcified by

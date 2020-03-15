@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,6 +36,7 @@
 #include "audio/chord_object.h"
 #include "audio/chord_track.h"
 #include "audio/control_port.h"
+#include "audio/curve.h"
 #include "audio/instrument_track.h"
 #include "audio/marker_track.h"
 #include "audio/master_track.h"
@@ -82,6 +83,7 @@
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 /**
  * Create an AutomationPointat the given Position
@@ -187,4 +189,101 @@ automation_arranger_widget_resize_curves (
   EVENTS_PUSH (
     ET_ARRANGER_SELECTIONS_CHANGED,
     AUTOMATION_SELECTIONS);
+}
+
+/** Used for passing a curve algorithm to some
+ * actions. */
+typedef struct CurveAlgorithmInfo
+{
+  AutomationPoint * ap;
+  CurveAlgorithm    algo;
+} CurveAlgorithmInfo;
+
+static void
+on_curve_algorithm_selected (
+  GtkMenuItem *        menu_item,
+  CurveAlgorithmInfo * info)
+{
+  info->ap->curve_opts.algo = info->algo;
+  free (info);
+}
+
+/**
+ * Show context menu at x, y.
+ */
+void
+automation_arranger_widget_show_context_menu (
+  ArrangerWidget * self,
+  double           x,
+  double           y)
+{
+  GtkWidget *menu, *menuitem;
+  menu = gtk_menu_new();
+
+  ArrangerObject * obj =
+    arranger_widget_get_hit_arranger_object (
+      (ArrangerWidget *) self,
+      ARRANGER_OBJECT_TYPE_AUTOMATION_POINT, x, y);
+  AutomationPoint * ap = (AutomationPoint *) obj;
+
+  if (ap)
+    {
+      /* add curve algorithm selection */
+      menuitem =
+        gtk_menu_item_new_with_label (
+          _("Curve algorithm"));
+      GtkMenu * submenu =
+        GTK_MENU (gtk_menu_new ());
+      gtk_widget_set_visible (
+        GTK_WIDGET (submenu), 1);
+      GtkMenuItem * submenu_item;
+      for (int i = 0; i < NUM_CURVE_ALGORITHMS; i++)
+        {
+          char tmp[100];
+          curve_algorithm_get_localized_name (
+            i, tmp);
+          char name[400];
+          if ((CurveAlgorithm) i ==
+                ap->curve_opts.algo)
+            {
+              strcpy (name, "* ");
+              strcat (name, tmp);
+            }
+          else
+            {
+              strcpy (name, tmp);
+            }
+          submenu_item =
+            GTK_MENU_ITEM (
+              gtk_menu_item_new_with_label (name));
+
+          CurveAlgorithmInfo * info =
+            calloc (1, sizeof (CurveAlgorithmInfo));
+          info->algo = i;
+          info->ap = ap;
+          g_signal_connect (
+            G_OBJECT (submenu_item), "activate",
+            G_CALLBACK (on_curve_algorithm_selected),
+            info);
+          gtk_menu_shell_append (
+            GTK_MENU_SHELL (submenu),
+            GTK_WIDGET (submenu_item));
+          gtk_widget_set_visible (
+            GTK_WIDGET (submenu_item), 1);
+        }
+
+      gtk_menu_item_set_submenu (
+        GTK_MENU_ITEM (menuitem),
+        GTK_WIDGET (submenu));
+      gtk_widget_set_visible (
+        GTK_WIDGET (menuitem), 1);
+
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (menu),
+        GTK_WIDGET (menuitem));
+    }
+
+  gtk_widget_show_all (GTK_WIDGET (menu));
+  gtk_menu_popup_at_pointer (
+    GTK_MENU (menu), NULL);
 }

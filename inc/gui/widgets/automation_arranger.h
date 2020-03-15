@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -72,7 +72,16 @@ automation_arranger_widget_create_ap (
 void
 automation_arranger_widget_resize_curves (
   ArrangerWidget * self,
-  double                     offset_y);
+  double           offset_y);
+
+/**
+ * Show context menu at x, y.
+ */
+void
+automation_arranger_widget_show_context_menu (
+  ArrangerWidget * self,
+  double           x,
+  double           y);
 
 /**
  * @}

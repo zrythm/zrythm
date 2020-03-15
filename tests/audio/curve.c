@@ -318,6 +318,115 @@ test_curve_algorithms ()
   val = curve_get_normalized_y (1.0, &opts, 1);
   g_assert_cmpfloat_with_epsilon (
     val, 0.0, epsilon);
+
+  /* ---- PULSE ---- */
+
+  opts.algo = CURVE_ALGORITHM_PULSE;
+
+  /* -- curviness -1 -- */
+  opts.curviness = - 1;
+  val = curve_get_normalized_y (0.0, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (0.5, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (1.0, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (0.0, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+  val = curve_get_normalized_y (0.5, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+  val = curve_get_normalized_y (1.0, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+
+  /* -- curviness -0.5 -- */
+  opts.curviness = - 0.5;
+  val = curve_get_normalized_y (0.0, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+  val = curve_get_normalized_y (0.5, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (1.0, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (0.0, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (0.5, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+  val = curve_get_normalized_y (1.0, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+
+  /* -- curviness 0 -- */
+  opts.curviness = 0;
+  val = curve_get_normalized_y (0.0, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+  val = curve_get_normalized_y (0.5, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (1.0, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (0.0, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (0.5, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+  val = curve_get_normalized_y (1.0, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+
+  /* -- curviness 0.5 -- */
+  opts.curviness = 0.5;
+  val = curve_get_normalized_y (0.0, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+  val = curve_get_normalized_y (0.5, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+  val = curve_get_normalized_y (1.0, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (0.0, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (0.5, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (1.0, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+
+  /* -- curviness 1 -- */
+  opts.curviness = 1;
+  val = curve_get_normalized_y (0.0, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+  val = curve_get_normalized_y (0.5, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
+  val = curve_get_normalized_y (1.0, &opts, 0);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (0.0, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (0.5, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 1.0, epsilon);
+  val = curve_get_normalized_y (1.0, &opts, 1);
+  g_assert_cmpfloat_with_epsilon (
+    val, 0.0, epsilon);
 }
 
 int

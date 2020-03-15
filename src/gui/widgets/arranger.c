@@ -1755,27 +1755,6 @@ arranger_widget_select_all (
 }
 
 static void
-show_context_menu_automation (
-  ArrangerWidget * self,
-  gdouble              x,
-  gdouble              y)
-{
-  GtkWidget *menu, *menuitem;
-
-  menu = gtk_menu_new();
-
-  menuitem =
-    gtk_menu_item_new_with_label ("Do something");
-
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL(menu), menuitem);
-
-  gtk_widget_show_all (menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
-}
-
-static void
 show_context_menu_timeline (
   ArrangerWidget * self,
   gdouble          x,
@@ -1830,9 +1809,9 @@ show_context_menu_timeline (
         r);
     }
 
-  gtk_widget_show_all(menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+  gtk_widget_show_all (menu);
+  gtk_menu_popup_at_pointer (
+    GTK_MENU (menu), NULL);
 }
 
 static void
@@ -1893,7 +1872,8 @@ show_context_menu (
       show_context_menu_chord (self, x, y);
       break;
     case TYPE (AUTOMATION):
-      show_context_menu_automation (self, x, y);
+      automation_arranger_widget_show_context_menu (
+        self, x, y);
       break;
     case TYPE (AUDIO):
       show_context_menu_audio (self, x, y);

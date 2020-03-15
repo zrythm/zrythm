@@ -22,6 +22,37 @@
 #include "audio/curve.h"
 #include "utils/math.h"
 
+#include <glib/gi18n.h>
+
+/**
+ * Stores the localized name of the algorithm in
+ * \ref buf.
+ */
+void
+curve_algorithm_get_localized_name (
+  CurveAlgorithm algo,
+  char *         buf)
+{
+  switch (algo)
+    {
+    case CURVE_ALGORITHM_EXPONENT:
+      sprintf (buf, _("Exponent"));
+      break;
+    case CURVE_ALGORITHM_SUPERELLIPSE:
+      sprintf (buf, _("Superellipse"));
+      break;
+    case CURVE_ALGORITHM_VITAL:
+      sprintf (buf, _("Vital"));
+      break;
+    case CURVE_ALGORITHM_PULSE:
+      sprintf (buf, _("Pulse"));
+      break;
+    default:
+      g_return_if_reached ();
+    }
+  return;
+}
+
 /**
  * Returns the Y value on a curve spcified by
  * \ref algo.
@@ -123,10 +154,23 @@ curve_get_normalized_y (
         else
           {
             val =
-              (exp (curviness_for_calc * x) - 1) /
-              (exp (curviness_for_calc) - 1);
+              expm1 (curviness_for_calc * x) /
+              expm1 (curviness_for_calc);
           }
       }
+      break;
+    case CURVE_ALGORITHM_PULSE:
+      {
+        val =
+          ((1.0 + opts->curviness) / 2.0) > x ?
+            0.0 : 1.0;
+
+        if (start_higher)
+          val = 1.0 - val;
+      }
+      break;
+    default:
+      g_warn_if_reached ();
       break;
     }
   return val;
