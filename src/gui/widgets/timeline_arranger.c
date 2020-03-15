@@ -17,13 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * The timeline containing regions and other
- * objects.
- */
-
 #include "actions/arranger_selections.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"

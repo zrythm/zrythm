@@ -22,6 +22,7 @@
 #include "audio/audio_bus_track.h"
 #include "audio/automation_region.h"
 #include "audio/channel.h"
+#include "audio/fade.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "config.h"
@@ -161,6 +162,14 @@ draw_background (
     draw_width,
     full_rect->height,
     1.0, 4.0);
+
+  /* clip this path so all drawing afterwards will
+   * be confined inside it. preserve so we can
+   * fill after this call. each region is drawn
+   * wrapped inside cairo_save() and
+   * cairo_restore() to remove the clip when done */
+  cairo_clip_preserve (cr);
+
   cairo_fill (cr);
 }
 
@@ -811,56 +820,79 @@ draw_fades (
 {
   ArrangerObject * obj =
     (ArrangerObject *) self;
-  double fade_in_ticks =
-    obj->fade_in_pos.total_ticks;
-  double fade_out_ticks =
-    obj->fade_out_pos.total_ticks;
-  g_warn_if_fail (
-    fade_out_ticks > fade_in_ticks);
-
-  /* get fade in px */
-  int x_px =
-    ui_pos_to_px_timeline (&obj->fade_in_pos, 0);
-
-  /* convert x_px to global */
-  x_px += full_rect->x;
-
+  Track * track = arranger_object_get_track (obj);
+  g_return_if_fail (track);
   int padding = 4;
 
-  if (/* if loop px is visible */
-      x_px >= rect->x - padding &&
-      x_px < (rect->x + rect->width) + padding)
+  /* set color */
+  GdkRGBA color;
+  ui_get_contrast_color (
+    &track->color, &color);
+  gdk_cairo_set_source_rgba (cr, &color);
+  cairo_set_line_width (cr, 3);
+
+  /* get fade in px as global */
+  int fade_in_px =
+    full_rect->x +
+    ui_pos_to_px_timeline (&obj->fade_in_pos, 0);
+
+  /* get start px as global */
+  int start_px = full_rect->x;
+
+  /* get visible positions (where to draw) */
+  int visible_fade_in_px =
+    MIN (fade_in_px, rect->x + rect->width);
+  int visible_start_px =
+    MAX (start_px, rect->x);
+
+  for (int i = visible_start_px;
+       i < visible_fade_in_px - 1; i++)
     {
-      gdk_cairo_set_source_rgba (
-        cr, &UI_COLORS->bright_green);
+      /* revert because cairo draws the other way */
+      double val =
+        1.0 -
+        fade_get_y_normalized (
+          (double) (i - start_px) /
+            (double) (fade_in_px - start_px),
+          &obj->fade_in_opts, 1);
+      double next_val =
+        1.0 -
+        fade_get_y_normalized (
+          (double) ((i + 1) - start_px) /
+            (double) (fade_in_px - start_px),
+          &obj->fade_in_opts, 1);
+
       cairo_move_to (
-        cr, x_px - rect->x,
-        draw_rect->y - rect->y);
+        cr, i - rect->x,
+        (full_rect->y +
+         val * full_rect->height) -
+          rect->y);
       cairo_line_to (
-        cr, x_px - rect->x,
-        (draw_rect->y + draw_rect->height) -
-        rect->y);
-      cairo_stroke (cr);
+        cr, (i + 1) - rect->x,
+        (full_rect->y +
+         next_val * full_rect->height) -
+          rect->y);
     }
+  cairo_stroke (cr);
 
   /* get fade out px */
-  x_px =
+  int fade_out_px =
     ui_pos_to_px_timeline (&obj->fade_out_pos, 0);
 
-  /* convert x_px to global */
-  x_px += full_rect->x;
+  /* convert fade_out_px to global */
+  fade_out_px += full_rect->x;
 
   if (/* if loop px is visible */
-      x_px >= rect->x - padding &&
-      x_px < (rect->x + rect->width) + padding)
+      fade_out_px >= rect->x - padding &&
+      fade_out_px < (rect->x + rect->width) + padding)
     {
       gdk_cairo_set_source_rgba (
         cr, &UI_COLORS->bright_green);
       cairo_move_to (
-        cr, x_px - rect->x,
+        cr, fade_out_px - rect->x,
         draw_rect->y - rect->y);
       cairo_line_to (
-        cr, x_px - rect->x,
+        cr, fade_out_px - rect->x,
         (draw_rect->y + draw_rect->height) -
         rect->y);
       cairo_stroke (cr);
@@ -1075,6 +1107,7 @@ region_draw (
   for (int i = REGION_COUNTERPART_MAIN;
        i <= REGION_COUNTERPART_LANE; i++)
     {
+      cairo_save (cr);
       if (i == REGION_COUNTERPART_LANE)
         {
           if (!region_type_has_lane (self->id.type))
@@ -1144,6 +1177,8 @@ region_draw (
         self, cr, rect, &full_rect, &draw_rect, i);
 
       /* TODO draw cut line? */
+
+      cairo_restore (cr);
     }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,7 @@
 #ifndef __AUDIO_AUTOMATION_POINT_H__
 #define __AUDIO_AUTOMATION_POINT_H__
 
+#include "audio/curve.h"
 #include "audio/position.h"
 #include "audio/region_identifier.h"
 #include "gui/backend/arranger_object.h"
@@ -44,27 +45,9 @@ AutomationPointWidget;
 
 #define AP_WIDGET_POINT_SIZE 6
 
-#define AP_MAX_CURVINESS 1.0
-/*#define AP_MIN_CURVINESS \
-  //(1.f / AP_MAX_CURVINESS)*/
-#define AP_MIN_CURVINESS 0.18
-#define AP_CURVINESS_RANGE \
-  (AP_MAX_CURVINESS - AP_MIN_CURVINESS)
-
 #define automation_point_is_selected(r) \
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
-
-/**
- * The curve algorithm to use for curves.
- */
-typedef enum AutomationPointCurveAlgorithm
-{
-  /** y = x^n */
-  AP_CURVE_ALGORITHM_EXPONENT,
-  /** y = 1 - (1 - x^n)^(1/n) */
-  AP_CURVE_ALGORITHM_SUPERELLIPSE,
-} AutomationPointCurveAlgorithm;
 
 /**
  * An automation point inside an AutomationTrack.
@@ -80,13 +63,7 @@ typedef struct AutomationPoint
   /** Normalized value (0 to 1) used as a cache. */
   float           normalized_val;
 
-  /** Whether the curve tilts upwards FIXME does
-   * not work at the  moment. */
-  int             curve_up;
-
-  /** Curviness between 0 and 1, regardless of
-   * whether it tilts up or down. */
-  double          curviness;
+  CurveOptions    curve_opts;
 
   /** Parent region. */
   RegionIdentifier region_id;
@@ -98,27 +75,19 @@ typedef struct AutomationPoint
 static const cyaml_schema_field_t
 automation_point_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "base", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     AutomationPoint, base,
     arranger_object_fields_schema),
-  CYAML_FIELD_FLOAT (
-    "fvalue", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     AutomationPoint, fvalue),
-  CYAML_FIELD_FLOAT (
-    "normalized_val", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     AutomationPoint, normalized_val),
-  CYAML_FIELD_INT (
-    "index", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     AutomationPoint, index),
-  CYAML_FIELD_INT (
-    "curve_up", CYAML_FLAG_DEFAULT,
-    AutomationPoint, curve_up),
-  CYAML_FIELD_FLOAT (
-    "curviness", CYAML_FLAG_DEFAULT,
-    AutomationPoint, curviness),
-  CYAML_FIELD_MAPPING (
-    "region_id", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
+    AutomationPoint, curve_opts,
+    curve_options_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
     AutomationPoint, region_id,
     region_identifier_fields_schema),
 
@@ -126,7 +95,8 @@ automation_point_fields_schema[] =
 };
 
 static const cyaml_schema_value_t
-automation_point_schema = {
+  automation_point_schema =
+{
   CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
     AutomationPoint, automation_point_fields_schema),
@@ -180,8 +150,7 @@ automation_point_get_normalized_value_in_curve (
 void
 automation_point_set_curviness (
   AutomationPoint * ap,
-  const curviness_t curviness,
-	const int         curve_up);
+  const curviness_t curviness);
 
 /**
  * Convenience function to return the control port

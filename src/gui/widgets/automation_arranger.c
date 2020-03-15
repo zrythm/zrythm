@@ -166,7 +166,7 @@ automation_arranger_widget_create_ap (
 void
 automation_arranger_widget_resize_curves (
   ArrangerWidget * self,
-  double                     offset_y)
+  double           offset_y)
 {
   double diff = offset_y - self->last_offset_y;
   diff = - diff;
@@ -176,22 +176,12 @@ automation_arranger_widget_resize_curves (
     {
       AutomationPoint * ap =
         AUTOMATION_SELECTIONS->automation_points[i];
-      if (ap->curve_up)
-        diff = - diff;
       double new_curve_val =
         CLAMP (
-          ap->curviness + diff,
-          AP_MIN_CURVINESS, 2.0);
-      int new_curve_up = ap->curve_up;
-      if (new_curve_val >= AP_MAX_CURVINESS)
-        {
-          new_curve_val -= AP_MAX_CURVINESS;
-          new_curve_val =
-            AP_MAX_CURVINESS - new_curve_val;
-          new_curve_up = !ap->curve_up;
-        }
+          ap->curve_opts.curviness + diff,
+          - 1.0, 1.0);
       automation_point_set_curviness (
-        ap, new_curve_val, new_curve_up);
+        ap, new_curve_val);
     }
 
   EVENTS_PUSH (

@@ -41,9 +41,6 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 
-static AutomationPointCurveAlgorithm CURVE_ALGO =
-  AP_CURVE_ALGORITHM_SUPERELLIPSE;
-
 static AutomationPoint *
 _create_new (
   const Position *        pos)
@@ -55,7 +52,14 @@ _create_new (
     (ArrangerObject *) self;
   obj->pos = *pos;
   obj->type = ARRANGER_OBJECT_TYPE_AUTOMATION_POINT;
-  self->curviness = 1.0;
+  self->curve_opts.curviness = 0;
+  self->curve_opts.algo =
+    ZRYTHM_TESTING ?
+      CURVE_ALGORITHM_SUPERELLIPSE :
+      (CurveAlgorithm)
+      g_settings_get_enum (
+        S_PREFERENCES,
+        "automation-curve-algorithm");
 
   self->index = -1;
 
@@ -277,47 +281,6 @@ automation_point_set_fvalue (
 }
 
 /**
- * TODO add description.
- *
- * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
- * @param x X-coordinate.
- * @param curviness Curviness variable.
- * @param start_higher Start at higher point.
- */
-static double
-get_y_normalized (
-  double x,
-  double curviness,
-  int    start_higher,
-  int    curve_up)
-{
-  if (!start_higher)
-    x = 1.0 - x;
-  if (curve_up)
-    x = 1.0 - x;
-
-  double val = -1.0;
-  switch (CURVE_ALGO)
-    {
-    case AP_CURVE_ALGORITHM_EXPONENT:
-      val =
-        pow (x, curviness);
-      break;
-    case AP_CURVE_ALGORITHM_SUPERELLIPSE:
-      val =
-        pow (
-          1.0 - pow (x, curviness),
-          (1.0 / curviness));
-      break;
-    }
-  if (curve_up)
-    {
-      val = 1.0 - val;
-    }
-  return val;
-}
-
-/**
  * The function to return a point on the curve.
  *
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
@@ -342,9 +305,8 @@ automation_point_get_normalized_value_in_curve (
   int start_higher =
     next_ap->normalized_val < self->normalized_val;
   dy =
-    get_y_normalized (
-      x, self->curviness, start_higher,
-      self->curve_up);
+    curve_get_normalized_y (
+      x, &self->curve_opts, start_higher);
   return dy;
 }
 
@@ -354,21 +316,13 @@ automation_point_get_normalized_value_in_curve (
 void
 automation_point_set_curviness (
   AutomationPoint * self,
-  const curviness_t curviness,
-  const int         curve_up)
+  const curviness_t curviness)
 {
   if (math_doubles_equal (
-        self->curviness, curviness))
+        self->curve_opts.curviness, curviness))
     return;
 
-  self->curviness = curviness;
-  self->curve_up = curve_up;
-  /*ArrangerObject * obj = (ArrangerObject *) self;*/
-  /*if (Z_IS_ARRANGER_OBJECT_WIDGET (obj->widget))*/
-    /*{*/
-      /*arranger_object_widget_force_redraw (*/
-        /*Z_ARRANGER_OBJECT_WIDGET (obj->widget));*/
-    /*}*/
+  self->curve_opts.curviness = curviness;
 }
 
 /**

@@ -26,6 +26,7 @@
 #ifndef __GUI_BACKEND_ARRANGER_OBJECT_H__
 #define __GUI_BACKEND_ARRANGER_OBJECT_H__
 
+#include "audio/curve.h"
 #include "audio/position.h"
 #include "utils/yaml.h"
 
@@ -75,24 +76,6 @@ typedef enum ArrangerObjectType
   ARRANGER_OBJECT_TYPE_VELOCITY,
 } ArrangerObjectType;
 
-/**
- * ArrangerObject flags.
- */
-typedef enum ArrangerObjectFlags
-{
-  /** This object is not a project object, but an
-   * object used temporarily eg. when undoing/
-   * redoing. */
-  ARRANGER_OBJECT_FLAG_NON_PROJECT = 1 << 0,
-
-} ArrangerObjectFlags;
-
-static const cyaml_bitdef_t
-arranger_object_flags_bitvals[] =
-{
-  { .name = "non_project", .offset =  0, .bits =  1 },
-};
-
 static const cyaml_strval_t
 arranger_object_type_strings[] =
 {
@@ -112,6 +95,24 @@ arranger_object_type_strings[] =
     ARRANGER_OBJECT_TYPE_AUTOMATION_POINT },
   { "Velocity",
     ARRANGER_OBJECT_TYPE_VELOCITY },
+};
+
+/**
+ * ArrangerObject flags.
+ */
+typedef enum ArrangerObjectFlags
+{
+  /** This object is not a project object, but an
+   * object used temporarily eg. when undoing/
+   * redoing. */
+  ARRANGER_OBJECT_FLAG_NON_PROJECT = 1 << 0,
+
+} ArrangerObjectFlags;
+
+static const cyaml_bitdef_t
+arranger_object_flags_bitvals[] =
+{
+  { .name = "non_project", .offset =  0, .bits =  1 },
 };
 
 typedef enum ArrangerObjectPositionType
@@ -211,6 +212,12 @@ typedef struct ArrangerObject
   /** Cache. */
   Position           cache_fade_out_pos;
 
+  /** Fade in curve options. */
+  CurveOptions       fade_in_opts;
+
+  /** Fade out curve options. */
+  CurveOptions       fade_out_opts;
+
   /** The full rectangle this object covers
    * including off-screen parts, in absolute
    * coordinates. */
@@ -256,7 +263,7 @@ typedef struct ArrangerObject
 } ArrangerObject;
 
 static const cyaml_schema_field_t
-arranger_object_fields_schema[] =
+  arranger_object_fields_schema[] =
 {
   YAML_FIELD_ENUM (
     ArrangerObject, type,
@@ -288,12 +295,19 @@ arranger_object_fields_schema[] =
   YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerObject, fade_out_pos,
     position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ArrangerObject, fade_in_opts,
+    curve_options_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ArrangerObject, fade_out_opts,
+    curve_options_fields_schema),
 
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
-arranger_object_schema = {
+  arranger_object_schema =
+{
   CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
     ArrangerObject, arranger_object_fields_schema),
 };

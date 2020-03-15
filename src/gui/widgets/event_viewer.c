@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -253,7 +253,9 @@ add_from_object (
         char value[50];
         sprintf (value, "%f", (double) ap->fvalue);
         char curviness[50];
-        sprintf (curviness, "%f", ap->curviness);
+        sprintf (
+          curviness, "%f",
+          ap->curve_opts.curviness);
         gtk_list_store_append (store, iter);
         gtk_list_store_set (
           store, iter,

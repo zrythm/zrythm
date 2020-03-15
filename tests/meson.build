@@ -50,6 +50,7 @@ if get_option ('enable_tests')
   tests = [
     ['actions/arranger_selections', true],
     ['audio/automation_track', true],
+    ['audio/curve', true],
     ['audio/midi_note', true],
     ['audio/midi_track', true],
     ['audio/position', true],

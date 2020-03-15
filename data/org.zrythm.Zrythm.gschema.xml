@@ -123,6 +123,11 @@
     <value nick="sqrt" value="1"/>
     <value nick="sine" value="2"/>
   </enum>
+  <enum id="org.zrythm.Zrythm.preferences.curve-algorithm-enum">
+    <value nick="exponent" value="0"/>
+    <value nick="superellipse" value="1"/>
+    <value nick="vital" value="2"/>
+  </enum>
   <enum id="org.zrythm.Zrythm.preferences.buffer-size-enum">
     <value nick="16" value="0"/>
     <value nick="32" value="1"/>
@@ -269,6 +274,28 @@
       <description>
         The Pan Law to use when
         applying pan on channels.
+      </description>
+    </key>
+
+    <!-- KEY: fade-algorithm -->
+    <key name="fade-algorithm"
+      enum="org.zrythm.Zrythm.preferences.curve-algorithm-enum">
+      <default>"superellipse"</default>
+      <summary>Fade algorithm</summary>
+      <description>
+        Default fade algorithm to use for fade
+        ins/outs.
+      </description>
+    </key>
+
+    <!-- KEY: automation-curve-algorithm -->
+    <key name="automation-curve-algorithm"
+      enum="org.zrythm.Zrythm.preferences.curve-algorithm-enum">
+      <default>"superellipse"</default>
+      <summary>Automation curve algorithm</summary>
+      <description>
+        Default algorithm to use for automation
+        curves.
       </description>
     </key>
 
