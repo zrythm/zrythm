@@ -55,11 +55,15 @@ setup_audio_devices (
   AudioBackend prev_backend =
     g_settings_get_enum (
       S_PREFERENCES, "audio-backend");
-  g_settings_set_enum (
-    S_PREFERENCES, "audio-backend",
-    atoi (
-      gtk_combo_box_get_active_id (
-        self->audio_backend)));
+  const char * active_id =
+    gtk_combo_box_get_active_id (
+      self->audio_backend);
+  if (active_id)
+    {
+      g_settings_set_enum (
+        S_PREFERENCES, "audio-backend",
+        atoi (active_id));
+    }
 
   AudioBackend backend =
     (AudioBackend)

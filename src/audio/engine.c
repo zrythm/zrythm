@@ -199,6 +199,8 @@ engine_init (
         S_PREFERENCES,
         "audio-backend");
 
+  int backend_reset_to_dummy = 0;
+
   /* use ifdef's so that dummy is used if the
    * selected backend isn't available */
   switch (ab_code)
@@ -234,7 +236,13 @@ engine_init (
 #endif
     default:
       self->audio_backend = AUDIO_BACKEND_DUMMY;
-      g_warn_if_reached ();
+      g_warning (
+        "selected audio backend not found. "
+        "switching to dummy");
+      g_settings_set_enum (
+        S_PREFERENCES, "audio-backend",
+        AUDIO_BACKEND_DUMMY);
+      backend_reset_to_dummy = 1;
       break;
     }
 
@@ -273,8 +281,30 @@ engine_init (
 #endif
     default:
       self->midi_backend = MIDI_BACKEND_DUMMY;
-      g_warn_if_reached ();
+      g_warning (
+        "selected midi backend not found. "
+        "switching to dummy");
+      g_settings_set_enum (
+        S_PREFERENCES, "midi-backend",
+        MIDI_BACKEND_DUMMY);
+      backend_reset_to_dummy = 1;
       break;
+    }
+
+  if (backend_reset_to_dummy && !ZRYTHM_TESTING)
+    {
+      char str[800];
+      sprintf (
+        str,
+        _("The selected MIDI/audio backend was not "
+          "found in the version of Zrythm you have "
+          "installed. The audio and MIDI backends "
+          "were set to \"Dummy\". Please set your "
+          "preferred backend from the "
+          "preferences."));
+      ui_show_message_full (
+        GTK_WINDOW (MAIN_WINDOW),
+        GTK_MESSAGE_WARNING, str);
     }
 
   self->pan_law =
