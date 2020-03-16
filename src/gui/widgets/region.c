@@ -808,6 +808,7 @@ draw_automation_region (
 
 /**
  * @param rect Arranger rectangle.
+ * @param full_rect Arranger object rect.
  */
 static void
 draw_fades (
@@ -822,7 +823,6 @@ draw_fades (
     (ArrangerObject *) self;
   Track * track = arranger_object_get_track (obj);
   g_return_if_fail (track);
-  int padding = 4;
 
   /* set color */
   cairo_set_source_rgba (
@@ -843,7 +843,6 @@ draw_fades (
   int visible_start_px =
     MAX (start_px, rect->x);
 
-  /*cairo_save (cr);*/
   for (int i = visible_start_px;
        i <= visible_fade_in_px; i++)
     {
@@ -861,6 +860,7 @@ draw_fades (
             (double) (fade_in_px - start_px),
           &obj->fade_in_opts, 1);
 
+      /* if start */
       if (i == visible_start_px)
         {
           cairo_move_to (
@@ -869,40 +869,84 @@ draw_fades (
              val * full_rect->height) -
               rect->y);
         }
+
       cairo_rel_line_to (
         cr, 1,
         (next_val - val) * full_rect->height);
+
+      /* if end */
+      if (i == visible_fade_in_px)
+        {
+          /* paint a gradient in the faded out
+           * part */
+          cairo_rel_line_to (
+            cr, 0, next_val - full_rect->height);
+          cairo_rel_line_to (
+            cr, - i, 0);
+          cairo_close_path (cr);
+          cairo_fill (cr);
+        }
     }
-  /*cairo_stroke_preserve (cr);*/
 
-  /* paint a gradient in the faded out part */
-  cairo_line_to (
-    cr, visible_start_px - rect->x,
-    full_rect->y - rect->y);
-  cairo_close_path (cr);
-  cairo_fill (cr);
+  /* ---- fade out ---- */
 
-  /* get fade out px */
+  /* get fade out px as global */
   int fade_out_px =
+    full_rect->x +
     ui_pos_to_px_timeline (&obj->fade_out_pos, 0);
 
-  /* convert fade_out_px to global */
-  fade_out_px += full_rect->x;
+  /* get end px as global */
+  int end_px = full_rect->x + full_rect->width;
 
-  if (/* if loop px is visible */
-      fade_out_px >= rect->x - padding &&
-      fade_out_px < (rect->x + rect->width) + padding)
+  /* get visible positions (where to draw) */
+  int visible_fade_out_px =
+    MAX (fade_out_px, rect->x);
+  int visible_end_px =
+    MIN (end_px, rect->x + rect->width);
+
+  for (int i = visible_fade_out_px;
+       i <= visible_end_px; i++)
     {
-      gdk_cairo_set_source_rgba (
-        cr, &UI_COLORS->bright_green);
-      cairo_move_to (
-        cr, fade_out_px - rect->x,
-        draw_rect->y - rect->y);
-      cairo_line_to (
-        cr, fade_out_px - rect->x,
-        (draw_rect->y + draw_rect->height) -
-        rect->y);
-      cairo_stroke (cr);
+      /* revert because cairo draws the other way */
+      double val =
+        1.0 -
+        fade_get_y_normalized (
+          (double) (i - fade_out_px) /
+            (double) (end_px - fade_out_px),
+          &obj->fade_out_opts, 0);
+      double next_val =
+        1.0 -
+        fade_get_y_normalized (
+          (double) ((i + 1) - fade_out_px) /
+            (double) (end_px - fade_out_px),
+          &obj->fade_out_opts, 0);
+
+      /* if start, move only */
+      if (i == visible_fade_out_px)
+        {
+          cairo_move_to (
+            cr, i - rect->x,
+            (full_rect->y +
+             val * full_rect->height) -
+              rect->y);
+        }
+
+      cairo_rel_line_to (
+        cr, 1,
+        (next_val - val) * full_rect->height);
+
+      /* if end, draw */
+      if (i == visible_end_px)
+        {
+          /* paint a gradient in the faded out
+           * part */
+          cairo_rel_line_to (
+            cr, 0, - full_rect->height);
+          cairo_rel_line_to (
+            cr, - i, 0);
+          cairo_close_path (cr);
+          cairo_fill (cr);
+        }
     }
 }
 

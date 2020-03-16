@@ -26,7 +26,7 @@
 #include <glib/gprintf.h>
 #include <glib/gstdio.h>
 
-#define MESSAGES_MAX 8000
+#define MESSAGES_MAX 16000
 
 typedef struct LogEvent
 {
