@@ -1211,21 +1211,184 @@ timeline_arranger_move_regions_to_new_tracks (
   return 1;
 }
 
-/*void*/
-/*timeline_arranger_widget_move_items_y (*/
-  /*ArrangerWidget * self,*/
-  /*double                   offset_y)*/
-/*{*/
+/** Used when activating fade presets. */
+typedef struct CurveOptionInfo
+{
+  CurveOptions     opts;
+  ArrangerObject * obj;
 
-/*}*/
+  /** 1 for in, 0 for out. */
+  int              fade_in;
+} CurveOptionInfo;
+
+static void
+on_fade_preset_selected (
+  GtkMenuItem *     menu_item,
+  CurveOptionInfo * info)
+{
+  ArrangerSelections * sel_before =
+    arranger_selections_clone (
+      (ArrangerSelections *) TL_SELECTIONS);
+  if (info->fade_in)
+    {
+      info->obj->fade_in_opts.algo =
+        info->opts.algo;
+      info->obj->fade_in_opts.curviness =
+        info->opts.curviness;
+    }
+  else
+    {
+      info->obj->fade_out_opts.algo =
+        info->opts.algo;
+      info->obj->fade_out_opts.curviness =
+        info->opts.curviness;
+    }
+
+  g_warn_if_fail (
+    arranger_object_is_selected (info->obj));
+  UndoableAction * ua =
+    arranger_selections_action_new_edit (
+      sel_before,
+      (ArrangerSelections *) TL_SELECTIONS,
+      ARRANGER_SELECTIONS_ACTION_EDIT_FADES);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_warn_if_fail (IS_ARRANGER_OBJECT (info->obj));
+  EVENTS_PUSH (
+    ET_ARRANGER_OBJECT_CHANGED, info->obj);
+
+  object_zero_and_free (info);
+}
 
 /**
- * Sets the default cursor in all selected regions and
- * intializes start positions.
+ * @param fade_in 1 for in, 0 for out.
  */
-/*void*/
-/*timeline_arranger_widget_on_drag_end (*/
-  /*ArrangerWidget * self)*/
-/*{*/
+static void
+create_fade_preset_menu (
+  ArrangerWidget * self,
+  GtkWidget *      menu,
+  ArrangerObject * obj,
+  int              fade_in)
+{
+  GtkWidget * menuitem =
+    gtk_menu_item_new_with_label (_("Fade preset"));
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
+  GtkMenu * submenu = GTK_MENU (gtk_menu_new ());
+  gtk_widget_set_visible (GTK_WIDGET (submenu), 1);
+  GtkMenuItem * submenu_item;
+  CurveOptionInfo * opts;
 
-/*}*/
+#define CREATE_ITEM(name,xalgo,curve) \
+  submenu_item = \
+    GTK_MENU_ITEM ( \
+      gtk_menu_item_new_with_label (name)); \
+  opts = calloc (1, sizeof (CurveOptionInfo)); \
+  opts->opts.algo = CURVE_ALGORITHM_##xalgo; \
+  opts->opts.curviness = curve; \
+  opts->fade_in = fade_in; \
+  opts->obj = obj; \
+  g_signal_connect ( \
+    G_OBJECT (submenu_item), "activate", \
+    G_CALLBACK (on_fade_preset_selected), opts); \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL (submenu), \
+    GTK_WIDGET (submenu_item)); \
+  gtk_widget_set_visible ( \
+    GTK_WIDGET (submenu_item), 1)
+
+  CREATE_ITEM (_("Linear"), SUPERELLIPSE, 0);
+  CREATE_ITEM (_("Exponential"), EXPONENT, - 0.6);
+  CREATE_ITEM (_("Elliptic"), SUPERELLIPSE, - 0.5);
+  CREATE_ITEM (_("Vital"), VITAL, - 0.5);
+
+  gtk_menu_item_set_submenu (
+    GTK_MENU_ITEM (menuitem),
+    GTK_WIDGET (submenu));
+  gtk_widget_set_visible (
+    GTK_WIDGET (menuitem), 1);
+}
+
+/**
+ * Show context menu at x, y.
+ */
+void
+timeline_arranger_widget_show_context_menu (
+  ArrangerWidget * self,
+  double           x,
+  double           y)
+{
+  GtkWidget *menu, *menuitem;
+  menu = gtk_menu_new();
+
+  ArrangerObject * obj =
+    arranger_widget_get_hit_arranger_object (
+      (ArrangerWidget *) self,
+      ARRANGER_OBJECT_TYPE_ALL, x, y);
+
+  if (obj)
+    {
+      int local_x = (int) (x - obj->full_rect.x);
+      int local_y = (int) (y - obj->full_rect.y);
+
+      if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
+        {
+          ZRegion * r = (ZRegion *) obj;
+          if (r->id.type == REGION_TYPE_MIDI)
+            {
+              menuitem =
+                gtk_menu_item_new_with_label (
+                  _("Export as MIDI file"));
+              gtk_menu_shell_append (
+                GTK_MENU_SHELL(menu), menuitem);
+              g_signal_connect (
+                menuitem, "activate",
+                G_CALLBACK (
+                  timeline_arranger_on_export_as_midi_file_clicked),
+                r);
+            }
+
+          if (r->id.type == REGION_TYPE_AUDIO)
+            {
+              if (arranger_object_is_fade_in (
+                    obj, local_x, local_y, 0))
+                {
+                  create_fade_preset_menu (
+                    self, menu, obj, 1);
+                }
+              if (arranger_object_is_fade_out (
+                    obj, local_x, local_y, 0))
+                {
+                  create_fade_preset_menu (
+                    self, menu, obj, 0);
+                }
+            }
+
+          menuitem =
+            gtk_menu_item_new_with_label (
+              _("Quick bounce"));
+          gtk_menu_shell_append (
+            GTK_MENU_SHELL(menu), menuitem);
+          g_signal_connect (
+            menuitem, "activate",
+            G_CALLBACK (
+              timeline_arranger_on_quick_bounce_clicked),
+            r);
+
+          menuitem =
+            gtk_menu_item_new_with_label (
+              _("Bounce..."));
+          gtk_menu_shell_append (
+            GTK_MENU_SHELL(menu), menuitem);
+          g_signal_connect (
+            menuitem, "activate",
+            G_CALLBACK (
+              timeline_arranger_on_bounce_clicked),
+            r);
+        }
+    }
+
+  gtk_widget_show_all (menu);
+  gtk_menu_popup_at_pointer (
+    GTK_MENU (menu), NULL);
+}

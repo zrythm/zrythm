@@ -251,6 +251,15 @@ timeline_arranger_widget_remove_children (
   ArrangerWidget * self);
 
 /**
+ * Show context menu at x, y.
+ */
+void
+timeline_arranger_widget_show_context_menu (
+  ArrangerWidget * self,
+  double           x,
+  double           y);
+
+/**
  * @}
  */
 

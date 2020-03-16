@@ -1138,6 +1138,17 @@ do_or_undo_edit (
               obj->loop_end_pos =
                 dest_objs[i]->loop_end_pos;
               break;
+            case ARRANGER_SELECTIONS_ACTION_EDIT_FADES:
+              obj->fade_in_pos =
+                dest_objs[i]->fade_in_pos;
+              obj->fade_out_pos =
+                dest_objs[i]->fade_out_pos;
+              obj->fade_in_opts =
+                dest_objs[i]->fade_in_opts;
+              obj->fade_out_opts =
+                dest_objs[i]->fade_out_opts;
+              g_message ("COPIED");
+              break;
             case ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE:
 #define SET_PRIMITIVE(cc,member) \
     ((cc *) obj)->member = ((cc *) dest_objs[i])->member

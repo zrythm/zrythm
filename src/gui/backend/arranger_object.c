@@ -2014,6 +2014,8 @@ arranger_object_clone (
       new_obj->fade_out_pos = self->fade_out_pos;
       new_obj->cache_fade_out_pos =
         self->cache_fade_out_pos;
+      new_obj->fade_in_opts = self->fade_in_opts;
+      new_obj->fade_out_opts = self->fade_out_opts;
     }
 
   return new_obj;

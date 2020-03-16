@@ -108,6 +108,9 @@ typedef enum ArrangerSelectionsActionEditType
    * ScaleObject's. */
   ARRANGER_SELECTIONS_ACTION_EDIT_SCALE,
 
+  /** Editing fade positions or curve options. */
+  ARRANGER_SELECTIONS_ACTION_EDIT_FADES,
+
   /** For ramping MidiNote velocities or
    * AutomationPoint values.
    * (this is handled by EDIT_PRIMITIVE) */
@@ -125,6 +128,8 @@ arranger_selections_action_edit_type_strings[] =
     ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE },
   { "Scale",
     ARRANGER_SELECTIONS_ACTION_EDIT_SCALE },
+  { "Fades",
+    ARRANGER_SELECTIONS_ACTION_EDIT_FADES },
 };
 
 /**

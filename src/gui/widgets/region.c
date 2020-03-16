@@ -825,10 +825,8 @@ draw_fades (
   int padding = 4;
 
   /* set color */
-  GdkRGBA color;
-  ui_get_contrast_color (
-    &track->color, &color);
-  gdk_cairo_set_source_rgba (cr, &color);
+  cairo_set_source_rgba (
+    cr, 0.2, 0.2, 0.2, 0.6);
   cairo_set_line_width (cr, 3);
 
   /* get fade in px as global */
@@ -845,8 +843,9 @@ draw_fades (
   int visible_start_px =
     MAX (start_px, rect->x);
 
+  /*cairo_save (cr);*/
   for (int i = visible_start_px;
-       i < visible_fade_in_px - 1; i++)
+       i <= visible_fade_in_px; i++)
     {
       /* revert because cairo draws the other way */
       double val =
@@ -862,18 +861,26 @@ draw_fades (
             (double) (fade_in_px - start_px),
           &obj->fade_in_opts, 1);
 
-      cairo_move_to (
-        cr, i - rect->x,
-        (full_rect->y +
-         val * full_rect->height) -
-          rect->y);
-      cairo_line_to (
-        cr, (i + 1) - rect->x,
-        (full_rect->y +
-         next_val * full_rect->height) -
-          rect->y);
+      if (i == visible_start_px)
+        {
+          cairo_move_to (
+            cr, i - rect->x,
+            (full_rect->y +
+             val * full_rect->height) -
+              rect->y);
+        }
+      cairo_rel_line_to (
+        cr, 1,
+        (next_val - val) * full_rect->height);
     }
-  cairo_stroke (cr);
+  /*cairo_stroke_preserve (cr);*/
+
+  /* paint a gradient in the faded out part */
+  cairo_line_to (
+    cr, visible_start_px - rect->x,
+    full_rect->y - rect->y);
+  cairo_close_path (cr);
+  cairo_fill (cr);
 
   /* get fade out px */
   int fade_out_px =
@@ -1160,10 +1167,10 @@ region_draw (
             &draw_rect, i);
           break;
         case REGION_TYPE_AUDIO:
-          draw_fades (
+          draw_audio_region (
             self, cr, rect, &full_rect,
             &draw_rect, i);
-          draw_audio_region (
+          draw_fades (
             self, cr, rect, &full_rect,
             &draw_rect, i);
           break;

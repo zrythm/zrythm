@@ -1755,66 +1755,6 @@ arranger_widget_select_all (
 }
 
 static void
-show_context_menu_timeline (
-  ArrangerWidget * self,
-  gdouble          x,
-  gdouble          y)
-{
-  GtkWidget *menu, *menuitem;
-
-  ArrangerObject * r_obj =
-    arranger_widget_get_hit_arranger_object (
-      (ArrangerWidget *) self,
-      ARRANGER_OBJECT_TYPE_REGION, x, y);
-  ZRegion * r = (ZRegion *) r_obj;
-
-  menu = gtk_menu_new();
-
-  if (r)
-    {
-      if (r->id.type == REGION_TYPE_MIDI)
-        {
-          menuitem =
-            gtk_menu_item_new_with_label (
-              _("Export as MIDI file"));
-          gtk_menu_shell_append (
-            GTK_MENU_SHELL(menu), menuitem);
-          g_signal_connect (
-            menuitem, "activate",
-            G_CALLBACK (
-              timeline_arranger_on_export_as_midi_file_clicked),
-            r);
-        }
-
-      menuitem =
-        gtk_menu_item_new_with_label (
-          _("Quick bounce"));
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL(menu), menuitem);
-      g_signal_connect (
-        menuitem, "activate",
-        G_CALLBACK (
-          timeline_arranger_on_quick_bounce_clicked),
-        r);
-
-      menuitem =
-        gtk_menu_item_new_with_label (
-          _("Bounce..."));
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL(menu), menuitem);
-      g_signal_connect (
-        menuitem, "activate",
-        G_CALLBACK (
-          timeline_arranger_on_bounce_clicked),
-        r);
-    }
-
-  gtk_widget_show_all (menu);
-  gtk_menu_popup_at_pointer (
-    GTK_MENU (menu), NULL);
-}
-
-static void
 show_context_menu_audio (
   ArrangerWidget * self,
   gdouble              x,
@@ -1860,7 +1800,8 @@ show_context_menu (
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      show_context_menu_timeline (self, x, y);
+      timeline_arranger_widget_show_context_menu (
+        self, x, y);
       break;
     case TYPE (MIDI):
       midi_arranger_show_context_menu (self, x, y);
@@ -1891,6 +1832,21 @@ on_right_click (
 {
   if (n_press != 1)
     return;
+
+  /* if object clicked and object is unselected,
+   * select it */
+  ArrangerObject * obj =
+    arranger_widget_get_hit_arranger_object (
+      (ArrangerWidget *) self,
+      ARRANGER_OBJECT_TYPE_ALL, x, y);
+  if (obj)
+    {
+      if (!arranger_object_is_selected (obj))
+        {
+          arranger_object_select (
+            obj, F_SELECT, F_NO_APPEND);
+        }
+    }
 
   show_context_menu (self, x, y);
 }
@@ -2567,9 +2523,9 @@ on_drag_begin_handle_hit_object (
 
   /* get flags */
   int is_fade_in =
-    arranger_object_is_fade_in (obj, wx, wy);
+    arranger_object_is_fade_in (obj, wx, wy, 1);
   int is_fade_out =
-    arranger_object_is_fade_out (obj, wx, wy);
+    arranger_object_is_fade_out (obj, wx, wy, 1);
   int is_resize_l =
     arranger_object_is_resize_l (obj, wx);
   int is_resize_r =
@@ -5234,14 +5190,14 @@ get_timeline_cursor (
                       (int) self->hover_x -
                         r_obj->full_rect.x,
                       (int) self->hover_y -
-                        r_obj->full_rect.y);
+                        r_obj->full_rect.y, 1);
                   int is_fade_out =
                     arranger_object_is_fade_out (
                       r_obj,
                       (int) self->hover_x -
                         r_obj->full_rect.x,
                       (int) self->hover_y -
-                        r_obj->full_rect.y);
+                        r_obj->full_rect.y, 1);
                   int is_resize_l =
                     arranger_object_is_resize_l (
                       r_obj,

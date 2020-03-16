@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -45,24 +45,32 @@
  * fade in mark.
  *
  * @param x X in local coordinates.
+ * @param only_handle Whether to only check if this
+ *   is inside the fade handle. If this is false,
+ *   the whole fade in area will be considered.
  */
 int
 arranger_object_is_fade_in (
   ArrangerObject * self,
   const int        x,
-  const int        y);
+  const int        y,
+  int              only_handle);
 
 /**
  * Returns if the current position is for moving the
  * fade out mark.
  *
  * @param x X in local coordinates.
+ * @param only_handle Whether to only check if this
+ *   is inside the fade handle. If this is false,
+ *   the whole fade out area will be considered.
  */
 int
 arranger_object_is_fade_out (
   ArrangerObject * self,
   const int        x,
-  const int        y);
+  const int        y,
+  int              only_handle);
 
 /**
  * Returns if the current position is for resizing

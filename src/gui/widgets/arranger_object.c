@@ -184,12 +184,16 @@ arranger_object_is_resize_r (
  * fade in mark.
  *
  * @param x X in local coordinates.
+ * @param only_handle Whether to only check if this
+ *   is inside the fade handle. If this is false,
+ *   the whole fade in area will be considered.
  */
 int
 arranger_object_is_fade_in (
   ArrangerObject * self,
   const int        x,
-  const int        y)
+  const int        y,
+  int              only_handle)
 {
   if (!arranger_object_can_fade (self))
     return 0;
@@ -197,10 +201,21 @@ arranger_object_is_fade_in (
   int fade_in_px =
     ui_pos_to_px_timeline (&self->fade_in_pos, 0);
 
-  return
-    x >= fade_in_px - ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
-    x <= fade_in_px + ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
-    y <= ARRANGER_OBJECT_FADE_POINT_HALFWIDTH;
+  if (only_handle)
+    {
+      return
+        x >=
+          fade_in_px -
+            ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
+        x <=
+          fade_in_px +
+            ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
+        y <= ARRANGER_OBJECT_FADE_POINT_HALFWIDTH;
+    }
+  else
+    {
+      return x <= fade_in_px;
+    }
 }
 
 /**
@@ -208,12 +223,16 @@ arranger_object_is_fade_in (
  * fade out mark.
  *
  * @param x X in local coordinates.
+ * @param only_handle Whether to only check if this
+ *   is inside the fade handle. If this is false,
+ *   the whole fade out area will be considered.
  */
 int
 arranger_object_is_fade_out (
   ArrangerObject * self,
   const int        x,
-  const int        y)
+  const int        y,
+  int              only_handle)
 {
   if (!arranger_object_can_fade (self))
     return 0;
@@ -221,10 +240,21 @@ arranger_object_is_fade_out (
   int fade_out_px =
     ui_pos_to_px_timeline (&self->fade_out_pos, 0);
 
-  return
-    x >= fade_out_px - ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
-    x <= fade_out_px + ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
-    y <= ARRANGER_OBJECT_FADE_POINT_HALFWIDTH;
+  if (only_handle)
+    {
+      return
+        x >=
+          fade_out_px -
+            ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
+        x <=
+          fade_out_px +
+            ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
+        y <= ARRANGER_OBJECT_FADE_POINT_HALFWIDTH;
+    }
+  else
+    {
+      return x >= fade_out_px;
+    }
 }
 
 /**
