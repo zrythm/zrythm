@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"PO-Revision-Date: 2020-03-14 19:36+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/gl/>\n"
@@ -161,7 +161,7 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:12
 msgid "Playhead"
-msgstr "Cabeza de reprodución"
+msgstr "Cabeza de Reprodución"
 
 #: ../../playback-and-recording/overview.rst:13
 msgid "The Playhead is the current position in the song."

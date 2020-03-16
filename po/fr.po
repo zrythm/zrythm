@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-03-07 22:22+0000\n"
-"PO-Revision-Date: 2020-03-03 20:33+0000\n"
+"PO-Revision-Date: 2020-03-15 23:58+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -54,9 +54,8 @@ msgid "Initializing caches"
 msgstr "Initialisation des caches"
 
 #: src/zrythm.c:425
-#, fuzzy
 msgid "Initializing file manager"
-msgstr "Initialisation du gestionnaire  de greffon"
+msgstr "Initialisation du gestionnaire de greffon"
 
 #: src/zrythm.c:432
 msgid "Initializing plugin manager"
@@ -139,10 +138,10 @@ msgstr ""
 #. * end
 #: src/main.c:278
 msgid "(trial) "
-msgstr ""
+msgstr "(essai) "
 
 #: src/main.c:296
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
 "\n"
@@ -161,21 +160,21 @@ msgstr ""
 "\n"
 "Options :\n"
 "  -h, --help      affiche cette aide et quitte\n"
+"  -p, --print-settings imprimer les paramètres actuels\n"
+"  ---reset-to-factory réinitialise les paramètres d'usine\n"
 "  -v, --version   affiche l'information d'information de version et quitte\n"
 "\n"
 "Exemples :\n"
-"  zrythm          exécute normalement\n"
+"  zrythm -v         affiche la version\n"
 "\n"
-"Écrire des commentaires et des bogues à %s%\n"
-"Supporter ce projet à https://liberapay.com/Zrythm\n"
-"Site ouèbe https://www.zrythm.org\n"
+"Rapporter les bogues à %s\n"
 
 #. getopt_long already printed an error
 #. * message
 #: src/main.c:364
 #, c-format
 msgid "Unknown option\n"
-msgstr ""
+msgstr "Option inconnue\n"
 
 #: src/main.c:374
 #, c-format
@@ -417,7 +416,7 @@ msgstr "Les arrière-plans sélectionnés sont opérationnels"
 
 #: src/gui/widgets/first_run_assistant.c:173
 msgid "JACK MIDI can only be used with JACK audio"
-msgstr ""
+msgstr "JACK MIDI ne peut être utilisé qu'avec JACK audio"
 
 #: src/gui/widgets/bind_cc_dialog.c:94
 msgid "Not a control change event"
@@ -1268,33 +1267,34 @@ msgstr ""
 #: src/settings/settings.c:71
 #, c-format
 msgid "Schema %s\n"
-msgstr ""
+msgstr "Schéma %s\n"
 
 #: src/settings/settings.c:76
 #, c-format
 msgid "Resetting schema %s...\n"
-msgstr ""
+msgstr "Réinitialisation du schéma %s...\n"
 
 #. TRANSLATORS: please keep the spaces
 #: src/settings/settings.c:103
 #, c-format
 msgid "  resetting %s to %s\n"
-msgstr ""
+msgstr "  réinitialisation de %s vers %s\n"
 
 #: src/settings/settings.c:145
 #, c-format
 msgid "Failed to find schema %s. Zrythm is likely not installed"
 msgstr ""
+"Impossible de trouver de schéma %s. Zrythm n'est probablement pas installé"
 
 #: src/settings/settings.c:159
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to view schema %s"
-msgstr "Échec pour trouver la propriété %s dans %s"
+msgstr "Impossible de voir le schéma %s"
 
 #: src/settings/settings.c:166
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reset schema %s"
-msgstr "Échec pour trouver la propriété %s dans %s"
+msgstr "Impossible de réinitialiser le schéma %s"
 
 #: src/settings/settings.c:199
 #, c-format
@@ -1302,16 +1302,18 @@ msgid ""
 "This will reset Zrythm to factory settings. You will lose all your "
 "preferences. Type 'y' to continue: "
 msgstr ""
+"Cela réinitialisera Zrythm aux réglages d'usine. Vous perdrez toutes vos "
+"préférences. Tapez \"y\" pour continuer : "
 
 #: src/settings/settings.c:205
-#, fuzzy, c-format
+#, c-format
 msgid "Aborting...\n"
-msgstr "Export..."
+msgstr "Interrompre...\n"
 
 #: src/settings/settings.c:216
 #, c-format
 msgid "Reset to factory settings successful\n"
-msgstr ""
+msgstr "Réinitialisation des paramètres d'usine réussi\n"
 
 #: src/audio/track_processor.c:194
 msgid "Piano Roll"
