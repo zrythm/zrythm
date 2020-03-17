@@ -603,8 +603,16 @@ snap_region_l (
   Position *       new_pos,
   int              dry_run)
 {
+  ArrangerObjectResizeType type =
+    ARRANGER_OBJECT_RESIZE_NORMAL;
+  if ACTION_IS (RESIZING_L_LOOP)
+    type = ARRANGER_OBJECT_RESIZE_LOOP;
+  else if ACTION_IS (RESIZING_L_FADE)
+    type = ARRANGER_OBJECT_RESIZE_FADE;
+
   if (SNAP_GRID_ANY_SNAP (self->snap_grid) &&
-        !self->shift_held)
+        !self->shift_held &&
+        type != ARRANGER_OBJECT_RESIZE_FADE)
     {
       Track * track =
         arranger_object_get_track (
@@ -613,13 +621,6 @@ snap_region_l (
         NULL, new_pos, track,
         NULL, self->snap_grid);
     }
-
-  ArrangerObjectResizeType type =
-    ARRANGER_OBJECT_RESIZE_NORMAL;
-  if ACTION_IS (RESIZING_L_LOOP)
-    type = ARRANGER_OBJECT_RESIZE_LOOP;
-  else if ACTION_IS (RESIZING_L_FADE)
-    type = ARRANGER_OBJECT_RESIZE_FADE;
 
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
@@ -775,8 +776,16 @@ snap_region_r (
   Position * new_pos,
   int        dry_run)
 {
+  ArrangerObjectResizeType type =
+    ARRANGER_OBJECT_RESIZE_NORMAL;
+  if ACTION_IS (RESIZING_R_LOOP)
+    type = ARRANGER_OBJECT_RESIZE_LOOP;
+  else if ACTION_IS (RESIZING_R_FADE)
+    type = ARRANGER_OBJECT_RESIZE_FADE;
+
   if (SNAP_GRID_ANY_SNAP (self->snap_grid) &&
-        !self->shift_held)
+        !self->shift_held &&
+        type != ARRANGER_OBJECT_RESIZE_FADE)
     {
       Track * track =
         arranger_object_get_track (
@@ -785,13 +794,6 @@ snap_region_r (
         NULL, new_pos, track,
         NULL, self->snap_grid);
     }
-
-  ArrangerObjectResizeType type =
-    ARRANGER_OBJECT_RESIZE_NORMAL;
-  if ACTION_IS (RESIZING_R_LOOP)
-    type = ARRANGER_OBJECT_RESIZE_LOOP;
-  else if ACTION_IS (RESIZING_R_FADE)
-    type = ARRANGER_OBJECT_RESIZE_FADE;
 
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
