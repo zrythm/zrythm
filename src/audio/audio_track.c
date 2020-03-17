@@ -21,9 +21,10 @@
 #include <stdlib.h>
 
 #include "audio/audio_track.h"
-#include "audio/clip.h"
 #include "audio/automation_tracklist.h"
+#include "audio/clip.h"
 #include "audio/engine.h"
+#include "audio/fade.h"
 #include "audio/pool.h"
 #include "audio/port.h"
 #include "project.h"
@@ -119,24 +120,26 @@ audio_track_fill_stereo_ports_from_clip (
               clip_start_frames =
                 position_to_frames (
                   &r_obj->clip_start_pos);
-              local_frames_start +=
+              long local_frames_start_adj =
+                local_frames_start +
                 clip_start_frames;
-              while (local_frames_start >=
+              while (local_frames_start_adj >=
                      loop_end_frames)
-                local_frames_start -= loop_frames;
+                local_frames_start_adj -=
+                  loop_frames;
 
               buff_index = 0;
               AudioClip * clip =
                 AUDIO_POOL->clips[r->pool_id];
 
               /* frames to skip if the region starts
-               * somewhere wi thin this cycle */
+               * somewhere within this cycle */
               unsigned int frames_to_skip = 0;
-              if (local_frames_start < 0)
+              if (local_frames_start_adj < 0)
                 {
                   frames_to_skip =
                     (unsigned int)
-                    (- local_frames_start);
+                    (- local_frames_start_adj);
                 }
 
               /* frames to process if the region
@@ -156,13 +159,14 @@ audio_track_fill_stereo_ports_from_clip (
                 (long) frames_to_skip;
 
               long current_local_frames =
-                local_frames_start;
+                local_frames_start_adj;
               for (j = frames_to_skip;
                    (long) j < frames_to_process;
                    j++)
                 {
                   current_local_frames =
-                    local_frames_start + (long) j;
+                    local_frames_start_adj +
+                    (long) j;
 
                   /* if loop point hit in the
                    * cycle, go back to loop start */
@@ -191,12 +195,49 @@ audio_track_fill_stereo_ports_from_clip (
                         (clip->channels *
                            r->num_frames));
 
+                  /* get the fade values */
+                  long local_frames =
+                    local_frames_start + j;
+                  float fade_in = 1.f;
+                  float fade_out = 1.f;
+                  if (local_frames <
+                        r_obj->fade_in_pos.frames)
+                    {
+                      fade_in =
+                        (float)
+                        fade_get_y_normalized (
+                          (double) local_frames /
+                          (double)
+                          r_obj->fade_in_pos.frames,
+                          &r_obj->fade_in_opts, 1);
+                    }
+                  else if (local_frames >=
+                             r_obj->fade_out_pos.
+                               frames)
+                    {
+                      fade_out =
+                        (float)
+                        fade_get_y_normalized (
+                          (double)
+                          (local_frames -
+                              r_obj->fade_out_pos.
+                                frames) /
+                          (double)
+                          (r_obj->end_pos.frames -
+                            (r_obj->fade_out_pos.
+                               frames +
+                             r_obj->pos.frames)),
+                          &r_obj->fade_out_opts, 0);
+                    }
+
                   stereo_ports->l->buf[j] =
-                    r->frames[buff_index];
+                    r->frames[buff_index] *
+                    fade_in * fade_out;
                   stereo_ports->r->buf[j] =
                     r->frames[
                       buff_index +
-                        (clip->channels - 1)];
+                        (clip->channels - 1)] *
+                    fade_in * fade_out;
                 }
             }
         }
