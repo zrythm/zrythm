@@ -489,6 +489,9 @@ load (
           gtk_window_set_title (
             GTK_WINDOW (dialog),
             _("Backup found"));
+          gtk_window_set_position (
+            GTK_WINDOW (dialog),
+            GTK_WIN_POS_CENTER_ALWAYS);
           gtk_window_set_icon_name (
             GTK_WINDOW (dialog), "zrythm");
           gtk_widget_set_visible (

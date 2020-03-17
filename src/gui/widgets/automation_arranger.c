@@ -239,23 +239,21 @@ automation_arranger_widget_show_context_menu (
       GtkMenuItem * submenu_item;
       for (int i = 0; i < NUM_CURVE_ALGORITHMS; i++)
         {
-          char tmp[100];
+          char name[100];
           curve_algorithm_get_localized_name (
-            i, tmp);
-          char name[400];
+            i, name);
+          submenu_item =
+            GTK_MENU_ITEM (
+              gtk_check_menu_item_new_with_label (
+                name));
+          gtk_check_menu_item_set_draw_as_radio (
+            GTK_CHECK_MENU_ITEM (submenu_item), 1);
           if ((CurveAlgorithm) i ==
                 ap->curve_opts.algo)
             {
-              strcpy (name, "* ");
-              strcat (name, tmp);
+              gtk_check_menu_item_set_active (
+                GTK_CHECK_MENU_ITEM (submenu_item), 1);
             }
-          else
-            {
-              strcpy (name, tmp);
-            }
-          submenu_item =
-            GTK_MENU_ITEM (
-              gtk_menu_item_new_with_label (name));
 
           CurveAlgorithmInfo * info =
             calloc (1, sizeof (CurveAlgorithmInfo));

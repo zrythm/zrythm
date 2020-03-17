@@ -1605,13 +1605,17 @@ show_context_menu (
         {
           char * lbl =
             g_strdup_printf (
-              _("%sMIDI Channel %d"),
-              i == track->midi_ch ? "* " : "",
-              i);
+              _("MIDI Channel %d"), i);
           submenu_item =
             GTK_MENU_ITEM (
-              gtk_menu_item_new_with_label (lbl));
+              gtk_check_menu_item_new_with_label (lbl));
+          gtk_check_menu_item_set_draw_as_radio (
+            GTK_CHECK_MENU_ITEM (submenu_item), 1);
           g_free (lbl);
+
+          if (i == track->midi_ch)
+            gtk_check_menu_item_set_active (
+              GTK_CHECK_MENU_ITEM (submenu_item), 1);
 
           MidiChSelectionInfo * info =
             calloc (
@@ -1657,20 +1661,21 @@ show_context_menu (
             {
               if (i == 0)
                 lbl =
-                  g_strdup_printf (
-                    _("%sInherit"),
-                    lane->midi_ch == i ? "* " : "");
+                  g_strdup (_("Inherit"));
               else
                 lbl =
                   g_strdup_printf (
-                    _("%sMIDI Channel %d"),
-                    lane->midi_ch == i ? "* " : "",
-                    i);
+                    _("MIDI Channel %d"), i);
               submenu_item =
                 GTK_MENU_ITEM (
-                  gtk_menu_item_new_with_label (
+                  gtk_check_menu_item_new_with_label (
                     lbl));
               g_free (lbl);
+
+              if (lane->midi_ch == i)
+                gtk_check_menu_item_set_active (
+                  GTK_CHECK_MENU_ITEM (
+                    submenu_item), 1);
 
               MidiChSelectionInfo * info =
                 calloc (

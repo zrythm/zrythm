@@ -81,59 +81,61 @@ automation_point_draw (
 
   if (next_ap)
     {
-      /* draw the curve */
-      double automation_point_y;
-      double new_x = 0;
-
       /* TODO use cairo translate to add padding */
-
-      /* set starting point */
-      double new_y;
 
       /* ignore the space between the center
        * of each point and the edges (2 of them
        * so a full AP_WIDGET_POINT_SIZE) */
       double width_for_curve =
-        obj->full_rect.width - AP_WIDGET_POINT_SIZE;
+        obj->full_rect.width - (double) AP_WIDGET_POINT_SIZE;
       double height_for_curve =
         obj->full_rect.height -
           AP_WIDGET_POINT_SIZE;
 
+      double step = 0.1;
+      double this_y = 0;
       for (double l = 0.0;
-           l <= (double) width_for_curve + 0.01;
-           l = l + 0.1)
+           l <= width_for_curve - step / 2.0;
+           l += step)
         {
-          /* in pixels, higher values are lower */
-          automation_point_y =
+          double next_y =
+            /* in pixels, higher values are lower */
             1.0 -
             automation_point_get_normalized_value_in_curve (
               ap,
               CLAMP (
-                l / width_for_curve, 0.0, 1.0));
-          automation_point_y *= height_for_curve;
-
-          new_x = (l + obj->full_rect.x) - rect->x;
-          new_y =
-            (obj->full_rect.y +
-              automation_point_y) -
-            rect->y;
+                (l + step) / width_for_curve, 0.0, 1.0));
+          next_y *= height_for_curve;
 
           if (math_doubles_equal (l, 0.0))
             {
+              this_y =
+                /* in pixels, higher values are lower */
+                1.0 -
+                automation_point_get_normalized_value_in_curve (
+                  ap, 0.0);
+              this_y *= height_for_curve;
               cairo_move_to (
                 cr,
-                new_x +
-                  AP_WIDGET_POINT_SIZE / 2,
-                new_y +
-                  AP_WIDGET_POINT_SIZE / 2);
+                (l + AP_WIDGET_POINT_SIZE / 2 +
+                   obj->full_rect.x) -
+                     rect->x,
+                (this_y + AP_WIDGET_POINT_SIZE / 2 +
+                   obj->full_rect.y) -
+                     rect->y);
             }
-
-          cairo_line_to (
-            cr,
-            new_x +
-              AP_WIDGET_POINT_SIZE / 2,
-            new_y +
-              AP_WIDGET_POINT_SIZE / 2);
+          else
+            {
+              cairo_line_to (
+                cr,
+                (l + step +
+                 AP_WIDGET_POINT_SIZE / 2 +
+                 obj->full_rect.x) - rect->x,
+                (next_y +
+                  AP_WIDGET_POINT_SIZE / 2 +
+                  obj->full_rect.y) - rect->y);
+            }
+          this_y = next_y;
         }
 
       cairo_stroke (cr);
