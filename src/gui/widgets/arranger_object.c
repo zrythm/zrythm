@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +19,7 @@
 
 #include "audio/automation_region.h"
 #include "audio/chord_track.h"
+#include "audio/fade.h"
 #include "audio/marker_track.h"
 #include "gui/backend/arranger_object.h"
 #include "gui/widgets/arranger_object.h"
@@ -186,14 +187,19 @@ arranger_object_is_resize_r (
  * @param x X in local coordinates.
  * @param only_handle Whether to only check if this
  *   is inside the fade handle. If this is false,
- *   the whole fade in area will be considered.
+ *   \ref only_outer will be considered.
+ * @param only_outer Whether to only check if this
+ *   is inside the fade's outter (unplayed) region.
+ *   If this is false, the whole fade area will
+ *   be considered.
  */
 int
 arranger_object_is_fade_in (
   ArrangerObject * self,
   const int        x,
   const int        y,
-  int              only_handle)
+  int              only_handle,
+  int              only_outer)
 {
   if (!arranger_object_can_fade (self))
     return 0;
@@ -212,6 +218,16 @@ arranger_object_is_fade_in (
             ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
         y <= ARRANGER_OBJECT_FADE_POINT_HALFWIDTH;
     }
+  else if (only_outer)
+    {
+      return
+        x <= fade_in_px && fade_in_px > 0 &&
+        (double) y <=
+          self->full_rect.height *
+          (1.0 -
+            fade_get_y_normalized (
+              (double) x / fade_in_px, &self->fade_in_opts, 1));
+    }
   else
     {
       return x <= fade_in_px;
@@ -225,14 +241,19 @@ arranger_object_is_fade_in (
  * @param x X in local coordinates.
  * @param only_handle Whether to only check if this
  *   is inside the fade handle. If this is false,
- *   the whole fade out area will be considered.
+ *   \ref only_outer will be considered.
+ * @param only_outer Whether to only check if this
+ *   is inside the fade's outter (unplayed) region.
+ *   If this is false, the whole fade area will
+ *   be considered.
  */
 int
 arranger_object_is_fade_out (
   ArrangerObject * self,
   const int        x,
   const int        y,
-  int              only_handle)
+  int              only_handle,
+  int              only_outer)
 {
   if (!arranger_object_can_fade (self))
     return 0;
@@ -250,6 +271,19 @@ arranger_object_is_fade_out (
           fade_out_px +
             ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
         y <= ARRANGER_OBJECT_FADE_POINT_HALFWIDTH;
+    }
+  else if (only_outer)
+    {
+      return
+        x >= fade_out_px &&
+        self->full_rect.width - fade_out_px > 0 &&
+        (double) y <=
+          self->full_rect.height *
+          (1.0 -
+            fade_get_y_normalized (
+              (double) (x - fade_out_px) /
+                (self->full_rect.width - fade_out_px),
+              &self->fade_out_opts, 0));
     }
   else
     {

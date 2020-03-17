@@ -1003,6 +1003,12 @@ arranger_widget_set_cursor (
     case ARRANGER_CURSOR_RESIZING_UP:
       SET_CURSOR_FROM_NAME ("n-resize");
       break;
+    case ARRANGER_CURSOR_RESIZING_UP_FADE_IN:
+      SET_CURSOR_FROM_NAME ("n-resize");
+      break;
+    case ARRANGER_CURSOR_RESIZING_UP_FADE_OUT:
+      SET_CURSOR_FROM_NAME ("n-resize");
+      break;
     case ARRANGER_CURSOR_RANGE:
       SET_CURSOR_FROM_NAME ("text");
       break;
@@ -2522,10 +2528,14 @@ on_drag_begin_handle_hit_object (
   self->start_pos_px = x;
 
   /* get flags */
-  int is_fade_in =
-    arranger_object_is_fade_in (obj, wx, wy, 1);
-  int is_fade_out =
-    arranger_object_is_fade_out (obj, wx, wy, 1);
+  int is_fade_in_point =
+    arranger_object_is_fade_in (obj, wx, wy, 1, 0);
+  int is_fade_out_point =
+    arranger_object_is_fade_out (obj, wx, wy, 1, 0);
+  int is_fade_in_outer =
+    arranger_object_is_fade_in (obj, wx, wy, 0, 1);
+  int is_fade_out_outer =
+    arranger_object_is_fade_out (obj, wx, wy, 0, 1);
   int is_resize_l =
     arranger_object_is_resize_l (obj, wx);
   int is_resize_r =
@@ -2622,10 +2632,14 @@ on_drag_begin_handle_hit_object (
           SET_ACTION (AUDITIONING);
           break;
         case TOOL_SELECT_NORMAL:
-          if (is_fade_in)
+          if (is_fade_in_point)
             SET_ACTION (RESIZING_L_FADE);
-          else if (is_fade_out)
+          else if (is_fade_out_point)
             SET_ACTION (RESIZING_R_FADE);
+          else if (is_fade_in_outer)
+            SET_ACTION (RESIZING_UP_FADE_IN);
+          else if (is_fade_out_outer)
+            SET_ACTION (RESIZING_UP_FADE_OUT);
           else if (is_resize_l && is_resize_loop)
             SET_ACTION (RESIZING_L_LOOP);
           else if (is_resize_l)
@@ -3293,6 +3307,14 @@ drag_update (
             self, offset_y);
         }
       break;
+    case UI_OVERLAY_ACTION_RESIZING_UP_FADE_IN:
+      timeline_arranger_widget_fade_up (
+        self, offset_y, 1);
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT:
+      timeline_arranger_widget_fade_up (
+        self, offset_y, 0);
+      break;
     case UI_OVERLAY_ACTION_MOVING:
     case UI_OVERLAY_ACTION_CREATING_MOVING:
       move_items_x (self, self->adj_ticks_diff);
@@ -3514,7 +3536,7 @@ on_drag_end_midi_modifier (
         /* FIXME */
         UndoableAction * ua =
           arranger_selections_action_new_edit (
-            (ArrangerSelections *) MA_SELECTIONS,
+            self->sel_at_start,
             (ArrangerSelections *) MA_SELECTIONS,
             ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
         undo_manager_perform (
@@ -3539,7 +3561,7 @@ on_drag_end_midi_modifier (
           F_PADDING);
         UndoableAction * ua =
           arranger_selections_action_new_edit (
-            (ArrangerSelections *) MA_SELECTIONS,
+            self->sel_at_start,
             (ArrangerSelections *) MA_SELECTIONS,
             ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
         if (ua)
@@ -3799,6 +3821,18 @@ on_drag_end_timeline (
 
   switch (self->action)
     {
+    case UI_OVERLAY_ACTION_RESIZING_UP_FADE_IN:
+    case UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT:
+      {
+        UndoableAction * ua =
+          arranger_selections_action_new_edit (
+            self->sel_at_start,
+            (ArrangerSelections *) TL_SELECTIONS,
+            ARRANGER_SELECTIONS_ACTION_EDIT_FADES);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
+      break;
     case UI_OVERLAY_ACTION_RESIZING_L:
       if (!self->resizing_range)
         {
@@ -5082,17 +5116,17 @@ get_automation_arranger_cursor (
       switch (P_TOOL)
         {
         case TOOL_SELECT_NORMAL:
-        {
-          if (is_hit)
-            {
-              return ARRANGER_CURSOR_GRAB;
-            }
-          else
-            {
-              /* set cursor to normal */
-              return ARRANGER_CURSOR_SELECT;
-            }
-        }
+          {
+            if (is_hit)
+              {
+                return ARRANGER_CURSOR_GRAB;
+              }
+            else
+              {
+                /* set cursor to normal */
+                return ARRANGER_CURSOR_SELECT;
+              }
+          }
           break;
         case TOOL_SELECT_STRETCH:
           break;
@@ -5135,6 +5169,9 @@ get_automation_arranger_cursor (
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
       ac = ARRANGER_CURSOR_RESIZING_R;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_UP:
+      ac = ARRANGER_CURSOR_GRABBING;
       break;
     default:
       ac = ARRANGER_CURSOR_SELECT;
@@ -5184,20 +5221,34 @@ get_timeline_cursor (
                 {
                   if (self->alt_held)
                     return ARRANGER_CURSOR_CUT;
-                  int is_fade_in =
+                  int is_fade_in_point =
                     arranger_object_is_fade_in (
                       r_obj,
                       (int) self->hover_x -
                         r_obj->full_rect.x,
                       (int) self->hover_y -
-                        r_obj->full_rect.y, 1);
-                  int is_fade_out =
+                        r_obj->full_rect.y, 1, 0);
+                  int is_fade_out_point =
                     arranger_object_is_fade_out (
                       r_obj,
                       (int) self->hover_x -
                         r_obj->full_rect.x,
                       (int) self->hover_y -
-                        r_obj->full_rect.y, 1);
+                        r_obj->full_rect.y, 1, 0);
+                  int is_fade_in_outer_region =
+                    arranger_object_is_fade_in (
+                      r_obj,
+                      (int) self->hover_x -
+                        r_obj->full_rect.x,
+                      (int) self->hover_y -
+                        r_obj->full_rect.y, 0, 1);
+                  int is_fade_out_outer_region =
+                    arranger_object_is_fade_out (
+                      r_obj,
+                      (int) self->hover_x -
+                        r_obj->full_rect.x,
+                      (int) self->hover_y -
+                        r_obj->full_rect.y, 0, 1);
                   int is_resize_l =
                     arranger_object_is_resize_l (
                       r_obj,
@@ -5213,10 +5264,10 @@ get_timeline_cursor (
                       r_obj,
                       (int) self->hover_y -
                         r_obj->full_rect.y);
-                  if (is_fade_in)
+                  if (is_fade_in_point)
                     return
                       ARRANGER_CURSOR_FADE_IN;
-                  else if (is_fade_out)
+                  else if (is_fade_out_point)
                     return
                       ARRANGER_CURSOR_FADE_OUT;
                   else if (is_resize_l &&
@@ -5233,6 +5284,12 @@ get_timeline_cursor (
                   else if (is_resize_r)
                     return
                       ARRANGER_CURSOR_RESIZING_R;
+                  else if (is_fade_in_outer_region)
+                    return
+                      ARRANGER_CURSOR_FADE_IN;
+                  else if (is_fade_out_outer_region)
+                    return
+                      ARRANGER_CURSOR_FADE_OUT;
                 }
               return ARRANGER_CURSOR_GRAB;
             }
@@ -5308,10 +5365,10 @@ get_timeline_cursor (
         ac = ARRANGER_CURSOR_RESIZING_L;
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
-      if (self->resizing_range)
-        ac = ARRANGER_CURSOR_RANGE;
-      else
-        ac = ARRANGER_CURSOR_RESIZING_L_LOOP;
+      ac = ARRANGER_CURSOR_RESIZING_L_LOOP;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_L_FADE:
+      ac = ARRANGER_CURSOR_FADE_IN;
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
       if (self->resizing_range)
@@ -5320,10 +5377,16 @@ get_timeline_cursor (
         ac = ARRANGER_CURSOR_RESIZING_R;
       break;
     case UI_OVERLAY_ACTION_RESIZING_R_LOOP:
-      if (self->resizing_range)
-        ac = ARRANGER_CURSOR_RANGE;
-      else
-        ac = ARRANGER_CURSOR_RESIZING_R_LOOP;
+      ac = ARRANGER_CURSOR_RESIZING_R_LOOP;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R_FADE:
+      ac = ARRANGER_CURSOR_FADE_OUT;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_UP_FADE_IN:
+      ac = ARRANGER_CURSOR_FADE_IN;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT:
+      ac = ARRANGER_CURSOR_FADE_OUT;
       break;
     default:
       ac = ARRANGER_CURSOR_SELECT;

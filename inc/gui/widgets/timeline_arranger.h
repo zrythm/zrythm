@@ -260,6 +260,17 @@ timeline_arranger_widget_show_context_menu (
   double           y);
 
 /**
+ * Fade up/down.
+ *
+ * @param fade_in 1 for in, 0 for out.
+ */
+void
+timeline_arranger_widget_fade_up (
+  ArrangerWidget * self,
+  double           offset_y,
+  int              fade_in);
+
+/**
  * @}
  */
 

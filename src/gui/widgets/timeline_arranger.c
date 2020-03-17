@@ -1351,13 +1351,13 @@ timeline_arranger_widget_show_context_menu (
           if (r->id.type == REGION_TYPE_AUDIO)
             {
               if (arranger_object_is_fade_in (
-                    obj, local_x, local_y, 0))
+                    obj, local_x, local_y, 0, 0))
                 {
                   create_fade_preset_menu (
                     self, menu, obj, 1);
                 }
               if (arranger_object_is_fade_out (
-                    obj, local_x, local_y, 0))
+                    obj, local_x, local_y, 0, 0))
                 {
                   create_fade_preset_menu (
                     self, menu, obj, 0);
@@ -1391,4 +1391,31 @@ timeline_arranger_widget_show_context_menu (
   gtk_widget_show_all (menu);
   gtk_menu_popup_at_pointer (
     GTK_MENU (menu), NULL);
+}
+
+/**
+ * Fade up/down.
+ *
+ * @param fade_in 1 for in, 0 for out.
+ */
+void
+timeline_arranger_widget_fade_up (
+  ArrangerWidget * self,
+  double           offset_y,
+  int              fade_in)
+{
+  for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
+    {
+      ZRegion * r = TL_SELECTIONS->regions[i];
+      ArrangerObject * obj =
+        (ArrangerObject *) r;
+
+      CurveOptions * opts =
+        fade_in ?
+          &obj->fade_in_opts : &obj->fade_out_opts;
+      double delta =
+        (self->last_offset_y - offset_y) * 0.008;
+      opts->curviness =
+        CLAMP (opts->curviness + delta, - 1.0, 1.0);
+    }
 }
