@@ -38,8 +38,15 @@ install_data (
 
 # Desktop launcher and description file.
 if os_linux or os_freebsd
-  desktop_file = i18n.merge_file (
+  desktop_file_config = configuration_data ()
+  desktop_file_config.set (
+    'SCHEMAS_DIR', schemasdir)
+  desktop_file = configure_file (
     input: 'zrythm.desktop.in',
+    output: 'zrythm.desktop.in',
+    configuration: desktop_file_config)
+  localized_desktop_file = i18n.merge_file (
+    input: desktop_file,
     output: 'zrythm.desktop',
     type: 'desktop',
     po_dir: '../po',
@@ -52,7 +59,7 @@ if os_linux or os_freebsd
     'desktop-file-validate', required: false)
   if desktop_utils.found()
     test('Validate desktop file', desktop_utils,
-      args: [desktop_file]
+      args: [localized_desktop_file]
     )
   endif
 endif

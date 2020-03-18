@@ -16,19 +16,21 @@ inside `meson_options.txt`.
 
 ## Dependencies
 ### Required
-- GTK+3 (library GPLv2+): <https://gitlab.gnome.org/GNOME/gtk>
-- jack (LGPLv2.1+): <https://jackaudio.org/>
-- lv2 (ISC): <https://lv2plug.in/>
+- GTK+3 (GPLv2+): <https://gitlab.gnome.org/GNOME/gtk>
+- audec (AGPLv3+): <https://git.zrythm.org/cgit/libaudec/>
 - lilv (ISC): <https://drobilla.net/software/lilv>
-- libsndfile (LGPLv3): <https://www.mega-nerd.com/libsndfile>
-- libyaml (MIT): <https://pyyaml.org/wiki/LibYAML>
-- libsamplerate (2-clause BSD): <http://www.mega-nerd.com/libsamplerate>
-- fftw (GPLv2): <http://www.fftw.org/>
-- suil (ISC): <http://drobilla.net/software/suil/>
+- libcyaml (ISC): <https://github.com/tlsa/libcyaml/>
+- fftw (GPLv2+): <http://www.fftw.org/>
 
 ### Optional
-- portaudio (MIT): <http://www.portaudio.com/>
+- jack (LGPLv2.1+): <https://jackaudio.org/>
 - ffmpeg (LGPL 2.1+, GPLv2+): <https://ffmpeg.org/>
+- carla (GPLv2+): <https://kx.studio/Applications:Carla>
+- guile (GPLv3+): <https://www.gnu.org/software/guile/>
+- rtaudio (MIT): <http://www.music.mcgill.ca/~gary/rtaudio/>
+- rtmidi (MIT): <https://www.music.mcgill.ca/~gary/rtmidi/>
+- SDL2 (zlib): <https://www.libsdl.org/>
+- libgtop (GPLv2+): <https://developer.gnome.org/libgtop/>
 
 ## Installation
 Once the program is built, it will need to be
@@ -67,7 +69,7 @@ Generally, we recommend installing under `/usr/local`
 
 ----
 
-Copyright (C) 2019 Alexandros Theodotou
+Copyright (C) 2019-2020 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
