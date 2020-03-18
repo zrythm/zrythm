@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -68,6 +68,12 @@ typedef struct AutomationTrack
   /** Position of multipane handle. */
   int               height;
 
+  /** Whether record mode is on. */
+  int               read;
+
+  /** Whether write mode is on. */
+  int               write;
+
   /** Buttons used by the track widget */
   CustomButtonWidget * top_right_buttons[8];
   int                  num_top_right_buttons;
@@ -85,26 +91,22 @@ typedef struct AutomationTrack
 static const cyaml_schema_field_t
   automation_track_fields_schema[] =
 {
-  CYAML_FIELD_INT (
-    "index", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     AutomationTrack, index),
-  CYAML_FIELD_MAPPING (
-    "port_id", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     AutomationTrack, port_id,
     port_identifier_fields_schema),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "regions",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    AutomationTrack, regions, num_regions,
-    &region_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "created", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+    AutomationTrack, regions, region_schema),
+  YAML_FIELD_INT (
     AutomationTrack, created),
-  CYAML_FIELD_INT (
-    "visible", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
+    AutomationTrack, read),
+  YAML_FIELD_INT (
+    AutomationTrack, write),
+  YAML_FIELD_INT (
     AutomationTrack, visible),
-  CYAML_FIELD_INT (
-    "height", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     AutomationTrack, height),
 
   CYAML_FIELD_END

@@ -1147,7 +1147,6 @@ do_or_undo_edit (
                 dest_objs[i]->fade_in_opts;
               obj->fade_out_opts =
                 dest_objs[i]->fade_out_opts;
-              g_message ("COPIED");
               break;
             case ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE:
 #define SET_PRIMITIVE(cc,member) \

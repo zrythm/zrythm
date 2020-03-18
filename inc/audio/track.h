@@ -544,6 +544,13 @@ track_get_full_visible_height (
   Track * self);
 
 /**
+ * Returns if the track is soloed.
+ */
+int
+track_get_soloed (
+  Track * self);
+
+/**
  * Returns if the track is muted.
  */
 int

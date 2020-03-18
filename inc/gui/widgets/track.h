@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -199,18 +199,6 @@ void
 track_widget_set_name (
   TrackWidget * self,
   const char * name);
-
-void
-track_widget_on_solo_toggled (
-  TrackWidget * self);
-
-/**
- * General handler for tracks that have mute
- * buttons.
- */
-void
-track_widget_on_mute_toggled (
-  TrackWidget * self);
 
 /**
  * Blocks all signal handlers.

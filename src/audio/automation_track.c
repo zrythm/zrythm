@@ -68,6 +68,7 @@ automation_track_new (
   self->regions =
     malloc (self->regions_size *
             sizeof (ZRegion *));
+  self->read = 1;
 
   self->height = TRACK_DEF_HEIGHT;
 

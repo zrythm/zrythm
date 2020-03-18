@@ -397,6 +397,16 @@ track_select (
 }
 
 /**
+ * Returns if the track is soloed.
+ */
+int
+track_get_soloed (
+  Track * self)
+{
+  return self->solo;
+}
+
+/**
  * Returns if the track is muted.
  */
 int

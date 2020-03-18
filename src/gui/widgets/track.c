@@ -735,14 +735,11 @@ draw_automation (
           at->num_bot_right_buttons = 2;
         }
 
-      /* draw buttons */
+      /* draw top left buttons */
       CustomButtonWidget * hovered_cb =
         get_hovered_button (
           self, (int) self->last_x,
           (int) self->last_y);
-      /*if (hovered_cb)*/
-        /*g_message ("hovered button %s",*/
-          /*hovered_cb->text);*/
       for (int j = 0; j < at->num_top_left_buttons;
            j++)
         {
@@ -808,6 +805,7 @@ draw_automation (
         layout, str, -1);
       pango_cairo_show_layout (cr, layout);
 
+      /* draw top right buttons */
       for (int j = 0; j < at->num_top_right_buttons;
            j++)
         {
@@ -867,7 +865,17 @@ draw_automation (
               CustomButtonWidgetState state =
                 CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
 
-              if (cb == self->clicked_button)
+              if (cb == self->clicked_button ||
+                  (string_is_equal (
+                     cb->icon_name,
+                     ICON_NAME_READ_AUTOMATION,
+                     0) &&
+                   at->read) ||
+                  (string_is_equal (
+                     cb->icon_name,
+                     ICON_NAME_WRITE_AUTOMATION,
+                     0) &&
+                   at->write))
                 {
                   /* currently clicked button */
                   state =
@@ -1777,12 +1785,6 @@ multipress_pressed (
   /*if (!gtk_widget_has_focus (GTK_WIDGET (self)))*/
     /*gtk_widget_grab_focus (GTK_WIDGET (self));*/
 
-  if (n_press == 2)
-    {
-      /* show popup to edit the name */
-      show_edit_name_popover (self);
-    }
-
   GdkModifierType state_mask =
     ui_get_state_mask (GTK_GESTURE (gesture));
 
@@ -1836,12 +1838,17 @@ multipress_released (
           else if (string_is_equal (
                 cb->icon_name, ICON_NAME_SOLO, 1))
             {
-              track_widget_on_solo_toggled (self);
+              track_set_soloed (
+                self->track,
+                !track_get_soloed (self->track), 1);
             }
           else if (string_is_equal (
                 cb->icon_name, ICON_NAME_MUTE, 1))
             {
-              track_widget_on_mute_toggled (self);
+              track_set_muted (
+                self->track,
+                !track_get_muted (self->track),
+                1, 1);
             }
           else if (string_is_equal (
                 cb->icon_name,
@@ -1880,14 +1887,14 @@ multipress_released (
           AutomationTrack * at =
             (AutomationTrack *) cb->owner;
           g_return_if_fail (at);
+          AutomationTracklist * atl =
+            automation_track_get_automation_tracklist (
+              at);
+          g_return_if_fail (atl);
 
           if (string_is_equal (
                 cb->icon_name, ICON_NAME_PLUS, 1))
             {
-              AutomationTracklist * atl =
-                automation_track_get_automation_tracklist (
-                  at);
-              g_return_if_fail (atl);
               AutomationTrack * new_at =
                 automation_tracklist_get_first_invisible_at (
                   atl);
@@ -1913,16 +1920,43 @@ multipress_released (
             }
           else if (
             string_is_equal (
-              cb->icon_name, ICON_NAME_MINUS, 1))
+              cb->icon_name, ICON_NAME_MINUS, 0))
             {
-              at->visible = 0;
-              EVENTS_PUSH (
-                ET_AUTOMATION_TRACK_REMOVED, at);
+              /* don't allow deleting if no other
+               * visible automation tracks */
+              int num_visible;
+              automation_tracklist_get_visible_tracks (
+                atl, NULL, &num_visible);
+              if (num_visible > 1)
+                {
+                  at->visible = 0;
+                  EVENTS_PUSH (
+                    ET_AUTOMATION_TRACK_REMOVED,
+                    at);
+                }
             }
           else if (
             string_is_equal (
               cb->icon_name,
-              ICON_NAME_SHOW_AUTOMATION_LANES, 1))
+              ICON_NAME_READ_AUTOMATION, 0))
+            {
+              at->read = !at->read;
+              EVENTS_PUSH (
+                ET_AUTOMATION_TRACK_CHANGED, at);
+            }
+          else if (
+            string_is_equal (
+              cb->icon_name,
+              ICON_NAME_WRITE_AUTOMATION, 0))
+            {
+              at->write = !at->write;
+              EVENTS_PUSH (
+                ET_AUTOMATION_TRACK_CHANGED, at);
+            }
+          else if (
+            string_is_equal (
+              cb->icon_name,
+              ICON_NAME_SHOW_AUTOMATION_LANES, 0))
             {
               AutomatableSelectorPopoverWidget * popover =
                 automatable_selector_popover_widget_new (at);
@@ -1945,6 +1979,11 @@ multipress_released (
                 GTK_WIDGET (popover));
             }
         }
+    }
+  else if (n_press == 2)
+    {
+      /* show popup to edit the name */
+      show_edit_name_popover (self);
     }
 
   self->button_pressed = 0;
@@ -2245,27 +2284,6 @@ track_widget_on_show_automation_toggled (
   /* set visibility flag */
   track_set_automation_visible (
     track, !track->automation_visible);
-}
-
-void
-track_widget_on_solo_toggled (
-  TrackWidget * self)
-{
-  track_set_soloed (
-    self->track, self->track->solo, 1);
-}
-
-/**
- * General handler for tracks that have mute
- * buttons.
- */
-void
-track_widget_on_mute_toggled (
-  TrackWidget * self)
-{
-  track_set_muted (
-    self->track,
-    !track_get_muted (self->track), 1, 1);
 }
 
 void
