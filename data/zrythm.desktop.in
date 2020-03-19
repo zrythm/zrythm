@@ -10,10 +10,10 @@ Name=Zrythm
 GenericName=Digital Audio Workstation
 Version=1.0
 Comment=highly automated and intuitive digital audio workstation
-Exec=env GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@ zrythm
+Exec=@BIN_DIR@/zrythm_launch
 # Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 Icon=zrythm
 Type=Application
 StartupNotify=true
-Categories=AudioVideo;Audio;Sequencer;X-Sound;Midi;X-Jack
-MimeType=application/x-zrythm-project
+Categories=AudioVideo;Audio;Sequencer;X-Sound;Midi;X-Jack;
+MimeType=application/x-zrythm-project;

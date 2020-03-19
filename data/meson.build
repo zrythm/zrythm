@@ -36,15 +36,25 @@ install_data (
     'samples', 'klick', 'square_normal.wav'),
   install_dir: samplesdir)
 
-# Desktop launcher and description file.
+# install desktop file and launcher script
 if os_linux or os_freebsd
-  desktop_file_config = configuration_data ()
-  desktop_file_config.set (
+  zrythm_launcher_config = configuration_data ()
+  zrythm_launcher_config.set (
     'SCHEMAS_DIR', schemasdir)
+  zrythm_launcher_config.set (
+    'BIN_DIR', bindir)
+  zrythm_launcher = configure_file (
+    input: 'zrythm_launch.in',
+    output: 'zrythm_launch',
+    configuration: zrythm_launcher_config,
+    install: true,
+    install_dir: bindir,
+    install_mode: 'r-xr-xr-x')
+
   desktop_file = configure_file (
     input: 'zrythm.desktop.in',
     output: 'zrythm.desktop.in',
-    configuration: desktop_file_config)
+    configuration: zrythm_launcher_config)
   localized_desktop_file = i18n.merge_file (
     input: desktop_file,
     output: 'zrythm.desktop',

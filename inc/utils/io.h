@@ -172,7 +172,7 @@ io_get_registry_string_val (
  *
  * @return Non-zero on fail.
  */
-void
+int
 io_get_bundle_path (
   char * bundle_path);
 #endif
