@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.153] - 2020-03-19
+- Add option to bounce material to audio
+- Add cability to fade in/out audio regions
+- Add capabilities to version info in bug report links
+- Implement ctrl + arrow keys movement in arrangers
+- Run work from LV2 workers immediately when freewheeling
+- Show description in `--print-settings`
+- Add `--pretty` option for colored output
+- Add various curve algorithms selectable via right click
+- Use check menu items instead of stars to indicate current selection
+- Don't allow removing the last visible automation track
+- Use boolean instead of int for booleans in gsettings
+- Add tests for curve algorithms
+- Use `GSETTINGS_SCHEMA_DIR` in the desktop file
+- Make gschema translatable
+- Update French, Galician translations
+- Fix crash when attempting to load MP3 files when built without ffmpeg
+- Fix crash when opening preferences when the selected backends are not compiled into the current version
+- Fix automation curves being cut off at the end
+- Fix crash when moving marker track
+- Fix solo buttons
+
 ## [0.8.113] - 2020-03-11
 - Show capabilities with `--version`
 - Write queued logs periodically instead of on every UI cycle
