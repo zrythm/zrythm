@@ -240,6 +240,7 @@ print_help ()
     "Options:\n"
     "  -h, --help      display this help message and exit\n"
     "  -p, --print-settings  print current settings\n"
+    "  --pretty        print output in user-friendly way\n"
     "  --reset-to-factory  reset to factory settings\n"
     "  -v, --version   output version information and exit\n\n"
     "Examples:\n"
@@ -259,6 +260,7 @@ main (int    argc,
 #define OPT_HELP 'h'
 #define OPT_PRINT_SETTINGS 'p'
 #define OPT_RESET_TO_FACTORY 6492
+#define OPT_PRETTY_PRINT 5914
 
   int c, option_index;
   static struct option long_options[] =
@@ -269,10 +271,14 @@ main (int    argc,
         OPT_PRINT_SETTINGS},
       {"reset-to-factory", no_argument,
         0, OPT_RESET_TO_FACTORY},
+      {"pretty", no_argument,
+        0, OPT_PRETTY_PRINT},
       {0, 0, 0, 0}
     };
   opterr = 0;
 
+  int pretty_print = 0;
+  int print_settings = 0;
   while (1)
     {
       c =
@@ -294,12 +300,14 @@ main (int    argc,
           return 0;
           break;
         case OPT_PRINT_SETTINGS:
-          settings_print ();
-          return 0;
+          print_settings = 1;
           break;
         case OPT_RESET_TO_FACTORY:
           settings_reset_to_factory (1, 1);
           return 0;
+          break;
+        case OPT_PRETTY_PRINT:
+          pretty_print = 1;
           break;
         case '?':
           /* getopt_long already printed an error
@@ -309,6 +317,12 @@ main (int    argc,
         default:
           abort ();
         }
+    }
+
+  if (print_settings)
+    {
+      settings_print (pretty_print);
+      return 0;
     }
 
   char * ver = zrythm_get_version (0);

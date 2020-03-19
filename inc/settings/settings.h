@@ -96,7 +96,8 @@ settings_reset_to_factory (
  * Prints the current settings.
  */
 void
-settings_print (void);
+settings_print (
+  int pretty_print);
 
 /**
  * Frees settings.

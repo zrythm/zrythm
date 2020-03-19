@@ -29,6 +29,7 @@
 #include "settings/settings.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "utils/terminal.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -58,17 +59,25 @@ static int
 print_or_reset_schema (
   GSettingsSchema * schema,
   const char *      schema_str,
-  int               print_only)
+  int               print_only,
+  int               pretty_print)
 {
   GSettings * settings =
     g_settings_new (schema_str);
   char ** keys =
     g_settings_schema_list_keys (schema);
 
+  char tmp[8000];
   if (print_only)
     {
+      sprintf (
+        tmp, _("Schema %s%s%s"),
+        pretty_print ? TERMINAL_BOLD : "",
+        schema_str,
+        pretty_print ? TERMINAL_RESET : "");
       printf (
-        _("Schema %s\n"), schema_str);
+        "%s%s\n",
+        pretty_print ? TERMINAL_UNDERLINE : "", tmp);
     }
   else
     {
@@ -89,19 +98,28 @@ print_or_reset_schema (
             g_settings_get_value (settings, key);
           char * var_str = g_variant_print (val, 0);
           printf (
-            "  %s=%s\n", key, var_str);
-#if 0
-          const char * summary =
-            g_settings_schema_key_get_summary (
-              schema_key);
-          printf (
-            "    %s\n", summary);
-#endif
+            "  %s%s%s=%s%s%s\n",
+            pretty_print ?
+              TERMINAL_COLOR_MAGENTA
+                TERMINAL_BOLD : "",
+            key,
+            pretty_print ? TERMINAL_RESET : "",
+            pretty_print ?
+              TERMINAL_COLOR_YELLOW : "",
+            var_str,
+            pretty_print ? TERMINAL_RESET : "");
           const char * description =
             g_settings_schema_key_get_description (
               schema_key);
           printf (
             "    %s\n", description);
+        }
+      else if (
+        /* don't reset install-dir */
+        string_is_equal (key, "install-dir", 1))
+        {
+          sprintf (tmp, _("skipping %s"), key);
+          printf ("  %s\n", tmp);
         }
       else
         {
@@ -110,9 +128,10 @@ print_or_reset_schema (
               schema_key);
           g_return_val_if_fail (val, -1);
           char * var_str = g_variant_print (val, 0);
-          printf (
-            /* TRANSLATORS: please keep the spaces */
-            _("  resetting %s to %s\n"), key, var_str);
+          sprintf (
+            tmp, _("resetting %s to %s"),
+            key, var_str);
+          printf ("  %s\n", tmp);
           int ret =
             g_settings_set_value (settings, key, val);
           if (!ret)
@@ -133,6 +152,7 @@ print_or_reset_schema (
 static int
 print_or_reset (
   int print_only,
+  int pretty_print,
   int exit_on_finish)
 {
   GSettingsSchemaSource * source =
@@ -162,7 +182,8 @@ print_or_reset (
                 return -1;
             }
           if (print_or_reset_schema (
-                schema, schema_str, print_only))
+                schema, schema_str, print_only,
+                pretty_print))
             {
               if (print_only)
                 {
@@ -222,7 +243,7 @@ settings_reset_to_factory (
         }
     }
 
-  print_or_reset (0, exit_on_finish);
+  print_or_reset (0, 0, exit_on_finish);
 
   printf (
     _("Reset to factory settings successful\n"));
@@ -232,9 +253,10 @@ settings_reset_to_factory (
  * Prints the current settings.
  */
 void
-settings_print (void)
+settings_print (
+  int pretty_print)
 {
-  print_or_reset (1, 0);
+  print_or_reset (1, pretty_print, 0);
 }
 
 /**

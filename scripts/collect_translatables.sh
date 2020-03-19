@@ -30,9 +30,10 @@ count = 0
 for path in ['inc', 'src', 'resources', 'data']:
   for dirpath, dirnames, filenames in os.walk(path):
     for filename in [
-      f for f in filenames if f.endswith(".c") or
-      f.endswith(".h") or f.endswith(".ui") or
-      f.endswith(".desktop.in")]:
+      f for f in filenames if f.endswith('.c') or
+      f.endswith('.h') or f.endswith('.ui') or
+      f.endswith('.gschema.xml') or
+      f.endswith('.desktop.in')]:
         str = os.path.join(dirpath, filename)
         potfiles.write (str + '\n')
         count = count + 1

@@ -22,7 +22,9 @@
 
 
 <schemalist>
-  <schema id="org.zrythm.Zrythm"
+  <schema
+    id="org.zrythm.Zrythm"
+    gettext-domain="zrythm"
     path="/org/zrythm/Zrythm/">
   </schema>
 
@@ -150,7 +152,9 @@
   </enum>
 
   <!-- GENERAL schema -->
-  <schema id="org.zrythm.Zrythm.general"
+  <schema
+    id="org.zrythm.Zrythm.general"
+    gettext-domain="zrythm"
     path="/org/zrythm/Zrythm/general/">
 
     <key name="recent-projects" type="as">
@@ -194,7 +198,9 @@
   </schema> <!-- end GENERAL schema -->
 
   <!-- PREFERENCES schema -->
-  <schema id="org.zrythm.Zrythm.preferences"
+  <schema
+    id="org.zrythm.Zrythm.preferences"
+    gettext-domain="zrythm"
     path="/org/zrythm/Zrythm/preferences/">
 
     <!-- KEY: audio-backend -->
@@ -509,7 +515,9 @@
   </schema> <!-- end PREFERENCES schema -->
 
   <!-- UI schema -->
-  <schema id="org.zrythm.Zrythm.ui"
+  <schema
+    id="org.zrythm.Zrythm.ui"
+    gettext-domain="zrythm"
     path="/org/zrythm/Zrythm/ui/">
 
     <!-- KEY: note notation -->
