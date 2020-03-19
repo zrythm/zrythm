@@ -127,7 +127,8 @@ localization_locale_exists (
  * exists on the system or not.
  */
 int
-localization_init (void);
+localization_init (
+  int   print_debug_messages);
 
 /**
  * @}

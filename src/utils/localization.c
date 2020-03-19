@@ -205,7 +205,8 @@ localization_locale_exists (
  * exists on the system or not.
  */
 int
-localization_init ()
+localization_init (
+  int   print_debug_messages)
 {
   /* get selected locale */
   GSettings * prefs =
@@ -215,12 +216,18 @@ localization_init ()
       prefs, "language");
   g_object_unref (G_OBJECT (prefs));
 
-  g_message ("preferred lang: \"%s\"",
-    language_strings[lang]);
+  if (print_debug_messages)
+    {
+      g_message ("preferred lang: \"%s\"",
+        language_strings[lang]);
+    }
 
   if (lang == LL_EN)
     {
-      g_message ("setting locale to default");
+      if (print_debug_messages)
+        {
+          g_message ("setting locale to default");
+        }
       setlocale (LC_ALL, "C");
       return 1;
     }
@@ -231,9 +238,12 @@ localization_init ()
   if (code)
     {
       match = setlocale (LC_ALL, code);
-      g_message (
-        "setting locale to %s (found %s)",
-        code, match);
+      if (print_debug_messages)
+        {
+          g_message (
+            "setting locale to %s (found %s)",
+            code, match);
+        }
 #if defined(_WOE32) || defined(__APPLE__)
       char buf[120];
       sprintf (buf, "LANG=%s", code);

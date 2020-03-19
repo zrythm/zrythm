@@ -195,7 +195,7 @@ on_language_changed (
     S_PREFERENCES, "language", (int) lang);
 
   /* if locale exists */
-  if (localization_init ())
+  if (localization_init (1))
     {
       /* enable "Next" */
       gtk_assistant_set_page_complete (

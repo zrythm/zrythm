@@ -3150,9 +3150,8 @@ msgid "Selected Plugin Browser filter."
 msgstr "プラグインブラウザ"
 
 #: data/org.zrythm.Zrythm.gschema.xml:652
-#, fuzzy
 msgid "Timeline event viewer visibility"
-msgstr "イベント ビューアの表示を切り替える"
+msgstr "イベント ビューアを表示"
 
 #: data/org.zrythm.Zrythm.gschema.xml:653
 msgid "Whether the timeline event viewer is visible or not."

@@ -244,7 +244,8 @@ print_help ()
     "  --reset-to-factory  reset to factory settings\n"
     "  -v, --version   output version information and exit\n\n"
     "Examples:\n"
-    "  zrythm -v       print version\n\n"
+    "  zrythm -v       print version\n"
+    "  zrythm -p --pretty  pretty-print current settings\n\n"
     "Report bugs to %s\n"),
     ISSUE_TRACKER_URL);
 }
@@ -321,6 +322,7 @@ main (int    argc,
 
   if (print_settings)
     {
+      localization_init (0);
       settings_print (pretty_print);
       return 0;
     }

@@ -750,7 +750,7 @@ zrythm_app_activate (GApplication * _app)
   /*g_message ("activate %d", *task_id);*/
 
   /* init localization */
-  localization_init ();
+  localization_init (1);
 }
 
 /**
