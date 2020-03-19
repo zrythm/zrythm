@@ -123,6 +123,15 @@ zrythm_get_dir (
   char * dir =
     g_settings_get_string (
       S_GENERAL, "dir");
+  if (strlen (dir) == 0)
+    {
+      g_free (dir);
+      dir =
+        g_build_filename (
+          io_get_home_dir (), "zrythm", NULL);
+      g_settings_set_string (
+        S_GENERAL, "dir", dir);
+    }
   return dir;
 }
 

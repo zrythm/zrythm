@@ -2222,7 +2222,7 @@ port_sum_signal_from_inputs (
             continue;
 
           float minf, maxf, depth_range;
-          if (port->id.type ==  TYPE_AUDIO)
+          if (port->id.type == TYPE_AUDIO)
             {
               minf = -1.f;
               maxf = 1.f;
@@ -2238,6 +2238,11 @@ port_sum_signal_from_inputs (
           /* sum the signals */
           for (l = start_frame; l < nframes; l++)
             {
+              if (port->id.type == TYPE_AUDIO)
+                {
+                  minf = -2.f;
+                  maxf = 2.f;
+                }
               port->buf[l] =
                 CLAMP (
                   port->buf[l] +

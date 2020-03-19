@@ -18,6 +18,7 @@
  */
 
 #include "utils/mpmc_queue.h"
+#include "utils/io.h"
 #include "utils/log.h"
 #include "utils/object_pool.h"
 #include "zrythm.h"
@@ -164,8 +165,8 @@ log_init (
       ZRYTHM->log_dir,
       G_DIR_SEPARATOR_S,
       str_datetime);
-  self->logfile =
-    g_fopen (str, "a");
+  io_mkdir (ZRYTHM->log_dir);
+  self->logfile = g_fopen (str, "a");
   g_return_if_fail (self->logfile);
   g_free (str);
   g_free (str_datetime);
