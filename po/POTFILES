@@ -37,7 +37,6 @@ inc/gui/widgets/bot_dock_edge.h
 inc/gui/widgets/timeline_minimap.h
 inc/gui/widgets/foldable_notebook.h
 inc/gui/widgets/midi_bus_track.h
-inc/gui/widgets/export_progress_dialog.h
 inc/gui/widgets/view_toolbar.h
 inc/gui/widgets/arranger_object.h
 inc/gui/widgets/tracklist.h
@@ -184,9 +183,11 @@ inc/gui/widgets/pinned_tracklist.h
 inc/gui/widgets/quantize_dialog.h
 inc/gui/widgets/knob_with_name.h
 inc/gui/widgets/midi_activity_bar.h
+inc/gui/widgets/dialogs/export_progress_dialog.h
 inc/gui/widgets/dialogs/about_dialog.h
 inc/gui/widgets/dialogs/port_info.h
 inc/gui/widgets/dialogs/arranger_object_info.h
+inc/gui/widgets/dialogs/bounce_dialog.h
 inc/gui/backend/audio_clip_editor.h
 inc/gui/backend/arranger_object.h
 inc/gui/backend/dir.h
@@ -210,6 +211,7 @@ inc/utils/flags.h
 inc/utils/file.h
 inc/utils/dir.h
 inc/utils/audio.h
+inc/utils/terminal.h
 inc/utils/smf.h
 inc/utils/hashtable.h
 inc/utils/types.h
@@ -248,6 +250,7 @@ inc/audio/audio_group_track.h
 inc/audio/chord_track.h
 inc/audio/dir.h
 inc/audio/audio_bus_track.h
+inc/audio/fade.h
 inc/audio/stretcher.h
 inc/audio/region_identifier.h
 inc/audio/sample_processor.h
@@ -277,6 +280,7 @@ inc/audio/passthrough_processor.h
 inc/audio/port_identifier.h
 inc/audio/rack_controller.h
 inc/audio/automation_point.h
+inc/audio/curve.h
 inc/audio/automation_region.h
 inc/audio/control_port.h
 inc/audio/midi_mapping.h
@@ -429,7 +433,6 @@ src/gui/widgets/piano_roll_keys.c
 src/gui/widgets/plugin_browser.c
 src/gui/widgets/toolbox.c
 src/gui/widgets/knob_with_name.c
-src/gui/widgets/export_progress_dialog.c
 src/gui/widgets/bot_bar.c
 src/gui/widgets/midi_controller_popover.c
 src/gui/widgets/timeline_selection_info.c
@@ -479,7 +482,6 @@ src/gui/widgets/bar_slider.c
 src/gui/widgets/timeline_panel.c
 src/gui/widgets/timeline_toolbar.c
 src/gui/widgets/event_viewer.c
-src/gui/widgets/audio_region.c
 src/gui/widgets/ports_expander.c
 src/gui/widgets/arranger_playhead.c
 src/gui/widgets/foldable_notebook.c
@@ -513,8 +515,10 @@ src/gui/widgets/chord_selector_window.c
 src/gui/widgets/chord_key.c
 src/gui/widgets/arranger_bg.c
 src/gui/widgets/dialogs/arranger_object_info.c
+src/gui/widgets/dialogs/bounce_dialog.c
 src/gui/widgets/dialogs/port_info.c
 src/gui/widgets/dialogs/about_dialog.c
+src/gui/widgets/dialogs/export_progress_dialog.c
 src/gui/backend/file_manager.c
 src/gui/backend/arranger_selections.c
 src/gui/backend/arranger_object.c
@@ -586,6 +590,7 @@ src/audio/modulator.c
 src/audio/marker_track.c
 src/audio/control_room.c
 src/audio/engine_sdl.c
+src/audio/fade.c
 src/audio/transport.c
 src/audio/exporter.c
 src/audio/supported_file.c
@@ -596,6 +601,7 @@ src/audio/region.c
 src/audio/engine.c
 src/audio/routing.c
 src/audio/audio_bus_track.c
+src/audio/curve.c
 src/audio/track_lane.c
 src/audio/marker.c
 src/audio/engine_rtmidi.c
@@ -700,6 +706,7 @@ resources/ui/event_viewer.ui
 resources/ui/automation_track.ui
 resources/ui/file_browser.ui
 resources/ui/marker_dialog.ui
+resources/ui/bounce_dialog.ui
 resources/ui/inspector_editor.ui
 resources/ui/header_notebook.ui
 resources/ui/snap_box.ui
@@ -719,4 +726,5 @@ resources/ui/project_toolbar.ui
 resources/ui/clip_editor_inner.ui
 resources/ui/preferences.ui
 resources/ui/tracklist_header.ui
+data/org.zrythm.Zrythm.gschema.xml
 data/zrythm.desktop.in
