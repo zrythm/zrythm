@@ -74,6 +74,18 @@ metronome_init (
           install_dir, "share", "zrythm", "samples",
           "square_normal.wav", NULL);
       g_free (install_dir);
+#elif defined(MAC_RELEASE)
+      char bundle_path[PATH_MAX];
+      int ret = io_get_bundle_path (bundle_path);
+      g_return_if_fail (ret == 0);
+      self->emphasis_path =
+        g_strdup_printf (
+          "%s/../share/zrythm/samples/"
+          "square_emphasis.wav", bundle_path);
+      self->normal_path =
+        g_strdup_printf (
+          "%s/../share/zrythm/samples/"
+          "square_normal.wav", bundle_path);
 #else
       self->emphasis_path =
         g_build_filename (

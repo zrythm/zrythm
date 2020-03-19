@@ -30,6 +30,7 @@
 
 #include "settings/settings.h"
 #include "utils/localization.h"
+#include "utils/io.h"
 #include "utils/string.h"
 #include "zrythm.h"
 
@@ -41,12 +42,6 @@
 #else
 #define CODESET "UTF-8"
 #define ALT_CODESET "UTF8"
-#endif
-
-#ifdef MAC_RELEASE
-#include "CoreFoundation/CoreFoundation.h"
-#include <unistd.h>
-#include <libgen.h>
 #endif
 
 static char *
@@ -264,17 +259,9 @@ localization_init (
 #if defined(WINDOWS_RELEASE)
   bindtextdomain (GETTEXT_PACKAGE, "share/locale");
 #elif defined(MAC_RELEASE)
-  CFBundleRef bundle =
-    CFBundleGetMainBundle ();
-  CFURLRef bundleURL =
-    CFBundleCopyBundleURL (bundle);
   char path[PATH_MAX];
-  Boolean success =
-    CFURLGetFileSystemRepresentation (
-      bundleURL, TRUE, (UInt8 *)path, PATH_MAX);
-  g_return_val_if_fail (success, 0);
-  CFRelease (bundleURL);
-  g_message ("bundle path: %s", path);
+  int ret = io_get_bundle_path (path);
+  g_return_val_if_fail (ret == 0, 0);
   char localedir[PATH_MAX];
   sprintf (localedir, "%s/../share/locale", path);
   bindtextdomain (

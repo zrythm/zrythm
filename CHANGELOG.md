@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.8.153] - 2020-03-19
+## [0.8.154] - 2020-03-19
 - Add option to bounce material to audio
 - Add cability to fade in/out audio regions
 - Add capabilities to version info in bug report links

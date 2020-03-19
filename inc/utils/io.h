@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -164,6 +164,17 @@ io_escape_dir_name (
 char *
 io_get_registry_string_val (
   const char * path);
+#endif
+
+#ifdef MAC_RELEASE
+/**
+ * Gets the bundle path on MacOS.
+ *
+ * @return Non-zero on fail.
+ */
+void
+io_get_bundle_path (
+  char * bundle_path);
 #endif
 
 /**

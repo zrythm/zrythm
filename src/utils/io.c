@@ -36,6 +36,12 @@
 
 #include <gtk/gtk.h>
 
+#ifdef MAC_RELEASE
+#include "CoreFoundation/CoreFoundation.h"
+#include <unistd.h>
+#include <libgen.h>
+#endif
+
 /**
  * Gets directory part of filename. MUST be freed.
  */
@@ -417,5 +423,31 @@ io_get_registry_string_val (
     RRF_RT_ANY, NULL, (PVOID) &value, &BufferSize);
   g_message ("reg value: %s", value);
   return g_strdup (value);
+}
+#endif
+
+#ifdef MAC_RELEASE
+/**
+ * Gets the bundle path on MacOS.
+ *
+ * @return Non-zero on fail.
+ */
+int
+io_get_bundle_path (
+  char * bundle_path)
+{
+  CFBundleRef bundle =
+    CFBundleGetMainBundle ();
+  CFURLRef bundleURL =
+    CFBundleCopyBundleURL (bundle);
+  Boolean success =
+    CFURLGetFileSystemRepresentation (
+      bundleURL, TRUE,
+      (UInt8 *) bundle_path, PATH_MAX);
+  g_return_val_if_fail (success, -1);
+  CFRelease (bundleURL);
+  g_message ("bundle path: %s", bundle_path);
+
+  return 0;
 }
 #endif
