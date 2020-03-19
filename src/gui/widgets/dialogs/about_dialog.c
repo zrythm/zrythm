@@ -63,7 +63,8 @@ about_dialog_widget_new (
       "WaldiS <admin@sto.ugu.pl>\n"
       "Silvério Santos\n"
       "Swann Martinet\n"
-      "Adolfo Jayme Barrientos";
+      "Adolfo Jayme Barrientos\n"
+      "Gabino S";
 
   char * version =
     zrythm_get_version (1);

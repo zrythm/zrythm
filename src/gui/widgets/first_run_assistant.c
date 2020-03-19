@@ -291,13 +291,6 @@ first_run_assistant_widget_new (
   /* set zrythm dir */
   char * dir;
   dir = zrythm_get_dir (ZRYTHM);
-  if (strlen (dir) == 0)
-    {
-      g_free (dir);
-      dir =
-        g_build_filename (
-          io_get_home_dir (), "zrythm", NULL);
-    }
   io_mkdir (dir);
   gtk_file_chooser_set_current_folder (
     GTK_FILE_CHOOSER (self->fc_btn),
