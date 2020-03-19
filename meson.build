@@ -17,7 +17,7 @@
 
 project (
   'zrythm', ['c', 'cpp'],
-  version: '0.8.154',
+  version: '0.8.155',
   license: 'AGPL-3-or-later',
   meson_version: '>= 0.50.0',
   default_options: [
@@ -195,12 +195,14 @@ jack_dep = dependency (
 if (not jack_dep.found ())
   jack_dep = dependency ('jack', required: false)
 endif
-if (jack_dep.found ())
+if get_option ('enable_jack') and jack_dep.found ()
   cdata.set('HAVE_JACK', 1)
   check_functions += [
     ['jack_set_property',[jack_dep]],
     ['jack_client_stop_thread', [jack_dep]],
     ]
+elif get_option ('enable_jack')
+  error ('libjack not found. Please install it or set \'enable_jack\' to false')
 endif
 
 foreach func : check_functions
@@ -627,7 +629,7 @@ summary({
 
 summary({
   'FFmpeg': get_option('enable_ffmpeg'),
-  'Jack': jack_dep.found(),
+  'Jack': get_option('enable_jack'),
   'PortAudio': get_option('enable_portaudio'),
   'RtMidi': get_option('enable_rtmidi'),
   'RtAudio': get_option('enable_rtaudio'),

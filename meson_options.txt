@@ -70,6 +70,12 @@ option (
   description: 'Use Carla to wrap some plugins')
 
 option (
+  'enable_jack',
+  type: 'boolean',
+  value: true,
+  description: 'Compile with JACK support')
+
+option (
   'enable_guile',
   type: 'boolean',
   value: false,

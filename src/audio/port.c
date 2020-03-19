@@ -2436,16 +2436,18 @@ port_rename_backend (
   if ((!port_is_exposed_to_backend (self)))
     return;
 
-  char str[600];
   switch (self->internal_type)
     {
 #ifdef HAVE_JACK
     case INTERNAL_JACK_PORT:
-      port_get_full_designation (self, str);
-      jack_port_rename (
-        AUDIO_ENGINE->client,
-        (jack_port_t *) self->data,
-        str);
+      {
+        char str[600];
+        port_get_full_designation (self, str);
+        jack_port_rename (
+          AUDIO_ENGINE->client,
+          (jack_port_t *) self->data,
+          str);
+      }
       break;
 #endif
     case INTERNAL_ALSA_SEQ_PORT:
