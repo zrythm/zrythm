@@ -78,15 +78,15 @@ bot_bar_widget_update_status (
     "%s: " ORANGIZE ("%s") " | "
     "%s: " ORANGIZE ("%d frames") " | "
     "%s: " ORANGIZE ("%d Hz"),
-    "Audio backend",
+    _("Audio backend"),
     engine_audio_backend_to_string (
       AUDIO_ENGINE->audio_backend),
-    "MIDI backend",
+    _("MIDI backend"),
     engine_midi_backend_to_string (
       AUDIO_ENGINE->midi_backend),
-    "Audio buffer size",
+    _("Audio buffer size"),
     AUDIO_ENGINE->block_length,
-    "Sample rate",
+    _("Sample rate"),
     AUDIO_ENGINE->sample_rate);
 
 #undef ORANGIZE

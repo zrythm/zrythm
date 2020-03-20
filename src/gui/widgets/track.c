@@ -2581,6 +2581,7 @@ track_widget_new (Track * track)
           type = METER_TYPE_MIDI;
           meter_widget_setup (
             self->meter_l, channel_get_current_l_db,
+            NULL,
             self->track->channel, type, 8);
           gtk_widget_set_margin_start (
             GTK_WIDGET (self->meter_l), 2);
@@ -2594,10 +2595,12 @@ track_widget_new (Track * track)
           type = METER_TYPE_DB;
           meter_widget_setup (
             self->meter_l, channel_get_current_l_db,
+            channel_get_current_l_max,
             self->track->channel, type, 6);
           self->meter_l->padding = 0;
           meter_widget_setup (
             self->meter_r, channel_get_current_r_db,
+            channel_get_current_r_max,
             self->track->channel, type, 6);
           self->meter_r->padding = 0;
           break;

@@ -1214,9 +1214,7 @@ init_stereo_out_ports (
     {
       strcat (str, " L");
       l = port_new_with_type (
-        TYPE_AUDIO,
-        flow,
-        str);
+        TYPE_AUDIO, flow, str);
 
       str[10] = '\0';
       strcat (str, " R");
@@ -1435,6 +1433,32 @@ channel_get_current_r_db (void * _channel)
   Channel * channel = (Channel *) _channel;
   float rms = get_current_rms (channel, 0);
   return rms;
+}
+
+float
+channel_get_current_l_max (void * _channel)
+{
+  Channel * ch= (Channel *) _channel;
+  gint64 now = g_get_monotonic_time ();
+  if (now - ch->stereo_out->l->max_amp_timestamp <
+        600000)
+    {
+      return ch->stereo_out->l->max_amp;
+    }
+  return -1.f;
+}
+
+float
+channel_get_current_r_max (void * _channel)
+{
+  Channel * ch= (Channel *) _channel;
+  gint64 now = g_get_monotonic_time ();
+  if (now - ch->stereo_out->r->max_amp_timestamp <
+        600000)
+    {
+      return ch->stereo_out->r->max_amp;
+    }
+  return -1.f;
 }
 
 void

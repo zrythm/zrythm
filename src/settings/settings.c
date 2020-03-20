@@ -108,11 +108,14 @@ print_or_reset_schema (
               TERMINAL_COLOR_YELLOW : "",
             var_str,
             pretty_print ? TERMINAL_RESET : "");
-          const char * description =
-            g_settings_schema_key_get_description (
-              schema_key);
-          printf (
-            "    %s\n", description);
+          if (pretty_print)
+            {
+              const char * description =
+                g_settings_schema_key_get_description (
+                  schema_key);
+              printf (
+                "    %s\n", description);
+            }
         }
       else if (
         /* don't reset install-dir */

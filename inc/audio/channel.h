@@ -202,7 +202,7 @@ typedef struct Channel
    * another channel. If we don't do this all the
    * channels end up staying on record mode.
    */
-  int                  record_set_automatically;
+  int              record_set_automatically;
 
   /**
    * Pointer back to Track.
@@ -358,11 +358,21 @@ channel_add_balance_control (
 float
 channel_get_balance_control (void * _channel);
 
+/* ---- getters ---- */
+
 float
 channel_get_current_l_db (void * _channel);
 
 float
 channel_get_current_r_db (void * _channel);
+
+float
+channel_get_current_l_max (void * _channel);
+
+float
+channel_get_current_r_max (void * _channel);
+
+/* ---- end getters ---- */
 
 void
 channel_set_current_l_db (

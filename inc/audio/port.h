@@ -372,6 +372,13 @@ typedef struct Port
    */
   ZixRing *           midi_ring;
 
+  /** Max amplitude during processing, if audio
+   * (fabsf). */
+  float            max_amp;
+
+  /** Last time \ref Port.max_amp was set. */
+  gint64           max_amp_timestamp;
+
   /** Magic number to identify that this is a Port. */
   int                 magic;
 } Port;

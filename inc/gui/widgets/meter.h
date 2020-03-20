@@ -25,15 +25,15 @@
 #ifndef __GUI_WIDGETS_METER_H__
 #define __GUI_WIDGETS_METER_H__
 
+#include "utils/general.h"
+
 #include <gtk/gtk.h>
 
 #define METER_WIDGET_TYPE \
   (meter_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MeterWidget,
-                      meter_widget,
-                      Z,
-                      METER_WIDGET,
-                      GtkDrawingArea)
+G_DECLARE_FINAL_TYPE (
+  MeterWidget, meter_widget,
+  Z, METER_WIDGET, GtkDrawingArea)
 
 typedef enum MeterType
 {
@@ -44,10 +44,22 @@ typedef enum MeterType
 typedef struct _MeterWidget
 {
   GtkDrawingArea         parent_instance;
-  float                  (*getter)(void*); ///< getter function for value
+
+  /** Getter for current value. */
+  GenericFloatGetter     getter;
+
+  /**
+   * Getter for max value (amp).
+   *
+   * Will be ignored if NULL or returning negative.
+   */
+  GenericFloatGetter     max_getter;
+
   void *                 object;
   MeterType              type;
-  int                    hover; ///< hovered or not
+
+  /** Hovered or not. */
+  int                    hover;
 
   /** Padding size for the border. */
   int                    padding;
@@ -57,14 +69,22 @@ typedef struct _MeterWidget
 } MeterWidget;
 
 /**
- * Creates a new Meter widget and binds it to the given value.
+ * Creates a new Meter widget and binds it to the
+ * given value.
+ *
+ * @param getter Getter func.
+ * @param max_getter Getter func for max (pass
+ *   NULL for midi).
+ * @param object Objet to call get with.
+ * @param type Meter type.
  */
 void
 meter_widget_setup (
-  MeterWidget * self,
-  float       (*getter)(void *),    ///< getter function
-  void        * object,      ///< object to call get on
-  MeterType   type,    ///< meter type
-  int         width);
+  MeterWidget *      self,
+  GenericFloatGetter getter,
+  GenericFloatGetter max_getter,
+  void        *      object,
+  MeterType          type,
+  int                width);
 
 #endif

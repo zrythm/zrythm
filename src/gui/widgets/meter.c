@@ -118,9 +118,34 @@ meter_draw_cb (
   cairo_move_to (
     cr, x, (float) height - value_px);
   cairo_line_to (
-    cr, x + width_without_padding,
+    cr, x * 2 + width_without_padding,
     (float) height - value_px);
   cairo_stroke (cr);
+
+  /* draw line for highest db */
+  if (self->max_getter)
+    {
+      float max_amp =
+        self->max_getter (self->object);
+      /*g_message ("amp %f", (double) max_amp);*/
+      if (max_amp > 0.001f)
+        {
+          value_px =
+            math_get_fader_val_from_amp (max_amp);
+          g_message ("amp %f", (double) value_px);
+          value_px *= height;
+
+          cairo_set_source_rgba (
+            cr, 0.6, 0.1, 0.05, 1);
+          cairo_set_line_width (cr, 2.0);
+          cairo_move_to (
+            cr, x, (float) height - value_px);
+          cairo_line_to (
+            cr, x * 2 + width_without_padding,
+            (float) height - value_px);
+          cairo_stroke (cr);
+        }
+    }
 
   return FALSE;
 }
@@ -143,17 +168,26 @@ on_crossing (GtkWidget * widget, GdkEvent *event)
 }
 
 /**
- * Creates a new Meter widget and binds it to the given value.
+ * Creates a new Meter widget and binds it to the
+ * given value.
+ *
+ * @param getter Getter func.
+ * @param max_getter Getter func for max (pass
+ *   NULL for midi).
+ * @param object Objet to call get with.
+ * @param type Meter type.
  */
 void
 meter_widget_setup (
-  MeterWidget * self,
-  float       (*getter)(void *),    ///< getter function
-  void        * object,      ///< object to call get on
-  MeterType   type,    ///< meter type
-  int         width)
+  MeterWidget *      self,
+  GenericFloatGetter getter,
+  GenericFloatGetter max_getter,
+  void        *      object,
+  MeterType          type,
+  int                width)
 {
   self->getter = getter;
+  self->max_getter = max_getter;
   self->object = object;
   self->type = type;
   self->padding = 2;

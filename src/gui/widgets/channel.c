@@ -576,7 +576,7 @@ setup_meter (ChannelWidget * self)
       type = METER_TYPE_MIDI;
       meter_widget_setup (
         self->meter_l, channel_get_current_l_db,
-        self->channel, type, 14);
+        NULL, self->channel, type, 14);
       gtk_widget_set_margin_start (
         GTK_WIDGET (self->meter_l), 5);
       gtk_widget_set_margin_end (
@@ -588,9 +588,11 @@ setup_meter (ChannelWidget * self)
       type = METER_TYPE_DB;
       meter_widget_setup (
         self->meter_l, channel_get_current_l_db,
+        channel_get_current_l_max,
         self->channel, type, 12);
       meter_widget_setup (
         self->meter_r, channel_get_current_r_db,
+        channel_get_current_r_max,
         self->channel, type, 12);
       break;
     default:

@@ -2292,6 +2292,41 @@ port_sum_signal_from_inputs (
             port->audio_ring, &port->buf[0],
             size);
         }
+
+      if (port->id.owner_type ==
+            PORT_OWNER_TYPE_TRACK &&
+          (port->id.flags & PORT_FLAG_STEREO_L ||
+           port->id.flags & PORT_FLAG_STEREO_R) &&
+          port->id.flow == FLOW_OUTPUT)
+        {
+          Track * tr = port_get_track (port, 1);
+          Channel * ch = tr->channel;
+          g_return_if_fail (ch);
+
+          if (port == ch->stereo_out->l ||
+              port == ch->stereo_out->r)
+            {
+              /* reset max if needed */
+              gint64 time_now =
+                g_get_monotonic_time ();
+              if (time_now -
+                    port->max_amp_timestamp >
+                  600000)
+                port->max_amp = -1.f;
+
+              for (l = start_frame; l < nframes;
+                   l++)
+                {
+                  float val = fabsf (port->buf[l]);
+                  if (val > port->max_amp)
+                    {
+                      port->max_amp = val;
+                      port->max_amp_timestamp =
+                        g_get_monotonic_time ();
+                    }
+                }
+            }
+        }
       break;
     case TYPE_CONTROL:
       {

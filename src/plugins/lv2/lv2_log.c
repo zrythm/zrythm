@@ -27,7 +27,7 @@ int
 lv2_log_vprintf (
   LV2_Log_Handle handle,
   LV2_URID       type,
-  const char*    fmt,
+  const char*    _fmt,
   va_list        ap)
 {
   Lv2Plugin* plugin  = (Lv2Plugin*) handle;
@@ -40,6 +40,12 @@ lv2_log_vprintf (
     level = G_LOG_LEVEL_WARNING;
   else
     level = G_LOG_LEVEL_MESSAGE;
+
+  /* remove trailing new line - glib adds its own */
+  char fmt[strlen (_fmt) + 1];
+  strcpy (fmt, _fmt);
+  if (fmt[strlen (fmt) - 1] == '\n')
+    fmt[strlen (fmt) - 1] = '\0';
 
   g_logv (
     plugin->plugin->descr->name,
