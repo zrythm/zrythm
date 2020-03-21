@@ -550,6 +550,8 @@ port_receive_midi_events_from_jack (
   jack_midi_event_t jack_ev;
   for(unsigned i = 0; i < num_events; i++)
     {
+      /* this is guaranteed to be a 3-byte
+       * MIDI event */
       jack_midi_event_get (
         &jack_ev, port_buf, i);
 
@@ -575,42 +577,11 @@ port_receive_midi_events_from_jack (
             }
           else
             {
-              /*g_message (*/
-                /*"JACK MIDI (%s): adding events "*/
-                /*"from buffer:\n"*/
-                /*"[%u] %hhx %hhx %hhx",*/
-                /*port_get_full_designation (self),*/
-                /*jack_ev.time,*/
-                /*jack_ev.buffer[0],*/
-                /*jack_ev.buffer[1],*/
-                /*jack_ev.buffer[2]);*/
-
-              int size = (int) jack_ev.size;
-              midi_byte_t buf[3];
-              memcpy (
-                buf, jack_ev.buffer,
-                (size_t) size *
-                  sizeof (jack_ev.buffer[0]));
-
-              /* if 'running status' mode, prepend
-               * status byte */
-              if (size == 2)
-                {
-                  buf[2] = buf[1];
-                  buf[1] = buf[0];
-                  buf[0] = self->last_midi_status;
-                }
-
               midi_events_add_event_from_buf (
                 self->midi_events,
-                jack_ev.time, buf, size, 0);
+                jack_ev.time, jack_ev.buffer,
+                (int) jack_ev.size, 0);
             }
-        }
-      if (jack_ev.size == 3)
-        {
-          /* remember last status */
-          self->last_midi_status =
-            jack_ev.buffer[0];
         }
     }
 

@@ -384,6 +384,8 @@ typedef struct Port
    *
    * Used for running status (see
    * http://midi.teragonaudio.com/tech/midispec/run.htm).
+   *
+   * Not needed for JACK.
    */
   midi_byte_t         last_midi_status;
 
