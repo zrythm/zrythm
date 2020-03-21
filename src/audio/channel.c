@@ -1436,27 +1436,27 @@ channel_get_current_r_db (void * _channel)
 }
 
 float
-channel_get_current_l_max (void * _channel)
+channel_get_current_l_peak (void * _channel)
 {
   Channel * ch= (Channel *) _channel;
   gint64 now = g_get_monotonic_time ();
-  if (now - ch->stereo_out->l->max_amp_timestamp <
+  if (now - ch->stereo_out->l->peak_timestamp <
         600000)
     {
-      return ch->stereo_out->l->max_amp;
+      return ch->stereo_out->l->peak;
     }
   return -1.f;
 }
 
 float
-channel_get_current_r_max (void * _channel)
+channel_get_current_r_peak (void * _channel)
 {
   Channel * ch= (Channel *) _channel;
   gint64 now = g_get_monotonic_time ();
-  if (now - ch->stereo_out->r->max_amp_timestamp <
+  if (now - ch->stereo_out->r->peak_timestamp <
         600000)
     {
-      return ch->stereo_out->r->max_amp;
+      return ch->stereo_out->r->peak;
     }
   return -1.f;
 }

@@ -248,6 +248,10 @@ midi_events_has_note_on (
 
 /**
  * Parses a MidiEvent from a raw MIDI buffer.
+ *
+ * This must be a full 3-byte message. If in
+ * 'running status' mode, the caller is responsible
+ * for prepending the status byte.
  */
 void
 midi_events_add_event_from_buf (

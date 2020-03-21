@@ -132,7 +132,7 @@ meter_draw_cb (
         {
           value_px =
             math_get_fader_val_from_amp (max_amp);
-          g_message ("amp %f", (double) value_px);
+          /*g_message ("amp %f", (double) value_px);*/
           value_px *= height;
 
           cairo_set_source_rgba (

@@ -588,11 +588,11 @@ setup_meter (ChannelWidget * self)
       type = METER_TYPE_DB;
       meter_widget_setup (
         self->meter_l, channel_get_current_l_db,
-        channel_get_current_l_max,
+        channel_get_current_l_peak,
         self->channel, type, 12);
       meter_widget_setup (
         self->meter_r, channel_get_current_r_db,
-        channel_get_current_r_max,
+        channel_get_current_r_peak,
         self->channel, type, 12);
       break;
     default:

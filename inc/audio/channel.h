@@ -367,10 +367,10 @@ float
 channel_get_current_r_db (void * _channel);
 
 float
-channel_get_current_l_max (void * _channel);
+channel_get_current_l_peak (void * _channel);
 
 float
-channel_get_current_r_max (void * _channel);
+channel_get_current_r_peak (void * _channel);
 
 /* ---- end getters ---- */
 

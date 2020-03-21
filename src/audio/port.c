@@ -584,11 +584,33 @@ port_receive_midi_events_from_jack (
                 /*jack_ev.buffer[0],*/
                 /*jack_ev.buffer[1],*/
                 /*jack_ev.buffer[2]);*/
+
+              int size = (int) jack_ev.size;
+              midi_byte_t buf[3];
+              memcpy (
+                buf, jack_ev.buffer,
+                (size_t) size *
+                  sizeof (jack_ev.buffer[0]));
+
+              /* if 'running status' mode, prepend
+               * status byte */
+              if (size == 2)
+                {
+                  buf[2] = buf[1];
+                  buf[1] = buf[0];
+                  buf[0] = self->last_midi_status;
+                }
+
               midi_events_add_event_from_buf (
                 self->midi_events,
-                jack_ev.time, jack_ev.buffer,
-                (int) jack_ev.size, 0);
+                jack_ev.time, buf, size, 0);
             }
+        }
+      if (jack_ev.size == 3)
+        {
+          /* remember last status */
+          self->last_midi_status =
+            jack_ev.buffer[0];
         }
     }
 
@@ -2306,22 +2328,22 @@ port_sum_signal_from_inputs (
           if (port == ch->stereo_out->l ||
               port == ch->stereo_out->r)
             {
-              /* reset max if needed */
+              /* reset peak if needed */
               gint64 time_now =
                 g_get_monotonic_time ();
               if (time_now -
-                    port->max_amp_timestamp >
+                    port->peak_timestamp >
                   600000)
-                port->max_amp = -1.f;
+                port->peak = -1.f;
 
               for (l = start_frame; l < nframes;
                    l++)
                 {
                   float val = fabsf (port->buf[l]);
-                  if (val > port->max_amp)
+                  if (val > port->peak)
                     {
-                      port->max_amp = val;
-                      port->max_amp_timestamp =
+                      port->peak = val;
+                      port->peak_timestamp =
                         g_get_monotonic_time ();
                     }
                 }

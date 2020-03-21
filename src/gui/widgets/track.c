@@ -2595,12 +2595,12 @@ track_widget_new (Track * track)
           type = METER_TYPE_DB;
           meter_widget_setup (
             self->meter_l, channel_get_current_l_db,
-            channel_get_current_l_max,
+            channel_get_current_l_peak,
             self->track->channel, type, 6);
           self->meter_l->padding = 0;
           meter_widget_setup (
             self->meter_r, channel_get_current_r_db,
-            channel_get_current_r_max,
+            channel_get_current_r_peak,
             self->track->channel, type, 6);
           self->meter_r->padding = 0;
           break;

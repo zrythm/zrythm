@@ -374,10 +374,18 @@ typedef struct Port
 
   /** Max amplitude during processing, if audio
    * (fabsf). */
-  float            max_amp;
+  float               peak;
 
   /** Last time \ref Port.max_amp was set. */
-  gint64           max_amp_timestamp;
+  gint64              peak_timestamp;
+
+  /**
+   * Last known MIDI status byte received.
+   *
+   * Used for running status (see
+   * http://midi.teragonaudio.com/tech/midispec/run.htm).
+   */
+  midi_byte_t         last_midi_status;
 
   /** Magic number to identify that this is a Port. */
   int                 magic;

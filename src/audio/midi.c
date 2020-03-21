@@ -749,6 +749,10 @@ print_unknown_event_message (
 
 /**
  * Parses a MidiEvent from a raw MIDI buffer.
+ *
+ * This must be a full 3-byte message. If in
+ * 'running status' mode, the caller is responsible
+ * for prepending the status byte.
  */
 void
 midi_events_add_event_from_buf (
@@ -758,25 +762,26 @@ midi_events_add_event_from_buf (
   int           buf_size,
   int           queued)
 {
+  g_return_if_fail (buf_size == 3);
+
   midi_byte_t type = buf[0] & 0xf0;
   midi_byte_t channel =
     (midi_byte_t) ((buf[0] & 0xf) + 1);
   switch (type)
     {
     case MIDI_CH1_NOTE_ON:
+      /* velocity == 0 means note off */
+      if (buf[2] == 0)
+        goto note_off;
+
       midi_events_add_note_on (
-        self,
-        channel,
-        buf[1],
-        buf[2],
-        time, queued);
+        self, channel, buf[1], buf[2], time,
+        queued);
       break;
     case MIDI_CH1_NOTE_OFF:
+note_off:
       midi_events_add_note_off (
-        self,
-        channel,
-        buf[1],
-        time, queued);
+        self, channel, buf[1], time, queued);
       break;
     case MIDI_SYSTEM_MESSAGE:
       /* ignore active sensing */
@@ -788,10 +793,7 @@ midi_events_add_event_from_buf (
       break;
     case MIDI_CH1_CTRL_CHANGE:
       midi_events_add_control_change (
-        self,
-        1, buf[1],
-        buf[2],
-        time, queued);
+        self, 1, buf[1], buf[2], time, queued);
       break;
     default:
       print_unknown_event_message (
