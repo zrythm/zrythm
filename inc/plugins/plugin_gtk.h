@@ -36,11 +36,16 @@ typedef struct Plugin Plugin;
  * @{
  */
 
-/** Widget for a control. */
+/**
+ * Widget for a control.
+ */
 typedef struct PluginGtkController
 {
   GtkSpinButton* spin;
   GtkWidget*     control;
+
+  /** Port this control is for. */
+  Port *         port;
 } PluginGtkController;
 
 typedef struct PluginGtkPresetMenu
@@ -108,12 +113,21 @@ plugin_gtk_rebuild_preset_menu (
   Plugin* plugin,
   GtkContainer* pset_menu);
 
+/**
+ * Creates a label for a control.
+ *
+ * @param title Whether this is a title text (makes
+ *   it bold).
+ * @param preformatted Whether the text is
+ *   preformatted.
+ */
 GtkWidget*
 plugin_gtk_new_label (
-  const char* text,
-  int title,
-  float xalign,
-  float yalign);
+  const char * text,
+  int          title,
+  int          preformatted,
+  float        xalign,
+  float        yalign);
 
 /**
  * @}

@@ -344,18 +344,38 @@ on_delete_preset_activate (
     }
 }
 
+/**
+ * Creates a label for a control.
+ *
+ * @param title Whether this is a title text (makes
+ *   it bold).
+ * @param preformatted Whether the text is
+ *   preformatted.
+ */
 GtkWidget*
 plugin_gtk_new_label (
-  const char* text,
-  int title,
-  float xalign,
-  float yalign)
+  const char * text,
+  int          title,
+  int          preformatted,
+  float        xalign,
+  float        yalign)
 {
-  GtkWidget*  label = gtk_label_new(NULL);
-  const char* fmt   = title ? "<span font_weight=\"bold\">%s</span>" : "%s:";
-  gchar * str = g_markup_printf_escaped(fmt, text);
+  GtkWidget * label = gtk_label_new(NULL);
+  const char * fmt =
+    title ?
+      "<b>%s</b>" :
+      "%s: ";
+  gchar * str;
+  if (preformatted)
+    {
+      str = g_strdup_printf (fmt, text);
+    }
+  else
+    {
+      str = g_markup_printf_escaped (fmt, text);
+    }
   gtk_label_set_markup (GTK_LABEL(label), str);
-  g_free(str);
+  g_free (str);
   gtk_label_set_xalign (
     GTK_LABEL (label), xalign);
   gtk_label_set_yalign (
@@ -367,11 +387,43 @@ void
 plugin_gtk_add_control_row (
   GtkWidget*  table,
   int         row,
-  const char* name,
+  const char* _name,
   PluginGtkController* controller)
 {
+  char name[600];
+  strcpy (name, _name);
+  int preformatted = false;
+
+  if (controller && controller->port)
+    {
+      PortIdentifier id = controller->port->id;
+
+#define FORMAT_UNIT(caps) \
+  case PORT_UNIT_##caps: \
+    sprintf ( \
+      name, "%s <small>(%s)</small>", \
+      _name, port_unit_strings[id.unit].str); \
+    break
+
+      switch (id.unit)
+        {
+        FORMAT_UNIT (HZ);
+        FORMAT_UNIT (DB);
+        FORMAT_UNIT (DEGREES);
+        FORMAT_UNIT (SECONDS);
+        FORMAT_UNIT (MS);
+        default:
+          break;
+        }
+
+#undef FORMAT_UNIT
+
+      preformatted = true;
+    }
+
   GtkWidget* label =
-    plugin_gtk_new_label (name, false, 1.0, 0.5);
+    plugin_gtk_new_label (
+      name, false, preformatted, 1.0, 0.5);
   gtk_grid_attach (
     GTK_GRID (table), label,
     0, row, 1, 1);

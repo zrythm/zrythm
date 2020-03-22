@@ -398,9 +398,13 @@ plugin_manager_init (PluginManager * self)
   ADD_LV2_NODE (ui_Gtk3UI, LV2_UI__Gtk3UI);
   ADD_LV2_NODE (ui_GtkUI, LV2_UI__GtkUI);
   ADD_LV2_NODE (units_db, LV2_UNITS__db);
+  ADD_LV2_NODE (units_degree, LV2_UNITS__degree);
   ADD_LV2_NODE (units_hz, LV2_UNITS__hz);
   ADD_LV2_NODE (units_midiNote, LV2_UNITS__midiNote);
+  ADD_LV2_NODE (units_mhz, LV2_UNITS__mhz);
+  ADD_LV2_NODE (units_ms, LV2_UNITS__ms);
   ADD_LV2_NODE (units_render, LV2_UNITS__render);
+  ADD_LV2_NODE (units_s, LV2_UNITS__s);
   ADD_LV2_NODE (units_unit, LV2_UNITS__unit);
   ADD_LV2_NODE (
     work_interface, LV2_WORKER__interface);

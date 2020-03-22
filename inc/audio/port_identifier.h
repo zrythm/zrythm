@@ -56,6 +56,34 @@ typedef enum PortType {
 } PortType;
 
 /**
+ * Port unit to be displayed in the UI.
+ */
+typedef enum PortUnit
+{
+  PORT_UNIT_NONE,
+  PORT_UNIT_HZ,
+  PORT_UNIT_MHZ,
+  PORT_UNIT_DB,
+  PORT_UNIT_DEGREES,
+  PORT_UNIT_SECONDS,
+
+  /** Milliseconds. */
+  PORT_UNIT_MS,
+} PortUnit;
+
+static const cyaml_strval_t
+port_unit_strings[] =
+{
+  { "none", PORT_UNIT_NONE     },
+  { "Hz",   PORT_UNIT_HZ       },
+  { "MHz",  PORT_UNIT_MHZ      },
+  { "dB",   PORT_UNIT_DB       },
+  { "°",    PORT_UNIT_DEGREES  },
+  { "s",    PORT_UNIT_SECONDS  },
+  { "ms",   PORT_UNIT_MS       },
+};
+
+/**
  * Type of owner.
  */
 typedef enum PortOwnerType
@@ -77,6 +105,22 @@ typedef enum PortOwnerType
 
   PORT_OWNER_TYPE_SAMPLE_PROCESSOR,
 } PortOwnerType;
+
+static const cyaml_strval_t
+port_owner_type_strings[] =
+{
+  { "backend",   PORT_OWNER_TYPE_BACKEND    },
+  { "plugin",    PORT_OWNER_TYPE_PLUGIN   },
+  { "track",     PORT_OWNER_TYPE_TRACK   },
+  { "pre-fader", PORT_OWNER_TYPE_PREFADER   },
+  { "fader",     PORT_OWNER_TYPE_FADER   },
+  { "track processor",
+    PORT_OWNER_TYPE_TRACK_PROCESSOR   },
+  { "monitor fader",
+    PORT_OWNER_TYPE_MONITOR_FADER },
+  { "sample processor",
+    PORT_OWNER_TYPE_SAMPLE_PROCESSOR },
+};
 
 /**
  * Port flags.
@@ -195,6 +239,9 @@ typedef struct PortIdentifier
   /** Flags (e.g. is side chain). */
   PortFlags           flags;
 
+  /** Port unit. */
+  PortUnit            unit;
+
   /** Index of Plugin in the Channel. */
   int                 plugin_slot;
 
@@ -213,22 +260,6 @@ port_flow_strings[] =
 };
 
 static const cyaml_strval_t
-port_owner_type_strings[] =
-{
-  { "backend",   PORT_OWNER_TYPE_BACKEND    },
-  { "plugin",    PORT_OWNER_TYPE_PLUGIN   },
-  { "track",     PORT_OWNER_TYPE_TRACK   },
-  { "pre-fader", PORT_OWNER_TYPE_PREFADER   },
-  { "fader",     PORT_OWNER_TYPE_FADER   },
-  { "track processor",
-    PORT_OWNER_TYPE_TRACK_PROCESSOR   },
-  { "monitor fader",
-    PORT_OWNER_TYPE_MONITOR_FADER },
-  { "sample processor",
-    PORT_OWNER_TYPE_SAMPLE_PROCESSOR },
-};
-
-static const cyaml_strval_t
 port_type_strings[] =
 {
   { "unknown",       TYPE_UNKNOWN    },
@@ -244,19 +275,15 @@ port_identifier_fields_schema[] =
   CYAML_FIELD_STRING_PTR (
     "label", CYAML_FLAG_POINTER,
     PortIdentifier, label, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_ENUM (
-    "owner_type", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_ENUM (
     PortIdentifier, owner_type,
-    port_owner_type_strings,
-    CYAML_ARRAY_LEN (port_owner_type_strings)),
-  CYAML_FIELD_ENUM (
-    "type", CYAML_FLAG_DEFAULT,
-    PortIdentifier, type, port_type_strings,
-    CYAML_ARRAY_LEN (port_type_strings)),
-  CYAML_FIELD_ENUM (
-    "flow", CYAML_FLAG_DEFAULT,
-    PortIdentifier, flow, port_flow_strings,
-    CYAML_ARRAY_LEN (port_flow_strings)),
+    port_owner_type_strings),
+  YAML_FIELD_ENUM (
+    PortIdentifier, type, port_type_strings),
+  YAML_FIELD_ENUM (
+    PortIdentifier, flow, port_flow_strings),
+  YAML_FIELD_ENUM (
+    PortIdentifier, unit, port_unit_strings),
   CYAML_FIELD_BITFIELD (
     "flags", CYAML_FLAG_DEFAULT,
     PortIdentifier, flags, port_flags_bitvals,

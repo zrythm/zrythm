@@ -1062,19 +1062,26 @@ make_file_chooser(Lv2Control* record)
 }
 
 static PluginGtkController*
-make_controller(Lv2Control* control, float value)
+make_controller (
+  Lv2Control * control, float value)
 {
   PluginGtkController* controller = NULL;
 
   if (control->is_toggle) {
-    controller = make_toggle(control, value);
+    controller = make_toggle (control, value);
   } else if (control->is_enumeration) {
-    controller = make_combo(control, value);
+    controller = make_combo (control, value);
   } else if (control->is_logarithmic) {
-    controller = make_log_slider(control, value);
+    controller = make_log_slider (control, value);
   } else {
-    controller = make_slider(control, value);
+    controller = make_slider (control, value);
   }
+
+  if (controller)
+    {
+      g_return_val_if_fail (control->port, NULL);
+      controller->port = control->port->port;
+    }
 
   return controller;
 }
@@ -1119,12 +1126,13 @@ lv2_gtk_build_control_widget (
   int num_ctrls = controls->len;
   for (i = 0; i < num_ctrls; ++i)
     {
-      Lv2Control* record =
-        g_array_index(controls, Lv2Control*, i);
-      PluginGtkController* controller = NULL;
-      LilvNode*   group      = record->group;
+      Lv2Control * record =
+        g_array_index (controls, Lv2Control*, i);
+      PluginGtkController * controller = NULL;
+      LilvNode * group = record->group;
 
-      /* Check group and add new heading if necessary */
+      /* Check group and add new heading if
+       * necessary */
       if (group &&
           !lilv_node_equals (group, last_group))
         {
@@ -1135,7 +1143,7 @@ lv2_gtk_build_control_widget (
           GtkWidget* group_label =
             plugin_gtk_new_label (
               lilv_node_as_string (group_name),
-              true, 0.0f, 1.0f);
+              true, false, 0.0f, 1.0f);
           gtk_grid_attach (
             GTK_GRID (port_table), group_label,
             0, n_rows, 2, 1);
@@ -1173,8 +1181,8 @@ lv2_gtk_build_control_widget (
           plugin_gtk_add_control_row (
             port_table, n_rows++,
             (record->label
-             ? lilv_node_as_string(record->label)
-             : lilv_node_as_uri(record->node)),
+             ? lilv_node_as_string (record->label)
+             : lilv_node_as_uri (record->node)),
             controller);
 
           /* Set tooltip text from comment,

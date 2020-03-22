@@ -75,6 +75,7 @@
 #include <lv2/instance-access/instance-access.h>
 #include <lv2/patch/patch.h>
 #include <lv2/time/time.h>
+#include <lv2/units/units.h>
 
 #include <lilv/lilv.h>
 #include <sratom/sratom.h>
@@ -288,9 +289,8 @@ create_port (
     {
       pi->type = TYPE_CONTROL;
       lv2_port->port->control =
-        isnan(default_value) ?
-        0.0f :
-        default_value;
+        isnan (default_value) ?
+          0.0f : default_value;
       if (show_hidden ||
           !lilv_port_has_property (
             lv2_plugin->lilv_plugin,
@@ -382,6 +382,32 @@ create_port (
           port->deff = port->minf;
         }
       port->zerof = port->minf;
+
+      /* set unit */
+      const LilvNode * port_node =
+        lilv_port_get_node (
+          lv2_plugin->lilv_plugin,
+          lv2_port->lilv_port);
+      LilvNodes * units =
+        lilv_world_find_nodes (
+          LILV_WORLD, port_node,
+          LV2_NODES.units_unit, NULL);
+
+#define SET_UNIT(caps,sc) \
+  if (lilv_nodes_contains ( \
+        units, LV2_NODES.units_##sc)) \
+    { \
+      port->id.unit = PORT_UNIT_##caps; \
+    }
+
+      SET_UNIT (DB, db);
+      SET_UNIT (DEGREES, degree);
+      SET_UNIT (HZ, hz);
+      SET_UNIT (MHZ, mhz);
+      SET_UNIT (MS, ms);
+      SET_UNIT (SECONDS, s);
+
+      lilv_nodes_free (units);
     }
   else if (lilv_port_is_a (
              lv2_plugin->lilv_plugin,

@@ -120,9 +120,13 @@ typedef struct Lv2Nodes
   LilvNode *          ui_Gtk3UI;
   LilvNode *          ui_GtkUI;
   LilvNode *          units_db;
+  LilvNode *          units_degree;
   LilvNode *          units_hz;
   LilvNode *          units_midiNote;
+  LilvNode *          units_mhz;
+  LilvNode *          units_ms;
   LilvNode *          units_render;
+  LilvNode *          units_s;
   LilvNode *          units_unit;
   LilvNode *          work_interface;
   LilvNode *          work_schedule;
