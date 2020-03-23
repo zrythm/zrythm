@@ -57,24 +57,33 @@ open_wrapper(SuilHost*      host,
 #ifdef HAVE_X11
 	if (!strcmp(ui_type_uri, X11_UI_URI))
     {
-      wrapper = suil_wrapper_new_x11(host,
-                      container_type_uri,
-                      ui_type_uri,
-                      features,
-                      n_features);
+      wrapper =
+        suil_wrapper_new_x11 (
+          host, container_type_uri,
+          ui_type_uri, features, n_features);
     }
 #endif
 
-  /* TODO write wrapper */
 #ifdef _WOE32
   if (!strcmp(ui_type_uri, WIN_UI_URI))
     {
-      wrapper = suil_wrapper_new_win(host,
-                      container_type_uri,
-                      ui_type_uri,
-                      features,
-                      n_features);
+      wrapper =
+        suil_wrapper_new_woe (
+          host, container_type_uri,
+          ui_type_uri, features, n_features);
     }
+#endif
+
+#ifdef __APPLE__
+#if 0
+  if (!strcmp(ui_type_uri, COCOA_UI_URI))
+    {
+      wrapper =
+        suil_wrapper_new_cocoa (
+          host, container_type_uri,
+          ui_type_uri, features, n_features);
+    }
+#endif
 #endif
 
 	if (!wrapper) {

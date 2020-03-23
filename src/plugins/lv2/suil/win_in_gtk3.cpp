@@ -193,7 +193,7 @@ wrapper_free(SuilWrapper* wrapper)
 }
 
 SuilWrapper*
-suil_wrapper_new_win (SuilHost*      host,
+suil_wrapper_new_woe (SuilHost*      host,
                  const char*    host_type_uri,
                  const char*    ui_type_uri,
                  LV2_Feature*** features,

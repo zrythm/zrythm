@@ -21,3 +21,10 @@ lv2_srcs += files ([
   'x11_in_gtk3.c',
   'win_in_gtk3.cpp',
   ])
+
+if os_darwin
+  lv2_srcs += files ([
+    # doesnt build for now
+    #'cocoa_in_gtk3.mm',
+    ])
+endif

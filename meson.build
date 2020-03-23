@@ -111,7 +111,7 @@ elif host_machine.system() == 'windows'
 endif
 
 if os_darwin
-  add_languages('objc')
+  add_languages(['objc', 'objcpp'])
 elif os_windows
   cdata.set ('USE_MMCSS_THREAD_PRIORITIES', 1)
 endif
