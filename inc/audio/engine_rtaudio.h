@@ -46,6 +46,10 @@ void
 engine_rtaudio_activate (
   AudioEngine * self);
 
+rtaudio_t
+engine_rtaudio_create_rtaudio (
+  AudioEngine * self);
+
 /**
  * Returns a list of names inside \ref names that
  * must be free'd.

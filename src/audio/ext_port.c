@@ -21,8 +21,10 @@
 
 #include "audio/engine.h"
 #include "audio/engine_jack.h"
+#include "audio/engine_rtaudio.h"
 #include "audio/engine_rtmidi.h"
 #include "audio/ext_port.h"
+#include "audio/rtaudio_device.h"
 #include "audio/rtmidi_device.h"
 #include "audio/windows_mme_device.h"
 #include "project.h"
@@ -319,6 +321,92 @@ get_ext_ports_from_rtmidi (
 }
 #endif
 
+#ifdef HAVE_RTAUDIO
+/**
+ * Creates an ExtPort from a RtAudio port.
+ */
+static ExtPort *
+ext_port_from_rtaudio (
+  unsigned int id,
+  unsigned int channel_idx,
+  int          is_input,
+  int          is_duplex)
+{
+  ExtPort * self =
+    calloc (1, sizeof (ExtPort));
+
+  RtAudioDevice * dev =
+    rtaudio_device_new (1, id, channel_idx, NULL);
+  self->rtaudio_id = id;
+  self->rtaudio_channel_idx = channel_idx;
+  self->rtaudio_is_input = is_input;
+  self->rtaudio_is_duplex = is_duplex;
+  self->full_name =
+    g_strdup_printf (
+      "%s (in %d)", dev->name, channel_idx);
+  self->type = EXT_PORT_TYPE_RTAUDIO;
+  rtaudio_device_free (dev);
+
+  return self;
+}
+
+static void
+get_ext_ports_from_rtaudio (
+  PortFlow   flow,
+  ExtPort ** arr,
+  int *      size)
+{
+  /* note: this is an output port from the graph
+   * side that will be used as an input port on
+   * the zrythm side */
+  if (flow == FLOW_OUTPUT)
+    {
+      rtaudio_t rtaudio =
+        engine_rtaudio_create_rtaudio (
+          AUDIO_ENGINE);
+      int num_devs = rtaudio_device_count (rtaudio);
+      for (unsigned int i = 0;
+           i < (unsigned int) num_devs; i++)
+        {
+          rtaudio_device_info_t dev_nfo =
+            rtaudio_get_device_info (
+              rtaudio, (int) i);
+          if (dev_nfo.input_channels > 0)
+            {
+              for (unsigned int j = 0;
+                   j < dev_nfo.input_channels; j++)
+                {
+                  arr[*size] =
+                    ext_port_from_rtaudio (
+                      i, j, true, false);
+                  (*size)++;
+                  g_message ("\n\n found input device");
+                }
+#if 0
+              for (unsigned int j = 0;
+                   j < dev_nfo.duplex_channels; j++)
+                {
+                  arr[*size] =
+                    ext_port_from_rtaudio (
+                      i, j, false, true);
+                  (*size)++;
+                  g_message ("\n\n found duplex device");
+                }
+#endif
+            }
+          else
+            {
+              continue;
+            }
+        }
+    }
+  else if (flow == FLOW_INPUT)
+    {
+      *size = 0;
+    }
+}
+#endif
+
 /**
  * Collects external ports of the given type.
  *
@@ -348,6 +436,12 @@ ext_ports_get (
         case AUDIO_BACKEND_JACK:
           get_ext_ports_from_jack (
             type, flow, hw, arr, size);
+          break;
+#endif
+#ifdef HAVE_RTAUDIO
+        case AUDIO_BACKEND_RTAUDIO:
+          get_ext_ports_from_rtaudio (
+            flow, arr, size);
           break;
 #endif
 #ifdef HAVE_ALSA
@@ -391,6 +485,19 @@ ext_ports_get (
 }
 
 /**
+ * Prints the port info.
+ */
+void
+ext_port_print (
+  ExtPort * self)
+{
+  g_message (
+    "Ext port:\n"
+    "full name: %s",
+    self->full_name);
+}
+
+/**
  * Creates a shallow clone of the port.
  */
 ExtPort *
@@ -408,6 +515,12 @@ ext_port_clone (
 #endif
 #ifdef HAVE_RTMIDI
   newport->rtmidi_id = ext_port->rtmidi_id;
+#endif
+#ifdef HAVE_RTAUDIO
+  newport->rtaudio_id = ext_port->rtaudio_id;
+  newport->rtaudio_channel_idx = ext_port->rtaudio_channel_idx;
+  newport->rtaudio_is_input = ext_port->rtaudio_is_input;
+  newport->rtaudio_is_duplex = ext_port->rtaudio_is_duplex;
 #endif
   if (ext_port->full_name)
     newport->full_name =

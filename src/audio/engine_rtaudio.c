@@ -82,8 +82,8 @@ error_cb (
   g_critical ("RtAudio error: %s", msg);
 }
 
-static rtaudio_t
-create_rtaudio (
+rtaudio_t
+engine_rtaudio_create_rtaudio (
   AudioEngine * self)
 {
   rtaudio_t rtaudio =
@@ -117,7 +117,7 @@ engine_rtaudio_setup (
   g_message (
     "Setting up RtAudio %s...", rtaudio_version ());
 
-  self->rtaudio = create_rtaudio (self);
+  self->rtaudio = engine_rtaudio_create_rtaudio (self);
   if (!self->rtaudio)
     {
       return -1;
@@ -277,7 +277,7 @@ engine_rtaudio_get_device_names (
   char **       names,
   int *         num_names)
 {
-  rtaudio_t rtaudio = create_rtaudio (self);
+  rtaudio_t rtaudio = engine_rtaudio_create_rtaudio (self);
   int num_devs = rtaudio_device_count (rtaudio);
   *num_names = 0;
   for (int i = 0; i < num_devs; i++)

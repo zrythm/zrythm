@@ -39,6 +39,10 @@
 #include <rtmidi/rtmidi_c.h>
 #endif
 
+#ifdef HAVE_RTAUDIO
+#include <rtaudio/rtaudio_c.h>
+#endif
+
 typedef struct Plugin Plugin;
 typedef struct MidiEvents MidiEvents;
 typedef struct Fader Fader;
@@ -53,6 +57,7 @@ typedef struct Track Track;
 typedef struct SampleProcessor SampleProcessor;
 typedef struct TrackProcessor TrackProcessor;
 typedef struct RtMidiDevice RtMidiDevice;
+typedef struct RtAudioDevice RtAudioDevice;
 typedef enum PanAlgorithm PanAlgorithm;
 typedef enum PanLaw PanLaw;
 
@@ -262,6 +267,16 @@ typedef struct Port
   /** RtMidi pointers for output ports. */
   RtMidiDevice *      rtmidi_outs[128];
   int                 num_rtmidi_outs;
+#endif
+
+#ifdef HAVE_RTAUDIO
+  /**
+   * RtAudio pointers for input ports.
+   *
+   * Each port can have multiple RtAudio devices.
+   */
+  RtAudioDevice *    rtaudio_ins[128];
+  int                num_rtaudio_ins;
 #endif
 
   /**
@@ -687,6 +702,16 @@ port_get_multiplier_by_index (
  */
 void
 port_prepare_rtmidi_events (
+  Port * self);
+#endif
+
+#ifdef HAVE_RTAUDIO
+/**
+ * Dequeue the audio data from the ring
+ * buffers into \ref RtAudioDevice.buf.
+ */
+void
+port_prepare_rtaudio_data (
   Port * self);
 #endif
 

@@ -70,6 +70,7 @@ typedef enum ExtPortType
   EXT_PORT_TYPE_ALSA,
   EXT_PORT_TYPE_WINDOWS_MME,
   EXT_PORT_TYPE_RTMIDI,
+  EXT_PORT_TYPE_RTAUDIO,
 } ExtPortType;
 
 static const cyaml_strval_t
@@ -79,6 +80,7 @@ ext_port_type_strings[] =
   { "ALSA",   EXT_PORT_TYPE_ALSA   },
   { "Windows MME",   EXT_PORT_TYPE_WINDOWS_MME   },
   { "RtMidi",   EXT_PORT_TYPE_RTMIDI   },
+  { "RtAudio",   EXT_PORT_TYPE_RTAUDIO   },
 };
 
 /**
@@ -113,6 +115,17 @@ typedef struct ExtPort
    * It must NOT be allocated or free'd.
    */
   WindowsMmeDevice * mme_dev;
+#endif
+
+#ifdef HAVE_RTAUDIO
+  /** RtAudio device index. */
+  unsigned int     rtaudio_id;
+  /** RtAudio channel index. */
+  unsigned int     rtaudio_channel_idx;
+
+  /** Whether the channel is input. */
+  int              rtaudio_is_input;
+  int              rtaudio_is_duplex;
 #endif
 
 #ifdef HAVE_RTMIDI
@@ -170,6 +183,13 @@ ext_port_schema =
 void
 ext_port_init_loaded (
   ExtPort * ext_port);
+
+/**
+ * Prints the port info.
+ */
+void
+ext_port_print (
+  ExtPort * self);
 
 /**
  * Returns the buffer of the external port.
