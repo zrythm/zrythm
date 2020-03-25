@@ -138,7 +138,7 @@ control_port_real_val_to_normalized (
                 /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
                 normalized_val =
                   logf (real_val / self->minf) /
-                  (self->maxf / self->minf);
+                  logf (self->maxf / self->minf);
               }
             else if (ctrl->is_toggle)
               {
