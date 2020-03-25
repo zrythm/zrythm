@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/control_port.h"
 #include "audio/midi_mapping.h"
 #include "utils/arrays.h"
 
@@ -76,9 +77,13 @@ midi_mappings_apply (
           mapping->key[1] == buf[1])
         {
           g_return_if_fail (mapping->dest);
+          float normalized_val =
+            (float) buf[2] / 127.f;
           port_set_control_value (
             mapping->dest,
-            (float) buf[2] / 127.f, 1, 1);
+            control_port_normalized_val_to_real (
+              mapping->dest, normalized_val),
+            false, true);
         }
     }
 }

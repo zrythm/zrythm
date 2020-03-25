@@ -37,6 +37,11 @@ typedef struct Port Port;
 /**
  * Converts normalized value (0.0 to 1.0) to
  * real value (eg. -10.0 to 100.0).
+ *
+ * @note This behaves differently from
+ *   \ref port_set_control_value() and
+ *   \ref port_get_control_value() and should be
+ *   used in widgets.
  */
 float
 control_port_normalized_val_to_real (
@@ -46,6 +51,11 @@ control_port_normalized_val_to_real (
 /**
  * Converts real value (eg. -10.0 to 100.0) to
  * normalized value (0.0 to 1.0).
+ *
+ * @note This behaves differently from
+ *   \ref port_set_control_value() and
+ *   \ref port_get_control_value() and should be
+ *   used in widgets.
  */
 float
 control_port_real_val_to_normalized (

@@ -101,6 +101,7 @@ fader_init (
   self->amp =
     port_new_with_type (
       TYPE_CONTROL, FLOW_INPUT, _("Volume"));
+  self->amp->maxf = 2.f;
   port_set_control_value (self->amp, amp, 0, 0);
   self->fader_val =
     math_get_fader_val_from_amp (amp);
@@ -122,7 +123,7 @@ fader_init (
   self->balance =
     port_new_with_type (
       TYPE_CONTROL, FLOW_INPUT,
-      _("Balance control"));
+      _("Balance"));
   port_set_control_value (
     self->balance, balance, 0, 0);
   port_set_owner_fader (self->balance, self);

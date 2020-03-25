@@ -51,6 +51,7 @@ typedef enum BarSliderType
 {
   BAR_SLIDER_TYPE_NORMAL,
   BAR_SLIDER_TYPE_PORT_MULTIPLIER,
+  BAR_SLIDER_TYPE_CONTROL_PORT,
 } BarSliderType;
 
 /**
@@ -100,6 +101,9 @@ typedef struct _BarSliderWidget
 
   /** Float setter. */
   void (*setter)(void*, float);
+
+  /** Port, if control port. */
+  Port *          port;
 
   /** Widget width. */
   int             width;

@@ -51,6 +51,9 @@ typedef struct _TrackInputExpanderWidget
  * @{
  */
 
+/**
+ * Inspector section for tracks.
+ */
 typedef struct _InspectorTrackWidget
 {
   GtkBox             parent_instance;
@@ -60,8 +63,17 @@ typedef struct _InspectorTrackWidget
   TrackInputExpanderWidget * inputs;
 
   PortsExpanderWidget * sends;
+
+  /** Pan, fader, etc. */
+  PortsExpanderWidget * controls;
 } InspectorTrackWidget;
 
+/**
+ * Refreshes the inspector section based on the
+ * given \ref tls.
+ *
+ * @param tls Track selections.
+ */
 void
 inspector_track_widget_show_tracks (
   InspectorTrackWidget * self,

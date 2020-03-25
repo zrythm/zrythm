@@ -41,8 +41,7 @@ typedef struct Plugin Plugin;
 G_DECLARE_FINAL_TYPE (
   PortsExpanderWidget,
   ports_expander_widget,
-  Z,
-  PORTS_EXPANDER_WIDGET,
+  Z, PORTS_EXPANDER_WIDGET,
   TwoColExpanderBoxWidget);
 
 /**
@@ -56,6 +55,7 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef enum PortsExpanderTrackPortType
 {
+  PE_TRACK_PORT_TYPE_CONTROLS,
   PE_TRACK_PORT_TYPE_SENDS,
   PE_TRACK_PORT_TYPE_STEREO_IN,
   PE_TRACK_PORT_TYPE_MIDI_IN,

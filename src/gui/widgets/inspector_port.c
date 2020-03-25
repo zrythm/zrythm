@@ -19,6 +19,7 @@
 
 #include "config.h"
 
+#include "audio/control_port.h"
 #include "audio/engine.h"
 #include "audio/midi.h"
 #include "audio/midi_mapping.h"
@@ -310,7 +311,10 @@ get_port_value (
       }
       break;
     case TYPE_CONTROL:
-      return port_get_control_value (port, 0);
+      return
+        control_port_real_val_to_normalized (
+          port,
+          port_get_control_value (port, 0));
       break;
     default:
       break;
@@ -323,7 +327,10 @@ set_port_value (
   InspectorPortWidget * self,
   float                 val)
 {
-  port_set_control_value (self->port, val, 0, 1);
+  port_set_control_value (
+    self->port,
+    control_port_normalized_val_to_real (
+      self->port, val), 0, 1);
 }
 
 static gboolean
@@ -423,15 +430,23 @@ inspector_port_widget_new (
         }
       float zerof = port->zerof;
       int editable = 0;
+      int is_control = 0;
       if (port->id.type == TYPE_CONTROL)
-        editable = 1;
+        {
+          editable = 1;
+          is_control = 1;
+        }
       self->bar_slider =
         _bar_slider_widget_new (
           BAR_SLIDER_TYPE_NORMAL,
           (float (*) (void *)) get_port_value,
           (void (*) (void *, float)) set_port_value,
-          (void *) self, NULL, minf, maxf, -1, 20,
-          zerof, 0, 2, BAR_SLIDER_UPDATE_MODE_CURSOR,
+          (void *) self, NULL,
+          /* use normalized vals for controls */
+          is_control ? 0.f : minf,
+          is_control ? 1.f : maxf, -1, 20,
+          is_control ? 0.f : zerof, 0, 2,
+          BAR_SLIDER_UPDATE_MODE_CURSOR,
           str, "");
       self->bar_slider->show_value = 0;
       self->bar_slider->editable = editable;

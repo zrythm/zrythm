@@ -753,6 +753,10 @@ engine_process_prepare (
       for (j = 0; j < atl->num_ats; j++)
         {
           at = atl->ats[j];
+
+          if (!at->read)
+            continue;
+
           /* FIXME passing playhead doesn't take
            * into account the latency compensation.
            * maybe automation should be a port/

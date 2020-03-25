@@ -371,6 +371,13 @@ ports_expander_widget_setup_track (
 
   switch (type)
     {
+    case PE_TRACK_PORT_TYPE_CONTROLS:
+      expander_box_widget_set_label (
+        Z_EXPANDER_BOX_WIDGET (self),
+        _("Controls"));
+      self->flow = FLOW_INPUT;
+      self->type = TYPE_CONTROL;
+      break;
     case PE_TRACK_PORT_TYPE_SENDS:
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self),
@@ -428,6 +435,11 @@ ports_expander_widget_setup_track (
       InspectorPortWidget * ip;
       switch (type)
         {
+        case PE_TRACK_PORT_TYPE_CONTROLS:
+          ADD_SINGLE (tr->channel->fader.amp);
+          ADD_SINGLE (tr->channel->fader.balance);
+          ADD_SINGLE (tr->mute);
+          break;
         case PE_TRACK_PORT_TYPE_SENDS:
           if (out_type == TYPE_AUDIO)
             {

@@ -682,6 +682,7 @@ draw_automation (
         }
       if (at->num_top_right_buttons == 0)
         {
+#if 0
           at->top_right_buttons[0] =
             custom_button_widget_new (
               ICON_NAME_MUTE, BUTTON_SIZE);
@@ -689,6 +690,7 @@ draw_automation (
             CUSTOM_BUTTON_WIDGET_OWNER_AT;
           at->top_right_buttons[0]->owner = at;
           at->num_top_right_buttons = 1;
+#endif
         }
       if (at->num_bot_left_buttons == 0)
         {
