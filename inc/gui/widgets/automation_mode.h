@@ -124,6 +124,10 @@ automation_mode_widget_new (
   AutomationTrack * owner);
 
 void
+automation_mode_widget_init (
+  AutomationModeWidget * self);
+
+void
 automation_mode_widget_draw (
   AutomationModeWidget * self,
   cairo_t *                 cr,

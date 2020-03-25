@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-03-25 15:53+0000\n"
+"POT-Creation-Date: 2020-03-25 20:56+0000\n"
 "PO-Revision-Date: 2020-03-11 14:33+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -79,7 +79,7 @@ msgid "(trial) "
 msgstr "(トライアル) "
 
 #: src/project.c:393 src/gui/widgets/route_target_selector_popover.c:153
-#: src/audio/track.c:1337
+#: src/audio/track.c:1338
 msgid "Master"
 msgstr "マスタ"
 
@@ -575,11 +575,11 @@ msgstr "MIDIトラックを追加 (_M)"
 msgid "Add Audio Track"
 msgstr "オーディオトラックを追加"
 
-#: src/gui/widgets/drag_dest_box.c:498 src/audio/track.c:1331
+#: src/gui/widgets/drag_dest_box.c:498 src/audio/track.c:1332
 msgid "Audio Bus"
 msgstr "オーディオバス"
 
-#: src/gui/widgets/drag_dest_box.c:509 src/audio/track.c:1334
+#: src/gui/widgets/drag_dest_box.c:509 src/audio/track.c:1335
 msgid "MIDI Bus"
 msgstr "MIDIバス"
 
@@ -587,11 +587,11 @@ msgstr "MIDIバス"
 msgid "Add Bus Track"
 msgstr "バストラックを追加"
 
-#: src/gui/widgets/drag_dest_box.c:532 src/audio/track.c:1343
+#: src/gui/widgets/drag_dest_box.c:532 src/audio/track.c:1344
 msgid "Audio Group"
 msgstr "オーディオ グループ"
 
-#: src/gui/widgets/drag_dest_box.c:543 src/audio/track.c:1346
+#: src/gui/widgets/drag_dest_box.c:543 src/audio/track.c:1347
 msgid "MIDI Group"
 msgstr "MIDIグループ"
 
@@ -745,12 +745,12 @@ msgstr ""
 msgid "Export as MIDI file"
 msgstr "MIDIファイルを選択"
 
-#: src/gui/widgets/timeline_arranger.c:1371 src/gui/widgets/track.c:1592
+#: src/gui/widgets/timeline_arranger.c:1371 src/gui/widgets/track.c:1595
 #, fuzzy
 msgid "Quick bounce"
 msgstr "クイック量子化"
 
-#: src/gui/widgets/timeline_arranger.c:1382 src/gui/widgets/track.c:1604
+#: src/gui/widgets/timeline_arranger.c:1382 src/gui/widgets/track.c:1607
 msgid "Bounce..."
 msgstr ""
 
@@ -904,7 +904,7 @@ msgstr "リージョンを選択してください…"
 msgid "Region"
 msgstr "リージョン"
 
-#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1349
+#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1350
 msgid "Marker"
 msgstr "マーカー"
 
@@ -918,7 +918,7 @@ msgid "MIDI note"
 msgstr "MIDI音符"
 
 #: src/gui/widgets/event_viewer.c:117 src/gui/widgets/event_viewer.c:588
-#: src/audio/region.c:303 src/audio/track.c:1340
+#: src/audio/region.c:303 src/audio/track.c:1341
 #: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr "和音"
@@ -1032,7 +1032,7 @@ msgstr "MIDI出力"
 msgid "Group"
 msgstr "グループ"
 
-#: src/gui/widgets/route_target_selector_popover.c:175 src/audio/track.c:1322
+#: src/gui/widgets/route_target_selector_popover.c:175 src/audio/track.c:1323
 msgid "Instrument"
 msgstr "音源"
 
@@ -1106,66 +1106,66 @@ msgstr "上部パネルの表示を切り替える"
 msgid "Toggle Right Panel"
 msgstr "右側パネルの表示を切り替える"
 
-#: src/gui/widgets/track.c:566 src/audio/track_lane.c:68
+#: src/gui/widgets/track.c:568 src/audio/track_lane.c:68
 #, c-format
 msgid "Lane %d"
 msgstr "レーン%d"
 
-#: src/gui/widgets/track.c:1514
+#: src/gui/widgets/track.c:1517
 msgid "_Delete Track"
 msgstr "トラックを削除(_D)"
 
-#: src/gui/widgets/track.c:1517
+#: src/gui/widgets/track.c:1520
 msgid "_Delete Tracks"
 msgstr "トラックを削除(_D)"
 
-#: src/gui/widgets/track.c:1532
+#: src/gui/widgets/track.c:1535
 msgid "_Duplicate Track"
 msgstr "トラックを複製(_D)"
 
-#: src/gui/widgets/track.c:1535
+#: src/gui/widgets/track.c:1538
 msgid "_Duplicate Tracks"
 msgstr "トラックを複製(_D)"
 
-#: src/gui/widgets/track.c:1553
+#: src/gui/widgets/track.c:1556
 msgid "Add Region"
 msgstr "リージョンを追加"
 
-#: src/gui/widgets/track.c:1565
+#: src/gui/widgets/track.c:1568
 msgid "Hide Track"
 msgstr "トラックを非表示にする"
 
-#: src/gui/widgets/track.c:1566
+#: src/gui/widgets/track.c:1569
 msgid "Hide Tracks"
 msgstr "トラックを非表示にする"
 
-#: src/gui/widgets/track.c:1577
+#: src/gui/widgets/track.c:1580
 msgid "Pin/Unpin Track"
 msgstr "トラックを固定/固定解除"
 
-#: src/gui/widgets/track.c:1578
+#: src/gui/widgets/track.c:1581
 msgid "Pin/Unpin Tracks"
 msgstr "トラックを固定/固定解除"
 
-#: src/gui/widgets/track.c:1620
+#: src/gui/widgets/track.c:1623
 msgid "Track MIDI Ch"
 msgstr "トラックのMIDI Ch"
 
-#: src/gui/widgets/track.c:1632
+#: src/gui/widgets/track.c:1635
 msgid "Passthrough input"
 msgstr "パススルー入力"
 
-#: src/gui/widgets/track.c:1661 src/gui/widgets/track.c:1721
+#: src/gui/widgets/track.c:1664 src/gui/widgets/track.c:1724
 #, fuzzy, c-format
 msgid "MIDI Channel %d"
 msgstr "%s MIDI チャンネル %d"
 
-#: src/gui/widgets/track.c:1701
+#: src/gui/widgets/track.c:1704
 #, c-format
 msgid "Lane %d MIDI Ch"
 msgstr "レーン%d Midi Ch"
 
-#: src/gui/widgets/track.c:1717
+#: src/gui/widgets/track.c:1720
 #, fuzzy
 msgid "Inherit"
 msgstr "%s 継承"
@@ -1335,7 +1335,7 @@ msgid "Chords"
 msgstr "和音"
 
 #: src/audio/automation_track.c:91
-msgid "Read"
+msgid "On"
 msgstr ""
 
 #: src/audio/automation_track.c:94
@@ -1344,6 +1344,14 @@ msgstr ""
 
 #: src/audio/automation_track.c:97
 msgid "Off"
+msgstr ""
+
+#: src/audio/automation_track.c:115
+msgid "Touch"
+msgstr ""
+
+#: src/audio/automation_track.c:118
+msgid "Latch"
 msgstr ""
 
 #: src/audio/marker_track.c:53
@@ -1356,11 +1364,11 @@ msgstr "目印"
 msgid "PortAudio Error: %s"
 msgstr "PortAudioエラー：%s"
 
-#: src/audio/region.c:294 src/audio/track.c:1328
+#: src/audio/region.c:294 src/audio/track.c:1329
 msgid "MIDI"
 msgstr "MIDI"
 
-#: src/audio/region.c:297 src/audio/track.c:1325
+#: src/audio/region.c:297 src/audio/track.c:1326
 msgid "Audio"
 msgstr "オーディオ"
 
@@ -1434,7 +1442,7 @@ msgstr "MIDIプレフェーダー出力"
 msgid "Sample Processor"
 msgstr "サンプルプロセッサ"
 
-#: src/audio/track.c:159
+#: src/audio/track.c:160
 msgid "Mute"
 msgstr "無音"
 

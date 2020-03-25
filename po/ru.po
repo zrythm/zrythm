@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-03-25 15:53+0000\n"
+"POT-Creation-Date: 2020-03-25 20:56+0000\n"
 "PO-Revision-Date: 2020-01-11 14:21+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
@@ -79,7 +79,7 @@ msgid "(trial) "
 msgstr ""
 
 #: src/project.c:393 src/gui/widgets/route_target_selector_popover.c:153
-#: src/audio/track.c:1337
+#: src/audio/track.c:1338
 msgid "Master"
 msgstr ""
 
@@ -544,11 +544,11 @@ msgstr ""
 msgid "Add Audio Track"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:498 src/audio/track.c:1331
+#: src/gui/widgets/drag_dest_box.c:498 src/audio/track.c:1332
 msgid "Audio Bus"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:509 src/audio/track.c:1334
+#: src/gui/widgets/drag_dest_box.c:509 src/audio/track.c:1335
 msgid "MIDI Bus"
 msgstr ""
 
@@ -556,11 +556,11 @@ msgstr ""
 msgid "Add Bus Track"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:532 src/audio/track.c:1343
+#: src/gui/widgets/drag_dest_box.c:532 src/audio/track.c:1344
 msgid "Audio Group"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:543 src/audio/track.c:1346
+#: src/gui/widgets/drag_dest_box.c:543 src/audio/track.c:1347
 msgid "MIDI Group"
 msgstr ""
 
@@ -707,11 +707,11 @@ msgstr ""
 msgid "Export as MIDI file"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1371 src/gui/widgets/track.c:1592
+#: src/gui/widgets/timeline_arranger.c:1371 src/gui/widgets/track.c:1595
 msgid "Quick bounce"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1382 src/gui/widgets/track.c:1604
+#: src/gui/widgets/timeline_arranger.c:1382 src/gui/widgets/track.c:1607
 msgid "Bounce..."
 msgstr ""
 
@@ -865,7 +865,7 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1349
+#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1350
 msgid "Marker"
 msgstr ""
 
@@ -879,7 +879,7 @@ msgid "MIDI note"
 msgstr ""
 
 #: src/gui/widgets/event_viewer.c:117 src/gui/widgets/event_viewer.c:588
-#: src/audio/region.c:303 src/audio/track.c:1340
+#: src/audio/region.c:303 src/audio/track.c:1341
 #: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr ""
@@ -993,7 +993,7 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector_popover.c:175 src/audio/track.c:1322
+#: src/gui/widgets/route_target_selector_popover.c:175 src/audio/track.c:1323
 msgid "Instrument"
 msgstr ""
 
@@ -1067,66 +1067,66 @@ msgstr ""
 msgid "Toggle Right Panel"
 msgstr ""
 
-#: src/gui/widgets/track.c:566 src/audio/track_lane.c:68
+#: src/gui/widgets/track.c:568 src/audio/track_lane.c:68
 #, c-format
 msgid "Lane %d"
 msgstr ""
 
-#: src/gui/widgets/track.c:1514
+#: src/gui/widgets/track.c:1517
 msgid "_Delete Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:1517
+#: src/gui/widgets/track.c:1520
 msgid "_Delete Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:1532
+#: src/gui/widgets/track.c:1535
 msgid "_Duplicate Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:1535
+#: src/gui/widgets/track.c:1538
 msgid "_Duplicate Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:1553
+#: src/gui/widgets/track.c:1556
 msgid "Add Region"
 msgstr ""
 
-#: src/gui/widgets/track.c:1565
+#: src/gui/widgets/track.c:1568
 msgid "Hide Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:1566
+#: src/gui/widgets/track.c:1569
 msgid "Hide Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:1577
+#: src/gui/widgets/track.c:1580
 msgid "Pin/Unpin Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:1578
+#: src/gui/widgets/track.c:1581
 msgid "Pin/Unpin Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:1620
+#: src/gui/widgets/track.c:1623
 msgid "Track MIDI Ch"
 msgstr ""
 
-#: src/gui/widgets/track.c:1632
+#: src/gui/widgets/track.c:1635
 msgid "Passthrough input"
 msgstr ""
 
-#: src/gui/widgets/track.c:1661 src/gui/widgets/track.c:1721
+#: src/gui/widgets/track.c:1664 src/gui/widgets/track.c:1724
 #, c-format
 msgid "MIDI Channel %d"
 msgstr ""
 
-#: src/gui/widgets/track.c:1701
+#: src/gui/widgets/track.c:1704
 #, c-format
 msgid "Lane %d MIDI Ch"
 msgstr ""
 
-#: src/gui/widgets/track.c:1717
+#: src/gui/widgets/track.c:1720
 msgid "Inherit"
 msgstr ""
 
@@ -1286,7 +1286,7 @@ msgid "Chords"
 msgstr ""
 
 #: src/audio/automation_track.c:91
-msgid "Read"
+msgid "On"
 msgstr ""
 
 #: src/audio/automation_track.c:94
@@ -1295,6 +1295,14 @@ msgstr ""
 
 #: src/audio/automation_track.c:97
 msgid "Off"
+msgstr ""
+
+#: src/audio/automation_track.c:115
+msgid "Touch"
+msgstr ""
+
+#: src/audio/automation_track.c:118
+msgid "Latch"
 msgstr ""
 
 #: src/audio/marker_track.c:53
@@ -1307,11 +1315,11 @@ msgstr ""
 msgid "PortAudio Error: %s"
 msgstr ""
 
-#: src/audio/region.c:294 src/audio/track.c:1328
+#: src/audio/region.c:294 src/audio/track.c:1329
 msgid "MIDI"
 msgstr ""
 
-#: src/audio/region.c:297 src/audio/track.c:1325
+#: src/audio/region.c:297 src/audio/track.c:1326
 msgid "Audio"
 msgstr ""
 
@@ -1381,7 +1389,7 @@ msgstr ""
 msgid "Sample Processor"
 msgstr ""
 
-#: src/audio/track.c:159
+#: src/audio/track.c:160
 msgid "Mute"
 msgstr ""
 

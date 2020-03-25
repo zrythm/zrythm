@@ -42,7 +42,7 @@ typedef struct AutomationModeWidget
 typedef enum AutomationMode
 {
   AUTOMATION_MODE_READ,
-  AUTOMATION_MODE_LATCH,
+  AUTOMATION_MODE_RECORD,
   AUTOMATION_MODE_OFF,
   NUM_AUTOMATION_MODES,
 } AutomationMode;
@@ -51,9 +51,24 @@ static const cyaml_strval_t
 automation_mode_strings[] =
 {
   { "Read",     AUTOMATION_MODE_READ    },
-  { "Rec",    AUTOMATION_MODE_LATCH   },
+  { "Rec",    AUTOMATION_MODE_RECORD   },
   { "Off",      AUTOMATION_MODE_OFF   },
   { "<invalid>",   NUM_AUTOMATION_MODES   },
+};
+
+typedef enum AutomationRecordMode
+{
+  AUTOMATION_RECORD_MODE_TOUCH,
+  AUTOMATION_RECORD_MODE_LATCH,
+  NUM_AUTOMATION_RECORD_MODES,
+} AutomationRecordMode;
+
+static const cyaml_strval_t
+automation_record_mode_strings[] =
+{
+  { "Touch",     AUTOMATION_RECORD_MODE_TOUCH    },
+  { "Latch",    AUTOMATION_RECORD_MODE_LATCH   },
+  { "<invalid>",   NUM_AUTOMATION_RECORD_MODES   },
 };
 
 typedef struct AutomationTrack
@@ -89,6 +104,11 @@ typedef struct AutomationTrack
 
   /** Automation mode. */
   AutomationMode    automation_mode;
+
+  /** Automation record mode, when
+   * \ref AutomationTrack.automation_mode is
+   * set to record. */
+  AutomationRecordMode    record_mode;
 
   /** Buttons used by the track widget */
   CustomButtonWidget * top_right_buttons[8];
@@ -159,6 +179,23 @@ void
 automation_mode_get_localized (
   AutomationMode mode,
   char *         buf);
+
+/**
+ * Gets the automation mode as a localized string.
+ */
+void
+automation_record_mode_get_localized (
+  AutomationRecordMode mode,
+  char *         buf);
+
+static inline void
+automation_track_swap_record_mode (
+  AutomationTrack * self)
+{
+  self->record_mode =
+    (self->record_mode + 1) %
+      NUM_AUTOMATION_RECORD_MODES;
+}
 
 AutomationTracklist *
 automation_track_get_automation_tracklist (

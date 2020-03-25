@@ -24,8 +24,9 @@
 #include "utils/cairo.h"
 #include "utils/ui.h"
 
-static void
-init (AutomationModeWidget * self)
+void
+automation_mode_widget_init (
+  AutomationModeWidget * self)
 {
   gdk_rgba_parse (
     &self->def_color, UI_COLOR_BUTTON_NORMAL);
@@ -52,8 +53,17 @@ init (AutomationModeWidget * self)
   int x_px, y_px;
   char txt[400];
 #define DO(caps) \
-  automation_mode_get_localized ( \
-    AUTOMATION_MODE_##caps, txt); \
+  if (AUTOMATION_MODE_##caps == \
+        AUTOMATION_MODE_RECORD) \
+    { \
+      automation_record_mode_get_localized ( \
+        self->owner->record_mode, txt); \
+    } \
+  else \
+    { \
+      automation_mode_get_localized ( \
+        AUTOMATION_MODE_##caps, txt); \
+    } \
   pango_layout_set_text (layout, txt, -1); \
   pango_layout_get_pixel_size ( \
     layout, &x_px, &y_px); \
@@ -64,7 +74,7 @@ init (AutomationModeWidget * self)
   total_width += x_px
 
   DO (READ);
-  DO (LATCH);
+  DO (RECORD);
   DO (OFF);
 
   self->width =
@@ -93,7 +103,7 @@ automation_mode_widget_new (
   pango_layout_set_font_description (
     self->layout, desc);
   pango_font_description_free (desc);
-  init (self);
+  automation_mode_widget_init (self);
 
   return self;
 }
@@ -182,7 +192,7 @@ draw_bg (
   /* draw bg with fade from last state */
   int draw_order[NUM_AUTOMATION_MODES] = {
     AUTOMATION_MODE_READ, AUTOMATION_MODE_OFF,
-    AUTOMATION_MODE_LATCH };
+    AUTOMATION_MODE_RECORD };
   for (int idx = 0; idx < NUM_AUTOMATION_MODES; idx++)
     {
       int i = draw_order[idx];
@@ -224,7 +234,7 @@ draw_bg (
           new_width +=
             self->text_widths[i + 1];
           break;
-        case AUTOMATION_MODE_LATCH:
+        case AUTOMATION_MODE_RECORD:
           rounded = 0;
           new_x +=
             self->text_widths[0] +
@@ -322,9 +332,20 @@ automation_mode_widget_draw (
         (y + self->height / 2) -
           self->text_heights[i] / 2);
       char mode_str[400];
-      automation_mode_get_localized (i, mode_str);
-      pango_layout_set_text (
-        layout, mode_str, -1);
+      if (i == AUTOMATION_MODE_RECORD)
+        {
+          automation_record_mode_get_localized (
+            self->owner->record_mode, mode_str);
+          pango_layout_set_text (
+            layout, mode_str, -1);
+        }
+      else
+        {
+          automation_mode_get_localized (
+            i, mode_str);
+          pango_layout_set_text (
+            layout, mode_str, -1);
+        }
       pango_cairo_show_layout (cr, layout);
 
       total_text_widths += self->text_widths[i];

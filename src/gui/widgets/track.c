@@ -2044,6 +2044,14 @@ multipress_released (
         automation_track_get_automation_tracklist (
           at);
       g_return_if_fail (atl);
+      if (at->automation_mode ==
+            AUTOMATION_MODE_RECORD &&
+          am->hit_mode ==
+            AUTOMATION_MODE_RECORD)
+        {
+          automation_track_swap_record_mode (at);
+          automation_mode_widget_init (am);
+        }
       at->automation_mode = am->hit_mode;
       EVENTS_PUSH (
         ET_AUTOMATION_TRACK_CHANGED, at);

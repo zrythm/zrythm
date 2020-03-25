@@ -90,11 +90,32 @@ automation_mode_get_localized (
     case AUTOMATION_MODE_READ:
       strcpy (buf, _("On"));
       break;
-    case AUTOMATION_MODE_LATCH:
+    case AUTOMATION_MODE_RECORD:
       strcpy (buf, _("Rec"));
       break;
     case AUTOMATION_MODE_OFF:
       strcpy (buf, _("Off"));
+      break;
+    default:
+      g_return_if_reached ();
+    }
+}
+
+/**
+ * Gets the automation mode as a localized string.
+ */
+void
+automation_record_mode_get_localized (
+  AutomationRecordMode mode,
+  char *         buf)
+{
+  switch (mode)
+    {
+    case AUTOMATION_RECORD_MODE_TOUCH:
+      strcpy (buf, _("Touch"));
+      break;
+    case AUTOMATION_RECORD_MODE_LATCH:
+      strcpy (buf, _("Latch"));
       break;
     default:
       g_return_if_reached ();
