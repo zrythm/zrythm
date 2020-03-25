@@ -41,6 +41,16 @@ control_port_get_val (
 }
 
 /**
+ * Returns if the control port is toggled.
+ */
+int
+control_port_is_toggled (
+  Port * self)
+{
+  return self->control > 0.001f;
+}
+
+/**
  * Converts normalized value (0.0 to 1.0) to
  * real value (eg. -10.0 to 100.0).
  */

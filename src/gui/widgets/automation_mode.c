@@ -59,7 +59,6 @@ init (AutomationModeWidget * self)
     layout, &x_px, &y_px); \
   self->text_widths[AUTOMATION_MODE_##caps] = x_px; \
   self->text_heights[AUTOMATION_MODE_##caps] = y_px; \
-  g_message ("text width for " #caps " %d", x_px); \
   if (y_px > self->max_text_height) \
     self->max_text_height = y_px; \
   total_width += x_px

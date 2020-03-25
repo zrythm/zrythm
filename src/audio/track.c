@@ -21,13 +21,14 @@
 
 #include "actions/edit_tracks_action.h"
 #include "actions/undo_manager.h"
+#include "audio/audio_group_track.h"
 #include "audio/audio_track.h"
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
 #include "audio/audio_bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
-#include "audio/audio_group_track.h"
+#include "audio/control_port.h"
 #include "audio/instrument_track.h"
 #include "audio/marker_track.h"
 #include "audio/master_track.h"
@@ -413,7 +414,7 @@ int
 track_get_muted (
   Track * self)
 {
-  return self->mute->control > 0.001f;
+  return control_port_is_toggled (self->mute);
 }
 
 /**

@@ -82,8 +82,10 @@ G_DEFINE_TYPE (
 
 #ifdef _WOE32
 #define NAME_FONT "9"
+#define AUTOMATABLE_NAME_FONT "8.5"
 #else
 #define NAME_FONT "10"
+#define AUTOMATABLE_NAME_FONT "9.5"
 #endif
 
 /**
@@ -720,7 +722,8 @@ draw_automation (
             /*at->index, at->automatable->label);*/
           custom_button_widget_set_text (
             cb, self->layout,
-            at->port_id.label);
+            at->port_id.label,
+            AUTOMATABLE_NAME_FONT);
           at->num_top_left_buttons = 1;
         }
       if (at->num_top_right_buttons == 0)
@@ -2030,7 +2033,7 @@ multipress_released (
             }
         }
     }
-  if (self->clicked_am)
+  else if (self->clicked_am)
     {
       AutomationModeWidget * am =
         self->clicked_am;

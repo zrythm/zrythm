@@ -129,6 +129,8 @@ typedef struct CustomButtonWidget
    */
   char *             text;
 
+  int                text_height;
+
   /** Cache layout for drawing the text. */
   PangoLayout *      layout;
 
@@ -180,12 +182,16 @@ custom_button_widget_draw_with_text (
 
 /**
  * Sets the text and layout to draw the text width.
+ *
+ * @param font_descr Font description to set the
+ *   pango layout font to.
  */
 void
 custom_button_widget_set_text (
   CustomButtonWidget * self,
   PangoLayout *        layout,
-  char *               text);
+  char *               text,
+  const char *         font_descr);
 
 void
 custom_button_widget_free (

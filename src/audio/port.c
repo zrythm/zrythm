@@ -1867,6 +1867,13 @@ port_forward_control_change_event (
         ET_CHANNEL_FADER_VAL_CHANGED,
         track->channel);
     }
+  else if (self->id.owner_type ==
+             PORT_OWNER_TYPE_TRACK)
+    {
+      Track * track = port_get_track (self, 1);
+      EVENTS_PUSH (
+        ET_TRACK_STATE_CHANGED, track);
+    }
 }
 
 /**

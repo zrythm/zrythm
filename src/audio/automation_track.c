@@ -256,24 +256,6 @@ automation_track_set_index (
       region->id.at_idx = index;
       region_update_identifier (region);
     }
-
-  Track * track =
-    automation_track_get_track (self);
-  if (self->top_left_buttons[0] &&
-      track && track->widget &&
-      track->widget->layout)
-    {
-      char * text =
-        g_strdup_printf (
-          /*"%d - %s",*/
-          "%s",
-          /*self->index, */
-          self->port_id.label);
-      custom_button_widget_set_text (
-        self->top_left_buttons[0],
-        track->widget->layout, text);
-      g_free (text);
-    }
 }
 
 /**

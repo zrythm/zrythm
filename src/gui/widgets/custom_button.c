@@ -206,7 +206,8 @@ custom_button_widget_draw_with_text (
   cairo_set_source_rgba (
     cr, 1, 1, 1, 1);
   cairo_move_to (
-    cr, x + self->size + 2, y);
+    cr, x + self->size + 2,
+    (y + self->size / 2) - self->text_height / 2);
   PangoLayout * layout = self->layout;
   pango_layout_set_text (
     layout, self->text, -1);
@@ -216,16 +217,30 @@ custom_button_widget_draw_with_text (
   self->last_state = state;
 }
 
+/**
+ * Sets the text and layout to draw the text width.
+ *
+ * @param font_descr Font description to set the
+ *   pango layout font to.
+ */
 void
 custom_button_widget_set_text (
   CustomButtonWidget * self,
   PangoLayout *        layout,
-  char *               text)
+  char *               text,
+  const char *         font_descr)
 {
   g_return_if_fail (text && layout);
 
   self->text = g_strdup (text);
   self->layout = pango_layout_copy (layout);
+  PangoFontDescription * desc =
+    pango_font_description_from_string (font_descr);
+  pango_layout_set_font_description (
+    self->layout, desc);
+  pango_font_description_free (desc);
+  pango_layout_get_pixel_size (
+    self->layout, NULL, &self->text_height);
 }
 
 void
