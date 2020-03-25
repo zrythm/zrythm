@@ -24,6 +24,7 @@ widget_srcs = files([
   'automatable_selector_popover.c',
   'automation_arranger.c',
   'automation_editor_space.c',
+  'automation_mode.c',
   'automation_point.c',
   #'automation_region.c',
   'balance_control.c',

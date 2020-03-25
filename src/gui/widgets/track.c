@@ -30,6 +30,7 @@
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automatable_selector_popover.h"
+#include "gui/widgets/automation_mode.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -206,6 +207,48 @@ get_hovered_button (
                   cb = at->bot_right_buttons[j];
                   RETURN_IF_HOVERED;
                 }
+            }
+        }
+    }
+  return NULL;
+}
+
+static AutomationModeWidget *
+get_hovered_am_widget (
+  TrackWidget * self,
+  int           x,
+  int           y)
+{
+#define IS_BUTTON_HOVERED \
+  (x >= cb->x && \
+   x <= cb->x + \
+     (cb->width ? cb->width : BUTTON_SIZE) && \
+   y >= cb->y && y <= cb->y + BUTTON_SIZE)
+#define RETURN_IF_HOVERED \
+  if (IS_BUTTON_HOVERED) return cb;
+
+  Track * track = self->track;
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  if (atl && track->automation_visible)
+    {
+      for (int i = 0; i < atl->num_ats; i++)
+        {
+          AutomationTrack * at = atl->ats[i];
+
+          /* skip invisible automation tracks */
+          if (!at->visible)
+            continue;
+
+          AutomationModeWidget * am = at->am_widget;
+          if (!am)
+            continue;
+          if (x >= am->x &&
+              x <= am->x + am->width &&
+              y >= am->y &&
+              y <= am->y + BUTTON_SIZE)
+            {
+              return am;
             }
         }
     }
@@ -694,6 +737,7 @@ draw_automation (
         }
       if (at->num_bot_left_buttons == 0)
         {
+#if 0
           at->bot_left_buttons[0] =
             custom_button_widget_new (
               ICON_NAME_WRITE_AUTOMATION,
@@ -717,6 +761,13 @@ draw_automation (
             CUSTOM_BUTTON_WIDGET_OWNER_AT;
           cb->owner = at;
           at->num_bot_left_buttons = 2;
+#endif
+        }
+      if (!at->am_widget)
+        {
+          at->am_widget =
+            automation_mode_widget_new (
+              BUTTON_SIZE, self->layout, at);
         }
       if (at->num_bot_right_buttons == 0)
         {
@@ -740,6 +791,10 @@ draw_automation (
       /* draw top left buttons */
       CustomButtonWidget * hovered_cb =
         get_hovered_button (
+          self, (int) self->last_x,
+          (int) self->last_y);
+      AutomationModeWidget * hovered_am =
+        get_hovered_am_widget (
           self, (int) self->last_x,
           (int) self->last_y);
       for (int j = 0; j < at->num_top_left_buttons;
@@ -849,57 +904,42 @@ draw_automation (
       if (BOT_BUTTONS_SHOULD_BE_VISIBLE (
             at->height))
         {
-          for (int j = 0; j < at->num_bot_left_buttons;
-               j++)
+          /* automation mode */
+          AutomationModeWidget * am = at->am_widget;
+
+          am->x =
+            BUTTON_PADDING_FROM_EDGE +
+            COLOR_AREA_WIDTH;
+          am->y =
+            (total_height + at->height) -
+              (BUTTON_PADDING_FROM_EDGE +
+               BUTTON_SIZE);
+
+          CustomButtonWidgetState state =
+            CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
+          if (self->clicked_am == am)
             {
-              cb =
-                at->bot_left_buttons[j];
-
-              cb->x =
-                BUTTON_PADDING_FROM_EDGE +
-                COLOR_AREA_WIDTH +
-                j * (BUTTON_SIZE + BUTTON_PADDING);
-              cb->y =
-                (total_height + at->height) -
-                  (BUTTON_PADDING_FROM_EDGE +
-                   BUTTON_SIZE);
-
-              CustomButtonWidgetState state =
-                CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
-
-              if (cb == self->clicked_button ||
-                  (string_is_equal (
-                     cb->icon_name,
-                     ICON_NAME_READ_AUTOMATION,
-                     0) &&
-                   at->read) ||
-                  (string_is_equal (
-                     cb->icon_name,
-                     ICON_NAME_WRITE_AUTOMATION,
-                     0) &&
-                   at->write))
-                {
-                  /* currently clicked button */
-                  state =
-                    CUSTOM_BUTTON_WIDGET_STATE_ACTIVE;
-                }
-              else if (hovered_cb == cb)
-                {
-                  state =
-                    CUSTOM_BUTTON_WIDGET_STATE_HOVERED;
-                }
-
-              if (state != cb->last_state)
-                {
-                  /* add another cycle to draw
-                   * transition */
-                  self->redraw =
-                    CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES;
-                  track_widget_force_redraw (self);
-                }
-              custom_button_widget_draw (
-                cb, cr, cb->x, cb->y, state);
+              /* currently clicked button */
+              state =
+                CUSTOM_BUTTON_WIDGET_STATE_ACTIVE;
             }
+          else if (hovered_am == am)
+            {
+              state =
+                CUSTOM_BUTTON_WIDGET_STATE_HOVERED;
+            }
+
+          if (state != cb->last_state)
+            {
+              /* add another cycle to draw
+               * transition */
+              self->redraw =
+                CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES;
+              track_widget_force_redraw (self);
+            }
+          automation_mode_widget_draw (
+            am, cr, am->x, am->y,
+            self->last_x, state);
 
           for (int j = 0;
                j < at->num_bot_right_buttons;
@@ -917,7 +957,7 @@ draw_automation (
                   (BUTTON_PADDING_FROM_EDGE +
                    BUTTON_SIZE);
 
-              CustomButtonWidgetState state =
+              state =
                 CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
 
               if (cb == self->clicked_button)
@@ -1119,6 +1159,9 @@ on_motion (
       CustomButtonWidget * cb =
         get_hovered_button (
           self, (int) event->x, (int) event->y);
+      AutomationModeWidget * am =
+        get_hovered_am_widget (
+          self, (int) event->x, (int) event->y);
       int val =
         self->track->main_height - (int) event->y;
       int resizing_track =
@@ -1129,7 +1172,7 @@ on_motion (
         get_lane_to_resize (self, (int) event->y);
       if (self->resizing)
         self->resize = 1;
-      else if (!cb && resizing_track)
+      else if (!cb && !am && resizing_track)
         {
           self->resize = 1;
           self->resize_target_type =
@@ -1137,7 +1180,7 @@ on_motion (
           self->resize_target = self->track;
           /*g_message ("RESIZING TRACK");*/
         }
-      else if (!cb && resizing_at)
+      else if (!cb && !am && resizing_at)
         {
           self->resize = 1;
           self->resize_target_type =
@@ -1147,7 +1190,7 @@ on_motion (
             /*"RESIZING AT %s",*/
             /*resizing_at->automatable->label);*/
         }
-      else if (!cb && resizing_lane)
+      else if (!cb && !am && resizing_lane)
         {
           self->resize = 1;
           self->resize_target_type =
@@ -1792,10 +1835,13 @@ multipress_pressed (
 
   CustomButtonWidget * cb =
     get_hovered_button (self, (int) x, (int) y);
-  if (cb)
+  AutomationModeWidget * am =
+    get_hovered_am_widget (self, (int) x, (int) y);
+  if (cb || am)
     {
       self->button_pressed = 1;
       self->clicked_button = cb;
+      self->clicked_am = am;
     }
   else
     {
@@ -1937,6 +1983,7 @@ multipress_released (
                     at);
                 }
             }
+#if 0
           else if (
             string_is_equal (
               cb->icon_name,
@@ -1955,6 +2002,7 @@ multipress_released (
               EVENTS_PUSH (
                 ET_AUTOMATION_TRACK_CHANGED, at);
             }
+#endif
           else if (
             string_is_equal (
               cb->icon_name,
@@ -1982,6 +2030,21 @@ multipress_released (
             }
         }
     }
+  if (self->clicked_am)
+    {
+      AutomationModeWidget * am =
+        self->clicked_am;
+      AutomationTrack * at =
+        (AutomationTrack *) am->owner;
+      g_return_if_fail (at);
+      AutomationTracklist * atl =
+        automation_track_get_automation_tracklist (
+          at);
+      g_return_if_fail (atl);
+      at->automation_mode = am->hit_mode;
+      EVENTS_PUSH (
+        ET_AUTOMATION_TRACK_CHANGED, at);
+    }
   else if (n_press == 2)
     {
       /* show popup to edit the name */
@@ -1990,6 +2053,7 @@ multipress_released (
 
   self->button_pressed = 0;
   self->clicked_button = NULL;
+  self->clicked_am = NULL;
   track_widget_force_redraw (self);
 }
 

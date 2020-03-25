@@ -36,6 +36,25 @@ typedef struct AutomationTracklist
   AutomationTracklist;
 typedef struct CustomButtonWidget
   CustomButtonWidget;
+typedef struct AutomationModeWidget
+  AutomationModeWidget;
+
+typedef enum AutomationMode
+{
+  AUTOMATION_MODE_READ,
+  AUTOMATION_MODE_LATCH,
+  AUTOMATION_MODE_OFF,
+  NUM_AUTOMATION_MODES,
+} AutomationMode;
+
+static const cyaml_strval_t
+automation_mode_strings[] =
+{
+  { "Read",     AUTOMATION_MODE_READ    },
+  { "Rec",    AUTOMATION_MODE_LATCH   },
+  { "Off",      AUTOMATION_MODE_OFF   },
+  { "<invalid>",   NUM_AUTOMATION_MODES   },
+};
 
 typedef struct AutomationTrack
 {
@@ -68,11 +87,8 @@ typedef struct AutomationTrack
   /** Position of multipane handle. */
   int               height;
 
-  /** Whether record mode is on. */
-  int               read;
-
-  /** Whether write mode is on. */
-  int               write;
+  /** Automation mode. */
+  AutomationMode    automation_mode;
 
   /** Buttons used by the track widget */
   CustomButtonWidget * top_right_buttons[8];
@@ -81,6 +97,10 @@ typedef struct AutomationTrack
   int                  num_top_left_buttons;
   CustomButtonWidget * bot_right_buttons[8];
   int                  num_bot_right_buttons;
+
+  /** Automation mode button group. */
+  AutomationModeWidget * am_widget;
+
   CustomButtonWidget * bot_left_buttons[8];
   int                  num_bot_left_buttons;
 
@@ -100,10 +120,9 @@ static const cyaml_schema_field_t
     AutomationTrack, regions, region_schema),
   YAML_FIELD_INT (
     AutomationTrack, created),
-  YAML_FIELD_INT (
-    AutomationTrack, read),
-  YAML_FIELD_INT (
-    AutomationTrack, write),
+  YAML_FIELD_ENUM (
+    AutomationTrack, automation_mode,
+    automation_mode_strings),
   YAML_FIELD_INT (
     AutomationTrack, visible),
   YAML_FIELD_INT (
@@ -132,6 +151,14 @@ automation_track_init_loaded (
 AutomationTrack *
 automation_track_new (
   Port * port);
+
+/**
+ * Gets the automation mode as a localized string.
+ */
+void
+automation_mode_get_localized (
+  AutomationMode mode,
+  char *         buf);
 
 AutomationTracklist *
 automation_track_get_automation_tracklist (

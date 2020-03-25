@@ -157,6 +157,7 @@ inc/gui/widgets/control_room.h
 inc/gui/widgets/splash.h
 inc/gui/widgets/chord_arranger_bg.h
 inc/gui/widgets/midi_arranger.h
+inc/gui/widgets/automation_mode.h
 inc/gui/widgets/chord_pad.h
 inc/gui/widgets/first_run_assistant.h
 inc/gui/widgets/timeline_minimap_bg.h
@@ -284,6 +285,7 @@ inc/audio/curve.h
 inc/audio/automation_region.h
 inc/audio/control_port.h
 inc/audio/midi_mapping.h
+inc/audio/rtaudio_device.h
 inc/audio/mixer.h
 inc/audio/windows_mmcss.h
 inc/audio/pool.h
@@ -377,7 +379,6 @@ src/gui/widgets/selection_info.c
 src/gui/widgets/port_connections_popover.c
 src/gui/widgets/chord_track.c
 src/gui/widgets/custom_button.c
-src/gui/widgets/automation_track.c
 src/gui/widgets/inspector_plugin.c
 src/gui/widgets/chord_arranger_bg.c
 src/gui/widgets/quantize_dialog.c
@@ -482,6 +483,7 @@ src/gui/widgets/bar_slider.c
 src/gui/widgets/timeline_panel.c
 src/gui/widgets/timeline_toolbar.c
 src/gui/widgets/event_viewer.c
+src/gui/widgets/automation_mode.c
 src/gui/widgets/ports_expander.c
 src/gui/widgets/arranger_playhead.c
 src/gui/widgets/foldable_notebook.c
@@ -606,6 +608,7 @@ src/audio/track_lane.c
 src/audio/marker.c
 src/audio/engine_rtmidi.c
 src/audio/position.c
+src/audio/rtaudio_device.c
 src/audio/midi.c
 src/audio/velocity.c
 src/audio/snap_grid.c

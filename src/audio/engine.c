@@ -754,7 +754,8 @@ engine_process_prepare (
         {
           at = atl->ats[j];
 
-          if (!at->read)
+          if (at->automation_mode ==
+                AUTOMATION_MODE_OFF)
             continue;
 
           /* FIXME passing playhead doesn't take

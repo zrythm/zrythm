@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-03-19 15:28+0000\n"
+"POT-Creation-Date: 2020-03-25 15:53+0000\n"
 "PO-Revision-Date: 2020-03-14 19:36+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -151,6 +151,7 @@ msgid ""
 "\n"
 "Examples:\n"
 "  zrythm -v       print version\n"
+"  zrythm -p --pretty  pretty-print current settings\n"
 "\n"
 "Report bugs to %s\n"
 msgstr ""
@@ -168,12 +169,12 @@ msgstr ""
 
 #. getopt_long already printed an error
 #. * message
-#: src/main.c:315
+#: src/main.c:316
 #, c-format
 msgid "Unknown option\n"
 msgstr "Opción descoñecida\n"
 
-#: src/main.c:331
+#: src/main.c:333
 #, c-format
 msgid ""
 "Zrythm-%s Copyright (C) 2018-2020 Alexandros Theodotou\n"
@@ -249,7 +250,7 @@ msgstr "Tipo de widget descoñecido para o valor"
 msgid "Unknown widget type for value\n"
 msgstr "Tipo de widget descoñecido para o valor\n"
 
-#: src/plugins/lv2/lv2_gtk.c:1216
+#: src/plugins/lv2/lv2_gtk.c:1224
 msgid "Close"
 msgstr "Pechar"
 
@@ -281,35 +282,35 @@ msgstr "Largura da nota"
 msgid "note type"
 msgstr "Tipo de nota"
 
-#: src/gui/widgets/inspector_port.c:174 resources/ui/bind_cc_dialog.ui:27
+#: src/gui/widgets/inspector_port.c:175 resources/ui/bind_cc_dialog.ui:27
 msgid "Bind MIDI CC"
 msgstr "Enlazar MIDI CC"
 
-#: src/gui/widgets/inspector_port.c:184 src/gui/widgets/midi_arranger.c:608
+#: src/gui/widgets/inspector_port.c:185 src/gui/widgets/midi_arranger.c:608
 msgid "View info"
 msgstr "Ver información"
 
-#: src/gui/widgets/inspector_port.c:353
+#: src/gui/widgets/inspector_port.c:360
 msgid "Incoming signals"
 msgstr "Sinais entrantes"
 
-#: src/gui/widgets/inspector_port.c:354
+#: src/gui/widgets/inspector_port.c:361
 msgid "Outgoing signals"
 msgstr "Sinais Saíntes"
 
-#: src/gui/widgets/inspector_port.c:366
+#: src/gui/widgets/inspector_port.c:373
 msgid "Current val"
 msgstr "Valor actual"
 
-#: src/gui/widgets/inspector_port.c:368
+#: src/gui/widgets/inspector_port.c:375
 msgid "Min"
 msgstr "Mín"
 
-#: src/gui/widgets/inspector_port.c:369
+#: src/gui/widgets/inspector_port.c:376
 msgid "Max"
 msgstr "Máx"
 
-#: src/gui/widgets/inspector_port.c:481
+#: src/gui/widgets/inspector_port.c:496
 msgid "Expose port to JACK"
 msgstr "Expor porto a JACK"
 
@@ -329,7 +330,7 @@ msgstr "Saída Directa"
 msgid "Track Properties"
 msgstr "Propiedades da Pista"
 
-#: src/gui/widgets/channel.c:1009
+#: src/gui/widgets/channel.c:1011
 msgid "Inserts"
 msgstr "Insercións"
 
@@ -661,6 +662,26 @@ msgstr "Categoría"
 msgid "Protocol"
 msgstr "Protocolo"
 
+#: src/gui/widgets/bot_bar.c:81
+#, fuzzy
+msgid "Audio backend"
+msgstr "Backend de Audio"
+
+#: src/gui/widgets/bot_bar.c:84
+#, fuzzy
+msgid "MIDI backend"
+msgstr "Backend de MIDI"
+
+#: src/gui/widgets/bot_bar.c:87
+#, fuzzy
+msgid "Audio buffer size"
+msgstr "Tamaño do Buffer"
+
+#: src/gui/widgets/bot_bar.c:89
+#, fuzzy
+msgid "Sample rate"
+msgstr "Razón de samples"
+
 #: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:59
 #: resources/ui/quantize_dialog.ui:143
 msgid "start"
@@ -722,12 +743,12 @@ msgstr ""
 msgid "Export as MIDI file"
 msgstr "Seleccionar ficheiro MIDI"
 
-#: src/gui/widgets/timeline_arranger.c:1371 src/gui/widgets/track.c:1547
+#: src/gui/widgets/timeline_arranger.c:1371 src/gui/widgets/track.c:1592
 #, fuzzy
 msgid "Quick bounce"
 msgstr "Cuantización Rápida"
 
-#: src/gui/widgets/timeline_arranger.c:1382 src/gui/widgets/track.c:1559
+#: src/gui/widgets/timeline_arranger.c:1382 src/gui/widgets/track.c:1604
 msgid "Bounce..."
 msgstr ""
 
@@ -957,7 +978,7 @@ msgstr "Valor"
 msgid "Curviness"
 msgstr "Curvatura"
 
-#: src/gui/widgets/ports_expander.c:175
+#: src/gui/widgets/ports_expander.c:175 src/gui/widgets/ports_expander.c:377
 msgid "Controls"
 msgstr "Controis"
 
@@ -989,19 +1010,19 @@ msgstr "Entradas CV"
 msgid "CV Outs"
 msgstr "Saídas CV"
 
-#: src/gui/widgets/ports_expander.c:377
+#: src/gui/widgets/ports_expander.c:384
 msgid "Sends"
 msgstr "Envíos"
 
-#: src/gui/widgets/ports_expander.c:384
+#: src/gui/widgets/ports_expander.c:391
 msgid "Stereo In"
 msgstr "Entrada Estéreo"
 
-#: src/gui/widgets/ports_expander.c:391
+#: src/gui/widgets/ports_expander.c:398
 msgid "MIDI In"
 msgstr "Entrada MIDI"
 
-#: src/gui/widgets/ports_expander.c:399
+#: src/gui/widgets/ports_expander.c:406
 msgid "MIDI Out"
 msgstr "Saída MIDI"
 
@@ -1083,66 +1104,66 @@ msgstr "Alternar Panel Superior"
 msgid "Toggle Right Panel"
 msgstr "Alternar Panel Dereito"
 
-#: src/gui/widgets/track.c:523 src/audio/track_lane.c:68
+#: src/gui/widgets/track.c:566 src/audio/track_lane.c:68
 #, c-format
 msgid "Lane %d"
 msgstr "Estaxe %d"
 
-#: src/gui/widgets/track.c:1469
+#: src/gui/widgets/track.c:1514
 msgid "_Delete Track"
 msgstr "_Eliminar Pista"
 
-#: src/gui/widgets/track.c:1472
+#: src/gui/widgets/track.c:1517
 msgid "_Delete Tracks"
 msgstr "_Eliminar Pistas"
 
-#: src/gui/widgets/track.c:1487
+#: src/gui/widgets/track.c:1532
 msgid "_Duplicate Track"
 msgstr "_Duplicar Pista"
 
-#: src/gui/widgets/track.c:1490
+#: src/gui/widgets/track.c:1535
 msgid "_Duplicate Tracks"
 msgstr "_Duplicar Pistas"
 
-#: src/gui/widgets/track.c:1508
+#: src/gui/widgets/track.c:1553
 msgid "Add Region"
 msgstr "Engadir Rexión"
 
-#: src/gui/widgets/track.c:1520
+#: src/gui/widgets/track.c:1565
 msgid "Hide Track"
 msgstr "Agochar Pista"
 
-#: src/gui/widgets/track.c:1521
+#: src/gui/widgets/track.c:1566
 msgid "Hide Tracks"
 msgstr "Agochar Pistas"
 
-#: src/gui/widgets/track.c:1532
+#: src/gui/widgets/track.c:1577
 msgid "Pin/Unpin Track"
 msgstr "Marcar/Desmarcar Pista"
 
-#: src/gui/widgets/track.c:1533
+#: src/gui/widgets/track.c:1578
 msgid "Pin/Unpin Tracks"
 msgstr "Ancorar/Desancorar Pistas"
 
-#: src/gui/widgets/track.c:1575
+#: src/gui/widgets/track.c:1620
 msgid "Track MIDI Ch"
 msgstr "Pista MIDI Ch"
 
-#: src/gui/widgets/track.c:1587
+#: src/gui/widgets/track.c:1632
 msgid "Passthrough input"
 msgstr "Entrada de paso"
 
-#: src/gui/widgets/track.c:1616 src/gui/widgets/track.c:1676
+#: src/gui/widgets/track.c:1661 src/gui/widgets/track.c:1721
 #, fuzzy, c-format
 msgid "MIDI Channel %d"
 msgstr "%sCanle MIDI %d"
 
-#: src/gui/widgets/track.c:1656
+#: src/gui/widgets/track.c:1701
 #, c-format
 msgid "Lane %d MIDI Ch"
 msgstr "Estaxe %d MIDI Ch"
 
-#: src/gui/widgets/track.c:1672
+#: src/gui/widgets/track.c:1717
 #, fuzzy
 msgid "Inherit"
 msgstr "%sHerdar"
@@ -1259,32 +1280,32 @@ msgstr "Esquema %s\n"
 msgid "Resetting schema %s...\n"
 msgstr "Reconfigurando esquema %s...\n"
 
-#: src/settings/settings.c:121
+#: src/settings/settings.c:124
 #, c-format
 msgid "skipping %s"
 msgstr ""
 
-#: src/settings/settings.c:132
+#: src/settings/settings.c:135
 #, fuzzy, c-format
 msgid "resetting %s to %s"
 msgstr "  reconfigurando %s a %s\n"
 
-#: src/settings/settings.c:177
+#: src/settings/settings.c:180
 #, c-format
 msgid "Failed to find schema %s. Zrythm is likely not installed"
 msgstr "Erro ao buscar o esquema %s. Zrythm asemella non instalado"
 
-#: src/settings/settings.c:192
+#: src/settings/settings.c:195
 #, c-format
 msgid "Failed to view schema %s"
 msgstr "Erro ao ver o esquema %s"
 
-#: src/settings/settings.c:199
+#: src/settings/settings.c:202
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr "Erro ao reiniciar o esquema %s"
 
-#: src/settings/settings.c:232
+#: src/settings/settings.c:235
 #, c-format
 msgid ""
 "This will reset Zrythm to factory settings. You will lose all your "
@@ -1293,12 +1314,12 @@ msgstr ""
 "Isto devolverá a Zrythm á configuración de fábrica. Perderas todas as túas "
 "preferencias. Escribe 'y' para continuar: "
 
-#: src/settings/settings.c:238
+#: src/settings/settings.c:241
 #, c-format
 msgid "Aborting...\n"
 msgstr "Cancelando...\n"
 
-#: src/settings/settings.c:249
+#: src/settings/settings.c:252
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr "Volta á configuración de fábrica con éxito\n"
@@ -1310,6 +1331,19 @@ msgstr "Piano Roll"
 #: src/audio/chord_track.c:54 resources/ui/inspector_chord.ui:31
 msgid "Chords"
 msgstr "Acordes"
+
+#: src/audio/automation_track.c:91
+msgid "Read"
+msgstr ""
+
+#: src/audio/automation_track.c:94
+#, fuzzy
+msgid "Rec"
+msgstr "Gravar"
+
+#: src/audio/automation_track.c:97
+msgid "Off"
+msgstr ""
 
 #: src/audio/marker_track.c:53
 msgid "Markers"
@@ -1413,23 +1447,24 @@ msgstr "Non implementado"
 msgid "Volume"
 msgstr "Volume"
 
-#: src/audio/fader.c:125
-msgid "Balance control"
+#: src/audio/fader.c:126
+#, fuzzy
+msgid "Balance"
 msgstr "Control de Balance"
 
-#: src/audio/fader.c:138
+#: src/audio/fader.c:139
 msgid "Fader in"
 msgstr "Entrada do Fader"
 
-#: src/audio/fader.c:147
+#: src/audio/fader.c:148
 msgid "Fader out"
 msgstr "Saída do Fader"
 
-#: src/audio/fader.c:158
+#: src/audio/fader.c:159
 msgid "MIDI fader in"
 msgstr "Entrada MIDI do fader"
 
-#: src/audio/fader.c:171
+#: src/audio/fader.c:172
 msgid "MIDI fader out"
 msgstr "Saída Midi do Fader"
 

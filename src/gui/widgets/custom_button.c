@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "gui/widgets/custom_button.h"
@@ -136,12 +137,9 @@ draw_bg (
         (double) self->transition_frames /
           (double) CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES);
       c = mid_c;
-      gdk_cairo_set_source_rgba (
-        cr, &c);
       self->transition_frames--;
     }
-  gdk_cairo_set_source_rgba (
-    cr, &c);
+  gdk_cairo_set_source_rgba (cr, &c);
   self->last_color = c;
 
   z_cairo_rounded_rectangle (
@@ -181,7 +179,7 @@ custom_button_widget_draw (
   double               y,
   CustomButtonWidgetState    state)
 {
-  draw_bg (self, cr, x, y, self->size, 0, state);
+  draw_bg (self, cr, x, y, self->size, false, state);
 
   draw_icon_with_shadow (self, cr, x, y, state);
 
@@ -227,8 +225,7 @@ custom_button_widget_set_text (
   g_return_if_fail (text && layout);
 
   self->text = g_strdup (text);
-  self->layout =
-    pango_layout_copy (layout);
+  self->layout = pango_layout_copy (layout);
 }
 
 void

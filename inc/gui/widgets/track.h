@@ -38,6 +38,8 @@ typedef struct Track Track;
 typedef struct CustomButtonWidget CustomButtonWidget;
 typedef struct _ArrangerWidget ArrangerWidget;
 typedef struct _MeterWidget MeterWidget;
+typedef struct AutomationModeWidget
+  AutomationModeWidget;
 
 /**
  * @addtogroup widgets
@@ -150,6 +152,9 @@ typedef struct _TrackWidget
 
   /** Currently clicked button. */
   CustomButtonWidget * clicked_button;
+
+  /** Currently clicked automation mode button. */
+  AutomationModeWidget * clicked_am;
 
   GtkDrawingArea *    drawing_area;
 

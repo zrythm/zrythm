@@ -37,6 +37,8 @@
 #include "utils/flags.h"
 #include "utils/objects.h"
 
+#include <glib/gi18n.h>
+
 void
 automation_track_init_loaded (
   AutomationTrack * self)
@@ -68,11 +70,35 @@ automation_track_new (
   self->regions =
     malloc (self->regions_size *
             sizeof (ZRegion *));
-  self->read = 1;
+  self->automation_mode = AUTOMATION_MODE_READ;
 
   self->height = TRACK_DEF_HEIGHT;
 
   return self;
+}
+
+/**
+ * Gets the automation mode as a localized string.
+ */
+void
+automation_mode_get_localized (
+  AutomationMode mode,
+  char *         buf)
+{
+  switch (mode)
+    {
+    case AUTOMATION_MODE_READ:
+      strcpy (buf, _("On"));
+      break;
+    case AUTOMATION_MODE_LATCH:
+      strcpy (buf, _("Rec"));
+      break;
+    case AUTOMATION_MODE_OFF:
+      strcpy (buf, _("Off"));
+      break;
+    default:
+      g_return_if_reached ();
+    }
 }
 
 /**

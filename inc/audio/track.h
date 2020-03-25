@@ -144,6 +144,18 @@ typedef enum TrackType
   TRACK_TYPE_MIDI_GROUP,
 } TrackType;
 
+static const cyaml_strval_t
+track_type_strings[] =
+{
+  { "Instrument",     TRACK_TYPE_INSTRUMENT    },
+  { "Audio",          TRACK_TYPE_AUDIO   },
+  { "MIDI",           TRACK_TYPE_MIDI   },
+  { "Master",         TRACK_TYPE_MASTER   },
+  { "Chord",          TRACK_TYPE_CHORD   },
+  { "Audio Bus",      TRACK_TYPE_AUDIO_BUS   },
+  { "MIDI Bus",       TRACK_TYPE_MIDI_BUS   },
+};
+
 /**
  * Track to be inserted into the Project's
  * Tracklist.
@@ -351,18 +363,6 @@ typedef struct Track
 
 } Track;
 
-static const cyaml_strval_t
-track_type_strings[] =
-{
-  { "Instrument",     TRACK_TYPE_INSTRUMENT    },
-  { "Audio",          TRACK_TYPE_AUDIO   },
-  { "MIDI",           TRACK_TYPE_MIDI   },
-  { "Master",         TRACK_TYPE_MASTER   },
-  { "Chord",          TRACK_TYPE_CHORD   },
-  { "Audio Bus",      TRACK_TYPE_AUDIO_BUS   },
-  { "MIDI Bus",       TRACK_TYPE_MIDI_BUS   },
-};
-
 static const cyaml_schema_field_t
 track_fields_schema[] =
 {
@@ -370,10 +370,8 @@ track_fields_schema[] =
     "name", CYAML_FLAG_POINTER,
     Track, name,
      0, CYAML_UNLIMITED),
-  CYAML_FIELD_ENUM (
-    "type", CYAML_FLAG_DEFAULT,
-    Track, type, track_type_strings,
-    CYAML_ARRAY_LEN (track_type_strings)),
+  YAML_FIELD_ENUM (
+    Track, type, track_type_strings),
   CYAML_FIELD_INT (
     "pos", CYAML_FLAG_DEFAULT,
     Track, pos),

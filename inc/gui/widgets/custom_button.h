@@ -28,6 +28,12 @@
 
 #include <gtk/gtk.h>
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 #define CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES 9
 
 typedef enum CustomButtonWidgetState
@@ -184,5 +190,9 @@ custom_button_widget_set_text (
 void
 custom_button_widget_free (
   CustomButtonWidget * self);
+
+/**
+ * @}
+ */
 
 #endif
