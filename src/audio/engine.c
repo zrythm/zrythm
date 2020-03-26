@@ -743,6 +743,7 @@ engine_process_prepare (
   AutomationTracklist * atl;
   AutomationTrack * at;
   float val;
+  gint64 cur_time = g_get_monotonic_time ();
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       atl =
@@ -754,8 +755,9 @@ engine_process_prepare (
         {
           at = atl->ats[j];
 
-          if (at->automation_mode ==
-                AUTOMATION_MODE_OFF)
+          /* skip if not reading automation */
+          if (!automation_track_should_read_automation (
+                at, cur_time))
             continue;
 
           /* FIXME passing playhead doesn't take

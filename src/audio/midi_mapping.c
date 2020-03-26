@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,7 +29,13 @@ void
 midi_mappings_init_loaded (
   MidiMappings * self)
 {
-  /* TODO */
+  for (int i = 0; i < self->num_mappings; i++)
+    {
+      MidiMapping * mapping =  &self->mappings[i];
+      mapping->dest =
+        port_find_from_identifier (
+          &mapping->dest_id);
+    }
 }
 
 /**
@@ -43,12 +49,17 @@ midi_mappings_bind (
   ExtPort *      device_port,
   Port *         dest_port)
 {
+  g_return_if_fail (
+    self && buf && dest_port);
   MidiMapping * mapping =
     &self->mappings[self->num_mappings];
   memcpy (
     mapping->key, buf, sizeof (midi_byte_t) * 3);
-  /*mapping->device_port =*/
-    /*ext_port_clone (device_port);*/
+  if (device_port)
+    {
+      mapping->device_port =
+        ext_port_clone (device_port);
+    }
   mapping->dest_id = dest_port->id;
   mapping->dest = dest_port;
   self->num_mappings++;

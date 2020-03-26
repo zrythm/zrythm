@@ -73,24 +73,22 @@ midi_mapping_fields_schema[] =
     "key", CYAML_FLAG_DEFAULT,
     MidiMapping, key,
     &uint8_t_schema, 3),
-  CYAML_FIELD_MAPPING_PTR (
-    "device_port", CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     MidiMapping, device_port,
     ext_port_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "dest_id", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     MidiMapping, dest_id,
     port_identifier_fields_schema),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
-midi_mapping_schema =
+  midi_mapping_schema =
 {
-	CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-	  MidiMapping, midi_mapping_fields_schema),
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_DEFAULT,
+    MidiMapping, midi_mapping_fields_schema),
 };
 
 static const cyaml_schema_field_t
@@ -102,15 +100,15 @@ midi_mappings_fields_schema[] =
     &midi_mapping_schema,
     0, CYAML_UNLIMITED),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 midi_mappings_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-	  MidiMappings, midi_mappings_fields_schema),
+    MidiMappings, midi_mappings_fields_schema),
 };
 
 /**

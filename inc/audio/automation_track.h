@@ -28,6 +28,9 @@
 
 #define MAX_AUTOMATION_POINTS 1200
 
+/** Relase time in ms when in touch record mode. */
+#define AUTOMATION_RECORDING_TOUCH_REL_MS 800
+
 typedef struct Port Port;
 typedef struct _AutomationTrackWidget
   AutomationTrackWidget;
@@ -94,13 +97,17 @@ typedef struct AutomationTrack
    *
    * Being created is a precondition for this.
    */
-  int               visible;
+  bool              visible;
 
   /** Y local to track. */
   int               y;
 
   /** Position of multipane handle. */
   int               height;
+
+  /** Last value recorded in this automation
+   * track. */
+  float             last_recorded_value;
 
   /** Automation mode. */
   AutomationMode    automation_mode;
@@ -109,6 +116,20 @@ typedef struct AutomationTrack
    * \ref AutomationTrack.automation_mode is
    * set to record. */
   AutomationRecordMode    record_mode;
+
+  /**
+   * To be initialized to false when in record mode
+   * and set to true when the first change is
+   * received.
+   */
+  bool                 has_change;
+
+  /** To be set to true when recording starts and
+   * false when recording ends. */
+  bool                 recording_started;
+
+  /** Region currently recording to. */
+  ZRegion *            recording_region;
 
   /** Buttons used by the track widget */
   CustomButtonWidget * top_right_buttons[8];
@@ -188,6 +209,10 @@ automation_record_mode_get_localized (
   AutomationRecordMode mode,
   char *         buf);
 
+AutomationTrack *
+automation_track_find_from_port_id (
+  PortIdentifier * id);
+
 static inline void
 automation_track_swap_record_mode (
   AutomationTrack * self)
@@ -200,6 +225,35 @@ automation_track_swap_record_mode (
 AutomationTracklist *
 automation_track_get_automation_tracklist (
   AutomationTrack * self);
+
+/**
+ * Returns whether the automation in the automation
+ * track should be read.
+ *
+ * @param cur_time Current time from
+ *   g_get_monotonic_time() passed here to ensure
+ *   the same timestamp is used in sequential calls.
+ */
+bool
+automation_track_should_read_automation (
+  AutomationTrack * at,
+  gint64            cur_time);
+
+/**
+ * Returns if the automation track is currently
+ * recording.
+ *
+ * Returns false if in touch mode after the release
+ * time has passed.
+ *
+ * @param cur_time Current time from
+ *   g_get_monotonic_time() passed here to ensure
+ *   the same timestamp is used in sequential calls.
+ */
+bool
+automation_track_should_be_recording (
+  AutomationTrack * at,
+  gint64            cur_time);
 
 /**
  * Adds an automation ZRegion to the AutomationTrack.
@@ -273,8 +327,8 @@ automation_track_get_ap_before_pos (
   const Position *        pos);
 
 /**
- * Returns the last ZRegion before the given
- * Position.
+ * Returns the ZRegion that surrounds the
+ * given Position, if any.
  */
 ZRegion *
 automation_track_get_region_before_pos (

@@ -19,6 +19,7 @@
 
 #include "actions/arranger_selections.h"
 #include "audio/audio_region.h"
+#include "audio/automation_region.h"
 #include "audio/clip.h"
 #include "audio/engine.h"
 #include "audio/recording_event.h"
@@ -29,6 +30,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/math.h"
 #include "utils/mpmc_queue.h"
 #include "zrythm.h"
 
@@ -53,9 +55,12 @@ add_recorded_id (
 
 static void
 on_stop_recording (
-  RecordingManager * self)
+  RecordingManager * self,
+  bool               is_automation)
 {
-  g_message ("----- stopped recording");
+  g_message (
+    "%s%s", "----- stopped recording",
+    is_automation ? " (automation)" : "");
 
   /* cache the current selections */
   ArrangerSelections * prev_selections =
@@ -68,6 +73,13 @@ on_stop_recording (
   for (int i = 0; i < self->num_recorded_ids; i++)
     {
       RegionIdentifier * id = &self->recorded_ids[i];
+
+      if ((is_automation &&
+           id->type != REGION_TYPE_AUTOMATION) ||
+         (!is_automation &&
+           id->type == REGION_TYPE_AUTOMATION))
+        continue;
+
       /*region_identifier_print (id);*/
       ZRegion * region = region_find (id);
       g_return_if_fail (region);
@@ -119,6 +131,10 @@ recording_manager_handle_recording (
 {
   Track * tr =
     track_processor_get_track (track_processor);
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (tr);
+  gint64 cur_time = g_get_monotonic_time ();
+  bool stop_recording = false;
 
   if (!TRANSPORT->recording ||
       !tr->recording ||
@@ -133,7 +149,7 @@ recording_manager_handle_recording (
             object_pool_get (
               RECORDING_MANAGER->event_obj_pool);
           re->type =
-            RECORDING_EVENT_TYPE_STOP_RECORDING;
+            RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING;
           re->g_start_frames = g_start_frames;
           re->local_offset = local_offset;
           re->nframes = nframes;
@@ -141,7 +157,7 @@ recording_manager_handle_recording (
           recording_event_queue_push_back_event (
             RECORDING_MANAGER->event_queue, re);
         }
-      return;
+      stop_recording = true;
     }
   else
     {
@@ -154,7 +170,7 @@ recording_manager_handle_recording (
             object_pool_get (
               RECORDING_MANAGER->event_obj_pool);
           re->type =
-            RECORDING_EVENT_TYPE_START_RECORDING;
+            RECORDING_EVENT_TYPE_START_TRACK_RECORDING;
           re->g_start_frames = g_start_frames;
           re->local_offset = local_offset;
           re->nframes = nframes;
@@ -163,6 +179,77 @@ recording_manager_handle_recording (
             RECORDING_MANAGER->event_queue, re);
         }
     }
+
+  for (int i = 0; i < atl->num_ats; i++)
+    {
+      AutomationTrack * at = atl->ats[i];
+      if ((!TRANSPORT_IS_ROLLING ||
+           !automation_track_should_be_recording (
+              at, cur_time)) &&
+          at->recording_started)
+        {
+          /* send stop automation recording event */
+          RecordingEvent * re =
+            (RecordingEvent *)
+            object_pool_get (
+              RECORDING_MANAGER->event_obj_pool);
+          re->type =
+            RECORDING_EVENT_TYPE_STOP_AUTOMATION_RECORDING;
+          re->g_start_frames = g_start_frames;
+          re->local_offset = local_offset;
+          re->nframes = nframes;
+          port_identifier_copy (
+            &re->port_id, &at->port_id);
+          strcpy (re->track_name, tr->name);
+          recording_event_queue_push_back_event (
+            RECORDING_MANAGER->event_queue, re);
+        }
+      if (TRANSPORT_IS_ROLLING &&
+          automation_track_should_be_recording (
+            at, cur_time))
+        {
+          if (!at->recording_started)
+            {
+              /* send start recording event */
+              RecordingEvent * re =
+                (RecordingEvent *)
+                object_pool_get (
+                  RECORDING_MANAGER->event_obj_pool);
+              re->type =
+                RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING;
+              re->g_start_frames = g_start_frames;
+              re->local_offset = local_offset;
+              re->nframes = nframes;
+              port_identifier_copy (
+                &re->port_id, &at->port_id);
+              strcpy (re->track_name, tr->name);
+              recording_event_queue_push_back_event (
+                RECORDING_MANAGER->event_queue, re);
+            }
+
+          /* add recorded automation material to
+           * event queue */
+          RecordingEvent * re =
+            (RecordingEvent *)
+            object_pool_get (
+              RECORDING_MANAGER->event_obj_pool);
+          re->type =
+            RECORDING_EVENT_TYPE_AUTOMATION;
+          re->g_start_frames = g_start_frames;
+          re->local_offset = local_offset;
+          re->nframes = nframes;
+          strcpy (re->track_name, tr->name);
+          port_identifier_copy (
+            &re->port_id, &at->port_id);
+          recording_event_queue_push_back_event (
+            RECORDING_MANAGER->event_queue, re);
+        }
+    }
+
+  if (stop_recording)
+    return;
+
+  /* add recorded track material to event queue */
 
   if (track_has_piano_roll (tr))
     {
@@ -626,14 +713,184 @@ handle_midi_event (
 }
 
 static void
-handle_start_recording (
+handle_automation_event (
   RecordingEvent * ev)
+{
+  long g_start_frames = ev->g_start_frames;
+  nframes_t nframes = ev->nframes;
+  /*nframes_t local_offset = ev->local_offset;*/
+  Track * tr = track_get_from_name (ev->track_name);
+  AutomationTrack * at =
+    automation_track_find_from_port_id (
+      &ev->port_id);
+  Port * port =
+    automation_track_get_port (at);
+  float value =
+    port_get_control_value (port, false);
+  float normalized_value =
+    port_get_control_value (port, true);
+
+  /* get end position */
+  long start_frames = g_start_frames;
+  long end_frames =
+    g_start_frames + (long) nframes;
+
+  /* adjust for transport loop end */
+  int loop_met = 0;
+  nframes_t frames_till_loop = 0;
+  if ((frames_till_loop =
+         transport_is_loop_point_met (
+           TRANSPORT, g_start_frames, nframes)))
+    {
+      loop_met = 1;
+      start_frames =
+        TRANSPORT->loop_start_pos.frames;
+      end_frames =
+        (end_frames -
+           TRANSPORT->loop_end_pos.frames) +
+        start_frames;
+    }
+
+  Position start_pos, end_pos;
+  position_from_frames (
+    &start_pos, start_frames);
+  position_from_frames (
+    &end_pos, end_frames);
+
+  /* get the recording region */
+  ZRegion * region =
+    automation_track_get_region_before_pos (
+      at, &start_pos);
+  if (!region)
+    {
+      /* create region */
+      region =
+        automation_region_new (
+          &start_pos, &end_pos, tr->pos,
+          at->index, at->num_regions);
+      g_return_if_fail (region);
+      track_add_region (
+        tr, region, at, -1,
+        F_GEN_NAME, F_PUBLISH_EVENTS);
+
+      add_recorded_id (
+        RECORDING_MANAGER, region);
+    }
+  at->recording_region = region;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
+
+  /* the region before the loop point, if
+   * loop point is met */
+  ZRegion * region_before_loop_end = NULL;
+
+  if (loop_met)
+    {
+      region_before_loop_end = region;
+
+      /* set current region end pos  to
+       * transport loop end */
+      arranger_object_end_pos_setter (
+        r_obj, &TRANSPORT->loop_end_pos);
+      r_obj->end_pos.frames =
+        TRANSPORT->loop_end_pos.frames;
+
+      position_from_frames (
+        &r_obj->loop_end_pos,
+        r_obj->end_pos.frames -
+          r_obj->pos.frames);
+
+      /* start new region in new lane at
+       * TRANSPORT loop start */
+      ZRegion * new_region =
+        automation_track_get_region_before_pos (
+          at, &TRANSPORT->loop_start_pos);
+      if (!new_region)
+        {
+          /* create region */
+          new_region =
+            automation_region_new (
+              &TRANSPORT->loop_start_pos,
+              &end_pos, tr->pos,
+              at->index, at->num_regions);
+          g_return_if_fail (new_region);
+          track_add_region (
+            tr, new_region, at, -1,
+            F_GEN_NAME, F_PUBLISH_EVENTS);
+        }
+      region = new_region;
+      add_recorded_id (
+        RECORDING_MANAGER, new_region);
+    }
+  else /* loop not met */
+    {
+      /* set region end pos */
+      arranger_object_end_pos_setter (
+        r_obj, &end_pos);
+      r_obj->end_pos.frames =
+        end_pos.frames;
+
+      position_from_frames (
+        &r_obj->loop_end_pos,
+        r_obj->end_pos.frames -
+          r_obj->pos.frames);
+    }
+
+  at->recording_region = region;
+
+  if (loop_met)
+    {
+      /* handle the samples until loop end */
+      if (region_before_loop_end)
+        {
+          if (!math_floats_equal (
+                value, at->last_recorded_value))
+            {
+              AutomationPoint * ap =
+                automation_point_new_float (
+                  value, normalized_value,
+                  &start_pos);
+              automation_region_add_ap (
+                region_before_loop_end, ap, true);
+            }
+          at->last_recorded_value = value;
+        }
+
+      /* handle samples after loop start */
+      AutomationPoint * ap =
+        automation_point_new_float (
+          value, normalized_value,
+          &TRANSPORT->loop_start_pos);
+      automation_region_add_ap (
+        region, ap, true);
+    }
+  else
+    {
+      /* handle the samples normally */
+      if (!math_floats_equal (
+            value, at->last_recorded_value))
+        {
+          AutomationPoint * ap =
+            automation_point_new_float (
+              value, normalized_value,
+              &start_pos);
+          automation_region_add_ap (
+            region, ap, true);
+        }
+      at->last_recorded_value = value;
+    }
+}
+
+static void
+handle_start_recording (
+  RecordingEvent * ev,
+  bool             is_automation)
 {
   Track * tr = track_get_from_name (ev->track_name);
 
   /* this could be called multiple times, ignore
    * if already processed */
-  if (tr->recording_region)
+  if (tr->recording_region && !is_automation)
     {
       g_message ("record start already processed");
       return;
@@ -663,39 +920,47 @@ handle_start_recording (
   position_from_frames (
     &end_pos, end_frames);
 
-  if (track_has_piano_roll (tr))
+  if (is_automation)
     {
-      /* create region */
-      int new_lane_pos = tr->num_lanes - 1;
-      ZRegion * region =
-        midi_region_new (
-          &start_pos, &end_pos, tr->pos,
-          new_lane_pos,
-          tr->lanes[new_lane_pos]->num_regions);
-      g_return_if_fail (region);
-      track_add_region (
-        tr, region, NULL, new_lane_pos,
-        F_GEN_NAME, F_PUBLISH_EVENTS);
-
-      tr->recording_region = region;
-      add_recorded_id (RECORDING_MANAGER, region);
+      /* nothing, wait for event to start
+       * writing data */
     }
-  else if (tr->type == TRACK_TYPE_AUDIO)
+  else
     {
-      /* create region */
-      int new_lane_pos = tr->num_lanes - 1;
-      ZRegion * region =
-        audio_region_new (
-          -1, NULL, NULL, ev->nframes, 2,
-          &start_pos, tr->pos, new_lane_pos,
-          tr->lanes[new_lane_pos]->num_regions);
-      g_return_if_fail (region);
-      track_add_region (
-        tr, region, NULL, new_lane_pos,
-        F_GEN_NAME, F_PUBLISH_EVENTS);
+      if (track_has_piano_roll (tr))
+        {
+          /* create region */
+          int new_lane_pos = tr->num_lanes - 1;
+          ZRegion * region =
+            midi_region_new (
+              &start_pos, &end_pos, tr->pos,
+              new_lane_pos,
+              tr->lanes[new_lane_pos]->num_regions);
+          g_return_if_fail (region);
+          track_add_region (
+            tr, region, NULL, new_lane_pos,
+            F_GEN_NAME, F_PUBLISH_EVENTS);
 
-      tr->recording_region = region;
-      add_recorded_id (RECORDING_MANAGER, region);
+          tr->recording_region = region;
+          add_recorded_id (RECORDING_MANAGER, region);
+        }
+      else if (tr->type == TRACK_TYPE_AUDIO)
+        {
+          /* create region */
+          int new_lane_pos = tr->num_lanes - 1;
+          ZRegion * region =
+            audio_region_new (
+              -1, NULL, NULL, ev->nframes, 2,
+              &start_pos, tr->pos, new_lane_pos,
+              tr->lanes[new_lane_pos]->num_regions);
+          g_return_if_fail (region);
+          track_add_region (
+            tr, region, NULL, new_lane_pos,
+            F_GEN_NAME, F_PUBLISH_EVENTS);
+
+          tr->recording_region = region;
+          add_recorded_id (RECORDING_MANAGER, region);
+        }
     }
 }
 
@@ -738,28 +1003,62 @@ events_process (void * data)
           /*g_message ("-------- RECORD AUDIO");*/
           handle_audio_event (ev);
           break;
-        case RECORDING_EVENT_TYPE_STOP_RECORDING:
-          g_message ("-------- STOP RECORDING");
+        case RECORDING_EVENT_TYPE_AUTOMATION:
+          g_message ("-------- RECORD AUTOMATION");
+          handle_automation_event (ev);
+          break;
+        case RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING:
+          g_message ("-------- STOP TRACK RECORDING");
           {
             Track * track =
               track_get_from_name (ev->track_name);
             g_warn_if_fail (track);
-            if (self->is_recording == 1)
+            if (self->is_recording)
               {
-                on_stop_recording (self);
+                on_stop_recording (self, false);
               }
             self->is_recording = 0;
             track->recording_region = NULL;
           }
           break;
-        case RECORDING_EVENT_TYPE_START_RECORDING:
-          g_message ("-------- START_RECORDING");
+        case RECORDING_EVENT_TYPE_STOP_AUTOMATION_RECORDING:
+          g_message ("-------- STOP AUTOMATION RECORDING");
+          {
+            AutomationTrack * at =
+              automation_track_find_from_port_id (
+                &ev->port_id);
+            g_warn_if_fail (at);
+            if (at->recording_started)
+              {
+                on_stop_recording (self, true);
+              }
+            at->recording_started = false;
+            at->recording_region = NULL;
+            at->has_change = false;
+          }
+          break;
+        case RECORDING_EVENT_TYPE_START_TRACK_RECORDING:
+          g_message ("-------- START TRACK RECORDING");
           if (!self->is_recording)
             {
               self->num_recorded_ids = 0;
             }
           self->is_recording = 1;
-          handle_start_recording (ev);
+          handle_start_recording (ev, false);
+          break;
+        case RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING:
+          g_message ("-------- START AUTOMATION RECORDING");
+          {
+            AutomationTrack * at =
+              automation_track_find_from_port_id (
+                &ev->port_id);
+            g_warn_if_fail (at);
+            if (!at->recording_started)
+              {
+                handle_start_recording (ev, true);
+              }
+            at->recording_started = true;
+          }
           break;
         default:
           g_warning (

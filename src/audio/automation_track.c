@@ -216,6 +216,90 @@ automation_track_get_ap_before_pos (
   return NULL;
 }
 
+AutomationTrack *
+automation_track_find_from_port_id (
+  PortIdentifier * id)
+{
+  Port * port = port_find_from_identifier (id);
+  g_return_val_if_fail (port, NULL);
+
+  Track * track = port_get_track (port, 1);
+  g_return_val_if_fail (track, NULL);
+
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  for (int i = 0; i < atl->num_ats; i++)
+    {
+      AutomationTrack * at = atl->ats[i];
+      if (port_identifier_is_equal (
+            id, &at->port_id))
+        return at;
+    }
+
+  return NULL;
+}
+
+/**
+ * Returns whether the automation in the automation
+ * track should be read.
+ *
+ * @param cur_time Current time from
+ *   g_get_monotonic_time() passed here to ensure
+ *   the same timestamp is used in sequential calls.
+ */
+bool
+automation_track_should_read_automation (
+  AutomationTrack * at,
+  gint64            cur_time)
+{
+  if (at->automation_mode == AUTOMATION_MODE_OFF)
+    return false;
+
+  if (automation_track_should_be_recording (
+        at, cur_time))
+    return false;
+
+  return true;
+}
+
+/**
+ * Returns if the automation track is currently
+ * recording.
+ *
+ * Returns false if in touch mode after the release
+ * time has passed.
+ *
+ * @param cur_time Current time from
+ *   g_get_monotonic_time() passed here to ensure
+ *   the same timestamp is used in sequential calls.
+ */
+bool
+automation_track_should_be_recording (
+  AutomationTrack * at,
+  gint64            cur_time)
+{
+  if (at->automation_mode == AUTOMATION_MODE_RECORD)
+    {
+      if (at->record_mode ==
+            AUTOMATION_RECORD_MODE_LATCH &&
+          at->has_change)
+        return true;
+      if (at->record_mode ==
+            AUTOMATION_RECORD_MODE_TOUCH)
+        {
+          Port * port =
+            automation_track_get_port (at);
+          /* still recording */
+          if (port->last_change -
+                cur_time <
+                AUTOMATION_RECORDING_TOUCH_REL_MS * 1000)
+            return true;
+        }
+    }
+
+  return false;
+}
+
 /**
  * Removes all arranger objects recursively.
  */

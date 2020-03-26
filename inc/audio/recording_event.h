@@ -60,10 +60,13 @@
 
 typedef enum RecordingEventType
 {
-  RECORDING_EVENT_TYPE_START_RECORDING,
+  RECORDING_EVENT_TYPE_START_TRACK_RECORDING,
+  RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING,
   RECORDING_EVENT_TYPE_MIDI,
   RECORDING_EVENT_TYPE_AUDIO,
-  RECORDING_EVENT_TYPE_STOP_RECORDING,
+  RECORDING_EVENT_TYPE_AUTOMATION,
+  RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING,
+  RECORDING_EVENT_TYPE_STOP_AUTOMATION_RECORDING,
 } RecordingEventType;
 
 /**
@@ -104,6 +107,12 @@ typedef struct RecordingEvent
    * MidiEvent, if midi.
    */
   MidiEvent  midi_event;
+
+  /** Port if automation. */
+  PortIdentifier   port_id;
+
+  /** Automation value, if automation. */
+  //float             control_val;
 
   /** Number of frames processed in this event. */
   nframes_t  nframes;

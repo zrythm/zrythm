@@ -293,8 +293,7 @@ static const cyaml_schema_field_t
   CYAML_FIELD_INT (
     "has_range", CYAML_FLAG_DEFAULT,
     Project, has_range),
-  CYAML_FIELD_MAPPING_PTR (
-    "midi_mappings", CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR (
     Project, midi_mappings,
     midi_mappings_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (

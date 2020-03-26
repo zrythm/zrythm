@@ -1859,8 +1859,10 @@ port_forward_control_change_event (
     {
       Track * track = port_get_track (self, 1);
       g_return_if_fail (
-        track && track->channel &&
-        track->channel->widget);
+        track && track->channel);
+      if (ZRYTHM_HAVE_UI)
+        g_return_if_fail (
+          track->channel->widget);
       fader_update_volume_and_fader_val (
         &track->channel->fader);
       EVENTS_PUSH (
@@ -1932,6 +1934,9 @@ port_set_control_value (
     {
       port_forward_control_change_event (self);
     }
+
+  /* remember time */
+  self->last_change = g_get_monotonic_time ();
 }
 
 /**
@@ -1944,7 +1949,7 @@ port_set_control_value (
 float
 port_get_control_value (
   Port *      self,
-  const int   normalize)
+  const bool  normalize)
 {
   g_return_val_if_fail (
     self->id.type == TYPE_CONTROL, 0.f);

@@ -289,6 +289,14 @@ typedef struct Port
    */
   float               control;
 
+  /**
+   * Last timestamp the control changed.
+   *
+   * This is used when recording automation in
+   * "touch" mode.
+   */
+  gint64              last_change;
+
   /* ====== flags to indicate port owner ====== */
 
   /**
@@ -789,7 +797,7 @@ port_set_control_value (
 float
 port_get_control_value (
   Port *      self,
-  const int   normalize);
+  const bool  normalize);
 
 /**
  * Returns the RMS of the last n cycles for
