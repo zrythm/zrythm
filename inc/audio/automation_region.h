@@ -26,6 +26,8 @@
 #ifndef __AUDIO_AUTOMATION_REGION_H__
 #define __AUDIO_AUTOMATION_REGION_H__
 
+#include <stdbool.h>
+
 #include "audio/region.h"
 
 typedef struct Track Track;
@@ -104,6 +106,32 @@ automation_region_remove_ap (
   ZRegion *          self,
   AutomationPoint * ap,
   int               free);
+
+/**
+ * Returns the automation points since the last
+ * recorded automation point (if the last recorded
+ * automation point was before the current pos).
+ */
+void
+automation_region_get_aps_since_last_recorded (
+  ZRegion *          self,
+  Position *         pos,
+  AutomationPoint ** aps,
+  int *              num_aps);
+
+/**
+ * Returns an automation point found within +/-
+ * delta_ticks from the position, or NULL.
+ *
+ * @param before_only Only check previous automation
+ *   points.
+ */
+AutomationPoint *
+automation_region_get_ap_around (
+  ZRegion *  self,
+  Position * _pos,
+  double     delta_ticks,
+  bool       before_only);
 
 /**
  * Frees members only but not the ZRegion itself.

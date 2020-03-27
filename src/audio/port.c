@@ -25,6 +25,7 @@
 
 #include "project.h"
 #include "audio/channel.h"
+#include "audio/control_port.h"
 #ifdef HAVE_JACK
 #include "audio/engine_jack.h"
 #endif
@@ -1928,15 +1929,20 @@ port_set_control_value (
         math_round_float_to_int (val);
     }
 
-  self->control = self->base_value;
+  if (!math_floats_equal (
+        self->control, self->base_value))
+    {
+      self->control = self->base_value;
+
+      /* remember time */
+      self->last_change = g_get_monotonic_time ();
+      self->value_changed_from_reading = false;
+    }
 
   if (forward_event)
     {
       port_forward_control_change_event (self);
     }
-
-  /* remember time */
-  self->last_change = g_get_monotonic_time ();
 }
 
 /**
@@ -1962,11 +1968,16 @@ port_get_control_value (
 
   if (normalize)
     {
+      return
+        control_port_real_val_to_normalized (
+          self, self->control);
+#if 0
       float minf = self->minf;
       float maxf = self->maxf;
       return
         (self->control - minf) /
         (maxf - minf);
+#endif
     }
   else
     {

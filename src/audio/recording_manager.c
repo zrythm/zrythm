@@ -21,6 +21,7 @@
 #include "audio/audio_region.h"
 #include "audio/automation_region.h"
 #include "audio/clip.h"
+#include "audio/control_port.h"
 #include "audio/engine.h"
 #include "audio/recording_event.h"
 #include "audio/recording_manager.h"
@@ -86,6 +87,11 @@ on_stop_recording (
       arranger_selections_add_object (
         (ArrangerSelections *) TL_SELECTIONS,
         (ArrangerObject *) region);
+
+      if (is_automation)
+        {
+          region->last_recorded_ap = NULL;
+        }
     }
 
   /* perform the create action */
@@ -185,8 +191,8 @@ recording_manager_handle_recording (
       AutomationTrack * at = atl->ats[i];
       if ((!TRANSPORT_IS_ROLLING ||
            !automation_track_should_be_recording (
-              at, cur_time)) &&
-          at->recording_started)
+             at, cur_time, false)) &&
+           at->recording_started)
         {
           /* send stop automation recording event */
           RecordingEvent * re =
@@ -206,7 +212,7 @@ recording_manager_handle_recording (
         }
       if (TRANSPORT_IS_ROLLING &&
           automation_track_should_be_recording (
-            at, cur_time))
+            at, cur_time, false))
         {
           if (!at->recording_started)
             {
@@ -712,6 +718,104 @@ handle_midi_event (
     }
 }
 
+/**
+ * Delete automation points since the last recorded
+ * automation point and the current position (eg,
+ * when in latch mode) if the position is after
+ * the last recorded ap.
+ */
+static void
+delete_automation_points (
+  AutomationTrack * at,
+  ZRegion *         region,
+  Position *        pos)
+{
+  AutomationPoint * aps[100];
+  int               num_aps = 0;
+  automation_region_get_aps_since_last_recorded (
+    region, pos, aps, &num_aps);
+  for (int i = 0; i < num_aps; i++)
+    {
+      AutomationPoint * ap = aps[i];
+      automation_region_remove_ap (
+        region, ap, true);
+    }
+
+  /* create a new automation point at the pos with
+   * the previous value */
+  if (region->last_recorded_ap)
+    {
+      /* remove the last recorded AP if its
+       * previous AP also has the same value */
+      AutomationPoint * ap_before_recorded =
+        automation_region_get_prev_ap (
+          region, region->last_recorded_ap);
+      if (ap_before_recorded &&
+          math_floats_equal (
+            ap_before_recorded->fvalue,
+            region->last_recorded_ap->fvalue))
+        {
+          automation_region_remove_ap (
+            region, region->last_recorded_ap, true);
+        }
+
+      ArrangerObject * r_obj =
+        (ArrangerObject *) region;
+      Position adj_pos;
+      position_set_to_pos (&adj_pos, pos);
+      position_add_ticks (
+        &adj_pos, - r_obj->pos.total_ticks);
+      AutomationPoint * ap =
+        automation_point_new_float (
+          region->last_recorded_ap->fvalue,
+          region->last_recorded_ap->normalized_val,
+          &adj_pos);
+      automation_region_add_ap (
+        region, ap, true);
+      region->last_recorded_ap = ap;
+    }
+}
+
+/**
+ * Creates a new automation point and deletes
+ * anything between the last recorded automation
+ * point and this point.
+ */
+static AutomationPoint *
+create_automation_point (
+  AutomationTrack * at,
+  ZRegion *         region,
+  float             val,
+  float             normalized_val,
+  Position *        pos)
+{
+  AutomationPoint * aps[100];
+  int               num_aps = 0;
+  automation_region_get_aps_since_last_recorded (
+    region, pos, aps, &num_aps);
+  for (int i = 0; i < num_aps; i++)
+    {
+      AutomationPoint * ap = aps[i];
+      automation_region_remove_ap (
+        region, ap, true);
+    }
+
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
+  Position adj_pos;
+  position_set_to_pos (&adj_pos, pos);
+  position_add_ticks (
+    &adj_pos, - r_obj->pos.total_ticks);
+  AutomationPoint * ap =
+    automation_point_new_float (
+      val, normalized_val, &adj_pos);
+  automation_region_add_ap (
+    region, ap, true);
+  region->last_recorded_ap = ap;
+
+  return ap;
+}
+
 static void
 handle_automation_event (
   RecordingEvent * ev)
@@ -729,6 +833,11 @@ handle_automation_event (
     port_get_control_value (port, false);
   float normalized_value =
     port_get_control_value (port, true);
+  bool automation_value_changed =
+    !port->value_changed_from_reading &&
+    !math_floats_equal (
+      value, at->last_recorded_value);
+  gint64 cur_time = g_get_monotonic_time ();
 
   /* get end position */
   long start_frames = g_start_frames;
@@ -757,17 +866,44 @@ handle_automation_event (
   position_from_frames (
     &end_pos, end_frames);
 
+  bool new_region_created = false;
+
   /* get the recording region */
   ZRegion * region =
     automation_track_get_region_before_pos (
       at, &start_pos);
-  if (!region)
+  ZRegion * region_at_end = NULL;
+  if (!loop_met)
+    region_at_end =
+      automation_track_get_region_before_pos (
+        at, &end_pos);
+  if (!region && automation_value_changed)
     {
       /* create region */
+      Position pos_to_end_new_r;
+      if (region_at_end)
+        {
+          ArrangerObject * r_at_end_obj =
+            (ArrangerObject *) region_at_end;
+          position_set_to_pos (
+            &pos_to_end_new_r, &r_at_end_obj->pos);
+        }
+      else if (loop_met)
+        {
+          position_set_to_pos (
+            &pos_to_end_new_r,
+            &TRANSPORT->loop_end_pos);
+        }
+      else
+        {
+          position_set_to_pos (
+            &pos_to_end_new_r, &end_pos);
+        }
       region =
         automation_region_new (
-          &start_pos, &end_pos, tr->pos,
+          &start_pos, &pos_to_end_new_r, tr->pos,
           at->index, at->num_regions);
+      new_region_created = true;
       g_return_if_fail (region);
       track_add_region (
         tr, region, at, -1,
@@ -776,6 +912,7 @@ handle_automation_event (
       add_recorded_id (
         RECORDING_MANAGER, region);
     }
+
   at->recording_region = region;
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
@@ -788,26 +925,48 @@ handle_automation_event (
     {
       region_before_loop_end = region;
 
-      /* set current region end pos  to
-       * transport loop end */
-      arranger_object_end_pos_setter (
-        r_obj, &TRANSPORT->loop_end_pos);
-      r_obj->end_pos.frames =
-        TRANSPORT->loop_end_pos.frames;
+      if (region)
+        {
+          /* set current region end pos to
+           * transport loop end */
+          arranger_object_end_pos_setter (
+            r_obj, &TRANSPORT->loop_end_pos);
+          r_obj->end_pos.frames =
+            TRANSPORT->loop_end_pos.frames;
 
-      position_from_frames (
-        &r_obj->loop_end_pos,
-        r_obj->end_pos.frames -
-          r_obj->pos.frames);
+          position_from_frames (
+            &r_obj->loop_end_pos,
+            r_obj->end_pos.frames -
+              r_obj->pos.frames);
+        }
 
-      /* start new region in new lane at
+      /* get or start new region at
        * TRANSPORT loop start */
       ZRegion * new_region =
         automation_track_get_region_before_pos (
           at, &TRANSPORT->loop_start_pos);
-      if (!new_region)
+      region_at_end =
+        automation_track_get_region_before_pos (
+          at, &end_pos);
+      if (!new_region &&
+          automation_track_should_be_recording (
+            at, cur_time, false))
         {
           /* create region */
+          Position pos_to_end_new_r;
+          if (region_at_end)
+            {
+              ArrangerObject * r_at_end_obj =
+                (ArrangerObject *) region_at_end;
+              position_set_to_pos (
+                &pos_to_end_new_r,
+                &r_at_end_obj->pos);
+            }
+          else
+            {
+              position_set_to_pos (
+                &pos_to_end_new_r, &end_pos);
+            }
           new_region =
             automation_region_new (
               &TRANSPORT->loop_start_pos,
@@ -819,21 +978,30 @@ handle_automation_event (
             F_GEN_NAME, F_PUBLISH_EVENTS);
         }
       region = new_region;
-      add_recorded_id (
-        RECORDING_MANAGER, new_region);
+      if (region)
+        {
+          add_recorded_id (
+            RECORDING_MANAGER, new_region);
+        }
     }
   else /* loop not met */
     {
-      /* set region end pos */
-      arranger_object_end_pos_setter (
-        r_obj, &end_pos);
-      r_obj->end_pos.frames =
-        end_pos.frames;
+      if (new_region_created ||
+          (r_obj &&
+           position_is_before (
+             &r_obj->end_pos, &end_pos)))
+        {
+          /* set region end pos */
+          arranger_object_end_pos_setter (
+            r_obj, &end_pos);
+          r_obj->end_pos.frames =
+            end_pos.frames;
 
-      position_from_frames (
-        &r_obj->loop_end_pos,
-        r_obj->end_pos.frames -
-          r_obj->pos.frames);
+          position_from_frames (
+            &r_obj->loop_end_pos,
+            r_obj->end_pos.frames -
+              r_obj->pos.frames);
+        }
     }
 
   at->recording_region = region;
@@ -843,41 +1011,61 @@ handle_automation_event (
       /* handle the samples until loop end */
       if (region_before_loop_end)
         {
-          if (!math_floats_equal (
-                value, at->last_recorded_value))
+          if (automation_value_changed)
             {
-              AutomationPoint * ap =
-                automation_point_new_float (
-                  value, normalized_value,
-                  &start_pos);
-              automation_region_add_ap (
-                region_before_loop_end, ap, true);
+              create_automation_point (
+                at, region_before_loop_end,
+                value, normalized_value,
+                &start_pos);
+              at->last_recorded_value = value;
             }
-          at->last_recorded_value = value;
         }
 
-      /* handle samples after loop start */
-      AutomationPoint * ap =
-        automation_point_new_float (
-          value, normalized_value,
-          &TRANSPORT->loop_start_pos);
-      automation_region_add_ap (
-        region, ap, true);
+      if (automation_track_should_be_recording (
+            at, cur_time, true))
+        {
+          while (position_is_equal (
+                   &((ArrangerObject *)
+                      region->aps[0])->pos,
+                   &TRANSPORT->loop_start_pos))
+            {
+              automation_region_remove_ap (
+                region, region->aps[0], true);
+            }
+
+          /* create/replace ap at loop start */
+          create_automation_point (
+            at, region, value, normalized_value,
+            &TRANSPORT->loop_start_pos);
+        }
     }
   else
     {
       /* handle the samples normally */
-      if (!math_floats_equal (
-            value, at->last_recorded_value))
+      if (automation_value_changed)
         {
-          AutomationPoint * ap =
-            automation_point_new_float (
-              value, normalized_value,
-              &start_pos);
-          automation_region_add_ap (
-            region, ap, true);
+          create_automation_point (
+            at, region,
+            value, normalized_value,
+            &start_pos);
+          at->last_recorded_value = value;
         }
-      at->last_recorded_value = value;
+      else if (at->record_mode ==
+                 AUTOMATION_RECORD_MODE_LATCH)
+        {
+          delete_automation_points (
+            at, region, &start_pos);
+        }
+    }
+
+  /* if we left touch mode, set last recorded ap
+   * to NULL */
+  if (at->record_mode ==
+        AUTOMATION_RECORD_MODE_TOUCH &&
+      !automation_track_should_be_recording (
+        at, cur_time, true))
+    {
+      at->recording_region->last_recorded_ap = NULL;
     }
 }
 
@@ -887,6 +1075,14 @@ handle_start_recording (
   bool             is_automation)
 {
   Track * tr = track_get_from_name (ev->track_name);
+  gint64 cur_time = g_get_monotonic_time ();
+  AutomationTrack * at = NULL;
+  if (is_automation)
+    {
+      at =
+        automation_track_find_from_port_id (
+          &ev->port_id);
+    }
 
   /* this could be called multiple times, ignore
    * if already processed */
@@ -924,6 +1120,27 @@ handle_start_recording (
     {
       /* nothing, wait for event to start
        * writing data */
+      Port * port =
+        automation_track_get_port (at);
+      float value =
+        port_get_control_value (port, false);
+
+      if (automation_track_should_be_recording (
+            at, cur_time, true))
+        {
+          /* set recorded value to something else
+           * to force the recorder to start
+           * writing */
+          g_message ("SHOULD BE RECORDING");
+          at->last_recorded_value = value + 2.f;
+        }
+      else
+        {
+          g_message ("SHOULD NOT BE RECORDING");
+          /** set the current value so that
+           * nothing is recorded until it changes */
+          at->last_recorded_value = value;
+        }
     }
   else
     {
@@ -1034,7 +1251,6 @@ events_process (void * data)
               }
             at->recording_started = false;
             at->recording_region = NULL;
-            at->has_change = false;
           }
           break;
         case RECORDING_EVENT_TYPE_START_TRACK_RECORDING:

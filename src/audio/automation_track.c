@@ -255,45 +255,70 @@ automation_track_should_read_automation (
   if (at->automation_mode == AUTOMATION_MODE_OFF)
     return false;
 
+  /* TODO last argument should be true but doesnt
+   * work properly atm */
   if (automation_track_should_be_recording (
-        at, cur_time))
+        at, cur_time, false))
     return false;
 
   return true;
 }
 
 /**
- * Returns if the automation track is currently
- * recording.
+ * Returns if the automation track should currently
+ * be recording data.
  *
  * Returns false if in touch mode after the release
  * time has passed.
  *
+ * This function assumes that the transport will
+ * be rolling.
+ *
  * @param cur_time Current time from
  *   g_get_monotonic_time() passed here to ensure
  *   the same timestamp is used in sequential calls.
+ * @param record_aps If set to true, this function
+ *   will return whether we should be recording
+ *   automation point data. If set to false, this
+ *   function will return whether we should be
+ *   recording a region (eg, if an automation point
+ *   was already created before and we are still
+ *   recording inside a region regardless of whether
+ *   we should create/edit automation points or not.
  */
 bool
 automation_track_should_be_recording (
   AutomationTrack * at,
-  gint64            cur_time)
+  gint64            cur_time,
+  bool              record_aps)
 {
   if (at->automation_mode == AUTOMATION_MODE_RECORD)
     {
       if (at->record_mode ==
-            AUTOMATION_RECORD_MODE_LATCH &&
-          at->has_change)
-        return true;
+            AUTOMATION_RECORD_MODE_LATCH)
+        {
+          /* in latch mode, we are always recording,
+           * even if the value doesn't change
+           * (an automation point will be created
+           * as soon as latch mode is armed) and
+           * then only when changes are made) */
+          return true;
+        }
       if (at->record_mode ==
             AUTOMATION_RECORD_MODE_TOUCH)
         {
           Port * port =
             automation_track_get_port (at);
-          /* still recording */
-          if (port->last_change -
-                cur_time <
+          gint64 diff =
+            cur_time - port->last_change;
+          if (diff <
                 AUTOMATION_RECORDING_TOUCH_REL_MS * 1000)
-            return true;
+            {
+              /* still recording */
+              return true;
+            }
+          else if (!record_aps)
+            return at->recording_started;
         }
     }
 

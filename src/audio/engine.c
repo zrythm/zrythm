@@ -780,6 +780,8 @@ engine_process_prepare (
                 automation_track_get_port (at);
               control_port_set_val_from_normalized (
                 port, val, 1);
+              port->value_changed_from_reading =
+                true;
             }
         }
     }

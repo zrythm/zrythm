@@ -289,6 +289,10 @@ typedef struct Port
    */
   float               control;
 
+  /** Flag that the value of the port changed from
+   * reading automation. */
+  bool                value_changed_from_reading;
+
   /**
    * Last timestamp the control changed.
    *

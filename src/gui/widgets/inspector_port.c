@@ -330,7 +330,7 @@ set_port_value (
   port_set_control_value (
     self->port,
     control_port_normalized_val_to_real (
-      self->port, val), 0, 1);
+      self->port, val), false, true);
 }
 
 static gboolean

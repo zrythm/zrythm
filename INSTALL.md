@@ -3,7 +3,7 @@ Installation Instructions
 
 # Building
 
-The project uses meson, so the steps are
+The project uses [meson](https://mesonbuild.com), so the steps are
 
     meson build
     ninja -C build
@@ -35,7 +35,7 @@ inside `meson_options.txt`.
 ## Installation
 Once the program is built, it will need to be
 installed the first time before it can run (to
-install the GSettings)
+install the [GSettings](https://developer.gnome.org/gio/stable/GSettings.html))
 
     ninja -C build install
 

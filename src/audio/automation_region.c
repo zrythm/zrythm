@@ -217,6 +217,94 @@ automation_region_remove_ap (
 }
 
 /**
+ * Returns the automation points since the last
+ * recorded automation point (if the last recorded
+ * automation point was before the current pos).
+ */
+void
+automation_region_get_aps_since_last_recorded (
+  ZRegion *          self,
+  Position *         pos,
+  AutomationPoint ** aps,
+  int *              num_aps)
+{
+  *num_aps = 0;
+
+  ArrangerObject * last_recorded_obj =
+    (ArrangerObject *) self->last_recorded_ap;
+  if (!last_recorded_obj ||
+      position_is_before_or_equal (
+        pos, &last_recorded_obj->pos))
+    return;
+
+  for (int i = 0; i < self->num_aps; i++)
+    {
+      AutomationPoint * ap = self->aps[i];
+      ArrangerObject * ap_obj =
+        (ArrangerObject *) ap;
+
+      if (position_is_after (
+            &ap_obj->pos, &last_recorded_obj->pos) &&
+          position_is_before_or_equal (
+            &ap_obj->pos, pos))
+        {
+          aps[*num_aps] = ap;
+          (*num_aps)++;
+        }
+    }
+}
+
+/**
+ * Returns an automation point found within +/-
+ * delta_ticks from the position, or NULL.
+ *
+ * @param before_only Only check previous automation
+ *   points.
+ */
+AutomationPoint *
+automation_region_get_ap_around (
+  ZRegion *  self,
+  Position * _pos,
+  double     delta_ticks,
+  bool       before_only)
+{
+  Position pos;
+  position_set_to_pos (&pos, _pos);
+  AutomationTrack * at =
+    region_get_automation_track (self);
+  /* FIXME only check aps in this region */
+  AutomationPoint * ap =
+    automation_track_get_ap_before_pos (at, &pos);
+  ArrangerObject * ap_obj =
+    (ArrangerObject *) ap;
+  if (ap &&
+      pos.total_ticks -
+        ap_obj->pos.total_ticks <=
+          (double) delta_ticks)
+    {
+      return ap;
+    }
+  else if (!before_only)
+    {
+      position_add_ticks (&pos, delta_ticks);
+      ap =
+        automation_track_get_ap_before_pos (
+          at, &pos);
+      ap_obj = (ArrangerObject *) ap;
+      if (ap)
+        {
+          double diff =
+            ap_obj->pos.total_ticks -
+              _pos->total_ticks;
+          if (diff >= 0.0)
+            return ap;
+        }
+    }
+
+  return NULL;
+}
+
+/**
  * Frees members only but not the ZRegion itself.
  *
  * Regions should be free'd using region_free.

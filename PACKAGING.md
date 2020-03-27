@@ -11,7 +11,7 @@ on our [CGit instance](https://git.zrythm.org/cgit/).
 
 # Meson
 
-Zrythm needs a fairly recent version of Meson to build 
+Zrythm needs a fairly recent version of Meson to build
 (around 0.50 and above).
 
 # Included Programs
@@ -42,17 +42,9 @@ automatically.
 See `scripts/meson_post_install.py` for more
 details.
 
-# Patches
-
-Please send a patch at dev _at_ zrythm.org if something does not build
-in a particular scenario and you manged to fix it, or
-if you want to add compilation flags. Alternatively,
-attach patches as new issues on our
-[Redmine instance](https://redmine.zrythm.org/projects/zrythm/issues).
-
 ----
 
-Copyright (C) 2019 Alexandros Theodotou
+Copyright (C) 2019-2020 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright

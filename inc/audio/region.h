@@ -153,6 +153,9 @@ typedef struct ZRegion
   int                num_aps;
   size_t             aps_size;
 
+  /** Last recorded automation point. */
+  AutomationPoint *  last_recorded_ap;
+
   /* ==== AUTOMATION REGION END ==== */
 
   /* ==== CHORD REGION ==== */
