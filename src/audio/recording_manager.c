@@ -96,8 +96,11 @@ on_stop_recording (
 
   /* perform the create action */
   UndoableAction * action =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
+    arranger_selections_action_new_record (
+      is_automation ?
+        self->selections_before_start_automation :
+        self->selections_before_start_track,
+      (ArrangerSelections *) TL_SELECTIONS, true);
   undo_manager_perform (UNDO_MANAGER, action);
 
   /* restore the selections */
@@ -1082,6 +1085,17 @@ handle_start_recording (
       at =
         automation_track_find_from_port_id (
           &ev->port_id);
+      RECORDING_MANAGER->
+        selections_before_start_automation =
+          arranger_selections_clone (
+            (ArrangerSelections *) TL_SELECTIONS);
+    }
+  else
+    {
+      RECORDING_MANAGER->
+        selections_before_start_track =
+          arranger_selections_clone (
+            (ArrangerSelections *) TL_SELECTIONS);
     }
 
   /* this could be called multiple times, ignore

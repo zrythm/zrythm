@@ -63,6 +63,7 @@ typedef enum UndoableActionType
 
   UA_CREATE_ARRANGER_SELECTIONS,
   UA_MOVE_ARRANGER_SELECTIONS,
+  UA_RECORD_ARRANGER_SELECTIONS,
   UA_RESIZE_ARRANGER_SELECTIONS,
   UA_SPLIT_ARRANGER_SELECTIONS,
   UA_EDIT_ARRANGER_SELECTIONS,
@@ -101,6 +102,8 @@ undoable_action_type_strings[] =
     UA_CREATE_ARRANGER_SELECTIONS },
   { "Move arranger selections",
     UA_MOVE_ARRANGER_SELECTIONS },
+  { "Record arranger selections",
+    UA_RECORD_ARRANGER_SELECTIONS },
   { "Resize arranger selections",
     UA_RESIZE_ARRANGER_SELECTIONS },
   { "Split arranger selections",

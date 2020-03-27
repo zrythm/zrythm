@@ -55,6 +55,12 @@ typedef struct RecordingManager
    */
   ObjectPool *       event_obj_pool;
 
+  /** Cloned selections before starting recording. */
+  ArrangerSelections * selections_before_start_track;
+
+  /** Cloned selections before starting recording. */
+  ArrangerSelections * selections_before_start_automation;
+
   /** Recorded region identifiers, to be used for
    * creating the undoable actions. */
   RegionIdentifier   recorded_ids[8000];

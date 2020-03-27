@@ -277,6 +277,25 @@ arranger_selections_action_new_create_or_delete (
   return ua;
 }
 
+UndoableAction *
+arranger_selections_action_new_record (
+  ArrangerSelections * sel_before,
+  ArrangerSelections * sel_after,
+  const bool           already_recorded)
+{
+  ArrangerSelectionsAction * self =
+    _create_action (sel_before);
+  UndoableAction * ua = (UndoableAction *) self;
+  ua->type = UA_RECORD_ARRANGER_SELECTIONS;
+
+  set_selections (self, sel_after, 1, 1);
+
+  if (!already_recorded)
+    self->first_run = 0;
+
+  return ua;
+}
+
 /**
  * Creates a new action for editing properties
  * of an object.
@@ -1068,6 +1087,130 @@ do_or_undo_create_or_delete (
  *   reverses the actions done by undo/redo.
  */
 static int
+do_or_undo_record (
+  ArrangerSelectionsAction * self,
+  const bool                 _do)
+{
+  int size_before = 0;
+  int size_after = 0;
+  arranger_selections_sort_by_indices (
+    self->sel, _do ? false : true);
+  arranger_selections_sort_by_indices (
+    self->sel_after, _do ? false : true);
+  ArrangerObject ** before_objs =
+    arranger_selections_get_all_objects (
+      self->sel, &size_before);
+  ArrangerObject ** after_objs =
+    arranger_selections_get_all_objects (
+      self->sel_after, &size_after);
+  ArrangerSelections * sel =
+    get_actual_arranger_selections (self);
+
+  if (!self->first_run)
+    {
+      /* clear current selections in the project */
+      arranger_selections_clear (sel);
+
+      /* if doing in a create action or undoing
+       * in a delete action */
+      if (_do)
+        {
+          /* create the newly recorded objects */
+          for (int i = 0; i < size_after; i++)
+            {
+              /* clone the clone */
+              ArrangerObject * obj =
+                arranger_object_clone (
+                  after_objs[i],
+                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+
+              /* add it to the project */
+              add_object_to_project (obj);
+
+              /* select it */
+              arranger_object_select (
+                obj, F_SELECT, F_APPEND);
+
+              /* remember new info */
+              arranger_object_copy_identifier (
+                after_objs[i], obj);
+            }
+
+          /* delete the previous objects */
+          for (int i = 0; i < size_before; i++)
+            {
+              /* get the actual object from the
+               * project */
+              ArrangerObject * obj =
+                arranger_object_find (
+                  before_objs[i]);
+              g_return_val_if_fail (obj, -1);
+
+              /* remove it */
+              remove_object_from_project (obj);
+            }
+        }
+
+      /* if undoing */
+      else
+        {
+          /* delete the newly recorded objects */
+          for (int i = 0; i < size_after; i++)
+            {
+              /* get the actual object from the
+               * project */
+              ArrangerObject * obj =
+                arranger_object_find (
+                  after_objs[i]);
+              g_return_val_if_fail (obj, -1);
+
+              /* remove it */
+              remove_object_from_project (obj);
+            }
+
+          /* add the objects before the recording */
+          for (int i = 0; i < size_before; i++)
+            {
+              /* clone the clone */
+              ArrangerObject * obj =
+                arranger_object_clone (
+                  before_objs[i],
+                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+
+              /* add it to the project */
+              add_object_to_project (obj);
+
+              /* select it */
+              arranger_object_select (
+                obj, F_SELECT, F_APPEND);
+
+              /* remember new info */
+              arranger_object_copy_identifier (
+                before_objs[i], obj);
+            }
+        }
+    }
+  free (before_objs);
+  free (after_objs);
+
+  EVENTS_PUSH (
+    ET_ARRANGER_SELECTIONS_CREATED, sel);
+  EVENTS_PUSH (
+    ET_ARRANGER_SELECTIONS_REMOVED, sel);
+
+  self->first_run = 0;
+
+  return 0;
+}
+
+/**
+ * Does or undoes the action.
+ *
+ * @param _do 1 to do, 0 to undo.
+ * @param create 1 to create, 0 to delete. This just
+ *   reverses the actions done by undo/redo.
+ */
+static int
 do_or_undo_edit (
   ArrangerSelectionsAction * self,
   const int                  _do)
@@ -1453,28 +1596,31 @@ arranger_selections_action_do (
   switch (ua->type)
     {
     case UA_CREATE_ARRANGER_SELECTIONS:
-      return do_or_undo_create_or_delete (self, 1, 1);
+      return do_or_undo_create_or_delete (self, true, true);
       break;
     case UA_DELETE_ARRANGER_SELECTIONS:
-      return do_or_undo_create_or_delete (self, 1, 0);
+      return do_or_undo_create_or_delete (self, true, 0);
       break;
     case UA_DUPLICATE_ARRANGER_SELECTIONS:
-      return do_or_undo_duplicate (self, 1);
+      return do_or_undo_duplicate (self, true);
       break;
     case UA_MOVE_ARRANGER_SELECTIONS:
-      return do_or_undo_move (self, 1);
+      return do_or_undo_move (self, true);
+      break;
+    case UA_RECORD_ARRANGER_SELECTIONS:
+      return do_or_undo_record (self, true);
       break;
     case UA_EDIT_ARRANGER_SELECTIONS:
-      return do_or_undo_edit (self, 1);
+      return do_or_undo_edit (self, true);
       break;
     case UA_SPLIT_ARRANGER_SELECTIONS:
-      return do_or_undo_split (self, 1);
+      return do_or_undo_split (self, true);
       break;
     case UA_RESIZE_ARRANGER_SELECTIONS:
-      return do_or_undo_resize (self, 1);
+      return do_or_undo_resize (self, true);
       break;
     case UA_QUANTIZE_ARRANGER_SELECTIONS:
-      return do_or_undo_quantize (self, 1);
+      return do_or_undo_quantize (self, true);
       break;
     default:
       g_return_val_if_reached (-1);
@@ -1495,28 +1641,22 @@ arranger_selections_action_undo (
     {
     case UA_CREATE_ARRANGER_SELECTIONS:
       return do_or_undo_create_or_delete (self, 0, 1);
-      break;
     case UA_DELETE_ARRANGER_SELECTIONS:
       return do_or_undo_create_or_delete (self, 0, 0);
-      break;
     case UA_DUPLICATE_ARRANGER_SELECTIONS:
       return do_or_undo_duplicate (self, 0);
-      break;
+    case UA_RECORD_ARRANGER_SELECTIONS:
+      return do_or_undo_record (self, false);
     case UA_MOVE_ARRANGER_SELECTIONS:
       return do_or_undo_move (self, 0);
-      break;
     case UA_EDIT_ARRANGER_SELECTIONS:
       return do_or_undo_edit (self, 0);
-      break;
     case UA_SPLIT_ARRANGER_SELECTIONS:
       return do_or_undo_split (self, 0);
-      break;
     case UA_RESIZE_ARRANGER_SELECTIONS:
       return do_or_undo_resize (self, 0);
-      break;
     case UA_QUANTIZE_ARRANGER_SELECTIONS:
       return do_or_undo_quantize (self, 0);
-      break;
     default:
       g_return_val_if_reached (-1);
       break;

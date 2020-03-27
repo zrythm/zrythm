@@ -26,6 +26,7 @@
 #ifndef __UNDO_ARRANGER_SELECTIONS_ACTION_H__
 #define __UNDO_ARRANGER_SELECTIONS_ACTION_H__
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "actions/undoable_action.h"
@@ -375,6 +376,12 @@ arranger_selections_action_new_create(sel) \
 arranger_selections_action_new_delete(sel) \
   arranger_selections_action_new_create_or_delete ( \
     (ArrangerSelections *) sel, 0)
+
+UndoableAction *
+arranger_selections_action_new_record (
+  ArrangerSelections * sel_before,
+  ArrangerSelections * sel_after,
+  const bool           already_recorded);
 
 /**
  * Creates a new action for moving or duplicating
