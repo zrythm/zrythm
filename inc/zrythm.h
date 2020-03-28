@@ -274,6 +274,12 @@ zrythm_get_dir (
   Zrythm * self);
 
 /**
+ * Define guile module.
+ */
+void
+guile_zrythm_define_module (void);
+
+/**
  * @}
  */
 

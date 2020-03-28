@@ -16,10 +16,17 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 if get_option('enable_guile')
+guile_srcs = files ([
+  'guile.c',
+  join_paths ('audio', 'position.c'),
+  'zrythm.c',
+  ])
+
 guilelib = static_library (
   'guilelib',
-  'guile.c',
+  guile_srcs,
   dependencies: [ guile_dep, zrythm_deps ],
   c_args: [ common_cflags ],
+  include_directories: all_inc,
   )
 endif

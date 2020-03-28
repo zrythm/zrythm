@@ -349,6 +349,12 @@ tracklist_get_num_visible_tracks (
   int         visible);
 
 /**
+ * Define guile module.
+ */
+void
+guile_tracklist_define_module (void);
+
+/**
  * @}
  */
 

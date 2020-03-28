@@ -14,22 +14,29 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 /**
- * Inits the guile subsystem.
- */
-int
-guile_init (
-  int     argc,
-  char ** argv);
-
-/**
- * Defines all available modules to be used
- * by scripts.
+ * \file
  *
- * This must be called in guile mode.
+ * Position guile module.
  */
+
+#ifndef __GUILE_AUDIO_POSITION_H__
+#define __GUILE_AUDIO_POSITION_H__
+
+/**
+ * @addtogroup guile
+ *
+ * @{
+ */
+
 void
-guile_define_modules (void);
+guile_audio_position_define_module (void);
+
+/**
+ * @}
+ */
+
+#endif

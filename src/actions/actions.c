@@ -67,6 +67,7 @@
 #include "gui/widgets/quantize_dialog.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/scripting_window.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/timeline_bot_box.h"
@@ -329,6 +330,7 @@ activate_scripting_interface (
   GVariant      *variant,
   gpointer       user_data)
 {
+#if 0
   GtkWidget * dialog =
     gtk_message_dialog_new_with_markup (
       GTK_WINDOW (MAIN_WINDOW),
@@ -345,14 +347,13 @@ activate_scripting_interface (
     GTK_WINDOW (MAIN_WINDOW));
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (GTK_WIDGET (dialog));
-#if 0
-  ScriptingDialogWidget * widget =
-    scripting_dialog_widget_new ();
+#endif
+  ScriptingWindowWidget * widget =
+    scripting_window_widget_new ();
   gtk_window_set_transient_for (
     GTK_WINDOW (widget),
     GTK_WINDOW (MAIN_WINDOW));
   gtk_widget_set_visible (GTK_WIDGET (widget), 1);
-#endif
 }
 
 /**

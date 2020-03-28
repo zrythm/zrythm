@@ -14,22 +14,34 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * Inits the guile subsystem.
- */
-int
-guile_init (
-  int     argc,
-  char ** argv);
+#include "audio/tracklist.h"
+#include "guile/tracklist.h"
 
-/**
- * Defines all available modules to be used
- * by scripts.
- *
- * This must be called in guile mode.
- */
+#include <libguile.h>
+
+static SCM
+get_tracks (void)
+{
+  /* TODO */
+  /*SCM arr =*/
+    /*scm_make_array (*/
+
+}
+
+static void
+init_module (void * data)
+{
+  scm_c_define_gsubr (
+    "tracklist-get-tracks", 0, 0, 0, get_tracks);
+  scm_c_export ("tracklist-get-tracks", NULL);
+}
+
 void
-guile_define_modules (void);
+guile_zrythm_define_module (void)
+{
+  scm_c_define_module (
+    "zrythm audio tracklist", init_module, NULL);
+}

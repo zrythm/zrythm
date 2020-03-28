@@ -25,30 +25,25 @@
 
 ;; join paths
 ;; TODO there's probably a built in function somewhere
-(define (join-path args)
+(define (join-path parts)
   (fold
     (lambda (x accumulator)
-      (set! accumulator
-        (string-append
-          (string-trim-right
-            accumulator file-name-sep-char)
-          (if (eq? x (car args))
-            (string-append "" x)
-            (string-append
-              file-name-separator-string
-               (string-trim
-                 x file-name-sep-char)))))
-      (string-trim-right
-        accumulator file-name-sep-char))
+      (string-append
+        (string-trim-right
+          accumulator file-name-sep-char)
+        (if (eq? x (car parts))
+          x
+          (string-append
+            file-name-separator-string
+            (string-trim-both
+              x file-name-sep-char)))))
     ""
-    args))
+    parts))
 
 ;; return the value of the given env variable or
 ;; return the given default value
 (define (getenv-or-default name default)
-  (if (getenv name)
-    (getenv name)
-    default))
+  (or (getenv name) default))
 
 ;; define paths
 (define prefix
@@ -73,7 +68,7 @@
   (join-path (list datadir "doc" "zrythm")))
 
 (define (program-found? program)
-  (eq? (system* "which" program) 0))
+  (zero? (system* "which" program)))
 
 (define (main . args)
   (unless (getenv "DESTDIR")

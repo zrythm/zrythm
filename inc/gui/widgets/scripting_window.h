@@ -18,18 +18,50 @@
  */
 
 /**
- * Inits the guile subsystem.
+ * \file
+ *
+ * Bounce to audio dialog.
  */
-int
-guile_init (
-  int     argc,
-  char ** argv);
+
+#ifndef __GUI_WIDGETS_SCRIPTING_WINDOW_H__
+#define __GUI_WIDGETS_SCRIPTING_WINDOW_H__
+
+#include <gtk/gtk.h>
+
+#define SCRIPTING_WINDOW_WIDGET_TYPE \
+  (scripting_window_widget_get_type ())
+G_DECLARE_FINAL_TYPE (
+  ScriptingWindowWidget,
+  scripting_window_widget,
+  Z, SCRIPTING_WINDOW_WIDGET,
+  GtkWindow)
 
 /**
- * Defines all available modules to be used
- * by scripts.
+ * @addtogroup widgets
  *
- * This must be called in guile mode.
+ * @{
  */
-void
-guile_define_modules (void);
+
+/**
+ * The export dialog.
+ */
+typedef struct _ScriptingWindowWidget
+{
+  GtkWindow            parent_instance;
+  GtkTextView *        editor;
+  GtkTextBuffer *      textbuf;
+  GtkButton *          execute_btn;
+  GtkLabel *           output;
+} ScriptingWindowWidget;
+
+/**
+ * Creates a bounce dialog.
+ */
+ScriptingWindowWidget *
+scripting_window_widget_new (void);
+
+/**
+ * @}
+ */
+
+#endif
