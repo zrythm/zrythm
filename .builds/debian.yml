@@ -7,7 +7,7 @@ packages:
   #- meson
   - ninja-build
   - gettext
-  - sed
+  - guile-2.0
   - help2man
   - python3-sphinx
   - ladspa-sdk

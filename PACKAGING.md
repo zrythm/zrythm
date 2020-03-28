@@ -39,8 +39,8 @@ automatically.
     update-desktop-database
     update-gdk-pixbuf-loaders
 
-See `scripts/meson_post_install.py` for more
-details.
+See the [post-install script](scripts/meson_post_install.scm)
+for more details.
 
 ----
 

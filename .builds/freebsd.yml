@@ -18,6 +18,7 @@ packages:
   - help2man
   - libsndfile
   - sord
+  - guile
   - alsa-lib
   - sratom
   - suil

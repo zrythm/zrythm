@@ -170,6 +170,7 @@ stoat = find_program (
   ['stoat'], required: false)
 python3 = find_program (
   ['python3', 'python'])
+guile = find_program (['guile'])
 
 check_headers = [
   'unistd.h',
@@ -608,10 +609,10 @@ subdir ('doc')
 subdir ('scripts')
 
 meson.add_install_script (
-  python3.path(),
+  guile.path(),
   join_paths (
     meson.current_source_dir (),
-    'scripts', 'meson_post_install.py'))
+    'scripts', 'meson_post_install.scm'))
 
 if meson.version().version_compare('>=0.53')
 summary({

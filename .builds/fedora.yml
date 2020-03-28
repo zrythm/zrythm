@@ -12,7 +12,7 @@ packages:
   - libyaml-devel
   - libsamplerate-devel
   - gettext
-  - sed
+  - guile
   - suil-devel
   - help2man
   - alsa-lib-devel
