@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-if get_option('enable_guile')
 guile_srcs = files ([
   'guile.c',
   join_paths ('audio', 'position.c'),
@@ -29,4 +28,3 @@ guilelib = static_library (
   c_args: [ common_cflags ],
   include_directories: all_inc,
   )
-endif
