@@ -18,6 +18,21 @@
  */
 
 /**
+ * \file
+ *
+ * Guile subsystem.
+ */
+
+#ifndef __GUILE_GUILE_H__
+#define __GUILE_GUILE_H__
+
+/**
+ * @addtogroup guile Guile scripting interface.
+ *
+ * @{
+ */
+
+/**
  * Inits the guile subsystem.
  */
 int
@@ -33,3 +48,9 @@ guile_init (
  */
 void
 guile_define_modules (void);
+
+/**
+ * @}
+ */
+
+#endif

@@ -22,59 +22,85 @@
 
 #include <libguile.h>
 
-SCM
-get_position_type (void)
+static SCM position_type;
+
+static void
+init_position_type (void)
 {
   SCM name = scm_from_utf8_symbol ("position");
   SCM slots =
-    scm_list_3 (
-      scm_from_utf8_symbol ("data"),
-      scm_from_utf8_symbol ("total_ticks"),
-      scm_from_utf8_symbol ("frames"));
+    scm_list_1 (
+      scm_from_utf8_symbol ("data"));
   scm_t_struct_finalize finalizer = NULL;
 
-  return
+  position_type =
     scm_make_foreign_object_type (
       name, slots, finalizer);
 }
 
-SCM
+static SCM
 make_position (
-  SCM name,
-  SCM s_total_ticks,
-  SCM s_frames)
+  SCM s_bars,
+  SCM s_beats,
+  SCM s_sixteenths,
+  SCM s_ticks,
+  SCM s_sub_tick)
 {
-  Position * pos;
-  double total_ticks = scm_to_double (s_total_ticks);
-  long frames = scm_to_long (s_frames);
-
   /* Allocate the Position.  Because we
      use scm_gc_malloc, this memory block will
      be automatically reclaimed when it becomes
      inaccessible, and its members will be traced
      by the garbage collector.  */
-  pos = (Position *)
+  Position * pos =
+    (Position *)
     scm_gc_malloc (sizeof (Position), "position");
 
-  pos->total_ticks = total_ticks;
-  pos->frames = frames;
+  pos->bars = scm_to_int (s_bars);
+  pos->beats = scm_to_int (s_beats);
+  pos->sixteenths = scm_to_int (s_sixteenths);
+  pos->ticks = scm_to_int (s_ticks);
+  pos->sub_tick = scm_to_double (s_sub_tick);
+  position_update_ticks_and_frames (pos);
 
   /* wrap the Position * in a new foreign object
    * and return that object */
   return
-    scm_make_foreign_object_3 (
-      get_position_type (), pos,
-      s_total_ticks, s_frames);
+    scm_make_foreign_object_1 (
+      position_type, pos);
+}
+
+static SCM
+print_position (
+  SCM s_pos)
+{
+  scm_assert_foreign_object_type (
+    position_type, s_pos);
+  Position * pos =
+    scm_foreign_object_ref (s_pos, 0);
+  (void) pos;
+
+  char buf[120];
+  position_stringize (pos, buf);
+
+  SCM out_port = scm_current_output_port ();
+  scm_display (
+    scm_from_utf8_string (buf),
+    out_port);
+
+  return SCM_UNSPECIFIED;
 }
 
 static void
 init_module (void * data)
 {
+  init_position_type ();
+
   scm_c_define_gsubr (
-    "position-new", 3, 0, 0, make_position);
-  scm_c_export ("position-new", NULL);
-
-
+    "position-new", 5, 0, 0, make_position);
+  scm_c_define_gsubr (
+    "position-print", 1, 0, 0, print_position);
+  scm_c_export (
+    "position-new", "position-print", NULL);
 }
 
 void

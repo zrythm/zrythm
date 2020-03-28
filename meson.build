@@ -610,7 +610,7 @@ subdir ('doc')
 subdir ('scripts')
 
 meson.add_install_script (
-  guile.path(),
+  guile.path(), '-s',
   join_paths (
     meson.current_source_dir (),
     'scripts', 'meson_post_install.scm'))

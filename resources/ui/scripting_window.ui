@@ -140,11 +140,12 @@
   </template>
   <object class="GtkTextBuffer" id="textbuf">
     <property name="text">;; Example script
-(use-modules (zrythm zrythm))
+(use-modules (zrythm zrythm)
+(zrythm audio position))
 (define zrythm-script
   (lambda ()
     (display (zrythm-get-ver))
-    (display "hello world") (newline)
-    (display (zrythm-get-ptr))))</property>
+    (let ((mypos (position-new 2 1 1 34 0)))
+      (position-print mypos))))</property>
   </object>
 </interface>
