@@ -59,22 +59,35 @@ if (get_option ('user_manual'))
     install_dir: docdir)
 endif
 
+guile_texi_docs = []
+if get_option('guile_snarf_docs_path') != ''
+  foreach snarfable_src : guile_snarfable_srcs
+    new_file = snarfable_src.split('.')[0].underscorify() + '.texi'
+    guile_texi_docs += custom_target (
+      new_file,
+      output: new_file,
+      input: snarfable_src,
+      command: [
+        meson.source_root () / 'scripts' / 'guile_gen_texi_docs.sh',
+        get_option ('guile_snarf_docs_path'),
+        guile_dep.name(),
+        '@INPUT@',
+        meson.build_root () / '@OUTPUT@',
+        meson.build_root () / '@PRIVATE_DIR@' ],
+      )
+  endforeach
+endif
+
 # TODO convert the makefile to meson commands
 run_target (
   'bundle_manual',
-  command: [
-    'make',
-    'gettext',
-    'bundle',
-    ],
+  command: [ 'make', 'gettext', 'bundle', ],
+  depends: guile_texi_docs,
   )
 
 run_target (
   'manual_gettext',
-  command: [
-    'make',
-    'gettext',
-    ],
+  command: [ 'make', 'gettext', ],
   )
 
 endif

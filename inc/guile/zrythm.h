@@ -32,6 +32,9 @@
  * @{
  */
 
+void
+guile_zrythm_define_module (void);
+
 /**
  * @}
  */

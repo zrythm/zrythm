@@ -15,10 +15,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-guile_snarfable_srcs = [
+_guile_snarfable_srcs = [
   join_paths ('audio', 'position.c'),
   'zrythm.c',
   ]
+guile_snarfable_srcs = []
+foreach srcfile : _guile_snarfable_srcs
+  guile_snarfable_srcs += meson.current_source_dir() / srcfile
+endforeach
 
 guile_srcs = [
   'guile.c',
@@ -26,37 +30,17 @@ guile_srcs = [
   ]
 
 if guile_snarf.found()
-  deps_for_guile = [
-    gtk_dep,
-    guile_dep,
-    ]
-
-  have_lilv = true
-  if lilv_dep.name() == 'null'
-    have_lilv = false
-  else
-    deps_for_guile += lilv_dep
-  endif
-
-  deps_for_guile_str = ''
-  foreach el : deps_for_guile
-    deps_for_guile_str += el.name() + ' '
-  endforeach
-  deps_for_guile_str = deps_for_guile_str.strip()
-
 # .x files
   guile_snarfed_srcs = []
   foreach snarfable_src : guile_snarfable_srcs
-    new_file = snarfable_src.split('.')[0] + '.x'
-    new_file = '_'.join (new_file.split('/'))
+    new_file = snarfable_src.split('.')[0].underscorify() + '.x'
     guile_snarfed_srcs += custom_target (
       new_file,
       output: new_file,
       input: snarfable_src,
       command: [
         guile, '-s', guile_snarf_wrap,
-        meson.source_root(),
-        deps_for_guile_str, '@0@'.format (have_lilv),
+        guile_dep.name(),
         '@OUTPUT@', '@INPUT@', ],
       )
   endforeach

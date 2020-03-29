@@ -16,11 +16,14 @@
 ;;; along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 (define-module (guile-utils)
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-98)
   #:export (file-name-sep-char
             join-path
             getenv-or-default
+            get-cflags-from-pkgconf-name
             program-found?))
 
 ;; file name separator char
@@ -51,3 +54,12 @@
 
 (define (program-found? program)
   (zero? (system* "which" program)))
+
+(define (get-cflags-from-pkgconf-name pkgconf-name)
+  (let* ((port (open-input-pipe
+                 (string-append
+                   "pkg-config --cflags-only-I "
+                   pkgconf-name)))
+         (str  (read-line port)))
+    (close-pipe port)
+    (string-trim-both str)))

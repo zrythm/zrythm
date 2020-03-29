@@ -17,8 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if !defined(SCM_MAGIC_SNARF_DOCS) && \
+  !defined(SCM_MAGIC_SNARFER)
 #include "audio/position.h"
 #include "guile/audio/position.h"
+#endif
 
 #include <libguile.h>
 
@@ -45,6 +48,7 @@ SCM_DEFINE (
   "Return a newly-created position as @var{bars}.\
 @var{beats}.@var{sixteenths}.@var{ticks}.\
 @var{sub_tick}.")
+#define FUNC_NAME s_
 {
   /* Allocate the Position.  Because we
      use scm_gc_malloc, this memory block will
@@ -68,10 +72,14 @@ SCM_DEFINE (
     scm_make_foreign_object_1 (
       position_type, pos);
 }
+#undef FUNC_NAME
 
-static SCM
-print_position (
-  SCM pos)
+SCM_DEFINE (
+  print_position, "position-print", 1, 0, 0,
+  (SCM pos),
+  "Prints the position as `bars.beats.sixteenths.\
+ticks.sub_tick`.")
+#define FUNC_NAME s_
 {
   scm_assert_foreign_object_type (
     position_type, pos);
@@ -88,6 +96,7 @@ print_position (
 
   return SCM_UNSPECIFIED;
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)

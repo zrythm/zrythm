@@ -549,9 +549,14 @@ if (get_option('enable_sdl'))
   cdata.set('HAVE_SDL', 1)
 endif
 
-guile_dep = dependency ('guile-3.0', required: false)
+guile_dep = dependency (
+  'guile-3.0', required: false)
 if not guile_dep.found ()
-  guile_dep = dependency ('guile-2.2')
+  guile_dep = dependency (
+    'guile-2.2', required: false)
+  if not guile_dep.found ()
+    guile_dep = dependency ('guile-2.0')
+  endif
 endif
 zrythm_deps += guile_dep
 #zrythm_deps += dependency ('gtksourceview-3.0')

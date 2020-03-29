@@ -124,3 +124,12 @@ option (
   type: 'boolean',
   value: false,
   description: 'Whether this is a trial version with limited functionality')
+
+option (
+  'guile_snarf_docs_path',
+  type: 'string',
+  value: '',
+  description: '''Path to guile-snarf-docs (used
+when generating documentation for the scripting
+interface). This is found in the libguile subdir of
+the guile distribution after compiling it.''')

@@ -17,8 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if !defined(SCM_MAGIC_SNARF_DOCS) && \
+  !defined(SCM_MAGIC_SNARFER)
 #include "guile/zrythm.h"
 #include "zrythm.h"
+#endif
 
 #include <libguile.h>
 
