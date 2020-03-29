@@ -81,11 +81,13 @@ install_data (
     join_paths (
       [datadir, 'mime/packages']))
 
-install_data (
-  'zrythm-completion.bash',
-  install_dir: join_paths (
-    sysconfdir, 'bash_completion.d'),
-  install_mode: 'r--r--r--',
-  rename: 'zrythm')
+if not os_windows
+  install_data (
+    'zrythm-completion.bash',
+    install_dir: join_paths (
+      sysconfdir, 'bash_completion.d'),
+    install_mode: 'r--r--r--',
+    rename: 'zrythm')
+endif
 
 subdir('windows')
