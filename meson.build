@@ -170,9 +170,12 @@ stoat = find_program (
   ['stoat'], required: false)
 python3 = find_program (
   ['python3', 'python'])
-guile = find_program (['guile'])
+guile = find_program (
+  ['guile2.2', 'guile'])
+guild = find_program (
+  ['guild2.2', 'guild'], required: false)
 guile_snarf = find_program (
-  ['guile-snarf'], required: false)
+  ['guile-snarf2.2', 'guile-snarf'], required: false)
 scripts_conf = {
   'SCRIPTS_DIR': meson.source_root () / 'scripts',
   'GUILE': guile.path(),
@@ -184,6 +187,17 @@ if guile_snarf.found()
   guile_snarf_wrap = configure_file (
     output: 'guile-snarf-wrap.scm',
     input: guile_snarf_wrap_path,
+    configuration: scripts_conf,
+    )
+endif
+if get_option('guile_snarf_docs_path') != ''
+  scripts_conf += {
+    'GUILE_SNARF_DOCS_BIN': get_option('guile_snarf_docs_path'),
+    'GUILD_BIN': guild.path() }
+  guile_gen_texi_docs_path = 'scripts' / 'guile-gen-texi-docs.scm'
+  guile_gen_texi_docs = configure_file (
+    output: 'guile-gen-texi-docs.scm',
+    input: guile_gen_texi_docs_path,
     configuration: scripts_conf,
     )
 endif

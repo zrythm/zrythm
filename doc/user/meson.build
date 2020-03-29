@@ -59,6 +59,7 @@ if (get_option ('user_manual'))
     install_dir: docdir)
 endif
 
+# generate texi docs
 guile_texi_docs = []
 if get_option('guile_snarf_docs_path') != ''
   foreach snarfable_src : guile_snarfable_srcs
@@ -66,12 +67,10 @@ if get_option('guile_snarf_docs_path') != ''
     guile_texi_docs += custom_target (
       new_file,
       output: new_file,
-      input: snarfable_src,
+      input: [ snarfable_src, guile_gen_texi_docs, ],
       command: [
-        meson.source_root () / 'scripts' / 'guile_gen_texi_docs.sh',
-        get_option ('guile_snarf_docs_path'),
-        guile_dep.name(),
-        '@INPUT@',
+        meson.build_root () / 'guile-gen-texi-docs.scm',
+        guile_dep.name(), '@INPUT0@',
         meson.build_root () / '@OUTPUT@',
         meson.build_root () / '@PRIVATE_DIR@' ],
       )

@@ -21,7 +21,10 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-98)
   #:export (file-name-sep-char
+            file-to-string
             join-path
+            invoke-with-fail
+            get-command-output
             getenv-or-default
             get-cflags-from-pkgconf-name
             program-found?))
@@ -55,11 +58,35 @@
 (define (program-found? program)
   (zero? (system* "which" program)))
 
-(define (get-cflags-from-pkgconf-name pkgconf-name)
-  (let* ((port (open-input-pipe
-                 (string-append
-                   "pkg-config --cflags-only-I "
-                   pkgconf-name)))
+(define (get-command-output cmd trim?)
+  (let* ((port (open-input-pipe cmd))
          (str  (read-line port)))
     (close-pipe port)
-    (string-trim-both str)))
+    (if (eq? trim? #t)
+      (string-trim-both str)
+      str)))
+
+(define (get-cflags-from-pkgconf-name pkgconf-name)
+  (get-command-output
+    (string-append
+      "pkg-config --cflags-only-I " pkgconf-name)
+    #t))
+
+(define (file-to-string path)
+  (let ((str ""))
+    (with-input-from-file
+      path
+      (lambda ()
+        (let loop ((x (read-char)))
+          (when (not (eof-object? x))
+            (begin
+              (set! str
+                (string-append str
+                               (format "~a" x)))
+              (loop (read-char)))))))
+    str))
+
+(define (invoke-with-fail args)
+  (unless
+    (zero? (apply system* args))
+    (exit -1)))
