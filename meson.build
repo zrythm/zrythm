@@ -194,10 +194,10 @@ if get_option('guile_snarf_docs_path') != ''
   scripts_conf += {
     'GUILE_SNARF_DOCS_BIN': get_option('guile_snarf_docs_path'),
     'GUILD_BIN': guild.path() }
-  guile_gen_texi_docs_path = 'scripts' / 'guile-gen-texi-docs.scm'
-  guile_gen_texi_docs = configure_file (
-    output: 'guile-gen-texi-docs.scm',
-    input: guile_gen_texi_docs_path,
+  guile_gen_docs_path = 'scripts' / 'guile-gen-docs.scm'
+  guile_gen_docs = configure_file (
+    output: 'guile-gen-docs.scm',
+    input: guile_gen_docs_path,
     configuration: scripts_conf,
     )
 endif
@@ -563,19 +563,21 @@ if (get_option('enable_sdl'))
   cdata.set('HAVE_SDL', 1)
 endif
 
-guile_dep = dependency (
-  'guile-3.0', required: false)
-if not guile_dep.found ()
+if get_option('enable_guile')
   guile_dep = dependency (
-    'guile-2.2', required: false)
+    'guile-3.0', required: false)
   if not guile_dep.found ()
-    guile_dep = dependency ('guile-2.0')
+    guile_dep = dependency (
+      'guile-2.2', required: false)
+    if not guile_dep.found ()
+      guile_dep = dependency ('guile-2.0')
+    endif
   endif
-endif
-zrythm_deps += guile_dep
+  zrythm_deps += guile_dep
 #zrythm_deps += dependency ('gtksourceview-3.0')
-cdata.set('HAVE_GUILE', 1)
+  cdata.set('HAVE_GUILE', 1)
 #cdata.set('HAVE_GTK_SOURCE_VIEW', 1)
+endif
 
 if os_windows
   zrythm_deps += cc.find_library('dbghelp')
@@ -678,6 +680,7 @@ summary({
   'SDL': get_option('enable_sdl'),
   'Carla': get_option('enable_carla'),
   'Gtop': libgtop_dep.found(),
+  'Guile': get_option('enable_guile'),
   }, section: 'Optional libraries')
 
 summary({

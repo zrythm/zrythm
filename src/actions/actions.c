@@ -330,7 +330,14 @@ activate_scripting_interface (
   GVariant      *variant,
   gpointer       user_data)
 {
-#if 0
+#ifdef HAVE_GUILE
+  ScriptingWindowWidget * widget =
+    scripting_window_widget_new ();
+  gtk_window_set_transient_for (
+    GTK_WINDOW (widget),
+    GTK_WINDOW (MAIN_WINDOW));
+  gtk_widget_set_visible (GTK_WIDGET (widget), 1);
+#else
   GtkWidget * dialog =
     gtk_message_dialog_new_with_markup (
       GTK_WINDOW (MAIN_WINDOW),
@@ -340,7 +347,8 @@ activate_scripting_interface (
       GTK_BUTTONS_OK,
       _("Scripting extensibility with "
       "<a href=\"%s\">GNU Guile</a> "
-      "is coming soon!"),
+      "is not enabled in your Zrythm "
+      "installation."),
       "https://www.gnu.org/software/guile");
   gtk_window_set_transient_for (
     GTK_WINDOW (dialog),
@@ -348,12 +356,6 @@ activate_scripting_interface (
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (GTK_WIDGET (dialog));
 #endif
-  ScriptingWindowWidget * widget =
-    scripting_window_widget_new ();
-  gtk_window_set_transient_for (
-    GTK_WINDOW (widget),
-    GTK_WINDOW (MAIN_WINDOW));
-  gtk_widget_set_visible (GTK_WIDGET (widget), 1);
 }
 
 /**

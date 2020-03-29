@@ -17,8 +17,10 @@
 ;;; You should have received a copy of the GNU Affero General Public License
 ;;; along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 ;;;
-;;; This file generates .texi documentation from a
+;;; This file generates .rst documentation from a
 ;;;   given C source file with defined SCM_* macros.
+;;; It first generates .texi files and then uses
+;;;   pandoc to convert that to .rst
 
 (add-to-load-path "@SCRIPTS_DIR@")
 
@@ -31,8 +33,8 @@
   #:use-module (ice-9 textual-ports)
   #:use-module (guile-utils))
 
-(define (snarf-docs-bin)
-  "@GUILE_SNARF_DOCS_BIN@")
+(define snarf-docs-bin "@GUILE_SNARF_DOCS_BIN@")
+(define pandoc-bin "@PANDOC_BIN@")
 
 (define (base-noext f)
   (basename f ".c"))
@@ -49,12 +51,12 @@
     ((this-program guile-pkgconf-name
                    input-file output-file
                    private-dir)
-     (chdir (dirname (snarf-docs-bin)))
+     (chdir (dirname snarf-docs-bin))
      (unless (file-exists? private-dir)
        (mkdir private-dir))
      (invoke-with-fail
        (list
-         "@GUILE_SNARF_DOCS_BIN@" "-o"
+         snarf-docs-bin "-o"
          (doc-file private-dir input-file)
          input-file "--"
          (get-cflags-from-pkgconf-name
@@ -67,8 +69,9 @@
                 (doc-file private-dir input-file)))
             (port
               (open-output-pipe
-                "@GUILD_BIN@ snarf-check-and-output-texi")))
+                (string-append
+                  snarf-docs-bin
+                  " snarf-check-and-output-texi"))))
            (display doc-file-contents port)))))))
 
 (apply main (program-arguments))
-

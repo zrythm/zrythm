@@ -29,29 +29,31 @@ guile_srcs = [
   guile_snarfable_srcs,
   ]
 
-if guile_snarf.found()
+if get_option ('enable_guile')
+  if guile_snarf.found()
 # .x files
-  guile_snarfed_srcs = []
-  foreach snarfable_src : guile_snarfable_srcs
-    new_file = snarfable_src.split('.')[0].underscorify() + '.x'
-    guile_snarfed_srcs += custom_target (
-      new_file,
-      output: new_file,
-      input: snarfable_src,
-      command: [
-        guile, '-s', guile_snarf_wrap,
-        guile_dep.name(),
-        '@OUTPUT@', '@INPUT@', ],
-      )
-  endforeach
+    guile_snarfed_srcs = []
+    foreach snarfable_src : guile_snarfable_srcs
+      new_file = snarfable_src.split('.')[0].underscorify() + '.x'
+      guile_snarfed_srcs += custom_target (
+        new_file,
+        output: new_file,
+        input: snarfable_src,
+        command: [
+          guile, '-s', guile_snarf_wrap,
+          guile_dep.name(),
+          '@OUTPUT@', '@INPUT@', ],
+        )
+    endforeach
 
-  guile_srcs += guile_snarfed_srcs
+    guile_srcs += guile_snarfed_srcs
+  endif
+
+  guilelib = static_library (
+    'guilelib',
+    guile_srcs,
+    dependencies: [ guile_dep, zrythm_deps ],
+    c_args: [ common_cflags ],
+    include_directories: all_inc,
+    )
 endif
-
-guilelib = static_library (
-  'guilelib',
-  guile_srcs,
-  dependencies: [ guile_dep, zrythm_deps ],
-  c_args: [ common_cflags ],
-  include_directories: all_inc,
-  )

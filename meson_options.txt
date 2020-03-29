@@ -126,6 +126,12 @@ option (
   description: 'Whether this is a trial version with limited functionality')
 
 option (
+  'enable_guile',
+  type: 'boolean',
+  value: true,
+  description: 'Build with libguile support for scripting')
+
+option (
   'guile_snarf_docs_path',
   type: 'string',
   value: '',
