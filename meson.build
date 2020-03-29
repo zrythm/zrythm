@@ -178,6 +178,7 @@ guile_snarf = find_program (
   ['guile-snarf2.2', 'guile-snarf'], required: false)
 scripts_conf = {
   'SCRIPTS_DIR': meson.source_root () / 'scripts',
+  'MESON_BUILD_ROOT': meson.build_root (),
   'GUILE': guile.path(),
   }
 if guile_snarf.found()
@@ -205,6 +206,12 @@ meson_post_install_path = 'scripts' / 'meson-post-install.scm'
 meson_post_install = configure_file (
   output: 'meson-post-install.scm',
   input: meson_post_install_path,
+  configuration: scripts_conf,
+  )
+post_install_wrap_path = 'scripts' / 'meson_post_install_wrap.sh'
+post_install_wrap = configure_file (
+  output: 'meson_post_install_wrap.sh',
+  input: post_install_wrap_path,
   configuration: scripts_conf,
   )
 
@@ -655,7 +662,7 @@ subdir ('doc')
 subdir ('scripts')
 
 meson.add_install_script (
-  meson.build_root() / 'meson-post-install.scm')
+  meson.build_root() / 'meson_post_install_wrap.sh')
 
 if meson.version().version_compare('>=0.53')
 summary({
