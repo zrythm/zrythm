@@ -171,17 +171,22 @@ stoat = find_program (
 python3 = find_program (
   ['python3', 'python'])
 guile = find_program (['guile'])
+guile_snarf = find_program (
+  ['guile-snarf'], required: false)
 scripts_conf = {
   'SCRIPTS_DIR': meson.source_root () / 'scripts',
   'GUILE': guile.path(),
   }
-guile_snarf = find_program (['guile-snarf'])
-guile_snarf_wrap_path = 'scripts' / 'guile-snarf-wrap.scm'
-guile_snarf_wrap = configure_file (
-  output: 'guile-snarf-wrap.scm',
-  input: guile_snarf_wrap_path,
-  configuration: scripts_conf,
-  )
+if guile_snarf.found()
+  scripts_conf += {
+    'GUILE_SNARF': guile_snarf.path() }
+  guile_snarf_wrap_path = 'scripts' / 'guile-snarf-wrap.scm'
+  guile_snarf_wrap = configure_file (
+    output: 'guile-snarf-wrap.scm',
+    input: guile_snarf_wrap_path,
+    configuration: scripts_conf,
+    )
+endif
 meson_post_install_path = 'scripts' / 'meson-post-install.scm'
 meson_post_install = configure_file (
   output: 'meson-post-install.scm',

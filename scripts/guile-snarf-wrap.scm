@@ -57,7 +57,7 @@
      (unless
        (zero?
          (system*
-           "guile-snarf"
+           "@GUILE_SNARF@"
            (get-local-include
              meson-source-root "inc")
            (get-local-include
