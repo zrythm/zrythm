@@ -171,6 +171,23 @@ stoat = find_program (
 python3 = find_program (
   ['python3', 'python'])
 guile = find_program (['guile'])
+scripts_conf = {
+  'SCRIPTS_DIR': meson.source_root () / 'scripts',
+  'GUILE': guile.path(),
+  }
+guile_snarf = find_program (['guile-snarf'])
+guile_snarf_wrap_path = 'scripts' / 'guile-snarf-wrap.scm'
+guile_snarf_wrap = configure_file (
+  output: 'guile-snarf-wrap.scm',
+  input: guile_snarf_wrap_path,
+  configuration: scripts_conf,
+  )
+meson_post_install_path = 'scripts' / 'meson-post-install.scm'
+meson_post_install = configure_file (
+  output: 'meson-post-install.scm',
+  input: meson_post_install_path,
+  configuration: scripts_conf,
+  )
 
 check_headers = [
   'unistd.h',
@@ -400,6 +417,9 @@ if not lv2_dep.found()
   lilv_proj = subproject('lilv')
   lv2_dep = lilv_proj.get_variable('lv2_dep')
 endif
+lilv_dep = dependency (
+  'lilv-0', version: '>=0.24.6',
+  fallback: ['lilv', 'lilv_dep'])
 fftw3_dep = dependency('fftw3', version: '>=3.3.5')
 
 chromaprint_dep = dependency (
@@ -419,9 +439,7 @@ zrythm_deps = [
   cyaml_dep,
   audec_dep,
   dependency('threads'),
-  dependency(
-    'lilv-0', version: '>=0.24.6',
-    fallback: ['lilv', 'lilv_dep']),
+  lilv_dep,
   dependency(
     'sratom-0',
     fallback: ['lilv', 'sratom_dep']),
@@ -611,10 +629,7 @@ subdir ('doc')
 subdir ('scripts')
 
 meson.add_install_script (
-  guile.path(), '-s',
-  join_paths (
-    meson.current_source_dir (),
-    'scripts', 'meson_post_install.scm'))
+  meson.build_root() / 'meson-post-install.scm')
 
 if meson.version().version_compare('>=0.53')
 summary({

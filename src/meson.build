@@ -39,9 +39,7 @@ zrythm_link_libs = [
   midilib,
   ]
 
-if get_option('enable_guile')
-  zrythm_link_libs += guilelib
-endif
+zrythm_link_libs += guilelib
 
 # there are problems if added to zrythm_srcs directly
 zrythm_lib_srcs = zrythm_srcs

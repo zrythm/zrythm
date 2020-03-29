@@ -38,13 +38,13 @@ init_position_type (void)
       name, slots, finalizer);
 }
 
-static SCM
-make_position (
-  SCM s_bars,
-  SCM s_beats,
-  SCM s_sixteenths,
-  SCM s_ticks,
-  SCM s_sub_tick)
+SCM_DEFINE (
+  make_position, "position-new", 5, 0, 0,
+  (SCM bars, SCM beats, SCM sixteenths,
+   SCM ticks, SCM sub_tick),
+  "Return a newly-created position as @var{bars}.\
+@var{beats}.@var{sixteenths}.@var{ticks}.\
+@var{sub_tick}.")
 {
   /* Allocate the Position.  Because we
      use scm_gc_malloc, this memory block will
@@ -55,11 +55,11 @@ make_position (
     (Position *)
     scm_gc_malloc (sizeof (Position), "position");
 
-  pos->bars = scm_to_int (s_bars);
-  pos->beats = scm_to_int (s_beats);
-  pos->sixteenths = scm_to_int (s_sixteenths);
-  pos->ticks = scm_to_int (s_ticks);
-  pos->sub_tick = scm_to_double (s_sub_tick);
+  pos->bars = scm_to_int (bars);
+  pos->beats = scm_to_int (beats);
+  pos->sixteenths = scm_to_int (sixteenths);
+  pos->ticks = scm_to_int (ticks);
+  pos->sub_tick = scm_to_double (sub_tick);
   position_update_ticks_and_frames (pos);
 
   /* wrap the Position * in a new foreign object
@@ -71,16 +71,15 @@ make_position (
 
 static SCM
 print_position (
-  SCM s_pos)
+  SCM pos)
 {
   scm_assert_foreign_object_type (
-    position_type, s_pos);
-  Position * pos =
-    scm_foreign_object_ref (s_pos, 0);
-  (void) pos;
+    position_type, pos);
+  Position * refpos =
+    scm_foreign_object_ref (pos, 0);
 
   char buf[120];
-  position_stringize (pos, buf);
+  position_stringize (refpos, buf);
 
   SCM out_port = scm_current_output_port ();
   scm_display (
