@@ -34,7 +34,7 @@ if get_option ('enable_guile')
 # .x files
     guile_snarfed_srcs = []
     foreach snarfable_src : guile_snarfable_srcs
-      new_file = snarfable_src.split('.')[0].underscorify() + '.x'
+      new_file = snarfable_src.split('.')[0].split(meson.current_source_dir () + '/')[1].underscorify() + '.x'
       guile_snarfed_srcs += custom_target (
         new_file,
         output: new_file,

@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -63,24 +63,60 @@ endif
 guile_docs = []
 if get_option ('enable_guile') and get_option ('guile_snarf_docs_path') != ''
   foreach snarfable_src : guile_snarfable_srcs
-    new_file = snarfable_src.split('.')[0].underscorify() + '.rst'
-    guile_docs += custom_target (
-      new_file,
-      output: new_file,
-      input: [ snarfable_src, guile_gen_docs, ],
+    base_file = snarfable_src.split('.')[0]
+    base_file = ' '.join(base_file.split (
+      meson.source_root ())[1].split('/'))
+    base_file = base_file.split('src guile ')[1]
+    rst_file = base_file + '.rst'
+    texi_file = base_file + '.texi'
+    texi_doc = custom_target (
+      texi_file,
+      output: texi_file,
+      input: [
+        snarfable_src,
+        meson.source_root () / 'scripts' / 'guile_gen_texi_docs.sh',
+        ],
       command: [
-        meson.build_root () / 'guile-gen-docs.scm',
+        '@INPUT1@',
+        get_option ('guile_snarf_docs_path'),
         guile_dep.name(), '@INPUT0@',
         meson.build_root () / '@OUTPUT@',
-        meson.build_root () / '@PRIVATE_DIR@' ],
+        meson.build_root () / '@PRIVATE_DIR@',
+        guild.path (),
+        ],
       )
+    rst_doc = custom_target (
+      rst_file,
+      output: rst_file,
+      input: [ texi_doc, guile_gen_docs, ],
+      command: [
+        meson.build_root () / 'guile-gen-docs.scm',
+        guile_dep.name(),
+        meson.build_root () / '@INPUT0@',
+        meson.build_root () / '@OUTPUT@',
+        meson.build_root () / '@PRIVATE_DIR@',
+        ],
+      )
+    guile_docs += rst_doc
   endforeach
 endif
 
 # TODO convert the makefile to meson commands
 run_target (
   'bundle_manual',
-  command: [ 'make', 'gettext', 'bundle', ],
+  command: [
+    'make', 'update-guile-docs', 'gettext',
+    'bundle',
+    'BUILDDIR=' +
+      meson.current_build_dir () / '_build',
+    'RENDERDIR=' +
+      meson.current_build_dir () / '_rendered',
+    'GUILE_DOCS_SRCDIR="' +
+      meson.current_build_dir () + '"',
+    'GUILE_DOCS_DESTDIR="' +
+      meson.current_source_dir () / 'scripting' / 'api' +
+      '"',
+    ],
   depends: guile_docs,
   )
 

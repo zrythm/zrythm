@@ -81,8 +81,8 @@
           (when (not (eof-object? x))
             (begin
               (set! str
-                (string-append str
-                               (format "~a" x)))
+                (string-append
+                  str (string x)))
               (loop (read-char)))))))
     str))
 

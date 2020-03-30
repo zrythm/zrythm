@@ -1,0 +1,55 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019-2020 Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-30 01:58+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../scripting/api/audio position.rst:6
+msgid "Return a newly-created position as bars.beats.sixteenths.ticks.sub_tick."
+msgstr ""
+
+#: ../../scripting/api/audio position.rst:11
+msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
+msgstr ""
+
+#: ../../scripting/api/intro.rst:6
+msgid "API"
+msgstr ""
+
+#: ../../scripting/api/zrythm.rst:6
+msgid "Return the Zrythm version as a string."
+msgstr ""
+
+#: ../../scripting/intro.rst:6
+msgid "Scripting"
+msgstr ""
+
+#: ../../scripting/overview.rst:6
+msgid "Overview"
+msgstr ""
+
+#: ../../scripting/overview.rst:8
+msgid ""
+"Zrythm offers a scripting interface using the `Guile language "
+"<https://www.gnu.org/software/guile/>`_, an implementation of Scheme."
+msgstr ""
+
+#: ../../scripting/overview.rst:11
+msgid ""
+"The next section is a comprehensive list of all available procedures in "
+"the API."
+msgstr ""
+

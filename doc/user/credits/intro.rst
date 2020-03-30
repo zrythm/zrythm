@@ -13,6 +13,9 @@ French
   * Olivier Humbert
   * Samuel Aubert
 
+Galician:
+  * Gabino S
+
 German:
   * Silvério Santos
   * Waui

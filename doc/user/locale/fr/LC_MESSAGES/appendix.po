@@ -1,19 +1,17 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2019, Alexandros Theodotou
-# This file is distributed under the same license as the Zrythm package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+# Translations template for PROJECT.
+# Copyright (C) 2020 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Zrythm 0.4\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: 2019-08-16 05:24+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language: fr\n"
-"Language-Team: French "
-"<https://hosted.weblate.org/projects/zrythm/manualappendix/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2020-03-30 01:58+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -46,32 +44,4 @@ msgstr "Résolution de problèmes"
 #: ../../appendix/troubleshooting.rst:8
 msgid "TODO"
 msgstr "ÀFAIRE"
-
-#~ msgid "/bin/zrythm"
-#~ msgstr "/bin/zrythm"
-
-#~ msgid "Zrythm executable"
-#~ msgstr "L'exécutable de Zrythm"
-
-#~ msgid "/usr/share/fonts/Segment7Standard"
-#~ msgstr "/usr/share/fonts/Segment7Standard"
-
-#~ msgid "Segment 7 font used in meters"
-#~ msgstr "La police d'écriture Segmant 7 est utilisé dans les compteurs"
-
-#~ msgid "/usr/share/glib-2.0/schemas/org.zrythm.gschema.xml"
-#~ msgstr "/usr/share/glib-2.0/schemas/org.zrythm.gschema.xml"
-
-#~ msgid "Settings schema"
-#~ msgstr "Schéma de paramétrage"
-
-#~ msgid "The app icon is missing"
-#~ msgstr "L'icône de l'application est manquante"
-
-#~ msgid ""
-#~ "Run `sudo touch /usr/share/icons/hicolor` and"
-#~ " `sudo gtk-update-icon-cache`"
-#~ msgstr ""
-#~ "Exécutez `sudo touch /usr/share/icons/hicolor` "
-#~ "et` sudo gtk-update-icon-cache`"
 

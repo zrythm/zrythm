@@ -27,16 +27,19 @@ GUILE_PKGCONF_NAME=$2
 INPUT_FILE=$3 # c file
 OUTPUT_FILE=$4 # texi file
 PRIVATE_DIR=$5 # for intermediate files
+GUILD_BIN=$6
 
 input_file_base=$(basename $INPUT_FILE)
 input_file_base_noext=$(echo "$input_file_base" | cut -f 1 -d '.')
 
 cd $(dirname $GUILE_SNARF_DOCS_BIN)
 mkdir -p "$PRIVATE_DIR"
+# snarf docs out of the C file into a doc file
 $GUILE_SNARF_DOCS_BIN -o \
   "$PRIVATE_DIR/$input_file_base_noext.doc" \
   $INPUT_FILE -- \
   $(pkg-config --cflags-only-I $GUILE_PKGCONF_NAME)
+# convert to texi
 cat "$PRIVATE_DIR/$input_file_base_noext.doc" | \
-  guild snarf-check-and-output-texi > \
+  $GUILD_BIN snarf-check-and-output-texi > \
   "$OUTPUT_FILE"

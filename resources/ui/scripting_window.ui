@@ -2,6 +2,16 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <object class="GtkTextBuffer" id="textbuf">
+    <property name="text">;; Example script
+(use-modules (zrythm)
+                               (audio position))
+(define zrythm-script
+  (lambda ()
+    (display (zrythm-get-ver))
+    (let ((mypos (position-new 2 1 1 34 0)))
+      (position-print mypos))))</property>
+  </object>
   <template class="ScriptingWindowWidget" parent="GtkWindow">
     <property name="can_focus">False</property>
     <child>
@@ -138,14 +148,4 @@
       </object>
     </child>
   </template>
-  <object class="GtkTextBuffer" id="textbuf">
-    <property name="text">;; Example script
-(use-modules (zrythm zrythm)
-(zrythm audio position))
-(define zrythm-script
-  (lambda ()
-    (display (zrythm-get-ver))
-    (let ((mypos (position-new 2 1 1 34 0)))
-      (position-print mypos))))</property>
-  </object>
 </interface>

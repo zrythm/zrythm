@@ -28,14 +28,19 @@
 /**
  * Guile function to get the zrythm pointer.
  */
+#if 0
 static SCM
 get_ptr (void)
 {
   return scm_from_pointer (ZRYTHM, NULL);
 }
+#endif
 
-static SCM
-get_ver (void)
+SCM_DEFINE (
+  get_ver, "zrythm-get-ver", 0, 0, 0,
+  (),
+  "Return the Zrythm version as a string.")
+#define FUNC_NAME s_
 {
   char ver[1000];
   zrythm_get_version_with_capabilities (ver);
@@ -44,15 +49,13 @@ get_ver (void)
       ver, strlen (ver), "UTF8",
       SCM_FAILED_CONVERSION_QUESTION_MARK);
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)
 {
   scm_c_define_gsubr (
-    "zrythm-get-ptr", 0, 0, 0, get_ptr);
-  scm_c_define_gsubr (
     "zrythm-get-ver", 0, 0, 0, get_ver);
-  scm_c_export ("zrythm-get-ptr", NULL);
   scm_c_export ("zrythm-get-ver", NULL);
 }
 
@@ -60,5 +63,5 @@ void
 guile_zrythm_define_module (void)
 {
   scm_c_define_module (
-    "zrythm zrythm", init_module, NULL);
+    "zrythm", init_module, NULL);
 }

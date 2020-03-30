@@ -115,5 +115,5 @@ void
 guile_audio_position_define_module (void)
 {
   scm_c_define_module (
-    "zrythm audio position", init_module, NULL);
+    "audio position", init_module, NULL);
 }

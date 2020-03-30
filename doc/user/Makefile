@@ -18,22 +18,28 @@ RENDERDIR     = _rendered
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-.PHONY: bundle
-
 LANGUAGES = en en_GB de fr gl it es ja pt pt_BR ru zh nb_NO
+
+GUILE_DOCS_SRCDIR=/tmp
+GUILE_DOCS_DESTDIR=/tmp
+.PHONY: update-guile-docs
+update-guile-docs:
+	echo "copying from $(GUILE_DOCS_SRCDIR) to $(GUILE_DOCS_DESTDIR)"
+	cp -f $(GUILE_DOCS_SRCDIR)/*.rst $(GUILE_DOCS_DESTDIR)/
 
 # Skip chinese latexpdf because it doesn't support Chinese yet
 # bundle: html epub
-bundle: html latexpdf #epub
+.PHONY: bundle
+bundle: html #latexpdf #epub
 	for lang in $(LANGUAGES) ; do \
 		mkdir -p $(RENDERDIR)/$$lang && \
 		cp -R $(BUILDDIR)/$$lang/html/* $(RENDERDIR)/$$lang/ ; \
 		if [[ "x$$lang" == "xzh" ]] ; then \
 			echo "skipping $$lang pdf" ; \
 		else \
-			cp $(BUILDDIR)/$$lang/latex/Zrythm.pdf $(RENDERDIR)/$$lang/ ; \
+			cp $(BUILDDIR)/$$lang/latex/Zrythm.pdf $(RENDERDIR)/$$lang/ || true ; \
 		fi ; \
-		cp $(BUILDDIR)/$$lang/epub/Zrythm.epub $(RENDERDIR)/$$lang/ && \
+		cp $(BUILDDIR)/$$lang/epub/Zrythm.epub $(RENDERDIR)/$$lang/ || true && \
 		zip -r $(RENDERDIR)/$$lang/Zrythm-html.zip $(BUILDDIR)/$$lang/html/* ; \
 	done
 

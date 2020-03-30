@@ -38,6 +38,7 @@ Welcome to the Zrythm manual.
    automation/intro
    modulators/intro
    exporting/intro
+   scripting/intro
    publishing/intro
    contributing/intro
    credits/intro

@@ -14,7 +14,30 @@ srcpath = './locale'
 for subdir, dirs, files in os.walk(srcpath):
     for file in files:
         fullpath = os.path.join(subdir,file)
-        if file.endswith('appendix.po'):
+        if file.endswith('scripting.po'):
+            with open(fullpath, 'r') as f :
+                filedata = f.read()
+
+                # remove "Schema Procedure"
+                # translations
+                filedata = re.sub(
+                    r'#:.*?api.*?\nmsgid "Scheme Procedure.*?\nmsgstr .*?\n\n',
+                    '', filedata)
+
+                filedata = re.sub(
+                    r'#:.*?api.*?:3\n.*?\nmsgstr .*?\n\n',
+                    '', filedata)
+
+                # remove absolute directories (possible
+                # bug with new versions of sphinx-intl)
+                filedata = re.sub(
+                    r'#: .*?/doc/user/',
+                    '#: ../../', filedata, flags=re.DOTALL)
+
+                with open(fullpath, 'w') as fw:
+                  fw.write(filedata)
+
+        elif file.endswith('appendix.po'):
             with open(fullpath, 'r') as f :
                 filedata = f.read()
 

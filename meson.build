@@ -176,11 +176,22 @@ guild = find_program (
   ['guild2.2', 'guild'], required: false)
 guile_snarf = find_program (
   ['guile-snarf2.2', 'guile-snarf'], required: false)
+pandoc = find_program (
+  ['pandoc'], required: false)
+texi2html = find_program (
+  ['texi2html'], required: false)
 scripts_conf = {
   'SCRIPTS_DIR': meson.source_root () / 'scripts',
   'MESON_BUILD_ROOT': meson.build_root (),
   'GUILE': guile.path(),
   }
+if pandoc.found()
+  scripts_conf += { 'PANDOC_BIN': pandoc.path() }
+endif
+if texi2html.found()
+  scripts_conf += {
+    'TEXI2HTML_BIN': texi2html.path() }
+endif
 if guile_snarf.found()
   scripts_conf += {
     'GUILE_SNARF': guile_snarf.path() }

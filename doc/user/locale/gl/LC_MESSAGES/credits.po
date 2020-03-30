@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-05 19:31+0000\n"
+"POT-Creation-Date: 2020-03-30 00:43+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,73 +41,81 @@ msgstr ""
 msgid "Samuel Aubert"
 msgstr ""
 
-#: ../../credits/intro.rst:19
-msgid "German:"
+#: ../../credits/intro.rst:17
+msgid "Galician:"
 msgstr ""
 
 #: ../../credits/intro.rst:17
-#: ../../credits/intro.rst:37
+msgid "Gabino S"
+msgstr ""
+
+#: ../../credits/intro.rst:22
+msgid "German:"
+msgstr ""
+
+#: ../../credits/intro.rst:20
+#: ../../credits/intro.rst:40
 msgid "Silvério Santos"
 msgstr ""
 
-#: ../../credits/intro.rst:18
+#: ../../credits/intro.rst:21
 msgid "Waui"
 msgstr ""
 
-#: ../../credits/intro.rst:19
+#: ../../credits/intro.rst:22
 msgid "André Menrath"
 msgstr ""
 
-#: ../../credits/intro.rst:22
+#: ../../credits/intro.rst:25
 msgid "Greek:"
 msgstr ""
 
-#: ../../credits/intro.rst:22
-#: ../../credits/intro.rst:28
+#: ../../credits/intro.rst:25
+#: ../../credits/intro.rst:31
 msgid "Alexandros Theodotou"
 msgstr ""
 
-#: ../../credits/intro.rst:25
+#: ../../credits/intro.rst:28
 msgid "Italian:"
 msgstr ""
 
-#: ../../credits/intro.rst:25
+#: ../../credits/intro.rst:28
 msgid "Swann Martinet"
 msgstr ""
 
-#: ../../credits/intro.rst:28
+#: ../../credits/intro.rst:31
 msgid "Japanese:"
 msgstr ""
 
-#: ../../credits/intro.rst:31
+#: ../../credits/intro.rst:34
 msgid "Norwegian Bokmal:"
 msgstr ""
 
-#: ../../credits/intro.rst:31
+#: ../../credits/intro.rst:34
 msgid "Allan Nordhøy"
 msgstr ""
 
-#: ../../credits/intro.rst:34
+#: ../../credits/intro.rst:37
 msgid "Polish:"
 msgstr ""
 
-#: ../../credits/intro.rst:34
+#: ../../credits/intro.rst:37
 msgid "WaldiS"
 msgstr ""
 
-#: ../../credits/intro.rst:38
+#: ../../credits/intro.rst:41
 msgid "Portuguese:"
 msgstr ""
 
-#: ../../credits/intro.rst:38
+#: ../../credits/intro.rst:41
 msgid "Manuela Silva"
 msgstr ""
 
-#: ../../credits/intro.rst:40
+#: ../../credits/intro.rst:43
 msgid "Spanish:"
 msgstr ""
 
-#: ../../credits/intro.rst:41
+#: ../../credits/intro.rst:44
 msgid "Adolfo Jayme-Barrientos"
 msgstr ""
 
