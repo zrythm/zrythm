@@ -145,6 +145,7 @@ html_context = {
                 [('en', 'English'),
                  ('en_GB', 'English UK'),
                  ('fr', 'Français'),
+                 ('gl', 'Galego'),
                  ('it', 'Italiano'),
                  ('es', "Español"),
                  ('pt', "Português"),
