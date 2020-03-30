@@ -16,8 +16,9 @@ inside `meson_options.txt`.
 
 ## Dependencies
 ### Required
-- GTK+3 (GPLv2+): <https://gitlab.gnome.org/GNOME/gtk>
 - audec (AGPLv3+): <https://git.zrythm.org/cgit/libaudec/>
+- GTK+3 (GPLv2+): <https://gitlab.gnome.org/GNOME/gtk>
+- guile (GPLv3+): <https://www.gnu.org/software/guile/>
 - lilv (ISC): <https://drobilla.net/software/lilv>
 - libcyaml (ISC): <https://github.com/tlsa/libcyaml/>
 - fftw (GPLv2+): <http://www.fftw.org/>
@@ -26,7 +27,6 @@ inside `meson_options.txt`.
 - jack (LGPLv2.1+): <https://jackaudio.org/>
 - ffmpeg (LGPL 2.1+, GPLv2+): <https://ffmpeg.org/>
 - carla (GPLv2+): <https://kx.studio/Applications:Carla>
-- guile (GPLv3+): <https://www.gnu.org/software/guile/>
 - rtaudio (MIT): <http://www.music.mcgill.ca/~gary/rtaudio/>
 - rtmidi (MIT): <https://www.music.mcgill.ca/~gary/rtmidi/>
 - SDL2 (zlib): <https://www.libsdl.org/>

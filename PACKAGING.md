@@ -39,7 +39,7 @@ automatically.
     update-desktop-database
     update-gdk-pixbuf-loaders
 
-See the [post-install script](scripts/meson_post_install.scm)
+See the [post-install script](scripts/meson-post-install.scm)
 for more details.
 
 ----
