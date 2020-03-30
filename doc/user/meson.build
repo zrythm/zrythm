@@ -63,8 +63,16 @@ endif
 guile_docs = []
 if get_option ('enable_guile') and get_option ('guile_snarf_docs_path') != ''
   foreach snarfable_src : guile_snarfable_srcs
-    base_file = snarfable_src.split('.')[0]
-    base_file = ' '.join(base_file.split (
+    split_by_dot = snarfable_src.split('.')
+    without_ext = ''
+    foreach sp : split_by_dot
+      if sp == split_by_dot[split_by_dot.length() - 2]
+        without_ext += sp
+      elif sp != split_by_dot[split_by_dot.length() - 1]
+        without_ext += sp + '.'
+      endif
+    endforeach
+    base_file = ' '.join(without_ext.split (
       meson.source_root ())[1].split('/'))
     base_file = base_file.split('src guile ')[1]
     rst_file = base_file + '.rst'

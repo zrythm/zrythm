@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.200] - 2020-03-30
+- Show peaks in meters
+- Show units in generic UIs for LV2 plugins when available
+- Show track control ports in the inspector
+- Add automation recording functionality
+- Add scripting functionality with guile
+- Add guile API docs to the manual
+- Convert some scripts from python to guile
+- Update Galician, Russian translations
+- Fix calculation for logarithmic ports
+- Fix mute status not showing on the track
+
 ## [0.8.156] - 2020-03-19
 - Add option to bounce material to audio
 - Add cability to fade in/out audio regions
