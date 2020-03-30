@@ -183,8 +183,12 @@ texi2html = find_program (
 scripts_conf = {
   'SCRIPTS_DIR': meson.source_root () / 'scripts',
   'MESON_BUILD_ROOT': meson.build_root (),
-  'GUILE': guile.path(),
   }
+if os_windows
+  scripts_conf += { 'GUILE': 'guile' }
+else
+  scripts_conf += { 'GUILE': guile.path() }
+endif
 if pandoc.found()
   scripts_conf += { 'PANDOC_BIN': pandoc.path() }
 endif

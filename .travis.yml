@@ -81,6 +81,7 @@ script:
       $mingw64 meson build
       $mingw64 ninja -C build
       $mingw64 ninja -C build test
+      $mingw64 ninja -C build install
       ;;
     linux)
       /tmp/meson/meson.py build -Denable_tests=true -Db_coverage=true
