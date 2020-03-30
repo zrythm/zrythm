@@ -8,32 +8,38 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-28 11:51+0000\n"
-"PO-Revision-Date: 2020-01-11 14:21+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
-"Language-Team: Russian "
-"<https://hosted.weblate.org/projects/zrythm/Language: ru\n"
+"PO-Revision-Date: 2020-03-30 12:27+0000\n"
+"Last-Translator: Viktor S <awsswa59@gmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
+"manualgetting-started/ru/>\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../getting-started/additional-resources.rst:6
 msgid "Additional Resources"
-msgstr ""
+msgstr "Дополнительные ресурсы"
 
 #: ../../getting-started/additional-resources.rst:9
 msgid "IRC/Matrix"
-msgstr ""
+msgstr "IRC/Matrix"
 
 #: ../../getting-started/additional-resources.rst:10
 msgid ""
 "We offer support on IRC at ``#zrythm`` on Freenode. Matrix users can use "
 "``#zrythmdaw:matrix.org``."
 msgstr ""
+"Мы предлагаем поддержку по IRC в ``#zrythm`` на Freenode. Пользователи "
+"Matrix могут использоват ``#zrythmdaw:matrix.org``."
 
 #: ../../getting-started/additional-resources.rst:14
 msgid "Issue Tracker"
-msgstr ""
+msgstr "Отслеживание проблем"
 
 #: ../../getting-started/additional-resources.rst:15
 msgid ""
@@ -51,20 +57,24 @@ msgid ""
 "Zrythm's source code can be found on our `CGit instance "
 "<https://git.zrythm.org/cgit/zrythm/>`_."
 msgstr ""
+"Исходный код Zrythm можно найти в нашем экземпляре CGit <https://git.zrythm."
+"org/cgit/zrythm/> `_."
 
 #: ../../getting-started/additional-resources.rst:25
 msgid "Older Versions"
-msgstr ""
+msgstr "Старые версии"
 
 #: ../../getting-started/additional-resources.rst:26
 msgid ""
 "Older releases of Zrythm can be found on the `Releases page "
 "<https://www.zrythm.org/releases>`_"
 msgstr ""
+"Более старые версии Zrythm можно найти `Версии <https://www.zrythm.org/"
+"releases>`_"
 
 #: ../../getting-started/getting-plugins.rst:6
 msgid "Getting Plugins"
-msgstr ""
+msgstr "Получение плагинов"
 
 #: ../../getting-started/getting-plugins.rst:8
 msgid ""
@@ -78,6 +88,8 @@ msgid ""
 "Fortunately, there are many plugins to choose from. This guide will show "
 "you a few ways you can install plugins."
 msgstr ""
+"К счастью, есть много плагинов на выбор. Это руководство покажет вам "
+"несколько способов установки плагинов."
 
 #: ../../getting-started/getting-plugins.rst:16
 msgid ""
@@ -85,6 +97,9 @@ msgid ""
 "repositories <https://kx.studio/>`_, since there are many plugins that "
 "can easily be installed via apt."
 msgstr ""
+"Если вы работаете в Debian/Ubuntu, мы настоятельно рекомендуем использовать "
+"репозитории `KXstudio <https://kx.studio/>`_, поскольку существует множество "
+"плагинов, которые можно легко установить через apt."
 
 #: ../../getting-started/getting-plugins.rst:20
 msgid ""
@@ -92,14 +107,17 @@ msgid ""
 "<https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ group, or you "
 "can hand-pick the plugins you want from there."
 msgstr ""
+"Если вы работаете в Arch GNU/Linux, мы рекомендуем установить группу `lv2-"
+"plugins <https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_, или вы "
+"можете вручную выбрать подключаемые модули оттуда."
 
 #: ../../getting-started/getting-plugins.rst:25
 msgid "If you are not sure where to start, please read on."
-msgstr ""
+msgstr "Если вы не уверены, с чего начать, пожалуйста, читайте дальше."
 
 #: ../../getting-started/getting-plugins.rst:28
 msgid "Recommended Plugin Bundles"
-msgstr ""
+msgstr "Рекомендуемые комплекты плагинов"
 
 #: ../../getting-started/getting-plugins.rst:30
 msgid ""
@@ -130,10 +148,12 @@ msgid ""
 "`X42 Plugins <http://x42-plugins.com/x42/>`_ has many MIDI effect and "
 "meter plugins."
 msgstr ""
+"`X42 Plugins <http://x42-plugins.com/x42/>`_ имеет множество MIDI-эффектов и "
+"плагинов."
 
 #: ../../getting-started/getting-plugins.rst:47
 msgid "Synths"
-msgstr ""
+msgstr "Синтезаторы"
 
 #: ../../getting-started/getting-plugins.rst:49
 msgid "`Helm <https://tytel.org/helm/>`_ is an excellent subtractive synth."
@@ -154,7 +174,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:59
 msgid "Percussion Generators"
-msgstr ""
+msgstr "Ударные генераторы"
 
 #: ../../getting-started/getting-plugins.rst:61
 msgid ""
@@ -164,7 +184,7 @@ msgstr ""
 
 #: ../../getting-started/installation/freebsd.rst:6
 msgid "FreeBSD"
-msgstr ""
+msgstr "FreeBSD"
 
 #: ../../getting-started/installation/freebsd.rst:9
 #: ../../getting-started/installation/gnu-linux.rst:11
@@ -186,7 +206,7 @@ msgstr ""
 
 #: ../../getting-started/installation/freebsd.rst:18
 msgid "Port"
-msgstr ""
+msgstr "Порт"
 
 #: ../../getting-started/installation/freebsd.rst:19
 msgid ""
@@ -198,7 +218,7 @@ msgstr ""
 #: ../../getting-started/installation/freebsd.rst:23
 #: ../../getting-started/installation/gnu-linux.rst:43
 msgid "Manual Installation"
-msgstr ""
+msgstr "Ручная установка"
 
 #: ../../getting-started/installation/freebsd.rst:24
 msgid "See :ref:`gnu-with-linux-manual-installation`."
@@ -206,7 +226,7 @@ msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:6
 msgid "GNU with Linux"
-msgstr ""
+msgstr "GNU с Linux"
 
 #: ../../getting-started/installation/gnu-linux.rst:12
 msgid ""
@@ -221,31 +241,31 @@ msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:21
 msgid "**Ubuntu 18.04 & 19.04** - amd64"
-msgstr ""
+msgstr "**Ubuntu 18.04 & 19.04** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:22
 msgid "**LinuxMint 19.3** - amd64"
-msgstr ""
+msgstr "**LinuxMint 19.3** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:23
 msgid "**Debian 9 & 10** - amd64"
-msgstr ""
+msgstr "**Debian 9 & 10** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:24
 msgid "**Arch Linux** - x86_64"
-msgstr ""
+msgstr "**Arch Linux** - x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:25
 msgid "**Fedora 31** - x86_64"
-msgstr ""
+msgstr "**Fedora 31** - x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:26
 msgid "**OpenSUSE Tumbleweed** - x86_64"
-msgstr ""
+msgstr "**OpenSUSE Tumbleweed** - x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:33
 msgid "Distro Package"
-msgstr ""
+msgstr "Пакеты дистрибутивов"
 
 #: ../../getting-started/installation/gnu-linux.rst:34
 msgid ""
@@ -268,11 +288,11 @@ msgstr ""
 
 #: ../../getting-started/installation/intro.rst:6
 msgid "Installation"
-msgstr ""
+msgstr "Установка"
 
 #: ../../getting-started/installation/macos.rst:6
 msgid "MacOS"
-msgstr ""
+msgstr "MacOS"
 
 #: ../../getting-started/installation/macos.rst:8
 msgid ""
@@ -282,13 +302,15 @@ msgstr ""
 
 #: ../../getting-started/installation/windows.rst:6
 msgid "Windows"
-msgstr ""
+msgstr "Windows"
 
 #: ../../getting-started/installation/windows.rst:8
 msgid ""
 "A Windows installer is available for purchase at the `Download "
 "<https://www.zrythm.org/en/download.html>`_ page on our website."
 msgstr ""
+"Установщик Windows можно приобрести на странице `Загрузка "
+"<https://www.zrythm.org/en/download.html>`_ нашего веб-сайта."
 
 #: ../../getting-started/intro.rst:6
 msgid "Getting Started"
@@ -296,58 +318,61 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:6
 msgid "System Requirements"
-msgstr ""
+msgstr "Системные Требования"
 
 #: ../../getting-started/system-requirements.rst:9
 msgid "Minimum Requirements"
-msgstr ""
+msgstr "Минимальные требования"
 
 #: ../../getting-started/system-requirements.rst:12
 #: ../../getting-started/system-requirements.rst:26
 msgid "Hardware"
-msgstr ""
+msgstr "Аппаратные средства"
 
 #: ../../getting-started/system-requirements.rst:13
 msgid "x86_64, i686 or ARM processor"
-msgstr ""
+msgstr "x86_64, i686 или ARM процессор"
 
 #: ../../getting-started/system-requirements.rst:16
 msgid "Operating System"
-msgstr ""
+msgstr "Операционная система"
 
 #: ../../getting-started/system-requirements.rst:17
 msgid "Unix-compatible OS or Windows"
-msgstr ""
+msgstr "Unix совместимая ОС или Windows"
 
 #: ../../getting-started/system-requirements.rst:20
 msgid "Recommended"
-msgstr ""
+msgstr "Рекомендуемые"
 
 #: ../../getting-started/system-requirements.rst:21
 msgid ""
 "We recommend running a fairly modern machine with the following specs so "
 "you can take full advantage of Zrythm."
 msgstr ""
+"Мы рекомендуем использовать довольно современный компьютер со следующими "
+"характеристиками, чтобы вы могли в полной мере использовать преимущества "
+"Zrythm."
 
 #: ../../getting-started/system-requirements.rst:27
 msgid "A fast processor"
-msgstr ""
+msgstr "Быстрый процессор"
 
 #: ../../getting-started/system-requirements.rst:28
 msgid "Large enough monitor"
-msgstr ""
+msgstr "Достаточно большой монитор"
 
 #: ../../getting-started/system-requirements.rst:29
 msgid "Audio interface"
-msgstr ""
+msgstr "Аудио интерфейс"
 
 #: ../../getting-started/system-requirements.rst:30
 msgid "MIDI keyboard"
-msgstr ""
+msgstr "MIDI клавиатура"
 
 #: ../../getting-started/system-requirements.rst:33
 msgid "Software"
-msgstr ""
+msgstr "Программное обеспечение"
 
 #: ../../getting-started/system-requirements.rst:34
 msgid ""
@@ -358,17 +383,19 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:40
 msgid "Audio Interface"
-msgstr ""
+msgstr "Аудио интерфейс"
 
 #: ../../getting-started/system-requirements.rst:41
 msgid ""
 "An Audio Interface is recommended as it offers low latency and better "
 "quality (especially if recording audio)."
 msgstr ""
+"Рекомендуется использовать аудиоинтерфейс, поскольку он обеспечивает низкую "
+"задержку и лучшее качество (особенно при записи звука)."
 
 #: ../../getting-started/system-requirements.rst:45
 msgid "JACK"
-msgstr ""
+msgstr "ДЖЕК"
 
 #: ../../getting-started/system-requirements.rst:46
 msgid ""
@@ -378,9 +405,8 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/zrythm-overview.rst:6
-#, fuzzy
 msgid "Overview"
-msgstr "Описание"
+msgstr "Обзор"
 
 #: ../../getting-started/zrythm-overview.rst:8
 msgid ""
@@ -392,7 +418,7 @@ msgstr ""
 
 #: ../../getting-started/zrythm-overview.rst:13
 msgid "Limitless automation"
-msgstr ""
+msgstr "Безграничная автоматизация"
 
 #: ../../getting-started/zrythm-overview.rst:12
 msgid ""
@@ -403,7 +429,7 @@ msgstr ""
 
 #: ../../getting-started/zrythm-overview.rst:16
 msgid "LV2 and VST plugins"
-msgstr ""
+msgstr "LV2 и VST плагины"
 
 #: ../../getting-started/zrythm-overview.rst:16
 msgid "Supports the free LV2 plugin format, with added support for VST."
@@ -411,7 +437,7 @@ msgstr ""
 
 #: ../../getting-started/zrythm-overview.rst:18
 msgid "JACK support"
-msgstr ""
+msgstr "Поддержка ДЖЕК"
 
 #: ../../getting-started/zrythm-overview.rst:19
 msgid "JACK aware, with support for JACK transport."
@@ -419,13 +445,15 @@ msgstr ""
 
 #: ../../getting-started/zrythm-overview.rst:21
 msgid "Chord assistance"
-msgstr ""
+msgstr "Аккордовая помощь"
 
 #: ../../getting-started/zrythm-overview.rst:21
 msgid ""
 "Has a chord pad for trying out chords in a scale and a chord track to "
 "help with chord progressions."
 msgstr ""
+"Имеет панель аккордов для опробования аккордов в масштабе и трек аккордов, "
+"чтобы помочь с последовательностями аккордов."
 
 #~ msgid "Here are a few terms you should be aware of when using Zrythm."
 #~ msgstr ""
@@ -983,4 +1011,3 @@ msgstr ""
 #~ " the `MSYS2 project "
 #~ "<https://packages.msys2.org/>`_."
 #~ msgstr ""
-
