@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:54+0000\n"
-"PO-Revision-Date: 2019-12-19 16:46+0000\n"
+"PO-Revision-Date: 2020-03-30 22:14+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -218,7 +219,7 @@ msgstr "Ligações para reportar bugs, doar, conversar, etc."
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Interface"
-msgstr ""
+msgstr "Interface"
 
 #: ../../zrythm-interface/mini-timeline.rst:6
 msgid "Timeline Minimap"
@@ -431,12 +432,10 @@ msgstr ""
 "ou pairando sobre eles com o cursor e rolando"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:6
-#, fuzzy
 msgid "Interface Overview"
-msgstr "Visão Geral Da Interface Zrythm"
+msgstr "Visão Geral Da Interface"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:8
-#, fuzzy
 msgid "The Zrythm interface is split into various sub-modules:"
 msgstr "A interface do Zrythm está dividida em vários submódulos:"
 
@@ -601,4 +600,3 @@ msgstr ""
 
 #~ msgid "Zrythm's Interface"
 #~ msgstr "Interface de Zrythm"
-
