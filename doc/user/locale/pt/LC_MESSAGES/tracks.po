@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2019-12-23 18:21+0000\n"
+"PO-Revision-Date: 2020-03-30 22:14+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese "
-"<https://hosted.weblate.org/projects/zrythm/manualtracks/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -86,7 +87,7 @@ msgstr "Isola a faixa."
 #: ../../tracks/master-track.rst:23
 #: ../../tracks/midi-track.rst:27
 msgid "Mute"
-msgstr "Mudo"
+msgstr "Silenciar"
 
 #: ../../tracks/audio-track.rst:22
 #: ../../tracks/bus-track-audio.rst:20
@@ -766,10 +767,14 @@ msgid ""
 "putting tracks under the same folder and doing common operations. This is"
 " different from what many other DAWs do, so please keep this in mind."
 msgstr ""
+"Na Zrythm, faixas de grupo são usadas para agrupar sinais (roteamento direto)"
+", faixas FX/bus são usadas para efeitos/envios e faixas de pasta são usadas "
+"para por faixas sob a mesma pasta e fazer operações comuns. Isto é diferente "
+"que muitos outros DAWs fazem, portanto, tenha isto em mente."
 
 #: ../../tracks/overview.rst:38
 msgid "If you have used Cubase before, you might find this easy to get used to."
-msgstr ""
+msgstr "Se já usou o Cubase antes, poderá achar fácil de se acostumar."
 
 #: ../../tracks/overview.rst:42
 msgid "Track Interface"
@@ -1069,4 +1074,3 @@ msgstr "Visibilidade da Faixa"
 
 #~ msgid "These are similar to :ref:`audio-track-sends`."
 #~ msgstr "Estes são semelhantes a :ref:'audio-track-sends'."
-

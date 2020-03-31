@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-03-25 20:56+0000\n"
-"PO-Revision-Date: 2019-12-28 13:21+0000\n"
+"PO-Revision-Date: 2020-03-30 22:14+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: src/zrythm.c:309
 msgid "Setting up main window"
@@ -2312,9 +2312,8 @@ msgid "Full designation"
 msgstr "Região completa"
 
 #: resources/ui/port_info_dialog.ui:114
-#, fuzzy
 msgid "Range"
-msgstr "Intervalo de Tempo"
+msgstr "Intervalo"
 
 #: resources/ui/port_info_dialog.ui:128
 msgid "Flags"

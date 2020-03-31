@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-28 11:51+0000\n"
-"PO-Revision-Date: 2019-12-20 21:21+0000\n"
+"PO-Revision-Date: 2020-03-30 22:14+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualgetting-started/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
-"/manualgetting-started/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../getting-started/additional-resources.rst:6
@@ -270,19 +271,16 @@ msgid "The installer supports the following distros (and derivatives):"
 msgstr "O instalador suporta as distros seguintes (e derivados):"
 
 #: ../../getting-started/installation/gnu-linux.rst:21
-#, fuzzy
 msgid "**Ubuntu 18.04 & 19.04** - amd64"
-msgstr "**Ubuntu 18.10, 19.04, 19.10** - amd64"
+msgstr "**Ubuntu 18.04 & 19.04** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:22
-#, fuzzy
 msgid "**LinuxMint 19.3** - amd64"
-msgstr "**Debian 10** - amd64"
+msgstr "**LinuxMint 19.3** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:23
-#, fuzzy
 msgid "**Debian 9 & 10** - amd64"
-msgstr "**Debian 10** - amd64"
+msgstr "**Debian 9 & 10** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:24
 msgid "**Arch Linux** - x86_64"
@@ -294,7 +292,7 @@ msgstr "**Fedora 31** - x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:26
 msgid "**OpenSUSE Tumbleweed** - x86_64"
-msgstr ""
+msgstr "**OpenSUSE Tumbleweed** - x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:33
 msgid "Distro Package"
@@ -347,14 +345,12 @@ msgid "Windows"
 msgstr "Windows"
 
 #: ../../getting-started/installation/windows.rst:8
-#, fuzzy
 msgid ""
 "A Windows installer is available for purchase at the `Download "
 "<https://www.zrythm.org/en/download.html>`_ page on our website."
 msgstr ""
-"Pode instalar a versão mais recente do Zrythm para a sua distro `da "
-"página de descarragemento <https://software.opensuse.org//download.html? "
-"project = home% 3Aalextee & package = zrythm>`_ na nossa website."
+"Um instalador do Windows está disponível para compra na página "
+"'Descarregamentos <https://www.zrythm.org/en/download.html>`_ no nosso site."
 
 #: ../../getting-started/intro.rst:6
 msgid "Getting Started"
@@ -382,9 +378,8 @@ msgid "Operating System"
 msgstr "Sistema Operacional"
 
 #: ../../getting-started/system-requirements.rst:17
-#, fuzzy
 msgid "Unix-compatible OS or Windows"
-msgstr "SO compatível com Unix"
+msgstr "SO compatível com Unix ou Windows"
 
 #: ../../getting-started/system-requirements.rst:20
 msgid "Recommended"
@@ -419,15 +414,14 @@ msgid "Software"
 msgstr "Software"
 
 #: ../../getting-started/system-requirements.rst:34
-#, fuzzy
 msgid ""
 "A JACK patchbay such as `QjackCtl <https://qjackctl.sourceforge.io/>`_, "
 "`Catia <https://kx.studio/Applications:Catia>`_ or `Ingen "
 "<https://drobilla.net/software/ingen>`_"
 msgstr ""
-"Um patchbay JACK como `QjackCtl <https://qjackctl.sourceforge.io/>`_, "
-"`Catia <https://kx.studio/Applications:Catia>`_ e `Ingen "
-"<https://drobilla.net/software/ingen>`_"
+"Um patchbay JACK como `QjackCtl <https://qjackctl.sourceforge.io/>`_, `Catia "
+"<https://kx.studio/Applications:Catia>`_ e `Ingen <https://drobilla.net/"
+"software/ingen>`_"
 
 #: ../../getting-started/system-requirements.rst:40
 msgid "Audio Interface"
@@ -451,6 +445,9 @@ msgid ""
 "Zrythm. You will find lots of information online about how to configure "
 "JACK, so we will skip this part."
 msgstr ""
+"Ao usar JACK, JACK precisa ser configurado e configurado antes de executar "
+"Zrythm. Encontrará muitas informações online sobre como configurar o JACK, "
+"por isso vamos pular esta parte."
 
 #: ../../getting-started/zrythm-overview.rst:6
 msgid "Overview"
@@ -478,14 +475,13 @@ msgstr ""
 " rampas e curvas ou com sinais CV de LFO e plugins de envelope."
 
 #: ../../getting-started/zrythm-overview.rst:16
-#, fuzzy
 msgid "LV2 and VST plugins"
-msgstr "Plug-ins LV2"
+msgstr "Plug-ins LV2 e VST"
 
 #: ../../getting-started/zrythm-overview.rst:16
-#, fuzzy
 msgid "Supports the free LV2 plugin format, with added support for VST."
-msgstr "Suporta o formato de plugin LV2 livre."
+msgstr ""
+"Suporta o formato livre do plugin LV2, com suporte adicional para o VST."
 
 #: ../../getting-started/zrythm-overview.rst:18
 msgid "JACK support"
@@ -1029,4 +1025,3 @@ msgstr ""
 #~ " the `MSYS2 project "
 #~ "<https://packages.msys2.org/>`_."
 #~ msgstr ""
-
