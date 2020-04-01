@@ -46,24 +46,18 @@
 
 (define (main . args)
   (unless (getenv "DESTDIR")
-    (display "Compiling gsettings schemas...")
-    (newline)
+    (display "Compiling gsettings schemas...\n")
     (system* "glib-compile-schemas" schemadir)
     (when (program-found? "gtk-update-icon-cache")
-      (display "Updating icon cache...")
-      (newline)
-      (system*
-        "touch"
-        (join-path
-          (list datadir "icons/hicolor")))
+      (display "Updating icon cache...\n")
+      (system* "touch"
+        (join-path (list datadir "icons/hicolor")))
       (system* "gtk-update-icon-cache"))
     (when (program-found? "update-mime-database")
-      (display "Updating MIME database...")
-      (newline)
+      (display "Updating MIME database...\n")
       (system* "update-mime-database" mime-dir))
     (when (program-found? "update-desktop-database")
-      (display "Updating desktop database...")
-      (newline)
+      (display "Updating desktop database...\n")
       (unless (file-exists? desktop-db-dir)
         (mkdir desktop-db-dir))
       (system* "update-desktop-database" "-q"

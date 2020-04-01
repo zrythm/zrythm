@@ -54,9 +54,6 @@ if (get_option ('user_manual'))
   install_data (
     'README.md',
     install_dir: docdir)
-  install_data (
-    'COPYING',
-    install_dir: docdir)
 endif
 
 # generate guile docs
