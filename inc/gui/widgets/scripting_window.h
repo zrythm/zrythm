@@ -28,6 +28,8 @@
 
 #include <gtk/gtk.h>
 
+#include <gtksourceview/gtksource.h>
+
 #define SCRIPTING_WINDOW_WIDGET_TYPE \
   (scripting_window_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -48,10 +50,11 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _ScriptingWindowWidget
 {
   GtkWindow            parent_instance;
-  GtkTextView *        editor;
-  GtkTextBuffer *      textbuf;
   GtkButton *          execute_btn;
   GtkLabel *           output;
+  GtkViewport *        source_viewport;
+  GtkSourceView *      editor;
+  GtkSourceBuffer *    buffer;
 } ScriptingWindowWidget;
 
 /**

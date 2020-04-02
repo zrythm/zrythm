@@ -2,16 +2,6 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <object class="GtkTextBuffer" id="textbuf">
-    <property name="text">;; Example script
-(use-modules (zrythm)
-                               (audio position))
-(define zrythm-script
-  (lambda ()
-    (display (zrythm-get-ver))
-    (let ((mypos (position-new 2 1 1 34 0)))
-      (position-print mypos))))</property>
-  </object>
   <template class="ScriptingWindowWidget" parent="GtkWindow">
     <property name="can_focus">False</property>
     <child>
@@ -39,20 +29,9 @@
                     <property name="can_focus">True</property>
                     <property name="shadow_type">in</property>
                     <child>
-                      <object class="GtkViewport">
+                      <object class="GtkViewport" id="source_viewport">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkTextView" id="editor">
-                            <property name="width_request">480</property>
-                            <property name="height_request">360</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="hexpand">True</property>
-                            <property name="vexpand">True</property>
-                            <property name="buffer">textbuf</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                   </object>

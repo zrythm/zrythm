@@ -496,6 +496,11 @@ stackswitcher button image
   padding-right: 3px;
 }
 
+textview {
+  font-family: Monospace;
+  font-size: 11pt;
+}
+
 /* button without padding */
 .mini-button
 {

@@ -40,6 +40,16 @@ G_DEFINE_TYPE (
   scripting_window_widget,
   GTK_TYPE_WINDOW)
 
+static const char * example_script = "\
+;; Example script\n\
+(use-modules (zrythm)\n\
+             (audio position))\n\
+(define zrythm-script\n\
+  (lambda ()\n\
+    (display (zrythm-get-ver))\n\
+    (let ((mypos (position-new 2 1 1 34 0)))\n\
+      (position-print mypos))))";
+
 /**
  * Function that runs in guile mode.
  */
@@ -54,12 +64,13 @@ guile_mode_func (void* data)
       "zrythm_script_XXXXXX", NULL);
   GtkTextIter start_iter, end_iter;
   gtk_text_buffer_get_start_iter (
-    self->textbuf, &start_iter);
+    GTK_TEXT_BUFFER (self->buffer), &start_iter);
   gtk_text_buffer_get_end_iter (
-    self->textbuf, &end_iter);
+    GTK_TEXT_BUFFER (self->buffer), &end_iter);
   char * script_content =
     gtk_text_buffer_get_text (
-      self->textbuf, &start_iter, &end_iter, false);
+      GTK_TEXT_BUFFER (self->buffer),
+      &start_iter, &end_iter, false);
   char * full_path =
     g_build_filename (tmp_dir, "script.scm", NULL);
   GError *err = NULL;
@@ -140,10 +151,9 @@ scripting_window_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, ScriptingWindowWidget, x)
 
-  BIND_CHILD (editor);
   BIND_CHILD (execute_btn);
   BIND_CHILD (output);
-  BIND_CHILD (textbuf);
+  BIND_CHILD (source_viewport);
 }
 
 static void
@@ -151,5 +161,39 @@ scripting_window_widget_init (
   ScriptingWindowWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  GtkSourceLanguageManager * manager =
+    gtk_source_language_manager_get_default ();
+  GtkSourceLanguage * lang =
+    gtk_source_language_manager_get_language (
+      manager, "scheme");
+  self->buffer =
+    gtk_source_buffer_new_with_language (lang);
+  self->editor =
+    GTK_SOURCE_VIEW (
+      gtk_source_view_new_with_buffer (
+      self->buffer));
+  gtk_container_add (
+    GTK_CONTAINER (self->source_viewport),
+    GTK_WIDGET (self->editor));
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->editor), true);
+  gtk_text_buffer_set_text (
+    GTK_TEXT_BUFFER (self->buffer),
+    example_script, -1);
+  gtk_source_view_set_show_line_numbers (
+    self->editor, true);
+  gtk_source_view_set_auto_indent (
+    self->editor, true);
+  gtk_source_view_set_indent_on_tab (
+    self->editor, true);
+  gtk_source_view_set_tab_width (
+    self->editor, 2);
+  gtk_source_view_set_indent_width (
+    self->editor, 2);
+  gtk_source_view_set_insert_spaces_instead_of_tabs (
+    self->editor, true);
+  gtk_source_view_set_smart_backspace (
+    self->editor, true);
 }
 #endif

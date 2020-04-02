@@ -67,7 +67,9 @@
 #include "gui/widgets/quantize_dialog.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
+#ifdef HAVE_GTK_SOURCE_VIEW
 #include "gui/widgets/scripting_window.h"
+#endif
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/timeline_bot_box.h"

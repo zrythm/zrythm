@@ -50,6 +50,10 @@
 #include <glibtop.h>
 #endif
 
+#ifdef HAVE_GTK_SOURCE_VIEW_4
+#include <gtksourceview/gtksource.h>
+#endif
+
 #include <audec/audec.h>
 #include <suil/suil.h>
 #include <fftw3.h>
@@ -396,6 +400,11 @@ main (int    argc,
   srand ((unsigned int) time (NULL));
 #else
   srandom ((unsigned int) time (NULL));
+#endif
+
+  /* init gtksourceview */
+#ifdef HAVE_GTK_SOURCE_VIEW_4
+  gtk_source_init ();
 #endif
 
   /* init object utils */

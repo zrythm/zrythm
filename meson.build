@@ -592,9 +592,17 @@ if get_option('enable_guile')
     guile_dep = dependency ('guile-2.2')
   endif
   zrythm_deps += guile_dep
-#zrythm_deps += dependency ('gtksourceview-3.0')
+  gtksource_dep = dependency (
+    'gtksourceview-4', required: false)
+  if gtksource_dep.found()
+    cdata.set('HAVE_GTK_SOURCE_VIEW_4', 1)
+  else
+    gtksource_dep = dependency (
+      'gtksourceview-3.0', required: true)
+    cdata.set('HAVE_GTK_SOURCE_VIEW_3', 1)
+  endif
+  zrythm_deps += gtksource_dep
   cdata.set('HAVE_GUILE', 1)
-#cdata.set('HAVE_GTK_SOURCE_VIEW', 1)
 endif
 
 if os_windows
