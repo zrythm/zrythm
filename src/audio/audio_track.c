@@ -87,6 +87,8 @@ audio_track_fill_stereo_ports_from_clip (
         {
           r = lane->regions[i];
           r_obj = (ArrangerObject *) r;
+          if (r_obj->muted)
+            continue;
 
           /* skip if in bounce mode and the
            * region should not be bounced */

@@ -420,6 +420,9 @@ midi_track_fill_midi_events (
             {
               r = lane->regions[i];
               r_obj = (ArrangerObject *) r;
+              if (r_obj->muted)
+                continue;
+
               region_loop_met = 0;
 
               /* skip if in bounce mode and the

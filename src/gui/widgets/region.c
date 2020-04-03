@@ -175,6 +175,7 @@ draw_background (
     {
       const int size = 14;
       const int padding = 2;
+
       cairo_surface_t * surface =
         z_cairo_get_surface_from_icon_name (
           "mute", size, 1);
@@ -182,9 +183,12 @@ draw_background (
       /* add main icon */
       cairo_set_source_rgba (
         cr, 1, 1, 1, 0.8);
+      double end_region_global =
+        full_rect->x + full_rect->width;
       cairo_mask_surface (
         cr, surface,
-        (draw_x + draw_width) - (size + padding),
+        (end_region_global - rect->x) -
+          (size + padding),
         (full_rect->y - rect->y) + padding);
       cairo_fill (cr);
     }
