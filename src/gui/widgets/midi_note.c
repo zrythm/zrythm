@@ -184,7 +184,7 @@ midi_note_draw (
         &color,
         arranger->hovered_object == obj,
         midi_note_is_selected (self),
-        false, false);
+        false, arranger_object_get_muted (obj));
       gdk_cairo_set_source_rgba (
         cr, &color);
 
@@ -211,7 +211,7 @@ midi_note_draw (
         arranger->hovered_object == obj,
         midi_note_is_selected (self),
         /* FIXME */
-        false, false);
+        false, arranger_object_get_muted (obj));
       color.alpha = 0.5;
       gdk_cairo_set_source_rgba (
         cr, &color);
@@ -275,34 +275,3 @@ midi_note_draw (
         layout, str_to_use);
     }
 }
-
-#if 0
-MidiNoteWidget *
-midi_note_widget_new (MidiNote * midi_note)
-{
-  MidiNoteWidget * self =
-    g_object_new (MIDI_NOTE_WIDGET_TYPE,
-                  "visible", 1,
-                  NULL);
-
-  arranger_object_widget_setup (
-    Z_ARRANGER_OBJECT_WIDGET (self),
-    (ArrangerObject *) midi_note);
-
-  self->midi_note = midi_note;
-
-  /* set tooltip text */
-  char * tooltip =
-    g_strdup_printf (
-      "[%s%d] %d",
-      chord_descriptor_note_to_string (
-        self->midi_note->val % 12),
-      self->midi_note->val / 12 - 1,
-      self->midi_note->vel->vel);
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self), tooltip);
-  g_free (tooltip);
-
-  return self;
-}
-#endif

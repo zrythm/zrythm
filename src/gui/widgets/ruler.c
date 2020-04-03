@@ -176,9 +176,13 @@ draw_regions (
   int px_start, px_end;
 
   /* draw the main region */
-  cairo_set_source_rgba (
-    cr, 1, track->color.green + 0.2,
-    track->color.blue + 0.2, 1.0);
+  GdkRGBA color = track->color;
+  ui_get_arranger_object_color (
+    &color,
+    MW_TIMELINE->hovered_object == region_obj,
+    region_is_selected (region),
+    false, arranger_object_get_muted (region_obj));
+  gdk_cairo_set_source_rgba (cr, &color);
   px_start =
     ui_pos_to_px_editor (
       &region_obj->pos, 1);

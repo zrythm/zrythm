@@ -2045,6 +2045,10 @@ arranger_object_clone (
       new_obj->fade_in_opts = self->fade_in_opts;
       new_obj->fade_out_opts = self->fade_out_opts;
     }
+  if (arranger_object_can_mute (self))
+    {
+      new_obj->muted = self->muted;
+    }
 
   return new_obj;
 }

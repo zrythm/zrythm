@@ -283,6 +283,8 @@ main_window_widget_init (MainWindowWidget * self)
     { "select-all", activate_select_all },
     /* selection submenu */
     { "loop-selection", activate_loop_selection },
+    { "mute-selection", activate_mute_selection,
+      "s"},
 
     /* view menu */
     { "toggle-left-panel",

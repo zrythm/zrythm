@@ -1642,6 +1642,59 @@ activate_quantize_options (
 }
 
 void
+activate_mute_selection (
+  GSimpleAction *action,
+  GVariant      *_variant,
+  gpointer       user_data)
+{
+  g_return_if_fail (_variant);
+
+  gsize size;
+  const char * variant =
+    g_variant_get_string (_variant, &size);
+  ArrangerSelections * sel = NULL;
+  if (string_is_equal (variant, "timeline", 1))
+    {
+      sel = (ArrangerSelections *) TL_SELECTIONS;
+    }
+  else if (string_is_equal (variant, "editor", 1))
+    {
+      sel = (ArrangerSelections *) MA_SELECTIONS;
+    }
+  else if (string_is_equal (variant, "global", 1))
+    {
+      if (MAIN_WINDOW->last_focused ==
+          GTK_WIDGET (MW_TIMELINE))
+        {
+          sel =
+            (ArrangerSelections *) TL_SELECTIONS;
+        }
+      else if (MAIN_WINDOW->last_focused ==
+                 GTK_WIDGET (MW_MIDI_ARRANGER))
+        {
+          sel =
+            (ArrangerSelections *) MA_SELECTIONS;
+        }
+    }
+  else
+    {
+      g_return_if_reached ();
+    }
+
+  if (sel)
+    {
+      UndoableAction * ua =
+        arranger_selections_action_new_edit (
+          sel, NULL,
+          ARRANGER_SELECTIONS_ACTION_EDIT_MUTE,
+          false);
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+
+  g_message ("mute/unmute selections");
+}
+
+void
 activate_set_timebase_master (
   GSimpleAction *action,
   GVariant      *variant,

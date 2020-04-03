@@ -51,7 +51,11 @@ velocity_draw (
   GdkRectangle * rect)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (obj);
   MidiNote * mn = velocity_get_midi_note (self);
+  ArrangerObject *  mn_obj =
+    (ArrangerObject *) mn;
   ZRegion * region =
     arranger_object_get_region (obj);
   Position global_start_pos;
@@ -102,14 +106,13 @@ velocity_draw (
   /* draw velocities of main region */
   if (region == clip_editor_get_region (CLIP_EDITOR))
     {
+      ui_get_arranger_object_color (
+        &color,
+        arranger->hovered_object == mn_obj,
+        velocity_is_selected (self),
+        /* FIXME */
+        false, arranger_object_get_muted (mn_obj));
       gdk_cairo_set_source_rgba (cr, &color);
-      if (velocity_is_selected (self))
-        {
-          cairo_set_source_rgba (
-            cr, color.red + 0.4,
-            color.green + 0.2,
-            color.blue + 0.2, 1);
-        }
       cairo_rectangle (
         cr,
         obj->full_rect.x - rect->x,

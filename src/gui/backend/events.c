@@ -107,6 +107,21 @@ redraw_all_arranger_bgs ()
 }
 
 static void
+redraw_regions_for_midi_selections (
+  MidiArrangerSelections * sel)
+{
+  for (int i = 0; i < sel->num_midi_notes;
+       i++)
+    {
+      MidiNote * mn = sel->midi_notes[i];
+      ZRegion * region =
+        midi_note_get_region (mn);
+      arranger_object_queue_redraw (
+        (ArrangerObject *) region);
+    }
+}
+
+static void
 on_arranger_selections_in_transit (
   ArrangerSelections * sel)
 {
@@ -146,6 +161,10 @@ on_arranger_selections_in_transit (
     break;
   case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
     clip_editor_redraw_region (CLIP_EDITOR);
+    break;
+  case ARRANGER_SELECTIONS_TYPE_MIDI:
+    redraw_regions_for_midi_selections (
+      (MidiArrangerSelections *) sel);
     break;
   default:
     break;
@@ -465,12 +484,21 @@ on_arranger_selections_changed (
   ArrangerObject ** objs =
     arranger_selections_get_all_objects (
       sel, &size);
+  bool redraw_editor_ruler = false;
   for (int i = 0; i < size; i++)
     {
       ArrangerObject * obj = objs[i];
       g_return_if_fail (IS_ARRANGER_OBJECT (obj));
 
+      if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
+        redraw_editor_ruler = true;
+
       arranger_object_queue_redraw (obj);
+    }
+
+  if (redraw_editor_ruler)
+    {
+      ruler_widget_redraw_whole (EDITOR_RULER);
     }
 
   refresh_for_selections_type (sel->type);
@@ -507,6 +535,12 @@ arranger_selections_change_redraw_everything (
         MW_MIDI_ARRANGER);
       arranger_widget_redraw_whole (
         MW_MIDI_MODIFIER_ARRANGER);
+      {
+        MidiArrangerSelections * ma_sel =
+          (MidiArrangerSelections *) sel;
+        redraw_regions_for_midi_selections (
+          ma_sel);
+      }
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
       break;
@@ -767,6 +801,8 @@ on_arranger_object_changed (
             /*arranger_object_set_widget_visibility_and_state (*/
               /*vel_obj, 1);*/
           /*}*/
+        arranger_object_queue_redraw (
+          (ArrangerObject *) parent_r_obj);
       }
       break;
     case ARRANGER_OBJECT_TYPE_REGION:

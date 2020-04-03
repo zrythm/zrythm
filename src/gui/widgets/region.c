@@ -350,6 +350,8 @@ draw_midi_region (
       MidiNote * mn = self->midi_notes[i];
       ArrangerObject * mn_obj =
         (ArrangerObject *) mn;
+      if (arranger_object_get_muted (mn_obj))
+        continue;
 
       /* get ratio (0.0 - 1.0) on x where midi note
        * starts & ends */

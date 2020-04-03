@@ -1006,6 +1006,9 @@ zrythm_app_startup (
   accel_install_primary_action_accelerator (
     "<Alt>Q",
     "win.quantize-options::global");
+  accel_install_primary_action_accelerator (
+    "<Shift>M",
+    "win.mute-selection::global");
 }
 
 static void

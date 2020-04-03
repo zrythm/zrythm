@@ -56,7 +56,7 @@ typedef struct RecordingManager RecordingManager;
  * @{
  */
 
-#define ZRYTHM zrythm
+#define ZRYTHM (zrythm)
 
 #define ZRYTHM_PROJECTS_DIR "Projects"
 

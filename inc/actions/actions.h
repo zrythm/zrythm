@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,14 +17,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Actions.
+ */
+
+#ifndef __ACTIONS_ACTIONS_H__
+#define __ACTIONS_ACTIONS_H__
+
 #include <gtk/gtk.h>
 
 #define DECLARE_SIMPLE(x) \
-  void \
-  activate_##x ( \
+  void x ( \
     GSimpleAction *action, \
     GVariant      *variant, \
     gpointer       user_data)
+
+/**
+ * @addtogroup actions
+ *
+ * @{
+ */
 
 void
 action_enable_window_action (
@@ -375,7 +389,7 @@ activate_hide_selected_tracks (
   GVariant      *variant,
   gpointer       user_data);
 
-DECLARE_SIMPLE (pin_selected_tracks);
+DECLARE_SIMPLE (activate_pin_selected_tracks);
 
 void
 activate_snap_events (GSimpleAction *action,
@@ -442,6 +456,8 @@ activate_quantize_options (
   GVariant      *variant,
   gpointer       user_data);
 
+DECLARE_SIMPLE (activate_mute_selection);
+
 void
 activate_set_timebase_master (
   GSimpleAction *action,
@@ -460,8 +476,16 @@ activate_unlink_jack_transport (
   GVariant      *variant,
   gpointer       user_data);
 
-DECLARE_SIMPLE (show_file_browser);
-DECLARE_SIMPLE (toggle_timeline_event_viewer);
-DECLARE_SIMPLE (toggle_editor_event_viewer);
+DECLARE_SIMPLE (activate_show_file_browser);
+DECLARE_SIMPLE (
+  activate_toggle_timeline_event_viewer);
+DECLARE_SIMPLE (
+  activate_toggle_editor_event_viewer);
+
+/**
+ * @}
+ */
 
 #undef DECLARE_SIMPLE
+
+#endif

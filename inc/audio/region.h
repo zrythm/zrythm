@@ -76,7 +76,7 @@ typedef struct ZRegion
   RegionIdentifier id;
 
   /** Name to be shown on the widget. */
-  char *         name;
+  char *          name;
 
   /**
    * Linked parent region.
@@ -85,14 +85,17 @@ typedef struct ZRegion
    * or the midi notes from the linked region
    * are used.
    */
-  RegionIdentifier  linked_region_id;
+  RegionIdentifier linked_region_id;
+
+  /** Whether a linked region exists. */
+  bool            has_link;
 
   /**
    * TODO region color independent of track.
    *
    * If null, the track color is used.
    */
-  GdkRGBA        color;
+  GdkRGBA         color;
 
   /* ==== MIDI REGION ==== */
 
@@ -194,13 +197,14 @@ static const cyaml_schema_field_t
     region_identifier_fields_schema),
   YAML_FIELD_STRING_PTR (
     ZRegion, name),
-  CYAML_FIELD_INT (
-    "pool_id", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     ZRegion, pool_id),
   CYAML_FIELD_MAPPING (
     "linked_region_id", CYAML_FLAG_DEFAULT,
     ZRegion, linked_region_id,
     region_identifier_fields_schema),
+  YAML_FIELD_INT (
+    ZRegion, has_link),
   CYAML_FIELD_SEQUENCE_COUNT (
     "midi_notes",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,

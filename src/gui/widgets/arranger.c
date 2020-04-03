@@ -5569,12 +5569,14 @@ arranger_widget_toggle_selections_muted (
   g_return_if_fail (
     arranger_object_can_mute (clicked_object));
 
-  UndoableAction * ua =
-    arranger_selections_action_new_edit (
-      arranger_widget_get_selections (self),
-      NULL,
-      ARRANGER_SELECTIONS_ACTION_EDIT_MUTE, false);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  GAction * action =
+    g_action_map_lookup_action (
+      G_ACTION_MAP (MAIN_WINDOW),
+      "mute-selection");
+  GVariant * var =
+    g_variant_new_string ("timeline");
+  g_action_activate (action, var);
+  g_free (var);
 }
 
 /**
