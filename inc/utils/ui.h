@@ -27,6 +27,8 @@
 #ifndef __UTILS_UI_H__
 #define __UTILS_UI_H__
 
+#include <stdbool.h>
+
 #include "utils/localization.h"
 
 #include <gtk/gtk.h>
@@ -642,9 +644,10 @@ ui_rectangle_overlap (
 void
 ui_get_arranger_object_color (
   GdkRGBA *    color,
-  const int    is_hovered,
-  const int    is_selected,
-  const int    is_transient);
+  const bool   is_hovered,
+  const bool   is_selected,
+  const bool   is_transient,
+  const bool   is_muted);
 
 UiCaches *
 ui_caches_new (void);

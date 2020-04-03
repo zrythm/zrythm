@@ -84,7 +84,7 @@ marker_draw (
   ui_get_arranger_object_color (
     &color,
     arranger->hovered_object == obj,
-    marker_is_selected (self), 0);
+    marker_is_selected (self), false, false);
   gdk_cairo_set_source_rgba (
     cr, &color);
 

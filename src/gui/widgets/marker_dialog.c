@@ -74,7 +74,8 @@ on_response (
       UndoableAction * ua =
         arranger_selections_action_new_edit (
           before, after,
-          ARRANGER_SELECTIONS_ACTION_EDIT_NAME);
+          ARRANGER_SELECTIONS_ACTION_EDIT_NAME,
+          true);
       undo_manager_perform (
         UNDO_MANAGER, ua);
       arranger_selections_free_full (

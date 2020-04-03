@@ -481,6 +481,17 @@ arranger_widget_scroll_until_obj (
   double           padding);
 
 /**
+ * Toggles the mute status of the selection, based
+ * on the mute status of the selected object.
+ *
+ * This creates an undoable action and executes it.
+ */
+void
+arranger_widget_toggle_selections_muted (
+  ArrangerWidget * self,
+  ArrangerObject * clicked_object);
+
+/**
  * Returns the earliest possible position allowed
  * in this arranger (eg, 1.1.0.0 for timeline).
  */

@@ -26,6 +26,8 @@
 #ifndef __GUI_BACKEND_ARRANGER_OBJECT_H__
 #define __GUI_BACKEND_ARRANGER_OBJECT_H__
 
+#include <stdbool.h>
+
 #include "audio/curve.h"
 #include "audio/position.h"
 #include "utils/yaml.h"
@@ -249,6 +251,9 @@ typedef struct ArrangerObject
    */
   ArrangerObject *   main;
 
+  /** Whether muted or not (if applicable). */
+  bool               muted;
+
   int                magic;
 
   /** 1 when hovering over the object. */
@@ -274,6 +279,8 @@ static const cyaml_schema_field_t
     arranger_object_flags_bitvals,
     CYAML_ARRAY_LEN (
       arranger_object_flags_bitvals)),
+  YAML_FIELD_INT (
+    ArrangerObject, muted),
   YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerObject, pos,
     position_fields_schema),
@@ -343,6 +350,10 @@ static const cyaml_schema_value_t
   ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION && \
     region_type_can_fade ( \
       ((ZRegion *) _obj)->id.type))
+
+#define arranger_object_can_mute(_obj) \
+  ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION || \
+   (_obj)->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
 
 /**
  * Gets the arranger for this arranger object.
@@ -460,6 +471,22 @@ arranger_object_is_selected (
 void
 arranger_object_print (
   ArrangerObject * self);
+
+/**
+ * Gets the mute status of the object.
+ */
+bool
+arranger_object_get_muted (
+  ArrangerObject * self);
+
+/**
+ * Sets the mute status of the object.
+ */
+void
+arranger_object_set_muted (
+  ArrangerObject * self,
+  bool             muted,
+  bool             fire_events);
 
 /**
  * Getter.

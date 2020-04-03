@@ -126,7 +126,8 @@ draw_background (
     arranger->hovered_object == obj,
     region_is_selected (self),
     /* FIXME */
-    0);
+    false,
+    arranger_object_get_muted (obj));
   gdk_cairo_set_source_rgba (
     cr, &color);
 
@@ -156,11 +157,8 @@ draw_background (
     }
 
   z_cairo_rounded_rectangle (
-    cr,
-    draw_x,
-    full_rect->y - rect->y,
-    draw_width,
-    full_rect->height,
+    cr, draw_x, full_rect->y - rect->y,
+    draw_width, full_rect->height,
     1.0, 4.0);
 
   /* clip this path so all drawing afterwards will
@@ -171,6 +169,25 @@ draw_background (
   cairo_clip_preserve (cr);
 
   cairo_fill (cr);
+
+  /* draw "mute" or "link" icon if needed */
+  if (arranger_object_get_muted (obj))
+    {
+      const int size = 14;
+      const int padding = 2;
+      cairo_surface_t * surface =
+        z_cairo_get_surface_from_icon_name (
+          "mute", size, 1);
+
+      /* add main icon */
+      cairo_set_source_rgba (
+        cr, 1, 1, 1, 0.8);
+      cairo_mask_surface (
+        cr, surface,
+        (draw_x + draw_width) - (size + padding),
+        (full_rect->y - rect->y) + padding);
+      cairo_fill (cr);
+    }
 }
 
 /**

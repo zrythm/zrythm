@@ -80,7 +80,7 @@ chord_object_draw (
   ui_get_arranger_object_color (
     &color,
     arranger->hovered_object == obj,
-    chord_object_is_selected (self), 0);
+    chord_object_is_selected (self), false, false);
   ChordDescriptor * descr =
     CHORD_EDITOR->chords[self->index];
   gdk_cairo_set_source_rgba (cr, &color);

@@ -1252,7 +1252,8 @@ on_fade_preset_selected (
     arranger_selections_action_new_edit (
       sel_before,
       (ArrangerSelections *) TL_SELECTIONS,
-      ARRANGER_SELECTIONS_ACTION_EDIT_FADES);
+      ARRANGER_SELECTIONS_ACTION_EDIT_FADES,
+      true);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   g_warn_if_fail (IS_ARRANGER_OBJECT (info->obj));
@@ -1260,6 +1261,17 @@ on_fade_preset_selected (
     ET_ARRANGER_OBJECT_CHANGED, info->obj);
 
   object_zero_and_free (info);
+}
+
+static void
+on_region_mute_active (
+  GtkMenuItem *     menu_item,
+  ZRegion *         region)
+{
+  arranger_widget_toggle_selections_muted (
+    arranger_object_get_arranger (
+      (ArrangerObject *) region),
+    (ArrangerObject *) region);
 }
 
 /**
@@ -1336,6 +1348,26 @@ timeline_arranger_widget_show_context_menu (
       if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
         {
           ZRegion * r = (ZRegion *) obj;
+
+          if (r->muted)
+            {
+              menuitem =
+                gtk_menu_item_new_with_label (
+                  _("Unmute"));
+            }
+          else
+            {
+              menuitem =
+                gtk_menu_item_new_with_label (
+                  _("Mute"));
+            }
+          gtk_menu_shell_append (
+            GTK_MENU_SHELL(menu), menuitem);
+          g_signal_connect (
+            menuitem, "activate",
+            G_CALLBACK (on_region_mute_active),
+            r);
+
           if (r->id.type == REGION_TYPE_MIDI)
             {
               menuitem =

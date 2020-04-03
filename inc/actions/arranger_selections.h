@@ -112,6 +112,9 @@ typedef enum ArrangerSelectionsActionEditType
   /** Editing fade positions or curve options. */
   ARRANGER_SELECTIONS_ACTION_EDIT_FADES,
 
+  /** Change mute status. */
+  ARRANGER_SELECTIONS_ACTION_EDIT_MUTE,
+
   /** For ramping MidiNote velocities or
    * AutomationPoint values.
    * (this is handled by EDIT_PRIMITIVE) */
@@ -131,6 +134,8 @@ arranger_selections_action_edit_type_strings[] =
     ARRANGER_SELECTIONS_ACTION_EDIT_SCALE },
   { "Fades",
     ARRANGER_SELECTIONS_ACTION_EDIT_FADES },
+  { "Mute",
+    ARRANGER_SELECTIONS_ACTION_EDIT_MUTE },
 };
 
 /**
@@ -483,7 +488,8 @@ UndoableAction *
 arranger_selections_action_new_edit (
   ArrangerSelections *             sel_before,
   ArrangerSelections *             sel_after,
-  ArrangerSelectionsActionEditType type);
+  ArrangerSelectionsActionEditType type,
+  bool                             already_edited);
 
 /**
  * Creates a new action for splitting

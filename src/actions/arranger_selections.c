@@ -303,22 +303,35 @@ arranger_selections_action_new_record (
  * @param sel_before The selections before the
  *   change.
  * @param sel_after The selections after the
- *   change.
+ *   change, or NULL if not already edited.
  * @param type Indication of which field has changed.
  */
 UndoableAction *
 arranger_selections_action_new_edit (
   ArrangerSelections *             sel_before,
   ArrangerSelections *             sel_after,
-  ArrangerSelectionsActionEditType type)
+  ArrangerSelectionsActionEditType type,
+  bool                             already_edited)
 {
   ArrangerSelectionsAction * self =
     _create_action (sel_before);
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_EDIT_ARRANGER_SELECTIONS;
 
-  set_selections (self, sel_after, 1, 1);
   self->edit_type = type;
+
+  if (!already_edited)
+    {
+      self->first_run = 0;
+      /* set as sel_after to avoid segfault, it
+       * will  be ignored anyway */
+      set_selections (
+        self, sel_before, true, true);
+    }
+  else
+    {
+      set_selections (self, sel_after, true, true);
+    }
 
   return ua;
 }
@@ -1338,6 +1351,12 @@ do_or_undo_edit (
                 free_later (old, musical_scale_free);
               }
               break;
+            case ARRANGER_SELECTIONS_ACTION_EDIT_MUTE:
+              {
+                /* set the new status */
+                arranger_object_set_muted (
+                  obj, !obj->muted, false);
+              }
             default:
               break;
             }

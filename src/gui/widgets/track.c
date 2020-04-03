@@ -298,7 +298,7 @@ draw_color_area (
     cr, c2.red, c2.green, c2.blue, 1);
   /*cairo_set_source_surface (*/
     /*self->cached_cr, surface, 1, 1);*/
-  cairo_mask_surface(
+  cairo_mask_surface (
     cr, surface, 1, 1);
   cairo_fill (cr);
 

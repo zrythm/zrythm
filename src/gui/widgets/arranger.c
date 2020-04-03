@@ -3538,7 +3538,8 @@ on_drag_end_midi_modifier (
           arranger_selections_action_new_edit (
             self->sel_at_start,
             (ArrangerSelections *) MA_SELECTIONS,
-            ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
+            ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
+            true);
         undo_manager_perform (
           UNDO_MANAGER, ua);
       }
@@ -3563,7 +3564,8 @@ on_drag_end_midi_modifier (
           arranger_selections_action_new_edit (
             self->sel_at_start,
             (ArrangerSelections *) MA_SELECTIONS,
-            ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
+            ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
+            true);
         if (ua)
           undo_manager_perform (
             UNDO_MANAGER, ua);
@@ -3828,7 +3830,8 @@ on_drag_end_timeline (
           arranger_selections_action_new_edit (
             self->sel_at_start,
             (ArrangerSelections *) TL_SELECTIONS,
-            ARRANGER_SELECTIONS_ACTION_EDIT_FADES);
+            ARRANGER_SELECTIONS_ACTION_EDIT_FADES,
+            true);
         undo_manager_perform (
           UNDO_MANAGER, ua);
       }
@@ -5550,6 +5553,28 @@ arranger_widget_refresh_cursor (
     }
 
   arranger_widget_set_cursor (self, ac);
+}
+
+/**
+ * Toggles the mute status of the selection, based
+ * on the mute status of the selected object.
+ *
+ * This creates an undoable action and executes it.
+ */
+void
+arranger_widget_toggle_selections_muted (
+  ArrangerWidget * self,
+  ArrangerObject * clicked_object)
+{
+  g_return_if_fail (
+    arranger_object_can_mute (clicked_object));
+
+  UndoableAction * ua =
+    arranger_selections_action_new_edit (
+      arranger_widget_get_selections (self),
+      NULL,
+      ARRANGER_SELECTIONS_ACTION_EDIT_MUTE, false);
+  undo_manager_perform (UNDO_MANAGER, ua);
 }
 
 /**

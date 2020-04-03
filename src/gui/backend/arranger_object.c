@@ -198,6 +198,34 @@ set_to_midi_note_object (
 }
 
 /**
+ * Sets the mute status of the object.
+ */
+void
+arranger_object_set_muted (
+  ArrangerObject * self,
+  bool             muted,
+  bool             fire_events)
+{
+  self->muted = muted;
+
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_CHANGED, self);
+    }
+}
+
+/**
+ * Gets the mute status of the object.
+ */
+bool
+arranger_object_get_muted (
+  ArrangerObject * self)
+{
+  return self->muted;
+}
+
+/**
  * Sets the dest object's values to the main
  * src object's values.
  */

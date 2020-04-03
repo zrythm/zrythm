@@ -1140,17 +1140,24 @@ ui_rectangle_overlap (
 void
 ui_get_arranger_object_color (
   GdkRGBA *    color,
-  const int    is_hovered,
-  const int    is_selected,
-  const int    is_transient)
+  const bool   is_hovered,
+  const bool   is_selected,
+  const bool   is_transient,
+  const bool   is_muted)
 {
   if (DEBUGGING)
-    color->alpha = 0.2;
+    color->alpha = 0.4;
   else
     color->alpha = is_transient ? 0.7 : 1.0;
+  if (is_muted)
+    {
+      color->red = 0.6f;
+      color->green = 0.6f;
+      color->blue = 0.6f;
+    }
   if (is_selected)
     {
-      color->red += 0.4;
+      color->red += is_muted ? 0.2 : 0.4;
       color->green += 0.2;
       color->blue += 0.2;
       color->alpha = DEBUGGING ? 0.5 : 1.0;

@@ -77,7 +77,7 @@ scale_object_draw (
   ui_get_arranger_object_color (
     &color,
     arranger->hovered_object == obj,
-    scale_object_is_selected (self), 0);
+    scale_object_is_selected (self), false, false);
   gdk_cairo_set_source_rgba (cr, &color);
 
   cairo_rectangle (

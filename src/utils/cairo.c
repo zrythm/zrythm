@@ -193,9 +193,7 @@ z_cairo_get_surface_from_icon_name (
       GdkPixbuf * pixbuf =
         gtk_icon_theme_load_icon (
           gtk_icon_theme_get_default (),
-          icon_name,
-          size,
-          0,
+          icon_name, size, 0,
           NULL);
       if (!pixbuf)
         {

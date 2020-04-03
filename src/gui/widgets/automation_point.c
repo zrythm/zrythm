@@ -68,7 +68,8 @@ automation_point_draw (
   ui_get_arranger_object_color (
     &color,
     arranger->hovered_object == obj,
-    automation_point_is_selected (ap), 0);
+    automation_point_is_selected (ap), false,
+    false);
   gdk_cairo_set_source_rgba (
     cr, &color);
 

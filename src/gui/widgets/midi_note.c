@@ -184,7 +184,7 @@ midi_note_draw (
         &color,
         arranger->hovered_object == obj,
         midi_note_is_selected (self),
-        0);
+        false, false);
       gdk_cairo_set_source_rgba (
         cr, &color);
 
@@ -211,7 +211,7 @@ midi_note_draw (
         arranger->hovered_object == obj,
         midi_note_is_selected (self),
         /* FIXME */
-        0);
+        false, false);
       color.alpha = 0.5;
       gdk_cairo_set_source_rgba (
         cr, &color);

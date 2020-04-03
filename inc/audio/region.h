@@ -88,7 +88,7 @@ typedef struct ZRegion
   RegionIdentifier  linked_region_id;
 
   /** Muted or not */
-  int                muted;
+  int            muted;
 
   /**
    * TODO region color independent of track.

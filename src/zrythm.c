@@ -591,7 +591,8 @@ static void on_prompt_for_project (
 "GNU Affero General Public License for more details.\n"
 "\n"
 "You should have received a copy of the GNU Affero General Public License\n"
-"along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.");
+"along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.\n\n\
+Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou");
           gtk_window_set_title (
             GTK_WINDOW (dialog),
             _("License Information"));

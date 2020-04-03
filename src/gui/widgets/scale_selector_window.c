@@ -60,7 +60,8 @@ on_delete_event (
   UndoableAction * ua =
     arranger_selections_action_new_edit (
       before, after,
-      ARRANGER_SELECTIONS_ACTION_EDIT_SCALE);
+      ARRANGER_SELECTIONS_ACTION_EDIT_SCALE,
+      true);
   undo_manager_perform (
     UNDO_MANAGER, ua);
   arranger_selections_free_full (
