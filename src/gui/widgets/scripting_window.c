@@ -30,6 +30,8 @@
 
 #include <gtk/gtk.h>
 
+#include <glib/gi18n.h>
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #include <libguile.h>
@@ -40,8 +42,13 @@ G_DEFINE_TYPE (
   scripting_window_widget,
   GTK_TYPE_WINDOW)
 
+static SCM out_port;
+static SCM error_out_port;
+
 static const char * example_script = "\
-;; Example script\n\
+;; This is an example GNU Guile script using modules provided by Zrythm\n\
+;; See https://www.gnu.org/software/guile/ for more info about GNU Guile\n\
+;; See https://manual.zrythm.org/en/scripting/intro.html for a list of modules provided by Zrythm\n\
 (use-modules (zrythm)\n\
              (audio position))\n\
 (define zrythm-script\n\
@@ -49,6 +56,58 @@ static const char * example_script = "\
     (display (zrythm-get-ver))\n\
     (let ((mypos (position-new 2 1 1 34 0)))\n\
       (position-print mypos))))";
+
+static SCM
+call_proc (void * data)
+{
+  char * full_path = (char *) data;
+
+  /* load a file called script.scm with the following
+   * content:
+   *
+   * (define zrythm-script
+   *   (lambda ()
+   *     (display "script called") (newline)))
+   */
+  scm_c_primitive_load (full_path);
+  SCM func =
+    scm_variable_ref (
+      scm_c_lookup ("zrythm-script"));
+  scm_call_0 (func);
+
+  return SCM_BOOL_T;
+}
+
+static SCM
+eval_handler (
+  void * handler_data, SCM key, SCM args)
+{
+  SCM stack = *(SCM *) handler_data;
+
+  /* Put the code which you want to handle an error
+   * after the stack has been unwound here. */
+
+  scm_print_exception (
+    error_out_port, SCM_BOOL_F,
+    key, args);
+  scm_display_backtrace (
+    stack, error_out_port, SCM_BOOL_F, SCM_BOOL_F);
+
+  return SCM_BOOL_F;
+}
+
+static SCM
+preunwind_proc (
+  void * handler_data,
+  SCM    key,
+  SCM    parameters)
+{
+  /* Capture the stack here: */
+  *(SCM *) handler_data =
+    scm_make_stack (SCM_BOOL_T, SCM_EOL);
+
+  return SCM_BOOL_T;
+}
 
 /**
  * Function that runs in guile mode.
@@ -88,27 +147,42 @@ guile_mode_func (void* data)
   guile_define_modules ();
 
   /* receive output */
-  SCM out_port = scm_open_output_string ();
+  out_port = scm_open_output_string ();
+  error_out_port = scm_open_output_string ();
   scm_set_current_output_port (out_port);
-  scm_set_current_error_port (out_port);
+  scm_set_current_error_port (error_out_port);
 
-  /* load a file called script.scm with the following
-   * content:
-   *
-   * (define zrythm-script
-   *   (lambda ()
-   *     (display "script called") (newline)))
-   */
-  scm_c_primitive_load (full_path);
-  SCM func =
-    scm_variable_ref (
-      scm_c_lookup ("zrythm-script"));
-  scm_call_0 (func);
+  SCM captured_stack = SCM_BOOL_F;
+
+  SCM ret =
+    scm_c_catch (
+      SCM_BOOL_T, call_proc, full_path, eval_handler,
+      &captured_stack, preunwind_proc,
+      &captured_stack);
 
   SCM str_scm = scm_get_output_string (out_port);
   char * str =
     scm_to_locale_string (str_scm);
-  gtk_label_set_text (self->output, str);
+  str_scm =
+    scm_get_output_string (error_out_port);
+  char * err_str =
+    scm_to_locale_string (str_scm);
+  if (ret == SCM_BOOL_T)
+    {
+      gtk_label_set_text (self->output, str);
+    }
+  else
+    {
+      char * markup =
+        g_markup_printf_escaped (
+          "<span foreground=\"red\" size=\"large\">"
+          "<b>%s</b></span>\n%s",
+          _("Script execution failed"),
+          err_str);
+      gtk_label_set_markup (
+        self->output, markup);
+      g_free (markup);
+    }
 
   return NULL;
 }
@@ -118,8 +192,6 @@ on_execute_clicked (
   GtkButton *      spin,
   ScriptingWindowWidget * self)
 {
-  g_message ("clicked");
-
   scm_with_guile (&guile_mode_func, self);
 }
 
@@ -195,5 +267,7 @@ scripting_window_widget_init (
     self->editor, true);
   gtk_source_view_set_smart_backspace (
     self->editor, true);
+
+  gtk_label_set_selectable (self->output, true);
 }
 #endif
