@@ -101,6 +101,10 @@ send_notes_off_at (
         {
           mn =
             region->midi_notes[i];
+          mn_obj =
+            (ArrangerObject *) mn;
+          if (arranger_object_get_muted (mn_obj))
+            continue;
 
           /* FIXME check if note is on
            * first */
@@ -133,6 +137,8 @@ send_notes_off_at (
             mn = region->midi_notes[i];
             mn_obj =
               (ArrangerObject *) mn;
+            if (arranger_object_get_muted (mn_obj))
+              continue;
 
             /* add num_loops * loop_ticks to the
              * midi note start & end poses to get
@@ -178,6 +184,8 @@ send_notes_off_at (
             mn = region->midi_notes[i];
             mn_obj =
               (ArrangerObject *) mn;
+            if (arranger_object_get_muted (mn_obj))
+              continue;
 
             /* if note is on at the boundary, send
              * note off */
@@ -420,7 +428,7 @@ midi_track_fill_midi_events (
             {
               r = lane->regions[i];
               r_obj = (ArrangerObject *) r;
-              if (r_obj->muted)
+              if (arranger_object_get_muted (r_obj))
                 continue;
 
               region_loop_met = 0;
@@ -562,6 +570,9 @@ midi_track_fill_midi_events (
                     r->midi_notes[kk];
                   mn_obj =
                     (ArrangerObject *) mn;
+                  if (arranger_object_get_muted (
+                        mn_obj))
+                    continue;
 
                   /* add note ons during region
                    * loop */
