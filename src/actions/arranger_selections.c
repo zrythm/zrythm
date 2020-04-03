@@ -1312,7 +1312,8 @@ do_or_undo_edit (
                 {
                 case ARRANGER_OBJECT_TYPE_REGION:
                   {
-                    SET_PRIMITIVE (ZRegion, muted);
+                    SET_PRIMITIVE (
+                      ArrangerObject, muted);
                     SET_PRIMITIVE (ZRegion, color);
                   }
                   break;

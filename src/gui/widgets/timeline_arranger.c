@@ -1349,7 +1349,7 @@ timeline_arranger_widget_show_context_menu (
         {
           ZRegion * r = (ZRegion *) obj;
 
-          if (r->muted)
+          if (arranger_object_get_muted (obj))
             {
               menuitem =
                 gtk_menu_item_new_with_label (

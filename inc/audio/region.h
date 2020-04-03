@@ -87,9 +87,6 @@ typedef struct ZRegion
    */
   RegionIdentifier  linked_region_id;
 
-  /** Muted or not */
-  int            muted;
-
   /**
    * TODO region color independent of track.
    *
@@ -204,9 +201,6 @@ static const cyaml_schema_field_t
     "linked_region_id", CYAML_FLAG_DEFAULT,
     ZRegion, linked_region_id,
     region_identifier_fields_schema),
-  CYAML_FIELD_INT (
-    "muted", CYAML_FLAG_DEFAULT,
-    ZRegion, muted),
   CYAML_FIELD_SEQUENCE_COUNT (
     "midi_notes",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,

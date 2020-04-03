@@ -187,7 +187,7 @@ test_new_region ()
     position_is_equal (
       &tmp, &r_obj->clip_start_pos));
 
-  g_assert_false (region->muted);
+  g_assert_false (r_obj->muted);
   g_assert_cmpint (region->num_midi_notes, ==, 0);
 
   position_set_to_pos (&tmp, &r_obj->pos);
