@@ -13,6 +13,7 @@ packages:
   - libsamplerate-devel
   - gettext
   - guile22-devel
+  - gtksourceview3-devel
   - suil-devel
   - help2man
   - alsa-lib-devel

@@ -14,6 +14,7 @@ packages:
   - jackit
   - lilv
   - libsamplerate
+  - gtksourceview4
   - serd
   - help2man
   - libsndfile

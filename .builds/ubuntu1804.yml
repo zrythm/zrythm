@@ -15,6 +15,7 @@ packages:
   - libavutil-dev
   - libavformat-dev
   - libchromaprint-dev
+  - libgtksourceview-3.0-dev
   - libsamplerate0-dev
   - libyaml-dev
   - librubberband-dev

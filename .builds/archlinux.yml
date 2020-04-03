@@ -15,6 +15,7 @@ packages:
   - ffmpeg
   - python
   - gettext
+  - gtksourceview4
   - sed
   - ninja
   - help2man
