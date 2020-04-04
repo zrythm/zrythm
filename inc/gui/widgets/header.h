@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,18 +17,16 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_HEADER_NOTEBOOK_H__
-#define __GUI_WIDGETS_HEADER_NOTEBOOK_H__
+#ifndef __GUI_WIDGETS_HEADER_H__
+#define __GUI_WIDGETS_HEADER_H__
 
 #include <gtk/gtk.h>
 
-#define HEADER_NOTEBOOK_WIDGET_TYPE \
-  (header_notebook_widget_get_type ())
-G_DECLARE_FINAL_TYPE (HeaderNotebookWidget,
-                      header_notebook_widget,
-                      Z,
-                      HEADER_NOTEBOOK_WIDGET,
-                      GtkNotebook)
+#define HEADER_WIDGET_TYPE \
+  (header_widget_get_type ())
+G_DECLARE_FINAL_TYPE (
+  HeaderWidget, header_widget,
+  Z, HEADER_WIDGET, GtkBox)
 
 /**
  * \file
@@ -36,21 +34,25 @@ G_DECLARE_FINAL_TYPE (HeaderNotebookWidget,
  * Header notebook.
  */
 
-#define MW_HEADER_NOTEBOOK MAIN_WINDOW->header_notebook
+#define MW_HEADER MAIN_WINDOW->header
 
 typedef struct _HomeToolbarWidget HomeToolbarWidget;
 typedef struct _ProjectToolbarWidget
   ProjectToolbarWidget;
 typedef struct _ViewToolbarWidget ViewToolbarWidget;
 typedef struct _HelpToolbarWidget HelpToolbarWidget;
+typedef struct _MidiActivityBarWidget
+  MidiActivityBarWidget;
+typedef struct _LiveWaveformWidget
+  LiveWaveformWidget;
 
 /**
  * Header notebook to be used at the very top of the
  * main window.
  */
-typedef struct _HeaderNotebookWidget
+typedef struct _HeaderWidget
 {
-  GtkNotebook         parent_instance;
+  GtkBox              parent_instance;
 
   /** Notebook toolbars. */
   HomeToolbarWidget * home_toolbar;
@@ -63,19 +65,23 @@ typedef struct _HeaderNotebookWidget
   GtkToolButton *     scripting_interface;
   GtkToolButton *     z_icon;
   GtkLabel *          prj_name_label;
-} HeaderNotebookWidget;
 
-HeaderNotebookWidget *
-header_notebook_widget_new ();
+  GtkNotebook *       notebook;
+  LiveWaveformWidget *      live_waveform;
+  MidiActivityBarWidget *   midi_activity;
+} HeaderWidget;
+
+HeaderWidget *
+header_widget_new ();
 
 void
-header_notebook_widget_setup (
-  HeaderNotebookWidget * self,
+header_widget_setup (
+  HeaderWidget * self,
   const char * title);
 
 void
-header_notebook_widget_set_subtitle (
-  HeaderNotebookWidget * self,
+header_widget_set_subtitle (
+  HeaderWidget * self,
   const char * subtitle);
 
 #endif

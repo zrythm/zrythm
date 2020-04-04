@@ -22,8 +22,6 @@
  *
  */
 
-#include "gui/widgets/header_notebook.h"
-#include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"

@@ -35,7 +35,7 @@
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/file_browser.h"
-#include "gui/widgets/header_notebook.h"
+#include "gui/widgets/header.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
@@ -117,8 +117,8 @@ void
 main_window_widget_refresh (
   MainWindowWidget * self)
 {
-  header_notebook_widget_setup (
-    MW_HEADER_NOTEBOOK,
+  header_widget_setup (
+    MW_HEADER,
     PROJECT->title);
 
   /* setup center dock */
@@ -185,7 +185,7 @@ main_window_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     MainWindowWidget,
-    header_notebook);
+    header);
   gtk_widget_class_bind_template_child (
     klass,
     MainWindowWidget,
@@ -405,7 +405,7 @@ main_window_widget_init (MainWindowWidget * self)
     G_ACTION_MAP (self), actions,
     G_N_ELEMENTS (actions), self);
 
-  g_type_ensure (HEADER_NOTEBOOK_WIDGET_TYPE);
+  g_type_ensure (HEADER_WIDGET_TYPE);
   g_type_ensure (TOP_BAR_WIDGET_TYPE);
   g_type_ensure (CENTER_DOCK_WIDGET_TYPE);
   g_type_ensure (BOT_BAR_WIDGET_TYPE);

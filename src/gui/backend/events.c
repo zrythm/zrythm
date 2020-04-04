@@ -54,7 +54,7 @@
 #include "gui/widgets/editor_selection_info.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/foldable_notebook.h"
-#include "gui/widgets/header_notebook.h"
+#include "gui/widgets/header.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/left_dock_edge.h"

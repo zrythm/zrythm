@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -18,9 +18,11 @@
  */
 
 #include "gui/accel.h"
-#include "gui/widgets/header_notebook.h"
+#include "gui/widgets/header.h"
 #include "gui/widgets/help_toolbar.h"
 #include "gui/widgets/home_toolbar.h"
+#include "gui/widgets/live_waveform.h"
+#include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/project_toolbar.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
@@ -31,22 +33,22 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (HeaderNotebookWidget,
-               header_notebook_widget,
-               GTK_TYPE_NOTEBOOK)
+G_DEFINE_TYPE (HeaderWidget,
+               header_widget,
+               GTK_TYPE_BOX)
 
 void
-header_notebook_widget_setup (
-  HeaderNotebookWidget * self,
+header_widget_setup (
+  HeaderWidget * self,
   const char * title)
 {
-  header_notebook_widget_set_subtitle (
+  header_widget_set_subtitle (
     self, title);
 }
 
 void
-header_notebook_widget_set_subtitle (
-  HeaderNotebookWidget * self,
+header_widget_set_subtitle (
+  HeaderWidget * self,
   const char * title)
 {
   char title_w_spaces[600];
@@ -59,8 +61,8 @@ header_notebook_widget_set_subtitle (
 }
 
 static void
-header_notebook_widget_init (
-  HeaderNotebookWidget * self)
+header_widget_init (
+  HeaderWidget * self)
 {
   g_type_ensure (HOME_TOOLBAR_WIDGET_TYPE);
   g_type_ensure (TOOLBOX_WIDGET_TYPE);
@@ -69,6 +71,8 @@ header_notebook_widget_init (
   g_type_ensure (HELP_TOOLBAR_WIDGET_TYPE);
   g_type_ensure (VIEW_TOOLBAR_WIDGET_TYPE);
   g_type_ensure (PROJECT_TOOLBAR_WIDGET_TYPE);
+  g_type_ensure (LIVE_WAVEFORM_WIDGET_TYPE);
+  g_type_ensure (MIDI_ACTIVITY_BAR_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -77,7 +81,15 @@ header_notebook_widget_init (
     gtk_widget_get_style_context (
       GTK_WIDGET (self));
   gtk_style_context_add_class (
-    context, "header_notebook");
+    context, "header");
+
+  live_waveform_widget_setup_engine (
+    self->live_waveform);
+  midi_activity_bar_widget_setup_engine (
+    self->midi_activity);
+  midi_activity_bar_widget_set_animation (
+    self->midi_activity,
+    MAB_ANIMATION_FLASH);
 
   /* set tooltips */
 #define SET_TOOLTIP(x, tooltip) \
@@ -93,19 +105,19 @@ header_notebook_widget_init (
 }
 
 static void
-header_notebook_widget_class_init (
-  HeaderNotebookWidgetClass * _klass)
+header_widget_class_init (
+  HeaderWidgetClass * _klass)
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
 
   resources_set_class_template (
-    klass, "header_notebook.ui");
+    klass, "header.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
     klass, \
-    HeaderNotebookWidget, \
+    HeaderWidget, \
     x)
 
   BIND_CHILD (home_toolbar);
@@ -118,7 +130,8 @@ header_notebook_widget_class_init (
   BIND_CHILD (preferences);
   BIND_CHILD (log_viewer);
   BIND_CHILD (scripting_interface);
+  BIND_CHILD (live_waveform);
+  BIND_CHILD (midi_activity);
 
 #undef BIND_CHILD
 }
-

@@ -33,10 +33,6 @@ typedef struct _DigitalMeterWidget
 typedef struct _TransportControlsWidget
   TransportControlsWidget;
 typedef struct _CpuWidget CpuWidget;
-typedef struct _MidiActivityBarWidget
-  MidiActivityBarWidget;
-typedef struct _LiveWaveformWidget
-  LiveWaveformWidget;
 
 /**
  * @addtogroup widgets
@@ -96,8 +92,6 @@ typedef struct _BotBarWidget
 
   DigitalMeterWidget *      digital_timesig;
   TransportControlsWidget * transport_controls;
-  LiveWaveformWidget *      live_waveform;
-  MidiActivityBarWidget *   midi_activity;
   CpuWidget *               cpu_load;
 } BotBarWidget;
 

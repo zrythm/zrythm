@@ -31,9 +31,7 @@
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/cpu.h"
 #include "gui/widgets/digital_meter.h"
-#include "gui/widgets/live_waveform.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/transport_controls.h"
 #include "project.h"
@@ -431,8 +429,6 @@ bot_bar_widget_class_init (
 
   BIND_CHILD (digital_meters);
   BIND_CHILD (transport_controls);
-  BIND_CHILD (live_waveform);
-  BIND_CHILD (midi_activity);
   BIND_CHILD (cpu_load);
   BIND_CHILD (status_bar);
 
@@ -445,8 +441,6 @@ bot_bar_widget_init (BotBarWidget * self)
   g_type_ensure (DIGITAL_METER_WIDGET_TYPE);
   g_type_ensure (TRANSPORT_CONTROLS_WIDGET_TYPE);
   g_type_ensure (CPU_WIDGET_TYPE);
-  g_type_ensure (LIVE_WAVEFORM_WIDGET_TYPE);
-  g_type_ensure (MIDI_ACTIVITY_BAR_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -471,13 +465,6 @@ bot_bar_widget_init (BotBarWidget * self)
     GTK_WIDGET (self->digital_meters));
   gtk_widget_show_all (GTK_WIDGET (self));
 
-  live_waveform_widget_setup_engine (
-    self->live_waveform);
-  midi_activity_bar_widget_setup_engine (
-    self->midi_activity);
-  midi_activity_bar_widget_set_animation (
-    self->midi_activity,
-    MAB_ANIMATION_FLASH);
   cpu_widget_setup (
     self->cpu_load);
 

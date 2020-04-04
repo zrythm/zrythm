@@ -64,7 +64,7 @@ widget_srcs = files([
   'file_browser_window.c',
   'first_run_assistant.c',
   'foldable_notebook.c',
-  'header_notebook.c',
+  'header.c',
   'help_toolbar.c',
   'home_toolbar.c',
   'inspector_ap.c',

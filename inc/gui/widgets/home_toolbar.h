@@ -35,7 +35,7 @@ G_DECLARE_FINAL_TYPE (HomeToolbarWidget,
  */
 
 #define MW_HOME_TOOLBAR \
-  MW_HEADER_NOTEBOOK->home_toolbar
+  MW_HEADER->home_toolbar
 
 typedef struct _ToolboxWidget ToolboxWidget;
 typedef struct _QuantizeMbWidget QuantizeMbWidget;

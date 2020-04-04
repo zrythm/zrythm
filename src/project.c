@@ -42,7 +42,7 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/transport.h"
-#include "gui/widgets/header_notebook.h"
+#include "gui/widgets/header.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/splash.h"
@@ -439,9 +439,8 @@ create_default (Project * self)
 
   if (ZRYTHM_HAVE_UI)
     {
-      header_notebook_widget_set_subtitle (
-        MW_HEADER_NOTEBOOK,
-        PROJECT->title);
+      header_widget_set_subtitle (
+        MW_HEADER, PROJECT->title);
     }
 }
 
@@ -667,9 +666,8 @@ load (
 
   if (ZRYTHM_HAVE_UI)
     {
-      header_notebook_widget_set_subtitle (
-        MW_HEADER_NOTEBOOK,
-        PROJECT->title);
+      header_widget_set_subtitle (
+        MW_HEADER, PROJECT->title);
     }
 
   return 0;
@@ -1019,9 +1017,8 @@ project_save (
 
   if (ZRYTHM_HAVE_UI)
     {
-      header_notebook_widget_set_subtitle (
-        MW_HEADER_NOTEBOOK,
-        PROJECT->title);
+      header_widget_set_subtitle (
+        MW_HEADER, PROJECT->title);
     }
 
   g_free (dir);

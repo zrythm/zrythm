@@ -20,7 +20,7 @@
 #include "actions/undoable_action.h"
 #include "actions/undo_stack.h"
 #include "actions/undo_manager.h"
-#include "gui/widgets/header_notebook.h"
+#include "gui/widgets/header.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
@@ -145,7 +145,7 @@ undo_manager_perform (
 
   undo_stack_clear (self->redo_stack);
 
-  if (MAIN_WINDOW && MW_HEADER_NOTEBOOK &&
+  if (MAIN_WINDOW && MW_HEADER &&
       MW_HOME_TOOLBAR)
     home_toolbar_widget_refresh_undo_redo_buttons (
       MW_HOME_TOOLBAR);

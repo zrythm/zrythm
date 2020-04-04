@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2020 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -153,7 +153,7 @@ automation-point:selected
   /*border-style: solid;*/
 }
 
-.header_notebook button.toggle:not(:checked)
+.header button.toggle:not(:checked)
 {
   background-color: @bg_darker_variant1;
 }
@@ -221,9 +221,10 @@ browser toolbar
   padding: 0px;
 }
 
-.header_notebook tabs,
-.header_notebook header,
-.header_notebook toolbar,
+.header tabs,
+.header header,
+.header toolbar,
+.header > box,
 home-toolbar,
 project-toolbar,
 view-toolbar,
@@ -307,7 +308,7 @@ menuitem:hover
 }
 
 button:not(.record-button).toggle:active,
-.header_notebook button.toggle:active
+.header button.toggle:active
 {
   background-color: @bright_orange;
 }
@@ -444,11 +445,31 @@ channel button.flat
   border-color: alpha (grey, 0.3);
 }
 
-.header_notebook label,
+/* blend with header box on the right */
+.header notebook {
+  border-right: 0px;
+}
+
+/* make the header box on the right match the
+ * style of the notebook */
+.header > box {
+  border-top: 1px;
+  border-bottom: 1px;
+  border-right: 1px;
+  border-style: solid;
+  /* from matcha theme */
+  border-color: rgba (0, 0, 0, 0.2);
+}
+.header > box > box {
+  border-top: 1px;
+  border-style: solid;
+  border-color: #1b1b1b;
+}
+
+.header label,
 .splash label,
-statusbar
-{
-font-size: 10.5pt;
+statusbar {
+  font-size: 10.5pt;
 }
 
 .thick-separator

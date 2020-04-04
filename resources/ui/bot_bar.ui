@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
 <!--
 
-  Copyright (C) 2018-2019 Alexandros Theodotou
+  Copyright (C) 2018-2020 Alexandros Theodotou
 
   This file is part of Zrythm
 
@@ -91,58 +90,6 @@
       <object class="GtkBox" id="mid_box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <child>
-          <object class="LiveWaveformWidget" id="live_waveform">
-            <property name="visible">True</property>
-            <property name="width-request">48</property>
-            <property name="margin">4</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">3</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="tooltip_text" translatable="yes">MIDI in activity</property>
-            <property name="margin_top">4</property>
-            <property name="margin_bottom">4</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label">MIDI in</property>
-                <property name="angle">90</property>
-                <attributes>
-                  <attribute name="font-desc" value="sans-serif 6"/>
-                </attributes>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="MidiActivityBarWidget" id="midi_activity">
-                <property name="visible">1</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">4</property>
-          </packing>
-        </child>
         <child>
           <object class="CpuWidget" id="cpu_load">
             <property name="visible">1</property>
