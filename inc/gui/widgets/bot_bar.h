@@ -28,6 +28,16 @@
 
 #include <gtk/gtk.h>
 
+typedef struct _DigitalMeterWidget
+  DigitalMeterWidget;
+typedef struct _TransportControlsWidget
+  TransportControlsWidget;
+typedef struct _CpuWidget CpuWidget;
+typedef struct _MidiActivityBarWidget
+  MidiActivityBarWidget;
+typedef struct _LiveWaveformWidget
+  LiveWaveformWidget;
+
 /**
  * @addtogroup widgets
  *
@@ -36,14 +46,14 @@
 
 #define BOT_BAR_WIDGET_TYPE \
   (bot_bar_widget_get_type ())
-G_DECLARE_FINAL_TYPE (BotBarWidget,
-                      bot_bar_widget,
-                      Z,
-                      BOT_BAR_WIDGET,
-                      GtkBox)
+G_DECLARE_FINAL_TYPE (
+  BotBarWidget, bot_bar_widget,
+  Z, BOT_BAR_WIDGET, GtkBox)
 
 #define MW_BOT_BAR MW->bot_bar
 #define MW_STATUS_BAR MW_BOT_BAR->status_bar
+#define MW_DIGITAL_TRANSPORT \
+  MW_BOT_BAR->digital_transport
 
 typedef struct _BotBarWidget
 {
@@ -56,6 +66,39 @@ typedef struct _BotBarWidget
 
   /** Status bar context id. */
   guint                 context_id;
+
+  GtkBox *                  digital_meters;
+  DigitalMeterWidget *      digital_bpm;
+
+  /**
+   * Overlay for showing things on top of the
+   * playhead positionmeter.
+   */
+  GtkOverlay *              playhead_overlay;
+
+  /**
+   * The playhead digital meter.
+   */
+  DigitalMeterWidget *      digital_transport;
+
+  /** Jack timebase master image. */
+  GtkWidget *               master_img;
+
+  /** Jack client master image. */
+  GtkWidget *               client_img;
+
+  /**
+   * Menuitems in context menu of digital transport.
+   */
+  GtkCheckMenuItem *        timebase_master_check;
+  GtkCheckMenuItem *        transport_client_check;
+  GtkCheckMenuItem *        no_jack_transport_check;
+
+  DigitalMeterWidget *      digital_timesig;
+  TransportControlsWidget * transport_controls;
+  LiveWaveformWidget *      live_waveform;
+  MidiActivityBarWidget *   midi_activity;
+  CpuWidget *               cpu_load;
 } BotBarWidget;
 
 void

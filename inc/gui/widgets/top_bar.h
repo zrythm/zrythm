@@ -48,38 +48,6 @@ typedef struct _TopBarWidget
 {
   GtkBox                    parent_instance;
   GtkToolbar *              top_bar_left;
-  GtkBox *                  digital_meters;
-  DigitalMeterWidget *      digital_bpm;
-
-  /**
-   * Overlay for showing things on top of the
-   * playhead positionmeter.
-   */
-  GtkOverlay *              playhead_overlay;
-
-  /**
-   * The playhead digital meter.
-   */
-  DigitalMeterWidget *      digital_transport;
-
-  /** Jack timebase master image. */
-  GtkWidget *               master_img;
-
-  /** Jack client master image. */
-  GtkWidget *               client_img;
-
-  /**
-   * Menuitems in context menu of digital transport.
-   */
-  GtkCheckMenuItem *        timebase_master_check;
-  GtkCheckMenuItem *        transport_client_check;
-  GtkCheckMenuItem *        no_jack_transport_check;
-
-  DigitalMeterWidget *      digital_timesig;
-  TransportControlsWidget * transport_controls;
-  LiveWaveformWidget *      live_waveform;
-  MidiActivityBarWidget *   midi_activity;
-  CpuWidget *               cpu_load;
 } TopBarWidget;
 
 void

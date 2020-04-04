@@ -42,6 +42,7 @@
 #include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
@@ -122,6 +123,19 @@ redraw_regions_for_midi_selections (
 }
 
 static void
+redraw_velocities_for_midi_selections (
+  MidiArrangerSelections * sel)
+{
+  for (int i = 0; i < sel->num_midi_notes;
+       i++)
+    {
+      MidiNote * mn = sel->midi_notes[i];
+      arranger_object_queue_redraw (
+        (ArrangerObject *) mn->vel);
+    }
+}
+
+static void
 on_arranger_selections_in_transit (
   ArrangerSelections * sel)
 {
@@ -165,6 +179,8 @@ on_arranger_selections_in_transit (
   case ARRANGER_SELECTIONS_TYPE_MIDI:
     redraw_regions_for_midi_selections (
       (MidiArrangerSelections *) sel);
+    redraw_velocities_for_midi_selections (
+      (MidiArrangerSelections *) sel);
     break;
   default:
     break;
@@ -181,10 +197,10 @@ on_playhead_changed (
 {
   if (MAIN_WINDOW)
     {
-      if (TOP_BAR->digital_transport)
+      if (MW_DIGITAL_TRANSPORT)
         {
           gtk_widget_queue_draw (
-            GTK_WIDGET (TOP_BAR->digital_transport));
+            GTK_WIDGET (MW_DIGITAL_TRANSPORT));
         }
       if (MW_RULER)
         {
