@@ -107,7 +107,6 @@ inc/gui/widgets/channel_slot.h
 inc/gui/widgets/automation_point.h
 inc/gui/widgets/audio_arranger.h
 inc/gui/widgets/scale_selector_window.h
-inc/gui/widgets/header_notebook.h
 inc/gui/widgets/project_assistant.h
 inc/gui/widgets/automation_region.h
 inc/gui/widgets/audio_editor_space.h
@@ -142,6 +141,7 @@ inc/gui/widgets/balance_control.h
 inc/gui/widgets/chord_object.h
 inc/gui/widgets/project_toolbar.h
 inc/gui/widgets/export_dialog.h
+inc/gui/widgets/header.h
 inc/gui/widgets/midi_region.h
 inc/gui/widgets/clip_editor.h
 inc/gui/widgets/track_input_expander.h
@@ -170,6 +170,7 @@ inc/gui/widgets/arranger.h
 inc/gui/widgets/channel.h
 inc/gui/widgets/home_toolbar.h
 inc/gui/widgets/inspector_port.h
+inc/gui/widgets/scripting_window.h
 inc/gui/widgets/center_dock.h
 inc/gui/widgets/drag_dest_box.h
 inc/gui/widgets/inspector_ap.h
@@ -338,7 +339,9 @@ inc/actions/delete_tracks_action.h
 inc/actions/edit_plugins_action.h
 inc/actions/undo_stack.h
 inc/actions/edit_tracks_action.h
+inc/guile/zrythm.h
 inc/guile/guile.h
+inc/guile/audio/position.h
 src/zrythm.c
 src/project.c
 src/main.c
@@ -413,7 +416,6 @@ src/gui/widgets/export_midi_file_dialog.c
 src/gui/widgets/scale_object.c
 src/gui/widgets/center_dock.c
 src/gui/widgets/port_selector_popover.c
-src/gui/widgets/midi_region.c
 src/gui/widgets/meter.c
 src/gui/widgets/automation_region.c
 src/gui/widgets/pinned_tracklist.c
@@ -445,6 +447,7 @@ src/gui/widgets/timeline_arranger.c
 src/gui/widgets/midi_bus_track.c
 src/gui/widgets/automation_arranger.c
 src/gui/widgets/mixer.c
+src/gui/widgets/header.c
 src/gui/widgets/panel_file_browser.c
 src/gui/widgets/help_toolbar.c
 src/gui/widgets/midi_modifier_arranger_bg.c
@@ -469,8 +472,8 @@ src/gui/widgets/automation_point.c
 src/gui/widgets/preferences.c
 src/gui/widgets/track_top_grid.c
 src/gui/widgets/marker_dialog.c
+src/gui/widgets/scripting_window.c
 src/gui/widgets/port_connection_row.c
-src/gui/widgets/header_notebook.c
 src/gui/widgets/ruler_marker.c
 src/gui/widgets/balance_control.c
 src/gui/widgets/live_waveform.c
@@ -654,7 +657,10 @@ src/actions/undo_stack.c
 src/actions/create_tracks_action.c
 src/actions/undo_manager.c
 src/actions/delete_plugins_action.c
+src/guile/tracklist.c
+src/guile/zrythm.c
 src/guile/guile.c
+src/guile/audio/position.c
 resources/ui/inspector_plugin.ui
 resources/ui/first_run_assistant.ui
 resources/ui/view_toolbar.ui
@@ -685,6 +691,7 @@ resources/ui/arranger_object_info_dialog.ui
 resources/ui/timeline_panel.ui
 resources/ui/mixer.ui
 resources/ui/chord_editor_space.ui
+resources/ui/scripting_window.ui
 resources/ui/automation_editor_space.ui
 resources/ui/route_target_selector.ui
 resources/ui/inspector_master.ui
@@ -695,6 +702,7 @@ resources/ui/modulator_view.ui
 resources/ui/panel_file_browser.ui
 resources/ui/port_selector_popover.ui
 resources/ui/audio_editor_space.ui
+resources/ui/header.ui
 resources/ui/inspector_track.ui
 resources/ui/project_scale_popover.ui
 resources/ui/center_dock.ui
@@ -711,7 +719,6 @@ resources/ui/file_browser.ui
 resources/ui/marker_dialog.ui
 resources/ui/bounce_dialog.ui
 resources/ui/inspector_editor.ui
-resources/ui/header_notebook.ui
 resources/ui/snap_box.ui
 resources/ui/quantize_dialog.ui
 resources/ui/inspector_midi.ui

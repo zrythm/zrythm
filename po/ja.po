@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-03-25 20:56+0000\n"
+"POT-Creation-Date: 2020-04-04 16:05+0100\n"
 "PO-Revision-Date: 2020-03-11 14:33+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -64,17 +64,17 @@ msgstr "プラグインマネージャの初期化"
 msgid "Scanning plugins"
 msgstr "プラグインをスキャン中"
 
-#: src/zrythm.c:597
+#: src/zrythm.c:598
 msgid "License Information"
 msgstr "ライセンス情報"
 
-#: src/zrythm.c:619
+#: src/zrythm.c:620
 msgid "Waiting for project"
 msgstr "プロジェクトを待機中"
 
 #. TRANSLATORS: please keep the space at the
 #. * end
-#: src/zrythm.c:733
+#: src/zrythm.c:734
 msgid "(trial) "
 msgstr "(トライアル) "
 
@@ -83,7 +83,7 @@ msgstr "(トライアル) "
 msgid "Master"
 msgstr "マスタ"
 
-#: src/project.c:486
+#: src/project.c:485
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -94,11 +94,11 @@ msgstr ""
 "  %s.\n"
 "新しいバックアップを使用しますか?"
 
-#: src/project.c:491
+#: src/project.c:490
 msgid "Backup found"
 msgstr "バックアップが見つかりました"
 
-#: src/project.c:562
+#: src/project.c:561
 #, c-format
 msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
@@ -107,31 +107,31 @@ msgstr ""
 "このプロジェクトは、Zrythm (%s) の異なるバージョンで作成されました。正しく動"
 "作しない可能性があります。"
 
-#: src/project.c:577
+#: src/project.c:576
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "プロジェクトの読み込みに失敗しました。詳細については、ログを確認してくださ"
 "い。"
 
-#: src/project.c:1006
+#: src/project.c:1004
 msgid "Backup saved."
 msgstr "バックアップが保存されました。"
 
-#: src/project.c:1016
+#: src/project.c:1014
 msgid "Project saved."
 msgstr "プロジェクトが保存されました。"
 
-#: src/main.c:92
+#: src/main.c:96
 #, c-format
 msgid "Error - Backtrace:\n"
 msgstr "エラー - バックトレース:\n"
 
-#: src/main.c:117
+#: src/main.c:121
 #, c-format
 msgid "Error: %s - Backtrace:\n"
 msgstr "エラー: %s - バックトレース:\n"
 
-#: src/main.c:167
+#: src/main.c:171
 #, c-format
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
@@ -139,7 +139,7 @@ msgstr ""
 "Zrythmが異常終了しました。修正に役立ちますので、%sバグレポートを送信%sしてく"
 "ださい。"
 
-#: src/main.c:239
+#: src/main.c:243
 #, fuzzy, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
@@ -172,12 +172,12 @@ msgstr ""
 
 #. getopt_long already printed an error
 #. * message
-#: src/main.c:316
+#: src/main.c:320
 #, c-format
 msgid "Unknown option\n"
 msgstr "オプションを認知できませんでした\n"
 
-#: src/main.c:333
+#: src/main.c:337
 #, c-format
 msgid ""
 "Zrythm-%s Copyright (C) 2018-2020 Alexandros Theodotou\n"
@@ -216,14 +216,14 @@ msgstr "状態を保存"
 
 #: src/plugins/plugin_gtk.c:82 src/plugins/lv2/lv2_gtk.c:99
 #: src/plugins/lv2/lv2_gtk.c:347 src/utils/dialogs.c:41 src/utils/dialogs.c:71
-#: src/actions/actions.c:748 resources/ui/export_midi_file_dialog.ui:54
+#: src/actions/actions.c:753 resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "取り消し(_C)"
 
 #: src/plugins/plugin_gtk.c:83 src/plugins/lv2/lv2_gtk.c:100
-#: src/actions/actions.c:750
+#: src/actions/actions.c:755
 msgid "_Save"
 msgstr "保存(_S)"
 
@@ -454,46 +454,6 @@ msgstr "インスペクター"
 msgid "Visibility"
 msgstr "ビジビリティ"
 
-#: src/gui/widgets/top_bar.c:43 src/gui/widgets/ruler_marker.c:169
-msgid "Playhead"
-msgstr "再生ヘッド"
-
-#: src/gui/widgets/top_bar.c:45
-msgid "Playhead [Jack Timebase Master]"
-msgstr "プレイヘッド [JACKタイムベースマスター]"
-
-#: src/gui/widgets/top_bar.c:47
-msgid "Playhead [Jack Client]"
-msgstr "プレイヘッド [JACKクライアント]"
-
-#: src/gui/widgets/top_bar.c:128
-msgid "Become JACK Transport master"
-msgstr "JACKトランスポートマスターになる"
-
-#: src/gui/widgets/top_bar.c:147
-msgid "Sync to JACK Transport"
-msgstr "JACKトランスポートに同期する"
-
-#: src/gui/widgets/top_bar.c:170
-msgid "Unlink JACK Transport"
-msgstr "JACKトランスポートのリンク解除"
-
-#: src/gui/widgets/top_bar.c:230
-msgid "playhead"
-msgstr "再生ヘッド"
-
-#: src/gui/widgets/top_bar.c:264
-msgid "JACK Transport client"
-msgstr "JACKトランスポートクライアント"
-
-#: src/gui/widgets/top_bar.c:284
-msgid "JACK Timebase master"
-msgstr "JACKタイムベースマスター"
-
-#: src/gui/widgets/top_bar.c:377
-msgid "time sig."
-msgstr "拍子記号"
-
 #: src/gui/widgets/export_midi_file_dialog.c:83
 #, c-format
 msgid "Exporting MIDI region \"%s\""
@@ -532,29 +492,29 @@ msgstr "エディタの属性"
 msgid "Plugin properties"
 msgstr "プラグインの属性"
 
-#: src/gui/widgets/digital_meter.c:294
+#: src/gui/widgets/digital_meter.c:295
 msgid "normal"
 msgstr "普通音符"
 
-#: src/gui/widgets/digital_meter.c:297
+#: src/gui/widgets/digital_meter.c:298
 msgid "dotted"
 msgstr "付点音符"
 
-#: src/gui/widgets/digital_meter.c:300
+#: src/gui/widgets/digital_meter.c:301
 msgid "triplet"
 msgstr "３連音符"
 
-#: src/gui/widgets/digital_meter.c:908
+#: src/gui/widgets/digital_meter.c:920
 msgid "Tempo/BPM"
 msgstr "テンポ/BPM"
 
-#: src/gui/widgets/digital_meter.c:922 src/gui/widgets/event_viewer.c:599
+#: src/gui/widgets/digital_meter.c:934 src/gui/widgets/event_viewer.c:599
 #: src/gui/widgets/event_viewer.c:629 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr "位置"
 
-#: src/gui/widgets/digital_meter.c:952
+#: src/gui/widgets/digital_meter.c:964
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "拍子 - 小節あたりの拍数/拍単位"
 
@@ -664,25 +624,63 @@ msgstr "カテゴリー"
 msgid "Protocol"
 msgstr "プロトコル"
 
-#: src/gui/widgets/bot_bar.c:81
-#, fuzzy
-msgid "Audio backend"
-msgstr "オーディオバックエンド"
+#: src/gui/widgets/bot_bar.c:50 src/gui/widgets/ruler_marker.c:169
+msgid "Playhead"
+msgstr "再生ヘッド"
 
-#: src/gui/widgets/bot_bar.c:84
-#, fuzzy
-msgid "MIDI backend"
-msgstr "MIDIバックエンド"
+#: src/gui/widgets/bot_bar.c:52
+msgid "Playhead [Jack Timebase Master]"
+msgstr "プレイヘッド [JACKタイムベースマスター]"
 
-#: src/gui/widgets/bot_bar.c:87
+#: src/gui/widgets/bot_bar.c:54
+msgid "Playhead [Jack Client]"
+msgstr "プレイヘッド [JACKクライアント]"
+
+#: src/gui/widgets/bot_bar.c:135
+msgid "Become JACK Transport master"
+msgstr "JACKトランスポートマスターになる"
+
+#: src/gui/widgets/bot_bar.c:154
+msgid "Sync to JACK Transport"
+msgstr "JACKトランスポートに同期する"
+
+#: src/gui/widgets/bot_bar.c:177
+msgid "Unlink JACK Transport"
+msgstr "JACKトランスポートのリンク解除"
+
+#: src/gui/widgets/bot_bar.c:237
+msgid "playhead"
+msgstr "再生ヘッド"
+
+#: src/gui/widgets/bot_bar.c:271
+msgid "JACK Transport client"
+msgstr "JACKトランスポートクライアント"
+
+#: src/gui/widgets/bot_bar.c:291
+msgid "JACK Timebase master"
+msgstr "JACKタイムベースマスター"
+
+#: src/gui/widgets/bot_bar.c:372 src/audio/region.c:297 src/audio/track.c:1326
+msgid "Audio"
+msgstr "オーディオ"
+
+#: src/gui/widgets/bot_bar.c:378
 #, fuzzy
-msgid "Audio buffer size"
+msgid "Audio buffer"
 msgstr "バッファサイズ"
 
-#: src/gui/widgets/bot_bar.c:89
+#: src/gui/widgets/bot_bar.c:380
 #, fuzzy
 msgid "Sample rate"
 msgstr "サンプルレート"
+
+#: src/gui/widgets/bot_bar.c:451
+msgid "bpm"
+msgstr ""
+
+#: src/gui/widgets/bot_bar.c:455
+msgid "time sig."
+msgstr "拍子記号"
 
 #: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:59
 #: resources/ui/quantize_dialog.ui:143
@@ -717,40 +715,49 @@ msgstr "位置"
 msgid "Custom Marker"
 msgstr "カスタムマーカー"
 
-#: src/gui/widgets/timeline_arranger.c:1276
+#: src/gui/widgets/timeline_arranger.c:1288
 #, fuzzy
 msgid "Fade preset"
 msgstr "フェーダー"
 
 #. TRANSLATORS: Pan algorithm
-#: src/gui/widgets/timeline_arranger.c:1302 src/utils/ui.c:688
+#: src/gui/widgets/timeline_arranger.c:1314 src/utils/ui.c:688
 msgid "Linear"
 msgstr "直線"
 
-#: src/gui/widgets/timeline_arranger.c:1303
+#: src/gui/widgets/timeline_arranger.c:1315
 msgid "Exponential"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1304
+#: src/gui/widgets/timeline_arranger.c:1316
 msgid "Elliptic"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1305 src/audio/curve.c:45
+#: src/gui/widgets/timeline_arranger.c:1317 src/audio/curve.c:45
 #, c-format
 msgid "Vital"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1343
+#: src/gui/widgets/timeline_arranger.c:1356
+#, fuzzy
+msgid "Unmute"
+msgstr "トラックの無音を解除"
+
+#: src/gui/widgets/timeline_arranger.c:1362 src/audio/track.c:160
+msgid "Mute"
+msgstr "無音"
+
+#: src/gui/widgets/timeline_arranger.c:1375
 #, fuzzy
 msgid "Export as MIDI file"
 msgstr "MIDIファイルを選択"
 
-#: src/gui/widgets/timeline_arranger.c:1371 src/gui/widgets/track.c:1595
+#: src/gui/widgets/timeline_arranger.c:1403 src/gui/widgets/track.c:1595
 #, fuzzy
 msgid "Quick bounce"
 msgstr "クイック量子化"
 
-#: src/gui/widgets/timeline_arranger.c:1382 src/gui/widgets/track.c:1607
+#: src/gui/widgets/timeline_arranger.c:1414 src/gui/widgets/track.c:1607
 msgid "Bounce..."
 msgstr ""
 
@@ -758,6 +765,23 @@ msgstr ""
 #, fuzzy
 msgid "Curve algorithm"
 msgstr "パンの計算法"
+
+#: src/gui/widgets/header.c:99
+msgid "About Zrythm"
+msgstr "Zrythmについて"
+
+#: src/gui/widgets/header.c:100 resources/ui/shortcuts.ui:40
+#: resources/ui/preferences.ui:27
+msgid "Preferences"
+msgstr "設定"
+
+#: src/gui/widgets/header.c:101
+msgid "Log viewer"
+msgstr "ログビューア"
+
+#: src/gui/widgets/header.c:103
+msgid "Scripting interface"
+msgstr "スクリプトインタフェース"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
@@ -866,6 +890,15 @@ msgstr "コントロールが選択されていません"
 msgid "Snap/Grid options"
 msgstr "スナップ/グリッド設定"
 
+#: src/gui/widgets/scripting_window.c:183
+msgid "Script execution failed"
+msgstr ""
+
+#: src/gui/widgets/scripting_window.c:210
+#, fuzzy
+msgid "GNU Guile Scripting Interface"
+msgstr "スクリプトインタフェース"
+
 #: src/gui/widgets/port_connection_row.c:97
 msgid "Enable/disable connection"
 msgstr "接続を有効/無効にする"
@@ -873,23 +906,6 @@ msgstr "接続を有効/無効にする"
 #: src/gui/widgets/port_connection_row.c:138
 msgid "Delete connection"
 msgstr "接続を削除"
-
-#: src/gui/widgets/header_notebook.c:87
-msgid "About Zrythm"
-msgstr "Zrythmについて"
-
-#: src/gui/widgets/header_notebook.c:88 resources/ui/shortcuts.ui:40
-#: resources/ui/preferences.ui:27
-msgid "Preferences"
-msgstr "設定"
-
-#: src/gui/widgets/header_notebook.c:89
-msgid "Log viewer"
-msgstr "ログビューア"
-
-#: src/gui/widgets/header_notebook.c:91
-msgid "Scripting interface"
-msgstr "スクリプトインタフェース"
 
 #: src/gui/widgets/live_waveform.c:201
 msgid "Live waveform indicator"
@@ -1207,7 +1223,7 @@ msgstr "エクスポートしました"
 msgid "Export Progress"
 msgstr "エクスポートの進行状況"
 
-#: src/gui/backend/events.c:1489
+#: src/gui/backend/events.c:1541
 msgid "Trial limit has been reached. Zrythm will now go silent"
 msgstr "試用制限に達しました。 Zrythmはサイレントになります"
 
@@ -1368,10 +1384,6 @@ msgstr "PortAudioエラー：%s"
 msgid "MIDI"
 msgstr "MIDI"
 
-#: src/audio/region.c:297 src/audio/track.c:1326
-msgid "Audio"
-msgstr "オーディオ"
-
 #: src/audio/region.c:300
 msgid "Automation"
 msgstr "オートメーション"
@@ -1441,10 +1453,6 @@ msgstr "MIDIプレフェーダー出力"
 #: src/audio/sample_processor.c:38
 msgid "Sample Processor"
 msgstr "サンプルプロセッサ"
-
-#: src/audio/track.c:160
-msgid "Mute"
-msgstr "無音"
 
 #. TODO
 #: src/audio/scale.c:563 src/audio/scale.c:597
@@ -1529,7 +1537,7 @@ msgstr "バックエンドエラー"
 msgid "Client zombie"
 msgstr "クライアントゾンビ"
 
-#: src/actions/arranger_selections.c:1532
+#: src/actions/arranger_selections.c:1692
 msgid "Edit arranger object(s)"
 msgstr "アレンジャーオブジェクトを編集"
 
@@ -1552,14 +1560,15 @@ msgstr "トラックを削除"
 msgid "Delete %d Tracks"
 msgstr "%d個のトラックを削除"
 
-#: src/actions/actions.c:339
-#, c-format
+#: src/actions/actions.c:350
+#, fuzzy, c-format
 msgid ""
-"Scripting extensibility with <a href=\"%s\">GNU Guile</a> is coming soon!"
+"Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
+"your Zrythm installation."
 msgstr ""
 "<a href=\"%s\">GNU Guile </a>によるスクリプト拡張機能はまもなく登場します！"
 
-#: src/actions/actions.c:608
+#: src/actions/actions.c:613
 msgid ""
 "Creating new projects is disabled. Please restart Zrythm to start a new "
 "project"
@@ -1567,32 +1576,32 @@ msgstr ""
 "新しいプロジェクトの作成は無効です。 Zrythmを再起動して新しいプロジェクトを開"
 "始してください"
 
-#: src/actions/actions.c:619 resources/ui/project_assistant.ui:86
+#: src/actions/actions.c:624 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
 msgid "Create new project"
 msgstr "プロジェクトの新規作成"
 
-#: src/actions/actions.c:622
+#: src/actions/actions.c:627
 msgid "Yes"
 msgstr "はい"
 
-#: src/actions/actions.c:624
+#: src/actions/actions.c:629
 msgid "No"
 msgstr "いいえ"
 
-#: src/actions/actions.c:629
+#: src/actions/actions.c:634
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr "現在のプロジェクトに保存されていない変更は失われます。続行しますか？"
 
-#: src/actions/actions.c:681
+#: src/actions/actions.c:686
 msgid "Loading is disabled in the trial version"
 msgstr "試用版では読み込みが無効になっています"
 
-#: src/actions/actions.c:709 src/actions/actions.c:733
+#: src/actions/actions.c:714 src/actions/actions.c:738
 msgid "Saving is disabled in the trial version"
 msgstr "試用版では保存が無効になっています"
 
-#: src/actions/actions.c:745
+#: src/actions/actions.c:750
 msgid "Save Project"
 msgstr "プロジェクトを保存"
 
@@ -2097,7 +2106,7 @@ msgstr "右パネルを切り替える"
 msgid "Toggle bottom panel"
 msgstr "下部パネルを切り替える"
 
-#: resources/ui/shortcuts.ui:99 resources/ui/header_notebook.ui:55
+#: resources/ui/shortcuts.ui:99 resources/ui/header.ui:92
 msgid "Project"
 msgstr "プロジェクト"
 
@@ -2270,6 +2279,14 @@ msgstr "オーナー"
 msgid "Arranger Object Info"
 msgstr "アレンジャーオブジェクトの詳細"
 
+#: resources/ui/scripting_window.ui:48
+msgid "Execute"
+msgstr ""
+
+#: resources/ui/scripting_window.ui:88
+msgid "The result will be printed here"
+msgstr ""
+
 #: resources/ui/inspector_master.ui:43 resources/ui/inspector_ap.ui:43
 #: resources/ui/inspector_midi.ui:43
 msgid "region_name"
@@ -2390,6 +2407,26 @@ msgstr "プラグイン"
 msgid "Port"
 msgstr "ポート"
 
+#: resources/ui/header.ui:74
+msgid "Edit"
+msgstr "編集"
+
+#: resources/ui/header.ui:111
+msgid "View"
+msgstr "表示"
+
+#: resources/ui/header.ui:130
+msgid "Help"
+msgstr "ヘルプ"
+
+#: resources/ui/header.ui:157
+msgid "Project name"
+msgstr "プロジェクト名"
+
+#: resources/ui/header.ui:225
+msgid "MIDI in activity"
+msgstr "MIDI IN発動"
+
 #: resources/ui/transport_controls.ui:54
 msgid "Play"
 msgstr "再生"
@@ -2413,6 +2450,10 @@ msgstr "ループ"
 #: resources/ui/splash.ui:66
 msgid "Initializing..."
 msgstr "初期化中…"
+
+#: resources/ui/bot_bar.ui:57
+msgid "Metronome"
+msgstr "メトロノーム"
 
 #: resources/ui/export_progress_dialog.ui:25
 msgid "Open Directory"
@@ -2487,22 +2528,6 @@ msgstr ""
 msgid "ms"
 msgstr ""
 
-#: resources/ui/header_notebook.ui:37
-msgid "Edit"
-msgstr "編集"
-
-#: resources/ui/header_notebook.ui:74
-msgid "View"
-msgstr "表示"
-
-#: resources/ui/header_notebook.ui:93
-msgid "Help"
-msgstr "ヘルプ"
-
-#: resources/ui/header_notebook.ui:147
-msgid "Project name"
-msgstr "プロジェクト名"
-
 #: resources/ui/quantize_dialog.ui:7
 msgid "Quantize Options"
 msgstr "クオンタイズの設定"
@@ -2530,14 +2555,6 @@ msgstr "スイング"
 #: resources/ui/quantize_dialog.ui:251
 msgid "Randomization"
 msgstr "ランダム化"
-
-#: resources/ui/top_bar.ui:31
-msgid "Metronome"
-msgstr "メトロノーム"
-
-#: resources/ui/top_bar.ui:87
-msgid "MIDI in activity"
-msgstr "MIDI IN発動"
 
 #: resources/ui/export_dialog.ui:27
 msgid "Export As..."
@@ -3228,6 +3245,14 @@ msgstr "高度に自動化された直感的なデジタルオーディオワー
 #: data/zrythm.desktop.in:16
 msgid "zrythm"
 msgstr "zrythm"
+
+#, fuzzy
+#~ msgid "Audio backend"
+#~ msgstr "オーディオバックエンド"
+
+#, fuzzy
+#~ msgid "MIDI backend"
+#~ msgstr "MIDIバックエンド"
 
 #~ msgid "English [en]"
 #~ msgstr "英語[en]"
