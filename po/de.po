@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-04-04 16:05+0100\n"
-"PO-Revision-Date: 2020-03-30 22:14+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"PO-Revision-Date: 2020-04-03 17:34+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1183,9 +1183,9 @@ msgid "Passthrough input"
 msgstr ""
 
 #: src/gui/widgets/track.c:1664 src/gui/widgets/track.c:1724
-#, fuzzy, c-format
+#, c-format
 msgid "MIDI Channel %d"
-msgstr "%sMIDI-Kanal %d"
+msgstr "MIDI-Kanal %d"
 
 #: src/gui/widgets/track.c:1704
 #, c-format
@@ -1317,9 +1317,9 @@ msgid "skipping %s"
 msgstr ""
 
 #: src/settings/settings.c:135
-#, fuzzy, c-format
+#, c-format
 msgid "resetting %s to %s"
-msgstr "Route zu %s"
+msgstr "%s auf %s zurücksetzen"
 
 #: src/settings/settings.c:180
 #, c-format
@@ -1327,14 +1327,14 @@ msgid "Failed to find schema %s. Zrythm is likely not installed"
 msgstr ""
 
 #: src/settings/settings.c:195
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to view schema %s"
-msgstr "Fehler beim Suchen der Eigenschaft %s in %s"
+msgstr ""
 
 #: src/settings/settings.c:202
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reset schema %s"
-msgstr "Fehler beim Suchen der Eigenschaft %s in %s"
+msgstr ""
 
 #: src/settings/settings.c:235
 #, c-format

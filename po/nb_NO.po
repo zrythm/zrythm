@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-04-04 16:05+0100\n"
-"PO-Revision-Date: 2019-09-09 17:25+0000\n"
+"PO-Revision-Date: 2020-04-04 02:16+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/nb_NO/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: src/zrythm.c:309
 #, fuzzy
@@ -1237,9 +1237,9 @@ msgid "Passthrough input"
 msgstr ""
 
 #: src/gui/widgets/track.c:1664 src/gui/widgets/track.c:1724
-#, fuzzy, c-format
+#, c-format
 msgid "MIDI Channel %d"
-msgstr "Kanal %s"
+msgstr "MIDI-kanal %d"
 
 #: src/gui/widgets/track.c:1704
 #, fuzzy, c-format
@@ -1357,12 +1357,12 @@ msgstr ""
 #: src/settings/settings.c:74
 #, c-format
 msgid "Schema %s%s%s"
-msgstr ""
+msgstr "Plan %s%s%s"
 
 #: src/settings/settings.c:85
 #, c-format
 msgid "Resetting schema %s...\n"
-msgstr ""
+msgstr "Tilbakestiller planen %s…\n"
 
 #: src/settings/settings.c:124
 #, c-format
@@ -1370,24 +1370,24 @@ msgid "skipping %s"
 msgstr ""
 
 #: src/settings/settings.c:135
-#, fuzzy, c-format
+#, c-format
 msgid "resetting %s to %s"
-msgstr "Videresender til %s"
+msgstr "tilbakestiller %s til %s"
 
 #: src/settings/settings.c:180
 #, c-format
 msgid "Failed to find schema %s. Zrythm is likely not installed"
-msgstr ""
+msgstr "Klarte ikke å finne planen %s. Zrythm er antagelig ikke installert"
 
 #: src/settings/settings.c:195
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to view schema %s"
-msgstr "Klarte ikke å finne egenskapen %s i %s"
+msgstr "Klarte ikke å vise planen %s"
 
 #: src/settings/settings.c:202
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reset schema %s"
-msgstr "Klarte ikke å finne egenskapen %s i %s"
+msgstr "Klarte ikke å tilbakestille plan %s"
 
 #: src/settings/settings.c:235
 #, c-format
@@ -1397,9 +1397,9 @@ msgid ""
 msgstr ""
 
 #: src/settings/settings.c:241
-#, fuzzy, c-format
+#, c-format
 msgid "Aborting...\n"
-msgstr "Eksporter som…"
+msgstr "Avbryter…\n"
 
 #: src/settings/settings.c:252
 #, c-format
