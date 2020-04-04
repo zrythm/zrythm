@@ -678,11 +678,11 @@ recreate_pango_layouts (
 
   self->empty_slot_layout =
     z_cairo_create_pango_layout (
-      (GtkWidget *) self, "Arial Italic 8",
+      (GtkWidget *) self, "Arial Italic 7.5",
       PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
   self->pl_name_layout =
     z_cairo_create_pango_layout (
-      (GtkWidget *) self, "Arial Bold 8",
+      (GtkWidget *) self, "Arial Bold 7.5",
       PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
 }
 
@@ -782,7 +782,7 @@ channel_slot_widget_init (
     GDK_LEAVE_NOTIFY_MASK);
 
   gtk_widget_set_size_request (
-    GTK_WIDGET (self), -1, 24);
+    GTK_WIDGET (self), -1, 22);
 
   self->pl_name = NULL;
   gtk_widget_set_tooltip_text (
