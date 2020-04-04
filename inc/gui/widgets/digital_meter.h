@@ -66,6 +66,7 @@ typedef struct _DigitalMeterWidget
   DigitalMeterType         type;
   GtkGestureDrag           * drag;
   double                   last_y;
+  double                   last_x;
   int height_start_pos;
   int height_end_pos;
 

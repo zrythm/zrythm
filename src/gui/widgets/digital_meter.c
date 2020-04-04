@@ -37,6 +37,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "utils/gtk.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -479,6 +480,7 @@ static void
 on_change_finished (
   DigitalMeterWidget * self)
 {
+  self->last_x = 0;
   self->last_y = 0;
   self->update_num = 0;
   self->update_dec = 0;
@@ -664,14 +666,19 @@ drag_begin (
 }
 
 static void
-drag_update (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_update (
+  GtkGestureDrag *     gesture,
+  gdouble              offset_x,
+  gdouble              offset_y,
+  DigitalMeterWidget * self)
 {
-  DigitalMeterWidget * self = (DigitalMeterWidget *) user_data;
   offset_y = - offset_y;
-  double diff = offset_y - self->last_y;
+  int use_x = fabs (offset_x) > fabs (offset_y);
+  double diff =
+    use_x ?
+    offset_x - self->last_x :
+    offset_y - self->last_y;
+  g_message ("diff %f", diff);
   int num;
   float dec;
   Position pos;
@@ -689,6 +696,7 @@ drag_update (GtkGestureDrag * gesture,
                 TRANSPORT,
                 TRANSPORT->bpm + (bpm_t) num);
               self->last_y = offset_y;
+              self->last_x = offset_x;
             }
         }
       else if (self->update_dec)
@@ -701,6 +709,7 @@ drag_update (GtkGestureDrag * gesture,
                 TRANSPORT,
                 TRANSPORT->bpm + (bpm_t) dec);
               self->last_y = offset_y;
+              self->last_x = offset_x;
             }
 
         }
@@ -717,6 +726,7 @@ drag_update (GtkGestureDrag * gesture,
               position_set_bar (
                 &pos, pos.bars + num);
               self->last_y = offset_y;
+              self->last_x = offset_x;
             }
         }
       else if (self->update_beats)
@@ -728,6 +738,7 @@ drag_update (GtkGestureDrag * gesture,
                 &pos,
                 pos.beats + num);
               self->last_y = offset_y;
+              self->last_x = offset_x;
             }
         }
       else if (self->update_sixteenths)
@@ -740,6 +751,7 @@ drag_update (GtkGestureDrag * gesture,
                 &pos,
                 pos.sixteenths + num);
               self->last_y = offset_y;
+              self->last_x = offset_x;
             }
         }
       else if (self->update_ticks)
@@ -752,6 +764,7 @@ drag_update (GtkGestureDrag * gesture,
                 &pos,
                 pos.ticks + num);
               self->last_y = offset_y;
+              self->last_x = offset_x;
             }
         }
       SET_POS;
@@ -784,7 +797,7 @@ drag_update (GtkGestureDrag * gesture,
     case DIGITAL_METER_TYPE_TIMESIG:
       if (self->update_timesig_top)
         {
-          num = self->start_timesig_top + (int) offset_y / 24;
+          num = self->start_timesig_top + (int) diff / 24;
           if (num < 1)
             {
               TRANSPORT->beats_per_bar = 1;
@@ -798,7 +811,7 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (self->update_timesig_bot)
         {
-          num = self->start_timesig_bot + (int) offset_y / 24;
+          num = self->start_timesig_bot + (int) diff / 24;
           if (num < 0)
             {
               transport_set_ebeat_unit (

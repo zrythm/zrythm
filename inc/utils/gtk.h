@@ -288,6 +288,69 @@ z_gtk_widget_get_device (
       gtk_widget_get_display (widget))));
 }
 
+static inline GdkScreen *
+z_gtk_widget_get_screen (
+  GtkWidget * widget)
+{
+  GdkScreen * screen =
+    gdk_visual_get_screen (
+      gdk_window_get_visual (
+        gtk_widget_get_window (widget)));
+  return screen;
+}
+
+static inline GdkWindow *
+z_gtk_widget_get_root_gdk_window (
+  GtkWidget * widget)
+{
+  GdkScreen * screen =
+    z_gtk_widget_get_screen (widget);
+  return
+    gdk_screen_get_root_window (screen);
+}
+
+static inline void
+z_gtk_widget_get_global_coordinates (
+  GtkWidget * widget,
+  int *       x,
+  int *       y)
+{
+  GdkDevice * dev =
+    z_gtk_widget_get_device (widget);
+  GdkWindow * win =
+    z_gtk_widget_get_root_gdk_window (widget);
+  gdk_window_get_device_position (
+    win, dev, x, y, NULL);
+}
+
+static inline void
+z_gtk_widget_get_global_coordinates_double (
+  GtkWidget * widget,
+  double *    x,
+  double *    y)
+{
+  GdkDevice * dev =
+    z_gtk_widget_get_device (widget);
+  GdkWindow * win =
+    z_gtk_widget_get_root_gdk_window (widget);
+  gdk_window_get_device_position_double (
+    win, dev, x, y, NULL);
+}
+
+/**
+ * Wraps the cursor to the given global coordinates.
+ */
+static inline void
+z_gtk_warp_cursor_to (
+  GtkWidget * widget, int x, int y)
+{
+  GdkDevice * dev =
+    z_gtk_widget_get_device (widget);
+  GdkScreen * screen =
+    z_gtk_widget_get_screen (widget);
+  gdk_device_warp (dev, screen, x, y);
+}
+
 /**
  * Sets the GdkModifierType given for the widget.
  *
