@@ -472,6 +472,13 @@ statusbar {
   font-size: 10.5pt;
 }
 
+center-dock > paned > paned > paned > separator {
+  background-color: alpha (white, 0.08);
+}
+center-dock > paned > paned > paned > separator:hover {
+  background-color: alpha (white, 0.12);
+}
+
 .thick-separator
 {
   min-height: 2px;

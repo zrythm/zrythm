@@ -331,7 +331,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
     self);
 
   gtk_container_add (
-    GTK_CONTAINER (self->digital_meters),
+    GTK_CONTAINER (self->playhead_box),
     GTK_WIDGET (self->playhead_overlay));
 }
 
@@ -365,17 +365,17 @@ bot_bar_widget_update_status (
   char str[400];
   sprintf (
     str,
-    "<small>%s: " ORANGIZE ("%s") " | "
+    "%s: " ORANGIZE ("%s") " | "
     "%s: " ORANGIZE ("%s") " | "
     "%s: " ORANGIZE ("%d frames") " | "
-    "%s: " ORANGIZE ("%d Hz") "</small>",
-    _("Audio backend"),
+    "%s: " ORANGIZE ("%d Hz"),
+    _("Audio"),
     engine_audio_backend_to_string (
       AUDIO_ENGINE->audio_backend),
-    _("MIDI backend"),
+    "MIDI",
     engine_midi_backend_to_string (
       AUDIO_ENGINE->midi_backend),
-    _("Audio buffer size"),
+    _("Audio buffer"),
     AUDIO_ENGINE->block_length,
     _("Sample rate"),
     AUDIO_ENGINE->sample_rate);
@@ -431,6 +431,7 @@ bot_bar_widget_class_init (
   BIND_CHILD (transport_controls);
   BIND_CHILD (cpu_load);
   BIND_CHILD (status_bar);
+  BIND_CHILD (playhead_box);
 
 #undef BIND_CHILD
 }
@@ -447,13 +448,10 @@ bot_bar_widget_init (BotBarWidget * self)
   /* setup digital meters */
   self->digital_bpm =
     digital_meter_widget_new (
-      DIGITAL_METER_TYPE_BPM,
-      NULL,
-      NULL, "bpm");
+      DIGITAL_METER_TYPE_BPM, NULL, NULL, _("bpm"));
   self->digital_timesig =
     digital_meter_widget_new (
-      DIGITAL_METER_TYPE_TIMESIG,
-      NULL,
+      DIGITAL_METER_TYPE_TIMESIG, NULL,
       NULL, _("time sig."));
   gtk_container_add (
     GTK_CONTAINER (self->digital_meters),

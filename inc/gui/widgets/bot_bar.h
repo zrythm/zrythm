@@ -90,6 +90,8 @@ typedef struct _BotBarWidget
   GtkCheckMenuItem *        transport_client_check;
   GtkCheckMenuItem *        no_jack_transport_check;
 
+  GtkBox *                  playhead_box;
+
   DigitalMeterWidget *      digital_timesig;
   TransportControlsWidget * transport_controls;
   CpuWidget *               cpu_load;

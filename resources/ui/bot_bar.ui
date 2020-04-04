@@ -79,6 +79,16 @@
             <property name="fill">True</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkBox" id="playhead_box">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+          </packing>
+        </child>
       </object>
       <packing>
         <property name="expand">False</property>

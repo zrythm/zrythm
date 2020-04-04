@@ -678,7 +678,6 @@ drag_update (
     use_x ?
     offset_x - self->last_x :
     offset_y - self->last_y;
-  g_message ("diff %f", diff);
   int num;
   float dec;
   Position pos;
