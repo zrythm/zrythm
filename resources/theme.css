@@ -396,8 +396,8 @@ automation-point:hover
   background-color: @hover_color;
 }
 
-inspector expander-box,
-inspector two-col-expander-box,
+.inspector expander-box,
+.inspector two-col-expander-box,
 modulator-view two-col-expander-box
 {
   margin: 4px;
@@ -408,8 +408,8 @@ modulator-view two-col-expander-box
   border-color: #555555;
 }
 
-inspector expander-box >button,
-inspector two-col-expander-box>button
+.inspector expander-box >button,
+.inspector two-col-expander-box>button
 {
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;

@@ -459,7 +459,8 @@ on_plugins_removed (Channel * ch)
     }
 
   /* change inspector page */
-  inspector_widget_refresh (MW_INSPECTOR);
+  left_dock_edge_widget_refresh (
+    MW_LEFT_DOCK_EDGE);
 }
 
 static void
@@ -518,7 +519,8 @@ on_arranger_selections_changed (
     }
 
   refresh_for_selections_type (sel->type);
-  inspector_widget_refresh (MW_INSPECTOR);
+  left_dock_edge_widget_refresh (
+    MW_LEFT_DOCK_EDGE);
 }
 
 static void
@@ -739,7 +741,8 @@ on_mixer_selections_changed ()
             }
         }
     }
-  inspector_widget_refresh (MW_INSPECTOR);
+  left_dock_edge_widget_refresh (
+    MW_LEFT_DOCK_EDGE);
 }
 
 static void
@@ -747,7 +750,8 @@ on_track_color_changed (Track * track)
 {
   channel_widget_refresh (track->channel->widget);
   track_widget_force_redraw (track->widget);
-  inspector_widget_refresh (MW_INSPECTOR);
+  left_dock_edge_widget_refresh (
+    MW_LEFT_DOCK_EDGE);
 }
 
 static void
@@ -757,7 +761,8 @@ on_track_name_changed (Track * track)
    * also affected */
   mixer_widget_soft_refresh (MW_MIXER);
   track_widget_force_redraw (track->widget);
-  inspector_widget_refresh (MW_INSPECTOR);
+  left_dock_edge_widget_refresh (
+    MW_LEFT_DOCK_EDGE);
   visibility_widget_refresh (MW_VISIBILITY);
 }
 
@@ -1131,7 +1136,8 @@ events_process (void * data)
             MW_VISIBILITY);
           tracklist_header_widget_refresh_track_count (
             MW_TRACKLIST_HEADER);
-          inspector_widget_refresh (MW_INSPECTOR);
+          left_dock_edge_widget_refresh (
+            MW_LEFT_DOCK_EDGE);
           break;
         case ET_CHANNEL_REMOVED:
           mixer_widget_hard_refresh (
@@ -1173,7 +1179,8 @@ events_process (void * data)
                 SELECTION_TYPE_TRACK ||
               PROJECT->last_selection ==
                 SELECTION_TYPE_PLUGIN)
-            inspector_widget_refresh (MW_INSPECTOR);
+            left_dock_edge_widget_refresh (
+              MW_LEFT_DOCK_EDGE);
           mixer_widget_soft_refresh (MW_MIXER);
           break;
         case ET_RULER_SIZE_CHANGED:

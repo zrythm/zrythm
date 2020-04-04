@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Inspector section for plugins.
+ */
+
 #ifndef __GUI_WIDGETS_INSPECTOR_PLUGIN_H__
 #define __GUI_WIDGETS_INSPECTOR_PLUGIN_H__
 
@@ -24,11 +30,20 @@
 
 #define INSPECTOR_PLUGIN_WIDGET_TYPE \
   (inspector_plugin_widget_get_type ())
-G_DECLARE_FINAL_TYPE (InspectorPluginWidget,
-                      inspector_plugin_widget,
-                      Z,
-                      INSPECTOR_PLUGIN_WIDGET,
-                      GtkBox)
+G_DECLARE_FINAL_TYPE (
+  InspectorPluginWidget,
+  inspector_plugin_widget,
+  Z, INSPECTOR_PLUGIN_WIDGET,
+  GtkBox)
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+#define MW_PLUGIN_INSPECTOR \
+  MW_LEFT_DOCK_EDGE->plugin_inspector
 
 typedef struct _PortsExpanderWidget
   PortsExpanderWidget;
@@ -55,5 +70,12 @@ void
 inspector_plugin_widget_show (
   InspectorPluginWidget * self,
   MixerSelections *       ms);
+
+InspectorPluginWidget *
+inspector_plugin_widget_new (void);
+
+/**
+ * @}
+ */
 
 #endif

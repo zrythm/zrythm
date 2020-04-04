@@ -51,6 +51,9 @@ typedef struct _TrackInputExpanderWidget
  * @{
  */
 
+#define MW_TRACK_INSPECTOR \
+  MW_LEFT_DOCK_EDGE->track_inspector
+
 /**
  * Inspector section for tracks.
  */
@@ -87,6 +90,9 @@ void
 inspector_track_widget_setup (
   InspectorTrackWidget * self,
   TracklistSelections *  tls);
+
+InspectorTrackWidget *
+inspector_track_widget_new (void);
 
 /**
  * @}

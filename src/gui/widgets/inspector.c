@@ -52,21 +52,21 @@ inspector_widget_refresh (
   if (PROJECT->last_selection ==
         SELECTION_TYPE_TRACK)
     {
-      gtk_stack_set_visible_child (
-        GTK_STACK (self->stack),
-        GTK_WIDGET (self->track));
+      /*gtk_stack_set_visible_child (*/
+        /*GTK_STACK (self->stack),*/
+        /*GTK_WIDGET (self->track));*/
       inspector_track_widget_show_tracks (
-        self->track,
+        MW_TRACK_INSPECTOR,
         TRACKLIST_SELECTIONS);
     }
   else if (PROJECT->last_selection ==
            SELECTION_TYPE_PLUGIN)
     {
-      gtk_stack_set_visible_child (
-        GTK_STACK (self->stack),
-        GTK_WIDGET (self->plugin));
+      /*gtk_stack_set_visible_child (*/
+        /*GTK_STACK (self->stack),*/
+        /*GTK_WIDGET (self->plugin));*/
       inspector_plugin_widget_show (
-        self->plugin, MIXER_SELECTIONS);
+        MW_PLUGIN_INSPECTOR, MIXER_SELECTIONS);
     }
 }
 

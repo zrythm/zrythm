@@ -19,11 +19,15 @@
 
 #include "gui/backend/events.h"
 #include "gui/backend/tracklist_selections.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/inspector_track.h"
+#include "gui/widgets/left_dock_edge.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/track_input_expander.h"
 #include "gui/widgets/track_properties_expander.h"
 #include "gui/widgets/ports_expander.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
@@ -39,6 +43,10 @@ inspector_track_widget_show_tracks (
   InspectorTrackWidget * self,
   TracklistSelections *  tls)
 {
+  gtk_notebook_set_current_page (
+    GTK_NOTEBOOK (
+      MW_LEFT_DOCK_EDGE->inspector_notebook), 0);
+
   /* show info for first track */
   Track * track = NULL;
   if (tls->num_tracks > 0)
@@ -115,6 +123,16 @@ inspector_track_widget_setup (
     track);
 }
 
+InspectorTrackWidget *
+inspector_track_widget_new (void)
+{
+  InspectorTrackWidget * self =
+    g_object_new (
+      INSPECTOR_TRACK_WIDGET_TYPE, NULL);
+
+  return self;
+}
+
 static void
 inspector_track_widget_class_init (
   InspectorTrackWidgetClass * _klass)
@@ -150,4 +168,7 @@ inspector_track_widget_init (
     PORTS_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  z_gtk_widget_add_style_class (
+    GTK_WIDGET (self), "inspector");
 }

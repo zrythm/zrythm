@@ -18,8 +18,12 @@
  */
 
 #include "gui/backend/mixer_selections.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/inspector_plugin.h"
+#include "gui/widgets/left_dock_edge.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/ports_expander.h"
+#include "utils/gtk.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
@@ -35,6 +39,10 @@ inspector_plugin_widget_show (
   InspectorPluginWidget * self,
   MixerSelections *       ms)
 {
+  gtk_notebook_set_current_page (
+    GTK_NOTEBOOK (
+      MW_LEFT_DOCK_EDGE->inspector_notebook), 1);
+
   /* show info for first plugin */
   Plugin * pl = NULL;
   if (ms->num_slots > 0)
@@ -66,6 +74,16 @@ inspector_plugin_widget_show (
   ports_expander_widget_setup_plugin (
     self->cv_outs, FLOW_OUTPUT,
     TYPE_CV, pl);
+}
+
+InspectorPluginWidget *
+inspector_plugin_widget_new (void)
+{
+  InspectorPluginWidget * self =
+    g_object_new (
+      INSPECTOR_PLUGIN_WIDGET_TYPE, NULL);
+
+  return self;
 }
 
 static void
@@ -123,4 +141,7 @@ inspector_plugin_widget_init (
   g_type_ensure (PORTS_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  z_gtk_widget_add_style_class (
+    GTK_WIDGET (self), "inspector");
 }

@@ -166,7 +166,6 @@ mixer_selections_remove_slot (
 
   if (ZRYTHM_HAVE_UI && publish_events)
     {
-      inspector_widget_refresh (MW_INSPECTOR);
       EVENTS_PUSH (ET_MIXER_SELECTIONS_CHANGED,
                    NULL);
     }

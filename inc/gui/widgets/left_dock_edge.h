@@ -39,15 +39,29 @@ typedef struct _InspectorWidget InspectorWidget;
 typedef struct _VisibilityWidget VisibilityWidget;
 typedef struct _FoldableNotebookWidget
   FoldableNotebookWidget;
+typedef struct _InspectorTrackWidget
+  InspectorTrackWidget;
+typedef struct _InspectorPluginWidget
+  InspectorPluginWidget;
 
 typedef struct _LeftDockEdgeWidget
 {
   GtkBox                   parent_instance;
   FoldableNotebookWidget * inspector_notebook;
-  InspectorWidget *        inspector;
+  //InspectorWidget *        inspector;
   VisibilityWidget *       visibility;
   GtkGestureMultiPress *   mp;
+
+  /** For TracklistSelections. */
+  InspectorTrackWidget *  track_inspector;
+
+  /** For MixerSelections. */
+  InspectorPluginWidget * plugin_inspector;
 } LeftDockEdgeWidget;
+
+void
+left_dock_edge_widget_refresh (
+  LeftDockEdgeWidget * self);
 
 void
 left_dock_edge_widget_setup (
