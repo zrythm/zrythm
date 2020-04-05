@@ -34,9 +34,10 @@
        (zero?
          (system*
            "@GUILE_SNARF@"
+           "-o" output-file input-file
+           "-I../inc"
            (get-cflags-from-pkgconf-name
-             guile-pkgconf-name)
-           "-o" output-file input-file))
+             guile-pkgconf-name)))
        (exit -1)))))
 
 (apply main (program-arguments))

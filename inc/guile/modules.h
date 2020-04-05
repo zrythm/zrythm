@@ -34,6 +34,9 @@
  * @{
  */
 
+/** Guile function prefix. */
+#define FUNC_NAME s_
+
 extern SCM position_type;
 extern SCM track_type;
 extern SCM tracklist_type;

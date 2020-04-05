@@ -868,11 +868,6 @@ plugin_clone (
         plugin_new_from_descr (
           pl->descr, pl->id.track_pos,
           pl->id.slot);
-      g_return_val_if_fail (
-        clone && clone->lv2 &&
-        clone->lv2->num_ports ==
-          pl->lv2->num_ports,
-        NULL);
 
       /* set the state file on the new Lv2Plugin
        * as the state filed saved on the original
@@ -884,6 +879,12 @@ plugin_clone (
       /* instantiate */
       int ret = plugin_instantiate (clone);
       g_return_val_if_fail (!ret, NULL);
+
+      g_return_val_if_fail (
+        clone && clone->lv2 &&
+        clone->lv2->num_ports ==
+          pl->lv2->num_ports,
+        NULL);
 
       /* delete the state file */
       io_remove (pl->lv2->state_file);
