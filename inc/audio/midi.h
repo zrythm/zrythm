@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -216,7 +216,7 @@ midi_events_append (
   MidiEvents * dest,
   const nframes_t    start_frame,
   const nframes_t    nframes,
-  int          queued);
+  bool          queued);
 
 /**
  * Adds a note on event to the given MidiEvents.

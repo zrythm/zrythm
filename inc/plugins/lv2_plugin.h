@@ -76,9 +76,9 @@
 #include <suil/suil.h>
 
 #ifdef __clang__
-#    define REALTIME __attribute__((annotate("realtime")))
+#  define REALTIME __attribute__((annotate("realtime")))
 #else
-#    define REALTIME
+#  define REALTIME
 #endif
 
 typedef struct Lv2Plugin Lv2Plugin;
@@ -242,10 +242,8 @@ static const cyaml_schema_field_t
     "ports", CYAML_FLAG_POINTER,
     Lv2Plugin, ports, num_ports,
     &lv2_port_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "state_file", CYAML_FLAG_POINTER,
-    Lv2Plugin, state_file,
-    0, CYAML_UNLIMITED),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    Lv2Plugin, state_file),
 
   CYAML_FIELD_END
 };

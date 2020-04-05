@@ -61,7 +61,7 @@ midi_events_append (
   MidiEvents * dest,
   const nframes_t    start_frame,
   const nframes_t    nframes,
-  int          queued)
+  bool          queued)
 {
   /* queued not implemented yet */
   g_return_if_fail (!queued);

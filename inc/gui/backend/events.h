@@ -139,6 +139,7 @@ typedef enum EventType
   /** Plugin visibility changed, should close/open
    * UI. */
   ET_PLUGIN_VISIBILITY_CHANGED,
+  ET_PLUGIN_STATE_CHANGED,
 
   ET_TRACKS_ADDED,
   ET_TRACKS_REMOVED,

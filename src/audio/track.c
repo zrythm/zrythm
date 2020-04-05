@@ -503,7 +503,7 @@ track_set_muted (
     {
       port_set_control_value (
         track->mute, mute ? 1.f : 0.f,
-        0, fire_events);
+        false, fire_events);
 
       if (fire_events)
         {
@@ -1329,10 +1329,10 @@ track_stringize_type (
         _("MIDI"));
     case TRACK_TYPE_AUDIO_BUS:
       return g_strdup (
-        _("Audio Bus"));
+        _("Audio FX"));
     case TRACK_TYPE_MIDI_BUS:
       return g_strdup (
-        _("MIDI Bus"));
+        _("MIDI FX"));
     case TRACK_TYPE_MASTER:
       return g_strdup (
         _("Master"));

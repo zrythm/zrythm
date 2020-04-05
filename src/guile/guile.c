@@ -19,48 +19,16 @@
 
 #include <stdio.h>
 
-#include "guile/audio/position.h"
-#include "guile/zrythm.h"
+#include "guile/modules.h"
 
 #include <gtk/gtk.h>
 
 #include <libguile.h>
 #include <pthread.h>
 
-#if 0
-/**
- * Function that runs in guile mode.
- */
-static void*
-guile_mode_func (void* data)
-{
-  /* load a file called script.scm with the following
-   * content:
-   *
-   * (define zrythm-script
-   *   (lambda ()
-   *     (display "script called") (newline)))
-   */
-  scm_c_primitive_load ("script.scm");
-  SCM func =
-    scm_variable_ref (
-      scm_c_lookup ("zrythm-script"));
-  scm_call_0 (func);
-
-  return NULL;
-}
-
-/**
- * Special thread for guile.
- */
-static void *
-thread_start_routine (void * arg)
-{
-  scm_with_guile (&guile_mode_func, NULL);
-
-  return NULL;
-}
-#endif
+SCM position_type;
+SCM track_type;
+SCM tracklist_type;
 
 /**
  * Inits the guile subsystem.
@@ -72,19 +40,6 @@ guile_init (
 {
   g_message ("Initializing guile subsystem...");
 
-#if 0
-  /* spawn thread for guile mode */
-  pthread_t thread_id;
-  if (pthread_create (
-        &thread_id, NULL,
-        &thread_start_routine, NULL))
-    {
-      g_critical (
-        "failed to create thread for guile");
-      return -1;
-    }
-
-#endif
   return 0;
 }
 
@@ -98,5 +53,7 @@ void
 guile_define_modules (void)
 {
   guile_audio_position_define_module ();
+  guile_audio_track_define_module ();
+  guile_audio_tracklist_define_module ();
   guile_zrythm_define_module ();
 }

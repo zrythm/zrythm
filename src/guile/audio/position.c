@@ -20,26 +20,10 @@
 #if !defined(SCM_MAGIC_SNARF_DOCS) && \
   !defined(SCM_MAGIC_SNARFER)
 #include "audio/position.h"
-#include "guile/audio/position.h"
+#include "guile/modules.h"
 #endif
 
 #include <libguile.h>
-
-static SCM position_type;
-
-static void
-init_position_type (void)
-{
-  SCM name = scm_from_utf8_symbol ("position");
-  SCM slots =
-    scm_list_1 (
-      scm_from_utf8_symbol ("data"));
-  scm_t_struct_finalize finalizer = NULL;
-
-  position_type =
-    scm_make_foreign_object_type (
-      name, slots, finalizer);
-}
 
 SCM_DEFINE (
   make_position, "position-new", 5, 0, 0,
@@ -101,7 +85,8 @@ ticks.sub_tick`.")
 static void
 init_module (void * data)
 {
-  init_position_type ();
+  init_guile_object_type (
+    &position_type, "position");
 
   scm_c_define_gsubr (
     "position-new", 5, 0, 0, make_position);

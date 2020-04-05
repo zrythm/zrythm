@@ -17,6 +17,8 @@
 
 _guile_snarfable_srcs = [
   join_paths ('audio', 'position.c'),
+  join_paths ('audio', 'track.c'),
+  join_paths ('audio', 'tracklist.c'),
   'zrythm.c',
   ]
 guile_snarfable_srcs = []

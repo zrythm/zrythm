@@ -17,31 +17,46 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/tracklist.h"
-#include "guile/tracklist.h"
+#if !defined(SCM_MAGIC_SNARF_DOCS) && \
+  !defined(SCM_MAGIC_SNARFER)
+#include "audio/track.h"
+#include "guile/modules.h"
+#include "project.h"
+#endif
 
 #include <libguile.h>
 
-static SCM
-get_tracks (void)
+SCM_DEFINE (
+  get_name, "track-get-name", 1, 0, 0,
+  (SCM track),
+  "Returns the name of @var{track}.")
+#define FUNC_NAME s_
 {
-  /* TODO */
-  /*SCM arr =*/
-    /*scm_make_array (*/
+  scm_assert_foreign_object_type (
+    track_type, track);
+  Track * reftrack =
+    scm_foreign_object_ref (track, 0);
 
+  return
+    scm_from_utf8_string (
+      track_get_name (reftrack));
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)
 {
+  init_guile_object_type (
+    &track_type, "track");
+
   scm_c_define_gsubr (
-    "tracklist-get-tracks", 0, 0, 0, get_tracks);
-  scm_c_export ("tracklist-get-tracks", NULL);
+    "track-get-name", 1, 0, 0, get_name);
+  scm_c_export ("track-get-name", NULL);
 }
 
 void
-guile_zrythm_define_module (void)
+guile_audio_track_define_module (void)
 {
   scm_c_define_module (
-    "zrythm audio tracklist", init_module, NULL);
+    "audio track", init_module, NULL);
 }

@@ -1151,9 +1151,9 @@ ui_get_arranger_object_color (
     color->alpha = is_transient ? 0.7 : 1.0;
   if (is_muted)
     {
-      color->red = 0.6f;
-      color->green = 0.6f;
-      color->blue = 0.6f;
+      color->red = 0.6;
+      color->green = 0.6;
+      color->blue = 0.6;
     }
   if (is_selected)
     {

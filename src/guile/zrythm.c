@@ -19,7 +19,7 @@
 
 #if !defined(SCM_MAGIC_SNARF_DOCS) && \
   !defined(SCM_MAGIC_SNARFER)
-#include "guile/zrythm.h"
+#include "guile/modules.h"
 #include "zrythm.h"
 #endif
 

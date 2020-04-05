@@ -688,6 +688,14 @@ plugin_process (
   const nframes_t  local_offset,
   const nframes_t nframes)
 {
+  if (!plugin_is_enabled (plugin))
+    {
+      plugin_process_passthrough (
+        plugin, g_start_frames, local_offset,
+        nframes);
+      return;
+    }
+
   /* if has MIDI input port */
   if (plugin->descr->num_midi_ins > 0)
     {
@@ -861,7 +869,10 @@ plugin_clone (
           pl->descr, pl->id.track_pos,
           pl->id.slot);
       g_return_val_if_fail (
-        clone && clone->lv2, NULL);
+        clone && clone->lv2 &&
+        clone->lv2->num_ports ==
+          pl->lv2->num_ports,
+        NULL);
 
       /* set the state file on the new Lv2Plugin
        * as the state filed saved on the original
@@ -905,6 +916,104 @@ plugin_clone (
   clone->visible = pl->visible;
 
   return clone;
+}
+
+/**
+ * Returns whether the plugin is enabled.
+ */
+bool
+plugin_is_enabled (
+  Plugin * self)
+{
+  return control_port_is_toggled (self->enabled);
+}
+
+void
+plugin_set_enabled (
+  Plugin * self,
+  bool     enabled,
+  bool     fire_events)
+{
+  port_set_control_value (
+    self->enabled, enabled ? 1.f : 0.f, false,
+    fire_events);
+
+  if (fire_events)
+    {
+      EVENTS_PUSH (ET_PLUGIN_STATE_CHANGED, self);
+    }
+}
+
+/**
+ * Processes the plugin by passing through the
+ * input to its output.
+ *
+ * This is called when the plugin is bypassed.
+ */
+void
+plugin_process_passthrough (
+  Plugin * self,
+  const long      g_start_frames,
+  const nframes_t  local_offset,
+  const nframes_t nframes)
+{
+  int last_audio_idx = 0;
+  int last_midi_idx = 0;
+  for (int i = 0; i < self->num_in_ports; i++)
+    {
+      bool goto_next = false;
+      Port * in_port = self->in_ports[i];
+      switch (in_port->id.type)
+        {
+        case TYPE_AUDIO:
+          for (int j = last_audio_idx;
+               j < self->num_out_ports;
+               j++)
+            {
+              Port * out_port = self->out_ports[j];
+              if (out_port->id.type == TYPE_AUDIO)
+                {
+                  /* copy */
+                  memcpy (
+                    &out_port->buf[local_offset],
+                    &in_port->buf[local_offset],
+                    sizeof (float) * nframes);
+
+                  last_audio_idx = j + 1;
+                  goto_next = true;
+                  break;
+                }
+              if (goto_next)
+                continue;
+            }
+          break;
+        case TYPE_EVENT:
+          for (int j = last_midi_idx;
+               j < self->num_out_ports;
+               j++)
+            {
+              Port * out_port = self->out_ports[j];
+              if (out_port->id.type == TYPE_EVENT)
+                {
+                  /* copy */
+                  midi_events_append (
+                    in_port->midi_events,
+                    out_port->midi_events,
+                    local_offset,
+                    nframes, false);
+
+                  last_midi_idx = j + 1;
+                  goto_next = true;
+                  break;
+                }
+              if (goto_next)
+                continue;
+            }
+          break;
+        default:
+          break;
+        }
+    }
 }
 
 /**

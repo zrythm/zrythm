@@ -176,7 +176,8 @@ channel_widget_update_meter_reading (
 /**
  * Updates everything on the widget.
  *
- * It is reduntant but keeps code organized. Should fix if it causes lags.
+ * It is reduntant but keeps code organized. Should
+ * fix if it causes lags.
  */
 void
 channel_widget_refresh (ChannelWidget * self);

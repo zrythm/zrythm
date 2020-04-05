@@ -433,6 +433,22 @@ on_plugin_added (Plugin * plugin)
 }
 
 static void
+on_plugin_state_changed (Plugin * pl)
+{
+  Track * track =
+    plugin_get_track (pl);
+  if (track && track->channel &&
+      track->channel->widget)
+    {
+      gtk_widget_queue_draw (
+        GTK_WIDGET (
+          track->channel->widget->inserts[
+            channel_get_plugin_index (
+              track->channel, pl)]));
+    }
+}
+
+static void
 on_modulator_added (Modulator * modulator)
 {
   on_plugin_added (modulator->plugin);
@@ -1238,6 +1254,10 @@ events_process (void * data)
           break;
         case ET_PLUGIN_VISIBILITY_CHANGED:
           on_plugin_visibility_changed (
+            (Plugin *) ev->arg);
+          break;
+        case ET_PLUGIN_STATE_CHANGED:
+          on_plugin_state_changed (
             (Plugin *) ev->arg);
           break;
         case ET_LAST_TIMELINE_OBJECT_CHANGED:

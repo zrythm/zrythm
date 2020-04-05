@@ -495,7 +495,7 @@ show_context_menu (DragDestBoxWidget * self)
   submenu = gtk_menu_new ();
   menu_item =
     z_gtk_create_menu_item (
-      _("Audio Bus"),
+      _("Audio FX"),
       NULL,
       ICON_TYPE_GNOME_BUILDER,
       NULL,
@@ -506,7 +506,7 @@ show_context_menu (DragDestBoxWidget * self)
     GTK_WIDGET (menu_item));
   menu_item =
     z_gtk_create_menu_item (
-      _("MIDI Bus"),
+      _("MIDI FX"),
       NULL,
       ICON_TYPE_GNOME_BUILDER,
       NULL,
@@ -518,7 +518,7 @@ show_context_menu (DragDestBoxWidget * self)
   menu_item =
     GTK_MENU_ITEM (
       gtk_menu_item_new_with_label (
-        _("Add Bus Track")));
+        _("Add FX Track")));
   gtk_menu_item_set_submenu (
     GTK_MENU_ITEM (menu_item),
     submenu);

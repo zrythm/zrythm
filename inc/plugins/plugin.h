@@ -440,6 +440,32 @@ plugin_is_selected (
   Plugin * pl);
 
 /**
+ * Returns whether the plugin is enabled.
+ */
+bool
+plugin_is_enabled (
+  Plugin * self);
+
+void
+plugin_set_enabled (
+  Plugin * self,
+  bool     enabled,
+  bool     fire_events);
+
+/**
+ * Processes the plugin by passing through the
+ * input to its output.
+ *
+ * This is called when the plugin is bypassed.
+ */
+void
+plugin_process_passthrough (
+  Plugin * self,
+  const long      g_start_frames,
+  const nframes_t  local_offset,
+  const nframes_t nframes);
+
+/**
  * Returns the event ports in the plugin.
  *
  * @param ports Array to fill in. Must be large

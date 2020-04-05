@@ -45,20 +45,34 @@ G_DEFINE_TYPE (
 static SCM out_port;
 static SCM error_out_port;
 
-static const char * example_script = "\
-;; This is an example GNU Guile script using\n\
+static const char * example_script =
+";; This is an example GNU Guile script using\n\
 ;; modules provided by Zrythm\n\
 ;; See https://www.gnu.org/software/guile/ for\n\
 ;; more info about GNU Guile\n\
 ;; See https://manual.zrythm.org/en/scripting/intro.html\n\
-;; for a list of modules provided by Zrythm\n\
-(use-modules (zrythm)\n\
+;; for a list of modules provided by Zrythm\n"
+#if 0
+"(use-modules (zrythm)\n\
              (audio position))\n\
 (define zrythm-script\n\
   (lambda ()\n\
     (display (zrythm-get-ver))\n\
     (let ((mypos (position-new 2 1 1 34 0)))\n\
       (position-print mypos))))";
+#endif
+"(use-modules (audio track)\n\
+             (audio tracklist))\n\
+(define zrythm-script\n\
+  (lambda ()\n\
+    ;; loop through all tracks and print them\n\
+    (let ((num-tracks (tracklist-get-num-tracks)))\n\
+      (let loop ((i 0))\n\
+        (when (< i num-tracks)\n\
+          (let ((track (tracklist-get-track-at-pos i)))\n\
+            (display (track-get-name track))\n\
+            (newline))\n\
+          (loop (+ i 1)))))))";
 
 static SCM
 call_proc (void * data)

@@ -73,9 +73,20 @@ channel_slot_draw_cb (
     {
       GdkRGBA bg, fg;
       fg = UI_COLOR_BLACK;
-      if (!plugin->enabled)
-        bg = UI_COLORS->matcha;
-      if (plugin->visible)
+      if (!plugin_is_enabled (plugin))
+        {
+          bg.red = 0.6;
+          bg.green = 0.6;
+          bg.blue = 0.6;
+          bg.alpha = 1.0;
+          if (plugin->visible)
+            {
+              bg.red += 0.1;
+              bg.green += 0.1;
+              bg.blue += 0.1;
+            }
+        }
+      else if (plugin->visible)
         bg = UI_COLORS->bright_green;
       else
         bg = UI_COLORS->darkish_green;
@@ -516,6 +527,15 @@ on_plugin_delete (
 }
 
 static void
+on_plugin_bypass_activate (
+  GtkMenuItem * menuitem,
+  Plugin *      pl)
+{
+  plugin_set_enabled (
+    pl, !plugin_is_enabled (pl), true);
+}
+
+static void
 show_context_menu (
   ChannelSlotWidget * self)
 {
@@ -524,23 +544,8 @@ show_context_menu (
 
   menu = gtk_menu_new();
 
-  /*int num_selections =*/
-    /*MIXER_SELECTIONS->num_slots;*/
-
-  /* TODO split below */
-  /*if (num_selections == 0)*/
-    /*{*/
-
-    /*}*/
-  /*else if (num_selections = 1)*/
-    /*{*/
-
-
-    /*}*/
-  /*else*/
-    /*{*/
-
-    /*}*/
+  Plugin * pl =
+    self->channel->plugins[self->slot_index];
 
 #define CREATE_SEPARATOR \
   menuitem = \
@@ -551,6 +556,24 @@ show_context_menu (
   gtk_menu_shell_append ( \
     GTK_MENU_SHELL(menu), GTK_WIDGET (menuitem))
 
+  /* add bypass option */
+  if (pl)
+    {
+      menuitem =
+        GTK_MENU_ITEM (
+          gtk_check_menu_item_new_with_label (
+            _("Bypass")));
+      gtk_check_menu_item_set_active (
+        GTK_CHECK_MENU_ITEM (menuitem),
+        !plugin_is_enabled (pl));
+      g_signal_connect (
+        G_OBJECT (menuitem), "activate",
+        G_CALLBACK (on_plugin_bypass_activate), pl);
+      ADD_TO_SHELL;
+      CREATE_SEPARATOR;
+      ADD_TO_SHELL;
+    }
+
   menuitem = CREATE_CUT_MENU_ITEM (NULL);
   ADD_TO_SHELL;
   menuitem = CREATE_COPY_MENU_ITEM (NULL);
@@ -558,7 +581,7 @@ show_context_menu (
   menuitem = CREATE_PASTE_MENU_ITEM (NULL);
   ADD_TO_SHELL;
   /* if plugin exists */
-  if (self->channel->plugins[self->slot_index])
+  if (pl)
     {
       /* add delete item */
       menuitem = CREATE_DELETE_MENU_ITEM (NULL);

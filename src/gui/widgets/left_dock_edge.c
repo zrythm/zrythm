@@ -82,7 +82,7 @@ left_dock_edge_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  const int min_width = 180;
+  const int min_width = 160;
   GtkWidget * img;
 
   /* setup track inspector */

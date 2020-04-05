@@ -1852,6 +1852,11 @@ port_forward_control_change_event (
             effect, self->vst_param_id,
             self->control);
         }
+      if (pl)
+        {
+          EVENTS_PUSH (
+            ET_PLUGIN_STATE_CHANGED, pl);
+        }
     }
   else if (self->id.owner_type ==
              PORT_OWNER_TYPE_FADER &&

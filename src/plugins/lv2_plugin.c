@@ -647,6 +647,8 @@ lv2_create_or_init_ports (
         }
     }
 
+  g_warn_if_fail (self->num_ports > 0);
+
   return 0;
 }
 

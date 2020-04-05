@@ -598,7 +598,7 @@ if get_option('enable_guile')
     cdata.set('HAVE_GTK_SOURCE_VIEW_4', 1)
   else
     gtksource_dep = dependency (
-      'gtksourceview-3.0', required: true)
+      'gtksourceview-3.0')
     cdata.set('HAVE_GTK_SOURCE_VIEW_3', 1)
   endif
   zrythm_deps += gtksource_dep
