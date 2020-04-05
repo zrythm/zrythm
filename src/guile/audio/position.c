@@ -20,10 +20,9 @@
 #if !defined(SCM_MAGIC_SNARF_DOCS) && \
   !defined(SCM_MAGIC_SNARFER)
 #include "audio/position.h"
-#include "guile/modules.h"
 #endif
 
-#include <libguile.h>
+#include "guile/modules.h"
 
 SCM_DEFINE (
   make_position, "position-new", 5, 0, 0,
@@ -32,7 +31,6 @@ SCM_DEFINE (
   "Return a newly-created position as @var{bars}.\
 @var{beats}.@var{sixteenths}.@var{ticks}.\
 @var{sub_tick}.")
-#define FUNC_NAME s_
 {
   /* Allocate the Position.  Because we
      use scm_gc_malloc, this memory block will
@@ -56,14 +54,12 @@ SCM_DEFINE (
     scm_make_foreign_object_1 (
       position_type, pos);
 }
-#undef FUNC_NAME
 
 SCM_DEFINE (
   print_position, "position-print", 1, 0, 0,
   (SCM pos),
   "Prints the position as `bars.beats.sixteenths.\
 ticks.sub_tick`.")
-#define FUNC_NAME s_
 {
   scm_assert_foreign_object_type (
     position_type, pos);
@@ -80,7 +76,6 @@ ticks.sub_tick`.")
 
   return SCM_UNSPECIFIED;
 }
-#undef FUNC_NAME
 
 static void
 init_module (void * data)
@@ -88,10 +83,11 @@ init_module (void * data)
   init_guile_object_type (
     &position_type, "position");
 
-  scm_c_define_gsubr (
-    "position-new", 5, 0, 0, make_position);
-  scm_c_define_gsubr (
-    "position-print", 1, 0, 0, print_position);
+#if !defined(SCM_MAGIC_SNARF_DOCS) && \
+  !defined(SCM_MAGIC_SNARFER)
+#include "audio_position.x"
+#endif
+
   scm_c_export (
     "position-new", "position-print", NULL);
 }

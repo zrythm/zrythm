@@ -20,17 +20,15 @@
 #if !defined(SCM_MAGIC_SNARF_DOCS) && \
   !defined(SCM_MAGIC_SNARFER)
 #include "audio/track.h"
-#include "guile/modules.h"
 #include "project.h"
 #endif
 
-#include <libguile.h>
+#include "guile/modules.h"
 
 SCM_DEFINE (
   get_name, "track-get-name", 1, 0, 0,
   (SCM track),
   "Returns the name of @var{track}.")
-#define FUNC_NAME s_
 {
   scm_assert_foreign_object_type (
     track_type, track);
@@ -41,7 +39,6 @@ SCM_DEFINE (
     scm_from_utf8_string (
       track_get_name (reftrack));
 }
-#undef FUNC_NAME
 
 static void
 init_module (void * data)
@@ -49,8 +46,11 @@ init_module (void * data)
   init_guile_object_type (
     &track_type, "track");
 
-  scm_c_define_gsubr (
-    "track-get-name", 1, 0, 0, get_name);
+#if !defined(SCM_MAGIC_SNARF_DOCS) && \
+  !defined(SCM_MAGIC_SNARFER)
+#include "audio_track.x"
+#endif
+
   scm_c_export ("track-get-name", NULL);
 }
 

@@ -54,8 +54,10 @@ SCM_DEFINE (
 static void
 init_module (void * data)
 {
-  scm_c_define_gsubr (
-    "zrythm-get-ver", 0, 0, 0, get_ver);
+#if !defined(SCM_MAGIC_SNARF_DOCS) && \
+  !defined(SCM_MAGIC_SNARFER)
+#include "zrythm.x"
+#endif
   scm_c_export ("zrythm-get-ver", NULL);
 }
 

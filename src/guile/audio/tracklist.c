@@ -20,48 +20,41 @@
 #if !defined(SCM_MAGIC_SNARF_DOCS) && \
   !defined(SCM_MAGIC_SNARFER)
 #include "audio/tracklist.h"
-#include "guile/modules.h"
 #include "project.h"
 #endif
 
-#include <libguile.h>
+#include "guile/modules.h"
 
 SCM_DEFINE (
   get_track_at_pos, "tracklist-get-track-at-pos",
   1, 0, 0,
   (SCM pos),
   "Returns the track at @var{pos} in the tracklist.")
-#define FUNC_NAME s_
 {
   return
     scm_make_foreign_object_1 (
       track_type,
       TRACKLIST->tracks[scm_to_int (pos)]);
 }
-#undef FUNC_NAME
 
 SCM_DEFINE (
   get_num_tracks, "tracklist-get-num-tracks", 0, 0, 0,
   (),
   "Returns the number of tracks in the tracklist.")
-#define FUNC_NAME s_
 {
   return
     scm_from_int (TRACKLIST->num_tracks);
 }
-#undef FUNC_NAME
 
 SCM_DEFINE (
   get_tracklist, "tracklist-get", 0, 0, 0,
   (),
   "Returns the tracklist for the current project.")
-#define FUNC_NAME s_
 {
   return
     scm_make_foreign_object_1 (
       tracklist_type, TRACKLIST);
 }
-#undef FUNC_NAME
 
 void
 init_module (void * data)
@@ -69,14 +62,10 @@ init_module (void * data)
   init_guile_object_type (
     &tracklist_type, "tracklist");
 
-  scm_c_define_gsubr (
-    "tracklist-get-track-at-pos", 1, 0, 0,
-    get_track_at_pos);
-  scm_c_define_gsubr (
-    "tracklist-get-num-tracks", 0, 0, 0,
-    get_num_tracks);
-  scm_c_define_gsubr (
-    "tracklist-get", 0, 0, 0, get_tracklist);
+#if !defined(SCM_MAGIC_SNARF_DOCS) && \
+  !defined(SCM_MAGIC_SNARFER)
+#include "audio_tracklist.x"
+#endif
   scm_c_export (
     "tracklist-get-track-at-pos",
     "tracklist-get-num-tracks",
