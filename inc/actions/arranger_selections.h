@@ -392,20 +392,34 @@ arranger_selections_action_new_record (
  * Creates a new action for moving or duplicating
  * objects.
  *
- * @param move 1 to move, 0 to duplicate.
+ * @param move True to move, false to duplicate.
  * @param already_moved If this is true, the first
  *   DO will do nothing.
  */
 UndoableAction *
 arranger_selections_action_new_move_or_duplicate (
   ArrangerSelections * sel,
-  const int            move,
+  const bool           move,
   const double         ticks,
   const int            delta_chords,
   const int            delta_pitch,
   const int            delta_tracks,
   const int            delta_lanes,
-  const int            already_moved);
+  const bool           already_moved);
+
+/**
+ * Creates a new action for linking regions.
+ *
+ * @param already_moved If this is true, the first
+ *   DO will do nothing.
+ */
+UndoableAction *
+arranger_selections_action_new_link (
+  ArrangerSelections * sel,
+  const double         ticks,
+  const int            delta_tracks,
+  const int            delta_lanes,
+  const bool           already_moved);
 
 #define \
 arranger_selections_action_new_move( \

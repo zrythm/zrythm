@@ -97,6 +97,9 @@ G_DEFINE_TYPE (
 
 #define TYPE(x) ARRANGER_WIDGET_TYPE_##x
 
+#define TYPE_IS(x) \
+  (self->type == TYPE (x))
+
 #define SCROLL_PADDING 8.0
 
 static void
@@ -1327,7 +1330,7 @@ arranger_widget_get_hit_objects_in_rect (
  * Useful to know if we need transient widgets or
  * not.
  */
-int
+bool
 arranger_widget_is_in_moving_operation (
   ArrangerWidget * self)
 {
@@ -1343,9 +1346,9 @@ arranger_widget_is_in_moving_operation (
         UI_OVERLAY_ACTION_MOVING_COPY ||
       self->action ==
         UI_OVERLAY_ACTION_MOVING_LINK)
-    return 1;
+    return true;
 
-  return 0;
+  return false;
 }
 
 /**
@@ -1869,6 +1872,7 @@ auto_scroll (
     {
     case UI_OVERLAY_ACTION_MOVING:
     case UI_OVERLAY_ACTION_MOVING_COPY:
+    case UI_OVERLAY_ACTION_MOVING_LINK:
     case UI_OVERLAY_ACTION_CREATING_MOVING:
     case UI_OVERLAY_ACTION_SELECTING:
     case UI_OVERLAY_ACTION_RAMPING:
@@ -1983,7 +1987,10 @@ arranger_widget_on_key_release (
 
   if (ACTION_IS (STARTING_MOVING))
     {
-      if (self->ctrl_held)
+      if (self->alt_held && self->can_link)
+        self->action =
+          UI_OVERLAY_ACTION_MOVING_LINK;
+      else if (self->ctrl_held)
         self->action =
           UI_OVERLAY_ACTION_MOVING_COPY;
       else
@@ -1991,10 +1998,26 @@ arranger_widget_on_key_release (
           UI_OVERLAY_ACTION_MOVING;
     }
   else if (ACTION_IS (MOVING) &&
+           self->alt_held &&
+           self->can_link)
+    {
+      self->action =
+        UI_OVERLAY_ACTION_MOVING_LINK;
+    }
+  else if (ACTION_IS (MOVING) &&
            self->ctrl_held)
     {
       self->action =
         UI_OVERLAY_ACTION_MOVING_COPY;
+    }
+  else if (ACTION_IS (MOVING_LINK) &&
+           !self->alt_held &&
+           self->can_link)
+    {
+      self->action =
+        self->ctrl_held ?
+        UI_OVERLAY_ACTION_MOVING_COPY :
+        UI_OVERLAY_ACTION_MOVING;
     }
   else if (ACTION_IS (MOVING_COPY) &&
            !self->ctrl_held)
@@ -2052,10 +2075,25 @@ arranger_widget_on_key_action (
         self->action =
           UI_OVERLAY_ACTION_MOVING;
     }
+  else if (ACTION_IS (MOVING) &&
+           self->alt_held &&
+           self->can_link)
+    {
+      self->action =
+        UI_OVERLAY_ACTION_MOVING_LINK;
+    }
   else if (ACTION_IS (MOVING) && self->ctrl_held)
     {
       self->action =
         UI_OVERLAY_ACTION_MOVING_COPY;
+    }
+  else if (ACTION_IS (MOVING_LINK) &&
+           !self->alt_held)
+    {
+      self->action =
+        self->ctrl_held ?
+        UI_OVERLAY_ACTION_MOVING_COPY :
+        UI_OVERLAY_ACTION_MOVING;
     }
   else if (ACTION_IS (MOVING_COPY) &&
            !self->ctrl_held)
@@ -2759,6 +2797,13 @@ drag_begin (
     self, start_x, &self->start_pos, 1);
   self->start_y = start_y;
 
+  /* check if selections can create links */
+  self->can_link =
+    TYPE_IS (TIMELINE) &&
+    TL_SELECTIONS->num_regions > 0 &&
+    TL_SELECTIONS->num_scale_objects == 0 &&
+    TL_SELECTIONS->num_markers == 0;
+
   if (!gtk_widget_has_focus (GTK_WIDGET (self)))
     gtk_widget_grab_focus (GTK_WIDGET (self));
 
@@ -3161,7 +3206,11 @@ drag_update (
         UI_OVERLAY_ACTION_DELETE_SELECTING;
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
-      if (self->ctrl_held)
+      if (self->alt_held &&
+          self->can_link)
+        self->action =
+          UI_OVERLAY_ACTION_MOVING_LINK;
+      else if (self->ctrl_held)
         self->action =
           UI_OVERLAY_ACTION_MOVING_COPY;
       else
@@ -3169,13 +3218,26 @@ drag_update (
           UI_OVERLAY_ACTION_MOVING;
       break;
     case UI_OVERLAY_ACTION_MOVING:
-      if (self->ctrl_held)
+      if (self->alt_held &&
+          self->can_link)
+        self->action =
+          UI_OVERLAY_ACTION_MOVING_LINK;
+      else if (self->ctrl_held)
         self->action =
           UI_OVERLAY_ACTION_MOVING_COPY;
+      break;
+    case UI_OVERLAY_ACTION_MOVING_LINK:
+      if (!self->alt_held)
+        self->action =
+          self->ctrl_held ?
+          UI_OVERLAY_ACTION_MOVING_COPY :
+          UI_OVERLAY_ACTION_MOVING;
       break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
       if (!self->ctrl_held)
         self->action =
+          self->alt_held && self->can_link ?
+          UI_OVERLAY_ACTION_MOVING_LINK :
           UI_OVERLAY_ACTION_MOVING;
       break;
     case UI_OVERLAY_ACTION_STARTING_RAMP:
@@ -3317,10 +3379,8 @@ drag_update (
       break;
     case UI_OVERLAY_ACTION_MOVING:
     case UI_OVERLAY_ACTION_CREATING_MOVING:
-      move_items_x (self, self->adj_ticks_diff);
-      move_items_y (self, offset_y);
-      break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
+    case UI_OVERLAY_ACTION_MOVING_LINK:
       move_items_x (self, self->adj_ticks_diff);
       move_items_y (self, offset_y);
       break;
@@ -3675,7 +3735,6 @@ on_drag_end_midi (
       break;
     /* if copy/link-moved */
     case UI_OVERLAY_ACTION_MOVING_COPY:
-    case UI_OVERLAY_ACTION_MOVING_LINK:
     {
       ArrangerObject * obj =
         (ArrangerObject *) self->start_object;
@@ -3685,13 +3744,19 @@ on_drag_end_midi (
       int pitch_diff =
         ((MidiNote *) obj)->val -
         ((MidiNote *) obj->transient)->val;
-      UndoableAction * ua =
+      UndoableAction * ua = NULL;
+      ua =
         (UndoableAction *)
         arranger_selections_action_new_duplicate_midi (
           (ArrangerSelections *) MA_SELECTIONS,
-          ticks_diff, pitch_diff, F_ALREADY_MOVED);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+          ticks_diff, pitch_diff,
+          F_ALREADY_MOVED);
+
+      if (ua)
+        {
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
     }
       break;
     case UI_OVERLAY_ACTION_NONE:
@@ -3979,14 +4044,33 @@ on_drag_end_timeline (
         double ticks_diff =
           obj->pos.total_ticks -
           obj->transient->pos.total_ticks;
-        UndoableAction * ua =
-          (UndoableAction *)
-          arranger_selections_action_new_duplicate_timeline (
-            TL_SELECTIONS, ticks_diff,
-            self->visible_track_diff,
-            self->lane_diff, F_ALREADY_MOVED);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+        UndoableAction * ua = NULL;
+        if (ACTION_IS (MOVING_COPY))
+          {
+            ua =
+              (UndoableAction *)
+              arranger_selections_action_new_duplicate_timeline (
+                TL_SELECTIONS, ticks_diff,
+                self->visible_track_diff,
+                self->lane_diff, F_ALREADY_MOVED);
+          }
+        else if (ACTION_IS (MOVING_LINK))
+          {
+            g_message ("LINKING");
+            ua =
+              (UndoableAction *)
+              arranger_selections_action_new_link (
+                (ArrangerSelections *)
+                  TL_SELECTIONS, ticks_diff,
+                self->visible_track_diff,
+                self->lane_diff, F_ALREADY_MOVED);
+          }
+
+        if (ua)
+          {
+            undo_manager_perform (
+              UNDO_MANAGER, ua);
+          }
       }
       break;
     case UI_OVERLAY_ACTION_NONE:
@@ -5353,13 +5437,13 @@ get_timeline_cursor (
     case UI_OVERLAY_ACTION_MOVING_COPY:
       ac = ARRANGER_CURSOR_GRABBING_COPY;
       break;
-    case UI_OVERLAY_ACTION_STARTING_MOVING:
-    case UI_OVERLAY_ACTION_MOVING:
-      ac = ARRANGER_CURSOR_GRABBING;
-      break;
     case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:
     case UI_OVERLAY_ACTION_MOVING_LINK:
       ac = ARRANGER_CURSOR_GRABBING_LINK;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING:
+    case UI_OVERLAY_ACTION_MOVING:
+      ac = ARRANGER_CURSOR_GRABBING;
       break;
     case UI_OVERLAY_ACTION_RESIZING_L:
       if (self->resizing_range)

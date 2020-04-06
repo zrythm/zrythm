@@ -37,8 +37,9 @@ marker_track_init (
   Track * self)
 {
   self->type = TRACK_TYPE_MARKER;
+  self->main_height = TRACK_DEF_HEIGHT / 2;
 
-  gdk_rgba_parse (&self->color, "#A3289a");
+  gdk_rgba_parse (&self->color, "#a328aa");
 }
 
 /**

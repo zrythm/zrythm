@@ -86,6 +86,9 @@ undoable_action_do (UndoableAction * self)
     DO_ACTION (MOVE_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
+    DO_ACTION (LINK_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
     DO_ACTION (RECORD_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
@@ -165,6 +168,9 @@ undoable_action_undo (UndoableAction * self)
     UNDO_ACTION (MOVE_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
+    UNDO_ACTION (LINK_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
     UNDO_ACTION (RECORD_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
@@ -236,6 +242,9 @@ undoable_action_free (UndoableAction * self)
                arranger_selections,
                ArrangerSelections);
     FREE_ACTION (MOVE_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    FREE_ACTION (LINK_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
     FREE_ACTION (EDIT_ARRANGER_SELECTIONS,
@@ -312,6 +321,9 @@ undoable_action_stringize (
                ArrangerSelections,
                arranger_selections);
     STRINGIZE_UA (MOVE_ARRANGER_SELECTIONS,
+               ArrangerSelections,
+               arranger_selections);
+    STRINGIZE_UA (LINK_ARRANGER_SELECTIONS,
                ArrangerSelections,
                arranger_selections);
     STRINGIZE_UA (RECORD_ARRANGER_SELECTIONS,

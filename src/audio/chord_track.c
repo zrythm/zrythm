@@ -39,7 +39,7 @@ chord_track_init (
 {
   self->type = TRACK_TYPE_CHORD;
 
-  gdk_rgba_parse (&self->color, "#0328fa");
+  gdk_rgba_parse (&self->color, "#0348fa");
 }
 
 /**
@@ -53,8 +53,6 @@ chord_track_new (
     track_new (
       TRACK_TYPE_CHORD, track_pos, _("Chords"),
       F_WITHOUT_LANE);
-
-  gdk_rgba_parse (&self->color, "#0328fa");
 
   return self;
 }

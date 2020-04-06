@@ -88,6 +88,7 @@ if get_option ('enable_guile') and get_option ('guile_snarf_docs_path') != ''
         meson.build_root () / '@OUTPUT@',
         meson.build_root () / '@PRIVATE_DIR@',
         guild.path (),
+        '-I' + meson.source_root () / 'inc',
         ],
       )
     rst_doc = custom_target (

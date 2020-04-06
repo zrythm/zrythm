@@ -17,12 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if !defined(SCM_MAGIC_SNARF_DOCS) && \
-  !defined(SCM_MAGIC_SNARFER)
+#include "guile/modules.h"
+
+#ifndef SNARF_MODE
 #include "audio/position.h"
 #endif
-
-#include "guile/modules.h"
 
 SCM_DEFINE (
   make_position, "position-new", 5, 0, 0,
@@ -51,8 +50,7 @@ SCM_DEFINE (
   /* wrap the Position * in a new foreign object
    * and return that object */
   return
-    scm_make_foreign_object_1 (
-      position_type, pos);
+    scm_from_pointer (pos, NULL);
 }
 
 SCM_DEFINE (
@@ -61,10 +59,7 @@ SCM_DEFINE (
   "Prints the position as `bars.beats.sixteenths.\
 ticks.sub_tick`.")
 {
-  scm_assert_foreign_object_type (
-    position_type, pos);
-  Position * refpos =
-    scm_foreign_object_ref (pos, 0);
+  Position * refpos = scm_to_pointer (pos);
 
   char buf[120];
   position_stringize (refpos, buf);
@@ -80,11 +75,7 @@ ticks.sub_tick`.")
 static void
 init_module (void * data)
 {
-  init_guile_object_type (
-    &position_type, "position");
-
-#if !defined(SCM_MAGIC_SNARF_DOCS) && \
-  !defined(SCM_MAGIC_SNARFER)
+#ifndef SNARF_MODE
 #include "audio_position.x"
 #endif
 

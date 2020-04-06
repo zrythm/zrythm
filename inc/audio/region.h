@@ -87,7 +87,7 @@ typedef struct ZRegion
    */
   RegionIdentifier linked_region_id;
 
-  /** Whether a linked region exists. */
+  /** Whether a linked parent region exists. */
   bool            has_link;
 
   /**

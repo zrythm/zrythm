@@ -28,6 +28,7 @@ INPUT_FILE=$3 # c file
 OUTPUT_FILE=$4 # texi file
 PRIVATE_DIR=$5 # for intermediate files
 GUILD_BIN=$6
+OTHER_INCLUDES=$7
 
 input_file_base=$(basename $INPUT_FILE)
 input_file_base_noext=$(echo "$input_file_base" | cut -f 1 -d '.')
@@ -38,6 +39,7 @@ mkdir -p "$PRIVATE_DIR"
 $GUILE_SNARF_DOCS_BIN -o \
   "$PRIVATE_DIR/$input_file_base_noext.doc" \
   $INPUT_FILE -- \
+  "$OTHER_INCLUDES" \
   $(pkg-config --cflags-only-I $GUILE_PKGCONF_NAME)
 # convert to texi
 cat "$PRIVATE_DIR/$input_file_base_noext.doc" | \

@@ -276,6 +276,14 @@ typedef struct _ArrangerWidget
   /** Rectangle in the last call. */
   GdkRectangle      last_rect;
 
+  /**
+   * Whether the current selections can link
+   * (ie, only regions are selected).
+   *
+   * To be set on drag begin.
+   */
+  bool              can_link;
+
 } ArrangerWidget;
 
 /**
@@ -409,7 +417,7 @@ arranger_widget_select_all (
  * Useful to know if we need transient widgets or
  * not.
  */
-int
+bool
 arranger_widget_is_in_moving_operation (
   ArrangerWidget * self);
 

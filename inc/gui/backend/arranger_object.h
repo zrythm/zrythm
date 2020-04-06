@@ -141,8 +141,9 @@ typedef enum ArrangerObjectCloneFlag
    * as a main Region. */
   ARRANGER_OBJECT_CLONE_COPY,
 
-  /** TODO */
-  ARRANGER_OBJECT_CLONE_LINK
+  /** Create a link copy that references the
+   * parent (only used for regions). */
+  ARRANGER_OBJECT_CLONE_COPY_LINK,
 } ArrangerObjectCloneFlag;
 
 /**

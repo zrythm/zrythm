@@ -17,23 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if !defined(SCM_MAGIC_SNARF_DOCS) && \
-  !defined(SCM_MAGIC_SNARFER)
+#include "guile/modules.h"
+
+#ifndef SNARF_MODE
 #include "audio/track.h"
 #include "project.h"
 #endif
-
-#include "guile/modules.h"
 
 SCM_DEFINE (
   get_name, "track-get-name", 1, 0, 0,
   (SCM track),
   "Returns the name of @var{track}.")
 {
-  scm_assert_foreign_object_type (
-    track_type, track);
   Track * reftrack =
-    scm_foreign_object_ref (track, 0);
+    scm_to_pointer (track);
 
   return
     scm_from_utf8_string (
@@ -43,11 +40,7 @@ SCM_DEFINE (
 static void
 init_module (void * data)
 {
-  init_guile_object_type (
-    &track_type, "track");
-
-#if !defined(SCM_MAGIC_SNARF_DOCS) && \
-  !defined(SCM_MAGIC_SNARFER)
+#ifndef SNARF_MODE
 #include "audio_track.x"
 #endif
 

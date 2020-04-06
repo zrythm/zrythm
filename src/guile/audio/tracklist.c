@@ -17,13 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if !defined(SCM_MAGIC_SNARF_DOCS) && \
-  !defined(SCM_MAGIC_SNARFER)
+#include "guile/modules.h"
+
+#ifndef SNARF_MODE
 #include "audio/tracklist.h"
 #include "project.h"
 #endif
-
-#include "guile/modules.h"
 
 SCM_DEFINE (
   get_track_at_pos, "tracklist-get-track-at-pos",
@@ -32,9 +31,8 @@ SCM_DEFINE (
   "Returns the track at @var{pos} in the tracklist.")
 {
   return
-    scm_make_foreign_object_1 (
-      track_type,
-      TRACKLIST->tracks[scm_to_int (pos)]);
+    scm_from_pointer (
+      TRACKLIST->tracks[scm_to_int (pos)], NULL);
 }
 
 SCM_DEFINE (
@@ -52,18 +50,13 @@ SCM_DEFINE (
   "Returns the tracklist for the current project.")
 {
   return
-    scm_make_foreign_object_1 (
-      tracklist_type, TRACKLIST);
+    scm_from_pointer (TRACKLIST, NULL);
 }
 
 void
 init_module (void * data)
 {
-  init_guile_object_type (
-    &tracklist_type, "tracklist");
-
-#if !defined(SCM_MAGIC_SNARF_DOCS) && \
-  !defined(SCM_MAGIC_SNARFER)
+#ifndef SNARF_MODE
 #include "audio_tracklist.x"
 #endif
   scm_c_export (

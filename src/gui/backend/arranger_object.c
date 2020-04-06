@@ -1782,19 +1782,23 @@ clone_region (
 
         AutomationPoint * src_ap, * dest_ap;
 
-        /* add automation points */
-        for (j = 0; j < ar_orig->num_aps; j++)
+        if (flag == ARRANGER_OBJECT_CLONE_COPY ||
+            flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
           {
-            src_ap = ar_orig->aps[j];
-            ArrangerObject * src_ap_obj =
-              (ArrangerObject *) src_ap;
-            dest_ap =
-              automation_point_new_float (
-                src_ap->fvalue,
-                src_ap->normalized_val,
-                &src_ap_obj->pos);
-            automation_region_add_ap (
-              ar, dest_ap, F_NO_PUBLISH_EVENTS);
+            /* add automation points */
+            for (j = 0; j < ar_orig->num_aps; j++)
+              {
+                src_ap = ar_orig->aps[j];
+                ArrangerObject * src_ap_obj =
+                  (ArrangerObject *) src_ap;
+                dest_ap =
+                  automation_point_new_float (
+                    src_ap->fvalue,
+                    src_ap->normalized_val,
+                    &src_ap_obj->pos);
+                automation_region_add_ap (
+                  ar, dest_ap, F_NO_PUBLISH_EVENTS);
+              }
           }
 
         new_region = ar;
@@ -1836,6 +1840,15 @@ clone_region (
 
   /* clone name */
   new_region->name = g_strdup (region->name);
+
+  /* link */
+  if (flag == ARRANGER_OBJECT_CLONE_COPY_LINK)
+    {
+      new_region->has_link = true;
+      region_identifier_copy (
+        &new_region->linked_region_id,
+        &region->id);
+    }
 
   /* set track to NULL and remember track pos */
   region_identifier_copy (

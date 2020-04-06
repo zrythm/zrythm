@@ -37,25 +37,15 @@
 /** Guile function prefix. */
 #define FUNC_NAME s_
 
+/** Macro. */
+#if defined(SCM_MAGIC_SNARF_DOCS) || \
+  defined(SCM_MAGIC_SNARFER)
+#define SNARF_MODE 1
+#endif
+
 extern SCM position_type;
 extern SCM track_type;
 extern SCM tracklist_type;
-
-static inline void
-init_guile_object_type (
-  SCM *        type,
-  const char * _name)
-{
-  SCM name = scm_from_utf8_symbol (_name);
-  SCM slots =
-    scm_list_1 (
-      scm_from_utf8_symbol ("data"));
-  scm_t_struct_finalize finalizer = NULL;
-
-  *type =
-    scm_make_foreign_object_type (
-      name, slots, finalizer);
-}
 
 void
 guile_audio_position_define_module (void);

@@ -226,13 +226,13 @@ get_actual_arranger_selections (
 UndoableAction *
 arranger_selections_action_new_move_or_duplicate (
   ArrangerSelections * sel,
-  const int            move,
+  const bool           move,
   const double         ticks,
   const int            delta_chords,
   const int            delta_pitch,
   const int            delta_tracks,
   const int            delta_lanes,
-  const int            already_moved)
+  const bool           already_moved)
 {
   ArrangerSelectionsAction * self =
     _create_action (sel);
@@ -250,6 +250,35 @@ arranger_selections_action_new_move_or_duplicate (
   self->delta_lanes = delta_lanes;
   self->delta_tracks = delta_tracks;
   self->delta_pitch = delta_pitch;
+
+  return ua;
+}
+
+/**
+ * Creates a new action for linking regions.
+ *
+ * @param already_moved If this is true, the first
+ *   DO will do nothing.
+ */
+UndoableAction *
+arranger_selections_action_new_link (
+  ArrangerSelections * sel,
+  const double         ticks,
+  const int            delta_tracks,
+  const int            delta_lanes,
+  const bool           already_moved)
+{
+  ArrangerSelectionsAction * self =
+    _create_action (sel);
+  UndoableAction * ua = (UndoableAction *) self;
+  ua->type = UA_LINK_ARRANGER_SELECTIONS;
+
+  if (!already_moved)
+    self->first_run = 0;
+
+  self->ticks = ticks;
+  self->delta_tracks = delta_tracks;
+  self->delta_lanes = delta_lanes;
 
   return ua;
 }
@@ -805,12 +834,13 @@ move_obj_by_tracks_and_lanes (
  * @param _do 1 to do, 0 to undo.
  */
 static int
-do_or_undo_duplicate (
+do_or_undo_duplicate_or_link (
   ArrangerSelectionsAction * self,
-  const int                  _do)
+  const bool                 link,
+  const bool                 _do)
 {
   arranger_selections_sort_by_indices (
-    self->sel, _do ? 0 : 1);
+    self->sel, !_do);
   int size = 0;
   ArrangerObject ** objs =
     arranger_selections_get_all_objects (
@@ -890,7 +920,9 @@ do_or_undo_duplicate (
           obj =
             arranger_object_clone (
               objs[i],
-              ARRANGER_OBJECT_CLONE_COPY_MAIN);
+              link ?
+                ARRANGER_OBJECT_CLONE_COPY_LINK :
+                ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
           /* add to track */
           add_object_to_project (obj);
@@ -1622,11 +1654,15 @@ arranger_selections_action_do (
       return do_or_undo_create_or_delete (self, true, 0);
       break;
     case UA_DUPLICATE_ARRANGER_SELECTIONS:
-      return do_or_undo_duplicate (self, true);
-      break;
+      return
+        do_or_undo_duplicate_or_link (
+          self, false, true);
     case UA_MOVE_ARRANGER_SELECTIONS:
       return do_or_undo_move (self, true);
-      break;
+    case UA_LINK_ARRANGER_SELECTIONS:
+      return
+        do_or_undo_duplicate_or_link (
+          self, true, true);
     case UA_RECORD_ARRANGER_SELECTIONS:
       return do_or_undo_record (self, true);
       break;
@@ -1660,23 +1696,31 @@ arranger_selections_action_undo (
   switch (ua->type)
     {
     case UA_CREATE_ARRANGER_SELECTIONS:
-      return do_or_undo_create_or_delete (self, 0, 1);
+      return
+        do_or_undo_create_or_delete (self, 0, 1);
     case UA_DELETE_ARRANGER_SELECTIONS:
-      return do_or_undo_create_or_delete (self, 0, 0);
+      return
+        do_or_undo_create_or_delete (self, 0, 0);
     case UA_DUPLICATE_ARRANGER_SELECTIONS:
-      return do_or_undo_duplicate (self, 0);
+      return
+        do_or_undo_duplicate_or_link (
+          self, false, false);
     case UA_RECORD_ARRANGER_SELECTIONS:
       return do_or_undo_record (self, false);
     case UA_MOVE_ARRANGER_SELECTIONS:
-      return do_or_undo_move (self, 0);
+      return do_or_undo_move (self, false);
+    case UA_LINK_ARRANGER_SELECTIONS:
+      return
+        do_or_undo_duplicate_or_link (
+          self, true, false);
     case UA_EDIT_ARRANGER_SELECTIONS:
-      return do_or_undo_edit (self, 0);
+      return do_or_undo_edit (self, false);
     case UA_SPLIT_ARRANGER_SELECTIONS:
-      return do_or_undo_split (self, 0);
+      return do_or_undo_split (self, false);
     case UA_RESIZE_ARRANGER_SELECTIONS:
-      return do_or_undo_resize (self, 0);
+      return do_or_undo_resize (self, false);
     case UA_QUANTIZE_ARRANGER_SELECTIONS:
-      return do_or_undo_quantize (self, 0);
+      return do_or_undo_quantize (self, false);
     default:
       g_return_val_if_reached (-1);
       break;

@@ -38,6 +38,10 @@ Thanks:
  unfa
    * Testing, ideas, bug reports
    * Promoting Zrythm
+ falktx
+   * Help with audio and LV2 plugin development
+ Mike Rosset
+   * Fixed snarfing of guile functions
 
 ----
 

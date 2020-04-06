@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -15,13 +15,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-gen_gtk_gresources = find_program (
-  'gen-gtk-gresources-xml.py')
+gen_gtk_resources = configure_file (
+  output: 'gen-gtk-resources-xml.scm',
+  input: 'gen-gtk-resources-xml.scm',
+  configuration: scripts_conf,
+  )
 zrythm_gresources_xml = configure_file (
   output: 'zrythm.gresources.xml',
-  input: 'gen-gtk-gresources-xml.py',
+  input: gen_gtk_resources,
   command: [
-    gen_gtk_gresources,
+    guile.path(), '-s', '@INPUT0@',
     meson.current_source_dir(),
     '@OUTPUT@'
     ])

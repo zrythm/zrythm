@@ -17,13 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if !defined(SCM_MAGIC_SNARF_DOCS) && \
-  !defined(SCM_MAGIC_SNARFER)
 #include "guile/modules.h"
+
+#ifndef SNARF_MODE
 #include "zrythm.h"
 #endif
-
-#include <libguile.h>
 
 /**
  * Guile function to get the zrythm pointer.
@@ -54,8 +52,7 @@ SCM_DEFINE (
 static void
 init_module (void * data)
 {
-#if !defined(SCM_MAGIC_SNARF_DOCS) && \
-  !defined(SCM_MAGIC_SNARFER)
+#ifndef SNARF_MODE
 #include "zrythm.x"
 #endif
   scm_c_export ("zrythm-get-ver", NULL);
