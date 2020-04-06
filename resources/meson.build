@@ -15,16 +15,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
+gen_gtk_resources_filename = 'gen-gtk-resources-xml.scm'
 gen_gtk_resources = configure_file (
-  output: 'gen-gtk-resources-xml.scm',
-  input: 'gen-gtk-resources-xml.scm',
+  output: gen_gtk_resources_filename,
+  input: gen_gtk_resources_filename,
+  configuration: scripts_conf,
+  )
+# wrap is needed on windows mingw
+gen_gtk_resources_wrap = configure_file (
+  output: 'gen_gtk_resources_xml_wrap.sh',
+  input: 'gen_gtk_resources_xml_wrap.sh',
   configuration: scripts_conf,
   )
 zrythm_gresources_xml = configure_file (
   output: 'zrythm.gresources.xml',
   input: gen_gtk_resources,
   command: [
-    guile.path(), '-s', '@INPUT0@',
+    gen_gtk_resources_wrap,
     meson.current_source_dir(),
     '@OUTPUT@'
     ])

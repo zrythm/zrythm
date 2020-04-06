@@ -208,7 +208,8 @@ if guile_snarf.found()
 endif
 if get_option('guile_snarf_docs_path') != ''
   scripts_conf += {
-    'GUILE_SNARF_DOCS_BIN': get_option('guile_snarf_docs_path'),
+    'GUILE_SNARF_DOCS_BIN': get_option (
+      'guile_snarf_docs_path'),
     'GUILD_BIN': guild.path() }
   guile_gen_docs_path = 'scripts' / 'guile-gen-docs.scm'
   guile_gen_docs = configure_file (
@@ -223,6 +224,7 @@ meson_post_install = configure_file (
   input: meson_post_install_path,
   configuration: scripts_conf,
   )
+# wrap is needed on windows mingw
 post_install_wrap_path = 'scripts' / 'meson_post_install_wrap.sh'
 post_install_wrap = configure_file (
   output: 'meson_post_install_wrap.sh',
