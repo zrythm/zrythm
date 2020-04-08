@@ -80,8 +80,9 @@ automation_point_set_region_and_index (
   int               index)
 {
   g_return_if_fail (ap && region);
+  ArrangerObject * obj = (ArrangerObject *) ap;
   region_identifier_copy (
-    &ap->region_id, &region->id);
+    &obj->region_id, &region->id);
   ap->index = index;
 }
 

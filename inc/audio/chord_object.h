@@ -61,9 +61,6 @@ typedef struct ChordObject
    * (0 topmost). */
   int                 index;
 
-  /** Parent region ID. */
-  RegionIdentifier    region_id;
-
   /** Cache layout for drawing the name. */
   PangoLayout *      layout;
 } ChordObject;
@@ -78,10 +75,6 @@ static const cyaml_schema_field_t
   CYAML_FIELD_INT (
     "index", CYAML_FLAG_DEFAULT,
     ChordObject, index),
-  CYAML_FIELD_MAPPING (
-    "region_id", CYAML_FLAG_DEFAULT,
-    ChordObject, region_id,
-    region_identifier_fields_schema),
 
   CYAML_FIELD_END
 };

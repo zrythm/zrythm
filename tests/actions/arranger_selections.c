@@ -399,7 +399,7 @@ check_after_move_timeline (
   g_assert_cmppos (&obj->end_pos, &p2);
   g_assert_true (
     region_identifier_is_equal (
-      &mn->region_id, &r->id));
+      &obj->region_id, &r->id));
 
   /* check audio region */
   obj =
@@ -632,7 +632,7 @@ check_after_duplicate_timeline (
   obj = (ArrangerObject *) mn;
   g_assert_true (
     region_identifier_is_equal (
-      &mn->region_id, &r->id));
+      &obj->region_id, &r->id));
   g_assert_cmpuint (mn->val, ==, MN_VAL);
   g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
   g_assert_cmppos (&obj->pos, &p1);
@@ -694,7 +694,7 @@ check_after_duplicate_timeline (
   obj = (ArrangerObject *) mn;
   g_assert_true (
     region_identifier_is_equal (
-      &mn->region_id, &r->id));
+      &obj->region_id, &r->id));
   g_assert_cmpuint (mn->val, ==, MN_VAL);
   g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
   g_assert_cmppos (&obj->pos, &p1);

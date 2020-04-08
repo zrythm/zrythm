@@ -72,6 +72,9 @@ typedef struct RegionIdentifier
 {
   RegionType type;
 
+  /** Link group index, if any, or -1. */
+  int        link_group;
+
   int        track_pos;
   int        lane_pos;
 
@@ -90,6 +93,8 @@ region_identifier_fields_schema[] =
     "type", CYAML_FLAG_DEFAULT,
     RegionIdentifier, type, region_type_bitvals,
     CYAML_ARRAY_LEN (region_type_bitvals)),
+  YAML_FIELD_INT (
+    RegionIdentifier, link_group),
   CYAML_FIELD_INT (
     "track_pos", CYAML_FLAG_DEFAULT,
     RegionIdentifier, track_pos),
@@ -113,6 +118,13 @@ region_identifier_schema = {
     region_identifier_fields_schema),
 };
 
+static const cyaml_schema_value_t
+region_identifier_schema_default = {
+  CYAML_VALUE_MAPPING (CYAML_FLAG_DEFAULT,
+    RegionIdentifier,
+    region_identifier_fields_schema),
+};
+
 static inline int
 region_identifier_is_equal (
   const RegionIdentifier * a,
@@ -123,6 +135,7 @@ region_identifier_is_equal (
     a->track_pos == b->track_pos &&
     a->lane_pos == b->lane_pos &&
     a->at_idx == b->at_idx &&
+    a->link_group == b->link_group &&
     a->type == b->type;
 }
 
@@ -136,6 +149,7 @@ region_identifier_copy (
   dest->lane_pos = src->lane_pos;
   dest->at_idx = src->at_idx;
   dest->type = src->type;
+  dest->link_group = src->link_group;
 }
 
 static inline const char *
@@ -158,11 +172,11 @@ region_identifier_print (
   g_message (
     "Region identifier: "
     "type: %s, track pos %d, lane pos %d, "
-    "at index %d, index %d",
+    "at index %d, index %d, link_group: %d",
     region_identifier_get_region_type_name (
       self->type),
     self->track_pos, self->lane_pos, self->at_idx,
-    self->idx);
+    self->idx, self->link_group);
 }
 
 /**

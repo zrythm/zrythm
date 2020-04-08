@@ -40,13 +40,13 @@
 
 /**
  * @param cr Arranger's cairo context.
- * @param rect Arranger's rectangle.
+ * @param arr_rect Arranger's rectangle.
  */
 void
 midi_note_draw (
   MidiNote *     self,
   cairo_t *      cr,
-  GdkRectangle * rect);
+  GdkRectangle * arr_rect);
 
 /**
  * @}

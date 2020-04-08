@@ -97,6 +97,28 @@
     &schema, 0, CYAML_UNLIMITED)
 
 /**
+ * Dynamic-width (reallocated) array of structs
+ * with variable count.
+ *
+ * @code@
+ * RegionIdentifier * ids;
+ * int                num_ids;
+ * int                ids_size;
+ * @endcode@
+ *
+ * @note \ref schema must be declared as
+ *   CYAML_VALUE_MAPPING with the flag
+ *   CYAML_FLAG_DEFAULT.
+ */
+#define YAML_FIELD_DYN_ARRAY_VAR_COUNT( \
+  owner,member,schema) \
+  CYAML_FIELD_SEQUENCE_COUNT ( \
+    #member, \
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL, \
+    owner, member, num_##member, \
+    &schema, 0, CYAML_UNLIMITED)
+
+/**
  * Dynamic-width (reallocated) array of pointers
  * with variable count, nullable.
  *

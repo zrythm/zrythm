@@ -316,31 +316,18 @@ arranger_object_get_region (
   switch (self->type)
     {
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
-      {
-        AutomationPoint * ap =
-          (AutomationPoint *) self;
-        id = &ap->region_id;
-      }
-      break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
-      {
-        MidiNote * mn =
-          (MidiNote *) self;
-        id = &mn->region_id;
-      }
+    case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
+      id = &self->region_id;
       break;
     case ARRANGER_OBJECT_TYPE_VELOCITY:
       {
         Velocity * vel =
           (Velocity *) self;
-        id = &vel->midi_note->region_id;
-      }
-      break;
-    case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
-      {
-        ChordObject * co =
-          (ChordObject *) self;
-        id = &co->region_id;
+        ArrangerObject * mn_obj =
+          (ArrangerObject *)
+          vel->midi_note;
+        id = &mn_obj->region_id;
       }
       break;
     default:
@@ -508,6 +495,13 @@ arranger_object_copy_identifier (
   ArrangerObject * src)
 {
   g_return_if_fail (dest->type == src->type);
+
+  if (arranger_object_owned_by_region (dest))
+    {
+      region_identifier_copy (
+        &dest->region_id, &src->region_id);
+    }
+
   switch (dest->type)
     {
     case TYPE (REGION):
@@ -522,8 +516,6 @@ arranger_object_copy_identifier (
       {
         MidiNote * destmn = (MidiNote *) dest;
         MidiNote * srcmn = (MidiNote *) src;
-        region_identifier_copy (
-          &destmn->region_id, &srcmn->region_id);
         destmn->pos = srcmn->pos;
       }
       break;
@@ -533,8 +525,6 @@ arranger_object_copy_identifier (
           (AutomationPoint *) dest;
         AutomationPoint * srcap =
           (AutomationPoint *) src;
-        region_identifier_copy (
-          &destap->region_id, &srcap->region_id);
         destap->index = srcap->index;
       }
       break;
@@ -544,8 +534,6 @@ arranger_object_copy_identifier (
           (ChordObject *) dest;
         ChordObject * srcap =
           (ChordObject *) src;
-        region_identifier_copy (
-          &destap->region_id, &srcap->region_id);
         destap->index = srcap->index;
       }
       break;
@@ -1359,14 +1347,6 @@ arranger_object_get_track (
           TRACKLIST->tracks[r->id.track_pos];
       }
       break;
-    case TYPE (CHORD_OBJECT):
-      {
-        ChordObject * chord = (ChordObject *) self;
-        track =
-          TRACKLIST->tracks[
-            chord->region_id.track_pos];
-      }
-      break;
     case TYPE (SCALE_OBJECT):
       {
         return P_CHORD_TRACK;
@@ -1392,22 +1372,22 @@ arranger_object_get_track (
          track, NULL);
       }
       break;
+    case TYPE (CHORD_OBJECT):
     case TYPE (MIDI_NOTE):
-      {
-        MidiNote * mn = (MidiNote *) self;
-        track =
-          TRACKLIST->tracks[
-            mn->region_id.track_pos];
-      }
+      track =
+        TRACKLIST->tracks[
+          self->region_id.track_pos];
       break;
     case TYPE (VELOCITY):
       {
         Velocity * vel = (Velocity *) self;
         MidiNote * mn =
           velocity_get_midi_note (vel);
+        ArrangerObject * mn_obj =
+          (ArrangerObject *) mn;
         track =
           TRACKLIST->tracks[
-            mn->region_id.track_pos];
+            mn_obj->region_id.track_pos];
       }
       break;
     default:
@@ -1583,10 +1563,13 @@ static ArrangerObject *
 find_chord_object (
   ChordObject * clone)
 {
+  ArrangerObject * clone_obj =
+    (ArrangerObject *) clone;
+
   /* get actual region - clone's region might be
    * an unused clone */
   ZRegion * r =
-    region_find (&clone->region_id);
+    region_find (&clone_obj->region_id);
   g_return_val_if_fail (r, NULL);
 
   g_return_val_if_fail (
@@ -1636,8 +1619,10 @@ static ArrangerObject *
 find_automation_point (
   AutomationPoint * src)
 {
+  ArrangerObject * src_obj =
+    (ArrangerObject *) src;
   ZRegion * region =
-    region_find (&src->region_id);
+    region_find (&src_obj->region_id);
   g_return_val_if_fail (
     region && region->num_aps > src->index, NULL);
 
@@ -1653,8 +1638,10 @@ static ArrangerObject *
 find_midi_note (
   MidiNote * src)
 {
+  ArrangerObject * src_obj =
+    (ArrangerObject *) src;
   ZRegion * r =
-    region_find (&src->region_id);
+    region_find (&src_obj->region_id);
   g_return_val_if_fail (
     r && r->num_midi_notes > src->pos, NULL);
 
@@ -1713,7 +1700,7 @@ arranger_object_find (
 
 static ArrangerObject *
 clone_region (
-  ZRegion *                region,
+  ZRegion *               region,
   ArrangerObjectCloneFlag flag)
 {
   int i, j;
@@ -1732,25 +1719,27 @@ clone_region (
             region->id.lane_pos,
             region->id.idx);
         ZRegion * mr_orig = region;
-        if (flag == ARRANGER_OBJECT_CLONE_COPY ||
-            flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
+        for (i = 0;
+             i < mr_orig->num_midi_notes; i++)
           {
-            for (i = 0;
-                 i < mr_orig->num_midi_notes; i++)
-              {
-                region_identifier_copy (
-                  &mr_orig->midi_notes[i]->region_id,
-                  &mr_orig->id);
-                MidiNote * mn =
-                  (MidiNote *)
-                  arranger_object_clone (
-                    (ArrangerObject *)
-                    mr_orig->midi_notes[i],
-                    ARRANGER_OBJECT_CLONE_COPY_MAIN);
+            MidiNote * orig_mn =
+              mr_orig->midi_notes[i];
+            ArrangerObject * orig_mn_obj =
+              (ArrangerObject *) orig_mn;
+            MidiNote * mn;
 
-                midi_region_add_midi_note (
-                  mr, mn, 0);
-              }
+            region_identifier_copy (
+              &orig_mn_obj->region_id,
+              &mr_orig->id);
+            mn =
+              (MidiNote *)
+              arranger_object_clone (
+                (ArrangerObject *)
+                mr_orig->midi_notes[i],
+                ARRANGER_OBJECT_CLONE_COPY_MAIN);
+
+            midi_region_add_midi_note (
+              mr, mn, 0);
           }
 
         new_region = (ZRegion *) mr;
@@ -1780,25 +1769,21 @@ clone_region (
             region->id.idx);
         ZRegion * ar_orig = region;
 
+        /* add automation points */
         AutomationPoint * src_ap, * dest_ap;
-
-        if (flag == ARRANGER_OBJECT_CLONE_COPY ||
-            flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
+        for (j = 0; j < ar_orig->num_aps; j++)
           {
-            /* add automation points */
-            for (j = 0; j < ar_orig->num_aps; j++)
-              {
-                src_ap = ar_orig->aps[j];
-                ArrangerObject * src_ap_obj =
-                  (ArrangerObject *) src_ap;
-                dest_ap =
-                  automation_point_new_float (
-                    src_ap->fvalue,
-                    src_ap->normalized_val,
-                    &src_ap_obj->pos);
-                automation_region_add_ap (
-                  ar, dest_ap, F_NO_PUBLISH_EVENTS);
-              }
+            src_ap = ar_orig->aps[j];
+            ArrangerObject * src_ap_obj =
+              (ArrangerObject *) src_ap;
+
+            dest_ap =
+              automation_point_new_float (
+                src_ap->fvalue,
+                src_ap->normalized_val,
+                &src_ap_obj->pos);
+            automation_region_add_ap (
+              ar, dest_ap, F_NO_PUBLISH_EVENTS);
           }
 
         new_region = ar;
@@ -1811,24 +1796,21 @@ clone_region (
             &r_obj->pos, &r_obj->end_pos,
             region->id.idx);
         ZRegion * cr_orig = region;
-        if (flag == ARRANGER_OBJECT_CLONE_COPY ||
-            flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
+        ChordObject * src_co, * dest_co;
+        for (i = 0;
+             i < cr_orig->num_chord_objects;
+             i++)
           {
-            ChordObject * co;
-            for (i = 0;
-                 i < cr_orig->num_chord_objects;
-                 i++)
-              {
-                co =
-                  (ChordObject *)
-                  arranger_object_clone (
-                    (ArrangerObject *)
-                    cr_orig->chord_objects[i],
-                    ARRANGER_OBJECT_CLONE_COPY_MAIN);
+            src_co = cr_orig->chord_objects[i];
 
-                chord_region_add_chord_object (
-                  cr, co);
-              }
+            dest_co =
+              (ChordObject *)
+              arranger_object_clone (
+                (ArrangerObject *) src_co,
+                ARRANGER_OBJECT_CLONE_COPY_MAIN);
+
+            chord_region_add_chord_object (
+              cr, dest_co);
           }
 
         new_region = cr;
@@ -1844,10 +1826,20 @@ clone_region (
   /* link */
   if (flag == ARRANGER_OBJECT_CLONE_COPY_LINK)
     {
-      new_region->has_link = true;
-      region_identifier_copy (
-        &new_region->linked_region_id,
-        &region->id);
+      /* create a link group if parent region
+       * is not in one */
+      if (region->id.link_group < 0)
+        {
+          int new_group =
+            region_link_group_manager_add_group (
+              REGION_LINK_GROUP_MANAGER);
+          region_set_link_group (
+            region, new_group);
+          region_update_identifier (
+            region);
+        }
+      region_set_link_group (
+        new_region, region->id.link_group);
     }
 
   /* set track to NULL and remember track pos */
@@ -1895,7 +1887,7 @@ clone_midi_note (
     (ArrangerObject *) src;
   MidiNote * mn =
     midi_note_new (
-      &src->region_id, &src_obj->pos,
+      &src_obj->region_id, &src_obj->pos,
       &src_obj->end_pos,
       src->val, src->vel->vel);
   mn->currently_listened = src->currently_listened;
@@ -1914,9 +1906,10 @@ clone_chord_object (
   if (flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
     is_main = 1;
 
+  ArrangerObject * src_obj = (ArrangerObject *) src;
   ChordObject * chord =
     chord_object_new (
-      &src->region_id, src->index, is_main);
+      &src_obj->region_id, src->index, is_main);
 
   return (ArrangerObject *) chord;
 }
@@ -1961,11 +1954,13 @@ clone_automation_point (
     automation_point_new_float (
       src->fvalue, src->normalized_val,
       &src_obj->pos);
+  ArrangerObject * ap_obj =
+    (ArrangerObject *) ap;
   region_identifier_copy (
-    &ap->region_id, &src->region_id);
+    &ap_obj->region_id, &src_obj->region_id);
   ap->index = src->index;
 
-  return (ArrangerObject *) ap;
+  return ap_obj;
 }
 
 /**

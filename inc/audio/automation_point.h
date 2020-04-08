@@ -65,9 +65,6 @@ typedef struct AutomationPoint
 
   CurveOptions    curve_opts;
 
-  /** Parent region. */
-  RegionIdentifier region_id;
-
   /** Index in the region. */
   int             index;
 } AutomationPoint;
@@ -87,9 +84,6 @@ automation_point_fields_schema[] =
   YAML_FIELD_MAPPING_EMBEDDED (
     AutomationPoint, curve_opts,
     curve_options_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AutomationPoint, region_id,
-    region_identifier_fields_schema),
 
   CYAML_FIELD_END
 };

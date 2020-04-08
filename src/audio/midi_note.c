@@ -59,7 +59,7 @@ midi_note_new (
   obj->type = ARRANGER_OBJECT_TYPE_MIDI_NOTE;
 
   region_identifier_copy (
-    &self->region_id, region_id);
+    &obj->region_id, region_id);
   self->val = val;
   self->vel =
     velocity_new (self, vel);
@@ -78,8 +78,9 @@ midi_note_set_region_and_index (
   ZRegion *   region,
   int        idx)
 {
+  ArrangerObject * obj = (ArrangerObject *) self;
   region_identifier_copy (
-    &self->region_id, &region->id);
+    &obj->region_id, &region->id);
   self->pos = idx;
 }
 
@@ -192,7 +193,7 @@ midi_note_is_equal (
     src->val == dest->val &&
     src->muted == dest->muted &&
     region_identifier_is_equal (
-      &src->region_id, &dest->region_id);
+      &src_obj->region_id, &dest_obj->region_id);
 }
 
 /**
@@ -318,7 +319,8 @@ ZRegion *
 midi_note_get_region (
   MidiNote * self)
 {
-  return region_find (&self->region_id);
+  ArrangerObject * obj = (ArrangerObject *) self;
+  return region_find (&obj->region_id);
 }
 
 /**

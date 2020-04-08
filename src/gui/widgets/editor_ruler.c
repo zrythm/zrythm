@@ -195,3 +195,24 @@ editor_ruler_on_drag_end (
         /*self->playhead, 0);*/
     /*}*/
 }
+
+int
+editor_ruler_get_regions_in_range (
+  RulerWidget * self,
+  double        x_start,
+  double        x_end,
+  ZRegion **    regions)
+{
+  Position p1, p2;
+  ui_px_to_pos_editor (
+    x_start, &p1, true);
+  ui_px_to_pos_editor (
+    x_end, &p2, true);
+  Track * track =
+    clip_editor_get_track (CLIP_EDITOR);
+  g_return_val_if_fail (track, 0);
+
+  return
+    track_get_regions_in_range (
+      track, &p1, &p2, regions);
+}

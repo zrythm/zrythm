@@ -185,7 +185,9 @@ check_after_step3 ()
   g_assert_cmpint (region->aps[0]->index, ==, 0);
   g_assert_true (
     region_identifier_is_equal (
-      &region->id, &region->aps[0]->region_id));
+      &region->id,
+      &((ArrangerObject *)region->aps[0])->
+        region_id));
 }
 
 static void
@@ -202,7 +204,9 @@ check_after_step4 ()
   g_assert_cmpint (region->aps[1]->index, ==, 1);
   g_assert_true (
     region_identifier_is_equal (
-      &region->id, &region->aps[1]->region_id));
+      &region->id,
+      &((ArrangerObject *)region->aps[1])->
+        region_id));
 }
 
 static void
@@ -401,7 +405,8 @@ check_after_step8 ()
   AutomationPoint * ap = region->aps[0];
   g_assert_true (
     region_identifier_is_equal (
-      &region->id, &ap->region_id));
+      &region->id,
+      &((ArrangerObject *) ap)->region_id));
 }
 
 static void

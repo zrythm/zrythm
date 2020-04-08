@@ -154,6 +154,21 @@ clip_editor_get_region (
   return region;
 }
 
+Track *
+clip_editor_get_track (
+  ClipEditor * self)
+{
+  ZRegion * region = clip_editor_get_region (self);
+  g_return_val_if_fail (region, NULL);
+
+  Track * track =
+    arranger_object_get_track (
+      (ArrangerObject *) region);
+  g_return_val_if_fail (track, NULL);
+
+  return track;
+}
+
 #if 0
 /**
  * Returns the ZRegion that widgets are expected

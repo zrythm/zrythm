@@ -28,6 +28,7 @@
 #include "audio/instrument_track.h"
 #include "audio/pool.h"
 #include "audio/region.h"
+#include "audio/region_link_group_manager.h"
 #include "audio/track.h"
 #include "gui/widgets/audio_region.h"
 #include "gui/widgets/automation_region.h"
@@ -69,6 +70,7 @@ region_init (
   self->id.lane_pos = lane_pos_or_at_idx;
   self->id.at_idx = lane_pos_or_at_idx;
   self->id.idx = idx_inside_lane_or_at;
+  self->id.link_group = -1;
 
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -337,6 +339,48 @@ region_get_lane (
   g_return_val_if_reached (NULL);
 }
 
+RegionLinkGroup *
+region_get_link_group (
+  ZRegion * self)
+{
+  g_return_val_if_fail (
+    self && self->id.link_group >= 0 &&
+    REGION_LINK_GROUP_MANAGER->num_groups >
+    self->id.link_group, NULL);
+  RegionLinkGroup * group =
+    region_link_group_manager_get_group (
+      REGION_LINK_GROUP_MANAGER,
+      self->id.link_group);
+  return group;
+}
+
+/**
+ * Sets the link group to the region.
+ *
+ * @param group_idx If -1, the region will be
+ *   removed from its current link group, if any.
+ */
+void
+region_set_link_group (
+  ZRegion * region,
+  int       group_idx)
+{
+  if (region->id.link_group >= 0)
+    {
+      region_link_group_remove_region (
+        region_get_link_group (region),
+        region);
+    }
+  if (group_idx >= 0)
+    {
+      RegionLinkGroup * group =
+        region_link_group_manager_get_group (
+          REGION_LINK_GROUP_MANAGER, group_idx);
+      region_link_group_add_region (
+        group, region);
+    }
+}
+
 /**
  * Looks for the ZRegion matching the identifier.
  */
@@ -413,6 +457,10 @@ void
 region_update_identifier (
   ZRegion * self)
 {
+  /* reset link group */
+  region_set_link_group (
+    self, self->id.link_group);
+
   switch (self->id.type)
     {
     case REGION_TYPE_AUDIO:

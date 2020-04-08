@@ -445,17 +445,20 @@ static void
 add_object_to_project (
   ArrangerObject * obj)
 {
+  /* find the region (if owned by region) */
+  ZRegion * region = NULL;
+  if (arranger_object_owned_by_region (obj))
+    {
+      region = region_find (&obj->region_id);
+      g_return_if_fail (region);
+    }
+
   switch (obj->type)
     {
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
       {
         AutomationPoint * ap =
           (AutomationPoint *) obj;
-
-        /* find the region */
-        ZRegion * region =
-          region_find (&ap->region_id);
-        g_return_if_fail (region);
 
         /* add it to the region */
         automation_region_add_ap (
@@ -467,11 +470,6 @@ add_object_to_project (
         ChordObject * chord =
           (ChordObject *) obj;
 
-        /* find the region */
-        ZRegion * region =
-          region_find (&chord->region_id);
-        g_return_if_fail (region);
-
         /* add it to the region */
         chord_region_add_chord_object (
           region, chord);
@@ -481,11 +479,6 @@ add_object_to_project (
       {
         MidiNote * mn =
           (MidiNote *) obj;
-
-        /* find the region */
-        ZRegion * region =
-          region_find (&mn->region_id);
-        g_return_if_fail (region);
 
         /* add it to the region */
         midi_region_add_midi_note (
@@ -514,8 +507,7 @@ add_object_to_project (
       break;
     case ARRANGER_OBJECT_TYPE_REGION:
       {
-        ZRegion * r =
-          (ZRegion *) obj;
+        ZRegion * r = (ZRegion *) obj;
 
         /* add it to track */
         Track * track =

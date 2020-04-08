@@ -172,7 +172,7 @@ test_project_check_vs_original_state (
   g_assert_cmppos (&obj->end_pos, p2);
   g_assert_true (
     region_identifier_is_equal (
-      &mn->region_id, &r->id));
+      &obj->region_id, &r->id));
 
   /* check audio region */
   g_assert_cmpint (
@@ -287,9 +287,11 @@ test_project_rebootstrap_timeline (
     midi_note_new (
       &r->id, p1, p2, MN_VAL, MN_VEL);
   midi_region_add_midi_note (r, mn, 0);
+  ArrangerObject * mn_obj =
+    (ArrangerObject *) mn;
   g_assert_true (
     region_identifier_is_equal (
-      &mn->region_id, &r->id));
+      &mn_obj->region_id, &r->id));
   arranger_selections_add_object (
     (ArrangerSelections *) MA_SELECTIONS,
     (ArrangerObject *) mn);

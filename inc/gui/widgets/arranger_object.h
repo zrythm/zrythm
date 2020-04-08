@@ -143,6 +143,15 @@ arranger_object_should_show_cut_lines (
   ArrangerObject * self,
   int              alt_pressed);
 
+/**
+ * Gets the full rectangle for a linked object.
+ */
+int
+arranger_object_get_full_rect_x_for_region_child (
+  ArrangerObject * self,
+  ZRegion *        region,
+  GdkRectangle *   full_rect);
+
 void
 arranger_object_set_full_rectangle (
   ArrangerObject * self,

@@ -1475,6 +1475,84 @@ track_set_name_with_events (
   track_set_name (track, name, F_PUBLISH_EVENTS);
 }
 
+int
+track_get_regions_in_range (
+  Track *    track,
+  Position * p1,
+  Position * p2,
+  ZRegion ** regions)
+{
+  int i, j;
+  int count = 0;
+
+  if (track->type == TRACK_TYPE_INSTRUMENT ||
+      track->type == TRACK_TYPE_AUDIO ||
+      track->type == TRACK_TYPE_MIDI)
+    {
+      TrackLane * lane;
+      ZRegion * r;
+      ArrangerObject * r_obj;
+      for (i = 0; i < track->num_lanes; i++)
+        {
+          lane = track->lanes[i];
+
+          for (j = 0; j < lane->num_regions; j++)
+            {
+              r = lane->regions[j];
+              r_obj = (ArrangerObject *) r;
+              /* start inside */
+              if ((position_is_before_or_equal (
+                     p1, &r_obj->pos) &&
+                   position_is_after (
+                     p2, &r_obj->pos)) ||
+                  /* end inside */
+                  (position_is_before_or_equal (
+                     p1, &r_obj->end_pos) &&
+                   position_is_after (
+                     p2, &r_obj->end_pos)) ||
+                  /* start before and end after */
+                  (position_is_before_or_equal (
+                     &r_obj->pos, p1) &&
+                   position_is_after (
+                     &r_obj->end_pos, p2)))
+                {
+                  regions[count++] = r;
+                }
+            }
+        }
+    }
+  else if (track->type == TRACK_TYPE_CHORD)
+    {
+      ZRegion * r;
+      ArrangerObject * r_obj;
+      for (j = 0; j < track->num_chord_regions; j++)
+        {
+          r = track->chord_regions[j];
+          r_obj = (ArrangerObject *) r;
+          /* start inside */
+          if ((position_is_before_or_equal (
+                 p1, &r_obj->pos) &&
+               position_is_after (
+                 p2, &r_obj->pos)) ||
+              /* end inside */
+              (position_is_before_or_equal (
+                 p1, &r_obj->end_pos) &&
+               position_is_after (
+                 p2, &r_obj->end_pos)) ||
+              /* start before and end after */
+              (position_is_before_or_equal (
+                 &r_obj->pos, p1) &&
+               position_is_after (
+                 &r_obj->end_pos, p2)))
+            {
+              regions[count++] = r;
+            }
+        }
+    }
+
+  return count;
+}
+
 /**
  * Setter for the track name.
  *

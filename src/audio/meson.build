@@ -73,6 +73,8 @@ audio_srcs = [
   'passthrough_processor.c',
   'recording_manager.c',
   'region.c',
+  'region_link_group.c',
+  'region_link_group_manager.c',
   'routing.c',
   'rtaudio_device.c',
   'rtmidi_device.c',

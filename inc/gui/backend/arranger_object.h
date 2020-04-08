@@ -30,6 +30,7 @@
 
 #include "audio/curve.h"
 #include "audio/position.h"
+#include "audio/region_identifier.h"
 #include "utils/yaml.h"
 
 typedef struct ArrangerObject ArrangerObject;
@@ -257,6 +258,10 @@ typedef struct ArrangerObject
 
   int                magic;
 
+  /** Parent region identifier for objects that are
+   * part of a region. */
+  RegionIdentifier   region_id;
+
   /** 1 when hovering over the object. */
   //int                hover;
 
@@ -309,6 +314,9 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerObject, fade_out_opts,
     curve_options_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ArrangerObject, region_id,
+    region_identifier_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -355,6 +363,12 @@ static const cyaml_schema_value_t
 #define arranger_object_can_mute(_obj) \
   ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION || \
    (_obj)->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+
+#define arranger_object_owned_by_region(_obj) \
+  ((_obj)->type == ARRANGER_OBJECT_TYPE_VELOCITY || \
+   (_obj)->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE || \
+   (_obj)->type == ARRANGER_OBJECT_TYPE_CHORD_OBJECT || \
+   (_obj)->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
 
 /**
  * Gets the arranger for this arranger object.
@@ -629,6 +643,16 @@ void
 arranger_object_copy_identifier (
   ArrangerObject * dest,
   ArrangerObject * src);
+
+void
+arranger_object_add_linked_region (
+  ArrangerObject * self,
+  ZRegion *        region);
+
+void
+arranger_object_remove_linked_region (
+  ArrangerObject * self,
+  ZRegion *        region);
 
 /**
  * Moves the object by the given amount of

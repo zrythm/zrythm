@@ -100,7 +100,7 @@ chord_selections_paste_to_pos (
       ArrangerObject * chord_obj =
         (ArrangerObject *) chord;
       region_identifier_copy (
-        &chord->region_id,
+        &chord_obj->region_id,
         &CLIP_EDITOR->region_id);
 
       curr_ticks =

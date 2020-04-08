@@ -60,26 +60,6 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#if 0
-int
-midi_arranger_widget_get_note_at_y (double y)
-{
-  double adj_y = y - 1;
-  double adj_px_per_key =
-    MW_PIANO_ROLL_KEYS->px_per_key + 1;
-  if (PIANO_ROLL->drum_mode)
-    {
-      return
-        PIANO_ROLL->drum_descriptors[
-          (int)(adj_y / adj_px_per_key)].value;
-    }
-  else
-    return
-      PIANO_ROLL->piano_descriptors[
-        (int)(adj_y / adj_px_per_key)].value;
-}
-#endif
-
 /**
  * Called on drag begin in parent when background is
  * double clicked (i.e., a note is created).
@@ -154,85 +134,6 @@ midi_arranger_widget_create_note (
   arranger_object_select (
     midi_note_obj, F_SELECT, F_NO_APPEND);
 }
-
-/**
- * Called when in selection mode.
- *
- * Called by arranger widget during drag_update to find and
- * select the midi notes enclosed in the selection area.
- *
- * @param[in] delete If this is a select-delete
- *   operation
- */
-/*void*/
-/*midi_arranger_widget_select (*/
-  /*ArrangerWidget * self,*/
-  /*double               offset_x,*/
-  /*double               offset_y,*/
-  /*int                  delete)*/
-/*{*/
-  /*ARRANGER_WIDGET_GET_PRIVATE (self);*/
-
-  /*if (!delete)*/
-    /*[> deselect all <]*/
-    /*arranger_widget_select_all (*/
-      /*Z_ARRANGER_WIDGET (self), 0);*/
-
-  /*[> find enclosed midi notes <]*/
-  /*GtkWidget *    midi_note_widgets[800];*/
-  /*int            num_midi_note_widgets = 0;*/
-  /*arranger_widget_get_hit_widgets_in_range (*/
-    /*Z_ARRANGER_WIDGET (self),*/
-    /*MIDI_NOTE_WIDGET_TYPE,*/
-    /*self->start_x,*/
-    /*self->start_y,*/
-    /*offset_x,*/
-    /*offset_y,*/
-    /*midi_note_widgets,*/
-    /*&num_midi_note_widgets);*/
-
-  /*ArrangerObjectWidget * midi_note_widget;*/
-  /*ArrangerObject * midi_note_obj;*/
-  /*if (delete)*/
-    /*{*/
-      /*[> delete the enclosed midi notes <]*/
-      /*for (int i = 0; i < num_midi_note_widgets; i++)*/
-        /*{*/
-          /*midi_note_widget =*/
-            /*Z_ARRANGER_OBJECT_WIDGET (*/
-              /*midi_note_widgets[i]);*/
-          /*ARRANGER_OBJECT_WIDGET_GET_PRIVATE (*/
-            /*midi_note_widget);*/
-          /*midi_note_obj =*/
-            /*arranger_object_get_main (*/
-              /*ao_prv->arranger_object);*/
-
-          /*MidiNote * mn =*/
-            /*(MidiNote *) midi_note_obj;*/
-
-          /*midi_region_remove_midi_note (*/
-            /*mn->region, mn,*/
-            /*F_NO_FREE, F_PUBLISH_EVENTS);*/
-        /*}*/
-    /*}*/
-  /*else*/
-    /*{*/
-      /*[> select the enclosed midi_notes <]*/
-      /*for (int i = 0; i < num_midi_note_widgets; i++)*/
-        /*{*/
-          /*midi_note_widget =*/
-            /*Z_ARRANGER_OBJECT_WIDGET (*/
-              /*midi_note_widgets[i]);*/
-          /*ARRANGER_OBJECT_WIDGET_GET_PRIVATE (*/
-            /*midi_note_widget);*/
-          /*midi_note_obj =*/
-            /*arranger_object_get_main (*/
-              /*ao_prv->arranger_object);*/
-          /*arranger_object_select (*/
-            /*midi_note_obj, F_SELECT, F_APPEND);*/
-        /*}*/
-    /*}*/
-/*}*/
 
 /**
  * Called during drag_update in the parent when

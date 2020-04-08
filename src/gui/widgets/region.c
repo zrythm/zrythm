@@ -171,7 +171,7 @@ draw_background (
   cairo_fill (cr);
 
   /* draw link icon if has linked parent */
-  if (self->has_link)
+  if (self->id.link_group >= 0)
     {
       const int size = 16;
       const int paddingh = 2;

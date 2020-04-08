@@ -59,9 +59,6 @@ typedef struct MidiNote
   /** Base struct. */
   ArrangerObject  base;
 
-  /** Parent region. */
-  RegionIdentifier region_id;
-
   /** Velocity. */
   Velocity *      vel;
 
@@ -108,10 +105,6 @@ static const cyaml_schema_field_t
   CYAML_FIELD_INT (
     "pos", CYAML_FLAG_DEFAULT,
     MidiNote, pos),
-  CYAML_FIELD_MAPPING (
-    "region_id", CYAML_FLAG_DEFAULT,
-    MidiNote, region_id,
-    region_identifier_fields_schema),
 
   CYAML_FIELD_END
 };

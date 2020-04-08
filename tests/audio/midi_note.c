@@ -90,7 +90,7 @@ test_new_midi_note ()
 
   g_assert_cmpint (
     region_identifier_is_equal (
-      &mn->region_id, &r_clone->id), ==, 1);
+      &mn_obj->region_id, &r_clone->id), ==, 1);
 
   MidiNote * mn_clone =
     (MidiNote *)

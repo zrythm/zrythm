@@ -67,6 +67,13 @@ void
 editor_ruler_on_drag_end (
   RulerWidget * self);
 
+int
+editor_ruler_get_regions_in_range (
+  RulerWidget * self,
+  double        x_start,
+  double        x_end,
+  ZRegion **    regions);
+
 /**
  * @}
  */

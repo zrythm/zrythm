@@ -182,8 +182,10 @@ midi_arranger_selections_paste_to_pos (
         arranger_object_clone (
           (ArrangerObject *) midi_note,
           ARRANGER_OBJECT_CLONE_COPY_MAIN);
+      ArrangerObject * cp_obj =
+        (ArrangerObject *) cp;
       region =
-        region_find (&cp->region_id);
+        region_find (&cp_obj->region_id);
       midi_region_add_midi_note (region, cp, 1);
     }
 #undef DIFF

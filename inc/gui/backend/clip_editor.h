@@ -149,6 +149,10 @@ clip_editor_get_region_for_widgets (
   ClipEditor * self);
 #endif
 
+Track *
+clip_editor_get_track (
+  ClipEditor * self);
+
 /**
  * Causes the selected ZRegion to be redrawin in the
  * UI, if any.

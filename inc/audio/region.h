@@ -42,6 +42,7 @@ typedef struct Track Track;
 typedef struct MidiNote MidiNote;
 typedef struct TrackLane TrackLane;
 typedef struct _AudioClipWidget AudioClipWidget;
+typedef struct RegionLinkGroup RegionLinkGroup;
 
 /**
  * @addtogroup audio
@@ -77,18 +78,6 @@ typedef struct ZRegion
 
   /** Name to be shown on the widget. */
   char *          name;
-
-  /**
-   * Linked parent region.
-   *
-   * Either the midi notes from this region,
-   * or the midi notes from the linked region
-   * are used.
-   */
-  RegionIdentifier linked_region_id;
-
-  /** Whether a linked parent region exists. */
-  bool            has_link;
 
   /**
    * TODO region color independent of track.
@@ -199,12 +188,6 @@ static const cyaml_schema_field_t
     ZRegion, name),
   YAML_FIELD_INT (
     ZRegion, pool_id),
-  CYAML_FIELD_MAPPING (
-    "linked_region_id", CYAML_FLAG_DEFAULT,
-    ZRegion, linked_region_id,
-    region_identifier_fields_schema),
-  YAML_FIELD_INT (
-    ZRegion, has_link),
   CYAML_FIELD_SEQUENCE_COUNT (
     "midi_notes",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
@@ -269,6 +252,21 @@ region_print (
 TrackLane *
 region_get_lane (
   const ZRegion * region);
+
+RegionLinkGroup *
+region_get_link_group (
+  ZRegion * self);
+
+/**
+ * Sets the link group to the region.
+ *
+ * @param group_idx If -1, the region will be
+ *   removed from its current link group, if any.
+ */
+void
+region_set_link_group (
+  ZRegion * region,
+  int       group_idx);
 
 /**
  * Returns the MidiNote matching the properties of

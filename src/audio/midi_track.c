@@ -81,7 +81,7 @@ typedef enum NoteProcessingType
  */
 static inline void
 send_notes_off_at (
-  ZRegion *           region,
+  ZRegion *          region,
   MidiEvents *       midi_events,
   midi_time_t        time,
   NoteProcessingType type)

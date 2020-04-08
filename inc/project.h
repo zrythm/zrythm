@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,6 +36,7 @@
 #include "audio/port.h"
 #include "audio/quantize_options.h"
 #include "audio/region.h"
+#include "audio/region_link_group_manager.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/backend/clip_editor.h"
@@ -186,6 +187,9 @@ typedef struct Project
   int                has_range;
   /* ---------------------- */
 
+  /** Manager for region link groups. */
+  RegionLinkGroupManager region_link_group_manager;
+
   /**
    * The audio backend
    */
@@ -293,6 +297,9 @@ static const cyaml_schema_field_t
   CYAML_FIELD_INT (
     "has_range", CYAML_FLAG_DEFAULT,
     Project, has_range),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Project, region_link_group_manager,
+    region_link_group_manager_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     Project, midi_mappings,
     midi_mappings_fields_schema),

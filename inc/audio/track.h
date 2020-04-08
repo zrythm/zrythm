@@ -880,6 +880,13 @@ void
 track_remove_empty_last_lanes (
   Track * track);
 
+int
+track_get_regions_in_range (
+  Track *    self,
+  Position * p1,
+  Position * p2,
+  ZRegion ** regions);
+
 /**
  * Wrapper for each track type.
  */

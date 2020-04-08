@@ -1046,6 +1046,24 @@ arranger_widget_get_snap_grid (
   g_return_val_if_reached (NULL);
 }
 
+#if 0
+/**
+ * Returns the number of regions inside the given
+ * editor arranger.
+ */
+static int
+get_regions_in_editor_rect (
+  ArrangerWidget * self,
+  GdkRectangle *   rect,
+  ZRegion **       regions)
+{
+  return
+    editor_ruler_get_regions_in_range (
+      EDITOR_RULER, rect->x, rect->x + rect->width,
+      regions);
+}
+#endif
+
 /**
  * Fills in the given array with the ArrangerObject's
  * of the given type that appear in the given
@@ -2958,7 +2976,7 @@ select_in_range (
           ChordObject * co =
             (ChordObject *) objs[i];
           ZRegion * region =
-            region_find (&co->region_id);
+            region_find (&obj->region_id);
 
           if (delete)
             {
@@ -2982,7 +3000,7 @@ select_in_range (
           AutomationPoint * ap =
             (AutomationPoint *) objs[i];
           ZRegion * region =
-            region_find (&ap->region_id);
+            region_find (&obj->region_id);
 
           if (delete)
             automation_region_remove_ap (
@@ -3071,7 +3089,7 @@ select_in_range (
           MidiNote * mn =
             (MidiNote *) obj;
           ZRegion * region =
-            region_find (&mn->region_id);
+            region_find (&obj->region_id);
 
           if (delete)
             {
@@ -3244,6 +3262,12 @@ drag_update (
       self->action =
         UI_OVERLAY_ACTION_RAMPING;
       break;
+    case UI_OVERLAY_ACTION_CUTTING:
+      /* alt + move changes the action from
+       * cutting to moving-link */
+      if (self->alt_held && self->can_link)
+        self->action =
+          UI_OVERLAY_ACTION_MOVING_LINK;
     default:
       break;
     }

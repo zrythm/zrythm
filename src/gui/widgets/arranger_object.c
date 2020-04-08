@@ -437,6 +437,31 @@ get_automation_point_y (
   return point;
 }
 
+/**
+ * Gets the full rectangle for a linked object.
+ */
+int
+arranger_object_get_full_rect_x_for_region_child (
+  ArrangerObject * self,
+  ZRegion *        region,
+  GdkRectangle *   full_rect)
+{
+  g_return_val_if_fail (region, 0);
+  ArrangerObject * region_obj =
+    (ArrangerObject *) region;
+
+  double region_start_ticks =
+    region_obj->pos.total_ticks;
+  Position tmp;
+
+  /* use absolute position */
+  position_from_ticks (
+    &tmp,
+    region_start_ticks +
+      self->pos.total_ticks);
+  return ui_pos_to_px_editor (&tmp, 1);
+}
+
 void
 arranger_object_set_full_rectangle (
   ArrangerObject * self,

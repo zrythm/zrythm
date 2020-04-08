@@ -69,12 +69,16 @@ velocity_is_equal (
   Velocity * src,
   Velocity * dest)
 {
+  ArrangerObject * src_mn_obj =
+    (ArrangerObject *) src->midi_note;
+  ArrangerObject * dest_mn_obj =
+    (ArrangerObject *) dest->midi_note;
   return
     src->vel == dest->vel &&
     src->midi_note->pos == dest->midi_note->pos &&
     region_identifier_is_equal (
-      &src->midi_note->region_id,
-      &dest->midi_note->region_id);
+      &src_mn_obj->region_id,
+      &dest_mn_obj->region_id);
 }
 
 /**

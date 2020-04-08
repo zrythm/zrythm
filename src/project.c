@@ -430,6 +430,9 @@ create_default (Project * self)
   quantize_options_update_quantize_points (
     &PROJECT->quantize_opts_editor);
 
+  region_link_group_manager_init (
+    &PROJECT->region_link_group_manager);
+
   position_set_to_bar (
     &PROJECT->range_1, 1);
   position_set_to_bar (
