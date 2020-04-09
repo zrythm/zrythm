@@ -184,22 +184,28 @@ guile_mode_func (void* data)
     scm_get_output_string (error_out_port);
   char * err_str =
     scm_to_locale_string (str_scm);
+  char * markup;
   if (ret == SCM_BOOL_T)
     {
-      gtk_label_set_text (self->output, str);
+      markup =
+        g_markup_printf_escaped (
+          "<span foreground=\"green\" size=\"large\">"
+          "<b>%s</b></span>\n%s",
+          _("Script execution successful"),
+          str);
     }
   else
     {
-      char * markup =
+      markup =
         g_markup_printf_escaped (
           "<span foreground=\"red\" size=\"large\">"
           "<b>%s</b></span>\n%s",
           _("Script execution failed"),
           err_str);
-      gtk_label_set_markup (
-        self->output, markup);
-      g_free (markup);
     }
+  gtk_label_set_markup (
+    self->output, markup);
+  g_free (markup);
 
   return NULL;
 }

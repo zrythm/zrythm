@@ -15,3 +15,7 @@ so for example, to use the procedures in
 the ``audio position`` section, one would do
 ``(use-modules (audio track))`` at the top of the
 script.
+
+.. note::
+
+  The Guile API is experimental.

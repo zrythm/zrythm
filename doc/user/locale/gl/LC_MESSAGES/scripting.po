@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-09 16:39+0100\n"
+"POT-Creation-Date: 2020-04-09 17:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,11 +67,20 @@ msgstr ""
 
 #: ../../scripting/examples.rst:8
 msgid ""
-"The following examples are in the public domain (CC 0). Feel free to copy"
-" and modify them."
+"The following examples are in the public domain (`CC 0 "
+"<https://creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to "
+"copy and modify them."
 msgstr ""
 
-#: ../../scripting/examples.rst:12
+#: ../../scripting/examples.rst:13
+msgid "Hello World"
+msgstr ""
+
+#: ../../scripting/examples.rst:22
+msgid "Print track names"
+msgstr ""
+
+#: ../../scripting/examples.rst:39
 msgid "Create MIDI track with notes"
 msgstr ""
 
@@ -97,9 +106,28 @@ msgid ""
 "one would do ``(use-modules (audio track))`` at the top of the script."
 msgstr ""
 
+#: ../../scripting/overview.rst:21
+msgid "The Guile API is experimental."
+msgstr ""
+
 #~ msgid ""
 #~ "The next section is a comprehensive "
 #~ "list of all available procedures in "
 #~ "the API."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The following examples are in the "
+#~ "public domain (CC 0). Feel free to"
+#~ " copy and modify them."
+#~ msgstr ""
+
+#~ msgid "Create MIDI track with notes"
+#~ msgstr ""
+
+#~ msgid "Print the name of every track"
+#~ msgstr ""
+
+#~ msgid "Create a MIDI track with notes"
 #~ msgstr ""
 

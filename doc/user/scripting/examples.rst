@@ -6,7 +6,34 @@ Examples
 ========
 
 The following examples are in the public domain
-(CC 0). Feel free to copy and modify them.
+(`CC 0 <https://creativecommons.org/publicdomain/zero/1.0/>`_).
+Feel free to copy and modify them.
+
+Hello World
+-----------
+
+.. code-block:: scheme
+
+  (define zrythm-script
+    (lambda ()
+      (display "Hello, World!")))
+
+Print track names
+-----------------
+
+.. code-block:: scheme
+
+  (use-modules (audio track)
+               (audio tracklist))
+  (define zrythm-script
+    (lambda ()
+      (let ((num-tracks (tracklist-get-num-tracks)))
+        (let loop ((i 0))
+          (when (< i num-tracks)
+            (let ((track (tracklist-get-track-at-pos i)))
+              (display (track-get-name track))
+              (newline))
+            (loop (+ i 1)))))))
 
 Create MIDI track with notes
 ----------------------------
