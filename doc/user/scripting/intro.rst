@@ -9,4 +9,5 @@ Scripting
    :maxdepth: 4
 
    overview
+   examples
    api/intro

@@ -21,7 +21,10 @@ for subdir, dirs, files in os.walk(srcpath):
                 # remove "Schema Procedure"
                 # translations
                 filedata = re.sub(
-                    r'#:.*?api.*?\nmsgid "Scheme Procedure.*?\nmsgstr .*?\n\n',
+                        r'#:.*?api.*?\n(#: .*?\n)*msgid "Scheme Procedure.*?\nmsgstr .*?\n\n',
+                    '', filedata)
+                filedata = re.sub(
+                    r'#:.*?api.*?\n(#: .*?\n)*msgid ""\n"Scheme Procedure.*?\n(".*"\n)*?msgstr .*?\n\n',
                     '', filedata)
 
                 filedata = re.sub(

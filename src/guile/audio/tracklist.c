@@ -25,6 +25,20 @@
 #endif
 
 SCM_DEFINE (
+  s_tracklist_insert_track,
+  "tracklist-insert-track", 2, 0, 0,
+  (SCM track, SCM idx),
+  "Inserts track @var{track} at index @var{idx} in "
+  "the tracklist.")
+{
+  tracklist_insert_track (
+    TRACKLIST, scm_to_pointer (track),
+    scm_to_int (idx), true, true);
+
+  return SCM_BOOL_T;
+}
+
+SCM_DEFINE (
   get_track_at_pos, "tracklist-get-track-at-pos",
   1, 0, 0,
   (SCM pos),
@@ -60,9 +74,11 @@ init_module (void * data)
 #include "audio_tracklist.x"
 #endif
   scm_c_export (
+    "tracklist-insert-track",
     "tracklist-get-track-at-pos",
     "tracklist-get-num-tracks",
-    "tracklist-get", NULL);
+    "tracklist-get",
+    NULL);
 }
 
 void

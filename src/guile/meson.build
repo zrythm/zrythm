@@ -16,6 +16,8 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 _guile_snarfable_srcs = [
+  join_paths ('audio', 'midi_note.c'),
+  join_paths ('audio', 'midi_region.c'),
   join_paths ('audio', 'position.c'),
   join_paths ('audio', 'track.c'),
   join_paths ('audio', 'tracklist.c'),

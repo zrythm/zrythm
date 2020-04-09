@@ -52,6 +52,8 @@ guile_init (
 void
 guile_define_modules (void)
 {
+  guile_audio_midi_note_define_module ();
+  guile_audio_midi_region_define_module ();
   guile_audio_position_define_module ();
   guile_audio_track_define_module ();
   guile_audio_tracklist_define_module ();

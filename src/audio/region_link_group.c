@@ -145,7 +145,8 @@ region_link_group_update (
            &self->ids[i], &main_region->id))
         continue;
 
-      g_message ("updating %d (%d %s)", i,
+      g_message ("[%s] updating %d (%d %s)",
+        __func__, i,
         region->id.idx, region->name);
 
       /* delete and readd all children */

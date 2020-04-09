@@ -48,6 +48,10 @@ extern SCM track_type;
 extern SCM tracklist_type;
 
 void
+guile_audio_midi_note_define_module (void);
+void
+guile_audio_midi_region_define_module (void);
+void
 guile_audio_position_define_module (void);
 void
 guile_audio_track_define_module (void);

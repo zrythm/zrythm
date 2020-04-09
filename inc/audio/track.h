@@ -598,7 +598,7 @@ track_is_selected (Track * self);
 void
 track_add_region (
   Track *           track,
-  ZRegion *          region,
+  ZRegion *         region,
   AutomationTrack * at,
   int               lane_pos,
   int               gen_name,
