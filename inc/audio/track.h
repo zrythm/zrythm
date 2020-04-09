@@ -56,6 +56,7 @@ typedef struct ChordObject ChordObject;
 typedef struct MusicalScale MusicalScale;
 typedef struct Modulator Modulator;
 typedef struct Marker Marker;
+typedef struct PluginDescriptor PluginDescriptor;
 typedef enum PassthroughProcessorType
   PassthroughProcessorType;
 typedef enum FaderType FaderType;
@@ -531,6 +532,10 @@ track_set_muted (
   int     mute,
   int     trigger_undo,
   int     fire_events);
+
+TrackType
+track_get_type_from_plugin_descriptor (
+  PluginDescriptor * descr);
 
 /**
  * Returns the full visible height (main height +

@@ -162,7 +162,8 @@ create (
             track, ar, NULL, 0, F_GEN_NAME,
             F_PUBLISH_EVENTS);
         }
-      else if (self->type == TRACK_TYPE_MIDI)
+      else if (self->type == TRACK_TYPE_MIDI &&
+               self->file_descr)
         {
           /* create a MIDI region from the MIDI
            * file & add to track */

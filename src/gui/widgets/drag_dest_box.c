@@ -308,11 +308,9 @@ on_drag_data_received (
           self->type ==
           DRAG_DEST_BOX_TYPE_TRACKLIST)
         {
-          TrackType tt;
-          if (plugin_descriptor_is_instrument (pd))
-            tt = TRACK_TYPE_INSTRUMENT;
-          else
-            tt = TRACK_TYPE_AUDIO_BUS;
+          TrackType tt =
+            track_get_type_from_plugin_descriptor (
+              pd);
 
           UndoableAction * ua =
             create_tracks_action_new (

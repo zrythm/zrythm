@@ -79,11 +79,8 @@ on_row_activated (GtkTreeView       *tree_view,
   PluginDescriptor * descr =
     g_value_get_pointer (&value);
 
-  TrackType tt;
-  if (plugin_descriptor_is_instrument (descr))
-    tt = TRACK_TYPE_INSTRUMENT;
-  else
-    tt = TRACK_TYPE_AUDIO_BUS;
+  TrackType tt =
+    track_get_type_from_plugin_descriptor (descr);
 
   UndoableAction * ua =
     create_tracks_action_new (

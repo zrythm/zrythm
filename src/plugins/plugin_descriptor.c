@@ -192,7 +192,8 @@ plugin_descriptor_is_midi_modifier (
      descr->category == PC_MIDI) ||
     (descr->category == PLUGIN_CATEGORY_NONE &&
      descr->num_midi_ins > 0 &&
-     descr->num_midi_outs > 0);
+     descr->num_midi_outs > 0 &&
+     descr->protocol != PROT_VST);
 }
 
 #undef IS_CAT

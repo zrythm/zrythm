@@ -1032,7 +1032,7 @@ draw_audio_region (
               long index =
                 j * (long) clip->channels +
                 (long) k;
-              g_warn_if_fail (
+              g_return_if_fail (
                 index >= 0 &&
                 index <
                 (long)

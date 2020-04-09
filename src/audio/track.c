@@ -417,6 +417,19 @@ track_get_muted (
   return control_port_is_toggled (self->mute);
 }
 
+TrackType
+track_get_type_from_plugin_descriptor (
+  PluginDescriptor * descr)
+{
+  if (plugin_descriptor_is_instrument (descr))
+    return TRACK_TYPE_INSTRUMENT;
+  else if (plugin_descriptor_is_midi_modifier (
+             descr))
+    return TRACK_TYPE_MIDI;
+  else
+    return TRACK_TYPE_AUDIO_BUS;
+}
+
 /**
  * Sets recording and connects/disconnects the
  * JACK ports.
