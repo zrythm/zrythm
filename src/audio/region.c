@@ -365,11 +365,20 @@ region_set_link_group (
   ZRegion * region,
   int       group_idx)
 {
-  if (region->id.link_group >= 0)
+  ArrangerObject * obj =
+    (ArrangerObject *) region;
+  if (obj->flags & ARRANGER_OBJECT_FLAG_NON_PROJECT)
+    {
+      region->id.link_group = group_idx;
+      return;
+    }
+
+  if (region->id.link_group >= 0 &&
+      region->id.link_group != group_idx)
     {
       region_link_group_remove_region (
         region_get_link_group (region),
-        region);
+        region, true);
     }
   if (group_idx >= 0)
     {
@@ -378,6 +387,60 @@ region_set_link_group (
           REGION_LINK_GROUP_MANAGER, group_idx);
       region_link_group_add_region (
         group, region);
+    }
+}
+
+void
+region_create_link_group_if_none (
+  ZRegion * region)
+{
+  ArrangerObject * obj =
+    (ArrangerObject *) region;
+  if (obj->flags & ARRANGER_OBJECT_FLAG_NON_PROJECT)
+    return;
+
+  if (region->id.link_group < 0)
+    {
+      int new_group =
+        region_link_group_manager_add_group (
+          REGION_LINK_GROUP_MANAGER);
+      region_set_link_group (
+        region, new_group);
+      region_update_identifier (region);
+    }
+}
+
+bool
+region_has_link_group (
+  ZRegion * region)
+{
+  return region->id.link_group >= 0;
+}
+
+/**
+ * Removes the link group from the region, if any.
+ */
+void
+region_unlink (
+  ZRegion * region)
+{
+  ArrangerObject * obj =
+    (ArrangerObject *) region;
+  if (obj->flags & ARRANGER_OBJECT_FLAG_NON_PROJECT)
+    {
+      region->id.link_group = -1;
+      return;
+    }
+
+  if (region->id.link_group >= 0)
+    {
+      RegionLinkGroup * group =
+        region_link_group_manager_get_group (
+          REGION_LINK_GROUP_MANAGER,
+          region->id.link_group);
+      region_link_group_remove_region (
+        group, region, true);
+      region_update_identifier (region);
     }
 }
 
@@ -491,6 +554,155 @@ region_update_identifier (
         }
       break;
     default:
+      break;
+    }
+}
+
+/**
+ * Updates all other regions in the region link
+ * group, if any.
+ */
+void
+region_update_link_group (
+  ZRegion * self)
+{
+  g_message ("updating link group %d",
+    self->id.link_group);
+  if (self->id.link_group >= 0)
+    {
+      RegionLinkGroup * group =
+        region_link_group_manager_get_group (
+          REGION_LINK_GROUP_MANAGER,
+          self->id.link_group);
+      region_link_group_update (
+        group, self);
+    }
+}
+
+/**
+ * Removes all children objects from the region.
+ */
+void
+region_remove_all_children (
+  ZRegion * region)
+{
+  switch (region->id.type)
+    {
+    case REGION_TYPE_MIDI:
+      {
+        for (int i = 0;
+             i < region->num_midi_notes; i++)
+          {
+            MidiNote * mn =
+              region->midi_notes[i];
+            midi_region_remove_midi_note (
+              region, mn, true, false);
+          }
+      }
+      break;
+    case REGION_TYPE_AUDIO:
+      break;
+    case REGION_TYPE_AUTOMATION:
+      {
+        /* add automation points */
+        for (int j = 0; j < region->num_aps; j++)
+          {
+            AutomationPoint * ap = region->aps[j];
+            automation_region_remove_ap (
+              region, ap, true);
+          }
+      }
+      break;
+    case REGION_TYPE_CHORD:
+      {
+        for (int i = 0;
+             i < region->num_chord_objects; i++)
+          {
+            ChordObject * co =
+              region->chord_objects[i];
+            chord_region_remove_chord_object (
+              region, co, true);
+          }
+      }
+      break;
+    }
+}
+
+/**
+ * Clones and copies all children from \ref src to
+ * \ref dest.
+ */
+void
+region_copy_children (
+  ZRegion * dest,
+  ZRegion * src)
+{
+  g_return_if_fail (dest->id.type == src->id.type);
+
+  int i, j;
+  switch (src->id.type)
+    {
+    case REGION_TYPE_MIDI:
+      {
+        for (i = 0;
+             i < src->num_midi_notes; i++)
+          {
+            MidiNote * orig_mn =
+              src->midi_notes[i];
+            ArrangerObject * orig_mn_obj =
+              (ArrangerObject *) orig_mn;
+
+            MidiNote * mn =
+              (MidiNote *)
+              arranger_object_clone (
+                orig_mn_obj,
+                ARRANGER_OBJECT_CLONE_COPY_MAIN);
+
+            midi_region_add_midi_note (
+              dest, mn, 0);
+          }
+      }
+      break;
+    case REGION_TYPE_AUDIO:
+      break;
+    case REGION_TYPE_AUTOMATION:
+      {
+        /* add automation points */
+        AutomationPoint * src_ap, * dest_ap;
+        for (j = 0; j < src->num_aps; j++)
+          {
+            src_ap = src->aps[j];
+            ArrangerObject * src_ap_obj =
+              (ArrangerObject *) src_ap;
+
+            dest_ap =
+              automation_point_new_float (
+                src_ap->fvalue,
+                src_ap->normalized_val,
+                &src_ap_obj->pos);
+            automation_region_add_ap (
+              dest, dest_ap, F_NO_PUBLISH_EVENTS);
+          }
+      }
+      break;
+    case REGION_TYPE_CHORD:
+      {
+        ChordObject * src_co, * dest_co;
+        for (i = 0;
+             i < src->num_chord_objects; i++)
+          {
+            src_co = src->chord_objects[i];
+
+            dest_co =
+              (ChordObject *)
+              arranger_object_clone (
+                (ArrangerObject *) src_co,
+                ARRANGER_OBJECT_CLONE_COPY_MAIN);
+
+            chord_region_add_chord_object (
+              dest, dest_co);
+          }
+      }
       break;
     }
 }

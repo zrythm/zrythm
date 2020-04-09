@@ -26,6 +26,8 @@
 #ifndef __AUDIO_REGION_LINK_GROUP_H__
 #define __AUDIO_REGION_LINK_GROUP_H__
 
+#include <stdbool.h>
+
 #include "audio/region_identifier.h"
 #include "utils/yaml.h"
 
@@ -94,10 +96,42 @@ region_link_group_add_region (
   RegionLinkGroup * self,
   ZRegion *         region);
 
+/**
+ * Remove the region from the link group.
+ *
+ * @param autoremove_last_region_and_group
+ *   Automatically remove the last region left in
+ *   the group, and the group itself when empty.
+ */
 void
 region_link_group_remove_region (
   RegionLinkGroup * self,
+  ZRegion *         region,
+  bool              autoremove_last_region_and_group);
+
+bool
+region_link_group_contains_region (
+  RegionLinkGroup * self,
   ZRegion *         region);
+
+/**
+ * Updates all other regions in the link group.
+ *
+ * @param region The region where the change
+ *   happened.
+ */
+void
+region_link_group_update (
+  RegionLinkGroup * self,
+  ZRegion *         region);
+
+/**
+ * Moves the regions from \ref src to \ref dest.
+ */
+void
+region_link_group_move (
+  RegionLinkGroup * dest,
+  RegionLinkGroup * src);
 
 /**
  * @}

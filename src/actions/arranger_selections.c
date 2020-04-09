@@ -179,8 +179,8 @@ _create_action (
   ArrangerSelectionsAction * self =
     calloc (1, sizeof (ArrangerSelectionsAction));
 
-  set_selections (self, sel, 1, 0);
-  self->first_run = 1;
+  set_selections (self, sel, true, false);
+  self->first_run = true;
 
   return self;
 }
@@ -240,7 +240,10 @@ arranger_selections_action_new_move_or_duplicate (
   if (move)
     ua->type = UA_MOVE_ARRANGER_SELECTIONS;
   else
-    ua->type = UA_DUPLICATE_ARRANGER_SELECTIONS;
+    {
+      ua->type = UA_DUPLICATE_ARRANGER_SELECTIONS;
+      set_selections (self, sel, true, true);
+    }
 
   if (!already_moved)
     self->first_run = 0;
@@ -259,22 +262,30 @@ arranger_selections_action_new_move_or_duplicate (
  *
  * @param already_moved If this is true, the first
  *   DO will do nothing.
+ * @param sel_before Original selections.
+ * @param sel_after Selections after duplication.
  */
 UndoableAction *
 arranger_selections_action_new_link (
-  ArrangerSelections * sel,
+  ArrangerSelections * sel_before,
+  ArrangerSelections * sel_after,
   const double         ticks,
   const int            delta_tracks,
   const int            delta_lanes,
   const bool           already_moved)
 {
+  g_return_val_if_fail (
+    sel_before && sel_after, NULL);
+
   ArrangerSelectionsAction * self =
-    _create_action (sel);
+    _create_action (sel_before);
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_LINK_ARRANGER_SELECTIONS;
 
+  set_selections (self, sel_after, true, true);
+
   if (!already_moved)
-    self->first_run = 0;
+    self->first_run = false;
 
   self->ticks = ticks;
   self->delta_tracks = delta_tracks;
@@ -745,6 +756,27 @@ do_or_undo_move (
             }
         }
     }
+
+  /* handle children of linked regions */
+  for (int i = 0; i < size; i++)
+    {
+      /* get the actual object from the
+       * project */
+      ArrangerObject * obj =
+        arranger_object_find (objs[i]);
+      g_return_val_if_fail (obj, -1);
+
+      if (arranger_object_owned_by_region (obj))
+        {
+          ZRegion * region =
+            arranger_object_get_region (obj);
+          g_return_val_if_fail (region, -1);
+
+          /* shift all linked objects */
+          region_update_link_group (region);
+        }
+    }
+
   free (objs);
 
   ArrangerSelections * sel =
@@ -833,8 +865,14 @@ do_or_undo_duplicate_or_link (
 {
   arranger_selections_sort_by_indices (
     self->sel, !_do);
+  arranger_selections_sort_by_indices (
+    self->sel_after, !_do);
   int size = 0;
   ArrangerObject ** objs =
+    arranger_selections_get_all_objects (
+      self->sel_after, &size);
+  /* objects the duplication/link was based from */
+  ArrangerObject ** orig_objs =
     arranger_selections_get_all_objects (
       self->sel, &size);
   ArrangerSelections * sel =
@@ -857,6 +895,8 @@ do_or_undo_duplicate_or_link (
   for (int i = 0; i < size; i++)
     {
       objs[i]->flags |=
+        ARRANGER_OBJECT_FLAG_NON_PROJECT;
+      orig_objs[i]->flags |=
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
       ArrangerObject * obj;
@@ -918,6 +958,36 @@ do_or_undo_duplicate_or_link (
 
           /* add to track */
           add_object_to_project (obj);
+
+          /* if we are linking, create the
+           * necessary links */
+          if (link)
+            {
+              /* add link group to original object
+               * if necessary */
+              ArrangerObject * orig_obj =
+                arranger_object_find (
+                  orig_objs[i]);
+              ZRegion * region =
+                (ZRegion *) orig_obj;
+              region_create_link_group_if_none (
+                region);
+              int link_group =
+                region->id.link_group;
+
+              /* add link group to clone */
+              region = (ZRegion *) obj;
+              region_set_link_group (
+                region, link_group);
+
+              /* remember link groups */
+              region = (ZRegion *) orig_objs[i];
+              region_set_link_group (
+                region, link_group);
+              region = (ZRegion *) objs[i];
+              region_set_link_group (
+                region, link_group);
+            }
         }
       else
         {
@@ -925,6 +995,27 @@ do_or_undo_duplicate_or_link (
           obj = arranger_object_find (objs[i]);
           g_return_val_if_fail (
             IS_ARRANGER_OBJECT (obj), -1);
+
+          /* if the object was created with linking,
+           * delete the links */
+          if (link)
+            {
+              /* remove link from created object
+               * (this will also automatically
+               * remove the link from the parent
+               * region if it is the only region in
+               * the link group) */
+              ZRegion * region = (ZRegion *) obj;
+              g_warn_if_fail (
+                region_has_link_group (region));
+              region_unlink (region);
+
+              /* unlink remembered link groups */
+              region = (ZRegion *) orig_objs[i];
+              region_unlink (region);
+              region = (ZRegion *) objs[i];
+              region_unlink (region);
+            }
 
           /* remove it */
           remove_object_from_project (obj);
@@ -1005,6 +1096,7 @@ do_or_undo_duplicate_or_link (
         }
     }
   free (objs);
+  free (orig_objs);
 
   sel = get_actual_arranger_selections (self);
   if (_do)

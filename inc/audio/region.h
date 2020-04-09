@@ -268,6 +268,10 @@ region_set_link_group (
   ZRegion * region,
   int       group_idx);
 
+bool
+region_has_link_group (
+  ZRegion * region);
+
 /**
  * Returns the MidiNote matching the properties of
  * the given MidiNote.
@@ -326,6 +330,14 @@ region_gen_name (
  */
 void
 region_update_identifier (
+  ZRegion * self);
+
+/**
+ * Updates all other regions in the region link
+ * group, if any.
+ */
+void
+region_update_link_group (
   ZRegion * self);
 
 /**
@@ -466,6 +478,33 @@ void
 region_remove_midi_note (
   ZRegion *   region,
   MidiNote * midi_note);
+
+void
+region_create_link_group_if_none (
+  ZRegion * region);
+
+/**
+ * Removes the link group from the region, if any.
+ */
+void
+region_unlink (
+  ZRegion * region);
+
+/**
+ * Removes all children objects from the region.
+ */
+void
+region_remove_all_children (
+  ZRegion * region);
+
+/**
+ * Clones and copies all children from \ref src to
+ * \ref dest.
+ */
+void
+region_copy_children (
+  ZRegion * dest,
+  ZRegion * src);
 
 /**
  * Disconnects the region and anything using it.

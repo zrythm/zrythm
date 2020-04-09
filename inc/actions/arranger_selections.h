@@ -412,10 +412,13 @@ arranger_selections_action_new_move_or_duplicate (
  *
  * @param already_moved If this is true, the first
  *   DO will do nothing.
+ * @param sel_before Original selections.
+ * @param sel_after Selections after duplication.
  */
 UndoableAction *
 arranger_selections_action_new_link (
-  ArrangerSelections * sel,
+  ArrangerSelections * sel_before,
+  ArrangerSelections * sel_after,
   const double         ticks,
   const int            delta_tracks,
   const int            delta_lanes,

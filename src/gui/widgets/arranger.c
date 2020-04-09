@@ -4080,10 +4080,10 @@ on_drag_end_timeline (
           }
         else if (ACTION_IS (MOVING_LINK))
           {
-            g_message ("LINKING");
             ua =
               (UndoableAction *)
               arranger_selections_action_new_link (
+                self->sel_at_start,
                 (ArrangerSelections *)
                   TL_SELECTIONS, ticks_diff,
                 self->visible_track_diff,

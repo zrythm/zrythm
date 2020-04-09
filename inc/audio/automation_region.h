@@ -103,7 +103,7 @@ automation_region_get_next_ap (
  */
 void
 automation_region_remove_ap (
-  ZRegion *          self,
+  ZRegion *         self,
   AutomationPoint * ap,
   int               free);
 

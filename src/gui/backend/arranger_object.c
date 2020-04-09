@@ -1823,25 +1823,6 @@ clone_region (
   /* clone name */
   new_region->name = g_strdup (region->name);
 
-  /* link */
-  if (flag == ARRANGER_OBJECT_CLONE_COPY_LINK)
-    {
-      /* create a link group if parent region
-       * is not in one */
-      if (region->id.link_group < 0)
-        {
-          int new_group =
-            region_link_group_manager_add_group (
-              REGION_LINK_GROUP_MANAGER);
-          region_set_link_group (
-            region, new_group);
-          region_update_identifier (
-            region);
-        }
-      region_set_link_group (
-        new_region, region->id.link_group);
-    }
-
   /* set track to NULL and remember track pos */
   region_identifier_copy (
     &new_region->id, &region->id);

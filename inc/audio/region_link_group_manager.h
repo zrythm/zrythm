@@ -84,6 +84,14 @@ region_link_group_manager_get_group (
   int                      group_id);
 
 /**
+ * Removes the group.
+ */
+void
+region_link_group_manager_remove_group (
+  RegionLinkGroupManager * self,
+  int                      group_id);
+
+/**
  * @}
  */
 
