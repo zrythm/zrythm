@@ -137,12 +137,16 @@ region_link_group_update (
 {
   for (int i = 0; i < self->num_ids; i++)
     {
-      ZRegion * region = region_find (&self->ids[i]);
+      ZRegion * region =
+        region_find (&self->ids[i]);
       g_return_if_fail (region);
 
       if (region_identifier_is_equal (
            &self->ids[i], &main_region->id))
         continue;
+
+      g_message ("updating %d (%d %s)", i,
+        region->id.idx, region->name);
 
       /* delete and readd all children */
       region_remove_all_children (region);

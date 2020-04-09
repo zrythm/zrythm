@@ -563,6 +563,32 @@ add_object_to_project (
 }
 
 static void
+update_region_link_groups (
+  ArrangerObject ** objs,
+  int               size)
+{
+  /* handle children of linked regions */
+  for (int i = 0; i < size; i++)
+    {
+      /* get the actual object from the
+       * project */
+      ArrangerObject * obj =
+        arranger_object_find (objs[i]);
+      g_return_if_fail (obj);
+
+      if (arranger_object_owned_by_region (obj))
+        {
+          ZRegion * region =
+            arranger_object_get_region (obj);
+          g_return_if_fail (region);
+
+          /* shift all linked objects */
+          region_update_link_group (region);
+        }
+    }
+}
+
+static void
 remove_object_from_project (
   ArrangerObject * obj)
 {
@@ -757,25 +783,7 @@ do_or_undo_move (
         }
     }
 
-  /* handle children of linked regions */
-  for (int i = 0; i < size; i++)
-    {
-      /* get the actual object from the
-       * project */
-      ArrangerObject * obj =
-        arranger_object_find (objs[i]);
-      g_return_val_if_fail (obj, -1);
-
-      if (arranger_object_owned_by_region (obj))
-        {
-          ZRegion * region =
-            arranger_object_get_region (obj);
-          g_return_val_if_fail (region, -1);
-
-          /* shift all linked objects */
-          region_update_link_group (region);
-        }
-    }
+  update_region_link_groups (objs, size);
 
   free (objs);
 
@@ -1479,6 +1487,10 @@ do_or_undo_edit (
             }
         }
     }
+
+  update_region_link_groups (
+    _do ? dest_objs : src_objs, size);
+
   free (src_objs);
   free (dest_objs);
 
@@ -1626,6 +1638,9 @@ do_or_undo_resize (
             objs[i], left, type, ticks);
         }
     }
+
+  update_region_link_groups (objs, size);
+
   free (objs);
 
   ArrangerSelections * sel =

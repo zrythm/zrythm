@@ -586,18 +586,24 @@ void
 region_remove_all_children (
   ZRegion * region)
 {
+  g_message ("removing all children from %d %s",
+    region->id.idx, region->name);
   switch (region->id.type)
     {
     case REGION_TYPE_MIDI:
       {
-        for (int i = 0;
-             i < region->num_midi_notes; i++)
+        g_message (
+          "%d midi notes", region->num_midi_notes);
+        for (int i = region->num_midi_notes - 1;
+             i >= 0; i--)
           {
             MidiNote * mn =
               region->midi_notes[i];
             midi_region_remove_midi_note (
               region, mn, true, false);
           }
+        g_warn_if_fail (
+          region->num_midi_notes == 0);
       }
       break;
     case REGION_TYPE_AUDIO:
@@ -605,9 +611,10 @@ region_remove_all_children (
     case REGION_TYPE_AUTOMATION:
       {
         /* add automation points */
-        for (int j = 0; j < region->num_aps; j++)
+        for (int i = region->num_aps - 1;
+             i >= 0; i--)
           {
-            AutomationPoint * ap = region->aps[j];
+            AutomationPoint * ap = region->aps[i];
             automation_region_remove_ap (
               region, ap, true);
           }
@@ -615,8 +622,8 @@ region_remove_all_children (
       break;
     case REGION_TYPE_CHORD:
       {
-        for (int i = 0;
-             i < region->num_chord_objects; i++)
+        for (int i = region->num_chord_objects - 1;
+             i >= 0; i--)
           {
             ChordObject * co =
               region->chord_objects[i];
@@ -639,12 +646,19 @@ region_copy_children (
 {
   g_return_if_fail (dest->id.type == src->id.type);
 
-  int i, j;
+  g_message (
+    "copying children from %d %s to %d %s",
+    src->id.idx, src->name,
+    dest->id.idx, dest->name);
+
   switch (src->id.type)
     {
     case REGION_TYPE_MIDI:
       {
-        for (i = 0;
+        g_warn_if_fail (dest->num_midi_notes == 0);
+        g_message (
+          "%d midi notes", src->num_midi_notes);
+        for (int i = 0;
              i < src->num_midi_notes; i++)
           {
             MidiNote * orig_mn =
@@ -669,7 +683,7 @@ region_copy_children (
       {
         /* add automation points */
         AutomationPoint * src_ap, * dest_ap;
-        for (j = 0; j < src->num_aps; j++)
+        for (int j = 0; j < src->num_aps; j++)
           {
             src_ap = src->aps[j];
             ArrangerObject * src_ap_obj =
@@ -688,7 +702,7 @@ region_copy_children (
     case REGION_TYPE_CHORD:
       {
         ChordObject * src_co, * dest_co;
-        for (i = 0;
+        for (int i = 0;
              i < src->num_chord_objects; i++)
           {
             src_co = src->chord_objects[i];
