@@ -17,7 +17,7 @@
 
 project (
   'zrythm', ['c', 'cpp'],
-  version: '0.8.200',
+  version: '0.8.252',
   license: 'AGPL-3-or-later',
   meson_version: '>= 0.50.0',
   default_options: [
@@ -198,7 +198,8 @@ if texi2html.found()
 endif
 if guile_snarf.found()
   scripts_conf += {
-    'GUILE_SNARF': guile_snarf.path() }
+    'GUILE_SNARF': guile_snarf.path(),
+    'SOURCE_ROOT_DIR': meson.source_root ()}
   guile_snarf_wrap_path = 'scripts' / 'guile-snarf-wrap.scm'
   guile_snarf_wrap = configure_file (
     output: 'guile-snarf-wrap.scm',

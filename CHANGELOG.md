@@ -1,6 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.252] - 2020-04-10
+- New layout: move transport bar to the bottom
+- Split inspector stack pages to separate notebook pages
+- Add plugin bypass option
+- Add region linking
+- Add region/midi note muting
+- Implement cut-paste for arranger objects
+- Add script examples to manual
+- Expose midi track/region/midi note creation to guile interface
+- Use GtkSourceView for scripting interface
+- Show exception and backtrace when script execution fails
+- Add cut/copy/duplicate/delete options to arranger context menus
+- Make channel slots shorter
+- Update Portuguese, German, Norwegian translations
+- Fix installation failure when using `enable_manual`
+- Fix FX track being created instead of MIDI when MIDI plugin is instantiated
+- Fix copy-paste not working
+- Fix function snarfing for guile interface
+
 ## [0.8.200] - 2020-03-30
 - Show peaks in meters
 - Show units in generic UIs for LV2 plugins when available
