@@ -316,14 +316,19 @@ z_gtk_create_menu_item (
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
   GtkWidget *icon = NULL;
   if (icon_name)
-    icon =
-      gtk_image_new_from_icon_name (icon_name,
-                                    GTK_ICON_SIZE_MENU);
+    {
+      icon =
+        gtk_image_new_from_icon_name (
+          icon_name, GTK_ICON_SIZE_MENU);
+    }
   else if (resource)
-    icon =
-      resources_get_icon (resource_icon_type,
-                          resource);
-  GtkWidget *label = gtk_accel_label_new (label_name);
+    {
+      icon =
+        resources_get_icon (
+          resource_icon_type, resource);
+    }
+  GtkWidget * label =
+    gtk_accel_label_new (label_name);
   GtkWidget * menu_item;
   if (is_toggle)
     menu_item = gtk_check_menu_item_new ();
@@ -333,7 +338,8 @@ z_gtk_create_menu_item (
   if (icon)
     gtk_container_add (GTK_CONTAINER (box), icon);
 
-  gtk_label_set_use_underline (GTK_LABEL (label), TRUE);
+  gtk_label_set_use_underline (
+    GTK_LABEL (label), TRUE);
   gtk_label_set_xalign (GTK_LABEL (label), 0.0);
 
   if (action_name)

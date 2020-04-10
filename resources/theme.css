@@ -50,7 +50,7 @@ window
   /*background-color: alpha(white, 0.80);*/
 /*}*/
 
-paned separator {
+paned > separator {
   min-height: 4px;
 }
 

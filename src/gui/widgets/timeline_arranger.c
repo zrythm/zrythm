@@ -73,6 +73,7 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
+#include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 
@@ -1263,17 +1264,6 @@ on_fade_preset_selected (
   object_zero_and_free (info);
 }
 
-static void
-on_region_mute_active (
-  GtkMenuItem *     menu_item,
-  ZRegion *         region)
-{
-  arranger_widget_toggle_selections_muted (
-    arranger_object_get_arranger (
-      (ArrangerObject *) region),
-    (ArrangerObject *) region);
-}
-
 /**
  * @param fade_in 1 for in, 0 for out.
  */
@@ -1335,6 +1325,10 @@ timeline_arranger_widget_show_context_menu (
   GtkWidget *menu, *menuitem;
   menu = gtk_menu_new();
 
+#define APPEND_TO_MENU \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL (menu), menuitem)
+
   ArrangerObject * obj =
     arranger_widget_get_hit_arranger_object (
       (ArrangerWidget *) self,
@@ -1345,6 +1339,28 @@ timeline_arranger_widget_show_context_menu (
       int local_x = (int) (x - obj->full_rect.x);
       int local_y = (int) (y - obj->full_rect.y);
 
+      /* create cut, copy, duplicate, delete */
+      menuitem =
+        GTK_WIDGET (
+          CREATE_CUT_MENU_ITEM ("win.cut"));
+      APPEND_TO_MENU;
+      menuitem =
+        GTK_WIDGET (
+          CREATE_COPY_MENU_ITEM ("win.copy"));
+      APPEND_TO_MENU;
+      menuitem =
+        GTK_WIDGET (
+          CREATE_DUPLICATE_MENU_ITEM (
+            "win.duplicate"));
+      APPEND_TO_MENU;
+      menuitem =
+        GTK_WIDGET (
+          CREATE_DELETE_MENU_ITEM ("win.delete"));
+      APPEND_TO_MENU;
+      menuitem =
+        gtk_separator_menu_item_new ();
+      APPEND_TO_MENU;
+
       if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
         {
           ZRegion * r = (ZRegion *) obj;
@@ -1352,21 +1368,25 @@ timeline_arranger_widget_show_context_menu (
           if (arranger_object_get_muted (obj))
             {
               menuitem =
-                gtk_menu_item_new_with_label (
-                  _("Unmute"));
+                GTK_WIDGET (
+                  CREATE_UNMUTE_MENU_ITEM (
+                    "win.mute-selection"));
+              gtk_actionable_set_action_target (
+                GTK_ACTIONABLE (menuitem),
+                "s", "timeline");
             }
           else
             {
               menuitem =
-                gtk_menu_item_new_with_label (
-                  _("Mute"));
+                GTK_WIDGET (
+                  CREATE_MUTE_MENU_ITEM (
+                    "win.mute-selection"));
+              gtk_actionable_set_action_target (
+                GTK_ACTIONABLE (menuitem),
+                "s", "timeline");
             }
           gtk_menu_shell_append (
             GTK_MENU_SHELL(menu), menuitem);
-          g_signal_connect (
-            menuitem, "activate",
-            G_CALLBACK (on_region_mute_active),
-            r);
 
           if (r->id.type == REGION_TYPE_MIDI)
             {
@@ -1421,7 +1441,18 @@ timeline_arranger_widget_show_context_menu (
             r);
         }
     }
+  else
+    {
+      menuitem =
+        GTK_WIDGET (
+          CREATE_PASTE_MENU_ITEM ("win.paste"));
+      APPEND_TO_MENU;
+    }
 
+#undef APPEND_TO_MENU
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu), GTK_WIDGET (self), NULL);
   gtk_widget_show_all (menu);
   gtk_menu_popup_at_pointer (
     GTK_MENU (menu), NULL);

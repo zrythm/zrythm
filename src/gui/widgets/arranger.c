@@ -1861,6 +1861,8 @@ on_right_click (
   if (n_press != 1)
     return;
 
+  MAIN_WINDOW->last_focused = GTK_WIDGET (self);
+
   /* if object clicked and object is unselected,
    * select it */
   ArrangerObject * obj =
@@ -2307,35 +2309,6 @@ arranger_widget_on_key_action (
                       /*sel, 0, 1, 0, 0, 0);*/
                   /*undo_manager_perform (*/
                     /*UNDO_MANAGER, action);*/
-                }
-            }
-          else if (
-              event->state & GDK_CONTROL_MASK &&
-              event->type == GDK_KEY_PRESS &&
-              event->keyval == GDK_KEY_d)
-            {
-              double length =
-                arranger_selections_get_length_in_ticks (
-                  sel);
-              UndoableAction * action;
-              if (self == MW_MIDI_ARRANGER ||
-                  self == MW_MIDI_MODIFIER_ARRANGER)
-                {
-                  action =
-                    arranger_selections_action_new_duplicate_midi (
-                      sel, length, 0,
-                      F_NOT_ALREADY_MOVED);
-                  undo_manager_perform (
-                    UNDO_MANAGER, action);
-                }
-              else if (self == MW_TIMELINE)
-                {
-                  action =
-                    arranger_selections_action_new_duplicate_timeline (
-                      sel, length, 0, 0,
-                      F_NOT_ALREADY_MOVED);
-                  undo_manager_perform (
-                    UNDO_MANAGER, action);
                 }
             }
         }

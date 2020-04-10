@@ -36,6 +36,8 @@ typedef struct _HeaderWidget HeaderWidget;
 typedef struct _CenterDockWidget CenterDockWidget;
 typedef struct _BotBarWidget BotBarWidget;
 typedef struct _TopBarWidget TopBarWidget;
+typedef struct ArrangerSelections
+  ArrangerSelections;
 
 /**
  * @addtogroup widgets
@@ -105,6 +107,14 @@ void
 main_window_widget_open (
   MainWindowWidget  * win,
   GFile             * file);
+
+/**
+ * Returns the selections for the last focused
+ * arranger.
+ */
+ArrangerSelections *
+main_window_get_last_focused_arranger_selections (
+  MainWindowWidget * self);
 
 void
 main_window_widget_quit (

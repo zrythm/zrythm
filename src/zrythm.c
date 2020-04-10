@@ -941,6 +941,9 @@ zrythm_app_startup (
     "<Control>v",
     "win.paste");
   accel_install_primary_action_accelerator (
+    "<Control>d",
+    "win.duplicate");
+  accel_install_primary_action_accelerator (
     "Delete",
     "win.delete");
   accel_install_primary_action_accelerator (

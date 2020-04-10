@@ -46,45 +46,57 @@
 
 #define CREATE_CUT_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    "Cu_t", \
+    _("Cu_t"), \
     "z-edit-cut", \
-    0, NULL, 0, action)
+    ICON_TYPE_ZRYTHM, NULL, 0, action)
 
 #define CREATE_COPY_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    "_Copy", \
+    _("_Copy"), \
     "z-edit-copy", \
-    0, NULL, 0, action)
+    ICON_TYPE_ZRYTHM, NULL, 0, action)
 
 #define CREATE_PASTE_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    "_Paste", \
+    _("_Paste"), \
     "z-edit-paste", \
-    0, NULL, 0, action)
+    ICON_TYPE_ZRYTHM, NULL, 0, action)
 
 #define CREATE_DELETE_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    "_Delete", \
+    _("_Delete"), \
     "z-edit-delete", \
-    0, NULL, 0, action)
+    ICON_TYPE_ZRYTHM, NULL, 0, action)
 
 #define CREATE_CLEAR_SELECTION_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    "Cle_ar Selection", \
+    _("Cle_ar Selection"), \
     "z-edit-clear", \
-    0, NULL, 0, action)
+    ICON_TYPE_ZRYTHM, NULL, 0, action)
 
 #define CREATE_SELECT_ALL_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    "Select A_ll", \
+    _("Select A_ll"), \
     "z-edit-select-all", \
-    0, NULL, 0, action)
+    ICON_TYPE_ZRYTHM, NULL, 0, action)
 
 #define CREATE_DUPLICATE_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    "Duplicate", \
+    _("Duplicate"), \
     "z-edit-copy", \
-    0, NULL, 0, action)
+    ICON_TYPE_ZRYTHM, NULL, 0, action)
+
+#define CREATE_MUTE_MENU_ITEM(action) \
+  z_gtk_create_menu_item ( \
+    _("Mute"), \
+    NULL, \
+    ICON_TYPE_ZRYTHM, NULL, 0, action)
+
+#define CREATE_UNMUTE_MENU_ITEM(action) \
+  z_gtk_create_menu_item ( \
+    _("Unmute"), \
+    NULL, \
+    ICON_TYPE_ZRYTHM, NULL, 0, action)
 
 #define z_gtk_assistant_set_current_page_complete( \
   assistant, complete) \

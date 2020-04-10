@@ -26,18 +26,29 @@
 #include "audio/tracklist.h"
 #include "audio/transport.h"
 #include "gui/accel.h"
+#include "gui/backend/arranger_selections.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/audio_arranger.h"
+#include "gui/widgets/audio_editor_space.h"
+#include "gui/widgets/automation_arranger.h"
+#include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
+#include "gui/widgets/chord_arranger.h"
+#include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/file_browser.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_editor_space.h"
+#include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/ruler.h"
@@ -111,6 +122,48 @@ on_close_notification_clicked (
   gtk_revealer_set_reveal_child (
     GTK_REVEALER (MAIN_WINDOW->revealer),
     0);
+}
+
+/**
+ * Returns the selections for the last focused
+ * arranger.
+ */
+ArrangerSelections *
+main_window_get_last_focused_arranger_selections (
+  MainWindowWidget * self)
+{
+  ArrangerSelections * sel = NULL;
+  if (MAIN_WINDOW_LAST_FOCUSED_IS (
+        MW_TIMELINE) ||
+      MAIN_WINDOW_LAST_FOCUSED_IS (
+        MW_PINNED_TIMELINE))
+    {
+      sel =
+        (ArrangerSelections *) TL_SELECTIONS;
+    }
+  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_MIDI_ARRANGER) ||
+           MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_MIDI_MODIFIER_ARRANGER))
+    {
+      sel =
+        (ArrangerSelections *) MA_SELECTIONS;
+    }
+  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_CHORD_ARRANGER))
+    {
+      sel =
+        (ArrangerSelections *) CHORD_SELECTIONS;
+    }
+  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_AUTOMATION_ARRANGER))
+    {
+      sel =
+        (ArrangerSelections *)
+        AUTOMATION_SELECTIONS;
+    }
+
+  return sel;
 }
 
 void

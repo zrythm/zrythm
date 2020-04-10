@@ -855,36 +855,9 @@ activate_cut (
   /* activate copy and then delete the selections */
   activate_copy (action, variant, user_data);
 
-  ArrangerSelections * sel = NULL;
-  if (MAIN_WINDOW_LAST_FOCUSED_IS (
-        MW_TIMELINE) ||
-      MAIN_WINDOW_LAST_FOCUSED_IS (
-        MW_PINNED_TIMELINE))
-    {
-      sel =
-        (ArrangerSelections *) TL_SELECTIONS;
-    }
-  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_MIDI_ARRANGER) ||
-           MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_MIDI_MODIFIER_ARRANGER))
-    {
-      sel =
-        (ArrangerSelections *) MA_SELECTIONS;
-    }
-  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_CHORD_ARRANGER))
-    {
-      sel =
-        (ArrangerSelections *) CHORD_SELECTIONS;
-    }
-  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_AUTOMATION_ARRANGER))
-    {
-      sel =
-        (ArrangerSelections *)
-        AUTOMATION_SELECTIONS;
-    }
+  ArrangerSelections * sel =
+    main_window_get_last_focused_arranger_selections (
+      MAIN_WINDOW);
 
   if (sel && arranger_selections_has_any (sel))
     {
@@ -1181,23 +1154,15 @@ activate_delete (
   GVariant      * variant,
   gpointer        user_data)
 {
-  if (MAIN_WINDOW->last_focused ==
-        GTK_WIDGET (MW_TIMELINE))
+  ArrangerSelections * sel =
+    main_window_get_last_focused_arranger_selections (
+      MAIN_WINDOW);
+
+  if (sel)
     {
       UndoableAction * action =
         arranger_selections_action_new_delete (
-          (ArrangerSelections *)
-          TL_SELECTIONS);
-      undo_manager_perform (
-        UNDO_MANAGER, action);
-    }
-  else if (MAIN_WINDOW->last_focused ==
-             GTK_WIDGET (MW_MIDI_ARRANGER))
-    {
-      UndoableAction * action =
-        arranger_selections_action_new_delete (
-          (ArrangerSelections *)
-          MA_SELECTIONS);
+          sel);
       undo_manager_perform (
         UNDO_MANAGER, action);
     }
@@ -1208,13 +1173,21 @@ activate_duplicate (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  if (MAIN_WINDOW->last_focused ==
-        GTK_WIDGET (MW_TIMELINE))
+  ArrangerSelections * sel =
+    main_window_get_last_focused_arranger_selections (
+      MAIN_WINDOW);
+
+  if (sel)
     {
-    }
-  else if (MAIN_WINDOW->last_focused ==
-             GTK_WIDGET (MW_MIDI_ARRANGER))
-    {
+      double length =
+        arranger_selections_get_length_in_ticks (
+          sel);
+      UndoableAction * ua =
+        arranger_selections_action_new_duplicate (
+          sel, length, 0, 0, 0, 0,
+          F_NOT_ALREADY_MOVED);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
     }
 }
 

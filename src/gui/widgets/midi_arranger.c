@@ -518,6 +518,10 @@ midi_arranger_show_context_menu (
         (ArrangerWidget *) self, F_NO_SELECT);
       arranger_selections_clear (
         (ArrangerSelections *) MA_SELECTIONS);
+
+      menu_item =
+        CREATE_PASTE_MENU_ITEM ("win.paste");
+      APPEND_TO_MENU;
     }
   menu_item =
     GTK_MENU_ITEM (gtk_separator_menu_item_new ());
@@ -533,7 +537,8 @@ midi_arranger_show_context_menu (
 
 #undef APPEND_TO_MENU
 
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu), GTK_WIDGET (self), NULL);
   gtk_widget_show_all (menu);
-
   gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
 }
