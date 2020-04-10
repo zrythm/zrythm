@@ -26,6 +26,17 @@ region_link_group_manager_init (
 {
 }
 
+void
+region_link_group_manager_init_loaded (
+  RegionLinkGroupManager * self)
+{
+  for (int i = 0; i < self->num_groups; i++)
+    {
+      self->groups[i].magic =
+        REGION_LINK_GROUP_MAGIC;
+    }
+}
+
 /**
  * Adds a group and returns its index.
  */

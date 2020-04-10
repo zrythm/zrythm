@@ -107,7 +107,8 @@ void
 region_link_group_remove_region (
   RegionLinkGroup * self,
   ZRegion *         region,
-  bool              autoremove_last_region_and_group);
+  bool              autoremove_last_region_and_group,
+  bool              update_identifier);
 
 bool
 region_link_group_contains_region (

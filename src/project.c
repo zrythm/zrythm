@@ -654,6 +654,9 @@ load (
   quantize_options_update_quantize_points (
     &PROJECT->quantize_opts_editor);
 
+  region_link_group_manager_init_loaded (
+    REGION_LINK_GROUP_MANAGER);
+
   RECREATE_MAIN_WINDOW;
 
   /* sanity check */

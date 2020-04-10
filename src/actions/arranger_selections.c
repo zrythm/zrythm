@@ -972,7 +972,9 @@ do_or_undo_duplicate_or_link (
 
           /* if we are linking, create the
            * necessary links */
-          if (link)
+          if (link &&
+              orig_objs[i]->type ==
+                ARRANGER_OBJECT_TYPE_REGION)
             {
               /* add link group to original object
                * if necessary */
@@ -989,15 +991,15 @@ do_or_undo_duplicate_or_link (
               /* add link group to clone */
               region = (ZRegion *) obj;
               region_set_link_group (
-                region, link_group);
+                region, link_group, true);
 
               /* remember link groups */
               region = (ZRegion *) orig_objs[i];
               region_set_link_group (
-                region, link_group);
+                region, link_group, true);
               region = (ZRegion *) objs[i];
               region_set_link_group (
-                region, link_group);
+                region, link_group, true);
             }
         }
       else
@@ -1009,7 +1011,9 @@ do_or_undo_duplicate_or_link (
 
           /* if the object was created with linking,
            * delete the links */
-          if (link)
+          if (link &&
+              obj->type ==
+                ARRANGER_OBJECT_TYPE_REGION)
             {
               /* remove link from created object
                * (this will also automatically
@@ -1018,8 +1022,11 @@ do_or_undo_duplicate_or_link (
                * the link group) */
               ZRegion * region = (ZRegion *) obj;
               g_warn_if_fail (
+                IS_REGION (region) &&
                 region_has_link_group (region));
               region_unlink (region);
+              g_warn_if_fail (
+                region->id.link_group == -1);
 
               /* unlink remembered link groups */
               region = (ZRegion *) orig_objs[i];

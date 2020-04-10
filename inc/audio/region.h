@@ -266,7 +266,8 @@ region_get_link_group (
 void
 region_set_link_group (
   ZRegion * region,
-  int       group_idx);
+  int       group_idx,
+  bool      update_identifier);
 
 bool
 region_has_link_group (

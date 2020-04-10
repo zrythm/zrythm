@@ -68,6 +68,10 @@ static const cyaml_schema_value_t
 };
 
 void
+region_link_group_manager_init_loaded (
+  RegionLinkGroupManager * self);
+
+void
 region_link_group_manager_init (
   RegionLinkGroupManager * self);
 

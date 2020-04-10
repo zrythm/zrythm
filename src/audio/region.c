@@ -363,7 +363,8 @@ region_get_link_group (
 void
 region_set_link_group (
   ZRegion * region,
-  int       group_idx)
+  int       group_idx,
+  bool      update_identifier)
 {
   ArrangerObject * obj =
     (ArrangerObject *) region;
@@ -378,7 +379,7 @@ region_set_link_group (
     {
       region_link_group_remove_region (
         region_get_link_group (region),
-        region, true);
+        region, true, update_identifier);
     }
   if (group_idx >= 0)
     {
@@ -388,6 +389,9 @@ region_set_link_group (
       region_link_group_add_region (
         group, region);
     }
+
+  if (update_identifier)
+    region_update_identifier (region);
 }
 
 void
@@ -405,8 +409,7 @@ region_create_link_group_if_none (
         region_link_group_manager_add_group (
           REGION_LINK_GROUP_MANAGER);
       region_set_link_group (
-        region, new_group);
-      region_update_identifier (region);
+        region, new_group, true);
     }
 }
 
@@ -429,19 +432,24 @@ region_unlink (
   if (obj->flags & ARRANGER_OBJECT_FLAG_NON_PROJECT)
     {
       region->id.link_group = -1;
-      return;
     }
-
-  if (region->id.link_group >= 0)
+  else if (region->id.link_group >= 0)
     {
       RegionLinkGroup * group =
         region_link_group_manager_get_group (
           REGION_LINK_GROUP_MANAGER,
           region->id.link_group);
       region_link_group_remove_region (
-        group, region, true);
-      region_update_identifier (region);
+        group, region, true, true);
     }
+  else
+    {
+      g_warn_if_reached ();
+    }
+
+  g_warn_if_fail (region->id.link_group == -1);
+
+  region_update_identifier (region);
 }
 
 /**
@@ -522,7 +530,7 @@ region_update_identifier (
 {
   /* reset link group */
   region_set_link_group (
-    self, self->id.link_group);
+    self, self->id.link_group, false);
 
   switch (self->id.type)
     {

@@ -1017,7 +1017,8 @@ on_timeline_clipboard_received (
     }
   else
     {
-      g_message ("can't paste timeline selections");
+      ui_show_notification (
+        _("Can't paste selections"));
     }
   arranger_selections_free (
     (ArrangerSelections *) ts);
@@ -1056,7 +1057,8 @@ on_midi_clipboard_received (
     }
   else
     {
-      g_message ("can't paste midi selections");
+      ui_show_notification (
+        _("Can't paste selections"));
     }
   arranger_selections_free (
     (ArrangerSelections *) mas);
@@ -1094,8 +1096,8 @@ on_chord_clipboard_received (
     }
   else
     {
-      g_message (
-        "can't paste chord selections");
+      ui_show_notification (
+        _("Can't paste selections"));
     }
   arranger_selections_free (
     (ArrangerSelections *) mas);

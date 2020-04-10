@@ -567,10 +567,12 @@ test_move_timeline ()
 /**
  * @param new_tracks Whether midi/audio regions
  *   were moved to new tracks.
+ * @param link Whether this is a link action.
  */
 static void
 check_after_duplicate_timeline (
-  int  new_tracks)
+  int  new_tracks,
+  bool link)
 {
   /* check */
   g_assert_cmpint (
@@ -637,6 +639,12 @@ check_after_duplicate_timeline (
   g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
   g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmppos (&obj->end_pos, &p2);
+  int link_group = r->id.link_group;
+  if (link)
+    {
+      g_assert_cmpint (
+        r->id.link_group, >, -1);
+    }
 
   /* check new midi region */
   if (new_tracks)
@@ -699,6 +707,11 @@ check_after_duplicate_timeline (
   g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
   g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmppos (&obj->end_pos, &p2);
+  if (link)
+    {
+      g_assert_cmpint (
+        r->id.link_group, ==, link_group);
+    }
 
   /* check prev audio region */
   if (new_tracks)
@@ -727,6 +740,12 @@ check_after_duplicate_timeline (
   g_assert_cmpint (r->id.idx, ==, 0);
   g_assert_cmpint (
     r->id.lane_pos, ==, AUDIO_REGION_LANE);
+  link_group = r->id.link_group;
+  if (link)
+    {
+      g_assert_cmpint (
+        r->id.link_group, >, -1);
+    }
 
   /* check new audio region */
   if (new_tracks)
@@ -756,6 +775,11 @@ check_after_duplicate_timeline (
     {
       g_assert_cmpint (
         r->id.track_pos, ==, audio_track->pos);
+    }
+  if (link)
+    {
+      g_assert_cmpint (
+        r->id.link_group, ==, link_group);
     }
 
   if (!new_tracks)
@@ -898,7 +922,7 @@ test_duplicate_timeline ()
       undo_manager_perform (UNDO_MANAGER, ua);
 
       /* check */
-      check_after_duplicate_timeline (i);
+      check_after_duplicate_timeline (i, false);
 
       /* undo and check that the objects are at
        * their original state*/
@@ -909,7 +933,91 @@ test_duplicate_timeline ()
       /* redo and check that the objects are moved
        * again */
       undo_manager_redo (UNDO_MANAGER);
-      check_after_duplicate_timeline (i);
+      check_after_duplicate_timeline (i, false);
+
+      /* undo again to prepare for next test */
+      undo_manager_undo (UNDO_MANAGER);
+      check_timeline_objects_vs_original_state (
+        0, 0, 1);
+    }
+}
+
+static void
+test_link_timeline ()
+{
+  /* clear undo/redo stacks */
+  undo_manager_clear_stacks (UNDO_MANAGER);
+
+  /* when i == 1 we are moving to new tracks */
+  for (int i = 0; i < 2; i++)
+    {
+      rebootstrap_timeline ();
+
+      ArrangerSelections * sel_before = NULL;
+
+      int track_diff =  i ? 2 : 0;
+      if (track_diff)
+        {
+          select_audio_and_midi_regions_only ();
+          sel_before =
+            arranger_selections_clone (
+              (ArrangerSelections *) TL_SELECTIONS);
+
+          Track * midi_track =
+            tracklist_find_track_by_name (
+              TRACKLIST, MIDI_TRACK_NAME);
+          Track * audio_track =
+            tracklist_find_track_by_name (
+              TRACKLIST, AUDIO_TRACK_NAME);
+          Track * new_midi_track =
+            tracklist_find_track_by_name (
+              TRACKLIST, TARGET_MIDI_TRACK_NAME);
+          Track * new_audio_track =
+            tracklist_find_track_by_name (
+              TRACKLIST, TARGET_AUDIO_TRACK_NAME);
+          region_move_to_track (
+            midi_track->lanes[MIDI_REGION_LANE]->
+              regions[0],
+            new_midi_track);
+          region_move_to_track (
+            audio_track->lanes[AUDIO_REGION_LANE]->
+              regions[0],
+            new_audio_track);
+        }
+      else
+        {
+          sel_before =
+            arranger_selections_clone (
+              (ArrangerSelections *) TL_SELECTIONS);
+        }
+
+      /* do move ticks */
+      arranger_selections_add_ticks (
+        (ArrangerSelections *) TL_SELECTIONS,
+        MOVE_TICKS, 0);
+
+      /* do duplicate */
+      UndoableAction * ua =
+        arranger_selections_action_new_link (
+          sel_before,
+          (ArrangerSelections *)TL_SELECTIONS,
+          MOVE_TICKS,
+          i > 0 ? 2 : 0, 0, F_ALREADY_MOVED);
+      undo_manager_perform (UNDO_MANAGER, ua);
+
+      /* check */
+      check_after_duplicate_timeline (i, true);
+
+      /* undo and check that the objects are at
+       * their original state*/
+      undo_manager_undo (UNDO_MANAGER);
+      check_timeline_objects_vs_original_state (
+        0, 0, 1);
+
+      /* redo and check that the objects are moved
+       * again */
+      undo_manager_redo (UNDO_MANAGER);
+      check_after_duplicate_timeline (i, true);
 
       /* undo again to prepare for next test */
       undo_manager_undo (UNDO_MANAGER);
@@ -940,6 +1048,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test duplicate timeline",
     (GTestFunc) test_duplicate_timeline);
+  g_test_add_func (
+    TEST_PREFIX "test link timeline",
+    (GTestFunc) test_link_timeline);
 
   return g_test_run ();
 }

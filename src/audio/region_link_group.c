@@ -78,7 +78,8 @@ void
 region_link_group_remove_region (
   RegionLinkGroup * self,
   ZRegion *         region,
-  bool              autoremove_last_region_and_group)
+  bool              autoremove_last_region_and_group,
+  bool              update_identifier)
 {
   g_return_if_fail (
     IS_REGION_LINK_GROUP (self) &&
@@ -104,10 +105,11 @@ region_link_group_remove_region (
        * it */
       if (self->num_ids == 1)
         {
-          region =
+          ZRegion * last_region =
             region_find (&self->ids[0]);
           region_link_group_remove_region (
-            self, region, true);
+            self, last_region, true,
+            update_identifier);
         }
       /* if no regions left, remove the group */
       else if (self->num_ids == 0)
@@ -122,6 +124,9 @@ region_link_group_remove_region (
     }
 
   region->id.link_group = -1;
+
+  if (update_identifier)
+    region_update_identifier (region);
 }
 
 /**
@@ -170,7 +175,7 @@ region_link_group_move (
       ZRegion * region =
         region_find (&src->ids[i]);
       region_set_link_group (
-        region, dest->group_idx);
+        region, dest->group_idx, true);
       region_identifier_copy (
         &dest->ids[i], &region->id);
     }
