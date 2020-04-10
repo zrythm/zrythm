@@ -375,12 +375,12 @@ arranger_selections_action_new_create_or_delete (
 #define \
 arranger_selections_action_new_create(sel) \
   arranger_selections_action_new_create_or_delete ( \
-    (ArrangerSelections *) sel, 1)
+    (ArrangerSelections *) sel, true)
 
 #define \
 arranger_selections_action_new_delete(sel) \
   arranger_selections_action_new_create_or_delete ( \
-    (ArrangerSelections *) sel, 0)
+    (ArrangerSelections *) sel, false)
 
 UndoableAction *
 arranger_selections_action_new_record (

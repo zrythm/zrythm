@@ -847,11 +847,53 @@ activate_redo (GSimpleAction *action,
 }
 
 void
-activate_cut (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_cut (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
 {
-  g_message ("ZOOMING IN");
+  /* activate copy and then delete the selections */
+  activate_copy (action, variant, user_data);
+
+  ArrangerSelections * sel = NULL;
+  if (MAIN_WINDOW_LAST_FOCUSED_IS (
+        MW_TIMELINE) ||
+      MAIN_WINDOW_LAST_FOCUSED_IS (
+        MW_PINNED_TIMELINE))
+    {
+      sel =
+        (ArrangerSelections *) TL_SELECTIONS;
+    }
+  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_MIDI_ARRANGER) ||
+           MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_MIDI_MODIFIER_ARRANGER))
+    {
+      sel =
+        (ArrangerSelections *) MA_SELECTIONS;
+    }
+  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_CHORD_ARRANGER))
+    {
+      sel =
+        (ArrangerSelections *) CHORD_SELECTIONS;
+    }
+  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_AUTOMATION_ARRANGER))
+    {
+      sel =
+        (ArrangerSelections *)
+        AUTOMATION_SELECTIONS;
+    }
+
+  if (sel && arranger_selections_has_any (sel))
+    {
+      UndoableAction * ua =
+        arranger_selections_action_new_delete (
+          sel);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
 }
 
 

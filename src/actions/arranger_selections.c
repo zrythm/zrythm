@@ -570,7 +570,6 @@ update_region_link_groups (
   /* handle children of linked regions */
   for (int i = 0; i < size; i++)
     {
-  g_message ("updating %d", i);
       /* get the actual object from the
        * project */
       ArrangerObject * obj =
@@ -582,9 +581,6 @@ update_region_link_groups (
           ZRegion * region =
             arranger_object_get_region (obj);
           g_return_if_fail (region);
-          g_message (
-            "updating region link group for %d %s",
-            region->id.idx, region->name);
 
           /* shift all linked objects */
           region_update_link_group (region);
@@ -692,6 +688,9 @@ do_or_undo_move (
     {
       for (int i = 0; i < size; i++)
         {
+          objs[i]->flags |=
+            ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
           /* get the actual object from the
            * project */
           ArrangerObject * obj =
@@ -1164,6 +1163,8 @@ do_or_undo_create_or_delete (
 
       for (int i = 0; i < size; i++)
         {
+          objs[i]->flags |=
+            ARRANGER_OBJECT_FLAG_NON_PROJECT;
 
           /* if doing in a create action or undoing
            * in a delete action */
@@ -1188,7 +1189,7 @@ do_or_undo_create_or_delete (
                 objs[i], obj);
             }
 
-          /* if undoing */
+          /* if removing */
           else
             {
               /* get the actual object from the
@@ -1197,26 +1198,46 @@ do_or_undo_create_or_delete (
                 arranger_object_find (objs[i]);
               g_return_val_if_fail (obj, -1);
 
+              /* if region, remove link */
+              if (obj->type ==
+                    ARRANGER_OBJECT_TYPE_REGION)
+                {
+                  ZRegion * region =
+                    (ZRegion *) obj;
+                  if (region_has_link_group (
+                        region))
+                    {
+                      region_unlink (region);
+
+                      /* unlink remembered link
+                       * groups */
+                      region = (ZRegion *) objs[i];
+                      region_unlink (region);
+                    }
+                }
+
               /* remove it */
               remove_object_from_project (obj);
             }
         }
     }
 
-  update_region_link_groups (objs, size);
-
-  free (objs);
-
+  /* if creating */
   if ((_do && create) || (!_do && !create))
     {
+      update_region_link_groups (objs, size);
+
       EVENTS_PUSH (
         ET_ARRANGER_SELECTIONS_CREATED, sel);
     }
+  /* if deleting */
   else
     {
       EVENTS_PUSH (
         ET_ARRANGER_SELECTIONS_REMOVED, sel);
     }
+
+  free (objs);
 
   self->first_run = 0;
 
@@ -1262,6 +1283,9 @@ do_or_undo_record (
           /* create the newly recorded objects */
           for (int i = 0; i < size_after; i++)
             {
+              after_objs[i]->flags |=
+                ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
               /* clone the clone */
               ArrangerObject * obj =
                 arranger_object_clone (
@@ -1283,6 +1307,9 @@ do_or_undo_record (
           /* delete the previous objects */
           for (int i = 0; i < size_before; i++)
             {
+              before_objs[i]->flags |=
+                ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
               /* get the actual object from the
                * project */
               ArrangerObject * obj =
@@ -1301,6 +1328,9 @@ do_or_undo_record (
           /* delete the newly recorded objects */
           for (int i = 0; i < size_after; i++)
             {
+              after_objs[i]->flags |=
+                ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
               /* get the actual object from the
                * project */
               ArrangerObject * obj =
@@ -1315,6 +1345,9 @@ do_or_undo_record (
           /* add the objects before the recording */
           for (int i = 0; i < size_before; i++)
             {
+              before_objs[i]->flags |=
+                ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
               /* clone the clone */
               ArrangerObject * obj =
                 arranger_object_clone (
@@ -1377,6 +1410,11 @@ do_or_undo_edit (
     {
       for (int i = 0; i < size; i++)
         {
+          src_objs[i]->flags |=
+            ARRANGER_OBJECT_FLAG_NON_PROJECT;
+          dest_objs[i]->flags |=
+            ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
           /* find the actual object */
           ArrangerObject * obj =
             arranger_object_find (src_objs[i]);
@@ -1529,6 +1567,9 @@ do_or_undo_split (
 
   for (int i = 0; i < size; i++)
     {
+      objs[i]->flags |=
+        ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
       ArrangerObject * obj, * r1, * r2;
       if (_do)
         {
@@ -1605,6 +1646,9 @@ do_or_undo_resize (
     {
       for (int i = 0; i < size; i++)
         {
+          objs[i]->flags |=
+            ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
           /* find the actual object */
           ArrangerObject * obj =
             arranger_object_find (objs[i]);
@@ -1681,6 +1725,11 @@ do_or_undo_quantize (
 
   for (int i = 0; i < size; i++)
     {
+      objs[i]->flags |=
+        ARRANGER_OBJECT_FLAG_NON_PROJECT;
+      quantized_objs[i]->flags |=
+        ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
       /* find the actual object */
       ArrangerObject * obj;
       if (_do)

@@ -107,6 +107,9 @@ undoable_action_do (UndoableAction * self)
     DO_ACTION (QUANTIZE_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
+    DO_ACTION (SPLIT_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
     default:
       g_warn_if_reached ();
       return -1;
@@ -189,6 +192,9 @@ undoable_action_undo (UndoableAction * self)
     UNDO_ACTION (QUANTIZE_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
+    UNDO_ACTION (SPLIT_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
     default:
       g_warn_if_reached ();
       return -1;
@@ -260,6 +266,9 @@ undoable_action_free (UndoableAction * self)
                arranger_selections,
                ArrangerSelections);
     FREE_ACTION (QUANTIZE_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    FREE_ACTION (SPLIT_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
     default:
@@ -342,6 +351,9 @@ undoable_action_stringize (
                ArrangerSelections,
                arranger_selections);
     STRINGIZE_UA (QUANTIZE_ARRANGER_SELECTIONS,
+               ArrangerSelections,
+               arranger_selections);
+    STRINGIZE_UA (SPLIT_ARRANGER_SELECTIONS,
                ArrangerSelections,
                arranger_selections);
     default:
