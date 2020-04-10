@@ -26,6 +26,8 @@
 #ifndef __UTILS_STRING_H__
 #define __UTILS_STRING_H__
 
+#include <stdbool.h>
+
 /**
  * @addtogroup utils
  *
@@ -56,11 +58,11 @@ string_array_contains_substr (
  * @param accept_alternatives Accept ASCII
  *   alternatives.
  */
-int
+bool
 string_contains_substr (
   const char * str,
   const char * substr,
-  const int    accept_alternatives);
+  const bool   accept_alternatives);
 
 /**
  * Returns if the two strings are equal.

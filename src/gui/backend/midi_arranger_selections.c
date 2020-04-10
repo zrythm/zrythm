@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -133,6 +133,8 @@ midi_arranger_selections_paste_to_pos (
 {
   ZRegion * region =
     clip_editor_get_region (CLIP_EDITOR);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
   g_return_if_fail (
     region && region->id.type == REGION_TYPE_MIDI);
 
@@ -142,23 +144,22 @@ midi_arranger_selections_paste_to_pos (
     region_timeline_frames_to_local (
       region, playhead->frames, 0);
   position_from_frames (&pos, pos.frames);
-  double pos_ticks = position_to_ticks (&pos);
+  double pos_ticks =
+    position_to_ticks (&pos) +
+    r_obj->pos.total_ticks;
 
   /* get pos of earliest object */
   Position start_pos;
   arranger_selections_get_start_pos (
-    (ArrangerSelections *) ts, &start_pos, 0);
+    (ArrangerSelections *) ts, &start_pos, false);
+  position_print (&start_pos);
   double start_pos_ticks =
     position_to_ticks (&start_pos);
 
-  /* subtract the start pos from every object and
-   * add the given pos */
-#define DIFF (curr_ticks - start_pos_ticks)
-#define ADJUST_POSITION(x) \
-  curr_ticks = position_to_ticks (x); \
-  position_from_ticks (x, pos_ticks + DIFF)
+  /* FIXME doesn't work when you paste at a negative
+   * position in the region */
 
-  double curr_ticks;
+  double curr_ticks, diff;
   int i;
   for (i = 0; i < ts->num_midi_notes; i++)
     {
@@ -169,12 +170,14 @@ midi_arranger_selections_paste_to_pos (
       /* update positions */
       curr_ticks =
         position_to_ticks (&mn_obj->pos);
+      diff = curr_ticks - start_pos_ticks;
       position_from_ticks (
-        &mn_obj->pos, pos_ticks + DIFF);
+        &mn_obj->pos, pos_ticks + diff);
       curr_ticks =
         position_to_ticks (&mn_obj->end_pos);
+      diff = curr_ticks - start_pos_ticks;
       position_from_ticks (
-        &mn_obj->end_pos, pos_ticks + DIFF);
+        &mn_obj->end_pos, pos_ticks + diff);
 
       /* clone and add to track */
       MidiNote * cp =
@@ -188,7 +191,6 @@ midi_arranger_selections_paste_to_pos (
         region_find (&cp_obj->region_id);
       midi_region_add_midi_note (region, cp, 1);
     }
-#undef DIFF
 }
 
 SERIALIZE_SRC (MidiArrangerSelections,
@@ -197,4 +199,3 @@ DESERIALIZE_SRC (MidiArrangerSelections,
                  midi_arranger_selections)
 PRINT_YAML_SRC (MidiArrangerSelections,
                 midi_arranger_selections)
-

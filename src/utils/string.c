@@ -107,11 +107,11 @@ string_is_equal (
  * @param accept_alternatives Accept ASCII
  *   alternatives.
  */
-int
+bool
 string_contains_substr (
   const char * str,
   const char * substr,
-  const int    accept_alternatives)
+  const bool   accept_alternatives)
 {
   return
     g_str_match_string (

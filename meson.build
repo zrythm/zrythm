@@ -253,7 +253,7 @@ check_functions = [
 # prefer jack1
 jack_dep = dependency (
   'jack', required: false, version: '<1.0')
-if (not jack_dep.found ())
+if not jack_dep.found ()
   jack_dep = dependency ('jack', required: false)
 endif
 if get_option ('enable_jack') and jack_dep.found ()

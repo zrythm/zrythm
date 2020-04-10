@@ -341,14 +341,7 @@ timeline_selections_paste_to_pos (
   double start_pos_ticks =
     position_to_ticks (&start_pos);
 
-  /* subtract the start pos from every object and
-   * add the given pos */
-#define DIFF (curr_ticks - start_pos_ticks)
-#define ADJUST_POSITION(x) \
-  curr_ticks = position_to_ticks (x); \
-  position_from_ticks (x, pos_ticks + DIFF)
-
-  double curr_ticks;
+  double curr_ticks, diff;
   int i;
   for (i = 0; i < ts->num_regions; i++)
     {
@@ -363,45 +356,15 @@ timeline_selections_paste_to_pos (
       /* update positions */
       curr_ticks =
         position_to_ticks (&r_obj->pos);
+      diff = curr_ticks - start_pos_ticks;
       position_from_ticks (
-        &r_obj->pos, pos_ticks + DIFF);
+        &r_obj->pos, pos_ticks + diff);
       curr_ticks =
         position_to_ticks (&r_obj->end_pos);
+      diff = curr_ticks - start_pos_ticks;
       position_from_ticks (
-        &r_obj->end_pos, pos_ticks + DIFF);
+        &r_obj->end_pos, pos_ticks + diff);
       /* TODO */
-      /*position_set_to_pos (&region->unit_end_pos,*/
-                           /*&region->end_pos);*/
-  g_message ("[in loop]num regions %d num midi notes %d",
-             ts->num_regions,
-             ts->regions[0]->num_midi_notes);
-
-      /* same for midi notes */
-      if (region->id.type == REGION_TYPE_MIDI)
-        {
-          ZRegion * mr = region;
-          g_message ("num midi notes here %d",
-                     mr->num_midi_notes);
-          for (int j = 0; j < mr->num_midi_notes; j++)
-            {
-              MidiNote * mn = mr->midi_notes[j];
-              ArrangerObject * mn_obj =
-                (ArrangerObject *) mn;
-              g_message ("old midi start");
-              /*position_print_yaml (&mn->start_pos);*/
-              g_message ("bars %d",
-                         mn_obj->pos.bars);
-              g_message ("new midi start");
-              ADJUST_POSITION (&mn_obj->pos);
-              position_print_yaml (
-                &mn_obj->pos);
-              g_message ("old midi start");
-              ADJUST_POSITION (&mn_obj->end_pos);
-              position_print_yaml (&mn_obj->end_pos);
-            }
-        }
-
-      /* TODO automation points */
 
       /* clone and add to track */
       ZRegion * cp =
@@ -409,10 +372,33 @@ timeline_selections_paste_to_pos (
         arranger_object_clone (
           r_obj,
           ARRANGER_OBJECT_CLONE_COPY_MAIN);
-      /* FIXME does not with automation regions */
-      track_add_region (
-        region_track, cp, NULL, region->id.lane_pos,
-        F_GEN_NAME, F_PUBLISH_EVENTS);
+
+      switch (region->id.type)
+        {
+        case REGION_TYPE_MIDI:
+        case REGION_TYPE_AUDIO:
+          track_add_region (
+            region_track, cp, NULL,
+            region->id.lane_pos,
+            F_GEN_NAME, F_PUBLISH_EVENTS);
+          break;
+        case REGION_TYPE_AUTOMATION:
+          {
+            AutomationTrack * at =
+              region_track->automation_tracklist.
+                ats[region->id.at_idx];
+            g_return_if_fail (at);
+            track_add_region (
+              region_track, cp, at, -1,
+              F_GEN_NAME, F_PUBLISH_EVENTS);
+          }
+          break;
+        case REGION_TYPE_CHORD:
+          track_add_region (
+            region_track, cp, NULL, -1,
+            F_GEN_NAME, F_PUBLISH_EVENTS);
+          break;
+        }
 
       /* select it */
       arranger_object_select (
@@ -427,8 +413,9 @@ timeline_selections_paste_to_pos (
 
       curr_ticks =
         position_to_ticks (&s_obj->pos);
+      diff = curr_ticks - start_pos_ticks;
       position_from_ticks (
-        &s_obj->pos, pos_ticks + DIFF);
+        &s_obj->pos, pos_ticks + diff);
 
       /* clone and add to track */
       ScaleObject * clone =
@@ -452,8 +439,9 @@ timeline_selections_paste_to_pos (
 
       curr_ticks =
         position_to_ticks (&m_obj->pos);
+      diff = curr_ticks - start_pos_ticks;
       position_from_ticks (
-        &m_obj->pos, pos_ticks + DIFF);
+        &m_obj->pos, pos_ticks + diff);
 
       /* clone and add to track */
       Marker * clone =

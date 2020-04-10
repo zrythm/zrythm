@@ -1039,7 +1039,8 @@ arranger_widget_get_snap_grid (
     {
       return SNAP_GRID_MIDI;
     }
-  else if (self == MW_TIMELINE)
+  else if (self == MW_TIMELINE ||
+           self == MW_PINNED_TIMELINE)
     {
       return SNAP_GRID_TIMELINE;
     }

@@ -570,6 +570,7 @@ update_region_link_groups (
   /* handle children of linked regions */
   for (int i = 0; i < size; i++)
     {
+  g_message ("updating %d", i);
       /* get the actual object from the
        * project */
       ArrangerObject * obj =
@@ -581,6 +582,9 @@ update_region_link_groups (
           ZRegion * region =
             arranger_object_get_region (obj);
           g_return_if_fail (region);
+          g_message (
+            "updating region link group for %d %s",
+            region->id.idx, region->name);
 
           /* shift all linked objects */
           region_update_link_group (region);
@@ -1198,6 +1202,9 @@ do_or_undo_create_or_delete (
             }
         }
     }
+
+  update_region_link_groups (objs, size);
+
   free (objs);
 
   if ((_do && create) || (!_do && !create))
@@ -1327,6 +1334,7 @@ do_or_undo_record (
             }
         }
     }
+
   free (before_objs);
   free (after_objs);
 

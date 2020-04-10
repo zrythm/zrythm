@@ -949,124 +949,173 @@ on_timeline_clipboard_received (
   const char *       text,
   gpointer           data)
 {
+  TimelineSelections * ts =
+    timeline_selections_deserialize (text);
+  arranger_selections_post_deserialize (
+    (ArrangerSelections *) ts);
+
+  if (timeline_selections_can_be_pasted (
+        ts, PLAYHEAD,
+        TRACKLIST_SELECTIONS->tracks[0]->pos))
+    {
+      g_message ("pasting timeline selections");
+      timeline_selections_paste_to_pos (
+        ts, PLAYHEAD);
+
+      /* create action to make it undoable */
+      /* (by now the TL_SELECTIONS should have
+       * only the pasted items selected) */
+      UndoableAction * ua =
+        (UndoableAction *)
+        arranger_selections_action_new_create (
+          (ArrangerSelections *)
+          TL_SELECTIONS);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
+  else
+    {
+      g_message ("can't paste timeline selections");
+    }
+  arranger_selections_free (
+    (ArrangerSelections *) ts);
+}
+
+static void
+on_midi_clipboard_received (
+  GtkClipboard *     clipboard,
+  const char *       text,
+  gpointer           data)
+{
+  MidiArrangerSelections * mas =
+    midi_arranger_selections_deserialize (text);
+  arranger_selections_post_deserialize (
+    (ArrangerSelections *) mas);
+
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (midi_arranger_selections_can_be_pasted (
+        mas, PLAYHEAD, region))
+    {
+      g_message ("pasting midi selections");
+      midi_arranger_selections_paste_to_pos (
+        mas, PLAYHEAD);
+
+      /* create action to make it undoable */
+      /* (by now the TL_SELECTIONS should have
+       * only the pasted items selected) */
+      UndoableAction * ua =
+        (UndoableAction *)
+        arranger_selections_action_new_create (
+          (ArrangerSelections *)
+          MA_SELECTIONS);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
+  else
+    {
+      g_message ("can't paste midi selections");
+    }
+  arranger_selections_free (
+    (ArrangerSelections *) mas);
+}
+static void
+on_chord_clipboard_received (
+  GtkClipboard *     clipboard,
+  const char *       text,
+  gpointer           data)
+{
+  ChordSelections * mas =
+    chord_selections_deserialize (text);
+  arranger_selections_post_deserialize (
+    (ArrangerSelections *) mas);
+
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (chord_selections_can_be_pasted (
+        mas, PLAYHEAD, region))
+    {
+      g_message ("pasting midi selections");
+      chord_selections_paste_to_pos (
+        mas, PLAYHEAD);
+
+      /* create action to make it undoable */
+      /* (by now the TL_SELECTIONS should have
+       * only the pasted items selected) */
+      UndoableAction * ua =
+        (UndoableAction *)
+        arranger_selections_action_new_create (
+          (ArrangerSelections *)
+          CHORD_SELECTIONS);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
+  else
+    {
+      g_message (
+        "can't paste chord selections");
+    }
+  arranger_selections_free (
+    (ArrangerSelections *) mas);
+}
+
+static void
+on_automation_clipboard_received (
+  GtkClipboard *     clipboard,
+  const char *       text,
+  gpointer           data)
+{
+  /* TODO */
+}
+
+static void
+on_clipboard_received (
+  GtkClipboard *     clipboard,
+  const char *       text,
+  gpointer           data)
+{
   if (!text)
     return;
+
+#define TYPE_PREFIX "\n  type: "
 
   if ((MAIN_WINDOW_LAST_FOCUSED_IS (
          MW_TIMELINE) ||
        MAIN_WINDOW_LAST_FOCUSED_IS (
          MW_PINNED_TIMELINE)) &&
-      g_str_has_prefix (
-        text, "regions:"))
+      string_contains_substr (
+        text, TYPE_PREFIX "Timeline", false))
     {
-      TimelineSelections * ts =
-        timeline_selections_deserialize (text);
-      arranger_selections_post_deserialize (
-        (ArrangerSelections *) ts);
-
-      if (timeline_selections_can_be_pasted (
-            ts, PLAYHEAD,
-            TRACKLIST_SELECTIONS->tracks[0]->pos))
-        {
-          g_message ("pasting timeline selections");
-          timeline_selections_paste_to_pos (
-            ts, PLAYHEAD);
-
-          /* create action to make it undoable */
-          /* (by now the TL_SELECTIONS should have
-           * only the pasted items selected) */
-          UndoableAction * ua =
-            (UndoableAction *)
-            arranger_selections_action_new_create (
-              (ArrangerSelections *)
-              TL_SELECTIONS);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
-        }
-      else
-        {
-          g_message ("can't paste timeline selections");
-        }
-      arranger_selections_free (
-        (ArrangerSelections *) ts);
+      on_timeline_clipboard_received (
+        clipboard, text, data);
     }
   else if ((MAIN_WINDOW_LAST_FOCUSED_IS (
               MW_MIDI_ARRANGER) ||
             MAIN_WINDOW_LAST_FOCUSED_IS (
               MW_MIDI_MODIFIER_ARRANGER)) &&
-            g_str_has_prefix (
-              text, "midi_notes:"))
+            string_contains_substr (
+              text, TYPE_PREFIX "MIDI", false))
     {
-      MidiArrangerSelections * mas =
-        midi_arranger_selections_deserialize (text);
-      arranger_selections_post_deserialize (
-        (ArrangerSelections *) mas);
-
-      ZRegion * region =
-        clip_editor_get_region (CLIP_EDITOR);
-      if (midi_arranger_selections_can_be_pasted (
-            mas, PLAYHEAD, region))
-        {
-          g_message ("pasting midi selections");
-          midi_arranger_selections_paste_to_pos (
-            mas, PLAYHEAD);
-
-          /* create action to make it undoable */
-          /* (by now the TL_SELECTIONS should have
-           * only the pasted items selected) */
-          UndoableAction * ua =
-            (UndoableAction *)
-            arranger_selections_action_new_create (
-              (ArrangerSelections *)
-              MA_SELECTIONS);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
-        }
-      else
-        {
-          g_message ("can't paste midi selections");
-        }
-      arranger_selections_free (
-        (ArrangerSelections *) mas);
+      on_midi_clipboard_received (
+        clipboard, text, data);
     }
   else if (MAIN_WINDOW_LAST_FOCUSED_IS (
              MW_CHORD_ARRANGER) &&
-           g_str_has_prefix (
-             text, "chord_objects:"))
+            string_contains_substr (
+              text, TYPE_PREFIX "Chord", false))
     {
-      ChordSelections * mas =
-        chord_selections_deserialize (text);
-      arranger_selections_post_deserialize (
-        (ArrangerSelections *) mas);
-
-      ZRegion * region =
-        clip_editor_get_region (CLIP_EDITOR);
-      if (chord_selections_can_be_pasted (
-            mas, PLAYHEAD, region))
-        {
-          g_message ("pasting midi selections");
-          chord_selections_paste_to_pos (
-            mas, PLAYHEAD);
-
-          /* create action to make it undoable */
-          /* (by now the TL_SELECTIONS should have
-           * only the pasted items selected) */
-          UndoableAction * ua =
-            (UndoableAction *)
-            arranger_selections_action_new_create (
-              (ArrangerSelections *)
-              CHORD_SELECTIONS);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
-        }
-      else
-        {
-          g_message (
-            "can't paste chord selections");
-        }
-      arranger_selections_free (
-        (ArrangerSelections *) mas);
+      on_chord_clipboard_received (
+        clipboard, text, data);
     }
+  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_AUTOMATION_ARRANGER) &&
+            string_contains_substr (
+              text, TYPE_PREFIX "Automation", false))
+    {
+      on_automation_clipboard_received (
+        clipboard, text, data);
+    }
+#undef TYPE_PREFIX
 }
 
 void
@@ -1078,7 +1127,7 @@ activate_paste (
   g_message ("paste");
   gtk_clipboard_request_text (
     DEFAULT_CLIPBOARD,
-    on_timeline_clipboard_received,
+    on_clipboard_received,
     NULL);
 }
 
