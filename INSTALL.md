@@ -19,6 +19,7 @@ inside `meson_options.txt`.
 - audec (AGPLv3+): <https://git.zrythm.org/cgit/libaudec/>
 - GTK+3 (GPLv2+): <https://gitlab.gnome.org/GNOME/gtk>
 - guile (GPLv3+): <https://www.gnu.org/software/guile/>
+- GtkSourceView (LGPLv2.1+): <https://wiki.gnome.org/Projects/GtkSourceView>
 - lilv (ISC): <https://drobilla.net/software/lilv>
 - libcyaml (ISC): <https://github.com/tlsa/libcyaml/>
 - fftw (GPLv2+): <http://www.fftw.org/>
@@ -47,25 +48,13 @@ using
 The built program will be at `build/src/zrythm` by
 default
 
-## Non-standard locations
+## Running
 
-When installing in non-standard locations, glib
-needs to find the corresponding gsettings schema.
-At runtime, GSettings looks for schemas in the
-`glib-2.0/schemas` subdirectories of all directories
-specified in the `XDG_DATA_DIRS`.
-It is possible to set
-the `GSETTINGS_SCHEMA_DIR` environment variable to
-`<your prefix>/share/glib-2.0/schemas` or prepend
-`XDG_DATA_DIRS` with `<your prefix>/share` before
-running `<your prefix>/bin/zrythm` to make glib
-use the schema installed in the custom location.
-
-There are also translations installed in the custom
-location so `XDG_DATA_DIRS` might be a better idea.
-
-Generally, we recommend installing under `/usr/local`
-(default) or `/usr` to avoid these problems.
+When running Zrythm from the command line, it is
+recommended to use `zrythm_launch` instead of
+running the `zrythm` binary directly. This takes
+care of using the correct GSettings schemas in the
+installed prefix.
 
 ----
 
