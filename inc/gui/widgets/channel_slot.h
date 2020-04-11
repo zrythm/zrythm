@@ -69,7 +69,8 @@ typedef struct _ChannelSlotWidget
  * Creates a new ChannelSlot widget and binds it to the given value.
  */
 ChannelSlotWidget *
-channel_slot_widget_new (int slot_index,
-                         ChannelWidget * cw);
+channel_slot_widget_new (
+  int slot_index,
+  Channel * ch);
 
 #endif

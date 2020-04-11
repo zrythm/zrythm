@@ -751,13 +751,13 @@ finalize (
 ChannelSlotWidget *
 channel_slot_widget_new (
   int slot_index,
-  ChannelWidget * cw)
+  Channel * ch)
 {
   ChannelSlotWidget * self =
     g_object_new (
       CHANNEL_SLOT_WIDGET_TYPE, NULL);
   self->slot_index = slot_index;
-  self->channel = cw->channel;
+  self->channel = ch;
 
   char * entry_plugin =
     g_strdup (TARGET_ENTRY_PLUGIN);

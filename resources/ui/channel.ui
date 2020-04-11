@@ -299,7 +299,8 @@
           </packing>
         </child>
         <child>
-          <object class="ExpanderBoxWidget" id="inserts_expander">
+          <object class="PluginStripExpanderWidget"
+                  id="inserts">
             <property name="visible">1</property>
           </object>
           <packing>

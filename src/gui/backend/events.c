@@ -51,22 +51,23 @@
 #include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/editor_selection_info.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/inspector_track.h"
-#include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/inspector.h"
+#include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
-#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/modulator_view.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/piano_roll_keys.h"
+#include "gui/widgets/plugin_strip_expander.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -440,11 +441,10 @@ on_plugin_state_changed (Plugin * pl)
   if (track && track->channel &&
       track->channel->widget)
     {
-      gtk_widget_queue_draw (
-        GTK_WIDGET (
-          track->channel->widget->inserts[
-            channel_get_plugin_index (
-              track->channel, pl)]));
+      plugin_strip_expander_widget_redraw_slot (
+        track->channel->widget->inserts,
+        channel_get_plugin_index (
+          track->channel, pl));
     }
 }
 
@@ -462,17 +462,9 @@ static void
 on_plugins_removed (Channel * ch)
 {
   /* redraw slots */
-  ChannelSlotWidget * csw;
-  for (int i = 0; i < STRIP_SIZE; i++)
-    {
-      csw =
-        ch->widget->inserts[i];
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (csw),
-        GTK_STATE_FLAG_SELECTED);
-      gtk_widget_queue_draw (
-        GTK_WIDGET (csw));
-    }
+  plugin_strip_expander_widget_set_state_flags (
+    ch->widget->inserts, -1,
+    GTK_STATE_FLAG_SELECTED, false);
 
   /* change inspector page */
   left_dock_edge_widget_refresh (
@@ -692,7 +684,6 @@ on_mixer_selections_changed ()
 {
   Plugin * pl;
   Channel * ch;
-  ChannelSlotWidget * csw;
 
   Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -706,55 +697,11 @@ on_mixer_selections_changed ()
       for (int j = 0; j < STRIP_SIZE; j++)
         {
           pl = ch->plugins[j];
-          csw =
-            ch->widget->inserts[j];
-          /*GtkStateFlags state_flags =*/
-            /*gtk_widget_get_state_flags (*/
-              /*GTK_WIDGET (csw));*/
 
-          if (pl)
-            {
-              if (plugin_is_selected (pl))
-                {
-                  /*if (state_flags !=*/
-                      /*GTK_STATE_FLAG_SELECTED)*/
-                    /*{*/
-                      /*g_message ("1");*/
-                      gtk_widget_set_state_flags (
-                        GTK_WIDGET (csw),
-                        GTK_STATE_FLAG_SELECTED,
-                        0);
-                      gtk_widget_queue_draw (
-                        GTK_WIDGET (csw));
-                    /*}*/
-                }
-              else
-                {
-                  /*if (state_flags ==*/
-                      /*GTK_STATE_FLAG_SELECTED)*/
-                    /*{*/
-                      /*g_message ("2");*/
-                      gtk_widget_unset_state_flags (
-                        GTK_WIDGET (csw),
-                        GTK_STATE_FLAG_SELECTED);
-                      gtk_widget_queue_draw (
-                        GTK_WIDGET (csw));
-                    /*}*/
-                }
-            }
-          else
-            {
-              /*if (state_flags ==*/
-                  /*GTK_STATE_FLAG_SELECTED)*/
-                /*{*/
-                  /*g_message ("3");*/
-                  gtk_widget_unset_state_flags (
-                    GTK_WIDGET (csw),
-                    GTK_STATE_FLAG_SELECTED);
-                  gtk_widget_queue_draw (
-                    GTK_WIDGET (csw));
-                /*}*/
-            }
+          plugin_strip_expander_widget_set_state_flags (
+            ch->widget->inserts, j,
+            GTK_STATE_FLAG_SELECTED,
+            pl && plugin_is_selected (pl));
         }
     }
   left_dock_edge_widget_refresh (
@@ -970,11 +917,13 @@ on_plugin_visibility_changed (Plugin * pl)
   if (track->channel->widget &&
       Z_IS_CHANNEL_WIDGET (
         track->channel->widget))
-    gtk_widget_queue_draw (
-      GTK_WIDGET (
-        track->channel->widget->inserts[
+    {
+      /* redraw slot */
+      plugin_strip_expander_widget_redraw_slot (
+        track->channel->widget->inserts,
           channel_get_plugin_index (
-            track->channel, pl)]));
+            track->channel, pl));
+    }
 }
 
 /*static int*/

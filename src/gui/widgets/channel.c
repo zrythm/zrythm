@@ -28,18 +28,19 @@
 #include "audio/master_track.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
+#include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
+#include "gui/widgets/channel_slot.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/expander_box.h"
 #include "gui/widgets/meter.h"
-#include "gui/widgets/channel_slot.h"
 #include "gui/widgets/fader.h"
 #include "gui/widgets/knob.h"
+#include "gui/widgets/plugin_strip_expander.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/balance_control.h"
 #include "gui/widgets/route_target_selector.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
@@ -606,43 +607,8 @@ setup_meter (ChannelWidget * self)
 void
 channel_widget_update_inserts (ChannelWidget * self)
 {
-  for (int i = 0; i < STRIP_SIZE; i++)
-    gtk_widget_queue_draw (
-      GTK_WIDGET (self->inserts[i]));
-}
-
-
-/**
- * Sets up the inserts.
- *
- * First removes the add button, then creates each slot.
- */
-static void
-setup_inserts (ChannelWidget * self)
-{
-  /*gtk_container_remove (GTK_CONTAINER (self->inserts_box),*/
-                        /*GTK_WIDGET (self->add_slot));*/
-  /*Channel * channel = self->channel;*/
-  for (int i = 0; i < STRIP_SIZE; i++)
-    {
-      self->insert_boxes[i] =
-        GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
-
-      self->inserts[i] = channel_slot_widget_new (i, self);
-      /* FIXME set to channel widget width */
-      /*gtk_widget_set_size_request (GTK_WIDGET (self->insert_boxes[i]),*/
-                                   /*20, 20);*/
-      gtk_box_pack_start (
-        self->insert_boxes[i],
-        GTK_WIDGET (self->inserts[i]),
-        1, 1, 0);
-      gtk_box_pack_start (
-        self->inserts_box,
-        GTK_WIDGET (self->insert_boxes[i]),
-        0, 1, 0);
-      gtk_widget_show_all (
-        GTK_WIDGET (self->insert_boxes[i]));
-    }
+  plugin_strip_expander_widget_refresh (
+    self->inserts);
 }
 
 static void
@@ -812,7 +778,9 @@ channel_widget_new (Channel * channel)
   self->channel = channel;
 
   /*setup_phase_panel (self);*/
-  setup_inserts (self);
+  plugin_strip_expander_widget_setup (
+    self->inserts, PSE_TYPE_INSERTS,
+    channel->track);
   fader_widget_setup (
     self->fader,
     &self->channel->fader,
@@ -895,7 +863,7 @@ channel_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     ChannelWidget,
-    inserts_expander);
+    inserts);
   gtk_widget_class_bind_template_child (
     klass,
     ChannelWidget,
@@ -961,6 +929,7 @@ channel_widget_init (ChannelWidget * self)
   g_type_ensure (FADER_WIDGET_TYPE);
   g_type_ensure (METER_WIDGET_TYPE);
   g_type_ensure (COLOR_AREA_WIDGET_TYPE);
+  g_type_ensure (PLUGIN_STRIP_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -976,39 +945,6 @@ channel_widget_init (ChannelWidget * self)
     self->name->label, 10);
   gtk_label_set_max_width_chars (
     self->output->label, 9);
-
-  /* setup inserts */
-  GtkWidget * inserts_scroll =
-    gtk_scrolled_window_new (
-      NULL, NULL);
-  gtk_widget_set_vexpand (inserts_scroll, 1);
-  gtk_widget_set_visible (inserts_scroll, 1);
-  gtk_scrolled_window_set_shadow_type (
-    GTK_SCROLLED_WINDOW (inserts_scroll),
-    GTK_SHADOW_ETCHED_IN);
-  gtk_widget_set_size_request (
-    inserts_scroll, -1, 124);
-
-  GtkWidget * viewport =
-    gtk_viewport_new (NULL, NULL);
-  gtk_widget_set_visible (viewport, 1);
-  gtk_container_add (
-    GTK_CONTAINER (inserts_scroll),
-    GTK_WIDGET (viewport));
-
-  self->inserts_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->inserts_box), 1);
-  gtk_container_add (
-    GTK_CONTAINER (viewport),
-    GTK_WIDGET (self->inserts_box));
-
-  expander_box_widget_add_content (
-    self->inserts_expander, inserts_scroll);
-  expander_box_widget_set_label (
-    self->inserts_expander, _("Inserts"));
 
   char * entry_track = g_strdup (TARGET_ENTRY_TRACK);
   GtkTargetEntry entries[] = {

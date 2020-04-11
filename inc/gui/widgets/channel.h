@@ -25,7 +25,8 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _ExpanderBoxWidget ExpanderBoxWidget;
+typedef struct _PluginStripExpanderWidget
+  PluginStripExpanderWidget;
 
 #define CHANNEL_WIDGET_TYPE \
   (channel_widget_get_type ())
@@ -59,14 +60,7 @@ typedef struct _ChannelWidget
   KnobWidget          * phase_knob;
 
   /* ----- Inserts ------ */
-  ExpanderBoxWidget * inserts_expander;
-  GtkBox              * inserts_box;
-  GtkBox              * insert_boxes[STRIP_SIZE];      ///< array of slot boxes (1 per plugin)
-  ChannelSlotWidget   * inserts[STRIP_SIZE];
-  GtkToggleButton     * insert_toggles[STRIP_SIZE];   ///< toggle buttons (per slot)
-  GtkLabel            * insert_labels[STRIP_SIZE];     ///< labels (per slot)
-  GtkToggleButton     * slot1b;
-  GtkToggleButton     * slot2b;
+  PluginStripExpanderWidget * inserts;
 
   /* -------- end --------- */
 
