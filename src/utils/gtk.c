@@ -33,7 +33,8 @@ z_gtk_widget_destroy_idle (
 }
 
 /**
- * NOTE: bumps reference, must be decremented after calling.
+ * @note Bumps reference, must be decremented after
+ * calling.
  */
 void
 z_gtk_container_remove_all_children (

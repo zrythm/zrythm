@@ -63,14 +63,20 @@ typedef struct _ChannelSlotWidget
   PangoLayout *        empty_slot_layout;
   /** Layout cache for plugin name. */
   PangoLayout *        pl_name_layout;
+
+  /** Whether to open the plugin inspector on click
+   * or not. */
+  bool                 open_plugin_inspector_on_click;
 } ChannelSlotWidget;
 
 /**
- * Creates a new ChannelSlot widget and binds it to the given value.
+ * Creates a new ChannelSlot widget and binds it to
+ * the given value.
  */
 ChannelSlotWidget *
 channel_slot_widget_new (
-  int slot_index,
-  Channel * ch);
+  int       slot_index,
+  Channel * ch,
+  bool      open_plugin_inspector_on_click);
 
 #endif

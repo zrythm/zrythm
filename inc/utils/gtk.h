@@ -166,6 +166,10 @@ int
 z_gtk_widget_destroy_idle (
   GtkWidget * widget);
 
+/**
+ * @note Bumps reference, must be decremented after
+ * calling.
+ */
 void
 z_gtk_container_remove_all_children (
   GtkContainer * container);

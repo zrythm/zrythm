@@ -23,9 +23,10 @@
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/plugin_strip_expander.h"
+#include "gui/widgets/ports_expander.h"
 #include "gui/widgets/track_input_expander.h"
 #include "gui/widgets/track_properties_expander.h"
-#include "gui/widgets/ports_expander.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -43,9 +44,15 @@ inspector_track_widget_show_tracks (
   InspectorTrackWidget * self,
   TracklistSelections *  tls)
 {
-  gtk_notebook_set_current_page (
-    GTK_NOTEBOOK (
-      MW_LEFT_DOCK_EDGE->inspector_notebook), 0);
+  if (gtk_notebook_get_current_page (
+        GTK_NOTEBOOK (
+          MW_LEFT_DOCK_EDGE->inspector_notebook)) !=
+      0)
+    {
+      gtk_notebook_set_current_page (
+        GTK_NOTEBOOK (
+          MW_LEFT_DOCK_EDGE->inspector_notebook), 0);
+    }
 
   /* show info for first track */
   Track * track = NULL;
@@ -58,23 +65,25 @@ inspector_track_widget_show_tracks (
         track);
 
       gtk_widget_set_visible (
-        GTK_WIDGET (self->sends), 0);
+        GTK_WIDGET (self->sends), false);
       gtk_widget_set_visible (
-        GTK_WIDGET (self->controls), 0);
+        GTK_WIDGET (self->controls), false);
       gtk_widget_set_visible (
-        GTK_WIDGET (self->inputs), 0);
+        GTK_WIDGET (self->inputs), false);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->inserts), false);
 
       if (track->channel)
         {
           gtk_widget_set_visible (
-            GTK_WIDGET (self->sends), 1);
+            GTK_WIDGET (self->sends), true);
           gtk_widget_set_visible (
-            GTK_WIDGET (self->controls), 1);
+            GTK_WIDGET (self->controls), true);
 
           if (track_has_inputs (track))
             {
               gtk_widget_set_visible (
-                GTK_WIDGET (self->inputs), 1);
+                GTK_WIDGET (self->inputs), true);
               track_input_expander_widget_refresh (
                 self->inputs, track);
             }
@@ -84,6 +93,15 @@ inspector_track_widget_show_tracks (
           ports_expander_widget_setup_track (
             self->controls,
             track, PE_TRACK_PORT_TYPE_CONTROLS);
+
+          if (track_type_has_channel (track->type))
+            {
+              gtk_widget_set_visible (
+                GTK_WIDGET (self->inserts), true);
+              plugin_strip_expander_widget_setup (
+                self->inserts, PSE_TYPE_INSERTS,
+                PSE_POSITION_INSPECTOR, track);
+            }
         }
     }
   else /* no tracks selected */
@@ -96,12 +114,12 @@ inspector_track_widget_show_tracks (
       ports_expander_widget_setup_track (
         self->sends,
         track, PE_TRACK_PORT_TYPE_CONTROLS);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->sends), 0);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->inputs), 0);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->controls), 0);
+      /*gtk_widget_set_visible (*/
+        /*GTK_WIDGET (self->sends), 0);*/
+      /*gtk_widget_set_visible (*/
+        /*GTK_WIDGET (self->inputs), 0);*/
+      /*gtk_widget_set_visible (*/
+        /*GTK_WIDGET (self->controls), 0);*/
     }
 }
 
@@ -152,6 +170,7 @@ inspector_track_widget_class_init (
   BIND_CHILD (sends);
   BIND_CHILD (controls);
   BIND_CHILD (inputs);
+  BIND_CHILD (inserts);
 
 #undef BIND_CHILD
 }
@@ -166,9 +185,14 @@ inspector_track_widget_init (
     TRACK_INPUT_EXPANDER_WIDGET_TYPE);
   g_type_ensure (
     PORTS_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (
+    PLUGIN_STRIP_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
   z_gtk_widget_add_style_class (
     GTK_WIDGET (self), "inspector");
+
+  expander_box_widget_set_vexpand (
+    Z_EXPANDER_BOX_WIDGET (self->inserts), false);
 }

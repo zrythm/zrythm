@@ -511,7 +511,7 @@ track_clone (Track * track);
  * Returns if the given TrackType is a type of
  * Track that has a Channel.
  */
-static inline int
+static inline bool
 track_type_has_channel (
   TrackType type)
 {

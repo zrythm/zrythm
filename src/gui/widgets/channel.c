@@ -780,7 +780,7 @@ channel_widget_new (Channel * channel)
   /*setup_phase_panel (self);*/
   plugin_strip_expander_widget_setup (
     self->inserts, PSE_TYPE_INSERTS,
-    channel->track);
+    PSE_POSITION_CHANNEL, channel->track);
   fader_widget_setup (
     self->fader,
     &self->channel->fader,

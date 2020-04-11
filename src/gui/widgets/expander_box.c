@@ -144,6 +144,17 @@ expander_box_widget_set_icon_name (
     GTK_ICON_SIZE_BUTTON);
 }
 
+void
+expander_box_widget_set_vexpand (
+  ExpanderBoxWidget * self,
+  bool                expand)
+{
+  GET_PRIVATE (self);
+
+  gtk_widget_set_vexpand (
+    GTK_WIDGET (prv->content), expand);
+}
+
 ExpanderBoxWidget *
 expander_box_widget_new (
   const char * label,

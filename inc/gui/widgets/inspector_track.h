@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -44,6 +44,8 @@ typedef struct _PortsExpanderWidget
   PortsExpanderWidget;
 typedef struct _TrackInputExpanderWidget
   TrackInputExpanderWidget;
+typedef struct _PluginStripExpanderWidget
+  PluginStripExpanderWidget;
 
 /**
  * @addtogroup widgets
@@ -69,6 +71,8 @@ typedef struct _InspectorTrackWidget
 
   /** Pan, fader, etc. */
   PortsExpanderWidget * controls;
+
+  PluginStripExpanderWidget * inserts;
 } InspectorTrackWidget;
 
 /**

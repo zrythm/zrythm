@@ -22,6 +22,7 @@
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/plugin_strip_expander.h"
 #include "project.h"
+#include "utils/gtk.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -112,8 +113,17 @@ plugin_strip_expander_widget_refresh (
       switch (self->type)
         {
         case PSE_TYPE_INSERTS:
-          gtk_widget_queue_draw (
-            GTK_WIDGET (self->inserts[i]));
+          {
+            Channel * ch =
+              track_get_channel (self->track);
+            Plugin * pl = ch->plugins[i];
+            plugin_strip_expander_widget_set_state_flags (
+              self, i,
+              GTK_STATE_FLAG_SELECTED,
+              pl && plugin_is_selected (pl));
+            gtk_widget_queue_draw (
+              GTK_WIDGET (self->inserts[i]));
+          }
           break;
         default:
           break;
@@ -139,11 +149,9 @@ void
 plugin_strip_expander_widget_setup (
   PluginStripExpanderWidget * self,
   PluginStripExpanderType     type,
+  PluginStripExpanderPosition position,
   Track *                     track)
 {
-  self->track = track;
-  self->type = type;
-
   /* set name and icon */
   char fullstr[200];
   switch (type)
@@ -167,43 +175,54 @@ plugin_strip_expander_widget_setup (
 
   set_icon_from_type (self, type);
 
-  /* remove children */
-  /*two_col_expander_box_widget_remove_children (*/
-    /*Z_TWO_COL_EXPANDER_BOX_WIDGET (self));*/
-
-  Channel * ch =
-    track_get_channel (track);
-  g_return_if_fail (ch);
-  for (int i = 0; i < STRIP_SIZE; i++)
+  if (track != self->track ||
+      type != self->type ||
+      position != self->position)
     {
-      GtkBox * strip_box =
-        GTK_BOX (
-          gtk_box_new (
-            GTK_ORIENTATION_HORIZONTAL, 0));
-      self->strip_boxes[i] = strip_box;
+      /* remove children */
+      z_gtk_container_destroy_all_children (
+        GTK_CONTAINER (self->box));
 
-      switch (type)
+      Channel * ch =
+        track_get_channel (track);
+      g_return_if_fail (ch);
+      for (int i = 0; i < STRIP_SIZE; i++)
         {
-        case PSE_TYPE_INSERTS:
-          {
-            ChannelSlotWidget * csw =
-              channel_slot_widget_new (i, ch);
-            self->inserts[i] = csw;
-            gtk_box_pack_start (
-              strip_box, GTK_WIDGET (csw), 1, 1, 0);
-          }
-          break;
-        default:
-          g_warn_if_reached ();
-          break;
-        }
+          GtkBox * strip_box =
+            GTK_BOX (
+              gtk_box_new (
+                GTK_ORIENTATION_HORIZONTAL, 0));
+          self->strip_boxes[i] = strip_box;
 
-      gtk_box_pack_start (
-        self->box,
-        GTK_WIDGET (strip_box), 0, 1, 0);
-      gtk_widget_show_all (
-        GTK_WIDGET (strip_box));
+          switch (type)
+            {
+            case PSE_TYPE_INSERTS:
+              {
+                ChannelSlotWidget * csw =
+                  channel_slot_widget_new (
+                    i, ch,
+                    position == PSE_POSITION_CHANNEL);
+                self->inserts[i] = csw;
+                gtk_box_pack_start (
+                  strip_box, GTK_WIDGET (csw), 1, 1, 0);
+              }
+              break;
+            default:
+              g_warn_if_reached ();
+              break;
+            }
+
+          gtk_box_pack_start (
+            self->box,
+            GTK_WIDGET (strip_box), 0, 1, 0);
+          gtk_widget_show_all (
+            GTK_WIDGET (strip_box));
+        }
     }
+
+  self->track = track;
+  self->type = type;
+  self->position = position;
 
   plugin_strip_expander_widget_refresh (self);
 }

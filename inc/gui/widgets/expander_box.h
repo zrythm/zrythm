@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,6 +20,8 @@
 #ifndef __GUI_WIDGETS_EXPANDER_BOX_H__
 #define __GUI_WIDGETS_EXPANDER_BOX_H__
 
+#include <stdbool.h>
+
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
@@ -29,8 +31,7 @@
 G_DECLARE_DERIVABLE_TYPE (
   ExpanderBoxWidget,
   expander_box_widget,
-  Z,
-  EXPANDER_BOX_WIDGET,
+  Z, EXPANDER_BOX_WIDGET,
   GtkBox)
 
 /**
@@ -121,6 +122,11 @@ void
 expander_box_widget_set_orientation (
   ExpanderBoxWidget * self,
   GtkOrientation      orientation);
+
+void
+expander_box_widget_set_vexpand (
+  ExpanderBoxWidget * self,
+  bool                expand);
 
 ExpanderBoxWidget *
 expander_box_widget_new (

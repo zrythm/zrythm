@@ -53,5 +53,12 @@
         <property name="can_focus">False</property>
       </object>
     </child>
+    <child>
+      <object class="PluginStripExpanderWidget"
+        id="inserts">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
   </template>
 </interface>

@@ -682,27 +682,15 @@ on_arranger_selections_removed (
 static void
 on_mixer_selections_changed ()
 {
-  Plugin * pl;
-  Channel * ch;
-
-  Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      track = TRACKLIST->tracks[i];
+      Track * track = TRACKLIST->tracks[i];
       if (!track_type_has_channel (track->type))
         continue;
 
-      ch = track->channel;
-
-      for (int j = 0; j < STRIP_SIZE; j++)
-        {
-          pl = ch->plugins[j];
-
-          plugin_strip_expander_widget_set_state_flags (
-            ch->widget->inserts, j,
-            GTK_STATE_FLAG_SELECTED,
-            pl && plugin_is_selected (pl));
-        }
+      Channel * ch = track->channel;
+      plugin_strip_expander_widget_refresh (
+        ch->widget->inserts);
     }
   left_dock_edge_widget_refresh (
     MW_LEFT_DOCK_EDGE);

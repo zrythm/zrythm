@@ -499,6 +499,7 @@ drag_end (GtkGestureDrag *gesture,
       self->channel->widget->last_plugin_press =
         g_get_monotonic_time ();
     }
+  g_message ("drag end %d", self->n_press);
 }
 
 static void
@@ -510,9 +511,13 @@ multipress_pressed (
   ChannelSlotWidget *   self)
 {
   self->n_press = n_press;
+  g_message ("multipress %d", n_press);
 
-  PROJECT->last_selection =
-    SELECTION_TYPE_PLUGIN;
+  if (self->open_plugin_inspector_on_click)
+    {
+      PROJECT->last_selection =
+        SELECTION_TYPE_PLUGIN;
+    }
 }
 
 static void
@@ -746,18 +751,22 @@ finalize (
 }
 
 /**
- * Creates a new ChannelSlot widget and binds it to the given value.
+ * Creates a new ChannelSlot widget and binds it to
+ * the given value.
  */
 ChannelSlotWidget *
 channel_slot_widget_new (
-  int slot_index,
-  Channel * ch)
+  int       slot_index,
+  Channel * ch,
+  bool      open_plugin_inspector_on_click)
 {
   ChannelSlotWidget * self =
     g_object_new (
       CHANNEL_SLOT_WIDGET_TYPE, NULL);
   self->slot_index = slot_index;
   self->channel = ch;
+  self->open_plugin_inspector_on_click =
+    open_plugin_inspector_on_click;
 
   char * entry_plugin =
     g_strdup (TARGET_ENTRY_PLUGIN);

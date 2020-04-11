@@ -39,7 +39,7 @@ G_DECLARE_FINAL_TYPE (
   ExpanderBoxWidget);
 
 typedef struct Track Track;
-typedef struct _ChannelSlotWidget ChannelSlot;
+typedef struct _ChannelSlotWidget ChannelSlotWidget;
 
 /**
  * @addtogroup widgets
@@ -54,6 +54,12 @@ typedef enum PluginStripExpanderType
   PSE_TYPE_INSERTS,
 } PluginStripExpanderType;
 
+typedef enum PluginStripExpanderPosition
+{
+  PSE_POSITION_CHANNEL,
+  PSE_POSITION_INSPECTOR,
+} PluginStripExpanderPosition;
+
 /**
  * A TwoColExpanderBoxWidget for showing the ports
  * in the InspectorWidget.
@@ -63,6 +69,7 @@ typedef struct _PluginStripExpanderWidget
   ExpanderBoxWidget parent_instance;
 
   PluginStripExpanderType type;
+  PluginStripExpanderPosition position;
 
   /** Scrolled window for the vbox inside. */
   GtkScrolledWindow * scroll;
@@ -117,6 +124,7 @@ void
 plugin_strip_expander_widget_setup (
   PluginStripExpanderWidget * self,
   PluginStripExpanderType     type,
+  PluginStripExpanderPosition position,
   Track *                     track);
 
 /**
