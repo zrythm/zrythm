@@ -26,7 +26,7 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="margin_top">2</property>
-    <property name="margin_bottom">6</property>
+    <property name="margin_bottom">4</property>
     <child>
       <object class="GtkGrid" id="grid">
         <property name="visible">True</property>
@@ -51,7 +51,7 @@
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="icon-name">record</property>
+                        <property name="icon_name">record</property>
                       </object>
                     </child>
                   </object>
@@ -71,7 +71,7 @@
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="icon-name">solo</property>
+                        <property name="icon_name">solo</property>
                       </object>
                     </child>
                   </object>
@@ -91,7 +91,7 @@
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="icon-name">mute</property>
+                        <property name="icon_name">mute</property>
                       </object>
                     </child>
                   </object>
@@ -111,7 +111,7 @@
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="icon-name">listen</property>
+                        <property name="icon_name">listen</property>
                       </object>
                     </child>
                   </object>
@@ -131,7 +131,7 @@
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="icon-name">lang-enum-value-symbolic-light</property>
+                        <property name="icon_name">lang-enum-value-symbolic-light</property>
                       </object>
                     </child>
                   </object>
@@ -221,7 +221,7 @@
           </object>
           <packing>
             <property name="left_attach">1</property>
-            <property name="top_attach">6</property>
+            <property name="top_attach">5</property>
             <property name="width">2</property>
           </packing>
         </child>
@@ -261,7 +261,7 @@
           </object>
           <packing>
             <property name="left_attach">1</property>
-            <property name="top_attach">0</property>
+            <property name="top_attach">1</property>
             <property name="width">2</property>
           </packing>
         </child>
@@ -270,20 +270,25 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
+            <property name="margin-top">1</property>
+            <property name="margin-bottom">1</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
-            <property name="top_attach">5</property>
+            <property name="top_attach">4</property>
             <property name="width">2</property>
           </packing>
         </child>
         <child>
           <object class="RouteTargetSelectorWidget" id="output">
             <property name="visible">True</property>
+            <property name="margin-start">4</property>
+            <property name="margin-end">4</property>
+            <property name="margin-top">2</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
-            <property name="top_attach">2</property>
+            <property name="top_attach">6</property>
             <property name="width">2</property>
           </packing>
         </child>
@@ -291,21 +296,21 @@
           <object class="ColorAreaWidget" id="color">
             <property name="visible">1</property>
             <property name="height-request">8</property>
+            <property name="margin-bottom">3</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
-            <property name="top_attach">1</property>
+            <property name="top_attach">0</property>
             <property name="width">2</property>
           </packing>
         </child>
         <child>
-          <object class="PluginStripExpanderWidget"
-                  id="inserts">
+          <object class="PluginStripExpanderWidget" id="inserts">
             <property name="visible">1</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
-            <property name="top_attach">4</property>
+            <property name="top_attach">3</property>
             <property name="width">2</property>
           </packing>
         </child>
@@ -341,6 +346,12 @@
             <property name="top_attach">0</property>
             <property name="height">7</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
     </child>

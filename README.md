@@ -95,6 +95,7 @@ enable us to spend more time working on the project.
 
 - [liberapay.com/Zrythm](https://liberapay.com/Zrythm)
 - [paypal.me/zrythm](https://paypal.me/zrythm)
+- [opencollective.com/zrythm](https://opencollective.com/zrythm)
 
 ----
 

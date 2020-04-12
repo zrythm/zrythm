@@ -782,7 +782,7 @@ channel_widget_new (Channel * channel)
     self->inserts, PSE_TYPE_INSERTS,
     PSE_POSITION_CHANNEL, channel->track);
   fader_widget_setup (
-    self->fader, &channel->fader, 40, -1);
+    self->fader, &channel->fader, 38, -1);
   setup_meter (self);
   setup_balance_control (self);
   setup_channel_icon (self);
