@@ -365,17 +365,19 @@ bot_bar_widget_update_status (
   char str[400];
   sprintf (
     str,
+    "<span size=\"small\">"
     "%s: " ORANGIZE ("%s") " | "
-    "%s: " ORANGIZE ("%s") " | "
+    "%s: " ORANGIZE ("%s") "\n"
     "%s: " ORANGIZE ("%d frames") " | "
-    "%s: " ORANGIZE ("%d Hz"),
+    "%s: " ORANGIZE ("%d Hz")
+    "</span>",
     _("Audio"),
     engine_audio_backend_to_string (
       AUDIO_ENGINE->audio_backend),
     "MIDI",
     engine_midi_backend_to_string (
       AUDIO_ENGINE->midi_backend),
-    _("Audio buffer"),
+    _("Buffer size"),
     AUDIO_ENGINE->block_length,
     _("Sample rate"),
     AUDIO_ENGINE->sample_rate);
