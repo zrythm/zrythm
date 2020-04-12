@@ -42,6 +42,7 @@ fontsdir = join_paths (datadir, 'fonts', 'zrythm')
 zrythmdatadir = join_paths (datadir, 'zrythm')
 samplesdir = join_paths (zrythmdatadir, 'samples')
 docdir = join_paths (datadir, 'doc', 'zrythm')
+sourceviewstylesdir = join_paths (datadir, 'sourceview-styles')
 
 # Used for building manpages, manual, etc., using
 # foreach
@@ -65,6 +66,9 @@ cdata.set_quoted (
   meson.get_compiler('c').version())
 cdata.set_quoted (
   'CONFIGURE_DATADIR', datadir)
+cdata.set_quoted (
+  'CONFIGURE_SOURCEVIEW_STYLES_DIR',
+  sourceviewstylesdir)
 cdata.set_quoted (
   'LIBDIR_NAME', get_option ('libdir'))
 cdata.set_quoted (

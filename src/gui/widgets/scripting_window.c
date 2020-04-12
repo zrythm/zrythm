@@ -295,6 +295,19 @@ scripting_window_widget_init (
   gtk_source_view_set_smart_backspace (
     self->editor, true);
 
+  /* set style */
+  GtkSourceStyleSchemeManager * style_mgr =
+    gtk_source_style_scheme_manager_get_default ();
+  gtk_source_style_scheme_manager_prepend_search_path (
+    style_mgr, CONFIGURE_SOURCEVIEW_STYLES_DIR);
+  gtk_source_style_scheme_manager_force_rescan (
+    style_mgr);
+  GtkSourceStyleScheme * scheme =
+    gtk_source_style_scheme_manager_get_scheme (
+      style_mgr, "monokai-extended-zrythm");
+  gtk_source_buffer_set_style_scheme (
+    self->buffer, scheme);
+
   gtk_label_set_selectable (self->output, true);
 }
 #endif

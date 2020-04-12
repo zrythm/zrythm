@@ -90,4 +90,12 @@ if not os_windows
     rename: 'zrythm')
 endif
 
+# GtkSourceView styles
+if get_option ('enable_guile')
+  install_data (
+    'gtksourceview-monokai-extended.xml',
+    install_dir: sourceviewstylesdir,
+    rename: 'monokai-extended-zrythm.xml')
+endif
+
 subdir('windows')
