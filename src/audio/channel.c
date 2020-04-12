@@ -1363,17 +1363,25 @@ get_current_rms (
   Track * track = channel_get_track (channel);
   if (track->out_signal_type == TYPE_EVENT)
     {
+      ChannelWidget * cw = channel->widget;
       Port * port = channel->midi_out;
       int has_midi_events = 0;
       if (port->write_ring_buffers)
         {
           MidiEvent event;
           while (
-            zix_ring_read (
+            zix_ring_peek (
               port->midi_ring, &event,
               sizeof (MidiEvent)) > 0)
             {
-              has_midi_events = 1;
+              if (event.systime >
+                    cw->last_midi_trigger_time)
+                {
+                  has_midi_events = 1;
+                  cw->last_midi_trigger_time =
+                    event.systime;
+                  break;
+                }
             }
         }
       else
@@ -1381,12 +1389,15 @@ get_current_rms (
           has_midi_events =
             g_atomic_int_compare_and_exchange (
               &port->has_midi_events, 1, 0);
+            if (has_midi_events)
+              {
+                cw->last_midi_trigger_time =
+                  g_get_monotonic_time ();
+              }
         }
 
       if (has_midi_events)
         {
-          channel->widget->last_midi_trigger_time =
-            g_get_real_time ();
           return 1.f;
         }
       else
@@ -1394,8 +1405,8 @@ get_current_rms (
           /** 350 ms */
           static const float MAX_TIME = 350000.f;
           gint64 time_diff =
-            g_get_real_time () -
-            channel->widget->last_midi_trigger_time;
+            g_get_monotonic_time () -
+            cw->last_midi_trigger_time;
           if ((float) time_diff < MAX_TIME)
             {
               return

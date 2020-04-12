@@ -38,6 +38,8 @@
 #include <jack/midiport.h>
 #endif
 
+#include <gtk/gtk.h>
+
 /**
  * @addtogroup audio
  *
@@ -100,6 +102,9 @@ typedef struct MidiEvent
   /** Time of the MIDI event, in frames from the
    * start of the current cycle. */
   midi_time_t    time;
+
+  /** Time using g_get_monotonic_time (). */
+  gint64         systime;
 
   /** Raw MIDI data. */
   midi_byte_t    raw_buffer[3];

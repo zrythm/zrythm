@@ -2285,14 +2285,24 @@ port_sum_signal_from_inputs (
         {
           if (port->write_ring_buffers)
             {
-              int i = port->midi_events->num_events - 1;
-              while (
-                i >= 0 && zix_ring_write_space (
-                  port->midi_ring) > sizeof (MidiEvent))
+              for (int i = port->midi_events->num_events - 1;
+                   i >= 0; i--)
                 {
+                  if (zix_ring_write_space (
+                        port->midi_ring) <
+                        sizeof (MidiEvent))
+                    {
+                      zix_ring_skip (
+                        port->midi_ring,
+                        sizeof (MidiEvent));
+                    }
+
+                  MidiEvent * ev =
+                    &port->midi_events->events[i];
+                  ev->systime =
+                    g_get_monotonic_time ();
                   zix_ring_write (
-                    port->midi_ring,
-                    &port->midi_events->events[i--],
+                    port->midi_ring, ev,
                     sizeof (MidiEvent));
                 }
             }

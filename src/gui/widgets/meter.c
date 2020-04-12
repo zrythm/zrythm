@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -122,7 +122,7 @@ meter_draw_cb (
     (float) height - value_px);
   cairo_stroke (cr);
 
-  /* draw line for highest db */
+  /* draw line for highest db (peak) */
   if (self->max_getter)
     {
       float max_amp =

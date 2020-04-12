@@ -46,12 +46,10 @@ static SCM out_port;
 static SCM error_out_port;
 
 static const char * example_script =
-";; This is an example GNU Guile script using\n\
-;; modules provided by Zrythm\n\
-;; See https://www.gnu.org/software/guile/ for\n\
-;; more info about GNU Guile\n\
-;; See https://manual.zrythm.org/en/scripting/intro.html\n\
-;; for a list of modules provided by Zrythm\n"
+";;; This is an example GNU Guile script using modules provided by Zrythm\n\
+;;; See https://www.gnu.org/software/guile/ for more info about GNU Guile\n\
+;;; See https://manual.zrythm.org/en/scripting/intro.html for a list of\n\
+;;; modules provided by Zrythm\n"
 #if 0
 "(use-modules (zrythm)\n\
              (audio position))\n\
@@ -227,7 +225,7 @@ scripting_window_widget_new ()
   ScriptingWindowWidget * self =
     g_object_new (
       SCRIPTING_WINDOW_WIDGET_TYPE,
-      "title", _("GNU Guile Scripting Interface"),
+      "title", _("Scripting Interface"),
       "icon-name", "zrythm",
       NULL);
 

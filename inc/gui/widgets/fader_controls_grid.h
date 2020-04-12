@@ -67,9 +67,13 @@ typedef struct _FaderControlsGridWidget
   GtkToggleButton * mute;
   GtkToggleButton * record;
 
+  GtkLabel *     meter_readings;
+
   gulong         record_toggled_handler_id;
   gulong         solo_toggled_handler_id;
   gulong         mute_toggled_handler_id;
+
+  double         meter_reading_val;
 
   /** Last MIDI event trigger time, for MIDI
    * output. */

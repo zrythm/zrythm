@@ -275,11 +275,18 @@ get_port_value (
           {
             MidiEvent event;
             while (
-              zix_ring_read (
+              zix_ring_peek (
                 port->midi_ring, &event,
                 sizeof (MidiEvent)) > 0)
               {
-                has_midi_events = 1;
+                if (event.systime >
+                      self->last_midi_trigger_time)
+                  {
+                    has_midi_events = 1;
+                    self->last_midi_trigger_time =
+                      event.systime;
+                    break;
+                  }
               }
           }
         else
@@ -287,18 +294,21 @@ get_port_value (
             has_midi_events =
               g_atomic_int_compare_and_exchange (
                 &port->has_midi_events, 1, 0);
+            if (has_midi_events)
+              {
+                self->last_midi_trigger_time =
+                  g_get_monotonic_time ();
+              }
           }
 
         if (has_midi_events)
           {
-            self->last_midi_trigger_time =
-              g_get_real_time ();
             return 1.f;
           }
         else
           {
             gint64 time_diff =
-              g_get_real_time () -
+              g_get_monotonic_time () -
               self->last_midi_trigger_time;
             if ((float) time_diff < MAX_TIME)
               {
@@ -346,7 +356,7 @@ bar_slider_tick_cb (
 
   /* if enough time passed, try to update the
    * tooltip */
-  gint64 now = g_get_real_time ();
+  gint64 now = g_get_monotonic_time ();
   if (now - self->last_tooltip_change > 100000)
     {
       char str[2000];

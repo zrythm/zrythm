@@ -24,6 +24,7 @@
 #include "gui/widgets/meter.h"
 #include "project.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 
@@ -39,23 +40,24 @@ update_meter_reading (
   GdkFrameClock * frame_clock,
   gpointer        user_data)
 {
-#if 0
-  double prev = widget->meter_reading_val;
-  Channel * channel = widget->channel;
-
   if (!gtk_widget_get_mapped (
-        GTK_WIDGET (widget)))
+        GTK_WIDGET (widget)) ||
+      !widget->track)
     {
       return G_SOURCE_CONTINUE;
     }
 
+  double prev = widget->meter_reading_val;
+  Track * track = widget->track;
+  Channel * channel =
+    track_get_channel (widget->track);
+  g_warn_if_fail (channel);
+
   /* TODO */
-  Track * track =
-    channel_get_track (channel);
   if (track->out_signal_type == TYPE_EVENT)
     {
       gtk_label_set_text (
-        widget->meter_reading, "-∞");
+        widget->meter_readings, "-∞");
       gtk_widget_queue_draw (
         GTK_WIDGET (widget->meter_l));
       gtk_widget_queue_draw (
@@ -78,15 +80,31 @@ update_meter_reading (
   double val =
     (channel_get_current_l_db (channel) +
       channel_get_current_r_db (channel)) / 2;
+  double peak_val =
+    MAX (
+      channel_get_current_l_peak (channel),
+      channel_get_current_r_peak (channel));
+  peak_val =
+    math_amp_to_dbfs ((float) peak_val);
   if (math_doubles_equal (val, prev))
     return G_SOURCE_CONTINUE;
-  char * string;
   if (val < -100.)
-    gtk_label_set_text (widget->meter_reading, "-∞");
+    gtk_label_set_text (
+      widget->meter_readings, "-∞");
   else
     {
-      string = g_strdup_printf ("%.1f", val);
-      gtk_label_set_text (widget->meter_reading, string);
+      char peak[400];
+      sprintf (peak, _("Peak"));
+      char rms[400];
+      /* TRANSLATORS: Root Mean Square */
+      sprintf (rms, _("RMS"));
+      char * string =
+        g_strdup_printf (
+          "%s:\n<small>%.1fdb</small>\n\n"
+          "%s:\n<small>%.1fdb</small>",
+          peak, peak_val, rms, val);
+      gtk_label_set_markup (
+        widget->meter_readings, string);
       g_free (string);
     }
   gtk_widget_queue_draw (
@@ -95,7 +113,6 @@ update_meter_reading (
     GTK_WIDGET (widget->meter_r));
 
   widget->meter_reading_val = val;
-#endif
 
   return G_SOURCE_CONTINUE;
 }
@@ -361,6 +378,7 @@ fader_controls_grid_widget_class_init (
   BIND_CHILD (solo);
   BIND_CHILD (mute);
   BIND_CHILD (record);
+  BIND_CHILD (meter_readings);
 
 #undef BIND_CHILD
 }
