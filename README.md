@@ -45,16 +45,14 @@ See the
 [user manual](http://manual.zrythm.org/), which is
 also available in PDF, epub and HTML-zip.
 
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Hacking
+See [HACKING.md](HACKING.md).
+
 ## Packaging
 See [PACKAGING.md](PACKAGING.md).
-
-## Contributing
-For contributing guidelines see
-[CONTRIBUTING.md](CONTRIBUTING.md).
-We also recommend taking a look at the
-[Developer Docs](https://docs.zrythm.org)
-
-Please submit patches and bug reports below.
 
 ## Mailing lists
 [user@zrythm.org](https://lists.zrythm.org/lists/listinfo/user), [dev@zrythm.org](https://lists.zrythm.org/lists/listinfo/dev)
