@@ -59,7 +59,7 @@ typedef struct _ColorAreaWidget
   GtkDrawingArea    parent_instance;
 
   /** Color pointer to set/read value. */
-  GdkRGBA  *        color;
+  GdkRGBA           color;
 
   /** The type. */
   ColorAreaType     type;

@@ -19,10 +19,12 @@
 
 #include "gui/backend/mixer_selections.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector_plugin.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/ports_expander.h"
+#include "plugins/plugin.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -30,9 +32,28 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (InspectorPluginWidget,
-               inspector_plugin_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  InspectorPluginWidget,
+  inspector_plugin_widget,
+  GTK_TYPE_BOX)
+
+static void
+setup_color (
+  InspectorPluginWidget * self,
+  Track *                 track)
+{
+  if (track)
+    {
+      color_area_widget_setup_track (
+        self->color, track);
+    }
+  else
+    {
+      GdkRGBA color = { 1, 1, 1, 1 };
+      color_area_widget_set_color (
+        self->color, &color);
+    }
+}
 
 void
 inspector_plugin_widget_show (
@@ -48,6 +69,15 @@ inspector_plugin_widget_show (
   if (ms->num_slots > 0)
     {
       pl = ms->plugins[0];
+    }
+
+  if (pl)
+    {
+      setup_color (self, plugin_get_track (pl));
+    }
+  else
+    {
+      setup_color (self, NULL);
     }
 
   ports_expander_widget_setup_plugin (
@@ -102,34 +132,14 @@ inspector_plugin_widget_class_init (
     child);
 
   BIND_CHILD (ctrl_ins);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    InspectorPluginWidget,
-    ctrl_outs);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    InspectorPluginWidget,
-    audio_ins);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    InspectorPluginWidget,
-    audio_outs);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    InspectorPluginWidget,
-    midi_ins);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    InspectorPluginWidget,
-    midi_outs);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    InspectorPluginWidget,
-    cv_ins);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    InspectorPluginWidget,
-    cv_outs);
+  BIND_CHILD (ctrl_outs);
+  BIND_CHILD (audio_ins);
+  BIND_CHILD (audio_outs);
+  BIND_CHILD (midi_ins);
+  BIND_CHILD (midi_outs);
+  BIND_CHILD (cv_ins);
+  BIND_CHILD (cv_outs);
+  BIND_CHILD (color);
 
 #undef BIND_CHILD
 }

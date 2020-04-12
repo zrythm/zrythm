@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <!--
 
-  Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+  Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -27,6 +27,13 @@
     <property name="visible">True</property>
     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
     <property name="spacing">2</property>
+    <child>
+      <object class="ColorAreaWidget" id="color">
+        <property name="visible">1</property>
+        <property name="height-request">8</property>
+        <property name="margin-bottom">1</property>
+      </object>
+    </child>
     <child>
       <object class="PortsExpanderWidget"
         id="ctrl_ins">

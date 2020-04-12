@@ -20,6 +20,7 @@
 #include "gui/backend/events.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/color_area.h"
 #include "gui/widgets/fader_controls_expander.h"
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/left_dock_edge.h"
@@ -41,6 +42,24 @@ G_DEFINE_TYPE (
   inspector_track_widget,
   GTK_TYPE_BOX)
 
+static void
+setup_color (
+  InspectorTrackWidget * self,
+  Track *                track)
+{
+  if (track)
+    {
+      color_area_widget_setup_track (
+        self->color, track);
+    }
+  else
+    {
+      GdkRGBA color = { 1, 1, 1, 1 };
+      color_area_widget_set_color (
+        self->color, &color);
+    }
+}
+
 void
 inspector_track_widget_show_tracks (
   InspectorTrackWidget * self,
@@ -61,6 +80,8 @@ inspector_track_widget_show_tracks (
   if (tls->num_tracks > 0)
     {
       track = tls->tracks[0];
+
+      setup_color (self, track);
 
       track_properties_expander_widget_refresh (
         self->instrument_track_info,
@@ -85,6 +106,8 @@ inspector_track_widget_show_tracks (
             GTK_WIDGET (self->controls), true);
           gtk_widget_set_visible (
             GTK_WIDGET (self->fader), true);
+          gtk_widget_set_visible (
+            GTK_WIDGET (self->inserts), true);
 
           if (track_has_inputs (track))
             {
@@ -118,12 +141,8 @@ inspector_track_widget_show_tracks (
       ports_expander_widget_setup_track (
         self->sends,
         track, PE_TRACK_PORT_TYPE_CONTROLS);
-      /*gtk_widget_set_visible (*/
-        /*GTK_WIDGET (self->sends), 0);*/
-      /*gtk_widget_set_visible (*/
-        /*GTK_WIDGET (self->inputs), 0);*/
-      /*gtk_widget_set_visible (*/
-        /*GTK_WIDGET (self->controls), 0);*/
+
+      setup_color (self, NULL);
     }
 }
 
@@ -176,6 +195,7 @@ inspector_track_widget_class_init (
   BIND_CHILD (inputs);
   BIND_CHILD (inserts);
   BIND_CHILD (fader);
+  BIND_CHILD (color);
 
 #undef BIND_CHILD
 }
@@ -194,6 +214,8 @@ inspector_track_widget_init (
     PLUGIN_STRIP_EXPANDER_WIDGET_TYPE);
   g_type_ensure (
     FADER_CONTROLS_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (
+    COLOR_AREA_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

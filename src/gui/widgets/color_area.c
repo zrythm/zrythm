@@ -60,16 +60,16 @@ color_area_draw_cb (
         context, self->cached_cr, 0, 0,
         width, height);
 
-      GdkRGBA * color;
+      GdkRGBA color;
       if (self->type == COLOR_AREA_TYPE_TRACK)
-        color = &self->track->color;
+        color = self->track->color;
       else
         color = self->color;
 
       cairo_rectangle (
         self->cached_cr, 0, 0, width, height);
       gdk_cairo_set_source_rgba (
-        self->cached_cr, color);
+        self->cached_cr, &color);
       cairo_fill (self->cached_cr);
 
       /* show track icon */
@@ -124,7 +124,7 @@ on_size_allocate (
   GdkRectangle *allocation,
   ColorAreaWidget * self)
 {
-  self->redraw = 1;
+  self->redraw = true;
 }
 
 /**
@@ -151,6 +151,7 @@ color_area_widget_setup_track (
 {
   self->track = track;
   self->type = COLOR_AREA_TYPE_TRACK;
+  self->redraw = true;
 }
 
 /**
@@ -161,12 +162,13 @@ color_area_widget_setup_track (
  */
 void
 color_area_widget_set_color (
-  ColorAreaWidget * widget,
+  ColorAreaWidget * self,
   GdkRGBA * color)
 {
-  widget->color = color;
+  self->color = *color;
 
-  gtk_widget_queue_draw (GTK_WIDGET (widget));
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+  self->redraw = true;
 }
 
 static void
@@ -178,7 +180,7 @@ color_area_widget_init (ColorAreaWidget * self)
   g_signal_connect (
     G_OBJECT (self), "draw",
     G_CALLBACK (color_area_draw_cb), self);
-  self->redraw = 1;
+  self->redraw = true;
 }
 
 static void

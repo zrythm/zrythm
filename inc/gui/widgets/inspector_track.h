@@ -48,6 +48,7 @@ typedef struct _PluginStripExpanderWidget
   PluginStripExpanderWidget;
 typedef struct _FaderControlsExpanderWidget
   FaderControlsExpanderWidget;
+typedef struct _ColorAreaWidget ColorAreaWidget;
 
 /**
  * @addtogroup widgets
@@ -77,6 +78,8 @@ typedef struct _InspectorTrackWidget
   PluginStripExpanderWidget * inserts;
 
   FaderControlsExpanderWidget * fader;
+
+  ColorAreaWidget *     color;
 } InspectorTrackWidget;
 
 /**

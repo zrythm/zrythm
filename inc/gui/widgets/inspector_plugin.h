@@ -47,6 +47,7 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _PortsExpanderWidget
   PortsExpanderWidget;
+typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct MixerSelections MixerSelections;
 
 typedef struct _InspectorPluginWidget
@@ -60,6 +61,8 @@ typedef struct _InspectorPluginWidget
   PortsExpanderWidget * midi_outs;
   PortsExpanderWidget * cv_ins;
   PortsExpanderWidget * cv_outs;
+
+  ColorAreaWidget *     color;
 } InspectorPluginWidget;
 
 /**
