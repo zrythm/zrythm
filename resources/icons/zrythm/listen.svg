@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    sodipodi:docname="listen.svg"
-   inkscape:version="0.92.2 2405546, 2018-03-11">
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -26,16 +26,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.2"
-     inkscape:cx="-19.875106"
+     inkscape:cx="-23.267963"
      inkscape:cy="19.389098"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="text1586"
      showgrid="false"
      units="px"
-     inkscape:window-width="1400"
-     inkscape:window-height="845"
+     inkscape:window-width="1920"
+     inkscape:window-height="1025"
      inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-y="27"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata5">
@@ -45,7 +45,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -56,13 +56,12 @@
      transform="translate(0,-292.76667)">
     <g
        aria-label="L"
-       transform="matrix(0.14144268,0,0,0.14144268,-35.287187,227.9373)"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:none"
-       id="flowRoot815">
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.29564667px;line-height:1.25;font-family:Cantarell;-inkscape-font-specification:'Cantarell, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#cfcfcd;fill-opacity:1;stroke:none;stroke-width:0.13906448"
+       id="text1586">
       <path
-         d="m 255.54883,486.48242 v -26.34765 h 5.76172 v 21.89453 h 12.03125 v 4.45312 z"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono Bold';fill:#b3b3b3"
-         id="path1420"
+         d="m 1.2668804,296.26128 h 1.6995725 v -0.45269 H 1.7791347 v -2.30315 H 1.2668804 Z"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.29564667px;font-family:Cantarell;-inkscape-font-specification:'Cantarell, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#cfcfcd;fill-opacity:1;stroke-width:0.1042781"
+         id="path4957"
          inkscape:connector-curvature="0" />
     </g>
   </g>

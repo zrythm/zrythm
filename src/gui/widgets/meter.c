@@ -53,8 +53,8 @@ meter_draw_cb (
     context, cr, 0, 0, width, height);
 
   float meter_val = -1.0;
-  g_return_val_if_fail (
-    self->getter && self->object, FALSE);
+  if (!self->getter || !self->object)
+    return FALSE;
   switch (self->type)
     {
     case METER_TYPE_DB:

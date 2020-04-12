@@ -487,6 +487,14 @@ z_gtk_setup_foldable_notebook (
   GtkNotebook * notebook);
 
 /**
+ * Sets the margin on all 4 sides on the widget.
+ */
+void
+z_gtk_widget_set_margin (
+  GtkWidget * widget,
+  int         margin);
+
+/**
  * @}
  */
 #endif

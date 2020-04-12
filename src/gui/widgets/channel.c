@@ -782,9 +782,7 @@ channel_widget_new (Channel * channel)
     self->inserts, PSE_TYPE_INSERTS,
     PSE_POSITION_CHANNEL, channel->track);
   fader_widget_setup (
-    self->fader,
-    &self->channel->fader,
-    40);
+    self->fader, &channel->fader, 40, -1);
   setup_meter (self);
   setup_balance_control (self);
   setup_channel_icon (self);
@@ -803,8 +801,7 @@ channel_widget_new (Channel * channel)
     GTK_WIDGET (self),
     (GtkTickCallback)
       channel_widget_update_meter_reading,
-    NULL,
-    NULL);
+    self, NULL);
 
   g_signal_connect (
     self, "destroy",
@@ -821,105 +818,37 @@ channel_widget_class_init (
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "channel.ui");
-  gtk_widget_class_set_css_name (klass,
-                                 "channel");
+  resources_set_class_template (
+    klass, "channel.ui");
+  gtk_widget_class_set_css_name (
+    klass, "channel");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    color);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    output);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    grid);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    icon_and_name_event_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    name);
-#if 0
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    phase_invert);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    phase_reading);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    phase_controls);
-#endif
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    inserts);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    e);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    solo);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    listen);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    mute);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    record);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    fader);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    meter_area);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    meter_l);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    meter_r);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    meter_reading);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    icon);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    balance_control_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    highlight_left_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    highlight_right_box);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, ChannelWidget, x)
+
+  BIND_CHILD (color);
+  BIND_CHILD (output);
+  BIND_CHILD (grid);
+  BIND_CHILD (icon_and_name_event_box);
+  BIND_CHILD (name);
+  BIND_CHILD (inserts);
+  BIND_CHILD (e);
+  BIND_CHILD (solo);
+  BIND_CHILD (listen);
+  BIND_CHILD (mute);
+  BIND_CHILD (record);
+  BIND_CHILD (fader);
+  BIND_CHILD (meter_area);
+  BIND_CHILD (meter_l);
+  BIND_CHILD (meter_r);
+  BIND_CHILD (meter_reading);
+  BIND_CHILD (icon);
+  BIND_CHILD (balance_control_box);
+  BIND_CHILD (highlight_left_box);
+  BIND_CHILD (highlight_right_box);
+
+#undef BIND_CHILD
 }
 
 static void

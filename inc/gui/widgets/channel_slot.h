@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,7 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
+/**
+ * \file
+ *
+ * Channel slot.
  */
 
 #ifndef __GUI_WIDGETS_CHANNEL_SLOT_H__
@@ -27,14 +30,20 @@
 
 #define CHANNEL_SLOT_WIDGET_TYPE \
   (channel_slot_widget_get_type ())
-G_DECLARE_FINAL_TYPE (ChannelSlotWidget,
-                      channel_slot_widget,
-                      Z,
-                      CHANNEL_SLOT_WIDGET,
-                      GtkDrawingArea)
+G_DECLARE_FINAL_TYPE (
+  ChannelSlotWidget,
+  channel_slot_widget,
+  Z, CHANNEL_SLOT_WIDGET,
+  GtkDrawingArea)
 
 typedef struct Plugin Plugin;
 typedef struct Channel Channel;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 typedef struct _ChannelSlotWidget
 {
@@ -78,5 +87,9 @@ channel_slot_widget_new (
   int       slot_index,
   Channel * ch,
   bool      open_plugin_inspector_on_click);
+
+/**
+ * @}
+ */
 
 #endif

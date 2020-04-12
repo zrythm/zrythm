@@ -60,5 +60,12 @@
         <property name="can_focus">False</property>
       </object>
     </child>
+    <child>
+      <object class="FaderControlsExpanderWidget"
+        id="fader">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
   </template>
 </interface>

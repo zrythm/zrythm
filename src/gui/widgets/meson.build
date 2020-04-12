@@ -60,6 +60,8 @@ widget_srcs = files([
   'export_dialog.c',
   'export_midi_file_dialog.c',
   'fader.c',
+  'fader_controls_expander.c',
+  'fader_controls_grid.c',
   'file_browser.c',
   'file_browser_window.c',
   'first_run_assistant.c',

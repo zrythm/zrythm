@@ -20,6 +20,7 @@
 #include "gui/backend/events.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/fader_controls_expander.h"
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
@@ -35,9 +36,10 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (InspectorTrackWidget,
-               inspector_track_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  InspectorTrackWidget,
+  inspector_track_widget,
+  GTK_TYPE_BOX)
 
 void
 inspector_track_widget_show_tracks (
@@ -72,13 +74,17 @@ inspector_track_widget_show_tracks (
         GTK_WIDGET (self->inputs), false);
       gtk_widget_set_visible (
         GTK_WIDGET (self->inserts), false);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->fader), false);
 
-      if (track->channel)
+      if (track_type_has_channel (track->type))
         {
           gtk_widget_set_visible (
             GTK_WIDGET (self->sends), true);
           gtk_widget_set_visible (
             GTK_WIDGET (self->controls), true);
+          gtk_widget_set_visible (
+            GTK_WIDGET (self->fader), true);
 
           if (track_has_inputs (track))
             {
@@ -94,14 +100,12 @@ inspector_track_widget_show_tracks (
             self->controls,
             track, PE_TRACK_PORT_TYPE_CONTROLS);
 
-          if (track_type_has_channel (track->type))
-            {
-              gtk_widget_set_visible (
-                GTK_WIDGET (self->inserts), true);
-              plugin_strip_expander_widget_setup (
-                self->inserts, PSE_TYPE_INSERTS,
-                PSE_POSITION_INSPECTOR, track);
-            }
+          plugin_strip_expander_widget_setup (
+            self->inserts, PSE_TYPE_INSERTS,
+            PSE_POSITION_INSPECTOR, track);
+
+          fader_controls_expander_widget_setup (
+            self->fader, track);
         }
     }
   else /* no tracks selected */
@@ -171,6 +175,7 @@ inspector_track_widget_class_init (
   BIND_CHILD (controls);
   BIND_CHILD (inputs);
   BIND_CHILD (inserts);
+  BIND_CHILD (fader);
 
 #undef BIND_CHILD
 }
@@ -187,6 +192,8 @@ inspector_track_widget_init (
     PORTS_EXPANDER_WIDGET_TYPE);
   g_type_ensure (
     PLUGIN_STRIP_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (
+    FADER_CONTROLS_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

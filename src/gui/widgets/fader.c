@@ -61,7 +61,8 @@ fader_draw_cb (
   double degrees = G_PI / 180.0;
   /* value in pixels = total pixels * val
    * val is percentage */
-  double fader_val = self->fader->fader_val;
+  double fader_val =
+    self->fader ? self->fader->fader_val : 1.f;
   double value_px = height * fader_val;
 
   /* draw background bar */
@@ -331,13 +332,14 @@ void
 fader_widget_setup (
   FaderWidget * self,
   Fader *       fader,
-  int width)
+  int           width,
+  int           height)
 {
   self->fader = fader;
 
   /* set size */
   gtk_widget_set_size_request (
-    GTK_WIDGET (self), width, -1);
+    GTK_WIDGET (self), width, height);
 }
 
 static void

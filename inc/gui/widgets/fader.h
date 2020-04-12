@@ -28,18 +28,18 @@
 
 #include <gtk/gtk.h>
 
+#define FADER_WIDGET_TYPE \
+  (fader_widget_get_type ())
+G_DECLARE_FINAL_TYPE (
+  FaderWidget, fader_widget,
+  Z, FADER_WIDGET, GtkDrawingArea)
+
+typedef struct Fader Fader;
+
 /**
  * @addtogroup widgets
  * @{
  */
-
-#define FADER_WIDGET_TYPE \
-  (fader_widget_get_type ())
-G_DECLARE_FINAL_TYPE (FaderWidget,
-                      fader_widget,
-                      Z,
-                      FADER_WIDGET,
-                      GtkDrawingArea)
 
 /**
  * A FaderWidget reflects a Fader object's state.
@@ -66,7 +66,8 @@ void
 fader_widget_setup (
   FaderWidget * self,
   Fader *       fader,
-  int width);
+  int           width,
+  int           height);
 
 /**
  * @}

@@ -565,3 +565,17 @@ z_gtk_container_get_nth_child (
   g_list_free (children);
   g_return_val_if_reached (NULL);
 }
+
+/**
+ * Sets the margin on all 4 sides on the widget.
+ */
+void
+z_gtk_widget_set_margin (
+  GtkWidget * widget,
+  int         margin)
+{
+  gtk_widget_set_margin_start (widget, margin);
+  gtk_widget_set_margin_end (widget, margin);
+  gtk_widget_set_margin_top (widget, margin);
+  gtk_widget_set_margin_bottom (widget, margin);
+}
