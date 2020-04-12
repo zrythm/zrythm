@@ -10,7 +10,7 @@ nationality, personal appearance, race, religion, or sexual identity
 and orientation.
 
 We pledge to act and interact in ways that contribute to an open, welcoming,
-diverse, inclusive, and healthy free software community.
+diverse, inclusive, and healthy community.
 
 ## Our Standards
 
@@ -26,15 +26,6 @@ community include:
   overall community
 * Assuming that other participants are posting in good faith, even when disagreeing
   with them
-* Advocating software freedom, for example, by using language that aligns with and
-  promotes the values of the free software community, such as referring to
-  free software as "free software" and avoiding the term "[open source](https://www.gnu.org/philosophy/open-source-misses-the-point.html)",
-  which undermines those values.
-* Avoiding raising unrelated political issues in Zrythm project discussions. The only
-  political positions that Zrythm endorses are (1) that all software should be
-  [free](https://www.fsf.org/about/what-is-free-software) and (2) supporting
-  basic human rights in computing. We don't require community members to agree with
-  these two points, however our decisions will be based on them
 
 Examples of unacceptable behavior include:
 
@@ -46,6 +37,12 @@ Examples of unacceptable behavior include:
   address, without their explicit permission
 * Other conduct which could reasonably be considered inappropriate in a
   professional setting
+
+Raising unrelated political issues should be avoided in Zrythm project
+discussions, because they are off-topic. The only political positions
+that Zrythm endorses are (1) that all software should be
+  [free](https://www.fsf.org/about/what-is-free-software) and (2) supporting
+  basic human rights in computing.
 
 ## Enforcement Responsibilities
 

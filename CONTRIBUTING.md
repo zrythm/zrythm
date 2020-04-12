@@ -48,7 +48,7 @@ Scheme for writing scripts and Python for the
 website.
 
 You will find it useful to read introductory
-material about C. Also, make sure to read the
+material about C. Also, make sure to read
 [HACKING.md](HACKING.md) for more details on the
 development setup, as well as the coding and
 cooperation conventions used in the project.
@@ -61,7 +61,8 @@ by [reporting bugs](https://redmine.zrythm.org/projects/zrythm/issues/new).
 # Translation
 You can help translate the software, the website
 and the manual into your language. Visit
-[Weblate](https://hosted.weblate.org/engage/zrythm/?utm_source=widget) to get started.
+[Weblate](https://hosted.weblate.org/engage/zrythm)
+to get started.
 
 Alternatively, you can edit the PO files directly
 and submit a patch.
