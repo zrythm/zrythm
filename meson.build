@@ -507,9 +507,10 @@ zrythm_deps = [
 
 if (get_option('enable_carla'))
   cdata.set('HAVE_CARLA', 1)
-  carla_native_plugin_dep = dependency(
-    'carla-native-plugin')
-  carla_utils_dep = dependency('carla-utils')
+  carla_native_plugin_dep = dependency (
+    'carla-native-plugin', version: '>=2.1.0')
+  carla_utils_dep = dependency (
+    'carla-utils', version: '>=2.1.0')
   carla_libdir = carla_native_plugin_dep.get_pkgconfig_variable('libdir')
   # note: this is only useful on gnu systems
   cdata.set_quoted (

@@ -19,6 +19,8 @@
 
 #include "config.h"
 
+#ifdef HAVE_CARLA
+
 #include "plugins/plugin_descriptor.h"
 #include "plugins/carla/carla_discovery.h"
 #include "utils/string.h"
@@ -127,3 +129,5 @@ z_carla_discovery_create_vst_descriptor (
 
   return descr;
 }
+
+#endif

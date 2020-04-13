@@ -17,5 +17,9 @@ resources/icons/font-awesome/** linguist-vendored
 resources/icons/fork-awesome/** linguist-vendored
 resources/icons/gnome-builder/** linguist-vendored
 git-packaging-hooks/** linguist-vendored
+src/plugins/lv2/suil/*.c linguist-vendored
+src/plugins/lv2/suil/*.cpp linguist-vendored
+src/plugins/lv2/suil/*.mm linguist-vendored
 
 inc/**/*.h linguist-language=C
+tests/**/*.h linguist-language=C
