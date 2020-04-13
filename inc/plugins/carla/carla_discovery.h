@@ -20,40 +20,34 @@
 /**
  * \file
  *
- * System utils.
+ * Carla discovery.
  */
 
-#ifndef __UTILS_SYSTEM_H__
-#define __UTILS_SYSTEM_H__
+#ifndef __PLUGINS_CARLA_DISCOVERY_H__
+#define __PLUGINS_CARLA_DISCOVERY_H__
+
+#include "config.h"
+
+#ifdef HAVE_CARLA
+
+typedef struct PluginDescriptor PluginDescriptor;
 
 /**
- * @addtogroup utils
+ * @addtogroup plugins
  *
  * @{
  */
 
 /**
- * Runs the given command in the background, waits for
- * it to finish and returns its exit code.
- *
- * @param ms_timer A timer in ms to
- *   kill the process, or negative to not
- *   wait.
+ * Create a descriptor for the given plugin path.
  */
-int
-system_run_cmd (
-  const char * cmd,
-  long         ms_timer);
-
-/**
- * Runs the command and returns the output, or NULL.
- */
-char *
-system_get_cmd_output (
-  const char * cmd);
+PluginDescriptor *
+z_carla_discovery_create_vst_descriptor (
+  const char * path);
 
 /**
  * @}
  */
 
+#endif
 #endif

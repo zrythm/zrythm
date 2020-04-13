@@ -17,5 +17,6 @@
 
 plugin_srcs += files([
   'carla_engine_interface.cpp',
+  'carla_discovery.c',
   'carla_plugin_interface.cpp',
   ])

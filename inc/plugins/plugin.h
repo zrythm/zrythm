@@ -266,7 +266,7 @@ plugin_new_from_descr (
  */
 Plugin *
 plugin_new_dummy (
-  PluginCategory cat,
+  ZPluginCategory cat,
   int            track_pos,
   int            slot);
 

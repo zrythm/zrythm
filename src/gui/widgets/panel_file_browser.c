@@ -221,7 +221,7 @@ create_model_for_types ()
 
   for (i = 0; i < NUM_FILE_TYPES; i++)
     {
-      FileType ft = i;
+      ZFileType ft = i;
       char * label =
         supported_file_type_get_description (ft);
 

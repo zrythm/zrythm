@@ -43,6 +43,7 @@
 
 #include "gui/widgets/main_window.h"
 #include "plugins/cached_vst_descriptors.h"
+#include "plugins/carla/carla_discovery.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
@@ -575,15 +576,15 @@ plugin_manager_scan_plugins (
       if (!vst_plugins)
         continue;
 
-      char * plugin;
+      char * plugin_path;
       int plugin_idx = 0;
-      while ((plugin = vst_plugins[plugin_idx++]) !=
+      while ((plugin_path = vst_plugins[plugin_idx++]) !=
                NULL)
         {
           PluginDescriptor * descriptor =
             cached_vst_descriptors_get (
               self->cached_vst_descriptors,
-              plugin);
+              plugin_path);
 
           if (descriptor)
             {
@@ -602,17 +603,23 @@ plugin_manager_scan_plugins (
               if (
                 cached_vst_descriptors_is_blacklisted (
                   self->cached_vst_descriptors,
-                  plugin))
+                  plugin_path))
                 {
                   g_message (
                     "Ignoring blacklisted VST "
-                    "plugin: %s", plugin);
+                    "plugin: %s", plugin_path);
                 }
               else
                 {
+#ifdef HAVE_CARLA
+                  descriptor =
+                    z_carla_discovery_create_vst_descriptor (
+                      plugin_path);
+#else
                   descriptor =
                     vst_plugin_create_descriptor_from_path (
-                      plugin, 0);
+                      plugin_path, 0);
+#endif
 
                   if (descriptor)
                     {
@@ -631,12 +638,12 @@ plugin_manager_scan_plugins (
                     }
                   else
                     {
-                      g_warning (
+                      g_message (
                         "Blacklisting VST %s",
-                        plugin);
+                        plugin_path);
                       cached_vst_descriptors_blacklist (
                         self->cached_vst_descriptors,
-                        plugin, 0);
+                        plugin_path, 0);
                     }
                 }
             }

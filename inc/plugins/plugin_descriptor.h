@@ -39,10 +39,10 @@
 /**
  * Plugin category.
  */
-typedef enum PluginCategory
+typedef enum ZPluginCategory
 {
   /** None specified. */
-  PLUGIN_CATEGORY_NONE,
+  ZPLUGIN_CATEGORY_NONE,
   PC_DELAY,
   PC_REVERB,
   PC_DISTORTION,
@@ -82,7 +82,7 @@ typedef enum PluginCategory
   PC_CONVERTER,
   PC_FUNCTION,
   PC_MIXER,
-} PluginCategory;
+} ZPluginCategory;
 
 /**
  * Plugin protocol.
@@ -116,7 +116,7 @@ typedef struct PluginDescriptor
   char *           author;
   char *           name;
   char *           website;
-  PluginCategory   category;
+  ZPluginCategory   category;
   /** Lv2 plugin subcategory. */
   char *           category_str;
   /** Number of audio input ports. */
@@ -303,12 +303,16 @@ plugin_descriptor_is_midi_modifier (
   PluginDescriptor * descr);
 
 /**
- * Returns the PluginCategory matching the given
+ * Returns the ZPluginCategory matching the given
  * string.
  */
-PluginCategory
+ZPluginCategory
 plugin_descriptor_string_to_category (
   const char * str);
+
+char *
+plugin_descriptor_category_to_string (
+  ZPluginCategory category);
 
 void
 plugin_descriptor_free (

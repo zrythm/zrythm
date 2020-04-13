@@ -520,44 +520,44 @@ carla_native_plugin_proces (
   /*return self;*/
 /*}*/
 
-static PluginCategory
+static ZPluginCategory
 carla_category_to_zrythm_category (
   int category)
 {
   switch (category)
     {
-    case CARLA_PLUGIN_CATEGORY_NONE:
-      return PLUGIN_CATEGORY_NONE;
+    case PLUGIN_CATEGORY_NONE:
+      return ZPLUGIN_CATEGORY_NONE;
       break;
-    case CARLA_PLUGIN_CATEGORY_SYNTH:
+    case PLUGIN_CATEGORY_SYNTH:
       return PC_INSTRUMENT;
       break;
-    case CARLA_PLUGIN_CATEGORY_DELAY:
+    case PLUGIN_CATEGORY_DELAY:
       return PC_DELAY;
       break;
-    case CARLA_PLUGIN_CATEGORY_EQ:
+    case PLUGIN_CATEGORY_EQ:
       return PC_EQ;
       break;
-    case CARLA_PLUGIN_CATEGORY_FILTER:
+    case PLUGIN_CATEGORY_FILTER:
       return PC_FILTER;
       break;
-    case CARLA_PLUGIN_CATEGORY_DISTORTION:
+    case PLUGIN_CATEGORY_DISTORTION:
       return PC_DISTORTION;
       break;
-    case CARLA_PLUGIN_CATEGORY_DYNAMICS:
+    case PLUGIN_CATEGORY_DYNAMICS:
       return PC_DYNAMICS;
       break;
-    case CARLA_PLUGIN_CATEGORY_MODULATOR:
+    case PLUGIN_CATEGORY_MODULATOR:
       return PC_MODULATOR;
       break;
-    case CARLA_PLUGIN_CATEGORY_UTILITY:
+    case PLUGIN_CATEGORY_UTILITY:
       return PC_UTILITY;
       break;
-    case CARLA_PLUGIN_CATEGORY_OTHER:
-      return PLUGIN_CATEGORY_NONE;
+    case PLUGIN_CATEGORY_OTHER:
+      return ZPLUGIN_CATEGORY_NONE;
       break;
     }
-  g_return_val_if_reached (PLUGIN_CATEGORY_NONE);
+  g_return_val_if_reached (ZPLUGIN_CATEGORY_NONE);
 }
 
 static char *
@@ -566,34 +566,34 @@ carla_category_to_zrythm_category_str (
 {
   switch (category)
     {
-    case CARLA_PLUGIN_CATEGORY_NONE:
+    case PLUGIN_CATEGORY_NONE:
       return g_strdup ("Plugin");
       break;
-    case CARLA_PLUGIN_CATEGORY_SYNTH:
+    case PLUGIN_CATEGORY_SYNTH:
       return g_strdup ("Instrument");
       break;
-    case CARLA_PLUGIN_CATEGORY_DELAY:
+    case PLUGIN_CATEGORY_DELAY:
       return g_strdup ("Delay");
       break;
-    case CARLA_PLUGIN_CATEGORY_EQ:
+    case PLUGIN_CATEGORY_EQ:
       return g_strdup ("Equalizer");
       break;
-    case CARLA_PLUGIN_CATEGORY_FILTER:
+    case PLUGIN_CATEGORY_FILTER:
       return g_strdup ("Filter");
       break;
-    case CARLA_PLUGIN_CATEGORY_DISTORTION:
+    case PLUGIN_CATEGORY_DISTORTION:
       return g_strdup ("Distortion");
       break;
-    case CARLA_PLUGIN_CATEGORY_DYNAMICS:
+    case PLUGIN_CATEGORY_DYNAMICS:
       return g_strdup ("Dynamics");
       break;
-    case CARLA_PLUGIN_CATEGORY_MODULATOR:
+    case PLUGIN_CATEGORY_MODULATOR:
       return g_strdup ("Modulator");
       break;
-    case CARLA_PLUGIN_CATEGORY_UTILITY:
+    case PLUGIN_CATEGORY_UTILITY:
       return g_strdup ("Utility");
       break;
-    case CARLA_PLUGIN_CATEGORY_OTHER:
+    case PLUGIN_CATEGORY_OTHER:
       return g_strdup ("Plugin");
       break;
     }
@@ -741,7 +741,7 @@ carla_native_plugin_get_descriptor_from_path (
       /* close */
       pclose (fp);
 
-      descr->category = PLUGIN_CATEGORY_NONE;
+      descr->category = ZPLUGIN_CATEGORY_NONE;
       descr->category_str =
         g_strdup ("Plugin");
 

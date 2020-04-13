@@ -98,6 +98,32 @@ string_replace (
   const char * to);
 
 /**
+ * Gets the string in the given regex group.
+ *
+ * @return The string, or NULL.
+ */
+char *
+string_get_regex_group (
+  const char * str,
+  const char * regex,
+  int          group);
+
+/**
+ * Gets the string in the given regex group as an
+ * integer.
+ *
+ * @param def Default.
+ *
+ * @return The int, or default.
+ */
+int
+string_get_regex_group_as_int (
+  const char * str,
+  const char * regex,
+  int          group,
+  int          def);
+
+/**
  * Returns the integer found at the end of a string
  * like "My String 3" -> 3, or -1 if no number is
  * found.

@@ -47,7 +47,7 @@ typedef struct _PanelFileBrowserWidget
   GtkExpander *          locations_exp;
   GtkBox *               browser_bot;
   GtkLabel *             file_info;
-  FileType               selected_type;
+  ZFileType               selected_type;
   GtkTreeModel *         type_tree_model;
   GtkTreeModel *         locations_tree_model;
   GtkTreeModelFilter *   files_tree_model;

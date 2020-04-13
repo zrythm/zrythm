@@ -569,7 +569,7 @@ vst_plugin_create_descriptor_from_path (
           g_warn_if_reached ();
           break;
         default:
-          descr->category = PLUGIN_CATEGORY_NONE;
+          descr->category = ZPLUGIN_CATEGORY_NONE;
           descr->category_str =
             g_strdup ("Plugin");
           break;

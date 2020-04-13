@@ -102,7 +102,7 @@ plugin_descriptor_is_instrument (
     /* if VSTs are instruments their category must
      * be INSTRUMENT, otherwise they are not */
     (descr->protocol != PROT_VST &&
-     descr->category == PLUGIN_CATEGORY_NONE &&
+     descr->category == ZPLUGIN_CATEGORY_NONE &&
      descr->num_midi_ins > 0 &&
      descr->num_audio_outs > 0);
 }
@@ -116,7 +116,7 @@ plugin_descriptor_is_effect (
 {
 
   return
-    (descr->category > PLUGIN_CATEGORY_NONE &&
+    (descr->category > ZPLUGIN_CATEGORY_NONE &&
      (IS_CAT (DELAY) ||
       IS_CAT (REVERB) ||
       IS_CAT (DISTORTION) ||
@@ -154,7 +154,7 @@ plugin_descriptor_is_effect (
       IS_CAT (CONVERTER) ||
       IS_CAT (FUNCTION) ||
       IS_CAT (MIXER))) ||
-    (descr->category == PLUGIN_CATEGORY_NONE &&
+    (descr->category == ZPLUGIN_CATEGORY_NONE &&
      descr->num_audio_ins > 0 &&
      descr->num_audio_outs > 0);
 }
@@ -167,8 +167,8 @@ plugin_descriptor_is_modulator (
   PluginDescriptor * descr)
 {
   return
-    (descr->category == PLUGIN_CATEGORY_NONE ||
-     (descr->category > PLUGIN_CATEGORY_NONE &&
+    (descr->category == ZPLUGIN_CATEGORY_NONE ||
+     (descr->category > ZPLUGIN_CATEGORY_NONE &&
       (IS_CAT (ENVELOPE) ||
        IS_CAT (GENERATOR) ||
        IS_CAT (CONSTANT) ||
@@ -188,9 +188,9 @@ plugin_descriptor_is_midi_modifier (
   PluginDescriptor * descr)
 {
   return
-    (descr->category > PLUGIN_CATEGORY_NONE &&
+    (descr->category > ZPLUGIN_CATEGORY_NONE &&
      descr->category == PC_MIDI) ||
-    (descr->category == PLUGIN_CATEGORY_NONE &&
+    (descr->category == ZPLUGIN_CATEGORY_NONE &&
      descr->num_midi_ins > 0 &&
      descr->num_midi_outs > 0 &&
      descr->protocol != PROT_VST);
@@ -199,14 +199,14 @@ plugin_descriptor_is_midi_modifier (
 #undef IS_CAT
 
 /**
- * Returns the PluginCategory matching the given
+ * Returns the ZPluginCategory matching the given
  * string.
  */
-PluginCategory
+ZPluginCategory
 plugin_descriptor_string_to_category (
   const char * str)
 {
-  PluginCategory category = PLUGIN_CATEGORY_NONE;
+  ZPluginCategory category = ZPLUGIN_CATEGORY_NONE;
 
 #define CHECK_CAT(term,cat) \
   if (g_strrstr (str, term)) \
@@ -258,6 +258,63 @@ plugin_descriptor_string_to_category (
 #undef CHECK_CAT
 
   return category;
+}
+
+char *
+plugin_descriptor_category_to_string (
+  ZPluginCategory category)
+{
+
+#define RET_STRING(term,cat) \
+  if (category == PC_##cat) \
+    return g_strdup (term)
+
+  /* add category */
+  RET_STRING ("Delay", DELAY);
+  RET_STRING ("Reverb", REVERB);
+  RET_STRING ("Distortion", DISTORTION);
+  RET_STRING ("Waveshaper", WAVESHAPER);
+  RET_STRING ("Dynamics", DYNAMICS);
+  RET_STRING ("Amplifier", AMPLIFIER);
+  RET_STRING ("Compressor", COMPRESSOR);
+  RET_STRING ("Envelope", ENVELOPE);
+  RET_STRING ("Expander", EXPANDER);
+  RET_STRING ("Gate", GATE);
+  RET_STRING ("Limiter", LIMITER);
+  RET_STRING ("Filter", FILTER);
+  RET_STRING ("Allpass", ALLPASS_FILTER);
+  RET_STRING ("Bandpass", BANDPASS_FILTER);
+  RET_STRING ("Comb", COMB_FILTER);
+  RET_STRING ("Equaliser", EQ);
+  RET_STRING ("Equalizer", EQ);
+  RET_STRING ("Multiband", MULTI_EQ);
+  RET_STRING ("Para", PARA_EQ);
+  RET_STRING ("Highpass", HIGHPASS_FILTER);
+  RET_STRING ("Lowpass", LOWPASS_FILTER);
+  RET_STRING ("Generator", GENERATOR);
+  RET_STRING ("Constant", CONSTANT);
+  RET_STRING ("Instrument", INSTRUMENT);
+  RET_STRING ("Oscillator", OSCILLATOR);
+  RET_STRING ("MIDI", MIDI);
+  RET_STRING ("Modulator", MODULATOR);
+  RET_STRING ("Chorus", CHORUS);
+  RET_STRING ("Flanger", FLANGER);
+  RET_STRING ("Phaser", PHASER);
+  RET_STRING ("Simulator", SIMULATOR);
+  RET_STRING ("SimulatorReverb", SIMULATOR_REVERB);
+  RET_STRING ("Spatial", SPATIAL);
+  RET_STRING ("Spectral", SPECTRAL);
+  RET_STRING ("Pitch", PITCH);
+  RET_STRING ("Utility", UTILITY);
+  RET_STRING ("Analyser", ANALYZER);
+  RET_STRING ("Analyzer", ANALYZER);
+  RET_STRING ("Converter", CONVERTER);
+  RET_STRING ("Function", FUNCTION);
+  RET_STRING ("Mixer", MIXER);
+
+#undef RET_STRING
+
+  return g_strdup ("Plugin");
 }
 
 void

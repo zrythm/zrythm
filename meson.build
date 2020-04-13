@@ -125,8 +125,6 @@ inc_inc = include_directories ('inc')
 ext_inc = include_directories ('ext')
 midilib_inc = include_directories (
   join_paths ('ext', 'midilib'))
-carla_native_plugin_inc = include_directories (
-  join_paths ('ext', 'carla'))
 zix_inc = include_directories (
   join_paths ('ext', 'zix'))
 suil_inc = include_directories (
@@ -135,7 +133,6 @@ all_inc = [
   root_inc,
   inc_inc,
   ext_inc,
-  carla_native_plugin_inc,
   midilib_inc,
   zix_inc,
   suil_inc,
@@ -187,6 +184,7 @@ texi2html = find_program (
 scripts_conf = {
   'SCRIPTS_DIR': meson.source_root () / 'scripts',
   'MESON_BUILD_ROOT': meson.build_root (),
+  'MESON_SOURCE_ROOT': meson.source_root (),
   }
 if os_windows
   scripts_conf += { 'GUILE': 'guile' }
@@ -201,26 +199,21 @@ if texi2html.found()
     'TEXI2HTML_BIN': texi2html.path() }
 endif
 if guile_snarf.found()
-  scripts_conf += {
-    'GUILE_SNARF': guile_snarf.path(),
-    'SOURCE_ROOT_DIR': meson.source_root ()}
-  guile_snarf_wrap_path = 'scripts' / 'guile-snarf-wrap.scm'
   guile_snarf_wrap = configure_file (
     output: 'guile-snarf-wrap.scm',
-    input: guile_snarf_wrap_path,
-    configuration: scripts_conf,
+    input: 'scripts' / 'guile-snarf-wrap.scm',
+    configuration: scripts_conf + {
+      'GUILE_SNARF': guile_snarf.path() },
     )
 endif
 if get_option('guile_snarf_docs_path') != ''
-  scripts_conf += {
-    'GUILE_SNARF_DOCS_BIN': get_option (
-      'guile_snarf_docs_path'),
-    'GUILD_BIN': guild.path() }
-  guile_gen_docs_path = 'scripts' / 'guile-gen-docs.scm'
   guile_gen_docs = configure_file (
     output: 'guile-gen-docs.scm',
-    input: guile_gen_docs_path,
-    configuration: scripts_conf,
+    input: 'scripts' / 'guile-gen-docs.scm',
+    configuration: scripts_conf + {
+      'GUILE_SNARF_DOCS_BIN': get_option (
+        'guile_snarf_docs_path'),
+      'GUILD_BIN': guild.path() },
     )
 endif
 meson_post_install_path = 'scripts' / 'meson-post-install.scm'
@@ -230,11 +223,11 @@ meson_post_install = configure_file (
   configuration: scripts_conf,
   )
 # wrap is needed on windows mingw
-post_install_wrap_path = 'scripts' / 'meson_post_install_wrap.sh'
-post_install_wrap = configure_file (
+configure_file (
   output: 'meson_post_install_wrap.sh',
-  input: post_install_wrap_path,
-  configuration: scripts_conf,
+  input: 'scripts' / 'generic_guile_wrap.sh',
+  configuration: scripts_conf + {
+    'SCRIPT_NAME': 'meson-post-install.scm'},
   )
 
 check_headers = [
@@ -517,35 +510,11 @@ if (get_option('enable_carla'))
   carla_native_plugin_dep = dependency(
     'carla-native-plugin')
   carla_utils_dep = dependency('carla-utils')
-  # workaround because carla's pc files are broken
-  carla_includedir = carla_native_plugin_dep.get_pkgconfig_variable('includedir')
   carla_libdir = carla_native_plugin_dep.get_pkgconfig_variable('libdir')
-  carla_native_plugin_dep = declare_dependency(
-    link_args: [
-      '-Wl,-rpath=' + carla_libdir,
-      '-L' + carla_libdir,
-      '-lcarla_native-plugin',
-      ],
-    compile_args: [
-      '-DREAL_BUILD',
-      '-I' + carla_includedir,
-      '-I' + join_paths (carla_includedir, 'includes'),
-      ])
-  # workaround because carla's pc files are broken
-  carla_includedir = carla_utils_dep.get_pkgconfig_variable('includedir')
-  carla_libdir = carla_utils_dep.get_pkgconfig_variable('libdir')
-  carla_utils_dep = declare_dependency(
-    link_args: [
-      '-Wl,-rpath=' + carla_libdir,
-      '-L' + carla_libdir,
-      '-lcarla_utils',
-      ],
-    compile_args: [
-      '-DREAL_BUILD',
-      '-I' + carla_includedir,
-      '-I' + join_paths (carla_includedir, 'includes'),
-      '-I' + join_paths (carla_includedir, 'utils'),
-      ])
+  # note: this is only useful on gnu systems
+  cdata.set_quoted (
+    'CARLA_DISCOVERY_NATIVE_PATH',
+    carla_libdir / 'carla-discovery-native')
   zrythm_deps += [
     carla_native_plugin_dep,
     carla_utils_dep, ]
@@ -689,6 +658,9 @@ subdir ('scripts')
 
 meson.add_install_script (
   meson.build_root() / 'meson_post_install_wrap.sh')
+
+meson.add_dist_script (
+  'scripts' / 'meson_dist.sh')
 
 if meson.version().version_compare('>=0.53')
 summary({

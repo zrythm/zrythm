@@ -54,7 +54,7 @@ supported_file_new_from_path (
  */
 int
 supported_file_type_is_supported (
-  FileType type)
+  ZFileType type)
 {
   if (supported_file_type_is_audio (type))
     {
@@ -79,7 +79,7 @@ supported_file_type_is_supported (
  */
 int
 supported_file_type_is_audio (
-  FileType type)
+  ZFileType type)
 {
   return
     type == FILE_TYPE_MP3 ||
@@ -93,7 +93,7 @@ supported_file_type_is_audio (
  */
 int
 supported_file_type_is_midi (
-  FileType type)
+  ZFileType type)
 {
   return type == FILE_TYPE_MIDI;
 }
@@ -122,7 +122,7 @@ supported_file_clone (
  */
 char *
 supported_file_type_get_description (
-  FileType type)
+  ZFileType type)
 {
   switch (type)
     {
@@ -159,13 +159,13 @@ supported_file_type_get_description (
 /**
  * Returns the file type of the given file path.
  */
-FileType
+ZFileType
 supported_file_get_type (
   const char * file)
 {
   char * ext =
     io_file_get_ext (file);
-  FileType type = FILE_TYPE_OTHER;
+  ZFileType type = FILE_TYPE_OTHER;
 
   if (g_file_test (file, G_FILE_TEST_IS_DIR))
     type = FILE_TYPE_DIR;
@@ -203,7 +203,7 @@ supported_file_get_type (
  */
 const char *
 supported_file_type_get_ext (
-  FileType type)
+  ZFileType type)
 {
   switch (type)
     {

@@ -37,7 +37,7 @@
 /**
  * File type.
  */
-typedef enum FileType
+typedef enum ZFileType
 {
   FILE_TYPE_MIDI,
   FILE_TYPE_MP3,
@@ -49,7 +49,7 @@ typedef enum FileType
   FILE_TYPE_PARENT_DIR,
   FILE_TYPE_OTHER,
   NUM_FILE_TYPES,
-} FileType;
+} ZFileType;
 
 static const cyaml_strval_t
   file_type_strings[] =
@@ -81,7 +81,7 @@ typedef struct SupportedFile
   char *         abs_path;
 
   /** Type of file. */
-  FileType       type;
+  ZFileType       type;
 
   /** Human readable label. */
   char *          label;
@@ -134,7 +134,7 @@ supported_file_new_from_path (
  */
 char *
 supported_file_type_get_description (
-  FileType type);
+  ZFileType type);
 
 
 /**
@@ -149,21 +149,21 @@ supported_file_clone (
  */
 int
 supported_file_type_is_supported (
-  FileType type);
+  ZFileType type);
 
 /**
  * Returns if the SupportedFile is an audio file.
  */
 int
 supported_file_type_is_audio (
-  FileType type);
+  ZFileType type);
 
 /**
  * Returns if the SupportedFile is a midi file.
  */
 int
 supported_file_type_is_midi (
-  FileType type);
+  ZFileType type);
 
 /**
  * Returns the most common extension for the given
@@ -171,12 +171,12 @@ supported_file_type_is_midi (
  */
 const char *
 supported_file_type_get_ext (
-  FileType type);
+  ZFileType type);
 
 /**
  * Returns the file type of the given file path.
  */
-FileType
+ZFileType
 supported_file_get_type (
   const char * file);
 

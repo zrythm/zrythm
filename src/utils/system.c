@@ -21,6 +21,7 @@
 #include <windows.h>
 #endif
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -140,4 +141,30 @@ system_run_cmd (
     }
   return system (timed_cmd);
 #endif
+}
+
+/**
+ * Runs the command and returns the output, or NULL.
+ */
+char *
+system_get_cmd_output (
+  const char * cmd)
+{
+  /* Open the command for reading. */
+  FILE * fp = popen (cmd, "r");
+  g_return_val_if_fail (fp, NULL);
+
+  /* Read the output a line at a time - output it. */
+  const int size = 4000;
+  char buf[size];
+  GString * str = g_string_new (NULL);
+  while (fgets (buf, size, fp) != NULL)
+    {
+      g_string_append (str, buf);
+    }
+
+  /* close */
+  pclose (fp);
+
+  return g_string_free (str, false);
 }

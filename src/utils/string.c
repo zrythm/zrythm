@@ -1,7 +1,5 @@
 /*
- * utils/string.h - string utils
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -186,6 +184,118 @@ string_replace (
     g_strjoinv (to, split);
   g_strfreev (split);
   return new_str;
+}
+
+/**
+ * Gets the string in the given regex group as an
+ * integer.
+ *
+ * @param def Default.
+ *
+ * @return The int, or default.
+ */
+int
+string_get_regex_group_as_int (
+  const char * str,
+  const char * regex,
+  int          group,
+  int          def)
+{
+  char * res =
+    string_get_regex_group (str, regex, group);
+  if (res)
+    {
+      int res_int = atoi (res);
+      g_free (res);
+      return res_int;
+    }
+  else
+    return def;
+}
+
+/**
+ * Gets the string in the given regex group.
+ *
+ * @return The string, or NULL.
+ */
+char *
+string_get_regex_group (
+  const char * str,
+  const char * regex,
+  int          group)
+{
+  int OVECCOUNT = 60;
+  const char *error;
+  int   erroffset;
+  pcre *re;
+  int   rc;
+  int   ovector[OVECCOUNT];
+
+  re =
+    pcre_compile (
+      /* pattern */
+      regex,
+      /* options */
+      0,
+      /* error message */
+      &error,
+      /* error offset */
+      &erroffset,
+      /* use default character tables */
+      0);
+
+  if (!re)
+    {
+      g_warning (
+        "pcre_compile failed (offset: %d), %s",
+        erroffset, error);
+      return NULL;
+    }
+
+  rc =
+    pcre_exec (
+      re, /* the compiled pattern */
+      0,  /* no extra data - pattern was not studied */
+      str, /* the string to match */
+      strlen (str), /* the length of the string */
+      0,   /* start at offset 0 in the subject */
+      0,   /* default options */
+      ovector, /* output vector for substring information */
+      OVECCOUNT); /* number of elements in the output vector */
+
+  if (rc < 0)
+    {
+      switch (rc)
+        {
+        case PCRE_ERROR_NOMATCH:
+          /*g_message ("String %s didn't match", str);*/
+          break;
+
+        default:
+          g_message (
+            "Error while matching \"%s\": %d",
+            str, rc);
+          break;
+        }
+      free (re);
+      return NULL;
+    }
+
+#if 0
+  for (int i = 0; i < rc; i++)
+    {
+      g_message (
+        "%2d: %.*s", i,
+        ovector[2 * i + 1] - ovector[2 * i],
+        str + ovector[2 * i]);
+    }
+#endif
+
+  return
+    g_strdup_printf (
+      "%.*s",
+      ovector[2 * group + 1] - ovector[2 * group],
+      str + ovector[2 * group]);
 }
 
 /**

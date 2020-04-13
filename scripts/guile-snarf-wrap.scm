@@ -35,7 +35,7 @@
          (system*
            "@GUILE_SNARF@"
            "-o" output-file input-file
-           "-I@SOURCE_ROOT_DIR@/inc"
+           "-I@MESON_SOURCE_ROOT@/inc"
            (get-cflags-from-pkgconf-name
              guile-pkgconf-name)))
        (exit -1)))))
