@@ -44,7 +44,6 @@
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/file_browser.h"
 #include "gui/widgets/header.h"
-#include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"

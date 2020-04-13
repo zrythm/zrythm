@@ -70,7 +70,6 @@ widget_srcs = files([
   'help_toolbar.c',
   'home_toolbar.c',
   'inspector_ap.c',
-  'inspector.c',
   'inspector_chord.c',
   'inspector_editor.c',
   'inspector_midi.c',

@@ -21,7 +21,6 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/inspector.h"
 #include "gui/widgets/inspector_plugin.h"
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/left_dock_edge.h"
@@ -67,13 +66,41 @@ left_dock_edge_widget_setup (
     MW_CENTER_DOCK->left_rest_paned,
     GTK_POS_LEFT);
 
-  /*inspector_widget_setup (*/
-    /*self->inspector);*/
   inspector_track_widget_setup (
     self->track_inspector, TRACKLIST_SELECTIONS);
 
   visibility_widget_refresh (
     self->visibility);
+}
+
+static GtkScrolledWindow *
+wrap_inspector_in_scrolled_window (
+  LeftDockEdgeWidget * self,
+  GtkWidget *          widget)
+{
+  GtkScrolledWindow * scroll;
+  GtkViewport * viewport;
+  scroll =
+    GTK_SCROLLED_WINDOW (
+      gtk_scrolled_window_new (NULL, NULL));
+  gtk_widget_set_visible (
+    GTK_WIDGET (scroll), true);
+  /*gtk_scrolled_window_set_overlay_scrolling (*/
+    /*scroll, false);*/
+  gtk_scrolled_window_set_policy (
+    scroll, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  viewport =
+    GTK_VIEWPORT (
+      gtk_viewport_new (NULL, NULL));
+  gtk_widget_set_visible (
+    GTK_WIDGET (viewport), true);
+  gtk_container_add (
+    GTK_CONTAINER (viewport), widget);
+  gtk_container_add (
+    GTK_CONTAINER (scroll),
+    GTK_WIDGET (viewport));
+
+  return scroll;
 }
 
 static void
@@ -84,6 +111,8 @@ left_dock_edge_widget_init (
 
   const int min_width = 160;
   GtkWidget * img;
+  GtkBox * inspector_wrap;
+  GtkScrolledWindow * scroll;
 
   /* setup track inspector */
   self->track_inspector =
@@ -94,17 +123,20 @@ left_dock_edge_widget_init (
       GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Track inspector"));
-  GtkBox * inspector_box =
+  inspector_wrap =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_container_add (
-    GTK_CONTAINER (inspector_box),
+    GTK_CONTAINER (inspector_wrap),
     GTK_WIDGET (self->track_inspector));
   gtk_widget_set_visible (
-    GTK_WIDGET (inspector_box), 1);
+    GTK_WIDGET (inspector_wrap), 1);
+  scroll =
+    wrap_inspector_in_scrolled_window (
+      self, GTK_WIDGET (inspector_wrap));
   gtk_notebook_prepend_page (
     GTK_NOTEBOOK (self->inspector_notebook),
-    GTK_WIDGET (inspector_box), img);
+    GTK_WIDGET (scroll), img);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->track_inspector),
     min_width, -1);
@@ -118,17 +150,17 @@ left_dock_edge_widget_init (
       GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Plugin inspector"));
-  inspector_box =
+  inspector_wrap =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_container_add (
-    GTK_CONTAINER (inspector_box),
+    GTK_CONTAINER (inspector_wrap),
     GTK_WIDGET (self->plugin_inspector));
   gtk_widget_set_visible (
-    GTK_WIDGET (inspector_box), 1);
+    GTK_WIDGET (inspector_wrap), 1);
   gtk_notebook_append_page (
     GTK_NOTEBOOK (self->inspector_notebook),
-    GTK_WIDGET (inspector_box), img);
+    GTK_WIDGET (inspector_wrap), img);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->plugin_inspector),
     min_width, -1);

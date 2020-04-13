@@ -58,7 +58,6 @@
 #include "gui/widgets/header.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/inspector_track.h"
-#include "gui/widgets/inspector.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"

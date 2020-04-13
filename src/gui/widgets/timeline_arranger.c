@@ -50,7 +50,6 @@
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/export_midi_file_dialog.h"
 #include "gui/widgets/foldable_notebook.h"
-#include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/marker.h"
 #include "gui/widgets/midi_arranger.h"

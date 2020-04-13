@@ -21,7 +21,6 @@
 #include "gui/backend/mixer_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/left_dock_edge.h"
-#include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/arrays.h"

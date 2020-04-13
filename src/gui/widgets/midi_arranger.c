@@ -34,7 +34,6 @@
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/dialogs/arranger_object_info.h"
 #include "gui/widgets/editor_ruler.h"
-#include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_arranger.h"
