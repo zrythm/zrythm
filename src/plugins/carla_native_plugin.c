@@ -360,10 +360,47 @@ carla_native_plugin_proces (
           break;
         }
 
+      /* get main midi port */
+      Port * port = NULL;
+      for (i = 0;
+           i < self->plugin->num_in_ports; i++)
+        {
+          port = self->plugin->in_ports[i];
+          if (port->id.type == TYPE_EVENT)
+            {
+              break;
+            }
+          else
+            port = NULL;
+        }
+
+      int num_events =
+        port ? port->midi_events->num_events : 0;
+      NativeMidiEvent events[
+        num_events == 0 ? 1 : num_events];
+      for (i = 0; i < num_events; i++)
+        {
+          MidiEvent * ev =
+            &port->midi_events->events[i];
+          events[i].time = ev->time;
+          events[i].size = 3;
+          events[i].data[0] = ev->raw_buffer[0];
+          events[i].data[1] = ev->raw_buffer[1];
+          events[i].data[2] = ev->raw_buffer[2];
+        }
+      if (num_events > 0)
+        {
+          g_message (
+            "Carla plugin %s has %d MIDI events",
+            self->plugin->descr->name,
+            self->num_midi_events);
+        }
+
       /*g_warn_if_reached ();*/
       self->native_plugin_descriptor->process (
         self->native_plugin_handle, inbuf, outbuf,
-        nframes, NULL, 0);
+        nframes, num_events > 0 ? events : NULL,
+        (uint32_t) num_events);
     }
       break;
 #if 0
