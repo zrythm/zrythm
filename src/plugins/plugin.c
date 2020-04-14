@@ -1029,7 +1029,7 @@ plugin_close_ui (Plugin *plugin)
   if (plugin->descr->open_with_carla)
     {
       carla_native_plugin_open_ui (
-        plugin->carla, 0);
+        plugin->carla, false);
     }
   else
     {

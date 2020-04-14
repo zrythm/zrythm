@@ -148,6 +148,7 @@ host_dispatcher (
   return 0;
 }
 
+#if 0
 /**
  * Carla engine callback.
  */
@@ -201,6 +202,7 @@ engine_callback (
       break;
     }
 }
+#endif
 
 static CarlaNativePlugin *
 _create ()
@@ -272,8 +274,8 @@ create_plugin (
     carla_create_native_plugin_host_handle (
       self->native_plugin_descriptor,
       self->native_plugin_handle);
-  carla_set_engine_callback (
-    self->host_handle, engine_callback, self);
+  /*carla_set_engine_callback (*/
+    /*self->host_handle, engine_callback, self);*/
   self->carla_plugin_id = 0;
   int ret = 0;
   switch (descr->protocol)
@@ -343,17 +345,18 @@ carla_native_plugin_proces (
 
   switch (self->plugin->descr->protocol)
     {
+    case PROT_LV2:
     case PROT_VST:
     {
       float * inbuf[] =
         {
           self->stereo_in->l->buf,
-          self->stereo_in->r->buf
+          self->stereo_in->r->buf,
         };
       float * outbuf[] =
         {
           self->stereo_out->l->buf,
-          self->stereo_out->r->buf
+          self->stereo_out->r->buf,
         };
       self->native_plugin_descriptor->process (
         self->native_plugin_handle, inbuf, outbuf,
@@ -969,7 +972,7 @@ carla_native_plugin_instantiate (
 void
 carla_native_plugin_open_ui (
   CarlaNativePlugin * self,
-  int                 show)
+  bool                show)
 {
   switch (self->plugin->descr->protocol)
     {
@@ -978,13 +981,21 @@ carla_native_plugin_open_ui (
       {
         carla_show_custom_ui (
           self->host_handle, 0, show);
-        self->plugin->visible = 1;
+          self->plugin->visible = show;
 
-        g_warn_if_fail (MAIN_WINDOW);
-        gtk_widget_add_tick_callback (
-          GTK_WIDGET (MAIN_WINDOW),
-          (GtkTickCallback) carla_plugin_tick_cb,
-          self, NULL);
+        if (show)
+          {
+            g_warn_if_fail (MAIN_WINDOW);
+            gtk_widget_add_tick_callback (
+              GTK_WIDGET (MAIN_WINDOW),
+              (GtkTickCallback)
+              carla_plugin_tick_cb,
+              self, NULL);
+          }
+
+          EVENTS_PUSH (
+            ET_PLUGIN_WINDOW_VISIBILITY_CHANGED,
+            self->plugin);
       }
       break;
 #if 0

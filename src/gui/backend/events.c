@@ -886,13 +886,9 @@ on_track_changed (Track * track)
 }
 
 static void
-on_plugin_visibility_changed (Plugin * pl)
+on_plugin_window_visibility_changed (
+  Plugin * pl)
 {
-  if (pl->visible)
-    plugin_open_ui (pl);
-  else if (!pl->visible)
-    plugin_close_ui (pl);
-
   Track * track = plugin_get_track (pl);
   if (track->type ==
       TRACK_TYPE_INSTRUMENT &&
@@ -911,6 +907,17 @@ on_plugin_visibility_changed (Plugin * pl)
           channel_get_plugin_index (
             track->channel, pl));
     }
+}
+
+static void
+on_plugin_visibility_changed (Plugin * pl)
+{
+  if (pl->visible)
+    plugin_open_ui (pl);
+  else if (!pl->visible)
+    plugin_close_ui (pl);
+
+  on_plugin_window_visibility_changed (pl);
 }
 
 /*static int*/
@@ -1190,6 +1197,10 @@ events_process (void * data)
           break;
         case ET_PLUGIN_VISIBILITY_CHANGED:
           on_plugin_visibility_changed (
+            (Plugin *) ev->arg);
+          break;
+        case ET_PLUGIN_WINDOW_VISIBILITY_CHANGED:
+          on_plugin_window_visibility_changed (
             (Plugin *) ev->arg);
           break;
         case ET_PLUGIN_STATE_CHANGED:

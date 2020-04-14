@@ -168,7 +168,7 @@ carla_native_plugin_proces (
 void
 carla_native_plugin_open_ui (
   CarlaNativePlugin * self,
-  int                 show);
+  bool                show);
 
 /**
  * Returns the plugin Port corresponding to the

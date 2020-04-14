@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -136,9 +136,13 @@ typedef enum EventType
 
   ET_TRACKLIST_SELECTIONS_CHANGED,
 
-  /** Plugin visibility changed, should close/open
-   * UI. */
+  /** Plugin visibility parameter changed, should
+   * close/open UI. */
   ET_PLUGIN_VISIBILITY_CHANGED,
+
+  /** Plugin UI opened or closed, should redraw */
+  ET_PLUGIN_WINDOW_VISIBILITY_CHANGED,
+
   ET_PLUGIN_STATE_CHANGED,
 
   ET_TRACKS_ADDED,
