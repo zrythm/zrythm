@@ -73,21 +73,6 @@ typedef struct CarlaNativePlugin
   /** Plugin ID inside carla engine. */
   unsigned int             carla_plugin_id;
 
-  /** Pointer to the in ports in the Plugin. */
-  StereoPorts *            stereo_in;
-
-  StereoPorts *            cv_in;
-
-  /** Pointer to the in port in the Plugin. */
-  Port *                   midi_in;
-
-  /** Pointer to the out ports in the Plugin. */
-  StereoPorts *            stereo_out;
-
-  StereoPorts *            cv_out;
-
-  /** Pointer to the out port in the Plugin. */
-  Port *                   midi_out;
 } CarlaNativePlugin;
 
 /**

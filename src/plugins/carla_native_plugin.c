@@ -148,62 +148,6 @@ host_dispatcher (
   return 0;
 }
 
-#if 0
-/**
- * Carla engine callback.
- */
-static void
-engine_callback (
-  void* ptr,
-  EngineCallbackOpcode action,
-  unsigned int pluginId,
-  int value1,
-  int value2,
-  int value3,
-  float valuef,
-  const char* valueStr)
-{
-  CarlaNativePlugin * self =
-    (CarlaNativePlugin *) ptr;
-
-  switch (action)
-    {
-    case ENGINE_CALLBACK_PARAMETER_VALUE_CHANGED:
-      break;
-    case ENGINE_CALLBACK_PLUGIN_ADDED:
-      self->carla_plugin_id = pluginId;
-      /*g_message ("Carla: plugin added");*/
-      break;
-    case ENGINE_CALLBACK_UI_STATE_CHANGED:
-      if (value1 == 1)
-        {
-          self->plugin->visible = value1;
-          g_message ("plugin ui visible");
-        }
-      else if (value1 == 0)
-        {
-          self->plugin->visible = value1;
-        }
-      else
-        {
-          g_warning (
-            "Plugin \"%s\" UI crashed",
-            self->plugin->descr->name);
-        }
-      break;
-    case ENGINE_CALLBACK_PATCHBAY_CLIENT_ADDED:
-    case ENGINE_CALLBACK_PATCHBAY_PORT_ADDED:
-    case ENGINE_CALLBACK_IDLE:
-    case ENGINE_CALLBACK_ENGINE_STOPPED:
-      /* ignore */
-      break;
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-}
-#endif
-
 static CarlaNativePlugin *
 _create ()
 {
@@ -274,8 +218,6 @@ create_plugin (
     carla_create_native_plugin_host_handle (
       self->native_plugin_descriptor,
       self->native_plugin_handle);
-  /*carla_set_engine_callback (*/
-    /*self->host_handle, engine_callback, self);*/
   self->carla_plugin_id = 0;
   int ret = 0;
   switch (descr->protocol)
@@ -343,21 +285,82 @@ carla_native_plugin_proces (
   self->time_info.bbt.beatsPerMinute =
     TRANSPORT->bpm;
 
-  switch (self->plugin->descr->protocol)
+  PluginDescriptor * descr =
+    self->plugin->descr;
+  switch (descr->protocol)
     {
     case PROT_LV2:
     case PROT_VST:
     {
-      float * inbuf[] =
+      float * inbuf[2];
+      float dummy_inbuf1[nframes];
+      memset (
+        dummy_inbuf1, 0, nframes * sizeof (float));
+      float dummy_inbuf2[nframes];
+      memset (
+        dummy_inbuf2, 0, nframes * sizeof (float));
+      float * outbuf[2];
+      float dummy_outbuf1[nframes];
+      memset (
+        dummy_outbuf1, 0, nframes * sizeof (float));
+      float dummy_outbuf2[nframes];
+      memset (
+        dummy_outbuf2, 0, nframes * sizeof (float));
+      int i = 0;
+      int audio_ports = 0;
+      while (i < self->plugin->num_in_ports)
         {
-          self->stereo_in->l->buf,
-          self->stereo_in->r->buf,
-        };
-      float * outbuf[] =
+          Port * port = self->plugin->in_ports[i];
+          if (port->id.type == TYPE_AUDIO)
+            {
+              inbuf[audio_ports++] =
+                self->plugin->in_ports[i]->buf;
+            }
+          if (audio_ports == 2)
+            break;
+          i++;
+        }
+      switch (audio_ports)
         {
-          self->stereo_out->l->buf,
-          self->stereo_out->r->buf,
-        };
+        case 0:
+          inbuf[0] = dummy_inbuf1;
+          inbuf[1] = dummy_inbuf2;
+          break;
+        case 1:
+          inbuf[1] = dummy_inbuf2;
+          break;
+        default:
+          break;
+        }
+
+      i = 0;
+      audio_ports = 0;
+      while (i < self->plugin->num_out_ports)
+        {
+          Port * port = self->plugin->out_ports[i];
+          if (port->id.type == TYPE_AUDIO)
+            {
+              outbuf[audio_ports++] =
+                self->plugin->out_ports[i]->buf;
+            }
+          if (audio_ports == 2)
+            break;
+          i++;
+        }
+      switch (audio_ports)
+        {
+        case 0:
+          outbuf[0] = dummy_outbuf1;
+          outbuf[1] = dummy_outbuf2;
+          break;
+        case 1:
+          outbuf[1] = dummy_outbuf2;
+          break;
+        default:
+          break;
+        }
+
+      /*g_warn_if_reached ();*/
       self->native_plugin_descriptor->process (
         self->native_plugin_handle, inbuf, outbuf,
         nframes, NULL, 0);
@@ -412,54 +415,6 @@ carla_native_plugin_proces (
       break;
     }
 }
-
-/**
- * Returns a filled in descriptor for the given
- * type.
- *
- * @param ins Set the descriptor to be an instrument.
- *
- * FIXME delete
- */
-/*PluginDescriptor **/
-/*carla_native_plugin_get_descriptor (*/
-  /*CarlaPluginType type,*/
-  /*int             ins)*/
-/*{*/
-  /*CarlaNativePlugin * plugin =*/
-    /*create (type);*/
-  /*const NativePluginDescriptor * descr =*/
-    /*plugin->descriptor;*/
-
-  /*PluginDescriptor * self =*/
-    /*calloc (1, sizeof (PluginDescriptor));*/
-
-  /*self->author =*/
-    /*g_strdup (descr->maker);*/
-  /*self->name =*/
-    /*g_strdup_printf (*/
-      /*"Zrythm %s: %s",*/
-      /*ins ? "Instrument" : "Effect",*/
-      /*descr->name);*/
-  /*if (ins)*/
-    /*self->category = PC_INSTRUMENT;*/
-  /*else*/
-    /*self->category = PC_UTILITY;*/
-  /*self->category_str =*/
-    /*g_strdup (_("Plugin Adapter"));*/
-  /*self->num_audio_ins = (int) descr->audioIns;*/
-  /*self->num_audio_outs = (int) descr->audioOuts;*/
-  /*self->num_midi_ins = (int) descr->midiIns;*/
-  /*self->num_midi_outs = (int) descr->midiOuts;*/
-  /*self->num_ctrl_ins = (int) descr->paramIns;*/
-  /*self->num_ctrl_outs = (int) descr->paramOuts;*/
-  /*self->protocol = PROT_CARLA;*/
-  /*self->carla_type = type;*/
-
-  /*carla_native_plugin_free (plugin);*/
-
-  /*return self;*/
-/*}*/
 
 static ZPluginCategory
 carla_category_to_zrythm_category (
@@ -830,113 +785,67 @@ create_ports (
   CarlaNativePlugin * self)
 {
   Port * port;
-  Port * tmp;
+  char tmp[500];
+  char name[4000];
 
-  /* create midi in/out */
-  port =
-    port_new_with_type (
-      TYPE_EVENT, FLOW_INPUT, "MIDI in");
-  plugin_add_in_port (
-    self->plugin, port);
-  self->midi_in = port;
-  port =
-    port_new_with_type (
-      TYPE_EVENT, FLOW_OUTPUT, "MIDI out");
-  plugin_add_out_port (
-    self->plugin, port);
-  self->midi_out = port;
-
-  /* create stereo in/out */
-  port =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_INPUT, "Stereo in L");
-  plugin_add_in_port (
-    self->plugin, port);
-  tmp = port;
-  port =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_INPUT, "Stereo in R");
-  plugin_add_in_port (
-    self->plugin, port);
-  self->stereo_in =
-    stereo_ports_new_from_existing (
-      tmp, port);
-
-  port =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_INPUT, "CV in L");
-  plugin_add_in_port (
-    self->plugin, port);
-  tmp = port;
-  port =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_INPUT, "CV in R");
-  plugin_add_in_port (
-    self->plugin, port);
-  self->cv_in =
-    stereo_ports_new_from_existing (
-      tmp, port);
-
-  port =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_OUTPUT, "Stereo out L");
-  plugin_add_out_port (
-    self->plugin, port);
-  tmp = port;
-  port =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_OUTPUT, "Stereo out R");
-  plugin_add_out_port (
-    self->plugin, port);
-  self->stereo_out =
-    stereo_ports_new_from_existing (
-      tmp, port);
-
-  port =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_OUTPUT, "CV out L");
-  plugin_add_out_port (
-    self->plugin, port);
-  tmp = port;
-  port =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_OUTPUT, "CV out R");
-  plugin_add_out_port (
-    self->plugin, port);
-  self->cv_out =
-    stereo_ports_new_from_existing (
-      tmp, port);
-
-  /* create controls */
-  uint32_t num_ports =
-    carla_native_plugin_get_param_count (self);
-  for (uint32_t i = 0; i < num_ports; i++)
+  PluginDescriptor * descr = self->plugin->descr;
+  for (int i = 0; i < descr->num_audio_ins; i++)
     {
-      const NativeParameter * param =
-        carla_native_plugin_get_param_info (
-          self, i);
-      PortFlow flow;
-      flow =
-        (param->hints &
-           NATIVE_PARAMETER_IS_OUTPUT) ?
-        FLOW_OUTPUT : FLOW_INPUT;
+      strcpy (tmp, _("Audio in"));
+      sprintf (name, "%s %d", tmp, i);
       port =
         port_new_with_type (
-          TYPE_CONTROL, flow, param->name);
+          TYPE_AUDIO, FLOW_INPUT, name);
+      plugin_add_in_port (
+        self->plugin, port);
+    }
+  for (int i = 0; i < descr->num_audio_outs; i++)
+    {
+      strcpy (tmp, _("Audio out"));
+      sprintf (name, "%s %d", tmp, i);
+      port =
+        port_new_with_type (
+          TYPE_AUDIO, FLOW_OUTPUT, name);
+      plugin_add_out_port (
+        self->plugin, port);
+    }
+  for (int i = 0; i < descr->num_midi_ins; i++)
+    {
+      strcpy (tmp, _("MIDI in"));
+      sprintf (name, "%s %d", tmp, i);
+      port =
+        port_new_with_type (
+          TYPE_EVENT, FLOW_INPUT, name);
+      plugin_add_in_port (
+        self->plugin, port);
+    }
+  for (int i = 0; i < descr->num_midi_outs; i++)
+    {
+      strcpy (tmp, _("MIDI out"));
+      sprintf (name, "%s %d", tmp, i);
+      port =
+        port_new_with_type (
+          TYPE_EVENT, FLOW_OUTPUT, name);
+      plugin_add_out_port (
+        self->plugin, port);
+    }
+
+  /* create controls */
+  const CarlaPortCountInfo * param_counts =
+    carla_get_parameter_count_info (
+      self->host_handle, 0);
+  for (uint32_t i = 0; i < param_counts->ins; i++)
+    {
+      const CarlaParameterInfo * param_info =
+        carla_get_parameter_info (
+          self->host_handle, 0, i);
+      port =
+        port_new_with_type (
+          TYPE_CONTROL, FLOW_INPUT,
+          param_info->name);
       port->carla_param_id = i;
-      switch (flow)
-        {
-        case FLOW_INPUT:
-          plugin_add_in_port (
-            self->plugin, port);
-          break;
-        case FLOW_OUTPUT:
-          plugin_add_out_port (
-            self->plugin, port);
-          break;
-        default:
-          g_warn_if_reached ();
-        }
+      plugin_add_in_port (
+        self->plugin, port);
     }
 }
 
