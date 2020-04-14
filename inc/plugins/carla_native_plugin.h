@@ -57,9 +57,11 @@ typedef enum CarlaPluginType
 
 typedef struct CarlaNativePlugin
 {
-  NativePluginHandle       handle;
-  NativeHostDescriptor     host;
-  const NativePluginDescriptor * descriptor;
+  NativePluginHandle       native_plugin_handle;
+  NativeHostDescriptor     native_host_descriptor;
+  const NativePluginDescriptor * native_plugin_descriptor;
+
+  CarlaHostHandle          host_handle;
 
   uint32_t                 num_midi_events;
   NativeMidiEvent          midi_events[200];
@@ -125,8 +127,8 @@ carla_native_plugin_get_param_count (
   CarlaNativePlugin * self)
 {
   return
-    self->descriptor->get_parameter_count (
-      self->handle);
+    self->native_plugin_descriptor->get_parameter_count (
+      self->native_plugin_handle);
 }
 
 /**
@@ -138,28 +140,8 @@ carla_native_plugin_get_param_info (
   uint32_t            index)
 {
   return
-    self->descriptor->get_parameter_info (
-      self->handle, index);
-}
-
-/**
- * Wrapper to get the CarlaPlugin instance.
- */
-CarlaPluginHandle
-carla_native_plugin_get_plugin_handle (
-  CarlaNativePlugin * self);
-
-/**
- * Wrapper to get param value at given index.
- */
-static inline float
-carla_native_plugin_get_param_value (
-  CarlaNativePlugin * self,
-  uint32_t            index)
-{
-  return
-    self->descriptor->get_parameter_value (
-      self->handle, index);
+    self->native_plugin_descriptor->get_parameter_info (
+      self->native_plugin_handle, index);
 }
 
 /**

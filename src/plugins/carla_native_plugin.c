@@ -28,8 +28,6 @@
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
-#include "plugins/carla/carla_engine_interface.h"
-#include "plugins/carla/carla_plugin_interface.h"
 #include "plugins/carla_native_plugin.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -39,6 +37,8 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+
+#include <CarlaHost.h>
 
 /**
  * Tick callback for the plugin UI.
@@ -52,10 +52,8 @@ carla_plugin_tick_cb (
   if (self->plugin->visible &&
       MAIN_WINDOW)
     {
-      CarlaPluginHandle plugin =
-        carla_native_plugin_get_plugin_handle (
-          self);
-      carla_plugin_ui_idle (plugin);
+      self->native_plugin_descriptor->ui_idle (
+        self->native_plugin_handle);
 
       return G_SOURCE_CONTINUE;
     }
@@ -160,7 +158,8 @@ engine_callback (
   unsigned int pluginId,
   int value1,
   int value2,
-  float value3,
+  int value3,
+  float valuef,
   const char* valueStr)
 {
   CarlaNativePlugin * self =
@@ -209,10 +208,10 @@ _create ()
   CarlaNativePlugin * self =
     calloc (1, sizeof (CarlaNativePlugin));
 
-  self->host.handle = self;
-  self->host.uiName =
+  self->native_host_descriptor.handle = self;
+  self->native_host_descriptor.uiName =
     g_strdup ("Zrythm");
-  self->host.uiParentId = 0;
+  self->native_host_descriptor.uiParentId = 0;
     /*(uintptr_t)*/
     /*z_gtk_widget_get_gdk_window_id (*/
       /*GTK_WIDGET (MAIN_WINDOW));*/
@@ -226,103 +225,72 @@ _create ()
   tmp = io_get_dir (dir);
   g_free (dir);
   dir = tmp;
-  self->host.resourceDir =
+  self->native_host_descriptor.resourceDir =
     g_build_filename (
       dir, "share", "carla", "resources", NULL);
   g_free (dir);
 
-  self->host.get_buffer_size =
+  self->native_host_descriptor.get_buffer_size =
     host_get_buffer_size;
-  self->host.get_sample_rate =
+  self->native_host_descriptor.get_sample_rate =
     host_get_sample_rate;
-  self->host.is_offline =
+  self->native_host_descriptor.is_offline =
     host_is_offline;
-  self->host.get_time_info =
+  self->native_host_descriptor.get_time_info =
     host_get_time_info;
-  self->host.write_midi_event =
+  self->native_host_descriptor.write_midi_event =
     host_write_midi_event;
-  self->host.ui_parameter_changed =
+  self->native_host_descriptor.ui_parameter_changed =
     host_ui_parameter_changed;
-  self->host.ui_custom_data_changed =
+  self->native_host_descriptor.ui_custom_data_changed =
     host_ui_custom_data_changed;
-  self->host.ui_closed =
+  self->native_host_descriptor.ui_closed =
     host_ui_closed;
-  self->host.ui_open_file = NULL;
-  self->host.ui_save_file = NULL;
-  self->host.dispatcher = host_dispatcher;
+  self->native_host_descriptor.ui_open_file = NULL;
+  self->native_host_descriptor.ui_save_file = NULL;
+  self->native_host_descriptor.dispatcher = host_dispatcher;
 
   self->time_info.bbt.valid = 1;
 
   return self;
 }
 
-#if 0
-static CarlaNativePlugin *
-create_carla_internal (CarlaPluginType type)
-{
-  CarlaNativePlugin * self =
-    _create ();
-
-  switch (type)
-    {
-    case CARLA_PLUGIN_RACK:
-      self->descriptor =
-        carla_get_native_rack_plugin ();
-      break;
-    case CARLA_PLUGIN_PATCHBAY:
-      self->descriptor =
-        carla_get_native_patchbay_plugin ();
-      break;
-    default:
-      g_warning ("Carla plugin type not supported");
-      break;
-    }
-  self->handle =
-    self->descriptor->instantiate (
-      &self->host);
-
-  return self;
-}
-#endif
-
 static CarlaNativePlugin *
 create_plugin (
   const PluginDescriptor * descr,
   PluginType   type)
 {
-  CarlaNativePlugin * self =
-    _create ();
+  CarlaNativePlugin * self = _create ();
 
   /* instantiate the plugin to get its info */
-  self->descriptor =
+  self->native_plugin_descriptor =
     carla_get_native_rack_plugin ();
-  self->handle =
-    self->descriptor->instantiate (
-      &self->host);
-  CarlaEngineHandle engine =
-    carla_engine_get_from_native_plugin (
-      self->descriptor, self->handle);
-  carla_engine_set_callback (
-    engine, engine_callback, self);
+  self->native_plugin_handle =
+    self->native_plugin_descriptor->instantiate (
+      &self->native_host_descriptor);
+  self->host_handle =
+    carla_create_native_plugin_host_handle (
+      self->native_plugin_descriptor,
+      self->native_plugin_handle);
+  carla_set_engine_callback (
+    self->host_handle, engine_callback, self);
   self->carla_plugin_id = 0;
   int ret = 0;
   switch (descr->protocol)
     {
     case PROT_LV2:
-      g_message ("lv2");
       ret =
-        carla_engine_add_plugin_simple (
-          engine, type,
-          descr->name, descr->name, descr->uri,
-          0, NULL);
+        carla_add_plugin (
+          self->host_handle, BINARY_NATIVE,
+          type, NULL, descr->name,
+          descr->uri, 0, NULL, 0);
       break;
     case PROT_VST:
-      g_message ("vst");
       ret =
-        carla_engine_add_plugin_simple (
-          engine, type,
-          descr->path, descr->name, descr->name,
-          0, NULL);
+        carla_add_plugin (
+          self->host_handle, BINARY_NATIVE,
+          type, descr->path, descr->name,
+          descr->name, 0, NULL, 0);
       break;
     default:
       g_warn_if_reached ();
@@ -331,23 +299,6 @@ create_plugin (
   g_return_val_if_fail (ret == 1, NULL);
 
   return self;
-}
-
-/**
- * Wrapper to get the CarlaPlugin instance.
- */
-CarlaPluginHandle
-carla_native_plugin_get_plugin_handle (
-  CarlaNativePlugin * self)
-{
-  CarlaEngineHandle engine =
-    carla_engine_get_from_native_plugin (
-      self->descriptor, self->handle);
-  CarlaPluginHandle plugin =
-    carla_engine_get_plugin (
-      engine, self->carla_plugin_id);
-
-  return plugin;
 }
 
 /**
@@ -394,7 +345,7 @@ carla_native_plugin_proces (
     {
     case PROT_VST:
     {
-      const float * inbuf[] =
+      float * inbuf[] =
         {
           self->stereo_in->l->buf,
           self->stereo_in->r->buf
@@ -404,22 +355,9 @@ carla_native_plugin_proces (
           self->stereo_out->l->buf,
           self->stereo_out->r->buf
         };
-      const float * cvinbuf[] =
-        {
-          self->cv_in->l->buf,
-          self->cv_in->r->buf
-        };
-      float * cvoutbuf[] =
-        {
-          self->cv_out->l->buf,
-          self->cv_out->r->buf
-        };
-      CarlaPluginHandle plugin =
-        carla_native_plugin_get_plugin_handle (self);
-      g_warn_if_fail (plugin);
-      carla_plugin_process (
-        plugin, inbuf,
-        outbuf, cvinbuf, cvoutbuf, nframes);
+      self->native_plugin_descriptor->process (
+        self->native_plugin_handle, inbuf, outbuf,
+        nframes, NULL, 0);
     }
       break;
 #if 0
@@ -1009,29 +947,17 @@ carla_native_plugin_instantiate (
   CarlaNativePlugin * self)
 {
   g_return_val_if_fail (
-    self->handle &&
-    self->descriptor->activate &&
-    self->descriptor->ui_show,
+    self->native_plugin_handle &&
+    self->native_plugin_descriptor->activate &&
+    self->native_plugin_descriptor->ui_show,
     -1);
-
-  /* get internal engine and add plugin */
-  CarlaEngineHandle engine =
-    carla_engine_get_from_native_plugin (
-      self->descriptor, self->handle);
-  carla_engine_set_callback (
-    engine, engine_callback, self);
-  carla_engine_add_plugin_simple (
-    engine, PLUGIN_VST2,
-    self->plugin->descr->path,
-    self->plugin->descr->name,
-    self->plugin->descr->name,
-    0, NULL);
 
   /* create ports */
   create_ports (self);
 
   g_message ("activating carla plugin...");
-  self->descriptor->activate (self->handle);
+  self->native_plugin_descriptor->activate (
+    self->native_plugin_handle);
   g_message ("carla plugin activated");
 
   return 0;
@@ -1050,12 +976,8 @@ carla_native_plugin_open_ui (
     case PROT_VST:
     case PROT_LV2:
       {
-        CarlaPluginHandle plugin =
-          carla_native_plugin_get_plugin_handle (
-            self);
-        g_warn_if_fail (plugin);
-        carla_plugin_show_custom_ui (
-          plugin, show);
+        carla_show_custom_ui (
+          self->host_handle, 0, show);
         self->plugin->visible = 1;
 
         g_warn_if_fail (MAIN_WINDOW);
@@ -1117,8 +1039,8 @@ void
 carla_native_plugin_free (
   CarlaNativePlugin * self)
 {
-  self->descriptor->deactivate (self->handle);
-  self->descriptor->cleanup (self->handle);
+  self->native_plugin_descriptor->deactivate (self->native_plugin_handle);
+  self->native_plugin_descriptor->cleanup (self->native_plugin_handle);
 
   free (self);
 }

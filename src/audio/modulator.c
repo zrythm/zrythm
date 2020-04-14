@@ -30,7 +30,7 @@
  */
 Modulator *
 modulator_new (
-  const PluginDescriptor * descr,
+  PluginDescriptor * descr,
   Track *       track)
 {
   Modulator * self = calloc (1, sizeof (Modulator));

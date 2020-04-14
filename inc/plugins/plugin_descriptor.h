@@ -151,6 +151,9 @@ typedef struct PluginDescriptor
   int              open_with_carla;
 #endif
 
+  /** Used for VST. */
+  int64_t              unique_id;
+
   /** Hash of the plugin's bundle (.so/.ddl for VST)
    * used when caching PluginDescriptor's, obtained
    * using g_file_hash(). */
@@ -197,29 +200,24 @@ plugin_descriptor_fields_schema[] =
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     PluginDescriptor, category_str,
      0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "num_audio_ins", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     PluginDescriptor, num_audio_ins),
-  CYAML_FIELD_INT (
-    "num_audio_outs", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     PluginDescriptor, num_audio_outs),
-  CYAML_FIELD_INT (
-    "num_midi_ins", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     PluginDescriptor, num_midi_ins),
-  CYAML_FIELD_INT (
-    "num_midi_outs", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     PluginDescriptor, num_midi_outs),
-  CYAML_FIELD_INT (
-    "num_ctrl_ins", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     PluginDescriptor, num_ctrl_ins),
-  CYAML_FIELD_INT (
-    "num_ctrl_outs", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     PluginDescriptor, num_ctrl_outs),
-  CYAML_FIELD_INT (
-    "num_cv_ins", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     PluginDescriptor, num_cv_ins),
-  CYAML_FIELD_INT (
-    "num_cv_outs", CYAML_FLAG_DEFAULT,
+  CYAML_FIELD_UINT (
+    "unique_id", CYAML_FLAG_DEFAULT,
+    PluginDescriptor, unique_id),
+  YAML_FIELD_INT (
     PluginDescriptor, num_cv_outs),
   CYAML_FIELD_ENUM (
     "arch", CYAML_FLAG_DEFAULT,

@@ -509,6 +509,8 @@ if (get_option('enable_carla'))
   cdata.set('HAVE_CARLA', 1)
   carla_native_plugin_dep = dependency (
     'carla-native-plugin', version: '>=2.1.0')
+  carla_standalone_dep = dependency (
+    'carla-standalone', version: '>=2.1.0')
   carla_utils_dep = dependency (
     'carla-utils', version: '>=2.1.0')
   carla_libdir = carla_native_plugin_dep.get_pkgconfig_variable('libdir')
@@ -518,6 +520,7 @@ if (get_option('enable_carla'))
     carla_libdir / 'carla-discovery-native')
   zrythm_deps += [
     carla_native_plugin_dep,
+    carla_standalone_dep,
     carla_utils_dep, ]
 endif
 

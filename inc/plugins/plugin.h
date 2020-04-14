@@ -257,7 +257,7 @@ plugin_add_out_port (
  */
 Plugin *
 plugin_new_from_descr (
-  const PluginDescriptor * descr,
+  PluginDescriptor * descr,
   int                      track_pos,
   int                      slot);
 

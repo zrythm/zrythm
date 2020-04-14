@@ -85,6 +85,10 @@ z_carla_discovery_create_vst_descriptor (
     string_get_regex_group (
       results,
       "carla-discovery::maker::(.*)\\n", 1);
+  descr->unique_id =
+    string_get_regex_group_as_int (
+      results,
+      "carla-discovery::uniqueId::(.*)\\n", 1, 0);
   descr->num_audio_ins =
     string_get_regex_group_as_int (
       results,

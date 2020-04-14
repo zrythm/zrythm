@@ -16,7 +16,5 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 plugin_srcs += files([
-  'carla_engine_interface.cpp',
   'carla_discovery.c',
-  'carla_plugin_interface.cpp',
   ])
