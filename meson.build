@@ -73,6 +73,8 @@ cdata.set_quoted (
   'LIBDIR_NAME', get_option ('libdir'))
 cdata.set_quoted (
   'CONFIGURE_LIBDIR', libdir)
+cdata.set_quoted (
+  'CONFIGURE_BINDIR', bindir)
 if get_option ('trial_ver')
   cdata.set('TRIAL_VER', 1)
 endif
@@ -103,6 +105,7 @@ os_darwin = false
 os_linux = false
 os_freebsd = false
 os_windows = false
+bin_suffix = ''
 
 if host_machine.system() == 'darwin'
   os_darwin = true
@@ -112,6 +115,7 @@ elif host_machine.system() == 'freebsd'
   os_freebsd = true
 elif host_machine.system() == 'windows'
   os_windows = true
+  bin_suffix = '.exe'
 endif
 
 if os_darwin
@@ -373,6 +377,7 @@ test_strict_cflags = [
   '-Werror=deprecated-declarations',
   '-Werror=format-extra-args',
   '-Werror=format',
+  '-Werror=endif-labels',
   ]
 
 if cc.get_id() == 'gcc'
@@ -514,10 +519,11 @@ if (get_option('enable_carla'))
   carla_utils_dep = dependency (
     'carla-utils', version: '>=2.1.0')
   carla_libdir = carla_native_plugin_dep.get_pkgconfig_variable('libdir')
-  # note: this is only useful on gnu systems
-  cdata.set_quoted (
-    'CARLA_DISCOVERY_NATIVE_PATH',
-    carla_libdir / 'carla-discovery-native')
+  install_data (
+    find_program (
+      carla_libdir / 'carla-discovery-native.exe',
+      carla_libdir / 'carla-discovery-native').path(),
+    install_dir: bindir)
   zrythm_deps += [
     carla_native_plugin_dep,
     carla_standalone_dep,

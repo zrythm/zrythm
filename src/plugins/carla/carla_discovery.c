@@ -21,8 +21,11 @@
 
 #ifdef HAVE_CARLA
 
+#include <stdlib.h>
+
 #include "plugins/plugin_descriptor.h"
 #include "plugins/carla/carla_discovery.h"
+#include "utils/file.h"
 #include "utils/string.h"
 #include "utils/system.h"
 
@@ -30,22 +33,31 @@
 
 static ZPluginCategory
 get_category_from_carla_category (
-  PluginCategory category)
+  const char * category)
 {
-  switch (category)
-    {
-    case PLUGIN_CATEGORY_SYNTH:
-      return PC_INSTRUMENT;
-    case PLUGIN_CATEGORY_UTILITY:
-      return PC_UTILITY;
-    case PLUGIN_CATEGORY_DYNAMICS:
-      return PC_DYNAMICS;
-    case PLUGIN_CATEGORY_DELAY:
-      return PC_DELAY;
-    case PLUGIN_CATEGORY_NONE:
-    default:
-      return ZPLUGIN_CATEGORY_NONE;
-    }
+#define EQUALS(x) \
+  string_is_equal (category, x, false)
+
+  if (EQUALS ("synth"))
+    return PC_INSTRUMENT;
+  else if (EQUALS ("delay"))
+    return PC_DELAY;
+  else if (EQUALS ("eq"))
+    return PC_EQ;
+  else if (EQUALS ("filter"))
+    return PC_FILTER;
+  else if (EQUALS ("distortion"))
+    return PC_DISTORTION;
+  else if (EQUALS ("dynamics"))
+    return PC_DYNAMICS;
+  else if (EQUALS ("modulator"))
+    return PC_MODULATOR;
+  else if (EQUALS ("utility"))
+    return PC_UTILITY;
+  else
+    return ZPLUGIN_CATEGORY_NONE;
+
+#undef EQUALS
 }
 
 /**
@@ -55,13 +67,42 @@ PluginDescriptor *
 z_carla_discovery_create_vst_descriptor (
   const char * path)
 {
+  const char * carla_discovery_filename =
+    "carla-discovery-native"
+#ifdef _WOE32
+      ".exe"
+#endif
+      ;
+  char * carla_discovery =
+    g_find_program_in_path (
+      carla_discovery_filename);
+
+  /* fallback on bindir */
+  if (!carla_discovery)
+    {
+      carla_discovery =
+        g_build_filename (
+          CONFIGURE_BINDIR, carla_discovery_filename,
+          NULL);
+      g_message (
+        "carla discovery not found locally, falling "
+        "back to bindir (%s)",
+        carla_discovery);
+      g_return_val_if_fail (
+        file_exists (carla_discovery), NULL);
+    }
+  g_return_val_if_fail (
+    carla_discovery, NULL);
   char cmd[4000];
   sprintf (
-    cmd, "%s vst %s",
-    CARLA_DISCOVERY_NATIVE_PATH, path);
+    cmd, "%s vst \"%s\"",
+    carla_discovery, path);
   char * results =
     system_get_cmd_output (cmd);
   g_return_val_if_fail (results, NULL);
+  g_message (
+    "cmd: [[[\n%s\n]]]\n\n"
+    "results: [[[\n%s\n]]]", cmd, results);
   char * error =
     string_get_regex_group (
       results,
@@ -69,7 +110,17 @@ z_carla_discovery_create_vst_descriptor (
   if (error)
     {
       g_free (error);
-      g_message ("error found: %s", results);
+      g_warning (
+        "error found for %s: %s",
+        path, results);
+      g_free (results);
+      return NULL;
+    }
+  else if (string_is_equal ("", results, false))
+    {
+      g_warning (
+        "No results returned for %s",
+        path);
       g_free (results);
       return NULL;
     }
@@ -80,7 +131,7 @@ z_carla_discovery_create_vst_descriptor (
     string_get_regex_group (
       results,
       "carla-discovery::name::(.*)\\n", 1);
-  g_warn_if_fail (descr->name);
+  g_return_val_if_fail (descr->name,  NULL);
   descr->author =
     string_get_regex_group (
       results,
@@ -114,10 +165,11 @@ z_carla_discovery_create_vst_descriptor (
       1, 0);
 
   /* get category */
-  int carla_category =
-    string_get_regex_group_as_int (
+  char * carla_category =
+    string_get_regex_group (
       results,
-      "carla-discovery::category::(.*)\\n", 1, 0);
+      "carla-discovery::category::(.*)\\n", 1);
+  g_return_val_if_fail (carla_category,  NULL);
   descr->category =
     get_category_from_carla_category (
       carla_category);;
