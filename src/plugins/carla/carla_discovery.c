@@ -206,6 +206,9 @@ z_carla_discovery_create_vst_descriptor (
   descr->arch = ARCH_64;
   descr->path = g_strdup (path);
 
+  /* open all VSTs with carla */
+  descr->open_with_carla = true;
+
   g_free (results);
 
   return descr;

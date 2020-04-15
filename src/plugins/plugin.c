@@ -135,8 +135,6 @@ plugin_new_from_descr (
 {
   Plugin * plugin = calloc (1, sizeof (Plugin));
 
-  /* FIXME remove */
-  descr->open_with_carla = true;
   plugin->descr =
     plugin_descriptor_clone (descr);
   plugin_init (plugin, track_pos, slot);
