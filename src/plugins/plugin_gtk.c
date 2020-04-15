@@ -543,11 +543,6 @@ on_window_destroy (
       break;
     }
 
-#ifdef _WOE32
-  gtk_window_close (
-    plugin->black_window);
-#endif
-
   if (plugin->descr->protocol == PROT_LV2)
     {
       Lv2Plugin * lv2 = plugin->lv2;
@@ -588,100 +583,6 @@ on_delete_event (
   return FALSE;
 }
 
-#ifdef _WOE32
-static void
-on_plugin_window_configure (
-  GtkWidget    *widget,
-  GdkEventConfigure *    event,
-  Plugin *      plugin)
-{
-  /*
-  gtk_widget_set_size_request (
-    GTK_WIDGET (plugin->black_window),
-    event->width, event->height);
-    */
-  int width, height;
-  gtk_window_get_size (
-    plugin->window, &width, &height);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (plugin->black_window),
-    width + 12, height + 32);
-
-  int root_x, root_y;
-  gtk_window_get_position (
-    plugin->window, &root_x, &root_y);
-  gtk_window_move (
-    plugin->black_window, root_x, root_y);
-
-  GdkWindow * plugin_win =
-    gtk_widget_get_window (
-      GTK_WIDGET (plugin->window));
-  GdkWindow * black_win =
-    gtk_widget_get_window (
-      GTK_WIDGET (plugin->black_window));
-  gdk_window_restack (
-    black_win, plugin_win, 0);
-  gdk_window_show_unraised (
-    gtk_widget_get_window (
-      GTK_WIDGET (plugin->black_window)));
-}
-
-static int
-on_black_window_da_draw (
-  GtkWidget    *widget,
-  cairo_t *     cr,
-  Plugin *      plugin)
-{
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  cairo_set_source_rgba (cr, 0, 0, 0, 1);
-  cairo_rectangle (cr, 0, 0, width, height);
-  cairo_fill (cr);
-
-  return FALSE;
-}
-
-int
-on_plugin_window_state_change (
-  GtkWidget * widget,
-  GdkEventWindowState *  event,
-  Plugin * plugin)
-{
-  g_message ("window state");
-  if (event->new_window_state & GDK_WINDOW_STATE_FOCUSED)
-    {
-      if (plugin->
-            black_window_shown_manually)
-        {
-          plugin->
-            black_window_shown_manually = 0;
-          return FALSE;
-        }
-      GdkWindow * plugin_win =
-        gtk_widget_get_window (
-          GTK_WIDGET (plugin->window));
-      GdkWindow * black_win =
-        gtk_widget_get_window (
-          GTK_WIDGET (plugin->black_window));
-      g_message ("FOCUSED");
-
-      gdk_window_show (
-        gtk_widget_get_window (
-          GTK_WIDGET (plugin->black_window)));
-      gdk_window_restack (
-        black_win, plugin_win, 0);
-      gdk_window_show (
-        gtk_widget_get_window (
-          GTK_WIDGET (plugin->window)));
-      plugin->black_window_shown_manually = 1;
-    }
-  return FALSE;
-}
-#endif
-
 /**
  * Creates a new GtkWindow that will be used to
  * either wrap plugin UIs or create generic UIs in.
@@ -700,37 +601,6 @@ plugin_gtk_create_window (
     plugin->window, "zrythm");
   gtk_window_set_role (
     plugin->window, "plugin_ui");
-
-#ifdef _WOE32
-  /* add black window in the background and make it
-   * follow the plugin one */
-  plugin->black_window =
-    GTK_WINDOW (
-      gtk_window_new (GTK_WINDOW_TOPLEVEL));
-  gtk_window_set_decorated (
-    plugin->black_window, 0);
-  GtkWidget * da =
-    gtk_drawing_area_new ();
-  gtk_widget_set_visible (da, 1);
-  gtk_widget_set_hexpand (da, 1);
-  gtk_widget_set_vexpand (da, 1);
-  gtk_container_add (
-    GTK_CONTAINER (plugin->black_window),
-    da);
-  gtk_window_present (plugin->black_window);
-  g_signal_connect (
-    da, "draw",
-    G_CALLBACK (on_black_window_da_draw),
-    plugin);
-  g_signal_connect (
-    plugin->window, "configure-event",
-    G_CALLBACK (on_plugin_window_configure),
-    plugin);
-  g_signal_connect (
-    plugin->window, "window-state-event",
-    G_CALLBACK (on_plugin_window_state_change),
-    plugin);
-#endif
 
   if (g_settings_get_boolean (
         S_PREFERENCES, "plugin-uis-stay-on-top"))
