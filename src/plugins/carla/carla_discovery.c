@@ -169,13 +169,37 @@ z_carla_discovery_create_vst_descriptor (
     string_get_regex_group (
       results,
       "carla-discovery::category::(.*)\\n", 1);
-  g_return_val_if_fail (carla_category,  NULL);
-  descr->category =
-    get_category_from_carla_category (
-      carla_category);;
-  descr->category_str =
-    plugin_descriptor_category_to_string (
-      descr->category);
+  if (carla_category)
+    {
+      descr->category =
+        get_category_from_carla_category (
+          carla_category);;
+      descr->category_str =
+        plugin_descriptor_category_to_string (
+          descr->category);
+    }
+  else
+    {
+      int hints =
+        string_get_regex_group_as_int (
+          results,
+          "carla-discovery::hints::(.*)\\n",
+          1, 0);
+      if ((unsigned int) hints & PLUGIN_IS_SYNTH)
+        {
+          descr->category = PC_INSTRUMENT;
+          descr->category_str =
+            plugin_descriptor_category_to_string (
+              descr->category);
+        }
+      else
+        {
+          descr->category = ZPLUGIN_CATEGORY_NONE;
+          descr->category_str =
+            plugin_descriptor_category_to_string (
+              descr->category);
+        }
+    }
 
   descr->protocol = PROT_VST;
   descr->arch = ARCH_64;
