@@ -375,34 +375,54 @@ carla_native_plugin_proces (
             port = NULL;
         }
 
-      int num_events =
+      int num_orig_events =
         port ? port->midi_events->num_events : 0;
-      NativeMidiEvent events[
-        num_events == 0 ? 1 : num_events];
-      for (i = 0; i < num_events; i++)
+      NativeMidiEvent events[4000];
+      int count = 0;
+      for (i = 0; i < num_orig_events; i++)
         {
           MidiEvent * ev =
             &port->midi_events->events[i];
-          events[i].time = ev->time;
-          events[i].size = 3;
-          events[i].data[0] = ev->raw_buffer[0];
-          events[i].data[1] = ev->raw_buffer[1];
-          events[i].data[2] = ev->raw_buffer[2];
+          events[count].time = ev->time;
+          events[count].size = 3;
+          events[count].data[0] = ev->raw_buffer[0];
+          events[count].data[1] = ev->raw_buffer[1];
+          events[count].data[2] = ev->raw_buffer[2];
           midi_event_print (ev);
+          if (events[count].data[0] ==
+                MIDI_CH1_CTRL_CHANGE &&
+              events[count].data[1] ==
+                MIDI_ALL_NOTES_OFF)
+            {
+              count++;
+              for (int j = 0; j < 128; j++)
+                {
+                  events[count].time = ev->time;
+                  events[count].size = 3;
+                  events[count].data[0] =
+                    MIDI_CH1_NOTE_OFF;
+                  events[count].data[1] = j;
+                  events[count].data[2] = 0;
+                  count++;
+                }
+            }
+          else
+            {
+              count++;
+            }
         }
-      if (num_events > 0)
+      if (count > 0)
         {
           g_message (
             "Carla plugin %s has %d MIDI events",
             self->plugin->descr->name,
-            num_events);
+            count);
         }
 
       /*g_warn_if_reached ();*/
       self->native_plugin_descriptor->process (
         self->native_plugin_handle, inbuf, outbuf,
-        nframes, num_events > 0 ? events : NULL,
-        (uint32_t) num_events);
+        nframes, events, (uint32_t) count);
     }
       break;
 #if 0
