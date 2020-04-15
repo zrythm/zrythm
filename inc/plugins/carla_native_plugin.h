@@ -63,8 +63,8 @@ typedef struct CarlaNativePlugin
 
   CarlaHostHandle          host_handle;
 
-  uint32_t                 num_midi_events;
-  NativeMidiEvent          midi_events[200];
+  //uint32_t                 num_midi_events;
+  //NativeMidiEvent          midi_events[200];
   NativeTimeInfo           time_info;
 
   /** Pointer back to Plugin. */

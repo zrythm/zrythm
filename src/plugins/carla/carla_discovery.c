@@ -97,12 +97,13 @@ z_carla_discovery_create_vst_descriptor (
   sprintf (
     cmd, "%s vst \"%s\"",
     carla_discovery, path);
+  g_message (
+    "cmd: [[[\n%s\n]]]", cmd);
   char * results =
     system_get_cmd_output (cmd);
   g_return_val_if_fail (results, NULL);
   g_message (
-    "cmd: [[[\n%s\n]]]\n\n"
-    "results: [[[\n%s\n]]]", cmd, results);
+    "results: [[[\n%s\n]]]", results);
   char * error =
     string_get_regex_group (
       results,

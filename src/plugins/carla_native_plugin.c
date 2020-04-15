@@ -106,6 +106,7 @@ host_write_midi_event (
   NativeHostHandle        handle,
   const NativeMidiEvent * event)
 {
+  g_message ("write midi event");
   return 0;
 }
 
@@ -387,13 +388,14 @@ carla_native_plugin_proces (
           events[i].data[0] = ev->raw_buffer[0];
           events[i].data[1] = ev->raw_buffer[1];
           events[i].data[2] = ev->raw_buffer[2];
+          midi_event_print (ev);
         }
       if (num_events > 0)
         {
           g_message (
             "Carla plugin %s has %d MIDI events",
             self->plugin->descr->name,
-            self->num_midi_events);
+            num_events);
         }
 
       /*g_warn_if_reached ();*/
