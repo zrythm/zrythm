@@ -937,6 +937,8 @@ create_ports (
             port_new_with_type (
               TYPE_CONTROL, FLOW_INPUT,
               param_info->name);
+          port->id.flags |=
+            PORT_FLAG_PLUGIN_CONTROL;
           port->carla_param_id = (int) i;
           plugin_add_in_port (
             self->plugin, port);
@@ -1016,6 +1018,26 @@ carla_native_plugin_open_ui (
 #endif
     default: break;
     }
+}
+
+float
+carla_native_plugin_get_param_value (
+  CarlaNativePlugin * self,
+  const uint32_t      id)
+{
+  return
+    carla_get_current_parameter_value (
+      self->host_handle, 0, id);
+}
+
+void
+carla_native_plugin_set_param_value (
+  CarlaNativePlugin * self,
+  const uint32_t      id,
+  float               val)
+{
+  carla_set_parameter_value (
+    self->host_handle, 0, id, val);
 }
 
 /**

@@ -156,31 +156,6 @@ carla_native_plugin_load_state (
   char *              dir);
 
 /**
- * Wrapper to get param count.
- */
-static inline uint32_t
-carla_native_plugin_get_param_count (
-  CarlaNativePlugin * self)
-{
-  return
-    self->native_plugin_descriptor->get_parameter_count (
-      self->native_plugin_handle);
-}
-
-/**
- * Wrapper to get param info at given index.
- */
-static inline const NativeParameter *
-carla_native_plugin_get_param_info (
-  CarlaNativePlugin * self,
-  uint32_t            index)
-{
-  return
-    self->native_plugin_descriptor->get_parameter_info (
-      self->native_plugin_handle, index);
-}
-
-/**
  * Instantiates the plugin.
  *
  * @param loading Whether loading an existing plugin
@@ -217,6 +192,17 @@ Port *
 carla_native_plugin_get_port_from_param_id (
   CarlaNativePlugin * self,
   const uint32_t      id);
+
+float
+carla_native_plugin_get_param_value (
+  CarlaNativePlugin * self,
+  const uint32_t      id);
+
+void
+carla_native_plugin_set_param_value (
+  CarlaNativePlugin * self,
+  const uint32_t      id,
+  float               val);
 
 /**
  * Deactivates, cleanups and frees the instance.

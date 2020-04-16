@@ -1843,17 +1843,33 @@ port_forward_control_change_event (
       PORT_OWNER_TYPE_PLUGIN)
     {
       Plugin * pl = port_get_plugin (self, 1);
-      if (pl && pl->descr->protocol == PROT_VST)
-        {
-          g_return_if_fail (
-            pl->vst && pl->vst->aeffect);
-          AEffect * effect = pl->vst->aeffect;
-          effect->setParameter (
-            effect, self->vst_param_id,
-            self->control);
-        }
       if (pl)
         {
+#ifdef HAVE_CARLA
+          if (pl->descr->open_with_carla &&
+              self->carla_param_id >= 0)
+            {
+              g_return_if_fail (pl->carla);
+              carla_native_plugin_set_param_value (
+                pl->carla,
+                (uint32_t) self->carla_param_id,
+                self->control);
+            }
+          else
+            {
+#endif
+              if (pl->descr->protocol == PROT_VST)
+                {
+                  g_return_if_fail (
+                    pl->vst && pl->vst->aeffect);
+                  AEffect * effect = pl->vst->aeffect;
+                  effect->setParameter (
+                    effect, self->vst_param_id,
+                    self->control);
+              }
+#ifdef HAVE_CARLA
+            }
+#endif
           EVENTS_PUSH (
             ET_PLUGIN_STATE_CHANGED, pl);
         }
