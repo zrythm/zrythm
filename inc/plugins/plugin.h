@@ -30,9 +30,7 @@
 
 #include "audio/automatable.h"
 #include "audio/port.h"
-#ifdef HAVE_CARLA
 #include "plugins/carla_native_plugin.h"
-#endif
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_identifier.h"
@@ -72,10 +70,8 @@ typedef struct Plugin
   /** VST plugin. */
   VstPlugin *          vst;
 
-#ifdef HAVE_CARLA
   /** Pointer to Carla native plugin. */
   CarlaNativePlugin *  carla;
-#endif
 
   /** Descriptor. */
   PluginDescriptor *   descr;
@@ -184,6 +180,11 @@ plugin_fields_schema[] =
     "lv2", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Plugin, lv2,
     lv2_plugin_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "carla",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    Plugin, carla,
+    carla_native_plugin_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
     "vst", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Plugin, vst,
@@ -339,6 +340,19 @@ plugin_move_automation (
 char *
 plugin_get_escaped_name (
   Plugin * pl);
+
+/**
+ * Generates a state directory path for the plugin.
+ *
+ * @param mkdir Create the directory at the path.
+ *
+ * @return The path. Must be free'd by caller with
+ *   g_free().
+ */
+char *
+plugin_generate_state_dir (
+  Plugin * pl,
+  bool     mkdir);
 
 /**
  * Returns if the Plugin has a supported custom

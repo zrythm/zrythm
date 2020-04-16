@@ -65,22 +65,35 @@ plugin_init_loaded (
 {
   self->magic = PLUGIN_MAGIC;
 
-  switch (self->descr->protocol)
+#ifdef HAVE_CARLA
+  if (self->descr->open_with_carla)
     {
-    case PROT_LV2:
-      g_return_if_fail (self->lv2);
-      self->lv2->plugin = self;
-      lv2_plugin_init_loaded (self->lv2);
-      break;
-    case PROT_VST:
-      g_return_if_fail (self->vst);
-      self->vst->plugin = self;
-      vst_plugin_init_loaded (self->vst);
-      break;
-    default:
-      g_warn_if_reached ();
-      break;
+      g_return_if_fail (self->carla);
+      self->carla->plugin = self;
+      carla_native_plugin_init_loaded (self->carla);
     }
+  else
+    {
+#endif
+      switch (self->descr->protocol)
+        {
+        case PROT_LV2:
+          g_return_if_fail (self->lv2);
+          self->lv2->plugin = self;
+          lv2_plugin_init_loaded (self->lv2);
+          break;
+        case PROT_VST:
+          g_return_if_fail (self->vst);
+          self->vst->plugin = self;
+          vst_plugin_init_loaded (self->vst);
+          break;
+        default:
+          g_warn_if_reached ();
+          break;
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
 
   plugin_instantiate (self);
 
@@ -119,6 +132,7 @@ plugin_init (
   port->zerof = 0.f;
   port->deff = 1.f;
   port->control = 1.f;
+  port->carla_param_id = -1;
   plugin->enabled = port;
 }
 
@@ -634,7 +648,7 @@ plugin_instantiate (
   if (pl->descr->open_with_carla)
     {
       carla_native_plugin_instantiate (
-        pl->carla);
+        pl->carla, !PROJECT->loaded);
     }
   else
     {
@@ -826,6 +840,40 @@ plugin_is_selected (
 }
 
 /**
+ * Generates a state directory path for the plugin.
+ *
+ * @param mkdir Create the directory at the path.
+ *
+ * @return The path. Must be free'd by caller with
+ *   g_free().
+ */
+char *
+plugin_generate_state_dir (
+  Plugin * pl,
+  bool     mkdir)
+{
+  char * escaped_name =
+    plugin_get_escaped_name (pl);
+  char * tmp =
+    g_strdup_printf (
+      "tmp_%s_XXXXXX", escaped_name);
+  char * states_dir =
+    project_get_states_dir (
+      PROJECT, PROJECT->backup_dir != NULL);
+  char * state_dir_plugin =
+    g_build_filename (
+      states_dir, tmp, NULL);
+  g_free (states_dir);
+  g_free (tmp);
+  g_free (escaped_name);
+
+  if (mkdir)
+    io_mkdir (state_dir_plugin);
+
+  return state_dir_plugin;
+}
+
+/**
  * Clones the given plugin.
  */
 Plugin *
@@ -833,64 +881,8 @@ plugin_clone (
   Plugin * pl)
 {
   Plugin * clone = NULL;
-  if (pl->descr->protocol == PROT_LV2)
-    {
-      /* NOTE from rgareus:
-       * I think you can use   lilv_state_restore (lilv_state_new_from_instance (..), ...)
-       * and skip  lilv_state_new_from_file() ; lilv_state_save ()
-       * lilv_state_new_from_instance() handles files and externals, too */
-
-      /* save state to file */
-      char * escaped_name =
-        plugin_get_escaped_name (pl);
-      char * tmp =
-        g_strdup_printf (
-          "tmp_%s_XXXXXX", escaped_name);
-      g_free (escaped_name);
-      char * states_dir =
-        project_get_states_dir (
-          PROJECT, PROJECT->backup_dir != NULL);
-      char * state_dir_plugin =
-        g_build_filename (states_dir,
-                          tmp,
-                          NULL);
-      g_free (states_dir);
-      io_mkdir (state_dir_plugin);
-      g_free (tmp);
-      lv2_plugin_save_state_to_file (
-        pl->lv2,
-        state_dir_plugin);
-      g_free (state_dir_plugin);
-      g_return_val_if_fail (
-        pl->lv2->state_file, NULL);
-
-      /* create a new plugin with same descriptor */
-      clone =
-        plugin_new_from_descr (
-          pl->descr, pl->id.track_pos,
-          pl->id.slot);
-
-      /* set the state file on the new Lv2Plugin
-       * as the state filed saved on the original
-       * so that it can be used when
-       * instantiating */
-      clone->lv2->state_file =
-        g_strdup (pl->lv2->state_file);
-
-      /* instantiate */
-      int ret = plugin_instantiate (clone);
-      g_return_val_if_fail (!ret, NULL);
-
-      g_return_val_if_fail (
-        clone && clone->lv2 &&
-        clone->lv2->num_ports ==
-          pl->lv2->num_ports,
-        NULL);
-
-      /* delete the state file */
-      io_remove (pl->lv2->state_file);
-    }
-  else if (pl->descr->protocol == PROT_VST)
+#ifdef HAVE_CARLA
+  if (pl->descr->open_with_carla)
     {
       /* create a new plugin with same descriptor */
       clone =
@@ -898,16 +890,92 @@ plugin_clone (
           pl->descr, pl->id.track_pos,
           pl->id.slot);
       g_return_val_if_fail (
-        clone && clone->vst, NULL);
+        clone && clone->carla, NULL);
 
       /* instantiate */
       int ret = plugin_instantiate (clone);
       g_return_val_if_fail (!ret, NULL);
 
-      /* copy the parameter values from the
-       * original plugin */
-      vst_plugin_copy_params (clone->vst, pl->vst);
+      /* save the state of the original plugin */
+      char * state_dir_pl =
+        plugin_generate_state_dir (
+          pl, true);
+      carla_native_plugin_save_state (
+        pl->carla, state_dir_pl);
+
+      /* load the state to the new plugin. */
+      carla_native_plugin_load_state (
+        clone->carla, state_dir_pl);
+
+      g_free (state_dir_pl);
     }
+  else
+    {
+#endif
+      if (pl->descr->protocol == PROT_LV2)
+        {
+          /* NOTE from rgareus:
+           * I think you can use   lilv_state_restore (lilv_state_new_from_instance (..), ...)
+           * and skip  lilv_state_new_from_file() ; lilv_state_save ()
+           * lilv_state_new_from_instance() handles files and externals, too */
+
+          /* save state to file */
+          char * state_dir_plugin =
+            plugin_generate_state_dir (
+              pl, true);
+          lv2_plugin_save_state_to_file (
+            pl->lv2, state_dir_plugin);
+          g_free (state_dir_plugin);
+          g_return_val_if_fail (
+            pl->lv2->state_file, NULL);
+
+          /* create a new plugin with same descriptor */
+          clone =
+            plugin_new_from_descr (
+              pl->descr, pl->id.track_pos,
+              pl->id.slot);
+
+          /* set the state file on the new Lv2Plugin
+           * as the state filed saved on the original
+           * so that it can be used when
+           * instantiating */
+          clone->lv2->state_file =
+            g_strdup (pl->lv2->state_file);
+
+          /* instantiate */
+          int ret = plugin_instantiate (clone);
+          g_return_val_if_fail (!ret, NULL);
+
+          g_return_val_if_fail (
+            clone && clone->lv2 &&
+            clone->lv2->num_ports ==
+              pl->lv2->num_ports,
+            NULL);
+
+          /* delete the state file */
+          io_remove (pl->lv2->state_file);
+        }
+      else if (pl->descr->protocol == PROT_VST)
+        {
+          /* create a new plugin with same descriptor */
+          clone =
+            plugin_new_from_descr (
+              pl->descr, pl->id.track_pos,
+              pl->id.slot);
+          g_return_val_if_fail (
+            clone && clone->vst, NULL);
+
+          /* instantiate */
+          int ret = plugin_instantiate (clone);
+          g_return_val_if_fail (!ret, NULL);
+
+          /* copy the parameter values from the
+           * original plugin */
+          vst_plugin_copy_params (clone->vst, pl->vst);
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
   g_return_val_if_fail (
     pl->num_in_ports || pl->num_out_ports, NULL);
 

@@ -28,6 +28,8 @@
 
 #include "config.h"
 
+#include <stdbool.h>
+
 #include "utils/yaml.h"
 
 /**
@@ -145,11 +147,9 @@ typedef struct PluginDescriptor
   char                 * path;
   /** Lv2Plugin URI. */
   char                 * uri;
-#ifdef HAVE_CARLA
   /** 1 if this plugin is to be instantiated
    * through Carla. */
-  int              open_with_carla;
-#endif
+  bool              open_with_carla;
 
   /** Used for VST. */
   int64_t              unique_id;
@@ -219,6 +219,8 @@ plugin_descriptor_fields_schema[] =
     PluginDescriptor, unique_id),
   YAML_FIELD_INT (
     PluginDescriptor, num_cv_outs),
+  YAML_FIELD_INT (
+    PluginDescriptor, open_with_carla),
   CYAML_FIELD_ENUM (
     "arch", CYAML_FLAG_DEFAULT,
     PluginDescriptor, arch,

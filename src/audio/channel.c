@@ -1100,9 +1100,15 @@ channel_append_all_ports (
     continue; \
 \
   for (k = 0; k < pl->num_in_ports; k++) \
-    _ADD (pl->in_ports[k]); \
+    { \
+      g_warn_if_fail (pl->in_ports[k]); \
+      _ADD (pl->in_ports[k]); \
+    } \
   for (k = 0; k < pl->num_out_ports; k++) \
-    _ADD (pl->out_ports[k])
+    { \
+      g_warn_if_fail (pl->out_ports[k]); \
+      _ADD (pl->out_ports[k]); \
+    }
 
   /* add channel ports */
   if (in_type == TYPE_AUDIO)

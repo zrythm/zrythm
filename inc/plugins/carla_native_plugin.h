@@ -25,13 +25,13 @@
 
 #include "config.h"
 
-#ifdef HAVE_CARLA
-
 #ifndef __PLUGINS_CARLA_NATIVE_PLUGIN_H__
 #define __PLUGINS_CARLA_NATIVE_PLUGIN_H__
 
+#ifdef HAVE_CARLA
 #include <CarlaNativePlugin.h>
 #include <CarlaUtils.h>
+#endif
 
 typedef struct PluginDescriptor PluginDescriptor;
 typedef void * CarlaPluginHandle;
@@ -41,6 +41,8 @@ typedef void * CarlaPluginHandle;
  *
  * @{
  */
+
+#define CARLA_STATE_FILENAME "state.carla"
 
 /**
  * The type of the Carla plugin.
@@ -57,23 +59,51 @@ typedef enum CarlaPluginType
 
 typedef struct CarlaNativePlugin
 {
-  NativePluginHandle       native_plugin_handle;
-  NativeHostDescriptor     native_host_descriptor;
+#ifdef HAVE_CARLA
+  NativePluginHandle native_plugin_handle;
+  NativeHostDescriptor native_host_descriptor;
   const NativePluginDescriptor * native_plugin_descriptor;
 
-  CarlaHostHandle          host_handle;
+  CarlaHostHandle  host_handle;
 
   //uint32_t                 num_midi_events;
   //NativeMidiEvent          midi_events[200];
-  NativeTimeInfo           time_info;
+  NativeTimeInfo   time_info;
+#endif
 
   /** Pointer back to Plugin. */
-  Plugin *                 plugin;
+  Plugin *         plugin;
 
   /** Plugin ID inside carla engine. */
-  unsigned int             carla_plugin_id;
+  unsigned int     carla_plugin_id;
+
+  /** State file. */
+  char *           state_file;
 
 } CarlaNativePlugin;
+
+static const cyaml_schema_field_t
+  carla_native_plugin_fields_schema[] =
+{
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    CarlaNativePlugin, state_file),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  carla_native_plugin_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER, CarlaNativePlugin,
+    carla_native_plugin_fields_schema),
+};
+
+#ifdef HAVE_CARLA
+
+void
+carla_native_plugin_init_loaded (
+  CarlaNativePlugin * self);
 
 /**
  * Creates an instance of a CarlaNativePlugin inside
@@ -105,6 +135,27 @@ carla_native_plugin_get_descriptor_from_cached (
   PluginType              type);
 
 /**
+ * Saves the state inside the given directory.
+ */
+int
+carla_native_plugin_save_state (
+  CarlaNativePlugin * self,
+  char *              dir);
+
+/**
+ * Loads the state from the given directory or from
+ * its state file.
+ *
+ * @param dir The directory to save the state from,
+ *   or NULL to use
+ *   \ref CarlaNativePlugin.state_file.
+ */
+void
+carla_native_plugin_load_state (
+  CarlaNativePlugin * self,
+  char *              dir);
+
+/**
  * Wrapper to get param count.
  */
 static inline uint32_t
@@ -132,11 +183,14 @@ carla_native_plugin_get_param_info (
 /**
  * Instantiates the plugin.
  *
+ * @param loading Whether loading an existing plugin
+ *   or not.
  * @ret 0 if no errors, non-zero if errors.
  */
 int
 carla_native_plugin_instantiate (
-  CarlaNativePlugin * self);
+  CarlaNativePlugin * self,
+  bool                loading);
 
 /**
  * Processes the plugin for this cycle.
@@ -160,9 +214,9 @@ carla_native_plugin_open_ui (
  * given parameter.
  */
 Port *
-carla_native_plugin_get_port_from_param (
-  CarlaNativePlugin *     self,
-  const NativeParameter * param);
+carla_native_plugin_get_port_from_param_id (
+  CarlaNativePlugin * self,
+  const uint32_t      id);
 
 /**
  * Deactivates, cleanups and frees the instance.
@@ -170,11 +224,10 @@ carla_native_plugin_get_port_from_param (
 void
 carla_native_plugin_free (
   CarlaNativePlugin * self);
+#endif // HAVE_CARLA
 
 /**
  * @}
  */
 
 #endif
-
-#endif // HAVE_CARLA

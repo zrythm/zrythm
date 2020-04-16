@@ -31,6 +31,7 @@
 #include "plugins/carla_native_plugin.h"
 #include "project.h"
 #include "utils/gtk.h"
+#include "utils/file.h"
 #include "utils/io.h"
 #include "utils/string.h"
 #include "zrythm.h"
@@ -39,6 +40,23 @@
 #include <glib/gi18n.h>
 
 #include <CarlaHost.h>
+
+void
+carla_native_plugin_init_loaded (
+  CarlaNativePlugin * self)
+{
+  carla_native_plugin_new_from_descriptor (
+    self->plugin);
+
+  char * state_dir =
+    io_path_get_parent_dir (
+      self->state_file);
+  carla_native_plugin_load_state (
+    self->plugin->carla, state_dir);
+  g_free (state_dir);
+
+  carla_native_plugin_free (self);
+}
 
 /**
  * Tick callback for the plugin UI.
@@ -841,52 +859,56 @@ carla_native_plugin_new_from_descriptor (
 
 static void
 create_ports (
-  CarlaNativePlugin * self)
+  CarlaNativePlugin * self,
+  bool                loading)
 {
   Port * port;
   char tmp[500];
   char name[4000];
 
   PluginDescriptor * descr = self->plugin->descr;
-  for (int i = 0; i < descr->num_audio_ins; i++)
+  if (!loading)
     {
-      strcpy (tmp, _("Audio in"));
-      sprintf (name, "%s %d", tmp, i);
-      port =
-        port_new_with_type (
-          TYPE_AUDIO, FLOW_INPUT, name);
-      plugin_add_in_port (
-        self->plugin, port);
-    }
-  for (int i = 0; i < descr->num_audio_outs; i++)
-    {
-      strcpy (tmp, _("Audio out"));
-      sprintf (name, "%s %d", tmp, i);
-      port =
-        port_new_with_type (
-          TYPE_AUDIO, FLOW_OUTPUT, name);
-      plugin_add_out_port (
-        self->plugin, port);
-    }
-  for (int i = 0; i < descr->num_midi_ins; i++)
-    {
-      strcpy (tmp, _("MIDI in"));
-      sprintf (name, "%s %d", tmp, i);
-      port =
-        port_new_with_type (
-          TYPE_EVENT, FLOW_INPUT, name);
-      plugin_add_in_port (
-        self->plugin, port);
-    }
-  for (int i = 0; i < descr->num_midi_outs; i++)
-    {
-      strcpy (tmp, _("MIDI out"));
-      sprintf (name, "%s %d", tmp, i);
-      port =
-        port_new_with_type (
-          TYPE_EVENT, FLOW_OUTPUT, name);
-      plugin_add_out_port (
-        self->plugin, port);
+      for (int i = 0; i < descr->num_audio_ins; i++)
+        {
+          strcpy (tmp, _("Audio in"));
+          sprintf (name, "%s %d", tmp, i);
+          port =
+            port_new_with_type (
+              TYPE_AUDIO, FLOW_INPUT, name);
+          plugin_add_in_port (
+            self->plugin, port);
+        }
+      for (int i = 0; i < descr->num_audio_outs; i++)
+        {
+          strcpy (tmp, _("Audio out"));
+          sprintf (name, "%s %d", tmp, i);
+          port =
+            port_new_with_type (
+              TYPE_AUDIO, FLOW_OUTPUT, name);
+          plugin_add_out_port (
+            self->plugin, port);
+        }
+      for (int i = 0; i < descr->num_midi_ins; i++)
+        {
+          strcpy (tmp, _("MIDI in"));
+          sprintf (name, "%s %d", tmp, i);
+          port =
+            port_new_with_type (
+              TYPE_EVENT, FLOW_INPUT, name);
+          plugin_add_in_port (
+            self->plugin, port);
+        }
+      for (int i = 0; i < descr->num_midi_outs; i++)
+        {
+          strcpy (tmp, _("MIDI out"));
+          sprintf (name, "%s %d", tmp, i);
+          port =
+            port_new_with_type (
+              TYPE_EVENT, FLOW_OUTPUT, name);
+          plugin_add_out_port (
+            self->plugin, port);
+        }
     }
 
   /* create controls */
@@ -895,27 +917,44 @@ create_ports (
       self->host_handle, 0);
   for (uint32_t i = 0; i < param_counts->ins; i++)
     {
-      const CarlaParameterInfo * param_info =
-        carla_get_parameter_info (
-          self->host_handle, 0, i);
-      port =
-        port_new_with_type (
-          TYPE_CONTROL, FLOW_INPUT,
-          param_info->name);
-      port->carla_param_id = i;
-      plugin_add_in_port (
-        self->plugin, port);
+      if (loading)
+        {
+          port =
+            carla_native_plugin_get_port_from_param_id (
+              self, i);
+          port_set_control_value (
+            port,
+            carla_get_current_parameter_value (
+              self->host_handle, 0, i), false,
+            false);
+        }
+      else
+        {
+          const CarlaParameterInfo * param_info =
+            carla_get_parameter_info (
+              self->host_handle, 0, i);
+          port =
+            port_new_with_type (
+              TYPE_CONTROL, FLOW_INPUT,
+              param_info->name);
+          port->carla_param_id = (int) i;
+          plugin_add_in_port (
+            self->plugin, port);
+        }
     }
 }
 
 /**
  * Instantiates the plugin.
  *
+ * @param loading Whether loading an existing plugin
+ *   or not.
  * @ret 0 if no errors, non-zero if errors.
  */
 int
 carla_native_plugin_instantiate (
-  CarlaNativePlugin * self)
+  CarlaNativePlugin * self,
+  bool                loading)
 {
   g_return_val_if_fail (
     self->native_plugin_handle &&
@@ -923,13 +962,18 @@ carla_native_plugin_instantiate (
     self->native_plugin_descriptor->ui_show,
     -1);
 
-  /* create ports */
-  create_ports (self);
+  /* create or load ports */
+  if (!loading)
+    create_ports (self, loading);
 
   g_message ("activating carla plugin...");
   self->native_plugin_descriptor->activate (
     self->native_plugin_handle);
   g_message ("carla plugin activated");
+
+  /* create or load ports */
+  if (loading)
+    create_ports (self, loading);
 
   return 0;
 }
@@ -979,9 +1023,9 @@ carla_native_plugin_open_ui (
  * given parameter.
  */
 Port *
-carla_native_plugin_get_port_from_param (
-  CarlaNativePlugin *     self,
-  const NativeParameter * param)
+carla_native_plugin_get_port_from_param_id (
+  CarlaNativePlugin * self,
+  const uint32_t      id)
 {
   Plugin * pl = self->plugin;
   Port * port;
@@ -991,24 +1035,69 @@ carla_native_plugin_get_port_from_param (
       if (port->id.type != TYPE_CONTROL)
         continue;
 
-      if (param ==
-            carla_native_plugin_get_param_info (
-              self, port->carla_param_id))
-        return port;
-    }
-  for (int i = 0; i < pl->num_out_ports; i++)
-    {
-      port = pl->out_ports[i];
-      if (port->id.type != TYPE_CONTROL)
-        continue;
-
-      if (param ==
-            carla_native_plugin_get_param_info (
-              self, port->carla_param_id))
+      if ((int) id == port->carla_param_id)
         return port;
     }
 
   g_return_val_if_reached (NULL);
+}
+
+/**
+ * Saves the state inside the given directory.
+ */
+int
+carla_native_plugin_save_state (
+  CarlaNativePlugin * self,
+  char *              dir)
+{
+  if (self->state_file)
+    {
+      g_free (self->state_file);
+    }
+  io_mkdir (dir);
+  self->state_file =
+    g_build_filename (
+      dir, CARLA_STATE_FILENAME, NULL);
+  int ret =
+    carla_save_plugin_state (
+      self->host_handle, 0, self->state_file);
+  g_warn_if_fail (file_exists (self->state_file));
+  return !ret;
+}
+
+/**
+ * Loads the state from the given directory or from
+ * its state file.
+ *
+ * @param dir The directory to save the state from,
+ *   or NULL to use
+ *   \ref CarlaNativePlugin.state_file.
+ */
+void
+carla_native_plugin_load_state (
+  CarlaNativePlugin * self,
+  char *              dir)
+{
+  char * state_file;
+  if (dir)
+    {
+      state_file =
+        g_build_filename (
+          dir, CARLA_STATE_FILENAME, NULL);
+    }
+  else
+    {
+      state_file = self->state_file;
+    }
+
+  g_warn_if_fail (file_exists (state_file));
+  carla_load_plugin_state (
+    self->host_handle, 0, state_file);
+
+  if (dir)
+    {
+      g_free (state_file);
+    }
 }
 
 /**
@@ -1018,8 +1107,13 @@ void
 carla_native_plugin_free (
   CarlaNativePlugin * self)
 {
-  self->native_plugin_descriptor->deactivate (self->native_plugin_handle);
-  self->native_plugin_descriptor->cleanup (self->native_plugin_handle);
+  if (self->native_plugin_descriptor)
+    {
+      self->native_plugin_descriptor->deactivate (
+        self->native_plugin_handle);
+      self->native_plugin_descriptor->cleanup (
+        self->native_plugin_handle);
+    }
 
   free (self);
 }

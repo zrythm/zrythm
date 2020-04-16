@@ -216,8 +216,7 @@ typedef struct Port
 
   /** Index of the control parameter (for Carla
    * plugin ports). */
-  uint32_t           carla_param_id;
-
+  int                carla_param_id;
 
   /**
    * Pointer to arbitrary data.
@@ -478,9 +477,10 @@ port_fields_schema[] =
   CYAML_FIELD_FLOAT (
     "deff", CYAML_FLAG_DEFAULT,
     Port, deff),
-  CYAML_FIELD_INT (
-    "vst_param_id", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Port, vst_param_id),
+  YAML_FIELD_INT (
+    Port, carla_param_id),
 
   CYAML_FIELD_END
 };

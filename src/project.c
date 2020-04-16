@@ -48,6 +48,7 @@
 #include "gui/widgets/splash.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
+#include "plugins/carla_native_plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/vst_plugin.h"
 #include "utils/arrays.h"
@@ -965,22 +966,35 @@ project_save (
             g_build_filename (
               states_dir, tmp, NULL);
           int ret = -1;
-          switch (pl->descr->protocol)
+#ifdef HAVE_CARLA
+          if (pl->descr->open_with_carla)
             {
-            case PROT_LV2:
               ret =
-                lv2_plugin_save_state_to_file (
-                  pl->lv2, state_dir_plugin);
-              break;
-            case PROT_VST:
-              ret =
-                vst_plugin_save_state_to_file (
-                  pl->vst, state_dir_plugin);
-              break;
-            default:
-              g_warn_if_reached ();
-              break;
+                carla_native_plugin_save_state (
+                  pl->carla, state_dir_plugin);
             }
+          else
+            {
+#endif
+              switch (pl->descr->protocol)
+                {
+                case PROT_LV2:
+                  ret =
+                    lv2_plugin_save_state_to_file (
+                      pl->lv2, state_dir_plugin);
+                  break;
+                case PROT_VST:
+                  ret =
+                    vst_plugin_save_state_to_file (
+                      pl->vst, state_dir_plugin);
+                  break;
+                default:
+                  g_warn_if_reached ();
+                  break;
+                }
+#ifdef HAVE_CARLA
+            }
+#endif
           g_free (state_dir_plugin);
           g_return_val_if_fail (ret == 0, -1);
         }
