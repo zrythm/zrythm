@@ -43,7 +43,8 @@ typedef struct PluginDescriptor PluginDescriptor;
  */
 PluginDescriptor *
 z_carla_discovery_create_vst_descriptor (
-  const char * path);
+  const char * path,
+  bool         thirty_two_bit);
 
 /**
  * @}

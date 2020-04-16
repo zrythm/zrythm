@@ -614,7 +614,13 @@ plugin_manager_scan_plugins (
 #ifdef HAVE_CARLA
                   descriptor =
                     z_carla_discovery_create_vst_descriptor (
-                      plugin_path);
+                      plugin_path, false);
+
+                  /* try 32-bit if above failed */
+                  if (!descriptor)
+                    descriptor =
+                      z_carla_discovery_create_vst_descriptor (
+                        plugin_path, true);
 #else
                   descriptor =
                     vst_plugin_create_descriptor_from_path (

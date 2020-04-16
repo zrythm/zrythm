@@ -65,12 +65,17 @@ get_category_from_carla_category (
  */
 PluginDescriptor *
 z_carla_discovery_create_vst_descriptor (
-  const char * path)
+  const char * path,
+  bool         thirty_two_bit)
 {
-  const char * carla_discovery_filename =
-    "carla-discovery-native"
+  char carla_discovery_filename[60];
+  strcpy (
+    carla_discovery_filename,
+    thirty_two_bit ?
+      "carla-discovery-win32" :
+      "carla-discovery-native");
 #ifdef _WOE32
-      ".exe"
+  strcat (carla_discovery_filename, ".exe");
 #endif
       ;
   char * carla_discovery =
@@ -203,7 +208,7 @@ z_carla_discovery_create_vst_descriptor (
     }
 
   descr->protocol = PROT_VST;
-  descr->arch = ARCH_64;
+  descr->arch = thirty_two_bit ? ARCH_32 : ARCH_64;
   descr->path = g_strdup (path);
 
   /* open all VSTs with carla */

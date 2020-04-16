@@ -244,14 +244,18 @@ create_plugin (
     case PROT_LV2:
       ret =
         carla_add_plugin (
-          self->host_handle, BINARY_NATIVE,
+          self->host_handle,
+          descr->arch == ARCH_64 ?
+            BINARY_NATIVE : BINARY_WIN32,
           type, NULL, descr->name,
           descr->uri, 0, NULL, 0);
       break;
     case PROT_VST:
       ret =
         carla_add_plugin (
-          self->host_handle, BINARY_NATIVE,
+          self->host_handle,
+          descr->arch == ARCH_64 ?
+            BINARY_NATIVE : BINARY_WIN32,
           type, descr->path, descr->name,
           descr->name, 0, NULL, 0);
       break;

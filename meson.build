@@ -522,8 +522,22 @@ if (get_option('enable_carla'))
   install_data (
     find_program (
       carla_libdir / 'carla-discovery-native.exe',
-      carla_libdir / 'carla-discovery-native').path(),
+      carla_libdir /
+        'carla-discovery-native').path(),
     install_dir: bindir)
+  # discovery & bridge for 32-bit vst's
+  if os_windows
+    install_data (
+      find_program (
+        carla_libdir /
+          'carla-discovery-win32.exe').path(),
+      install_dir: bindir)
+    install_data (
+      find_program (
+        carla_libdir /
+          'carla-bridge-win32.exe').path(),
+      install_dir: bindir)
+  endif
   zrythm_deps += [
     carla_native_plugin_dep,
     carla_standalone_dep,
