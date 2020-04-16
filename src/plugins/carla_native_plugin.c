@@ -263,7 +263,14 @@ create_plugin (
       g_warn_if_reached ();
       break;
     }
-  g_return_val_if_fail (ret == 1, NULL);
+
+  if (ret != 1)
+    {
+      g_warning (
+        "%s",
+        carla_get_last_error (self->host_handle));
+      return NULL;
+    }
 
   /* enable various messages */
 #define ENABLE_OPTION(x) \
