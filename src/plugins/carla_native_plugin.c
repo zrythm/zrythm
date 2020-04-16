@@ -238,6 +238,13 @@ create_plugin (
       self->native_plugin_descriptor,
       self->native_plugin_handle);
   self->carla_plugin_id = 0;
+
+  /* set binary paths */
+  carla_set_engine_option (
+    self->host_handle,
+    ENGINE_OPTION_PATH_BINARIES, 0,
+    CONFIGURE_BINDIR);
+
   int ret = 0;
   switch (descr->protocol)
     {
