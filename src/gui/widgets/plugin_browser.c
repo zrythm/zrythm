@@ -315,12 +315,14 @@ on_selection_changed (
       PluginDescriptor * descr =
         g_value_get_pointer (&value);
       char * label = g_strdup_printf (
-        "%s\n%s, %s\nAudio: %d, %d\nMidi: %d, "
+        "%s\n%s, %s (%s)\nAudio: %d, %d\nMidi: %d, "
         "%d\nControls: %d, %d\nCV: %d, %d",
         descr->author,
         descr->category_str,
         plugin_protocol_to_str (
           descr->protocol),
+        plugin_architecture_strings[
+          descr->arch].str,
         descr->num_audio_ins,
         descr->num_audio_outs,
         descr->num_midi_ins,
