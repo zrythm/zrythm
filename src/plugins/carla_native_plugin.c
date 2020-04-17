@@ -125,6 +125,21 @@ host_write_midi_event (
   const NativeMidiEvent * event)
 {
   g_message ("write midi event");
+  CarlaNativePlugin * self =
+    (CarlaNativePlugin *) handle;
+
+  Port * midi_out_port =
+    carla_native_plugin_get_midi_out_port (self);
+
+  midi_byte_t buf[event->size];
+  for (int i = 0; i < event->size; i++)
+    {
+      buf[i] = event->data[i];
+    }
+  midi_events_add_event_from_buf (
+    midi_out_port->midi_events, event->time,
+    buf, event->size, false);
+
   return 0;
 }
 
@@ -1057,6 +1072,25 @@ carla_native_plugin_set_param_value (
 {
   carla_set_parameter_value (
     self->host_handle, 0, id, val);
+}
+
+/**
+ * Returns the MIDI out port.
+ */
+Port *
+carla_native_plugin_get_midi_out_port (
+  CarlaNativePlugin * self)
+{
+  Plugin * pl = self->plugin;
+  Port * port;
+  for (int i = 0; i < pl->num_in_ports; i++)
+    {
+      port = pl->out_ports[i];
+      if (port->id.type == TYPE_EVENT)
+        return port;
+    }
+
+  g_return_val_if_reached (NULL);
 }
 
 /**

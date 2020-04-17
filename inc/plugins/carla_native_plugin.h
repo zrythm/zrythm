@@ -193,6 +193,13 @@ carla_native_plugin_get_port_from_param_id (
   CarlaNativePlugin * self,
   const uint32_t      id);
 
+/**
+ * Returns the MIDI out port.
+ */
+Port *
+carla_native_plugin_get_midi_out_port (
+  CarlaNativePlugin * self);
+
 float
 carla_native_plugin_get_param_value (
   CarlaNativePlugin * self,
