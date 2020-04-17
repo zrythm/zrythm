@@ -428,6 +428,12 @@ project_init_selections (Project * self);
 void
 project_set_has_range (int has_range);
 
+/**
+ * Tears down the project.
+ */
+void
+project_tear_down (Project * self);
+
 SERIALIZE_INC (Project, project)
 DESERIALIZE_INC (Project, project)
 PRINT_YAML_INC (Project, project)

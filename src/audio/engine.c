@@ -1351,16 +1351,45 @@ engine_tear_down (
 {
   g_message ("tearing down audio engine...");
 
-#ifdef HAVE_JACK
-  if (self->audio_backend ==
-        AUDIO_BACKEND_JACK)
-    engine_jack_tear_down (self);
-#endif
-  if (self->audio_backend ==
-        AUDIO_BACKEND_DUMMY)
+#ifdef HAVE_CARLA
+  /* close all carla plugin engines */
+  for (int i = 0; i < TRACKLIST->num_tracks;
+       i++)
     {
-      engine_dummy_tear_down (self);
-    }
+      Track * track = TRACKLIST->tracks[i];
+      if (track_type_has_channel (track->type))
+        {
+          Channel * ch =
+            track_get_channel (track);
+          for (int j = 0; j < STRIP_SIZE; j++)
+            {
+              Plugin * pl = ch->plugins[j];
+              if (!pl)
+                continue;
 
-  /* TODO free data */
+              if (pl->descr->open_with_carla)
+                {
+                  carla_native_plugin_close (
+                    pl->carla);
+                }
+            }
+        }
+    }
+#endif
+
+  router_tear_down (&MIXER->router);
+
+  switch (self->audio_backend)
+    {
+#ifdef HAVE_JACK
+    case AUDIO_BACKEND_JACK:
+      engine_jack_tear_down (self);
+      break;
+#endif
+    case AUDIO_BACKEND_DUMMY:
+      engine_dummy_tear_down (self);
+      break;
+    default:
+      break;
+    }
 }

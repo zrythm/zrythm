@@ -1124,17 +1124,12 @@ graph_destroy (
     "destroying graph %p (router g1 %p g2 %p)",
     self, self->router->graph,
     self->router->graph);
-  int i;
   self->destroying = 1;
 
   graph_terminate (self);
 
   /* wait for threads to finish */
   g_usleep (1000);
-
-  for (i = 0; i < self->num_threads; ++i) {
-    /*pthread_join (workers[i], NULL);*/
-  }
 
   graph_free (self);
   free (self);
@@ -2032,4 +2027,15 @@ router_is_processing_thread (
 #endif
 
   return 0;
+}
+
+void
+router_tear_down (
+  Router * self)
+{
+  g_message ("tearing down router...");
+  graph_destroy (self->graph);
+  self->graph = NULL;
+
+  zix_sem_destroy (&self->graph_access);
 }

@@ -66,10 +66,10 @@
 #include <glib/gi18n.h>
 
 /**
- * Tears down the project before loading another one.
+ * Tears down the project.
  */
-static void
-tear_down (Project * self)
+void
+project_tear_down (Project * self)
 {
   g_message ("tearing down the project...");
 
@@ -78,9 +78,13 @@ tear_down (Project * self)
   if (self->title)
     g_free (self->title);
 
-  engine_tear_down (AUDIO_ENGINE);
+  engine_tear_down (&self->audio_engine);
 
-  track_free (P_CHORD_TRACK);
+  if (&self->tracklist &&
+      self->tracklist.chord_track)
+    {
+      track_free (self->tracklist.chord_track);
+    }
 
   free (self);
 }
@@ -352,7 +356,7 @@ create_default (Project * self)
   int loading_while_running = self->loaded;
   if (loading_while_running)
     {
-      tear_down (self);
+      project_tear_down (self);
       PROJECT = calloc (1, sizeof (Project));
       self = PROJECT;
 
@@ -593,7 +597,7 @@ load (
   int loading_while_running = PROJECT->loaded;
   if (loading_while_running)
     {
-      tear_down (PROJECT);
+      project_tear_down (PROJECT);
       PROJECT = prj;
 
       DESTROY_PREV_MAIN_WINDOW;

@@ -135,6 +135,15 @@ host_ui_parameter_changed (
   float value)
 {
   g_message ("handle ui param changed");
+  CarlaNativePlugin * self =
+    (CarlaNativePlugin *) handle;
+  Port * port =
+    carla_native_plugin_get_port_from_param_id (
+      self, index);
+  g_return_if_fail (port);
+
+  port_set_control_value (
+    port, value, false, false);
 }
 
 static void
@@ -1132,11 +1141,8 @@ carla_native_plugin_load_state (
     }
 }
 
-/**
- * Deactivates, cleanups and frees the instance.
- */
 void
-carla_native_plugin_free (
+carla_native_plugin_close (
   CarlaNativePlugin * self)
 {
   if (self->native_plugin_descriptor)
@@ -1146,6 +1152,21 @@ carla_native_plugin_free (
       self->native_plugin_descriptor->cleanup (
         self->native_plugin_handle);
     }
+  if (self->host_handle)
+    {
+      carla_host_handle_free (self->host_handle);
+      self->host_handle = NULL;
+    }
+}
+
+/**
+ * Deactivates, cleanups and frees the instance.
+ */
+void
+carla_native_plugin_free (
+  CarlaNativePlugin * self)
+{
+  carla_native_plugin_close (self);
 
   free (self);
 }

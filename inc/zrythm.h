@@ -287,6 +287,17 @@ zrythm_set_progress_status (
   const double perc);
 
 /**
+ * Called immediately after the main GTK loop
+ * terminates.
+ *
+ * This is also called manually on SIGINT.
+ */
+void
+zrythm_on_shutdown (
+  GApplication * application,
+  ZrythmApp *    self);
+
+/**
  * @}
  */
 

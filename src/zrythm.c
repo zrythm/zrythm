@@ -1033,13 +1033,20 @@ lock_memory (void)
 /**
  * Called immediately after the main GTK loop
  * terminates.
+ *
+ * This is also called manually on SIGINT.
  */
-static void
-on_shutdown (
+void
+zrythm_on_shutdown (
   GApplication * application,
   ZrythmApp *    self)
 {
-  /* TODO */
+  g_message ("shutting down...");
+
+  if (PROJECT && PROJECT->loaded)
+    {
+      project_tear_down (PROJECT);
+    }
 }
 
 ZrythmApp *
@@ -1062,7 +1069,7 @@ zrythm_app_new (void)
   /* add shutdown handler */
   g_signal_connect (
     G_OBJECT (self), "shutdown",
-    G_CALLBACK (on_shutdown), self);
+    G_CALLBACK (zrythm_on_shutdown), self);
 
   return self;
 }

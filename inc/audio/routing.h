@@ -356,6 +356,10 @@ void
 graph_free (
   Graph * self);
 
+void
+router_tear_down (
+  Router * self);
+
 /**
  * @}
  */

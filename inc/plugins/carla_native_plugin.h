@@ -204,6 +204,10 @@ carla_native_plugin_set_param_value (
   const uint32_t      id,
   float               val);
 
+void
+carla_native_plugin_close (
+  CarlaNativePlugin * self);
+
 /**
  * Deactivates, cleanups and frees the instance.
  */

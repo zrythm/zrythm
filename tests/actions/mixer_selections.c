@@ -82,9 +82,8 @@ rebootstrap (
     LILV_WORLD, path);
   lilv_node_free (path);
 
-  double progress = 0;
   plugin_manager_scan_plugins (
-    PLUGIN_MANAGER, 1.0, &progress);
+    PLUGIN_MANAGER, 1.0, NULL);
   g_assert_cmpint (
     PLUGIN_MANAGER->num_plugins, ==, 1);
 

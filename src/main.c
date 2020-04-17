@@ -65,7 +65,7 @@
 
 /** SIGSEGV handler. */
 static void
-handler (int sig)
+segv_handler (int sig)
 {
   char message[12000];
   char current_line[2000];
@@ -356,7 +356,7 @@ main (int    argc,
 
   /* install segfault handler */
   g_message ("Installing signal handler...");
-  signal(SIGSEGV, handler);
+  signal(SIGSEGV, segv_handler);
 
 #ifdef HAVE_X11
   /* init xlib threads */

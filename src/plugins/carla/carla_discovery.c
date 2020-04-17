@@ -111,7 +111,7 @@ z_carla_discovery_create_vst_descriptor (
   char * argv[] = {
     carla_discovery, type, (char *) path, NULL };
   char * results =
-    system_get_cmd_output (argv, 2000, true);
+    system_get_cmd_output (argv, 1200, true);
   g_return_val_if_fail (results, NULL);
   g_message (
     "results: [[[\n%s\n]]]", results);
