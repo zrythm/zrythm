@@ -1134,6 +1134,9 @@ carla_native_plugin_load_state (
   g_warn_if_fail (file_exists (state_file));
   carla_load_plugin_state (
     self->host_handle, 0, state_file);
+  g_message (
+    "loading carla plugin state from %s",
+    state_file);
 
   if (dir)
     {

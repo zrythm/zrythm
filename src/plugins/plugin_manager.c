@@ -482,7 +482,7 @@ get_vst_paths (
   char ** paths =
     g_settings_get_strv (
       S_PREFERENCES, "vst-search-paths-windows");
-  g_return_if_fail (paths);
+  g_return_val_if_fail (paths, NULL);
 #else
   char * vst_path =
     g_strdup (getenv ("VST_PATH"));

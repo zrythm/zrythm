@@ -889,6 +889,11 @@ static void
 on_plugin_window_visibility_changed (
   Plugin * pl)
 {
+  if (!IS_PLUGIN (pl) || pl->deleting)
+    {
+      return;
+    }
+
   Track * track = plugin_get_track (pl);
   if (track->type ==
       TRACK_TYPE_INSTRUMENT &&
