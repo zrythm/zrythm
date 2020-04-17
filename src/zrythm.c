@@ -82,8 +82,8 @@ ZrythmApp * zrythm_app;
  * The splash screen then reads these values from
  * the Zrythm struct.
  */
-static void
-set_progress_status (
+void
+zrythm_set_progress_status (
   Zrythm *     self,
   const char * text,
   const double perc)
@@ -304,7 +304,7 @@ on_setup_main_window (
   GVariant *parameter,
   gpointer  user_data)
 {
-  set_progress_status (
+  zrythm_set_progress_status (
     ZRYTHM,
     _("Setting up main window"),
     0.98);
@@ -345,7 +345,7 @@ static void on_load_project (GSimpleAction  *action,
                              GVariant *parameter,
                              gpointer  user_data)
 {
-  set_progress_status (
+  zrythm_set_progress_status (
     ZRYTHM,
     _("Loading project"),
     0.8);
@@ -374,7 +374,7 @@ static void on_init_main_window (
 {
   ZrythmApp * _app = (ZrythmApp *) user_data;
 
-  set_progress_status (
+  zrythm_set_progress_status (
     ZRYTHM,
     _("Initializing main window"),
     0.8);
@@ -392,7 +392,7 @@ static void *
 init_thread (
   gpointer data)
 {
-  set_progress_status (
+  zrythm_set_progress_status (
     ZRYTHM,
     _("Initializing settings"),
     0.0);
@@ -401,7 +401,7 @@ init_thread (
   ZRYTHM->debug =
     env_get_int ("ZRYTHM_DEBUG", 0);
   /* init zrythm folders ~/Zrythm */
-  set_progress_status (
+  zrythm_set_progress_status (
     ZRYTHM,
     _("Initializing Zrythm directories"),
     0.01);
@@ -410,33 +410,33 @@ init_thread (
   init_templates ();
 
   /* init log */
-  set_progress_status (
+  zrythm_set_progress_status (
     ZRYTHM,
     _("Initializing logging system"),
     0.02);
   log_init (LOG);
 
-  set_progress_status (
+  zrythm_set_progress_status (
     ZRYTHM,
     _("Initializing symap"),
     0.03);
   ZRYTHM->symap = symap_new ();
 
-  set_progress_status (
+  zrythm_set_progress_status (
     ZRYTHM,
     _("Initializing caches"),
     0.05);
   CAIRO_CACHES = z_cairo_caches_new ();
   UI_CACHES = ui_caches_new ();
 
-  set_progress_status (
+  zrythm_set_progress_status (
     ZRYTHM,
     _("Initializing file manager"),
     0.15);
   file_manager_init (&ZRYTHM->file_manager);
   file_manager_load_files (&ZRYTHM->file_manager);
 
-  set_progress_status (
+  zrythm_set_progress_status (
     ZRYTHM,
     _("Initializing plugin manager"),
     0.2);
@@ -444,7 +444,7 @@ init_thread (
   if (!g_settings_get_boolean (
          S_GENERAL, "first-run"))
     {
-      set_progress_status (
+      zrythm_set_progress_status (
         ZRYTHM,
         _("Scanning plugins"),
         0.4);
@@ -615,7 +615,7 @@ Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou");
           return;
         }
 
-      set_progress_status (
+      zrythm_set_progress_status (
         ZRYTHM,
         _("Waiting for project"),
         0.8);

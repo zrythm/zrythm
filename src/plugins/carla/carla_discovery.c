@@ -79,10 +79,7 @@ z_carla_discovery_create_vst_descriptor (
     "carla-discovery-native"
 #endif
     );
-#ifdef _WOE32
-  strcat (carla_discovery_filename, ".exe");
-#endif
-      ;
+  strcat (carla_discovery_filename, BIN_SUFFIX);
   char * carla_discovery =
     g_find_program_in_path (
       carla_discovery_filename);

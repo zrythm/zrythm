@@ -474,6 +474,65 @@ plugin_manager_init (PluginManager * self)
     cached_vst_descriptors_new ();
 }
 
+static char **
+get_vst_paths (
+  PluginManager * self)
+{
+#ifdef _WOE32
+  char ** paths =
+    g_settings_get_strv (
+      S_PREFERENCES, "vst-search-paths-windows");
+  g_return_if_fail (paths);
+#else
+  char * vst_path =
+    g_strdup (getenv ("VST_PATH"));
+  if (!vst_path || (strlen (vst_path) == 0))
+    vst_path =
+      g_strdup (
+        "~/.vst:~/vst:"
+        "/usr/" LIBDIR_NAME "/vst:"
+        "/usr/local/" LIBDIR_NAME "/vst");
+  char ** paths =
+    g_strsplit (vst_path, ":", 0);
+  g_free (vst_path);
+#endif
+
+  return paths;
+}
+
+static int
+get_vst_count (
+  PluginManager * self)
+{
+  char ** paths = get_vst_paths (self);
+  int path_idx = 0;
+  char * path;
+  int count = 0;
+  while ((path = paths[path_idx++]) != NULL)
+    {
+      if (!g_file_test (path, G_FILE_TEST_EXISTS))
+        continue;
+
+      char ** vst_plugins =
+        io_get_files_in_dir_ending_in (
+          path, 1, LIB_SUFFIX);
+      if (!vst_plugins)
+        continue;
+
+      char * plugin_path;
+      int plugin_idx = 0;
+      while ((plugin_path = vst_plugins[plugin_idx++]) !=
+               NULL)
+        {
+          count++;
+        }
+      g_strfreev (vst_plugins);
+    }
+  g_strfreev (paths);
+
+  return count;
+}
+
 /**
  * Scans for plugins, optionally updating the
  * progress.
@@ -504,7 +563,8 @@ plugin_manager_scan_plugins (
     return;
 
   double size =
-    (double) lilv_plugins_size (lilv_plugins);
+    (double) lilv_plugins_size (lilv_plugins) +
+    (double) get_vst_count (self);
 
   /* scan LV2 */
   g_message ("Scanning LV2 plugins...");
@@ -529,33 +589,39 @@ plugin_manager_scan_plugins (
       count++;
 
       if (progress)
-        *progress =
-          start_progress +
-          ((double) count / size) *
-            (max_progress - start_progress);
+        {
+          *progress =
+            start_progress +
+            ((double) count / size) *
+              (max_progress - start_progress);
+          char prog_str[800];
+          if (descriptor)
+            {
+              sprintf (
+                prog_str, "%s: %s",
+                _("Scanned LV2 plugin"),
+                descriptor->name);
+            }
+          else
+            {
+              const LilvNode*  lv2_uri =
+                lilv_plugin_get_uri (p);
+              const char * uri_str =
+                lilv_node_as_string (lv2_uri);
+              sprintf (
+                prog_str,
+                _("Skipped LV2 plugin at %s"),
+                uri_str);
+            }
+          zrythm_set_progress_status (
+            ZRYTHM, prog_str, *progress);
+        }
     }
   g_message ("Scanned %d LV2 plugins", count);
 
   /* scan vst */
   g_message ("Scanning VST plugins...");
-#ifdef _WOE32
-  char ** paths =
-    g_settings_get_strv (
-      S_PREFERENCES, "vst-search-paths-windows");
-  g_return_if_fail (paths);
-#else
-  char * vst_path =
-    g_strdup (getenv ("VST_PATH"));
-  if (!vst_path || (strlen (vst_path) == 0))
-    vst_path =
-      g_strdup (
-        "~/.vst:~/vst:"
-        "/usr/" LIBDIR_NAME "/vst:"
-        "/usr/local/" LIBDIR_NAME "/vst");
-  char ** paths =
-    g_strsplit (vst_path, ":", 0);
-  g_free (vst_path);
-#endif
+  char ** paths = get_vst_paths (self);
   int path_idx = 0;
   char * path;
   while ((path = paths[path_idx++]) != NULL)
@@ -566,13 +632,8 @@ plugin_manager_scan_plugins (
       g_message ("scanning for VSTs in %s", path);
 
       char ** vst_plugins =
-#ifdef _WOE32
         io_get_files_in_dir_ending_in (
-          path, 1, ".dll");
-#else
-        io_get_files_in_dir_ending_in (
-          path, 1, ".so");
-#endif
+          path, 1, LIB_SUFFIX);
       if (!vst_plugins)
         continue;
 
@@ -652,6 +713,32 @@ plugin_manager_scan_plugins (
                         plugin_path, 0);
                     }
                 }
+            }
+          count++;
+
+          if (progress)
+            {
+              *progress =
+                start_progress +
+                ((double) count / size) *
+                  (max_progress - start_progress);
+              char prog_str[800];
+              if (descriptor)
+                {
+                  sprintf (
+                    prog_str, "%s: %s",
+                    _("Scanned VST plugin"),
+                    descriptor->name);
+                }
+              else
+                {
+                  sprintf (
+                    prog_str,
+                    _("Skipped VST plugin at %s"),
+                    plugin_path);
+                }
+              zrythm_set_progress_status (
+                ZRYTHM, prog_str, *progress);
             }
         }
       if (plugin_idx > 0)

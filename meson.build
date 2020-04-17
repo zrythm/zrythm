@@ -52,29 +52,46 @@ locales = [
   'pl', 'pt', 'pt_BR',
   'ru', 'zh' ]
 
+os_darwin = false
+os_linux = false
+os_freebsd = false
+os_windows = false
+bin_suffix = ''
+lib_suffix = '.so'
+
+if host_machine.system() == 'darwin'
+  os_darwin = true
+  lib_suffix = '.dylib'
+elif host_machine.system() == 'linux'
+  os_linux = true
+elif host_machine.system() == 'freebsd'
+  os_freebsd = true
+elif host_machine.system() == 'windows'
+  os_windows = true
+  bin_suffix = '.exe'
+  lib_suffix = '.dll'
+endif
+
 cdata = configuration_data ()
 cdata.set_quoted (
-  'PACKAGE_VERSION',
-  '@VCS_TAG@')
+  'PACKAGE_VERSION', '@VCS_TAG@')
 cdata.set_quoted (
   'COMPILER',
   meson.get_compiler('c').get_id())
-cdata.set_quoted (
-  'PREFIX', prefix)
+cdata.set_quoted ('PREFIX', prefix)
 cdata.set_quoted (
   'COMPILER_VERSION',
   meson.get_compiler('c').version())
-cdata.set_quoted (
-  'CONFIGURE_DATADIR', datadir)
+cdata.set_quoted ('CONFIGURE_DATADIR', datadir)
 cdata.set_quoted (
   'CONFIGURE_SOURCEVIEW_STYLES_DIR',
   sourceviewstylesdir)
 cdata.set_quoted (
   'LIBDIR_NAME', get_option ('libdir'))
-cdata.set_quoted (
-  'CONFIGURE_LIBDIR', libdir)
-cdata.set_quoted (
-  'CONFIGURE_BINDIR', bindir)
+cdata.set_quoted ('CONFIGURE_LIBDIR', libdir)
+cdata.set_quoted ('CONFIGURE_BINDIR', bindir)
+cdata.set_quoted ('LIB_SUFFIX', lib_suffix)
+cdata.set_quoted ('BIN_SUFFIX', bin_suffix)
 if get_option ('trial_ver')
   cdata.set('TRIAL_VER', 1)
 endif
@@ -99,23 +116,6 @@ cdata.set_quoted (
   'https://redmine.zrythm.org/projects/zrythm/issues/new')
 if (get_option ('user_manual'))
   cdata.set_quoted ('MANUAL_PATH', docdir)
-endif
-
-os_darwin = false
-os_linux = false
-os_freebsd = false
-os_windows = false
-bin_suffix = ''
-
-if host_machine.system() == 'darwin'
-  os_darwin = true
-elif host_machine.system() == 'linux'
-  os_linux = true
-elif host_machine.system() == 'freebsd'
-  os_freebsd = true
-elif host_machine.system() == 'windows'
-  os_windows = true
-  bin_suffix = '.exe'
 endif
 
 if os_darwin

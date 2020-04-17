@@ -274,6 +274,19 @@ zrythm_get_dir (
   Zrythm * self);
 
 /**
+ * Sets the current status and progress percentage
+ * during loading.
+ *
+ * The splash screen then reads these values from
+ * the Zrythm struct.
+ */
+void
+zrythm_set_progress_status (
+  Zrythm *     self,
+  const char * text,
+  const double perc);
+
+/**
  * @}
  */
 
