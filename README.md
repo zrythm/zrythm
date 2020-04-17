@@ -28,7 +28,12 @@ towards a stable release.
 ![screenshot](https://www.zrythm.org/static/images/apr-10-2020.png)
 
 ### Supported plugin protocols
-- LV2, VST2 (Experimental)
+- Full support: LV2, VST2
+- Experimental: VST3
+
+Support for all plugin protocols besides LV2 is
+possible thanks to
+[Carla](https://github.com/falkTX/Carla/).
 
 ### Supported backends
 - Audio: JACK, SDL2, RtAudio (ALSA/WASAPI/CoreAudio)
