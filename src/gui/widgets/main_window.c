@@ -304,10 +304,12 @@ on_key_action (
         widget, event,
         Z_ARRANGER_WIDGET (
           MAIN_WINDOW->last_focused));
+
+      /* stop other handlers */
+      return TRUE;
     }
 
-  /* stop other handlers */
-  return TRUE;
+  return FALSE;
 }
 
 static void

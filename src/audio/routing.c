@@ -658,6 +658,7 @@ graph_terminate (
   zix_sem_post (&self->callback_start);
 
   /* join threads */
+#ifdef HAVE_JACK
   if (AUDIO_ENGINE->audio_backend ==
         AUDIO_BACKEND_JACK)
     {
@@ -669,8 +670,8 @@ graph_terminate (
             self->threads[i].jthread);
 #else
           pthread_join (
-            self->threads[i].pthread, NULL);
-#endif
+            self->threads[i].jthread, NULL);
+#endif // HAVE_JACK_CLIENT_STOP_THREAD
         }
 #ifdef HAVE_JACK_CLIENT_STOP_THREAD
       jack_client_stop_thread (
@@ -678,11 +679,12 @@ graph_terminate (
         self->main_thread.jthread);
 #else
       pthread_join (
-        self->main_thread.pthread, NULL);
-#endif
+        self->main_thread.jthread, NULL);
+#endif // HAVE_JACK_CLIENT_STOP_THREAD
     }
   else
     {
+#endif // HAVE_JACK
       for (int i = 0; i < self->num_threads; i++)
         {
           pthread_join (
@@ -690,7 +692,9 @@ graph_terminate (
         }
       pthread_join (
         self->main_thread.pthread, NULL);
+#ifdef HAVE_JACK
     }
+#endif
 
   /*self->init_trigger_list = NULL;*/
   /*self->n_init_triggers   = 0;*/
