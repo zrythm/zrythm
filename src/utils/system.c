@@ -164,7 +164,9 @@ watch_out_cb (
  *
  * This assumes that the process will exit within a
  * few milliseconds from when the first output is
- * printed.
+ * printed, unless \ref always_wait is true, in
+ * which case the process will only be
+ * reaped after the waiting time.
  *
  * @param ms_timer A timer in ms to
  *   kill the process, or negative to not
@@ -173,7 +175,8 @@ watch_out_cb (
 char *
 system_get_cmd_output (
   char ** argv,
-  long         ms_timer)
+  long    ms_timer,
+  bool    always_wait)
 {
   GPid pid;
   int out, err;
@@ -196,29 +199,41 @@ system_get_cmd_output (
     g_io_channel_unix_new (out);
 #endif
 
-  ChildWatchData data = { false };
-  g_io_add_watch (
-    out_ch, G_IO_IN, (GIOFunc) watch_out_cb,
-    &data);
-
-  gint64 time_at_start = g_get_monotonic_time ();
-  gint64 cur_time = time_at_start;
-  while (!data.exited &&
-         (cur_time - time_at_start) <
-           (1000 * ms_timer))
+  if (always_wait)
     {
-      g_usleep (10000);
-      cur_time = g_get_monotonic_time ();
+      /* wait for the full length of the timer */
+      g_usleep (1000 * (unsigned long) ms_timer);
     }
-  g_usleep (10000);
+  else
+    {
+      /* wait until the first input is received or
+       * for the full length of the timer if no
+       * input is received */
+      ChildWatchData data = { false };
+      g_io_add_watch (
+        out_ch, G_IO_IN, (GIOFunc) watch_out_cb,
+        &data);
+
+      gint64 time_at_start = g_get_monotonic_time ();
+      gint64 cur_time = time_at_start;
+      while (!data.exited &&
+             (cur_time - time_at_start) <
+               (1000 * ms_timer))
+        {
+          g_usleep (10000);
+          cur_time = g_get_monotonic_time ();
+        }
+      g_usleep (10000);
+    }
 
   g_spawn_close_pid (pid);
-  g_io_channel_unref (out_ch);
 
   char * str;
   gsize size;
   g_io_channel_read_to_end (
     out_ch, &str, &size, NULL);
+
+  g_io_channel_unref (out_ch);
 
   return str;
 

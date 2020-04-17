@@ -48,6 +48,12 @@ system_run_cmd (
 /**
  * Runs the command and returns the output, or NULL.
  *
+ * This assumes that the process will exit within a
+ * few milliseconds from when the first output is
+ * printed, unless \ref always_wait is true, in
+ * which case the process will only be
+ * reaped after the waiting time.
+ *
  * @param ms_timer A timer in ms to
  *   kill the process, or negative to not
  *   wait.
@@ -55,7 +61,8 @@ system_run_cmd (
 char *
 system_get_cmd_output (
   char ** argv,
-  long         ms_timer);
+  long    ms_timer,
+  bool    always_wait);
 
 /**
  * @}
