@@ -143,13 +143,86 @@ system_run_cmd (
 #endif
 }
 
+typedef struct ChildWatchData
+{
+  bool exited;
+} ChildWatchData;
+
+static gboolean
+watch_out_cb (
+  GIOChannel   *channel,
+  GIOCondition  cond,
+  ChildWatchData * data)
+{
+  data->exited = true;
+
+  return true;
+}
+
 /**
  * Runs the command and returns the output, or NULL.
+ *
+ * This assumes that the process will exit within a
+ * few milliseconds from when the first output is
+ * printed.
+ *
+ * @param ms_timer A timer in ms to
+ *   kill the process, or negative to not
+ *   wait.
  */
 char *
 system_get_cmd_output (
-  const char * cmd)
+  char ** argv,
+  long         ms_timer)
 {
+  GPid pid;
+  int out, err;
+  bool ret =
+    g_spawn_async_with_pipes (
+      NULL, argv, NULL, G_SPAWN_DEFAULT, NULL,
+      NULL, &pid, NULL, &out, &err, NULL);
+  if (!ret)
+    {
+      g_warning (
+        "%s: spawn failed", __func__);
+      return NULL;
+    }
+
+  /* create channels used to read output */
+  GIOChannel *out_ch =
+#ifdef _WOE32
+    g_io_channel_win32_new_fd (out);
+#else
+    g_io_channel_unix_new (out);
+#endif
+
+  ChildWatchData data = { false };
+  g_io_add_watch (
+    out_ch, G_IO_IN, (GIOFunc) watch_out_cb,
+    &data);
+
+  gint64 time_at_start = g_get_monotonic_time ();
+  gint64 cur_time = time_at_start;
+  while (!data.exited &&
+         (cur_time - time_at_start) <
+           (1000 * ms_timer))
+    {
+      g_usleep (10000);
+      cur_time = g_get_monotonic_time ();
+    }
+  g_usleep (10000);
+
+  g_spawn_close_pid (pid);
+  g_io_channel_unref (out_ch);
+
+  char * str;
+  gsize size;
+  g_io_channel_read_to_end (
+    out_ch, &str, &size, NULL);
+
+  return str;
+
+#if 0
   /* Open the command for reading. */
   FILE * fp = popen (cmd, "r");
   g_return_val_if_fail (fp, NULL);
@@ -167,4 +240,5 @@ system_get_cmd_output (
   pclose (fp);
 
   return g_string_free (str, false);
+#endif
 }

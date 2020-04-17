@@ -274,7 +274,7 @@ create_plugin (
   if (ret != 1)
     {
       g_warning (
-        "%s",
+        "Error adding carla plugin: %s",
         carla_get_last_error (self->host_handle));
       return NULL;
     }

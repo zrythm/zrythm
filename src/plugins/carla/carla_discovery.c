@@ -71,9 +71,14 @@ z_carla_discovery_create_vst_descriptor (
   char carla_discovery_filename[60];
   strcpy (
     carla_discovery_filename,
+#ifdef _WOE32
     thirty_two_bit ?
       "carla-discovery-win32" :
-      "carla-discovery-native");
+      "carla-discovery-native"
+#else
+    "carla-discovery-native"
+#endif
+    );
 #ifdef _WOE32
   strcat (carla_discovery_filename, ".exe");
 #endif
@@ -98,14 +103,27 @@ z_carla_discovery_create_vst_descriptor (
     }
   g_return_val_if_fail (
     carla_discovery, NULL);
+  char path_arg[2000];
+  sprintf (
+    path_arg,
+#ifdef _WOE32
+    "'%s'",
+#else
+    "%s",
+#endif
+    path);
+  char type[40];
+  strcpy (type, "vst");
   char cmd[4000];
   sprintf (
-    cmd, "%s vst \"%s\"",
-    carla_discovery, path);
+    cmd, "%s %s %s",
+    carla_discovery, type, path_arg);
   g_message (
     "cmd: [[[\n%s\n]]]", cmd);
+  char * argv[] = {
+    carla_discovery, type, path_arg, NULL };
   char * results =
-    system_get_cmd_output (cmd);
+    system_get_cmd_output (argv, 2000);
   g_return_val_if_fail (results, NULL);
   g_message (
     "results: [[[\n%s\n]]]", results);

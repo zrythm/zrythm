@@ -47,10 +47,15 @@ system_run_cmd (
 
 /**
  * Runs the command and returns the output, or NULL.
+ *
+ * @param ms_timer A timer in ms to
+ *   kill the process, or negative to not
+ *   wait.
  */
 char *
 system_get_cmd_output (
-  const char * cmd);
+  char ** argv,
+  long         ms_timer);
 
 /**
  * @}
