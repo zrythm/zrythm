@@ -124,48 +124,37 @@ io_path_get_basename (const char * filename)
 }
 
 char *
-io_path_get_parent_dir (const char * path)
+io_path_get_parent_dir (
+  const char * path)
 {
-  char ** parts = g_strsplit (path, G_DIR_SEPARATOR_S, -1);
-  char * new_str = NULL;
-  char * prev_str = NULL;
-  int num_parts = 0;
-  while (parts[num_parts])
+#ifdef _WOE32
+#define PATH_SEP "\\\\"
+#define ROOT_REGEX "[A-Z]:" PATH_SEP
+#else
+#define PATH_SEP "/"
+#define ROOT_REGEX "/"
+#endif
+  char regex[] =
+    "(" ROOT_REGEX ".*)" PATH_SEP "[^" PATH_SEP "]+";
+  char * parent =
+    string_get_regex_group (path, regex, 1);
+  g_message ("[%s]\npath: %s\nregex: %s\nparent: %s",
+    __func__, path, regex, parent);
+
+  if (!parent)
     {
-      num_parts++;
+      strcpy (
+        regex, "(" ROOT_REGEX ")[^" PATH_SEP "]*");
+      parent =
+        string_get_regex_group (path, regex, 1);
+      g_message ("path: %s\nregex: %s\nparent: %s",
+        path, regex, parent);
     }
 
-  /* root */
-  if (num_parts < 2)
-    new_str = g_strdup (G_DIR_SEPARATOR_S);
-  else
-    {
-      for (int i = 0; i < num_parts - 1; i++)
-        {
-          prev_str = new_str;
+#undef PATH_SEP
+#undef ROOT_REGEX
 
-          if (i == 1)
-            new_str = g_strconcat (new_str,
-                                   parts[i],
-                                   NULL);
-          else if (i == 0)
-            new_str = g_strconcat (G_DIR_SEPARATOR_S,
-                                   parts[i],
-                                   NULL);
-          else
-            new_str = g_strconcat (new_str,
-                                   G_DIR_SEPARATOR_S,
-                                   parts[i],
-                                   NULL);
-
-          if (prev_str)
-            g_free (prev_str);
-        }
-    }
-
-  g_strfreev (parts);
-
-  return new_str;
+  return parent;
 }
 
 char *

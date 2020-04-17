@@ -658,34 +658,39 @@ graph_terminate (
   zix_sem_post (&self->callback_start);
 
   /* join threads */
-#ifdef HAVE_JACK
-  for (int i = 0; i < self->num_threads; i++)
+  if (AUDIO_ENGINE->audio_backend ==
+        AUDIO_BACKEND_JACK)
     {
+      for (int i = 0; i < self->num_threads; i++)
+        {
+#ifdef HAVE_JACK_CLIENT_STOP_THREAD
+          jack_client_stop_thread (
+            AUDIO_ENGINE->client,
+            self->threads[i].jthread);
+#else
+          pthread_join (
+            self->threads[i].pthread, NULL);
+#endif
+        }
 #ifdef HAVE_JACK_CLIENT_STOP_THREAD
       jack_client_stop_thread (
         AUDIO_ENGINE->client,
-        self->threads[i].jthread);
+        self->main_thread.jthread);
 #else
       pthread_join (
-        self->threads[i].jthread, NULL);
+        self->main_thread.pthread, NULL);
 #endif
     }
-#ifdef HAVE_JACK_CLIENT_STOP_THREAD
-  jack_client_stop_thread (
-    AUDIO_ENGINE->client,
-    self->main_thread.jthread);
-#else
-  pthread_join (
-    self->main_thread.jthread, NULL);
-#endif
-#else
-  for (int i = 0; i < self->num_threads; i++)
+  else
     {
+      for (int i = 0; i < self->num_threads; i++)
+        {
+          pthread_join (
+            self->threads[i].pthread, NULL);
+        }
       pthread_join (
-        self->threads[i].pthread, NULL);
+        self->main_thread.pthread, NULL);
     }
-  pthread_join (self->main_thread.pthread, NULL);
-#endif
 
   /*self->init_trigger_list = NULL;*/
   /*self->n_init_triggers   = 0;*/
@@ -2034,7 +2039,8 @@ router_tear_down (
   Router * self)
 {
   g_message ("tearing down router...");
-  graph_destroy (self->graph);
+  if (self->graph)
+    graph_destroy (self->graph);
   self->graph = NULL;
 
   zix_sem_destroy (&self->graph_access);

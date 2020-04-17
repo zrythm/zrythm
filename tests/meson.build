@@ -60,6 +60,7 @@ if get_option ('enable_tests')
     ['project', true],
     ['utils/arrays', true],
     ['utils/general', true],
+    ['utils/io', true],
     ['utils/string', true],
     ]
 
