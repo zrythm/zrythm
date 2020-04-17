@@ -230,12 +230,15 @@ system_get_cmd_output (
 
   char * str;
   gsize size;
-  g_io_channel_read_to_end (
-    out_ch, &str, &size, NULL);
-
+  GIOStatus gio_status =
+    g_io_channel_read_to_end (
+      out_ch, &str, &size, NULL);
   g_io_channel_unref (out_ch);
 
-  return str;
+  if (gio_status == G_IO_STATUS_NORMAL)
+    return str;
+  else
+    return NULL;
 
 #if 0
   /* Open the command for reading. */

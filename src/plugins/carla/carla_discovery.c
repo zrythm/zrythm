@@ -103,34 +103,30 @@ z_carla_discovery_create_vst_descriptor (
     }
   g_return_val_if_fail (
     carla_discovery, NULL);
-  char path_arg[2000];
-  sprintf (
-    path_arg,
-#ifdef _WOE32
-    "'%s'",
-#else
-    "%s",
-#endif
-    path);
   char type[40];
   strcpy (type, "vst");
   char cmd[4000];
   sprintf (
     cmd, "%s %s %s",
-    carla_discovery, type, path_arg);
+    carla_discovery, type, path);
   g_message (
     "cmd: [[[\n%s\n]]]", cmd);
   char * argv[] = {
-    carla_discovery, type, path_arg, NULL };
+    carla_discovery, type, (char *) path, NULL };
   char * results =
-    system_get_cmd_output (argv, 2000, false);
+    system_get_cmd_output (argv, 2000, true);
   g_return_val_if_fail (results, NULL);
   g_message (
     "results: [[[\n%s\n]]]", results);
+#ifdef _WOE32
+#define LINE_SEP "\\r\\n"
+#else
+#define LINE_SEP "\\n"
+#endif
   char * error =
     string_get_regex_group (
       results,
-      "carla-discovery::error::(.*)\\n", 1);
+      "carla-discovery::error::(.*)" LINE_SEP, 1);
   if (error)
     {
       g_free (error);
@@ -154,45 +150,45 @@ z_carla_discovery_create_vst_descriptor (
   descr->name =
     string_get_regex_group (
       results,
-      "carla-discovery::name::(.*)\\n", 1);
+      "carla-discovery::name::(.*)" LINE_SEP, 1);
   g_return_val_if_fail (descr->name,  NULL);
   descr->author =
     string_get_regex_group (
       results,
-      "carla-discovery::maker::(.*)\\n", 1);
+      "carla-discovery::maker::(.*)" LINE_SEP, 1);
   descr->unique_id =
     string_get_regex_group_as_int (
       results,
-      "carla-discovery::uniqueId::(.*)\\n", 1, 0);
+      "carla-discovery::uniqueId::(.*)" LINE_SEP, 1, 0);
   descr->num_audio_ins =
     string_get_regex_group_as_int (
       results,
-      "carla-discovery::audio.ins::(.*)\\n", 1, 0);
+      "carla-discovery::audio.ins::(.*)" LINE_SEP, 1, 0);
   descr->num_audio_outs =
     string_get_regex_group_as_int (
       results,
-      "carla-discovery::audio.outs::(.*)\\n", 1, 0);
+      "carla-discovery::audio.outs::(.*)" LINE_SEP, 1, 0);
   descr->num_ctrl_ins =
     string_get_regex_group_as_int (
       results,
-      "carla-discovery::parameters.ins::(.*)\\n",
+      "carla-discovery::parameters.ins::(.*)" LINE_SEP,
       1, 0);
   descr->num_midi_ins =
     string_get_regex_group_as_int (
       results,
-      "carla-discovery::midi.ins::(.*)\\n",
+      "carla-discovery::midi.ins::(.*)" LINE_SEP,
       1, 0);
   descr->num_midi_outs =
     string_get_regex_group_as_int (
       results,
-      "carla-discovery::midi.ins::(.*)\\n",
+      "carla-discovery::midi.ins::(.*)" LINE_SEP,
       1, 0);
 
   /* get category */
   char * carla_category =
     string_get_regex_group (
       results,
-      "carla-discovery::category::(.*)\\n", 1);
+      "carla-discovery::category::(.*)" LINE_SEP, 1);
   if (carla_category)
     {
       descr->category =
@@ -207,7 +203,7 @@ z_carla_discovery_create_vst_descriptor (
       int hints =
         string_get_regex_group_as_int (
           results,
-          "carla-discovery::hints::(.*)\\n",
+          "carla-discovery::hints::(.*)" LINE_SEP,
           1, 0);
       if ((unsigned int) hints & PLUGIN_IS_SYNTH)
         {
