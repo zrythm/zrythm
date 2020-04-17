@@ -96,6 +96,7 @@ control_port_normalized_val_to_real (
           }
           break;
         case PROT_VST:
+        case PROT_VST3:
           /* no change for now */
           return normalized_val;
           break;
@@ -165,6 +166,7 @@ control_port_real_val_to_normalized (
           }
           break;
         case PROT_VST:
+        case PROT_VST3:
           /* vst is already normalized */
           return real_val;
           break;
@@ -256,6 +258,7 @@ control_port_set_val_from_normalized (
           }
           break;
         case PROT_VST:
+        case PROT_VST3:
           {
             /* no change for now */
             float real_val = val;

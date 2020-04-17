@@ -500,6 +500,52 @@ get_vst_paths (
   return paths;
 }
 
+#if defined (HAVE_CARLA) && defined (_WOE32)
+static char **
+get_vst3_paths (
+  PluginManager * self)
+{
+  return
+    g_strsplit (
+      "C:\\Program Files\\Common Files\\VST3:"
+      "C:\\Program Files (x86)\\Common Files\\VST3",
+      ":", 0);
+}
+
+static int
+get_vst3_count (
+  PluginManager * self)
+{
+  char ** paths = get_vst3_paths (self);
+  int path_idx = 0;
+  char * path;
+  int count = 0;
+  while ((path = paths[path_idx++]) != NULL)
+    {
+      if (!g_file_test (path, G_FILE_TEST_EXISTS))
+        continue;
+
+      char ** vst_plugins =
+        io_get_files_in_dir_ending_in (
+          path, 1, ".vst3");
+      if (!vst_plugins)
+        continue;
+
+      char * plugin_path;
+      int plugin_idx = 0;
+      while ((plugin_path = vst_plugins[plugin_idx++]) !=
+               NULL)
+        {
+          count++;
+        }
+      g_strfreev (vst_plugins);
+    }
+  g_strfreev (paths);
+
+  return count;
+}
+#endif
+
 static int
 get_vst_count (
   PluginManager * self)
@@ -565,6 +611,9 @@ plugin_manager_scan_plugins (
   double size =
     (double) lilv_plugins_size (lilv_plugins) +
     (double) get_vst_count (self);
+#if defined (HAVE_CARLA) && defined (_WOE32)
+  size += (double) get_vst3_count (self);
+#endif
 
   /* scan LV2 */
   g_message ("Scanning LV2 plugins...");
@@ -675,13 +724,13 @@ plugin_manager_scan_plugins (
 #ifdef HAVE_CARLA
                   descriptor =
                     z_carla_discovery_create_vst_descriptor (
-                      plugin_path, false);
+                      plugin_path, false, false);
 
                   /* try 32-bit if above failed */
                   if (!descriptor)
                     descriptor =
                       z_carla_discovery_create_vst_descriptor (
-                        plugin_path, true);
+                        plugin_path, true, false);
 #else
                   descriptor =
                     vst_plugin_create_descriptor_from_path (
@@ -748,8 +797,133 @@ plugin_manager_scan_plugins (
         }
       g_strfreev (vst_plugins);
     }
-
   g_strfreev (paths);
+
+#if defined (HAVE_CARLA) && defined (_WOE32)
+  /* scan vst3 */
+  g_message ("Scanning VST3 plugins...");
+  paths = get_vst3_paths (self);
+  path_idx = 0;
+  while ((path = paths[path_idx++]) != NULL)
+    {
+      if (!g_file_test (path, G_FILE_TEST_EXISTS))
+        continue;
+
+      g_message ("scanning for VST3s in %s", path);
+
+      char ** vst_plugins =
+        io_get_files_in_dir_ending_in (
+          path, 1, ".vst3");
+      if (!vst_plugins)
+        continue;
+
+      char * plugin_path;
+      int plugin_idx = 0;
+      while ((plugin_path = vst_plugins[plugin_idx++]) !=
+               NULL)
+        {
+          PluginDescriptor * descriptor =
+            cached_vst_descriptors_get (
+              self->cached_vst_descriptors,
+              plugin_path);
+
+          if (descriptor)
+            {
+              g_message (
+                "Found cached VST %s",
+                descriptor->name);
+              array_append (
+                self->plugin_descriptors,
+                self->num_plugins,
+                descriptor);
+              add_category (
+                self, descriptor->category_str);
+            }
+          else
+            {
+              if (
+                cached_vst_descriptors_is_blacklisted (
+                  self->cached_vst_descriptors,
+                  plugin_path))
+                {
+                  g_message (
+                    "Ignoring blacklisted VST "
+                    "plugin: %s", plugin_path);
+                }
+              else
+                {
+                  if (!descriptor)
+                    descriptor =
+                      z_carla_discovery_create_vst_descriptor (
+                      plugin_path,
+                      string_contains_substr (
+                        plugin_path,
+                        "C:\\Program Files (x86)",
+                        false),
+                      true);
+
+                  if (descriptor)
+                    {
+                      array_append (
+                        self->plugin_descriptors,
+                        self->num_plugins,
+                        descriptor);
+                      add_category (
+                        self, descriptor->category_str);
+                      g_message (
+                        "Caching VST %s",
+                        descriptor->name);
+                      cached_vst_descriptors_add (
+                        self->cached_vst_descriptors,
+                        descriptor, 0);
+                    }
+                  else
+                    {
+                      g_message (
+                        "Blacklisting VST3 %s",
+                        plugin_path);
+                      cached_vst_descriptors_blacklist (
+                        self->cached_vst_descriptors,
+                        plugin_path, 0);
+                    }
+                }
+            }
+          count++;
+
+          if (progress)
+            {
+              *progress =
+                start_progress +
+                ((double) count / size) *
+                  (max_progress - start_progress);
+              char prog_str[800];
+              if (descriptor)
+                {
+                  sprintf (
+                    prog_str, "%s: %s",
+                    _("Scanned VST plugin"),
+                    descriptor->name);
+                }
+              else
+                {
+                  sprintf (
+                    prog_str,
+                    _("Skipped VST plugin at %s"),
+                    plugin_path);
+                }
+              zrythm_set_progress_status (
+                ZRYTHM, prog_str, *progress);
+            }
+        }
+      if (plugin_idx > 0)
+        {
+          cached_vst_descriptors_serialize_to_file (
+            self->cached_vst_descriptors);
+        }
+      g_strfreev (vst_plugins);
+    }
+  g_strfreev (paths);
+#endif
 
   /* sort alphabetically */
   qsort (self->plugin_descriptors,

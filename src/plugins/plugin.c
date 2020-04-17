@@ -154,7 +154,8 @@ plugin_new_from_descr (
   plugin_init (plugin, track_pos, slot);
 
 #ifdef HAVE_CARLA
-  if (descr->protocol == PROT_VST)
+  if (descr->protocol == PROT_VST ||
+      descr->protocol == PROT_VST3)
     {
       plugin->descr->open_with_carla = true;
       carla_native_plugin_new_from_descriptor (

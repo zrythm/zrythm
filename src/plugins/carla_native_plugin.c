@@ -282,6 +282,7 @@ create_plugin (
           descr->uri, 0, NULL, 0);
       break;
     case PROT_VST:
+    case PROT_VST3:
       ret =
         carla_add_plugin (
           self->host_handle,
@@ -366,6 +367,7 @@ carla_native_plugin_proces (
     {
     case PROT_LV2:
     case PROT_VST:
+    case PROT_VST3:
     {
       float * inbuf[2];
       float dummy_inbuf1[nframes];
@@ -609,161 +611,6 @@ carla_category_to_zrythm_category_str (
 
 /**
  * Returns a filled in descriptor from the
- * given binary path.
- */
-PluginDescriptor *
-carla_native_plugin_get_descriptor_from_path (
-  const char * path,
-  PluginType   type)
-{
-  PluginDescriptor * descr =
-    calloc (1, sizeof (PluginDescriptor));
-
-  descr->path =
-    g_strdup (path);
-
-  descr->open_with_carla = 1;
-  switch (type)
-    {
-#if 0
-    case PLUGIN_INTERNAL:
-      descr->protocol = PROT_CARLA_INTERNAL;
-      break;
-#endif
-    case PLUGIN_LADSPA:
-      descr->protocol = PROT_LADSPA;
-      break;
-    case PLUGIN_DSSI:
-      descr->protocol = PROT_DSSI;
-      break;
-    case PLUGIN_LV2:
-      descr->protocol = PROT_LV2;
-      break;
-    case PLUGIN_VST2:
-      descr->protocol = PROT_VST;
-      break;
-#if 0
-    case PLUGIN_SF2:
-      descr->protocol = PROT_SF2;
-      break;
-    case PLUGIN_SFZ:
-      descr->protocol = PROT_SFZ;
-      break;
-    case PLUGIN_JACK:
-      descr->protocol = PROT_JACK;
-      break;
-#endif
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-
-  if (descr->protocol == PROT_VST)
-    {
-      char * carla_discovery_native =
-        g_build_filename (
-          carla_get_library_folder (),
-          "carla-discovery-native",
-          NULL);
-
-      /* read plugin info */
-      FILE *fp;
-      char line[1035];
-
-      /* Open the command for reading. */
-      char * command =
-        g_strdup_printf (
-          "%s vst %s",
-          carla_discovery_native,
-          path);
-      fp = popen (command, "r");
-      g_free (command);
-      if (fp == NULL)
-        g_return_val_if_reached (NULL);
-
-      /* Read the output a line at a time -
-       * output it. */
-      while (fgets (
-                line, sizeof (line) - 1, fp) !=
-               NULL)
-        {
-          if (g_str_has_prefix (
-                line,
-                "carla-discovery::name::"))
-            {
-              descr->name =
-                g_strdup (
-                  g_strchomp (&line[23]));
-            }
-          else if (
-            g_str_has_prefix (
-              line, "carla-discovery::maker::"))
-            {
-              descr->author =
-                g_strdup (
-                  g_strchomp (&line[24]));
-            }
-          else if (
-            g_str_has_prefix (
-              line,
-              "carla-discovery::audio.ins::"))
-            {
-              descr->num_audio_ins =
-                atoi (g_strchomp (&line[28]));
-            }
-          else if (
-            g_str_has_prefix (
-              line,
-              "carla-discovery::audio.outs::"))
-            {
-              descr->num_audio_outs =
-                atoi (g_strchomp (&line[29]));
-            }
-          else if (
-            g_str_has_prefix (
-              line,
-              "carla-discovery::midi.ins::"))
-            {
-              descr->num_midi_ins =
-                atoi (g_strchomp (&line[27]));
-            }
-          else if (
-            g_str_has_prefix (
-              line,
-              "carla-discovery::midi.outs::"))
-            {
-              descr->num_midi_outs =
-                atoi (g_strchomp (&line[28]));
-            }
-          else if (
-            g_str_has_prefix (
-              line,
-              "carla-discovery::parameters.ins::"))
-            {
-              descr->num_ctrl_ins =
-                atoi (g_strchomp (&line[33]));
-            }
-        }
-
-      /* close */
-      pclose (fp);
-
-      descr->category = ZPLUGIN_CATEGORY_NONE;
-      descr->category_str =
-        g_strdup ("Plugin");
-
-      if (!descr->name)
-        {
-          plugin_descriptor_free (descr);
-          return NULL;
-        }
-    }
-
-  return descr;
-}
-
-/**
- * Returns a filled in descriptor from the
  * CarlaCachedPluginInfo.
  */
 PluginDescriptor *
@@ -854,6 +701,10 @@ create_from_descr (
     case PROT_VST:
       self =
         create_plugin (descr, PLUGIN_VST2);
+      break;
+    case PROT_VST3:
+      self =
+        create_plugin (descr, PLUGIN_VST3);
       break;
 #if 0
     case PROT_SFZ:
@@ -1025,6 +876,7 @@ carla_native_plugin_open_ui (
   switch (self->plugin->descr->protocol)
     {
     case PROT_VST:
+    case PROT_VST3:
     case PROT_LV2:
       {
         carla_show_custom_ui (

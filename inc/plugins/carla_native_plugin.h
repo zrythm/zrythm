@@ -118,15 +118,6 @@ carla_native_plugin_new_from_descriptor (
 
 /**
  * Returns a filled in descriptor from the
- * given binary path.
- */
-PluginDescriptor *
-carla_native_plugin_get_descriptor_from_path (
-  const char * path,
-  PluginType   type);
-
-/**
- * Returns a filled in descriptor from the
  * CarlaCachedPluginInfo.
  */
 PluginDescriptor *

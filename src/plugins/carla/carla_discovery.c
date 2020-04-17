@@ -66,7 +66,8 @@ get_category_from_carla_category (
 PluginDescriptor *
 z_carla_discovery_create_vst_descriptor (
   const char * path,
-  bool         thirty_two_bit)
+  bool         thirty_two_bit,
+  bool         vst3)
 {
   char carla_discovery_filename[60];
   strcpy (
@@ -101,7 +102,7 @@ z_carla_discovery_create_vst_descriptor (
   g_return_val_if_fail (
     carla_discovery, NULL);
   char type[40];
-  strcpy (type, "vst");
+  strcpy (type, vst3 ? "vst3" : "vst");
   char cmd[4000];
   sprintf (
     cmd, "%s %s %s",
@@ -218,7 +219,7 @@ z_carla_discovery_create_vst_descriptor (
         }
     }
 
-  descr->protocol = PROT_VST;
+  descr->protocol = vst3 ? PROT_VST3 : PROT_VST;
   descr->arch = thirty_two_bit ? ARCH_32 : ARCH_64;
   descr->path = g_strdup (path);
 
