@@ -1,7 +1,7 @@
 Contributing to Zrythm
 ======================
 
-Zrythm is a project developed mostly by volunteers
+Zrythm is a project developed by volunteers
 from all around the world. You are welcome to join
 us in the [development mailing list](https://lists.zrythm.org/lists/listinfo/dev)
 or in the #zrythm channel in IRC Freenode. Tell us
@@ -14,21 +14,21 @@ contribute to the best of their abilities. To this
 end our project uses a “Contributor Covenant”, which
 was adapted from https://contributor-covenant.org/.
 You can find the full pledge in the
-[CODE OF CONDUCT](CODE_OF_CONDUCT.md) file.
+[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) file.
 
 # Project Management
 We use [Redmine](https://redmine.zrythm.org/)
-as the central point for development, maintenance and
+as the central point for the development, maintenance and
 issue tracking of Zrythm.
 
-The source files for all the components of the
-project, including software, web site, documentation,
-and artwork, are available in Git repositories at
+The source files for all of the components of the
+project, including software, web site, documentation
+and artwork are available in Git repositories at
 [CGit](https://git.zrythm.org/cgit/).
 
 # Art
 We are always looking for artists to help us design
-and improve user interfaces, and create multimedia
+and improve user interfaces and create multimedia
 material for documentation, presentations and
 promotional items.
 
@@ -36,8 +36,8 @@ promotional items.
 You can read the project documentation already
 available in the manual and help us identify any
 errors or omissions. Creating new manuals,
-tutorials, and blog entries will also help users and
-developers discover what we do.
+tutorials and blog entries will also help users and
+developers discover Zrythm.
 
 # Programming
 Source code is in the
@@ -64,8 +64,8 @@ and the manual into your language. Visit
 [Weblate](https://hosted.weblate.org/engage/zrythm)
 to get started.
 
-Alternatively, you can edit the PO files directly
-and submit a patch.
+Alternatively, you can edit PO
+files directly and submit a patch.
 
 # Other resources for contributors
 Documents, supporting material and auxiliary
