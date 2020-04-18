@@ -487,11 +487,27 @@ get_vst_paths (
   char * vst_path =
     g_strdup (getenv ("VST_PATH"));
   if (!vst_path || (strlen (vst_path) == 0))
-    vst_path =
-      g_strdup (
-        "~/.vst:~/vst:"
-        "/usr/" LIBDIR_NAME "/vst:"
-        "/usr/local/" LIBDIR_NAME "/vst");
+    {
+      if (string_is_equal (
+            LIBDIR_NAME, "lib", false))
+        {
+          vst_path =
+            g_strdup (
+              "~/.vst:~/vst:"
+              "/usr/" LIBDIR_NAME "/vst:"
+              "/usr/local/" LIBDIR_NAME "/vst");
+        }
+      else
+        {
+          vst_path =
+            g_strdup (
+              "~/.vst:~/vst:"
+              "/usr/lib/vst:"
+              "/usr/" LIBDIR_NAME "/vst:"
+              "/usr/local/lib/vst:"
+              "/usr/local/" LIBDIR_NAME "/vst");
+        }
+    }
   char ** paths =
     g_strsplit (vst_path, ":", 0);
   g_free (vst_path);
