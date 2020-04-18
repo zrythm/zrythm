@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.298] - 2020-04-18
+- Add full vst2 support via carla (32bit and 64 bit)
+- Add experimental vst3 support via carla (windows only)
+- Show inserts in track inspector
+- Add fader section in track inspector
+- Re-layout channel widgets
+- Add style scheme for scripting interface
+- Split status bar info to 2 lines
+- Show currently scanned plugin in splash screen
+- Update Galician translations
+
 ## [0.8.252] - 2020-04-10
 - New layout: move transport bar to the bottom
 - Split inspector stack pages to separate notebook pages
