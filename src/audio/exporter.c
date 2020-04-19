@@ -262,7 +262,7 @@ export_audio (
           marker_track_get_end_marker (
             P_MARKER_TRACK);
         transport_move_playhead (
-          &start->pos, 1);
+          &start->pos, true);
         position_set_to_pos (
           &start_pos,
           &start->pos);
@@ -273,7 +273,7 @@ export_audio (
       break;
     case TIME_RANGE_LOOP:
       transport_move_playhead (
-        &TRANSPORT->loop_start_pos, 1);
+        &TRANSPORT->loop_start_pos, true);
       position_set_to_pos (
         &start_pos,
         &TRANSPORT->loop_start_pos);
@@ -283,7 +283,7 @@ export_audio (
       break;
     case TIME_RANGE_CUSTOM:
       transport_move_playhead (
-        &info->custom_start, 1);
+        &info->custom_start, true);
       position_set_to_pos (
         &start_pos,
         &info->custom_start);

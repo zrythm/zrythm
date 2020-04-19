@@ -215,7 +215,7 @@ typedef struct AudioEngine
    *
    * Useful for debugging.
    */
-  long              cycle;
+  volatile long     cycle;
 
 #ifdef HAVE_JACK
   /** JACK client. */
@@ -329,7 +329,7 @@ typedef struct AudioEngine
   ZixSem            port_operation_lock;
 
   /** Ok to process or not. */
-  gint              run;
+  volatile gint     run;
 
   /** 1 if currently exporting. */
   gint              exporting;
@@ -338,7 +338,7 @@ typedef struct AudioEngine
   gint              skip_cycle;
 
   /** Send note off MIDI everywhere. */
-  gint              panic;
+  volatile gint     panic;
 
   //ZixSem             alsa_callback_start;
 

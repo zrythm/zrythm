@@ -1142,6 +1142,8 @@ engine_process (
     }
 #endif
 
+  /*self->cycle++;*/
+
   /*
    * processing finished, return 0 (OK)
    */
@@ -1384,6 +1386,11 @@ engine_tear_down (
 #ifdef HAVE_JACK
     case AUDIO_BACKEND_JACK:
       engine_jack_tear_down (self);
+      break;
+#endif
+#ifdef HAVE_RTAUDIO
+    case AUDIO_BACKEND_RTAUDIO:
+      engine_rtaudio_tear_down (self);
       break;
 #endif
     case AUDIO_BACKEND_DUMMY:

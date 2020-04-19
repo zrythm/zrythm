@@ -61,13 +61,15 @@
 
 /**
  * Type of MIDI event.
+ *
+ * These are in order of precedence.
  */
 typedef enum MidiEventType
 {
   MIDI_EVENT_TYPE_PITCHBEND,
   MIDI_EVENT_TYPE_CONTROLLER,
-  MIDI_EVENT_TYPE_NOTE_ON,
   MIDI_EVENT_TYPE_NOTE_OFF,
+  MIDI_EVENT_TYPE_NOTE_ON,
   MIDI_EVENT_TYPE_ALL_NOTES_OFF,
 } MidiEventType;
 

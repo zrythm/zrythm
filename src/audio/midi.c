@@ -641,6 +641,10 @@ cmpfunc (
     (MidiEvent const *) _a;
   const MidiEvent * b =
     (MidiEvent const *) _b;
+  if (a->time == b->time)
+    {
+      return (int) a->type - (int) b->type;
+    }
   return (int) a->time - (int) b->time;
 }
 
@@ -656,17 +660,13 @@ midi_events_sort (
   size_t num_events;
   if (queued)
     {
-      events =
-        self->queued_events;
-      num_events =
-        (size_t) self->num_queued_events;
+      events = self->queued_events;
+      num_events = (size_t) self->num_queued_events;
     }
   else
     {
-      events =
-        self->events;
-      num_events =
-        (size_t) self->num_events;
+      events = self->events;
+      num_events = (size_t) self->num_events;
     }
   qsort (events, num_events, sizeof (MidiEvent),
          cmpfunc);
