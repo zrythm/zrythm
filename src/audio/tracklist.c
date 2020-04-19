@@ -667,6 +667,24 @@ tracklist_has_soloed (
 }
 
 /**
+ * Activate or deactivate all plugins.
+ *
+ * This is useful for exporting: deactivating and
+ * reactivating a plugin will reset its state.
+ */
+void
+tracklist_activate_all_plugins (
+  Tracklist * self,
+  bool        activate)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      track_activate_all_plugins (
+        self->tracks[i], activate);
+    }
+}
+
+/**
  * @param visible 1 for visible, 0 for invisible.
  */
 int

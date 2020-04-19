@@ -306,6 +306,11 @@ Plugin *
 plugin_clone (
   Plugin * pl);
 
+void
+plugin_activate (
+  Plugin * pl,
+  bool     activate);
+
 /**
  * Sets the channel and slot on the plugin and
  * its ports.

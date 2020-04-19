@@ -203,6 +203,11 @@ carla_native_plugin_set_param_value (
   float               val);
 
 void
+carla_native_plugin_activate (
+  CarlaNativePlugin * self,
+  bool                activate);
+
+void
 carla_native_plugin_close (
   CarlaNativePlugin * self);
 

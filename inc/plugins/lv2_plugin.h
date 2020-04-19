@@ -378,6 +378,11 @@ void
 lv2_plugin_allocate_port_buffers (
   Lv2Plugin* plugin);
 
+void
+lv2_plugin_activate (
+  Lv2Plugin * self,
+  bool        activate);
+
 /**
  * Frees the Lv2Plugin and all its components.
  */

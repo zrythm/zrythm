@@ -1827,6 +1827,21 @@ lv2_plugin_instantiate (
   return 0;
 }
 
+void
+lv2_plugin_activate (
+  Lv2Plugin * self,
+  bool        activate)
+{
+  if (activate)
+    {
+      lilv_instance_activate (self->instance);
+    }
+  else
+    {
+      lilv_instance_deactivate (self->instance);
+    }
+}
+
 /**
  * Processes the plugin for this cycle.
  *

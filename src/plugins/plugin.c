@@ -346,6 +346,31 @@ plugin_find (
   return ret;
 }
 
+void
+plugin_activate (
+  Plugin * pl,
+  bool     activate)
+{
+  g_return_if_fail (pl);
+
+  switch (pl->descr->protocol)
+    {
+    case PROT_LV2:
+      lv2_plugin_activate (pl->lv2, activate);
+      break;
+    case PROT_VST:
+    case PROT_VST3:
+#ifdef HAVE_CARLA
+      carla_native_plugin_activate (
+        pl->carla, activate);
+#endif
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+}
+
 /**
  * Updates the plugin's latency.
  *

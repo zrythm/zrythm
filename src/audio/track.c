@@ -1634,3 +1634,25 @@ track_set_name (
         ET_TRACK_NAME_CHANGED, track);
     }
 }
+
+void
+track_activate_all_plugins (
+  Track * track,
+  bool    activate)
+{
+  if (!track_type_has_channel (track->type))
+    return;
+
+  Channel * ch = track_get_channel (track);
+  g_return_if_fail (ch);
+
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      Plugin * pl = ch->plugins[i];
+
+      if (pl)
+        {
+          plugin_activate (pl, activate);
+        }
+    }
+}

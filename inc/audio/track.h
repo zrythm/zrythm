@@ -892,6 +892,11 @@ track_get_regions_in_range (
   Position * p2,
   ZRegion ** regions);
 
+void
+track_activate_all_plugins (
+  Track * track,
+  bool    activate);
+
 /**
  * Wrapper for each track type.
  */

@@ -588,6 +588,15 @@ exporter_generic_export_thread (
   info->prev_loop = TRANSPORT->loop;
   TRANSPORT->loop = 0;
 
+  /* deactivate and activate all plugins to make
+   * them reset their states */
+  /* TODO this doesn't reset the plugin state as
+   * expected, so sending note off is needed */
+  tracklist_activate_all_plugins (
+    TRACKLIST, false);
+  tracklist_activate_all_plugins (
+    TRACKLIST, true);
+
   /* export */
   exporter_export (info);
 

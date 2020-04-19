@@ -349,6 +349,17 @@ tracklist_get_num_visible_tracks (
   int         visible);
 
 /**
+ * Activate or deactivate all plugins.
+ *
+ * This is useful for exporting: deactivating and
+ * reactivating a plugin will reset its state.
+ */
+void
+tracklist_activate_all_plugins (
+  Tracklist * self,
+  bool        activate);
+
+/**
  * Define guile module.
  */
 void
