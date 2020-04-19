@@ -39,6 +39,8 @@
 #define S_PREFERENCES SETTINGS->preferences
 #define S_UI SETTINGS->ui
 #define S_GENERAL SETTINGS->general
+#define S_UI_INSPECTOR_SETTINGS \
+  SETTINGS->ui_inspector
 #define S_IS_DEBUG (g_settings_get_int ( \
   S_GENERAL, "debug"))
 
@@ -73,6 +75,8 @@ typedef struct Settings
    * remembered.
    */
   GSettings * ui;
+
+  GSettings * ui_inspector;
 } Settings;
 
 /**

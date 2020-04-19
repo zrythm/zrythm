@@ -44,6 +44,35 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 static void
+reveal_cb (
+  ExpanderBoxWidget * expander,
+  const bool    revealed,
+  void *        user_data)
+{
+  InspectorTrackWidget * self =
+    Z_INSPECTOR_TRACK_WIDGET (user_data);
+
+#define SET_SETTING(mem,key) \
+  if (expander == Z_EXPANDER_BOX_WIDGET (self->mem)) \
+    { \
+      g_settings_set_boolean ( \
+        S_UI_INSPECTOR_SETTINGS, \
+        "track-" key "-expanded", revealed); \
+    }
+
+  SET_SETTING (track_info, "properties");
+  SET_SETTING (inputs, "inputs");
+  SET_SETTING (sends, "sends");
+  SET_SETTING (controls, "controls");
+  SET_SETTING (inserts, "inserts");
+  SET_SETTING (midi_fx, "midi-fx");
+  SET_SETTING (fader, "fader");
+  SET_SETTING (comment, "comment");
+
+#undef SET_SETTING
+}
+
+static void
 setup_color (
   InspectorTrackWidget * self,
   Track *                track)
@@ -85,7 +114,7 @@ inspector_track_widget_show_tracks (
       setup_color (self, track);
 
       track_properties_expander_widget_refresh (
-        self->instrument_track_info,
+        self->track_info,
         track);
 
       gtk_widget_set_visible (
@@ -154,7 +183,7 @@ inspector_track_widget_show_tracks (
   else /* no tracks selected */
     {
       track_properties_expander_widget_refresh (
-        self->instrument_track_info, NULL);
+        self->track_info, NULL);
       ports_expander_widget_setup_track (
         self->sends,
         track, PE_TRACK_PORT_TYPE_SENDS);
@@ -182,7 +211,7 @@ inspector_track_widget_setup (
   g_return_if_fail (track);
 
   track_properties_expander_widget_setup (
-    self->instrument_track_info,
+    self->track_info,
     track);
 }
 
@@ -211,7 +240,7 @@ inspector_track_widget_class_init (
     InspectorTrackWidget, \
     child);
 
-  BIND_CHILD (instrument_track_info);
+  BIND_CHILD (track_info);
   BIND_CHILD (sends);
   BIND_CHILD (controls);
   BIND_CHILD (inputs);
@@ -254,4 +283,26 @@ inspector_track_widget_init (
     Z_EXPANDER_BOX_WIDGET (self->midi_fx), false);
   expander_box_widget_set_vexpand (
     Z_EXPANDER_BOX_WIDGET (self->comment), false);
+
+  /* set states */
+#define SET_STATE(mem,key) \
+  expander_box_widget_set_reveal ( \
+    Z_EXPANDER_BOX_WIDGET (self->mem), \
+    g_settings_get_boolean ( \
+      S_UI_INSPECTOR_SETTINGS, \
+      "track-" key "-expanded")); \
+  expander_box_widget_set_reveal_callback ( \
+    Z_EXPANDER_BOX_WIDGET (self->mem), \
+    reveal_cb, self)
+
+  SET_STATE (track_info, "properties");
+  SET_STATE (inputs, "inputs");
+  SET_STATE (sends, "sends");
+  SET_STATE (controls, "controls");
+  SET_STATE (inserts, "inserts");
+  SET_STATE (midi_fx, "midi-fx");
+  SET_STATE (fader, "fader");
+  SET_STATE (comment, "comment");
+
+#undef SET_STATE
 }

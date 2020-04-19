@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Expander box.
+ */
+
 #ifndef __GUI_WIDGETS_EXPANDER_BOX_H__
 #define __GUI_WIDGETS_EXPANDER_BOX_H__
 
@@ -35,6 +41,20 @@ G_DECLARE_DERIVABLE_TYPE (
   GtkBox)
 
 /**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+/**
+ * Reveal callback prototype.
+ */
+typedef void (*ExpanderBoxRevealFunc) (
+  ExpanderBoxWidget * expander_box,
+  const bool    revealed,
+  void *        user_data);
+
+/**
  * An expander box is a base widget with a button that
  * when clicked expands the contents.
  */
@@ -49,6 +69,10 @@ typedef struct
 
   /** Horizontal or vertical. */
   GtkOrientation orientation;
+
+  ExpanderBoxRevealFunc reveal_cb;
+
+  void *                user_data;
 
 } ExpanderBoxWidgetPrivate;
 
@@ -119,6 +143,12 @@ expander_box_widget_set_reveal (
   int                 reveal);
 
 void
+expander_box_widget_set_reveal_callback (
+  ExpanderBoxWidget * self,
+  ExpanderBoxRevealFunc   cb,
+  void *                  user_data);
+
+void
 expander_box_widget_set_orientation (
   ExpanderBoxWidget * self,
   GtkOrientation      orientation);
@@ -133,5 +163,9 @@ expander_box_widget_new (
   const char * label,
   const char * icon_name,
   GtkOrientation orientation);
+
+/**
+ * @}
+ */
 
 #endif

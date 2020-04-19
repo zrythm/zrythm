@@ -38,9 +38,17 @@ on_clicked (
 {
   GET_PRIVATE (self);
 
+  bool revealed =
+    !gtk_revealer_get_reveal_child (
+      prv->revealer);
   gtk_revealer_set_reveal_child (
-    prv->revealer,
-    !gtk_revealer_get_reveal_child (prv->revealer));
+    prv->revealer, revealed);
+
+  if (prv->reveal_cb)
+    {
+      prv->reveal_cb (
+        self, revealed, prv->user_data);
+    }
 }
 
 /**
@@ -153,6 +161,18 @@ expander_box_widget_set_vexpand (
 
   gtk_widget_set_vexpand (
     GTK_WIDGET (prv->content), expand);
+}
+
+void
+expander_box_widget_set_reveal_callback (
+  ExpanderBoxWidget * self,
+  ExpanderBoxRevealFunc   cb,
+  void *                  user_data)
+{
+  GET_PRIVATE (self);
+
+  prv->reveal_cb = cb;
+  prv->user_data = user_data;
 }
 
 ExpanderBoxWidget *

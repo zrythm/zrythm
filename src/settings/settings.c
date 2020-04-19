@@ -49,10 +49,14 @@ settings_init (Settings * self)
   self->ui =
     g_settings_new (
       GSETTINGS_ZRYTHM_PREFIX ".ui");
+  self->ui_inspector =
+    g_settings_new (
+      GSETTINGS_ZRYTHM_PREFIX ".ui.inspector");
 
   g_return_if_fail (
     self->root && self->general &&
-    self->preferences && self->ui);
+    self->preferences && self->ui &&
+    self->ui_inspector);
 }
 
 static int
@@ -276,4 +280,6 @@ settings_free_members (Settings * self)
     g_object_unref_and_null (self->preferences);
   if (self->ui)
     g_object_unref_and_null (self->ui);
+  if (self->ui_inspector)
+    g_object_unref_and_null (self->ui_inspector);
 }

@@ -680,4 +680,84 @@
 
   </schema> <!-- end UI schema -->
 
+  <!-- Inspector schema -->
+  <schema
+    id="org.zrythm.Zrythm.ui.inspector"
+    gettext-domain="zrythm"
+    path="/org/zrythm/Zrythm/ui/inspector/">
+
+    <!-- KEY: track-properties-expanded -->
+    <key name="track-properties-expanded" type="b">
+      <default>true</default>
+      <summary>Track properties expanded</summary>
+      <description>
+        Whether track properties is expanded.
+      </description>
+    </key>
+
+    <!-- KEY: track-sends-expanded -->
+    <key name="track-sends-expanded" type="b">
+      <default>true</default>
+      <summary>Track sends expanded</summary>
+      <description>
+        Whether track sends is expanded.
+      </description>
+    </key>
+
+    <!-- KEY: track-inputs-expanded -->
+    <key name="track-inputs-expanded" type="b">
+      <default>true</default>
+      <summary>Track inputs expanded</summary>
+      <description>
+        Whether track inputs is expanded.
+      </description>
+    </key>
+
+    <!-- KEY: track-controls-expanded -->
+    <key name="track-controls-expanded" type="b">
+      <default>true</default>
+      <summary>Track controls expanded</summary>
+      <description>
+        Whether track controls is expanded.
+      </description>
+    </key>
+
+    <!-- KEY: track-inserts-expanded -->
+    <key name="track-inserts-expanded" type="b">
+      <default>true</default>
+      <summary>Track inserts expanded</summary>
+      <description>
+        Whether track inserts is expanded.
+      </description>
+    </key>
+
+    <!-- KEY: track-midi_fx-expanded -->
+    <key name="track-midi-fx-expanded" type="b">
+      <default>true</default>
+      <summary>Track midi_fx expanded</summary>
+      <description>
+        Whether track midi_fx is expanded.
+      </description>
+    </key>
+
+    <!-- KEY: track-fader-expanded -->
+    <key name="track-fader-expanded" type="b">
+      <default>true</default>
+      <summary>Track fader expanded</summary>
+      <description>
+        Whether track fader is expanded.
+      </description>
+    </key>
+
+    <!-- KEY: track-comment-expanded -->
+    <key name="track-comment-expanded" type="b">
+      <default>true</default>
+      <summary>Track comment expanded</summary>
+      <description>
+        Whether track comment is expanded.
+      </description>
+    </key>
+
+  </schema> <!-- End inspector schema -->
+
 </schemalist>

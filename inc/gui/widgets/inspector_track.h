@@ -67,8 +67,7 @@ typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct _InspectorTrackWidget
 {
   GtkBox             parent_instance;
-  TrackPropertiesExpanderWidget *
-    instrument_track_info;
+  TrackPropertiesExpanderWidget * track_info;
 
   TrackInputExpanderWidget * inputs;
 
