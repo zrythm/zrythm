@@ -283,7 +283,7 @@ typedef enum UiOverlayAction
 #define ui_set_pencil_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-document-edit", 3, 6);
+    "z-document-edit", 3, 18);
 
 #define ui_set_cut_clip_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
