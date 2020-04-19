@@ -30,6 +30,7 @@
 UndoableAction *
 create_plugins_action_new (
   const PluginDescriptor * descr,
+  PluginSlotType  slot_type,
   int       track_pos,
   int       slot,
   int       num_plugins)
@@ -41,6 +42,7 @@ create_plugins_action_new (
   ua->type =
     UA_CREATE_PLUGINS;
 
+  self->slot_type = slot_type;
   self->slot = slot;
   self->track_pos = track_pos;
   plugin_descriptor_copy (descr, &self->descr);
@@ -90,7 +92,8 @@ create_plugins_action_do (
 
       /* add to channel */
       channel_add_plugin (
-        ch, self->slot + i, pl, 1, 1,
+        ch, self->slot_type,
+        self->slot + i, pl, 1, 1,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
       if (g_settings_get_boolean (
@@ -126,7 +129,7 @@ create_plugins_action_undo (
     {
       /* remove the plugin */
       channel_remove_plugin (
-        ch, self->slot + i, 1, 0,
+        ch, self->slot_type, self->slot + i, 1, 0,
         F_NO_RECALC_GRAPH);
 
       EVENTS_PUSH (ET_PLUGINS_REMOVED,

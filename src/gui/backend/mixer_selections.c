@@ -117,6 +117,7 @@ void
 mixer_selections_add_slot (
   MixerSelections * ms,
   Channel *         ch,
+  PluginSlotType   type,
   int               slot)
 {
   if (!ms->has_any ||
@@ -151,6 +152,7 @@ void
 mixer_selections_remove_slot (
   MixerSelections * ms,
   int               slot,
+  PluginSlotType   type,
   int               publish_events)
 {
   g_message ("removing slot %d", slot);
@@ -177,6 +179,7 @@ mixer_selections_remove_slot (
 int
 mixer_selections_contains_slot (
   MixerSelections * ms,
+  PluginSlotType   type,
   int               slot)
 {
   for (int i = 0; i < ms->num_slots; i++)
@@ -219,7 +222,7 @@ mixer_selections_clear (
   for (i = ms->num_slots - 1; i >= 0; i--)
     {
       mixer_selections_remove_slot (
-        ms, ms->slots[i], 0);
+        ms, ms->slots[i], ms->type, 0);
     }
 
   if (pub_events)
@@ -253,6 +256,7 @@ mixer_selections_clone (
       ms->slots[i] = src->slots[i];
     }
 
+  ms->type = src->type;
   ms->num_slots = src->num_slots;
   ms->has_any = src->has_any;
   ms->track_pos = src->track_pos;
@@ -268,6 +272,7 @@ void
 mixer_selections_paste_to_slot (
   MixerSelections * ts,
   Channel *         ch,
+  PluginSlotType   type,
   int               slot)
 {
   g_warn_if_reached ();
@@ -287,4 +292,3 @@ DESERIALIZE_SRC (
   MixerSelections, mixer_selections)
 PRINT_YAML_SRC (
   MixerSelections, mixer_selections)
-

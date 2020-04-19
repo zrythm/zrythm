@@ -1172,7 +1172,9 @@ channel_append_all_ports (
       for (j = 0; j < STRIP_SIZE; j++)
         {
           pl = tr->channel->plugins[j];
+          ADD_PLUGIN_PORTS;
 
+          pl = tr->channel->midi_fx[j];
           ADD_PLUGIN_PORTS;
         }
     }
@@ -1547,7 +1549,7 @@ channel_disconnect_plugin_from_strip (
 /**
  * Removes a plugin at pos from the channel.
  *
- * If deleting_channel is 1, the automation tracks
+ * If deleting_channel is true, the automation tracks
  * associated with the plugin are not deleted at
  * this time.
  *
@@ -1561,13 +1563,25 @@ channel_disconnect_plugin_from_strip (
  */
 void
 channel_remove_plugin (
-  Channel * channel,
-  int pos,
-  int deleting_plugin,
-  int deleting_channel,
-  int recalc_graph)
+  Channel *      channel,
+  PluginSlotType slot_type,
+  int            slot,
+  bool           deleting_plugin,
+  bool           deleting_channel,
+  bool           recalc_graph)
 {
-  Plugin * plugin = channel->plugins[pos];
+  Plugin * plugin = NULL;
+  switch (slot_type)
+    {
+    case PLUGIN_SLOT_INSERT:
+      plugin = channel->plugins[slot];
+      break;
+    case PLUGIN_SLOT_MIDI_FX:
+      plugin = channel->midi_fx[slot];
+      break;
+    default:
+      break;
+    }
   g_return_if_fail (plugin);
   g_warn_if_fail (
     plugin->id.track_pos == channel->track_pos);
@@ -1578,10 +1592,10 @@ channel_remove_plugin (
   Track * track = channel_get_track (channel);
   g_message (
     "Removing %s from %s:%d",
-    plugin->descr->name, track->name, pos);
+    plugin->descr->name, track->name, slot);
 
   channel_disconnect_plugin_from_strip (
-    channel, pos, plugin);
+    channel, slot, plugin);
 
   /* if deleting plugin disconnect the plugin
    * entirely */
@@ -1591,6 +1605,7 @@ channel_remove_plugin (
         {
           mixer_selections_remove_slot (
             MIXER_SELECTIONS, plugin->id.slot,
+            slot_type,
             F_PUBLISH_EVENTS);
         }
 
@@ -1601,7 +1616,18 @@ channel_remove_plugin (
       free_later (plugin, plugin_free);
     }
 
-  channel->plugins[pos] = NULL;
+  switch (slot_type)
+    {
+    case PLUGIN_SLOT_INSERT:
+      channel->plugins[slot] = NULL;
+      break;
+    case PLUGIN_SLOT_MIDI_FX:
+      channel->midi_fx[slot] = NULL;
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
 
   /* if not deleting plugin (moving, etc.) just
    * disconnect its connections to the prev/
@@ -1623,7 +1649,7 @@ channel_remove_plugin (
  * point.
  *
  * @param channel The Channel.
- * @param pos The position in the strip starting
+ * @param slot The position in the strip starting
  *   from 0.
  * @param plugin The plugin to add.
  * @param confirm Confirm if an existing plugin
@@ -1638,8 +1664,9 @@ channel_remove_plugin (
  */
 int
 channel_add_plugin (
-  Channel * channel,
-  int       pos,
+  Channel * self,
+  PluginSlotType slot_type,
+  int       slot,
   Plugin *  plugin,
   int       confirm,
   int       gen_automatables,
@@ -1647,12 +1674,26 @@ channel_add_plugin (
   int       pub_events)
 {
   int i;
-  Track * track = channel_get_track (channel);
+  Track * track = channel_get_track (self);
   int prev_active = track->active;
   track->active = 0;
 
+  Plugin ** plugins = NULL;
+  switch (slot_type)
+    {
+    case PLUGIN_SLOT_INSERT:
+      plugins = self->plugins;
+      break;
+    case PLUGIN_SLOT_MIDI_FX:
+      plugins = self->midi_fx;
+      break;
+    default:
+      g_return_val_if_reached (0);
+    }
+
   /* confirm if another plugin exists */
-  if (confirm && channel->plugins[pos])
+  Plugin * existing_pl = plugins[slot];
+  if (confirm && existing_pl)
     {
       GtkDialog * dialog =
         dialogs_get_overwrite_plugin_dialog (
@@ -1667,32 +1708,34 @@ channel_add_plugin (
     }
 
   /* free current plugin */
-  if (channel->plugins[pos])
+  if (existing_pl)
     {
       channel_remove_plugin (
-        channel, pos, 1, 0, F_NO_RECALC_GRAPH);
+        self, slot_type, slot, 1, 0,
+        F_NO_RECALC_GRAPH);
     }
 
   g_message (
-    "Inserting %s at %s:%d",
-    plugin->descr->name, track->name, pos);
-  channel->plugins[pos] = plugin;
+    "Inserting %s %s at %s:%d",
+    plugin_slot_type_to_string (slot_type),
+    plugin->descr->name, track->name, slot);
+  plugins[slot] = plugin;
   plugin_set_channel_and_slot (
-    plugin, channel, pos);
+    plugin, self, slot_type, slot);
 
-  Plugin * next_plugin = NULL;
-  for (i = pos + 1; i < STRIP_SIZE; i++)
+  Plugin * next_pl = NULL;
+  for (i = slot + 1; i < STRIP_SIZE; i++)
     {
-      next_plugin = channel->plugins[i];
-      if (next_plugin)
+      next_pl = plugins[i];
+      if (next_pl)
         break;
     }
 
-  Plugin * prev_plugin = NULL;
-  for (i = pos - 1; i >= 0; i--)
+  Plugin * prev_pl = NULL;
+  for (i = slot - 1; i >= 0; i--)
     {
-      prev_plugin = channel->plugins[i];
-      if (prev_plugin)
+      prev_pl = plugins[i];
+      if (prev_pl)
         break;
     }
 
@@ -1700,26 +1743,18 @@ channel_add_plugin (
    * connect ports
    * ------------------------------------------ */
 
-  if (!prev_plugin && !next_plugin)
+  if (!prev_pl && !next_pl)
     connect_no_prev_no_next (
-      channel,
-      plugin);
-  else if (!prev_plugin && next_plugin)
+      self, plugin);
+  else if (!prev_pl && next_pl)
     connect_no_prev_next (
-      channel,
-      plugin,
-      next_plugin);
-  else if (prev_plugin && !next_plugin)
+      self, plugin, next_pl);
+  else if (prev_pl && !next_pl)
     connect_prev_no_next (
-      channel,
-      prev_plugin,
-      plugin);
-  else if (prev_plugin && next_plugin)
+      self, prev_pl, plugin);
+  else if (prev_pl && next_pl)
     connect_prev_next (
-      channel,
-      prev_plugin,
-      plugin,
-      next_plugin);
+      self, prev_pl, plugin, next_pl);
 
   track->active = prev_active;
 
@@ -1954,20 +1989,29 @@ channel_clone (
           Plugin * clone_pl =
             plugin_clone (ch->plugins[i]);
           channel_add_plugin (
-            clone, i, clone_pl, F_NO_CONFIRM,
+            clone, PLUGIN_SLOT_INSERT,
+            i, clone_pl, F_NO_CONFIRM,
+            F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
+            F_NO_PUBLISH_EVENTS);
+        }
+    }
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      if (ch->midi_fx[i])
+        {
+          Plugin * clone_pl =
+            plugin_clone (ch->midi_fx[i]);
+          channel_add_plugin (
+            clone, PLUGIN_SLOT_MIDI_FX,
+            i, clone_pl, F_NO_CONFIRM,
             F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
             F_NO_PUBLISH_EVENTS);
         }
     }
 
-#define COPY_MEMBER(mem) \
-  clone->mem = ch->mem
-
   clone->fader.track_pos = clone->track_pos;
   clone->prefader.track_pos = clone->track_pos;
   fader_copy_values (&ch->fader, &clone->fader);
-
-#undef COPY_MEMBER
 
   /* TODO clone port connections, same for
    * plugins */
@@ -2029,7 +2073,20 @@ channel_disconnect (
           if (channel->plugins[i])
             {
               channel_remove_plugin (
-                channel, i, remove_pl, 0,
+                channel,
+                PLUGIN_SLOT_INSERT,
+                i, remove_pl, 0,
+                F_NO_RECALC_GRAPH);
+            }
+        }
+      FOREACH_STRIP
+        {
+          if (channel->midi_fx[i])
+            {
+              channel_remove_plugin (
+                channel,
+                PLUGIN_SLOT_MIDI_FX,
+                i, remove_pl, 0,
                 F_NO_RECALC_GRAPH);
             }
         }

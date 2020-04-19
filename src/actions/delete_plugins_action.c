@@ -76,7 +76,8 @@ delete_plugins_action_do (
     {
       /* remove the plugin at given slot */
       channel_remove_plugin (
-        ch, self->ms->plugins[i]->id.slot, 1, 0,
+        ch, self->ms->type,
+        self->ms->plugins[i]->id.slot, 1, 0,
         F_NO_RECALC_GRAPH);
     }
 
@@ -135,7 +136,7 @@ delete_plugins_action_undo (
 
       /* add plugin to channel at original slot */
       channel_add_plugin (
-        ch, slot, pl,
+        ch, self->ms->type, slot, pl,
         F_NO_CONFIRM,
         F_GEN_AUTOMATABLES,
         F_NO_RECALC_GRAPH,
@@ -168,7 +169,8 @@ delete_plugins_action_undo (
 
       /* select the plugin */
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, ch, pl->id.slot);
+        MIXER_SELECTIONS, ch, self->ms->type,
+        pl->id.slot);
 
       /* show it if it was visible before */
       if (ZRYTHM_HAVE_UI &&

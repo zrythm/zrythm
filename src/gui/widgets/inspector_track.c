@@ -96,6 +96,8 @@ inspector_track_widget_show_tracks (
       gtk_widget_set_visible (
         GTK_WIDGET (self->inserts), false);
       gtk_widget_set_visible (
+        GTK_WIDGET (self->midi_fx), false);
+      gtk_widget_set_visible (
         GTK_WIDGET (self->fader), false);
 
       if (track_type_has_channel (track->type))
@@ -116,6 +118,14 @@ inspector_track_widget_show_tracks (
               track_input_expander_widget_refresh (
                 self->inputs, track);
             }
+          if (track->in_signal_type == TYPE_EVENT)
+            {
+              gtk_widget_set_visible (
+                GTK_WIDGET (self->midi_fx), true);
+              plugin_strip_expander_widget_setup (
+                self->midi_fx, PLUGIN_SLOT_MIDI_FX,
+                PSE_POSITION_INSPECTOR, track);
+            }
           ports_expander_widget_setup_track (
             self->sends,
             track, PE_TRACK_PORT_TYPE_SENDS);
@@ -124,7 +134,7 @@ inspector_track_widget_show_tracks (
             track, PE_TRACK_PORT_TYPE_CONTROLS);
 
           plugin_strip_expander_widget_setup (
-            self->inserts, PSE_TYPE_INSERTS,
+            self->inserts, PLUGIN_SLOT_INSERT,
             PSE_POSITION_INSPECTOR, track);
 
           fader_controls_expander_widget_setup (
@@ -194,6 +204,7 @@ inspector_track_widget_class_init (
   BIND_CHILD (controls);
   BIND_CHILD (inputs);
   BIND_CHILD (inserts);
+  BIND_CHILD (midi_fx);
   BIND_CHILD (fader);
   BIND_CHILD (color);
 
@@ -224,4 +235,6 @@ inspector_track_widget_init (
 
   expander_box_widget_set_vexpand (
     Z_EXPANDER_BOX_WIDGET (self->inserts), false);
+  expander_box_widget_set_vexpand (
+    Z_EXPANDER_BOX_WIDGET (self->midi_fx), false);
 }

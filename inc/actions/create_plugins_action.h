@@ -20,6 +20,7 @@
 #ifndef __UNDO_CREATE_PLUGINS_ACTION_H__
 #define __UNDO_CREATE_PLUGINS_ACTION_H__
 
+#include "audio/channel.h"
 #include "actions/undoable_action.h"
 #include "plugins/plugin.h"
 
@@ -35,6 +36,9 @@ typedef struct Channel Channel;
 typedef struct CreatePluginsAction
 {
   UndoableAction  parent_instance;
+
+  /** Type of slot to create to. */
+  PluginSlotType  slot_type;
 
   /** Slot to create to.
    *
@@ -65,11 +69,12 @@ static const cyaml_schema_field_t
     "parent_instance", CYAML_FLAG_DEFAULT,
     CreatePluginsAction, parent_instance,
     undoable_action_fields_schema),
-  CYAML_FIELD_INT (
-    "slot", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_ENUM (
+    CreatePluginsAction, slot_type,
+    plugin_slot_type_strings),
+  YAML_FIELD_INT (
     CreatePluginsAction, slot),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     CreatePluginsAction, track_pos),
   CYAML_FIELD_SEQUENCE_COUNT (
     "plugins", CYAML_FLAG_DEFAULT,
@@ -94,6 +99,7 @@ static const cyaml_schema_value_t
 UndoableAction *
 create_plugins_action_new (
   const PluginDescriptor * descr,
+  PluginSlotType  slot_type,
   int       track_pos,
   int       slot,
   int       num_plugins);

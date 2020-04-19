@@ -17,18 +17,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Mixer selections.
+ */
+
 #ifndef __GUI_BACKEND_MIXER_SELECTIONS_H__
 #define __GUI_BACKEND_MIXER_SELECTIONS_H__
 
 #include "audio/automation_point.h"
+#include "audio/channel.h"
 #include "audio/midi_region.h"
 #include "audio/region.h"
 #include "utils/yaml.h"
 
+typedef struct Plugin Plugin;
+
+/**
+ * @addtogroup gui_backend
+ *
+ * @{
+ */
+
 #define MIXER_SELECTIONS \
   (&PROJECT->mixer_selections)
-
-typedef struct Plugin Plugin;
 
 /**
  * Selections to be used for the timeline's current
@@ -36,6 +49,8 @@ typedef struct Plugin Plugin;
  */
 typedef struct MixerSelections
 {
+  PluginSlotType type;
+
   /** Slots selected. */
   int       slots[60];
 
@@ -54,16 +69,17 @@ typedef struct MixerSelections
 static const cyaml_schema_field_t
   mixer_selections_fields_schema[] =
 {
+  YAML_FIELD_ENUM (
+    MixerSelections, type,
+    plugin_slot_type_strings),
   CYAML_FIELD_SEQUENCE_COUNT (
     "slots", CYAML_FLAG_DEFAULT,
     MixerSelections, slots,
     num_slots,
     &int_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     MixerSelections, track_pos),
-  CYAML_FIELD_INT (
-    "has_any", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     MixerSelections, has_any),
 
   CYAML_FIELD_END
@@ -117,6 +133,7 @@ void
 mixer_selections_paste_to_slot (
   MixerSelections * ts,
   Channel *         ch,
+  PluginSlotType   type,
   int               slot);
 
 /**
@@ -132,6 +149,7 @@ mixer_selections_get_track (
 int
 mixer_selections_contains_slot (
   MixerSelections * ms,
+  PluginSlotType   type,
   int               slot);
 
 /**
@@ -154,6 +172,7 @@ void
 mixer_selections_add_slot (
   MixerSelections * ms,
   Channel *         ch,
+  PluginSlotType   type,
   int               slot);
 
 /**
@@ -166,6 +185,7 @@ void
 mixer_selections_remove_slot (
   MixerSelections * ms,
   int               slot,
+  PluginSlotType   type,
   int               publish_events);
 
 /**
@@ -178,6 +198,10 @@ mixer_selections_clear (
 
 void
 mixer_selections_free (MixerSelections * self);
+
+/**
+ * @}
+ */
 
 SERIALIZE_INC (MixerSelections, mixer_selections)
 DESERIALIZE_INC (MixerSelections, mixer_selections)

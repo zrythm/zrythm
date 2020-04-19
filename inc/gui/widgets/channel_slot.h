@@ -48,6 +48,9 @@ typedef struct Channel Channel;
 typedef struct _ChannelSlotWidget
 {
   GtkDrawingArea       parent_instance;
+
+  PluginSlotType      type;
+
   /** The Channel this belongs to. */
   Channel *            channel;
   /** The Channel slot index. */
@@ -86,6 +89,7 @@ ChannelSlotWidget *
 channel_slot_widget_new (
   int       slot_index,
   Channel * ch,
+  PluginSlotType type,
   bool      open_plugin_inspector_on_click);
 
 /**

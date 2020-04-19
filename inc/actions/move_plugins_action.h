@@ -20,8 +20,10 @@
 #ifndef __UNDO_MOVE_PLUGINS_ACTION_H__
 #define __UNDO_MOVE_PLUGINS_ACTION_H__
 
+#include "audio/channel.h"
 #include "actions/undoable_action.h"
 #include "gui/backend/mixer_selections.h"
+#include "utils/yaml.h"
 
 typedef struct Plugin Plugin;
 typedef struct Track Track;
@@ -33,6 +35,9 @@ typedef struct MixerSelections MixerSelections;
 typedef struct MovePluginsAction
 {
   UndoableAction  parent_instance;
+
+  /** Type of starting slot to move plugins to. */
+  PluginSlotType  slot_type;
 
   /** To slot.
    *
@@ -61,17 +66,16 @@ static const cyaml_schema_field_t
     "parent_instance", CYAML_FLAG_DEFAULT,
     MovePluginsAction, parent_instance,
     undoable_action_fields_schema),
-  CYAML_FIELD_INT (
-    "to_slot", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_ENUM (
+    MovePluginsAction, slot_type,
+    plugin_slot_type_strings),
+  YAML_FIELD_INT (
     MovePluginsAction, to_slot),
-  CYAML_FIELD_INT (
-    "to_track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     MovePluginsAction, to_track_pos),
-  CYAML_FIELD_INT (
-    "from_track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     MovePluginsAction, from_track_pos),
-  CYAML_FIELD_INT (
-    "is_new_channel", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     MovePluginsAction, is_new_channel),
   CYAML_FIELD_MAPPING_PTR (
     "ms", CYAML_FLAG_POINTER,
@@ -89,10 +93,16 @@ static const cyaml_schema_value_t
     move_plugins_action_fields_schema),
 };
 
+/**
+ * Create a new action.
+ *
+ * @param slot_type Slot type to copy to.
+ */
 UndoableAction *
 move_plugins_action_new (
   MixerSelections * ms,
-  Track *  to_tr,
+  PluginSlotType   slot_type,
+  Track *    to_tr,
   int        to_slot);
 
 int

@@ -518,7 +518,8 @@ test_move_plugins ()
   Channel * ch = track->channel;
   Plugin * pl = ch->plugins[0];
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, ch, pl->id.slot);
+    MIXER_SELECTIONS, ch, PLUGIN_SLOT_INSERT,
+    pl->id.slot);
   g_assert_cmpint (
     MIXER_SELECTIONS->num_slots, ==, 1);
 
@@ -527,7 +528,8 @@ test_move_plugins ()
   /* duplicate to next slot in a new track */
   action =
     copy_plugins_action_new (
-      MIXER_SELECTIONS, NULL, 1);
+      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+      NULL, 1);
   undo_manager_perform (UNDO_MANAGER, action);
 
   check_after_step5 ();
@@ -538,7 +540,8 @@ test_move_plugins ()
   Channel * new_ch = new_track->channel;
   action =
     copy_plugins_action_new (
-      MIXER_SELECTIONS, new_track, 2);
+      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+      new_track, 2);
   undo_manager_perform (UNDO_MANAGER, action);
 
   /* select the plugin above too */
@@ -546,7 +549,8 @@ test_move_plugins ()
     MIXER_SELECTIONS->num_slots, ==, 1);
   g_assert_true (MIXER_SELECTIONS->has_any);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, new_ch, 1);
+    MIXER_SELECTIONS, new_ch, PLUGIN_SLOT_INSERT,
+    1);
   g_assert_cmpint (
     MIXER_SELECTIONS->num_slots, ==, 2);
 
@@ -555,7 +559,8 @@ test_move_plugins ()
   /* copy both to the previous track at slot 5 */
   action =
     copy_plugins_action_new (
-      MIXER_SELECTIONS, track, 5);
+      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+      track, 5);
   undo_manager_perform (UNDO_MANAGER, action);
 
   check_after_step7 ();
@@ -564,7 +569,8 @@ test_move_plugins ()
    * track */
   action =
     move_plugins_action_new (
-      MIXER_SELECTIONS, new_track, 7);
+      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+      new_track, 7);
   undo_manager_perform (UNDO_MANAGER, action);
 
   check_after_step8 ();

@@ -779,7 +779,7 @@ channel_widget_new (Channel * channel)
 
   /*setup_phase_panel (self);*/
   plugin_strip_expander_widget_setup (
-    self->inserts, PSE_TYPE_INSERTS,
+    self->inserts, PLUGIN_SLOT_INSERT,
     PSE_POSITION_CHANNEL, channel->track);
   fader_widget_setup (
     self->fader, &channel->fader, 38, -1);

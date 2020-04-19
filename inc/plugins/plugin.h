@@ -317,9 +317,10 @@ plugin_activate (
  */
 void
 plugin_set_channel_and_slot (
-  Plugin *  pl,
-  Channel * ch,
-  int       slot);
+  Plugin *       pl,
+  Channel *      ch,
+  PluginSlotType slot_type,
+  int            slot);
 
 /**
  * Returns if the Plugin is an instrument or not.

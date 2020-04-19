@@ -47,13 +47,6 @@ typedef struct _ChannelSlotWidget ChannelSlotWidget;
  * @{
  */
 
-typedef enum PluginStripExpanderType
-{
-  PSE_TYPE_MIDI_EFFECTS,
-  PSE_TYPE_MODULATORS,
-  PSE_TYPE_INSERTS,
-} PluginStripExpanderType;
-
 typedef enum PluginStripExpanderPosition
 {
   PSE_POSITION_CHANNEL,
@@ -68,7 +61,7 @@ typedef struct _PluginStripExpanderWidget
 {
   ExpanderBoxWidget parent_instance;
 
-  PluginStripExpanderType type;
+  PluginSlotType    slot_type;
   PluginStripExpanderPosition position;
 
   /** Scrolled window for the vbox inside. */
@@ -82,7 +75,7 @@ typedef struct _PluginStripExpanderWidget
   GtkBox *          strip_boxes[STRIP_SIZE];
 
   /** Channel slots, if type is inserts. */
-  ChannelSlotWidget * inserts[STRIP_SIZE];
+  ChannelSlotWidget * slots[STRIP_SIZE];
 
   /** Owner track. */
   Track *           track;
@@ -123,7 +116,7 @@ plugin_strip_expander_widget_refresh (
 void
 plugin_strip_expander_widget_setup (
   PluginStripExpanderWidget * self,
-  PluginStripExpanderType     type,
+  PluginSlotType              type,
   PluginStripExpanderPosition position,
   Track *                     track);
 

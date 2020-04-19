@@ -119,6 +119,16 @@
     &schema, 0, CYAML_UNLIMITED)
 
 /**
+ * Fixed sequence of pointers.
+ */
+#define YAML_FIELD_SEQUENCE_FIXED( \
+  owner,member,schema,size) \
+  CYAML_FIELD_SEQUENCE_FIXED ( \
+    #member, CYAML_FLAG_DEFAULT, \
+    owner, member, \
+    &schema, size)
+
+/**
  * Dynamic-width (reallocated) array of pointers
  * with variable count, nullable.
  *

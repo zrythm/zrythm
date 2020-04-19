@@ -101,9 +101,10 @@ mixer_load_plugins (
  */
 void
 mixer_move_plugin (
-  Mixer *   self,
-  Plugin *  pl,
-  Channel * ch,
-  int       slot);
+  Mixer *        self,
+  Plugin *       pl,
+  Channel *      ch,
+  PluginSlotType slot_type,
+  int            slot);
 
 #endif

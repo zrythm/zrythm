@@ -118,10 +118,11 @@ mixer_load_plugins (
  */
 void
 mixer_move_plugin (
-  Mixer *   self,
-  Plugin *  pl,
-  Channel * ch,
-  int       slot)
+  Mixer *        self,
+  Plugin *       pl,
+  Channel *      ch,
+  PluginSlotType slot_type,
+  int            slot)
 {
   g_return_if_fail (pl);
   g_return_if_fail (ch);
@@ -142,6 +143,8 @@ mixer_move_plugin (
     }
 
   int prev_slot = pl->id.slot;
+  PluginSlotType prev_slot_type =
+    pl->id.slot_type;
   Channel * prev_ch = plugin_get_channel (pl);
 
   /* move plugin's automation from src to dest */
@@ -150,11 +153,12 @@ mixer_move_plugin (
 
   /* remove plugin from its channel */
   channel_remove_plugin (
-    prev_ch, prev_slot, 0, 0, F_NO_RECALC_GRAPH);
+    prev_ch, prev_slot_type, prev_slot,
+    0, 0, F_NO_RECALC_GRAPH);
 
   /* add plugin to its new channel */
   channel_add_plugin (
-    ch, slot, pl, 0, 0, F_RECALC_GRAPH,
+    ch, slot_type, slot, pl, 0, 0, F_RECALC_GRAPH,
     F_PUBLISH_EVENTS);
 
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, prev_ch);

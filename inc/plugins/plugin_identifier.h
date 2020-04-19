@@ -32,26 +32,48 @@
  * @{
  */
 
+typedef enum PluginSlotType
+{
+  PLUGIN_SLOT_INSERT,
+  PLUGIN_SLOT_MIDI_FX,
+} PluginSlotType;
+
+static const cyaml_strval_t
+plugin_slot_type_strings[] =
+{
+  { "Insert",     PLUGIN_SLOT_INSERT    },
+  { "MIDI FX",    PLUGIN_SLOT_MIDI_FX   },
+};
+
+static inline const char *
+plugin_slot_type_to_string (
+  PluginSlotType type)
+{
+  return plugin_slot_type_strings[type].str;
+}
+
 /**
  * Plugin identifier.
  */
 typedef struct PluginIdentifier
 {
+  PluginSlotType   slot_type;
   /** The Channel this plugin belongs to. */
-  int                  track_pos;
+  int              track_pos;
 
   /** The slot this plugin is in in the channel. */
-  int                  slot;
+  int              slot;
 } PluginIdentifier;
 
 static const cyaml_schema_field_t
 plugin_identifier_fields_schema[] =
 {
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_ENUM (
+    PluginIdentifier, slot_type,
+    plugin_slot_type_strings),
+  YAML_FIELD_INT (
     PluginIdentifier, track_pos),
-  CYAML_FIELD_INT (
-    "slot", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     PluginIdentifier, slot),
 
   CYAML_FIELD_END
@@ -70,6 +92,7 @@ plugin_identifier_is_equal (
   const PluginIdentifier * b)
 {
   return
+    a->slot_type == b->slot_type &&
     a->track_pos == b->track_pos &&
     a->slot == b->slot;
 }
@@ -79,6 +102,7 @@ plugin_identifier_copy (
   PluginIdentifier * dest,
   const PluginIdentifier * src)
 {
+  dest->slot_type = src->slot_type;
   dest->track_pos = src->track_pos;
   dest->slot = src->slot;
 }

@@ -77,6 +77,8 @@ typedef struct _InspectorTrackWidget
 
   PluginStripExpanderWidget * inserts;
 
+  PluginStripExpanderWidget * midi_fx;
+
   FaderControlsExpanderWidget * fader;
 
   ColorAreaWidget *     color;

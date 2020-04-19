@@ -35,18 +35,17 @@ on_switch_page (
 {
   int num_pages =
     gtk_notebook_get_n_pages (notebook);
-  GtkBox * box;
+  GtkContainer * box;
   GtkWidget * widget;
   for (int i = 0; i < num_pages; i++)
     {
       box =
-        GTK_BOX (
+        GTK_CONTAINER (
           gtk_notebook_get_nth_page (notebook, i));
 
       /* set the child visible */
       widget =
-        z_gtk_container_get_single_child (
-          GTK_CONTAINER (box));
+        z_gtk_container_get_single_child (box);
       gtk_widget_set_visible (
         widget, (guint) i == page_num ? 1 : 0);
     }

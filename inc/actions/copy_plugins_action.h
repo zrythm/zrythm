@@ -38,6 +38,9 @@ typedef struct CopyPluginsAction
 {
   UndoableAction  parent_instance;
 
+  /** Type of starting slot to copy plugins to. */
+  PluginSlotType  slot_type;
+
   /** Starting slot to copy plugins to. */
   int              slot;
 
@@ -68,14 +71,14 @@ static const cyaml_schema_field_t
     "parent_instance", CYAML_FLAG_DEFAULT,
     CopyPluginsAction, parent_instance,
     undoable_action_fields_schema),
-  CYAML_FIELD_INT (
-    "slot", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_ENUM (
+    CopyPluginsAction, slot_type,
+    plugin_slot_type_strings),
+  YAML_FIELD_INT (
     CopyPluginsAction, slot),
-  CYAML_FIELD_INT (
-    "is_new_channel", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     CopyPluginsAction, is_new_channel),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     CopyPluginsAction, track_pos),
   CYAML_FIELD_MAPPING_PTR (
     "ms", CYAML_FLAG_POINTER,
@@ -98,10 +101,12 @@ static const cyaml_schema_value_t
  *
  * @param slot Starting slot to copy plugins to.
  * @param tr Track to copy to.
+ * @param slot_type Slot type to copy to.
  */
 UndoableAction *
 copy_plugins_action_new (
   MixerSelections * ms,
+  PluginSlotType   slot_type,
   Track *           tr,
   int               slot);
 

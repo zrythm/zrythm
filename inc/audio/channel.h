@@ -44,6 +44,10 @@
 #endif
 
 typedef struct AutomationTrack AutomationTrack;
+typedef struct _ChannelWidget ChannelWidget;
+typedef struct Track Track;
+typedef struct _TrackWidget TrackWidget;
+typedef struct ExtPort ExtPort;
 
 /**
  * @addtogroup audio
@@ -60,11 +64,6 @@ typedef struct AutomationTrack AutomationTrack;
 #define FOREACH_AUTOMATABLE(ch) for (int i = 0; i < ch->num_automatables; i++)
 #define MAX_FADER_AMP 1.42f
 
-typedef struct _ChannelWidget ChannelWidget;
-typedef struct Track Track;
-typedef struct _TrackWidget TrackWidget;
-typedef struct ExtPort ExtPort;
-
 /**
  * A Channel is part of a Track (excluding Tracks that
  * don't have Channels) and contains information
@@ -73,9 +72,14 @@ typedef struct ExtPort ExtPort;
 typedef struct Channel
 {
   /**
+   * The MIDI effect strip on instrument/MIDI tracks.
+   */
+  Plugin *         midi_fx[STRIP_SIZE];
+
+  /**
    * The channel strip.
    *
-   * Note: the first plugin is special in MIDI
+   * @not the first plugin is special in instrument
    * channels.
    */
   Plugin *         plugins[STRIP_SIZE];
@@ -217,11 +221,12 @@ typedef struct Channel
 static const cyaml_schema_field_t
 channel_fields_schema[] =
 {
-  CYAML_FIELD_SEQUENCE_FIXED (
-    "plugins",
-    CYAML_FLAG_DEFAULT,
+  YAML_FIELD_SEQUENCE_FIXED (
+    Channel, midi_fx,
+    plugin_schema, STRIP_SIZE),
+  YAML_FIELD_SEQUENCE_FIXED (
     Channel, plugins,
-    &plugin_schema, STRIP_SIZE),
+    plugin_schema, STRIP_SIZE),
   CYAML_FIELD_MAPPING (
     "prefader", CYAML_FLAG_DEFAULT,
     Channel, prefader,
@@ -439,6 +444,7 @@ channel_process (Channel * channel);
 int
 channel_add_plugin (
   Channel * channel,
+  PluginSlotType slot_type,
   int       pos,
   Plugin *  plugin,
   int       confirm,
@@ -551,10 +557,11 @@ channel_generate_automation_tracks (
 void
 channel_remove_plugin (
   Channel * channel,
-  int pos,
-  int deleting_plugin,
-  int deleting_channel,
-  int recalc_graph);
+  PluginSlotType type,
+  int       pos,
+  bool      deleting_plugin,
+  bool      deleting_channel,
+  bool      recalc_graph);
 
 /**
  * Updates the track position in the channel and

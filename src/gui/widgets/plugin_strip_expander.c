@@ -42,12 +42,12 @@ plugin_strip_expander_widget_redraw_slot (
   PluginStripExpanderWidget * self,
   int                         slot)
 {
-  switch (self->type)
+  switch (self->slot_type)
     {
-    case PSE_TYPE_INSERTS:
+    case PLUGIN_SLOT_INSERT:
+    case PLUGIN_SLOT_MIDI_FX:
       gtk_widget_queue_draw (
-        GTK_WIDGET (self->inserts[slot]));
-      break;
+        GTK_WIDGET (self->slots[slot]));
     default:
       break;
     }
@@ -67,9 +67,10 @@ plugin_strip_expander_widget_set_state_flags (
   GtkStateFlags               flags,
   bool                        set)
 {
-  switch (self->type)
+  switch (self->slot_type)
     {
-    case PSE_TYPE_INSERTS:
+    case PLUGIN_SLOT_INSERT:
+    case PLUGIN_SLOT_MIDI_FX:
       if (slot == -1)
         {
           for (int i = 0; i < STRIP_SIZE; i++)
@@ -83,17 +84,17 @@ plugin_strip_expander_widget_set_state_flags (
           if (set)
             {
               gtk_widget_set_state_flags (
-                GTK_WIDGET (self->inserts[slot]),
+                GTK_WIDGET (self->slots[slot]),
                 flags, 0);
             }
           else
             {
               gtk_widget_unset_state_flags (
-                GTK_WIDGET (self->inserts[slot]),
+                GTK_WIDGET (self->slots[slot]),
                 flags);
             }
           gtk_widget_queue_draw (
-            GTK_WIDGET (self->inserts[slot]));
+            GTK_WIDGET (self->slots[slot]));
         }
       break;
     default:
@@ -110,9 +111,9 @@ plugin_strip_expander_widget_refresh (
 {
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      switch (self->type)
+      switch (self->slot_type)
         {
-        case PSE_TYPE_INSERTS:
+        case PLUGIN_SLOT_INSERT:
           {
             Channel * ch =
               track_get_channel (self->track);
@@ -122,7 +123,20 @@ plugin_strip_expander_widget_refresh (
               GTK_STATE_FLAG_SELECTED,
               pl && plugin_is_selected (pl));
             gtk_widget_queue_draw (
-              GTK_WIDGET (self->inserts[i]));
+              GTK_WIDGET (self->slots[i]));
+          }
+          break;
+        case PLUGIN_SLOT_MIDI_FX:
+          {
+            Channel * ch =
+              track_get_channel (self->track);
+            Plugin * pl = ch->midi_fx[i];
+            plugin_strip_expander_widget_set_state_flags (
+              self, i,
+              GTK_STATE_FLAG_SELECTED,
+              pl && plugin_is_selected (pl));
+            gtk_widget_queue_draw (
+              GTK_WIDGET (self->slots[i]));
           }
           break;
         default:
@@ -134,7 +148,7 @@ plugin_strip_expander_widget_refresh (
 static void
 set_icon_from_type (
   PluginStripExpanderWidget * self,
-  PluginStripExpanderType     type)
+  PluginSlotType              slot_type)
 {
   /* TODO */
   expander_box_widget_set_icon_name (
@@ -148,22 +162,19 @@ set_icon_from_type (
 void
 plugin_strip_expander_widget_setup (
   PluginStripExpanderWidget * self,
-  PluginStripExpanderType     type,
+  PluginSlotType              slot_type,
   PluginStripExpanderPosition position,
   Track *                     track)
 {
   /* set name and icon */
   char fullstr[200];
-  switch (type)
+  switch (slot_type)
     {
-    case PSE_TYPE_INSERTS:
+    case PLUGIN_SLOT_INSERT:
       strcpy (fullstr, _("Inserts"));
       break;
-    case PSE_TYPE_MIDI_EFFECTS:
+    case PLUGIN_SLOT_MIDI_FX:
       strcpy (fullstr, "MIDI FX");
-      break;
-    case PSE_TYPE_MODULATORS:
-      strcpy (fullstr, _("Modulators"));
       break;
     default:
       g_return_if_reached ();
@@ -173,10 +184,10 @@ plugin_strip_expander_widget_setup (
     Z_EXPANDER_BOX_WIDGET (self),
     fullstr);
 
-  set_icon_from_type (self, type);
+  set_icon_from_type (self, slot_type);
 
   if (track != self->track ||
-      type != self->type ||
+      slot_type != self->slot_type ||
       position != self->position)
     {
       /* remove children */
@@ -194,15 +205,16 @@ plugin_strip_expander_widget_setup (
                 GTK_ORIENTATION_HORIZONTAL, 0));
           self->strip_boxes[i] = strip_box;
 
-          switch (type)
+          switch (slot_type)
             {
-            case PSE_TYPE_INSERTS:
+            case PLUGIN_SLOT_INSERT:
+            case PLUGIN_SLOT_MIDI_FX:
               {
                 ChannelSlotWidget * csw =
                   channel_slot_widget_new (
-                    i, ch,
+                    i, ch, slot_type,
                     position == PSE_POSITION_CHANNEL);
-                self->inserts[i] = csw;
+                self->slots[i] = csw;
                 gtk_box_pack_start (
                   strip_box, GTK_WIDGET (csw), 1, 1, 0);
               }
@@ -221,7 +233,7 @@ plugin_strip_expander_widget_setup (
     }
 
   self->track = track;
-  self->type = type;
+  self->slot_type = slot_type;
   self->position = position;
 
   plugin_strip_expander_widget_refresh (self);

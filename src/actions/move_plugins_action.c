@@ -27,9 +27,15 @@
 
 #include <glib/gi18n.h>
 
+/**
+ * Create a new action.
+ *
+ * @param slot_type Slot type to copy to.
+ */
 UndoableAction *
 move_plugins_action_new (
   MixerSelections * ms,
+  PluginSlotType   slot_type,
   Track *    to_tr,
   int        to_slot)
 {
@@ -40,6 +46,7 @@ move_plugins_action_new (
   ua->type =
     UA_MOVE_PLUGINS;
 
+  self->slot_type = slot_type;
   self->to_slot = to_slot;
   self->from_track_pos = ms->track_pos;
   if (to_tr)
@@ -129,10 +136,11 @@ move_plugins_action_do (
       /* move and select plugin to to_slot + diff */
       to_slot = self->to_slot + i;
       mixer_move_plugin (
-        MIXER, pl, to_ch, to_slot);
+        MIXER, pl, to_ch, self->slot_type, to_slot);
 
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, to_ch, to_slot);
+        MIXER_SELECTIONS, to_ch, self->slot_type,
+        to_slot);
     }
 
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, to_ch);
@@ -170,11 +178,13 @@ move_plugins_action_undo (
       /* move plugin to its original slot */
       mixer_move_plugin (
         MIXER, pl, ch,
+        self->ms->type,
         self->ms->plugins[i]->id.slot);
 
       /* add to mixer selections */
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, ch, pl->id.slot);
+        MIXER_SELECTIONS, ch, self->ms->type,
+        pl->id.slot);
     }
 
   if (self->is_new_channel)

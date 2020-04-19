@@ -32,10 +32,12 @@
  *
  * @param slot Starting slot to copy plugins to.
  * @param tr Track to copy to.
+ * @param slot_type Slot type to copy to.
  */
 UndoableAction *
 copy_plugins_action_new (
   MixerSelections * ms,
+  PluginSlotType   slot_type,
   Track *           tr,
   int               slot)
 {
@@ -46,6 +48,7 @@ copy_plugins_action_new (
   ua->type =
     UA_COPY_PLUGINS;
 
+  self->slot_type = slot_type;
   self->ms = mixer_selections_clone (ms);
   self->slot = slot;
 
@@ -131,7 +134,7 @@ copy_plugins_action_do (
       /* add it to the channel */
       int new_slot = self->slot + i;
       channel_add_plugin (
-        ch, new_slot, pl, 1, 1,
+        ch, self->slot_type, new_slot, pl, 1, 1,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
       /* copy the automation regions from the
@@ -183,7 +186,8 @@ copy_plugins_action_do (
 
       /* select it */
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, ch, new_slot);
+        MIXER_SELECTIONS, ch, self->slot_type,
+        new_slot);
 
       /* show it if it was visible before */
       if (ZRYTHM_HAVE_UI &&
@@ -229,7 +233,8 @@ copy_plugins_action_undo (
       for (int i = 0; i < self->ms->num_slots; i++)
         {
           channel_remove_plugin (
-            ch, self->slot + i, 1, 0,
+            ch, self->slot_type,
+            self->slot + i, 1, 0,
             F_NO_RECALC_GRAPH);
         }
     }
@@ -242,6 +247,7 @@ copy_plugins_action_undo (
     {
       mixer_selections_add_slot (
         MIXER_SELECTIONS, prev_ch,
+        self->ms->type,
         self->ms->slots[i]);
       /*g_message ("readding slot %d",*/
         /*self->ms->slots[i]);*/

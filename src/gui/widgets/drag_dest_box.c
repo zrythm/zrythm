@@ -354,6 +354,7 @@ on_drag_data_received (
           ua =
             copy_plugins_action_new (
               MIXER_SELECTIONS,
+              PLUGIN_SLOT_INSERT,
               NULL, 0);
         }
       else if (action == GDK_ACTION_MOVE)
@@ -361,6 +362,7 @@ on_drag_data_received (
           ua =
             move_plugins_action_new (
               MIXER_SELECTIONS,
+              PLUGIN_SLOT_INSERT,
               NULL, 0);
         }
       g_warn_if_fail (ua);

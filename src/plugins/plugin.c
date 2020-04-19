@@ -250,12 +250,14 @@ plugin_remove_ats_from_automation_tracklist (
  */
 void
 plugin_set_channel_and_slot (
-  Plugin *  pl,
-  Channel * ch,
-  int       slot)
+  Plugin *       pl,
+  Channel *      ch,
+  PluginSlotType slot_type,
+  int            slot)
 {
   pl->id.track_pos = ch->track_pos;
   pl->id.slot = slot;
+  pl->id.slot_type = slot_type;
 
   int i;
   Port * port;
@@ -271,9 +273,7 @@ plugin_set_channel_and_slot (
     }
 
   if (
-#ifdef HAVE_CARLA
     !pl->descr->open_with_carla &&
-#endif
       pl->descr->protocol == PROT_LV2)
     {
       lv2_plugin_update_port_identifiers (

@@ -45,6 +45,28 @@ G_DEFINE_TYPE (
 
 #define ELLIPSIZE_PADDING 2
 
+static Plugin *
+get_plugin (
+  ChannelSlotWidget * self)
+{
+  Plugin * plugin = NULL;
+  switch (self->type)
+    {
+    case PLUGIN_SLOT_INSERT:
+      return
+        self->channel->plugins[self->slot_index];
+      break;
+    case PLUGIN_SLOT_MIDI_FX:
+      return
+        self->channel->midi_fx[self->slot_index];
+      break;
+    default:
+      break;
+    }
+
+  return plugin;
+}
+
 static int
 channel_slot_draw_cb (
   GtkWidget * widget,
@@ -63,8 +85,7 @@ channel_slot_draw_cb (
     context, cr, 0, 0, width, height);
 
   int padding = 2;
-  Plugin * plugin =
-    self->channel->plugins[self->slot_index];
+  Plugin * plugin = get_plugin (self);
   if (plugin)
     {
       GdkRGBA bg, fg;
@@ -224,6 +245,7 @@ on_drag_data_received (
               ua =
                 copy_plugins_action_new (
                   MIXER_SELECTIONS,
+                  self->type,
                   self->channel->track,
                   self->slot_index);
             }
@@ -232,6 +254,7 @@ on_drag_data_received (
               ua =
                 move_plugins_action_new (
                   MIXER_SELECTIONS,
+                  self->type,
                   self->channel->track,
                   self->slot_index);
             }
@@ -253,7 +276,8 @@ on_drag_data_received (
 
       UndoableAction * ua =
         create_plugins_action_new (
-          descr, self->channel->track_pos,
+          descr, self->type,
+          self->channel->track_pos,
           self->slot_index, 1);
 
       undo_manager_perform (
@@ -302,6 +326,7 @@ select_no_ctrl_pl_no_ch (
   mixer_selections_add_slot (
     MIXER_SELECTIONS,
     self->channel,
+    self->type,
     self->slot_index);
 }
 
@@ -316,6 +341,7 @@ select_no_ctrl_pl_ch (
    * selection otherwise do nothing */
   if (!mixer_selections_contains_slot (
         MIXER_SELECTIONS,
+        self->type,
         self->slot_index))
     {
       mixer_selections_clear (
@@ -325,6 +351,7 @@ select_no_ctrl_pl_ch (
       mixer_selections_add_slot (
         MIXER_SELECTIONS,
         self->channel,
+        self->type,
         self->slot_index);
     }
 }
@@ -367,6 +394,7 @@ select_ctrl_pl_no_ch (
   mixer_selections_add_slot (
     MIXER_SELECTIONS,
     self->channel,
+    self->type,
     self->slot_index);
 }
 
@@ -380,11 +408,13 @@ select_ctrl_pl_ch (
    * add it to selections */
   if (mixer_selections_contains_slot (
         MIXER_SELECTIONS,
+        self->type,
         self->slot_index))
     {
       mixer_selections_remove_slot (
         MIXER_SELECTIONS,
         self->slot_index,
+        self->type,
         F_PUBLISH_EVENTS);
       /*self->deselected = 1;*/
     }
@@ -393,6 +423,7 @@ select_ctrl_pl_ch (
       mixer_selections_add_slot (
         MIXER_SELECTIONS,
         self->channel,
+        self->type,
         self->slot_index);
     }
 }
@@ -419,17 +450,17 @@ select_plugin (
   ChannelSlotWidget * self,
   int                 ctrl)
 {
-  int pl = 0, ch = 0;
+  bool pl = false, ch = false;
 
   /* if plugin exists */
-  if (self->channel->plugins[
-        self->slot_index])
-    pl = 1;
+  Plugin * plugin = get_plugin (self);
+  if (plugin)
+    pl = true;
 
   /* if same channel as selections */
   if (self->channel->track_pos ==
         MIXER_SELECTIONS->track_pos)
-    ch = 1;
+    ch = true;
 
   if (!ctrl && !pl && !ch)
     select_no_ctrl_no_pl_no_ch (self);
@@ -465,8 +496,7 @@ drag_end (GtkGestureDrag *gesture,
     ui_get_state_mask (
       GTK_GESTURE (gesture));
 
-  Plugin * pl =
-    self->channel->plugins[self->slot_index];
+  Plugin * pl = get_plugin (self);
   if (self->n_press == 2)
     {
       g_message ("opening plugin ");
@@ -545,8 +575,7 @@ show_context_menu (
 
   menu = gtk_menu_new();
 
-  Plugin * pl =
-    self->channel->plugins[self->slot_index];
+  Plugin * pl = get_plugin (self);
 
 #define CREATE_SEPARATOR \
   menuitem = \
@@ -635,8 +664,7 @@ on_drag_data_get (
   guint             time,
   ChannelSlotWidget * self)
 {
-  Plugin* pl =
-    self->channel->plugins[self->slot_index];
+  Plugin* pl = get_plugin (self);
 
   if (!pl)
     return;
@@ -754,12 +782,14 @@ ChannelSlotWidget *
 channel_slot_widget_new (
   int       slot_index,
   Channel * ch,
+  PluginSlotType type,
   bool      open_plugin_inspector_on_click)
 {
   ChannelSlotWidget * self =
     g_object_new (
       CHANNEL_SLOT_WIDGET_TYPE, NULL);
   self->slot_index = slot_index;
+  self->type = type;
   self->channel = ch;
   self->open_plugin_inspector_on_click =
     open_plugin_inspector_on_click;
