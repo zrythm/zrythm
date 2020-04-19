@@ -126,6 +126,7 @@ widget_srcs = files([
   'snap_grid.c',
   'snap_grid_popover.c',
   'splash.c',
+  'text_expander.c',
   'timeline_arranger.c',
   'timeline_bot_box.c',
   'timeline_minimap_bg.c',

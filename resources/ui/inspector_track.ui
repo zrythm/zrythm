@@ -81,5 +81,12 @@
         <property name="can_focus">False</property>
       </object>
     </child>
+    <child>
+      <object class="TextExpanderWidget"
+        id="comment">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
   </template>
 </interface>

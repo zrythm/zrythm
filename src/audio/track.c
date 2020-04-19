@@ -152,6 +152,7 @@ track_init (
   self->processor.track_pos = self->pos;
   self->processor.track = self;
   self->magic = TRACK_MAGIC;
+  self->comment = g_strdup ("");
   track_add_lane (self, 0);
 
   /* set mute control */
@@ -1163,60 +1164,6 @@ track_add_modulator (
 }
 
 /**
- * Wrapper for each track type.
- */
-void
-track_free (Track * track)
-{
-  if (track->name)
-    g_free (track->name);
-
-  /* remove regions */
-  /* FIXME move inside *_track_free */
-  int i;
-  for (i = 0; i < track->num_lanes; i++)
-    track_lane_free (track->lanes[i]);
-
-  /* remove automation points, curves, tracks,
-   * lanes*/
-  /* FIXME move inside *_track_free */
-  automation_tracklist_free_members (
-    &track->automation_tracklist);
-
-#define _FREE_TRACK(type_caps,sc) \
-  case TRACK_TYPE_##type_caps: \
-    sc##_track_free (track); \
-    break
-
-  switch (track->type)
-    {
-      _FREE_TRACK (INSTRUMENT, instrument);
-      _FREE_TRACK (MASTER, master);
-      _FREE_TRACK (AUDIO, audio);
-      _FREE_TRACK (CHORD, chord);
-      _FREE_TRACK (AUDIO_BUS, audio_bus);
-      _FREE_TRACK (MIDI_BUS, audio_bus);
-      _FREE_TRACK (AUDIO_GROUP, audio_group);
-      _FREE_TRACK (MIDI_GROUP, midi_group);
-    default:
-      /* TODO */
-      break;
-    }
-
-#undef _FREE_TRACK
-
-  if (track->channel)
-    channel_free (track->channel);
-
-  if (track->widget &&
-      GTK_IS_WIDGET (track->widget))
-    gtk_widget_destroy (
-      GTK_WIDGET (track->widget));
-
-  object_zero_and_free (track);
-}
-
-/**
  * Returns the automation tracklist if the track type has one,
  * or NULL if it doesn't (like chord tracks).
  */
@@ -1655,4 +1602,94 @@ track_activate_all_plugins (
           plugin_activate (pl, activate);
         }
     }
+}
+
+/**
+ * Comment setter.
+ */
+void
+track_set_comment (
+  void *  track,
+  char *  comment)
+{
+  Track * self = (Track *) track;
+  g_return_if_fail (IS_TRACK (self));
+
+  g_free (self->comment);
+  self->comment = g_strdup (comment);
+}
+
+/**
+ * Comment getter.
+ */
+const char *
+track_get_comment (
+  void *  track)
+{
+  Track * self = (Track *) track;
+  g_return_val_if_fail (IS_TRACK (self), NULL);
+
+  return self->comment;
+}
+
+/**
+ * Wrapper for each track type.
+ */
+void
+track_free (Track * track)
+{
+  if (track->name)
+    {
+      g_free (track->name);
+      track->name = NULL;
+    }
+  if (track->comment)
+    {
+      g_free (track->comment);
+      track->comment = NULL;
+    }
+
+  /* remove regions */
+  /* FIXME move inside *_track_free */
+  int i;
+  for (i = 0; i < track->num_lanes; i++)
+    track_lane_free (track->lanes[i]);
+
+  /* remove automation points, curves, tracks,
+   * lanes*/
+  /* FIXME move inside *_track_free */
+  automation_tracklist_free_members (
+    &track->automation_tracklist);
+
+#define _FREE_TRACK(type_caps,sc) \
+  case TRACK_TYPE_##type_caps: \
+    sc##_track_free (track); \
+    break
+
+  switch (track->type)
+    {
+      _FREE_TRACK (INSTRUMENT, instrument);
+      _FREE_TRACK (MASTER, master);
+      _FREE_TRACK (AUDIO, audio);
+      _FREE_TRACK (CHORD, chord);
+      _FREE_TRACK (AUDIO_BUS, audio_bus);
+      _FREE_TRACK (MIDI_BUS, audio_bus);
+      _FREE_TRACK (AUDIO_GROUP, audio_group);
+      _FREE_TRACK (MIDI_GROUP, midi_group);
+    default:
+      /* TODO */
+      break;
+    }
+
+#undef _FREE_TRACK
+
+  if (track->channel)
+    channel_free (track->channel);
+
+  if (track->widget &&
+      GTK_IS_WIDGET (track->widget))
+    gtk_widget_destroy (
+      GTK_WIDGET (track->widget));
+
+  object_zero_and_free (track);
 }

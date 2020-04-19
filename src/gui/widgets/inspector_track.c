@@ -29,6 +29,7 @@
 #include "gui/widgets/ports_expander.h"
 #include "gui/widgets/track_input_expander.h"
 #include "gui/widgets/track_properties_expander.h"
+#include "gui/widgets/text_expander.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -99,6 +100,15 @@ inspector_track_widget_show_tracks (
         GTK_WIDGET (self->midi_fx), false);
       gtk_widget_set_visible (
         GTK_WIDGET (self->fader), false);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->comment), true);
+
+      text_expander_widget_setup (
+        self->comment, track_get_comment,
+        track_set_comment, track);
+      expander_box_widget_set_label (
+        Z_EXPANDER_BOX_WIDGET (self->comment),
+        _("Comment"));
 
       if (track_type_has_channel (track->type))
         {
@@ -151,6 +161,8 @@ inspector_track_widget_show_tracks (
       ports_expander_widget_setup_track (
         self->sends,
         track, PE_TRACK_PORT_TYPE_CONTROLS);
+      text_expander_widget_setup (
+        self->comment, NULL, NULL, NULL);
 
       setup_color (self, NULL);
     }
@@ -206,6 +218,7 @@ inspector_track_widget_class_init (
   BIND_CHILD (inserts);
   BIND_CHILD (midi_fx);
   BIND_CHILD (fader);
+  BIND_CHILD (comment);
   BIND_CHILD (color);
 
 #undef BIND_CHILD
@@ -226,6 +239,8 @@ inspector_track_widget_init (
   g_type_ensure (
     FADER_CONTROLS_EXPANDER_WIDGET_TYPE);
   g_type_ensure (
+    TEXT_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (
     COLOR_AREA_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
@@ -237,4 +252,6 @@ inspector_track_widget_init (
     Z_EXPANDER_BOX_WIDGET (self->inserts), false);
   expander_box_widget_set_vexpand (
     Z_EXPANDER_BOX_WIDGET (self->midi_fx), false);
+  expander_box_widget_set_vexpand (
+    Z_EXPANDER_BOX_WIDGET (self->comment), false);
 }

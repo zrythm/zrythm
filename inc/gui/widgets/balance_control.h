@@ -23,7 +23,7 @@
 #ifndef __GUI_WIDGETS_BALANCE_CONTROL_H__
 #define __GUI_WIDGETS_BALANCE_CONTROL_H__
 
-#include "utils/general.h"
+#include "utils/types.h"
 
 #include <gtk/gtk.h>
 

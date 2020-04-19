@@ -58,6 +58,32 @@ typedef float bpm_t;
 typedef double curviness_t;
 
 /**
+ * Getter prototype for float values.
+ */
+typedef float (*GenericFloatGetter) (
+  void * object);
+
+/**
+ * Setter prototype for float values.
+ */
+typedef void (*GenericFloatSetter) (
+  void * object,
+  float  val);
+
+/**
+ * Getter prototype for strings.
+ */
+typedef const char * (*GenericStringGetter) (
+  void * object);
+
+/**
+ * Setter prototype for float values.
+ */
+typedef void (*GenericStringSetter) (
+  void * object,
+  char * val);
+
+/**
  * @}
  */
 

@@ -453,9 +453,7 @@ track_fields_schema[] =
     "midi_ch", CYAML_FLAG_DEFAULT,
     Track, midi_ch),
   CYAML_FIELD_STRING_PTR (
-    "comment",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Track, comment,
+    "comment", CYAML_FLAG_POINTER, Track, comment,
      0, CYAML_UNLIMITED),
 
   CYAML_FIELD_END
@@ -896,6 +894,21 @@ void
 track_activate_all_plugins (
   Track * track,
   bool    activate);
+
+/**
+ * Comment setter.
+ */
+void
+track_set_comment (
+  void *  track,
+  char *  comment);
+
+/**
+ * Comment getter.
+ */
+const char *
+track_get_comment (
+  void *  track);
 
 /**
  * Wrapper for each track type.

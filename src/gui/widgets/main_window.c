@@ -44,6 +44,8 @@
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/file_browser.h"
 #include "gui/widgets/header.h"
+#include "gui/widgets/left_dock_edge.h"
+#include "gui/widgets/inspector_track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
@@ -52,6 +54,7 @@
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/snap_grid.h"
+#include "gui/widgets/text_expander.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/timeline_bot_box.h"
@@ -296,6 +299,11 @@ on_key_action (
 
   if (!z_gtk_keyval_is_arrow (event->keyval))
     return FALSE;
+
+  if (MW_TRACK_INSPECTOR->comment->has_focus)
+    {
+      return FALSE;
+    }
 
   if (Z_IS_ARRANGER_WIDGET (
         MAIN_WINDOW->last_focused))
