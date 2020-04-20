@@ -761,14 +761,28 @@ recreate_pango_layouts (
   if (PANGO_IS_LAYOUT (self->pl_name_layout))
     g_object_unref (self->pl_name_layout);
 
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self));
+  PangoFontDescription *font_desc;
+
+  gtk_style_context_get (
+    context, GTK_STATE_FLAG_NORMAL,
+    "font", &font_desc, NULL);
   self->empty_slot_layout =
-    z_cairo_create_pango_layout (
-      (GtkWidget *) self, "Arial Italic 7.5",
+    z_cairo_create_pango_layout_from_description (
+      (GtkWidget *) self, font_desc,
       PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+  pango_font_description_free (font_desc);
+
+  gtk_style_context_get (
+    context, GTK_STATE_FLAG_CHECKED,
+    "font", &font_desc, NULL);
   self->pl_name_layout =
-    z_cairo_create_pango_layout (
-      (GtkWidget *) self, "Arial Bold 7.5",
+    z_cairo_create_pango_layout_from_description (
+      (GtkWidget *) self, font_desc,
       PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+  pango_font_description_free (font_desc);
 }
 
 static void
@@ -943,7 +957,8 @@ static void
 channel_slot_widget_class_init (
   ChannelSlotWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "channel-slot");
 

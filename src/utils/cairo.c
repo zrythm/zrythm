@@ -91,9 +91,9 @@ z_cairo_create_default_pango_layout (
  * based on the given settings.
  */
 PangoLayout *
-z_cairo_create_pango_layout (
+z_cairo_create_pango_layout_from_description (
   GtkWidget *  widget,
-  const char * font,
+  PangoFontDescription * descr,
   PangoEllipsizeMode ellipsize_mode,
   int          ellipsize_padding)
 {
@@ -113,11 +113,30 @@ z_cairo_create_pango_layout (
       pango_layout_set_ellipsize (
         layout, ellipsize_mode);
     }
+  pango_layout_set_font_description (
+    layout, descr);
+
+  return layout;
+}
+
+/**
+ * Creates a PangoLayout to be cached in widgets
+ * based on the given settings.
+ */
+PangoLayout *
+z_cairo_create_pango_layout_from_string (
+  GtkWidget *  widget,
+  const char * font,
+  PangoEllipsizeMode ellipsize_mode,
+  int          ellipsize_padding)
+{
   PangoFontDescription * desc =
     pango_font_description_from_string (
       font);
-  pango_layout_set_font_description (
-    layout, desc);
+  PangoLayout * layout =
+    z_cairo_create_pango_layout_from_description (
+      widget, desc, ellipsize_mode,
+      ellipsize_padding);
   pango_font_description_free (desc);
 
   return layout;

@@ -16,6 +16,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+/*
+ * Define theme colors.
+ *
+ * These can be fetched with
+ * gtk_style_context_lookup_color().
+ */
 @define-color bg_color #2D2D2D;
 @define-color bg_dark_variant1 #262626;
 @define-color bg_dark_variant2 #1F1F1F;
@@ -124,50 +131,9 @@ filechooser list
   /*box-shadow: inset -2px 0 #2eb398, 1px 0 #2eb398;*/
 /*}*/
 
-region,
-chord,
-marker,
-scale-object,
-midi-note,
-velocity
-{
-  /*box-shadow: 2px 2px 6px alpha (black, 0.1);*/
-}
-
-region
-{
-  border-width: 0px;
-}
-
-region:selected,
-chord:selected,
-marker:selected,
-scale-object:selected,
-midi-note:selected,
-velocity:selected,
-automation-point:selected
-{
-  /*box-shadow: 2px 2px 10px @selection_color;*/
-  /*border-color: gray;*/
-  /*border-width: 1px;*/
-  /*border-style: solid;*/
-}
-
 .header button.toggle:not(:checked)
 {
   background-color: @bg_darker_variant1;
-}
-
-region:hover,
-chord:hover,
-marker:hover,
-scale-object:hover,
-midi-note:hover,
-velocity:hover,
-automation-point:hover,
-automation-curve:hover
-{
-  /*box-shadow: 2px 2px 10px @hover_color;*/
 }
 
 treeview.view:selected
@@ -368,6 +334,20 @@ velocity:selected,
 automation-point:selected
 {
   background-color: @selection_color;
+}
+
+channel-slot
+{
+  font-family: Arial;
+  font-style: italic;
+  font-size: x-small;
+}
+
+/* Checked means the plugin is visible */
+channel-slot:checked
+{
+  font-style: normal;
+  font-weight: bold;
 }
 
 channel-slot:selected

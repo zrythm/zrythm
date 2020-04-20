@@ -284,7 +284,7 @@ recreate_pango_layouts (
     g_object_unref (self->layout);
 
   self->layout =
-    z_cairo_create_pango_layout (
+    z_cairo_create_pango_layout_from_string (
       (GtkWidget *) self, Z_CAIRO_FONT,
       PANGO_ELLIPSIZE_NONE, -1); }
 

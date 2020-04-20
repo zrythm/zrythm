@@ -187,9 +187,20 @@ z_cairo_get_surface_from_icon_name (
  * based on the given settings.
  */
 PangoLayout *
-z_cairo_create_pango_layout (
+z_cairo_create_pango_layout_from_string (
   GtkWidget *  widget,
   const char * font,
+  PangoEllipsizeMode ellipsize_mode,
+  int          ellipsize_padding);
+
+/**
+ * Creates a PangoLayout to be cached in widgets
+ * based on the given settings.
+ */
+PangoLayout *
+z_cairo_create_pango_layout_from_description (
+  GtkWidget *  widget,
+  PangoFontDescription * descr,
   PangoEllipsizeMode ellipsize_mode,
   int          ellipsize_padding);
 

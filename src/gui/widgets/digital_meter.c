@@ -868,15 +868,15 @@ recreate_pango_layouts (
     g_object_unref (self->normal_layout);
 
   self->caption_layout =
-    z_cairo_create_pango_layout (
+    z_cairo_create_pango_layout_from_string (
       (GtkWidget *) self, CAPTION_FONT,
       PANGO_ELLIPSIZE_NONE, -1);
   self->seg7_layout =
-    z_cairo_create_pango_layout (
+    z_cairo_create_pango_layout_from_string (
       (GtkWidget *) self, SEG7_FONT,
       PANGO_ELLIPSIZE_NONE, -1);
   self->normal_layout =
-    z_cairo_create_pango_layout (
+    z_cairo_create_pango_layout_from_string (
       (GtkWidget *) self, NORMAL_FONT,
       PANGO_ELLIPSIZE_NONE, -1);
 }

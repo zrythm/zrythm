@@ -796,13 +796,16 @@ uint8_t
 midi_region_get_midi_ch (
   const ZRegion * self)
 {
+  g_return_val_if_fail (self, 1);
   uint8_t ret;
   TrackLane * lane = region_get_lane (self);
+  g_return_val_if_fail (lane, 1);
   if (lane->midi_ch > 0)
     ret = lane->midi_ch;
   else
     {
       Track * track = track_lane_get_track (lane);
+      g_return_val_if_fail (track, 1);
       ret = track->midi_ch;
     }
 
