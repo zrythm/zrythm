@@ -234,8 +234,10 @@ plugin_remove_ats_from_automation_tracklist (
           at->port_id.flags &
             PORT_FLAG_PLUGIN_CONTROL)
         {
-          if (at->port_id.plugin_slot ==
-                pl->id.slot)
+          if (at->port_id.plugin_id.slot ==
+                pl->id.slot &&
+              at->port_id.plugin_id.slot_type ==
+                pl->id.slot_type)
             {
               automation_tracklist_remove_at (
                 atl, at, free_ats);
@@ -340,7 +342,19 @@ plugin_find (
   plugin_identifier_copy (
     &plugin.id, id);
   Channel * ch = plugin_get_channel (&plugin);
-  Plugin * ret = ch->plugins[id->slot];
+  Plugin * ret = NULL;
+  switch (id->slot_type)
+    {
+    case PLUGIN_SLOT_MIDI_FX:
+      ret = ch->midi_fx[id->slot];
+      break;
+    case PLUGIN_SLOT_INSTRUMENT:
+      ret = ch->instrument;
+      break;
+    case PLUGIN_SLOT_INSERT:
+      ret = ch->inserts[id->slot];
+      break;
+    }
   g_return_val_if_fail (ret, NULL);
 
   return ret;
@@ -449,10 +463,11 @@ plugin_add_out_port (
  */
 void
 plugin_move_automation (
-  Plugin *  pl,
-  Channel * prev_ch,
-  Channel * ch,
-  int       new_slot)
+  Plugin *       pl,
+  Channel *      prev_ch,
+  Channel *      ch,
+  PluginSlotType new_slot_type,
+  int            new_slot)
 {
   Track * prev_track =
     channel_get_track (prev_ch);
@@ -495,7 +510,9 @@ plugin_move_automation (
 
       /* update the automation track port
        * identifier */
-      at->port_id.plugin_slot = new_slot;
+      at->port_id.plugin_id.slot = new_slot;
+      at->port_id.plugin_id.slot_type =
+        new_slot_type;
     }
 }
 
@@ -714,6 +731,23 @@ plugin_instantiate (
     pl->enabled, 1.f, 0);
 
   return 0;
+}
+
+/**
+ * Prepare plugin for processing.
+ */
+void
+plugin_prepare_process (
+  Plugin * self)
+{
+  for (int i = 0; i < self->num_in_ports; i++)
+    {
+      port_clear_buffer (self->in_ports[i]);
+    }
+  for (int i = 0; i < self->num_out_ports; i++)
+    {
+      port_clear_buffer (self->out_ports[i]);
+    }
 }
 
 /**

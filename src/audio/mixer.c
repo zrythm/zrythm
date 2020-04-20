@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -82,34 +82,6 @@ mixer_init_loaded ()
 }
 
 /**
- * Loads plugins from state files. Used when loading projects.
- */
-void
-mixer_load_plugins (
-  Mixer * mixer)
-{
-  Track * track;
-  Channel * ch;
-  Plugin * pl;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
-    {
-      track = TRACKLIST->tracks[i];
-      ch = track->channel;
-      if (!ch)
-        continue;
-
-      for (int j = 0; j < STRIP_SIZE; j++)
-        {
-          pl = ch->plugins[j];
-          if (!pl)
-            continue;
-
-          plugin_instantiate (pl);
-        }
-    }
-}
-
-/**
  * Moves the given plugin to the given slot in
  * the given channel.
  *
@@ -128,7 +100,20 @@ mixer_move_plugin (
   g_return_if_fail (ch);
 
   /* confirm if another plugin exists */
-  if (ch->plugins[slot])
+  Plugin * existing_pl = NULL;
+  switch (slot_type)
+    {
+    case PLUGIN_SLOT_MIDI_FX:
+      existing_pl = ch->midi_fx[slot];
+      break;
+    case PLUGIN_SLOT_INSTRUMENT:
+      existing_pl = ch->instrument;
+      break;
+    case PLUGIN_SLOT_INSERT:
+      existing_pl = ch->inserts[slot];
+      break;
+    }
+  if (existing_pl)
     {
       GtkDialog * dialog =
         dialogs_get_overwrite_plugin_dialog (
@@ -149,7 +134,7 @@ mixer_move_plugin (
 
   /* move plugin's automation from src to dest */
   plugin_move_automation (
-    pl, prev_ch, ch, slot);
+    pl, prev_ch, ch, slot_type, slot);
 
   /* remove plugin from its channel */
   channel_remove_plugin (

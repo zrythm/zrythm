@@ -115,7 +115,7 @@ check_after_step1 ()
   Track * track = TRACKLIST->tracks[TRACK_POS];
   Channel * ch = track->channel;
   g_assert_nonnull (ch);
-  Plugin * pl = ch->plugins[0];
+  Plugin * pl = ch->inserts[0];
   g_assert_nonnull (pl);
   g_assert_cmpint (pl->id.track_pos, ==, track->pos);
   g_assert_cmpint (pl->id.slot, ==, 0);
@@ -226,10 +226,10 @@ check_after_step5 ()
     new_track->type == TRACK_TYPE_INSTRUMENT ||
     new_track->type == TRACK_TYPE_AUDIO_BUS);
   g_assert_nonnull (new_ch);
-  Plugin * new_pl = new_ch->plugins[1];
+  Plugin * new_pl = new_ch->inserts[1];
   g_assert_nonnull (new_pl);
-  g_assert_null (new_ch->plugins[0]);
-  Plugin * pl = ch->plugins[0];
+  g_assert_null (new_ch->inserts[0]);
+  Plugin * pl = ch->inserts[0];
   g_assert_cmpint (pl->id.track_pos, ==, 3);
   g_assert_cmpint (pl->id.slot, ==, 0);
   g_assert_cmpint (new_pl->id.track_pos, ==, 4);
@@ -271,8 +271,8 @@ check_after_step6 ()
     MIXER_SELECTIONS->track_pos, ==, 4);
   g_assert_cmpint (
     MIXER_SELECTIONS->slots[0], ==, 2);
-  g_assert_nonnull (new_ch->plugins[2]);
-  Plugin * slot2_plugin = new_ch->plugins[2];
+  g_assert_nonnull (new_ch->inserts[2]);
+  Plugin * slot2_plugin = new_ch->inserts[2];
   g_assert_cmpint (
     slot2_plugin->id.track_pos, ==, 4);
   g_assert_cmpint (slot2_plugin->id.slot, ==, 2);
@@ -310,22 +310,22 @@ check_after_step7 ()
   g_assert_true (MIXER_SELECTIONS->has_any);
   g_assert_cmpint (
     MIXER_SELECTIONS->track_pos, ==, track->pos);
-  g_assert_nonnull (ch->plugins[5]);
-  g_assert_nonnull (ch->plugins[6]);
-  g_assert_nonnull (new_ch->plugins[1]);
-  g_assert_nonnull (new_ch->plugins[2]);
-  g_assert_null (new_ch->plugins[5]);
-  g_assert_null (new_ch->plugins[6]);
+  g_assert_nonnull (ch->inserts[5]);
+  g_assert_nonnull (ch->inserts[6]);
+  g_assert_nonnull (new_ch->inserts[1]);
+  g_assert_nonnull (new_ch->inserts[2]);
+  g_assert_null (new_ch->inserts[5]);
+  g_assert_null (new_ch->inserts[6]);
 
   /* check their identifiers */
   g_assert_cmpint (
-    ch->plugins[5]->id.track_pos, ==, track->pos);
+    ch->inserts[5]->id.track_pos, ==, track->pos);
   g_assert_cmpint (
-    ch->plugins[5]->id.slot, ==, 5);
+    ch->inserts[5]->id.slot, ==, 5);
   g_assert_cmpint (
-    ch->plugins[6]->id.track_pos, ==, track->pos);
+    ch->inserts[6]->id.track_pos, ==, track->pos);
   g_assert_cmpint (
-    ch->plugins[6]->id.slot, ==, 6);
+    ch->inserts[6]->id.slot, ==, 6);
 
   /* check that the automations were copied too */
   AutomationTracklist * atl =
@@ -337,12 +337,12 @@ check_after_step7 ()
     case PLUGIN_TYPE_AMP:
       at =
         automation_tracklist_get_plugin_at (
-          atl, 5, "Gain");
+          atl, PLUGIN_SLOT_INSERT, 5, "Gain");
       break;
     case PLUGIN_TYPE_FIFTHS:
       at =
         automation_tracklist_get_plugin_at (
-          atl, 5, "Test param");
+          atl, PLUGIN_SLOT_INSERT, 5, "Test param");
       break;
     }
   g_assert_nonnull (at);
@@ -370,10 +370,10 @@ check_after_step8 ()
   g_assert_true (MIXER_SELECTIONS->has_any);
   g_assert_cmpint (
     MIXER_SELECTIONS->track_pos, ==, new_track->pos);
-  g_assert_null (ch->plugins[5]);
-  g_assert_null (ch->plugins[6]);
-  g_assert_nonnull (new_ch->plugins[7]);
-  g_assert_nonnull (new_ch->plugins[8]);
+  g_assert_null (ch->inserts[5]);
+  g_assert_null (ch->inserts[6]);
+  g_assert_nonnull (new_ch->inserts[7]);
+  g_assert_nonnull (new_ch->inserts[8]);
 
   /* verify that the automation was moved too */
   AutomationTracklist * atl =
@@ -385,12 +385,12 @@ check_after_step8 ()
     case PLUGIN_TYPE_AMP:
       at =
         automation_tracklist_get_plugin_at (
-          atl, 7, "Gain");
+          atl, PLUGIN_SLOT_INSERT, 7, "Gain");
       break;
     case PLUGIN_TYPE_FIFTHS:
       at =
         automation_tracklist_get_plugin_at (
-          atl, 7, "Test param");
+          atl, PLUGIN_SLOT_INSERT, 7, "Test param");
       break;
     }
   g_assert_nonnull (at);
@@ -430,12 +430,12 @@ check_after_step9 ()
     case PLUGIN_TYPE_AMP:
       at =
         automation_tracklist_get_plugin_at (
-          atl, 7, "Gain");
+          atl, PLUGIN_SLOT_INSERT, 7, "Gain");
       break;
     case PLUGIN_TYPE_FIFTHS:
       at =
         automation_tracklist_get_plugin_at (
-          atl, 7, "Test param");
+          atl, PLUGIN_SLOT_INSERT, 7, "Test param");
       break;
     }
   (void) at;
@@ -516,7 +516,7 @@ test_move_plugins ()
 
   /* select the plugin */
   Channel * ch = track->channel;
-  Plugin * pl = ch->plugins[0];
+  Plugin * pl = ch->inserts[0];
   mixer_selections_add_slot (
     MIXER_SELECTIONS, ch, PLUGIN_SLOT_INSERT,
     pl->id.slot);

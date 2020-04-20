@@ -53,7 +53,9 @@ delete_plugins_action_new (
           AutomationTrack * at = atl->ats[i];
           if (at->port_id.owner_type !=
                 PORT_OWNER_TYPE_PLUGIN ||
-              at->port_id.plugin_slot != slot)
+              at->port_id.plugin_id.slot != slot ||
+              at->port_id.plugin_id.slot_type !=
+                self->ms->type)
             continue;
 
           self->ats[self->num_ats++] =
@@ -152,15 +154,17 @@ delete_plugins_action_undo (
               AutomationTrack * cloned_at =
                 self->ats[j];
 
-              if (cloned_at->port_id.plugin_slot !=
-                    self->ms->slots[k])
+              if (cloned_at->port_id.plugin_id.slot !=
+                    self->ms->slots[k] ||
+                  cloned_at->port_id.plugin_id.slot_type !=
+                    self->ms->type)
                 continue;
 
               /* find corresponding automation
                * track in track and copy regions */
               AutomationTrack * actual_at =
                 automation_tracklist_get_plugin_at (
-                  atl, slot,
+                  atl, self->ms->type, slot,
                   cloned_at->port_id.label);
 
               copy_regions (actual_at, cloned_at);

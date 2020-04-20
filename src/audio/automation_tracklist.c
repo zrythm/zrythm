@@ -97,6 +97,7 @@ automation_tracklist_delete_at (
 AutomationTrack *
 automation_tracklist_get_plugin_at (
   AutomationTracklist * self,
+  PluginSlotType        slot_type,
   const int             plugin_slot,
   const char *          label)
 {
@@ -107,7 +108,10 @@ automation_tracklist_get_plugin_at (
 
       if (at->port_id.owner_type ==
             PORT_OWNER_TYPE_PLUGIN &&
-          plugin_slot == at->port_id.plugin_slot &&
+          plugin_slot ==
+            at->port_id.plugin_id.slot &&
+          slot_type ==
+            at->port_id.plugin_id.slot_type &&
           string_is_equal (
             label, at->port_id.label, 0))
         {

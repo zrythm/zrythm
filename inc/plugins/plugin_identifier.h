@@ -26,6 +26,8 @@
 #ifndef __PLUGINS_PLUGIN_IDENTIFIER_H__
 #define __PLUGINS_PLUGIN_IDENTIFIER_H__
 
+#include "utils/yaml.h"
+
 /**
  * @addtogroup plugins
  *
@@ -36,13 +38,15 @@ typedef enum PluginSlotType
 {
   PLUGIN_SLOT_INSERT,
   PLUGIN_SLOT_MIDI_FX,
+  PLUGIN_SLOT_INSTRUMENT,
 } PluginSlotType;
 
 static const cyaml_strval_t
 plugin_slot_type_strings[] =
 {
-  { "Insert",     PLUGIN_SLOT_INSERT    },
-  { "MIDI FX",    PLUGIN_SLOT_MIDI_FX   },
+  { "Insert",     PLUGIN_SLOT_INSERT     },
+  { "MIDI FX",    PLUGIN_SLOT_MIDI_FX    },
+  { "Instrument", PLUGIN_SLOT_INSTRUMENT },
 };
 
 static inline const char *

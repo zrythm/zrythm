@@ -160,8 +160,18 @@ create_model_for_ports (
         }
       else if (type > AS_TYPE_CHANNEL)
         {
-          Plugin * plugin =
-            track->channel->plugins[type - 1];
+          Plugin * plugin = NULL;
+          if (type > AS_TYPE_INSTRUMENT)
+            plugin =
+              track->channel->inserts[
+                type - AS_TYPE_INSERT_0];
+          else if (type == AS_TYPE_INSTRUMENT)
+            plugin = track->channel->instrument;
+          else
+            plugin =
+              track->channel->midi_fx[
+                type = AS_TYPE_MIDI_FX_0];
+
           if (!plugin)
             continue;
 
@@ -224,20 +234,51 @@ create_model_for_types (
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      Plugin * plugin = track->channel->plugins[i];
-
+      Plugin * plugin = track->channel->midi_fx[i];
       if (plugin)
         {
           char label[600];
           sprintf (
-            label, "[%d] %s",
+            label, _("[MIDI FX %d] %s"),
             i, plugin->descr->name);
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
             list_store, &iter,
             0, "z-plugins",
             1, label,
-            2, AS_TYPE_PLUGIN_0 + i,
+            2, AS_TYPE_MIDI_FX_0 + i,
+            -1);
+        }
+
+      plugin = track->channel->instrument;
+      if (plugin)
+        {
+          char label[600];
+          sprintf (
+            label, _("[Instrument %d] %s"),
+            i, plugin->descr->name);
+          gtk_list_store_append (list_store, &iter);
+          gtk_list_store_set (
+            list_store, &iter,
+            0, "z-plugins",
+            1, label,
+            2, AS_TYPE_INSERT_0 + i,
+            -1);
+        }
+
+      plugin = track->channel->inserts[i];
+      if (plugin)
+        {
+          char label[600];
+          sprintf (
+            label, _("[Insert %d] %s"),
+            i, plugin->descr->name);
+          gtk_list_store_append (list_store, &iter);
+          gtk_list_store_set (
+            list_store, &iter,
+            0, "z-plugins",
+            1, label,
+            2, AS_TYPE_INSERT_0 + i,
             -1);
         }
     }
@@ -437,8 +478,22 @@ automatable_selector_popover_widget_new (
     }
   else if (id->flags & PORT_FLAG_PLUGIN_CONTROL)
     {
-      self->selected_type =
-        AS_TYPE_PLUGIN_0 + id->plugin_slot;
+      PluginIdentifier * pl_id = &id->plugin_id;
+      switch (pl_id->slot_type)
+        {
+        case PLUGIN_SLOT_MIDI_FX:
+          self->selected_type =
+            AS_TYPE_MIDI_FX_0 + pl_id->slot;
+          break;
+        case PLUGIN_SLOT_INSTRUMENT:
+          self->selected_type =
+            AS_TYPE_INSTRUMENT;
+          break;
+        case PLUGIN_SLOT_INSERT:
+          self->selected_type =
+            AS_TYPE_INSERT_0 + pl_id->slot;
+          break;
+        }
     }
 
   /* set selected automatable */

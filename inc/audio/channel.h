@@ -73,16 +73,16 @@ typedef struct Channel
 {
   /**
    * The MIDI effect strip on instrument/MIDI tracks.
+   *
+   * This is processed before the instrument/inserts.
    */
   Plugin *         midi_fx[STRIP_SIZE];
 
-  /**
-   * The channel strip.
-   *
-   * @not the first plugin is special in instrument
-   * channels.
-   */
-  Plugin *         plugins[STRIP_SIZE];
+  /** The channel insert strip. */
+  Plugin *         inserts[STRIP_SIZE];
+
+  /** The instrument plugin, if instrument track. */
+  Plugin *         instrument;
 
   /**
    * External MIDI inputs that are currently
@@ -225,8 +225,10 @@ channel_fields_schema[] =
     Channel, midi_fx,
     plugin_schema, STRIP_SIZE),
   YAML_FIELD_SEQUENCE_FIXED (
-    Channel, plugins,
+    Channel, inserts,
     plugin_schema, STRIP_SIZE),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Channel, instrument, plugin_fields_schema),
   CYAML_FIELD_MAPPING (
     "prefader", CYAML_FLAG_DEFAULT,
     Channel, prefader,
@@ -234,31 +236,23 @@ channel_fields_schema[] =
   CYAML_FIELD_MAPPING (
     "fader", CYAML_FLAG_DEFAULT,
     Channel, fader, fader_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "midi_out",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Channel, midi_out,
     port_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "stereo_out",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Channel, stereo_out,
     stereo_ports_fields_schema),
-  CYAML_FIELD_INT (
-    "has_output", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Channel, has_output),
-  CYAML_FIELD_INT (
-    "output_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Channel, output_pos),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Channel, track_pos),
   CYAML_FIELD_SEQUENCE_COUNT (
     "ext_midi_ins", CYAML_FLAG_DEFAULT,
     Channel, ext_midi_ins, num_ext_midi_ins,
     &ext_port_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "all_midi_ins", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Channel, all_midi_ins),
   CYAML_FIELD_SEQUENCE_FIXED (
     "midi_channels", CYAML_FLAG_DEFAULT,
@@ -268,21 +262,17 @@ channel_fields_schema[] =
     "ext_stereo_l_ins", CYAML_FLAG_DEFAULT,
     Channel, ext_stereo_l_ins, num_ext_stereo_l_ins,
     &ext_port_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "all_stereo_l_ins", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Channel, all_stereo_l_ins),
   CYAML_FIELD_SEQUENCE_COUNT (
     "ext_stereo_r_ins", CYAML_FLAG_DEFAULT,
     Channel, ext_stereo_r_ins, num_ext_stereo_r_ins,
     &ext_port_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "all_stereo_r_ins", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Channel, all_stereo_r_ins),
-  CYAML_FIELD_INT (
-    "all_midi_channels", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Channel, all_midi_channels),
-  CYAML_FIELD_INT (
-    "record_set_automatically", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Channel, record_set_automatically),
 
   CYAML_FIELD_END
@@ -478,33 +468,6 @@ channel_reconnect_ext_input_ports (
   Channel * ch);
 
 /**
- * Returns the index of the last active slot.
- */
-int
-channel_get_last_active_slot_index (
-  Channel * channel);
-
-/**
- * Returns the last Plugin in the strip.
- */
-Plugin *
-channel_get_last_plugin (
-  Channel * self);
-
-/**
- * Returns the index on the mixer.
- */
-int
-channel_get_index (Channel * channel);
-
-/**
- * Returns the plugin's strip index on the channel
- */
-int
-channel_get_plugin_index (Channel * channel,
-                          Plugin *  plugin);
-
-/**
  * Connects or disconnects the MIDI editor key press port to the channel's
  * first plugin
  */
@@ -513,12 +476,6 @@ channel_reattach_midi_editor_manual_press_port (
   Channel * channel,
   int       connect,
   const int recalc_graph);
-
-/**
- * Convenience method to get the first active plugin in the channel
- */
-Plugin *
-channel_get_first_plugin (Channel * channel);
 
 /**
  * Convenience function to get the automation track

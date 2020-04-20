@@ -435,15 +435,29 @@ on_plugin_added (Plugin * plugin)
 static void
 on_plugin_state_changed (Plugin * pl)
 {
-  Track * track =
-    plugin_get_track (pl);
+  Track * track = plugin_get_track (pl);
   if (track && track->channel &&
       track->channel->widget)
     {
-      plugin_strip_expander_widget_redraw_slot (
-        track->channel->widget->inserts,
-        channel_get_plugin_index (
-          track->channel, pl));
+      /* redraw slot */
+      switch (pl->id.slot_type)
+        {
+        case PLUGIN_SLOT_MIDI_FX:
+          plugin_strip_expander_widget_redraw_slot (
+            MW_TRACK_INSPECTOR->midi_fx,
+            pl->id.slot);
+          break;
+        case PLUGIN_SLOT_INSERT:
+          plugin_strip_expander_widget_redraw_slot (
+            MW_TRACK_INSPECTOR->inserts,
+            pl->id.slot);
+          plugin_strip_expander_widget_redraw_slot (
+            track->channel->widget->inserts,
+            pl->id.slot);
+          break;
+        default:
+          break;
+        }
     }
 }
 
@@ -907,10 +921,24 @@ on_plugin_window_visibility_changed (
         track->channel->widget))
     {
       /* redraw slot */
-      plugin_strip_expander_widget_redraw_slot (
-        track->channel->widget->inserts,
-          channel_get_plugin_index (
-            track->channel, pl));
+      switch (pl->id.slot_type)
+        {
+        case PLUGIN_SLOT_MIDI_FX:
+          plugin_strip_expander_widget_redraw_slot (
+            MW_TRACK_INSPECTOR->midi_fx,
+            pl->id.slot);
+          break;
+        case PLUGIN_SLOT_INSERT:
+          plugin_strip_expander_widget_redraw_slot (
+            MW_TRACK_INSPECTOR->inserts,
+            pl->id.slot);
+          plugin_strip_expander_widget_redraw_slot (
+            track->channel->widget->inserts,
+            pl->id.slot);
+          break;
+        default:
+          break;
+        }
     }
 }
 
@@ -1499,10 +1527,19 @@ events_process (void * data)
               if (!ch)
                 continue;
 
-              for (int k = 0; k < STRIP_SIZE; k++)
+              for (int k = 0;
+                   k < STRIP_SIZE * 2 + 1; k++)
                 {
-                  Plugin * pl =
-                    ch->plugins[k];
+                  Plugin * pl = NULL;
+                  if (k < STRIP_SIZE)
+                    pl = ch->midi_fx[k];
+                  else if (k == STRIP_SIZE)
+                    pl = ch->instrument;
+                  else
+                    pl =
+                      ch->inserts[
+                        k - (STRIP_SIZE + 1)];
+
                   if (!pl)
                     continue;
                   if (pl->visible)

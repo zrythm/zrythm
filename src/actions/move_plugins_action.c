@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -126,9 +126,22 @@ move_plugins_action_do (
   for (int i = 0; i < self->ms->num_slots; i++)
     {
       /* get the plugin */
-      pl =
-        from_ch->plugins[
-          self->ms->plugins[i]->id.slot];
+      switch (self->ms->type)
+        {
+        case PLUGIN_SLOT_MIDI_FX:
+          pl =
+            from_ch->midi_fx[
+              self->ms->plugins[i]->id.slot];
+          break;
+        case PLUGIN_SLOT_INSTRUMENT:
+          pl = from_ch->instrument;
+          break;
+        case PLUGIN_SLOT_INSERT:
+          pl =
+            from_ch->inserts[
+              self->ms->plugins[i]->id.slot];
+          break;
+        }
       g_warn_if_fail (
         pl &&
         pl->id.track_pos == from_ch->track_pos);
@@ -172,7 +185,20 @@ move_plugins_action_undo (
   for (int i = 0; i < self->ms->num_slots; i++)
     {
       /* get the actual plugin */
-      pl = current_ch->plugins[self->to_slot + i];
+      switch (self->slot_type)
+        {
+        case PLUGIN_SLOT_MIDI_FX:
+          pl =
+            current_ch->midi_fx[self->to_slot + i];
+          break;
+        case PLUGIN_SLOT_INSTRUMENT:
+          pl = current_ch->instrument;
+          break;
+        case PLUGIN_SLOT_INSERT:
+          pl =
+            current_ch->inserts[self->to_slot + i];
+          break;
+        }
       g_return_val_if_fail (pl, -1);
 
       /* move plugin to its original slot */

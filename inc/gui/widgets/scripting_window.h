@@ -20,7 +20,7 @@
 /**
  * \file
  *
- * Bounce to audio dialog.
+ * Scripting window.
  */
 
 #ifndef __GUI_WIDGETS_SCRIPTING_WINDOW_H__

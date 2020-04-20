@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -83,13 +83,6 @@ mixer_recalc_graph (
  */
 void
 mixer_process (
-  Mixer * mixer);
-
-/**
- * Loads plugins from state files. Used when loading projects.
- */
-void
-mixer_load_plugins (
   Mixer * mixer);
 
 /**

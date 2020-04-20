@@ -1613,9 +1613,16 @@ graph_setup (
             graph_add_node ( \
               self, ROUTE_NODE_TYPE_PLUGIN, pl)
 
-      for (j = 0; j < STRIP_SIZE; j++)
+      for (j = 0; j < STRIP_SIZE * 2 + 1; j++)
         {
-          pl = tr->channel->plugins[j];
+          if (j < STRIP_SIZE)
+            pl = tr->channel->midi_fx[j];
+          else if (j == STRIP_SIZE)
+            pl = tr->channel->instrument;
+          else
+            pl =
+              tr->channel->inserts[
+                j - (STRIP_SIZE + 1)];
 
           ADD_PLUGIN;
 
@@ -1853,9 +1860,16 @@ graph_setup (
               node_connect (node, node2); \
             }
 
-      for (j = 0; j < STRIP_SIZE; j++)
+      for (j = 0; j < STRIP_SIZE * 2 + 1; j++)
         {
-          pl = tr->channel->plugins[j];
+          if (j < STRIP_SIZE)
+            pl = tr->channel->midi_fx[j];
+          else if (j == STRIP_SIZE)
+            pl = tr->channel->instrument;
+          else
+            pl =
+              tr->channel->inserts[
+                j - (STRIP_SIZE + 1)];
 
           CONNECT_PLUGIN;
         }

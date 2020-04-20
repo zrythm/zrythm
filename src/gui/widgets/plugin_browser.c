@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -59,10 +59,11 @@ enum
  * Called when row is double clicked.
  */
 static void
-on_row_activated (GtkTreeView       *tree_view,
-               GtkTreePath       *tp,
-               GtkTreeViewColumn *column,
-               gpointer           user_data)
+on_row_activated (
+  GtkTreeView       *tree_view,
+  GtkTreePath       *tp,
+  GtkTreeViewColumn *column,
+  gpointer           user_data)
 {
   GtkTreeModel * model = GTK_TREE_MODEL (user_data);
   GtkTreeIter iter;
@@ -72,10 +73,7 @@ on_row_activated (GtkTreeView       *tree_view,
     tp);
   GValue value = G_VALUE_INIT;
   gtk_tree_model_get_value (
-    model,
-    &iter,
-    PL_COLUMN_DESCR,
-    &value);
+    model, &iter, PL_COLUMN_DESCR, &value);
   PluginDescriptor * descr =
     g_value_get_pointer (&value);
 

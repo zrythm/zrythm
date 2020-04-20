@@ -352,11 +352,31 @@ lv2_control_get_from_port (
    * will be null so use the indices */
   Plugin * pl = port_get_plugin (port->port, 1);
   if (!pl)
-    pl =
-      TRACKLIST->tracks[
-        port->port->id.track_pos]->
-          channel->plugins[
-            port->port->id.plugin_slot];
+    {
+      PluginIdentifier * pl_id =
+        &port->port->id.plugin_id;
+      switch (pl_id->slot_type)
+        {
+        case PLUGIN_SLOT_MIDI_FX:
+          pl =
+            TRACKLIST->tracks[
+              port->port->id.track_pos]->
+                channel->midi_fx[pl_id->slot];
+          break;
+        case PLUGIN_SLOT_INSTRUMENT:
+          pl =
+            TRACKLIST->tracks[
+              port->port->id.track_pos]->
+                channel->instrument;
+          break;
+        case PLUGIN_SLOT_INSERT:
+          pl =
+            TRACKLIST->tracks[
+              port->port->id.track_pos]->
+                channel->inserts[pl_id->slot];
+          break;
+        }
+    }
 
   Lv2Plugin * plgn =
     pl->lv2;

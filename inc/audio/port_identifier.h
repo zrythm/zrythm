@@ -26,6 +26,7 @@
 #ifndef __AUDIO_PORT_IDENTIFIER_H__
 #define __AUDIO_PORT_IDENTIFIER_H__
 
+#include "plugins/plugin_identifier.h"
 #include "utils/string.h"
 #include "utils/yaml.h"
 
@@ -242,8 +243,8 @@ typedef struct PortIdentifier
   /** Port unit. */
   PortUnit            unit;
 
-  /** Index of Plugin in the Channel. */
-  int                 plugin_slot;
+  /** Identifier of plugin. */
+  PluginIdentifier    plugin_id;
 
   /** Index of Track in the Tracklist. */
   int                 track_pos;
@@ -291,9 +292,10 @@ port_identifier_fields_schema[] =
   CYAML_FIELD_INT (
     "track_pos", CYAML_FLAG_DEFAULT,
     PortIdentifier, track_pos),
-  CYAML_FIELD_INT (
-    "plugin_slot", CYAML_FLAG_DEFAULT,
-    PortIdentifier, plugin_slot),
+  CYAML_FIELD_MAPPING (
+    "plugin_id", CYAML_FLAG_DEFAULT,
+    PortIdentifier, plugin_id,
+    plugin_identifier_fields_schema),
   CYAML_FIELD_INT (
     "port_index", CYAML_FLAG_DEFAULT,
     PortIdentifier, port_index),
@@ -327,7 +329,8 @@ port_identifier_copy (
   dest->type = src->type;
   dest->flow = src->flow;
   dest->flags = src->flags;
-  dest->plugin_slot = src->plugin_slot;
+  plugin_identifier_copy (
+    &dest->plugin_id, &src->plugin_id);
   dest->track_pos = src->track_pos;
   dest->port_index = src->port_index;
 }
@@ -347,7 +350,8 @@ port_identifier_is_equal (
     dest->type == src->type &&
     dest->flow == src->flow &&
     dest->flags == src->flags &&
-    dest->plugin_slot == src->plugin_slot &&
+    plugin_identifier_is_equal (
+      &dest->plugin_id, &src->plugin_id) &&
     dest->track_pos == src->track_pos &&
     dest->port_index == src->port_index;
 }

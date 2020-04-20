@@ -1593,9 +1593,17 @@ track_activate_all_plugins (
   Channel * ch = track_get_channel (track);
   g_return_if_fail (ch);
 
-  for (int i = 0; i < STRIP_SIZE; i++)
+  for (int i = 0; i < STRIP_SIZE * 2 + 1; i++)
     {
-      Plugin * pl = ch->plugins[i];
+      Plugin * pl = NULL;
+      if (i < STRIP_SIZE)
+        pl = track->channel->midi_fx[i];
+      else if (i == STRIP_SIZE)
+        pl = track->channel->instrument;
+      else
+        pl =
+          track->channel->inserts[
+            i - (STRIP_SIZE + 1)];
 
       if (pl)
         {

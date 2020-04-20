@@ -586,11 +586,17 @@ engine_realloc_port_buffers (
       if (!ch)
         continue;
 
-      for (j = 0; j < STRIP_SIZE; j++)
+      for (j = 0; j < STRIP_SIZE * 2 + 1; j++)
         {
-          if (ch->plugins[j])
+          if (j < STRIP_SIZE)
+            pl = ch->midi_fx[j];
+          else if (j == STRIP_SIZE)
+            pl = ch->instrument;
+          else
+            pl = ch->inserts[j];
+
+          if (pl)
             {
-              pl = ch->plugins[j];
               if (pl->descr->protocol == PROT_LV2)
                 {
                   lv2_plugin_allocate_port_buffers (
@@ -1363,9 +1369,17 @@ engine_tear_down (
         {
           Channel * ch =
             track_get_channel (track);
-          for (int j = 0; j < STRIP_SIZE; j++)
+          for (int j = 0; j < STRIP_SIZE * 2 + 1;
+               j++)
             {
-              Plugin * pl = ch->plugins[j];
+              Plugin * pl = NULL;
+              if (j < STRIP_SIZE)
+                pl = ch->midi_fx[j];
+              else if (j == STRIP_SIZE)
+                pl = ch->instrument;
+              else
+                pl = ch->inserts[j];
+
               if (!pl)
                 continue;
 

@@ -63,21 +63,6 @@ port_init_loaded (Port * this)
 {
   this->magic = PORT_MAGIC;
 
-#define SET_FIELDS_FROM_ID(id,port) \
-  switch (id->owner_type) \
-    { \
-    case PORT_OWNER_TYPE_PLUGIN: \
-      break; \
-    case PORT_OWNER_TYPE_TRACK: \
-    case PORT_OWNER_TYPE_TRACK_PROCESSOR: \
-      break; \
-    default: \
-      break; \
-    }
-
-  /* find plugin and track */
-  SET_FIELDS_FROM_ID ((&this->id),this);
-
   PortIdentifier * id;
   for (int i = 0; i < this->num_srcs; i++)
     {
@@ -189,8 +174,22 @@ port_find_from_identifier (
       tr =
         TRACKLIST->tracks[id->track_pos];
       g_warn_if_fail (IS_TRACK (tr));
-      pl =
-        tr->channel->plugins[id->plugin_slot];
+      switch (id->plugin_id.slot_type)
+        {
+        case PLUGIN_SLOT_MIDI_FX:
+          pl =
+            tr->channel->midi_fx[
+              id->plugin_id.slot];
+          break;
+        case PLUGIN_SLOT_INSTRUMENT:
+          pl = tr->channel->instrument;
+          break;
+        case PLUGIN_SLOT_INSERT:
+          pl =
+            tr->channel->inserts[
+              id->plugin_id.slot];
+          break;
+        }
       g_warn_if_fail (IS_PLUGIN (pl));
       switch (id->flow)
         {
@@ -432,7 +431,7 @@ _port_new (
 {
   Port * port = calloc (1, sizeof (Port));
 
-  port->id.plugin_slot = -1;
+  port->id.plugin_id.slot = -1;
   port->id.track_pos = -1;
   port->magic = PORT_MAGIC;
 
@@ -951,8 +950,9 @@ port_set_owner_plugin (
 {
   g_warn_if_fail (port && pl);
 
+  plugin_identifier_copy (
+    &port->id.plugin_id, &pl->id);
   port->id.track_pos = pl->id.track_pos;
-  port->id.plugin_slot = pl->id.slot;
   port->id.owner_type =
     PORT_OWNER_TYPE_PLUGIN;
 }
@@ -2800,9 +2800,20 @@ port_get_plugin (
       return NULL;
     }
 
-  Plugin * pl =
-    track->channel->plugins[
-      self->id.plugin_slot];
+  Plugin * pl = NULL;
+  PluginIdentifier * pl_id = &self->id.plugin_id;
+  switch (pl_id->slot_type)
+    {
+    case PLUGIN_SLOT_MIDI_FX:
+      pl = track->channel->midi_fx[pl_id->slot];
+      break;
+    case PLUGIN_SLOT_INSTRUMENT:
+      pl = track->channel->instrument;
+      break;
+    case PLUGIN_SLOT_INSERT:
+      pl = track->channel->inserts[pl_id->slot];
+      break;
+    }
   if (!pl && self->tmp_plugin)
     return self->tmp_plugin;
   if (warn_if_fail)

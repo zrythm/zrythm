@@ -54,6 +54,10 @@ instrument_track_init (Track * track);
 void
 instrument_track_setup (Track * self);
 
+Plugin *
+instrument_track_get_instrument (
+  Track * self);
+
 /**
  * Returns if the first plugin's UI in the
  * instrument track is visible.

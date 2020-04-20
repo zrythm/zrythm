@@ -117,7 +117,7 @@ plugin_strip_expander_widget_refresh (
           {
             Channel * ch =
               track_get_channel (self->track);
-            Plugin * pl = ch->plugins[i];
+            Plugin * pl = ch->inserts[i];
             plugin_strip_expander_widget_set_state_flags (
               self, i,
               GTK_STATE_FLAG_SELECTED,

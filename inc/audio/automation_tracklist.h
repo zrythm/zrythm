@@ -243,6 +243,7 @@ automation_tracklist_set_at_index (
 AutomationTrack *
 automation_tracklist_get_plugin_at (
   AutomationTracklist * self,
+  PluginSlotType        slot_type,
   const int             plugin_slot,
   const char *          label);
 

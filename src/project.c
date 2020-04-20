@@ -952,9 +952,14 @@ project_save (
       if (!ch)
         continue;
 
-      for (j = 0; j < STRIP_SIZE; j++)
+      for (j = 0; j < STRIP_SIZE * 2 + 1; j++)
         {
-          pl = ch->plugins[j];
+          if (j < STRIP_SIZE)
+            pl = ch->midi_fx[j];
+          else if (j == STRIP_SIZE)
+            pl = ch->instrument;
+          else
+            pl = ch->inserts[j];
 
           if (!pl)
             continue;

@@ -325,7 +325,7 @@ create_model_for_plugins (
 
       for (int i = 0; i < STRIP_SIZE; i++)
         {
-          pl = ch->plugins[i];
+          pl = ch->midi_fx[i];
 
           /* skip if no plugin or the plugin is the
            * port's plugin */
@@ -334,8 +334,54 @@ create_model_for_plugins (
                  PORT_OWNER_TYPE_PLUGIN &&
                pl ==
                  port_get_plugin (self->port, 1)))
-            continue;
+            {
+              continue;
+            }
 
+          // Add a new row to the model
+          gtk_list_store_append (list_store, &iter);
+          gtk_list_store_set (
+            list_store, &iter,
+            0, "z-plugins",
+            1, pl->descr->name,
+            2, pl,
+            -1);
+        }
+      for (int i = 0; i < STRIP_SIZE; i++)
+        {
+          pl = ch->inserts[i];
+
+          /* skip if no plugin or the plugin is the
+           * port's plugin */
+          if (!pl ||
+              (id->owner_type ==
+                 PORT_OWNER_TYPE_PLUGIN &&
+               pl ==
+                 port_get_plugin (self->port, 1)))
+            {
+              continue;
+            }
+
+          // Add a new row to the model
+          gtk_list_store_append (list_store, &iter);
+          gtk_list_store_set (
+            list_store, &iter,
+            0, "z-plugins",
+            1, pl->descr->name,
+            2, pl,
+            -1);
+        }
+
+      pl = ch->instrument;
+
+      /* skip if no plugin or the plugin is the
+       * port's plugin */
+      if (pl &&
+          !(id->owner_type ==
+             PORT_OWNER_TYPE_PLUGIN &&
+           pl ==
+             port_get_plugin (self->port, 1)))
+        {
           // Add a new row to the model
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (

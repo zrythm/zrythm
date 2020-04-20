@@ -9,13 +9,17 @@ Zrythm
 
 Zrythm is a digital audio workstation designed to be
 featureful and easy to use. It allows limitless
-automation, supports LV2 plugins, works with the JACK
-audio backend, provides chord assistance, is free
-software and can be used in English, French,
-Portuguese, Japanese and German.
+automation through curves, LFOs and envelopes,
+supports multiple plugin formats including LV2, VST2
+and VST3, works with multiple backends including
+JACK, RtAudio/RtMidi and SDL2, assists with chord
+progressions via a special Chord Track and chord
+pads, and can be used in multiple languages
+including English, French, Portuguese, Japanese and
+German.
 
-It is written in C using the GTK+3 toolkit and uses
-the meson build system.
+Zrythm is [free software](https://www.gnu.org/philosophy/free-sw.html)
+written in C using the GTK+3 toolkit.
 
 More info can be found at https://www.zrythm.org
 
@@ -25,7 +29,7 @@ Zrythm is currently in alpha. Most essential
 DAW features are implemented and we are working
 towards a stable release.
 
-![screenshot](https://www.zrythm.org/static/images/apr-10-2020.png)
+![screenshot](https://www.zrythm.org/static/images/apr-12-2020.png)
 
 ### Supported plugin protocols
 - Full support: LV2, VST2

@@ -147,8 +147,10 @@ copy_plugins_action_do (
           if (prev_at->num_regions == 0 ||
               prev_at->port_id.owner_type !=
                 PORT_OWNER_TYPE_PLUGIN ||
-              prev_at->port_id.plugin_slot !=
-                self->ms->slots[i])
+              prev_at->port_id.plugin_id.slot !=
+                self->ms->slots[i] ||
+              prev_at->port_id.plugin_id.slot_type !=
+                self->ms->type)
             continue;
 
           /* find the corresponding at in the new
@@ -159,8 +161,10 @@ copy_plugins_action_do (
 
               if (at->port_id.owner_type !=
                     PORT_OWNER_TYPE_PLUGIN ||
-                  at->port_id.plugin_slot !=
+                  at->port_id.plugin_id.slot !=
                     new_slot ||
+                  at->port_id.plugin_id.slot_type !=
+                    self->slot_type ||
                   at->port_id.port_index !=
                     prev_at->port_id.port_index)
                 continue;

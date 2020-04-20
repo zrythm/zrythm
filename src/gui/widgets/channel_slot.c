@@ -54,13 +54,13 @@ get_plugin (
     {
     case PLUGIN_SLOT_INSERT:
       return
-        self->channel->plugins[self->slot_index];
+        self->channel->inserts[self->slot_index];
       break;
     case PLUGIN_SLOT_MIDI_FX:
       return
         self->channel->midi_fx[self->slot_index];
       break;
-    default:
+    case PLUGIN_SLOT_INSTRUMENT:
       break;
     }
 
@@ -231,8 +231,8 @@ on_drag_data_received (
       Channel * orig_ch =
         plugin_get_channel (pl);
       if (self->channel != orig_ch ||
-          self->slot_index !=
-            channel_get_plugin_index (orig_ch, pl))
+          self->slot_index != pl->id.slot ||
+          self->type != pl->id.slot_type)
         {
           /* determine if moving or copying */
           GdkDragAction action =

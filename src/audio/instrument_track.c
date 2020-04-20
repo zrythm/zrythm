@@ -56,6 +56,21 @@ instrument_track_setup (InstrumentTrack * self)
   channel_track_setup (self);
 }
 
+Plugin *
+instrument_track_get_instrument (
+  Track * self)
+{
+  g_return_val_if_fail (
+    self &&
+    self->type == TRACK_TYPE_INSTRUMENT &&
+    self->channel, 0);
+
+  Plugin * plugin = self->channel->instrument;
+  g_return_val_if_fail (plugin, NULL);
+
+  return plugin;
+}
+
 /**
  * Returns if the first plugin's UI in the
  * instrument track is visible.
@@ -64,12 +79,8 @@ int
 instrument_track_is_plugin_visible (
   Track * self)
 {
-  g_return_val_if_fail (
-    self &&
-    self->type == TRACK_TYPE_INSTRUMENT &&
-    self->channel, 0);
-
-  Plugin * plugin = self->channel->plugins[0];
+  Plugin * plugin =
+    instrument_track_get_instrument (self);
   g_return_val_if_fail (plugin, 0);
 
   return plugin->visible;
@@ -83,12 +94,8 @@ void
 instrument_track_toggle_plugin_visible (
   Track * self)
 {
-  g_return_if_fail (
-    self &&
-    self->type == TRACK_TYPE_INSTRUMENT &&
-    self->channel);
-
-  Plugin * plugin = self->channel->plugins[0];
+  Plugin * plugin =
+    instrument_track_get_instrument (self);
   g_return_if_fail (plugin);
 
   plugin->visible = !plugin->visible;

@@ -3,7 +3,8 @@ Installation Instructions
 
 # Building
 
-The project uses [meson](https://mesonbuild.com), so the steps are
+The project uses [meson](https://mesonbuild.com), so
+the steps are
 
     meson build
     ninja -C build

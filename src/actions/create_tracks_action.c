@@ -133,12 +133,18 @@ create (
       if (track->channel && pl)
         {
           channel_add_plugin (
-            track->channel, PLUGIN_SLOT_INSERT,
+            track->channel,
+            self->pl_descr.category ==
+              PC_INSTRUMENT ?
+                PLUGIN_SLOT_INSTRUMENT :
+                PLUGIN_SLOT_INSERT,
             pl->id.slot, pl,
             1, 1, F_NO_RECALC_GRAPH,
             F_NO_PUBLISH_EVENTS);
           g_warn_if_fail (
             pl->id.track_pos == track->pos);
+          g_warn_if_fail (
+            track->channel->instrument == pl);
         }
 
       if (self->type == TRACK_TYPE_AUDIO)

@@ -357,7 +357,7 @@ void
 channel_prepare_process (Channel * self)
 {
   Plugin * plugin;
-  int i,j;
+  int j;
   Track * tr = channel_get_track (self);
   PortType out_type = tr->out_signal_type;
 
@@ -380,21 +380,15 @@ channel_prepare_process (Channel * self)
 
   for (j = 0; j < STRIP_SIZE; j++)
     {
-      plugin = self->plugins[j];
-      if (!plugin)
-        continue;
-
-      for (i = 0; i < plugin->num_in_ports;
-           i++)
-        {
-          port_clear_buffer (plugin->in_ports[i]);
-        }
-      for (i = 0; i < plugin->num_out_ports;
-           i++)
-        {
-          port_clear_buffer (plugin->out_ports[i]);
-        }
+      plugin = self->inserts[j];
+      if (plugin)
+        plugin_prepare_process (plugin);
+      plugin = self->midi_fx[j];
+      if (plugin)
+        plugin_prepare_process (plugin);
     }
+  if (self->instrument)
+    plugin_prepare_process (self->instrument);
 
   if (tr->in_signal_type == TYPE_EVENT)
     {
@@ -455,13 +449,29 @@ channel_init_loaded (Channel * ch)
   Plugin * pl;
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      pl = ch->plugins[i];
-      if (!pl)
-        continue;
-
-      pl->id.track_pos = ch->track_pos;
-      pl->id.slot = i;
-      plugin_init_loaded (pl);
+      pl = ch->inserts[i];
+      if (pl)
+        {
+          pl->id.track_pos = ch->track_pos;
+          pl->id.slot = i;
+          pl->id.slot_type = PLUGIN_SLOT_INSERT;
+          plugin_init_loaded (pl);
+        }
+      pl = ch->midi_fx[i];
+      if (pl)
+        {
+          pl->id.track_pos = ch->track_pos;
+          pl->id.slot = i;
+          pl->id.slot_type = PLUGIN_SLOT_MIDI_FX;
+          plugin_init_loaded (pl);
+        }
+    }
+  if (ch->instrument)
+    {
+          pl->id.track_pos = ch->track_pos;
+          pl->id.slot = 0;
+          pl->id.slot_type = PLUGIN_SLOT_INSTRUMENT;
+          plugin_init_loaded (pl);
     }
 }
 
@@ -1171,11 +1181,20 @@ channel_append_all_ports (
       /* add plugin ports */
       for (j = 0; j < STRIP_SIZE; j++)
         {
-          pl = tr->channel->plugins[j];
+          pl = ch->inserts[j];
           ADD_PLUGIN_PORTS;
 
-          pl = tr->channel->midi_fx[j];
+          pl = ch->midi_fx[j];
           ADD_PLUGIN_PORTS;
+        }
+
+      if (ch->instrument)
+        {
+          for (j = 0; j < 1; j++)
+            {
+              pl = ch->instrument;
+              ADD_PLUGIN_PORTS;
+            }
         }
     }
 
@@ -1302,12 +1321,6 @@ channel_new (
       break;
     default:
       break;
-    }
-
-  /* init plugins */
-  for (int i = 0; i < STRIP_SIZE; i++)
-    {
-      self->plugins[i] = NULL;
     }
 
   FaderType fader_type =
@@ -1499,21 +1512,82 @@ channel_disconnect_plugin_from_strip (
   Plugin * pl)
 {
   int i;
+  PluginSlotType slot_type = pl->id.slot_type;
+  Plugin ** prev_plugins = NULL;
+  switch (slot_type)
+    {
+    case PLUGIN_SLOT_INSERT:
+      prev_plugins = ch->inserts;
+      break;
+    case PLUGIN_SLOT_MIDI_FX:
+      prev_plugins = ch->midi_fx;
+      break;
+    case PLUGIN_SLOT_INSTRUMENT:
+      prev_plugins = ch->midi_fx;
+      break;
+    default:
+      g_return_if_reached ();
+    }
+  Plugin ** next_plugins = NULL;
+  switch (slot_type)
+    {
+    case PLUGIN_SLOT_INSERT:
+      next_plugins = ch->inserts;
+      break;
+    case PLUGIN_SLOT_MIDI_FX:
+      next_plugins = ch->midi_fx;
+      break;
+    case PLUGIN_SLOT_INSTRUMENT:
+      next_plugins = ch->inserts;
+      break;
+    default:
+      g_return_if_reached ();
+    }
 
   Plugin * next_plugin = NULL;
   for (i = pos + 1; i < STRIP_SIZE; i++)
     {
-      next_plugin = ch->plugins[i];
+      next_plugin = next_plugins[i];
       if (next_plugin)
         break;
+    }
+  if (!next_plugin &&
+      slot_type == PLUGIN_SLOT_MIDI_FX)
+    {
+      if (ch->instrument)
+        next_plugin = ch->instrument;
+      else
+        {
+          for (i = 0; i < STRIP_SIZE; i++)
+            {
+              next_plugin = ch->inserts[i];
+              if (next_plugin)
+                break;
+            }
+        }
     }
 
   Plugin * prev_plugin = NULL;
   for (i = pos - 1; i >= 0; i--)
     {
-      prev_plugin = ch->plugins[i];
+      prev_plugin = prev_plugins[i];
       if (prev_plugin)
         break;
+    }
+  if (!prev_plugin &&
+      slot_type == PLUGIN_SLOT_INSERT)
+    {
+      if (ch->instrument)
+        prev_plugin = ch->instrument;
+      else
+        {
+          for (i = STRIP_SIZE - 1; i >= 0; i--)
+            {
+              prev_plugin = ch->midi_fx[i];
+              if (prev_plugin)
+                break;
+            }
+        }
     }
 
   if (!prev_plugin && !next_plugin)
@@ -1574,7 +1648,7 @@ channel_remove_plugin (
   switch (slot_type)
     {
     case PLUGIN_SLOT_INSERT:
-      plugin = channel->plugins[slot];
+      plugin = channel->inserts[slot];
       break;
     case PLUGIN_SLOT_MIDI_FX:
       plugin = channel->midi_fx[slot];
@@ -1619,7 +1693,7 @@ channel_remove_plugin (
   switch (slot_type)
     {
     case PLUGIN_SLOT_INSERT:
-      channel->plugins[slot] = NULL;
+      channel->inserts[slot] = NULL;
       break;
     case PLUGIN_SLOT_MIDI_FX:
       channel->midi_fx[slot] = NULL;
@@ -1682,29 +1756,35 @@ channel_add_plugin (
   switch (slot_type)
     {
     case PLUGIN_SLOT_INSERT:
-      plugins = self->plugins;
+      plugins = self->inserts;
       break;
     case PLUGIN_SLOT_MIDI_FX:
       plugins = self->midi_fx;
+      break;
+    case PLUGIN_SLOT_INSTRUMENT:
       break;
     default:
       g_return_val_if_reached (0);
     }
 
-  /* confirm if another plugin exists */
-  Plugin * existing_pl = plugins[slot];
-  if (confirm && existing_pl)
+  Plugin * existing_pl = NULL;
+  if (slot_type != PLUGIN_SLOT_INSTRUMENT)
     {
-      GtkDialog * dialog =
-        dialogs_get_overwrite_plugin_dialog (
-          GTK_WINDOW (MAIN_WINDOW));
-      int result =
-        gtk_dialog_run (dialog);
-      gtk_widget_destroy (GTK_WIDGET (dialog));
+      /* confirm if another plugin exists */
+      existing_pl = plugins[slot];
+      if (confirm && existing_pl)
+        {
+          GtkDialog * dialog =
+            dialogs_get_overwrite_plugin_dialog (
+              GTK_WINDOW (MAIN_WINDOW));
+          int result =
+            gtk_dialog_run (dialog);
+          gtk_widget_destroy (GTK_WIDGET (dialog));
 
-      /* do nothing if not accepted */
-      if (result != GTK_RESPONSE_ACCEPT)
-        return 0;
+          /* do nothing if not accepted */
+          if (result != GTK_RESPONSE_ACCEPT)
+            return 0;
+        }
     }
 
   /* free current plugin */
@@ -1719,24 +1799,96 @@ channel_add_plugin (
     "Inserting %s %s at %s:%d",
     plugin_slot_type_to_string (slot_type),
     plugin->descr->name, track->name, slot);
-  plugins[slot] = plugin;
+  if (slot_type == PLUGIN_SLOT_INSTRUMENT)
+    {
+      self->instrument = plugin;
+    }
+  else
+    {
+      plugins[slot] = plugin;
+    }
   plugin_set_channel_and_slot (
     plugin, self, slot_type, slot);
 
-  Plugin * next_pl = NULL;
-  for (i = slot + 1; i < STRIP_SIZE; i++)
+  Plugin ** prev_plugins = NULL;
+  switch (slot_type)
     {
-      next_pl = plugins[i];
+    case PLUGIN_SLOT_INSERT:
+      prev_plugins = self->inserts;
+      break;
+    case PLUGIN_SLOT_MIDI_FX:
+      prev_plugins = self->midi_fx;
+      break;
+    case PLUGIN_SLOT_INSTRUMENT:
+      prev_plugins = self->midi_fx;
+      break;
+    default:
+      g_return_val_if_reached (0);
+    }
+  Plugin ** next_plugins = NULL;
+  switch (slot_type)
+    {
+    case PLUGIN_SLOT_INSERT:
+      next_plugins = self->inserts;
+      break;
+    case PLUGIN_SLOT_MIDI_FX:
+      next_plugins = self->midi_fx;
+      break;
+    case PLUGIN_SLOT_INSTRUMENT:
+      next_plugins = self->inserts;
+      break;
+    default:
+      g_return_val_if_reached (0);
+    }
+
+  Plugin * next_pl = NULL;
+  for (i =
+         (slot_type == PLUGIN_SLOT_INSTRUMENT ?
+            0 : slot + 1); i < STRIP_SIZE; i++)
+    {
+      next_pl = next_plugins[i];
       if (next_pl)
         break;
     }
+  if (!next_pl &&
+      slot_type == PLUGIN_SLOT_MIDI_FX)
+    {
+      if (self->instrument)
+        next_pl = self->instrument;
+      else
+        {
+          for (i = 0; i < STRIP_SIZE; i++)
+            {
+              next_pl = self->inserts[i];
+              if (next_pl)
+                break;
+            }
+        }
+    }
 
   Plugin * prev_pl = NULL;
-  for (i = slot - 1; i >= 0; i--)
+  for (i =
+         (slot_type == PLUGIN_SLOT_INSTRUMENT ?
+            STRIP_SIZE - 1 : slot - 1); i >= 0; i--)
     {
-      prev_pl = plugins[i];
+      prev_pl = prev_plugins[i];
       if (prev_pl)
         break;
+    }
+  if (!prev_pl &&
+      slot_type == PLUGIN_SLOT_INSERT)
+    {
+      if (self->instrument)
+        prev_pl = self->instrument;
+      else
+        {
+          for (i = STRIP_SIZE - 1; i >= 0; i--)
+            {
+              prev_pl = self->midi_fx[i];
+              if (prev_pl)
+                break;
+            }
+        }
     }
 
   /* ------------------------------------------
@@ -1797,11 +1949,20 @@ channel_update_track_pos (
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      Plugin * pl = self->plugins[i];
+      Plugin * pl = self->inserts[i];
       if (pl)
         {
           plugin_set_track_pos (pl, pos);
         }
+      pl = self->midi_fx[i];
+      if (pl)
+        {
+          plugin_set_track_pos (pl, pos);
+        }
+    }
+  if (self->instrument)
+    {
+      plugin_set_track_pos (self->instrument, pos);
     }
 
   if (self->midi_out)
@@ -1820,82 +1981,6 @@ channel_update_track_pos (
   passthrough_processor_update_track_pos (
     &self->prefader, pos);
 }
-
-/**
- * Returns the index of the last active slot.
- */
-int
-channel_get_last_active_slot_index (Channel * channel)
-{
-  int index = -1;
-  for (int i = 0; i < STRIP_SIZE; i++)
-    {
-      if (channel->plugins[i])
-        index = i;
-    }
-  return index;
-}
-
-/**
- * Returns the last Plugin in the strip.
- */
-Plugin *
-channel_get_last_plugin (
-  Channel * self)
-{
-  for (int i = STRIP_SIZE - 1; i >= 0; i--)
-    {
-      if (self->plugins[i])
-        return self->plugins[i];
-    }
-  return NULL;
-}
-
-/**
- * Returns the index on the mixer.
- *
- * where is this used?
- */
-int
-channel_get_index (Channel * channel)
-{
-  Track * track;
-  int index = 0;
-  for (int i = 0;
-       i < TRACKLIST->num_tracks; i++)
-    {
-      track = TRACKLIST->tracks[i];
-
-      if (track->type == TRACK_TYPE_MASTER ||
-          track->type == TRACK_TYPE_CHORD)
-        continue;
-
-      index++;
-      if (track->channel == channel)
-        return index;
-    }
-  g_return_val_if_reached (-1);
-}
-
-/**
- * Convenience method to get the first active plugin in the channel
- */
-Plugin *
-channel_get_first_plugin (Channel * channel)
-{
-  /* find first plugin */
-  Plugin * plugin = NULL;
-  for (int i = 0; i < STRIP_SIZE; i++)
-    {
-      if (channel->plugins[i])
-        {
-          plugin = channel->plugins[i];
-          break;
-        }
-    }
-  return plugin;
-}
-
 
 /**
  * Connects or disconnects the MIDI editor key press
@@ -1921,25 +2006,6 @@ channel_reattach_midi_editor_manual_press_port (
 
   if (recalc_graph)
     mixer_recalc_graph (MIXER);
-}
-
-/**
- * Returns the plugin's strip index on the channel
- */
-int
-channel_get_plugin_index (Channel * channel,
-                          Plugin *  plugin)
-{
-  for (int i = 0; i < STRIP_SIZE; i++)
-    {
-      if (channel->plugins[i] == plugin)
-        {
-          return i;
-        }
-    }
-  g_warning ("%s: plugin not found", __func__);
-
-  return -1;
 }
 
 /**
@@ -1984,10 +2050,10 @@ channel_clone (
   /* copy plugins */
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      if (ch->plugins[i])
+      if (ch->inserts[i])
         {
           Plugin * clone_pl =
-            plugin_clone (ch->plugins[i]);
+            plugin_clone (ch->inserts[i]);
           channel_add_plugin (
             clone, PLUGIN_SLOT_INSERT,
             i, clone_pl, F_NO_CONFIRM,
@@ -2007,6 +2073,16 @@ channel_clone (
             F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
             F_NO_PUBLISH_EVENTS);
         }
+    }
+  if (ch->instrument)
+    {
+      Plugin * clone_pl =
+        plugin_clone (ch->instrument);
+      channel_add_plugin (
+        clone, PLUGIN_SLOT_INSTRUMENT,
+        0, clone_pl, F_NO_CONFIRM,
+        F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
+        F_NO_PUBLISH_EVENTS);
     }
 
   clone->fader.track_pos = clone->track_pos;
@@ -2070,7 +2146,7 @@ channel_disconnect (
     {
       FOREACH_STRIP
         {
-          if (channel->plugins[i])
+          if (channel->inserts[i])
             {
               channel_remove_plugin (
                 channel,
@@ -2134,20 +2210,6 @@ channel_free (Channel * channel)
     default:
       break;
     }
-
-  /* remove plugins */
-  /*Plugin * pl;*/
-  /*for (int i = 0; i < STRIP_SIZE; i++)*/
-    /*{*/
-      /*pl = channel->plugins[i];*/
-      /*g_message ("------attempting to free pl %d",*/
-                 /*i);*/
-      /*if (!pl)*/
-        /*continue;*/
-      /*g_message ("freeing");*/
-
-      /*plugin_free (pl);*/
-    /*}*/
 
   /* remove automation tracks - they are already
    * free'd in track_free */

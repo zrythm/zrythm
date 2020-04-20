@@ -335,10 +335,11 @@ plugin_descriptor_is_instrument (
  */
 void
 plugin_move_automation (
-  Plugin *  pl,
-  Channel * prev_ch,
-  Channel * ch,
-  int       new_slot);
+  Plugin *       pl,
+  Channel *      prev_ch,
+  Channel *      ch,
+  PluginSlotType new_slot_type,
+  int            new_slot);
 
 /**
  * Returns the escaped name of the plugin.
@@ -410,6 +411,13 @@ void
 plugin_generate_automation_tracks (
   Plugin * plugin,
   Track *  track);
+
+/**
+ * Prepare plugin for processing.
+ */
+void
+plugin_prepare_process (
+  Plugin * self);
 
 /**
  * Loads the plugin from its state file.

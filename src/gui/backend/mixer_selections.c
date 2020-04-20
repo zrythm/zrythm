@@ -117,15 +117,17 @@ void
 mixer_selections_add_slot (
   MixerSelections * ms,
   Channel *         ch,
-  PluginSlotType   type,
+  PluginSlotType    type,
   int               slot)
 {
   if (!ms->has_any ||
-      ch->track_pos != ms->track_pos)
+      ch->track_pos != ms->track_pos ||
+      type != ms->type)
     {
       mixer_selections_clear (
         ms, F_NO_PUBLISH_EVENTS);
       ms->track_pos = ch->track_pos;
+      ms->type = type;
     }
   ms->has_any = 1;
 
@@ -133,13 +135,15 @@ mixer_selections_add_slot (
         ms->slots, ms->num_slots, slot))
     return;
 
+  Plugin * pl =
+    type == PLUGIN_SLOT_MIDI_FX ?
+      ch->midi_fx[slot] : ch->inserts[slot];
   array_double_append (
     ms->slots, ms->plugins, ms->num_slots,
-    slot, ch->plugins[slot]);
+    slot, pl);
 
   EVENTS_PUSH (
-    ET_MIXER_SELECTIONS_CHANGED,
-    ch->plugins[slot]);
+    ET_MIXER_SELECTIONS_CHANGED, pl);
 }
 
 /**
@@ -248,9 +252,22 @@ mixer_selections_clone (
 
   for (i = 0; i < src->num_slots; i++)
     {
-      Plugin * pl =
-        TRACKLIST->tracks[src->track_pos]->
-          channel->plugins[src->slots[i]];
+      Plugin * pl = NULL;
+      switch (src->type)
+        {
+        case PLUGIN_SLOT_MIDI_FX:
+          pl =
+            TRACKLIST->tracks[src->track_pos]->
+              channel->midi_fx[src->slots[i]];
+          break;
+        case PLUGIN_SLOT_INSERT:
+          pl =
+            TRACKLIST->tracks[src->track_pos]->
+              channel->inserts[src->slots[i]];
+          break;
+        default:
+          break;
+        }
       g_return_val_if_fail (pl, NULL);
       ms->plugins[i] = plugin_clone (pl);
       ms->slots[i] = src->slots[i];
