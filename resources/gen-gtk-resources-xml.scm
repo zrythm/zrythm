@@ -303,8 +303,7 @@ Args:
 
          ;; add theme and close
          (display
-"    <file>theme.css</file>
-  </gresource>
+"  </gresource>
 </gresources>"))))))
 
 (apply main (program-arguments))

@@ -40,6 +40,7 @@ mandir = join_paths (datadir, 'man', 'man1')
 schemasdir = join_paths (datadir, 'glib-2.0/schemas')
 fontsdir = join_paths (datadir, 'fonts', 'zrythm')
 zrythmdatadir = join_paths (datadir, 'zrythm')
+themesdir = join_paths (zrythmdatadir, 'themes')
 samplesdir = join_paths (zrythmdatadir, 'samples')
 docdir = join_paths (datadir, 'doc', 'zrythm')
 sourceviewstylesdir = join_paths (datadir, 'sourceview-styles')
@@ -86,6 +87,7 @@ cdata.set_quoted ('CONFIGURE_DATADIR', datadir)
 cdata.set_quoted (
   'CONFIGURE_SOURCEVIEW_STYLES_DIR',
   sourceviewstylesdir)
+cdata.set_quoted ('CONFIGURE_THEMES_DIR', themesdir)
 cdata.set_quoted (
   'LIBDIR_NAME', get_option ('libdir'))
 cdata.set_quoted ('CONFIGURE_LIBDIR', libdir)

@@ -98,4 +98,10 @@ if get_option ('enable_guile')
     rename: 'monokai-extended-zrythm.xml')
 endif
 
+# theme
+install_data (
+  'theme.css',
+  install_dir: themesdir,
+  rename: 'zrythm-theme.css')
+
 subdir('windows')

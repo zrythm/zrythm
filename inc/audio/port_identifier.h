@@ -273,9 +273,8 @@ port_type_strings[] =
 static const cyaml_schema_field_t
 port_identifier_fields_schema[] =
 {
-  CYAML_FIELD_STRING_PTR (
-    "label", CYAML_FLAG_POINTER,
-    PortIdentifier, label, 0, CYAML_UNLIMITED),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PortIdentifier, label),
   YAML_FIELD_ENUM (
     PortIdentifier, owner_type,
     port_owner_type_strings),

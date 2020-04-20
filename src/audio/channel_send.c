@@ -45,19 +45,8 @@ channel_send_init (
   self->track_pos = track_pos;
   self->slot = slot;
   self->is_empty = true;
-
-  PortType type = get_signal_type (self);
-  switch (type)
-    {
-    case TYPE_AUDIO:
-      self->amount = 1.f;
-      break;
-    case TYPE_EVENT:
-      self->on = true;
-      break;
-    default:
-      break;
-    }
+  self->amount = 1.f;
+  self->on = true;
 }
 
 Track *

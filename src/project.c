@@ -959,7 +959,7 @@ project_save (
           else if (j == STRIP_SIZE)
             pl = ch->instrument;
           else
-            pl = ch->inserts[j];
+            pl = ch->inserts[j - (STRIP_SIZE + 1)];
 
           if (!pl)
             continue;

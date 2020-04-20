@@ -593,7 +593,7 @@ engine_realloc_port_buffers (
           else if (j == STRIP_SIZE)
             pl = ch->instrument;
           else
-            pl = ch->inserts[j];
+            pl = ch->inserts[j - (STRIP_SIZE + 1)];
 
           if (pl)
             {
@@ -1378,7 +1378,9 @@ engine_tear_down (
               else if (j == STRIP_SIZE)
                 pl = ch->instrument;
               else
-                pl = ch->inserts[j];
+                pl =
+                  ch->inserts[
+                    j - (STRIP_SIZE + 1)];
 
               if (!pl)
                 continue;

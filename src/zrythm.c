@@ -861,18 +861,38 @@ zrythm_app_startup (
     /*1);*/
   g_message ("set resource paths");
 
-  // set default css provider
+  /* set default css provider */
   GtkCssProvider * css_provider =
     gtk_css_provider_new();
-  gtk_css_provider_load_from_resource (
-    css_provider,
-    "/org/zrythm/Zrythm/app/theme.css");
+  char * css_theme_path =
+    g_build_filename (
+      g_get_home_dir (), ".config", "zrythm",
+      "theme.css", NULL);
+  if (!g_file_test (
+         css_theme_path, G_FILE_TEST_EXISTS))
+    {
+      g_free (css_theme_path);
+      css_theme_path =
+        g_build_filename (
+          CONFIGURE_THEMES_DIR, "zrythm-theme.css",
+          NULL);
+    }
+  GError * err = NULL;
+  gtk_css_provider_load_from_path (
+    css_provider, css_theme_path, &err);
+  if (err)
+    {
+      g_warning (
+        "Failed to load CSS from path %s: %s",
+        css_theme_path, err->message);
+    }
   gtk_style_context_add_provider_for_screen (
-          gdk_screen_get_default (),
-          GTK_STYLE_PROVIDER (css_provider),
-          800);
+    gdk_screen_get_default (),
+    GTK_STYLE_PROVIDER (css_provider), 800);
   g_object_unref (css_provider);
-  g_message ("set default css provider");
+  g_message (
+    "set default css provider from path: %s",
+    css_theme_path);
 
   /* set default window icon */
   gtk_window_set_default_icon_name ("zrythm");
