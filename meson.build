@@ -474,6 +474,16 @@ if (chromaprint_dep.found ())
   cdata.set('HAVE_CHROMAPRINT', 1)
 endif
 
+gtksource_dep = dependency (
+  'gtksourceview-4', required: false)
+if gtksource_dep.found()
+  cdata.set('HAVE_GTK_SOURCE_VIEW_4', 1)
+else
+  gtksource_dep = dependency (
+    'gtksourceview-3.0')
+  cdata.set('HAVE_GTK_SOURCE_VIEW_3', 1)
+endif
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -502,6 +512,7 @@ zrythm_deps = [
   lv2_dep,
   chromaprint_dep,
   fftw3_dep,
+  gtksource_dep,
 
   # these are needed for gentoo
   dependency('fftw3_threads', required: false),
@@ -592,16 +603,6 @@ if get_option('enable_guile')
     guile_dep = dependency ('guile-2.2')
   endif
   zrythm_deps += guile_dep
-  gtksource_dep = dependency (
-    'gtksourceview-4', required: false)
-  if gtksource_dep.found()
-    cdata.set('HAVE_GTK_SOURCE_VIEW_4', 1)
-  else
-    gtksource_dep = dependency (
-      'gtksourceview-3.0')
-    cdata.set('HAVE_GTK_SOURCE_VIEW_3', 1)
-  endif
-  zrythm_deps += gtksource_dep
   cdata.set('HAVE_GUILE', 1)
 endif
 
