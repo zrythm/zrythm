@@ -314,6 +314,16 @@ char *
 plugin_descriptor_category_to_string (
   ZPluginCategory category);
 
+/**
+ * Returns if the given plugin identifier can be
+ * dropped in a slot of the given type.
+ */
+bool
+plugin_descriptor_is_valid_for_slot_type (
+  PluginDescriptor * self,
+  int                slot_type,
+  int                track_type);
+
 void
 plugin_descriptor_free (
   PluginDescriptor * self);

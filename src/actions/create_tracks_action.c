@@ -143,8 +143,6 @@ create (
             F_NO_PUBLISH_EVENTS);
           g_warn_if_fail (
             pl->id.track_pos == track->pos);
-          g_warn_if_fail (
-            track->channel->instrument == pl);
         }
 
       if (self->type == TRACK_TYPE_AUDIO)

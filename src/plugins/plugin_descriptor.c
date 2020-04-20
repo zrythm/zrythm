@@ -19,7 +19,9 @@
 
 #include <stdlib.h>
 
+#include "audio/track.h"
 #include "plugins/plugin_descriptor.h"
+#include "plugins/plugin.h"
 
 #include <gtk/gtk.h>
 
@@ -315,6 +317,37 @@ plugin_descriptor_category_to_string (
 #undef RET_STRING
 
   return g_strdup ("Plugin");
+}
+
+/**
+ * Returns if the given plugin identifier can be
+ * dropped in a slot of the given type.
+ */
+bool
+plugin_descriptor_is_valid_for_slot_type (
+  PluginDescriptor * self,
+  int                slot_type,
+  int                track_type)
+{
+  switch (slot_type)
+    {
+    case PLUGIN_SLOT_INSERT:
+      if (track_type == TRACK_TYPE_MIDI)
+        {
+          return self->num_midi_outs > 0;
+        }
+      else
+        {
+          return self->num_audio_outs > 0;
+        }
+    case PLUGIN_SLOT_MIDI_FX:
+      return self->num_midi_outs > 0;
+      break;
+    default:
+      break;
+    }
+
+  g_return_val_if_reached (false);
 }
 
 void

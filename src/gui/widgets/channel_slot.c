@@ -215,7 +215,9 @@ on_drag_data_received (
     gdk_atom_intern_static_string (
       TARGET_ENTRY_PLUGIN_DESCR);
 
-  Plugin * pl;
+  bool plugin_invalid = false;
+  Plugin * pl = NULL;
+  PluginDescriptor * descr = NULL;
   if (atom == plugin_atom)
     {
       Plugin * received_pl = NULL;
@@ -234,54 +236,84 @@ on_drag_data_received (
           self->slot_index != pl->id.slot ||
           self->type != pl->id.slot_type)
         {
-          /* determine if moving or copying */
-          GdkDragAction action =
-            gdk_drag_context_get_selected_action (
-              context);
-
-          UndoableAction * ua = NULL;
-          if (action == GDK_ACTION_COPY)
+          if (plugin_descriptor_is_valid_for_slot_type (
+                pl->descr, self->type,
+                self->channel->track->type))
             {
-              ua =
-                copy_plugins_action_new (
-                  MIXER_SELECTIONS,
-                  self->type,
-                  self->channel->track,
-                  self->slot_index);
-            }
-          else if (action == GDK_ACTION_MOVE)
-            {
-              ua =
-                move_plugins_action_new (
-                  MIXER_SELECTIONS,
-                  self->type,
-                  self->channel->track,
-                  self->slot_index);
-            }
-          g_warn_if_fail (ua);
+              /* determine if moving or copying */
+              GdkDragAction action =
+                gdk_drag_context_get_selected_action (
+                  context);
 
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
+              UndoableAction * ua = NULL;
+              if (action == GDK_ACTION_COPY)
+                {
+                  ua =
+                    copy_plugins_action_new (
+                      MIXER_SELECTIONS,
+                      self->type,
+                      self->channel->track,
+                      self->slot_index);
+                }
+              else if (action == GDK_ACTION_MOVE)
+                {
+                  ua =
+                    move_plugins_action_new (
+                      MIXER_SELECTIONS,
+                      self->type,
+                      self->channel->track,
+                      self->slot_index);
+                }
+              g_warn_if_fail (ua);
+
+              undo_manager_perform (
+                UNDO_MANAGER, ua);
+            }
+          else
+            {
+              plugin_invalid = true;
+              descr = pl->descr;
+            }
         }
     }
   else if (atom == plugin_descr_atom)
     {
       gdk_drag_status (
         context, GDK_ACTION_COPY, time);
-      PluginDescriptor * descr = NULL;
       const guchar *my_data =
         gtk_selection_data_get_data (data);
       memcpy (&descr, my_data, sizeof (descr));
       g_warn_if_fail (descr);
 
-      UndoableAction * ua =
-        create_plugins_action_new (
-          descr, self->type,
-          self->channel->track_pos,
-          self->slot_index, 1);
+      /* validate */
+      if (plugin_descriptor_is_valid_for_slot_type (
+            descr, self->type,
+            self->channel->track->type))
+        {
+          UndoableAction * ua =
+            create_plugins_action_new (
+              descr, self->type,
+              self->channel->track_pos,
+              self->slot_index, 1);
 
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      else
+        {
+          plugin_invalid = true;
+        }
+    }
+
+  if (plugin_invalid)
+    {
+      char msg[400];
+      sprintf (
+        msg,
+        _("Plugin %s cannot be added to this slot"),
+        descr->name);
+      ui_show_error_message (
+        MAIN_WINDOW, msg);
     }
 
   gtk_widget_queue_draw (widget);
@@ -679,12 +711,13 @@ on_drag_data_get (
 }
 
 static void
-on_drag_motion (GtkWidget *widget,
-             GdkDragContext *context,
-             gint x,
-             gint y,
-             guint time,
-             ChannelSlotWidget * self)
+on_drag_motion (
+  GtkWidget *widget,
+  GdkDragContext *context,
+  gint x,
+  gint y,
+  guint time,
+  ChannelSlotWidget * self)
 {
   GdkModifierType mask;
   z_gtk_widget_get_mask (
