@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,6 +30,7 @@
 #include "config.h"
 
 #include "audio/automatable.h"
+#include "audio/channel_send.h"
 #include "audio/ext_port.h"
 #include "audio/fader.h"
 #include "audio/passthrough_processor.h"
@@ -83,6 +84,14 @@ typedef struct Channel
 
   /** The instrument plugin, if instrument track. */
   Plugin *         instrument;
+
+  /**
+   * The sends strip.
+   *
+   * The first 5 are pre-fader and the rest are
+   * post-fader.
+   */
+  ChannelSend      sends[STRIP_SIZE];
 
   /**
    * External MIDI inputs that are currently
@@ -227,14 +236,15 @@ channel_fields_schema[] =
   YAML_FIELD_SEQUENCE_FIXED (
     Channel, inserts,
     plugin_schema, STRIP_SIZE),
+  YAML_FIELD_SEQUENCE_FIXED (
+    Channel, sends,
+    channel_send_schema, STRIP_SIZE),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Channel, instrument, plugin_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "prefader", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Channel, prefader,
     passthrough_processor_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "fader", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Channel, fader, fader_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Channel, midi_out,

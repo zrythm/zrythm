@@ -1333,6 +1333,13 @@ channel_new (
     &self->prefader, prefader_type, self);
   track_processor_init (&track->processor, track);
 
+  /* init sends */
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      channel_send_init (
+        &self->sends[i], self->track_pos, i);
+    }
+
   return self;
 }
 

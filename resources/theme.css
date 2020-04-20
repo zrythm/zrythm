@@ -336,7 +336,8 @@ automation-point:selected
   background-color: @selection_color;
 }
 
-channel-slot
+channel-slot,
+channel-send
 {
   font-family: Arial;
   font-style: italic;
@@ -344,13 +345,15 @@ channel-slot
 }
 
 /* Checked means the plugin is visible */
-channel-slot:checked
+channel-slot:checked,
+channel-send:checked
 {
   font-style: normal;
   font-weight: bold;
 }
 
-channel-slot:selected
+channel-slot:selected,
+channel-send:selected
 {
   background-color: @light_blueish;
 }
@@ -368,6 +371,7 @@ scale-object:hover,
 marker:hover,
 fader:hover,
 channel-slot:hover:not(:selected),
+channel-send:hover:not(:selected),
 balance-control:hover,
 ruler-playhead:hover,
 arranger-playhed:hover,

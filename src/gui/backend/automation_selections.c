@@ -24,7 +24,6 @@
 #include "audio/transport.h"
 #include "gui/backend/events.h"
 #include "gui/backend/automation_selections.h"
-#include "gui/widgets/audio_region.h"
 #include "gui/widgets/midi_region.h"
 #include "project.h"
 #include "utils/arrays.h"

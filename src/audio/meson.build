@@ -26,6 +26,7 @@ audio_srcs = [
   'audio_bus_track.c',
   'balance_control.c',
   'channel.c',
+  'channel_send.c',
   'channel_track.c',
   'chord_descriptor.c',
   'chord_object.c',

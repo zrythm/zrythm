@@ -28,7 +28,6 @@
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/chord_selections.h"
 #include "gui/backend/timeline_selections.h"
-#include "gui/widgets/audio_region.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_point.h"

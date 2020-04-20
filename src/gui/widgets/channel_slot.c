@@ -111,10 +111,9 @@ channel_slot_draw_cb (
       /* fill background */
       cairo_set_source_rgba (
         cr, bg.red, bg.green, bg.blue, 1.0);
-      cairo_move_to (cr, padding, padding);
-      cairo_line_to (cr, padding, height - padding);
-      cairo_line_to (cr, width - padding, height - padding);
-      cairo_line_to (cr, width - padding, padding);
+      cairo_rectangle (
+        cr, padding, padding,
+        width - padding * 2, height - padding * 2);
       cairo_fill(cr);
 
       /* fill text */
@@ -148,11 +147,9 @@ channel_slot_draw_cb (
       /* fill background */
       cairo_set_source_rgba (
         cr, 0.1, 0.1, 0.1, 1.0);
-      cairo_move_to (cr, padding, padding);
-      cairo_line_to (cr, padding, height - padding);
-      cairo_line_to (
-        cr, width - padding, height - padding);
-      cairo_line_to (cr, width - padding, padding);
+      cairo_rectangle (
+        cr, padding, padding,
+        width - padding * 2, height - padding * 2);
       cairo_fill(cr);
 
       /* fill text */
@@ -174,7 +171,7 @@ channel_slot_draw_cb (
           g_free (self->pl_name);
           self->pl_name = NULL;
           gtk_widget_set_tooltip_text (
-            widget, _("empty slot"));
+            widget, text);
         }
     }
 

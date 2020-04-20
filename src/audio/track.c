@@ -39,7 +39,6 @@
 #include "audio/track.h"
 #include "gui/backend/events.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/audio_region.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"

@@ -30,7 +30,6 @@
 #include "audio/region.h"
 #include "audio/region_link_group_manager.h"
 #include "audio/track.h"
-#include "gui/widgets/audio_region.h"
 #include "gui/widgets/automation_region.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
