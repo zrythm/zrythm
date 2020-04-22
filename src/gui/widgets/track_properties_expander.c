@@ -20,6 +20,7 @@
 #include "audio/engine.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
+#include "gui/widgets/channel_slot.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/track_properties_expander.h"
@@ -58,6 +59,20 @@ track_properties_expander_widget_refresh (
         track_get_name,
         (EditableLabelWidgetTextSetter)
         track_set_name_with_events);
+
+      bool is_instrument =
+        track->type == TRACK_TYPE_INSTRUMENT;
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->instrument_slot),
+        is_instrument);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->instrument_label),
+        is_instrument);
+      if (is_instrument)
+        {
+          channel_slot_widget_set_instrument (
+            self->instrument_slot, track->channel);
+        }
     }
 }
 
@@ -118,6 +133,18 @@ track_properties_expander_widget_setup (
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->direct_out));
+
+  /* add instrument slot */
+  self->instrument_slot =
+    channel_slot_widget_new_instrument ();
+  CREATE_LABEL (_("Instrument"));
+  two_col_expander_box_widget_add_single (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    lbl);
+  self->instrument_label = GTK_LABEL (lbl);
+  two_col_expander_box_widget_add_single (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    GTK_WIDGET (self->instrument_slot));
 
 #undef CREATE_LABEL
 

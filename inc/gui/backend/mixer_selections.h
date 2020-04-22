@@ -146,16 +146,16 @@ mixer_selections_get_track (
 /**
  * Returns if the slot is selected or not.
  */
-int
+bool
 mixer_selections_contains_slot (
   MixerSelections * ms,
-  PluginSlotType   type,
+  PluginSlotType    type,
   int               slot);
 
 /**
  * Returns if the plugin is selected or not.
  */
-int
+bool
 mixer_selections_contains_plugin (
   MixerSelections * ms,
   Plugin *          pl);
@@ -187,6 +187,14 @@ mixer_selections_remove_slot (
   int               slot,
   PluginSlotType   type,
   int               publish_events);
+
+/**
+ * Returns the first selected plugin if any is
+ * selected, otherwise NULL.
+ */
+Plugin *
+mixer_selections_get_first_plugin (
+  MixerSelections * self);
 
 /**
  * Clears selections.

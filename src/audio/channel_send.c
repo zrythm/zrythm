@@ -66,7 +66,7 @@ channel_send_connect_stereo (
   ChannelSend * self,
   StereoPorts * stereo)
 {
-
+  /* TODO */
 }
 
 /**
@@ -77,6 +77,7 @@ channel_send_connect_midi (
   ChannelSend * self,
   Port *        port)
 {
+  /* TODO */
 }
 
 void

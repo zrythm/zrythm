@@ -83,6 +83,25 @@ FoldableNotebookWidget *
 foldable_notebook_widget_new (void);
 
 /**
+ * Get the widget at the given page.
+ */
+GtkWidget *
+foldable_notebook_widget_get_widget_at_page (
+  FoldableNotebookWidget * self,
+  int                      page);
+
+/**
+ * Get the widget currently visible.
+ *
+ * FIXME this is not working with nested containers
+ * like scrolled windows. this whole widget needs
+ * a rewrite.
+ */
+GtkWidget *
+foldable_notebook_widget_get_current_widget (
+  FoldableNotebookWidget * self);
+
+/**
  * Sets the folded space visible or not.
  */
 void

@@ -32,7 +32,7 @@
 
 void
 mixer_selections_init_loaded (
-  MixerSelections * ms)
+  MixerSelections * self)
 {
 }
 
@@ -41,9 +41,9 @@ mixer_selections_init_loaded (
  */
 int
 mixer_selections_has_any (
-  MixerSelections * ms)
+  MixerSelections * self)
 {
-  return ms->num_slots;
+  return self->has_any;
 }
 
 /**
@@ -126,24 +126,30 @@ mixer_selections_add_slot (
     {
       mixer_selections_clear (
         ms, F_NO_PUBLISH_EVENTS);
-      ms->track_pos = ch->track_pos;
-      ms->type = type;
     }
-  ms->has_any = 1;
+  g_message ("added slot");
+  ms->track_pos = ch->track_pos;
+  ms->type = type;
+  ms->has_any = true;
 
-  if (array_contains_int (
+  Plugin * pl = NULL;
+  if (type != PLUGIN_SLOT_INSTRUMENT &&
+      !array_contains_int (
         ms->slots, ms->num_slots, slot))
-    return;
+    {
+      pl =
+        type == PLUGIN_SLOT_MIDI_FX ?
+          ch->midi_fx[slot] : ch->inserts[slot];
+      array_double_append (
+        ms->slots, ms->plugins, ms->num_slots,
+        slot, pl);
+    }
 
-  Plugin * pl =
-    type == PLUGIN_SLOT_MIDI_FX ?
-      ch->midi_fx[slot] : ch->inserts[slot];
-  array_double_append (
-    ms->slots, ms->plugins, ms->num_slots,
-    slot, pl);
-
-  EVENTS_PUSH (
-    ET_MIXER_SELECTIONS_CHANGED, pl);
+  if (pl)
+    {
+      EVENTS_PUSH (
+        ET_MIXER_SELECTIONS_CHANGED, pl);
+    }
 }
 
 /**
@@ -156,14 +162,15 @@ void
 mixer_selections_remove_slot (
   MixerSelections * ms,
   int               slot,
-  PluginSlotType   type,
+  PluginSlotType    type,
   int               publish_events)
 {
   g_message ("removing slot %d", slot);
   array_delete_primitive (
     ms->slots, ms->num_slots, slot);
 
-  if (ms->num_slots == 0)
+  if (ms->num_slots == 0 ||
+      ms->type == PLUGIN_SLOT_INSTRUMENT)
     {
       ms->has_any = 0;
       ms->track_pos = -1;
@@ -180,37 +187,95 @@ mixer_selections_remove_slot (
 /**
  * Returns if the slot is selected or not.
  */
-int
+bool
 mixer_selections_contains_slot (
-  MixerSelections * ms,
-  PluginSlotType   type,
+  MixerSelections * self,
+  PluginSlotType    type,
   int               slot)
 {
-  for (int i = 0; i < ms->num_slots; i++)
-    if (ms->slots[i] == slot)
-      return 1;
+  if (type != self->type)
+    return false;
 
-  return 0;
+  if (type == PLUGIN_SLOT_INSTRUMENT)
+    {
+      return self->has_any;
+    }
+  else
+    {
+      for (int i = 0; i < self->num_slots; i++)
+        {
+          if (self->slots[i] == slot)
+            {
+              return true;
+            }
+        }
+    }
+
+  return false;
 }
 
 /**
  * Returns if the plugin is selected or not.
  */
-int
+bool
 mixer_selections_contains_plugin (
   MixerSelections * ms,
   Plugin *          pl)
 {
   if (ms->track_pos != pl->id.track_pos)
-    return 0;
+    return false;
 
-  for (int i = 0; i < ms->num_slots; i++)
+  if (ms->type == PLUGIN_SLOT_INSTRUMENT)
     {
-      if (ms->slots[i] == pl->id.slot)
-        return 1;
+      if (pl->id.slot_type ==
+            PLUGIN_SLOT_INSTRUMENT &&
+          pl->id.track_pos == ms->track_pos)
+        {
+          return true;
+        }
+    }
+  else
+    {
+      for (int i = 0; i < ms->num_slots; i++)
+        {
+          if (ms->slots[i] == pl->id.slot &&
+              ms->type == pl->id.slot_type)
+            return true;
+        }
     }
 
-  return 0;
+  return false;
+}
+
+/**
+ * Returns the first selected plugin if any is
+ * selected, otherwise NULL.
+ */
+Plugin *
+mixer_selections_get_first_plugin (
+  MixerSelections * self)
+{
+  if (self->has_any)
+    {
+      Track * track =
+        mixer_selections_get_track (self);
+      g_return_val_if_fail (track, NULL);
+      switch (self->type)
+        {
+        case PLUGIN_SLOT_INSTRUMENT:
+          return track->channel->instrument;
+        case PLUGIN_SLOT_INSERT:
+          return
+            track->channel->inserts[
+              self->slots[0]];
+        case PLUGIN_SLOT_MIDI_FX:
+          return
+            track->channel->midi_fx[
+              self->slots[0]];
+        }
+    }
+
+  return NULL;
 }
 
 /**
@@ -218,16 +283,19 @@ mixer_selections_contains_plugin (
  */
 void
 mixer_selections_clear (
-  MixerSelections * ms,
+  MixerSelections * self,
   const int         pub_events)
 {
   int i;
 
-  for (i = ms->num_slots - 1; i >= 0; i--)
+  for (i = self->num_slots - 1; i >= 0; i--)
     {
       mixer_selections_remove_slot (
-        ms, ms->slots[i], ms->type, 0);
+        self, self->slots[i], self->type, 0);
     }
+
+  self->has_any = false;
+  self->track_pos = -1;
 
   if (pub_events)
     {

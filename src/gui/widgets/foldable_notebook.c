@@ -35,17 +35,13 @@ on_switch_page (
 {
   int num_pages =
     gtk_notebook_get_n_pages (notebook);
-  GtkContainer * box;
   GtkWidget * widget;
   for (int i = 0; i < num_pages; i++)
     {
-      box =
-        GTK_CONTAINER (
-          gtk_notebook_get_nth_page (notebook, i));
-
       /* set the child visible */
       widget =
-        z_gtk_container_get_single_child (box);
+        foldable_notebook_widget_get_widget_at_page (
+          self, i);
       gtk_widget_set_visible (
         widget, (guint) i == page_num ? 1 : 0);
     }
@@ -59,9 +55,6 @@ foldable_notebook_widget_set_visibility (
   FoldableNotebookWidget * self,
   int                      new_visibility)
 {
-  GtkBox * current_box;
-  GtkWidget * widget;
-
   /* toggle visibility of all box children.
    * do this on the children because toggling
    * the visibility of the box causes gtk to
@@ -72,13 +65,9 @@ foldable_notebook_widget_set_visibility (
   /*int max_width = 0, max_height = 0;*/
   for (int i = 0; i < num_pages; i++)
     {
-      current_box =
-        GTK_BOX (
-          gtk_notebook_get_nth_page (
-            GTK_NOTEBOOK (self), i));
-      widget =
-        z_gtk_container_get_single_child (
-          GTK_CONTAINER (current_box));
+      GtkWidget * widget =
+        foldable_notebook_widget_get_widget_at_page (
+          self, i);
       gtk_widget_set_visible (
         widget, new_visibility);
     }
@@ -133,15 +122,28 @@ int
 foldable_notebook_widget_is_content_visible (
   FoldableNotebookWidget * self)
 {
-  GtkBox * current_box =
-    GTK_BOX (
+  GtkWidget * widget =
+    foldable_notebook_widget_get_current_widget (
+      self);
+  return
+    gtk_widget_get_visible (widget);
+}
+
+/**
+ * Get the widget currently visible.
+ */
+GtkWidget *
+foldable_notebook_widget_get_current_widget (
+  FoldableNotebookWidget * self)
+{
+  GtkContainer * current_box =
+    GTK_CONTAINER (
       z_gtk_notebook_get_current_page_widget (
         GTK_NOTEBOOK (self)));
   GtkWidget * widget =
     z_gtk_container_get_single_child (
       GTK_CONTAINER (current_box));
-  return
-    gtk_widget_get_visible (widget);
+  return widget;
 }
 
 /**
@@ -156,6 +158,21 @@ foldable_notebook_widget_toggle_visibility (
     self,
     !foldable_notebook_widget_is_content_visible (
        self));
+}
+
+GtkWidget *
+foldable_notebook_widget_get_widget_at_page (
+  FoldableNotebookWidget * self,
+  int                      page)
+{
+  GtkContainer * container =
+    GTK_CONTAINER (
+      gtk_notebook_get_nth_page (
+        GTK_NOTEBOOK (self), page));
+  GtkWidget * widget =
+    z_gtk_container_get_single_child (
+      GTK_CONTAINER (container));
+  return widget;
 }
 
 /**

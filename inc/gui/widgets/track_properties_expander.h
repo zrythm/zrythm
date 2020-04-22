@@ -44,6 +44,7 @@ typedef struct _EditableLabelWidget
 typedef struct Track Track;
 typedef struct _RouteTargetSelectorWidget
   RouteTargetSelectorWidget;
+typedef struct _ChannelSlotWidget ChannelSlotWidget;
 
 /**
  * @addtogroup widgets
@@ -63,6 +64,11 @@ typedef struct _TrackPropertiesExpanderWidget
   EditableLabelWidget *   name;
 
   RouteTargetSelectorWidget * direct_out;
+
+  /** Instrument slot, for instrument tracks. */
+  ChannelSlotWidget *     instrument_slot;
+
+  GtkLabel *              instrument_label;
 
   /* TODO midi inputs, etc. See Instrument Track
    * Inspector from cubase manual. */

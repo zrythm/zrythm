@@ -336,22 +336,6 @@ automation-point:selected
   background-color: @selection_color;
 }
 
-channel-slot,
-channel-send
-{
-  font-family: Arial;
-  font-style: italic;
-  font-size: x-small;
-}
-
-/* Checked means the plugin is visible */
-channel-slot:checked,
-channel-send:checked
-{
-  font-style: normal;
-  font-weight: bold;
-}
-
 channel-slot:selected,
 channel-send:selected
 {

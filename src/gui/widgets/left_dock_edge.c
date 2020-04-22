@@ -38,6 +38,26 @@ G_DEFINE_TYPE (LeftDockEdgeWidget,
                left_dock_edge_widget,
                GTK_TYPE_BOX)
 
+static void
+on_notebook_switch_page (
+  GtkNotebook * notebook,
+  GtkWidget *   page,
+  guint         page_num,
+  LeftDockEdgeWidget * self)
+{
+  if (page_num == 0)
+    {
+      g_message ("SWITCHED TRACK");
+      PROJECT->last_selection = SELECTION_TYPE_TRACK;
+    }
+  else if (page_num == 1)
+    {
+      g_message ("SWITCHED PLUGIN");
+      PROJECT->last_selection =
+        SELECTION_TYPE_PLUGIN;
+    }
+}
+
 void
 left_dock_edge_widget_refresh (
   LeftDockEdgeWidget * self)
@@ -65,6 +85,11 @@ left_dock_edge_widget_setup (
     self->inspector_notebook,
     MW_CENTER_DOCK->left_rest_paned,
     GTK_POS_LEFT);
+  g_signal_connect (
+    G_OBJECT (self->inspector_notebook),
+    "switch-page",
+    G_CALLBACK (on_notebook_switch_page),
+    self);
 
   inspector_track_widget_setup (
     self->track_inspector, TRACKLIST_SELECTIONS);

@@ -66,9 +66,9 @@ inspector_plugin_widget_show (
 
   /* show info for first plugin */
   Plugin * pl = NULL;
-  if (ms->num_slots > 0)
+  if (ms->has_any)
     {
-      pl = ms->plugins[0];
+      pl = mixer_selections_get_first_plugin (ms);
     }
 
   if (pl)

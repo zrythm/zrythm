@@ -81,20 +81,8 @@ plugin_strip_expander_widget_set_state_flags (
         }
       else
         {
-          if (set)
-            {
-              gtk_widget_set_state_flags (
-                GTK_WIDGET (self->slots[slot]),
-                flags, 0);
-            }
-          else
-            {
-              gtk_widget_unset_state_flags (
-                GTK_WIDGET (self->slots[slot]),
-                flags);
-            }
-          gtk_widget_queue_draw (
-            GTK_WIDGET (self->slots[slot]));
+          channel_slot_widget_set_state_flags (
+            self->slots[slot], flags, set);
         }
       break;
     default:

@@ -27,8 +27,10 @@
 #include "audio/engine.h"
 #include "plugins/lv2_plugin.h"
 #include "gui/widgets/bot_bar.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/channel_slot.h"
+#include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/cairo.h"
@@ -61,6 +63,10 @@ get_plugin (
         self->channel->midi_fx[self->slot_index];
       break;
     case PLUGIN_SLOT_INSTRUMENT:
+      if (self->channel)
+        {
+          return self->channel->instrument;
+        }
       break;
     }
 
@@ -487,7 +493,8 @@ select_plugin (
     pl = true;
 
   /* if same channel as selections */
-  if (self->channel->track_pos ==
+  if (self->channel &&
+      self->channel->track_pos ==
         MIXER_SELECTIONS->track_pos)
     ch = true;
 
@@ -509,17 +516,21 @@ select_plugin (
     select_ctrl_pl_ch (self);
 
   /* select channel */
-  Track * track =
-    channel_get_track (self->channel);
-  tracklist_selections_select_single (
-    TRACKLIST_SELECTIONS, track);
+  if (self->channel)
+    {
+      Track * track =
+        channel_get_track (self->channel);
+      tracklist_selections_select_single (
+        TRACKLIST_SELECTIONS, track);
+    }
 }
 
 static void
-drag_end (GtkGestureDrag *gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               ChannelSlotWidget * self)
+drag_end (
+  GtkGestureDrag *    gesture,
+  gdouble             offset_x,
+  gdouble             offset_y,
+  ChannelSlotWidget * self)
 {
   GdkModifierType state_mask =
     ui_get_state_mask (
@@ -568,7 +579,8 @@ multipress_pressed (
   self->n_press = n_press;
   g_message ("multipress %d", n_press);
 
-  if (self->open_plugin_inspector_on_click)
+  if (self->open_plugin_inspector_on_click &&
+      self->type != PLUGIN_SLOT_INSTRUMENT)
     {
       PROJECT->last_selection =
         SELECTION_TYPE_PLUGIN;
@@ -596,6 +608,33 @@ on_plugin_bypass_activate (
 }
 
 static void
+on_plugin_inspect_activate (
+  GtkMenuItem * menuitem,
+  Plugin *      pl)
+{
+  PROJECT->last_selection = SELECTION_TYPE_PLUGIN;
+  left_dock_edge_widget_refresh (
+    MW_LEFT_DOCK_EDGE);
+}
+
+static bool
+tick_cb (
+  GtkWidget *         widget,
+  GdkFrameClock *     frame_clock,
+  ChannelSlotWidget * self)
+{
+  Plugin * pl = get_plugin (self);
+  bool is_selected = pl && plugin_is_selected (pl);
+  if (is_selected != self->was_selected)
+    {
+      channel_slot_widget_set_state_flags (
+        self, GTK_STATE_FLAG_SELECTED, is_selected);
+    }
+
+  return G_SOURCE_CONTINUE;
+}
+
+static void
 show_context_menu (
   ChannelSlotWidget * self)
 {
@@ -615,9 +654,9 @@ show_context_menu (
   gtk_menu_shell_append ( \
     GTK_MENU_SHELL(menu), GTK_WIDGET (menuitem))
 
-  /* add bypass option */
   if (pl)
     {
+      /* add bypass option */
       menuitem =
         GTK_MENU_ITEM (
           gtk_check_menu_item_new_with_label (
@@ -629,6 +668,18 @@ show_context_menu (
         G_OBJECT (menuitem), "activate",
         G_CALLBACK (on_plugin_bypass_activate), pl);
       ADD_TO_SHELL;
+
+      /* add inspect option */
+      menuitem =
+        GTK_MENU_ITEM (
+          gtk_menu_item_new_with_label (
+            _("Inspect")));
+      g_signal_connect (
+        G_OBJECT (menuitem), "activate",
+        G_CALLBACK (on_plugin_inspect_activate),
+        pl);
+      ADD_TO_SHELL;
+
       CREATE_SEPARATOR;
       ADD_TO_SHELL;
     }
@@ -640,7 +691,7 @@ show_context_menu (
   menuitem = CREATE_PASTE_MENU_ITEM (NULL);
   ADD_TO_SHELL;
   /* if plugin exists */
-  if (pl)
+  if (pl && self->type != PLUGIN_SLOT_INSTRUMENT)
     {
       /* add delete item */
       menuitem = CREATE_DELETE_MENU_ITEM (NULL);
@@ -667,11 +718,12 @@ show_context_menu (
 }
 
 static void
-on_right_click (GtkGestureMultiPress *gesture,
-               gint                  n_press,
-               gdouble               x,
-               gdouble               y,
-               ChannelSlotWidget *   self)
+on_right_click (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  ChannelSlotWidget *   self)
 {
   if (n_press != 1)
     return;
@@ -720,9 +772,11 @@ on_drag_motion (
   z_gtk_widget_get_mask (
     widget, &mask);
   if (mask & GDK_CONTROL_MASK)
-    gdk_drag_status (context, GDK_ACTION_COPY, time);
+    gdk_drag_status (
+      context, GDK_ACTION_COPY, time);
   else
-    gdk_drag_status (context, GDK_ACTION_MOVE, time);
+    gdk_drag_status (
+      context, GDK_ACTION_MOVE, time);
 }
 
 static gboolean
@@ -758,28 +812,15 @@ recreate_pango_layouts (
   if (PANGO_IS_LAYOUT (self->pl_name_layout))
     g_object_unref (self->pl_name_layout);
 
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self));
-  PangoFontDescription *font_desc;
-
-  gtk_style_context_get (
-    context, GTK_STATE_FLAG_NORMAL,
-    "font", &font_desc, NULL);
   self->empty_slot_layout =
-    z_cairo_create_pango_layout_from_description (
-      (GtkWidget *) self, font_desc,
+    z_cairo_create_pango_layout_from_string (
+      (GtkWidget *) self, "Arial Italic 7.5",
       PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
-  pango_font_description_free (font_desc);
 
-  gtk_style_context_get (
-    context, GTK_STATE_FLAG_CHECKED,
-    "font", &font_desc, NULL);
   self->pl_name_layout =
-    z_cairo_create_pango_layout_from_description (
-      (GtkWidget *) self, font_desc,
+    z_cairo_create_pango_layout_from_string (
+      (GtkWidget *) self, "Arial Bold 7.5",
       PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
-  pango_font_description_free (font_desc);
 }
 
 static void
@@ -816,6 +857,43 @@ finalize (
   G_OBJECT_CLASS (
     channel_slot_widget_parent_class)->
       finalize (G_OBJECT (self));
+}
+
+/**
+ * Sets or unsets state flags and redraws the
+ * widget.
+ *
+ * @param set True to set, false to unset.
+ */
+void
+channel_slot_widget_set_state_flags (
+  ChannelSlotWidget * self,
+  GtkStateFlags       flags,
+  bool                set)
+{
+  if (set)
+    {
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self), flags, 0);
+    }
+  else
+    {
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self), flags);
+    }
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+
+void
+channel_slot_widget_set_instrument (
+  ChannelSlotWidget * self,
+  Channel *           ch)
+{
+  self->channel = ch;
+  channel_slot_widget_set_state_flags (
+    self, GTK_STATE_FLAG_SELECTED,
+    ch->instrument &&
+    plugin_is_selected (ch->instrument));
 }
 
 /**
@@ -868,6 +946,24 @@ channel_slot_widget_new (
     GDK_ACTION_MOVE | GDK_ACTION_COPY);
   g_free (entry_plugin);
   g_free (entry_plugin_descr);
+
+  return self;
+}
+
+/**
+ * Creates a new ChannelSlot widget whose track
+ * and plugin can change.
+ */
+ChannelSlotWidget *
+channel_slot_widget_new_instrument (void)
+{
+  ChannelSlotWidget * self =
+    g_object_new (
+      CHANNEL_SLOT_WIDGET_TYPE, NULL);
+  self->slot_index = -1;
+  self->type = PLUGIN_SLOT_INSTRUMENT;
+  self->channel = NULL;
+  self->open_plugin_inspector_on_click = false;
 
   return self;
 }
@@ -948,6 +1044,10 @@ channel_slot_widget_init (
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
     G_CALLBACK (on_size_allocate),  self);
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), (GtkTickCallback) tick_cb,
+    self, NULL);
 }
 
 static void

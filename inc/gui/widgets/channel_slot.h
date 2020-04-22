@@ -76,10 +76,21 @@ typedef struct _ChannelSlotWidget
   /** Layout cache for plugin name. */
   PangoLayout *        pl_name_layout;
 
+  /** Cache to check if the selection state was
+   * changed. */
+  bool                 was_selected;
+
   /** Whether to open the plugin inspector on click
    * or not. */
   bool                 open_plugin_inspector_on_click;
 } ChannelSlotWidget;
+
+/**
+ * Creates a new ChannelSlot widget whose track
+ * and plugin can change.
+ */
+ChannelSlotWidget *
+channel_slot_widget_new_instrument (void);
 
 /**
  * Creates a new ChannelSlot widget and binds it to
@@ -91,6 +102,23 @@ channel_slot_widget_new (
   Channel * ch,
   PluginSlotType type,
   bool      open_plugin_inspector_on_click);
+
+void
+channel_slot_widget_set_instrument (
+  ChannelSlotWidget * self,
+  Channel *           ch);
+
+/**
+ * Sets or unsets state flags and redraws the
+ * widget.
+ *
+ * @param set True to set, false to unset.
+ */
+void
+channel_slot_widget_set_state_flags (
+  ChannelSlotWidget * self,
+  GtkStateFlags       flags,
+  bool                set);
 
 /**
  * @}

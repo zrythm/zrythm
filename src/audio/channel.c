@@ -468,10 +468,11 @@ channel_init_loaded (Channel * ch)
     }
   if (ch->instrument)
     {
-          pl->id.track_pos = ch->track_pos;
-          pl->id.slot = 0;
-          pl->id.slot_type = PLUGIN_SLOT_INSTRUMENT;
-          plugin_init_loaded (pl);
+      pl = ch->instrument;
+      pl->id.track_pos = ch->track_pos;
+      pl->id.slot = 0;
+      pl->id.slot_type = PLUGIN_SLOT_INSTRUMENT;
+      plugin_init_loaded (pl);
     }
 }
 
