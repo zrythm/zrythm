@@ -20,6 +20,7 @@
 #include "gui/backend/events.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/channel_sends_expander.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/fader_controls_expander.h"
 #include "gui/widgets/inspector_track.h"
@@ -62,6 +63,7 @@ reveal_cb (
 
   SET_SETTING (track_info, "properties");
   SET_SETTING (inputs, "inputs");
+  SET_SETTING (outputs, "outputs");
   SET_SETTING (sends, "sends");
   SET_SETTING (controls, "controls");
   SET_SETTING (inserts, "inserts");
@@ -120,6 +122,8 @@ inspector_track_widget_show_tracks (
       gtk_widget_set_visible (
         GTK_WIDGET (self->sends), false);
       gtk_widget_set_visible (
+        GTK_WIDGET (self->outputs), false);
+      gtk_widget_set_visible (
         GTK_WIDGET (self->controls), false);
       gtk_widget_set_visible (
         GTK_WIDGET (self->inputs), false);
@@ -144,6 +148,8 @@ inspector_track_widget_show_tracks (
           gtk_widget_set_visible (
             GTK_WIDGET (self->sends), true);
           gtk_widget_set_visible (
+            GTK_WIDGET (self->outputs), true);
+          gtk_widget_set_visible (
             GTK_WIDGET (self->controls), true);
           gtk_widget_set_visible (
             GTK_WIDGET (self->fader), true);
@@ -166,7 +172,7 @@ inspector_track_widget_show_tracks (
                 PSE_POSITION_INSPECTOR, track);
             }
           ports_expander_widget_setup_track (
-            self->sends,
+            self->outputs,
             track, PE_TRACK_PORT_TYPE_SENDS);
           ports_expander_widget_setup_track (
             self->controls,
@@ -178,6 +184,10 @@ inspector_track_widget_show_tracks (
 
           fader_controls_expander_widget_setup (
             self->fader, track);
+
+          channel_sends_expander_widget_setup (
+            self->sends, CSE_POSITION_INSPECTOR,
+            track);
         }
     }
   else /* no tracks selected */
@@ -185,10 +195,10 @@ inspector_track_widget_show_tracks (
       track_properties_expander_widget_refresh (
         self->track_info, NULL);
       ports_expander_widget_setup_track (
-        self->sends,
+        self->outputs,
         track, PE_TRACK_PORT_TYPE_SENDS);
       ports_expander_widget_setup_track (
-        self->sends,
+        self->controls,
         track, PE_TRACK_PORT_TYPE_CONTROLS);
       text_expander_widget_setup (
         self->comment, NULL, NULL, NULL);
@@ -242,6 +252,7 @@ inspector_track_widget_class_init (
 
   BIND_CHILD (track_info);
   BIND_CHILD (sends);
+  BIND_CHILD (outputs);
   BIND_CHILD (controls);
   BIND_CHILD (inputs);
   BIND_CHILD (inserts);
@@ -265,6 +276,8 @@ inspector_track_widget_init (
     PORTS_EXPANDER_WIDGET_TYPE);
   g_type_ensure (
     PLUGIN_STRIP_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (
+    CHANNEL_SENDS_EXPANDER_WIDGET_TYPE);
   g_type_ensure (
     FADER_CONTROLS_EXPANDER_WIDGET_TYPE);
   g_type_ensure (
@@ -297,6 +310,7 @@ inspector_track_widget_init (
 
   SET_STATE (track_info, "properties");
   SET_STATE (inputs, "inputs");
+  SET_STATE (outputs, "outputs");
   SET_STATE (sends, "sends");
   SET_STATE (controls, "controls");
   SET_STATE (inserts, "inserts");

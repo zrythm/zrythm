@@ -162,7 +162,9 @@ channel_slot_draw_cb (
       cairo_set_source_rgba (
         cr, 0.3, 0.3, 0.3, 1.0);
       int w, h;
-      char * text = _("empty slot");
+      char text[400];
+      sprintf (
+        text, _("Slot #%d"), self->slot_index);
       z_cairo_get_text_extents_for_widget (
         widget, self->empty_slot_layout, text,
         &w, &h);
@@ -654,6 +656,8 @@ show_context_menu (
   gtk_menu_shell_append ( \
     GTK_MENU_SHELL(menu), GTK_WIDGET (menuitem))
 
+  bool needs_sep = false;
+
   if (pl)
     {
       /* add bypass option */
@@ -680,16 +684,25 @@ show_context_menu (
         pl);
       ADD_TO_SHELL;
 
-      CREATE_SEPARATOR;
+      needs_sep = true;
+    }
+
+  if (self->type != PLUGIN_SLOT_INSTRUMENT)
+    {
+      if (needs_sep)
+        {
+          CREATE_SEPARATOR;
+          ADD_TO_SHELL;
+        }
+
+      menuitem = CREATE_CUT_MENU_ITEM (NULL);
+      ADD_TO_SHELL;
+      menuitem = CREATE_COPY_MENU_ITEM (NULL);
+      ADD_TO_SHELL;
+      menuitem = CREATE_PASTE_MENU_ITEM (NULL);
       ADD_TO_SHELL;
     }
 
-  menuitem = CREATE_CUT_MENU_ITEM (NULL);
-  ADD_TO_SHELL;
-  menuitem = CREATE_COPY_MENU_ITEM (NULL);
-  ADD_TO_SHELL;
-  menuitem = CREATE_PASTE_MENU_ITEM (NULL);
-  ADD_TO_SHELL;
   /* if plugin exists */
   if (pl && self->type != PLUGIN_SLOT_INSTRUMENT)
     {
@@ -699,13 +712,26 @@ show_context_menu (
         G_OBJECT (menuitem), "activate",
         G_CALLBACK (on_plugin_delete), self);
       ADD_TO_SHELL;
+
+      needs_sep = true;
     }
-  CREATE_SEPARATOR;
-  ADD_TO_SHELL;
-  menuitem = CREATE_CLEAR_SELECTION_MENU_ITEM (NULL);
-  ADD_TO_SHELL;
-  menuitem = CREATE_SELECT_ALL_MENU_ITEM (NULL);
-  ADD_TO_SHELL;
+
+  if (self->type != PLUGIN_SLOT_INSTRUMENT)
+    {
+      if (needs_sep)
+        {
+          CREATE_SEPARATOR;
+          ADD_TO_SHELL;
+        }
+
+      menuitem =
+        CREATE_CLEAR_SELECTION_MENU_ITEM (NULL);
+      ADD_TO_SHELL;
+      menuitem = CREATE_SELECT_ALL_MENU_ITEM (NULL);
+      ADD_TO_SHELL;
+
+      needs_sep = true;
+    }
 
 #undef ADD_TO_SHELL
 

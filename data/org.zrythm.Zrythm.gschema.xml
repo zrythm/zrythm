@@ -695,6 +695,15 @@
       </description>
     </key>
 
+    <!-- KEY: track-outputs-expanded -->
+    <key name="track-outputs-expanded" type="b">
+      <default>true</default>
+      <summary>Track outputs expanded</summary>
+      <description>
+        Whether track outputs is expanded.
+      </description>
+    </key>
+
     <!-- KEY: track-sends-expanded -->
     <key name="track-sends-expanded" type="b">
       <default>true</default>

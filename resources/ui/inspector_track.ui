@@ -55,9 +55,17 @@
     </child>
     <child>
       <object class="PortsExpanderWidget"
+        id="outputs">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="ChannelSendsExpanderWidget"
         id="sends">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="vexpand">False</property>
       </object>
     </child>
     <child>

@@ -51,6 +51,8 @@ typedef struct _FaderControlsExpanderWidget
 typedef struct _TextExpanderWidget
   TextExpanderWidget;
 typedef struct _ColorAreaWidget ColorAreaWidget;
+typedef struct _ChannelSendsExpanderWidget
+  ChannelSendsExpanderWidget;
 
 /**
  * @addtogroup widgets
@@ -71,7 +73,9 @@ typedef struct _InspectorTrackWidget
 
   TrackInputExpanderWidget * inputs;
 
-  PortsExpanderWidget * sends;
+  ChannelSendsExpanderWidget * sends;
+
+  PortsExpanderWidget * outputs;
 
   /** Pan, fader, etc. */
   PortsExpanderWidget * controls;

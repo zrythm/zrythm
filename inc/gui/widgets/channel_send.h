@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (
   ChannelSendWidget,
   channel_send_widget,
   Z, CHANNEL_SEND_WIDGET,
-  GtkWidget)
+  GtkDrawingArea)
 
 typedef struct ChannelSend ChannelSend;
 
@@ -46,7 +46,7 @@ typedef struct ChannelSend ChannelSend;
 
 typedef struct _ChannelSendWidget
 {
-  GtkWidget           parent_instance;
+  GtkDrawingArea      parent_instance;
 
   /** Owner. */
   ChannelSend *       send;

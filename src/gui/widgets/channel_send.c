@@ -31,7 +31,7 @@
 
 G_DEFINE_TYPE (
   ChannelSendWidget, channel_send_widget,
-  GTK_TYPE_WIDGET)
+  GTK_TYPE_DRAWING_AREA)
 
 #define ELLIPSIZE_PADDING 2
 
@@ -228,28 +228,14 @@ recreate_pango_layouts (
   if (PANGO_IS_LAYOUT (self->name_layout))
     g_object_unref (self->name_layout);
 
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self));
-  PangoFontDescription *font_desc;
-
-  gtk_style_context_get (
-    context, GTK_STATE_FLAG_NORMAL,
-    "font", &font_desc, NULL);
   self->empty_slot_layout =
-    z_cairo_create_pango_layout_from_description (
-      (GtkWidget *) self, font_desc,
+    z_cairo_create_pango_layout_from_string (
+      (GtkWidget *) self, "Arial Italic 7.5",
       PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
-  pango_font_description_free (font_desc);
-
-  gtk_style_context_get (
-    context, GTK_STATE_FLAG_CHECKED,
-    "font", &font_desc, NULL);
   self->name_layout =
-    z_cairo_create_pango_layout_from_description (
-      (GtkWidget *) self, font_desc,
+    z_cairo_create_pango_layout_from_string (
+      (GtkWidget *) self, "Arial Bold 7.5",
       PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
-  pango_font_description_free (font_desc);
 }
 
 static void
