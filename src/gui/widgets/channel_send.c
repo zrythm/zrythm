@@ -19,6 +19,7 @@
 
 #include "audio/channel_send.h"
 #include "gui/widgets/channel_send.h"
+#include "gui/widgets/channel_send_selector.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/cairo.h"
@@ -148,6 +149,15 @@ multipress_pressed (
 {
   self->n_press = n_press;
   g_message ("multipress %d", n_press);
+
+  if (n_press == 2)
+    {
+      ChannelSendSelectorWidget * send_selector =
+        channel_send_selector_widget_new (
+          self);
+      gtk_widget_show_all (
+        GTK_WIDGET (send_selector));
+    }
 }
 
 static void

@@ -689,6 +689,15 @@ track_type_can_host_region_type (
   const TrackType  tt,
   const RegionType rt);
 
+static inline bool
+track_type_is_fx (
+  const TrackType type)
+{
+  return
+    type == TRACK_TYPE_AUDIO_BUS ||
+    type == TRACK_TYPE_MIDI_BUS;
+}
+
 /**
  * Returns if the Track can record.
  */

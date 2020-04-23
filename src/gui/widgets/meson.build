@@ -33,6 +33,7 @@ widget_srcs = files([
   'center_dock.c',
   'channel.c',
   'channel_send.c',
+  'channel_send_selector.c',
   'channel_sends_expander.c',
   'channel_slot.c',
   'chord_arranger.c',

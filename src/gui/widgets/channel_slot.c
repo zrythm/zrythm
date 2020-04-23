@@ -164,7 +164,7 @@ channel_slot_draw_cb (
       int w, h;
       char text[400];
       sprintf (
-        text, _("Slot #%d"), self->slot_index);
+        text, _("Slot #%d"), self->slot_index + 1);
       z_cairo_get_text_extents_for_widget (
         widget, self->empty_slot_layout, text,
         &w, &h);

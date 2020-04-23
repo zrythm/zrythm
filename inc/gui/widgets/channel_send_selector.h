@@ -20,23 +20,24 @@
 /**
  * \file
  *
- * Channel send widget.
+ * Channel send selector widget.
  */
 
-#ifndef __GUI_WIDGETS_CHANNEL_SEND_H__
-#define __GUI_WIDGETS_CHANNEL_SEND_H__
+#ifndef __GUI_WIDGETS_CHANNEL_SEND_SELECTOR_H__
+#define __GUI_WIDGETS_CHANNEL_SEND_SELECTOR_H__
 
 #include <gtk/gtk.h>
 
-#define CHANNEL_SEND_WIDGET_TYPE \
-  (channel_send_widget_get_type ())
+#define CHANNEL_SEND_SELECTOR_WIDGET_TYPE \
+  (channel_send_selector_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ChannelSendWidget,
-  channel_send_widget,
-  Z, CHANNEL_SEND_WIDGET,
-  GtkDrawingArea)
+  ChannelSendSelectorWidget,
+  channel_send_selector_widget,
+  Z, CHANNEL_SEND_SELECTOR_WIDGET,
+  GtkPopover)
 
 typedef struct ChannelSend ChannelSend;
+typedef struct _ChannelSendWidget ChannelSendWidget;
 
 /**
  * @addtogroup widgets
@@ -44,37 +45,29 @@ typedef struct ChannelSend ChannelSend;
  * @{
  */
 
-typedef struct _ChannelSendWidget
+typedef struct _ChannelSendSelectorWidget
 {
-  GtkDrawingArea      parent_instance;
+  GtkPopover          parent_instance;
 
   /** Owner. */
-  ChannelSend *       send;
+  ChannelSendWidget * send_widget;
 
-  GtkGestureMultiPress * multipress;
-  GtkGestureDrag *    drag;
+  /** Main vbox. */
+  GtkBox *            vbox;
 
-  /** For multipress. */
-  int                 n_press;
+  /** Button group below the list box. */
+  GtkButtonBox *      btn_box;
 
-  GtkGestureMultiPress * right_mouse_mp;
+  GtkTreeModel *      model;
+  GtkTreeView *       treeview;
 
-  /** Cache tooltip string. */
-  char *              cache_tooltip;
+  GtkButton *         ok_btn;
 
-  /** Layout cache for empty slot. */
-  PangoLayout *       empty_slot_layout;
-  /** Layout cache for name. */
-  PangoLayout *       name_layout;
-} ChannelSendWidget;
+} ChannelSendSelectorWidget;
 
-/**
- * Creates a new ChannelSend widget and binds it to
- * the given value.
- */
-ChannelSendWidget *
-channel_send_widget_new (
-  ChannelSend * send);
+ChannelSendSelectorWidget *
+channel_send_selector_widget_new (
+  ChannelSendWidget * send);
 
 /**
  * @}

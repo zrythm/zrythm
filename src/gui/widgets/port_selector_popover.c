@@ -547,8 +547,7 @@ tree_view_setup (
 
       /* set headers invisible */
       gtk_tree_view_set_headers_visible (
-        GTK_TREE_VIEW (tree_view),
-        0);
+        GTK_TREE_VIEW (tree_view), false);
 
       g_signal_connect (
         G_OBJECT (gtk_tree_view_get_selection (

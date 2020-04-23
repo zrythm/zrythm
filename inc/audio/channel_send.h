@@ -63,6 +63,9 @@ typedef struct ChannelSend
   /** If the send is currently empty. */
   bool           is_empty;
 
+  /** Whether the connection is enabled or not. */
+  bool           enabled;
+
   /** Destination L port. */
   PortIdentifier dest_l_id;
 
