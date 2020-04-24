@@ -64,6 +64,24 @@ log_init_writer_idle (
   Log * self);
 
 /**
+ * Idle callback.
+ */
+int
+log_idle_cb (
+  Log * self);
+
+/**
+ * Returns the last \ref n lines as a newly
+ * allocated string.
+ *
+ * @param n Number of lines.
+ */
+char *
+log_get_last_n_lines (
+  Log * self,
+  int   n);
+
+/**
  * Initializes logging to a file.
  *
  * This can be called from any thread.

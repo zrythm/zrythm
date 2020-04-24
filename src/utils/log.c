@@ -64,8 +64,11 @@ write_str (
   return 0;
 }
 
-static int
-idle_cb (
+/**
+ * Idle callback.
+ */
+int
+log_idle_cb (
   Log * self)
 {
   if (!self || !self->mqueue)
@@ -134,13 +137,41 @@ log_init_writer_idle (
   Log * self)
 {
   g_timeout_add_seconds (
-    3, (GSourceFunc) idle_cb, self);
+    3, (GSourceFunc) log_idle_cb, self);
 }
 
 static void *
 create_log_event_obj (void)
 {
   return calloc (1, sizeof (LogEvent));
+}
+
+/**
+ * Returns the last \ref n lines as a newly
+ * allocated string.
+ *
+ * @param n Number of lines.
+ */
+char *
+log_get_last_n_lines (
+  Log * self,
+  int   n)
+{
+  int total_lines =
+    gtk_text_buffer_get_line_count (
+      self->messages_buf);
+  GtkTextIter start_iter;
+  gtk_text_buffer_get_iter_at_line_index (
+    self->messages_buf, &start_iter,
+    MAX (total_lines - n, 0), 0);
+  GtkTextIter end_iter;
+  gtk_text_buffer_get_end_iter (
+    self->messages_buf, &end_iter);
+
+  return
+    gtk_text_buffer_get_text (
+      self->messages_buf, &start_iter,
+      &end_iter, false);
 }
 
 /**

@@ -128,7 +128,14 @@ segv_handler (int sig)
   free (strings);
 #endif
 
+  /* call the callback to write queued messages
+   * and get last few lines of the log, before
+   * logging the backtrace */
+  log_idle_cb (LOG);
+  char * log =
+    log_get_last_n_lines (LOG, 60);
   g_message ("%s", message);
+  log_idle_cb (LOG);
 
   GtkDialogFlags flags =
     GTK_DIALOG_DESTROY_WITH_PARENT;
@@ -156,8 +163,9 @@ segv_handler (int sig)
       "# Version\n%s\n"
       "# Other info\n"
       "> Context, distro, etc.\n\n"
-      "# Backtrace\n%s\n",
-      ver_with_caps, message);
+      "# Backtrace\n```\n%s```\n\n"
+      "# Log\n```\n%s```",
+      ver_with_caps, message, log);
   char * report_template_escaped =
     g_uri_escape_string (
       report_template, NULL, FALSE);
