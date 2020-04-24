@@ -20,7 +20,9 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "audio/midi_mapping.h"
 #include "gui/widgets/balance_control.h"
+#include "gui/widgets/bind_cc_dialog.h"
 #include "gui/widgets/bot_bar.h"
 #include "utils/gtk.h"
 #include "utils/ui.h"
@@ -273,6 +275,86 @@ drag_end (
   gtk_widget_hide (GTK_WIDGET (self->tooltip_win));
 }
 
+static void
+on_reset (
+  GtkMenuItem *menuitem,
+  BalanceControlWidget * self)
+{
+  /* TODO */
+}
+
+static void
+on_bind_midi_cc (
+  GtkMenuItem * menuitem,
+  BalanceControlWidget * self)
+{
+  BindCcDialogWidget * dialog =
+    bind_cc_dialog_widget_new ();
+
+  int ret =
+    gtk_dialog_run (GTK_DIALOG (dialog));
+
+  if (ret == GTK_RESPONSE_ACCEPT)
+    {
+      if (dialog->cc[0])
+        {
+          /* TODO */
+#if 0
+          midi_mappings_bind (
+            MIDI_MAPPINGS, dialog->cc,
+            NULL, self->fader->amp);
+#endif
+        }
+    }
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
+show_context_menu (
+  BalanceControlWidget * self)
+{
+  GtkWidget *menu, *menuitem;
+
+  menu = gtk_menu_new();
+
+  menuitem =
+    gtk_menu_item_new_with_label (
+      _("Reset"));
+  g_signal_connect (
+    menuitem, "activate",
+    G_CALLBACK (on_reset), self);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
+
+  menuitem =
+    gtk_menu_item_new_with_label (
+      _("Bind MIDI CC"));
+  g_signal_connect (
+    menuitem, "activate",
+    G_CALLBACK (on_bind_midi_cc), self);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
+
+  gtk_widget_show_all(menu);
+
+  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+
+}
+
+static void
+on_right_click (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  BalanceControlWidget * self)
+{
+  if (n_press == 1)
+    {
+      show_context_menu (self);
+    }
+}
+
 /**
  * Creates a new BalanceControl widget and binds it to the
  * given value.
@@ -294,6 +376,15 @@ balance_control_widget_new (
   self->setter = setter;
   self->object = object;
 
+  /* add right mouse multipress */
+  GtkGestureMultiPress * right_mouse_mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self)));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (right_mouse_mp),
+    GDK_BUTTON_SECONDARY);
+
   /* connect signals */
   g_signal_connect (
     G_OBJECT (self), "draw",
@@ -310,6 +401,9 @@ balance_control_widget_new (
   g_signal_connect (
     G_OBJECT(self->drag), "drag-end",
     G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (right_mouse_mp), "pressed",
+    G_CALLBACK (on_right_click), self);
 
   return self;
 }

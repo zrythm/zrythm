@@ -175,6 +175,11 @@ text_expander_widget_init (
     Z_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->scroll));
 
+  expander_box_widget_set_icon_resource (
+    Z_EXPANDER_BOX_WIDGET (self),
+    ICON_TYPE_GNOME_BUILDER,
+    "xml-comment-symbolic-light.svg");
+
   g_signal_connect (
     G_OBJECT (self->editor), "focus-out-event",
     G_CALLBACK (on_focus_out), self);

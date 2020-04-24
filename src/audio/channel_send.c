@@ -59,6 +59,39 @@ channel_send_get_track (
   return track;
 }
 
+/**
+ * Gets the target track.
+ */
+Track *
+channel_send_get_target_track (
+  ChannelSend * self)
+{
+  if (self->is_empty)
+    return NULL;
+
+  Track * track = channel_send_get_track (self);
+  Port * port;
+  switch (track->out_signal_type)
+    {
+    case TYPE_AUDIO:
+      port =
+        port_find_from_identifier (
+          &self->dest_l_id);
+      return
+        port_get_track (port, true);
+    case TYPE_EVENT:
+      port =
+        port_find_from_identifier (
+          &self->dest_midi_id);
+      return
+        port_get_track (port, true);
+    default:
+      break;
+    }
+
+  g_return_val_if_reached (NULL);
+}
+
 static void
 update_connections (
   ChannelSend * self)

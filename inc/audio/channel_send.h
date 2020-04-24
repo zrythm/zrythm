@@ -118,8 +118,18 @@ channel_send_init (
   int           track_pos,
   int           slot);
 
+/**
+ * Gets the owner track.
+ */
 Track *
 channel_send_get_track (
+  ChannelSend * self);
+
+/**
+ * Gets the target track.
+ */
+Track *
+channel_send_get_target_track (
   ChannelSend * self);
 
 /**

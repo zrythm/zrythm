@@ -62,9 +62,25 @@ channel_sends_expander_widget_setup (
     Z_EXPANDER_BOX_WIDGET (self),
     _("Sends"));
 
-  expander_box_widget_set_icon_name (
-    Z_EXPANDER_BOX_WIDGET (self),
-    "z-configure");
+  if (track)
+    {
+      switch (track->out_signal_type)
+        {
+        case TYPE_AUDIO:
+          expander_box_widget_set_icon_resource (
+            Z_EXPANDER_BOX_WIDGET (self),
+            ICON_TYPE_ZRYTHM,
+            "audio.svg");
+          break;
+        case TYPE_EVENT:
+          expander_box_widget_set_icon_name (
+            Z_EXPANDER_BOX_WIDGET (self),
+            "z-audio-midi");
+          break;
+        default:
+          break;
+        }
+    }
 
   if (track != self->track ||
       position != self->position)

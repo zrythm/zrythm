@@ -143,6 +143,10 @@ setup_treeview (
       3, G_TYPE_STRING, G_TYPE_STRING,
       G_TYPE_POINTER);
 
+  GtkTreeSelection * sel =
+    gtk_tree_view_get_selection (
+      GTK_TREE_VIEW (self->treeview));
+
   ChannelSendTarget * target =
     calloc (1, sizeof (ChannelSendTarget));
   target->type = TARGET_TYPE_NONE;
@@ -150,10 +154,12 @@ setup_treeview (
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
     list_store, &iter,
-    0, "z-folder",
+    0, "z-edit-none",
     1, _("None"),
     2, target,
     -1);
+  int select_idx = 0;
+  int count = 1;
 
   Track * track =
     channel_send_get_track (self->send_widget->send);
@@ -181,10 +187,19 @@ setup_treeview (
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
         list_store, &iter,
-        0, "z-folder",
+        0, "z-media-album-track",
         1, target_track->name,
         2, target,
         -1);
+
+      if (!self->send_widget->send->is_empty &&
+          target_track ==
+            channel_send_get_target_track (
+              self->send_widget->send))
+        {
+          select_idx = count;
+        }
+      count++;
     }
 
   /* TODO plugin sidechain inputs */
@@ -192,6 +207,18 @@ setup_treeview (
   self->model = GTK_TREE_MODEL (list_store);
   gtk_tree_view_set_model (
     self->treeview, self->model);
+
+  GtkTreePath * path =
+    gtk_tree_path_new_from_indices (select_idx, -1);
+  gtk_tree_selection_select_path (
+    sel, path);
+  gtk_tree_path_free (path);
+
+  g_signal_connect (
+    G_OBJECT (
+      gtk_tree_view_get_selection (
+        GTK_TREE_VIEW (self->treeview))), "changed",
+     G_CALLBACK (on_selection_changed), self);
 }
 
 ChannelSendSelectorWidget *
@@ -204,7 +231,6 @@ channel_send_selector_widget_new (
       "relative-to", GTK_WIDGET (send),
       NULL);
   self->send_widget = send;
-
 
   setup_treeview (self);
 
@@ -306,11 +332,6 @@ channel_send_selector_widget_init (
   gtk_tree_view_set_headers_visible (
     self->treeview, false);
 
-  g_signal_connect (
-    G_OBJECT (
-      gtk_tree_view_get_selection (
-        GTK_TREE_VIEW (self->treeview))), "changed",
-     G_CALLBACK (on_selection_changed), self);
 #if 0
   g_signal_connect (
     G_OBJECT (self->ok_btn), "clicked",

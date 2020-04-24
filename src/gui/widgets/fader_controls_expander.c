@@ -83,6 +83,10 @@ fader_controls_expander_widget_init (
     Z_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->grid));
 
+  expander_box_widget_set_icon_name (
+    Z_EXPANDER_BOX_WIDGET (self),
+    "mixer");
+
   /* add css classes */
   GtkStyleContext * context =
     gtk_widget_get_style_context (

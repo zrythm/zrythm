@@ -59,6 +59,7 @@
     "edit-redo"
     "edit-cut"
     "edit-copy"
+    "edit-none"
     "edit-paste"
     "edit-delete"
     "edit-select-all"

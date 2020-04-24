@@ -147,10 +147,12 @@ inspector_track_widget_show_tracks (
         {
           gtk_widget_set_visible (
             GTK_WIDGET (self->sends), true);
+#if 0
           gtk_widget_set_visible (
             GTK_WIDGET (self->outputs), true);
           gtk_widget_set_visible (
             GTK_WIDGET (self->controls), true);
+#endif
           gtk_widget_set_visible (
             GTK_WIDGET (self->fader), true);
           gtk_widget_set_visible (

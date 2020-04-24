@@ -133,17 +133,6 @@ plugin_strip_expander_widget_refresh (
     }
 }
 
-static void
-set_icon_from_type (
-  PluginStripExpanderWidget * self,
-  PluginSlotType              slot_type)
-{
-  /* TODO */
-  expander_box_widget_set_icon_name (
-    Z_EXPANDER_BOX_WIDGET (self),
-    "z-configure");
-}
-
 /**
  * Sets up the PluginStripExpanderWidget.
  */
@@ -156,13 +145,18 @@ plugin_strip_expander_widget_setup (
 {
   /* set name and icon */
   char fullstr[200];
+  bool is_midi = false;
   switch (slot_type)
     {
     case PLUGIN_SLOT_INSERT:
       strcpy (fullstr, _("Inserts"));
+      is_midi =
+        track &&
+        track->out_signal_type == TYPE_EVENT;
       break;
     case PLUGIN_SLOT_MIDI_FX:
       strcpy (fullstr, "MIDI FX");
+      is_midi = true;
       break;
     default:
       g_return_if_reached ();
@@ -172,7 +166,19 @@ plugin_strip_expander_widget_setup (
     Z_EXPANDER_BOX_WIDGET (self),
     fullstr);
 
-  set_icon_from_type (self, slot_type);
+  if (is_midi)
+    {
+      expander_box_widget_set_icon_name (
+        Z_EXPANDER_BOX_WIDGET (self),
+        "z-audio-midi");
+    }
+  else
+    {
+      expander_box_widget_set_icon_resource (
+        Z_EXPANDER_BOX_WIDGET (self),
+        ICON_TYPE_ZRYTHM,
+        "audio.svg");
+    }
 
   if (track != self->track ||
       slot_type != self->slot_type ||

@@ -21,8 +21,11 @@
 
 #include "audio/channel.h"
 #include "audio/fader.h"
+#include "audio/midi_mapping.h"
+#include "gui/widgets/bind_cc_dialog.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/fader.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 
@@ -289,6 +292,29 @@ on_reset_fader (GtkMenuItem *menuitem,
 }
 
 static void
+on_bind_midi_cc (
+  GtkMenuItem * menuitem,
+  FaderWidget * self)
+{
+  BindCcDialogWidget * dialog =
+    bind_cc_dialog_widget_new ();
+
+  int ret =
+    gtk_dialog_run (GTK_DIALOG (dialog));
+
+  if (ret == GTK_RESPONSE_ACCEPT)
+    {
+      if (dialog->cc[0])
+        {
+          midi_mappings_bind (
+            MIDI_MAPPINGS, dialog->cc,
+            NULL, self->fader->amp);
+        }
+    }
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 show_context_menu (
   FaderWidget * self)
 {
@@ -296,14 +322,23 @@ show_context_menu (
 
   menu = gtk_menu_new();
 
-  menuitem = gtk_menu_item_new_with_label("Reset");
-
+  menuitem =
+    gtk_menu_item_new_with_label (
+      _("Reset"));
   g_signal_connect (
     menuitem, "activate",
     G_CALLBACK (on_reset_fader), self);
-
   gtk_menu_shell_append (
-    GTK_MENU_SHELL(menu), menuitem);
+    GTK_MENU_SHELL (menu), menuitem);
+
+  menuitem =
+    gtk_menu_item_new_with_label (
+      _("Bind MIDI CC"));
+  g_signal_connect (
+    menuitem, "activate",
+    G_CALLBACK (on_bind_midi_cc), self);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
 
   gtk_widget_show_all(menu);
 
