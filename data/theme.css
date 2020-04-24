@@ -42,11 +42,16 @@
 @define-color z_yellow #F9CA1B;
 @define-color bright_orange #F79616;
 @define-color z_purple #9D3955;
-@define-color matcha_green #2eb398;
+@define-color matcha #2eb398;
 @define-color hover_color alpha (white, 0.1);
 @define-color selection_color alpha (white, 0.07);
 @define-color light_blueish alpha (#1aa3ff, 0.8);
-/* see https://coolors.co/ to generate more */
+@define-color prefader_send #D21E6D;
+@define-color postfader_send #901ed2;
+@define-color solo_checked @darkish_green;
+@define-color solo_active @matcha;
+/* see https://coolors.co/ to generate more or use
+ * GPick */
 
 window
 {
@@ -301,7 +306,7 @@ button.donate-button
 
 button.toggle.solo-button:active
 {
-  background-color: @matcha_green;
+  background-color: @matcha;
 }
 
 button:not(.toggle):active,

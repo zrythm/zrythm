@@ -97,20 +97,29 @@ update_text (ExportDialogWidget * self)
   char * filename =
     get_export_filename (self);
 
+  char * matcha =
+    gdk_rgba_to_string (&UI_COLORS->matcha);
+
 #define ORANGIZE(x) \
   "<span " \
-  "foreground=\"" UI_COLOR_MATCHA "\">" x "</span>"
+  "foreground=\"" matcha "\">" x "</span>"
 
   char * exports_dir =
     project_get_exports_dir (PROJECT);
   char * str =
     g_strdup_printf (
       "The following files will be created:\n"
-      ORANGIZE ("%s") "\n\n"
+      "<span " \
+      "foreground=\"%s\">%s</span>"
+      "\n\n"
       "in the directory:\n"
-      "<a href=\"%s\">" ORANGIZE ("%s") "</a>",
+      "<a href=\"%s\">"
+      "foreground=\"%s\">%s</span>"
+      "</a>",
+      matcha,
       filename,
       exports_dir,
+      matcha,
       exports_dir);
   gtk_label_set_markup (
     self->output_label,
@@ -118,6 +127,7 @@ update_text (ExportDialogWidget * self)
   g_free (filename);
   g_free (str);
   g_free (exports_dir);
+  g_free (matcha);
 
   g_signal_connect (
     G_OBJECT (self->output_label), "activate-link",

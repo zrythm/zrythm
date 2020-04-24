@@ -55,12 +55,82 @@ typedef struct ChannelSendTarget
   PluginIdentifier      pl_id;
 } ChannelSendTarget;
 
+static Track *
+get_track_from_target (
+  ChannelSendTarget * target)
+{
+  if (target->type == TARGET_TYPE_NONE)
+    return NULL;
+
+  return TRACKLIST->tracks[target->track_pos];
+}
+
+#if 0
 static void
 on_ok_clicked (
   GtkButton * btn,
   ChannelSendSelectorWidget * self)
 {
   gtk_widget_destroy (GTK_WIDGET (self));
+}
+#endif
+
+static void
+on_selection_changed (
+  GtkTreeSelection *          ts,
+  ChannelSendSelectorWidget * self)
+{
+  GList * selected_rows =
+    gtk_tree_selection_get_selected_rows (
+      ts, NULL);
+  if (!selected_rows)
+    return;
+
+  GtkTreePath * tp =
+    (GtkTreePath *)
+      g_list_first (selected_rows)->data;
+  GtkTreeIter iter;
+  gtk_tree_model_get_iter (
+    self->model, &iter, tp);
+  GValue value = G_VALUE_INIT;
+  gtk_tree_model_get_value (
+    self->model, &iter, 2, &value);
+  ChannelSendTarget * target =
+    g_value_get_pointer (&value);
+
+  Track * src_track =
+    channel_send_get_track (self->send_widget->send);
+  Track * dest_track =
+    get_track_from_target (target);
+  switch (target->type)
+    {
+    case TARGET_TYPE_NONE:
+      channel_send_disconnect (
+        self->send_widget->send);
+      break;
+    case TARGET_TYPE_TRACK:
+      switch (src_track->out_signal_type)
+        {
+        case TYPE_EVENT:
+          channel_send_connect_midi (
+            self->send_widget->send,
+            dest_track->processor.midi_in);
+          break;
+        case TYPE_AUDIO:
+          channel_send_connect_stereo (
+            self->send_widget->send,
+            dest_track->processor.stereo_in);
+          break;
+        default:
+          break;
+        }
+      break;
+    case TARGET_TYPE_PLUGIN_SIDECHAIN:
+      break;
+    }
+
+  gtk_widget_queue_draw (
+    GTK_WIDGET (self->send_widget));
 }
 
 static void
@@ -73,13 +143,16 @@ setup_treeview (
       3, G_TYPE_STRING, G_TYPE_STRING,
       G_TYPE_POINTER);
 
+  ChannelSendTarget * target =
+    calloc (1, sizeof (ChannelSendTarget));
+  target->type = TARGET_TYPE_NONE;
   GtkTreeIter iter;
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
     list_store, &iter,
     0, "z-folder",
     1, _("None"),
-    2, NULL,
+    2, target,
     -1);
 
   Track * track =
@@ -99,7 +172,7 @@ setup_treeview (
       g_message ("adding %s", target_track->name);
 
       /* create target */
-      ChannelSendTarget * target =
+      target =
         calloc (1, sizeof (ChannelSendTarget));
       target->type = TARGET_TYPE_TRACK;
       target->track_pos = i;
@@ -167,6 +240,7 @@ channel_send_selector_widget_init (
     GTK_CONTAINER (self->vbox),
     GTK_WIDGET (self->treeview));
 
+#if 0
   /* add button group */
   self->btn_box =
     GTK_BUTTON_BOX (
@@ -184,6 +258,7 @@ channel_send_selector_widget_init (
   gtk_container_add (
     GTK_CONTAINER (self->btn_box),
     GTK_WIDGET (self->ok_btn));
+#endif
 
   /* init tree view */
   GtkCellRenderer * renderer;
@@ -217,14 +292,14 @@ channel_send_selector_widget_init (
   gtk_tree_view_set_headers_visible (
     self->treeview, false);
 
-#if 0
   g_signal_connect (
     G_OBJECT (
       gtk_tree_view_get_selection (
         GTK_TREE_VIEW (self->treeview))), "changed",
      G_CALLBACK (on_selection_changed), self);
-#endif
+#if 0
   g_signal_connect (
     G_OBJECT (self->ok_btn), "clicked",
     G_CALLBACK (on_ok_clicked), self);
+#endif
 }

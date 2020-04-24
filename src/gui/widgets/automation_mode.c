@@ -23,6 +23,7 @@
 #include "gui/widgets/automation_mode.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 
 void
 automation_mode_widget_init (
@@ -32,10 +33,8 @@ automation_mode_widget_init (
     &self->def_color, UI_COLOR_BUTTON_NORMAL);
   gdk_rgba_parse (
     &self->hovered_color, UI_COLOR_BUTTON_HOVER);
-  gdk_rgba_parse (
-    &self->toggled_colors[0], UI_COLOR_SOLO_CHECKED);
-  gdk_rgba_parse (
-    &self->held_colors[0], UI_COLOR_SOLO_ACTIVE);
+  self->toggled_colors[0] = UI_COLORS->solo_checked;
+  self->held_colors[0] = UI_COLORS->solo_active;
   gdk_rgba_parse (
     &self->toggled_colors[1], UI_COLOR_RECORD_CHECKED);
   gdk_rgba_parse (

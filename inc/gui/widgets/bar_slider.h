@@ -26,6 +26,8 @@
 #ifndef __GUI_WIDGETS_BAR_SLIDER_H__
 #define __GUI_WIDGETS_BAR_SLIDER_H__
 
+#include "utils/ui.h"
+
 #include <gtk/gtk.h>
 
 #define BAR_SLIDER_WIDGET_TYPE \
@@ -124,7 +126,7 @@ typedef struct _BarSliderWidget
   double          start_x;
 
   /** Update mode. */
-  BarSliderUpdateMode mode;
+  UiDragMode      mode;
 
   /** Whether hovering or not. */
   int             hover;
@@ -173,7 +175,7 @@ _bar_slider_widget_new (
   float  zero,
   int    convert_to_percentage,
   int    decimals,
-  BarSliderUpdateMode mode,
+  UiDragMode mode,
   const char * prefix,
   const char * suffix);
 

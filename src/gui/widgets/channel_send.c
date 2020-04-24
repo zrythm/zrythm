@@ -57,54 +57,7 @@ channel_send_draw_cb (
   ChannelSend * send = self->send;
   char dest_name[400];
   channel_send_get_dest_name (send, dest_name);
-  if (!send->is_empty)
-    {
-      GdkRGBA bg, fg;
-      fg = UI_COLOR_BLACK;
-      bg.red = 0.6;
-      bg.green = 0.6;
-      bg.blue = 0.6;
-      bg.alpha = 1.0;
-
-      bg.red += 0.1;
-      bg.green += 0.1;
-      bg.blue += 0.1;
-
-      /* fill background */
-      cairo_set_source_rgba (
-        cr, bg.red, bg.green, bg.blue, 1.0);
-      cairo_rectangle (
-        cr, padding, padding,
-        width - padding * 2, height - padding * 2);
-      cairo_fill(cr);
-
-      /* fill text */
-      cairo_set_source_rgba (
-        cr, fg.red, fg.green, fg.blue, 1.0);
-      int w, h;
-      z_cairo_get_text_extents_for_widget (
-        widget, self->name_layout,
-        dest_name, &w, &h);
-      z_cairo_draw_text_full (
-        cr, widget, self->name_layout,
-        dest_name,
-        width / 2 - w / 2,
-        height / 2 - h / 2);
-
-      /* update tooltip */
-      if (!self->cache_tooltip ||
-          !g_strcmp0 (
-            dest_name, self->cache_tooltip))
-        {
-          if (self->cache_tooltip)
-            g_free (self->cache_tooltip);
-          self->cache_tooltip =
-            g_strdup (dest_name);
-          gtk_widget_set_tooltip_text (
-            widget, self->cache_tooltip);
-        }
-    }
-  else
+  if (send->is_empty)
     {
       /* fill background */
       cairo_set_source_rgba (
@@ -135,8 +88,111 @@ channel_send_draw_cb (
             widget, dest_name);
         }
     }
+  else
+    {
+      GdkRGBA bg, fg;
+      fg = UI_COLOR_BLACK;
+      if (channel_send_is_prefader (self->send))
+        bg = UI_COLORS->prefader_send;
+      else
+        bg = UI_COLORS->postfader_send;
+
+      /* fill background */
+      cairo_set_source_rgba (
+        cr, bg.red, bg.green, bg.blue, 0.4);
+      cairo_rectangle (
+        cr, padding, padding,
+        width - padding * 2, height - padding * 2);
+      cairo_fill(cr);
+
+      /* fill amount */
+      float amount =
+        channel_send_get_amount_for_widgets (
+          self->send) * width;
+      cairo_set_source_rgba (
+        cr, bg.red, bg.green, bg.blue, 1.0);
+      cairo_rectangle (
+        cr, padding, padding,
+        amount - padding * 2, height - padding * 2);
+      cairo_fill(cr);
+
+      /* fill text */
+      cairo_set_source_rgba (
+        cr, fg.red, fg.green, fg.blue, 1.0);
+      int w, h;
+      z_cairo_get_text_extents_for_widget (
+        widget, self->name_layout,
+        dest_name, &w, &h);
+      z_cairo_draw_text_full (
+        cr, widget, self->name_layout,
+        dest_name,
+        width / 2 - w / 2,
+        height / 2 - h / 2);
+
+      /* update tooltip */
+      if (!self->cache_tooltip ||
+          !g_strcmp0 (
+            dest_name, self->cache_tooltip))
+        {
+          if (self->cache_tooltip)
+            g_free (self->cache_tooltip);
+          self->cache_tooltip =
+            g_strdup (dest_name);
+          gtk_widget_set_tooltip_text (
+            widget, self->cache_tooltip);
+        }
+    }
 
   return FALSE;
+}
+
+static void
+on_drag_begin (
+  GtkGestureDrag *    gesture,
+  gdouble             start_x,
+  gdouble             start_y,
+  ChannelSendWidget * self)
+{
+  self->start_x = start_x;
+}
+
+static void
+on_drag_update (
+  GtkGestureDrag *    gesture,
+  gdouble             offset_x,
+  gdouble             offset_y,
+  ChannelSendWidget * self)
+{
+  if (!self->send->is_empty)
+    {
+      int width =
+        gtk_widget_get_allocated_width (
+          GTK_WIDGET (self));
+      double new_normalized_val =
+        ui_get_normalized_draggable_value (
+          width,
+          channel_send_get_amount_for_widgets (
+            self->send),
+          self->start_x, self->start_x + offset_x,
+          self->start_x + self->last_offset_x,
+          1.0, UI_DRAG_MODE_CURSOR);
+      channel_send_set_amount_from_widget (
+        self->send, (float) new_normalized_val);
+      gtk_widget_queue_draw (GTK_WIDGET (self));
+    }
+
+  self->last_offset_x = offset_x;
+}
+
+static void
+on_drag_end (
+  GtkGestureDrag *    gesture,
+  gdouble             offset_x,
+  gdouble             offset_y,
+  ChannelSendWidget * self)
+{
+  self->start_x = 0;
+  self->last_offset_x = 0;
 }
 
 static void
@@ -354,6 +410,15 @@ channel_send_widget_init (
   g_signal_connect (
     G_OBJECT (self->right_mouse_mp), "pressed",
     G_CALLBACK (on_right_click), self);
+  g_signal_connect (
+    G_OBJECT (self->drag), "drag-begin",
+    G_CALLBACK (on_drag_begin),  self);
+  g_signal_connect (
+    G_OBJECT (self->drag), "drag-update",
+    G_CALLBACK (on_drag_update),  self);
+  g_signal_connect (
+    G_OBJECT (self->drag), "drag-end",
+    G_CALLBACK (on_drag_end),  self);
   g_signal_connect (
     G_OBJECT (self), "screen-changed",
     G_CALLBACK (on_screen_changed),  self);

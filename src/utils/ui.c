@@ -1179,23 +1179,82 @@ ui_get_arranger_object_color (
     }
 }
 
+/**
+ * Gets a draggable value as a normalized value
+ * between 0 and 1.
+ *
+ * @param size Widget size (either width or height).
+ * @param start_px Px at start of drag.
+ * @param cur_px Current px.
+ * @param last_px Px during last call.
+ */
+double
+ui_get_normalized_draggable_value (
+  double       size,
+  double       cur_val,
+  double       start_px,
+  double       cur_px,
+  double       last_px,
+  double       multiplier,
+  UiDragMode   mode)
+{
+  switch (mode)
+    {
+    case UI_DRAG_MODE_CURSOR:
+      return CLAMP (cur_px / size, 0.0, 1.0);
+    case UI_DRAG_MODE_RELATIVE:
+      return
+        CLAMP (
+          cur_val + (cur_px - last_px) / size,
+          0.0, 1.0);
+    case UI_DRAG_MODE_RELATIVE_WITH_MULTIPLIER:
+      return
+        CLAMP (
+          cur_val +
+          (multiplier * (cur_px - last_px)) / size,
+          0.0, 1.0);
+    }
+
+  g_return_val_if_reached (0.0);
+}
+
 UiCaches *
 ui_caches_new ()
 {
   UiCaches * self =
     calloc (1, sizeof (UiCaches));
 
+  GtkWidget * widget =
+    gtk_drawing_area_new ();
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (widget);
+
   UiColors * colors = &self->colors;
+  bool ret;
+
+#define GET_COLOR_FROM_THEME(cname) \
+  ret = \
+    gtk_style_context_lookup_color ( \
+      context, #cname, \
+      &colors->cname); \
+  g_warn_if_fail (ret)
+
+  GET_COLOR_FROM_THEME (bright_green);
+  GET_COLOR_FROM_THEME (darkish_green);
+  GET_COLOR_FROM_THEME (matcha);
+  GET_COLOR_FROM_THEME (prefader_send);
+  GET_COLOR_FROM_THEME (postfader_send);
+  GET_COLOR_FROM_THEME (solo_checked);
+  GET_COLOR_FROM_THEME (solo_active);
+
+#undef GET_COLOR_FROM_THEME
+
+  gtk_widget_destroy (widget);
+
   gdk_rgba_parse (
     &colors->dark_text, UI_COLOR_DARK_TEXT);
   gdk_rgba_parse (
     &colors->bright_text, UI_COLOR_BRIGHT_TEXT);
-  gdk_rgba_parse (
-    &colors->matcha, UI_COLOR_MATCHA);
-  gdk_rgba_parse (
-    &colors->bright_green, UI_COLOR_BRIGHT_GREEN);
-  gdk_rgba_parse (
-    &colors->darkish_green, UI_COLOR_DARKISH_GREEN);
   gdk_rgba_parse (
     &colors->highlight_both,
     UI_COLOR_HIGHLIGHT_BOTH);

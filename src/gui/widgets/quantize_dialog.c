@@ -129,7 +129,7 @@ quantize_dialog_widget_new (
       quantize_options_get_amount,
       quantize_options_set_amount,
       opts, 0, 100, w, h, 0, 0,
-      BAR_SLIDER_UPDATE_MODE_CURSOR, "%");
+      UI_DRAG_MODE_CURSOR, "%");
   gtk_container_add (
     GTK_CONTAINER (self->amount_box),
     GTK_WIDGET (self->amount));
@@ -138,7 +138,7 @@ quantize_dialog_widget_new (
       quantize_options_get_swing,
       quantize_options_set_swing,
       opts, 0, 100, w, h, 0, 0,
-      BAR_SLIDER_UPDATE_MODE_CURSOR, "%");
+      UI_DRAG_MODE_CURSOR, "%");
   gtk_container_add (
     GTK_CONTAINER (self->swing_box),
     GTK_WIDGET (self->swing));
@@ -147,7 +147,7 @@ quantize_dialog_widget_new (
       quantize_options_get_randomization,
       quantize_options_set_randomization,
       opts, 0.f, 100.f, w, h, 0, 0,
-      BAR_SLIDER_UPDATE_MODE_CURSOR, " ticks");
+      UI_DRAG_MODE_CURSOR, " ticks");
   gtk_container_add (
     GTK_CONTAINER (self->randomization_box),
     GTK_WIDGET (self->randomization));

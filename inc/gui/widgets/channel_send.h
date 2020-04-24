@@ -54,6 +54,9 @@ typedef struct _ChannelSendWidget
   GtkGestureMultiPress * multipress;
   GtkGestureDrag *    drag;
 
+  double              start_x;
+  double              last_offset_x;
+
   /** For multipress. */
   int                 n_press;
 

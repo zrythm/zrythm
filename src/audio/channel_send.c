@@ -21,6 +21,7 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "project.h"
+#include "utils/math.h"
 
 #include <glib/gi18n.h>
 
@@ -59,6 +60,56 @@ channel_send_get_track (
 }
 
 /**
+ * Gets the amount to be used in widgets (0.0-1.0).
+ */
+float
+channel_send_get_amount_for_widgets (
+  ChannelSend * self)
+{
+  g_return_val_if_fail (!self->is_empty, 0.f);
+
+  Track * track = channel_send_get_track (self);
+  switch (track->out_signal_type)
+    {
+    case TYPE_AUDIO:
+      return
+        math_get_fader_val_from_amp (self->amount);
+      break;
+    case TYPE_EVENT:
+      return self->on ? 1.f : 0.f;
+      break;
+    default:
+      break;
+    }
+  g_return_val_if_reached (0.f);
+}
+
+/**
+ * Sets the amount from a widget amount (0.0-1.0).
+ */
+void
+channel_send_set_amount_from_widget (
+  ChannelSend * self,
+  float         val)
+{
+  g_return_if_fail (!self->is_empty);
+
+  Track * track = channel_send_get_track (self);
+  switch (track->out_signal_type)
+    {
+    case TYPE_AUDIO:
+      self->amount =
+        math_get_amp_val_from_fader (val);
+      break;
+    case TYPE_EVENT:
+      self->amount = val > 0.001f ? 1.f : 0.f;
+      break;
+    default:
+      break;
+    }
+}
+
+/**
  * Connects a send to stereo ports.
  */
 void
@@ -67,6 +118,12 @@ channel_send_connect_stereo (
   StereoPorts * stereo)
 {
   /* TODO */
+  g_message ("connect stereo");
+  port_identifier_copy (
+    &self->dest_l_id, &stereo->l->id);
+  port_identifier_copy (
+    &self->dest_r_id, &stereo->r->id);
+  self->is_empty = false;
 }
 
 /**
@@ -78,6 +135,21 @@ channel_send_connect_midi (
   Port *        port)
 {
   /* TODO */
+  g_message ("connect midi");
+  port_identifier_copy (
+    &self->dest_midi_id, &port->id);
+  self->is_empty = false;
+}
+
+/**
+ * Removes the connection at the given send.
+ */
+void
+channel_send_disconnect (
+  ChannelSend * self)
+{
+  g_message ("disconnect");
+  self->is_empty = true;
 }
 
 void
@@ -114,13 +186,29 @@ channel_send_get_dest_name (
   else
     {
       PortType type = get_signal_type (self);
+      PortIdentifier * dest;
       if (type == TYPE_AUDIO)
         {
-          strcpy (buf, self->dest_l_id.label);
+          dest = &self->dest_l_id;
         }
       else
         {
-          strcpy (buf, self->dest_midi_id.label);
+          dest = &self->dest_midi_id;
+        }
+
+      Port * port =
+        port_find_from_identifier (dest);
+      Track * track;
+      switch (dest->owner_type)
+        {
+        case PORT_OWNER_TYPE_TRACK_PROCESSOR:
+          track = port_get_track (port, true);
+          sprintf (
+            buf, _("%s input"),
+            track->name);
+          break;
+        default:
+          break;
         }
     }
 }

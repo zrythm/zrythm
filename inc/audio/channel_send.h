@@ -63,9 +63,6 @@ typedef struct ChannelSend
   /** If the send is currently empty. */
   bool           is_empty;
 
-  /** Whether the connection is enabled or not. */
-  bool           enabled;
-
   /** Destination L port. */
   PortIdentifier dest_l_id;
 
@@ -126,6 +123,21 @@ channel_send_get_track (
   ChannelSend * self);
 
 /**
+ * Gets the amount to be used in widgets (0.0-1.0).
+ */
+float
+channel_send_get_amount_for_widgets (
+  ChannelSend * self);
+
+/**
+ * Sets the amount from a widget amount (0.0-1.0).
+ */
+void
+channel_send_set_amount_from_widget (
+  ChannelSend * self,
+  float         val);
+
+/**
  * Connects a send to stereo ports.
  */
 void
@@ -140,6 +152,13 @@ void
 channel_send_connect_midi (
   ChannelSend * self,
   Port *        port);
+
+/**
+ * Removes the connection at the given send.
+ */
+void
+channel_send_disconnect (
+  ChannelSend * self);
 
 void
 channel_send_set_amount (

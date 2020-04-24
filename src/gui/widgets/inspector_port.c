@@ -456,7 +456,7 @@ inspector_port_widget_new (
           is_control ? 0.f : minf,
           is_control ? 1.f : maxf, -1, 20,
           is_control ? 0.f : zerof, 0, 2,
-          BAR_SLIDER_UPDATE_MODE_CURSOR,
+          UI_DRAG_MODE_CURSOR,
           str, "");
       self->bar_slider->show_value = 0;
       self->bar_slider->editable = editable;

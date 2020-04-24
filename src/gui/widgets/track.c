@@ -581,11 +581,10 @@ draw_lanes (
           cb->owner_type =
             CUSTOM_BUTTON_WIDGET_OWNER_LANE;
           cb->owner = lane;
-          gdk_rgba_parse (
-            &cb->toggled_color,
-            UI_COLOR_SOLO_CHECKED);
-          gdk_rgba_parse (
-            &cb->held_color, UI_COLOR_SOLO_ACTIVE);
+          cb->toggled_color =
+            UI_COLORS->solo_checked;
+          cb->held_color =
+            UI_COLORS->solo_active;
           lane->buttons[1] =
             custom_button_widget_new (
               ICON_NAME_MUTE, BUTTON_SIZE);
@@ -2463,11 +2462,10 @@ add_solo_button (
 {
   CustomButtonWidget * cb =
     add_button (self, top, ICON_NAME_SOLO);
-  gdk_rgba_parse (
-    &cb->toggled_color,
-    UI_COLOR_SOLO_CHECKED);
-  gdk_rgba_parse (
-    &cb->held_color, UI_COLOR_SOLO_ACTIVE);
+  cb->toggled_color =
+    UI_COLORS->solo_checked;
+  cb->held_color =
+    UI_COLORS->solo_active;
 
   return cb;
 }

@@ -44,11 +44,9 @@ typedef struct Position Position;
 #define UI_CACHES (ZRYTHM->ui_caches)
 #define UI_COLORS (&UI_CACHES->colors)
 
+/* FIXME remove these and use theme */
 #define UI_COLOR_DARK_TEXT "#323232"
 #define UI_COLOR_BRIGHT_TEXT "#cdcdcd"
-#define UI_COLOR_MATCHA "#2eb398"
-#define UI_COLOR_BRIGHT_GREEN "#1ddd6a"
-#define UI_COLOR_DARKISH_GREEN "#1a884c"
 #define UI_COLOR_BRIGHT_ORANGE "#F79616"
 #define UI_COLOR_DARK_ORANGE "#D68A0C"
 #define UI_COLOR_YELLOW "#F9CA1B"
@@ -60,9 +58,7 @@ typedef struct Position Position;
 #define UI_COLOR_BUTTON_ACTIVE \
   UI_COLOR_BRIGHT_ORANGE
 #define UI_COLOR_RECORD_CHECKED "#ED2939"
-#define UI_COLOR_SOLO_CHECKED UI_COLOR_DARKISH_GREEN
 #define UI_COLOR_RECORD_ACTIVE "#FF2400"
-#define UI_COLOR_SOLO_ACTIVE UI_COLOR_MATCHA
 #define UI_COLOR_HIGHLIGHT_SCALE "#662266"
 #define UI_COLOR_HIGHLIGHT_CHORD "#BB22BB"
 #define UI_COLOR_HIGHLIGHT_BOTH "#FF22FF"
@@ -86,6 +82,10 @@ typedef struct UiColors
   GdkRGBA       highlight_both;
   GdkRGBA       highlight_in_scale;
   GdkRGBA       highlight_in_chord;
+  GdkRGBA       prefader_send;
+  GdkRGBA       postfader_send;
+  GdkRGBA       solo_checked;
+  GdkRGBA       solo_active;
 } UiColors;
 
 /**
@@ -274,6 +274,22 @@ typedef enum UiOverlayAction
   UI_OVERLAY_ACTION_RAMPING,
   UI_OVERLAY_ACTION_CUTTING,
 } UiOverlayAction;
+
+/**
+ * Dragging modes for widgets that have click&drag.
+ */
+typedef enum UiDragMode
+{
+  /** Value is wherever the cursor is. */
+  UI_DRAG_MODE_CURSOR,
+
+  /** Value is changed based on the offset. */
+  UI_DRAG_MODE_RELATIVE,
+
+  /** Value is changed based on the offset, times
+   * a multiplier. */
+  UI_DRAG_MODE_RELATIVE_WITH_MULTIPLIER,
+} UiDragMode;
 
 #define ui_set_pointer_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
@@ -648,6 +664,25 @@ ui_get_arranger_object_color (
   const bool   is_selected,
   const bool   is_transient,
   const bool   is_muted);
+
+/**
+ * Gets a draggable value as a normalized value
+ * between 0 and 1.
+ *
+ * @param size Widget size (either width or height).
+ * @param start_px Px at start of drag.
+ * @param cur_px Current px.
+ * @param last_px Px during last call.
+ */
+double
+ui_get_normalized_draggable_value (
+  double       size,
+  double       cur_val,
+  double       start_px,
+  double       cur_px,
+  double       last_px,
+  double       multiplier,
+  UiDragMode   mode);
 
 UiCaches *
 ui_caches_new (void);

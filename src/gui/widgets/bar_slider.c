@@ -195,12 +195,6 @@ on_crossing (
   gtk_widget_queue_draw (widget);
 }
 
-static double clamp
-(double x, double upper, double lower)
-{
-   return MIN(upper, MAX(x, lower));
-}
-
 static void
 drag_begin (
   GtkGestureDrag * gesture,
@@ -211,18 +205,7 @@ drag_begin (
   if (!self->editable)
     return;
 
-  if (self->mode == BAR_SLIDER_UPDATE_MODE_CURSOR)
-    {
-      SET_REAL_VAL (
-        REAL_VAL_FROM_BAR_SLIDER (
-          clamp (
-            offset_x /
-              gtk_widget_get_allocated_width (
-                GTK_WIDGET (self)),
-            1.0f, 0.0f)));
-      self->start_x = offset_x;
-      gtk_widget_queue_draw ((GtkWidget *)self);
-    }
+  self->start_x = offset_x;
 }
 
 static void
@@ -235,30 +218,19 @@ drag_update (
   if (!self->editable)
     return;
 
-  if (self->mode == BAR_SLIDER_UPDATE_MODE_CURSOR)
-    {
-      SET_REAL_VAL (
-        REAL_VAL_FROM_BAR_SLIDER (
-          clamp (
-            (self->start_x + offset_x) /
-              gtk_widget_get_allocated_width (
-                GTK_WIDGET (self)),
-            1.0f, 0.0f)));
-    }
-  else if (self->mode ==
-             BAR_SLIDER_UPDATE_MODE_RELATIVE)
-    {
-      SET_REAL_VAL (
-        REAL_VAL_FROM_BAR_SLIDER (
-          clamp (
-            BAR_SLIDER_VAL_FROM_REAL (GET_REAL_VAL) +
-              (float) (offset_x - self->last_x) /
-              (float)
-              gtk_widget_get_allocated_width (
-                GTK_WIDGET (self)),
-            1.0f, 0.0f)));
-      self->last_x = offset_x;
-    }
+  int width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (self));
+  double new_normalized_val =
+    ui_get_normalized_draggable_value (
+      width,
+      BAR_SLIDER_VAL_FROM_REAL (GET_REAL_VAL),
+      self->start_x, self->start_x + offset_x,
+      self->start_x + self->last_x,
+      1.0, self->mode);
+  SET_REAL_VAL (
+    REAL_VAL_FROM_BAR_SLIDER (new_normalized_val));
+  self->last_x = offset_x;
   gtk_widget_queue_draw ((GtkWidget *)self);
 }
 
@@ -323,7 +295,7 @@ _bar_slider_widget_new (
   float    zero,
   int    convert_to_percentage,
   int       decimals,
-  BarSliderUpdateMode mode,
+  UiDragMode mode,
   const char * prefix,
   const char * suffix)
 {
@@ -373,12 +345,9 @@ _bar_slider_widget_new (
   g_signal_connect (
     G_OBJECT(self), "leave-notify-event",
     G_CALLBACK (on_crossing),  self);
-  if (mode == BAR_SLIDER_UPDATE_MODE_CURSOR)
-    {
-      g_signal_connect (
-        G_OBJECT(self->drag), "drag-begin",
-        G_CALLBACK (drag_begin),  self);
-    }
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-begin",
+    G_CALLBACK (drag_begin),  self);
   g_signal_connect (
     G_OBJECT(self->drag), "drag-update",
     G_CALLBACK (drag_update),  self);
