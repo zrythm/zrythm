@@ -59,6 +59,51 @@ channel_send_get_track (
   return track;
 }
 
+static void
+update_connections (
+  ChannelSend * self)
+{
+  if (self->is_empty)
+    return;
+
+  Track * track = channel_send_get_track (self);
+  Port * self_port, * dest_port;
+  int idx;
+  switch (track->out_signal_type)
+    {
+    case TYPE_AUDIO:
+      for (int i = 0; i < 2; i++)
+        {
+          self_port =
+            channel_send_is_prefader (self) ?
+              (i == 0 ?
+                track->channel->prefader.
+                  stereo_out->l :
+                track->channel->prefader.
+                  stereo_out->r) :
+              (i == 0 ?
+                track->channel->fader.stereo_out->l :
+                track->channel->fader.stereo_out->r);
+          dest_port =
+            port_find_from_identifier (
+              i == 0 ?
+                &self->dest_l_id :
+                &self->dest_r_id);
+          idx =
+            port_get_dest_index (
+              self_port, dest_port);
+          port_set_multiplier_by_index (
+            self_port, idx, self->amount);
+        }
+      break;
+    case TYPE_EVENT:
+      /* TODO */
+      break;
+    default:
+      break;
+    }
+}
+
 /**
  * Gets the amount to be used in widgets (0.0-1.0).
  */
@@ -107,6 +152,7 @@ channel_send_set_amount_from_widget (
     default:
       break;
     }
+  update_connections (self);
 }
 
 /**
@@ -117,13 +163,29 @@ channel_send_connect_stereo (
   ChannelSend * self,
   StereoPorts * stereo)
 {
-  /* TODO */
-  g_message ("connect stereo");
+  channel_send_disconnect (self);
+
   port_identifier_copy (
     &self->dest_l_id, &stereo->l->id);
   port_identifier_copy (
     &self->dest_r_id, &stereo->r->id);
+
+  Track * track = channel_send_get_track (self);
+  StereoPorts * self_stereo =
+    channel_send_is_prefader (self) ?
+      track->channel->prefader.stereo_out :
+      track->channel->fader.stereo_out;
+
+  /* connect */
+  stereo_ports_connect (
+    self_stereo, stereo, true);
+
   self->is_empty = false;
+
+  /* set multipliers */
+  update_connections (self);
+
+  mixer_recalc_graph (MIXER);
 }
 
 /**
@@ -134,11 +196,55 @@ channel_send_connect_midi (
   ChannelSend * self,
   Port *        port)
 {
-  /* TODO */
-  g_message ("connect midi");
+  channel_send_disconnect (self);
+
   port_identifier_copy (
     &self->dest_midi_id, &port->id);
+
+  Track * track = channel_send_get_track (self);
+  Port * self_port =
+    channel_send_is_prefader (self) ?
+      track->channel->prefader.midi_out :
+      track->channel->fader.midi_out;
+  port_connect (
+    self_port, port, true);
+
   self->is_empty = false;
+
+  mixer_recalc_graph (MIXER);
+}
+
+static void
+disconnect_midi (
+  ChannelSend * self)
+{
+  Track * track = channel_send_get_track (self);
+  Port * self_port =
+    channel_send_is_prefader (self) ?
+      track->channel->prefader.midi_out :
+      track->channel->fader.midi_out;
+  Port * dest_port =
+    port_find_from_identifier (&self->dest_midi_id);
+  port_disconnect (self_port, dest_port);
+}
+
+static void
+disconnect_audio (
+  ChannelSend * self)
+{
+  Track * track = channel_send_get_track (self);
+  StereoPorts * self_stereo =
+    channel_send_is_prefader (self) ?
+      track->channel->prefader.stereo_out :
+      track->channel->fader.stereo_out;
+  Port * port = self_stereo->l;
+  Port * dest_port =
+    port_find_from_identifier (&self->dest_l_id);
+  port_disconnect (port, dest_port);
+  port = self_stereo->r;
+  dest_port =
+    port_find_from_identifier (&self->dest_r_id);
+  port_disconnect (port, dest_port);
 }
 
 /**
@@ -148,8 +254,25 @@ void
 channel_send_disconnect (
   ChannelSend * self)
 {
-  g_message ("disconnect");
+  if (self->is_empty)
+    return;
+
+  Track * track = channel_send_get_track (self);
+  switch (track->out_signal_type)
+    {
+    case TYPE_AUDIO:
+      disconnect_audio (self);
+      break;
+    case TYPE_EVENT:
+      disconnect_midi (self);
+      break;
+    default:
+      break;
+    }
+
   self->is_empty = true;
+
+  mixer_recalc_graph (MIXER);
 }
 
 void
