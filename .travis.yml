@@ -77,7 +77,7 @@ script:
       # hack to disable jack
       $mingw64 sed -i -e '75s/true/false/' meson_options.txt
       # hack to disable guile
-      $mingw64 sed -i -e '131s/true/false/' meson_options.txt
+      $mingw64 sed -i -e '87s/true/false/' meson_options.txt
       $mingw64 meson build
       $mingw64 ninja -C build
       $mingw64 ninja -C build test

@@ -82,6 +82,12 @@ option (
   description: 'Compile with GraphViz support (for exporting graphs)')
 
 option (
+  'enable_guile',
+  type: 'boolean',
+  value: true,
+  description: 'Build with libguile support for scripting')
+
+option (
   'gen_dev_docs',
   type: 'boolean',
   value: false,
@@ -130,12 +136,6 @@ option (
   type: 'boolean',
   value: false,
   description: 'Whether this is a trial version with limited functionality')
-
-option (
-  'enable_guile',
-  type: 'boolean',
-  value: true,
-  description: 'Build with libguile support for scripting')
 
 option (
   'guile_snarf_docs_path',
