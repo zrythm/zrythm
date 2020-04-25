@@ -108,6 +108,8 @@ fader_init (
   port_set_owner_fader (self->amp, self);
   self->amp->id.flags |=
     PORT_FLAG_AMPLITUDE;
+  self->amp->id.flags |=
+    PORT_FLAG_AUTOMATABLE;
   if (type == FADER_TYPE_AUDIO_CHANNEL ||
       type == FADER_TYPE_MIDI_CHANNEL)
     {
@@ -129,6 +131,8 @@ fader_init (
   port_set_owner_fader (self->balance, self);
   self->balance->id.flags |=
     PORT_FLAG_STEREO_BALANCE;
+  self->balance->id.flags |=
+    PORT_FLAG_AUTOMATABLE;
 
   if (type == FADER_TYPE_AUDIO_CHANNEL ||
       type == FADER_TYPE_MONITOR)

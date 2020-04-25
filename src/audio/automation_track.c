@@ -63,9 +63,6 @@ automation_track_new (
   AutomationTrack * self =
     calloc (1, sizeof (AutomationTrack));
 
-  port_identifier_copy (
-    &self->port_id, &port->id);
-
   self->regions_size = 1;
   self->regions =
     malloc (self->regions_size *
@@ -73,6 +70,9 @@ automation_track_new (
   self->automation_mode = AUTOMATION_MODE_READ;
 
   self->height = TRACK_DEF_HEIGHT;
+
+  port_identifier_copy (
+    &self->port_id, &port->id);
 
   return self;
 }
@@ -216,6 +216,11 @@ automation_track_get_ap_before_pos (
   return NULL;
 }
 
+/**
+ * @note This is expensive and should only be used
+ *   if \ref PortIdentifier.at_idx is not set. Use
+ *   port_get_automation_track() instead.
+ */
 AutomationTrack *
 automation_track_find_from_port_id (
   PortIdentifier * id)
@@ -252,6 +257,7 @@ automation_track_should_read_automation (
   AutomationTrack * at,
   gint64            cur_time)
 {
+  g_return_val_if_fail (at, false);
   if (at->automation_mode == AUTOMATION_MODE_OFF)
     return false;
 

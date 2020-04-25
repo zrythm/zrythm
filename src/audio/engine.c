@@ -665,7 +665,7 @@ engine_process_prepare (
   AudioEngine * self,
   uint32_t nframes)
 {
-  int i, j;
+  int i;
 
   self->last_time_taken =
     g_get_monotonic_time ();
@@ -742,54 +742,6 @@ engine_process_prepare (
 
       if (ch)
         channel_prepare_process (ch);
-    }
-
-  /* for each automation track, update the val */
-  /* TODO move to routing process node */
-  AutomationTracklist * atl;
-  AutomationTrack * at;
-  float val;
-  gint64 cur_time = g_get_monotonic_time ();
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
-    {
-      atl =
-        track_get_automation_tracklist (
-          TRACKLIST->tracks[i]);
-      if (!atl)
-        continue;
-      for (j = 0; j < atl->num_ats; j++)
-        {
-          at = atl->ats[j];
-
-          /* skip if not reading automation */
-          if (!automation_track_should_read_automation (
-                at, cur_time))
-            continue;
-
-          /* FIXME passing playhead doesn't take
-           * into account the latency compensation.
-           * maybe automation should be a port/
-           * processor in the signal chain. */
-          /* FIXME this is the most processor hungry
-           * part of zrythm */
-          val =
-            automation_track_get_normalized_val_at_pos (
-              at, PLAYHEAD);
-          /*g_message ("val received %f",*/
-                     /*val);*/
-          /* if there was an automation event
-           * at the playhead position, val is
-           * positive */
-          if (val >= 0.f)
-            {
-              Port * port =
-                automation_track_get_port (at);
-              control_port_set_val_from_normalized (
-                port, val, 1);
-              port->value_changed_from_reading =
-                true;
-            }
-        }
     }
 
   self->filled_stereo_out_bufs = 0;

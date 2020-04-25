@@ -127,6 +127,8 @@ plugin_init (
     PORT_FLAG_PLUGIN_ENABLED;
   port->id.flags |=
     PORT_FLAG_TOGGLE;
+  port->id.flags |=
+    PORT_FLAG_AUTOMATABLE;
   port->minf = 0.f;
   port->maxf = 1.f;
   port->zerof = 0.f;

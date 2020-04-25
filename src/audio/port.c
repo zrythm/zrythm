@@ -277,6 +277,7 @@ port_find_from_identifier (
         }
       break;
     case PORT_OWNER_TYPE_FADER:
+      g_warn_if_fail (id->track_pos >= 0);
       tr = TRACKLIST->tracks[id->track_pos];
       g_warn_if_fail (tr);
       ch = tr->channel;
@@ -1295,21 +1296,21 @@ port_disconnect_all (Port * port)
 }
 
 /**
- * Updates the track pos on a track port and
- * all its source/destination identifiers.
+ * To be called when the port's identifier changes
+ * to update corresponding identifiers.
  */
 void
-port_update_track_pos (
-  Port * self,
-  int    pos)
+port_update_identifier (
+  Port * self)
 {
-  self->id.track_pos = pos;
+  /* update in all sources/dests */
   for (int i = 0; i < self->num_srcs; i++)
     {
       Port * src = self->srcs[i];
       int dest_idx =
         port_get_dest_index (src, self);
-      src->dest_ids[dest_idx].track_pos = pos;
+      port_identifier_copy (
+        &src->dest_ids[dest_idx], &self->id);
       g_warn_if_fail (
         src->dests[dest_idx] == self);
     }
@@ -1318,8 +1319,8 @@ port_update_track_pos (
       Port * dest = self->dests[i];
       int src_idx =
         port_get_src_index (dest, self);
-      dest->src_ids[src_idx].track_pos = pos;
-      dest->srcs[src_idx]->id.track_pos = pos;
+      port_identifier_copy (
+        &dest->src_ids[src_idx], &self->id);
       g_warn_if_fail (
         dest->srcs[src_idx] == self);
     }
@@ -1330,6 +1331,33 @@ port_update_track_pos (
       port_identifier_copy (
         &port->port_id, &self->id);
     }
+
+  /* TODO */
+#if 0
+  if (self->id.flags & PORT_FLAG_AUTOMATABLE)
+    {
+      /* update automation track's port id */
+      AutomationTrack * at =
+        automation_track_find_from_port_id (
+          &self->id);
+      g_return_if_fail (at);
+      port_identifier_copy (
+        &at->port_id, &self->id);
+    }
+#endif
+}
+
+/**
+ * Updates the track pos on a track port and
+ * all its source/destination identifiers.
+ */
+void
+port_update_track_pos (
+  Port * self,
+  int    pos)
+{
+  self->id.track_pos = pos;
+  port_update_identifier (self);
 }
 
 #ifdef HAVE_ALSA
@@ -2184,10 +2212,11 @@ stereo_ports_new_generic (
  */
 void
 port_sum_signal_from_inputs (
-  Port *    port,
+  Port *          port,
+  const long      g_start_frames,
   const nframes_t start_frame,
   const nframes_t nframes,
-  const int noroll)
+  const bool      noroll)
 {
   Port * src_port;
   int k;
@@ -2474,6 +2503,35 @@ port_sum_signal_from_inputs (
       break;
     case TYPE_CONTROL:
       {
+        /* calculate value from automation track */
+        g_warn_if_fail (
+          port->id.flags & PORT_FLAG_AUTOMATABLE);
+        AutomationTrack * at =
+          automation_track_find_from_port_id (
+            &port->id);
+        if (port->id.flags & PORT_FLAG_AUTOMATABLE &&
+            automation_track_should_read_automation (
+              at, AUDIO_ENGINE->timestamp_start))
+          {
+            Position pos;
+            position_from_frames (
+              &pos, g_start_frames);
+            float val =
+              automation_track_get_normalized_val_at_pos (
+                at, &pos);
+
+            /* if there was an automation event
+             * at the playhead position, val is
+             * positive */
+            if (val >= 0.f)
+              {
+                control_port_set_val_from_normalized (
+                  port, val, 1);
+                port->value_changed_from_reading =
+                  true;
+              }
+          }
+
         float maxf, minf, depth_range, val_to_use;
         /* whether this is the first CV processed
          * on this control port */
@@ -2774,9 +2832,9 @@ port_get_track (
 
   Track * track =
     TRACKLIST->tracks[self->id.track_pos];
-  if (warn_if_fail)
+  if (!track && warn_if_fail)
     {
-      g_return_val_if_fail (track, NULL);
+      g_warning ("%s: not found", __func__);
     }
   return track;
 }
@@ -2795,7 +2853,9 @@ port_get_plugin (
     {
       if (warn_if_fail)
         {
-          g_warning ("No track found for port");
+          g_warning (
+            "%s: No track found for port",
+            __func__);
         }
       return NULL;
     }

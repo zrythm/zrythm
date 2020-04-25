@@ -164,6 +164,8 @@ track_init (
     PORT_FLAG_CHANNEL_MUTE;
   self->mute->id.flags |=
     PORT_FLAG_TOGGLE;
+  self->mute->id.flags |=
+    PORT_FLAG_AUTOMATABLE;
   port_set_owner_track (
     self->mute, self);
 }

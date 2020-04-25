@@ -824,6 +824,8 @@ create_ports (
               param_info->name);
           port->id.flags |=
             PORT_FLAG_PLUGIN_CONTROL;
+          port->id.flags |=
+            PORT_FLAG_AUTOMATABLE;
           port->carla_param_id = (int) i;
           plugin_add_in_port (
             self->plugin, port);

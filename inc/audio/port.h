@@ -58,6 +58,7 @@ typedef struct SampleProcessor SampleProcessor;
 typedef struct TrackProcessor TrackProcessor;
 typedef struct RtMidiDevice RtMidiDevice;
 typedef struct RtAudioDevice RtAudioDevice;
+typedef struct AutomationTrack AutomationTrack;
 typedef enum PanAlgorithm PanAlgorithm;
 typedef enum PanLaw PanLaw;
 
@@ -649,6 +650,14 @@ port_get_plugin (
   int    warn_if_fail);
 
 /**
+ * To be called when the port's identifier changes
+ * to update corresponding identifiers.
+ */
+void
+port_update_identifier (
+  Port * port);
+
+/**
  * Returns the index of the destination in the dest
  * array.
  */
@@ -905,10 +914,11 @@ port_apply_fader (
  */
 void
 port_sum_signal_from_inputs (
-  Port *    port,
+  Port *          port,
+  const long      g_start_frames,
   const nframes_t start_frame,
   const nframes_t nframes,
-  const int noroll);
+  const bool      noroll);
 
 /**
  * Sets the owner track & its ID.

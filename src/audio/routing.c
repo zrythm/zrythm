@@ -413,7 +413,8 @@ node_process (
           else
             {
               port_sum_signal_from_inputs (
-                port, local_offset,
+                port, g_start_frames,
+                local_offset,
                 nframes, noroll);
             }
         }
@@ -429,7 +430,7 @@ node_process (
       else
         {
           port_sum_signal_from_inputs (
-            port, local_offset,
+            port, g_start_frames, local_offset,
             nframes, noroll);
         }
     }

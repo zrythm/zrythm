@@ -345,6 +345,13 @@ create_port (
           pi->flags |= PORT_FLAG_INTEGER;
         }
 
+      /* TODO ignore freewheel and other ports that
+       * shouldn't be automatable */
+      if (pi->flow == FLOW_INPUT)
+        {
+          pi->flags |= PORT_FLAG_AUTOMATABLE;
+        }
+
       LilvNode * def;
       LilvNode * min;
       LilvNode * max;

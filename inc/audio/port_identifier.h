@@ -36,6 +36,12 @@
  * @{
  */
 
+#define PORT_IDENTIFIER_MAGIC 3411841
+#define IS_PORT_IDENTIFIER(tr) \
+  (tr && \
+   ((PortIdentifier *) tr)->magic == \
+     PORT_IDENTIFIER_MAGIC)
+
 /**
  * Direction of the signal.
  */
@@ -191,6 +197,16 @@ typedef enum PortFlags
 
   /** Port is for channel fader. */
   PORT_FLAG_CHANNEL_FADER = 1 << 18,
+
+  /**
+   * Port has an automation track.
+   *
+   * If this is set, it is assumed that the
+   * automation track at
+   * \ref PortIdentifier.port_index is for this
+   * port.
+   */
+  PORT_FLAG_AUTOMATABLE = 1 << 19,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -215,6 +231,7 @@ port_flags_bitvals[] =
   { .name = "plugin_control", .offset = 16, .bits = 1 },
   { .name = "channel_mute", .offset = 17, .bits = 1 },
   { .name = "channel_fader", .offset = 18, .bits = 1 },
+  { .name = "automatable", .offset = 19, .bits = 1 },
 };
 
 /**
@@ -288,15 +305,13 @@ port_identifier_fields_schema[] =
     "flags", CYAML_FLAG_DEFAULT,
     PortIdentifier, flags, port_flags_bitvals,
     CYAML_ARRAY_LEN (port_flags_bitvals)),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     PortIdentifier, track_pos),
   CYAML_FIELD_MAPPING (
     "plugin_id", CYAML_FLAG_DEFAULT,
     PortIdentifier, plugin_id,
     plugin_identifier_fields_schema),
-  CYAML_FIELD_INT (
-    "port_index", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     PortIdentifier, port_index),
 
   CYAML_FIELD_END,
@@ -321,6 +336,7 @@ port_identifier_copy (
   PortIdentifier * dest,
   PortIdentifier * src)
 {
+  g_return_if_fail (dest && src);
   if (dest->label)
     g_free (dest->label);
   dest->label = g_strdup (src->label);

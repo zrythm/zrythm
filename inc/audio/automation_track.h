@@ -203,6 +203,11 @@ automation_record_mode_get_localized (
   AutomationRecordMode mode,
   char *         buf);
 
+/**
+ * @note This is expensive and should only be used
+ *   if \ref PortIdentifier.at_idx is not set. Use
+ *   port_get_automation_track() instead.
+ */
 AutomationTrack *
 automation_track_find_from_port_id (
   PortIdentifier * id);
