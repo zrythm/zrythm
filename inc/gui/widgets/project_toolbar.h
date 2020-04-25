@@ -45,6 +45,7 @@ typedef struct _ProjectToolbarWidget
   GtkToolButton *     save_as_btn;
   GtkToolButton *    open;
   GtkToolButton *    export_as;
+  GtkToolButton *    export_graph;
 } ProjectToolbarWidget;
 
 #endif

@@ -31,6 +31,7 @@
 #include "actions/copy_tracks_action.h"
 #include "actions/create_tracks_action.h"
 #include "actions/delete_tracks_action.h"
+#include "audio/graph_export.h"
 #include "audio/instrument_track.h"
 #include "audio/midi.h"
 #include "audio/track.h"
@@ -808,6 +809,84 @@ activate_export_as (GSimpleAction *action,
     GTK_WINDOW (MAIN_WINDOW));
   gtk_dialog_run (GTK_DIALOG (export));
   gtk_widget_destroy (GTK_WIDGET (export));
+}
+
+void
+activate_export_graph (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+#ifdef HAVE_CGRAPH
+  Graph * graph = graph_new (ROUTER);
+  graph_setup (graph, false, false);
+
+  char * exports_dir =
+    project_get_exports_dir (PROJECT);
+
+  GtkWidget *dialog, *label, *content_area;
+  GtkDialogFlags flags;
+
+  // Create the widgets
+  flags = GTK_DIALOG_DESTROY_WITH_PARENT;
+  dialog =
+    gtk_dialog_new_with_buttons (
+      _("Export routing graph"),
+      GTK_WINDOW (MAIN_WINDOW), flags,
+      _("Image (PNG)"), 1,
+      _("Dot graph"), 2,
+      NULL);
+  content_area =
+    gtk_dialog_get_content_area (
+      GTK_DIALOG (dialog));
+  char lbl[600];
+  sprintf (
+    lbl,
+    _("The graph will be exported to %s.\n"
+    "Select a format to export as."), exports_dir);
+  label = gtk_label_new (lbl);
+  gtk_widget_set_visible (label, true);
+  gtk_label_set_justify (
+    GTK_LABEL (label), GTK_JUSTIFY_CENTER);
+  z_gtk_widget_set_margin (label, 3);
+
+ // Add the label, and show everything we’ve added
+  gtk_container_add (
+    GTK_CONTAINER (content_area), label);
+
+  int result = gtk_dialog_run (GTK_DIALOG (dialog));
+  const char * filename = NULL;
+  GraphExportType export_type;
+  switch (result)
+    {
+      /* png */
+      case 1:
+        filename = "graph.png";
+        export_type = GRAPH_EXPORT_PNG;
+        break;
+      /* dot */
+      case 2:
+        filename = "graph.dot";
+        export_type = GRAPH_EXPORT_DOT;
+        break;
+      default:
+        gtk_widget_destroy (dialog);
+        return;
+    }
+  gtk_widget_destroy (dialog);
+
+  char * path =
+    g_build_filename (
+      exports_dir, filename, NULL);
+  graph_export_as (
+    graph, export_type, path);
+  g_free (exports_dir);
+  g_free (path);
+
+  ui_show_notification (_("Graph exported"));
+
+  graph_free (graph);
+#endif
 }
 
 void

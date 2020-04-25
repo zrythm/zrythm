@@ -43,6 +43,8 @@ typedef enum GraphExportType
 {
 #ifdef HAVE_CGRAPH
   GRAPH_EXPORT_PNG,
+  GRAPH_EXPORT_DOT,
+  GRAPH_EXPORT_PS,
 #endif
   NUM_GRAPH_EXPORT_TYPES,
 } GraphExportType;

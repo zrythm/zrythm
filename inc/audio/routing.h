@@ -75,6 +75,8 @@ typedef struct Position Position;
  * @{
  */
 
+#define ROUTER (&MIXER->router)
+
 #define mpmc_queue_push_back_node(q,x) \
   mpmc_queue_push_back (q, (void *) x)
 

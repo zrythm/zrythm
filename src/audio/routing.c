@@ -46,7 +46,6 @@
 #ifdef HAVE_PORT_AUDIO
 #include "audio/engine_pa.h"
 #endif
-#include "audio/graph_export.h"
 #include "audio/master_track.h"
 #include "audio/midi.h"
 #include "audio/midi_track.h"
@@ -1923,16 +1922,7 @@ graph_setup (
    * TODO
    * ======================== */
 
-  graph_print (self);
-
-#ifdef HAVE_CGRAPH
-  char * path =
-    g_build_filename (
-      zrythm_get_dir (ZRYTHM), "graph_export.png",
-      NULL);
-  graph_export_as (
-    self, GRAPH_EXPORT_PNG, path);
-#endif
+  /*graph_print (self);*/
 
   if (rechain)
     graph_rechain (self);

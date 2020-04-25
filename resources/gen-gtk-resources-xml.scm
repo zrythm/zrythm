@@ -64,6 +64,8 @@
     "edit-delete"
     "edit-select-all"
     "edit-clear"
+    "distribute-graph-directed"
+    "filename-dot-amarok"
     "folder"
     "folder-favorites"
     "format-justify-fill"

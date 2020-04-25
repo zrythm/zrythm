@@ -188,6 +188,12 @@ activate_export_as (GSimpleAction *action,
                   gpointer       user_data);
 
 void
+activate_export_graph (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+void
 activate_properties (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);

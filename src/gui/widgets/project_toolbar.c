@@ -41,6 +41,7 @@ project_toolbar_widget_init (ProjectToolbarWidget * self)
   SET_TOOLTIP (save_as_btn, _("Save As"));
   SET_TOOLTIP (open, _("Open Project"));
   SET_TOOLTIP (export_as, _("Export As"));
+  SET_TOOLTIP (export_graph, _("Export Graph"));
 #undef SET_TOOLTIP
 }
 
@@ -65,6 +66,7 @@ project_toolbar_widget_class_init (ProjectToolbarWidgetClass * _klass)
   BIND_CHILD (save_as_btn);
   BIND_CHILD (open);
   BIND_CHILD (export_as);
+  BIND_CHILD (export_graph);
 
 #undef BIND_CHILD
 }

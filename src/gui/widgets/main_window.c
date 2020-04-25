@@ -331,6 +331,7 @@ main_window_widget_init (MainWindowWidget * self)
     { "save", activate_save },
     { "save-as", activate_save_as },
     { "export-as", activate_export_as },
+    { "export-graph", activate_export_graph },
     { "properties", activate_properties },
 
     /* edit menu */

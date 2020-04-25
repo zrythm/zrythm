@@ -207,20 +207,20 @@ fill_anodes (
   char cluster_name[600];
 
   /* fill nodes */
-  for (int i = 0; i < graph->n_graph_nodes; i++)
+  for (size_t i = 0; i < graph->num_setup_graph_nodes; i++)
     {
-      GraphNode * node = graph->graph_nodes[i];
+      GraphNode * node = graph->setup_graph_nodes[i];
       ANode * anode = &anodes[i];
       anode->node = node;
       get_graph_from_node (
-        anodes, graph->n_graph_nodes, node);
+        anodes, graph->num_setup_graph_nodes, node);
     }
 
   /* create top clusters (tracks, sample processor,
    * monitor fader) */
-  for (int i = 0; i < graph->n_graph_nodes; i++)
+  for (size_t i = 0; i < graph->num_setup_graph_nodes; i++)
     {
-      GraphNode * node = graph->graph_nodes[i];
+      GraphNode * node = graph->setup_graph_nodes[i];
       ANode * anode = &anodes[i];
 
       if (node->type != ROUTE_NODE_TYPE_TRACK &&
@@ -240,9 +240,9 @@ fill_anodes (
     }
 
   /* create track subclusters */
-  for (int i = 0; i < graph->n_graph_nodes; i++)
+  for (size_t i = 0; i < graph->num_setup_graph_nodes; i++)
     {
-      GraphNode * node = graph->graph_nodes[i];
+      GraphNode * node = graph->setup_graph_nodes[i];
       ANode * anode = &anodes[i];
 
       if (node->type != ROUTE_NODE_TYPE_PLUGIN &&
@@ -289,7 +289,7 @@ fill_anodes (
 
       Agraph_t * aparent_graph =
         get_parent_graph (
-          anodes, graph->n_graph_nodes, parent_node);
+          anodes, graph->num_setup_graph_nodes, parent_node);
       g_warn_if_fail (aparent_graph);
       char * node_name =
         graph_get_node_name (node);
@@ -304,9 +304,10 @@ fill_anodes (
 }
 
 static void
-export_as_png (
+export_as_graphviz_type (
   Graph *         graph,
-  const char *    export_path)
+  const char *    export_path,
+  const char *    type)
 {
   GVC_t * gvc = gvContext();
   Agraph_t * agraph =
@@ -317,24 +318,24 @@ export_as_png (
   /* fill anodes with subgraphs */
   ANode * anodes =
     calloc (
-      (size_t) graph->n_graph_nodes,
+      (size_t) graph->num_setup_graph_nodes,
       sizeof (ANode));
   fill_anodes (graph, agraph, anodes);
 
   /* create graph */
-  for (int i = 0; i < graph->n_graph_nodes; i++)
+  for (size_t i = 0; i < graph->num_setup_graph_nodes; i++)
     {
-      GraphNode * node = graph->graph_nodes[i];
+      GraphNode * node = graph->setup_graph_nodes[i];
       Agnode_t * anode =
         create_anode (
-          agraph, node, anodes, graph->n_graph_nodes);
+          agraph, node, anodes, graph->num_setup_graph_nodes);
       for (int j = 0; j < node->n_childnodes; j++)
         {
           GraphNode * child = node->childnodes[j];
           Agnode_t * achildnode =
             create_anode (
               agraph, child, anodes,
-              graph->n_graph_nodes);
+              graph->num_setup_graph_nodes);
 
           /* create edge */
           Agedge_t * edge =
@@ -362,7 +363,7 @@ export_as_png (
     }
 
   gvLayout (gvc, agraph, "dot");
-  gvRenderFilename (gvc, agraph, "png", export_path);
+  gvRenderFilename (gvc, agraph, type, export_path);
   gvFreeLayout(gvc, agraph);
   agclose (agraph);
   gvFreeContext(gvc);
@@ -378,14 +379,29 @@ graph_export_as (
   GraphExportType type,
   const char *    export_path)
 {
+  g_message (
+    "exporting graph to %s...", export_path);
+
   switch (type)
     {
 #ifdef HAVE_CGRAPH
     case GRAPH_EXPORT_PNG:
-      export_as_png (graph, export_path);
+      export_as_graphviz_type (
+        graph, export_path, "png");
+      break;
+    case GRAPH_EXPORT_DOT:
+      export_as_graphviz_type (
+        graph, export_path, "dot");
+      break;
+    case GRAPH_EXPORT_PS:
+      export_as_graphviz_type (
+        graph, export_path, "ps");
       break;
 #endif
     default:
+      g_warn_if_reached ();
       break;
     }
+
+  g_message ("graph exported");
 }
