@@ -22,6 +22,7 @@ packages:
   - python-sphinx
   - ladspa
   - lv2
+  - graphviz
   - rubberband
   - xdg-utils
   - lcov

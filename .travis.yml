@@ -25,7 +25,7 @@ before_install:
       export msys2+='& C:\\tools\\msys64\\msys2_shell.cmd -defterm -no-start'
       export mingw64="$msys2 -mingw64 -full-path -here -c \$\* --"
       export msys2+=" -msys2 -c \$\* --"
-      $msys2 pacman --sync --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-gtk3 mingw-w64-x86_64-meson mingw-w64-x86_64-libsamplerate mingw-w64-x86_64-fftw mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-libyaml mingw-w64-x86_64-libsndfile mingw-w64-x86_64-rubberband mingw-w64-x86_64-dlfcn mingw-w64-x86_64-SDL2 mingw-w64-x86_64-chromaprint guile libguile-devel mingw-w64-x86_64-gtksourceview3
+      $msys2 pacman --sync --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-gtk3 mingw-w64-x86_64-meson mingw-w64-x86_64-libsamplerate mingw-w64-x86_64-fftw mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-libyaml mingw-w64-x86_64-libsndfile mingw-w64-x86_64-rubberband mingw-w64-x86_64-dlfcn mingw-w64-x86_64-SDL2 mingw-w64-x86_64-chromaprint guile libguile-devel mingw-w64-x86_64-gtksourceview3 mingw-w64-x86_64-graphviz
       ## Install more MSYS2 packages from https://packages.msys2.org/base here
       taskkill //IM gpg-agent.exe //F || true # https://travis-ci.community/t/4967
       export PATH=/C/tools/msys64/mingw64/bin:$PATH
@@ -34,11 +34,11 @@ before_install:
     osx)
       brew update
       # use || true because it returns 1
-      brew install fftw meson libsamplerate sdl2 chromaprint libgtop lilv librsvg gtk+3 guile gtksourceview4 || true
+      brew install fftw meson libsamplerate sdl2 chromaprint libgtop lilv librsvg gtk+3 guile gtksourceview4 graphviz || true
       brew link --overwrite python
       ;;
     linux)
-      sudo apt-get install -y libgtk-3-dev libjack-dev libsndfile1-dev ninja-build gettext sed help2man python3-sphinx ladspa-sdk libfftw3-dev libasound2-dev libavcodec-dev libavutil-dev libavformat-dev libchromaprint-dev libsamplerate0-dev libyaml-dev librubberband-dev python3 xdg-utils git lcov guile-2.2-dev libgtksourceview-3.0-dev
+      sudo apt-get install -y libgtk-3-dev libjack-dev libsndfile1-dev ninja-build gettext sed help2man python3-sphinx ladspa-sdk libfftw3-dev libasound2-dev libavcodec-dev libavutil-dev libavformat-dev libchromaprint-dev libsamplerate0-dev libyaml-dev librubberband-dev python3 xdg-utils git lcov guile-2.2-dev libgtksourceview-3.0-dev libgraphviz-dev
       git clone https://github.com/mesonbuild/meson /tmp/meson
       pip install --user gcovr cpp-coveralls
       ;;

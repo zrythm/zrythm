@@ -10,6 +10,7 @@ packages:
   - libX11
   - gsettings-desktop-schemas
   - ffmpeg
+  - graphviz
   - libgtop
   - jackit
   - lilv

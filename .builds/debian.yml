@@ -18,6 +18,7 @@ packages:
   - libavformat-dev
   - libchromaprint-dev
   - libgtksourceview-3.0-dev
+  - libgraphviz-dev
   #- libsuil-dev
   #- lv2-dev
   - libsamplerate0-dev
