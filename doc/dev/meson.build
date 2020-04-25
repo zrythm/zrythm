@@ -27,43 +27,46 @@ doxyfile_mcss = configure_file (
   configuration: cdata,
   )
 
-html_dev_target = custom_target (
-  'html-dev-docs',
-  depend_files: [
-    doxyfile,
-    doxyfile_mcss,
-    zrythm_srcs,
-    join_paths (meson.source_root(),
-                'CONTRIBUTING.md'),
-    'mainpage.h',
-    'cyaml_schemas.h',
-    'processing_cycle.h',
-    'release_checklist.h',
-    'weblate.h',
-    ],
-  output: 'html',
-  command: [
-    join_paths (meson.current_source_dir (), 'm.css', 'documentation', 'doxygen.py'),
-    doxyfile_mcss,
-    ],
-  install: false,
-  build_by_default: get_option ('gen_dev_docs'),
-  )
+if dot_bin.found()
+  html_dev_target = custom_target (
+    'html-dev-docs',
+    depend_files: [
+      doxyfile,
+      doxyfile_mcss,
+      zrythm_srcs,
+      join_paths (meson.source_root(),
+                  'CONTRIBUTING.md'),
+      'mainpage.h',
+      'cyaml_schemas.h',
+      'processing_cycle.h',
+      'release_checklist.h',
+      'weblate.h',
+      ],
+    output: 'html',
+    command: [
+      meson.current_source_dir () / 'm.css' /
+      'documentation' / 'doxygen.py',
+      doxyfile_mcss,
+      ],
+    install: false,
+    build_by_default: get_option ('gen_dev_docs'),
+    )
 
-run_target (
-  'gen_dev_docs',
-  command: [
-    'echo',
-    'Developer Docs generated',
-    ],
-  depends: html_dev_target,
-  )
+  run_target (
+    'gen_dev_docs',
+    command: [
+      'echo',
+      'Developer Docs generated',
+      ],
+    depends: html_dev_target,
+    )
 
-run_target (
-  'clean_dev_docs',
-  command: [
-    'rm',
-    '-rf',
-    'html',
-    ],
-  )
+  run_target (
+    'clean_dev_docs',
+    command: [
+      'rm',
+      '-rf',
+      'html',
+      ],
+    )
+endif

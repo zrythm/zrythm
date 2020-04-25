@@ -154,6 +154,7 @@ cc = meson.get_compiler ('c')
 # --- Check for programs ---
 
 find_program ('sed', required: true)
+dot_bin = find_program ('dot', required: false)
 
 # find command to open a directory
 if os_linux or os_freebsd
