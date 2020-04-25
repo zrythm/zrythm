@@ -232,6 +232,22 @@ create_model_for_types (
   Track * track =
     automation_track_get_track (self->owner);
 
+  if (track->channel->instrument)
+    {
+      Plugin * plugin = track->channel->instrument;
+      char label[600];
+      sprintf (
+        label, _("[Instrument] %s"),
+        plugin->descr->name);
+      gtk_list_store_append (list_store, &iter);
+      gtk_list_store_set (
+        list_store, &iter,
+        0, "z-plugins",
+        1, label,
+        2, AS_TYPE_INSTRUMENT,
+        -1);
+    }
+
   for (int i = 0; i < STRIP_SIZE; i++)
     {
       Plugin * plugin = track->channel->midi_fx[i];
@@ -247,22 +263,6 @@ create_model_for_types (
             0, "z-plugins",
             1, label,
             2, AS_TYPE_MIDI_FX_0 + i,
-            -1);
-        }
-
-      plugin = track->channel->instrument;
-      if (plugin)
-        {
-          char label[600];
-          sprintf (
-            label, _("[Instrument %d] %s"),
-            i, plugin->descr->name);
-          gtk_list_store_append (list_store, &iter);
-          gtk_list_store_set (
-            list_store, &iter,
-            0, "z-plugins",
-            1, label,
-            2, AS_TYPE_INSERT_0 + i,
             -1);
         }
 
