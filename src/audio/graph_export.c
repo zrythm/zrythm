@@ -131,10 +131,6 @@ get_parent_graph (
     default:
       break;
     }
-  g_message ("parent of %s is %s",
-    graph_get_node_name (node),
-    parent_node ? graph_get_node_name (parent_node) :
-    "(NULL)");
   if (!parent_node)
     return NULL;
 
@@ -161,6 +157,35 @@ create_anode (
   switch (node->type)
     {
     case ROUTE_NODE_TYPE_PORT:
+      switch (node->port->id.type)
+        {
+        case TYPE_AUDIO:
+          agsafeset (
+            anode, (char *) "color",
+            (char *) "crimson",
+            (char *) "black");
+          break;
+        case TYPE_EVENT:
+          agsafeset (
+            anode, (char *) "color",
+            (char *) "navy",
+            (char *) "black");
+          break;
+        case TYPE_CONTROL:
+          agsafeset (
+            anode, (char *) "color",
+            (char *) "darkviolet",
+            (char *) "black");
+          break;
+        case TYPE_CV:
+          agsafeset (
+            anode, (char *) "color",
+            (char *) "darkgreen",
+            (char *) "black");
+          break;
+        default:
+          break;
+        }
       break;
     default:
       agsafeset (
@@ -209,8 +234,9 @@ fill_anodes (
         cluster_name, "cluster_%s", node_name);
       anode->graph =
         agsubg (aroot_graph, cluster_name, true);
-      g_message ("added cluster %s to root",
-        cluster_name);
+      agsafeset (
+        anode->graph, (char *) "label", node_name,
+        (char *) "");
     }
 
   /* create track subclusters */
@@ -271,8 +297,9 @@ fill_anodes (
         cluster_name, "cluster_%s", node_name);
       anode->graph =
         agsubg (aparent_graph, cluster_name, true);
-      g_message ("added cluster %s to parent graph",
-        cluster_name);
+      agsafeset (
+        anode->graph, (char *) "label", node_name,
+        (char *) "");
     }
 }
 
@@ -310,8 +337,27 @@ export_as_png (
               graph->n_graph_nodes);
 
           /* create edge */
-          agedge (
-            agraph, anode, achildnode, NULL, true);
+          Agedge_t * edge =
+            agedge (
+              agraph, anode, achildnode, NULL, true);
+          if (node->type == ROUTE_NODE_TYPE_PORT)
+            {
+              char * color =
+                agget (anode, (char *) "color");
+              agsafeset (
+                edge, (char *) "color", color,
+                (char *) "black");
+            }
+          else if (child->type ==
+                     ROUTE_NODE_TYPE_PORT)
+            {
+              char * color =
+                agget (achildnode, (char *) "color");
+              agsafeset (
+                edge, (char *) "color",
+                (char *) color,
+                (char *) "black");
+            }
         }
     }
 

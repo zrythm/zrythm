@@ -1925,7 +1925,7 @@ graph_setup (
 
   graph_print (self);
 
-#if 0
+#ifdef HAVE_CGRAPH
   char * path =
     g_build_filename (
       zrythm_get_dir (ZRYTHM), "graph_export.png",
