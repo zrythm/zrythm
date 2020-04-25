@@ -33,6 +33,7 @@
 #include "audio/instrument_track.h"
 #include "audio/master_track.h"
 #include "audio/midi.h"
+#include "audio/midi_track.h"
 #include "audio/mixer.h"
 #include "audio/modulator.h"
 #include "audio/pan.h"
@@ -885,6 +886,13 @@ channel_generate_automation_tracks (
   /* mute */
   at = automation_track_new (track->mute);
   automation_tracklist_add_at (atl, at);
+
+  if (track->type == TRACK_TYPE_INSTRUMENT ||
+      track->type == TRACK_TYPE_MIDI)
+    {
+      /* add midi automatables */
+      midi_track_add_midi_automatables (track);
+    }
 }
 
 /**

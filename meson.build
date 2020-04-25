@@ -565,6 +565,12 @@ if (get_option('enable_ffmpeg'))
   cdata.set('HAVE_FFMPEG', 1)
 endif
 
+if (get_option ('enable_graphviz'))
+  zrythm_deps += dependency ('libcgraph')
+  zrythm_deps += dependency ('libgvc')
+  cdata.set('HAVE_CGRAPH', 1)
+endif
+
 if (get_option('enable_portaudio'))
   zrythm_deps += dependency ('portaudio-2.0')
   # disable until it works

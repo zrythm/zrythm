@@ -151,5 +151,7 @@
  * When there are no more trigger nodes left, the
  * processing cycle is completed.
  *
+ * \section latency_compensation Latency Compensation
+ *
  */
 

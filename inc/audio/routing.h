@@ -50,11 +50,23 @@
 
 #include "zix/sem.h"
 
+#include <gtk/gtk.h>
+
 typedef struct GraphNode GraphNode;
 typedef struct Graph Graph;
 typedef struct PassthroughProcessor
   PassthroughProcessor;
 typedef struct MPMCQueue MPMCQueue;
+typedef struct Port Port;
+typedef struct Fader Fader;
+typedef struct Track Track;
+typedef struct SampleProcessor SampleProcessor;
+typedef struct Plugin Plugin;
+typedef struct Position Position;
+
+#ifdef HAVE_JACK
+#include <jack/thread.h>
+#endif
 
 /**
  * @addtogroup audio
@@ -91,6 +103,9 @@ typedef enum GraphNodeType
   ROUTE_NODE_TYPE_SAMPLE_PROCESSOR,
 } GraphNodeType;
 
+/**
+ * A node in the processing graph.
+ */
 typedef struct GraphNode
 {
   int           id;
@@ -305,6 +320,50 @@ graph_print (
 void
 graph_destroy (
   Graph * graph);
+
+/**
+ * Returns a human friendly name of the node.
+ *
+ * Must be free'd.
+ */
+char *
+graph_get_node_name (
+  GraphNode * node);
+
+GraphNode *
+graph_find_node_from_port (
+  Graph * graph,
+  const Port * port);
+
+GraphNode *
+graph_find_node_from_plugin (
+  Graph * graph,
+  Plugin * pl);
+
+GraphNode *
+graph_find_node_from_track (
+  Graph * graph,
+  Track * track);
+
+GraphNode *
+graph_find_node_from_fader (
+  Graph * graph,
+  Fader * fader);
+
+GraphNode *
+graph_find_node_from_prefader (
+  Graph * graph,
+  PassthroughProcessor * prefader);
+
+GraphNode *
+graph_find_node_from_sample_processor (
+  Graph * graph,
+  SampleProcessor * sample_processor);
+
+GraphNode *
+graph_find_node_from_monitor_fader (
+  Graph * graph,
+  Fader * fader);
 
 /*
  * Adds the graph nodes and connections, then

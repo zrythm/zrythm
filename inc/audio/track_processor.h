@@ -26,6 +26,7 @@
 #ifndef __AUDIO_TRACK_PROCESSOR_H__
 #define __AUDIO_TRACK_PROCESSOR_H__
 
+#include "audio/midi.h"
 #include "audio/port.h"
 #include "utils/types.h"
 #include "utils/yaml.h"
@@ -83,6 +84,8 @@ typedef struct TrackProcessor
    * the TrackProcessor internally.
    */
   Port *           piano_roll;
+
+  Port *           midi_automatables[NUM_MIDI_AUTOMATABLES];
 
   /**
    * Current dBFS after procesing each output port.

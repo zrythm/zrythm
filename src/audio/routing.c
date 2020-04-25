@@ -46,6 +46,7 @@
 #ifdef HAVE_PORT_AUDIO
 #include "audio/engine_pa.h"
 #endif
+#include "audio/graph_export.h"
 #include "audio/master_track.h"
 #include "audio/midi.h"
 #include "audio/midi_track.h"
@@ -145,8 +146,8 @@ node_finish (
  *
  * Must be free'd.
  */
-static char *
-get_node_name (
+char *
+graph_get_node_name (
   GraphNode * node)
 {
   char str[600];
@@ -232,7 +233,7 @@ print_node (
     }
 
   (void) node_get_pointer;
-  char * name = get_node_name (node);
+  char * name = graph_get_node_name (node);
   char * str1 =
     g_strdup_printf (
       "node [(%d) %s] refcount: %d | terminal: %s | initial: %s | playback latency: %d",
@@ -247,7 +248,7 @@ print_node (
   for (int j = 0; j < node->n_childnodes; j++)
     {
       dest = node->childnodes[j];
-      name = get_node_name (dest);
+      name = graph_get_node_name (dest);
       str2 =
         g_strdup_printf ("%s (dest [(%d) %s])",
           str1, dest->id, name);
@@ -865,8 +866,8 @@ node_connect (
   add_depends (to, from);
 }
 
-static GraphNode *
-find_node_from_port (
+GraphNode *
+graph_find_node_from_port (
   Graph * graph,
   const Port * port)
 {
@@ -882,8 +883,8 @@ find_node_from_port (
   return NULL;
 }
 
-static GraphNode *
-find_node_from_plugin (
+GraphNode *
+graph_find_node_from_plugin (
   Graph * graph,
   Plugin * pl)
 {
@@ -899,8 +900,8 @@ find_node_from_plugin (
   return NULL;
 }
 
-static GraphNode *
-find_node_from_track (
+GraphNode *
+graph_find_node_from_track (
   Graph * graph,
   Track * track)
 {
@@ -916,8 +917,8 @@ find_node_from_track (
   return NULL;
 }
 
-static GraphNode *
-find_node_from_fader (
+GraphNode *
+graph_find_node_from_fader (
   Graph * graph,
   Fader * fader)
 {
@@ -933,8 +934,8 @@ find_node_from_fader (
   return NULL;
 }
 
-static GraphNode *
-find_node_from_prefader (
+GraphNode *
+graph_find_node_from_prefader (
   Graph * graph,
   PassthroughProcessor * prefader)
 {
@@ -950,8 +951,8 @@ find_node_from_prefader (
   return NULL;
 }
 
-static GraphNode *
-find_node_from_sample_processor (
+GraphNode *
+graph_find_node_from_sample_processor (
   Graph * graph,
   SampleProcessor * sample_processor)
 {
@@ -969,8 +970,8 @@ find_node_from_sample_processor (
   return NULL;
 }
 
-static GraphNode *
-find_node_from_monitor_fader (
+GraphNode *
+graph_find_node_from_monitor_fader (
   Graph * graph,
   Fader * fader)
 {
@@ -1355,13 +1356,13 @@ connect_port (
   Port * port)
 {
   GraphNode * node =
-    find_node_from_port (self, port);
+    graph_find_node_from_port (self, port);
   GraphNode * node2;
   Port * src, * dest;
   for (int j = 0; j < port->num_srcs; j++)
     {
       src = port->srcs[j];
-      node2 = find_node_from_port (self, src);
+      node2 = graph_find_node_from_port (self, src);
       g_warn_if_fail (node);
       g_warn_if_fail (node2);
       node_connect (node2, node);
@@ -1369,7 +1370,7 @@ connect_port (
   for (int j = 0; j < port->num_dests; j++)
     {
       dest = port->dests[j];
-      node2 = find_node_from_port (self, dest);
+      node2 = graph_find_node_from_port (self, dest);
       g_warn_if_fail (node);
       g_warn_if_fail (node2);
       node_connect (node, node2);
@@ -1669,36 +1670,36 @@ graph_setup (
 
   /* connect the sample processor */
   node =
-    find_node_from_sample_processor (
+    graph_find_node_from_sample_processor (
       self, SAMPLE_PROCESSOR);
   port = SAMPLE_PROCESSOR->stereo_out->l;
   node2 =
-    find_node_from_port (self, port);
+    graph_find_node_from_port (self, port);
   node_connect (node, node2);
   port = SAMPLE_PROCESSOR->stereo_out->r;
   node2 =
-    find_node_from_port (self, port);
+    graph_find_node_from_port (self, port);
   node_connect (node, node2);
 
   /* connect the monitor fader */
   node =
-    find_node_from_monitor_fader (
+    graph_find_node_from_monitor_fader (
       self, MONITOR_FADER);
   port = MONITOR_FADER->stereo_in->l;
   node2 =
-    find_node_from_port (self, port);
+    graph_find_node_from_port (self, port);
   node_connect (node2, node);
   port = MONITOR_FADER->stereo_in->r;
   node2 =
-    find_node_from_port (self, port);
+    graph_find_node_from_port (self, port);
   node_connect (node2, node);
   port = MONITOR_FADER->stereo_out->l;
   node2 =
-    find_node_from_port (self, port);
+    graph_find_node_from_port (self, port);
   node_connect (node, node2);
   port = MONITOR_FADER->stereo_out->r;
   node2 =
-    find_node_from_port (self, port);
+    graph_find_node_from_port (self, port);
   node_connect (node, node2);
 
   for (i = 0; i < TRACKLIST->num_tracks; i++)
@@ -1709,37 +1710,37 @@ graph_setup (
 
       /* connect the track */
       node =
-        find_node_from_track (
+        graph_find_node_from_track (
           self, tr);
       g_warn_if_fail (node);
       if (tr->in_signal_type == TYPE_AUDIO)
         {
           port = tr->processor.stereo_in->l;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node2, node);
           port = tr->processor.stereo_in->r;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node2, node);
           port = tr->processor.stereo_out->l;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node, node2);
           port = tr->processor.stereo_out->r;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node, node2);
         }
       else if (tr->in_signal_type == TYPE_EVENT)
         {
           port = tr->processor.midi_in;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node2, node);
           port = tr->processor.midi_out;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node, node2);
         }
 
@@ -1750,7 +1751,7 @@ graph_setup (
 
       /* connect the fader */
       node =
-        find_node_from_fader (
+        graph_find_node_from_fader (
           self, fader);
       g_warn_if_fail (node);
       if (fader->type == FADER_TYPE_AUDIO_CHANNEL)
@@ -1758,21 +1759,21 @@ graph_setup (
           /* connect ins */
           port = fader->stereo_in->l;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node2, node);
           port = fader->stereo_in->r;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node2, node);
 
           /* connect outs */
           port = fader->stereo_out->l;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node, node2);
           port = fader->stereo_out->r;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node, node2);
         }
       else if (fader->type ==
@@ -1780,25 +1781,25 @@ graph_setup (
         {
           port = fader->midi_in;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node2, node);
           port = fader->midi_out;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node, node2);
         }
       port = fader->amp;
       node2 =
-        find_node_from_port (self, port);
+        graph_find_node_from_port (self, port);
       node_connect (node2, node);
       port = fader->balance;
       node2 =
-        find_node_from_port (self, port);
+        graph_find_node_from_port (self, port);
       node_connect (node2, node);
 
       /* connect the prefader */
       node =
-        find_node_from_prefader (
+        graph_find_node_from_prefader (
           self, prefader);
       g_warn_if_fail (node);
       if (prefader->type ==
@@ -1806,19 +1807,19 @@ graph_setup (
         {
           port = prefader->stereo_in->l;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node2, node);
           port = prefader->stereo_in->r;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node2, node);
           port = prefader->stereo_out->l;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node, node2);
           port = prefader->stereo_out->r;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node, node2);
         }
       else if (prefader->type ==
@@ -1826,11 +1827,11 @@ graph_setup (
         {
           port = prefader->midi_in;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node2, node);
           port = prefader->midi_out;
           node2 =
-            find_node_from_port (self, port);
+            graph_find_node_from_port (self, port);
           node_connect (node, node2);
         }
 
@@ -1839,7 +1840,7 @@ graph_setup (
             continue; \
  \
           node = \
-            find_node_from_plugin (self, pl); \
+            graph_find_node_from_plugin (self, pl); \
           g_warn_if_fail (node); \
           for (k = 0; k < pl->num_in_ports; k++) \
             { \
@@ -1847,7 +1848,7 @@ graph_setup (
               g_warn_if_fail ( \
                 port_get_plugin (port, 1) != NULL); \
               node2 = \
-                find_node_from_port (self, port); \
+                graph_find_node_from_port (self, port); \
               node_connect (node2, node); \
             } \
           for (k = 0; k < pl->num_out_ports; k++) \
@@ -1856,7 +1857,7 @@ graph_setup (
               g_warn_if_fail ( \
                 port_get_plugin (port, 1) != NULL); \
               node2 = \
-                find_node_from_port (self, port); \
+                graph_find_node_from_port (self, port); \
               node_connect (node, node2); \
             }
 
@@ -1924,6 +1925,15 @@ graph_setup (
 
   graph_print (self);
 
+#if 0
+  char * path =
+    g_build_filename (
+      zrythm_get_dir (ZRYTHM), "graph_export.png",
+      NULL);
+  graph_export_as (
+    self, GRAPH_EXPORT_PNG, path);
+#endif
+
   if (rechain)
     graph_rechain (self);
 }
@@ -1950,9 +1960,9 @@ graph_validate (
    * if the connection between src->dest is valid */
   GraphNode * node, * node2;
   node =
-    find_node_from_port (self, src);
+    graph_find_node_from_port (self, src);
   node2 =
-    find_node_from_port (self, dest);
+    graph_find_node_from_port (self, dest);
   node_connect (node, node2);
 
   int valid = graph_is_valid (self);

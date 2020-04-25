@@ -76,6 +76,12 @@ option (
   description: 'Compile with JACK support')
 
 option (
+  'enable_graphviz',
+  type: 'boolean',
+  value: true,
+  description: 'Compile with GraphViz support (for exporting graphs)')
+
+option (
   'gen_dev_docs',
   type: 'boolean',
   value: false,

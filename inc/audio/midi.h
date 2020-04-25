@@ -74,6 +74,19 @@ typedef enum MidiEventType
 } MidiEventType;
 
 /**
+ * Automatable MIDI signals.
+ */
+typedef enum MidiAutomatables
+{
+  MIDI_AUTOMATABLE_MOD_WHEEL,
+  MIDI_AUTOMATABLE_BREATH_CONTROLLER,
+  MIDI_AUTOMATABLE_FOOT_PEDAL_MSB,
+  MIDI_AUTOMATABLE_PORTAMENTO_TIME_MSB,
+  MIDI_AUTOMATABLE_DATA_ENTRY_MSB,
+  NUM_MIDI_AUTOMATABLES,
+} MidiAutomatables;
+
+/**
  * Backend-agnostic MIDI event descriptor.
  */
 typedef struct MidiEvent
