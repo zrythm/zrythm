@@ -51,6 +51,7 @@ if get_option ('enable_tests')
     ['actions/arranger_selections', true],
     ['audio/automation_track', true],
     ['audio/curve', true],
+    ['audio/midi', true],
     ['audio/midi_mapping', true],
     ['audio/midi_note', true],
     ['audio/midi_track', true],

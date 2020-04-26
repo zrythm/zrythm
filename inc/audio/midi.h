@@ -209,6 +209,31 @@ midi_events_print (
   const int    queued);
 
 /**
+ * Used for MIDI controls whose values are split
+ * between MSB/LSB.
+ *
+ * @param lsb First byte (pos 1).
+ * @param msb Second byte (pos 2).
+ */
+int
+midi_combine_bytes_to_int (
+  midi_byte_t lsb,
+  midi_byte_t msb);
+
+/**
+ * Used for MIDI controls whose values are split
+ * between MSB/LSB.
+ *
+ * @param lsb First byte (pos 1).
+ * @param msb Second byte (pos 2).
+ */
+void
+midi_get_bytes_from_int (
+  int           val,
+  midi_byte_t * lsb,
+  midi_byte_t * msb);
+
+/**
  * Appends the events from src to dest
  *
  * @param queued Append queued events instead of

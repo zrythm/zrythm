@@ -596,6 +596,40 @@ midi_events_add_control_change (
 }
 
 /**
+ * Used for MIDI controls whose values are split
+ * between MSB/LSB.
+ *
+ * @param lsb First byte (pos 1).
+ * @param msb Second byte (pos 2).
+ */
+int
+midi_combine_bytes_to_int (
+  midi_byte_t lsb,
+  midi_byte_t msb)
+{
+  /* http://midi.teragonaudio.com/tech/midispec/wheel.htm */
+  return (int) ((msb << 7) | lsb);
+}
+
+/**
+ * Used for MIDI controls whose values are split
+ * between MSB/LSB.
+ *
+ * @param lsb First byte (pos 1).
+ * @param msb Second byte (pos 2).
+ */
+void
+midi_get_bytes_from_int (
+  int           val,
+  midi_byte_t * lsb,
+  midi_byte_t * msb)
+{
+  /* https://arduino.stackexchange.com/questions/18955/how-to-send-a-pitch-bend-midi-message-using-arcore */
+  *lsb = val & 0x7F;
+  *msb = val >> 7;
+}
+
+/**
  * Adds a control event to the given MidiEvents.
  *
  * @param channel MIDI channel starting from 1.
@@ -624,10 +658,9 @@ midi_events_add_pitchbend (
   ev->raw_buffer[0] =
     (midi_byte_t)
     (MIDI_CH1_PITCH_WHEEL_RANGE | (channel - 1));
-  uint16_t pitchbend_14bit =
-    (uint16_t) (pitchbend + 8192);
-  ev->raw_buffer[1] = pitchbend_14bit & 0x7F;
-  ev->raw_buffer[2] = pitchbend_14bit >> 7;
+  midi_get_bytes_from_int (
+    pitchbend + 8192, &ev->raw_buffer[1],
+    &ev->raw_buffer[2]);
 
   if (queued)
     self->num_queued_events++;
@@ -789,8 +822,8 @@ note_off:
     case MIDI_CH1_PITCH_WHEEL_RANGE:
       midi_events_add_pitchbend (
         self, channel,
-        (int) ((buf[2] << 7) | buf[1]), time,
-        queued);
+        midi_combine_bytes_to_int (buf[1], buf[2]),
+        time, queued);
       break;
     case MIDI_SYSTEM_MESSAGE:
       /* ignore active sensing */
