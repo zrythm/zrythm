@@ -37,9 +37,10 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (PluginBrowserWidget,
-               plugin_browser_widget,
-               GTK_TYPE_PANED)
+G_DEFINE_TYPE (
+  PluginBrowserWidget,
+  plugin_browser_widget,
+  GTK_TYPE_PANED)
 
 enum
 {
@@ -76,6 +77,16 @@ on_row_activated (
     model, &iter, PL_COLUMN_DESCR, &value);
   PluginDescriptor * descr =
     g_value_get_pointer (&value);
+
+#ifndef HAVE_CARLA
+  if (descr->protocol == PROT_VST)
+    {
+      ui_show_error_message (
+        MAIN_WINDOW,
+        _("VST support without Carla is deprecated "
+        "and will be removed in future versions."));
+    }
+#endif
 
   TrackType tt =
     track_get_type_from_plugin_descriptor (descr);
@@ -350,6 +361,16 @@ on_drag_data_get (
   PluginDescriptor * descr =
     z_gtk_get_single_selection_pointer (
       tv, PL_COLUMN_DESCR);
+
+#ifndef HAVE_CARLA
+  if (descr->protocol == PROT_VST)
+    {
+      ui_show_error_message (
+        MAIN_WINDOW,
+        _("VST support without Carla is deprecated "
+        "and will be removed in future versions."));
+    }
+#endif
 
   gtk_selection_data_set (data,
     gdk_atom_intern_static_string (
