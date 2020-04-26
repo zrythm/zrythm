@@ -741,6 +741,81 @@ zrythm_get_version_with_capabilities (
   g_free (ver);
 }
 
+/**
+ * Returns the prefix or in the case of windows
+ * the root dir (C/program files/zrythm) or in the
+ * case of macos the bundle path.
+ *
+ * In all cases, "share" is expected to be found
+ * in this dir.
+ *
+ * @return A newly allocated string.
+ */
+char *
+zrythm_get_prefix (void)
+{
+#ifdef WINDOWS_RELEASE
+  return
+    io_get_registry_string_val ("InstallPath");
+#elif defined(MAC_RELEASE)
+  char bundle_path[PATH_MAX];
+  int ret = io_get_bundle_path (bundle_path);
+  g_return_val_if_fail (ret == 0, NULL);
+  return io_path_get_parent_dir (bundle_path);
+#else
+  return g_strdup (PREFIX);
+#endif
+}
+
+/**
+ * Returns the datadir ("share" under whatever is
+ * returned by zrythm_get_prefix().
+ *
+ * @return A newly allocated string.
+ */
+char *
+zrythm_get_datadir (void)
+{
+  char * prefix = zrythm_get_prefix ();
+  char * ret =
+    g_build_filename (
+      prefix, "share", NULL);
+  g_free (prefix);
+  return ret;
+}
+
+/**
+ * Returns the samples directory.
+ *
+ * @return A newly allocated string.
+ */
+char *
+zrythm_get_samplesdir (void)
+{
+  char * datadir = zrythm_get_datadir ();
+  char * ret =
+    g_build_filename (
+      datadir, "zrythm", "samples",  NULL);
+  g_free (datadir);
+  return ret;
+}
+
+/**
+ * Returns the locale directory (share/locale).
+ *
+ * @return A newly allocated string.
+ */
+char *
+zrythm_get_localedir (void)
+{
+  char * datadir = zrythm_get_datadir ();
+  char * ret =
+    g_build_filename (
+      datadir, "locale",  NULL);
+  g_free (datadir);
+  return ret;
+}
+
 /*
  * Called after startup if no filename is passed on
  * command line.

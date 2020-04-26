@@ -103,7 +103,6 @@ endif
 if get_option ('mac_release')
   cdata.set ('MAC_RELEASE', 1)
 endif
-cdata.set_quoted('SAMPLES_DIR', samplesdir)
 cdata.set (
   'MESON_SOURCE_ROOT',
   meson.source_root ())

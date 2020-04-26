@@ -62,38 +62,13 @@ metronome_init (
     }
   else
     {
-#ifdef WINDOWS_RELEASE
-      char * install_dir =
-        io_get_registry_string_val ("InstallPath");
+      char * samplesdir = zrythm_get_samplesdir ();
       self->emphasis_path =
         g_build_filename (
-          install_dir, "share", "zrythm", "samples",
-          "square_emphasis.wav", NULL);
+          samplesdir, "square_emphasis.wav", NULL);
       self->normal_path =
         g_build_filename (
-          install_dir, "share", "zrythm", "samples",
-          "square_normal.wav", NULL);
-      g_free (install_dir);
-#elif defined(MAC_RELEASE)
-      char bundle_path[PATH_MAX];
-      int ret = io_get_bundle_path (bundle_path);
-      g_return_if_fail (ret == 0);
-      self->emphasis_path =
-        g_strdup_printf (
-          "%s/../share/zrythm/samples/"
-          "square_emphasis.wav", bundle_path);
-      self->normal_path =
-        g_strdup_printf (
-          "%s/../share/zrythm/samples/"
-          "square_normal.wav", bundle_path);
-#else
-      self->emphasis_path =
-        g_build_filename (
-          SAMPLES_DIR, "square_emphasis.wav", NULL);
-      self->normal_path =
-        g_build_filename (
-          SAMPLES_DIR, "square_normal.wav", NULL);
-#endif
+          samplesdir, "square_normal.wav", NULL);
 
       /* decode */
       AudioEncoder * enc =

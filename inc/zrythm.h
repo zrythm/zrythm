@@ -274,6 +274,44 @@ zrythm_get_dir (
   Zrythm * self);
 
 /**
+ * Returns the prefix or in the case of windows
+ * the root dir (C/program files/zrythm) or in the
+ * case of macos the bundle path.
+ *
+ * In all cases, "share" is expected to be found
+ * in this dir.
+ *
+ * @return A newly allocated string.
+ */
+char *
+zrythm_get_prefix (void);
+
+/**
+ * Returns the datadir ("share" under whatever is
+ * returned by zrythm_get_prefix().
+ *
+ * @return A newly allocated string.
+ */
+char *
+zrythm_get_datadir (void);
+
+/**
+ * Returns the samples directory.
+ *
+ * @return A newly allocated string.
+ */
+char *
+zrythm_get_samplesdir (void);
+
+/**
+ * Returns the locale directory (share/locale).
+ *
+ * @return A newly allocated string.
+ */
+char *
+zrythm_get_localedir (void);
+
+/**
  * Sets the current status and progress percentage
  * during loading.
  *

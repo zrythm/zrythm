@@ -258,17 +258,10 @@ localization_init (
   /* bind text domain */
 #if defined(WINDOWS_RELEASE)
   bindtextdomain (GETTEXT_PACKAGE, "share/locale");
-#elif defined(MAC_RELEASE)
-  char path[PATH_MAX];
-  int ret = io_get_bundle_path (path);
-  g_return_val_if_fail (ret == 0, 0);
-  char localedir[PATH_MAX];
-  sprintf (localedir, "%s/../share/locale", path);
+#else
+  char * localedir = zrythm_get_localedir ();
   bindtextdomain (
     GETTEXT_PACKAGE, localedir);
-#else
-  bindtextdomain (
-    GETTEXT_PACKAGE, CONFIGURE_DATADIR "/locale");
 #endif
 
   /* set domain codeset */
