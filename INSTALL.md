@@ -18,21 +18,22 @@ inside `meson_options.txt`.
 ## Dependencies
 ### Required
 - audec (AGPLv3+): <https://git.zrythm.org/cgit/libaudec/>
-- GTK+3 (GPLv2+): <https://gitlab.gnome.org/GNOME/gtk>
-- guile (GPLv3+): <https://www.gnu.org/software/guile/>
-- GtkSourceView (LGPLv2.1+): <https://wiki.gnome.org/Projects/GtkSourceView>
-- lilv (ISC): <https://drobilla.net/software/lilv>
-- libcyaml (ISC): <https://github.com/tlsa/libcyaml/>
 - fftw (GPLv2+): <http://www.fftw.org/>
+- gtk+3 (GPLv2+): <https://gitlab.gnome.org/GNOME/gtk>
+- gtksourceview (LGPLv2.1+): <https://wiki.gnome.org/Projects/GtkSourceView>
+- guile (GPLv3+): <https://www.gnu.org/software/guile/>
+- libcyaml (ISC): <https://github.com/tlsa/libcyaml/>
+- lilv (ISC): <https://drobilla.net/software/lilv>
 
 ### Optional
-- jack (LGPLv2.1+): <https://jackaudio.org/>
-- ffmpeg (LGPL 2.1+, GPLv2+): <https://ffmpeg.org/>
 - carla (GPLv2+): <https://kx.studio/Applications:Carla>
+- ffmpeg (LGPLv2.1+, GPLv2+): <https://ffmpeg.org/>
+- graphviz (EPLv1.0): <http://graphviz.org/>
+- jack (LGPLv2.1+): <https://jackaudio.org/>
+- libgtop (GPLv2+): <https://developer.gnome.org/libgtop/>
 - rtaudio (MIT): <http://www.music.mcgill.ca/~gary/rtaudio/>
 - rtmidi (MIT): <https://www.music.mcgill.ca/~gary/rtmidi/>
 - SDL2 (zlib): <https://www.libsdl.org/>
-- libgtop (GPLv2+): <https://developer.gnome.org/libgtop/>
 
 ## Installation
 Once the program is built, it will need to be
