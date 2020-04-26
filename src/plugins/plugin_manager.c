@@ -483,6 +483,10 @@ get_vst_paths (
     g_settings_get_strv (
       S_PREFERENCES, "vst-search-paths-windows");
   g_return_val_if_fail (paths, NULL);
+#elif defined (__APPLE__)
+  char ** paths =
+    g_strsplit (
+      "/Library/Audio/Plug-ins/VST:", ":", 1);
 #else
   char * vst_path =
     g_strdup (getenv ("VST_PATH"));
@@ -516,16 +520,23 @@ get_vst_paths (
   return paths;
 }
 
-#if defined (HAVE_CARLA) && defined (_WOE32)
+#if defined (HAVE_CARLA) && \
+  (defined (_WOE32) || defined (__APPLE__))
 static char **
 get_vst3_paths (
   PluginManager * self)
 {
+#ifdef _WOE32
   return
     g_strsplit (
       "C:\\Program Files\\Common Files\\VST3:"
       "C:\\Program Files (x86)\\Common Files\\VST3",
       ":", 0);
+#elif defined (__APPLE__)
+  return
+    g_strsplit (
+      "/Library/Audio/Plug-ins/VST3:", ":", 1);
+#endif
 }
 
 static int
@@ -629,6 +640,10 @@ plugin_manager_scan_plugins (
     (double) get_vst_count (self);
 #if defined (HAVE_CARLA) && defined (_WOE32)
   size += (double) get_vst3_count (self);
+#endif
+#if defined (HAVE_CARLA) && defined (__APPLE__)
+  size +=
+    carla_get_cached_plugin_count (PLUGIN_AU, NULL);
 #endif
 
   /* scan LV2 */
@@ -815,7 +830,8 @@ plugin_manager_scan_plugins (
     }
   g_strfreev (paths);
 
-#if defined (HAVE_CARLA) && defined (_WOE32)
+#if defined (HAVE_CARLA) && \
+  (defined (_WOE32) || defined (__APPLE__))
   /* scan vst3 */
   g_message ("Scanning VST3 plugins...");
   paths = get_vst3_paths (self);
@@ -939,6 +955,63 @@ plugin_manager_scan_plugins (
       g_strfreev (vst_plugins);
     }
   g_strfreev (paths);
+#endif
+
+#if defined (HAVE_CARLA) && defined (__APPLE__)
+  /* scan AU plugins */
+  g_message ("Scanning AU plugins...");
+  unsigned int au_count =
+    carla_get_cached_plugin_count (PLUGIN_AU, NULL);
+  for (unsigned int i = 0; i < au_count; i++)
+    {
+      /* skip because broken atm */
+      count++;
+      continue;
+
+      const CarlaCachedPluginInfo * info =
+        carla_get_cached_plugin_info (
+          PLUGIN_AU, i);
+
+      PluginDescriptor * descriptor =
+        z_carla_discovery_create_au_descriptor (
+          info);
+
+      if (descriptor)
+        {
+          self->plugin_descriptors[
+            self->num_plugins++] =
+              descriptor;
+          add_category (
+            self, descriptor->category_str);
+        }
+
+      count++;
+
+      if (progress)
+        {
+          *progress =
+            start_progress +
+            ((double) count / size) *
+              (max_progress - start_progress);
+          char prog_str[800];
+          if (descriptor)
+            {
+              sprintf (
+                prog_str, "%s: %s",
+                _("Scanned AU plugin"),
+                descriptor->name);
+            }
+          else
+            {
+              sprintf (
+                prog_str,
+                _("Skipped AU plugin at %u"),
+                i);
+            }
+          zrythm_set_progress_status (
+            ZRYTHM, prog_str, *progress);
+        }
+    }
 #endif
 
   /* sort alphabetically */

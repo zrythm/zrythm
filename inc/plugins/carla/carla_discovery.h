@@ -30,6 +30,8 @@
 
 #ifdef HAVE_CARLA
 
+#include <CarlaUtils.h>
+
 typedef struct PluginDescriptor PluginDescriptor;
 
 /**
@@ -46,6 +48,15 @@ z_carla_discovery_create_vst_descriptor (
   const char * path,
   bool         thirty_two_bit,
   bool         vst3);
+
+#ifdef __APPLE__
+/**
+ * Create a descriptor for the given AU plugin.
+ */
+PluginDescriptor *
+z_carla_discovery_create_au_descriptor (
+  const CarlaCachedPluginInfo * info);
+#endif
 
 /**
  * @}

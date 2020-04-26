@@ -80,8 +80,7 @@ project_tear_down (Project * self)
 
   engine_tear_down (&self->audio_engine);
 
-  if (&self->tracklist &&
-      self->tracklist.chord_track)
+  if (self->tracklist.chord_track)
     {
       track_free (self->tracklist.chord_track);
     }

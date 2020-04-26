@@ -98,7 +98,20 @@ typedef enum PluginProtocol
   PROT_LADSPA,
   PROT_VST,
   PROT_VST3,
+  PROT_AU,
 } PluginProtocol;
+
+static const cyaml_strval_t
+plugin_protocol_strings[] =
+{
+  { "Dummy",        PROT_DUMMY  },
+  { "LV2",          PROT_LV2    },
+  { "DSSI",         PROT_DSSI   },
+  { "LADSPA",       PROT_LADSPA },
+  { "VST",          PROT_VST    },
+  { "VST3",         PROT_VST3   },
+  { "AU",           PROT_AU     },
+};
 
 /**
  * 32 or 64 bit.
@@ -159,16 +172,6 @@ typedef struct PluginDescriptor
    * using g_file_hash(). */
   unsigned int         ghash;
 } PluginDescriptor;
-
-static const cyaml_strval_t
-plugin_protocol_strings[] =
-{
-  { "LV2",          PROT_LV2    },
-  { "DSSI",         PROT_DSSI   },
-  { "LADSPA",       PROT_LADSPA },
-  { "VST",          PROT_VST    },
-  { "VST3",         PROT_VST3   },
-};
 
 static const cyaml_strval_t
 plugin_architecture_strings[] =

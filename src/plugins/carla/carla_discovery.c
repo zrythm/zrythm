@@ -60,6 +60,36 @@ get_category_from_carla_category (
 #undef EQUALS
 }
 
+ZPluginCategory
+carla_category_to_zrythm_category (
+  PluginCategory carla_cat)
+{
+  switch (carla_cat)
+    {
+    case PLUGIN_CATEGORY_SYNTH:
+      return PC_INSTRUMENT;
+    case PLUGIN_CATEGORY_DELAY:
+      return PC_DELAY;
+    case PLUGIN_CATEGORY_EQ:
+      return PC_EQ;
+    case PLUGIN_CATEGORY_FILTER:
+      return PC_FILTER;
+    case PLUGIN_CATEGORY_DISTORTION:
+      return PC_DISTORTION;
+    case PLUGIN_CATEGORY_DYNAMICS:
+      return PC_DYNAMICS;
+    case PLUGIN_CATEGORY_MODULATOR:
+      return PC_MODULATOR;
+    case PLUGIN_CATEGORY_UTILITY:
+      break;
+    case PLUGIN_CATEGORY_OTHER:
+    case PLUGIN_CATEGORY_NONE:
+    default:
+      break;
+    }
+  return ZPLUGIN_CATEGORY_NONE;
+}
+
 /**
  * Create a descriptor for the given plugin path.
  */
@@ -230,5 +260,56 @@ z_carla_discovery_create_vst_descriptor (
 
   return descr;
 }
+
+#ifdef __APPLE__
+/**
+ * Create a descriptor for the given AU plugin.
+ */
+PluginDescriptor *
+z_carla_discovery_create_au_descriptor (
+  const CarlaCachedPluginInfo * info)
+{
+  if (!info || !info->valid)
+    return NULL;
+
+  PluginDescriptor * descr =
+    calloc (1, sizeof (PluginDescriptor));
+  descr->name = g_strdup (info->name);
+  g_return_val_if_fail (descr->name,  NULL);
+  descr->author = g_strdup (info->maker);
+  descr->num_audio_ins = info->audioIns;
+  descr->num_audio_outs = info->audioOuts;
+  descr->num_cv_ins = info->cvIns;
+  descr->num_cv_outs = info->cvOuts;
+  descr->num_ctrl_ins = info->parameterIns;
+  descr->num_ctrl_outs = info->parameterOuts;
+  descr->num_midi_ins = info->midiIns;
+  descr->num_midi_outs = info->midiOuts;
+
+  /* get category */
+  if (info->hints & PLUGIN_IS_SYNTH)
+    {
+      descr->category = PC_INSTRUMENT;
+    }
+  else
+    {
+      descr->category =
+        carla_category_to_zrythm_category (
+          info->category);
+    }
+  descr->category_str =
+    plugin_descriptor_category_to_string (
+      descr->category);
+
+  descr->protocol = PROT_AU;
+  descr->arch = ARCH_64;
+  descr->path = NULL;
+
+  /* open all AUs with carla */
+  descr->open_with_carla = true;
+
+  return descr;
+}
+#endif
 
 #endif
