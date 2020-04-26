@@ -242,6 +242,15 @@ port_find_from_identifier (
                 return tr->processor.stereo_in->r;
             }
           break;
+        case TYPE_CONTROL:
+          if (id->flags &
+                PORT_FLAG_MIDI_AUTOMATABLE)
+            {
+              return
+                tr->processor.midi_automatables[
+                  id->port_index];
+            }
+          break;
         default:
           break;
         }
@@ -2503,6 +2512,9 @@ port_sum_signal_from_inputs (
       break;
     case TYPE_CONTROL:
       {
+        if (port->id.flow != FLOW_INPUT)
+          break;
+
         /* calculate value from automation track */
         g_warn_if_fail (
           port->id.flags & PORT_FLAG_AUTOMATABLE);
@@ -2526,7 +2538,7 @@ port_sum_signal_from_inputs (
             if (val >= 0.f)
               {
                 control_port_set_val_from_normalized (
-                  port, val, 1);
+                  port, val, true);
                 port->value_changed_from_reading =
                   true;
               }

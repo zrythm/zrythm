@@ -312,7 +312,7 @@ control_port_set_val_from_normalized (
     }
   else if (id->flags & PORT_FLAG_STEREO_BALANCE)
     {
-      Track * track = port_get_track (self, 1);
+      Track * track = port_get_track (self, true);
       Channel * ch = track_get_channel (track);
       if (!math_floats_equal (
             channel_get_balance_control (ch), val))
@@ -321,6 +321,23 @@ control_port_set_val_from_normalized (
             ET_AUTOMATION_VALUE_CHANGED, self);
         }
       channel_set_balance_control (ch, val);
+    }
+  else if (id->flags & PORT_FLAG_MIDI_AUTOMATABLE)
+    {
+      Track * track = port_get_track (self, true);
+      float real_val =
+        self->minf +
+        val * (self->maxf - self->minf);
+      if (!math_floats_equal (
+            val,
+            track->processor.midi_automatables[
+              self->id.port_index]->control))
+        {
+          EVENTS_PUSH (
+            ET_AUTOMATION_VALUE_CHANGED, self);
+        }
+      port_set_control_value (
+        self, real_val, 0, 0);
     }
   else
     {

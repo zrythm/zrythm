@@ -853,49 +853,6 @@ channel_reset_fader (Channel * self)
 }
 
 /**
- * Generates automation tracks for the channel.
- *
- * Should be called as soon as the track is
- * created.
- */
-void
-channel_generate_automation_tracks (
-  Channel * self)
-{
-  Track * track =
-    channel_get_track (self);
-  g_message (
-    "Generating automation tracks for channel %s",
-    track->name);
-
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (track);
-
-  /* fader */
-  AutomationTrack * at =
-    automation_track_new (self->fader.amp);
-  automation_tracklist_add_at (atl, at);
-  at->created = 1;
-  at->visible = 1;
-
-  /* balance */
-  at =
-    automation_track_new (self->fader.balance);
-  automation_tracklist_add_at (atl, at);
-
-  /* mute */
-  at = automation_track_new (track->mute);
-  automation_tracklist_add_at (atl, at);
-
-  if (track->type == TRACK_TYPE_INSTRUMENT ||
-      track->type == TRACK_TYPE_MIDI)
-    {
-      /* add midi automatables */
-      midi_track_add_midi_automatables (track);
-    }
-}
-
-/**
  * Connects the channel's ports.
  */
 void
@@ -1145,6 +1102,14 @@ channel_append_all_ports (
       g_warn_if_fail (tr->processor.midi_out);
       _ADD (tr->processor.midi_in);
       _ADD (tr->processor.midi_out);
+      for (int i = 0;
+           i < NUM_MIDI_AUTOMATABLES * 16; i++)
+        {
+          g_warn_if_fail (
+            tr->processor.midi_automatables[i]);
+          _ADD (
+            tr->processor.midi_automatables[i]);
+        }
     }
 
   if (out_type == TYPE_AUDIO)

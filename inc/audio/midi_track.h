@@ -43,13 +43,6 @@ typedef struct ZRegion MidiRegion;
 void
 midi_track_init (Track * track);
 
-/**
- * Add MIDI automatables to the automation tracklist.
- */
-void
-midi_track_add_midi_automatables (
-  Track * self);
-
 void
 midi_track_setup (Track * self);
 

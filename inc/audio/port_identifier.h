@@ -207,6 +207,10 @@ typedef enum PortFlags
    * port.
    */
   PORT_FLAG_AUTOMATABLE = 1 << 19,
+
+  /** MIDI automatable control, such as modwheel or
+   * pitch bend. */
+  PORT_FLAG_MIDI_AUTOMATABLE = 1 << 20,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -232,6 +236,7 @@ port_flags_bitvals[] =
   { .name = "channel_mute", .offset = 17, .bits = 1 },
   { .name = "channel_fader", .offset = 18, .bits = 1 },
   { .name = "automatable", .offset = 19, .bits = 1 },
+  { .name = "midi_automatable", .offset = 20, .bits = 1 },
 };
 
 /**

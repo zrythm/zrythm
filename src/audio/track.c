@@ -191,6 +191,7 @@ track_new (
     calloc (1, sizeof (Track));
 
   track->pos = pos;
+  track->type = type;
   track_init (track, with_lane);
 
   track->name = g_strdup (label);
@@ -274,26 +275,12 @@ track_new (
   automation_tracklist_init (
     &track->automation_tracklist, track);
 
-  /* if should have channel */
-  switch (type)
+  if (track_type_has_channel (track->type))
     {
-    case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_INSTRUMENT:
-    case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_MIDI:
-    case TRACK_TYPE_AUDIO_BUS:
-    case TRACK_TYPE_AUDIO_GROUP:
-    case TRACK_TYPE_MIDI_BUS:
-    case TRACK_TYPE_MIDI_GROUP:
-      track->channel =
-        channel_new (track);
-      channel_generate_automation_tracks (
-        track->channel);
-      break;
-    case TRACK_TYPE_CHORD:
-    case TRACK_TYPE_MARKER:
-      break;
+      track->channel = channel_new (track);
     }
+
+  track_generate_automation_tracks (track);
 
   return track;
 }
@@ -824,6 +811,59 @@ track_get_last_region (
     }
 
   return last_region;
+}
+
+/**
+ * Generates automatables for the track.
+ *
+ * Should be called as soon as the track is
+ * created.
+ */
+void
+track_generate_automation_tracks (
+  Track * track)
+{
+  g_message (
+    "Generating automation tracks for track %s",
+    track->name);
+
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  AutomationTrack * at;
+
+  if (track_type_has_channel (track->type))
+    {
+      /* fader */
+      at =
+        automation_track_new (
+          track->channel->fader.amp);
+      automation_tracklist_add_at (atl, at);
+      at->created = 1;
+      at->visible = 1;
+
+      /* balance */
+      at =
+        automation_track_new (
+          track->channel->fader.balance);
+      automation_tracklist_add_at (atl, at);
+
+      /* mute */
+      at = automation_track_new (track->mute);
+      automation_tracklist_add_at (atl, at);
+    }
+
+  if (track_has_piano_roll (track))
+    {
+      /* midi automatables */
+      for (int i = 0;
+           i < NUM_MIDI_AUTOMATABLES * 16; i++)
+        {
+          Port * cc =
+            track->processor.midi_automatables[i];
+          at = automation_track_new (cc);
+          automation_tracklist_add_at (atl, at);
+        }
+    }
 }
 
 /**

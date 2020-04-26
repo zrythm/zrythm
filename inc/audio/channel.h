@@ -497,16 +497,6 @@ channel_get_automation_track (
   PortFlags       type);
 
 /**
- * Generates automatables for the channel.
- *
- * Should be called as soon as the track is
- * created.
- */
-void
-channel_generate_automation_tracks (
-  Channel * channel);
-
-/**
  * Removes a plugin at pos from the channel.
  *
  * If deleting_channel is 1, the automation tracks

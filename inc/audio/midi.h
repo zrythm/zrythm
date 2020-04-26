@@ -74,19 +74,6 @@ typedef enum MidiEventType
 } MidiEventType;
 
 /**
- * Automatable MIDI signals.
- */
-typedef enum MidiAutomatables
-{
-  MIDI_AUTOMATABLE_MOD_WHEEL,
-  MIDI_AUTOMATABLE_BREATH_CONTROLLER,
-  MIDI_AUTOMATABLE_FOOT_PEDAL_MSB,
-  MIDI_AUTOMATABLE_PORTAMENTO_TIME_MSB,
-  MIDI_AUTOMATABLE_DATA_ENTRY_MSB,
-  NUM_MIDI_AUTOMATABLES,
-} MidiAutomatables;
-
-/**
  * Backend-agnostic MIDI event descriptor.
  */
 typedef struct MidiEvent
@@ -314,13 +301,14 @@ midi_events_add_control_change (
  * Adds a control event to the given MidiEvents.
  *
  * @param channel MIDI channel starting from 1.
+ * @param pitchbend -8192 to 8191
  * @param queued Add to queued events instead.
  */
 void
 midi_events_add_pitchbend (
   MidiEvents * self,
   midi_byte_t  channel,
-  midi_byte_t  pitchbend,
+  int          pitchbend,
   midi_time_t  time,
   int          queued);
 

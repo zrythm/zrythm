@@ -42,6 +42,7 @@ typedef struct _AutomatableSelectorButtonWidget
 
 typedef enum AutomatableSelectorType
 {
+  AS_TYPE_MIDI,
   AS_TYPE_CHANNEL,
   AS_TYPE_MIDI_FX_0,
   AS_TYPE_MIDI_FX_1,

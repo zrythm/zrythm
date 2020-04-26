@@ -712,6 +712,16 @@ track_type_can_record (
 }
 
 /**
+ * Generates automatables for the track.
+ *
+ * Should be called as soon as the track is
+ * created.
+ */
+void
+track_generate_automation_tracks (
+  Track * track);
+
+/**
  * Wrapper.
  */
 void

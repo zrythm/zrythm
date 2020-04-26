@@ -80,6 +80,20 @@
     &schema, 0, CYAML_UNLIMITED)
 
 /**
+ * Fixed-width array of pointers with fixed count.
+ *
+ * @code@
+ * MyStruct * my_structs[MAX_STRUCTS_CONST];
+ * @endcode@
+ */
+#define YAML_FIELD_FIXED_SIZE_PTR_ARRAY( \
+  owner,member,schema,size) \
+  CYAML_FIELD_SEQUENCE_FIXED ( \
+    #member, CYAML_FLAG_DEFAULT, \
+    owner, member, \
+    &schema, size)
+
+/**
  * Dynamic-width (reallocated) array of pointers
  * with variable count.
  *

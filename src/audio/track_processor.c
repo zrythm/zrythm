@@ -69,13 +69,19 @@ track_processor_init_loaded (
           self->piano_roll->midi_events =
             midi_events_new (
               self->piano_roll);
+          for (int i = 0;
+               i < NUM_MIDI_AUTOMATABLES * 16; i++)
+            {
+              Port * cc = self->midi_automatables[i];
+              port_set_owner_track_processor (
+                cc, self);
+              cc->midi_events = midi_events_new (cc);
+            }
         }
       self->midi_in->midi_events =
-        midi_events_new (
-          self->midi_in);
+        midi_events_new (self->midi_in);
       self->midi_out->midi_events =
-        midi_events_new (
-          self->midi_out);
+        midi_events_new (self->midi_out);
       port_set_owner_track_processor (
         self->midi_in, self);
       port_set_owner_track_processor (
@@ -117,6 +123,55 @@ init_midi_port (
       str);
 
   port_set_owner_track_processor (*port, self);
+}
+
+static void
+init_midi_cc_ports (
+  TrackProcessor * self,
+  int              loading)
+{
+  for (int i = 0; i < NUM_MIDI_AUTOMATABLES * 16;
+       i++)
+    {
+      char name[400];
+      TrackProcessorMidiAutomatable type =
+        i % NUM_MIDI_AUTOMATABLES;
+      /* starting from 1 */
+      int channel = i / NUM_MIDI_AUTOMATABLES + 1;
+      Port * cc = NULL;
+      switch (type)
+        {
+        case MIDI_AUTOMATABLE_MOD_WHEEL:
+          sprintf (
+            name, "Ch%d Mod wheel",
+            channel);
+          cc =
+            port_new_with_type (
+              TYPE_CONTROL, FLOW_INPUT, name);
+          break;
+        case MIDI_AUTOMATABLE_PITCH_BEND:
+          sprintf (
+            name, "Ch%d Pitch bend",
+            channel);
+          cc =
+            port_new_with_type (
+              TYPE_CONTROL, FLOW_INPUT, name);
+          cc->maxf = 8191.f;
+          cc->minf = -8192.f;
+          cc->deff = 0.f;
+          cc->zerof = 0.f;
+          break;
+        default:
+          break;
+        }
+      cc->id.flags |= PORT_FLAG_MIDI_AUTOMATABLE;
+      cc->id.flags |= PORT_FLAG_AUTOMATABLE;
+      cc->id.port_index = i;
+
+      port_set_owner_track_processor (
+        cc, self);
+      self->midi_automatables[i] = cc;
+    }
 }
 
 /**
@@ -201,6 +256,7 @@ track_processor_init (
             PORT_FLAG_PIANO_ROLL;
           port_set_owner_track_processor (
             self->piano_roll, self);
+          init_midi_cc_ports (self, false);
         }
       break;
     case TYPE_AUDIO:
@@ -317,14 +373,14 @@ track_processor_process (
   /* set the piano roll contents to midi out */
   if (track_has_piano_roll (tr))
     {
-      Port * port = self->piano_roll;
+      Port * pr = self->piano_roll;
 
       /* panic MIDI if necessary */
       if (g_atomic_int_get (
             &AUDIO_ENGINE->panic))
         {
           midi_events_panic (
-            port->midi_events, 1);
+            pr->midi_events, 1);
         }
       /* get events from track if playing */
       else if (TRANSPORT->play_state ==
@@ -335,21 +391,69 @@ track_processor_process (
           midi_track_fill_midi_events (
             tr, g_start_frames,
             local_offset, nframes,
-            port->midi_events);
+            pr->midi_events);
         }
       midi_events_dequeue (
-        port->midi_events);
-      if (port->midi_events->num_events > 0)
+        pr->midi_events);
+      if (pr->midi_events->num_events > 0)
         g_message (
           "%s piano roll has %d events",
           tr->name,
-          port->midi_events->num_events);
+          pr->midi_events->num_events);
 
-      /* set the midi events to MIDI out */
+      /* append midi events from modwheel and
+       * pitchbend to MIDI out */
+      for (int i = 0;
+           i < NUM_MIDI_AUTOMATABLES * 16; i++)
+        {
+          Port * cc = self->midi_automatables[i];
+          if (math_floats_equal (
+                self->last_automatable_vals[i],
+                cc->control))
+            continue;
+
+          TrackProcessorMidiAutomatable type =
+            i % NUM_MIDI_AUTOMATABLES;
+          /* starting from 1 */
+          int channel =
+            i / NUM_MIDI_AUTOMATABLES + 1;
+          switch (type)
+            {
+            case MIDI_AUTOMATABLE_PITCH_BEND:
+              midi_events_add_pitchbend (
+                self->midi_out->midi_events,
+                channel,
+                math_round_float_to_int (
+                  cc->control),
+                local_offset, false);
+              break;
+            case MIDI_AUTOMATABLE_MOD_WHEEL:
+              midi_events_add_control_change (
+                self->midi_out->midi_events,
+                channel,
+                0x01,
+                math_round_float_to_type (
+                  cc->control * 127.f, midi_byte_t),
+                local_offset, false);
+              break;
+            default:
+              break;
+            }
+          self->last_automatable_vals[i] =
+            cc->control;
+        }
+      if (self->midi_out->midi_events->num_events > 0)
+        g_message (
+          "%s midi processor out has %d events",
+          tr->name,
+          self->midi_out->midi_events->num_events);
+
+      /* append the midi events from piano roll to
+       * MIDI out */
       midi_events_append (
-        port->midi_events,
+        pr->midi_events,
         self->midi_out->midi_events, local_offset,
-        nframes, 0);
+        nframes, false);
     }
 
   /* handle recording. this will only create events

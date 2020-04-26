@@ -50,25 +50,6 @@ midi_track_init (Track * track)
   gdk_rgba_parse (&track->color, "#F79616");
 }
 
-/**
- * Add MIDI automatables to the automation tracklist.
- */
-void
-midi_track_add_midi_automatables (
-  Track * self)
-{
-  /* TODO */
-#if 0
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (track);
-  AutomationTrack * at;
-
-
-  at = automation_track_new (track->mute);
-  automation_tracklist_add_at (atl, at);
-#endif
-}
-
 void
 midi_track_setup (Track * self)
 {

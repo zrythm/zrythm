@@ -487,9 +487,9 @@ port_fields_schema[] =
 };
 
 static const cyaml_schema_value_t
-port_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+port_schema =
+{
+  YAML_VALUE_PTR_NULLABLE (
     Port, port_fields_schema),
 };
 

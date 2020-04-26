@@ -207,6 +207,11 @@ This might happen when calling GTK code or
 GUI thread. Any GTK-related code must be run from
 the GUI thread only.
 
+## Values not being read properly at specific parts of the code (e.g. getting a zero value when we know the variable is non-zero)
+Delete build dir and reconfigure. This is likely
+an optimization problem with meson/ninja that
+appears rarely.
+
 ----
 
 Copyright (C) 2018-2020 Alexandros Theodotou

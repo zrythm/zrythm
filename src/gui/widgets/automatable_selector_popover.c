@@ -143,7 +143,21 @@ create_model_for_ports (
       char icon_name[256];
 
       Port * port = NULL;
-      if (type == AS_TYPE_CHANNEL)
+      if (type == AS_TYPE_MIDI)
+        {
+          /* skip non-channel automation tracks */
+          port =
+            automation_track_get_port (at);
+          if (!(port->id.flags &
+                  PORT_FLAG_MIDI_AUTOMATABLE))
+            continue;
+          g_message (
+            "port %s is a midi automatable",
+            port->id.label);
+
+          strcpy (icon_name, "z-audio-midi");
+        }
+      else if (type == AS_TYPE_CHANNEL)
         {
           /* skip non-channel automation tracks */
           port =
@@ -221,6 +235,20 @@ create_model_for_types (
       3, G_TYPE_STRING, G_TYPE_STRING,
       G_TYPE_INT);
 
+  Track * track =
+    automation_track_get_track (self->owner);
+
+  if (track_has_piano_roll (track))
+    {
+      gtk_list_store_append (list_store, &iter);
+      gtk_list_store_set (
+        list_store, &iter,
+        0, "z-text-x-csrc",
+        1, "MIDI",
+        2, AS_TYPE_MIDI,
+        -1);
+    }
+
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
     list_store, &iter,
@@ -228,9 +256,6 @@ create_model_for_types (
     1, "Channel",
     2, AS_TYPE_CHANNEL,
     -1);
-
-  Track * track =
-    automation_track_get_track (self->owner);
 
   if (track->channel->instrument)
     {

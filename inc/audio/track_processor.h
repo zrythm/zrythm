@@ -42,6 +42,16 @@ typedef struct Track Track;
  */
 
 /**
+ * Automatable MIDI signals.
+ */
+typedef enum TrackProcessorMidiAutomatable
+{
+  MIDI_AUTOMATABLE_MOD_WHEEL,
+  MIDI_AUTOMATABLE_PITCH_BEND,
+  NUM_MIDI_AUTOMATABLES,
+} TrackProcessorMidiAutomatable;
+
+/**
  * A TrackProcessor is a processor that is used as
  * the first entry point when processing a track.
  */
@@ -85,7 +95,12 @@ typedef struct TrackProcessor
    */
   Port *           piano_roll;
 
-  Port *           midi_automatables[NUM_MIDI_AUTOMATABLES];
+  /** MIDI CC control ports, 16 channels. */
+  Port *           midi_automatables[NUM_MIDI_AUTOMATABLES * 16];
+
+  /** Last processed values, to avoid re-sending
+   * messages when the value is the same. */
+  float            last_automatable_vals[NUM_MIDI_AUTOMATABLES * 16];
 
   /**
    * Current dBFS after procesing each output port.
@@ -105,33 +120,25 @@ typedef struct TrackProcessor
 static const cyaml_schema_field_t
 track_processor_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING_PTR (
-    "midi_in",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor, midi_in,
     port_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "midi_out",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor, midi_out,
     port_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "piano_roll",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor, piano_roll,
     port_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "stereo_in",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor, stereo_in,
     stereo_ports_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "stereo_out",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor, stereo_out,
     stereo_ports_fields_schema),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
+    TrackProcessor, midi_automatables,
+    port_schema, NUM_MIDI_AUTOMATABLES * 16),
+  YAML_FIELD_INT (
     TrackProcessor, track_pos),
 
   CYAML_FIELD_END

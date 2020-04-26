@@ -599,13 +599,14 @@ midi_events_add_control_change (
  * Adds a control event to the given MidiEvents.
  *
  * @param channel MIDI channel starting from 1.
+ * @param pitchbend -8192 to 8191
  * @param queued Add to queued events instead.
  */
 void
 midi_events_add_pitchbend (
   MidiEvents * self,
   midi_byte_t  channel,
-  midi_byte_t  pitchbend,
+  int          pitchbend,
   midi_time_t  time,
   int          queued)
 {
@@ -623,8 +624,10 @@ midi_events_add_pitchbend (
   ev->raw_buffer[0] =
     (midi_byte_t)
     (MIDI_CH1_PITCH_WHEEL_RANGE | (channel - 1));
-  ev->raw_buffer[1] = 1;
-  ev->raw_buffer[2] = pitchbend;
+  uint16_t pitchbend_14bit =
+    (uint16_t) (pitchbend + 8192);
+  ev->raw_buffer[1] = pitchbend_14bit & 0x7F;
+  ev->raw_buffer[2] = pitchbend_14bit >> 7;
 
   if (queued)
     self->num_queued_events++;
@@ -782,6 +785,12 @@ midi_events_add_event_from_buf (
 note_off:
       midi_events_add_note_off (
         self, channel, buf[1], time, queued);
+      break;
+    case MIDI_CH1_PITCH_WHEEL_RANGE:
+      midi_events_add_pitchbend (
+        self, channel,
+        (int) ((buf[2] << 7) | buf[1]), time,
+        queued);
       break;
     case MIDI_SYSTEM_MESSAGE:
       /* ignore active sensing */

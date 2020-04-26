@@ -1743,6 +1743,19 @@ graph_setup (
             graph_find_node_from_port (self, port);
           node_connect (node, node2);
         }
+      if (track_has_piano_roll (tr))
+        {
+          for (j = 0;
+               j < NUM_MIDI_AUTOMATABLES * 16; j++)
+            {
+              port =
+                tr->processor.midi_automatables[j];
+              node2 =
+                graph_find_node_from_port (
+                  self, port);
+              node_connect (node2, node);
+            }
+        }
 
       Fader * fader;
       PassthroughProcessor * prefader;
