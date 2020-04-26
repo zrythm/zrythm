@@ -1,6 +1,32 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.333] - 2020-04-26
+### Added
+- Add MIDI FX section in track inspector
+- Add comment field in track inspector (WIP)
+- Remember reveal status of track inspector sections
+- Zrythm is now user themable on XDG base dir-compliant systems (`$XDG_CONFIG_HOME/zrythm/theme.css`)
+- Add button to export routing graph as image or dot graph
+- Add MIDI pitch bend and modwheel automatables to MIDI-capable tracks
+
+### Changed
+- Make gtksourceview mandatory
+- Instruments go on a special slot instread of in the inserts
+- Don't allow plugins with non-matching output type in channel slots
+- Channel sends now work as single stereo/MIDI bundle instead of separate ports
+- Zrythm theme is now installed externally instead of bundled as a resource
+- Bug reports now include last few lines of log
+- Process automation when the control port is processed instead of collectively at the start of each cycle
+
+### Deprecated
+- Deprecate VST support without carla
+
+### Fixed
+- Fix VST plugins not scanned in distros whose libdir name is not `lib`
+- Fix first MIDI note ignored on Windows during export
+- Fix edit cursor positioning
+
 ## [0.8.298] - 2020-04-18
 - Add full vst2 support via carla (32bit and 64 bit)
 - Add experimental vst3 support via carla (windows only)
