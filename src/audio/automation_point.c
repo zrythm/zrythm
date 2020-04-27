@@ -253,21 +253,39 @@ automation_point_curves_up (
 }
 
 /**
- * Sets the value from given real value and
- * notifies interested parties.
+ * Sets the value from given real or normalized
+ * value and notifies interested parties.
+ *
+ * @param is_normalized Whether the given value is
+ *   normalized.
  */
 void
 automation_point_set_fvalue (
   AutomationPoint * self,
-  float             real_val)
+  float             real_val,
+  bool              is_normalized)
 {
   Port * port =
     automation_point_get_port (self);
+  if (is_normalized)
+    {
+      g_message ("received val %f",
+        (double) real_val);
+      self->normalized_val =
+        CLAMP (real_val, 0.f, 1.f);
+      real_val =
+        control_port_normalized_val_to_real (
+          port, self->normalized_val);
+    }
+  else
+    {
+      real_val =
+        CLAMP (real_val, port->minf, port->maxf);
+      self->normalized_val =
+        control_port_real_val_to_normalized (
+          port, real_val);
+    }
   g_message ("setting to %f", (double) real_val);
-  float normalized_val =
-    control_port_real_val_to_normalized (
-      port, real_val);
-  self->normalized_val = normalized_val;
   self->fvalue = real_val;
 
   ZRegion * region =
@@ -275,7 +293,7 @@ automation_point_set_fvalue (
       (ArrangerObject *) self);
   g_return_if_fail (region);
   control_port_set_val_from_normalized (
-    port, normalized_val, 1);
+    port, self->normalized_val, 1);
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_CHANGED, self);

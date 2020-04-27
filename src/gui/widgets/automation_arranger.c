@@ -127,9 +127,6 @@ automation_arranger_widget_create_ap (
     control_port_normalized_val_to_real (
       port, normalized_val);
 
-  self->action =
-    UI_OVERLAY_ACTION_CREATING_MOVING;
-
   /* create a new ap */
   AutomationPoint * ap =
     automation_point_new_float (

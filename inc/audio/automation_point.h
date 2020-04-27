@@ -107,12 +107,17 @@ automation_point_new_float (
   const Position *    pos);
 
 /**
- * Updates the value and notifies interested parties.
+ * Sets the value from given real or normalized
+ * value and notifies interested parties.
+ *
+ * @param is_normalized Whether the given value is
+ *   normalized.
  */
 void
 automation_point_set_fvalue (
-  AutomationPoint * ap,
-  float             fval);
+  AutomationPoint * self,
+  float             real_val,
+  bool              is_normalized);
 
 /**
  * Sets the ZRegion and the index in the

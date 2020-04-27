@@ -1126,7 +1126,7 @@ add_object_if_overlap (
           !automation_point_is_point_hit (
             (AutomationPoint *) obj, x, y) &&
           !automation_point_is_curve_hit (
-            (AutomationPoint *) obj, x, y, 12.0))
+            (AutomationPoint *) obj, x, y, 16.0))
         {
           return false;
         }
@@ -1571,21 +1571,32 @@ move_items_y (
       if (AUTOMATION_SELECTIONS->
             num_automation_points)
         {
-          AutomationPoint * ap;
+          double offset_y_normalized =
+            - offset_y /
+            (double)
+            gtk_widget_get_allocated_height (
+              GTK_WIDGET (self));
+          g_warn_if_fail (self->sel_at_start);
+          (void) get_fvalue_at_y;
           for (int i = 0;
                i < AUTOMATION_SELECTIONS->
                  num_automation_points; i++)
             {
-              ap =
+              AutomationPoint * ap =
                 AUTOMATION_SELECTIONS->
                   automation_points[i];
+              AutomationSelections * automation_sel =
+                (AutomationSelections *)
+                self->sel_at_start;
+              AutomationPoint * start_ap =
+                automation_sel->
+                  automation_points[i];
 
-              float fval =
-                get_fvalue_at_y (
-                  self,
-                  self->start_y + offset_y);
               automation_point_set_fvalue (
-                ap, fval);
+                ap,
+                start_ap->normalized_val +
+                  (float) offset_y_normalized,
+                true);
             }
           ArrangerObject * start_ap_obj =
             self->start_object;
@@ -2497,9 +2508,10 @@ multipress_pressed (
  * given position.
  */
 static void
-create_item (ArrangerWidget * self,
-             double           start_x,
-             double           start_y)
+create_item (
+  ArrangerWidget * self,
+  double           start_x,
+  double           start_y)
 {
   /* something will be created */
   Position pos;
@@ -2623,6 +2635,11 @@ create_item (ArrangerWidget * self,
         }
       break;
     }
+
+  /* set the start selections */
+  self->sel_at_start =
+    arranger_selections_clone (
+      arranger_widget_get_selections (self));
 }
 
 static void
@@ -2664,7 +2681,7 @@ set_earliest_obj (
  *
  * @return If an object was handled or not.
  */
-static int
+static bool
 on_drag_begin_handle_hit_object (
   ArrangerWidget * self,
   const double     x,
@@ -2675,7 +2692,9 @@ on_drag_begin_handle_hit_object (
       self, ARRANGER_OBJECT_TYPE_ALL, x, y);
 
   if (!obj)
-    return 0;
+    {
+      return false;
+    }
 
   /* get x as local to the object */
   int wx =
@@ -2906,7 +2925,7 @@ on_drag_begin_handle_hit_object (
     arranger_selections_clone (
       arranger_widget_get_selections (self));
 
-  return 1;
+  return true;
 }
 
 static void
@@ -4436,9 +4455,13 @@ arranger_widget_get_hit_arranger_object (
   arranger_widget_get_hit_objects_at_point (
     self, type, x, y, objs, &num_objs);
   if (num_objs > 0)
-    return objs[num_objs - 1];
+    {
+      return objs[num_objs - 1];
+    }
   else
-    return NULL;
+    {
+      return NULL;
+    }
 
   /*switch (self->type)*/
     /*{*/

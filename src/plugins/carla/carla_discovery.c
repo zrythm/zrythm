@@ -28,6 +28,7 @@
 #include "utils/file.h"
 #include "utils/string.h"
 #include "utils/system.h"
+#include "zrythm.h"
 
 #include <CarlaBackend.h>
 
@@ -60,7 +61,8 @@ get_category_from_carla_category (
 #undef EQUALS
 }
 
-ZPluginCategory
+#ifdef __APPLE__
+static ZPluginCategory
 carla_category_to_zrythm_category (
   PluginCategory carla_cat)
 {
@@ -89,6 +91,7 @@ carla_category_to_zrythm_category (
     }
   return ZPLUGIN_CATEGORY_NONE;
 }
+#endif
 
 /**
  * Create a descriptor for the given plugin path.
