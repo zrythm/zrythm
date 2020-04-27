@@ -67,6 +67,8 @@ curve_get_normalized_y (
   CurveOptions * opts,
   int            start_higher)
 {
+  g_return_val_if_fail (x >= 0.0 && x <= 1.0, 0.0);
+
   int curve_up = opts->curviness >= 0;
 
   double val = -1.0;

@@ -40,6 +40,43 @@
 #define AP_WIDGET_POINT_SIZE 6
 
 /**
+ * Returns if the automation point (circle) is hit.
+ *
+ * This function assumes that the point is already
+ * inside the full rect of the automation point.
+ *
+ * @param x X in global coordinates.
+ * @param y Y in global coordinates.
+ *
+ * @note the transient is also checked.
+ */
+bool
+automation_point_is_point_hit (
+  AutomationPoint * self,
+  double            x,
+  double            y);
+
+/**
+ * Returns if the automation curve is hit.
+ *
+ * This function assumes that the point is already
+ * inside the full rect of the automation point.
+ *
+ * @param x X in global coordinates.
+ * @param y Y in global coordinates.
+ * @param delta_from_curve Allowed distance from the
+ *   curve.
+ *
+ * @note the transient is also checked.
+ */
+bool
+automation_point_is_curve_hit (
+  AutomationPoint * self,
+  double            x,
+  double            y,
+  double            delta_from_curve);
+
+/**
  * Draws the AutomationPoint in the given cairo
  * context in absolute coordinates.
  *

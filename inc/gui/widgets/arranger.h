@@ -17,6 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Arranger base widget.
+ */
+
 #ifndef __GUI_WIDGETS_ARRANGER_H__
 #define __GUI_WIDGETS_ARRANGER_H__
 
@@ -34,9 +40,6 @@ G_DECLARE_FINAL_TYPE (
   Z, ARRANGER_WIDGET,
   GtkDrawingArea)
 
-#define ARRANGER_WIDGET_GET_ACTION(arr,actn) \
-  (arr->action == UI_OVERLAY_ACTION_##actn)
-
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
 typedef struct SnapGrid SnapGrid;
@@ -50,6 +53,15 @@ typedef struct _GtkEventControllerMotion
 typedef struct ArrangerObject ArrangerObject;
 typedef struct ArrangerSelections ArrangerSelections;
 typedef enum ArrangerObjectType ArrangerObjectType;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+#define ARRANGER_WIDGET_GET_ACTION(arr,actn) \
+  (arr->action == UI_OVERLAY_ACTION_##actn)
 
 typedef enum ArrangerCursor
 {
@@ -377,6 +389,27 @@ arranger_widget_get_visible_rect (
  * of the given type that appear in the given
  * ranger.
  *
+ * @param x Global x.
+ * @param y Global y.
+ * @param type The type of arranger objects to find,
+ *   or -1 to look for all objects.
+ * @param array The array to fill.
+ * @param array_size The size of the array to fill.
+ */
+void
+arranger_widget_get_hit_objects_at_point (
+  ArrangerWidget *   self,
+  ArrangerObjectType type,
+  double             x,
+  double             y,
+  ArrangerObject **  array,
+  int *              array_size);
+
+/**
+ * Fills in the given array with the ArrangerObject's
+ * of the given type that appear in the given
+ * ranger.
+ *
  * @param rect The rectangle to search in.
  * @param type The type of arranger objects to find,
  *   or -1 to look for all objects.
@@ -507,5 +540,9 @@ void
 arranger_widget_get_min_possible_position (
   ArrangerWidget * self,
   Position *       pos);
+
+/**
+ * @}
+ */
 
 #endif

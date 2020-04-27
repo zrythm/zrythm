@@ -180,7 +180,7 @@ automation_point_get_y (
  * Returns if the curve of the AutomationPoint
  * curves upwards as you move right on the x axis.
  */
-int
+bool
 automation_point_curves_up (
   AutomationPoint * self);
 

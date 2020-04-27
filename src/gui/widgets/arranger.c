@@ -1065,9 +1065,89 @@ get_regions_in_editor_rect (
 #endif
 
 /**
- * Fills in the given array with the ArrangerObject's
- * of the given type that appear in the given
- * range.
+ * Adds the object to the array if it or its
+ * transient overlaps with the rectangle, or with
+ * \ref x \ref y if \ref rect is NULL.
+ *
+ * When rect is NULL, this is a special case for
+ * automation points. The object will only
+ * be added if the cursor is on the automation
+ * point or within n px from the curve.
+ *
+ * @return Whether the object was added or not.
+ */
+static bool
+add_object_if_overlap (
+  ArrangerWidget *   self,
+  GdkRectangle *     rect,
+  double             x,
+  double             y,
+  ArrangerObject **  array,
+  int *              array_size,
+  ArrangerObject *   obj)
+{
+  arranger_object_set_full_rectangle (
+    obj, self);
+  bool is_same_arranger =
+    arranger_object_get_arranger (obj) == self;
+  bool add = false;
+  if (rect)
+    {
+      if (is_same_arranger &&
+          (ui_rectangle_overlap (
+             &obj->full_rect, rect) ||
+           /* also check original (transient) */
+           (arranger_object_should_orig_be_visible (
+              obj) &&
+            obj->transient &&
+            ui_rectangle_overlap (
+              &obj->transient->full_rect, rect))))
+        {
+          add = true;
+        }
+    }
+  else if (
+    is_same_arranger &&
+    (ui_is_point_in_rect_hit (
+      &obj->full_rect, true, true, x, y,
+      0, 0) ||
+    /* also check original (transient) */
+    (arranger_object_should_orig_be_visible (
+       obj) &&
+     obj->transient &&
+     ui_is_point_in_rect_hit (
+       &obj->transient->full_rect, true,
+       true, x, y, 0, 0))))
+    {
+      /** handle special case for automation
+       * points */
+      if (obj->type ==
+            ARRANGER_OBJECT_TYPE_AUTOMATION_POINT &&
+          !automation_point_is_point_hit (
+            (AutomationPoint *) obj, x, y) &&
+          !automation_point_is_curve_hit (
+            (AutomationPoint *) obj, x, y, 12.0))
+        {
+          return false;
+        }
+
+      add = true;
+    }
+
+  if (add)
+    {
+      array[*array_size] = obj;
+      (*array_size)++;
+    }
+
+  return add;
+}
+
+/**
+ * Fills in the given array with the
+ * ArrangerObject's of the given type that appear
+ * in the given rect, or at the given coords if
+ * \ref rect is NULL.
  *
  * @param rect The rectangle to search in.
  * @param type The type of arranger objects to find,
@@ -1075,34 +1155,18 @@ get_regions_in_editor_rect (
  * @param array The array to fill.
  * @param array_size The size of the array to fill.
  */
-void
-arranger_widget_get_hit_objects_in_rect (
+static void
+get_hit_objects (
   ArrangerWidget *   self,
   ArrangerObjectType type,
   GdkRectangle *     rect,
+  double             x,
+  double             y,
   ArrangerObject **  array,
   int *              array_size)
 {
   *array_size = 0;
   ArrangerObject * obj = NULL;
-
-#define ADD_OBJ_IF_OVERLAP \
-  arranger_object_set_full_rectangle ( \
-    obj, self); \
-  if (arranger_object_get_arranger (obj) == \
-        self && \
-      (ui_rectangle_overlap ( \
-         &obj->full_rect, rect) || \
-       /* also check original (transient) */ \
-       (arranger_object_should_orig_be_visible ( \
-          obj) && \
-        obj->transient && \
-        ui_rectangle_overlap ( \
-          &obj->transient->full_rect, rect)))) \
-    { \
-      array[*array_size] = obj; \
-      (*array_size)++; \
-    }
 
   switch (self->type)
     {
@@ -1124,7 +1188,9 @@ arranger_widget_get_hit_objects_in_rect (
               obj =
                 (ArrangerObject *)
                 P_CHORD_TRACK->scales[i];
-              ADD_OBJ_IF_OVERLAP;
+              add_object_if_overlap (
+                self, rect, x, y, array,
+                array_size, obj);
             }
         }
 
@@ -1153,8 +1219,11 @@ arranger_widget_get_hit_objects_in_rect (
                         lane->regions[k];
                       obj =
                         (ArrangerObject *) r;
-                      ADD_OBJ_IF_OVERLAP
-                      else
+                      bool ret =
+                        add_object_if_overlap (
+                          self, rect, x, y, array,
+                          array_size, obj);
+                      if (!ret)
                         {
                           if (!track->
                                 lanes_visible)
@@ -1185,7 +1254,9 @@ arranger_widget_get_hit_objects_in_rect (
                     P_CHORD_TRACK->chord_regions[j];
                   obj =
                     (ArrangerObject *) cr;
-                  ADD_OBJ_IF_OVERLAP;
+                  add_object_if_overlap (
+                    self, rect, x, y, array,
+                    array_size, obj);
                 }
 
               /* automation regions */
@@ -1212,7 +1283,9 @@ arranger_widget_get_hit_objects_in_rect (
                           obj =
                             (ArrangerObject *)
                             at->regions[k];
-                          ADD_OBJ_IF_OVERLAP;
+                          add_object_if_overlap (
+                            self, rect, x, y, array,
+                            array_size, obj);
                         }
                     }
                 }
@@ -1231,7 +1304,9 @@ arranger_widget_get_hit_objects_in_rect (
                 P_CHORD_TRACK->scales[j];
               obj =
                 (ArrangerObject *) scale;
-              ADD_OBJ_IF_OVERLAP;
+              add_object_if_overlap (
+                self, rect, x, y, array,
+                array_size, obj);
             }
         }
 
@@ -1247,7 +1322,9 @@ arranger_widget_get_hit_objects_in_rect (
                 P_MARKER_TRACK->markers[j];
               obj =
                 (ArrangerObject *) marker;
-              ADD_OBJ_IF_OVERLAP;
+              add_object_if_overlap (
+                self, rect, x, y, array,
+                array_size, obj);
             }
         }
       break;
@@ -1268,7 +1345,9 @@ arranger_widget_get_hit_objects_in_rect (
               obj =
                 (ArrangerObject *)
                 mn;
-              ADD_OBJ_IF_OVERLAP;
+              add_object_if_overlap (
+                self, rect, x, y, array,
+                array_size, obj);
             }
         }
       break;
@@ -1289,7 +1368,9 @@ arranger_widget_get_hit_objects_in_rect (
               Velocity * vel = mn->vel;
               obj =
                 (ArrangerObject *) vel;
-              ADD_OBJ_IF_OVERLAP;
+              add_object_if_overlap (
+                self, rect, x, y, array,
+                array_size, obj);
             }
         }
       break;
@@ -1310,7 +1391,9 @@ arranger_widget_get_hit_objects_in_rect (
                 r->chord_objects[i];
               obj =
                 (ArrangerObject *) co;
-              ADD_OBJ_IF_OVERLAP;
+              add_object_if_overlap (
+                self, rect, x, y, array,
+                array_size, obj);
             }
         }
       break;
@@ -1328,7 +1411,9 @@ arranger_widget_get_hit_objects_in_rect (
             {
               AutomationPoint * ap =  r->aps[i];
               obj = (ArrangerObject *) ap;
-              ADD_OBJ_IF_OVERLAP;
+              add_object_if_overlap (
+                self, rect, x, y, array,
+                array_size, obj);
             }
         }
       break;
@@ -1339,6 +1424,54 @@ arranger_widget_get_hit_objects_in_rect (
       g_warn_if_reached ();
       break;
     }
+}
+
+/**
+ * Fills in the given array with the ArrangerObject's
+ * of the given type that appear in the given
+ * range.
+ *
+ * @param rect The rectangle to search in.
+ * @param type The type of arranger objects to find,
+ *   or -1 to look for all objects.
+ * @param array The array to fill.
+ * @param array_size The size of the array to fill.
+ */
+void
+arranger_widget_get_hit_objects_in_rect (
+  ArrangerWidget *   self,
+  ArrangerObjectType type,
+  GdkRectangle *     rect,
+  ArrangerObject **  array,
+  int *              array_size)
+{
+  get_hit_objects (
+    self, type, rect, 0, 0, array, array_size);
+}
+
+/**
+ * Fills in the given array with the ArrangerObject's
+ * of the given type that appear in the given
+ * ranger.
+ *
+ * @param x Global x.
+ * @param y Global y.
+ * @param type The type of arranger objects to find,
+ *   or -1 to look for all objects.
+ * @param array The array to fill.
+ * @param array_size The size of the array to fill.
+ */
+void
+arranger_widget_get_hit_objects_at_point (
+  ArrangerWidget *   self,
+  ArrangerObjectType type,
+  double             x,
+  double             y,
+  ArrangerObject **  array,
+  int *              array_size)
+{
+  get_hit_objects (
+    self, type, NULL, x, y, array, array_size);
 }
 
 /**
@@ -4300,9 +4433,8 @@ arranger_widget_get_hit_arranger_object (
 {
   ArrangerObject * objs[800];
   int              num_objs;
-  GdkRectangle rect = { (int) x, (int) y, 1, 1 };
-  arranger_widget_get_hit_objects_in_rect (
-    self, type, &rect, objs, &num_objs);
+  arranger_widget_get_hit_objects_at_point (
+    self, type, x, y, objs, &num_objs);
   if (num_objs > 0)
     return objs[num_objs - 1];
   else

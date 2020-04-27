@@ -163,3 +163,77 @@ automation_point_draw (
   gdk_cairo_set_source_rgba (cr, &color);
   cairo_stroke (cr);
 }
+
+/**
+ * Returns if the automation point (circle) is hit.
+ *
+ * This function assumes that the point is already
+ * inside the full rect of the automation point.
+ *
+ * @param x X in global coordinates.
+ * @param y Y in global coordinates.
+ *
+ * @note the transient is also checked.
+ */
+bool
+automation_point_is_point_hit (
+  AutomationPoint * self,
+  double            x,
+  double            y)
+{
+  ArrangerObject * obj = (ArrangerObject *) self;
+
+  bool curves_up =
+    automation_point_curves_up (self);
+
+  if ((obj->full_rect.x - x) <
+        AP_WIDGET_POINT_SIZE &&
+      curves_up ?
+        (obj->full_rect.y + obj->full_rect.height) -
+          y < AP_WIDGET_POINT_SIZE :
+        y - obj->full_rect.y <
+           AP_WIDGET_POINT_SIZE)
+    return true;
+
+  return false;
+}
+
+/**
+ * Returns if the automation curve is hit.
+ *
+ * This function assumes that the point is already
+ * inside the full rect of the automation point.
+ *
+ * @param x X in global coordinates.
+ * @param y Y in global coordinates.
+ * @param delta_from_curve Allowed distance from the
+ *   curve.
+ *
+ * @note the transient is also checked.
+ */
+bool
+automation_point_is_curve_hit (
+  AutomationPoint * self,
+  double            x,
+  double            y,
+  double            delta_from_curve)
+{
+  ArrangerObject * obj = (ArrangerObject *) self;
+
+  /* subtract from 1 because cairo draws in the
+   * opposite direction */
+  double curve_val =
+    1.0 -
+    automation_point_get_normalized_value_in_curve (
+      self,
+      (x - obj->full_rect.x) /
+        obj->full_rect.width);
+  curve_val =
+    obj->full_rect.y +
+    curve_val * obj->full_rect.height;
+
+  if (fabs (curve_val - y) <= delta_from_curve)
+    return true;
+
+  return false;
+}

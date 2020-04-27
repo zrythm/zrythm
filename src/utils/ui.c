@@ -401,6 +401,50 @@ ui_px_to_frames_editor (
 }
 
 /**
+ * Returns if \ref rect is hit or not by the
+ * given coordinate.
+ *
+ * @param check_x Check x-axis for match.
+ * @param check_y Check y-axis for match.
+ * @param x x in parent space.
+ * @param y y in parent space.
+ * @param x_padding Padding to add to the x
+ *   of the object when checking if hit.
+ *   The bigger the padding the more space the
+ *   child will have to get hit.
+ * @param y_padding Padding to add to the y
+ *   of the object when checking if hit.
+ *   The bigger the padding the more space the
+ *   child will have to get hit.
+ */
+bool
+ui_is_point_in_rect_hit (
+  GdkRectangle * rect,
+  const bool     check_x,
+  const bool     check_y,
+  double         x,
+  double         y,
+  double         x_padding,
+  double         y_padding)
+{
+  /* make coordinates local to the rect */
+  x -= rect->x;
+  y -= rect->y;
+
+  /* if hit */
+  if ((!check_x ||
+        (x >= - x_padding &&
+         x <= rect->width + x_padding)) &&
+      (!check_y ||
+        (y >= - y_padding &&
+         y <= rect->height + y_padding)))
+    {
+      return true;
+    }
+  return false;
+}
+
+/**
  * Returns if the child is hit or not by the
  * coordinates in parent.
  *
@@ -1084,7 +1128,7 @@ ui_is_color_bright (
 /**
  * Returns if the color is very bright or not.
  */
-int
+bool
 ui_is_color_very_bright (
   GdkRGBA * src)
 {
@@ -1112,7 +1156,7 @@ ui_get_state_mask (
 /**
  * Returns if the 2 rectangles overlay.
  */
-int
+bool
 ui_rectangle_overlap (
   GdkRectangle * rect1,
   GdkRectangle * rect2)
@@ -1120,14 +1164,14 @@ ui_rectangle_overlap (
   /* if one rect is on the side of the other */
   if (rect1->x > rect2->x + rect2->width ||
       rect2->x > rect1->x + rect1->width)
-    return 0;
+    return false;
 
   /* if one rect is above the other */
   if (rect1->y > rect2->y + rect2->height ||
       rect2->y > rect1->y + rect1->height)
-    return 0;
+    return false;
 
-  return 1;
+  return true;
 }
 
 /**

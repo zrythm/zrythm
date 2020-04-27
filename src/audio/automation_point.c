@@ -230,7 +230,7 @@ automation_point_new_float (
  * Returns if the curve of the AutomationPoint
  * curves upwards as you move right on the x axis.
  */
-int
+bool
 automation_point_curves_up (
   AutomationPoint * self)
 {
@@ -244,12 +244,12 @@ automation_point_curves_up (
       region, self);
 
   if (!next_ap)
-    return 0;
+    return false;
 
   if (next_ap->fvalue > self->fvalue)
-    return 1;
+    return true;
   else
-    return 0;
+    return false;
 }
 
 /**
@@ -294,6 +294,8 @@ automation_point_get_normalized_value_in_curve (
   AutomationPoint * self,
   double            x)
 {
+  g_return_val_if_fail (x >= 0.0 && x <= 1.0, 0.0);
+
   ZRegion * region =
     arranger_object_get_region (
       (ArrangerObject *) self);

@@ -391,6 +391,33 @@ ui_show_message_full (
   const char * message);
 
 /**
+ * Returns if \ref rect is hit or not by the
+ * given coordinate.
+ *
+ * @param check_x Check x-axis for match.
+ * @param check_y Check y-axis for match.
+ * @param x x in parent space.
+ * @param y y in parent space.
+ * @param x_padding Padding to add to the x
+ *   of the object when checking if hit.
+ *   The bigger the padding the more space the
+ *   child will have to get hit.
+ * @param y_padding Padding to add to the y
+ *   of the object when checking if hit.
+ *   The bigger the padding the more space the
+ *   child will have to get hit.
+ */
+bool
+ui_is_point_in_rect_hit (
+  GdkRectangle * rect,
+  const bool     check_x,
+  const bool     check_y,
+  double         x,
+  double         y,
+  double         x_padding,
+  double         y_padding);
+
+/**
  * Returns if the child is hit or not by the
  * coordinates in parent.
  *
@@ -638,14 +665,14 @@ ui_is_color_bright (
 /**
  * Returns if the color is very bright or not.
  */
-int
+bool
 ui_is_color_very_bright (
   GdkRGBA * src);
 
 /**
  * Returns if the 2 rectangles overlay.
  */
-int
+bool
 ui_rectangle_overlap (
   GdkRectangle * rect1,
   GdkRectangle * rect2);
