@@ -186,7 +186,9 @@ test_export_wav ()
 
   char * tmp_dir =
     g_dir_make_tmp ("test_wav_prj_XXXXXX", NULL);
-  ret = project_save (PROJECT, tmp_dir, 0, 0);
+  ret =
+    project_save (
+      PROJECT, tmp_dir, 0, 0, F_NO_ASYNC);
   g_free (tmp_dir);
   g_assert_cmpint (ret, ==, 0);
 

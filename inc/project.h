@@ -345,6 +345,8 @@ project_load (
  *   will be saved as <original filename>.bak<num>.
  * @param show_notification Show a notification
  *   in the UI that the project was saved.
+ * @param async Save asynchronously in another
+ *   thread.
  *
  * @return Non-zero if error.
  */
@@ -353,7 +355,8 @@ project_save (
   Project *    self,
   const char * _dir,
   const int    is_backup,
-  const int    show_notification);
+  const int    show_notification,
+  const bool   async);
 
 /**
  * Autosave callback.

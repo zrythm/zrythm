@@ -1701,9 +1701,6 @@ graph_setup (
             continue;
         }
 
-      char des[400];
-      port_get_full_designation (port, des);
-      g_message ("adding port %s", des);
       add_port (
         self, port, drop_unnecessary_ports);
     }

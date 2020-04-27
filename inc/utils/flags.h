@@ -106,4 +106,7 @@
 #define F_INCLUDE_PLUGINS 1
 #define F_NO_INCLUDE_PLUGINS 0
 
+#define F_ASYNC 1
+#define F_NO_ASYNC 0
+
 #endif

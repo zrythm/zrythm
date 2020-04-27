@@ -97,7 +97,7 @@ test_project_save_and_reload (void)
   /* save the project */
   int ret =
     project_save (
-      PROJECT, PROJECT->dir, 0, 0);
+      PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
   g_assert_cmpint (ret, ==, 0);
   char * prj_file =
     g_build_filename (

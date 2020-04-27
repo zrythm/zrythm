@@ -724,7 +724,10 @@ project_load (
     zrythm_get_version (0);
 
   if (is_template || !filename)
-    project_save (PROJECT, PROJECT->dir, 0, 0);
+    {
+      project_save (
+        PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
+    }
 
   return 0;
 }
@@ -767,7 +770,8 @@ project_autosave_cb (
       else
         {
           project_save (
-            PROJECT, PROJECT->dir, 1, 1);
+            PROJECT, PROJECT->dir, 1, 1,
+            F_NO_ASYNC);
           PROJECT->last_autosave_time = cur_time;
         }
     }
@@ -887,6 +891,97 @@ project_get_project_file_path (
 }
 
 /**
+ * Projet save data.
+ */
+typedef struct ProjectSaveData
+{
+  /** Project clone (with memcpy). */
+  Project  project;
+
+  /** Full path to save to. */
+  char *   project_file_path;
+
+  bool     is_backup;
+
+  /** To be set to true when the thread finishes. */
+  bool     finished;
+
+  bool     show_notification;
+
+  /** Whether an error occured during saving. */
+  bool     has_error;
+} ProjectSaveData;
+
+/**
+ * Thread that does the serialization and saving.
+ */
+static void *
+serialize_project_thread (
+  ProjectSaveData * data)
+{
+  GError *err = NULL;
+  char * yaml = project_serialize (&data->project);
+  if (!yaml)
+    {
+      data->has_error = true;
+      goto serialize_end;
+    }
+  g_file_set_contents (
+    data->project_file_path, yaml, -1, &err);
+  g_free (yaml);
+  if (err != NULL)
+    {
+      g_warning (
+        "Unable to write project file: %s",
+        err->message);
+      g_error_free (err);
+      data->has_error = true;
+    }
+
+serialize_end:
+  data->finished = true;
+  return NULL;
+}
+
+/**
+ * Idle func to check if the project has finished
+ * saving and show a notification.
+ */
+static int
+project_idle_saved_cb (
+  ProjectSaveData * data)
+{
+  if (!data->finished)
+    {
+      return G_SOURCE_CONTINUE;
+    }
+
+  if (data->is_backup)
+    {
+      g_message (_("Backup saved."));
+    }
+  else
+    {
+      if (!ZRYTHM_TESTING)
+        {
+          zrythm_add_to_recent_projects (
+            ZRYTHM, data->project_file_path);
+        }
+      if (data->show_notification)
+        ui_show_notification (_("Project saved."));
+    }
+  g_free (data->project_file_path);
+
+  if (ZRYTHM_HAVE_UI)
+    {
+      header_widget_set_subtitle (
+        MW_HEADER, PROJECT->title);
+    }
+
+  return G_SOURCE_REMOVE;
+}
+
+/**
  * Saves the project to a project file in the
  * given dir.
  *
@@ -894,6 +989,8 @@ project_get_project_file_path (
  *   will be saved as <original filename>.bak<num>.
  * @param show_notification Show a notification
  *   in the UI that the project was saved.
+ * @param async Save asynchronously in another
+ *   thread.
  *
  * @return Non-zero if error.
  */
@@ -902,7 +999,8 @@ project_save (
   Project *    self,
   const char * _dir,
   const int    is_backup,
-  const int    show_notification)
+  const int    show_notification,
+  const bool   async)
 {
   int i, j;
 
@@ -926,6 +1024,7 @@ project_save (
     io_path_get_basename (dir);
   set_title (self, basename);
   g_free (basename);
+  g_free (dir);
 
   /* save current datetime */
   set_datetime_str (self);
@@ -1009,47 +1108,31 @@ project_save (
     }
   g_free (states_dir);
 
-  char * project_file_path =
+  ProjectSaveData * data =
+    calloc (1, sizeof (ProjectSaveData));
+  data->project_file_path =
     project_get_project_file_path (
       self, is_backup);
-  char * yaml = project_serialize (PROJECT);
-  g_return_val_if_fail (yaml, -1);
-  GError *err = NULL;
-  g_file_set_contents (
-    project_file_path, yaml, -1, &err);
-  g_free (yaml);
-  if (err != NULL)
+  data->show_notification = show_notification;
+  data->is_backup = is_backup;
+  memcpy (
+    &data->project, PROJECT, sizeof (Project));
+  if (async)
     {
-      g_warning (
-        "Unable to write project file: %s",
-        err->message);
-      g_error_free (err);
-      RETURN_ERROR;
-    }
-
-  if (is_backup)
-    {
-      g_message (_("Backup saved."));
+      g_thread_new (
+        "serialize_project_thread",
+        (GThreadFunc)
+        serialize_project_thread, data);
+      g_idle_add (
+        (GSourceFunc) project_idle_saved_cb,
+        data);
     }
   else
     {
-      if (!ZRYTHM_TESTING)
-        {
-          zrythm_add_to_recent_projects (
-            ZRYTHM, project_file_path);
-        }
-      if (show_notification)
-        ui_show_notification (_("Project saved."));
+      /* call synchronously */
+      serialize_project_thread (data);
+      project_idle_saved_cb (data);
     }
-  g_free (project_file_path);
-
-  if (ZRYTHM_HAVE_UI)
-    {
-      header_widget_set_subtitle (
-        MW_HEADER, PROJECT->title);
-    }
-
-  g_free (dir);
 
   RETURN_OK;
 }

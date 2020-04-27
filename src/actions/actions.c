@@ -725,7 +725,8 @@ activate_save (GSimpleAction *action,
     }
   g_message ("%s project dir", PROJECT->dir);
 
-  project_save (PROJECT, PROJECT->dir, 0, 1);
+  project_save (
+    PROJECT, PROJECT->dir, 0, 1, F_NO_ASYNC);
 }
 
 void
@@ -782,7 +783,8 @@ activate_save_as (GSimpleAction *action,
 
       filename =
         gtk_file_chooser_get_filename (chooser);
-      project_save (PROJECT, filename, 0, 1);
+      project_save (
+        PROJECT, filename, 0, 1, F_NO_ASYNC);
       g_free (filename);
     }
 

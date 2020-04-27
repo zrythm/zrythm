@@ -40,7 +40,7 @@ test_empty_save_load ()
   /* resave it */
   ret =
     project_save (
-      PROJECT, PROJECT->dir, 0, 0);
+      PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
   g_assert_cmpint (ret, ==, 0);
 }
 
@@ -57,7 +57,7 @@ test_save_load_with_data ()
   /* save the project */
   ret =
     project_save (
-      PROJECT, PROJECT->dir, 0, 0);
+      PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
   g_assert_cmpint (ret, ==, 0);
   char * prj_file =
     g_build_filename (
