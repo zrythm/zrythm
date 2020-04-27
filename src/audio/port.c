@@ -42,6 +42,7 @@
 #include "plugins/plugin.h"
 #include "plugins/lv2/lv2_ui.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -923,7 +924,7 @@ port_get_all (
       ch = tr->channel;
 
       channel_append_all_ports (
-        ch, ports, size, 1);
+        ch, ports, size, F_INCLUDE_PLUGINS);
     }
 }
 

@@ -1045,6 +1045,26 @@ channel_get_output_track (
   return track;
 }
 
+static void
+add_plugin_ports (
+  Plugin *  pl,
+  Port **   ports,
+  int *     size)
+{
+  for (int i = 0; i < pl->num_in_ports; i++)
+    {
+      Port * port = pl->in_ports[i];
+      g_return_if_fail (port);
+      array_append (ports, (*size), port)
+    }
+  for (int i = 0; i < pl->num_out_ports; i++)
+    {
+      Port * port = pl->out_ports[i];
+      g_return_if_fail (port);
+      array_append (ports, (*size), port)
+    }
+}
+
 /**
  * Appends all channel ports and optionally
  * plugin ports to the array.
@@ -1058,7 +1078,7 @@ channel_append_all_ports (
   int *   size,
   int     include_plugins)
 {
-  int j, k;
+  int j;
   Track * tr = channel_get_track (ch);
   g_warn_if_fail (tr);
   PortType in_type =
@@ -1067,24 +1087,7 @@ channel_append_all_ports (
     tr->out_signal_type;
 
 #define _ADD(port) \
-  array_append ( \
-    ports, (*size), \
-    port)
-
-#define ADD_PLUGIN_PORTS \
-  if (!pl) \
-    continue; \
-\
-  for (k = 0; k < pl->num_in_ports; k++) \
-    { \
-      g_warn_if_fail (pl->in_ports[k]); \
-      _ADD (pl->in_ports[k]); \
-    } \
-  for (k = 0; k < pl->num_out_ports; k++) \
-    { \
-      g_warn_if_fail (pl->out_ports[k]); \
-      _ADD (pl->out_ports[k]); \
-    }
+  array_append (ports, (*size), port)
 
   /* add channel ports */
   if (in_type == TYPE_AUDIO)
@@ -1156,19 +1159,24 @@ channel_append_all_ports (
       for (j = 0; j < STRIP_SIZE; j++)
         {
           pl = ch->inserts[j];
-          ADD_PLUGIN_PORTS;
+          if (pl)
+            {
+              add_plugin_ports (
+                pl, ports, size);
+            }
 
           pl = ch->midi_fx[j];
-          ADD_PLUGIN_PORTS;
+          if (pl)
+            {
+              add_plugin_ports (
+                pl, ports, size);
+            }
         }
 
       if (ch->instrument)
         {
-          for (j = 0; j < 1; j++)
-            {
-              pl = ch->instrument;
-              ADD_PLUGIN_PORTS;
-            }
+          add_plugin_ports (
+            ch->instrument, ports, size);
         }
     }
 
@@ -1176,9 +1184,12 @@ channel_append_all_ports (
     {
       pl = tr->modulators[j]->plugin;
 
-      ADD_PLUGIN_PORTS;
+      if (pl)
+        {
+          add_plugin_ports (
+            pl, ports, size);
+        }
     }
-#undef ADD_PLUGIN_PORTS
 #undef _ADD
 }
 

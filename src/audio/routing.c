@@ -1537,6 +1537,63 @@ graph_rechain (
   graph_clear_setup (self);
 }
 
+static void
+add_plugin (
+  Graph *  self,
+  Plugin * pl)
+{
+  g_return_if_fail (pl && !pl->deleting);
+  if (pl->num_in_ports == 0 &&
+      pl->num_out_ports > 0)
+    graph_add_initial_node (
+      self, ROUTE_NODE_TYPE_PLUGIN, pl);
+  else if (pl->num_out_ports == 0 &&
+           pl->num_in_ports > 0)
+    graph_add_terminal_node (
+      self, ROUTE_NODE_TYPE_PLUGIN, pl);
+  else if (pl->num_out_ports == 0 &&
+           pl->num_in_ports == 0)
+    {
+    }
+  else
+    graph_add_node (
+      self, ROUTE_NODE_TYPE_PLUGIN, pl);
+}
+
+static void
+connect_plugin (
+  Graph *  self,
+  Plugin * pl)
+{
+  g_return_if_fail (pl && !pl->deleting);
+  GraphNode * pl_node =
+    graph_find_node_from_plugin (self, pl);
+  g_return_if_fail (pl_node);
+  for (int i = 0; i < pl->num_in_ports; i++)
+    {
+      Port * port = pl->in_ports[i];
+      g_return_if_fail (
+        port_get_plugin (
+          port, 1) != NULL);
+      GraphNode * port_node =
+        graph_find_node_from_port (
+          self, port);
+      g_return_if_fail (port_node);
+      node_connect (port_node, pl_node);
+    }
+  for (int i = 0; i < pl->num_out_ports; i++)
+    {
+      Port * port = pl->out_ports[i];
+      g_return_if_fail (
+        port_get_plugin (port, 1) != NULL);
+      GraphNode * port_node =
+        graph_find_node_from_port (
+          self, port);
+      g_warn_if_fail (port_node);
+      node_connect (pl_node, port_node);
+    }
+}
+
 /*
  * Adds the graph nodes and connections, then
  * rechains.
@@ -1552,7 +1609,7 @@ graph_setup (
   const int drop_unnecessary_ports,
   const int rechain)
 {
-  int i, j, k;
+  int i, j;
   GraphNode * node, * node2;
 
   /* ========================
@@ -1594,26 +1651,7 @@ graph_setup (
         self, ROUTE_NODE_TYPE_PREFADER,
         &tr->channel->prefader);
 
-#define ADD_PLUGIN \
-          if (!pl || pl->deleting) \
-            continue; \
- \
-          if (pl->num_in_ports == 0 && \
-              pl->num_out_ports > 0) \
-            graph_add_initial_node ( \
-              self, ROUTE_NODE_TYPE_PLUGIN, pl); \
-          else if (pl->num_out_ports == 0 && \
-                   pl->num_in_ports > 0) \
-            graph_add_terminal_node ( \
-              self, ROUTE_NODE_TYPE_PLUGIN, pl); \
-          else if (pl->num_out_ports == 0 && \
-                   pl->num_in_ports == 0) \
-            { \
-            } \
-          else \
-            graph_add_node ( \
-              self, ROUTE_NODE_TYPE_PLUGIN, pl)
-
+      /* add plugins */
       for (j = 0; j < STRIP_SIZE * 2 + 1; j++)
         {
           if (j < STRIP_SIZE)
@@ -1625,20 +1663,23 @@ graph_setup (
               tr->channel->inserts[
                 j - (STRIP_SIZE + 1)];
 
-          ADD_PLUGIN;
+          if (!pl || pl->deleting)
+            continue;
 
+          add_plugin (self, pl);
           plugin_update_latency (pl);
         }
       for (j = 0; j < tr->num_modulators; j++)
         {
           pl = tr->modulators[j]->plugin;
 
-          ADD_PLUGIN;
+          if (!pl || pl->deleting)
+            continue;
 
+          add_plugin (self, pl);
           plugin_update_latency (pl);
         }
     }
-#undef ADD_PLUGIN
 
   /* add ports */
   Port * ports[10000];
@@ -1660,6 +1701,9 @@ graph_setup (
             continue;
         }
 
+      char des[400];
+      port_get_full_designation (port, des);
+      g_message ("adding port %s", des);
       add_port (
         self, port, drop_unnecessary_ports);
     }
@@ -1848,32 +1892,6 @@ graph_setup (
           node_connect (node, node2);
         }
 
-#define CONNECT_PLUGIN \
-          if (!pl || pl->deleting) \
-            continue; \
- \
-          node = \
-            graph_find_node_from_plugin (self, pl); \
-          g_warn_if_fail (node); \
-          for (k = 0; k < pl->num_in_ports; k++) \
-            { \
-              port = pl->in_ports[k]; \
-              g_warn_if_fail ( \
-                port_get_plugin (port, 1) != NULL); \
-              node2 = \
-                graph_find_node_from_port (self, port); \
-              node_connect (node2, node); \
-            } \
-          for (k = 0; k < pl->num_out_ports; k++) \
-            { \
-              port = pl->out_ports[k]; \
-              g_warn_if_fail ( \
-                port_get_plugin (port, 1) != NULL); \
-              node2 = \
-                graph_find_node_from_port (self, port); \
-              node_connect (node, node2); \
-            }
-
       for (j = 0; j < STRIP_SIZE * 2 + 1; j++)
         {
           if (j < STRIP_SIZE)
@@ -1885,17 +1903,18 @@ graph_setup (
               tr->channel->inserts[
                 j - (STRIP_SIZE + 1)];
 
-          CONNECT_PLUGIN;
+          if (pl && !pl->deleting)
+            connect_plugin (self, pl);
         }
 
       for (j = 0; j < tr->num_modulators; j++)
         {
           pl = tr->modulators[j]->plugin;
 
-          CONNECT_PLUGIN;
+          if (pl && !pl->deleting)
+            connect_plugin (self, pl);
         }
     }
-#undef CONNECT_PLUGIN
 
   for (i = 0; i < num_ports; i++)
     {

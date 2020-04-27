@@ -103,4 +103,7 @@
 #define F_ALREADY_MOVED 1
 #define F_NOT_ALREADY_MOVED 0
 
+#define F_INCLUDE_PLUGINS 1
+#define F_NO_INCLUDE_PLUGINS 0
+
 #endif
