@@ -1634,6 +1634,8 @@ channel_remove_plugin (
     case PLUGIN_SLOT_MIDI_FX:
       plugin = channel->midi_fx[slot];
       break;
+    case PLUGIN_SLOT_INSTRUMENT:
+      plugin = channel->instrument;
     default:
       break;
     }
@@ -1678,6 +1680,9 @@ channel_remove_plugin (
       break;
     case PLUGIN_SLOT_MIDI_FX:
       channel->midi_fx[slot] = NULL;
+      break;
+    case PLUGIN_SLOT_INSTRUMENT:
+      channel->instrument = NULL;
       break;
     default:
       g_warn_if_reached ();
@@ -2132,20 +2137,25 @@ channel_disconnect (
               channel_remove_plugin (
                 channel,
                 PLUGIN_SLOT_INSERT,
-                i, remove_pl, 0,
+                i, remove_pl, false,
                 F_NO_RECALC_GRAPH);
             }
-        }
-      FOREACH_STRIP
-        {
           if (channel->midi_fx[i])
             {
               channel_remove_plugin (
                 channel,
                 PLUGIN_SLOT_MIDI_FX,
-                i, remove_pl, 0,
+                i, remove_pl, false,
                 F_NO_RECALC_GRAPH);
             }
+        }
+      if (channel->instrument)
+        {
+          channel_remove_plugin (
+            channel,
+            PLUGIN_SLOT_INSTRUMENT,
+            0, remove_pl, false,
+            F_NO_RECALC_GRAPH);
         }
     }
 

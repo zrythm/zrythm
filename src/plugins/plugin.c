@@ -1159,9 +1159,11 @@ plugin_close_ui (Plugin *plugin)
     {
       carla_native_plugin_open_ui (
         plugin->carla, false);
+      g_message ("closing carla plugin UI");
     }
   else
     {
+      g_message ("closing non-carla plugin UI");
 #endif
       if (GTK_IS_WINDOW (plugin->window))
         {
