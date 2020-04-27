@@ -844,8 +844,8 @@ activate_export_graph (
   char lbl[600];
   sprintf (
     lbl,
-    _("The graph will be exported to %s.\n"
-    "Select a format to export as."), exports_dir);
+    _("The graph will be exported to %s\n"
+    "Select a format to export as"), exports_dir);
   label = gtk_label_new (lbl);
   gtk_widget_set_visible (label, true);
   gtk_label_set_justify (

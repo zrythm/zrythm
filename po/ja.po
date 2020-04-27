@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-04-04 16:05+0100\n"
+"POT-Creation-Date: 2020-04-27 22:23+0100\n"
 "PO-Revision-Date: 2020-03-11 14:33+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -19,6 +19,48 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 4.0-dev\n"
+
+#: inc/utils/gtk.h:49
+msgid "Cu_t"
+msgstr ""
+
+#: inc/utils/gtk.h:55
+#, fuzzy
+msgid "_Copy"
+msgstr "コピー"
+
+#: inc/utils/gtk.h:61
+#, fuzzy
+msgid "_Paste"
+msgstr "貼り付け"
+
+#: inc/utils/gtk.h:67
+#, fuzzy
+msgid "_Delete"
+msgstr "削除"
+
+#: inc/utils/gtk.h:73
+#, fuzzy
+msgid "Cle_ar Selection"
+msgstr "選択をクリア"
+
+#: inc/utils/gtk.h:79
+#, fuzzy
+msgid "Select A_ll"
+msgstr "すべてを選択"
+
+#: inc/utils/gtk.h:85 src/gui/widgets/home_toolbar.c:128
+msgid "Duplicate"
+msgstr "複製"
+
+#: inc/utils/gtk.h:91 src/audio/track.c:160
+msgid "Mute"
+msgstr "無音"
+
+#: inc/utils/gtk.h:97
+#, fuzzy
+msgid "Unmute"
+msgstr "トラックの無音を解除"
 
 #: src/zrythm.c:309
 msgid "Setting up main window"
@@ -78,12 +120,12 @@ msgstr "プロジェクトを待機中"
 msgid "(trial) "
 msgstr "(トライアル) "
 
-#: src/project.c:393 src/gui/widgets/route_target_selector_popover.c:153
-#: src/audio/track.c:1338
+#: src/project.c:397 src/gui/widgets/route_target_selector_popover.c:153
+#: src/audio/track.c:1339
 msgid "Master"
 msgstr "マスタ"
 
-#: src/project.c:485
+#: src/project.c:492
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -94,11 +136,11 @@ msgstr ""
 "  %s.\n"
 "新しいバックアップを使用しますか?"
 
-#: src/project.c:490
+#: src/project.c:497
 msgid "Backup found"
 msgstr "バックアップが見つかりました"
 
-#: src/project.c:561
+#: src/project.c:568
 #, c-format
 msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
@@ -107,17 +149,17 @@ msgstr ""
 "このプロジェクトは、Zrythm (%s) の異なるバージョンで作成されました。正しく動"
 "作しない可能性があります。"
 
-#: src/project.c:576
+#: src/project.c:583
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "プロジェクトの読み込みに失敗しました。詳細については、ログを確認してくださ"
 "い。"
 
-#: src/project.c:1004
+#: src/project.c:961
 msgid "Backup saved."
 msgstr "バックアップが保存されました。"
 
-#: src/project.c:1014
+#: src/project.c:971
 msgid "Project saved."
 msgstr "プロジェクトが保存されました。"
 
@@ -131,7 +173,7 @@ msgstr "エラー - バックトレース:\n"
 msgid "Error: %s - Backtrace:\n"
 msgstr "エラー: %s - バックトレース:\n"
 
-#: src/main.c:171
+#: src/main.c:179
 #, c-format
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
@@ -139,7 +181,7 @@ msgstr ""
 "Zrythmが異常終了しました。修正に役立ちますので、%sバグレポートを送信%sしてく"
 "ださい。"
 
-#: src/main.c:243
+#: src/main.c:251
 #, fuzzy, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
@@ -172,12 +214,12 @@ msgstr ""
 
 #. getopt_long already printed an error
 #. * message
-#: src/main.c:320
+#: src/main.c:328
 #, c-format
 msgid "Unknown option\n"
 msgstr "オプションを認知できませんでした\n"
 
-#: src/main.c:337
+#: src/main.c:345
 #, c-format
 msgid ""
 "Zrythm-%s Copyright (C) 2018-2020 Alexandros Theodotou\n"
@@ -202,11 +244,60 @@ msgstr ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/plugins/plugin_manager.c:244
+#: src/plugins/carla_native_plugin.c:759
+#, fuzzy
+msgid "Audio in"
+msgstr "入力音響"
+
+#: src/plugins/carla_native_plugin.c:769
+#, fuzzy
+msgid "Audio out"
+msgstr "出力音響"
+
+#: src/plugins/carla_native_plugin.c:779
+msgid "MIDI in"
+msgstr "MIDI入力"
+
+#: src/plugins/carla_native_plugin.c:789
+#, fuzzy
+msgid "MIDI out"
+msgstr "MIDI出力"
+
+#: src/plugins/plugin_manager.c:245
 msgid "Error loading LV2 bundle dir: "
 msgstr "LV2バンドルディレクトリの読み込みエラー： "
 
-#: src/plugins/plugin.c:111
+#: src/plugins/plugin_manager.c:683
+#, fuzzy
+msgid "Scanned LV2 plugin"
+msgstr "プラグインをスキャン中"
+
+#: src/plugins/plugin_manager.c:694
+#, c-format
+msgid "Skipped LV2 plugin at %s"
+msgstr ""
+
+#: src/plugins/plugin_manager.c:817 src/plugins/plugin_manager.c:943
+#, fuzzy
+msgid "Scanned VST plugin"
+msgstr "プラグインをスキャン中"
+
+#: src/plugins/plugin_manager.c:824 src/plugins/plugin_manager.c:950
+#, c-format
+msgid "Skipped VST plugin at %s"
+msgstr ""
+
+#: src/plugins/plugin_manager.c:1008
+#, fuzzy
+msgid "Scanned AU plugin"
+msgstr "プラグインをスキャン中"
+
+#: src/plugins/plugin_manager.c:1015
+#, c-format
+msgid "Skipped AU plugin at %u"
+msgstr ""
+
+#: src/plugins/plugin.c:124
 msgid "Enabled"
 msgstr "有効"
 
@@ -216,14 +307,14 @@ msgstr "状態を保存"
 
 #: src/plugins/plugin_gtk.c:82 src/plugins/lv2/lv2_gtk.c:99
 #: src/plugins/lv2/lv2_gtk.c:347 src/utils/dialogs.c:41 src/utils/dialogs.c:71
-#: src/actions/actions.c:753 resources/ui/export_midi_file_dialog.ui:54
+#: src/actions/actions.c:755 resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "取り消し(_C)"
 
 #: src/plugins/plugin_gtk.c:83 src/plugins/lv2/lv2_gtk.c:100
-#: src/actions/actions.c:755
+#: src/actions/actions.c:757
 msgid "_Save"
 msgstr "保存(_S)"
 
@@ -264,6 +355,17 @@ msgstr "新規プロジェクトを作成"
 msgid "Untitled Project"
 msgstr "プロジェクト名未設定"
 
+#: src/gui/widgets/fader_controls_grid.c:97
+#, c-format
+msgid "Peak"
+msgstr ""
+
+#. TRANSLATORS: Root Mean Square
+#: src/gui/widgets/fader_controls_grid.c:100
+#, c-format
+msgid "RMS"
+msgstr ""
+
 #: src/gui/widgets/port_connections_popover.c:77
 msgid "INPUTS"
 msgstr "入力"
@@ -284,35 +386,36 @@ msgstr "音符の長さ"
 msgid "note type"
 msgstr "音符の種類"
 
-#: src/gui/widgets/inspector_port.c:175 resources/ui/bind_cc_dialog.ui:27
+#: src/gui/widgets/inspector_port.c:175 src/gui/widgets/balance_control.c:331
+#: src/gui/widgets/fader.c:336 resources/ui/bind_cc_dialog.ui:27
 msgid "Bind MIDI CC"
 msgstr "MIDI CC をバインドする"
 
-#: src/gui/widgets/inspector_port.c:185 src/gui/widgets/midi_arranger.c:608
+#: src/gui/widgets/inspector_port.c:185 src/gui/widgets/midi_arranger.c:508
 msgid "View info"
 msgstr "詳細を見る"
 
-#: src/gui/widgets/inspector_port.c:360
+#: src/gui/widgets/inspector_port.c:370
 msgid "Incoming signals"
 msgstr "信号入力"
 
-#: src/gui/widgets/inspector_port.c:361
+#: src/gui/widgets/inspector_port.c:371
 msgid "Outgoing signals"
 msgstr "信号出力"
 
-#: src/gui/widgets/inspector_port.c:373
+#: src/gui/widgets/inspector_port.c:383
 msgid "Current val"
 msgstr "現値"
 
-#: src/gui/widgets/inspector_port.c:375
+#: src/gui/widgets/inspector_port.c:385
 msgid "Min"
 msgstr "最小値"
 
-#: src/gui/widgets/inspector_port.c:376
+#: src/gui/widgets/inspector_port.c:386
 msgid "Max"
 msgstr "最大値"
 
-#: src/gui/widgets/inspector_port.c:496
+#: src/gui/widgets/inspector_port.c:506
 msgid "Expose port to JACK"
 msgstr "JACKへのポートの公開"
 
@@ -320,21 +423,22 @@ msgstr "JACKへのポートの公開"
 msgid "Log Viewer"
 msgstr "ログビューア"
 
-#: src/gui/widgets/track_properties_expander.c:102
+#: src/gui/widgets/track_properties_expander.c:117
 msgid "Track Name"
 msgstr "トラック名"
 
-#: src/gui/widgets/track_properties_expander.c:114
+#: src/gui/widgets/track_properties_expander.c:129
 msgid "Direct Out"
 msgstr "ダイレクトアウト"
 
-#: src/gui/widgets/track_properties_expander.c:127
+#: src/gui/widgets/track_properties_expander.c:140
+#: src/gui/widgets/route_target_selector_popover.c:175 src/audio/track.c:1324
+msgid "Instrument"
+msgstr "音源"
+
+#: src/gui/widgets/track_properties_expander.c:154
 msgid "Track Properties"
 msgstr "トラックの属性"
-
-#: src/gui/widgets/channel.c:1011
-msgid "Inserts"
-msgstr "インサート"
 
 #: src/gui/widgets/track_input_expander.c:292
 msgid "All MIDI Inputs"
@@ -445,14 +549,24 @@ msgstr "空白のプロジェクト"
 msgid "Project Assistant"
 msgstr "プロジェクトアシスタント"
 
-#: src/gui/widgets/left_dock_edge.c:103
-msgid "Inspector"
+#: src/gui/widgets/left_dock_edge.c:150
+#, fuzzy
+msgid "Track inspector"
 msgstr "インスペクター"
 
-#: src/gui/widgets/left_dock_edge.c:123
+#: src/gui/widgets/left_dock_edge.c:177
+#, fuzzy
+msgid "Plugin inspector"
+msgstr "プラグインブラウザ"
+
+#: src/gui/widgets/left_dock_edge.c:199
 #: resources/ui/chord_selector_window.ui:683
 msgid "Visibility"
 msgstr "ビジビリティ"
+
+#: src/gui/widgets/plugin_strip_expander.c:152
+msgid "Inserts"
+msgstr "インサート"
 
 #: src/gui/widgets/export_midi_file_dialog.c:83
 #, c-format
@@ -471,6 +585,17 @@ msgstr "これらのポートは接続できません"
 msgid "Track Ports"
 msgstr "トラックポート"
 
+#: src/gui/widgets/channel_send_selector.c:158
+#: resources/ui/editor_toolbar.ui:57
+msgid "None"
+msgstr "無し"
+
+#: src/gui/widgets/channel_send_selector.c:295
+#: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:24
+#: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
+msgid "OK"
+msgstr "OK"
+
 #: src/gui/widgets/editor_selection_info.c:58
 msgid "start position"
 msgstr "開始位置"
@@ -479,18 +604,6 @@ msgstr "開始位置"
 #: src/gui/widgets/timeline_selection_info.c:430
 msgid "No object selected"
 msgstr "オブジェクトが選択されていません"
-
-#: src/gui/widgets/inspector.c:165
-msgid "Track properties"
-msgstr "トラックの属性"
-
-#: src/gui/widgets/inspector.c:175
-msgid "Editor properties"
-msgstr "エディタの属性"
-
-#: src/gui/widgets/inspector.c:185
-msgid "Plugin properties"
-msgstr "プラグインの属性"
 
 #: src/gui/widgets/digital_meter.c:295
 msgid "normal"
@@ -535,23 +648,26 @@ msgstr "MIDIトラックを追加 (_M)"
 msgid "Add Audio Track"
 msgstr "オーディオトラックを追加"
 
-#: src/gui/widgets/drag_dest_box.c:498 src/audio/track.c:1332
-msgid "Audio Bus"
-msgstr "オーディオバス"
+#: src/gui/widgets/drag_dest_box.c:498 src/audio/track.c:1333
+#, fuzzy
+msgid "Audio FX"
+msgstr "オーディオ"
 
-#: src/gui/widgets/drag_dest_box.c:509 src/audio/track.c:1335
-msgid "MIDI Bus"
-msgstr "MIDIバス"
+#: src/gui/widgets/drag_dest_box.c:509 src/audio/track.c:1336
+#, fuzzy
+msgid "MIDI FX"
+msgstr "MIDI"
 
 #: src/gui/widgets/drag_dest_box.c:521
-msgid "Add Bus Track"
+#, fuzzy
+msgid "Add FX Track"
 msgstr "バストラックを追加"
 
-#: src/gui/widgets/drag_dest_box.c:532 src/audio/track.c:1344
+#: src/gui/widgets/drag_dest_box.c:532 src/audio/track.c:1345
 msgid "Audio Group"
 msgstr "オーディオ グループ"
 
-#: src/gui/widgets/drag_dest_box.c:543 src/audio/track.c:1347
+#: src/gui/widgets/drag_dest_box.c:543 src/audio/track.c:1348
 msgid "MIDI Group"
 msgstr "MIDIグループ"
 
@@ -594,8 +710,26 @@ msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
 "あるチャンネルでListenが有効になっているときに他のチャンネルに設定するレベル"
 
-#: src/gui/widgets/channel_slot.c:134 src/gui/widgets/channel_slot.c:149
-#: src/gui/widgets/channel_slot.c:789
+#: src/gui/widgets/channel_slot.c:167
+#, c-format
+msgid "Slot #%d"
+msgstr ""
+
+#: src/gui/widgets/channel_slot.c:318
+#, c-format
+msgid "Plugin %s cannot be added to this slot"
+msgstr ""
+
+#: src/gui/widgets/channel_slot.c:667
+msgid "Bypass"
+msgstr ""
+
+#: src/gui/widgets/channel_slot.c:680
+#, fuzzy
+msgid "Inspect"
+msgstr "インスペクター"
+
+#: src/gui/widgets/channel_slot.c:1013
 msgid "empty slot"
 msgstr "空のスロット"
 
@@ -611,16 +745,22 @@ msgstr "音階"
 msgid "chord"
 msgstr "和音"
 
-#: src/gui/widgets/plugin_browser.c:1005 resources/ui/panel_file_browser.ui:63
+#: src/gui/widgets/plugin_browser.c:86 src/gui/widgets/plugin_browser.c:370
+msgid ""
+"VST support without Carla is deprecated and will be removed in future "
+"versions."
+msgstr ""
+
+#: src/gui/widgets/plugin_browser.c:1018 resources/ui/panel_file_browser.ui:63
 #: resources/ui/file_browser.ui:63
 msgid "Collection"
 msgstr "コレクション"
 
-#: src/gui/widgets/plugin_browser.c:1015
+#: src/gui/widgets/plugin_browser.c:1028
 msgid "Category"
 msgstr "カテゴリー"
 
-#: src/gui/widgets/plugin_browser.c:1025
+#: src/gui/widgets/plugin_browser.c:1038
 msgid "Protocol"
 msgstr "プロトコル"
 
@@ -660,34 +800,34 @@ msgstr "JACKトランスポートクライアント"
 msgid "JACK Timebase master"
 msgstr "JACKタイムベースマスター"
 
-#: src/gui/widgets/bot_bar.c:372 src/audio/region.c:297 src/audio/track.c:1326
+#: src/gui/widgets/bot_bar.c:374 src/audio/region.c:298 src/audio/track.c:1327
 msgid "Audio"
 msgstr "オーディオ"
 
-#: src/gui/widgets/bot_bar.c:378
+#: src/gui/widgets/bot_bar.c:380 data/org.zrythm.Zrythm.gschema.xml:247
 #, fuzzy
-msgid "Audio buffer"
+msgid "Buffer size"
 msgstr "バッファサイズ"
 
-#: src/gui/widgets/bot_bar.c:380
+#: src/gui/widgets/bot_bar.c:382
 #, fuzzy
 msgid "Sample rate"
 msgstr "サンプルレート"
 
-#: src/gui/widgets/bot_bar.c:451
+#: src/gui/widgets/bot_bar.c:453
 msgid "bpm"
 msgstr ""
 
-#: src/gui/widgets/bot_bar.c:455
+#: src/gui/widgets/bot_bar.c:457
 msgid "time sig."
 msgstr "拍子記号"
 
-#: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:59
+#: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:60
 #: resources/ui/quantize_dialog.ui:143
 msgid "start"
 msgstr "開始"
 
-#: src/gui/widgets/timeline_selection_info.c:275 src/audio/marker_track.c:66
+#: src/gui/widgets/timeline_selection_info.c:275 src/audio/marker_track.c:67
 #: resources/ui/quantize_dialog.ui:156
 msgid "end"
 msgstr "終わり"
@@ -715,53 +855,44 @@ msgstr "位置"
 msgid "Custom Marker"
 msgstr "カスタムマーカー"
 
-#: src/gui/widgets/timeline_arranger.c:1288
+#: src/gui/widgets/timeline_arranger.c:1277
 #, fuzzy
 msgid "Fade preset"
 msgstr "フェーダー"
 
 #. TRANSLATORS: Pan algorithm
-#: src/gui/widgets/timeline_arranger.c:1314 src/utils/ui.c:688
+#: src/gui/widgets/timeline_arranger.c:1303 src/utils/ui.c:732
 msgid "Linear"
 msgstr "直線"
 
-#: src/gui/widgets/timeline_arranger.c:1315
+#: src/gui/widgets/timeline_arranger.c:1304
 msgid "Exponential"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1316
+#: src/gui/widgets/timeline_arranger.c:1305
 msgid "Elliptic"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1317 src/audio/curve.c:45
+#: src/gui/widgets/timeline_arranger.c:1306 src/audio/curve.c:45
 #, c-format
 msgid "Vital"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1356
-#, fuzzy
-msgid "Unmute"
-msgstr "トラックの無音を解除"
-
-#: src/gui/widgets/timeline_arranger.c:1362 src/audio/track.c:160
-msgid "Mute"
-msgstr "無音"
-
-#: src/gui/widgets/timeline_arranger.c:1375
+#: src/gui/widgets/timeline_arranger.c:1394
 #, fuzzy
 msgid "Export as MIDI file"
 msgstr "MIDIファイルを選択"
 
-#: src/gui/widgets/timeline_arranger.c:1403 src/gui/widgets/track.c:1595
+#: src/gui/widgets/timeline_arranger.c:1422 src/gui/widgets/track.c:1584
 #, fuzzy
 msgid "Quick bounce"
 msgstr "クイック量子化"
 
-#: src/gui/widgets/timeline_arranger.c:1414 src/gui/widgets/track.c:1607
+#: src/gui/widgets/timeline_arranger.c:1433 src/gui/widgets/track.c:1596
 msgid "Bounce..."
 msgstr ""
 
-#: src/gui/widgets/automation_arranger.c:234
+#: src/gui/widgets/automation_arranger.c:230
 #, fuzzy
 msgid "Curve algorithm"
 msgstr "パンの計算法"
@@ -825,10 +956,6 @@ msgstr "コピー"
 msgid "Paste"
 msgstr "貼り付け"
 
-#: src/gui/widgets/home_toolbar.c:128
-msgid "Duplicate"
-msgstr "複製"
-
 #: src/gui/widgets/home_toolbar.c:130
 msgid "Delete"
 msgstr "削除"
@@ -882,21 +1009,44 @@ msgstr "信号をルーティングするチャンネルを選択"
 msgid "Stereo Out"
 msgstr "ステレオ出力"
 
+#: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:388
+msgid "Fader"
+msgstr "フェーダー"
+
 #: src/gui/widgets/automatable_selector_popover.c:64
 msgid "No control selected"
 msgstr "コントロールが選択されていません"
+
+#: src/gui/widgets/automatable_selector_popover.c:265
+#, fuzzy, c-format
+msgid "[Instrument] %s"
+msgstr "音源"
+
+#: src/gui/widgets/automatable_selector_popover.c:283
+#, c-format
+msgid "[MIDI FX %d] %s"
+msgstr ""
+
+#: src/gui/widgets/automatable_selector_popover.c:299
+#, fuzzy, c-format
+msgid "[Insert %d] %s"
+msgstr "インサート"
 
 #: src/gui/widgets/snap_grid.c:95
 msgid "Snap/Grid options"
 msgstr "スナップ/グリッド設定"
 
-#: src/gui/widgets/scripting_window.c:183
+#: src/gui/widgets/scripting_window.c:192
+msgid "Script execution successful"
+msgstr ""
+
+#: src/gui/widgets/scripting_window.c:201
 msgid "Script execution failed"
 msgstr ""
 
-#: src/gui/widgets/scripting_window.c:210
+#: src/gui/widgets/scripting_window.c:228
 #, fuzzy
-msgid "GNU Guile Scripting Interface"
+msgid "Scripting Interface"
 msgstr "スクリプトインタフェース"
 
 #: src/gui/widgets/port_connection_row.c:97
@@ -907,6 +1057,11 @@ msgstr "接続を有効/無効にする"
 msgid "Delete connection"
 msgstr "接続を削除"
 
+#: src/gui/widgets/balance_control.c:322 src/gui/widgets/fader.c:327
+#: resources/ui/first_run_assistant.ui:130
+msgid "Reset"
+msgstr "リセット"
+
 #: src/gui/widgets/live_waveform.c:201
 msgid "Live waveform indicator"
 msgstr "生波形表示"
@@ -915,12 +1070,17 @@ msgstr "生波形表示"
 msgid "Select a region..."
 msgstr "リージョンを選択してください…"
 
+#: src/gui/widgets/channel_sends_expander.c:63
+#: src/gui/widgets/ports_expander.c:384
+msgid "Sends"
+msgstr "センド"
+
 #: src/gui/widgets/event_viewer.c:105 resources/ui/inspector_master.ui:31
 #: resources/ui/inspector_ap.ui:31 resources/ui/inspector_midi.ui:31
 msgid "Region"
 msgstr "リージョン"
 
-#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1350
+#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1351
 msgid "Marker"
 msgstr "マーカー"
 
@@ -934,7 +1094,7 @@ msgid "MIDI note"
 msgstr "MIDI音符"
 
 #: src/gui/widgets/event_viewer.c:117 src/gui/widgets/event_viewer.c:588
-#: src/audio/region.c:303 src/audio/track.c:1341
+#: src/audio/region.c:304 src/audio/track.c:1342
 #: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr "和音"
@@ -978,7 +1138,7 @@ msgstr "音符"
 msgid "Pitch"
 msgstr "ピッチ"
 
-#: src/gui/widgets/event_viewer.c:547 resources/ui/midi_editor_space.ui:133
+#: src/gui/widgets/event_viewer.c:547 resources/ui/midi_editor_space.ui:134
 #: resources/ui/chord_editor_space.ui:152
 #: resources/ui/automation_editor_space.ui:115
 msgid "Velocity"
@@ -1028,10 +1188,6 @@ msgstr "CV入力"
 msgid "CV Outs"
 msgstr "CV出力"
 
-#: src/gui/widgets/ports_expander.c:384
-msgid "Sends"
-msgstr "センド"
-
 #: src/gui/widgets/ports_expander.c:391
 msgid "Stereo In"
 msgstr "ステレオ入力"
@@ -1047,10 +1203,6 @@ msgstr "MIDI出力"
 #: src/gui/widgets/route_target_selector_popover.c:161
 msgid "Group"
 msgstr "グループ"
-
-#: src/gui/widgets/route_target_selector_popover.c:175 src/audio/track.c:1323
-msgid "Instrument"
-msgstr "音源"
 
 #: src/gui/widgets/route_target_selector_popover.c:234
 #: src/gui/widgets/route_target_selector_popover.c:407
@@ -1080,6 +1232,11 @@ msgstr "プロジェクトを開く"
 
 #: src/gui/widgets/project_toolbar.c:43
 msgid "Export As"
+msgstr "名前を付けて出力"
+
+#: src/gui/widgets/project_toolbar.c:44
+#, fuzzy
+msgid "Export Graph"
 msgstr "名前を付けて出力"
 
 #: src/gui/widgets/view_toolbar.c:39
@@ -1122,73 +1279,73 @@ msgstr "上部パネルの表示を切り替える"
 msgid "Toggle Right Panel"
 msgstr "右側パネルの表示を切り替える"
 
+#: src/gui/widgets/inspector_track.c:144
+msgid "Comment"
+msgstr ""
+
 #: src/gui/widgets/track.c:568 src/audio/track_lane.c:68
 #, c-format
 msgid "Lane %d"
 msgstr "レーン%d"
 
-#: src/gui/widgets/track.c:1517
+#: src/gui/widgets/track.c:1516
 msgid "_Delete Track"
 msgstr "トラックを削除(_D)"
 
-#: src/gui/widgets/track.c:1520
+#: src/gui/widgets/track.c:1519
 msgid "_Delete Tracks"
 msgstr "トラックを削除(_D)"
 
-#: src/gui/widgets/track.c:1535
+#: src/gui/widgets/track.c:1530
 msgid "_Duplicate Track"
 msgstr "トラックを複製(_D)"
 
-#: src/gui/widgets/track.c:1538
+#: src/gui/widgets/track.c:1533
 msgid "_Duplicate Tracks"
 msgstr "トラックを複製(_D)"
 
-#: src/gui/widgets/track.c:1556
+#: src/gui/widgets/track.c:1551
 msgid "Add Region"
 msgstr "リージョンを追加"
 
-#: src/gui/widgets/track.c:1568
+#: src/gui/widgets/track.c:1560
 msgid "Hide Track"
 msgstr "トラックを非表示にする"
 
-#: src/gui/widgets/track.c:1569
+#: src/gui/widgets/track.c:1561
 msgid "Hide Tracks"
 msgstr "トラックを非表示にする"
 
-#: src/gui/widgets/track.c:1580
+#: src/gui/widgets/track.c:1569
 msgid "Pin/Unpin Track"
 msgstr "トラックを固定/固定解除"
 
-#: src/gui/widgets/track.c:1581
+#: src/gui/widgets/track.c:1570
 msgid "Pin/Unpin Tracks"
 msgstr "トラックを固定/固定解除"
 
-#: src/gui/widgets/track.c:1623
+#: src/gui/widgets/track.c:1612
 msgid "Track MIDI Ch"
 msgstr "トラックのMIDI Ch"
 
-#: src/gui/widgets/track.c:1635
+#: src/gui/widgets/track.c:1624
 msgid "Passthrough input"
 msgstr "パススルー入力"
 
-#: src/gui/widgets/track.c:1664 src/gui/widgets/track.c:1724
+#: src/gui/widgets/track.c:1653 src/gui/widgets/track.c:1713
 #, fuzzy, c-format
 msgid "MIDI Channel %d"
 msgstr "%s MIDI チャンネル %d"
 
-#: src/gui/widgets/track.c:1704
+#: src/gui/widgets/track.c:1693
 #, c-format
 msgid "Lane %d MIDI Ch"
 msgstr "レーン%d Midi Ch"
 
-#: src/gui/widgets/track.c:1720
+#: src/gui/widgets/track.c:1709
 #, fuzzy
 msgid "Inherit"
 msgstr "%s 継承"
-
-#: src/gui/widgets/fader.c:351
-msgid "Fader"
-msgstr "フェーダー"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:109
 msgid "Arranger object info"
@@ -1223,7 +1380,7 @@ msgstr "エクスポートしました"
 msgid "Export Progress"
 msgstr "エクスポートの進行状況"
 
-#: src/gui/backend/events.c:1541
+#: src/gui/backend/events.c:1557
 msgid "Trial limit has been reached. Zrythm will now go silent"
 msgstr "試用制限に達しました。 Zrythmはサイレントになります"
 
@@ -1244,23 +1401,23 @@ msgid "Error instantiating plugin. Please see log for details."
 msgstr "プラグイン%sのインスタンス化エラー。詳細はログを参照してください。"
 
 #. TRANSLATORS: Dummy audio backend
-#: src/utils/ui.c:619 src/utils/ui.c:659
+#: src/utils/ui.c:663 src/utils/ui.c:703
 msgid "Dummy"
 msgstr "ダミー"
 
-#: src/utils/ui.c:661
+#: src/utils/ui.c:705
 msgid "ALSA Sequencer"
 msgstr "ALSAシーケンサー"
 
-#: src/utils/ui.c:689
+#: src/utils/ui.c:733
 msgid "Square Root"
 msgstr "平方根"
 
-#: src/utils/ui.c:690
+#: src/utils/ui.c:734
 msgid "Sine (Equal Power)"
 msgstr "正弦波（イコールパワー）"
 
-#: src/utils/ui.c:860
+#: src/utils/ui.c:904
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
@@ -1269,7 +1426,7 @@ msgstr ""
 "選択した言語のロケール（%s）は利用できません。ロケールをインストールして、"
 "Zrythmを再起動してください"
 
-#: src/utils/ui.c:865
+#: src/utils/ui.c:909
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -1286,44 +1443,44 @@ msgstr ""
 "2. Run <b>locale-gen</b> as root\n"
 "3. Restart Zrythm"
 
-#: src/settings/settings.c:74
+#: src/settings/settings.c:78
 #, fuzzy, c-format
 msgid "Schema %s%s%s"
 msgstr "スキーマ %s\n"
 
-#: src/settings/settings.c:85
+#: src/settings/settings.c:89
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr "スキーマ %s をリセット中...\n"
 
-#: src/settings/settings.c:124
+#: src/settings/settings.c:128
 #, c-format
 msgid "skipping %s"
 msgstr ""
 
-#: src/settings/settings.c:135
+#: src/settings/settings.c:139
 #, fuzzy, c-format
 msgid "resetting %s to %s"
 msgstr "  %s を %s にリセット中\n"
 
-#: src/settings/settings.c:180
+#: src/settings/settings.c:184
 #, c-format
 msgid "Failed to find schema %s. Zrythm is likely not installed"
 msgstr ""
 "スキーマ %s が見つかりませんでした。Zrythmはおそらくインストールされていませ"
 "ん"
 
-#: src/settings/settings.c:195
+#: src/settings/settings.c:199
 #, c-format
 msgid "Failed to view schema %s"
 msgstr "スキーマ %s を表示できませんでした"
 
-#: src/settings/settings.c:202
+#: src/settings/settings.c:206
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr "スキーマ %s をリセットできませんでした"
 
-#: src/settings/settings.c:235
+#: src/settings/settings.c:239
 #, c-format
 msgid ""
 "This will reset Zrythm to factory settings. You will lose all your "
@@ -1332,17 +1489,17 @@ msgstr ""
 "これにより、Zrythm が初期設定にリセットされます。すべてのプリファレンスが失わ"
 "れます。続行するには「y」と入力してください： "
 
-#: src/settings/settings.c:241
+#: src/settings/settings.c:245
 #, c-format
 msgid "Aborting...\n"
 msgstr "中止しています...\n"
 
-#: src/settings/settings.c:252
+#: src/settings/settings.c:256
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr "初期設定にリセットされました\n"
 
-#: src/audio/track_processor.c:194
+#: src/audio/track_processor.c:249
 msgid "Piano Roll"
 msgstr "ピアノロール"
 
@@ -1370,7 +1527,22 @@ msgstr ""
 msgid "Latch"
 msgstr ""
 
-#: src/audio/marker_track.c:53
+#: src/audio/channel_send.c:338
+#, fuzzy
+msgid "Pre-fader send"
+msgstr "プレフェーダー送信"
+
+#: src/audio/channel_send.c:340
+#, fuzzy
+msgid "Post-fader send"
+msgstr "ポストフェーダー送信"
+
+#: src/audio/channel_send.c:363
+#, fuzzy, c-format
+msgid "%s input"
+msgstr "入力なし"
+
+#: src/audio/marker_track.c:54
 msgid "Markers"
 msgstr "目印"
 
@@ -1380,11 +1552,11 @@ msgstr "目印"
 msgid "PortAudio Error: %s"
 msgstr "PortAudioエラー：%s"
 
-#: src/audio/region.c:294 src/audio/track.c:1329
+#: src/audio/region.c:295 src/audio/track.c:1330
 msgid "MIDI"
 msgstr "MIDI"
 
-#: src/audio/region.c:300
+#: src/audio/region.c:301
 msgid "Automation"
 msgstr "オートメーション"
 
@@ -1463,24 +1635,24 @@ msgstr "未実装"
 msgid "Volume"
 msgstr "音量"
 
-#: src/audio/fader.c:126
+#: src/audio/fader.c:128
 #, fuzzy
 msgid "Balance"
 msgstr "バランスコントロール"
 
-#: src/audio/fader.c:139
+#: src/audio/fader.c:143
 msgid "Fader in"
 msgstr "フェーダー入力"
 
-#: src/audio/fader.c:148
+#: src/audio/fader.c:152
 msgid "Fader out"
 msgstr "フェーダー出力"
 
-#: src/audio/fader.c:159
+#: src/audio/fader.c:163
 msgid "MIDI fader in"
 msgstr "MIDIフェーダー入力"
 
-#: src/audio/fader.c:172
+#: src/audio/fader.c:176
 msgid "MIDI fader out"
 msgstr "MIDIフェーダー出力"
 
@@ -1537,16 +1709,16 @@ msgstr "バックエンドエラー"
 msgid "Client zombie"
 msgstr "クライアントゾンビ"
 
-#: src/actions/arranger_selections.c:1692
+#: src/actions/arranger_selections.c:1899
 msgid "Edit arranger object(s)"
 msgstr "アレンジャーオブジェクトを編集"
 
-#: src/actions/create_plugins_action.c:140
+#: src/actions/create_plugins_action.c:150
 #, c-format
 msgid "Create %s"
 msgstr "%sを作成"
 
-#: src/actions/create_plugins_action.c:144
+#: src/actions/create_plugins_action.c:154
 #, c-format
 msgid "Create %d %ss"
 msgstr "%d個の%sを作成"
@@ -1560,7 +1732,7 @@ msgstr "トラックを削除"
 msgid "Delete %d Tracks"
 msgstr "%d個のトラックを削除"
 
-#: src/actions/actions.c:350
+#: src/actions/actions.c:351
 #, fuzzy, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
@@ -1568,7 +1740,7 @@ msgid ""
 msgstr ""
 "<a href=\"%s\">GNU Guile </a>によるスクリプト拡張機能はまもなく登場します！"
 
-#: src/actions/actions.c:613
+#: src/actions/actions.c:614
 msgid ""
 "Creating new projects is disabled. Please restart Zrythm to start a new "
 "project"
@@ -1576,51 +1748,82 @@ msgstr ""
 "新しいプロジェクトの作成は無効です。 Zrythmを再起動して新しいプロジェクトを開"
 "始してください"
 
-#: src/actions/actions.c:624 resources/ui/project_assistant.ui:86
+#: src/actions/actions.c:625 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
 msgid "Create new project"
 msgstr "プロジェクトの新規作成"
 
-#: src/actions/actions.c:627
+#: src/actions/actions.c:628
 msgid "Yes"
 msgstr "はい"
 
-#: src/actions/actions.c:629
+#: src/actions/actions.c:630
 msgid "No"
 msgstr "いいえ"
 
-#: src/actions/actions.c:634
+#: src/actions/actions.c:635
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr "現在のプロジェクトに保存されていない変更は失われます。続行しますか？"
 
-#: src/actions/actions.c:686
+#: src/actions/actions.c:687
 msgid "Loading is disabled in the trial version"
 msgstr "試用版では読み込みが無効になっています"
 
-#: src/actions/actions.c:714 src/actions/actions.c:738
+#: src/actions/actions.c:715 src/actions/actions.c:740
 msgid "Saving is disabled in the trial version"
 msgstr "試用版では保存が無効になっています"
 
-#: src/actions/actions.c:750
+#: src/actions/actions.c:752
 msgid "Save Project"
 msgstr "プロジェクトを保存"
 
-#: src/actions/copy_plugins_action.c:263
+#: src/actions/actions.c:836
+#, fuzzy
+msgid "Export routing graph"
+msgstr "エクスポートの進行状況"
+
+#: src/actions/actions.c:838
+msgid "Image (PNG)"
+msgstr ""
+
+#: src/actions/actions.c:839
+msgid "Dot graph"
+msgstr ""
+
+#: src/actions/actions.c:847
+#, c-format
+msgid ""
+"The graph will be exported to %s\n"
+"Select a format to export as"
+msgstr ""
+
+#: src/actions/actions.c:888
+#, fuzzy
+msgid "Graph exported"
+msgstr "エクスポートしました"
+
+#: src/actions/actions.c:1075 src/actions/actions.c:1115
+#: src/actions/actions.c:1154
+#, fuzzy
+msgid "Can't paste selections"
+msgstr "選択範囲のをループする"
+
+#: src/actions/copy_plugins_action.c:273
 #, c-format
 msgid "Copy %s"
 msgstr "%sをコピー"
 
-#: src/actions/copy_plugins_action.c:267
+#: src/actions/copy_plugins_action.c:277
 #, c-format
 msgid "Copy %d Plugins"
 msgstr "%dプラグインをコピー"
 
-#: src/actions/move_plugins_action.c:199
+#: src/actions/move_plugins_action.c:235
 #, c-format
 msgid "Move %s"
 msgstr "%sを移動"
 
-#: src/actions/move_plugins_action.c:203
+#: src/actions/move_plugins_action.c:239
 #, c-format
 msgid "Move %d Plugins"
 msgstr "%dプラグインを移動"
@@ -1668,21 +1871,21 @@ msgstr "%sトラック"
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr "プラグイン%sのインスタンス化エラー。詳細はログを参照してください。"
 
-#: src/actions/create_tracks_action.c:318
+#: src/actions/create_tracks_action.c:324
 #, c-format
 msgid "Create %s Track"
 msgstr "%sトラックを作成"
 
-#: src/actions/create_tracks_action.c:321
+#: src/actions/create_tracks_action.c:327
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "%d個の%sトラックを作成"
 
-#: src/actions/delete_plugins_action.c:199
+#: src/actions/delete_plugins_action.c:205
 msgid "Delete Plugin"
 msgstr "プラグインを削除"
 
-#: src/actions/delete_plugins_action.c:202
+#: src/actions/delete_plugins_action.c:208
 #, c-format
 msgid "Delete %d Plugins"
 msgstr "%d個のプラグインを削除"
@@ -1715,10 +1918,6 @@ msgstr ""
 #: resources/ui/first_run_assistant.ui:120
 msgid "Select a folder"
 msgstr "フォルダ選択"
-
-#: resources/ui/first_run_assistant.ui:130
-msgid "Reset"
-msgstr "リセット"
 
 #: resources/ui/first_run_assistant.ui:134
 msgid "Resets the path to the default"
@@ -1761,11 +1960,6 @@ msgstr "バックエンド"
 #: resources/ui/preferences.ui:58
 msgid "Cancel"
 msgstr "取り消し"
-
-#: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:24
-#: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
-msgid "OK"
-msgstr "OK"
 
 #: resources/ui/bind_cc_dialog.ui:81
 msgid "Press a key or move a knob on your MIDI device"
@@ -2238,17 +2432,17 @@ msgstr "再スキャン"
 msgid "Scan again for MIDI controllers"
 msgstr "MIDIコントローラをもう一度スキャンする"
 
-#: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
+#: resources/ui/midi_editor_space.ui:135 resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:116
 msgid "Pitch Wheel"
 msgstr "ピッチベンド"
 
-#: resources/ui/midi_editor_space.ui:135 resources/ui/chord_editor_space.ui:154
+#: resources/ui/midi_editor_space.ui:136 resources/ui/chord_editor_space.ui:154
 #: resources/ui/automation_editor_space.ui:117
 msgid "Mod Wheel"
 msgstr "モッドホイール"
 
-#: resources/ui/midi_editor_space.ui:136 resources/ui/chord_editor_space.ui:155
+#: resources/ui/midi_editor_space.ui:137 resources/ui/chord_editor_space.ui:155
 #: resources/ui/automation_editor_space.ui:118
 msgid "Aftertouch"
 msgstr "アフタータッチ"
@@ -2279,11 +2473,11 @@ msgstr "オーナー"
 msgid "Arranger Object Info"
 msgstr "アレンジャーオブジェクトの詳細"
 
-#: resources/ui/scripting_window.ui:48
+#: resources/ui/scripting_window.ui:50
 msgid "Execute"
 msgstr ""
 
-#: resources/ui/scripting_window.ui:88
+#: resources/ui/scripting_window.ui:90
 msgid "The result will be printed here"
 msgstr ""
 
@@ -2451,7 +2645,7 @@ msgstr "ループ"
 msgid "Initializing..."
 msgstr "初期化中…"
 
-#: resources/ui/bot_bar.ui:57
+#: resources/ui/bot_bar.ui:58
 msgid "Metronome"
 msgstr "メトロノーム"
 
@@ -2661,10 +2855,6 @@ msgstr "ノートの種類"
 msgid "Highlight"
 msgstr "ハイライト"
 
-#: resources/ui/editor_toolbar.ui:57
-msgid "None"
-msgstr "無し"
-
 #: resources/ui/editor_toolbar.ui:60
 msgid "Both"
 msgstr "両方"
@@ -2852,11 +3042,6 @@ msgstr ""
 #: data/org.zrythm.Zrythm.gschema.xml:238
 msgid "Samplerate to pass to the backend, if not JACK."
 msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:247
-#, fuzzy
-msgid "Buffer size"
-msgstr "バッファサイズ"
 
 #: data/org.zrythm.Zrythm.gschema.xml:248
 msgid "Buffer size to pass to the backend, if not JACK."
@@ -3233,6 +3418,80 @@ msgstr "モニター出力"
 msgid "The monitor out volume in amplitude (0.0 to 2.0)."
 msgstr ""
 
+#: data/org.zrythm.Zrythm.gschema.xml:692
+#, fuzzy
+msgid "Track properties expanded"
+msgstr "トラックの属性"
+
+#: data/org.zrythm.Zrythm.gschema.xml:693
+msgid "Whether track properties is expanded."
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:701
+msgid "Track outputs expanded"
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:702
+msgid "Whether track outputs is expanded."
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:710
+#, fuzzy
+msgid "Track sends expanded"
+msgstr "トラック名"
+
+#: data/org.zrythm.Zrythm.gschema.xml:711
+msgid "Whether track sends is expanded."
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:719
+msgid "Track inputs expanded"
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:720
+msgid "Whether track inputs is expanded."
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:728
+msgid "Track controls expanded"
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:729
+msgid "Whether track controls is expanded."
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:737
+msgid "Track inserts expanded"
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:738
+msgid "Whether track inserts is expanded."
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:746
+msgid "Track midi_fx expanded"
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:747
+msgid "Whether track midi_fx is expanded."
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:755
+msgid "Track fader expanded"
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:756
+msgid "Whether track fader is expanded."
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:764
+msgid "Track comment expanded"
+msgstr ""
+
+#: data/org.zrythm.Zrythm.gschema.xml:765
+msgid "Whether track comment is expanded."
+msgstr ""
+
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
 msgstr "デジタル・オーディオ・ワークステーション"
@@ -3245,6 +3504,26 @@ msgstr "高度に自動化された直感的なデジタルオーディオワー
 #: data/zrythm.desktop.in:16
 msgid "zrythm"
 msgstr "zrythm"
+
+#~ msgid "Editor properties"
+#~ msgstr "エディタの属性"
+
+#~ msgid "Plugin properties"
+#~ msgstr "プラグインの属性"
+
+#~ msgid "Audio Bus"
+#~ msgstr "オーディオバス"
+
+#~ msgid "MIDI Bus"
+#~ msgstr "MIDIバス"
+
+#, fuzzy
+#~ msgid "Audio buffer"
+#~ msgstr "バッファサイズ"
+
+#, fuzzy
+#~ msgid "GNU Guile Scripting Interface"
+#~ msgstr "スクリプトインタフェース"
 
 #, fuzzy
 #~ msgid "Audio backend"
@@ -3503,20 +3782,11 @@ msgstr "zrythm"
 #~ msgid "Output"
 #~ msgstr "出力先"
 
-#~ msgid "Pre-Fader Sends"
-#~ msgstr "プレフェーダー送信"
-
-#~ msgid "Post-Fader Sends"
-#~ msgstr "ポストフェーダー送信"
-
 #~ msgid "Stereo in"
 #~ msgstr "ステレオ入力"
 
 #~ msgid "Stereo out"
 #~ msgstr "ステレオ出力"
-
-#~ msgid "MIDI in"
-#~ msgstr "MIDI入力"
 
 #~ msgid "Choose a method to donate"
 #~ msgstr "使用する支払い方法を選択する"

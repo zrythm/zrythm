@@ -880,6 +880,7 @@ carla_native_plugin_open_ui (
     case PROT_VST:
     case PROT_VST3:
     case PROT_LV2:
+    case PROT_AU:
       {
         carla_show_custom_ui (
           self->host_handle, 0, show);

@@ -12,8 +12,7 @@ inc/plugins/carla_native_plugin.h
 inc/plugins/plugin_identifier.h
 inc/plugins/plugin_descriptor.h
 inc/plugins/plugin_manager.h
-inc/plugins/carla/carla_engine_interface.h
-inc/plugins/carla/carla_plugin_interface.h
+inc/plugins/carla/carla_discovery.h
 inc/plugins/vst/vst_windows.h
 inc/plugins/vst/vst_x11.h
 inc/plugins/vst/vestige.h
@@ -46,6 +45,7 @@ inc/gui/widgets/audio_group_track.h
 inc/gui/widgets/midi_arranger_bg.h
 inc/gui/widgets/panel_file_browser.h
 inc/gui/widgets/chord_button.h
+inc/gui/widgets/channel_send_selector.h
 inc/gui/widgets/automation_arranger_bg.h
 inc/gui/widgets/timeline_bg.h
 inc/gui/widgets/chord_track.h
@@ -56,7 +56,9 @@ inc/gui/widgets/chord_arranger.h
 inc/gui/widgets/dir.h
 inc/gui/widgets/audio_bus_track.h
 inc/gui/widgets/slider_bar.h
+inc/gui/widgets/channel_sends_expander.h
 inc/gui/widgets/timeline_panel.h
+inc/gui/widgets/fader_controls_expander.h
 inc/gui/widgets/route_target_selector.h
 inc/gui/widgets/marker.h
 inc/gui/widgets/snap_grid_popover.h
@@ -66,6 +68,7 @@ inc/gui/widgets/port_connection_row.h
 inc/gui/widgets/snap_box.h
 inc/gui/widgets/midi_controller_popover.h
 inc/gui/widgets/audio_track.h
+inc/gui/widgets/plugin_strip_expander.h
 inc/gui/widgets/right_dock_edge.h
 inc/gui/widgets/ruler_marker.h
 inc/gui/widgets/digital_meter.h
@@ -92,7 +95,6 @@ inc/gui/widgets/route_target_selector_popover.h
 inc/gui/widgets/export_midi_file_dialog.h
 inc/gui/widgets/midi_controller_mb.h
 inc/gui/widgets/track_properties_expander.h
-inc/gui/widgets/audio_region.h
 inc/gui/widgets/modulator_view.h
 inc/gui/widgets/fader.h
 inc/gui/widgets/log_viewer.h
@@ -120,6 +122,7 @@ inc/gui/widgets/expander_box.h
 inc/gui/widgets/visibility.h
 inc/gui/widgets/marker_dialog.h
 inc/gui/widgets/inspector_chord.h
+inc/gui/widgets/fader_controls_grid.h
 inc/gui/widgets/track_lane.h
 inc/gui/widgets/chord_region.h
 inc/gui/widgets/bar_slider.h
@@ -139,14 +142,15 @@ inc/gui/widgets/ruler_range.h
 inc/gui/widgets/instrument_track.h
 inc/gui/widgets/balance_control.h
 inc/gui/widgets/chord_object.h
+inc/gui/widgets/text_expander.h
 inc/gui/widgets/project_toolbar.h
 inc/gui/widgets/export_dialog.h
 inc/gui/widgets/header.h
 inc/gui/widgets/midi_region.h
+inc/gui/widgets/channel_send.h
 inc/gui/widgets/clip_editor.h
 inc/gui/widgets/track_input_expander.h
 inc/gui/widgets/chord_editor_space.h
-inc/gui/widgets/inspector.h
 inc/gui/widgets/scale_object.h
 inc/gui/widgets/custom_button.h
 inc/gui/widgets/editor_toolbar.h
@@ -263,6 +267,7 @@ inc/audio/midi_note.h
 inc/audio/engine_windows_mme.h
 inc/audio/audio_track.h
 inc/audio/rtmidi_device.h
+inc/audio/region_link_group_manager.h
 inc/audio/marker_track.h
 inc/audio/automation_track.h
 inc/audio/master_track.h
@@ -270,10 +275,12 @@ inc/audio/midi_file.h
 inc/audio/modulator.h
 inc/audio/midi_group_track.h
 inc/audio/clip.h
+inc/audio/graph_export.h
 inc/audio/snap_grid.h
 inc/audio/engine_jack.h
 inc/audio/engine_dummy.h
 inc/audio/automation_tracklist.h
+inc/audio/region_link_group.h
 inc/audio/audio_region.h
 inc/audio/fader.h
 inc/audio/transport.h
@@ -308,6 +315,7 @@ inc/audio/balance_control.h
 inc/audio/chord_object.h
 inc/audio/exporter.h
 inc/audio/midi_region.h
+inc/audio/channel_send.h
 inc/audio/scale_object.h
 inc/audio/quantize_options.h
 inc/audio/region.h
@@ -339,9 +347,8 @@ inc/actions/delete_tracks_action.h
 inc/actions/edit_plugins_action.h
 inc/actions/undo_stack.h
 inc/actions/edit_tracks_action.h
-inc/guile/zrythm.h
+inc/guile/modules.h
 inc/guile/guile.h
-inc/guile/audio/position.h
 src/zrythm.c
 src/project.c
 src/main.c
@@ -353,6 +360,7 @@ src/plugins/vst_plugin.c
 src/plugins/plugin.c
 src/plugins/plugin_gtk.c
 src/plugins/lv2_plugin.c
+src/plugins/carla/carla_discovery.c
 src/plugins/vst/vst_windows.c
 src/plugins/vst/vst_x11.c
 src/plugins/vst/test_vst.c
@@ -377,6 +385,7 @@ src/gui/widgets/audio_group_track.c
 src/gui/widgets/midi_group_track.c
 src/gui/widgets/tracklist.c
 src/gui/widgets/create_project_dialog.c
+src/gui/widgets/fader_controls_grid.c
 src/gui/widgets/midi_note.c
 src/gui/widgets/selection_info.c
 src/gui/widgets/port_connections_popover.c
@@ -403,6 +412,7 @@ src/gui/widgets/first_run_assistant.c
 src/gui/widgets/bind_cc_dialog.c
 src/gui/widgets/project_assistant.c
 src/gui/widgets/left_dock_edge.c
+src/gui/widgets/plugin_strip_expander.c
 src/gui/widgets/chord_region.c
 src/gui/widgets/top_bar.c
 src/gui/widgets/master_track.c
@@ -418,10 +428,11 @@ src/gui/widgets/center_dock.c
 src/gui/widgets/port_selector_popover.c
 src/gui/widgets/meter.c
 src/gui/widgets/automation_region.c
+src/gui/widgets/channel_send_selector.c
 src/gui/widgets/pinned_tracklist.c
 src/gui/widgets/midi_arranger_bg.c
 src/gui/widgets/editor_selection_info.c
-src/gui/widgets/inspector.c
+src/gui/widgets/channel_send.c
 src/gui/widgets/bot_dock_edge.c
 src/gui/widgets/digital_meter.c
 src/gui/widgets/drag_dest_box.c
@@ -456,6 +467,7 @@ src/gui/widgets/region.c
 src/gui/widgets/audio_bus_track.c
 src/gui/widgets/track_lane.c
 src/gui/widgets/marker.c
+src/gui/widgets/text_expander.c
 src/gui/widgets/home_toolbar.c
 src/gui/widgets/quantize_box.c
 src/gui/widgets/right_dock_edge.c
@@ -463,6 +475,7 @@ src/gui/widgets/modulator_view.c
 src/gui/widgets/timeline_minimap_bg.c
 src/gui/widgets/audio_arranger_bg.c
 src/gui/widgets/route_target_selector.c
+src/gui/widgets/fader_controls_expander.c
 src/gui/widgets/automatable_selector_popover.c
 src/gui/widgets/velocity.c
 src/gui/widgets/chord_button.c
@@ -480,6 +493,7 @@ src/gui/widgets/live_waveform.c
 src/gui/widgets/ruler.c
 src/gui/widgets/audio_track.c
 src/gui/widgets/clip_editor_inner.c
+src/gui/widgets/channel_sends_expander.c
 src/gui/widgets/track_lanelist.c
 src/gui/widgets/scale_selector_window.c
 src/gui/widgets/bar_slider.c
@@ -590,6 +604,7 @@ src/audio/sample_playback.c
 src/audio/midi_region.c
 src/audio/automation_region.c
 src/audio/windows_mmcss.c
+src/audio/channel_send.c
 src/audio/instrument_track.c
 src/audio/modulator.c
 src/audio/marker_track.c
@@ -631,7 +646,9 @@ src/audio/control_port.c
 src/audio/audio_region.c
 src/audio/chord_object.c
 src/audio/metronome.c
+src/audio/region_link_group_manager.c
 src/audio/channel_track.c
+src/audio/graph_export.c
 src/audio/sample_processor.c
 src/audio/recording_manager.c
 src/audio/midi_mapping.c
@@ -640,6 +657,7 @@ src/audio/track.c
 src/audio/midi_track.c
 src/audio/scale.c
 src/audio/clip.c
+src/audio/region_link_group.c
 src/audio/fader.c
 src/audio/engine_jack.c
 src/actions/arranger_selections.c
@@ -657,17 +675,20 @@ src/actions/undo_stack.c
 src/actions/create_tracks_action.c
 src/actions/undo_manager.c
 src/actions/delete_plugins_action.c
-src/guile/tracklist.c
 src/guile/zrythm.c
 src/guile/guile.c
+src/guile/audio/tracklist.c
+src/guile/audio/midi_note.c
+src/guile/audio/midi_region.c
 src/guile/audio/position.c
+src/guile/audio/track.c
+resources/ui/fader_controls_grid.ui
 resources/ui/inspector_plugin.ui
 resources/ui/first_run_assistant.ui
 resources/ui/view_toolbar.ui
 resources/ui/right_dock_edge.ui
 resources/ui/bind_cc_dialog.ui
 resources/ui/log_viewer.ui
-resources/ui/inspector.ui
 resources/ui/track.ui
 resources/ui/scale_selector_window.ui
 resources/ui/bot_dock_edge.ui
