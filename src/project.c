@@ -771,7 +771,7 @@ project_autosave_cb (
         {
           project_save (
             PROJECT, PROJECT->dir, 1, 1,
-            F_NO_ASYNC);
+            F_ASYNC);
           PROJECT->last_autosave_time = cur_time;
         }
     }
