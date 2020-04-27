@@ -296,6 +296,15 @@ char *
 zrythm_get_datadir (void);
 
 /**
+ * Returns the bindir ("bin" under whatever is
+ * returned by zrythm_get_prefix().
+ *
+ * @return A newly allocated string.
+ */
+char *
+zrythm_get_bindir (void);
+
+/**
  * Returns the samples directory.
  *
  * @return A newly allocated string.

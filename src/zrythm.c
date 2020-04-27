@@ -785,6 +785,23 @@ zrythm_get_datadir (void)
 }
 
 /**
+ * Returns the bindir ("bin" under whatever is
+ * returned by zrythm_get_prefix().
+ *
+ * @return A newly allocated string.
+ */
+char *
+zrythm_get_bindir (void)
+{
+  char * prefix = zrythm_get_prefix ();
+  char * ret =
+    g_build_filename (
+      prefix, "bin", NULL);
+  g_free (prefix);
+  return ret;
+}
+
+/**
  * Returns the samples directory.
  *
  * @return A newly allocated string.

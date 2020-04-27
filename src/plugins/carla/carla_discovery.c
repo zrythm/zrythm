@@ -118,10 +118,14 @@ z_carla_discovery_create_vst_descriptor (
   /* fallback on bindir */
   if (!carla_discovery)
     {
+      char * bindir =
+        zrythm_get_bindir ();
       carla_discovery =
         g_build_filename (
-          CONFIGURE_BINDIR, carla_discovery_filename,
+          bindir,
+          carla_discovery_filename,
           NULL);
+      g_free (bindir);
       g_message (
         "carla discovery not found locally, falling "
         "back to bindir (%s)",

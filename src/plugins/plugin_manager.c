@@ -486,7 +486,7 @@ get_vst_paths (
 #elif defined (__APPLE__)
   char ** paths =
     g_strsplit (
-      "/Library/Audio/Plug-ins/VST:", ":", 1);
+      "/Library/Audio/Plug-ins/VST:", ":", -1);
 #else
   char * vst_path =
     g_strdup (getenv ("VST_PATH"));
@@ -535,7 +535,7 @@ get_vst3_paths (
 #elif defined (__APPLE__)
   return
     g_strsplit (
-      "/Library/Audio/Plug-ins/VST3:", ":", 1);
+      "/Library/Audio/Plug-ins/VST3:", ":", -1);
 #endif
 }
 
@@ -638,7 +638,8 @@ plugin_manager_scan_plugins (
   double size =
     (double) lilv_plugins_size (lilv_plugins) +
     (double) get_vst_count (self);
-#if defined (HAVE_CARLA) && defined (_WOE32)
+#if defined (HAVE_CARLA) && \
+  (defined (_WOE32) || defined (__APPLE__))
   size += (double) get_vst3_count (self);
 #endif
 #if defined (HAVE_CARLA) && defined (__APPLE__)
@@ -713,7 +714,13 @@ plugin_manager_scan_plugins (
 
       char ** vst_plugins =
         io_get_files_in_dir_ending_in (
-          path, 1, LIB_SUFFIX);
+          path, 1,
+#ifdef __APPLE__
+          ".vst"
+#else
+          LIB_SUFFIX
+#endif
+          );
       if (!vst_plugins)
         continue;
 
