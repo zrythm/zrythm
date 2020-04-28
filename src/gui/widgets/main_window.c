@@ -67,6 +67,7 @@
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (MainWindowWidget,
                main_window_widget,

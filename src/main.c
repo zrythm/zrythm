@@ -290,8 +290,8 @@ main (int    argc,
     };
   opterr = 0;
 
-  int pretty_print = 0;
-  int print_settings = 0;
+  bool pretty_print = 0;
+  bool print_settings = 0;
   while (1)
     {
       c =
@@ -313,14 +313,14 @@ main (int    argc,
           return 0;
           break;
         case OPT_PRINT_SETTINGS:
-          print_settings = 1;
+          print_settings = true;
           break;
         case OPT_RESET_TO_FACTORY:
           settings_reset_to_factory (1, 1);
           return 0;
           break;
         case OPT_PRETTY_PRINT:
-          pretty_print = 1;
+          pretty_print = true;
           break;
         case '?':
           /* getopt_long already printed an error

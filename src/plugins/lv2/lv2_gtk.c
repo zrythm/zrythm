@@ -551,6 +551,11 @@ control_changed (
           gtk_range_set_value (
             GTK_RANGE (widget), fvalue);
         }
+      else if (GTK_IS_SWITCH (widget))
+        {
+          gtk_switch_set_active (
+            GTK_SWITCH (widget), fvalue > 0.f);
+        }
       else
         {
           g_warning (
@@ -826,14 +831,15 @@ combo_changed (GtkComboBox* box, gpointer data)
 }
 
 static gboolean
-toggle_changed (
-  GtkToggleButton* button, gpointer data)
+switch_state_set (
+  GtkSwitch * button,
+  gboolean    state,
+  gpointer    data)
 {
   /*g_message ("toggle_changed");*/
   lv2_gtk_set_float_control (
     (const Lv2Control*)data,
-    gtk_toggle_button_get_active (
-      button) ? 1.0f : 0.0f);
+    state ? 1.0f : 0.0f);
   return FALSE;
 }
 
@@ -1015,20 +1021,26 @@ make_slider(Lv2Control* record, float value)
 static PluginGtkController*
 make_toggle(Lv2Control* record, float value)
 {
-  GtkWidget* check = gtk_check_button_new();
+  GtkWidget * check = gtk_switch_new ();
+  gtk_widget_set_halign (check, GTK_ALIGN_START);
 
-  gtk_widget_set_sensitive(check, record->is_writable);
+  gtk_widget_set_sensitive (
+    check, record->is_writable);
 
-  if (value) {
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check), TRUE);
-  }
+  if (value)
+    {
+      gtk_switch_set_active (
+        GTK_SWITCH (check), TRUE);
+    }
 
-  if (record->is_writable) {
-    g_signal_connect(G_OBJECT(check), "toggled",
-                     G_CALLBACK(toggle_changed), record);
-  }
+  if (record->is_writable)
+    {
+      g_signal_connect (
+        G_OBJECT (check), "state-set",
+        G_CALLBACK (switch_state_set), record);
+    }
 
-  return new_controller(NULL, check);
+  return new_controller (NULL, check);
 }
 
 static PluginGtkController*

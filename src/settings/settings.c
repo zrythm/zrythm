@@ -118,7 +118,7 @@ print_or_reset_schema (
                 g_settings_schema_key_get_description (
                   schema_key);
               printf (
-                "    %s\n", description);
+                "    %s\n", _(description));
             }
         }
       else if (
