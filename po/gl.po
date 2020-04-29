@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-04-29 14:27+0100\n"
-"PO-Revision-Date: 2020-04-16 22:11+0000\n"
+"PO-Revision-Date: 2020-04-29 15:11+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "gl/>\n"
@@ -17,36 +17,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0.1-dev\n"
+"X-Generator: Weblate 4.0.2\n"
 
 #: inc/utils/gtk.h:49
 msgid "Cu_t"
-msgstr ""
+msgstr "_Cortar"
 
 #: inc/utils/gtk.h:55
-#, fuzzy
 msgid "_Copy"
-msgstr "Copiar"
+msgstr "_Copiar"
 
 #: inc/utils/gtk.h:61
-#, fuzzy
 msgid "_Paste"
-msgstr "Pegar"
+msgstr "_Pegar"
 
 #: inc/utils/gtk.h:67
-#, fuzzy
 msgid "_Delete"
-msgstr "Eliminar"
+msgstr "_Eliminar"
 
 #: inc/utils/gtk.h:73
-#, fuzzy
 msgid "Cle_ar Selection"
-msgstr "Soltar Selección"
+msgstr "_Soltar Selección"
 
 #: inc/utils/gtk.h:79
-#, fuzzy
 msgid "Select A_ll"
-msgstr "Seleccionar Todo"
+msgstr "_Seleccionar Todo"
 
 #: inc/utils/gtk.h:85 src/gui/widgets/home_toolbar.c:128
 msgid "Duplicate"
@@ -245,22 +240,18 @@ msgstr ""
 "\n"
 
 #: src/plugins/carla_native_plugin.c:759
-#, fuzzy
 msgid "Audio in"
-msgstr "Entradas de Audio"
+msgstr "Entrada de Audio"
 
 #: src/plugins/carla_native_plugin.c:769
-#, fuzzy
 msgid "Audio out"
-msgstr "Saídas de Audio"
+msgstr "Saída de Audio"
 
 #: src/plugins/carla_native_plugin.c:779
-#, fuzzy
 msgid "MIDI in"
 msgstr "Entrada MIDI"
 
 #: src/plugins/carla_native_plugin.c:789
-#, fuzzy
 msgid "MIDI out"
 msgstr "Saída MIDI"
 
@@ -269,34 +260,32 @@ msgid "Error loading LV2 bundle dir: "
 msgstr "Error ao cargar o directorio LV2: "
 
 #: src/plugins/plugin_manager.c:684
-#, fuzzy
 msgid "Scanned LV2 plugin"
-msgstr "Escaneando plugins"
+msgstr "Plugin LV2 escaneado"
 
 #: src/plugins/plugin_manager.c:695
 #, c-format
 msgid "Skipped LV2 plugin at %s"
-msgstr ""
+msgstr "Saltouse un plugin LV2 en %s"
 
 #: src/plugins/plugin_manager.c:818 src/plugins/plugin_manager.c:944
 #, fuzzy
 msgid "Scanned VST plugin"
-msgstr "Escaneando plugins"
+msgstr "Plugin VST escaneado"
 
 #: src/plugins/plugin_manager.c:825 src/plugins/plugin_manager.c:951
 #, c-format
 msgid "Skipped VST plugin at %s"
-msgstr ""
+msgstr "Saltouse un plugin VST en %s"
 
 #: src/plugins/plugin_manager.c:1009
-#, fuzzy
 msgid "Scanned AU plugin"
-msgstr "Escaneando plugins"
+msgstr "Plugin AU escaneado"
 
 #: src/plugins/plugin_manager.c:1016
 #, c-format
 msgid "Skipped AU plugin at %u"
-msgstr ""
+msgstr "Saltouse un plugin AU en %u"
 
 #: src/plugins/plugin.c:124
 msgid "Enabled"
@@ -359,13 +348,13 @@ msgstr "Proxecto Sen Título"
 #: src/gui/widgets/fader_controls_grid.c:97
 #, c-format
 msgid "Peak"
-msgstr ""
+msgstr "Pico"
 
 #. TRANSLATORS: Root Mean Square
 #: src/gui/widgets/fader_controls_grid.c:100
 #, c-format
 msgid "RMS"
-msgstr ""
+msgstr "RMS"
 
 #: src/gui/widgets/port_connections_popover.c:77
 msgid "INPUTS"
@@ -551,14 +540,12 @@ msgid "Project Assistant"
 msgstr "Asistente de Proxectos"
 
 #: src/gui/widgets/left_dock_edge.c:150
-#, fuzzy
 msgid "Track inspector"
-msgstr "Inspeccionar"
+msgstr "Inspeccionar pista"
 
 #: src/gui/widgets/left_dock_edge.c:177
-#, fuzzy
 msgid "Plugin inspector"
-msgstr "Navegador de Plugins"
+msgstr "Inspeccionar Plugin"
 
 #: src/gui/widgets/left_dock_edge.c:199
 #: resources/ui/chord_selector_window.ui:683
@@ -650,19 +637,16 @@ msgid "Add Audio Track"
 msgstr "Engadir Pista de Audio"
 
 #: src/gui/widgets/drag_dest_box.c:498 src/audio/track.c:1333
-#, fuzzy
 msgid "Audio FX"
-msgstr "Audio"
+msgstr "FX de Audio"
 
 #: src/gui/widgets/drag_dest_box.c:509 src/audio/track.c:1336
-#, fuzzy
 msgid "MIDI FX"
-msgstr "MIDI"
+msgstr "FX de MIDI"
 
 #: src/gui/widgets/drag_dest_box.c:521
-#, fuzzy
 msgid "Add FX Track"
-msgstr "Engadir Pista Bus"
+msgstr "Engadir Pista de FX"
 
 #: src/gui/widgets/drag_dest_box.c:532 src/audio/track.c:1345
 msgid "Audio Group"
@@ -714,19 +698,18 @@ msgstr ""
 #: src/gui/widgets/channel_slot.c:167
 #, c-format
 msgid "Slot #%d"
-msgstr ""
+msgstr "Oco #%d"
 
 #: src/gui/widgets/channel_slot.c:318
 #, c-format
 msgid "Plugin %s cannot be added to this slot"
-msgstr ""
+msgstr "O plugin %s non pode ser engadido neste oco"
 
 #: src/gui/widgets/channel_slot.c:667
 msgid "Bypass"
-msgstr ""
+msgstr "Bypass"
 
 #: src/gui/widgets/channel_slot.c:680
-#, fuzzy
 msgid "Inspect"
 msgstr "Inspeccionar"
 
@@ -751,6 +734,7 @@ msgid ""
 "VST support without Carla is deprecated and will be removed in future "
 "versions."
 msgstr ""
+"O soporte de VST sen Carla está obsoleto e quitarase en versións futuras"
 
 #: src/gui/widgets/plugin_browser.c:1018 resources/ui/panel_file_browser.ui:63
 #: resources/ui/file_browser.ui:63
@@ -907,7 +891,7 @@ msgstr "Ver rexistro"
 
 #: src/gui/widgets/header.c:103
 msgid "Scripting interface"
-msgstr "Interface de secuencias de comandos"
+msgstr "Interface de comandos"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
@@ -1013,37 +997,35 @@ msgid "No control selected"
 msgstr "Ningún control seleccionado"
 
 #: src/gui/widgets/automatable_selector_popover.c:265
-#, fuzzy, c-format
+#, c-format
 msgid "[Instrument] %s"
-msgstr "Instrumento"
+msgstr "[Instrumento] %s"
 
 #: src/gui/widgets/automatable_selector_popover.c:283
 #, c-format
 msgid "[MIDI FX %d] %s"
-msgstr ""
+msgstr "[FX de MIDI %d] %s"
 
 #: src/gui/widgets/automatable_selector_popover.c:299
-#, fuzzy, c-format
+#, c-format
 msgid "[Insert %d] %s"
-msgstr "Insercións"
+msgstr "[Insertar %d] %s"
 
 #: src/gui/widgets/snap_grid.c:95
 msgid "Snap/Grid options"
 msgstr "Axuste/Opcións da grade"
 
 #: src/gui/widgets/scripting_window.c:192
-#, fuzzy
 msgid "Script execution successful"
-msgstr "Fallou a execución do script"
+msgstr "Execución da secuencia de comandos exitosa"
 
 #: src/gui/widgets/scripting_window.c:201
 msgid "Script execution failed"
-msgstr "Fallou a execución do script"
+msgstr "Fallou a execución da secuencia de comandos"
 
 #: src/gui/widgets/scripting_window.c:228
-#, fuzzy
 msgid "Scripting Interface"
-msgstr "Interface de secuencias de comandos"
+msgstr "Interface de comandos"
 
 #: src/gui/widgets/port_connection_row.c:97
 msgid "Enable/disable connection"
@@ -1231,9 +1213,8 @@ msgid "Export As"
 msgstr "Exportar Como"
 
 #: src/gui/widgets/project_toolbar.c:44
-#, fuzzy
 msgid "Export Graph"
-msgstr "Exportar Como"
+msgstr "Exportar Gráfico"
 
 #: src/gui/widgets/view_toolbar.c:39
 msgid "Toggle Status Bar"
@@ -1277,7 +1258,7 @@ msgstr "Alternar Panel Dereito"
 
 #: src/gui/widgets/inspector_track.c:144
 msgid "Comment"
-msgstr ""
+msgstr "Comentario"
 
 #: src/gui/widgets/track.c:568 src/audio/track_lane.c:68
 #, c-format
@@ -1523,18 +1504,17 @@ msgid "Latch"
 msgstr "Pasador"
 
 #: src/audio/channel_send.c:338
-#, fuzzy
 msgid "Pre-fader send"
-msgstr "Entrada Pre-Fader"
+msgstr "Envío Pre-Fader"
 
 #: src/audio/channel_send.c:340
 msgid "Post-fader send"
-msgstr ""
+msgstr "Envío Post-Fader"
 
 #: src/audio/channel_send.c:363
-#, fuzzy, c-format
+#, c-format
 msgid "%s input"
-msgstr "Sen entradas"
+msgstr "Entrada %s"
 
 #: src/audio/marker_track.c:54
 msgid "Markers"
@@ -1735,7 +1715,7 @@ msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
 "your Zrythm installation."
 msgstr ""
-"A extensibilidade de scripts de <a href=\"%s\">GNU Guile</a> non está "
+"A extensibilidade de comandos de <a href=\"%s\">GNU Guile</a> non está "
 "activada na túa instalación de Zrythm."
 
 #: src/actions/actions.c:614
@@ -1776,17 +1756,16 @@ msgid "Save Project"
 msgstr "Gardar Proxecto"
 
 #: src/actions/actions.c:836
-#, fuzzy
 msgid "Export routing graph"
-msgstr "Progreso da exportación"
+msgstr "Exportar gráfico da ruta"
 
 #: src/actions/actions.c:838
 msgid "Image (PNG)"
-msgstr ""
+msgstr "Imaxe (PNG)"
 
 #: src/actions/actions.c:839
 msgid "Dot graph"
-msgstr ""
+msgstr "Gráfico de puntos"
 
 #: src/actions/actions.c:847
 #, c-format
@@ -1794,17 +1773,17 @@ msgid ""
 "The graph will be exported to %s\n"
 "Select a format to export as"
 msgstr ""
+"O gráfico será exportado a %s\n"
+"Selecciona o formato ao que exportar"
 
 #: src/actions/actions.c:888
-#, fuzzy
 msgid "Graph exported"
-msgstr "Exportado"
+msgstr "Gráfico exportado"
 
 #: src/actions/actions.c:1075 src/actions/actions.c:1115
 #: src/actions/actions.c:1154
-#, fuzzy
 msgid "Can't paste selections"
-msgstr "Bucle coa selección"
+msgstr "Imposible pegar as seleccións"
 
 #: src/actions/copy_plugins_action.c:273
 #, c-format
@@ -3257,79 +3236,76 @@ msgid "Bit depth to use when exporting"
 msgstr "Profundidade de bits da exportación"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:322
-#, fuzzy
 msgid "Track properties expanded"
-msgstr "Propiedades da pista"
+msgstr "Propiedades da pista expandidas"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:323
 msgid "Whether track properties is expanded."
-msgstr ""
+msgstr "Se expandir as propiedades da pista."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:327
 msgid "Track outputs expanded"
-msgstr ""
+msgstr "Saídas da pista expandidas"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:328
 msgid "Whether track outputs is expanded."
-msgstr ""
+msgstr "Se expandir as saídas da pista."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:332
-#, fuzzy
 msgid "Track sends expanded"
-msgstr "Nome da pista"
+msgstr "Envíos da pista expandidos"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:333
 msgid "Whether track sends is expanded."
-msgstr ""
+msgstr "Se expandir os envíos da pista."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:337
 msgid "Track inputs expanded"
-msgstr ""
+msgstr "Entradas da pista expandidas"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:338
 msgid "Whether track inputs is expanded."
-msgstr ""
+msgstr "Se expandir as entradas da pista."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:342
 msgid "Track controls expanded"
-msgstr ""
+msgstr "Controis da pista expandidos"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:343
 msgid "Whether track controls is expanded."
-msgstr ""
+msgstr "Se expandir os controis da pista."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:347
 msgid "Track inserts expanded"
-msgstr ""
+msgstr "Insercións da pista expandidas"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:348
 msgid "Whether track inserts is expanded."
-msgstr ""
+msgstr "Se expandir as insercións da pista."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:352
-#, fuzzy
 msgid "Track midi-fx expanded"
-msgstr "Nome da pista"
+msgstr "Pista midi-fx expandida"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:353
 msgid "Whether track midi-fx is expanded."
-msgstr ""
+msgstr "Se expandir a pista de midi-fx."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:357
 msgid "Track fader expanded"
-msgstr ""
+msgstr "Fader da pista expandido"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:358
 msgid "Whether track fader is expanded."
-msgstr ""
+msgstr "Se expandir o fader da pista."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:362
 msgid "Track comment expanded"
-msgstr ""
+msgstr "Comentarios da pista expandidos"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:363
 msgid "Whether track comment is expanded."
-msgstr ""
+msgstr "Se expandir os comentarios da pista."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:371
 msgid "Audio backend"
