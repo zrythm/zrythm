@@ -121,14 +121,14 @@ engine_sdl_setup (
     engine_samplerate_enum_to_int (
       (AudioEngineSamplerate)
       g_settings_get_enum (
-        S_PREFERENCES, "samplerate"));
+        S_P_GENERAL_ENGINE, "sample-rate"));
   req_specs.format = AUDIO_F32SYS;
   req_specs.channels = 2;
   req_specs.samples =
     engine_buffer_size_enum_to_int (
       (AudioEngineBufferSize)
       g_settings_get_enum (
-        S_PREFERENCES, "buffer-size"));
+        S_P_GENERAL_ENGINE, "buffer-size"));
   req_specs.callback =
     (SDL_AudioCallback) sdl_callback;
   req_specs.userdata = self;
@@ -143,7 +143,7 @@ engine_sdl_setup (
 
   char * out_device =
     g_settings_get_string (
-      S_PREFERENCES, "sdl-audio-device-name");
+      S_P_GENERAL_ENGINE, "sdl-audio-device-name");
   if (!out_device || strlen (out_device) < 1)
     {
       out_device = NULL;
