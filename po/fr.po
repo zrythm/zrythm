@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-04-27 22:23+0100\n"
+"POT-Creation-Date: 2020-04-29 14:27+0100\n"
 "PO-Revision-Date: 2020-03-15 23:58+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
@@ -63,61 +63,61 @@ msgstr "Muet"
 msgid "Unmute"
 msgstr "Activer la piste muette"
 
-#: src/zrythm.c:309
+#: src/zrythm.c:306
 msgid "Setting up main window"
 msgstr "Configuration de la fenêtre principale"
 
-#: src/zrythm.c:350
+#: src/zrythm.c:347
 msgid "Loading project"
 msgstr "Chargement du projet"
 
-#: src/zrythm.c:379
+#: src/zrythm.c:376
 msgid "Initializing main window"
 msgstr "Initialisation de la fenêtre principale"
 
-#: src/zrythm.c:397
+#: src/zrythm.c:394
 msgid "Initializing settings"
 msgstr "Initialisation des paramètres"
 
-#: src/zrythm.c:406
+#: src/zrythm.c:403
 msgid "Initializing Zrythm directories"
 msgstr "Initialisation des répertoires de Zrythm"
 
-#: src/zrythm.c:415
+#: src/zrythm.c:412
 msgid "Initializing logging system"
 msgstr "Initialisation du système d'identification"
 
-#: src/zrythm.c:421
+#: src/zrythm.c:418
 msgid "Initializing symap"
 msgstr "Initialisation de mappage de symboles"
 
-#: src/zrythm.c:427
+#: src/zrythm.c:424
 msgid "Initializing caches"
 msgstr "Initialisation des caches"
 
-#: src/zrythm.c:434
+#: src/zrythm.c:431
 msgid "Initializing file manager"
 msgstr "Initialisation du gestionnaire de greffon"
 
-#: src/zrythm.c:441
+#: src/zrythm.c:438
 msgid "Initializing plugin manager"
 msgstr "Initialisation du gestionnaire  de greffon"
 
-#: src/zrythm.c:449
+#: src/zrythm.c:446
 msgid "Scanning plugins"
 msgstr "Scan des greffons"
 
-#: src/zrythm.c:598
+#: src/zrythm.c:595
 msgid "License Information"
 msgstr "Informations de licence"
 
-#: src/zrythm.c:620
+#: src/zrythm.c:617
 msgid "Waiting for project"
 msgstr "En attente du projet"
 
 #. TRANSLATORS: please keep the space at the
 #. * end
-#: src/zrythm.c:734
+#: src/zrythm.c:731
 msgid "(trial) "
 msgstr "(essai) "
 
@@ -156,11 +156,11 @@ msgstr ""
 "Impossible de charger le projet. Veuillez consulter les journaux pour plus "
 "d'informations."
 
-#: src/project.c:961
+#: src/project.c:962
 msgid "Backup saved."
 msgstr "Sauvegarde sauvegardée."
 
-#: src/project.c:971
+#: src/project.c:972
 msgid "Project saved."
 msgstr "Projet sauvegardé."
 
@@ -269,32 +269,32 @@ msgstr "Sortie MIDI"
 msgid "Error loading LV2 bundle dir: "
 msgstr "Erreur lors du chargement du répertoire bundle LV2: "
 
-#: src/plugins/plugin_manager.c:683
+#: src/plugins/plugin_manager.c:684
 #, fuzzy
 msgid "Scanned LV2 plugin"
 msgstr "Scan des greffons"
 
-#: src/plugins/plugin_manager.c:694
+#: src/plugins/plugin_manager.c:695
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:817 src/plugins/plugin_manager.c:943
+#: src/plugins/plugin_manager.c:818 src/plugins/plugin_manager.c:944
 #, fuzzy
 msgid "Scanned VST plugin"
 msgstr "Scan des greffons"
 
-#: src/plugins/plugin_manager.c:824 src/plugins/plugin_manager.c:950
+#: src/plugins/plugin_manager.c:825 src/plugins/plugin_manager.c:951
 #, c-format
 msgid "Skipped VST plugin at %s"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1008
+#: src/plugins/plugin_manager.c:1009
 #, fuzzy
 msgid "Scanned AU plugin"
 msgstr "Scan des greffons"
 
-#: src/plugins/plugin_manager.c:1015
+#: src/plugins/plugin_manager.c:1016
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr ""
@@ -337,15 +337,15 @@ msgstr "Supprimer le préréglage ?"
 msgid "_OK"
 msgstr "_OK"
 
-#: src/plugins/lv2/lv2_gtk.c:557
+#: src/plugins/lv2/lv2_gtk.c:562
 msgid "Unknown widget type for value"
 msgstr "Type de widget inconnu pour la valeur"
 
-#: src/plugins/lv2/lv2_gtk.c:583
+#: src/plugins/lv2/lv2_gtk.c:588
 msgid "Unknown widget type for value\n"
 msgstr "Type de widget inconnu pour value\n"
 
-#: src/plugins/lv2/lv2_gtk.c:1224
+#: src/plugins/lv2/lv2_gtk.c:1236
 msgid "Close"
 msgstr "Fermer"
 
@@ -808,7 +808,7 @@ msgstr "maître JACK Timebase"
 msgid "Audio"
 msgstr "Audio"
 
-#: src/gui/widgets/bot_bar.c:380 data/org.zrythm.Zrythm.gschema.xml:247
+#: src/gui/widgets/bot_bar.c:380 build/data/org.zrythm.Zrythm.gschema.xml:386
 #, fuzzy
 msgid "Buffer size"
 msgstr "Taille de tampon"
@@ -1452,43 +1452,43 @@ msgstr ""
 "2. Lancez <b>locale-gen</b> en root\n"
 "3. Redémarrez Zrythm"
 
-#: src/settings/settings.c:78
+#: src/settings/settings.c:97
 #, fuzzy, c-format
 msgid "Schema %s%s%s"
 msgstr "Schéma %s\n"
 
-#: src/settings/settings.c:89
+#: src/settings/settings.c:108
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr "Réinitialisation du schéma %s...\n"
 
-#: src/settings/settings.c:128
+#: src/settings/settings.c:147
 #, c-format
 msgid "skipping %s"
 msgstr ""
 
-#: src/settings/settings.c:139
+#: src/settings/settings.c:158
 #, fuzzy, c-format
 msgid "resetting %s to %s"
 msgstr "  réinitialisation de %s vers %s\n"
 
-#: src/settings/settings.c:184
+#: src/settings/settings.c:203
 #, c-format
 msgid "Failed to find schema %s. Zrythm is likely not installed"
 msgstr ""
 "Impossible de trouver de schéma %s. Zrythm n'est probablement pas installé"
 
-#: src/settings/settings.c:199
+#: src/settings/settings.c:218
 #, c-format
 msgid "Failed to view schema %s"
 msgstr "Impossible de voir le schéma %s"
 
-#: src/settings/settings.c:206
+#: src/settings/settings.c:225
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr "Impossible de réinitialiser le schéma %s"
 
-#: src/settings/settings.c:239
+#: src/settings/settings.c:258
 #, c-format
 msgid ""
 "This will reset Zrythm to factory settings. You will lose all your "
@@ -1497,12 +1497,12 @@ msgstr ""
 "Cela réinitialisera Zrythm aux réglages d'usine. Vous perdrez toutes vos "
 "préférences. Tapez \"y\" pour continuer : "
 
-#: src/settings/settings.c:245
+#: src/settings/settings.c:264
 #, c-format
 msgid "Aborting...\n"
 msgstr "Interrompre...\n"
 
-#: src/settings/settings.c:256
+#: src/settings/settings.c:275
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr "Réinitialisation des paramètres d'usine réussi\n"
@@ -1920,7 +1920,7 @@ msgstr ""
 " Ceci vous guidera pour la configuration de base de Zrythm. Tout d'abord, "
 "choisissez votre langue."
 
-#: resources/ui/first_run_assistant.ui:89 resources/ui/preferences.ui:519
+#: resources/ui/first_run_assistant.ui:89 resources/ui/preferences.ui:512
 msgid "Language"
 msgstr "Langue"
 
@@ -1950,13 +1950,11 @@ msgstr ""
 msgid "Select the audio and MIDI engine backends to use"
 msgstr "Sélectionnez les moteurs de traitement audio et MIDI à utiliser"
 
-#: resources/ui/first_run_assistant.ui:200 resources/ui/preferences.ui:170
-#: data/org.zrythm.Zrythm.gschema.xml:312
+#: resources/ui/first_run_assistant.ui:200 resources/ui/preferences.ui:169
 msgid "MIDI Backend"
 msgstr "Système MIDI"
 
-#: resources/ui/first_run_assistant.ui:213 resources/ui/preferences.ui:124
-#: data/org.zrythm.Zrythm.gschema.xml:210
+#: resources/ui/first_run_assistant.ui:213 resources/ui/preferences.ui:123
 msgid "Audio Backend"
 msgstr "Système audio"
 
@@ -2131,6 +2129,7 @@ msgid "Fishbowl"
 msgstr "Cuvette à poisson"
 
 #: resources/ui/timeline_toolbar.ui:64
+#: build/data/org.zrythm.Zrythm.gschema.xml:224
 msgid "Musical mode"
 msgstr "Mode musical"
 
@@ -2290,7 +2289,7 @@ msgstr "Sélectionnez le répertoire parent dans lequel sauvegarder le projet"
 msgid "Global Shortcuts"
 msgstr "Raccourcis globaux"
 
-#: resources/ui/shortcuts.ui:36 resources/ui/preferences.ui:372
+#: resources/ui/shortcuts.ui:36 resources/ui/preferences.ui:365
 msgid "General"
 msgstr "Général"
 
@@ -2781,6 +2780,7 @@ msgid "Artist"
 msgstr "Artiste"
 
 #: resources/ui/export_dialog.ui:98
+#: build/data/org.zrythm.Zrythm.gschema.xml:293
 msgid "Genre"
 msgstr "Genre"
 
@@ -2793,10 +2793,12 @@ msgid "Electronic"
 msgstr "Électronique"
 
 #: resources/ui/export_dialog.ui:131
+#: build/data/org.zrythm.Zrythm.gschema.xml:303
 msgid "Format"
 msgstr "Format"
 
 #: resources/ui/export_dialog.ui:150
+#: build/data/org.zrythm.Zrythm.gschema.xml:308
 msgid "Dither"
 msgstr "Bruit de dispersion"
 
@@ -2839,6 +2841,7 @@ msgid "Tracks"
 msgstr "Pistes"
 
 #: resources/ui/export_dialog.ui:298
+#: build/data/org.zrythm.Zrythm.gschema.xml:313
 msgid "Bit depth"
 msgstr "Profondeur de Bit"
 
@@ -2883,647 +2886,121 @@ msgstr "Surbrillance"
 msgid "Both"
 msgstr "Les deux"
 
-#: resources/ui/preferences.ui:110
+#: resources/ui/preferences.ui:109
 msgid "Engine"
 msgstr "Moteur"
 
-#: resources/ui/preferences.ui:135
+#: resources/ui/preferences.ui:134
 msgid "The audio backend to connect to"
 msgstr "Le dorsal audio auquel se connecter"
 
-#: resources/ui/preferences.ui:148
+#: resources/ui/preferences.ui:147
 msgid "MIDI Controllers"
 msgstr "Contrôleurs MIDI"
 
-#: resources/ui/preferences.ui:181
+#: resources/ui/preferences.ui:180
 msgid "The MIDI backend to connect to"
 msgstr "Le dorsal MIDI auquel se connecter"
 
-#: resources/ui/preferences.ui:192
+#: resources/ui/preferences.ui:191
 msgid "Pan Algorithm"
 msgstr "Algorithme de panoramique"
 
-#: resources/ui/preferences.ui:202
+#: resources/ui/preferences.ui:201
 msgid "Pan Law"
 msgstr "Loi de panoramique"
 
-#: resources/ui/preferences.ui:212
+#: resources/ui/preferences.ui:211
 msgid "The pan algorithm to use"
 msgstr "L'algorithme de panoramique à utiliser"
 
-#: resources/ui/preferences.ui:223
+#: resources/ui/preferences.ui:222
 msgid "The pan law to use"
 msgstr "La loi de la panoramique à utiliser"
 
-#: resources/ui/preferences.ui:235
+#: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:405
 msgid "Zrythm path"
 msgstr "Chemin de Zrythm"
 
-#: resources/ui/preferences.ui:246
+#: resources/ui/preferences.ui:245
 msgid "The global Zrythm working path for non-project related files"
 msgstr ""
 "Le chemin de travail global de Zrythm pour les fichiers sans lien à un projet"
 
-#: resources/ui/preferences.ui:267
+#: resources/ui/preferences.ui:266
 msgid "Device Name"
 msgstr "Nom de périphérique"
 
-#: resources/ui/preferences.ui:302
+#: resources/ui/preferences.ui:301
 msgid "Buffer Size"
 msgstr "Taille de tampon"
 
-#: resources/ui/preferences.ui:326 data/org.zrythm.Zrythm.gschema.xml:237
+#: resources/ui/preferences.ui:325 build/data/org.zrythm.Zrythm.gschema.xml:381
 msgid "Samplerate"
 msgstr "Taux d'échantillonnage"
 
-#: resources/ui/preferences.ui:387 resources/ui/preferences.ui:456
+#: resources/ui/preferences.ui:380 resources/ui/preferences.ui:449
 msgid "Plugins"
 msgstr "Greffons"
 
-#: resources/ui/preferences.ui:397
+#: resources/ui/preferences.ui:390
 msgid "Always open plugin UIs"
 msgstr "Toujours ouvrir les interfaces graphiques de greffon"
 
-#: resources/ui/preferences.ui:401
+#: resources/ui/preferences.ui:394
 msgid "Always show the plugin UI when instantiating a plugin"
 msgstr ""
 "Toujours afficher l'interface du greffon lors de l'instanciation d'un greffon"
 
-#: resources/ui/preferences.ui:413
+#: resources/ui/preferences.ui:406
 msgid "Keep plugin UIs on top"
 msgstr "Garder les interfaces graphiques des greffons au dessus"
 
-#: resources/ui/preferences.ui:417
+#: resources/ui/preferences.ui:410
 msgid "Keep plugin UI windows on top of the main window"
 msgstr ""
 "Garder les fenêtres d'interfaces des greffons au dessus de la fenêtre "
 "principale"
 
-#: resources/ui/preferences.ui:430
+#: resources/ui/preferences.ui:423
 msgid "VST2 Paths"
 msgstr "Chemins VST2"
 
-#: resources/ui/preferences.ui:472
+#: resources/ui/preferences.ui:465
 msgid "Main Window"
 msgstr "Fenêtre principale"
 
-#: resources/ui/preferences.ui:489
+#: resources/ui/preferences.ui:482
 msgid "Editing"
 msgstr "Modifier"
 
-#: resources/ui/preferences.ui:505
+#: resources/ui/preferences.ui:498
 msgid "Interface"
 msgstr "Interface"
 
-#: resources/ui/preferences.ui:530
+#: resources/ui/preferences.ui:523
 msgid "The language of the Zrythm interface"
 msgstr "La langue de l'interface de Zrythm"
 
-#: resources/ui/preferences.ui:562
+#: resources/ui/preferences.ui:555
 msgid "GUI"
 msgstr "IGU"
 
-#: resources/ui/preferences.ui:579 resources/ui/preferences.ui:625
+#: resources/ui/preferences.ui:572 resources/ui/preferences.ui:618
 msgid "Projects"
 msgstr "Projets"
 
-#: resources/ui/preferences.ui:591
+#: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:488
 msgid "Autosave interval"
 msgstr "Intervalle de sauvegarde automatique"
 
-#: resources/ui/preferences.ui:602
+#: resources/ui/preferences.ui:595
 msgid ""
 "Set the interval to auto-save project backups, in minutes. Setting this to 0 "
 "will disable auto-save"
 msgstr ""
 "Définir l'intervalle de sauvegarde automatique du projet, en minutes. Le "
 "mettre à 0 désactivera la sauvegarde automatique"
-
-#: data/org.zrythm.Zrythm.gschema.xml:162
-#, fuzzy
-msgid "Recent project list"
-msgstr "Sélectionner un projet"
-
-#: data/org.zrythm.Zrythm.gschema.xml:163
-msgid "A list of recent projects to be referenced on startup."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:169
-msgid "First run"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:170
-msgid "Whether this is the first run or not."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:176
-#, fuzzy
-msgid "Zrythm directory"
-msgstr "Répertoire Zrythm"
-
-#: data/org.zrythm.Zrythm.gschema.xml:177
-msgid "This is the directory used to save projects and other files in."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:183
-#, fuzzy
-msgid "Installation directory"
-msgstr "Répertoire parent"
-
-#: data/org.zrythm.Zrythm.gschema.xml:184
-msgid ""
-"This is the directory Zrythm is installed in. Currently only used on Windows."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:191
-#, fuzzy
-msgid "Last project directory"
-msgstr "Répertoire parent"
-
-#: data/org.zrythm.Zrythm.gschema.xml:192
-msgid "Last directory a project was created in."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:211
-#, fuzzy
-msgid "The audio back end to use."
-msgstr "Le dorsal audio auquel se connecter"
-
-#: data/org.zrythm.Zrythm.gschema.xml:219
-#, fuzzy
-msgid "SDL audio device name"
-msgstr "Nom de périphérique"
-
-#: data/org.zrythm.Zrythm.gschema.xml:220
-msgid "The name of the SDL audio device to open."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:228
-#, fuzzy
-msgid "RtAudio device name"
-msgstr "Nom de périphérique"
-
-#: data/org.zrythm.Zrythm.gschema.xml:229
-msgid "The name of the RtAudio device to open."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:238
-msgid "Samplerate to pass to the backend, if not JACK."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:248
-msgid "Buffer size to pass to the backend, if not JACK."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:257
-#, fuzzy
-msgid "Undo stack length"
-msgstr "Longueur de note"
-
-#: data/org.zrythm.Zrythm.gschema.xml:258
-msgid "Maximum undo history stack length. Set to -1 for unlimited."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:268
-#, fuzzy
-msgid "The panning algorithm"
-msgstr "L'algorithme de panoramique à utiliser"
-
-#: data/org.zrythm.Zrythm.gschema.xml:269
-msgid "The panning algorithm to use when applying pan on channels."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:279
-#, fuzzy
-msgid "The Pan Law"
-msgstr "Loi de panoramique"
-
-#: data/org.zrythm.Zrythm.gschema.xml:280
-msgid "The Pan Law to use when applying pan on channels."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:290
-#, fuzzy
-msgid "Fade algorithm"
-msgstr "Algorithme de panoramique"
-
-#: data/org.zrythm.Zrythm.gschema.xml:291
-msgid "Default fade algorithm to use for fade ins/outs."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:301
-#, fuzzy
-msgid "Automation curve algorithm"
-msgstr "Point d'automatisation"
-
-#: data/org.zrythm.Zrythm.gschema.xml:302
-msgid "Default algorithm to use for automation curves."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:313
-#, fuzzy
-msgid "The MIDI backend to use"
-msgstr "Le dorsal MIDI auquel se connecter"
-
-#: data/org.zrythm.Zrythm.gschema.xml:321
-#: data/org.zrythm.Zrythm.gschema.xml:323
-msgid "A list of controllers that should be auto-connected."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:332
-#, fuzzy
-msgid "UI interface language"
-msgstr "Interface"
-
-#: data/org.zrythm.Zrythm.gschema.xml:333
-msgid "The interface language."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:341
-msgid "Bounce to audio with effects"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:342
-msgid ""
-"If send to true, the effects chain will be included in the bounced material."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:351
-msgid "Bounce tail (ms)"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:352
-msgid ""
-"Tail to allow when bouncing (for example to catch reverb tails after a "
-"region finishes) in milliseconds."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:362
-msgid "Open plugin UIs when they are instantiated"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:363
-msgid ""
-"Open plugin UIs when they are dragged and dropped or activated in the plugin "
-"browser or not."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:373
-#, fuzzy
-msgid "Whether plugin UIs should always be shown on top of the main window"
-msgstr ""
-"Garder les fenêtres d'interfaces des greffons au dessus de la fenêtre "
-"principale"
-
-#: data/org.zrythm.Zrythm.gschema.xml:374
-#, fuzzy
-msgid ""
-"If this is set to 1, plugin UIs will always be shown on top of the main "
-"window."
-msgstr ""
-"Garder les fenêtres d'interfaces des greffons au dessus de la fenêtre "
-"principale"
-
-#: data/org.zrythm.Zrythm.gschema.xml:383
-#, fuzzy
-msgid "Force generic plugin UIs"
-msgstr "Toujours ouvrir les interfaces graphiques de greffon"
-
-#: data/org.zrythm.Zrythm.gschema.xml:384
-msgid ""
-"Whether to force generic plugin UIs or not. If this is set to 1, custom "
-"plugin UIs will be ignored."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:394
-#, fuzzy
-msgid "Plugin UI refresh rate"
-msgstr "Propriétés de greffon"
-
-#: data/org.zrythm.Zrythm.gschema.xml:395
-msgid ""
-"The refresh rate to use for the UI, in Hz. If set to 0, the screen's refresh "
-"rate will be used."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:405
-msgid "Search paths for SFZ instruments"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:406
-msgid "The search paths to scan for SFZ instruments."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:415
-msgid "Search paths for SF2 instruments"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:416
-msgid "The search paths to scan for SF2 instruments."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:429
-msgid "Search paths for VST plugins"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:430
-#, fuzzy
-msgid ""
-"The search paths to scan for VST plugins in. Duplicate paths will be "
-"deduplicated."
-msgstr ""
-"Choisissez les chemins à scanner pour les greffons LV2 (ou accepter le "
-"défaut)"
-
-#: data/org.zrythm.Zrythm.gschema.xml:440
-#, fuzzy
-msgid "Region Size"
-msgstr "Région"
-
-#: data/org.zrythm.Zrythm.gschema.xml:441
-msgid "The default region size to use for automatically created regions"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:450
-msgid "Artist to use when exporting"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:451
-msgid ""
-"The artist to use by default when exporting. This value is saved/loaded in "
-"the export dialog."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:459
-msgid "Genre to use when exporting"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:460
-msgid ""
-"The genre to use by default when exporting. This value is saved/loaded in "
-"the export dialog."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:469
-msgid "Time range to use when exporting"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:470
-msgid ""
-"The time range to display as selected by default when exporting. This value "
-"is saved when an export is done and remembered the next time the export "
-"dialog is displayed."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:479
-msgid "Format to use when exporting"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:480
-msgid ""
-"The format to display as selected by default when exporting. This value is "
-"saved when an export is done and remembered the next time the export dialog "
-"is displayed."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:488
-msgid "Add dither to export"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:489
-msgid "Add dither while exporting."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:498
-msgid "Bit depth to use when exporting"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:499
-msgid "Bit depth to use when exporting."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:507
-#, fuzzy
-msgid "Autosave interval in minutes"
-msgstr "Intervalle de sauvegarde automatique"
-
-#: data/org.zrythm.Zrythm.gschema.xml:508
-#, fuzzy
-msgid ""
-"Interval to auto-save the current project, in minutes. If this is 0, "
-"autosave will be disabled."
-msgstr ""
-"Définir l'intervalle de sauvegarde automatique du projet, en minutes. Le "
-"mettre à 0 désactivera la sauvegarde automatique"
-
-#: data/org.zrythm.Zrythm.gschema.xml:527
-#, fuzzy
-msgid "Note Notation"
-msgstr "Basculer sur la notation de note"
-
-#: data/org.zrythm.Zrythm.gschema.xml:528
-msgid ""
-"The note notation used in the piano roll. (note numbers or notes like C, C#)"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:536
-#, fuzzy
-msgid "Metronome enabled"
-msgstr "Métronome"
-
-#: data/org.zrythm.Zrythm.gschema.xml:537
-msgid "Metronome is enabled or not."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:545
-#, fuzzy
-msgid "Musical mode on/off"
-msgstr "Mode musical"
-
-#: data/org.zrythm.Zrythm.gschema.xml:546
-msgid ""
-"Whether to use musical mode. If this is on, time-stretching will be applied "
-"to events so that they match the project BPM. This mostly applies to audio "
-"regions."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:557
-msgid "Listen to notes on/off"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:558
-msgid "Whether to listen to MIDI notes while dragging them in the piano roll."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:568
-#, fuzzy
-msgid "Piano Roll Highlight"
-msgstr "Piano Roll"
-
-#: data/org.zrythm.Zrythm.gschema.xml:569
-msgid "Whether to highlight chords, scales, both or none in the Piano Roll."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:579
-msgid "Piano Roll MIDI Modifier"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:580
-msgid "The MIDI modifier to display in the MIDI modifier arranger."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:589
-#, fuzzy
-msgid "Divider position"
-msgstr "position de départ"
-
-#: data/org.zrythm.Zrythm.gschema.xml:590
-msgid "Height of the instrument browser on the top side of the GtkPaned."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:599
-msgid "Left panel divider position"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:600
-msgid "Position of the resize handle of the left panel."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:610
-msgid "Right panel divider position"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:611
-msgid "Position of the resize handle of the right panel."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:621
-msgid "Bottom panel divider position"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:622
-msgid "Position of the resize handle of the bot panel."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:632
-#, fuzzy
-msgid "Plugin Browser tab"
-msgstr "Navigateur de greffon"
-
-#: data/org.zrythm.Zrythm.gschema.xml:633
-#, fuzzy
-msgid "Selected Plugin Browser tab."
-msgstr "Navigateur de greffon"
-
-#: data/org.zrythm.Zrythm.gschema.xml:642
-#, fuzzy
-msgid "Plugin Browser filter"
-msgstr "Navigateur de greffon"
-
-#: data/org.zrythm.Zrythm.gschema.xml:643
-#, fuzzy
-msgid "Selected Plugin Browser filter."
-msgstr "Navigateur de greffon"
-
-#: data/org.zrythm.Zrythm.gschema.xml:652
-#, fuzzy
-msgid "Timeline event viewer visibility"
-msgstr "Basculer l'afficheur d'événement"
-
-#: data/org.zrythm.Zrythm.gschema.xml:653
-msgid "Whether the timeline event viewer is visible or not."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:663
-msgid "Editor event viewer visibility"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:664
-msgid "Whether the editor event viewer is visible or not."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:674
-#, fuzzy
-msgid "Monitor out volume"
-msgstr "Moniteur arrière"
-
-#: data/org.zrythm.Zrythm.gschema.xml:675
-msgid "The monitor out volume in amplitude (0.0 to 2.0)."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:692
-#, fuzzy
-msgid "Track properties expanded"
-msgstr "Propriétés de la piste"
-
-#: data/org.zrythm.Zrythm.gschema.xml:693
-msgid "Whether track properties is expanded."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:701
-msgid "Track outputs expanded"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:702
-msgid "Whether track outputs is expanded."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:710
-#, fuzzy
-msgid "Track sends expanded"
-msgstr "Nom de piste"
-
-#: data/org.zrythm.Zrythm.gschema.xml:711
-msgid "Whether track sends is expanded."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:719
-msgid "Track inputs expanded"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:720
-msgid "Whether track inputs is expanded."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:728
-msgid "Track controls expanded"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:729
-msgid "Whether track controls is expanded."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:737
-msgid "Track inserts expanded"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:738
-msgid "Whether track inserts is expanded."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:746
-msgid "Track midi_fx expanded"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:747
-msgid "Whether track midi_fx is expanded."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:755
-msgid "Track fader expanded"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:756
-msgid "Whether track fader is expanded."
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:764
-msgid "Track comment expanded"
-msgstr ""
-
-#: data/org.zrythm.Zrythm.gschema.xml:765
-msgid "Whether track comment is expanded."
-msgstr ""
 
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
@@ -3539,6 +3016,563 @@ msgstr ""
 #: data/zrythm.desktop.in:16
 msgid "zrythm"
 msgstr "zrythm"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:160
+#, fuzzy
+msgid "Recent project list"
+msgstr "Sélectionner un projet"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:161
+msgid "A list of recent projects to be referenced on startup."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:165
+msgid "First run"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:166
+msgid "Whether this is the first run or not."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:170
+#, fuzzy
+msgid "Installation directory"
+msgstr "Répertoire parent"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:171
+msgid ""
+"This is the directory Zrythm is installed in. Currently only used on Windows."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:175
+#, fuzzy
+msgid "Last project directory"
+msgstr "Répertoire parent"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:176
+msgid "Last directory a project was created in."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:184
+msgid "Bounce with effects"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:185
+msgid ""
+"If set to true, the effects chain will be included in the bounced material."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:189
+#, fuzzy
+msgid "Bounce tail"
+msgstr "Options de quantification"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:190
+msgid ""
+"Tail to allow when bouncing (for example to catch reverb tails), in "
+"milliseconds."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:194
+#, fuzzy
+msgid "Timeline object length"
+msgstr "Longueur de note"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:195
+#: build/data/org.zrythm.Zrythm.gschema.xml:205
+msgid "Default length to use when creating timelinle objects, eg in edit mode."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:199
+msgid "Timeline object length type"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:200
+#: build/data/org.zrythm.Zrythm.gschema.xml:210
+msgid ""
+"Default length type to use when creating timelinle objects, eg in edit mode."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:204
+#, fuzzy
+msgid "Editor object length"
+msgstr "Aucun objet sélectionné"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:209
+#, fuzzy
+msgid "Editor object length type"
+msgstr "Aucun objet sélectionné"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:214
+#, fuzzy
+msgid "Note notation"
+msgstr "Basculer sur la notation de note"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:215
+msgid ""
+"The note notation used in the piano roll - MIDI pitch index or notes (C, C#, "
+"etc.)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:219
+#, fuzzy
+msgid "Metronome enabled"
+msgstr "Métronome"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:220
+#, fuzzy
+msgid "Whether the metronome is enabled."
+msgstr "Métronome"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:225
+msgid ""
+"Whether to use musical mode. If this is on, time-stretching will be applied "
+"to events so that they match the project BPM. This mostly applies to audio "
+"regions."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:229
+msgid "Listen to notes while they are moved"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:230
+msgid "Whether to listen to MIDI notes while dragging them in the piano roll."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:234
+#, fuzzy
+msgid "Piano roll highlight"
+msgstr "Piano Roll"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:235
+msgid "Whether to highlight chords, scales, both or none in the piano roll."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:239
+#, fuzzy
+msgid "Piano roll MIDI modifier"
+msgstr "Panneau du Piano Roll"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:240
+msgid ""
+"The MIDI modifier to display in the MIDI editor (only velocity is valid at "
+"the moment)."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:244
+#, fuzzy
+msgid "Browser divider position"
+msgstr "position de départ"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:245
+msgid "Height of the top part of the plugin/file browser."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:249
+msgid "Left panel divider position"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:250
+msgid "Position of the resize handle of the left panel."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:254
+msgid "Right panel divider position"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:255
+msgid "Position of the resize handle of the right panel."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:259
+#, fuzzy
+msgid "Bot panel divider position"
+msgstr "position de départ"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:260
+msgid "Position of the resize handle of the bot panel."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:264
+#, fuzzy
+msgid "Plugin browser tab"
+msgstr "Navigateur de greffon"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:265
+#, fuzzy
+msgid "Selected plugin browser tab."
+msgstr "Navigateur de greffon"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:269
+#, fuzzy
+msgid "Plugin browser filter"
+msgstr "Navigateur de greffon"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:270
+#, fuzzy
+msgid "Selected plugin browser filter"
+msgstr "Navigateur de greffon"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:274
+#, fuzzy
+msgid "Timeline event viewer visibility"
+msgstr "Basculer l'afficheur d'événement"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:275
+msgid "Whether the timeline event viewer is visible or not."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:279
+msgid "Editor event viewer visibility"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:280
+msgid "Whether the editor event viewer is visible or not."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:284
+#, fuzzy
+msgid "Monitor out volume"
+msgstr "Moniteur arrière"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:285
+msgid "The monitor out volume in amplitude (0 to 2)."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:294
+msgid "Genre to use when exporting, if the file type supports it."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:298
+#, fuzzy
+msgid "Time range"
+msgstr "Plage temporelle"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:299
+msgid "Time range to export."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:304
+msgid "Format to export to."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:309
+msgid "Add dither while exporting, if applicable."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:314
+msgid "Bit depth to use when exporting"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:322
+#, fuzzy
+msgid "Track properties expanded"
+msgstr "Propriétés de la piste"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:323
+msgid "Whether track properties is expanded."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:327
+msgid "Track outputs expanded"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:328
+msgid "Whether track outputs is expanded."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:332
+#, fuzzy
+msgid "Track sends expanded"
+msgstr "Nom de piste"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:333
+msgid "Whether track sends is expanded."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:337
+msgid "Track inputs expanded"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:338
+msgid "Whether track inputs is expanded."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:342
+msgid "Track controls expanded"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:343
+msgid "Whether track controls is expanded."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:347
+msgid "Track inserts expanded"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:348
+msgid "Whether track inserts is expanded."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:352
+#, fuzzy
+msgid "Track midi-fx expanded"
+msgstr "Nom de piste"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:353
+msgid "Whether track midi-fx is expanded."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:357
+msgid "Track fader expanded"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:358
+msgid "Whether track fader is expanded."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:362
+msgid "Track comment expanded"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:363
+msgid "Whether track comment is expanded."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:371
+#, fuzzy
+msgid "Audio backend"
+msgstr "Système audio"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:372
+#, fuzzy
+msgid "The audio backend to use."
+msgstr "Le dorsal audio auquel se connecter"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:376
+#, fuzzy
+msgid "RtAudio device"
+msgstr "Nom de périphérique"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:377
+#, fuzzy
+msgid "The name of the RtAudio device to use."
+msgstr "Le dorsal audio auquel se connecter"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:382
+msgid "Samplerate to pass to the backend."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:387
+#, fuzzy
+msgid "Buffer size to pass to the backend."
+msgstr "Tester les systèmes"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:391
+#, fuzzy
+msgid "MIDI backend"
+msgstr "Système MIDI"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:392
+#, fuzzy
+msgid "The MIDI backend to use."
+msgstr "Le dorsal MIDI auquel se connecter"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:396
+#, fuzzy
+msgid "MIDI controllers"
+msgstr "Contrôleurs MIDI"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:397
+msgid "A list of controllers to auto-connect to."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:406
+msgid "The directory used to save projects and other files in."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:414
+msgid "Open UI on instantiation"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:415
+msgid "Open plugin UIs when they are instantiated."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:419
+#, fuzzy
+msgid "Keep window on top"
+msgstr "Garder les interfaces graphiques des greffons au dessus"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:420
+#, fuzzy
+msgid "Always show plugin UIs on top of the main window."
+msgstr ""
+"Garder les fenêtres d'interfaces des greffons au dessus de la fenêtre "
+"principale"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:424
+msgid "Generic UIs"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:425
+msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:429
+#, fuzzy
+msgid "Refresh rate"
+msgstr "Propriétés de greffon"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:430
+msgid ""
+"Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:442
+msgid "Search paths for VST plugins"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:443
+#, fuzzy
+msgid ""
+"The search paths to scan for VST plugins in. Duplicate paths will be "
+"deduplicated."
+msgstr ""
+"Choisissez les chemins à scanner pour les greffons LV2 (ou accepter le "
+"défaut)"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:447
+msgid "Search paths for SFZ instruments"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:448
+#, fuzzy
+msgid ""
+"The search paths to scan for SFZ instruments in. Duplicate paths will be "
+"deduplicated."
+msgstr ""
+"Choisissez les chemins à scanner pour les greffons LV2 (ou accepter le "
+"défaut)"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:452
+msgid "Search paths for SF2 instruments"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:453
+#, fuzzy
+msgid ""
+"The search paths to scan for SF2 instruments in. Duplicate paths will be "
+"deduplicated."
+msgstr ""
+"Choisissez les chemins à scanner pour les greffons LV2 (ou accepter le "
+"défaut)"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:461
+#, fuzzy
+msgid "Fade algorithm"
+msgstr "Algorithme de panoramique"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:462
+msgid "Default fade algorithm to use for fade in/outs."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:470
+#, fuzzy
+msgid "Automation curve algorithm"
+msgstr "Point d'automatisation"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:471
+msgid "Default algorithm to use for automation curves."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:479
+#, fuzzy
+msgid "Undo stack length"
+msgstr "Longueur de note"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:480
+msgid "Maximum undo history stack length. Set to -1 for unlimited."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:489
+#, fuzzy
+msgid ""
+"Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
+"this is set to 0."
+msgstr ""
+"Définir l'intervalle de sauvegarde automatique du projet, en minutes. Le "
+"mettre à 0 désactivera la sauvegarde automatique"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:497
+#, fuzzy
+msgid "User interface language"
+msgstr "Interface"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:498
+#, fuzzy
+msgid "The language to use for the user interface."
+msgstr "La langue de l'interface de Zrythm"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:506
+#, fuzzy
+msgid "The panning algorithm"
+msgstr "L'algorithme de panoramique à utiliser"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:507
+msgid ""
+"The panning algorithm to use when applying pan on mono signals (not used at "
+"the moment)."
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:511
+#, fuzzy
+msgid "The pan law"
+msgstr "Loi de panoramique"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:512
+msgid ""
+"The pan law to use when applying pan on mono signals (not used at the "
+"moment)."
+msgstr ""
+
+#, fuzzy
+#~ msgid "Zrythm directory"
+#~ msgstr "Répertoire Zrythm"
+
+#, fuzzy
+#~ msgid "SDL audio device name"
+#~ msgstr "Nom de périphérique"
+
+#, fuzzy
+#~ msgid "Whether plugin UIs should always be shown on top of the main window"
+#~ msgstr ""
+#~ "Garder les fenêtres d'interfaces des greffons au dessus de la fenêtre "
+#~ "principale"
+
+#, fuzzy
+#~ msgid ""
+#~ "If this is set to 1, plugin UIs will always be shown on top of the main "
+#~ "window."
+#~ msgstr ""
+#~ "Garder les fenêtres d'interfaces des greffons au dessus de la fenêtre "
+#~ "principale"
+
+#, fuzzy
+#~ msgid "Force generic plugin UIs"
+#~ msgstr "Toujours ouvrir les interfaces graphiques de greffon"
+
+#, fuzzy
+#~ msgid "Region Size"
+#~ msgstr "Région"
+
+#, fuzzy
+#~ msgid "Autosave interval in minutes"
+#~ msgstr "Intervalle de sauvegarde automatique"
+
+#, fuzzy
+#~ msgid "Musical mode on/off"
+#~ msgstr "Mode musical"
 
 #~ msgid "Editor properties"
 #~ msgstr "Propriétés de l'éditeur"
@@ -3559,14 +3593,6 @@ msgstr "zrythm"
 #, fuzzy
 #~ msgid "GNU Guile Scripting Interface"
 #~ msgstr "Interface de scriptage"
-
-#, fuzzy
-#~ msgid "Audio backend"
-#~ msgstr "Système audio"
-
-#, fuzzy
-#~ msgid "MIDI backend"
-#~ msgstr "Système MIDI"
 
 #~ msgid "English [en]"
 #~ msgstr "Anglais [en]"
