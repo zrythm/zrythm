@@ -71,8 +71,8 @@ option (
 
 option (
   'enable_jack',
-  type: 'boolean',
-  value: true,
+  type: 'feature',
+  value: 'auto',
   description: 'Compile with JACK support')
 
 option (

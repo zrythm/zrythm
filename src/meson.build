@@ -95,3 +95,14 @@ vst_test_exe = executable(
   link_args: common_ldflags,
   install: true,
   )
+
+# run stoat
+if (stoat.found() and
+  meson.get_compiler('c').get_id() == 'clang' and
+  meson.get_compiler('cpp').get_id() == 'clang')
+  run_target (
+    'run_stoat',
+    command: [ meson.source_root () / 'scripts' / 'run_stoat.sh', ],
+    depends: [ zrythm_lib, ],
+    )
+endif

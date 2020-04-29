@@ -184,9 +184,11 @@ In alphabetic order:
 4. Any other headers
 
 ## Line Length
-Please keep lines within 60 characters. This works
+We keep lines within 60 characters. This works
 nicely with 4 columns of files open simultaneously
-in a tiled editor like vim.
+in a tiled editor like vim, but if you find this
+difficult to work with < 80 characters is acceptable
+too.
 
 ## Licensing
 If you contributed significant (for copyright
@@ -199,6 +201,9 @@ We prefer code contributions in the form of patches. Use `git format-patch` to g
 post them in a new issue on
 [Redmine](https://redmine.zrythm.org/projects/zrythm/issues) or
 send them to the dev mailing list at dev@zrythm.org.
+You may also use `git-send-email` for this.
+If you are having difficulties creating patches
+please contact us and we will guide you.
 
 # Troubleshooting
 ## Getting random GUI related errors with no trace in valgrind or GTK warnings

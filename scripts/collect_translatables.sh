@@ -38,6 +38,8 @@ for path in ['inc', 'src', 'resources', 'data']:
         potfiles.write (str + '\n')
         count = count + 1
 
+potfiles.write (os.path.join ('build', 'data', 'org.zrythm.Zrythm.gschema.xml'))
+
 print (
   "wrote {} entries to {}".format (
     count, potfiles.name))

@@ -94,9 +94,12 @@ if get_option ('enable_guile') and get_option ('guile_snarf_docs_path') != ''
     rst_doc = custom_target (
       rst_file,
       output: rst_file,
-      input: [ texi_doc, guile_gen_docs, ],
+      input: [
+        texi_doc,
+        meson.build_root () / 'scripts' / 'guile-gen-docs.scm',
+        ],
       command: [
-        meson.build_root () / 'guile-gen-docs.scm',
+        '@INPUT1@',
         guile_dep.name(),
         meson.build_root () / '@INPUT0@',
         meson.build_root () / '@OUTPUT@',

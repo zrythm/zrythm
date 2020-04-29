@@ -55,7 +55,8 @@ if get_option ('enable_guile')
         output: new_file,
         input: snarfable_src,
         command: [
-          guile, '-s', guile_snarf_wrap,
+          guile, '-s',
+          meson.build_root () / 'scripts' / 'guile-snarf-wrap.scm',
           guile_dep.name(),
           '@OUTPUT@', '@INPUT@', ],
         )

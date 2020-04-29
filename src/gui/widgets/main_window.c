@@ -231,8 +231,8 @@ main_window_widget_class_init (
   MainWindowWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "main_window.ui");
+  resources_set_class_template (
+    klass, "main_window.ui");
 
   gtk_widget_class_bind_template_child (
     klass,

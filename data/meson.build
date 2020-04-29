@@ -15,8 +15,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-install_data (
-  'org.zrythm.Zrythm.gschema.xml',
+gschema_top = 'org.zrythm.Zrythm'
+gschema = configure_file (
+  input: gschema_gen_wrap,
+  output: gschema_top + '.gschema.xml',
+  command: [
+    '@INPUT0@', '@OUTPUT@', gschema_top,
+    ],
+  install: true,
   install_dir: schemasdir)
 
 # install fonts if needed

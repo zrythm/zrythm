@@ -27,7 +27,14 @@
             get-command-output
             getenv-or-default
             get-cflags-from-pkgconf-name
-            program-found?))
+            program-found?
+            string-replace-substring))
+
+;; get index of an element in the list
+;; this function assumes the element is in the list
+(define (get-element-index e lst)
+  (cond ((eqv? e (car lst)) 0)
+    (else (+ (element-index e (cdr lst)) 1))))
 
 ;; file name separator char
 (define file-name-sep-char
@@ -90,3 +97,23 @@
   (unless
     (zero? (apply system* args))
     (exit -1)))
+
+;; taken from guile mailing lists
+(define* (string-replace-substring
+           s substr replacement
+           #:optional
+           (start 0)
+           (end (string-length s)))
+  (let ((substr-length (string-length substr)))
+    (if (zero? substr-length)
+        (error "string-replace-substring: empty substr")
+        (let loop ((start start)
+                   (pieces (list (substring s 0 start))))
+          (let ((idx (string-contains s substr start end)))
+            (if idx
+                (loop (+ idx substr-length)
+                      (cons* replacement
+                             (substring s start idx)
+                             pieces))
+                (string-concatenate-reverse (cons (substring s start)
+                                                  pieces))))))))

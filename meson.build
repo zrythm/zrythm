@@ -187,54 +187,6 @@ pandoc = find_program (
   ['pandoc'], required: false)
 texi2html = find_program (
   ['texi2html'], required: false)
-scripts_conf = {
-  'SCRIPTS_DIR': meson.source_root () / 'scripts',
-  'MESON_BUILD_ROOT': meson.build_root (),
-  'MESON_SOURCE_ROOT': meson.source_root (),
-  }
-if os_windows
-  scripts_conf += { 'GUILE': 'guile' }
-else
-  scripts_conf += { 'GUILE': guile.path() }
-endif
-if pandoc.found()
-  scripts_conf += { 'PANDOC_BIN': pandoc.path() }
-endif
-if texi2html.found()
-  scripts_conf += {
-    'TEXI2HTML_BIN': texi2html.path() }
-endif
-if guile_snarf.found()
-  guile_snarf_wrap = configure_file (
-    output: 'guile-snarf-wrap.scm',
-    input: 'scripts' / 'guile-snarf-wrap.scm',
-    configuration: scripts_conf + {
-      'GUILE_SNARF': guile_snarf.path() },
-    )
-endif
-if get_option('guile_snarf_docs_path') != ''
-  guile_gen_docs = configure_file (
-    output: 'guile-gen-docs.scm',
-    input: 'scripts' / 'guile-gen-docs.scm',
-    configuration: scripts_conf + {
-      'GUILE_SNARF_DOCS_BIN': get_option (
-        'guile_snarf_docs_path'),
-      'GUILD_BIN': guild.path() },
-    )
-endif
-meson_post_install_path = 'scripts' / 'meson-post-install.scm'
-meson_post_install = configure_file (
-  output: 'meson-post-install.scm',
-  input: meson_post_install_path,
-  configuration: scripts_conf,
-  )
-# wrap is needed on windows mingw
-configure_file (
-  output: 'meson_post_install_wrap.sh',
-  input: 'scripts' / 'generic_guile_wrap.sh',
-  configuration: scripts_conf + {
-    'SCRIPT_NAME': 'meson-post-install.scm'},
-  )
 
 check_headers = [
   'unistd.h',
@@ -260,14 +212,12 @@ jack_dep = dependency (
 if not jack_dep.found ()
   jack_dep = dependency ('jack', required: false)
 endif
-if get_option ('enable_jack') and jack_dep.found ()
+if (not get_option ('enable_jack').disabled ()) and jack_dep.found ()
   cdata.set('HAVE_JACK', 1)
   check_functions += [
     ['jack_set_property',[jack_dep]],
     ['jack_client_stop_thread', [jack_dep]],
     ]
-elif get_option ('enable_jack')
-  error ('libjack not found. Please install it or set \'enable_jack\' to false')
 endif
 
 foreach func : check_functions
@@ -680,6 +630,7 @@ add_project_link_arguments (
 
 ext_srcs = []
 
+subdir ('scripts')
 subdir ('po')
 subdir ('ext')
 subdir ('resources')
@@ -687,10 +638,9 @@ subdir ('data')
 subdir ('src')
 subdir ('tests')
 subdir ('doc')
-subdir ('scripts')
 
 meson.add_install_script (
-  meson.build_root() / 'meson_post_install_wrap.sh')
+  meson.build_root() / 'scripts' / 'meson_post_install_wrap.sh')
 
 meson.add_dist_script (
   'scripts' / 'meson_dist.sh')
@@ -711,7 +661,7 @@ summary({
 
 summary({
   'FFmpeg': get_option('enable_ffmpeg'),
-  'Jack': get_option('enable_jack'),
+  'Jack': not get_option('enable_jack').disabled(),
   'PortAudio': get_option('enable_portaudio'),
   'RtMidi': get_option('enable_rtmidi'),
   'RtAudio': get_option('enable_rtaudio'),

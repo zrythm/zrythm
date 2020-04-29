@@ -56,7 +56,6 @@
             <child>
               <object class="GtkButton" id="cancel">
                 <property name="label" translatable="yes">Cancel</property>
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <signal name="clicked" handler="on_cancel_clicked" object="PreferencesWidget" swapped="no"/>
@@ -356,12 +355,6 @@
                             <property name="top_attach">2</property>
                             <property name="width">2</property>
                           </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
                         </child>
                       </object>
                     </child>

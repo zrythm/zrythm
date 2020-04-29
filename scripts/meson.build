@@ -15,24 +15,60 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-collect_translatables = run_target (
-  'collect-translatables',
-  command: [
-    'collect_translatables.sh',
-    ],
+scripts_conf = {
+  'SCRIPTS_DIR': meson.current_build_dir (),
+  'MESON_BUILD_ROOT': meson.build_root (),
+  'MESON_SOURCE_ROOT': meson.source_root (),
+  }
+if os_windows
+  scripts_conf += { 'GUILE': 'guile' }
+else
+  scripts_conf += { 'GUILE': guile.path() }
+endif
+if pandoc.found()
+  scripts_conf += { 'PANDOC_BIN': pandoc.path() }
+endif
+if texi2html.found()
+  scripts_conf += {
+    'TEXI2HTML_BIN': texi2html.path() }
+endif
+if guile_snarf.found()
+  scripts_conf += {
+    'GUILE_SNARF': guile_snarf.path() }
+endif
+if get_option('guile_snarf_docs_path') != ''
+  scripts_conf += {
+    'GUILE_SNARF_DOCS_BIN': get_option (
+      'guile_snarf_docs_path'),
+    'GUILD_BIN': guild.path() }
+endif
+
+# configure each guile script to build/scripts
+src_scripts = run_command ('ls').stdout().strip().split('\n')
+foreach script : src_scripts
+  if script.endswith ('.scm')
+    meson_post_install = configure_file (
+      output: script,
+      input: script,
+      configuration: scripts_conf,
+      )
+  endif
+endforeach
+
+# ---- create wraps needed on windows mingw ----
+
+# create the post install wrap
+meson_post_install_wrap = configure_file (
+  output: 'meson_post_install_wrap.sh',
+  input: 'generic_guile_wrap.sh',
+  configuration: scripts_conf + {
+    'SCRIPT_NAME': 'meson-post-install.scm'},
   )
 
-# run stoat
-if (stoat.found() and
-  meson.get_compiler('c').get_id() == 'clang' and
-  meson.get_compiler('cpp').get_id() == 'clang')
-run_target (
-  'run_stoat',
-  command: [
-    'run_stoat.sh',
-    ],
-  depends: [
-    zrythm_lib,
-    ]
+# create the gschema generator wrap
+gschema_gen_wrap = configure_file (
+  output: 'gschema_gen_wrap.sh',
+  input: 'generic_guile_wrap.sh',
+  configuration: scripts_conf + {
+    'SCRIPT_NAME': 'gschema-gen.scm'},
   )
-endif

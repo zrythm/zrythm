@@ -30,3 +30,10 @@ i18n.gettext (
     '--add-comments'
     ],
   )
+
+collect_translatables = run_target (
+  'collect-translatables',
+  command: [
+    meson.source_root () / 'scripts' / 'collect_translatables.sh',
+    ],
+  )
