@@ -136,7 +136,8 @@ engine_rtaudio_setup (
    * to open */
   char * out_device =
     g_settings_get_string (
-      S_PREFERENCES, "rtaudio-audio-device-name");
+      S_P_GENERAL_ENGINE,
+      "rtaudio-audio-device-name");
   int out_device_id = -1;
   for (int i = 0; i < dev_count; i++)
     {
@@ -179,13 +180,13 @@ engine_rtaudio_setup (
     engine_samplerate_enum_to_int (
       (AudioEngineSamplerate)
       g_settings_get_enum (
-        S_PREFERENCES, "samplerate"));
+        S_P_GENERAL_ENGINE, "sample-rate"));
   unsigned int buffer_size =
     (unsigned int)
     engine_buffer_size_enum_to_int (
       (AudioEngineBufferSize)
       g_settings_get_enum (
-        S_PREFERENCES, "buffer-size"));
+        S_P_GENERAL_ENGINE, "buffer-size"));
   g_message (
     "Attempting to open device [%s] with sample "
     "rate %u and buffer size %d",

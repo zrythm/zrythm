@@ -481,7 +481,8 @@ get_vst_paths (
 #ifdef _WOE32
   char ** paths =
     g_settings_get_strv (
-      S_PREFERENCES, "vst-search-paths-windows");
+      S_P_PLUGINS_PATHS,
+      "vst-search-paths-windows");
   g_return_val_if_fail (paths, NULL);
 #elif defined (__APPLE__)
   char ** paths =
