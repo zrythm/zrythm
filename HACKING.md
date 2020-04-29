@@ -5,22 +5,26 @@ Hacking Zrythm
 
     .
     ├── AUTHORS                      # Author information
+    ├── build                        # temporary build dir
     ├── CHANGELOG.md                 # Changelog
+    ├── CODE_OF_CONDUCT.md           # Code of conduct
     ├── CONTRIBUTING.md              # Contributing guidelines
     ├── COPYING                      # Main license
     ├── COPYING.*                    # Other licenses
     ├── data                         # Data files to be installed
     │   ├── fonts                    # Fonts
-    │   ├── org.zrythm.Zrythm.gschema.xml # GSettings schema
-    │   ├── org.zrythm.Zrythm-mime.xml # MIME type specification for project files
+    │   ├── gtksourceview-monokai-extended.xml # GtkSourceView theme
+    │   ├── org.zrythm.Zrythm-mime.xml # MIME type specification
     │   ├── samples                  # Audio samples
-    │   └── zrythm.desktop.in        # Desktop file
+    │   ├── theme.css                # UI theme
+    │   ├── zrythm-completion.bash   # Bash completion
+    │   ├── zrythm.desktop.in        # Desktop file
+    │   └── zrythm_launch.in         # Launcher script
     ├── doc                          # Documentation
     │   ├── dev                      # Developer docs
     │   ├── man                      # Manpage
     │   └── user                     # User manual
     ├── ext                          # External libs
-    │   ├── libcyaml                 # Yaml serialization
     │   ├── midilib                  # MIDI file serialization
     │   └── zix                      # Data struct utils
     ├── git-packaging-hooks          # Git hooks for packaging
@@ -30,6 +34,7 @@ Hacking Zrythm
     │   ├── gui                      # Gui-related headers
     │   │   ├── backend              # Backend for serialization
     │   │   └── widgets              # Gui widgets
+    │   ├── guile                    # Guile scripting interface
     │   ├── plugins                  # Plugin handling
     │   │   ├── lv2                  # LV2 plugin handling
     │   │   └── vst                  # VST plugin handling
@@ -39,7 +44,7 @@ Hacking Zrythm
     ├── INSTALL.md                   # Installation instructions
     ├── meson.build                  # Meson conf
     ├── meson.options                # Meson options
-    ├── plugins                      # Bundled plugins
+    ├── PACKAGING.md                 # Information for packagers
     ├── po                           # I18n
     │   ├── *.po                     # Translations
     │   ├── LINGUAS                  # Languages
@@ -47,15 +52,23 @@ Hacking Zrythm
     │   └── zrythm.pot               # Source strings
     ├── README.md                    # Main README file
     ├── resources                    # Bundled resources
-    │   ├── gen-gtk-resources-xml.py # Gtk resources generator
+    │   ├── gen-gtk-resources-xml.scm # Gtk resources generator
     │   ├── icons                    # Icons
     │   ├── theme                    # Parent GTK theme
-    │   ├── theme.css                # Zrythm GTK theme
     │   └── ui                       # GTK ui files for widgets
     ├── scripts                      # various scripts
     │   ├── collect_translatables.sh # Prints the translatable files
-    │   └── meson_post_install.py    # Commands to run after install
+    │   ├── generic_guile_wrap.sh    # Wrapper for running guile scripts
+    │   ├── gschema-gen.scm          # GSettings schema generator
+    │   ├── guile-gen-docs.scm       # Guile API doc generator
+    │   ├── guile_gen_texi_docs.sh   # Creates texi docs for the Guile API
+    │   ├── guile-snarf-wrap.scm     # Snarfing for Guile API
+    │   ├── guile-utils.scm          # Utilities used in other scripts
+    │   ├── meson_dist.sh            # Command to run after meson dist
+    │   ├── meson-post-install.scm   # Commands to run after install
+    │   └── run_stoat.sh             # Runs stoat
     ├── src                          # Source (.c) counterparts of inc
+    ├── subprojects                  # Subprojects to auto-fetch if some dependencies are not found
     ├── tests                        # Unit tests
     │   └── helpers                  # Test helpers
     ├── THANKS                       # Thanks notice
