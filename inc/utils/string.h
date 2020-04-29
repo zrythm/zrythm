@@ -140,6 +140,20 @@ string_get_int_after_last_space (
   char *       str_without_num);
 
 /**
+ * TODO
+ * Sorts the given string array and removes
+ * duplicates.
+ *
+ * @param str_arr A NULL-terminated array of strings.
+ *
+ * @return A NULL-terminated array with the string
+ *   addresses of the source array.
+ */
+char **
+string_array_sort_and_remove_duplicates (
+  char ** str_arr);
+
+/**
  * @}
  */
 

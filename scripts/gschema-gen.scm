@@ -93,15 +93,15 @@
 
 (define (schema-print schema)
   ;; display header
-  (display
-    (string-append
-      "  <schema id=\""  (schema-id schema) "\"
-          path=\"" (schema-path schema) "\">\n"))
+  (format #t "  <schema id=~s
+        path=~s>\n"
+        (schema-id schema)
+        (schema-path schema))
   ;; display keys
   (fold
     (lambda (key keys)
       (format #t
-        "    <key name=\"~a\" ~a=\"~a\">
+        "    <key name=~s ~a=~s>~a
       <default>~a</default>
       <summary>~a</summary>
       <description>~a</description>
@@ -114,11 +114,16 @@
           (string-append
             top-id "." (schema-key-enum key) "-enum")
           (schema-key-type key))
+        (if (string? (schema-key-range-min key))
+          (format #f "\n      <range min=~s max=~s />"
+                  (schema-key-range-min key)
+                  (schema-key-range-max key))
+          "")
         (if (or
               (string? (schema-key-enum key))
               (string=? (schema-key-type key) "s"))
-          (string-append
-            "\"" (schema-key-default key) "\"")
+          (format #f "~s"
+                  (schema-key-default key))
           (schema-key-default key))
         (schema-key-summary key)
         (schema-key-description key)))
@@ -507,6 +512,13 @@ Args:
              ))) ;; ui.inspector
 
          ;; -- print preferences schemas --
+         ;; the first key in each schema should
+         ;; be called "info" and have the group in
+         ;; the summary and the subgroup in the
+         ;; description
+         ;; the value is [
+         ;;   sort index of group,
+         ;;   sort index of child ]
 
          (preferences-category-print
            (make-preferences-category
@@ -515,6 +527,9 @@ Args:
                (make-schema
                  "engine"
                  (list
+                   (make-schema-key
+                     "info" "ai" "[0,0]"
+                     "General" "Engine")
                    (make-schema-key-with-enum
                      "audio-backend" "audio-backend"
                      "none" "Audio backend"
@@ -544,6 +559,9 @@ Args:
                  "paths"
                  (list
                    (make-schema-key
+                     "info" "ai" "[0,1]"
+                     "General" "Paths")
+                   (make-schema-key
                      "zrythm-dir" "s"
                      "" "Zrythm path"
                      "The directory used to save projects and other files in.")
@@ -557,6 +575,9 @@ Args:
                (make-schema
                  "uis"
                  (list
+                   (make-schema-key
+                     "info" "ai" "[1,0]"
+                     "Plugins" "UIs")
                    (make-schema-key
                      "open-on-instantiate" "b"
                      "true" "Open UI on instantiation"
@@ -577,6 +598,9 @@ Args:
                (make-schema
                  "paths"
                  (list
+                   (make-schema-key
+                     "info" "ai" "[1,1]"
+                     "Plugins" "Paths")
                    (make-schema-key
                      "vst-search-paths-windows" "as"
                      "[ \"C:\\\\Program Files\\\\Common Files\\\\VST2\",
@@ -604,6 +628,9 @@ Args:
                (make-schema
                  "audio"
                  (list
+                   (make-schema-key
+                     "info" "ai" "[3,0]"
+                     "Editing" "Audio")
                    (make-schema-key-with-enum
                      "fade-algorithm" "curve-algorithm"
                      "superellipse" "Fade algorithm"
@@ -612,6 +639,9 @@ Args:
                (make-schema
                  "automation"
                  (list
+                   (make-schema-key
+                     "info" "ai" "[3,1]"
+                     "Editing" "Automation")
                    (make-schema-key-with-enum
                      "curve-algorithm"
                      "curve-algorithm"
@@ -622,6 +652,9 @@ Args:
                (make-schema
                  "undo"
                  (list
+                   (make-schema-key
+                     "info" "ai" "[3,2]"
+                     "Editing" "Undo")
                    (make-schema-key-with-range
                      "undo-stack-length" "i" "-1"
                      "380000" "128"
@@ -638,7 +671,11 @@ Args:
                  "general"
                  (list
                    (make-schema-key
-                     "autosave-interval" "u" "1"
+                     "info" "ai" "[4,0]"
+                     "Projects" "General")
+                   (make-schema-key-with-range
+                     "autosave-interval" "u"
+                     "0" "120" "1"
                      "Autosave interval"
                      "Interval to auto-save projects, in minutes. Auto-saving will be disabled if this is set to 0.")
                  )) ;; projects/general
@@ -651,6 +688,9 @@ Args:
                (make-schema
                  "general"
                  (list
+                   (make-schema-key
+                     "info" "ai" "[5,0]"
+                     "UI" "General")
                    (make-schema-key-with-enum
                      "language" "language"
                      "en"
@@ -666,6 +706,9 @@ Args:
                (make-schema
                  "pan"
                  (list
+                   (make-schema-key
+                     "info" "ai" "[2,0]"
+                     "DSP" "Pan")
                    (make-schema-key-with-enum
                      "pan-algorithm" "pan-algorithm"
                      "sine"

@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Preferences widget.
+ */
+
 #ifndef __GUI_WIDGETS_PREFERENCES_H__
 #define __GUI_WIDGETS_PREFERENCES_H__
 
@@ -24,51 +30,64 @@
 
 #define PREFERENCES_WIDGET_TYPE \
   (preferences_widget_get_type ())
-G_DECLARE_FINAL_TYPE (PreferencesWidget,
-                      preferences_widget,
-                      Z,
-                      PREFERENCES_WIDGET,
-                      GtkDialog)
-
-#define MW_PREFERENCES ZRYTHM->preferences
+G_DECLARE_FINAL_TYPE (
+  PreferencesWidget, preferences_widget,
+  Z, PREFERENCES_WIDGET, GtkDialog)
 
 typedef struct Preferences Preferences;
 typedef struct _MidiControllerMbWidget
   MidiControllerMbWidget;
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+#define MW_PREFERENCES ZRYTHM->preferences
+
+typedef struct SubgroupInfo
+{
+  /** Localized name. */
+  char *            name;
+
+  char *            group_name;
+
+  int               group_idx;
+  int               subgroup_idx;
+  GSettingsSchema * schema;
+  GSettings *       settings;
+} SubgroupInfo;
+
+/**
+ * Preferences widget.
+ */
 typedef struct _PreferencesWidget
 {
-  GtkDialog                parent_instance;
-  GtkNotebook *            categories;
-  GtkButton *              cancel;
-  GtkButton *              ok;
+  GtkDialog      parent_instance;
+  GtkNotebook *  group_notebook;
+
+  SubgroupInfo   subgroup_infos[12][40];
+
+  /* everything below is unused */
   GtkComboBox *            audio_backend;
   GtkComboBox *            midi_backend;
   GtkComboBox *            pan_algo;
   GtkComboBox *            pan_law;
   MidiControllerMbWidget * midi_controllers;
-  Preferences *            preferences;
-  GtkCheckButton *         open_plugin_uis;
-  GtkCheckButton *         keep_plugin_uis_on_top;
   GtkComboBox *            language;
   GtkLabel *               locale_not_available;
-  GtkSpinButton *          autosave_spin;
-
-  /** Zrythm path chooser. */
-  GtkFileChooserButton *   zpath_fc;
-
   GtkBox *             audio_backend_opts_box;
   GtkComboBox *        buffer_size_cb;
   GtkComboBox *        samplerate_cb;
   GtkComboBoxText *        device_name_cb;
-
-#ifdef _WOE32
-  GtkLabel *           vst_paths_label;
-  GtkEntry *           vst_paths_entry;
-#endif
 } PreferencesWidget;
 
 PreferencesWidget *
 preferences_widget_new (void);
+
+/**
+ * @}
+ */
 
 #endif
