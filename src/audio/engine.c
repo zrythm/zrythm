@@ -196,7 +196,7 @@ engine_init (
       AUDIO_BACKEND_DUMMY :
       (AudioBackend)
       g_settings_get_enum (
-        S_PREFERENCES,
+        S_P_GENERAL_ENGINE,
         "audio-backend");
 
   int backend_reset_to_dummy = 0;
@@ -240,7 +240,7 @@ engine_init (
         "selected audio backend not found. "
         "switching to dummy");
       g_settings_set_enum (
-        S_PREFERENCES, "audio-backend",
+        S_P_GENERAL_ENGINE, "audio-backend",
         AUDIO_BACKEND_DUMMY);
       backend_reset_to_dummy = 1;
       break;
@@ -252,7 +252,7 @@ engine_init (
       MIDI_BACKEND_DUMMY :
       (MidiBackend)
       g_settings_get_enum (
-        S_PREFERENCES,
+        S_P_GENERAL_ENGINE,
         "midi-backend");
   switch (mb_code)
     {
@@ -285,7 +285,7 @@ engine_init (
         "selected midi backend not found. "
         "switching to dummy");
       g_settings_set_enum (
-        S_PREFERENCES, "midi-backend",
+        S_P_GENERAL_ENGINE, "midi-backend",
         MIDI_BACKEND_DUMMY);
       backend_reset_to_dummy = 1;
       break;
@@ -312,15 +312,15 @@ engine_init (
       PAN_LAW_MINUS_3DB :
       (PanLaw)
       g_settings_get_enum (
-        S_PREFERENCES,
+        S_P_DSP_PAN,
         "pan-law");
   self->pan_algo =
     ZRYTHM_TESTING ?
       PAN_ALGORITHM_SINE_LAW :
       (PanAlgorithm)
       g_settings_get_enum (
-        S_PREFERENCES,
-        "pan-algo");
+        S_P_DSP_PAN,
+        "pan-algorithm");
 
   int ret = 0;
   switch (self->audio_backend)

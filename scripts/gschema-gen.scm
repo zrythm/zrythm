@@ -613,7 +613,7 @@ Args:
                  "automation"
                  (list
                    (make-schema-key-with-enum
-                     "automation-curve-algorithm"
+                     "curve-algorithm"
                      "curve-algorithm"
                      "superellipse"
                      "Automation curve algorithm"
@@ -646,7 +646,7 @@ Args:
 
          (preferences-category-print
            (make-preferences-category
-             "user-interface"
+             "ui"
              (list
                (make-schema
                  "general"
@@ -656,8 +656,8 @@ Args:
                      "en"
                      "User interface language"
                      "The language to use for the user interface.")
-                 )) ;; user-interface/language
-             ))) ;; user-interface
+                 )) ;; ui/general
+             ))) ;; ui
 
          (preferences-category-print
            (make-preferences-category

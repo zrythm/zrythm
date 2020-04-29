@@ -389,8 +389,8 @@ setup_formats_combo_box (
   gtk_combo_box_set_active (
     self->format,
     g_settings_get_enum (
-      S_PREFERENCES,
-      "export-format"));
+      S_EXPORT,
+      "format"));
 }
 
 static void
@@ -419,20 +419,20 @@ on_export_clicked (
   info.format =
     gtk_combo_box_get_active (self->format);
   g_settings_set_enum (
-    S_PREFERENCES,
-    "export-format",
+    S_EXPORT,
+    "format",
     info.format);
   info.depth =
     gtk_combo_box_get_active (self->bit_depth);
   g_settings_set_enum (
-    S_PREFERENCES,
-    "export-bit-depth",
+    S_EXPORT,
+    "bit-depth",
     info.depth);
   info.dither =
     gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (self->dither));
   g_settings_set_boolean (
-    S_PREFERENCES, "export-dither", info.dither);
+    S_EXPORT, "dither", info.dither);
   info.artist =
     g_strdup (
       gtk_entry_get_text (self->export_artist));
@@ -440,18 +440,18 @@ on_export_clicked (
     g_strdup (
       gtk_entry_get_text (self->export_genre));
   g_settings_set_string (
-    S_PREFERENCES,
-    "export-artist",
+    S_EXPORT,
+    "artist",
     info.artist);
   g_settings_set_string (
-    S_PREFERENCES,
-    "export-genre",
+    S_EXPORT,
+    "genre",
     info.genre);
 
 #define SET_TIME_RANGE(x) \
   g_settings_set_enum ( \
-    S_PREFERENCES, \
-    "export-time-range", TIME_RANGE_##x); \
+    S_EXPORT, \
+    "time-range", TIME_RANGE_##x); \
   info.time_range = TIME_RANGE_##x
 
   if (gtk_toggle_button_get_active (
@@ -585,13 +585,13 @@ export_dialog_widget_init (
   gtk_entry_set_text (
     GTK_ENTRY (self->export_artist),
     g_settings_get_string (
-      S_PREFERENCES,
-      "export-artist"));
+      S_EXPORT,
+      "artist"));
   gtk_entry_set_text (
     GTK_ENTRY (self->export_genre),
     g_settings_get_string (
-      S_PREFERENCES,
-      "export-genre"));
+      S_EXPORT,
+      "genre"));
 
   gtk_toggle_button_set_active (
     self->time_range_song,
@@ -603,8 +603,8 @@ export_dialog_widget_init (
     self->time_range_custom,
     0);
   switch (g_settings_get_enum (
-            S_PREFERENCES,
-            "export-time-range"))
+            S_EXPORT,
+            "time-range"))
     {
     case 0: // song
       gtk_toggle_button_set_active (
@@ -626,7 +626,7 @@ export_dialog_widget_init (
   gtk_toggle_button_set_active (
     GTK_TOGGLE_BUTTON (self->dither),
     g_settings_get_boolean (
-      S_PREFERENCES, "export-dither"));
+      S_EXPORT, "dither"));
 
   setup_bit_depth_combo_box (self);
   setup_formats_combo_box (self);

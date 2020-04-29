@@ -118,11 +118,11 @@ zrythm_get_dir (
         }
     }
 
-  g_warn_if_fail (S_PREFERENCES != NULL);
+  g_warn_if_fail (S_P_GENERAL_PATHS != NULL);
 
   char * dir =
     g_settings_get_string (
-      S_GENERAL, "dir");
+      S_P_GENERAL_PATHS, "zrythm-dir");
   if (strlen (dir) == 0)
     {
       g_free (dir);
@@ -130,7 +130,7 @@ zrythm_get_dir (
         g_build_filename (
           io_get_home_dir (), "zrythm", NULL);
       g_settings_set_string (
-        S_GENERAL, "dir", dir);
+        S_P_GENERAL_PATHS, "zrythm-dir", dir);
     }
   return dir;
 }
@@ -170,8 +170,8 @@ static void
 init_recent_projects ()
 {
   gchar ** recent_projects =
-    g_settings_get_strv (S_GENERAL,
-                         "recent-projects");
+    g_settings_get_strv (
+      S_GENERAL, "recent-projects");
 
   /* get recent projects */
   ZRYTHM->num_recent_projects = 0;
@@ -204,8 +204,7 @@ init_recent_projects ()
 
   /* save the new list */
   g_settings_set_strv (
-    S_GENERAL,
-    "recent-projects",
+    S_GENERAL, "recent-projects",
     (const char * const *) ZRYTHM->recent_projects);
 }
 
@@ -259,8 +258,7 @@ zrythm_add_to_recent_projects (
     ZRYTHM->num_recent_projects] = NULL;
 
   g_settings_set_strv (
-    S_GENERAL,
-    "recent-projects",
+    S_GENERAL, "recent-projects",
     (const char * const *) ZRYTHM->recent_projects);
 }
 
@@ -282,8 +280,7 @@ zrythm_remove_recent_project (
             ZRYTHM->num_recent_projects] = NULL;
 
           g_settings_set_strv (
-            S_GENERAL,
-            "recent-projects",
+            S_GENERAL, "recent-projects",
             (const char * const *)
               ZRYTHM->recent_projects);
         }
@@ -321,7 +318,7 @@ on_setup_main_window (
   /* add timeout for auto-saving projects */
   unsigned int autosave_interval =
     g_settings_get_uint (
-      S_PREFERENCES, "autosave-interval");
+      S_P_PROJECTS_GENERAL, "autosave-interval");
   if (autosave_interval > 0)
     {
       PROJECT->last_autosave_time =

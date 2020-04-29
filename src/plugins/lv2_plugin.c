@@ -1564,7 +1564,7 @@ lv2_plugin_instantiate (
     lilv_plugin_get_uis (self->lilv_plugin);
   if (!ZRYTHM_TESTING &&
       !g_settings_get_boolean (
-        S_PREFERENCES, "generic-plugin-uis"))
+        S_P_PLUGINS_UIS, "generic"))
     {
       LILV_FOREACH (uis, u, self->uis)
         {
@@ -1601,8 +1601,8 @@ lv2_plugin_instantiate (
     }
   else if (!ZRYTHM_TESTING &&
            !g_settings_get_boolean (
-              S_PREFERENCES,
-              "generic-plugin-uis"))
+              S_P_PLUGINS_UIS,
+              "generic"))
     {
       self->ui =
         lilv_uis_get (

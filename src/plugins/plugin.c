@@ -534,7 +534,7 @@ plugin_set_ui_refresh_rate (
   /* if no preferred refresh rate is set,
    * use the monitor's refresh rate */
   if (!g_settings_get_int (
-         S_PREFERENCES, "plugin-ui-refresh-rate"))
+         S_P_PLUGINS_UIS, "refresh-rate"))
     {
       GdkDisplay * display =
         gdk_display_get_default ();
@@ -561,7 +561,7 @@ plugin_set_ui_refresh_rate (
       self->ui_update_hz =
         (float)
         g_settings_get_int (
-          S_PREFERENCES, "plugin-ui-refresh-rate");
+          S_P_PLUGINS_UIS, "refresh-rate");
     }
 
   /* clamp the refresh rate to sensible limits */

@@ -38,14 +38,12 @@
 void
 settings_init (Settings * self)
 {
-  self->root =
-    g_settings_new (GSETTINGS_ZRYTHM_PREFIX);
   self->general =
     g_settings_new (
       GSETTINGS_ZRYTHM_PREFIX ".general");
-  self->preferences =
+  self->export =
     g_settings_new (
-      GSETTINGS_ZRYTHM_PREFIX ".preferences");
+      GSETTINGS_ZRYTHM_PREFIX ".export");
   self->ui =
     g_settings_new (
       GSETTINGS_ZRYTHM_PREFIX ".ui");
@@ -53,9 +51,30 @@ settings_init (Settings * self)
     g_settings_new (
       GSETTINGS_ZRYTHM_PREFIX ".ui.inspector");
 
+#define PREFERENCES_PREFIX \
+  GSETTINGS_ZRYTHM_PREFIX ".preferences."
+#define NEW_PREFERENCES_SETTINGS(a,b) \
+  self->preferences_##a##_##b = \
+    g_settings_new ( \
+      PREFERENCES_PREFIX #a "." #b); \
+  g_return_if_fail (self->preferences_##a##_##b)
+
+  NEW_PREFERENCES_SETTINGS (dsp, pan);
+  NEW_PREFERENCES_SETTINGS (editing, audio);
+  NEW_PREFERENCES_SETTINGS (editing, automation);
+  NEW_PREFERENCES_SETTINGS (editing, undo);
+  NEW_PREFERENCES_SETTINGS (general, engine);
+  NEW_PREFERENCES_SETTINGS (general, paths);
+  NEW_PREFERENCES_SETTINGS (plugins, uis);
+  NEW_PREFERENCES_SETTINGS (plugins, paths);
+  NEW_PREFERENCES_SETTINGS (projects, general);
+  NEW_PREFERENCES_SETTINGS (ui, general);
+
+#undef PREFERENCES_PREFIX
+
   g_return_if_fail (
-    self->root && self->general &&
-    self->preferences && self->ui &&
+    self->general &&
+    self->export && self->ui &&
     self->ui_inspector);
 }
 
@@ -272,14 +291,14 @@ settings_print (
 void
 settings_free_members (Settings * self)
 {
-  if (self->root)
-    g_object_unref_and_null (self->root);
   if (self->general)
     g_object_unref_and_null (self->general);
-  if (self->preferences)
-    g_object_unref_and_null (self->preferences);
+  if (self->export)
+    g_object_unref_and_null (self->export);
   if (self->ui)
     g_object_unref_and_null (self->ui);
   if (self->ui_inspector)
     g_object_unref_and_null (self->ui_inspector);
+
+  /* TODO more */
 }

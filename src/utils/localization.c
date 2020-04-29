@@ -205,7 +205,9 @@ localization_init (
 {
   /* get selected locale */
   GSettings * prefs =
-    g_settings_new ("org.zrythm.Zrythm.preferences");
+    g_settings_new (
+      GSETTINGS_ZRYTHM_PREFIX
+      ".preferences.ui.general");
   LocalizationLanguage lang =
     g_settings_get_enum (
       prefs, "language");

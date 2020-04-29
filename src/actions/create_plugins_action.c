@@ -97,8 +97,8 @@ create_plugins_action_do (
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
       if (g_settings_get_boolean (
-            S_PREFERENCES,
-            "open-plugin-uis-on-instantiate"))
+            S_P_PLUGINS_UIS,
+            "open-on-instantiate"))
         {
           pl->visible = 1;
           EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,

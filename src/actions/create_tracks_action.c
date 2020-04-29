@@ -194,8 +194,8 @@ create (
 
       if (pl && ZRYTHM_HAVE_UI &&
           g_settings_get_boolean (
-            S_PREFERENCES,
-            "open-plugin-uis-on-instantiate") &&
+            S_P_PLUGINS_UIS,
+            "open-on-instantiate") &&
           add_to_project)
         {
           pl->visible = 1;

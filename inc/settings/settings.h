@@ -36,8 +36,27 @@
 
 #define GSETTINGS_ZRYTHM_PREFIX "org.zrythm.Zrythm"
 #define SETTINGS (&ZRYTHM->settings)
-#define S_PREFERENCES SETTINGS->preferences
 #define S_UI SETTINGS->ui
+#define S_EXPORT SETTINGS->ui
+#define S_P_DSP_PAN SETTINGS->preferences_dsp_pan
+#define S_P_EDITING_AUDIO \
+  SETTINGS->preferences_editing_audio
+#define S_P_EDITING_AUTOMATION \
+  SETTINGS->preferences_editing_automation
+#define S_P_EDITING_UNDO \
+  SETTINGS->preferences_editing_undo
+#define S_P_GENERAL_ENGINE \
+  SETTINGS->preferences_general_engine
+#define S_P_GENERAL_PATHS \
+  SETTINGS->preferences_general_paths
+#define S_P_PLUGINS_UIS \
+  SETTINGS->preferences_plugins_uis
+#define S_P_PLUGINS_PATHS \
+  SETTINGS->preferences_plugins_paths
+#define S_P_PROJECTS_GENERAL \
+  SETTINGS->preferences_projects_general
+#define S_P_UI_GENERAL \
+  SETTINGS->preferences_ui_general
 #define S_GENERAL SETTINGS->general
 #define S_UI_INSPECTOR_SETTINGS \
   SETTINGS->ui_inspector
@@ -54,18 +73,23 @@
 
 typedef struct Settings
 {
-  GSettings * root;
-
-  /**
-   * This is for everything stored in preferences that can
-   * be edited by the user.
-   */
-  GSettings * preferences;
-
   /**
    * General settings, like recent projects list.
    */
   GSettings * general;
+
+  /** All preferences_* settings are to be shown in
+   * the preferences dialog. */
+  GSettings * preferences_dsp_pan;
+  GSettings * preferences_editing_audio;
+  GSettings * preferences_editing_automation;
+  GSettings * preferences_editing_undo;
+  GSettings * preferences_general_engine;
+  GSettings * preferences_general_paths;
+  GSettings * preferences_plugins_uis;
+  GSettings * preferences_plugins_paths;
+  GSettings * preferences_projects_general;
+  GSettings * preferences_ui_general;
 
   /**
    * UI memory.
@@ -75,6 +99,8 @@ typedef struct Settings
    * remembered.
    */
   GSettings * ui;
+
+  GSettings * export;
 
   GSettings * ui_inspector;
 } Settings;

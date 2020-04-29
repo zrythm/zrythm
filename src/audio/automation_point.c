@@ -58,8 +58,8 @@ _create_new (
       CURVE_ALGORITHM_SUPERELLIPSE :
       (CurveAlgorithm)
       g_settings_get_enum (
-        S_PREFERENCES,
-        "automation-curve-algorithm");
+        S_P_EDITING_AUTOMATION,
+        "curve-algorithm");
 
   self->index = -1;
 

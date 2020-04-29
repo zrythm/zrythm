@@ -54,21 +54,21 @@ setup_audio_devices (
 {
   AudioBackend prev_backend =
     g_settings_get_enum (
-      S_PREFERENCES, "audio-backend");
+      S_P_GENERAL_ENGINE, "audio-backend");
   const char * active_id =
     gtk_combo_box_get_active_id (
       self->audio_backend);
   if (active_id)
     {
       g_settings_set_enum (
-        S_PREFERENCES, "audio-backend",
+        S_P_GENERAL_ENGINE, "audio-backend",
         atoi (active_id));
     }
 
   AudioBackend backend =
     (AudioBackend)
     g_settings_get_enum (
-      S_PREFERENCES, "audio-backend");
+      S_P_GENERAL_ENGINE, "audio-backend");
   gtk_widget_set_visible (
     GTK_WIDGET (self->audio_backend_opts_box),
     backend == AUDIO_BACKEND_SDL ||
@@ -88,7 +88,7 @@ setup_audio_devices (
 #endif
 
   g_settings_set_enum (
-    S_PREFERENCES, "audio-backend", prev_backend);
+    S_P_GENERAL_ENGINE, "audio-backend", prev_backend);
 }
 
 static void
@@ -149,7 +149,7 @@ setup_autosave_spinbutton (
   GtkAdjustment * adj =
     gtk_adjustment_new (
       g_settings_get_uint (
-        S_PREFERENCES, "autosave-interval"),
+        S_P_PROJECTS_GENERAL, "autosave-interval"),
       0, 20, 1.0, 5.0, 0.0);
   gtk_spin_button_set_adjustment (
     self->autosave_spin,
@@ -162,13 +162,13 @@ setup_plugins (PreferencesWidget * self)
   gtk_toggle_button_set_active (
     GTK_TOGGLE_BUTTON (self->open_plugin_uis),
     g_settings_get_boolean (
-      S_PREFERENCES,
-      "open-plugin-uis-on-instantiate"));
+      S_P_PLUGINS_UIS,
+      "open-on-instantiate"));
   gtk_toggle_button_set_active (
     GTK_TOGGLE_BUTTON (self->keep_plugin_uis_on_top),
     g_settings_get_boolean (
-      S_PREFERENCES,
-      "plugin-uis-stay-on-top"));
+      S_P_PLUGINS_UIS,
+      "stay-on-top"));
 }
 
 static void
@@ -191,42 +191,42 @@ on_ok_clicked (GtkWidget * widget,
     Z_PREFERENCES_WIDGET (user_data);
 
   g_settings_set_enum (
-    S_PREFERENCES,
+    S_P_GENERAL_ENGINE,
     "audio-backend",
     atoi (
       gtk_combo_box_get_active_id (
         self->audio_backend)));
   g_settings_set_enum (
-    S_PREFERENCES,
+    S_P_GENERAL_ENGINE,
     "midi-backend",
     atoi (
       gtk_combo_box_get_active_id (
         self->midi_backend)));
   g_settings_set_enum (
-    S_PREFERENCES,
+    S_P_UI_GENERAL,
     "language",
     gtk_combo_box_get_active (self->language));
   g_settings_set_enum (
-    S_PREFERENCES,
-    "pan-algo",
+    S_P_DSP_PAN,
+    "pan-algorithm",
     gtk_combo_box_get_active (self->pan_algo));
   g_settings_set_enum (
-    S_PREFERENCES,
+    S_P_DSP_PAN,
     "pan-law",
     gtk_combo_box_get_active (self->pan_law));
   g_settings_set_boolean (
-    S_PREFERENCES,
-    "open-plugin-uis-on-instantiate",
+    S_P_PLUGINS_UIS,
+    "open-on-instantiate",
     gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (self->open_plugin_uis)));
   g_settings_set_boolean (
-    S_PREFERENCES,
-    "plugin-uis-stay-on-top",
+    S_P_PLUGINS_UIS,
+    "stay-on-top",
     gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (
         self->keep_plugin_uis_on_top)));
   g_settings_set_uint (
-    S_PREFERENCES,
+    S_P_PROJECTS_GENERAL,
     "autosave-interval",
     (unsigned int)
       gtk_spin_button_get_value (
@@ -242,29 +242,31 @@ on_ok_clicked (GtkWidget * widget,
   AudioBackend backend =
     (AudioBackend)
     g_settings_get_enum (
-      S_PREFERENCES, "audio-backend");
+      S_P_GENERAL_ENGINE, "audio-backend");
   if (backend == AUDIO_BACKEND_SDL ||
       backend == AUDIO_BACKEND_RTAUDIO)
     {
       g_settings_set_enum (
-        S_PREFERENCES, "samplerate",
+        S_P_GENERAL_ENGINE, "sample-rate",
         gtk_combo_box_get_active (
           self->samplerate_cb));
       g_settings_set_enum (
-        S_PREFERENCES, "buffer-size",
+        S_P_GENERAL_ENGINE, "buffer-size",
         gtk_combo_box_get_active (
           self->buffer_size_cb));
       if (backend == AUDIO_BACKEND_SDL)
         {
           g_settings_set_string (
-            S_PREFERENCES, "sdl-audio-device-name",
+            S_P_GENERAL_ENGINE,
+            "sdl-audio-device-name",
             gtk_combo_box_text_get_active_text (
               self->device_name_cb));
         }
       else if (backend == AUDIO_BACKEND_RTAUDIO)
         {
           g_settings_set_string (
-            S_PREFERENCES, "rtaudio-audio-device-name",
+            S_P_GENERAL_ENGINE,
+            "rtaudio-audio-device-name",
             gtk_combo_box_text_get_active_text (
               self->device_name_cb));
         }
@@ -278,7 +280,7 @@ on_ok_clicked (GtkWidget * widget,
   char * str =
     g_file_get_path (file);
   g_settings_set_string (
-    S_GENERAL, "dir", str);
+    S_P_GENERAL_PATHS, "zrythm-dir", str);
   g_free (str);
 
   gtk_window_close (GTK_WINDOW (self));

@@ -82,7 +82,7 @@ midi_controller_mb_widget_save_settings (
 
   int res =
     g_settings_set_strv (
-      S_PREFERENCES,
+      S_P_GENERAL_ENGINE,
       "midi-controllers",
       (const char * const*) controllers);
   g_warn_if_fail (res == 1);

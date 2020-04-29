@@ -812,7 +812,7 @@ ui_setup_language_combo_box (
   gtk_combo_box_set_active (
     GTK_COMBO_BOX (language),
     g_settings_get_enum (
-      S_PREFERENCES,
+      S_P_UI_GENERAL,
       "language"));
 }
 
@@ -829,7 +829,7 @@ ui_setup_audio_backends_combo_box (
   char id[40];
   sprintf (id, "%d",
     g_settings_get_enum (
-      S_PREFERENCES,
+      S_P_GENERAL_ENGINE,
       "audio-backend"));
   gtk_combo_box_set_active_id (
     GTK_COMBO_BOX (cb), id);
@@ -848,7 +848,7 @@ ui_setup_midi_backends_combo_box (
   char id[40];
   sprintf (id, "%d",
     g_settings_get_enum (
-      S_PREFERENCES,
+      S_P_GENERAL_ENGINE,
       "midi-backend"));
   gtk_combo_box_set_active_id (
     GTK_COMBO_BOX (cb), id);
@@ -867,8 +867,8 @@ ui_setup_pan_algo_combo_box (
   gtk_combo_box_set_active (
     GTK_COMBO_BOX (cb),
     g_settings_get_enum (
-      S_PREFERENCES,
-      "pan-algo"));
+      S_P_DSP_PAN,
+      "pan-algorithm"));
 }
 
 /**
@@ -884,7 +884,7 @@ ui_setup_pan_law_combo_box (
   gtk_combo_box_set_active (
     GTK_COMBO_BOX (cb),
     g_settings_get_enum (
-      S_PREFERENCES,
+      S_P_DSP_PAN,
       "pan-law"));
 }
 
@@ -937,7 +937,7 @@ ui_setup_buffer_size_combo_box (
   char id[40];
   sprintf (id, "%d",
     g_settings_get_enum (
-      S_PREFERENCES,
+      S_P_GENERAL_ENGINE,
       "buffer-size"));
   gtk_combo_box_set_active_id (
     GTK_COMBO_BOX (cb), id);
@@ -956,8 +956,8 @@ ui_setup_samplerate_combo_box (
   char id[40];
   sprintf (id, "%d",
     g_settings_get_enum (
-      S_PREFERENCES,
-      "samplerate"));
+      S_P_GENERAL_ENGINE,
+      "sample-rate"));
   gtk_combo_box_set_active_id (
     GTK_COMBO_BOX (cb), id);
 }
@@ -972,7 +972,7 @@ ui_setup_device_name_combo_box (
   AudioBackend backend =
     (AudioBackend)
     g_settings_get_enum (
-      S_PREFERENCES, "audio-backend");
+      S_P_GENERAL_ENGINE, "audio-backend");
 
   gtk_combo_box_text_remove_all (cb);
 
@@ -989,7 +989,7 @@ ui_setup_device_name_combo_box (
       } \
     char * current_device = \
       g_settings_get_string ( \
-        S_PREFERENCES, \
+        S_P_GENERAL_ENGINE, \
         #type "-audio-device-name"); \
     for (int i = 0; i < num_names; i++) \
       { \
@@ -1030,7 +1030,8 @@ ui_setup_vst_paths_entry (
 {
   char ** paths =
     g_settings_get_strv (
-      S_PREFERENCES, "vst-search-paths-windows");
+      S_P_PLUGINS_PATHS,
+      "vst-search-paths-windows");
   g_return_if_fail (paths);
 
   int path_idx = 0;
@@ -1062,7 +1063,7 @@ ui_update_vst_paths_from_entry (
   char ** paths =
     g_strsplit (txt, ";", 0);
   g_settings_set_strv (
-    S_PREFERENCES, "vst-search-paths-windows",
+    S_P_PLUGINS_PATHS, "vst-search-paths-windows",
     (const char * const *) paths);
   g_free (paths);
 }

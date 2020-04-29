@@ -753,7 +753,8 @@ project_autosave_cb (
       gint64 microsec_to_autosave =
         (gint64)
         g_settings_get_uint (
-          S_PREFERENCES, "autosave-interval") * 60 *
+          S_P_PROJECTS_GENERAL,
+          "autosave-interval") * 60 *
           1000000 -
           /* subtract 4 seconds because the time
            * this gets called is not exact */

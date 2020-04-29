@@ -108,7 +108,7 @@ on_tail_value_changed (
   BounceDialogWidget * self)
 {
   g_settings_set_int (
-    S_PREFERENCES, "bounce-tail",
+    S_UI, "bounce-tail",
     gtk_spin_button_get_value_as_int (spin));
 }
 
@@ -165,11 +165,11 @@ bounce_dialog_widget_init (BounceDialogWidget * self)
   gtk_toggle_button_set_active (
     GTK_TOGGLE_BUTTON (self->with_effects_check),
     g_settings_get_boolean (
-      S_PREFERENCES, "bounce-with-effects"));
+      S_UI, "bounce-with-effects"));
   gtk_spin_button_set_value (
     self->tail_spin,
     (double)
     g_settings_get_int (
-      S_PREFERENCES, "bounce-tail"));
+      S_UI, "bounce-tail"));
 }
 

@@ -123,7 +123,7 @@ setup (
    * exist */
   gchar ** saved_controllers =
     g_settings_get_strv (
-      S_PREFERENCES,
+      S_P_GENERAL_ENGINE,
       "midi-controllers");
   char * tmp;
   i = 0;

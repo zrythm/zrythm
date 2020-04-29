@@ -56,7 +56,7 @@ on_reset_clicked (
     GTK_FILE_CHOOSER (self->fc_btn),
     dir);
   g_settings_set_string (
-    S_GENERAL, "dir", dir);
+    S_P_GENERAL_PATHS, "zrythm-dir", dir);
   g_free (dir);
 }
 
@@ -149,7 +149,7 @@ on_audio_backend_changed (
 {
   /* update settings */
   g_settings_set_enum (
-    S_PREFERENCES,
+    S_P_GENERAL_ENGINE,
     "audio-backend",
     atoi (gtk_combo_box_get_active_id (widget)));
 }
@@ -161,7 +161,7 @@ on_midi_backend_changed (
 {
   AudioBackend ab =
     g_settings_get_enum (
-      S_PREFERENCES, "audio-backend");
+      S_P_GENERAL_ENGINE, "audio-backend");
   MidiBackend mb =
     (MidiBackend)
     atoi (gtk_combo_box_get_active_id (widget));
@@ -178,7 +178,7 @@ on_midi_backend_changed (
 
   /* update settings */
   g_settings_set_enum (
-    S_PREFERENCES, "midi-backend", mb);
+    S_P_GENERAL_ENGINE, "midi-backend", mb);
 }
 
 static void
@@ -192,7 +192,7 @@ on_language_changed (
 
   /* update settings */
   g_settings_set_enum (
-    S_PREFERENCES, "language", (int) lang);
+    S_P_UI_GENERAL, "language", (int) lang);
 
   /* if locale exists */
   if (localization_init (1))
@@ -241,7 +241,7 @@ on_file_set (
   char * str =
     g_file_get_path (file);
   g_settings_set_string (
-    S_GENERAL, "dir", str);
+    S_P_GENERAL_PATHS, "zrythm-dir", str);
   char * str2 =
     g_build_filename (
       str, ZRYTHM_PROJECTS_DIR, NULL);

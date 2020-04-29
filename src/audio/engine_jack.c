@@ -156,7 +156,7 @@ autoconnect_midi_controllers (
   /* get selected MIDI devices */
   char ** devices =
     g_settings_get_strv (
-      S_PREFERENCES,
+      S_P_GENERAL_ENGINE,
       "midi-controllers");
 
   if(!devices) return;

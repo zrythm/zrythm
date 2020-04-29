@@ -948,7 +948,7 @@ vst_plugin_open_ui (
 #endif
 
   if (g_settings_get_boolean (
-        S_PREFERENCES, "plugin-uis-stay-on-top"))
+        S_P_PLUGINS_UIS, "stay-on-top"))
     {
 #ifdef _WOE32
       gtk_window_set_transient_for (
