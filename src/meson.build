@@ -39,7 +39,7 @@ zrythm_link_libs = [
   midilib,
   ]
 
-if get_option ('enable_guile')
+if guile_dep.found ()
   zrythm_link_libs += guilelib
 endif
 

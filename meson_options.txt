@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -34,57 +34,57 @@ option (
   description: 'Whether to compile GUI unit tests')
 
 option (
-  'enable_ffmpeg',
-  type: 'boolean',
-  value: false,
+  'ffmpeg',
+  type: 'feature',
+  value: 'disabled',
   description: 'Compile with ffmpeg (for MP3 support)')
 
 option (
-  'enable_portaudio',
-  type: 'boolean',
-  value: false,
+  'portaudio',
+  type: 'feature',
+  value: 'disabled',
   description: 'Compile with portaudio support')
 
 option (
-  'enable_rtmidi',
-  type: 'boolean',
-  value: false,
+  'rtmidi',
+  type: 'feature',
+  value: 'disabled',
   description: 'Compile with RtMidi support')
 
 option (
-  'enable_rtaudio',
-  type: 'boolean',
-  value: false,
+  'rtaudio',
+  type: 'feature',
+  value: 'disabled',
   description: 'Compile with RtAudio support')
 
 option (
-  'enable_sdl',
-  type: 'boolean',
-  value: false,
+  'sdl',
+  type: 'feature',
+  value: 'disabled',
   description: 'Compile with SDL2 backend support')
 
 option (
-  'enable_carla',
-  type: 'boolean',
-  value: false,
+  'carla',
+  type: 'feature',
+  value: 'disabled',
   description: 'Use Carla to wrap some plugins')
 
 option (
-  'enable_jack',
+  'jack',
   type: 'feature',
   value: 'auto',
   description: 'Compile with JACK support')
 
 option (
-  'enable_graphviz',
-  type: 'boolean',
-  value: true,
+  'graphviz',
+  type: 'feature',
+  value: 'auto',
   description: 'Compile with GraphViz support (for exporting graphs)')
 
 option (
-  'enable_guile',
-  type: 'boolean',
-  value: true,
+  'guile',
+  type: 'feature',
+  value: 'auto',
   description: 'Build with libguile support for scripting')
 
 option (

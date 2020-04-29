@@ -58,7 +58,7 @@ endif
 
 # generate guile docs
 guile_docs = []
-if get_option ('enable_guile') and get_option ('guile_snarf_docs_path') != ''
+if guile_dep.found () and get_option ('guile_snarf_docs_path') != ''
   foreach snarfable_src : guile_snarfable_srcs
     split_by_dot = snarfable_src.split('.')
     without_ext = ''

@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -97,12 +97,10 @@ if not os_windows
 endif
 
 # GtkSourceView styles
-if get_option ('enable_guile')
-  install_data (
-    'gtksourceview-monokai-extended.xml',
-    install_dir: sourceviewstylesdir,
-    rename: 'monokai-extended-zrythm.xml')
-endif
+install_data (
+  'gtksourceview-monokai-extended.xml',
+  install_dir: sourceviewstylesdir,
+  rename: 'monokai-extended-zrythm.xml')
 
 # theme
 install_data (

@@ -64,7 +64,7 @@ script:
   set -e
   case $TRAVIS_OS_NAME in
     osx)
-      meson build -Denable_sdl=true -Denable_rtaudio=true -Denable_rtmidi=true -Denable_tests=true -Denable_jack=false
+      meson build -Dsdl=enabled -Drtaudio=auto -Drtmidi=auto -Denable_tests=true
       ninja -C build
       ninja -C build test
       sudo ninja -C build install
@@ -73,11 +73,7 @@ script:
       # hack to enable tests
       $mingw64 sed -i -e '27s/false/true/' meson_options.txt
       # hack to enable sdl
-      $mingw64 sed -i -e '63s/false/true/' meson_options.txt
-      # hack to disable jack
-      $mingw64 sed -i -e '75s/true/false/' meson_options.txt
-      # hack to disable guile
-      $mingw64 sed -i -e '87s/true/false/' meson_options.txt
+      $mingw64 sed -i -e '63s/disabled/enabled/' meson_options.txt
       $mingw64 meson build
       $mingw64 ninja -C build
       $mingw64 ninja -C build test

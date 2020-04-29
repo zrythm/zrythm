@@ -33,9 +33,9 @@ guile_srcs = [
   guile_snarfable_srcs,
   ]
 
-if get_option ('enable_guile')
-  if guile_snarf.found()
-# .x files
+if guile_dep.found ()
+  if guile_snarf.found ()
+    # .x files
     guile_snarfed_srcs = []
     foreach snarfable_src : guile_snarfable_srcs
       split_by_dot = snarfable_src.split('.')

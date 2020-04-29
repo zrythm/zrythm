@@ -210,9 +210,11 @@ check_functions = [
 jack_dep = dependency (
   'jack', required: false, version: '<1.0')
 if not jack_dep.found ()
-  jack_dep = dependency ('jack', required: false)
+  jack_dep = dependency (
+    'jack',
+    required: get_option ('jack'))
 endif
-if (not get_option ('enable_jack').disabled ()) and jack_dep.found ()
+if jack_dep.found ()
   cdata.set('HAVE_JACK', 1)
   check_functions += [
     ['jack_set_property',[jack_dep]],
@@ -436,6 +438,109 @@ else
   cdata.set('HAVE_GTK_SOURCE_VIEW_3', 1)
 endif
 
+libcgraph_dep = dependency (
+  'libcgraph',
+  required: get_option ('graphviz'))
+libgvc_dep = dependency (
+  'libgvc',
+  required: get_option ('graphviz'))
+if libcgraph_dep.found () and libgvc_dep.found ()
+  cdata.set('HAVE_CGRAPH', 1)
+endif
+
+guile_dep = dependency (
+  'guile-3.0', required: false)
+if not guile_dep.found ()
+  guile_dep = dependency (
+    'guile-2.2',
+    required: get_option ('guile'))
+endif
+if (guile_dep.found ())
+  cdata.set('HAVE_GUILE', 1)
+endif
+
+libavcodec_dep = dependency (
+  'libavcodec',
+  required: get_option ('ffmpeg'))
+libavformat_dep = dependency (
+  'libavformat',
+  required: get_option ('ffmpeg'))
+libavutil_dep = dependency (
+  'libavformat',
+  required: get_option ('ffmpeg'))
+if libavcodec_dep.found () and libavformat_dep.found () and libavutil_dep.found ()
+  cdata.set('HAVE_FFMPEG', 1)
+endif
+
+carla_native_plugin_dep = dependency (
+  'carla-native-plugin', version: '>=2.1.0',
+  required: get_option ('carla'))
+carla_standalone_dep = dependency (
+  'carla-standalone', version: '>=2.1.0',
+  required: get_option ('carla'))
+carla_utils_dep = dependency (
+  'carla-utils', version: '>=2.1.0',
+  required: get_option ('carla'))
+if (carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla_utils_dep.found ())
+  carla_libdir = carla_native_plugin_dep.get_pkgconfig_variable('libdir')
+  install_data (
+    find_program (
+      carla_libdir / 'carla-discovery-native.exe',
+      carla_libdir /
+        'carla-discovery-native').path(),
+    install_dir: bindir)
+  cdata.set('HAVE_CARLA', 1)
+# discovery & bridge for 32-bit vst's
+  if os_windows
+    install_data (
+      find_program (
+        carla_libdir /
+          'carla-discovery-win32.exe').path(),
+      install_dir: bindir)
+    install_data (
+      find_program (
+        carla_libdir /
+          'carla-bridge-win32.exe').path(),
+      install_dir: bindir)
+  endif
+endif
+
+portaudio_dep = dependency (
+  # disable until it works
+  'portaudio-2.0-dont-use-yet',
+  required: get_option ('portaudio'))
+if portaudio_dep.found ()
+  cdata.set('HAVE_PORT_AUDIO', 1)
+endif
+
+rtmidi_dep = dependency (
+  'rtmidi', required: get_option ('rtmidi'))
+if not rtmidi_dep.found () and not get_option ('rtmidi').disabled ()
+  rtmidi_proj = subproject('rtmidi')
+  rtmidi_dep = rtmidi_proj.get_variable(
+    'zrythm_rtmidi_dep')
+endif
+if rtmidi_dep.found ()
+  cdata.set('HAVE_RTMIDI', 1)
+endif
+
+rtaudio_dep = dependency (
+  'rtaudio', required: get_option ('rtaudio'))
+if not rtaudio_dep.found() and not get_option ('rtaudio').disabled ()
+  rtaudio_proj = subproject('rtaudio')
+  rtaudio_dep = rtaudio_proj.get_variable(
+    'zrythm_rtaudio_dep')
+endif
+if rtaudio_dep.found ()
+  cdata.set('HAVE_RTAUDIO', 1)
+endif
+
+sdl_dep = dependency (
+  'sdl2', required: get_option ('sdl'))
+if sdl_dep.found ()
+  cdata.set('HAVE_SDL', 1)
+endif
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -446,6 +551,19 @@ zrythm_deps = [
   alsa_dep,
   cyaml_dep,
   audec_dep,
+  libcgraph_dep,
+  libgvc_dep,
+  guile_dep,
+  libavcodec_dep,
+  libavformat_dep,
+  libavutil_dep,
+  carla_native_plugin_dep,
+  carla_standalone_dep,
+  carla_utils_dep,
+  portaudio_dep,
+  rtaudio_dep,
+  rtmidi_dep,
+  sdl_dep,
   dependency('threads'),
   lilv_dep,
   dependency(
@@ -472,97 +590,6 @@ zrythm_deps = [
 
   libm,
 ]
-
-if (get_option('enable_carla'))
-  cdata.set('HAVE_CARLA', 1)
-  carla_native_plugin_dep = dependency (
-    'carla-native-plugin', version: '>=2.1.0')
-  carla_standalone_dep = dependency (
-    'carla-standalone', version: '>=2.1.0')
-  carla_utils_dep = dependency (
-    'carla-utils', version: '>=2.1.0')
-  carla_libdir = carla_native_plugin_dep.get_pkgconfig_variable('libdir')
-  install_data (
-    find_program (
-      carla_libdir / 'carla-discovery-native.exe',
-      carla_libdir /
-        'carla-discovery-native').path(),
-    install_dir: bindir)
-  # discovery & bridge for 32-bit vst's
-  if os_windows
-    install_data (
-      find_program (
-        carla_libdir /
-          'carla-discovery-win32.exe').path(),
-      install_dir: bindir)
-    install_data (
-      find_program (
-        carla_libdir /
-          'carla-bridge-win32.exe').path(),
-      install_dir: bindir)
-  endif
-  zrythm_deps += [
-    carla_native_plugin_dep,
-    carla_standalone_dep,
-    carla_utils_dep, ]
-endif
-
-if (get_option('enable_ffmpeg'))
-  zrythm_deps += dependency('libavcodec')
-  zrythm_deps += dependency('libavformat')
-  zrythm_deps += dependency('libavutil')
-  cdata.set('HAVE_FFMPEG', 1)
-endif
-
-if (get_option ('enable_graphviz'))
-  zrythm_deps += dependency ('libcgraph')
-  zrythm_deps += dependency ('libgvc')
-  cdata.set('HAVE_CGRAPH', 1)
-endif
-
-if (get_option('enable_portaudio'))
-  zrythm_deps += dependency ('portaudio-2.0')
-  # disable until it works
-  #cdata.set('HAVE_PORT_AUDIO', 1)
-endif
-
-if (get_option('enable_rtmidi'))
-  rtmidi_dep = dependency ('rtmidi', required: false)
-  if not rtmidi_dep.found()
-    rtmidi_proj = subproject('rtmidi')
-    rtmidi_dep = rtmidi_proj.get_variable(
-      'zrythm_rtmidi_dep')
-  endif
-  zrythm_deps += rtmidi_dep
-  cdata.set('HAVE_RTMIDI', 1)
-endif
-
-if (get_option('enable_rtaudio'))
-  rtaudio_dep = dependency (
-    'rtaudio', required: false)
-  if not rtaudio_dep.found()
-    rtaudio_proj = subproject('rtaudio')
-    rtaudio_dep = rtaudio_proj.get_variable(
-      'zrythm_rtaudio_dep')
-  endif
-  zrythm_deps += rtaudio_dep
-  cdata.set('HAVE_RTAUDIO', 1)
-endif
-
-if (get_option('enable_sdl'))
-  zrythm_deps += dependency ('sdl2')
-  cdata.set('HAVE_SDL', 1)
-endif
-
-if get_option('enable_guile')
-  guile_dep = dependency (
-    'guile-3.0', required: false)
-  if not guile_dep.found ()
-    guile_dep = dependency ('guile-2.2')
-  endif
-  zrythm_deps += guile_dep
-  cdata.set('HAVE_GUILE', 1)
-endif
 
 if os_windows
   zrythm_deps += cc.find_library('dbghelp')
@@ -660,15 +687,15 @@ summary({
   }, section: 'General')
 
 summary({
-  'FFmpeg': get_option('enable_ffmpeg'),
-  'Jack': not get_option('enable_jack').disabled(),
-  'PortAudio': get_option('enable_portaudio'),
-  'RtMidi': get_option('enable_rtmidi'),
-  'RtAudio': get_option('enable_rtaudio'),
-  'SDL': get_option('enable_sdl'),
-  'Carla': get_option('enable_carla'),
+  'FFmpeg': libavcodec_dep.found () and libavformat_dep.found () and libavutil_dep.found (),
+  'Jack': jack_dep.found (),
+  'PortAudio': portaudio_dep.found (),
+  'RtMidi': rtmidi_dep.found (),
+  'RtAudio': rtaudio_dep.found (),
+  'SDL': sdl_dep.found (),
+  'Carla': carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla_utils_dep.found (),
   'Gtop': libgtop_dep.found(),
-  'Guile': get_option('enable_guile'),
+  'Guile': guile_dep. found(),
   }, section: 'Optional libraries')
 
 summary({
