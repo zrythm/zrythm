@@ -2,14 +2,15 @@
 # Copyright (C) 2019 THE zrythm'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # Alexandros Theodotou <alex at zrythm dot org>, 2019.
-# Alexandros Theodotou <alextee@posteo.net>, 2019.
+# Alexandros Theodotou <alextee@posteo.net>, 2019, 2020.
+# Anonymous <noreply@weblate.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-04-30 14:10+0100\n"
-"PO-Revision-Date: 2020-04-29 22:39+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-04-30 23:31+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -58,7 +59,7 @@ msgstr "Silenciar"
 
 #: inc/utils/gtk.h:97
 msgid "Unmute"
-msgstr ""
+msgstr "No silenciar"
 
 #: inc/audio/curve.h:90 src/audio/curve.c:39
 #, fuzzy, c-format
@@ -313,7 +314,7 @@ msgstr ""
 #: src/main.c:328
 #, c-format
 msgid "Unknown option\n"
-msgstr ""
+msgstr "Opción desconocida\n"
 
 #: src/main.c:345
 #, c-format
@@ -374,7 +375,7 @@ msgstr "Analizando complementos"
 #: src/plugins/plugin_manager.c:695
 #, c-format
 msgid "Skipped LV2 plugin at %s"
-msgstr ""
+msgstr "Se saltó el plugin del LV2 en %s"
 
 #: src/plugins/plugin_manager.c:818 src/plugins/plugin_manager.c:944
 #, fuzzy
@@ -384,7 +385,7 @@ msgstr "Analizando complementos"
 #: src/plugins/plugin_manager.c:825 src/plugins/plugin_manager.c:951
 #, c-format
 msgid "Skipped VST plugin at %s"
-msgstr ""
+msgstr "Se saltó el plugin VST en %s"
 
 #: src/plugins/plugin_manager.c:1009
 #, fuzzy
@@ -394,7 +395,7 @@ msgstr "Analizando complementos"
 #: src/plugins/plugin_manager.c:1016
 #, c-format
 msgid "Skipped AU plugin at %u"
-msgstr ""
+msgstr "Se saltó el plugin AU en %u"
 
 #: src/plugins/plugin.c:124
 msgid "Enabled"
@@ -463,7 +464,7 @@ msgstr ""
 #: src/gui/widgets/fader_controls_grid.c:100
 #, c-format
 msgid "RMS"
-msgstr ""
+msgstr "RMS"
 
 #: src/gui/widgets/port_connections_popover.c:77
 msgid "INPUTS"
@@ -479,11 +480,11 @@ msgstr "Añadir"
 
 #: src/gui/widgets/quantize_dialog.c:112
 msgid "note length"
-msgstr ""
+msgstr "longitud de la nota"
 
 #: src/gui/widgets/quantize_dialog.c:121
 msgid "note type"
-msgstr ""
+msgstr "tipo de nota"
 
 #: src/gui/widgets/inspector_port.c:175 src/gui/widgets/balance_control.c:331
 #: src/gui/widgets/fader.c:336 resources/ui/bind_cc_dialog.ui:27
@@ -504,15 +505,15 @@ msgstr "Señales salientes"
 
 #: src/gui/widgets/inspector_port.c:383
 msgid "Current val"
-msgstr ""
+msgstr "El valor actual"
 
 #: src/gui/widgets/inspector_port.c:385
 msgid "Min"
-msgstr ""
+msgstr "Mínimo"
 
 #: src/gui/widgets/inspector_port.c:386
 msgid "Max"
-msgstr ""
+msgstr "Máximo"
 
 #: src/gui/widgets/inspector_port.c:506
 msgid "Expose port to JACK"
@@ -537,7 +538,7 @@ msgstr "Instrumento"
 
 #: src/gui/widgets/track_properties_expander.c:154
 msgid "Track Properties"
-msgstr ""
+msgstr "Propiedades de la pista"
 
 #: src/gui/widgets/track_input_expander.c:292
 msgid "All MIDI Inputs"
@@ -566,7 +567,7 @@ msgstr ""
 #: src/gui/widgets/track_input_expander.c:351
 #, c-format
 msgid "Audio input (%s) for recording"
-msgstr ""
+msgstr "Entrada de audio (%s) para la grabación"
 
 #. TRANSLATORS: Left and Right
 #: src/gui/widgets/track_input_expander.c:353
@@ -593,7 +594,7 @@ msgstr "Ningún canal"
 
 #: src/gui/widgets/track_input_expander.c:487
 msgid "MIDI channel to filter to"
-msgstr ""
+msgstr "Canal MIDI para filtrar a"
 
 #: src/gui/widgets/track_input_expander.c:633
 msgid "Inputs"
@@ -610,19 +611,19 @@ msgstr ""
 
 #: src/gui/widgets/first_run_assistant.c:127
 msgid "Backend combination not supported"
-msgstr ""
+msgstr "No se admite la combinación de la parte trasera"
 
 #: src/gui/widgets/first_run_assistant.c:133
 msgid "The selected backends are operational"
-msgstr ""
+msgstr "Los backends seleccionados están operativos"
 
 #: src/gui/widgets/first_run_assistant.c:173
 msgid "JACK MIDI can only be used with JACK audio"
-msgstr ""
+msgstr "JACK MIDI sólo puede ser usado con el audio de JACK"
 
 #: src/gui/widgets/bind_cc_dialog.c:94
 msgid "Not a control change event"
-msgstr ""
+msgstr "No es un evento de cambio de control"
 
 #: src/gui/widgets/project_assistant.c:265 src/gui/widgets/event_viewer.c:440
 #: resources/ui/create_project_dialog.ui:96
@@ -642,7 +643,7 @@ msgstr ""
 
 #: src/gui/widgets/project_assistant.c:527
 msgid "Blank project"
-msgstr ""
+msgstr "Proyecto en blanco"
 
 #: src/gui/widgets/project_assistant.c:675
 msgid "Project Assistant"
@@ -678,7 +679,7 @@ msgstr ""
 
 #: src/gui/widgets/port_selector_popover.c:84
 msgid "These ports cannot be connected"
-msgstr ""
+msgstr "Estos puertos no pueden ser conectados"
 
 #: src/gui/widgets/port_selector_popover.c:318
 msgid "Track Ports"
@@ -687,7 +688,7 @@ msgstr ""
 #: src/gui/widgets/channel_send_selector.c:158
 #: resources/ui/editor_toolbar.ui:57
 msgid "None"
-msgstr ""
+msgstr "Ninguna"
 
 #: src/gui/widgets/channel_send_selector.c:295
 #: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:24
@@ -697,7 +698,7 @@ msgstr "Aceptar"
 
 #: src/gui/widgets/editor_selection_info.c:58
 msgid "start position"
-msgstr ""
+msgstr "posición de inicio"
 
 #: src/gui/widgets/editor_selection_info.c:85
 #: src/gui/widgets/timeline_selection_info.c:430
@@ -706,7 +707,7 @@ msgstr ""
 
 #: src/gui/widgets/digital_meter.c:295
 msgid "normal"
-msgstr ""
+msgstr "normal"
 
 #: src/gui/widgets/digital_meter.c:298
 msgid "dotted"
@@ -718,7 +719,7 @@ msgstr ""
 
 #: src/gui/widgets/digital_meter.c:920
 msgid "Tempo/BPM"
-msgstr ""
+msgstr "Tempo/BPM"
 
 #: src/gui/widgets/digital_meter.c:934 src/gui/widgets/event_viewer.c:599
 #: src/gui/widgets/event_viewer.c:629 resources/ui/inspector_master.ui:79
@@ -728,24 +729,24 @@ msgstr ""
 
 #: src/gui/widgets/digital_meter.c:964
 msgid "Time Signature - Beats per bar / Beat unit"
-msgstr ""
+msgstr "Firma de tiempo - Latidos por barra / Unidad de latidos"
 
 #: src/gui/widgets/drag_dest_box.c:266
 #, c-format
 msgid "Unsupported file type %s"
-msgstr ""
+msgstr "Tipo de archivo no soportado %s"
 
 #: src/gui/widgets/drag_dest_box.c:294
 msgid "No file found"
-msgstr ""
+msgstr "No se encontró ningún archivo"
 
 #: src/gui/widgets/drag_dest_box.c:473
 msgid "Add _MIDI Track"
-msgstr ""
+msgstr "Agregar la pista de _MIDI"
 
 #: src/gui/widgets/drag_dest_box.c:485
 msgid "Add Audio Track"
-msgstr ""
+msgstr "Agregar pista de audio"
 
 #: src/gui/widgets/drag_dest_box.c:498 src/audio/track.c:1333
 #, fuzzy
@@ -764,15 +765,15 @@ msgstr "Ocultar pista"
 
 #: src/gui/widgets/drag_dest_box.c:532 src/audio/track.c:1345
 msgid "Audio Group"
-msgstr ""
+msgstr "Grupo de Audio"
 
 #: src/gui/widgets/drag_dest_box.c:543 src/audio/track.c:1348
 msgid "MIDI Group"
-msgstr ""
+msgstr "Grupo MIDI"
 
 #: src/gui/widgets/drag_dest_box.c:555
 msgid "Add Group Track"
-msgstr ""
+msgstr "Agregar pista de grupo"
 
 #: src/gui/widgets/instrument_track.c:219 src/gui/widgets/midi_track.c:190
 #: resources/ui/transport_controls.ui:36
@@ -841,13 +842,15 @@ msgstr ""
 
 #: src/gui/widgets/piano_roll_keys.c:168
 msgid "chord"
-msgstr ""
+msgstr "Acorde"
 
 #: src/gui/widgets/plugin_browser.c:86 src/gui/widgets/plugin_browser.c:370
 msgid ""
 "VST support without Carla is deprecated and will be removed in future "
 "versions."
 msgstr ""
+"El soporte de VST sin Carla está obsoleto y será eliminado en futuras "
+"versiones."
 
 #: src/gui/widgets/plugin_browser.c:1018 resources/ui/panel_file_browser.ui:63
 #: resources/ui/file_browser.ui:63
@@ -860,7 +863,7 @@ msgstr ""
 
 #: src/gui/widgets/plugin_browser.c:1038
 msgid "Protocol"
-msgstr ""
+msgstr "Protocolo"
 
 #: src/gui/widgets/bot_bar.c:50 src/gui/widgets/ruler_marker.c:169
 msgid "Playhead"
@@ -872,19 +875,19 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:54
 msgid "Playhead [Jack Client]"
-msgstr ""
+msgstr "Playhead [Cliente Jack]"
 
 #: src/gui/widgets/bot_bar.c:135
 msgid "Become JACK Transport master"
-msgstr ""
+msgstr "Conviértase en maestro de transporte de JACK"
 
 #: src/gui/widgets/bot_bar.c:154
 msgid "Sync to JACK Transport"
-msgstr ""
+msgstr "Sincronización con el transporte JACK"
 
 #: src/gui/widgets/bot_bar.c:177
 msgid "Unlink JACK Transport"
-msgstr ""
+msgstr "Desenganchar el transporte de JACK"
 
 #: src/gui/widgets/bot_bar.c:237
 msgid "playhead"

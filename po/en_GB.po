@@ -1,14 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# Alexandros Theodotou <alextee@posteo.net>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-04-30 14:10+0100\n"
-"PO-Revision-Date: 2020-01-20 08:22+0000\n"
+"PO-Revision-Date: 2020-04-30 23:31+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: English (United Kingdom) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/en_GB/>\n"
@@ -17,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 4.0.2\n"
 
 #: inc/utils/gtk.h:49
 msgid "Cu_t"
@@ -1247,7 +1246,7 @@ msgstr ""
 
 #: src/gui/widgets/ports_expander.c:175 src/gui/widgets/ports_expander.c:377
 msgid "Controls"
-msgstr ""
+msgstr "Controls"
 
 #: src/gui/widgets/ports_expander.c:178
 msgid "Control Outs"
@@ -2998,7 +2997,7 @@ msgstr ""
 #: resources/ui/preferences.ui:572 resources/ui/preferences.ui:618
 #: build/data/org.zrythm.Zrythm.gschema.xml:531
 msgid "Projects"
-msgstr ""
+msgstr "Projects"
 
 #: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:537
 msgid "Autosave interval"
