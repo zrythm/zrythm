@@ -34,7 +34,6 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_identifier.h"
-#include "plugins/vst_plugin.h"
 #include "utils/types.h"
 
 /* pulled in from X11 */
@@ -66,9 +65,6 @@ typedef struct Plugin
    * Pointer back to plugin in its original format.
    */
   Lv2Plugin *          lv2;
-
-  /** VST plugin. */
-  VstPlugin *          vst;
 
   /** Pointer to Carla native plugin. */
   CarlaNativePlugin *  carla;
@@ -185,10 +181,6 @@ plugin_fields_schema[] =
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Plugin, carla,
     carla_native_plugin_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "vst", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Plugin, vst,
-    vst_plugin_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
     "in_ports",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,

@@ -65,7 +65,6 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
-#include "plugins/vst_plugin.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"

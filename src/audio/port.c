@@ -1893,20 +1893,6 @@ port_forward_control_change_event (
                 (uint32_t) self->carla_param_id,
                 self->control);
             }
-          else
-            {
-#endif
-              if (pl->descr->protocol == PROT_VST)
-                {
-                  g_return_if_fail (
-                    pl->vst && pl->vst->aeffect);
-                  AEffect * effect = pl->vst->aeffect;
-                  effect->setParameter (
-                    effect, self->vst_param_id,
-                    self->control);
-              }
-#ifdef HAVE_CARLA
-            }
 #endif
           EVENTS_PUSH (
             ET_PLUGIN_STATE_CHANGED, pl);

@@ -44,7 +44,6 @@
 #include "plugins/lv2/lv2_state.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_gtk.h"
-#include "plugins/vst/vst_x11.h"
 #include "settings/settings.h"
 #include "project.h"
 #include "zrythm.h"
@@ -532,12 +531,6 @@ on_window_destroy (
     case PROT_LV2:
       g_return_if_fail (plugin->lv2);
       lv2_gtk_on_window_destroy (plugin->lv2);
-      break;
-    case PROT_VST:
-      g_return_if_fail (plugin->vst);
-#ifdef HAVE_X11
-      vst_x11_destroy_editor (plugin->vst);
-#endif
       break;
     default:
       break;

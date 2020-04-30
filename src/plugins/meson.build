@@ -23,11 +23,9 @@ plugin_srcs = files ([
   'plugin_descriptor.c',
   'plugin_gtk.c',
   'plugin_manager.c',
-  'vst_plugin.c',
   ])
 
 subdir ('carla')
 subdir ('lv2')
-subdir ('vst')
 
 zrythm_srcs += plugin_srcs

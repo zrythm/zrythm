@@ -43,7 +43,6 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_control.h"
 #include "plugins/lv2/lv2_gtk.h"
-#include "plugins/vst_plugin.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/io.h"
@@ -81,11 +80,6 @@ plugin_init_loaded (
           g_return_if_fail (self->lv2);
           self->lv2->plugin = self;
           lv2_plugin_init_loaded (self->lv2);
-          break;
-        case PROT_VST:
-          g_return_if_fail (self->vst);
-          self->vst->plugin = self;
-          vst_plugin_init_loaded (self->vst);
           break;
         default:
           g_warn_if_reached ();
@@ -172,10 +166,6 @@ plugin_new_from_descr (
         case PROT_LV2:
           lv2_plugin_new_from_uri (
             plugin, descr->uri);
-          break;
-        case PROT_VST:
-          vst_plugin_new_from_descriptor (
-            plugin, descr);
           break;
         default:
           break;
@@ -289,6 +279,8 @@ plugin_set_channel_and_slot (
 /**
  * Returns if the Plugin has a supported custom
  * UI.
+ *
+ * TODO
  */
 int
 plugin_has_supported_custom_ui (
@@ -297,11 +289,6 @@ plugin_has_supported_custom_ui (
   switch (self->descr->protocol)
     {
     case PROT_LV2:
-      break;
-    case PROT_VST:
-      return
-        self->vst->aeffect->flags &
-          effFlagsHasEditor;
       break;
     default:
       g_return_val_if_reached (-1);
@@ -714,15 +701,6 @@ plugin_instantiate (
               }
           }
           break;
-        case PROT_VST:
-          if (vst_plugin_instantiate (
-                pl->vst, !PROJECT->loaded))
-            {
-              g_warning (
-                "VST plugin instantiation failed");
-              return -1;
-            }
-          break;
         default:
           g_warn_if_reached ();
           return -1;
@@ -801,11 +779,6 @@ plugin_process (
           lv2_plugin_process (
             plugin->lv2, g_start_frames, nframes);
           break;
-        case PROT_VST:
-          vst_plugin_process (
-            plugin->vst, g_start_frames,
-            local_offset, nframes);
-          break;
         default:
           break;
         }
@@ -874,13 +847,6 @@ plugin_open_ui (Plugin *plugin)
                   {
                     lv2_gtk_open_ui (lv2_plugin);
                   }
-              }
-              break;
-            case PROT_VST:
-              {
-                VstPlugin * vst_plugin =
-                  plugin->vst;
-                vst_plugin_open_ui (vst_plugin);
               }
               break;
             default:
@@ -1018,24 +984,6 @@ plugin_clone (
 
           /* delete the state file */
           io_remove (pl->lv2->state_file);
-        }
-      else if (pl->descr->protocol == PROT_VST)
-        {
-          /* create a new plugin with same descriptor */
-          clone =
-            plugin_new_from_descr (
-              pl->descr, pl->id.track_pos,
-              pl->id.slot);
-          g_return_val_if_fail (
-            clone && clone->vst, NULL);
-
-          /* instantiate */
-          int ret = plugin_instantiate (clone);
-          g_return_val_if_fail (!ret, NULL);
-
-          /* copy the parameter values from the
-           * original plugin */
-          vst_plugin_copy_params (clone->vst, pl->vst);
         }
 #ifdef HAVE_CARLA
     }
@@ -1178,9 +1126,6 @@ plugin_close_ui (Plugin *plugin)
         {
         case PROT_LV2:
           lv2_gtk_close_ui (plugin->lv2);
-          break;
-        case PROT_VST:
-          vst_plugin_close_ui (plugin->vst);
           break;
         default:
           g_return_if_reached ();

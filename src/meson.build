@@ -85,17 +85,6 @@ zrythm_exe = executable (
   install: true,
   )
 
-vst_test_exe = executable(
-  'zrythm_vst_check',
-  sources: [ vst_check_srcs ],
-  dependencies: [ zrythm_deps, ],
-  link_with: [ zrythm_lib, ],
-  include_directories: all_inc,
-  c_args: [ common_cflags ],
-  link_args: common_ldflags,
-  install: true,
-  )
-
 # run stoat
 if (stoat.found() and
   meson.get_compiler('c').get_id() == 'clang' and

@@ -33,7 +33,7 @@ towards a stable release.
 
 ### Supported plugin protocols
 - Full support: LV2, VST2
-- Experimental: VST3
+- Experimental: VST3, AU
 
 Support for all plugin protocols besides LV2 is
 possible thanks to

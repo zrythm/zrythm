@@ -50,7 +50,6 @@
 #include "gui/widgets/track.h"
 #include "plugins/carla_native_plugin.h"
 #include "plugins/lv2_plugin.h"
-#include "plugins/vst_plugin.h"
 #include "utils/arrays.h"
 #include "utils/datetime.h"
 #include "utils/general.h"
@@ -1090,11 +1089,6 @@ project_save (
                   ret =
                     lv2_plugin_save_state_to_file (
                       pl->lv2, state_dir_plugin);
-                  break;
-                case PROT_VST:
-                  ret =
-                    vst_plugin_save_state_to_file (
-                      pl->vst, state_dir_plugin);
                   break;
                 default:
                   g_warn_if_reached ();

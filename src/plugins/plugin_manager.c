@@ -47,7 +47,6 @@
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
-#include "plugins/vst_plugin.h"
 #include "utils/arrays.h"
 #include "utils/io.h"
 #include "utils/string.h"
@@ -474,6 +473,7 @@ plugin_manager_init (PluginManager * self)
     cached_vst_descriptors_new ();
 }
 
+#ifdef HAVE_CARLA
 static char **
 get_vst_paths (
   PluginManager * self)
@@ -515,13 +515,12 @@ get_vst_paths (
   char ** paths =
     g_strsplit (vst_path, ":", 0);
   g_free (vst_path);
-#endif
+#endif // __APPLE__
 
   return paths;
 }
 
-#if defined (HAVE_CARLA) && \
-  (defined (_WOE32) || defined (__APPLE__))
+#if defined (_WOE32) || defined (__APPLE__)
 static char **
 get_vst3_paths (
   PluginManager * self)
@@ -536,7 +535,7 @@ get_vst3_paths (
   return
     g_strsplit (
       "/Library/Audio/Plug-ins/VST3:", ":", -1);
-#endif
+#endif // __APPLE__
 }
 
 static int
@@ -571,7 +570,7 @@ get_vst3_count (
 
   return count;
 }
-#endif
+#endif // _WOE32 || __APPLE__
 
 static int
 get_vst_count (
@@ -605,6 +604,7 @@ get_vst_count (
 
   return count;
 }
+#endif // HAVE_CARLA
 
 /**
  * Scans for plugins, optionally updating the
@@ -636,15 +636,16 @@ plugin_manager_scan_plugins (
     return;
 
   double size =
-    (double) lilv_plugins_size (lilv_plugins) +
-    (double) get_vst_count (self);
-#if defined (HAVE_CARLA) && \
-  (defined (_WOE32) || defined (__APPLE__))
+    (double) lilv_plugins_size (lilv_plugins);
+#ifdef HAVE_CARLA
+  size += (double) get_vst_count (self);
+#  if defined (_WOE32) || defined (__APPLE__)
   size += (double) get_vst3_count (self);
-#endif
-#if defined (HAVE_CARLA) && defined (__APPLE__)
+#  endif
+#  ifdef __APPLE__
   size +=
     carla_get_cached_plugin_count (PLUGIN_AU, NULL);
+#  endif
 #endif
 
   /* scan LV2 */
@@ -700,6 +701,7 @@ plugin_manager_scan_plugins (
     }
   g_message ("Scanned %d LV2 plugins", count);
 
+#ifdef HAVE_CARLA
   /* scan vst */
   g_message ("Scanning VST plugins...");
   char ** paths = get_vst_paths (self);
@@ -759,7 +761,6 @@ plugin_manager_scan_plugins (
                 }
               else
                 {
-#ifdef HAVE_CARLA
                   descriptor =
                     z_carla_discovery_create_vst_descriptor (
                       plugin_path, ARCH_64,
@@ -771,11 +772,6 @@ plugin_manager_scan_plugins (
                       z_carla_discovery_create_vst_descriptor (
                         plugin_path, ARCH_32,
                         PROT_VST);
-#else
-                  descriptor =
-                    vst_plugin_create_descriptor_from_path (
-                      plugin_path, 0);
-#endif
 
                   if (descriptor)
                     {
@@ -839,8 +835,7 @@ plugin_manager_scan_plugins (
     }
   g_strfreev (paths);
 
-#if defined (HAVE_CARLA) && \
-  (defined (_WOE32) || defined (__APPLE__))
+#if defined (_WOE32) || defined (__APPLE__)
   /* scan vst3 */
   g_message ("Scanning VST3 plugins...");
   paths = get_vst3_paths (self);
@@ -965,9 +960,9 @@ plugin_manager_scan_plugins (
       g_strfreev (vst_plugins);
     }
   g_strfreev (paths);
-#endif
+#endif // _WOE32 || __APPLE__
 
-#if defined (HAVE_CARLA) && defined (__APPLE__)
+#ifdef __APPLE__
   /* scan AU plugins */
   g_message ("Scanning AU plugins...");
   unsigned int au_count =
@@ -1019,7 +1014,8 @@ plugin_manager_scan_plugins (
             ZRYTHM, prog_str, *progress);
         }
     }
-#endif
+#endif // __APPLE__
+#endif // HAVE_CARLA
 
   /* sort alphabetically */
   qsort (self->plugin_descriptors,
