@@ -2,13 +2,13 @@
 # Copyright (C) 2019 THE zrythm'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # Alexandros Theodotou <alex at zrythm dot org>, 2019.
-# Alexandros Theodotou <alextee@posteo.net>, 2019.
+# Alexandros Theodotou <alextee@posteo.net>, 2019, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-04-29 23:44+0100\n"
-"PO-Revision-Date: 2020-04-29 22:39+0000\n"
+"PO-Revision-Date: 2020-04-30 23:31+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
@@ -763,7 +763,7 @@ msgstr ""
 
 #: src/gui/widgets/plugin_browser.c:1038
 msgid "Protocol"
-msgstr ""
+msgstr "Protocolo"
 
 #: src/gui/widgets/bot_bar.c:50 src/gui/widgets/ruler_marker.c:169
 msgid "Playhead"
