@@ -37,12 +37,10 @@ packages:
   - rubberband
 sources:
   - https://git.sr.ht/~alextee/zrythm
-  - https://github.com/mesonbuild/meson
 tasks:
   - setup: |
       cd zrythm
-      sed -i -e 's/python3/python3.6/g' ../meson/meson.py
-      CFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ../meson/meson.py build -Denable_tests=true -Dmanpage=true
+      CFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib meson build -Denable_tests=true -Dmanpage=true
   - build: |
       cd zrythm
       ninja -C build
