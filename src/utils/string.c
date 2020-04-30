@@ -156,18 +156,43 @@ string_convert_to_filename (
 }
 
 /**
- * Removes any bak, bak1 etc suffixes from the
- * string and returns a newly allocated string.
+ * Removes the suffix starting from \ref suffix
+ * from \ref full_str and returns a newly allocated
+ * string.
  */
 char *
-string_get_substr_before_backup_ext (
-  const char * str)
+string_get_substr_before_suffix (
+  const char * str,
+  const char * suffix)
 {
-  /* get the part without .bak */
+  /* get the part without the suffix */
   char ** parts =
     g_strsplit (
-      str, ".bak", 0);
+      str, suffix, 0);
   char * part = g_strdup (parts[0]);
+  g_strfreev (parts);
+  return part;
+}
+
+/**
+ * Removes everything up to and including the first
+ * match of \ref match from the start of the string
+ * and returns a newly allocated string.
+ */
+char *
+string_remove_until_after_first_match (
+  const char * str,
+  const char * match)
+{
+  char ** parts =
+    g_strsplit (
+      str, match, 2);
+#if 0
+  g_message ("after removing prefix: %s", prefix);
+  g_message ("part 0 %s", parts[0]);
+  g_message ("part 1 %s", parts[1]);
+#endif
+  char * part = g_strdup (parts[1]);
   g_strfreev (parts);
   return part;
 }

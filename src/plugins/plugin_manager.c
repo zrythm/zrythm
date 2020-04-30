@@ -481,8 +481,7 @@ get_vst_paths (
 #ifdef _WOE32
   char ** paths =
     g_settings_get_strv (
-      S_P_PLUGINS_PATHS,
-      "vst-search-paths-windows");
+      S_PREFERENCES, "vst-search-paths-windows");
   g_return_val_if_fail (paths, NULL);
 #elif defined (__APPLE__)
   char ** paths =
@@ -763,13 +762,15 @@ plugin_manager_scan_plugins (
 #ifdef HAVE_CARLA
                   descriptor =
                     z_carla_discovery_create_vst_descriptor (
-                      plugin_path, false, false);
+                      plugin_path, ARCH_64,
+                      PROT_VST);
 
                   /* try 32-bit if above failed */
                   if (!descriptor)
                     descriptor =
                       z_carla_discovery_create_vst_descriptor (
-                        plugin_path, true, false);
+                        plugin_path, ARCH_32,
+                        PROT_VST);
 #else
                   descriptor =
                     vst_plugin_create_descriptor_from_path (
@@ -846,6 +847,7 @@ plugin_manager_scan_plugins (
   path_idx = 0;
   while ((path = paths[path_idx++]) != NULL)
     {
+      g_message ("path %s", path);
       if (!g_file_test (path, G_FILE_TEST_EXISTS))
         continue;
 
@@ -899,8 +901,8 @@ plugin_manager_scan_plugins (
                       string_contains_substr (
                         plugin_path,
                         "C:\\Program Files (x86)",
-                        false),
-                      true);
+                        false) ? ARCH_32 : ARCH_64,
+                      PROT_VST3);
 
                   if (descriptor)
                     {
@@ -970,19 +972,16 @@ plugin_manager_scan_plugins (
   g_message ("Scanning AU plugins...");
   unsigned int au_count =
     carla_get_cached_plugin_count (PLUGIN_AU, NULL);
+  char * all_plugins =
+    z_carla_discovery_run (
+      ARCH_64, "au", ":all");
+  g_message ("all plugins %s", all_plugins);
+  g_message ("%u plugins found", au_count);
   for (unsigned int i = 0; i < au_count; i++)
     {
-      /* skip because broken atm */
-      count++;
-      continue;
-
-      const CarlaCachedPluginInfo * info =
-        carla_get_cached_plugin_info (
-          PLUGIN_AU, i);
-
       PluginDescriptor * descriptor =
-        z_carla_discovery_create_au_descriptor (
-          info);
+        z_carla_discovery_create_au_descriptor_from_string (
+          &all_plugins, i);
 
       if (descriptor)
         {

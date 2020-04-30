@@ -57,18 +57,6 @@ typedef enum BarSliderType
 } BarSliderType;
 
 /**
- * Defines how drag_update will work.
- */
-typedef enum BarSliderUpdateMode
-{
-  /** Update the value relative from where the drag
-   * was started. */
-  BAR_SLIDER_UPDATE_MODE_RELATIVE,
-  /** Update the value to wherever the cursor is. */
-  BAR_SLIDER_UPDATE_MODE_CURSOR,
-} BarSliderUpdateMode;
-
-/**
  * Draggable slider to adjust an amount (such as a
  * percentage).
  *
@@ -198,7 +186,7 @@ _bar_slider_widget_new (
     NULL, NULL, (void *) _port, _dest, 0.f, 1.f, \
     160, 20, \
     0.f, 1, 0, \
-    BAR_SLIDER_UPDATE_MODE_CURSOR, _prefix, " %")
+    UI_DRAG_MODE_CURSOR, _prefix, " %")
 
 /**
  * @}

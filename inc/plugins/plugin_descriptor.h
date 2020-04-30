@@ -104,7 +104,7 @@ typedef enum PluginProtocol
 static const cyaml_strval_t
 plugin_protocol_strings[] =
 {
-  { "Dummy",        PROT_DUMMY  },
+  { __("Dummy"),    PROT_DUMMY  },
   { "LV2",          PROT_LV2    },
   { "DSSI",         PROT_DSSI   },
   { "LADSPA",       PROT_LADSPA },
@@ -121,6 +121,13 @@ typedef enum PluginArchitecture
   ARCH_32,
   ARCH_64
 } PluginArchitecture;
+
+static const cyaml_strval_t
+plugin_architecture_strings[] =
+{
+  { "32-bit",       ARCH_32     },
+  { "64-bit",       ARCH_64     },
+};
 
 /***
  * A descriptor to be implemented by all plugins
@@ -172,13 +179,6 @@ typedef struct PluginDescriptor
    * using g_file_hash(). */
   unsigned int         ghash;
 } PluginDescriptor;
-
-static const cyaml_strval_t
-plugin_architecture_strings[] =
-{
-  { "32-bit",       ARCH_32     },
-  { "64-bit",       ARCH_64     },
-};
 
 static const cyaml_schema_field_t
 plugin_descriptor_fields_schema[] =

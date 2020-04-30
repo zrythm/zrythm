@@ -41,22 +41,63 @@ typedef struct PluginDescriptor PluginDescriptor;
  */
 
 /**
- * Create a descriptor for the given plugin path.
+ * Returns the absolute path to carla-discovery-*
+ * as a newly allocated string.
+ */
+char *
+z_carla_discovery_get_discovery_path (
+  PluginArchitecture arch);
+
+/**
+ * Runs carla discovery for the given arch with the
+ * given arguments and returns the output as a
+ * newly allocated string.
+ */
+char *
+z_carla_discovery_run (
+  PluginArchitecture arch,
+  const char *       arg1,
+  const char *       arg2);
+
+/**
+ * Create a descriptor using carla discovery.
+ *
+ * @path Path to the plugin bundle.
+ * @arch Architecture.
+ * @protocol Protocol.
  */
 PluginDescriptor *
 z_carla_discovery_create_vst_descriptor (
-  const char * path,
-  bool         thirty_two_bit,
-  bool         vst3);
+  const char *       path,
+  PluginArchitecture arch,
+  PluginProtocol     protocol);
 
 #ifdef __APPLE__
 /**
  * Create a descriptor for the given AU plugin.
  */
 PluginDescriptor *
-z_carla_discovery_create_au_descriptor (
+z_carla_discovery_create_au_descriptor_from_info (
   const CarlaCachedPluginInfo * info);
+
+/**
+ * Create a descriptor for the given AU plugin.
+ */
+PluginDescriptor *
+z_carla_discovery_create_au_descriptor_from_string (
+  char ** all_plugins,
+  int     idx);
 #endif
+
+/**
+ * Parses plugin info into a new PluginDescriptor.
+ *
+ * @param plugin_path Identifier to use for debugging.
+ */
+PluginDescriptor *
+z_carla_discovery_parse_plugin_info (
+  const char * plugin_path,
+  char * results);
 
 /**
  * @}

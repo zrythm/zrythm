@@ -84,12 +84,24 @@ string_convert_to_filename (
   const char * str);
 
 /**
- * Removes any bak, bak1 etc suffixes from the
- * string and returns a newly allocated string.
+ * Removes the suffix starting from \ref suffix
+ * from \ref full_str and returns a newly allocated
+ * string.
  */
 char *
-string_get_substr_before_backup_ext (
-  const char * str);
+string_get_substr_before_suffix (
+  const char * str,
+  const char * suffix);
+
+/**
+ * Removes everything up to and including the first
+ * match of \ref match from the start of the string
+ * and returns a newly allocated string.
+ */
+char *
+string_remove_until_after_first_match (
+  const char * str,
+  const char * match);
 
 char *
 string_replace (

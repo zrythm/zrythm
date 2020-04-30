@@ -94,19 +94,18 @@ carla_category_to_zrythm_category (
 #endif
 
 /**
- * Create a descriptor for the given plugin path.
+ * Returns the absolute path to carla-discovery-*
+ * as a newly allocated string.
  */
-PluginDescriptor *
-z_carla_discovery_create_vst_descriptor (
-  const char * path,
-  bool         thirty_two_bit,
-  bool         vst3)
+char *
+z_carla_discovery_get_discovery_path (
+  PluginArchitecture arch)
 {
   char carla_discovery_filename[60];
   strcpy (
     carla_discovery_filename,
 #ifdef _WOE32
-    thirty_two_bit ?
+    arch == ARCH_32 ?
       "carla-discovery-win32" :
       "carla-discovery-native"
 #else
@@ -136,23 +135,20 @@ z_carla_discovery_create_vst_descriptor (
       g_return_val_if_fail (
         file_exists (carla_discovery), NULL);
     }
-  g_return_val_if_fail (
-    carla_discovery, NULL);
-  char type[40];
-  strcpy (type, vst3 ? "vst3" : "vst");
-  char cmd[4000];
-  sprintf (
-    cmd, "%s %s %s",
-    carla_discovery, type, path);
-  g_message (
-    "cmd: [[[\n%s\n]]]", cmd);
-  char * argv[] = {
-    carla_discovery, type, (char *) path, NULL };
-  char * results =
-    system_get_cmd_output (argv, 1200, true);
-  g_return_val_if_fail (results, NULL);
-  g_message (
-    "results: [[[\n%s\n]]]", results);
+
+  return carla_discovery;
+}
+
+/**
+ * Parses plugin info into a new PluginDescriptor.
+ *
+ * @param plugin_path Identifier to use for debugging.
+ */
+PluginDescriptor *
+z_carla_discovery_parse_plugin_info (
+  const char * plugin_path,
+  char * results)
+{
 #ifdef _WOE32
 #define LINE_SEP "\\r\\n"
 #else
@@ -167,7 +163,7 @@ z_carla_discovery_create_vst_descriptor (
       g_free (error);
       g_warning (
         "error found for %s: %s",
-        path, results);
+        plugin_path, results);
       g_free (results);
       return NULL;
     }
@@ -175,7 +171,7 @@ z_carla_discovery_create_vst_descriptor (
     {
       g_warning (
         "No results returned for %s",
-        path);
+        plugin_path);
       g_free (results);
       return NULL;
     }
@@ -256,8 +252,40 @@ z_carla_discovery_create_vst_descriptor (
         }
     }
 
-  descr->protocol = vst3 ? PROT_VST3 : PROT_VST;
-  descr->arch = thirty_two_bit ? ARCH_32 : ARCH_64;
+  return descr;
+}
+
+/**
+ * Create a descriptor using carla discovery.
+ *
+ * @path Path to the plugin bundle.
+ * @arch Architecture.
+ * @protocol Protocol.
+ */
+PluginDescriptor *
+z_carla_discovery_create_vst_descriptor (
+  const char *       path,
+  PluginArchitecture arch,
+  PluginProtocol     protocol)
+{
+  char type[40];
+  strcpy (
+    type, protocol == PROT_VST3 ? "vst3" : "vst");
+  char * results =
+    z_carla_discovery_run (
+      arch, type, path);
+  g_return_val_if_fail (results, NULL);
+  g_message (
+    "results: [[[\n%s\n]]]", results);
+
+  PluginDescriptor * descr =
+    z_carla_discovery_parse_plugin_info (
+      path, results);
+  if (!descr)
+    return NULL;
+
+  descr->protocol = protocol;
+  descr->arch = arch;
   descr->path = g_strdup (path);
 
   /* open all VSTs with carla */
@@ -268,12 +296,43 @@ z_carla_discovery_create_vst_descriptor (
   return descr;
 }
 
+/**
+ * Runs carla discovery for the given arch with the
+ * given arguments and returns the output as a
+ * newly allocated string.
+ */
+char *
+z_carla_discovery_run (
+  PluginArchitecture arch,
+  const char *       arg1,
+  const char *       arg2)
+{
+  char * carla_discovery =
+    z_carla_discovery_get_discovery_path (arch);
+  g_return_val_if_fail (
+    carla_discovery, NULL);
+
+  char cmd[4000];
+  sprintf (
+    cmd, "%s %s %s",
+    carla_discovery, arg1, arg2);
+  g_message (
+    "cmd: [[[\n%s\n]]]", cmd);
+  char * argv[] = {
+    carla_discovery, (char *) arg1,
+    (char *) arg2, NULL };
+  char * results =
+    system_get_cmd_output (argv, 1200, true);
+
+  return results;
+}
+
 #ifdef __APPLE__
 /**
  * Create a descriptor for the given AU plugin.
  */
 PluginDescriptor *
-z_carla_discovery_create_au_descriptor (
+z_carla_discovery_create_au_descriptor_from_info (
   const CarlaCachedPluginInfo * info)
 {
   if (!info || !info->valid)
@@ -307,6 +366,48 @@ z_carla_discovery_create_au_descriptor (
   descr->category_str =
     plugin_descriptor_category_to_string (
       descr->category);
+
+  descr->protocol = PROT_AU;
+  descr->arch = ARCH_64;
+  descr->path = NULL;
+
+  /* open all AUs with carla */
+  descr->open_with_carla = true;
+
+  return descr;
+}
+
+/**
+ * Create a descriptor for the given AU plugin.
+ */
+PluginDescriptor *
+z_carla_discovery_create_au_descriptor_from_string (
+  char ** all_plugins,
+  int     idx)
+{
+  const char * discovery_end_txt =
+    "carla-discovery::end::------------";
+
+  /* get info for this plugin */
+  char * plugin_info =
+    string_get_substr_before_suffix (
+      *all_plugins, discovery_end_txt);
+
+  /* replace *all_plugins with the following parts */
+  char * next_val =
+    string_remove_until_after_first_match (
+      *all_plugins, discovery_end_txt);
+  g_free (*all_plugins);
+  *all_plugins = next_val;
+
+  char id[50];
+  sprintf (id, "%d", idx);
+  PluginDescriptor * descr =
+    z_carla_discovery_parse_plugin_info (
+      id, plugin_info);
+  g_free (plugin_info);
+  if (!descr)
+    return NULL;
 
   descr->protocol = PROT_AU;
   descr->arch = ARCH_64;
