@@ -1,3 +1,0 @@
-/** @file
- * @brief A file
- */

@@ -1,4 +1,0 @@
-strict graph "" {
-    a -- b
-    a -- b
-}

@@ -1,9 +1,0 @@
-/** @mainpage
-
-@htmlinclude file.html
-*/
-
-/** @page warnings This will produce a warning
-
-@htmlinclude nonexistent.html
-*/

@@ -1,4 +1,0 @@
-/// ===============
-/// The Thing
-/// ===============
-namespace Namespace {}

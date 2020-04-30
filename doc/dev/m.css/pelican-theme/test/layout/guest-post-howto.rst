@@ -1,2 +1,0 @@
-Guest post howto
-################
