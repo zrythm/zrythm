@@ -273,6 +273,7 @@ create_plugin (
   switch (descr->protocol)
     {
     case PROT_LV2:
+    case PROT_AU:
       ret =
         carla_add_plugin (
           self->host_handle,
@@ -368,6 +369,7 @@ carla_native_plugin_proces (
     case PROT_LV2:
     case PROT_VST:
     case PROT_VST3:
+    case PROT_AU:
     {
       float * inbuf[2];
       float dummy_inbuf1[nframes];
@@ -698,6 +700,10 @@ create_from_descr (
       self =
         create_plugin (descr, PLUGIN_LV2);
       break;
+    case PROT_AU:
+      self =
+        create_plugin (descr, PLUGIN_AU);
+      break;
     case PROT_VST:
       self =
         create_plugin (descr, PLUGIN_VST2);
@@ -800,6 +806,10 @@ create_ports (
   const CarlaPortCountInfo * param_counts =
     carla_get_parameter_count_info (
       self->host_handle, 0);
+  /* FIXME eventually remove this line. this is added
+   * because carla discovery reports 0 params for
+   * AU plugins, so we update the descriptor here */
+  descr->num_ctrl_ins = (int) param_counts->ins;
   for (uint32_t i = 0; i < param_counts->ins; i++)
     {
       if (loading)

@@ -215,6 +215,12 @@ z_carla_discovery_parse_plugin_info (
       "carla-discovery::midi.ins::(.*)" LINE_SEP,
       1, 0);
 
+  /* get label for AU */
+  descr->uri =
+    string_get_regex_group (
+      results,
+      "carla-discovery::label::(.*)" LINE_SEP, 1);
+
   /* get category */
   char * carla_category =
     string_get_regex_group (
@@ -411,7 +417,6 @@ z_carla_discovery_create_au_descriptor_from_string (
 
   descr->protocol = PROT_AU;
   descr->arch = ARCH_64;
-  descr->path = NULL;
 
   /* open all AUs with carla */
   descr->open_with_carla = true;
