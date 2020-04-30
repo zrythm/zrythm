@@ -80,15 +80,6 @@ io_file_get_ext (const char * file)
 }
 
 /**
- * Gets home dir. MUST be freed.
- */
-const char *
-io_get_home_dir ()
-{
-  return g_get_home_dir ();
-}
-
-/**
  * Creates the file if doesn't exist
  */
 FILE *

@@ -49,12 +49,6 @@ void
 io_mkdir (const char * dir);
 
 /**
- * Gets home dir. MUST be freed.
- */
-const char *
-io_get_home_dir (void);
-
-/**
  * Creates the file if doesn't exist
  */
 FILE *

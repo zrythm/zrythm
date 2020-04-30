@@ -27,6 +27,8 @@
 #ifndef __UTILS_LOCALIZATION_H__
 #define __UTILS_LOCALIZATION_H__
 
+#include <stdbool.h>
+
 #include <gtk/gtk.h>
 
 /**
@@ -162,12 +164,16 @@ localization_locale_exists (
  * Sets the locale to the currently selected one and
  * inits gettext.
  *
+ * @param use_locale Use the user's local instead of
+ *   the Zrythm settings.
+ *
  * Returns if a locale for the selected language
  * exists on the system or not.
  */
-int
+bool
 localization_init (
-  int   print_debug_messages);
+  bool use_locale,
+  bool print_debug_messages);
 
 /**
  * @}

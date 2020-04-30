@@ -575,6 +575,7 @@ add_subgroup (
   char ** keys =
     g_settings_schema_list_keys (info->schema);
   int i = 0;
+  int num_controls = 0;
   char * key;
   while ((key = keys[i++]))
     {
@@ -632,11 +633,19 @@ add_subgroup (
             widget, description);
           gtk_container_add (
             GTK_CONTAINER (box), widget);
+          num_controls++;
         }
       else
         {
           g_message ("no widget");
         }
+    }
+
+  /* Remove label if no controls added */
+  if (num_controls == 0)
+    {
+      gtk_container_remove (
+        GTK_CONTAINER (page_box), label);
     }
 }
 

@@ -96,14 +96,18 @@ zrythm_set_progress_status (
 }
 
 /**
- * Gets the zrythm directory (by default
- * /home/user/zrythm).
+ * Gets the zrythm directory, either from the
+ * settings if non-empty, or the default
+ * ($XDG_DATA_DIR/zrythm).
+ *
+ * @param force_default Ignore the settings and get
+ *   the default dir.
  *
  * Must be free'd by caler.
  */
 char *
 zrythm_get_dir (
-  Zrythm * self)
+  bool  force_default)
 {
   if (ZRYTHM_TESTING)
     {
@@ -118,20 +122,19 @@ zrythm_get_dir (
         }
     }
 
-  g_warn_if_fail (S_P_GENERAL_PATHS != NULL);
+  g_return_val_if_fail (S_P_GENERAL_PATHS, NULL);
 
   char * dir =
     g_settings_get_string (
       S_P_GENERAL_PATHS, "zrythm-dir");
-  if (strlen (dir) == 0)
+  if (force_default || strlen (dir) == 0)
     {
       g_free (dir);
       dir =
         g_build_filename (
-          io_get_home_dir (), "zrythm", NULL);
-      g_settings_set_string (
-        S_P_GENERAL_PATHS, "zrythm-dir", dir);
+          g_get_user_data_dir (), "zrythm", NULL);
     }
+
   return dir;
 }
 
@@ -142,8 +145,7 @@ static void
 init_dirs_and_files ()
 {
   g_message ("initing dirs and files");
-  ZRYTHM->zrythm_dir =
-    zrythm_get_dir (ZRYTHM);
+  ZRYTHM->zrythm_dir = zrythm_get_dir (false);
   io_mkdir (ZRYTHM->zrythm_dir);
 
   ZRYTHM->projects_dir =
@@ -839,8 +841,15 @@ zrythm_app_activate (GApplication * _app)
 {
   /*g_message ("activate %d", *task_id);*/
 
-  /* init localization */
-  localization_init (1);
+  /* init localization, using system locale if
+   * first run */
+  GSettings * prefs =
+    g_settings_new (
+      GSETTINGS_ZRYTHM_PREFIX ".general");
+  localization_init (
+    g_settings_get_boolean (
+      prefs, "first-run"), true);
+  g_object_unref (G_OBJECT (prefs));
 }
 
 /**

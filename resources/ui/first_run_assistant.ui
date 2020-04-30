@@ -104,7 +104,7 @@
           <object class="GtkLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Next, choose the  location to use for saving temporary files and projects (or accept the default)</property>
+            <property name="label" translatable="yes">Next, choose the location to use for saving temporary files and projects (or accept the default)</property>
           </object>
           <packing>
             <property name="expand">False</property>

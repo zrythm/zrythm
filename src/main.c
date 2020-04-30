@@ -334,7 +334,7 @@ main (int    argc,
 
   if (print_settings)
     {
-      localization_init (0);
+      localization_init (false, false);
       settings_print (pretty_print);
       return 0;
     }

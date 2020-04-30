@@ -771,7 +771,10 @@ int
 graph_start (
   Graph * graph)
 {
-  int num_cores = audio_get_num_cores ();
+  int num_cores =
+    MIN (
+      MAX_GRAPH_THREADS,
+      audio_get_num_cores ());
   graph->num_threads =
     env_get_int (
       "ZRYTHM_DSP_THREADS",

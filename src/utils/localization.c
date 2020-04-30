@@ -196,40 +196,56 @@ localization_locale_exists (
  * Sets the locale to the currently selected one and
  * inits gettext.
  *
+ * @param use_locale Use the user's local instead of
+ *   the Zrythm settings.
+ *
  * Returns if a locale for the selected language
  * exists on the system or not.
  */
-int
+bool
 localization_init (
-  int   print_debug_messages)
+  bool use_locale,
+  bool print_debug_messages)
 {
-  /* get selected locale */
-  GSettings * prefs =
-    g_settings_new (
-      GSETTINGS_ZRYTHM_PREFIX
-      ".preferences.ui.general");
-  LocalizationLanguage lang =
-    g_settings_get_enum (
-      prefs, "language");
-  g_object_unref (G_OBJECT (prefs));
-
-  if (print_debug_messages)
+  char * code = NULL;
+  LocalizationLanguage lang;
+  if (use_locale)
     {
-      g_message ("preferred lang: \"%s\"",
-        language_strings[lang]);
+      code = g_strdup (setlocale (LC_ALL, NULL));
+      g_message (
+        "Initing localization with system locale "
+        "%s", code);
     }
-
-  if (lang == LL_EN)
+  else
     {
+      /* get selected locale */
+      GSettings * prefs =
+        g_settings_new (
+          GSETTINGS_ZRYTHM_PREFIX
+          ".preferences.ui.general");
+      lang =
+        g_settings_get_enum (
+          prefs, "language");
+      g_object_unref (G_OBJECT (prefs));
+
       if (print_debug_messages)
         {
-          g_message ("setting locale to default");
+          g_message ("preferred lang: \"%s\"",
+            language_strings[lang]);
         }
-      setlocale (LC_ALL, "C");
-      return 1;
-    }
 
-  char * code = localization_locale_exists (lang);
+      if (lang == LL_EN)
+        {
+          if (print_debug_messages)
+            {
+              g_message ("setting locale to default");
+            }
+          setlocale (LC_ALL, "C");
+          return 1;
+        }
+
+      code = localization_locale_exists (lang);
+    }
 
   char * match = NULL;
   if (code)
@@ -250,10 +266,13 @@ localization_init (
     }
   else
     {
-      g_warning (
-        "No locale for \"%s\" is "
-        "installed, using default",
-        language_strings[lang]);
+      if (!use_locale)
+        {
+          g_warning (
+            "No locale for \"%s\" is "
+            "installed, using default",
+            language_strings[lang]);
+        }
       setlocale (LC_ALL, "C");
     }
 

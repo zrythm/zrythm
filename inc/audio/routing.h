@@ -83,6 +83,8 @@ typedef struct Position Position;
 #define mpmc_queue_dequeue_node(q,x) \
   mpmc_queue_dequeue (q, (void *) x)
 
+#define MAX_GRAPH_THREADS 128
+
 /**
  * Graph nodes can be either ports or processors.
  *
@@ -253,7 +255,7 @@ typedef struct Graph
 
   /* ------------------------------------ */
 
-  GraphThread          threads[16];
+  GraphThread          threads[MAX_GRAPH_THREADS];
   GraphThread          main_thread;
   gint                 num_threads;
 

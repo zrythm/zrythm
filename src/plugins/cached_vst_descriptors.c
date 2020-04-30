@@ -27,7 +27,7 @@
 static char *
 get_cached_vst_descriptors_file_path (void)
 {
-  char * zrythm_dir = zrythm_get_dir (ZRYTHM);
+  char * zrythm_dir = zrythm_get_dir (false);
   g_return_val_if_fail (zrythm_dir, NULL);
 
   return
@@ -78,8 +78,8 @@ cached_vst_descriptors_new (void)
   if (!file_exists (path))
     {
       g_message (
-        "Cached VST descriptors file does not "
-        "exist");
+        "Cached VST descriptors file at %s does "
+        "not exist", path);
       return
         calloc (1, sizeof (CachedVstDescriptors));
     }
@@ -88,7 +88,8 @@ cached_vst_descriptors_new (void)
   if (err != NULL)
     {
       g_critical (
-        "Failed to create CachedVstDescriptors");
+        "Failed to create CachedVstDescriptors "
+        "from %s", path);
       g_free (err);
       g_free (yaml);
       g_free (path);
@@ -100,7 +101,7 @@ cached_vst_descriptors_new (void)
     {
       g_critical (
         "Failed to deserialize "
-        "CachedVstDescriptors");
+        "CachedVstDescriptors from %s", path);
       g_free (err);
       g_free (yaml);
       g_free (path);

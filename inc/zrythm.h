@@ -264,14 +264,18 @@ zrythm_get_version_with_capabilities (
   char * str);
 
 /**
- * Gets the zrythm directory (by default
- * /home/user/zrythm).
+ * Gets the zrythm directory, either from the
+ * settings if non-empty, or the default
+ * ($XDG_DATA_DIR/zrythm).
+ *
+ * @param force_default Ignore the settings and get
+ *   the default dir.
  *
  * Must be free'd by caler.
  */
 char *
 zrythm_get_dir (
-  Zrythm * self);
+  bool  force_default);
 
 /**
  * Returns the prefix or in the case of windows

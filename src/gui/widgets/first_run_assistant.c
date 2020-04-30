@@ -48,13 +48,10 @@ on_reset_clicked (
   GtkButton *widget,
   FirstRunAssistantWidget * self)
 {
-  g_message ("reset");
-  char * dir =
-    g_build_filename (
-      io_get_home_dir (), "zrythm", NULL);
+  char * dir = zrythm_get_dir (true);
+  g_message ("reset to %s", dir);
   gtk_file_chooser_select_filename (
-    GTK_FILE_CHOOSER (self->fc_btn),
-    dir);
+    GTK_FILE_CHOOSER (self->fc_btn), dir);
   g_settings_set_string (
     S_P_GENERAL_PATHS, "zrythm-dir", dir);
   g_free (dir);
@@ -186,6 +183,7 @@ on_language_changed (
   GtkComboBox *widget,
   FirstRunAssistantWidget * self)
 {
+  g_message ("language changed");
   LocalizationLanguage lang =
     (LocalizationLanguage)
     gtk_combo_box_get_active (widget);
@@ -195,7 +193,7 @@ on_language_changed (
     S_P_UI_GENERAL, "language", (int) lang);
 
   /* if locale exists */
-  if (localization_init (1))
+  if (localization_init (false, true))
     {
       /* enable "Next" */
       gtk_assistant_set_page_complete (
@@ -289,14 +287,11 @@ first_run_assistant_widget_new (
 #endif
 
   /* set zrythm dir */
-  char * dir;
-  dir = zrythm_get_dir (ZRYTHM);
-  io_mkdir (dir);
+  char * dir = zrythm_get_dir (false);
   gtk_file_chooser_set_current_folder (
-    GTK_FILE_CHOOSER (self->fc_btn),
-    dir);
+    GTK_FILE_CHOOSER (self->fc_btn), dir);
   g_settings_set_string (
-    S_GENERAL, "dir", dir);
+    S_P_GENERAL_PATHS, "zrythm-dir", dir);
 
   /* set the last project dir to the default one */
   char * projects_dir  =
