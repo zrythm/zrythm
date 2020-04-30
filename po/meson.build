@@ -27,7 +27,8 @@ i18n.gettext (
   args: [
     '--directory=' + meson.source_root(),
     '--msgid-bugs-address=https://git.zrythm.org/zrythm/zrythm/issues',
-    '--add-comments'
+    '--add-comments',
+    '--keyword=__',
     ],
   )
 

@@ -153,6 +153,7 @@ cc = meson.get_compiler ('c')
 # --- Check for programs ---
 
 find_program ('sed', required: true)
+find_program ('gettext', required: true)
 dot_bin = find_program ('dot', required: false)
 
 # find command to open a directory
@@ -237,6 +238,9 @@ test_cflags = [
   '-Wignored-qualifiers',
   '-Wno-cast-function-type',
   '-fno-common',
+  # dummy macro for extracting translatable strings
+  # when we can't use gettext()
+  '-D__(x)=x',
   ]
 
 if (get_option ('buildtype') == 'release')

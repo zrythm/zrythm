@@ -93,6 +93,45 @@ static const char * language_strings[] = {
   "zh",
 };
 
+static const char * language_strings_full[] = {
+  "اَلْعَرَبِيَّةُ‎ [ar]",
+  "Czech [cs]",
+  "Dansk [da]",
+  "Deutsch [de]",
+  "English [en]",
+  "English UK [en_GB]",
+  "Ελληνικά [el]",
+  "Español [es]",
+  "Eeti [et]",
+  "Suomi [fi]",
+  "Français [fr]",
+  "Gaelic [gd]",
+  "Galego [gl]",
+  "हिन्दी [hi]",
+  "Italiano [it]",
+  "日本語 [ja]",
+  "한국어 [ko]",
+  "Bokmål [nb_NO]",
+  "Nederlands [nl]",
+  "Polski [pl]",
+  "Português [pt]",
+  "Português BR [pt_BR]",
+  "русский [ru]",
+  "Svenska [sv]",
+  "中文 [zh]",
+};
+
+static inline const char *
+localization_get_full_string (
+  LocalizationLanguage lang)
+{
+  g_return_val_if_fail (
+    lang >= 0 && lang < NUM_LL_LANGUAGES,
+    NULL);
+
+  return language_strings_full[lang];
+}
+
 /**
  * Returns the character string code for the
  * language (e.g. "fr").

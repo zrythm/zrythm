@@ -68,19 +68,6 @@ typedef struct _PreferencesWidget
   GtkNotebook *  group_notebook;
 
   SubgroupInfo   subgroup_infos[12][40];
-
-  /* everything below is unused */
-  GtkComboBox *            audio_backend;
-  GtkComboBox *            midi_backend;
-  GtkComboBox *            pan_algo;
-  GtkComboBox *            pan_law;
-  MidiControllerMbWidget * midi_controllers;
-  GtkComboBox *            language;
-  GtkLabel *               locale_not_available;
-  GtkBox *             audio_backend_opts_box;
-  GtkComboBox *        buffer_size_cb;
-  GtkComboBox *        samplerate_cb;
-  GtkComboBoxText *        device_name_cb;
 } PreferencesWidget;
 
 PreferencesWidget *

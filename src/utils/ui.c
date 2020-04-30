@@ -659,22 +659,21 @@ ui_create_audio_backends_model (void)
 #endif
   };
   const gchar *labels[] = {
-    /* TRANSLATORS: Dummy audio backend */
-    _("Dummy"),
+    _(audio_backend_str[AUDIO_BACKEND_DUMMY]),
 #ifdef HAVE_ALSA
-    "ALSA",
+    _(audio_backend_str[AUDIO_BACKEND_ALSA]),
 #endif
 #ifdef HAVE_JACK
-    "Jack",
+    _(audio_backend_str[AUDIO_BACKEND_JACK]),
 #endif
 #ifdef HAVE_PORT_AUDIO
-    "PortAudio",
+    _(audio_backend_str[AUDIO_BACKEND_PORT_AUDIO]),
 #endif
 #ifdef HAVE_SDL
-    "SDL2",
+    _(audio_backend_str[AUDIO_BACKEND_SDL]),
 #endif
 #ifdef HAVE_RTAUDIO
-    "RtAudio",
+    _(audio_backend_str[AUDIO_BACKEND_RTAUDIO]),
 #endif
   };
 
@@ -699,19 +698,18 @@ ui_create_midi_backends_model (void)
 #endif
   };
   const gchar * labels[] = {
-    /* TRANSLATORS: Dummy audio backend */
-    _("Dummy"),
+    _(midi_backend_str[MIDI_BACKEND_DUMMY]),
 #ifdef HAVE_ALSA
-    _("ALSA Sequencer"),
+    _(midi_backend_str[MIDI_BACKEND_ALSA]),
 #endif
 #ifdef HAVE_JACK
-    "Jack MIDI",
+    _(midi_backend_str[MIDI_BACKEND_JACK]),
 #endif
 #ifdef _WOE32
-    "Windows MME",
+    _(midi_backend_str[MIDI_BACKEND_WINDOWS_MME]),
 #endif
 #ifdef HAVE_RTMIDI
-    "RtMidi",
+    _(midi_backend_str[MIDI_BACKEND_RTMIDI]),
 #endif
   };
 

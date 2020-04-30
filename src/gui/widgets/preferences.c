@@ -23,9 +23,11 @@
 #include "gui/widgets/midi_controller_mb.h"
 #include "gui/widgets/preferences.h"
 #include "plugins/plugin_gtk.h"
+#include "project.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/localization.h"
+#include "utils/gtk.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -68,6 +70,36 @@ on_path_entry_changed (
 }
 
 static void
+on_enum_combo_box_active_changed (
+  GtkComboBox *  combo,
+  CallbackData * data)
+{
+  g_settings_set_enum (
+    data->info->settings, data->key,
+    gtk_combo_box_get_active (combo));
+}
+
+static void
+on_string_combo_box_active_changed (
+  GtkComboBoxText *  combo,
+  CallbackData * data)
+{
+  g_settings_set_string (
+    data->info->settings, data->key,
+    gtk_combo_box_text_get_active_text (combo));
+}
+
+static void
+on_backends_combo_box_active_changed (
+  GtkComboBox *  combo,
+  CallbackData * data)
+{
+  g_settings_set_enum (
+    data->info->settings, data->key,
+    atoi (gtk_combo_box_get_active_id (combo)));
+}
+
+static void
 on_file_set (
   GtkFileChooserButton * widget,
   CallbackData *         data)
@@ -81,6 +113,14 @@ on_file_set (
     data->info->settings, data->key, str);
   g_free (str);
   g_object_unref (file);
+}
+
+static void
+on_closure_notify_delete_data (
+  CallbackData * data,
+  GClosure *     closure)
+{
+  free (data);
 }
 
 /** Path type. */
@@ -127,6 +167,42 @@ get_path_type (
   return PATH_TYPE_NONE;
 }
 
+static bool
+should_be_hidden (
+  const char * group,
+  const char * subgroup,
+  const char * key)
+{
+  return
+#ifndef _WOE32
+    KEY_IS (
+      "Plugins", "Paths",
+      "vst-search-paths-windows") ||
+#endif
+    KEY_IS (
+      "Plugins", "Paths", "sfz-search-paths") ||
+    KEY_IS (
+      "Plugins", "Paths", "sf2-search-paths") ||
+    (AUDIO_ENGINE->audio_backend !=
+       AUDIO_BACKEND_SDL &&
+     KEY_IS (
+       "General", "Engine",
+       "sdl-audio-device-name")) ||
+    (AUDIO_ENGINE->audio_backend !=
+       AUDIO_BACKEND_RTAUDIO &&
+     KEY_IS (
+       "General", "Engine",
+       "rtaudio-audio-device-name")) ||
+    (AUDIO_ENGINE->audio_backend ==
+       AUDIO_BACKEND_JACK &&
+     KEY_IS (
+       "General", "Engine", "sample-rate")) ||
+    (AUDIO_ENGINE->audio_backend ==
+       AUDIO_BACKEND_JACK &&
+     KEY_IS (
+       "General", "Engine", "buffer-size"));
+}
+
 static GtkWidget *
 make_control (
   PreferencesWidget * self,
@@ -136,15 +212,24 @@ make_control (
 {
   SubgroupInfo * info =
     &self->subgroup_infos[group_idx][subgroup_idx];
+  char * group = info->group_name;
+  char * subgroup = info->name;
   GSettingsSchemaKey * schema_key =
     g_settings_schema_get_key (
       info->schema, key);
   const GVariantType * type =
     g_settings_schema_key_get_value_type (
       schema_key);
+  GVariant * current_var =
+    g_settings_get_value (info->settings, key);
   GVariant * range =
     g_settings_schema_key_get_range (
       schema_key);
+
+#if 0
+  g_message ("%s",
+    g_variant_get_type_string (current_var));
+#endif
 
 #define TYPE_EQUALS(type2) \
   string_is_equal ( \
@@ -152,11 +237,79 @@ make_control (
     (const char *) G_VARIANT_TYPE_##type2, true)
 
   GtkWidget * widget = NULL;
-  bool is_special = false;
-  if (is_special)
+  if (KEY_IS (
+        "General", "Engine",
+        "rtaudio-audio-device-name") ||
+      KEY_IS (
+        "General", "Engine",
+        "sdl-audio-device-name"))
     {
-      /* TODO */
-      return NULL;
+      widget = gtk_combo_box_text_new ();
+      ui_setup_device_name_combo_box (
+        GTK_COMBO_BOX_TEXT (widget));
+      CallbackData * data =
+        calloc (1, sizeof (CallbackData));
+      data->info = info;
+      data->preferences_widget = self;
+      data->key = g_strdup (key);
+      g_signal_connect_data (
+        G_OBJECT (widget), "changed",
+        G_CALLBACK (
+          on_string_combo_box_active_changed),
+        data,
+        (GClosureNotify)
+          on_closure_notify_delete_data,
+        G_CONNECT_AFTER);
+    }
+  else if (KEY_IS (
+             "General", "Engine", "midi-backend"))
+    {
+      widget = gtk_combo_box_new ();
+      ui_setup_midi_backends_combo_box (
+        GTK_COMBO_BOX (widget));
+      CallbackData * data =
+        calloc (1, sizeof (CallbackData));
+      data->info = info;
+      data->preferences_widget = self;
+      data->key = g_strdup (key);
+      g_signal_connect_data (
+        G_OBJECT (widget), "changed",
+        G_CALLBACK (
+          on_backends_combo_box_active_changed),
+        data,
+        (GClosureNotify)
+          on_closure_notify_delete_data,
+        G_CONNECT_AFTER);
+    }
+  else if (KEY_IS (
+             "General", "Engine", "audio-backend"))
+    {
+      widget = gtk_combo_box_new ();
+      ui_setup_audio_backends_combo_box (
+        GTK_COMBO_BOX (widget));
+      CallbackData * data =
+        calloc (1, sizeof (CallbackData));
+      data->info = info;
+      data->preferences_widget = self;
+      data->key = g_strdup (key);
+      g_signal_connect_data (
+        G_OBJECT (widget), "changed",
+        G_CALLBACK (
+          on_backends_combo_box_active_changed),
+        data,
+        (GClosureNotify)
+          on_closure_notify_delete_data,
+        G_CONNECT_AFTER);
+    }
+  else if (KEY_IS (
+        "General", "Engine",
+        "midi-controllers"))
+    {
+      widget =
+        g_object_new (
+          MIDI_CONTROLLER_MB_WIDGET_TYPE, NULL);
+      midi_controller_mb_widget_setup (
+        Z_MIDI_CONTROLLER_MB_WIDGET (widget));
     }
   else if (TYPE_EQUALS (BOOLEAN))
     {
@@ -181,8 +334,6 @@ make_control (
       GVariant * upper_var =
         g_variant_get_child_value (
           range_vals, 1);
-      GVariant * current_var =
-        g_settings_get_value (info->settings, key);
       double lower = 0.f, upper = 1.f, current = 0.f;
       if (TYPE_EQUALS (INT32))
         {
@@ -255,10 +406,105 @@ make_control (
           data->info = info;
           data->preferences_widget = self;
           data->key = g_strdup (key);
-          g_signal_connect (
+          g_signal_connect_data (
             G_OBJECT (widget), "file-set",
             G_CALLBACK (on_file_set),
-            data);
+            data,
+            (GClosureNotify)
+              on_closure_notify_delete_data,
+            G_CONNECT_AFTER);
+        }
+      else if (path_type == PATH_TYPE_NONE)
+        {
+          /* map enums */
+          const char ** strv = NULL;
+          const cyaml_strval_t * cyaml_strv = NULL;
+          size_t size = 0;
+
+#define SET_STRV_IF_MATCH(a,b,c,arr_name) \
+  if (KEY_IS (a,b,c)) \
+    { \
+      strv = arr_name; \
+      size = G_N_ELEMENTS (arr_name); \
+    }
+
+#define SET_STRV_FROM_CYAML_IF_MATCH( \
+  a,b,c,arr_name) \
+  if (KEY_IS (a,b,c)) \
+    { \
+      cyaml_strv = arr_name; \
+      size = G_N_ELEMENTS (arr_name); \
+    }
+
+          SET_STRV_IF_MATCH (
+            "General", "Engine", "audio-backend",
+            audio_backend_str);
+          SET_STRV_IF_MATCH (
+            "General", "Engine", "midi-backend",
+            midi_backend_str);
+          SET_STRV_IF_MATCH (
+            "General", "Engine", "sample-rate",
+            sample_rate_str);
+          SET_STRV_IF_MATCH (
+            "General", "Engine", "buffer-size",
+            buffer_size_str);
+          SET_STRV_FROM_CYAML_IF_MATCH (
+            "Editing", "Audio", "fade-algorithm",
+            curve_algorithm_strings);
+          SET_STRV_FROM_CYAML_IF_MATCH (
+            "Editing", "Automation",
+            "curve-algorithm",
+            curve_algorithm_strings);
+          SET_STRV_IF_MATCH (
+            "UI", "General", "language",
+            language_strings_full);
+          SET_STRV_IF_MATCH (
+            "DSP", "Pan", "pan-algorithm",
+            pan_algorithm_str);
+          SET_STRV_IF_MATCH (
+            "DSP", "Pan", "pan-law",
+            pan_law_str);
+
+#undef SET_STRV_IF_MATCH
+
+          if (strv || cyaml_strv)
+            {
+              widget =
+                gtk_combo_box_text_new ();
+              for (size_t i = 0; i < size; i++)
+                {
+                  if (cyaml_strv)
+                    {
+                      gtk_combo_box_text_append (
+                        GTK_COMBO_BOX_TEXT (widget),
+                        cyaml_strv[i].str,
+                        _(cyaml_strv[i].str));
+                    }
+                  else if (strv)
+                    {
+                      gtk_combo_box_text_append (
+                        GTK_COMBO_BOX_TEXT (widget),
+                        strv[i], _(strv[i]));
+                    }
+                }
+              gtk_combo_box_set_active (
+                GTK_COMBO_BOX (widget),
+                g_settings_get_enum (
+                  info->settings, key));
+              CallbackData * data =
+                calloc (1, sizeof (CallbackData));
+              data->info = info;
+              data->preferences_widget = self;
+              data->key = g_strdup (key);
+              g_signal_connect_data (
+                G_OBJECT (widget), "changed",
+                G_CALLBACK (
+                  on_enum_combo_box_active_changed),
+                data,
+                (GClosureNotify)
+                  on_closure_notify_delete_data,
+                G_CONNECT_AFTER);
+            }
         }
     }
   else if (TYPE_EQUALS (STRING_ARRAY))
@@ -282,12 +528,22 @@ make_control (
           data->info = info;
           data->preferences_widget = self;
           data->key = g_strdup (key);
-          g_signal_connect (
+          g_signal_connect_data (
             G_OBJECT (widget), "changed",
             G_CALLBACK (on_path_entry_changed),
-            data);
+            data,
+            (GClosureNotify)
+              on_closure_notify_delete_data,
+            G_CONNECT_AFTER);
         }
     }
+#if 0
+  else if (string_is_equal (
+             g_variant_get_type_string (
+               current_var), "ai", true))
+    {
+    }
+#endif
 
 #undef TYPE_EQUALS
 
@@ -298,7 +554,8 @@ static void
 add_subgroup (
   PreferencesWidget * self,
   int                 group_idx,
-  int                 subgroup_idx)
+  int                 subgroup_idx,
+  GtkSizeGroup *      size_group)
 {
   SubgroupInfo * info =
     &self->subgroup_infos[group_idx][subgroup_idx];
@@ -314,11 +571,6 @@ add_subgroup (
   gtk_widget_set_visible (label, true);
   gtk_container_add (
     GTK_CONTAINER (page_box), label);
-
-  /* create a sizegroup for the labels */
-  GtkSizeGroup * size_group =
-    gtk_size_group_new (
-      GTK_SIZE_GROUP_HORIZONTAL);
 
   char ** keys =
     g_settings_schema_list_keys (info->schema);
@@ -336,11 +588,16 @@ add_subgroup (
         _(g_settings_schema_key_get_description (
           schema_key));
 
-      g_message ("adding control for %s", summary);
+      if (string_is_equal (key, "info", true) ||
+          should_be_hidden (
+            info->group_name, info->name, key))
+        continue;
+
+      g_message ("adding control for %s", key);
 
       /* create a box to add controls */
       GtkWidget * box =
-        gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+        gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
       gtk_widget_set_visible (box, true);
       gtk_container_add (
         GTK_CONTAINER (page_box), box);
@@ -361,12 +618,24 @@ add_subgroup (
           self, group_idx, subgroup_idx, key);
       if (widget)
         {
-          g_message ("adding widget for %s", key);
           gtk_widget_set_visible (widget, true);
+          if (GTK_IS_SWITCH (widget))
+            {
+              gtk_widget_set_halign (
+                widget, GTK_ALIGN_START);
+            }
+          else
+            {
+              gtk_widget_set_hexpand (widget, true);
+            }
           gtk_widget_set_tooltip_text (
             widget, description);
           gtk_container_add (
             GTK_CONTAINER (box), widget);
+        }
+      else
+        {
+          g_message ("no widget");
         }
     }
 }
@@ -452,15 +721,21 @@ add_group (
   GtkWidget * box =
     gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_set_visible (box, true);
+  z_gtk_widget_set_margin (box, 4);
   gtk_notebook_append_page (
     self->group_notebook, box,
     plugin_gtk_new_label (
       group_name, true, false, 0.f, 0.5f));
 
+  /* create a sizegroup for the labels */
+  GtkSizeGroup * size_group =
+    gtk_size_group_new (
+      GTK_SIZE_GROUP_HORIZONTAL);
+
   /* add each subgroup */
   for (int j = 0; j <= max_subgroup_idx; j++)
     {
-      add_subgroup (self, group_idx, j);
+      add_subgroup (self, group_idx, j, size_group);
     }
 }
 

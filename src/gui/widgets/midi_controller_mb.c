@@ -46,11 +46,15 @@ set_label (MidiControllerMbWidget * self)
     self->label, _("Select..."));
 }
 
+/**
+ * This is called when the popover closes.
+ */
 void
 midi_controller_mb_widget_refresh (
   MidiControllerMbWidget * self)
 {
   set_label (self);
+  midi_controller_mb_widget_save_settings (self);
 }
 
 void
@@ -64,7 +68,8 @@ midi_controller_mb_widget_save_settings (
 
   children =
     gtk_container_get_children (
-      GTK_CONTAINER (self->popover->controllers_box));
+      GTK_CONTAINER (
+        self->popover->controllers_box));
   for (iter = children;
        iter != NULL;
        iter = g_list_next (iter))
@@ -107,7 +112,8 @@ midi_controller_mb_widget_class_init (MidiControllerMbWidgetClass * klass)
 }
 
 static void
-midi_controller_mb_widget_init (MidiControllerMbWidget * self)
+midi_controller_mb_widget_init (
+  MidiControllerMbWidget * self)
 {
   self->box =
     GTK_BOX (gtk_box_new (

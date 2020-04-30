@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -46,6 +46,21 @@ typedef enum PanLaw
   PAN_LAW_MINUS_6DB
 } PanLaw;
 
+static const char * pan_law_str[] =
+{
+  /* TRANSLATORS: decibels */
+  __("0dB"),
+  __("-3dB"),
+  __("-6dB"),
+};
+
+static inline const char *
+pan_law_to_string (
+  PanLaw pan_law)
+{
+  return pan_law_str[pan_law];
+}
+
 /**
  * See https://www.harmonycentral.com/articles/the-truth-about-panning-laws
  */
@@ -55,6 +70,20 @@ typedef enum PanAlgorithm
   PAN_ALGORITHM_SQUARE_ROOT,
   PAN_ALGORITHM_SINE_LAW
 } PanAlgorithm;
+
+static const char * pan_algorithm_str[] =
+{
+  __("Linear"),
+  __("Square Root"),
+  __("Sine"),
+};
+
+static inline const char *
+pan_algorithm_to_string (
+  PanAlgorithm pan_algo)
+{
+  return pan_algorithm_str[pan_algo];
+}
 
 void
 pan_get_calc_lr (

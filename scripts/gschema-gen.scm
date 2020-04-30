@@ -538,6 +538,10 @@ Args:
                      "rtaudio-audio-device-name" "s"
                      "" "RtAudio device"
                      "The name of the RtAudio device to use.")
+                   (make-schema-key
+                     "sdl-audio-device-name" "s"
+                     "" "SDL device"
+                     "The name of the SDL device to use.")
                    (make-schema-key-with-enum
                      "sample-rate" "sample-rate"
                      "48000" "Samplerate"
@@ -608,15 +612,15 @@ Args:
         \"C:\\\\Program Files\\\\Steinberg\\\\VSTPlugins\",
         \"C:\\\\Program Files\\\\Common Files\\\\VST2\",
         \"C:\\\\Program Files\\\\Common Files\\\\Steinberg\\\\VST2\" ]"
-                     "Search paths for VST plugins"
+                     "VST plugins"
                      "The search paths to scan for VST plugins in. Duplicate paths will be deduplicated.")
                    (make-schema-key
                      "sfz-search-paths" "as" "[]"
-                     "Search paths for SFZ instruments"
+                     "SFZ instruments"
                      "The search paths to scan for SFZ instruments in. Duplicate paths will be deduplicated.")
                    (make-schema-key
                      "sf2-search-paths" "as" "[]"
-                     "Search paths for SF2 instruments"
+                     "SF2 instruments"
                      "The search paths to scan for SF2 instruments in. Duplicate paths will be deduplicated.")
                  )) ;; plugins/paths
              ))) ;; plugins
@@ -646,7 +650,7 @@ Args:
                      "curve-algorithm"
                      "curve-algorithm"
                      "superellipse"
-                     "Automation curve algorithm"
+                     "Curve algorithm"
                      "Default algorithm to use for automation curves.")
                  )) ;; editing/automation
                (make-schema
@@ -712,12 +716,12 @@ Args:
                    (make-schema-key-with-enum
                      "pan-algorithm" "pan-algorithm"
                      "sine"
-                     "The panning algorithm"
+                     "Pan algorithm"
                      "The panning algorithm to use when applying pan on mono signals (not used at the moment).")
                    (make-schema-key-with-enum
                      "pan-law" "pan-law"
                      "minus-three-db"
-                     "The pan law"
+                     "Pan law"
                      "The pan law to use when applying pan on mono signals (not used at the moment).")
                  )) ;; dsp/pan
              ))) ;; dsp

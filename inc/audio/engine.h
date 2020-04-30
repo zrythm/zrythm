@@ -103,6 +103,26 @@ typedef enum AudioEngineBufferSize
   NUM_AUDIO_ENGINE_BUFFER_SIZES,
 } AudioEngineBufferSize;
 
+static const char * buffer_size_str[] =
+{
+  "16",
+  "32",
+  "64",
+  "128",
+  "256",
+  "512",
+  __("1,024"),
+  __("2,048"),
+  __("4,096"),
+};
+
+static inline const char *
+engine_buffer_size_to_string (
+  AudioEngineBufferSize buf_size)
+{
+  return buffer_size_str[buf_size];
+}
+
 /**
  * Samplerates to be used in comboboxes.
  */
@@ -117,6 +137,24 @@ typedef enum AudioEngineSamplerate
   AUDIO_ENGINE_SAMPLERATE_192000,
   NUM_AUDIO_ENGINE_SAMPLERATES,
 } AudioEngineSamplerate;
+
+static const char * sample_rate_str[] =
+{
+  __("22,050"),
+  __("32,000"),
+  __("44,100"),
+  __("48,000"),
+  __("88,200"),
+  __("96,000"),
+  __("192,000"),
+};
+
+static inline const char *
+engine_sample_rate_to_string (
+  AudioEngineSamplerate sample_rate)
+{
+  return sample_rate_str[sample_rate];
+}
 
 //typedef struct MIDI_Controller
 //{
@@ -134,6 +172,17 @@ typedef enum AudioBackend
   AUDIO_BACKEND_RTAUDIO,
   NUM_AUDIO_BACKENDS,
 } AudioBackend;
+
+static const char * audio_backend_str[] =
+{
+  /* TRANSLATORS: Dummy backend */
+  __("Dummy"),
+  "ALSA",
+  "JACK",
+  "PortAudio",
+  "SDL2",
+  "RtAudio",
+};
 
 /**
  * Mode used when bouncing, either during exporting
@@ -156,17 +205,6 @@ typedef enum BounceMode
   BOUNCE_INHERIT,
 } BounceMode;
 
-static const char * audio_backend_str[] =
-{
-  "Dummy",
-  "ALSA",
-  "JACK",
-  "PortAudio",
-  "SDL2",
-  "RtAudio",
-  "invalid"
-};
-
 typedef enum MidiBackend
 {
   MIDI_BACKEND_DUMMY,
@@ -179,12 +217,12 @@ typedef enum MidiBackend
 
 static const char * midi_backend_str[] =
 {
-  "Dummy",
-  "ALSA",
-  "JACK",
+  /* TRANSLATORS: Dummy backend */
+  __("Dummy"),
+  __("ALSA Sequencer"),
+  "JACK MIDI",
   "Windows MME",
   "RtMidi",
-  "invalid"
 };
 
 typedef enum AudioEngineJackTransportType
