@@ -135,8 +135,10 @@ io_path_get_parent_dir (
     "(" ROOT_REGEX ".*)" PATH_SEP "[^" PATH_SEP "]+";
   char * parent =
     string_get_regex_group (path, regex, 1);
+#if 0
   g_message ("[%s]\npath: %s\nregex: %s\nparent: %s",
     __func__, path, regex, parent);
+#endif
 
   if (!parent)
     {
@@ -144,8 +146,10 @@ io_path_get_parent_dir (
         regex, "(" ROOT_REGEX ")[^" PATH_SEP "]*");
       parent =
         string_get_regex_group (path, regex, 1);
+#if 0
       g_message ("path: %s\nregex: %s\nparent: %s",
         path, regex, parent);
+#endif
     }
 
 #undef PATH_SEP

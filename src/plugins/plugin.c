@@ -169,37 +169,35 @@ new_carla_plugin:
         case PROT_LV2:
           {
 #ifdef HAVE_CARLA
-            LilvNode * lv2_uri =
-              lilv_new_uri (LILV_WORLD, descr->uri);
-            const LilvPlugin * lilv_plugin =
-              lilv_plugins_get_by_uri (
-                PM_LILV_NODES.lilv_plugins,
-                lv2_uri);
-            lilv_node_free (lv2_uri);
-            LilvUIs * uis =
-              lilv_plugin_get_uis (lilv_plugin);
-            const LilvUI * picked_ui;
-            plugin->descr->needs_bridging =
-              lv2_plugin_pick_ui (
-                uis, LV2_PLUGIN_UI_FOR_BRIDGING,
-                &picked_ui, NULL);
-            lilv_uis_free (uis);
-
-            /* don't bridge until it's fixed */
-            /*plugin->descr->needs_bridging = false;*/
-
-            if (plugin->descr->needs_bridging)
+            /* try to bridge bridgable plugins */
+            if (g_settings_get_boolean (
+                  S_P_PLUGINS_UIS,
+                  "bridge-unsupported"))
               {
-                goto new_carla_plugin;
-              }
-            else
-              {
-#endif
-                lv2_plugin_new_from_uri (
-                  plugin, descr->uri);
-#ifdef HAVE_CARLA
+                LilvNode * lv2_uri =
+                  lilv_new_uri (LILV_WORLD, descr->uri);
+                const LilvPlugin * lilv_plugin =
+                  lilv_plugins_get_by_uri (
+                    PM_LILV_NODES.lilv_plugins,
+                    lv2_uri);
+                lilv_node_free (lv2_uri);
+                LilvUIs * uis =
+                  lilv_plugin_get_uis (lilv_plugin);
+                const LilvUI * picked_ui;
+                plugin->descr->needs_bridging =
+                  lv2_plugin_pick_ui (
+                    uis, LV2_PLUGIN_UI_FOR_BRIDGING,
+                    &picked_ui, NULL);
+                lilv_uis_free (uis);
+
+                if (plugin->descr->needs_bridging)
+                  {
+                    goto new_carla_plugin;
+                  }
               }
 #endif
+            lv2_plugin_new_from_uri (
+              plugin, descr->uri);
           }
           break;
         default:

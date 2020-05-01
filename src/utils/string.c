@@ -399,6 +399,7 @@ string_get_int_after_last_space (
       return -1;
     }
 
+#if 0
   for (i = 0; i < rc; i++)
     {
       g_message (
@@ -406,6 +407,7 @@ string_get_int_after_last_space (
         ovector[2 * i + 1] - ovector[2 * i],
         str + ovector[2 * i]);
     }
+#endif
 
   if (str_without_num)
     {
