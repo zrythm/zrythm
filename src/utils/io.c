@@ -109,9 +109,15 @@ io_file_strip_ext (const char * filename)
  * MUST be freed.
  */
 char *
-io_path_get_basename (const char * filename)
+io_path_get_basename_without_ext (
+  const char * filename)
 {
-  return g_path_get_basename (filename);
+  char * basename = g_path_get_basename (filename);
+  char * no_ext =
+    io_file_strip_ext (basename);
+  g_free (basename);
+
+  return no_ext;
 }
 
 char *

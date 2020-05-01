@@ -302,6 +302,15 @@ create_plugin (
           type, descr->path, descr->name,
           descr->name, 0, NULL, 0);
       break;
+    case PROT_SFZ:
+    case PROT_SF2:
+      ret =
+        carla_add_plugin (
+          self->host_handle,
+          BINARY_NATIVE,
+          type, descr->path, descr->name,
+          descr->name, 0, NULL, 0);
+      break;
     default:
       g_warn_if_reached ();
       break;
@@ -389,6 +398,8 @@ carla_native_plugin_proces (
     case PROT_VST:
     case PROT_VST3:
     case PROT_AU:
+    case PROT_SFZ:
+    case PROT_SF2:
     {
       float * inbuf[2];
       float dummy_inbuf1[nframes];
@@ -498,53 +509,8 @@ carla_native_plugin_proces (
       self->native_plugin_descriptor->process (
         self->native_plugin_handle, inbuf, outbuf,
         nframes, events, (uint32_t) num_events);
-    }
+      }
       break;
-#if 0
-    case PROT_SFZ:
-    {
-      float * inbuf[] =
-        {
-          self->stereo_in->l->buf,
-          self->stereo_in->r->buf
-        };
-      float * outbuf[] =
-        {
-          self->stereo_out->l->buf,
-          self->stereo_out->r->buf
-        };
-      for (int i = 0;
-           i < self->midi_in->midi_events->
-            num_events; i++)
-        {
-          MidiEvent * ev =
-            &self->midi_in->midi_events->events[i];
-          self->midi_events[i].time =
-            ev->time;
-          self->midi_events[i].size = 3;
-          self->midi_events[i].data[0] =
-            ev->raw_buffer[0];
-          self->midi_events[i].data[1] =
-            ev->raw_buffer[1];
-          self->midi_events[i].data[2] =
-            ev->raw_buffer[2];
-        }
-      self->num_midi_events =
-        (uint32_t)
-        self->midi_in->midi_events->num_events;
-      if (self->num_midi_events > 0)
-        {
-          g_message (
-            "Carla plugin %s has %d MIDI events",
-            self->plugin->descr->name,
-            self->num_midi_events);
-        }
-      self->descriptor->process (
-        self->handle, inbuf, outbuf, nframes,
-        self->midi_events, self->num_midi_events);
-    }
-      break;
-#endif
     default:
       break;
     }
@@ -731,11 +697,15 @@ create_from_descr (
       self =
         create_plugin (descr, PLUGIN_VST3);
       break;
-#if 0
     case PROT_SFZ:
       self =
         create_plugin (descr, PLUGIN_SFZ);
       break;
+    case PROT_SF2:
+      self =
+        create_plugin (descr, PLUGIN_SF2);
+      break;
+#if 0
     case PROT_CARLA_INTERNAL:
       create_carla_internal (
         descr->carla_type);
@@ -829,6 +799,9 @@ create_ports (
    * because carla discovery reports 0 params for
    * AU plugins, so we update the descriptor here */
   descr->num_ctrl_ins = (int) param_counts->ins;
+  g_message (
+    "%d control ins found for %s",
+    descr->num_ctrl_ins, descr->name);
   for (uint32_t i = 0; i < param_counts->ins; i++)
     {
       if (loading)
@@ -913,7 +886,7 @@ carla_native_plugin_open_ui (
       {
         carla_show_custom_ui (
           self->host_handle, 0, show);
-          self->plugin->visible = show;
+        self->plugin->visible = show;
 
         if (show)
           {
@@ -930,11 +903,8 @@ carla_native_plugin_open_ui (
             self->plugin);
       }
       break;
-#if 0
-    case PROT_SFZ:
+    default:
       break;
-#endif
-    default: break;
     }
 }
 

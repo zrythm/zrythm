@@ -481,7 +481,8 @@ get_vst_paths (
 #ifdef _WOE32
   char ** paths =
     g_settings_get_strv (
-      S_PREFERENCES, "vst-search-paths-windows");
+      S_P_PLUGINS_PATHS,
+      "vst-search-paths-windows");
   g_return_val_if_fail (paths, NULL);
 #elif defined (__APPLE__)
   char ** paths =
@@ -605,6 +606,25 @@ get_vst_count (
   return count;
 }
 #endif // HAVE_CARLA
+
+/**
+ * Gets the SFZ or SF2 paths.
+ */
+static char **
+get_sf_paths (
+  PluginManager * self,
+  bool            sf2)
+{
+  char ** paths =
+    g_settings_get_strv (
+      S_P_PLUGINS_PATHS,
+      sf2 ?
+        "sf2-search-paths" :
+        "sfz-search-paths");
+  g_return_val_if_fail (paths, NULL);
+
+  return paths;
+}
 
 /**
  * Scans for plugins, optionally updating the
@@ -1015,6 +1035,81 @@ plugin_manager_scan_plugins (
         }
     }
 #endif // __APPLE__
+  for (int i = 0; i < 2; i++)
+    {
+      char type[12];
+      strcpy (type, (i == 0) ? "SFZ" : "SF2");
+      char suffix[12];
+      strcpy (suffix, (i == 0) ? ".sfz" : ".sf2");
+      /* scan sfz */
+      g_message (
+        "Scanning %s instruments...", type);
+      paths = get_sf_paths (self, i);
+      path_idx = 0;
+      while ((path = paths[path_idx++]) != NULL)
+        {
+          if (!g_file_test (path, G_FILE_TEST_EXISTS))
+            continue;
+
+          g_message (
+            "scanning for %ss in %s", type, path);
+
+          char ** sf_instruments =
+            io_get_files_in_dir_ending_in (
+              path, 1, suffix);
+          if (!sf_instruments)
+            continue;
+
+          char * ins_path;
+          int ins_idx = 0;
+          while ((ins_path =
+                    sf_instruments[ins_idx++]) != NULL)
+            {
+              PluginDescriptor * descr =
+                calloc (1, sizeof (PluginDescriptor));
+
+              descr->path = g_strdup (ins_path);
+              descr->category = PC_INSTRUMENT;
+              descr->category_str =
+                plugin_descriptor_category_to_string (
+                  descr->category);
+              descr->name =
+                io_path_get_basename_without_ext (
+                  ins_path);
+              char * parent_path =
+                io_path_get_parent_dir (ins_path);
+              descr->author =
+                g_path_get_basename (parent_path);
+              g_free (parent_path);
+              descr->num_audio_outs = 2;
+              descr->num_midi_ins = 1;
+              descr->arch = ARCH_64;
+              descr->protocol =
+                i == 0 ? PROT_SFZ : PROT_SF2;
+              descr->open_with_carla = true;
+
+              array_append (
+                self->plugin_descriptors,
+                self->num_plugins, descr);
+              add_category (
+                self, descr->category_str);
+
+              if (progress)
+                {
+                  char prog_str[800];
+                  sprintf (
+                    prog_str,
+                    "Scanned %s instrument: %s",
+                    type,
+                    descr->name);
+                  zrythm_set_progress_status (
+                    ZRYTHM, prog_str, *progress);
+                }
+            }
+          g_strfreev (sf_instruments);
+        }
+      g_strfreev (paths);
+    }
 #endif // HAVE_CARLA
 
   /* sort alphabetically */

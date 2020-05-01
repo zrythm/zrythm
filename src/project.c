@@ -1021,7 +1021,7 @@ project_save (
 
   /* set the title */
   char * basename =
-    io_path_get_basename (dir);
+    g_path_get_basename (dir);
   set_title (self, basename);
   g_free (basename);
   g_free (dir);

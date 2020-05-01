@@ -315,7 +315,7 @@ plugin_descriptor_category_to_string (
 
 #undef RET_STRING
 
-  return g_strdup ("Plugin");
+  return g_strdup ("Other");
 }
 
 /**

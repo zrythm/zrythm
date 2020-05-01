@@ -131,7 +131,7 @@ create_project_dialog_widget_new ()
   g_free (tmp);
   g_free (untitled_project);
   untitled_project =
-    io_path_get_basename (dir);
+    g_path_get_basename (dir);
   g_free (dir);
   g_free (str);
   gtk_entry_set_text (

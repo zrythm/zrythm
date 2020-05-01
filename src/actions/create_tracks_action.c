@@ -74,7 +74,7 @@ create (
           self->type == TRACK_TYPE_AUDIO)
         {
           char * basename =
-            io_path_get_basename (
+            g_path_get_basename (
               self->file_descr->abs_path);
           track =
             track_new (
@@ -86,7 +86,7 @@ create (
                self->type == TRACK_TYPE_MIDI)
         {
           char * basename =
-            io_path_get_basename (
+            g_path_get_basename (
               self->file_descr->abs_path);
           track =
             track_new (

@@ -99,6 +99,8 @@ typedef enum PluginProtocol
   PROT_VST,
   PROT_VST3,
   PROT_AU,
+  PROT_SFZ,
+  PROT_SF2,
 } PluginProtocol;
 
 static const cyaml_strval_t
@@ -111,6 +113,8 @@ plugin_protocol_strings[] =
   { "VST",          PROT_VST    },
   { "VST3",         PROT_VST3   },
   { "AU",           PROT_AU     },
+  { "SFZ",          PROT_SFZ    },
+  { "SF2",          PROT_SF2    },
 };
 
 /**

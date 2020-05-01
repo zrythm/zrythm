@@ -75,7 +75,8 @@ io_file_get_ext (const char * file);
  * MUST be freed.
  */
 char *
-io_path_get_basename (const char * filename);
+io_path_get_basename_without_ext (
+  const char * filename);
 
 char *
 io_file_get_creation_datetime (

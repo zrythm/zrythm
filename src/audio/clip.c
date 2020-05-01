@@ -48,7 +48,7 @@ audio_clip_init_from_file (
   memcpy (
     self->frames, enc->out_frames,
     arr_size * sizeof (float));
-  self->name = io_path_get_basename (full_path);
+  self->name = g_path_get_basename (full_path);
   self->channels = enc->nfo.channels;
   self->bpm = TRANSPORT->bpm;
   /*g_message (*/

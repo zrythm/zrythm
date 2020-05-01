@@ -74,7 +74,7 @@ get_export_filename (ExportDialogWidget * self)
   /* we now have the full path, get only the
    * basename */
   base =
-    io_path_get_basename (full_path);
+    g_path_get_basename (full_path);
   g_free (full_path);
 
   return base;

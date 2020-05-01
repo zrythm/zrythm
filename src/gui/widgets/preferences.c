@@ -179,10 +179,12 @@ should_be_hidden (
       "Plugins", "Paths",
       "vst-search-paths-windows") ||
 #endif
+#ifndef HAVE_CARLA
     KEY_IS (
       "Plugins", "Paths", "sfz-search-paths") ||
     KEY_IS (
       "Plugins", "Paths", "sf2-search-paths") ||
+#endif
     (AUDIO_ENGINE->audio_backend !=
        AUDIO_BACKEND_SDL &&
      KEY_IS (

@@ -152,7 +152,9 @@ plugin_new_from_descr (
 #ifdef HAVE_CARLA
   if (descr->protocol == PROT_VST ||
       descr->protocol == PROT_VST3 ||
-      descr->protocol == PROT_AU)
+      descr->protocol == PROT_AU ||
+      descr->protocol == PROT_SFZ ||
+      descr->protocol == PROT_SF2)
     {
 new_carla_plugin:
       plugin->descr->open_with_carla = true;
@@ -398,6 +400,8 @@ plugin_activate (
     case PROT_VST:
     case PROT_VST3:
     case PROT_AU:
+    case PROT_SFZ:
+    case PROT_SF2:
 #ifdef HAVE_CARLA
       carla_native_plugin_activate (
         pl->carla, activate);
