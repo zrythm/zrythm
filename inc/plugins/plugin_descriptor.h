@@ -171,6 +171,11 @@ typedef struct PluginDescriptor
    * through Carla. */
   bool              open_with_carla;
 
+  /** Whether the plugin needs to be bridged
+   * through Carla (only used for LV2 plugins
+   * having Gtk2 UIs). */
+  bool              needs_bridging;
+
   /** Used for VST. */
   int64_t              unique_id;
 
@@ -224,24 +229,18 @@ plugin_descriptor_fields_schema[] =
     PluginDescriptor, num_cv_outs),
   YAML_FIELD_INT (
     PluginDescriptor, open_with_carla),
-  CYAML_FIELD_ENUM (
-    "arch", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
+    PluginDescriptor, needs_bridging),
+  YAML_FIELD_ENUM (
     PluginDescriptor, arch,
-    plugin_architecture_strings,
-    CYAML_ARRAY_LEN (plugin_architecture_strings)),
-  CYAML_FIELD_ENUM (
-    "protocol", CYAML_FLAG_DEFAULT,
+    plugin_architecture_strings),
+  YAML_FIELD_ENUM (
     PluginDescriptor, protocol,
-    plugin_protocol_strings,
-    CYAML_ARRAY_LEN (plugin_protocol_strings)),
-  CYAML_FIELD_STRING_PTR (
-    "path", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    PluginDescriptor, path,
-     0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "uri", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    PluginDescriptor, uri,
-     0, CYAML_UNLIMITED),
+    plugin_protocol_strings),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PluginDescriptor, path),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PluginDescriptor, uri),
   CYAML_FIELD_UINT (
     "ghash", CYAML_FLAG_DEFAULT,
     PluginDescriptor, ghash),

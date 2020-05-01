@@ -68,9 +68,8 @@ plugin_descriptor_copy (
   dest->protocol = src->protocol;
   dest->path = g_strdup (src->path);
   dest->uri = g_strdup (src->uri);
-#ifdef HAVE_CARLA
   dest->open_with_carla = src->open_with_carla;
-#endif
+  dest->needs_bridging = src->needs_bridging;
   dest->ghash = src->ghash;
 }
 

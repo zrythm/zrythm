@@ -33,7 +33,7 @@ guile_srcs = [
   guile_snarfable_srcs,
   ]
 
-if guile_dep.found ()
+if have_guile
   if guile_snarf.found ()
     # .x files
     guile_snarfed_srcs = []

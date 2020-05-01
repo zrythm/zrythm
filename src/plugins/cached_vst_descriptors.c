@@ -22,7 +22,7 @@
 #include "utils/string.h"
 #include "zrythm.h"
 
-#define CACHED_VST_DESCRIPTORS_VERSION 1
+#define CACHED_VST_DESCRIPTORS_VERSION 2
 
 static char *
 get_cached_vst_descriptors_file_path (void)
@@ -80,6 +80,7 @@ cached_vst_descriptors_new (void)
       g_message (
         "Cached VST descriptors file at %s does "
         "not exist", path);
+return_new_instance:
       return
         calloc (1, sizeof (CachedVstDescriptors));
     }
@@ -95,6 +96,25 @@ cached_vst_descriptors_new (void)
       g_free (path);
       return NULL;
     }
+
+  /* if not same version, purge file and return
+   * a new instance */
+  char version_str[120];
+  sprintf (
+    version_str, "version: %d",
+    CACHED_VST_DESCRIPTORS_VERSION);
+  if (!g_str_has_prefix (yaml, version_str))
+    {
+      g_message (
+        "Found old vst descriptor file version. "
+        "Purging file and creating a new one.");
+      GFile * file =
+        g_file_new_for_path (path);
+      g_file_delete (file, NULL, NULL);
+      g_object_unref (file);
+      goto return_new_instance;
+    }
+
   CachedVstDescriptors * self =
     cached_vst_descriptors_deserialize (yaml);
   if (!self)

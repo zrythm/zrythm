@@ -57,6 +57,8 @@
 #include <lv2/port-props/port-props.h>
 #include <suil/suil.h>
 
+#define MIN_SCALE_WIDTH 120
+
 /**
  * To be called by plugin_gtk both on generic UIs
  * and normal UIs when a plugin window is destroyed.
@@ -933,6 +935,8 @@ make_log_slider(Lv2Control* record, float value)
     gtk_scale_new_with_range (
       GTK_ORIENTATION_HORIZONTAL,
       lmin, lmax, 0.001);
+  gtk_widget_set_size_request (
+    scale, MIN_SCALE_WIDTH, -1);
   GtkWidget*  spin  =
     gtk_spin_button_new_with_range (
       min, max, 0.000001);
@@ -976,10 +980,13 @@ make_slider(Lv2Control* record, float value)
     lilv_get_float_from_node_with_fallback (
       record->max, 1.0f);
   const double step  = record->is_integer ? 1.0 : ((max - min) / 100.0);
-  GtkWidget*   scale =
+  GtkWidget * scale =
     gtk_scale_new_with_range (
       GTK_ORIENTATION_HORIZONTAL, min, max, step);
-  GtkWidget*   spin  = gtk_spin_button_new_with_range(min, max, step);
+  gtk_widget_set_size_request (
+    scale, MIN_SCALE_WIDTH, -1);
+  GtkWidget * spin =
+    gtk_spin_button_new_with_range (min, max, step);
 
   gtk_widget_set_sensitive (
     scale, record->is_writable);
@@ -1447,7 +1454,7 @@ lv2_gtk_open_ui (
         GTK_CONTAINER (scroll_win), controls);
       gtk_scrolled_window_set_policy (
         GTK_SCROLLED_WINDOW (scroll_win),
-        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+        GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
       gtk_container_add (
         GTK_CONTAINER (plugin->plugin->ev_box),
         scroll_win);

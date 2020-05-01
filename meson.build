@@ -215,7 +215,8 @@ if not jack_dep.found ()
     'jack',
     required: get_option ('jack'))
 endif
-if jack_dep.found ()
+have_jack = jack_dep.found () and not get_option ('jack').disabled ()
+if have_jack
   cdata.set('HAVE_JACK', 1)
   check_functions += [
     ['jack_set_property',[jack_dep]],
@@ -459,7 +460,8 @@ if not guile_dep.found ()
     'guile-2.2',
     required: get_option ('guile'))
 endif
-if (guile_dep.found ())
+have_guile = guile_dep.found () and not get_option ('guile').disabled ()
+if have_guile
   cdata.set('HAVE_GUILE', 1)
 endif
 
@@ -494,7 +496,9 @@ if (carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla
         'carla-discovery-native').path(),
     install_dir: bindir)
   cdata.set('HAVE_CARLA', 1)
-# discovery & bridge for 32-bit vst's
+
+  # install discovery & bridge for 32-bit vst's on
+  # windows
   if os_windows
     install_data (
       find_program (
@@ -505,6 +509,16 @@ if (carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla
       find_program (
         carla_libdir /
           'carla-bridge-win32.exe').path(),
+      install_dir: bindir)
+  endif
+
+  # install bridge for gtk2 plugins
+  carla_bridge_lv2_gtk2 = find_program (
+      carla_libdir / 'carla-bridge-lv2-gtk2',
+      required: false)
+  if carla_bridge_lv2_gtk2.found() and (os_linux or os_freebsd)
+    install_data (
+      carla_bridge_lv2_gtk2.path(),
       install_dir: bindir)
   endif
 endif
@@ -692,14 +706,14 @@ summary({
 
 summary({
   'FFmpeg': libavcodec_dep.found () and libavformat_dep.found () and libavutil_dep.found (),
-  'Jack': jack_dep.found (),
+  'Jack': have_jack,
   'PortAudio': portaudio_dep.found (),
   'RtMidi': rtmidi_dep.found (),
   'RtAudio': rtaudio_dep.found (),
   'SDL': sdl_dep.found (),
   'Carla': carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla_utils_dep.found (),
   'Gtop': libgtop_dep.found(),
-  'Guile': guile_dep. found(),
+  'Guile': have_guile,
   }, section: 'Optional libraries')
 
 summary({

@@ -1407,7 +1407,8 @@ lv2_plugin_pick_ui (
                   ui_type_uri);
               if (acceptable)
                 {
-                  *out_ui_type = ui_type;
+                  if (out_ui_type)
+                    *out_ui_type = ui_type;
                   g_message (
                     "Wrappable UI accepted");
                 }
@@ -1419,8 +1420,12 @@ lv2_plugin_pick_ui (
                     true))
                 {
                   acceptable = true;
-                  *out_ui_type =
-                    PM_LILV_NODES.ui_externalkx;
+                  if (out_ui_type)
+                    {
+                      *out_ui_type =
+                        PM_LILV_NODES.
+                          ui_externalkx;
+                    }
                   g_message (
                     "External KX UI accepted");
                 }
@@ -1430,8 +1435,11 @@ lv2_plugin_pick_ui (
                          true))
                 {
                   acceptable = true;
-                  *out_ui_type =
-                    PM_LILV_NODES.ui_external;
+                  if (out_ui_type)
+                    {
+                      *out_ui_type =
+                        PM_LILV_NODES.ui_external;
+                    }
                   g_message (
                     "External non-KX UI accepted");
                 }
@@ -1442,7 +1450,10 @@ lv2_plugin_pick_ui (
                     PM_LILV_NODES.ui_GtkUI))
                 {
                   acceptable = true;
-                  *out_ui_type = ui_type;
+                  if (out_ui_type)
+                    {
+                      *out_ui_type = ui_type;
+                    }
                   g_message (
                     "GTK2 UI accepted for "
                     "bridging");
@@ -1452,7 +1463,10 @@ lv2_plugin_pick_ui (
 
           if (acceptable)
             {
-              *out_ui = cur_ui;
+              if (out_ui)
+                {
+                  *out_ui = cur_ui;
+                }
               return true;
             }
         }

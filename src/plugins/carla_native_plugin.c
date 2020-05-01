@@ -269,11 +269,21 @@ create_plugin (
     ENGINE_OPTION_PATH_BINARIES, 0,
     CONFIGURE_BINDIR);
 
+  /* if bridged plugin, set prefer bridges */
+  if (descr->needs_bridging)
+    {
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_PREFER_UI_BRIDGES, true,
+        NULL);
+    }
+
   int ret = 0;
   switch (descr->protocol)
     {
     case PROT_LV2:
     case PROT_AU:
+      g_message ("uri %s", descr->uri);
       ret =
         carla_add_plugin (
           self->host_handle,
@@ -295,6 +305,15 @@ create_plugin (
     default:
       g_warn_if_reached ();
       break;
+    }
+
+  /* if bridged plugin, unset prefer bridges */
+  if (descr->needs_bridging)
+    {
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_PREFER_UI_BRIDGES, false,
+        NULL);
     }
 
   if (ret != 1)
