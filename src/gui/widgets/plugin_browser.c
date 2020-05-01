@@ -362,16 +362,6 @@ on_drag_data_get (
     z_gtk_get_single_selection_pointer (
       tv, PL_COLUMN_DESCR);
 
-#ifndef HAVE_CARLA
-  if (descr->protocol == PROT_VST)
-    {
-      ui_show_error_message (
-        MAIN_WINDOW,
-        _("VST support without Carla is deprecated "
-        "and will be removed in future versions."));
-    }
-#endif
-
   gtk_selection_data_set (data,
     gdk_atom_intern_static_string (
       TARGET_ENTRY_PLUGIN_DESCR),
@@ -381,17 +371,33 @@ on_drag_data_get (
 }
 
 static GtkTreeModel *
-create_model_for_collections ()
+create_model_for_favorites ()
 {
-  GtkListStore *list_store;
-  /*GtkTreePath *path;*/
-  /*GtkTreeIter iter;*/
-  /*gint i;*/
-
-  /* plugin name, index */
-  list_store =
+  /* list name, list index */
+  GtkListStore * list_store =
     gtk_list_store_new (
       2, G_TYPE_STRING, G_TYPE_INT);
+
+  gchar ** favorites =
+    g_settings_get_strv (
+      S_UI, "plugin-favorites");
+  int i = 0;
+  char * favorite_list;
+  while ((favorite_list = favorites[i++]))
+    {
+      char ** split =
+        g_strsplit (favorite_list, "::", 2);
+
+      /* add row to model */
+      GtkTreeIter iter;
+      gtk_list_store_append (list_store, &iter);
+      gtk_list_store_set (
+        list_store, &iter,
+        0, split[0], 1, i, -1);
+
+      g_strfreev (split);
+    }
+  g_strfreev (favorites);
 
   return GTK_TREE_MODEL (list_store);
 }
@@ -399,31 +405,31 @@ create_model_for_collections ()
 static GtkTreeModel *
 create_model_for_categories ()
 {
-  GtkListStore *list_store;
-  /*GtkTreePath *path;*/
-  GtkTreeIter iter;
-  gint i;
+  /* plugin category */
+  GtkListStore * list_store =
+    gtk_list_store_new (
+      1, G_TYPE_STRING);
 
-  /* plugin name, index */
-  list_store = gtk_list_store_new (1,
-                                   G_TYPE_STRING);
-
-  for (i = 0; i < PLUGIN_MANAGER->num_plugin_categories; i++)
+  for (int i = 0;
+       i < PLUGIN_MANAGER->num_plugin_categories;
+       i++)
     {
-      const gchar * name = PLUGIN_MANAGER->plugin_categories[i];
+      const gchar * name =
+        PLUGIN_MANAGER->plugin_categories[i];
 
       // Add a new row to the model
+      GtkTreeIter iter;
       gtk_list_store_append (list_store, &iter);
-      gtk_list_store_set (list_store, &iter,
-                          0, name,
-                          -1);
+      gtk_list_store_set (
+        list_store, &iter, 0, name, -1);
     }
 
   return GTK_TREE_MODEL (list_store);
 }
 
 static GtkTreeModel *
-create_model_for_plugins (PluginBrowserWidget * self)
+create_model_for_plugins (
+  PluginBrowserWidget * self)
 {
   GtkListStore *list_store;
   /*GtkTreePath *path;*/
@@ -825,7 +831,7 @@ plugin_browser_widget_new ()
 
   /* setup collections */
   self->collection_tree_model =
-    create_model_for_collections ();
+    create_model_for_favorites ();
   tree_view_setup (
     self, self->collection_tree_view,
     self->collection_tree_model, 1,0);

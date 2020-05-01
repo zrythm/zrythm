@@ -186,7 +186,7 @@ new_carla_plugin:
             lilv_uis_free (uis);
 
             /* don't bridge until it's fixed */
-            plugin->descr->needs_bridging = false;
+            /*plugin->descr->needs_bridging = false;*/
 
             if (plugin->descr->needs_bridging)
               {

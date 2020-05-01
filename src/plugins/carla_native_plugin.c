@@ -269,9 +269,19 @@ create_plugin (
     ENGINE_OPTION_PATH_BINARIES, 0,
     CONFIGURE_BINDIR);
 
+  /* set lv2 path */
+  carla_set_engine_option (
+    self->host_handle,
+    ENGINE_OPTION_PLUGIN_PATH, PLUGIN_LV2,
+    PLUGIN_MANAGER->lv2_path);
+
   /* if bridged plugin, set prefer bridges */
   if (descr->needs_bridging)
     {
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_PREFER_PLUGIN_BRIDGES, true,
+        NULL);
       carla_set_engine_option (
         self->host_handle,
         ENGINE_OPTION_PREFER_UI_BRIDGES, true,
@@ -314,15 +324,6 @@ create_plugin (
     default:
       g_warn_if_reached ();
       break;
-    }
-
-  /* if bridged plugin, unset prefer bridges */
-  if (descr->needs_bridging)
-    {
-      carla_set_engine_option (
-        self->host_handle,
-        ENGINE_OPTION_PREFER_UI_BRIDGES, false,
-        NULL);
     }
 
   if (ret != 1)

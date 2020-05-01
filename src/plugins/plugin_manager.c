@@ -92,6 +92,7 @@ add_category (
           return;
         }
     }
+  g_message ("%s: %s", __func__, category);
   self->plugin_categories[
     self->num_plugin_categories++] =
       g_strdup (category);
@@ -171,6 +172,7 @@ plugin_manager_init (PluginManager * self)
   char * env_lv2_path = getenv ("LV2_PATH");
   if (env_lv2_path && (strlen (env_lv2_path) > 0))
     {
+      self->lv2_path = g_strdup (env_lv2_path);
       lv2_path =
         lilv_new_string (world, env_lv2_path);
     }
@@ -179,22 +181,26 @@ plugin_manager_init (PluginManager * self)
       if (string_is_equal (
             LIBDIR_NAME, "lib", 0))
         {
-          lv2_path =
-            lilv_new_string (
-              world,
+          self->lv2_path =
+            g_strdup (
               "~/.lv2:/usr/local/lib/lv2:"
               "/usr/lib/lv2");
+          lv2_path =
+            lilv_new_string (
+              world, self->lv2_path);
         }
       else
         {
-          lv2_path =
-            lilv_new_string (
-              world,
+          self->lv2_path =
+            g_strdup (
               "~/.lv2:/usr/local/" LIBDIR_NAME
               "/lv2:/usr/" LIBDIR_NAME "/lv2:"
               /* some distros report the wrong
                * LIBDIR_NAME so hardcode these */
               "/usr/local/lib/lv2:/usr/lib/lv2");
+          lv2_path =
+            lilv_new_string (
+              world, self->lv2_path);
         }
     }
   g_return_if_fail (lv2_path);

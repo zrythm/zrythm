@@ -1132,7 +1132,9 @@ lv2_plugin_create_descriptor_from_lilv (
   const LilvNode * label =
     lilv_plugin_class_get_label(pclass);
   str = lilv_node_as_string (label);
-  pd->category_str = g_strdup (str);
+  pd->category_str =
+    string_get_substr_before_suffix (
+      str, " Plugin");
 
   pd->category =
     plugin_descriptor_string_to_category (

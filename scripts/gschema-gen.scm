@@ -430,6 +430,11 @@ Args:
                  "0.0" "2.0" "1.0"
                  "Monitor out volume"
                  "The monitor out volume in amplitude (0 to 2).")
+               (make-schema-key
+                 "plugin-favorites" "as"
+                 "[ \"My Synths::ZSaw::ZSaw-trial\" ]"
+                 "Plugin favorites"
+                 "A list of plugin favorites as strings separated by '::', where the first element is the name of the list.")
              ))) ;; ui
 
          (schema-print

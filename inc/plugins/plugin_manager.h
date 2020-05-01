@@ -166,6 +166,8 @@ typedef struct PluginManager
   /** URIDs. */
   Lv2URIDs               urids;
 
+  char *                 lv2_path;
+
 } PluginManager;
 
 /**

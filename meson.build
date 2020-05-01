@@ -43,7 +43,7 @@ zrythmdatadir = join_paths (datadir, 'zrythm')
 themesdir = join_paths (zrythmdatadir, 'themes')
 samplesdir = join_paths (zrythmdatadir, 'samples')
 docdir = join_paths (datadir, 'doc', 'zrythm')
-sourceviewstylesdir = join_paths (datadir, 'sourceview-styles')
+sourceviewstylesdir = join_paths (zrythmdatadir, 'sourceview-styles')
 
 # Used for building manpages, manual, etc., using
 # foreach
