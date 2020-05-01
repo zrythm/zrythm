@@ -17,7 +17,7 @@
 
 project (
   'zrythm', ['c', 'cpp'],
-  version: '0.8.333',
+  version: '0.8.378',
   license: 'AGPL-3-or-later',
   meson_version: '>= 0.50.0',
   default_options: [
@@ -513,6 +513,14 @@ if (carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla
   endif
 
   # install bridge for gtk2 plugins
+  carla_bridge_native = find_program (
+      carla_libdir / 'carla-bridge-native',
+      required: false)
+  if carla_bridge_native.found() and (os_linux or os_freebsd)
+    install_data (
+      carla_bridge_native.path(),
+      install_dir: bindir)
+  endif
   carla_bridge_lv2_gtk2 = find_program (
       carla_libdir / 'carla-bridge-lv2-gtk2',
       required: false)

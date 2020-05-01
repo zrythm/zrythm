@@ -1,6 +1,33 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.378] - 2020-05-01
+### Added
+- Add AU, VST2, VST3 support for MacOS
+- Add SFZ and SF2 support
+- Option to bridge unsupported UIs as an external process
+
+### Changed
+- Automation curves are now grabbable only if the cursor is near them
+- Project backups are now saved asynchronously
+- Show localized strings with `-p --pretty`
+- Show switches instead of checkboxes for toggle ports in generic UIs
+- Use Guile to generate gsettings schema
+- Use meson features instead of booleans for optional dependencies
+- Generate preferences window automatically
+- Use system locale on first run
+- Change default Zrythm path to XDG data home specification
+- Change libcyaml dependency version to allow newer versions
+- Update Japanese, Galician, German, Spanish, Chinese translations
+
+### Fixed
+- Fix using incorrect paths on Windows/MacOS
+- Fix moving multiple automation points setting them all to the same value
+- Fix deleting instrument track not deleting instrument UIs
+- Fix MIDI FX ports not being added to routing graph
+- Fix crash on systems with > 16 CPU cores
+- Fix generic UI windows being shrinkable beyond control visibility
+
 ## [0.8.333] - 2020-04-26
 ### Added
 - Add MIDI FX section in track inspector
