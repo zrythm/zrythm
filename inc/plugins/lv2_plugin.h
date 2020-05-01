@@ -157,7 +157,7 @@ typedef struct Lv2Plugin
   LilvUIs*           uis;
   /** Plugin UI (RDF data). */
   const LilvUI*      ui;
-  /** Plugin UI type (unwrapped). */
+  /** The native UI type for this plugin. */
   const LilvNode*    ui_type;
   /** Plugin instance (shared library). */
   LilvInstance*      instance;
@@ -195,7 +195,7 @@ typedef struct Lv2Plugin
   int                want_position;
 
   /** Whether the plugin has an external UI. */
-  int                has_external_ui;
+  bool               has_external_ui;
 
   /** Data structure used for external UIs. */
   LV2_External_UI_Widget* external_ui_widget;
@@ -339,6 +339,41 @@ lv2_plugin_process (
 nframes_t
 lv2_plugin_get_latency (
   Lv2Plugin * pl);
+
+/**
+ * In order of preference.
+ */
+typedef enum Lv2PluginPickUiFlag
+{
+  /** Plugin UI wrappable using Suil. */
+  LV2_PLUGIN_UI_WRAPPABLE,
+
+  /** External/KxExternal UI. */
+  LV2_PLUGIN_UI_EXTERNAL,
+
+  /** Gtk2. */
+  LV2_PLUGIN_UI_FOR_BRIDGING,
+} Lv2PluginPickUiFlag;
+
+/**
+ * Pick the most preferable UI.
+ *
+ * @param[out] ui (Output) UI of the specific
+ *   plugin.
+ * @param[out] ui_type UI type (eg, X11).
+ *
+ * @return Whether a UI was picked.
+ */
+bool
+lv2_plugin_pick_ui (
+  const LilvUIs *     uis,
+  Lv2PluginPickUiFlag flag,
+  const LilvUI **     out_ui,
+  const LilvNode **   out_ui_type);
+
+bool
+lv2_plugin_ui_type_is_external (
+  const LilvNode * ui_type);
 
 /**
  * Saves the current state in given dir.

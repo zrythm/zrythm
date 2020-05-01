@@ -403,7 +403,7 @@ lv2_ui_instantiate (
           plugin->external_ui_widget =
             suil_instance_get_widget (
               (SuilInstance*)plugin->ui_instance);
-      }
+        }
       else
         {
           plugin->has_external_ui = 0;

@@ -1349,6 +1349,118 @@ lv2_plugin_free (
   free (lv2_plugin);
 }
 
+bool
+lv2_plugin_ui_type_is_external (
+  const LilvNode * ui_type)
+{
+  return
+    lilv_node_equals (
+      ui_type, PM_LILV_NODES.ui_externalkx) ||
+    lilv_node_equals (
+      ui_type, PM_LILV_NODES.ui_external);
+}
+
+/**
+ * Pick the most preferable UI.
+ *
+ * @param[out] ui (Output) UI of the specific
+ *   plugin.
+ * @param[out] ui_type UI type (eg, X11).
+ *
+ * @return Whether a UI was picked.
+ */
+bool
+lv2_plugin_pick_ui (
+  const LilvUIs *     uis,
+  Lv2PluginPickUiFlag flag,
+  const LilvUI **     out_ui,
+  const LilvNode **   out_ui_type)
+{
+  LILV_FOREACH (uis, u, uis)
+    {
+      const LilvUI* cur_ui =
+        lilv_uis_get (uis, u);
+      const LilvNodes * ui_types =
+        lilv_ui_get_classes (cur_ui);
+      g_message (
+        "Checking UI: %s",
+        lilv_node_as_uri (
+          lilv_ui_get_uri (cur_ui)));
+      LILV_FOREACH (nodes, t, ui_types)
+        {
+          const LilvNode * ui_type =
+            lilv_nodes_get (ui_types, t);
+          const char * ui_type_uri =
+            lilv_node_as_uri (ui_type);
+          g_message (
+            "Found UI type: %s", ui_type_uri);
+
+          bool acceptable = false;
+          switch (flag)
+            {
+            case LV2_PLUGIN_UI_WRAPPABLE:
+              acceptable =
+                (bool)
+                suil_ui_supported (
+                  lilv_node_as_uri (
+                    PM_LILV_NODES.ui_Gtk3UI),
+                  ui_type_uri);
+              if (acceptable)
+                {
+                  *out_ui_type = ui_type;
+                  g_message (
+                    "Wrappable UI accepted");
+                }
+              break;
+            case LV2_PLUGIN_UI_EXTERNAL:
+              if (string_is_equal (
+                    ui_type_uri,
+                    KX_EXTERNAL_UI_WIDGET,
+                    true))
+                {
+                  acceptable = true;
+                  *out_ui_type =
+                    PM_LILV_NODES.ui_externalkx;
+                  g_message (
+                    "External KX UI accepted");
+                }
+              else if (string_is_equal (
+                         ui_type_uri,
+                         LV2_UI_PREFIX "external",
+                         true))
+                {
+                  acceptable = true;
+                  *out_ui_type =
+                    PM_LILV_NODES.ui_external;
+                  g_message (
+                    "External non-KX UI accepted");
+                }
+              break;
+            case LV2_PLUGIN_UI_FOR_BRIDGING:
+              if (lilv_node_equals (
+                    ui_type,
+                    PM_LILV_NODES.ui_GtkUI))
+                {
+                  acceptable = true;
+                  *out_ui_type = ui_type;
+                  g_message (
+                    "GTK2 UI accepted for "
+                    "bridging");
+                }
+              break;
+            }
+
+          if (acceptable)
+            {
+              *out_ui = cur_ui;
+              return true;
+            }
+        }
+    }
+
+  return false;
+}
+
 /**
  * Instantiate the plugin.
  *
@@ -1558,107 +1670,45 @@ lv2_plugin_instantiate (
           lilv_plugin_get_uri (self->lilv_plugin));
     }
 
-  /* Get a self->UI */
-  g_message ("Looking for supported UI...");
+  /* Get appropriate UI */
   self->uis =
     lilv_plugin_get_uis (self->lilv_plugin);
   if (!ZRYTHM_TESTING &&
       !g_settings_get_boolean (
         S_P_PLUGINS_UIS, "generic"))
     {
-      LILV_FOREACH (uis, u, self->uis)
-        {
-          const LilvUI* this_ui =
-            lilv_uis_get (self->uis, u);
-          const LilvNodes* types =
-            lilv_ui_get_classes (this_ui);
-          LILV_FOREACH (nodes, t, types)
-            {
-              const char * pt =
-                lilv_node_as_uri (
-                  lilv_nodes_get (types, t));
-              g_message ("Found UI: %s", pt);
-            }
-          if (lilv_ui_is_supported (
-                this_ui, suil_ui_supported,
-                PM_LILV_NODES.ui_Gtk3UI,
-                &self->ui_type))
-            {
-              /* TODO: Multiple UI support */
-              g_message (
-                "UI is supported for wrapping with "
-                "suil");
-              self->ui = this_ui;
-              break;
-            }
-          else
-            {
-              g_message (
-                "UI unsupported for wrapping with "
-                "suil");
-            }
-        }
-    }
-  else if (!ZRYTHM_TESTING &&
-           !g_settings_get_boolean (
-              S_P_PLUGINS_UIS,
-              "generic"))
-    {
-      self->ui =
-        lilv_uis_get (
-          self->uis, lilv_uis_begin (self->uis));
-    }
+      /* get a wrappable UI */
+      g_message ("Looking for wrappable UI...");
+      bool ui_picked =
+        lv2_plugin_pick_ui (
+          self->uis, LV2_PLUGIN_UI_WRAPPABLE,
+          &self->ui, &self->ui_type);
 
-  /* no wrappable UI found */
-  if (!self->ui)
-    {
-      g_message (
-        "Wrappable UI not found, looking for "
-        "external");
-      LILV_FOREACH (uis, u, self->uis)
+      /* if wrappable UI not found, get an external
+       * UI */
+      if (!ui_picked)
         {
-          const LilvUI* ui =
-            lilv_uis_get (self->uis, u);
-          const LilvNodes* types =
-            lilv_ui_get_classes (ui);
-          LILV_FOREACH(nodes, t, types)
+          g_message (
+            "No wrappable UI found. "
+            "Looking for external UI...");
+          ui_picked =
+            lv2_plugin_pick_ui (
+              self->uis, LV2_PLUGIN_UI_EXTERNAL,
+              &self->ui, &self->ui_type);
+          if (ui_picked)
             {
-              const char * pt =
-                lilv_node_as_uri (
-                  lilv_nodes_get (types, t));
-              if (!strcmp (
-                    pt, KX_EXTERNAL_UI_WIDGET))
-                {
-                  g_message ("Found UI: %s", pt);
-                  g_message (
-                    "External KX UI selected");
-                  self->has_external_ui = 1;
-                  self->ui = ui;
-                  self->ui_type =
-                    PM_LILV_NODES.ui_externalkx;
-                }
-              else if (!strcmp (
-                        pt,
-                        LV2_UI_PREFIX "external"))
-                {
-                  g_message ("Found UI: %s", pt);
-                  g_message (
-                    "External UI selected");
-                  self->has_external_ui = 1;
-                  self->ui_type =
-                    PM_LILV_NODES.ui_external;
-                  self->ui = ui;
-                }
+              self->has_external_ui = true;
             }
         }
     }
 
-  /* Create ringbuffers for UI if necessary */
   if (self->ui)
     {
-      g_message ("Selected UI: %s",
+      g_message ("Selected UI: %s (type: %s)",
         lilv_node_as_uri (
-          lilv_ui_get_uri(self->ui)));
+          lilv_ui_get_uri(self->ui)),
+        lilv_node_as_uri (
+          self->ui_type));
     }
   else
     {
