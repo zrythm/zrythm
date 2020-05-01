@@ -403,7 +403,7 @@ if (alsa_dep.found ())
   # cdata.set('HAVE_ALSA', 1)
 endif
 cyaml_dep = dependency(
-  'libcyaml', required: false, version: '=1.0.1')
+  'libcyaml', required: false, version: '>=1.0.1')
 if not cyaml_dep.found()
   cyaml_proj = subproject('libcyaml')
   cyaml_dep = cyaml_proj.get_variable(
