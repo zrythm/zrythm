@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the zrythm package.
 # Alexandros Theodotou <alex at zrytm dot org>, 2019.
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
-# Alexandros Theodotou <alextee@posteo.net>, 2019.
+# Alexandros Theodotou <alextee@posteo.net>, 2019, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-04-30 14:10+0100\n"
-"PO-Revision-Date: 2020-04-29 22:39+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2020-05-02 05:11+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.0.2\n"
+"X-Generator: Weblate 4.1-dev\n"
 
 #: inc/utils/gtk.h:49
 msgid "Cu_t"
@@ -79,43 +79,43 @@ msgstr "パルス"
 
 #: inc/audio/engine.h:114
 msgid "1,024"
-msgstr ""
+msgstr "1,024"
 
 #: inc/audio/engine.h:115
 msgid "2,048"
-msgstr ""
+msgstr "2,048"
 
 #: inc/audio/engine.h:116
 msgid "4,096"
-msgstr ""
+msgstr "4,096"
 
 #: inc/audio/engine.h:143
 msgid "22,050"
-msgstr ""
+msgstr "22,050"
 
 #: inc/audio/engine.h:144
 msgid "32,000"
-msgstr ""
+msgstr "32,000"
 
 #: inc/audio/engine.h:145
 msgid "44,100"
-msgstr ""
+msgstr "44,100"
 
 #: inc/audio/engine.h:146
 msgid "48,000"
-msgstr ""
+msgstr "48,000"
 
 #: inc/audio/engine.h:147
 msgid "88,200"
-msgstr ""
+msgstr "88,200"
 
 #: inc/audio/engine.h:148
 msgid "96,000"
-msgstr ""
+msgstr "96,000"
 
 #: inc/audio/engine.h:149
 msgid "192,000"
-msgstr ""
+msgstr "192,000"
 
 #. TRANSLATORS: Dummy backend
 #: inc/audio/engine.h:179 inc/audio/engine.h:221
@@ -129,15 +129,15 @@ msgstr "ALSAシーケンサー"
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
 msgid "0dB"
-msgstr ""
+msgstr "0dB"
 
 #: inc/audio/pan.h:53
 msgid "-3dB"
-msgstr ""
+msgstr "-3dB"
 
 #: inc/audio/pan.h:54
 msgid "-6dB"
-msgstr ""
+msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1303
@@ -151,7 +151,7 @@ msgstr "平方根"
 
 #: inc/audio/pan.h:78
 msgid "Sine"
-msgstr ""
+msgstr "正弦"
 
 #: src/zrythm.c:306
 msgid "Setting up main window"
@@ -3107,17 +3107,17 @@ msgstr "音符の長さ"
 #: build/data/org.zrythm.Zrythm.gschema.xml:195
 #: build/data/org.zrythm.Zrythm.gschema.xml:205
 msgid "Default length to use when creating timelinle objects, eg in edit mode."
-msgstr ""
+msgstr "編集モードなどでタイムラインオブジェクトを作成する際に使用するデフォルトの長さ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:199
 msgid "Timeline object length type"
-msgstr ""
+msgstr "タイムラインオブジェクト長の種類"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:200
 #: build/data/org.zrythm.Zrythm.gschema.xml:210
 msgid ""
 "Default length type to use when creating timelinle objects, eg in edit mode."
-msgstr ""
+msgstr "編集モードなどでタイムラインオブジェクトを作成する際に使用するデフォルトの長さの種類。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:204
 #, fuzzy
@@ -3138,7 +3138,7 @@ msgstr "音符表記を切り替える"
 msgid ""
 "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, "
 "etc.)"
-msgstr ""
+msgstr "ピアノロールで使用されている音符表記 - MIDIピッチインデックスまたは音符（C、C#など）"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:219
 #, fuzzy
@@ -3156,14 +3156,16 @@ msgid ""
 "to events so that they match the project BPM. This mostly applies to audio "
 "regions."
 msgstr ""
+"ミュージカルモードを使用するかどうか。これがオンの場合、プロジェクトのBPMと一致するようにイベントにタイムストレッチが適用されます。これは主にオーディオ"
+"リージョンに適用されます。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:229
 msgid "Listen to notes while they are moved"
-msgstr ""
+msgstr "音符を移動させながら試聴"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:230
 msgid "Whether to listen to MIDI notes while dragging them in the piano roll."
-msgstr ""
+msgstr "ピアノロールでドラッグしながらMIDI音符を試聴かどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:234
 #, fuzzy
@@ -3171,8 +3173,9 @@ msgid "Piano roll highlight"
 msgstr "ピアノロール"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:235
+#, fuzzy
 msgid "Whether to highlight chords, scales, both or none in the piano roll."
-msgstr ""
+msgstr "ピアノロールでコード、スケール、両方、または何も強調表示しないかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:239
 #, fuzzy
@@ -3183,7 +3186,7 @@ msgstr "ピアノロールパネル"
 msgid ""
 "The MIDI modifier to display in the MIDI editor (only velocity is valid at "
 "the moment)."
-msgstr ""
+msgstr "MIDIエディターに表示するMIDIモディファイア（現時点ではベロシティのみ有効）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:244
 #, fuzzy
@@ -3192,11 +3195,11 @@ msgstr "開始位置"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:245
 msgid "Height of the top part of the plugin/file browser."
-msgstr ""
+msgstr "プラグイン/ファイルブラウザの上部の高さ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:249
 msgid "Left panel divider position"
-msgstr ""
+msgstr "左パネルの仕切り位置"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:250
 msgid "Position of the resize handle of the left panel."
