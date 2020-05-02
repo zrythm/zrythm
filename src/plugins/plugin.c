@@ -170,7 +170,8 @@ new_carla_plugin:
           {
 #ifdef HAVE_CARLA
             /* try to bridge bridgable plugins */
-            if (g_settings_get_boolean (
+            if (!ZRYTHM_TESTING &&
+                g_settings_get_boolean (
                   S_P_PLUGINS_UIS,
                   "bridge-unsupported"))
               {

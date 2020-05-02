@@ -630,13 +630,21 @@ get_sf_paths (
   PluginManager * self,
   bool            sf2)
 {
-  char ** paths =
-    g_settings_get_strv (
-      S_P_PLUGINS_PATHS,
-      sf2 ?
-        "sf2-search-paths" :
-        "sfz-search-paths");
-  g_return_val_if_fail (paths, NULL);
+  char ** paths = NULL;
+  if (ZRYTHM_TESTING)
+    {
+      paths = g_strsplit (":", ":", -1);
+    }
+  else
+    {
+      paths =
+        g_settings_get_strv (
+          S_P_PLUGINS_PATHS,
+          sf2 ?
+            "sf2-search-paths" :
+            "sfz-search-paths");
+      g_return_val_if_fail (paths, NULL);
+    }
 
   return paths;
 }

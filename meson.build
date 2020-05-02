@@ -729,5 +729,6 @@ summary({
   'includedir': includedir,
   'libdir': libdir,
   'datadir': datadir,
+  'sysconfdir': sysconfdir,
   }, section: 'Directories')
 endif
