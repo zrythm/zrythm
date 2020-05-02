@@ -17,44 +17,33 @@
 
 if (sphinx_build.found())
 
-# note: this is not used at the moment.
-# `ninja -C build bundle_manual` is used instead
 foreach lang : locales
-  html_manual = custom_target (
-    'html-manual-' + lang,
-    depend_files: [
-      'conf.py',
-      ],
-    output: lang,
-    command: [
-      sphinx_build,
-      '-D',
-      'language=' + lang,
-      '-b',
-      'html',
-      meson.current_source_dir (),
-      '@OUTPUT@',
-      ],
-    install: false,
-    build_by_default: get_option ('user_manual'),
-    )
+  foreach format : [ 'html', 'latexpdf', 'epub' ]
+    name = format + '-manual-' + lang
+    output =  meson.current_build_dir () / lang / format
+    command = [
+      sphinx_build, '-D', 'language=' + lang,
+      '-b', format, meson.current_source_dir (),
+      output,
+      ]
 
-  if (get_option ('user_manual'))
-    install_subdir (
-      join_paths (
-        meson.current_build_dir (),
-        lang),
-      strip_directory: true,
-      install_dir:
-        join_paths (docdir, lang))
-  endif
+    run_target (name, command: command)
+
+    if format == 'html'
+      html_manual = custom_target (
+        name,
+        depend_files: [
+          'conf.py',
+          ],
+        output: lang,
+        command: command,
+        install: get_option ('user_manual'),
+        install_dir: docdir,
+        build_by_default: get_option ('user_manual'),
+        )
+    endif
+  endforeach
 endforeach
-
-if (get_option ('user_manual'))
-  install_data (
-    'README.md',
-    install_dir: docdir)
-endif
 
 # generate guile docs
 guile_docs = []

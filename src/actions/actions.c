@@ -155,10 +155,8 @@ activate_news (
 {
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
-    "https://git.zrythm.org/cgit/zrythm/plain/"
-    "CHANGELOG.md",
-    0,
-    NULL);
+    "https://forum.zrythm.org/c/"
+    "News-and-blog-entries", 0, NULL);
 }
 
 void
@@ -171,28 +169,20 @@ activate_manual (
   LocalizationLanguage lang =
     (LocalizationLanguage)
     g_settings_get_enum (
-      S_PREFERENCES,
-      "language");
-  char * lang_code =
+      S_P_UI_GENERAL, "language");
+  const char * lang_code =
     localization_get_string_code (lang);
   char * path =
     g_strdup_printf (
       "file://%s/%s/index.html",
-      MANUAL_PATH,
-      lang_code);
+      MANUAL_PATH, lang_code);
   gtk_show_uri_on_window (
-    GTK_WINDOW (MAIN_WINDOW),
-    path,
-    0,
-    NULL);
-  g_free (lang_code);
+    GTK_WINDOW (MAIN_WINDOW), path, 0, NULL);
   g_free (path);
 #else
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
-    "https://manual.zrythm.org",
-    0,
-    NULL);
+    "https://manual.zrythm.org", 0, NULL);
 #endif
 }
 
@@ -204,8 +194,7 @@ activate_chat (GSimpleAction *action,
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
     "https://matrix.to/#/#zrythmdaw:matrix.org",
-    0,
-    NULL);
+    0, NULL);
 }
 
 void
@@ -215,9 +204,7 @@ activate_donate (GSimpleAction *action,
 {
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
-    "https://liberapay.com/Zrythm",
-    0,
-    NULL);
+    "https://liberapay.com/Zrythm", 0, NULL);
 }
 
 void
