@@ -90,9 +90,12 @@ typedef struct Lv2Nodes
   LilvNode *          core_name;
   LilvNode *          core_OutputPort;
   LilvNode *          core_reportsLatency;
+  LilvNode *          core_requiredFeature;
   LilvNode *          core_sampleRate;
   LilvNode *          core_symbol;
   LilvNode *          core_toggled;
+  LilvNode *          data_access;
+  LilvNode *          instance_access;
   LilvNode *          ev_EventPort;
   LilvNode *          patch_Message;
   LilvNode *          patch_readable;

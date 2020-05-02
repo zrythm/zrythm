@@ -178,7 +178,7 @@ typedef struct PluginDescriptor
   /** Whether the plugin needs to be bridged
    * through Carla (only used for LV2 plugins
    * having Gtk2 UIs). */
-  bool              needs_bridging;
+  //bool              needs_bridging;
 
   /** Used for VST. */
   int64_t              unique_id;
@@ -233,8 +233,8 @@ plugin_descriptor_fields_schema[] =
     PluginDescriptor, num_cv_outs),
   YAML_FIELD_INT (
     PluginDescriptor, open_with_carla),
-  YAML_FIELD_INT (
-    PluginDescriptor, needs_bridging),
+  //YAML_FIELD_INT (
+    //PluginDescriptor, needs_bridging),
   YAML_FIELD_ENUM (
     PluginDescriptor, arch,
     plugin_architecture_strings),

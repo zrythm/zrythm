@@ -330,11 +330,20 @@ plugin_manager_init (PluginManager * self)
   ADD_LV2_NODE (
     core_reportsLatency, LV2_CORE__reportsLatency);
   ADD_LV2_NODE (
+    core_requiredFeature,
+    LV2_CORE__requiredFeature);
+  ADD_LV2_NODE (
     core_sampleRate, LV2_CORE__sampleRate);
   ADD_LV2_NODE (
     core_symbol, LV2_CORE__symbol);
   ADD_LV2_NODE (
     core_toggled, LV2_CORE__toggled);
+  ADD_LV2_NODE (
+    data_access,
+    "http://lv2plug.in/ns/ext/data-access");
+  ADD_LV2_NODE (
+    instance_access,
+    "http://lv2plug.in/ns/ext/instance-access");
   ADD_LV2_NODE (
     ev_EventPort,
     LV2_EVENT__EventPort);

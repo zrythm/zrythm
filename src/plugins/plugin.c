@@ -175,7 +175,8 @@ new_carla_plugin:
                   "bridge-unsupported"))
               {
                 LilvNode * lv2_uri =
-                  lilv_new_uri (LILV_WORLD, descr->uri);
+                  lilv_new_uri (
+                    LILV_WORLD, descr->uri);
                 const LilvPlugin * lilv_plugin =
                   lilv_plugins_get_by_uri (
                     PM_LILV_NODES.lilv_plugins,
@@ -184,13 +185,13 @@ new_carla_plugin:
                 LilvUIs * uis =
                   lilv_plugin_get_uis (lilv_plugin);
                 const LilvUI * picked_ui;
-                plugin->descr->needs_bridging =
+                bool needs_bridging =
                   lv2_plugin_pick_ui (
                     uis, LV2_PLUGIN_UI_FOR_BRIDGING,
                     &picked_ui, NULL);
                 lilv_uis_free (uis);
 
-                if (plugin->descr->needs_bridging)
+                if (needs_bridging)
                   {
                     goto new_carla_plugin;
                   }
