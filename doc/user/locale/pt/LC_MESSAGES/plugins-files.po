@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:32+0000\n"
-"PO-Revision-Date: 2019-12-20 21:21+0000\n"
+"PO-Revision-Date: 2020-05-02 05:11+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
-"/manualplugins-files/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.1-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:6
@@ -365,6 +366,8 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-window.rst:22
 msgid "Some plugin UIs cannot be wrapped and will be opened in separate windows."
 msgstr ""
+"Algumas UIs de plugin não podem ser embrulhadas e serão abertas em janelas "
+"separadas."
 
 #: ../../plugins-files/plugins/ports.rst:6
 msgid "Ports"
@@ -466,9 +469,8 @@ msgstr ""
 "estados fader, pan, e enabled (ligado/desligado)."
 
 #: ../../plugins-files/plugins/scanning.rst:6
-#, fuzzy
 msgid "Scanning for Plugins"
-msgstr "Instanciar Plugins"
+msgstr "Procurando Plugins"
 
 #: ../../plugins-files/plugins/scanning.rst:8
 msgid ""
@@ -476,16 +478,21 @@ msgid ""
 "until it is closed. Zrythm supports both LV2 and VST plugins, although "
 "LV2 is the recommended standard."
 msgstr ""
+"A Zrythm procurará plugins na inicialização e se lembrará deles até que seja "
+"fechado. A Zrythm suporta plugins LV2 e VST, embora LV2 seja o padrão "
+"recomendado."
 
 #: ../../plugins-files/plugins/scanning.rst:13
 msgid ""
 "Plugin scanning can be disableld by passing NO_SCAN_PLUGINS=1 when "
 "running Zrythm."
 msgstr ""
+"A verificação de plug-in pode ser desativada passando NO_SCAN_PLUGINS = 1 ao "
+"executar o Zrythm."
 
 #: ../../plugins-files/plugins/scanning.rst:17
 msgid "LV2 Scan"
-msgstr ""
+msgstr "Procurar LV2"
 
 #: ../../plugins-files/plugins/scanning.rst:19
 msgid ""
@@ -494,30 +501,35 @@ msgid ""
 "bypass this behavior by passing the ``LV2_PATH`` environment variable to "
 "specify custom paths. For example, ``LV2_PATH=~/custom-lv2-dir zrythm``."
 msgstr ""
+"O Zrythm procurará por plugins LV2 nos caminhos padrão especificados `aqui "
+"<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>` _. Pode "
+"ignorar esse comportamento passando a variável de ambiente `` LV2_PATH`` "
+"para especificar caminhos personalizados. Por exemplo, `` LV2_PATH =~/dir-"
+"lv2-personalizado zrythm``."
 
 #: ../../plugins-files/plugins/scanning.rst:26
 msgid "VST Scan"
-msgstr ""
+msgstr "Procurar VST"
 
 #: ../../plugins-files/plugins/scanning.rst:28
 msgid "On UNIX, Zrythm will scan for VST plugins in the following paths."
-msgstr ""
+msgstr "No UNIX, o Zrythm procurará plug-ins VST nos seguintes caminhos."
 
 #: ../../plugins-files/plugins/scanning.rst:31
 msgid "``~/.vst``"
-msgstr ""
+msgstr "``~/.vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:32
 msgid "``~/vst``"
-msgstr ""
+msgstr "``~/vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:33
 msgid "``/usr/local/lib/vst``"
-msgstr ""
+msgstr "``/usr/local/lib/vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:34
 msgid "``/usr/lib/vst``"
-msgstr ""
+msgstr "``/usr/lib/vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:36
 msgid ""
@@ -525,10 +537,13 @@ msgid ""
 "variable to specify custom paths. For example, ``VST_PATH=~/custom-vst-"
 "dir zrythm``."
 msgstr ""
+"Você pode ignorar esse comportamento passando a variável de ambiente `` "
+"VST_PATH`` para especificar caminhos personalizados. Por exemplo, `` "
+"VST_PATH =~/dir-vst-personalizado zrythm``."
 
 #: ../../plugins-files/plugins/scanning.rst:40
 msgid "``lib`` will be replaced with ``lib64`` depending on your system."
-msgstr ""
+msgstr "O ``lib`` será substituído por ``lib64`` dependendo do seu sistema."
 
 #: ../../plugins-files/plugins/scanning.rst:43
 msgid ""
@@ -536,22 +551,25 @@ msgid ""
 "plug-in locations on Windows <https://helpcenter.steinberg.de/hc/en-"
 "us/articles/115000177084-VST-plug-in-locations-on-Windows>`_."
 msgstr ""
+"No Windows, o Zrythm irá procurar plug-ins nos caminhos especificados em `"
+"Locais de plug-ins VST no Windows <https://helpcenter.steinberg.de/hc/en-us/"
+"articles/115000177084-VST-plug-in-locations-on-Windows>`_."
 
 #: ../../plugins-files/plugins/scanning.rst:46
 msgid "``C:\\Program Files\\VSTPlugins``"
-msgstr ""
+msgstr "``C:\\Program Files\\VSTPlugins``"
 
 #: ../../plugins-files/plugins/scanning.rst:47
 msgid "``C:\\Program Files\\Steinberg\\VSTPlugins``"
-msgstr ""
+msgstr "``C:\\Program Files\\Steinberg\\VSTPlugins``"
 
 #: ../../plugins-files/plugins/scanning.rst:48
 msgid "``C:\\Program Files\\Common Files\\VST2``"
-msgstr ""
+msgstr "``C:\\Program Files\\Common Files\\VST2``"
 
 #: ../../plugins-files/plugins/scanning.rst:49
 msgid "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
-msgstr ""
+msgstr "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
 
 #: ../../plugins-files/plugins/scanning.rst:51
 msgid ""
@@ -561,6 +579,11 @@ msgid ""
 " start-up, and you can delete or edit this file to force a re-scan of "
 "previously scanned plugins."
 msgstr ""
+"Como a procura de plug-ins VST leva muito tempo, o Zrythm lembra-se dos plug-"
+"ins VST verificados e grava essas informações em `` << ZRYTHM PATH "
+">>/cached_vst_descriptors.yaml``. Novos plug-ins serão verificados em cada "
+"inicialização, e pode excluir ou editar este ficheiro para forçar uma nova "
+"verificação dos plug-ins verificados anteriormente."
 
 #~ msgid ""
 #~ "When a Plugin is selected in the"
@@ -659,4 +682,3 @@ msgstr ""
 #~ "``C:\\Program Files\\Common Files\\VST2`` - "
 #~ "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
 #~ msgstr ""
-
