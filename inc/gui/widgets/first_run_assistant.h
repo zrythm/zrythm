@@ -46,8 +46,6 @@ typedef struct _FirstRunAssistantWidget
   GtkButton *          test_backends;
   GtkComboBox *        audio_backend;
   GtkComboBox *        midi_backend;
-  GtkLabel *           vst_paths_label;
-  GtkEntry *           vst_paths_entry;
 } FirstRunAssistantWidget;
 
 /**

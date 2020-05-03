@@ -250,17 +250,6 @@ on_file_set (
   g_free (str2);
 }
 
-#ifdef _WOE32
-static void
-on_vst_paths_changed (
-  GtkEditable * editable,
-  FirstRunAssistantWidget * self)
-{
-  ui_update_vst_paths_from_entry (
-    self->vst_paths_entry);
-}
-#endif
-
 FirstRunAssistantWidget *
 first_run_assistant_widget_new (
   GtkWindow * parent)
@@ -281,11 +270,6 @@ first_run_assistant_widget_new (
     self->audio_backend);
   ui_setup_midi_backends_combo_box (
     self->midi_backend);
-
-#ifdef _WOE32
-  /* setup vst_paths */
-  ui_setup_vst_paths_entry (self->vst_paths_entry);
-#endif
 
   /* set zrythm dir */
   char * dir =
@@ -333,15 +317,9 @@ first_run_assistant_widget_new (
   g_signal_connect (
     G_OBJECT (self->reset), "clicked",
     G_CALLBACK (on_reset_clicked), self);
-#ifdef _WOE32
-  g_signal_connect (
-    G_OBJECT (self->vst_paths_entry), "changed",
-    G_CALLBACK (on_vst_paths_changed), self);
-#else
   g_signal_connect (
     G_OBJECT (self->test_backends), "clicked",
     G_CALLBACK (on_test_backends_clicked), self);
-#endif
 
   return self;
 }
@@ -368,10 +346,6 @@ first_run_assistant_widget_class_init (
   BIND (fc_btn);
   BIND (reset);
   BIND (test_backends);
-#ifdef _WOE32
-  BIND (vst_paths_label);
-  BIND (vst_paths_entry);
-#endif
 
 #undef BIND
 }
@@ -385,10 +359,6 @@ first_run_assistant_widget_init (
   gtk_widget_init_template (GTK_WIDGET (self));
 
 #ifdef _WOE32
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->vst_paths_label), 1);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->vst_paths_entry), 1);
   gtk_widget_set_visible (
     GTK_WIDGET (self->test_backends), 0);
 #endif
