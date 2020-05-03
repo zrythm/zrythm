@@ -96,72 +96,26 @@ zrythm_set_progress_status (
 }
 
 /**
- * Gets the zrythm directory, either from the
- * settings if non-empty, or the default
- * ($XDG_DATA_DIR/zrythm).
- *
- * @param force_default Ignore the settings and get
- *   the default dir.
- *
- * Must be free'd by caler.
- */
-char *
-zrythm_get_dir (
-  bool  force_default)
-{
-  if (ZRYTHM_TESTING)
-    {
-      if (testing_dir)
-        return testing_dir;
-      else
-        {
-          testing_dir =
-            g_dir_make_tmp (
-              "zrythm_test_dir_XXXXXX", NULL);
-          return testing_dir;
-        }
-    }
-
-  g_return_val_if_fail (S_P_GENERAL_PATHS, NULL);
-
-  char * dir =
-    g_settings_get_string (
-      S_P_GENERAL_PATHS, "zrythm-dir");
-  if (force_default || strlen (dir) == 0)
-    {
-      g_free (dir);
-      dir =
-        g_build_filename (
-          g_get_user_data_dir (), "zrythm", NULL);
-    }
-
-  return dir;
-}
-
-/**
  * Initializes/creates the default dirs/files.
  */
 static void
 init_dirs_and_files ()
 {
   g_message ("initing dirs and files");
-  ZRYTHM->zrythm_dir = zrythm_get_dir (false);
-  io_mkdir (ZRYTHM->zrythm_dir);
+  char * dir;
 
-  ZRYTHM->projects_dir =
-    g_build_filename (
-      ZRYTHM->zrythm_dir, "Projects", NULL);
-  io_mkdir (ZRYTHM->projects_dir);
+#define MK_USER_DIR(x) \
+  dir =  zrythm_get_dir (ZRYTHM_DIR_USER_##x); \
+  io_mkdir (dir); \
+  g_free (dir)
 
-  ZRYTHM->templates_dir =
-    g_build_filename (
-      ZRYTHM->zrythm_dir, "Templates", NULL);
-  io_mkdir (ZRYTHM->templates_dir);
+  MK_USER_DIR (TOP);
+  MK_USER_DIR (PROJECTS);
+  MK_USER_DIR (TEMPLATES);
+  MK_USER_DIR (LOG);
+  MK_USER_DIR (THEMES);
 
-  ZRYTHM->log_dir =
-    g_build_filename (
-      ZRYTHM->zrythm_dir, "log", NULL);
-  io_mkdir (ZRYTHM->log_dir);
+#undef MK_USER_DIR
 }
 
 /**
@@ -217,9 +171,11 @@ init_recent_projects ()
 static void
 init_templates ()
 {
-
+  char * user_templates_dir =
+    zrythm_get_dir (ZRYTHM_DIR_USER_TEMPLATES);
   ZRYTHM->templates =
-    io_get_files_in_dir (ZRYTHM->templates_dir);
+    io_get_files_in_dir (user_templates_dir);
+  g_free (user_templates_dir);
 }
 
 /**
@@ -750,8 +706,8 @@ zrythm_get_version_with_capabilities (
  *
  * @return A newly allocated string.
  */
-char *
-zrythm_get_prefix (void)
+static char *
+get_prefix (void)
 {
 #ifdef WINDOWS_RELEASE
   return
@@ -767,69 +723,164 @@ zrythm_get_prefix (void)
 }
 
 /**
- * Returns the datadir ("share" under whatever is
- * returned by zrythm_get_prefix().
+ * Gets the zrythm directory, either from the
+ * settings if non-empty, or the default
+ * ($XDG_DATA_DIR/zrythm).
  *
- * @return A newly allocated string.
+ * @param force_default Ignore the settings and get
+ *   the default dir.
+ *
+ * Must be free'd by caler.
  */
-char *
-zrythm_get_datadir (void)
+static char *
+get_user_dir (
+  bool  force_default)
 {
-  char * prefix = zrythm_get_prefix ();
-  char * ret =
-    g_build_filename (
-      prefix, "share", NULL);
-  g_free (prefix);
-  return ret;
+  if (ZRYTHM_TESTING)
+    {
+      if (testing_dir)
+        return testing_dir;
+      else
+        {
+          testing_dir =
+            g_dir_make_tmp (
+              "zrythm_test_dir_XXXXXX", NULL);
+          return testing_dir;
+        }
+    }
+
+  GSettings * settings =
+    g_settings_new (
+      GSETTINGS_ZRYTHM_PREFIX
+      ".preferences.general.paths");
+  g_return_val_if_fail (settings, NULL);
+
+  char * dir =
+    g_settings_get_string (
+      settings, "zrythm-dir");
+  if (force_default || strlen (dir) == 0)
+    {
+      g_free (dir);
+      dir =
+        g_build_filename (
+          g_get_user_data_dir (), "zrythm", NULL);
+    }
+
+  g_object_unref (settings);
+
+  return dir;
 }
 
 /**
- * Returns the bindir ("bin" under whatever is
- * returned by zrythm_get_prefix().
+ * Returns the default user "zrythm" dir.
  *
- * @return A newly allocated string.
+ * This is used when resetting or when the
+ * dir is not selected by the user yet.
  */
 char *
-zrythm_get_bindir (void)
+zrythm_get_default_user_dir (void)
 {
-  char * prefix = zrythm_get_prefix ();
-  char * ret =
-    g_build_filename (
-      prefix, "bin", NULL);
-  g_free (prefix);
-  return ret;
+  return get_user_dir (true);
 }
 
 /**
- * Returns the samples directory.
+ * Returns a Zrythm directory specified by
+ * \ref type.
  *
  * @return A newly allocated string.
  */
 char *
-zrythm_get_samplesdir (void)
+zrythm_get_dir (
+  ZrythmDirType type)
 {
-  char * datadir = zrythm_get_datadir ();
-  char * ret =
-    g_build_filename (
-      datadir, "zrythm", "samples",  NULL);
-  g_free (datadir);
-  return ret;
-}
+  char * res = NULL;
 
-/**
- * Returns the locale directory (share/locale).
- *
- * @return A newly allocated string.
- */
-char *
-zrythm_get_localedir (void)
-{
-  char * datadir = zrythm_get_datadir ();
-  char * ret =
-    g_build_filename (
-      datadir, "locale",  NULL);
-  g_free (datadir);
-  return ret;
+  /* handle system dirs */
+  if (type < ZRYTHM_DIR_USER_TOP)
+    {
+      char * prefix = get_prefix ();
+
+      switch (type)
+        {
+        case ZRYTHM_DIR_SYSTEM_PREFIX:
+          res = g_strdup (prefix);
+          break;
+        case ZRYTHM_DIR_SYSTEM_BINDIR:
+          res =
+            g_build_filename (
+              prefix, "bin", NULL);
+          break;
+        case ZRYTHM_DIR_SYSTEM_PARENT_DATADIR:
+          res =
+            g_build_filename (
+              prefix, "share", NULL);
+          break;
+        case ZRYTHM_DIR_SYSTEM_LOCALEDIR:
+          res =
+            g_build_filename (
+              prefix, "share", "locale", NULL);
+          break;
+        case ZRYTHM_DIR_SYSTEM_ZRYTHM_DATADIR:
+          res =
+            g_build_filename (
+              prefix, "share", "zrythm", NULL);
+          break;
+        case ZRYTHM_DIR_SYSTEM_SAMPLESDIR:
+          res =
+            g_build_filename (
+              prefix, "share", "zrythm",
+              "samples", NULL);
+          break;
+        case ZRYTHM_DIR_SYSTEM_THEMESDIR:
+          res =
+            g_build_filename (
+              prefix, "share", "zrythm",
+              "themes", NULL);
+          break;
+        default:
+          break;
+        }
+
+      g_free (prefix);
+    }
+  /* handle user dirs */
+  else
+    {
+      char * user_dir = get_user_dir (false);
+
+      switch (type)
+        {
+        case ZRYTHM_DIR_USER_TOP:
+          res = g_strdup (user_dir);
+          break;
+        case ZRYTHM_DIR_USER_PROJECTS:
+          res =
+            g_build_filename (
+              user_dir, "projects", NULL);
+          break;
+        case ZRYTHM_DIR_USER_TEMPLATES:
+          res =
+            g_build_filename (
+              user_dir, "templates", NULL);
+          break;
+        case ZRYTHM_DIR_USER_LOG:
+          res =
+            g_build_filename (
+              user_dir, "log", NULL);
+          break;
+        case ZRYTHM_DIR_USER_THEMES:
+          res =
+            g_build_filename (
+              user_dir, "themes", NULL);
+          break;
+        default:
+          break;
+        }
+
+      g_free (user_dir);
+    }
+
+  return res;
 }
 
 /*
@@ -962,18 +1013,24 @@ zrythm_app_startup (
   /* set default css provider */
   GtkCssProvider * css_provider =
     gtk_css_provider_new();
+  char * user_themes_dir =
+    zrythm_get_dir (ZRYTHM_DIR_USER_THEMES);
   char * css_theme_path =
     g_build_filename (
-      g_get_home_dir (), ".config", "zrythm",
-      "theme.css", NULL);
+      user_themes_dir, "theme.css", NULL);
+  g_free (user_themes_dir);
   if (!g_file_test (
          css_theme_path, G_FILE_TEST_EXISTS))
     {
       g_free (css_theme_path);
+      char * system_themes_dir =
+        zrythm_get_dir (
+          ZRYTHM_DIR_SYSTEM_THEMESDIR);
       css_theme_path =
         g_build_filename (
-          CONFIGURE_THEMES_DIR, "zrythm-theme.css",
-          NULL);
+          system_themes_dir,
+          "zrythm-theme.css", NULL);
+      g_free (system_themes_dir);
     }
   GError * err = NULL;
   gtk_css_provider_load_from_path (

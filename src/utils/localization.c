@@ -280,9 +280,12 @@ localization_init (
 #if defined(WINDOWS_RELEASE)
   bindtextdomain (GETTEXT_PACKAGE, "share/locale");
 #else
-  char * localedir = zrythm_get_localedir ();
+  char * localedir =
+    zrythm_get_dir (
+      ZRYTHM_DIR_SYSTEM_LOCALEDIR);
   bindtextdomain (
     GETTEXT_PACKAGE, localedir);
+  g_free (localedir);
 #endif
 
   /* set domain codeset */

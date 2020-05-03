@@ -190,15 +190,18 @@ log_init (
     g_date_time_format (
       datetime,
       "%F_%H-%M-%S");
+  char * user_log_dir =
+    zrythm_get_dir (ZRYTHM_DIR_USER_LOG);
   char * str =
     g_strdup_printf (
       "%s%slog_%s",
-      ZRYTHM->log_dir,
+      user_log_dir,
       G_DIR_SEPARATOR_S,
       str_datetime);
-  io_mkdir (ZRYTHM->log_dir);
+  io_mkdir (user_log_dir);
   self->logfile = g_fopen (str, "a");
   g_return_if_fail (self->logfile);
+  g_free (user_log_dir);
   g_free (str);
   g_free (str_datetime);
   g_date_time_unref (datetime);

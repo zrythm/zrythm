@@ -66,6 +66,66 @@ typedef struct RecordingManager RecordingManager;
 #define ZRYTHM_HAVE_UI (ZRYTHM->have_ui)
 
 /**
+ * Type of Zrythm directory.
+ */
+typedef enum ZrythmDirType
+{
+  /*
+   * ----
+   * System directories that ship with Zrythm
+   * and must not be changed.
+   * ----
+   */
+
+  /**
+   * The prefix, or in the case of windows installer
+   * the root dir (C/program files/zrythm), or in the
+   * case of macos installer the bundle path.
+   *
+   * In all cases, "share" is expected to be found
+   * in this dir.
+   */
+  ZRYTHM_DIR_SYSTEM_PREFIX,
+
+  /** "bin" under \ref ZRYTHM_DIR_SYSTEM_PREFIX. */
+  ZRYTHM_DIR_SYSTEM_BINDIR,
+
+  /** "share" under \ref ZRYTHM_DIR_SYSTEM_PREFIX. */
+  ZRYTHM_DIR_SYSTEM_PARENT_DATADIR,
+
+  /** Localization under "share". */
+  ZRYTHM_DIR_SYSTEM_LOCALEDIR,
+
+  /** share/zrythm */
+  ZRYTHM_DIR_SYSTEM_ZRYTHM_DATADIR,
+
+  /** Samples. */
+  ZRYTHM_DIR_SYSTEM_SAMPLESDIR,
+
+  /** Themes. */
+  ZRYTHM_DIR_SYSTEM_THEMESDIR,
+
+  /* ************************************ */
+
+  /*
+   * ----
+   * Zrythm user directories that contain
+   * user-modifiable data.
+   * ----
+   */
+
+  /** Main zrythm directory from gsettings. */
+  ZRYTHM_DIR_USER_TOP,
+
+  /** Subdirs of \ref ZRYTHM_DIR_USER_TOP. */
+  ZRYTHM_DIR_USER_PROJECTS,
+  ZRYTHM_DIR_USER_TEMPLATES,
+  ZRYTHM_DIR_USER_LOG,
+  ZRYTHM_DIR_USER_THEMES,
+
+} ZrythmDirType;
+
+/**
  * To be used throughout the program.
  *
  * Everything here should be global and function regardless
@@ -76,59 +136,51 @@ typedef struct Zrythm
   /**
    * Manages plugins (loading, instantiating, etc.)
    */
-  PluginManager           plugin_manager;
+  PluginManager       plugin_manager;
 
-  MainWindowWidget *      main_window; ///< main window
+  /** Main window. */
+  MainWindowWidget *  main_window;
 
   /**
    * Application settings
    */
-  Settings                settings;
+  Settings            settings;
 
   /**
    * Project data.
    *
-   * This is what should be exported/imported when saving/
-   * loading projects.
+   * This is what should be exported/imported when
+   * saving/loading projects.
    *
    * The only reason this is a pointer is to easily
    * deserialize.
    */
-  Project *               project;
-
-  /** /home/user/zrythm */
-  char *                  zrythm_dir;
-  /** \ref Zrythm.zrythm_dir /zrythm_dir/Projects */
-  char *                  projects_dir;
-  /** \ref Zrythm.zrythm_dir /Templates TODO */
-  char *                  templates_dir;
-  /** \ref Zrythm.zrythm_dir /log */
-  char *                  log_dir;
+  Project *           project;
 
   /** +1 to ensure last element is NULL in case
    * full. */
   char *
     recent_projects[MAX_RECENT_PROJECTS + 1];
-  int                     num_recent_projects;
+  int                 num_recent_projects;
 
   /** NULL terminated array of project template
    * absolute paths. */
-  char **                 templates;
+  char **             templates;
 
   /** The metronome. */
-  Metronome               metronome;
+  Metronome           metronome;
 
-  /** 1 if the open file is a template to be used
+  /** Whether the open file is a template to be used
    * to create a new project from. */
-  int                     opening_template;
+  bool                opening_template;
 
-  /** 1 if creating a new project, either from
+  /** Whether creating a new project, either from
    * a template or blank. */
-  int                     creating_project;
+  bool                creating_project;
 
   /** Path to create a project in, including its
    * title. */
-  char *                  create_project_path;
+  char *              create_project_path;
 
   /**
    * Filename to open passed through the command
@@ -137,48 +189,48 @@ typedef struct Zrythm
    * Used only when a filename is passed.
    * E.g., zrytm myproject.xml
    */
-  char *                  open_filename;
+  char *              open_filename;
 
   /**
    * Event queue, mainly for GUI events.
    */
-  MPMCQueue *             event_queue;
+  MPMCQueue *         event_queue;
 
   /**
    * Object pool of event structs to avoid real time
    * allocation.
    */
-  ObjectPool *            event_obj_pool;
+  ObjectPool *        event_obj_pool;
 
   /** Recording manager. */
-  RecordingManager *      recording_manager;
+  RecordingManager *  recording_manager;
 
   /** File manager. */
-  FileManager             file_manager;
+  FileManager         file_manager;
 
   /**
    * String interner for internal things.
    */
-  Symap *                 symap;
+  Symap *             symap;
 
-  CairoCaches *           cairo_caches;
+  CairoCaches *       cairo_caches;
 
-  UiCaches *              ui_caches;
+  UiCaches *          ui_caches;
 
   /**
    * In debug mode or not (determined by GSetting).
    */
-  int                     debug;
+  bool                debug;
 
   /**
    * Used when running the tests.
    *
    * This is set by the TESTING environment variable.
    */
-  int                     testing;
+  bool                testing;
 
   /** Initialization thread. */
-  GThread *               init_thread;
+  GThread *           init_thread;
 
   /**
    * The GTK thread where the main GUI loop runs.
@@ -186,21 +238,21 @@ typedef struct Zrythm
    * This is stored for identification purposes
    * in other threads.
    */
-  GThread *               gtk_thread;
+  GThread *           gtk_thread;
 
   /** Status text to be used in the splash screen. */
-  char                    status[800];
+  char                status[800];
 
   /** Semaphore for setting the progress in the
    * splash screen from a non-gtk thread. */
-  ZixSem                  progress_status_lock;
+  ZixSem              progress_status_lock;
 
   /** Log settings. */
-  Log                     log;
+  Log                 log;
 
   /** Flag to set when initialization has
    * finished. */
-  int                     init_finished;
+  bool                init_finished;
 
   /**
    * Progress done (0.0 ~ 1.0).
@@ -208,11 +260,11 @@ typedef struct Zrythm
    * To be used in things like the splash screen,
    * loading projects, etc.
    */
-  double                  progress;
+  double              progress;
 
   /** 1 if Zrythm has a UI, 0 if headless (eg, when
    * unit-testing). */
-  int                     have_ui;
+  bool                have_ui;
 } Zrythm;
 
 /**
@@ -264,65 +316,23 @@ zrythm_get_version_with_capabilities (
   char * str);
 
 /**
- * Gets the zrythm directory, either from the
- * settings if non-empty, or the default
- * ($XDG_DATA_DIR/zrythm).
+ * Returns the default user "zrythm" dir.
  *
- * @param force_default Ignore the settings and get
- *   the default dir.
+ * This is used when resetting or when the
+ * dir is not selected by the user yet.
+ */
+char *
+zrythm_get_default_user_dir (void);
+
+/**
+ * Returns a Zrythm directory specified by
+ * \ref type.
  *
- * Must be free'd by caler.
+ * @return A newly allocated string.
  */
 char *
 zrythm_get_dir (
-  bool  force_default);
-
-/**
- * Returns the prefix or in the case of windows
- * the root dir (C/program files/zrythm) or in the
- * case of macos the bundle path.
- *
- * In all cases, "share" is expected to be found
- * in this dir.
- *
- * @return A newly allocated string.
- */
-char *
-zrythm_get_prefix (void);
-
-/**
- * Returns the datadir ("share" under whatever is
- * returned by zrythm_get_prefix().
- *
- * @return A newly allocated string.
- */
-char *
-zrythm_get_datadir (void);
-
-/**
- * Returns the bindir ("bin" under whatever is
- * returned by zrythm_get_prefix().
- *
- * @return A newly allocated string.
- */
-char *
-zrythm_get_bindir (void);
-
-/**
- * Returns the samples directory.
- *
- * @return A newly allocated string.
- */
-char *
-zrythm_get_samplesdir (void);
-
-/**
- * Returns the locale directory (share/locale).
- *
- * @return A newly allocated string.
- */
-char *
-zrythm_get_localedir (void);
+  ZrythmDirType type);
 
 /**
  * Sets the current status and progress percentage

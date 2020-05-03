@@ -48,7 +48,8 @@ on_reset_clicked (
   GtkButton *widget,
   FirstRunAssistantWidget * self)
 {
-  char * dir = zrythm_get_dir (true);
+  char * dir =
+    zrythm_get_default_user_dir ();
   g_message ("reset to %s", dir);
   gtk_file_chooser_select_filename (
     GTK_FILE_CHOOSER (self->fc_btn), dir);
@@ -287,7 +288,8 @@ first_run_assistant_widget_new (
 #endif
 
   /* set zrythm dir */
-  char * dir = zrythm_get_dir (false);
+  char * dir =
+    zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
   gtk_file_chooser_set_current_folder (
     GTK_FILE_CHOOSER (self->fc_btn), dir);
   g_settings_set_string (

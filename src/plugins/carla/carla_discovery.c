@@ -121,12 +121,11 @@ z_carla_discovery_get_discovery_path (
   if (!carla_discovery)
     {
       char * bindir =
-        zrythm_get_bindir ();
+        zrythm_get_dir (
+          ZRYTHM_DIR_SYSTEM_BINDIR);
       carla_discovery =
         g_build_filename (
-          bindir,
-          carla_discovery_filename,
-          NULL);
+          bindir, carla_discovery_filename, NULL);
       g_free (bindir);
       g_message (
         "carla discovery not found locally, falling "
