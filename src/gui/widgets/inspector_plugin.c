@@ -23,6 +23,7 @@
 #include "gui/widgets/inspector_plugin.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/plugin_properties_expander.h"
 #include "gui/widgets/ports_expander.h"
 #include "plugins/plugin.h"
 #include "utils/gtk.h"
@@ -104,6 +105,9 @@ inspector_plugin_widget_show (
   ports_expander_widget_setup_plugin (
     self->cv_outs, FLOW_OUTPUT,
     TYPE_CV, pl);
+
+  plugin_properties_expander_widget_refresh (
+    self->properties, pl);
 }
 
 InspectorPluginWidget *
@@ -112,6 +116,9 @@ inspector_plugin_widget_new (void)
   InspectorPluginWidget * self =
     g_object_new (
       INSPECTOR_PLUGIN_WIDGET_TYPE, NULL);
+
+  plugin_properties_expander_widget_setup (
+    self->properties, NULL);
 
   return self;
 }
@@ -131,6 +138,8 @@ inspector_plugin_widget_class_init (
     InspectorPluginWidget, \
     child);
 
+  BIND_CHILD (color);
+  BIND_CHILD (properties);
   BIND_CHILD (ctrl_ins);
   BIND_CHILD (ctrl_outs);
   BIND_CHILD (audio_ins);
@@ -139,7 +148,6 @@ inspector_plugin_widget_class_init (
   BIND_CHILD (midi_outs);
   BIND_CHILD (cv_ins);
   BIND_CHILD (cv_outs);
-  BIND_CHILD (color);
 
 #undef BIND_CHILD
 }
@@ -148,6 +156,8 @@ static void
 inspector_plugin_widget_init (
   InspectorPluginWidget * self)
 {
+  g_type_ensure (
+    PLUGIN_PROPERTIES_EXPANDER_WIDGET_TYPE);
   g_type_ensure (PORTS_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));

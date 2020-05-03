@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-if get_option ('enable_tests')
+if get_option ('enable-tests')
 
   subdir('eg-amp.lv2')
   subdir('eg-fifths.lv2')
@@ -71,7 +71,7 @@ if get_option ('enable_tests')
       ]
   endif
 
-  if get_option ('enable_gui_tests')
+  if get_option ('enable-gui-tests')
     tests += [
       ['gui/widgets/region', false],
       ['gui/widgets/track', false],

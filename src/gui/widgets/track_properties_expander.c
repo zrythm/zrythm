@@ -24,7 +24,9 @@
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/track_properties_expander.h"
+#include "plugins/plugin_gtk.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/string.h"
 
 #include <glib/gi18n.h>
@@ -87,24 +89,16 @@ track_properties_expander_widget_setup (
   g_warn_if_fail (track);
   self->track = track;
 
-  char * str;
   GtkWidget * lbl;
 
 #define CREATE_LABEL(x) \
-  lbl = gtk_label_new (NULL); \
-  gtk_label_set_xalign ( \
-    GTK_LABEL (lbl), 0); \
-  gtk_widget_set_margin_start ( \
-    lbl, 2); \
-  str = \
-    g_strdup_printf ( \
-      "%s%s%s", \
-      "<b><small>", \
-      x, "</small></b>"); \
-  gtk_widget_set_visible (lbl, 1); \
-  gtk_label_set_markup ( \
-    GTK_LABEL (lbl), str); \
-  g_free (str)
+  lbl = \
+    plugin_gtk_new_label ( \
+      x, true, false, 0.f, 0.5f); \
+  z_gtk_widget_add_style_class ( \
+    lbl, "inspector_label"); \
+  gtk_widget_set_margin_start (lbl, 2); \
+  gtk_widget_set_visible (lbl, 1)
 
   /* add track name */
   self->name =

@@ -101,6 +101,7 @@ widget_srcs = files([
   'panel_file_browser.c',
   'piano_roll_keys.c',
   'plugin_browser.c',
+  'plugin_properties_expander.c',
   'plugin_strip_expander.c',
   'port_connection_row.c',
   'port_connections_popover.c',

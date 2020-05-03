@@ -49,24 +49,15 @@ if dot_bin.found()
       doxyfile_mcss,
       ],
     install: false,
-    build_by_default: get_option ('gen_dev_docs'),
+    build_by_default: false,
     )
 
   run_target (
-    'gen_dev_docs',
+    'gen-dev-docs',
     command: [
       'echo',
       'Developer Docs generated',
       ],
     depends: html_dev_target,
-    )
-
-  run_target (
-    'clean_dev_docs',
-    command: [
-      'rm',
-      '-rf',
-      'html',
-      ],
     )
 endif

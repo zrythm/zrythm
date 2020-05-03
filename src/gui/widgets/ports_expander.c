@@ -495,4 +495,3 @@ ports_expander_widget_init (
     /*Z_TWO_COL_EXPANDER_BOX_WIDGET (self),*/
     /*GTK_WIDGET (self->name));*/
 }
-

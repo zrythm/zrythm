@@ -47,12 +47,16 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _PortsExpanderWidget
   PortsExpanderWidget;
+typedef struct _PluginPropertiesExpanderWidget
+  PluginPropertiesExpanderWidget;
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct MixerSelections MixerSelections;
 
 typedef struct _InspectorPluginWidget
 {
   GtkBox                parent_instance;
+
+  PluginPropertiesExpanderWidget * properties;
   PortsExpanderWidget * ctrl_ins;
   PortsExpanderWidget * ctrl_outs;
   PortsExpanderWidget * audio_ins;

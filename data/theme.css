@@ -515,3 +515,8 @@ textview {
 {
   padding: 0px;
 }
+
+.inspector_label
+{
+  font-size: small;
+}

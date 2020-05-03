@@ -19,7 +19,7 @@ project (
   'zrythm', ['c', 'cpp'],
   version: '0.8.378',
   license: 'AGPL-3-or-later',
-  meson_version: '>= 0.50.0',
+  meson_version: '>= 0.53.0',
   default_options: [
     'warning_level=2',
     'buildtype=debug',
@@ -45,7 +45,7 @@ samplesdir = join_paths (zrythmdatadir, 'samples')
 docdir = join_paths (datadir, 'doc', 'zrythm')
 sourceviewstylesdir = join_paths (zrythmdatadir, 'sourceview-styles')
 
-# Used for building manpages, manual, etc., using
+# Used for building with-manpages, manual, etc., using
 # foreach
 locales = [
   'en', 'en_GB', 'gl', 'de', 'fr', 'it',
@@ -94,13 +94,13 @@ cdata.set_quoted ('CONFIGURE_LIBDIR', libdir)
 cdata.set_quoted ('CONFIGURE_BINDIR', bindir)
 cdata.set_quoted ('LIB_SUFFIX', lib_suffix)
 cdata.set_quoted ('BIN_SUFFIX', bin_suffix)
-if get_option ('trial_ver')
+if get_option ('trial-ver')
   cdata.set('TRIAL_VER', 1)
 endif
-if get_option ('windows_release')
+if get_option ('windows-release')
   cdata.set ('WINDOWS_RELEASE', 1)
 endif
-if get_option ('mac_release')
+if get_option ('mac-release')
   cdata.set ('MAC_RELEASE', 1)
 endif
 cdata.set (
@@ -115,7 +115,7 @@ cdata.set_quoted (
 cdata.set_quoted (
   'NEW_ISSUE_URL',
   'https://redmine.zrythm.org/projects/zrythm/issues/new')
-if (get_option ('user_manual'))
+if (get_option ('with-user-manual'))
   cdata.set_quoted ('MANUAL_PATH', docdir)
 endif
 
@@ -170,10 +170,10 @@ cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
 
 sphinx_build = find_program (
   ['sphinx-build', 'sphinx-build-3'],
-  required: get_option ('user_manual'))
+  required: get_option ('with-user-manual'))
 help2man = find_program (
   ['help2man'],
-  required: get_option ('manpage'))
+  required: get_option ('with-manpage'))
 stoat = find_program (
   ['stoat'], required: false)
 python3 = find_program (
@@ -259,7 +259,7 @@ if (get_option ('buildtype') == 'release')
   #cdata.set('G_DISABLE_CHECKS', 1)
 endif
 
-if get_option ('enable_profiling')
+if get_option ('enable-profiling')
   test_cflags += [ '-g', '-pg', 'no-pie' ]
 endif
 
@@ -347,7 +347,7 @@ if cc.get_id() == 'gcc'
 endif
 
 strict_cflags = []
-if get_option ('strict_flags')
+if get_option ('strict-flags')
   strict_cflags = cc.get_supported_arguments (
     test_strict_cflags)
 endif
@@ -361,7 +361,7 @@ endif
 
 test_ldflags = []
 
-if get_option ('enable_profiling')
+if get_option ('enable-profiling')
   test_ldflags += [ '-g', '-pg', 'no-pie' ]
 endif
 
@@ -450,6 +450,7 @@ libgvc_dep = dependency (
   'libgvc',
   required: get_option ('graphviz'))
 if libcgraph_dep.found () and libgvc_dep.found ()
+  have_graphviz = true
   cdata.set('HAVE_CGRAPH', 1)
 endif
 
@@ -698,21 +699,19 @@ meson.add_install_script (
 meson.add_dist_script (
   'scripts' / 'meson_dist.sh')
 
-if meson.version().version_compare('>=0.53')
-summary({
+summary ({
   'Build type': get_option('buildtype'),
-  'Profiling': get_option('enable_profiling'),
-  'Strict flags': get_option('strict_flags'),
-  'Build tests': get_option('enable_tests'),
-  'Build GUI tests': get_option('enable_gui_tests'),
-  'Generate developer docs': get_option('gen_dev_docs'),
-  'Build/install manpage': get_option('manpage'),
-  'Build/install user manual': get_option('user_manual'),
-  'Install DSEG font': get_option('install_dseg_font'),
+  'Profiling': get_option('enable-profiling'),
+  'Strict flags': get_option('strict-flags'),
+  'Build tests': get_option('enable-tests'),
+  'Build GUI tests': get_option('enable-gui-tests'),
+  'Build/install manpage': get_option('with-manpage'),
+  'Build/install user manual': get_option('with-user-manual'),
+  'Install DSEG font': get_option('with-dseg-font'),
   'Coverage reports': get_option('b_coverage'),
   }, section: 'General')
 
-summary({
+summary ({
   'FFmpeg': libavcodec_dep.found () and libavformat_dep.found () and libavutil_dep.found (),
   'Jack': have_jack,
   'PortAudio': portaudio_dep.found (),
@@ -722,13 +721,13 @@ summary({
   'Carla': carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla_utils_dep.found (),
   'Gtop': libgtop_dep.found(),
   'Guile': have_guile,
-  }, section: 'Optional libraries')
+  'GraphViz': have_graphviz,
+  }, section: 'Features')
 
-summary({
+summary ({
   'prefix': prefix,
   'includedir': includedir,
   'libdir': libdir,
   'datadir': datadir,
   'sysconfdir': sysconfdir,
   }, section: 'Directories')
-endif

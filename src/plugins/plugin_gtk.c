@@ -354,8 +354,8 @@ on_delete_preset_activate (
 GtkWidget*
 plugin_gtk_new_label (
   const char * text,
-  int          title,
-  int          preformatted,
+  bool         title,
+  bool         preformatted,
   float        xalign,
   float        yalign)
 {

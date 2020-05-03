@@ -86,20 +86,24 @@ typedef struct Plugin
   Port *              enabled;
 
   /** Whether plugin UI is opened or not. */
-  int                 visible;
+  bool                visible;
+
+  /** Selected preset. */
+  int                 selected_preset_id;
+  char *              selected_preset;
 
   /** The latency in samples. */
   nframes_t           latency;
 
   /**
-   * UI has been instantiated or not.
+   * Whether the UI has finished instantiating.
    *
    * When instantiating a plugin UI, if it takes
    * too long there is a UI buffer overflow because
    * UI updates are sent in lv2_plugin_process.
    *
-   * This should be set to 0 until the plugin UI
-   * has finished instantiating, and if this is 0
+   * This should be set to false until the plugin UI
+   * has finished instantiating, and if this is false
    * then no UI updates should be sent to the
    * plugin.
    */
@@ -109,8 +113,9 @@ typedef struct Plugin
    * per second). */
   float                ui_update_hz;
 
-  /** Plugin is in deletion. */
-  int                  deleting;
+  /** Whether the plugin is currently being
+   * deleted. */
+  bool                 deleting;
 
   /** Active preset item, if wrapped or generic
    * UI. */
@@ -143,20 +148,6 @@ typedef struct Plugin
    * Plugin.window so that we can
    * deactivate before freeing the plugin. */
   gulong             delete_event_id;
-
-#ifdef _WOE32
-  /** A black decoration-less window that follows
-   * the wrapped plugin's window on Windows. */
-  GtkWindow *          black_window;
-
-  /**
-   * Set to 1 to avoid recursive signals
-   * being fired.
-   *
-   * See plugin_gtk.c
-   */
-  int                black_window_shown_manually;
-#endif
 
   int                 magic;
 } Plugin;

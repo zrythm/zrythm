@@ -116,6 +116,8 @@ plugin_gtk_rebuild_preset_menu (
 /**
  * Creates a label for a control.
  *
+ * TODO move to ui.
+ *
  * @param title Whether this is a title text (makes
  *   it bold).
  * @param preformatted Whether the text is
@@ -124,8 +126,8 @@ plugin_gtk_rebuild_preset_menu (
 GtkWidget*
 plugin_gtk_new_label (
   const char * text,
-  int          title,
-  int          preformatted,
+  bool         title,
+  bool         preformatted,
   float        xalign,
   float        yalign);
 
