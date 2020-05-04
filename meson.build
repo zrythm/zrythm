@@ -451,8 +451,8 @@ libcgraph_dep = dependency (
 libgvc_dep = dependency (
   'libgvc',
   required: get_option ('graphviz'))
-if libcgraph_dep.found () and libgvc_dep.found ()
-  have_graphviz = true
+have_graphviz = libcgraph_dep.found () and libgvc_dep.found ()
+if have_graphviz
   cdata.set('HAVE_CGRAPH', 1)
 endif
 

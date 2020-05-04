@@ -64,7 +64,7 @@ script:
   set -e
   case $TRAVIS_OS_NAME in
     osx)
-      meson build -Dsdl=enabled -Drtaudio=auto -Drtmidi=auto -Denable_tests=true
+      meson build -Dsdl=enabled -Drtaudio=auto -Drtmidi=auto -Denable-tests=true
       ninja -C build
       ninja -C build test
       sudo ninja -C build install
@@ -80,7 +80,7 @@ script:
       $mingw64 ninja -C build install
       ;;
     linux)
-      /tmp/meson/meson.py build -Denable_tests=true -Db_coverage=true
+      /tmp/meson/meson.py build -Denable-tests=true -Db_coverage=true
       ninja -C build
       ninja -C build test
       ninja -C build coverage-text

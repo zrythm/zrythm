@@ -620,7 +620,6 @@ get_vst_count (
 
   return count;
 }
-#endif // HAVE_CARLA
 
 /**
  * Gets the SFZ or SF2 paths.
@@ -648,6 +647,7 @@ get_sf_paths (
 
   return paths;
 }
+#endif // HAVE_CARLA
 
 /**
  * Scans for plugins, optionally updating the

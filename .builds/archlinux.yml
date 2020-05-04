@@ -35,7 +35,7 @@ secrets:
 tasks:
   - setup: |
       cd zrythm
-      ../meson/meson.py build -Denable_tests=true -Dmanpage=true -Dffmpeg=enabled -Db_coverage=true
+      meson build -Denable-tests=true -Dmanpage=true -Dffmpeg=enabled -Db_coverage=true
   - build: |
       cd zrythm
       ninja -C build
@@ -44,6 +44,16 @@ tasks:
       ninja -C build test
       ninja -C build coverage-text
       cat build/meson-logs/coverage.txt
+  - test-multiple-options: |
+      cd zrythm
+      meson build --reconfigure -Dffmpeg=disabled -Dgraphviz=enabled -Djack=disabled
+      ninja -C build test
+      meson build --reconfigure -Dsdl=enabled -Drtaudio=disabled -Drtmidi=disabled
+      ninja -C build test
+      meson build --reconfigure -Dgraphviz=disabled -Dtrial-ver=true -Dstrict-flags=true -Dwith-dseg-font=false
+      ninja -C build test
+      meson build --reconfigure -Dstrict-flags=true -Dwith-user-manual=true -Dguile=disabled
+      ninja -C build test
   - install: |
       cd zrythm
       DESTDIR=/tmp ninja -C build install
