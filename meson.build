@@ -220,7 +220,9 @@ if have_jack
   cdata.set('HAVE_JACK', 1)
   check_functions += [
     ['jack_set_property',[jack_dep]],
-    ['jack_client_stop_thread', [jack_dep]],
+    # do not add support for this - it causes
+    # problems with jack1/jack2 mixups
+    #['jack_client_stop_thread', [jack_dep]],
     ]
 endif
 

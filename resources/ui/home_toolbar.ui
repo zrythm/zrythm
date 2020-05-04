@@ -124,7 +124,7 @@
     <child>
       <object class="GtkToolButton" id="loop_selection">
         <property name="visible">1</property>
-        <property name="icon-name">loop</property>
+        <property name="icon-name">media-playlist-repeat</property>
         <property name="action-name">win.loop-selection</property>
       </object>
     </child>
