@@ -133,23 +133,21 @@ set_icon_from_port_type (
   PortType              type)
 {
   if (type == TYPE_AUDIO)
-    expander_box_widget_set_icon_resource (
+    expander_box_widget_set_icon_name (
       Z_EXPANDER_BOX_WIDGET (self),
-      ICON_TYPE_ZRYTHM,
-      "audio.svg");
+      "signal-audio");
   else if (type == TYPE_CV)
-    expander_box_widget_set_icon_resource (
+    expander_box_widget_set_icon_name (
       Z_EXPANDER_BOX_WIDGET (self),
-      ICON_TYPE_ZRYTHM,
-      "cv.svg");
+      "signal-cv");
   else if (type == TYPE_EVENT)
     expander_box_widget_set_icon_name (
       Z_EXPANDER_BOX_WIDGET (self),
-      "z-audio-midi");
+      "audio-midi");
   else if (type == TYPE_CONTROL)
     expander_box_widget_set_icon_name (
       Z_EXPANDER_BOX_WIDGET (self),
-      "z-configure");
+      "configure");
 }
 
 /**

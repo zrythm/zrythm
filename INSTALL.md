@@ -18,8 +18,9 @@ inside `meson_options.txt`.
 ## Dependencies
 ### Required
 - audec (AGPLv3+): <https://git.zrythm.org/cgit/libaudec/>
+- breeze-icons (LGPLv3+): <https://github.com/KDE/breeze-icons>
 - fftw (GPLv2+): <http://www.fftw.org/>
-- gtk+3 (GPLv2+): <https://gitlab.gnome.org/GNOME/gtk>
+- gtk+3 (LGPLv2.1+): <https://gitlab.gnome.org/GNOME/gtk>
 - gtksourceview (LGPLv2.1+): <https://wiki.gnome.org/Projects/GtkSourceView>
 - guile (GPLv3+): <https://www.gnu.org/software/guile/>
 - libcyaml (ISC): <https://github.com/tlsa/libcyaml/>

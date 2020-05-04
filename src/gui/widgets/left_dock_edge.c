@@ -144,7 +144,7 @@ left_dock_edge_widget_init (
     inspector_track_widget_new ();
   img =
     gtk_image_new_from_icon_name (
-      "z-media-album-track",
+      BREEZE_ICON_PREFIX "media-album-track",
       GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Track inspector"));
@@ -171,7 +171,7 @@ left_dock_edge_widget_init (
     inspector_plugin_widget_new ();
   img =
     gtk_image_new_from_icon_name (
-      "plug-solid-small",
+      "font-awesome-plug-solid-small",
       GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Plugin inspector"));
@@ -193,7 +193,7 @@ left_dock_edge_widget_init (
   /* setup visibility */
   img =
     gtk_image_new_from_icon_name (
-      "z-view-visible",
+      BREEZE_ICON_PREFIX "view-visible",
       GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Visibility"));

@@ -30,7 +30,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="action_name">win.new</property>
-        <property name="icon_name">z-document-new</property>
+        <property name="icon_name">document-new</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -42,7 +42,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="action_name">win.save</property>
-        <property name="icon_name">z-document-save</property>
+        <property name="icon_name">document-save</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -54,7 +54,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="action_name">win.save-as</property>
-        <property name="icon_name">z-document-save-as</property>
+        <property name="icon_name">document-save-as</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -66,7 +66,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="action_name">win.open</property>
-        <property name="icon_name">z-document-open</property>
+        <property name="icon_name">document-open</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -86,14 +86,14 @@
     <child>
       <object class="GtkToolButton" id="export_as">
         <property name="visible">1</property>
-        <property name="icon-name">z-document-send</property>
+        <property name="icon-name">document-send</property>
         <property name="action-name">win.export-as</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="export_graph">
         <property name="visible">1</property>
-        <property name="icon-name">z-distribute-graph-directed</property>
+        <property name="icon-name">distribute-graph-directed</property>
         <property name="action-name">win.export-graph</property>
       </object>
     </child>

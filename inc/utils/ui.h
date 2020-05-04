@@ -294,67 +294,67 @@ typedef enum UiDragMode
 #define ui_set_pointer_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-edit-select", 5, 4);
+    BREEZE_ICON_PREFIX "edit-select", 5, 4);
 
 #define ui_set_pencil_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-document-edit", 3, 18);
+    BREEZE_ICON_PREFIX "document-edit", 3, 18);
 
 #define ui_set_cut_clip_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "cut-clip", 9, 6);
+    ZRYTHM_ICON_PREFIX "cut-clip", 9, 6);
 
 #define ui_set_eraser_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-draw-eraser", 3, 6);
+    BREEZE_ICON_PREFIX "draw-eraser", 3, 6);
 
 #define ui_set_line_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-draw-line", 3, 6);
+    BREEZE_ICON_PREFIX "draw-line", 3, 6);
 
 #define ui_set_speaker_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-volume-high", 3, 6);
+    BREEZE_ICON_PREFIX "audio-volume-high", 3, 6);
 
 #define ui_set_hand_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-transform-move", 10, 10);
+    BREEZE_ICON_PREFIX "transform-move", 10, 10);
 
 #define ui_set_left_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "left-resize", 0, 10);
+    ZRYTHM_ICON_PREFIX "left-resize", 0, 10);
 
 #define ui_set_left_resize_loop_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "left-resize-loop", 0, 10);
+    ZRYTHM_ICON_PREFIX "left-resize-loop", 0, 10);
 
 #define ui_set_right_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "right-resize", 15, 10);
+    ZRYTHM_ICON_PREFIX "right-resize", 15, 10);
 
 #define ui_set_right_resize_loop_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "right-resize-loop", 15, 10);
+    ZRYTHM_ICON_PREFIX "right-resize-loop", 15, 10);
 
 #define ui_set_fade_in_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "fade-in", 11, 11);
+    ZRYTHM_ICON_PREFIX "fade-in", 11, 11);
 
 #define ui_set_fade_out_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "fade-out", 11, 11);
+    ZRYTHM_ICON_PREFIX "fade-out", 11, 11);
 
 /**
  * Sets cursor from icon name.

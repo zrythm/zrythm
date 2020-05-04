@@ -169,7 +169,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="action_name">app.scripting-interface</property>
-                <property name="icon_name">z-amarok_scripts</property>
+                <property name="icon_name">amarok_scripts</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -181,7 +181,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="action_name">app.log</property>
-                <property name="icon_name">z-view-list-text</property>
+                <property name="icon_name">view-list-text</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -193,7 +193,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="action_name">app.preferences</property>
-                <property name="icon_name">fa-cog</property>
+                <property name="icon_name">fork-awesome-fa-cog</property>
               </object>
               <packing>
                 <property name="expand">False</property>

@@ -449,10 +449,11 @@ create_model_for_plugins (
       gchar * icon_name = NULL;
       if (plugin_descriptor_is_instrument (descr))
         icon_name =
-          g_strdup ("z-audio-midi");
+          g_strdup (
+            BREEZE_ICON_PREFIX "audio-midi");
       else
         icon_name =
-          g_strdup ("z-plugins");
+          g_strdup (BREEZE_ICON_PREFIX "plugins");
       /*else if (!strcmp (descr->category, "Distortion"))*/
         /*icon_name = "z-distortionfx";*/
 
@@ -1010,11 +1011,13 @@ plugin_browser_widget_init (
   g_value_init (&iconval2, G_TYPE_STRING);
   g_value_init (&iconval3, G_TYPE_STRING);
   g_value_set_string (
-    &iconval1, "z-folder-favorites");
+    &iconval1,
+    BREEZE_ICON_PREFIX "folder-favorites");
   g_value_set_string(
-    &iconval2, "iconfinder_category_103432_edited");
+    &iconval2,
+    "ext-iconfinder_category_103432_edited");
   g_value_set_string(
-    &iconval3, "plug-solid");
+    &iconval3, "font-awesome-plug-solid");
 
   gtk_container_child_set_property (
     GTK_CONTAINER (self->stack),

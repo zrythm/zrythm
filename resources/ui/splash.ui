@@ -51,11 +51,11 @@
               <object class="GtkImage" id="img">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="icon_name">z-splash-png</property>
-                <property name="icon_size">0</property>
+                <property name="icon_name">zrythm-splash-png</property>
+                <property name="icon_size">6</property>
               </object>
               <packing>
-                <property name="index">-1</property>
+                <property name="index">1</property>
               </packing>
             </child>
             <child type="overlay">

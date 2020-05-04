@@ -86,7 +86,7 @@ cpu_draw_cb (
   cairo_surface_t * surface;
   surface =
     z_cairo_get_surface_from_icon_name (
-      "iconfinder_cpu_2561419",
+      "ext-iconfinder_cpu_2561419",
       ICON_SIZE, 0);
   cairo_mask_surface(
     cr, surface, PADDING, PADDING);
@@ -94,7 +94,7 @@ cpu_draw_cb (
 
   surface =
     z_cairo_get_surface_from_icon_name (
-      "wave-square-solid",
+      "font-awesome-wave-square-solid",
       ICON_SIZE, 0);
   cairo_mask_surface(
     cr, surface, PADDING, 2 * PADDING + ICON_SIZE);

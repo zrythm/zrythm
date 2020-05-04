@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <!--
 
-  Copyright (C) 2018-2019 Alexandros Theodotou
+  Copyright (C) 2018-2020 Alexandros Theodotou
 
   This file is part of Zrythm
 
@@ -49,7 +49,7 @@
                     <child>
                       <object class="GtkImage">
                         <property name="visible">1</property>
-                        <property name="resource">/org/zrythm/icons/zrythm/add.svg</property>
+                        <property name="icon_name">plus</property>
                       </object>
                     </child>
                   </object>

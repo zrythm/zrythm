@@ -620,21 +620,21 @@ setup_channel_icon (ChannelWidget * self)
     {
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_MIDI:
-      resources_set_image_icon (
-        self->icon, ICON_TYPE_ZRYTHM,
-        "instrument.svg");
+      gtk_image_set_from_icon_name (
+        self->icon, "synth",
+        GTK_ICON_SIZE_BUTTON);
       break;
     case TRACK_TYPE_AUDIO:
-      resources_set_image_icon (
-        self->icon, ICON_TYPE_ZRYTHM,
-        "audio.svg");
+      gtk_image_set_from_icon_name (
+        self->icon, "signal-audio",
+        GTK_ICON_SIZE_BUTTON);
       break;
     case TRACK_TYPE_AUDIO_BUS:
     case TRACK_TYPE_AUDIO_GROUP:
     case TRACK_TYPE_MASTER:
-      resources_set_image_icon (
-        self->icon, ICON_TYPE_ZRYTHM,
-        "bus.svg");
+      gtk_image_set_from_icon_name (
+        self->icon, "bus",
+        GTK_ICON_SIZE_BUTTON);
       break;
     default:
       break;
@@ -918,7 +918,7 @@ channel_widget_init (ChannelWidget * self)
     GTK_CONTAINER (self->record));
   z_gtk_button_set_icon_name (
     GTK_BUTTON (self->record),
-    "z-media-record");
+    BREEZE_ICON_PREFIX "media-record");
   context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self->record));

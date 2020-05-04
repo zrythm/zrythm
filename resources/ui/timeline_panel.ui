@@ -27,11 +27,6 @@
     <property name="visible">1</property>
     <property name="vexpand">1</property>
     <property name="orientation">vertical</property>
-    <!--<child>-->
-      <!--<object class="TimelineSelectionInfoWidget" id="selection_info">-->
-        <!--<property name="visible">1</property>-->
-      <!--</object>-->
-    <!--</child>-->
     <child>
       <object class="TimelineToolbarWidget" id="timeline_toolbar">
         <property name="visible">1</property>
@@ -117,7 +112,6 @@
                     </child>
                   </object>
                   <packing>
-                    <!--<property name="shrink">0</property>-->
                   </packing>
                 </child>
                 <child>
@@ -143,7 +137,6 @@
                     </child>
                   </object>
                   <packing>
-                    <!--<property name="shrink">0</property>-->
                   </packing>
                 </child>
               </object>

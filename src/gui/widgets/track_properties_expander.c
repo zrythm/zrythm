@@ -146,10 +146,8 @@ track_properties_expander_widget_setup (
   expander_box_widget_set_label (
     Z_EXPANDER_BOX_WIDGET (self),
     _("Track Properties"));
-  expander_box_widget_set_icon_resource (
-    Z_EXPANDER_BOX_WIDGET (self),
-    ICON_TYPE_ZRYTHM,
-    "instrument.svg");
+  expander_box_widget_set_icon_name (
+    Z_EXPANDER_BOX_WIDGET (self), "synth");
   expander_box_widget_set_orientation (
     Z_EXPANDER_BOX_WIDGET (self),
     GTK_ORIENTATION_VERTICAL);

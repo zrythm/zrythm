@@ -141,7 +141,7 @@
                   file-name-separator-string))
               "</file>"))
           (newline)))
-      '("z-" ""))))
+      '("zbreeze-" ""))))
 
 #!
 Args:
@@ -237,6 +237,14 @@ Args:
                (lambda (icon-file)
                  (display
                    (string-append
+                     "    <file alias=\"icons/"
+                     dir "/" dir "-" icon-file
+                     "\">icons/"
+                     dir "/" icon-file
+                     "</file>"))
+                 (newline)
+                 (display
+                   (string-append
                      "    <file>icons/"
                      dir "/" icon-file
                      "</file>"))
@@ -248,7 +256,7 @@ Args:
                    (or
                      (string-suffix? ".svg" f)
                      (string-suffix? ".png" f))))))
-           '("zrythm" "gnome-builder" "ext"
+           '("gnome-builder" "ext"
              "fork-awesome" "font-awesome"))
 
          ;; add breeze icons

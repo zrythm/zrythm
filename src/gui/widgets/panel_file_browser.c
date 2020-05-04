@@ -291,28 +291,44 @@ create_model_for_files (PanelFileBrowserWidget * self)
       switch (descr->type)
         {
         case FILE_TYPE_MIDI:
-          strcpy (icon_name, "z-audio-midi");
+          strcpy (
+            icon_name,
+            BREEZE_ICON_PREFIX "audio-midi");
           break;
         case FILE_TYPE_MP3:
-          strcpy (icon_name, "z-audio-x-mpeg");
+          strcpy (
+            icon_name,
+            BREEZE_ICON_PREFIX "audio-x-mpeg");
           break;
         case FILE_TYPE_FLAC:
-          strcpy (icon_name, "z-audio-x-flac");
+          strcpy (
+            icon_name,
+            BREEZE_ICON_PREFIX "audio-x-flac");
           break;
         case FILE_TYPE_OGG:
-          strcpy (icon_name, "z-application-ogg");
+          strcpy (
+            icon_name,
+            BREEZE_ICON_PREFIX "application-ogg");
           break;
         case FILE_TYPE_WAV:
-          strcpy (icon_name, "z-audio-x-wav");
+          strcpy (
+            icon_name,
+            BREEZE_ICON_PREFIX "audio-x-wav");
           break;
         case FILE_TYPE_DIR:
-          strcpy (icon_name, "z-folder");
+          strcpy (
+            icon_name,
+            BREEZE_ICON_PREFIX "folder");
           break;
         case FILE_TYPE_PARENT_DIR:
-          strcpy (icon_name, "z-folder");
+          strcpy (
+            icon_name,
+            BREEZE_ICON_PREFIX "folder");
           break;
         case FILE_TYPE_OTHER:
-          strcpy (icon_name, "z-application-x-zerosize");
+          strcpy (
+            icon_name,
+            BREEZE_ICON_PREFIX "application-x-zerosize");
           break;
         default:
           strcpy (icon_name, "");

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -165,10 +165,11 @@ route_target_selector_widget_init (
   self->box =
     GTK_BOX (gtk_box_new (
               GTK_ORIENTATION_HORIZONTAL, 0));
-  self->img = GTK_IMAGE (
-    resources_get_icon (
-      ICON_TYPE_GNOME_BUILDER,
-      "debug-step-out-symbolic-light.svg"));
+  self->img =
+    GTK_IMAGE (
+      gtk_image_new_from_icon_name (
+        "gnome-builder-debug-step-out-symbolic-light",
+        GTK_ICON_SIZE_BUTTON));
 
   self->label =
     GTK_LABEL (

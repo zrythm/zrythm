@@ -39,7 +39,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="hexpand">True</property>
-            <property name="primary_icon_name">edit-find-symbolic</property>
+            <property name="primary_icon_name">edit-find</property>
             <property name="primary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">False</property>
           </object>

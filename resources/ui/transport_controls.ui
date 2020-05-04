@@ -37,7 +37,7 @@
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="icon-name">z-media-record</property>
+            <property name="icon-name">media-record</property>
           </object>
         </child>
       </object>
@@ -55,7 +55,7 @@
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="icon-name">z-media-playback-start</property>
+            <property name="icon-name">media-playback-start</property>
           </object>
         </child>
       </object>
@@ -70,7 +70,7 @@
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="icon-name">z-media-playback-stop</property>
+            <property name="icon-name">media-playback-stop</property>
           </object>
         </child>
       </object>
@@ -88,7 +88,7 @@
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="icon-name">z-media-seek-backward</property>
+            <property name="icon-name">media-seek-backward</property>
           </object>
         </child>
       </object>
@@ -106,7 +106,7 @@
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="icon-name">z-media-seek-forward</property>
+            <property name="icon-name">media-seek-forward</property>
           </object>
         </child>
       </object>
@@ -124,7 +124,7 @@
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="icon-name">z-media-playlist-repeat</property>
+            <property name="icon-name">media-playlist-repeat</property>
           </object>
         </child>
       </object>

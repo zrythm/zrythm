@@ -65,20 +65,24 @@
 G_DEFINE_TYPE (
   TrackWidget, track_widget, GTK_TYPE_BOX)
 
-#define ICON_NAME_RECORD "z-media-record"
+#define ICON_NAME_RECORD "zbreeze-media-record"
 #define ICON_NAME_SOLO "solo"
 #define ICON_NAME_MUTE "mute"
 #define ICON_NAME_SHOW_UI "instrument"
 #define ICON_NAME_SHOW_AUTOMATION_LANES \
-  "z-node-type-cusp"
+  "zbreeze-node-type-cusp"
 #define ICON_NAME_SHOW_TRACK_LANES \
-  "z-format-justify-fill"
-#define ICON_NAME_LOCK "z-document-decrypt"
-#define ICON_NAME_FREEZE "snowflake-o"
-#define ICON_NAME_WRITE_AUTOMATION "rw_read_write"
-#define ICON_NAME_READ_AUTOMATION "r_read"
-#define ICON_NAME_PLUS "plus"
-#define ICON_NAME_MINUS "minus"
+  "zbreeze-format-justify-fill"
+#define ICON_NAME_LOCK "zbreeze-document-decrypt"
+#define ICON_NAME_FREEZE "fork-awesome-snowflake-o"
+#define ICON_NAME_PLUS "add"
+#define ICON_NAME_MINUS "remove"
+#define ICON_NAME_BUS "bus"
+#define ICON_NAME_CHORDS "zbreeze-minuet-chords"
+#define ICON_NAME_SHOW_MARKERS \
+  BREEZE_ICON_PREFIX "kdenlive-show-markers"
+#define ICON_NAME_MIDI \
+  BREEZE_ICON_PREFIX "audio-midi"
 
 #ifdef _WOE32
 #define NAME_FONT "9"
@@ -739,31 +743,6 @@ draw_automation (
         }
       if (at->num_bot_left_buttons == 0)
         {
-#if 0
-          at->bot_left_buttons[0] =
-            custom_button_widget_new (
-              ICON_NAME_WRITE_AUTOMATION,
-              BUTTON_SIZE);
-          cb = at->bot_left_buttons[0];
-          gdk_rgba_parse (
-            &cb->toggled_color,
-            UI_COLOR_RECORD_CHECKED);
-          gdk_rgba_parse (
-            &cb->held_color,
-            UI_COLOR_RECORD_ACTIVE);
-          cb->owner_type =
-            CUSTOM_BUTTON_WIDGET_OWNER_AT;
-          cb->owner = at;
-          at->bot_left_buttons[1] =
-            custom_button_widget_new (
-              ICON_NAME_READ_AUTOMATION,
-              BUTTON_SIZE);
-          cb = at->bot_left_buttons[1];
-          cb->owner_type =
-            CUSTOM_BUTTON_WIDGET_OWNER_AT;
-          cb->owner = at;
-          at->num_bot_left_buttons = 2;
-#endif
         }
       if (!at->am_widget)
         {
@@ -1975,26 +1954,6 @@ multipress_released (
                     at);
                 }
             }
-#if 0
-          else if (
-            string_is_equal (
-              cb->icon_name,
-              ICON_NAME_READ_AUTOMATION, 0))
-            {
-              at->read = !at->read;
-              EVENTS_PUSH (
-                ET_AUTOMATION_TRACK_CHANGED, at);
-            }
-          else if (
-            string_is_equal (
-              cb->icon_name,
-              ICON_NAME_WRITE_AUTOMATION, 0))
-            {
-              at->write = !at->write;
-              EVENTS_PUSH (
-                ET_AUTOMATION_TRACK_CHANGED, at);
-            }
-#endif
           else if (
             string_is_equal (
               cb->icon_name,
@@ -2541,7 +2500,9 @@ track_widget_new (Track * track)
   switch (track->type)
     {
     case TRACK_TYPE_INSTRUMENT:
-      strcpy (self->icon_name, "z-audio-midi");
+      strcpy (
+        self->icon_name,
+        ICON_NAME_MIDI);
       add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (
@@ -2558,7 +2519,9 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MIDI:
-      strcpy (self->icon_name, "z-audio-midi");
+      strcpy (
+        self->icon_name,
+        ICON_NAME_MIDI);
       add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (
@@ -2571,7 +2534,7 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MASTER:
-      strcpy (self->icon_name, "bus");
+      strcpy (self->icon_name, ICON_NAME_BUS);
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);
@@ -2579,7 +2542,7 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_CHORD:
-      strcpy (self->icon_name, "z-minuet-chords");
+      strcpy (self->icon_name, ICON_NAME_CHORDS);
       add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (
@@ -2587,11 +2550,10 @@ track_widget_new (Track * track)
       break;
     case TRACK_TYPE_MARKER:
       strcpy (
-        self->icon_name,
-        "z-kdenlive-show-markers");
+        self->icon_name, ICON_NAME_SHOW_MARKERS);
       break;
     case TRACK_TYPE_AUDIO_BUS:
-      strcpy (self->icon_name, "bus");
+      strcpy (self->icon_name, ICON_NAME_BUS);
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);
@@ -2599,7 +2561,7 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MIDI_BUS:
-      strcpy (self->icon_name, "bus");
+      strcpy (self->icon_name, ICON_NAME_BUS);
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);
@@ -2607,7 +2569,7 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_AUDIO_GROUP:
-      strcpy (self->icon_name, "bus");
+      strcpy (self->icon_name, ICON_NAME_BUS);
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);
@@ -2615,7 +2577,7 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MIDI_GROUP:
-      strcpy (self->icon_name, "bus");
+      strcpy (self->icon_name, ICON_NAME_BUS);
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);

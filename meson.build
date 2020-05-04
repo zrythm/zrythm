@@ -242,6 +242,8 @@ test_cflags = [
   # dummy macro for extracting translatable strings
   # when we can't use gettext()
   '-D__(x)=x',
+  '-DZRYTHM_ICON_PREFIX=""',
+  '-DBREEZE_ICON_PREFIX=""',
   ]
 
 if (get_option ('buildtype') == 'release')

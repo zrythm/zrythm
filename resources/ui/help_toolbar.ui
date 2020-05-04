@@ -30,7 +30,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="action_name">app.chat</property>
-        <property name="icon_name">z-dialog-messages</property>
+        <property name="icon_name">dialog-messages</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -42,7 +42,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="action_name">app.manual</property>
-        <property name="icon_name">z-system-help</property>
+        <property name="icon_name">system-help</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -54,7 +54,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="action_name">app.news</property>
-        <property name="icon_name">z-news-subscribe</property>
+        <property name="icon_name">news-subscribe</property>
         <property name="tooltip-text" translatable="yes">News</property>
       </object>
       <packing>
@@ -65,7 +65,7 @@
     <child>
       <object class="GtkToolButton" id="shortcuts">
         <property name="visible">1</property>
-        <property name="icon-name">z-input-keyboard</property>
+        <property name="icon-name">input-keyboard</property>
         <property name="action-name">app.shortcuts</property>
       </object>
     </child>
@@ -74,7 +74,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="action_name">app.donate</property>
-        <property name="icon_name">z-taxes-finances</property>
+        <property name="icon_name">taxes-finances</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -86,7 +86,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="action_name">app.bugreport</property>
-        <property name="icon_name">z-tools-report-bug</property>
+        <property name="icon_name">tools-report-bug</property>
       </object>
       <packing>
         <property name="expand">False</property>

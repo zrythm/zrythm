@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <!--
 
-  Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+  Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -25,12 +25,13 @@
   <template class="HomeToolbarWidget" parent="GtkToolbar">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <property name="icon-size">small-toolbar</property>
     <child>
       <object class="GtkToolButton" id="undo">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="action-name">win.undo</property>
-        <property name="icon-name">z-edit-undo</property>
+        <property name="icon-name">edit-undo</property>
         <property name="label" translatable="yes">Undo</property>
       </object>
       <packing>
@@ -43,7 +44,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="action-name">win.redo</property>
-        <property name="icon-name">z-edit-redo</property>
+        <property name="icon-name">edit-redo</property>
         <property name="label" translatable="yes">Redo</property>
       </object>
       <packing>
@@ -64,35 +65,35 @@
     <child>
       <object class="GtkToolButton" id="cut">
         <property name="visible">1</property>
-        <property name="icon-name">z-edit-cut</property>
+        <property name="icon-name">edit-cut</property>
         <property name="action-name">win.cut</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="copy">
         <property name="visible">1</property>
-        <property name="icon-name">z-edit-copy</property>
+        <property name="icon-name">edit-copy</property>
         <property name="action-name">win.copy</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="paste">
         <property name="visible">1</property>
-        <property name="icon-name">z-edit-paste</property>
+        <property name="icon-name">edit-paste</property>
         <property name="action-name">win.paste</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="duplicate">
         <property name="visible">1</property>
-        <property name="icon-name">z-edit-copy</property>
+        <property name="icon-name">edit-duplicate</property>
         <property name="action-name">win.duplicate</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="delete">
         <property name="visible">1</property>
-        <property name="icon-name">z-edit-delete</property>
+        <property name="icon-name">edit-delete</property>
         <property name="action-name">win.delete</property>
       </object>
     </child>
@@ -109,21 +110,21 @@
     <child>
       <object class="GtkToolButton" id="clear_selection">
         <property name="visible">1</property>
-        <property name="icon-name">z-edit-clear</property>
+        <property name="icon-name">edit-clear</property>
         <property name="action-name">win.clear-selection</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="select_all">
         <property name="visible">1</property>
-        <property name="icon-name">z-edit-select-all</property>
+        <property name="icon-name">edit-select-all</property>
         <property name="action-name">win.select-all</property>
       </object>
     </child>
     <child>
       <object class="GtkToolButton" id="loop_selection">
         <property name="visible">1</property>
-        <property name="icon-name">z-media-repeat-album-amarok</property>
+        <property name="icon-name">loop</property>
         <property name="action-name">win.loop-selection</property>
       </object>
     </child>

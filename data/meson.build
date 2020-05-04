@@ -34,12 +34,10 @@ endif
 
 #install samples
 install_data (
-  join_paths (
-    'samples', 'klick', 'square_emphasis.wav'),
+  'samples/klick/square_emphasis.wav',
   install_dir: samplesdir)
 install_data (
-  join_paths (
-    'samples', 'klick', 'square_normal.wav'),
+  'samples/klick/square_normal.wav',
   install_dir: samplesdir)
 
 # install desktop file and launcher script
@@ -80,12 +78,21 @@ if os_linux or os_freebsd
   endif
 endif
 
+# install icon theme
+install_subdir (
+  'icon-themes/zrythm-dark',
+  install_dir: themesdir / 'icons')
+
+# install app icon
+install_data (
+  'icon-themes/zrythm-dark/scalable/apps/zrythm.svg',
+  install_dir:
+    datadir / 'icons/hicolor/scalable/apps')
+
 # Zrythm project MIME type
 install_data (
   'org.zrythm.Zrythm-mime.xml',
-  install_dir:
-    join_paths (
-      [datadir, 'mime/packages']))
+  install_dir: datadir / 'mime/packages')
 
 if not os_windows
   install_data (

@@ -67,7 +67,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="icon-name">piano_roll</property>
+                <property name="icon-name">piano-roll</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -142,7 +142,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="icon-name">z-insert-math-expression</property>
+                <property name="icon-name">insert-math-expression</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -179,7 +179,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="icon-name">z-minuet-chords</property>
+                <property name="icon-name">minuet-chords</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -207,7 +207,7 @@
               <object class="GtkToolButton" id="toggle_top_panel">
                 <property name="visible">1</property>
                 <property name="tooltip-text">Show/hide top panel</property>
-                <property name="icon-name">builder-view-top-pane-symbolic-light</property>
+                <property name="icon-name">gnome-builder-builder-view-top-pane-symbolic-light</property>
                 <property name="action-name">win.toggle-top-panel</property>
               </object>
             </child>

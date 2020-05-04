@@ -67,15 +67,14 @@ channel_sends_expander_widget_setup (
       switch (track->out_signal_type)
         {
         case TYPE_AUDIO:
-          expander_box_widget_set_icon_resource (
+          expander_box_widget_set_icon_name (
             Z_EXPANDER_BOX_WIDGET (self),
-            ICON_TYPE_ZRYTHM,
-            "audio.svg");
+            "signal-audio");
           break;
         case TYPE_EVENT:
           expander_box_widget_set_icon_name (
             Z_EXPANDER_BOX_WIDGET (self),
-            "z-audio-midi");
+            "audio-midi");
           break;
         default:
           break;

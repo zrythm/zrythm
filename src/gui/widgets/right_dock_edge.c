@@ -97,7 +97,7 @@ right_dock_edge_widget_init (
     plugin_browser_widget_new ();
   img =
     gtk_image_new_from_icon_name (
-      "z-plugins",
+      BREEZE_ICON_PREFIX "plugins",
       GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Plugin Browser"));
@@ -122,7 +122,8 @@ right_dock_edge_widget_init (
        * 24, but if we pass 24 and 1 a different
        * icon is loaded, so load the 12 icon and
        * scale it 2 times */
-      "z-media-optical-audio", 12, 2,
+      BREEZE_ICON_PREFIX "media-optical-audio",
+      12, 2,
       GTK_ICON_LOOKUP_FORCE_SIZE, NULL);
   img =
     gtk_image_new_from_pixbuf (pixbuf);
@@ -144,7 +145,7 @@ right_dock_edge_widget_init (
     control_room_widget_new (CONTROL_ROOM);
   img =
     gtk_image_new_from_icon_name (
-      "z-audio-headphones",
+      BREEZE_ICON_PREFIX "audio-headphones",
       GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Control Room"));
@@ -162,7 +163,7 @@ right_dock_edge_widget_init (
   /* add file browser button */
   img =
     gtk_image_new_from_icon_name (
-      "z-media-optical-audio",
+      BREEZE_ICON_PREFIX "media-optical-audio",
       GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_image_set_pixel_size (
     (GtkImage *) img, 32);

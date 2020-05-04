@@ -112,7 +112,7 @@ RMS:
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="icon_name">z-media-record</property>
+                <property name="icon_name">media-record</property>
               </object>
             </child>
           </object>
@@ -192,7 +192,7 @@ RMS:
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="icon_name">lang-enum-value-symbolic-light</property>
+                <property name="icon_name">gnome-builder-lang-enum-value-symbolic-light</property>
               </object>
             </child>
           </object>

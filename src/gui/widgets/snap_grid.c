@@ -86,7 +86,7 @@ snap_grid_widget_init (SnapGridWidget * self)
   self->img =
     GTK_IMAGE (
       gtk_image_new_from_icon_name (
-        "z-snap-extension",
+        BREEZE_ICON_PREFIX "snap-extension",
         GTK_ICON_SIZE_SMALL_TOOLBAR));
   self->label =
     GTK_LABEL (gtk_label_new (""));

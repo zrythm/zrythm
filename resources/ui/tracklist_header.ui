@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <!--
 
-  Copyright (C) 2018-2019 Alexandros Theodotou
+  Copyright (C) 2018-2020 Alexandros Theodotou
 
   This file is part of Zrythm
 
@@ -29,7 +29,7 @@
       <object class="GtkImage">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="icon-name">z-application-msword</property>
+        <property name="icon-name">application-msword</property>
       </object>
       <packing>
         <property name="left_attach">0</property>
