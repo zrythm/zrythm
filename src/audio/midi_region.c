@@ -291,9 +291,16 @@ midi_region_remove_midi_note (
       /*ar_prv->start_object = NULL;*/
     /*}*/
 
-  array_delete (region->midi_notes,
-                region->num_midi_notes,
-                midi_note);
+  array_delete (
+    region->midi_notes, region->num_midi_notes,
+    midi_note);
+
+  for (int i = 0; i < region->num_midi_notes; i++)
+    {
+      midi_note_set_region_and_index (
+        region->midi_notes[i], region, i);
+    }
+
   if (free)
     free_later (midi_note, arranger_object_free);
 

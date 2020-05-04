@@ -118,10 +118,29 @@ plugin_properties_expander_widget_setup (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->type));
 
-  CREATE_LABEL (_("Preset"));
+  CREATE_LABEL (_("Banks"));
   gtk_widget_set_visible (lbl, TRUE);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
+  self->banks =
+    GTK_COMBO_BOX_TEXT (gtk_combo_box_text_new ());
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->banks), TRUE);
+  two_col_expander_box_widget_add_single (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    GTK_WIDGET (self->banks));
+
+  CREATE_LABEL (_("Presets"));
+  gtk_widget_set_visible (lbl, TRUE);
+  two_col_expander_box_widget_add_single (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
+  self->presets =
+    GTK_COMBO_BOX_TEXT (gtk_combo_box_text_new ());
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->presets), TRUE);
+  two_col_expander_box_widget_add_single (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    GTK_WIDGET (self->presets));
 
   plugin_properties_expander_widget_refresh (
     self, pl);

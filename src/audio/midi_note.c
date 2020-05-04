@@ -75,7 +75,7 @@ midi_note_new (
 void
 midi_note_set_region_and_index (
   MidiNote * self,
-  ZRegion *   region,
+  ZRegion *  region,
   int        idx)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
@@ -242,6 +242,12 @@ midi_note_get_val_as_string (
       sprintf (
         buf, "%s<sup>%d</sup>",
         note_str, note_val);
+      if (DEBUGGING)
+        {
+          char tmp[50];
+          sprintf (tmp, "%s (%d)", buf, self->pos);
+          strcpy (buf, tmp);
+        }
     }
   else
     {

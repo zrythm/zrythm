@@ -66,7 +66,8 @@ typedef struct _PluginPropertiesExpanderWidget
   /** Plugin class. */
   GtkLabel *    type;
 
-  PluginPresetSelectorWidget * pset_selector;
+  GtkComboBoxText * banks;
+  GtkComboBoxText * presets;
 
   /** Owner plugin. */
   Plugin *      plugin;

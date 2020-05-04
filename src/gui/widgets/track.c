@@ -68,7 +68,7 @@ G_DEFINE_TYPE (
 #define ICON_NAME_RECORD "zbreeze-media-record"
 #define ICON_NAME_SOLO "solo"
 #define ICON_NAME_MUTE "mute"
-#define ICON_NAME_SHOW_UI "instrument"
+#define ICON_NAME_SHOW_UI "synth"
 #define ICON_NAME_SHOW_AUTOMATION_LANES \
   "zbreeze-node-type-cusp"
 #define ICON_NAME_SHOW_TRACK_LANES \

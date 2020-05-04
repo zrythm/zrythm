@@ -329,22 +329,22 @@ typedef enum UiDragMode
 #define ui_set_left_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    ZRYTHM_ICON_PREFIX "left-resize", 0, 10);
+    ZRYTHM_ICON_PREFIX "object-resize-left", 0, 10);
 
 #define ui_set_left_resize_loop_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    ZRYTHM_ICON_PREFIX "left-resize-loop", 0, 10);
+    ZRYTHM_ICON_PREFIX "object-resize-loop-left", 0, 10);
 
 #define ui_set_right_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    ZRYTHM_ICON_PREFIX "right-resize", 15, 10);
+    ZRYTHM_ICON_PREFIX "object-resize-right", 15, 10);
 
 #define ui_set_right_resize_loop_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    ZRYTHM_ICON_PREFIX "right-resize-loop", 15, 10);
+    ZRYTHM_ICON_PREFIX "object-resize-loop-right", 15, 10);
 
 #define ui_set_fade_in_cursor(widget) \
   ui_set_cursor_from_icon_name ( \

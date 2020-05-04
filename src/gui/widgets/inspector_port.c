@@ -487,7 +487,7 @@ inspector_port_widget_new (
         {
           self->jack =
             z_gtk_toggle_button_new_with_icon (
-              "jack");
+              "expose-to-jack");
           gtk_widget_set_halign (
             GTK_WIDGET (self->jack),
             GTK_ALIGN_START);
