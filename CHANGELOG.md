@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [0.8.397] - 2020-05-05
 ### Added
 - Install freedesktop-compliant icon theme
-- Allow icon theme customization through user overrids
+- Allow icon theme customization through user overrides
 - Preset/bank selector in plugin inspector
 
 ### Changed
