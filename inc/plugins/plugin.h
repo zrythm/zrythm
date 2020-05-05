@@ -34,6 +34,7 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_identifier.h"
+#include "plugins/plugin_preset.h"
 #include "utils/types.h"
 
 /* pulled in from X11 */
@@ -85,12 +86,15 @@ typedef struct Plugin
   /** Control for plugin enabled. */
   Port *              enabled;
 
+  PluginBank **       banks;
+  int                 num_banks;
+  size_t              banks_size;
+
+  PluginPresetIdentifier selected_bank;
+  PluginPresetIdentifier selected_preset;
+
   /** Whether plugin UI is opened or not. */
   bool                visible;
-
-  /** Selected preset. */
-  int                 selected_preset_id;
-  char *              selected_preset;
 
   /** The latency in samples. */
   nframes_t           latency;
@@ -155,39 +159,33 @@ typedef struct Plugin
 static const cyaml_schema_field_t
 plugin_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "id", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Plugin, id,
     plugin_identifier_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "descr", CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR (
     Plugin, descr,
     plugin_descriptor_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "lv2", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Plugin, lv2,
     lv2_plugin_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "carla",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Plugin, carla,
     carla_native_plugin_fields_schema),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "in_ports",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Plugin, in_ports, num_in_ports,
-    &port_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "out_ports",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Plugin, out_ports, num_out_ports,
-    &port_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_MAPPING_PTR (
-    "enabled",
-    CYAML_FLAG_POINTER,
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+    Plugin, in_ports, port_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+    Plugin, out_ports, port_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+    Plugin, banks, plugin_bank_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Plugin, selected_bank,
+    plugin_preset_identifier_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Plugin, selected_preset,
+    plugin_preset_identifier_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
     Plugin, enabled, port_fields_schema),
-  CYAML_FIELD_INT (
-    "visible", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Plugin, visible),
 
   CYAML_FIELD_END
@@ -501,6 +499,28 @@ plugin_close_ui (Plugin *plugin);
  */
 void
 plugin_update_automatables (Plugin * plugin);
+
+PluginBank *
+plugin_add_bank_if_not_exists (
+  Plugin * self,
+  const char * uri,
+  const char * name);
+
+void
+plugin_add_preset_to_bank (
+  Plugin *       self,
+  PluginBank *   bank,
+  PluginPreset * preset);
+
+void
+plugin_set_selected_bank_from_index (
+  Plugin * self,
+  int      idx);
+
+void
+plugin_set_selected_preset_from_index (
+  Plugin * self,
+  int      idx);
 
 /**
  * Connect the output Ports of the given source

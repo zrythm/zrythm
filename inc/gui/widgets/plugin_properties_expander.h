@@ -69,8 +69,11 @@ typedef struct _PluginPropertiesExpanderWidget
   GtkComboBoxText * banks;
   GtkComboBoxText * presets;
 
-  /** Owner plugin. */
+  /** Currently selected plugin. */
   Plugin *      plugin;
+
+  gulong        bank_changed_handler;
+  gulong        pset_changed_handler;
 } PluginPropertiesExpanderWidget;
 
 /**

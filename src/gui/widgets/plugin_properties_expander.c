@@ -36,6 +36,37 @@ G_DEFINE_TYPE (
   plugin_properties_expander_widget,
   TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 
+static void
+on_bank_changed (
+  GtkComboBox * cb,
+  PluginPropertiesExpanderWidget * self)
+{
+  if (!self->plugin)
+    return;
+
+  plugin_set_selected_bank_from_index (
+    self->plugin, gtk_combo_box_get_active (cb));
+
+  g_signal_handler_block (
+    self->presets, self->pset_changed_handler);
+  plugin_gtk_setup_plugin_presets_combo_box (
+    self->presets, self->plugin);
+  g_signal_handler_unblock (
+    self->presets, self->pset_changed_handler);
+}
+
+static void
+on_preset_changed (
+  GtkComboBox * cb,
+  PluginPropertiesExpanderWidget * self)
+{
+  if (!self->plugin)
+    return;
+
+  plugin_set_selected_preset_from_index (
+    self->plugin, gtk_combo_box_get_active (cb));
+}
+
 /**
  * Refreshes each field.
  */
@@ -44,6 +75,8 @@ plugin_properties_expander_widget_refresh (
   PluginPropertiesExpanderWidget * self,
   Plugin *                         pl)
 {
+  self->plugin = pl;
+
   if (pl)
     {
       gtk_label_set_text (
@@ -58,6 +91,19 @@ plugin_properties_expander_widget_refresh (
       gtk_label_set_text (
         self->type, _("None"));
     }
+
+  g_signal_handler_block (
+    self->banks, self->bank_changed_handler);
+  plugin_gtk_setup_plugin_banks_combo_box (
+    self->banks, pl);
+  g_signal_handler_unblock (
+    self->banks, self->bank_changed_handler);
+  g_signal_handler_block (
+    self->presets, self->pset_changed_handler);
+  plugin_gtk_setup_plugin_presets_combo_box (
+    self->presets, pl);
+  g_signal_handler_unblock (
+    self->presets, self->pset_changed_handler);
 }
 
 /**
@@ -129,6 +175,10 @@ plugin_properties_expander_widget_setup (
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->banks));
+  self->bank_changed_handler =
+    g_signal_connect (
+      G_OBJECT (self->banks), "changed",
+      G_CALLBACK (on_bank_changed), self);
 
   CREATE_LABEL (_("Presets"));
   gtk_widget_set_visible (lbl, TRUE);
@@ -141,6 +191,10 @@ plugin_properties_expander_widget_setup (
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->presets));
+  self->pset_changed_handler =
+    g_signal_connect (
+      G_OBJECT (self->presets), "changed",
+      G_CALLBACK (on_preset_changed), self);
 
   plugin_properties_expander_widget_refresh (
     self, pl);

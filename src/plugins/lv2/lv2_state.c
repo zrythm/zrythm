@@ -106,57 +106,6 @@ lv2_state_save (
   plugin->save_dir = NULL;
 }
 
-int
-lv2_state_load_presets (
-  Lv2Plugin* plugin,
-  PresetSink sink,
-  void* data)
-{
-  LilvNodes* presets =
-    lilv_plugin_get_related (
-      plugin->lilv_plugin,
-      PM_LILV_NODES.pset_Preset);
-  LILV_FOREACH(nodes, i, presets) {
-    const LilvNode* preset = lilv_nodes_get(presets, i);
-    lilv_world_load_resource(LILV_WORLD, preset);
-    if (!sink) {
-      continue;
-    }
-
-    LilvNodes* labels =
-      lilv_world_find_nodes (
-        LILV_WORLD, preset,
-        PM_LILV_NODES.rdfs_label, NULL);
-    if (labels) {
-      const LilvNode* label = lilv_nodes_get_first(labels);
-      sink(plugin, preset, label, data);
-      lilv_nodes_free(labels);
-    } else {
-      fprintf(stderr, "Preset <%s> has no rdfs:label\n",
-              lilv_node_as_string(lilv_nodes_get(presets, i)));
-    }
-  }
-  lilv_nodes_free(presets);
-
-  return 0;
-}
-
-int
-lv2_state_unload_presets (
-  Lv2Plugin* plugin)
-{
-  LilvNodes* presets =
-    lilv_plugin_get_related (
-      plugin->lilv_plugin,
-      PM_LILV_NODES.pset_Preset);
-  LILV_FOREACH(nodes, i, presets) {
-    const LilvNode* preset = lilv_nodes_get(presets, i);
-    lilv_world_unload_resource(LILV_WORLD, preset);
-  }
-  lilv_nodes_free(presets);
-
-  return 0;
-}
 
 static void
 set_port_value (
@@ -311,3 +260,56 @@ lv2_state_delete_current_preset (
   plugin->preset = NULL;
   return 0;
 }
+
+int
+lv2_state_load_presets (
+  Lv2Plugin* plugin,
+  PresetSink sink,
+  void* data)
+{
+  LilvNodes* presets =
+    lilv_plugin_get_related (
+      plugin->lilv_plugin,
+      PM_LILV_NODES.pset_Preset);
+  LILV_FOREACH(nodes, i, presets) {
+    const LilvNode* preset = lilv_nodes_get(presets, i);
+    lilv_world_load_resource(LILV_WORLD, preset);
+    if (!sink) {
+      continue;
+    }
+
+    LilvNodes* labels =
+      lilv_world_find_nodes (
+        LILV_WORLD, preset,
+        PM_LILV_NODES.rdfs_label, NULL);
+    if (labels) {
+      const LilvNode* label = lilv_nodes_get_first(labels);
+      sink(plugin, preset, label, data);
+      lilv_nodes_free(labels);
+    } else {
+      fprintf(stderr, "Preset <%s> has no rdfs:label\n",
+              lilv_node_as_string(lilv_nodes_get(presets, i)));
+    }
+  }
+  lilv_nodes_free(presets);
+
+  return 0;
+}
+
+int
+lv2_state_unload_presets (
+  Lv2Plugin* plugin)
+{
+  LilvNodes* presets =
+    lilv_plugin_get_related (
+      plugin->lilv_plugin,
+      PM_LILV_NODES.pset_Preset);
+  LILV_FOREACH(nodes, i, presets) {
+    const LilvNode* preset = lilv_nodes_get(presets, i);
+    lilv_world_unload_resource(LILV_WORLD, preset);
+  }
+  lilv_nodes_free(presets);
+
+  return 0;
+}
+

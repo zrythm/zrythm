@@ -648,3 +648,104 @@ plugin_gtk_close_window (
   gtk_window_close (
     GTK_WINDOW (plugin->window));
 }
+
+typedef struct PresetInfo
+{
+  char *            name;
+  GtkComboBoxText * cb;
+} PresetInfo;
+
+/**
+ * Sets up the combo box with all the banks the
+ * plugin has.
+ *
+ * @return Whether any banks were added.
+ */
+bool
+plugin_gtk_setup_plugin_banks_combo_box (
+  GtkComboBoxText * cb,
+  Plugin *          plugin)
+{
+  bool ret = false;
+
+  if (!plugin)
+    {
+      gtk_combo_box_text_remove_all (cb);
+      return false;
+    }
+
+  if (plugin->descr->open_with_carla)
+    {
+#ifdef HAVE_CARLA
+#endif
+    }
+  else if (plugin->descr->protocol == PROT_LV2)
+    {
+      gtk_combo_box_text_remove_all (cb);
+      for (int i = 0; i < plugin->num_banks; i++)
+        {
+          PluginBank * bank = plugin->banks[i];
+          gtk_combo_box_text_append (
+            cb, bank->uri, bank->name);
+          ret = true;
+        }
+
+      gtk_combo_box_set_active (
+        GTK_COMBO_BOX (cb),
+        plugin->selected_bank.bank_idx);
+    }
+
+  return ret;
+}
+
+/**
+ * Sets up the combo box with all the presets the
+ * plugin has in the given bank, or all the presets
+ * if NULL is given.
+ *
+ * @return Whether any presets were added.
+ */
+bool
+plugin_gtk_setup_plugin_presets_combo_box (
+  GtkComboBoxText * cb,
+  Plugin *          plugin)
+{
+  bool ret = false;
+
+  if (!plugin)
+    {
+      gtk_combo_box_text_remove_all (cb);
+      return false;
+    }
+
+  if (plugin->descr->open_with_carla)
+    {
+#ifdef HAVE_CARLA
+#endif
+    }
+  else if (plugin->descr->protocol == PROT_LV2)
+    {
+      gtk_combo_box_text_remove_all (cb);
+      if (plugin->selected_bank.bank_idx == -1)
+        return false;
+
+      PluginBank * bank =
+        plugin->banks[
+          plugin->selected_bank.bank_idx];
+      for (int j = 0; j < bank->num_presets;
+           j++)
+        {
+          PluginPreset * preset =
+            bank->presets[j];
+          gtk_combo_box_text_append (
+            cb, preset->uri, preset->name);
+          ret = true;
+        }
+
+      gtk_combo_box_set_active (
+        GTK_COMBO_BOX (cb),
+        plugin->selected_preset.idx);
+    }
+
+  return ret;
+}

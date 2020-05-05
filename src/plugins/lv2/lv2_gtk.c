@@ -195,9 +195,9 @@ lv2_gtk_add_preset_to_menu (
   if (bank)
     {
       PluginGtkPresetMenu* bank_menu =
-        lv2_gtk_get_bank_menu(plugin, menu, bank);
+        lv2_gtk_get_bank_menu (plugin, menu, bank);
       gtk_menu_shell_append (
-        GTK_MENU_SHELL(bank_menu->menu), item);
+        GTK_MENU_SHELL (bank_menu->menu), item);
     }
   else
     gtk_menu_shell_append (

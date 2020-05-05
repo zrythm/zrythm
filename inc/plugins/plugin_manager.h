@@ -111,6 +111,7 @@ typedef struct Lv2Nodes
   LilvNode *          pprops_rangeSteps;
   LilvNode *          pprops_trigger;
   LilvNode *          pset_bank;
+  LilvNode *          pset_Bank;
   LilvNode *          pset_Preset;
   LilvNode *          rdfs_comment;
   LilvNode *          rdfs_label;
@@ -140,6 +141,13 @@ typedef struct Lv2Nodes
   LilvNode *          auto_automation_controller;
   LilvNode *          inline_display_in_gui;
 #endif
+
+  /** Default bank to use for presets that don't
+   * belong to a bank. */
+  LilvNode *          zrythm_default_bank;
+  /** Init preset. */
+  LilvNode *          zrythm_default_preset;
+
   LilvNode* end;  ///< NULL terminator for easy freeing of entire structure
 } Lv2Nodes;
 

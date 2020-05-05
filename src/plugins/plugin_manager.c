@@ -388,6 +388,8 @@ plugin_manager_init (PluginManager * self)
   ADD_LV2_NODE (
     pset_bank, LV2_PRESETS__bank);
   ADD_LV2_NODE (
+    pset_Bank, LV2_PRESETS__Bank);
+  ADD_LV2_NODE (
     pset_Preset, LV2_PRESETS__Preset);
   ADD_LV2_NODE (
     rdfs_comment, LILV_NS_RDFS "comment");
@@ -432,6 +434,14 @@ plugin_manager_init (PluginManager * self)
   /*nodes->auto_automation_controller  = lilv_new_uri(world,LV2_AUTOMATE_URI__controller);*/
   /*nodes->inline_display_in_gui       = lilv_new_uri(world,LV2_INLINEDISPLAY__in_gui);*/
 #endif
+
+  ADD_LV2_NODE (
+    zrythm_default_bank,
+    "https://lv2.zrythm.org#default-bank");
+  ADD_LV2_NODE (
+    zrythm_default_preset,
+    "https://lv2.zrythm.org#init-preset");
+
   nodes->end = NULL;
 #undef ADD_LV2_NODE
 

@@ -419,6 +419,13 @@ lv2_plugin_activate (
   bool        activate);
 
 /**
+ * Populates the banks in the plugin instance.
+ */
+void
+lv2_plugin_populate_banks (
+  Lv2Plugin * self);
+
+/**
  * Frees the Lv2Plugin and all its components.
  */
 void

@@ -70,6 +70,7 @@
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #include <lv2/buf-size/buf-size.h>
 #include <lv2/instance-access/instance-access.h>
@@ -1493,7 +1494,7 @@ lv2_plugin_pick_ui (
 int
 lv2_plugin_instantiate (
   Lv2Plugin *  self,
-  char * preset_uri)
+  char *       preset_uri)
 {
   int i;
 
@@ -1574,12 +1575,11 @@ lv2_plugin_instantiate (
         lilv_new_uri (
           LILV_WORLD, preset_uri);
 
-      lv2_state_load_presets (self, NULL, NULL);
+      lv2_state_load_presets (
+        self, NULL, NULL);
       self->state =
         lilv_state_new_from_world (
-          LILV_WORLD,
-          &self->map,
-          preset);
+          LILV_WORLD, &self->map, preset);
       self->preset = self->state;
       lilv_node_free(preset);
       if (!self->state)
@@ -2332,4 +2332,97 @@ lv2_plugin_save_state_to_str (
       /*lv2_plugin->state_features);*/
 
   return -1;
+}
+
+/**
+ * Populates the banks in the plugin instance.
+ */
+void
+lv2_plugin_populate_banks (
+  Lv2Plugin * self)
+{
+  /* add default bank and preset */
+  PluginBank * pl_def_bank =
+    plugin_add_bank_if_not_exists (
+      self->plugin,
+      lilv_node_as_string (
+        PM_LILV_NODES.zrythm_default_bank),
+      _("Default bank"));
+  PluginPreset * pl_def_preset =
+    calloc (1, sizeof (PluginPreset));
+  pl_def_preset->uri =
+    g_strdup (
+      lilv_node_as_string (
+        PM_LILV_NODES.zrythm_default_preset));
+  pl_def_preset->name = g_strdup (_("Init"));
+  plugin_add_preset_to_bank (
+    self->plugin, pl_def_bank, pl_def_preset);
+
+  LilvNodes * presets =
+    lilv_plugin_get_related (
+      self->lilv_plugin,
+      PM_LILV_NODES.pset_Preset);
+  LILV_FOREACH (nodes, i, presets)
+    {
+      const LilvNode* preset =
+        lilv_nodes_get (presets, i);
+
+      LilvNodes * banks =
+        lilv_world_find_nodes (
+          LILV_WORLD, preset,
+          PM_LILV_NODES.pset_bank, NULL);
+      PluginBank * pl_bank = NULL;
+      if (banks)
+        {
+          const LilvNode * bank =
+            lilv_nodes_get_first (banks);
+          const LilvNode * bank_label =
+            lilv_world_get (
+              LILV_WORLD, bank,
+              PM_LILV_NODES.rdfs_label, NULL);
+          pl_bank =
+            plugin_add_bank_if_not_exists (
+              self->plugin,
+              lilv_node_as_string (bank),
+              bank_label ?
+                lilv_node_as_string (bank_label) :
+                _("Unnamed bank"));
+          lilv_nodes_free (banks);
+        }
+      else
+        {
+          pl_bank = pl_def_bank;
+        }
+
+      LilvNodes * labels =
+        lilv_world_find_nodes (
+          LILV_WORLD, preset,
+          PM_LILV_NODES.rdfs_label, NULL);
+      if (labels)
+        {
+          const LilvNode* label =
+            lilv_nodes_get_first(labels);
+          PluginPreset * pl_preset =
+            calloc (1, sizeof (PluginPreset));
+          pl_preset->uri =
+            g_strdup (lilv_node_as_string (preset));
+          pl_preset->name =
+            g_strdup (lilv_node_as_string (label));
+          plugin_add_preset_to_bank (
+            self->plugin, pl_bank, pl_preset);
+          lilv_nodes_free (labels);
+
+          g_message (
+            "found preset %s (<%s>)",
+            pl_preset->name, pl_preset->uri);
+        }
+      else
+        {
+          g_message (
+            "Skipping preset <%s> because it has "
+            "no rdfs:label",
+            lilv_node_as_string (preset));
+        }
+    }
+  lilv_nodes_free (presets);
 }

@@ -43,6 +43,7 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_control.h"
 #include "plugins/lv2/lv2_gtk.h"
+#include "plugins/lv2/lv2_state.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/io.h"
@@ -56,7 +57,7 @@
  * Plugin UI refresh rate limits.
  */
 #define MIN_REFRESH_RATE 30.f
-#define MAX_REFRESH_RATE 60.f
+#define MAX_REFRESH_RATE 121.f
 
 void
 plugin_init_loaded (
@@ -130,6 +131,151 @@ plugin_init (
   port->control = 1.f;
   port->carla_param_id = -1;
   plugin->enabled = port;
+
+  plugin->selected_bank.bank_idx = -1;
+  plugin->selected_bank.idx = -1;
+  plugin->selected_preset.bank_idx = -1;
+  plugin->selected_preset.idx = -1;
+}
+
+PluginBank *
+plugin_add_bank_if_not_exists (
+  Plugin * self,
+  const char * uri,
+  const char * name)
+{
+  for (int i = 0; i < self->num_banks; i++)
+    {
+      PluginBank * bank = self->banks[i];
+      if (uri)
+        {
+          if (string_is_equal (bank->uri, uri, 0))
+            {
+              return bank;
+            }
+        }
+      else
+        {
+          if (string_is_equal (bank->name, name, 0))
+            {
+              return bank;
+            }
+        }
+    }
+
+  PluginBank * bank =
+    calloc (1, sizeof (PluginBank));
+
+  bank->id.idx = -1;
+  bank->id.bank_idx = self->num_banks;
+  plugin_identifier_copy (
+    &bank->id.plugin_id, &self->id);
+  bank->name = g_strdup (name);
+  if (uri)
+    bank->uri = g_strdup (uri);
+
+  array_double_size_if_full (
+    self->banks, self->num_banks, self->banks_size,
+    PluginBank *);
+  array_append (self->banks, self->num_banks, bank);
+
+  return bank;
+}
+
+void
+plugin_add_preset_to_bank (
+  Plugin *       self,
+  PluginBank *   bank,
+  PluginPreset * preset)
+{
+  preset->id.idx = bank->num_presets;
+  preset->id.bank_idx = bank->id.bank_idx;
+  plugin_identifier_copy (
+    &preset->id.plugin_id, &bank->id.plugin_id);
+
+  array_double_size_if_full (
+    bank->presets, bank->num_presets,
+    bank->presets_size, PluginPreset *);
+  array_append (
+    bank->presets, bank->num_presets, preset);
+}
+
+static void
+populate_banks (
+  Plugin * self)
+{
+  g_message ("populating plugin banks...");
+
+  PluginDescriptor * descr = self->descr;
+
+#ifdef HAVE_CARLA
+  if (descr->open_with_carla)
+    {
+      /*carla_native_plugin_populate_banks (*/
+        /*self->carla);*/
+    }
+  else
+    {
+#endif
+      switch (descr->protocol)
+        {
+        case PROT_LV2:
+          lv2_plugin_populate_banks (self->lv2);
+          break;
+        default:
+          break;
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
+
+  /* select the init preset */
+  self->selected_bank.bank_idx = 0;
+  self->selected_bank.idx = -1;
+  plugin_identifier_copy (
+    &self->selected_bank.plugin_id, &self->id);
+  self->selected_preset.bank_idx = 0;
+  self->selected_preset.idx = 0;
+  plugin_identifier_copy (
+    &self->selected_preset.plugin_id, &self->id);
+}
+
+void
+plugin_set_selected_bank_from_index (
+  Plugin * self,
+  int      idx)
+{
+  self->selected_bank.bank_idx = idx;
+  self->selected_preset.bank_idx = idx;
+  plugin_set_selected_preset_from_index (
+    self, 0);
+}
+
+void
+plugin_set_selected_preset_from_index (
+  Plugin * self,
+  int      idx)
+{
+  self->selected_preset.idx = idx;
+
+  g_message (
+    "applying preset at index %d", idx);
+
+  if (self->descr->open_with_carla)
+    {
+    }
+  else if (self->descr->protocol == PROT_LV2)
+    {
+      LilvNode * pset_uri =
+        lilv_new_uri (
+          LILV_WORLD,
+          self->banks[
+            self->selected_bank.bank_idx]->
+              presets[idx]->uri);
+      lv2_state_apply_preset (
+        self->lv2, pset_uri);
+      lilv_node_free (pset_uri);
+    }
 }
 
 /**
@@ -140,8 +286,8 @@ plugin_init (
 Plugin *
 plugin_new_from_descr (
   PluginDescriptor * descr,
-  int                      track_pos,
-  int                      slot)
+  int                track_pos,
+  int                slot)
 {
   Plugin * plugin = calloc (1, sizeof (Plugin));
 
@@ -192,7 +338,11 @@ new_carla_plugin:
                     &picked_ui, NULL);
                 lilv_uis_free (uis);
 
-                if (needs_bridging)
+                if (needs_bridging &&
+                    /* carla doesn't work with
+                     * CV plugins */
+                    descr->num_cv_ins == 0 &&
+                    descr->num_cv_outs == 0)
                   {
                     goto new_carla_plugin;
                   }
@@ -208,6 +358,9 @@ new_carla_plugin:
 #ifdef HAVE_CARLA
     }
 #endif
+
+  /* update banks */
+  populate_banks (plugin);
 
   return plugin;
 }

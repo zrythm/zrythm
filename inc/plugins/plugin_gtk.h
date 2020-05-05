@@ -114,6 +114,29 @@ plugin_gtk_rebuild_preset_menu (
   GtkContainer* pset_menu);
 
 /**
+ * Sets up the combo box with all the banks the
+ * plugin has.
+ *
+ * @return Whether any banks were added.
+ */
+bool
+plugin_gtk_setup_plugin_banks_combo_box (
+  GtkComboBoxText * cb,
+  Plugin *          plugin);
+
+/**
+ * Sets up the combo box with all the presets the
+ * plugin has in the given bank, or all the presets
+ * if NULL is given.
+ *
+ * @return Whether any presets were added.
+ */
+bool
+plugin_gtk_setup_plugin_presets_combo_box (
+  GtkComboBoxText * cb,
+  Plugin *          plugin);
+
+/**
  * Creates a label for a control.
  *
  * TODO move to ui.

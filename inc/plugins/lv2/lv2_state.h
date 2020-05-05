@@ -20,7 +20,7 @@
 /**
  * \file
  *
- * LV2 state related code.
+ * LV2 state management.
  */
 
 #ifndef __PLUGINS_LV2_LV2_STATE_H__
@@ -42,12 +42,20 @@ typedef int (*PresetSink)
   const LilvNode* title,
   void*           data);
 
-/**
- * Deletes the current preset.
- */
-int
-lv2_state_delete_current_preset (
-  Lv2Plugin* plugin);
+void
+lv2_state_apply_state (
+  Lv2Plugin* plugin,
+  LilvState* state);
+
+void
+lv2_state_save (
+  Lv2Plugin* plugin,
+  const char* dir);
+
+char *
+lv2_state_make_path (
+  LV2_State_Make_Path_Handle handle,
+  const char*                path);
 
 /**
  * Saves the preset.
@@ -61,6 +69,18 @@ lv2_state_save_preset (
   const char * filename);
 
 int
+lv2_state_apply_preset (
+  Lv2Plugin* plugin,
+  const LilvNode* preset);
+
+/**
+ * Deletes the current preset.
+ */
+int
+lv2_state_delete_current_preset (
+  Lv2Plugin* plugin);
+
+int
 lv2_state_load_presets (
   Lv2Plugin* plugin,
   PresetSink sink,
@@ -70,29 +90,8 @@ int
 lv2_state_unload_presets (
   Lv2Plugin* plugin);
 
-void
-lv2_state_apply_state (
-  Lv2Plugin* plugin,
-  LilvState* state);
-
-int
-lv2_state_apply_preset (
-  Lv2Plugin* plugin,
-  const LilvNode* preset);
-
-void
-lv2_state_save (
-  Lv2Plugin* plugin,
-  const char* dir);
-
-char *
-lv2_state_make_path (
-  LV2_State_Make_Path_Handle handle,
-  const char*                path);
-
 /**
  * @}
  */
 
 #endif
-
