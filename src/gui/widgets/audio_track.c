@@ -239,7 +239,7 @@ audio_track_widget_init (AudioTrackWidget * self)
     0);
 
   /* set icon */
-  SET_TRACK_ICON ("audio");
+  SET_TRACK_ICON ("signal-audio");
 }
 
 static void

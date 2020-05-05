@@ -2585,7 +2585,7 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_AUDIO:
-      strcpy (self->icon_name, "audio");
+      strcpy (self->icon_name, "signal-audio");
       add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (

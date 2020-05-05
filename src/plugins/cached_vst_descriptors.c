@@ -42,7 +42,8 @@ cached_vst_descriptors_serialize_to_file (
   CachedVstDescriptors * self)
 {
   self->version = CACHED_VST_DESCRIPTORS_VERSION;
-  g_message ("Writing cached VST descriptors...");
+  g_message (
+    "Serializing cached VST descriptors...");
   char * yaml =
     cached_vst_descriptors_serialize (self);
   g_return_if_fail (yaml);
@@ -50,6 +51,9 @@ cached_vst_descriptors_serialize_to_file (
   char * path =
     get_cached_vst_descriptors_file_path ();
   g_return_if_fail (path && strlen (path) > 2);
+  g_message (
+    "Writing cached VST descriptors to %s...",
+    path);
   g_file_set_contents (
     path, yaml, -1, &err);
   if (err != NULL)

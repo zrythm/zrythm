@@ -248,6 +248,16 @@ test_cflags = [
   '-DBREEZE_ICON_PREFIX=""',
   ]
 
+if os_windows
+  test_cflags += [
+    '-DPATH_SPLIT=";"',
+    ]
+else
+  test_cflags += [
+    '-DPATH_SPLIT=":"',
+    ]
+endif
+
 if (get_option ('buildtype') == 'release')
   test_cflags += [
     '-ffast-math',

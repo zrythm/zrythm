@@ -316,7 +316,6 @@ z_carla_discovery_run (
     z_carla_discovery_get_discovery_path (arch);
   g_return_val_if_fail (
     carla_discovery, NULL);
-
   char cmd[4000];
   sprintf (
     cmd, "%s %s %s",

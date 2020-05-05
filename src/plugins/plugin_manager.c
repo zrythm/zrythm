@@ -512,7 +512,8 @@ get_vst_paths (
 #elif defined (__APPLE__)
   char ** paths =
     g_strsplit (
-      "/Library/Audio/Plug-ins/VST:", ":", -1);
+      "/Library/Audio/Plug-ins/VST" PATH_SPLIT,
+      PATH_SPLIT, -1);
 #else
   char * vst_path =
     g_strdup (getenv ("VST_PATH"));
@@ -539,7 +540,7 @@ get_vst_paths (
         }
     }
   char ** paths =
-    g_strsplit (vst_path, ":", 0);
+    g_strsplit (vst_path, PATH_SPLIT, 0);
   g_free (vst_path);
 #endif // __APPLE__
 
@@ -554,13 +555,15 @@ get_vst3_paths (
 #ifdef _WOE32
   return
     g_strsplit (
-      "C:\\Program Files\\Common Files\\VST3:"
+      "C:\\Program Files\\Common Files\\VST3"
+      PATH_SPLIT
       "C:\\Program Files (x86)\\Common Files\\VST3",
-      ":", 0);
+      PATH_SPLIT, 0);
 #elif defined (__APPLE__)
   return
     g_strsplit (
-      "/Library/Audio/Plug-ins/VST3:", ":", -1);
+      "/Library/Audio/Plug-ins/VST3" PATH_SPLIT,
+      PATH_SPLIT, -1);
 #endif // __APPLE__
 }
 
@@ -642,7 +645,7 @@ get_sf_paths (
   char ** paths = NULL;
   if (ZRYTHM_TESTING)
     {
-      paths = g_strsplit (":", ":", -1);
+      paths = g_strsplit (PATH_SPLIT, PATH_SPLIT, -1);
     }
   else
     {
