@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.397] - 2020-05-05
+### Added
+- Install freedesktop-compliant icon theme
+- Allow icon theme customization through user overrids
+- Preset/bank selector in plugin inspector
+
+### Changed
+- For unsupported UIs, bridge only UI if possible, otherwise bridge whole plugin
+- Use comma to separate paths on windows
+- Rename meson options to use dash instead of underscore
+- Don't use jack2-only API
+
+### Fixed
+- Fix build with `user_manual` option
+- Fix deleting midi notes removing other notes
+- Fix balance control reset not working
+
 ## [0.8.378] - 2020-05-01
 ### Added
 - Add AU, VST2, VST3 support for MacOS
