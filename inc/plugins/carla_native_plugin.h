@@ -146,6 +146,10 @@ carla_native_plugin_load_state (
   CarlaNativePlugin * self,
   char *              dir);
 
+void
+carla_native_plugin_populate_banks (
+  CarlaNativePlugin * self);
+
 /**
  * Instantiates the plugin.
  *

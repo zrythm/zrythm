@@ -398,6 +398,48 @@ create_plugin (
   return self;
 }
 
+void
+carla_native_plugin_populate_banks (
+  CarlaNativePlugin * self)
+{
+  /* add default bank and preset */
+  PluginBank * pl_def_bank =
+    plugin_add_bank_if_not_exists (
+      self->plugin,
+      lilv_node_as_string (
+        PM_LILV_NODES.zrythm_default_bank),
+      _("Default bank"));
+  PluginPreset * pl_def_preset =
+    calloc (1, sizeof (PluginPreset));
+  pl_def_preset->uri =
+    g_strdup (
+      lilv_node_as_string (
+        PM_LILV_NODES.zrythm_default_preset));
+  pl_def_preset->name = g_strdup (_("Init"));
+  plugin_add_preset_to_bank (
+    self->plugin, pl_def_bank, pl_def_preset);
+
+  uint32_t count =
+    carla_get_program_count (
+      self->host_handle, 0);
+  for (uint32_t i = 0; i < count; i++)
+    {
+      PluginPreset * pl_preset =
+        calloc (1, sizeof (PluginPreset));
+      pl_preset->carla_program = (int) i;
+      pl_preset->name =
+        g_strdup (
+          carla_get_program_name (
+            self->host_handle, 0, i));
+      plugin_add_preset_to_bank (
+        self->plugin, pl_def_bank, pl_preset);
+
+      g_message (
+        "found preset %s (%d)",
+        pl_preset->name, pl_preset->carla_program);
+    }
+}
+
 /**
  * Processes the plugin for this cycle.
  */

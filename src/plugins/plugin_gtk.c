@@ -667,33 +667,24 @@ plugin_gtk_setup_plugin_banks_combo_box (
   Plugin *          plugin)
 {
   bool ret = false;
+  gtk_combo_box_text_remove_all (cb);
 
   if (!plugin)
     {
-      gtk_combo_box_text_remove_all (cb);
       return false;
     }
 
-  if (plugin->descr->open_with_carla)
+  for (int i = 0; i < plugin->num_banks; i++)
     {
-#ifdef HAVE_CARLA
-#endif
+      PluginBank * bank = plugin->banks[i];
+      gtk_combo_box_text_append (
+        cb, bank->uri, bank->name);
+      ret = true;
     }
-  else if (plugin->descr->protocol == PROT_LV2)
-    {
-      gtk_combo_box_text_remove_all (cb);
-      for (int i = 0; i < plugin->num_banks; i++)
-        {
-          PluginBank * bank = plugin->banks[i];
-          gtk_combo_box_text_append (
-            cb, bank->uri, bank->name);
-          ret = true;
-        }
 
-      gtk_combo_box_set_active (
-        GTK_COMBO_BOX (cb),
-        plugin->selected_bank.bank_idx);
-    }
+  gtk_combo_box_set_active (
+    GTK_COMBO_BOX (cb),
+    plugin->selected_bank.bank_idx);
 
   return ret;
 }
@@ -712,40 +703,30 @@ plugin_gtk_setup_plugin_presets_combo_box (
 {
   bool ret = false;
 
-  if (!plugin)
+  gtk_combo_box_text_remove_all (cb);
+
+  if (!plugin ||
+      plugin->selected_bank.bank_idx == -1)
     {
-      gtk_combo_box_text_remove_all (cb);
       return false;
     }
 
-  if (plugin->descr->open_with_carla)
+  PluginBank * bank =
+    plugin->banks[
+      plugin->selected_bank.bank_idx];
+  for (int j = 0; j < bank->num_presets;
+       j++)
     {
-#ifdef HAVE_CARLA
-#endif
+      PluginPreset * preset =
+        bank->presets[j];
+      gtk_combo_box_text_append (
+        cb, preset->uri, preset->name);
+      ret = true;
     }
-  else if (plugin->descr->protocol == PROT_LV2)
-    {
-      gtk_combo_box_text_remove_all (cb);
-      if (plugin->selected_bank.bank_idx == -1)
-        return false;
 
-      PluginBank * bank =
-        plugin->banks[
-          plugin->selected_bank.bank_idx];
-      for (int j = 0; j < bank->num_presets;
-           j++)
-        {
-          PluginPreset * preset =
-            bank->presets[j];
-          gtk_combo_box_text_append (
-            cb, preset->uri, preset->name);
-          ret = true;
-        }
-
-      gtk_combo_box_set_active (
-        GTK_COMBO_BOX (cb),
-        plugin->selected_preset.idx);
-    }
+  gtk_combo_box_set_active (
+    GTK_COMBO_BOX (cb),
+    plugin->selected_preset.idx);
 
   return ret;
 }

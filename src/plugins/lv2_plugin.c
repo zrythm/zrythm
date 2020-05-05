@@ -1559,8 +1559,7 @@ lv2_plugin_instantiate (
   self->state_sched_feature.data = &self->ssched;
 
   self->llog.handle = self;
-  self->llog.printf = lv2_log_printf;
-  self->llog.vprintf = lv2_log_vprintf;
+  lv2_log_set_printf_funcs (&self->llog);
   self->log_feature.data = &self->llog;
 
   zix_sem_init (&self->exit_sem, 0);

@@ -83,6 +83,9 @@ typedef struct PluginPreset
   /** URI if LV2. */
   char *           uri;
 
+  /** Carla program index. */
+  int              carla_program;
+
   PluginPresetIdentifier id;
 } PluginPreset;
 
@@ -93,6 +96,8 @@ plugin_preset_fields_schema[] =
     PluginPreset, name),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PluginPreset, uri),
+  YAML_FIELD_INT (
+    PluginPreset, carla_program),
   YAML_FIELD_MAPPING_EMBEDDED (
     PluginPreset, id,
     plugin_preset_identifier_fields_schema),

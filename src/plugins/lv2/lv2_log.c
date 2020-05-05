@@ -23,6 +23,18 @@
 #include "plugins/plugin_manager.h"
 #include "zrythm.h"
 
+/**
+ * Needed because we can't set them directly when
+ * gi18n.h is included.
+ */
+void
+lv2_log_set_printf_funcs (
+  LV2_Log_Log * log)
+{
+  log->printf = lv2_log_printf;
+  log->vprintf = lv2_log_vprintf;
+}
+
 int
 lv2_log_vprintf (
   LV2_Log_Handle handle,

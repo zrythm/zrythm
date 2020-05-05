@@ -211,8 +211,8 @@ populate_banks (
 #ifdef HAVE_CARLA
   if (descr->open_with_carla)
     {
-      /*carla_native_plugin_populate_banks (*/
-        /*self->carla);*/
+      carla_native_plugin_populate_banks (
+        self->carla);
     }
   else
     {
@@ -263,18 +263,45 @@ plugin_set_selected_preset_from_index (
 
   if (self->descr->open_with_carla)
     {
+#ifdef HAVE_CARLA
+      /* if init preset */
+      if (self->selected_bank.bank_idx == 0 &&
+          idx == 0)
+        {
+          carla_reset_parameters (
+            self->carla->host_handle, 0);
+        }
+      else
+        {
+          carla_set_program (
+            self->carla->host_handle, 0,
+            (uint32_t)
+            self->banks[
+              self->selected_bank.bank_idx]->
+                presets[idx]->carla_program);
+        }
+#endif
     }
   else if (self->descr->protocol == PROT_LV2)
     {
-      LilvNode * pset_uri =
-        lilv_new_uri (
-          LILV_WORLD,
-          self->banks[
-            self->selected_bank.bank_idx]->
-              presets[idx]->uri);
-      lv2_state_apply_preset (
-        self->lv2, pset_uri);
-      lilv_node_free (pset_uri);
+      /* if init preset */
+      if (self->selected_bank.bank_idx == 0 &&
+          idx == 0)
+        {
+          /* TODO init all control ports */
+        }
+      else
+        {
+          LilvNode * pset_uri =
+            lilv_new_uri (
+              LILV_WORLD,
+              self->banks[
+                self->selected_bank.bank_idx]->
+                  presets[idx]->uri);
+          lv2_state_apply_preset (
+            self->lv2, pset_uri);
+          lilv_node_free (pset_uri);
+        }
     }
 }
 
