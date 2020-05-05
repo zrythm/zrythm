@@ -280,7 +280,7 @@ on_reset (
   GtkMenuItem *menuitem,
   BalanceControlWidget * self)
 {
-  /* TODO */
+  SET_VAL (0.5);
 }
 
 static void
