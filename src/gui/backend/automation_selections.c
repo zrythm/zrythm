@@ -92,9 +92,7 @@ automation_selections_paste_to_pos (
   /* FIXME doesn't work when you paste at a negative
    * position in the region */
 
-  double curr_ticks, diff;
-  int i;
-  for (i = 0; i < ts->num_automation_points; i++)
+  for (int i = 0; i < ts->num_automation_points; i++)
     {
       AutomationPoint * ap =
         ts->automation_points[i];
@@ -102,8 +100,9 @@ automation_selections_paste_to_pos (
         (ArrangerObject *) ap;
 
       /* update positions */
-      curr_ticks = position_to_ticks (&ap_obj->pos);
-      diff = curr_ticks - start_pos_ticks;
+      double curr_ticks =
+        position_to_ticks (&ap_obj->pos);
+      double diff = curr_ticks - start_pos_ticks;
       position_from_ticks (
         &ap_obj->pos, pos_ticks + diff);
 

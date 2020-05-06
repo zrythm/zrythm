@@ -3642,9 +3642,6 @@ on_drag_end_automation (
       double ticks_diff =
         obj->pos.total_ticks -
         start_obj->pos.total_ticks;
-      g_message ("norm val at start %f now %f",
-        (double) start_ap->normalized_val,
-        (double) ap->normalized_val);
       double norm_value_diff =
         ap->normalized_val -
         start_ap->normalized_val;

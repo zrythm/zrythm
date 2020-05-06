@@ -159,18 +159,16 @@ midi_arranger_selections_paste_to_pos (
   /* FIXME doesn't work when you paste at a negative
    * position in the region */
 
-  double curr_ticks, diff;
-  int i;
-  for (i = 0; i < ts->num_midi_notes; i++)
+  for (int i = 0; i < ts->num_midi_notes; i++)
     {
       MidiNote * midi_note = ts->midi_notes[i];
       ArrangerObject * mn_obj =
         (ArrangerObject *) midi_note;
 
       /* update positions */
-      curr_ticks =
+      double curr_ticks =
         position_to_ticks (&mn_obj->pos);
-      diff = curr_ticks - start_pos_ticks;
+      double diff = curr_ticks - start_pos_ticks;
       position_from_ticks (
         &mn_obj->pos, pos_ticks + diff);
       curr_ticks =
