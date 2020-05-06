@@ -124,7 +124,8 @@ mpmc_queue_push_back (
       if (dif == 0)
         {
           if (g_atomic_int_compare_and_exchange (
-                &self->enqueue_pos, pos, pos + 1))
+                &self->enqueue_pos, (gint) pos,
+                (gint) (pos + 1)))
             {
               break;
             }
@@ -166,7 +167,8 @@ mpmc_queue_dequeue (
       if (dif == 0)
         {
           if (g_atomic_int_compare_and_exchange (
-                &self->dequeue_pos, pos, pos + 1))
+                &self->dequeue_pos, (gint) pos,
+                (gint) (pos + 1)))
             break;
         }
       else if (dif < 0)

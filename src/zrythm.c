@@ -290,24 +290,36 @@ on_setup_main_window (
 }
 
 /**
- * Called after the main window has been initialized.
+ * Called after the main window has been
+ * initialized.
  *
  * Loads the project backend or creates the default
  * one.
  * FIXME rename
  */
-static void on_load_project (GSimpleAction  *action,
-                             GVariant *parameter,
-                             gpointer  user_data)
+static void on_load_project (
+  GSimpleAction  *action,
+  GVariant *parameter,
+  gpointer  user_data)
 {
   zrythm_set_progress_status (
     ZRYTHM,
     _("Loading project"),
     0.8);
 
-  project_load (
-    ZRYTHM->open_filename,
-    ZRYTHM->opening_template);
+  int ret =
+    project_load (
+      ZRYTHM->open_filename,
+      ZRYTHM->opening_template);
+
+  if (ret != 0)
+    {
+      ui_show_error_message (
+        NULL,
+        _("No project has been selected. Zrythm "
+        "will now close."));
+      exit (0);
+    }
 
   g_action_group_activate_action (
     G_ACTION_GROUP (zrythm_app),

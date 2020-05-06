@@ -42,6 +42,7 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/transport.h"
+#include "gui/widgets/create_project_dialog.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
@@ -130,7 +131,7 @@ get_newer_backup (
 
   char * filepath =
     project_get_project_file_path (self, 0);
-  if (stat (filepath, &stat_res)==0)
+  if (stat (filepath, &stat_res) == 0)
     {
       orig_tm = localtime (&stat_res.st_mtime);
       t1 = mktime (orig_tm);
@@ -270,8 +271,7 @@ create_and_set_dir_and_title (
   const char * _dir)
 {
   set_dir (self, _dir);
-  char * str =
-    g_path_get_basename (_dir);
+  char * str = g_path_get_basename (_dir);
   set_title (self, str);
   g_free (str);
 }
@@ -700,9 +700,35 @@ project_load (
   const int is_template)
 {
   if (filename)
-    load (filename, is_template);
+    {
+      int ret = load (filename, is_template);
+      if (ret != 0)
+        {
+          ui_show_error_message (
+            NULL,
+            _("Failed to load project. Will create "
+            "a new one instead."));
+
+          CreateProjectDialogWidget * dialog =
+            create_project_dialog_widget_new ();
+
+          ret =
+            gtk_dialog_run (GTK_DIALOG (dialog));
+          gtk_widget_destroy (GTK_WIDGET (dialog));
+
+          if (ret != GTK_RESPONSE_OK)
+            return -1;
+
+          g_message (
+            "creating project %s",
+            ZRYTHM->create_project_path);
+          create_default (PROJECT);
+        }
+    }
   else
-    create_default (PROJECT);
+    {
+      create_default (PROJECT);
+    }
 
   engine_activate (AUDIO_ENGINE);
 
