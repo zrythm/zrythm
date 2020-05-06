@@ -2306,7 +2306,7 @@ arranger_widget_on_key_action (
                   UndoableAction * action =
                     arranger_selections_action_new_move (
                       sel, - move_ticks, 0, 0,
-                      0, 0, F_NOT_ALREADY_MOVED);
+                      0, 0, 0, F_NOT_ALREADY_MOVED);
                   undo_manager_perform (
                     UNDO_MANAGER, action);
 
@@ -2320,7 +2320,7 @@ arranger_widget_on_key_action (
             {
               UndoableAction * action =
                 arranger_selections_action_new_move (
-                  sel, move_ticks, 0, 0, 0, 0,
+                  sel, move_ticks, 0, 0, 0, 0, 0,
                   F_NOT_ALREADY_MOVED);
               undo_manager_perform (
                 UNDO_MANAGER, action);
@@ -2364,7 +2364,7 @@ arranger_widget_on_key_action (
                       action =
                         arranger_selections_action_new_move (
                           sel, 0, 0, pitch_delta,
-                          0, 0,
+                          0, 0, 0,
                           F_NOT_ALREADY_MOVED);
                       undo_manager_perform (
                         UNDO_MANAGER, action);
@@ -2379,7 +2379,7 @@ arranger_widget_on_key_action (
                 {
                   action =
                     arranger_selections_action_new_move (
-                      sel, 0, -1, 0, 0, 0,
+                      sel, 0, -1, 0, 0, 0, 0,
                       F_NOT_ALREADY_MOVED);
                   undo_manager_perform (
                     UNDO_MANAGER, action);
@@ -2421,9 +2421,8 @@ arranger_widget_on_key_action (
                   if (pitch_delta)
                     {
                       action =
-                        arranger_selections_action_new_move (
-                          sel, 0, 0, pitch_delta,
-                          0, 0,
+                        arranger_selections_action_new_move_midi (
+                          sel, 0, pitch_delta,
                           F_NOT_ALREADY_MOVED);
                       undo_manager_perform (
                         UNDO_MANAGER, action);
@@ -2437,8 +2436,8 @@ arranger_widget_on_key_action (
               else if (self == MW_CHORD_ARRANGER)
                 {
                   action =
-                    arranger_selections_action_new_move (
-                      sel, 0, 1, 0, 0, 0,
+                    arranger_selections_action_new_move_chord (
+                      sel, 0, 1,
                       F_NOT_ALREADY_MOVED);
                   undo_manager_perform (
                     UNDO_MANAGER, action);
@@ -2542,7 +2541,7 @@ create_item (
         timeline_arranger_widget_get_track_at_y (
           self, start_y);
 
-      /* creating automation point */
+      /* creating automation region */
       if (at)
         {
           timeline_arranger_widget_create_region (
@@ -3593,12 +3592,17 @@ on_drag_end_automation (
     }
 
   if (self->action ==
-        UI_OVERLAY_ACTION_RESIZING_L)
+        UI_OVERLAY_ACTION_RESIZING_UP)
     {
-    }
-  else if (self->action ==
-        UI_OVERLAY_ACTION_RESIZING_R)
-    {
+      UndoableAction * ua =
+        arranger_selections_action_new_edit (
+          self->sel_at_start,
+          (ArrangerSelections *)
+          AUTOMATION_SELECTIONS,
+          ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
+          F_ALREADY_EDITED);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
     }
   else if (self->action ==
         UI_OVERLAY_ACTION_STARTING_MOVING)
@@ -3625,30 +3629,36 @@ on_drag_end_automation (
   else if (self->action ==
              UI_OVERLAY_ACTION_MOVING)
     {
-      /*Position earliest_trans_pos;*/
-      /*automation_selections_get_start_pos (*/
-        /*AUTOMATION_SELECTIONS,*/
-        /*&earliest_trans_pos, 1);*/
-      /*UndoableAction * ua =*/
-        /*(UndoableAction *)*/
-        /*move_automation_selections_action_new (*/
-          /*TL_SELECTIONS,*/
-          /*position_to_ticks (*/
-            /*&earliest_trans_pos) -*/
-          /*position_to_ticks (*/
-            /*&self->earliest_obj_start_pos),*/
-          /*automation_selections_get_highest_track (*/
-            /*TL_SELECTIONS, F_TRANSIENTS) -*/
-          /*automation_selections_get_highest_track (*/
-            /*TL_SELECTIONS, F_NO_TRANSIENTS));*/
-      /*undo_manager_perform (*/
-        /*UNDO_MANAGER, ua);*/
+      AutomationSelections * sel_at_start =
+        (AutomationSelections *) self->sel_at_start;
+      AutomationPoint * start_ap =
+        sel_at_start->automation_points[0];
+      ArrangerObject * start_obj =
+        (ArrangerObject *) start_ap;
+      AutomationPoint * ap =
+        AUTOMATION_SELECTIONS->automation_points[0];
+      ArrangerObject * obj =
+        (ArrangerObject *) ap;
+      double ticks_diff =
+        obj->pos.total_ticks -
+        start_obj->pos.total_ticks;
+      g_message ("norm val at start %f now %f",
+        (double) start_ap->normalized_val,
+        (double) ap->normalized_val);
+      double norm_value_diff =
+        ap->normalized_val -
+        start_ap->normalized_val;
+      UndoableAction * ua =
+        arranger_selections_action_new_move_automation (
+          AUTOMATION_SELECTIONS,
+          ticks_diff, norm_value_diff,
+          F_ALREADY_MOVED);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
     }
-  /* if copy/link-moved */
+  /* if copy-moved */
   else if (self->action ==
-             UI_OVERLAY_ACTION_MOVING_COPY ||
-           self->action ==
-             UI_OVERLAY_ACTION_MOVING_LINK)
+             UI_OVERLAY_ACTION_MOVING_COPY)
     {
       /*Position earliest_trans_pos;*/
       /*automation_selections_get_start_pos (*/
@@ -3683,27 +3693,22 @@ on_drag_end_automation (
         AUTOMATION_SELECTIONS);
     }
   /* if something was created */
-  /*else if (self->action ==*/
-             /*UI_OVERLAY_ACTION_CREATING_MOVING ||*/
-           /*self->action ==*/
-             /*UI_OVERLAY_ACTION_CREATING_RESIZING_R)*/
-    /*{*/
-      /*automation_selections_set_to_transient_poses (*/
-        /*TL_SELECTIONS);*/
-      /*automation_selections_set_to_transient_values (*/
-        /*TL_SELECTIONS);*/
-
-      /*UndoableAction * ua =*/
-        /*(UndoableAction *)*/
-        /*create_automation_selections_action_new (*/
-          /*TL_SELECTIONS);*/
-      /*undo_manager_perform (*/
-        /*UNDO_MANAGER, ua);*/
-    /*}*/
+  else if (self->action ==
+             UI_OVERLAY_ACTION_CREATING_MOVING)
+    {
+      UndoableAction * ua =
+        arranger_selections_action_new_create (
+          (ArrangerSelections *)
+          AUTOMATION_SELECTIONS);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
   /* if didn't click on something */
   else
     {
     }
+
+  self->start_object = NULL;
 }
 
 static void

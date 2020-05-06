@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/automation_region.h"
 #include "audio/chord_track.h"
 #include "audio/engine.h"
 #include "audio/position.h"
@@ -34,40 +35,90 @@
 
 #include <gtk/gtk.h>
 
+/**
+ * Returns if the selections can be pasted.
+ *
+ * @param pos Position to paste to.
+ * @param region ZRegion to paste to.
+ */
+int
+automation_selections_can_be_pasted (
+  AutomationSelections * ts,
+  Position *             pos,
+  ZRegion *              r)
+{
+  if (!r || r->id.type != REGION_TYPE_AUTOMATION)
+    return 0;
+
+  ArrangerObject * r_obj =
+    (ArrangerObject *) r;
+  if (r_obj->pos.frames + pos->frames < 0)
+    return 0;
+
+  return 1;
+}
+
 void
 automation_selections_paste_to_pos (
   AutomationSelections * ts,
-  Position *           pos)
+  Position *           playhead)
 {
-  double pos_ticks = position_to_ticks (pos);
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
+  g_return_if_fail (
+    region &&
+    region->id.type == REGION_TYPE_AUTOMATION);
+
+  /* get region-local pos */
+  Position pos;
+  pos.frames =
+    region_timeline_frames_to_local (
+      region, playhead->frames, 0);
+  position_from_frames (&pos, pos.frames);
+  double pos_ticks =
+    position_to_ticks (&pos) +
+    r_obj->pos.total_ticks;
 
   /* get pos of earliest object */
   Position start_pos;
   arranger_selections_get_start_pos (
-    (ArrangerSelections *) ts, &start_pos, 0);
+    (ArrangerSelections *) ts, &start_pos, false);
+  position_print (&start_pos);
   double start_pos_ticks =
     position_to_ticks (&start_pos);
 
-  /* subtract the start pos from every object and
-   * add the given pos */
-#define DIFF (curr_ticks - start_pos_ticks)
-#define ADJUST_POSITION(x) \
-  curr_ticks = position_to_ticks (x); \
-  position_from_ticks (x, pos_ticks + DIFF)
+  /* FIXME doesn't work when you paste at a negative
+   * position in the region */
 
-  double curr_ticks;
+  double curr_ticks, diff;
   int i;
-  AutomationPoint * ap;
-  ArrangerObject * ap_obj;
   for (i = 0; i < ts->num_automation_points; i++)
     {
-      ap =
+      AutomationPoint * ap =
         ts->automation_points[i];
-      ap_obj = (ArrangerObject *) ap;
+      ArrangerObject * ap_obj =
+        (ArrangerObject *) ap;
 
+      /* update positions */
       curr_ticks = position_to_ticks (&ap_obj->pos);
+      diff = curr_ticks - start_pos_ticks;
       position_from_ticks (
-        &ap_obj->pos, pos_ticks + DIFF);
+        &ap_obj->pos, pos_ticks + diff);
+
+      /* clone and add to track */
+      AutomationPoint * ap_clone =
+        (AutomationPoint *)
+        arranger_object_clone (
+          (ArrangerObject *) ap,
+          ARRANGER_OBJECT_CLONE_COPY_MAIN);
+      ArrangerObject * cp_obj =
+        (ArrangerObject *) ap_clone;
+      region =
+        region_find (&cp_obj->region_id);
+      automation_region_add_ap (
+        region, ap_clone, F_PUBLISH_EVENTS);
     }
 #undef DIFF
 }

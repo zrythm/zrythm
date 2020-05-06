@@ -219,9 +219,12 @@ get_actual_arranger_selections (
  * Creates a new action for moving or duplicating
  * objects.
  *
- * @param move 1 to move, 0 to duplicate.
+ * @param move True to move, false to duplicate.
  * @param already_moved If this is true, the first
  *   DO will do nothing.
+ * @param delta_normalized_amount Difference in a
+ *   normalized amount, such as automation point
+ *   normalized value.
  */
 UndoableAction *
 arranger_selections_action_new_move_or_duplicate (
@@ -232,6 +235,7 @@ arranger_selections_action_new_move_or_duplicate (
   const int            delta_pitch,
   const int            delta_tracks,
   const int            delta_lanes,
+  const double         delta_normalized_amount,
   const bool           already_moved)
 {
   ArrangerSelectionsAction * self =
@@ -253,6 +257,8 @@ arranger_selections_action_new_move_or_duplicate (
   self->delta_lanes = delta_lanes;
   self->delta_tracks = delta_tracks;
   self->delta_pitch = delta_pitch;
+  self->delta_normalized_amount =
+    delta_normalized_amount;
 
   return ua;
 }
@@ -683,6 +689,9 @@ do_or_undo_move (
       - self->delta_chords;
   int delta_pitch =
     _do ? self->delta_pitch : - self->delta_pitch;
+  double delta_normalized_amt =
+    _do ? self->delta_normalized_amount :
+      - self->delta_normalized_amount;
 
   if (!self->first_run)
     {
@@ -782,6 +791,34 @@ do_or_undo_move (
           if (delta_chords != 0)
             {
               /* TODO */
+            }
+
+          if (!math_doubles_equal (
+                delta_normalized_amt, 0.0))
+            {
+              if (obj->type ==
+                    ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
+                {
+                  AutomationPoint * ap =
+                    (AutomationPoint *) obj;
+
+                  /* shift the actual object */
+                  automation_point_set_fvalue (
+                    ap,
+                    ap->normalized_val +
+                      (float)
+                      delta_normalized_amt, true);
+
+                  /* also shift the copy so they
+                   * can match */
+                  AutomationPoint * copy_ap =
+                    (AutomationPoint *) objs[i];
+                  automation_point_set_fvalue (
+                    copy_ap,
+                    copy_ap->normalized_val +
+                     (float)
+                     delta_normalized_amt, true);
+                }
             }
         }
     }
@@ -1509,6 +1546,17 @@ do_or_undo_edit (
                       dest_mn->vel->vel;
                   }
                   break;
+                case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+                  {
+                    SET_PRIMITIVE (
+                      AutomationPoint, curve_opts);
+                    SET_PRIMITIVE (
+                      AutomationPoint, fvalue);
+                    SET_PRIMITIVE (
+                      AutomationPoint,
+                      normalized_val);
+                  }
+                  break;
                 default:
                   break;
                 }
@@ -1535,6 +1583,7 @@ do_or_undo_edit (
                 arranger_object_set_muted (
                   obj, !obj->muted, false);
               }
+              break;
             default:
               break;
             }

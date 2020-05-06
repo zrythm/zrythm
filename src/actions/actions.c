@@ -1150,7 +1150,38 @@ on_automation_clipboard_received (
   const char *       text,
   gpointer           data)
 {
-  /* TODO */
+  AutomationSelections * as =
+    automation_selections_deserialize (text);
+  arranger_selections_post_deserialize (
+    (ArrangerSelections *) as);
+
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (automation_selections_can_be_pasted (
+        as, PLAYHEAD, region))
+    {
+      g_message ("pasting automation selections");
+      automation_selections_paste_to_pos (
+        as, PLAYHEAD);
+
+      /* create action to make it undoable */
+      /* (by now the TL_SELECTIONS should have
+       * only the pasted items selected) */
+      UndoableAction * ua =
+        (UndoableAction *)
+        arranger_selections_action_new_create (
+          (ArrangerSelections *)
+          AUTOMATION_SELECTIONS);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
+  else
+    {
+      ui_show_notification (
+        _("Can't paste selections"));
+    }
+  arranger_selections_free (
+    (ArrangerSelections *) as);
 }
 
 static void
@@ -1252,7 +1283,7 @@ activate_duplicate (GSimpleAction *action,
           sel);
       UndoableAction * ua =
         arranger_selections_action_new_duplicate (
-          sel, length, 0, 0, 0, 0,
+          sel, length, 0, 0, 0, 0, 0,
           F_NOT_ALREADY_MOVED);
       undo_manager_perform (
         UNDO_MANAGER, ua);

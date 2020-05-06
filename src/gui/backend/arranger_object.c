@@ -1934,6 +1934,7 @@ clone_automation_point (
     automation_point_new_float (
       src->fvalue, src->normalized_val,
       &src_obj->pos);
+  ap->curve_opts = src->curve_opts;
   ArrangerObject * ap_obj =
     (ArrangerObject *) ap;
   region_identifier_copy (

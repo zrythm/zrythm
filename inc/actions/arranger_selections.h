@@ -170,6 +170,11 @@ typedef struct ArrangerSelectionsAction
   int                  delta_pitch;
   /** Delta of MidiNote velocity. */
   int                  delta_vel;
+  /**
+   * Difference in a normalized amount, such as
+   * automation point normalized value.
+   */
+  double               delta_normalized_amount;
 
   /** String, when changing a string. */
   char *               str;
@@ -261,6 +266,9 @@ static const cyaml_schema_field_t
     ArrangerSelectionsAction, delta_pitch),
   YAML_FIELD_INT (
     ArrangerSelectionsAction, delta_vel),
+  YAML_FIELD_FLOAT (
+    ArrangerSelectionsAction,
+    delta_normalized_amount),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     ArrangerSelectionsAction, str),
   YAML_FIELD_MAPPING_EMBEDDED (
@@ -395,6 +403,9 @@ arranger_selections_action_new_record (
  * @param move True to move, false to duplicate.
  * @param already_moved If this is true, the first
  *   DO will do nothing.
+ * @param delta_normalized_amount Difference in a
+ *   normalized amount, such as automation point
+ *   normalized value.
  */
 UndoableAction *
 arranger_selections_action_new_move_or_duplicate (
@@ -405,6 +416,7 @@ arranger_selections_action_new_move_or_duplicate (
   const int            delta_pitch,
   const int            delta_tracks,
   const int            delta_lanes,
+  const double         delta_normalized_amount,
   const bool           already_moved);
 
 /**
@@ -426,18 +438,18 @@ arranger_selections_action_new_link (
 
 #define \
 arranger_selections_action_new_move( \
-  sel,ticks,chords,pitch,tracks,lanes, \
+  sel,ticks,chords,pitch,tracks,lanes,norm_amt, \
   already_moved) \
   arranger_selections_action_new_move_or_duplicate ( \
     (ArrangerSelections *) sel, 1, ticks, chords, \
-    pitch, tracks, lanes, already_moved)
+    pitch, tracks, lanes, norm_amt, already_moved)
 #define \
 arranger_selections_action_new_duplicate( \
-  sel,ticks,chords,pitch,tracks,lanes, \
+  sel,ticks,chords,pitch,tracks,lanes,norm_amt, \
   already_moved) \
   arranger_selections_action_new_move_or_duplicate ( \
     (ArrangerSelections *) sel, 0, ticks, chords, \
-    pitch, tracks, lanes, already_moved)
+    pitch, tracks, lanes, norm_amt, already_moved)
 
 #define \
 arranger_selections_action_new_move_timeline( \
@@ -445,51 +457,51 @@ arranger_selections_action_new_move_timeline( \
   already_moved) \
   arranger_selections_action_new_move ( \
     sel, ticks, 0, 0, delta_tracks, delta_lanes, \
-    already_moved)
+    0, already_moved)
 #define \
 arranger_selections_action_new_duplicate_timeline( \
   sel,ticks,delta_tracks,delta_lanes, \
   already_moved) \
   arranger_selections_action_new_duplicate ( \
     sel, ticks, 0, 0, delta_tracks, delta_lanes, \
-    already_moved)
+    0, already_moved)
 
 #define \
 arranger_selections_action_new_move_midi( \
   sel,ticks,delta_pitch, already_moved) \
   arranger_selections_action_new_move ( \
     sel, ticks, 0, delta_pitch, 0, 0, \
-    already_moved)
+    0, already_moved)
 #define \
 arranger_selections_action_new_duplicate_midi( \
-  sel,ticks,delta_pitch, already_moved) \
+  sel,ticks,delta_pitch,already_moved) \
   arranger_selections_action_new_duplicate ( \
     sel, ticks, 0, delta_pitch, 0, 0, \
-    already_moved)
+    0, already_moved)
 
 #define \
 arranger_selections_action_new_move_chord( \
   sel,ticks,delta_chords, already_moved) \
   arranger_selections_action_new_move ( \
     sel, ticks, delta_chords, 0, 0, 0, \
-    already_moved)
+    0, already_moved)
 #define \
 arranger_selections_action_new_duplicate_chord( \
   sel,ticks,delta_chords, already_moved) \
   arranger_selections_action_new_duplicate ( \
     sel, ticks, delta_chords, 0, 0, 0, \
-    already_moved)
+    0, already_moved)
 
 #define \
 arranger_selections_action_new_move_automation( \
-  sel,ticks, already_moved) \
+  sel,ticks,norm_amt,already_moved) \
   arranger_selections_action_new_move ( \
-    sel, ticks, 0, 0, 0, 0, already_moved)
+    sel, ticks, 0, 0, 0, 0, norm_amt, already_moved)
 #define \
 arranger_selections_action_new_duplicate_automation( \
-  sel,ticks, already_moved) \
+  sel,ticks,norm_amt,already_moved) \
   arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, 0, 0, 0, already_moved)
+    sel, ticks, 0, 0, 0, 0, norm_amt, already_moved)
 
 /**
  * Creates a new action for editing properties

@@ -79,6 +79,18 @@ automation_selections_schema = {
     automation_selections_fields_schema),
 };
 
+/**
+ * Returns if the selections can be pasted.
+ *
+ * @param pos Position to paste to.
+ * @param region ZRegion to paste to.
+ */
+int
+automation_selections_can_be_pasted (
+  AutomationSelections * ts,
+  Position *             pos,
+  ZRegion *              r);
+
 void
 automation_selections_paste_to_pos (
   AutomationSelections * ts,
