@@ -312,6 +312,26 @@ position_add_ms (
   position_add_frames (pos, frames);
 }
 
+void
+position_add_minutes (
+  Position * pos,
+  int        mins)
+{
+  long frames =
+    position_ms_to_frames (mins * 60 * 1000);
+  position_add_frames (pos, frames);
+}
+
+void
+position_add_seconds (
+  Position * pos,
+  long       seconds)
+{
+  long frames =
+    position_ms_to_frames (seconds * 1000);
+  position_add_frames (pos, frames);
+}
+
 /**
  * Returns closest snap point.
  */

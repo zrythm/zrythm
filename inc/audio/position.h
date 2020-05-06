@@ -292,6 +292,16 @@ position_add_ms (
   Position * pos,
   long       ms);
 
+void
+position_add_minutes (
+  Position * pos,
+  int        mins);
+
+void
+position_add_seconds (
+  Position * pos,
+  long       seconds);
+
 double
 position_to_ticks (
   const Position * pos);

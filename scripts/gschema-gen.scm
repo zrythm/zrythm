@@ -301,6 +301,9 @@ Args:
            "sample-rate"
            '("22050" "32000" "44100" "48000" "88200"
              "96000" "192000"))
+         (print-enum
+           "transport-display"
+           '("bbt" "time"))
          (newline)
 
          ;; -- print normal schemas --
@@ -435,6 +438,11 @@ Args:
                  "[ \"My Synths::ZSaw::ZSaw-trial\" ]"
                  "Plugin favorites"
                  "A list of plugin favorites as strings separated by '::', where the first element is the name of the list.")
+               (make-schema-key-with-enum
+                 "transport-display"
+                 "transport-display" "bbt"
+                 "Transport display type"
+                 "Selected transport display type (BBT/time).")
              ))) ;; ui
 
          (schema-print

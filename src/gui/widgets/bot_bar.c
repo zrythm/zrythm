@@ -53,6 +53,31 @@ G_DEFINE_TYPE (BotBarWidget,
 #define PLAYHEAD_JACK_CLIENT_CAPTION \
   _("Playhead [Jack Client]")
 
+static void
+on_playhead_display_type_changed (
+  GtkCheckMenuItem * menuitem,
+  BotBarWidget *     self)
+{
+  if (menuitem == self->bbt_display_check &&
+        gtk_check_menu_item_get_active (menuitem))
+    {
+      g_settings_set_enum (
+        S_UI, "transport-display",
+        TRANSPORT_DISPLAY_BBT);
+    }
+  else if (menuitem == self->time_display_check &&
+             gtk_check_menu_item_get_active (
+               menuitem))
+    {
+      g_settings_set_enum (
+        S_UI, "transport-display",
+        TRANSPORT_DISPLAY_TIME);
+    }
+
+  gtk_widget_queue_draw (
+    GTK_WIDGET (self->digital_transport));
+}
+
 #ifdef HAVE_JACK
 static void
 on_jack_transport_type_changed (
@@ -123,6 +148,51 @@ on_transport_playhead_right_click (
 
   menu = gtk_menu_new();
 
+  /* switch display */
+  GSList *group = NULL;
+  menuitem =
+    gtk_radio_menu_item_new_with_label (
+      group, _("BBT display"));
+  group =
+    gtk_radio_menu_item_get_group (
+      GTK_RADIO_MENU_ITEM (menuitem));
+  gtk_check_menu_item_set_active (
+    GTK_CHECK_MENU_ITEM (menuitem),
+    g_settings_get_enum (
+      S_UI, "transport-display") ==
+      TRANSPORT_DISPLAY_BBT);
+  g_signal_connect (
+    G_OBJECT (menuitem), "toggled",
+    G_CALLBACK (on_playhead_display_type_changed),
+    self);
+  self->bbt_display_check =
+    GTK_CHECK_MENU_ITEM (menuitem);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
+
+  menuitem =
+    gtk_radio_menu_item_new_with_label (
+      group, _("Time display"));
+  gtk_check_menu_item_set_active (
+    GTK_CHECK_MENU_ITEM (menuitem),
+    g_settings_get_enum (
+      S_UI, "transport-display") ==
+      TRANSPORT_DISPLAY_TIME);
+  g_signal_connect (
+    G_OBJECT (menuitem), "toggled",
+    G_CALLBACK (on_playhead_display_type_changed),
+    self);
+  self->time_display_check =
+    GTK_CHECK_MENU_ITEM (menuitem);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
+
+  menuitem =
+    gtk_separator_menu_item_new ();
+  gtk_widget_set_visible (menuitem, true);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
+
   /* jack transport related */
 #ifdef HAVE_JACK
   GtkWidget * menuitem2;
@@ -150,8 +220,7 @@ on_transport_playhead_right_click (
         GTK_MENU_SHELL (menu), menuitem);
       menuitem2 =
         gtk_radio_menu_item_new_with_mnemonic (
-          NULL,
-          _("Sync to JACK Transport"));
+          NULL, _("Sync to JACK Transport"));
       gtk_radio_menu_item_join_group (
         GTK_RADIO_MENU_ITEM (menuitem2),
         GTK_RADIO_MENU_ITEM (menuitem));
@@ -173,8 +242,7 @@ on_transport_playhead_right_click (
         GTK_MENU_SHELL (menu), menuitem);
       menuitem2 =
         gtk_radio_menu_item_new_with_mnemonic (
-          NULL,
-          _("Unlink JACK Transport"));
+          NULL, _("Unlink JACK Transport"));
       gtk_radio_menu_item_join_group (
         GTK_RADIO_MENU_ITEM (menuitem2),
         GTK_RADIO_MENU_ITEM (menuitem));
@@ -229,12 +297,11 @@ bot_bar_widget_refresh (BotBarWidget * self)
       GTK_WIDGET (self->digital_transport));
   self->digital_transport =
     digital_meter_widget_new_for_position (
-      TRANSPORT,
-      NULL,
+      TRANSPORT, NULL,
       transport_get_playhead_pos,
-      transport_set_playhead_pos,
-      NULL,
+      transport_set_playhead_pos, NULL,
       _("playhead"));
+  self->digital_transport->is_transport = true;
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->digital_transport),
     PLAYHEAD_CAPTION);

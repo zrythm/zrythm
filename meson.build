@@ -49,7 +49,7 @@ sourceviewstylesdir = join_paths (zrythmdatadir, 'sourceview-styles')
 # foreach
 locales = [
   'en', 'en_GB', 'gl', 'de', 'fr', 'it',
-  'nb_NO', 'es', 'ja',
+  'nb_NO', 'el', 'es', 'ja',
   'pl', 'pt', 'pt_BR',
   'ru', 'zh' ]
 

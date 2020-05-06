@@ -32,10 +32,10 @@ towards a stable release.
 ![screenshot](https://www.zrythm.org/static/images/apr-12-2020.png)
 
 ### Supported plugins/instruments
-- Full support: LV2, VST2
-- Experimental: VST3, AU, SFZ, SF2
+- Full support: LV2, VST2, AU, SFZ, SF2
+- Experimental: VST3
 
-Support for all protocols besides LV2 is
+Support for all formats besides LV2 is
 possible thanks to
 [Carla](https://github.com/falkTX/Carla/).
 

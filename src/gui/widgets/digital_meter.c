@@ -44,9 +44,10 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (DigitalMeterWidget,
-               digital_meter_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  DigitalMeterWidget,
+  digital_meter_widget,
+  GTK_TYPE_DRAWING_AREA)
 
 #define FONT_SIZE 16
 /*#define SEG7_FONT "Segment7 Bold 16"*/
@@ -57,6 +58,12 @@ G_DEFINE_TYPE (DigitalMeterWidget,
 #define HALF_SPACE_BETWEEN 2
 #define PADDING_W 4
 #define PADDING_TOP 0
+
+#define DISPLAY_TIME \
+  (self->is_transport && \
+   g_settings_get_enum ( \
+     S_UI, "transport-display") == \
+     TRANSPORT_DISPLAY_TIME)
 
 #define SET_POS \
   ((*self->setter) (self->obj, &pos))
@@ -187,86 +194,161 @@ digital_meter_draw_cb (
     case DIGITAL_METER_TYPE_POSITION:
 
       GET_POS;
-      bars = pos.bars;
-      beats = pos.beats;
-      sixteenths = pos.sixteenths;
-      ticks = pos.ticks;
+      if (DISPLAY_TIME)
+        {
+          long ms = position_to_ms (&pos);
+          long secs = ms / 1000;
+          int mins = (int) secs / 60;
+          ms = ms % 1000;
+          secs = secs % 60;
 
-      z_cairo_get_text_extents_for_widget (
-        widget, self->seg7_layout, "-8888888888",
-        &textw, &texth);
-      self->bars_start_pos =
-        ((width / 2) - textw / 2) -
-        HALF_SPACE_BETWEEN * 3;
-      z_cairo_get_text_extents_for_widget (
-        widget, self->seg7_layout, "-888",
-        &textw, &texth);
-      self->bars_end_pos =
-        self->bars_start_pos + textw;
-      self->beats_start_pos =
-        self->bars_end_pos + SPACE_BETWEEN;
-      z_cairo_get_text_extents_for_widget (
-        widget, self->seg7_layout, "8",
-        &textw, &texth);
-      self->beats_end_pos =
-        self->beats_start_pos + textw;
-      self->sixteenths_start_pos =
-        self->beats_end_pos + SPACE_BETWEEN;
-      self->sixteenths_end_pos =
-        self->sixteenths_start_pos + textw;
-      self->ticks_start_pos =
-        self->sixteenths_end_pos + SPACE_BETWEEN;
-      z_cairo_get_text_extents_for_widget (
-        widget, self->seg7_layout, "888",
-        &textw, &texth);
-      self->ticks_end_pos =
-        self->ticks_start_pos + textw;
-      self->height_start_pos =
-        PADDING_TOP +
-        caption_texth + HALF_SPACE_BETWEEN;
-      self->height_end_pos =
-        self->height_start_pos + texth;
+          z_cairo_get_text_extents_for_widget (
+            widget, self->seg7_layout,
+            /* MM:SS:ms 1 for each digit */
+            "888888888", &textw, &texth);
+          self->minutes_start_pos =
+            ((width / 2) - textw / 2) -
+            HALF_SPACE_BETWEEN * 3;
+          z_cairo_get_text_extents_for_widget (
+            widget, self->seg7_layout, "88",
+            &textw, &texth);
+          self->minutes_end_pos =
+            self->minutes_start_pos + textw;
+          self->seconds_start_pos =
+            self->minutes_end_pos + SPACE_BETWEEN;
+          z_cairo_get_text_extents_for_widget (
+            widget, self->seg7_layout, "88",
+            &textw, &texth);
+          self->seconds_end_pos =
+            self->seconds_start_pos + textw;
+          self->ms_start_pos =
+            self->seconds_end_pos + SPACE_BETWEEN;
+          z_cairo_get_text_extents_for_widget (
+            widget, self->seg7_layout, "888",
+            &textw, &texth);
+          self->ms_end_pos =
+            self->ms_start_pos + textw;
 
-      if (bars < -100)
-        sprintf (text, "%d", bars);
-      else if (bars < -10)
-        sprintf (text, "!%d", bars);
-      else if (bars < 0)
-        sprintf (text, "!!%d", bars);
-      else if (bars < 10)
-        sprintf (text, "!!!%d", bars);
-      else if (bars < 100)
-        sprintf (text, "!!%d", bars);
+          self->height_start_pos =
+            PADDING_TOP +
+            caption_texth + HALF_SPACE_BETWEEN;
+          self->height_end_pos =
+            self->height_start_pos + texth;
+
+          /* draw minutes */
+          if (mins < 10)
+            sprintf (text, "!%d", mins);
+          else
+            sprintf (text, "%d", mins);
+          z_cairo_draw_text_full (
+            cr, widget, self->seg7_layout, text,
+            self->minutes_start_pos,
+            self->height_start_pos);
+
+          /* draw seconds */
+          if (secs < 10)
+            sprintf (text, "0%ld", secs);
+          else
+            sprintf (text, "%ld", secs);
+          z_cairo_draw_text_full (
+            cr, widget, self->seg7_layout, text,
+            self->seconds_start_pos,
+            self->height_start_pos);
+
+          /* draw ms */
+          if (ms < 10)
+            sprintf (text, "00%ld", ms);
+          else if (ms < 100)
+            sprintf (text, "0%ld", ms);
+          else
+            sprintf (text, "%ld", ms);
+          z_cairo_draw_text_full (
+            cr, widget, self->seg7_layout, text,
+            self->ms_start_pos,
+            self->height_start_pos);
+        }
       else
-        sprintf (text, "!%d", bars);
-      z_cairo_draw_text_full (
-        cr, widget, self->seg7_layout, text,
-        self->bars_start_pos,
-        self->height_start_pos);
+        {
+          bars = pos.bars;
+          beats = pos.beats;
+          sixteenths = pos.sixteenths;
+          ticks = pos.ticks;
 
-      sprintf (text, "%d", abs (beats));
-      z_cairo_draw_text_full (
-        cr, widget, self->seg7_layout, text,
-        self->beats_start_pos,
-        self->height_start_pos);
+          z_cairo_get_text_extents_for_widget (
+            widget, self->seg7_layout,
+            "-8888888888", &textw, &texth);
+          self->bars_start_pos =
+            ((width / 2) - textw / 2) -
+            HALF_SPACE_BETWEEN * 3;
+          z_cairo_get_text_extents_for_widget (
+            widget, self->seg7_layout, "-888",
+            &textw, &texth);
+          self->bars_end_pos =
+            self->bars_start_pos + textw;
+          self->beats_start_pos =
+            self->bars_end_pos + SPACE_BETWEEN;
+          z_cairo_get_text_extents_for_widget (
+            widget, self->seg7_layout, "8",
+            &textw, &texth);
+          self->beats_end_pos =
+            self->beats_start_pos + textw;
+          self->sixteenths_start_pos =
+            self->beats_end_pos + SPACE_BETWEEN;
+          self->sixteenths_end_pos =
+            self->sixteenths_start_pos + textw;
+          self->ticks_start_pos =
+            self->sixteenths_end_pos + SPACE_BETWEEN;
+          z_cairo_get_text_extents_for_widget (
+            widget, self->seg7_layout, "888",
+            &textw, &texth);
+          self->ticks_end_pos =
+            self->ticks_start_pos + textw;
+          self->height_start_pos =
+            PADDING_TOP +
+            caption_texth + HALF_SPACE_BETWEEN;
+          self->height_end_pos =
+            self->height_start_pos + texth;
 
-      sprintf (text, "%d", abs (sixteenths));
-      z_cairo_draw_text_full (
-        cr, widget, self->seg7_layout, text,
-        self->sixteenths_start_pos,
-        self->height_start_pos);
+          if (bars < -100)
+            sprintf (text, "%d", bars);
+          else if (bars < -10)
+            sprintf (text, "!%d", bars);
+          else if (bars < 0)
+            sprintf (text, "!!%d", bars);
+          else if (bars < 10)
+            sprintf (text, "!!!%d", bars);
+          else if (bars < 100)
+            sprintf (text, "!!%d", bars);
+          else
+            sprintf (text, "!%d", bars);
+          z_cairo_draw_text_full (
+            cr, widget, self->seg7_layout, text,
+            self->bars_start_pos,
+            self->height_start_pos);
 
-      if (abs (ticks) < 10)
-        sprintf (text, "00%d", abs (ticks));
-      else if (abs (ticks) < 100)
-        sprintf (text, "0%d", abs (ticks));
-      else
-        sprintf (text, "%d", abs (ticks));
-      z_cairo_draw_text_full (
-        cr, widget, self->seg7_layout, text,
-        self->ticks_start_pos,
-        self->height_start_pos);
+          sprintf (text, "%d", abs (beats));
+          z_cairo_draw_text_full (
+            cr, widget, self->seg7_layout, text,
+            self->beats_start_pos,
+            self->height_start_pos);
 
+          sprintf (text, "%d", abs (sixteenths));
+          z_cairo_draw_text_full (
+            cr, widget, self->seg7_layout, text,
+            self->sixteenths_start_pos,
+            self->height_start_pos);
+
+          if (abs (ticks) < 10)
+            sprintf (text, "00%d", abs (ticks));
+          else if (abs (ticks) < 100)
+            sprintf (text, "0%d", abs (ticks));
+          else
+            sprintf (text, "%d", abs (ticks));
+          z_cairo_draw_text_full (
+            cr, widget, self->seg7_layout, text,
+            self->ticks_start_pos,
+            self->height_start_pos);
+        }
       break;
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
       heap_text =
@@ -396,26 +478,46 @@ update_flags (
       if (y >= self->height_start_pos &&
           y <= self->height_end_pos)
         {
-
-          if (x >= self->bars_start_pos &&
-              x <= self->bars_end_pos)
+          if (DISPLAY_TIME)
             {
-              self->update_bars = 1;
+              if (x >= self->minutes_start_pos &&
+                  x <= self->minutes_end_pos)
+                {
+                  self->update_minutes = 1;
+                }
+              else if (x >= self->seconds_start_pos &&
+                       x <= self->seconds_end_pos)
+                {
+                  self->update_seconds = 1;
+                }
+              else if (x >= self->ms_start_pos &&
+                       x <= self->ms_end_pos)
+                {
+                  self->update_ms = 1;
+                }
             }
-          else if (x >= self->beats_start_pos &&
-                   x <= self->beats_end_pos)
+          else
             {
-              self->update_beats = 1;
-            }
-          else if (x >= self->sixteenths_start_pos &&
-                   x <= self->sixteenths_end_pos)
-            {
-              self->update_sixteenths = 1;
-            }
-          else if (x >= self->ticks_start_pos &&
-                   x <= self->ticks_end_pos)
-            {
-              self->update_ticks = 1;
+              if (x >= self->bars_start_pos &&
+                  x <= self->bars_end_pos)
+                {
+                  self->update_bars = 1;
+                }
+              else if (x >= self->beats_start_pos &&
+                       x <= self->beats_end_pos)
+                {
+                  self->update_beats = 1;
+                }
+              else if (x >= self->sixteenths_start_pos &&
+                       x <= self->sixteenths_end_pos)
+                {
+                  self->update_sixteenths = 1;
+                }
+              else if (x >= self->ticks_start_pos &&
+                       x <= self->ticks_end_pos)
+                {
+                  self->update_ticks = 1;
+                }
             }
         }
 
@@ -488,6 +590,9 @@ on_change_finished (
   self->update_beats = 0;
   self->update_sixteenths = 0;
   self->update_ticks = 0;
+  self->update_minutes = 0;
+  self->update_seconds = 0;
+  self->update_ms = 0;
   /* FIXME super reduntant */
   if (self->update_note_length ||
       self->update_note_type)
@@ -560,31 +665,50 @@ on_scroll (
 
     case DIGITAL_METER_TYPE_POSITION:
       GET_POS;
-      if (self->update_bars)
+      if (DISPLAY_TIME)
         {
-          position_set_bar (
-            &pos, pos.bars + num);
+          long ms = 0;
+          if (self->update_minutes)
+            {
+              ms = num * 60 * 1000;
+            }
+          else if (self->update_seconds)
+            {
+              ms = num * 1000;
+            }
+          else if (self->update_ms)
+            {
+              ms = num;
+            }
+          position_add_ms (&pos, ms);
         }
-      else if (self->update_beats)
+      else
         {
-          position_set_beat (
-            &pos,
-            pos.beats + num);
+          if (self->update_bars)
+            {
+              position_set_bar (
+                &pos, pos.bars + num);
+            }
+          else if (self->update_beats)
+            {
+              position_set_beat (
+                &pos,
+                pos.beats + num);
+            }
+          else if (self->update_sixteenths)
+            {
+              position_set_sixteenth (
+                &pos,
+                pos.sixteenths + num);
+            }
+          else if (self->update_ticks)
+            {
+              position_set_tick (
+                &pos,
+                pos.ticks + num);
+            }
+          SET_POS;
         }
-      else if (self->update_sixteenths)
-        {
-          position_set_sixteenth (
-            &pos,
-            pos.sixteenths + num);
-        }
-      else if (self->update_ticks)
-        {
-          position_set_tick (
-            &pos,
-            pos.ticks + num);
-        }
-      SET_POS;
-
       break;
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
       if (self->update_note_length)
@@ -717,57 +841,97 @@ drag_update (
 
     case DIGITAL_METER_TYPE_POSITION:
       GET_POS;
-      if (self->update_bars)
+      if (DISPLAY_TIME)
         {
-          num = (int) diff / 4;
-          if (abs (num) > 0)
+          if (self->update_minutes)
             {
-              position_set_bar (
-                &pos, pos.bars + num);
-              self->last_y = offset_y;
-              self->last_x = offset_x;
+              g_message ("UPDATE MINS");
+              num = (int) diff / 4;
+              if (abs (num) > 0)
+                {
+              g_message ("UPDATE MINS %d", num);
+                  position_print (&pos);
+                  position_add_minutes (
+                    &pos, num);
+                  position_print (&pos);
+                  self->last_y = offset_y;
+                  self->last_x = offset_x;
+                }
+            }
+          else if (self->update_seconds)
+            {
+              num = (int) diff / 4;
+              if (abs (num) > 0)
+                {
+                  position_add_seconds (
+                    &pos, num);
+                  self->last_y = offset_y;
+                  self->last_x = offset_x;
+                }
+            }
+          else if (self->update_ms)
+            {
+              num = (int) diff / 4;
+              if (abs (num) > 0)
+                {
+                  position_add_ms (
+                    &pos, num);
+                  self->last_y = offset_y;
+                  self->last_x = offset_x;
+                }
             }
         }
-      else if (self->update_beats)
+      else
         {
-          num = (int) diff / 4;
-          if (abs (num) > 0)
+          if (self->update_bars)
             {
-              position_set_beat (
-                &pos,
-                pos.beats + num);
-              self->last_y = offset_y;
-              self->last_x = offset_x;
+              num = (int) diff / 4;
+              if (abs (num) > 0)
+                {
+                  position_set_bar (
+                    &pos, pos.bars + num);
+                  self->last_y = offset_y;
+                  self->last_x = offset_x;
+                }
+            }
+          else if (self->update_beats)
+            {
+              num = (int) diff / 4;
+              if (abs (num) > 0)
+                {
+                  position_set_beat (
+                    &pos,
+                    pos.beats + num);
+                  self->last_y = offset_y;
+                  self->last_x = offset_x;
+                }
+            }
+          else if (self->update_sixteenths)
+            {
+              num = (int) diff / 4;
+              if (abs (num) > 0)
+                {
+                  position_set_sixteenth (
+                    &pos,
+                    pos.sixteenths + num);
+                  self->last_y = offset_y;
+                  self->last_x = offset_x;
+                }
+            }
+          else if (self->update_ticks)
+            {
+              num = (int) diff / 4;
+              if (abs (num) > 0)
+                {
+                  position_set_tick (
+                    &pos,
+                    pos.ticks + num);
+                  self->last_y = offset_y;
+                  self->last_x = offset_x;
+                }
             }
         }
-      else if (self->update_sixteenths)
-        {
-          num = (int) diff / 4;
-          /*g_message ("updating num with %d", num);*/
-          if (abs (num) > 0)
-            {
-              position_set_sixteenth (
-                &pos,
-                pos.sixteenths + num);
-              self->last_y = offset_y;
-              self->last_x = offset_x;
-            }
-        }
-      else if (self->update_ticks)
-        {
-          num = (int) diff / 4;
-          /*g_message ("updating num with %d", num);*/
-          if (abs (num) > 0)
-            {
-              position_set_tick (
-                &pos,
-                pos.ticks + num);
-              self->last_y = offset_y;
-              self->last_x = offset_x;
-            }
-        }
-      SET_POS;
-
+        SET_POS;
       break;
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
       if (self->update_note_length)

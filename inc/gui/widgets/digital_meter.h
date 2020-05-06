@@ -1,7 +1,5 @@
 /*
- * inc/gui/widgets/digital_meter.h - DigitalMeter
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,6 +26,8 @@
 
 #ifndef __GUI_WIDGETS_DIGITAL_METER_H__
 #define __GUI_WIDGETS_DIGITAL_METER_H__
+
+#include <stdbool.h>
 
 #include <gtk/gtk.h>
 
@@ -63,7 +63,11 @@ typedef struct SnapGrid SnapGrid;
 typedef struct _DigitalMeterWidget
 {
   GtkDrawingArea           parent_instance;
+
   DigitalMeterType         type;
+
+  bool                     is_transport;
+
   GtkGestureDrag           * drag;
   double                   last_y;
   double                   last_x;
@@ -87,10 +91,25 @@ typedef struct _DigitalMeterWidget
   int                      sixteenths_end_pos;
   int                      ticks_start_pos;
   int                      ticks_end_pos;
-  int                      update_bars; ///< flag to update bars
-  int                      update_beats; ///< flag to update beats
-  int                      update_sixteenths; ///< flag to update beats
-  int                      update_ticks; ///< flag to update beats
+
+  /** Update flags. */
+  int                      update_bars;
+  int                      update_beats;
+  int                      update_sixteenths;
+  int                      update_ticks;
+
+  /** For time. */
+  int                      minutes_start_pos;
+  int                      minutes_end_pos;
+  int                      seconds_start_pos;
+  int                      seconds_end_pos;
+  int                      ms_start_pos;
+  int                      ms_end_pos;
+
+  /** Update flags. */
+  int                      update_minutes;
+  int                      update_seconds;
+  int                      update_ms;
 
   /* for note length/type */
   NoteLength *             note_length;

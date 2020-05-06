@@ -71,6 +71,16 @@ typedef enum {
 } Play_State;
 
 /**
+ * Corrseponts to "transport-display" in the
+ * gsettings.
+ */
+typedef enum TransportDisplay
+{
+  TRANSPORT_DISPLAY_BBT,
+  TRANSPORT_DISPLAY_TIME,
+} TransportDisplay;
+
+/**
  * The transport.
  */
 typedef struct Transport
