@@ -854,6 +854,8 @@ channel_reset_fader (Channel * self)
 
 /**
  * Connects the channel's ports.
+ *
+ * This should only be called on new tracks.
  */
 void
 channel_connect (
@@ -1076,7 +1078,7 @@ channel_append_all_ports (
   Channel * ch,
   Port ** ports,
   int *   size,
-  int     include_plugins)
+  bool    include_plugins)
 {
   int j;
   Track * tr = channel_get_track (ch);
@@ -1936,7 +1938,7 @@ channel_update_track_pos (
   Port * ports[80000];
   int    num_ports = 0;
   channel_append_all_ports (
-    self, ports, &num_ports, 1);
+    self, ports, &num_ports, true);
 
   for (int i = 0; i < num_ports; i++)
     {
@@ -1972,6 +1974,12 @@ channel_update_track_pos (
         self->stereo_out->l, pos);
       port_update_track_pos (
         self->stereo_out->r, pos);
+    }
+
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      ChannelSend * send = &self->sends[i];
+      send->track_pos = pos;
     }
 
   fader_update_track_pos (&self->fader, pos);

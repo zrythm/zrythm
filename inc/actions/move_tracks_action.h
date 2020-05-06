@@ -78,19 +78,19 @@ move_tracks_action_new (
 
 int
 move_tracks_action_do (
-	MoveTracksAction * self);
+  MoveTracksAction * self);
 
 int
 move_tracks_action_undo (
-	MoveTracksAction * self);
+  MoveTracksAction * self);
 
 char *
 move_tracks_action_stringize (
-	MoveTracksAction * self);
+  MoveTracksAction * self);
 
 void
 move_tracks_action_free (
-	MoveTracksAction * self);
+  MoveTracksAction * self);
 
 /**
  * @}

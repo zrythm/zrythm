@@ -1051,6 +1051,9 @@ track_set_pos (
   Track * track,
   int     pos)
 {
+  g_message (
+    "%s: %s (%d) to %d",
+    __func__, track->name, track->pos, pos);
   track->pos = pos;
 
   for (int i = 0; i < track->num_lanes; i++)

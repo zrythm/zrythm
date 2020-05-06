@@ -184,10 +184,10 @@ void
 tracklist_remove_track (
   Tracklist * self,
   Track *     track,
-  int         rm_pl,
-  int         free,
-  int         publish_events,
-  int         recalc_graph);
+  bool        rm_pl,
+  bool        free,
+  bool        publish_events,
+  bool        recalc_graph);
 
 /**
  * Moves a track from its current position to the

@@ -1,0 +1,38 @@
+@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
+@prefix doap:  <http://usefulinc.com/ns/doap#> .
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix urid:  <http://lv2plug.in/ns/ext/urid#> .
+@prefix midi:  <http://lv2plug.in/ns/ext/midi#> .
+
+<https://lv2.zrythm.org/test-instrument>
+  a lv2:Plugin,
+    lv2:InstrumentPlugin ;
+  doap:name "Test Instrument" ;
+  doap:license <http://opensource.org/licenses/isc> ;
+  lv2:project <https://lv2.zrythm.org> ;
+  lv2:requiredFeature urid:map ;
+  lv2:optionalFeature lv2:hardRTCapable ;
+  lv2:port [
+    a lv2:InputPort ,
+      atom:AtomPort ;
+    atom:bufferType atom:Sequence ;
+    atom:supports midi:MidiEvent ;
+    lv2:index 0 ;
+    lv2:symbol "in" ;
+    lv2:name "In"
+  ] , [
+    a lv2:OutputPort ,
+      lv2:AudioPort ;
+    lv2:index 1 ;
+    lv2:symbol "mono_out" ;
+    lv2:name "Mono Out"
+  ] , [
+    a lv2:InputPort ,
+      lv2:ControlPort ;
+    lv2:index 2 ;
+    lv2:symbol "test" ;
+    lv2:name "Test param" ;
+    lv2:default 0.0 ;
+    lv2:minimum -90.0 ;
+    lv2:maximum 24.0
+  ] .

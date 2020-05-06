@@ -514,10 +514,10 @@ void
 tracklist_remove_track (
   Tracklist * self,
   Track *     track,
-  int         rm_pl,
-  int         free,
-  int         publish_events,
-  int         recalc_graph)
+  bool        rm_pl,
+  bool        free,
+  bool        publish_events,
+  bool        recalc_graph)
 {
   g_message ("removing %s",
              track->name);
@@ -589,8 +589,7 @@ tracklist_remove_track (
     mixer_recalc_graph (MIXER);
 
   if (publish_events)
-    EVENTS_PUSH (ET_TRACKS_REMOVED,
-                 NULL);
+    EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
 }
 
 /**
@@ -609,23 +608,99 @@ tracklist_move_track (
   int         publish_events,
   int         recalc_graph)
 {
-  tracklist_remove_track (
-    self,
-    track,
-    F_NO_REMOVE_PL,
-    F_NO_FREE,
-    F_NO_PUBLISH_EVENTS,
-    F_NO_RECALC_GRAPH);
+  g_message (
+    "%s: %s from %d to %d",
+    __func__, track->name, track->pos, pos);
+  bool move_higher = pos < track->pos;
 
-  tracklist_insert_track (
-    self,
-    track,
-    pos,
-    F_NO_PUBLISH_EVENTS,
-    recalc_graph);
+  Track * prev_visible =
+    tracklist_get_prev_visible_track (
+      TRACKLIST, track);
+  Track * next_visible =
+    tracklist_get_next_visible_track (
+      TRACKLIST, track);
+
+  /* clear the editor region if it exists and
+   * belongs to this track */
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (region &&
+      arranger_object_get_track (
+        (ArrangerObject *) region) == track)
+    {
+      clip_editor_set_region (CLIP_EDITOR, NULL);
+    }
+
+  /* remove/deselect all objects */
+  track_clear (track);
+
+  int idx =
+    array_index_of (
+      self->tracks, self->num_tracks, track);
+  g_warn_if_fail (
+    track->pos == idx);
+
+  tracklist_selections_remove_track (
+    TRACKLIST_SELECTIONS, track, publish_events);
+
+  /* if it was the only track selected, select
+   * the next one */
+  if (TRACKLIST_SELECTIONS->num_tracks == 0 &&
+      (prev_visible || next_visible))
+    {
+      tracklist_selections_add_track (
+        TRACKLIST_SELECTIONS,
+        next_visible ? next_visible : prev_visible,
+        publish_events);
+    }
+
+  if (move_higher)
+    {
+      /* move all other tracks 1 track further */
+      for (int i = track->pos - 1; i >= pos; i--)
+        {
+          track_set_pos (self->tracks[i], i + 1);
+        }
+    }
+  else
+    {
+      /* move all other tracks 1 track earlier */
+      for (int i = track->pos + 1; i <= pos; i++)
+        {
+          track_set_pos (self->tracks[i], i - 1);
+        }
+    }
+
+  array_delete (
+    self->tracks, self->num_tracks, track);
+
+  /* if adding at the end, append it, otherwise
+   * insert it */
+  if (pos == self->num_tracks)
+    {
+      array_append (
+        self->tracks, self->num_tracks, track);
+    }
+  else
+    {
+      array_insert (
+        self->tracks, self->num_tracks,
+        pos, track);
+    }
+
+  track_set_pos (track, pos);
+
+  /* make the track the only selected track */
+  tracklist_selections_select_single (
+    TRACKLIST_SELECTIONS, track);
+
+  if (recalc_graph)
+    mixer_recalc_graph (MIXER);
 
   if (publish_events)
     EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
+
+  g_message ("%s: finished moving track", __func__);
 }
 
 /**

@@ -326,7 +326,7 @@ channel_append_all_ports (
   Channel * ch,
   Port ** ports,
   int *   size,
-  int     include_plugins);
+  bool    include_plugins);
 
 /**
  * Exposes the channel's ports to the backend.
@@ -337,6 +337,8 @@ channel_expose_ports_to_backend (
 
 /**
  * Connects the channel's ports.
+ *
+ * This should only be called on new tracks.
  */
 void
 channel_connect (

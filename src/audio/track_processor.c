@@ -117,12 +117,11 @@ init_midi_port (
   PortFlow flow = in ? FLOW_INPUT : FLOW_OUTPUT;
 
   *port =
-    port_new_with_type (
-      TYPE_EVENT,
-      flow,
-      str);
-
+    port_new_with_type (TYPE_EVENT, flow, str);
   port_set_owner_track_processor (*port, self);
+
+  if (in)
+    (*port)->id.flags |= PORT_FLAG_SENDABLE;
 }
 
 static void
@@ -221,6 +220,12 @@ init_stereo_out_ports (
 
   *sp =
     stereo_ports_new_from_existing (l, r);
+
+  if (in)
+    {
+      l->id.flags |= PORT_FLAG_SENDABLE;
+      r->id.flags |= PORT_FLAG_SENDABLE;
+    }
 }
 
 /**

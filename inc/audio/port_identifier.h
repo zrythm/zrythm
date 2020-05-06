@@ -211,6 +211,11 @@ typedef enum PortFlags
   /** MIDI automatable control, such as modwheel or
    * pitch bend. */
   PORT_FLAG_MIDI_AUTOMATABLE = 1 << 20,
+
+  /** Channels can send to this port (ie, this port
+   * is a track procesor midi/stereo in or a plugin
+   * sidechain in). */
+  PORT_FLAG_SENDABLE = 1 << 21,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -237,6 +242,7 @@ port_flags_bitvals[] =
   { .name = "channel_fader", .offset = 18, .bits = 1 },
   { .name = "automatable", .offset = 19, .bits = 1 },
   { .name = "midi_automatable", .offset = 20, .bits = 1 },
+  { .name = "sendable", .offset = 21, .bits = 1 },
 };
 
 /**

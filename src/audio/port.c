@@ -1313,7 +1313,7 @@ void
 port_update_identifier (
   Port * self)
 {
-  /* update in all sources/dests */
+  /* update in all sources */
   for (int i = 0; i < self->num_srcs; i++)
     {
       Port * src = self->srcs[i];
@@ -1324,6 +1324,8 @@ port_update_identifier (
       g_warn_if_fail (
         src->dests[dest_idx] == self);
     }
+
+  /* update in all dests */
   for (int i = 0; i < self->num_dests; i++)
     {
       Port * dest = self->dests[i];
@@ -1366,6 +1368,68 @@ port_update_track_pos (
   Port * self,
   int    pos)
 {
+  if (self->id.flags & PORT_FLAG_SENDABLE)
+    {
+      /* this could be a send receiver, so update
+       * the sending channel if matching */
+      for (int i = 0; i < self->num_srcs; i++)
+        {
+          Port * src = self->srcs[i];
+
+          if (src->id.owner_type ==
+                 PORT_OWNER_TYPE_PREFADER ||
+              src->id.owner_type ==
+                PORT_OWNER_TYPE_FADER)
+            {
+              Track * src_track =
+                port_get_track (src, true);
+              Channel * src_ch =
+                track_get_channel (src_track);
+              for (int j = 0; j < STRIP_SIZE; j++)
+                {
+                  ChannelSend * send =
+                    &src_ch->sends[j];
+                  if (send->is_empty)
+                    continue;
+
+                  switch (src_track->out_signal_type)
+                    {
+                    case TYPE_EVENT:
+                      if (port_identifier_is_equal (
+                            &send->dest_midi_id,
+                            &self->id))
+                        {
+                          send->dest_midi_id.track_pos =
+                            pos;
+                          g_message ("updating midi send");
+                        }
+                      break;
+                    case TYPE_AUDIO:
+                      if (port_identifier_is_equal (
+                            &send->dest_l_id,
+                            &self->id))
+                        {
+                          send->dest_l_id.track_pos =
+                            pos;
+                          g_message ("updating audio L send");
+                        }
+                      else if (port_identifier_is_equal (
+                            &send->dest_r_id,
+                            &self->id))
+                        {
+                          send->dest_r_id.track_pos =
+                            pos;
+                          g_message ("updating audio R send");
+                        }
+                      break;
+                    default:
+                      break;
+                    }
+                }
+            }
+        }
+    }
+
   self->id.track_pos = pos;
   port_update_identifier (self);
 }

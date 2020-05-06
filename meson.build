@@ -54,7 +54,7 @@ locales = [
   'ru', 'zh' ]
 
 os_darwin = false
-os_linux = false
+os_gnu = false
 os_freebsd = false
 os_windows = false
 bin_suffix = ''
@@ -64,7 +64,7 @@ if host_machine.system() == 'darwin'
   os_darwin = true
   lib_suffix = '.dylib'
 elif host_machine.system() == 'linux'
-  os_linux = true
+  os_gnu = true
 elif host_machine.system() == 'freebsd'
   os_freebsd = true
 elif host_machine.system() == 'windows'
@@ -157,7 +157,7 @@ find_program ('gettext', required: true)
 dot_bin = find_program ('dot', required: false)
 
 # find command to open a directory
-if os_linux or os_freebsd
+if os_gnu or os_freebsd
   open_dir_cmd = 'xdg-open'
   find_program (open_dir_cmd)
 elif os_darwin
@@ -531,7 +531,7 @@ if (carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla
   carla_bridge_native = find_program (
       carla_libdir / 'carla-bridge-native',
       required: false)
-  if carla_bridge_native.found() and (os_linux or os_freebsd)
+  if carla_bridge_native.found() and (os_gnu or os_freebsd)
     install_data (
       carla_bridge_native.path(),
       install_dir: bindir)
@@ -539,7 +539,7 @@ if (carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla
   carla_bridge_lv2_gtk2 = find_program (
       carla_libdir / 'carla-bridge-lv2-gtk2',
       required: false)
-  if carla_bridge_lv2_gtk2.found() and (os_linux or os_freebsd)
+  if carla_bridge_lv2_gtk2.found() and (os_gnu or os_freebsd)
     install_data (
       carla_bridge_lv2_gtk2.path(),
       install_dir: bindir)
@@ -642,7 +642,7 @@ else
   zrythm_deps += cc.find_library('fftw3f_threads')
 endif
 
-if os_linux
+if os_gnu
   zrythm_deps += cc.find_library('rt')
 endif
 

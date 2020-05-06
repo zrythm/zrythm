@@ -19,6 +19,7 @@ if get_option ('enable-tests')
 
   subdir('eg-amp.lv2')
   subdir('eg-fifths.lv2')
+  subdir('test-instrument.lv2')
 
   test_env = environment ()
   test_env.set (
@@ -65,9 +66,10 @@ if get_option ('enable-tests')
     ['utils/string', true],
     ]
 
-  if os_linux
+  if os_gnu
     tests += [
       ['actions/mixer_selections', true],
+      ['actions/move_tracks', true],
       ]
   endif
 

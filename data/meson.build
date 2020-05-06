@@ -41,7 +41,7 @@ install_data (
   install_dir: samplesdir)
 
 # install desktop file and launcher script
-if os_linux or os_freebsd
+if os_gnu or os_freebsd
   zrythm_launcher_config = configuration_data ()
   zrythm_launcher_config.set (
     'SCHEMAS_DIR', schemasdir)
