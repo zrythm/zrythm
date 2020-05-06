@@ -66,7 +66,7 @@ io_file_strip_ext (const char * filename);
 /**
  * Returns file extension or NULL.
  */
-char *
+const char *
 io_file_get_ext (const char * file);
 
 /**

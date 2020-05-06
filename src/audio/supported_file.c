@@ -163,13 +163,12 @@ ZFileType
 supported_file_get_type (
   const char * file)
 {
-  char * ext =
-    io_file_get_ext (file);
+  const char * ext = io_file_get_ext (file);
   ZFileType type = FILE_TYPE_OTHER;
 
   if (g_file_test (file, G_FILE_TEST_IS_DIR))
     type = FILE_TYPE_DIR;
-  else if (!ext)
+  else if (string_is_equal (ext, "", 1))
     type = FILE_TYPE_OTHER;
   else if (
       string_is_equal (ext, "MID", 1) ||
@@ -190,9 +189,6 @@ supported_file_get_type (
     type = FILE_TYPE_WAV;
   else
     type = FILE_TYPE_OTHER;
-
-  if (ext)
-    g_free (ext);
 
   return type;
 }

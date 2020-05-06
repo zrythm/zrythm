@@ -67,16 +67,14 @@ io_mkdir (const char * dir)
 /**
  * Returns file extension or NULL.
  */
-char *
-io_file_get_ext (const char * file)
+const char *
+io_file_get_ext (const char * filename)
 {
-  char ** parts = g_strsplit (file, ".", 2);
-  char * file_part = parts[0];
-  char * ext_part = parts[1];
+  const char * dot = strrchr (filename, '.');
+  if (!dot || dot == filename)
+    return "";
 
-  g_free (file_part);
-
-  return ext_part;
+  return dot + 1;
 }
 
 /**
@@ -307,8 +305,7 @@ io_get_next_available_filepath (
   int i = 1;
   char * file_without_ext =
     io_file_strip_ext (filepath);
-  char * file_ext =
-    io_file_get_ext (filepath);
+  const char * file_ext = io_file_get_ext (filepath);
   char * new_path = g_strdup (filepath);
   while (file_exists (new_path))
     {
@@ -331,7 +328,6 @@ io_get_next_available_filepath (
         }
     }
   g_free (file_without_ext);
-  g_free (file_ext);
 
   return new_path;
 }

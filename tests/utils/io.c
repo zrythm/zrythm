@@ -65,6 +65,23 @@ test_get_parent_dir ()
 #endif
 }
 
+static void
+test_get_ext (void)
+{
+  const char * res;
+
+  res = io_file_get_ext ("abc.wav");
+  g_assert_cmpstr (res, ==, "wav");
+  res = io_file_get_ext ("abc.test.wav");
+  g_assert_cmpstr (res, ==, "wav");
+  res = io_file_get_ext ("abctestwav");
+  g_assert_cmpstr (res, ==, "");
+  res = io_file_get_ext ("abctestwav.");
+  g_assert_cmpstr (res, ==, "");
+  res = io_file_get_ext ("...");
+  g_assert_cmpstr (res, ==, "");
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -75,6 +92,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test get parent dir",
     (GTestFunc) test_get_parent_dir);
+  g_test_add_func (
+    TEST_PREFIX "test get ext",
+    (GTestFunc) test_get_ext);
 
   return g_test_run ();
 }
