@@ -1523,8 +1523,6 @@ move_items_x (
   arranger_selections_add_ticks (
     sel, ticks_diff);
 
-  g_message ("ticks diff %f", ticks_diff);
-
   EVENTS_PUSH (
     ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
 }

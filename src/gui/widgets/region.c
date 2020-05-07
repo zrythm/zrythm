@@ -866,48 +866,54 @@ draw_fades (
   int visible_start_px =
     MAX (start_px, rect->x);
 
-  for (int i = visible_start_px;
-       i <= visible_fade_in_px; i++)
+  if (fade_in_px - start_px != 0)
     {
-      /* revert because cairo draws the other way */
-      double val =
-        1.0 -
-        fade_get_y_normalized (
-          (double) (i - start_px) /
-            (double) (fade_in_px - start_px),
-          &obj->fade_in_opts, 1);
-      double next_val =
-        1.0 -
-        fade_get_y_normalized (
-          (double) ((i + 1) - start_px) /
-            (double) (fade_in_px - start_px),
-          &obj->fade_in_opts, 1);
-
-      /* if start */
-      if (i == visible_start_px)
+      double local_px_diff =
+        (double) (fade_in_px - start_px);
+      for (int i = visible_start_px;
+           i <= visible_fade_in_px; i++)
         {
-          cairo_move_to (
-            cr, i - rect->x,
-            (full_rect->y +
-             val * full_rect->height) -
-              rect->y);
-        }
+          /* revert because cairo draws the other
+           * way */
+          double val =
+            1.0 -
+            fade_get_y_normalized (
+              (double) (i - start_px) /
+                local_px_diff,
+              &obj->fade_in_opts, 1);
+          double next_val =
+            1.0 -
+            fade_get_y_normalized (
+              (double) ((i + 1) - start_px) /
+                local_px_diff,
+              &obj->fade_in_opts, 1);
 
-      cairo_rel_line_to (
-        cr, 1,
-        (next_val - val) * full_rect->height);
+          /* if start */
+          if (i == visible_start_px)
+            {
+              cairo_move_to (
+                cr, i - rect->x,
+                (full_rect->y +
+                 val * full_rect->height) -
+                  rect->y);
+            }
 
-      /* if end */
-      if (i == visible_fade_in_px)
-        {
-          /* paint a gradient in the faded out
-           * part */
           cairo_rel_line_to (
-            cr, 0, next_val - full_rect->height);
-          cairo_rel_line_to (
-            cr, - i, 0);
-          cairo_close_path (cr);
-          cairo_fill (cr);
+            cr, 1,
+            (next_val - val) * full_rect->height);
+
+          /* if end */
+          if (i == visible_fade_in_px)
+            {
+              /* paint a gradient in the faded out
+               * part */
+              cairo_rel_line_to (
+                cr, 0, next_val - full_rect->height);
+              cairo_rel_line_to (
+                cr, - i, 0);
+              cairo_close_path (cr);
+              cairo_fill (cr);
+            }
         }
     }
 
@@ -927,48 +933,54 @@ draw_fades (
   int visible_end_px =
     MIN (end_px, rect->x + rect->width);
 
-  for (int i = visible_fade_out_px;
-       i <= visible_end_px; i++)
+  if (end_px - fade_out_px != 0)
     {
-      /* revert because cairo draws the other way */
-      double val =
-        1.0 -
-        fade_get_y_normalized (
-          (double) (i - fade_out_px) /
-            (double) (end_px - fade_out_px),
-          &obj->fade_out_opts, 0);
-      double next_val =
-        1.0 -
-        fade_get_y_normalized (
-          (double) ((i + 1) - fade_out_px) /
-            (double) (end_px - fade_out_px),
-          &obj->fade_out_opts, 0);
-
-      /* if start, move only */
-      if (i == visible_fade_out_px)
+      double local_px_diff =
+        (double) (end_px - fade_out_px);
+      for (int i = visible_fade_out_px;
+           i <= visible_end_px; i++)
         {
-          cairo_move_to (
-            cr, i - rect->x,
-            (full_rect->y +
-             val * full_rect->height) -
-              rect->y);
-        }
+          /* revert because cairo draws the other
+           * way */
+          double val =
+            1.0 -
+            fade_get_y_normalized (
+              (double) (i - fade_out_px) /
+                local_px_diff,
+              &obj->fade_out_opts, 0);
+          double next_val =
+            1.0 -
+            fade_get_y_normalized (
+              (double) ((i + 1) - fade_out_px) /
+                local_px_diff,
+              &obj->fade_out_opts, 0);
 
-      cairo_rel_line_to (
-        cr, 1,
-        (next_val - val) * full_rect->height);
+          /* if start, move only */
+          if (i == visible_fade_out_px)
+            {
+              cairo_move_to (
+                cr, i - rect->x,
+                (full_rect->y +
+                 val * full_rect->height) -
+                  rect->y);
+            }
 
-      /* if end, draw */
-      if (i == visible_end_px)
-        {
-          /* paint a gradient in the faded out
-           * part */
           cairo_rel_line_to (
-            cr, 0, - full_rect->height);
-          cairo_rel_line_to (
-            cr, - i, 0);
-          cairo_close_path (cr);
-          cairo_fill (cr);
+            cr, 1,
+            (next_val - val) * full_rect->height);
+
+          /* if end, draw */
+          if (i == visible_end_px)
+            {
+              /* paint a gradient in the faded out
+               * part */
+              cairo_rel_line_to (
+                cr, 0, - full_rect->height);
+              cairo_rel_line_to (
+                cr, - i, 0);
+              cairo_close_path (cr);
+              cairo_fill (cr);
+            }
         }
     }
 }
