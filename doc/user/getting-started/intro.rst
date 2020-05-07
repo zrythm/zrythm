@@ -8,8 +8,6 @@ Getting Started
 .. toctree::
    :maxdepth: 4
 
-   zrythm-overview
    system-requirements
    installation/intro
    getting-plugins
-   additional-resources

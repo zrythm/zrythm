@@ -591,7 +591,7 @@ Args:
                    (make-schema-key
                      "zrythm-dir" "s"
                      "" "Zrythm path"
-                     "The directory used to save projects and other files in.")
+                     "The directory used to save user data in.")
                  )) ;; general/paths
              ))) ;; general
 

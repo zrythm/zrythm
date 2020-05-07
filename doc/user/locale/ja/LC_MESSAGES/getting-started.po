@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-28 11:51+0000\n"
+"POT-Creation-Date: 2020-05-07 22:54+0100\n"
 "PO-Revision-Date: 2020-01-24 15:57+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language: ja\n"
@@ -17,150 +17,102 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.7.0\n"
-
-#: ../../getting-started/additional-resources.rst:6
-msgid "Additional Resources"
-msgstr "補足的リソース"
-
-#: ../../getting-started/additional-resources.rst:9
-msgid "IRC/Matrix"
-msgstr "IRC/Matrix"
-
-#: ../../getting-started/additional-resources.rst:10
-msgid ""
-"We offer support on IRC at ``#zrythm`` on Freenode. Matrix users can use "
-"``#zrythmdaw:matrix.org``."
-msgstr ""
-"IRC (Freenode)の ``#zrythm``、またはMatrixの ``#zrythmdaw:matrix.org`` "
-"でユーザ・サポートを提供しています。"
-
-#: ../../getting-started/additional-resources.rst:14
-msgid "Issue Tracker"
-msgstr "課題管理システム"
-
-#: ../../getting-started/additional-resources.rst:15
-msgid ""
-"The issue tracker can be found on our `Redmine instance "
-"<https://redmine.zrythm.org/projects/zrythm/issues>`_. You can use this "
-"to report bugs or give feedback."
-msgstr ""
-"課題トラッカーはZrythmの `Redmine インスタンス "
-"<https://redmine.zrythm.org/projects/zrythm/issues>`_ "
-"にあります。これを使用して、バグを報告したり、フィードバックを書いたりできます。"
-
-#: ../../getting-started/additional-resources.rst:20
-msgid "Source Code"
-msgstr "ソースコード"
-
-#: ../../getting-started/additional-resources.rst:21
-msgid ""
-"Zrythm's source code can be found on our `CGit instance "
-"<https://git.zrythm.org/cgit/zrythm/>`_."
-msgstr ""
-"ZrythmのソースコードはZrythmの `CGitインスタンス <https://git.zrythm.org/cgit/zrythm/>`_"
-" にあります。"
-
-#: ../../getting-started/additional-resources.rst:25
-msgid "Older Versions"
-msgstr "旧バージョン"
-
-#: ../../getting-started/additional-resources.rst:26
-msgid ""
-"Older releases of Zrythm can be found on the `Releases page "
-"<https://www.zrythm.org/releases>`_"
-msgstr "Zrythmの旧リリースは、`リリースページ <https://www.zrythm.org/releases>`_ にあります"
+"Generated-By: Babel 2.8.0\n"
 
 #: ../../getting-started/getting-plugins.rst:6
-msgid "Getting Plugins"
-msgstr "プラグインの入手方法"
+msgid "Getting Plugins, Instruments and Samples"
+msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:8
-msgid ""
-"Zrythm ships with a few bundled plugins to help you get started "
-"(currently only ZLFO), but you should install some plugins like "
-"synthesizers and effects before you can make music."
-msgstr "Zrythmには、いくつかのプラグインが同梱されています（現在はZLFOのみ）が、音楽を作成する前にシンセサイザーやエフェクトなどのプラグインをインストールする必要があります。"
+#: ../../getting-started/getting-plugins.rst:9
+msgid "Plugins"
+msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:13
+#: ../../getting-started/getting-plugins.rst:11
 msgid ""
-"Fortunately, there are many plugins to choose from. This guide will show "
-"you a few ways you can install plugins."
+"Zrythm ships with a few bundled plugins to help users get started, but "
+"users are expected to download and install their own plugins that suit "
+"their preferences."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:15
+#, fuzzy
+msgid ""
+"There are many plugins to choose from. This guide will show you a few "
+"ways you can install plugins on GNU/Linux systems."
 msgstr "幸いなことに、数多くのプラグインがあります。このガイドではそれぞれを手に入れる方法を紹介していきます。"
 
-#: ../../getting-started/getting-plugins.rst:16
+#: ../../getting-started/getting-plugins.rst:19
+#, fuzzy
 msgid ""
-"If you are on Debian/Ubuntu, we highly recommend using the `KXstudio "
-"repositories <https://kx.studio/>`_, since there are many plugins that "
-"can easily be installed via apt."
+"For users of Debian-based distributions, we recommend using the `KXstudio"
+" repositories <https://kx.studio/>`_, as there are many plugins that can "
+"easily be installed via apt."
 msgstr ""
 "Debian/Ubuntu を使用している場合は、apt 経由で簡単にインストールできるプラグインが多数存在するため、`KXstudio "
 "リポジトリ <https://kx.studio/>`_ を使用することを強くお勧めします。"
 
-#: ../../getting-started/getting-plugins.rst:20
+#: ../../getting-started/getting-plugins.rst:23
+#, fuzzy
 msgid ""
-"If you are on Arch GNU/Linux, we recommend installing the `lv2-plugins "
-"<https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ group, or you "
-"can hand-pick the plugins you want from there."
+"For users of Arch Linux-based distributions, we recommend installing the "
+"`lv2-plugins <https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ "
+"group."
 msgstr ""
 "Arch GNU/Linuxを使用している場合は、`lv2-plugins "
 "<https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ "
 "グループをインストールするか、そこから必要なプラグインを手動で選ぶことをお勧めします。"
 
-#: ../../getting-started/getting-plugins.rst:25
-msgid "If you are not sure where to start, please read on."
-msgstr "どこから始めたらよいかわからない場合は、を読んでください。"
-
-#: ../../getting-started/getting-plugins.rst:28
+#: ../../getting-started/getting-plugins.rst:29
 msgid "Recommended Plugin Bundles"
 msgstr "おすすめなプラグインバンドル"
 
-#: ../../getting-started/getting-plugins.rst:30
+#: ../../getting-started/getting-plugins.rst:31
+#, fuzzy
 msgid ""
 "`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ provides a "
-"good variety of synths and effects that can help you get you started "
-"making music right away."
+"good variety of synths and effects."
 msgstr ""
 "`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ "
 "は、さまざまなシンセと、すぐに音楽を作り始めるためのいくつかのエフェクトを提供しています。"
 
 #: ../../getting-started/getting-plugins.rst:34
+#, fuzzy
 msgid ""
 "`ZAM Plugins <http://www.zamaudio.com/?p=976>`_ is an effects pack that "
-"contains all the basic effects like Delay, Reverb, Compression, EQ, "
-"Saturation, etc."
+"contains high quality plugins for all the basic effects such as Delay, "
+"Reverb, Compression, EQ and Saturation."
 msgstr ""
 "`ZAM プラグイン <http://www.zamaudio.com/?p=976>`_ "
 "はDelay、Reverb、Compression、EQ、Saturationなどの基本的なエフェクトをすべて含むエフェクトパックです。"
 
-#: ../../getting-started/getting-plugins.rst:38
-msgid "`LSP <https://lsp-plug.in/>`_ has a lot of useful effects."
+#: ../../getting-started/getting-plugins.rst:39
+#, fuzzy
+msgid ""
+"The `LSP Project <https://lsp-plug.in/>`_ has a wide variety of effect "
+"plugins."
 msgstr "`LSP <https://lsp-plug.in/>`_ にはたくさんの便利な効果があります。"
 
-#: ../../getting-started/getting-plugins.rst:40
+#: ../../getting-started/getting-plugins.rst:42
+#, fuzzy
 msgid ""
-"`OpenAV <http://openavproductions.com>`_ has effects and instruments "
-"worth checking out."
-msgstr "`OpenAV <http://openavproductions.com>`_ にはいろんなな使いやすいプラグインがあります。"
-
-#: ../../getting-started/getting-plugins.rst:43
-msgid ""
-"`X42 Plugins <http://x42-plugins.com/x42/>`_ has many MIDI effect and "
-"meter plugins."
+"`X42 Plugins <http://x42-plugins.com/x42/>`_ is a collection of various "
+"MIDI effect and meter plugins."
 msgstr "`X42プラグイン <http://x42-plugins.com/x42/>`_ には、多くのMIDIエフェクトとメータープラグインがあります。"
 
-#: ../../getting-started/getting-plugins.rst:47
+#: ../../getting-started/getting-plugins.rst:46
 msgid "Synths"
 msgstr "シンセサイザー"
 
-#: ../../getting-started/getting-plugins.rst:49
-msgid "`Helm <https://tytel.org/helm/>`_ is an excellent subtractive synth."
+#: ../../getting-started/getting-plugins.rst:48
+#, fuzzy
+msgid "`Helm <https://tytel.org/helm/>`_ is a powerful subtractive synthesizer."
 msgstr "`Helm <https://tytel.org/helm/>`_ は優れた減算シンセです。"
 
 #: ../../getting-started/getting-plugins.rst:51
+#, fuzzy
 msgid ""
-"`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synth that is "
-"closely modeled on the Yamaha DX7."
+"`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synthesizer "
+"that is closely modeled on the Yamaha DX7."
 msgstr "`Dexed <http://asb2m10.github.io/dexed/>`_ DexedはヤマハDX7を綿密にモデル化したFMシンセです。"
 
 #: ../../getting-started/getting-plugins.rst:54
@@ -184,49 +136,73 @@ msgstr ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ "
 "は、他の種類のパーカッションも合成できるキックドラムシンセサイザーです。"
 
+#: ../../getting-started/getting-plugins.rst:66
+msgid "SFZ/SF2 Instruments"
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:68
+msgid ""
+"You can find a list of SFZ instruments under free licenses at `sfz "
+"instruments <https://sfzinstruments.github.io/>`_."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:72
+msgid "Samples"
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:74
+msgid ""
+"We recommend using `Freesound <https://freesound.org/>`_ for collecting "
+"CC-licensed samples."
+msgstr ""
+
 #: ../../getting-started/installation/freebsd.rst:6
 msgid "FreeBSD"
 msgstr "FreeBSD"
 
 #: ../../getting-started/installation/freebsd.rst:9
 #: ../../getting-started/installation/gnu-linux.rst:11
+#: ../../getting-started/installation/macos.rst:9
+#: ../../getting-started/installation/windows.rst:9
 msgid "Installer"
 msgstr "インストーラー"
 
 #: ../../getting-started/installation/freebsd.rst:10
+#, fuzzy
 msgid ""
 "We plan to add FreeBSD support to the installer mentioned in :ref:`gnu-"
-"with-linux-installer`."
+"with-linux-installer` in the future."
 msgstr ":ref:`gnu-with-linux-installer` に記載されているインストーラーにFreeBSDサポートを追加する予定です。"
 
-#: ../../getting-started/installation/freebsd.rst:13
-#: ../../getting-started/installation/gnu-linux.rst:28
-msgid ""
-"This is the easiest and recommended way to install the latest version for"
-" most users, and we provide support for it."
-msgstr "これは、ほとんどのユーザーに最新バージョンをインストールする最も簡単で推奨される方法であり、サポートを提供します。"
-
-#: ../../getting-started/installation/freebsd.rst:18
+#: ../../getting-started/installation/freebsd.rst:14
 msgid "Port"
 msgstr "ポート"
 
-#: ../../getting-started/installation/freebsd.rst:19
+#: ../../getting-started/installation/freebsd.rst:15
+#, fuzzy
 msgid ""
 "You can install the `zrythm port "
-"<https://www.freshports.org/audio/zrythm/>`_ but it may be old and "
-"missing features and optimizations."
+"<https://www.freshports.org/audio/zrythm/>`_."
 msgstr ""
 "`zrythm port <https://www.freshports.org/audio/zrythm/>`_ "
 "をインストールできますが、古いもので機能や最適化が欠けている可能性があります。"
 
-#: ../../getting-started/installation/freebsd.rst:23
-#: ../../getting-started/installation/gnu-linux.rst:43
+#: ../../getting-started/installation/freebsd.rst:19
+#: ../../getting-started/installation/gnu-linux.rst:40
+#: ../../getting-started/installation/macos.rst:21
+#: ../../getting-started/installation/windows.rst:21
 msgid "Manual Installation"
 msgstr "手動インストール"
 
-#: ../../getting-started/installation/freebsd.rst:24
-msgid "See :ref:`gnu-with-linux-manual-installation`."
-msgstr ":ref:`gnu-with-linux-manual-installation` を参照してください。"
+#: ../../getting-started/installation/freebsd.rst:20
+#: ../../getting-started/installation/macos.rst:22
+#: ../../getting-started/installation/windows.rst:22
+#, fuzzy
+msgid ""
+"If you are an advanced user and prefer to build Zrythm yourself, you can "
+"build Zrythm from source. See :ref:`gnu-with-linux-manual-installation` "
+"for details."
+msgstr "上級ユーザーで、Zrythmを自分でビルドすることを好む場合、ZrythmはMesonビルドシステムを使用するため、ビルドおよびインストールの手順は次のとおりです。"
 
 #: ../../getting-started/installation/gnu-linux.rst:6
 msgid "GNU with Linux"
@@ -246,7 +222,8 @@ msgid "The installer supports the following distros (and derivatives):"
 msgstr "インストーラは、次のディストリビューション(およびデリバティブ)に対応しています。"
 
 #: ../../getting-started/installation/gnu-linux.rst:21
-msgid "**Ubuntu 18.04 & 19.04** - amd64"
+#, fuzzy
+msgid "**Ubuntu 18.04, 19.10 & 20.04** - amd64"
 msgstr "**Ubuntu 18.04 & 19.04** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:22
@@ -262,37 +239,44 @@ msgid "**Arch Linux** - x86_64"
 msgstr "**Arch Linux** - x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:25
-msgid "**Fedora 31** - x86_64"
+#, fuzzy
+msgid "**Fedora 32** - x86_64"
 msgstr "**Fedora 31** - x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:26
 msgid "**OpenSUSE Tumbleweed** - x86_64"
 msgstr "**OpenSUSE Tumbleweed** - x86_64"
 
+#: ../../getting-started/installation/gnu-linux.rst:28
+msgid ""
+"This is the easiest and recommended way to install the latest version for"
+" most users, and we provide support for it."
+msgstr "これは、ほとんどのユーザーに最新バージョンをインストールする最も簡単で推奨される方法であり、サポートを提供します。"
+
 #: ../../getting-started/installation/gnu-linux.rst:33
-msgid "Distro Package"
+#, fuzzy
+msgid "Distribution Package"
 msgstr "ディストリビューションパッケージ"
 
 #: ../../getting-started/installation/gnu-linux.rst:34
 msgid ""
 "If your distribution provides a Zrythm package you can install it from "
-"there, but it will likely be an older version than the one we provide and"
-" it may be missing optimizations or features that we include with the "
-"installer."
+"there."
 msgstr ""
-"ディストリビューションが Zrythm "
-"パッケージを提供している場合は、そこからインストールできますが、おそらく、提供するパッケージよりも古いバージョンであり、インストーラに含まれる最適化や機能が不足している可能性があります。"
 
-#: ../../getting-started/installation/gnu-linux.rst:44
+#: ../../getting-started/installation/gnu-linux.rst:41
 msgid ""
-"If you are an advanced user and prefer to build Zrythm yourself, Zrythm "
-"uses the Meson build system, so the procedure to build and install is as "
-"follows:"
-msgstr "上級ユーザーで、Zrythmを自分でビルドすることを好む場合、ZrythmはMesonビルドシステムを使用するため、ビルドおよびインストールの手順は次のとおりです。"
+"If you are an advanced user and prefer to build Zrythm yourself, you can "
+"build Zrythm from source, either using a `source distribution tarball "
+"<https://www.zrythm.org/releases/>`_ or `git "
+"<https://git.zrythm.org/cgit/zrythm/>`_."
+msgstr ""
 
-#: ../../getting-started/installation/gnu-linux.rst:54
-msgid "See the ``INSTALL.md`` file for more information."
-msgstr "詳細については、``INSTALL.md`` ファイルを参照してください。"
+#: ../../getting-started/installation/gnu-linux.rst:46
+msgid ""
+"See the ``INSTALL.md`` file in the source distribution for installation "
+"instructions."
+msgstr ""
 
 #: ../../getting-started/installation/intro.rst:6
 msgid "Installation"
@@ -302,25 +286,36 @@ msgstr "インストール"
 msgid "MacOS"
 msgstr "MacOS"
 
-#: ../../getting-started/installation/macos.rst:8
+#: ../../getting-started/installation/macos.rst:10
+#, fuzzy
 msgid ""
-"Install from source manually as mentioned in :ref:`gnu-with-linux-manual-"
-"installation`. No support is offered at the moment."
+"You can install the latest version of Zrythm for MacOS from the `Download"
+" <https://www.zrythm.org/en/download.html>`_ page on our website."
 msgstr ""
-":ref:`gnu-with-linux-manual-installation` "
-"に記載されているように、ソースからインストールします。現時点ではサポートは提供されません。"
+"Zrythmのウェブサイトの `ダウンロード <https://www.zrythm.org/ja/download.html>`_ "
+"ページのインストーラーを使用して、ご使用されているディストリビューション用の Zrythm の最新バージョンをインストールできます。"
+
+#: ../../getting-started/installation/macos.rst:16
+#: ../../getting-started/installation/windows.rst:16
+#, fuzzy
+msgid ""
+"This is the easiest and recommended way to install the latest version of "
+"Zrythm on Windows, and we provide support for it."
+msgstr "これは、ほとんどのユーザーに最新バージョンをインストールする最も簡単で推奨される方法であり、サポートを提供します。"
 
 #: ../../getting-started/installation/windows.rst:6
 msgid "Windows"
 msgstr "Windows"
 
-#: ../../getting-started/installation/windows.rst:8
+#: ../../getting-started/installation/windows.rst:10
+#, fuzzy
 msgid ""
-"A Windows installer is available for purchase at the `Download "
-"<https://www.zrythm.org/en/download.html>`_ page on our website."
+"You can install the latest version of Zrythm for Windows 64bit from the "
+"`Download <https://www.zrythm.org/en/download.html>`_ page on our "
+"website."
 msgstr ""
-"Windows インストーラーは、`ダウンロード <https://www.zrythm.org/ja/download.html>`_ "
-"ページで購入できます。"
+"Zrythmのウェブサイトの `ダウンロード <https://www.zrythm.org/ja/download.html>`_ "
+"ページのインストーラーを使用して、ご使用されているディストリビューション用の Zrythm の最新バージョンをインストールできます。"
 
 #: ../../getting-started/intro.rst:6
 msgid "Getting Started"
@@ -331,135 +326,80 @@ msgid "System Requirements"
 msgstr "システム要件"
 
 #: ../../getting-started/system-requirements.rst:9
-msgid "Minimum Requirements"
-msgstr "最小要件"
-
-#: ../../getting-started/system-requirements.rst:12
-#: ../../getting-started/system-requirements.rst:26
 msgid "Hardware"
 msgstr "ハードウェア"
 
-#: ../../getting-started/system-requirements.rst:13
+#: ../../getting-started/system-requirements.rst:10
 msgid "x86_64, i686 or ARM processor"
 msgstr "x86_64、i686 または ARM プロセッサ"
 
-#: ../../getting-started/system-requirements.rst:16
+#: ../../getting-started/system-requirements.rst:13
 msgid "Operating System"
 msgstr "OS"
 
-#: ../../getting-started/system-requirements.rst:17
-msgid "Unix-compatible OS or Windows"
-msgstr "Unix 互換の OS または Windows"
+#: ../../getting-started/system-requirements.rst:14
+msgid "GNU/Linux, FreeBSD, Windows or MacOS"
+msgstr ""
 
-#: ../../getting-started/system-requirements.rst:20
-msgid "Recommended"
+#: ../../getting-started/system-requirements.rst:17
+#, fuzzy
+msgid "Recommendations"
 msgstr "推奨"
 
-#: ../../getting-started/system-requirements.rst:21
+#: ../../getting-started/system-requirements.rst:20
+msgid "CPU"
+msgstr ""
+
+#: ../../getting-started/system-requirements.rst:20
 msgid ""
-"We recommend running a fairly modern machine with the following specs so "
-"you can take full advantage of Zrythm."
-msgstr "Zrythmを最大限に活用できるように、次の仕様でかなり近代的なパソコンを使用することをお勧めします。"
+"For smooth operation, it is recommended to use a CPU with at least 2GHz "
+"clock speed and at least 4 cores in total."
+msgstr ""
 
-#: ../../getting-started/system-requirements.rst:27
-msgid "A fast processor"
-msgstr "高速なプロセッサ"
+#: ../../getting-started/system-requirements.rst:23
+msgid "Monitor"
+msgstr ""
 
-#: ../../getting-started/system-requirements.rst:28
-msgid "Large enough monitor"
-msgstr "十分に大きいモニター"
+#: ../../getting-started/system-requirements.rst:23
+msgid ""
+"It is recommended to have at least 16 inches of monitor space to work "
+"efficiently with Zrythm."
+msgstr ""
 
-#: ../../getting-started/system-requirements.rst:29
+#: ../../getting-started/system-requirements.rst:26
+#, fuzzy
 msgid "Audio interface"
 msgstr "オーディオインターフェイス"
 
-#: ../../getting-started/system-requirements.rst:30
+#: ../../getting-started/system-requirements.rst:26
+#, fuzzy
+msgid ""
+"An audio interface offers low latency and better quality than on-board "
+"sound cards (especially if recording audio)."
+msgstr "オーディオインターフェイスは、低レイテンシとより良い品質を提供します(特にオーディオを録音する場合)ので、お勧めします。"
+
+#: ../../getting-started/system-requirements.rst:29
+#, fuzzy
 msgid "MIDI keyboard"
 msgstr "MIDIキーボード"
 
-#: ../../getting-started/system-requirements.rst:33
-msgid "Software"
-msgstr "ソフトウェア"
-
-#: ../../getting-started/system-requirements.rst:34
-msgid ""
-"A JACK patchbay such as `QjackCtl <https://qjackctl.sourceforge.io/>`_, "
-"`Catia <https://kx.studio/Applications:Catia>`_ or `Ingen "
-"<https://drobilla.net/software/ingen>`_"
+#: ../../getting-started/system-requirements.rst:29
+msgid "For quickly trying out melodies or recording."
 msgstr ""
-"`QjackCtl <https://qjackctl.sourceforge.io/>`_、`Catia "
-"<https://kx.studio/Applications:Catia>`_ または `Ingen "
-"<https://drobilla.net/software/ingen>`_ などのJACKパッチベイ"
 
-#: ../../getting-started/system-requirements.rst:40
-msgid "Audio Interface"
-msgstr "オーディオインターフェイス"
-
-#: ../../getting-started/system-requirements.rst:41
-msgid ""
-"An Audio Interface is recommended as it offers low latency and better "
-"quality (especially if recording audio)."
-msgstr "オーディオインターフェイスは、低レイテンシとより良い品質を提供します(特にオーディオを録音する場合)ので、お勧めします。"
-
-#: ../../getting-started/system-requirements.rst:45
+#: ../../getting-started/system-requirements.rst:32
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../getting-started/system-requirements.rst:46
+#: ../../getting-started/system-requirements.rst:33
+#, fuzzy
 msgid ""
-"When using JACK, JACK needs to be set up and configured before running "
-"Zrythm. You will find lots of information online about how to configure "
-"JACK, so we will skip this part."
+"When using the JACK backend, JACK needs to be set up and configured "
+"before running Zrythm. You will find lots of information online about how"
+" to configure JACK, so we will skip this part."
 msgstr ""
 "JACK を使用する場合、Zrythm を実行する前に JACK を設定する必要があります。JACK "
 "の設定方法に関する情報はオンラインで多数見つかりますので、この部分は省略します。"
-
-#: ../../getting-started/zrythm-overview.rst:6
-msgid "Overview"
-msgstr "概要"
-
-#: ../../getting-started/zrythm-overview.rst:8
-msgid ""
-"Zrythm is a digital audio workstation designed to be featureful and easy "
-"to use."
-msgstr "Zrythmは、機能が豊富で使いやすいように設計されたデジタルオーディオワークステーションです。"
-
-#: ../../getting-started/zrythm-overview.rst:13
-msgid "Limitless automation"
-msgstr "無限のオートメーション"
-
-#: ../../getting-started/zrythm-overview.rst:12
-msgid ""
-"You can automate almost anything with automation events using straight "
-"lines, ramps and curves, or with CV signals from LFO and envelope "
-"plugins."
-msgstr "オートメーションイベントでは、直線、ランプ、カーブ、LFOやエンベローププラグインからのCV信号を使って、ほとんど何でもオートーメートできます。"
-
-#: ../../getting-started/zrythm-overview.rst:16
-msgid "LV2 and VST plugins"
-msgstr "LV2 および VST プラグイン"
-
-#: ../../getting-started/zrythm-overview.rst:16
-msgid "Supports the free LV2 plugin format, with added support for VST."
-msgstr "VST対応を追加で、オープンスタンダードであるLV2のプラグイン標準を完全に対応しています。"
-
-#: ../../getting-started/zrythm-overview.rst:18
-msgid "JACK support"
-msgstr "JACK対応"
-
-#: ../../getting-started/zrythm-overview.rst:19
-msgid "JACK aware, with support for JACK transport."
-msgstr "JACK トランスポートを含む、完全な JACK 対応。"
-
-#: ../../getting-started/zrythm-overview.rst:21
-msgid "Chord assistance"
-msgstr "和音援助"
-
-#: ../../getting-started/zrythm-overview.rst:21
-msgid ""
-"Has a chord pad for trying out chords in a scale and a chord track to "
-"help with chord progressions."
-msgstr "スケールでコードを試聴できるコードパッドと、コード進行を支援するコードトラックがあります。"
 
 #~ msgid "Clips"
 #~ msgstr "クリップ"
@@ -725,4 +665,189 @@ msgstr "スケールでコードを試聴できるコードパッドと、コー
 #~ "インストーラーのサポートは提供していますが、WindowsでZrythmを手動でビルドすることはサポートしていません。試してみたい場合は、"
 #~ " `MSYS2プロジェクト <https://packages.msys2.org/>`_ "
 #~ "から必要なほとんどのパッケージを取得できます。"
+
+#~ msgid "Additional Resources"
+#~ msgstr "補足的リソース"
+
+#~ msgid "IRC/Matrix"
+#~ msgstr "IRC/Matrix"
+
+#~ msgid ""
+#~ "We offer support on IRC at "
+#~ "``#zrythm`` on Freenode. Matrix users "
+#~ "can use ``#zrythmdaw:matrix.org``."
+#~ msgstr ""
+#~ "IRC (Freenode)の ``#zrythm``、またはMatrixの "
+#~ "``#zrythmdaw:matrix.org`` でユーザ・サポートを提供しています。"
+
+#~ msgid "Issue Tracker"
+#~ msgstr "課題管理システム"
+
+#~ msgid ""
+#~ "The issue tracker can be found on"
+#~ " our `Redmine instance "
+#~ "<https://redmine.zrythm.org/projects/zrythm/issues>`_. You "
+#~ "can use this to report bugs or "
+#~ "give feedback."
+#~ msgstr ""
+#~ "課題トラッカーはZrythmの `Redmine インスタンス "
+#~ "<https://redmine.zrythm.org/projects/zrythm/issues>`_ "
+#~ "にあります。これを使用して、バグを報告したり、フィードバックを書いたりできます。"
+
+#~ msgid "Source Code"
+#~ msgstr "ソースコード"
+
+#~ msgid ""
+#~ "Zrythm's source code can be found "
+#~ "on our `CGit instance "
+#~ "<https://git.zrythm.org/cgit/zrythm/>`_."
+#~ msgstr ""
+#~ "ZrythmのソースコードはZrythmの `CGitインスタンス "
+#~ "<https://git.zrythm.org/cgit/zrythm/>`_ にあります。"
+
+#~ msgid "Older Versions"
+#~ msgstr "旧バージョン"
+
+#~ msgid ""
+#~ "Older releases of Zrythm can be "
+#~ "found on the `Releases page "
+#~ "<https://www.zrythm.org/releases>`_"
+#~ msgstr "Zrythmの旧リリースは、`リリースページ <https://www.zrythm.org/releases>`_ にあります"
+
+#~ msgid "Getting Plugins"
+#~ msgstr "プラグインの入手方法"
+
+#~ msgid ""
+#~ "Zrythm ships with a few bundled "
+#~ "plugins to help you get started "
+#~ "(currently only ZLFO), but you should"
+#~ " install some plugins like synthesizers "
+#~ "and effects before you can make "
+#~ "music."
+#~ msgstr "Zrythmには、いくつかのプラグインが同梱されています（現在はZLFOのみ）が、音楽を作成する前にシンセサイザーやエフェクトなどのプラグインをインストールする必要があります。"
+
+#~ msgid "If you are not sure where to start, please read on."
+#~ msgstr "どこから始めたらよいかわからない場合は、を読んでください。"
+
+#~ msgid ""
+#~ "`OpenAV <http://openavproductions.com>`_ has effects"
+#~ " and instruments worth checking out."
+#~ msgstr "`OpenAV <http://openavproductions.com>`_ にはいろんなな使いやすいプラグインがあります。"
+
+#~ msgid "See :ref:`gnu-with-linux-manual-installation`."
+#~ msgstr ":ref:`gnu-with-linux-manual-installation` を参照してください。"
+
+#~ msgid ""
+#~ "If your distribution provides a Zrythm"
+#~ " package you can install it from "
+#~ "there, but it will likely be an"
+#~ " older version than the one we "
+#~ "provide and it may be missing "
+#~ "optimizations or features that we "
+#~ "include with the installer."
+#~ msgstr ""
+#~ "ディストリビューションが Zrythm "
+#~ "パッケージを提供している場合は、そこからインストールできますが、おそらく、提供するパッケージよりも古いバージョンであり、インストーラに含まれる最適化や機能が不足している可能性があります。"
+
+#~ msgid "See the ``INSTALL.md`` file for more information."
+#~ msgstr "詳細については、``INSTALL.md`` ファイルを参照してください。"
+
+#~ msgid ""
+#~ "Install from source manually as "
+#~ "mentioned in :ref:`gnu-with-linux-"
+#~ "manual-installation`. No support is offered"
+#~ " at the moment."
+#~ msgstr ""
+#~ ":ref:`gnu-with-linux-manual-installation` "
+#~ "に記載されているように、ソースからインストールします。現時点ではサポートは提供されません。"
+
+#~ msgid ""
+#~ "A Windows installer is available for "
+#~ "purchase at the `Download "
+#~ "<https://www.zrythm.org/en/download.html>`_ page on "
+#~ "our website."
+#~ msgstr ""
+#~ "Windows インストーラーは、`ダウンロード "
+#~ "<https://www.zrythm.org/ja/download.html>`_ ページで購入できます。"
+
+#~ msgid "Minimum Requirements"
+#~ msgstr "最小要件"
+
+#~ msgid "Unix-compatible OS or Windows"
+#~ msgstr "Unix 互換の OS または Windows"
+
+#~ msgid ""
+#~ "We recommend running a fairly modern "
+#~ "machine with the following specs so "
+#~ "you can take full advantage of "
+#~ "Zrythm."
+#~ msgstr "Zrythmを最大限に活用できるように、次の仕様でかなり近代的なパソコンを使用することをお勧めします。"
+
+#~ msgid "A fast processor"
+#~ msgstr "高速なプロセッサ"
+
+#~ msgid "Large enough monitor"
+#~ msgstr "十分に大きいモニター"
+
+#~ msgid "Software"
+#~ msgstr "ソフトウェア"
+
+#~ msgid ""
+#~ "A JACK patchbay such as `QjackCtl "
+#~ "<https://qjackctl.sourceforge.io/>`_, `Catia "
+#~ "<https://kx.studio/Applications:Catia>`_ or `Ingen "
+#~ "<https://drobilla.net/software/ingen>`_"
+#~ msgstr ""
+#~ "`QjackCtl <https://qjackctl.sourceforge.io/>`_、`Catia "
+#~ "<https://kx.studio/Applications:Catia>`_ または `Ingen "
+#~ "<https://drobilla.net/software/ingen>`_ などのJACKパッチベイ"
+
+#~ msgid "Audio Interface"
+#~ msgstr "オーディオインターフェイス"
+
+#~ msgid "Overview"
+#~ msgstr "概要"
+
+#~ msgid ""
+#~ "Zrythm is a digital audio workstation"
+#~ " designed to be featureful and easy"
+#~ " to use."
+#~ msgstr "Zrythmは、機能が豊富で使いやすいように設計されたデジタルオーディオワークステーションです。"
+
+#~ msgid "Limitless automation"
+#~ msgstr "無限のオートメーション"
+
+#~ msgid ""
+#~ "You can automate almost anything with"
+#~ " automation events using straight lines,"
+#~ " ramps and curves, or with CV "
+#~ "signals from LFO and envelope plugins."
+#~ msgstr "オートメーションイベントでは、直線、ランプ、カーブ、LFOやエンベローププラグインからのCV信号を使って、ほとんど何でもオートーメートできます。"
+
+#~ msgid "LV2 and VST plugins"
+#~ msgstr "LV2 および VST プラグイン"
+
+#~ msgid "Supports the free LV2 plugin format, with added support for VST."
+#~ msgstr "VST対応を追加で、オープンスタンダードであるLV2のプラグイン標準を完全に対応しています。"
+
+#~ msgid "JACK support"
+#~ msgstr "JACK対応"
+
+#~ msgid "JACK aware, with support for JACK transport."
+#~ msgstr "JACK トランスポートを含む、完全な JACK 対応。"
+
+#~ msgid "Chord assistance"
+#~ msgstr "和音援助"
+
+#~ msgid ""
+#~ "Has a chord pad for trying out "
+#~ "chords in a scale and a chord "
+#~ "track to help with chord progressions."
+#~ msgstr "スケールでコードを試聴できるコードパッドと、コード進行を支援するコードトラックがあります。"
+
+#~ msgid "CPU:"
+#~ msgstr ""
+
+#~ msgid "Monitor:"
+#~ msgstr ""
 

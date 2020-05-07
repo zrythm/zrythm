@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-24 12:22+0000\n"
+"POT-Creation-Date: 2020-05-07 22:47+0100\n"
 "PO-Revision-Date: 2020-04-30 23:31+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
-"Language-Team: English (United Kingdom) <https://hosted.weblate.org/projects/"
-"zrythm/manualconfiguration/en_GB/>\n"
 "Language: en_GB\n"
+"Language-Team: English (United Kingdom) "
+"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/en_GB/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0.2\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
 msgid "Additional Settings"
@@ -27,46 +26,58 @@ msgstr ""
 #: ../../configuration/additional-settings.rst:8
 msgid ""
 "Zrythm stores all of its configuration using the GSettings mechanism, "
-"which comes with the ``gsettings`` command for changing settings from the"
-" command line, or the optional GUI tool ``dconf-editor``."
+"which comes with the `gsettings <https://developer.gnome.org/gio/stable"
+"/gsettings-tool.html>`_ command for changing settings from the command "
+"line, or the optional GUI tool `dconf-editor "
+"<https://wiki.gnome.org/Apps/DconfEditor>`_."
 msgstr ""
 
 #: ../../configuration/additional-settings.rst:14
 msgid ""
 "Normally, you shouldn't need to access any of these settings as most of "
 "them are found inside Zrythm's UI, and it is not recommended to edit them"
-" as Zrythm validates some settings before it saves them, but in some "
-"cases you may want to change them manually for some reason."
-msgstr ""
-
-#: ../../configuration/additional-settings.rst:23
-msgid "Using gsettings"
+" as Zrythm validates some settings before it saves them or uses some "
+"settings internally, but in some cases you may want to change them "
+"manually for some reason - for example if your selected backend causes "
+"Zrythm to crash."
 msgstr ""
 
 #: ../../configuration/additional-settings.rst:25
+msgid "Viewing the Current Settings"
+msgstr ""
+
+#: ../../configuration/additional-settings.rst:27
 msgid ""
-"To see what settings are available and for info on how to use "
-"``gsettings`` see ``man gsettings``."
+"The ``zrythm`` binary comes with a ``--print-settings`` option (see :ref"
+":`command-line-options` for more details) that prints the whole "
+"configuration to the command line. In combination with the ``--pretty`` "
+"option (ie, ``zrythm --print-settings --pretty`` or ``zrythm -p "
+"--pretty`` for short), you can get output like the following."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:28
+#: ../../configuration/additional-settings.rst:38
 msgid ""
-"As an example, to change the audio backend you would do ``gsettings set "
-"org.zrythm.Zrythm.preferences audio-backend \"jack\"``"
+"This feature is mostly added for debugging purposes and to help us "
+"identify problems with user configurations, but feel free to use it if "
+"you are curious."
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:31
-msgid "You can use the range option to get a list of the available values:"
+#: ../../configuration/additional-settings.rst:43
+msgid "Reset to Factory Settings"
 msgstr ""
 
-#: ../../configuration/additional-settings.rst:39
-msgid "Using dconf-editor"
-msgstr ""
-
-#: ../../configuration/additional-settings.rst:41
+#: ../../configuration/additional-settings.rst:45
 msgid ""
-"Install and run dconf-editor, and navigate to ``org.zrythm.Zrythm``. All "
-"the settings can be found there."
+"The ``zrythm`` binary also comes with a ``--reset-to-factory`` option for"
+" resetting Zrythm to its default state."
+msgstr ""
+
+#: ../../configuration/additional-settings.rst:49
+msgid "This will clear ALL your settings."
+msgstr ""
+
+#: ../../configuration/additional-settings.rst:51
+msgid "This will be added on the UI soon."
 msgstr ""
 
 #: ../../configuration/device-setup/intro.rst:6
@@ -79,23 +90,17 @@ msgstr ""
 
 #: ../../configuration/device-setup/intro.rst:11
 msgid ""
-"On Linux-based platforms, Zrythm works with both ALSA and JACK as "
-"available backends. Depending on the selected backend, the configuration "
-"differs."
+"Depending on the selected backend, the configuration differs. Zrythm will"
+" auto-scan and allow you to connect to input devices for recording "
+"through the Track Inspector, as below, and in most cases you don't need "
+"to use any external tools or auto-connect mechanism."
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:16
-msgid ""
-"Zrythm will auto-scan and allow you to connect to input devices for "
-"recording through the Track Inspector, as below, and in most cases you "
-"don't need to use any external tools or auto-connect mechanism."
-msgstr ""
-
-#: ../../configuration/device-setup/intro.rst:25
+#: ../../configuration/device-setup/intro.rst:21
 msgid "Auto-Connecting Devices"
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:27
+#: ../../configuration/device-setup/intro.rst:23
 msgid ""
 "For other types of devices that are not linked to specific tracks, such "
 "as devices that send global MIDI messages and devices that control the "
@@ -103,31 +108,31 @@ msgid ""
 "to on launch."
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:33
-msgid "This is a TODO feature"
+#: ../../configuration/device-setup/intro.rst:29
+msgid ""
+"You can select these in :ref:`midi_devices` in the welcome dialog as well"
+" as in :ref:`preferences`."
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:36
+#: ../../configuration/device-setup/intro.rst:33
 msgid "JACK"
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:38
+#: ../../configuration/device-setup/intro.rst:35
 msgid ""
-"When using the JACK audio and MIDI backend, Zrythm exposes ports to JACK,"
-" so devices can be attached there using a tool like Catia. Note that for "
-"MIDI, devices might need to be bridged to JACK using ``a2jmidid``."
+"When using the JACK audio and MIDI backend Zrythm exposes ports to JACK, "
+"so devices can be attached there using a tool like `Qjackctl "
+"<https://qjackctl.sourceforge.io/>`_."
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:44
-msgid "An example configuration looks like this (in Catia inside Cadence)"
+#: ../../configuration/device-setup/intro.rst:43
+msgid "For most users, everything can be accomplished from within Zrythm."
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:50
-msgid "ALSA"
-msgstr ""
-
-#: ../../configuration/device-setup/intro.rst:52
-msgid "A tool like Catia can be used to connect MIDI devices to Zrythm."
+#: ../../configuration/device-setup/intro.rst:46
+msgid ""
+"Depending on your setup, MIDI devices might need to be bridged to JACK "
+"using ``a2jmidid``."
 msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:6
@@ -154,207 +159,394 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:23
-msgid "You must have a locale for the language you want to use enabled."
+msgid "You must have a locale enabled for the language you want to use."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:25
-msgid ""
-"This is usually not a problem since you are probably already using the "
-"correct locale for your language. In case a locale cannot be found, you "
-"will see a message telling you the steps to enable it."
-msgstr ""
-
-#: ../../configuration/first-run-wizard.rst:31
+#: ../../configuration/first-run-wizard.rst:27
 msgid "Path"
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:36
+#: ../../configuration/first-run-wizard.rst:32
 msgid ""
 "This is the path where Zrythm will save projects, temporary files, "
-"exported audio, etc. The default is \"zrythm\" in the user's directory."
+"exported audio, etc. The default is \"zrythm\" under `XDG_DATA_HOME "
+"<https://specifications.freedesktop.org/basedir-spec/basedir-spec-"
+"latest.html>`_ on freedesktop-compliant systems."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:41
+#: ../../configuration/first-run-wizard.rst:39
 msgid "Audio/MIDI Backends"
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:46
+#: ../../configuration/first-run-wizard.rst:44
 msgid ""
 "Zrythm supports multiple audio and MIDI backend engines. JACK is the "
 "recommended one for both, but it takes some time to set up if this is "
-"your first time using it. If you don't want to use JACK for some reason "
-"you can select other backends such as ALSA or SDL2."
+"your first time using it. If you choose to use JACK, JACK MIDI and the "
+"JACK audio backend must be chosen together."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:52
+#: ../../configuration/first-run-wizard.rst:50
+msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
+msgstr ""
+
+#: ../../configuration/first-run-wizard.rst:53
 msgid ""
 "Click :zbutton:`Test` to try connecting to the backend to see if it is "
 "functional."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:55
+#: ../../configuration/first-run-wizard.rst:56
 msgid ""
-"JACK MIDI requires a JACK server to be running, which means you probably "
-"want to use it with the JACK audio backend."
+"If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
+"chosen together."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:60
+#: ../../configuration/first-run-wizard.rst:62
 msgid "MIDI Devices"
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:65
+#: ../../configuration/first-run-wizard.rst:67
 msgid ""
 "These are the discovered devices that will be auto-connected and ready to"
 " use every time you run Zrythm. Click \"Rescan\" to scan for devices "
 "again."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:69
+#: ../../configuration/first-run-wizard.rst:71
 msgid ""
-"All of the settings mentioned here are also available in the preferences "
-"(Ctr+Shift+P or File->Preferences), so don't worry if you selected the "
-"wrong settings."
+"All of the settings mentioned here are also available in the "
+":ref:`preferences`, so don't worry if you selected the wrong settings."
 msgstr ""
 
 #: ../../configuration/intro.rst:6
 msgid "Configuration"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:6
+#: ../../configuration/preferences/intro.rst:8
 msgid "Preferences"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:8
+#: ../../configuration/preferences/intro.rst:10
 msgid ""
 "Zrythm has a Preferences dialog containing all of the global settings "
 "that can be accessed by clicking the gear icon or by ``Ctrl+Shift+P``."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:15
+#: ../../configuration/preferences/intro.rst:14
 msgid ""
-"The Preferences dialog is split into the following sections, which are "
-"explained below:"
+"Each section in the preferences dialog is explained in the following "
+"sections."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:18
-#: ../../configuration/preferences/intro.rst:25
+#: ../../configuration/preferences/intro.rst:174
+#: ../../configuration/preferences/intro.rst:194
 msgid "General"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:19
-msgid "Audio"
-msgstr ""
-
 #: ../../configuration/preferences/intro.rst:20
-#: ../../configuration/preferences/intro.rst:69
-msgid "GUI"
+msgid "General settings."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:21
-#: ../../configuration/preferences/intro.rst:60
-msgid "Plugins"
-msgstr ""
-
-#: ../../configuration/preferences/intro.rst:22
-#: ../../configuration/preferences/intro.rst:75
-msgid "Projects"
-msgstr "Projects"
-
-#: ../../configuration/preferences/intro.rst:28
-msgid "Audio Backend"
+#: ../../configuration/preferences/intro.rst:26
+msgid "Engine"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:28
-msgid "The backend to use for the audio engine."
+msgid "Audio engine settings."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:31
-msgid "MIDI Backend"
+msgid "Audio backend"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:31
-msgid "The MIDI backend to use for the audio engine."
+msgid "The audio backend to use."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:34
-msgid "MIDI Controllers"
+msgid "MIDI backend"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:34
-msgid "MIDI devices to auto-connect to when Zrythm starts."
-msgstr ""
-
-#: ../../configuration/preferences/intro.rst:50
-msgid "Pan Algorithm"
+msgid "The MIDI backend to use."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:37
-msgid ""
-"The panning algorithm to use. See the graph below for the different "
-"curves as you move the pan from left to right. We recommend leaving it as"
-" the default (Sine). See https://www.cs.cmu.edu/~music/icm-"
-"online/readings/panlaws/index.html for more information. This is not used"
-" at the moment."
+msgid "MIDI controllers"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:49
-msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
+#: ../../configuration/preferences/intro.rst:37
+msgid "A list of controllers to auto-connect to."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:53
-msgid "Pan Law"
+#: ../../configuration/preferences/intro.rst:40
+#: ../../configuration/preferences/intro.rst:82
+msgid "Paths"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:53
-msgid "This is not used at the moment."
+#: ../../configuration/preferences/intro.rst:42
+msgid "Global paths."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:57
-msgid "Zrythm Path"
+#: ../../configuration/preferences/intro.rst:45
+msgid "Zrythm path"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:45
+msgid "The directory to save user data in."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:48
+msgid "Plugins"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:50
+msgid "Plugin settings."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:56
+msgid "UIs"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:58
+msgid "Plugin UIs."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:62
+msgid "Generic UIs"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:61
+msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:65
+msgid "Open UI on instantiation"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:65
+msgid "Open plugin NUIs when they are instantiated."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:68
+msgid "Keep window on top"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:68
+msgid "Always show plugin UIs on top of the main window."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:72
+msgid "Bridge unsupported UIs"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:71
 msgid ""
-"The path to save projects, temporary files, and other non-project "
-"specific files."
+"Bridge unsupported UIs in another process instead of creating generic "
+"ones."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:63
-msgid "Always open plugin UIs"
-msgstr ""
-
-#: ../../configuration/preferences/intro.rst:63
-msgid "Always show the plugin UI when instantiating plugins."
-msgstr ""
-
-#: ../../configuration/preferences/intro.rst:66
-msgid "Keep plugin UIs on top"
-msgstr ""
-
-#: ../../configuration/preferences/intro.rst:66
-msgid "Whether to always keep plugin UIs above other Zrythm windows or not."
-msgstr ""
-
-#: ../../configuration/preferences/intro.rst:72
-msgid "Language"
-msgstr ""
-
-#: ../../configuration/preferences/intro.rst:72
-msgid "The language that the Zrythm interface uses."
+#: ../../configuration/preferences/intro.rst:74
+msgid "This may lead to performance loss for some plugins."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:79
-msgid "Autosave Interval"
+msgid "Refresh rate"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:78
-msgid ""
-"The amount of time to wait before auto-saving a backup of the current "
-"project, in minutes. Setting this to 0 will turn it off."
+msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:81
-msgid "Changing some of these settings requires a restart of Zrythm."
+#: ../../configuration/preferences/intro.rst:85
+msgid "VST plugins"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:85
+msgid "The search paths to scan for VST plugins in."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:87
+msgid ""
+"This option is only available on Windows. On GNU/Linux and MacOS the "
+"paths are fixed. See :ref:`plugin-paths` for details."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:92
+msgid "SFZ instruments"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:92
+msgid "The search paths to scan for SFZ instruments in."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:95
+msgid "SF2 instruments"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:95
+msgid "The search paths to scan for SF2 instruments in."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:98
+msgid "DSP"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:100
+msgid "Digital signal processing."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:106
+msgid "Pan"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:108
+msgid "Panning options for mono signals (not used at the moment)."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:125
+msgid "Pan algorithm"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:111
+msgid ""
+"The panning algorithm to use when applying pan on mono signals. See the "
+"graph below for the different curves as you move the pan from left to "
+"right. We recommend leaving it as the default (Sine). See "
+"https://www.cs.cmu.edu/~music/icm-online/readings/panlaws/index.html for "
+"more information."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:124
+msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:128
+msgid "Pan law"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:128
+msgid "The pan law to use when applying pan on mono signals."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:131
+msgid "Editing"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:133
+msgid "Editing options."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:139
+msgid "Audio"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:141
+msgid "Audio editing."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:144
+msgid "Fade algorithm"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:144
+msgid "Default fade algorithm to use for fade in/outs."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:147
+msgid "Automation"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:149
+msgid "Automation editing."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:152
+msgid "Curve algorithm"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:152
+msgid "Default curve algorithm to use for automation curves."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:155
+msgid "Undo"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:157
+msgid "Undo options."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:160
+msgid "Undo stack length"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:160
+msgid "Maximum undo history stack length. Set to -1 for unlimited."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:162
+msgid "We recommend leaving it at 128."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:166
+msgid "Projects"
+msgstr "Projects"
+
+#: ../../configuration/preferences/intro.rst:168
+msgid "Project settings."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:176
+msgid "General project settings."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:180
+msgid "Autosave interval"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:179
+msgid ""
+"Interval to auto-save projects, in minutes. Auto-saving will be disabled "
+"if this is set to 0."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:182
+msgid ""
+"This refers to automatic back-ups. The main project will not be "
+"overwritten unless you explicitly save it."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:186
+msgid "UI"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:188
+msgid "User interface options."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:196
+msgid "General user interface options."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:199
+msgid "User interface language"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:199
+msgid "The language to use for the user interface."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:201
+msgid ""
+"For a list of supported languages and their translation status see "
+"`Weblate <https://hosted.weblate.org/projects/zrythm/>`_."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:205
+msgid "Some of these settings require a restart of Zrythm to take effect."
 msgstr ""
 
 #~ msgid ""
@@ -697,3 +889,227 @@ msgstr ""
 #~ "online/readings/panlaws/index.html for more "
 #~ "information."
 #~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm stores all of its configuration"
+#~ " using the GSettings mechanism, which "
+#~ "comes with the ``gsettings`` command for"
+#~ " changing settings from the command "
+#~ "line, or the optional GUI tool "
+#~ "``dconf-editor``."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Normally, you shouldn't need to access"
+#~ " any of these settings as most "
+#~ "of them are found inside Zrythm's "
+#~ "UI, and it is not recommended to"
+#~ " edit them as Zrythm validates some"
+#~ " settings before it saves them, but"
+#~ " in some cases you may want to"
+#~ " change them manually for some "
+#~ "reason."
+#~ msgstr ""
+
+#~ msgid "Using gsettings"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "To see what settings are available "
+#~ "and for info on how to use "
+#~ "``gsettings`` see ``man gsettings``."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "As an example, to change the audio"
+#~ " backend you would do ``gsettings set"
+#~ " org.zrythm.Zrythm.preferences audio-backend "
+#~ "\"jack\"``"
+#~ msgstr ""
+
+#~ msgid "You can use the range option to get a list of the available values:"
+#~ msgstr ""
+
+#~ msgid "Using dconf-editor"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Install and run dconf-editor, and "
+#~ "navigate to ``org.zrythm.Zrythm``. All the "
+#~ "settings can be found there."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "On Linux-based platforms, Zrythm works"
+#~ " with both ALSA and JACK as "
+#~ "available backends. Depending on the "
+#~ "selected backend, the configuration differs."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm will auto-scan and allow "
+#~ "you to connect to input devices "
+#~ "for recording through the Track "
+#~ "Inspector, as below, and in most "
+#~ "cases you don't need to use any"
+#~ " external tools or auto-connect "
+#~ "mechanism."
+#~ msgstr ""
+
+#~ msgid "This is a TODO feature"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "When using the JACK audio and MIDI"
+#~ " backend, Zrythm exposes ports to "
+#~ "JACK, so devices can be attached "
+#~ "there using a tool like Catia. "
+#~ "Note that for MIDI, devices might "
+#~ "need to be bridged to JACK using"
+#~ " ``a2jmidid``."
+#~ msgstr ""
+
+#~ msgid "An example configuration looks like this (in Catia inside Cadence)"
+#~ msgstr ""
+
+#~ msgid "ALSA"
+#~ msgstr ""
+
+#~ msgid "A tool like Catia can be used to connect MIDI devices to Zrythm."
+#~ msgstr ""
+
+#~ msgid "You must have a locale for the language you want to use enabled."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This is usually not a problem "
+#~ "since you are probably already using "
+#~ "the correct locale for your language."
+#~ " In case a locale cannot be "
+#~ "found, you will see a message "
+#~ "telling you the steps to enable "
+#~ "it."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This is the path where Zrythm will"
+#~ " save projects, temporary files, exported"
+#~ " audio, etc. The default is "
+#~ "\"zrythm\" in the user's directory."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm supports multiple audio and MIDI"
+#~ " backend engines. JACK is the "
+#~ "recommended one for both, but it "
+#~ "takes some time to set up if "
+#~ "this is your first time using it."
+#~ " If you don't want to use JACK"
+#~ " for some reason you can select "
+#~ "other backends such as ALSA or "
+#~ "SDL2."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "JACK MIDI requires a JACK server "
+#~ "to be running, which means you "
+#~ "probably want to use it with the"
+#~ " JACK audio backend."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "All of the settings mentioned here "
+#~ "are also available in the preferences"
+#~ " (Ctr+Shift+P or File->Preferences), so "
+#~ "don't worry if you selected the "
+#~ "wrong settings."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The Preferences dialog is split into "
+#~ "the following sections, which are "
+#~ "explained below:"
+#~ msgstr ""
+
+#~ msgid "GUI"
+#~ msgstr ""
+
+#~ msgid "Audio Backend"
+#~ msgstr ""
+
+#~ msgid "The backend to use for the audio engine."
+#~ msgstr ""
+
+#~ msgid "MIDI Backend"
+#~ msgstr ""
+
+#~ msgid "The MIDI backend to use for the audio engine."
+#~ msgstr ""
+
+#~ msgid "MIDI Controllers"
+#~ msgstr ""
+
+#~ msgid "MIDI devices to auto-connect to when Zrythm starts."
+#~ msgstr ""
+
+#~ msgid "Pan Algorithm"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The panning algorithm to use. See "
+#~ "the graph below for the different "
+#~ "curves as you move the pan from"
+#~ " left to right. We recommend leaving"
+#~ " it as the default (Sine). See "
+#~ "https://www.cs.cmu.edu/~music/icm-"
+#~ "online/readings/panlaws/index.html for more "
+#~ "information. This is not used at "
+#~ "the moment."
+#~ msgstr ""
+
+#~ msgid "Pan Law"
+#~ msgstr ""
+
+#~ msgid "This is not used at the moment."
+#~ msgstr ""
+
+#~ msgid "Zrythm Path"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The path to save projects, temporary "
+#~ "files, and other non-project specific"
+#~ " files."
+#~ msgstr ""
+
+#~ msgid "Always open plugin UIs"
+#~ msgstr ""
+
+#~ msgid "Always show the plugin UI when instantiating plugins."
+#~ msgstr ""
+
+#~ msgid "Keep plugin UIs on top"
+#~ msgstr ""
+
+#~ msgid "Whether to always keep plugin UIs above other Zrythm windows or not."
+#~ msgstr ""
+
+#~ msgid "Language"
+#~ msgstr ""
+
+#~ msgid "The language that the Zrythm interface uses."
+#~ msgstr ""
+
+#~ msgid "Autosave Interval"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The amount of time to wait before"
+#~ " auto-saving a backup of the "
+#~ "current project, in minutes. Setting "
+#~ "this to 0 will turn it off."
+#~ msgstr ""
+
+#~ msgid "Changing some of these settings requires a restart of Zrythm."
+#~ msgstr ""
+

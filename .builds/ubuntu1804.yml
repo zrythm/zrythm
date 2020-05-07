@@ -28,7 +28,7 @@ sources:
 tasks:
   - setup: |
       cd zrythm
-      ../meson/meson.py build -Denable-tests=true -Dmanpage=true
+      ../meson/meson.py build -Denable-tests=true -Dwith-manpage=true
   - build: |
       cd zrythm
       ninja -C build

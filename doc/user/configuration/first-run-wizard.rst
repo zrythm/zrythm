@@ -20,12 +20,8 @@ Zrythm lets you choose the language of the interface. The
 interface is already translated in multiple languages, so
 choose the language you are most comfortable in.
 
-.. note:: You must have a locale for the language you want to use enabled.
-
-  This is usually not a problem since you are probably already
-  using the correct locale for your language. In case a locale
-  cannot be found, you will see a message telling you the
-  steps to enable it.
+.. note:: You must have a locale enabled for the language
+  you want to use.
 
 Path
 ----
@@ -35,7 +31,9 @@ Path
 
 This is the path where Zrythm will save projects,
 temporary files, exported audio, etc. The default is
-"zrythm" in the user's directory.
+"zrythm" under
+`XDG_DATA_HOME <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_ on freedesktop-compliant
+systems.
 
 Audio/MIDI Backends
 -------------------
@@ -45,16 +43,20 @@ Audio/MIDI Backends
 
 Zrythm supports multiple audio and MIDI backend engines.
 JACK is the recommended one for both, but it takes some time
-to set up if this is your first time using it. If you don't
-want to use JACK for some reason you can select other backends
-such as ALSA or SDL2.
+to set up if this is your first time using it. If you choose
+to use JACK, JACK MIDI and the JACK audio backend must be
+chosen together.
 
-Click :zbutton:`Test` to try connecting to the backend to see if it is
-functional.
+If JACK is not available on your system,
+we recommend RtAudio and RtMidi.
 
-.. note:: JACK MIDI requires a JACK server to be running,
-   which means you probably want to use it with the JACK audio
-   backend.
+Click :zbutton:`Test` to try connecting to the backend to
+see if it is functional.
+
+.. note:: If you choose to use JACK, JACK MIDI and the JACK
+   audio backend must be chosen together.
+
+.. _midi_devices:
 
 MIDI Devices
 ------------
@@ -66,6 +68,6 @@ These are the discovered devices that will be auto-connected
 and ready to use every time you run Zrythm. Click "Rescan"
 to scan for devices again.
 
-.. tip:: All of the settings mentioned here are also available in the
-   preferences (Ctr+Shift+P or File->Preferences), so don't worry
+.. tip:: All of the settings mentioned here are also
+   available in the :ref:`preferences`, so don't worry
    if you selected the wrong settings.

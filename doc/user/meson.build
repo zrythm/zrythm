@@ -101,7 +101,7 @@ endif
 
 # TODO convert the makefile to meson commands
 run_target (
-  'bundle_manual',
+  'bundle-manual',
   command: [
     'make', 'update-guile-docs', 'gettext',
     'bundle',

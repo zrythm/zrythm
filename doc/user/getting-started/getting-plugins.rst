@@ -1,63 +1,75 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
-Getting Plugins
-===============
+Getting Plugins, Instruments and Samples
+========================================
 
-Zrythm ships with a few bundled plugins to help you get
-started (currently only ZLFO), but you should
-install some plugins like synthesizers and effects before
-you can make music.
+Plugins
+-------
 
-Fortunately, there are many plugins to choose from. This guide
-will show you a few ways you can install plugins.
+Zrythm ships with a few bundled plugins to help users get
+started, but users are expected to download and install
+their own plugins that suit their preferences.
 
-If you are on Debian/Ubuntu, we highly recommend using
-the `KXstudio repositories <https://kx.studio/>`_, since
+There are many plugins to choose from. This guide
+will show you a few ways you can install plugins on GNU/Linux
+systems.
+
+For users of Debian-based distributions, we recommend using
+the `KXstudio repositories <https://kx.studio/>`_, as
 there are many plugins that can easily be installed via apt.
 
-If you are on Arch GNU/Linux, we recommend installing the
+For users of Arch Linux-based distributions, we recommend
+installing the
 `lv2-plugins <https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_
-group, or you can hand-pick the plugins you want from
-there.
-
-If you are not sure where to start, please read on.
+group.
 
 Recommended Plugin Bundles
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_
-provides a good variety of synths and effects that can
-help you get you started making music right away.
+provides a good variety of synths and effects.
 
 `ZAM Plugins <http://www.zamaudio.com/?p=976>`_
-is an effects pack that contains all the
-basic effects like Delay, Reverb, Compression, EQ, Saturation, etc.
+is an effects pack that contains high quality plugins for
+all the basic effects such as Delay, Reverb, Compression,
+EQ and Saturation.
 
-`LSP <https://lsp-plug.in/>`_ has a lot of useful effects.
+The `LSP Project <https://lsp-plug.in/>`_ has a wide variety
+of effect plugins.
 
-`OpenAV <http://openavproductions.com>`_
-has effects and instruments worth checking out.
-
-`X42 Plugins <http://x42-plugins.com/x42/>`_ has many
-MIDI effect and meter plugins.
+`X42 Plugins <http://x42-plugins.com/x42/>`_ is a collection
+of various MIDI effect and meter plugins.
 
 Synths
-------
+~~~~~~
 
-`Helm <https://tytel.org/helm/>`_ is an excellent subtractive synth.
+`Helm <https://tytel.org/helm/>`_ is a powerful subtractive
+synthesizer.
 
-`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synth
-that is closely modeled on the Yamaha DX7.
+`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM
+synthesizer that is closely modeled on the Yamaha DX7.
 
 `ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_
 is a powerful additive/subtractive synth that can synthesize
 a wide variety of sounds.
 
 Percussion Generators
----------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 `GeonKick <https://gitlab.com/iurie/geonkick>`_ is a
 kick drum synthesizer that can also synthesize other types of
 percussion.
+
+SFZ/SF2 Instruments
+-------------------
+
+You can find a list of SFZ instruments under free licenses
+at `sfz instruments <https://sfzinstruments.github.io/>`_.
+
+Samples
+-------
+
+We recommend using `Freesound <https://freesound.org/>`_ for
+collecting CC-licensed samples.
