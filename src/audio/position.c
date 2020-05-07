@@ -251,7 +251,7 @@ position_set_tick (
   position_update_ticks_and_frames (pos);
   g_warn_if_fail (
     pos->sub_tick >= 0.0 &&
-    pos->sub_tick <= 0.9999999);
+    pos->sub_tick < 1.0);
 }
 
 /**
@@ -273,7 +273,7 @@ position_add_frames (
   pos->frames = new_frames;
   g_warn_if_fail (
     pos->sub_tick >= 0.0 &&
-    pos->sub_tick <= 0.9999999);
+    pos->sub_tick < 1.0);
 }
 
 /**
@@ -539,7 +539,7 @@ position_to_ticks (
       ticks += pos->sub_tick;
       g_warn_if_fail (
         pos->sub_tick >= 0.0 &&
-        pos->sub_tick <= 0.9999999);
+        pos->sub_tick < 1.0);
       return ticks;
     }
   else if (pos->bars < 0)
@@ -562,7 +562,7 @@ position_to_ticks (
       ticks += pos->sub_tick;
       g_warn_if_fail (
         pos->sub_tick >= 0.0 &&
-        pos->sub_tick <= 0.9999999);
+        pos->sub_tick < 1.0);
       return ticks;
     }
   else
@@ -608,7 +608,7 @@ position_from_ticks (
       pos->sub_tick = ticks - pos->ticks;
       g_warn_if_fail (
         pos->sub_tick >= 0.0 &&
-        pos->sub_tick <= 0.9999999);
+        pos->sub_tick < 1.0);
     }
   else
     {
@@ -635,7 +635,7 @@ position_from_ticks (
       pos->sub_tick = ticks - pos->ticks;
       g_warn_if_fail (
         pos->sub_tick >= 0.0 &&
-        pos->sub_tick <= 0.9999999);
+        pos->sub_tick < 1.0);
     }
   position_update_ticks_and_frames (pos);
 }

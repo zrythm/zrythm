@@ -96,8 +96,7 @@ audio_region_new (
   else
     {
       self->pool_id = pool_id;
-      clip =
-          AUDIO_POOL->clips[pool_id];
+      clip = AUDIO_POOL->clips[pool_id];
       g_warn_if_fail (clip && clip->frames);
     }
 

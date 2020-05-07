@@ -326,6 +326,19 @@ region_gen_name (
   Track *           track);
 
 /**
+ * Stretch the region's contents.
+ *
+ * This should be called right after changing the
+ * region's size.
+ *
+ * @param ratio The ratio to stretch by.
+ */
+void
+region_stretch (
+  ZRegion * self,
+  double    ratio);
+
+/**
  * To be called every time the identifier changes
  * to update the region's children.
  */

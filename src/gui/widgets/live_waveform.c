@@ -116,7 +116,8 @@ live_waveform_draw_cb (
       AUDIO_ENGINE->block_length;
   if (lblocks_read == 0)
     {
-      g_return_val_if_reached (FALSE);
+      return FALSE;
+      /*g_return_val_if_reached (FALSE);*/
     }
 
   /* get the R buffer */

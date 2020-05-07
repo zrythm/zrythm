@@ -29,6 +29,7 @@
 #include "audio/pool.h"
 #include "audio/region.h"
 #include "audio/region_link_group_manager.h"
+#include "audio/stretcher.h"
 #include "audio/track.h"
 #include "gui/widgets/automation_region.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -199,6 +200,93 @@ region_move_to_track (
    * last on its track lane */
   track_remove_empty_last_lanes (
     region_track);
+}
+
+/**
+ * Stretch the region's contents.
+ *
+ * This should be called right after changing the
+ * region's size.
+ *
+ * @param ratio The ratio to stretch by.
+ */
+void
+region_stretch (
+  ZRegion * self,
+  double    ratio)
+{
+  self->stretching = true;
+  ArrangerObject * obj = (ArrangerObject *) self;
+
+  switch (self->id.type)
+    {
+    case REGION_TYPE_MIDI:
+      for (int i = 0; i < self->num_midi_notes; i++)
+        {
+          MidiNote * mn =
+            self->midi_notes[i];
+          ArrangerObject * mn_obj =
+            (ArrangerObject *) mn;
+
+          /* set start pos */
+          double before_ticks =
+            mn_obj->pos.total_ticks;
+          double new_ticks = before_ticks * ratio;
+          Position tmp;
+          position_from_ticks (
+            &tmp, new_ticks);
+          arranger_object_pos_setter (
+            mn_obj, &tmp);
+
+          /* set end pos */
+          before_ticks =
+            mn_obj->end_pos.
+              total_ticks;
+          new_ticks = before_ticks * ratio;
+          position_from_ticks (
+            &tmp, new_ticks);
+          arranger_object_end_pos_setter (
+            mn_obj, &tmp);
+        }
+      break;
+    case REGION_TYPE_AUDIO:
+      {
+        AudioClip * clip =
+          audio_region_get_clip (self);
+        Stretcher * stretcher =
+          stretcher_new_rubberband (
+            AUDIO_ENGINE->sample_rate,
+            clip->channels, ratio, 1.0);
+        ssize_t returned_frames =
+          stretcher_stretch_interleaved (
+            stretcher, self->frames,
+            (size_t) self->num_frames,
+            &self->frames);
+        g_warn_if_fail (returned_frames > 0);
+        self->num_frames =
+          (size_t) returned_frames;
+        (void) obj;
+        /* readjust end position to match the
+         * number of frames exactly */
+        Position new_end_pos;
+        position_from_frames (
+          &new_end_pos, returned_frames);
+        arranger_object_set_position (
+          obj, &new_end_pos,
+          ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
+          F_NO_VALIDATE);
+        arranger_object_set_position (
+          obj, &new_end_pos,
+          ARRANGER_OBJECT_POSITION_TYPE_END,
+          F_NO_VALIDATE);
+        stretcher_free (stretcher);
+      }
+      break;
+    default:
+      break;
+    }
+
+  self->stretching = false;
 }
 
 /**

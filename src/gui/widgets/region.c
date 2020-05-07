@@ -948,11 +948,13 @@ draw_fades (
               (double) (i - fade_out_px) /
                 local_px_diff,
               &obj->fade_out_opts, 0);
+          double tmp =
+            (double) ((i + 1) - fade_out_px);
           double next_val =
             1.0 -
             fade_get_y_normalized (
-              (double) ((i + 1) - fade_out_px) /
-                local_px_diff,
+              tmp > local_px_diff ?
+                1.0 : tmp / local_px_diff,
               &obj->fade_out_opts, 0);
 
           /* if start, move only */
@@ -1029,7 +1031,7 @@ draw_audio_region (
   long prev_frames =
     (long) (multiplier * local_start_x);
   long curr_frames = prev_frames;
-  for (double i = local_start_x;
+  for (double i = local_start_x + 0.5;
        i < (double) local_end_x; i += 3.0)
     {
       curr_frames = (long) (multiplier * i);

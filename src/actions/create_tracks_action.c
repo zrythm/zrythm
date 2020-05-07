@@ -150,8 +150,13 @@ create (
           /* create an audio region & add to
            * track */
           Position start_pos;
-          position_set_to_pos (
-            &start_pos, PLAYHEAD);
+          /* FIXME need to pass a position when
+           * creating this action, and the position
+           * should be used here to place the
+           * audio region to, but for now
+           * assume all audio clips are
+           * instantiated at 1.1.1.0 */
+          position_init (&start_pos);
           ZRegion * ar =
             audio_region_new (
               add_to_project ? self->pool_id : -1,

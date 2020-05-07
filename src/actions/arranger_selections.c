@@ -1717,18 +1717,25 @@ do_or_undo_resize (
             {
             case ARRANGER_SELECTIONS_ACTION_RESIZE_L:
               type = ARRANGER_OBJECT_RESIZE_NORMAL;
-              left = 1;
+              left = true;
+              break;
+            case ARRANGER_SELECTIONS_ACTION_STRETCH_L:
+              type = ARRANGER_OBJECT_RESIZE_STRETCH;
+              left = true;
               break;
             case ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP:
-              left = 1;
+              left = true;
               type = ARRANGER_OBJECT_RESIZE_LOOP;
               break;
             case ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE:
-              left = 1;
+              left = true;
               type = ARRANGER_OBJECT_RESIZE_FADE;
               break;
             case ARRANGER_SELECTIONS_ACTION_RESIZE_R:
               type = ARRANGER_OBJECT_RESIZE_NORMAL;
+              break;
+            case ARRANGER_SELECTIONS_ACTION_STRETCH_R:
+              type = ARRANGER_OBJECT_RESIZE_STRETCH;
               break;
             case ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP:
               type = ARRANGER_OBJECT_RESIZE_LOOP;
@@ -1755,6 +1762,8 @@ do_or_undo_resize (
     get_actual_arranger_selections (self);
   EVENTS_PUSH (
     ET_ARRANGER_SELECTIONS_CHANGED, sel);
+  EVENTS_PUSH (
+    ET_ARRANGER_SELECTIONS_ACTION_FINISHED, sel);
 
   self->first_run = 0;
 

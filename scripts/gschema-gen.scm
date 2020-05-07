@@ -304,6 +304,11 @@ Args:
          (print-enum
            "transport-display"
            '("bbt" "time"))
+         (print-enum
+           "tool"
+           '("select-normal" "select-stretch"
+             "edit" "cut" "erase" "ramp"
+             "audition"))
          (newline)
 
          ;; -- print normal schemas --
@@ -443,6 +448,11 @@ Args:
                  "transport-display" "bbt"
                  "Transport display type"
                  "Selected transport display type (BBT/time).")
+               (make-schema-key-with-enum
+                 "selected-tool"
+                 "tool" "select-normal"
+                 "Selected editing tool"
+                 "Selected editing tool.")
              ))) ;; ui
 
          (schema-print

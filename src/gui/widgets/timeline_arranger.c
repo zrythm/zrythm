@@ -609,6 +609,8 @@ snap_region_l (
     type = ARRANGER_OBJECT_RESIZE_LOOP;
   else if ACTION_IS (RESIZING_L_FADE)
     type = ARRANGER_OBJECT_RESIZE_FADE;
+  else if ACTION_IS (STRETCHING_L)
+    type = ARRANGER_OBJECT_RESIZE_STRETCH;
 
   if (SNAP_GRID_ANY_SNAP (self->snap_grid) &&
         !self->shift_held &&
@@ -665,7 +667,7 @@ snap_region_l (
       if (is_valid)
         {
           arranger_object_resize (
-            r_obj, 1, type, diff);
+            r_obj, true, type, diff);
         }
     }
 
@@ -782,6 +784,8 @@ snap_region_r (
     type = ARRANGER_OBJECT_RESIZE_LOOP;
   else if ACTION_IS (RESIZING_R_FADE)
     type = ARRANGER_OBJECT_RESIZE_FADE;
+  else if ACTION_IS (STRETCHING_R)
+    type = ARRANGER_OBJECT_RESIZE_STRETCH;
 
   if (SNAP_GRID_ANY_SNAP (self->snap_grid) &&
         !self->shift_held &&
@@ -844,7 +848,7 @@ snap_region_r (
       if (is_valid)
         {
           arranger_object_resize (
-            r_obj, 0, type, diff);
+            r_obj, false, type, diff);
 
           /* if creating also set the loop points
            * appropriately */

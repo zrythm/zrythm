@@ -576,7 +576,7 @@ draw_audio_bg (
         obj->pos.frames,
       0);
 
-  for (double i = local_start_x;
+  for (double i = local_start_x + 0.5;
        i < local_end_x; i+= 2.0)
     {
       long curr_frames =
@@ -2877,20 +2877,13 @@ on_drag_begin_handle_hit_object (
           break;
         case TOOL_SELECT_NORMAL:
         case TOOL_EDIT:
+        case TOOL_SELECT_STRETCH:
           if ((is_resize_l) &&
               !PIANO_ROLL->drum_mode)
             SET_ACTION (RESIZING_L);
           else if (is_resize_r &&
                    !PIANO_ROLL->drum_mode)
             SET_ACTION (RESIZING_R);
-          else
-            SET_ACTION (STARTING_MOVING);
-          break;
-        case TOOL_SELECT_STRETCH:
-          if (is_resize_l)
-            SET_ACTION (STRETCHING_L);
-          else if (is_resize_r)
-            SET_ACTION (STRETCHING_R);
           else
             SET_ACTION (STARTING_MOVING);
           break;
@@ -3442,6 +3435,7 @@ drag_update (
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_L:
+    case UI_OVERLAY_ACTION_STRETCHING_L:
       /* snap selections based on new pos */
       if (self->type == TYPE (TIMELINE))
         {
@@ -3462,10 +3456,6 @@ drag_update (
               self, &self->curr_pos, 0);
         }
       break;
-    case UI_OVERLAY_ACTION_STRETCHING_L:
-      /* TODO */
-      g_message ("stretching L");
-      break;
     case UI_OVERLAY_ACTION_RESIZING_R_FADE:
     case UI_OVERLAY_ACTION_RESIZING_R_LOOP:
       if (self->type == TYPE (TIMELINE))
@@ -3485,6 +3475,7 @@ drag_update (
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
+    case UI_OVERLAY_ACTION_STRETCHING_R:
     case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
       if (self->type == TYPE (TIMELINE))
         {
@@ -3510,9 +3501,6 @@ drag_update (
             midi_arranger_widget_snap_midi_notes_r (
               self, &self->curr_pos, 0);
         }
-      break;
-    case UI_OVERLAY_ACTION_STRETCHING_R:
-      g_message ("stretching R");
       break;
     case UI_OVERLAY_ACTION_RESIZING_UP:
       if (self->type == TYPE (MIDI_MODIFIER))
@@ -4082,6 +4070,22 @@ on_drag_end_timeline (
             UNDO_MANAGER, ua);
         }
       break;
+    case UI_OVERLAY_ACTION_STRETCHING_L:
+      {
+        ArrangerObject * obj =
+          (ArrangerObject *) self->start_object;
+        double ticks_diff =
+          obj->pos.total_ticks -
+          obj->transient->pos.total_ticks;
+        UndoableAction * ua =
+          arranger_selections_action_new_resize (
+            (ArrangerSelections *) TL_SELECTIONS,
+            ARRANGER_SELECTIONS_ACTION_STRETCH_L,
+            ticks_diff);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
+      break;
     case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
         {
           ArrangerObject * obj =
@@ -4131,22 +4135,37 @@ on_drag_end_timeline (
             UNDO_MANAGER, ua);
         }
       break;
+    case UI_OVERLAY_ACTION_STRETCHING_R:
+      {
+        ArrangerObject * obj =
+          (ArrangerObject *) self->start_object;
+        double ticks_diff =
+          obj->end_pos.total_ticks -
+          obj->transient->end_pos.total_ticks;
+        UndoableAction * ua =
+          arranger_selections_action_new_resize (
+            (ArrangerSelections *) TL_SELECTIONS,
+            ARRANGER_SELECTIONS_ACTION_STRETCH_R,
+            ticks_diff);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
+      break;
     case UI_OVERLAY_ACTION_RESIZING_R_LOOP:
-      if (!self->resizing_range)
-        {
-          ArrangerObject * obj =
-            (ArrangerObject *) self->start_object;
-          double ticks_diff =
-            obj->end_pos.total_ticks -
-            obj->transient->end_pos.total_ticks;
-          UndoableAction * ua =
-            arranger_selections_action_new_resize (
-              (ArrangerSelections *) TL_SELECTIONS,
-              ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
-              ticks_diff);
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
-        }
+      {
+        ArrangerObject * obj =
+          (ArrangerObject *) self->start_object;
+        double ticks_diff =
+          obj->end_pos.total_ticks -
+          obj->transient->end_pos.total_ticks;
+        UndoableAction * ua =
+          arranger_selections_action_new_resize (
+            (ArrangerSelections *) TL_SELECTIONS,
+            ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
+            ticks_diff);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R_FADE:
         {

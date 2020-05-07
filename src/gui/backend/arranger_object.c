@@ -1043,6 +1043,8 @@ arranger_object_resize (
   ArrangerObjectResizeType type,
   const double             ticks)
 {
+  double before_length =
+    arranger_object_get_length_in_ticks (self);
   Position tmp;
   if (left)
     {
@@ -1122,6 +1124,30 @@ arranger_object_resize (
                 self, &tmp,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
                 F_NO_VALIDATE);
+            }
+
+          if (type ==
+                ARRANGER_OBJECT_RESIZE_STRETCH &&
+              self->type ==
+                ARRANGER_OBJECT_TYPE_REGION)
+            {
+              /* move fade out */
+              tmp = self->fade_out_pos;
+              position_add_ticks (&tmp, ticks);
+              arranger_object_set_position (
+                self, &tmp,
+                ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
+                F_NO_VALIDATE);
+
+              ZRegion * region = (ZRegion *) self;
+              double new_length =
+                arranger_object_get_length_in_ticks (
+                  self);
+
+              /* stretch contents */
+              region_stretch (
+                region,
+                new_length / before_length);
             }
         }
     }
@@ -1694,6 +1720,23 @@ clone_region (
             region->id.track_pos,
             region->id.lane_pos,
             region->id.idx);
+
+        /* copy the actual frames - they might
+         * be different from the clip due to
+         * eg. stretching */
+        AudioClip * clip =
+          audio_region_get_clip (region);
+        size_t frame_bytes_size =
+          sizeof (float) *
+            (size_t) region->num_frames *
+            clip->channels;
+        ar->frames =
+          realloc (
+            ar->frames, frame_bytes_size);
+        ar->num_frames = region->num_frames;
+        memcpy (
+          &ar->frames[0], &region->frames[0],
+          frame_bytes_size);
 
         new_region = ar;
         new_region->pool_id = region->pool_id;

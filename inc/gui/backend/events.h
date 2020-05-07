@@ -80,6 +80,10 @@ typedef enum EventType
   ET_ARRANGER_SELECTIONS_REMOVED,
   ET_ARRANGER_SELECTIONS_MOVED,
 
+  /** To be used after an action is finished to
+   * redraw everything. */
+  ET_ARRANGER_SELECTIONS_ACTION_FINISHED,
+
   /** also for channels */
   ET_TRACK_STATE_CHANGED,
   /** works for all rulers */

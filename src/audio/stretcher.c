@@ -130,7 +130,6 @@ stretcher_stretch (
     self->rubberband_state, in_samples,
     in_samples_size, 1);
 
-
   /* get the output data */
   int available_out_samples =
     rubberband_available (self->rubberband_state);

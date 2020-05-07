@@ -97,6 +97,12 @@ audio_track_fill_stereo_ports_from_clip (
               (!r->bounce || !self->bounce))
             continue;
 
+          /* skip if region is currently being
+           * stretched FIXME what if stretching
+           * starts inside this - need a semaphore */
+          if (r->stretching)
+            continue;
+
           if (region_is_hit_by_range (
                 r,
                 cycle_start_frames,

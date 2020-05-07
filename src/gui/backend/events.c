@@ -974,48 +974,16 @@ stretch_audio_region (
   ZRegion * region)
 {
   g_return_if_fail (region);
-  ArrangerObject * obj = (ArrangerObject *) region;
 
   if (g_settings_get_boolean (S_UI, "musical-mode"))
     {
-      region->stretching = 1;
-
       AudioClip * clip =
         audio_region_get_clip (region);
       double time_ratio =
         (double) clip->bpm /
         (double) TRANSPORT->bpm;
-      Stretcher * stretcher =
-        stretcher_new_rubberband (
-          AUDIO_ENGINE->sample_rate,
-          clip->channels, time_ratio, 1.0);
-
-      /*g_message ("BEFORE STRETCHING: clip num frames: %ld, position end: %ld",*/
-        /*clip->num_frames,*/
-        /*obj->end_pos.frames);*/
-      /*position_print (&obj->end_pos);*/
-
-      ssize_t returned_frames =
-        stretcher_stretch_interleaved (
-          stretcher, clip->frames,
-          (size_t) clip->num_frames,
-          &region->frames);
-      g_warn_if_fail (returned_frames > 0);
-      region->num_frames =
-        (size_t) returned_frames;
-      /*g_warn_if_fail (*/
-        /*returned_frames !=*/
-          /*(ssize_t) new_frames_size);*/
-
-      /*g_message ("AFTER: position end frames %ld",*/
-        /*obj->end_pos.frames);*/
-      /*position_print (&obj->end_pos);*/
-      g_warn_if_fail (
-        obj->end_pos.frames <= returned_frames);
-
-      region->stretching = 0;
+      region_stretch (region, time_ratio);
     }
-
 }
 
 static void
@@ -1162,6 +1130,9 @@ events_process (void * data)
         case ET_ARRANGER_SELECTIONS_MOVED:
           on_arranger_selections_moved (
             ARRANGER_SELECTIONS (ev->arg));
+          break;
+        case ET_ARRANGER_SELECTIONS_ACTION_FINISHED:
+          redraw_all_arranger_bgs ();
           break;
         case ET_TRACKLIST_SELECTIONS_CHANGED:
           /* only refresh the inspector if the
