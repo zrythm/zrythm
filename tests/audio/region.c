@@ -199,7 +199,7 @@ test_new_region ()
       arranger_object_set_position (
         r_obj, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_START,
-        F_NO_CACHED, F_NO_VALIDATE);
+        F_NO_VALIDATE);
     }
 }
 

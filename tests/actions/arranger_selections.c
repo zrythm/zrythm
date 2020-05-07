@@ -912,7 +912,7 @@ test_duplicate_timeline ()
       /* do move ticks */
       arranger_selections_add_ticks (
         (ArrangerSelections *) TL_SELECTIONS,
-        MOVE_TICKS, 0);
+        MOVE_TICKS);
 
       /* do duplicate */
       UndoableAction * ua =
@@ -994,7 +994,7 @@ test_link_timeline ()
       /* do move ticks */
       arranger_selections_add_ticks (
         (ArrangerSelections *) TL_SELECTIONS,
-        MOVE_TICKS, 0);
+        MOVE_TICKS);
 
       /* do duplicate */
       UndoableAction * ua =
