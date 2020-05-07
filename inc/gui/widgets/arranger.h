@@ -179,6 +179,9 @@ typedef struct _ArrangerWidget
    * positions. */
   double               adj_ticks_diff;
 
+  /** adj_ticks_diff in last cycle. */
+  double               last_adj_ticks_diff;
+
   /** The absolute (not snapped) Position as of the
    * current action. */
   Position             curr_pos;

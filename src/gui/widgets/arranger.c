@@ -577,7 +577,7 @@ draw_audio_bg (
       0);
 
   for (double i = local_start_x;
-       i < local_end_x; i+= 0.6)
+       i < local_end_x; i+= 2.0)
     {
       long curr_frames =
         ui_px_to_frames_editor (i, 1) -
@@ -610,10 +610,13 @@ draw_audio_bg (
                 min = val;
             }
         }
+#define DRAW_VLINE(cr,x,from_y,to_y) \
+  cairo_move_to (cr, x, from_y); \
+  cairo_line_to (cr, x, to_y)
 
       min = (min + 1.f) / 2.f; /* normallize */
       max = (max + 1.f) / 2.f; /* normalize */
-      z_cairo_draw_vertical_line (
+      DRAW_VLINE (
         cr,
         /* x */
         i - rect->x,
@@ -630,6 +633,8 @@ draw_audio_bg (
 
       prev_frames = curr_frames;
     }
+#undef DRAW_VLINE
+  cairo_stroke (cr);
 }
 
 static gboolean
@@ -1516,7 +1521,9 @@ move_items_x (
   ArrangerSelections * sel =
     arranger_widget_get_selections (self);
   arranger_selections_add_ticks (
-    sel, ticks_diff, F_CACHED);
+    sel, ticks_diff);
+
+  g_message ("ticks diff %f", ticks_diff);
 
   EVENTS_PUSH (
     ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
@@ -2664,7 +2671,6 @@ set_earliest_obj (
       arranger_selections_get_start_pos (
         sel, &self->earliest_obj_start_pos,
         F_GLOBAL);
-      arranger_selections_set_cache_poses (sel);
       self->earliest_obj_exists = 1;
     }
   else
@@ -3528,7 +3534,10 @@ drag_update (
     case UI_OVERLAY_ACTION_CREATING_MOVING:
     case UI_OVERLAY_ACTION_MOVING_COPY:
     case UI_OVERLAY_ACTION_MOVING_LINK:
-      move_items_x (self, self->adj_ticks_diff);
+      move_items_x (
+        self,
+        self->adj_ticks_diff -
+          self->last_adj_ticks_diff);
       move_items_y (self, offset_y);
       break;
     case UI_OVERLAY_ACTION_AUTOFILLING:
@@ -3569,6 +3578,7 @@ drag_update (
   /* update last offsets */
   self->last_offset_x = offset_x;
   self->last_offset_y = offset_y;
+  self->last_adj_ticks_diff = self->adj_ticks_diff;
 
   arranger_widget_redraw_whole (self);
   arranger_widget_refresh_cursor (self);
@@ -4322,6 +4332,7 @@ drag_end (
   self->start_y = 0;
   self->last_offset_x = 0;
   self->last_offset_y = 0;
+  self->last_adj_ticks_diff = 0;
   self->start_object = NULL;
 
   self->shift_held = 0;

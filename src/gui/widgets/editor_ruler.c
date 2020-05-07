@@ -108,7 +108,7 @@ editor_ruler_on_drag_update (
               arranger_object_set_position (
                 r_obj, &region_local_pos,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
-                F_NO_CACHED, F_VALIDATE);
+                F_VALIDATE);
               transport_update_position_frames (
                 TRANSPORT);
               EVENTS_PUSH (
@@ -129,7 +129,7 @@ editor_ruler_on_drag_update (
               arranger_object_set_position (
                 r_obj, &region_local_pos,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
-                F_NO_CACHED, F_VALIDATE);
+                F_VALIDATE);
               transport_update_position_frames (
                 TRANSPORT);
               EVENTS_PUSH (
@@ -147,7 +147,7 @@ editor_ruler_on_drag_update (
               arranger_object_set_position (
                 r_obj, &region_local_pos,
                 ARRANGER_OBJECT_POSITION_TYPE_CLIP_START,
-                F_NO_CACHED, F_VALIDATE);
+                F_VALIDATE);
               transport_update_position_frames (
                 TRANSPORT);
               EVENTS_PUSH (

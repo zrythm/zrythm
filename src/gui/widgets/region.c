@@ -35,6 +35,7 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_panel.h"
+#include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
@@ -991,6 +992,10 @@ draw_audio_region (
       return;
     }
 
+  double multiplier =
+    (double) AUDIO_ENGINE->frames_per_tick /
+    MW_RULER->px_per_tick;
+
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
 
   AudioClip * clip =
@@ -1010,13 +1015,13 @@ draw_audio_region (
     local_start_x +
     (double) draw_rect->width;
   long prev_frames =
-    ui_px_to_frames_timeline (local_start_x, 0);
+    (long) (multiplier * local_start_x);
+  long curr_frames = prev_frames;
   for (double i = local_start_x;
-       i < (double) local_end_x; i += 1.0)
+       i < (double) local_end_x; i += 3.0)
     {
+      curr_frames = (long) (multiplier * i);
       /* current single channel frames */
-      long curr_frames =
-        ui_px_to_frames_timeline (i, 0);
       curr_frames += clip_start_frames;
       while (curr_frames >= loop_end_frames)
         {
@@ -1046,10 +1051,14 @@ draw_audio_region (
                 min = val;
             }
         }
+#define DRAW_VLINE(cr,x,from_y,to_y) \
+  cairo_move_to (cr, x, from_y); \
+  cairo_line_to (cr, x, to_y)
+
       /* normalize */
       min = (min + 1.f) / 2.f;
       max = (max + 1.f) / 2.f;
-      z_cairo_draw_vertical_line (
+      DRAW_VLINE (
         cr,
         /* x */
         (i - 0.5 + full_rect->x) - rect->x,
@@ -1067,6 +1076,8 @@ draw_audio_region (
 
       prev_frames = curr_frames;
     }
+
+  cairo_stroke (cr);
 }
 
 /**

@@ -258,6 +258,10 @@ else
     ]
 endif
 
+if get_option ('enable-profiling')
+  test_cflags += [ '-g', '-pg', 'no-pie' ]
+endif
+
 if (get_option ('buildtype') == 'release')
   test_cflags += [
     '-ffast-math',
@@ -271,10 +275,6 @@ if (get_option ('buildtype') == 'release')
     #'-fvisibility=hidden',
     ]
   #cdata.set('G_DISABLE_CHECKS', 1)
-endif
-
-if get_option ('enable-profiling')
-  test_cflags += [ '-g', '-pg', 'no-pie' ]
 endif
 
 common_cflags = cc.get_supported_arguments (

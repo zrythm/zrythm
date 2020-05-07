@@ -710,11 +710,11 @@ do_or_undo_move (
             {
               /* shift the actual object */
               arranger_object_move (
-                obj, ticks, F_NO_CACHED);
+                obj, ticks);
 
               /* also shift the copy */
               arranger_object_move (
-                objs[i], ticks, F_NO_CACHED);
+                objs[i], ticks);
             }
 
           if (delta_tracks != 0)
@@ -965,9 +965,9 @@ do_or_undo_duplicate_or_link (
                     self->ticks, 0.0))
                 {
                   arranger_object_move (
-                    obj, - self->ticks, 0);
+                    obj, - self->ticks);
                   arranger_object_move (
-                    objs[i], - self->ticks, 0);
+                    objs[i], - self->ticks);
                 }
 
               /* tracks & lanes */
@@ -1082,12 +1082,12 @@ do_or_undo_duplicate_or_link (
             {
               /* shift it */
               arranger_object_move (
-                obj, ticks, F_NO_CACHED);
+                obj, ticks);
             }
 
           /* also shift the copy */
           arranger_object_move (
-            objs[i], ticks, F_NO_CACHED);
+            objs[i], ticks);
         /*}*/
 
       if (delta_tracks != 0)

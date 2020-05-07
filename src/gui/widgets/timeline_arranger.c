@@ -417,7 +417,7 @@ timeline_arranger_widget_create_region (
   arranger_object_set_position (
     r_obj, &r_obj->end_pos,
     ARRANGER_OBJECT_POSITION_TYPE_END,
-    F_CACHED, F_NO_VALIDATE);
+    F_NO_VALIDATE);
   arranger_object_select (
     r_obj, F_SELECT, F_NO_APPEND);
 }

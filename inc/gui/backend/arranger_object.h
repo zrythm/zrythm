@@ -166,14 +166,8 @@ typedef struct ArrangerObject
    */
   Position           pos;
 
-  /** Cache, used in runtime operations. */
-  Position           cache_pos;
-
   /** End Position, if the object has one. */
   Position           end_pos;
-
-  /** Cache, used in runtime operations. */
-  Position           cache_end_pos;
 
   /**
    * Start position of the clip loop.
@@ -184,14 +178,8 @@ typedef struct ArrangerObject
    */
   Position           clip_start_pos;
 
-  /** Cache, used in runtime operations. */
-  Position           cache_clip_start_pos;
-
   /** Loop start Position, if the object has one. */
   Position           loop_start_pos;
-
-  /** Cache, used in runtime operations. */
-  Position           cache_loop_start_pos;
 
   /**
    * End position of the clip loop.
@@ -201,20 +189,11 @@ typedef struct ArrangerObject
    */
   Position           loop_end_pos;
 
-  /** Cache, used in runtime operations. */
-  Position           cache_loop_end_pos;
-
   /** Fade in position. */
   Position           fade_in_pos;
 
-  /** Cache. */
-  Position           cache_fade_in_pos;
-
   /** Fade in position. */
   Position           fade_out_pos;
-
-  /** Cache. */
-  Position           cache_fade_out_pos;
 
   /** Fade in curve options. */
   CurveOptions       fade_in_opts;
@@ -599,15 +578,12 @@ arranger_object_loop_end_pos_setter (
  * @param pos The position to set to.
  * @param pos_type The type of Position to set in the
  *   ArrangerObject.
- * @param cached Set to 1 to validate based on the
- *   cached positions instead of the main ones.
  */
 int
 arranger_object_is_position_valid (
   ArrangerObject *           self,
   const Position *           pos,
-  ArrangerObjectPositionType pos_type,
-  const int                  cached);
+  ArrangerObjectPositionType pos_type);
 
 /**
  * Sets the Position  all of the object's linked
@@ -616,8 +592,6 @@ arranger_object_is_position_valid (
  * @param pos The position to set to.
  * @param pos_type The type of Position to set in the
  *   ArrangerObject.
- * @param cached Set to 1 to set the cached positions
- *   instead of the main ones.
  * @param validate Validate the Position before
  *   setting it.
  */
@@ -626,7 +600,6 @@ arranger_object_set_position (
   ArrangerObject *           self,
   const Position *           pos,
   ArrangerObjectPositionType pos_type,
-  const int                  cached,
   const int                  validate);
 
 /**
@@ -657,15 +630,11 @@ arranger_object_remove_linked_region (
 /**
  * Moves the object by the given amount of
  * ticks.
- *
- * @param use_cached_pos Add the ticks to the cached
- *   Position instead of its current Position.
  */
 void
 arranger_object_move (
   ArrangerObject *         self,
-  const double             ticks,
-  const int                use_cached_pos);
+  const double             ticks);
 
 /**
  * Returns the length of the ArrangerObject (if

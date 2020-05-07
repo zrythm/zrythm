@@ -221,16 +221,6 @@ arranger_selections_get_last_object (
   //Position *           pos);
 
 /**
- * Sets the cache Position's for each object in
- * the selection.
- *
- * Used by the ArrangerWidget's.
- */
-void
-arranger_selections_set_cache_poses (
-  ArrangerSelections * self);
-
-/**
  * Returns all objects in the selections in a
  * newly allocated array that should be free'd.
  *
@@ -259,8 +249,7 @@ arranger_selections_redraw (
 void
 arranger_selections_add_ticks (
   ArrangerSelections *     self,
-  const double             ticks,
-  const int                use_cached_pos);
+  const double             ticks);
 
 /**
  * Clears selections.

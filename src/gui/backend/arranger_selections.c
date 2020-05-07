@@ -1006,99 +1006,15 @@ arranger_selections_get_last_object (
 }
 
 /**
- * Sets the cache Position's for each object in
- * the selection.
- *
- * Used by the ArrangerWidget's.
- */
-void
-arranger_selections_set_cache_poses (
-  ArrangerSelections * self)
-{
-  int i;
-  TimelineSelections * ts;
-  ChordSelections * cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections * as;
-
-#define SET_CACHE_POS(sel,sc) \
-  for (i = 0; i < sel->num_##sc##s; i++) \
-    { \
-      ArrangerObject * sc = \
-        (ArrangerObject *) sel->sc##s[i]; \
-      sc->cache_pos = sc->pos; \
-      if (arranger_object_type_has_length ( \
-            sc->type)) \
-        { \
-          sc->cache_end_pos = sc->end_pos; \
-        } \
-      if (arranger_object_type_can_loop ( \
-            sc->type)) \
-        { \
-          sc->cache_clip_start_pos =  \
-            sc->clip_start_pos; \
-          sc->cache_loop_start_pos =  \
-            sc->loop_start_pos; \
-          sc->cache_loop_end_pos =  \
-            sc->loop_end_pos; \
-        } \
-    }
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      SET_CACHE_POS (
-        ts, region);
-      SET_CACHE_POS (
-        ts, scale_object);
-      SET_CACHE_POS (
-        ts, marker);
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      SET_CACHE_POS (
-        mas, midi_note);
-      for (i = 0; i < mas->num_midi_notes; i++)
-        {
-          MidiNote * mn = mas->midi_notes[i];
-          midi_note_set_cache_val (
-            mn, mn->val);
-          velocity_set_cache_vel (
-            mn->vel, mn->vel->vel);
-        }
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      SET_CACHE_POS (
-        as, automation_point);
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      SET_CACHE_POS (
-        cs, chord_object);
-      break;
-    default:
-      g_return_if_reached ();
-    }
-
-#undef SET_CACHE_POS
-}
-
-/**
  * Moves the selections by the given
  * amount of ticks.
  *
- * @param use_cached_pos Add the ticks to the cached
- *   Position's instead of the current Position's
- *   FIXME this is not used anymore.
  * @param ticks Ticks to add.
  */
 void
 arranger_selections_add_ticks (
   ArrangerSelections *     self,
-  const double             ticks,
-  const int                use_cached_pos)
+  const double             ticks)
 {
   int i;
   TimelineSelections * ts;
@@ -1111,8 +1027,7 @@ arranger_selections_add_ticks (
     { \
       ArrangerObject * sc = \
         (ArrangerObject *) sel->sc##s[i]; \
-      arranger_object_move ( \
-        sc, ticks, use_cached_pos); \
+      arranger_object_move (sc, ticks); \
     }
 
   switch (self->type)

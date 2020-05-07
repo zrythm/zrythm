@@ -119,7 +119,7 @@ to color all the track backgrounds red.
 # Tests and Coverage
 To run the test suite, use
 
-    meson build -Denable_tests=true
+    meson build -Denable-tests=true
 
 followed by
 

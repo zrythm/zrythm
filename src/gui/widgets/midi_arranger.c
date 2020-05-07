@@ -117,11 +117,11 @@ midi_arranger_widget_create_note (
   arranger_object_set_position (
     midi_note_obj, &tmp,
     ARRANGER_OBJECT_POSITION_TYPE_END,
-    F_NO_CACHED, F_NO_VALIDATE);
+    F_NO_VALIDATE);
   arranger_object_set_position (
     midi_note_obj, &tmp,
     ARRANGER_OBJECT_POSITION_TYPE_END,
-    F_CACHED, F_NO_VALIDATE);
+    F_NO_VALIDATE);
 
   /* set as start object */
   self->start_object = midi_note_obj;
@@ -162,9 +162,8 @@ midi_arranger_widget_snap_midi_notes_l (
   double delta;
   delta =
     pos->total_ticks -
-    (self->start_object->
-      cache_pos.total_ticks +
-    r_obj->pos.total_ticks);
+    (self->start_object->pos.total_ticks +
+      r_obj->pos.total_ticks);
 
   Position new_start_pos, new_global_start_pos;
   MidiNote * midi_note;
@@ -181,7 +180,7 @@ midi_arranger_widget_snap_midi_notes_l (
        * delta to the cached start pos */
       position_set_to_pos (
         &new_start_pos,
-        &mn_obj->cache_pos);
+        &mn_obj->pos);
       position_add_ticks (
         &new_start_pos, delta);
 
@@ -307,9 +306,8 @@ midi_arranger_widget_snap_midi_notes_r (
    * pos */
   double delta =
     pos->total_ticks -
-    (self->start_object->
-      cache_end_pos.total_ticks +
-    r_obj->pos.total_ticks);
+    (self->start_object->end_pos.total_ticks +
+      r_obj->pos.total_ticks);
 
   MidiNote * midi_note;
   Position new_end_pos, new_global_end_pos;
@@ -329,7 +327,7 @@ midi_arranger_widget_snap_midi_notes_r (
        * to the cached end pos */
       position_set_to_pos (
         &new_end_pos,
-        &mn_obj->cache_end_pos);
+        &self->start_object->end_pos);
       position_add_ticks (
         &new_end_pos, delta);
 

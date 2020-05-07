@@ -342,53 +342,28 @@ arranger_object_get_region (
 /**
  * Gets a pointer to the Position in the
  * ArrangerObject matching the given arguments.
- *
- * @param cache 1 to return the cached Position
- *   instead of the main one.
  */
 static Position *
 get_position_ptr (
   ArrangerObject *           self,
-  ArrangerObjectPositionType pos_type,
-  int                        cached)
+  ArrangerObjectPositionType pos_type)
 {
   switch (pos_type)
     {
     case ARRANGER_OBJECT_POSITION_TYPE_START:
-      if (cached)
-        return &self->cache_pos;
-      else
-        return &self->pos;
+      return &self->pos;
     case ARRANGER_OBJECT_POSITION_TYPE_END:
-      if (cached)
-        return &self->cache_end_pos;
-      else
-        return &self->end_pos;
+      return &self->end_pos;
     case ARRANGER_OBJECT_POSITION_TYPE_CLIP_START:
-      if (cached)
-        return &self->cache_clip_start_pos;
-      else
-        return &self->clip_start_pos;
+      return &self->clip_start_pos;
     case ARRANGER_OBJECT_POSITION_TYPE_LOOP_START:
-      if (cached)
-        return &self->cache_loop_start_pos;
-      else
-        return &self->loop_start_pos;
+      return &self->loop_start_pos;
     case ARRANGER_OBJECT_POSITION_TYPE_LOOP_END:
-      if (cached)
-        return &self->cache_loop_end_pos;
-      else
-        return &self->loop_end_pos;
+      return &self->loop_end_pos;
     case ARRANGER_OBJECT_POSITION_TYPE_FADE_IN:
-      if (cached)
-        return &self->cache_fade_in_pos;
-      else
-        return &self->fade_in_pos;
+      return &self->fade_in_pos;
     case ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT:
-      if (cached)
-        return &self->cache_fade_out_pos;
-      else
-        return &self->fade_out_pos;
+      return &self->fade_out_pos;
     }
   g_return_val_if_reached (NULL);
 }
@@ -399,8 +374,6 @@ get_position_ptr (
  * @param pos The position to set to.
  * @param pos_type The type of Position to set in the
  *   ArrangerObject.
- * @param cached Set to 1 to validate based on the
- *   cached positions instead of the main ones.
  * @param validate Validate the Position before
  *   setting it.
  */
@@ -408,8 +381,7 @@ int
 arranger_object_is_position_valid (
   ArrangerObject *           self,
   const Position *           pos,
-  ArrangerObjectPositionType pos_type,
-  const int                  cached)
+  ArrangerObjectPositionType pos_type)
 {
   int is_valid = 0;
   switch (pos_type)
@@ -418,10 +390,7 @@ arranger_object_is_position_valid (
       if (arranger_object_type_has_length (
             self->type))
         {
-          Position * end_pos =
-            cached ?
-              &self->cache_end_pos :
-              &self->end_pos;
+          Position * end_pos = &self->end_pos;
           is_valid =
             position_is_before (
               pos, end_pos) &&
@@ -443,9 +412,7 @@ arranger_object_is_position_valid (
     case ARRANGER_OBJECT_POSITION_TYPE_LOOP_START:
       {
         Position * loop_end_pos =
-          cached ?
-            &self->cache_loop_end_pos :
-            &self->loop_end_pos;
+           &self->loop_end_pos;
         is_valid =
           position_is_before (
             pos, loop_end_pos) &&
@@ -462,9 +429,7 @@ arranger_object_is_position_valid (
     case ARRANGER_OBJECT_POSITION_TYPE_CLIP_START:
       {
         Position * loop_end_pos =
-          cached ?
-            &self->cache_loop_end_pos :
-            &self->loop_end_pos;
+           &self->loop_end_pos;
         is_valid =
           position_is_before (
             pos, loop_end_pos) &&
@@ -563,8 +528,6 @@ arranger_object_copy_identifier (
  * @param pos The position to set to.
  * @param pos_type The type of Position to set in the
  *   ArrangerObject.
- * @param cached Set to 1 to set the cached positions
- *   instead of the main ones.
  * @param validate Validate the Position before
  *   setting it.
  */
@@ -573,7 +536,6 @@ arranger_object_set_position (
   ArrangerObject *           self,
   const Position *           pos,
   ArrangerObjectPositionType pos_type,
-  const int                  cached,
   const int                  validate)
 {
   g_return_if_fail (self && pos);
@@ -582,13 +544,13 @@ arranger_object_set_position (
    * invalid */
   if (validate &&
       !arranger_object_is_position_valid (
-        self, pos, pos_type, cached))
+        self, pos, pos_type))
     return;
 
   Position * pos_ptr;
   pos_ptr =
     get_position_ptr (
-      self, pos_type, cached);
+      self, pos_type);
   g_return_if_fail (pos_ptr);
   position_set_to_pos (pos_ptr, pos);
 }
@@ -642,18 +604,11 @@ arranger_object_print (
 /**
  * Moves the object by the given amount of
  * ticks.
- *
- * FIXME remove use_cached_pos and find what is
- * using it.
- *
- * @param use_cached_pos Add the ticks to the cached
- *   Position instead of its current Position.
  */
 void
 arranger_object_move (
   ArrangerObject *         self,
-  const double             ticks,
-  const int                use_cached_pos)
+  const double             ticks)
 {
   if (arranger_object_type_has_length (self->type))
     {
@@ -663,18 +618,14 @@ arranger_object_move (
 
       /* start pos */
       Position tmp;
-      if (use_cached_pos)
-        position_set_to_pos (
-          &tmp, &self->cache_pos);
-      else
-        position_set_to_pos (
-          &tmp, &self->pos);
+      position_set_to_pos (
+        &tmp, &self->pos);
       position_add_ticks (
         &tmp, ticks);
       arranger_object_set_position (
         self, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_START,
-        F_NO_CACHED, F_NO_VALIDATE);
+        F_NO_VALIDATE);
 
       /* end pos */
       if (self->type == TYPE (REGION))
@@ -691,35 +642,27 @@ arranger_object_move (
         }
       else
         {
-          if (use_cached_pos)
-            position_set_to_pos (
-              &tmp, &self->cache_end_pos);
-          else
-            position_set_to_pos (
-              &tmp, &self->end_pos);
+          position_set_to_pos (
+            &tmp, &self->end_pos);
           position_add_ticks (
             &tmp, ticks);
         }
       arranger_object_set_position (
         self, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_END,
-        F_NO_CACHED, F_NO_VALIDATE);
+        F_NO_VALIDATE);
     }
   else
     {
       Position tmp;
-      if (use_cached_pos)
-        position_set_to_pos (
-          &tmp, &self->cache_pos);
-      else
-        position_set_to_pos (
-          &tmp, &self->pos);
+      position_set_to_pos (
+        &tmp, &self->pos);
       position_add_ticks (
         &tmp, ticks);
       arranger_object_set_position (
         self, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_START,
-        F_NO_CACHED, F_NO_VALIDATE);
+        F_NO_VALIDATE);
     }
 }
 
@@ -876,8 +819,6 @@ arranger_object_init_loaded (
   g_return_if_fail (self->type > TYPE (NONE));
 
   /* init positions */
-  self->cache_pos = self->pos;
-  self->cache_end_pos = self->end_pos;
   self->magic = ARRANGER_OBJECT_MAGIC;
 
   switch (self->type)
@@ -1044,7 +985,7 @@ add_ticks_to_region_children (
         {
           arranger_object_move (
             (ArrangerObject *) self->midi_notes[i],
-            ticks, F_NO_CACHED);
+            ticks);
         }
       break;
     case REGION_TYPE_AUDIO:
@@ -1054,7 +995,7 @@ add_ticks_to_region_children (
         {
           arranger_object_move (
             (ArrangerObject *) self->aps[i],
-            ticks, F_NO_CACHED);
+            ticks);
         }
       break;
     case REGION_TYPE_CHORD:
@@ -1064,7 +1005,7 @@ add_ticks_to_region_children (
           arranger_object_move (
             (ArrangerObject *)
               self->chord_objects[i],
-            ticks, F_NO_CACHED);
+            ticks);
         }
       break;
     }
@@ -1112,7 +1053,7 @@ arranger_object_resize (
           arranger_object_set_position (
             self, &tmp,
             ARRANGER_OBJECT_POSITION_TYPE_FADE_IN,
-            F_NO_CACHED, F_NO_VALIDATE);
+            F_NO_VALIDATE);
         }
       else
         {
@@ -1121,7 +1062,7 @@ arranger_object_resize (
           arranger_object_set_position (
             self, &tmp,
             ARRANGER_OBJECT_POSITION_TYPE_START,
-            F_NO_CACHED, F_NO_VALIDATE);
+            F_NO_VALIDATE);
 
           if (arranger_object_type_can_loop (
                 self->type))
@@ -1131,7 +1072,7 @@ arranger_object_resize (
               arranger_object_set_position (
                 self, &tmp,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
-                F_NO_CACHED, F_NO_VALIDATE);
+                F_NO_VALIDATE);
             }
 
           /* move containing items */
@@ -1147,7 +1088,7 @@ arranger_object_resize (
               arranger_object_set_position (
                 self, &tmp,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
-                F_NO_CACHED, F_NO_VALIDATE);
+                F_NO_VALIDATE);
             }
         }
     }
@@ -1160,7 +1101,7 @@ arranger_object_resize (
           arranger_object_set_position (
             self, &tmp,
             ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
-            F_NO_CACHED, F_NO_VALIDATE);
+            F_NO_VALIDATE);
         }
       else
         {
@@ -1169,7 +1110,7 @@ arranger_object_resize (
           arranger_object_set_position (
             self, &tmp,
             ARRANGER_OBJECT_POSITION_TYPE_END,
-            F_NO_CACHED, F_NO_VALIDATE);
+            F_NO_VALIDATE);
 
           if (type != ARRANGER_OBJECT_RESIZE_LOOP &&
               arranger_object_type_can_loop (
@@ -1180,7 +1121,7 @@ arranger_object_resize (
               arranger_object_set_position (
                 self, &tmp,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
-                F_NO_CACHED, F_NO_VALIDATE);
+                F_NO_VALIDATE);
             }
         }
     }
@@ -1225,7 +1166,7 @@ arranger_object_pos_setter (
   arranger_object_set_position (
     self, pos,
     ARRANGER_OBJECT_POSITION_TYPE_START,
-    F_NO_CACHED, F_VALIDATE);
+    F_VALIDATE);
 }
 
 /**
@@ -1241,7 +1182,7 @@ arranger_object_end_pos_setter (
   arranger_object_set_position (
     self, pos,
     ARRANGER_OBJECT_POSITION_TYPE_END,
-    F_NO_CACHED, F_VALIDATE);
+    F_VALIDATE);
 }
 
 /**
@@ -1257,7 +1198,7 @@ arranger_object_clip_start_pos_setter (
   arranger_object_set_position (
     self, pos,
     ARRANGER_OBJECT_POSITION_TYPE_CLIP_START,
-    F_NO_CACHED, F_VALIDATE);
+    F_VALIDATE);
 }
 
 /**
@@ -1273,7 +1214,7 @@ arranger_object_loop_start_pos_setter (
   arranger_object_set_position (
     self, pos,
     ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
-    F_NO_CACHED, F_VALIDATE);
+    F_VALIDATE);
 }
 
 /**
@@ -1289,7 +1230,7 @@ arranger_object_loop_end_pos_setter (
   arranger_object_set_position (
     self, pos,
     ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
-    F_NO_CACHED, F_VALIDATE);
+    F_VALIDATE);
 }
 
 /**
@@ -2005,32 +1946,20 @@ arranger_object_clone (
 
   /* set positions */
   new_obj->pos = self->pos;
-  new_obj->cache_pos = self->pos;
   if (arranger_object_type_has_length (self->type))
     {
       new_obj->end_pos = self->end_pos;
-      new_obj->cache_end_pos = self->end_pos;
     }
   if (arranger_object_type_can_loop (self->type))
     {
       new_obj->clip_start_pos = self->clip_start_pos;
-      new_obj->cache_clip_start_pos =
-        self->clip_start_pos;
       new_obj->loop_start_pos = self->loop_start_pos;
-      new_obj->cache_loop_start_pos =
-        self->cache_loop_start_pos;
       new_obj->loop_end_pos = self->loop_end_pos;
-      new_obj->cache_loop_end_pos =
-        self->cache_loop_end_pos;
     }
   if (arranger_object_can_fade (self))
     {
       new_obj->fade_in_pos = self->fade_in_pos;
-      new_obj->cache_fade_in_pos =
-        self->cache_fade_in_pos;
       new_obj->fade_out_pos = self->fade_out_pos;
-      new_obj->cache_fade_out_pos =
-        self->cache_fade_out_pos;
       new_obj->fade_in_opts = self->fade_in_opts;
       new_obj->fade_out_opts = self->fade_out_opts;
     }
