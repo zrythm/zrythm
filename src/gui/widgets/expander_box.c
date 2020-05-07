@@ -235,7 +235,7 @@ expander_box_widget_init (ExpanderBoxWidget * self)
   prv->btn_img =
     GTK_IMAGE (
       gtk_image_new_from_icon_name (
-        BREEZE_ICON_PREFIX "plugins",
+        "plugins",
         GTK_ICON_SIZE_BUTTON));
   GtkWidget * box =
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL,

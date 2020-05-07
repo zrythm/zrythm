@@ -997,11 +997,17 @@ arranger_widget_set_cursor (
     case ARRANGER_CURSOR_RESIZING_L:
       SET_X_CURSOR (left_resize);
       break;
+    case ARRANGER_CURSOR_STRETCHING_L:
+      SET_X_CURSOR (left_stretch);
+      break;
     case ARRANGER_CURSOR_RESIZING_L_LOOP:
       SET_X_CURSOR (left_resize_loop);
       break;
     case ARRANGER_CURSOR_RESIZING_R:
       SET_X_CURSOR (right_resize);
+      break;
+    case ARRANGER_CURSOR_STRETCHING_R:
+      SET_X_CURSOR (right_stretch);
       break;
     case ARRANGER_CURSOR_RESIZING_R_LOOP:
       SET_X_CURSOR (right_resize_loop);
@@ -5463,6 +5469,7 @@ get_timeline_cursor (
       switch (P_TOOL)
         {
         case TOOL_SELECT_NORMAL:
+        case TOOL_SELECT_STRETCH:
         {
           if (is_hit)
             {
@@ -5520,19 +5527,39 @@ get_timeline_cursor (
                     return
                       ARRANGER_CURSOR_FADE_OUT;
                   else if (is_resize_l &&
-                      is_resize_loop)
-                    return
-                      ARRANGER_CURSOR_RESIZING_L_LOOP;
+                           is_resize_loop)
+                    {
+                      return
+                        ARRANGER_CURSOR_RESIZING_L_LOOP;
+                    }
                   else if (is_resize_l)
-                    return
-                      ARRANGER_CURSOR_RESIZING_L;
+                    {
+                      if (P_TOOL ==
+                           TOOL_SELECT_NORMAL)
+                        return
+                          ARRANGER_CURSOR_RESIZING_L;
+                      else if (P_TOOL ==
+                                 TOOL_SELECT_STRETCH)
+                        {
+                          return
+                            ARRANGER_CURSOR_STRETCHING_L;
+                        }
+                    }
                   else if (is_resize_r &&
                            is_resize_loop)
                     return
                       ARRANGER_CURSOR_RESIZING_R_LOOP;
                   else if (is_resize_r)
-                    return
-                      ARRANGER_CURSOR_RESIZING_R;
+                    {
+                      if (P_TOOL ==
+                           TOOL_SELECT_NORMAL)
+                        return
+                          ARRANGER_CURSOR_RESIZING_R;
+                      else if (P_TOOL ==
+                                 TOOL_SELECT_STRETCH)
+                        return
+                          ARRANGER_CURSOR_STRETCHING_R;
+                    }
                   else if (is_fade_in_outer_region)
                     return
                       ARRANGER_CURSOR_FADE_IN;
@@ -5571,8 +5598,6 @@ get_timeline_cursor (
             }
         }
           break;
-        case TOOL_SELECT_STRETCH:
-          break;
         case TOOL_EDIT:
           ac = ARRANGER_CURSOR_EDIT;
           break;
@@ -5607,6 +5632,9 @@ get_timeline_cursor (
     case UI_OVERLAY_ACTION_MOVING:
       ac = ARRANGER_CURSOR_GRABBING;
       break;
+    case UI_OVERLAY_ACTION_STRETCHING_L:
+      ac = ARRANGER_CURSOR_STRETCHING_L;
+      break;
     case UI_OVERLAY_ACTION_RESIZING_L:
       if (self->resizing_range)
         ac = ARRANGER_CURSOR_RANGE;
@@ -5618,6 +5646,9 @@ get_timeline_cursor (
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_FADE:
       ac = ARRANGER_CURSOR_FADE_IN;
+      break;
+    case UI_OVERLAY_ACTION_STRETCHING_R:
+      ac = ARRANGER_CURSOR_STRETCHING_R;
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
       if (self->resizing_range)

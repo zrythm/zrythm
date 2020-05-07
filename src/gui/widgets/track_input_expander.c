@@ -529,7 +529,7 @@ track_input_expander_widget_refresh (
 
       expander_box_widget_set_icon_name (
         Z_EXPANDER_BOX_WIDGET (self),
-        BREEZE_ICON_PREFIX "audio-midi");
+        "audio-midi");
     }
   else if (track->type == TRACK_TYPE_AUDIO)
     {

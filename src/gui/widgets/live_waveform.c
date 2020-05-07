@@ -141,7 +141,8 @@ live_waveform_draw_cb (
       AUDIO_ENGINE->block_length;
   if (rblocks_read == 0)
     {
-      g_return_val_if_reached (FALSE);
+      return FALSE;
+      /*g_return_val_if_reached (FALSE);*/
     }
 
   for (unsigned int i = 0; i < nframes; i += step)

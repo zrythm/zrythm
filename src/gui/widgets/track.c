@@ -80,9 +80,9 @@ G_DEFINE_TYPE (
 #define ICON_NAME_BUS "bus"
 #define ICON_NAME_CHORDS "zbreeze-minuet-chords"
 #define ICON_NAME_SHOW_MARKERS \
-  BREEZE_ICON_PREFIX "kdenlive-show-markers"
+  "kdenlive-show-markers"
 #define ICON_NAME_MIDI \
-  BREEZE_ICON_PREFIX "audio-midi"
+  "audio-midi"
 
 #ifdef _WOE32
 #define NAME_FONT "9"

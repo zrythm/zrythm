@@ -294,67 +294,77 @@ typedef enum UiDragMode
 #define ui_set_pointer_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    BREEZE_ICON_PREFIX "edit-select", 5, 4);
+    "edit-select", 5, 4);
 
 #define ui_set_pencil_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    BREEZE_ICON_PREFIX "document-edit", 3, 18);
+    "document-edit", 3, 18);
 
 #define ui_set_cut_clip_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    ZRYTHM_ICON_PREFIX "cut-clip", 9, 6);
+    "cut-clip", 9, 6);
 
 #define ui_set_eraser_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    BREEZE_ICON_PREFIX "draw-eraser", 3, 6);
+    "draw-eraser", 3, 6);
 
 #define ui_set_line_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    BREEZE_ICON_PREFIX "draw-line", 3, 6);
+    "draw-line", 3, 6);
 
 #define ui_set_speaker_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    BREEZE_ICON_PREFIX "audio-volume-high", 3, 6);
+    "audio-volume-high", 3, 6);
 
 #define ui_set_hand_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    BREEZE_ICON_PREFIX "transform-move", 10, 10);
+    "transform-move", 10, 10);
 
 #define ui_set_left_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    ZRYTHM_ICON_PREFIX "object-resize-left", 0, 10);
+    "object-resize-left", 0, 10);
+
+#define ui_set_left_stretch_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "object-stretch-left", 0, 10);
 
 #define ui_set_left_resize_loop_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    ZRYTHM_ICON_PREFIX "object-resize-loop-left", 0, 10);
+    "object-resize-loop-left", 0, 10);
 
 #define ui_set_right_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    ZRYTHM_ICON_PREFIX "object-resize-right", 15, 10);
+    "object-resize-right", 15, 10);
+
+#define ui_set_right_stretch_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "object-stretch-right", 15, 10);
 
 #define ui_set_right_resize_loop_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    ZRYTHM_ICON_PREFIX "object-resize-loop-right", 15, 10);
+    "object-resize-loop-right", 15, 10);
 
 #define ui_set_fade_in_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    ZRYTHM_ICON_PREFIX "fade-in", 11, 11);
+    "fade-in", 11, 11);
 
 #define ui_set_fade_out_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    ZRYTHM_ICON_PREFIX "fade-out", 11, 11);
+    "fade-out", 11, 11);
 
 /**
  * Sets cursor from icon name.

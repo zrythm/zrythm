@@ -293,42 +293,42 @@ create_model_for_files (PanelFileBrowserWidget * self)
         case FILE_TYPE_MIDI:
           strcpy (
             icon_name,
-            BREEZE_ICON_PREFIX "audio-midi");
+            "audio-midi");
           break;
         case FILE_TYPE_MP3:
           strcpy (
             icon_name,
-            BREEZE_ICON_PREFIX "audio-x-mpeg");
+            "audio-x-mpeg");
           break;
         case FILE_TYPE_FLAC:
           strcpy (
             icon_name,
-            BREEZE_ICON_PREFIX "audio-x-flac");
+            "audio-x-flac");
           break;
         case FILE_TYPE_OGG:
           strcpy (
             icon_name,
-            BREEZE_ICON_PREFIX "application-ogg");
+            "application-ogg");
           break;
         case FILE_TYPE_WAV:
           strcpy (
             icon_name,
-            BREEZE_ICON_PREFIX "audio-x-wav");
+            "audio-x-wav");
           break;
         case FILE_TYPE_DIR:
           strcpy (
             icon_name,
-            BREEZE_ICON_PREFIX "folder");
+            "folder");
           break;
         case FILE_TYPE_PARENT_DIR:
           strcpy (
             icon_name,
-            BREEZE_ICON_PREFIX "folder");
+            "folder");
           break;
         case FILE_TYPE_OTHER:
           strcpy (
             icon_name,
-            BREEZE_ICON_PREFIX "application-x-zerosize");
+            "application-x-zerosize");
           break;
         default:
           strcpy (icon_name, "");

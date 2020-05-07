@@ -130,7 +130,7 @@ create_model_for_ports (
         list_store, &iter); \
       gtk_list_store_set ( \
         list_store, &iter, \
-        0, BREEZE_ICON_PREFIX "plugins", \
+        0, "plugins", \
         1, port->id.label, \
         2, port, \
         -1); \
@@ -264,7 +264,7 @@ create_model_for_tracks (
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
         list_store, &iter,
-        0, BREEZE_ICON_PREFIX "text-x-csrc",
+        0, "text-x-csrc",
         1, track->name,
         2, track,
         -1);
@@ -314,7 +314,7 @@ create_model_for_plugins (
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
             list_store, &iter,
-            0, BREEZE_ICON_PREFIX "folder",
+            0, "folder",
             1, _("Track Ports"),
             2, dummy_plugin,
             -1);
@@ -342,7 +342,7 @@ create_model_for_plugins (
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
             list_store, &iter,
-            0, BREEZE_ICON_PREFIX "plugins",
+            0, "plugins",
             1, pl->descr->name,
             2, pl,
             -1);
@@ -366,7 +366,7 @@ create_model_for_plugins (
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
             list_store, &iter,
-            0, BREEZE_ICON_PREFIX "plugins",
+            0, "plugins",
             1, pl->descr->name,
             2, pl,
             -1);
@@ -386,7 +386,7 @@ create_model_for_plugins (
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
             list_store, &iter,
-            0, BREEZE_ICON_PREFIX "plugins",
+            0, "plugins",
             1, pl->descr->name,
             2, pl,
             -1);

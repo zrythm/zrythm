@@ -157,7 +157,7 @@ create_model_for_ports (
 
           strcpy (
             icon_name,
-            BREEZE_ICON_PREFIX "audio-midi");
+            "audio-midi");
         }
       else if (type == AS_TYPE_CHANNEL)
         {
@@ -174,7 +174,7 @@ create_model_for_ports (
 
           strcpy (
             icon_name,
-            BREEZE_ICON_PREFIX "text-x-csrc");
+            "text-x-csrc");
         }
       else if (type > AS_TYPE_CHANNEL)
         {
@@ -202,7 +202,7 @@ create_model_for_ports (
 
           strcpy (
             icon_name,
-            BREEZE_ICON_PREFIX "plugins");
+            "plugins");
         }
 
       if (!port)
@@ -249,7 +249,7 @@ create_model_for_types (
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
         list_store, &iter,
-        0, BREEZE_ICON_PREFIX "text-x-csrc",
+        0, "text-x-csrc",
         1, "MIDI",
         2, AS_TYPE_MIDI,
         -1);
@@ -258,7 +258,7 @@ create_model_for_types (
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
     list_store, &iter,
-    0, BREEZE_ICON_PREFIX "text-x-csrc",
+    0, "text-x-csrc",
     1, "Channel",
     2, AS_TYPE_CHANNEL,
     -1);
@@ -273,7 +273,7 @@ create_model_for_types (
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
         list_store, &iter,
-        0, BREEZE_ICON_PREFIX "plugins",
+        0, "plugins",
         1, label,
         2, AS_TYPE_INSTRUMENT,
         -1);
@@ -291,7 +291,7 @@ create_model_for_types (
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
             list_store, &iter,
-            0, BREEZE_ICON_PREFIX "plugins",
+            0, "plugins",
             1, label,
             2, AS_TYPE_MIDI_FX_0 + i,
             -1);
@@ -307,7 +307,7 @@ create_model_for_types (
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
             list_store, &iter,
-            0, BREEZE_ICON_PREFIX "plugins",
+            0, "plugins",
             1, label,
             2, AS_TYPE_INSERT_0 + i,
             -1);

@@ -354,12 +354,18 @@ arranger_object_is_resize_loop (
   if (self->type == ARRANGER_OBJECT_TYPE_REGION)
     {
       ZRegion * r = (ZRegion *) self;
-      if (r->id.type == REGION_TYPE_AUDIO)
-        return 1;
+      if (r->id.type == REGION_TYPE_AUDIO &&
+          P_TOOL != TOOL_SELECT_STRETCH)
+        {
+          return 1;
+        }
 
       if ((position_to_ticks (&self->end_pos) -
            position_to_ticks (&self->pos)) >
-          position_to_ticks (&self->loop_end_pos))
+          position_to_ticks (&self->loop_end_pos) +
+            /* add some buffer because these are not
+             * accurate */
+            0.1)
         {
           return 1;
         }
