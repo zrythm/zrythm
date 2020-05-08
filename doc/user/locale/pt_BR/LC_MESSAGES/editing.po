@@ -8,17 +8,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-24 13:30+0000\n"
+"POT-Creation-Date: 2020-05-08 21:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/intro.rst:6
-msgid "Clip Editors"
+msgid "Editors"
 msgstr ""
 
 #: ../../editing/clip-editors/intro.rst:8
@@ -28,34 +28,31 @@ msgstr ""
 #: ../../editing/piano-roll-editing/overview.rst:8
 #: ../../editing/piano-roll-editing/ruler.rst:8
 #: ../../editing/piano-roll-editing/toolbar.rst:8
-#: ../../editing/snapping-and-grid-options.rst:8
-#: ../../editing/timeline/arranger.rst:8
-#: ../../editing/timeline/event-viewer.rst:8
 msgid "TODO"
 msgstr ""
 
-#: ../../editing/common-operations.rst:6
+#: ../../editing/common-operations.rst:8
 msgid "Common Operations"
 msgstr ""
 
-#: ../../editing/common-operations.rst:8
+#: ../../editing/common-operations.rst:10
 msgid ""
 "These operations are common to most editors, and behave similarly to what"
 " you should be used to from other applications."
 msgstr ""
 
-#: ../../editing/common-operations.rst:13
+#: ../../editing/common-operations.rst:15
 msgid "Undo/Redo"
 msgstr ""
 
-#: ../../editing/common-operations.rst:14
+#: ../../editing/common-operations.rst:16
 msgid ""
 "Most actions in Zrythm are undoable, which means that you can go back to "
 "the state before that action was made, or you can come back to a state "
 "that you undo'ed from."
 msgstr ""
 
-#: ../../editing/common-operations.rst:18
+#: ../../editing/common-operations.rst:20
 msgid ""
 "For example, if you create a MIDI note and press undo, the MIDI note will"
 " be deleted (Zrythm goes back into the state where the MIDI note did not "
@@ -63,156 +60,156 @@ msgid ""
 "go back between Undo and Redo as many times as you want."
 msgstr ""
 
-#: ../../editing/common-operations.rst:24
+#: ../../editing/common-operations.rst:26
 msgid ""
 "The shortcuts for undo and redo are :zbutton:`Control` + :zbutton:`Z` to "
 "Undo and :zbutton:`Control` + :zbutton:`Shift` + :zbutton:`Z` to Redo."
 msgstr ""
 
-#: ../../editing/common-operations.rst:28
+#: ../../editing/common-operations.rst:30
 msgid ""
 "If you Undo and then perform a new action, the Redo history will be "
 "deleted."
 msgstr ""
 
-#: ../../editing/common-operations.rst:32
+#: ../../editing/common-operations.rst:34
 msgid "Object Operations"
 msgstr ""
 
-#: ../../editing/common-operations.rst:34
+#: ../../editing/common-operations.rst:36
 msgid "Cut"
 msgstr ""
 
-#: ../../editing/common-operations.rst:35
+#: ../../editing/common-operations.rst:37
 msgid ""
 "Delete and copy the selected objects and save them in the clipboard so "
 "that they can be pasted elsewhere. The shortcut for cutting is "
 ":zbutton:`Control` + :zbutton:`X`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:41
+#: ../../editing/common-operations.rst:43
 msgid "Copy"
 msgstr ""
 
-#: ../../editing/common-operations.rst:42
+#: ../../editing/common-operations.rst:44
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
 "elsewhere. The shortcut for copying is :zbutton:`Control` + :zbutton:`C`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:48
+#: ../../editing/common-operations.rst:50
 msgid "Paste"
 msgstr ""
 
-#: ../../editing/common-operations.rst:49
+#: ../../editing/common-operations.rst:51
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
 "position. The shortcut for pasting is :zbutton:`Control` + :zbutton:`V`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:55
+#: ../../editing/common-operations.rst:57
 msgid "Duplicate"
 msgstr ""
 
-#: ../../editing/common-operations.rst:56
+#: ../../editing/common-operations.rst:58
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
 "duplicating is :zbutton:`Control` + :zbutton:`D`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:61
+#: ../../editing/common-operations.rst:63
 msgid "Delete"
 msgstr ""
 
-#: ../../editing/common-operations.rst:62
+#: ../../editing/common-operations.rst:64
 msgid ""
 "Delete the selected objects. You can also press :zbutton:`Delete` on your"
 " keyboard to do this."
 msgstr ""
 
-#: ../../editing/common-operations.rst:67
+#: ../../editing/common-operations.rst:69
 msgid "Selections"
 msgstr ""
 
-#: ../../editing/common-operations.rst:69
+#: ../../editing/common-operations.rst:71
 msgid "Clear Selection"
 msgstr ""
 
-#: ../../editing/common-operations.rst:70
+#: ../../editing/common-operations.rst:72
 msgid "Clear current selection (unselect all objects)."
 msgstr ""
 
-#: ../../editing/common-operations.rst:73
+#: ../../editing/common-operations.rst:75
 msgid "Select All"
 msgstr ""
 
-#: ../../editing/common-operations.rst:74
+#: ../../editing/common-operations.rst:76
 msgid "Select all objects in the current editor."
 msgstr ""
 
-#: ../../editing/common-operations.rst:77
+#: ../../editing/common-operations.rst:79
 msgid "Loop Selection"
 msgstr ""
 
-#: ../../editing/common-operations.rst:78
+#: ../../editing/common-operations.rst:80
 msgid ""
 "Place the loop markers around the selection. The shortcut for this is "
 ":zbutton:`Control` + :zbutton:`L`."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:6
+#: ../../editing/edit-modes.rst:8
 msgid "Edit Modes"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:8
+#: ../../editing/edit-modes.rst:10
 msgid ""
-"When working in each editor, you will most likely be using the cursor "
-"tools provided by Zrythm to create, edit and delete objects. Each cursor "
-"signifies a separate edit mode, and Zrythm offers the following edit "
-"modes."
+"When working in each editor or arranger, you will most likely be using "
+"the cursor tools provided by Zrythm to create, edit and delete objects. "
+"Each cursor signifies a separate edit mode, and Zrythm offers the "
+"following edit modes."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:17
+#: ../../editing/edit-modes.rst:19
 msgid "Select/Stretch Mode"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:18
+#: ../../editing/edit-modes.rst:20
 msgid "This can be toggled to switch between Select and Stretch."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:20
+#: ../../editing/edit-modes.rst:22
 msgid ""
 "In Select mode, you can make object selections and move, clone and resize"
 " objects. This is the most common mode and the most common operations can"
 " be accomplished by just using this."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:25
+#: ../../editing/edit-modes.rst:27
 msgid ""
 "Stretch mode is similar to the Select mode, with the exception that when "
 "you resize objects, their contents will be stretched to fit the new size."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:30
+#: ../../editing/edit-modes.rst:32
 msgid "Selecting Objects"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:31
+#: ../../editing/edit-modes.rst:33
 msgid ""
 "To select objects, you can either click on them, click in empty space and"
 " keep dragging to make a selection, or :zbutton:`Control`-click to "
 "add/remove objects to/from the selection."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:36
+#: ../../editing/edit-modes.rst:38
 msgid "Selected objects will have brighter color than non-selected objects."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:40
+#: ../../editing/edit-modes.rst:42
 msgid "Moving and Cloning Objects"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:41
+#: ../../editing/edit-modes.rst:43
 msgid ""
 "To move objects around, click on a selected object and keep dragging with"
 " your cursor to where you want to move them. Holding down "
@@ -221,45 +218,45 @@ msgid ""
 "objects."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:48
+#: ../../editing/edit-modes.rst:50
 msgid "Resizing Objects"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:49
+#: ../../editing/edit-modes.rst:51
 msgid ""
 "Objects that have length, such as regions and MIDI notes, can be resized "
 "by clicking and dragging their edges."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:52
+#: ../../editing/edit-modes.rst:54
 msgid ""
 "On objects that can be repeated, such as regions, moving the cursor on "
 "the bottom half of the object will allow you to resize the object by "
 "repeating it, instead of just resizing it."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:57
+#: ../../editing/edit-modes.rst:59
 msgid ""
 "When resizing, already repeated objects can only be repeated. To resize "
 "them instead of repeat them, their length must be changed or their clip "
 "markers must be moved so that they are not repeated anymore."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:65
+#: ../../editing/edit-modes.rst:67
 msgid "Cutting Objects"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:66
+#: ../../editing/edit-modes.rst:68
 msgid ""
 "You can :zbutton:`Alt`-click inside objects to break them up. Holding "
 "down :zbutton:`Shift` while doing this will bypass snapping."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:71
+#: ../../editing/edit-modes.rst:73
 msgid "Edit Mode"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:72
+#: ../../editing/edit-modes.rst:74
 msgid ""
 "This mode is used to quickly create or delete objects. While you can "
 "still create objects in Select mode by double clicking and dragging, in "
@@ -267,49 +264,49 @@ msgid ""
 "more efficient when creating a large number of objects."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:78
+#: ../../editing/edit-modes.rst:80
 msgid ""
 "Holding down :zbutton:`Control` while clicking will allow you to create "
 "multiple objects in a row (where applicable) with a length specified by "
 "the snap settings corresponding to each editor."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:84
+#: ../../editing/edit-modes.rst:86
 msgid "Cut Mode"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:85
+#: ../../editing/edit-modes.rst:87
 msgid ""
 "Cut mode behaves similarly to what is mentioned in :ref:`cutting-"
 "objects`, with the exception that you can just click instead of "
 ":zbutton:`Alt`-clicking."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:90
+#: ../../editing/edit-modes.rst:92
 msgid "Erase Mode"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:91
+#: ../../editing/edit-modes.rst:93
 msgid ""
 "You can just click on objects to delete them, or click and drag to make a"
 " selection, deleting all objects inside it."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:95
+#: ../../editing/edit-modes.rst:97
 msgid "Ramp Mode"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:96
+#: ../../editing/edit-modes.rst:98
 msgid ""
 "This mode is currently only used for editing velocities for MIDI notes. "
 "You can click and drag in the velocity editor to create velocity ramps."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:101
+#: ../../editing/edit-modes.rst:106
 msgid "Audition Mode"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:102
+#: ../../editing/edit-modes.rst:107
 msgid "This is a TODO feature."
 msgstr ""
 
@@ -389,7 +386,7 @@ msgstr ""
 msgid "Fades and Cross-Fades"
 msgstr ""
 
-#: ../../editing/intro.rst:6
+#: ../../editing/intro.rst:8
 msgid "Editing"
 msgstr ""
 
@@ -420,24 +417,10 @@ msgid "Overview"
 msgstr ""
 
 #: ../../editing/overview.rst:8
-msgid ""
-"Editing refers to any work done in the timeline arranger and the "
-"following editors."
+msgid "Editing refers to any work done in the timeline arranger and the editors."
 msgstr ""
 
 #: ../../editing/overview.rst:11
-msgid "Piano Roll (MIDI Editor)"
-msgstr ""
-
-#: ../../editing/overview.rst:12
-msgid "Automation Editor"
-msgstr ""
-
-#: ../../editing/overview.rst:13
-msgid "Chord Editor"
-msgstr ""
-
-#: ../../editing/overview.rst:15
 msgid ""
 "While each editor has its own toolbar to assist with various operations, "
 "there is a global Edit section in the top toolbar that has common "
@@ -445,7 +428,6 @@ msgid ""
 msgstr ""
 
 #: ../../editing/piano-roll-editing/arranger.rst:6
-#: ../../editing/timeline/arranger.rst:6
 msgid "Arranger"
 msgstr ""
 
@@ -567,7 +549,6 @@ msgstr ""
 msgid "This will perform quantization based on the last known settings."
 msgstr ""
 
-#: ../../editing/snapping-and-grid-options.rst:6
 #: ../../editing/snapping-grid-options.rst:6
 msgid "Snapping and Grid Options"
 msgstr ""
@@ -622,11 +603,159 @@ msgstr ""
 msgid "Note type for the note length (normal/dotted/triplet)"
 msgstr ""
 
+#: ../../editing/timeline/arranger.rst:8
+msgid "Timeline Arranger"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:10
+msgid ""
+"The timeline arranger is the main area where the song is composed. It "
+"consists of a collection of events, such as regions, positioned against "
+"time. Some events will open separate windows for further editing when "
+"clicked."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:18
+msgid ""
+"The timeline arranger is split into a top arranger that remains fixed on "
+"top and a bottom arranger below it. This way you can pin tracks you want "
+"to always be visible at the top."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:24
+msgid "Arranger Objects"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:25
+msgid "The following arranger objects can exist inside the timeline."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:28
+msgid "Regions"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:29
+msgid "Regions are containers for events or data (such as audio clips)."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:35
+msgid "The following types of regions exist."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:37
+msgid "Audio region"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:38
+msgid "Contains audio clips."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:39
+msgid "MIDI region"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:40
+msgid "Contains MIDI notes."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:41
+msgid "Automation region"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:42
+msgid "Contains automation events."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:44
+msgid "Chord region"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:44
+msgid "Contains sequences of chords."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:47
+msgid "Markers"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:48
+msgid ""
+"Markers are used to mark the start of a logical section inside the song, "
+"such as `Chorus` or `Intro`."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:54
+msgid ""
+"There are two special markers that signify the start and end of the song "
+"that are used for exporting the song and cannot be deleted."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:59
+msgid "Scales"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:60
+msgid ""
+"Scales are used in the Chord track to indicate the start of a section "
+"using a specific musical scale."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:67
+msgid "Creating Objects"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:68
+msgid ""
+"In select (default) mode, all objects are created by double clicking "
+"inside the arranger and dragging, then releasing when you are satisfied "
+"with the position/size."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:72
+msgid "For creating objects in other modes, see :ref:`edit-modes`."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:75
+msgid "Moving Objects"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:76
+msgid ""
+"Objects are moved by clicking and dragging them around. You can move "
+"regions to other tracks if the track types are compatible."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:81
+msgid "Copy-Moving Objects"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:82
+msgid ""
+"Holding down :zbutton:`Ctrl` while moving objects will allow you to copy-"
+"and-move the objects to the new location."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:86
+msgid "Link-Moving Regions"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:87
+msgid "Linked regions can be created by holding down :zbutton:`Alt` while moving."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:90
+msgid "Other editing capabilities were explained previously in :ref:`edit-modes`."
+msgstr ""
+
 #: ../../editing/timeline/event-viewer.rst:6
 msgid "Event Viewer"
 msgstr ""
 
-#: ../../editing/timeline/intro.rst:6
+#: ../../editing/timeline/event-viewer.rst:8
+msgid "The event viewer displays all events in the timeline as a list."
+msgstr ""
+
+#: ../../editing/timeline/intro.rst:8
 msgid "Timeline"
 msgstr ""
 
@@ -637,80 +766,109 @@ msgid ""
 "ruler/arranger on the right side."
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:12
+#: ../../editing/timeline/overview.rst:15
 msgid "Tracklist"
 msgstr ""
 
 #: ../../editing/timeline/overview.rst:17
+msgid ""
+"The Tracklist contains all of the Tracks in the project. It is split into"
+" the top (pinned) Tracklist and the bottom (main) Tracklist."
+msgstr ""
+
+#: ../../editing/timeline/overview.rst:24
 msgid ""
 "At the top of the tracklist, the number of visible tracks over the number"
 " of total tracks is shown, as well as a search box for searching tracks "
 "by name (not operational at the moment)."
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:22
-msgid "The rest of the tracklist is briefly touched upon at :ref:`tracklist`."
-msgstr ""
-
-#: ../../editing/timeline/overview.rst:25
+#: ../../editing/timeline/overview.rst:29
 msgid ""
-"The tracklist is split between the pinned tracks at the top and the "
-"unpinned tracks at the bottom. You can pin tracks to make them stick to "
-"the top, and this is useful for chord progressions and markers, so you "
-"can always see them."
+"You can pin tracks to make them stick to the top, and this is useful for "
+"chord progressions and markers, so you can always see them."
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:31
-msgid "For more details about track operations, see the :ref:`tracks` section."
-msgstr ""
-
-#: ../../editing/timeline/overview.rst:35
-msgid "Ruler/Arranger"
+#: ../../editing/timeline/overview.rst:33
+msgid "The rest of the tracklist is briefly touched upon in :ref:`tracklist`."
 msgstr ""
 
 #: ../../editing/timeline/overview.rst:36
+msgid "For more details about track operations, see the :ref:`tracks` section."
+msgstr ""
+
+#: ../../editing/timeline/overview.rst:40
+msgid "Minimap"
+msgstr ""
+
+#: ../../editing/timeline/overview.rst:41
 msgid ""
-"This section contains the timeline events and various ruler markers. It "
-"is similarly split to match the tracklist on the left."
+"The timeline minimap is a little box that represents the current visible "
+"area of the timeline. It can be moved around and resized to change the "
+"visible area."
+msgstr ""
+
+#: ../../editing/timeline/overview.rst:48
+msgid "The rest of the timeline elements are explained in the following sections."
 msgstr ""
 
 #: ../../editing/timeline/ruler.rst:8
+msgid "The ruler is mainly used to control looping and playback."
+msgstr ""
+
+#: ../../editing/timeline/ruler.rst:13
 msgid ""
-"The ruler is mainly used to control looping and playback. The various "
-"loop points and markers available are discussed in :ref:`loop-points-and-"
-"markers`."
+"The ruler will display more or less information depending on the current "
+"zoom level. It will also display the followin markers/indicators "
+"discussed in :ref:`loop-points-and-markers`."
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:16
-msgid "Changing the Playhead Position"
+#: ../../editing/timeline/ruler.rst:18
+msgid "Cue point"
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:17
-msgid ""
-"To change the position of the playhead, click, or click and drag inside "
-"the ruler (avoiding the top part, which is used for selecting ranges). "
-"Hold :zbutton:`Shift` to bypass snapping."
+#: ../../editing/timeline/ruler.rst:19
+msgid "Displayed as a blue, right-pointing arrow."
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:22
-msgid "Setting the Cue Point"
+#: ../../editing/timeline/ruler.rst:20
+msgid "Playhead position"
+msgstr ""
+
+#: ../../editing/timeline/ruler.rst:21
+msgid "Shown as a grey, down-facing arrow."
+msgstr ""
+
+#: ../../editing/timeline/ruler.rst:25
+msgid "Loop points"
 msgstr ""
 
 #: ../../editing/timeline/ruler.rst:23
 msgid ""
-"Double click inside the ruler to set the cue point. This will be used to "
-"return to when playback is stopped. Hold :zbutton:`Shift` to bypass "
-"snapping."
+"Shown as 2 green arrows, and the area between them is shown in bright "
+"green if loop is enabled, or grey if disabled. Can be dragged to "
+"reposition."
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:28
-msgid "Changing the Loop Region"
-msgstr ""
-
-#: ../../editing/timeline/ruler.rst:29
+#: ../../editing/timeline/ruler.rst:27
 msgid ""
-"To change the loop region (green area), click and drag the green arrows "
-"on the left and right. Hold :zbutton:`Shift` to bypass snapping."
+"Clicking and dragging on empty space in the ruler (other than the top "
+"part, which is used for selecting ranges) will allow you to reposition "
+"the playhead."
+msgstr ""
+
+#: ../../editing/timeline/ruler.rst:31
+msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
+msgstr ""
+
+#: ../../editing/timeline/ruler.rst:34
+msgid "Setting the Cue Point"
+msgstr ""
+
+#: ../../editing/timeline/ruler.rst:35
+msgid ""
+"Double click inside the ruler to set the cue point. This will be used to "
+"return to when playback is stopped."
 msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:8
@@ -884,5 +1042,95 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "For more details about track operations, see the Tracks section."
+#~ msgstr ""
+
+#~ msgid "Clip Editors"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "When working in each editor, you "
+#~ "will most likely be using the "
+#~ "cursor tools provided by Zrythm to "
+#~ "create, edit and delete objects. Each"
+#~ " cursor signifies a separate edit "
+#~ "mode, and Zrythm offers the following"
+#~ " edit modes."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Editing refers to any work done in"
+#~ " the timeline arranger and the "
+#~ "following editors."
+#~ msgstr ""
+
+#~ msgid "Piano Roll (MIDI Editor)"
+#~ msgstr ""
+
+#~ msgid "Automation Editor"
+#~ msgstr ""
+
+#~ msgid "Chord Editor"
+#~ msgstr ""
+
+#~ msgid "The rest of the tracklist is briefly touched upon at :ref:`tracklist`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The tracklist is split between the "
+#~ "pinned tracks at the top and the"
+#~ " unpinned tracks at the bottom. You"
+#~ " can pin tracks to make them "
+#~ "stick to the top, and this is "
+#~ "useful for chord progressions and "
+#~ "markers, so you can always see "
+#~ "them."
+#~ msgstr ""
+
+#~ msgid "Ruler/Arranger"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This section contains the timeline "
+#~ "events and various ruler markers. It "
+#~ "is similarly split to match the "
+#~ "tracklist on the left."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The ruler is mainly used to "
+#~ "control looping and playback. The "
+#~ "various loop points and markers "
+#~ "available are discussed in :ref:`loop-"
+#~ "points-and-markers`."
+#~ msgstr ""
+
+#~ msgid "Changing the Playhead Position"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "To change the position of the "
+#~ "playhead, click, or click and drag "
+#~ "inside the ruler (avoiding the top "
+#~ "part, which is used for selecting "
+#~ "ranges). Hold :zbutton:`Shift` to bypass "
+#~ "snapping."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Double click inside the ruler to "
+#~ "set the cue point. This will be"
+#~ " used to return to when playback "
+#~ "is stopped. Hold :zbutton:`Shift` to "
+#~ "bypass snapping."
+#~ msgstr ""
+
+#~ msgid "Changing the Loop Region"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "To change the loop region (green "
+#~ "area), click and drag the green "
+#~ "arrows on the left and right. Hold"
+#~ " :zbutton:`Shift` to bypass snapping."
 #~ msgstr ""
 

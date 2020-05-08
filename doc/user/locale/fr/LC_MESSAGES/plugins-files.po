@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-08 19:08+0100\n"
+"POT-Creation-Date: 2020-05-08 20:20+0100\n"
 "PO-Revision-Date: 2020-01-26 13:21+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -69,10 +69,11 @@ msgid "Overview"
 msgstr "Vue générale"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:8
+#, fuzzy
 msgid ""
 "Zrythm can import MIDI and audio files into the project. The files can be"
-" imported by dragging and dropping from your computer or from the File "
-"Browser into a track."
+" imported by dragging and dropping from your computer or from the :ref"
+":`file-browser` into a track."
 msgstr ""
 "Zrythm peut importer des fichiers MIDI et audio dans le projet. Les "
 "fichiers peuvent être importés par glisser-déposer depuis votre "
@@ -294,7 +295,7 @@ msgid "Plugin Types"
 msgstr "Greffons"
 
 #: ../../plugins-files/plugins/plugin-info.rst:20
-msgid "Plugins are classified in the following categories."
+msgid "Plugins are classified into the following categories."
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
@@ -455,8 +456,8 @@ msgstr "Scanner les greffons"
 #, fuzzy
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
-"until it is closed. Zrythm supports both LV2, VST2, VST3 and AU plugins. "
-"LV2 is the recommended standard."
+"until it is closed. Zrythm supports LV2, VST2, VST3 and AU plugins. LV2 "
+"is the recommended standard."
 msgstr ""
 "Zrythm recherchera des greffons au démarrage et les mémorisera jusqu'à sa"
 " fermeture. Zrythm prend en charge les greffons LV2 et VST, bien que LV2 "
@@ -469,9 +470,10 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:18
+#, fuzzy
 msgid ""
-"Plugin scanning can be disableld by passing NO_SCAN_PLUGINS=1 when "
-"running Zrythm."
+"Plugin scanning can be disabled by passing NO_SCAN_PLUGINS=1 when running"
+" Zrythm."
 msgstr ""
 "Le scannage des greffons peut être désactivé en passant NO_SCAN_PLUGINS=1"
 " lors de l'exécution de Zrythm."
@@ -910,5 +912,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "``/Library/Audio/Plug-Ins/Components``"
+#~ msgstr ""
+
+#~ msgid "Plugins are classified in the following categories."
 #~ msgstr ""
 

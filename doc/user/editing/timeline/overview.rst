@@ -8,8 +8,15 @@ Editing in the timeline is the most common workflow inside
 Zrythm. The timeline section consists of the tracklist on the
 left and the ruler/arranger on the right side.
 
+.. image:: /_static/img/timeline.png
+   :align: center
+
 Tracklist
 ---------
+
+The Tracklist contains all of the Tracks in the
+project. It is split into the top (pinned)
+Tracklist and the bottom (main) Tracklist.
 
 .. image:: /_static/img/tracklist.png
    :align: center
@@ -19,20 +26,24 @@ over the number of total tracks is shown, as well as
 a search box for searching tracks by name (not
 operational at the moment).
 
-The rest of the tracklist is briefly touched upon at
-:ref:`tracklist`.
-
-The tracklist is split between the pinned tracks
-at the top and the unpinned tracks at the bottom.
 You can pin tracks to make them stick to the top, and
 this is useful for chord progressions and markers,
 so you can always see them.
 
+The rest of the tracklist is briefly touched upon in
+:ref:`tracklist`.
+
 For more details about track operations, see the :ref:`tracks`
 section.
 
-Ruler/Arranger
---------------
-This section contains the timeline events and various
-ruler markers. It is similarly split to match the
-tracklist on the left.
+Minimap
+-------
+The timeline minimap is a little box that represents the
+current visible area of the timeline. It can be moved around
+and resized to change the visible area.
+
+.. image:: /_static/img/timeline-minimap.png
+   :align: center
+
+The rest of the timeline elements are explained in the
+following sections.

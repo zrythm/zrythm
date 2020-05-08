@@ -2,8 +2,10 @@
    Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
-Overview
-========
+.. _export-audio-and-midi:
+
+Audio & MIDI
+============
 
 The Export dialog below is used to export the project
 or part of the project into audio or MIDI files.

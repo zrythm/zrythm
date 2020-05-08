@@ -8,4 +8,5 @@ Exporting
 .. toctree::
    :maxdepth: 4
 
-   overview
+   audio-and-midi
+   routing-graph

@@ -7,130 +7,125 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-12 20:16+0100\n"
+"POT-Creation-Date: 2020-05-08 21:17+0100\n"
 "PO-Revision-Date: 2019-09-22 21:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
-"manualexporting/de/>\n"
 "Language: de\n"
+"Language-Team: German "
+"<https://hosted.weblate.org/projects/zrythm/manualexporting/de/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: ../../exporting/intro.rst:6
-msgid "Exporting"
-msgstr "Exportieren"
+#: ../../exporting/audio-and-midi.rst:8
+msgid "Audio & MIDI"
+msgstr ""
 
-#: ../../exporting/overview.rst:6
-msgid "Overview"
-msgstr "Übersicht"
-
-#: ../../exporting/overview.rst:8
+#: ../../exporting/audio-and-midi.rst:10
 msgid ""
 "The Export dialog below is used to export the project or part of the "
 "project into audio or MIDI files."
 msgstr ""
-"Das Dialogfeld Export unten wird verwendet, um das Projekt oder einen Teil "
-"des Projekts in Audio- oder MIDI-Dateien zu exportieren."
+"Das Dialogfeld Export unten wird verwendet, um das Projekt oder einen "
+"Teil des Projekts in Audio- oder MIDI-Dateien zu exportieren."
 
-#: ../../exporting/overview.rst:15
+#: ../../exporting/audio-and-midi.rst:17
 msgid "Fields"
 msgstr "Felder"
 
-#: ../../exporting/overview.rst:18
+#: ../../exporting/audio-and-midi.rst:20
 msgid "Artist and Genre"
 msgstr "Künstler und Genre"
 
-#: ../../exporting/overview.rst:20
+#: ../../exporting/audio-and-midi.rst:22
 msgid ""
 "These will be included as metadata to the exported file if the format "
 "supports it. The title used will be the project title."
 msgstr ""
-"Diese werden als Metadaten in die exportierte Datei aufgenommen, wenn das "
-"Format dies unterstützt. Der verwendete Titel ist der Projekttitel."
+"Diese werden als Metadaten in die exportierte Datei aufgenommen, wenn das"
+" Format dies unterstützt. Der verwendete Titel ist der Projekttitel."
 
-#: ../../exporting/overview.rst:25
+#: ../../exporting/audio-and-midi.rst:27
 msgid "Format"
 msgstr "Format"
 
-#: ../../exporting/overview.rst:27
+#: ../../exporting/audio-and-midi.rst:29
 msgid "The format to export to. Currently, the following formats are supported"
 msgstr ""
-"Das Format, in das exportiert werden soll. Derzeit werden folgende Formate "
-"unterstützt"
+"Das Format, in das exportiert werden soll. Derzeit werden folgende "
+"Formate unterstützt"
 
-#: ../../exporting/overview.rst:30
+#: ../../exporting/audio-and-midi.rst:32
 msgid "FLAC - .FLAC"
 msgstr "FLAC - .FLAC"
 
-#: ../../exporting/overview.rst:31
+#: ../../exporting/audio-and-midi.rst:33
 msgid "OGG (Vorbis) - .ogg"
 msgstr "OGG (Vorbis) - .ogg"
 
-#: ../../exporting/overview.rst:32
+#: ../../exporting/audio-and-midi.rst:34
 msgid "WAV - .wav"
 msgstr "WAV - .wav"
 
-#: ../../exporting/overview.rst:33
+#: ../../exporting/audio-and-midi.rst:35
 msgid "MP3 - .mp3"
 msgstr "MP3 - .mp3"
 
-#: ../../exporting/overview.rst:34
+#: ../../exporting/audio-and-midi.rst:36
 msgid "MIDI - .mid"
 msgstr "MIDI - .mid"
 
-#: ../../exporting/overview.rst:37
+#: ../../exporting/audio-and-midi.rst:39
 msgid "Dither"
 msgstr "Dithern"
 
-#: ../../exporting/overview.rst:39
+#: ../../exporting/audio-and-midi.rst:41
 msgid "TODO"
 msgstr "ZU ERLEDIGEN"
 
-#: ../../exporting/overview.rst:42
+#: ../../exporting/audio-and-midi.rst:44
 msgid "Bit Depth"
 msgstr "Bittiefe"
 
-#: ../../exporting/overview.rst:44
+#: ../../exporting/audio-and-midi.rst:46
 msgid ""
 "This is the bit depth that will be used when exporting audio. The higher "
 "the bit depth the larger the file will be, but it will have better "
 "quality."
 msgstr ""
-"Dies ist die Bittiefe, die beim Export von Audio verwendet wird. Je höher "
-"die Bittiefe, desto größer wird die Datei, aber sie hat eine bessere "
+"Dies ist die Bittiefe, die beim Export von Audio verwendet wird. Je höher"
+" die Bittiefe, desto größer wird die Datei, aber sie hat eine bessere "
 "Qualität."
 
-#: ../../exporting/overview.rst:49
+#: ../../exporting/audio-and-midi.rst:51
 msgid "Time Range"
 msgstr "Zeitbereich"
 
-#: ../../exporting/overview.rst:51
+#: ../../exporting/audio-and-midi.rst:53
 msgid ""
 "The time range to export. You can choose to export the whole song "
 "(defined by the start/end markers), the current loop range or a custom "
 "time range."
 msgstr ""
-"Der Zeitbereich für den Export. Sie können das gesamte Lied (definiert durch "
-"die Start-/End-Marker), den aktuellen Loop-Bereich oder einen "
+"Der Zeitbereich für den Export. Sie können das gesamte Lied (definiert "
+"durch die Start-/End-Marker), den aktuellen Loop-Bereich oder einen "
 "benutzerdefinierten Zeitbereich exportieren."
 
-#: ../../exporting/overview.rst:56
+#: ../../exporting/audio-and-midi.rst:58
 msgid "Filename Pattern"
 msgstr "Dateinamenmuster"
 
-#: ../../exporting/overview.rst:58
+#: ../../exporting/audio-and-midi.rst:60
 msgid "The pattern to use as the name of the file."
 msgstr "Das Muster, das für den Namen der Datei verwendet werden soll."
 
-#: ../../exporting/overview.rst:61
+#: ../../exporting/audio-and-midi.rst:63
 msgid "Open Exported Directory"
 msgstr "Exportiertes Verzeichnis öffnen"
 
-#: ../../exporting/overview.rst:62
+#: ../../exporting/audio-and-midi.rst:64
 msgid ""
 "Once export is completed, a dialog will appear with an option to open the"
 " directory the file was saved in using your default file browser program."
@@ -139,8 +134,16 @@ msgstr ""
 "Verzeichnis zu öffnen, in dem die Datei mit Ihrem Standard-Dateibrowser "
 "gespeichert wurde."
 
+#: ../../exporting/intro.rst:6
+msgid "Exporting"
+msgstr "Exportieren"
+
 #~ msgid "Exporting MIDI Files"
 #~ msgstr "MIDI-Dateien exportieren"
 
 #~ msgid "Exporting the Mixdown"
 #~ msgstr "Den Mixdown exportieren"
+
+#~ msgid "Overview"
+#~ msgstr "Übersicht"
+

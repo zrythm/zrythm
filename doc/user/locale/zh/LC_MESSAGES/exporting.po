@@ -7,121 +7,120 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-12 20:16+0100\n"
+"POT-Creation-Date: 2020-05-08 21:17+0100\n"
 "PO-Revision-Date: 2020-01-22 19:47+0000\n"
 "Last-Translator: yu zhang <zhangyu201510@gmail.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"zrythm/manualexporting/zh_Hans/>\n"
 "Language: zh\n"
+"Language-Team: Chinese (Simplified) "
+"<https://hosted.weblate.org/projects/zrythm/manualexporting/zh_Hans/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.11-dev\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: ../../exporting/intro.rst:6
-msgid "Exporting"
+#: ../../exporting/audio-and-midi.rst:8
+msgid "Audio & MIDI"
 msgstr ""
 
-#: ../../exporting/overview.rst:6
-msgid "Overview"
-msgstr ""
-
-#: ../../exporting/overview.rst:8
+#: ../../exporting/audio-and-midi.rst:10
 msgid ""
 "The Export dialog below is used to export the project or part of the "
 "project into audio or MIDI files."
 msgstr ""
 
-#: ../../exporting/overview.rst:15
+#: ../../exporting/audio-and-midi.rst:17
 msgid "Fields"
 msgstr ""
 
-#: ../../exporting/overview.rst:18
+#: ../../exporting/audio-and-midi.rst:20
 msgid "Artist and Genre"
 msgstr ""
 
-#: ../../exporting/overview.rst:20
+#: ../../exporting/audio-and-midi.rst:22
 msgid ""
 "These will be included as metadata to the exported file if the format "
 "supports it. The title used will be the project title."
 msgstr ""
 
-#: ../../exporting/overview.rst:25
+#: ../../exporting/audio-and-midi.rst:27
 msgid "Format"
 msgstr ""
 
-#: ../../exporting/overview.rst:27
+#: ../../exporting/audio-and-midi.rst:29
 msgid "The format to export to. Currently, the following formats are supported"
 msgstr ""
 
-#: ../../exporting/overview.rst:30
+#: ../../exporting/audio-and-midi.rst:32
 msgid "FLAC - .FLAC"
 msgstr ""
 
-#: ../../exporting/overview.rst:31
+#: ../../exporting/audio-and-midi.rst:33
 msgid "OGG (Vorbis) - .ogg"
 msgstr ""
 
-#: ../../exporting/overview.rst:32
+#: ../../exporting/audio-and-midi.rst:34
 msgid "WAV - .wav"
 msgstr ""
 
-#: ../../exporting/overview.rst:33
+#: ../../exporting/audio-and-midi.rst:35
 msgid "MP3 - .mp3"
 msgstr ""
 
-#: ../../exporting/overview.rst:34
+#: ../../exporting/audio-and-midi.rst:36
 msgid "MIDI - .mid"
 msgstr ""
 
-#: ../../exporting/overview.rst:37
+#: ../../exporting/audio-and-midi.rst:39
 msgid "Dither"
 msgstr ""
 
-#: ../../exporting/overview.rst:39
+#: ../../exporting/audio-and-midi.rst:41
 msgid "TODO"
 msgstr "确定"
 
-#: ../../exporting/overview.rst:42
+#: ../../exporting/audio-and-midi.rst:44
 msgid "Bit Depth"
 msgstr ""
 
-#: ../../exporting/overview.rst:44
+#: ../../exporting/audio-and-midi.rst:46
 msgid ""
 "This is the bit depth that will be used when exporting audio. The higher "
 "the bit depth the larger the file will be, but it will have better "
 "quality."
 msgstr ""
 
-#: ../../exporting/overview.rst:49
+#: ../../exporting/audio-and-midi.rst:51
 msgid "Time Range"
 msgstr ""
 
-#: ../../exporting/overview.rst:51
+#: ../../exporting/audio-and-midi.rst:53
 msgid ""
 "The time range to export. You can choose to export the whole song "
 "(defined by the start/end markers), the current loop range or a custom "
 "time range."
 msgstr ""
 
-#: ../../exporting/overview.rst:56
+#: ../../exporting/audio-and-midi.rst:58
 msgid "Filename Pattern"
 msgstr ""
 
-#: ../../exporting/overview.rst:58
+#: ../../exporting/audio-and-midi.rst:60
 msgid "The pattern to use as the name of the file."
 msgstr ""
 
-#: ../../exporting/overview.rst:61
+#: ../../exporting/audio-and-midi.rst:63
 msgid "Open Exported Directory"
 msgstr ""
 
-#: ../../exporting/overview.rst:62
+#: ../../exporting/audio-and-midi.rst:64
 msgid ""
 "Once export is completed, a dialog will appear with an option to open the"
 " directory the file was saved in using your default file browser program."
+msgstr ""
+
+#: ../../exporting/intro.rst:6
+msgid "Exporting"
 msgstr ""
 
 #~ msgid "Exporting MIDI Files"
@@ -129,3 +128,7 @@ msgstr ""
 
 #~ msgid "Exporting the Mixdown"
 #~ msgstr ""
+
+#~ msgid "Overview"
+#~ msgstr ""
+

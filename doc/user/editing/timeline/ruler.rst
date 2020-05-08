@@ -6,26 +6,31 @@ Ruler
 =====
 
 The ruler is mainly used to control looping and playback.
-The various loop points and markers available are discussed
-in :ref:`loop-points-and-markers`.
 
 .. image:: /_static/img/ruler.png
    :align: center
 
-Changing the Playhead Position
--------------------------------
-To change the position of the playhead, click, or click and drag
-inside the ruler (avoiding the top part, which is used for
-selecting ranges). Hold :zbutton:`Shift` to bypass snapping.
+The ruler will display more or less information depending on
+the current zoom level. It will also display the
+followin markers/indicators discussed in
+:ref:`loop-points-and-markers`.
+
+Cue point
+  Displayed as a blue, right-pointing arrow.
+Playhead position
+  Shown as a grey, down-facing arrow.
+Loop points
+  Shown as 2 green arrows, and the area between them is
+  shown in bright green if loop is enabled, or grey if
+  disabled. Can be dragged to reposition.
+
+Clicking and dragging on empty space in the ruler (other
+than the top part, which is used for selecting ranges) will
+allow you to reposition the playhead.
+
+.. tip:: Hold :zbutton:`Shift` to temporarily disable snapping
 
 Setting the Cue Point
 ---------------------
 Double click inside the ruler to set the cue point. This
 will be used to return to when playback is stopped.
-Hold :zbutton:`Shift` to bypass snapping.
-
-Changing the Loop Region
-------------------------
-To change the loop region (green area), click and drag the
-green arrows on the left and right.
-Hold :zbutton:`Shift` to bypass snapping.

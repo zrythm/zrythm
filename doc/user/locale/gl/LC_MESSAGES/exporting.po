@@ -7,107 +7,102 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-05 19:31+0000\n"
+"POT-Creation-Date: 2020-05-08 21:17+0100\n"
 "PO-Revision-Date: 2020-03-07 09:52+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
-"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
-"manualexporting/gl/>\n"
 "Language: gl\n"
+"Language-Team: Galician "
+"<https://hosted.weblate.org/projects/zrythm/manualexporting/gl/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0-dev\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: ../../exporting/intro.rst:6
-msgid "Exporting"
-msgstr "Exportación"
+#: ../../exporting/audio-and-midi.rst:8
+msgid "Audio & MIDI"
+msgstr ""
 
-#: ../../exporting/overview.rst:6
-msgid "Overview"
-msgstr "Información xeral"
-
-#: ../../exporting/overview.rst:8
+#: ../../exporting/audio-and-midi.rst:10
 msgid ""
 "The Export dialog below is used to export the project or part of the "
 "project into audio or MIDI files."
 msgstr ""
-"O diálogo de Exportar de abaixo emprégase para exportar o proxecto ou parte "
-"do mesmo en ficheiros de audio ou MIDI."
+"O diálogo de Exportar de abaixo emprégase para exportar o proxecto ou "
+"parte do mesmo en ficheiros de audio ou MIDI."
 
-#: ../../exporting/overview.rst:15
+#: ../../exporting/audio-and-midi.rst:17
 msgid "Fields"
 msgstr "Campos"
 
-#: ../../exporting/overview.rst:18
+#: ../../exporting/audio-and-midi.rst:20
 msgid "Artist and Genre"
 msgstr "Artista e Xénero"
 
-#: ../../exporting/overview.rst:20
+#: ../../exporting/audio-and-midi.rst:22
 msgid ""
 "These will be included as metadata to the exported file if the format "
 "supports it. The title used will be the project title."
 msgstr ""
-"Estes serán incluídos como metadatos no ficheiro exportado se o formato o "
-"permite. O título utilizado será o do proxecto."
+"Estes serán incluídos como metadatos no ficheiro exportado se o formato o"
+" permite. O título utilizado será o do proxecto."
 
-#: ../../exporting/overview.rst:25
+#: ../../exporting/audio-and-midi.rst:27
 msgid "Format"
 msgstr "Formato"
 
-#: ../../exporting/overview.rst:27
+#: ../../exporting/audio-and-midi.rst:29
 msgid "The format to export to. Currently, the following formats are supported"
 msgstr ""
-"O formato ao que exportar. Ata o de agora, están dispoñibles os seguintes "
-"formatos"
+"O formato ao que exportar. Ata o de agora, están dispoñibles os seguintes"
+" formatos"
 
-#: ../../exporting/overview.rst:30
+#: ../../exporting/audio-and-midi.rst:32
 msgid "FLAC - .FLAC"
 msgstr "FLAC - .FLAC"
 
-#: ../../exporting/overview.rst:31
+#: ../../exporting/audio-and-midi.rst:33
 msgid "OGG (Vorbis) - .ogg"
 msgstr "OGG (Vorbis) - .ogg"
 
-#: ../../exporting/overview.rst:32
+#: ../../exporting/audio-and-midi.rst:34
 msgid "WAV - .wav"
 msgstr "WAV - .wav"
 
-#: ../../exporting/overview.rst:33
+#: ../../exporting/audio-and-midi.rst:35
 msgid "MP3 - .mp3"
 msgstr "MP3 - .mp3"
 
-#: ../../exporting/overview.rst:34
+#: ../../exporting/audio-and-midi.rst:36
 msgid "MIDI - .mid"
 msgstr "MIDI - .mid"
 
-#: ../../exporting/overview.rst:37
+#: ../../exporting/audio-and-midi.rst:39
 msgid "Dither"
 msgstr "Dither"
 
-#: ../../exporting/overview.rst:39
+#: ../../exporting/audio-and-midi.rst:41
 msgid "TODO"
 msgstr "TODO"
 
-#: ../../exporting/overview.rst:42
+#: ../../exporting/audio-and-midi.rst:44
 msgid "Bit Depth"
 msgstr "Profundidade de Bits"
 
-#: ../../exporting/overview.rst:44
+#: ../../exporting/audio-and-midi.rst:46
 msgid ""
 "This is the bit depth that will be used when exporting audio. The higher "
 "the bit depth the larger the file will be, but it will have better "
 "quality."
 msgstr ""
-"Esta é a profundidade de bits que se empregará ao exportar o audio. Canto "
-"máis alta sexa, máis pesado será o arquivo e mellor calidade terá."
+"Esta é a profundidade de bits que se empregará ao exportar o audio. Canto"
+" máis alta sexa, máis pesado será o arquivo e mellor calidade terá."
 
-#: ../../exporting/overview.rst:49
+#: ../../exporting/audio-and-midi.rst:51
 msgid "Time Range"
 msgstr "Intervalo de Tempo"
 
-#: ../../exporting/overview.rst:51
+#: ../../exporting/audio-and-midi.rst:53
 msgid ""
 "The time range to export. You can choose to export the whole song "
 "(defined by the start/end markers), the current loop range or a custom "
@@ -117,23 +112,31 @@ msgstr ""
 "completo (definida polos marcadores inicio/fin), o bucle actual ou un "
 "intervalo de tempo personalizado."
 
-#: ../../exporting/overview.rst:56
+#: ../../exporting/audio-and-midi.rst:58
 msgid "Filename Pattern"
 msgstr "Patrón do Nome dos Arquivos"
 
-#: ../../exporting/overview.rst:58
+#: ../../exporting/audio-and-midi.rst:60
 msgid "The pattern to use as the name of the file."
 msgstr "O patrón a usar como nome do arquivo."
 
-#: ../../exporting/overview.rst:61
+#: ../../exporting/audio-and-midi.rst:63
 msgid "Open Exported Directory"
 msgstr "Abrir Directorio de Exportación"
 
-#: ../../exporting/overview.rst:62
+#: ../../exporting/audio-and-midi.rst:64
 msgid ""
 "Once export is completed, a dialog will appear with an option to open the"
 " directory the file was saved in using your default file browser program."
 msgstr ""
-"Unha vez se rematou a exportación, aparecerá un diálogo cunha opción para "
-"abrir o directorio no que foi gardado o ficheiro empregando o teu explorador "
-"por defecto."
+"Unha vez se rematou a exportación, aparecerá un diálogo cunha opción para"
+" abrir o directorio no que foi gardado o ficheiro empregando o teu "
+"explorador por defecto."
+
+#: ../../exporting/intro.rst:6
+msgid "Exporting"
+msgstr "Exportación"
+
+#~ msgid "Overview"
+#~ msgstr "Información xeral"
+

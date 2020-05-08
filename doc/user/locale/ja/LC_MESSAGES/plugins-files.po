@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-08 19:08+0100\n"
+"POT-Creation-Date: 2020-05-08 20:20+0100\n"
 "PO-Revision-Date: 2020-03-01 10:34+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language: ja\n"
@@ -65,10 +65,11 @@ msgid "Overview"
 msgstr "概要"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:8
+#, fuzzy
 msgid ""
 "Zrythm can import MIDI and audio files into the project. The files can be"
-" imported by dragging and dropping from your computer or from the File "
-"Browser into a track."
+" imported by dragging and dropping from your computer or from the :ref"
+":`file-browser` into a track."
 msgstr ""
 "Zrythm は、プロジェクトに MIDI ファイルとオーディオ "
 "ファイルをインポートできます。ファイルは、コンピュータまたはファイルブラウザからトラックにドラッグアンドドロップすることでインポートできます。"
@@ -257,7 +258,7 @@ msgid "Plugin Types"
 msgstr "プラグイン"
 
 #: ../../plugins-files/plugins/plugin-info.rst:20
-msgid "Plugins are classified in the following categories."
+msgid "Plugins are classified into the following categories."
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
@@ -397,8 +398,8 @@ msgstr "プラグインのスキャン"
 #, fuzzy
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
-"until it is closed. Zrythm supports both LV2, VST2, VST3 and AU plugins. "
-"LV2 is the recommended standard."
+"until it is closed. Zrythm supports LV2, VST2, VST3 and AU plugins. LV2 "
+"is the recommended standard."
 msgstr ""
 "Zrythmは起動時にプラグインをスキャンし、閉じられるまでそれらのプラグインを覚えています。Zrythm は LV2 と VST "
 "の両方のプラグインを対応していますが、LV2 は推奨される標準です。"
@@ -410,9 +411,10 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:18
+#, fuzzy
 msgid ""
-"Plugin scanning can be disableld by passing NO_SCAN_PLUGINS=1 when "
-"running Zrythm."
+"Plugin scanning can be disabled by passing NO_SCAN_PLUGINS=1 when running"
+" Zrythm."
 msgstr "Zrythm の実行時に NO_SCAN_PLUGINS=1 を渡すことにより、プラグインのスキャンを無効にできます。"
 
 #: ../../plugins-files/plugins/scanning.rst:22
@@ -785,5 +787,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "``/Library/Audio/Plug-Ins/Components``"
+#~ msgstr ""
+
+#~ msgid "Plugins are classified in the following categories."
 #~ msgstr ""
 

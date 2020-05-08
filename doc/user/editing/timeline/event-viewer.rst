@@ -5,4 +5,8 @@
 Event Viewer
 ============
 
-TODO
+The event viewer displays all events in the timeline
+as a list.
+
+.. image:: /_static/img/timeline-event-viewer.png
+   :align: center

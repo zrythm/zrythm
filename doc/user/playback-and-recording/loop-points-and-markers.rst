@@ -10,7 +10,8 @@ Loop Points and Markers
 Loop Points
 -----------
 
-TODO
+The loop points indicate the area that will be looped
+during playback, if looping is enabled.
 
 Cue Point
 ---------
@@ -18,7 +19,6 @@ Cue Point
 The Cue Point is where the Playhead will move
 to when Play is clicked while playing or when
 Stop is clicked while paused.
-
 
 Song Start Marker
 -----------------

@@ -32,26 +32,8 @@ Edit Menu
 The Edit menu various buttons and controls that are used
 often during editing and arranging.
 
-Undo
-  Undo the last action.
-
-Redo
-  Redo the last undo'ed action.
-
-Cut
-  Delete the selected objects and copy them in the clipboard.
-
-Copy
-  Copy the selected objects to the clipboard.
-
-Paste
-  Paste the clipboard contents at the playhead.
-
-Duplicate
-  Duplicate the selected objects.
-
-Delete
-  Delete the selected objects.
+The :ref:`editing` chapter explains these controls
+in detail.
 
 Project Menu
 ~~~~~~~~~~~~
@@ -71,10 +53,15 @@ Load
   Load a project.
 
 Export As
-  Export the project as audio or MIDI.
+  Export the project as audio or MIDI. See
+  :ref:`export-audio-and-midi` for more details.
 
 Export Graph
   Export the routing graph as an image or .dot graph.
+  See :ref:`export-routing-graph` for more details.
+
+For more information about projects, see the
+:ref:`projects` chapter.
 
 View Menu
 ~~~~~~~~~

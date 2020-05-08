@@ -6,11 +6,7 @@ Overview
 ========
 
 Editing refers to any work done in the timeline arranger
-and the following editors.
-
-- Piano Roll (MIDI Editor)
-- Automation Editor
-- Chord Editor
+and the editors.
 
 While each editor has its own toolbar to assist with
 various operations, there is a global Edit section in the

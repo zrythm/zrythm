@@ -2,10 +2,12 @@
    Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
+.. _edit-modes:
+
 Edit Modes
 ==========
 
-When working in each editor, you will most likely be
+When working in each editor or arranger, you will most likely be
 using the cursor tools provided by Zrythm to create,
 edit and delete objects. Each cursor signifies a separate
 edit mode, and Zrythm offers the following edit modes.
@@ -96,6 +98,9 @@ Ramp Mode
 This mode is currently only used for editing velocities for
 MIDI notes. You can click and drag in the velocity editor
 to create velocity ramps.
+
+.. image:: /_static/img/ramp-tool.png
+   :align: center
 
 Audition Mode
 ~~~~~~~~~~~~~

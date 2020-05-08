@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-08 17:25+0100\n"
+"POT-Creation-Date: 2020-05-08 21:17+0100\n"
 "PO-Revision-Date: 2020-01-26 13:21+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -202,154 +202,59 @@ msgid ""
 "the selected track."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:26
-msgid "Track Properties"
+#: ../../zrythm-interface/left-panel.rst:25
+msgid "See :ref:`track-inspector` for more details."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:31
-msgid "Track Name"
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:32
-msgid "Name of the track"
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:33
-msgid "Direct Out"
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:34
-msgid "The track that this track routes its output to."
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:37
-msgid "Instrument"
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:36
-msgid ""
-"If the track is an :ref:`instrument-track`, the instrument plugin for "
-"this track."
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:40
-msgid "Track Inputs"
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:45
-msgid "See :ref:`track-inputs` for more information."
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:48
-msgid "MIDI FX/Inserts"
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:49
-msgid ""
-"These are slots for dropping audio or MIDI effects that will be applied "
-"to the signal as it passes through the track."
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:55
-#: ../../zrythm-interface/left-panel.rst:65
-msgid "See the :ref:`tracks` chapter for more information."
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:58
-msgid "Aux Sends"
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:59
-msgid ""
-"`Aux sends <https://en.wikipedia.org/wiki/Aux-send>`_ to other tracks or "
-"plugin side-chain inputs."
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:68
-msgid "Fader"
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:69
-msgid "Fader section to control the volume and stereo balance."
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:74
-msgid "Peak"
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:75
-msgid "Peak signal value."
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:77
-msgid "RMS"
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:77
-msgid "Root Mean Square of the signal value."
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:80
-msgid "Comments"
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:81
-msgid "User comments."
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:86
-msgid "This is a TODO feature."
-msgstr ""
-
-#: ../../zrythm-interface/left-panel.rst:89
+#: ../../zrythm-interface/left-panel.rst:28
 msgid "Plugin Inspector"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:90
+#: ../../zrythm-interface/left-panel.rst:29
 msgid "The plugin inspector shows various options for the selected plugin."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:97
+#: ../../zrythm-interface/left-panel.rst:36
 msgid "Plugin Properties"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:98
+#: ../../zrythm-interface/left-panel.rst:37
 msgid ""
 "The plugin properties show the name and type of the plugin, as well as "
 "preset and bank selectors."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:105
+#: ../../zrythm-interface/left-panel.rst:44
 msgid "Plugin Ports"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:106
+#: ../../zrythm-interface/left-panel.rst:45
 msgid "These are the ports that the plugin has."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:111
+#: ../../zrythm-interface/left-panel.rst:50
 msgid ""
 "Control input ports can be changed by clicking and dragging, and can also"
 " be automated using automation tracks. Ports can be routed to other ports"
 " anywhere within Zrythm by double clicking on them."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:116
+#: ../../zrythm-interface/left-panel.rst:55
 msgid "Ports are explained in more detail in :ref:`ports`."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:118
+#: ../../zrythm-interface/left-panel.rst:57
 msgid ""
 "Depending on the type of plugin, there may be different categories of "
 "ports being shown."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:122
+#: ../../zrythm-interface/left-panel.rst:61
 msgid "Track Visibility"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:123
-msgid "The track visibility tab allows toggling the visibility of tracks."
+#: ../../zrythm-interface/left-panel.rst:63
+msgid "See :ref:`track-visibility`."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:8
@@ -393,68 +298,16 @@ msgstr ""
 "Contient divers boutons et contrôles qui sont souvent utilisés lors de "
 "l'édition et de l'arrangement"
 
-#: ../../zrythm-interface/main-toolbar.rst:36
-msgid "Undo"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:36
-msgid "Undo the last action."
+#: ../../zrythm-interface/main-toolbar.rst:35
+msgid "The :ref:`editing` chapter explains these controls in detail."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:39
-msgid "Redo"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:39
-msgid "Redo the last undo'ed action."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:42
-msgid "Cut"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:42
-msgid "Delete the selected objects and copy them in the clipboard."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:45
-msgid "Copy"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:45
-msgid "Copy the selected objects to the clipboard."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:48
-msgid "Paste"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:48
-msgid "Paste the clipboard contents at the playhead."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:51
-msgid "Duplicate"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:51
-msgid "Duplicate the selected objects."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:54
-msgid "Delete"
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:54
-msgid "Delete the selected objects."
-msgstr ""
-
-#: ../../zrythm-interface/main-toolbar.rst:57
 #, fuzzy
 msgid "Project Menu"
 msgstr "Projet"
 
-#: ../../zrythm-interface/main-toolbar.rst:58
+#: ../../zrythm-interface/main-toolbar.rst:40
 #, fuzzy
 msgid ""
 "The Project menu contains various project-related actions such as saving,"
@@ -463,60 +316,68 @@ msgstr ""
 "Diverses actions liées au projet telles que la sauvegarde, le chargement "
 "et l'exportation MIDI ou audio"
 
-#: ../../zrythm-interface/main-toolbar.rst:62
+#: ../../zrythm-interface/main-toolbar.rst:44
 #, fuzzy
 msgid "New Project"
 msgstr "Projet"
 
-#: ../../zrythm-interface/main-toolbar.rst:62
+#: ../../zrythm-interface/main-toolbar.rst:44
 msgid "Create a new project."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:65
+#: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:65
+#: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save the current project at its current location."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:68
+#: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save As"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:68
+#: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save the current project at a new location."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:71
+#: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:71
+#: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load a project."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:74
+#: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Export As"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:74
-msgid "Export the project as audio or MIDI."
+#: ../../zrythm-interface/main-toolbar.rst:56
+msgid ""
+"Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for"
+" more details."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:77
+#: ../../zrythm-interface/main-toolbar.rst:61
 msgid "Export Graph"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:77
-msgid "Export the routing graph as an image or .dot graph."
+#: ../../zrythm-interface/main-toolbar.rst:60
+msgid ""
+"Export the routing graph as an image or .dot graph. See :ref:`export-"
+"routing-graph` for more details."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:80
+#: ../../zrythm-interface/main-toolbar.rst:63
+msgid "For more information about projects, see the :ref:`projects` chapter."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:67
 msgid "View Menu"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:81
+#: ../../zrythm-interface/main-toolbar.rst:68
 #, fuzzy
 msgid ""
 "The View menu contains controls to change the appearance of Zrythm and "
@@ -525,152 +386,152 @@ msgstr ""
 "Contrôles pour changer l'apparence de Zrythm et de ses différentes zones,"
 " comme le zoom"
 
-#: ../../zrythm-interface/main-toolbar.rst:85
+#: ../../zrythm-interface/main-toolbar.rst:72
 msgid "Zoom In"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:85
+#: ../../zrythm-interface/main-toolbar.rst:72
 msgid "Zooms in."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:88
+#: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zoom Out"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:88
+#: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zooms out."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:91
+#: ../../zrythm-interface/main-toolbar.rst:78
 msgid "Original Size"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:91
+#: ../../zrythm-interface/main-toolbar.rst:78
 msgid "Zooms back to the default zoom level."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:95
+#: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Best Fit"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:94
+#: ../../zrythm-interface/main-toolbar.rst:81
 msgid ""
 "Zooms in or out as much as required to show all of the events in the "
 "timeline."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:98
+#: ../../zrythm-interface/main-toolbar.rst:85
 msgid "Toggle Left/Right/Bottom Panels"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:98
+#: ../../zrythm-interface/main-toolbar.rst:85
 msgid "Toggles the panel's visibility."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:101
+#: ../../zrythm-interface/main-toolbar.rst:88
 msgid "Toggle Timeline Visibility"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:101
+#: ../../zrythm-interface/main-toolbar.rst:88
 msgid "Toggles the timeline's visibility."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:104
+#: ../../zrythm-interface/main-toolbar.rst:91
 msgid "Help Menu"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:105
+#: ../../zrythm-interface/main-toolbar.rst:92
 #, fuzzy
 msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
 msgstr "Liens pour signaler des bogues, faire un don, tchatter, etc."
 
-#: ../../zrythm-interface/main-toolbar.rst:108
+#: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Chat"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:109
+#: ../../zrythm-interface/main-toolbar.rst:96
 msgid "Join the Zrythm chatroom on Matrix."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:110
+#: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Manual"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:111
+#: ../../zrythm-interface/main-toolbar.rst:98
 msgid "View the user manual."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:112
+#: ../../zrythm-interface/main-toolbar.rst:99
 msgid "News"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:113
+#: ../../zrythm-interface/main-toolbar.rst:100
 msgid "Show the latest changelog."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:114
+#: ../../zrythm-interface/main-toolbar.rst:101
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:115
+#: ../../zrythm-interface/main-toolbar.rst:102
 msgid "Show all the available keyboard shortcuts."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:116
+#: ../../zrythm-interface/main-toolbar.rst:103
 msgid "Donate"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:117
+#: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Donate to Zrythm through LiberaPay."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:119
+#: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Report a Bug"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:119
+#: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Opens the page to report a new bug."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:122
+#: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Additional Controls"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:123
+#: ../../zrythm-interface/main-toolbar.rst:110
 msgid "The main toolbar also contains the following widgets."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:128
+#: ../../zrythm-interface/main-toolbar.rst:115
 msgid "There are the following buttons next to the name of the current project."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:132
+#: ../../zrythm-interface/main-toolbar.rst:119
 msgid "Scripting Interface"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:132
+#: ../../zrythm-interface/main-toolbar.rst:119
 msgid "Shows the scripting interface. See :ref:`scripting` for more information."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:134
+#: ../../zrythm-interface/main-toolbar.rst:121
 msgid "Log Viewer"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:135
+#: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Displays the log, which gets updated real-time."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:138
+#: ../../zrythm-interface/main-toolbar.rst:125
 msgid "Preferences"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:137
+#: ../../zrythm-interface/main-toolbar.rst:124
 msgid "Shows the preferences dialog. See :ref:`preferences` for more information."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:140
+#: ../../zrythm-interface/main-toolbar.rst:127
 msgid ""
 "The MIDI In widget shows the MIDI activity of auto-connected MIDI devices"
 " and the live waveform display shows the audio waveform from the master "
@@ -724,140 +585,11 @@ msgid ""
 "specific actions."
 msgstr ""
 
-#: ../../zrythm-interface/timeline.rst:18
-msgid "Tracklist"
-msgstr "Liste des pistes"
-
-#: ../../zrythm-interface/timeline.rst:19
+#: ../../zrythm-interface/timeline.rst:17
 msgid ""
-"The Tracklist contains all of the Tracks in the project. It is split into"
-" the top (pinned) Tracklist and the bottom (main) Tracklist."
+"The :ref:`editing-timeline` section goes in depth about editing inside "
+"the timeline panel."
 msgstr ""
-"La liste de piste contient toutes les pistes du projet. Elle est divisée "
-"en une liste de piste supérieure (épinglée) et une liste de piste "
-"inférieure (principale)."
-
-#: ../../zrythm-interface/timeline.rst:26
-msgid ""
-"The numbers at the top indicate the number of visible tracks versus the "
-"total number of tracks."
-msgstr ""
-
-#: ../../zrythm-interface/timeline.rst:29
-msgid "The search box is a TODO feature."
-msgstr ""
-
-#: ../../zrythm-interface/timeline.rst:32
-msgid "Timeline Arranger"
-msgstr ""
-
-#: ../../zrythm-interface/timeline.rst:33
-#, fuzzy
-msgid ""
-"The timeline arranger is the main area where the song is composed. It "
-"consists of a collection of events, such as regions, positioned against "
-"time. Some events will open separate windows for further editing when "
-"clicked."
-msgstr ""
-"La ligne temporelle est la zone principale où le morceau est composé. Il "
-"s'agit généralement d'un ensemble d'événements - principalement des "
-"régions - qui se positionnent dans le temps. Certains événements ouvrent "
-"des fenêtres séparées pour une modification ultérieure lorsqu'on clique "
-"dessus."
-
-#: ../../zrythm-interface/timeline.rst:41
-#, fuzzy
-msgid ""
-"The timeline arranger is split into a top arranger that remains fixed on "
-"top and a bottom arranger below it. This way you can pin tracks you want "
-"to always be visible at the top."
-msgstr ""
-"La ligne temporelle est divisée en une ligne temporelle supérieure qui "
-"reste fixe sur le dessus et une ligne temporelle déroulante en dessous. "
-"De cette façon, vous pouvez épingler les pistes que vous voulez toujours "
-"voir en haut."
-
-#: ../../zrythm-interface/timeline.rst:47
-msgid "Ruler"
-msgstr "Règle"
-
-#: ../../zrythm-interface/timeline.rst:48
-#, fuzzy
-msgid "A ruler is used to show the position of events in the arranger."
-msgstr ""
-"Une règle est utilisée pour montrer la position des événements dans un "
-"arrangeur donné, que ce soit l'arrangeur de ligne temporelle, ou du "
-"piano-roll, ou de l'éditeur d'échantillons."
-
-#: ../../zrythm-interface/timeline.rst:54
-#, fuzzy
-msgid ""
-"The ruler will display more or less information depending on the current "
-"zoom level. It will also display the following markers/indicators."
-msgstr ""
-"La règle affichera plus ou moins d'informations en fonction du niveau de "
-"zoom actuel. Elle affichera également les marqueurs/indicateurs suivants."
-
-#: ../../zrythm-interface/timeline.rst:58
-msgid "Cue point"
-msgstr "Point de repère"
-
-#: ../../zrythm-interface/timeline.rst:59
-msgid "Displayed as a blue, right-pointing arrow."
-msgstr "Affiché sous la forme d'une flèche bleue pointant vers la droite."
-
-#: ../../zrythm-interface/timeline.rst:60
-msgid "Playhead position"
-msgstr "Position de la tête de lecture"
-
-#: ../../zrythm-interface/timeline.rst:61
-msgid "Shown as a grey, down-facing arrow."
-msgstr "Représenté par une flèche grise orientée vers le bas."
-
-#: ../../zrythm-interface/timeline.rst:65
-msgid "Loop points"
-msgstr "Points de bouclage"
-
-#: ../../zrythm-interface/timeline.rst:63
-msgid ""
-"Shown as 2 green arrows, and the area between them is shown in bright "
-"green if loop is enabled, or grey if disabled. Can be dragged to "
-"reposition."
-msgstr ""
-"Représenté par 2 flèches vertes, et la zone entre elles est affichée en "
-"vert vif si la boucle est activée, ou en gris si elle est désactivée. "
-"Peut être glissé pour être repositionné."
-
-#: ../../zrythm-interface/timeline.rst:67
-msgid ""
-"Clicking and dragging on empty space in the ruler will allow you to "
-"reposition the playhead."
-msgstr ""
-"Cliquer et faire glisser sur l'espace vide dans la règle vous permettra "
-"de repositionner la tête de lecture."
-
-#: ../../zrythm-interface/timeline.rst:70
-msgid ""
-"Hold :zbutton:`Shift` to disable snapping momentarily while moving things"
-" around"
-msgstr ""
-"Maintenir :zbutton:`MAJ' pour désactiver l'accrochage momentanément tout "
-"en déplaçant les objets"
-
-#: ../../zrythm-interface/timeline.rst:74
-#, fuzzy
-msgid "Minimap"
-msgstr "Mini carte de la ligne temporelle"
-
-#: ../../zrythm-interface/timeline.rst:75
-msgid ""
-"The timeline minimap is a little box that represents the current visible "
-"area of the timeline. It can be moved around and resized to change the "
-"visible area."
-msgstr ""
-"La ligne temporelle minimap est une petite boîte qui représente la zone "
-"visible actuelle de la ligne temporelle. Elle peut être déplacée et "
-"redimensionnée pour modifier la zone visible."
 
 #: ../../zrythm-interface/transport-bar.rst:8
 msgid "Transport Bar"
@@ -983,7 +715,7 @@ msgstr ""
 #~ msgstr "Contrôles"
 
 #~ msgid "Fader"
-#~ msgstr "Fader"
+#~ msgstr ""
 
 #~ msgid "Meters"
 #~ msgstr "Mesureurs"
@@ -1211,4 +943,277 @@ msgstr ""
 
 #~ msgid "The track that this track routes is output to."
 #~ msgstr ""
+
+#~ msgid "Track Properties"
+#~ msgstr ""
+
+#~ msgid "Track Name"
+#~ msgstr ""
+
+#~ msgid "Name of the track"
+#~ msgstr ""
+
+#~ msgid "Direct Out"
+#~ msgstr ""
+
+#~ msgid "The track that this track routes its output to."
+#~ msgstr ""
+
+#~ msgid "Instrument"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If the track is an :ref:`instrument-"
+#~ "track`, the instrument plugin for this"
+#~ " track."
+#~ msgstr ""
+
+#~ msgid "Track Inputs"
+#~ msgstr ""
+
+#~ msgid "See :ref:`track-inputs` for more information."
+#~ msgstr ""
+
+#~ msgid "MIDI FX/Inserts"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "These are slots for dropping audio "
+#~ "or MIDI effects that will be "
+#~ "applied to the signal as it passes"
+#~ " through the track."
+#~ msgstr ""
+
+#~ msgid "See the :ref:`tracks` chapter for more information."
+#~ msgstr ""
+
+#~ msgid "Aux Sends"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "`Aux sends <https://en.wikipedia.org/wiki/Aux-"
+#~ "send>`_ to other tracks or plugin "
+#~ "side-chain inputs."
+#~ msgstr ""
+
+#~ msgid "Fader section to control the volume and stereo balance."
+#~ msgstr ""
+
+#~ msgid "Peak"
+#~ msgstr ""
+
+#~ msgid "Peak signal value."
+#~ msgstr ""
+
+#~ msgid "RMS"
+#~ msgstr ""
+
+#~ msgid "Root Mean Square of the signal value."
+#~ msgstr ""
+
+#~ msgid "Comments"
+#~ msgstr ""
+
+#~ msgid "User comments."
+#~ msgstr ""
+
+#~ msgid "This is a TODO feature."
+#~ msgstr ""
+
+#~ msgid "The track visibility tab allows toggling the visibility of tracks."
+#~ msgstr ""
+
+#~ msgid "Undo"
+#~ msgstr ""
+
+#~ msgid "Undo the last action."
+#~ msgstr ""
+
+#~ msgid "Redo"
+#~ msgstr ""
+
+#~ msgid "Redo the last undo'ed action."
+#~ msgstr ""
+
+#~ msgid "Cut"
+#~ msgstr ""
+
+#~ msgid "Delete the selected objects and copy them in the clipboard."
+#~ msgstr ""
+
+#~ msgid "Copy"
+#~ msgstr ""
+
+#~ msgid "Copy the selected objects to the clipboard."
+#~ msgstr ""
+
+#~ msgid "Paste"
+#~ msgstr ""
+
+#~ msgid "Paste the clipboard contents at the playhead."
+#~ msgstr ""
+
+#~ msgid "Duplicate"
+#~ msgstr ""
+
+#~ msgid "Duplicate the selected objects."
+#~ msgstr ""
+
+#~ msgid "Delete"
+#~ msgstr ""
+
+#~ msgid "Delete the selected objects."
+#~ msgstr ""
+
+#~ msgid "Export the project as audio or MIDI."
+#~ msgstr ""
+
+#~ msgid "Export the routing graph as an image or .dot graph."
+#~ msgstr ""
+
+#~ msgid "Tracklist"
+#~ msgstr "Liste des pistes"
+
+#~ msgid ""
+#~ "The Tracklist contains all of the "
+#~ "Tracks in the project. It is split"
+#~ " into the top (pinned) Tracklist and"
+#~ " the bottom (main) Tracklist."
+#~ msgstr ""
+#~ "La liste de piste contient toutes "
+#~ "les pistes du projet. Elle est "
+#~ "divisée en une liste de piste "
+#~ "supérieure (épinglée) et une liste de"
+#~ " piste inférieure (principale)."
+
+#~ msgid ""
+#~ "The numbers at the top indicate "
+#~ "the number of visible tracks versus "
+#~ "the total number of tracks."
+#~ msgstr ""
+
+#~ msgid "The search box is a TODO feature."
+#~ msgstr ""
+
+#~ msgid "Timeline Arranger"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The timeline arranger is the main "
+#~ "area where the song is composed. "
+#~ "It consists of a collection of "
+#~ "events, such as regions, positioned "
+#~ "against time. Some events will open "
+#~ "separate windows for further editing "
+#~ "when clicked."
+#~ msgstr ""
+#~ "La ligne temporelle est la zone "
+#~ "principale où le morceau est composé."
+#~ " Il s'agit généralement d'un ensemble "
+#~ "d'événements - principalement des régions "
+#~ "- qui se positionnent dans le "
+#~ "temps. Certains événements ouvrent des "
+#~ "fenêtres séparées pour une modification "
+#~ "ultérieure lorsqu'on clique dessus."
+
+#~ msgid ""
+#~ "The timeline arranger is split into "
+#~ "a top arranger that remains fixed "
+#~ "on top and a bottom arranger below"
+#~ " it. This way you can pin "
+#~ "tracks you want to always be "
+#~ "visible at the top."
+#~ msgstr ""
+#~ "La ligne temporelle est divisée en "
+#~ "une ligne temporelle supérieure qui "
+#~ "reste fixe sur le dessus et une"
+#~ " ligne temporelle déroulante en dessous."
+#~ " De cette façon, vous pouvez épingler"
+#~ " les pistes que vous voulez toujours"
+#~ " voir en haut."
+
+#~ msgid "Ruler"
+#~ msgstr "Règle"
+
+#~ msgid "A ruler is used to show the position of events in the arranger."
+#~ msgstr ""
+#~ "Une règle est utilisée pour montrer "
+#~ "la position des événements dans un "
+#~ "arrangeur donné, que ce soit l'arrangeur"
+#~ " de ligne temporelle, ou du piano-"
+#~ "roll, ou de l'éditeur d'échantillons."
+
+#~ msgid ""
+#~ "The ruler will display more or "
+#~ "less information depending on the "
+#~ "current zoom level. It will also "
+#~ "display the following markers/indicators."
+#~ msgstr ""
+#~ "La règle affichera plus ou moins "
+#~ "d'informations en fonction du niveau de"
+#~ " zoom actuel. Elle affichera également "
+#~ "les marqueurs/indicateurs suivants."
+
+#~ msgid "Cue point"
+#~ msgstr "Point de repère"
+
+#~ msgid "Displayed as a blue, right-pointing arrow."
+#~ msgstr "Affiché sous la forme d'une flèche bleue pointant vers la droite."
+
+#~ msgid "Playhead position"
+#~ msgstr "Position de la tête de lecture"
+
+#~ msgid "Shown as a grey, down-facing arrow."
+#~ msgstr "Représenté par une flèche grise orientée vers le bas."
+
+#~ msgid "Loop points"
+#~ msgstr "Points de bouclage"
+
+#~ msgid ""
+#~ "Shown as 2 green arrows, and the"
+#~ " area between them is shown in "
+#~ "bright green if loop is enabled, "
+#~ "or grey if disabled. Can be "
+#~ "dragged to reposition."
+#~ msgstr ""
+#~ "Représenté par 2 flèches vertes, et "
+#~ "la zone entre elles est affichée "
+#~ "en vert vif si la boucle est "
+#~ "activée, ou en gris si elle est"
+#~ " désactivée. Peut être glissé pour "
+#~ "être repositionné."
+
+#~ msgid ""
+#~ "Clicking and dragging on empty space "
+#~ "in the ruler will allow you to "
+#~ "reposition the playhead."
+#~ msgstr ""
+#~ "Cliquer et faire glisser sur l'espace"
+#~ " vide dans la règle vous permettra"
+#~ " de repositionner la tête de lecture."
+
+#~ msgid ""
+#~ "Hold :zbutton:`Shift` to disable snapping "
+#~ "momentarily while moving things around"
+#~ msgstr ""
+#~ "Maintenir :zbutton:`MAJ' pour désactiver "
+#~ "l'accrochage momentanément tout en déplaçant"
+#~ " les objets"
+
+#~ msgid "Minimap"
+#~ msgstr "Mini carte de la ligne temporelle"
+
+#~ msgid ""
+#~ "The timeline minimap is a little "
+#~ "box that represents the current visible"
+#~ " area of the timeline. It can "
+#~ "be moved around and resized to "
+#~ "change the visible area."
+#~ msgstr ""
+#~ "La ligne temporelle minimap est une "
+#~ "petite boîte qui représente la zone "
+#~ "visible actuelle de la ligne temporelle."
+#~ " Elle peut être déplacée et "
+#~ "redimensionnée pour modifier la zone "
+#~ "visible."
 
