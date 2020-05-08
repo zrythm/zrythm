@@ -36,6 +36,7 @@ Welcome to the Zrythm manual.
    mixing/intro
    playback-and-recording/intro
    automation/intro
+   connections/intro
    modulators/intro
    exporting/intro
    scripting/intro

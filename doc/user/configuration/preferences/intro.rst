@@ -78,6 +78,8 @@ Refresh rate
   Refresh rate in Hz. If set to 0, the screen's refresh rate
   will be used.
 
+.. _vst-paths:
+
 Paths
 ~~~~~
 

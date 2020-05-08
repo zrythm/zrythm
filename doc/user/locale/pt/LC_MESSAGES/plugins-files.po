@@ -7,24 +7,23 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-24 13:32+0000\n"
+"POT-Creation-Date: 2020-05-08 17:25+0100\n"
 "PO-Revision-Date: 2020-05-02 05:11+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualplugins-files/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
+"/manualplugins-files/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:6
+#: ../../plugins-files/audio-midi-files/file-browser.rst:8
 msgid "File Browser"
 msgstr "Navegador de Ficheiros"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:8
+#: ../../plugins-files/audio-midi-files/file-browser.rst:10
 msgid ""
 "The File Browser makes it easy to navigate through files on your computer"
 " or through your custom collections."
@@ -32,28 +31,28 @@ msgstr ""
 "O Navegador de Ficheiros facilita a navegação pelos ficheiros no seu "
 "computador ou em suas coleções personalizadas."
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:12
+#: ../../plugins-files/audio-midi-files/file-browser.rst:14
 msgid "This is a work in progress."
 msgstr "Este é um trabalho em progresso."
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:15
+#: ../../plugins-files/audio-midi-files/file-browser.rst:17
 msgid "Filtering"
 msgstr "Filtrar"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:17
-#: ../../plugins-files/audio-midi-files/file-browser.rst:22
+#: ../../plugins-files/audio-midi-files/file-browser.rst:19
+#: ../../plugins-files/audio-midi-files/file-browser.rst:24
 msgid "TODO"
 msgstr "A FAZER"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:20
+#: ../../plugins-files/audio-midi-files/file-browser.rst:22
 msgid "Collections"
 msgstr "Coleções"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:25
+#: ../../plugins-files/audio-midi-files/file-browser.rst:27
 msgid "Importing Files"
 msgstr "Importar Ficheiros"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:27
+#: ../../plugins-files/audio-midi-files/file-browser.rst:29
 msgid ""
 "Files are imported by either double clicking them in the browser or "
 "dragging and dropping them into a track."
@@ -161,11 +160,11 @@ msgstr "Para mais informações sobre portas, consulte a secção seguinte."
 msgid "Plugins"
 msgstr "Plugins"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:6
+#: ../../plugins-files/plugins/plugin-browser.rst:8
 msgid "Plugin Browser"
 msgstr "Navegador de Plugins"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:8
+#: ../../plugins-files/plugins/plugin-browser.rst:10
 msgid ""
 "The Plugin Browser makes it easy to browse and filter Plugins installed "
 "on your computer."
@@ -173,11 +172,11 @@ msgstr ""
 "O Navegador de Plugin facilita a navegação e filtragem dos Plugins "
 "instalados no seu computador."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:15
+#: ../../plugins-files/plugins/plugin-browser.rst:17
 msgid "Filters Tab"
 msgstr "Separador Filtros"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:16
+#: ../../plugins-files/plugins/plugin-browser.rst:18
 msgid ""
 "The filters tab at the top allows you to select how to filter the "
 "Plugins. There are 3 tabs:"
@@ -185,11 +184,11 @@ msgstr ""
 "O separador Filtros na parte superior permite que você selecione como "
 "filtrar os Plugins. Existem 3 separadores:"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:21
+#: ../../plugins-files/plugins/plugin-browser.rst:23
 msgid "Collection"
 msgstr "Coleção"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:20
+#: ../../plugins-files/plugins/plugin-browser.rst:22
 msgid ""
 "This tab contains your collections. You can create collections such as "
 "\"MySynths\" and filter by the selected collections."
@@ -197,11 +196,11 @@ msgstr ""
 "Este separador contém suas coleções. Você pode criar coleções como "
 "\"MeusSynths\" e filtrar pelas coleções selecionadas."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:24
+#: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid "Category"
 msgstr "Categoria"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:24
+#: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid ""
 "Filter Plugins by category based on the plugin metadata, such as "
 "\"Delay\", \"Distortion\", etc."
@@ -209,23 +208,23 @@ msgstr ""
 "Plugins de filtro por categoria com base nos metadados do plugin, tais "
 "como \"Delay\", \"Distorção\", etc."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:28
+#: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Protocol"
 msgstr "Protocolo"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:27
+#: ../../plugins-files/plugins/plugin-browser.rst:29
 msgid "Allows you to filter plugins based their protocol (LV2 or VST)."
 msgstr "Permite-lhe filtrar plugins com base no seu protocolo (LV2 ou VST)."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:30
+#: ../../plugins-files/plugins/plugin-browser.rst:32
 msgid "Collections and Protocols are not operational at the moment."
 msgstr "As Coleções e Protocolos não estão operacionais no momento."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:33
+#: ../../plugins-files/plugins/plugin-browser.rst:35
 msgid "Filter Buttons"
 msgstr "Botões de Filtro"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:34
+#: ../../plugins-files/plugins/plugin-browser.rst:36
 msgid ""
 "Additionally to the above, you can filter plugins based on their type. "
 "The following types exist:"
@@ -233,19 +232,19 @@ msgstr ""
 "Além disso, você pode filtrar plugins com base em seu tipo. Existem os "
 "seguintes tipos:"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:38
+#: ../../plugins-files/plugins/plugin-browser.rst:40
 msgid "Instrument"
 msgstr "Instrumento"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:38
+#: ../../plugins-files/plugins/plugin-browser.rst:40
 msgid "These plugins will create an instrument track when added to the project."
 msgstr "Estes plugins criarão uma faixa de instrumento ao adicionar ao projeto."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:42
+#: ../../plugins-files/plugins/plugin-browser.rst:44
 msgid "Effects"
 msgstr "Efeitos"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:41
+#: ../../plugins-files/plugins/plugin-browser.rst:43
 msgid ""
 "These plugins can be dragged into the insert slots of existing channels "
 "in the mixer or can be instantiated to create new bus tracks."
@@ -254,11 +253,11 @@ msgstr ""
 " canais existentes no misturador ou podem ser instanciados para criar "
 "novas faixas de bus."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:45
+#: ../../plugins-files/plugins/plugin-browser.rst:47
 msgid "Modulators"
 msgstr "Moduladores"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:45
+#: ../../plugins-files/plugins/plugin-browser.rst:47
 msgid ""
 "These plugins output CV signals and can be used to modulate other plugin "
 "or track parameters."
@@ -266,11 +265,11 @@ msgstr ""
 "Estes plugins emitem sinais CV e podem ser usados para modular outros "
 "parâmetros de plugin ou de faixa."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:51
+#: ../../plugins-files/plugins/plugin-browser.rst:53
 msgid "MIDI Effects"
 msgstr "Efeitos MIDI"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:48
+#: ../../plugins-files/plugins/plugin-browser.rst:50
 msgid ""
 "These plugins modify incoming MIDI signals and can be used in the MIDI "
 "signal chain of an Instrument or MIDI track (coming soon)."
@@ -278,7 +277,7 @@ msgstr ""
 "Estes plugins modificam os sinais MIDI de entrada e servem na cadeia de "
 "sinais MIDI de um Instrumento ou faixa MIDI (em breve)."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:54
+#: ../../plugins-files/plugins/plugin-browser.rst:56
 msgid ""
 "Zrythm looks inside the Plugin's metadata to determine what type the "
 "Plugin is. If that is not enough, Zrythm makes a decision based on the "
@@ -289,19 +288,19 @@ msgstr ""
 "Plugin é. Se não for suficiente, o Zrythm decide à base da quantidade de "
 "portas de entrada e saída de áudio, MIDI, controle e CV."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:63
+#: ../../plugins-files/plugins/plugin-browser.rst:65
 msgid "Instantiating Plugins"
 msgstr "Instanciar Plugins"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:64
+#: ../../plugins-files/plugins/plugin-browser.rst:66
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr "Existem algumas maneiras de instanciar plugins:"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:67
+#: ../../plugins-files/plugins/plugin-browser.rst:69
 msgid "Drag-n-Drop"
 msgstr "Arrastar-e-soltar"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:69
+#: ../../plugins-files/plugins/plugin-browser.rst:71
 msgid ""
 "You can drag and drop the selected plugin into empty space in the "
 "Tracklist or into empty space in the Mixer to create a new track using "
@@ -311,7 +310,7 @@ msgstr ""
 "Faixas ou em espaço vazio no Misturador para criar uma faixa usando esse "
 "plugin."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:79
+#: ../../plugins-files/plugins/plugin-browser.rst:81
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or"
 " replace the previous plugin."
@@ -319,11 +318,11 @@ msgstr ""
 "Alternativamente, pode arrastar o plugin num slot de misturador para "
 "adicioná-lo lá ou substituir o plugin anterior."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:85
+#: ../../plugins-files/plugins/plugin-browser.rst:87
 msgid "If the plugin is a modulator, you can drop it into the Modulators Tab."
 msgstr "Se o plugin é um modulador, pode colocá-lo no separador Moduladores."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:89
+#: ../../plugins-files/plugins/plugin-browser.rst:91
 msgid ""
 "The Modulators tab is a work-in-progress. For the time being, you can use"
 " them as regular effects."
@@ -331,11 +330,11 @@ msgstr ""
 "O separador Moduladores é um trabalho em progresso. Por enquanto, pode "
 "usá-los como efeitos regulares."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:93
+#: ../../plugins-files/plugins/plugin-browser.rst:95
 msgid "Double Click/Enter"
 msgstr "Clique Duplo/Enter"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:95
+#: ../../plugins-files/plugins/plugin-browser.rst:97
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
@@ -366,8 +365,8 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-window.rst:22
 msgid "Some plugin UIs cannot be wrapped and will be opened in separate windows."
 msgstr ""
-"Algumas UIs de plugin não podem ser embrulhadas e serão abertas em janelas "
-"separadas."
+"Algumas UIs de plugin não podem ser embrulhadas e serão abertas em "
+"janelas separadas."
 
 #: ../../plugins-files/plugins/ports.rst:6
 msgid "Ports"
@@ -473,65 +472,81 @@ msgid "Scanning for Plugins"
 msgstr "Procurando Plugins"
 
 #: ../../plugins-files/plugins/scanning.rst:8
+#, fuzzy
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
-"until it is closed. Zrythm supports both LV2 and VST plugins, although "
+"until it is closed. Zrythm supports both LV2, VST2, VST3 and AU plugins. "
 "LV2 is the recommended standard."
 msgstr ""
-"A Zrythm procurará plugins na inicialização e se lembrará deles até que seja "
-"fechado. A Zrythm suporta plugins LV2 e VST, embora LV2 seja o padrão "
-"recomendado."
+"A Zrythm procurará plugins na inicialização e se lembrará deles até que "
+"seja fechado. A Zrythm suporta plugins LV2 e VST, embora LV2 seja o "
+"padrão recomendado."
 
 #: ../../plugins-files/plugins/scanning.rst:13
+msgid ""
+"SFZ and SF2 instruments are also supported, and they are scanned as "
+"instrument plugins."
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:16
 msgid ""
 "Plugin scanning can be disableld by passing NO_SCAN_PLUGINS=1 when "
 "running Zrythm."
 msgstr ""
-"A verificação de plug-in pode ser desativada passando NO_SCAN_PLUGINS = 1 ao "
-"executar o Zrythm."
+"A verificação de plug-in pode ser desativada passando NO_SCAN_PLUGINS = 1"
+" ao executar o Zrythm."
 
-#: ../../plugins-files/plugins/scanning.rst:17
+#: ../../plugins-files/plugins/scanning.rst:20
 msgid "LV2 Scan"
 msgstr "Procurar LV2"
 
-#: ../../plugins-files/plugins/scanning.rst:19
+#: ../../plugins-files/plugins/scanning.rst:22
+#, fuzzy
 msgid ""
 "Zrythm will scan for LV2 plugins in the standard paths specified `here "
 "<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. You can "
 "bypass this behavior by passing the ``LV2_PATH`` environment variable to "
-"specify custom paths. For example, ``LV2_PATH=~/custom-lv2-dir zrythm``."
+"specify custom paths. For example, ``LV2_PATH=/home/me/custom-lv2-dir "
+"zrythm``."
 msgstr ""
-"O Zrythm procurará por plugins LV2 nos caminhos padrão especificados `aqui "
-"<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>` _. Pode "
-"ignorar esse comportamento passando a variável de ambiente `` LV2_PATH`` "
-"para especificar caminhos personalizados. Por exemplo, `` LV2_PATH =~/dir-"
-"lv2-personalizado zrythm``."
+"O Zrythm procurará por plugins LV2 nos caminhos padrão especificados "
+"`aqui <https://lv2plug.in/pages/filesystem-hierarchy-standard.html>` _. "
+"Pode ignorar esse comportamento passando a variável de ambiente `` "
+"LV2_PATH`` para especificar caminhos personalizados. Por exemplo, `` "
+"LV2_PATH =~/dir-lv2-personalizado zrythm``."
 
-#: ../../plugins-files/plugins/scanning.rst:26
-msgid "VST Scan"
-msgstr "Procurar VST"
-
-#: ../../plugins-files/plugins/scanning.rst:28
-msgid "On UNIX, Zrythm will scan for VST plugins in the following paths."
-msgstr "No UNIX, o Zrythm procurará plug-ins VST nos seguintes caminhos."
-
-#: ../../plugins-files/plugins/scanning.rst:31
-msgid "``~/.vst``"
-msgstr "``~/.vst``"
-
-#: ../../plugins-files/plugins/scanning.rst:32
-msgid "``~/vst``"
-msgstr "``~/vst``"
+#: ../../plugins-files/plugins/scanning.rst:30
+msgid "VST2/VST3 Scan"
+msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:33
+msgid "GNU/Linux and FreeBSD"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:34
+#, fuzzy
+msgid "Zrythm will scan for VST2 and VST3 plugins in the following paths."
+msgstr "No UNIX, o Zrythm procurará plug-ins VST nos seguintes caminhos."
+
+#: ../../plugins-files/plugins/scanning.rst:37
+#, fuzzy
+msgid "``$HOME/.vst``"
+msgstr "``~/.vst``"
+
+#: ../../plugins-files/plugins/scanning.rst:38
+#, fuzzy
+msgid "``$HOME/vst``"
+msgstr "``~/vst``"
+
+#: ../../plugins-files/plugins/scanning.rst:39
 msgid "``/usr/local/lib/vst``"
 msgstr "``/usr/local/lib/vst``"
 
-#: ../../plugins-files/plugins/scanning.rst:34
+#: ../../plugins-files/plugins/scanning.rst:40
 msgid "``/usr/lib/vst``"
 msgstr "``/usr/lib/vst``"
 
-#: ../../plugins-files/plugins/scanning.rst:36
+#: ../../plugins-files/plugins/scanning.rst:42
 msgid ""
 "You can bypass this behavior by passing the ``VST_PATH`` environment "
 "variable to specify custom paths. For example, ``VST_PATH=~/custom-vst-"
@@ -541,49 +556,89 @@ msgstr ""
 "VST_PATH`` para especificar caminhos personalizados. Por exemplo, `` "
 "VST_PATH =~/dir-vst-personalizado zrythm``."
 
-#: ../../plugins-files/plugins/scanning.rst:40
+#: ../../plugins-files/plugins/scanning.rst:46
 msgid "``lib`` will be replaced with ``lib64`` depending on your system."
 msgstr "O ``lib`` será substituído por ``lib64`` dependendo do seu sistema."
 
-#: ../../plugins-files/plugins/scanning.rst:43
-msgid ""
-"On Windows, Zrythm will scan for plugins in the paths specified in `VST "
-"plug-in locations on Windows <https://helpcenter.steinberg.de/hc/en-"
-"us/articles/115000177084-VST-plug-in-locations-on-Windows>`_."
+#: ../../plugins-files/plugins/scanning.rst:50
+msgid "Windows"
 msgstr ""
-"No Windows, o Zrythm irá procurar plug-ins nos caminhos especificados em `"
-"Locais de plug-ins VST no Windows <https://helpcenter.steinberg.de/hc/en-us/"
-"articles/115000177084-VST-plug-in-locations-on-Windows>`_."
-
-#: ../../plugins-files/plugins/scanning.rst:46
-msgid "``C:\\Program Files\\VSTPlugins``"
-msgstr "``C:\\Program Files\\VSTPlugins``"
-
-#: ../../plugins-files/plugins/scanning.rst:47
-msgid "``C:\\Program Files\\Steinberg\\VSTPlugins``"
-msgstr "``C:\\Program Files\\Steinberg\\VSTPlugins``"
-
-#: ../../plugins-files/plugins/scanning.rst:48
-msgid "``C:\\Program Files\\Common Files\\VST2``"
-msgstr "``C:\\Program Files\\Common Files\\VST2``"
-
-#: ../../plugins-files/plugins/scanning.rst:49
-msgid "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
-msgstr "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
 
 #: ../../plugins-files/plugins/scanning.rst:51
 msgid ""
-"Since scanning VST plugins takes a long time, Zrythm will remember "
-"scanned VST plugins and save this information in ``<<ZRYTHM "
-"PATH>>/cached_vst_descriptors.yaml``. New plugins will be scanned on each"
-" start-up, and you can delete or edit this file to force a re-scan of "
-"previously scanned plugins."
+"Zrythm will scan for VST plugins in the paths specified in :ref:`vst-"
+"paths`."
 msgstr ""
-"Como a procura de plug-ins VST leva muito tempo, o Zrythm lembra-se dos plug-"
-"ins VST verificados e grava essas informações em `` << ZRYTHM PATH "
-">>/cached_vst_descriptors.yaml``. Novos plug-ins serão verificados em cada "
-"inicialização, e pode excluir ou editar este ficheiro para forçar uma nova "
-"verificação dos plug-ins verificados anteriormente."
+
+#: ../../plugins-files/plugins/scanning.rst:55
+msgid "MacOS"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:56
+#, fuzzy
+msgid ""
+"Zrythm will scan for VST plugins in the paths specified in `VST plug-in "
+"locations on Mac OS X and macOS <https://helpcenter.steinberg.de/hc/en-"
+"us/articles/115000171310>`_."
+msgstr ""
+"No Windows, o Zrythm irá procurar plug-ins nos caminhos especificados em "
+"`Locais de plug-ins VST no Windows <https://helpcenter.steinberg.de/hc"
+"/en-us/articles/115000177084-VST-plug-in-locations-on-Windows>`_."
+
+#: ../../plugins-files/plugins/scanning.rst:59
+msgid "``/Library/Audio/Plug-Ins/VST`` for VST2"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:60
+msgid "``/Library/Audio/Plug-Ins/VST3`` for VST3"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:62
+#, fuzzy
+msgid ""
+"Since scanning VST plugins takes a long time, Zrythm will remember "
+"scanned VST plugins and save this information in "
+"``$ZRYTHM_PATH/cached_vst_descriptors.yaml``."
+msgstr ""
+"Como a procura de plug-ins VST leva muito tempo, o Zrythm lembra-se dos "
+"plug-ins VST verificados e grava essas informações em `` << ZRYTHM PATH "
+">>/cached_vst_descriptors.yaml``. Novos plug-ins serão verificados em "
+"cada inicialização, e pode excluir ou editar este ficheiro para forçar "
+"uma nova verificação dos plug-ins verificados anteriormente."
+
+#: ../../plugins-files/plugins/scanning.rst:67
+#, fuzzy
+msgid ""
+"New plugins will be scanned on each start-up, and you can delete or edit "
+"this file to force a re-scan of previously scanned plugins."
+msgstr ""
+"Como a procura de plug-ins VST leva muito tempo, o Zrythm lembra-se dos "
+"plug-ins VST verificados e grava essas informações em `` << ZRYTHM PATH "
+">>/cached_vst_descriptors.yaml``. Novos plug-ins serão verificados em "
+"cada inicialização, e pode excluir ou editar este ficheiro para forçar "
+"uma nova verificação dos plug-ins verificados anteriormente."
+
+#: ../../plugins-files/plugins/scanning.rst:72
+msgid "AU Scan"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:73
+msgid "On MacOS, AUs will be scanned in their default locations."
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:75
+msgid "``/Library/Audio/Plug-Ins/Components``"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:78
+msgid "SFZ/SF2 Scan"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:79
+msgid ""
+"SFZ and SF2 instruments will be scanned in all directories and "
+"subdirectories specified in :ref:`vst-paths`."
+msgstr ""
 
 #~ msgid ""
 #~ "When a Plugin is selected in the"
@@ -682,3 +737,19 @@ msgstr ""
 #~ "``C:\\Program Files\\Common Files\\VST2`` - "
 #~ "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
 #~ msgstr ""
+
+#~ msgid "VST Scan"
+#~ msgstr "Procurar VST"
+
+#~ msgid "``C:\\Program Files\\VSTPlugins``"
+#~ msgstr "``C:\\Program Files\\VSTPlugins``"
+
+#~ msgid "``C:\\Program Files\\Steinberg\\VSTPlugins``"
+#~ msgstr "``C:\\Program Files\\Steinberg\\VSTPlugins``"
+
+#~ msgid "``C:\\Program Files\\Common Files\\VST2``"
+#~ msgstr "``C:\\Program Files\\Common Files\\VST2``"
+
+#~ msgid "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
+#~ msgstr "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
+

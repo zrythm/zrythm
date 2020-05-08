@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-08 16:10+0100\n"
+"POT-Creation-Date: 2020-05-08 17:25+0100\n"
 "PO-Revision-Date: 2020-03-14 19:36+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -215,7 +215,7 @@ msgid "Direct Out"
 msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:34
-msgid "The track that this track routes is output to."
+msgid "The track that this track routes its output to."
 msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:37
@@ -1114,4 +1114,7 @@ msgstr ""
 #~ "moi útil na parte baixa da ventá"
 #~ " que amosa información sobre o "
 #~ "proxecto actual."
+
+#~ msgid "The track that this track routes is output to."
+#~ msgstr ""
 

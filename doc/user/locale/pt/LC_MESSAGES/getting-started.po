@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-07 22:54+0100\n"
+"POT-Creation-Date: 2020-05-08 17:25+0100\n"
 "PO-Revision-Date: 2020-03-30 22:14+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -168,104 +168,27 @@ msgid ""
 "CC-licensed samples."
 msgstr ""
 
-#: ../../getting-started/installation/freebsd.rst:6
-msgid "FreeBSD"
-msgstr "FreeBSD"
+#: ../../getting-started/installation.rst:6
+msgid "Installation"
+msgstr "Instalação"
 
-#: ../../getting-started/installation/freebsd.rst:9
-#: ../../getting-started/installation/gnu-linux.rst:11
-#: ../../getting-started/installation/macos.rst:9
-#: ../../getting-started/installation/windows.rst:9
-msgid "Installer"
+#: ../../getting-started/installation.rst:11
+#, fuzzy
+msgid "Installers"
 msgstr "Instalador"
 
-#: ../../getting-started/installation/freebsd.rst:10
+#: ../../getting-started/installation.rst:12
 #, fuzzy
 msgid ""
-"We plan to add FreeBSD support to the installer mentioned in :ref:`gnu-"
-"with-linux-installer` in the future."
-msgstr ""
-"Pretendemos adicionar suporte de FreeBSD ao instalador mencionado em :ref"
-":'gnu-with-linux-installer'."
-
-#: ../../getting-started/installation/freebsd.rst:14
-msgid "Port"
-msgstr "Porta"
-
-#: ../../getting-started/installation/freebsd.rst:15
-#, fuzzy
-msgid ""
-"You can install the `zrythm port "
-"<https://www.freshports.org/audio/zrythm/>`_."
-msgstr ""
-"Pode instalar o `port zrythm <https://www.freshports.org/audio/zrythm/>`_"
-" mas pode ser antigo e recursos e otimizações podem faltar."
-
-#: ../../getting-started/installation/freebsd.rst:19
-#: ../../getting-started/installation/gnu-linux.rst:40
-#: ../../getting-started/installation/macos.rst:21
-#: ../../getting-started/installation/windows.rst:21
-msgid "Manual Installation"
-msgstr "Instalação Manual"
-
-#: ../../getting-started/installation/freebsd.rst:20
-#: ../../getting-started/installation/macos.rst:22
-#: ../../getting-started/installation/windows.rst:22
-#, fuzzy
-msgid ""
-"If you are an advanced user and prefer to build Zrythm yourself, you can "
-"build Zrythm from source. See :ref:`gnu-with-linux-manual-installation` "
-"for details."
-msgstr ""
-"Se é um utilizador avançado e prefere compilar Zrythm você mesmo, Zrythm "
-"usa o sistema de construção Meson, então o procedimento para construir e "
-"instalar é o seguinte:"
-
-#: ../../getting-started/installation/gnu-linux.rst:6
-msgid "GNU with Linux"
-msgstr "GNU com Linux"
-
-#: ../../getting-started/installation/gnu-linux.rst:12
-msgid ""
-"You can install the latest version of Zrythm for your distro using an "
-"installer from the `Download <https://www.zrythm.org/en/download.html>`_ "
-"page on our website."
+"You can install the latest version of Zrythm for your distro or operating"
+" system using an installer from the `Download "
+"<https://www.zrythm.org/en/download.html>`_ page on our website."
 msgstr ""
 "Pode instalar a versão mais recente do Zrythm para a sua distro `da "
 "página de descarragemento <https://software.opensuse.org//download.html? "
 "project = home% 3Aalextee & package = zrythm>`_ na nossa website."
 
-#: ../../getting-started/installation/gnu-linux.rst:18
-msgid "The installer supports the following distros (and derivatives):"
-msgstr "O instalador suporta as distros seguintes (e derivados):"
-
-#: ../../getting-started/installation/gnu-linux.rst:21
-#, fuzzy
-msgid "**Ubuntu 18.04, 19.10 & 20.04** - amd64"
-msgstr "**Ubuntu 18.04 & 19.04** - amd64"
-
-#: ../../getting-started/installation/gnu-linux.rst:22
-msgid "**LinuxMint 19.3** - amd64"
-msgstr "**LinuxMint 19.3** - amd64"
-
-#: ../../getting-started/installation/gnu-linux.rst:23
-msgid "**Debian 9 & 10** - amd64"
-msgstr "**Debian 9 & 10** - amd64"
-
-#: ../../getting-started/installation/gnu-linux.rst:24
-msgid "**Arch Linux** - x86_64"
-msgstr "**Arch Linux** - x86_64"
-
-#: ../../getting-started/installation/gnu-linux.rst:25
-#, fuzzy
-msgid "**Fedora 32** - x86_64"
-msgstr "**Fedora 31** - x86_64"
-
-#: ../../getting-started/installation/gnu-linux.rst:26
-msgid "**OpenSUSE Tumbleweed** - x86_64"
-msgstr "**OpenSUSE Tumbleweed** - x86_64"
-
-#: ../../getting-started/installation/gnu-linux.rst:28
+#: ../../getting-started/installation.rst:18
 msgid ""
 "This is the easiest and recommended way to install the latest version for"
 " most users, and we provide support for it."
@@ -273,18 +196,11 @@ msgstr ""
 "Esta é a maneira mais fácil e recomendada de instalar a última versão "
 "para a maioria dos utilizadores e fornecemos suporte para ela."
 
-#: ../../getting-started/installation/gnu-linux.rst:33
-#, fuzzy
-msgid "Distribution Package"
-msgstr "Pacote Distro"
+#: ../../getting-started/installation.rst:23
+msgid "Manual Installation"
+msgstr "Instalação Manual"
 
-#: ../../getting-started/installation/gnu-linux.rst:34
-msgid ""
-"If your distribution provides a Zrythm package you can install it from "
-"there."
-msgstr ""
-
-#: ../../getting-started/installation/gnu-linux.rst:41
+#: ../../getting-started/installation.rst:24
 msgid ""
 "If you are an advanced user and prefer to build Zrythm yourself, you can "
 "build Zrythm from source, either using a `source distribution tarball "
@@ -292,54 +208,95 @@ msgid ""
 "<https://git.zrythm.org/cgit/zrythm/>`_."
 msgstr ""
 
-#: ../../getting-started/installation/gnu-linux.rst:46
+#: ../../getting-started/installation.rst:29
 msgid ""
 "See the ``INSTALL.md`` file in the source distribution for installation "
 "instructions."
 msgstr ""
 
-#: ../../getting-started/installation/intro.rst:6
-msgid "Installation"
-msgstr "Instalação"
+#: ../../getting-started/installation.rst:33
+msgid "GNU/Linux"
+msgstr ""
 
-#: ../../getting-started/installation/macos.rst:6
-msgid "MacOS"
-msgstr "MacOS"
+#: ../../getting-started/installation.rst:36
+#: ../../getting-started/installation.rst:60
+msgid "Installer"
+msgstr "Instalador"
 
-#: ../../getting-started/installation/macos.rst:10
+#: ../../getting-started/installation.rst:37
+msgid "The installer supports the following distros (and derivatives):"
+msgstr "O instalador suporta as distros seguintes (e derivados):"
+
+#: ../../getting-started/installation.rst:40
+#, fuzzy
+msgid "**Ubuntu 18.04, 19.10 & 20.04** - amd64"
+msgstr "**Ubuntu 18.04 & 19.04** - amd64"
+
+#: ../../getting-started/installation.rst:41
+msgid "**LinuxMint 19.3** - amd64"
+msgstr "**LinuxMint 19.3** - amd64"
+
+#: ../../getting-started/installation.rst:42
+msgid "**Debian 9 & 10** - amd64"
+msgstr "**Debian 9 & 10** - amd64"
+
+#: ../../getting-started/installation.rst:43
+msgid "**Arch Linux** - x86_64"
+msgstr "**Arch Linux** - x86_64"
+
+#: ../../getting-started/installation.rst:44
+#, fuzzy
+msgid "**Fedora 32** - x86_64"
+msgstr "**Fedora 31** - x86_64"
+
+#: ../../getting-started/installation.rst:45
+msgid "**OpenSUSE Tumbleweed** - x86_64"
+msgstr "**OpenSUSE Tumbleweed** - x86_64"
+
+#: ../../getting-started/installation.rst:48
+#, fuzzy
+msgid "Distribution Package"
+msgstr "Pacote Distro"
+
+#: ../../getting-started/installation.rst:49
+msgid ""
+"If your distribution provides a Zrythm package you can also install it "
+"from there."
+msgstr ""
+
+#: ../../getting-started/installation.rst:53
+msgid "Windows & MacOS"
+msgstr ""
+
+#: ../../getting-started/installation.rst:54
+msgid "The installers above fully support Windows 64bit and MacOS."
+msgstr ""
+
+#: ../../getting-started/installation.rst:57
+msgid "FreeBSD"
+msgstr "FreeBSD"
+
+#: ../../getting-started/installation.rst:61
 #, fuzzy
 msgid ""
-"You can install the latest version of Zrythm for MacOS from the `Download"
-" <https://www.zrythm.org/en/download.html>`_ page on our website."
+"We plan to add FreeBSD support to the installer mentioned above in the "
+"future."
 msgstr ""
-"Pode instalar a versão mais recente do Zrythm para a sua distro `da "
-"página de descarragemento <https://software.opensuse.org//download.html? "
-"project = home% 3Aalextee & package = zrythm>`_ na nossa website."
+"Pretendemos adicionar suporte de FreeBSD ao instalador mencionado em :ref"
+":'gnu-with-linux-installer'."
 
-#: ../../getting-started/installation/macos.rst:16
-#: ../../getting-started/installation/windows.rst:16
+#: ../../getting-started/installation.rst:65
+msgid "Port"
+msgstr "Porta"
+
+#: ../../getting-started/installation.rst:66
 #, fuzzy
 msgid ""
-"This is the easiest and recommended way to install the latest version of "
-"Zrythm on Windows, and we provide support for it."
+"You can also install Zrythm from `freshports "
+"<https://www.freshports.org/audio/zrythm/>`_."
 msgstr ""
-"Esta é a maneira mais fácil e recomendada de instalar a última versão "
-"para a maioria dos utilizadores e fornecemos suporte para ela."
-
-#: ../../getting-started/installation/windows.rst:6
-msgid "Windows"
-msgstr "Windows"
-
-#: ../../getting-started/installation/windows.rst:10
-#, fuzzy
-msgid ""
-"You can install the latest version of Zrythm for Windows 64bit from the "
-"`Download <https://www.zrythm.org/en/download.html>`_ page on our "
-"website."
-msgstr ""
-"Pode instalar a versão mais recente do Zrythm para a sua distro `da "
-"página de descarragemento <https://software.opensuse.org//download.html? "
-"project = home% 3Aalextee & package = zrythm>`_ na nossa website."
+"Pode instalar o `port zrythm <https://www.freshports.org/audio/zrythm/>`_"
+" mas pode ser antigo e recursos e otimizações podem faltar."
 
 #: ../../getting-started/intro.rst:6
 msgid "Getting Started"
@@ -1180,4 +1137,69 @@ msgstr ""
 
 #~ msgid "Monitor:"
 #~ msgstr ""
+
+#~ msgid ""
+#~ "If you are an advanced user and"
+#~ " prefer to build Zrythm yourself, you"
+#~ " can build Zrythm from source. See"
+#~ " :ref:`gnu-with-linux-manual-installation`"
+#~ " for details."
+#~ msgstr ""
+#~ "Se é um utilizador avançado e "
+#~ "prefere compilar Zrythm você mesmo, "
+#~ "Zrythm usa o sistema de construção "
+#~ "Meson, então o procedimento para "
+#~ "construir e instalar é o seguinte:"
+
+#~ msgid "GNU with Linux"
+#~ msgstr "GNU com Linux"
+
+#~ msgid ""
+#~ "If your distribution provides a Zrythm"
+#~ " package you can install it from "
+#~ "there."
+#~ msgstr ""
+
+#~ msgid "MacOS"
+#~ msgstr "MacOS"
+
+#~ msgid ""
+#~ "You can install the latest version "
+#~ "of Zrythm for MacOS from the "
+#~ "`Download <https://www.zrythm.org/en/download.html>`_ page"
+#~ " on our website."
+#~ msgstr ""
+#~ "Pode instalar a versão mais recente "
+#~ "do Zrythm para a sua distro `da"
+#~ " página de descarragemento "
+#~ "<https://software.opensuse.org//download.html? project ="
+#~ " home% 3Aalextee & package = "
+#~ "zrythm>`_ na nossa website."
+
+#~ msgid ""
+#~ "This is the easiest and recommended "
+#~ "way to install the latest version "
+#~ "of Zrythm on Windows, and we "
+#~ "provide support for it."
+#~ msgstr ""
+#~ "Esta é a maneira mais fácil e "
+#~ "recomendada de instalar a última versão"
+#~ " para a maioria dos utilizadores e"
+#~ " fornecemos suporte para ela."
+
+#~ msgid "Windows"
+#~ msgstr "Windows"
+
+#~ msgid ""
+#~ "You can install the latest version "
+#~ "of Zrythm for Windows 64bit from "
+#~ "the `Download <https://www.zrythm.org/en/download.html>`_"
+#~ " page on our website."
+#~ msgstr ""
+#~ "Pode instalar a versão mais recente "
+#~ "do Zrythm para a sua distro `da"
+#~ " página de descarragemento "
+#~ "<https://software.opensuse.org//download.html? project ="
+#~ " home% 3Aalextee & package = "
+#~ "zrythm>`_ na nossa website."
 

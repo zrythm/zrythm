@@ -34,30 +34,8 @@ Protocol
 Filter Buttons
 --------------
 Additionally to the above, you can filter plugins based on
-their type. The following types exist:
-
-Instrument
-  These plugins will create an instrument track when added
-  to the project.
-Effects
-  These plugins can be dragged into the insert slots of
-  existing channels in the mixer or can be instantiated to
-  create new bus tracks.
-Modulators
-  These plugins output CV signals and can be used to modulate
-  other plugin or track parameters.
-MIDI Effects
-  These plugins modify incoming MIDI signals and
-  can be used
-  in the MIDI signal chain of an Instrument or MIDI
-  track (coming soon).
-
-.. note::
-  Zrythm looks inside the Plugin's metadata to
-  determine what type the Plugin is. If that is not
-  enough, Zrythm makes a decision based on the
-  number of audio, MIDI, control and CV input and
-  output ports a Plugin has.
+their type. See :ref:`plugin-types` for more information
+about the various types of plugins there are.
 
 .. _instantiating-plugins:
 
