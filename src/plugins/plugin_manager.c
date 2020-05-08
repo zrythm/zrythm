@@ -182,9 +182,10 @@ plugin_manager_init (PluginManager * self)
             LIBDIR_NAME, "lib", 0))
         {
           self->lv2_path =
-            g_strdup (
-              "~/.lv2:/usr/local/lib/lv2:"
-              "/usr/lib/lv2");
+            g_strdup_printf (
+              "%s/.lv2:/usr/local/lib/lv2:"
+              "/usr/lib/lv2",
+              g_get_home_dir ());
           lv2_path =
             lilv_new_string (
               world, self->lv2_path);
@@ -192,12 +193,13 @@ plugin_manager_init (PluginManager * self)
       else
         {
           self->lv2_path =
-            g_strdup (
-              "~/.lv2:/usr/local/" LIBDIR_NAME
+            g_strdup_printf (
+              "%s/.lv2:/usr/local/" LIBDIR_NAME
               "/lv2:/usr/" LIBDIR_NAME "/lv2:"
               /* some distros report the wrong
                * LIBDIR_NAME so hardcode these */
-              "/usr/local/lib/lv2:/usr/lib/lv2");
+              "/usr/local/lib/lv2:/usr/lib/lv2",
+              g_get_home_dir ());
           lv2_path =
             lilv_new_string (
               world, self->lv2_path);
@@ -523,21 +525,32 @@ get_vst_paths (
             LIBDIR_NAME, "lib", false))
         {
           vst_path =
-            g_strdup (
-              "~/.vst:~/vst:"
+            g_strdup_printf (
+              "%s/.vst:%s/vst:"
               "/usr/" LIBDIR_NAME "/vst:"
-              "/usr/local/" LIBDIR_NAME "/vst");
+              "/usr/local/" LIBDIR_NAME "/vst",
+              g_get_home_dir (), g_get_home_dir ());
         }
       else
         {
           vst_path =
-            g_strdup (
-              "~/.vst:~/vst:"
+            g_strdup_printf (
+              "%s/.vst:%s/vst:"
               "/usr/lib/vst:"
               "/usr/" LIBDIR_NAME "/vst:"
               "/usr/local/lib/vst:"
-              "/usr/local/" LIBDIR_NAME "/vst");
+              "/usr/local/" LIBDIR_NAME "/vst",
+              g_get_home_dir (), g_get_home_dir ());
         }
+
+      g_message (
+        "Using standard VST paths: %s", vst_path);
+    }
+  else
+    {
+      g_message (
+        "using %s from the environment (VST_PATH)",
+        vst_path);
     }
   char ** paths =
     g_strsplit (vst_path, PATH_SPLIT, 0);
