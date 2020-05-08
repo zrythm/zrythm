@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-24 13:54+0000\n"
+"POT-Creation-Date: 2020-05-08 16:10+0100\n"
 "PO-Revision-Date: 2020-03-01 10:34+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"manualzrythm-interface/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm"
+"/manualzrythm-interface/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.0-dev\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
 msgid "Basic Concepts and Terminology"
@@ -58,8 +57,8 @@ msgid ""
 " are some special tracks like the Chord Track and the Marker Track that "
 "contain chords and markers respectively."
 msgstr ""
-"トラックは、タイムライン内の 1 つのスロットで、さまざまなリージョンとオートメーションを含んでいます。オートメーションレーンなど、さまざまなレーンが含ま"
-"れている場合があります。コードトラックやマーカートラックなど、それぞれコードとマーカーを含む特別なトラックがいくつかあります。"
+"トラックは、タイムライン内の 1 "
+"つのスロットで、さまざまなリージョンとオートメーションを含んでいます。オートメーションレーンなど、さまざまなレーンが含まれている場合があります。コードトラックやマーカートラックなど、それぞれコードとマーカーを含む特別なトラックがいくつかあります。"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:39
 msgid "Channel"
@@ -70,9 +69,7 @@ msgid ""
 "A Channel is a single slot in the Mixer. Most types of Tracks have a "
 "corresponding Channel, which is used for adjusting the Track's volume, "
 "pan and other settings."
-msgstr ""
-"チャンネルはミキサーにあるスロットです。ほとんどのトラックの種類には、トラックのボリューム、パン、その他の設定を調整するための、そのトラックに対応するチャ"
-"ンネルがあります。"
+msgstr "チャンネルはミキサーにあるスロットです。ほとんどのトラックの種類には、トラックのボリューム、パン、その他の設定を調整するための、そのトラックに対応するチャンネルがあります。"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:49
 msgid "Range"
@@ -90,37 +87,46 @@ msgstr "MIDIノート"
 msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
 msgstr "MIDI ノートは、仮想(またはハードウェア)のインストゥルメントをトリガーするために使用されます。"
 
-#: ../../zrythm-interface/editors.rst:6
-msgid "Editors"
+#: ../../zrythm-interface/bottom-panel.rst:8
+msgid "Bottom Panel"
+msgstr ""
+
+#: ../../zrythm-interface/bottom-panel.rst:10
+msgid ""
+"The bottom panel contains various editors (such as the piano roll and "
+"automation editor) as well as the mixer and chord pads."
+msgstr ""
+
+#: ../../zrythm-interface/bottom-panel.rst:18
+#, fuzzy
+msgid "Editor"
 msgstr "エディター"
 
-#: ../../zrythm-interface/editors.rst:8
+#: ../../zrythm-interface/bottom-panel.rst:19
 msgid ""
-"Zrythm has various editors for editing the various events in the Timeline"
-" in detail. These editors appear in the Editor tab in the bottom panel."
+"The Editor tab contains an arranger for editing regions, as well as "
+"various controls that vary depending on the type of region selected."
 msgstr ""
-"Zrythm には、タイムラインのさまざまなイベントを詳細に編集するためのさまざまなエディターがあります。これらのエディタは、下部パネルの[エディタ]タブ"
-"に表示されます。"
 
-#: ../../zrythm-interface/editors.rst:13
+#: ../../zrythm-interface/bottom-panel.rst:27
 msgid "Piano Roll"
 msgstr "ピアノロール"
 
-#: ../../zrythm-interface/editors.rst:15
+#: ../../zrythm-interface/bottom-panel.rst:29
 msgid ""
 "The Piano Roll, or MIDI Arranger, is the most commonly used editor. It "
 "can be used to edit MIDI regions, which contain MIDI notes. When a MIDI "
 "Region is selected, the Editor tab will display the Piano Roll, allowing "
 "you to edit that region."
 msgstr ""
-"ピアノロール、またはMIDIアレンジャーは、最も一般的に使用されるエディタです。MIDI ノートを含む MIDI リージョンを編集するために使用できます。"
-"MIDI リージョンを選択すると、エディタタブにピアノロールが表示され、そのリージョンを編集できます。"
+"ピアノロール、またはMIDIアレンジャーは、最も一般的に使用されるエディタです。MIDI ノートを含む MIDI "
+"リージョンを編集するために使用できます。MIDI リージョンを選択すると、エディタタブにピアノロールが表示され、そのリージョンを編集できます。"
 
-#: ../../zrythm-interface/editors.rst:24
+#: ../../zrythm-interface/bottom-panel.rst:39
 msgid "Automation Editor"
 msgstr "オートメーションエディター"
 
-#: ../../zrythm-interface/editors.rst:26
+#: ../../zrythm-interface/bottom-panel.rst:41
 msgid ""
 "In Zrythm, automation is also enclosed in regions (called Automation "
 "Regions). This allows automation to be repeated, much like MIDI Regions. "
@@ -128,337 +134,793 @@ msgid ""
 "Region is selected."
 msgstr ""
 "Zrythm では、オートメーションもリージョン(オートメーションリージョンと呼ばれる)に格納されています。これにより、MIDI "
-"リージョンと同様にオートメーションを繰り返すことができます。オートメーションリージョンが選択されると、オートメーション エディタが [エディター] "
-"タブに表示されます。"
+"リージョンと同様にオートメーションを繰り返すことができます。オートメーションリージョンが選択されると、オートメーション エディタが [エディター]"
+" タブに表示されます。"
 
-#: ../../zrythm-interface/editors.rst:35
+#: ../../zrythm-interface/bottom-panel.rst:50
 msgid "Chord Editor"
 msgstr "コードエディター"
 
-#: ../../zrythm-interface/editors.rst:37
+#: ../../zrythm-interface/bottom-panel.rst:52
 msgid "The Chord Editor is used for editing Chord Regions."
 msgstr "コードエディターは、コードリージョンの編集に使用されます。"
 
-#: ../../zrythm-interface/editors.rst:39
+#: ../../zrythm-interface/bottom-panel.rst:54
 msgid "This is a work in progress"
 msgstr "これはTODOです"
 
-#: ../../zrythm-interface/global-menus.rst:6
-msgid "Global Menus"
-msgstr "全般のメニュー"
+#: ../../zrythm-interface/bottom-panel.rst:57
+msgid "Mixer"
+msgstr "ミキサー"
 
-#: ../../zrythm-interface/global-menus.rst:8
-msgid "Zrythm has the following global menus at the top of its interface."
-msgstr "Zrythmのインターフェイスの上部には、次の全般のメニューがあります。"
-
-#: ../../zrythm-interface/global-menus.rst:14
-msgid "Zrythm icon"
-msgstr "Zrythmアイコン"
-
-#: ../../zrythm-interface/global-menus.rst:14
-msgid "Clicking this will show the About dialog"
-msgstr "これをクリックすると、About ダイアログが表示されます。"
-
-#: ../../zrythm-interface/global-menus.rst:17
-msgid "Home"
-msgstr "編集"
-
-#: ../../zrythm-interface/global-menus.rst:17
+#: ../../zrythm-interface/bottom-panel.rst:58
 msgid ""
-"Contains various buttons and controls that are used often during editing "
-"and arranging"
-msgstr "編集やアレンジ時によく使用されるさまざまなボタンやコントロールが含まれています。"
+"The Mixer tab contains each channel and various controls for changing the"
+" signal as it passes through the channel."
+msgstr ""
 
-#: ../../zrythm-interface/global-menus.rst:20
-msgid "Project"
-msgstr "プロジェクト"
-
-#: ../../zrythm-interface/global-menus.rst:20
-msgid ""
-"Various project-related actions such as saving, loading and exporting "
-"MIDI or audio"
-msgstr "MIDIやオーディオの保存、ロード、書き出しなど、プロジェクトに関連するさまざまなアクション"
-
-#: ../../zrythm-interface/global-menus.rst:23
-msgid "View"
-msgstr "表示"
-
-#: ../../zrythm-interface/global-menus.rst:23
-msgid ""
-"Controls to change the appearance of Zrythm and its various areas, such "
-"as zooming"
-msgstr "Zrythm の外観とズームなどのさまざまな領域を変更するコントロール"
-
-#: ../../zrythm-interface/global-menus.rst:25
-msgid "Help"
-msgstr "ヘルプ"
-
-#: ../../zrythm-interface/global-menus.rst:26
-msgid "Links for reporting bugs, donating, chatting, etc."
-msgstr "バグ報告、寄付、チャットなどのリンク。"
+#: ../../zrythm-interface/bottom-panel.rst:64
+msgid "Mixing is explained in its own section."
+msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Interface"
 msgstr "インターフェイス"
 
-#: ../../zrythm-interface/mini-timeline.rst:6
-msgid "Timeline Minimap"
-msgstr "タイムラインミニマップ"
-
-#: ../../zrythm-interface/mini-timeline.rst:8
-msgid ""
-"The timeline minimap is a little box that represents the current visible "
-"area of the timeline. It can be moved around and resized to change the "
-"visible area."
+#: ../../zrythm-interface/left-panel.rst:8
+msgid "Left Panel"
 msgstr ""
-"タイムラインのミニマップは、タイムラインの現在の表示領域を表す小さなボックスです。このコントロールは、移動してサイズを変更して、表示領域を変更できます。"
 
-#: ../../zrythm-interface/mixer.rst:6
-msgid "Mixer"
-msgstr "ミキサー"
-
-#: ../../zrythm-interface/mixer.rst:8
-msgid ""
-"The Mixer tab contains the Mixer, where all the visible Channels in the "
-"project are shown. The Mixer is used to mix the audio signals from each "
-"Channel."
+#: ../../zrythm-interface/left-panel.rst:10
+msgid "The left panel contains the inspectors and track visibility options."
 msgstr ""
-"ミキサータブには、プロジェクト内のすべてのチャンネルが表示されるミキサーがあります。ミキサーは、各チャンネルからのオーディオ信号をミックスするために使用さ"
-"れます。"
 
-#: ../../zrythm-interface/ruler.rst:6
+#: ../../zrythm-interface/left-panel.rst:17
+msgid "Track Inspector"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:19
+msgid ""
+"The first tab is the track inspector, which shows various options about "
+"the selected track."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:26
+msgid "Track Properties"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:31
+msgid "Track Name"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:32
+msgid "Name of the track"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:33
+msgid "Direct Out"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:34
+msgid "The track that this track routes is output to."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:37
+msgid "Instrument"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:36
+msgid ""
+"If the track is an :ref:`instrument-track`, the instrument plugin for "
+"this track."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:40
+msgid "Track Inputs"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:45
+msgid "See :ref:`track-inputs` for more information."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:48
+msgid "MIDI FX/Inserts"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:49
+msgid ""
+"These are slots for dropping audio or MIDI effects that will be applied "
+"to the signal as it passes through the track."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:55
+#: ../../zrythm-interface/left-panel.rst:65
+msgid "See the :ref:`tracks` chapter for more information."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:58
+msgid "Aux Sends"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:59
+msgid ""
+"`Aux sends <https://en.wikipedia.org/wiki/Aux-send>`_ to other tracks or "
+"plugin side-chain inputs."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:68
+msgid "Fader"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:69
+msgid "Fader section to control the volume and stereo balance."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:74
+msgid "Peak"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:75
+msgid "Peak signal value."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:77
+msgid "RMS"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:77
+msgid "Root Mean Square of the signal value."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:80
+msgid "Comments"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:81
+msgid "User comments."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:86
+msgid "This is a TODO feature."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:89
+msgid "Plugin Inspector"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:90
+msgid "The plugin inspector shows various options for the selected plugin."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:97
+msgid "Plugin Properties"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:98
+msgid ""
+"The plugin properties show the name and type of the plugin, as well as "
+"preset and bank selectors."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:105
+msgid "Plugin Ports"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:106
+msgid "These are the ports that the plugin has."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:111
+msgid ""
+"Control input ports can be changed by clicking and dragging, and can also"
+" be automated using automation tracks. Ports can be routed to other ports"
+" anywhere within Zrythm by double clicking on them."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:116
+msgid "Ports are explained in more detail in :ref:`ports`."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:118
+msgid ""
+"Depending on the type of plugin, there may be different categories of "
+"ports being shown."
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:122
+msgid "Track Visibility"
+msgstr ""
+
+#: ../../zrythm-interface/left-panel.rst:123
+msgid "The track visibility tab allows toggling the visibility of tracks."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:8
+msgid "Main Toolbar"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:10
+msgid ""
+"The main toolbar contains global actions, such as saving and loading a "
+"project or opening the preferences window."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:17
+msgid "About Dialog"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:19
+msgid ""
+"Clicking the Zrythm icon will show the About dialog, which contains "
+"information about authors and copyright."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:26
+msgid "Global Menus"
+msgstr "全般のメニュー"
+
+#: ../../zrythm-interface/main-toolbar.rst:27
+msgid "Zrythm has the following global menus at the top of its interface."
+msgstr "Zrythmのインターフェイスの上部には、次の全般のメニューがあります。"
+
+#: ../../zrythm-interface/main-toolbar.rst:31
+msgid "Edit Menu"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:32
+#, fuzzy
+msgid ""
+"The Edit menu various buttons and controls that are used often during "
+"editing and arranging."
+msgstr "編集やアレンジ時によく使用されるさまざまなボタンやコントロールが含まれています。"
+
+#: ../../zrythm-interface/main-toolbar.rst:36
+msgid "Undo"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:36
+msgid "Undo the last action."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:39
+msgid "Redo"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:39
+msgid "Redo the last undo'ed action."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:42
+msgid "Cut"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:42
+msgid "Delete the selected objects and copy them in the clipboard."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:45
+msgid "Copy"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:45
+msgid "Copy the selected objects to the clipboard."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:48
+msgid "Paste"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:48
+msgid "Paste the clipboard contents at the playhead."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:51
+msgid "Duplicate"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:51
+msgid "Duplicate the selected objects."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:54
+msgid "Delete"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:54
+msgid "Delete the selected objects."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:57
+#, fuzzy
+msgid "Project Menu"
+msgstr "プロジェクト"
+
+#: ../../zrythm-interface/main-toolbar.rst:58
+#, fuzzy
+msgid ""
+"The Project menu contains various project-related actions such as saving,"
+" loading and exporting MIDI or audio."
+msgstr "MIDIやオーディオの保存、ロード、書き出しなど、プロジェクトに関連するさまざまなアクション"
+
+#: ../../zrythm-interface/main-toolbar.rst:62
+#, fuzzy
+msgid "New Project"
+msgstr "プロジェクト"
+
+#: ../../zrythm-interface/main-toolbar.rst:62
+msgid "Create a new project."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:65
+msgid "Save"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:65
+msgid "Save the current project at its current location."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:68
+msgid "Save As"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:68
+msgid "Save the current project at a new location."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:71
+msgid "Load"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:71
+msgid "Load a project."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:74
+msgid "Export As"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:74
+msgid "Export the project as audio or MIDI."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:77
+msgid "Export Graph"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:77
+msgid "Export the routing graph as an image or .dot graph."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:80
+msgid "View Menu"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:81
+#, fuzzy
+msgid ""
+"The View menu contains controls to change the appearance of Zrythm and "
+"its various areas, such as zooming."
+msgstr "Zrythm の外観とズームなどのさまざまな領域を変更するコントロール"
+
+#: ../../zrythm-interface/main-toolbar.rst:85
+msgid "Zoom In"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:85
+msgid "Zooms in."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:88
+msgid "Zoom Out"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:88
+msgid "Zooms out."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:91
+msgid "Original Size"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:91
+msgid "Zooms back to the default zoom level."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:95
+msgid "Best Fit"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:94
+msgid ""
+"Zooms in or out as much as required to show all of the events in the "
+"timeline."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:98
+msgid "Toggle Left/Right/Bottom Panels"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:98
+msgid "Toggles the panel's visibility."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:101
+msgid "Toggle Timeline Visibility"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:101
+msgid "Toggles the timeline's visibility."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:104
+msgid "Help Menu"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:105
+#, fuzzy
+msgid ""
+"The Help menu contains links for reporting bugs, donating, chatting and "
+"other useful links."
+msgstr "バグ報告、寄付、チャットなどのリンク。"
+
+#: ../../zrythm-interface/main-toolbar.rst:108
+msgid "Chat"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:109
+msgid "Join the Zrythm chatroom on Matrix."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:110
+msgid "Manual"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:111
+msgid "View the user manual."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:112
+msgid "News"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:113
+msgid "Show the latest changelog."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:114
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:115
+msgid "Show all the available keyboard shortcuts."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:116
+msgid "Donate"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:117
+msgid "Donate to Zrythm through LiberaPay."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:119
+msgid "Report a Bug"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:119
+msgid "Opens the page to report a new bug."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:122
+msgid "Additional Controls"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:123
+msgid "The main toolbar also contains the following widgets."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:128
+msgid "There are the following buttons next to the name of the current project."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:132
+msgid "Scripting Interface"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:132
+msgid "Shows the scripting interface. See :ref:`scripting` for more information."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:134
+msgid "Log Viewer"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:135
+msgid "Displays the log, which gets updated real-time."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:138
+msgid "Preferences"
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:137
+msgid "Shows the preferences dialog. See :ref:`preferences` for more information."
+msgstr ""
+
+#: ../../zrythm-interface/main-toolbar.rst:140
+msgid ""
+"The MIDI In widget shows the MIDI activity of auto-connected MIDI devices"
+" and the live waveform display shows the audio waveform from the master "
+"output."
+msgstr ""
+
+#: ../../zrythm-interface/right-panel.rst:8
+msgid "Right Panel"
+msgstr ""
+
+#: ../../zrythm-interface/right-panel.rst:9
+msgid ""
+"The right panel contains plugin and sample browsers in addition to the "
+"control room."
+msgstr ""
+
+#: ../../zrythm-interface/right-panel.rst:16
+msgid "Plugin Browser"
+msgstr ""
+
+#: ../../zrythm-interface/right-panel.rst:17
+msgid ""
+"The first tab is the plugin browser, which is explained in its own "
+"section: :ref:`plugin-browser`"
+msgstr ""
+
+#: ../../zrythm-interface/right-panel.rst:21
+msgid "File Browser"
+msgstr ""
+
+#: ../../zrythm-interface/right-panel.rst:22
+msgid "The file browser is also explained in its own section: :ref:`file-browser`"
+msgstr ""
+
+#: ../../zrythm-interface/right-panel.rst:26
+msgid "Control Room"
+msgstr ""
+
+#: ../../zrythm-interface/right-panel.rst:28
+msgid "TODO"
+msgstr ""
+
+#: ../../zrythm-interface/timeline.rst:8
+msgid "Timeline"
+msgstr "タイムライン"
+
+#: ../../zrythm-interface/timeline.rst:10
+msgid ""
+"The timeline consists of the timeline arranger and the project's tracks "
+"on the left side. It has a special toolbar at the top for timeline-"
+"specific actions."
+msgstr ""
+
+#: ../../zrythm-interface/timeline.rst:18
+msgid "Tracklist"
+msgstr "トラックリスト"
+
+#: ../../zrythm-interface/timeline.rst:19
+msgid ""
+"The Tracklist contains all of the Tracks in the project. It is split into"
+" the top (pinned) Tracklist and the bottom (main) Tracklist."
+msgstr "トラックリストには、プロジェクト内のすべてのトラックが表示されます。上部(ピン留め)トラックリストと下部(メイン)トラックリストに分割されます。"
+
+#: ../../zrythm-interface/timeline.rst:26
+msgid ""
+"The numbers at the top indicate the number of visible tracks versus the "
+"total number of tracks."
+msgstr ""
+
+#: ../../zrythm-interface/timeline.rst:29
+msgid "The search box is a TODO feature."
+msgstr ""
+
+#: ../../zrythm-interface/timeline.rst:32
+msgid "Timeline Arranger"
+msgstr ""
+
+#: ../../zrythm-interface/timeline.rst:33
+#, fuzzy
+msgid ""
+"The timeline arranger is the main area where the song is composed. It "
+"consists of a collection of events, such as regions, positioned against "
+"time. Some events will open separate windows for further editing when "
+"clicked."
+msgstr ""
+"タイムラインは、曲が構成されるメインエリアです。一般的に、時間に対して配置されるイベント (主にリージョン) "
+"のコレクションで構成されます。一部のイベントでは、クリックすると別のウィンドウが開き、さらに編集できます。"
+
+#: ../../zrythm-interface/timeline.rst:41
+#, fuzzy
+msgid ""
+"The timeline arranger is split into a top arranger that remains fixed on "
+"top and a bottom arranger below it. This way you can pin tracks you want "
+"to always be visible at the top."
+msgstr "タイムラインは上部に固定された上のタイムラインと、その下にスクロール可能なタイムラインに分割されます。これにより、常に一番上に表示するトラックをピン留めできます。"
+
+#: ../../zrythm-interface/timeline.rst:47
 msgid "Ruler"
 msgstr "ルーラー"
 
-#: ../../zrythm-interface/ruler.rst:8
-msgid ""
-"A ruler is used to show the position of events in a given arranger, "
-"whether it is the timeline arranger or the piano roll or the sample "
-"editor."
+#: ../../zrythm-interface/timeline.rst:48
+#, fuzzy
+msgid "A ruler is used to show the position of events in the arranger."
 msgstr "ルーラーは、タイムラインのアレンジャー、ピアノロール、サンプルエディタなど、それぞれのアレンジャーのイベントの位置を示すために使用されます。"
 
-#: ../../zrythm-interface/ruler.rst:15
+#: ../../zrythm-interface/timeline.rst:54
+#, fuzzy
 msgid ""
 "The ruler will display more or less information depending on the current "
-"zoom level. It will also display the following markers/ indicators."
+"zoom level. It will also display the following markers/indicators."
 msgstr "ルーラーには、現在のズーム レベルに応じて、情報の表示量が増減します。また、以下のマーカー/インジケータも表示されます。"
 
-#: ../../zrythm-interface/ruler.rst:19
+#: ../../zrythm-interface/timeline.rst:58
 msgid "Cue point"
 msgstr "キューポイント"
 
-#: ../../zrythm-interface/ruler.rst:20
+#: ../../zrythm-interface/timeline.rst:59
 msgid "Displayed as a blue, right-pointing arrow."
 msgstr "青い右向きの矢印として表示されます。"
 
-#: ../../zrythm-interface/ruler.rst:21
+#: ../../zrythm-interface/timeline.rst:60
 msgid "Playhead position"
 msgstr "再生ヘッドの位置"
 
-#: ../../zrythm-interface/ruler.rst:22
+#: ../../zrythm-interface/timeline.rst:61
 msgid "Shown as a grey, down-facing arrow."
 msgstr "灰色の下向き矢印として表示されます。"
 
-#: ../../zrythm-interface/ruler.rst:30
+#: ../../zrythm-interface/timeline.rst:65
 msgid "Loop points"
 msgstr "ループポイント"
 
-#: ../../zrythm-interface/ruler.rst:24
+#: ../../zrythm-interface/timeline.rst:63
 msgid ""
 "Shown as 2 green arrows, and the area between them is shown in bright "
 "green if loop is enabled, or grey if disabled. Can be dragged to "
 "reposition."
 msgstr ""
-"2 つの緑色の矢印で表示され、ループが有効な場合はそれらの間の領域が明るい緑色で表示され、無効になっている場合はグレーで表示されます。位置を変更するために"
-"ドラッグできます。"
+"2 "
+"つの緑色の矢印で表示され、ループが有効な場合はそれらの間の領域が明るい緑色で表示され、無効になっている場合はグレーで表示されます。位置を変更するためにドラッグできます。"
 
-#: ../../zrythm-interface/ruler.rst:28
-msgid ""
-"In the timeline arranger, these are the global loop points. In arrangers "
-"found in the editor, these are the region loop points."
-msgstr "タイムラインアレンジャーでは、これらは全般なループポイントです。エディタにあるのはリージョンのループポイントです。"
-
-#: ../../zrythm-interface/ruler.rst:32
+#: ../../zrythm-interface/timeline.rst:67
 msgid ""
 "Clicking and dragging on empty space in the ruler will allow you to "
 "reposition the playhead."
 msgstr "ルーラーの空の領域をクリックしてドラッグすると、再生ヘッドの位置を変更できます。"
 
-#: ../../zrythm-interface/ruler.rst:35
+#: ../../zrythm-interface/timeline.rst:70
 msgid ""
 "Hold :zbutton:`Shift` to disable snapping momentarily while moving things"
 " around"
 msgstr ":zbutton:`Shift` を押しながら操作すると、一時的にスナップを無効にします"
 
-#: ../../zrythm-interface/status-bar.rst:6
-msgid "Status Bar"
-msgstr "ステータスバー"
+#: ../../zrythm-interface/timeline.rst:74
+#, fuzzy
+msgid "Minimap"
+msgstr "タイムラインミニマップ"
 
-#: ../../zrythm-interface/status-bar.rst:8
+#: ../../zrythm-interface/timeline.rst:75
 msgid ""
-"The status bar contains information about the currently active audio "
-"backend."
-msgstr "ステータス バーには、現在アクティブなオーディオ バックエンドに関する情報が表示されます。"
+"The timeline minimap is a little box that represents the current visible "
+"area of the timeline. It can be moved around and resized to change the "
+"visible area."
+msgstr "タイムラインのミニマップは、タイムラインの現在の表示領域を表す小さなボックスです。このコントロールは、移動してサイズを変更して、表示領域を変更できます。"
 
-#: ../../zrythm-interface/timeline.rst:6
-msgid "Timeline"
-msgstr "タイムライン"
-
-#: ../../zrythm-interface/timeline.rst:8
-msgid ""
-"The timeline is the main area where the song is composed. It generally "
-"consists of a collection of events - mostly regions - that are positioned"
-" against time. Some events will open separate windows for further editing"
-" when clicked."
-msgstr ""
-"タイムラインは、曲が構成されるメインエリアです。一般的に、時間に対して配置されるイベント (主にリージョン) "
-"のコレクションで構成されます。一部のイベントでは、クリックすると別のウィンドウが開き、さらに編集できます。"
-
-#: ../../zrythm-interface/timeline.rst:16
-msgid ""
-"The Timeline is split into a top timeline that remains fixed on top, and "
-"a scrollable timeline below it. This way you can pin tracks you want to "
-"always be visible at the top."
-msgstr ""
-"タイムラインは上部に固定された上のタイムラインと、その下にスクロール可能なタイムラインに分割されます。これにより、常に一番上に表示するトラックをピン留めで"
-"きます。"
-
-#: ../../zrythm-interface/tracklist.rst:8
-msgid "Tracklist"
-msgstr "トラックリスト"
-
-#: ../../zrythm-interface/tracklist.rst:10
-msgid ""
-"The Tracklist contains all of the Tracks in the project. It is split into"
-" the top (pinned) Tracklist and the bottom (main) Tracklist."
-msgstr ""
-"トラックリストには、プロジェクト内のすべてのトラックが表示されます。上部(ピン留め)トラックリストと下部(メイン)トラックリストに分割されます。"
-
-#: ../../zrythm-interface/transport-bar.rst:6
+#: ../../zrythm-interface/transport-bar.rst:8
 msgid "Transport Bar"
 msgstr "トランスポートバー"
 
-#: ../../zrythm-interface/transport-bar.rst:8
+#: ../../zrythm-interface/transport-bar.rst:10
+#, fuzzy
 msgid ""
-"The transport bar contains controls for changing the behavior of "
-"playback. It includes the following items."
+"The transport bar contains information about the audio engine and "
+"transport controls."
+msgstr "ステータス バーには、現在アクティブなオーディオ バックエンドに関する情報が表示されます。"
+
+#: ../../zrythm-interface/transport-bar.rst:17
+#, fuzzy
+msgid "Transport Controls"
+msgstr "トランスポートのボタン"
+
+#: ../../zrythm-interface/transport-bar.rst:18
+#, fuzzy
+msgid ""
+"Transport controls change the behavior of playback. They include the "
+"following items."
 msgstr "トランスポート バーには、再生の動作を変更するためのコントロールが含まれています。以下の項目が含まれます。"
 
-#: ../../zrythm-interface/transport-bar.rst:14
+#: ../../zrythm-interface/transport-bar.rst:24
 msgid "Metronome toggle"
 msgstr "メトロノームのON/OFFの切り替え"
 
-#: ../../zrythm-interface/transport-bar.rst:15
+#: ../../zrythm-interface/transport-bar.rst:25
 msgid "Toggles the metronome on/off"
 msgstr "メトロノームのオン/オフを切り替えます"
 
-#: ../../zrythm-interface/transport-bar.rst:16
+#: ../../zrythm-interface/transport-bar.rst:26
 msgid "BPM"
 msgstr "BPM"
 
-#: ../../zrythm-interface/transport-bar.rst:17
+#: ../../zrythm-interface/transport-bar.rst:27
 msgid "Song tempo (beats per minute)"
 msgstr "曲のテンポ（1分あたりのビート）"
 
-#: ../../zrythm-interface/transport-bar.rst:18
+#: ../../zrythm-interface/transport-bar.rst:28
 msgid "Playhead"
 msgstr "再生ヘッド"
 
-#: ../../zrythm-interface/transport-bar.rst:19
+#: ../../zrythm-interface/transport-bar.rst:29
 #, fuzzy
 msgid "Current playhead position, in bars.beats.sixteenths.ticks"
 msgstr "現在の再生ヘッドの位置（bars.beats.sixteenths.ticks単位）"
 
-#: ../../zrythm-interface/transport-bar.rst:21
+#: ../../zrythm-interface/transport-bar.rst:31
 msgid "Transport buttons"
 msgstr "トランスポートのボタン"
 
-#: ../../zrythm-interface/transport-bar.rst:21
+#: ../../zrythm-interface/transport-bar.rst:31
 msgid "Controls for stopping, playback, recording, etc."
 msgstr "停止、再生、録音などのコントロール"
 
-#: ../../zrythm-interface/transport-bar.rst:23
+#: ../../zrythm-interface/transport-bar.rst:33
 msgid ""
 "Widgets like the BPM meter can be changed by clicking and dragging, or by"
 " hovering over them with the cursor and scrolling"
 msgstr "BPMメーターなどのウィジェットは、クリックしてドラッグするか、カーソルをその上に置いてスクロールすることで変更できます"
+
+#: ../../zrythm-interface/transport-bar.rst:38
+msgid "Backend Information"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:39
+msgid ""
+"Information about the currently selected backend and options is visible "
+"in the bottom left corner."
+msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:6
 msgid "Interface Overview"
 msgstr "インターフェイスの概要"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:8
-msgid "The Zrythm interface is split into various sub-modules:"
+#, fuzzy
+msgid "The Zrythm interface is split into various sub-modules."
 msgstr "Zrythmのインタフェースは、さまざまなサブモジュールに分割されています。"
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:13
-msgid "Inspector Panel (1)"
-msgstr "インスペクターパネル (1)"
-
-#: ../../zrythm-interface/zrythm-interface-overview.rst:13
-msgid ""
-"The inspector panel contains the inspector, which is used to view and "
-"change parameters of the currently selected objects."
-msgstr "インスペクタパネルには、現在選択されているオブジェクトのパラメータを表示および変更するために使用されるインスペクタが含まれます。"
-
-#: ../../zrythm-interface/zrythm-interface-overview.rst:16
-msgid "Editor Panel (2)"
-msgstr "エディターパネル（2）"
-
-#: ../../zrythm-interface/zrythm-interface-overview.rst:16
-msgid ""
-"The editor panel contains various views that are useful in composing and "
-"mixing, such as the Clip Editor and the Mixer."
-msgstr "エディタパネルには、クリップエディタやミキサーなど、作成やミキシングに役立つさまざまなビューが含まれています。"
-
-#: ../../zrythm-interface/zrythm-interface-overview.rst:19
-msgid "Browser Panel (3)"
-msgstr "ブラウザパネル (3)"
-
-#: ../../zrythm-interface/zrythm-interface-overview.rst:19
-msgid ""
-"The browser panel contains the browser, and is used to find plugins "
-"and/or audio and MIDI files to drag and drop into the project."
+#: ../../zrythm-interface/zrythm-interface-overview.rst:12
+msgid "Each sub-module is explained in its own section."
 msgstr ""
-"ブラウザーパネルにはブラウザーがあり、プロジェクトにドラッグアンドドロップするプラグインやオーディオおよびMIDIファイルを検索するために使用されます。"
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:22
-msgid "Arranger Panel (4)"
-msgstr "アレンジャーパネル (4)"
+#: ../../zrythm-interface/zrythm-interface-overview.rst:14
+msgid ":ref:`timeline` (1)"
+msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:22
-msgid ""
-"This is where the action happens. The main panel mainly consists of the "
-"Timeline Arranger and the Project's Tracks on the left side."
-msgstr "ここはほとんど使います。メインパネルは、主にタイムラインアレンジャーと左側にあるプロジェクトのトラックで構成されています。"
+#: ../../zrythm-interface/zrythm-interface-overview.rst:15
+msgid ":ref:`main-toolbar` (2)"
+msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:25
-msgid "Toolbar (5)"
-msgstr "ツールバー (5)"
+#: ../../zrythm-interface/zrythm-interface-overview.rst:16
+msgid ":ref:`left-panel` (3)"
+msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:25
-msgid ""
-"There are two main toolbars containing global controls such as BPM and "
-"Transport."
-msgstr "BPM やトランスポートなどの全般のコントロールを含む 2 つのメイン ツールバーがあります。"
+#: ../../zrythm-interface/zrythm-interface-overview.rst:17
+msgid ":ref:`bottom-panel` (4)"
+msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:28
-msgid "Title Bar (6)"
-msgstr "タイトルバー (6)"
+#: ../../zrythm-interface/zrythm-interface-overview.rst:18
+msgid ":ref:`transport-bar` (5)"
+msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:28
-msgid "The Title Bar contains menus with options for various operations."
-msgstr "タイトル バーには、さまざまな操作のオプションを含むメニューが含まれています。"
-
-#: ../../zrythm-interface/zrythm-interface-overview.rst:31
-msgid "Status Bar (7)"
-msgstr "ステータスバー (7)"
-
-#: ../../zrythm-interface/zrythm-interface-overview.rst:31
-msgid ""
-"The status bar is a helpful bar in the bottom of the window that displays"
-" information about the current project."
-msgstr "ステータスバーは、現在のプロジェクトに関する情報を表示するウィンドウの下部にある便利なバーです。"
+#: ../../zrythm-interface/zrythm-interface-overview.rst:19
+msgid ":ref:`right-panel` (6)"
+msgstr ""
 
 #~ msgid "Channel Overview"
 #~ msgstr ""
@@ -564,3 +1026,112 @@ msgstr "ステータスバーは、現在のプロジェクトに関する情報
 
 #~ msgid "Zrythm's interface is split into various sub-modules:"
 #~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm has various editors for editing"
+#~ " the various events in the Timeline"
+#~ " in detail. These editors appear in"
+#~ " the Editor tab in the bottom "
+#~ "panel."
+#~ msgstr ""
+#~ "Zrythm "
+#~ "には、タイムラインのさまざまなイベントを詳細に編集するためのさまざまなエディターがあります。これらのエディタは、下部パネルの[エディタ]タブに表示されます。"
+
+#~ msgid "Zrythm icon"
+#~ msgstr "Zrythmアイコン"
+
+#~ msgid "Clicking this will show the About dialog"
+#~ msgstr "これをクリックすると、About ダイアログが表示されます。"
+
+#~ msgid "Home"
+#~ msgstr "編集"
+
+#~ msgid "View"
+#~ msgstr "表示"
+
+#~ msgid "Help"
+#~ msgstr "ヘルプ"
+
+#~ msgid ""
+#~ "The Mixer tab contains the Mixer, "
+#~ "where all the visible Channels in "
+#~ "the project are shown. The Mixer "
+#~ "is used to mix the audio signals"
+#~ " from each Channel."
+#~ msgstr "ミキサータブには、プロジェクト内のすべてのチャンネルが表示されるミキサーがあります。ミキサーは、各チャンネルからのオーディオ信号をミックスするために使用されます。"
+
+#~ msgid ""
+#~ "In the timeline arranger, these are "
+#~ "the global loop points. In arrangers "
+#~ "found in the editor, these are the"
+#~ " region loop points."
+#~ msgstr "タイムラインアレンジャーでは、これらは全般なループポイントです。エディタにあるのはリージョンのループポイントです。"
+
+#~ msgid "Status Bar"
+#~ msgstr "ステータスバー"
+
+#~ msgid "Inspector Panel (1)"
+#~ msgstr "インスペクターパネル (1)"
+
+#~ msgid ""
+#~ "The inspector panel contains the "
+#~ "inspector, which is used to view "
+#~ "and change parameters of the currently"
+#~ " selected objects."
+#~ msgstr "インスペクタパネルには、現在選択されているオブジェクトのパラメータを表示および変更するために使用されるインスペクタが含まれます。"
+
+#~ msgid "Editor Panel (2)"
+#~ msgstr "エディターパネル（2）"
+
+#~ msgid ""
+#~ "The editor panel contains various views"
+#~ " that are useful in composing and "
+#~ "mixing, such as the Clip Editor "
+#~ "and the Mixer."
+#~ msgstr "エディタパネルには、クリップエディタやミキサーなど、作成やミキシングに役立つさまざまなビューが含まれています。"
+
+#~ msgid "Browser Panel (3)"
+#~ msgstr "ブラウザパネル (3)"
+
+#~ msgid ""
+#~ "The browser panel contains the browser,"
+#~ " and is used to find plugins "
+#~ "and/or audio and MIDI files to "
+#~ "drag and drop into the project."
+#~ msgstr "ブラウザーパネルにはブラウザーがあり、プロジェクトにドラッグアンドドロップするプラグインやオーディオおよびMIDIファイルを検索するために使用されます。"
+
+#~ msgid "Arranger Panel (4)"
+#~ msgstr "アレンジャーパネル (4)"
+
+#~ msgid ""
+#~ "This is where the action happens. "
+#~ "The main panel mainly consists of "
+#~ "the Timeline Arranger and the Project's"
+#~ " Tracks on the left side."
+#~ msgstr "ここはほとんど使います。メインパネルは、主にタイムラインアレンジャーと左側にあるプロジェクトのトラックで構成されています。"
+
+#~ msgid "Toolbar (5)"
+#~ msgstr "ツールバー (5)"
+
+#~ msgid ""
+#~ "There are two main toolbars containing"
+#~ " global controls such as BPM and "
+#~ "Transport."
+#~ msgstr "BPM やトランスポートなどの全般のコントロールを含む 2 つのメイン ツールバーがあります。"
+
+#~ msgid "Title Bar (6)"
+#~ msgstr "タイトルバー (6)"
+
+#~ msgid "The Title Bar contains menus with options for various operations."
+#~ msgstr "タイトル バーには、さまざまな操作のオプションを含むメニューが含まれています。"
+
+#~ msgid "Status Bar (7)"
+#~ msgstr "ステータスバー (7)"
+
+#~ msgid ""
+#~ "The status bar is a helpful bar"
+#~ " in the bottom of the window "
+#~ "that displays information about the "
+#~ "current project."
+#~ msgstr "ステータスバーは、現在のプロジェクトに関する情報を表示するウィンドウの下部にある便利なバーです。"
+

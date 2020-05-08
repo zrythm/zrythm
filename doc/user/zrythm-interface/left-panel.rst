@@ -31,7 +31,7 @@ Track Properties
 Track Name
   Name of the track
 Direct Out
-  The track that this track routes is output to.
+  The track that this track routes its output to.
 Instrument
   If the track is an :ref:`instrument-track`, the instrument
   plugin for this track.

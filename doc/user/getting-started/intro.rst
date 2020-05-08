@@ -9,5 +9,5 @@ Getting Started
    :maxdepth: 4
 
    system-requirements
-   installation/intro
+   installation
    getting-plugins

@@ -69,6 +69,8 @@ Properties
 Track properties are basic properties that the track
 has, like its name, color, and direct output.
 
+.. _track-inputs:
+
 Inputs
 ~~~~~~
 
