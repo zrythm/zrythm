@@ -2,11 +2,21 @@
    Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
+.. _transport-bar:
+
 Transport Bar
 =============
 
-The transport bar contains controls for changing the behavior
-of playback. It includes the following items.
+The transport bar contains information about the audio engine
+and transport controls.
+
+.. image:: /_static/img/transport-bar.png
+   :align: center
+
+Transport Controls
+------------------
+Transport controls change the behavior of playback. They
+include the following items.
 
 .. image:: /_static/img/transport_bar.png
    :align: center
@@ -23,3 +33,11 @@ Transport buttons
 .. tip:: Widgets like the BPM meter can be changed
   by clicking and dragging, or by hovering over them with the cursor
   and scrolling
+
+Backend Information
+-------------------
+Information about the currently selected backend and options
+is visible in the bottom left corner.
+
+.. image:: /_static/img/backend-info.png
+   :align: center
