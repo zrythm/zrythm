@@ -4,8 +4,8 @@
 
 .. _audio-group-track:
 
-Group Track (Audio)
-===================
+Audio Group Track
+=================
 
 Audio group tracks can be used for grouping
 audio signals together via direct routing.

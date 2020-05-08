@@ -2,11 +2,11 @@
    Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
-Bus Track (MIDI)
-================
+MIDI FX Track
+=============
 
-MIDI bus tracks can be used for MIDI effects by
-sending MIDI signals to them with MIDI sends.
+MIDI FX tracks can be used for MIDI effects by
+sending MIDI signals to them using :ref:`track-sends`.
 
 .. image:: /_static/img/midi-bus-track.png
    :align: center

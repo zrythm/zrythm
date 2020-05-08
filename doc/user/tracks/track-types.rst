@@ -30,21 +30,21 @@ Audio Track
   *Input:* **Audio**, *Output:* **Audio**
 
   *Can record:* **Yes**
-Bus Track (Audio)
+Audio FX Track
   A Track corresponding to a mixer bus. Bus tracks
   only contain automation
 
   *Input:* **Audio**, *Output:* **Audio**
 
   *Can record:* **No**
-Bus Track (MIDI)
+MIDI FX Track
   Similar to an audio bus track, except that it
   handles MIDI instead of audio.
 
   *Input:* **MIDI**, *Output:* **MIDI**
 
   *Can record:* **No**
-Group Track (Audio)
+Audio Group Track
   A group track is used to route signals from
   multiple tracks into one track (or "group" them).
   It behaves like
@@ -55,7 +55,7 @@ Group Track (Audio)
   *Input:* **Audio**, *Output:* **Audio**
 
   *Can record:* **No**
-Group Track (MIDI)
+MIDI Group Track
   Similar to an audio Group Track, except that it
   handles MIDI instead of audio.
 

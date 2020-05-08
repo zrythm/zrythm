@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-08 17:25+0100\n"
+"POT-Creation-Date: 2020-05-08 19:08+0100\n"
 "PO-Revision-Date: 2020-01-26 13:21+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -90,11 +90,11 @@ msgstr "Zrythm prend en charge le OGG, le FLAC, le WAV et le MP3."
 msgid "Plugins & Files"
 msgstr "Greffons et fichiers"
 
-#: ../../plugins-files/plugins/inspector-page.rst:6
+#: ../../plugins-files/plugins/inspector-page.rst:8
 msgid "Inspector Page"
 msgstr "Page de l'inspecteur"
 
-#: ../../plugins-files/plugins/inspector-page.rst:8
+#: ../../plugins-files/plugins/inspector-page.rst:10
 msgid ""
 "When a Plugin is selected in the Mixer, its page will appear in the "
 "Inspector as follows."
@@ -102,7 +102,7 @@ msgstr ""
 "Lorsqu'un greffon est sélectionné dans le mixeur, sa page apparaîtra dans"
 " l'inspecteur, comme suit."
 
-#: ../../plugins-files/plugins/inspector-page.rst:14
+#: ../../plugins-files/plugins/inspector-page.rst:16
 msgid ""
 "This page will display information about the Plugin and its ports and "
 "allow you to make changes."
@@ -110,11 +110,11 @@ msgstr ""
 "Cette page affichera des informations à propos du greffon et de ses ports"
 " et vous permettra de faire des modifications."
 
-#: ../../plugins-files/plugins/inspector-page.rst:19
+#: ../../plugins-files/plugins/inspector-page.rst:21
 msgid "Changing Values"
 msgstr "Modification des valeurs"
 
-#: ../../plugins-files/plugins/inspector-page.rst:21
+#: ../../plugins-files/plugins/inspector-page.rst:23
 msgid ""
 "The values of control ports can be changed by clicking and dragging "
 "inside the bar."
@@ -122,40 +122,15 @@ msgstr ""
 "Les valeurs des ports de contrôle peuvent être modifiées en cliquant et "
 "en glissant à l'intérieur de la barre."
 
-#: ../../plugins-files/plugins/inspector-page.rst:25
+#: ../../plugins-files/plugins/inspector-page.rst:27
 msgid "Connections"
 msgstr "Collections"
 
-#: ../../plugins-files/plugins/inspector-page.rst:27
+#: ../../plugins-files/plugins/inspector-page.rst:29
 msgid ""
-"Compatible ports can be connected to one another. This allows you to "
-"route anything-to-anything. For example, you can route an LFO's CV output"
-" to a filter plugin's cutoff parameter."
+"Compatible ports can be connected to one another. See :ref:`making-"
+"connections` for more details."
 msgstr ""
-"Les ports compatibles peuvent être connectés les uns aux autres. Cela "
-"vous permet de router n'importe quoi vers n'importe quoi. Par exemple, "
-"vous pouvez router la sortie CV d'un LFO vers le paramètre de coupure "
-"d'un greffon de filtre."
-
-#: ../../plugins-files/plugins/inspector-page.rst:32
-msgid ""
-"The number in orange indicates how many ports are currently connected to "
-"each port."
-msgstr ""
-"Le chiffre en orange indique combien de ports sont actuellement connectés"
-" à chaque port."
-
-#: ../../plugins-files/plugins/inspector-page.rst:35
-msgid ""
-"By double clicking the port, you can select a port to connect it to, or "
-"edit existing connections."
-msgstr ""
-"En double-cliquant sur le port, vous pouvez sélectionner un port pour l'y"
-" connecter ou modifier les connexions existantes."
-
-#: ../../plugins-files/plugins/inspector-page.rst:41
-msgid "For more information about ports, see the next section."
-msgstr "Pour plus d'informations sur les ports, voir la section suivante."
 
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
@@ -230,41 +205,127 @@ msgid "Filter Buttons"
 msgstr "Boutons de filtre"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:36
+#, fuzzy
 msgid ""
 "Additionally to the above, you can filter plugins based on their type. "
-"The following types exist:"
+"See :ref:`plugin-types` for more information about the various types of "
+"plugins there are."
 msgstr ""
 "En plus de ce qui précède, vous pouvez filtrer les greffons en fonction "
 "de leur type. Les types suivants existent :"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:40
+#: ../../plugins-files/plugins/plugin-browser.rst:43
+msgid "Instantiating Plugins"
+msgstr "Instancier des greffons"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:44
+msgid "There are a couple of ways to instantiate plugins:"
+msgstr "Il y a plusieurs façons d'instancier les greffons :"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:47
+msgid "Drag-n-Drop"
+msgstr "Glisser-déposer"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:49
+msgid ""
+"You can drag and drop the selected plugin into empty space in the "
+"Tracklist or into empty space in the Mixer to create a new track using "
+"that plugin."
+msgstr ""
+"Vous pouvez glisser-déposer le greffon sélectionné dans un espace vide de"
+" la liste des pistes ou dans un espace vide du mixeur pour créer une "
+"nouvelle piste utilisant ce greffon."
+
+#: ../../plugins-files/plugins/plugin-browser.rst:59
+msgid ""
+"Alternatively, you can drag the plugin on a mixer slot to add it there or"
+" replace the previous plugin."
+msgstr ""
+"Alternativement, vous pouvez faire glisser le greffon sur un emplacement "
+"de mixeur pour l'y ajouter ou remplacer le greffon précédent."
+
+#: ../../plugins-files/plugins/plugin-browser.rst:65
+msgid "If the plugin is a modulator, you can drop it into the Modulators Tab."
+msgstr ""
+"Si le greffon est un modulateur, vous pouvez le déposer dans l'onglet "
+"Modulateurs."
+
+#: ../../plugins-files/plugins/plugin-browser.rst:69
+msgid ""
+"The Modulators tab is a work-in-progress. For the time being, you can use"
+" them as regular effects."
+msgstr ""
+"Les onglets Modulateurs sont un travail en cours. Pour l'instant, vous "
+"pouvez les utiliser comme des effets réguliers."
+
+#: ../../plugins-files/plugins/plugin-browser.rst:73
+msgid "Double Click/Enter"
+msgstr "Double-clic/entrée"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:75
+msgid ""
+"Double click on the plugin or select it and press the return key on your "
+"keyboard to create a new track using that plugin."
+msgstr ""
+"Double-cliquez sur le greffon ou sélectionnez-le et appuyez sur la touche"
+" Entrée de votre clavier pour créer une nouvelle piste utilisant ce "
+"greffon."
+
+#: ../../plugins-files/plugins/plugin-info.rst:6
+#, fuzzy
+msgid "Plugin Overview"
+msgstr "Navigateur de greffon"
+
+#: ../../plugins-files/plugins/plugin-info.rst:8
+msgid ""
+"A plugin is an external module that provides audio processing "
+"capabilities to Zrythm, such as an SFZ instrument or an LV2 reverb "
+"plugin. There are various types of plugins supported by Zrythm mentioned "
+"in :ref:`scanning-plugins`."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-info.rst:13
+msgid "In Zrythm, SFZ/SF2 are also used as plugins."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-info.rst:18
+#, fuzzy
+msgid "Plugin Types"
+msgstr "Greffons"
+
+#: ../../plugins-files/plugins/plugin-info.rst:20
+msgid "Plugins are classified in the following categories."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "Instrument"
 msgstr "Instrument"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:40
+#: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "These plugins will create an instrument track when added to the project."
 msgstr ""
 "Ces greffons créeront une piste d'instrument lorsqu'ils seront ajoutés au"
 " projet."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:44
+#: ../../plugins-files/plugins/plugin-info.rst:27
 msgid "Effects"
 msgstr "Effets"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:43
+#: ../../plugins-files/plugins/plugin-info.rst:26
+#, fuzzy
 msgid ""
 "These plugins can be dragged into the insert slots of existing channels "
-"in the mixer or can be instantiated to create new bus tracks."
+"in the mixer or can be instantiated to create new FX tracks."
 msgstr ""
 "Ces greffons peuvent être glissés dans les emplacements d'insertion des "
 "canaux existants dans le mixeur ou peuvent être instanciés pour créer de "
 "nouvelles pistes de bus."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:47
+#: ../../plugins-files/plugins/plugin-info.rst:30
 msgid "Modulators"
 msgstr "Modulateurs"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:47
+#: ../../plugins-files/plugins/plugin-info.rst:30
 msgid ""
 "These plugins output CV signals and can be used to modulate other plugin "
 "or track parameters."
@@ -272,11 +333,11 @@ msgstr ""
 "Ces greffons émettent des signaux CV et peuvent être utilisés pour "
 "moduler d'autres plugins ou paramètres de piste."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:53
+#: ../../plugins-files/plugins/plugin-info.rst:36
 msgid "MIDI Effects"
 msgstr "Effets MIDI"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:50
+#: ../../plugins-files/plugins/plugin-info.rst:33
 msgid ""
 "These plugins modify incoming MIDI signals and can be used in the MIDI "
 "signal chain of an Instrument or MIDI track (coming soon)."
@@ -285,7 +346,7 @@ msgstr ""
 " dans la chaîne de signal MIDI d'un instrument ou d'une piste MIDI (à "
 "venir)."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:56
+#: ../../plugins-files/plugins/plugin-info.rst:39
 msgid ""
 "Zrythm looks inside the Plugin's metadata to determine what type the "
 "Plugin is. If that is not enough, Zrythm makes a decision based on the "
@@ -297,77 +358,62 @@ msgstr ""
 "décision basée sur le nombre de ports d'entrée et de sortie audio, MIDI, "
 "contrôle et CV du greffon."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:65
-msgid "Instantiating Plugins"
-msgstr "Instancier des greffons"
+#: ../../plugins-files/plugins/plugin-info.rst:46
+#, fuzzy
+msgid "Plugin Ports"
+msgstr "Greffons"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:66
-msgid "There are a couple of ways to instantiate plugins:"
-msgstr "Il y a plusieurs façons d'instancier les greffons :"
-
-#: ../../plugins-files/plugins/plugin-browser.rst:69
-msgid "Drag-n-Drop"
-msgstr "Glisser-déposer"
-
-#: ../../plugins-files/plugins/plugin-browser.rst:71
+#: ../../plugins-files/plugins/plugin-info.rst:47
 msgid ""
-"You can drag and drop the selected plugin into empty space in the "
-"Tracklist or into empty space in the Mixer to create a new track using "
-"that plugin."
+"Plugins consist of controls (parameters) and a variety of audio, MIDI and"
+" CV ports. Ports are explained in :ref:`ports`."
 msgstr ""
-"Vous pouvez glisser-déposer le greffon sélectionné dans un espace vide de"
-" la liste des pistes ou dans un espace vide du mixeur pour créer une "
-"nouvelle piste utilisant ce greffon."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:81
+#: ../../plugins-files/plugins/plugin-info.rst:51
 msgid ""
-"Alternatively, you can drag the plugin on a mixer slot to add it there or"
-" replace the previous plugin."
+"Zrythm first creates all plugins with a special `Enabled` control port "
+"that controls bypassing, and the rest of the plugin's ports are appended."
 msgstr ""
-"Alternativement, vous pouvez faire glisser le greffon sur un emplacement "
-"de mixeur pour l'y ajouter ou remplacer le greffon précédent."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:87
-msgid "If the plugin is a modulator, you can drop it into the Modulators Tab."
-msgstr ""
-"Si le greffon est un modulateur, vous pouvez le déposer dans l'onglet "
-"Modulateurs."
-
-#: ../../plugins-files/plugins/plugin-browser.rst:91
+#: ../../plugins-files/plugins/plugin-info.rst:55
 msgid ""
-"The Modulators tab is a work-in-progress. For the time being, you can use"
-" them as regular effects."
+"All of the plugin's ports can be found in the plugin inspector page "
+"described in :ref:`plugin-inspector-page`"
 msgstr ""
-"Les onglets Modulateurs sont un travail en cours. Pour l'instant, vous "
-"pouvez les utiliser comme des effets réguliers."
-
-#: ../../plugins-files/plugins/plugin-browser.rst:95
-msgid "Double Click/Enter"
-msgstr "Double-clic/entrée"
-
-#: ../../plugins-files/plugins/plugin-browser.rst:97
-msgid ""
-"Double click on the plugin or select it and press the return key on your "
-"keyboard to create a new track using that plugin."
-msgstr ""
-"Double-cliquez sur le greffon ou sélectionnez-le et appuyez sur la touche"
-" Entrée de votre clavier pour créer une nouvelle piste utilisant ce "
-"greffon."
 
 #: ../../plugins-files/plugins/plugin-window.rst:6
 msgid "Plugin Window"
 msgstr "Fenêtre de greffon"
 
-#: ../../plugins-files/plugins/plugin-window.rst:8
+#: ../../plugins-files/plugins/plugin-window.rst:9
+msgid "Custom UIs"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-window.rst:10
+#, fuzzy
 msgid ""
 "When Plugin UIs are opened, a window such as the following will be "
-"displayed, if the plugin ships with its own UI."
+"displayed, if the plugin ships with its own UI. This window will contain "
+"additions by Zrythm (such as the `File` and `Presets` menus)."
 msgstr ""
 "Lorsque des interfaces utilisateur de greffon sont ouvertes, une fenêtre "
 "telle que celle-ci s'affiche si le greffon est livré avec sa propre "
 "interface utilisateur."
 
-#: ../../plugins-files/plugins/plugin-window.rst:15
+#: ../../plugins-files/plugins/plugin-window.rst:19
+#, fuzzy
+msgid ""
+"Some plugin UIs cannot be wrapped and will be opened in separate windows "
+"without additions like `File` or `Presets`."
+msgstr ""
+"Certaines interfaces de greffon ne peuvent pas être emballées et "
+"s'ouvriront dans des fenêtres séparées."
+
+#: ../../plugins-files/plugins/plugin-window.rst:24
+msgid "Generic UIs"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-window.rst:25
 msgid ""
 "If the plugin does not ship with its own UI, the following generic UI "
 "will be generated for it."
@@ -375,118 +421,37 @@ msgstr ""
 "Si le greffon n'est pas livré avec sa propre interface utilisateur, "
 "l'interface utilisateur générique suivante sera générée pour lui."
 
-#: ../../plugins-files/plugins/plugin-window.rst:22
-msgid "Some plugin UIs cannot be wrapped and will be opened in separate windows."
+#: ../../plugins-files/plugins/plugin-window.rst:33
+msgid "Bridging"
 msgstr ""
-"Certaines interfaces de greffon ne peuvent pas être emballées et "
-"s'ouvriront dans des fenêtres séparées."
 
-#: ../../plugins-files/plugins/ports.rst:6
-msgid "Ports"
-msgstr "Ports"
-
-#: ../../plugins-files/plugins/ports.rst:8
+#: ../../plugins-files/plugins/plugin-window.rst:34
 msgid ""
-"Plugins expose Ports that are used internally to route MIDI and audio "
-"signals to/from and externally for automation."
+"Most plugins are instantiated in the same process as Zrythm. This has the"
+" advantage that DSP processing is very fast, however, some plugin UIs are"
+" not compatible with Zrythm and need to be bridged (run as separate "
+"processes)."
 msgstr ""
-"Les greffons exposent les ports qui sont utilisés en interne pour router "
-"les signaux MIDI et audio de/vers et à l’extérieur pour l'automatisation."
 
-#: ../../plugins-files/plugins/ports.rst:12
+#: ../../plugins-files/plugins/plugin-window.rst:40
 msgid ""
-"A Port can only be an Input Port or an Output Port and can have one of "
-"the following types."
+"When it is possible to bridge only the UI, Zrythm will do so, and this "
+"will not have any performance implications on DSP. If bridging the whole "
+"plugin is required, this will have some performance implications, since "
+"it is required to communicate with the plugin in another process."
 msgstr ""
-"Un port ne peut être qu'un port d'entrée ou un port de sortie et peut "
-"avoir l'un des types suivants."
 
-#: ../../plugins-files/plugins/ports.rst:18
-msgid "Audio"
-msgstr "Audio"
-
-#: ../../plugins-files/plugins/ports.rst:16
+#: ../../plugins-files/plugins/plugin-window.rst:47
 msgid ""
-"Ports of this type receive or send raw audio signals. Usually, Effect "
-"Plugins will have at least two of these as inputs for Left and Right, and"
-" at least two as outputs."
+"This process is transparent to the user and only mentioned here for "
+"reference."
 msgstr ""
-"Les ports de ce type reçoivent ou envoient des signaux audio bruts. "
-"Habituellement, les greffons d'effets ont au moins deux de ces derniers "
-"comme entrées pour droite et gauche, et au moins deux comme sorties."
 
-#: ../../plugins-files/plugins/ports.rst:22
-msgid "Event"
-msgstr "Événement"
-
-#: ../../plugins-files/plugins/ports.rst:21
-msgid ""
-"Event Ports are mainly used for routing MIDI signals. Instrument Plugins "
-"will have at least one Event Port."
-msgstr ""
-"Les ports d'événements sont principalement utilisés pour router les "
-"signaux MIDI. Les greffons d'instrument auront au moins un port "
-"d'événement."
-
-#: ../../plugins-files/plugins/ports.rst:26
-msgid "Control"
-msgstr "Contrôle"
-
-#: ../../plugins-files/plugins/ports.rst:25
-msgid ""
-"Control Ports are Plugin parameters that are usually shown inside the "
-"Plugin's UI. These can be automated in automation lanes."
-msgstr ""
-"Les ports de contrôle sont des paramètres de greffon qui sont "
-"généralement affichés à l'intérieur de l'interface utilisateur du "
-"greffon. Ceux-ci peuvent être automatisés dans les voies "
-"d'automatisation."
-
-#: ../../plugins-files/plugins/ports.rst:34
-msgid "CV"
-msgstr "CV"
-
-#: ../../plugins-files/plugins/ports.rst:29
-msgid ""
-"CV Ports are continuous signals that can be fed into or emitted from "
-"Plugins, and are mainly used by the Modulators. Each Modulator will have "
-"at least one CV output Port which can be routed to Plugin Control Ports "
-"for automation."
-msgstr ""
-"Les ports CV sont des signaux continus qui peuvent être nourris ou émis "
-"depuis les greffons, et sont principalement utilisés par les modulateurs."
-" Chaque modulateur aura au moins un port de sortie CV qui peut être routé"
-" vers des ports de contrôle de greffon pour l'automatisation."
-
-#: ../../plugins-files/plugins/ports.rst:36
-msgid ""
-"Usually, only Ports of the same type can be connected, with the exception"
-" of CV ports. CV output Ports may be routed to both CV input Ports and "
-"Control input Ports."
-msgstr ""
-"Habituellement, seuls les ports du même type peuvent être connectés, à "
-"l'exception des ports CV. Les ports de sortie CV peuvent être routés à la"
-" fois vers les ports d'entrée CV et vers les ports d'entrée de contrôle."
-
-#: ../../plugins-files/plugins/ports.rst:41
-msgid "Output Ports may only be routed to Input Ports and vice versa."
-msgstr ""
-"Les ports de sortie ne peuvent être acheminés que vers les ports d'entrée"
-" et vice versa."
-
-#: ../../plugins-files/plugins/ports.rst:45
-msgid ""
-"Tracks/channels also have their own ports, for example for the fader, "
-"pan, and enabled status (on/off)."
-msgstr ""
-"Les pistes/canaux ont également leurs propres ports, par exemple pour le "
-"Fader, Pan, et statut d'activation (On/Off)."
-
-#: ../../plugins-files/plugins/scanning.rst:6
+#: ../../plugins-files/plugins/scanning.rst:8
 msgid "Scanning for Plugins"
 msgstr "Scanner les greffons"
 
-#: ../../plugins-files/plugins/scanning.rst:8
+#: ../../plugins-files/plugins/scanning.rst:10
 #, fuzzy
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
@@ -497,13 +462,13 @@ msgstr ""
 " fermeture. Zrythm prend en charge les greffons LV2 et VST, bien que LV2 "
 "soit la norme recommandée."
 
-#: ../../plugins-files/plugins/scanning.rst:13
+#: ../../plugins-files/plugins/scanning.rst:15
 msgid ""
 "SFZ and SF2 instruments are also supported, and they are scanned as "
 "instrument plugins."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:16
+#: ../../plugins-files/plugins/scanning.rst:18
 msgid ""
 "Plugin scanning can be disableld by passing NO_SCAN_PLUGINS=1 when "
 "running Zrythm."
@@ -511,85 +476,80 @@ msgstr ""
 "Le scannage des greffons peut être désactivé en passant NO_SCAN_PLUGINS=1"
 " lors de l'exécution de Zrythm."
 
-#: ../../plugins-files/plugins/scanning.rst:20
+#: ../../plugins-files/plugins/scanning.rst:22
 msgid "LV2 Scan"
 msgstr "Scan LV2"
 
-#: ../../plugins-files/plugins/scanning.rst:22
-#, fuzzy
+#: ../../plugins-files/plugins/scanning.rst:24
 msgid ""
-"Zrythm will scan for LV2 plugins in the standard paths specified `here "
+"Zrythm will scan for LV2 plugins in the `standard paths specified here "
 "<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. You can "
 "bypass this behavior by passing the ``LV2_PATH`` environment variable to "
-"specify custom paths. For example, ``LV2_PATH=/home/me/custom-lv2-dir "
+"specify custom paths. For example, ``LV2_PATH=$HOME/custom-lv2-dir "
 "zrythm``."
 msgstr ""
-"Zrythm recherchera les greffons LV2 dans les chemins standards spécifiés "
-"`ici <https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. "
-"Vous pouvez contourner ce comportement en passant la variable "
-"d'environnement ``LV2_PATH`` pour spécifier des chemins personnalisés. "
-"Par exemple, ``LV2_PATH=~/custom-lv2-dir zrythm``."
 
-#: ../../plugins-files/plugins/scanning.rst:30
+#: ../../plugins-files/plugins/scanning.rst:32
 msgid "VST2/VST3 Scan"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:33
+#: ../../plugins-files/plugins/scanning.rst:35
 msgid "GNU/Linux and FreeBSD"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:34
+#: ../../plugins-files/plugins/scanning.rst:36
 #, fuzzy
 msgid "Zrythm will scan for VST2 and VST3 plugins in the following paths."
 msgstr "Sous UNIX, Zrythm recherchera des greffons VST dans les chemins suivants."
 
-#: ../../plugins-files/plugins/scanning.rst:37
+#: ../../plugins-files/plugins/scanning.rst:39
 #, fuzzy
 msgid "``$HOME/.vst``"
 msgstr "``~/.vst``"
 
-#: ../../plugins-files/plugins/scanning.rst:38
+#: ../../plugins-files/plugins/scanning.rst:40
 #, fuzzy
 msgid "``$HOME/vst``"
 msgstr "``~/vst``"
 
-#: ../../plugins-files/plugins/scanning.rst:39
+#: ../../plugins-files/plugins/scanning.rst:41
 msgid "``/usr/local/lib/vst``"
 msgstr "``/usr/local/lib/vst``"
 
-#: ../../plugins-files/plugins/scanning.rst:40
+#: ../../plugins-files/plugins/scanning.rst:42
 msgid "``/usr/lib/vst``"
 msgstr "``/usr/lib/vst``"
 
-#: ../../plugins-files/plugins/scanning.rst:42
+#: ../../plugins-files/plugins/scanning.rst:44
+#, fuzzy
 msgid ""
 "You can bypass this behavior by passing the ``VST_PATH`` environment "
-"variable to specify custom paths. For example, ``VST_PATH=~/custom-vst-"
-"dir zrythm``."
+"variable to specify custom paths. For example, ``VST_PATH=$HOME/custom-"
+"vst-dir zrythm``."
 msgstr ""
 "Vous pouvez contourner ce comportement en passant la variable "
 "d'environnement ``VST_PATH`` pour spécifier des chemins personnalisés. "
 "Par exemple, ``VST_PATH=~/custom-vst-dir zrythm``."
 
-#: ../../plugins-files/plugins/scanning.rst:46
+#: ../../plugins-files/plugins/scanning.rst:48
 msgid "``lib`` will be replaced with ``lib64`` depending on your system."
 msgstr "``lib`` sera remplacé par \"lib64\" selon votre système."
 
-#: ../../plugins-files/plugins/scanning.rst:50
+#: ../../plugins-files/plugins/scanning.rst:52
 msgid "Windows"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:51
+#: ../../plugins-files/plugins/scanning.rst:53
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in :ref:`vst-"
 "paths`."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:55
+#: ../../plugins-files/plugins/scanning.rst:57
 msgid "MacOS"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:56
+#: ../../plugins-files/plugins/scanning.rst:58
 #, fuzzy
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in `VST plug-in "
@@ -601,15 +561,15 @@ msgstr ""
 "<https://helpcenter.steinberg.de/hc/en-us/articles/115000177084-VST-plug-"
 "in-locations-on-Windows>`_."
 
-#: ../../plugins-files/plugins/scanning.rst:59
+#: ../../plugins-files/plugins/scanning.rst:61
 msgid "``/Library/Audio/Plug-Ins/VST`` for VST2"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:60
+#: ../../plugins-files/plugins/scanning.rst:62
 msgid "``/Library/Audio/Plug-Ins/VST3`` for VST3"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:62
+#: ../../plugins-files/plugins/scanning.rst:64
 #, fuzzy
 msgid ""
 "Since scanning VST plugins takes a long time, Zrythm will remember "
@@ -623,7 +583,7 @@ msgstr ""
 "modifier ce fichier pour forcer un nouveau scan des greffons précédemment"
 " scannés."
 
-#: ../../plugins-files/plugins/scanning.rst:67
+#: ../../plugins-files/plugins/scanning.rst:69
 #, fuzzy
 msgid ""
 "New plugins will be scanned on each start-up, and you can delete or edit "
@@ -636,16 +596,14 @@ msgstr ""
 "modifier ce fichier pour forcer un nouveau scan des greffons précédemment"
 " scannés."
 
-#: ../../plugins-files/plugins/scanning.rst:72
+#: ../../plugins-files/plugins/scanning.rst:74
 msgid "AU Scan"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:73
-msgid "On MacOS, AUs will be scanned in their default locations."
-msgstr ""
-
 #: ../../plugins-files/plugins/scanning.rst:75
-msgid "``/Library/Audio/Plug-Ins/Components``"
+msgid ""
+"On MacOS, AUs will be scanned at their default location ``/Library/Audio"
+"/Plug-Ins/Components``."
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:78
@@ -767,4 +725,190 @@ msgstr ""
 
 #~ msgid "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
 #~ msgstr "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
+
+#~ msgid ""
+#~ "Compatible ports can be connected to "
+#~ "one another. This allows you to "
+#~ "route anything-to-anything. For example,"
+#~ " you can route an LFO's CV "
+#~ "output to a filter plugin's cutoff "
+#~ "parameter."
+#~ msgstr ""
+#~ "Les ports compatibles peuvent être "
+#~ "connectés les uns aux autres. Cela "
+#~ "vous permet de router n'importe quoi "
+#~ "vers n'importe quoi. Par exemple, vous"
+#~ " pouvez router la sortie CV d'un "
+#~ "LFO vers le paramètre de coupure "
+#~ "d'un greffon de filtre."
+
+#~ msgid ""
+#~ "The number in orange indicates how "
+#~ "many ports are currently connected to"
+#~ " each port."
+#~ msgstr ""
+#~ "Le chiffre en orange indique combien "
+#~ "de ports sont actuellement connectés à"
+#~ " chaque port."
+
+#~ msgid ""
+#~ "By double clicking the port, you "
+#~ "can select a port to connect it"
+#~ " to, or edit existing connections."
+#~ msgstr ""
+#~ "En double-cliquant sur le port, "
+#~ "vous pouvez sélectionner un port pour"
+#~ " l'y connecter ou modifier les "
+#~ "connexions existantes."
+
+#~ msgid "For more information about ports, see the next section."
+#~ msgstr "Pour plus d'informations sur les ports, voir la section suivante."
+
+#~ msgid "Ports"
+#~ msgstr "Ports"
+
+#~ msgid ""
+#~ "Plugins expose Ports that are used "
+#~ "internally to route MIDI and audio "
+#~ "signals to/from and externally for "
+#~ "automation."
+#~ msgstr ""
+#~ "Les greffons exposent les ports qui "
+#~ "sont utilisés en interne pour router "
+#~ "les signaux MIDI et audio de/vers "
+#~ "et à l’extérieur pour l'automatisation."
+
+#~ msgid ""
+#~ "A Port can only be an Input "
+#~ "Port or an Output Port and can "
+#~ "have one of the following types."
+#~ msgstr ""
+#~ "Un port ne peut être qu'un port"
+#~ " d'entrée ou un port de sortie "
+#~ "et peut avoir l'un des types "
+#~ "suivants."
+
+#~ msgid "Audio"
+#~ msgstr "Audio"
+
+#~ msgid ""
+#~ "Ports of this type receive or send"
+#~ " raw audio signals. Usually, Effect "
+#~ "Plugins will have at least two of"
+#~ " these as inputs for Left and "
+#~ "Right, and at least two as "
+#~ "outputs."
+#~ msgstr ""
+#~ "Les ports de ce type reçoivent ou"
+#~ " envoient des signaux audio bruts. "
+#~ "Habituellement, les greffons d'effets ont "
+#~ "au moins deux de ces derniers "
+#~ "comme entrées pour droite et gauche, "
+#~ "et au moins deux comme sorties."
+
+#~ msgid "Event"
+#~ msgstr "Événement"
+
+#~ msgid ""
+#~ "Event Ports are mainly used for "
+#~ "routing MIDI signals. Instrument Plugins "
+#~ "will have at least one Event Port."
+#~ msgstr ""
+#~ "Les ports d'événements sont principalement "
+#~ "utilisés pour router les signaux MIDI."
+#~ " Les greffons d'instrument auront au "
+#~ "moins un port d'événement."
+
+#~ msgid "Control"
+#~ msgstr "Contrôle"
+
+#~ msgid ""
+#~ "Control Ports are Plugin parameters that"
+#~ " are usually shown inside the "
+#~ "Plugin's UI. These can be automated "
+#~ "in automation lanes."
+#~ msgstr ""
+#~ "Les ports de contrôle sont des "
+#~ "paramètres de greffon qui sont "
+#~ "généralement affichés à l'intérieur de "
+#~ "l'interface utilisateur du greffon. Ceux-"
+#~ "ci peuvent être automatisés dans les "
+#~ "voies d'automatisation."
+
+#~ msgid "CV"
+#~ msgstr "CV"
+
+#~ msgid ""
+#~ "CV Ports are continuous signals that "
+#~ "can be fed into or emitted from"
+#~ " Plugins, and are mainly used by "
+#~ "the Modulators. Each Modulator will have"
+#~ " at least one CV output Port "
+#~ "which can be routed to Plugin "
+#~ "Control Ports for automation."
+#~ msgstr ""
+#~ "Les ports CV sont des signaux "
+#~ "continus qui peuvent être nourris ou "
+#~ "émis depuis les greffons, et sont "
+#~ "principalement utilisés par les modulateurs."
+#~ " Chaque modulateur aura au moins un"
+#~ " port de sortie CV qui peut "
+#~ "être routé vers des ports de "
+#~ "contrôle de greffon pour l'automatisation."
+
+#~ msgid ""
+#~ "Usually, only Ports of the same "
+#~ "type can be connected, with the "
+#~ "exception of CV ports. CV output "
+#~ "Ports may be routed to both CV "
+#~ "input Ports and Control input Ports."
+#~ msgstr ""
+#~ "Habituellement, seuls les ports du même"
+#~ " type peuvent être connectés, à "
+#~ "l'exception des ports CV. Les ports "
+#~ "de sortie CV peuvent être routés à"
+#~ " la fois vers les ports d'entrée "
+#~ "CV et vers les ports d'entrée de"
+#~ " contrôle."
+
+#~ msgid "Output Ports may only be routed to Input Ports and vice versa."
+#~ msgstr ""
+#~ "Les ports de sortie ne peuvent "
+#~ "être acheminés que vers les ports "
+#~ "d'entrée et vice versa."
+
+#~ msgid ""
+#~ "Tracks/channels also have their own "
+#~ "ports, for example for the fader, "
+#~ "pan, and enabled status (on/off)."
+#~ msgstr ""
+#~ "Les pistes/canaux ont également leurs "
+#~ "propres ports, par exemple pour le "
+#~ "Fader, Pan, et statut d'activation "
+#~ "(On/Off)."
+
+#~ msgid ""
+#~ "Zrythm will scan for LV2 plugins "
+#~ "in the standard paths specified `here"
+#~ " <https://lv2plug.in/pages/filesystem-hierarchy-"
+#~ "standard.html>`_. You can bypass this "
+#~ "behavior by passing the ``LV2_PATH`` "
+#~ "environment variable to specify custom "
+#~ "paths. For example, ``LV2_PATH=/home/me/custom-"
+#~ "lv2-dir zrythm``."
+#~ msgstr ""
+#~ "Zrythm recherchera les greffons LV2 dans"
+#~ " les chemins standards spécifiés `ici "
+#~ "<https://lv2plug.in/pages/filesystem-hierarchy-"
+#~ "standard.html>`_. Vous pouvez contourner ce"
+#~ " comportement en passant la variable "
+#~ "d'environnement ``LV2_PATH`` pour spécifier "
+#~ "des chemins personnalisés. Par exemple, "
+#~ "``LV2_PATH=~/custom-lv2-dir zrythm``."
+
+#~ msgid "On MacOS, AUs will be scanned in their default locations."
+#~ msgstr ""
+
+#~ msgid "``/Library/Audio/Plug-Ins/Components``"
+#~ msgstr ""
 

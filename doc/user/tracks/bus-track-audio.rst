@@ -2,11 +2,11 @@
    Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
-Bus Track (Audio)
-=================
+Audio FX Track
+==============
 
-Audio bus tracks can be used for effects by
-sending audio signals to them with sends.
+Audio FX tracks can be used for effects by
+sending audio signals to them with :ref:`track-sends`.
 
 .. image:: /_static/img/audio-bus-track.png
    :align: center

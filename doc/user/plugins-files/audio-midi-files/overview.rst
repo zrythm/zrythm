@@ -8,7 +8,7 @@ Overview
 Zrythm can import MIDI and audio files into
 the project. The files can be imported by
 dragging and dropping from your computer or
-from the File Browser into a track.
+from the :ref:`file-browser` into a track.
 
 Supported Audio Formats
 -----------------------

@@ -6,11 +6,10 @@ Instrument Track
 ================
 
 The instrument track is used for synths and
-other instruments. The first plugin in the
-strip of the instrument track's channel must
-be an instrument plugin. This is done
-automatically when instrument tracks are
-created from instrument plugins.
+other instruments. Instrument tracks contain
+a special `instrument slot` in the mixer that
+will get processed `after` the MIDI FX section
+and `before` the Inserts section.
 
 .. image:: /_static/img/instrument-track.png
    :align: center

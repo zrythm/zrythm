@@ -19,71 +19,10 @@ Track Inspector
 The first tab is the track inspector, which shows various
 options about the selected track.
 
-.. image:: /_static/img/track-inspector.png
+.. image:: /_static/img/track-inspector-annotated.png
    :align: center
 
-Track Properties
-~~~~~~~~~~~~~~~~
-
-.. image:: /_static/img/track-properties.png
-   :align: center
-
-Track Name
-  Name of the track
-Direct Out
-  The track that this track routes its output to.
-Instrument
-  If the track is an :ref:`instrument-track`, the instrument
-  plugin for this track.
-
-Track Inputs
-~~~~~~~~~~~~
-
-.. image:: /_static/img/track-inputs.png
-   :align: center
-
-See :ref:`track-inputs` for more information.
-
-MIDI FX/Inserts
-~~~~~~~~~~~~~~~
-These are slots for dropping audio or MIDI effects that will
-be applied to the signal as it passes through the track.
-
-.. image:: /_static/img/midi-fx-inserts.png
-   :align: center
-
-See the :ref:`tracks` chapter for more information.
-
-Aux Sends
-~~~~~~~~~
-`Aux sends <https://en.wikipedia.org/wiki/Aux-send>`_ to
-other tracks or plugin side-chain inputs.
-
-.. image:: /_static/img/track-sends.png
-   :align: center
-
-See the :ref:`tracks` chapter for more information.
-
-Fader
-~~~~~
-Fader section to control the volume and stereo balance.
-
-.. image:: /_static/img/track-fader.png
-   :align: center
-
-Peak
-  Peak signal value.
-RMS
-  Root Mean Square of the signal value.
-
-Comments
-~~~~~~~~
-User comments.
-
-.. image:: /_static/img/track-comments.png
-   :align: center
-
-.. note:: This is a TODO feature.
+See :ref:`track-inspector` for more details.
 
 Plugin Inspector
 ----------------
@@ -120,8 +59,5 @@ Ports are explained in more detail in :ref:`ports`.
 
 Track Visibility
 ----------------
-The track visibility tab allows toggling the visibility of
-tracks.
 
-.. image:: /_static/img/track-visibility.png
-   :align: center
+See :ref:`track-visibility`.

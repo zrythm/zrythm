@@ -17,7 +17,7 @@ supported by Zrythm mentioned in :ref:`scanning-plugins`.
 Plugin Types
 ------------
 
-Plugins are classified in the following categories.
+Plugins are classified into the following categories.
 
 Instrument
   These plugins will create an instrument track when added

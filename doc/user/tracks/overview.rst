@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 Overview
@@ -16,12 +16,6 @@ Most types of tracks have a corresponding channel that
 appears in the mixer.
 
 .. image:: /_static/img/channel.png
-   :align: center
-
-Each track has its own page in the inspector section, which is
-shown when selecting a Track.
-
-.. image:: /_static/img/track_inputs.png
    :align: center
 
 There are various kinds of Tracks suited for
@@ -56,40 +50,13 @@ right-hand side showing the current level.
 Track Inspector
 ----------------
 
-.. image:: /_static/img/midi-track-inspector.png
-   :align: center
-
 Each track will display its page in the inspector when
-selected. Depending on the track, the properties shown
-will be differ.
-
-Properties
-~~~~~~~~~~
-
-Track properties are basic properties that the track
-has, like its name, color, and direct output.
-
-.. _track-inputs:
-
-Inputs
-~~~~~~
-
-If the track takes input, there will be an input
-selection section.
-
-Sends
-~~~~~
-
-These are ports that can be connected to for any
-purpose. These are generally useful for side-chaining.
-The pre-fader port(s) hold the signal up to before
-the fader is processed, and the post-fader port(s)
-hold the signal after the fader is applied.
+selected. See :ref:`track-inspector` for more details.
 
 Context Menu
 ------------
 
-Each tracks has a context menu, with additional options
+Each tracks has a context menu with additional options
 depending on its type.
 
 .. image:: /_static/img/track-context-menu-duplicate-track.png

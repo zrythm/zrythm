@@ -8,14 +8,14 @@ Scanning for Plugins
 ====================
 
 Zrythm will scan for plugins on startup and will remember
-those plugins until it is closed. Zrythm supports both
+those plugins until it is closed. Zrythm supports
 LV2, VST2, VST3 and AU plugins. LV2 is the recommended
 standard.
 
 SFZ and SF2 instruments are also supported, and they are
 scanned as instrument plugins.
 
-.. tip:: Plugin scanning can be disableld by passing
+.. tip:: Plugin scanning can be disabled by passing
    NO_SCAN_PLUGINS=1 when running Zrythm.
 
 LV2 Scan
