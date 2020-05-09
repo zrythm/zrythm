@@ -15,14 +15,12 @@ to the control room.
 Plugin Browser
 --------------
 The first tab is the plugin browser, which is explained in
-its own section: :ref:`plugin-browser`
+:ref:`plugin-browser`.
 
 File Browser
 ------------
-The file browser is also explained in its own section:
-:ref:`file-browser`
+The file browser is covered in :ref:`file-browser`.
 
 Control Room
 ------------
-
-TODO
+The control room is covered in :ref:`control-room`.

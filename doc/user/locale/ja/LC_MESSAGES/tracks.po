@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-08 20:20+0100\n"
+"POT-Creation-Date: 2020-05-09 17:47+0100\n"
 "PO-Revision-Date: 2020-01-24 23:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language: ja\n"
@@ -31,8 +31,8 @@ msgid ""
 msgstr "オーディオトラックにはオーディオリージョンが含まれ、オーディオクリップの録音や再生に使用できます。"
 
 #: ../../tracks/audio-track.rst:15
-#: ../../tracks/bus-track-audio.rst:15
-#: ../../tracks/bus-track-midi.rst:15
+#: ../../tracks/bus-track-audio.rst:17
+#: ../../tracks/bus-track-midi.rst:17
 #: ../../tracks/chord-track.rst:19
 #: ../../tracks/group-track-audio.rst:21
 #: ../../tracks/instrument-track.rst:18
@@ -43,6 +43,7 @@ msgstr "トップボタン"
 
 #: ../../tracks/audio-track.rst:17
 #: ../../tracks/chord-track.rst:22
+#: ../../tracks/inspector-page.rst:110
 #: ../../tracks/instrument-track.rst:20
 #: ../../tracks/midi-track.rst:23
 msgid "Record"
@@ -55,10 +56,11 @@ msgid "Arms the track for recording."
 msgstr "録音のためにトラックをアームします。"
 
 #: ../../tracks/audio-track.rst:19
-#: ../../tracks/bus-track-audio.rst:17
-#: ../../tracks/bus-track-midi.rst:17
+#: ../../tracks/bus-track-audio.rst:19
+#: ../../tracks/bus-track-midi.rst:19
 #: ../../tracks/chord-track.rst:24
 #: ../../tracks/group-track-audio.rst:23
+#: ../../tracks/inspector-page.rst:121
 #: ../../tracks/instrument-track.rst:22
 #: ../../tracks/master-track.rst:20
 #: ../../tracks/midi-track.rst:25
@@ -66,8 +68,8 @@ msgid "Solo"
 msgstr "ソロ"
 
 #: ../../tracks/audio-track.rst:20
-#: ../../tracks/bus-track-audio.rst:18
-#: ../../tracks/bus-track-midi.rst:18
+#: ../../tracks/bus-track-audio.rst:20
+#: ../../tracks/bus-track-midi.rst:20
 #: ../../tracks/group-track-audio.rst:24
 #: ../../tracks/instrument-track.rst:23
 #: ../../tracks/master-track.rst:21
@@ -76,10 +78,11 @@ msgid "Soloes the track."
 msgstr "トラックをソロにします。"
 
 #: ../../tracks/audio-track.rst:22
-#: ../../tracks/bus-track-audio.rst:20
-#: ../../tracks/bus-track-midi.rst:20
+#: ../../tracks/bus-track-audio.rst:22
+#: ../../tracks/bus-track-midi.rst:22
 #: ../../tracks/chord-track.rst:28
 #: ../../tracks/group-track-audio.rst:26
+#: ../../tracks/inspector-page.rst:114
 #: ../../tracks/instrument-track.rst:24
 #: ../../tracks/master-track.rst:23
 #: ../../tracks/midi-track.rst:28
@@ -87,8 +90,8 @@ msgid "Mute"
 msgstr "ミュート"
 
 #: ../../tracks/audio-track.rst:22
-#: ../../tracks/bus-track-audio.rst:20
-#: ../../tracks/bus-track-midi.rst:20
+#: ../../tracks/bus-track-audio.rst:22
+#: ../../tracks/bus-track-midi.rst:22
 #: ../../tracks/group-track-audio.rst:26
 #: ../../tracks/instrument-track.rst:25
 #: ../../tracks/master-track.rst:23
@@ -97,8 +100,8 @@ msgid "Mutes the track."
 msgstr "トラックをミュートします。"
 
 #: ../../tracks/audio-track.rst:25
-#: ../../tracks/bus-track-audio.rst:23
-#: ../../tracks/bus-track-midi.rst:23
+#: ../../tracks/bus-track-audio.rst:25
+#: ../../tracks/bus-track-midi.rst:25
 #: ../../tracks/group-track-audio.rst:29
 #: ../../tracks/instrument-track.rst:30
 #: ../../tracks/master-track.rst:26
@@ -131,8 +134,8 @@ msgid "Toggles the visibility of lanes."
 msgstr "レーンの表示/非表示を切り替えます。"
 
 #: ../../tracks/audio-track.rst:32
-#: ../../tracks/bus-track-audio.rst:26
-#: ../../tracks/bus-track-midi.rst:26
+#: ../../tracks/bus-track-audio.rst:28
+#: ../../tracks/bus-track-midi.rst:28
 #: ../../tracks/group-track-audio.rst:32
 #: ../../tracks/instrument-track.rst:39
 #: ../../tracks/master-track.rst:29
@@ -141,8 +144,8 @@ msgid "Show Automation"
 msgstr "オートメーションを表示"
 
 #: ../../tracks/audio-track.rst:32
-#: ../../tracks/bus-track-audio.rst:26
-#: ../../tracks/bus-track-midi.rst:26
+#: ../../tracks/bus-track-audio.rst:28
+#: ../../tracks/bus-track-midi.rst:28
 #: ../../tracks/group-track-audio.rst:32
 #: ../../tracks/instrument-track.rst:39
 #: ../../tracks/master-track.rst:29
@@ -151,32 +154,32 @@ msgid "Toggles the visibility of automation tracks."
 msgstr "オートメーション トラックの表示/非表示を切り替えます。"
 
 #: ../../tracks/audio-track.rst:35
-#: ../../tracks/bus-track-audio.rst:29
-#: ../../tracks/bus-track-midi.rst:29
+#: ../../tracks/bus-track-audio.rst:31
+#: ../../tracks/bus-track-midi.rst:31
 #: ../../tracks/chord-track.rst:31
 #: ../../tracks/group-track-audio.rst:35
 #: ../../tracks/instrument-track.rst:42
-#: ../../tracks/marker-track.rst:18
+#: ../../tracks/marker-track.rst:20
 #: ../../tracks/master-track.rst:32
 #: ../../tracks/midi-track.rst:41
 msgid "Inspector"
 msgstr "インスペクター"
 
 #: ../../tracks/audio-track.rst:41
-#: ../../tracks/bus-track-audio.rst:35
-#: ../../tracks/bus-track-midi.rst:35
+#: ../../tracks/bus-track-audio.rst:37
+#: ../../tracks/bus-track-midi.rst:37
 #: ../../tracks/chord-track.rst:37
 #: ../../tracks/group-track-audio.rst:41
 #: ../../tracks/instrument-track.rst:48
-#: ../../tracks/marker-track.rst:24
+#: ../../tracks/marker-track.rst:26
 #: ../../tracks/master-track.rst:38
 #: ../../tracks/midi-track.rst:47
 msgid "Properties"
 msgstr "属性"
 
 #: ../../tracks/audio-track.rst:44
-#: ../../tracks/bus-track-audio.rst:40
-#: ../../tracks/bus-track-midi.rst:40
+#: ../../tracks/bus-track-audio.rst:42
+#: ../../tracks/bus-track-midi.rst:42
 #: ../../tracks/group-track-audio.rst:46
 #: ../../tracks/inspector-page.rst:28
 #: ../../tracks/instrument-track.rst:51
@@ -201,8 +204,8 @@ msgid "Left and right audio input sources used when recording."
 msgstr "録音時に使用される左右のオーディオ入力ソース。"
 
 #: ../../tracks/audio-track.rst:53
-#: ../../tracks/bus-track-audio.rst:43
-#: ../../tracks/bus-track-midi.rst:43
+#: ../../tracks/bus-track-audio.rst:45
+#: ../../tracks/bus-track-midi.rst:45
 #: ../../tracks/group-track-audio.rst:49
 #: ../../tracks/instrument-track.rst:61
 #: ../../tracks/master-track.rst:47
@@ -228,8 +231,8 @@ msgid "These are similar to :ref:`midi-track-lanes`."
 msgstr "これらは :ref:`midi-track-lanes` と同様です。"
 
 #: ../../tracks/audio-track.rst:63
-#: ../../tracks/bus-track-audio.rst:48
-#: ../../tracks/bus-track-midi.rst:48
+#: ../../tracks/bus-track-audio.rst:50
+#: ../../tracks/bus-track-midi.rst:50
 #: ../../tracks/group-track-audio.rst:54
 #: ../../tracks/instrument-track.rst:77
 #: ../../tracks/master-track.rst:52
@@ -238,71 +241,106 @@ msgid "Automation Tracks"
 msgstr "オートメーショントラック"
 
 #: ../../tracks/audio-track.rst:65
-#: ../../tracks/bus-track-audio.rst:50
-#: ../../tracks/bus-track-midi.rst:50
+#: ../../tracks/bus-track-audio.rst:52
+#: ../../tracks/bus-track-midi.rst:52
 #: ../../tracks/group-track-audio.rst:56
 #: ../../tracks/instrument-track.rst:79
 #: ../../tracks/master-track.rst:54
 msgid "These are similar to :ref:`midi-track-automation-tracks`."
 msgstr "これらは :ref:`midi-track-automation-tracks` と同様です。"
 
-#: ../../tracks/bus-track-audio.rst:6
+#: ../../tracks/automation.rst:8
+#, fuzzy
+msgid "Automation"
+msgstr "オートメーションを表示"
+
+#: ../../tracks/automation.rst:11
+#, fuzzy
+msgid "Automation Lanes"
+msgstr "オートメーショントラック"
+
+#: ../../tracks/automation.rst:12
+msgid ""
+"Tracks which have automatable controls, such as Fader, Pan and parameters"
+" of Plugins they contain will have an option to show their Automation "
+"Lanes."
+msgstr ""
+
+#: ../../tracks/automation.rst:17
+msgid ""
+"You can choose which parameter you want to automate in each Automation "
+"Lane."
+msgstr ""
+
+#: ../../tracks/automation.rst:24
+#, fuzzy
+msgid "Editing Automation"
+msgstr "オートメーションを表示"
+
+#: ../../tracks/automation.rst:25
+msgid ""
+"Editing automation consists of creating automation regions and then "
+"creating automation events inside the automation editor. See the "
+":ref:`editing` chapter for details."
+msgstr ""
+
+#: ../../tracks/bus-track-audio.rst:8
 #: ../../tracks/track-types.rst:38
 #, fuzzy
 msgid "Audio FX Track"
 msgstr "オーディオトラック"
 
-#: ../../tracks/bus-track-audio.rst:8
+#: ../../tracks/bus-track-audio.rst:10
 #, fuzzy
 msgid ""
 "Audio FX tracks can be used for effects by sending audio signals to them "
 "with :ref:`track-sends`."
 msgstr "オーディオバストラックは、センドでそれらにオーディオ信号を送信することにより、エフェクトに使用することができます。"
 
-#: ../../tracks/bus-track-audio.rst:37
-#: ../../tracks/bus-track-midi.rst:37
+#: ../../tracks/bus-track-audio.rst:39
+#: ../../tracks/bus-track-midi.rst:39
 #: ../../tracks/chord-track.rst:39
 #: ../../tracks/group-track-audio.rst:43
 #: ../../tracks/inspector-page.rst:26
-#: ../../tracks/marker-track.rst:26
+#: ../../tracks/marker-track.rst:28
 #: ../../tracks/master-track.rst:40
 #: ../../tracks/midi-track.rst:50
 msgid "Track Name"
 msgstr "トラック名"
 
-#: ../../tracks/bus-track-audio.rst:38
-#: ../../tracks/bus-track-midi.rst:38
+#: ../../tracks/bus-track-audio.rst:40
+#: ../../tracks/bus-track-midi.rst:40
 #: ../../tracks/group-track-audio.rst:44
 msgid "The unique name of the track."
 msgstr "トラックの一意の名前。"
 
-#: ../../tracks/bus-track-audio.rst:40
+#: ../../tracks/bus-track-audio.rst:42
 msgid "The track to route the output of the audio bus track to."
 msgstr "オーディオバストラックの出力をルーティングするトラック。"
 
-#: ../../tracks/bus-track-audio.rst:45
+#: ../../tracks/bus-track-audio.rst:47
 #: ../../tracks/group-track-audio.rst:51
 #: ../../tracks/master-track.rst:49
 msgid "These are similar to :ref:`instrument-track-sends`."
 msgstr "これらは :ref:`instrument-track-sends` と同様です。"
 
-#: ../../tracks/bus-track-midi.rst:6
+#: ../../tracks/bus-track-midi.rst:8
 #: ../../tracks/track-types.rst:45
 msgid "MIDI FX Track"
 msgstr ""
 
-#: ../../tracks/bus-track-midi.rst:8
+#: ../../tracks/bus-track-midi.rst:10
 #, fuzzy
 msgid ""
 "MIDI FX tracks can be used for MIDI effects by sending MIDI signals to "
 "them using :ref:`track-sends`."
 msgstr "オーディオバストラックは、センドでそれらにオーディオ信号を送信することにより、エフェクトに使用することができます。"
 
-#: ../../tracks/bus-track-midi.rst:40
+#: ../../tracks/bus-track-midi.rst:42
 msgid "The track to route the output of the MIDI bus track to."
 msgstr "MIDI バストラックの出力をルーティングするトラック。"
 
-#: ../../tracks/bus-track-midi.rst:45
+#: ../../tracks/bus-track-midi.rst:47
 msgid "These are similar to :ref:`midi-track-sends`."
 msgstr "これらは :ref:`midi-track-sends` と同様です。"
 
@@ -411,12 +449,12 @@ msgstr "オーディオグループトラックは、直接ルーティングを
 msgid "The track to route the output of the audio group track to."
 msgstr "オーディオグループトラックの出力をルーティングするトラック。"
 
-#: ../../tracks/group-track-midi.rst:6
+#: ../../tracks/group-track-midi.rst:8
 #: ../../tracks/track-types.rst:63
 msgid "MIDI Group Track"
 msgstr ""
 
-#: ../../tracks/group-track-midi.rst:8
+#: ../../tracks/group-track-midi.rst:10
 msgid ""
 "These are similar to :ref:`audio-group-track`, except that they act on "
 "MIDI signals instead of audio signals."
@@ -522,30 +560,89 @@ msgid "Fader section to control the volume and stereo balance."
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:93
+msgid ""
+"To change the fader or stereo balance amount, click and drag their "
+"respective widgets. You can reset them to their default positions by "
+"right clicking and selecting :zbutton:`Reset`."
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:98
+msgid ""
+"The meter displays the amplitude of the signal in dBFS as it is processed"
+" live. The following values are displayed next to the meter for "
+"additional reference."
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:102
 msgid "Peak"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:94
+#: ../../tracks/inspector-page.rst:103
 msgid "Peak signal value."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:96
+#: ../../tracks/inspector-page.rst:105
 msgid "RMS"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:96
+#: ../../tracks/inspector-page.rst:105
 msgid "Root Mean Square of the signal value."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:99
+#: ../../tracks/inspector-page.rst:107
+msgid "The following controls are available for controlling the signal flow."
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:111
+#, fuzzy
+msgid "Arm the track for recording."
+msgstr "録音のためにトラックをアームします。"
+
+#: ../../tracks/inspector-page.rst:113
+msgid "Mutes the track, meaning no sound will be sent to its direct out."
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:116
+msgid ""
+"The track will still be processed, so if you are looking to decrease DSP "
+"usage, try disabling plugins instead."
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:121
+msgid ""
+"Soloes the track. If any track is soloed, only the soloed tracks will "
+"produce sounds."
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:126
+msgid "Listen"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:124
+msgid ""
+"Similar to solo, except it dims the volume of other tracks instead of "
+"muting them. The dim amount can be controlled in the control room "
+"described in :ref:`control-room`. Not operational at the moment."
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:129
+msgid "Channel Settings"
+msgstr ""
+
+#: ../../tracks/inspector-page.rst:129
+#, fuzzy
+msgid "Not operational at the moment."
+msgstr "現時点では使用されていません。"
+
+#: ../../tracks/inspector-page.rst:132
 msgid "Comments"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:100
+#: ../../tracks/inspector-page.rst:133
 msgid "User comments."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:105
+#: ../../tracks/inspector-page.rst:138
 msgid "This is a TODO feature."
 msgstr ""
 
@@ -626,19 +723,19 @@ msgstr ""
 msgid "Tracks"
 msgstr ""
 
-#: ../../tracks/marker-track.rst:6
+#: ../../tracks/marker-track.rst:8
 #: ../../tracks/track-types.rst:88
 msgid "Marker Track"
 msgstr ""
 
-#: ../../tracks/marker-track.rst:8
+#: ../../tracks/marker-track.rst:10
 msgid ""
 "The marker track holds song markers that make it easier to jump to or to "
 "export specific sections of the song. Each project can only have one "
 "marker track and it cannot be deleted (but can be hidden)."
 msgstr ""
 
-#: ../../tracks/marker-track.rst:27
+#: ../../tracks/marker-track.rst:29
 msgid "The name of the marker track."
 msgstr ""
 

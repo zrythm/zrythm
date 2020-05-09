@@ -34,6 +34,9 @@ Transport buttons
   by clicking and dragging, or by hovering over them with the cursor
   and scrolling
 
+More information about working with the transport
+bar is covered in :ref:`transport-controls`.
+
 Backend Information
 -------------------
 Information about the currently selected backend and options

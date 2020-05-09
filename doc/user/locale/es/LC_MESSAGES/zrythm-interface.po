@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-08 21:17+0100\n"
+"POT-Creation-Date: 2020-05-09 18:06+0100\n"
 "PO-Revision-Date: 2020-03-01 10:34+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language: es\n"
@@ -107,11 +107,15 @@ msgid ""
 "various controls that vary depending on the type of region selected."
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:27
-msgid "Piano Roll"
+#: ../../zrythm-interface/bottom-panel.rst:26
+msgid "Editing inside the Editor tab is covered in :ref:`editors`."
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:29
+msgid "Piano Roll"
+msgstr ""
+
+#: ../../zrythm-interface/bottom-panel.rst:31
 msgid ""
 "The Piano Roll, or MIDI Arranger, is the most commonly used editor. It "
 "can be used to edit MIDI regions, which contain MIDI notes. When a MIDI "
@@ -119,11 +123,15 @@ msgid ""
 "you to edit that region."
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:39
+#: ../../zrythm-interface/bottom-panel.rst:40
+msgid "The piano roll is covered in detail in :ref:`piano-roll`."
+msgstr ""
+
+#: ../../zrythm-interface/bottom-panel.rst:43
 msgid "Automation Editor"
 msgstr "Editor de automatización"
 
-#: ../../zrythm-interface/bottom-panel.rst:41
+#: ../../zrythm-interface/bottom-panel.rst:45
 msgid ""
 "In Zrythm, automation is also enclosed in regions (called Automation "
 "Regions). This allows automation to be repeated, much like MIDI Regions. "
@@ -131,30 +139,51 @@ msgid ""
 "Region is selected."
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:50
-msgid "Chord Editor"
-msgstr "Editor de acordes"
-
-#: ../../zrythm-interface/bottom-panel.rst:52
-msgid "The Chord Editor is used for editing Chord Regions."
-msgstr ""
-
-#: ../../zrythm-interface/bottom-panel.rst:54
-msgid "This is a work in progress"
+#: ../../zrythm-interface/bottom-panel.rst:53
+msgid "The automation editor is covered in detail in :ref:`automation-editor`."
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:57
+#, fuzzy
+msgid "Audio Editor"
+msgstr "Editor de automatización"
+
+#: ../../zrythm-interface/bottom-panel.rst:58
+msgid ""
+"The audio editor is used to view the contents of audio regions. The audio"
+" editor will appear in the Editor tab when an audio region is selected."
+msgstr ""
+
+#: ../../zrythm-interface/bottom-panel.rst:66
+msgid "The audio editor is covered in detail in :ref:`audio-editor`."
+msgstr ""
+
+#: ../../zrythm-interface/bottom-panel.rst:70
+msgid "Chord Editor"
+msgstr "Editor de acordes"
+
+#: ../../zrythm-interface/bottom-panel.rst:71
+msgid ""
+"The chord editor is used for editing chord regions. It will appear in the"
+" Editor tab when a chord region is selected in the chord track."
+msgstr ""
+
+#: ../../zrythm-interface/bottom-panel.rst:78
+msgid "The chord editor is covered in detail in :ref:`chord-editor`."
+msgstr ""
+
+#: ../../zrythm-interface/bottom-panel.rst:82
 msgid "Mixer"
 msgstr "Mezclador"
 
-#: ../../zrythm-interface/bottom-panel.rst:58
+#: ../../zrythm-interface/bottom-panel.rst:83
 msgid ""
 "The Mixer tab contains each channel and various controls for changing the"
 " signal as it passes through the channel."
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:64
-msgid "Mixing is explained in its own section."
+#: ../../zrythm-interface/bottom-panel.rst:89
+msgid "Mixing is covered in :ref:`mixing`."
 msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
@@ -179,58 +208,58 @@ msgid ""
 "the selected track."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:25
+#: ../../zrythm-interface/left-panel.rst:22
 msgid "See :ref:`track-inspector` for more details."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:28
+#: ../../zrythm-interface/left-panel.rst:25
 msgid "Plugin Inspector"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:29
+#: ../../zrythm-interface/left-panel.rst:26
 msgid "The plugin inspector shows various options for the selected plugin."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:36
+#: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:37
+#: ../../zrythm-interface/left-panel.rst:34
 msgid ""
 "The plugin properties show the name and type of the plugin, as well as "
 "preset and bank selectors."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:44
+#: ../../zrythm-interface/left-panel.rst:41
 msgid "Plugin Ports"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:45
+#: ../../zrythm-interface/left-panel.rst:42
 msgid "These are the ports that the plugin has."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:50
+#: ../../zrythm-interface/left-panel.rst:47
 msgid ""
 "Control input ports can be changed by clicking and dragging, and can also"
 " be automated using automation tracks. Ports can be routed to other ports"
 " anywhere within Zrythm by double clicking on them."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:55
+#: ../../zrythm-interface/left-panel.rst:52
 msgid "Ports are explained in more detail in :ref:`ports`."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:57
+#: ../../zrythm-interface/left-panel.rst:54
 msgid ""
 "Depending on the type of plugin, there may be different categories of "
 "ports being shown."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:61
+#: ../../zrythm-interface/left-panel.rst:58
 msgid "Track Visibility"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:63
+#: ../../zrythm-interface/left-panel.rst:60
 msgid "See :ref:`track-visibility`."
 msgstr ""
 
@@ -522,8 +551,8 @@ msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:17
 msgid ""
-"The first tab is the plugin browser, which is explained in its own "
-"section: :ref:`plugin-browser`"
+"The first tab is the plugin browser, which is explained in :ref:`plugin-"
+"browser`."
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:21
@@ -531,15 +560,15 @@ msgid "File Browser"
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:22
-msgid "The file browser is also explained in its own section: :ref:`file-browser`"
+msgid "The file browser is covered in :ref:`file-browser`."
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:26
+#: ../../zrythm-interface/right-panel.rst:25
 msgid "Control Room"
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:28
-msgid "TODO"
+#: ../../zrythm-interface/right-panel.rst:26
+msgid "The control room is covered in :ref:`control-room`."
 msgstr ""
 
 #: ../../zrythm-interface/timeline.rst:8
@@ -617,11 +646,17 @@ msgid ""
 " hovering over them with the cursor and scrolling"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:38
+#: ../../zrythm-interface/transport-bar.rst:37
+msgid ""
+"More information about working with the transport bar is covered in :ref"
+":`transport-controls`."
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:41
 msgid "Backend Information"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:39
+#: ../../zrythm-interface/transport-bar.rst:42
 msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
@@ -1174,5 +1209,28 @@ msgstr ""
 #~ " area of the timeline. It can "
 #~ "be moved around and resized to "
 #~ "change the visible area."
+#~ msgstr ""
+
+#~ msgid "The Chord Editor is used for editing Chord Regions."
+#~ msgstr ""
+
+#~ msgid "This is a work in progress"
+#~ msgstr ""
+
+#~ msgid "Mixing is explained in its own section."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The first tab is the plugin "
+#~ "browser, which is explained in its "
+#~ "own section: :ref:`plugin-browser`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The file browser is also explained "
+#~ "in its own section: :ref:`file-browser`"
+#~ msgstr ""
+
+#~ msgid "TODO"
 #~ msgstr ""
 

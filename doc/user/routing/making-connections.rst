@@ -32,4 +32,4 @@ functionality into Zrythm in the future, but for
 now Zrythm allows you to export the whole routing
 graph as a PNG image, so you can view it externally.
 
-See :ref:`exporting-routing-graph` for details.
+See :ref:`export-routing-graph` for details.

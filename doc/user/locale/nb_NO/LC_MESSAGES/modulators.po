@@ -7,51 +7,55 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-12 12:26+0100\n"
+"POT-Creation-Date: 2020-05-09 17:47+0100\n"
 "PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
-"Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
-"manualmodulators/nb_NO/>\n"
 "Language: nb_NO\n"
+"Language-Team: Norwegian Bokmål "
+"<https://hosted.weblate.org/projects/zrythm/manualmodulators/nb_NO/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: ../../modulators/adding-modulators.rst:2
+#: ../../modulators/adding-modulators.rst:6
 msgid "Adding Modulators"
 msgstr "Tillegg av modulatorer"
 
-#: ../../modulators/adding-modulators.rst:4
+#: ../../modulators/adding-modulators.rst:8
 #, fuzzy
 msgid "Modulators are Plugins that have at least one CV output port."
 msgstr "Modulatorer er programtillegg som har minst én CV-utgangsport."
 
-#: ../../modulators/adding-modulators.rst:7
-#: ../../modulators/routing-modulators.rst:4
+#: ../../modulators/adding-modulators.rst:11
+#: ../../modulators/routing-modulators.rst:8
 msgid "TODO"
 msgstr "GJENSTÅR"
 
-#: ../../modulators/intro.rst:2
+#: ../../modulators/intro.rst:6
 msgid "Modulators"
 msgstr "Modulatorer"
 
-#: ../../modulators/modulators-tab.rst:2
+#: ../../modulators/intro.rst:8
+msgid "This feature is not available at the moment."
+msgstr ""
+
+#: ../../modulators/modulators-tab.rst:6
 msgid "Modulators Tab"
 msgstr "Modulatorfane"
 
-#: ../../modulators/modulators-tab.rst:4
+#: ../../modulators/modulators-tab.rst:8
 msgid ""
 "Zrythm has a Modulators tab in the bottom panel that can hold any number "
 "of Modulators. Modulators are associated with Tracks, so each Track will "
 "have its own list of Modulators."
 msgstr ""
-"Zrythm har en modulatorfane i bunnpanelet som kan ha et antall modulatorer. "
-"Modulatorer er tilknyttet spor, så hvert spor vil ha sin egen liste med "
-"modulatorer."
+"Zrythm har en modulatorfane i bunnpanelet som kan ha et antall "
+"modulatorer. Modulatorer er tilknyttet spor, så hvert spor vil ha sin "
+"egen liste med modulatorer."
 
-#: ../../modulators/routing-modulators.rst:2
+#: ../../modulators/routing-modulators.rst:6
 msgid "Routing Modulators"
 msgstr "Videresending av modulatorer"
+

@@ -7,18 +7,48 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-05 19:31+0000\n"
+"POT-Creation-Date: 2020-05-09 17:47+0100\n"
 "PO-Revision-Date: 2020-03-07 22:21+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
-"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
-"manualmixing/gl/>\n"
 "Language: gl\n"
+"Language-Team: Galician "
+"<https://hosted.weblate.org/projects/zrythm/manualmixing/gl/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0-dev\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../mixing/channels.rst:6
+#: ../../mixing/channels/intro.rst:6
+#: ../../mixing/overview.rst:37
+msgid "Channels"
+msgstr "Canles"
+
+#: ../../mixing/channels.rst:7
+#: ../../mixing/overview.rst:38
+msgid "A channel is part of a track, if the track type has a channel."
+msgstr ""
+
+#: ../../mixing/channels.rst:13
+#: ../../mixing/overview.rst:44
+msgid ""
+"Channels contain a fader, controls such as mute and solo, a meter, a "
+"direct out selector and a strip of insert plugins. These are covered in "
+":ref:`track-inspector`."
+msgstr ""
+
+#: ../../mixing/channels.rst:19
+#: ../../mixing/overview.rst:50
+msgid "Changing the Track Name"
+msgstr ""
+
+#: ../../mixing/channels.rst:20
+#: ../../mixing/overview.rst:51
+msgid ""
+"The name of the track the channel corresponds to can be changed by double"
+" clicking the name at the top of the channel."
+msgstr ""
 
 #: ../../mixing/channels/channel-overview.rst:6
 msgid "Channel Overview"
@@ -32,10 +62,6 @@ msgstr "Controis"
 msgid "Fader"
 msgstr "Fader"
 
-#: ../../mixing/channels/intro.rst:6
-msgid "Channels"
-msgstr "Canles"
-
 #: ../../mixing/channels/meters.rst:6
 #: ../../mixing/meters.rst:6
 msgid "Meters"
@@ -45,11 +71,7 @@ msgstr "Medidores"
 msgid "Plugin Strip"
 msgstr "Restra de Plugins"
 
-#: ../../mixing/groups.rst:6
-msgid "Groups"
-msgstr "Grupos"
-
-#: ../../mixing/intro.rst:6
+#: ../../mixing/intro.rst:8
 msgid "Mixing"
 msgstr "Mestura"
 
@@ -70,8 +92,48 @@ msgid ""
 "and end markers."
 msgstr ""
 "O diálogo 'Ficheiro -> Exportar Como' pódese utilizar para exportar a "
-"mestura ou a canción. A mestura pode ser un bucle ou un intervalo entre os "
-"marcadores do inicio e fin da canción."
+"mestura ou a canción. A mestura pode ser un bucle ou un intervalo entre "
+"os marcadores do inicio e fin da canción."
+
+#: ../../mixing/overview.rst:8
+#, fuzzy
+msgid "Mixing Overview"
+msgstr "Información das Rutas"
+
+#: ../../mixing/overview.rst:9
+msgid ""
+"Mixing refers to any actions made inside the mixer, such as routing "
+"signals around, controlling the fader level of various channels and "
+"setting their stereo balance."
+msgstr ""
+
+#: ../../mixing/overview.rst:17
+msgid "Mixer"
+msgstr ""
+
+#: ../../mixing/overview.rst:18
+msgid ""
+"The mixer contains all of the channels in the project corresponding to "
+"visible tracks."
+msgstr ""
+
+#: ../../mixing/overview.rst:21
+msgid ""
+"The master channel, a special channel used to route audio to the output "
+"audio device, is pinned on the right side of the mixer."
+msgstr ""
+
+#: ../../mixing/overview.rst:28
+msgid ""
+"The rest of the mixer shows the rest of the channels, along with some "
+"extra space used for drag-and-dropping plugins or files."
+msgstr ""
+
+#: ../../mixing/overview.rst:32
+msgid ""
+"Most of the activities that can be performed in the mixer are also "
+"available in the track inspector described in :ref:`track-inspector`."
+msgstr ""
 
 #: ../../mixing/panning.rst:6
 msgid "Panning"
@@ -83,9 +145,9 @@ msgid ""
 "supports Linear Pan, Square Root Pan and Sine Law Pan, with a Pan Law of "
 "-6dB, -3dB, or 0dB."
 msgstr ""
-"As canles poden ser paneadas á Esquerda ou á Dereita arrastrando o control "
-"do Panorama. Zrythm permite Panorama Lineal, de Raíz Cadrada e de Regra do "
-"Seno de -6dB, -3d-b ou 0dB."
+"As canles poden ser paneadas á Esquerda ou á Dereita arrastrando o "
+"control do Panorama. Zrythm permite Panorama Lineal, de Raíz Cadrada e de"
+" Regra do Seno de -6dB, -3d-b ou 0dB."
 
 #: ../../mixing/panning.rst:12
 msgid ""
@@ -93,9 +155,72 @@ msgid ""
 "default is Sine Law with -3dB. If you don't understand what these mean, "
 "it's best to leave them to their default values."
 msgstr ""
-"Estas opcións pódense configurar na xanela de Preferencias. Por defecto é a "
-"Regra do Seno con -3dB. Se non entendes o que isto quere dicir, é mellor que "
-"o deixes cos valores por defecto."
+"Estas opcións pódense configurar na xanela de Preferencias. Por defecto é"
+" a Regra do Seno con -3dB. Se non entendes o que isto quere dicir, é "
+"mellor que o deixes cos valores por defecto."
+
+#: ../../mixing/routing.rst:6
+#: ../../mixing/routing/intro.rst:6
+msgid "Routing"
+msgstr "Rutas"
+
+#: ../../mixing/routing.rst:9
+msgid "Groups"
+msgstr "Grupos"
+
+#: ../../mixing/routing.rst:10
+msgid ""
+"Audio and MIDI group tracks (covered in :ref:`audio-group-track` and :ref"
+":`midi-group-track` respectively) can be created for grouping signals."
+msgstr ""
+
+#: ../../mixing/routing.rst:15
+msgid ""
+"To route channels to these tracks, you can click the direct out selector "
+"and choose them."
+msgstr ""
+
+#: ../../mixing/routing.rst:22
+msgid "Buses/FX Tracks"
+msgstr ""
+
+#: ../../mixing/routing.rst:23
+msgid ""
+"Audio and MIDI FX tracks (covered in :ref:`audio-bus-track` and :ref"
+":`midi-bus-track` respectively) can be created for sending additional "
+"signals to them, in addition to the channel's main direct output."
+msgstr ""
+
+#: ../../mixing/routing.rst:28
+msgid ""
+"This is useful for example for applying reverb and controlling the reverb"
+" signal separately."
+msgstr ""
+
+#: ../../mixing/routing.rst:31
+msgid ""
+"You can send to these tracks/channels using the Sends section in the "
+"track inspector explained in :ref:`track-sends`."
+msgstr ""
+
+#: ../../mixing/routing.rst:35
+msgid ""
+"Some other DAWs use the term `bus` to refer to what Zrythm refers to as "
+"`group`. Please keep this in mind if you are coming from other DAWs as "
+"they are different things in Zrythm."
+msgstr ""
+
+#: ../../mixing/routing.rst:41
+#: ../../mixing/sidechaining.rst:6
+msgid "Sidechaining"
+msgstr "Facendo Sidechain"
+
+#: ../../mixing/routing.rst:42
+msgid ""
+"Similar to sending signals to FX tracks, you can also send signals to "
+"plugin sidechain ports, if the plugin has any. See :ref:`track-sends` for"
+" details."
+msgstr ""
 
 #: ../../mixing/routing/buses.rst:6
 msgid "Buses"
@@ -104,10 +229,6 @@ msgstr "Buses"
 #: ../../mixing/routing/insert-effects.rst:6
 msgid "Insert Effects"
 msgstr "Inserir Efectos"
-
-#: ../../mixing/routing/intro.rst:6
-msgid "Routing"
-msgstr "Rutas"
 
 #: ../../mixing/routing/ports.rst:6
 msgid "Ports"
@@ -121,6 +242,3 @@ msgstr "Información das Rutas"
 msgid "Send Effects"
 msgstr "Enviar Efectos"
 
-#: ../../mixing/sidechaining.rst:6
-msgid "Sidechaining"
-msgstr "Facendo Sidechain"

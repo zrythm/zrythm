@@ -2,6 +2,8 @@
    Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
+.. _export-routing-graph:
+
 Routing Graph
 =============
 Zrythm allows you to export its routing graph. This

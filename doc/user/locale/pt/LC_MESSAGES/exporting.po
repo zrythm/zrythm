@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-08 21:17+0100\n"
+"POT-Creation-Date: 2020-05-09 17:47+0100\n"
 "PO-Revision-Date: 2019-10-28 15:53+0000\n"
 "Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
 "Language: pt\n"
@@ -137,6 +137,29 @@ msgstr ""
 #: ../../exporting/intro.rst:6
 msgid "Exporting"
 msgstr "Exportação"
+
+#: ../../exporting/routing-graph.rst:6
+msgid "Routing Graph"
+msgstr ""
+
+#: ../../exporting/routing-graph.rst:7
+msgid ""
+"Zrythm allows you to export its routing graph. This is useful for "
+"debugging and also helps visualizing the internals of Zrythm."
+msgstr ""
+
+#: ../../exporting/routing-graph.rst:11
+msgid ""
+"Clicking the :zbutton:`Export Graph` button will show the following "
+"selection. The routing graph can be exported as either a PNG image or a "
+".dot graph."
+msgstr ""
+
+#: ../../exporting/routing-graph.rst:19
+msgid ""
+"For large projects, it may take a while to generate the PNG graph and the"
+" resulting image will be extremely large."
+msgstr ""
 
 #~ msgid "Exporting MIDI Files"
 #~ msgstr "Exportando ficheiros MIDI"
