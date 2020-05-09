@@ -7,7 +7,7 @@ System Requirements
 
 Hardware
 --------
-- x86_64, i686 or ARM processor
+- x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) or aarch64 (ARMv8)
 
 Operating System
 ----------------
@@ -24,7 +24,7 @@ Monitor
   to work efficiently with Zrythm.
 Audio interface
   An audio interface offers low latency and better quality than
-  on-board sound cards (especially if recording audio).
+  integrated sound cards (especially if recording audio).
 MIDI keyboard
   For quickly trying out melodies or recording.
 
@@ -32,5 +32,6 @@ JACK
 ----
 When using the JACK backend, JACK needs to be set up and configured
 before running Zrythm. You will find lots of information
-online about how to configure JACK, so we will skip this
-part.
+online about how to configure JACK, such as
+`Demystifying JACK - A Beginners Guide to Getting Started with JACK <https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack.html>`_,
+so we will skip this part.

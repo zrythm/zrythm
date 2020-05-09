@@ -8,7 +8,8 @@ Device Setup
 Connecting MIDI and Audio Devices
 ---------------------------------
 
-Depending on the selected backend, the
+Depending on the selected backend
+(covered in :ref:`preferences-engine`), the
 configuration differs. Zrythm will auto-scan and allow you
 to connect to input devices for recording through the
 Track Inspector, as below, and in most cases you don't

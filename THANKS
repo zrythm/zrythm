@@ -2,6 +2,7 @@ Thanks:
 
  Daniel Peterson
    * Minor fixes
+   * Former splash screen
  Yustin
    * Help with GSource-related fixes
    * Help with optimization
@@ -45,6 +46,8 @@ Thanks:
    * Fixed snarfing of guile functions
  Mire
    * Design and layout ideas
+ xirimiris
+   * Suggestions on improving the manual
 
 ----
 

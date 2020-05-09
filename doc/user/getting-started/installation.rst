@@ -21,8 +21,8 @@ support for it.
 
 Manual Installation
 -------------------
-If you are an advanced user and prefer to build Zrythm
-yourself, you can build Zrythm from source, either using
+If you are an advanced user, you can also build Zrythm from
+source, either using
 a `source distribution tarball <https://www.zrythm.org/releases/>`_
 or `git <https://git.zrythm.org/cgit/zrythm/>`_.
 
@@ -35,7 +35,7 @@ GNU/Linux
 Installer
 ~~~~~~~~~
 The installer supports the following
-distros (and derivatives):
+distributions (and derivatives):
 
 - **Ubuntu 18.04, 19.10 & 20.04** - amd64
 - **LinuxMint 19.3** - amd64

@@ -22,16 +22,23 @@ General settings.
 .. image:: /_static/img/preferences-general.png
    :align: center
 
+.. _preferences-engine:
+
 Engine
 ~~~~~~
 
 Audio engine settings.
 
 Audio backend
-  The audio backend to use.
+  The audio backend to use. The available backends are
+  JACK, RtAudio and SDL2. We recommend using JACK when
+  possible, otherwise RtAudio.
 
 MIDI backend
-  The MIDI backend to use.
+  The MIDI backend to use. The available backends are
+  JACK MIDI, RtMidi and WindowsMME (Windows only). We
+  recommend using JACK MIDI when possible, otherwise
+  RtMidi.
 
 MIDI controllers
   A list of controllers to auto-connect to.

@@ -16,12 +16,20 @@ There are many plugins to choose from. This guide
 will show you a few ways you can install plugins on GNU/Linux
 systems.
 
-For users of Debian-based distributions, we recommend using
+.. note:: For other systems, you can find a `list of free
+  software plugins here
+  <https://github.com/webprofusion/OpenAudio>`_.
+
+.. tip:: See :ref:`scanning-plugins` for paths where plugins
+  will be scanned in.
+
+For users of Debian-based distributions such as Ubuntu and
+Linux Mint we recommend using
 the `KXstudio repositories <https://kx.studio/>`_, as
 there are many plugins that can easily be installed via apt.
 
-For users of Arch Linux-based distributions, we recommend
-installing the
+For users of Arch Linux-based distributions such as Manjaro
+we recommend installing the
 `lv2-plugins <https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_
 group.
 

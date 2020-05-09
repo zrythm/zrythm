@@ -7,6 +7,10 @@
   box-sizing: border-box;
 }
 
+.footer-copyright {
+  text-align: center;
+}
+
 .zbutton {
  text-decoration: none;
   background-color: #444444;

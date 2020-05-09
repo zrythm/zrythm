@@ -11,6 +11,10 @@ See the `TRANSLATORS file <https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLA
 These include translators for the software, the manual
 and the website.
 
-Designers
----------
+Other Contributors
+------------------
+See the `THANKS file <https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in the source distribution.
+
+Icon Designers
+--------------
 Carlos Han (C.K. Design)
