@@ -2,11 +2,16 @@
    Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
+.. _transport-controls:
+
 Transport Controls
 ==================
 
-Playback is mainly controlled by the following
-Transport Controls, found in the main toolbar.
+Playback is controlled by the following
+transport controls.
+
+.. image:: /_static/img/transport-controls.png
+   :align: center
 
 Record
   Arms the project for recording.
@@ -30,5 +35,18 @@ Loop
 
 Metronome
 ---------
+Clicking the metronome button will set metronome
+on/off.
 
-TODO
+.. image:: /_static/img/metronome-button.png
+   :align: center
+
+When metronome is enabled, you will hear metronome
+ticks during playback at each bar and each tick.
+The tick at each bar will be more emphasized.
+This is useful for making sure your song stays
+on beat.
+
+.. tip:: The metronome samples can be overridden by
+  placing your own samples in your Zrythm directory.
+  This is a TODO feature.

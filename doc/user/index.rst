@@ -31,15 +31,15 @@ Welcome to the Zrythm manual.
    projects/intro
    plugins-files/intro
    tracks/intro
-   chords-and-scales/intro
    editing/intro
    mixing/intro
    playback-and-recording/intro
-   automation/intro
-   connections/intro
+   routing/intro
+   chords-and-scales/intro
    modulators/intro
    exporting/intro
    scripting/intro
+   theming/intro
    contributing/intro
    user-media/intro
    credits/intro

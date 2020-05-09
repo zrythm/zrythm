@@ -5,9 +5,12 @@
 Modulators
 ==========
 
-.. toctree::
-   :maxdepth: 4
+This feature is not available at the moment.
 
-   modulators-tab
-   adding-modulators
-   routing-modulators
+..
+  .. toctree::
+     :maxdepth: 4
+
+     modulators-tab
+     adding-modulators
+     routing-modulators

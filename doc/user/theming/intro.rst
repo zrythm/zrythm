@@ -2,11 +2,12 @@
    Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
-Connections
-===========
+Theming
+=======
 
 .. toctree::
    :maxdepth: 4
 
-   ports
-   making-connections
+   overview
+   css
+   icon-themes

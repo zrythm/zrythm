@@ -38,6 +38,8 @@ Listen to notes
   the piano roll. This is useful if you want to `hear` what
   you are doing.
 
+.. _piano-roll-keys:
+
 Piano Roll Keys
 ---------------
 These are the keys corresponding to each key found on a piano.

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 11:38+0100\n"
+"POT-Creation-Date: 2020-05-09 14:21+0100\n"
 "PO-Revision-Date: 2020-03-07 22:21+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -24,18 +24,25 @@ msgstr ""
 msgid "Audio Editor"
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:10
-#: ../../editing/clip-editors/automation-editor.rst:10
-#: ../../editing/clip-editors/chord-editor.rst:10
-#: ../../editing/clip-editors/piano-roll.rst:106
-#: ../../editing/piano-roll-editing/arranger.rst:9
-#: ../../editing/piano-roll-editing/drum-view.rst:11
-#: ../../editing/piano-roll-editing/highlighting.rst:11
-#: ../../editing/piano-roll-editing/overview.rst:8
-#: ../../editing/piano-roll-editing/ruler.rst:8
-#: ../../editing/piano-roll-editing/toolbar.rst:8
-msgid "TODO"
-msgstr "TODO"
+#: ../../editing/clip-editors/audio-editor.rst:9
+msgid "The audio editor is displayed when an audio region is selected."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:15
+msgid ""
+"Currently, it is only used to view audio and has no other functionality, "
+"besides changing the points in the ruler, as discussed in :ref:`editor-"
+"ruler`."
+msgstr ""
+
+#: ../../editing/clip-editors/audio-editor.rst:20
+#, fuzzy
+msgid "Audio Arranger"
+msgstr "Arranxador"
+
+#: ../../editing/clip-editors/audio-editor.rst:21
+msgid "The audio arranger refers to the arranger section of the audio editor."
+msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:28
@@ -43,9 +50,193 @@ msgstr "TODO"
 msgid "Automation Editor"
 msgstr "Editor de Automatizacións"
 
+#: ../../editing/clip-editors/automation-editor.rst:9
+msgid "The automation editor is displayed when an automation region is selected."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:15
+msgid ""
+"It is very similar to the piano roll, with the exception that the "
+"arranger contains automation points and curves instead of MIDI notes."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:20
+#, fuzzy
+msgid "Automation Arranger"
+msgstr "Editor de Automatizacións"
+
+#: ../../editing/clip-editors/automation-editor.rst:21
+msgid ""
+"The automation arranger refers to the arranger section of the automation "
+"editor."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:27
+msgid ""
+"The automation arranger contains automation points drawn as circles and "
+"curves connecting them. During playback, Zrythm will interpolate the "
+"value of the control being automated based on the curve."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:32
+msgid ""
+"Editing inside the automation arranger generally follows :ref:`edit-"
+"modes` and :ref:`common-operations`, with the added feature that curves "
+"can be dragged up or down to change their `curviness`."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:40
+msgid "Curves"
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:41
+msgid ""
+"Right-clicking on a curve allows you to change the curve algorithm used. "
+"The following curve algorithms are available."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:44
+msgid "Exponent"
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:45
+msgid "Exponential curve."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:46
+msgid "Superellipse"
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:47
+msgid "Elliptical curve."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:49
+msgid "Vital"
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:49
+msgid "The curve that Vital synth uses, similar to exponential curve."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:52
+#, fuzzy
+msgid "Pulse"
+msgstr "Regra"
+
+#: ../../editing/clip-editors/automation-editor.rst:52
+msgid "Pulse wave."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:55
+#: ../../editing/clip-editors/chord-editor.rst:65
+#: ../../editing/clip-editors/piano-roll.rst:111
+#: ../../editing/timeline/event-viewer.rst:8
+msgid "Event Viewer"
+msgstr "Visor de Eventos"
+
+#: ../../editing/clip-editors/automation-editor.rst:56
+msgid ""
+"The event viewer in the automation editor is similar to the timeline "
+"event viewer discussed in :ref:`timeline-event-viewer`."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:63
+msgid "It displays information about each automation point and its curve."
+msgstr ""
+
 #: ../../editing/clip-editors/chord-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:36
 msgid "Chord Editor"
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:9
+msgid "The chord editor is displayed when a chord region is selected."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:15
+msgid ""
+"Its ruler behaves similarly to the editor ruler explained in :ref"
+":`editor-ruler`."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:18
+msgid ""
+"The chord editor has a list of chords on the left side that can be "
+"changed, and an arranger on the right side for creating chord "
+"progressions."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:23
+msgid "Chords"
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:24
+msgid ""
+"A chord in the context of the chord editor refers to a chord on the left "
+"side of the editor."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:30
+msgid ""
+"These chords act similarly to the piano roll keys explained in :ref"
+":`piano-roll-keys`."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:34
+msgid "Chord Selector"
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:35
+msgid ""
+"Double-clicking on a chord will bring up the chord selector, which allows"
+" you to change that chord."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:41
+msgid ""
+"At the moment, only the chord creator is functional. A chord can be "
+"created by selecting its root note, its type, its accent and its bass "
+"note."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:45
+msgid ""
+"Selecting :zbutton:`In scale` under `Visibility` will only show options "
+"that correspond to chords inside the scale active at the start of the "
+"region. This makes it easy to create chords that stay in the current "
+"scale."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:51
+#, fuzzy
+msgid "Chord Arranger"
+msgstr "Arranxador"
+
+#: ../../editing/clip-editors/chord-editor.rst:52
+msgid "The chord arranger refers to the arranger section of the chord editor."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:58
+msgid ""
+"The chord editor contains `chord objects` that signify the start of a "
+"chord. Chord objects do not have a length."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:61
+msgid ""
+"Editing in the chord arranger follows :ref:`edit-modes` and :ref:`common-"
+"operations`."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:66
+msgid ""
+"The event viewer in the chord editor is similar to the timeline event "
+"viewer discussed in :ref:`timeline-event-viewer`."
+msgstr ""
+
+#: ../../editing/clip-editors/chord-editor.rst:73
+msgid "It displays information about each chord object."
 msgstr ""
 
 #: ../../editing/clip-editors/intro.rst:6
@@ -121,44 +312,44 @@ msgid ""
 "roll. This is useful if you want to `hear` what you are doing."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:42
+#: ../../editing/clip-editors/piano-roll.rst:44
 #, fuzzy
 msgid "Piano Roll Keys"
 msgstr "Piano Roll"
 
-#: ../../editing/clip-editors/piano-roll.rst:43
+#: ../../editing/clip-editors/piano-roll.rst:45
 msgid "These are the keys corresponding to each key found on a piano."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:48
+#: ../../editing/clip-editors/piano-roll.rst:50
 msgid ""
 "Clicking on each key allows you to listen to it, much like pressing a key"
 " on a real piano."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:51
+#: ../../editing/clip-editors/piano-roll.rst:53
 msgid ""
 "A label for each key is shown on the left side of the black/white keys, "
 "in addition to any highlighting (if selected). See :ref:`chord-"
 "highlighting` for more information."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:56
+#: ../../editing/clip-editors/piano-roll.rst:58
 msgid ""
 "The zoom level can be changed by holding down :zbutton:`Ctrl` and "
 ":zbutton:`Shift` and scrolling."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:60
+#: ../../editing/clip-editors/piano-roll.rst:62
 #, fuzzy
 msgid "MIDI Arranger"
 msgstr "Arranxador"
 
-#: ../../editing/clip-editors/piano-roll.rst:61
+#: ../../editing/clip-editors/piano-roll.rst:63
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:67
+#: ../../editing/clip-editors/piano-roll.rst:69
 msgid ""
 "The MIDI arranger contains MIDI notes drawn as rectangles from their "
 "start position to their end position. Zrythm will send a MIDI note on "
@@ -166,23 +357,23 @@ msgid ""
 "signal when the end position of a note is reached."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:73
+#: ../../editing/clip-editors/piano-roll.rst:75
 msgid ""
 "Editing inside the MIDI arranger is covered in :ref:`edit-modes` and :ref"
 ":`common-operations`."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:77
+#: ../../editing/clip-editors/piano-roll.rst:79
 msgid "Velocity Editor"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:78
+#: ../../editing/clip-editors/piano-roll.rst:80
 msgid ""
 "There is another arranger at the bottom of the MIDI arranger for editing "
 "the velocity of each note."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:84
+#: ../../editing/clip-editors/piano-roll.rst:86
 msgid ""
 "Velocity refers to the force with which a note is played. Each instrument"
 " handles various velocities for the same note differently, but generally "
@@ -190,42 +381,47 @@ msgid ""
 "are useful for adding expression to melodies."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:90
+#: ../../editing/clip-editors/piano-roll.rst:92
 msgid ""
 "The velocity of each note is drawn as a bar, where higher means a larger "
 "value. Clicking and dragging the tip of each velocity bar allows you to "
 "change it."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:94
+#: ../../editing/clip-editors/piano-roll.rst:96
 msgid ""
 "You can also edit multiple velocities at once by selecting multiple MIDI "
 "notes before editing a velocity bar."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:98
+#: ../../editing/clip-editors/piano-roll.rst:100
 msgid ""
 "The :ref:`ramp-mode` can also be used in the velocity editor to `ramp` "
 "velocities."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:105
+#: ../../editing/clip-editors/piano-roll.rst:107
 #, fuzzy
 msgid "Context Menu"
 msgstr "Menú Contextual das Rexións"
 
-#: ../../editing/clip-editors/piano-roll.rst:109
-#: ../../editing/timeline/event-viewer.rst:8
-msgid "Event Viewer"
-msgstr "Visor de Eventos"
+#: ../../editing/clip-editors/piano-roll.rst:108
+#: ../../editing/piano-roll-editing/arranger.rst:9
+#: ../../editing/piano-roll-editing/drum-view.rst:11
+#: ../../editing/piano-roll-editing/highlighting.rst:11
+#: ../../editing/piano-roll-editing/overview.rst:8
+#: ../../editing/piano-roll-editing/ruler.rst:8
+#: ../../editing/piano-roll-editing/toolbar.rst:8
+msgid "TODO"
+msgstr "TODO"
 
-#: ../../editing/clip-editors/piano-roll.rst:110
+#: ../../editing/clip-editors/piano-roll.rst:112
 msgid ""
 "The event viewer in the piano roll is similar to the timeline event "
 "viewer discussed in :ref:`timeline-event-viewer`."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:117
+#: ../../editing/clip-editors/piano-roll.rst:119
 msgid "It displays information about each MIDI note in the MIDI arranger."
 msgstr ""
 

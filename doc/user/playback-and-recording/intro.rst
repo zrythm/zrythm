@@ -12,7 +12,4 @@ Playback and Recording
    bpm-and-time-signatures
    transport-controls
    loop-points-and-markers
-   arming-for-recording
-   recording-midi
-   recording-audio
-   recording-automation
+   recording

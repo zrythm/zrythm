@@ -18,7 +18,9 @@
 if (sphinx_build.found())
 
 foreach lang : locales
-  foreach format : [ 'html', 'latexpdf', 'epub' ]
+  foreach format : [
+    'html', 'singlehtml', 'latexpdf', 'epub' ]
+
     name = format + '-manual-' + lang
     output =  meson.current_build_dir () / lang / format
     command = [

@@ -90,10 +90,43 @@ Fader section to control the volume and stereo balance.
 .. image:: /_static/img/track-fader.png
    :align: center
 
+To change the fader or stereo balance amount, click and
+drag their respective widgets. You can reset them to their
+default positions by right clicking and selecting
+:zbutton:`Reset`.
+
+The meter displays the amplitude of the signal in dBFS as
+it is processed live. The following values are displayed
+next to the meter for additional reference.
+
 Peak
   Peak signal value.
 RMS
   Root Mean Square of the signal value.
+
+The following controls are available for controlling the
+signal flow.
+
+Record
+  Arm the track for recording.
+Mute
+  Mutes the track, meaning no sound will be sent to its
+  direct out.
+
+.. note:: The track will still be processed, so if you
+  are looking to decrease DSP usage, try disabling
+  plugins instead.
+
+Solo
+  Soloes the track. If any track is soloed, only the soloed
+  tracks will produce sounds.
+Listen
+  Similar to solo, except it dims the volume of other tracks
+  instead of muting them. The dim amount can be controlled
+  in the control room described in :ref:`control-room`.
+  Not operational at the moment.
+Channel Settings
+  Not operational at the moment.
 
 Comments
 --------

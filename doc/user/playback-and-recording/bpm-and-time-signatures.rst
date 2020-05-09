@@ -9,7 +9,12 @@ BPM
 ---
 
 The BPM can be set to between 40 and 360 by
-clicking and dragging the BPM widget. Clicking
+clicking and dragging the BPM widget.
+
+.. image:: /_static/img/bpm-widget.png
+   :align: center
+
+Clicking
 and dragging on the integer counterpart will
 change the integer (e.g., from 140.24 to
 141.24) and clicking and dragging on the
@@ -18,6 +23,9 @@ value (e.g., frrom 140.24 to 140.25).
 
 Time Signature
 --------------
+
+.. image:: /_static/img/time-sig.png
+   :align: center
 
 The Time Signature is split into the following
 

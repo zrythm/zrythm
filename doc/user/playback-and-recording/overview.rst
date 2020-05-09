@@ -10,8 +10,9 @@ will be useful in the following sections.
 
 Playhead
 --------
-The Playhead is the current position in the
-song.
+The playhead is the current position in the
+song. It is displayed as a red line inside
+arrangers.
 
 Position
 --------
