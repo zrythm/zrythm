@@ -2,6 +2,8 @@
    Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
+.. _timeline-ruler:
+
 Ruler
 =====
 
@@ -12,7 +14,7 @@ The ruler is mainly used to control looping and playback.
 
 The ruler will display more or less information depending on
 the current zoom level. It will also display the
-followin markers/indicators discussed in
+following markers/indicators discussed in
 :ref:`loop-points-and-markers`.
 
 Cue point

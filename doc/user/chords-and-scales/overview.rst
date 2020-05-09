@@ -39,6 +39,8 @@ follows.
 
    Chord objects inside the chord region above.
 
+.. _chord-highlighting:
+
 Highlighting
 ~~~~~~~~~~~~
 

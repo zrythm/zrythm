@@ -2,6 +2,8 @@
    Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
+.. _timeline-event-viewer:
+
 Event Viewer
 ============
 

@@ -19,9 +19,6 @@ Track Inspector
 The first tab is the track inspector, which shows various
 options about the selected track.
 
-.. image:: /_static/img/track-inspector-annotated.png
-   :align: center
-
 See :ref:`track-inspector` for more details.
 
 Plugin Inspector

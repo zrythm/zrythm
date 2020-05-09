@@ -2,16 +2,9 @@
    Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
-Editors
-=======
+.. _chord-editor:
 
-.. toctree::
-   :maxdepth: 4
+Chord Editor
+============
 
-   overview
-   toolbar
-   ruler
-   piano-roll
-   automation-editor
-   audio-editor
-   chord-editor
+TODO

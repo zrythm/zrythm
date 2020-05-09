@@ -93,6 +93,8 @@ Erase Mode
 You can just click on objects to delete them, or click
 and drag to make a selection, deleting all objects inside it.
 
+.. _ramp-mode:
+
 Ramp Mode
 ~~~~~~~~~
 This mode is currently only used for editing velocities for
