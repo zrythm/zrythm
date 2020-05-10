@@ -545,7 +545,7 @@ static void on_prompt_for_project (
               flags,
               GTK_MESSAGE_INFO,
               GTK_BUTTONS_OK,
-"Copyright (C) 2018-2020 Alexandros Theodotou\n"
+"Copyright (C) 2018-2020 The Zrythm contributors\n"
 "\n"
 "Zrythm is free software: you can redistribute it and/or modify\n"
 "it under the terms of the GNU Affero General Public License as published by\n"

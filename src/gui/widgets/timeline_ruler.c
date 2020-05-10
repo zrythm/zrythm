@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,6 +36,7 @@
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -79,6 +80,18 @@ timeline_ruler_on_drag_end (
   /*if (self->target == RW_TARGET_PLAYHEAD)*/
     /*ruler_marker_widget_update_tooltip (*/
       /*self->playhead, 0);*/
+  if ((ACTION_IS (MOVING) ||
+         ACTION_IS (STARTING_MOVING)) &&
+      self->target == RW_TARGET_PLAYHEAD)
+    {
+      /* set cue point */
+      position_set_to_pos (
+        &TRANSPORT->cue_pos,
+        &self->last_set_pos);
+
+      EVENTS_PUSH (
+        ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
+    }
 }
 
 void
@@ -93,14 +106,15 @@ timeline_ruler_on_drag_begin_no_marker_hit (
     {
       Position pos;
       ui_px_to_pos_timeline (
-        start_x,
-        &pos,
-        1);
+        start_x, &pos, 1);
       if (!self->shift_held)
         position_snap_simple (
           &pos,
           SNAP_GRID_TIMELINE);
-      transport_move_playhead (&pos, 1);
+      transport_move_playhead (
+        TRANSPORT, &pos, F_PANIC,
+        F_NO_SET_CUE_POINT);
+      self->last_set_pos = pos;
       self->action =
         UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target = RW_TARGET_PLAYHEAD;
@@ -358,7 +372,10 @@ timeline_ruler_on_drag_update (
                   position_compare (
                     &tmp, &timeline_end) <= 0)
                 {
-                  transport_move_playhead (&tmp, 1);
+                  transport_move_playhead (
+                    TRANSPORT, &tmp,
+                    F_PANIC, F_NO_SET_CUE_POINT);
+                  self->last_set_pos = tmp;
                   EVENTS_PUSH (
                     ET_PLAYHEAD_POS_CHANGED_MANUALLY,
                     NULL);

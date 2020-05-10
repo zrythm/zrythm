@@ -151,8 +151,16 @@ typedef struct _RulerWidget
    *
    * Useful for moving range.
    */
-  Position                 range1_start_pos;
-  Position                 range2_start_pos;
+  Position          range1_start_pos;
+  Position          range2_start_pos;
+
+  /**
+   * Last position the playhead was set to.
+   *
+   * This is used for setting the cue point on
+   * drag end.
+   */
+  Position          last_set_pos;
 
   cairo_t *         cached_cr;
 

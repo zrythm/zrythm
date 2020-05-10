@@ -38,6 +38,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/top_bar.h"
+#include "utils/flags.h"
 #include "utils/math.h"
 
 #include <gtk/gtk.h>
@@ -103,20 +104,22 @@ transport_init (
       position_set_to_bar (&self->loop_start_pos, 1);
       position_set_to_bar (&self->loop_end_pos, 5);
 
-      self->loop = 1;
-
-      self->metronome_enabled =
-        ZRYTHM_TESTING ?
-        1 :
-        g_settings_get_boolean (
-          S_UI, "metronome-enabled");
-
       transport_set_bpm (
         self, TRANSPORT_DEFAULT_BPM);
     }
 
   /* set playstate */
   self->play_state = PLAYSTATE_PAUSED;
+
+  self->loop =
+    ZRYTHM_TESTING ? true :
+    g_settings_get_boolean (
+      S_TRANSPORT, "loop");
+  self->metronome_enabled =
+    ZRYTHM_TESTING ? true :
+    g_settings_get_boolean (
+      S_TRANSPORT, "metronome-enabled");
+
 
   zix_sem_init(&self->paused, 0);
 }
@@ -205,6 +208,14 @@ transport_request_pause (
   Transport * self)
 {
   self->play_state = PLAYSTATE_PAUSE_REQUESTED;
+
+  if (g_settings_get_boolean (
+        S_TRANSPORT, "return-to-cue"))
+    {
+      transport_move_playhead (
+        self, &self->cue_pos, F_NO_PANIC,
+        F_NO_SET_CUE_POINT);
+    }
 }
 
 void
@@ -267,11 +278,15 @@ transport_get_playhead_pos (
  *
  * @param target Position to set to.
  * @param panic Send MIDI panic or not.
+ * @param set_cue_point Also set the cue point at
+ *   this position.
  */
 void
 transport_move_playhead (
-  Position * target,
-  int      panic)
+  Transport * self,
+  Position *  target,
+  bool        panic,
+  bool        set_cue_point)
 {
   int i, j, k, l;
   /* send MIDI note off on currently playing timeline
@@ -327,12 +342,13 @@ transport_move_playhead (
     }
 
   /* move to new pos */
-  position_set_to_pos (&TRANSPORT->playhead_pos,
-                       target);
-  /*if (panic)*/
-    /*{*/
-      /*AUDIO_ENGINE->panic = 1;*/
-    /*}*/
+  position_set_to_pos (&self->playhead_pos, target);
+
+  if (set_cue_point)
+    {
+      /* move cue point */
+      position_set_to_pos (&self->cue_pos, target);
+    }
 
   EVENTS_PUSH (
     ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
@@ -347,6 +363,8 @@ transport_set_metronome_enabled (
   const int   enabled)
 {
   self->metronome_enabled = enabled;
+  g_settings_set_boolean (
+    S_TRANSPORT, "metronome-enabled", enabled);
 }
 
 /**
@@ -432,7 +450,8 @@ transport_goto_prev_marker (
            180)
         {
           transport_move_playhead (
-            &markers[i - 1], 1);
+            self, &markers[i - 1], F_PANIC,
+            F_SET_CUE_POINT);
           break;
         }
       else if (
@@ -440,7 +459,8 @@ transport_goto_prev_marker (
           &markers[i], &self->playhead_pos))
         {
           transport_move_playhead (
-            &markers[i], 1);
+            self, &markers[i],
+            F_PANIC, F_SET_CUE_POINT);
           break;
         }
     }
@@ -461,7 +481,8 @@ transport_goto_next_marker (
             &markers[i], &self->playhead_pos))
         {
           transport_move_playhead (
-            &markers[i], 1);
+            self, &markers[i], F_PANIC,
+            F_SET_CUE_POINT);
           break;
         }
     }
@@ -473,9 +494,11 @@ transport_goto_next_marker (
 void
 transport_set_loop (
   Transport * self,
-  int         enabled)
+  bool        enabled)
 {
   self->loop = enabled;
+  g_settings_set_boolean (
+    S_TRANSPORT, "loop", enabled);
 
   EVENTS_PUSH (ET_LOOP_TOGGLED, NULL);
 }

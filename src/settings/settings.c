@@ -50,6 +50,9 @@ settings_init (Settings * self)
   self->ui_inspector =
     g_settings_new (
       GSETTINGS_ZRYTHM_PREFIX ".ui.inspector");
+  self->transport =
+    g_settings_new (
+      GSETTINGS_ZRYTHM_PREFIX ".transport");
 
 #define PREFERENCES_PREFIX \
   GSETTINGS_ZRYTHM_PREFIX ".preferences."

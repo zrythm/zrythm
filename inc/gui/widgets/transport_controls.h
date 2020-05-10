@@ -42,6 +42,7 @@ typedef struct _TransportControlsWidget
   GtkButton *        forward;
   GtkToggleButton *  trans_record;
   GtkToggleButton *  loop;
+  GtkToggleButton *  return_to_cue_toggle;
 } TransportControlsWidget;
 
 #endif

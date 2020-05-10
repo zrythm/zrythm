@@ -373,10 +373,6 @@ Args:
                  "Note notation"
                  "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, etc.)")
                (make-schema-key
-                 "metronome-enabled" "b" "false"
-                 "Metronome enabled"
-                 "Whether the metronome is enabled.")
-               (make-schema-key
                  "musical-mode" "b" "true"
                  "Musical mode"
                  "Whether to use musical mode. If this is on, time-stretching will be applied to events so that they match the project BPM. This mostly applies to audio regions.")
@@ -533,6 +529,26 @@ Args:
                  "Track comment expanded"
                  "Whether track comment is expanded.")
              ))) ;; ui.inspector
+
+         (schema-print
+           (make-schema
+             "transport"
+             (list
+               (make-schema-key
+                 "loop" "b"
+                 "true"
+                 "Transport loop"
+                 "Whether looping is enabled.")
+               (make-schema-key
+                 "return-to-cue" "b"
+                 "true"
+                 "Return to cue"
+                 "Whether return to cue on stop is enabled.")
+               (make-schema-key
+                 "metronome-enabled" "b" "false"
+                 "Metronome enabled"
+                 "Whether the metronome is enabled.")
+             ))) ;; transport
 
          ;; -- print preferences schemas --
          ;; the first key in each schema should

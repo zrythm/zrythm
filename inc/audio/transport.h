@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -156,13 +156,13 @@ typedef struct Transport
   int               rolling;
 
   /** Looping or not. */
-  int               loop;
+  bool              loop;
 
   /** Recording or not. */
   int               recording;
 
   /** Metronome enabled or not. */
-  int               metronome_enabled;
+  bool              metronome_enabled;
 
   /**
    * This is set when record is toggled and is used to check
@@ -232,9 +232,6 @@ transport_fields_schema[] =
   CYAML_FIELD_FLOAT (
     "bpm", CYAML_FLAG_DEFAULT,
     Transport, bpm),
-  CYAML_FIELD_INT (
-    "loop", CYAML_FLAG_DEFAULT,
-    Transport, loop),
   CYAML_FIELD_INT (
     "recording", CYAML_FLAG_DEFAULT,
     Transport, recording),
@@ -325,11 +322,15 @@ transport_get_playhead_pos (
  *
  * @param target Position to set to.
  * @param panic Send MIDI panic or not.
+ * @param set_cue_point Also set the cue point at
+ *   this position.
  */
 void
 transport_move_playhead (
-  Position * target,
-  int        panic);
+  Transport * self,
+  Position *  target,
+  bool        panic,
+  bool        set_cue_point);
 
 /**
  * Enables or disables loop.
@@ -337,7 +338,7 @@ transport_move_playhead (
 void
 transport_set_loop (
   Transport * self,
-  int         enabled);
+  bool        enabled);
 
 /**
  * Moves the playhead to the prev Marker.

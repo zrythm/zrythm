@@ -82,7 +82,7 @@ about_dialog_widget_new (
       GTK_TYPE_ABOUT_DIALOG,
       "artists", artists,
       "authors", authors,
-      "copyright", "Copyright © 2018-2020 Alexandros Theodotou and the Zrythm contributors\nZrythm and the Zrythm logo are trademarks of Alexandros Theodotou",
+      "copyright", "Copyright © 2018-2020 The Zrythm contributors\nZrythm and the Zrythm logo are trademarks of Alexandros Theodotou",
       "documenters", documenters,
       /*"logo-icon-name", "z",*/
       "logo", pixbuf,

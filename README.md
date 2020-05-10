@@ -21,13 +21,13 @@ German.
 Zrythm is [free software](https://www.gnu.org/philosophy/free-sw.html)
 written in C using the GTK+3 toolkit.
 
-More info can be found at https://www.zrythm.org
+[Home page](https://www.zrythm.org)
 
 # Current state
 
 Zrythm is currently in alpha. Most essential
 DAW features are implemented and we are working
-towards a stable release.
+towards a stable release. [View the Roadmap](https://redmine.zrythm.org/projects/zrythm/roadmap)
 
 ![screenshot](https://www.zrythm.org/static/images/apr-12-2020.png)
 
@@ -50,9 +50,7 @@ possible thanks to
 See [INSTALL.md](INSTALL.md).
 
 ## Using
-See the
-[user manual](http://manual.zrythm.org/), which is
-also available in PDF, epub and HTML-zip.
+See the [user manual](http://manual.zrythm.org/).
 
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md).

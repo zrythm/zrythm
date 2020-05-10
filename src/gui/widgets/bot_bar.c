@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -387,7 +387,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
   GtkGestureMultiPress * right_mp =
     GTK_GESTURE_MULTI_PRESS (
       gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
+        GTK_WIDGET (self->digital_transport)));
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (
       right_mp),

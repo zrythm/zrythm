@@ -1658,11 +1658,11 @@ change_state_loop (
   GVariant *      value,
   gpointer        user_data)
 {
-  int loop = g_variant_get_boolean (value);
+  int enabled = g_variant_get_boolean (value);
 
   g_simple_action_set_state (action, value);
 
-  transport_set_loop (TRANSPORT, loop);
+  transport_set_loop (TRANSPORT, enabled);
 }
 
 void
@@ -1671,12 +1671,10 @@ change_state_metronome (
   GVariant *      value,
   gpointer        user_data)
 {
-  int enabled = g_variant_get_boolean (value);
+  bool enabled = g_variant_get_boolean (value);
 
   g_simple_action_set_state (action, value);
 
-  g_settings_set_boolean (
-    S_UI, "metronome-enabled", enabled);
   transport_set_metronome_enabled (
     TRANSPORT, enabled);
 }

@@ -1068,12 +1068,12 @@ drag_end (GtkGestureDrag *gesture,
   self->shift_held = 0;
   self->dragging = 0;
 
-  self->action = UI_OVERLAY_ACTION_NONE;
-
   if (self->type == TYPE (TIMELINE))
     timeline_ruler_on_drag_end (self);
   else if (self->type == TYPE (EDITOR))
     editor_ruler_on_drag_end (self);
+
+  self->action = UI_OVERLAY_ACTION_NONE;
 }
 
 static gboolean

@@ -263,6 +263,9 @@ endif
 if (get_option ('buildtype') == 'release')
   test_cflags += [
     '-ffast-math',
+    # this may break the backtrace
+    '-fomit-frame-pointer',
+    '-fstrength-reduce',
     '-DPIC',
     '-fdata-sections',
     '-ffunction-sections',

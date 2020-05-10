@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -53,7 +53,9 @@ editor_ruler_on_drag_begin_no_marker_hit (
   if (!self->shift_held)
     position_snap_simple (
       &pos, SNAP_GRID_MIDI);
-  transport_move_playhead (&pos, 1);
+  transport_move_playhead (
+    TRANSPORT, &pos, F_PANIC, F_NO_SET_CUE_POINT);
+  self->last_set_pos = pos;
   self->action =
     UI_OVERLAY_ACTION_STARTING_MOVING;
   self->target = RW_TARGET_PLAYHEAD;
@@ -171,7 +173,9 @@ editor_ruler_on_drag_update (
                 &editor_pos, &timeline_end))
             {
               transport_move_playhead (
-                &editor_pos, 1);
+                TRANSPORT, &editor_pos,
+                F_PANIC, F_NO_SET_CUE_POINT);
+              self->last_set_pos = editor_pos;
               ruler_widget_redraw_whole (self);
               EVENTS_PUSH (
                 ET_PLAYHEAD_POS_CHANGED_MANUALLY,
@@ -194,6 +198,18 @@ editor_ruler_on_drag_end (
       /*ruler_marker_widget_update_tooltip (*/
         /*self->playhead, 0);*/
     /*}*/
+  if ((ACTION_IS (MOVING) ||
+         ACTION_IS (STARTING_MOVING)) &&
+      TARGET_IS (PLAYHEAD))
+    {
+      /* set cue point */
+      position_set_to_pos (
+        &TRANSPORT->cue_pos,
+        &self->last_set_pos);
+
+      EVENTS_PUSH (
+        ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
+    }
 }
 
 int

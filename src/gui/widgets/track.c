@@ -65,20 +65,20 @@
 G_DEFINE_TYPE (
   TrackWidget, track_widget, GTK_TYPE_BOX)
 
-#define ICON_NAME_RECORD "zbreeze-media-record"
+#define ICON_NAME_RECORD "media-record"
 #define ICON_NAME_SOLO "solo"
 #define ICON_NAME_MUTE "mute"
 #define ICON_NAME_SHOW_UI "synth"
 #define ICON_NAME_SHOW_AUTOMATION_LANES \
-  "zbreeze-node-type-cusp"
+  "node-type-cusp"
 #define ICON_NAME_SHOW_TRACK_LANES \
-  "zbreeze-format-justify-fill"
-#define ICON_NAME_LOCK "zbreeze-document-decrypt"
+  "format-justify-fill"
+#define ICON_NAME_LOCK "document-decrypt"
 #define ICON_NAME_FREEZE "fork-awesome-snowflake-o"
 #define ICON_NAME_PLUS "add"
 #define ICON_NAME_MINUS "remove"
 #define ICON_NAME_BUS "bus"
-#define ICON_NAME_CHORDS "zbreeze-minuet-chords"
+#define ICON_NAME_CHORDS "minuet-chords"
 #define ICON_NAME_SHOW_MARKERS \
   "kdenlive-show-markers"
 #define ICON_NAME_MIDI \

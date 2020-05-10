@@ -25,6 +25,21 @@
   <template class="TransportControlsWidget" parent="GtkBox">
     <property name="visible">1</property>
     <child>
+      <object class="GtkToggleButton" id="return_to_cue_toggle">
+        <property name="visible">1</property>
+        <property name="can-focus">1</property>
+        <property name="receives-default">1</property>
+        <property name="relief">none</property>
+        <property name="tooltip_text" translatable="yes">Return to cue point on stop</property>
+        <child>
+          <object class="GtkImage">
+            <property name="visible">1</property>
+            <property name="icon-name">anchor</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
       <object class="GtkToggleButton" id="trans_record">
         <style>
           <class name="record-button"/>
@@ -41,9 +56,6 @@
           </object>
         </child>
       </object>
-      <packing>
-        <property name="position">2</property>
-      </packing>
     </child>
     <child>
       <object class="GtkButton" id="play">
@@ -74,9 +86,6 @@
           </object>
         </child>
       </object>
-      <packing>
-        <property name="position">1</property>
-      </packing>
     </child>
     <child>
       <object class="GtkButton" id="backward">
@@ -92,9 +101,6 @@
           </object>
         </child>
       </object>
-      <packing>
-        <property name="position">3</property>
-      </packing>
     </child>
     <child>
       <object class="GtkButton" id="forward">
@@ -110,9 +116,6 @@
           </object>
         </child>
       </object>
-      <packing>
-        <property name="position">4</property>
-      </packing>
     </child>
     <child>
       <object class="GtkToggleButton" id="loop">
@@ -128,9 +131,6 @@
           </object>
         </child>
       </object>
-      <packing>
-        <property name="position">5</property>
-      </packing>
     </child>
   </template>
 </interface>
