@@ -927,9 +927,6 @@ msgstr "Modifier certains de ces paramètres nécessite un redémarrage de Zryth
 #~ msgid "Overview"
 #~ msgstr "Vue générale"
 
-#~ msgid "Audio"
-#~ msgstr "Audio"
-
 #~ msgid ""
 #~ "The panning algorithm to use. We "
 #~ "recommend leaving it as the default "
