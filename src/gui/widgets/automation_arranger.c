@@ -233,7 +233,7 @@ automation_arranger_widget_show_context_menu (
         {
           char name[100];
           curve_algorithm_get_localized_name (
-            i, name);
+            (CurveAlgorithm) i, name);
           submenu_item =
             GTK_MENU_ITEM (
               gtk_check_menu_item_new_with_label (
@@ -249,7 +249,7 @@ automation_arranger_widget_show_context_menu (
 
           CurveAlgorithmInfo * info =
             calloc (1, sizeof (CurveAlgorithmInfo));
-          info->algo = i;
+          info->algo = (CurveAlgorithm) i;
           info->ap = ap;
           g_signal_connect (
             G_OBJECT (submenu_item), "activate",

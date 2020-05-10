@@ -126,7 +126,7 @@ get_hit_mode (
         /*i, x, next_start);*/
       if (x < next_start)
         {
-          return i;
+          return (AutomationMode) i;
         }
     }
   return AUTOMATION_MODE_OFF;
@@ -199,7 +199,8 @@ draw_bg (
       CustomButtonWidgetState cur_state =
         self->current_states[i];
       GdkRGBA c;
-      get_color_for_state (self, cur_state, i, &c);
+      get_color_for_state (
+        self, cur_state, (AutomationMode) i, &c);
       if (self->last_states[i] != cur_state)
         {
           self->transition_frames =
@@ -341,7 +342,7 @@ automation_mode_widget_draw (
       else
         {
           automation_mode_get_localized (
-            i, mode_str);
+            (AutomationMode) i, mode_str);
           pango_layout_set_text (
             layout, mode_str, -1);
         }

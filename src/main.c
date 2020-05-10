@@ -49,7 +49,10 @@
 #endif
 
 #ifdef HAVE_GTK_SOURCE_VIEW_4
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <gtksourceview/gtksource.h>
+#pragma GCC diagnostic pop
 #endif
 
 #include <audec/audec.h>

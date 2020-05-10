@@ -81,7 +81,7 @@ select_automatable (
   GtkTreeIter iter;
   gtk_tree_model_iter_nth_child (
     self->type_model, &iter, NULL,
-    self->selected_type);
+    (int) self->selected_type);
   gtk_tree_selection_select_iter (sel, &iter);
 
   /* select current automatable */
@@ -358,6 +358,7 @@ on_selection_changed (
                                     2,
                                     &value);
           self->selected_type =
+            (AutomatableSelectorType)
             g_value_get_int (&value);
           self->port_model =
             create_model_for_ports (
@@ -514,7 +515,7 @@ automatable_selector_popover_widget_new (
         {
         case PLUGIN_SLOT_MIDI_FX:
           self->selected_type =
-            AS_TYPE_MIDI_FX_0 + pl_id->slot;
+            (int) AS_TYPE_MIDI_FX_0 + pl_id->slot;
           break;
         case PLUGIN_SLOT_INSTRUMENT:
           self->selected_type =
@@ -522,7 +523,7 @@ automatable_selector_popover_widget_new (
           break;
         case PLUGIN_SLOT_INSERT:
           self->selected_type =
-            AS_TYPE_INSERT_0 + pl_id->slot;
+            (int) AS_TYPE_INSERT_0 + pl_id->slot;
           break;
         }
     }

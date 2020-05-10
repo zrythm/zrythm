@@ -28,7 +28,10 @@
 
 #include <gtk/gtk.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <gtksourceview/gtksource.h>
+#pragma GCC diagnostic pop
 
 #define SCRIPTING_WINDOW_WIDGET_TYPE \
   (scripting_window_widget_get_type ())

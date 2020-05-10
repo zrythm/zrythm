@@ -2585,6 +2585,7 @@ create_item (
             case TRACK_TYPE_CHORD:
               timeline_arranger_widget_create_chord_or_scale (
                 self, track, start_y, &pos);
+              break;
             case TRACK_TYPE_AUDIO_BUS:
               break;
             case TRACK_TYPE_AUDIO_GROUP:
@@ -3394,6 +3395,7 @@ drag_update (
       if (self->alt_held && self->can_link)
         self->action =
           UI_OVERLAY_ACTION_MOVING_LINK;
+      break;
     default:
       break;
     }
@@ -3645,8 +3647,9 @@ on_drag_end_automation (
         obj->pos.total_ticks -
         start_obj->pos.total_ticks;
       double norm_value_diff =
-        ap->normalized_val -
-        start_ap->normalized_val;
+        (double)
+        (ap->normalized_val -
+         start_ap->normalized_val);
       UndoableAction * ua =
         arranger_selections_action_new_move_automation (
           AUTOMATION_SELECTIONS,
