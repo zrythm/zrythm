@@ -30,8 +30,9 @@
 #include "utils/flags.h"
 #include "utils/objects.h"
 
-static int
-cmpfunc (const void * _a, const void * _b)
+int
+automation_region_sort_func (
+  const void * _a, const void * _b)
 {
   AutomationPoint * a =
     *(AutomationPoint * const *) _a;
@@ -108,7 +109,7 @@ automation_region_force_sort (
   qsort (self->aps,
          (size_t) self->num_aps,
          sizeof (AutomationPoint *),
-         cmpfunc);
+         automation_region_sort_func);
 
   /* refresh indices */
   for (int i = 0; i < self->num_aps; i++)
@@ -134,17 +135,8 @@ automation_region_add_ap (
   array_append (
     self->aps, self->num_aps, ap);
 
-  /* sort by position */
-  qsort (
-    self->aps, (size_t) self->num_aps,
-    sizeof (AutomationPoint *), cmpfunc);
-
-  /* refresh indices */
-  for (int i = 0; i < self->num_aps; i++)
-    {
-      automation_point_set_region_and_index (
-        self->aps[i], self, i);
-    }
+  /* re-sort */
+  automation_region_force_sort (self);
 
   if (pub_events)
     {

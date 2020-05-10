@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -690,7 +690,6 @@ add_ticks_if_global (
   g_return_if_fail (region);
   position_add_ticks (
     pos, region->pos.total_ticks);
-
 }
 
 /**

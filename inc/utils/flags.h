@@ -118,4 +118,10 @@
 #define F_SET_CUE_POINT 1
 #define F_NO_SET_CUE_POINT 0
 
+#define F_CLONE 1
+#define F_NO_CLONE 0
+
+#define F_IS_AFTER 1
+#define F_IS_NOT_AFTER 0
+
 #endif

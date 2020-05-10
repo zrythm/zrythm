@@ -61,6 +61,9 @@
 #define TYPE(x) \
   ARRANGER_OBJECT_TYPE_##x
 
+#define TYPE_IS(x) \
+  (self->type == TYPE (x))
+
 #define POSITION_TYPE(x) \
   ARRANGER_OBJECT_POSITION_TYPE_##x
 

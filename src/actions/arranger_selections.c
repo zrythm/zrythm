@@ -288,7 +288,8 @@ arranger_selections_action_new_link (
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_LINK_ARRANGER_SELECTIONS;
 
-  set_selections (self, sel_after, true, true);
+  set_selections (
+    self, sel_after, F_CLONE, F_IS_AFTER);
 
   if (!already_moved)
     self->first_run = false;
@@ -693,6 +694,13 @@ do_or_undo_move (
     _do ? self->delta_normalized_amount :
       - self->delta_normalized_amount;
 
+  /* this is used for automation points to
+   * keep track of which automation point in the
+   * project matches which automation point in
+   * the cached selections */
+  GHashTable * ht =
+    g_hash_table_new (NULL, NULL);
+
   if (!self->first_run)
     {
       for (int i = 0; i < size; i++)
@@ -705,6 +713,9 @@ do_or_undo_move (
           ArrangerObject * obj =
             arranger_object_find (objs[i]);
           g_return_val_if_fail (obj, -1);
+
+          g_hash_table_insert (
+            ht, obj, objs[i]);
 
           if (!math_doubles_equal (ticks, 0.0))
             {
@@ -821,11 +832,43 @@ do_or_undo_move (
                 }
             }
         }
+
+      /* if moving automation points, re-sort
+       * the region and remember the new indices */
+      ArrangerObject * obj =
+        /* get the actual object from the
+         * project */
+        arranger_object_find (objs[0]);
+      g_return_val_if_fail (obj, -1);
+      if (obj->type ==
+            ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
+        {
+          ZRegion * region =
+            arranger_object_get_region (obj);
+          g_return_val_if_fail (region, -1);
+          automation_region_force_sort (region);
+
+          GHashTableIter iter;
+          gpointer key, value;
+
+          g_hash_table_iter_init (&iter, ht);
+          while (g_hash_table_iter_next (
+                   &iter, &key, &value))
+            {
+              AutomationPoint * prj_ap =
+                (AutomationPoint *) key;
+              AutomationPoint * cached_ap =
+                (AutomationPoint *) value;
+              automation_point_set_region_and_index (
+                cached_ap, region, prj_ap->index);
+            }
+        }
     }
 
   update_region_link_groups (objs, size);
 
   free (objs);
+  g_hash_table_destroy (ht);
 
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);

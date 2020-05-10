@@ -60,6 +60,10 @@ void
 automation_region_print_automation (
   ZRegion * self);
 
+int
+automation_region_sort_func (
+  const void * _a, const void * _b);
+
 /**
  * Forces sort of the automation points.
  */

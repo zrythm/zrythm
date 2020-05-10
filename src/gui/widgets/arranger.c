@@ -1529,6 +1529,16 @@ move_items_x (
   arranger_selections_add_ticks (
     sel, ticks_diff);
 
+  if (sel->type ==
+        ARRANGER_SELECTIONS_TYPE_AUTOMATION)
+    {
+      /* re-sort the automation region */
+      ZRegion * region =
+        clip_editor_get_region (CLIP_EDITOR);
+      g_return_if_fail (region);
+      automation_region_force_sort (region);
+    }
+
   EVENTS_PUSH (
     ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
 }

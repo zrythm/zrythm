@@ -779,15 +779,23 @@ draw_automation_region (
                          ac_width + 0.1;
                        k += 0.1)
                     {
-                      /* in pixels, higher values are lower */
-                      ap_y =
-                        1.0 -
-                        automation_point_get_normalized_value_in_curve (
-                          ap,
-                          CLAMP (
-                            (k - x_start_real) /
-                              ac_width,
-                            0.0, 1.0));
+                      if (math_doubles_equal (ac_width, 0.0))
+                        {
+                          ap_y = 0.5;
+                        }
+                      else
+                        {
+                          ap_y =
+                            /* in pixels, higher values
+                             * are lower */
+                            1.0 -
+                            automation_point_get_normalized_value_in_curve (
+                              ap,
+                              CLAMP (
+                                (k - x_start_real) /
+                                  ac_width,
+                                0.0, 1.0));
+                        }
                       ap_y *= ac_height;
 
                       new_x = k;
