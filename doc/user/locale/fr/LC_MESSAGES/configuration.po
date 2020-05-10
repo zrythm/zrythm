@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-07 22:47+0100\n"
-"PO-Revision-Date: 2020-01-26 13:21+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2020-05-10 07:35+0000\n"
+"Last-Translator: Nicolas FAURE <sub26nico@laposte.net>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/fr/>\n"
 "Language: fr\n"
-"Language-Team: French "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -316,7 +317,7 @@ msgstr "Système audio"
 
 #: ../../configuration/preferences/intro.rst:31
 msgid "The audio backend to use."
-msgstr ""
+msgstr "Le serveur audio auquel se connecter"
 
 #: ../../configuration/preferences/intro.rst:34
 #, fuzzy
@@ -325,7 +326,7 @@ msgstr "Système audio"
 
 #: ../../configuration/preferences/intro.rst:34
 msgid "The MIDI backend to use."
-msgstr ""
+msgstr "Le serveur MIDI auquel se connecter."
 
 #: ../../configuration/preferences/intro.rst:37
 #, fuzzy
@@ -398,6 +399,8 @@ msgstr "Garder les interfaces graphiques des greffons au dessus"
 #: ../../configuration/preferences/intro.rst:68
 msgid "Always show plugin UIs on top of the main window."
 msgstr ""
+"Toujours afficher les interfaces utilisateur des greffons en dessus de la "
+"fenêtre principale."
 
 #: ../../configuration/preferences/intro.rst:72
 msgid "Bridge unsupported UIs"
@@ -586,10 +589,13 @@ msgid "Autosave interval"
 msgstr "Intervalle de sauvegarde automatique"
 
 #: ../../configuration/preferences/intro.rst:179
+#, fuzzy
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
 "if this is set to 0."
 msgstr ""
+"Définir l'intervalle de sauvegarde automatique du projet, en minutes. Le "
+"mettre à 0 désactivera la sauvegarde automatique"
 
 #: ../../configuration/preferences/intro.rst:182
 msgid ""
@@ -616,7 +622,7 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:199
 #, fuzzy
 msgid "The language to use for the user interface."
-msgstr "La langue que l'interface de Zrythm utilise."
+msgstr "La langue de l'interface de Zrythm"
 
 #: ../../configuration/preferences/intro.rst:201
 msgid ""
@@ -1150,4 +1156,3 @@ msgstr "Modifier certains de ces paramètres nécessite un redémarrage de Zryth
 #~ "en cours, en minutes. Le réglage "
 #~ "de cette valeur à 0 la "
 #~ "désactivera."
-
