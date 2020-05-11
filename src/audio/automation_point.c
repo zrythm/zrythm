@@ -86,7 +86,8 @@ automation_point_set_region_and_index (
   ap->index = index;
 
   /* set the info to the transient too */
-  if (arranger_object_should_orig_be_visible (obj) &&
+  if (ZRYTHM_HAVE_UI &&
+      arranger_object_should_orig_be_visible (obj) &&
       obj->transient)
     {
       ArrangerObject * trans_obj = obj->transient;

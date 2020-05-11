@@ -155,7 +155,13 @@ host_ui_parameter_changed (
   Port * port =
     carla_native_plugin_get_port_from_param_id (
       self, index);
-  g_return_if_fail (port);
+  if (!port)
+    {
+      g_message (
+        "%s: no port found for param %u",
+        __func__, index);
+      return;
+    }
 
   port_set_control_value (
     port, value, false, false);
@@ -889,7 +895,9 @@ create_ports (
    * because carla discovery reports 0 params for
    * AU plugins, so we update the descriptor here */
   descr->num_ctrl_ins = (int) param_counts->ins;
-  g_message ("%d ins and %d outs", descr->num_ctrl_ins, (int) param_counts->outs);
+  g_message (
+    "params: %d ins and %d outs",
+    descr->num_ctrl_ins, (int) param_counts->outs);
   for (uint32_t i = 0; i < param_counts->ins; i++)
     {
       if (loading)
@@ -1055,14 +1063,25 @@ carla_native_plugin_get_port_from_param_id (
 {
   Plugin * pl = self->plugin;
   Port * port;
+  int j = 0;
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       port = pl->in_ports[i];
       if (port->id.type != TYPE_CONTROL)
         continue;
 
+      j = port->carla_param_id;
       if ((int) id == port->carla_param_id)
         return port;
+    }
+
+  if ((int) id > j)
+    {
+      g_message (
+        "%s: index %u not found in input ports. "
+        "this is likely an output param. ignoring",
+        __func__, id);
+      return NULL;
     }
 
   g_return_val_if_reached (NULL);
