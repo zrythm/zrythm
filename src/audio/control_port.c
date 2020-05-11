@@ -137,10 +137,19 @@ control_port_real_val_to_normalized (
   if (id->flags & PORT_FLAG_PLUGIN_CONTROL)
     {
       Plugin * pl = port_get_plugin (self, 1);
+
+      if (pl->descr->open_with_carla)
+        {
+          /* already normalized */
+          return real_val;
+        }
+
       switch (pl->descr->protocol)
         {
         case PROT_LV2:
           {
+            g_return_val_if_fail (
+              self->lv2_port, 0.f);
             Lv2Control * ctrl =
               self->lv2_port->lv2_control;
             g_return_val_if_fail (ctrl, 0.f);
