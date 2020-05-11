@@ -889,6 +889,7 @@ create_ports (
    * because carla discovery reports 0 params for
    * AU plugins, so we update the descriptor here */
   descr->num_ctrl_ins = (int) param_counts->ins;
+  g_message ("%d ins and %d outs", descr->num_ctrl_ins, (int) param_counts->outs);
   for (uint32_t i = 0; i < param_counts->ins; i++)
     {
       if (loading)

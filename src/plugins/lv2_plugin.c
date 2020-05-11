@@ -667,6 +667,7 @@ void
 lv2_plugin_allocate_port_buffers (
   Lv2Plugin* plugin)
 {
+  g_return_if_fail (plugin);
   for (int i = 0; i < plugin->num_ports; ++i)
     {
       Lv2Port* const lv2_port =

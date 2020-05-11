@@ -597,7 +597,8 @@ engine_realloc_port_buffers (
 
           if (pl)
             {
-              if (pl->descr->protocol == PROT_LV2)
+              if (pl->descr->protocol == PROT_LV2 &&
+                  !pl->descr->open_with_carla)
                 {
                   lv2_plugin_allocate_port_buffers (
                     pl->lv2);
