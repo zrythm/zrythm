@@ -2572,6 +2572,7 @@ port_sum_signal_from_inputs (
         AutomationTrack * at =
           automation_track_find_from_port_id (
             &port->id);
+        g_warn_if_fail (at);
         if (port->id.flags & PORT_FLAG_AUTOMATABLE &&
             automation_track_should_read_automation (
               at, AUDIO_ENGINE->timestamp_start))

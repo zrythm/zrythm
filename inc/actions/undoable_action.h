@@ -157,6 +157,8 @@ static const cyaml_schema_value_t
 /**
  * Performs the action.
  *
+ * @note Only to be called by undo manager.
+ *
  * @return Non-zero if errors occurred.
  */
 int

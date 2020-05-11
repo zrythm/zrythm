@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/engine.h"
 #include "actions/arranger_selections.h"
 #include "actions/copy_plugins_action.h"
 #include "actions/copy_tracks_action.h"
@@ -29,6 +30,7 @@
 #include "actions/move_plugins_action.h"
 #include "actions/move_tracks_action.h"
 #include "actions/undoable_action.h"
+#include "project.h"
 
 #include <glib.h>
 #include <glib/gi18n.h>
@@ -36,16 +38,22 @@
 /**
  * Performs the action.
  *
- * Note: only to be called by undo manager.
+ * @note Only to be called by undo manager.
+ *
+ * @return Non-zero if errors occurred.
  */
 int
 undoable_action_do (UndoableAction * self)
 {
+  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
+
+  int ret = 0;
+
   /* uppercase, camel case, snake case */
 #define DO_ACTION(uc,sc,cc) \
   case UA_##uc: \
     g_message ("[DOING ACTION]: " #uc); \
-    return sc##_action_do ((cc##Action *) self); \
+    ret = sc##_action_do ((cc##Action *) self); \
     break;
 
   switch (self->type)
@@ -112,10 +120,14 @@ undoable_action_do (UndoableAction * self)
                ArrangerSelections);
     default:
       g_warn_if_reached ();
-      return -1;
+      ret = -1;
     }
 
 #undef DO_ACTION
+
+  zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
+
+  return ret;
 }
 
 /**
@@ -126,11 +138,15 @@ undoable_action_do (UndoableAction * self)
 int
 undoable_action_undo (UndoableAction * self)
 {
+  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
+
+  int ret = 0;
+
 /* uppercase, camel case, snake case */
 #define UNDO_ACTION(uc,sc,cc) \
   case UA_##uc: \
     g_message ("[UNDOING ACTION]: " #uc); \
-    return sc##_action_undo ((cc##Action *) self); \
+    ret = sc##_action_undo ((cc##Action *) self); \
     break;
 
   switch (self->type)
@@ -197,10 +213,14 @@ undoable_action_undo (UndoableAction * self)
                ArrangerSelections);
     default:
       g_warn_if_reached ();
-      return -1;
+      ret = -1;
     }
 
 #undef UNDO_ACTION
+
+  zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
+
+  return ret;
 }
 
 void

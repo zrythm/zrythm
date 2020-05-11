@@ -59,7 +59,7 @@ engine_dummy_setup (
   /* Set audio engine properties */
   self->sample_rate   = 44100;
   /*self->block_length  = 16384;*/
-  self->block_length  = 256;
+  self->block_length  = 32;
   self->midi_buf_size = 4096;
 
   g_warn_if_fail (
