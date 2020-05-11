@@ -659,7 +659,8 @@ draw_automation_region (
     {
       ap = self->aps[i];
       next_ap =
-        automation_region_get_next_ap (self, ap);
+        automation_region_get_next_ap (
+          self, ap, true, true);
       ArrangerObject * ap_obj =
         (ArrangerObject *) ap;
       ArrangerObject * next_ap_obj =

@@ -92,11 +92,19 @@ automation_region_get_prev_ap (
 /**
  * Returns the AutomationPoint after the given
  * one.
+ *
+ * @param check_positions Compare positions instead
+ *   of just getting the next index.
+ * @param check_transients Also check the transient
+ *   of each object. This only matters if \ref
+ *   check_positions is true.
  */
 AutomationPoint *
 automation_region_get_next_ap (
-  ZRegion *          self,
-  AutomationPoint * ap);
+  ZRegion *         self,
+  AutomationPoint * ap,
+  bool              check_positions,
+  bool              check_transients);
 
 /**
  * Removes the AutomationPoint from the ZRegion,

@@ -979,9 +979,19 @@ do_or_undo_duplicate_or_link (
     _do ? self->delta_chords : - self->delta_chords;
   int delta_pitch =
     _do ? self->delta_pitch : - self->delta_pitch;
+  float delta_normalized_amount =
+    _do ? (float) self->delta_normalized_amount :
+      (float) - self->delta_normalized_amount;
 
   /* clear current selections in the project */
   arranger_selections_clear (sel);
+
+  /* this is used for automation points to
+   * keep track of which automation point in the
+   * project matches which automation point in
+   * the cached selections */
+  GHashTable * ht =
+    g_hash_table_new (NULL, NULL);
 
   for (int i = 0; i < size; i++)
     {
@@ -1037,6 +1047,26 @@ do_or_undo_duplicate_or_link (
                     (MidiNote *) objs[i],
                     - delta_pitch);
                 }
+
+              /* automation value */
+              if (!math_floats_equal (
+                    delta_normalized_amount, 0.f))
+                {
+                  AutomationPoint * ap =
+                    (AutomationPoint *) obj;
+                  AutomationPoint * cached_ap =
+                    (AutomationPoint *) objs[i];
+                  automation_point_set_fvalue (
+                    ap,
+                    ap->normalized_val -
+                      delta_normalized_amount,
+                    true);
+                  automation_point_set_fvalue (
+                    cached_ap,
+                    cached_ap->normalized_val -
+                      delta_normalized_amount,
+                    true);
+                }
             }
 
           /* clone the clone */
@@ -1081,8 +1111,8 @@ do_or_undo_duplicate_or_link (
               region_set_link_group (
                 region, link_group, true);
             }
-        }
-      else
+        } /* endif do */
+      else /* if undo */
         {
           /* find the actual object */
           obj = arranger_object_find (objs[i]);
@@ -1117,10 +1147,12 @@ do_or_undo_duplicate_or_link (
 
           /* remove it */
           remove_object_from_project (obj);
-        }
 
-      /*if (ticks != 0)*/
-        /*{*/
+        } /* endif undo */
+
+      if (!math_doubles_equal (
+            ticks, 0.0))
+        {
           if (_do)
             {
               /* shift it */
@@ -1131,7 +1163,7 @@ do_or_undo_duplicate_or_link (
           /* also shift the copy */
           arranger_object_move (
             objs[i], ticks);
-        /*}*/
+        }
 
       if (delta_tracks != 0)
         {
@@ -1182,6 +1214,31 @@ do_or_undo_duplicate_or_link (
           /* TODO */
         }
 
+      if (!math_floats_equal (
+            delta_normalized_amount, 0.f))
+        {
+          /* shift the obj */
+          AutomationPoint * ap =
+            (AutomationPoint *) obj;
+          automation_point_set_fvalue (
+            ap,
+            ap->normalized_val +
+              delta_normalized_amount,
+            true);
+
+          /* also shift the copy */
+          AutomationPoint * cached_ap =
+            (AutomationPoint *) objs[i];
+          automation_point_set_fvalue (
+            cached_ap,
+            cached_ap->normalized_val +
+              delta_normalized_amount,
+            true);
+        }
+
+      /* add the mapping to the hashtable */
+      g_hash_table_insert (ht, obj, objs[i]);
+
       if (_do)
         {
           /* select it */
@@ -1193,8 +1250,43 @@ do_or_undo_duplicate_or_link (
             objs[i], obj);
         }
     }
+
+  /* if copy-moving automation points, re-sort
+   * the region and remember the new indices */
+  if (objs[0]->type ==
+        ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
+    {
+      /* get the actual object from the
+       * project */
+      ArrangerObject * obj =
+        g_hash_table_get_keys_as_array (
+          ht, NULL)[0];
+      g_return_val_if_fail (
+        IS_ARRANGER_OBJECT (obj), -1);
+      ZRegion * region =
+        arranger_object_get_region (obj);
+      g_return_val_if_fail (region, -1);
+      automation_region_force_sort (region);
+
+      GHashTableIter iter;
+      gpointer key, value;
+
+      g_hash_table_iter_init (&iter, ht);
+      while (g_hash_table_iter_next (
+               &iter, &key, &value))
+        {
+          AutomationPoint * prj_ap =
+            (AutomationPoint *) key;
+          AutomationPoint * cached_ap =
+            (AutomationPoint *) value;
+          automation_point_set_region_and_index (
+            cached_ap, region, prj_ap->index);
+        }
+    }
+
   free (objs);
   free (orig_objs);
+  g_hash_table_destroy (ht);
 
   sel = get_actual_arranger_selections (self);
   if (_do)

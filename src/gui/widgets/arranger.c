@@ -927,6 +927,7 @@ arranger_draw_cb (
       /*g_message (*/
         /*"objects found: %d (is pinned %d)",*/
         /*num_objs, self->is_pinned);*/
+      /* note: these are only project objects */
       for (int j = 0; j < num_objs; j++)
         {
           draw_arranger_object (
@@ -1129,14 +1130,27 @@ add_object_if_overlap (
        &obj->transient->full_rect, true,
        true, x, y, 0, 0))))
     {
+      /* object to check for automation point
+       * curve cross (either main object or
+       * transient) */
+      ArrangerObject * obj_to_check =
+        (arranger_object_should_orig_be_visible (
+          obj) && obj->transient &&
+         ui_is_point_in_rect_hit (
+           &obj->transient->full_rect, true,
+           true, x, y, 0, 0)) ?
+        obj->transient : obj;
+
       /** handle special case for automation
        * points */
       if (obj->type ==
             ARRANGER_OBJECT_TYPE_AUTOMATION_POINT &&
           !automation_point_is_point_hit (
-            (AutomationPoint *) obj, x, y) &&
+            (AutomationPoint *) obj_to_check,
+            x, y) &&
           !automation_point_is_curve_hit (
-            (AutomationPoint *) obj, x, y, 16.0))
+            (AutomationPoint *) obj_to_check,
+            x, y, 16.0))
         {
           return false;
         }
@@ -3672,28 +3686,25 @@ on_drag_end_automation (
   else if (self->action ==
              UI_OVERLAY_ACTION_MOVING_COPY)
     {
-      /*Position earliest_trans_pos;*/
-      /*automation_selections_get_start_pos (*/
-        /*TL_SELECTIONS,*/
-        /*&earliest_trans_pos, 1);*/
-      /*UndoableAction * ua =*/
-        /*(UndoableAction *)*/
-        /*duplicate_automation_selections_action_new (*/
-          /*TL_SELECTIONS,*/
-          /*position_to_ticks (*/
-            /*&earliest_trans_pos) -*/
-          /*position_to_ticks (*/
-            /*&self->earliest_obj_start_pos),*/
-          /*automation_selections_get_highest_track (*/
-            /*TL_SELECTIONS, F_TRANSIENTS) -*/
-          /*automation_selections_get_highest_track (*/
-            /*TL_SELECTIONS, F_NO_TRANSIENTS));*/
-      /*automation_selections_reset_transient_poses (*/
-        /*TL_SELECTIONS);*/
-      /*automation_selections_clear (*/
-        /*TL_SELECTIONS);*/
-      /*undo_manager_perform (*/
-        /*UNDO_MANAGER, ua);*/
+      ArrangerObject * obj =
+        (ArrangerObject *) self->start_object;
+      double ticks_diff =
+        obj->pos.total_ticks -
+        obj->transient->pos.total_ticks;
+      float value_diff =
+        ((AutomationPoint *) obj)->normalized_val -
+        ((AutomationPoint *) obj->transient)->
+          normalized_val;
+      UndoableAction * ua = NULL;
+      ua =
+        (UndoableAction *)
+        arranger_selections_action_new_duplicate_automation (
+          (ArrangerSelections *)
+            AUTOMATION_SELECTIONS,
+          ticks_diff, value_diff,
+          F_ALREADY_MOVED);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
     }
   else if (self->action ==
              UI_OVERLAY_ACTION_NONE ||

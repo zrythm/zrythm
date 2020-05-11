@@ -18,7 +18,7 @@
 
   <hr/>
 
-  <div role="contentinfo" class="footer-copyright">
+  <div role="contentinfo">
     <p>
     {%- if show_copyright %}
       {%- if hasdoc('copyright') %}
@@ -27,8 +27,6 @@
         {% trans copyright=copyright|e %}Copyright &copy; {{ copyright }}{% endtrans %}.
       {%- endif %}
     {%- endif %}
-
-    <br>
 
     {%- if build_id and build_url %}
       {% trans build_url=build_url, build_id=build_id %}

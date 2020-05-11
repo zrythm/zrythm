@@ -426,7 +426,7 @@ automation_track_get_normalized_val_at_pos (
 
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
-      region, ap);
+      region, ap, false, false);
   ArrangerObject * next_ap_obj =
     (ArrangerObject *) next_ap;
   /*g_message ("prev fvalue %f next %f",*/

@@ -468,6 +468,11 @@ arranger_object_get_full_rect_x_for_region_child (
   return ui_pos_to_px_editor (&tmp, 1);
 }
 
+/**
+ * @param is_transient Whether or not this object
+ *   is a transient (object at original position
+ *   during copy-moving).
+ */
 void
 arranger_object_set_full_rectangle (
   ArrangerObject * self,
@@ -547,7 +552,9 @@ arranger_object_set_full_rectangle (
 
         AutomationPoint * next_ap =
           automation_region_get_next_ap (
-            region, ap);
+            region, ap, true,
+            arranger->action ==
+              UI_OVERLAY_ACTION_MOVING_COPY);
 
         if (next_ap)
           {
@@ -567,6 +574,9 @@ arranger_object_set_full_rectangle (
             self->full_rect.width =
               AP_WIDGET_POINT_SIZE +
               ui_pos_to_px_editor (&tmp, 0);
+
+            g_warn_if_fail (
+              self->full_rect.width >= 0);
 
             int cur_y =
               get_automation_point_y (ap, arranger);
@@ -846,6 +856,9 @@ arranger_object_get_draw_rectangle (
   GdkRectangle *   full_rect,
   GdkRectangle *   draw_rect)
 {
+  g_return_val_if_fail (
+    full_rect->width > 0, false);
+
   if (!ui_rectangle_overlap (
         parent_rect, full_rect))
     return 0;

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 20:03+0100\n"
+"POT-Creation-Date: 2020-05-10 15:00+0100\n"
 "PO-Revision-Date: 2020-03-07 09:52+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -30,7 +30,7 @@ msgstr "Benvida/o ao manual de Zrythm."
 #: ../../index.rst:14
 #: ../../index.rst:52
 #, fuzzy
-msgid "Copyright © 2019-2020 Alexandros Theodotou and the Zrythm contributors"
+msgid "Copyright © 2019-2020 The Zrythm contributors"
 msgstr "Copyright © 2019-2020 Alexandros Theodotou"
 
 #: ../../index.rst:16

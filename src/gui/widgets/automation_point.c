@@ -52,7 +52,7 @@ automation_point_draw (
     arranger_object_get_region (obj);
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
-      region, ap);
+      region, ap, true, true);
   ArrangerObject * next_obj =
     (ArrangerObject *) next_ap;
   ArrangerWidget * arranger =
@@ -162,6 +162,33 @@ automation_point_draw (
   cairo_fill_preserve (cr);
   gdk_cairo_set_source_rgba (cr, &color);
   cairo_stroke (cr);
+
+  if (DEBUGGING)
+    {
+      char text[500];
+      sprintf (
+        text, "%d/%d (%f)",
+        ap->index,
+        region->num_aps,
+        (double) ap->normalized_val);
+      if (arranger->action != UI_OVERLAY_ACTION_NONE
+          && !obj->transient)
+        {
+          strcat (text, " - t");
+        }
+      cairo_set_source_rgba (cr, 1, 1, 1, 1);
+      cairo_move_to (
+        cr,
+      (obj->full_rect.x + AP_WIDGET_POINT_SIZE / 2) -
+        rect->x,
+      upslope ?
+        ((obj->full_rect.y + obj->full_rect.height) -
+         AP_WIDGET_POINT_SIZE / 2) -
+          rect->y :
+        (obj->full_rect.y + AP_WIDGET_POINT_SIZE / 2) -
+          rect->y);
+      cairo_show_text (cr, text);
+    }
 }
 
 /**

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 20:03+0100\n"
+"POT-Creation-Date: 2020-05-10 15:00+0100\n"
 "PO-Revision-Date: 2020-04-29 23:30+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language: zh\n"
@@ -29,7 +29,7 @@ msgstr ""
 
 #: ../../index.rst:14
 #: ../../index.rst:52
-msgid "Copyright © 2019-2020 Alexandros Theodotou and the Zrythm contributors"
+msgid "Copyright © 2019-2020 The Zrythm contributors"
 msgstr ""
 
 #: ../../index.rst:16
@@ -76,5 +76,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Copyright © 2019-2020 Alexandros Theodotou"
+#~ msgstr ""
+
+#~ msgid "Copyright © 2019-2020 Alexandros Theodotou and the Zrythm contributors"
 #~ msgstr ""
 

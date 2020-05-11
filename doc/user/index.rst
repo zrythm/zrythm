@@ -11,7 +11,7 @@ Welcome to the Zrythm manual.
    this here in latex.
 .. only:: latex
 
-   Copyright © 2019-2020 Alexandros Theodotou and the Zrythm contributors
+   Copyright © 2019-2020 The Zrythm contributors
 
    *Permission is granted to copy, distribute and/or modify this
    document under the terms of the GNU Free Documentation License,
@@ -49,7 +49,7 @@ Welcome to the Zrythm manual.
    after the ToC
 .. only:: html or epub
 
-   Copyright © 2019-2020 Alexandros Theodotou and the Zrythm contributors
+   Copyright © 2019-2020 The Zrythm contributors
 
    *Permission is granted to copy, distribute and/or modify this
    document under the terms of the GNU Free Documentation License,

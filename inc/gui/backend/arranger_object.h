@@ -390,12 +390,13 @@ arranger_object_should_lane_be_visible (
   ArrangerObject * self);
 
 /**
- * Returns if the cached object should be visible, ie,
- * while copy- moving (ctrl+drag) we want to show both
- * the object at its original position and the current
- * object.
+ * Returns if the cached object should be visible,
+ * ie, while copy- moving (ctrl+drag) we want to
+ * show both the object at its original position
+ * and the current object.
  *
- * This refers to the object at its original position.
+ * This refers to the object at its original
+ * position (called "transient").
  */
 int
 arranger_object_should_orig_be_visible (

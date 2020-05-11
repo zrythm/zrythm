@@ -25,6 +25,12 @@
 #include "audio/region.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/events.h"
+#include "gui/widgets/automation_arranger.h"
+#include "gui/widgets/automation_editor_space.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/clip_editor.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
@@ -164,16 +170,75 @@ automation_region_get_prev_ap (
 /**
  * Returns the AutomationPoint after the given
  * one.
+ *
+ * @param check_positions Compare positions instead
+ *   of just getting the next index.
+ * @param check_transients Also check the transient
+ *   of each object. This only matters if \ref
+ *   check_positions is true. FIXME not used at
+ *   the moment. Keep it around for abit then
+ *   delete it if not needed.
  */
 AutomationPoint *
 automation_region_get_next_ap (
-  ZRegion *          self,
-  AutomationPoint * ap)
+  ZRegion *         self,
+  AutomationPoint * ap,
+  bool              check_positions,
+  bool              check_transients)
 {
   g_return_val_if_fail (
     self && ap, NULL);
 
-  if (ap->index < self->num_aps - 1)
+  if (check_positions)
+    {
+      check_transients =
+        ZRYTHM_HAVE_UI &&
+        MW_AUTOMATION_ARRANGER &&
+        MW_AUTOMATION_ARRANGER->action ==
+          UI_OVERLAY_ACTION_MOVING_COPY;
+      ArrangerObject * obj = (ArrangerObject *) ap;
+      AutomationPoint * next_ap = NULL;
+      ArrangerObject * next_obj = NULL;
+      for (int i = 0; i < self->num_aps; i++)
+        {
+          for (int j = 0;
+               j < (check_transients ? 2 : 1); j++)
+            {
+              AutomationPoint * cur_ap =
+                self->aps[i];
+              ArrangerObject * cur_obj =
+                (ArrangerObject *) cur_ap;
+              if (j == 1)
+                {
+                  if (cur_obj->transient)
+                    {
+                      cur_obj = cur_obj->transient;
+                      cur_ap =
+                        (AutomationPoint *)
+                        cur_obj;
+                    }
+                  else
+                    continue;
+                }
+
+              if (cur_ap == ap)
+                continue;
+
+              if (position_is_after_or_equal (
+                    &cur_obj->pos, &obj->pos) &&
+                  (!next_obj ||
+                   position_is_before (
+                     &cur_obj->pos,
+                     &next_obj->pos)))
+                {
+                  next_obj = cur_obj;
+                  next_ap = cur_ap;
+                }
+            }
+        }
+      return next_ap;
+    }
+  else if (ap->index < self->num_aps - 1)
     return self->aps[ap->index + 1];
 
   return NULL;

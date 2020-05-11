@@ -1477,7 +1477,7 @@ arranger_object_should_lane_be_visible (
  * and the current object.
  *
  * This refers to the object at its original
- * position.
+ * position (called "transient").
  */
 int
 arranger_object_should_orig_be_visible (

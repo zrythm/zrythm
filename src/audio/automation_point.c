@@ -84,6 +84,18 @@ automation_point_set_region_and_index (
   region_identifier_copy (
     &obj->region_id, &region->id);
   ap->index = index;
+
+  /* set the info to the transient too */
+  if (arranger_object_should_orig_be_visible (obj) &&
+      obj->transient)
+    {
+      ArrangerObject * trans_obj = obj->transient;
+      AutomationPoint * trans_ap =
+        (AutomationPoint *) trans_obj;
+      region_identifier_copy (
+        &trans_obj->region_id, &region->id);
+      trans_ap->index = index;
+    }
 }
 
 int
@@ -241,7 +253,7 @@ automation_point_curves_up (
       (ArrangerObject *) self);
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
-      region, self);
+      region, self, true, true);
 
   if (!next_ap)
     return false;
@@ -319,7 +331,7 @@ automation_point_get_normalized_value_in_curve (
       (ArrangerObject *) self);
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
-      region, self);
+      region, self, true, true);
 
   double dy;
 
