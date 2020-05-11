@@ -63,6 +63,13 @@ control_port_normalized_val_to_real (
   if (id->flags & PORT_FLAG_PLUGIN_CONTROL)
     {
       Plugin * pl = port_get_plugin (self, 1);
+
+      if (pl->descr->open_with_carla)
+        {
+          /* no change for now */
+          return normalized_val;
+        }
+
       switch (pl->descr->protocol)
         {
         case PROT_LV2:
@@ -225,6 +232,17 @@ control_port_set_val_from_normalized (
   if (id->flags & PORT_FLAG_PLUGIN_CONTROL)
     {
       Plugin * plugin = port_get_plugin (self, 1);
+
+      if (plugin->descr->open_with_carla)
+        {
+          /* no change for now */
+          float real_val = val;
+          self->base_value = real_val;
+          port_set_control_value (
+            self, real_val, 0, 1);
+          return;
+        }
+
       switch (plugin->descr->protocol)
         {
         case PROT_LV2:
