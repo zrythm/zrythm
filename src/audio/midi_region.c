@@ -379,7 +379,8 @@ midi_region_new_from_midi_file (
           g_message("dwAbsPos: %d ", msg.dwAbsPos);
           position_print (&pos);
 
-          if (pos.bars >
+          if (ZRYTHM_HAVE_UI &&
+              pos.bars >
                 MW_TIMELINE->last_timeline_obj_bars -8)
             {
               MW_TIMELINE->last_timeline_obj_bars =
@@ -524,6 +525,7 @@ midi_region_new_from_midi_file (
                     tmp[msg.iMsgSize - 3] = '\0';
                     region_set_name (
                       self, tmp, 0);
+                    g_warn_if_fail (self->name);
                     g_message (
                       "[data sz %d] Track name = '%s'",
                       msg.iMsgSize - 3, self->name);

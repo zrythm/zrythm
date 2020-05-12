@@ -888,18 +888,33 @@ port_get_num_unlocked_srcs (Port * port)
 /**
  * Gathers all ports in the project and puts them
  * in the given array and size.
+ *
+ * @param size Current array count.
+ * @param is_dynamic Whether the array can be
+ *   dynamically resized.
+ * @param max_size Current array size, if dynamic.
  */
 void
 port_get_all (
-  Port ** ports,
-  int *   size)
+  Port *** ports,
+  int *    max_size,
+  bool     is_dynamic,
+  int *    size)
 {
   *size = 0;
 
 #define _ADD(port) \
+  if (is_dynamic) \
+    { \
+      array_double_size_if_full ( \
+        *ports, (*size), (*max_size), Port *); \
+    } \
+  else if (*size == *max_size) \
+    { \
+      g_return_if_reached (); \
+    } \
   array_append ( \
-    ports, (*size), \
-    port)
+    *ports, (*size), port)
 
   /* add fader ports */
   _ADD (MONITOR_FADER->stereo_in->l);
@@ -924,7 +939,8 @@ port_get_all (
       ch = tr->channel;
 
       channel_append_all_ports (
-        ch, ports, size, F_INCLUDE_PLUGINS);
+        ch, ports, size, is_dynamic, max_size,
+        F_INCLUDE_PLUGINS);
     }
 }
 

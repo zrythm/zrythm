@@ -319,14 +319,19 @@ channel_handle_recording (
  * Appends all channel ports and optionally
  * plugin ports to the array.
  *
- * The array must be large enough.
+ * @param size Current array count.
+ * @param is_dynamic Whether the array can be
+ *   dynamically resized.
+ * @param max_size Current array size, if dynamic.
  */
 void
 channel_append_all_ports (
   Channel * ch,
-  Port ** ports,
-  int *   size,
-  bool    include_plugins);
+  Port ***  ports,
+  int *     size,
+  bool      is_dynamic,
+  int *     max_size,
+  bool      include_plugins);
 
 /**
  * Exposes the channel's ports to the backend.

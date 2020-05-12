@@ -141,6 +141,15 @@ undo_manager_perform (
       return;
     }
 
+  /* if the undo stack is full, delete the last
+   * element */
+  if (undo_stack_is_full (self->undo_stack))
+    {
+      UndoableAction * last_action =
+        undo_stack_pop_last (self->undo_stack);
+      undoable_action_free (last_action);
+    }
+
   undo_stack_push (self->undo_stack, action);
 
   undo_stack_clear (self->redo_stack);

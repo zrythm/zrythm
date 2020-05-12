@@ -189,10 +189,12 @@ create (
             {
               track_add_region (
                 track, mr, NULL, 0,
-                /* name was already generated based
-                 * on the track name in the MIDI
-                 * file */
-                F_NO_GEN_NAME,
+                /* name could already be generated
+                 * based
+                 * on the track name (if any) in
+                 * the MIDI file */
+                mr->name ?
+                  F_NO_GEN_NAME : F_GEN_NAME,
                 F_NO_PUBLISH_EVENTS);
             }
         }

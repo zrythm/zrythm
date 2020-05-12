@@ -619,16 +619,21 @@ load (
   clip_editor_init_loaded (CLIP_EDITOR);
 
   /* init ports */
-  Port * ports[10000];
-  int num_ports;
+  int max_size = 20;
+  Port ** ports =
+    calloc ((size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
   Port * port;
-  port_get_all (ports, &num_ports);
+  port_get_all (
+    &ports, &max_size, true, &num_ports);
   g_message ("Initializing loaded Ports...");
   for (int i = 0; i < num_ports; i++)
     {
       port = ports[i];
       port_init_loaded (port);
     }
+  free (ports);
+
   midi_mappings_init_loaded (
     PROJECT->midi_mappings);
 

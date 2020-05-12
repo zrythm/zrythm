@@ -41,6 +41,9 @@ typedef struct FreeElement
   void (*dfunc) (void *);
 } FreeElement;
 
+/*
+ * FIXME why is this source? move to separate
+ * thread */
 static gboolean
 free_later_source ()
 {
@@ -125,7 +128,8 @@ _free_later (
 void
 object_utils_init ()
 {
-  free_stack = stack_new (8000);
+  free_stack = stack_new (80000);
 
+  /* FIXME don't do it on gtk thread */
   g_timeout_add (2000, free_later_source, NULL);
 }

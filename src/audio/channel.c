@@ -1050,35 +1050,58 @@ channel_get_output_track (
 static void
 add_plugin_ports (
   Plugin *  pl,
-  Port **   ports,
+  Port ***  ports,
+  int *     max_size,
+  bool      is_dynamic,
   int *     size)
 {
+
+#define _ADD(port) \
+  if (is_dynamic) \
+    { \
+      array_double_size_if_full ( \
+        *ports, (*size), (*max_size), Port *); \
+    } \
+  else if (*size == *max_size) \
+    { \
+      g_return_if_reached (); \
+    } \
+  array_append ( \
+    *ports, (*size), port)
+
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       Port * port = pl->in_ports[i];
       g_return_if_fail (port);
-      array_append (ports, (*size), port)
+      _ADD (port);
     }
   for (int i = 0; i < pl->num_out_ports; i++)
     {
       Port * port = pl->out_ports[i];
       g_return_if_fail (port);
-      array_append (ports, (*size), port)
+      _ADD (port);
     }
+
+#undef _ADD
 }
 
 /**
  * Appends all channel ports and optionally
  * plugin ports to the array.
  *
- * The array must be large enough.
+ * @param size Current array count.
+ * @param is_dynamic Whether the array can be
+ *   dynamically resized.
+ * @param max_size Current array size, if dynamic.
  */
 void
 channel_append_all_ports (
   Channel * ch,
-  Port ** ports,
-  int *   size,
-  bool    include_plugins)
+  Port ***  ports,
+  int *     size,
+  bool      is_dynamic,
+  int *     max_size,
+  bool      include_plugins)
 {
   int j;
   Track * tr = channel_get_track (ch);
@@ -1089,7 +1112,17 @@ channel_append_all_ports (
     tr->out_signal_type;
 
 #define _ADD(port) \
-  array_append (ports, (*size), port)
+  if (is_dynamic) \
+    { \
+      array_double_size_if_full ( \
+        *ports, (*size), (*max_size), Port *); \
+    } \
+  else if (*size == *max_size) \
+    { \
+      g_return_if_reached (); \
+    } \
+  array_append ( \
+    *ports, (*size), port)
 
   /* add channel ports */
   if (in_type == TYPE_AUDIO)
@@ -1164,21 +1197,24 @@ channel_append_all_ports (
           if (pl)
             {
               add_plugin_ports (
-                pl, ports, size);
+                pl, ports, max_size, is_dynamic,
+                size);
             }
 
           pl = ch->midi_fx[j];
           if (pl)
             {
               add_plugin_ports (
-                pl, ports, size);
+                pl, ports, max_size, is_dynamic,
+                size);
             }
         }
 
       if (ch->instrument)
         {
           add_plugin_ports (
-            ch->instrument, ports, size);
+            ch->instrument, ports, max_size,
+            is_dynamic, size);
         }
     }
 
@@ -1189,7 +1225,8 @@ channel_append_all_ports (
       if (pl)
         {
           add_plugin_ports (
-            pl, ports, size);
+            pl, ports, max_size, is_dynamic,
+            size);
         }
     }
 #undef _ADD
@@ -1935,16 +1972,21 @@ channel_update_track_pos (
 {
   self->track_pos = pos;
 
-  Port * ports[80000];
-  int    num_ports = 0;
+  int max_size = 20;
+  Port ** ports =
+    calloc (
+      (size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
   channel_append_all_ports (
-    self, ports, &num_ports, true);
+    self, &ports, &num_ports, true,
+    &max_size, true);
 
   for (int i = 0; i < num_ports; i++)
     {
       g_warn_if_fail (ports[i]);
       port_update_track_pos (ports[i], pos);
     }
+  free (ports);
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
@@ -2178,15 +2220,19 @@ channel_disconnect (
         }
     }
 
-  Port * ports[80000];
-  int    num_ports = 0;
+  int max_size = 20;
+  Port ** ports =
+    calloc (
+      (size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
   channel_append_all_ports (
-    channel,
-    ports, &num_ports, 0);
+    channel, &ports, &num_ports,
+    true, &max_size, false);
   for (int i = 0; i < num_ports; i++)
     {
       port_disconnect_all (ports[i]);
     }
+  free (ports);
 
   if (recalc_graph)
     mixer_recalc_graph (MIXER);

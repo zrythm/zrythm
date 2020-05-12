@@ -1685,10 +1685,13 @@ graph_setup (
     }
 
   /* add ports */
-  Port * ports[10000];
+  int max_size = 20;
+  Port ** ports =
+    calloc ((size_t) max_size, sizeof (Port *));
   int num_ports;
   Port * port;
-  port_get_all (ports, &num_ports);
+  port_get_all (
+    &ports, &max_size, true, &num_ports);
   for (i = 0; i < num_ports; i++)
     {
       port = ports[i];
@@ -1952,10 +1955,14 @@ graph_setup (
    *
    * this is because indices can be changed by the
    * GUI thread while the graph is running
-   * TODO
+   * TODO or maybe not needed since there is a lock
+   * now
    * ======================== */
 
   /*graph_print (self);*/
+
+  /* free ports */
+  free (ports);
 
   if (rechain)
     graph_rechain (self);

@@ -653,10 +653,21 @@ midi_track_fill_midi_events (
                           r),
                         mn->val,
                         time, 1);
-                      g_warn_if_fail (
-                        time <
-                        local_start_frame +
-                          nframes);
+                      if (time >= local_start_frame + nframes)
+                        {
+                          g_warning (
+                            "Midi note OFF time is "
+                            "%u. This is %u greater "
+                            "than the max time %u "
+                            "in this cycle. Note "
+                            "OFF will be ignored",
+                            time,
+                            (local_start_frame +
+                              nframes) - 1,
+                            (time -
+                              (local_start_frame +
+                                 nframes)) + 1);
+                        }
                     }
                 }
             }

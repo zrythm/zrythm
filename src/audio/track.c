@@ -1602,14 +1602,19 @@ track_set_name (
   if (track->channel)
     {
       /* update external ports */
-      Port * ports[10000];
-      int    num_ports = 0;
+      int max_size = 20;
+      Port ** ports =
+        calloc (
+          (size_t) max_size, sizeof (Port *));
+      int num_ports = 0;
       channel_append_all_ports (
-        track->channel, ports, &num_ports, 1);
+        track->channel, &ports, &num_ports,
+        true, &max_size, true);
       Port * port;
       for (int i = 0; i < num_ports; i++)
         {
           port = ports[i];
+          g_return_if_fail (port);
 
           if (port_is_exposed_to_backend (
                 port))
@@ -1617,6 +1622,7 @@ track_set_name (
               port_rename_backend (port);
             }
         }
+      free (ports);
     }
 
   if (pub_events)

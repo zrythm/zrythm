@@ -633,11 +633,18 @@ port_get_full_designation (
 /**
  * Gathers all ports in the project and puts them
  * in the given array and size.
+ *
+ * @param size Current array count.
+ * @param is_dynamic Whether the array can be
+ *   dynamically resized.
+ * @param max_size Current array size, if dynamic.
  */
 void
 port_get_all (
-  Port ** ports,
-  int *   size);
+  Port *** ports,
+  int *    max_size,
+  bool     is_dynamic,
+  int *    size);
 
 Track *
 port_get_track (

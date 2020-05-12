@@ -566,9 +566,13 @@ engine_realloc_port_buffers (
   Port * port;
   Channel * ch;
   Plugin * pl;
-  Port * ports[60000];
-  int num_ports;
-  port_get_all (ports, &num_ports);
+  int max_size = 20;
+  Port ** ports =
+    calloc (
+      (size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
+  port_get_all (
+    &ports, &max_size, true, &num_ports);
   for (i = 0; i < num_ports; i++)
     {
       port = ports[i];
@@ -579,6 +583,7 @@ engine_realloc_port_buffers (
                  nframes * sizeof (float));
       /* TODO memset */
     }
+  free (ports);
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       ch = TRACKLIST->tracks[i]->channel;
