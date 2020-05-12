@@ -58,6 +58,7 @@ test_midi_file_playback ()
       F_RECURSIVE, ".MID");
   char * midi_file;
   int iter = 0;
+  int max_files = 80;
   Position init_pos;
   position_set_to_bar (&init_pos, 1);
   while ((midi_file = midi_files[iter++]))
@@ -72,6 +73,9 @@ test_midi_file_playback ()
         UNDO_MANAGER, ua);
 
       supported_file_free (file);
+
+      if (iter == max_files)
+        break;
     }
   g_strfreev (midi_files);
 

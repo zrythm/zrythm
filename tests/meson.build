@@ -61,7 +61,6 @@ if get_option ('enable-tests')
     ['audio/position', true],
     ['audio/region', true],
     ['audio/track', true],
-    ['integration/midi_file', true],
     ['project', true],
     ['utils/arrays', true],
     ['utils/general', true],
@@ -73,6 +72,7 @@ if get_option ('enable-tests')
     tests += [
       ['actions/mixer_selections', true],
       ['actions/move_tracks', true],
+      ['integration/midi_file', true],
       ]
   endif
 
@@ -94,10 +94,6 @@ if get_option ('enable-tests')
     parallel = _test[1]
     source = [ test_name + '.c' ]
     test_name = '_'.join(test_name.split('/'))
-    timeout_length = 30
-    if test_name.contains('integration')
-      timeout_length = 180
-    endif
 
     exe = executable (
       test_name,
@@ -120,8 +116,7 @@ if get_option ('enable-tests')
     test (
       test_name, exe,
       env: test_env, suite: _test[0].split('/')[0],
-      is_parallel: parallel,
-      timeout: timeout_length)
+      is_parallel: parallel)
   endforeach
 
 endif
