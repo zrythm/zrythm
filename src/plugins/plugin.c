@@ -572,24 +572,24 @@ plugin_activate (
 {
   g_return_if_fail (pl);
 
-  switch (pl->descr->protocol)
+  if (pl->descr->open_with_carla)
     {
-    case PROT_LV2:
-      lv2_plugin_activate (pl->lv2, activate);
-      break;
-    case PROT_VST:
-    case PROT_VST3:
-    case PROT_AU:
-    case PROT_SFZ:
-    case PROT_SF2:
 #ifdef HAVE_CARLA
       carla_native_plugin_activate (
         pl->carla, activate);
 #endif
-      break;
-    default:
-      g_warn_if_reached ();
-      break;
+    }
+  else
+    {
+      switch (pl->descr->protocol)
+        {
+        case PROT_LV2:
+          lv2_plugin_activate (pl->lv2, activate);
+          break;
+        default:
+          g_warn_if_reached ();
+          break;
+        }
     }
 }
 
@@ -895,15 +895,17 @@ plugin_instantiate (
 
   plugin_set_ui_refresh_rate (pl);
 
-#ifdef HAVE_CARLA
   if (pl->descr->open_with_carla)
     {
+#ifdef HAVE_CARLA
       carla_native_plugin_instantiate (
         pl->carla, !PROJECT->loaded);
+#else
+      g_return_val_if_reached (-1);
+#endif
     }
   else
     {
-#endif
       switch (pl->descr->protocol)
         {
         case PROT_LV2:
@@ -923,9 +925,7 @@ plugin_instantiate (
           return -1;
           break;
         }
-#ifdef HAVE_CARLA
     }
-#endif
   control_port_set_val_from_normalized (
     pl->enabled, 1.f, 0);
 
@@ -1026,15 +1026,15 @@ plugin_process (
 void
 plugin_open_ui (Plugin *plugin)
 {
-#ifdef HAVE_CARLA
   if (plugin->descr->open_with_carla)
     {
+#ifdef HAVE_CARLA
       carla_native_plugin_open_ui (
         plugin->carla, 1);
+#endif
     }
   else
     {
-#endif
       if (GTK_IS_WINDOW (plugin->window))
         {
           gtk_window_present (
@@ -1070,9 +1070,7 @@ plugin_open_ui (Plugin *plugin)
               break;
             }
         }
-#ifdef HAVE_CARLA
     }
-#endif
 }
 
 /**
