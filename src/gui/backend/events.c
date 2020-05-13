@@ -989,6 +989,12 @@ stretch_audio_region (
 static void
 on_bpm_changed (void)
 {
+  ruler_widget_refresh (MW_RULER);
+  ruler_widget_refresh (EDITOR_RULER);
+  snap_grid_update_snap_points (
+    SNAP_GRID_TIMELINE);
+  snap_grid_update_snap_points (
+    SNAP_GRID_MIDI);
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * track = TRACKLIST->tracks[i];

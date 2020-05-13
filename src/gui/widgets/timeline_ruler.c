@@ -341,7 +341,7 @@ timeline_ruler_on_drag_update (
           EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED,
                        NULL);
         }
-      else
+      else /* not range */
         {
           /* set some useful positions */
           Position tmp;
@@ -356,8 +356,7 @@ timeline_ruler_on_drag_update (
           /* convert px to position */
           ui_px_to_pos_timeline (
             self->start_x + offset_x,
-            &tmp,
-            1);
+            &tmp, true);
 
           /* snap if not shift held */
           if (!self->shift_held)

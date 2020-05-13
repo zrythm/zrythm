@@ -127,4 +127,7 @@
 #define F_RECURSIVE 1
 #define F_NO_RECURSIVE 0
 
+#define F_HAS_PADDING 1
+#define F_NO_HAS_PADDING 0
+
 #endif
