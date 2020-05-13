@@ -528,23 +528,20 @@ if (carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla
       install_dir: bindir)
   endif
 
-  # install bridge for gtk2 plugins
-  carla_bridge_native = find_program (
-      carla_libdir / 'carla-bridge-native',
-      required: false)
-  if carla_bridge_native.found() and (os_gnu or os_freebsd)
-    install_data (
-      carla_bridge_native.path(),
-      install_dir: bindir)
-  endif
-  carla_bridge_lv2_gtk2 = find_program (
-      carla_libdir / 'carla-bridge-lv2-gtk2',
-      required: false)
-  if carla_bridge_lv2_gtk2.found() and (os_gnu or os_freebsd)
-    install_data (
-      carla_bridge_lv2_gtk2.path(),
-      install_dir: bindir)
-  endif
+  # install gnu/linux bridges
+  foreach bridge_type : [
+    'native', 'lv2-gtk2', 'lv2-gtk3', 'lv2-qt4',
+    'lv2-qt5' ]
+    carla_bridge = find_program (
+        carla_libdir / 'carla-bridge-' + bridge_type,
+        required: false)
+    if carla_bridge.found() and (os_gnu or os_freebsd)
+      cdata.set('HAVE_CARLA_BRIDGE_' + bridge_type.underscorify().to_upper(), 1)
+      install_data (
+        carla_bridge.path(),
+        install_dir: bindir)
+    endif
+  endforeach
 endif
 
 portaudio_dep = dependency (

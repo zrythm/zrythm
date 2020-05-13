@@ -1449,9 +1449,29 @@ lv2_plugin_pick_ui (
                 }
               break;
             case LV2_PLUGIN_UI_FOR_BRIDGING:
-              if (lilv_node_equals (
+              if (
+#ifdef HAVE_CARLA_BRIDGE_LV2_GTK2
+                  lilv_node_equals (
                     ui_type,
-                    PM_LILV_NODES.ui_GtkUI))
+                    PM_LILV_NODES.ui_GtkUI) ||
+#endif
+#ifdef HAVE_CARLA_BRIDGE_LV2_GTK3
+                  lilv_node_equals (
+                    ui_type,
+                    PM_LILV_NODES.ui_Gtk3UI) ||
+#endif
+#ifdef HAVE_CARLA_BRIDGE_LV2_QT5
+                  lilv_node_equals (
+                    ui_type,
+                    PM_LILV_NODES.ui_Qt5UI) ||
+#endif
+#ifdef HAVE_CARLA_BRIDGE_LV2_QT4
+                  lilv_node_equals (
+                    ui_type,
+                    PM_LILV_NODES.ui_Qt4UI) ||
+#endif
+                  false
+                  )
                 {
                   acceptable = true;
                   if (out_ui_type)
@@ -1459,8 +1479,10 @@ lv2_plugin_pick_ui (
                       *out_ui_type = ui_type;
                     }
                   g_message (
-                    "GTK2 UI accepted for "
-                    "bridging");
+                    "UI %s accepted for "
+                    "bridging",
+                    lilv_node_as_string (
+                      ui_type));
                 }
               break;
             }

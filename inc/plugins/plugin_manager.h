@@ -123,6 +123,8 @@ typedef struct Lv2Nodes
   LilvNode *          ui_externalkx;
   LilvNode *          ui_Gtk3UI;
   LilvNode *          ui_GtkUI;
+  LilvNode *          ui_Qt4UI;
+  LilvNode *          ui_Qt5UI;
   LilvNode *          units_db;
   LilvNode *          units_degree;
   LilvNode *          units_hz;

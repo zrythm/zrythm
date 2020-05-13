@@ -356,7 +356,7 @@ timeline_ruler_on_drag_update (
           /* convert px to position */
           ui_px_to_pos_timeline (
             self->start_x + offset_x,
-            &tmp, true);
+            &tmp, F_HAS_PADDING);
 
           /* snap if not shift held */
           if (!self->shift_held)

@@ -416,6 +416,8 @@ plugin_manager_init (PluginManager * self)
     "external-ui#Widget");
   ADD_LV2_NODE (ui_Gtk3UI, LV2_UI__Gtk3UI);
   ADD_LV2_NODE (ui_GtkUI, LV2_UI__GtkUI);
+  ADD_LV2_NODE (ui_Qt4UI, LV2_UI__Qt4UI);
+  ADD_LV2_NODE (ui_Qt5UI, LV2_UI__Qt5UI);
   ADD_LV2_NODE (units_db, LV2_UNITS__db);
   ADD_LV2_NODE (units_degree, LV2_UNITS__degree);
   ADD_LV2_NODE (units_hz, LV2_UNITS__hz);
