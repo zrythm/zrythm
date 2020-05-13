@@ -21,6 +21,7 @@
 #include "audio/midi.h"
 #include "audio/midi_track.h"
 #include "project.h"
+#include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "zrythm.h"
@@ -33,6 +34,7 @@
 
 #define BUFFER_SIZE 20
 #define LARGE_BUFFER_SIZE 2000
+#define MAX_FILES 100
 
 static void
 test_midi_file_playback ()
@@ -56,13 +58,24 @@ test_midi_file_playback ()
     io_get_files_in_dir_ending_in (
       MIDILIB_TEST_MIDI_FILES_PATH,
       F_RECURSIVE, ".MID");
+
+  /* shuffle array */
+  int count = 0;
   char * midi_file;
+  while ((midi_file = midi_files[count++]));
+  srandom ((unsigned int) time (NULL));
+  array_shuffle (
+    midi_files, count - 1, sizeof (char *));
+
   int iter = 0;
-  int max_files = 80;
   Position init_pos;
   position_set_to_bar (&init_pos, 1);
   while ((midi_file = midi_files[iter++]))
     {
+      /*if (!g_str_has_suffix (midi_file, "M23.MID"))*/
+        /*continue;*/
+      g_message ("testing %s", midi_file);
+
       SupportedFile * file =
         supported_file_new_from_path (midi_file);
       UndoableAction * ua =
@@ -71,10 +84,57 @@ test_midi_file_playback ()
           TRACKLIST->num_tracks, 1);
       undo_manager_perform (
         UNDO_MANAGER, ua);
-
       supported_file_free (file);
+      g_message ("testing %s", midi_file);
 
-      if (iter == max_files)
+      Track * track =
+        tracklist_get_last_track (
+          TRACKLIST, false, true);
+
+      ZRegion * region =
+        track->lanes[0]->regions[0];
+
+      /* set start pos to a bit before the first
+       * note, send end pos a few cycles later */
+      Position start_pos, stop_pos;
+      position_set_to_pos (
+        &start_pos,
+        &((ArrangerObject *)
+        region->midi_notes[0])->pos);
+      position_set_to_pos (&stop_pos, &start_pos);
+      position_add_frames (
+        &start_pos, - BUFFER_SIZE * 2);
+      position_add_frames (
+        /* run 80 cycles */
+        &stop_pos, BUFFER_SIZE * 80);
+
+      /* set region end somewhere within the
+       * covered positions to check for warnings */
+      Position tmp;
+      position_set_to_pos (&tmp, &start_pos);
+      position_add_frames (
+        &tmp, BUFFER_SIZE * 32 + BUFFER_SIZE / 3);
+      arranger_object_end_pos_setter (
+        (ArrangerObject *) region,
+        &tmp);
+
+      /* start filling events to see if any
+       * warnings occur */
+      for (long i = start_pos.frames;
+           i < stop_pos.frames;
+           i += BUFFER_SIZE)
+        {
+          /* try all possible offsets */
+          for (int j = 0; j < BUFFER_SIZE; j++)
+            {
+              midi_track_fill_midi_events (
+                track, i,
+                j, BUFFER_SIZE, events);
+              midi_events_clear (events, true);
+            }
+        }
+
+      if (iter == MAX_FILES)
         break;
     }
   g_strfreev (midi_files);

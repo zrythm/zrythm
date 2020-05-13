@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -215,6 +215,16 @@ array_contains_int (
     }
   return 0;
 }
+
+/**
+ * Shuffle array elements.
+ *
+ * @param n Count.
+ * @param size Size of each element
+ *   (@code sizeof (arr[0]) @endcode).
+ */
+void array_shuffle (
+  void *array, size_t n, size_t size);
 
 /**
  * Returns 1 if element exists in array, 0 if not.

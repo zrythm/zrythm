@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -188,4 +188,36 @@ array_sort_alphabetically (char ** array,
     qsort (
       array, (size_t) size,
       sizeof (char *), alphaBetize);
+}
+
+/**
+ * Shuffle array elements.
+ *
+ * @param n Count.
+ * @param size Size of each element
+ *   (@code sizeof (arr[0]) @endcode).
+ */
+void array_shuffle (
+  void *array, size_t n, size_t size)
+{
+  char tmp[size];
+  char *arr = array;
+  size_t stride = size * sizeof(char);
+
+  if (n > 1)
+    {
+      size_t i;
+      for (i = 0; i < n - 1; ++i)
+        {
+          size_t rnd = (size_t) rand();
+          size_t j =
+            i + rnd / (RAND_MAX / (n - i) + 1);
+
+          memcpy (tmp, arr + j * stride, size);
+          memcpy (
+            arr + j * stride,
+            arr + i * stride, size);
+          memcpy (arr + i * stride, tmp, size);
+        }
+    }
 }

@@ -627,21 +627,26 @@ midi_track_fill_midi_events (
                     /* either note ends before
                      * the cycle end or the region
                      * looped */
-                    (mn_obj->end_pos.frames <=
-                       r_local_end_pos ||
+                    ((mn_obj->end_pos.frames <=
+                       r_local_end_pos) ||
                      region_loop_met))
                     {
-                      /* set time based on whether
-                       * note ends before the cycle
-                       * end or the region was
-                       * looped */
+                      /* note ends before the cycle
+                       * end */
                       if (mn_obj->end_pos.frames <=
                             r_local_end_pos)
-                        time =
-                          (midi_time_t)
-                          (((mn_obj->end_pos.frames -
-                             r_local_pos) - 1) +
-                            diff_to_tp_loop_end);
+                        {
+                          time =
+                            (midi_time_t)
+                            ((mn_obj->end_pos.
+                               frames -
+                               r_local_pos) +
+                              diff_to_tp_loop_end);
+                          /* need to do -1 for some
+                           * reason */
+                          if (time > 0)
+                            time--;
+                        }
                       else /* region was looped */
                         time =
                           (midi_time_t)
@@ -657,16 +662,18 @@ midi_track_fill_midi_events (
                         {
                           g_warning (
                             "Midi note OFF time is "
-                            "%u. This is %u greater "
-                            "than the max time %u "
+                            "%" PRIu32 ". This is "
+                            "%" PRIu32 " greater "
+                            "than the max time %"
+                            PRIu32 " "
                             "in this cycle. Note "
                             "OFF will be ignored",
                             time,
-                            (local_start_frame +
-                              nframes) - 1,
                             (time -
                               (local_start_frame +
-                                 nframes)) + 1);
+                                 nframes)) + 1,
+                            (local_start_frame +
+                              nframes) - 1);
                         }
                     }
                 }
