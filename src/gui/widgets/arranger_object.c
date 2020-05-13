@@ -478,6 +478,13 @@ arranger_object_set_full_rectangle (
   ArrangerObject * self,
   ArrangerWidget * arranger)
 {
+#define WARN_IF_HAS_NEGATIVE_DIMENSIONS \
+  g_warn_if_fail ( \
+    self->full_rect.x >= 0 && \
+    self->full_rect.y >= 0 && \
+    self->full_rect.width >= 0 && \
+    self->full_rect.height >= 0)
+
   switch (self->type)
     {
     case TYPE (CHORD_OBJECT):
@@ -526,6 +533,8 @@ arranger_object_set_full_rectangle (
           Z_CAIRO_TEXT_PADDING * 2;
 
         self->full_rect.height = adj_px_per_key;
+
+        WARN_IF_HAS_NEGATIVE_DIMENSIONS;
       }
       break;
     case TYPE (AUTOMATION_POINT):
@@ -596,6 +605,7 @@ arranger_object_set_full_rectangle (
               (cur_y > next_y ?
                cur_y - next_y :
                next_y - cur_y) + AP_WIDGET_POINT_SIZE;
+            WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
         else
           {
@@ -608,6 +618,8 @@ arranger_object_set_full_rectangle (
               AP_WIDGET_POINT_SIZE;
             self->full_rect.height =
               AP_WIDGET_POINT_SIZE;
+
+            WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
         }
       break;
@@ -653,6 +665,8 @@ arranger_object_set_full_rectangle (
               track->main_height -
                 (self->texth +
                  Z_CAIRO_TEXT_PADDING * 4);
+
+            WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
         else if (region->id.type ==
                    REGION_TYPE_AUTOMATION)
@@ -672,12 +686,16 @@ arranger_object_set_full_rectangle (
             self->full_rect.y =
               wy + at->y;
             self->full_rect.height = at->height;
+
+            WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
         else
           {
             self->full_rect.y = wy;
             self->full_rect.height =
               track->main_height;
+
+            WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
         /* leave some space for the line below
          * the region */
@@ -721,6 +739,8 @@ arranger_object_set_full_rectangle (
               self->full_rect.height;
             self->full_rect.x -=
               self->full_rect.width / 2;
+
+            WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
         else
           {
@@ -732,6 +752,8 @@ arranger_object_set_full_rectangle (
             self->full_rect.width =
               ui_pos_to_px_editor (
                 &tmp, 1) - self->full_rect.x;
+
+            WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
       }
       break;
@@ -745,6 +767,10 @@ arranger_object_set_full_rectangle (
           (GtkWidget *) (arranger),
           0, 0,
           &wx, &wy);
+        /* for some reason it returns a few
+         * negatives at first */
+        if (wy < 0)
+          wy = 0;
 
         self->full_rect.x =
           ui_pos_to_px_timeline (
@@ -761,6 +787,8 @@ arranger_object_set_full_rectangle (
         self->full_rect.y =
           (wy + track->main_height) - obj_height;
         self->full_rect.height = obj_height;
+
+        WARN_IF_HAS_NEGATIVE_DIMENSIONS;
       }
       break;
     case TYPE (MARKER):
@@ -773,6 +801,10 @@ arranger_object_set_full_rectangle (
           (GtkWidget *) (arranger),
           0, 0,
           &wx, &wy);
+        /* for some reason it returns a few
+         * negatives at first */
+        if (wy < 0)
+          wy = 0;
 
         self->full_rect.x =
           ui_pos_to_px_timeline (
@@ -788,6 +820,8 @@ arranger_object_set_full_rectangle (
         self->full_rect.y =
           (wy + track->main_height) - obj_height;
         self->full_rect.height = obj_height;
+
+        WARN_IF_HAS_NEGATIVE_DIMENSIONS;
       }
       break;
     case TYPE (VELOCITY):
@@ -827,6 +861,8 @@ arranger_object_set_full_rectangle (
         self->full_rect.y = height - vel_px;
         self->full_rect.width = 12;
         self->full_rect.height = vel_px;
+
+        WARN_IF_HAS_NEGATIVE_DIMENSIONS;
       }
       break;
     default:
@@ -851,6 +887,8 @@ arranger_object_set_full_rectangle (
         self->full_rect.width,
         self->full_rect.height);
     }
+
+#undef WARN_IF_HAS_NEGATIVE_DIMENSIONS
 }
 
 /**
