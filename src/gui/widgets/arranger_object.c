@@ -833,6 +833,24 @@ arranger_object_set_full_rectangle (
       g_warn_if_reached ();
       break;
     }
+
+  if (self->full_rect.x < 0 ||
+      self->full_rect.y < 0 ||
+      self->full_rect.width < 0 ||
+      self->full_rect.height < 0)
+    {
+      g_message ("Object:");
+      arranger_object_print (self);
+      g_warning (
+        "The full rectangle of widget %p has "
+        "negative dimensions: (%d,%d) w: %d h: %d. "
+        "This should not happen. A rendering error "
+        "is expected to occur.",
+        self,
+        self->full_rect.x, self->full_rect.y,
+        self->full_rect.width,
+        self->full_rect.height);
+    }
 }
 
 /**
