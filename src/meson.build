@@ -25,6 +25,17 @@ if os_darwin
   zrythm_srcs += 'Wrapper.m'
 endif
 
+# add the translators C string header to the sources
+translators_c_h = configure_file (
+  input: translators_c_header_gen_wrap,
+  output: 'translators.h',
+  command: [
+    '@INPUT0@', '@OUTPUT@', 'about',
+    meson.source_root () / 'TRANSLATORS',
+    ],
+  )
+zrythm_srcs += translators_c_h
+
 subdir('actions')
 subdir('audio')
 subdir('gui')

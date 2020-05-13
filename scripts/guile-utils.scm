@@ -20,7 +20,8 @@
   #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-98)
-  #:export (file-name-sep-char
+  #:export (elem?
+            file-name-sep-char
             file-to-string
             join-path
             invoke-with-fail
@@ -29,6 +30,12 @@
             get-cflags-from-pkgconf-name
             program-found?
             string-replace-substring))
+
+;; returns if a is an element of list l
+(define (elem? a l)
+  (cond ((null? l) #f)
+        ((equal? a (car l)) #t)
+        (else (elem? a (cdr l)))))
 
 ;; get index of an element in the list
 ;; this function assumes the element is in the list

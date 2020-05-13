@@ -17,6 +17,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/* auto-generated */
+#include "src/translators.h"
+
 #include "gui/widgets/dialogs/about_dialog.h"
 #include "utils/resources.h"
 #include "zrythm.h"
@@ -63,16 +66,7 @@ about_dialog_widget_new (
       NULL
     };
   const char * translators =
-      "Alexandros Theodotou\n"
-      "Nicolas Faure <sub26nico@laposte.net>\n"
-      "Olivier Humbert <trebmuh@tuxfamily.org>\n"
-      "Waui\n"
-      "Allan Nordhøy <epost@anotheragency.no>\n"
-      "WaldiS <admin@sto.ugu.pl>\n"
-      "Silvério Santos\n"
-      "Swann Martinet\n"
-      "Adolfo Jayme Barrientos\n"
-      "Gabino S";
+    TRANSLATORS_STR;
 
   char * version =
     zrythm_get_version (1);

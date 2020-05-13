@@ -57,10 +57,12 @@ endforeach
 
 # ---- create wraps needed on windows mingw ----
 
+generic_guile_wrap_name = 'generic_guile_wrap.sh'
+
 # create the post install wrap
 meson_post_install_wrap = configure_file (
   output: 'meson_post_install_wrap.sh',
-  input: 'generic_guile_wrap.sh',
+  input: generic_guile_wrap_name,
   configuration: scripts_conf + {
     'SCRIPT_NAME': 'meson-post-install.scm'},
   )
@@ -68,7 +70,16 @@ meson_post_install_wrap = configure_file (
 # create the gschema generator wrap
 gschema_gen_wrap = configure_file (
   output: 'gschema_gen_wrap.sh',
-  input: 'generic_guile_wrap.sh',
+  input: generic_guile_wrap_name,
   configuration: scripts_conf + {
     'SCRIPT_NAME': 'gschema-gen.scm'},
+  )
+
+# create the translators C-string header generator
+# wrap
+translators_c_header_gen_wrap = configure_file (
+  output: 'translators_c_header_gen_wrap.sh',
+  input: generic_guile_wrap_name,
+  configuration: scripts_conf + {
+    'SCRIPT_NAME': 'gen-translators-list.scm'},
   )
