@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <inttypes.h>
 #include <stdlib.h>
 
 #include "config.h"
