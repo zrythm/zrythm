@@ -1,7 +1,7 @@
 Zrythm
 ======
 
-[![translated](https://hosted.weblate.org/widgets/zrythm/-/svg-badge.svg "Translation Status")](https://hosted.weblate.org/engage/zrythm/?utm_source=widget)
+[![Financial Contributors on Open Collective](https://opencollective.com/zrythm/all/badge.svg?label=financial+contributors)](https://opencollective.com/zrythm) [![translated](https://hosted.weblate.org/widgets/zrythm/-/svg-badge.svg "Translation Status")](https://hosted.weblate.org/engage/zrythm/?utm_source=widget)
 [![builds.sr.ht status](https://builds.sr.ht/~alextee/zrythm.svg)](https://builds.sr.ht/~alextee/zrythm?)
 [![travis build status](https://img.shields.io/travis/zrythm/zrythm?label=travis%20build)](https://travis-ci.org/zrythm/zrythm)
 [![code grade](https://img.shields.io/codacy/grade/c16bdc22f6ae4e539aa6417274e71d17)](https://www.codacy.com/manual/alex-tee/zrythm)
@@ -110,3 +110,33 @@ Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.  This file is offered as-is,
 without any warranty.
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/zrythm/zrythm/graphs/contributors"><img src="https://opencollective.com/zrythm/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/zrythm/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/zrythm"><img src="https://opencollective.com/zrythm/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/zrythm/contribute)]
+
+<a href="https://opencollective.com/zrythm/organization/0/website"><img src="https://opencollective.com/zrythm/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/zrythm/organization/1/website"><img src="https://opencollective.com/zrythm/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/zrythm/organization/2/website"><img src="https://opencollective.com/zrythm/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/zrythm/organization/3/website"><img src="https://opencollective.com/zrythm/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/zrythm/organization/4/website"><img src="https://opencollective.com/zrythm/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/zrythm/organization/5/website"><img src="https://opencollective.com/zrythm/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/zrythm/organization/6/website"><img src="https://opencollective.com/zrythm/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/zrythm/organization/7/website"><img src="https://opencollective.com/zrythm/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/zrythm/organization/8/website"><img src="https://opencollective.com/zrythm/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/zrythm/organization/9/website"><img src="https://opencollective.com/zrythm/organization/9/avatar.svg"></a>
