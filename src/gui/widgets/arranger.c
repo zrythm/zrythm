@@ -1189,6 +1189,8 @@ get_hit_objects (
   ArrangerObject **  array,
   int *              array_size)
 {
+  g_return_if_fail (self && array);
+
   *array_size = 0;
   ArrangerObject * obj = NULL;
 
@@ -1249,6 +1251,7 @@ get_hit_objects (
                           array_size, obj);
                       if (!ret)
                         {
+                          /* check lanes */
                           if (!track->
                                 lanes_visible)
                             continue;
@@ -1256,9 +1259,15 @@ get_hit_objects (
                           region_get_lane_full_rect (
                             lane->regions[k],
                             &lane_rect);
-                          if (ui_rectangle_overlap (
+                          if (((rect &&
+                               ui_rectangle_overlap (
                                 &lane_rect,
-                                rect) &&
+                                rect)) ||
+                               (!rect &&
+                                ui_is_point_in_rect_hit (
+                                  &lane_rect,
+                                  true, true, x, y,
+                                  0, 0))) &&
                               arranger_object_get_arranger (obj) ==  self)
                             {
                               array[*array_size] =

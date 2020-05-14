@@ -245,12 +245,42 @@ typedef struct ArrangerObject
   /** 1 when hovering over the object. */
   //int                hover;
 
-  /** Set to 1 to redraw. */
-  //int                redraw;
+  /* ---- The following should only be used for
+   * objects that really need caching, such as
+   * audio regions ---- */
 
-  /** Cached drawing. */
-  //cairo_t *          cached_cr;
-  //cairo_surface_t *  cached_surface;
+  /**
+   * Set to true to blit the cached surface, false
+   * to redraw.
+   *
+   * @note This is only used if \ref
+   *   ArrangerObject.can_cache_drawing is true.
+   */
+  bool               use_cache;
+
+  /**
+   * Cached cairo_t.
+   *
+   * Has 2 elements in case the object needs to
+   * draw more than 1 copy (such as lane/track
+   * regions).
+   *
+   * @note This is only used if \ref
+   *   ArrangerObject.can_cache_drawing is true.
+   */
+  cairo_t *          cached_cr[2];
+
+  /**
+   * Cached surface containing drawing.
+   *
+   * Has 2 elements in case the object needs to
+   * draw more than 1 copy (such as lane/track
+   * regions).
+   *
+   * @note This is only used if \ref
+   *   ArrangerObject.can_cache_drawing is true.
+   */
+  cairo_surface_t *  cached_surface[2];
 } ArrangerObject;
 
 static const cyaml_schema_field_t
@@ -349,6 +379,13 @@ static const cyaml_schema_value_t
    (_obj)->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE || \
    (_obj)->type == ARRANGER_OBJECT_TYPE_CHORD_OBJECT || \
    (_obj)->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
+
+  /** Whether or not this object supports cached
+   * drawing. */
+#define arranger_object_can_cache_drawing(_obj) \
+  ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION && \
+    region_type_can_fade ( \
+      ((ZRegion *) _obj)->id.type))
 
 /**
  * Gets the arranger for this arranger object.

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -122,8 +122,10 @@ audio_region_new (
     self, start_pos, &obj->end_pos, track_pos,
     lane_pos, idx_inside_lane);
 
-  if (!recording)
-    audio_clip_write_to_pool (clip);
+  (void) recording;
+  g_warn_if_fail (audio_region_get_clip (self));
+  /*if (!recording)*/
+    /*audio_clip_write_to_pool (clip);*/
 
   return self;
 }

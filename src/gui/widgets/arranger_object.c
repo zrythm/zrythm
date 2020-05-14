@@ -961,6 +961,7 @@ arranger_object_get_draw_rectangle (
       (full_rect->y + full_rect->height) -
       draw_rect->y);
   g_warn_if_fail (draw_rect->height >= 0);
+
   return 1;
   /*g_message ("full rect: (%d, %d) w: %d h: %d",*/
     /*full_rect->x, full_rect->y,*/

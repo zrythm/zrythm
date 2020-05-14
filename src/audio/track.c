@@ -22,6 +22,7 @@
 #include "actions/edit_tracks_action.h"
 #include "actions/undo_manager.h"
 #include "audio/audio_group_track.h"
+#include "audio/audio_region.h"
 #include "audio/audio_track.h"
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
@@ -972,6 +973,14 @@ track_add_region (
         track->chord_regions,
         track->num_chord_regions, region);
       region->id.idx = track->num_chord_regions - 1;
+    }
+
+  /* write clip if audio region */
+  if (region->id.type == REGION_TYPE_AUDIO)
+    {
+      AudioClip * clip =
+        audio_region_get_clip (region);
+      audio_clip_write_to_pool (clip);
     }
 
   if (fire_events)

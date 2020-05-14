@@ -1014,6 +1014,7 @@ draw_audio_region (
       arranger_object_queue_redraw (obj);
       return;
     }
+  g_message ("drawing audio region ");
 
   double multiplier =
     (double) AUDIO_ENGINE->frames_per_tick /
@@ -1041,7 +1042,7 @@ draw_audio_region (
     (long) (multiplier * local_start_x);
   long curr_frames = prev_frames;
   for (double i = local_start_x + 0.5;
-       i < (double) local_end_x; i += 3.0)
+       i < (double) local_end_x; i += 0.5)
     {
       curr_frames = (long) (multiplier * i);
       /* current single channel frames */
@@ -1081,21 +1082,39 @@ draw_audio_region (
       /* normalize */
       min = (min + 1.f) / 2.f;
       max = (max + 1.f) / 2.f;
+      /* local from the full rect x */
+      double local_full_x = i - 0.5;
+      /* local from the draw rect x */
+      double local_draw_x =
+        local_full_x -
+        (draw_rect->x - full_rect->x);
+      /* local from the full rect y */
+      double local_full_min_y =
+        MAX (
+          (double) min *
+            (double) full_rect->height, 0.0);
+      /* local from the draw rect y */
+      double local_draw_min_y =
+        local_full_min_y -
+        (draw_rect->y - full_rect->y);
+      /* local from the full rect y */
+      double local_full_max_y =
+        MIN (
+          (double) max *
+            (double) full_rect->height,
+          (double) full_rect->height);
+      /* local from the draw rect y */
+      double local_draw_max_y =
+        local_full_max_y -
+        (draw_rect->y - full_rect->y);
       DRAW_VLINE (
         cr,
         /* x */
-        (i - 0.5 + full_rect->x) - rect->x,
+        local_draw_x,
         /* from y */
-        (full_rect->y +
-          MAX (
-            (double) min *
-              (double) full_rect->height, 0.0)) - rect->y,
+        local_draw_min_y,
         /* to y */
-        (full_rect->y +
-          MIN (
-            (double) max *
-              (double) full_rect->height,
-            (double) full_rect->height)) - rect->y);
+        local_draw_max_y);
 
       prev_frames = curr_frames;
     }
@@ -1203,18 +1222,20 @@ draw_name (
  */
 void
 region_draw (
-  ZRegion *       self,
+  ZRegion *      self,
   cairo_t *      cr,
   GdkRectangle * rect)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
   GdkRectangle draw_rect;
+  GdkRectangle main_draw_rect, main_full_rect;
   GdkRectangle full_rect = obj->full_rect;
   for (int i = REGION_COUNTERPART_MAIN;
        i <= REGION_COUNTERPART_LANE; i++)
     {
       cairo_save (cr);
+
       if (i == REGION_COUNTERPART_LANE)
         {
           if (!region_type_has_lane (self->id.type))
@@ -1246,46 +1267,115 @@ region_draw (
       arranger_object_get_draw_rectangle (
         obj, rect, &full_rect, &draw_rect);
 
-      draw_background (
-        self, cr, rect, &full_rect, &draw_rect, i);
-
-      switch (self->id.type)
+      if (i == REGION_COUNTERPART_MAIN)
         {
-        case REGION_TYPE_MIDI:
-          draw_midi_region (
-            self, cr, rect, &full_rect,
-            &draw_rect, i);
-          break;
-        case REGION_TYPE_AUTOMATION:
-          draw_automation_region (
-            self, cr, rect, &full_rect,
-            &draw_rect, i);
-          break;
-        case REGION_TYPE_CHORD:
-          draw_chord_region (
-            self, cr, rect, &full_rect,
-            &draw_rect, i);
-          break;
-        case REGION_TYPE_AUDIO:
-          draw_audio_region (
-            self, cr, rect, &full_rect,
-            &draw_rect, i);
-          draw_fades (
-            self, cr, rect, &full_rect,
-            &draw_rect, i);
-          break;
-        default:
-          break;
+          main_draw_rect = draw_rect;
+          main_full_rect = full_rect;
+        }
+
+      /* draw background before caching so
+       * we don't need to implement caching
+       * for hover/select */
+      draw_background (
+        self, cr, rect, &full_rect,
+        &draw_rect, i);
+
+      if (obj->use_cache &&
+          self->last_main_draw_rect.x ==
+            main_draw_rect.x &&
+          self->last_main_full_rect.x ==
+            main_full_rect.x &&
+          self->last_main_full_rect.width ==
+            main_full_rect.width &&
+          self->last_main_draw_rect.width ==
+            main_draw_rect.width)
+        {
+          g_message ("using cache");
+        }
+      else
+        {
+          g_message ("NOT using cache");
+
+          /* switch cr if caching */
+          cairo_t * cr_to_use = cr;
+          if (arranger_object_can_cache_drawing (
+                obj))
+            {
+              z_cairo_reset_caches (
+                &obj->cached_cr[i],
+                &obj->cached_surface[i],
+                draw_rect.width, draw_rect.height,
+                cr);
+              cr_to_use = obj->cached_cr[i];
+            }
+
+          switch (self->id.type)
+            {
+            case REGION_TYPE_MIDI:
+              draw_midi_region (
+                self, cr_to_use, rect, &full_rect,
+                &draw_rect, i);
+              break;
+            case REGION_TYPE_AUTOMATION:
+              draw_automation_region (
+                self, cr_to_use, rect, &full_rect,
+                &draw_rect, i);
+              break;
+            case REGION_TYPE_CHORD:
+              draw_chord_region (
+                self, cr_to_use, rect, &full_rect,
+                &draw_rect, i);
+              break;
+            case REGION_TYPE_AUDIO:
+              draw_audio_region (
+                self, cr_to_use, rect, &full_rect,
+                &draw_rect, i);
+              break;
+            default:
+              break;
+            }
+
+          if (arranger_object_can_fade (obj))
+            {
+              draw_fades (
+                self, cr_to_use, rect, &full_rect,
+                &draw_rect, i);
+            }
+
+          /* TODO draw cut line? */
+        }
+
+      if (arranger_object_can_cache_drawing (obj))
+        {
+          cairo_save (cr);
+
+          int x = draw_rect.x - rect->x;
+          int y = draw_rect.y - rect->y;
+          cairo_translate (
+            cr, x, y);
+          /*cairo_scale (cr, 0.8, 1);*/
+          cairo_set_source_surface (
+            cr, obj->cached_surface[i], 0.0, 0.0);
+          cairo_paint (cr);
+
+          cairo_restore (cr);
         }
 
       draw_loop_points (
-        self, cr, rect, &full_rect, &draw_rect, i);
+        self, cr, rect, &full_rect,
+        &draw_rect, i);
       draw_name (
-        self, cr, rect, &full_rect, &draw_rect, i);
-
-      /* TODO draw cut line? */
+        self, cr, rect, &full_rect,
+        &draw_rect, i);
 
       cairo_restore (cr);
+    }
+
+  if (arranger_object_can_cache_drawing (obj))
+    {
+      self->last_main_draw_rect = main_draw_rect;
+      self->last_main_full_rect = main_full_rect;
+      obj->use_cache = true;
     }
 }
 

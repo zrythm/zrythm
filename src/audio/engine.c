@@ -843,10 +843,14 @@ find_and_queue_metronome (
       bar_offset =
         (nframes_t)
         (bar_pos.frames - start_pos->frames);
+      nframes_t met_offset =
+        bar_offset + loffset;
+      g_return_if_fail (
+        met_offset < AUDIO_ENGINE->block_length);
       sample_processor_queue_metronome (
         SAMPLE_PROCESSOR,
         METRONOME_TYPE_EMPHASIS,
-        bar_offset + loffset);
+        met_offset);
     }
 
   int num_beats_before =
@@ -886,10 +890,15 @@ find_and_queue_metronome (
           beat_offset =
             (nframes_t)
             (beat_pos.frames - start_pos->frames);
+          nframes_t met_offset =
+            beat_offset + loffset;
+          g_return_if_fail (
+            met_offset <
+              AUDIO_ENGINE->block_length);
           sample_processor_queue_metronome (
             SAMPLE_PROCESSOR,
             METRONOME_TYPE_NORMAL,
-            beat_offset + loffset);
+            met_offset);
         }
     }
 }

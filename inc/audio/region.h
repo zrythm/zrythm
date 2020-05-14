@@ -171,6 +171,12 @@ typedef struct ZRegion
    */
   int                bounce;
 
+  /* these are used for caching */
+  GdkRectangle       last_main_full_rect;
+
+  /** Last main draw rect. */
+  GdkRectangle       last_main_draw_rect;
+
   int                magic;
 } ZRegion;
 

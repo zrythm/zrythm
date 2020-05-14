@@ -1160,6 +1160,7 @@ ui_rectangle_overlap (
   GdkRectangle * rect1,
   GdkRectangle * rect2)
 {
+  g_return_val_if_fail (rect1 && rect2, false);
   /* if one rect is on the side of the other */
   if (rect1->x > rect2->x + rect2->width ||
       rect2->x > rect1->x + rect1->width)
