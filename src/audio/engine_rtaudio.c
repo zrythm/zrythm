@@ -106,6 +106,33 @@ engine_rtaudio_create_rtaudio (
   return rtaudio;
 }
 
+static void
+print_dev_info (
+  rtaudio_device_info_t * nfo,
+  char *                  buf)
+{
+  sprintf (
+    buf,
+    "name: %s\n"
+    "probed: %d\n"
+    "output channels: %u\n"
+    "input channels: %u\n"
+    "duplex channels: %u\n"
+    "is default output: %d\n"
+    "is default input: %d\n"
+    "formats: TODO\n"
+    "preferred sample rate: %u\n"
+    "sample rates: TODO",
+    nfo->name,
+    nfo->probed,
+    nfo->output_channels,
+    nfo->input_channels,
+    nfo->duplex_channels,
+    nfo->is_default_output,
+    nfo->is_default_input,
+    nfo->preferred_sample_rate);
+}
+
 /**
  * Set up the engine.
  */
@@ -143,11 +170,13 @@ engine_rtaudio_setup (
     {
       rtaudio_device_info_t dev_nfo =
         rtaudio_get_device_info (self->rtaudio, i);
+      char dev_nfo_str[800];
+      print_dev_info (&dev_nfo, dev_nfo_str);
       g_message (
-        "RtAudio device %d: %s",
-        i, dev_nfo.name);
+        "RtAudio device %d: %s", i, dev_nfo_str);
       if (string_is_equal (
-            dev_nfo.name, out_device, 1))
+            dev_nfo.name, out_device, 1) &&
+          dev_nfo.output_channels > 0)
         {
           out_device_id = i;
         }
