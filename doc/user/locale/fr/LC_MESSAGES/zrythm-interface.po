@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 18:06+0100\n"
-"PO-Revision-Date: 2020-01-26 13:21+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2020-05-14 16:41+0000\n"
+"Last-Translator: JEHANNIN <sahaa.thyva@laposte.net>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/fr/>\n"
 "Language: fr\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -537,8 +538,9 @@ msgid "There are the following buttons next to the name of the current project."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:119
+#, fuzzy
 msgid "Scripting Interface"
-msgstr ""
+msgstr "Interface de scriptage"
 
 #: ../../zrythm-interface/main-toolbar.rst:119
 msgid "Shows the scripting interface. See :ref:`scripting` for more information."
@@ -1274,4 +1276,3 @@ msgstr ""
 
 #~ msgid "TODO"
 #~ msgstr ""
-

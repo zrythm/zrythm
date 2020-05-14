@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 18:06+0100\n"
-"PO-Revision-Date: 2020-03-01 10:34+0000\n"
+"PO-Revision-Date: 2020-05-11 10:41+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -89,13 +90,13 @@ msgstr "MIDI ノートは、仮想(またはハードウェア)のインスト�
 
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
-msgstr ""
+msgstr "下部パネル"
 
 #: ../../zrythm-interface/bottom-panel.rst:10
 msgid ""
 "The bottom panel contains various editors (such as the piano roll and "
 "automation editor) as well as the mixer and chord pads."
-msgstr ""
+msgstr "下部パネルには、様々なエディタ(ピアノロールやオートメーションエディタなど)、ミキサーやコードパッドが含まれています。"
 
 #: ../../zrythm-interface/bottom-panel.rst:18
 #, fuzzy
@@ -1180,4 +1181,3 @@ msgstr ""
 
 #~ msgid "TODO"
 #~ msgstr ""
-

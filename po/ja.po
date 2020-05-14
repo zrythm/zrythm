@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-04-30 14:10+0100\n"
-"PO-Revision-Date: 2020-05-02 05:11+0000\n"
+"PO-Revision-Date: 2020-05-11 10:41+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -3203,15 +3203,15 @@ msgstr "左パネルの仕切り位置"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:250
 msgid "Position of the resize handle of the left panel."
-msgstr ""
+msgstr "左パネルのリサイズハンドルの位置。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:254
 msgid "Right panel divider position"
-msgstr ""
+msgstr "右パネルの仕切り位置"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:255
 msgid "Position of the resize handle of the right panel."
-msgstr ""
+msgstr "右パネルのリサイズハンドルの位置。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:259
 #, fuzzy
@@ -3220,7 +3220,7 @@ msgstr "開始位置"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:260
 msgid "Position of the resize handle of the bot panel."
-msgstr ""
+msgstr "下パネルのリサイズハンドルの位置。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:264
 #, fuzzy
@@ -3268,8 +3268,9 @@ msgid "The monitor out volume in amplitude (0 to 2)."
 msgstr "モニターア出力の音量（0.0～2.0）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:295
+#, fuzzy
 msgid "Genre to use when exporting, if the file type supports it."
-msgstr ""
+msgstr "ファイルタイプがサポートしている場合は、エクスポート時に使用するジャンルを指定します。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:299
 #, fuzzy
@@ -3278,19 +3279,19 @@ msgstr "時間の範囲"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:300
 msgid "Time range to export."
-msgstr ""
+msgstr "エクスポートする時間範囲。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:305
 msgid "Format to export to."
-msgstr ""
+msgstr "エクスポートするフォーマット。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:310
 msgid "Add dither while exporting, if applicable."
-msgstr ""
+msgstr "エクスポート中にディザを追加します。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:315
 msgid "Bit depth to use when exporting"
-msgstr ""
+msgstr "エクスポート時に使用するビット深度"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:323
 msgid "Track properties expanded"
@@ -3298,15 +3299,15 @@ msgstr "トラック属性の展開状態"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:324
 msgid "Whether track properties is expanded."
-msgstr ""
+msgstr "トラックのプロパティが展開されているかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:328
 msgid "Track outputs expanded"
-msgstr ""
+msgstr "トラック出力の展開状況"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:329
 msgid "Whether track outputs is expanded."
-msgstr ""
+msgstr "トラック出力が展開されているかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:333
 #, fuzzy
@@ -3315,31 +3316,31 @@ msgstr "トラック名"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:334
 msgid "Whether track sends is expanded."
-msgstr ""
+msgstr "トラックセンドが展開されているかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:338
 msgid "Track inputs expanded"
-msgstr ""
+msgstr "トラック入力の展開状況"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:339
 msgid "Whether track inputs is expanded."
-msgstr ""
+msgstr "トラック入力が展開されているかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:343
 msgid "Track controls expanded"
-msgstr ""
+msgstr "トラックコントロールの展開状況"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:344
 msgid "Whether track controls is expanded."
-msgstr ""
+msgstr "トラックコントロールが展開されているかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:348
 msgid "Track inserts expanded"
-msgstr ""
+msgstr "トラックインサートの展開状況"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:349
 msgid "Whether track inserts is expanded."
-msgstr ""
+msgstr "トラックインサートが展開されているかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:353
 #, fuzzy
@@ -3348,23 +3349,23 @@ msgstr "トラック名"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:354
 msgid "Whether track midi-fx is expanded."
-msgstr ""
+msgstr "トラックMIDI-FXが展開されているかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:358
 msgid "Track fader expanded"
-msgstr ""
+msgstr "トラックフェーダーの展開状況"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:359
 msgid "Whether track fader is expanded."
-msgstr ""
+msgstr "トラックフェーダーが展開されているかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:363
 msgid "Track comment expanded"
-msgstr ""
+msgstr "トラックコメントの展開状態"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:364
 msgid "Whether track comment is expanded."
-msgstr ""
+msgstr "トラックコメントが展開されているかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:377
 #, fuzzy
@@ -3464,11 +3465,11 @@ msgstr "プラグインUIウィンドウを常にメインウィンドウの上�
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:445
 msgid "Generic UIs"
-msgstr ""
+msgstr "汎用UI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:446
 msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
-msgstr ""
+msgstr "カスタムのものではなく、Zrythmによって生成された汎用のプラグインUIを表示します。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:451
 #, fuzzy
@@ -3478,7 +3479,7 @@ msgstr "プラグインUIのリフレッシュレート"
 #: build/data/org.zrythm.Zrythm.gschema.xml:452
 msgid ""
 "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
-msgstr ""
+msgstr "リフレッシュレート（Hz）。0に設定すると、画面のリフレッシュレートが使用されます。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:469
 #, fuzzy
@@ -3569,7 +3570,7 @@ msgstr "Zrythmインターフェイスの言語"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:560
 msgid "DSP"
-msgstr ""
+msgstr "DSP"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:561
 #, fuzzy
