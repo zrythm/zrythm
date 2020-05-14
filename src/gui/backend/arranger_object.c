@@ -1860,6 +1860,7 @@ clone_midi_note (
   mn->currently_listened = src->currently_listened;
   mn->last_listened_val = src->last_listened_val;
   mn->pos = src->pos;
+  mn->vel->vel_at_start = src->vel->vel_at_start;
 
   return (ArrangerObject *) mn;
 }
@@ -1980,9 +1981,11 @@ arranger_object_clone (
         Velocity * src = (Velocity *) self;
         MidiNote * mn =
           velocity_get_midi_note (src);
-        new_obj =
-          (ArrangerObject *)
+        Velocity * new_vel =
           velocity_new (mn, src->vel);
+        new_obj =
+          (ArrangerObject *) new_vel;
+        new_vel->vel_at_start = src->vel_at_start;
       }
       break;
     default:

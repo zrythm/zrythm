@@ -38,6 +38,19 @@ typedef struct _ArrangerWidget ArrangerWidget;
  * @{
  */
 
+/**
+ * Sets the start velocities of all velocities
+ * in the current region.
+ */
+void
+midi_modifier_arranger_widget_set_start_vel (
+  ArrangerWidget * self);
+
+void
+midi_modifier_arranger_widget_select_vels_in_range (
+  ArrangerWidget * self,
+  double           offset_x);
+
 void
 midi_modifier_arranger_widget_resize_velocities (
   ArrangerWidget * self,

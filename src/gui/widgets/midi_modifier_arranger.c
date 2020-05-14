@@ -38,108 +38,37 @@
 #include "utils/flags.h"
 
 /**
- * To be called from get_child_position in parent
- * widget.
- *
- * Used to allocate the overlay children.
- */
-/*void*/
-/*midi_modifier_arranger_widget_set_allocation (*/
-  /*ArrangerWidget * self,*/
-  /*GtkWidget *          widget,*/
-  /*GdkRectangle *       allocation)*/
-/*{*/
-  /*if (Z_IS_VELOCITY_WIDGET (widget))*/
-    /*{*/
-      /*VelocityWidget * vw =*/
-        /*Z_VELOCITY_WIDGET (widget);*/
-
-      /* use transient or non transient note
-       * depending on which is visible */
-      /*MidiNote * mn = vw->velocity->midi_note;*/
-      /*ArrangerObject * mn_obj =*/
-        /*arranger_object_get_visible_counterpart (*/
-          /*(ArrangerObject *) mn);*/
-
-      /*gint wx, wy;*/
-      /*gtk_widget_translate_coordinates(*/
-                /*GTK_WIDGET (mn_obj->widget),*/
-                /*GTK_WIDGET (self),*/
-                /*0,*/
-                /*0,*/
-                /*&wx,*/
-                /*&wy);*/
-      /*int height =*/
-        /*gtk_widget_get_allocated_height (*/
-          /*GTK_WIDGET (self));*/
-
-      /*int vel_px =*/
-        /*(int)*/
-        /*((float) height **/
-          /*((float) vw->velocity->vel / 127.f));*/
-      /*allocation->x = wx;*/
-      /*allocation->y = height - vel_px;*/
-      /*allocation->width = 12;*/
-      /*allocation->height = vel_px;*/
-    /*}*/
-/*}*/
-
-/**
- * Called when in selection mode.
- *
- * Called by arranger widget during drag_update to find and
- * select the midi notes enclosed in the selection area.
- *
- * @param[in] delete If this is a select-delete
- *   operation
- */
-/*void*/
-/*midi_modifier_arranger_widget_select (*/
-  /*ArrangerWidget * self,*/
-  /*double               offset_x,*/
-  /*double               offset_y,*/
-  /*int                  delete)*/
-/*{*/
-
-  /*[> deselect all <]*/
-  /*arranger_widget_select_all (*/
-    /*Z_ARRANGER_WIDGET (self), 0);*/
-
-  /*[> find enclosed velocities <]*/
-  /*GtkWidget *    velocities[800];*/
-  /*int            num_velocities = 0;*/
-  /*arranger_widget_get_hit_widgets_in_range (*/
-    /*Z_ARRANGER_WIDGET (self),*/
-    /*VELOCITY_WIDGET_TYPE,*/
-    /*self->start_x,*/
-    /*self->start_y,*/
-    /*offset_x,*/
-    /*offset_y,*/
-    /*velocities,*/
-    /*&num_velocities);*/
-
-  /*[> select the enclosed midi_notes <]*/
-  /*for (int i = 0; i < num_velocities; i++)*/
-    /*{*/
-      /*VelocityWidget * vel_w =*/
-        /*Z_VELOCITY_WIDGET (velocities[i]);*/
-      /*Velocity * vel =*/
-        /*vel_w->velocity;*/
-      /*arranger_object_select (*/
-        /*(ArrangerObject *) vel->midi_note,*/
-        /*F_SELECT, F_APPEND);*/
-    /*}*/
-/*}*/
-
-/**
- * Draws a ramp from the start coordinates to the
- * given coordinates.
+ * Sets the start velocities of all velocities
+ * in the current region.
  */
 void
-midi_modifier_arranger_widget_ramp (
+midi_modifier_arranger_widget_set_start_vel (
+  ArrangerWidget * self)
+{
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  g_return_if_fail (
+    region && region->id.type == REGION_TYPE_MIDI);
+
+  for (int i = 0; i < region->num_midi_notes; i++)
+    {
+      MidiNote * mn = region->midi_notes[i];
+      Velocity * vel = mn->vel;
+      vel->vel_at_start = vel->vel;
+    }
+}
+
+/**
+ * Returns the enclosed velocities.
+ *
+ * @param hit Return hit or unhit velocities.
+ */
+static Velocity **
+get_enclosed_velocities (
   ArrangerWidget * self,
-  double                       offset_x,
-  double                       offset_y)
+  double           offset_x,
+  int *            num_vels,
+  bool             hit)
 {
   Position selection_start_pos, selection_end_pos;
   ui_px_to_pos_editor (
@@ -155,26 +84,69 @@ midi_modifier_arranger_widget_ramp (
       &selection_start_pos,
     F_PADDING);
 
-  ArrangerObject * region_obj =
-    (ArrangerObject *)
-    clip_editor_get_region (CLIP_EDITOR);
-  g_return_if_fail (region_obj);
-
   /* find enclosed velocities */
-  int         velocities_size = 1;
+  int velocities_size = 1;
   Velocity ** velocities =
     (Velocity **)
     malloc (
       (size_t) velocities_size *
       sizeof (Velocity *));
-  int         num_velocities = 0;
+  *num_vels = 0;
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  g_return_val_if_fail (
+    region && region->id.type == REGION_TYPE_MIDI,
+    NULL);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
   track_get_velocities_in_range (
-    arranger_object_get_track (region_obj),
-    &selection_start_pos,
-    &selection_end_pos,
-    &velocities,
-    &num_velocities,
-    &velocities_size, 1);
+    arranger_object_get_track (r_obj),
+    &selection_start_pos, &selection_end_pos,
+    &velocities, num_vels, &velocities_size, hit);
+
+  return velocities;
+}
+
+void
+midi_modifier_arranger_widget_select_vels_in_range (
+  ArrangerWidget * self,
+  double           offset_x)
+{
+  /* find enclosed velocities */
+  int num_velocities = 0;
+  Velocity ** velocities =
+    get_enclosed_velocities (
+      self, offset_x, &num_velocities, true);
+
+  arranger_selections_clear (
+    (ArrangerSelections *) MA_SELECTIONS);
+  for (int i = 0; i < num_velocities; i++)
+    {
+      Velocity * vel = velocities[i];
+      MidiNote * mn = velocity_get_midi_note (vel);
+
+      arranger_object_select (
+        (ArrangerObject *) mn, F_SELECT, F_APPEND);
+    }
+
+  free (velocities);
+}
+
+/**
+ * Draws a ramp from the start coordinates to the
+ * given coordinates.
+ */
+void
+midi_modifier_arranger_widget_ramp (
+  ArrangerWidget * self,
+  double           offset_x,
+  double           offset_y)
+{
+  /* find enclosed velocities */
+  int num_velocities = 0;
+  Velocity ** velocities =
+    get_enclosed_velocities (
+      self, offset_x, &num_velocities, true);
 
   /* ramp */
   Velocity * vel;
@@ -222,25 +194,20 @@ midi_modifier_arranger_widget_ramp (
       velocity_set_val (
         vel, val);
     }
+  free (velocities);
 
   /* find velocities not hit */
   num_velocities = 0;
-  track_get_velocities_in_range (
-    arranger_object_get_track (region_obj),
-    &selection_start_pos,
-    &selection_end_pos,
-    &velocities,
-    &num_velocities,
-    &velocities_size, 0);
+  velocities =
+    get_enclosed_velocities (
+      self, offset_x, &num_velocities, false);
 
   /* reset their value */
   for (int i = 0; i < num_velocities; i++)
     {
       vel = velocities[i];
-      velocity_set_val (
-        vel, vel->cache_vel);
+      velocity_set_val (vel, vel->vel_at_start);
     }
-
   free (velocities);
 }
 
@@ -275,17 +242,19 @@ midi_modifier_arranger_widget_resize_velocities (
       /*vel->widget, 1);*/
   /*g_message ("diff %d", diff);*/
 
-  Velocity * vel;
   for (int i = 0;
        i < MA_SELECTIONS->num_midi_notes; i++)
     {
-      vel =
+      Velocity * vel =
         MA_SELECTIONS->midi_notes[i]->vel;
+      Velocity * vel_at_start =
+        ((MidiArrangerSelections *)
+        self->sel_at_start)->midi_notes[i]->vel;
 
       velocity_set_val (
         vel,
         CLAMP (
-          vel->cache_vel + self->vel_diff,
+          vel_at_start->vel + self->vel_diff,
           1, 127));
 
 #if 0

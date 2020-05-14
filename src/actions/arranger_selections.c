@@ -1677,8 +1677,6 @@ do_or_undo_edit (
                       (MidiNote *) dest_objs[i];
                     velocity_set_val (
                       mn->vel, dest_mn->vel->vel);
-                    mn->vel->cache_vel =
-                      dest_mn->vel->vel;
                   }
                   break;
                 case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:

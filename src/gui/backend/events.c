@@ -523,6 +523,7 @@ on_arranger_selections_changed (
     arranger_selections_get_all_objects (
       sel, &size);
   bool redraw_editor_ruler = false;
+  bool redraw_midi_modifier = false;
   for (int i = 0; i < size; i++)
     {
       ArrangerObject * obj = objs[i];
@@ -532,11 +533,29 @@ on_arranger_selections_changed (
         redraw_editor_ruler = true;
 
       arranger_object_queue_redraw (obj);
+
+      if (obj->type ==
+            ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+        {
+          redraw_midi_modifier = true;
+
+          /* FIXME doesn't work for some reason */
+#if 0
+          MidiNote * mn = (MidiNote *) obj;
+          arranger_object_queue_redraw (
+            (ArrangerObject *) mn->vel);
+#endif
+        }
     }
 
   if (redraw_editor_ruler)
     {
       ruler_widget_redraw_whole (EDITOR_RULER);
+    }
+  if (redraw_midi_modifier)
+    {
+      arranger_widget_redraw_whole (
+        MW_MIDI_MODIFIER_ARRANGER);
     }
 
   refresh_for_selections_type (sel->type);
@@ -608,33 +627,6 @@ on_arranger_selections_created (
 {
   arranger_selections_change_redraw_everything (
     sel);
-#if 0
-  arranger_selections_redraw (sel);
-  switch (sel->type)
-    {
-    case ARRANGER_SELECTIONS_TYPE_TIMELINE:
-      event_viewer_widget_refresh (
-        MW_TIMELINE_EVENT_VIEWER);
-      break;
-    case ARRANGER_SELECTIONS_TYPE_MIDI:
-      clip_editor_redraw_region (CLIP_EDITOR);
-      event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
-      break;
-    case ARRANGER_SELECTIONS_TYPE_CHORD:
-      clip_editor_redraw_region (CLIP_EDITOR);
-      event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
-      break;
-    case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-      clip_editor_redraw_region (CLIP_EDITOR);
-      event_viewer_widget_refresh (
-        MW_EDITOR_EVENT_VIEWER);
-      break;
-    default:
-      g_return_if_reached ();
-    }
-#endif
 }
 
 static void

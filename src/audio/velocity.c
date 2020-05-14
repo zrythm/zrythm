@@ -82,18 +82,6 @@ velocity_is_equal (
 }
 
 /**
- * Sets the cached value for use in live actions.
- */
-void
-velocity_set_cache_vel (
-  Velocity *    self,
-  const uint8_t vel)
-{
-  /* see ARRANGER_OBJ_SET_POS */
-  self->cache_vel = vel;
-}
-
-/**
  * Sets the velocity to the given value.
  *
  * The given value may exceed the bounds 0-127,

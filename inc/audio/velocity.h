@@ -62,9 +62,9 @@ typedef struct Velocity
   /** Velocity value (0-127). */
   uint8_t          vel;
 
-  /** Cache velocity, used to save the values at
-   * the start of actions. */
-  uint8_t          cache_vel;
+  /** Velocity at drag begin - used for ramp
+   * actions only. */
+  uint8_t          vel_at_start;
 
   /** Pointer back to the MIDI note. */
   MidiNote *       midi_note;
@@ -106,14 +106,6 @@ void
 velocity_set_midi_note (
   Velocity * velocity,
   MidiNote * midi_note);
-
-/**
- * Sets the cached value for use in live actions.
- */
-void
-velocity_set_cache_vel (
-  Velocity * velocity,
-  const uint8_t vel);
 
 /**
  * Returns 1 if the Velocity's match, 0 if not.

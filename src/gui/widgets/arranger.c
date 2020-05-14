@@ -3412,6 +3412,11 @@ drag_update (
     case UI_OVERLAY_ACTION_STARTING_RAMP:
       self->action =
         UI_OVERLAY_ACTION_RAMPING;
+      if (self->type == TYPE (MIDI_MODIFIER))
+        {
+          midi_modifier_arranger_widget_set_start_vel (
+            self);
+        }
       break;
     case UI_OVERLAY_ACTION_CUTTING:
       /* alt + move changes the action from
@@ -3769,7 +3774,7 @@ on_drag_end_midi_modifier (
     {
     case UI_OVERLAY_ACTION_RESIZING_UP:
       {
-        /* FIXME */
+        g_return_if_fail (self->sel_at_start);
         UndoableAction * ua =
           arranger_selections_action_new_edit (
             self->sel_at_start,
@@ -3796,6 +3801,28 @@ on_drag_end_midi_modifier (
             &selection_end_pos :
             &selection_start_pos,
           F_PADDING);
+
+        /* prepare the velocities in cloned
+         * arranger selections from the
+         * vels at start */
+        midi_modifier_arranger_widget_select_vels_in_range (
+          self, self->last_offset_x);
+        self->sel_at_start =
+          arranger_selections_clone (
+            (ArrangerSelections *)
+            MA_SELECTIONS);
+        MidiArrangerSelections * sel_at_start =
+          (MidiArrangerSelections *)
+          self->sel_at_start;
+        for (int i = 0;
+             i < sel_at_start->num_midi_notes; i++)
+          {
+            MidiNote * mn =
+              sel_at_start->midi_notes[i];
+            Velocity * vel = mn->vel;
+            vel->vel = vel->vel_at_start;
+          }
+
         UndoableAction * ua =
           arranger_selections_action_new_edit (
             self->sel_at_start,
