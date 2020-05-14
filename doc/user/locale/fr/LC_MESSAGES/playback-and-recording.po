@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2019-09-14 11:24+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2020-05-14 16:41+0000\n"
+"Last-Translator: JEHANNIN <sahaa.thyva@laposte.net>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualplayback-and-recording/fr/>\n"
 "Language: fr\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm"
-"/manualplayback-and-recording/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
@@ -252,7 +253,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:37
 msgid "Latch"
-msgstr ""
+msgstr "Relâcher"
 
 #: ../../playback-and-recording/recording.rst:42
 msgid ""
@@ -261,8 +262,9 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/recording.rst:46
+#, fuzzy
 msgid "Touch"
-msgstr ""
+msgstr "Touché"
 
 #: ../../playback-and-recording/recording.rst:51
 msgid ""
@@ -391,4 +393,3 @@ msgstr ""
 
 #~ msgid "Song End Marker"
 #~ msgstr "Marqueur de fin de morceau"
-
