@@ -1533,7 +1533,7 @@ expose_to_alsa (
     }
   self->exposed_to_backend = expose;
 }
-#endif
+#endif // HAVE_ALSA
 
 #ifdef HAVE_RTMIDI
 static void
@@ -1585,102 +1585,6 @@ expose_to_rtmidi (
     }
   self->exposed_to_backend = expose;
 }
-
-#ifdef HAVE_RTAUDIO
-static void
-expose_to_rtaudio (
-  Port * self,
-  int    expose)
-{
-  Track * track =
-    port_get_track (self, 0);
-  if (!track)
-    return;
-
-  Channel * ch = track->channel;
-  if (!ch)
-    return;
-
-  char lbl[600];
-  port_get_full_designation (self, lbl);
-  if (expose)
-    {
-      if (self->id.flow == FLOW_INPUT)
-        {
-          if (self->id.flags & PORT_FLAG_STEREO_L)
-            {
-              if (ch->all_stereo_l_ins)
-                {
-                }
-              else
-                {
-                  for (int i = 0;
-                       i < ch->num_ext_stereo_l_ins; i++)
-                    {
-                      int idx =
-                        self->num_rtaudio_ins;
-                      ExtPort * ext_port =
-                        ch->ext_stereo_l_ins[i];
-                      ext_port_print (ext_port);
-                      self->rtaudio_ins[idx] =
-                        rtaudio_device_new (
-                          ext_port->rtaudio_is_input,
-                          ext_port->rtaudio_id,
-                          ext_port->rtaudio_channel_idx,
-                          self);
-                      rtaudio_device_open (
-                        self->rtaudio_ins[idx], true);
-                      self->num_rtaudio_ins++;
-                    }
-                }
-            }
-          else if (self->id.flags & PORT_FLAG_STEREO_R)
-            {
-              if (ch->all_stereo_r_ins)
-                {
-                }
-              else
-                {
-                  for (int i = 0;
-                       i < ch->num_ext_stereo_r_ins; i++)
-                    {
-                      int idx =
-                        self->num_rtaudio_ins;
-                      ExtPort * ext_port =
-                        ch->ext_stereo_r_ins[i];
-                      ext_port_print (ext_port);
-                      self->rtaudio_ins[idx] =
-                        rtaudio_device_new (
-                          ext_port->rtaudio_is_input,
-                          ext_port->rtaudio_id,
-                          ext_port->rtaudio_channel_idx,
-                          self);
-                      rtaudio_device_open (
-                        self->rtaudio_ins[idx], true);
-                      self->num_rtaudio_ins++;
-                    }
-                }
-            }
-        }
-      g_message ("exposing %s", lbl);
-    }
-  else
-    {
-      if (self->id.flow == FLOW_INPUT)
-        {
-          for (int i = 0; i < self->num_rtaudio_ins;
-               i++)
-            {
-              rtaudio_device_close (
-                self->rtaudio_ins[i], true);
-            }
-          self->num_rtaudio_ins = 0;
-        }
-      g_message ("unexposing %s", lbl);
-    }
-  self->exposed_to_backend = expose;
-}
-#endif
 
 /**
  * Sums the inputs coming in from RtMidi
@@ -1821,7 +1725,103 @@ port_prepare_rtmidi_events (
     }
   self->last_midi_dequeue = cur_time;
 }
-#endif
+#endif // HAVE_RTMIDI
+
+#ifdef HAVE_RTAUDIO
+static void
+expose_to_rtaudio (
+  Port * self,
+  int    expose)
+{
+  Track * track =
+    port_get_track (self, 0);
+  if (!track)
+    return;
+
+  Channel * ch = track->channel;
+  if (!ch)
+    return;
+
+  char lbl[600];
+  port_get_full_designation (self, lbl);
+  if (expose)
+    {
+      if (self->id.flow == FLOW_INPUT)
+        {
+          if (self->id.flags & PORT_FLAG_STEREO_L)
+            {
+              if (ch->all_stereo_l_ins)
+                {
+                }
+              else
+                {
+                  for (int i = 0;
+                       i < ch->num_ext_stereo_l_ins; i++)
+                    {
+                      int idx =
+                        self->num_rtaudio_ins;
+                      ExtPort * ext_port =
+                        ch->ext_stereo_l_ins[i];
+                      ext_port_print (ext_port);
+                      self->rtaudio_ins[idx] =
+                        rtaudio_device_new (
+                          ext_port->rtaudio_is_input,
+                          ext_port->rtaudio_id,
+                          ext_port->rtaudio_channel_idx,
+                          self);
+                      rtaudio_device_open (
+                        self->rtaudio_ins[idx], true);
+                      self->num_rtaudio_ins++;
+                    }
+                }
+            }
+          else if (self->id.flags & PORT_FLAG_STEREO_R)
+            {
+              if (ch->all_stereo_r_ins)
+                {
+                }
+              else
+                {
+                  for (int i = 0;
+                       i < ch->num_ext_stereo_r_ins; i++)
+                    {
+                      int idx =
+                        self->num_rtaudio_ins;
+                      ExtPort * ext_port =
+                        ch->ext_stereo_r_ins[i];
+                      ext_port_print (ext_port);
+                      self->rtaudio_ins[idx] =
+                        rtaudio_device_new (
+                          ext_port->rtaudio_is_input,
+                          ext_port->rtaudio_id,
+                          ext_port->rtaudio_channel_idx,
+                          self);
+                      rtaudio_device_open (
+                        self->rtaudio_ins[idx], true);
+                      self->num_rtaudio_ins++;
+                    }
+                }
+            }
+        }
+      g_message ("exposing %s", lbl);
+    }
+  else
+    {
+      if (self->id.flow == FLOW_INPUT)
+        {
+          for (int i = 0; i < self->num_rtaudio_ins;
+               i++)
+            {
+              rtaudio_device_close (
+                self->rtaudio_ins[i], true);
+            }
+          self->num_rtaudio_ins = 0;
+        }
+      g_message ("unexposing %s", lbl);
+    }
+  self->exposed_to_backend = expose;
+}
+#endif // HAVE_RTAUDIO
 
 #ifdef _WOE32
 /**

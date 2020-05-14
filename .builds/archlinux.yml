@@ -54,6 +54,8 @@ tasks:
       ninja -C build test
       meson build --reconfigure -Dstrict-flags=true -Dwith-user-manual=true -Dguile=disabled
       ninja -C build test
+      meson build --reconfigure -Drtaudio=auto -Drtmidi=disabled
+      ninja -C build test
   - install: |
       cd zrythm
       DESTDIR=/tmp ninja -C build install

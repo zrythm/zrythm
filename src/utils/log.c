@@ -194,7 +194,7 @@ log_init (
     zrythm_get_dir (ZRYTHM_DIR_USER_LOG);
   char * str =
     g_strdup_printf (
-      "%s%slog_%s",
+      "%s%slog_%s.log",
       user_log_dir,
       G_DIR_SEPARATOR_S,
       str_datetime);
