@@ -90,7 +90,7 @@ option (
 option (
   'with-manpage',
   type: 'boolean',
-  value: false,
+  value: true,
   description: 'Build and install manpage')
 
 option (

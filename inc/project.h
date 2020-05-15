@@ -87,6 +87,20 @@ typedef enum SelectionType
   SELECTION_TYPE_EDITOR,
 } SelectionType;
 
+/**
+ * Flag to pass to project_compress() and
+ * project_decompress().
+ */
+typedef enum ProjectCompressionFlag
+{
+  PROJECT_COMPRESS_FILE,
+  PROJECT_COMPRESS_DATA,
+} ProjectCompressionFlag;
+
+#define PROJECT_DECOMPRESS_FILE \
+  PROJECT_COMPRESS_FILE
+#define PROJECT_DECOMPRESS_DATA \
+  PROJECT_COMPRESS_DATA
 
 /**
  * Contains all of the info that will be serialized
@@ -424,6 +438,38 @@ project_get_project_file_path (
  */
 void
 project_init_selections (Project * self);
+
+/**
+ * Compresses/decompress a project from a file/data
+ * to a file/data.
+ *
+ * @param compress True to compress, false to
+ *   decompress.
+ * @param[out] dest Pointer to a location to allocate
+ *   memory.
+ * @param[out] dest_size Pointer to a location to
+ *   store the size of the allocated memory.
+ * @param src Input buffer or filepath.
+ * @param src_size Input buffer size, if not
+ *   filepath.
+ *
+ * @return Error message if error, otherwise NULL.
+ */
+char *
+_project_compress (
+  bool                   compress,
+  char **                dest,
+  size_t *               dest_size,
+  ProjectCompressionFlag dest_type,
+  const char *           src,
+  const size_t           src_size,
+  ProjectCompressionFlag src_type);
+
+#define project_compress(a,b,c,d,e,f) \
+  _project_compress (true, a, b, c, d, e, f)
+
+#define project_decompress(a,b,c,d,e,f) \
+  _project_compress (false, a, b, c, d, e, f)
 
 /**
  * Sets if the project has range and updates UI.

@@ -22,13 +22,19 @@ Show additional debug info about objects
 .R \fI<zrythm_path>/log\fR
 Log files for each Zrythm run
 .TP
-.R \fI<zrythm_path>/Templates\fR
+.R \fI<zrythm_path>/templates\fR
 Project templates
+.TP
+.R \fI<zrythm_path>/themes\fR
+User themes
+.TP
+.R \fI<zrythm_path>/cached_vst_descriptors.yaml\fR
+Cached VST plugin descriptors
 
 [author]
 Alexandros Theodotou
 
 [copyright]
-Copyright © 2018-2020 Alexandros Theodotou
+Copyright © 2018-2020 The Zrythm contributors
 This is free software; see the source for copying conditions.
 There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");

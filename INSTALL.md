@@ -25,6 +25,7 @@ inside `meson_options.txt`.
 - guile (GPLv3+): <https://www.gnu.org/software/guile/>
 - libcyaml (ISC): <https://github.com/tlsa/libcyaml/>
 - lilv (ISC): <https://drobilla.net/software/lilv>
+- zstd (3-Clause BSD): <https://github.com/facebook/zstd>
 
 ### Optional
 - carla (GPLv2+): <https://kx.studio/Applications:Carla>
