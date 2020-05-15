@@ -27,6 +27,7 @@ packages:
   - xdg-utils
   - lcov
   - gcovr
+  - zstd
 sources:
   - https://git.sr.ht/~alextee/zrythm
   - https://github.com/mesonbuild/meson

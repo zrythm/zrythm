@@ -35,6 +35,7 @@ packages:
   - fftw3
   - fftw3-float
   - rubberband
+  - zstd
 sources:
   - https://git.sr.ht/~alextee/zrythm
 tasks:

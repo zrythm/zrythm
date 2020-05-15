@@ -11,6 +11,7 @@ packages:
   - libsndfile-devel
   - libyaml-devel
   - libsamplerate-devel
+  - libzstd-devel
   - gettext
   - guile22-devel
   - gtksourceview3-devel

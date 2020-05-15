@@ -25,6 +25,7 @@ packages:
   - libyaml-dev
   - python3
   - librubberband-dev
+  - libzstd-dev
   - xdg-utils
 sources:
   - https://git.sr.ht/~alextee/zrythm
