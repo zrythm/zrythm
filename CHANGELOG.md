@@ -1,6 +1,44 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.459] - 2020-05-15
+### Added
+- Add real time display to playhead meter
+- Add error handling when project fails to load
+- Add missing actions in automation editor
+- Add undoable region stretching and related cursors
+- Add option to return to cue point on stop
+- Add integration test for loading and playing back MIDI files
+- Add CLI commands to convert between .zpj and .yaml
+
+### Changed
+- Don't attempt to draw fades if there are none
+- Huge update of the user manual
+- Update French, Japanese translations
+- Use a semaphore to lock port operations during do/undo
+- Make `free_later()` traverse the stack in a non-GTK thread to avoid UI freezes when many objects are free'd
+- Bridge all GTK/Qt plugin UIs with carla
+- Auto-generate list of translators for about dialog from the TRANSLATORS file
+- Cache drawing of audio regions to prevent freezes when multiple regions are on the screen
+- Update build instructions for Windows
+- Use zstd to compress Zrythm project files
+
+### Removed
+- Remove cached positions from arranger objects
+- Remove breeze icons from distribution (now a runtime dependency)
+
+### Fixed
+- Fix sends being lost when moving tracks
+- Fix extension not properly extracted for filenames with multiple dots
+- Fix VST scanning in user home dir
+- Fix gcc 10 warnings/errors
+- Fix various issues with LV2 plugins loaded through carla
+- Fix bounce on tracks with carla plugins
+- Fix MIDI note off occasionally ignored
+- Fix snap points not being updated when BPM changes
+- Fix build with RtAudio but without RtMidi
+- Fix rtaudio input devices with the same name being string-matched as the selected output device
+
 ## [0.8.397] - 2020-05-05
 ### Added
 - Install freedesktop-compliant icon theme
