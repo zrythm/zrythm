@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-10 15:00+0100\n"
+"POT-Creation-Date: 2020-05-15 15:02+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,48 +17,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../scripting/api/audio midi_note.rst:6
-msgid "Returns a new midi note."
-msgstr ""
-
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio position.rst:6
-msgid "Return a newly-created position as bars.beats.sixteenths.ticks.sub_tick."
-msgstr ""
-
-#: ../../scripting/api/audio position.rst:11
-msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
-msgstr ""
-
-#: ../../scripting/api/audio track.rst:6
-msgid ""
-"Returns a new track with name name to be placed at position idx in the "
-"tracklist."
-msgstr ""
-
-#: ../../scripting/api/audio track.rst:11
-msgid "Returns the name of track."
-msgstr ""
-
-#: ../../scripting/api/audio track.rst:15
-msgid "Adds region to track track. To be used for regions with lanes (midi/audio)"
-msgstr ""
-
-#: ../../scripting/api/audio tracklist.rst:6
-msgid "Inserts track track at index idx in the tracklist."
-msgstr ""
-
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/intro.rst:6
 msgid "API"
-msgstr ""
-
-#: ../../scripting/api/zrythm.rst:6
-msgid "Return the Zrythm version as a string."
 msgstr ""
 
 #: ../../scripting/examples.rst:6
@@ -129,5 +90,37 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Create a MIDI track with notes"
+#~ msgstr ""
+
+#~ msgid "Returns a new midi note."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Return a newly-created position as "
+#~ "bars.beats.sixteenths.ticks.sub_tick."
+#~ msgstr ""
+
+#~ msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Returns a new track with name name"
+#~ " to be placed at position idx "
+#~ "in the tracklist."
+#~ msgstr ""
+
+#~ msgid "Returns the name of track."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Adds region to track track. To be"
+#~ " used for regions with lanes "
+#~ "(midi/audio)"
+#~ msgstr ""
+
+#~ msgid "Inserts track track at index idx in the tracklist."
+#~ msgstr ""
+
+#~ msgid "Return the Zrythm version as a string."
 #~ msgstr ""
 

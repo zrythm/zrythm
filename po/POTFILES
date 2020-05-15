@@ -3,19 +3,16 @@ inc/project.h
 inc/Wrapper.h
 inc/zrythm.h
 inc/plugins/dir.h
+inc/plugins/plugin_preset.h
 inc/plugins/plugin_gtk.h
 inc/plugins/lv2_plugin.h
 inc/plugins/cached_vst_descriptors.h
 inc/plugins/plugin.h
-inc/plugins/vst_plugin.h
 inc/plugins/carla_native_plugin.h
 inc/plugins/plugin_identifier.h
 inc/plugins/plugin_descriptor.h
 inc/plugins/plugin_manager.h
 inc/plugins/carla/carla_discovery.h
-inc/plugins/vst/vst_windows.h
-inc/plugins/vst/vst_x11.h
-inc/plugins/vst/vestige.h
 inc/plugins/lv2/lv2_ui.h
 inc/plugins/lv2/lv2_gtk.h
 inc/plugins/lv2/lv2_control.h
@@ -114,7 +111,6 @@ inc/gui/widgets/automation_region.h
 inc/gui/widgets/audio_editor_space.h
 inc/gui/widgets/mixer.h
 inc/gui/widgets/left_dock_edge.h
-inc/gui/widgets/midi_modifier_arranger_bg.h
 inc/gui/widgets/ruler.h
 inc/gui/widgets/selection_info.h
 inc/gui/widgets/live_waveform.h
@@ -186,6 +182,7 @@ inc/gui/widgets/automatable_selector_popover.h
 inc/gui/widgets/chord_key.h
 inc/gui/widgets/velocity.h
 inc/gui/widgets/pinned_tracklist.h
+inc/gui/widgets/plugin_properties_expander.h
 inc/gui/widgets/quantize_dialog.h
 inc/gui/widgets/knob_with_name.h
 inc/gui/widgets/midi_activity_bar.h
@@ -356,14 +353,10 @@ src/plugins/plugin_descriptor.c
 src/plugins/carla_native_plugin.c
 src/plugins/cached_vst_descriptors.c
 src/plugins/plugin_manager.c
-src/plugins/vst_plugin.c
 src/plugins/plugin.c
 src/plugins/plugin_gtk.c
 src/plugins/lv2_plugin.c
 src/plugins/carla/carla_discovery.c
-src/plugins/vst/vst_windows.c
-src/plugins/vst/vst_x11.c
-src/plugins/vst/test_vst.c
 src/plugins/lv2/lv2_state.c
 src/plugins/lv2/lv2_ui.c
 src/plugins/lv2/lv2_gtk.c
@@ -461,7 +454,6 @@ src/gui/widgets/mixer.c
 src/gui/widgets/header.c
 src/gui/widgets/panel_file_browser.c
 src/gui/widgets/help_toolbar.c
-src/gui/widgets/midi_modifier_arranger_bg.c
 src/gui/widgets/timeline_ruler.c
 src/gui/widgets/region.c
 src/gui/widgets/audio_bus_track.c
@@ -474,6 +466,7 @@ src/gui/widgets/right_dock_edge.c
 src/gui/widgets/modulator_view.c
 src/gui/widgets/timeline_minimap_bg.c
 src/gui/widgets/audio_arranger_bg.c
+src/gui/widgets/plugin_properties_expander.c
 src/gui/widgets/route_target_selector.c
 src/gui/widgets/fader_controls_expander.c
 src/gui/widgets/automatable_selector_popover.c
