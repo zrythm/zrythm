@@ -5,8 +5,7 @@
     <comment>Zrythm project</comment>
     <comment xml:lang="fr">Projet Zrythm</comment>
     <glob pattern="*.zpj"/>
-    <sub-class-of type="text/yaml"/>
-    <sub-class-of type="text/plain"/>
+    <sub-class-of type="application/zstd"/>
   </mime-type>
   <!-- see #1062 -->
   <mime-type type="application/x-zrythm-package">

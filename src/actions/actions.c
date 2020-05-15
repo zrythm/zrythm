@@ -710,7 +710,8 @@ activate_save (GSimpleAction *action,
         action, variant, user_data);
       return;
     }
-  g_message ("%s project dir", PROJECT->dir);
+  g_message (
+    "project dir: %s", PROJECT->dir);
 
   project_save (
     PROJECT, PROJECT->dir, 0, 1, F_NO_ASYNC);

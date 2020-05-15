@@ -62,8 +62,9 @@
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
-
 #include <glib/gi18n.h>
+
+#include <zstd.h>
 
 /**
  * Tears down the project.
@@ -520,35 +521,91 @@ load (
         }
     }
 
-  gchar * yaml;
+  /* get file contents */
+  char * compressed_pj;
+  gsize compressed_pj_size;
   GError *err = NULL;
-
-  char * project_file_path =
+  char * project_file_path_alloc =
     project_get_project_file_path (
       PROJECT, PROJECT->backup_dir != NULL);
+  char project_file_path[1600];
+  strcpy (
+    project_file_path, project_file_path_alloc);
   g_message (
     "loading project file %s",
     project_file_path);
   g_file_get_contents (
-    project_file_path, &yaml, NULL, &err);
+    project_file_path, &compressed_pj,
+    &compressed_pj_size, &err);
   if (err != NULL)
     {
-      // Report error to user, and free error
-      char * str =
-        g_strdup_printf (
-          "Unable to read file: %s",
-          err->message);
-      ui_show_error_message (
-        MAIN_WINDOW,
-        str);
-      g_free (str);
+      /* Report error to user, and free error */
+      char str[800];
+      sprintf (
+        str, _("Unable to read file: %s"),
+        err->message);
+      ui_show_error_message (MAIN_WINDOW, str);
       g_error_free (err);
       RETURN_ERROR
     }
-  g_free (project_file_path);
 
-  Project * prj = project_deserialize (yaml);
-  g_free (yaml);
+  /* decompress */
+  g_message ("decompressing project...");
+  unsigned long long const frame_content_size =
+    ZSTD_getFrameContentSize (
+      compressed_pj, compressed_pj_size);
+  if (frame_content_size == ZSTD_CONTENTSIZE_ERROR)
+    {
+      ui_show_error_message (
+        MAIN_WINDOW,
+        _("Project not compressed by zstd!"));
+      g_free (compressed_pj);
+      RETURN_ERROR;
+    }
+  char * frame_content =
+    malloc ((size_t) frame_content_size);
+  size_t uncompressed_size =
+    ZSTD_decompress (
+      frame_content, frame_content_size,
+      compressed_pj, compressed_pj_size);
+  if (ZSTD_isError (uncompressed_size))
+    {
+      char str[800];
+      sprintf (
+        str,
+        _("Failed to decompress project file: %s"),
+        ZSTD_getErrorName (uncompressed_size));
+      ui_show_error_message (
+        MAIN_WINDOW, str);
+      g_free (compressed_pj);
+      RETURN_ERROR;
+    }
+  if (uncompressed_size != frame_content_size)
+    {
+      ui_show_error_message (
+        MAIN_WINDOW,
+        _("uncompressed_size != frame_content_size "
+        "impossible because zstd will check this "
+        "condition!"));
+      g_free (compressed_pj);
+      RETURN_ERROR;
+    }
+  g_message (
+    "%25s : %u bytes -> %u bytes",
+    project_file_path,
+    (unsigned) compressed_pj_size,
+    (unsigned) uncompressed_size);
+
+  /* make string null-terminated */
+  frame_content =
+    realloc (
+      frame_content,
+      frame_content_size + sizeof (char));
+  frame_content[frame_content_size] = '\0';
+
+  Project * prj =
+    project_deserialize ((char *) frame_content);
+  free (frame_content);
   if (!prj)
     {
       g_critical ("Failed to load project");
@@ -950,6 +1007,13 @@ static void *
 serialize_project_thread (
   ProjectSaveData * data)
 {
+  size_t yaml_byte_size;
+  size_t compress_bound;
+  void * compressed_yaml;
+  size_t compressed_size;
+
+  /* generate yaml */
+  g_message ("serializing project to yaml...");
   GError *err = NULL;
   char * yaml = project_serialize (&data->project);
   if (!yaml)
@@ -957,9 +1021,45 @@ serialize_project_thread (
       data->has_error = true;
       goto serialize_end;
     }
-  g_file_set_contents (
-    data->project_file_path, yaml, -1, &err);
+
+  /* compress */
+  g_message (
+    "using zstd v%d.%d.%d",
+    ZSTD_VERSION_MAJOR,
+    ZSTD_VERSION_MINOR,
+    ZSTD_VERSION_RELEASE);
+  g_message ("compressing project...");
+  yaml_byte_size =
+    strlen (yaml) * sizeof (char);
+  compress_bound =
+    ZSTD_compressBound (yaml_byte_size);
+  compressed_yaml =
+    malloc (compress_bound);
+  compressed_size =
+    ZSTD_compress (
+      compressed_yaml, compress_bound,
+      yaml, yaml_byte_size, 1);
   g_free (yaml);
+  if (ZSTD_isError (compressed_size))
+    {
+      g_warning (
+        "Failed to compress project file: %s",
+        ZSTD_getErrorName (compressed_size));
+      free (compressed_yaml);
+      data->has_error = true;
+      goto serialize_end;
+    }
+  g_message (
+    "Compression : %u bytes -> %u bytes",
+    (unsigned) yaml_byte_size,
+    (unsigned) compressed_size);
+
+  /* set file contents */
+  g_message ("saving project file...");
+  g_file_set_contents (
+    data->project_file_path, compressed_yaml,
+    (gssize) compressed_size, &err);
+  free (compressed_yaml);
   if (err != NULL)
     {
       g_warning (
@@ -968,6 +1068,8 @@ serialize_project_thread (
       g_error_free (err);
       data->has_error = true;
     }
+
+  g_message ("successfully saved project");
 
 serialize_end:
   data->finished = true;

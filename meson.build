@@ -603,6 +603,7 @@ zrythm_deps = [
   rtaudio_dep,
   rtmidi_dep,
   sdl_dep,
+  dependency('libzstd'),
   dependency('threads'),
   lilv_dep,
   dependency(
