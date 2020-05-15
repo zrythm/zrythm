@@ -113,12 +113,21 @@ typedef struct ZRegion
   int               pool_id;
 
   /**
-   * Whether currently stretching.
+   * Whether currently running the stretching
+   * algorithm.
    *
    * If this is true, region drawing will be
    * deferred.
    */
-  int               stretching;
+  bool              stretching;
+
+  /**
+   * The length before stretching.
+   */
+  double            before_length;
+
+  /** Used during arranger UI overlay actions. */
+  double            stretch_ratio;
 
   /**
    * Frames to actually use.

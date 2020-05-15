@@ -275,6 +275,8 @@ region_stretch (
           obj, &new_end_pos,
           ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
           F_NO_VALIDATE);
+        position_add_frames (
+          &new_end_pos, obj->pos.frames);
         arranger_object_set_position (
           obj, &new_end_pos,
           ARRANGER_OBJECT_POSITION_TYPE_END,
@@ -286,6 +288,7 @@ region_stretch (
       break;
     }
 
+  obj->use_cache = false;
   self->stretching = false;
 }
 

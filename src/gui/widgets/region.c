@@ -1280,7 +1280,7 @@ region_draw (
         self, cr, rect, &full_rect,
         &draw_rect, i);
 
-      if (obj->use_cache &&
+      if ((obj->use_cache &&
           self->last_main_draw_rect.x ==
             main_draw_rect.x &&
           self->last_main_full_rect.x ==
@@ -1288,7 +1288,9 @@ region_draw (
           self->last_main_full_rect.width ==
             main_full_rect.width &&
           self->last_main_draw_rect.width ==
-            main_draw_rect.width)
+            main_draw_rect.width) ||
+          MW_TIMELINE->action ==
+            UI_OVERLAY_ACTION_STRETCHING_R)
         {
           g_message ("using cache");
         }
@@ -1353,7 +1355,12 @@ region_draw (
           int y = draw_rect.y - rect->y;
           cairo_translate (
             cr, x, y);
-          /*cairo_scale (cr, 0.8, 1);*/
+          if (MW_TIMELINE->action ==
+                UI_OVERLAY_ACTION_STRETCHING_R)
+            {
+              cairo_scale (
+                cr, self->stretch_ratio, 1);
+            }
           cairo_set_source_surface (
             cr, obj->cached_surface[i], 0.0, 0.0);
           cairo_paint (cr);

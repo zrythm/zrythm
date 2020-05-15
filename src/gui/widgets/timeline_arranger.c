@@ -667,7 +667,7 @@ snap_region_l (
       if (is_valid)
         {
           arranger_object_resize (
-            r_obj, true, type, diff);
+            r_obj, true, type, diff, true);
         }
     }
 
@@ -774,9 +774,9 @@ timeline_arranger_widget_snap_regions_l (
 static inline int
 snap_region_r (
   ArrangerWidget * self,
-  ZRegion * region,
-  Position * new_pos,
-  int        dry_run)
+  ZRegion *        region,
+  Position *       new_pos,
+  int              dry_run)
 {
   ArrangerObjectResizeType type =
     ARRANGER_OBJECT_RESIZE_NORMAL;
@@ -848,7 +848,7 @@ snap_region_r (
       if (is_valid)
         {
           arranger_object_resize (
-            r_obj, false, type, diff);
+            r_obj, false, type, diff, true);
 
           /* if creating also set the loop points
            * appropriately */

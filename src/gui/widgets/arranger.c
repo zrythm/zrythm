@@ -2956,9 +2956,27 @@ on_drag_begin_handle_hit_object (
 #undef SET_ACTION
 
   /* clone the arranger selections at this point */
+  ArrangerSelections * orig_selections =
+    arranger_widget_get_selections (self);
   self->sel_at_start =
-    arranger_selections_clone (
-      arranger_widget_get_selections (self));
+    arranger_selections_clone (orig_selections);
+
+  /* if the action is stretching, set the
+   * "before_length" on each region */
+  if (orig_selections->type ==
+        ARRANGER_SELECTIONS_TYPE_TIMELINE &&
+      ACTION_IS (STRETCHING_R))
+    {
+      TimelineSelections * sel =
+        (TimelineSelections *) orig_selections;
+      for (int i = 0; i < sel->num_regions; i++)
+        {
+          ZRegion * region = sel->regions[i];
+          region->before_length =
+            arranger_object_get_length_in_ticks (
+              (ArrangerObject *) region);
+        }
+    }
 
   return true;
 }
@@ -4202,6 +4220,21 @@ on_drag_end_timeline (
         double ticks_diff =
           obj->end_pos.total_ticks -
           obj->transient->end_pos.total_ticks;
+        /* stretch now */
+        for (int i = 0;
+             i < TL_SELECTIONS->num_regions; i++)
+          {
+            ZRegion * region =
+              TL_SELECTIONS->regions[i];
+            ArrangerObject * r_obj =
+              (ArrangerObject *) region;
+            region_stretch (
+              region,
+              arranger_object_get_length_in_ticks (
+                r_obj) /
+              arranger_object_get_length_in_ticks (
+                r_obj->transient));
+          }
         UndoableAction * ua =
           arranger_selections_action_new_resize (
             (ArrangerSelections *) TL_SELECTIONS,

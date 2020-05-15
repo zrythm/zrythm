@@ -1878,12 +1878,12 @@ do_or_undo_resize (
               break;
             }
           arranger_object_resize (
-            obj, left, type, ticks);
+            obj, left, type, ticks, false);
 
           /* also resize the clone so we can find
            * the actual object next time */
           arranger_object_resize (
-            objs[i], left, type, ticks);
+            objs[i], left, type, ticks, false);
         }
     }
 

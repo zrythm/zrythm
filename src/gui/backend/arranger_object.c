@@ -1038,13 +1038,16 @@ arranger_object_add_ticks_to_children (
  * @param left 1 to resize left side, 0 to resize
  *   right side.
  * @param ticks Number of ticks to resize.
+ * @param during_ui_action Whether this is called
+ *   during a UI action (not at the end).
  */
 void
 arranger_object_resize (
   ArrangerObject *         self,
   const int                left,
   ArrangerObjectResizeType type,
-  const double             ticks)
+  const double             ticks,
+  bool                     during_ui_action)
 {
   double before_length =
     arranger_object_get_length_in_ticks (self);
@@ -1147,10 +1150,25 @@ arranger_object_resize (
                 arranger_object_get_length_in_ticks (
                   self);
 
-              /* stretch contents */
-              region_stretch (
-                region,
-                new_length / before_length);
+              /* FIXME this flag is not good,
+               * remove from this function and
+               * do it in the arranger */
+              if (during_ui_action)
+                {
+                  region->stretch_ratio =
+                    new_length /
+                    region->before_length;
+                }
+              else
+                {
+                  /* stretch contents */
+                  double stretch_ratio =
+                    new_length / before_length;
+                  g_message ("resizing with %f",
+                    stretch_ratio);
+                  region_stretch (
+                    region, stretch_ratio);
+                }
             }
         }
     }
