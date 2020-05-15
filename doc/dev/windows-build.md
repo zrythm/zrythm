@@ -101,6 +101,35 @@ Make sure it matches with your installation path.
 
 To open the terminal hit `ctrl`+`` ` ``
 
+### ASIO
+
+Because of copyright issues, you cannot distribut a build of ASIO. However, you can build one for yourself.
+
+## Building rtaudio with ASIO support
+
+Download and install visual studio community edition and cmake. Make sure cmake is available in your path.
+Start a windows cmd.
+
+```
+# Clone the rt audio repository
+git clone https://github.com/thestk/rtaudio.git --single-branch
+cd rtaudio
+mkdir build
+cd build
+# Configure with asio enabled, and point the prefix to your mingw64 install dir (no trailing slash!)
+cmake .. -DRTAUDIO_API_ASIO=ON -DCMAKE_INSTALL_PREFIX="C:/msys64/mingw64"
+# Build and install
+cmake --build . --config Release
+cmake --install .
+```
+
+## Activate rtaudio from meson
+Then from msys2 mingw64, you can build with:
+```
+# non empty output means install was successful
+pkg-config --list-all | grep rtaudio
+meson build -Denable_rtaudio=auto
+```
 ----
 
 Copyright (C) 2020 Sidar Talei, Matthieu Talbot
