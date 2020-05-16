@@ -580,6 +580,11 @@ if sdl_dep.found ()
   cdata.set('HAVE_SDL', 1)
 endif
 
+zstd_dep = dependency ('libzstd', required: false)
+if not zstd_dep.found ()
+  zstd_dep = cc.find_library ('zstd')
+endif
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -603,7 +608,7 @@ zrythm_deps = [
   rtaudio_dep,
   rtmidi_dep,
   sdl_dep,
-  dependency('libzstd'),
+  zstd_dep,
   dependency('threads'),
   lilv_dep,
   dependency(
