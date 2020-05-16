@@ -64,7 +64,7 @@ script:
   set -e
   case $TRAVIS_OS_NAME in
     osx)
-      meson build -Dsdl=enabled -Drtaudio=auto -Drtmidi=auto -Denable-tests=true
+      meson build -Dsdl=enabled -Drtaudio=auto -Drtmidi=auto -Denable-tests=true -Dwith-manpage=false
       ninja -C build
       ninja -C build test
       sudo ninja -C build install
@@ -74,6 +74,8 @@ script:
       $mingw64 sed -i -e '27s/false/true/' meson_options.txt
       # hack to enable sdl
       $mingw64 sed -i -e '63s/disabled/enabled/' meson_options.txt
+      # hack to disable manpage
+      $mingw64 sed -i -e '93s/true/false/' meson_options.txt
       # hack to fix translator generation
       $mingw64 sed -i -e '94s/translator/"invalid"/' scripts/gen-translators-list.scm
       $mingw64 meson build
