@@ -22,7 +22,7 @@
 #ifndef __UTILS_WINDOWS_ERRORS_H__
 #define __UTILS_WINDOWS_ERRORS_H__
 
-#include <Windows.h>
+#include <windows.h>
 
 void
 windows_errors_get_last_error_str (

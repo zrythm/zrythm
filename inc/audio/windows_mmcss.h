@@ -42,7 +42,7 @@
 #ifndef __AUDIO_WINDOWS_MMCSS_H__
 #define __AUDIO_WINDOWS_MMCSS_H__
 
-#include <Windows.h>
+#include <windows.h>
 
 typedef enum AVRT_PRIORITY
 {

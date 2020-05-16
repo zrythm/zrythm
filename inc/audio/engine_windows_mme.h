@@ -24,7 +24,7 @@
 #ifndef __AUDIO_ENGINE_WINDOWS_MME_H__
 #define __AUDIO_ENGINE_WINDOWS_MME_H__
 
-#include <Windows.h>
+#include <windows.h>
 
 #include <gtk/gtk.h>
 

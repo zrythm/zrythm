@@ -44,7 +44,7 @@
 
 #include <stdint.h>
 
-#include <Windows.h>
+#include <windows.h>
 
 #include "zix/ring.h"
 
