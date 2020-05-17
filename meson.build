@@ -226,6 +226,12 @@ if have_jack
     ]
 endif
 
+glib_dep = dependency('glib-2.0')
+check_functions += [
+  # use a fallback if this does not exist (glib < 2.58)
+  ['g_canonicalize_filename',[glib_dep]],
+  ]
+
 foreach func : check_functions
   if cc.has_function(func[0], dependencies: func[1])
     cdata.set('HAVE_' + func[0].underscorify().to_upper(), 1)
@@ -291,6 +297,7 @@ if os_windows
   common_cflags += [
     '-mms-bitfields',
     '-mwindows',
+    #'-mstackrealign',
     '-Wl,-Bdynamic',
     '-Wl,-as-needed',
     '-D_WOE32=1',
