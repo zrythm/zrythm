@@ -157,6 +157,10 @@ log_get_last_n_lines (
   Log * self,
   int   n)
 {
+  if (!GTK_IS_TEXT_BUFFER (
+        self->messages_buf))
+    return NULL;
+
   int total_lines =
     gtk_text_buffer_get_line_count (
       self->messages_buf);

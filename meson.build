@@ -641,10 +641,11 @@ if os_windows
   # msys2 provides a separate fftw3f entry in
   # pkg-config
   zrythm_deps += dependency('fftw3f')
-else
-  zrythm_deps += cc.find_library('fftw3_threads')
-  zrythm_deps += cc.find_library('fftw3f_threads')
 endif
+
+# for mingw on arch linux
+zrythm_deps += cc.find_library('fftw3_threads', required: false)
+zrythm_deps += cc.find_library('fftw3f_threads', required: false)
 
 if os_gnu
   zrythm_deps += cc.find_library('rt')

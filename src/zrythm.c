@@ -1036,18 +1036,24 @@ zrythm_app_startup (
   g_free (user_icon_theme_dir);
 
   /* try to load an icon */
+  g_message (
+    "Attempting to load an icon from the icon theme...");
   GError * err = NULL;
   GdkPixbuf * icon =
     gtk_icon_theme_load_icon (
       icon_theme, "solo", 48, 0, &err);
+  g_message ("icon: %p", icon);
   if (err)
     {
-      g_error (
+      g_critical (
         "Failed to load icon from icon theme: %s",
         err->message);
+      g_error ("Failed to load icon");
     }
   g_object_unref (icon);
+  g_message ("Icon loaded.");
 
+  g_message ("Setting gtk icon theme resource paths...");
   gtk_icon_theme_add_resource_path (
     gtk_icon_theme_get_default (),
     "/org/zrythm/Zrythm/app/icons/zrythm");
@@ -1071,7 +1077,7 @@ zrythm_app_startup (
     /*gtk_icon_theme_get_default (),*/
     /*path,*/
     /*1);*/
-  g_message ("set resource paths");
+  g_message ("Resource paths set");
 
   /* set default css provider */
   GtkCssProvider * css_provider =
