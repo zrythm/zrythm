@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-if (help2man.found())
+if help2man.found() and not os_windows
 manpage = custom_target (
   'manpage',
   input: 'zrythm.h2m',
