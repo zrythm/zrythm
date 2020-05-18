@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-04-30 14:10+0100\n"
-"PO-Revision-Date: 2020-05-14 16:41+0000\n"
+"PO-Revision-Date: 2020-05-18 07:41+0000\n"
 "Last-Translator: JEHANNIN <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
@@ -28,27 +28,22 @@ msgid "Cu_t"
 msgstr "Couper"
 
 #: inc/utils/gtk.h:55
-#, fuzzy
 msgid "_Copy"
-msgstr "Copier"
+msgstr "_Copier"
 
 #: inc/utils/gtk.h:61
-#, fuzzy
 msgid "_Paste"
-msgstr "Coller"
+msgstr "_Coller"
 
 #: inc/utils/gtk.h:67
-#, fuzzy
 msgid "_Delete"
-msgstr "Supprimer"
+msgstr "_Supprimer"
 
 #: inc/utils/gtk.h:73
-#, fuzzy
 msgid "Cle_ar Selection"
-msgstr "Déselectionner"
+msgstr "_Désélectionner"
 
 #: inc/utils/gtk.h:79
-#, fuzzy
 msgid "Select A_ll"
 msgstr "Tout sélectionner"
 
@@ -66,9 +61,9 @@ msgid "Unmute"
 msgstr "Activer la piste muette"
 
 #: inc/audio/curve.h:90 src/audio/curve.c:39
-#, fuzzy, c-format
+#, c-format
 msgid "Exponent"
-msgstr "Exporter"
+msgstr "Exponentiel"
 
 #: inc/audio/curve.h:92 src/audio/curve.c:42
 #, c-format, fuzzy
@@ -79,52 +74,52 @@ msgstr "Superellipse"
 #: src/audio/curve.c:45
 #, c-format
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: inc/audio/curve.h:96 src/audio/curve.c:48
-#, c-format
+#, c-format, fuzzy
 msgid "Pulse"
-msgstr ""
+msgstr "Pulsation"
 
 #: inc/audio/engine.h:114
 msgid "1,024"
-msgstr ""
+msgstr "1 024"
 
 #: inc/audio/engine.h:115
 msgid "2,048"
-msgstr ""
+msgstr "2 048"
 
 #: inc/audio/engine.h:116
 msgid "4,096"
-msgstr ""
+msgstr "4 096"
 
 #: inc/audio/engine.h:143
 msgid "22,050"
-msgstr ""
+msgstr "22 050"
 
 #: inc/audio/engine.h:144
 msgid "32,000"
-msgstr ""
+msgstr "32 000"
 
 #: inc/audio/engine.h:145
 msgid "44,100"
-msgstr ""
+msgstr "44 100"
 
 #: inc/audio/engine.h:146
 msgid "48,000"
-msgstr ""
+msgstr "48 000"
 
 #: inc/audio/engine.h:147
 msgid "88,200"
-msgstr ""
+msgstr "88 200"
 
 #: inc/audio/engine.h:148
 msgid "96,000"
-msgstr ""
+msgstr "96 000"
 
 #: inc/audio/engine.h:149
 msgid "192,000"
-msgstr ""
+msgstr "192 000"
 
 #. TRANSLATORS: Dummy backend
 #: inc/audio/engine.h:179 inc/audio/engine.h:221
@@ -160,7 +155,7 @@ msgstr "Racine carrée"
 
 #: inc/audio/pan.h:78
 msgid "Sine"
-msgstr ""
+msgstr "Sinusoidal"
 
 #: src/zrythm.c:306
 msgid "Setting up main window"
