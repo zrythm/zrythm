@@ -67,6 +67,7 @@ static SplashWindowWidget * splash;
 static GApplication * app;
 static FirstRunAssistantWidget * first_run_assistant;
 static ProjectAssistantWidget * assistant;
+static bool have_svg_loader = false;
 
 /** Zrythm directory used during unit tests. */
 static char * testing_dir = NULL;
@@ -971,6 +972,8 @@ print_gdk_pixbuf_format_info (
     {
       strcat (extensions, tmp);
       strcat (extensions, ", ");
+      if (g_str_has_prefix (tmp, "svg"))
+        have_svg_loader = true;
     }
   extensions[strlen (extensions) - 2] = '\0';
   g_strfreev (_extensions);
@@ -1098,6 +1101,13 @@ zrythm_app_startup (
     formats_list, print_gdk_pixbuf_format_info,
     NULL);
   g_slist_free (g_steal_pointer (&formats_list));
+  if (!have_svg_loader)
+    {
+      fprintf (
+        stderr,
+        "SVG loader was not found.\n");
+      exit (-1);
+    }
 
   /* try to load an icon */
   g_message (
@@ -1111,6 +1121,10 @@ zrythm_app_startup (
     {
       g_critical (
         "Failed to load icon from icon theme: %s",
+        err->message);
+      fprintf (
+        stderr,
+        "Failed to load icon from icon theme: %s.\n",
         err->message);
       g_error ("Failed to load icon");
     }
