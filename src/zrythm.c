@@ -382,7 +382,7 @@ init_thread (
     ZRYTHM,
     _("Initializing logging system"),
     0.02);
-  log_init (LOG);
+  log_init_with_file (LOG);
 
   zrythm_set_progress_status (
     ZRYTHM,
@@ -1000,6 +1000,8 @@ static void
 zrythm_app_startup (
   GApplication* _app)
 {
+  log_init (LOG);
+
   g_message ("startup");
   G_APPLICATION_CLASS (
     zrythm_app_parent_class)->

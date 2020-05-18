@@ -112,14 +112,24 @@ log_writer (
     g_log_writer_format_fields (
       log_level, fields, n_fields, 0);
 
-  /* queue the message */
-  LogEvent * ev =
-    (LogEvent *)
-    object_pool_get (LOG->obj_pool);
-  ev->log_level = log_level;
-  ev->message = str;
-  mpmc_queue_push_back (
-    self->mqueue, (void *) ev);
+  if (LOG->obj_pool && self->mqueue)
+    {
+      /* queue the message */
+      LogEvent * ev =
+        (LogEvent *)
+        object_pool_get (self->obj_pool);
+      ev->log_level = log_level;
+      ev->message = str;
+      mpmc_queue_push_back (
+        self->mqueue, (void *) ev);
+    }
+  else
+    {
+#ifdef _WOE32
+      /* log file not ready yet, log to console */
+      fprintf (stderr, "%s\n", str);
+#endif
+    }
 
   /* call the default log writer */
   return
@@ -184,7 +194,7 @@ log_get_last_n_lines (
  * This can be called from any thread.
  */
 void
-log_init (
+log_init_with_file (
   Log * self)
 {
   /* open file to write to */
@@ -223,7 +233,12 @@ log_init (
   mpmc_queue_reserve (
     self->mqueue,
     (size_t) MESSAGES_MAX * sizeof (char *));
+}
 
+void
+log_init (
+  Log * self)
+{
   g_log_set_writer_func (
     (GLogWriterFunc) log_writer, self, NULL);
 }

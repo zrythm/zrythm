@@ -87,6 +87,15 @@ log_get_last_n_lines (
  * This can be called from any thread.
  */
 void
+log_init_with_file (
+  Log * self);
+
+/**
+ * Initializes basic logging.
+ *
+ * This can be called from any thread.
+ */
+void
 log_init (
   Log * self);
 
