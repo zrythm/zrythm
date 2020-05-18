@@ -55,9 +55,9 @@
 
 #include "Wrapper.h"
 
-#include <gtk/gtk.h>
-
+#include <gdk-pixbuf/gdk-pixbuf.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   ZrythmApp, zrythm_app,
@@ -935,6 +935,61 @@ zrythm_app_open (
   g_message ("open %s", zrythm->open_filename);
 }
 
+static void
+print_gdk_pixbuf_format_info (
+  gpointer data,
+  gpointer user_data)
+{
+  GdkPixbufFormat * format =
+    (GdkPixbufFormat *) data;
+  char * name =
+    gdk_pixbuf_format_get_name (format);
+  char * description =
+    gdk_pixbuf_format_get_description (format);
+  char * license =
+    gdk_pixbuf_format_get_license (format);
+  char mime_types[800] = "";
+  char ** _mime_types =
+    gdk_pixbuf_format_get_mime_types (
+      format);
+  char * tmp = NULL;
+  int i = 0;
+  while ((tmp = _mime_types[i++]))
+    {
+      strcat (mime_types, tmp);
+      strcat (mime_types, ", ");
+    }
+  mime_types[strlen (mime_types) - 2] = '\0';
+  g_strfreev (_mime_types);
+  char extensions[800] = "";
+  char ** _extensions =
+    gdk_pixbuf_format_get_extensions (
+      format);
+  tmp = NULL;
+  i = 0;
+  while ((tmp = _extensions[i++]))
+    {
+      strcat (extensions, tmp);
+      strcat (extensions, ", ");
+    }
+  extensions[strlen (extensions) - 2] = '\0';
+  g_strfreev (_extensions);
+  g_message (
+    "Found GDK Pixbuf Format:\n"
+    "name: %s\ndescription: %s\n"
+    "mime types: %s\nextensions: %s\n"
+    "is scalable: %d\nis disabled: %d\n"
+    "license: %s",
+    name, description, mime_types,
+    extensions,
+    gdk_pixbuf_format_is_scalable (format),
+    gdk_pixbuf_format_is_disabled (format),
+    license);
+  g_free (name);
+  g_free (description);
+  g_free (license);
+}
+
 /**
  * First function that gets called.
  */
@@ -1034,6 +1089,15 @@ zrythm_app_startup (
     user_icon_theme_dir);
   g_free (user_themes_dir);
   g_free (user_icon_theme_dir);
+
+  /* look for found loaders */
+  g_message ("looking for GDK Pixbuf formats...");
+  GSList * formats_list =
+    gdk_pixbuf_get_formats ();
+  g_slist_foreach (
+    formats_list, print_gdk_pixbuf_format_info,
+    NULL);
+  g_slist_free (g_steal_pointer (&formats_list));
 
   /* try to load an icon */
   g_message (
