@@ -148,10 +148,17 @@ _project_compress (
     }
   else /* decompress */
     {
+#if (ZSTD_VERSION_MAJOR == 1 && \
+  ZSTD_VERSION_MINOR < 3)
+      unsigned long long const frame_content_size =
+        ZSTD_getDecompressedSize (src, src_size);
+      if (frame_content_size == 0)
+#else
       unsigned long long const frame_content_size =
         ZSTD_getFrameContentSize (src, src_size);
       if (frame_content_size ==
             ZSTD_CONTENTSIZE_ERROR)
+#endif
         {
           return
             g_strdup (

@@ -103,7 +103,7 @@ To open the terminal hit `ctrl`+`` ` ``
 
 ### ASIO
 
-Because of copyright issues, you cannot distribut a build of ASIO. However, you can build one for yourself.
+Because of licensing issues, you cannot distribute a build of ASIO. However, you can build one for yourself.
 
 ## Building rtaudio with ASIO support
 
