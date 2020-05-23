@@ -7,7 +7,7 @@ packages:
   #- meson
   - ninja-build
   - gettext
-  - guile-2.2-dev
+  - guile-2.0
   - help2man
   - python3-sphinx
   - ladspa-sdk
@@ -33,7 +33,7 @@ sources:
 tasks:
   - setup: |
       cd zrythm
-      ../meson/meson.py build -Denable-tests=true -Dwith-manpage=true -Dffmpeg=enabled
+      ../meson/meson.py build -Dtests=true -Dmanpage=true -Dffmpeg=enabled -Dguile=disabled
   - build: |
       cd zrythm
       ninja -C build

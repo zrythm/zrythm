@@ -36,10 +36,10 @@ if guile_snarf.found()
   scripts_conf += {
     'GUILE_SNARF': guile_snarf.path() }
 endif
-if get_option('guile-snarf-docs-path') != ''
+if get_option('guile_snarf_docs_path') != ''
   scripts_conf += {
     'GUILE_SNARF_DOCS_BIN': get_option (
-      'guile-snarf-docs-path'),
+      'guile_snarf_docs_path'),
     'GUILD_BIN': guild.path() }
 endif
 

@@ -29,7 +29,7 @@ sources:
 tasks:
   - setup: |
       cd zrythm
-      ../meson/meson.py build -Denable-tests=true -Dwith-manpage=true
+      ../meson/meson.py build -Dtests=true -Dmanpage=true
   - build: |
       cd zrythm
       ninja -C build

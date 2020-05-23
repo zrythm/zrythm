@@ -35,9 +35,9 @@ manpage = custom_target (
     '--version-string=Zrythm ' + meson.project_version (),
     zrythm_exe,
     ],
-  install: get_option ('with-manpage'),
+  install: get_option ('manpage'),
   install_dir: mandir,
-  build_by_default: get_option ('with-manpage'),
+  build_by_default: get_option ('manpage'),
   )
 
 run_target (

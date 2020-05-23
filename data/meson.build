@@ -26,7 +26,7 @@ gschema = configure_file (
   install_dir: schemasdir)
 
 # install fonts if needed
-if get_option('with-dseg-font')
+if get_option('dseg_font')
   install_subdir (
     join_paths ('fonts', 'DSEG14-Classic-MINI'),
     install_dir: fontsdir)

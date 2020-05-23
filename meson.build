@@ -45,7 +45,7 @@ samplesdir = join_paths (zrythmdatadir, 'samples')
 docdir = join_paths (datadir, 'doc', 'zrythm')
 sourceviewstylesdir = join_paths (zrythmdatadir, 'sourceview-styles')
 
-# Used for building with-manpages, manual, etc., using
+# Used for building manpages, manual, etc., using
 # foreach
 locales = [
   'en', 'en_GB', 'gl', 'de', 'fr', 'it',
@@ -94,13 +94,13 @@ cdata.set_quoted ('CONFIGURE_LIBDIR', libdir)
 cdata.set_quoted ('CONFIGURE_BINDIR', bindir)
 cdata.set_quoted ('LIB_SUFFIX', lib_suffix)
 cdata.set_quoted ('BIN_SUFFIX', bin_suffix)
-if get_option ('trial-ver')
+if get_option ('trial_ver')
   cdata.set('TRIAL_VER', 1)
 endif
-if get_option ('windows-release')
+if get_option ('windows_release')
   cdata.set ('WINDOWS_RELEASE', 1)
 endif
-if get_option ('mac-release')
+if get_option ('mac_release')
   cdata.set ('MAC_RELEASE', 1)
 endif
 cdata.set (
@@ -115,7 +115,7 @@ cdata.set_quoted (
 cdata.set_quoted (
   'NEW_ISSUE_URL',
   'https://redmine.zrythm.org/projects/zrythm/issues/new')
-if (get_option ('with-user-manual'))
+if (get_option ('user_manual'))
   cdata.set_quoted ('MANUAL_PATH', docdir)
 endif
 
@@ -170,10 +170,10 @@ cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
 
 sphinx_build = find_program (
   ['sphinx-build', 'sphinx-build-3'],
-  required: get_option ('with-user-manual'))
+  required: get_option ('user_manual'))
 help2man = find_program (
   ['help2man'],
-  required: get_option ('with-manpage'))
+  required: get_option ('manpage'))
 stoat = find_program (
   ['stoat'], required: false)
 python3 = find_program (
@@ -262,7 +262,7 @@ else
     ]
 endif
 
-if get_option ('enable-profiling')
+if get_option ('profiling')
   test_cflags += [ '-g', '-pg', 'no-pie' ]
 endif
 
@@ -369,7 +369,7 @@ if cc.get_id() == 'gcc'
 endif
 
 strict_cflags = []
-if get_option ('strict-flags')
+if get_option ('strict_flags')
   strict_cflags = cc.get_supported_arguments (
     test_strict_cflags)
 endif
@@ -383,7 +383,7 @@ endif
 
 test_ldflags = []
 
-if get_option ('enable-profiling')
+if get_option ('profiling')
   test_ldflags += [ '-g', '-pg', 'no-pie' ]
 endif
 
@@ -727,13 +727,13 @@ meson.add_dist_script (
 
 summary ({
   'Build type': get_option('buildtype'),
-  'Profiling': get_option('enable-profiling'),
-  'Strict flags': get_option('strict-flags'),
-  'Build tests': get_option('enable-tests'),
-  'Build GUI tests': get_option('enable-gui-tests'),
-  'Build/install manpage': get_option('with-manpage'),
-  'Build/install user manual': get_option('with-user-manual'),
-  'Install DSEG font': get_option('with-dseg-font'),
+  'Profiling': get_option('profiling'),
+  'Strict flags': get_option('strict_flags'),
+  'Build tests': get_option('tests'),
+  'Build GUI tests': get_option('gui_tests'),
+  'Build/install manpage': get_option('manpage'),
+  'Build/install user manual': get_option('user_manual'),
+  'Install DSEG font': get_option('dseg_font'),
   'Coverage reports': get_option('b_coverage'),
   }, section: 'General')
 

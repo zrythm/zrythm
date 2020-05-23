@@ -54,7 +54,7 @@ then TraceStage "running staging-specific post-commit hooks"
      rm -rf $tmp_builddir > /dev/null
      for compiler in clang gcc; do
        for buildtype in debug release; do
-         CC=$compiler CXX=$compiler meson $tmp_builddir --buildtype=$buildtype -Denable-tests=true 2> /dev/null
+         CC=$compiler CXX=$compiler meson $tmp_builddir --buildtype=$buildtype -Dtests=true 2> /dev/null
          TraceStep "verifying re-build/test"
          ninja -C $tmp_builddir test > /dev/null
          DESTDIR=$tmp_installdir ninja -C $tmp_builddir install > /dev/null

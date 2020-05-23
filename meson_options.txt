@@ -16,19 +16,19 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 option (
-  'enable-profiling',
+  'profiling',
   type: 'boolean',
   value: false,
   description: 'Enable profiling with gprof')
 
 option (
-  'enable-tests',
+  'tests',
   type: 'boolean',
   value: false,
   description: 'Whether to compile unit tests')
 
 option (
-  'enable-gui-tests',
+  'gui_tests',
   type: 'boolean',
   value: false,
   description: 'Whether to compile GUI unit tests')
@@ -88,25 +88,25 @@ option (
   description: 'Build with libguile support for scripting')
 
 option (
-  'with-manpage',
+  'manpage',
   type: 'boolean',
   value: true,
   description: 'Build and install manpage')
 
 option (
-  'with-user-manual',
+  'user_manual',
   type: 'boolean',
   value: false,
   description: 'Build and install user manual')
 
 option (
-  'strict-flags',
+  'strict_flags',
   type: 'boolean',
   value: false,
   description: 'Compile and link with strict flags (-Werror)')
 
 option (
-  'with-dseg-font',
+  'dseg_font',
   type: 'boolean',
   value: true,
   description: '''Install the DSEG14 font used by the
@@ -114,25 +114,25 @@ transport meters. Packagers should turn this off and
 set the font as a dependency instead''')
 
 option (
-  'windows-release',
+  'windows_release',
   type: 'boolean',
   value: false,
   description: 'This is only used when making the installers')
 
 option (
-  'mac-release',
+  'mac_release',
   type: 'boolean',
   value: false,
   description: 'This is only used when making the installers')
 
 option (
-  'trial-ver',
+  'trial_ver',
   type: 'boolean',
   value: false,
   description: 'Whether this is a trial version with limited functionality')
 
 option (
-  'guile-snarf-docs-path',
+  'guile_snarf_docs_path',
   type: 'string',
   value: '',
   description: '''Path to guile-snarf-docs (used

@@ -33,7 +33,7 @@ sources:
 tasks:
   - setup: |
       cd zrythm
-      ../meson/meson.py build -Denable-tests=true -Dwith-manpage=true -Dffmpeg=enabled
+      ../meson/meson.py build -Dtests=true -Dmanpage=true -Dffmpeg=enabled
   - build: |
       cd zrythm
       ninja -C build
