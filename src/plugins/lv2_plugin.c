@@ -1021,7 +1021,9 @@ nframes_t
 lv2_plugin_get_latency (
   Lv2Plugin * pl)
 {
-  lv2_plugin_process (pl, PLAYHEAD->frames, 2);
+  lv2_plugin_process (
+    pl, PLAYHEAD->frames,
+    AUDIO_ENGINE->block_length);
 
   return pl->plugin_latency;
 }
