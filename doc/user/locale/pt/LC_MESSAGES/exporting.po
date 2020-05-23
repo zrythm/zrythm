@@ -8,20 +8,21 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2019-10-28 15:53+0000\n"
-"Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
+"PO-Revision-Date: 2020-05-18 07:41+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualexporting/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese "
-"<https://hosted.weblate.org/projects/zrythm/manualexporting/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../exporting/audio-and-midi.rst:8
 msgid "Audio & MIDI"
-msgstr ""
+msgstr "Áudio & MIDI"
 
 #: ../../exporting/audio-and-midi.rst:10
 msgid ""
@@ -140,13 +141,15 @@ msgstr "Exportação"
 
 #: ../../exporting/routing-graph.rst:6
 msgid "Routing Graph"
-msgstr ""
+msgstr "Gráfico de Roteamento"
 
 #: ../../exporting/routing-graph.rst:7
 msgid ""
 "Zrythm allows you to export its routing graph. This is useful for "
 "debugging and also helps visualizing the internals of Zrythm."
 msgstr ""
+"Zrythm permite que exporte o seu gráfico de roteamento. Isto é útil para "
+"depuração e também ajuda a visualizar os internos da Zrythm."
 
 #: ../../exporting/routing-graph.rst:11
 msgid ""
@@ -154,12 +157,17 @@ msgid ""
 "selection. The routing graph can be exported as either a PNG image or a "
 ".dot graph."
 msgstr ""
+"Clicando no botão :zbutton:`Exportar Gráfico`, aparecerá a seguinte seleção. "
+"O gráfico de roteamento pode ser exportado como uma imagem PNG ou como um "
+"gráfico .dot."
 
 #: ../../exporting/routing-graph.rst:19
 msgid ""
 "For large projects, it may take a while to generate the PNG graph and the"
 " resulting image will be extremely large."
 msgstr ""
+"Para projetos grandes, pode demorar um pouco para gerar o gráfico PNG e a "
+"imagem resultante será extremamente grande."
 
 #~ msgid "Exporting MIDI Files"
 #~ msgstr "Exportando ficheiros MIDI"
@@ -169,4 +177,3 @@ msgstr ""
 
 #~ msgid "Overview"
 #~ msgstr "Sinopse"
-

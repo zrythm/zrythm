@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 14:21+0100\n"
-"PO-Revision-Date: 2020-05-14 16:41+0000\n"
+"PO-Revision-Date: 2020-05-18 07:41+0000\n"
 "Last-Translator: JEHANNIN <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/fr/>\n"
@@ -98,7 +98,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:44
 msgid "Exponent"
-msgstr ""
+msgstr "Exponentiel"
 
 #: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponential curve."
@@ -115,7 +115,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "The curve that Vital synth uses, similar to exponential curve."
@@ -124,7 +124,7 @@ msgstr ""
 #: ../../editing/clip-editors/automation-editor.rst:52
 #, fuzzy
 msgid "Pulse"
-msgstr "Règle"
+msgstr "Pulsation"
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse wave."
