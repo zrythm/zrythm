@@ -754,8 +754,23 @@ add_group (
 static void
 on_window_closed (
   GtkWidget *object,
-  gpointer   user_data)
+  PreferencesWidget * self)
 {
+  GtkWidget * dialog =
+    gtk_message_dialog_new_with_markup (
+      GTK_WINDOW (MAIN_WINDOW),
+      GTK_DIALOG_MODAL |
+        GTK_DIALOG_DESTROY_WITH_PARENT,
+      GTK_MESSAGE_INFO,
+      GTK_BUTTONS_OK,
+      _("Some changes will only take "
+      "effect after you restart Zrythm"));
+  gtk_window_set_transient_for (
+    GTK_WINDOW (dialog),
+    GTK_WINDOW (self));
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+
   MAIN_WINDOW->preferences_opened = false;
 }
 
