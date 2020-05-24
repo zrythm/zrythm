@@ -76,6 +76,9 @@ typedef struct _MainWindowWidget
   GtkButton *              close_notification_button;
   GtkLabel *               notification_label;
 
+  /** Whether preferences window is opened. */
+  bool                     preferences_opened;
+
   /**
    * Last focused widget.
    *

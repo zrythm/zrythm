@@ -20,6 +20,7 @@
 #include <locale.h>
 
 #include "audio/engine.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_controller_mb.h"
 #include "gui/widgets/preferences.h"
 #include "plugins/plugin_gtk.h"
@@ -750,6 +751,14 @@ add_group (
     }
 }
 
+static void
+on_window_closed (
+  GtkWidget *object,
+  gpointer   user_data)
+{
+  MAIN_WINDOW->preferences_opened = false;
+}
+
 /**
  * Sets up the preferences widget.
  */
@@ -766,6 +775,10 @@ preferences_widget_new ()
     {
       add_group (self, i);
     }
+
+  g_signal_connect (
+    G_OBJECT (self), "destroy",
+    G_CALLBACK (on_window_closed), self);
 
   return self;
 }

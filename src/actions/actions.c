@@ -277,13 +277,21 @@ activate_preferences (
   GVariant      *variant,
   gpointer       user_data)
 {
-  PreferencesWidget * widget =
-    preferences_widget_new ();
+  if (MAIN_WINDOW->preferences_opened)
+    {
+      return;
+    }
+
+  GtkWindow * preferences_window =
+    GTK_WINDOW (
+      preferences_widget_new ());
+  g_return_if_fail (preferences_window);
   gtk_window_set_transient_for (
-    GTK_WINDOW (widget),
-    GTK_WINDOW (MAIN_WINDOW));
-  gtk_widget_set_visible (GTK_WIDGET (widget),
-                          1);
+    preferences_window,
+    (GtkWindow *) MAIN_WINDOW);
+  gtk_widget_show_all (
+    (GtkWidget *) preferences_window);
+  MAIN_WINDOW->preferences_opened = true;
 }
 
 /**
