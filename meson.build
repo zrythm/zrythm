@@ -47,11 +47,7 @@ sourceviewstylesdir = join_paths (zrythmdatadir, 'sourceview-styles')
 
 # Used for building manpages, manual, etc., using
 # foreach
-locales = [
-  'en', 'en_GB', 'gl', 'de', 'fr', 'it',
-  'nb_NO', 'el', 'es', 'ja',
-  'pl', 'pt', 'pt_BR',
-  'ru', 'zh' ]
+locales = run_command ('cat', 'po/LINGUAS').stdout ().strip ().split (' ')
 
 os_darwin = false
 os_gnu = false
