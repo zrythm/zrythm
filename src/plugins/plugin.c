@@ -102,6 +102,13 @@ plugin_init (
   int      track_pos,
   int      slot)
 {
+  g_message (
+    "%s: %s (%s) track pos %d slot %d",
+    __func__, plugin->descr->name,
+    plugin_protocol_strings[
+      plugin->descr->protocol].str,
+    track_pos, slot);
+
   plugin->in_ports_size = 1;
   plugin->out_ports_size = 1;
   plugin->id.track_pos = track_pos;
@@ -316,6 +323,12 @@ plugin_new_from_descr (
   int                track_pos,
   int                slot)
 {
+  g_message (
+    "%s: %s (%s) track pos %d slot %d",
+    __func__, descr->name,
+    plugin_protocol_strings[descr->protocol].str,
+    track_pos, slot);
+
   Plugin * plugin = calloc (1, sizeof (Plugin));
 
   plugin->descr =

@@ -1945,7 +1945,7 @@ activate_toggle_editor_event_viewer (
     !gtk_widget_get_visible (
        GTK_WIDGET (MW_EDITOR_EVENT_VIEWER));
 
-  g_settings_set_int (
+  g_settings_set_boolean (
     S_UI, "editor-event-viewer-visible",
     new_visibility);
   gtk_widget_set_visible (

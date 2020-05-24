@@ -99,7 +99,6 @@ if get_option ('tests')
       test_name,
       sources: [
         source,
-        zrythm_resources,
         ],
       c_args : [
         common_cflags,

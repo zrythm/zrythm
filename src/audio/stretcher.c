@@ -37,6 +37,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "audio/stretcher.h"
 #include "utils/math.h"
