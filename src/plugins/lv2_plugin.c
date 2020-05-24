@@ -1472,6 +1472,9 @@ lv2_plugin_pick_ui (
                     ui_type,
                     PM_LILV_NODES.ui_Qt4UI) ||
 #endif
+                  lilv_node_equals (
+                    ui_type,
+                    PM_LILV_NODES.ui_externalkx) ||
                   false
                   )
                 {
