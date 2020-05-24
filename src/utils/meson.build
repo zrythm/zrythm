@@ -19,6 +19,7 @@ util_srcs = [
   'arrays.c',
   'audio.c',
   'cairo.c',
+  'cpu_windows.cpp',
   'datetime.c',
   'dialogs.c',
   'dictionary.c',

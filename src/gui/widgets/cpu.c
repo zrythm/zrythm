@@ -22,25 +22,20 @@
 
 #include "config.h"
 
-#ifdef _WOE32
-#include <winsock2.h>
-#endif
+#include <stdio.h>
 
 #include "audio/engine.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/cpu.h"
 #include "project.h"
+#include "utils/cpu_windows.h"
+#include "utils/cairo.h"
 
-#include <stdio.h>
 #ifdef HAVE_LIBGTOP
 #include <glibtop.h>
 #include <glibtop/cpu.h>
 #include <glibtop/loadavg.h>
-#elif defined(_WOE32)
-#include <windows.h>
 #endif
-
-#include "utils/cairo.h"
 
 G_DEFINE_TYPE (CpuWidget,
                cpu_widget,
@@ -164,10 +159,6 @@ refresh_dsp_load (
 {
   if (g_atomic_int_get (&AUDIO_ENGINE->run))
     {
-
-#ifdef __APPLE__
-      /* TODO engine not working yet */
-#else
       gint64 block_latency =
         (AUDIO_ENGINE->block_length * 1000000) /
         AUDIO_ENGINE->sample_rate;
@@ -176,7 +167,6 @@ refresh_dsp_load (
         ((double) AUDIO_ENGINE->max_time_taken *
            100.0 /
          (double) block_latency);
-#endif
     }
   else
     self->dsp = 0;
@@ -188,16 +178,6 @@ refresh_dsp_load (
 
 #if defined(__linux__) && !defined(HAVE_LIBGTOP)
 static long double a[4], b[4] = {0,0,0,0}, loadavg;
-#endif
-
-#ifdef _WOE32
-static unsigned long long
-FileTimeToInt64 (const FILETIME * ft)
-{
-  return
-    (((unsigned long long)(ft->dwHighDateTime))<<32) |
-    ((unsigned long long)ft->dwLowDateTime);
-}
 #endif
 
 /**
@@ -218,7 +198,9 @@ refresh_cpu_load (
 
   prev_total = cpu.total;
   prev_idle = cpu.idle;
+
 #elif defined(__linux__)
+
   /* ======= non libgtop ====== */
   FILE *fp;
 
@@ -234,35 +216,11 @@ refresh_cpu_load (
   b[2] = a[2];
   b[3] = a[3];
   /* ========== end ========= */
+
 #elif defined(_WOE32)
-  FILETIME idleTime, kernelTime, userTime;
 
-  if (GetSystemTimes (
-        &idleTime, &kernelTime, &userTime))
-    {
-      unsigned long long idleTicks =
-        FileTimeToInt64(&idleTime);
-      unsigned long long totalTicks =
-        FileTimeToInt64(&kernelTime) +
-        FileTimeToInt64(&userTime);
-      static unsigned long long _previousTotalTicks = 0;
-      static unsigned long long _previousIdleTicks = 0;
+  self->cpu = cpu_windows_get_usage (-1);
 
-      unsigned long long totalTicksSinceLastTime = totalTicks-_previousTotalTicks;
-      unsigned long long idleTicksSinceLastTime  = idleTicks-_previousIdleTicks;
-
-      self->cpu =
-        (int)
-        (1.0f - (
-          (totalTicksSinceLastTime > 0) ?
-            ((float)idleTicksSinceLastTime) /
-              totalTicksSinceLastTime : 0));
-
-      _previousTotalTicks = totalTicks;
-      _previousIdleTicks  = idleTicks;
-    }
-  else
-    self->cpu = -1.0f;
 #endif
 
   char ttip[100];
