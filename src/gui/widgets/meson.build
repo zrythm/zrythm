@@ -99,6 +99,7 @@ widget_srcs = files([
   'modulator.c',
   'modulator_view.c',
   'panel_file_browser.c',
+  'piano_keyboard.c',
   'piano_roll_keys.c',
   'plugin_browser.c',
   'plugin_properties_expander.c',

@@ -61,6 +61,8 @@ typedef struct _AutomationEditorSpaceWidget
  * left_of_ruler_size_group depending on if the
  * current editor space is visible or not.
  *
+ * FIXME why link them?
+ *
  * To be used by each editor space.
  *
  * @note Assumes that a boolean called visible

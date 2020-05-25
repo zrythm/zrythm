@@ -32,7 +32,16 @@ G_DECLARE_FINAL_TYPE (
   ChordKeyWidget,
   chord_key_widget,
   Z, CHORD_KEY_WIDGET,
-  GtkDrawingArea)
+  GtkGrid)
+
+typedef struct _PianoKeyboardWidget
+  PianoKeyboardWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 /**
 * Piano roll note widget to be shown on the left
@@ -40,13 +49,25 @@ G_DECLARE_FINAL_TYPE (
 */
 typedef struct _ChordKeyWidget
 {
-  GtkDrawingArea         parent_instance;
+  GtkGrid           parent_instance;
 
   /** The chord this widget is for. */
-  ChordDescriptor *      descr;
+  ChordDescriptor * descr;
+
+  GtkLabel *        chord_lbl;
+  GtkBox *          piano_box;
+  PianoKeyboardWidget * piano;
+  GtkButtonBox *    btn_box;
+  GtkButton *       choose_chord_btn;
+  GtkButton *       invert_prev_btn;
+  GtkButton *       invert_next_btn;
 
   GtkGestureMultiPress * multipress;
 } ChordKeyWidget;
+
+void
+chord_key_widget_refresh (
+  ChordKeyWidget * self);
 
 /**
  * Creates a ChordKeyWidget for the given
@@ -55,5 +76,9 @@ typedef struct _ChordKeyWidget
 ChordKeyWidget *
 chord_key_widget_new (
   ChordDescriptor * descr);
+
+/**
+ * @}
+ */
 
 #endif

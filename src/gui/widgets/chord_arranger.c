@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -64,7 +64,6 @@
 #include "gui/widgets/scale_object.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/chord_arranger.h"
-#include "gui/widgets/chord_arranger_bg.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
@@ -143,152 +142,3 @@ chord_arranger_widget_get_chord_at_y (
     MW_CHORD_EDITOR_SPACE->px_per_key + 1;
   return (int) (adj_y / adj_px_per_key);
 }
-
-
-/*static int*/
-/*on_motion (*/
-  /*GtkWidget *      widget,*/
-  /*GdkEventMotion * event,*/
-  /*ArrangerWidget * self)*/
-/*{*/
-  /*if (event->type == GDK_LEAVE_NOTIFY)*/
-    /*self->hovered_index = -1;*/
-  /*else*/
-    /*self->hovered_index =*/
-      /*chord_arranger_widget_get_chord_at_y (*/
-        /*event->y);*/
-  /*[>g_message ("hovered index: %d",<]*/
-             /*[>self->hovered_index);<]*/
-
-  /*ARRANGER_WIDGET_GET_PRIVATE (self);*/
-  /*gtk_widget_queue_draw (*/
-    /*GTK_WIDGET (self->bg));*/
-
-  /*return FALSE;*/
-/*}*/
-
-
-/**
- * Returns the ticks objects were moved by since
- * the start of the drag.
- *
- * FIXME not really needed, can use
- * chord_selections_get_start_pos and the
- * arranger's earliest_obj_start_pos.
- */
-/*static long*/
-/*get_moved_diff (*/
-  /*ArrangerWidget * self)*/
-/*{*/
-/*#define GET_DIFF(sc,pos_name) \*/
-  /*if (CHORD_SELECTIONS->num_##sc##s) \*/
-    /*{ \*/
-      /*return \*/
-        /*position_to_ticks ( \*/
-          /*&sc##_get_main_trans_##sc ( \*/
-            /*CHORD_SELECTIONS->sc##s[0])->pos_name) - \*/
-        /*position_to_ticks ( \*/
-          /*&sc##_get_main_##sc ( \*/
-            /*CHORD_SELECTIONS->sc##s[0])->pos_name); \*/
-    /*}*/
-
-  /*GET_DIFF (chord_object, pos);*/
-
-  /*g_return_val_if_reached (0);*/
-/*}*/
-
-/**
- * Sets the default cursor in all selected regions
- * and intializes start positions.
- */
-/*void*/
-/*chord_arranger_widget_on_drag_end (*/
-  /*ArrangerWidget * self)*/
-/*{*/
-  /*ARRANGER_WIDGET_GET_PRIVATE (self);*/
-
-/*}*/
-
-/*static void*/
-/*add_children_from_chord_track (*/
-  /*ArrangerWidget * self,*/
-  /*ChordTrack *          ct)*/
-/*{*/
-  /*int i, j, k;*/
-  /*ZRegion * r;*/
-  /*ChordObject * c;*/
-  /*for (i = 0; i < ct->num_chord_regions; i++)*/
-    /*{*/
-      /*r = ct->chord_regions[i];*/
-
-      /*for (j = 0; j < r->num_chord_objects; j++)*/
-        /*{*/
-          /*c = r->chord_objects[j];*/
-
-          /*for (k = 0 ;*/
-               /*k <= AOI_COUNTERPART_MAIN_TRANSIENT;*/
-               /*k++)*/
-            /*{*/
-              /*if (k == AOI_COUNTERPART_MAIN)*/
-                /*c =*/
-                  /*chord_object_get_main (c);*/
-              /*else if (*/
-                /*k == AOI_COUNTERPART_MAIN_TRANSIENT)*/
-                /*c =*/
-                  /*chord_object_get_main_trans (c);*/
-
-              /*g_return_if_fail (c);*/
-              /*ArrangerObject * obj =*/
-                /*(ArrangerObject *) c;*/
-
-              /*if (!obj->widget)*/
-                /*arranger_object_gen_widget (obj);*/
-
-              /*arranger_widget_add_overlay_child (*/
-                /*(ArrangerWidget *) self, obj);*/
-            /*}*/
-        /*}*/
-    /*}*/
-/*}*/
-
-/**
- * Readd children.
- */
-
-/**
- * Scroll to the given position.
- */
-/*void*/
-/*chord_arranger_widget_scroll_to (*/
-  /*ArrangerWidget * self,*/
-  /*Position *               pos)*/
-/*{*/
-  /*[> TODO <]*/
-
-/*}*/
-
-/*static gboolean*/
-/*on_focus (*/
-  /*GtkWidget * widget,*/
-  /*gpointer    user_data)*/
-/*{*/
-  /*[>g_message ("chord focused");<]*/
-  /*MAIN_WINDOW->last_focused = widget;*/
-
-  /*return FALSE;*/
-/*}*/
-
-/*static void*/
-/*chord_arranger_widget_class_init (*/
-  /*ArrangerWidgetClass * klass)*/
-/*{*/
-/*}*/
-
-/*static void*/
-/*chord_arranger_widget_init (*/
-  /*ArrangerWidget *self )*/
-/*{*/
-  /*g_signal_connect (*/
-    /*self, "grab-focus",*/
-    /*G_CALLBACK (on_focus), self);*/
-/*}*/

@@ -28,6 +28,8 @@
 
 #include <cyaml/cyaml.h>
 
+typedef struct Track Track;
+
 /**
  * @addtogroup gui_backend
  *
@@ -253,6 +255,12 @@ piano_roll_schema =
 int
 piano_roll_is_key_black (
   int        note);
+
+#define piano_roll_is_next_key_black(x) \
+  piano_roll_is_key_black (x + 1)
+
+#define piano_roll_is_prev_key_black(x) \
+  piano_roll_is_key_black (x - 1)
 
 /**
  * Adds the note if it doesn't exist in the array.

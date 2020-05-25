@@ -25,21 +25,24 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_editor_space.h"
+#include "gui/widgets/chord_key.h"
 #include "gui/widgets/chord_selector_window.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/chord_key.h"
+#include "gui/widgets/piano_keyboard.h"
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/gtk.h"
+#include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (ChordKeyWidget,
                chord_key_widget,
-               GTK_TYPE_DRAWING_AREA)
+               GTK_TYPE_GRID)
 
+#if 0
 static gboolean
 chord_key_draw_cb (
   GtkWidget * widget,
@@ -70,24 +73,28 @@ chord_key_draw_cb (
 
  return FALSE;
 }
+#endif
 
 static void
-on_pressed (
-  GtkGestureMultiPress *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
+on_choose_chord_btn_clicked (
+  GtkButton * btn,
   ChordKeyWidget *  self)
 {
-  if (n_press == 2)
-    {
-      ChordSelectorWindowWidget * chord_selector =
-        chord_selector_window_widget_new (
-          self->descr);
+  ChordSelectorWindowWidget * chord_selector =
+    chord_selector_window_widget_new (
+      self->descr);
 
-      gtk_window_present (
-        GTK_WINDOW (chord_selector));
-    }
+  gtk_window_present (
+    GTK_WINDOW (chord_selector));
+}
+
+void
+chord_key_widget_refresh (
+  ChordKeyWidget * self)
+{
+  char str[120];
+  chord_descriptor_to_string (self->descr, str);
+  gtk_label_set_text (self->chord_lbl, str);
 }
 
 /**
@@ -99,17 +106,23 @@ chord_key_widget_new (
   ChordDescriptor * descr)
 {
   ChordKeyWidget * self =
-    g_object_new (CHORD_KEY_WIDGET_TYPE,
-                  NULL);
+    g_object_new (CHORD_KEY_WIDGET_TYPE, NULL);
 
   self->descr = descr;
 
-  gtk_widget_set_visible (
-    GTK_WIDGET (self), 1);
+  chord_key_widget_refresh (self);
 
+  /* add piano widget */
+  self->piano =
+    piano_keyboard_widget_new (
+      GTK_ORIENTATION_HORIZONTAL);
   gtk_widget_set_size_request (
-    GTK_WIDGET (self), 98,
-    MW_CHORD_EDITOR_SPACE->px_per_key);
+    GTK_WIDGET (self->piano), 156, 24);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->piano), true);
+  gtk_container_add (
+    GTK_CONTAINER (self->piano_box),
+    GTK_WIDGET (self->piano));
 
   return self;
 }
@@ -121,27 +134,38 @@ chord_key_widget_class_init (
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "chord-key");
+
+  resources_set_class_template (
+    klass, "chord_key.ui");
+
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, ChordKeyWidget, x)
+
+  BIND_CHILD (chord_lbl);
+  BIND_CHILD (piano_box);
+  BIND_CHILD (btn_box);
+  BIND_CHILD (choose_chord_btn);
+  BIND_CHILD (invert_prev_btn);
+  BIND_CHILD (invert_next_btn);
+
+#undef BIND_CHILD
 }
 
 static void
 chord_key_widget_init (
   ChordKeyWidget * self)
 {
-  /* make it able to notify */
-  gtk_widget_add_events (
-    GTK_WIDGET (self),
-    GDK_ALL_EVENTS_MASK);
+  gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->multipress =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
+  gtk_widget_set_visible (
+    GTK_WIDGET (self), 1);
+
+  gtk_widget_set_halign (
+    GTK_WIDGET (self->btn_box), GTK_ALIGN_END);
+
 
   g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (chord_key_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT(self->multipress), "pressed",
-    G_CALLBACK (on_pressed),  self);
+    G_OBJECT (self->choose_chord_btn), "clicked",
+    G_CALLBACK (on_choose_chord_btn_clicked),  self);
 }
-

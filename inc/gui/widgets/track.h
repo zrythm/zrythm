@@ -20,7 +20,7 @@
 /**
  * \file
  *
- * Track base widget to be inherited.
+ * Track widget to be shown in the tracklist.
  */
 
 #ifndef __GUI_WIDGETS_TRACK_H__

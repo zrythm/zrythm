@@ -2317,8 +2317,7 @@ track_widget_on_record_toggled (
 {
   Track * track = self->track;
   g_return_if_fail (track);
-  ChannelTrack * ct = (ChannelTrack *) track;
-  Channel * chan = ct->channel;
+  Channel * chan = track->channel;
   g_return_if_fail (chan);
 
   /* toggle record flag */
