@@ -62,6 +62,7 @@ on_jack_toggled (
  */
 static int
 get_port_str (
+  InspectorPortWidget * self,
   Port * port,
   char * buf)
 {
@@ -85,19 +86,24 @@ get_port_str (
         (num_midi_mappings > 0 ? "*" : "");
       char * port_label =
         g_markup_escape_text (port->id.label, -1);
+      char color_prefix[60];
+      sprintf (
+        color_prefix,
+        "<span foreground=\"%s\">",
+        self->hex_color);
+      char color_suffix[40] = "</span>";
       if (port->id.flow == FLOW_INPUT)
         {
-#define ORANGIZE(x) \
-  "<span " \
-  "foreground=\"" UI_COLOR_BRIGHT_ORANGE "\">" x "</span>"
           int num_unlocked_srcs =
             port_get_num_unlocked_srcs (port);
           sprintf (
             buf, "%s <small><sup>"
-            ORANGIZE ("%d%s")
+            "%s%d%s%s"
             "</sup></small>",
             port_label,
-            num_unlocked_srcs, star);
+            color_prefix,
+            num_unlocked_srcs, star,
+            color_suffix);
           return 1;
         }
       else if (port->id.flow == FLOW_OUTPUT)
@@ -106,13 +112,13 @@ get_port_str (
             port_get_num_unlocked_dests (port);
           sprintf (
             buf, "%s <small><sup>"
-            ORANGIZE ("%d%s")
+            "%s%d%s%s"
             "</sup></small>",
             port_label,
-            num_unlocked_dests, star);
+            color_prefix,
+            num_unlocked_dests, star,
+            color_suffix);
           return 1;
-#undef ORANGIZE
-#undef GREENIZE
         }
       g_free (port_label);
     }
@@ -216,7 +222,7 @@ on_popover_closed (
   InspectorPortWidget * self)
 {
   get_port_str (
-    self->port, self->bar_slider->prefix);
+    self, self->port, self->bar_slider->prefix);
 }
 
 static void
@@ -427,7 +433,7 @@ inspector_port_widget_new (
       goto inspector_port_new_end;
     }
 
-  has_str = get_port_str (port, str);
+  has_str = get_port_str (self, port, str);
 
   if (has_str)
     {
@@ -585,4 +591,7 @@ inspector_port_widget_init (
 {
   gtk_widget_set_visible (
     GTK_WIDGET (self), 1);
+
+  ui_gdk_rgba_to_hex (
+    &UI_COLORS->bright_orange, self->hex_color);
 }

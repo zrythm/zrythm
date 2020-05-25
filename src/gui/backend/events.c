@@ -50,6 +50,7 @@
 #include "gui/widgets/channel.h"
 #include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_editor_space.h"
+#include "gui/widgets/chord_key.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/editor_selection_info.h"
@@ -1438,12 +1439,11 @@ events_process (void * data)
                j < CHORD_EDITOR->num_chords; j++)
             {
               if (CHORD_EDITOR->chords[j] ==
-                (ChordDescriptor *) ev->arg)
+                   (ChordDescriptor *) ev->arg)
                 {
-                  gtk_widget_queue_draw (
-                    GTK_WIDGET (
-                      MW_CHORD_EDITOR_SPACE->
-                        chord_keys[j]));
+                  chord_key_widget_refresh (
+                    MW_CHORD_EDITOR_SPACE->
+                      chord_keys[j]);
                   break;
                 }
             }

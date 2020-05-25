@@ -95,6 +95,8 @@ chord_key_widget_refresh (
   char str[120];
   chord_descriptor_to_string (self->descr, str);
   gtk_label_set_text (self->chord_lbl, str);
+
+  piano_keyboard_widget_refresh (self->piano);
 }
 
 /**
@@ -110,19 +112,18 @@ chord_key_widget_new (
 
   self->descr = descr;
 
-  chord_key_widget_refresh (self);
-
   /* add piano widget */
   self->piano =
-    piano_keyboard_widget_new (
-      GTK_ORIENTATION_HORIZONTAL);
+    piano_keyboard_widget_new_for_chord_key (descr);
   gtk_widget_set_size_request (
-    GTK_WIDGET (self->piano), 156, 24);
+    GTK_WIDGET (self->piano), 216, 24);
   gtk_widget_set_visible (
     GTK_WIDGET (self->piano), true);
   gtk_container_add (
     GTK_CONTAINER (self->piano_box),
     GTK_WIDGET (self->piano));
+
+  chord_key_widget_refresh (self);
 
   return self;
 }

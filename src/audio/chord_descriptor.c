@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "audio/chord_descriptor.h"
 
@@ -27,30 +28,20 @@ CHORD_TYPES;
 CHORD_ACCENTS;
 
 /**
- * Creates a ChordDescriptor.
+ * Updates the notes array based on the current
+ * settings.
  */
-ChordDescriptor *
-chord_descriptor_new (
-  MusicalNote            root,
-  int                    has_bass,
-  MusicalNote            bass,
-  ChordType              type,
-  ChordAccent            accent,
-  int                    inversion)
+void
+chord_descriptor_update_notes (
+  ChordDescriptor * self)
 {
-  ChordDescriptor * self =
-    calloc (1, sizeof (ChordDescriptor));
+  int root = self->root_note;
+  int bass = self->bass_note;
 
-  self->root_note = root;
-  self->has_bass = has_bass;
-  if (has_bass)
-    self->bass_note = bass;
-  self->type = type;
-  self->accent = accent;
-  self->inversion = inversion;
+  memset (self->notes, 0, sizeof (self->notes));
 
   /* add bass note */
-  if (has_bass)
+  if (self->has_bass)
     {
       self->notes[bass] = 1;
     }
@@ -59,7 +50,7 @@ chord_descriptor_new (
   self->notes[12 + root] = 1;
 
   /* add 2 more notes for triad */
-  switch (type)
+  switch (self->type)
     {
     case CHORD_TYPE_MAJ:
       self->notes[12 + root + 4] = 1;
@@ -91,42 +82,42 @@ chord_descriptor_new (
     }
 
   unsigned int min_seventh_sems =
-    type == CHORD_TYPE_DIM ? 9 : 10;
+    self->type == CHORD_TYPE_DIM ? 9 : 10;
 
   /* add accents */
-  switch (accent)
+  switch (self->accent)
     {
     case CHORD_ACC_NONE:
       break;
     case CHORD_ACC_7:
-      self->notes[12 + root + min_seventh_sems] = 1;
+      self->notes[12 + self->root_note + min_seventh_sems] = 1;
       break;
     case CHORD_ACC_j7:
-      self->notes[12 + root + 11] = 1;
+      self->notes[12 + self->root_note + 11] = 1;
       break;
     case CHORD_ACC_b9:
-      self->notes[12 + root + 13] = 1;
+      self->notes[12 + self->root_note + 13] = 1;
       break;
     case CHORD_ACC_9:
-      self->notes[12 + root + 14] = 1;
+      self->notes[12 + self->root_note + 14] = 1;
       break;
     case CHORD_ACC_S9:
-      self->notes[12 + root + 15] = 1;
+      self->notes[12 + self->root_note + 15] = 1;
       break;
     case CHORD_ACC_11:
-      self->notes[12 + root + 17] = 1;
+      self->notes[12 + self->root_note + 17] = 1;
       break;
     case CHORD_ACC_b5_S11:
-      self->notes[12 + root + 6] = 1;
-      self->notes[12 + root + 18] = 1;
+      self->notes[12 + self->root_note + 6] = 1;
+      self->notes[12 + self->root_note + 18] = 1;
       break;
     case CHORD_ACC_S5_b13:
-      self->notes[12 + root + 8] = 1;
-      self->notes[12 + root + 16] = 1;
+      self->notes[12 + self->root_note + 8] = 1;
+      self->notes[12 + self->root_note + 16] = 1;
       break;
     case CHORD_ACC_6_13:
-      self->notes[12 + root + 9] = 1;
-      self->notes[12 + root + 21] = 1;
+      self->notes[12 + self->root_note + 9] = 1;
+      self->notes[12 + self->root_note + 21] = 1;
       break;
     default:
       g_warning ("chord unimplemented");
@@ -134,11 +125,40 @@ chord_descriptor_new (
     }
 
   /* add the 7th to accents > 7 */
-  if (accent >= CHORD_ACC_b9 &&
-      accent <= CHORD_ACC_6_13)
-    self->notes[12 + root + min_seventh_sems] = 1;
+  if (self->accent >= CHORD_ACC_b9 &&
+      self->accent <= CHORD_ACC_6_13)
+    {
+      self->notes[
+        12 + self->root_note + min_seventh_sems] = 1;
+    }
 
   /* TODO invert */
+}
+
+/**
+ * Creates a ChordDescriptor.
+ */
+ChordDescriptor *
+chord_descriptor_new (
+  MusicalNote            root,
+  int                    has_bass,
+  MusicalNote            bass,
+  ChordType              type,
+  ChordAccent            accent,
+  int                    inversion)
+{
+  ChordDescriptor * self =
+    calloc (1, sizeof (ChordDescriptor));
+
+  self->root_note = root;
+  self->has_bass = has_bass;
+  if (has_bass)
+    self->bass_note = bass;
+  self->type = type;
+  self->accent = accent;
+  self->inversion = inversion;
+
+  chord_descriptor_update_notes (self);
 
   return self;
 }

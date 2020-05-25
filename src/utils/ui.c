@@ -545,6 +545,32 @@ ui_show_notification_idle_func (char * msg)
 }
 
 /**
+ * Converts RGB to hex string.
+ */
+void
+ui_rgb_to_hex (
+  double red,
+  double green,
+  double blue,
+  char * buf)
+{
+  sprintf (
+    buf, "#%hhx%hhx%hhx",
+    (char) (red * 255.0),
+    (char) (green * 255.0),
+    (char) (blue * 255.0));
+}
+
+void
+ui_gdk_rgba_to_hex (
+  GdkRGBA * color,
+  char *    buf)
+{
+  ui_rgb_to_hex (
+    color->red, color->green, color->blue, buf);
+}
+
+/**
  * Returns the modifier type (state mask) from the
  * given gesture.
  */
@@ -1285,6 +1311,8 @@ ui_caches_new ()
 
   GET_COLOR_FROM_THEME (bright_green);
   GET_COLOR_FROM_THEME (darkish_green);
+  GET_COLOR_FROM_THEME (dark_orange);
+  GET_COLOR_FROM_THEME (bright_orange);
   GET_COLOR_FROM_THEME (matcha);
   GET_COLOR_FROM_THEME (prefader_send);
   GET_COLOR_FROM_THEME (postfader_send);

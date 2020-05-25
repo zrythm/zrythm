@@ -323,6 +323,14 @@ chord_descriptor_to_string (
   char *                  str);
 
 /**
+ * Updates the notes array based on the current
+ * settings.
+ */
+void
+chord_descriptor_update_notes (
+  ChordDescriptor * self);
+
+/**
  * Frees the ChordDescriptor.
  */
 void

@@ -47,16 +47,10 @@ typedef struct Position Position;
 /* FIXME remove these and use theme */
 #define UI_COLOR_DARK_TEXT "#323232"
 #define UI_COLOR_BRIGHT_TEXT "#cdcdcd"
-#define UI_COLOR_BRIGHT_ORANGE "#F79616"
-#define UI_COLOR_DARK_ORANGE "#D68A0C"
 #define UI_COLOR_YELLOW "#F9CA1B"
 #define UI_COLOR_PURPLE "#9D3955"
 #define UI_COLOR_BUTTON_NORMAL "#343434"
 #define UI_COLOR_BUTTON_HOVER "#444444"
-#define UI_COLOR_BUTTON_TOGGLED \
-  UI_COLOR_BRIGHT_ORANGE
-#define UI_COLOR_BUTTON_ACTIVE \
-  UI_COLOR_BRIGHT_ORANGE
 #define UI_COLOR_RECORD_CHECKED "#ED2939"
 #define UI_COLOR_RECORD_ACTIVE "#FF2400"
 #define UI_COLOR_HIGHLIGHT_SCALE "#662266"
@@ -75,6 +69,8 @@ static const GdkRGBA UI_COLOR_BLACK = {
 typedef struct UiColors
 {
   GdkRGBA       dark_text;
+  GdkRGBA       dark_orange;
+  GdkRGBA       bright_orange;
   GdkRGBA       bright_text;
   GdkRGBA       matcha;
   GdkRGBA       bright_green;
@@ -532,6 +528,21 @@ ui_px_to_pos_editor (
   double            px,
   Position *        pos,
   int               has_padding);
+
+/**
+ * Converts RGB to hex string.
+ */
+void
+ui_rgb_to_hex (
+  double red,
+  double green,
+  double blue,
+  char * buf);
+
+void
+ui_gdk_rgba_to_hex (
+  GdkRGBA * color,
+  char *    buf);
 
 /**
  * Shows a notification in the revealer.

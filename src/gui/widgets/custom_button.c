@@ -23,6 +23,7 @@
 #include "gui/widgets/custom_button.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 
 static void
 init (CustomButtonWidget * self)
@@ -31,10 +32,8 @@ init (CustomButtonWidget * self)
     &self->def_color, UI_COLOR_BUTTON_NORMAL);
   gdk_rgba_parse (
     &self->hovered_color, UI_COLOR_BUTTON_HOVER);
-  gdk_rgba_parse (
-    &self->toggled_color, UI_COLOR_BUTTON_TOGGLED);
-  gdk_rgba_parse (
-    &self->held_color, UI_COLOR_BUTTON_ACTIVE);
+  self->toggled_color = UI_COLORS->bright_orange;
+  self->held_color = UI_COLORS->bright_orange;
   self->aspect = 1.0;
   self->corner_radius = 1.6;
 }

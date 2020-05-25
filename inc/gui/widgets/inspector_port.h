@@ -89,6 +89,8 @@ typedef struct _InspectorPortWidget
 
   /** Multipress guesture for right click. */
   GtkGestureMultiPress * right_click_gesture;
+
+  char                   hex_color[40];
 } InspectorPortWidget;
 
 void

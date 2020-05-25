@@ -47,6 +47,9 @@ on_delete_event (
   GdkEvent  *event,
   ChordSelectorWindowWidget * self)
 {
+  /* update the keys */
+  chord_descriptor_update_notes (self->descr);
+
   EVENTS_PUSH (ET_CHORD_KEY_CHANGED, self->descr);
 
   return FALSE;

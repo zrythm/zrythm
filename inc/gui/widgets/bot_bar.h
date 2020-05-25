@@ -98,6 +98,9 @@ typedef struct _BotBarWidget
   DigitalMeterWidget *      digital_timesig;
   TransportControlsWidget * transport_controls;
   CpuWidget *               cpu_load;
+
+  /** Color in hex to use in pango markups. */
+  char                      hex_color[8];
 } BotBarWidget;
 
 void

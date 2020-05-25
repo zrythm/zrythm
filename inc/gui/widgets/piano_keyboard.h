@@ -36,6 +36,8 @@ G_DECLARE_FINAL_TYPE (
   piano_keyboard_widget, Z, PIANO_KEYBOARD,
   GtkDrawingArea)
 
+typedef struct ChordDescriptor ChordDescriptor;
+
 /**
  * @addtogroup widgets
  *
@@ -71,6 +73,10 @@ typedef struct _PianoKeyboardWidget
   /** Horizontal/vertical. */
   GtkOrientation       orientation;
 
+  /** Chord descriptor, if this widget is for
+   * a chord key. */
+  ChordDescriptor *    chord_descr;
+
 } PianoKeyboardWidget;
 
 /**
@@ -79,6 +85,17 @@ typedef struct _PianoKeyboardWidget
 PianoKeyboardWidget *
 piano_keyboard_widget_new (
   GtkOrientation orientation);
+
+void
+piano_keyboard_widget_refresh (
+  PianoKeyboardWidget * self);
+
+/**
+ * Creates a piano keyboard widget.
+ */
+PianoKeyboardWidget *
+piano_keyboard_widget_new_for_chord_key (
+  ChordDescriptor * descr);
 
 /**
  * @}
