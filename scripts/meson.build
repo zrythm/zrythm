@@ -83,3 +83,11 @@ translators_c_header_gen_wrap = configure_file (
   configuration: scripts_conf + {
     'SCRIPT_NAME': 'gen-translators-list.scm'},
   )
+
+# create the gtk resources generator wrap
+gen_gtk_resources_xml_wrap = configure_file (
+  output: 'gen-gtk-resources-xml.sh',
+  input: generic_guile_wrap_name,
+  configuration: scripts_conf + {
+    'SCRIPT_NAME': 'gen-gtk-resources-xml.scm'},
+  )
