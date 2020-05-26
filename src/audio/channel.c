@@ -1406,12 +1406,16 @@ channel_get_balance_control (
       channel->fader.balance, 0);
 }
 
-#if 0
-static float
-get_current_rms (
-  Channel * channel,
-  int       left)
+/**
+ * MIDI peak.
+ *
+ * @note Used by the UI.
+ */
+float
+channel_get_current_midi_peak (
+  void * _channel)
 {
+  Channel * channel = (Channel *) _channel;
   float rms = 0.f;
   Track * track = channel_get_track (channel);
   if (track->out_signal_type == TYPE_EVENT)
@@ -1471,75 +1475,82 @@ get_current_rms (
             }
         }
     }
-  else if (track->out_signal_type == TYPE_AUDIO)
-    {
-      rms =
-        audio_port_get_meter_value (
-          left ?
-            channel->stereo_out->l :
-            channel->stereo_out->r,
-          METER_ALGORITHM_RMS,
-          AUDIO_VALUE_DBFS, 1);
-    }
   return rms;
-}
-#endif
-
-float
-channel_get_current_l_db (void * _channel)
-{
-  Channel * ch = (Channel *) _channel;
-  return
-    audio_port_get_meter_value (
-      ch->stereo_out->l,
-      METER_ALGORITHM_RMS,
-      AUDIO_VALUE_DBFS, 1);
 }
 
 /**
- * Gets the RMS value.
+ * Digital peak.
+ *
+ * @note Used by the UI.
  */
 float
-channel_get_current_r_db (void * _channel)
-{
-  Channel * ch = (Channel *) _channel;
-  return
-    audio_port_get_meter_value (
-      ch->stereo_out->r,
-      METER_ALGORITHM_RMS,
-      AUDIO_VALUE_DBFS, 1);
-}
-
-float
-channel_get_current_l_peak (void * _channel)
+channel_get_current_l_digital_peak (
+  void * _channel)
 {
   Channel * ch = (Channel *) _channel;
   return
     audio_port_get_meter_value (
       ch->stereo_out->l,
-      METER_ALGORITHM_TRUE_PEAK,
-      AUDIO_VALUE_AMPLITUDE, 1);
+      METER_ALGORITHM_DIGITAL_PEAK,
+      AUDIO_VALUE_DBFS, 8);
 }
 
+/**
+ * Digital peak.
+ *
+ * @note Used by the UI.
+ */
 float
-channel_get_current_r_peak (void * _channel)
+channel_get_current_r_digital_peak (
+  void * _channel)
 {
   Channel * ch= (Channel *) _channel;
   return
     audio_port_get_meter_value (
       ch->stereo_out->r,
-      METER_ALGORITHM_TRUE_PEAK,
+      METER_ALGORITHM_DIGITAL_PEAK,
+      AUDIO_VALUE_DBFS, 8);
+}
+
+/**
+ * Digital peak.
+ *
+ * @note Used by the UI.
+ */
+float
+channel_get_current_l_digital_peak_max (
+  void * _channel)
+{
+  Channel * ch = (Channel *) _channel;
+  return
+    audio_port_get_meter_value (
+      ch->stereo_out->l,
+      METER_ALGORITHM_DIGITAL_PEAK_MAX,
+      AUDIO_VALUE_AMPLITUDE, 1);
+}
+
+float
+channel_get_current_r_digital_peak_max (
+  void * _channel)
+{
+  Channel * ch= (Channel *) _channel;
+  return
+    audio_port_get_meter_value (
+      ch->stereo_out->r,
+      METER_ALGORITHM_DIGITAL_PEAK_MAX,
       AUDIO_VALUE_AMPLITUDE, 1);
 }
 
 void
-channel_set_current_l_db (Channel * channel, float val)
+channel_set_current_l_db (
+  Channel * channel, float val)
 {
   channel->fader.l_port_db = val;
 }
 
 void
-channel_set_current_r_db (Channel * channel, float val)
+channel_set_current_r_db (
+  Channel * channel, float val)
 {
   channel->fader.r_port_db = val;
 }

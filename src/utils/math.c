@@ -65,6 +65,31 @@ math_get_amp_val_from_fader (
       (-192.f + 198.f * powf (fader, 1.f / 8.f)));
 }
 
+/**
+ * Gets the digital peak of the given signal as
+ * amplitude (0-2).
+ */
+sample_t
+math_calculate_max_amp (
+  sample_t *      buf,
+  const nframes_t nframes)
+{
+  sample_t ret = 1e-20f;
+  for (nframes_t i = 0; i < nframes; i++)
+    {
+      if (fabsf (buf[i]) > ret)
+        {
+          ret = fabsf (buf[i]);
+        }
+    }
+
+  return ret;
+}
+
+/**
+ * Gets the RMS of the given signal as amplitude
+ * (0-2).
+ */
 sample_t
 math_calculate_rms_amp (
   sample_t *      buf,

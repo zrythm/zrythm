@@ -2606,7 +2606,8 @@ track_widget_new (Track * track)
         case TYPE_EVENT:
           type = METER_TYPE_MIDI;
           meter_widget_setup (
-            self->meter_l, channel_get_current_l_db,
+            self->meter_l,
+            channel_get_current_midi_peak,
             NULL,
             self->track->channel, type, 8);
           gtk_widget_set_margin_start (
@@ -2620,13 +2621,15 @@ track_widget_new (Track * track)
         case TYPE_AUDIO:
           type = METER_TYPE_DB;
           meter_widget_setup (
-            self->meter_l, channel_get_current_l_db,
-            channel_get_current_l_peak,
+            self->meter_l,
+            channel_get_current_l_digital_peak,
+            channel_get_current_l_digital_peak_max,
             self->track->channel, type, 6);
           self->meter_l->padding = 0;
           meter_widget_setup (
-            self->meter_r, channel_get_current_r_db,
-            channel_get_current_r_peak,
+            self->meter_r,
+            channel_get_current_r_digital_peak,
+            channel_get_current_r_digital_peak_max,
             self->track->channel, type, 6);
           self->meter_r->padding = 0;
           break;

@@ -109,8 +109,8 @@ channel_widget_update_meter_reading (
       AUDIO_ENGINE->nframes));
 
   double val =
-    (channel_get_current_l_db (channel) +
-      channel_get_current_r_db (channel)) / 2;
+    (channel_get_current_l_digital_peak (channel) +
+      channel_get_current_r_digital_peak (channel)) / 2;
   if (math_doubles_equal (val, prev))
     return G_SOURCE_CONTINUE;
   char * string;
@@ -576,7 +576,8 @@ setup_meter (ChannelWidget * self)
     case TYPE_EVENT:
       type = METER_TYPE_MIDI;
       meter_widget_setup (
-        self->meter_l, channel_get_current_l_db,
+        self->meter_l,
+        channel_get_current_midi_peak,
         NULL, self->channel, type, 14);
       gtk_widget_set_margin_start (
         GTK_WIDGET (self->meter_l), 5);
@@ -588,12 +589,14 @@ setup_meter (ChannelWidget * self)
     case TYPE_AUDIO:
       type = METER_TYPE_DB;
       meter_widget_setup (
-        self->meter_l, channel_get_current_l_db,
-        channel_get_current_l_peak,
+        self->meter_l,
+        channel_get_current_l_digital_peak,
+        channel_get_current_l_digital_peak_max,
         self->channel, type, 12);
       meter_widget_setup (
-        self->meter_r, channel_get_current_r_db,
-        channel_get_current_r_peak,
+        self->meter_r,
+        channel_get_current_r_digital_peak,
+        channel_get_current_r_digital_peak_max,
         self->channel, type, 12);
       break;
     default:

@@ -52,6 +52,7 @@
 #include <gtk/gtk.h>
 
 #define SLEEPTIME_USEC 60
+#define TIME_TO_RESET_PEAK 1600000
 
 /**
  * This function finds the Ports corresponding to
@@ -2183,6 +2184,7 @@ audio_port_get_meter_value (
       return 1e-20f;
     }
 
+  /* value as amplitude */
   float ret = 1e-20f;
 
   switch (algo)
@@ -2204,6 +2206,27 @@ audio_port_get_meter_value (
         true_peak_dsp_read_f (
           port->true_peak_processor);
       ret = port->true_peak;
+      break;
+    case METER_ALGORITHM_DIGITAL_PEAK:
+      ret =
+        math_calculate_max_amp (
+          &buf[start_index],
+          (size_t) num_cycles *
+            AUDIO_ENGINE->block_length);
+      break;
+    case METER_ALGORITHM_DIGITAL_PEAK_MAX:
+      {
+        gint64 now = g_get_monotonic_time ();
+        if (now - port->peak_timestamp <
+              TIME_TO_RESET_PEAK)
+          {
+            ret = port->peak;
+          }
+        else
+          {
+            return -1.f;
+          }
+      }
       break;
     default:
       break;
@@ -2621,7 +2644,7 @@ port_sum_signal_from_inputs (
                 g_get_monotonic_time ();
               if (time_now -
                     port->peak_timestamp >
-                  600000)
+                  TIME_TO_RESET_PEAK)
                 port->peak = -1.f;
 
               for (l = start_frame; l < nframes;

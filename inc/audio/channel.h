@@ -372,21 +372,50 @@ channel_get_balance_control (void * _channel);
 
 /* ---- getters ---- */
 
-/** Meant to be used by the UI. */
+/**
+ * MIDI peak.
+ *
+ * @note Used by the UI.
+ */
 float
-channel_get_current_l_db (void * _channel);
+channel_get_current_midi_peak (
+  void * _channel);
 
-/** Meant to be used by the UI. */
+/**
+ * Digital peak.
+ *
+ * @note Used by the UI.
+ */
 float
-channel_get_current_r_db (void * _channel);
+channel_get_current_l_digital_peak (
+  void * _channel);
 
-/** Meant to be used by the UI. */
+/**
+ * Digital peak.
+ *
+ * @note Used by the UI.
+ */
 float
-channel_get_current_l_peak (void * _channel);
+channel_get_current_r_digital_peak (
+  void * _channel);
 
-/** Meant to be used by the UI. */
+/**
+ * Digital peak.
+ *
+ * @note Used by the UI.
+ */
 float
-channel_get_current_r_peak (void * _channel);
+channel_get_current_l_digital_peak_max (
+  void * _channel);
+
+/**
+ * Digital peak.
+ *
+ * @note Used by the UI.
+ */
+float
+channel_get_current_r_digital_peak_max (
+  void * _channel);
 
 /* ---- end getters ---- */
 

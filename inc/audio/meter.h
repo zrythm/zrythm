@@ -36,6 +36,11 @@
 
 typedef enum MeterAlgorithm
 {
+  METER_ALGORITHM_DIGITAL_PEAK,
+  METER_ALGORITHM_DIGITAL_PEAK_MAX,
+
+  /** @note True peak is intensive, only use it
+   * where needed (mixer). */
   METER_ALGORITHM_TRUE_PEAK,
   METER_ALGORITHM_TRUE_PEAK_MAX,
   METER_ALGORITHM_RMS,
