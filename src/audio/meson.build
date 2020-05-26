@@ -92,6 +92,7 @@ audio_srcs = [
   'track_processor.c',
   'tracklist.c',
   'transport.c',
+  'true_peak_dsp.c',
   'velocity.c',
   'windows_mmcss.c',
   'windows_mme_device.c',

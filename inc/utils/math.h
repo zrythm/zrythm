@@ -47,6 +47,11 @@ sample_t
 math_get_amp_val_from_fader (
   sample_t fader);
 
+sample_t
+math_calculate_rms_amp (
+  sample_t *      buf,
+  const nframes_t nframes);
+
 /**
  * Calculate db using RMS method.
  *

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -82,6 +82,18 @@ typedef const char * (*GenericStringGetter) (
 typedef void (*GenericStringSetter) (
   void * object,
   char * val);
+
+typedef enum AudioValueFormat
+{
+  /** 0 to 2, amplitude. */
+  AUDIO_VALUE_AMPLITUDE,
+
+  /** dbFS. */
+  AUDIO_VALUE_DBFS,
+
+  /** 0 to 1, suitable for drawing. */
+  AUDIO_VALUE_FADER,
+} AudioValueFormat;
 
 /**
  * @}

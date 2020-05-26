@@ -1406,6 +1406,7 @@ channel_get_balance_control (
       channel->fader.balance, 0);
 }
 
+#if 0
 static float
 get_current_rms (
   Channel * channel,
@@ -1473,55 +1474,62 @@ get_current_rms (
   else if (track->out_signal_type == TYPE_AUDIO)
     {
       rms =
-        port_get_rms_db (
+        audio_port_get_meter_value (
           left ?
             channel->stereo_out->l :
             channel->stereo_out->r,
-          1);
+          METER_ALGORITHM_RMS,
+          AUDIO_VALUE_DBFS, 1);
     }
   return rms;
 }
+#endif
 
 float
 channel_get_current_l_db (void * _channel)
 {
-  Channel * channel = (Channel *) _channel;
-  float rms = get_current_rms (channel, 1);
-  return rms;
+  Channel * ch = (Channel *) _channel;
+  return
+    audio_port_get_meter_value (
+      ch->stereo_out->l,
+      METER_ALGORITHM_RMS,
+      AUDIO_VALUE_DBFS, 1);
 }
 
+/**
+ * Gets the RMS value.
+ */
 float
 channel_get_current_r_db (void * _channel)
 {
-  Channel * channel = (Channel *) _channel;
-  float rms = get_current_rms (channel, 0);
-  return rms;
+  Channel * ch = (Channel *) _channel;
+  return
+    audio_port_get_meter_value (
+      ch->stereo_out->r,
+      METER_ALGORITHM_RMS,
+      AUDIO_VALUE_DBFS, 1);
 }
 
 float
 channel_get_current_l_peak (void * _channel)
 {
-  Channel * ch= (Channel *) _channel;
-  gint64 now = g_get_monotonic_time ();
-  if (now - ch->stereo_out->l->peak_timestamp <
-        600000)
-    {
-      return ch->stereo_out->l->peak;
-    }
-  return -1.f;
+  Channel * ch = (Channel *) _channel;
+  return
+    audio_port_get_meter_value (
+      ch->stereo_out->l,
+      METER_ALGORITHM_TRUE_PEAK,
+      AUDIO_VALUE_AMPLITUDE, 1);
 }
 
 float
 channel_get_current_r_peak (void * _channel)
 {
   Channel * ch= (Channel *) _channel;
-  gint64 now = g_get_monotonic_time ();
-  if (now - ch->stereo_out->r->peak_timestamp <
-        600000)
-    {
-      return ch->stereo_out->r->peak;
-    }
-  return -1.f;
+  return
+    audio_port_get_meter_value (
+      ch->stereo_out->r,
+      METER_ALGORITHM_TRUE_PEAK,
+      AUDIO_VALUE_AMPLITUDE, 1);
 }
 
 void

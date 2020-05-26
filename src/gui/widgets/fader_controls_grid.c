@@ -330,6 +330,9 @@ fader_controls_grid_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->meter_readings), 50, -1);
+
   /* add css classes */
   GtkStyleContext * context =
     gtk_widget_get_style_context (

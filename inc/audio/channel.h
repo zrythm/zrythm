@@ -372,15 +372,19 @@ channel_get_balance_control (void * _channel);
 
 /* ---- getters ---- */
 
+/** Meant to be used by the UI. */
 float
 channel_get_current_l_db (void * _channel);
 
+/** Meant to be used by the UI. */
 float
 channel_get_current_r_db (void * _channel);
 
+/** Meant to be used by the UI. */
 float
 channel_get_current_l_peak (void * _channel);
 
+/** Meant to be used by the UI. */
 float
 channel_get_current_r_peak (void * _channel);
 

@@ -260,13 +260,10 @@ get_port_value (
     {
     case TYPE_AUDIO:
       {
-        float rms =
-          port_get_rms_db (port, 2);
-        sample_t amp =
-          math_dbfs_to_amp (rms);
-        sample_t fader_val =
-          math_get_fader_val_from_amp (amp);
-        return fader_val;
+        return
+          audio_port_get_meter_value (
+            port, METER_ALGORITHM_RMS,
+            AUDIO_VALUE_FADER, 2);
       }
       break;
     case TYPE_CV:

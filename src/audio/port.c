@@ -37,6 +37,7 @@
 #include "audio/port.h"
 #include "audio/rtaudio_device.h"
 #include "audio/rtmidi_device.h"
+#include "audio/true_peak_dsp.h"
 #include "audio/windows_mme_device.h"
 #include "gui/widgets/channel.h"
 #include "plugins/plugin.h"
@@ -111,6 +112,17 @@ port_init_loaded (Port * this)
 #endif
       break;
     case TYPE_AUDIO:
+      this->true_peak_processor =
+        true_peak_dsp_new ();
+      true_peak_dsp_init (
+        this->true_peak_processor,
+        AUDIO_ENGINE->sample_rate);
+      this->true_peak_max_processor =
+        true_peak_dsp_new ();
+      true_peak_dsp_init (
+        this->true_peak_max_processor,
+        AUDIO_ENGINE->sample_rate);
+      /* fall through */
     case TYPE_CV:
       this->audio_ring =
         zix_ring_new (
@@ -507,6 +519,16 @@ port_new_with_type (
         zix_ring_new (
           sizeof (float) *
           (size_t) AUDIO_ENGINE->block_length * 11);
+      self->true_peak_processor =
+        true_peak_dsp_new ();
+      true_peak_dsp_init (
+        self->true_peak_processor,
+        AUDIO_ENGINE->sample_rate);
+      self->true_peak_max_processor =
+        true_peak_dsp_new ();
+      true_peak_dsp_init (
+        self->true_peak_max_processor,
+        AUDIO_ENGINE->sample_rate);
       break;
     case TYPE_CV:
       self->minf = -1.f;
@@ -2111,8 +2133,9 @@ port_get_control_value (
 }
 
 /**
- * Returns the RMS of the last n cycles for
- * audio ports.
+ * Returns the value for the last n cycles.
+ *
+ * TODO move to new file audio_port.
  *
  * @param num_cycles Number of cycles to take into
  *   account, normally 1. If this is more than 1,
@@ -2120,13 +2143,15 @@ port_get_control_value (
  *   cycles is chosen.
  */
 float
-port_get_rms_db (
-  Port * port,
-  int    n_cycles)
+audio_port_get_meter_value (
+  Port *           port,
+  MeterAlgorithm   algo,
+  AudioValueFormat format,
+  int              num_cycles)
 {
   g_return_val_if_fail (
-    port && n_cycles > 0 &&
-    port->id.type == TYPE_AUDIO, 0.f);
+    port && num_cycles > 0 &&
+    port->id.type == TYPE_AUDIO, 1e-20f);
 
   size_t read_space_avail =
     zix_ring_read_space (port->audio_ring);
@@ -2136,7 +2161,7 @@ port_get_rms_db (
   size_t blocks_to_read =
     read_space_avail / size;
   if (blocks_to_read == 0)
-    return 0.f;
+    return 1e-20f;
 
   float buf[
     AUDIO_ENGINE->block_length *
@@ -2146,23 +2171,57 @@ port_get_rms_db (
       port->audio_ring, &buf[0],
       read_space_avail);
   blocks_read /= size;
-  n_cycles = MIN (n_cycles, (int) blocks_read);
+  num_cycles = MIN (num_cycles, (int) blocks_read);
   size_t start_index =
-    (blocks_read - (size_t) n_cycles) *
+    (blocks_read - (size_t) num_cycles) *
       AUDIO_ENGINE->block_length;
   if (blocks_read == 0)
     {
       g_message (
         "No blocks read for port %s",
         port->id.label);
-      return 0.f;
+      return 1e-20f;
     }
 
-  return
-    math_calculate_rms_db (
-      &buf[start_index],
-      (size_t) n_cycles *
-        AUDIO_ENGINE->block_length);
+  float ret = 1e-20f;
+
+  switch (algo)
+    {
+    case METER_ALGORITHM_RMS:
+      ret =
+        math_calculate_rms_amp (
+          &buf[start_index],
+          (size_t) num_cycles *
+            AUDIO_ENGINE->block_length);
+      break;
+    case METER_ALGORITHM_TRUE_PEAK:
+      /* process true peak */
+      true_peak_dsp_process (
+        port->true_peak_processor,
+        &port->buf[0],
+        (int) AUDIO_ENGINE->block_length);
+      port->true_peak =
+        true_peak_dsp_read_f (
+          port->true_peak_processor);
+      ret = port->true_peak;
+      break;
+    default:
+      break;
+    }
+
+  switch (format)
+    {
+    case AUDIO_VALUE_AMPLITUDE:
+      return ret;
+    case AUDIO_VALUE_DBFS:
+      return math_amp_to_dbfs (ret);
+    case AUDIO_VALUE_FADER:
+      return math_get_fader_val_from_amp (ret);
+    default:
+      break;
+    }
+
+  g_return_val_if_reached (1e-20f);
 }
 
 /**
@@ -2542,6 +2601,8 @@ port_sum_signal_from_inputs (
             size);
         }
 
+      /* if track output (to be shown on mixer)
+       * calculate meter values */
       if (port->id.owner_type ==
             PORT_OWNER_TYPE_TRACK &&
           (port->id.flags & PORT_FLAG_STEREO_L ||
