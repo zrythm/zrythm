@@ -48,6 +48,7 @@ zrythm_link_libs = [
   lv2_lib,
   widgets_lib,
   midilib,
+  zita_resampler_lib,
   ]
 
 if guile_dep.found ()
