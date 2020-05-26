@@ -2929,10 +2929,15 @@ port_clear_buffer (Port * port)
   if ((pi->type == TYPE_AUDIO ||
        pi->type == TYPE_CV) && port->buf)
     {
-      memset (
-        port->buf, 0,
-        AUDIO_ENGINE->block_length *
-          sizeof (float));
+      /* copy the value locally to have it on the
+       * stack */
+      float denormal_prevention_val =
+        DENORMAL_PREVENTION_VAL;
+      for (nframes_t i = 0;
+           i < AUDIO_ENGINE->block_length; i++)
+        {
+          port->buf[i] = denormal_prevention_val;
+        }
       return;
     }
   if (port->id.type == TYPE_EVENT &&

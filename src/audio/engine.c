@@ -671,10 +671,18 @@ engine_process_prepare (
   AudioEngine * self,
   uint32_t nframes)
 {
-  int i;
+  if (self->denormal_prevention_val_positive)
+    {
+      self->denormal_prevention_val = - 1e-20f;
+    }
+  else
+    {
+      self->denormal_prevention_val = 1e-20f;
+    }
+  self->denormal_prevention_val_positive =
+    !self->denormal_prevention_val_positive;
 
-  self->last_time_taken =
-    g_get_monotonic_time ();
+  self->last_time_taken = g_get_monotonic_time ();
   self->nframes = nframes;
 
   if (TRANSPORT->play_state ==
@@ -742,7 +750,7 @@ engine_process_prepare (
 
   /* prepare channels for this cycle */
   Channel * ch;
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       ch = TRACKLIST->tracks[i]->channel;
 

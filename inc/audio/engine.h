@@ -86,6 +86,9 @@ typedef struct WindowsMmeDevice WindowsMmeDevice;
   (AUDIO_ENGINE->midi_editor_manual_press-> \
   midi_events)
 
+#define DENORMAL_PREVENTION_VAL \
+  (AUDIO_ENGINE->denormal_prevention_val)
+
 /**
  * Buffer sizes to be used in combo boxes.
  */
@@ -496,6 +499,18 @@ typedef struct AudioEngine
    * unusable.
    */
   gint64            last_xrun_notification;
+
+  /**
+   * Whether the denormal prevention value
+   * (1e-12 ~ 1e-20) is positive.
+   *
+   * This should be swapped often to avoid DC offset
+   * prevention algorithms removing it.
+   *
+   * See https://www.earlevel.com/main/2019/04/19/floating-point-denormals/ for details.
+   */
+  bool              denormal_prevention_val_positive;
+  float             denormal_prevention_val;
 
 #ifdef TRIAL_VER
   /** Time at start to keep track if trial limit
