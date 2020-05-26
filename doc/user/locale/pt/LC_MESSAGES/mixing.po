@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2019-09-10 10:37+0000\n"
+"PO-Revision-Date: 2020-05-18 07:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualmixing/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese "
-"<https://hosted.weblate.org/projects/zrythm/manualmixing/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../mixing/channels.rst:6
@@ -28,7 +29,7 @@ msgstr "Canais"
 #: ../../mixing/channels.rst:7
 #: ../../mixing/overview.rst:38
 msgid "A channel is part of a track, if the track type has a channel."
-msgstr ""
+msgstr "Um canal faz parte de uma faixa, se o tipo de faixa tiver um canal."
 
 #: ../../mixing/channels.rst:13
 #: ../../mixing/overview.rst:44
@@ -37,11 +38,14 @@ msgid ""
 "direct out selector and a strip of insert plugins. These are covered in "
 ":ref:`track-inspector`."
 msgstr ""
+"Os canais contêm um fader, controles como o mudo e solo, um medidor, um "
+"seletor de saída direta e uma tira de plugins de inserção. Estes são "
+"cobertos em :ref:`track-inspector'."
 
 #: ../../mixing/channels.rst:19
 #: ../../mixing/overview.rst:50
 msgid "Changing the Track Name"
-msgstr ""
+msgstr "Alterar o Nome da Faixa"
 
 #: ../../mixing/channels.rst:20
 #: ../../mixing/overview.rst:51
@@ -49,6 +53,8 @@ msgid ""
 "The name of the track the channel corresponds to can be changed by double"
 " clicking the name at the top of the channel."
 msgstr ""
+"O nome da faixa à qual o canal corresponde pode ser alterado a clicar duas "
+"vezes no nome na parte superior do canal."
 
 #: ../../mixing/channels/channel-overview.rst:6
 msgid "Channel Overview"
@@ -98,9 +104,8 @@ msgstr ""
 "intervalo entre os marcadores de início e fim da música."
 
 #: ../../mixing/overview.rst:8
-#, fuzzy
 msgid "Mixing Overview"
-msgstr "Visão Geral De Roteamento"
+msgstr "Visão Geral da Mistura"
 
 #: ../../mixing/overview.rst:9
 msgid ""
@@ -108,34 +113,45 @@ msgid ""
 "signals around, controlling the fader level of various channels and "
 "setting their stereo balance."
 msgstr ""
+"A mistura refere-se a quaisquer ações realizadas dentro do misturador, tais "
+"como o encaminhamento de sinais, o controlo do nível de fader dos vários "
+"canais e a definição do seu equilíbrio estéreo."
 
 #: ../../mixing/overview.rst:17
 msgid "Mixer"
-msgstr ""
+msgstr "Misturador"
 
 #: ../../mixing/overview.rst:18
 msgid ""
 "The mixer contains all of the channels in the project corresponding to "
 "visible tracks."
 msgstr ""
+"O misturador contém todos os canais do projeto correspondentes às faixas "
+"visíveis."
 
 #: ../../mixing/overview.rst:21
 msgid ""
 "The master channel, a special channel used to route audio to the output "
 "audio device, is pinned on the right side of the mixer."
 msgstr ""
+"O canal mestre, um canal especial utilizado para encaminhar o áudio para o "
+"aparelho de áudio de saída, está localizado no lado direito do misturador."
 
 #: ../../mixing/overview.rst:28
 msgid ""
 "The rest of the mixer shows the rest of the channels, along with some "
 "extra space used for drag-and-dropping plugins or files."
 msgstr ""
+"O resto do misturador mostra o resto dos canais, com algum espaço adicional "
+"para arrastar e soltar plugins ou ficheiros."
 
 #: ../../mixing/overview.rst:32
 msgid ""
 "Most of the activities that can be performed in the mixer are also "
 "available in the track inspector described in :ref:`track-inspector`."
 msgstr ""
+"A maioria das atividades que podem ser realizadas no misturador também estão "
+"disponíveis no inspetor de faixas descrito em :ref:`track-inspector`."
 
 #: ../../mixing/panning.rst:6
 msgid "Panning"
@@ -175,16 +191,21 @@ msgid ""
 "Audio and MIDI group tracks (covered in :ref:`audio-group-track` and :ref"
 ":`midi-group-track` respectively) can be created for grouping signals."
 msgstr ""
+"As faixas de áudio e de grupo MIDI (cobertas em :ref:`audio-group-track` e "
+":ref:`midi-group-track` respetivamente) podem ser criadas para agrupar "
+"sinais."
 
 #: ../../mixing/routing.rst:15
 msgid ""
 "To route channels to these tracks, you can click the direct out selector "
 "and choose them."
 msgstr ""
+"Para encaminhar canais para estas faixas, pode clicar no seletor direto e "
+"escolhê-los."
 
 #: ../../mixing/routing.rst:22
 msgid "Buses/FX Tracks"
-msgstr ""
+msgstr "Buses/Faixas FX"
 
 #: ../../mixing/routing.rst:23
 msgid ""
@@ -192,18 +213,25 @@ msgid ""
 ":`midi-bus-track` respectively) can be created for sending additional "
 "signals to them, in addition to the channel's main direct output."
 msgstr ""
+"Faixas áudio e MIDI FX (coberto em :ref:`audio-bus-track` e :ref:`midi-bus-"
+"track\", respetivamente) podem ser criados para o envio de um sinal para "
+"eles, além do canal principal de saída direta."
 
 #: ../../mixing/routing.rst:28
 msgid ""
 "This is useful for example for applying reverb and controlling the reverb"
 " signal separately."
 msgstr ""
+"Isto é útil, por exemplo, para aplicar o reverb e controlar o sinal reverb "
+"separadamente."
 
 #: ../../mixing/routing.rst:31
 msgid ""
 "You can send to these tracks/channels using the Sends section in the "
 "track inspector explained in :ref:`track-sends`."
 msgstr ""
+"Pode enviar para essas faixas/canais utilizando a seção Envios no inspetor "
+"de faixas explicada em :ref:`enviar-faixas`."
 
 #: ../../mixing/routing.rst:35
 msgid ""
@@ -211,6 +239,9 @@ msgid ""
 "`group`. Please keep this in mind if you are coming from other DAWs as "
 "they are different things in Zrythm."
 msgstr ""
+"Alguns outros DAWs utilizam o termo `bus` para se referir ao que Zrythm se "
+"refere como `grupo`. Por favor tenha isto em mente se está vindo de outros "
+"DAWs como eles são coisas diferentes em Zrythm."
 
 #: ../../mixing/routing.rst:41
 #: ../../mixing/sidechaining.rst:6
@@ -223,6 +254,9 @@ msgid ""
 "plugin sidechain ports, if the plugin has any. See :ref:`track-sends` for"
 " details."
 msgstr ""
+"Similar ao envio de sinais para pistas FX, também pode enviar sinais para as "
+"portas de plugin sidechain, se o plugin tiver algum. Veja :ref:`reck-sends' "
+"para detalhes."
 
 #: ../../mixing/routing/buses.rst:6
 msgid "Buses"
@@ -246,4 +280,3 @@ msgstr "Enviar Efeitos"
 
 #~ msgid "TODO"
 #~ msgstr "A FAZER"
-
