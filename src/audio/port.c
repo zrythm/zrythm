@@ -1736,8 +1736,21 @@ port_prepare_rtmidi_events (
             (midi_time_t)
             (((double) h.time / (double) length) *
             (double) AUDIO_ENGINE->block_length);
-          g_return_if_fail (
-            ev_time < AUDIO_ENGINE->block_length);
+
+          if (ev_time >= AUDIO_ENGINE->block_length)
+            {
+              g_warning (
+                "%s: event with invalid time %u "
+                "received. the maximum allowed time "
+                "is " PRIu32 ". setting it to "
+                "%u...",
+                __func__, ev_time,
+                AUDIO_ENGINE->block_length - 1,
+                AUDIO_ENGINE->block_length - 1);
+              ev_time =
+                (midi_byte_t)
+                (AUDIO_ENGINE->block_length - 1);
+            }
 
           midi_events_add_event_from_buf (
             dev->events,
