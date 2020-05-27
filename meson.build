@@ -22,7 +22,7 @@ project (
   meson_version: '>= 0.53.0',
   default_options: [
     'warning_level=2',
-    'buildtype=debug',
+    'buildtype=debugoptimized',
     'c_std=gnu11',
     ],
   )

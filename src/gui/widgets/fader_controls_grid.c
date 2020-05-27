@@ -40,6 +40,8 @@ update_meter_reading (
   GdkFrameClock * frame_clock,
   gpointer        user_data)
 {
+  /* TODO fix */
+#if 0
   if (!gtk_widget_get_mapped (
         GTK_WIDGET (widget)) ||
       !widget->track)
@@ -107,6 +109,7 @@ update_meter_reading (
     }
 
   widget->meter_reading_val = peak_val;
+#endif
 
   return G_SOURCE_CONTINUE;
 }
@@ -188,17 +191,15 @@ setup_meter (
   if (!track)
     return;
 
-  MeterType type = METER_TYPE_DB;
   Channel * ch = NULL;
   if (track_type_has_channel (track->type))
     ch = track_get_channel (track);
   switch (track->out_signal_type)
     {
     case TYPE_EVENT:
-      type = METER_TYPE_MIDI;
       meter_widget_setup (
-        self->meter_l, channel_get_current_midi_peak,
-        NULL, ch, type, 14);
+        self->meter_l,
+        ch->midi_out, 14);
       gtk_widget_set_margin_start (
         GTK_WIDGET (self->meter_l), 5);
       gtk_widget_set_margin_end (
@@ -207,17 +208,12 @@ setup_meter (
         GTK_WIDGET (self->meter_r), false);
       break;
     case TYPE_AUDIO:
-      type = METER_TYPE_DB;
       meter_widget_setup (
         self->meter_l,
-        channel_get_current_l_digital_peak,
-        channel_get_current_l_digital_peak_max,
-        ch, type, 12);
+        ch->stereo_out->l, 12);
       meter_widget_setup (
         self->meter_r,
-        channel_get_current_r_digital_peak,
-        channel_get_current_r_digital_peak_max,
-        ch, type, 12);
+        ch->stereo_out->r, 12);
       gtk_widget_set_visible (
         GTK_WIDGET (self->meter_r), true);
       break;

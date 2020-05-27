@@ -26,6 +26,7 @@
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
 #include "audio/master_track.h"
+#include "audio/meter.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "gui/widgets/balance_control.h"
@@ -73,6 +74,7 @@ channel_widget_update_meter_reading (
   GdkFrameClock * frame_clock,
   gpointer        user_data)
 {
+#if 0
   double prev = widget->meter_reading_val;
   Channel * channel = widget->channel;
 
@@ -96,6 +98,7 @@ channel_widget_update_meter_reading (
       return G_SOURCE_CONTINUE;
     }
 
+  /* TODO fix */
   /* calc decibels */
   channel_set_current_l_db (
     channel,
@@ -128,6 +131,7 @@ channel_widget_update_meter_reading (
     GTK_WIDGET (widget->meter_r));
 
   widget->meter_reading_val = val;
+#endif
 
   return G_SOURCE_CONTINUE;
 }
@@ -568,17 +572,14 @@ setup_phase_panel (ChannelWidget * self)
 static void
 setup_meter (ChannelWidget * self)
 {
-  MeterType type = METER_TYPE_DB;
   Track * track =
     channel_get_track (self->channel);
   switch (track->out_signal_type)
     {
     case TYPE_EVENT:
-      type = METER_TYPE_MIDI;
       meter_widget_setup (
         self->meter_l,
-        channel_get_current_midi_peak,
-        NULL, self->channel, type, 14);
+        self->channel->midi_out, 14);
       gtk_widget_set_margin_start (
         GTK_WIDGET (self->meter_l), 5);
       gtk_widget_set_margin_end (
@@ -587,17 +588,12 @@ setup_meter (ChannelWidget * self)
         GTK_WIDGET (self->meter_r), 0);
       break;
     case TYPE_AUDIO:
-      type = METER_TYPE_DB;
       meter_widget_setup (
         self->meter_l,
-        channel_get_current_l_digital_peak,
-        channel_get_current_l_digital_peak_max,
-        self->channel, type, 12);
+        self->channel->stereo_out->l, 12);
       meter_widget_setup (
         self->meter_r,
-        channel_get_current_r_digital_peak,
-        channel_get_current_r_digital_peak_max,
-        self->channel, type, 12);
+        self->channel->stereo_out->r, 12);
       break;
     default:
       break;

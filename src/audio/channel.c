@@ -1406,82 +1406,7 @@ channel_get_balance_control (
       channel->fader.balance, 0);
 }
 
-/**
- * MIDI peak.
- *
- * @note Used by the UI.
- */
-float
-channel_get_current_midi_peak (
-  void * _channel)
-{
-  Channel * channel = (Channel *) _channel;
-  float rms = 0.f;
-  Track * track = channel_get_track (channel);
-  if (track->out_signal_type == TYPE_EVENT)
-    {
-      ChannelWidget * cw = channel->widget;
-      Port * port = channel->midi_out;
-      int has_midi_events = 0;
-      if (port->write_ring_buffers)
-        {
-          MidiEvent event;
-          while (
-            zix_ring_peek (
-              port->midi_ring, &event,
-              sizeof (MidiEvent)) > 0)
-            {
-              if (event.systime >
-                    cw->last_midi_trigger_time)
-                {
-                  has_midi_events = 1;
-                  cw->last_midi_trigger_time =
-                    event.systime;
-                  break;
-                }
-            }
-        }
-      else
-        {
-          has_midi_events =
-            g_atomic_int_compare_and_exchange (
-              &port->has_midi_events, 1, 0);
-            if (has_midi_events)
-              {
-                cw->last_midi_trigger_time =
-                  g_get_monotonic_time ();
-              }
-        }
-
-      if (has_midi_events)
-        {
-          return 6.f;
-        }
-      else
-        {
-          return -198.f;
-
 #if 0
-          /** 350 ms */
-          static const float MAX_TIME = 350000.f;
-          gint64 time_diff =
-            g_get_monotonic_time () -
-            cw->last_midi_trigger_time;
-          if ((float) time_diff < MAX_TIME)
-            {
-              return
-                1.f - (float) time_diff / MAX_TIME;
-            }
-          else
-            {
-              return 0.f;
-            }
-#endif
-        }
-    }
-  return rms;
-}
-
 /**
  * Digital peak.
  *
@@ -1558,6 +1483,7 @@ channel_set_current_r_db (
 {
   channel->fader.r_port_db = val;
 }
+#endif
 
 static inline void
 channel_disconnect_plugin_from_strip (

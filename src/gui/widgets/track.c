@@ -2600,16 +2600,12 @@ track_widget_new (Track * track)
 
   if (track_type_has_channel (self->track->type))
     {
-      MeterType type = METER_TYPE_DB;
       switch (self->track->out_signal_type)
         {
         case TYPE_EVENT:
-          type = METER_TYPE_MIDI;
           meter_widget_setup (
             self->meter_l,
-            channel_get_current_midi_peak,
-            NULL,
-            self->track->channel, type, 8);
+            self->track->channel->midi_out, 8);
           gtk_widget_set_margin_start (
             GTK_WIDGET (self->meter_l), 2);
           gtk_widget_set_margin_end (
@@ -2619,18 +2615,13 @@ track_widget_new (Track * track)
             GTK_WIDGET (self->meter_r), 0);
           break;
         case TYPE_AUDIO:
-          type = METER_TYPE_DB;
           meter_widget_setup (
             self->meter_l,
-            channel_get_current_l_digital_peak,
-            channel_get_current_l_digital_peak_max,
-            self->track->channel, type, 6);
+            self->track->channel->stereo_out->l, 6);
           self->meter_l->padding = 0;
           meter_widget_setup (
             self->meter_r,
-            channel_get_current_r_digital_peak,
-            channel_get_current_r_digital_peak_max,
-            self->track->channel, type, 6);
+            self->track->channel->stereo_out->r, 6);
           self->meter_r->padding = 0;
           break;
         default:

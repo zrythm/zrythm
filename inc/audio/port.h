@@ -82,6 +82,8 @@ typedef enum PanLaw PanLaw;
 #define FOREACH_DESTS(port) \
   for (int i = 0; i < port->num_dests; i++)
 
+#define TIME_TO_RESET_PEAK 4800000
+
 /**
  * Special ID for owner_pl, owner_ch, etc. to indicate that
  * the port is not owned.
@@ -375,13 +377,9 @@ typedef struct Port
    * processed by the UI. */
   volatile int        has_midi_events;
 
-  /** True peak processor. */
-  TruePeakDsp *       true_peak_processor;
-  TruePeakDsp *       true_peak_max_processor;
-
-  /** Current true peak. */
-  float               true_peak;
-  float               true_peak_max;
+  /** Used by the UI to detect when unprocessed
+   * MIDI events exist. */
+  gint64              last_midi_event_time;
 
   /**
    * Ring buffer for saving the contents of the
@@ -828,23 +826,6 @@ float
 port_get_control_value (
   Port *      self,
   const bool  normalize);
-
-/**
- * Returns the value for the last n cycles.
- *
- * TODO move to new file audio_port.
- *
- * @param num_cycles Number of cycles to take into
- *   account, normally 1. If this is more than 1,
- *   the minimum of available cycles or given
- *   cycles is chosen.
- */
-float
-audio_port_get_meter_value (
-  Port *           port,
-  MeterAlgorithm   algo,
-  AudioValueFormat format,
-  int              num_cycles);
 
 /**
  * Connets src to dest.

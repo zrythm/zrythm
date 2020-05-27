@@ -370,6 +370,7 @@ channel_add_balance_control (
 float
 channel_get_balance_control (void * _channel);
 
+#if 0
 /* ---- getters ---- */
 
 /**
@@ -426,6 +427,8 @@ channel_set_current_l_db (
 void
 channel_set_current_r_db (
   Channel * channel, float val);
+
+#endif
 
 /**
  * Sets fader to 0.0.

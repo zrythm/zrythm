@@ -78,6 +78,9 @@ typedef struct _InspectorPortWidget
   /** Port this is for. */
   Port *            port;
 
+  /** Meter for this widget. */
+  Meter *           meter;
+
   /** Jack button to expose port to jack. */
   GtkToggleButton * jack;
 

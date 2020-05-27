@@ -249,7 +249,7 @@ on_double_click (
 }
 
 /** 250 ms */
-static const float MAX_TIME = 250000.f;
+/*static const float MAX_TIME = 250000.f;*/
 
 static float
 get_port_value (
@@ -259,68 +259,18 @@ get_port_value (
   switch (port->id.type)
     {
     case TYPE_AUDIO:
+    case TYPE_EVENT:
       {
-        return
-          audio_port_get_meter_value (
-            port, METER_ALGORITHM_RMS,
-            AUDIO_VALUE_FADER, 2);
+        float val, max;
+        meter_get_value (
+          self->meter, AUDIO_VALUE_FADER,
+          &val, &max);
+        return val;
       }
       break;
     case TYPE_CV:
       {
         return port->buf[0];
-      }
-      break;
-    case TYPE_EVENT:
-      {
-        int has_midi_events = 0;
-        if (port->write_ring_buffers)
-          {
-            MidiEvent event;
-            while (
-              zix_ring_peek (
-                port->midi_ring, &event,
-                sizeof (MidiEvent)) > 0)
-              {
-                if (event.systime >
-                      self->last_midi_trigger_time)
-                  {
-                    has_midi_events = 1;
-                    self->last_midi_trigger_time =
-                      event.systime;
-                    break;
-                  }
-              }
-          }
-        else
-          {
-            has_midi_events =
-              g_atomic_int_compare_and_exchange (
-                &port->has_midi_events, 1, 0);
-            if (has_midi_events)
-              {
-                self->last_midi_trigger_time =
-                  g_get_monotonic_time ();
-              }
-          }
-
-        if (has_midi_events)
-          {
-            return 1.f;
-          }
-        else
-          {
-            gint64 time_diff =
-              g_get_monotonic_time () -
-              self->last_midi_trigger_time;
-            if ((float) time_diff < MAX_TIME)
-              {
-                return
-                  1.f - (float) time_diff / MAX_TIME;
-              }
-            else
-              return 0.f;
-          }
       }
       break;
     case TYPE_CONTROL:
@@ -420,7 +370,7 @@ inspector_port_widget_new (
       NULL);
 
   self->port = port;
-
+  self->meter = meter_new_for_port (port);
 
   char str[200];
   int has_str = 0;
@@ -567,6 +517,8 @@ finalize (
     g_object_unref (self->double_click_gesture);
   if (self->right_click_gesture)
     g_object_unref (self->right_click_gesture);
+  if (self->meter)
+    meter_free (self->meter);
 
   G_OBJECT_CLASS (
     inspector_port_widget_parent_class)->
