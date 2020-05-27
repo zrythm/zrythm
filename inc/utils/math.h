@@ -93,6 +93,18 @@ math_dbfs_to_amp (
 }
 
 /**
+ * Convert form dbFS to fader val 0.0 to 1.0.
+ */
+static inline sample_t
+math_dbfs_to_fader_val (
+  sample_t dbfs)
+{
+  return
+    math_get_fader_val_from_amp (
+      math_dbfs_to_amp (dbfs));
+}
+
+/**
  * Checks if 2 doubles are equal.
  *
  * @param epsilon The allowed difference.

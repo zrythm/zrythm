@@ -55,6 +55,14 @@ typedef struct _MeterWidget
    */
   GenericFloatGetter     max_getter;
 
+  /** Last meter value, used to show a falloff and
+   * avoid sudden dips. */
+  float                  last_val;
+
+  /** Time the last val was taken at (last draw
+   * time). */
+  gint64                 last_draw_time;
+
   void *                 object;
   MeterType              type;
 

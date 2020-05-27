@@ -90,7 +90,7 @@ update_meter_reading (
 
   if (math_doubles_equal (peak_val, prev))
     return G_SOURCE_CONTINUE;
-  if (peak_val < -100.)
+  if (peak_val < -98.)
     gtk_label_set_text (
       widget->meter_readings, "-∞");
   else

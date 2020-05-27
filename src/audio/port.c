@@ -52,7 +52,7 @@
 #include <gtk/gtk.h>
 
 #define SLEEPTIME_USEC 60
-#define TIME_TO_RESET_PEAK 1600000
+#define TIME_TO_RESET_PEAK 4800000
 
 /**
  * This function finds the Ports corresponding to
@@ -145,9 +145,9 @@ port_find_from_identifier (
   PortIdentifier * id)
 {
   g_return_val_if_fail (id, NULL);
-  Track * tr;
-  Channel * ch;
-  Plugin * pl;
+  Track * tr = NULL;
+  Channel * ch = NULL;
+  Plugin * pl = NULL;
   switch (id->owner_type)
     {
     case PORT_OWNER_TYPE_BACKEND:
@@ -2575,6 +2575,12 @@ port_sum_signal_from_inputs (
             {
               maxf = port->maxf;
               minf = port->minf;
+            }
+          else
+            {
+              g_warn_if_reached ();
+              minf = 0.f;
+              maxf = 0.f;
             }
           depth_range =
             (maxf - minf) / 2.f;

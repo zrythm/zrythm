@@ -1455,10 +1455,13 @@ channel_get_current_midi_peak (
 
       if (has_midi_events)
         {
-          return 1.f;
+          return 6.f;
         }
       else
         {
+          return -198.f;
+
+#if 0
           /** 350 ms */
           static const float MAX_TIME = 350000.f;
           gint64 time_diff =
@@ -1473,6 +1476,7 @@ channel_get_current_midi_peak (
             {
               return 0.f;
             }
+#endif
         }
     }
   return rms;
@@ -1492,7 +1496,7 @@ channel_get_current_l_digital_peak (
     audio_port_get_meter_value (
       ch->stereo_out->l,
       METER_ALGORITHM_DIGITAL_PEAK,
-      AUDIO_VALUE_DBFS, 8);
+      AUDIO_VALUE_DBFS, 2);
 }
 
 /**
@@ -1509,7 +1513,7 @@ channel_get_current_r_digital_peak (
     audio_port_get_meter_value (
       ch->stereo_out->r,
       METER_ALGORITHM_DIGITAL_PEAK,
-      AUDIO_VALUE_DBFS, 8);
+      AUDIO_VALUE_DBFS, 2);
 }
 
 /**

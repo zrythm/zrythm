@@ -27,13 +27,6 @@ G_DEFINE_TYPE (
 
 #define GET_REAL_VAL ((*self->getter) (self->object))
 
-static float
-meter_val_from_real (MeterWidget * self)
-{
-  float amp = math_dbfs_to_amp (GET_REAL_VAL);
-  return math_get_fader_val_from_amp (amp);
-}
-
 static int
 meter_draw_cb (
   GtkWidget * widget,
@@ -52,18 +45,39 @@ meter_draw_cb (
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
-  float meter_val = -1.0;
+  float meter_val = -198.0;
   if (!self->getter || !self->object)
     return FALSE;
-  switch (self->type)
+
+  /* get value in dbfs */
+  meter_val = GET_REAL_VAL;
+
+  gint64 now = g_get_monotonic_time ();
+  if (meter_val < self->last_val)
     {
-    case METER_TYPE_DB:
-      meter_val = meter_val_from_real (self);
-      break;
-    case METER_TYPE_MIDI:
-      meter_val = GET_REAL_VAL;
-      break;
+      /* calculate new value after falloff */
+      float falloff =
+        ((float)
+         (now - self->last_draw_time) / 1000000.f) *
+          13.3f;
+
+      /* use prev val plus falloff if higher than
+       * current val */
+      float prev_val_after_falloff =
+        self->last_val - falloff;
+      if (prev_val_after_falloff > meter_val)
+        {
+          meter_val = prev_val_after_falloff;
+        }
     }
+
+  /* remember vals */
+  self->last_draw_time = now;
+  self->last_val = meter_val;
+
+  /* convert val from dbfs to fader */
+  meter_val = math_dbfs_to_fader_val (meter_val);
+
   float value_px = (float) height * meter_val;
   if (value_px < 0)
     value_px = 0;

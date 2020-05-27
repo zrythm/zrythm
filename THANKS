@@ -20,6 +20,7 @@ Thanks:
    * Help and advice
    * Routing algorithm
    * Latency compensation algorithm
+   * Meter algorithms
  David Robillard
    * A lot of useful code we borrowed
  The GTK team

@@ -1065,7 +1065,22 @@ zrythm_app_startup (
     gtk_settings, "gtk-icon-theme-name",
     "zrythm-dark", NULL);
 
-  /* prepend system icons to search path */
+  /* prepend freedesktop system icons to search
+   * path, just in case */
+  char * parent_datadir =
+    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_PARENT_DATADIR);
+  char * freedesktop_icon_theme_dir =
+    g_build_filename (
+      parent_datadir, "icons", NULL);
+  gtk_icon_theme_prepend_search_path (
+    icon_theme, freedesktop_icon_theme_dir);
+  g_message (
+    "prepended icon theme search path: %s",
+    freedesktop_icon_theme_dir);
+  g_free (parent_datadir);
+  g_free (freedesktop_icon_theme_dir);
+
+  /* prepend zrythm system icons to search path */
   char * system_themes_dir =
     zrythm_get_dir (ZRYTHM_DIR_SYSTEM_THEMESDIR);
   char * system_icon_theme_dir =

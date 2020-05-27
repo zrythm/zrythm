@@ -1096,6 +1096,7 @@ plugin_manager_scan_plugins (
       g_message (
         "Scanning %s instruments...", type);
       paths = get_sf_paths (self, i);
+      g_return_if_fail (paths);
       path_idx = 0;
       while ((path = paths[path_idx++]) != NULL)
         {

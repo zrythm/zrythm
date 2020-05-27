@@ -65,7 +65,7 @@ int
 move_plugins_action_do (
   MovePluginsAction * self)
 {
-  Plugin * pl;
+  Plugin * pl = NULL;
   Channel * from_ch =
     TRACKLIST->tracks[self->from_track_pos]->channel;
   g_return_val_if_fail (from_ch, -1);
@@ -165,8 +165,6 @@ int
 move_plugins_action_undo (
   MovePluginsAction * self)
 {
-  Plugin * pl;
-
   /* get original channel */
   Channel * ch =
     TRACKLIST->tracks[
@@ -185,6 +183,7 @@ move_plugins_action_undo (
   for (int i = 0; i < self->ms->num_slots; i++)
     {
       /* get the actual plugin */
+      Plugin * pl = NULL;
       switch (self->slot_type)
         {
         case PLUGIN_SLOT_MIDI_FX:

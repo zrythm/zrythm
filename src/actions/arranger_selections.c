@@ -1844,7 +1844,7 @@ do_or_undo_resize (
           g_return_val_if_fail (obj, -1);
 
           /* resize */
-          ArrangerObjectResizeType type;
+          ArrangerObjectResizeType type = -1;
           int left = 0;
           switch (self->resize_type)
             {
@@ -1876,6 +1876,8 @@ do_or_undo_resize (
             case ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE:
               type = ARRANGER_OBJECT_RESIZE_FADE;
               break;
+            default:
+              g_warn_if_reached ();
             }
           arranger_object_resize (
             obj, left, type, ticks, false);
