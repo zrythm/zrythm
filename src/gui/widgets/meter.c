@@ -76,7 +76,9 @@ meter_draw_cb (
   self->last_val = meter_val;
 
   /* convert val from dbfs to fader */
-  meter_val = math_dbfs_to_fader_val (meter_val);
+  float meter_amp = math_dbfs_to_amp (meter_val);
+  meter_val =
+    math_get_fader_val_from_amp (meter_amp);
 
   float value_px = (float) height * meter_val;
   if (value_px < 0)
@@ -101,7 +103,23 @@ meter_draw_cb (
         intensity * self->start_color.blue;
       /*float a = intensity_inv * self->end_color.alpha  +*/
                 /*intensity * self->start_color.alpha;*/
+
       cairo_set_source_rgba (cr, r,g,b, 1.0);
+
+      /* use gradient */
+      cairo_pattern_t * pat =
+        cairo_pattern_create_linear (
+          0.0, 0.0, 0.0, height);
+      cairo_pattern_add_color_stop_rgba (
+        pat, 0, r, g, b, 1);
+      cairo_pattern_add_color_stop_rgba (
+        pat, 0.5, r, g, b, 1);
+      cairo_pattern_add_color_stop_rgba (
+        pat, 0.75, 0, 1, 0, 1);
+      cairo_pattern_add_color_stop_rgba (
+        pat, 1, 0, 0.2, 1, 1);
+      cairo_set_source (
+        cr, pat);
     }
   else if (self->type == METER_TYPE_MIDI)
     {
@@ -141,6 +159,11 @@ meter_draw_cb (
     {
       float max_amp =
         self->max_getter (self->object);
+
+      /* set to current falloff if peak is lower */
+      if (max_amp < meter_amp)
+        max_amp = meter_amp;
+
       /*g_message ("amp %f", (double) max_amp);*/
       if (max_amp > 0.001f)
         {
