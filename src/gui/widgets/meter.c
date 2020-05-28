@@ -115,10 +115,11 @@ meter_draw_cb (
   cairo_stroke (cr);
 
   /* draw peak */
-  peak *= height;
   cairo_set_source_rgba (
-    cr, 0.6, 0.1, 0.05, 1);
+    /* make higher peak brighter */
+    cr, 0.6 + 0.4 * (double) peak, 0.1, 0.05, 1);
   cairo_set_line_width (cr, 2.0);
+  peak *= height;
   cairo_move_to (
     cr, x, (float) height - peak);
   cairo_line_to (
