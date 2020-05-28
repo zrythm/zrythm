@@ -70,16 +70,15 @@ G_DEFINE_TYPE (ChannelWidget,
  */
 gboolean
 channel_widget_update_meter_reading (
-  ChannelWidget * widget,
+  ChannelWidget * self,
   GdkFrameClock * frame_clock,
   gpointer        user_data)
 {
-#if 0
-  double prev = widget->meter_reading_val;
-  Channel * channel = widget->channel;
+  double prev = self->meter_reading_val;
+  Channel * channel = self->channel;
 
   if (!gtk_widget_get_mapped (
-        GTK_WIDGET (widget)))
+        GTK_WIDGET (self)))
     {
       return G_SOURCE_CONTINUE;
     }
@@ -90,48 +89,47 @@ channel_widget_update_meter_reading (
   if (track->out_signal_type == TYPE_EVENT)
     {
       gtk_label_set_text (
-        widget->meter_reading, "-∞");
-      gtk_widget_queue_draw (
-        GTK_WIDGET (widget->meter_l));
-      gtk_widget_queue_draw (
-        GTK_WIDGET (widget->meter_r));
+        self->meter_reading, "-∞");
       return G_SOURCE_CONTINUE;
     }
 
-  /* TODO fix */
-  /* calc decibels */
-  channel_set_current_l_db (
-    channel,
-    math_calculate_rms_db (
-      channel->stereo_out->l->buf,
-      AUDIO_ENGINE->nframes));
-  channel_set_current_r_db (
-    channel,
-    math_calculate_rms_db (
-      channel->stereo_out->r->buf,
-      AUDIO_ENGINE->nframes));
-
-  double val =
-    (channel_get_current_l_digital_peak (channel) +
-      channel_get_current_r_digital_peak (channel)) / 2;
+  float amp =
+    MAX (
+      self->meter_l->meter->prev_max,
+      self->meter_r->meter->prev_max);
+  double val = (double) math_amp_to_dbfs (amp);
   if (math_doubles_equal (val, prev))
     return G_SOURCE_CONTINUE;
-  char * string;
   if (val < -100.)
-    gtk_label_set_text (widget->meter_reading, "-∞");
+    gtk_label_set_text (self->meter_reading, "-∞");
   else
     {
-      string = g_strdup_printf ("%.1f", val);
-      gtk_label_set_text (widget->meter_reading, string);
-      g_free (string);
+      char string[40];
+      if (val < -10.)
+        {
+          sprintf (string, "%.0f", val);
+        }
+      else
+        {
+          sprintf (string, "%.1f", val);
+        }
+      char formatted_str[80];
+      if (val > 0)
+        {
+          sprintf (
+            formatted_str,
+            "<span foreground=\"#FF0A05\">%s</span>",
+            string);
+        }
+      else
+        {
+          strcpy (formatted_str, string);
+        }
+      gtk_label_set_markup (
+        self->meter_reading, formatted_str);
     }
-  gtk_widget_queue_draw (
-    GTK_WIDGET (widget->meter_l));
-  gtk_widget_queue_draw (
-    GTK_WIDGET (widget->meter_r));
 
-  widget->meter_reading_val = val;
-#endif
+  self->meter_reading_val = val;
 
   return G_SOURCE_CONTINUE;
 }

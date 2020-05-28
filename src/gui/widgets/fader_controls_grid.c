@@ -40,8 +40,6 @@ update_meter_reading (
   GdkFrameClock * frame_clock,
   gpointer        user_data)
 {
-  /* TODO fix */
-#if 0
   if (!gtk_widget_get_mapped (
         GTK_WIDGET (widget)) ||
       !widget->track)
@@ -55,40 +53,19 @@ update_meter_reading (
     track_get_channel (widget->track);
   g_warn_if_fail (channel);
 
-  /* TODO */
   if (track->out_signal_type == TYPE_EVENT)
     {
       gtk_label_set_text (
         widget->meter_readings, "-∞");
-      gtk_widget_queue_draw (
-        GTK_WIDGET (widget->meter_l));
-      gtk_widget_queue_draw (
-        GTK_WIDGET (widget->meter_r));
       return G_SOURCE_CONTINUE;
     }
 
-  /* calc decibels */
-  channel_set_current_l_db (
-    channel,
-    math_calculate_rms_db (
-      channel->stereo_out->l->buf,
-      AUDIO_ENGINE->nframes));
-  channel_set_current_r_db (
-    channel,
-    math_calculate_rms_db (
-      channel->stereo_out->r->buf,
-      AUDIO_ENGINE->nframes));
-
-  double peak_val =
+  float amp =
     MAX (
-      channel_get_current_l_digital_peak_max (channel),
-      channel_get_current_r_digital_peak_max (channel));
-  peak_val =
-    math_amp_to_dbfs ((float) peak_val);
-  gtk_widget_queue_draw (
-    GTK_WIDGET (widget->meter_l));
-  gtk_widget_queue_draw (
-    GTK_WIDGET (widget->meter_r));
+      widget->meter_l->meter->prev_max,
+      widget->meter_r->meter->prev_max);
+
+  double peak_val = (double) math_amp_to_dbfs (amp);
 
   if (math_doubles_equal (peak_val, prev))
     return G_SOURCE_CONTINUE;
@@ -97,19 +74,34 @@ update_meter_reading (
       widget->meter_readings, "-∞");
   else
     {
-      char peak[400];
-      sprintf (peak, _("Peak"));
-      char * string =
-        g_strdup_printf (
-          "%s:\n<small>%.1fdb</small>",
-          peak, peak_val);
+      char format_str[400];
+      strcpy (format_str, _("Peak"));
+      strcat (format_str, ":\n<small>");
+      if (peak_val < -10.)
+        {
+          strcat (format_str, "%.0fdb</small>");
+        }
+      else
+        {
+          if (peak_val > 0)
+            {
+              strcat (
+                format_str,
+                "<span foreground=\"#FF0A05\">"
+                "%.1fdb</span></small>");
+            }
+          else
+            {
+              strcat (format_str, "%.1fdb</small>");
+            }
+        }
+      char str[800];
+      sprintf (str, format_str, peak_val);
       gtk_label_set_markup (
-        widget->meter_readings, string);
-      g_free (string);
+        widget->meter_readings, str);
     }
 
   widget->meter_reading_val = peak_val;
-#endif
 
   return G_SOURCE_CONTINUE;
 }

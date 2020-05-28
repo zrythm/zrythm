@@ -58,28 +58,33 @@ meter_draw_cb (
   float width_without_padding =
     (float) (width - self->padding * 2);
 
+  GdkRGBA bar_color = { 0, 0, 0, 1 };
   double intensity = (double) meter_val;
   const double intensity_inv = 1.0 - intensity;
-  double r =
+  bar_color.red =
     intensity_inv * self->end_color.red +
     intensity * self->start_color.red;
-  double g =
+  bar_color.green =
     intensity_inv * self->end_color.green +
     intensity * self->start_color.green;
-  double b =
+  bar_color.blue =
     intensity_inv * self->end_color.blue  +
     intensity * self->start_color.blue;
 
-  cairo_set_source_rgba (cr, r,g,b, 1.0);
+  gdk_cairo_set_source_rgba (cr, &bar_color);
 
   /* use gradient */
   cairo_pattern_t * pat =
     cairo_pattern_create_linear (
       0.0, 0.0, 0.0, height);
   cairo_pattern_add_color_stop_rgba (
-    pat, 0, r, g, b, 1);
+    pat, 0,
+    bar_color.red, bar_color.green,
+    bar_color.blue, 1);
   cairo_pattern_add_color_stop_rgba (
-    pat, 0.5, r, g, b, 1);
+    pat, 0.5,
+    bar_color.red, bar_color.green,
+    bar_color.blue, 1);
   cairo_pattern_add_color_stop_rgba (
     pat, 0.75, 0, 1, 0, 1);
   cairo_pattern_add_color_stop_rgba (
@@ -115,9 +120,24 @@ meter_draw_cb (
   cairo_stroke (cr);
 
   /* draw peak */
-  cairo_set_source_rgba (
-    /* make higher peak brighter */
-    cr, 0.6 + 0.4 * (double) peak, 0.1, 0.05, 1);
+  float peak_amp =
+    math_get_amp_val_from_fader (peak);
+  if (peak_amp > 1.f)
+    {
+      cairo_set_source_rgba (
+        /* make higher peak brighter */
+        cr, 0.6 + 0.4 * (double) peak, 0.1, 0.05, 1);
+    }
+  else
+    {
+      cairo_set_source_rgba (
+        /* make higher peak brighter */
+        cr,
+        0.4 + 0.4 * (double) peak,
+        0.4 + 0.4 * (double) peak,
+        0.4 + 0.4 * (double) peak,
+        1);
+    }
   cairo_set_line_width (cr, 2.0);
   peak *= height;
   cairo_move_to (
