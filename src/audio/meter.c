@@ -123,27 +123,6 @@ meter_get_value (
             (int) AUDIO_ENGINE->block_length);
           peak_dsp_read (
             self->peak_processor, &amp, &max_amp);
-#if 0
-          amp =
-            math_calculate_max_amp (
-              &buf[start_index],
-              (size_t) num_cycles *
-                AUDIO_ENGINE->block_length);
-          {
-            gint64 now = g_get_monotonic_time ();
-            if (now - port->peak_timestamp <
-                  TIME_TO_RESET_PEAK)
-              {
-                /* new peak */
-                max_amp = port->peak;
-              }
-            else
-              {
-                /* prev peak */
-                max_amp = self->prev_max;
-              }
-          }
-#endif
           break;
         default:
           break;

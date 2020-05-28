@@ -57,9 +57,10 @@ peak_dsp_process (
 
   if (self->fpp != n)
     {
-      const float fall = 15.0f;
+      /*const float fall = 15.f;*/
+      const float fall = 5.f;
       const float tme = (float) n / self->fsamp; // period time in seconds
-      self->fall = powf (10.0f, -0.05f * fall * tme); // per period fallback multiplier
+      self->fall = powf (10.f, -0.05f * fall * tme); // per period fallback multiplier
       self->fpp = n;
     }
 
@@ -144,9 +145,10 @@ peak_dsp_reset (
 void
 peak_dsp_init (
   PeakDsp * self,
-  float         samplerate)
+  float     samplerate)
 {
-  const float hold = 0.5f;
+  /*const float hold = 0.5f;*/
+  const float hold = 1.5f;
   self->fsamp = samplerate;
 
   self->hold = (int)(hold * samplerate + 0.5f); // number of samples to hold peak
