@@ -112,7 +112,7 @@ log_writer (
     g_log_writer_format_fields (
       log_level, fields, n_fields, 0);
 
-  if (LOG->obj_pool && self->mqueue)
+  if (self->initialized)
     {
       /* queue the message */
       LogEvent * ev =
@@ -233,6 +233,8 @@ log_init_with_file (
   mpmc_queue_reserve (
     self->mqueue,
     (size_t) MESSAGES_MAX * sizeof (char *));
+
+  self->initialized = true;
 }
 
 void

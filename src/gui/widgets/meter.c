@@ -28,10 +28,9 @@ G_DEFINE_TYPE (
 static int
 meter_draw_cb (
   GtkWidget * widget,
-  cairo_t * cr, void* data)
+  cairo_t * cr,
+  MeterWidget * self)
 {
-  MeterWidget * self = (MeterWidget *) widget;
-
   GtkStyleContext *context =
   gtk_widget_get_style_context (widget);
 
@@ -194,6 +193,17 @@ meter_widget_setup (
   self->meter = meter_new_for_port (port);
   self->padding = 2;
 
+  /* connect signals */
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (meter_draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_crossing),  self);
+
   /* set size */
   gtk_widget_set_size_request (
     GTK_WIDGET (self), width, -1);
@@ -222,17 +232,6 @@ meter_widget_init (MeterWidget * self)
   /*gdk_rgba_parse (&self->end_color, "#00FFCC");*/
   gdk_rgba_parse (&self->start_color, "#F9CA1B");
   gdk_rgba_parse (&self->end_color, "#1DDD6A");
-
-  /* connect signals */
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (meter_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_crossing),  self);
 }
 
 static void

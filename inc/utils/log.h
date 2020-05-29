@@ -20,6 +20,8 @@
 #ifndef __UTILS_LOG_H__
 #define __UTILS_LOG_H__
 
+#include <stdbool.h>
+
 #include <gtk/gtk.h>
 
 typedef struct _LogViewerWidget LogViewerWidget;
@@ -49,6 +51,8 @@ typedef struct Log
 
   /** Object pool for the queue. */
   ObjectPool *    obj_pool;
+
+  bool            initialized;
 
   /** Currently opened log viewer. */
   LogViewerWidget * viewer;

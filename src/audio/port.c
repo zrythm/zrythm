@@ -19,6 +19,7 @@
 
 #include "config.h"
 
+#include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -1720,7 +1721,7 @@ port_prepare_rtmidi_events (
               g_warning (
                 "%s: event with invalid time %u "
                 "received. the maximum allowed time "
-                "is " PRIu32 ". setting it to "
+                "is %" PRIu32 ". setting it to "
                 "%u...",
                 __func__, ev_time,
                 AUDIO_ENGINE->block_length - 1,
