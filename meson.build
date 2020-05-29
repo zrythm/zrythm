@@ -289,9 +289,7 @@ if os_freebsd
   common_cflags += [
     '-I' + includedir,
     ]
-endif
-
-if os_windows
+elif os_windows
   common_cflags += [
     '-mms-bitfields',
     '-mwindows',

@@ -37,6 +37,13 @@
 #include <glibtop/loadavg.h>
 #endif
 
+#ifdef __APPLE__
+#include <mach/mach_init.h>
+#include <mach/mach_error.h>
+#include <mach/mach_host.h>
+#include <mach/vm_map.h>
+#endif
+
 G_DEFINE_TYPE (CpuWidget,
                cpu_widget,
                GTK_TYPE_DRAWING_AREA)
@@ -144,7 +151,6 @@ cpu_draw_cb (
 unsigned long prev_total, prev_idle;
 #endif
 
-
 /**
  * Refreshes DSP load percentage.
  *
@@ -178,6 +184,21 @@ refresh_dsp_load (
 
 #if defined(__linux__) && !defined(HAVE_LIBGTOP)
 static long double a[4], b[4] = {0,0,0,0}, loadavg;
+#endif
+
+#ifdef __APPLE__
+static unsigned long long _previousTotalTicks = 0;
+static unsigned long long _previousIdleTicks = 0;
+
+float CalculateCPULoad(unsigned long long idleTicks, unsigned long long totalTicks)
+{
+  unsigned long long totalTicksSinceLastTime = totalTicks-_previousTotalTicks;
+  unsigned long long idleTicksSinceLastTime  = idleTicks-_previousIdleTicks;
+  float ret = 1.0f-((totalTicksSinceLastTime > 0) ? ((float)idleTicksSinceLastTime)/totalTicksSinceLastTime : 0);
+  _previousTotalTicks = totalTicks;
+  _previousIdleTicks  = idleTicks;
+  return ret;
+}
 #endif
 
 /**
@@ -220,6 +241,26 @@ refresh_cpu_load (
 #elif defined(_WOE32)
 
   self->cpu = cpu_windows_get_usage (-1);
+
+#elif defined (__APPLE__)
+
+  host_cpu_load_info_data_t cpuinfo;
+   mach_msg_type_number_t count = HOST_CPU_LOAD_INFO_COUNT;
+   if (host_statistics (
+        mach_host_self(), HOST_CPU_LOAD_INFO,
+        (host_info_t)&cpuinfo, &count) == KERN_SUCCESS)
+   {
+      unsigned long long totalTicks = 0;
+      for(int i=0; i<CPU_STATE_MAX; i++) totalTicks += cpuinfo.cpu_ticks[i];
+      self->cpu =
+        (int)
+        (CalculateCPULoad(cpuinfo.cpu_ticks[CPU_STATE_IDLE], totalTicks) * 100.f);
+   }
+   else
+     {
+       g_warn_if_reached ();
+       self->cpu = 0;
+     }
 
 #endif
 
