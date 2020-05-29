@@ -407,7 +407,8 @@ endif
 # set config defines
 libgtop_dep = dependency(
   'libgtop-2.0', required: false)
-if (libgtop_dep.found ())
+# disable for now
+if libgtop_dep.found () and false
   cdata.set('HAVE_LIBGTOP', 1)
   cdata.set('TIME_WITH_SYS_TIME', 0)
 endif
