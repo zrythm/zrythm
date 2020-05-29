@@ -673,9 +673,15 @@ tmp_h = configure_file (
   output: 'tmp.h',
   configuration: cdata,
   )
+if get_option ('fallback_version') == ''
+  version_fallback = meson.project_version ()
+else
+  version_fallback = get_option ('fallback_version')
+endif
 config_h_vcs = vcs_tag (
   input: tmp_h,
   output: 'config.h',
+  fallback: version_fallback,
   )
 config_h_dep = declare_dependency (
   sources: config_h_vcs,

@@ -139,3 +139,9 @@ option (
 when generating documentation for the scripting
 interface). This is found in the libguile subdir of
 the guile distribution after compiling it.''')
+
+option (
+  'fallback_version',
+  type: 'string',
+  value: '',
+  description: 'Fallback version string to use if git is not available. meson.project_version () will be used if empty.')
