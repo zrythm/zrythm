@@ -78,7 +78,7 @@ peak_dsp_process (
       if (t < max) t = max;             // Update digital peak.
     }
 
-  if (!finite(t)) t = 0;
+  if (!isfinite(t)) t = 0;
 
   if (self->flag) // Display thread has read the rms value.
     {
