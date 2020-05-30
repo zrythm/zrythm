@@ -190,15 +190,15 @@ meter_get_value (
         }
     }
 
-  /* remember vals */
-  self->last_draw_time = now;
-  self->last_amp = amp;
-  self->prev_max = max_amp;
-
   /* if this is a peak value, set to current falloff
    * if peak is lower */
   if (max_amp < amp)
     max_amp = amp;
+
+  /* remember vals */
+  self->last_draw_time = now;
+  self->last_amp = amp;
+  self->prev_max = max_amp;
 
   switch (format)
     {

@@ -1,7 +1,5 @@
 /*
- * gui/widgets/meter.h - Meter widget
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -50,6 +48,9 @@ typedef struct _MeterWidget
 
   GdkRGBA                start_color;
   GdkRGBA                end_color;
+
+  float                  meter_val;
+  float                  meter_peak;
 } MeterWidget;
 
 /**

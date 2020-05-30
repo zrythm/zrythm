@@ -43,11 +43,8 @@ meter_draw_cb (
     context, cr, 0, 0, width, height);
 
   /* get values */
-  float peak = -198.0;
-  float meter_val = -198.0;
-  meter_get_value (
-    self->meter, AUDIO_VALUE_FADER, &meter_val,
-    &peak);
+  float peak = self->meter_peak;
+  float meter_val = self->meter_val;
 
   float value_px = (float) height * meter_val;
   if (value_px < 0)
@@ -138,12 +135,12 @@ meter_draw_cb (
         1);
     }
   cairo_set_line_width (cr, 2.0);
-  peak *= height;
+  double peak_px = (double) peak * height;
   cairo_move_to (
-    cr, x, (float) height - peak);
+    cr, x, height - peak_px);
   cairo_line_to (
     cr, x * 2 + width_without_padding,
-    (float) height - peak);
+    height - peak_px);
   cairo_stroke (cr);
 
   return FALSE;
@@ -178,6 +175,29 @@ tick_cb (
   return G_SOURCE_CONTINUE;
 }
 
+/*
+ * Timeout to "run" the meter.
+ */
+static gboolean
+meter_timeout (
+  MeterWidget * self)
+{
+  if (GTK_IS_WIDGET (self))
+    {
+      if (self->meter)
+        {
+          meter_get_value (
+            self->meter, AUDIO_VALUE_FADER,
+            &self->meter_val,
+            &self->meter_peak);
+        }
+
+      return G_SOURCE_CONTINUE;
+    }
+  else
+    return G_SOURCE_REMOVE;
+}
+
 /**
  * Creates a new Meter widget and binds it to the
  * given value.
@@ -190,27 +210,16 @@ meter_widget_setup (
   Port *             port,
   int                width)
 {
+  if (self->meter)
+    {
+      meter_free (self->meter);
+    }
   self->meter = meter_new_for_port (port);
   self->padding = 2;
-
-  /* connect signals */
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (meter_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_crossing),  self);
 
   /* set size */
   gtk_widget_set_size_request (
     GTK_WIDGET (self), width, -1);
-
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) tick_cb,
-    self, NULL);
 }
 
 static void
@@ -232,12 +241,30 @@ meter_widget_init (MeterWidget * self)
   /*gdk_rgba_parse (&self->end_color, "#00FFCC");*/
   gdk_rgba_parse (&self->start_color, "#F9CA1B");
   gdk_rgba_parse (&self->end_color, "#1DDD6A");
+
+  /* connect signals */
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (meter_draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_crossing),  self);
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), (GtkTickCallback) tick_cb,
+    self, NULL);
+  g_timeout_add (
+    20, (GSourceFunc) meter_timeout, self);
 }
 
 static void
 meter_widget_class_init (MeterWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "meter");
 
