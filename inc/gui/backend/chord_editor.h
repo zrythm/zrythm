@@ -46,7 +46,12 @@ typedef struct ChordDescriptor ChordDescriptor;
  */
 typedef struct ChordEditor
 {
-  /** The chords to show on the left. */
+  /**
+   * The chords to show on the left.
+   *
+   * Currently fixed to 12 chords whose order cannot
+   * be edited. Chords cannot be added or removed.
+   */
   ChordDescriptor * chords[128];
   int               num_chords;
 } ChordEditor;

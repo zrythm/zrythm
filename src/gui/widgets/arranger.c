@@ -1424,6 +1424,9 @@ get_hit_objects (
                 r->chord_objects[i];
               obj =
                 (ArrangerObject *) co;
+              g_return_if_fail (
+                co->chord_index <
+                CHORD_EDITOR->num_chords);
               add_object_if_overlap (
                 self, rect, x, y, array,
                 array_size, obj);
@@ -2660,7 +2663,8 @@ create_item (
         clip_editor_get_region (CLIP_EDITOR);
 
       /* create a chord object */
-      if (region)
+      if (region && chord_index <
+            CHORD_EDITOR->num_chords)
         {
           chord_arranger_widget_create_chord (
             self, &pos, chord_index,

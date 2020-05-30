@@ -527,8 +527,7 @@ arranger_object_set_full_rectangle (
           region_start_ticks +
           self->pos.total_ticks);
         self->full_rect.x =
-          ui_pos_to_px_editor (
-            &tmp, 1);
+          ui_pos_to_px_editor (&tmp, 1);
         self->full_rect.y =
           adj_px_per_key * co->chord_index;
 

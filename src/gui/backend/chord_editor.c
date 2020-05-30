@@ -36,22 +36,13 @@ void
 chord_editor_init (
   ChordEditor * self)
 {
-  self->chords[0] =
-    chord_descriptor_new (
-      NOTE_A, 1, NOTE_A, CHORD_TYPE_MIN,
-      CHORD_ACC_7, 0);
-  self->chords[1] =
-    chord_descriptor_new (
-      NOTE_B, 1, NOTE_B, CHORD_TYPE_MIN,
-      CHORD_ACC_7, 0);
-  self->chords[2] =
-    chord_descriptor_new (
-      NOTE_B, 1, NOTE_B, CHORD_TYPE_MIN,
-      CHORD_ACC_7, 0);
-  self->chords[3] =
-    chord_descriptor_new (
-      NOTE_B, 1, NOTE_B, CHORD_TYPE_MIN,
-      CHORD_ACC_7, 0);
-  self->num_chords = 4;
+  self->num_chords = 0;
+  for (int i = 0; i < 12; i++)
+    {
+      self->chords[i] =
+        chord_descriptor_new (
+          NOTE_C + i, 1, NOTE_C + i, CHORD_TYPE_MAJ,
+          CHORD_ACC_NONE, 0);
+      self->num_chords++;
+    }
 }
-

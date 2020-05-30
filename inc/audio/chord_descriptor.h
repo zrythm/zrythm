@@ -180,42 +180,38 @@ typedef struct ChordDescriptor
 } ChordDescriptor;
 
 static const cyaml_strval_t musical_note_strings[] = {
-	{ "C",          NOTE_C    },
-	{ "C#",         NOTE_CS   },
-	{ "D",          NOTE_D   },
-	{ "D#",         NOTE_DS   },
-	{ "E",          NOTE_E   },
-	{ "F",          NOTE_F   },
-	{ "F#",         NOTE_FS   },
-	{ "G",          NOTE_G   },
-	{ "G#",         NOTE_GS   },
-	{ "A",          NOTE_A   },
-	{ "A#",         NOTE_AS   },
-	{ "B",          NOTE_B   },
+  { "C",          NOTE_C    },
+  { "C#",         NOTE_CS   },
+  { "D",          NOTE_D   },
+  { "D#",         NOTE_DS   },
+  { "E",          NOTE_E   },
+  { "F",          NOTE_F   },
+  { "F#",         NOTE_FS   },
+  { "G",          NOTE_G   },
+  { "G#",         NOTE_GS   },
+  { "A",          NOTE_A   },
+  { "A#",         NOTE_AS   },
+  { "B",          NOTE_B   },
 };
 
 static const cyaml_schema_field_t
   chord_descriptor_fields_schema[] =
 {
-	CYAML_FIELD_INT (
-    "has_bass", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     ChordDescriptor, has_bass),
-  CYAML_FIELD_ENUM (
-    "root_note", CYAML_FLAG_DEFAULT,
-    ChordDescriptor, root_note, musical_note_strings,
-    CYAML_ARRAY_LEN (musical_note_strings)),
-  CYAML_FIELD_ENUM (
-    "bass_note", CYAML_FLAG_DEFAULT,
-    ChordDescriptor, bass_note, musical_note_strings,
-    CYAML_ARRAY_LEN (musical_note_strings)),
+  YAML_FIELD_ENUM (
+    ChordDescriptor, root_note,
+    musical_note_strings),
+  YAML_FIELD_ENUM (
+    ChordDescriptor, bass_note,
+    musical_note_strings),
   CYAML_FIELD_SEQUENCE_FIXED (
     "notes", CYAML_FLAG_OPTIONAL,
     ChordDescriptor, notes, &int_schema, 36),
-	CYAML_FIELD_INT (
-    "inversion", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     ChordDescriptor, inversion),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t

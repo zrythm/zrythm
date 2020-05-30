@@ -77,6 +77,12 @@ typedef struct _ChordEditorSpaceWidget
   /** Containers for each chord key. */
   GtkBox *              chord_key_boxes[128];
 
+  GtkScrolledWindow *   chord_keys_scroll;
+
+  /** Vertical size goup for the keys and the
+   * arranger. */
+  GtkSizeGroup *        arranger_and_keys_vsize_group;
+
   /** The arranger. */
   ArrangerWidget *      arranger;
   GtkScrolledWindow *   arranger_scroll;
