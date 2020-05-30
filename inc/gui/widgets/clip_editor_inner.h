@@ -57,31 +57,14 @@ typedef struct _AutomationEditorSpaceWidget
   MW_CLIP_EDITOR->clip_editor_inner
 
 /**
- * Adds or removes widgets from the
- * left_of_ruler_size_group depending on if the
- * current editor space is visible or not.
- *
- * FIXME why link them?
- *
- * To be used by each editor space.
- *
- * @note Assumes that a boolean called visible
- *   exists.
- *
- * @param wname The name of the widget.
+ * Adds or remove the widget from the
+ * "left of ruler" size group.
  */
-#define CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP( \
-  wname) \
-  if (visible) \
-    gtk_size_group_add_widget ( \
-      MW_CLIP_EDITOR_INNER-> \
-        left_of_ruler_size_group, \
-      GTK_WIDGET (self->wname)); \
-  else \
-    gtk_size_group_remove_widget ( \
-      MW_CLIP_EDITOR_INNER-> \
-        left_of_ruler_size_group, \
-      GTK_WIDGET (self->wname))
+void
+clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
+  ClipEditorInnerWidget * self,
+  GtkWidget *             widget,
+  bool                    add);
 
 /**
  * The piano roll widget is the whole space inside

@@ -71,8 +71,10 @@ chord_editor_space_widget_update_size_group (
   ChordEditorSpaceWidget * self,
   int                     visible)
 {
-  CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP (
-    chord_keys_box);
+  clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
+    MW_CLIP_EDITOR_INNER,
+    GTK_WIDGET (self->chord_keys_box),
+    visible);
 }
 
 void
