@@ -262,10 +262,13 @@ endif
 
 if get_option ('profiling')
   test_cflags += [ '-pg', 'no-pie' ]
+  if get_option ('extra_optimizations')
+    error ('extra_optimizations and profiling are incompatible')
+  endif
 endif
 
 if get_option ('extra_optimizations')
-  if target_machine.cpu() == 'x86_64'
+  if host_machine.cpu() == 'x86_64'
     test_cflags += [
       '-ffast-math',
       # this may break the backtrace

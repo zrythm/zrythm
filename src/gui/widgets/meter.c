@@ -184,12 +184,18 @@ meter_timeout (
 {
   if (GTK_IS_WIDGET (self))
     {
-      if (self->meter)
+      if (self->meter &&
+          gtk_widget_get_mapped (
+            GTK_WIDGET (self)))
         {
           meter_get_value (
             self->meter, AUDIO_VALUE_FADER,
             &self->meter_val,
             &self->meter_peak);
+        }
+      else
+        {
+          /* not mapped, skipping dsp */
         }
 
       return G_SOURCE_CONTINUE;
