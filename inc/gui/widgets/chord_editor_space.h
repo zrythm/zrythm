@@ -81,15 +81,15 @@ typedef struct _ChordEditorSpaceWidget
   ArrangerWidget *      arranger;
   GtkScrolledWindow *   arranger_scroll;
   GtkViewport *         arranger_viewport;
-
-  /** Pixel height of each key, determined by the
-   * zoom level. */
-  int                  px_per_key;
-
-  /** Pixel height of all keys combined. */
-  int                  total_key_px;
-
 } ChordEditorSpaceWidget;
+
+int
+chord_editor_space_widget_get_chord_height (
+  ChordEditorSpaceWidget * self);
+
+int
+chord_editor_space_widget_get_all_chords_height (
+  ChordEditorSpaceWidget * self);
 
 void
 chord_editor_space_widget_setup (

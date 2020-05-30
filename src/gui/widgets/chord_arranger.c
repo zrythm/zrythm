@@ -17,12 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * The chord containing regions and other
- * objects.
- */
+#include <math.h>
 
 #include "actions/arranger_selections.h"
 #include "actions/undoable_action.h"
@@ -86,9 +81,9 @@
 void
 chord_arranger_widget_create_chord (
   ArrangerWidget * self,
-  const Position *      pos,
-  int                   chord_index,
-  ZRegion *              region)
+  const Position * pos,
+  int              chord_index,
+  ZRegion *        region)
 {
   self->action =
     UI_OVERLAY_ACTION_CREATING_MOVING;
@@ -106,19 +101,14 @@ chord_arranger_widget_create_chord (
   /* create a new chord */
   ChordObject * chord =
     chord_object_new (
-      &region->id, chord_index, 1);
+      &region->id, chord_index,
+      region->num_chord_objects);
   ArrangerObject * chord_obj =
     (ArrangerObject *) chord;
 
   /* add it to chord region */
   chord_region_add_chord_object (
     region, chord);
-
-  /*arranger_object_gen_widget (chord_obj);*/
-
-  /* set visibility */
-  /*arranger_object_set_widget_visibility_and_state (*/
-    /*chord_obj, 1);*/
 
   arranger_object_set_position (
     chord_obj, &local_pos,
@@ -139,6 +129,8 @@ chord_arranger_widget_get_chord_at_y (
 {
   double adj_y = y - 1;
   double adj_px_per_key =
-    MW_CHORD_EDITOR_SPACE->px_per_key + 1;
-  return (int) (adj_y / adj_px_per_key);
+    chord_editor_space_widget_get_chord_height (
+      MW_CHORD_EDITOR_SPACE) + 1;
+  return
+    (int) floor (adj_y / adj_px_per_key);
 }

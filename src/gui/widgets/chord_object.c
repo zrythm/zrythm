@@ -82,44 +82,30 @@ chord_object_draw (
     arranger->hovered_object == obj,
     chord_object_is_selected (self), false, false);
   ChordDescriptor * descr =
-    CHORD_EDITOR->chords[self->index];
+    chord_object_get_chord_descriptor (self);
   gdk_cairo_set_source_rgba (cr, &color);
 
-  cairo_rectangle (
-    cr, obj->full_rect.x - rect->x,
+  z_cairo_rounded_rectangle (
+    cr,
+    obj->full_rect.x - rect->x,
     obj->full_rect.y - rect->y,
-    obj->full_rect.width -
-      CHORD_OBJECT_WIDGET_TRIANGLE_W,
-    obj->full_rect.height);
-  cairo_fill (cr);
-
-  cairo_move_to (
-    cr,
-    (obj->full_rect.x + obj->full_rect.width) -
-      (CHORD_OBJECT_WIDGET_TRIANGLE_W + rect->x),
-    obj->full_rect.y - rect->y);
-  cairo_line_to (
-    cr,
-    (obj->full_rect.x + obj->full_rect.width) -
-      rect->x,
-    (obj->full_rect.y + obj->full_rect.height) -
-      rect->y);
-  cairo_line_to (
-    cr,
-    (obj->full_rect.x + obj->full_rect.width) -
-      (CHORD_OBJECT_WIDGET_TRIANGLE_W + rect->x),
-    (obj->full_rect.y + obj->full_rect.height) -
-      rect->y);
-  cairo_line_to (
-    cr,
-    (obj->full_rect.x + obj->full_rect.width) -
-      (CHORD_OBJECT_WIDGET_TRIANGLE_W + rect->x),
-    obj->full_rect.y - rect->y);
-  cairo_close_path (cr);
+    obj->full_rect.width,
+    obj->full_rect.height, 1, 4);
   cairo_fill (cr);
 
   char str[100];
   chord_descriptor_to_string (descr, str);
+  char display_str[200];
+  if (DEBUGGING)
+    {
+      sprintf (
+        display_str, "%d %s",
+        self->chord_index, str);
+    }
+  else
+    {
+      strcpy (display_str, str);
+    }
 
   GdkRGBA c2;
   ui_get_contrast_color (&color, &c2);
@@ -131,7 +117,8 @@ chord_object_draw (
     (obj->full_rect.y + CHORD_OBJECT_NAME_PADDING) -
       rect->y);
   z_cairo_draw_text (
-    cr, GTK_WIDGET (arranger), self->layout, str);
+    cr, GTK_WIDGET (arranger), self->layout,
+    display_str);
 }
 
 #if 0

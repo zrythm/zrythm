@@ -1888,14 +1888,12 @@ clone_chord_object (
   ChordObject *           src,
   ArrangerObjectCloneFlag flag)
 {
-  int is_main = 0;
-  if (flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
-    is_main = 1;
-
-  ArrangerObject * src_obj = (ArrangerObject *) src;
+  ArrangerObject * src_obj =
+    (ArrangerObject *) src;
   ChordObject * chord =
     chord_object_new (
-      &src_obj->region_id, src->index, is_main);
+      &src_obj->region_id, src->chord_index,
+      src->index);
 
   return (ArrangerObject *) chord;
 }

@@ -1292,11 +1292,11 @@ region_draw (
           MW_TIMELINE->action ==
             UI_OVERLAY_ACTION_STRETCHING_R)
         {
-          g_message ("using cache");
+          /*g_message ("using cache");*/
         }
       else
         {
-          g_message ("NOT using cache");
+          /*g_message ("NOT using cache");*/
 
           /* switch cr if caching */
           cairo_t * cr_to_use = cr;

@@ -507,7 +507,7 @@ arranger_object_set_full_rectangle (
       {
         ChordObject * co = (ChordObject *) self;
         ChordDescriptor * descr =
-          CHORD_EDITOR->chords[co->index];
+          chord_object_get_chord_descriptor (co);
 
         ZRegion * region =
           arranger_object_get_region (self);
@@ -518,7 +518,8 @@ arranger_object_set_full_rectangle (
           region_obj->pos.total_ticks;
         Position tmp;
         int adj_px_per_key =
-          MW_CHORD_EDITOR_SPACE->px_per_key + 1;
+          chord_editor_space_widget_get_chord_height (
+            MW_CHORD_EDITOR_SPACE) + 1;
 
         /* use absolute position */
         position_from_ticks (
@@ -529,8 +530,7 @@ arranger_object_set_full_rectangle (
           ui_pos_to_px_editor (
             &tmp, 1);
         self->full_rect.y =
-          adj_px_per_key *
-          co->index;
+          adj_px_per_key * co->chord_index;
 
         char chord_str[100];
         chord_descriptor_to_string (

@@ -68,11 +68,17 @@ clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
     }
   else
     {
-      gtk_size_group_remove_widget (
-        self->left_of_ruler_size_group, widget);
-      g_message ("%s: removing %s",
-        __func__,
-        gtk_widget_get_name (widget));
+      GSList * list =
+        gtk_size_group_get_widgets (
+          self->left_of_ruler_size_group);
+      if (g_slist_index (list, widget) >= 0)
+        {
+          gtk_size_group_remove_widget (
+            self->left_of_ruler_size_group, widget);
+          g_message ("%s: removing %s",
+            __func__,
+            gtk_widget_get_name (widget));
+        }
     }
 }
 

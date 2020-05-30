@@ -3148,16 +3148,19 @@ select_in_range (
   switch (self->type)
     {
     case TYPE (CHORD):
+      arranger_widget_get_hit_objects_in_rect (
+        self, ARRANGER_OBJECT_TYPE_CHORD_OBJECT,
+        &rect, objs, &num_objs);
       for (i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
           ChordObject * co =
             (ChordObject *) objs[i];
-          ZRegion * region =
-            region_find (&obj->region_id);
 
           if (delete)
             {
+              ZRegion * region =
+                region_find (&obj->region_id);
               chord_region_remove_chord_object (
                 region, co, F_FREE);
             }

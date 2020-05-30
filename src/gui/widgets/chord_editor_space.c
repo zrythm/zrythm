@@ -77,6 +77,32 @@ chord_editor_space_widget_update_size_group (
     visible);
 }
 
+static void
+on_realize (
+  GtkWidget * widget,
+  ChordEditorSpaceWidget * self)
+{
+}
+
+int
+chord_editor_space_widget_get_chord_height (
+  ChordEditorSpaceWidget * self)
+{
+  return
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self->chord_keys[0]));
+}
+
+int
+chord_editor_space_widget_get_all_chords_height (
+  ChordEditorSpaceWidget * self)
+{
+  return
+    CHORD_EDITOR->num_chords *
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self->chord_keys[0]));
+}
+
 void
 chord_editor_space_widget_refresh (
   ChordEditorSpaceWidget * self)
@@ -88,12 +114,6 @@ void
 chord_editor_space_widget_setup (
   ChordEditorSpaceWidget * self)
 {
-  self->px_per_key =
-    DEFAULT_PX_PER_KEY *
-    (int) PIANO_ROLL->notes_zoom;
-  self->total_key_px =
-    self->px_per_key * CHORD_EDITOR->num_chords;
-
   if (self->arranger)
     {
       arranger_widget_setup (
@@ -136,6 +156,10 @@ chord_editor_space_widget_init (
 
   self->arranger->type =
     ARRANGER_WIDGET_TYPE_CHORD;
+
+  g_signal_connect (
+    G_OBJECT (self), "realize",
+    G_CALLBACK (on_realize),  self);
 }
 
 static void
