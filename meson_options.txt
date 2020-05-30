@@ -145,3 +145,9 @@ option (
   type: 'string',
   value: '',
   description: 'Fallback version string to use if git is not available. meson.project_version () will be used if empty.')
+
+option (
+  'extra_optimizations',
+  type: 'boolean',
+  value: true,
+  description: 'Turn on target machine-specific optimizations.')

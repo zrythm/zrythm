@@ -15,6 +15,18 @@ inside `meson_options.txt`.
 
     meson configure build
 
+## Optimization
+
+The default build type is `debugoptmized`, which
+is equivalent to `-Ddebug=true -Doptimization=2`
+(`-O2 -g`). This works well in most cases. For
+extremely optimized builds, we suggest building with
+
+    meson build -Ddebug=true -Doptimization=3 -Dextra_optimizations=true
+
+We suggest always keeping `-Ddebug=true` to assist
+with meaningful stack traces and bug reports.
+
 ## Dependencies
 ### Required
 - audec (AGPLv3+): <https://git.zrythm.org/cgit/libaudec/>

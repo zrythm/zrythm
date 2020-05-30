@@ -21,6 +21,12 @@ that could be packaged separately. If you wish to package
 them separately and make Zrythm use them, you can pass the
 flags found in `meson_options.txt`.
 
+# Debug Symbols
+
+Please do not strip symbols to assist with
+meaningful stack traces which are sent with bug
+reports.
+
 # Docs
 
 See the `manpage` and `user_manual` meson options.

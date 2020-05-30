@@ -261,25 +261,26 @@ else
 endif
 
 if get_option ('profiling')
-  test_cflags += [ '-g', '-pg', 'no-pie' ]
+  test_cflags += [ '-pg', 'no-pie' ]
 endif
 
-if (get_option ('buildtype') == 'release')
-  test_cflags += [
-    '-ffast-math',
-    # this may break the backtrace
-    '-fomit-frame-pointer',
-    '-fstrength-reduce',
-    '-DPIC',
-    '-fdata-sections',
-    '-ffunction-sections',
-    '-mtune=generic',
-    '-msse',
-    '-msse2',
-    '-mfpmath=sse',
-    #'-fvisibility=hidden',
-    ]
-  #cdata.set('G_DISABLE_CHECKS', 1)
+if get_option ('extra_optimizations')
+  if target_machine.cpu() == 'x86_64'
+    test_cflags += [
+      '-ffast-math',
+      # this may break the backtrace
+      '-fomit-frame-pointer',
+      '-fstrength-reduce',
+      '-DPIC',
+      '-fdata-sections',
+      '-ffunction-sections',
+      '-mtune=generic',
+      '-msse',
+      '-msse2',
+      '-mfpmath=sse',
+      #'-fvisibility=hidden',
+      ]
+  endif
 endif
 
 common_cflags = cc.get_supported_arguments (
@@ -380,7 +381,7 @@ endif
 test_ldflags = []
 
 if get_option ('profiling')
-  test_ldflags += [ '-g', '-pg', 'no-pie' ]
+  test_ldflags += [ '-pg', 'no-pie' ]
 endif
 
 common_ldflags = cc.get_supported_link_arguments (
