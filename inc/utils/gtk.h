@@ -494,6 +494,10 @@ z_gtk_widget_set_margin (
   GtkWidget * widget,
   int         margin);
 
+GtkFlowBoxChild *
+z_gtk_flow_box_get_selected_child (
+  GtkFlowBox * self);
+
 /**
  * @}
  */

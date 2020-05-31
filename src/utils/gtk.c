@@ -579,3 +579,20 @@ z_gtk_widget_set_margin (
   gtk_widget_set_margin_top (widget, margin);
   gtk_widget_set_margin_bottom (widget, margin);
 }
+
+GtkFlowBoxChild *
+z_gtk_flow_box_get_selected_child (
+  GtkFlowBox * self)
+{
+  GList * list =
+    gtk_flow_box_get_selected_children (flowbox);
+  GtkFlowBoxChild * sel_child = NULL;
+  for (GList * l = list; l != NULL; l = l->next)
+    {
+      sel_child = (GtkFlowBoxChild *) l->data;
+      break;
+    }
+  g_list_free (list);
+
+  return sel_child;
+}
