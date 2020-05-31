@@ -451,9 +451,10 @@ creator_filter (
           if (child != self->creator_root_notes[i])
             continue;
 
-          return
+          bool ret =
             musical_scale_is_key_in_scale (
               self->scale->scale, i);
+          return ret;
         }
 
       /* bass notes */

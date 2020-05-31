@@ -301,11 +301,11 @@ typedef struct MusicalScale
 static const cyaml_strval_t
   musical_scale_type_strings[] =
 {
-	{ "Acoustic",     SCALE_ACOUSTIC    },
-	{ "Aeolian",      SCALE_AEOLIAN   },
-	{ "Algerian",     SCALE_ALGERIAN   },
-	{ "Altered",      SCALE_ALTERED   },
-	{ "Augmented",    SCALE_AUGMENTED   },
+  { "Acoustic",     SCALE_ACOUSTIC    },
+  { "Aeolian",      SCALE_AEOLIAN   },
+  { "Algerian",     SCALE_ALGERIAN   },
+  { "Altered",      SCALE_ALTERED   },
+  { "Augmented",    SCALE_AUGMENTED   },
 };
 
 static const cyaml_schema_field_t
@@ -319,16 +319,16 @@ static const cyaml_schema_field_t
     "root_key", CYAML_FLAG_DEFAULT,
     MusicalScale, root_key, musical_note_strings,
     CYAML_ARRAY_LEN (musical_note_strings)),
-	CYAML_FIELD_INT (
-    "num_notes", CYAML_FLAG_DEFAULT,
-    MusicalScale, num_notes),
+  CYAML_FIELD_SEQUENCE_FIXED (
+    "notes", CYAML_FLAG_OPTIONAL,
+    MusicalScale, notes, &int_schema, 12),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
   musical_scale_schema = {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
     MusicalScale, musical_scale_fields_schema),
 };

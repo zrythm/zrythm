@@ -99,7 +99,7 @@
       <object class="GtkToolButton" id="event_viewer_toggle">
         <property name="visible">True</property>
         <property name="action-name">win.toggle-editor-event-viewer</property>
-        <property name="icon-name">ev</property>
+        <property name="icon-name">event-viewer</property>
         <property name="tooltip-text" translatable="yes">Toggle event viewer</property>
       </object>
     </child>

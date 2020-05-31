@@ -230,46 +230,27 @@ static void
 main_window_widget_class_init (
   MainWindowWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "main_window.ui");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    MainWindowWidget,
-    main_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MainWindowWidget,
-    header);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MainWindowWidget,
-    top_bar);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MainWindowWidget,
-    center_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MainWindowWidget,
-    center_dock);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MainWindowWidget,
-    bot_bar);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MainWindowWidget,
-    revealer);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MainWindowWidget,
-    close_notification_button);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MainWindowWidget,
-    notification_label);
+  gtk_widget_class_set_css_name (
+    klass, "main-window");
+
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, MainWindowWidget, x)
+
+  BIND_CHILD (main_box);
+  BIND_CHILD (header);
+  BIND_CHILD (top_bar);
+  BIND_CHILD (center_box);
+  BIND_CHILD (center_dock);
+  BIND_CHILD (bot_bar);
+  BIND_CHILD (revealer);
+  BIND_CHILD (close_notification_button);
+  BIND_CHILD (notification_label);
   gtk_widget_class_bind_template_callback (
     klass,
     on_main_window_destroy);
@@ -277,8 +258,7 @@ main_window_widget_class_init (
     klass,
     on_state_changed);
 
-  gtk_widget_class_set_css_name (klass,
-                                 "main-window");
+#undef BIND_CHILD
 }
 
 static gboolean

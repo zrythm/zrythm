@@ -585,7 +585,7 @@ z_gtk_flow_box_get_selected_child (
   GtkFlowBox * self)
 {
   GList * list =
-    gtk_flow_box_get_selected_children (flowbox);
+    gtk_flow_box_get_selected_children (self);
   GtkFlowBoxChild * sel_child = NULL;
   for (GList * l = list; l != NULL; l = l->next)
     {

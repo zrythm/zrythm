@@ -135,7 +135,7 @@
                               <object class="GtkImage" id="image2">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="icon_name">z-window-close</property>
+                                <property name="icon_name">window-close</property>
                               </object>
                             </child>
                             <style>
