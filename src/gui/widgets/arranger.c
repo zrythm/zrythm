@@ -2973,13 +2973,8 @@ on_drag_begin_handle_hit_object (
     {
       TimelineSelections * sel =
         (TimelineSelections *) orig_selections;
-      for (int i = 0; i < sel->num_regions; i++)
-        {
-          ZRegion * region = sel->regions[i];
-          region->before_length =
-            arranger_object_get_length_in_ticks (
-              (ArrangerObject *) region);
-        }
+      transport_prepare_audio_regions_for_stretch (
+        TRANSPORT, sel);
     }
 
   return true;
@@ -4228,20 +4223,8 @@ on_drag_end_timeline (
           obj->end_pos.total_ticks -
           obj->transient->end_pos.total_ticks;
         /* stretch now */
-        for (int i = 0;
-             i < TL_SELECTIONS->num_regions; i++)
-          {
-            ZRegion * region =
-              TL_SELECTIONS->regions[i];
-            ArrangerObject * r_obj =
-              (ArrangerObject *) region;
-            region_stretch (
-              region,
-              arranger_object_get_length_in_ticks (
-                r_obj) /
-              arranger_object_get_length_in_ticks (
-                r_obj->transient));
-          }
+        transport_stretch_audio_regions (
+          TRANSPORT, TL_SELECTIONS, false, 0.0);
         UndoableAction * ua =
           arranger_selections_action_new_resize (
             (ArrangerSelections *) TL_SELECTIONS,

@@ -33,6 +33,8 @@
 
 #include "zix/sem.h"
 
+typedef struct TimelineSelections TimelineSelections;
+
 /**
  * @addtogroup audio
  *
@@ -256,13 +258,54 @@ transport_init (
   int         loading);
 
 /**
- * Sets BPM and does any necessary processing (like notifying interested
- * parties).
+ * Sets BPM.
+ *
+ * @param temporary Whether this is a temporary
+ *   change (\ref Transport.prev_bpm will not
+ *   change).
+ * @param update_snap_points Whether to update the
+ *   snap points.
+ * @param stretch_audio_region Whether to stretch
+ *   audio regions. This should only be true when
+ *   the BPM change is final.
  */
 void
 transport_set_bpm (
   Transport * self,
-  float bpm);
+  bpm_t       bpm,
+  bool        temporary,
+  bool        fire_events);
+
+/**
+ * Prepares audio regions for stretching (sets the
+ * \ref ZRegion.before_length).
+ *
+ * @param selections If NULL, all audio regions
+ *   are used. If non-NULL, only the regions in the
+ *   selections are used.
+ */
+void
+transport_prepare_audio_regions_for_stretch (
+  Transport *          self,
+  TimelineSelections * sel);
+
+/**
+ * Stretches audio regions.
+ *
+ * @param selections If NULL, all audio regions
+ *   are used. If non-NULL, only the regions in the
+ *   selections are used.
+ * @param with_fixed_ratio Stretch all regions with
+ *   a fixed ratio. If this is off, the current
+ *   region length and \ref ZRegion.before_length
+ *   will be used to calculate the ratio.
+ */
+void
+transport_stretch_audio_regions (
+  Transport *          self,
+  TimelineSelections * sel,
+  bool                 with_fixed_ratio,
+  double               time_ratio);
 
 /**
  * Updates beat unit and anything depending on it.

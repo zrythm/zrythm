@@ -44,27 +44,60 @@
 #include <gtk/gtk.h>
 
 /**
- * Sets BPM and does any necessary processing (like
- * notifying interested parties).
+ * Sets BPM.
+ *
+ * @param update_snap_points Whether to update the
+ *   snap points.
+ * @param stretch_audio_region Whether to stretch
+ *   audio regions. This should only be true when
+ *   the BPM change is final.
  */
 void
 transport_set_bpm (
   Transport * self,
-  bpm_t       bpm)
+  bpm_t       bpm,
+  bool        temporary,
+  bool        fire_events)
 {
   if (bpm < TRANSPORT_MIN_BPM)
-    bpm = TRANSPORT_MIN_BPM;
+    {
+      bpm = TRANSPORT_MIN_BPM;
+    }
   else if (bpm > TRANSPORT_MAX_BPM)
-    bpm = TRANSPORT_MAX_BPM;
-  self->prev_bpm = self->bpm;
+    {
+      bpm = TRANSPORT_MAX_BPM;
+    }
+
   self->bpm = bpm;
 
   engine_update_frames_per_tick (
     AUDIO_ENGINE, self->beats_per_bar,
     bpm, AUDIO_ENGINE->sample_rate);
 
-  /* kick off offline resampling */
-  EVENTS_PUSH (ET_BPM_CHANGED, NULL);
+  if (!temporary)
+    {
+      self->prev_bpm = self->bpm;
+
+      snap_grid_update_snap_points (
+        SNAP_GRID_TIMELINE);
+      snap_grid_update_snap_points (
+        SNAP_GRID_MIDI);
+
+      if (g_settings_get_boolean (
+            S_UI, "musical-mode"))
+        {
+          transport_stretch_audio_regions (
+            self, NULL, true,
+            self->bpm / self->prev_bpm);
+        }
+
+      /* TODO create action */
+    }
+
+  if (fire_events)
+    {
+      EVENTS_PUSH (ET_BPM_CHANGED, NULL);
+    }
 }
 
 /**
@@ -105,7 +138,7 @@ transport_init (
       position_set_to_bar (&self->loop_end_pos, 5);
 
       transport_set_bpm (
-        self, TRANSPORT_DEFAULT_BPM);
+        self, TRANSPORT_DEFAULT_BPM, true, false);
     }
 
   /* set playstate */
@@ -122,6 +155,122 @@ transport_init (
 
 
   zix_sem_init(&self->paused, 0);
+}
+
+/**
+ * Prepares audio regions for stretching (sets the
+ * \ref ZRegion.before_length).
+ *
+ * @param selections If NULL, all audio regions
+ *   are used. If non-NULL, only the regions in the
+ *   selections are used.
+ */
+void
+transport_prepare_audio_regions_for_stretch (
+  Transport *          self,
+  TimelineSelections * sel)
+{
+  if (sel)
+    {
+      for (int i = 0; i < sel->num_regions; i++)
+        {
+          ZRegion * region = sel->regions[i];
+          region->before_length =
+            arranger_object_get_length_in_ticks (
+              (ArrangerObject *) region);
+        }
+    }
+  else
+    {
+      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+        {
+          Track * track = TRACKLIST->tracks[i];
+
+          if (track->type != TRACK_TYPE_AUDIO)
+            continue;
+
+          for (int j = 0; j < track->num_lanes; j++)
+            {
+              TrackLane * lane = track->lanes[j];
+
+              for (int k = 0; k < lane->num_regions;
+                   k++)
+                {
+                  ZRegion * region =
+                    lane->regions[k];
+                  region->before_length =
+                    arranger_object_get_length_in_ticks (
+                      (ArrangerObject *) region);
+                } // foreach region
+            } // foreach lane
+        } // foreach track
+    }
+}
+
+/**
+ * Stretches audio regions.
+ *
+ * @param selections If NULL, all audio regions
+ *   are used. If non-NULL, only the regions in the
+ *   selections are used.
+ * @param with_fixed_ratio Stretch all regions with
+ *   a fixed ratio. If this is off, the current
+ *   region length and \ref ZRegion.before_length
+ *   will be used to calculate the ratio.
+ */
+void
+transport_stretch_audio_regions (
+  Transport *          self,
+  TimelineSelections * sel,
+  bool                 with_fixed_ratio,
+  double               time_ratio)
+{
+  if (sel)
+    {
+      for (int i = 0; i < sel->num_regions; i++)
+        {
+          ZRegion * region =
+            TL_SELECTIONS->regions[i];
+          ArrangerObject * r_obj =
+            (ArrangerObject *) region;
+          double ratio =
+            with_fixed_ratio ? time_ratio :
+            arranger_object_get_length_in_ticks (
+              r_obj) /
+            region->before_length;
+          region_stretch (region, ratio);
+        }
+    }
+  else
+    {
+      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+        {
+          Track * track = TRACKLIST->tracks[i];
+
+          if (track->type != TRACK_TYPE_AUDIO)
+            continue;
+
+          for (int j = 0; j < track->num_lanes; j++)
+            {
+              TrackLane * lane = track->lanes[j];
+
+              for (int k = 0; k < lane->num_regions;
+                   k++)
+                {
+                  ZRegion * region =
+                    lane->regions[k];
+                  ArrangerObject * r_obj =
+                    (ArrangerObject *) region;
+                  double ratio =
+                    with_fixed_ratio ? time_ratio :
+                    arranger_object_get_length_in_ticks (
+                      r_obj) /
+                    region->before_length;
+                  region_stretch (region, ratio);
+                }
+            }
+        }
+    }
 }
 
 /**

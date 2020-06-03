@@ -288,7 +288,8 @@ engine_jack_prepare_process (
             (int) pos.beats_per_bar;
           transport_set_bpm (
             TRANSPORT,
-            (float) pos.beats_per_minute);
+            (float) pos.beats_per_minute, false,
+            true);
           transport_set_beat_unit (
             TRANSPORT, (int) pos.beat_type);
         }

@@ -569,6 +569,10 @@ on_change_started (
       if (self->on_drag_begin)
         ((*self->on_drag_begin) (self->obj));
       break;
+    case DIGITAL_METER_TYPE_BPM:
+      transport_prepare_audio_regions_for_stretch (
+        TRANSPORT, NULL);
+      break;
     default:
       break;
     }
@@ -617,6 +621,10 @@ on_change_finished (
       if (self->on_drag_end)
         ((*self->on_drag_end) (self->obj));
       break;
+    case DIGITAL_METER_TYPE_BPM:
+      transport_set_bpm (
+        TRANSPORT, TRANSPORT->bpm, false, true);
+      break;
     default:
       break;
     }
@@ -652,13 +660,15 @@ on_scroll (
         {
           transport_set_bpm (
             TRANSPORT,
-            TRANSPORT->bpm + (bpm_t) num);
+            TRANSPORT->bpm + (bpm_t) num, true,
+            true);
         }
       else if (self->update_dec)
         {
           transport_set_bpm (
             TRANSPORT,
-            TRANSPORT->bpm + (bpm_t) num / 100.f);
+            TRANSPORT->bpm + (bpm_t) num / 100.f,
+            true, true);
         }
 
       break;
@@ -817,7 +827,8 @@ drag_update (
             {
               transport_set_bpm (
                 TRANSPORT,
-                TRANSPORT->bpm + (bpm_t) num);
+                TRANSPORT->bpm + (bpm_t) num,
+                true, true);
               self->last_y = offset_y;
               self->last_x = offset_x;
             }
@@ -830,7 +841,8 @@ drag_update (
             {
               transport_set_bpm (
                 TRANSPORT,
-                TRANSPORT->bpm + (bpm_t) dec);
+                TRANSPORT->bpm + (bpm_t) dec,
+                true, true);
               self->last_y = offset_y;
               self->last_x = offset_x;
             }

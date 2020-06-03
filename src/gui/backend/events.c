@@ -963,50 +963,10 @@ on_plugin_visibility_changed (Plugin * pl)
 /*}*/
 
 static void
-stretch_audio_region (
-  ZRegion * region)
-{
-  g_return_if_fail (region);
-
-  if (g_settings_get_boolean (S_UI, "musical-mode"))
-    {
-      AudioClip * clip =
-        audio_region_get_clip (region);
-      double time_ratio =
-        (double) clip->bpm /
-        (double) TRANSPORT->bpm;
-      region_stretch (region, time_ratio);
-    }
-}
-
-static void
 on_bpm_changed (void)
 {
   ruler_widget_refresh (MW_RULER);
   ruler_widget_refresh (EDITOR_RULER);
-  snap_grid_update_snap_points (
-    SNAP_GRID_TIMELINE);
-  snap_grid_update_snap_points (
-    SNAP_GRID_MIDI);
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
-    {
-      Track * track = TRACKLIST->tracks[i];
-
-      if (track->type != TRACK_TYPE_AUDIO)
-        continue;
-
-      for (int j = 0; j < track->num_lanes; j++)
-        {
-          TrackLane * lane = track->lanes[j];
-
-          for (int k = 0; k < lane->num_regions;
-               k++)
-            {
-              stretch_audio_region (
-                lane->regions[k]);
-            }
-        }
-    }
 }
 
 static inline void

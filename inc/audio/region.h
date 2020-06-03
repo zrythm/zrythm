@@ -122,7 +122,7 @@ typedef struct ZRegion
   bool              stretching;
 
   /**
-   * The length before stretching.
+   * The length before stretching, in ticks.
    */
   double            before_length;
 

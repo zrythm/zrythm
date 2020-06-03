@@ -194,8 +194,8 @@ snap_grid_update_snap_points (SnapGrid * self)
   self->num_snap_points = 0;
   add_snap_point (self, &tmp);
   long ticks =
-    snap_grid_get_note_ticks (self->note_length,
-                              self->note_type);
+    snap_grid_get_note_ticks (
+      self->note_length, self->note_type);
   g_warn_if_fail (TRANSPORT->ticks_per_bar > 0);
   while (position_is_before (&tmp, &end_pos))
     {

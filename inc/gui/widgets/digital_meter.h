@@ -71,8 +71,8 @@ typedef struct _DigitalMeterWidget
   GtkGestureDrag           * drag;
   double                   last_y;
   double                   last_x;
-  int height_start_pos;
-  int height_end_pos;
+  int                      height_start_pos;
+  int                      height_end_pos;
 
   /* for BPM */
   int                      num_part_start_pos;
