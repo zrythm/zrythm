@@ -2,13 +2,13 @@
 # Copyright (C) 2019 THE zrythm'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # alex <alex@zrythm.org>, 2019.
-#
+# ssantos <ssantos@web.de>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-05-15 15:01+0100\n"
-"PO-Revision-Date: 2020-03-30 22:14+0000\n"
+"PO-Revision-Date: 2020-06-02 15:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:109 inc/audio/engine.h:179
@@ -1728,11 +1728,11 @@ msgstr ""
 
 #: src/audio/automation_track.c:115
 msgid "Touch"
-msgstr ""
+msgstr "Toque"
 
 #: src/audio/automation_track.c:118
 msgid "Latch"
-msgstr ""
+msgstr "Trinco"
 
 #: src/audio/channel_send.c:338
 #, fuzzy
