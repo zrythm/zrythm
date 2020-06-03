@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-05-15 15:01+0100\n"
+"POT-Creation-Date: 2020-06-03 21:08+0100\n"
 "PO-Revision-Date: 2020-05-26 22:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -19,8 +19,8 @@ msgstr ""
 "X-Generator: Weblate 4.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
-#: inc/plugins/plugin_descriptor.h:109 inc/audio/engine.h:179
-#: inc/audio/engine.h:221
+#: inc/plugins/plugin_descriptor.h:109 inc/audio/engine.h:182
+#: inc/audio/engine.h:224
 msgid "Dummy"
 msgstr "Dummy"
 
@@ -81,47 +81,47 @@ msgstr "Vital"
 msgid "Pulse"
 msgstr "Pulso"
 
-#: inc/audio/engine.h:114
+#: inc/audio/engine.h:117
 msgid "1,024"
 msgstr "1,024"
 
-#: inc/audio/engine.h:115
+#: inc/audio/engine.h:118
 msgid "2,048"
 msgstr "2,048"
 
-#: inc/audio/engine.h:116
+#: inc/audio/engine.h:119
 msgid "4,096"
 msgstr "4,096"
 
-#: inc/audio/engine.h:143
+#: inc/audio/engine.h:146
 msgid "22,050"
 msgstr "22,050"
 
-#: inc/audio/engine.h:144
+#: inc/audio/engine.h:147
 msgid "32,000"
 msgstr "32,000"
 
-#: inc/audio/engine.h:145
+#: inc/audio/engine.h:148
 msgid "44,100"
 msgstr "44,100"
 
-#: inc/audio/engine.h:146
+#: inc/audio/engine.h:149
 msgid "48,000"
 msgstr "48,000"
 
-#: inc/audio/engine.h:147
+#: inc/audio/engine.h:150
 msgid "88,200"
 msgstr "88,200"
 
-#: inc/audio/engine.h:148
+#: inc/audio/engine.h:151
 msgid "96,000"
 msgstr "96,000"
 
-#: inc/audio/engine.h:149
+#: inc/audio/engine.h:152
 msgid "192,000"
 msgstr "192,000"
 
-#: inc/audio/engine.h:222
+#: inc/audio/engine.h:225
 msgid "ALSA Sequencer"
 msgstr "Secuenciador ALSA"
 
@@ -140,11 +140,11 @@ msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1307
-#: src/utils/ui.c:730
+#: src/utils/ui.c:756
 msgid "Linear"
 msgstr "Lineal"
 
-#: inc/audio/pan.h:77 src/utils/ui.c:731
+#: inc/audio/pan.h:77 src/utils/ui.c:757
 msgid "Square Root"
 msgstr "Raíz Cadrada"
 
@@ -152,66 +152,66 @@ msgstr "Raíz Cadrada"
 msgid "Sine"
 msgstr "Seno"
 
-#: src/zrythm.c:264
+#: src/zrythm.c:265
 msgid "Setting up main window"
 msgstr "Configurando a xanela principal"
 
-#: src/zrythm.c:307
+#: src/zrythm.c:308
 msgid "Loading project"
 msgstr "Cargando o proxecto"
 
-#: src/zrythm.c:319
+#: src/zrythm.c:320
 #, fuzzy
 msgid "No project has been selected. Zrythm will now close."
 msgstr "O tempo de proba expirou. Agora Zrythm silenciarase"
 
-#: src/zrythm.c:346
+#: src/zrythm.c:347
 msgid "Initializing main window"
 msgstr "Iniciando xanela principal"
 
-#: src/zrythm.c:364
+#: src/zrythm.c:365
 msgid "Initializing settings"
 msgstr "Iniciando configuracións"
 
-#: src/zrythm.c:373
+#: src/zrythm.c:374
 msgid "Initializing Zrythm directories"
 msgstr "Iniciando directorios de Zrythm"
 
-#: src/zrythm.c:382
+#: src/zrythm.c:383
 msgid "Initializing logging system"
 msgstr "Iniciando sistema de rexistro"
 
-#: src/zrythm.c:388
+#: src/zrythm.c:389
 msgid "Initializing symap"
 msgstr "Iniciando symap"
 
-#: src/zrythm.c:394
+#: src/zrythm.c:395
 msgid "Initializing caches"
 msgstr "Iniciando cachés"
 
-#: src/zrythm.c:401
+#: src/zrythm.c:402
 msgid "Initializing file manager"
 msgstr "Iniciando xestor de ficheiros"
 
-#: src/zrythm.c:408
+#: src/zrythm.c:409
 msgid "Initializing plugin manager"
 msgstr "Iniciando xestor de plugins"
 
-#: src/zrythm.c:416
+#: src/zrythm.c:417
 msgid "Scanning plugins"
 msgstr "Escaneando plugins"
 
-#: src/zrythm.c:565
+#: src/zrythm.c:566
 msgid "License Information"
 msgstr "Información da licenza"
 
-#: src/zrythm.c:587
+#: src/zrythm.c:588
 msgid "Waiting for project"
 msgstr "Agardando polo proxecto"
 
 #. TRANSLATORS: please keep the space at the
 #. * end
-#: src/zrythm.c:701
+#: src/zrythm.c:702
 msgid "(trial) "
 msgstr "(proba) "
 
@@ -220,32 +220,32 @@ msgstr "(proba) "
 msgid "Failed to open file: %s"
 msgstr "Erro ao ver o esquema %s"
 
-#: src/project.c:158
+#: src/project.c:165
 msgid "Project not compressed by zstd!"
 msgstr ""
 
-#: src/project.c:171
+#: src/project.c:178
 #, fuzzy, c-format
 msgid "Failed to decompress project file: %s"
 msgstr "Erro ao reiniciar o esquema %s"
 
-#: src/project.c:180
+#: src/project.c:187
 msgid ""
 "uncompressed_size != frame_content_size impossible because zstd will check "
 "this condition!"
 msgstr ""
 
-#: src/project.c:212
+#: src/project.c:219
 #, fuzzy, c-format
 msgid "Failed to write file: %s"
 msgstr "Erro ao ver o esquema %s"
 
-#: src/project.c:550 src/gui/widgets/route_target_selector_popover.c:153
+#: src/project.c:557 src/gui/widgets/route_target_selector_popover.c:153
 #: src/audio/track.c:1351
 msgid "Master"
 msgstr "Máster"
 
-#: src/project.c:645
+#: src/project.c:652
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -256,16 +256,16 @@ msgstr ""
 "  %s.\n"
 "Empregar a copia de seguridade máis recente?"
 
-#: src/project.c:650
+#: src/project.c:657
 msgid "Backup found"
 msgstr "Copia de seguridade atopada"
 
-#: src/project.c:698
+#: src/project.c:705
 #, fuzzy, c-format
 msgid "Unable to read file: %s"
 msgstr "Incapaz de cargar o cliente interno"
 
-#: src/project.c:752
+#: src/project.c:759
 #, c-format
 msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
@@ -274,24 +274,24 @@ msgstr ""
 "Este proxecto foi creado cunha versión diferente de Zrythm (%s). Pode non "
 "funcionar correctamente."
 
-#: src/project.c:767
+#: src/project.c:774
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "Erro ao cargar o proxecto. Por favor, revise os rexistros para máis "
 "información."
 
-#: src/project.c:899
+#: src/project.c:906
 #, fuzzy
 msgid "Failed to load project. Will create a new one instead."
 msgstr ""
 "Erro ao cargar o proxecto. Por favor, revise os rexistros para máis "
 "información."
 
-#: src/project.c:1209
+#: src/project.c:1216
 msgid "Backup saved."
 msgstr "Copia de seguridade gardada."
 
-#: src/project.c:1219
+#: src/project.c:1226
 msgid "Project saved."
 msgstr "Proxecto gardado."
 
@@ -413,28 +413,28 @@ msgstr ""
 "Apoia este proxecto en https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/plugins/carla_native_plugin.c:417 src/plugins/lv2_plugin.c:2372
+#: src/plugins/carla_native_plugin.c:417 src/plugins/lv2_plugin.c:2377
 #, fuzzy
 msgid "Default bank"
 msgstr "Valor por defecto"
 
-#: src/plugins/carla_native_plugin.c:424 src/plugins/lv2_plugin.c:2379
+#: src/plugins/carla_native_plugin.c:424 src/plugins/lv2_plugin.c:2384
 msgid "Init"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:850
+#: src/plugins/carla_native_plugin.c:851
 msgid "Audio in"
 msgstr "Entrada de Audio"
 
-#: src/plugins/carla_native_plugin.c:860
+#: src/plugins/carla_native_plugin.c:861
 msgid "Audio out"
 msgstr "Saída de Audio"
 
-#: src/plugins/carla_native_plugin.c:870
+#: src/plugins/carla_native_plugin.c:871
 msgid "MIDI in"
 msgstr "Entrada MIDI"
 
-#: src/plugins/carla_native_plugin.c:880
+#: src/plugins/carla_native_plugin.c:881
 msgid "MIDI out"
 msgstr "Saída MIDI"
 
@@ -469,7 +469,7 @@ msgstr "Plugin AU escaneado"
 msgid "Skipped AU plugin at %u"
 msgstr "Saltouse un plugin AU en %u"
 
-#: src/plugins/plugin.c:119
+#: src/plugins/plugin.c:126
 msgid "Enabled"
 msgstr "Activado"
 
@@ -479,18 +479,18 @@ msgstr "Gardar Estado"
 
 #: src/plugins/plugin_gtk.c:81 src/plugins/lv2/lv2_gtk.c:101
 #: src/plugins/lv2/lv2_gtk.c:349 src/utils/dialogs.c:41 src/utils/dialogs.c:71
-#: src/actions/actions.c:743 resources/ui/export_midi_file_dialog.ui:54
+#: src/actions/actions.c:751 resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "_Cancelar"
 
 #: src/plugins/plugin_gtk.c:82 src/plugins/lv2/lv2_gtk.c:102
-#: src/actions/actions.c:745
+#: src/actions/actions.c:753
 msgid "_Save"
 msgstr "_Gardar"
 
-#: src/plugins/lv2_plugin.c:2411
+#: src/plugins/lv2_plugin.c:2416
 msgid "Unnamed bank"
 msgstr ""
 
@@ -531,16 +531,9 @@ msgstr "Crear Novo Proxecto"
 msgid "Untitled Project"
 msgstr "Proxecto Sen Título"
 
-#: src/gui/widgets/fader_controls_grid.c:97
-#, c-format
+#: src/gui/widgets/fader_controls_grid.c:78
 msgid "Peak"
 msgstr "Pico"
-
-#. TRANSLATORS: Root Mean Square
-#: src/gui/widgets/fader_controls_grid.c:100
-#, c-format
-msgid "RMS"
-msgstr "Media cadrática"
 
 #: src/gui/widgets/port_connections_popover.c:77
 msgid "INPUTS"
@@ -562,36 +555,36 @@ msgstr "Largura da nota"
 msgid "note type"
 msgstr "Tipo de nota"
 
-#: src/gui/widgets/inspector_port.c:175 src/gui/widgets/balance_control.c:331
+#: src/gui/widgets/inspector_port.c:181 src/gui/widgets/balance_control.c:331
 #: src/gui/widgets/fader.c:336 resources/ui/bind_cc_dialog.ui:27
 msgid "Bind MIDI CC"
 msgstr "Enlazar MIDI CC"
 
-#: src/gui/widgets/inspector_port.c:185 src/gui/widgets/midi_arranger.c:506
+#: src/gui/widgets/inspector_port.c:191 src/gui/widgets/midi_arranger.c:506
 msgid "View info"
 msgstr "Ver información"
 
-#: src/gui/widgets/inspector_port.c:370
+#: src/gui/widgets/inspector_port.c:323
 msgid "Incoming signals"
 msgstr "Sinais entrantes"
 
-#: src/gui/widgets/inspector_port.c:371
+#: src/gui/widgets/inspector_port.c:324
 msgid "Outgoing signals"
 msgstr "Sinais Saíntes"
 
-#: src/gui/widgets/inspector_port.c:383
+#: src/gui/widgets/inspector_port.c:336
 msgid "Current val"
 msgstr "Valor actual"
 
-#: src/gui/widgets/inspector_port.c:385
+#: src/gui/widgets/inspector_port.c:338
 msgid "Min"
 msgstr "Mín"
 
-#: src/gui/widgets/inspector_port.c:386
+#: src/gui/widgets/inspector_port.c:339
 msgid "Max"
 msgstr "Máx"
 
-#: src/gui/widgets/inspector_port.c:506
+#: src/gui/widgets/inspector_port.c:459
 msgid "Expose port to JACK"
 msgstr "Expor porto a JACK"
 
@@ -794,17 +787,17 @@ msgstr "punteado"
 msgid "triplet"
 msgstr "triplete"
 
-#: src/gui/widgets/digital_meter.c:1084
+#: src/gui/widgets/digital_meter.c:1097
 msgid "Tempo/BPM"
 msgstr "Tempo/BPM"
 
-#: src/gui/widgets/digital_meter.c:1098 src/gui/widgets/event_viewer.c:599
+#: src/gui/widgets/digital_meter.c:1111 src/gui/widgets/event_viewer.c:599
 #: src/gui/widgets/event_viewer.c:629 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr "Posición"
 
-#: src/gui/widgets/digital_meter.c:1128
+#: src/gui/widgets/digital_meter.c:1141
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "Compás - Pulsos por compás / Duración do pulso"
 
@@ -982,24 +975,24 @@ msgstr "Cliente de JACK Transport"
 msgid "JACK Timebase master"
 msgstr "Máster de JACK Timebase"
 
-#: src/gui/widgets/bot_bar.c:441 src/audio/region.c:386 src/audio/track.c:1339
+#: src/gui/widgets/bot_bar.c:443 src/audio/region.c:389 src/audio/track.c:1339
 #: build/data/org.zrythm.Zrythm.gschema.xml:536
 msgid "Audio"
 msgstr "Audio"
 
-#: src/gui/widgets/bot_bar.c:447 build/data/org.zrythm.Zrythm.gschema.xml:439
+#: src/gui/widgets/bot_bar.c:453 build/data/org.zrythm.Zrythm.gschema.xml:439
 msgid "Buffer size"
 msgstr "Tamaño do buffer"
 
-#: src/gui/widgets/bot_bar.c:449
+#: src/gui/widgets/bot_bar.c:457
 msgid "Sample rate"
 msgstr "Razón de samples"
 
-#: src/gui/widgets/bot_bar.c:520
+#: src/gui/widgets/bot_bar.c:531
 msgid "bpm"
 msgstr "bpm"
 
-#: src/gui/widgets/bot_bar.c:524
+#: src/gui/widgets/bot_bar.c:535
 msgid "time sig."
 msgstr "Compás"
 
@@ -1069,7 +1062,7 @@ msgstr "Algoritmo de curva"
 msgid "About Zrythm"
 msgstr "Sobre Zrythm"
 
-#: src/gui/widgets/header.c:100 src/gui/widgets/preferences.c:762
+#: src/gui/widgets/header.c:100 src/gui/widgets/preferences.c:786
 #: resources/ui/shortcuts.ui:40 resources/ui/preferences.ui:27
 msgid "Preferences"
 msgstr "Preferencias"
@@ -1226,13 +1219,17 @@ msgstr "[Insertar %d] %s"
 msgid "Snap/Grid options"
 msgstr "Axuste/Opcións da grade"
 
-#: src/gui/widgets/preferences.c:394 resources/ui/first_run_assistant.ui:120
+#: src/gui/widgets/preferences.c:395 resources/ui/first_run_assistant.ui:120
 msgid "Select a folder"
 msgstr "Selecciona unha carpeta"
 
-#: src/gui/widgets/preferences.c:395
+#: src/gui/widgets/preferences.c:396
 msgid "Select a file"
 msgstr "Selecciona un ficheiro"
+
+#: src/gui/widgets/preferences.c:766
+msgid "Some changes will only take effect after you restart Zrythm"
+msgstr ""
 
 #: src/gui/widgets/scripting_window.c:192
 msgid "Script execution successful"
@@ -1263,7 +1260,7 @@ msgstr "Reiniciar"
 msgid "Live waveform indicator"
 msgstr "Indicador de formas de onda en directo"
 
-#: src/gui/widgets/clip_editor_inner.c:195
+#: src/gui/widgets/clip_editor_inner.c:245
 msgid "Select a region..."
 msgstr "Seleccionar rexión..."
 
@@ -1291,7 +1288,7 @@ msgid "MIDI note"
 msgstr "Nota MIDI"
 
 #: src/gui/widgets/event_viewer.c:117 src/gui/widgets/event_viewer.c:588
-#: src/audio/region.c:392 src/audio/track.c:1354
+#: src/audio/region.c:395 src/audio/track.c:1354
 #: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr "Acorde"
@@ -1329,7 +1326,7 @@ msgid "Pitch"
 msgstr "Pitch"
 
 #: src/gui/widgets/event_viewer.c:547 resources/ui/midi_editor_space.ui:134
-#: resources/ui/chord_editor_space.ui:152
+#: resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:115
 msgid "Velocity"
 msgstr "Intensidade (Vel.)"
@@ -1569,7 +1566,7 @@ msgstr "Exportado"
 msgid "Export Progress"
 msgstr "Progreso da exportación"
 
-#: src/gui/backend/events.c:1526
+#: src/gui/backend/events.c:1482
 msgid "Trial limit has been reached. Zrythm will now go silent"
 msgstr "O tempo de proba expirou. Agora Zrythm silenciarase"
 
@@ -1589,11 +1586,11 @@ msgstr "Xa hai un plugin no oco seleccionado. Quérelo sobrescribir?"
 msgid "Error instantiating plugin. Please see log for details."
 msgstr "Erro instalando un plugin. Por favor, mira o rexistro para detalles."
 
-#: src/utils/ui.c:732
+#: src/utils/ui.c:758
 msgid "Sine (Equal Power)"
 msgstr "Seno (Mesma Intensidade)"
 
-#: src/utils/ui.c:902
+#: src/utils/ui.c:928
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
@@ -1602,7 +1599,7 @@ msgstr ""
 "A configuración rexional para o idioma seleccionado (%s) non está "
 "dispoñible. Por favor, instálaa antes e reinicia Zrythm"
 
-#: src/utils/ui.c:907
+#: src/utils/ui.c:933
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -1725,11 +1722,11 @@ msgstr "Marcadores"
 msgid "PortAudio Error: %s"
 msgstr "Erro de PortAudio %s"
 
-#: src/audio/region.c:383 src/audio/track.c:1342
+#: src/audio/region.c:386 src/audio/track.c:1342
 msgid "MIDI"
 msgstr "MIDI"
 
-#: src/audio/region.c:389 build/data/org.zrythm.Zrythm.gschema.xml:550
+#: src/audio/region.c:392 build/data/org.zrythm.Zrythm.gschema.xml:550
 msgid "Automation"
 msgstr "Automatización"
 
@@ -1817,60 +1814,60 @@ msgstr "Entrada MIDI do fader"
 msgid "MIDI fader out"
 msgstr "Saída Midi do Fader"
 
-#: src/audio/engine_jack.c:332
+#: src/audio/engine_jack.c:333
 msgid "XRUN occurred - check your JACK configuration"
 msgstr "XRUN ocorreu - comproba a túa configuración de JACK"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:675
+#: src/audio/engine_jack.c:676
 msgid "Overall operation failed"
 msgstr "A operación xeral fallou"
 
-#: src/audio/engine_jack.c:681
+#: src/audio/engine_jack.c:682
 msgid "The operation contained an invalid or unsupported option"
 msgstr "A operación contiña unha opción inválida ou non soportada"
 
-#: src/audio/engine_jack.c:688
+#: src/audio/engine_jack.c:689
 msgid "The desired client name was not unique"
 msgstr "O nome de cliente desexado non era exclusivo"
 
-#: src/audio/engine_jack.c:694
+#: src/audio/engine_jack.c:695
 msgid "Unable to connect to the JACK server"
 msgstr "Incapaz de conectar ao servidor JACK"
 
-#: src/audio/engine_jack.c:700
+#: src/audio/engine_jack.c:701
 msgid "Communication error with the JACK server"
 msgstr "Erro de comunicación co servidor JACK"
 
-#: src/audio/engine_jack.c:706
+#: src/audio/engine_jack.c:707
 msgid "Requested client does not exist"
 msgstr "O cliente solicitado non existe"
 
-#: src/audio/engine_jack.c:712
+#: src/audio/engine_jack.c:713
 msgid "Unable to load internal client"
 msgstr "Incapaz de cargar o cliente interno"
 
-#: src/audio/engine_jack.c:718
+#: src/audio/engine_jack.c:719
 msgid "Unable to initialize client"
 msgstr "Incapaz de iniciar o cliente"
 
-#: src/audio/engine_jack.c:724
+#: src/audio/engine_jack.c:725
 msgid "Unable to access shared memory"
 msgstr "Incapaz de acceder á memoria compartida"
 
-#: src/audio/engine_jack.c:730
+#: src/audio/engine_jack.c:731
 msgid "Client's protocol version does not match"
 msgstr "A versión do protocolo do Cliente non coincide"
 
-#: src/audio/engine_jack.c:734
+#: src/audio/engine_jack.c:735
 msgid "Backend error"
 msgstr "Erro do Backend"
 
-#: src/audio/engine_jack.c:738
+#: src/audio/engine_jack.c:739
 msgid "Client zombie"
 msgstr "Cliente zombie"
 
-#: src/actions/arranger_selections.c:2090
+#: src/actions/arranger_selections.c:2092
 msgid "Edit arranger object(s)"
 msgstr "Editar obxecto(s) do organizador"
 
@@ -1893,7 +1890,7 @@ msgstr "Borrar Pista"
 msgid "Delete %d Tracks"
 msgstr "Borrar %d Pistas"
 
-#: src/actions/actions.c:338
+#: src/actions/actions.c:346
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
@@ -1902,7 +1899,7 @@ msgstr ""
 "A extensibilidade de comandos de <a href=\"%s\">GNU Guile</a> non está "
 "activada na túa instalación de Zrythm."
 
-#: src/actions/actions.c:601
+#: src/actions/actions.c:609
 msgid ""
 "Creating new projects is disabled. Please restart Zrythm to start a new "
 "project"
@@ -1910,48 +1907,48 @@ msgstr ""
 "Creación de novos proxectos desactivada. Por favor, reinicie Zrythm para "
 "comezar un novo proxecto"
 
-#: src/actions/actions.c:612 resources/ui/project_assistant.ui:86
+#: src/actions/actions.c:620 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
 msgid "Create new project"
 msgstr "Crear un novo proxecto"
 
-#: src/actions/actions.c:615
+#: src/actions/actions.c:623
 msgid "Yes"
 msgstr "Si"
 
-#: src/actions/actions.c:617
+#: src/actions/actions.c:625
 msgid "No"
 msgstr "Non"
 
-#: src/actions/actions.c:622
+#: src/actions/actions.c:630
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr "Os cambios non gardados perderanse. Desexa continuar?"
 
-#: src/actions/actions.c:674
+#: src/actions/actions.c:682
 msgid "Loading is disabled in the trial version"
 msgstr "Carga desactivada na versión de proba"
 
-#: src/actions/actions.c:702 src/actions/actions.c:728
+#: src/actions/actions.c:710 src/actions/actions.c:736
 msgid "Saving is disabled in the trial version"
 msgstr "A opción de gardar está desactivada na versión de proba"
 
-#: src/actions/actions.c:740
+#: src/actions/actions.c:748
 msgid "Save Project"
 msgstr "Gardar Proxecto"
 
-#: src/actions/actions.c:824
+#: src/actions/actions.c:832
 msgid "Export routing graph"
 msgstr "Exportar gráfico da ruta"
 
-#: src/actions/actions.c:826
+#: src/actions/actions.c:834
 msgid "Image (PNG)"
 msgstr "Imaxe (PNG)"
 
-#: src/actions/actions.c:827
+#: src/actions/actions.c:835
 msgid "Dot graph"
 msgstr "Gráfico de puntos"
 
-#: src/actions/actions.c:835
+#: src/actions/actions.c:843
 #, c-format
 msgid ""
 "The graph will be exported to %s\n"
@@ -1960,12 +1957,12 @@ msgstr ""
 "O gráfico será exportado a %s\n"
 "Selecciona o formato ao que exportar"
 
-#: src/actions/actions.c:876
+#: src/actions/actions.c:884
 msgid "Graph exported"
 msgstr "Gráfico exportado"
 
-#: src/actions/actions.c:1063 src/actions/actions.c:1103
-#: src/actions/actions.c:1142 src/actions/actions.c:1182
+#: src/actions/actions.c:1071 src/actions/actions.c:1111
+#: src/actions/actions.c:1150 src/actions/actions.c:1190
 msgid "Can't paste selections"
 msgstr "Imposible pegar as seleccións"
 
@@ -1979,12 +1976,17 @@ msgstr "Copiar %s"
 msgid "Copy %d Plugins"
 msgstr "Copiar %d Plugins"
 
-#: src/actions/move_plugins_action.c:235
+#: src/actions/transport_action.c:121
+#, fuzzy
+msgid "Change BPM"
+msgstr "Cambiar Panorama"
+
+#: src/actions/move_plugins_action.c:234
 #, c-format
 msgid "Move %s"
 msgstr "Mover %s"
 
-#: src/actions/move_plugins_action.c:239
+#: src/actions/move_plugins_action.c:238
 #, c-format
 msgid "Move %d Plugins"
 msgstr "Mover %d Plugins"
@@ -2589,17 +2591,17 @@ msgstr "Escanear de novo"
 msgid "Scan again for MIDI controllers"
 msgstr "Volver a escanear controladores MIDI"
 
-#: resources/ui/midi_editor_space.ui:135 resources/ui/chord_editor_space.ui:153
+#: resources/ui/midi_editor_space.ui:135 resources/ui/chord_editor_space.ui:154
 #: resources/ui/automation_editor_space.ui:116
 msgid "Pitch Wheel"
 msgstr "Roda de Pitch"
 
-#: resources/ui/midi_editor_space.ui:136 resources/ui/chord_editor_space.ui:154
+#: resources/ui/midi_editor_space.ui:136 resources/ui/chord_editor_space.ui:155
 #: resources/ui/automation_editor_space.ui:117
 msgid "Mod Wheel"
 msgstr "Roda de Modificador"
 
-#: resources/ui/midi_editor_space.ui:137 resources/ui/chord_editor_space.ui:155
+#: resources/ui/midi_editor_space.ui:137 resources/ui/chord_editor_space.ui:156
 #: resources/ui/automation_editor_space.ui:118
 msgid "Aftertouch"
 msgstr "Aftertouch"
@@ -2637,6 +2639,10 @@ msgstr "Executar"
 #: resources/ui/scripting_window.ui:90
 msgid "The result will be printed here"
 msgstr "O resultado aparecerá aquí"
+
+#: resources/ui/chord_key.ui:12
+msgid "Amin 7"
+msgstr ""
 
 #: resources/ui/inspector_master.ui:43 resources/ui/inspector_ap.ui:43
 #: resources/ui/inspector_midi.ui:43
@@ -3725,8 +3731,8 @@ msgid ""
 "The panning algorithm to use when applying pan on mono signals (not used at "
 "the moment)."
 msgstr ""
-"O algoritmo do panorama a utilizar cando se aplique panorama a sinais mono ("
-"sen uso polo de agora)."
+"O algoritmo do panorama a utilizar cando se aplique panorama a sinais mono "
+"(sen uso polo de agora)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:617
 msgid "Pan law"
@@ -3739,6 +3745,10 @@ msgid ""
 msgstr ""
 "A Regra do Panorama a utilizar cando se aplique panorama a sinais mono (sen "
 "uso polo de agora)."
+
+#, c-format
+#~ msgid "RMS"
+#~ msgstr "Media cadrática"
 
 #~ msgid "Choose the paths to scan for VST2 plugins (or accept the default)"
 #~ msgstr ""

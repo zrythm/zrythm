@@ -43,6 +43,7 @@ inc/gui/widgets/midi_arranger_bg.h
 inc/gui/widgets/panel_file_browser.h
 inc/gui/widgets/chord_button.h
 inc/gui/widgets/channel_send_selector.h
+inc/gui/widgets/piano_keyboard.h
 inc/gui/widgets/automation_arranger_bg.h
 inc/gui/widgets/timeline_bg.h
 inc/gui/widgets/chord_track.h
@@ -155,7 +156,6 @@ inc/gui/widgets/inspector_region_info.h
 inc/gui/widgets/cpu.h
 inc/gui/widgets/control_room.h
 inc/gui/widgets/splash.h
-inc/gui/widgets/chord_arranger_bg.h
 inc/gui/widgets/midi_arranger.h
 inc/gui/widgets/automation_mode.h
 inc/gui/widgets/chord_pad.h
@@ -225,6 +225,7 @@ inc/utils/yaml.h
 inc/utils/dialogs.h
 inc/utils/arrays.h
 inc/utils/io.h
+inc/utils/cpu_windows.h
 inc/utils/stack.h
 inc/utils/localization.h
 inc/utils/stoat.h
@@ -276,6 +277,7 @@ inc/audio/graph_export.h
 inc/audio/snap_grid.h
 inc/audio/engine_jack.h
 inc/audio/engine_dummy.h
+inc/audio/meter.h
 inc/audio/automation_tracklist.h
 inc/audio/region_link_group.h
 inc/audio/audio_region.h
@@ -302,6 +304,9 @@ inc/audio/track_lane.h
 inc/audio/chord_descriptor.h
 inc/audio/chord_region.h
 inc/audio/ext_port.h
+inc/audio/kmeter_dsp.h
+inc/audio/true_peak_dsp.h
+inc/audio/peak_dsp.h
 inc/audio/audio_file.h
 inc/audio/engine.h
 inc/audio/engine_alsa.h
@@ -338,6 +343,7 @@ inc/actions/undoable_action.h
 inc/actions/copy_plugins_action.h
 inc/actions/move_plugins_action.h
 inc/actions/arranger_selections.h
+inc/actions/transport_action.h
 inc/actions/copy_tracks_action.h
 inc/actions/move_tracks_action.h
 inc/actions/delete_tracks_action.h
@@ -377,6 +383,7 @@ src/gui/widgets/snap_box.c
 src/gui/widgets/audio_group_track.c
 src/gui/widgets/midi_group_track.c
 src/gui/widgets/tracklist.c
+src/gui/widgets/piano_keyboard.c
 src/gui/widgets/create_project_dialog.c
 src/gui/widgets/fader_controls_grid.c
 src/gui/widgets/midi_note.c
@@ -385,7 +392,6 @@ src/gui/widgets/port_connections_popover.c
 src/gui/widgets/chord_track.c
 src/gui/widgets/custom_button.c
 src/gui/widgets/inspector_plugin.c
-src/gui/widgets/chord_arranger_bg.c
 src/gui/widgets/quantize_dialog.c
 src/gui/widgets/two_col_expander_box.c
 src/gui/widgets/inspector_port.c
@@ -587,6 +593,7 @@ src/audio/rtmidi_device.c
 src/audio/automation_track.c
 src/audio/channel.c
 src/audio/port.c
+src/audio/peak_dsp.c
 src/audio/chord_region.c
 src/audio/master_track.c
 src/audio/engine_dummy.c
@@ -595,6 +602,7 @@ src/audio/scale_object.c
 src/audio/engine_windows_mme.c
 src/audio/sample_playback.c
 src/audio/midi_region.c
+src/audio/meter.c
 src/audio/automation_region.c
 src/audio/windows_mmcss.c
 src/audio/channel_send.c
@@ -614,6 +622,7 @@ src/audio/region.c
 src/audio/engine.c
 src/audio/routing.c
 src/audio/audio_bus_track.c
+src/audio/true_peak_dsp.c
 src/audio/curve.c
 src/audio/track_lane.c
 src/audio/marker.c
@@ -621,6 +630,7 @@ src/audio/engine_rtmidi.c
 src/audio/position.c
 src/audio/rtaudio_device.c
 src/audio/midi.c
+src/audio/kmeter_dsp.c
 src/audio/velocity.c
 src/audio/snap_grid.c
 src/audio/automation_point.c
@@ -658,6 +668,7 @@ src/actions/create_plugins_action.c
 src/actions/delete_tracks_action.c
 src/actions/actions.c
 src/actions/copy_plugins_action.c
+src/actions/transport_action.c
 src/actions/undoable_action.c
 src/actions/edit_plugins_action.c
 src/actions/move_plugins_action.c
@@ -706,6 +717,7 @@ resources/ui/timeline_panel.ui
 resources/ui/mixer.ui
 resources/ui/chord_editor_space.ui
 resources/ui/scripting_window.ui
+resources/ui/chord_key.ui
 resources/ui/automation_editor_space.ui
 resources/ui/route_target_selector.ui
 resources/ui/inspector_master.ui
