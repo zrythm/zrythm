@@ -570,6 +570,7 @@ on_change_started (
         ((*self->on_drag_begin) (self->obj));
       break;
     case DIGITAL_METER_TYPE_BPM:
+      TRANSPORT->prev_bpm = TRANSPORT->bpm;
       transport_prepare_audio_regions_for_stretch (
         TRANSPORT, NULL);
       break;

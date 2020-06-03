@@ -962,13 +962,6 @@ on_plugin_visibility_changed (Plugin * pl)
   /*return FALSE;*/
 /*}*/
 
-static void
-on_bpm_changed (void)
-{
-  ruler_widget_refresh (MW_RULER);
-  ruler_widget_refresh (EDITOR_RULER);
-}
-
 static inline void
 clean_duplicates_and_copy (
   MPMCQueue * q,
@@ -1436,7 +1429,10 @@ events_process (void * data)
             MW_MIDI_MODIFIER_ARRANGER);
           break;
         case ET_BPM_CHANGED:
-          on_bpm_changed ();
+          ruler_widget_refresh (MW_RULER);
+          ruler_widget_refresh (EDITOR_RULER);
+          gtk_widget_queue_draw (
+            GTK_WIDGET (MW_DIGITAL_BPM));
           break;
         case ET_CHANNEL_FADER_VAL_CHANGED:
           channel_widget_redraw_fader (

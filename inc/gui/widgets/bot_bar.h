@@ -50,6 +50,8 @@ G_DECLARE_FINAL_TYPE (
 #define MW_STATUS_BAR MW_BOT_BAR->status_bar
 #define MW_DIGITAL_TRANSPORT \
   MW_BOT_BAR->digital_transport
+#define MW_DIGITAL_BPM \
+  MW_BOT_BAR->digital_bpm
 
 typedef struct _BotBarWidget
 {

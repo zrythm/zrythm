@@ -30,6 +30,7 @@
 #include "actions/move_plugins_action.h"
 #include "actions/move_tracks_action.h"
 #include "actions/undoable_action.h"
+#include "actions/transport_action.h"
 #include "project.h"
 
 #include <glib.h>
@@ -118,6 +119,7 @@ undoable_action_do (UndoableAction * self)
     DO_ACTION (SPLIT_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
+    DO_ACTION (TRANSPORT, transport, Transport);
     default:
       g_warn_if_reached ();
       ret = -1;
@@ -211,6 +213,7 @@ undoable_action_undo (UndoableAction * self)
     UNDO_ACTION (SPLIT_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
+    UNDO_ACTION (TRANSPORT, transport, Transport);
     default:
       g_warn_if_reached ();
       ret = -1;
@@ -291,6 +294,7 @@ undoable_action_free (UndoableAction * self)
     FREE_ACTION (SPLIT_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
+    FREE_ACTION (TRANSPORT, transport, Transport);
     default:
       g_warn_if_reached ();
       break;
@@ -376,6 +380,8 @@ undoable_action_stringize (
     STRINGIZE_UA (SPLIT_ARRANGER_SELECTIONS,
                ArrangerSelections,
                arranger_selections);
+    STRINGIZE_UA (
+      TRANSPORT, Transport, transport);
     default:
       g_return_val_if_reached (
         g_strdup (""));

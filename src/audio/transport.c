@@ -59,6 +59,10 @@ transport_set_bpm (
   bool        temporary,
   bool        fire_events)
 {
+  g_message (
+    "%s: bpm <%f>, temporary <%d>",
+    __func__, (double) bpm, temporary);
+
   if (bpm < TRANSPORT_MIN_BPM)
     {
       bpm = TRANSPORT_MIN_BPM;
@@ -70,28 +74,15 @@ transport_set_bpm (
 
   self->bpm = bpm;
 
-  engine_update_frames_per_tick (
-    AUDIO_ENGINE, self->beats_per_bar,
-    bpm, AUDIO_ENGINE->sample_rate);
-
   if (!temporary)
     {
+      UndoableAction * action =
+        transport_action_new_bpm_change (
+          self->prev_bpm, self->bpm, false);
+      undo_manager_perform (
+        UNDO_MANAGER, action);
+
       self->prev_bpm = self->bpm;
-
-      snap_grid_update_snap_points (
-        SNAP_GRID_TIMELINE);
-      snap_grid_update_snap_points (
-        SNAP_GRID_MIDI);
-
-      if (g_settings_get_boolean (
-            S_UI, "musical-mode"))
-        {
-          transport_stretch_audio_regions (
-            self, NULL, true,
-            self->bpm / self->prev_bpm);
-        }
-
-      /* TODO create action */
     }
 
   if (fire_events)

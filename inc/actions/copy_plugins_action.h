@@ -67,8 +67,7 @@ typedef struct CopyPluginsAction
 static const cyaml_schema_field_t
   copy_plugins_action_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "parent_instance", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     CopyPluginsAction, parent_instance,
     undoable_action_fields_schema),
   YAML_FIELD_ENUM (
@@ -91,8 +90,8 @@ static const cyaml_schema_field_t
 static const cyaml_schema_value_t
   copy_plugins_action_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER, CopyPluginsAction,
+  YAML_VALUE_PTR (
+    CopyPluginsAction,
     copy_plugins_action_fields_schema),
 };
 

@@ -61,6 +61,7 @@ undo_stack_init_loaded (
   size_t edit_tracks_actions_idx = 0;
   size_t move_plugins_actions_idx = 0;
   size_t move_tracks_actions_idx = 0;
+  size_t transport_actions_idx = 0;
 
   size_t i = 0;
   while (i < self->num_as_actions ||
@@ -73,7 +74,8 @@ undo_stack_init_loaded (
          i < self->num_edit_plugins_actions ||
          i < self->num_edit_tracks_actions ||
          i < self->num_move_plugins_actions ||
-         i < self->num_move_tracks_actions)
+         i < self->num_move_tracks_actions ||
+         i < self->num_transport_actions)
     {
       /* if there are still actions of this type */
       if (as_actions_idx < self->num_as_actions)
@@ -133,6 +135,7 @@ undo_stack_init_loaded (
       DO_SIMPLE (EditTracks, edit_tracks)
       DO_SIMPLE (MovePlugins, move_plugins)
       DO_SIMPLE (MoveTracks, move_tracks)
+      DO_SIMPLE (Transport, transport)
 
       i++;
     }
@@ -213,6 +216,8 @@ undo_stack_push (
       COPY_PLUGINS, CopyPlugins, copy_plugins);
     APPEND_ELEMENT (
       DELETE_PLUGINS, DeletePlugins, delete_plugins);
+    APPEND_ELEMENT (
+      TRANSPORT, Transport, transport);
     case UA_CREATE_ARRANGER_SELECTIONS:
     case UA_MOVE_ARRANGER_SELECTIONS:
     case UA_LINK_ARRANGER_SELECTIONS:
@@ -274,6 +279,8 @@ remove_action (
       COPY_PLUGINS, CopyPlugins, copy_plugins);
     REMOVE_ELEMENT (
       DELETE_PLUGINS, DeletePlugins, delete_plugins);
+    REMOVE_ELEMENT (
+      TRANSPORT, Transport, transport);
     case UA_CREATE_ARRANGER_SELECTIONS:
     case UA_MOVE_ARRANGER_SELECTIONS:
     case UA_LINK_ARRANGER_SELECTIONS:

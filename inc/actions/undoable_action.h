@@ -74,6 +74,8 @@ typedef enum UndoableActionType
 
   /* ---------------- end ----------------- */
 
+  UA_TRANSPORT,
+
 } UndoableActionType;
 
 static const cyaml_strval_t
@@ -119,6 +121,7 @@ undoable_action_type_strings[] =
     UA_DELETE_ARRANGER_SELECTIONS },
   { "Quantize arranger selections",
     UA_QUANTIZE_ARRANGER_SELECTIONS },
+  { "Transport", UA_TRANSPORT },
 };
 
 typedef struct UndoableAction
