@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 20:20+0100\n"
-"PO-Revision-Date: 2020-05-02 05:11+0000\n"
+"PO-Revision-Date: 2020-06-03 20:07+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
-"/manualplugins-files/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
@@ -69,15 +70,14 @@ msgid "Overview"
 msgstr "Sinopse"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:8
-#, fuzzy
 msgid ""
 "Zrythm can import MIDI and audio files into the project. The files can be"
 " imported by dragging and dropping from your computer or from the :ref"
 ":`file-browser` into a track."
 msgstr ""
 "O Zrythm pode importar ficheiros de MIDI e de áudio para o projeto. Os "
-"ficheiros podem ser importados arrastando e soltando do seu computador ou"
-" do Navegador de Ficheiros para uma faixa."
+"ficheiros podem ser importados arrastando e soltando do seu computador ou do "
+":ref:'file-browser' numa faixa."
 
 #: ../../plugins-files/audio-midi-files/overview.rst:14
 msgid "Supported Audio Formats"
@@ -132,6 +132,8 @@ msgid ""
 "Compatible ports can be connected to one another. See :ref:`making-"
 "connections` for more details."
 msgstr ""
+"Portas compatíveis podem ser conectadas umas às outras. Veja :ref:`making-"
+"connections` para obter mais detalhes."
 
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
@@ -202,14 +204,14 @@ msgid "Filter Buttons"
 msgstr "Botões de Filtro"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:36
-#, fuzzy
 msgid ""
 "Additionally to the above, you can filter plugins based on their type. "
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
 msgstr ""
-"Além disso, você pode filtrar plugins com base em seu tipo. Existem os "
-"seguintes tipos:"
+"Além dos acima, pode filtrar suplementos com base no seu tipo. Veja :ref"
+":'plugin-types' para obter mais informações sobre os vários tipos de "
+"suplementos que existem."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:43
 msgid "Instantiating Plugins"
@@ -266,9 +268,8 @@ msgstr ""
 "teclado para criar uma nova faixa usando esse plugin."
 
 #: ../../plugins-files/plugins/plugin-info.rst:6
-#, fuzzy
 msgid "Plugin Overview"
-msgstr "Navegador de Plugins"
+msgstr "Visão Geral de Suplementos"
 
 #: ../../plugins-files/plugins/plugin-info.rst:8
 msgid ""
@@ -277,19 +278,22 @@ msgid ""
 "plugin. There are various types of plugins supported by Zrythm mentioned "
 "in :ref:`scanning-plugins`."
 msgstr ""
+"Um suplemento é um módulo externo que fornece recursos de processamento de "
+"áudio para Zrythm, como um instrumento SFZ ou um suplemento LV2 reverb. "
+"Existem vários tipos de suplementos suportados pela Zrythm mencionados em "
+":ref:'scaning-plugins'."
 
 #: ../../plugins-files/plugins/plugin-info.rst:13
 msgid "In Zrythm, SFZ/SF2 are also used as plugins."
-msgstr ""
+msgstr "Em Zrythm SFZ/SF2 também são usados como suplementos."
 
 #: ../../plugins-files/plugins/plugin-info.rst:18
-#, fuzzy
 msgid "Plugin Types"
-msgstr "Plugins"
+msgstr "Tipos de Suplementos"
 
 #: ../../plugins-files/plugins/plugin-info.rst:20
 msgid "Plugins are classified into the following categories."
-msgstr ""
+msgstr "Os suplementos são classificados nas seguintes categorias."
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "Instrument"
@@ -304,14 +308,13 @@ msgid "Effects"
 msgstr "Efeitos"
 
 #: ../../plugins-files/plugins/plugin-info.rst:26
-#, fuzzy
 msgid ""
 "These plugins can be dragged into the insert slots of existing channels "
 "in the mixer or can be instantiated to create new FX tracks."
 msgstr ""
-"Estes plugins podem ser arrastados para os compartimentos de inserção dos"
-" canais existentes no misturador ou podem ser instanciados para criar "
-"novas faixas de bus."
+"Esses suplementos podem ser arrastados para os compartimentos de inserção de "
+"canais existentes no misturador ou podem ser instanciados para criar faixas "
+"FX."
 
 #: ../../plugins-files/plugins/plugin-info.rst:30
 msgid "Modulators"
@@ -349,27 +352,33 @@ msgstr ""
 "portas de entrada e saída de áudio, MIDI, controle e CV."
 
 #: ../../plugins-files/plugins/plugin-info.rst:46
-#, fuzzy
 msgid "Plugin Ports"
-msgstr "Plugins"
+msgstr "Portas de Suplementos"
 
 #: ../../plugins-files/plugins/plugin-info.rst:47
 msgid ""
 "Plugins consist of controls (parameters) and a variety of audio, MIDI and"
 " CV ports. Ports are explained in :ref:`ports`."
 msgstr ""
+"Os suplementos consistem em controles (parâmetros) e uma variedade de portas "
+"de áudio, MIDI e CV. As portas são explicadas em :ref:'ports'."
 
 #: ../../plugins-files/plugins/plugin-info.rst:51
 msgid ""
 "Zrythm first creates all plugins with a special `Enabled` control port "
 "that controls bypassing, and the rest of the plugin's ports are appended."
 msgstr ""
+"Zrythm cria primeiro todos os suplementos com uma porta de controle especial "
+"'Ativado' que controla o desvio, e o resto das portas do suplemento são "
+"anexadas."
 
 #: ../../plugins-files/plugins/plugin-info.rst:55
 msgid ""
 "All of the plugin's ports can be found in the plugin inspector page "
 "described in :ref:`plugin-inspector-page`"
 msgstr ""
+"Todas as portas do suplemento podem ser encontradas na página do inspetor de "
+"suplementos descrita em :ref:'plugin-inspector-page'"
 
 #: ../../plugins-files/plugins/plugin-window.rst:6
 msgid "Plugin Window"
@@ -377,7 +386,7 @@ msgstr "Janela do Plugin"
 
 #: ../../plugins-files/plugins/plugin-window.rst:9
 msgid "Custom UIs"
-msgstr ""
+msgstr "UIs personalizadas"
 
 #: ../../plugins-files/plugins/plugin-window.rst:10
 #, fuzzy
@@ -900,4 +909,3 @@ msgstr ""
 
 #~ msgid "Plugins are classified in the following categories."
 #~ msgstr ""
-
