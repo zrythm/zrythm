@@ -17,11 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "utils/mpmc_queue.h"
 #include "utils/objects.h"
 #include "utils/stack.h"
 #include "zrythm.h"
 
-static Stack * free_stack = NULL;
+/*static Stack * free_stack = NULL;*/
+static MPMCQueue * free_queue = NULL;
 static Stack * free_stack_for_source = NULL;
 static ZixSem free_stack_for_source_lock;
 
@@ -82,51 +84,35 @@ free_later_thread_func (
     {
       g_usleep (800000);
 
-      if (!free_stack)
+      if (!free_queue)
         {
           g_critical ("free_stack uninitialized");
           return NULL;
         }
 
-      if (!stack_is_empty (free_stack))
+      gint64 curr_time =
+        g_get_monotonic_time ();
+
+      FreeElement * el = NULL;
+      while (mpmc_queue_dequeue (
+               free_queue, (void **) &el))
         {
-          /* it might change so get its size at this
-           * point. */
-          int ssize = stack_size (free_stack);
-          gint64 curr_time =
-            g_get_monotonic_time ();
-
-          FreeElement * el;
-          for (int i = 0; i < ssize; i++)
+          /* if enough time has passed */
+          if (curr_time - el->time_added >
+                TIME_TO_WAIT_USEC)
             {
-              /* peek the element at 0 */
-              el =
-                (FreeElement *)
-                stack_peek_last (free_stack);
-
-              g_warn_if_fail (el != NULL);
-
-              /* if enough time has passed */
-              if (curr_time - el->time_added >
-                  TIME_TO_WAIT_USEC)
-                {
-                  /* pop and free */
-                  el =
-                    (FreeElement *)
-                    stack_pop_last (free_stack);
-                  zix_sem_wait (
-                    &free_stack_for_source_lock);
-                  stack_push (
-                    free_stack_for_source,
-                    (void *) el);
-                  zix_sem_post (
-                    &free_stack_for_source_lock);
-                }
-              else
-                {
-                  /* not enough time passed, exit */
-                  break;
-                }
+              zix_sem_wait (
+                &free_stack_for_source_lock);
+              stack_push (
+                free_stack_for_source,
+                (void *) el);
+              zix_sem_post (
+                &free_stack_for_source_lock);
+            }
+          else
+            {
+              /* not enough time passed, exit */
+              break;
             }
         }
     }
@@ -136,15 +122,16 @@ free_later_thread_func (
 /**
  * Frees the object after a while.
  *
- * This is useful when the object will be in use for a
- * while, for example in the current processing cycle.
+ * This is useful when the object will be in use
+ * for a while, for example in the current
+ * processing cycle.
  */
 void
 _free_later (
   void * object,
   void (*dfunc) (void *))
 {
-  g_warn_if_fail (free_stack != NULL);
+  g_warn_if_fail (free_queue != NULL);
 
   if (ZRYTHM_TESTING)
     {
@@ -156,9 +143,10 @@ _free_later (
     calloc (1, sizeof (FreeElement));
   free_element->obj = object;
   free_element->dfunc = dfunc;
-  free_element->time_added =
-    g_get_monotonic_time ();
-  stack_push (free_stack, (void *) free_element);
+  free_element->time_added = g_get_monotonic_time ();
+  /*stack_push (free_stack, (void *) free_element);*/
+  mpmc_queue_push_back (
+    free_queue, (void *) free_element);
 }
 
 /**
@@ -168,7 +156,11 @@ _free_later (
 void
 object_utils_init ()
 {
-  free_stack = stack_new (800000);
+  /*free_stack = stack_new (800000);*/
+  free_queue = mpmc_queue_new ();
+  mpmc_queue_reserve (
+    free_queue,
+    800000 * sizeof (FreeElement *));
   free_stack_for_source = stack_new (8000);
   zix_sem_init (&free_stack_for_source_lock, 1);
 

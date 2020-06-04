@@ -522,6 +522,9 @@ on_project_new_finish (
   GtkAssistant * _assistant,
   gpointer       user_data)
 {
+  g_message (
+    "%s (%s) called", __func__, __FILE__);
+
   ProjectAssistantWidget * pa =
     Z_PROJECT_ASSISTANT_WIDGET (_assistant);
   ZRYTHM->creating_project = 1;
@@ -581,17 +584,16 @@ on_project_new_finish (
                  zrythm->create_project_path);
     }
 
+  /* FIXME error if the assistant is deleted
+   * here, setting invisible for now, but
+   * eventually must be destroyed */
+  gtk_widget_set_visible (GTK_WIDGET (pa), 0);
+
   if (quit)
     {
-      /* FIXME error if the assistant is deleted
-       * here, setting invisible for now, but
-       * eventually must be destroyed */
-      gtk_widget_set_visible (GTK_WIDGET (pa), 0);
     }
   else
     {
-      gtk_widget_set_visible (
-        GTK_WIDGET (pa), 0);
       project_load (
         ZRYTHM->open_filename,
         ZRYTHM->opening_template);

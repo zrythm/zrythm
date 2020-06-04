@@ -1421,27 +1421,30 @@ timeline_arranger_widget_show_context_menu (
                 }
             }
 
-          menuitem =
-            gtk_menu_item_new_with_label (
-              _("Quick bounce"));
-          gtk_menu_shell_append (
-            GTK_MENU_SHELL(menu), menuitem);
-          g_signal_connect (
-            menuitem, "activate",
-            G_CALLBACK (
-              timeline_arranger_on_quick_bounce_clicked),
-            r);
+          if (r->id.type == REGION_TYPE_MIDI)
+            {
+              menuitem =
+                gtk_menu_item_new_with_label (
+                  _("Quick bounce"));
+              gtk_menu_shell_append (
+                GTK_MENU_SHELL(menu), menuitem);
+              g_signal_connect (
+                menuitem, "activate",
+                G_CALLBACK (
+                  timeline_arranger_on_quick_bounce_clicked),
+                r);
 
-          menuitem =
-            gtk_menu_item_new_with_label (
-              _("Bounce..."));
-          gtk_menu_shell_append (
-            GTK_MENU_SHELL(menu), menuitem);
-          g_signal_connect (
-            menuitem, "activate",
-            G_CALLBACK (
-              timeline_arranger_on_bounce_clicked),
-            r);
+              menuitem =
+                gtk_menu_item_new_with_label (
+                  _("Bounce..."));
+              gtk_menu_shell_append (
+                GTK_MENU_SHELL(menu), menuitem);
+              g_signal_connect (
+                menuitem, "activate",
+                G_CALLBACK (
+                  timeline_arranger_on_bounce_clicked),
+                r);
+            }
         }
     }
   else

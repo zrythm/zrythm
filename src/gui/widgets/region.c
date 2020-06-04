@@ -180,7 +180,7 @@ draw_background (
 
       cairo_surface_t * surface =
         z_cairo_get_surface_from_icon_name (
-          "z-emblem-symbolic-link", size, 1);
+          "emblem-symbolic-link", size, 1);
 
       /* add main icon */
       double end_region_global =

@@ -286,7 +286,6 @@ create_plugin (
       /* set bridging on if needed */
       /* TODO if the UI and DSP binary is the same
        * file, bridge the whole plugin */
-      /* TODO bridge anything other than X11 */
       LilvNode * lv2_uri =
         lilv_new_uri (LILV_WORLD, descr->uri);
       const LilvPlugin * lilv_plugin =
@@ -297,10 +296,11 @@ create_plugin (
       LilvUIs * uis =
         lilv_plugin_get_uis (lilv_plugin);
       const LilvUI * picked_ui;
+      const LilvNode * picked_ui_type;
       bool needs_bridging =
         lv2_plugin_pick_ui (
           uis, LV2_PLUGIN_UI_FOR_BRIDGING,
-          &picked_ui, NULL);
+          &picked_ui, &picked_ui_type);
       if (needs_bridging)
         {
           const LilvNode * ui_uri =
@@ -315,14 +315,24 @@ create_plugin (
                 PM_LILV_NODES.data_access) ||
               lilv_nodes_contains (
                 ui_required_features,
-                PM_LILV_NODES.instance_access)
+                PM_LILV_NODES.instance_access) ||
+              lilv_node_equals (
+                picked_ui_type,
+                PM_LILV_NODES.ui_Qt4UI) ||
+              lilv_node_equals (
+                picked_ui_type,
+                PM_LILV_NODES.ui_Qt5UI) ||
+              lilv_node_equals (
+                picked_ui_type,
+                PM_LILV_NODES.ui_GtkUI) ||
+              lilv_node_equals (
+                picked_ui_type,
+                PM_LILV_NODES.ui_Gtk3UI)
               )
             {
-              /* if the DSP and the UI are separate, only
-               * bridge UI, otherwise bridge both */
               g_message (
-                "plugin requires instance/data "
-                "access, using plugin bridge");
+                "plugin must be bridged whole, "
+                "using plugin bridge");
               carla_set_engine_option (
                 self->host_handle,
                 ENGINE_OPTION_PREFER_PLUGIN_BRIDGES,
@@ -333,8 +343,8 @@ create_plugin (
               g_message ("using UI bridge only");
               carla_set_engine_option (
                 self->host_handle,
-                ENGINE_OPTION_PREFER_UI_BRIDGES, true,
-                NULL);
+                ENGINE_OPTION_PREFER_UI_BRIDGES,
+                true, NULL);
             }
           lilv_nodes_free (ui_required_features);
         }

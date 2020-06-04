@@ -896,10 +896,14 @@ project_load (
   char *    filename,
   const int is_template)
 {
+  g_message (
+    "%s: filename <%s> is template <%d>",
+    __func__, filename, is_template);
+
   if (filename)
     {
       int ret = load (filename, is_template);
-      if (ret != 0)
+      if (ret)
         {
           ui_show_error_message (
             NULL,
