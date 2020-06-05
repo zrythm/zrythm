@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 18:06+0100\n"
-"PO-Revision-Date: 2020-05-14 16:41+0000\n"
-"Last-Translator: JEHANNIN <sahaa.thyva@laposte.net>\n"
+"PO-Revision-Date: 2020-06-05 11:41+0000\n"
+"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/fr/>\n"
 "Language: fr\n"
@@ -391,7 +391,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:61
 msgid "Export Graph"
-msgstr ""
+msgstr "Exporter le graph sous"
 
 #: ../../zrythm-interface/main-toolbar.rst:60
 msgid ""
@@ -538,7 +538,6 @@ msgid "There are the following buttons next to the name of the current project."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:119
-#, fuzzy
 msgid "Scripting Interface"
 msgstr "Interface de scriptage"
 

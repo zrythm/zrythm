@@ -5,15 +5,16 @@
 # Nicolas Faure <sub26nico@laposte.net>, 2019.
 # Nicolas FAURE <sub26nico@laposte.net>, 2020.
 # JEHANNIN <sahaa.thyva@laposte.net>, 2020.
+# Sahaathyva <sahaa.thyva@laposte.net>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-06-03 21:08+0100\n"
-"PO-Revision-Date: 2020-05-18 07:41+0000\n"
-"Last-Translator: JEHANNIN <sahaa.thyva@laposte.net>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"PO-Revision-Date: 2020-06-05 11:41+0000\n"
+"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -320,7 +321,7 @@ msgstr ""
 "rapport de bogue%s."
 
 #: src/main.c:253
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
 "\n"
@@ -346,9 +347,14 @@ msgstr ""
 "\n"
 "Options :\n"
 "  -h, --help      affiche cette aide et quitte\n"
-"  -p, --print-settings affiche les paramètres actuels\n"
-"  ---reset-to-factory réinitialise les paramètres d'usine\n"
-"  -v, --version   affiche l'information d'information de version et quitte\n"
+"--convert-yaml-to-zpj  convertir un projet yaml au format .zpj\n"
+"  --convert-zpj-to-yaml  convertir un projet zpj au format YAML\n"
+"  -o, --output    specifier un fichier de sortie\n"
+"  -p, --print-settings  affichage des paramètres actuels\n"
+"  --pretty        affichage de manière plus lisible pour un utilisateur\n"
+"  --reset-to-factory  restauration des paramètres d'origine\n"
+"  -v, --version   affichage des informations de version et quitte\n"
+"\n"
 "\n"
 "Exemples :\n"
 "  zrythm -v         affiche la version\n"
@@ -359,12 +365,14 @@ msgstr ""
 #: src/main.c:284
 #, c-format
 msgid "File %s not found."
-msgstr ""
+msgstr "Fichier %s non trouvé."
 
 #: src/main.c:305
 msgid ""
 "An output file was not specified. Please pass one with `--output [FILE]`."
 msgstr ""
+"Aucun fichier se sortie spécifié. Veuillez SVP en spécifier un avec `--"
+"output [FILE]`."
 
 #. getopt_long already printed an error
 #. * message
@@ -376,17 +384,17 @@ msgstr "Option inconnue\n"
 #: src/main.c:427
 #, c-format
 msgid "Project failed to compress: %s\n"
-msgstr ""
+msgstr "Echec de la compression du projet:%s\n"
 
 #: src/main.c:436
 #, c-format
 msgid "Project successfully compressed.\n"
-msgstr ""
+msgstr "Compression du projet réussie.\n"
 
 #: src/main.c:454
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr ""
+msgstr "Echec de la décompression du projet: %s\n"
 
 #: src/main.c:463
 #, c-format
@@ -1063,12 +1071,12 @@ msgstr "Exporter dans un fichier MIDI"
 #: src/gui/widgets/timeline_arranger.c:1426 src/gui/widgets/track.c:1563
 #, fuzzy
 msgid "Quick bounce"
-msgstr "Rebond rapide"
+msgstr "Conversion audio rapide"
 
 #: src/gui/widgets/timeline_arranger.c:1437 src/gui/widgets/track.c:1575
 #, fuzzy
 msgid "Bounce..."
-msgstr "Rebond..."
+msgstr "Conversion audio..."
 
 #: src/gui/widgets/automation_arranger.c:226
 #: build/data/org.zrythm.Zrythm.gschema.xml:554
@@ -1182,13 +1190,13 @@ msgid "Type"
 msgstr "Type"
 
 #: src/gui/widgets/plugin_properties_expander.c:167
+#, fuzzy
 msgid "Banks"
-msgstr ""
+msgstr "Banque de Pré-réglages"
 
 #: src/gui/widgets/plugin_properties_expander.c:183
-#, fuzzy
 msgid "Presets"
-msgstr "Réinitialiser"
+msgstr "Pré-réglages"
 
 #: src/gui/widgets/route_target_selector.c:54
 msgid "<tt><i>Engine</i></tt>"
@@ -1248,6 +1256,7 @@ msgstr "Sélectionner un fichier"
 #: src/gui/widgets/preferences.c:766
 msgid "Some changes will only take effect after you restart Zrythm"
 msgstr ""
+"Certains changements ne prendront effet qu'après un redémarrage de Zrythm"
 
 #: src/gui/widgets/scripting_window.c:192
 msgid "Script execution successful"
@@ -1258,7 +1267,6 @@ msgid "Script execution failed"
 msgstr "Exécution du script en échec"
 
 #: src/gui/widgets/scripting_window.c:228
-#, fuzzy
 msgid "Scripting Interface"
 msgstr "Interface de scriptage"
 
@@ -1441,9 +1449,8 @@ msgid "Export As"
 msgstr "Exporter sous"
 
 #: src/gui/widgets/project_toolbar.c:44
-#, fuzzy
 msgid "Export Graph"
-msgstr "Exporter sous"
+msgstr "Exporter le graph sous"
 
 #: src/gui/widgets/view_toolbar.c:39
 msgid "Toggle Status Bar"
@@ -1486,8 +1493,9 @@ msgid "Toggle Right Panel"
 msgstr "Basculer le panneau de droite"
 
 #: src/gui/widgets/inspector_track.c:144
+#, fuzzy
 msgid "Comment"
-msgstr ""
+msgstr "Commenter"
 
 #: src/gui/widgets/track.c:572 src/audio/track_lane.c:68
 #, c-format
@@ -1549,9 +1557,8 @@ msgid "Lane %d MIDI Ch"
 msgstr "Midi Can voie %d"
 
 #: src/gui/widgets/track.c:1688
-#, fuzzy
 msgid "Inherit"
-msgstr "%sHériter"
+msgstr "Hériter"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:109
 msgid "Arranger object info"
@@ -1705,7 +1712,6 @@ msgid "Chords"
 msgstr "Accords"
 
 #: src/audio/automation_track.c:91
-#, fuzzy
 msgid "On"
 msgstr "En fonctionnement"
 
@@ -1715,14 +1721,12 @@ msgid "Rec"
 msgstr "Enregistrer"
 
 #: src/audio/automation_track.c:97
-#, fuzzy
 msgid "Off"
 msgstr "A l'arrêt"
 
 #: src/audio/automation_track.c:115
-#, fuzzy
 msgid "Touch"
-msgstr "Touché"
+msgstr "Toucher"
 
 #: src/audio/automation_track.c:118
 msgid "Latch"
@@ -1825,7 +1829,6 @@ msgid "Volume"
 msgstr "Volume"
 
 #: src/audio/fader.c:128
-#, fuzzy
 msgid "Balance"
 msgstr "Contrôle de la balance"
 
@@ -1970,9 +1973,8 @@ msgid "Save Project"
 msgstr "Sauvegarder le projet"
 
 #: src/actions/actions.c:832
-#, fuzzy
 msgid "Export routing graph"
-msgstr "Progression de l'exportation"
+msgstr "Exporter le graphe du routage"
 
 #: src/actions/actions.c:834
 msgid "Image (PNG)"
@@ -2011,9 +2013,8 @@ msgid "Copy %d Plugins"
 msgstr "Copier %d Greffons"
 
 #: src/actions/transport_action.c:121
-#, fuzzy
 msgid "Change BPM"
-msgstr "Changer la panoramique"
+msgstr "Changer le tempo"
 
 #: src/actions/move_plugins_action.c:234
 #, c-format
@@ -2108,7 +2109,6 @@ msgid "Language"
 msgstr "Langue"
 
 #: resources/ui/first_run_assistant.ui:107
-#, fuzzy
 msgid ""
 "Next, choose the location to use for saving temporary files and projects (or "
 "accept the default)"
@@ -2822,7 +2822,7 @@ msgstr "MIDI en activité"
 
 #: resources/ui/transport_controls.ui:33
 msgid "Return to cue point on stop"
-msgstr ""
+msgstr "Retourner au point de repère à l'arrêt"
 
 #: resources/ui/transport_controls.ui:66
 msgid "Play"
@@ -2910,8 +2910,9 @@ msgid "Bounce Options"
 msgstr "Options de quantification"
 
 #: resources/ui/bounce_dialog.ui:65
+#, fuzzy
 msgid "Bounce"
-msgstr ""
+msgstr "Gel audio"
 
 #: resources/ui/bounce_dialog.ui:91
 msgid "Bounce with effect chain"
@@ -3279,14 +3280,16 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:213
 #: build/data/org.zrythm.Zrythm.gschema.xml:223
+#, fuzzy
 msgid ""
 "Default length type to use when creating timelinle objects, eg in edit mode."
 msgstr ""
+"Longueur par défaut à utiliser pour créer des objets dans la ligne de temps, "
+"par ex en mode édition."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:217
-#, fuzzy
 msgid "Editor object length"
-msgstr "Aucun objet sélectionné"
+msgstr "Longueur de l'objet édité"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:222
 #, fuzzy
@@ -3303,6 +3306,8 @@ msgid ""
 "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, "
 "etc.)"
 msgstr ""
+"Le mode de notation de note utilisé dans le piano-roll / Index de pitch MIDI "
+"ou notes (Do,Do#,etc...)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:233
 msgid ""
@@ -3317,16 +3322,17 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:238
 msgid "Whether to listen to MIDI notes while dragging them in the piano roll."
-msgstr ""
+msgstr "Entendre les notes MIDI pendant qu'on les place dans le piano-roll."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:242
-#, fuzzy
 msgid "Piano roll highlight"
-msgstr "Piano Roll"
+msgstr "Mise en évidence du Piano Roll"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:243
 msgid "Whether to highlight chords, scales, both or none in the piano roll."
 msgstr ""
+"Pour mettre en évidence les accords,échelles, les deux ou rien dans le piano "
+"roll."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:247
 #, fuzzy
@@ -3338,6 +3344,8 @@ msgid ""
 "The MIDI modifier to display in the MIDI editor (only velocity is valid at "
 "the moment)."
 msgstr ""
+"L'éditeur d'événements MIDI à afficher dans l'éditeur MIDI (Seulement la "
+"vélocité des notes est valide pour l'instant)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:252
 #, fuzzy
@@ -3346,11 +3354,11 @@ msgstr "position de départ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:253
 msgid "Height of the top part of the plugin/file browser."
-msgstr ""
+msgstr "Hauteur de la partie haute du navigateur de Greffons/Fichiers."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:257
 msgid "Left panel divider position"
-msgstr ""
+msgstr "Position du séparateur de Panneau gauche"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:258
 msgid "Position of the resize handle of the left panel."
