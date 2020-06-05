@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 20:03+0100\n"
-"PO-Revision-Date: 2020-05-26 22:41+0000\n"
+"PO-Revision-Date: 2020-06-05 11:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/gl/>\n"
@@ -405,7 +405,7 @@ msgstr "Manter sempre as xanelas das UI dos plugins enriba da xanela principal"
 
 #: ../../configuration/preferences/intro.rst:79
 msgid "Bridge unsupported UIs"
-msgstr ""
+msgstr "Facer unha ponte ás UIs non soportadas"
 
 #: ../../configuration/preferences/intro.rst:78
 msgid ""
