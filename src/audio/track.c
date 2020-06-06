@@ -1115,6 +1115,29 @@ track_set_automation_visible (
 }
 
 /**
+ * Unselects all arranger objects in the track.
+ */
+void
+track_unselect_all (
+  Track * self)
+{
+  /* unselect lane regions */
+  for (int i = 0; i < self->num_lanes; i++)
+    {
+      TrackLane * lane = self->lanes[i];
+      track_lane_unselect_all (lane);
+    }
+
+  /* unselect automation regions */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (self);
+  if (atl)
+    {
+      automation_tracklist_unselect_all (atl);
+    }
+}
+
+/**
  * Removes all arranger objects recursively.
  */
 void

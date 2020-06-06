@@ -347,6 +347,13 @@ automation_track_get_region_before_pos (
   const Position *        pos);
 
 /**
+ * Unselects all arranger objects.
+ */
+void
+automation_track_unselect_all (
+  AutomationTrack * self);
+
+/**
  * Removes all objects recursively.
  */
 void

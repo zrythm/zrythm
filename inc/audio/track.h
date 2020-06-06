@@ -218,6 +218,8 @@ typedef struct Track
   int                 main_height;
 
   /**
+   * FIXME move mute and solo to fader.
+   *
    * Control port for muting the (channel)
    * fader.
    *
@@ -628,6 +630,13 @@ track_select (
   int     select,
   int     exclusive,
   int     fire_events);
+
+/**
+ * Unselects all arranger objects in the track.
+ */
+void
+track_unselect_all (
+  Track * self);
 
 /**
  * Removes all objects recursively from the track.

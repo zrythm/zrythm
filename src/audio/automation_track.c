@@ -332,6 +332,21 @@ automation_track_should_be_recording (
 }
 
 /**
+ * Unselects all arranger objects.
+ */
+void
+automation_track_unselect_all (
+  AutomationTrack * self)
+{
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      ZRegion * region = self->regions[i];
+      arranger_object_select (
+        (ArrangerObject *) region, false, false);
+    }
+}
+
+/**
  * Removes all arranger objects recursively.
  */
 void

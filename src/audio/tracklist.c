@@ -631,8 +631,8 @@ tracklist_move_track (
       clip_editor_set_region (CLIP_EDITOR, NULL);
     }
 
-  /* remove/deselect all objects */
-  track_clear (track);
+  /* deselect all objects */
+  track_unselect_all (track);
 
   int idx =
     array_index_of (

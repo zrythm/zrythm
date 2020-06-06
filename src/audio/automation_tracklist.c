@@ -387,6 +387,20 @@ automation_tracklist_update_track_pos (
 }
 
 /**
+ * Unselects all arranger objects.
+ */
+void
+automation_tracklist_unselect_all (
+  AutomationTracklist * self)
+{
+  for (int i = self->num_ats - 1; i >= 0; i--)
+    {
+      AutomationTrack * at = self->ats[i];
+      automation_track_unselect_all (at);
+    }
+}
+
+/**
  * Removes all arranger objects recursively.
  */
 void

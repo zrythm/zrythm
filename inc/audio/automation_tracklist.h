@@ -212,6 +212,13 @@ automation_tracklist_get_at_from_port (
   Port *                port);
 
 /**
+ * Unselects all arranger objects.
+ */
+void
+automation_tracklist_unselect_all (
+  AutomationTracklist * self);
+
+/**
  * Removes all objects recursively.
  */
 void

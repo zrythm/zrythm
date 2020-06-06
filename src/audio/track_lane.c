@@ -134,6 +134,10 @@ track_lane_set_track_pos (
   TrackLane * self,
   const int   pos)
 {
+  g_message (
+    "%s: lane: %d, track pos: %d, num regions: %d",
+    __func__, self->pos, pos, self->num_regions);
+
   self->track_pos = pos;
 
   for (int i = 0; i < self->num_regions; i++)
@@ -196,6 +200,23 @@ track_lane_clone (
     }
 
   return new_lane;
+}
+
+/**
+ * Unselects all arranger objects.
+ */
+void
+track_lane_unselect_all (
+  TrackLane * self)
+{
+  Track * track = track_lane_get_track (self);
+  g_return_if_fail (track);
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      ZRegion * region = self->regions[i];
+      arranger_object_select (
+        (ArrangerObject *) region, false, false);
+    }
 }
 
 /**
