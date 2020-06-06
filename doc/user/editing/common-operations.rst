@@ -24,8 +24,7 @@ Redo button will create the note again, and you can go
 back between Undo and Redo as many times as you want.
 
 The shortcuts for undo and redo are
-:zbutton:`Control` + :zbutton:`Z` to Undo and
-:zbutton:`Control` + :zbutton:`Shift` + :zbutton:`Z` to Redo.
+:kbd:`Control-z` and :kbd:`Control-Shift-z`.
 
 .. warning:: If you Undo and then perform a new action, the
    Redo history will be deleted.

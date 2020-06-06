@@ -10,7 +10,7 @@ will be useful in the following sections.
 
 Playhead
 --------
-The playhead is the current position in the
+The :dfn:`playhead` is the current position in the
 song. It is displayed as a red line inside
 arrangers.
 

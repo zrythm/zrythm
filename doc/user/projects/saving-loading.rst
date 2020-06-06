@@ -15,24 +15,24 @@ or to create a new one.
 .. image:: /_static/img/project_list.png
    :align: center
 
-When you select a project and click :zbutton:`Apply`, Zrythm will
+When you select a project and click :guilabel:`Apply`, Zrythm will
 load that project.
 
 Creating Projects
 -----------------
 
-In the menu above, if you select :zbutton:`Create new project`,
+In the menu above, if you select :guilabel:`Create new project`,
 Zrythm will ask you for a template to use for creating the new
 Project.
 
 .. image:: /_static/img/project_select_template.png
    :align: center
 
-.. tip:: A blank template is available, but you can create your
-  own templates by copying a project folder to the ``Templates``
-  directory in the Zrythm installation path.
+.. tip:: A blank template is available, and you can
+  create your own templates by copying a project
+  directory to :file:`{ZRYTHM_USER_DIR}/templates`.
 
-Once a template (or blank) is selected and you click :zbutton:`Apply`,
+Once a template (or blank) is selected and you click :guilabel:`Apply`,
 Zrythm will ask you for a parent directory to save the Project
 in and a title for the Project.
 
@@ -45,8 +45,8 @@ ready to go.
 Saving Projects
 ---------------
 
-Saving works as you would expect: :zbutton:`Save As...` will save the Project in a new location
-and :zbutton:`Save` will save the Project in the
+Saving works as you would expect: :guilabel:`Save As...` will save the Project in a new location
+and :guilabel:`Save` will save the Project in the
 previous location.
 
 .. note:: When saving projects, Zrythm expects you to
@@ -66,4 +66,4 @@ if you want to load them instead.
 The auto-save interval can be changed (or disabled) in the preferences
 window.
 
-.. tip:: The backups are saved in the project's directory, under ``backups``
+.. tip:: The backups are saved in the project's directory, under :file:`backups`.

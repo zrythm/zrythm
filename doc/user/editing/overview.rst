@@ -9,7 +9,8 @@ Editing refers to any work done in the timeline arranger
 and the editors.
 
 While each editor has its own toolbar to assist with
-various operations, there is a global Edit section in the
+various operations, there is a global
+:guilabel:`Edit` section in the
 top toolbar that has common features shared by each
 editor.
 

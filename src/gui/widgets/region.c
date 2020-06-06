@@ -1014,7 +1014,6 @@ draw_audio_region (
       arranger_object_queue_redraw (obj);
       return;
     }
-  g_message ("drawing audio region ");
 
   double multiplier =
     (double) AUDIO_ENGINE->frames_per_tick /

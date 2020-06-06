@@ -9,10 +9,10 @@ Preferences
 
 Zrythm has a Preferences dialog containing all
 of the global settings that can be accessed by
-clicking the gear icon or by ``Ctrl+Shift+P``.
+clicking the gear icon or with :kbd:`Ctrl+Shift+P`.
 
-Each section in the preferences dialog is explained in the
-following sections.
+Each section in the preferences dialog is explained
+in the following sections.
 
 General
 -------

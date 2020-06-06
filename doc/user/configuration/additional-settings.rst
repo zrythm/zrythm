@@ -24,7 +24,7 @@ causes Zrythm to crash.
 Viewing the Current Settings
 ----------------------------
 
-The ``zrythm`` binary comes with a ``--print-settings`` option
+The :program:`zrythm` binary comes with a ``--print-settings`` option
 (see :ref:`command-line-options` for more details) that
 prints the whole configuration to the command line. In
 combination with the ``--pretty`` option (ie,
@@ -42,7 +42,7 @@ feel free to use it if you are curious.
 Reset to Factory Settings
 -------------------------
 
-The ``zrythm`` binary also comes with a
+The :program:`zrythm` binary also comes with a
 ``--reset-to-factory`` option for
 resetting Zrythm to its default state.
 

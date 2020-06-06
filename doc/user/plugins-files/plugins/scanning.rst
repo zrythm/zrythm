@@ -16,7 +16,7 @@ SFZ and SF2 instruments are also supported, and they are
 scanned as instrument plugins.
 
 .. tip:: Plugin scanning can be disabled by passing
-   NO_SCAN_PLUGINS=1 when running Zrythm.
+   ``NO_SCAN_PLUGINS=1`` when running Zrythm.
 
 LV2 Scan
 --------
@@ -24,7 +24,7 @@ LV2 Scan
 Zrythm will scan for LV2 plugins in the `standard paths
 specified
 here <https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. You can bypass this behavior by passing the
-``LV2_PATH`` environment variable to specify custom
+:envvar:`LV2_PATH` environment variable to specify custom
 paths. For example,
 ``LV2_PATH=$HOME/custom-lv2-dir zrythm``.
 
@@ -36,13 +36,13 @@ GNU/Linux and FreeBSD
 Zrythm will scan for VST2 and VST3 plugins in the
 following paths.
 
-- ``$HOME/.vst``
-- ``$HOME/vst``
-- ``/usr/local/lib/vst``
-- ``/usr/lib/vst``
+- :file:`{$HOME}/.vst`
+- :file:`{$HOME}/vst`
+- :file:`/usr/local/lib/vst`
+- :file:`/usr/lib/vst`
 
 You can bypass this behavior by passing the
-``VST_PATH`` environment variable to specify custom
+:envvar:`VST_PATH` environment variable to specify custom
 paths. For example, ``VST_PATH=$HOME/custom-vst-dir zrythm``.
 
 .. note:: ``lib`` will be replaced with ``lib64`` depending
@@ -58,8 +58,8 @@ MacOS
 Zrythm will scan for VST plugins in the paths
 specified in `VST plug-in locations on Mac OS X and macOS <https://helpcenter.steinberg.de/hc/en-us/articles/115000171310>`_.
 
-* ``/Library/Audio/Plug-Ins/VST`` for VST2
-* ``/Library/Audio/Plug-Ins/VST3`` for VST3
+* :file:`/Library/Audio/Plug-Ins/VST` for VST2
+* :file:`/Library/Audio/Plug-Ins/VST3` for VST3
 
 .. note:: Since scanning VST plugins takes a long time, Zrythm
   will remember scanned VST plugins and save this
