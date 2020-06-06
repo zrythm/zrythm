@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 18:06+0100\n"
-"PO-Revision-Date: 2020-05-26 22:41+0000\n"
+"PO-Revision-Date: 2020-06-05 11:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/gl/>\n"
@@ -242,7 +242,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
-msgstr ""
+msgstr "Propiedades do plugin"
 
 #: ../../zrythm-interface/left-panel.rst:34
 msgid ""

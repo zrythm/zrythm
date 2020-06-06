@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-06-03 21:08+0100\n"
-"PO-Revision-Date: 2020-05-26 22:41+0000\n"
+"PO-Revision-Date: 2020-06-05 11:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "gl/>\n"
@@ -161,9 +161,8 @@ msgid "Loading project"
 msgstr "Cargando o proxecto"
 
 #: src/zrythm.c:320
-#, fuzzy
 msgid "No project has been selected. Zrythm will now close."
-msgstr "O tempo de proba expirou. Agora Zrythm silenciarase"
+msgstr "Ningún proxecto seleccionado. Zrythm vaise pechar."
 
 #: src/zrythm.c:347
 msgid "Initializing main window"
@@ -216,29 +215,31 @@ msgid "(trial) "
 msgstr "(proba) "
 
 #: src/project.c:121
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open file: %s"
-msgstr "Erro ao ver o esquema %s"
+msgstr "Erro ao abrir o ficheiro: %s"
 
 #: src/project.c:165
 msgid "Project not compressed by zstd!"
-msgstr ""
+msgstr "O proxecto non está comprimido por zstd!"
 
 #: src/project.c:178
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to decompress project file: %s"
-msgstr "Erro ao reiniciar o esquema %s"
+msgstr "Erro ao descomprimir o ficheiro do proxecto %s"
 
 #: src/project.c:187
 msgid ""
 "uncompressed_size != frame_content_size impossible because zstd will check "
 "this condition!"
 msgstr ""
+"uncompressed_size != frame_content_size imposible porque zstd vai comprobar "
+"esta condición!"
 
 #: src/project.c:219
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write file: %s"
-msgstr "Erro ao ver o esquema %s"
+msgstr "Erro ao escribir o ficheiro: %s"
 
 #: src/project.c:557 src/gui/widgets/route_target_selector_popover.c:153
 #: src/audio/track.c:1351
@@ -261,9 +262,9 @@ msgid "Backup found"
 msgstr "Copia de seguridade atopada"
 
 #: src/project.c:705
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read file: %s"
-msgstr "Incapaz de cargar o cliente interno"
+msgstr "Incapaz de ler o ficheiro: %s"
 
 #: src/project.c:759
 #, c-format
@@ -281,11 +282,8 @@ msgstr ""
 "información."
 
 #: src/project.c:906
-#, fuzzy
 msgid "Failed to load project. Will create a new one instead."
-msgstr ""
-"Erro ao cargar o proxecto. Por favor, revise os rexistros para máis "
-"información."
+msgstr "Erro ao cargar o proxecto. Crearase un novo no canto."
 
 #: src/project.c:1216
 msgid "Backup saved."
@@ -313,7 +311,7 @@ msgstr ""
 "Zrythm bloqueouse. Por favor, axúdanos a arranxar isto %sreportando o erro%s."
 
 #: src/main.c:253
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
 "\n"
@@ -335,17 +333,21 @@ msgid ""
 "\n"
 "Report bugs to %s\n"
 msgstr ""
-"Uso: zrythm [ OPCIÓNS ] [ NOME-DO-PROXECTO ]\n"
+"Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
 "\n"
 "Opcións:\n"
-"  -h, --help      amosar esta mensaxe de axuda e saír\n"
-"  -p, --print-settings  imprimir configuración actual\n"
-"--pretty        amosar saída dun xeito amigable\n"
-"  --reset-to-factory  restaurar a configuración de fábrica\n"
-"  -v, --version   ofrecer información de versión e saír\n"
-"\n"
+"  -h, --help     amosar esta mensaxe de axuda e saír\n"
+"  --convert-yaml-to-zpj  converter un proxecto yaml ao formato .zpj\n"
+"  --convert-zpj-to-yaml converter un proxecto .zpj ao formato YAML\n"
+"  -o, --output    especificar un ficheiro de saída\n"
+"  -p, --print-settings imprimir a configuración actual\n"
+"  --pretty        imprimir a saída dun xeito amigable para o usuario\n"
+"  --reset-to-factory  reiniciar á configuración de fábrica\n"
+"  -v, --version  amosar información da versión e saír\n"
 "Exemplos:\n"
 "  zrythm -v       print version\n"
+"  zrythm --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  "
+"convert a compressed zpj project to YAML\n"
 "  zrythm -p --pretty  pretty-print current settings\n"
 "\n"
 "Reportar erros a %s\n"
@@ -353,12 +355,14 @@ msgstr ""
 #: src/main.c:284
 #, c-format
 msgid "File %s not found."
-msgstr ""
+msgstr "Non se atopou o ficheiro %s."
 
 #: src/main.c:305
 msgid ""
 "An output file was not specified. Please pass one with `--output [FILE]`."
 msgstr ""
+"Non se especificou ficheiro de saída. Por favor, indica un con `--output "
+"[FILE]`."
 
 #. getopt_long already printed an error
 #. * message
@@ -370,25 +374,25 @@ msgstr "Opción descoñecida\n"
 #: src/main.c:427
 #, c-format
 msgid "Project failed to compress: %s\n"
-msgstr ""
+msgstr "O proxecto fallou ao comprimir: %s\n"
 
 #: src/main.c:436
 #, c-format
 msgid "Project successfully compressed.\n"
-msgstr ""
+msgstr "Proxecto comprimido con éxito.\n"
 
 #: src/main.c:454
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr ""
+msgstr "O proxecto fallou ao descomprimir: %s\n"
 
 #: src/main.c:463
 #, c-format
 msgid "Project successfully decompressed.\n"
-msgstr ""
+msgstr "Proxecto descomprimido con éxito.\n"
 
 #: src/main.c:472
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Zrythm-%s Copyright (C) 2018-2020 The Zrythm contributors\n"
 "\n"
@@ -414,13 +418,12 @@ msgstr ""
 "\n"
 
 #: src/plugins/carla_native_plugin.c:417 src/plugins/lv2_plugin.c:2377
-#, fuzzy
 msgid "Default bank"
-msgstr "Valor por defecto"
+msgstr "Banco por defecto"
 
 #: src/plugins/carla_native_plugin.c:424 src/plugins/lv2_plugin.c:2384
 msgid "Init"
-msgstr ""
+msgstr "Init"
 
 #: src/plugins/carla_native_plugin.c:851
 msgid "Audio in"
@@ -492,7 +495,7 @@ msgstr "_Gardar"
 
 #: src/plugins/lv2_plugin.c:2416
 msgid "Unnamed bank"
-msgstr ""
+msgstr "Banco sen nome"
 
 #: src/plugins/lv2/lv2_gtk.c:248
 msgid "URI (Optional):"
@@ -945,11 +948,11 @@ msgstr "Cabeza de reprodución [Cliente JACK]"
 
 #: src/gui/widgets/bot_bar.c:155
 msgid "BBT display"
-msgstr ""
+msgstr "Exposición BBT"
 
 #: src/gui/widgets/bot_bar.c:175
 msgid "Time display"
-msgstr ""
+msgstr "Exposición do tempo"
 
 #: src/gui/widgets/bot_bar.c:205
 msgid "Become JACK Transport master"
@@ -1151,7 +1154,6 @@ msgid "Show file browser"
 msgstr "Amosar navegador de ficheiros"
 
 #: src/gui/widgets/plugin_properties_expander.c:122
-#, fuzzy
 msgid "Plugin Properties"
 msgstr "Propiedades do plugin"
 
@@ -1165,12 +1167,11 @@ msgstr "Tipo"
 
 #: src/gui/widgets/plugin_properties_expander.c:167
 msgid "Banks"
-msgstr ""
+msgstr "Bancos"
 
 #: src/gui/widgets/plugin_properties_expander.c:183
-#, fuzzy
 msgid "Presets"
-msgstr "Reiniciar"
+msgstr "Presets"
 
 #: src/gui/widgets/route_target_selector.c:54
 msgid "<tt><i>Engine</i></tt>"
@@ -1229,7 +1230,7 @@ msgstr "Selecciona un ficheiro"
 
 #: src/gui/widgets/preferences.c:766
 msgid "Some changes will only take effect after you restart Zrythm"
-msgstr ""
+msgstr "Algúns cambios só terán efecto despois de reiniciar Zrythm"
 
 #: src/gui/widgets/scripting_window.c:192
 msgid "Script execution successful"
@@ -1977,9 +1978,8 @@ msgid "Copy %d Plugins"
 msgstr "Copiar %d Plugins"
 
 #: src/actions/transport_action.c:121
-#, fuzzy
 msgid "Change BPM"
-msgstr "Cambiar Panorama"
+msgstr "Cambiar BPM"
 
 #: src/actions/move_plugins_action.c:234
 #, c-format
@@ -2073,7 +2073,6 @@ msgid "Language"
 msgstr "Idioma"
 
 #: resources/ui/first_run_assistant.ui:107
-#, fuzzy
 msgid ""
 "Next, choose the location to use for saving temporary files and projects (or "
 "accept the default)"
@@ -2642,7 +2641,7 @@ msgstr "O resultado aparecerá aquí"
 
 #: resources/ui/chord_key.ui:12
 msgid "Amin 7"
-msgstr ""
+msgstr "Amin 7"
 
 #: resources/ui/inspector_master.ui:43 resources/ui/inspector_ap.ui:43
 #: resources/ui/inspector_midi.ui:43
@@ -2786,7 +2785,7 @@ msgstr "MIDI en activo"
 
 #: resources/ui/transport_controls.ui:33
 msgid "Return to cue point on stop"
-msgstr ""
+msgstr "Volver ao marcador ao deterse"
 
 #: resources/ui/transport_controls.ui:66
 msgid "Play"
@@ -3376,37 +3375,34 @@ msgid "The monitor out volume in amplitude (0 to 2)."
 msgstr "O volume de saída do monitor en amplitude (0 a 2)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:298
-#, fuzzy
 msgid "Plugin favorites"
-msgstr "Propiedades do plugin"
+msgstr "Plugins favoritos"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:299
 msgid ""
 "A list of plugin favorites as strings separated by '::', where the first "
 "element is the name of the list."
 msgstr ""
+"Unha lista de plugins favoritos coo cadeas de texto, separadas por '::', na "
+"que o primeiro elemento é o nome da lista."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:303
-#, fuzzy
 msgid "Transport display type"
-msgstr "Tipo de arquivo non soportado %s"
+msgstr "Tipo de display de transporte %s"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:304
 msgid "Selected transport display type (BBT/time)."
-msgstr ""
+msgstr "O tipo de display de transporte seleccionado (BBT/time)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:308
-#, fuzzy
 msgid "Selected editing tool"
-msgstr "Seleccionar/Ferramenta de estirar"
+msgstr "Ferramenta de edición seleccionada"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:309
-#, fuzzy
 msgid "Selected editing tool."
-msgstr "Seleccionar/Ferramenta de estirar"
+msgstr "Ferramenta de edición seleccionada."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:318
-#, fuzzy
 msgid "Genre to use when exporting, if the file type supports it."
 msgstr "Xénero a empregar na exportación, se o tipo de ficheiro o permite."
 
@@ -3503,32 +3499,28 @@ msgid "Whether track comment is expanded."
 msgstr "Se expandir os comentarios da pista."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:395
-#, fuzzy
 msgid "Transport loop"
-msgstr "Cliente de JACK Transport"
+msgstr "Bucle de transporte"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:396
-#, fuzzy
 msgid "Whether looping is enabled."
-msgstr "O metrónomo está activado ou non."
+msgstr "Se o bucle está activado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:400
 msgid "Return to cue"
-msgstr ""
+msgstr "Volver ao marcador"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:401
-#, fuzzy
 msgid "Whether return to cue on stop is enabled."
-msgstr "O metrónomo está activado ou non."
+msgstr "Se está activado volver ao marcador ao se deter."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:405
 msgid "Metronome enabled"
 msgstr "Metrónomo activado"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:406
-#, fuzzy
 msgid "Whether the metronome is enabled."
-msgstr "O metrónomo está activado ou non."
+msgstr "Se o metrónomo está activado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:419
 msgid "Audio backend"
@@ -3619,13 +3611,15 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:492
 msgid "Bridge unsupported UIs"
-msgstr ""
+msgstr "Facer unha ponte ás UIs non soportadas"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:493
 msgid ""
 "Bridge unsupported UIs in another process instead of creating generic ones. "
 "This will lead to some performance loss."
 msgstr ""
+"Facer unha ponte ás UIs noutro proceso no canto de crear xenéricas. Isto "
+"levará a algunhas perdas no rendemento."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:498
 msgid "Refresh rate"

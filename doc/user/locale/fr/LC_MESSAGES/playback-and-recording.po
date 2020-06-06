@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-05-14 16:41+0000\n"
-"Last-Translator: JEHANNIN <sahaa.thyva@laposte.net>\n"
+"PO-Revision-Date: 2020-06-05 11:41+0000\n"
+"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/fr/>\n"
 "Language: fr\n"
@@ -262,9 +262,8 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/recording.rst:46
-#, fuzzy
 msgid "Touch"
-msgstr "Touché"
+msgstr "Toucher"
 
 #: ../../playback-and-recording/recording.rst:51
 msgid ""
