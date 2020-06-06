@@ -470,8 +470,7 @@ midi_track_fill_midi_events (
                   r_local_end_pos =
                     region_timeline_frames_to_local (
                       r,
-                      TRANSPORT->
-                        loop_end_pos.frames,
+                      TRANSPORT->loop_end_pos.frames,
                       1);
                 }
               /* second half (after loop start) */
@@ -542,8 +541,7 @@ midi_track_fill_midi_events (
                     local_start_frame + nframes);
                 }
 
-              if (r_local_end_pos <
-                    r_local_pos)
+              if (r_local_end_pos < r_local_pos)
                 {
                   /* diff_from_loop_start will be 0
                    * unless this is the 2nd part of
@@ -596,7 +594,9 @@ midi_track_fill_midi_events (
                     mn_obj->pos.frames >=
                       r_local_pos &&
                     mn_obj->pos.frames <
-                      r_local_pos + (long) nframes)
+                      r_local_pos + (long) nframes &&
+                    mn_obj->pos.frames <
+                      r_local_end_pos)
                     {
                       g_message (
                         "normal note on");
