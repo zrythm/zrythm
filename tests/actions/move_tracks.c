@@ -133,6 +133,31 @@ test_move_tracks ()
       &send->dest_l_id, &stereo_in->l->id) &&
     port_identifier_is_equal (
       &send->dest_r_id, &stereo_in->r->id));
+
+  /* unswap tracks */
+  undo_manager_undo (UNDO_MANAGER);
+
+  /* check that ids are updated */
+  ins_track = TRACKLIST->tracks[3];
+  fx_track = TRACKLIST->tracks[4];
+  g_assert_true (
+    ins_track->type == TRACK_TYPE_INSTRUMENT);
+  g_assert_true (
+    fx_track->type == TRACK_TYPE_AUDIO_BUS);
+  send = &ins_track->channel->sends[0];
+  stereo_in =
+    fx_track->processor.stereo_in;
+  g_assert_cmpint (
+    stereo_in->l->id.track_pos, ==, 4);
+  g_assert_cmpint (
+    stereo_in->r->id.track_pos, ==, 4);
+  g_assert_cmpint (send->track_pos, ==, 3);
+  g_assert_true (!send->is_empty);
+  g_assert_true (
+    port_identifier_is_equal (
+      &send->dest_l_id, &stereo_in->l->id) &&
+    port_identifier_is_equal (
+      &send->dest_r_id, &stereo_in->r->id));
 }
 
 int

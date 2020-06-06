@@ -204,6 +204,8 @@ track_lane_clone (
 
 /**
  * Unselects all arranger objects.
+ *
+ * TODO replace with "select_all" and boolean param.
  */
 void
 track_lane_unselect_all (

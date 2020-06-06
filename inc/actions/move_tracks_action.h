@@ -34,10 +34,10 @@ typedef struct TracklistSelections TracklistSelections;
 
 typedef struct MoveTracksAction
 {
-  UndoableAction  parent_instance;
+  UndoableAction        parent_instance;
 
   /** Position to move the tracks to. */
-  int             pos;
+  int                   pos;
 
   TracklistSelections * tls;
 } MoveTracksAction;
