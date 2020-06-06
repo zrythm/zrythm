@@ -10,11 +10,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-06-03 21:08+0100\n"
+"POT-Creation-Date: 2020-06-06 15:21+0100\n"
 "PO-Revision-Date: 2020-06-05 11:41+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
-"\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
+">\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -248,7 +248,7 @@ msgid "Failed to write file: %s"
 msgstr "Impossible de voir le schéma %s"
 
 #: src/project.c:557 src/gui/widgets/route_target_selector_popover.c:153
-#: src/audio/track.c:1351
+#: src/audio/track.c:1374
 msgid "Master"
 msgstr "Master"
 
@@ -287,18 +287,18 @@ msgstr ""
 "Impossible de charger le projet. Veuillez consulter les journaux pour plus "
 "d'informations."
 
-#: src/project.c:906
+#: src/project.c:910
 #, fuzzy
 msgid "Failed to load project. Will create a new one instead."
 msgstr ""
 "Impossible de charger le projet. Veuillez consulter les journaux pour plus "
 "d'informations."
 
-#: src/project.c:1216
+#: src/project.c:1220
 msgid "Backup saved."
 msgstr "Sauvegarde sauvegardée."
 
-#: src/project.c:1226
+#: src/project.c:1230
 msgid "Project saved."
 msgstr "Projet sauvegardé."
 
@@ -427,28 +427,28 @@ msgstr ""
 "Supporter ce projet à https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/plugins/carla_native_plugin.c:417 src/plugins/lv2_plugin.c:2377
+#: src/plugins/carla_native_plugin.c:427 src/plugins/lv2_plugin.c:2377
 #, fuzzy
 msgid "Default bank"
 msgstr "Valeur par défaut"
 
-#: src/plugins/carla_native_plugin.c:424 src/plugins/lv2_plugin.c:2384
+#: src/plugins/carla_native_plugin.c:434 src/plugins/lv2_plugin.c:2384
 msgid "Init"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:851
+#: src/plugins/carla_native_plugin.c:861
 msgid "Audio in"
 msgstr "Entrée Audio"
 
-#: src/plugins/carla_native_plugin.c:861
+#: src/plugins/carla_native_plugin.c:871
 msgid "Audio out"
 msgstr "Sortie Audio"
 
-#: src/plugins/carla_native_plugin.c:871
+#: src/plugins/carla_native_plugin.c:881
 msgid "MIDI in"
 msgstr "Entrée MIDI"
 
-#: src/plugins/carla_native_plugin.c:881
+#: src/plugins/carla_native_plugin.c:891
 msgid "MIDI out"
 msgstr "Sortie MIDI"
 
@@ -493,14 +493,14 @@ msgstr "Sauvegarder l'état"
 
 #: src/plugins/plugin_gtk.c:81 src/plugins/lv2/lv2_gtk.c:101
 #: src/plugins/lv2/lv2_gtk.c:349 src/utils/dialogs.c:41 src/utils/dialogs.c:71
-#: src/actions/actions.c:751 resources/ui/export_midi_file_dialog.ui:54
+#: src/actions/actions.c:753 resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "_Annuler"
 
 #: src/plugins/plugin_gtk.c:82 src/plugins/lv2/lv2_gtk.c:102
-#: src/actions/actions.c:753
+#: src/actions/actions.c:755
 msgid "_Save"
 msgstr "_Sauvegarder"
 
@@ -615,7 +615,7 @@ msgid "Direct Out"
 msgstr "Sortie directe"
 
 #: src/gui/widgets/track_properties_expander.c:134
-#: src/gui/widgets/route_target_selector_popover.c:175 src/audio/track.c:1336
+#: src/gui/widgets/route_target_selector_popover.c:175 src/audio/track.c:1359
 msgid "Instrument"
 msgstr "Instrument"
 
@@ -835,12 +835,12 @@ msgstr "Ajouter une piste _MIDI"
 msgid "Add Audio Track"
 msgstr "Ajouter une piste audio"
 
-#: src/gui/widgets/drag_dest_box.c:498 src/audio/track.c:1345
+#: src/gui/widgets/drag_dest_box.c:498 src/audio/track.c:1368
 #, fuzzy
 msgid "Audio FX"
 msgstr "Audio"
 
-#: src/gui/widgets/drag_dest_box.c:509 src/audio/track.c:1348
+#: src/gui/widgets/drag_dest_box.c:509 src/audio/track.c:1371
 #, fuzzy
 msgid "MIDI FX"
 msgstr "MIDI"
@@ -850,11 +850,11 @@ msgstr "MIDI"
 msgid "Add FX Track"
 msgstr "Ajouter une piste de bus d'effet"
 
-#: src/gui/widgets/drag_dest_box.c:532 src/audio/track.c:1357
+#: src/gui/widgets/drag_dest_box.c:532 src/audio/track.c:1380
 msgid "Audio Group"
 msgstr "Groupe audio"
 
-#: src/gui/widgets/drag_dest_box.c:543 src/audio/track.c:1360
+#: src/gui/widgets/drag_dest_box.c:543 src/audio/track.c:1383
 msgid "MIDI Group"
 msgstr "Groupe MIDI"
 
@@ -998,7 +998,7 @@ msgstr "client du transport JACK"
 msgid "JACK Timebase master"
 msgstr "maître JACK Timebase"
 
-#: src/gui/widgets/bot_bar.c:443 src/audio/region.c:389 src/audio/track.c:1339
+#: src/gui/widgets/bot_bar.c:443 src/audio/region.c:389 src/audio/track.c:1362
 #: build/data/org.zrythm.Zrythm.gschema.xml:536
 msgid "Audio"
 msgstr "Audio"
@@ -1068,12 +1068,12 @@ msgstr "Elliptique"
 msgid "Export as MIDI file"
 msgstr "Exporter dans un fichier MIDI"
 
-#: src/gui/widgets/timeline_arranger.c:1426 src/gui/widgets/track.c:1563
+#: src/gui/widgets/timeline_arranger.c:1428 src/gui/widgets/track.c:1563
 #, fuzzy
 msgid "Quick bounce"
 msgstr "Conversion audio rapide"
 
-#: src/gui/widgets/timeline_arranger.c:1437 src/gui/widgets/track.c:1575
+#: src/gui/widgets/timeline_arranger.c:1439 src/gui/widgets/track.c:1575
 #, fuzzy
 msgid "Bounce..."
 msgstr "Conversion audio..."
@@ -1301,7 +1301,7 @@ msgstr "Envois"
 msgid "Region"
 msgstr "Région"
 
-#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1363
+#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1386
 msgid "Marker"
 msgstr "Marqueur"
 
@@ -1315,7 +1315,7 @@ msgid "MIDI note"
 msgstr "Note MIDI"
 
 #: src/gui/widgets/event_viewer.c:117 src/gui/widgets/event_viewer.c:588
-#: src/audio/region.c:395 src/audio/track.c:1354
+#: src/audio/region.c:395 src/audio/track.c:1377
 #: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr "Accord"
@@ -1755,7 +1755,7 @@ msgstr "Marqueurs"
 msgid "PortAudio Error: %s"
 msgstr "Erreur de PortAudio: %s"
 
-#: src/audio/region.c:386 src/audio/track.c:1342
+#: src/audio/region.c:386 src/audio/track.c:1365
 msgid "MIDI"
 msgstr "MIDI"
 
@@ -1933,7 +1933,7 @@ msgstr ""
 "L'extensibilité des scripts avec <a href=\"%s\">GNU Guile</a> n'est pas "
 "activée dans votre installation Zrythm."
 
-#: src/actions/actions.c:609
+#: src/actions/actions.c:611
 msgid ""
 "Creating new projects is disabled. Please restart Zrythm to start a new "
 "project"
@@ -1941,50 +1941,50 @@ msgstr ""
 "La création de nouveaux projets est désactivée. Veuillez redémarrer Zrythm "
 "pour commencer un nouveau projet"
 
-#: src/actions/actions.c:620 resources/ui/project_assistant.ui:86
+#: src/actions/actions.c:622 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
 msgid "Create new project"
 msgstr "Créer un nouveau projet"
 
-#: src/actions/actions.c:623
+#: src/actions/actions.c:625
 msgid "Yes"
 msgstr "Oui"
 
-#: src/actions/actions.c:625
+#: src/actions/actions.c:627
 msgid "No"
 msgstr "Non"
 
-#: src/actions/actions.c:630
+#: src/actions/actions.c:632
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
 "Toute modification non sauvegardée du projet en cours sera perdue. "
 "Continuer ?"
 
-#: src/actions/actions.c:682
+#: src/actions/actions.c:684
 msgid "Loading is disabled in the trial version"
 msgstr "Le chargement est désactivé dans la version d'essai"
 
-#: src/actions/actions.c:710 src/actions/actions.c:736
+#: src/actions/actions.c:712 src/actions/actions.c:738
 msgid "Saving is disabled in the trial version"
 msgstr "La sauvegarde est désactivée dans la version d'essai"
 
-#: src/actions/actions.c:748
+#: src/actions/actions.c:750
 msgid "Save Project"
 msgstr "Sauvegarder le projet"
 
-#: src/actions/actions.c:832
+#: src/actions/actions.c:834
 msgid "Export routing graph"
 msgstr "Exporter le graphe du routage"
 
-#: src/actions/actions.c:834
+#: src/actions/actions.c:836
 msgid "Image (PNG)"
 msgstr "Image (PNG)"
 
-#: src/actions/actions.c:835
+#: src/actions/actions.c:837
 msgid "Dot graph"
 msgstr "Graphe en points"
 
-#: src/actions/actions.c:843
+#: src/actions/actions.c:845
 #, c-format
 msgid ""
 "The graph will be exported to %s\n"
@@ -1993,12 +1993,12 @@ msgstr ""
 "Le graphique sera exporté dans %s\n"
 "Sélectionner le format d'export"
 
-#: src/actions/actions.c:884
+#: src/actions/actions.c:886
 msgid "Graph exported"
 msgstr "Graphe exporté"
 
-#: src/actions/actions.c:1071 src/actions/actions.c:1111
-#: src/actions/actions.c:1150 src/actions/actions.c:1190
+#: src/actions/actions.c:1073 src/actions/actions.c:1113
+#: src/actions/actions.c:1152 src/actions/actions.c:1192
 msgid "Can't paste selections"
 msgstr "Collage des sélections impossible"
 
@@ -2050,11 +2050,11 @@ msgstr "Changer le Fader"
 msgid "Change Pan"
 msgstr "Changer la panoramique"
 
-#: src/actions/move_tracks_action.c:128
+#: src/actions/move_tracks_action.c:133
 msgid "Move Track"
 msgstr "Déplacer la piste"
 
-#: src/actions/move_tracks_action.c:131
+#: src/actions/move_tracks_action.c:136
 #, c-format
 msgid "Move %d Tracks"
 msgstr "Déplacer %d Pistes"
