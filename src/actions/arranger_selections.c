@@ -371,7 +371,7 @@ arranger_selections_action_new_edit (
     {
       self->first_run = 0;
       /* set as sel_after to avoid segfault, it
-       * will  be ignored anyway */
+       * will be ignored anyway */
       set_selections (
         self, sel_before, true, true);
     }

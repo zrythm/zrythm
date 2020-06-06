@@ -196,8 +196,31 @@ on_curve_algorithm_selected (
   GtkMenuItem *        menu_item,
   CurveAlgorithmInfo * info)
 {
+  g_return_if_fail (
+    AUTOMATION_SELECTIONS->num_automation_points ==
+      1 &&
+    AUTOMATION_SELECTIONS->automation_points[0] ==
+      info->ap);
+
+  /* clone the selections before the change */
+  ArrangerSelections * sel_before =
+    arranger_selections_clone (
+      (ArrangerSelections *) AUTOMATION_SELECTIONS);
+
+  /* change */
   info->ap->curve_opts.algo = info->algo;
+
+  /* create undoable action */
+  UndoableAction * ua =
+    arranger_selections_action_new_edit (
+      sel_before,
+      (ArrangerSelections *) AUTOMATION_SELECTIONS,
+      ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
+      true);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
   free (info);
+  arranger_selections_free_full (sel_before);
 }
 
 /**
