@@ -1,6 +1,48 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.535] - 2020-06-06
+### Added
+- Add image-missing fallback if icon is not found
+- Add build flag for extra optimizations
+- Show red reading in meters if peak above 0db, grey otherwise
+- Show native CPU usage meter on MacOS
+- Show build type in `--version`
+- Add VCS tag fallback version if git is not found
+- Make BPM changes undoable
+- Make changing the automation curve algorithm undoable
+- Show chord notes in chord editor lanes
+- Show color gradient in meters
+### Changed
+- Fallback to older compression API if zstd version is lower than 1.3
+- Don't attempt to build manpage on windows
+- Update French, Portuguese, Galician translations
+- Log to stderr until log file is initialized
+- Ask for LV2 plugin latency by passing block length instead of 2 samples
+- Underscorify and simplify build flags
+- Don't allow multiple preferences windows
+- Use LINGUAS file to determine available locales for meson
+- Open KX external UIs with carla
+- Make markers, chords and scales rounded rectangles
+- Use peak meter in mixer channels and RMS meter for master with falloffs (algorithms from x42 meters)
+- Chord editor now has 12 fixed chord slots
+- Accents in the chord creator are now toggled on single click
+- Only resize audio regions when BPM change is completed (in musical mode)
+- Use MPMC queue instead of a stack for queueing up objects to be deleted with `free_later()`
+### Deprecated
+- Deprecate libgtop support
+### Fixed
+- Fix zstd library discovery
+- Fix setting integers on gsettings keys expecting booleans
+- Fix CPU meter on windows
+- Fix various crashes with chord editor
+- Fix freezes when using RtMidi on Windows
+- Fix various MacOS issues
+- Fix scales not saved properly
+- Fix moving tracks clearing regions of tracks being moved
+- Fix undo/redo when moving tracks
+- Fix MIDI note on incorrectly being fired at transport loop point
+
 ## [0.8.459] - 2020-05-15
 ### Added
 - Add real time display to playhead meter
