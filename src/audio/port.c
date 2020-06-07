@@ -281,9 +281,6 @@ port_find_from_identifier (
                 return ch->stereo_out->r;
             }
           break;
-        case TYPE_CONTROL:
-          if (id->flags & PORT_FLAG_CHANNEL_MUTE)
-            return tr->mute;
         default:
           break;
         }
@@ -339,6 +336,11 @@ port_find_from_identifier (
                          PORT_FLAG_STEREO_BALANCE)
                 {
                   return ch->fader.balance;
+                }
+              else if (id->flags &
+                         PORT_FLAG_CHANNEL_MUTE)
+                {
+                  return ch->fader.mute;
                 }
             }
           break;

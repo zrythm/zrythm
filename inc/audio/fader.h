@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -89,6 +89,15 @@ typedef struct Fader
   Port *           balance;
 
   /**
+   * Control port for muting the (channel)
+   * fader.
+   */
+  Port *              mute;
+
+  /** Soloed or not. */
+  int                 solo;
+
+  /**
    * L & R audio input ports, if audio.
    */
   StereoPorts *    stereo_in;
@@ -135,24 +144,25 @@ fader_type_strings[] =
 static const cyaml_schema_field_t
 fader_fields_schema[] =
 {
-  CYAML_FIELD_ENUM (
-    "type", CYAML_FLAG_DEFAULT,
-    Fader, type, fader_type_strings,
-    CYAML_ARRAY_LEN (fader_type_strings)),
-  CYAML_FIELD_FLOAT (
-    "volume", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_ENUM (
+    Fader, type, fader_type_strings),
+  YAML_FIELD_FLOAT (
     Fader, volume),
   CYAML_FIELD_MAPPING_PTR (
     "amp",
     CYAML_FLAG_POINTER,
     Fader, amp, port_fields_schema),
-  CYAML_FIELD_FLOAT (
-    "phase", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     Fader, phase),
   CYAML_FIELD_MAPPING_PTR (
     "balance",
     CYAML_FLAG_POINTER,
     Fader, balance, port_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "mute", CYAML_FLAG_POINTER,
+    Fader, mute, port_fields_schema),
+  YAML_FIELD_INT (
+    Fader, solo),
   CYAML_FIELD_MAPPING_PTR (
     "midi_in",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
@@ -173,8 +183,7 @@ fader_fields_schema[] =
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Fader, stereo_out,
     stereo_ports_fields_schema),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Fader, track_pos),
 
   CYAML_FIELD_END
@@ -224,6 +233,42 @@ void
 fader_add_amp (
   void * self,
   float   amp);
+
+/**
+ * Sets track muted and optionally adds the action
+ * to the undo stack.
+ */
+void
+fader_set_muted (
+  Fader * self,
+  bool    mute,
+  bool    trigger_undo,
+  bool    fire_events);
+
+/**
+ * Returns if the fader is muted.
+ */
+bool
+fader_get_muted (
+  Fader * self);
+
+/**
+ * Returns if the track is soloed.
+ */
+bool
+fader_get_soloed (
+  Fader * self);
+
+/**
+ * Sets track soloed and optionally adds the action
+ * to the undo stack.
+ */
+void
+fader_set_soloed (
+  Fader * self,
+  bool    solo,
+  bool    trigger_undo,
+  bool    fire_events);
 
 /**
  * Gets the fader amplitude (not db)

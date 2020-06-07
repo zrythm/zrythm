@@ -735,7 +735,7 @@ tracklist_has_soloed (
     {
       track = self->tracks[i];
 
-      if (track->solo && track->channel)
+      if (track->channel && track_get_soloed (track))
         return 1;
     }
   return 0;

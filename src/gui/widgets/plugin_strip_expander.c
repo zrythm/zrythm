@@ -187,8 +187,7 @@ plugin_strip_expander_widget_setup (
       z_gtk_container_destroy_all_children (
         GTK_CONTAINER (self->box));
 
-      Channel * ch =
-        track_get_channel (track);
+      Channel * ch = track_get_channel (track);
       g_return_if_fail (ch);
       for (int i = 0; i < STRIP_SIZE; i++)
         {

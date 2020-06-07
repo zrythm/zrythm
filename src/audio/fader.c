@@ -19,6 +19,7 @@
 
 #include "audio/balance_control.h"
 #include "audio/channel.h"
+#include "audio/control_port.h"
 #include "audio/control_room.h"
 #include "audio/engine.h"
 #include "audio/fader.h"
@@ -69,6 +70,7 @@ fader_init_loaded (
 
   port_set_owner_fader (self->amp, self);
   port_set_owner_fader (self->balance, self);
+  port_set_owner_fader (self->mute, self);
 
   fader_set_amp ((void *) self, self->amp->control);
 }
@@ -134,6 +136,20 @@ fader_init (
   self->balance->id.flags |=
     PORT_FLAG_AUTOMATABLE;
 
+  /* set mute */
+  self->mute =
+    port_new_with_type (
+      TYPE_CONTROL, FLOW_INPUT, _("Mute"));
+  port_set_control_value (
+    self->mute, 0.f, 0, 0);
+  self->mute->id.flags |=
+    PORT_FLAG_CHANNEL_MUTE;
+  self->mute->id.flags |=
+    PORT_FLAG_TOGGLE;
+  self->mute->id.flags |=
+    PORT_FLAG_AUTOMATABLE;
+  port_set_owner_fader (self->mute, self);
+
   if (type == FADER_TYPE_AUDIO_CHANNEL ||
       type == FADER_TYPE_MONITOR)
     {
@@ -188,6 +204,104 @@ fader_init (
         self->midi_in, self);
       port_set_owner_fader (
         self->midi_out, self);
+    }
+}
+
+/**
+ * Sets track muted and optionally adds the action
+ * to the undo stack.
+ */
+void
+fader_set_muted (
+  Fader * self,
+  bool    mute,
+  bool    trigger_undo,
+  bool    fire_events)
+{
+  Track * track = fader_get_track (self);
+  g_return_if_fail (track);
+
+  if (trigger_undo)
+    {
+      TracklistSelections tls;
+      tls.tracks[0] = track;
+      tls.num_tracks = 1;
+      UndoableAction * action =
+        edit_tracks_action_new (
+          EDIT_TRACK_ACTION_TYPE_MUTE, track, &tls,
+          0.f, 0.f, 0, mute);
+      undo_manager_perform (
+        UNDO_MANAGER, action);
+    }
+  else
+    {
+      port_set_control_value (
+        self->mute, mute ? 1.f : 0.f,
+        false, fire_events);
+
+      if (fire_events)
+        {
+          EVENTS_PUSH (
+            ET_TRACK_STATE_CHANGED, track);
+        }
+    }
+}
+
+/**
+ * Returns if the fader is muted.
+ */
+bool
+fader_get_muted (
+  Fader * self)
+{
+  return control_port_is_toggled (self->mute);
+}
+
+/**
+ * Returns if the track is soloed.
+ */
+bool
+fader_get_soloed (
+  Fader * self)
+{
+  return self->solo;
+}
+
+/**
+ * Sets track soloed and optionally adds the action
+ * to the undo stack.
+ */
+void
+fader_set_soloed (
+  Fader * self,
+  bool    solo,
+  bool    trigger_undo,
+  bool    fire_events)
+{
+  Track * track = fader_get_track (self);
+  g_return_if_fail (track);
+
+  if (trigger_undo)
+    {
+      TracklistSelections tls;
+      tls.tracks[0] = track;
+      tls.num_tracks = 1;
+      UndoableAction * action =
+        edit_tracks_action_new (
+          EDIT_TRACK_ACTION_TYPE_SOLO, track, &tls,
+          0.f, 0.f, solo, 0);
+      undo_manager_perform (
+        UNDO_MANAGER, action);
+    }
+  else
+    {
+      self->solo = solo;
+
+      if (fire_events)
+        {
+          EVENTS_PUSH (
+            ET_TRACK_STATE_CHANGED, track);
+        }
     }
 }
 
@@ -368,6 +482,8 @@ fader_copy_values (
   dest->fader_val = src->fader_val;
   dest->amp->control = src->amp->control;
   dest->balance->control = src->balance->control;
+  dest->mute->control = src->mute->control;
+  dest->solo = src->solo;
 }
 
 /**
@@ -387,6 +503,10 @@ fader_update_track_pos (
   if (self->balance)
     {
       port_update_track_pos (self->balance, pos);
+    }
+  if (self->mute)
+    {
+      port_update_track_pos (self->mute, pos);
     }
   if (self->stereo_in)
     {

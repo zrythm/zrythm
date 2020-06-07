@@ -463,7 +463,7 @@ draw_buttons (
       else if (string_is_equal (
                 cb->icon_name,
                 ICON_NAME_SOLO, 1) &&
-               self->track->solo)
+               track_get_soloed (self->track))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
@@ -1859,7 +1859,8 @@ multipress_released (
             {
               track_set_soloed (
                 self->track,
-                !track_get_soloed (self->track), 1);
+                !track_get_soloed (self->track),
+                true, true);
             }
           else if (string_is_equal (
                 cb->icon_name, ICON_NAME_MUTE, 1))
@@ -1867,7 +1868,7 @@ multipress_released (
               track_set_muted (
                 self->track,
                 !track_get_muted (self->track),
-                1, 1);
+                true, true);
             }
           else if (string_is_equal (
                 cb->icon_name,

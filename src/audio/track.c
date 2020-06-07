@@ -154,21 +154,6 @@ track_init (
   self->magic = TRACK_MAGIC;
   self->comment = g_strdup ("");
   track_add_lane (self, 0);
-
-  /* set mute control */
-  self->mute =
-    port_new_with_type (
-      TYPE_CONTROL, FLOW_INPUT, _("Mute"));
-  port_set_control_value (
-    self->mute, 0.f, 0, 0);
-  self->mute->id.flags |=
-    PORT_FLAG_CHANNEL_MUTE;
-  self->mute->id.flags |=
-    PORT_FLAG_TOGGLE;
-  self->mute->id.flags |=
-    PORT_FLAG_AUTOMATABLE;
-  port_set_owner_track (
-    self->mute, self);
 }
 
 /**
@@ -305,8 +290,6 @@ track_clone (Track * track)
   COPY_MEMBER (automation_visible);
   COPY_MEMBER (visible);
   COPY_MEMBER (main_height);
-  COPY_MEMBER (mute);
-  COPY_MEMBER (solo);
   COPY_MEMBER (recording);
   COPY_MEMBER (pinned);
   COPY_MEMBER (active);
@@ -390,21 +373,25 @@ track_select (
 /**
  * Returns if the track is soloed.
  */
-int
+bool
 track_get_soloed (
   Track * self)
 {
-  return self->solo;
+  g_return_val_if_fail (
+    self && self->channel, false);
+  return fader_get_soloed (&self->channel->fader);
 }
 
 /**
  * Returns if the track is muted.
  */
-int
+bool
 track_get_muted (
   Track * self)
 {
-  return control_port_is_toggled (self->mute);
+  g_return_val_if_fail (
+    self && self->channel, false);
+  return fader_get_muted (&self->channel->fader);
 }
 
 TrackType
@@ -427,8 +414,8 @@ track_get_type_from_plugin_descriptor (
 void
 track_set_recording (
   Track *   track,
-  int       recording,
-  int       fire_events)
+  bool      recording,
+  bool      fire_events)
 {
   Channel * channel =
     track_get_channel (track);
@@ -483,37 +470,15 @@ track_set_recording (
  */
 void
 track_set_muted (
-  Track * track,
-  int     mute,
-  int     trigger_undo,
-  int     fire_events)
+  Track * self,
+  bool    mute,
+  bool    trigger_undo,
+  bool    fire_events)
 {
-  if (trigger_undo)
-    {
-      TracklistSelections tls;
-      tls.tracks[0] = track;
-      tls.num_tracks = 1;
-      UndoableAction * action =
-        edit_tracks_action_new (
-          EDIT_TRACK_ACTION_TYPE_MUTE,
-          track,
-          &tls,
-          0.f, 0.f, 0, mute);
-      undo_manager_perform (UNDO_MANAGER,
-                            action);
-    }
-  else
-    {
-      port_set_control_value (
-        track->mute, mute ? 1.f : 0.f,
-        false, fire_events);
-
-      if (fire_events)
-        {
-          EVENTS_PUSH (
-            ET_TRACK_STATE_CHANGED, track);
-        }
-    }
+  g_return_if_fail (self && self->channel);
+  fader_set_muted (
+    &self->channel->fader, mute, trigger_undo,
+    fire_events);
 }
 
 /**
@@ -693,29 +658,15 @@ track_get_full_visible_height (
  */
 void
 track_set_soloed (
-  Track * track,
-  int     solo,
-  int     trigger_undo)
+  Track * self,
+  bool    solo,
+  bool    trigger_undo,
+  bool    fire_events)
 {
-  TracklistSelections tls;
-  tls.tracks[0] = track;
-  tls.num_tracks = 1;
-  UndoableAction * action =
-    edit_tracks_action_new (
-      EDIT_TRACK_ACTION_TYPE_SOLO,
-      track,
-      &tls,
-      0.f, 0.f, solo, 0);
-  if (trigger_undo)
-    {
-      undo_manager_perform (UNDO_MANAGER,
-                            action);
-    }
-  else
-    {
-      edit_tracks_action_do (
-        (EditTracksAction *) action);
-    }
+  g_return_if_fail (self && self->channel);
+  fader_set_soloed (
+    &self->channel->fader, solo, trigger_undo,
+    fire_events);
 }
 
 /**
@@ -849,7 +800,9 @@ track_generate_automation_tracks (
       automation_tracklist_add_at (atl, at);
 
       /* mute */
-      at = automation_track_new (track->mute);
+      at =
+        automation_track_new (
+          track->channel->fader.mute);
       automation_tracklist_add_at (atl, at);
     }
 
@@ -1073,7 +1026,6 @@ track_set_pos (
   automation_tracklist_update_track_pos (
     &track->automation_tracklist, track);
 
-  track->mute->id.track_pos = pos;
   track_processor_set_track_pos (
     &track->processor, pos);
   track->processor.track = track;
@@ -1248,9 +1200,9 @@ track_get_automation_tracklist (Track * track)
 {
   switch (track->type)
     {
-    case TRACK_TYPE_CHORD:
     case TRACK_TYPE_MARKER:
       break;
+    case TRACK_TYPE_CHORD:
     case TRACK_TYPE_AUDIO_BUS:
     case TRACK_TYPE_AUDIO_GROUP:
     case TRACK_TYPE_MIDI_BUS:
@@ -1290,6 +1242,7 @@ track_get_channel (Track * track)
     case TRACK_TYPE_MIDI_BUS:
     case TRACK_TYPE_MIDI_GROUP:
     case TRACK_TYPE_MIDI:
+    case TRACK_TYPE_CHORD:
       return track->channel;
     default:
       return NULL;

@@ -506,7 +506,7 @@ on_solo_toggled (
     channel_get_track (self->channel);
   track_set_soloed (
     track,
-    gtk_toggle_button_get_active (btn), 1);
+    gtk_toggle_button_get_active (btn), true, true);
 }
 
 static void
@@ -518,7 +518,7 @@ on_mute_toggled (GtkToggleButton * btn,
   track_set_muted (
     track,
     gtk_toggle_button_get_active (btn),
-    1, 1);
+    true, true);
 }
 
 /*static void*/
@@ -689,7 +689,7 @@ channel_widget_refresh_buttons (
   gtk_toggle_button_set_active (
     self->record, track->recording);
   gtk_toggle_button_set_active (
-    self->solo, track->solo);
+    self->solo, track_get_soloed (track));
   gtk_toggle_button_set_active (
     self->mute, track_get_muted (track));
   channel_widget_unblock_all_signal_handlers (

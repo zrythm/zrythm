@@ -217,20 +217,6 @@ typedef struct Track
   /** Height of the main part (without lanes). */
   int                 main_height;
 
-  /**
-   * FIXME move mute and solo to fader.
-   *
-   * Control port for muting the (channel)
-   * fader.
-   *
-   * It is here instead of in Fader because some
-   * tracks don't have channels.
-   */
-  Port *              mute;
-
-  /** Soloed or not. */
-  int                 solo;
-
   /** Recording or not. */
   int                 recording;
 
@@ -375,35 +361,21 @@ track_fields_schema[] =
      0, CYAML_UNLIMITED),
   YAML_FIELD_ENUM (
     Track, type, track_type_strings),
-  CYAML_FIELD_INT (
-    "pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Track, pos),
-  CYAML_FIELD_INT (
-    "pos_before_pinned", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Track, pos_before_pinned),
-  CYAML_FIELD_INT (
-    "lanes_visible", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Track, lanes_visible),
-  CYAML_FIELD_INT (
-    "automation_visible", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Track, automation_visible),
-  CYAML_FIELD_INT (
-    "visible", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Track, visible),
-  CYAML_FIELD_INT (
-    "main_height", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Track, main_height),
-  CYAML_FIELD_INT (
-    "passthrough_midi_input", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Track, passthrough_midi_input),
-  CYAML_FIELD_MAPPING_PTR (
-    "mute", CYAML_FLAG_POINTER,
-    Track, mute, port_fields_schema),
-  CYAML_FIELD_INT (
-    "solo", CYAML_FLAG_DEFAULT,
-    Track, solo),
-  CYAML_FIELD_INT (
-    "recording", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Track, recording),
   CYAML_FIELD_INT (
     "pinned", CYAML_FLAG_DEFAULT,
@@ -443,14 +415,10 @@ track_fields_schema[] =
     "automation_tracklist", CYAML_FLAG_DEFAULT,
     Track, automation_tracklist,
     automation_tracklist_fields_schema),
-  CYAML_FIELD_ENUM (
-    "in_signal_type", CYAML_FLAG_DEFAULT,
-    Track, in_signal_type, port_type_strings,
-    CYAML_ARRAY_LEN (port_type_strings)),
-  CYAML_FIELD_ENUM (
-    "out_signal_type", CYAML_FLAG_DEFAULT,
-    Track, out_signal_type, port_type_strings,
-    CYAML_ARRAY_LEN (port_type_strings)),
+  YAML_FIELD_ENUM (
+    Track, in_signal_type, port_type_strings),
+  YAML_FIELD_ENUM (
+    Track, out_signal_type, port_type_strings),
   CYAML_FIELD_UINT (
     "midi_ch", CYAML_FLAG_DEFAULT,
     Track, midi_ch),
@@ -515,8 +483,7 @@ static inline bool
 track_type_has_channel (
   TrackType type)
 {
-  if (type == TRACK_TYPE_CHORD ||
-      type == TRACK_TYPE_MARKER)
+  if (type == TRACK_TYPE_MARKER)
     return 0;
 
   return 1;
@@ -529,9 +496,9 @@ track_type_has_channel (
 void
 track_set_muted (
   Track * track,
-  int     mute,
-  int     trigger_undo,
-  int     fire_events);
+  bool    mute,
+  bool    trigger_undo,
+  bool    fire_events);
 
 TrackType
 track_get_type_from_plugin_descriptor (
@@ -549,14 +516,14 @@ track_get_full_visible_height (
 /**
  * Returns if the track is soloed.
  */
-int
+bool
 track_get_soloed (
   Track * self);
 
 /**
  * Returns if the track is muted.
  */
-int
+bool
 track_get_muted (
   Track * self);
 
@@ -567,17 +534,19 @@ track_get_muted (
 void
 track_set_recording (
   Track *   track,
-  int       recording,
-  int       fire_events);
+  bool      recording,
+  bool      fire_events);
 
 /**
  * Sets track soloed and optionally adds the action
  * to the undo stack.
  */
 void
-track_set_soloed (Track * track,
-                  int     solo,
-                  int     trigger_undo);
+track_set_soloed (
+  Track * track,
+  bool    solo,
+  bool    trigger_undo,
+  bool    fire_events);
 
 /**
  * Returns if Track is in TracklistSelections.

@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - Make changing the automation curve algorithm undoable
 - Show chord notes in chord editor lanes
 - Show color gradient in meters
+
 ### Changed
 - Fallback to older compression API if zstd version is lower than 1.3
 - Don't attempt to build manpage on windows
@@ -29,8 +30,10 @@ All notable changes to this project will be documented in this file.
 - Accents in the chord creator are now toggled on single click
 - Only resize audio regions when BPM change is completed (in musical mode)
 - Use MPMC queue instead of a stack for queueing up objects to be deleted with `free_later()`
+
 ### Deprecated
 - Deprecate libgtop support
+
 ### Fixed
 - Fix zstd library discovery
 - Fix setting integers on gsettings keys expecting booleans

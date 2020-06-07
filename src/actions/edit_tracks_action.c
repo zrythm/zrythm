@@ -77,12 +77,14 @@ edit_tracks_action_do (EditTracksAction * self)
       switch (self->type)
         {
         case EDIT_TRACK_ACTION_TYPE_SOLO:
-          track->solo = self->solo_new;
+          track_set_soloed (
+            track, self->solo_new, false,
+            F_NO_PUBLISH_EVENTS);
           break;
         case EDIT_TRACK_ACTION_TYPE_MUTE:
           track_set_muted (
             track, self->mute_new,
-            0, F_NO_PUBLISH_EVENTS);
+            false, F_NO_PUBLISH_EVENTS);
           break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
           g_return_val_if_fail (ch, -1);
@@ -124,12 +126,14 @@ edit_tracks_action_undo (
       switch (self->type)
         {
         case EDIT_TRACK_ACTION_TYPE_SOLO:
-          track->solo = !self->solo_new;
+          track_set_soloed (
+            track, !self->solo_new, false,
+            F_NO_PUBLISH_EVENTS);
           break;
         case EDIT_TRACK_ACTION_TYPE_MUTE:
           track_set_muted (
             track, !self->mute_new,
-            0, F_NO_PUBLISH_EVENTS);
+            false, F_NO_PUBLISH_EVENTS);
           break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
           g_return_val_if_fail (ch, -1);

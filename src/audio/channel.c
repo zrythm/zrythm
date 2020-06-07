@@ -1140,13 +1140,16 @@ channel_append_all_ports (
       g_warn_if_fail (tr->processor.midi_out);
       _ADD (tr->processor.midi_in);
       _ADD (tr->processor.midi_out);
-      for (int i = 0;
-           i < NUM_MIDI_AUTOMATABLES * 16; i++)
+      if (track_has_piano_roll (tr))
         {
-          g_warn_if_fail (
-            tr->processor.midi_automatables[i]);
-          _ADD (
-            tr->processor.midi_automatables[i]);
+          for (int i = 0;
+               i < NUM_MIDI_AUTOMATABLES * 16; i++)
+            {
+              g_warn_if_fail (
+                tr->processor.midi_automatables[i]);
+              _ADD (
+                tr->processor.midi_automatables[i]);
+            }
         }
     }
 
@@ -1185,7 +1188,7 @@ channel_append_all_ports (
     ch->fader.amp && ch->fader.balance);
   _ADD (ch->fader.amp);
   _ADD (ch->fader.balance);
-  _ADD (ch->track->mute);
+  _ADD (ch->fader.mute);
 
   Plugin * pl;
   if (include_plugins)

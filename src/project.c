@@ -241,9 +241,12 @@ project_tear_down (Project * self)
 
   engine_tear_down (&self->audio_engine);
 
-  if (self->tracklist.chord_track)
+  Track * chord_track = self->tracklist.chord_track;
+  if (chord_track)
     {
-      track_free (self->tracklist.chord_track);
+      channel_disconnect (
+        chord_track->channel, true, false);
+      track_free (chord_track);
     }
 
   free (self);

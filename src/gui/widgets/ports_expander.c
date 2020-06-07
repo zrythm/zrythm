@@ -436,7 +436,7 @@ ports_expander_widget_setup_track (
         case PE_TRACK_PORT_TYPE_CONTROLS:
           ADD_SINGLE (tr->channel->fader.amp);
           ADD_SINGLE (tr->channel->fader.balance);
-          ADD_SINGLE (tr->mute);
+          ADD_SINGLE (tr->channel->fader.mute);
           break;
         case PE_TRACK_PORT_TYPE_SENDS:
           if (out_type == TYPE_AUDIO)

@@ -128,7 +128,8 @@ on_solo_toggled (
     {
       track_set_soloed (
         self->track,
-        gtk_toggle_button_get_active (btn), 1);
+        gtk_toggle_button_get_active (btn),
+        true, true);
     }
 }
 
@@ -142,7 +143,7 @@ on_mute_toggled (
       track_set_muted (
         self->track,
         gtk_toggle_button_get_active (btn),
-        1, 1);
+        true, true);
     }
 }
 
@@ -285,7 +286,7 @@ fader_controls_grid_widget_setup (
             GTK_WIDGET (self->record), false);
         }
       gtk_toggle_button_set_active (
-        self->solo, track->solo);
+        self->solo, track_get_soloed (track));
       fader_controls_grid_widget_unblock_signal_handlers (
         self);
     }

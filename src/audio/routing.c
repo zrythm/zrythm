@@ -398,7 +398,7 @@ node_process (
           if (track_get_muted (track) ||
               (tracklist_has_soloed (
                 TRACKLIST) &&
-                 !track->solo &&
+                 !track_get_soloed (track) &&
                  track != P_MASTER_TRACK) ||
               (AUDIO_ENGINE->bounce_mode ==
                  BOUNCE_ON &&
@@ -1853,6 +1853,10 @@ graph_setup (
         graph_find_node_from_port (self, port);
       node_connect (node2, node);
       port = fader->balance;
+      node2 =
+        graph_find_node_from_port (self, port);
+      node_connect (node2, node);
+      port = fader->mute;
       node2 =
         graph_find_node_from_port (self, port);
       node_connect (node2, node);
