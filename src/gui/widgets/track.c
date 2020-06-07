@@ -81,8 +81,8 @@ G_DEFINE_TYPE (
 #define ICON_NAME_CHORDS "minuet-chords"
 #define ICON_NAME_SHOW_MARKERS \
   "kdenlive-show-markers"
-#define ICON_NAME_MIDI \
-  "audio-midi"
+#define ICON_NAME_MIDI "audio-midi"
+#define ICON_NAME_TEMPO "filename-bpm-amarok"
 
 #ifdef _WOE32
 #define NAME_FONT "9"
@@ -2551,6 +2551,9 @@ track_widget_new (Track * track)
     case TRACK_TYPE_MARKER:
       strcpy (
         self->icon_name, ICON_NAME_SHOW_MARKERS);
+      break;
+    case TRACK_TYPE_TEMPO:
+      strcpy (self->icon_name, ICON_NAME_TEMPO);
       break;
     case TRACK_TYPE_AUDIO_BUS:
       strcpy (self->icon_name, ICON_NAME_BUS);

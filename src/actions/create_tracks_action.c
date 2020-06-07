@@ -51,12 +51,11 @@ create (
 
   if (self->is_empty)
     {
-      char * tmp =
+      const char * track_type_str =
         track_stringize_type (self->type);
-      char * label;
-      label =
-        g_strdup_printf (_("%s Track"), tmp);
-      g_free (tmp);
+      char label[600];
+      sprintf (
+        label, _("%s Track"), track_type_str);
 
       track =
         track_new (
@@ -322,9 +321,8 @@ char *
 create_tracks_action_stringize (
   CreateTracksAction * self)
 {
-  char * type =
-    track_stringize_type (
-      self->type);
+  const char * type =
+    track_stringize_type (self->type);
   char * ret;
   if (self->num_tracks == 1)
     ret = g_strdup_printf (
@@ -333,8 +331,6 @@ create_tracks_action_stringize (
     ret = g_strdup_printf (
       _("Create %d %s Tracks"),
       self->num_tracks, type);
-
-  g_free (type);
 
   return ret;
 }

@@ -133,6 +133,21 @@
     &schema, 0, CYAML_UNLIMITED)
 
 /**
+ * Dynamic-width (reallocated) array of pointers
+ * with variable count, nullable.
+ *
+ * @code@
+ * AutomationTrack ** ats;
+ * int                num_ats;
+ * int                ats_size;
+ * @endcode@
+ */
+#define YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT( \
+  owner,member,schema) \
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (\
+    owner,member,schema)
+
+/**
  * Fixed sequence of pointers.
  */
 #define YAML_FIELD_SEQUENCE_FIXED( \

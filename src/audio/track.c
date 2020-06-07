@@ -1301,46 +1301,11 @@ track_get_region_at_pos (
   return NULL;
 }
 
-char *
+const char *
 track_stringize_type (
   TrackType type)
 {
-  switch (type)
-    {
-    case TRACK_TYPE_INSTRUMENT:
-      return g_strdup (
-        _("Instrument"));
-    case TRACK_TYPE_AUDIO:
-      return g_strdup (
-        _("Audio"));
-    case TRACK_TYPE_MIDI:
-      return g_strdup (
-        _("MIDI"));
-    case TRACK_TYPE_AUDIO_BUS:
-      return g_strdup (
-        _("Audio FX"));
-    case TRACK_TYPE_MIDI_BUS:
-      return g_strdup (
-        _("MIDI FX"));
-    case TRACK_TYPE_MASTER:
-      return g_strdup (
-        _("Master"));
-    case TRACK_TYPE_CHORD:
-      return g_strdup (
-        _("Chord"));
-    case TRACK_TYPE_AUDIO_GROUP:
-      return g_strdup (
-        _("Audio Group"));
-    case TRACK_TYPE_MIDI_GROUP:
-      return g_strdup (
-        _("MIDI Group"));
-    case TRACK_TYPE_MARKER:
-      return g_strdup (
-        _("Marker"));
-    default:
-      g_warn_if_reached ();
-      return NULL;
-    }
+  return _(track_type_strings[type].str);
 }
 
 /**

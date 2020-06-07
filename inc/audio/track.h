@@ -113,6 +113,12 @@ typedef enum TrackType
   TRACK_TYPE_MARKER,
 
   /**
+   * Special track for BPM (tempo) and time
+   * signature events.
+   */
+  TRACK_TYPE_TEMPO,
+
+  /**
    * Buses are channels that receive audio input
    * and have effects on their channel strip. They
    * are similar to Group Tracks, except that they
@@ -148,13 +154,17 @@ typedef enum TrackType
 static const cyaml_strval_t
 track_type_strings[] =
 {
-  { "Instrument",     TRACK_TYPE_INSTRUMENT    },
-  { "Audio",          TRACK_TYPE_AUDIO   },
-  { "MIDI",           TRACK_TYPE_MIDI   },
-  { "Master",         TRACK_TYPE_MASTER   },
-  { "Chord",          TRACK_TYPE_CHORD   },
-  { "Audio Bus",      TRACK_TYPE_AUDIO_BUS   },
-  { "MIDI Bus",       TRACK_TYPE_MIDI_BUS   },
+  { __("Instrument"),  TRACK_TYPE_INSTRUMENT    },
+  { __("Audio"),       TRACK_TYPE_AUDIO   },
+  { __("Master"),      TRACK_TYPE_MASTER   },
+  { __("Chord"),       TRACK_TYPE_CHORD   },
+  { __("Marker"),      TRACK_TYPE_MARKER   },
+  { __("Tempo"),       TRACK_TYPE_TEMPO   },
+  { __("Audio Bus"),   TRACK_TYPE_AUDIO_BUS   },
+  { __("Audio Group"), TRACK_TYPE_AUDIO_GROUP   },
+  { __("MIDI"),        TRACK_TYPE_MIDI   },
+  { __("MIDI Bus"),    TRACK_TYPE_MIDI_BUS   },
+  { __("MIDI Group"),  TRACK_TYPE_MIDI_GROUP   },
 };
 
 /**
@@ -203,29 +213,29 @@ typedef struct Track
    * through unpinned tracks, can just check this
    * variable.
    */
-  int                 pinned;
+  bool                pinned;
 
   /** Flag to set automations visible or not. */
-  int                 automation_visible;
+  bool                automation_visible;
 
   /** Flag to set track lanes visible or not. */
-  int                 lanes_visible;
+  bool                lanes_visible;
 
   /** Whole Track is visible or not. */
-  int                 visible;
+  bool                visible;
 
   /** Height of the main part (without lanes). */
   int                 main_height;
 
   /** Recording or not. */
-  int                 recording;
+  bool                recording;
 
   /**
    * Active (enabled) or not.
    *
    * Disabled tracks should be ignored in routing.
    */
-  int                 active;
+  bool                active;
 
   /**
    * Track color.
@@ -323,7 +333,7 @@ typedef struct Track
    * the UI should create a separate event using
    * EVENTS_PUSH.
    */
-  int                  trigger_midi_activity;
+  bool                 trigger_midi_activity;
 
   /**
    * The input signal type (eg audio bus tracks have
@@ -346,7 +356,7 @@ typedef struct Track
    *
    * Only relevant for tracks that output audio.
    */
-  int                  bounce;
+  bool                 bounce;
 
   int                  magic;
 
@@ -355,10 +365,7 @@ typedef struct Track
 static const cyaml_schema_field_t
 track_fields_schema[] =
 {
-  CYAML_FIELD_STRING_PTR (
-    "name", CYAML_FLAG_POINTER,
-    Track, name,
-     0, CYAML_UNLIMITED),
+  YAML_FIELD_STRING_PTR (Track, name),
   YAML_FIELD_ENUM (
     Track, type, track_type_strings),
   YAML_FIELD_INT (
@@ -380,39 +387,22 @@ track_fields_schema[] =
   CYAML_FIELD_INT (
     "pinned", CYAML_FLAG_DEFAULT,
     Track, pinned),
-  CYAML_FIELD_MAPPING (
-    "color", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Track, color, gdk_rgba_fields_schema),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "lanes", CYAML_FLAG_POINTER,
-    Track, lanes, num_lanes,
-    &track_lane_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "chord_regions",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Track, chord_regions, num_chord_regions,
-    &region_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "scales",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Track, scales, num_scales,
-    &scale_object_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "markers",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Track, markers, num_markers,
-    &marker_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_MAPPING_PTR (
-    "channel",
-    CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,
-    Track, channel,
-    channel_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "processor", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+    Track, lanes, track_lane_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    Track, chord_regions, region_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    Track, scales, scale_object_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    Track, markers, marker_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Track, channel, channel_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
     Track, processor,
     track_processor_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "automation_tracklist", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Track, automation_tracklist,
     automation_tracklist_fields_schema),
   YAML_FIELD_ENUM (
@@ -811,7 +801,7 @@ Track *
 track_get_from_name (
   const char * name);
 
-char *
+const char *
 track_stringize_type (
   TrackType type);
 
