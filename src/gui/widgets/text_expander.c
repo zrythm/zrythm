@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/text_expander.h"
 #include "project.h"
