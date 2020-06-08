@@ -1487,7 +1487,8 @@ show_context_menu (
 
       if (track->type != TRACK_TYPE_MASTER &&
           track->type != TRACK_TYPE_CHORD &&
-          track->type != TRACK_TYPE_MARKER)
+          track->type != TRACK_TYPE_MARKER &&
+          track->type != TRACK_TYPE_TEMPO)
         {
           /* delete track */
           if (num_selected == 1)
@@ -1885,9 +1886,11 @@ multipress_released (
               instrument_track_toggle_plugin_visible (
                 self->track);
             }
-          else if (string_is_equal (
-                cb->icon_name,
-                ICON_NAME_SHOW_AUTOMATION_LANES, 1))
+          else if (
+            string_is_equal (
+              cb->icon_name,
+              ICON_NAME_SHOW_AUTOMATION_LANES,
+              true))
             {
               track_widget_on_show_automation_toggled (
                 self);
@@ -2391,7 +2394,7 @@ on_screen_changed (
 static CustomButtonWidget *
 add_button (
   TrackWidget * self,
-  int           top,
+  bool          top,
   const char *  icon_name)
 {
   CustomButtonWidget * cb =
@@ -2554,6 +2557,9 @@ track_widget_new (Track * track)
       break;
     case TRACK_TYPE_TEMPO:
       strcpy (self->icon_name, ICON_NAME_TEMPO);
+      add_button (
+        self, true,
+        ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_AUDIO_BUS:
       strcpy (self->icon_name, ICON_NAME_BUS);

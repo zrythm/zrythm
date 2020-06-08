@@ -216,6 +216,12 @@ typedef enum PortFlags
    * is a track procesor midi/stereo in or a plugin
    * sidechain in). */
   PORT_FLAG_SENDABLE = 1 << 21,
+
+  /** This is a BPM port. */
+  PORT_FLAG_BPM = 1 << 22,
+
+  /** This is a time signature port. */
+  PORT_FLAG_TIME_SIG = 1 << 23,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -243,6 +249,8 @@ port_flags_bitvals[] =
   { .name = "automatable", .offset = 19, .bits = 1 },
   { .name = "midi_automatable", .offset = 20, .bits = 1 },
   { .name = "sendable", .offset = 21, .bits = 1 },
+  { .name = "bpm", .offset = 22, .bits = 1 },
+  { .name = "time_sig", .offset = 23, .bits = 1 },
 };
 
 /**

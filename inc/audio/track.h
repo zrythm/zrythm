@@ -303,6 +303,16 @@ typedef struct Track
 
   /* ==== MARKER TRACK END ==== */
 
+  /* ==== TEMPO TRACK ==== */
+
+  /** Automatable BPM control. */
+  Port *              bpm_port;
+
+  /** Automatable time sig control. */
+  Port *              time_sig_port;
+
+  /* ==== TEMPO TRACK END ==== */
+
   /* ==== CHANNEL TRACK ==== */
 
   /** 1 Track has 0 or 1 Channel. */
@@ -399,6 +409,10 @@ track_fields_schema[] =
     Track, markers, marker_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Track, channel, channel_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Track, bpm_port, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Track, time_sig_port, port_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
     Track, processor,
     track_processor_fields_schema),
@@ -473,8 +487,14 @@ static inline bool
 track_type_has_channel (
   TrackType type)
 {
-  if (type == TRACK_TYPE_MARKER)
-    return 0;
+  switch (type)
+    {
+    case TRACK_TYPE_MARKER:
+    case TRACK_TYPE_TEMPO:
+      return 0;
+    default:
+      break;
+    }
 
   return 1;
 }
@@ -896,6 +916,43 @@ track_set_comment (
 const char *
 track_get_comment (
   void *  track);
+
+/**
+ * Appends all channel ports and optionally
+ * plugin ports to the array.
+ *
+ * @param size Current array count.
+ * @param is_dynamic Whether the array can be
+ *   dynamically resized.
+ * @param max_size Current array size, if dynamic.
+ */
+void
+track_append_all_ports (
+  Track *   self,
+  Port ***  ports,
+  int *     size,
+  bool      is_dynamic,
+  int *     max_size,
+  bool      include_plugins);
+
+/**
+ * Disconnects the track from the processing
+ * chain.
+ *
+ * This should be called immediately when the
+ * track is getting deleted, and track_free
+ * should be designed to be called later after
+ * an arbitrary delay.
+ *
+ * @param remove_pl Remove the Plugin from the
+ *   Channel. Useful when deleting the channel.
+ * @param recalc_graph Recalculate mixer graph.
+ */
+void
+track_disconnect (
+  Track * self,
+  bool    remove_pl,
+  bool    recalc_graph);
 
 /**
  * Wrapper for each track type.

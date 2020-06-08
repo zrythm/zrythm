@@ -1121,6 +1121,7 @@ channel_append_all_ports (
     { \
       g_return_if_reached (); \
     } \
+  g_warn_if_fail (port); \
   array_append ( \
     *ports, (*size), port)
 
@@ -1924,22 +1925,6 @@ channel_update_track_pos (
 {
   self->track_pos = pos;
 
-  int max_size = 20;
-  Port ** ports =
-    calloc (
-      (size_t) max_size, sizeof (Port *));
-  int num_ports = 0;
-  channel_append_all_ports (
-    self, &ports, &num_ports, true,
-    &max_size, true);
-
-  for (int i = 0; i < num_ports; i++)
-    {
-      g_warn_if_fail (ports[i]);
-      port_update_track_pos (ports[i], pos);
-    }
-  free (ports);
-
   for (int i = 0; i < STRIP_SIZE; i++)
     {
       Plugin * pl = self->inserts[i];
@@ -2138,8 +2123,7 @@ channel_remove_ats_from_automation_tracklist (
 void
 channel_disconnect (
   Channel * channel,
-  int       remove_pl,
-  int       recalc_graph)
+  bool      remove_pl)
 {
   if (remove_pl)
     {
@@ -2171,23 +2155,6 @@ channel_disconnect (
             F_NO_RECALC_GRAPH);
         }
     }
-
-  int max_size = 20;
-  Port ** ports =
-    calloc (
-      (size_t) max_size, sizeof (Port *));
-  int num_ports = 0;
-  channel_append_all_ports (
-    channel, &ports, &num_ports,
-    true, &max_size, false);
-  for (int i = 0; i < num_ports; i++)
-    {
-      port_disconnect_all (ports[i]);
-    }
-  free (ports);
-
-  if (recalc_graph)
-    mixer_recalc_graph (MIXER);
 }
 
 /**

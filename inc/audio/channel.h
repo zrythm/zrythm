@@ -598,8 +598,7 @@ channel_clone (
 void
 channel_disconnect (
   Channel * channel,
-  int       remove_pl,
-  int       recalc_graph);
+  bool      remove_pl);
 
 /**
  * Frees the channel.

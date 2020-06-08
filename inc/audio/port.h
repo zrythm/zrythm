@@ -812,8 +812,8 @@ void
 port_set_control_value (
   Port *      self,
   const float val,
-  const int   is_normalized,
-  const int   forward_event);
+  const bool  is_normalized,
+  const bool  forward_event);
 
 /**
  * Gets the given control value from the

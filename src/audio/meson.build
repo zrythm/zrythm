@@ -90,6 +90,7 @@ audio_srcs = [
   'snap_grid.c',
   'stretcher.c',
   'supported_file.c',
+  'tempo_track.c',
   'track.c',
   'track_lane.c',
   'track_processor.c',

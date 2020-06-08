@@ -18,6 +18,7 @@
  */
 
 #include "audio/track.h"
+#include "audio/tempo_track.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"
@@ -66,8 +67,9 @@ test_save_load_with_data ()
   /* remove objects */
   chord_track_clear (P_CHORD_TRACK);
   marker_track_clear (P_MARKER_TRACK);
+  tempo_track_clear (P_TEMPO_TRACK);
   for (int i = TRACKLIST->num_tracks - 1;
-       i >= 3; i--)
+       i >= 4; i--)
     {
       Track * track = TRACKLIST->tracks[i];
       tracklist_remove_track (
@@ -104,4 +106,3 @@ main (int argc, char *argv[])
 
   return g_test_run ();
 }
-

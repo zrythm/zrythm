@@ -37,6 +37,7 @@
 #include "audio/midi_group_track.h"
 #include "audio/midi_track.h"
 #include "audio/instrument_track.h"
+#include "audio/tempo_track.h"
 #include "audio/track.h"
 #include "gui/backend/events.h"
 #include "gui/widgets/arranger.h"
@@ -128,8 +129,9 @@ track_add_lane (
 
   if (fire_events)
     {
-      EVENTS_PUSH (ET_TRACK_LANE_ADDED,
-                   self->lanes[self->num_lanes - 1]);
+      EVENTS_PUSH (
+        ET_TRACK_LANE_ADDED,
+        self->lanes[self->num_lanes - 1]);
     }
 }
 
@@ -248,11 +250,18 @@ track_new (
       chord_track_init (track);
       break;
     case TRACK_TYPE_MARKER:
-      marker_track_init (track);
       track->in_signal_type =
         TYPE_UNKNOWN;
       track->out_signal_type =
         TYPE_UNKNOWN;
+      marker_track_init (track);
+      break;
+    case TRACK_TYPE_TEMPO:
+      track->in_signal_type =
+        TYPE_UNKNOWN;
+      track->out_signal_type =
+        TYPE_UNKNOWN;
+      tempo_track_init (track);
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -818,6 +827,20 @@ track_generate_automation_tracks (
           automation_tracklist_add_at (atl, at);
         }
     }
+
+  /* create special BPM and time sig automation
+   * tracks for tempo track */
+  if (track->type == TRACK_TYPE_TEMPO)
+    {
+      at = automation_track_new (track->bpm_port);
+      at->created = true;
+      at->visible = true;
+      automation_tracklist_add_at (atl, at);
+      at =
+        automation_track_new (
+          track->time_sig_port);
+      automation_tracklist_add_at (atl, at);
+    }
 }
 
 /**
@@ -1030,12 +1053,70 @@ track_set_pos (
     &track->processor, pos);
   track->processor.track = track;
 
+  int max_size = 20;
+  Port ** ports =
+    calloc (
+      (size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
+  track_append_all_ports (
+    track, &ports, &num_ports, true,
+    &max_size, true);
+  for (int i = 0; i < num_ports; i++)
+    {
+      g_warn_if_fail (ports[i]);
+      port_update_track_pos (ports[i], pos);
+    }
+  free (ports);
+
   /* update port identifier track positions */
   if (track->channel)
     {
       Channel * ch = track->channel;
       channel_update_track_pos (ch, pos);
     }
+}
+
+/**
+ * Disconnects the track from the processing
+ * chain.
+ *
+ * This should be called immediately when the
+ * track is getting deleted, and track_free
+ * should be designed to be called later after
+ * an arbitrary delay.
+ *
+ * @param remove_pl Remove the Plugin from the
+ *   Channel. Useful when deleting the channel.
+ * @param recalc_graph Recalculate mixer graph.
+ */
+void
+track_disconnect (
+  Track * self,
+  bool    remove_pl,
+  bool    recalc_graph)
+{
+  if (track_type_has_channel (self->type))
+    {
+      channel_disconnect (
+        self->channel, remove_pl);
+    }
+
+  int max_size = 20;
+  Port ** ports =
+    calloc (
+      (size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
+  track_append_all_ports (
+    self, &ports, &num_ports,
+    true, &max_size, false);
+  for (int i = 0; i < num_ports; i++)
+    {
+      port_disconnect_all (ports[i]);
+    }
+  free (ports);
+
+  if (recalc_graph)
+    mixer_recalc_graph (MIXER);
 }
 
 /**
@@ -1211,9 +1292,8 @@ track_get_automation_tracklist (Track * track)
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_MASTER:
     case TRACK_TYPE_MIDI:
-        {
-          return &track->automation_tracklist;
-        }
+    case TRACK_TYPE_TEMPO:
+      return &track->automation_tracklist;
     default:
       g_warn_if_reached ();
       break;
@@ -1557,8 +1637,8 @@ track_set_name (
         calloc (
           (size_t) max_size, sizeof (Port *));
       int num_ports = 0;
-      channel_append_all_ports (
-        track->channel, &ports, &num_ports,
+      track_append_all_ports (
+        track, &ports, &num_ports,
         true, &max_size, true);
       Port * port;
       for (int i = 0; i < num_ports; i++)
@@ -1638,6 +1718,56 @@ track_get_comment (
   g_return_val_if_fail (IS_TRACK (self), NULL);
 
   return self->comment;
+}
+
+/**
+ * Appends all channel ports and optionally
+ * plugin ports to the array.
+ *
+ * @param size Current array count.
+ * @param is_dynamic Whether the array can be
+ *   dynamically resized.
+ * @param max_size Current array size, if dynamic.
+ */
+void
+track_append_all_ports (
+  Track *   self,
+  Port ***  ports,
+  int *     size,
+  bool      is_dynamic,
+  int *     max_size,
+  bool      include_plugins)
+{
+  if (track_type_has_channel (self->type))
+    {
+      g_return_if_fail (self->channel);
+      channel_append_all_ports (
+        self->channel, ports, size, is_dynamic,
+        max_size, include_plugins);
+    }
+
+#define _ADD(port) \
+  if (is_dynamic) \
+    { \
+      array_double_size_if_full ( \
+        *ports, (*size), (*max_size), Port *); \
+    } \
+  else if (*size == *max_size) \
+    { \
+      g_return_if_reached (); \
+    } \
+  g_warn_if_fail (port); \
+  array_append ( \
+    *ports, (*size), port)
+
+  if (self->type == TRACK_TYPE_TEMPO)
+    {
+      /* add bpm/time sig ports */
+      _ADD (self->bpm_port);
+      _ADD (self->time_sig_port);
+    }
+
+#undef _ADD
 }
 
 /**

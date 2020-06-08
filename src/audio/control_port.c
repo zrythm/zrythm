@@ -26,8 +26,9 @@
 #include "gui/backend/events.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2/lv2_control.h"
-#include "utils/math.h"
 #include "project.h"
+#include "utils/flags.h"
+#include "utils/math.h"
 #include "zrythm.h"
 
 /**
@@ -368,6 +369,15 @@ control_port_set_val_from_normalized (
         }
       port_set_control_value (
         self, real_val, 0, 0);
+    }
+  else if (id->flags & PORT_FLAG_AUTOMATABLE)
+    {
+      float real_val =
+        self->minf +
+        val * (self->maxf - self->minf);
+      port_set_control_value (
+        self, real_val, F_NOT_NORMALIZED,
+        false);
     }
   else
     {

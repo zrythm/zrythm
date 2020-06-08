@@ -325,7 +325,8 @@ automation_point_get_normalized_value_in_curve (
   AutomationPoint * self,
   double            x)
 {
-  g_return_val_if_fail (x >= 0.0 && x <= 1.0, 0.0);
+  g_return_val_if_fail (
+    self && x >= 0.0 && x <= 1.0, 0.0);
 
   ZRegion * region =
     arranger_object_get_region (
@@ -333,6 +334,7 @@ automation_point_get_normalized_value_in_curve (
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
       region, self, true, true);
+  g_return_val_if_fail (next_ap, self->fvalue);
 
   double dy;
 

@@ -39,6 +39,7 @@
 #include "audio/marker_track.h"
 #include "audio/midi_note.h"
 #include "audio/mixer.h"
+#include "audio/tempo_track.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/transport.h"
@@ -244,8 +245,9 @@ project_tear_down (Project * self)
   Track * chord_track = self->tracklist.chord_track;
   if (chord_track)
     {
-      channel_disconnect (
-        chord_track->channel, true, false);
+      track_disconnect (
+        chord_track, F_REMOVE_PL,
+        F_NO_RECALC_GRAPH);
       track_free (chord_track);
     }
 
@@ -539,15 +541,25 @@ create_default (Project * self)
       ZRYTHM->create_project_path);
 
   /* init pinned tracks */
-  Track * track =
-    chord_track_new (0);
+
+  /* chord */
+  Track * track = chord_track_new (0);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
   track->pinned = 1;
   TRACKLIST->chord_track = track;
-  track =
-    marker_track_default (1);
+
+  /* tempo */
+  track = tempo_track_default (1);
+  tracklist_append_track (
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
+    F_NO_RECALC_GRAPH);
+  track->pinned = 1;
+  TRACKLIST->tempo_track = track;
+
+  /* marker */
+  track = marker_track_default (0);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);

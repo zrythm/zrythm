@@ -261,6 +261,14 @@ port_find_from_identifier (
     case PORT_OWNER_TYPE_TRACK:
       tr = TRACKLIST->tracks[id->track_pos];
       g_warn_if_fail (tr);
+      if (id->flags & PORT_FLAG_BPM)
+        {
+          return tr->bpm_port;
+        }
+      else if (id->flags & PORT_FLAG_TIME_SIG)
+        {
+          return tr->time_sig_port;
+        }
       ch = tr->channel;
       g_warn_if_fail (ch);
       switch (id->type)
@@ -932,18 +940,11 @@ port_get_all (
   _ADD (SAMPLE_PROCESSOR->stereo_out->l);
   _ADD (SAMPLE_PROCESSOR->stereo_out->r);
 
-  Channel * ch;
-  Track * tr;
-  int i;
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      tr = TRACKLIST->tracks[i];
-      if (!tr->channel)
-        continue;
-      ch = tr->channel;
-
-      channel_append_all_ports (
-        ch, ports, size, is_dynamic, max_size,
+      Track * tr = TRACKLIST->tracks[i];
+      track_append_all_ports (
+        tr, ports, size, is_dynamic, max_size,
         F_INCLUDE_PLUGINS);
     }
 }
@@ -2039,8 +2040,8 @@ void
 port_set_control_value (
   Port *      self,
   const float val,
-  const int   is_normalized,
-  const int   forward_event)
+  const bool  is_normalized,
+  const bool  forward_event)
 {
   g_return_if_fail (
     self->id.type == TYPE_CONTROL);

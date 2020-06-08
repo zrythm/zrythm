@@ -85,10 +85,10 @@ typedef struct AutomationTrack
 
   /** Whether it has been created by the user
    * yet or not. */
-  int               created;
+  bool              created;
 
   /** The automation Region's. */
-  ZRegion **         regions;
+  ZRegion **        regions;
   int               num_regions;
   size_t            regions_size;
 

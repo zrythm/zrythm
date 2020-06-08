@@ -35,6 +35,7 @@
 #include "audio/master_track.h"
 #include "audio/midi_note.h"
 #include "audio/region.h"
+#include "audio/tempo_track.h"
 #include "audio/tracklist.h"
 #include "project.h"
 #include "utils/cairo.h"
@@ -248,8 +249,9 @@ test_project_rebootstrap_timeline (
   /* remove any previous work */
   chord_track_clear (P_CHORD_TRACK);
   marker_track_clear (P_MARKER_TRACK);
+  tempo_track_clear (P_TEMPO_TRACK);
   for (int i = TRACKLIST->num_tracks - 1;
-       i >= 3; i--)
+       i >= 4; i--)
     {
       Track * track = TRACKLIST->tracks[i];
       tracklist_remove_track (

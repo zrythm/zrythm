@@ -519,8 +519,7 @@ tracklist_remove_track (
   bool        publish_events,
   bool        recalc_graph)
 {
-  g_message ("removing %s",
-             track->name);
+  g_message ("removing %s", track->name);
 
   Track * prev_visible =
     tracklist_get_prev_visible_track (
@@ -549,12 +548,7 @@ tracklist_remove_track (
   g_warn_if_fail (
     track->pos == idx);
 
-  if (track->channel)
-    {
-      channel_disconnect (
-        track->channel,
-        rm_pl, F_NO_RECALC_GRAPH);
-    }
+  track_disconnect (track, rm_pl, F_NO_RECALC_GRAPH);
 
   tracklist_selections_remove_track (
     TRACKLIST_SELECTIONS, track, publish_events);

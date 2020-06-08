@@ -1756,9 +1756,7 @@ graph_setup (
         continue;
 
       /* connect the track */
-      node =
-        graph_find_node_from_track (
-          self, tr);
+      node = graph_find_node_from_track (self, tr);
       g_warn_if_fail (node);
       if (tr->in_signal_type == TYPE_AUDIO)
         {
@@ -1802,6 +1800,17 @@ graph_setup (
                   self, port);
               node_connect (node2, node);
             }
+        }
+      if (tr->type == TRACK_TYPE_TEMPO)
+        {
+          port = tr->bpm_port;
+          node2 =
+            graph_find_node_from_port (self, port);
+          node_connect (node2, node);
+          port = tr->time_sig_port;
+          node2 =
+            graph_find_node_from_port (self, port);
+          node_connect (node2, node);
         }
 
       Fader * fader;
