@@ -187,6 +187,9 @@ graph_get_node_name (
     case ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
       return
         g_strdup ("Sample Processor");
+    case ROUTE_NODE_TYPE_INITIAL_PROCESSOR:
+      return
+        g_strdup ("Initial Processor");
     }
   g_return_val_if_reached (NULL);
 }
@@ -215,6 +218,9 @@ node_get_pointer (
       break;
     case ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
       return node->sample_processor;
+      break;
+    case ROUTE_NODE_TYPE_INITIAL_PROCESSOR:
+      return NULL;
       break;
     }
   g_return_val_if_reached (NULL);
@@ -269,7 +275,7 @@ node_process (
   const nframes_t   nframes)
 {
   /*g_message (*/
-    /*"processing %s", get_node_name (node));*/
+    /*"processing %s", graph_get_node_name (node));*/
   int noroll = 0;
 
   nframes_t local_offset =
@@ -867,6 +873,8 @@ node_connect (
 
   add_feeds (from, to);
   add_depends (to, from);
+
+  g_warn_if_fail (!from->terminal && !to->initial);
 }
 
 GraphNode *
@@ -991,6 +999,22 @@ graph_find_node_from_monitor_fader (
   return NULL;
 }
 
+static GraphNode *
+graph_find_initial_processor_node (
+  Graph * graph)
+{
+  GraphNode * node;
+  for (size_t i = 0;
+       i < graph->num_setup_graph_nodes; i++)
+    {
+      node = graph->setup_graph_nodes[i];
+      if (node->type ==
+            ROUTE_NODE_TYPE_INITIAL_PROCESSOR)
+        return node;
+    }
+  return NULL;
+}
+
 static inline GraphNode *
 graph_node_new (
   Graph * graph,
@@ -1027,6 +1051,8 @@ graph_node_new (
     case ROUTE_NODE_TYPE_TRACK:
       node->track = (Track *) data;
       break;
+    case ROUTE_NODE_TYPE_INITIAL_PROCESSOR:
+      break;
     }
 
   return node;
@@ -1048,51 +1074,6 @@ graph_add_node (
     graph_node_new (graph, type, data);
   graph->setup_graph_nodes[
     graph->num_setup_graph_nodes++] = node;
-
-  return node;
-}
-
-static inline GraphNode *
-graph_add_terminal_node (
-  Graph * self,
-  GraphNodeType type,
-  void * data)
-{
-  GraphNode * node =
-    graph_add_node (self, type, data);
-  node->terminal = 1;
-
-  /* used for calculating latencies */
-  self->setup_terminal_nodes =
-    (GraphNode **) realloc (
-      self->setup_terminal_nodes,
-      (size_t)
-      (1 + self->num_setup_terminal_nodes) *
-        sizeof (GraphNode *));
-  self->setup_terminal_nodes[
-    self->num_setup_terminal_nodes++] = node;
-
-  return node;
-}
-
-static inline GraphNode *
-graph_add_initial_node (
-  Graph * self,
-  GraphNodeType type,
-  void * data)
-{
-  self->setup_init_trigger_list =
-    (GraphNode**)realloc (
-      self->setup_init_trigger_list,
-      (size_t) (1 + self->num_setup_init_triggers) *
-        sizeof (GraphNode*));
-
-  GraphNode * node =
-    graph_add_node (self, type, data);
-  node->initial = 1;
-
-  self->setup_init_trigger_list[
-    self->num_setup_init_triggers++] = node;
 
   return node;
 }
@@ -1148,11 +1129,13 @@ graph_destroy (
   free (self);
 }
 
-/* called from a terminal node (from the Graph worked-thread)
- * to indicate it has completed processing.
+/* called from a terminal node (from the Graph
+ * worked-thread) to indicate it has completed
+ * processing.
  *
- * The thread of the last terminal node that reaches here
- * will inform the main-thread, wait, and kick off the next process cycle.
+ * The thread of the last terminal node that
+ * reaches here will inform the main-thread, wait,
+ * and kick off the next process cycle.
  */
 static inline void
 graph_reached_terminal_node (
@@ -1269,33 +1252,14 @@ graph_print (
  */
 static inline void
 add_port (
-  Graph *      self,
-  Port * port,
-  const int    drop_if_unnecessary)
+  Graph *    self,
+  Port *     port,
+  const bool drop_if_unnecessary)
 {
-  PortIdentifier * id = &port->id;
-  PortOwnerType owner =
-    port->id.owner_type;
+  PortOwnerType owner = port->id.owner_type;
 
-  /*add_port_node (self, port);*/
-  if (port->num_dests == 0 &&
-      port->num_srcs == 0 &&
-      (owner == PORT_OWNER_TYPE_PLUGIN ||
-       owner == PORT_OWNER_TYPE_FADER))
-    {
-      if (id->flow == FLOW_INPUT)
-        {
-          graph_add_initial_node (
-            self, ROUTE_NODE_TYPE_PORT, port);
-        }
-      else if (id->flow == FLOW_OUTPUT)
-        {
-          graph_add_terminal_node (
-            self, ROUTE_NODE_TYPE_PORT, port);
-        }
-    }
   /* drop ports without sources and dests */
-  else if (
+  if (
     drop_if_unnecessary &&
     port->num_dests == 0 &&
     port->num_srcs == 0 &&
@@ -1303,45 +1267,9 @@ add_port (
     owner != PORT_OWNER_TYPE_FADER &&
     owner != PORT_OWNER_TYPE_MONITOR_FADER &&
     owner != PORT_OWNER_TYPE_PREFADER &&
-    owner != PORT_OWNER_TYPE_TRACK_PROCESSOR)
+    owner != PORT_OWNER_TYPE_TRACK_PROCESSOR &&
+    owner != PORT_OWNER_TYPE_TRACK)
     {
-    }
-  else if (port->num_srcs == 0 &&
-      !(owner == PORT_OWNER_TYPE_PLUGIN &&
-        id->flow == FLOW_OUTPUT) &&
-      !(owner == PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-        id->flow == FLOW_OUTPUT) &&
-      !(owner == PORT_OWNER_TYPE_FADER &&
-        id->flow == FLOW_OUTPUT) &&
-      !(owner == PORT_OWNER_TYPE_MONITOR_FADER &&
-        id->flow == FLOW_OUTPUT) &&
-      !(owner == PORT_OWNER_TYPE_PREFADER &&
-        id->flow == FLOW_OUTPUT) &&
-      !(owner ==
-          PORT_OWNER_TYPE_SAMPLE_PROCESSOR &&
-        id->flow == FLOW_OUTPUT))
-    {
-      graph_add_initial_node (
-        self, ROUTE_NODE_TYPE_PORT, port);
-    }
-  else if (port->num_dests == 0 &&
-           /*port->num_srcs > 0 &&*/
-           !(owner == PORT_OWNER_TYPE_PLUGIN &&
-             id->flow == FLOW_INPUT) &&
-           !(owner == PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-             id->flow == FLOW_INPUT) &&
-           !(owner == PORT_OWNER_TYPE_FADER &&
-             id->flow == FLOW_INPUT) &&
-           !(owner == PORT_OWNER_TYPE_MONITOR_FADER &&
-             id->flow == FLOW_INPUT) &&
-           !(owner == PORT_OWNER_TYPE_PREFADER &&
-             id->flow == FLOW_INPUT) &&
-           !(owner ==
-               PORT_OWNER_TYPE_SAMPLE_PROCESSOR &&
-             id->flow == FLOW_INPUT))
-    {
-      graph_add_terminal_node (
-        self, ROUTE_NODE_TYPE_PORT, port);
     }
   else
     {
@@ -1361,10 +1289,9 @@ connect_port (
   GraphNode * node =
     graph_find_node_from_port (self, port);
   GraphNode * node2;
-  Port * src, * dest;
   for (int j = 0; j < port->num_srcs; j++)
     {
-      src = port->srcs[j];
+      Port * src = port->srcs[j];
       node2 = graph_find_node_from_port (self, src);
       g_warn_if_fail (node);
       g_warn_if_fail (node2);
@@ -1372,7 +1299,7 @@ connect_port (
     }
   for (int j = 0; j < port->num_dests; j++)
     {
-      dest = port->dests[j];
+      Port * dest = port->dests[j];
       node2 = graph_find_node_from_port (self, dest);
       g_warn_if_fail (node);
       g_warn_if_fail (node2);
@@ -1548,11 +1475,11 @@ add_plugin (
   g_return_if_fail (pl && !pl->deleting);
   if (pl->num_in_ports == 0 &&
       pl->num_out_ports > 0)
-    graph_add_initial_node (
+    graph_add_node (
       self, ROUTE_NODE_TYPE_PLUGIN, pl);
   else if (pl->num_out_ports == 0 &&
            pl->num_in_ports > 0)
-    graph_add_terminal_node (
+    graph_add_node (
       self, ROUTE_NODE_TYPE_PLUGIN, pl);
   else if (pl->num_out_ports == 0 &&
            pl->num_in_ports == 0)
@@ -1620,14 +1547,19 @@ graph_setup (
    * ======================== */
 
   /* add the sample processor */
-  graph_add_initial_node ( \
+  graph_add_node (
     self, ROUTE_NODE_TYPE_SAMPLE_PROCESSOR,
     SAMPLE_PROCESSOR);
 
   /* add the monitor fader */
-  graph_add_node ( \
+  graph_add_node (
     self, ROUTE_NODE_TYPE_MONITOR_FADER,
     MONITOR_FADER);
+
+  /* add the initial processor */
+  graph_add_node (
+    self, ROUTE_NODE_TYPE_INITIAL_PROCESSOR,
+    NULL);
 
   /* add plugins */
   Track * tr;
@@ -1636,13 +1568,13 @@ graph_setup (
     {
       tr = TRACKLIST->tracks[i];
       g_warn_if_fail (tr);
-      if (!tr->channel)
-        continue;
 
       /* add the track */
       graph_add_node ( \
-        self, ROUTE_NODE_TYPE_TRACK,
-        tr);
+        self, ROUTE_NODE_TYPE_TRACK, tr);
+
+      if (!tr->channel)
+        continue;
 
       /* add the fader */
       graph_add_node ( \
@@ -1749,11 +1681,12 @@ graph_setup (
     graph_find_node_from_port (self, port);
   node_connect (node, node2);
 
+  GraphNode * initial_processor_node =
+    graph_find_initial_processor_node (self);
+
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       tr = TRACKLIST->tracks[i];
-      if (!tr->channel)
-        continue;
 
       /* connect the track */
       node = graph_find_node_from_track (self, tr);
@@ -1764,10 +1697,14 @@ graph_setup (
           node2 =
             graph_find_node_from_port (self, port);
           node_connect (node2, node);
+          node_connect (
+            initial_processor_node, node2);
           port = tr->processor.stereo_in->r;
           node2 =
             graph_find_node_from_port (self, port);
           node_connect (node2, node);
+          node_connect (
+            initial_processor_node, node2);
           port = tr->processor.stereo_out->l;
           node2 =
             graph_find_node_from_port (self, port);
@@ -1783,6 +1720,8 @@ graph_setup (
           node2 =
             graph_find_node_from_port (self, port);
           node_connect (node2, node);
+          node_connect (
+            initial_processor_node, node2);
           port = tr->processor.midi_out;
           node2 =
             graph_find_node_from_port (self, port);
@@ -1811,7 +1750,12 @@ graph_setup (
           node2 =
             graph_find_node_from_port (self, port);
           node_connect (node2, node);
+          node_connect (
+            node, initial_processor_node);
         }
+
+      if (!tr->channel)
+        continue;
 
       Fader * fader;
       PassthroughProcessor * prefader;
@@ -1948,6 +1892,46 @@ graph_setup (
 
       connect_port (
         self, port);
+    }
+
+  /* ========================
+   * set initial and terminal nodes
+   * ======================== */
+  for (size_t ii = 0;
+       ii < self->num_setup_graph_nodes; ii++)
+    {
+      node = self->setup_graph_nodes[ii];
+      if (node->n_childnodes == 0)
+        {
+          /* terminal node */
+          node->terminal = true;
+
+          /* used for calculating latencies */
+          self->setup_terminal_nodes =
+            (GraphNode **) realloc (
+              self->setup_terminal_nodes,
+              (size_t)
+              (1 + self->num_setup_terminal_nodes) *
+                sizeof (GraphNode *));
+          self->setup_terminal_nodes[
+            self->num_setup_terminal_nodes++] =
+              node;
+        }
+      if (node->init_refcount == 0)
+        {
+          /* initial node */
+          self->setup_init_trigger_list =
+            (GraphNode**)realloc (
+              self->setup_init_trigger_list,
+              (size_t)
+              (1 + self->num_setup_init_triggers) *
+                sizeof (GraphNode*));
+
+          node->initial = true;
+
+          self->setup_init_trigger_list[
+            self->num_setup_init_triggers++] = node;
+        }
     }
 
   /* ========================

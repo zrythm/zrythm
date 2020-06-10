@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -106,6 +106,14 @@ typedef enum GraphNodeType
   ROUTE_NODE_TYPE_PREFADER,
   /** Sample processor. */
   ROUTE_NODE_TYPE_SAMPLE_PROCESSOR,
+
+  /**
+   * Initial processor.
+   *
+   * The initial processor is a dummy processor
+   * in the chain processed before anything else.
+   */
+  ROUTE_NODE_TYPE_INITIAL_PROCESSOR,
 } GraphNodeType;
 
 /**
@@ -119,9 +127,9 @@ typedef struct GraphNode
   Graph *      graph;
 
   /** outgoing edges
-	 * downstream nodes to activate when this node
+   * downstream nodes to activate when this node
    * has completed processed
-	 */
+   */
   GraphNode **  childnodes;
   int           n_childnodes;
 
@@ -153,15 +161,15 @@ typedef struct GraphNode
   SampleProcessor * sample_processor;
 
   /** For debugging. */
-  int  terminal;
-  int  initial;
+  bool          terminal;
+  bool          initial;
 
   /** The playback latency of the node, in
    * samples. */
-  nframes_t          playback_latency;
+  nframes_t     playback_latency;
 
   /** The route's playback latency. */
-  nframes_t          route_playback_latency;
+  nframes_t     route_playback_latency;
 
   GraphNodeType type;
 } GraphNode;
@@ -204,8 +212,8 @@ typedef struct Graph
   GraphNode **  graph_nodes;
   int           n_graph_nodes;
 
-	/** Nodes without incoming edges.
-	 * These run concurrently at the start of each
+  /** Nodes without incoming edges.
+   * These run concurrently at the start of each
    * cycle to kick off processing */
   GraphNode ** init_trigger_list;
   size_t       n_init_triggers;
@@ -240,8 +248,8 @@ typedef struct Graph
   volatile guint      idle_thread_cnt;
 
   /** Chain used to setup in the background.
-	 * This is applied and cleared by graph_rechain()
-	 */
+   * This is applied and cleared by graph_rechain()
+   */
   GraphNode **         setup_graph_nodes;
   size_t               num_setup_graph_nodes;
   GraphNode **         setup_init_trigger_list;
@@ -280,7 +288,7 @@ typedef struct Router
   nframes_t   local_offset;
 
   /** Used when recalculating the graph. */
-  ZixSem               graph_access;
+  ZixSem      graph_access;
 
 } Router;
 

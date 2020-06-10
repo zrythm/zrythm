@@ -461,12 +461,15 @@ track_processor_process (
         nframes, false);
     }
 
-  /* handle recording. this will only create events
-   * in regions. it will not copy the input content
-   * to the output ports */
-  recording_manager_handle_recording (
-    RECORDING_MANAGER, self, g_start_frames,
-    local_offset, nframes);
+  if (track_type_can_record (tr->type))
+    {
+      /* handle recording. this will only create
+       * events in regions. it will not copy the
+       * input content to the output ports */
+      recording_manager_handle_recording (
+        RECORDING_MANAGER, self, g_start_frames,
+        local_offset, nframes);
+    }
 
   /* add inputs to outputs */
   switch (tr->in_signal_type)

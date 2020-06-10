@@ -152,6 +152,11 @@ create_anode (
     aparent_graph = aroot_graph;
 
   char * node_name = graph_get_node_name (node);
+  /*node_name =*/
+    /*g_strdup_printf (*/
+      /*"%s i:%d t:%d init refcount: %d", node_name,*/
+      /*node->initial, node->terminal,*/
+      /*node->init_refcount);*/
   Agnode_t * anode =
     agnode (aparent_graph, node_name, true);
   switch (node->type)
@@ -289,7 +294,8 @@ fill_anodes (
 
       Agraph_t * aparent_graph =
         get_parent_graph (
-          anodes, graph->num_setup_graph_nodes, parent_node);
+          anodes, graph->num_setup_graph_nodes,
+          parent_node);
       g_warn_if_fail (aparent_graph);
       char * node_name =
         graph_get_node_name (node);
