@@ -684,7 +684,7 @@ else
 endif
 config_h_vcs = vcs_tag (
   input: tmp_h,
-  output: 'config.h',
+  output: 'zrythm-config.h',
   fallback: version_fallback,
   )
 config_h_dep = declare_dependency (

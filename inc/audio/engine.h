@@ -26,7 +26,7 @@
 #ifndef __AUDIO_ENGINE_H__
 #define __AUDIO_ENGINE_H__
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include "audio/control_room.h"
 #include "audio/ext_port.h"

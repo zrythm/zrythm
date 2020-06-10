@@ -18,7 +18,7 @@
    @file suil.h API for Suil, an LV2 UI wrapper library.
 */
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #ifndef HAVE_SUIL
 

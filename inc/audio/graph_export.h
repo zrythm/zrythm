@@ -26,7 +26,7 @@
 #ifndef __AUDIO_GRAPH_EXPORT_H__
 #define __AUDIO_GRAPH_EXPORT_H__
 
-#include "config.h"
+#include "zrythm-config.h"
 
 typedef struct Graph Graph;
 

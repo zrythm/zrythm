@@ -26,7 +26,7 @@
 #ifndef __AUDIO_MIDI_H__
 #define __AUDIO_MIDI_H__
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include <stdint.h>
 #include <string.h>

@@ -27,7 +27,7 @@
  * the mixer.
  */
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include "audio/automatable.h"
 #include "audio/channel_send.h"

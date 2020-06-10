@@ -36,7 +36,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include <stdlib.h>
 #include <ctype.h>

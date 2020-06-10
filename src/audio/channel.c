@@ -21,7 +21,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include "audio/audio_track.h"
 #include "audio/automation_track.h"

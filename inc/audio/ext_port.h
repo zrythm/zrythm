@@ -26,7 +26,7 @@
  * External ports.
  */
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include "audio/automatable.h"
 #include "audio/fader.h"

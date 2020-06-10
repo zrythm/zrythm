@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 
-#include "config.h"
+#include "zrythm-config.h"
 #include "audio/encoder.h"
 #include "audio/metronome.h"
 #include "utils/audio.h"

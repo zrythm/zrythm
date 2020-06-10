@@ -26,7 +26,7 @@
 #ifndef __PLUGINS_BASE_PLUGIN_H__
 #define __PLUGINS_BASE_PLUGIN_H__
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include "audio/automatable.h"
 #include "audio/port.h"

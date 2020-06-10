@@ -20,7 +20,7 @@
 /** \file
  */
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include <stdio.h>
 

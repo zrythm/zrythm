@@ -34,7 +34,7 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include "audio/engine.h"
 #include "audio/track.h"

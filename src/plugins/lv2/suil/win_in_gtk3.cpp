@@ -16,7 +16,7 @@
 
 /* TODO make it GTK3 compatible */
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #ifdef _WOE32
 

@@ -26,7 +26,7 @@
 #ifndef __PLUGINS_CARLA_DISCOVERY_H__
 #define __PLUGINS_CARLA_DISCOVERY_H__
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #ifdef HAVE_CARLA
 

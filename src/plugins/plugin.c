@@ -25,7 +25,7 @@
 
 #define _GNU_SOURCE 1  /* To pick up REG_RIP */
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include <signal.h>
 #include <stdlib.h>

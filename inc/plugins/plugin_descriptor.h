@@ -26,7 +26,7 @@
 #ifndef __PLUGINS_PLUGIN_DESCRIPTOR_H__
 #define __PLUGINS_PLUGIN_DESCRIPTOR_H__
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include <stdbool.h>
 

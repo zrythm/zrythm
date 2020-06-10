@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include "audio/automatable.h"
 #include "audio/automation_track.h"

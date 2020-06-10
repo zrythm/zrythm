@@ -23,7 +23,7 @@
  * Code related to Carla plugins.
  */
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #ifndef __PLUGINS_CARLA_NATIVE_PLUGIN_H__
 #define __PLUGINS_CARLA_NATIVE_PLUGIN_H__

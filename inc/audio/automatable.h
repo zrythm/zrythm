@@ -21,7 +21,7 @@
 #define __AUDIO_AUTOMATABLE_H__
 
 #if 0
-#include "config.h"
+#include "zrythm-config.h"
 
 #include "audio/port.h"
 #include "plugins/lv2/lv2_control.h"

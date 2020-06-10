@@ -19,7 +19,7 @@
 
 #include <stdio.h>
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include "audio/channel.h"
 #include "audio/engine.h"

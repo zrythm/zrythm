@@ -26,7 +26,7 @@
 #ifndef __AUDIO_ENCODER_H__
 #define __AUDIO_ENCODER_H__
 
-#include "config.h"
+#include "zrythm-config.h"
 #include <audec/audec.h>
 
 /**

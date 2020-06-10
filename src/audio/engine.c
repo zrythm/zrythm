@@ -42,7 +42,7 @@
 #include <stdlib.h>
 #include <signal.h>
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"

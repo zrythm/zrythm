@@ -24,7 +24,7 @@
  *
  */
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include <locale.h>
 

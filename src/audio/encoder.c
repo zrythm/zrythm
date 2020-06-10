@@ -20,7 +20,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "config.h"
+#include "zrythm-config.h"
 #include "audio/encoder.h"
 #include "audio/engine.h"
 #include "project.h"

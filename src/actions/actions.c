@@ -23,7 +23,7 @@
  * GAction actions.
  */
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include "actions/actions.h"
 #include "actions/arranger_selections.h"

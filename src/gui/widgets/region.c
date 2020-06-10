@@ -25,7 +25,7 @@
 #include "audio/fade.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
-#include "config.h"
+#include "zrythm-config.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/bot_bar.h"

@@ -24,7 +24,7 @@
 #ifndef __UTILS_IO_H__
 #define __UTILS_IO_H__
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include <stdio.h>
 

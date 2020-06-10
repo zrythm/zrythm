@@ -35,7 +35,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#include "zrythm-config.h"
 
 #include "audio/audio_track.h"
 #include "audio/engine.h"
@@ -1906,7 +1906,6 @@ graph_setup (
           /* terminal node */
           node->terminal = true;
 
-          /* used for calculating latencies */
           self->setup_terminal_nodes =
             (GraphNode **) realloc (
               self->setup_terminal_nodes,
@@ -1920,15 +1919,14 @@ graph_setup (
       if (node->init_refcount == 0)
         {
           /* initial node */
+          node->initial = true;
+
           self->setup_init_trigger_list =
             (GraphNode**)realloc (
               self->setup_init_trigger_list,
               (size_t)
               (1 + self->num_setup_init_triggers) *
                 sizeof (GraphNode*));
-
-          node->initial = true;
-
           self->setup_init_trigger_list[
             self->num_setup_init_triggers++] = node;
         }
