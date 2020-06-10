@@ -88,7 +88,7 @@ marker_track_widget_init (MarkerTrackWidget * self)
   TRACK_WIDGET_GET_PRIVATE (self);
 
   /* set icon */
-  SET_TRACK_ICON ("z-kdenlive-show-markers");
+  SET_TRACK_ICON ("kdenlive-show-markers");
 
   gtk_widget_set_visible (GTK_WIDGET (self), 1);
 }

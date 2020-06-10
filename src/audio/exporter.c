@@ -32,6 +32,7 @@
 #include "audio/mixer.h"
 #include "audio/position.h"
 #include "audio/routing.h"
+#include "audio/tempo_track.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
@@ -448,7 +449,9 @@ export_midi (
     {
       /* Write tempo information out to track 1 */
       midiSongAddTempo (
-        mf, 1, (int) TRANSPORT->bpm);
+        mf, 1,
+        (int)
+        tempo_track_get_current_bpm (P_TEMPO_TRACK));
 
       midiFileSetPPQN (mf, TICKS_PER_QUARTER_NOTE);
 

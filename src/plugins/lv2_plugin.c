@@ -40,9 +40,7 @@
 #include <assert.h>
 #include <math.h>
 #include <signal.h>
-#ifndef __cplusplus
-#    include <stdbool.h>
-#endif
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -52,6 +50,7 @@
 
 #include "audio/engine.h"
 #include "audio/midi.h"
+#include "audio/tempo_track.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/lv2_plugin.h"
@@ -1967,7 +1966,8 @@ lv2_plugin_process (
     lv2_plugin->gframes !=
       g_start_frames ||
     !math_floats_equal (
-      lv2_plugin->bpm, TRANSPORT->bpm);
+      lv2_plugin->bpm,
+      tempo_track_get_current_bpm (P_TEMPO_TRACK));
 # if 0
   if (xport_changed)
     {
@@ -2034,7 +2034,9 @@ lv2_plugin_process (
       lv2_atom_forge_key (
         forge, PM_URIDS.time_beatsPerMinute);
       lv2_atom_forge_float (
-        forge, TRANSPORT->bpm);
+        forge,
+        tempo_track_get_current_bpm (
+          P_TEMPO_TRACK));
     }
 
   /* Update transport state to expected values for
@@ -2052,7 +2054,8 @@ lv2_plugin_process (
       lv2_plugin->gframes = g_start_frames;
       lv2_plugin->rolling = 0;
     }
-  lv2_plugin->bpm = TRANSPORT->bpm;
+  lv2_plugin->bpm =
+    tempo_track_get_current_bpm (P_TEMPO_TRACK);
 
   /* Prepare port buffers */
   for (p = 0; p < lv2_plugin->num_ports; ++p)

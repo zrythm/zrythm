@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,6 +21,7 @@
 #include "audio/engine_dummy.h"
 #include "audio/mixer.h"
 #include "audio/port.h"
+#include "audio/tempo_track.h"
 #include "project.h"
 
 #include <gtk/gtk.h>
@@ -64,10 +65,6 @@ engine_dummy_setup (
 
   g_warn_if_fail (
     TRANSPORT && TRANSPORT->beats_per_bar > 1);
-
-  engine_update_frames_per_tick (
-    self, TRANSPORT->beats_per_bar,
-    TRANSPORT->bpm, self->sample_rate);
 
   /* create ports */
   Port * monitor_out_l, * monitor_out_r;

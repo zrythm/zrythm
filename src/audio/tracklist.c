@@ -43,13 +43,9 @@ tracklist_init_loaded (
   Tracklist * self)
 {
   g_message ("initializing loaded Tracklist...");
-  int i;
-  Track * track;
-  /*Channel * chan;*/
-  /*AutomationTracklist * atl;*/
-  for (i = 0; i < self->num_tracks; i++)
+  for (int i = 0; i < self->num_tracks; i++)
     {
-      track = self->tracks[i];
+      Track * track = self->tracks[i];
 
       if (track->type == TRACK_TYPE_CHORD)
         self->chord_track = track;
@@ -57,6 +53,8 @@ tracklist_init_loaded (
         self->marker_track = track;
       else if (track->type == TRACK_TYPE_MASTER)
         self->master_track = track;
+      else if (track->type == TRACK_TYPE_TEMPO)
+        self->tempo_track = track;
 
       track_init_loaded (track);
     }

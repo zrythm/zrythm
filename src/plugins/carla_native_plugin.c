@@ -25,6 +25,7 @@
 
 #include "audio/engine.h"
 #include "audio/midi.h"
+#include "audio/tempo_track.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
@@ -494,7 +495,7 @@ carla_native_plugin_proces (
   self->time_info.bbt.ticksPerBeat =
     TRANSPORT->ticks_per_beat;
   self->time_info.bbt.beatsPerMinute =
-    TRANSPORT->bpm;
+    tempo_track_get_current_bpm (P_TEMPO_TRACK);
 
   PluginDescriptor * descr =
     self->plugin->descr;

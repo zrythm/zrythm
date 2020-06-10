@@ -23,6 +23,7 @@
 #include "audio/position.h"
 #include "audio/quantize_options.h"
 #include "audio/snap_grid.h"
+#include "audio/tempo_track.h"
 #include "audio/transport.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -37,6 +38,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "zrythm.h"
 
@@ -143,8 +145,13 @@ digital_meter_draw_cb (
     {
     case DIGITAL_METER_TYPE_BPM:
 
-      num_part = (int) TRANSPORT->bpm;
-      dec_part = (int) (TRANSPORT->bpm * 100) % 100;
+      num_part =
+        (int)
+        tempo_track_get_current_bpm (P_TEMPO_TRACK);
+      dec_part =
+        (int)
+        (tempo_track_get_current_bpm (
+           P_TEMPO_TRACK) * 100) % 100;
 
       z_cairo_get_text_extents_for_widget (
         widget, self->seg7_layout, "88888",
@@ -570,7 +577,8 @@ on_change_started (
         ((*self->on_drag_begin) (self->obj));
       break;
     case DIGITAL_METER_TYPE_BPM:
-      TRANSPORT->prev_bpm = TRANSPORT->bpm;
+      self->prev_bpm =
+        tempo_track_get_current_bpm (P_TEMPO_TRACK);
       transport_prepare_audio_regions_for_stretch (
         TRANSPORT, NULL);
       break;
@@ -623,8 +631,10 @@ on_change_finished (
         ((*self->on_drag_end) (self->obj));
       break;
     case DIGITAL_METER_TYPE_BPM:
-      transport_set_bpm (
-        TRANSPORT, TRANSPORT->bpm, false, true);
+      tempo_track_set_bpm (
+        P_TEMPO_TRACK,
+        tempo_track_get_current_bpm (P_TEMPO_TRACK),
+        self->prev_bpm, false, F_PUBLISH_EVENTS);
       break;
     default:
       break;
@@ -659,17 +669,19 @@ on_scroll (
       /*g_message ("update num ? %d", self->update_num);*/
       if (self->update_num)
         {
-          transport_set_bpm (
-            TRANSPORT,
-            TRANSPORT->bpm + (bpm_t) num, true,
-            true);
+          tempo_track_set_bpm (
+            P_TEMPO_TRACK,
+            tempo_track_get_current_bpm (
+              P_TEMPO_TRACK) + (bpm_t) num,
+            0.f, true, F_PUBLISH_EVENTS);
         }
       else if (self->update_dec)
         {
-          transport_set_bpm (
-            TRANSPORT,
-            TRANSPORT->bpm + (bpm_t) num / 100.f,
-            true, true);
+          tempo_track_set_bpm (
+            P_TEMPO_TRACK,
+            tempo_track_get_current_bpm (
+              P_TEMPO_TRACK) + (bpm_t) num / 100.f,
+            0.f, true, F_PUBLISH_EVENTS);
         }
 
       break;
@@ -826,10 +838,11 @@ drag_update (
           /*g_message ("updating num with %d", num);*/
           if (abs (num) > 0)
             {
-              transport_set_bpm (
-                TRANSPORT,
-                TRANSPORT->bpm + (bpm_t) num,
-                true, true);
+              tempo_track_set_bpm (
+                P_TEMPO_TRACK,
+                tempo_track_get_current_bpm (
+                  P_TEMPO_TRACK) + (bpm_t) num,
+                0.f, true, F_PUBLISH_EVENTS);
               self->last_y = offset_y;
               self->last_x = offset_x;
             }
@@ -840,10 +853,11 @@ drag_update (
           g_message ("%f", (double) dec);
           if (fabs (dec) > 0)
             {
-              transport_set_bpm (
-                TRANSPORT,
-                TRANSPORT->bpm + (bpm_t) dec,
-                true, true);
+              tempo_track_set_bpm (
+                P_TEMPO_TRACK,
+                tempo_track_get_current_bpm (
+                  P_TEMPO_TRACK) + (bpm_t) dec,
+                0.f, true, F_PUBLISH_EVENTS);
               self->last_y = offset_y;
               self->last_x = offset_x;
             }

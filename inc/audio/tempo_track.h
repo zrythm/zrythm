@@ -71,6 +71,32 @@ tempo_track_get_bpm_at_pos (
   const Position * pos);
 
 /**
+ * Returns the current BPM.
+ */
+bpm_t
+tempo_track_get_current_bpm (
+  Track * self);
+
+/**
+ * Sets the BPM.
+ *
+ * @param update_snap_points Whether to update the
+ *   snap points.
+ * @param stretch_audio_region Whether to stretch
+ *   audio regions. This should only be true when
+ *   the BPM change is final.
+ * @param start_bpm The BPM at the start of the
+ *   action, if not temporary.
+ */
+void
+tempo_track_set_bpm (
+  Track * self,
+  bpm_t   bpm,
+  bpm_t   start_bpm,
+  bool    temporary,
+  bool    fire_events);
+
+/**
  * Frees the Track.
  */
 void

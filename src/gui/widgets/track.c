@@ -1499,7 +1499,7 @@ show_context_menu (
               g_strdup (_("_Delete Tracks"));
           menuitem =
             z_gtk_create_menu_item (
-              str, "z-edit-delete", 0, NULL, 0,
+              str, "edit-delete", 0, NULL, 0,
               "win.delete-selected-tracks");
           g_free (str);
           APPEND (menuitem);
@@ -1514,7 +1514,7 @@ show_context_menu (
           menuitem =
             z_gtk_create_menu_item (
               str,
-              "z-edit-copy",
+              "edit-copy",
               0,
               NULL,
               0,
@@ -1528,7 +1528,7 @@ show_context_menu (
         {
           menuitem =
             z_gtk_create_menu_item (
-              _("Add Region"), "z-list-add",
+              _("Add Region"), "list-add",
               0, NULL, 0,
               "win.duplicate-selected-tracks");
           APPEND (menuitem);
@@ -1539,7 +1539,7 @@ show_context_menu (
           num_selected == 1 ?
             _("Hide Track") :
             _("Hide Tracks"),
-          "z-view-hidden", 0, NULL, 0,
+          "view-hidden", 0, NULL, 0,
           "win.hide-selected-tracks");
       APPEND (menuitem);
 
@@ -1548,7 +1548,7 @@ show_context_menu (
           num_selected == 1 ?
             _("Pin/Unpin Track") :
             _("Pin/Unpin Tracks"),
-          "z-window-pin",
+          "window-pin",
           0,
           NULL,
           0,

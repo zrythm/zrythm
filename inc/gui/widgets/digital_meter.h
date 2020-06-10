@@ -29,6 +29,8 @@
 
 #include <stdbool.h>
 
+#include "utils/types.h"
+
 #include <gtk/gtk.h>
 
 #define DIGITAL_METER_WIDGET_TYPE \
@@ -74,15 +76,25 @@ typedef struct _DigitalMeterWidget
   int                      height_start_pos;
   int                      height_end_pos;
 
+  /* ========= BPM ========= */
   /* for BPM */
   int                      num_part_start_pos;
   int                      num_part_end_pos;
   int                      dec_part_start_pos;
   int                      dec_part_end_pos;
-  int                      update_num; ///< flag to update bpm
-  int                      update_dec; ///< flag to update bpm decimal
 
-  /* for position */
+  /** Used when changing the BPM. */
+  bpm_t                    prev_bpm;
+
+  /** Flag to update BPM. */
+  bool                     update_num;
+  /** Flag to update BPM decimal. */
+  bool                     update_dec;
+
+  /* ========= BPM end ========= */
+
+  /* ========= position ========= */
+
   int                      bars_start_pos;
   int                      bars_end_pos;
   int                      beats_start_pos;
@@ -98,6 +110,10 @@ typedef struct _DigitalMeterWidget
   int                      update_sixteenths;
   int                      update_ticks;
 
+  /* ========= position end ========= */
+
+  /* ========= time ========= */
+
   /** For time. */
   int                      minutes_start_pos;
   int                      minutes_end_pos;
@@ -110,6 +126,8 @@ typedef struct _DigitalMeterWidget
   int                      update_minutes;
   int                      update_seconds;
   int                      update_ms;
+
+  /* ========= time end ========= */
 
   /* for note length/type */
   NoteLength *             note_length;

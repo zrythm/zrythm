@@ -804,18 +804,21 @@ expose_to_jack (
     {
       g_message (
         "unexposing port %s from JACK", label);
-      int ret =
-        jack_port_unregister (
-          AUDIO_ENGINE->client,
-          JACK_PORT_T (self->data));
-      if (ret)
+      if (AUDIO_ENGINE->client)
         {
-          char jack_error[600];
-          engine_jack_get_error_message (
-            (jack_status_t) ret, jack_error);
-          g_warning (
-            "JACK port unregister error: %s",
-            jack_error);
+          int ret =
+            jack_port_unregister (
+              AUDIO_ENGINE->client,
+              JACK_PORT_T (self->data));
+          if (ret)
+            {
+              char jack_error[600];
+              engine_jack_get_error_message (
+                (jack_status_t) ret, jack_error);
+              g_warning (
+                "JACK port unregister error: %s",
+                jack_error);
+            }
         }
       self->internal_type = INTERNAL_NONE;
       self->data = NULL;
@@ -2080,6 +2083,16 @@ port_set_control_value (
       /* remember time */
       self->last_change = g_get_monotonic_time ();
       self->value_changed_from_reading = false;
+
+      /* if bpm, update engine */
+      if (id->flags & PORT_FLAG_BPM)
+        {
+          engine_update_frames_per_tick (
+            AUDIO_ENGINE, TRANSPORT->beats_per_bar,
+            self->control,
+            AUDIO_ENGINE->sample_rate);
+          EVENTS_PUSH (ET_BPM_CHANGED, NULL);
+        }
     }
 
   if (forward_event)

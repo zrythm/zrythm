@@ -44,54 +44,6 @@
 #include <gtk/gtk.h>
 
 /**
- * Sets BPM.
- *
- * @param update_snap_points Whether to update the
- *   snap points.
- * @param stretch_audio_region Whether to stretch
- *   audio regions. This should only be true when
- *   the BPM change is final.
- */
-void
-transport_set_bpm (
-  Transport * self,
-  bpm_t       bpm,
-  bool        temporary,
-  bool        fire_events)
-{
-  g_message (
-    "%s: bpm <%f>, temporary <%d>",
-    __func__, (double) bpm, temporary);
-
-  if (bpm < TRANSPORT_MIN_BPM)
-    {
-      bpm = TRANSPORT_MIN_BPM;
-    }
-  else if (bpm > TRANSPORT_MAX_BPM)
-    {
-      bpm = TRANSPORT_MAX_BPM;
-    }
-
-  self->bpm = bpm;
-
-  if (!temporary)
-    {
-      UndoableAction * action =
-        transport_action_new_bpm_change (
-          self->prev_bpm, self->bpm, false);
-      undo_manager_perform (
-        UNDO_MANAGER, action);
-
-      self->prev_bpm = self->bpm;
-    }
-
-  if (fire_events)
-    {
-      EVENTS_PUSH (ET_BPM_CHANGED, NULL);
-    }
-}
-
-/**
  * Initialize transport
  */
 void
@@ -127,9 +79,6 @@ transport_init (
         /*&self->end_marker_pos, 128);*/
       position_set_to_bar (&self->loop_start_pos, 1);
       position_set_to_bar (&self->loop_end_pos, 5);
-
-      transport_set_bpm (
-        self, TRANSPORT_DEFAULT_BPM, true, false);
     }
 
   /* set playstate */
@@ -145,7 +94,7 @@ transport_init (
       S_TRANSPORT, "metronome-enabled");
 
 
-  zix_sem_init(&self->paused, 0);
+  zix_sem_init (&self->paused, 0);
 }
 
 /**

@@ -579,6 +579,11 @@ create_default (Project * self)
     TRACKLIST_SELECTIONS, track, 0);
   self->last_selection = SELECTION_TYPE_TRACK;
 
+  engine_update_frames_per_tick (
+    AUDIO_ENGINE, TRANSPORT->beats_per_bar,
+    tempo_track_get_current_bpm (P_TEMPO_TRACK),
+    AUDIO_ENGINE->sample_rate);
+
   /* create untitled project */
   create_and_set_dir_and_title (
     self, ZRYTHM->create_project_path);
@@ -814,16 +819,33 @@ load (
   /* re-update paths for the newly loaded project */
   set_dir (prj, dir);
 
-  undo_manager_init (&PROJECT->undo_manager, 1);
-  engine_init (AUDIO_ENGINE, 1);
+  /* set the tempo track */
+  for (int i = 0; i < prj->tracklist.num_tracks;
+       i++)
+    {
+      Track * track = prj->tracklist.tracks[i];
+
+      if (track->type == TRACK_TYPE_TEMPO)
+        {
+          prj->tracklist.tempo_track = track;
+          break;
+        }
+    }
+
+  undo_manager_init (&PROJECT->undo_manager, true);
+  engine_init (AUDIO_ENGINE, true);
 
   char * filepath_noext = g_path_get_basename (dir);
   PROJECT->title = filepath_noext;
 
   g_free (dir);
-
-  tracklist_init_loaded (&PROJECT->tracklist);
   clip_editor_init_loaded (CLIP_EDITOR);
+  tracklist_init_loaded (&PROJECT->tracklist);
+
+  engine_update_frames_per_tick (
+    AUDIO_ENGINE, TRANSPORT->beats_per_bar,
+    tempo_track_get_current_bpm (P_TEMPO_TRACK),
+    AUDIO_ENGINE->sample_rate);
 
   /* init ports */
   int max_size = 20;

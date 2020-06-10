@@ -364,10 +364,14 @@ node_process (
   else if (node->type ==
            ROUTE_NODE_TYPE_TRACK)
     {
-      track_processor_process (
-        &node->track->processor,
-        g_start_frames, local_offset,
-        nframes);
+      if (node->track->type != TRACK_TYPE_TEMPO &&
+          node->track->type != TRACK_TYPE_MARKER)
+        {
+          track_processor_process (
+            &node->track->processor,
+            g_start_frames, local_offset,
+            nframes);
+        }
     }
   else if (node->type == ROUTE_NODE_TYPE_PORT)
     {

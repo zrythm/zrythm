@@ -87,7 +87,7 @@ port_connection_row_widget_new (
   /* power button */
   GtkToggleButton * btn =
     z_gtk_toggle_button_new_with_icon (
-      "z-network-connect");
+      "network-connect");
   gtk_toggle_button_set_active (btn, enabled);
   gtk_widget_set_visible (GTK_WIDGET (btn), 1);
   gtk_box_pack_start (
@@ -127,7 +127,7 @@ port_connection_row_widget_new (
   self->delete_btn =
     GTK_BUTTON (
       gtk_button_new_from_icon_name (
-        "z-edit-delete", GTK_ICON_SIZE_BUTTON));
+        "edit-delete", GTK_ICON_SIZE_BUTTON));
   gtk_widget_set_visible (
     GTK_WIDGET (self->delete_btn), 1);
   gtk_container_add (

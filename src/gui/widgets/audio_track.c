@@ -175,7 +175,7 @@ audio_track_widget_init (AudioTrackWidget * self)
 
   /* create buttons */
   self->record =
-    z_gtk_toggle_button_new_with_icon ("z-media-record");
+    z_gtk_toggle_button_new_with_icon ("media-record");
   context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self->record));
@@ -196,10 +196,10 @@ audio_track_widget_init (AudioTrackWidget * self)
       "mute.svg");
   self->show_automation =
     z_gtk_toggle_button_new_with_icon (
-      "z-node-type-cusp");
+      "node-type-cusp");
   self->show_lanes =
     z_gtk_toggle_button_new_with_icon (
-      "z-format-justify-fill");
+      "format-justify-fill");
   ui_add_widget_tooltip (
     self->show_lanes,
     _("Show track lanes"));

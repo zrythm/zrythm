@@ -147,7 +147,7 @@ modulator_widget_new (
     modulator->name);
   expander_box_widget_set_icon_name (
     Z_EXPANDER_BOX_WIDGET (self),
-    "z-insert-math-expression");
+    "insert-math-expression");
 
   self->controls_box =
     GTK_BOX (

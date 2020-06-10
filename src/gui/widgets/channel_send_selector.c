@@ -154,7 +154,7 @@ setup_treeview (
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
     list_store, &iter,
-    0, "z-edit-none",
+    0, "edit-none",
     1, _("None"),
     2, target,
     -1);
@@ -187,7 +187,7 @@ setup_treeview (
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
         list_store, &iter,
-        0, "z-media-album-track",
+        0, "media-album-track",
         1, target_track->name,
         2, target,
         -1);

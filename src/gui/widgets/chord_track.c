@@ -94,7 +94,7 @@ chord_track_widget_init (ChordTrackWidget * self)
   /* create buttons */
   self->record =
     z_gtk_toggle_button_new_with_icon (
-      "z-media-record");
+      "media-record");
   context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self->record));
@@ -137,7 +137,7 @@ chord_track_widget_init (ChordTrackWidget * self)
     GTK_WIDGET (self), -1, 42);
 
   /* set icon */
-  SET_TRACK_ICON ("z-minuet-chords");
+  SET_TRACK_ICON ("minuet-chords");
 }
 
 static void

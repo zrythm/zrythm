@@ -97,6 +97,71 @@ tempo_track_get_bpm_at_pos (
 }
 
 /**
+ * Returns the current BPM.
+ */
+bpm_t
+tempo_track_get_current_bpm (
+  Track * self)
+{
+  return
+    port_get_control_value (
+      self->bpm_port, false);
+}
+
+/**
+ * Sets the BPM.
+ *
+ * @param update_snap_points Whether to update the
+ *   snap points.
+ * @param stretch_audio_region Whether to stretch
+ *   audio regions. This should only be true when
+ *   the BPM change is final.
+ * @param start_bpm The BPM at the start of the
+ *   action, if not temporary.
+ */
+void
+tempo_track_set_bpm (
+  Track * self,
+  bpm_t   bpm,
+  bpm_t   start_bpm,
+  bool    temporary,
+  bool    fire_events)
+{
+  g_message (
+    "%s: bpm <%f>, temporary <%d>",
+    __func__, (double) bpm, temporary);
+
+  if (bpm < TRANSPORT_MIN_BPM)
+    {
+      bpm = TRANSPORT_MIN_BPM;
+    }
+  else if (bpm > TRANSPORT_MAX_BPM)
+    {
+      bpm = TRANSPORT_MAX_BPM;
+    }
+
+  port_set_control_value (
+    self->bpm_port, bpm, false, false);
+
+  if (!temporary)
+    {
+      UndoableAction * action =
+        transport_action_new_bpm_change (
+          start_bpm,
+          port_get_control_value (
+            self->bpm_port, false),
+          false);
+      undo_manager_perform (
+        UNDO_MANAGER, action);
+    }
+
+  if (fire_events)
+    {
+      EVENTS_PUSH (ET_BPM_CHANGED, NULL);
+    }
+}
+
+/**
  * Removes all objects from the tempo track.
  *
  * Mainly used in testing.

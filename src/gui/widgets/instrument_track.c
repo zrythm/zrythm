@@ -213,7 +213,7 @@ instrument_track_widget_init (
   /* create buttons */
   self->record =
     z_gtk_toggle_button_new_with_icon (
-      "z-media-record");
+      "media-record");
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->record),
     _("Record"));
@@ -247,19 +247,19 @@ instrument_track_widget_init (
     GTK_WIDGET (self->show_ui), "Show UI");
   self->show_automation =
     z_gtk_toggle_button_new_with_icon (
-      "z-node-type-cusp");
+      "node-type-cusp");
   ui_add_widget_tooltip (
     self->show_automation,
     _("Show automation lanes"));
   self->show_lanes =
     z_gtk_toggle_button_new_with_icon (
-      "z-format-justify-fill");
+      "format-justify-fill");
   ui_add_widget_tooltip (
     self->show_lanes,
     _("Show track lanes"));
   self->lock =
     z_gtk_toggle_button_new_with_icon (
-      "z-document-decrypt");
+      "document-decrypt");
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->lock),
     _("Lock track"));
@@ -323,7 +323,7 @@ instrument_track_widget_init (
     0);
 
   /* set icon */
-  SET_TRACK_ICON ("z-audio-midi");
+  SET_TRACK_ICON ("audio-midi");
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }

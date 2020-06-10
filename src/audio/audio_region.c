@@ -146,7 +146,9 @@ audio_region_get_clip (
   AudioClip * clip =
     AUDIO_POOL->clips[self->pool_id];
 
-  g_return_val_if_fail (clip, NULL);
+  g_return_val_if_fail (
+    clip && clip->frames && clip->num_frames > 0,
+    NULL);
 
   return clip;
 }

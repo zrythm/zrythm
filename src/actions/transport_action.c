@@ -19,6 +19,7 @@
 
 #include "actions/transport_action.h"
 #include "audio/engine.h"
+#include "audio/tempo_track.h"
 #include "audio/transport.h"
 #include "gui/backend/events.h"
 #include "project.h"
@@ -26,6 +27,9 @@
 
 #include <glib/gi18n.h>
 
+/**
+ * FIXME make a general port change action.
+ */
 UndoableAction *
 transport_action_new_bpm_change (
   bpm_t           bpm_before,
@@ -51,13 +55,16 @@ do_or_undo (
   TransportAction * self,
   bool              _do)
 {
-  TRANSPORT->bpm =
-    _do ? self->bpm_after : self->bpm_before;
+  port_set_control_value (
+    P_TEMPO_TRACK->bpm_port,
+    _do ? self->bpm_after : self->bpm_before,
+    false, false);
   g_message ("set BPM to %f",
-    (double) TRANSPORT->bpm);
+    (double)
+    tempo_track_get_current_bpm (P_TEMPO_TRACK));
   engine_update_frames_per_tick (
     AUDIO_ENGINE, TRANSPORT->beats_per_bar,
-    TRANSPORT->bpm,
+    tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate);
 
   snap_grid_update_snap_points (SNAP_GRID_TIMELINE);

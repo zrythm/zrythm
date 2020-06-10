@@ -65,6 +65,7 @@
 #include "audio/routing.h"
 #include "audio/sample_playback.h"
 #include "audio/sample_processor.h"
+#include "audio/tempo_track.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
@@ -495,12 +496,6 @@ engine_init (
     {
       self->pool = audio_pool_new ();
     }
-
-  engine_update_frames_per_tick (
-    self,
-    TRANSPORT->beats_per_bar,
-    TRANSPORT->bpm,
-    self->sample_rate);
 }
 
 /**

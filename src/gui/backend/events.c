@@ -1433,6 +1433,17 @@ events_process (void * data)
           ruler_widget_refresh (EDITOR_RULER);
           gtk_widget_queue_draw (
             GTK_WIDGET (MW_DIGITAL_BPM));
+
+          /* these are only used in the UI so
+           * no need to update them during DSP */
+          snap_grid_update_snap_points (
+            &PROJECT->snap_grid_timeline);
+          snap_grid_update_snap_points (
+            &PROJECT->snap_grid_midi);
+          quantize_options_update_quantize_points (
+            &PROJECT->quantize_opts_timeline);
+          quantize_options_update_quantize_points (
+            &PROJECT->quantize_opts_editor);
           break;
         case ET_CHANNEL_FADER_VAL_CHANGED:
           channel_widget_redraw_fader (

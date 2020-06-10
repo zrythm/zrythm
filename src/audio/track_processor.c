@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -365,6 +365,7 @@ track_processor_process (
   const nframes_t  nframes)
 {
   Track * tr = track_processor_get_track (self);
+  g_return_if_fail (tr);
 
   /* set the audio clip contents to stereo out */
   if (tr->type == TRACK_TYPE_AUDIO)

@@ -148,12 +148,6 @@ typedef struct Transport
    * FIXME is this used? */
   nframes_t          position;
 
-  /** Transport tempo in beats per minute. */
-  bpm_t              bpm;
-
-  /** Used when changing the BPM. */
-  bpm_t              prev_bpm;
-
   /** Transport speed (0=stop, 1=play). */
   int               rolling;
 
@@ -231,9 +225,6 @@ transport_fields_schema[] =
   CYAML_FIELD_INT (
     "position", CYAML_FLAG_DEFAULT,
     Transport, position),
-  CYAML_FIELD_FLOAT (
-    "bpm", CYAML_FLAG_DEFAULT,
-    Transport, bpm),
   CYAML_FIELD_INT (
     "recording", CYAML_FLAG_DEFAULT,
     Transport, recording),
@@ -256,25 +247,6 @@ void
 transport_init (
   Transport * self,
   int         loading);
-
-/**
- * Sets BPM.
- *
- * @param temporary Whether this is a temporary
- *   change (\ref Transport.prev_bpm will not
- *   change).
- * @param update_snap_points Whether to update the
- *   snap points.
- * @param stretch_audio_region Whether to stretch
- *   audio regions. This should only be true when
- *   the BPM change is final.
- */
-void
-transport_set_bpm (
-  Transport * self,
-  bpm_t       bpm,
-  bool        temporary,
-  bool        fire_events);
 
 /**
  * Prepares audio regions for stretching (sets the

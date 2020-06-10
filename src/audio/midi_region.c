@@ -43,6 +43,7 @@
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
 #include "audio/region.h"
+#include "audio/tempo_track.h"
 #include "audio/track.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -768,7 +769,9 @@ midi_region_export_to_midi_file (
     {
       /* Write tempo information out to track 1 */
       midiSongAddTempo (
-        mf, 1, (int) TRANSPORT->bpm);
+        mf, 1,
+        (int)
+        tempo_track_get_current_bpm (P_TEMPO_TRACK));
 
       /* All data is written out to _tracks_ not
        * channels. We therefore

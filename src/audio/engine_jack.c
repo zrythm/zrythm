@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +29,7 @@
 #include "audio/mixer.h"
 #include "audio/port.h"
 #include "audio/routing.h"
+#include "audio/tempo_track.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
@@ -213,11 +214,14 @@ sample_rate_cb (
 {
   AUDIO_ENGINE->sample_rate = nframes;
 
-  engine_update_frames_per_tick (
-    self,
-    TRANSPORT->beats_per_bar,
-    TRANSPORT->bpm,
-    AUDIO_ENGINE->sample_rate);
+  if (P_TEMPO_TRACK)
+    {
+      engine_update_frames_per_tick (
+        self,
+        TRANSPORT->beats_per_bar,
+        tempo_track_get_current_bpm (P_TEMPO_TRACK),
+        AUDIO_ENGINE->sample_rate);
+    }
 
   g_message (
     "JACK: Sample rate changed to %d", nframes);
@@ -286,10 +290,11 @@ engine_jack_prepare_process (
         {
           TRANSPORT->beats_per_bar =
             (int) pos.beats_per_bar;
-          transport_set_bpm (
-            TRANSPORT,
-            (float) pos.beats_per_minute, false,
-            true);
+          tempo_track_set_bpm (
+            P_TEMPO_TRACK,
+            (float) pos.beats_per_minute,
+            (float) pos.beats_per_minute,
+            true, true);
           transport_set_beat_unit (
             TRANSPORT, (int) pos.beat_type);
         }
@@ -372,7 +377,8 @@ timebase_cb (
   pos->ticks_per_beat =
     TRANSPORT->ticks_per_beat;
   pos->beats_per_minute =
-    (double) TRANSPORT->bpm;
+    (double)
+    tempo_track_get_current_bpm (P_TEMPO_TRACK);
 }
 
 /**
@@ -747,6 +753,7 @@ engine_jack_tear_down (
   AudioEngine * self)
 {
   jack_client_close (self->client);
+  self->client = NULL;
 
   /* init semaphore */
   zix_sem_init (

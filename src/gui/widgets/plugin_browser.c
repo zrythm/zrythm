@@ -455,7 +455,7 @@ create_model_for_plugins (
         icon_name =
           g_strdup ("plugins");
       /*else if (!strcmp (descr->category, "Distortion"))*/
-        /*icon_name = "z-distortionfx";*/
+        /*icon_name = "distortionfx";*/
 
       // Add a new row to the model
       gtk_list_store_append (list_store, &iter);

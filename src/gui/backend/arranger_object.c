@@ -753,6 +753,7 @@ init_loaded_region (
       {
         AudioClip * clip =
           audio_region_get_clip (self);
+        g_return_if_fail (clip);
 
         /* copy the clip frames to the cache. */
         self->frames =
