@@ -154,17 +154,17 @@ typedef enum TrackType
 static const cyaml_strval_t
 track_type_strings[] =
 {
-  { __("Instrument"),  TRACK_TYPE_INSTRUMENT    },
-  { __("Audio"),       TRACK_TYPE_AUDIO   },
-  { __("Master"),      TRACK_TYPE_MASTER   },
-  { __("Chord"),       TRACK_TYPE_CHORD   },
-  { __("Marker"),      TRACK_TYPE_MARKER   },
-  { __("Tempo"),       TRACK_TYPE_TEMPO   },
-  { __("Audio Bus"),   TRACK_TYPE_AUDIO_BUS   },
-  { __("Audio Group"), TRACK_TYPE_AUDIO_GROUP   },
-  { __("MIDI"),        TRACK_TYPE_MIDI   },
-  { __("MIDI Bus"),    TRACK_TYPE_MIDI_BUS   },
-  { __("MIDI Group"),  TRACK_TYPE_MIDI_GROUP   },
+  { __("Instrument"),   TRACK_TYPE_INSTRUMENT    },
+  { __("Audio"),        TRACK_TYPE_AUDIO   },
+  { __("Master"),       TRACK_TYPE_MASTER   },
+  { __("Chord"),        TRACK_TYPE_CHORD   },
+  { __("Marker"),       TRACK_TYPE_MARKER   },
+  { __("Tempo"),        TRACK_TYPE_TEMPO   },
+  { __("Audio FX"),     TRACK_TYPE_AUDIO_BUS   },
+  { __("Audio Group"),  TRACK_TYPE_AUDIO_GROUP   },
+  { __("MIDI"),         TRACK_TYPE_MIDI   },
+  { __("MIDI FX"),      TRACK_TYPE_MIDI_BUS   },
+  { __("MIDI Group"),   TRACK_TYPE_MIDI_GROUP   },
 };
 
 /**
@@ -960,6 +960,13 @@ track_disconnect (
   Track * self,
   bool    remove_pl,
   bool    recalc_graph);
+
+static inline const char *
+track_type_to_string (
+  TrackType type)
+{
+  return track_type_strings[type].str;
+}
 
 /**
  * Wrapper for each track type.
