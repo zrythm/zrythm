@@ -184,6 +184,27 @@ clip_editor_get_region_for_widgets (
 }
 #endif
 
+ArrangerSelections *
+clip_editor_get_arranger_selections (
+  ClipEditor * self)
+{
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (!region)
+    {
+      return NULL;
+    }
+
+  ArrangerSelections * sel =
+    region_get_arranger_selections (region);
+  if (!sel)
+    {
+      return NULL;
+    }
+
+  return sel;
+}
+
 void
 clip_editor_init (ClipEditor * self)
 {

@@ -67,7 +67,16 @@ on_quantize_clicked (
 {
   if (QUANTIZE_OPTIONS_IS_EDITOR (self->opts))
     {
-      /* TODO */
+      ArrangerSelections * sel =
+        clip_editor_get_arranger_selections (
+          CLIP_EDITOR);
+      g_return_if_fail (sel);
+
+      UndoableAction * ua =
+        arranger_selections_action_new_quantize (
+          sel, self->opts);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
     }
   else if (QUANTIZE_OPTIONS_IS_TIMELINE (self->opts))
     {

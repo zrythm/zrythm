@@ -570,6 +570,14 @@ region_copy_children (
   ZRegion * src);
 
 /**
+ * Returns the ArrangerSelections based on the
+ * given region type.
+ */
+ArrangerSelections *
+region_get_arranger_selections (
+  ZRegion * self);
+
+/**
  * Disconnects the region and anything using it.
  *
  * Does not free the ZRegion or its children's

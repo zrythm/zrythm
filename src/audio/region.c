@@ -982,6 +982,38 @@ region_is_hit (
 }
 
 /**
+ * Returns the ArrangerSelections based on the
+ * given region type.
+ */
+ArrangerSelections *
+region_get_arranger_selections (
+  ZRegion * self)
+{
+  ArrangerSelections * sel = NULL;
+  switch (self->id.type)
+    {
+    case REGION_TYPE_MIDI:
+      sel =
+        (ArrangerSelections *) MA_SELECTIONS;
+      break;
+    case REGION_TYPE_AUTOMATION:
+      sel =
+        (ArrangerSelections *)
+        AUTOMATION_SELECTIONS;
+      break;
+    case REGION_TYPE_CHORD:
+      sel =
+        (ArrangerSelections *)
+        CHORD_SELECTIONS;
+      break;
+    default:
+      break;
+    }
+
+  return sel;
+}
+
+/**
  * Returns whether the region is effectively in
  * musical mode.
  *

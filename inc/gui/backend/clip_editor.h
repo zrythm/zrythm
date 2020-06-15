@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -32,6 +32,9 @@
 #include "gui/backend/chord_editor.h"
 #include "gui/backend/piano_roll.h"
 
+typedef struct ZRegion ZRegion;
+typedef struct ArrangerSelections ArrangerSelections;
+
 /**
  * @addtogroup gui_backend
  *
@@ -39,8 +42,6 @@
  */
 
 #define CLIP_EDITOR (&PROJECT->clip_editor)
-
-typedef struct ZRegion ZRegion;
 
 /**
  * Clip editor serializable backend.
@@ -137,6 +138,10 @@ clip_editor_set_region (
 
 ZRegion *
 clip_editor_get_region (
+  ClipEditor * self);
+
+ArrangerSelections *
+clip_editor_get_arranger_selections (
   ClipEditor * self);
 
 #if 0

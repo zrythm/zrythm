@@ -95,6 +95,36 @@
 #include <glib/gi18n.h>
 
 static void
+redraw_arranger_for_selections (
+  ArrangerSelections * sel)
+{
+  switch (sel->type)
+    {
+    case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+      arranger_widget_redraw_whole (MW_TIMELINE);
+      arranger_widget_redraw_whole (
+        MW_PINNED_TIMELINE);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+      arranger_widget_redraw_whole (
+        MW_AUTOMATION_ARRANGER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_MIDI:
+      arranger_widget_redraw_whole (
+        MW_MIDI_ARRANGER);
+      arranger_widget_redraw_whole (
+        MW_MIDI_MODIFIER_ARRANGER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_CHORD:
+      arranger_widget_redraw_whole (
+        MW_CHORD_ARRANGER);
+      break;
+    default:
+      break;
+    }
+}
+
+static void
 redraw_all_arranger_bgs ()
 {
   arranger_widget_redraw_whole (MW_TIMELINE);
@@ -1081,6 +1111,10 @@ events_process (void * data)
           break;
         case ET_ARRANGER_SELECTIONS_MOVED:
           on_arranger_selections_moved (
+            ARRANGER_SELECTIONS (ev->arg));
+          break;
+        case ET_ARRANGER_SELECTIONS_QUANTIZED:
+          redraw_arranger_for_selections (
             ARRANGER_SELECTIONS (ev->arg));
           break;
         case ET_ARRANGER_SELECTIONS_ACTION_FINISHED:

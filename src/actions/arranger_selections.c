@@ -1987,7 +1987,7 @@ do_or_undo_quantize (
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
   EVENTS_PUSH (
-    ET_ARRANGER_SELECTIONS_CHANGED, sel);
+    ET_ARRANGER_SELECTIONS_QUANTIZED, sel);
 
   self->first_run = 0;
 

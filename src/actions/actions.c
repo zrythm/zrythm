@@ -1740,6 +1740,15 @@ activate_quick_quantize (
     }
   else if (string_is_equal (variant, "editor", 1))
     {
+      ArrangerSelections * sel =
+        clip_editor_get_arranger_selections (
+          CLIP_EDITOR);
+      g_return_if_fail (sel);
+      UndoableAction * ua =
+        arranger_selections_action_new_quantize (
+          sel, QUANTIZE_OPTIONS_EDITOR);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
     }
   else if (string_is_equal (variant, "global", 1))
     {
