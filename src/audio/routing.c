@@ -1329,18 +1329,7 @@ get_node_single_playback_latency (
       /* latency is already set at this point */
       return node->pl->latency;
     case ROUTE_NODE_TYPE_TRACK:
-      if (node->track->type == TRACK_TYPE_AUDIO)
-        {
-          Track * track = node->track;
-          return
-            (nframes_t)
-            stretcher_get_latency (
-              track->rt_stretcher);
-        }
-      else
-        {
-          return 0;
-        }
+      return 0;
     default:
       break;
     }

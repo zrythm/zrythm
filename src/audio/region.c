@@ -991,6 +991,11 @@ bool
 region_get_musical_mode (
   ZRegion * self)
 {
+  if (ZRYTHM_TESTING)
+    {
+      return true;
+    }
+
   switch (self->musical_mode)
     {
     case REGION_MUSICAL_MODE_INHERIT:
