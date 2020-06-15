@@ -23,7 +23,6 @@
 
 #include "audio/engine.h"
 #include "audio/engine_rtaudio.h"
-#include "audio/tempo_track.h"
 #include "settings/settings.h"
 #include "project.h"
 #include "zrythm.h"
@@ -237,11 +236,6 @@ engine_rtaudio_setup (
     }
   self->block_length = buffer_size;
   self->sample_rate = (sample_rate_t) samplerate;
-
-  engine_update_frames_per_tick (
-    self, TRANSPORT->beats_per_bar,
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    self->sample_rate);
 
   /* create ports */
   Port * monitor_out_l, * monitor_out_r;
