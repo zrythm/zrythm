@@ -71,6 +71,8 @@ control_port_is_toggled (
 
 /**
  * Get the current real value of the control.
+ *
+ * TODO "normalize" parameter.
  */
 float
 control_port_get_val (

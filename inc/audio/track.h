@@ -273,6 +273,13 @@ typedef struct Track
 
   /* ==== INSTRUMENT/MIDI/AUDIO TRACK END ==== */
 
+  /* ==== AUDIO TRACK ==== */
+
+  /** Real-time time stretcher. */
+  Stretcher *          rt_stretcher;
+
+  /* ==== AUDIO TRACK END ==== */
+
   /* ==== CHORD TRACK ==== */
 
   /**

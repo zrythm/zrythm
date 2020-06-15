@@ -37,7 +37,7 @@
 #define GSETTINGS_ZRYTHM_PREFIX "org.zrythm.Zrythm"
 #define SETTINGS (&ZRYTHM->settings)
 #define S_UI SETTINGS->ui
-#define S_EXPORT SETTINGS->ui
+#define S_EXPORT SETTINGS->export
 #define S_P_DSP_PAN SETTINGS->preferences_dsp_pan
 #define S_P_EDITING_AUDIO \
   SETTINGS->preferences_editing_audio

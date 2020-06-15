@@ -1,7 +1,5 @@
 /*
- * audio/audio_region.h - Audio region
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -70,6 +68,15 @@ audio_region_new (
   int              track_pos,
   int              lane_pos,
   int              idx_inside_lane);
+
+/**
+ * Allocates the frame caches from the frames in
+ * the clip.
+ */
+void
+audio_region_init_frame_caches (
+  AudioRegion * self,
+  AudioClip *   clip);
 
 /**
  * Returns the audio clip associated with the

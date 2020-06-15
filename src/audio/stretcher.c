@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -49,44 +49,128 @@
  * backend.
  *
  * @param samplerate The new samplerate.
- * @param time_ratio The ratio to multiply time by (eg
- *   if the BPM is doubled, this will be 0.5).
- * @param pitch_ratio The ratio to pitch by. This will
- *   normally be 1.0 when time-stretching).
+ * @param time_ratio The ratio to multiply time by
+ *   (eg if the BPM is doubled, this will be 0.5).
+ * @param pitch_ratio The ratio to pitch by. This
+ *   will normally be 1.0 when time-stretching).
+ * @param realtime Whether to perform realtime
+ *   stretching (lower quality but fast enough to
+ *   be used real-time).
  */
 Stretcher *
 stretcher_new_rubberband (
   unsigned int   samplerate,
   unsigned int   channels,
   double         time_ratio,
-  double         pitch_ratio)
+  double         pitch_ratio,
+  bool           realtime)
 {
   Stretcher * self = calloc (1, sizeof (Stretcher));
 
   self->backend = STRETCHER_BACKEND_RUBBERBAND;
   self->samplerate = samplerate;
   self->channels = channels;
-  self->block_size = 6000;
-  self->rubberband_state =
-    rubberband_new (
-      samplerate, channels,
-      RubberBandOptionProcessOffline |
-        RubberBandOptionStretchElastic |
-        RubberBandOptionTransientsCrisp |
-        RubberBandOptionDetectorCompound |
-        RubberBandOptionPhaseLaminar |
-        RubberBandOptionThreadingNever |
-        RubberBandOptionWindowStandard |
-        RubberBandOptionSmoothingOff |
-        RubberBandOptionFormantShifted |
-        RubberBandOptionPitchHighQuality |
-        RubberBandOptionChannelsApart,
-      time_ratio, pitch_ratio);
-  rubberband_set_default_debug_level (0);
-  rubberband_set_max_process_size (
-    self->rubberband_state, self->block_size);
+  self->is_realtime = realtime;
+  if (realtime)
+    {
+      self->block_size = 16000;
+      self->rubberband_state =
+        rubberband_new (
+          samplerate, channels,
+            RubberBandOptionProcessRealTime |
+            RubberBandOptionTransientsCrisp |
+            RubberBandOptionDetectorCompound |
+            RubberBandOptionPhaseLaminar |
+            RubberBandOptionThreadingAlways |
+            RubberBandOptionWindowStandard |
+            RubberBandOptionSmoothingOff |
+            RubberBandOptionFormantShifted |
+            RubberBandOptionPitchHighSpeed |
+            RubberBandOptionChannelsApart,
+          time_ratio, pitch_ratio);
 
-  g_message ("time ratio: %f", time_ratio);
+      /* feed it samples so it is ready to use */
+#if 0
+      unsigned int samples_required =
+        rubberband_get_samples_required (
+          self->rubberband_state);
+      float in_samples_l[samples_required];
+      float in_samples_r[samples_required];
+      for (unsigned int i; i < samples_required; i++)
+        {
+          in_samples_l[i] = 0.f;
+          in_samples_r[i] = 0.f;
+        }
+      const float * in_samples[channels];
+      in_samples[0] = in_samples_l;
+      if (channels == 2)
+        in_samples[1] = in_samples_r;
+      rubberband_process (
+        self->rubberband_state, in_samples,
+        samples_required, false);
+      g_usleep (1000);
+      int avail =
+        rubberband_available (
+          self->rubberband_state);
+      float * out_samples[2] = {
+        in_samples_l, in_samples_r };
+      size_t retrieved_out_samples =
+        rubberband_retrieve (
+          self->rubberband_state, out_samples,
+          (unsigned int) avail);
+      g_message (
+        "%s: required: %u, available %d, "
+        "retrieved %zu",
+        __func__, samples_required, avail,
+        retrieved_out_samples);
+      samples_required =
+        rubberband_get_samples_required (
+          self->rubberband_state);
+      rubberband_process (
+        self->rubberband_state, in_samples,
+        samples_required, false);
+      g_usleep (1000);
+      avail =
+        rubberband_available (
+          self->rubberband_state);
+      retrieved_out_samples =
+        rubberband_retrieve (
+          self->rubberband_state, out_samples,
+          (unsigned int) avail);
+      g_message (
+        "%s: required: %u, available %d, "
+        "retrieved %zu",
+        __func__, samples_required, avail,
+        retrieved_out_samples);
+#endif
+    }
+  else
+    {
+      self->block_size = 6000;
+      self->rubberband_state =
+        rubberband_new (
+          samplerate, channels,
+            RubberBandOptionProcessOffline |
+            RubberBandOptionStretchElastic |
+            RubberBandOptionTransientsCrisp |
+            RubberBandOptionDetectorCompound |
+            RubberBandOptionPhaseLaminar |
+            RubberBandOptionThreadingNever |
+            RubberBandOptionWindowStandard |
+            RubberBandOptionSmoothingOff |
+            RubberBandOptionFormantShifted |
+            RubberBandOptionPitchHighQuality |
+            RubberBandOptionChannelsApart,
+          time_ratio, pitch_ratio);
+      rubberband_set_max_process_size (
+        self->rubberband_state, self->block_size);
+    }
+  rubberband_set_default_debug_level (0);
+
+  g_message (
+    "%s: time ratio: %f, latency: %u",
+    __func__, time_ratio,
+    stretcher_get_latency (self));
 
   return self;
 }
@@ -107,55 +191,110 @@ stretcher_stretch (
   float *     in_samples_r,
   size_t      in_samples_size,
   float *     out_samples_l,
-  float *     out_samples_r)
+  float *     out_samples_r,
+  size_t      out_samples_wanted)
 {
+  g_message (
+    "%s: in samples size: %zu",
+    __func__, in_samples_size);
   g_return_val_if_fail (in_samples_l, -1);
 
-  /* FIXME this function is wrong */
-  g_return_val_if_reached (-1);
+  /*rubberband_reset (self->rubberband_state);*/
 
   /* create the de-interleaved array */
   unsigned int channels = in_samples_r ? 2 : 1;
   g_return_val_if_fail (
-    self->channels != channels, -1);
+    self->channels == channels, -1);
   const float * in_samples[channels];
   in_samples[0] = in_samples_l;
   if (channels == 2)
     in_samples[1] = in_samples_r;
+  float * out_samples[2] = {
+    out_samples_l, out_samples_r };
 
-  /* study and process */
-  rubberband_study (
-    self->rubberband_state, in_samples,
-    in_samples_size, 1);
+  if (self->is_realtime)
+    {
+      rubberband_set_max_process_size (
+        self->rubberband_state, in_samples_size);
+    }
+  else
+    {
+      /* tell rubberband how many input samples it
+       * will receive */
+      rubberband_set_expected_input_duration (
+        self->rubberband_state, in_samples_size);
+
+      rubberband_study (
+        self->rubberband_state, in_samples,
+        in_samples_size, 1);
+    }
+  unsigned int samples_required =
+    rubberband_get_samples_required (
+      self->rubberband_state);
+  g_message (
+    "%s: samples required: %u, latency: %u",
+    __func__, samples_required,
+    rubberband_get_latency (
+      self->rubberband_state));
   rubberband_process (
     self->rubberband_state, in_samples,
-    in_samples_size, 1);
+    in_samples_size, false);
 
   /* get the output data */
-  int available_out_samples =
+  int avail =
     rubberband_available (self->rubberband_state);
-  float * out_samples[channels];
-  rubberband_retrieve (
-    self->rubberband_state, out_samples,
-    (unsigned int) available_out_samples);
 
-  /* store the output data in the given arrays */
-  memcpy (
-    &out_samples_l[0], out_samples[0],
-    (size_t) available_out_samples * sizeof (float));
-  if (channels == 2)
+  /* if the wanted amount of samples are not ready,
+   * fill with silence */
+  if (avail < (int) out_samples_wanted)
     {
-      memcpy (
-        &out_samples_r[0], out_samples[1],
-        (size_t) available_out_samples *
-          sizeof (float));
+      g_message (
+        "%s: not enough samples available",
+        __func__);
+      return (ssize_t) out_samples_wanted;
     }
 
-  return available_out_samples;
+  g_message (
+    "%s: samples wanted %zu (avail %u)",
+    __func__, out_samples_wanted, avail);
+  size_t retrieved_out_samples =
+    rubberband_retrieve (
+      self->rubberband_state, out_samples,
+      out_samples_wanted);
+  g_warn_if_fail (
+    retrieved_out_samples == out_samples_wanted);
+
+  g_message (
+    "%s: out samples size: %zu",
+    __func__, retrieved_out_samples);
+
+  return (ssize_t) retrieved_out_samples;
+}
+
+void
+stretcher_set_time_ratio (
+  Stretcher * self,
+  double      ratio)
+{
+  rubberband_set_time_ratio (
+    self->rubberband_state, ratio);
+}
+
+/**
+ * Get latency in number of samples.
+ */
+unsigned int
+stretcher_get_latency (
+  Stretcher * self)
+{
+  return
+    rubberband_get_latency (self->rubberband_state);
 }
 
 /**
  * Perform stretching.
+ *
+ * @note This must only be used offline.
  *
  * @param in_samples_size The number of input samples
  *   per channel.

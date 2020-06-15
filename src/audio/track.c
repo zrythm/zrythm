@@ -37,6 +37,7 @@
 #include "audio/midi_group_track.h"
 #include "audio/midi_track.h"
 #include "audio/instrument_track.h"
+#include "audio/stretcher.h"
 #include "audio/tempo_track.h"
 #include "audio/track.h"
 #include "gui/backend/events.h"
@@ -107,6 +108,14 @@ track_init_loaded (Track * track)
   if (atl)
     {
       automation_tracklist_init_loaded (atl);
+    }
+
+  if (track->type == TRACK_TYPE_AUDIO)
+    {
+      track->rt_stretcher =
+        stretcher_new_rubberband (
+          AUDIO_ENGINE->sample_rate, 2, 1.0,
+          1.0, true);
     }
 }
 

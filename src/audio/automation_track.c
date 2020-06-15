@@ -23,6 +23,7 @@
 #include "audio/automation_track.h"
 #include "audio/automation_point.h"
 #include "audio/automation_region.h"
+#include "audio/control_port.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/backend/events.h"
@@ -410,16 +411,21 @@ automation_track_set_index (
 }
 
 /**
- * Returns the normalized value (0.0-1.0) at the
- * given position (global).
+ * Returns the actual parameter value at the given
+ * position.
  *
  * If there is no automation point/curve during
- * the position, it returns negative.
+ * the position, it returns the current value
+ * of the parameter it is automating.
+ *
+ * @param normalized Whether to return the value
+ *   normalized.
  */
 float
-automation_track_get_normalized_val_at_pos (
+automation_track_get_val_at_pos (
   AutomationTrack * self,
-  Position *        pos)
+  Position *        pos,
+  bool              normalized)
 {
   g_return_val_if_fail (self, 0.f);
   AutomationPoint * ap =
@@ -428,10 +434,17 @@ automation_track_get_normalized_val_at_pos (
   ArrangerObject * ap_obj =
     (ArrangerObject *) ap;
 
+  Port * port =
+    automation_track_get_port (self);
+  g_return_val_if_fail (port, 0.f);
+
   /* no automation points yet, return negative
    * (no change) */
   if (!ap)
-    return -1.f;
+    {
+      return
+        port_get_control_value (port, normalized);
+    }
 
   ZRegion * region =
     arranger_object_get_region (ap_obj);
@@ -444,13 +457,19 @@ automation_track_get_normalized_val_at_pos (
       region, ap, false, false);
   ArrangerObject * next_ap_obj =
     (ArrangerObject *) next_ap;
-  /*g_message ("prev fvalue %f next %f",*/
-             /*prev_ap->fvalue,*/
-             /*next_ap->fvalue);*/
 
   /* return value at last ap */
   if (!next_ap)
-    return ap->normalized_val;
+    {
+      if (normalized)
+        {
+          return ap->normalized_val;
+        }
+      else
+        {
+          return ap->fvalue;
+        }
+    }
 
   int prev_ap_lower =
     ap->normalized_val <= next_ap->normalized_val;
@@ -467,16 +486,12 @@ automation_track_get_normalized_val_at_pos (
   double ratio =
     (double) (localp - ap_frames) /
     (double) (next_ap_frames - ap_frames);
-  /*g_message ("ratio %f",*/
-             /*ratio);*/
 
   float result =
     (float)
     automation_point_get_normalized_value_in_curve (
       ap, ratio);
   result = result * cur_next_diff;
-  /*g_message ("halfbaked result %f start at lower %d",*/
-             /*result, prev_ap_lower);*/
   if (prev_ap_lower)
     result +=
       ap->normalized_val;
@@ -484,9 +499,16 @@ automation_track_get_normalized_val_at_pos (
     result +=
       next_ap->normalized_val;
 
-  /*g_message ("result of %s: %f",*/
-             /*self->automatable->label, result);*/
-  return result;
+  if (normalized)
+    {
+      return result;
+    }
+  else
+    {
+      return
+        control_port_normalized_val_to_real (
+          port, result);
+    }
 }
 
 /**

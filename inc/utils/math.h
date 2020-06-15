@@ -135,7 +135,10 @@ math_dbfs_to_fader_val (
  * Rounds a double to an int.
  */
 #define math_round_double_to_int(x) \
-  math_round_double_to_type (x,int)
+  math_round_double_to_type (x, int)
+
+#define math_round_double_to_uint(x) \
+  math_round_double_to_type (x, unsigned int)
 
 /**
  * Rounds a double to a size_t.

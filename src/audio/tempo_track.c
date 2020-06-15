@@ -19,6 +19,8 @@
 
 #include <stdlib.h>
 
+#include "audio/automation_track.h"
+#include "audio/port.h"
 #include "audio/tempo_track.h"
 #include "audio/track.h"
 #include "project.h"
@@ -89,11 +91,15 @@ tempo_track_default (
  */
 bpm_t
 tempo_track_get_bpm_at_pos (
-  const Track *    track,
-  const Position * pos)
+  Track *    self,
+  Position * pos)
 {
-  /* TODO */
-  g_return_val_if_reached (0.f);
+  AutomationTrack * at =
+    automation_track_find_from_port_id (
+      &self->bpm_port->id);
+  return
+    automation_track_get_val_at_pos (
+      at, pos, false);
 }
 
 /**

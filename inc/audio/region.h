@@ -43,6 +43,7 @@ typedef struct MidiNote MidiNote;
 typedef struct TrackLane TrackLane;
 typedef struct _AudioClipWidget AudioClipWidget;
 typedef struct RegionLinkGroup RegionLinkGroup;
+typedef struct Stretcher Stretcher;
 
 /**
  * @addtogroup audio
@@ -60,6 +61,21 @@ typedef struct RegionLinkGroup RegionLinkGroup;
 #define region_is_selected(r) \
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
+
+/**
+ * Musical mode setting for audio regions.
+ */
+typedef enum RegionMusicalMode
+{
+  /** Inherit from global musical mode setting. */
+  REGION_MUSICAL_MODE_INHERIT,
+  /** Musical mode off - don't auto-stretch when
+   * BPM changes. */
+  REGION_MUSICAL_MODE_OFF,
+  /** Musical mode on - auto-stretch when BPM
+   * changes. */
+  REGION_MUSICAL_MODE_ON,
+} RegionMusicalMode;
 
 /**
  * A region (clip) is an object on the timeline that
@@ -130,13 +146,21 @@ typedef struct ZRegion
   double            stretch_ratio;
 
   /**
-   * Frames to actually use.
+   * Frames to actually use, interleaved.
    *
    * Properties such as \ref AudioClip.channels can
    * be fetched from the AudioClip.
    */
   sample_t *        frames;
   size_t            num_frames;
+
+  /**
+   * Per-channel frames for convenience.
+   */
+  sample_t *        ch_frames[16];
+
+  /** Musical mode setting. */
+  RegionMusicalMode musical_mode;
 
   /* ==== AUDIO REGION END ==== */
 
@@ -498,6 +522,16 @@ void
 region_get_type_as_string (
   RegionType type,
   char *     buf);
+
+/**
+ * Returns whether the region is effectively in
+ * musical mode.
+ *
+ * @note Only applicable to audio regions.
+ */
+bool
+region_get_musical_mode (
+  ZRegion * self);
 
 /**
  * Removes the MIDI note and its components

@@ -24,6 +24,7 @@
 #include "audio/chord_track.h"
 #include "audio/marker_track.h"
 #include "audio/midi_region.h"
+#include "audio/stretcher.h"
 #include "gui/backend/arranger_object.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/chord_selections.h"
@@ -755,19 +756,8 @@ init_loaded_region (
           audio_region_get_clip (self);
         g_return_if_fail (clip);
 
-        /* copy the clip frames to the cache. */
-        self->frames =
-          malloc (
-            sizeof (float) *
-              (size_t) clip->num_frames *
-              clip->channels);
-        self->num_frames =
-          (size_t) clip->num_frames;
-        memcpy (
-          &self->frames[0], &clip->frames[0],
-          sizeof (float) *
-            (size_t) clip->num_frames *
-            clip->channels);
+        audio_region_init_frame_caches (
+          self, clip);
       }
       break;
     case REGION_TYPE_MIDI:

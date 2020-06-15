@@ -459,6 +459,10 @@ Args:
                  "genre" "s" "Electronic"
                  "Genre"
                  "Genre to use when exporting, if the file type supports it.")
+               (make-schema-key
+                 "artist" "s" "Zrythm"
+                 "Artist"
+                 "Artist to use when exporting, if the file type supports it.")
                (make-schema-key-with-enum
                  "time-range" "export-time-range"
                  "song"

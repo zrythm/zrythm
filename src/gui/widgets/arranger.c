@@ -403,15 +403,20 @@ draw_timeline_bg (
                 }
 
               float normalized_val =
-                automation_track_get_normalized_val_at_pos (
-                  at, PLAYHEAD);
+                automation_track_get_val_at_pos (
+                  at, PLAYHEAD, true);
               Port * port =
                 automation_track_get_port (at);
-              if (normalized_val < 0.f)
-                normalized_val =
-                  control_port_real_val_to_normalized (
-                    port,
-                    control_port_get_val (port));
+              AutomationPoint * ap =
+                automation_track_get_ap_before_pos (
+                  at, PLAYHEAD);
+              if (!ap)
+                {
+                  normalized_val =
+                    control_port_real_val_to_normalized (
+                      port,
+                      control_port_get_val (port));
+                }
 
               int y_px =
                 automation_track_get_y_px_from_normalized_val (

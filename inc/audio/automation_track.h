@@ -299,19 +299,6 @@ automation_track_set_index (
   AutomationTrack * self,
   int               index);
 
-#if 0
-/**
- * Sets the automatable to the automation track and
- * updates the GUI
- *
- * FIXME no definition implemented.
- */
-void
-automation_track_set_automatable (
-  AutomationTrack * automation_track,
-  Automatable *     a);
-#endif
-
 /**
  * Clones the AutomationTrack.
  */
@@ -367,11 +354,15 @@ automation_track_clear (
  * If there is no automation point/curve during
  * the position, it returns the current value
  * of the parameter it is automating.
+ *
+ * @param normalized Whether to return the value
+ *   normalized.
  */
 float
-automation_track_get_normalized_val_at_pos (
+automation_track_get_val_at_pos (
   AutomationTrack * at,
-  Position *        pos);
+  Position *        pos,
+  bool              normalized);
 
 /**
  * Returns the y pixels from the value based on the

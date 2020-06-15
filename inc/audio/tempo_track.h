@@ -67,8 +67,8 @@ tempo_track_clear (
  */
 bpm_t
 tempo_track_get_bpm_at_pos (
-  const Track *    track,
-  const Position * pos);
+  Track *    track,
+  Position * pos);
 
 /**
  * Returns the current BPM.

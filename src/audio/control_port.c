@@ -125,6 +125,12 @@ control_port_normalized_val_to_real (
         (float) math_get_amp_val_from_fader (
           normalized_val);
     }
+  else if (id->flags & PORT_FLAG_AUTOMATABLE)
+    {
+      return
+        self->minf +
+        normalized_val * (self->maxf - self->minf);
+    }
   else
     {
       return normalized_val;
@@ -204,6 +210,13 @@ control_port_real_val_to_normalized (
         (float)
         math_get_fader_val_from_amp (real_val);
     }
+  else if (id->flags & PORT_FLAG_AUTOMATABLE)
+    {
+      float sizef = self->maxf - self->minf;
+      return
+        (sizef - (self->maxf - real_val)) /
+        sizef;
+    }
   else
     {
       return real_val;
@@ -251,25 +264,9 @@ control_port_set_val_from_normalized (
             Lv2Control * ctrl =
               self->lv2_port->lv2_control;
             g_return_if_fail (ctrl);
-            float real_val;
-            if (ctrl->is_logarithmic)
-              {
-                /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-                real_val =
-                  self->minf *
-                    powf (
-                      self->maxf / self->minf, val);
-              }
-            else if (ctrl->is_toggle)
-              {
-                real_val = val >= 0.001f ? 1.f : 0.f;
-              }
-            else
-              {
-                real_val =
-                  self->minf +
-                  val * (self->maxf - self->minf);
-              }
+            float real_val =
+              control_port_normalized_val_to_real (
+                self, val);
 
             if (!math_floats_equal (
                   port_get_control_value (self, 0),
@@ -373,8 +370,8 @@ control_port_set_val_from_normalized (
   else if (id->flags & PORT_FLAG_AUTOMATABLE)
     {
       float real_val =
-        self->minf +
-        val * (self->maxf - self->minf);
+        control_port_normalized_val_to_real (
+          self, val);
       port_set_control_value (
         self, real_val, F_NOT_NORMALIZED,
         false);

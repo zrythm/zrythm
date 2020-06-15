@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,7 @@
 #ifndef __AUDIO_STRETCHER_H__
 #define __AUDIO_STRETCHER_H__
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <sys/types.h>
 
@@ -65,6 +66,8 @@ typedef struct Stretcher
   unsigned int      samplerate;
   unsigned int      channels;
 
+  bool              is_realtime;
+
   /**
    * Size of the block to process in each
    * iteration.
@@ -79,17 +82,21 @@ typedef struct Stretcher
  * backend.
  *
  * @param samplerate The new samplerate.
- * @param time_ratio The ratio to multiply time by (eg
- *   if the BPM is doubled, this will be 0.5).
- * @param pitch_ratio The ratio to pitch by. This will
- *   normally be 1.0 when time-stretching).
+ * @param time_ratio The ratio to multiply time by
+ *   (eg if the BPM is doubled, this will be 0.5).
+ * @param pitch_ratio The ratio to pitch by. This
+ *   will normally be 1.0 when time-stretching).
+ * @param realtime Whether to perform realtime
+ *   stretching (lower quality but fast enough to
+ *   be used real-time).
  */
 Stretcher *
 stretcher_new_rubberband (
   unsigned int   samplerate,
   unsigned int   channels,
   double         time_ratio,
-  double         pitch_ratio);
+  double         pitch_ratio,
+  bool           realtime);
 
 /**
  * Perform stretching.
@@ -110,10 +117,25 @@ stretcher_stretch (
   float *     in_samples_r,
   size_t      in_samples_size,
   float *     out_samples_l,
-  float *     out_samples_r);
+  float *     out_samples_r,
+  size_t      out_samples_wanted);
+
+/**
+ * Get latency in number of samples.
+ */
+unsigned int
+stretcher_get_latency (
+  Stretcher * self);
+
+void
+stretcher_set_time_ratio (
+  Stretcher * self,
+  double      ratio);
 
 /**
  * Perform stretching.
+ *
+ * @note Not real-time safe, does allocations.
  *
  * @param in_samples_size The number of input samples
  *   per channel.

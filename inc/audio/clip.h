@@ -56,7 +56,8 @@ typedef struct AudioClip
   channels_t    channels;
 
   /**
-   * BPM of the project when this clip was loaded.
+   * BPM of the clip, or BPM of the project when
+   * the clip was first loaded.
    */
   bpm_t         bpm;
 

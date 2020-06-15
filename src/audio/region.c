@@ -256,7 +256,7 @@ region_stretch (
         Stretcher * stretcher =
           stretcher_new_rubberband (
             AUDIO_ENGINE->sample_rate,
-            clip->channels, ratio, 1.0);
+            clip->channels, ratio, 1.0, false);
         ssize_t returned_frames =
           stretcher_stretch_interleaved (
             stretcher, self->frames,
@@ -979,6 +979,30 @@ region_is_hit (
      (!inclusive &&
       r_obj->end_pos.frames >
         gframes));
+}
+
+/**
+ * Returns whether the region is effectively in
+ * musical mode.
+ *
+ * @note Only applicable to audio regions.
+ */
+bool
+region_get_musical_mode (
+  ZRegion * self)
+{
+  switch (self->musical_mode)
+    {
+    case REGION_MUSICAL_MODE_INHERIT:
+      return
+        g_settings_get_boolean (
+          S_UI, "musical-mode");
+    case REGION_MUSICAL_MODE_OFF:
+      return false;
+    case REGION_MUSICAL_MODE_ON:
+      return true;
+    }
+  g_return_val_if_reached (false);
 }
 
 /**

@@ -2584,15 +2584,18 @@ port_sum_signal_from_inputs (
             Position pos;
             position_from_frames (
               &pos, g_start_frames);
-            float val =
-              automation_track_get_normalized_val_at_pos (
-                at, &pos);
 
             /* if there was an automation event
-             * at the playhead position, val is
-             * positive */
-            if (val >= 0.f)
+             * at the playhead position, set val
+             * and flag */
+            AutomationPoint * ap =
+              automation_track_get_ap_before_pos (
+                at, &pos);
+            if (ap)
               {
+                float val =
+                  automation_track_get_val_at_pos (
+                    at, &pos, true);
                 control_port_set_val_from_normalized (
                   port, val, true);
                 port->value_changed_from_reading =

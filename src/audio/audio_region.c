@@ -106,16 +106,7 @@ audio_region_new (
   position_add_frames (
     &obj->end_pos, clip->num_frames);
 
-  /* copy the clip frames to the cache. */
-  self->frames =
-    malloc (
-      sizeof (float) *
-        (size_t) clip->num_frames * clip->channels);
-  self->num_frames = (size_t) clip->num_frames;
-  memcpy (
-    &self->frames[0], &clip->frames[0],
-    sizeof (float) * (size_t) clip->num_frames *
-    clip->channels);
+  audio_region_init_frame_caches (self, clip);
 
   /* init */
   region_init (
@@ -128,6 +119,42 @@ audio_region_new (
     /*audio_clip_write_to_pool (clip);*/
 
   return self;
+}
+
+/**
+ * Allocates the frame caches from the frames in
+ * the clip.
+ */
+void
+audio_region_init_frame_caches (
+  AudioRegion * self,
+  AudioClip *   clip)
+{
+  /* copy the clip frames to the cache. */
+  self->frames =
+    malloc (
+      sizeof (float) *
+        (size_t) clip->num_frames * clip->channels);
+  self->num_frames = (size_t) clip->num_frames;
+  memcpy (
+    &self->frames[0], &clip->frames[0],
+    sizeof (float) * (size_t) clip->num_frames *
+    clip->channels);
+
+  /* copy the frames to the channel caches */
+  for (unsigned int i = 0; i < clip->channels; i++)
+    {
+      self->ch_frames[i] =
+        malloc (
+          sizeof (float) *
+            (size_t) clip->num_frames);
+      for (size_t j = 0;
+           j < (size_t) clip->num_frames; j++)
+        {
+          self->ch_frames[i][j] =
+            self->frames[j * clip->channels + i];
+        }
+    }
 }
 
 /**
@@ -161,4 +188,12 @@ audio_region_get_clip (
 void
 audio_region_free_members (ZRegion * self)
 {
+  free (self->frames);
+  for (int i = 0; i < 16; i++)
+    {
+      if (self->ch_frames[i])
+        {
+          free (self->ch_frames[i]);
+        }
+    }
 }

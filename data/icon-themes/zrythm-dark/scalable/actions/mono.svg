@@ -1,0 +1,6 @@
+<svg width="256" height="256" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" fill-rule="evenodd">
+        <circle fill="#000" cx="127" cy="129" r="81"/>
+        <ellipse fill="#FFF" cx="128" cy="128.5" rx="63" ry="60.5"/>
+    </g>
+</svg>

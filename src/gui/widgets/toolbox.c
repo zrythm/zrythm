@@ -174,34 +174,19 @@ toolbox_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "toolbox");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    ToolboxWidget,
-    select_mode);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ToolboxWidget,
-    edit_mode);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ToolboxWidget,
-    cut_mode);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ToolboxWidget,
-    erase_mode);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ToolboxWidget,
-    ramp_mode);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ToolboxWidget,
-    audition_mode);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ToolboxWidget,
-    select_img);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, ToolboxWidget, x)
+
+  BIND_CHILD (select_mode);
+  BIND_CHILD (edit_mode);
+  BIND_CHILD (cut_mode);
+  BIND_CHILD (erase_mode);
+  BIND_CHILD (ramp_mode);
+  BIND_CHILD (audition_mode);
+  BIND_CHILD (select_img);
+
+#undef BIND_CHILD
 }
 
 static void

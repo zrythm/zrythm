@@ -54,6 +54,7 @@
 #include "audio/passthrough_processor.h"
 #include "audio/port.h"
 #include "audio/routing.h"
+#include "audio/stretcher.h"
 #include "audio/track.h"
 #include "audio/track_processor.h"
 #include "project.h"
@@ -1322,10 +1323,26 @@ static nframes_t
 get_node_single_playback_latency (
   GraphNode * node)
 {
-  if (node->type == ROUTE_NODE_TYPE_PLUGIN)
+  switch (node->type)
     {
+    case ROUTE_NODE_TYPE_PLUGIN:
       /* latency is already set at this point */
       return node->pl->latency;
+    case ROUTE_NODE_TYPE_TRACK:
+      if (node->track->type == TRACK_TYPE_AUDIO)
+        {
+          Track * track = node->track;
+          return
+            (nframes_t)
+            stretcher_get_latency (
+              track->rt_stretcher);
+        }
+      else
+        {
+          return 0;
+        }
+    default:
+      break;
     }
 
   return 0;
