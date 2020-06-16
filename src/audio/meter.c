@@ -56,11 +56,9 @@ meter_get_value (
         (size_t) AUDIO_ENGINE->block_length;
       size_t blocks_to_read =
         read_space_avail / size;
+      /* if no blocks available, skip */
       if (blocks_to_read == 0)
         {
-          g_message (
-            "%s: blocks to read is 0",
-            __func__);
           * val = 1e-20f;
           * max = 1e-20f;
           return;

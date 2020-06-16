@@ -171,27 +171,42 @@ draw_background (
 
   cairo_fill (cr);
 
+  /* ---- draw applicable icons ---- */
+
+#define DRAW_ICON(name) \
+  cairo_surface_t * surface = \
+    z_cairo_get_surface_from_icon_name ( \
+      name, size, 1); \
+  cairo_set_source_surface ( \
+    cr, surface, \
+    (end_region_global - rect->x) - \
+      (size + paddingh) * (icons_drawn + 1), \
+    (full_rect->y - rect->y) + paddingv); \
+  cairo_paint (cr); \
+  icons_drawn++
+
+  const int size = 16;
+  const int paddingh = 2;
+  const int paddingv = 0;
+  const double end_region_global =
+    full_rect->x + full_rect->width;
+  int icons_drawn = 0;
+
   /* draw link icon if has linked parent */
   if (self->id.link_group >= 0)
     {
-      const int size = 16;
-      const int paddingh = 2;
-      const int paddingv = 0;
-
-      cairo_surface_t * surface =
-        z_cairo_get_surface_from_icon_name (
-          "emblem-symbolic-link", size, 1);
-
-      /* add main icon */
-      double end_region_global =
-        full_rect->x + full_rect->width;
-      cairo_set_source_surface (
-        cr, surface,
-        (end_region_global - rect->x) -
-          (size + paddingh),
-        (full_rect->y - rect->y) + paddingv);
-      cairo_paint (cr);
+      DRAW_ICON ("emblem-symbolic-link");
     }
+
+  /* draw musical mode icon if region is in
+   * musical mode */
+  if (self->id.type == REGION_TYPE_AUDIO &&
+      region_get_musical_mode (self))
+    {
+      DRAW_ICON ("music-note-16th");
+    }
+
+#undef DRAW_ICON
 }
 
 /**
