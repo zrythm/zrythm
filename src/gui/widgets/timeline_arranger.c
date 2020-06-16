@@ -1309,11 +1309,119 @@ create_fade_preset_menu (
   CREATE_ITEM (_("Elliptic"), SUPERELLIPSE, - 0.5);
   CREATE_ITEM (_("Vital"), VITAL, - 0.5);
 
+#undef CREATE_ITEM
+
   gtk_menu_item_set_submenu (
     GTK_MENU_ITEM (menuitem),
     GTK_WIDGET (submenu));
   gtk_widget_set_visible (
     GTK_WIDGET (menuitem), 1);
+}
+
+/** Used when selecting a musical mode. */
+typedef struct MusicalModeInfo
+{
+  RegionMusicalMode mode;
+  ArrangerObject *  obj;
+} MusicalModeInfo;
+
+static void
+on_musical_mode_toggled (
+  GtkCheckMenuItem * menu_item,
+  MusicalModeInfo *  info)
+{
+  if (!gtk_check_menu_item_get_active (menu_item))
+    {
+      return;
+    }
+
+  ArrangerSelections * sel_before =
+    arranger_selections_clone (
+      (ArrangerSelections *) TL_SELECTIONS);
+
+  /* make the change */
+  ZRegion * region = (ZRegion *) info->obj;
+  region->musical_mode = info->mode;
+
+  g_warn_if_fail (
+    arranger_object_is_selected (info->obj));
+  UndoableAction * ua =
+    arranger_selections_action_new_edit (
+      sel_before,
+      (ArrangerSelections *) TL_SELECTIONS,
+      ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
+      true);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_warn_if_fail (IS_ARRANGER_OBJECT (info->obj));
+  EVENTS_PUSH (
+    ET_ARRANGER_OBJECT_CHANGED, info->obj);
+
+  object_zero_and_free (info);
+}
+
+/**
+ * @param fade_in 1 for in, 0 for out.
+ */
+static void
+create_musical_mode_pset_menu (
+  ArrangerWidget * self,
+  GtkWidget *      menu,
+  ArrangerObject * obj)
+{
+  GtkWidget * menuitem =
+    gtk_menu_item_new_with_label (
+      _("Musical Mode"));
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
+
+  GtkMenu * submenu = GTK_MENU (gtk_menu_new ());
+  gtk_widget_set_visible (GTK_WIDGET (submenu), 1);
+  GtkMenuItem * submenu_item[
+    REGION_MUSICAL_MODE_ON + 2];
+  MusicalModeInfo * nfo;
+  GSList * group = NULL;
+  ZRegion * region = (ZRegion *) obj;
+  for (int i = 0; i <= REGION_MUSICAL_MODE_ON; i++)
+    {
+      submenu_item[i] =
+        GTK_MENU_ITEM (
+          gtk_radio_menu_item_new_with_label (
+            group,
+            _(region_musical_mode_strings[i].str)));
+      if ((RegionMusicalMode) i ==
+            region->musical_mode)
+        {
+          gtk_check_menu_item_set_active (
+            GTK_CHECK_MENU_ITEM (
+              submenu_item[i]), true);
+        }
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (submenu),
+        GTK_WIDGET (submenu_item[i]));
+      gtk_widget_set_visible (
+        GTK_WIDGET (submenu_item[i]), true);
+
+      group =
+        gtk_radio_menu_item_get_group (
+          GTK_RADIO_MENU_ITEM (submenu_item[i]));
+    }
+
+  gtk_menu_item_set_submenu (
+    GTK_MENU_ITEM (menuitem),
+    GTK_WIDGET (submenu));
+  gtk_widget_set_visible (
+    GTK_WIDGET (menuitem), 1);
+
+  for (int i = 0; i <= REGION_MUSICAL_MODE_ON; i++)
+    {
+      nfo = calloc (1, sizeof (MusicalModeInfo));
+      nfo->mode = i;
+      nfo->obj = obj;
+      g_signal_connect (
+        G_OBJECT (submenu_item[i]), "toggled",
+        G_CALLBACK (on_musical_mode_toggled), nfo);
+    }
 }
 
 /**
@@ -1407,6 +1515,7 @@ timeline_arranger_widget_show_context_menu (
 
           if (r->id.type == REGION_TYPE_AUDIO)
             {
+              /* create fade menus */
               if (arranger_object_is_fade_in (
                     obj, local_x, local_y, 0, 0))
                 {
@@ -1419,6 +1528,10 @@ timeline_arranger_widget_show_context_menu (
                   create_fade_preset_menu (
                     self, menu, obj, 0);
                 }
+
+              /* create musical mode menu */
+              create_musical_mode_pset_menu (
+                self, menu, obj);
             }
 
           if (r->id.type == REGION_TYPE_MIDI)

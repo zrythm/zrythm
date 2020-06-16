@@ -1664,6 +1664,8 @@ do_or_undo_edit (
                     SET_PRIMITIVE (
                       ArrangerObject, muted);
                     SET_PRIMITIVE (ZRegion, color);
+                    SET_PRIMITIVE (
+                      ZRegion, musical_mode);
                   }
                   break;
                 case ARRANGER_OBJECT_TYPE_MIDI_NOTE:

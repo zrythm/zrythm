@@ -77,6 +77,17 @@ typedef enum RegionMusicalMode
   REGION_MUSICAL_MODE_ON,
 } RegionMusicalMode;
 
+static const cyaml_strval_t
+region_musical_mode_strings[] =
+{
+  { __("Inherit"),
+    REGION_MUSICAL_MODE_INHERIT },
+  { __("Off"),
+    REGION_MUSICAL_MODE_OFF },
+  { __("On"),
+    REGION_MUSICAL_MODE_ON },
+};
+
 /**
  * A region (clip) is an object on the timeline that
  * contains either MidiNote's or AudioClip's.
@@ -241,6 +252,9 @@ static const cyaml_schema_field_t
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ZRegion, chord_objects, num_chord_objects,
     &chord_object_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_ENUM (
+    ZRegion, musical_mode,
+    region_musical_mode_strings),
 
   CYAML_FIELD_END
 };

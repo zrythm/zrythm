@@ -51,6 +51,9 @@ typedef struct _MeterWidget
 
   float                  meter_val;
   float                  meter_peak;
+
+  /** ID of the source function. */
+  guint                  source_id;
 } MeterWidget;
 
 /**

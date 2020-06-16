@@ -1220,8 +1220,8 @@ plugin_clone (
     pl->num_in_ports || pl->num_out_ports, NULL);
 
   g_return_val_if_fail (clone, NULL);
-  clone->id.slot = pl->id.slot;
-  clone->id.track_pos = pl->id.track_pos;
+  plugin_identifier_copy (
+    &clone->id, &pl->id);
   clone->magic = PLUGIN_MAGIC;
   clone->visible = pl->visible;
 

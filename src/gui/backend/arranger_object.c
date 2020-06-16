@@ -1752,6 +1752,7 @@ clone_region (
 
         new_region = ar;
         new_region->pool_id = region->pool_id;
+        ar->musical_mode = region->musical_mode;
       }
     break;
     case REGION_TYPE_AUTOMATION:

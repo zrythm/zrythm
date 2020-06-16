@@ -235,6 +235,8 @@ finalize (
   if (self->meter)
     meter_free (self->meter);
 
+  g_source_remove (self->source_id);
+
   G_OBJECT_CLASS (
     meter_widget_parent_class)->
       finalize (G_OBJECT (self));
@@ -262,8 +264,9 @@ meter_widget_init (MeterWidget * self)
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb,
     self, NULL);
-  g_timeout_add (
-    20, (GSourceFunc) meter_timeout, self);
+  self->source_id =
+    g_timeout_add (
+      20, (GSourceFunc) meter_timeout, self);
 }
 
 static void

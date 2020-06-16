@@ -406,6 +406,7 @@ static void
 bar_slider_widget_class_init (
   BarSliderWidgetClass * _klass)
 {
+  /* TODO put this info in the docs */
   /* <ebassi> alextee: Rule of thumb: use dispose()
    * for releasing references to objects you acquired
    * from the outside, and finalize() to release
@@ -414,8 +415,8 @@ bar_slider_widget_class_init (
    * <ebassi> alextee: There's basically no reason to
    * override destroy(); always use dispose/finalize
    * <ebassi> alextee: The "destroy" signal is for
-   * other code, using your widget, to release references
-   * they might have */
+   * other code, using your widget, to release
+   * references they might have */
   GObjectClass * klass =
     G_OBJECT_CLASS (_klass);
 
