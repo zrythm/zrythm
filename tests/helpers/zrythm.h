@@ -89,8 +89,6 @@
 void
 test_helper_zrythm_init ()
 {
-  object_utils_init ();
-
   ZRYTHM = zrythm_new (false, true);
   ZRYTHM->create_project_path =
     g_dir_make_tmp (

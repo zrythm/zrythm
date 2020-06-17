@@ -47,6 +47,7 @@
 #include "utils/localization.h"
 #include "utils/log.h"
 #include "utils/object_pool.h"
+#include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/io.h"
 #include "utils/symap.h"
@@ -466,6 +467,9 @@ zrythm_free (
 
   /* TODO free everything */
 
+  /* FIXME move to struct inside zrythm */
+  object_utils_free (self->object_utils);
+
   object_zero_and_free (self);
 
   g_message ("%s: done", __func__);
@@ -488,8 +492,11 @@ zrythm_new (
     __func__);
 
   Zrythm * self = object_new (Zrythm);
+  ZRYTHM = self;
+
   self->have_ui = have_ui;
   self->testing = testing;
+  self->object_utils = object_utils_new ();
   self->project = object_new (Project);
   self->symap = symap_new ();
 

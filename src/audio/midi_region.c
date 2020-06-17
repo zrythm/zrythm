@@ -61,6 +61,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/math.h"
+#include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
 

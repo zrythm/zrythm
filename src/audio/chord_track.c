@@ -27,6 +27,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
 

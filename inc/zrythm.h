@@ -46,6 +46,7 @@ typedef struct MPMCQueue MPMCQueue;
 typedef struct ObjectPool ObjectPool;
 typedef struct RecordingManager RecordingManager;
 typedef struct EventManager EventManager;
+typedef struct ObjectUtils ObjectUtils;
 
 /**
  * @addtogroup general
@@ -204,6 +205,9 @@ typedef struct Zrythm
   CairoCaches *       cairo_caches;
 
   UiCaches *          ui_caches;
+
+  /** Object utils. */
+  ObjectUtils *       object_utils;
 
   /**
    * In debug mode or not (determined by GSetting).

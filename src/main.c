@@ -532,10 +532,6 @@ main (int    argc,
   gtk_source_init ();
 #endif
 
-  /* init object utils */
-  g_message ("Initing object utils...");
-  object_utils_init ();
-
   /* init math coefficients */
   g_message ("Initing math coefficients...");
   math_init ();
@@ -543,8 +539,8 @@ main (int    argc,
   /* send activate signal */
   g_message ("Initing Zrythm app...");
   zrythm_app = zrythm_app_new ();
-  g_message ("running Zrythm...");
 
+  g_message ("running Zrythm...");
   return
     g_application_run (
       G_APPLICATION (zrythm_app), argc, argv);

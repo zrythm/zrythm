@@ -67,6 +67,8 @@
 #include "audio/sample_processor.h"
 #include "audio/tempo_track.h"
 #include "audio/transport.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
