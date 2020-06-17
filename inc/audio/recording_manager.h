@@ -44,7 +44,7 @@ typedef struct RecordingManager
 {
   /** Whether recording is currently in progress or
    * not. */
-  int                is_recording;
+  bool               is_recording;
 
   /** Event queue. */
   MPMCQueue *        event_queue;
@@ -60,6 +60,9 @@ typedef struct RecordingManager
 
   /** Cloned selections before starting recording. */
   ArrangerSelections * selections_before_start_automation;
+
+  /** Source func ID. */
+  guint              source_id;
 
   /** Recorded region identifiers, to be used for
    * creating the undoable actions. */
@@ -92,6 +95,10 @@ recording_manager_handle_recording (
  */
 RecordingManager *
 recording_manager_new (void);
+
+void
+recording_manager_free (
+  RecordingManager * self);
 
 /**
  * @}

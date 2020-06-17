@@ -50,7 +50,8 @@ free_later_source (
   /* it might change so get its size at this
    * point. */
   int ssize =
-    MIN (stack_size (self->free_stack_for_source), 28);
+    MIN (
+      stack_size (self->free_stack_for_source), 28);
 
   FreeElement * el;
   for (int i = 0; i < ssize; i++)
@@ -68,6 +69,39 @@ free_later_source (
   return G_SOURCE_CONTINUE;
 }
 
+static void
+add_all_elements_to_source_stack (
+  ObjectUtils * self,
+  bool          check_time)
+{
+  gint64 curr_time =
+    g_get_monotonic_time ();
+
+  FreeElement * el = NULL;
+  while (mpmc_queue_dequeue (
+           self->free_queue, (void **) &el))
+    {
+      /* if enough time has passed */
+      if (!check_time ||
+          (curr_time - el->time_added >
+             TIME_TO_WAIT_USEC))
+        {
+          zix_sem_wait (
+            &self->free_stack_for_source_lock);
+          stack_push (
+            self->free_stack_for_source,
+            (void *) el);
+          zix_sem_post (
+            &self->free_stack_for_source_lock);
+        }
+      else
+        {
+          /* not enough time passed, exit */
+          break;
+        }
+    }
+}
+
 /*
  * this thread is only for traversing
  * the stack and checking the time. if an object
@@ -79,7 +113,16 @@ free_later_thread_func (
 {
   while (true)
     {
-      g_usleep (800000);
+      int time_slept = 0;
+      while (time_slept < 800000)
+        {
+          g_usleep (2000);
+          if (self->quit_thread)
+            {
+              g_thread_exit (NULL);
+            }
+          time_slept += 2000;
+        }
 
       if (!self->free_queue)
         {
@@ -87,31 +130,7 @@ free_later_thread_func (
           return NULL;
         }
 
-      gint64 curr_time =
-        g_get_monotonic_time ();
-
-      FreeElement * el = NULL;
-      while (mpmc_queue_dequeue (
-               self->free_queue, (void **) &el))
-        {
-          /* if enough time has passed */
-          if (curr_time - el->time_added >
-                TIME_TO_WAIT_USEC)
-            {
-              zix_sem_wait (
-                &self->free_stack_for_source_lock);
-              stack_push (
-                self->free_stack_for_source,
-                (void *) el);
-              zix_sem_post (
-                &self->free_stack_for_source_lock);
-            }
-          else
-            {
-              /* not enough time passed, exit */
-              break;
-            }
-        }
+      add_all_elements_to_source_stack (self, true);
     }
   g_warn_if_reached ();
 }
@@ -164,14 +183,17 @@ object_utils_new ()
     self->free_queue,
     800000 * sizeof (FreeElement *));
   self->free_stack_for_source = stack_new (8000);
-  zix_sem_init (&self->free_stack_for_source_lock, 1);
+  zix_sem_init (
+    &self->free_stack_for_source_lock, 1);
 
-  g_timeout_add (
-    1000, (GSourceFunc) free_later_source, self);
-  g_thread_new (
-    "obj_utils_free_later",
-    (GThreadFunc) free_later_thread_func,
-    self);
+  self->source_id =
+    g_timeout_add (
+      1000, (GSourceFunc) free_later_source, self);
+  self->free_later_thread =
+    g_thread_new (
+      "obj_utils_free_later",
+      (GThreadFunc) free_later_thread_func,
+      self);
 
   return self;
 
@@ -184,6 +206,19 @@ object_utils_free (
 {
   g_message (
     "%s: Freeing object utils...", __func__);
+
+  /* stop thread and source */
+  g_source_remove_and_zero (self->source_id);
+  self->quit_thread = true;
+  g_usleep (10000);
+
+  /* free all pending objects */
+  add_all_elements_to_source_stack (self, false);
+  while (!stack_is_empty (
+           self->free_stack_for_source))
+    {
+      free_later_source (self);
+    }
 
   mpmc_queue_free (self->free_queue);
 

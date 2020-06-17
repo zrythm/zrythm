@@ -465,10 +465,12 @@ zrythm_free (
       project_tear_down (PROJECT);
     }
 
-  /* TODO free everything */
+  object_free_w_func_and_null (
+    recording_manager_free,
+    self->recording_manager);
 
-  /* FIXME move to struct inside zrythm */
-  object_utils_free (self->object_utils);
+  object_free_w_func_and_null (
+    object_utils_free, self->object_utils);
 
   object_zero_and_free (self);
 
@@ -497,6 +499,8 @@ zrythm_new (
   self->have_ui = have_ui;
   self->testing = testing;
   self->object_utils = object_utils_new ();
+  self->recording_manager =
+    recording_manager_new ();
   self->project = object_new (Project);
   self->symap = symap_new ();
 

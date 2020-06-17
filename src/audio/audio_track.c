@@ -107,6 +107,8 @@ audio_track_fill_stereo_ports_from_clip (
   const nframes_t local_start_frame,
   nframes_t       nframes)
 {
+  g_return_if_fail (IS_TRACK (self) && stereo_ports);
+
   long region_end_frames,
        local_frames_start,
        /*local_frames_end,*/

@@ -38,6 +38,14 @@ typedef struct ObjectUtils
   MPMCQueue * free_queue;
   Stack *     free_stack_for_source;
   ZixSem      free_stack_for_source_lock;
+
+  /** Source func ID. */
+  guint       source_id;
+
+  GThread *   free_later_thread;
+
+  /** Whether to quit the thread. */
+  bool        quit_thread;
 } ObjectUtils;
 
 /** Calls _free_later after doing the casting so the

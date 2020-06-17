@@ -57,6 +57,24 @@ add_recorded_id (
 }
 
 static void
+free_temp_selections (
+  RecordingManager * self)
+{
+  if (self->selections_before_start_track)
+    {
+      object_free_w_func_and_null (
+        arranger_selections_free,
+        self->selections_before_start_track);
+    }
+  if (self->selections_before_start_automation)
+    {
+      object_free_w_func_and_null (
+        arranger_selections_free,
+        self->selections_before_start_automation);
+    }
+}
+
+static void
 on_stop_recording (
   RecordingManager * self,
   bool               is_automation)
@@ -120,6 +138,9 @@ on_stop_recording (
       arranger_object_select (
         obj, F_SELECT, F_APPEND);
     }
+
+  /* free the temporary selections */
+  free_temp_selections (self);
 }
 
 /**
@@ -1076,8 +1097,9 @@ handle_automation_event (
 
 static void
 handle_start_recording (
-  RecordingEvent * ev,
-  bool             is_automation)
+  RecordingManager * self,
+  RecordingEvent *   ev,
+  bool               is_automation)
 {
   Track * tr = track_get_from_name (ev->track_name);
   gint64 cur_time = g_get_monotonic_time ();
@@ -1087,15 +1109,13 @@ handle_start_recording (
       at =
         automation_track_find_from_port_id (
           &ev->port_id);
-      RECORDING_MANAGER->
-        selections_before_start_automation =
+      self->selections_before_start_automation =
           arranger_selections_clone (
             (ArrangerSelections *) TL_SELECTIONS);
     }
   else
     {
-      RECORDING_MANAGER->
-        selections_before_start_track =
+      self->selections_before_start_track =
           arranger_selections_clone (
             (ArrangerSelections *) TL_SELECTIONS);
     }
@@ -1203,16 +1223,10 @@ handle_start_recording (
  * This will loop indefinintely.
  */
 static int
-events_process (void * data)
+events_process (
+  RecordingManager * self)
 {
-  MPMCQueue * q = (MPMCQueue *) data;
-  RecordingManager * self = RECORDING_MANAGER;
   /*gint64 curr_time = g_get_monotonic_time ();*/
-  if (q != self->event_queue)
-    {
-      return G_SOURCE_REMOVE;
-    }
-
   /*g_message ("starting processing");*/
   RecordingEvent * ev;
   while (recording_event_queue_dequeue_event (
@@ -1276,7 +1290,7 @@ events_process (void * data)
               self->num_recorded_ids = 0;
             }
           self->is_recording = 1;
-          handle_start_recording (ev, false);
+          handle_start_recording (self, ev, false);
           break;
         case RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING:
           g_message ("-------- START AUTOMATION RECORDING");
@@ -1287,7 +1301,8 @@ events_process (void * data)
             g_warn_if_fail (at);
             if (!at->recording_started)
               {
-                handle_start_recording (ev, true);
+                handle_start_recording (
+                  self, ev, true);
               }
             at->recording_started = true;
           }
@@ -1316,34 +1331,45 @@ RecordingManager *
 recording_manager_new (void)
 {
   RecordingManager * self =
-    calloc (1, sizeof (RecordingManager));
+    object_new (RecordingManager);
 
-  ObjectPool * obj_pool;
-  MPMCQueue * queue;
-  if (self->event_queue &&
-      self->event_obj_pool)
-    {
-      obj_pool = self->event_obj_pool;
-      queue = self->event_queue;
-      self->event_obj_pool = NULL;
-      self->event_queue = NULL;
-      object_pool_free (obj_pool);
-      mpmc_queue_free (queue);
-    }
-
-  obj_pool =
+  self->event_obj_pool =
     object_pool_new (
       (ObjectCreatorFunc) recording_event_new,
       (ObjectFreeFunc) recording_event_free,
       200);
-  queue = mpmc_queue_new ();
+  self->event_queue = mpmc_queue_new ();
   mpmc_queue_reserve (
-    queue, (size_t) 200);
+    self->event_queue, (size_t) 200);
 
-  self->event_queue = queue;
-  self->event_obj_pool = obj_pool;
-
-  g_timeout_add (12, events_process, queue);
+  self->source_id =
+    g_timeout_add (
+      12, (GSourceFunc) events_process, self);
 
   return self;
+}
+
+void
+recording_manager_free (
+  RecordingManager * self)
+{
+  g_message ("%s: Freeing...", __func__);
+
+  /* stop source func */
+  g_source_remove_and_zero (self->source_id);
+
+  /* process pending events */
+  events_process (self);
+
+  /* free objects */
+  object_free_w_func_and_null (
+    mpmc_queue_free, self->event_queue);
+  object_free_w_func_and_null (
+    object_pool_free, self->event_obj_pool);
+
+  free_temp_selections (self);
+
+  object_zero_and_free (self);
+
+  g_message ("%s: done", __func__);
 }
