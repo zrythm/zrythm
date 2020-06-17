@@ -42,8 +42,8 @@ typedef struct CachedVstDescriptors
  * @{
  */
 
-#define PLUGIN_MANAGER (&ZRYTHM->plugin_manager)
-#define LV2_NODES PLUGIN_MANAGER->lv2_nodes
+#define PLUGIN_MANAGER (ZRYTHM->plugin_manager)
+#define LV2_NODES (PLUGIN_MANAGER->lv2_nodes)
 #define LILV_WORLD LV2_NODES.lilv_world
 #define LV2_GENERATOR_PLUGIN "Generator"
 #define LV2_CONSTANT_PLUGIN "Constant"
@@ -185,11 +185,8 @@ typedef struct PluginManager
 
 } PluginManager;
 
-/**
- * Initializes plugin manager.
- */
-void
-plugin_manager_init (PluginManager * self);
+PluginManager *
+plugin_manager_new (void);
 
 /**
  * Scans for plugins, optionally updating the

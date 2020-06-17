@@ -347,6 +347,13 @@ fader_update_track_pos (
   int     pos);
 
 /**
+ * Frees the fader members.
+ */
+void
+fader_free_members (
+  Fader * self);
+
+/**
  * @}
  */
 

@@ -620,9 +620,9 @@ void
 export_settings_free_members (
   ExportSettings * self)
 {
-  g_free_if_exists (self->artist);
-  g_free_if_exists (self->genre);
-  g_free_if_exists (self->file_uri);
+  g_free_and_null (self->artist);
+  g_free_and_null (self->genre);
+  g_free_and_null (self->file_uri);
 }
 
 void

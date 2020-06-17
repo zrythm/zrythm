@@ -30,6 +30,7 @@
 #include "audio/midi_note.h"
 #include "audio/region.h"
 #include "audio/tempo_track.h"
+#include "plugins/plugin_manager.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"
@@ -76,7 +77,8 @@ rebootstrap (
     TESTS_BUILDDIR, plugin_dir);
   g_message ("path is %s", path_str);
 
-  plugin_manager_init (PLUGIN_MANAGER);
+  plugin_manager_free (PLUGIN_MANAGER);
+  ZRYTHM->plugin_manager = plugin_manager_new ();
   LilvNode * path =
     lilv_new_uri (LILV_WORLD, path_str);
   lilv_world_load_bundle (

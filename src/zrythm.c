@@ -468,7 +468,13 @@ zrythm_free (
   object_free_w_func_and_null (
     recording_manager_free,
     self->recording_manager);
+  object_free_w_func_and_null (
+    plugin_manager_free,
+    self->plugin_manager);
+  object_free_w_func_and_null (
+    event_manager_free, self->event_manager);
 
+  /* free object utils last */
   object_free_w_func_and_null (
     object_utils_free, self->object_utils);
 
@@ -501,6 +507,7 @@ zrythm_new (
   self->object_utils = object_utils_new ();
   self->recording_manager =
     recording_manager_new ();
+  self->plugin_manager = plugin_manager_new ();
   self->project = object_new (Project);
   self->symap = symap_new ();
 

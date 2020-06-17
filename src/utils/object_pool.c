@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #include "utils/object_pool.h"
+#include "utils/objects.h"
 
 #include <gtk/gtk.h>
 
@@ -116,7 +117,7 @@ object_pool_free (
       self->free_func (obj);
     }
 
-  self->obj_available = NULL;
+  object_free_zero_and_null (self->obj_available);
   self->num_obj_available = 0;
   self->max_objects = 0;
   zix_sem_post (&self->access_sem);

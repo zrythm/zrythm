@@ -1195,6 +1195,18 @@ typedef struct ProjectSaveData
   bool     has_error;
 } ProjectSaveData;
 
+static void
+project_save_data_free (
+  ProjectSaveData * self)
+{
+  if (self->project_file_path)
+    {
+      g_free_and_null (self->project_file_path);
+    }
+
+  object_zero_and_free (self);
+}
+
 /**
  * Thread that does the serialization and saving.
  */
@@ -1285,13 +1297,15 @@ project_idle_saved_cb (
       if (data->show_notification)
         ui_show_notification (_("Project saved."));
     }
-  g_free (data->project_file_path);
 
   if (ZRYTHM_HAVE_UI)
     {
       header_widget_set_subtitle (
         MW_HEADER, PROJECT->title);
     }
+
+  object_free_w_func_and_null (
+    project_save_data_free, data);
 
   return G_SOURCE_REMOVE;
 }
@@ -1419,7 +1433,7 @@ project_save (
   g_free (states_dir);
 
   ProjectSaveData * data =
-    calloc (1, sizeof (ProjectSaveData));
+    object_new (ProjectSaveData);
   data->project_file_path =
     project_get_project_file_path (
       self, is_backup);

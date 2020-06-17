@@ -45,6 +45,7 @@
 #include "audio/midi.h"
 #include "audio/transport.h"
 #include "project.h"
+#include "utils/objects.h"
 
 /**
  * Appends the events from src to dest
@@ -272,8 +273,7 @@ MidiEvents *
 midi_events_new (
   Port * port)
 {
-  MidiEvents * self =
-    calloc (1, sizeof(MidiEvents));
+  MidiEvents * self = object_new (MidiEvents);
 
   midi_events_init (self);
   self->port = port;
@@ -1029,5 +1029,7 @@ void
 midi_events_free (
   MidiEvents * self)
 {
-  free (self);
+  zix_sem_destroy (&self->access_sem);
+
+  object_zero_and_free (self);
 }

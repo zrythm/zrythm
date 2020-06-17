@@ -30,6 +30,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
@@ -585,4 +586,29 @@ fader_process (
         self->midi_out->midi_events,
         start_frame, nframes, 0);
     }
+}
+
+/**
+ * Frees the fader members.
+ */
+void
+fader_free_members (
+  Fader * self)
+{
+  object_free_w_func_and_null (
+    port_free, self->amp);
+  object_free_w_func_and_null (
+    port_free, self->balance);
+  object_free_w_func_and_null (
+    port_free, self->mute);
+
+  object_free_w_func_and_null (
+    stereo_ports_free, self->stereo_in);
+  object_free_w_func_and_null (
+    stereo_ports_free, self->stereo_out);
+
+  object_free_w_func_and_null (
+    port_free, self->midi_in);
+  object_free_w_func_and_null (
+    port_free, self->midi_out);
 }

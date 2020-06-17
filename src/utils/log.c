@@ -264,6 +264,8 @@ void
 log_teardown (
   Log * self)
 {
+  g_message ("%s: Tearing down...", __func__);
+
   /* remove source func */
   g_source_remove (self->writer_source_id);
 
@@ -283,4 +285,6 @@ log_teardown (
   object_free_w_func_and_null (
     mpmc_queue_free, self->mqueue);
   g_object_unref_and_null (self->messages_buf);
+
+  g_message ("%s: done", __func__);
 }

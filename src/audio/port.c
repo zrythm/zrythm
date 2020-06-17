@@ -555,6 +555,18 @@ stereo_ports_new_from_existing (
   return sp;
 }
 
+void
+stereo_ports_free (
+  StereoPorts * self)
+{
+  object_free_w_func_and_null (
+    port_free, self->l);
+  object_free_w_func_and_null (
+    port_free, self->r);
+
+  object_zero_and_free (self);
+}
+
 #ifdef HAVE_JACK
 void
 port_receive_midi_events_from_jack (
@@ -3047,28 +3059,35 @@ port_apply_pan (
  * updating counters.
  */
 void
-port_free (Port * port)
+port_free (Port * self)
 {
   /* assert no connections */
-  g_warn_if_fail (port->num_srcs == 0);
-  g_warn_if_fail (port->num_dests == 0);
+  g_warn_if_fail (self->num_srcs == 0);
+  g_warn_if_fail (self->num_dests == 0);
 
-  if (port->id.label)
-    g_free (port->id.label);
-  if (port->buf)
-    free (port->buf);
-  if (port->audio_ring)
-    zix_ring_free (port->audio_ring);
-  if (port->midi_ring)
-    zix_ring_free (port->midi_ring);
+  g_free_and_null (self->id.label);
+  object_zero_and_free (self->buf);
+  if (self->audio_ring)
+    {
+      zix_ring_free (self->audio_ring);
+      self->audio_ring = NULL;
+    }
+  if (self->midi_ring)
+    {
+      zix_ring_free (self->midi_ring);
+      self->midi_ring = NULL;
+    }
+
+  object_free_w_func_and_null (
+    midi_events_free, self->midi_events);
 
 #ifdef HAVE_RTMIDI
-  for (int i = 0; i < port->num_rtmidi_ins; i++)
+  for (int i = 0; i < self->num_rtmidi_ins; i++)
     {
       rtmidi_device_close (
-        port->rtmidi_ins[i], 1);
+        self->rtmidi_ins[i], 1);
     }
 #endif
 
-  free (port);
+  object_zero_and_free (self);
 }

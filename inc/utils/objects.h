@@ -45,8 +45,10 @@
  * frees the object.
  */
 #define object_zero_and_free(ptr) \
-  object_set_to_zero (ptr); \
-  free (ptr)
+  if (ptr) { \
+    object_set_to_zero (ptr); \
+    free (ptr); \
+    ptr = NULL; };
 
 /**
  * Frees memory, sets the pointer to NULL and
@@ -67,21 +69,18 @@
 #define g_object_unref_and_null(ptr) \
   { g_object_unref (ptr); ptr = NULL; }
 
-#define g_free_if_exists(ptr) \
-  { if (ptr) g_free (ptr); (ptr) = NULL; }
-
 /**
  * Frees memory and sets the pointer to NULL.
  */
 #define g_free_and_null(ptr) \
-  { g_free (ptr); ptr = NULL; }
+  { if (ptr) g_free (ptr); (ptr) = NULL; }
 
 /**
  * Call the function \ref _func to free \ref _obj
  * and set \ref _obj to NULL.
  */
 #define object_free_w_func_and_null(_func,_obj) \
-  { _func (_obj); _obj = NULL; }
+  if (_obj) { _func (_obj); _obj = NULL; }
 
 #define g_source_remove_and_zero(src_id) \
   { g_source_remove (src_id); src_id = 0; }

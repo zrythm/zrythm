@@ -1614,6 +1614,8 @@ void
 event_manager_free (
   EventManager * self)
 {
+  g_message ("%s: Freeing...", __func__);
+
   event_manager_stop_events (self);
 
   object_free_w_func_and_null (
@@ -1622,4 +1624,6 @@ event_manager_free (
     mpmc_queue_free, self->mqueue);
 
   object_zero_and_free (self);
+
+  g_message ("%s: done", __func__);
 }

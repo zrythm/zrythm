@@ -48,6 +48,7 @@
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/resources.h"
+#include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"

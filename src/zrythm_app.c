@@ -59,6 +59,13 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#ifdef HAVE_GTK_SOURCE_VIEW_4
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#include <gtksourceview/gtksource.h>
+#pragma GCC diagnostic pop
+#endif
+
 /** This is declared extern in zrythm_app.h. */
 ZrythmApp * zrythm_app = NULL;
 
@@ -302,11 +309,6 @@ init_thread (
   file_manager_init (&ZRYTHM->file_manager);
   file_manager_load_files (&ZRYTHM->file_manager);
 
-  zrythm_set_progress_status (
-    ZRYTHM,
-    _("Initializing plugin manager"),
-    0.2);
-  plugin_manager_init (&ZRYTHM->plugin_manager);
   if (!g_settings_get_boolean (
          S_GENERAL, "first-run"))
     {
@@ -315,7 +317,7 @@ init_thread (
         _("Scanning plugins"),
         0.4);
       plugin_manager_scan_plugins (
-        &ZRYTHM->plugin_manager,
+        ZRYTHM->plugin_manager,
         0.7, &ZRYTHM->progress);
     }
 
@@ -359,7 +361,7 @@ scan_plugins_after_first_run_thread (
   gpointer data)
 {
   plugin_manager_scan_plugins (
-    &ZRYTHM->plugin_manager,
+    ZRYTHM->plugin_manager,
     0.7, &ZRYTHM->progress);
 
   ZRYTHM->init_finished = 1;
@@ -992,6 +994,10 @@ zrythm_app_on_shutdown (
     {
       zrythm_free (ZRYTHM);
     }
+
+#ifdef HAVE_GTK_SOURCE_VIEW_4
+  gtk_source_finalize ();
+#endif
 }
 
 /**

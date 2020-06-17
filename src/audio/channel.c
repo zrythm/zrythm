@@ -1330,7 +1330,7 @@ channel_new (
 {
   g_return_val_if_fail (track, NULL);
 
-  Channel * self = calloc (1, sizeof (Channel));
+  Channel * self = object_new (Channel);
 
   self->magic = CHANNEL_MAGIC;
   self->track_pos = track->pos;
@@ -2169,36 +2169,31 @@ channel_disconnect (
  * free them.
  */
 void
-channel_free (Channel * channel)
+channel_free (Channel * self)
 {
-  g_return_if_fail (channel);
+  g_return_if_fail (self);
 
-  Track * track = channel_get_track (channel);
+  Track * track = channel_get_track (self);
 
   track_processor_free_members (&track->processor);
+  fader_free_members (&self->fader);
 
-  switch (track->out_signal_type)
-    {
-    case TYPE_AUDIO:
-      port_free (channel->stereo_out->l);
-      port_free (channel->stereo_out->r);
-      break;
-    case TYPE_EVENT:
-      port_free (channel->midi_out);
-      break;
-    default:
-      break;
-    }
+  object_free_w_func_and_null (
+    stereo_ports_free, self->stereo_out);
+  object_free_w_func_and_null (
+    port_free, self->midi_out);
 
   /* remove automation tracks - they are already
    * free'd in track_free */
   channel_remove_ats_from_automation_tracklist (
-    channel);
+    self);
 
-  if (GTK_IS_WIDGET (channel->widget))
+  if (GTK_IS_WIDGET (self->widget))
     {
       gtk_widget_destroy (
-        GTK_WIDGET (channel->widget));
+        GTK_WIDGET (self->widget));
     }
+
+  object_zero_and_free (self);
 }
 

@@ -94,7 +94,9 @@ meter_draw_cb (
     (float) height - value_px,
     x + width_without_padding,
     value_px);
-  cairo_fill(cr);
+  cairo_fill (cr);
+
+  cairo_pattern_destroy (pat);
 
   /* draw border line */
   cairo_set_source_rgba (

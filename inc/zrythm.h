@@ -29,7 +29,6 @@
 #include "audio/metronome.h"
 #include "audio/snap_grid.h"
 #include "gui/backend/file_manager.h"
-#include "plugins/plugin_manager.h"
 #include "settings/settings.h"
 #include "utils/log.h"
 
@@ -47,6 +46,7 @@ typedef struct ObjectPool ObjectPool;
 typedef struct RecordingManager RecordingManager;
 typedef struct EventManager EventManager;
 typedef struct ObjectUtils ObjectUtils;
+typedef struct PluginManager PluginManager;
 
 /**
  * @addtogroup general
@@ -134,7 +134,7 @@ typedef struct Zrythm
   /**
    * Manages plugins (loading, instantiating, etc.)
    */
-  PluginManager       plugin_manager;
+  PluginManager *     plugin_manager;
 
   /** Main window. */
   MainWindowWidget *  main_window;

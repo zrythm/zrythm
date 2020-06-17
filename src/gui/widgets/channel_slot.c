@@ -38,6 +38,7 @@
 #include "utils/cairo.h"
 #include "utils/gtk.h"
 #include "utils/flags.h"
+#include "utils/symap.h"
 #include "utils/ui.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"

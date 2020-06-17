@@ -31,6 +31,7 @@
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
+#include "plugins/plugin_manager.h"
 #include "plugins/carla_native_plugin.h"
 #include "project.h"
 #include "utils/gtk.h"

@@ -606,6 +606,10 @@ stereo_ports_connect (
   StereoPorts * dest,
   int           locked);
 
+void
+stereo_ports_free (
+  StereoPorts * self);
+
 #ifdef HAVE_JACK
 /**
  * Receives MIDI data from the port's exposed
