@@ -29,6 +29,7 @@
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

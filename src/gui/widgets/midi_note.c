@@ -45,6 +45,7 @@
 #include "settings/settings.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 static void
 recreate_pango_layouts (

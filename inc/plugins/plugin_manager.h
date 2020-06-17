@@ -29,6 +29,8 @@
 #include "plugins/lv2/lv2_urid.h"
 #include "utils/symap.h"
 
+#include "zix/sem.h"
+
 #include <lilv/lilv.h>
 
 typedef struct CachedVstDescriptors

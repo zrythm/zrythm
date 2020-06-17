@@ -23,13 +23,15 @@
 #include "audio/engine.h"
 #include "audio/port.h"
 #include "audio/track.h"
-#include "gui/backend/events.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2/lv2_control.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 /**
  * Get the current real value of the control.

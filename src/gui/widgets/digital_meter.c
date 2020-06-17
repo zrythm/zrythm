@@ -25,6 +25,8 @@
 #include "audio/snap_grid.h"
 #include "audio/tempo_track.h"
 #include "audio/transport.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/digital_meter.h"
@@ -41,6 +43,7 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

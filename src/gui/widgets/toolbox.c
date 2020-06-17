@@ -31,6 +31,7 @@
 #include "gui/widgets/toolbox.h"
 #include "project.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 G_DEFINE_TYPE (ToolboxWidget,
                toolbox_widget,

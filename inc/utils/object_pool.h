@@ -28,6 +28,18 @@
 
 #include "zix/sem.h"
 
+/**
+ * Function to call to create the objects in the
+ * pool.
+ */
+typedef void * (* ObjectCreatorFunc) (void);
+
+/**
+ * Function to call to free the objects in the
+ * pool.
+ */
+typedef void (* ObjectFreeFunc) (void *);
+
 typedef struct ObjectPool
 {
   int         max_objects;
@@ -36,22 +48,20 @@ typedef struct ObjectPool
   void **     obj_available;
   int         num_obj_available;
 
+  /** Object free func. */
+  ObjectFreeFunc free_func;
+
   /** Semaphore for atomic operations. */
   ZixSem      access_sem;
 } ObjectPool;
-
-/**
- * Function to call to create the objects in the
- * pool.
- */
-typedef void * (* ObjectCreatorFunc) (void);
 
 /**
  * Creates a new object pool.
  */
 ObjectPool *
 object_pool_new (
-  ObjectCreatorFunc func,
+  ObjectCreatorFunc create_func,
+  ObjectFreeFunc    free_func,
   int               max_objects);
 
 /**
@@ -69,6 +79,9 @@ object_pool_return (
   ObjectPool * self,
   void *       object);
 
+/**
+ * Frees the pool and all its objects.
+ */
 void
 object_pool_free (
   ObjectPool * self);

@@ -18,6 +18,8 @@
  */
 
 #include "audio/transport.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
@@ -37,6 +39,7 @@
 #include "gui/widgets/tracklist_header.h"
 #include "project.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 G_DEFINE_TYPE (
   TimelinePanelWidget,

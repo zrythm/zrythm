@@ -36,6 +36,7 @@ typedef struct _HeaderWidget HeaderWidget;
 typedef struct _CenterDockWidget CenterDockWidget;
 typedef struct _BotBarWidget BotBarWidget;
 typedef struct _TopBarWidget TopBarWidget;
+typedef struct _ZrythmApp ZrythmApp;
 typedef struct ArrangerSelections
   ArrangerSelections;
 

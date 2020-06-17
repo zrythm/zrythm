@@ -50,6 +50,12 @@ void
 object_utils_init (void);
 
 /**
+ * Allocates memory for an object of type \ref type.
+ */
+#define object_new(type) \
+  calloc (1, sizeof (type))
+
+/**
  * Zero's out the struct pointed to by \ref ptr.
  *
  * @param ptr A pointer to a struct.
@@ -72,8 +78,8 @@ object_utils_init (void);
  * @param ptr A pointer to a pointer to be free'd.
  */
 #define object_free_zero_and_null(ptr) \
-  { object_set_to_zero (*ptr); \
-    free (*ptr); *ptr = NULL; }
+  { object_set_to_zero (ptr); \
+    free (ptr); ptr = NULL; }
 
 /**
  * Frees memory, sets the pointer to NULL and
@@ -91,7 +97,17 @@ object_utils_init (void);
  * Frees memory and sets the pointer to NULL.
  */
 #define g_free_and_null(ptr) \
-  { g_free (*ptr); *ptr = NULL; }
+  { g_free (ptr); ptr = NULL; }
+
+/**
+ * Call the function \ref _func to free \ref _obj
+ * and set \ref _obj to NULL.
+ */
+#define object_free_w_func_and_null(_func,_obj) \
+  { _func (_obj); _obj = NULL; }
+
+#define g_source_remove_and_zero(src_id) \
+  { g_source_remove (src_id); src_id = 0; }
 
 /**
  * @}

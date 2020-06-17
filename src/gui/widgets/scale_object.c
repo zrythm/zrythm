@@ -26,6 +26,7 @@
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 /**
  * Recreates the pango layouts for drawing.

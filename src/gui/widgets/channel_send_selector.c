@@ -24,6 +24,7 @@
 #include "gui/widgets/channel_send.h"
 #include "gui/widgets/channel_send_selector.h"
 #include "project.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

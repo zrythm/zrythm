@@ -32,6 +32,8 @@
 #include "audio/port.h"
 #include "audio/position.h"
 #include "audio/track.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/center_dock.h"
@@ -40,6 +42,7 @@
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "zrythm_app.h"
 
 static AutomationPoint *
 _create_new (

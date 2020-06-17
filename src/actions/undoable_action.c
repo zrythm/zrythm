@@ -32,6 +32,7 @@
 #include "actions/undoable_action.h"
 #include "actions/transport_action.h"
 #include "project.h"
+#include "zrythm_app.h"
 
 #include <glib.h>
 #include <glib/gi18n.h>

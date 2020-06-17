@@ -44,6 +44,8 @@
 #include <mach/vm_map.h>
 #endif
 
+#include "zrythm_app.h"
+
 G_DEFINE_TYPE (CpuWidget,
                cpu_widget,
                GTK_TYPE_DRAWING_AREA)

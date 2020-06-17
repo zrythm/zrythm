@@ -36,6 +36,8 @@
 #include "audio/midi.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
@@ -88,6 +90,7 @@
 #include "utils/resources.h"
 #include "utils/stack.h"
 #include "utils/string.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 
@@ -555,7 +558,7 @@ on_project_new_finish (
         pa->project_selection->filename;
       g_message (
         "Loading project: %s",
-        zrythm->open_filename);
+        ZRYTHM->open_filename);
       ZRYTHM->creating_project = 0;
     }
   /* no selection, load blank project */
@@ -569,7 +572,7 @@ on_project_new_finish (
   /* if not loading a project, show dialog to
    * select directory and name */
   int quit = 0;
-  if (zrythm->creating_project)
+  if (ZRYTHM->creating_project)
     {
       CreateProjectDialogWidget * dialog =
         create_project_dialog_widget_new ();
@@ -581,7 +584,7 @@ on_project_new_finish (
       gtk_widget_destroy (GTK_WIDGET (dialog));
 
       g_message ("creating project %s",
-                 zrythm->create_project_path);
+                 ZRYTHM->create_project_path);
     }
 
   /* FIXME error if the assistant is deleted

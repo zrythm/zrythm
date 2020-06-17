@@ -21,6 +21,7 @@
 #include "utils/io.h"
 #include "utils/log.h"
 #include "utils/object_pool.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 
 #include <glib.h>
@@ -146,14 +147,23 @@ void
 log_init_writer_idle (
   Log * self)
 {
-  g_timeout_add_seconds (
-    3, (GSourceFunc) log_idle_cb, self);
+  self->writer_source_id =
+    g_timeout_add_seconds (
+      3, (GSourceFunc) log_idle_cb, self);
 }
 
 static void *
 create_log_event_obj (void)
 {
   return calloc (1, sizeof (LogEvent));
+}
+
+static void
+free_log_event_obj (
+  LogEvent * ev)
+{
+  g_free_and_null (ev->message);
+  object_free_zero_and_null (ev);
 }
 
 /**
@@ -213,7 +223,7 @@ log_init_with_file (
       G_DIR_SEPARATOR_S,
       str_datetime);
   io_mkdir (user_log_dir);
-  self->logfile = g_fopen (str, "a");
+  self->logfile = fopen (str, "a");
   g_return_if_fail (self->logfile);
   g_free (user_log_dir);
   g_free (str);
@@ -226,7 +236,9 @@ log_init_with_file (
   /* init the object pool for log events */
   self->obj_pool =
     object_pool_new (
-      create_log_event_obj, MESSAGES_MAX);
+      create_log_event_obj,
+      (ObjectFreeFunc) free_log_event_obj,
+      MESSAGES_MAX);
 
   /* init the message queue */
   self->mqueue = mpmc_queue_new ();
@@ -243,4 +255,32 @@ log_init (
 {
   g_log_set_writer_func (
     (GLogWriterFunc) log_writer, self, NULL);
+}
+
+/**
+ * Stops logging and frees any allocated memory.
+ */
+void
+log_teardown (
+  Log * self)
+{
+  /* remove source func */
+  g_source_remove (self->writer_source_id);
+
+  /* clear the queue */
+  log_idle_cb (self);
+
+  /* set back default log handler */
+  g_log_set_writer_func (
+    g_log_writer_default, NULL, NULL);
+
+  /* close log file */
+  fclose (self->logfile);
+
+  /* free children */
+  object_free_w_func_and_null (
+    object_pool_free, self->obj_pool);
+  object_free_w_func_and_null (
+    mpmc_queue_free, self->mqueue);
+  g_object_unref_and_null (self->messages_buf);
 }

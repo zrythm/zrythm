@@ -28,6 +28,7 @@
 #include "utils/file.h"
 #include "utils/math.h"
 #include "utils/io.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

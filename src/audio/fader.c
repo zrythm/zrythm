@@ -25,6 +25,8 @@
 #include "audio/fader.h"
 #include "audio/midi.h"
 #include "audio/track.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/math.h"

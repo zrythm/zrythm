@@ -31,6 +31,7 @@
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

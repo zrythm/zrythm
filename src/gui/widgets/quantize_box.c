@@ -27,6 +27,7 @@
 #include "gui/widgets/snap_grid.h"
 #include "project.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 G_DEFINE_TYPE (QuantizeBoxWidget,
                quantize_box_widget,

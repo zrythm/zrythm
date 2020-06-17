@@ -28,18 +28,14 @@
 
 #include "audio/metronome.h"
 #include "audio/snap_grid.h"
-#include "gui/backend/events.h"
 #include "gui/backend/file_manager.h"
 #include "plugins/plugin_manager.h"
 #include "settings/settings.h"
 #include "utils/log.h"
 
-#include <gtk/gtk.h>
+#include "zix/sem.h"
 
-#define ZRYTHM_APP_TYPE (zrythm_app_get_type ())
-G_DECLARE_FINAL_TYPE (
-  ZrythmApp, zrythm_app, ZRYTHM, APP,
-  GtkApplication)
+#include <gtk/gtk.h>
 
 typedef struct _MainWindowWidget MainWindowWidget;
 typedef struct Project Project;
@@ -49,6 +45,7 @@ typedef struct UiCaches UiCaches;
 typedef struct MPMCQueue MPMCQueue;
 typedef struct ObjectPool ObjectPool;
 typedef struct RecordingManager RecordingManager;
+typedef struct EventManager EventManager;
 
 /**
  * @addtogroup general
@@ -191,16 +188,7 @@ typedef struct Zrythm
    */
   char *              open_filename;
 
-  /**
-   * Event queue, mainly for GUI events.
-   */
-  MPMCQueue *         event_queue;
-
-  /**
-   * Object pool of event structs to avoid real time
-   * allocation.
-   */
-  ObjectPool *        event_obj_pool;
+  EventManager *      event_manager;
 
   /** Recording manager. */
   RecordingManager *  recording_manager;
@@ -247,7 +235,7 @@ typedef struct Zrythm
    * splash screen from a non-gtk thread. */
   ZixSem              progress_status_lock;
 
-  /** Log settings. */
+  /** Log settings FIXME allocate. */
   Log                 log;
 
   /** Flag to set when initialization has
@@ -268,25 +256,9 @@ typedef struct Zrythm
 } Zrythm;
 
 /**
- * The global struct.
- *
- * Contains data that is irrelevant to the project.
- */
-struct _ZrythmApp
-{
-  GtkApplication      parent;
-
-  Zrythm *            zrythm;
-};
-
-/**
  * Global variable, should be available to all files.
  */
 extern Zrythm * zrythm;
-extern ZrythmApp * zrythm_app;
-
-ZrythmApp *
-zrythm_app_new (void);
 
 void
 zrythm_add_to_recent_projects (
@@ -348,15 +320,50 @@ zrythm_set_progress_status (
   const double perc);
 
 /**
- * Called immediately after the main GTK loop
- * terminates.
+ * Returns the prefix or in the case of windows
+ * the root dir (C/program files/zrythm) or in the
+ * case of macos the bundle path.
  *
- * This is also called manually on SIGINT.
+ * In all cases, "share" is expected to be found
+ * in this dir.
+ *
+ * @return A newly allocated string.
+ */
+char *
+zrythm_get_prefix (void);
+
+/**
+ * Gets the zrythm directory, either from the
+ * settings if non-empty, or the default
+ * ($XDG_DATA_DIR/zrythm).
+ *
+ * @param force_default Ignore the settings and get
+ *   the default dir.
+ *
+ * Must be free'd by caler.
+ */
+char *
+zrythm_get_user_dir (
+  bool  force_default);
+
+/**
+ * Creates a new Zrythm instance.
+ *
+ * @param have_ui Whether Zrythm is instantiated
+ *   with a UI (false if headless).
+ * @param testing Whether this is a unit test.
+ */
+Zrythm *
+zrythm_new (
+  bool have_ui,
+  bool testing);
+
+/**
+ * Frees the instance and any unfreed members.
  */
 void
-zrythm_on_shutdown (
-  GApplication * application,
-  ZrythmApp *    self);
+zrythm_free (
+  Zrythm * self);
 
 /**
  * @}

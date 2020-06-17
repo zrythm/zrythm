@@ -24,7 +24,8 @@
 #include "audio/position.h"
 #include "audio/region.h"
 #include "gui/backend/automation_selections.h"
-#include "gui/backend/events.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -35,6 +36,7 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 int
 automation_region_sort_func (

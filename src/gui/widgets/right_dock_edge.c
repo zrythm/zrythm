@@ -27,6 +27,7 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "project.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

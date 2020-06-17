@@ -24,6 +24,7 @@
 #include "gui/widgets/piano_keyboard.h"
 #include "utils/ui.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 G_DEFINE_TYPE (
   PianoKeyboardWidget, piano_keyboard_widget,

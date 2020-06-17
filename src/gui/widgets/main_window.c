@@ -27,6 +27,8 @@
 #include "audio/transport.h"
 #include "gui/accel.h"
 #include "gui/backend/arranger_selections.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
@@ -65,6 +67,7 @@
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -83,10 +86,10 @@ on_main_window_destroy (MainWindowWidget * self,
 
   if (PROJECT->loaded)
     {
-      /* set this to NULL to stop events from
-       * getting fired. this prevents some segfaults
-       * on shutdown */
-      ZRYTHM->event_queue = NULL;
+      /* stop events from getting fired. this
+       * prevents some segfaults on shutdown */
+      event_manager_stop_events (EVENT_MANAGER);
+
       g_application_quit (
         G_APPLICATION (zrythm_app));
     }

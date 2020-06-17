@@ -19,8 +19,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm.h"
 #include "gui/accel.h"
+#include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

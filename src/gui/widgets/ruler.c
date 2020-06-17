@@ -22,6 +22,8 @@
 #include "actions/actions.h"
 #include "audio/position.h"
 #include "audio/transport.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -43,6 +45,7 @@
 #include "utils/cairo.h"
 #include "utils/ui.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

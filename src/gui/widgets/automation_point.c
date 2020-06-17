@@ -32,6 +32,7 @@
 #include "utils/cairo.h"
 #include "utils/math.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 /**
  * Draws the AutomationPoint in the given cairo

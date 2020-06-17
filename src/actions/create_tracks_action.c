@@ -25,11 +25,14 @@
 #include "audio/mixer.h"
 #include "audio/supported_file.h"
 #include "audio/tracklist.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 #include <ext/midilib/src/midifile.h>
 

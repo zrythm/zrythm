@@ -26,6 +26,7 @@
 #include "gui/widgets/track_top_grid.h"
 #include "project.h"
 #include "utils/cairo.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>

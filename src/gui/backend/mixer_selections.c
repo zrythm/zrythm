@@ -17,7 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/backend/events.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/backend/mixer_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/left_dock_edge.h"

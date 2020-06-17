@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/backend/events.h"
+#include "gui/backend/event_manager.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel_sends_expander.h"
@@ -34,6 +34,7 @@
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

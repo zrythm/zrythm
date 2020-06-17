@@ -30,6 +30,7 @@
 #include "plugins/lv2/lv2_ui.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

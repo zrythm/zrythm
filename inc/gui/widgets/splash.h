@@ -20,8 +20,6 @@
 #ifndef __GUI_WIDGETS_SPLASH_H__
 #define __GUI_WIDGETS_SPLASH_H__
 
-#include "zrythm.h"
-
 #include <gtk/gtk.h>
 
 #define SPLASH_WINDOW_WIDGET_TYPE \
@@ -31,6 +29,14 @@ G_DECLARE_FINAL_TYPE (
   splash_window_widget,
   Z, SPLASH_WINDOW_WIDGET,
   GtkWindow)
+
+typedef struct _ZrythmApp ZrythmApp;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 typedef struct _SplashWindowWidget
 {
@@ -51,5 +57,9 @@ splash_window_widget_new (
 void
 splash_window_widget_close (
   SplashWindowWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

@@ -37,6 +37,8 @@
 #include "audio/engine.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"

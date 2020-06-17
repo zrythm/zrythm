@@ -33,6 +33,8 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/mpmc_queue.h"
+#include "utils/object_pool.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -1305,12 +1307,6 @@ events_process (void * data)
   return G_SOURCE_CONTINUE;
 }
 
-static void *
-create_event_obj (void)
-{
-  return calloc (1, sizeof (RecordingEvent));
-}
-
 /**
  * Creates the event queue and starts the event loop.
  *
@@ -1337,7 +1333,9 @@ recording_manager_new (void)
 
   obj_pool =
     object_pool_new (
-      create_event_obj, 200);
+      (ObjectCreatorFunc) recording_event_new,
+      (ObjectFreeFunc) recording_event_free,
+      200);
   queue = mpmc_queue_new ();
   mpmc_queue_reserve (
     queue, (size_t) 200);

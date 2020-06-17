@@ -19,7 +19,7 @@
 
 #include "audio/engine.h"
 #include "audio/track.h"
-#include "gui/backend/events.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/editable_label.h"
 #include "project.h"

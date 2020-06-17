@@ -23,6 +23,8 @@
 #include "audio/port.h"
 #include "audio/tempo_track.h"
 #include "audio/track.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"

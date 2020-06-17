@@ -49,6 +49,7 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n-lib.h>
 

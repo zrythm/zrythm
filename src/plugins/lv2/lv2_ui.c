@@ -38,6 +38,7 @@
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <lv2/instance-access/instance-access.h>
 

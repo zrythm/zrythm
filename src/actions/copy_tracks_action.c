@@ -19,6 +19,8 @@
 
 #include "actions/copy_tracks_action.h"
 #include "audio/track.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/region.h"
@@ -26,6 +28,7 @@
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 UndoableAction *
 copy_tracks_action_new (

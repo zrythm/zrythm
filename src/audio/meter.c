@@ -26,6 +26,7 @@
 #include "audio/true_peak_dsp.h"
 #include "project.h"
 #include "utils/math.h"
+#include "zrythm_app.h"
 
 /**
  * Get the current meter value.

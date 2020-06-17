@@ -41,6 +41,7 @@
 #include "utils/ui.h"
 #include "project.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>

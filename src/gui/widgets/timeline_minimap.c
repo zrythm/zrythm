@@ -18,6 +18,8 @@
  */
 
 #include "audio/engine.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_bg.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -37,6 +39,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

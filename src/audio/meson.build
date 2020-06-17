@@ -76,6 +76,7 @@ audio_srcs = [
   'quantize_options.c',
   'pan.c',
   'passthrough_processor.c',
+  'recording_event.c',
   'recording_manager.c',
   'region.c',
   'region_link_group.c',

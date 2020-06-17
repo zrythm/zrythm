@@ -28,6 +28,8 @@
 #include "audio/tracklist.h"
 #include "audio/region.h"
 #include "gui/backend/tracklist_selections.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automatable_selector_popover.h"
 #include "gui/widgets/automation_mode.h"
@@ -57,6 +59,7 @@
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

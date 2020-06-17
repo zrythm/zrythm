@@ -30,6 +30,8 @@
 
 #include "audio/channel.h"
 #include "gui/backend/clip_editor.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"

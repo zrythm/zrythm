@@ -20,6 +20,8 @@
 #include "actions/create_tracks_action.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/expander_box.h"
 #include "gui/widgets/track_visibility_tree.h"
 #include "gui/widgets/center_dock.h"
@@ -33,6 +35,7 @@
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>

@@ -22,6 +22,7 @@
 #include "utils/arrays.h"
 #include "utils/stack.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 void
 undo_stack_init_loaded (

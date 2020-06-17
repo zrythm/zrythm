@@ -21,9 +21,11 @@
 #include "audio/engine.h"
 #include "audio/tempo_track.h"
 #include "audio/transport.h"
-#include "gui/backend/events.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "project.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

@@ -22,11 +22,13 @@
 #include "audio/chord_track.h"
 #include "audio/scale.h"
 #include "audio/track.h"
-#include "gui/backend/events.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

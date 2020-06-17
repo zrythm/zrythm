@@ -28,19 +28,21 @@
  */
 ObjectPool *
 object_pool_new (
-  ObjectCreatorFunc func,
+  ObjectCreatorFunc create_func,
+  ObjectFreeFunc    free_func,
   int               max_objects)
 {
   ObjectPool * self =
     calloc (1, sizeof (ObjectPool));
 
+  self->free_func = free_func;
   self->max_objects = max_objects;
   self->obj_available =
     calloc ((size_t) max_objects, sizeof (void *));
 
   for (int i = 0; i < max_objects; i++)
     {
-      void * obj = func ();
+      void * obj = create_func ();
       self->obj_available[i] = obj;
       self->num_obj_available++;
     }
@@ -88,9 +90,38 @@ object_pool_return (
   g_return_if_fail (fail == 0);
 }
 
+/**
+ * Frees the pool and all its objects.
+ */
 void
 object_pool_free (
   ObjectPool * self)
 {
-  /* TODO */
+  zix_sem_wait (&self->access_sem);
+  if (self->num_obj_available != self->max_objects)
+    {
+      g_critical (
+        "%s: Cannot free: "
+        "There are %d objects in use.",
+        __func__,
+        self->max_objects - self->num_obj_available);
+      zix_sem_post (&self->access_sem);
+      return;
+    }
+
+  /* free each object */
+  for (int i = 0; i < self->num_obj_available; i++)
+    {
+      void * obj = self->obj_available[i];
+      self->free_func (obj);
+    }
+
+  self->obj_available = NULL;
+  self->num_obj_available = 0;
+  self->max_objects = 0;
+  zix_sem_post (&self->access_sem);
+
+  zix_sem_destroy (&self->access_sem);
+
+  free (self);
 }

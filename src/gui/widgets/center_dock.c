@@ -26,6 +26,7 @@
 #include "gui/widgets/timeline_panel.h"
 #include "project.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 G_DEFINE_TYPE (
   CenterDockWidget,

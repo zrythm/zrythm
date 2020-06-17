@@ -91,11 +91,7 @@ test_helper_zrythm_init ()
 {
   object_utils_init ();
 
-  ZRYTHM = calloc (1, sizeof (Zrythm));
-  ZRYTHM->symap = symap_new ();
-  ZRYTHM->testing = 1;
-  ZRYTHM->have_ui = 0;
-  PROJECT = calloc (1, sizeof (Project));
+  ZRYTHM = zrythm_new (false, true);
   ZRYTHM->create_project_path =
     g_dir_make_tmp (
       "zrythm_test_project_XXXXXX", NULL);

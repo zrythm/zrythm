@@ -26,6 +26,8 @@
 #include "audio/midi.h"
 #include "audio/transport.h"
 #include "project.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_playhead.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -40,6 +42,7 @@
 #include "gui/widgets/top_bar.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

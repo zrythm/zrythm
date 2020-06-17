@@ -25,7 +25,7 @@
 #include "audio/position.h"
 #include "audio/track.h"
 #include "audio/transport.h"
-#include "gui/backend/events.h"
+#include "gui/backend/event_manager.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/midi_region.h"
 #include "project.h"

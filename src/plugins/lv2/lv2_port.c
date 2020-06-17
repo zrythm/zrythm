@@ -21,6 +21,7 @@
 #include "plugins/lv2/lv2_port.h"
 #include "plugins/plugin_manager.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 /**
  * Returns the Lv2Port corresponding to the given

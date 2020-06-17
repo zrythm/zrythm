@@ -21,6 +21,7 @@
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

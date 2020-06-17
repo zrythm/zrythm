@@ -21,12 +21,15 @@
 #include "audio/chord_object.h"
 #include "audio/chord_track.h"
 #include "audio/scale_object.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_object.h"
 #include "gui/widgets/chord_selector_window.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>

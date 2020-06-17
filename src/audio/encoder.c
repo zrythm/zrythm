@@ -24,6 +24,7 @@
 #include "audio/encoder.h"
 #include "audio/engine.h"
 #include "project.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

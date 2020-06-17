@@ -44,6 +44,8 @@
 #include "audio/windows_mme_device.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_gtk.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
@@ -57,6 +59,7 @@
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/stoat.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>

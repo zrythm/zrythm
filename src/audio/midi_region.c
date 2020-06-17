@@ -45,6 +45,8 @@
 #include "audio/region.h"
 #include "audio/tempo_track.h"
 #include "audio/track.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"

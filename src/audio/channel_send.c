@@ -22,6 +22,7 @@
 #include "audio/tracklist.h"
 #include "project.h"
 #include "utils/math.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

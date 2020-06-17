@@ -38,6 +38,7 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_worker.h"
 #include "project.h"
+#include "zrythm_app.h"
 
 static LV2_Worker_Status
 lv2_worker_respond (

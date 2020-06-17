@@ -26,7 +26,7 @@
 #include "audio/control_port.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
-#include "gui/backend/events.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/custom_button.h"
@@ -37,6 +37,7 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

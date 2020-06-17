@@ -36,6 +36,7 @@
 #include "utils/cairo.h"
 #include "utils/flags.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 /**
  * Draws the Velocity in the given cairo context in

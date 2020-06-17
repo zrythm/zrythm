@@ -22,9 +22,12 @@
 #include "audio/marker_track.h"
 #include "audio/track.h"
 #include "project.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>

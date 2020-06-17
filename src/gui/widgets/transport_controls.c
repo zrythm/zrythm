@@ -23,6 +23,7 @@
 #include "gui/widgets/transport_controls.h"
 #include "utils/flags.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

@@ -43,6 +43,8 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/transport.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/create_project_dialog.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/main_window.h"
@@ -58,9 +60,10 @@
 #include "utils/file.h"
 #include "utils/flags.h"
 #include "utils/io.h"
-#include "utils/smf.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -233,7 +236,7 @@ _project_compress (
 void
 project_tear_down (Project * self)
 {
-  g_message ("tearing down the project...");
+  g_message ("%s: tearing down...", __func__);
 
   PROJECT->loaded = 0;
 
@@ -251,7 +254,9 @@ project_tear_down (Project * self)
       track_free (chord_track);
     }
 
-  free (self);
+  object_zero_and_free (self);
+
+  g_message ("%s: done", __func__);
 }
 
 /**
@@ -451,17 +456,35 @@ project_sanity_check (Project * self)
   /* TODO */
 }
 
-/* macro to clean previous main window */
-#define DESTROY_PREV_MAIN_WINDOW \
-  MainWindowWidget * mww = MAIN_WINDOW; \
-  MAIN_WINDOW = NULL; \
-  ZRYTHM->event_queue = NULL; \
-  if (ZRYTHM_HAVE_UI && GTK_IS_WIDGET (mww)) \
-    { \
-      g_message ( \
-        "destroying previous main window..."); \
-      gtk_widget_destroy (GTK_WIDGET (mww)); \
+static void
+destroy_prev_main_window (void)
+{
+  MainWindowWidget * mww = MAIN_WINDOW;
+  MAIN_WINDOW = NULL;
+  event_manager_stop_events (EVENT_MANAGER);
+  if (GTK_IS_WIDGET (mww))
+    {
+      g_message (
+        "destroying previous main window...");
+      gtk_widget_destroy (GTK_WIDGET (mww));
     }
+}
+
+static void
+refresh_main_window (
+  bool loading_while_running)
+{
+  /* mimic behavior when starting the app */
+  if (ZRYTHM_HAVE_UI)
+    {
+      event_manager_start_events (EVENT_MANAGER);
+      if (loading_while_running)
+        {
+          main_window_widget_refresh (MAIN_WINDOW);
+          g_atomic_int_set (&AUDIO_ENGINE->run, 1);
+        }
+    }
+}
 
 #define RECREATE_MAIN_WINDOW \
   if (loading_while_running && \
@@ -470,16 +493,6 @@ project_sanity_check (Project * self)
       g_message ("recreating main window..."); \
       MAIN_WINDOW = \
         main_window_widget_new (zrythm_app); \
-    }
-
-#define REFRESH_MAIN_WINDOW \
-  /* mimic behavior when starting the app */ \
-  if (loading_while_running && \
-      ZRYTHM_HAVE_UI) \
-    { \
-      events_init (ZRYTHM); \
-      main_window_widget_refresh (MAIN_WINDOW); \
-      g_atomic_int_set (&AUDIO_ENGINE->run, 1); \
     }
 
 /**
@@ -524,7 +537,10 @@ create_default (Project * self)
       PROJECT = calloc (1, sizeof (Project));
       self = PROJECT;
 
-      DESTROY_PREV_MAIN_WINDOW;
+      if (ZRYTHM_HAVE_UI)
+        {
+          destroy_prev_main_window ();
+        }
     }
 
   /* initialize selections */
@@ -622,7 +638,7 @@ create_default (Project * self)
   position_set_to_bar (
     &PROJECT->range_2, 1);
 
-  REFRESH_MAIN_WINDOW;
+  refresh_main_window (loading_while_running);
 
   if (ZRYTHM_HAVE_UI)
     {
@@ -810,7 +826,10 @@ load (
       project_tear_down (PROJECT);
       PROJECT = prj;
 
-      DESTROY_PREV_MAIN_WINDOW;
+      if (ZRYTHM_HAVE_UI)
+        {
+          destroy_prev_main_window ();
+        }
     }
 
   g_message ("initing loaded structures");
@@ -905,7 +924,7 @@ load (
   /* recalculate the routing graph */
   mixer_recalc_graph (MIXER);
 
-  REFRESH_MAIN_WINDOW;
+  refresh_main_window (loading_while_running);
 
   if (ZRYTHM_HAVE_UI)
     {

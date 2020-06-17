@@ -25,6 +25,7 @@
 #include "gui/widgets/chord_object.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "zrythm_app.h"
 
 /**
  * Creates a ChordObject.

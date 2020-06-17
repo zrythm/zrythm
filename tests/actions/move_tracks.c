@@ -28,6 +28,7 @@
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include "tests/helpers/project.h"
 

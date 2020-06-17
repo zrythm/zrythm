@@ -26,6 +26,8 @@
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "plugins/lv2_plugin.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
@@ -38,6 +40,7 @@
 #include "utils/flags.h"
 #include "utils/ui.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

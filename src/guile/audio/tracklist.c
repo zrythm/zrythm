@@ -22,6 +22,7 @@
 #ifndef SNARF_MODE
 #include "audio/tracklist.h"
 #include "project.h"
+#include "zrythm_app.h"
 #endif
 
 SCM_DEFINE (

@@ -39,6 +39,8 @@
 #include "audio/rtaudio_device.h"
 #include "audio/rtmidi_device.h"
 #include "audio/windows_mme_device.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/channel.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2/lv2_ui.h"

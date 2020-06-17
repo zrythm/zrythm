@@ -22,6 +22,7 @@
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 /**
  * Needed because we can't set them directly when

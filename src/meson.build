@@ -19,6 +19,7 @@ zrythm_main = files ('main.c')
 zrythm_srcs = files ([
   'project.c',
   'zrythm.c',
+  'zrythm_app.c',
   ])
 
 if os_darwin

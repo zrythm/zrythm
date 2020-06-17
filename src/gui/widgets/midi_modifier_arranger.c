@@ -36,6 +36,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "zrythm_app.h"
 
 /**
  * Sets the start velocities of all velocities

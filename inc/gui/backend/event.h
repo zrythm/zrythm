@@ -20,52 +20,16 @@
 /**
  * \file
  *
- * Events for calling refresh on widgets.
- *
- * Note: This is only for refreshing widgets. No
- * logic should be performed here. Any logic must be
- * done before pushing an event.
+ * UI event.
  */
-#ifndef __GUI_BACKEND_EVENTS_H__
-#define __GUI_BACKEND_EVENTS_H__
-
-#include "utils/mpmc_queue.h"
-#include "utils/object_pool.h"
-
-typedef struct Zrythm Zrythm;
+#ifndef __GUI_BACKEND_EVENT_H__
+#define __GUI_BACKEND_EVENT_H__
 
 /**
  * @addtogroup events
  *
  * @{
  */
-
-#define event_queue_push_back_event(q,x) \
-  mpmc_queue_push_back (q, (void *) x)
-
-#define event_queue_dequeue_event(q,x) \
-  mpmc_queue_dequeue (q, (void *) x)
-
-/**
- * Push events.
- */
-#define EVENTS_PUSH(et,_arg) \
-  if (EVENTS && \
-      (!AUDIO_ENGINE || \
-       !AUDIO_ENGINE->exporting)) \
-    { \
-      ZEvent * _ev = \
-        (ZEvent *) \
-        object_pool_get (ZRYTHM->event_obj_pool); \
-      _ev->type = et; \
-      _ev->arg = (void *) _arg; \
-      event_queue_push_back_event (EVENTS, _ev); \
-    }
-
-/** The event queue. */
-#define EVENTS (ZRYTHM->event_queue)
-
-#define EVENTS_MAX 2000
 
 typedef enum EventType
 {
@@ -199,14 +163,11 @@ typedef struct ZEvent
   void *        arg;
 } ZEvent;
 
-/**
- * Creates the event queue and starts the event loop.
- *
- * Must be called from a GTK thread.
- */
+ZEvent *
+event_new (void);
+
 void
-events_init (
-  Zrythm * zrythm);
+event_free (ZEvent * self);
 
 /**
  * @}

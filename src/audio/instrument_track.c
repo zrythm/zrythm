@@ -31,12 +31,15 @@
 #include "audio/region.h"
 #include "audio/track.h"
 #include "audio/velocity.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "plugins/lv2/lv2_control.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "gui/widgets/track.h"
 #include "utils/arrays.h"
 #include "utils/stoat.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

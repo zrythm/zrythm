@@ -37,6 +37,8 @@
 
 #include "audio/engine.h"
 #include "audio/track.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/lv2_plugin.h"
@@ -49,6 +51,7 @@
 #include "utils/lilv.h"
 #include "utils/math.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

@@ -17,12 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Events for calling refresh on widgets.
- */
-
 #include <math.h>
 
 #include "audio/audio_region.h"
@@ -35,7 +29,8 @@
 #include "audio/pool.h"
 #include "audio/stretcher.h"
 #include "audio/track.h"
-#include "gui/backend/events.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/audio_arranger.h"
@@ -994,10 +989,11 @@ on_plugin_visibility_changed (Plugin * pl)
 
 static inline void
 clean_duplicates_and_copy (
-  MPMCQueue * q,
-  ZEvent **   events,
-  int *       num_events)
+  EventManager * self,
+  ZEvent **      events,
+  int *          num_events)
 {
+  MPMCQueue * q = self->mqueue;
   ZEvent * event;
   *num_events = 0;
   int i, already_exists = 0;;
@@ -1017,7 +1013,7 @@ clean_duplicates_and_copy (
       if (already_exists)
         {
           object_pool_return (
-            ZRYTHM->event_obj_pool, event);
+            self->obj_pool, event);
         }
       else
         {
@@ -1033,20 +1029,15 @@ clean_duplicates_and_copy (
  * This will loop indefinintely.
  */
 static int
-events_process (void * data)
+process_events (void * data)
 {
-  MPMCQueue * q = (MPMCQueue *) data;
-  /*gint64 curr_time = g_get_monotonic_time ();*/
-  if (q != ZRYTHM->event_queue)
-    {
-      return G_SOURCE_REMOVE;
-    }
+  EventManager * self = (EventManager *) data;
 
   ZEvent * events[60];
   ZEvent * ev;
   int num_events = 0, i;
   clean_duplicates_and_copy (
-    q, events, &num_events);
+    self, events, &num_events);
 
   /*g_message ("starting processing");*/
   for (i = 0; i < num_events; i++)
@@ -1535,7 +1526,7 @@ events_process (void * data)
         }
 
       object_pool_return (
-        ZRYTHM->event_obj_pool, ev);
+        self->obj_pool, ev);
     }
   /*g_message ("processed %d events", i);*/
 
@@ -1549,10 +1540,25 @@ events_process (void * data)
   return G_SOURCE_CONTINUE;
 }
 
-static void *
-create_event_obj (void)
+/**
+ * Starts accepting events.
+ */
+void
+event_manager_start_events (
+  EventManager * self)
 {
-  return calloc (1, sizeof (ZEvent));
+  if (self->process_source_id)
+    {
+      g_warning (
+        "%s: already processing events", __func__);
+      return;
+    }
+
+  g_message (
+    "%s: starting processing events...", __func__);
+
+  self->process_source_id =
+    g_timeout_add (12, process_events, self);
 }
 
 /**
@@ -1560,33 +1566,60 @@ create_event_obj (void)
  *
  * Must be called from a GTK thread.
  */
-void
-events_init (
-  Zrythm * _zrythm)
+EventManager *
+event_manager_new (void)
 {
-  ObjectPool * obj_pool;
-  MPMCQueue * queue;
-  if (zrythm->event_queue &&
-      zrythm->event_obj_pool)
-    {
-      obj_pool = zrythm->event_obj_pool;
-      queue = zrythm->event_queue;
-      zrythm->event_obj_pool = NULL;
-      zrythm->event_queue = NULL;
-      object_pool_free (obj_pool);
-      mpmc_queue_free (queue);
-    }
+  EventManager * self = object_new (EventManager);
 
-  obj_pool =
+  self->obj_pool =
     object_pool_new (
-      create_event_obj, EVENTS_MAX);
-  queue = mpmc_queue_new ();
+      (ObjectCreatorFunc) event_new,
+      (ObjectFreeFunc) event_free,
+      EVENT_MANAGER_MAX_EVENTS);
+  self->mqueue = mpmc_queue_new ();
   mpmc_queue_reserve (
-    queue,
-    (size_t) EVENTS_MAX * sizeof (ZEvent *));
+    self->mqueue,
+    (size_t)
+    EVENT_MANAGER_MAX_EVENTS * sizeof (ZEvent *));
 
-  zrythm->event_queue = queue;
-  ZRYTHM->event_obj_pool = obj_pool;
+  return self;
+}
 
-  g_timeout_add (12, events_process, queue);
+/**
+ * Stops events from getting fired.
+ */
+void
+event_manager_stop_events (
+  EventManager * self)
+{
+  if (self->process_source_id)
+    {
+      /* remove the source func */
+      g_source_remove_and_zero (
+        self->process_source_id);
+
+      /* process any remaining events - clear the
+       * queue. */
+      process_events (self);
+    }
+  else
+    {
+      g_message (
+        "%s: events already stopped. Doing nothing.",
+        __func__);
+    }
+}
+
+void
+event_manager_free (
+  EventManager * self)
+{
+  event_manager_stop_events (self);
+
+  object_free_w_func_and_null (
+    object_pool_free, self->obj_pool);
+  object_free_w_func_and_null (
+    mpmc_queue_free, self->mqueue);
+
+  object_zero_and_free (self);
 }

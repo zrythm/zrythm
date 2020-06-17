@@ -21,7 +21,7 @@
 #include "actions/undoable_action.h"
 #include "audio/quantize_options.h"
 #include "gui/accel.h"
-#include "gui/backend/events.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/quantize_box.h"
@@ -30,6 +30,7 @@
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

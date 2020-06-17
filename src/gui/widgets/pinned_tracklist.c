@@ -25,7 +25,7 @@
 #include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/timeline_panel.h"
-#include "gui/backend/events.h"
+#include "gui/backend/event_manager.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "zrythm.h"

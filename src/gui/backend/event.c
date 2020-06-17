@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,32 +17,22 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "plugins/lv2_plugin.h"
-#include "plugins/lv2/lv2_urid.h"
-#include "plugins/plugin_manager.h"
-#include "zix/sem.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include <stdlib.h>
+#include <string.h>
 
-LV2_URID
-lv2_urid_map_uri (
-  LV2_URID_Map_Handle handle,
-  const char*         uri)
+#include "gui/backend/event.h"
+#include "utils/objects.h"
+
+ZEvent *
+event_new (void)
 {
-  zix_sem_wait (&PM_SYMAP_LOCK);
-  const LV2_URID id = symap_map (PM_SYMAP, uri);
-  zix_sem_post (&PM_SYMAP_LOCK);
-  return id;
+  ZEvent * self = object_new (ZEvent);
+
+  return self;
 }
 
-const char *
-lv2_urid_unmap_uri (
-  LV2_URID_Unmap_Handle handle,
-  LV2_URID              urid)
+void
+event_free (ZEvent * self)
 {
-  zix_sem_wait (&PM_SYMAP_LOCK);
-  const char* uri = symap_unmap (PM_SYMAP, urid);
-  zix_sem_post (&PM_SYMAP_LOCK);
-  return uri;
+  object_zero_and_free (self);
 }
-

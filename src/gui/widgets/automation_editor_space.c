@@ -34,6 +34,7 @@
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

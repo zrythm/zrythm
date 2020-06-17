@@ -24,6 +24,8 @@
 #include "audio/chord_track.h"
 #include "audio/marker_track.h"
 #include "audio/track.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/backend/arranger_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "project.h"
@@ -31,6 +33,7 @@
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

@@ -24,6 +24,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/track_top_grid.h"
 #include "project.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

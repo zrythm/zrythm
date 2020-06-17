@@ -56,6 +56,9 @@ typedef struct Log
 
   /** Currently opened log viewer. */
   LogViewerWidget * viewer;
+
+  /** ID of the source function. */
+  guint           writer_source_id;
 } Log;
 
 /**
@@ -101,6 +104,13 @@ log_init_with_file (
  */
 void
 log_init (
+  Log * self);
+
+/**
+ * Stops logging and frees any allocated memory.
+ */
+void
+log_teardown (
   Log * self);
 
 /**

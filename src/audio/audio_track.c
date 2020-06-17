@@ -32,6 +32,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/math.h"
+#include "zrythm_app.h"
 
 void
 audio_track_init (

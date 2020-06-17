@@ -28,6 +28,8 @@
 #include "gui/backend/arranger_object.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/chord_selections.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"

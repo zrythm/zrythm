@@ -22,6 +22,8 @@
 
 set -e
 
+export NO_SCAN_PLUGINS=1
+export ZRYTHM_DSP_THREADS=1
 valgrind --num-callers=40 --leak-check=full \
     --show-leak-kinds=all --track-origins=yes \
     --verbose --log-file=valog \

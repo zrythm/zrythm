@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,6 +28,7 @@
 #define __AUDIO_RECORDING_EVENTS_H__
 
 #include "audio/midi.h"
+#include "audio/port_identifier.h"
 #include "utils/types.h"
 
 /**
@@ -117,6 +118,13 @@ typedef struct RecordingEvent
   /** Number of frames processed in this event. */
   nframes_t  nframes;
 } RecordingEvent;
+
+RecordingEvent *
+recording_event_new (void);
+
+void
+recording_event_free (
+  RecordingEvent * self);
 
 /**
  * @}

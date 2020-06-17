@@ -20,10 +20,13 @@
 #include "actions/copy_plugins_action.h"
 #include "audio/channel.h"
 #include "audio/mixer.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

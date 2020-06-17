@@ -22,6 +22,8 @@
 #include "audio/mixer.h"
 #include "audio/tracklist.h"
 #include "audio/track.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -34,6 +36,7 @@
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "zrythm_app.h"
 
 /**
  * Initializes the tracklist when loading a project.

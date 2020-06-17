@@ -26,6 +26,7 @@
 #include "gui/widgets/timeline_minimap_bg.h"
 #include "gui/widgets/timeline_panel.h"
 #include "project.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

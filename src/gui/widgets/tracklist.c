@@ -30,6 +30,8 @@
 #include "audio/scale.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
@@ -45,6 +47,7 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 G_DEFINE_TYPE (
   TracklistWidget, tracklist_widget, GTK_TYPE_BOX)

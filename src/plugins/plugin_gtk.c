@@ -38,7 +38,8 @@
 
 #include "audio/engine.h"
 #include "audio/track.h"
-#include "gui/backend/events.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/lv2/lv2_gtk.h"
 #include "plugins/lv2/lv2_state.h"

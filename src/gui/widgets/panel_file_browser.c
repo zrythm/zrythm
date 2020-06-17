@@ -42,6 +42,7 @@
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

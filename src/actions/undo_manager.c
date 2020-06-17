@@ -25,6 +25,7 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/stack.h"
+#include "zrythm_app.h"
 
 /**
  * Inits the undo manager by creating or

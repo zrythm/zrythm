@@ -28,6 +28,7 @@
 #include "audio/rtmidi_device.h"
 #include "audio/windows_mme_device.h"
 #include "project.h"
+#include "zrythm_app.h"
 
 #ifdef HAVE_JACK
 #include <jack/jack.h>

@@ -27,6 +27,7 @@
 #include "project.h"
 #include "utils/audio.h"
 #include "utils/io.h"
+#include "zrythm_app.h"
 
 /**
  * Creates a ZRegion for audio data.

@@ -36,6 +36,7 @@
 #include "gui/widgets/ruler.h"
 #include "project.h"
 #include "utils/resources.h"
+#include "zrythm_app.h"
 
 G_DEFINE_TYPE (ClipEditorWidget,
                clip_editor_widget,

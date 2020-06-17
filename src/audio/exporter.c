@@ -41,6 +41,7 @@
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 #include "midilib/src/midifile.h"
 

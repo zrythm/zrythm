@@ -39,6 +39,8 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/transport.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -69,6 +71,7 @@
 #include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 

@@ -26,6 +26,8 @@
 #include "audio/tracklist.h"
 #include "audio/transport.h"
 #include "audio/velocity.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -55,6 +57,7 @@
 #include "utils/resources.h"
 #include "settings/settings.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>

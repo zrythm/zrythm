@@ -40,6 +40,7 @@
 #include "plugins/lv2/lv2_control.h"
 #include "plugins/lv2/lv2_ui.h"
 #include "project.h"
+#include "zrythm_app.h"
 
 #include <lilv/lilv.h>
 
