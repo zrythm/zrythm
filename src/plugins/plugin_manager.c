@@ -536,6 +536,8 @@ static char **
 get_vst_paths (
   PluginManager * self)
 {
+  g_message ("%s: getting paths...", __func__);
+
 #ifdef _WOE32
   char ** paths =
     g_settings_get_strv (
@@ -587,6 +589,8 @@ get_vst_paths (
     g_strsplit (vst_path, PATH_SPLIT, 0);
   g_free (vst_path);
 #endif // __APPLE__
+
+  g_message ("%s: done", __func__);
 
   return paths;
 }
@@ -751,7 +755,8 @@ plugin_manager_scan_plugins (
 #endif
 
   /* scan LV2 */
-  g_message ("Scanning LV2 plugins...");
+  g_message (
+    "%s: Scanning LV2 plugins...", __func__);
   unsigned int count = 0;
   LILV_FOREACH (plugins, i, lilv_plugins)
     {
@@ -801,7 +806,8 @@ plugin_manager_scan_plugins (
             ZRYTHM, prog_str, *progress);
         }
     }
-  g_message ("Scanned %d LV2 plugins", count);
+  g_message (
+    "%s: Scanned %d LV2 plugins", __func__, count);
 
 #ifdef HAVE_CARLA
   /* scan vst */

@@ -70,7 +70,7 @@ if get_option ('tests')
 
   if os_gnu
     tests += [
-      ['actions/mixer_selections', true],
+      ['actions/mixer_selections', false],
       ['actions/move_tracks', true],
       ['integration/midi_file', true],
       ]
