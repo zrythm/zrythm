@@ -19,7 +19,7 @@
 
 #include "actions/delete_plugins_action.h"
 #include "audio/channel.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
@@ -86,7 +86,7 @@ delete_plugins_action_do (
         F_NO_RECALC_GRAPH);
     }
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph ((ROUTER));
 
   return 0;
 }
@@ -191,7 +191,7 @@ delete_plugins_action_undo (
         }
     }
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph ((ROUTER));
 
   EVENTS_PUSH (ET_PLUGINS_ADDED, ch);
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);

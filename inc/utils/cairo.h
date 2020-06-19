@@ -230,6 +230,10 @@ z_cairo_reset_caches (
 CairoCaches *
 z_cairo_caches_new (void);
 
+void
+z_cairo_caches_free (
+  CairoCaches * self);
+
 /**
  * @}
  */

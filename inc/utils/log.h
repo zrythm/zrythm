@@ -34,7 +34,7 @@ typedef struct ObjectPool ObjectPool;
  * @{
  */
 
-#define LOG (&ZRYTHM->log)
+#define LOG (ZRYTHM->log)
 
 typedef struct Log
 {
@@ -98,19 +98,18 @@ log_init_with_file (
   Log * self);
 
 /**
- * Initializes basic logging.
+ * Creates the logger and sets the writer func.
  *
  * This can be called from any thread.
  */
-void
-log_init (
-  Log * self);
+Log *
+log_new (void);
 
 /**
  * Stops logging and frees any allocated memory.
  */
 void
-log_teardown (
+log_free (
   Log * self);
 
 /**

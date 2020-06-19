@@ -30,8 +30,9 @@
 #ifdef HAVE_JACK
 #include "audio/engine_jack.h"
 #endif
+#include "audio/graph.h"
 #include "audio/midi.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/modulator.h"
 #include "audio/pan.h"
 #include "audio/passthrough_processor.h"
@@ -56,6 +57,8 @@
 
 #define SLEEPTIME_USEC 60
 
+#define AUDIO_RING_SIZE 65536
+
 /**
  * This function finds the Ports corresponding to
  * the PortIdentifiers for srcs and dests.
@@ -64,45 +67,48 @@
  * yml.
  */
 void
-port_init_loaded (Port * this)
+port_init_loaded (
+  Port * self)
 {
-  this->magic = PORT_MAGIC;
+  self->magic = PORT_MAGIC;
 
   PortIdentifier * id;
-  for (int i = 0; i < this->num_srcs; i++)
+  for (int i = 0; i < self->num_srcs; i++)
     {
-      id = &this->src_ids[i];
-      this->srcs[i] =
+      id = &self->src_ids[i];
+      self->srcs[i] =
         port_find_from_identifier (id);
-      g_warn_if_fail (this->srcs[i]);
+      g_warn_if_fail (self->srcs[i]);
     }
-  for (int i = 0; i < this->num_dests; i++)
+  for (int i = 0; i < self->num_dests; i++)
     {
-      id = &this->dest_ids[i];
-      this->dests[i] =
+      id = &self->dest_ids[i];
+      self->dests[i] =
         port_find_from_identifier (id);
-      g_warn_if_fail (this->dests[i]);
+      g_warn_if_fail (self->dests[i]);
     }
 
   /* connect to backend if flag set */
-  if (port_is_exposed_to_backend (this))
+  if (port_is_exposed_to_backend (self))
     {
-      port_set_expose_to_backend (this, 1);
+      port_set_expose_to_backend (self, 1);
     }
 
-  this->buf =
-    calloc (80000, sizeof (float));
+  if (AUDIO_ENGINE->block_length > 0)
+    {
+      self->buf =
+        calloc (80000, sizeof (float));
+    }
 
-  g_return_if_fail (AUDIO_ENGINE->block_length > 0);
-  switch (this->id.type)
+  switch (self->id.type)
     {
     case TYPE_EVENT:
-      if (!this->midi_events)
+      if (!self->midi_events)
         {
-          this->midi_events =
-            midi_events_new (this);
+          self->midi_events =
+            midi_events_new (self);
         }
-      this->midi_ring =
+      self->midi_ring =
         zix_ring_new (
           sizeof (MidiEvent) * (size_t) 11);
 #ifdef _WOE32
@@ -110,17 +116,16 @@ port_init_loaded (Port * this)
             MIDI_BACKEND_WINDOWS_MME)
         {
           zix_sem_init (
-            &this->mme_connections_sem, 1);
+            &self->mme_connections_sem, 1);
         }
 #endif
       break;
     case TYPE_AUDIO:
       /* fall through */
     case TYPE_CV:
-      this->audio_ring =
+      self->audio_ring =
         zix_ring_new (
-          sizeof (float) *
-          (size_t) AUDIO_ENGINE->block_length * 36);
+          sizeof (float) * AUDIO_RING_SIZE);
     default:
       break;
     }
@@ -308,10 +313,10 @@ port_find_from_identifier (
           switch (id->flow)
             {
             case FLOW_INPUT:
-              return ch->fader.midi_in;
+              return ch->fader->midi_in;
               break;
             case FLOW_OUTPUT:
-              return ch->fader.midi_out;
+              return ch->fader->midi_out;
               break;
             default:
               break;
@@ -321,18 +326,18 @@ port_find_from_identifier (
           if (id->flow == FLOW_OUTPUT)
             {
               if (id->flags & PORT_FLAG_STEREO_L)
-                return ch->fader.stereo_out->l;
+                return ch->fader->stereo_out->l;
               else if (id->flags &
                          PORT_FLAG_STEREO_R)
-                return ch->fader.stereo_out->r;
+                return ch->fader->stereo_out->r;
             }
           else if (id->flow == FLOW_INPUT)
             {
               if (id->flags & PORT_FLAG_STEREO_L)
-                return ch->fader.stereo_in->l;
+                return ch->fader->stereo_in->l;
               else if (id->flags &
                          PORT_FLAG_STEREO_R)
-                return ch->fader.stereo_in->r;
+                return ch->fader->stereo_in->r;
             }
           break;
         case TYPE_CONTROL:
@@ -341,17 +346,17 @@ port_find_from_identifier (
               if (id->flags &
                     PORT_FLAG_AMPLITUDE)
                 {
-                  return ch->fader.amp;
+                  return ch->fader->amp;
                 }
               else if (id->flags &
                          PORT_FLAG_STEREO_BALANCE)
                 {
-                  return ch->fader.balance;
+                  return ch->fader->balance;
                 }
               else if (id->flags &
                          PORT_FLAG_CHANNEL_MUTE)
                 {
-                  return ch->fader.mute;
+                  return ch->fader->mute;
                 }
             }
           break;
@@ -455,23 +460,28 @@ static Port *
 _port_new (
   const char * label)
 {
-  Port * port = calloc (1, sizeof (Port));
+  g_message (
+    "%s: Creating port %s...", __func__, label);
+
+  Port * port = object_new (Port);
 
   port->id.plugin_id.slot = -1;
   port->id.track_pos = -1;
   port->magic = PORT_MAGIC;
 
   port->num_dests = 0;
-  g_warn_if_fail (
-    AUDIO_ENGINE->block_length > 0);
-  port->buf =
-    calloc (AUDIO_ENGINE->block_length,
-            sizeof (float));
+  if (AUDIO_ENGINE->block_length != 0)
+    {
+      port->buf =
+        calloc (
+          AUDIO_ENGINE->block_length,
+          sizeof (float));
+    }
   port->id.flow = FLOW_UNKNOWN;
   port->id.label = g_strdup (label);
 
-  g_message ("[port_new] Creating port %s",
-             port->id.label);
+  g_message ("%s: done", __func__);
+
   return port;
 }
 
@@ -520,8 +530,7 @@ port_new_with_type (
       self->zerof = 0.f;
       self->audio_ring =
         zix_ring_new (
-          sizeof (float) *
-          (size_t) AUDIO_ENGINE->block_length * 11);
+          sizeof (float) * AUDIO_RING_SIZE);
       break;
     case TYPE_CV:
       self->minf = -1.f;
@@ -529,8 +538,7 @@ port_new_with_type (
       self->zerof = 0.f;
       self->audio_ring =
         zix_ring_new (
-          sizeof (float) *
-          (size_t) AUDIO_ENGINE->block_length * 11);
+          sizeof (float) * AUDIO_RING_SIZE);
     default:
       break;
     }
@@ -553,6 +561,14 @@ stereo_ports_new_from_existing (
   sp->r = r;
 
   return sp;
+}
+
+void
+stereo_ports_disconnect (
+  StereoPorts * self)
+{
+  port_disconnect_all (self->l);
+  port_disconnect_all (self->r);
 }
 
 void
@@ -812,7 +828,7 @@ expose_to_jack (
               AUDIO_ENGINE->client,
               label, type, flags, 0);
         }
-      g_warn_if_fail (self->data);
+      g_return_if_fail (self->data);
       self->internal_type = INTERNAL_JACK_PORT;
     }
   else
@@ -873,6 +889,8 @@ stereo_ports_connect (
   StereoPorts * dest,
   int           locked)
 {
+  g_return_if_fail (src && dest);
+
   port_connect (
     src->l,
     dest->l, locked);
@@ -934,6 +952,7 @@ port_get_all (
   *size = 0;
 
 #define _ADD(port) \
+  g_warn_if_fail (port); \
   if (is_dynamic) \
     { \
       array_double_size_if_full ( \
@@ -955,6 +974,7 @@ port_get_all (
   _ADD (AUDIO_ENGINE->monitor_out->l);
   _ADD (AUDIO_ENGINE->monitor_out->r);
   _ADD (AUDIO_ENGINE->midi_editor_manual_press);
+  _ADD (AUDIO_ENGINE->midi_in);
   _ADD (SAMPLE_PROCESSOR->stereo_out->l);
   _ADD (SAMPLE_PROCESSOR->stereo_out->r);
 
@@ -1120,13 +1140,18 @@ port_set_owner_prefader (
  * the connection will be valid and won't break the
  * acyclicity of the graph).
  */
-int
+bool
 ports_can_be_connected (
   const Port * src,
   const Port *dest)
 {
-  return
-    graph_validate (&MIXER->router, src, dest);
+  Graph * graph = graph_new (ROUTER);
+  bool valid =
+    graph_validate_with_connection (
+      graph, src, dest);
+  graph_free (graph);
+
+  return valid;
 }
 
 /**
@@ -1242,10 +1267,7 @@ port_disconnect (Port * src, Port * dest)
   int pos = -1;
   /* disconnect dest from src */
   array_delete_return_pos (
-    src->dests,
-    src->num_dests,
-    dest,
-    pos);
+    src->dests, src->num_dests, dest, pos);
   if (pos >= 0)
     {
       for (int i = pos;
@@ -2026,7 +2048,7 @@ port_forward_control_change_event (
         g_return_if_fail (
           track->channel->widget);
       fader_update_volume_and_fader_val (
-        &track->channel->fader);
+        track->channel->fader);
       EVENTS_PUSH (
         ET_CHANNEL_FADER_VAL_CHANGED,
         track->channel);

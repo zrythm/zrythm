@@ -33,7 +33,15 @@ G_DECLARE_FINAL_TYPE (
   ZrythmApp, zrythm_app, ZRYTHM, APP,
   GtkApplication)
 
+typedef struct _MainWindowWidget MainWindowWidget;
+typedef struct _SplashWindowWidget
+  SplashWindowWidget;
+typedef struct _FirstRunAssistantWidget
+  FirstRunAssistantWidget;
+typedef struct _ProjectAssistantWidget
+  ProjectAssistantWidget;
 typedef struct Zrythm Zrythm;
+typedef struct UiCaches UiCaches;
 
 /**
  * @addtogroup general
@@ -44,12 +52,57 @@ typedef struct Zrythm Zrythm;
 /**
  * The global struct.
  *
- * Contains data that is only relevant to the GUI and
- * not to Zrythm.
+ * Contains data that is only relevant to the GUI
+ * and not to Zrythm.
  */
 struct _ZrythmApp
 {
   GtkApplication      parent;
+
+  /**
+   * Default settings (got from
+   * gtk_settings_get_default()).
+   */
+  GtkSettings *       default_settings;
+
+  /** Main window. */
+  MainWindowWidget *  main_window;
+
+  /**
+   * The GTK thread where the main GUI loop runs.
+   *
+   * This is stored for identification purposes
+   * in other threads.
+   */
+  GThread *           gtk_thread;
+
+  UiCaches *          ui_caches;
+
+  /** Initialization thread. */
+  GThread *           init_thread;
+
+  /** Semaphore for setting the progress in the
+   * splash screen from a non-gtk thread. */
+  ZixSem              progress_status_lock;
+
+  /** Flag to set when initialization has
+   * finished. */
+  bool                init_finished;
+
+  /** Status text to be used in the splash
+   * screen. */
+  char                status[800];
+
+  /** Splash screen. */
+  SplashWindowWidget * splash;
+
+  /** First run wizard. */
+  FirstRunAssistantWidget * first_run_assistant;
+
+  /** Project selector. */
+  ProjectAssistantWidget * assistant;
+
+  bool                 have_svg_loader;
 };
 
 /**
@@ -64,6 +117,19 @@ extern ZrythmApp * zrythm_app;
  */
 ZrythmApp *
 zrythm_app_new (void);
+
+/**
+ * Sets the current status and progress percentage
+ * during loading.
+ *
+ * The splash screen then reads these values from
+ * the Zrythm struct.
+ */
+void
+zrythm_app_set_progress_status (
+  ZrythmApp *  self,
+  const char * text,
+  const double perc);
 
 /**
  * @}

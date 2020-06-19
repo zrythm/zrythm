@@ -69,8 +69,7 @@ engine_windows_mme_print_error (
  */
 int
 engine_windows_mme_setup (
-  AudioEngine * self,
-  int           loading);
+  AudioEngine * self);
 
 /**
  * Starts all previously scanned devices.

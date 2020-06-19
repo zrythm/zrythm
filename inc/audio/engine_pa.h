@@ -39,8 +39,7 @@ typedef struct AudioEngine AudioEngine;
  */
 int
 engine_pa_setup (
-  AudioEngine * self,
-  int           loading);
+  AudioEngine * self);
 
 void
 engine_pa_fill_out_bufs (

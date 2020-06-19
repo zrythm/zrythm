@@ -19,7 +19,7 @@
 
 #include "actions/copy_plugins_action.h"
 #include "audio/channel.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
@@ -206,7 +206,7 @@ copy_plugins_action_do (
         }
     }
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph (ROUTER);
 
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
 
@@ -262,7 +262,7 @@ copy_plugins_action_undo (
 
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph (ROUTER);
 
   return 0;
 }

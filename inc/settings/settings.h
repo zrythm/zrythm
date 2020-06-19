@@ -35,7 +35,7 @@
  */
 
 #define GSETTINGS_ZRYTHM_PREFIX "org.zrythm.Zrythm"
-#define SETTINGS (&ZRYTHM->settings)
+#define SETTINGS (ZRYTHM->settings)
 #define S_UI SETTINGS->ui
 #define S_EXPORT SETTINGS->export
 #define S_P_DSP_PAN SETTINGS->preferences_dsp_pan
@@ -113,8 +113,8 @@ typedef struct Settings
 /**
  * Initializes settings.
  */
-void
-settings_init (Settings * self);
+Settings *
+settings_new (void);
 
 /**
  * Resets settings to defaults.
@@ -138,7 +138,8 @@ settings_print (
  * Frees settings.
  */
 void
-settings_free_members (Settings * self);
+settings_free (
+  Settings * self);
 
 /**
  * @}

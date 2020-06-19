@@ -71,7 +71,7 @@ if get_option ('tests')
   if os_gnu
     tests += [
       ['actions/mixer_selections', false],
-      ['actions/move_tracks', true],
+      ['actions/move_tracks', false],
       ['integration/midi_file', true],
       ]
   endif

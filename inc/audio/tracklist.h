@@ -40,7 +40,7 @@ typedef struct _TracklistWidget TracklistWidget;
 typedef struct _PinnedTracklistWidget
   PinnedTracklistWidget;
 
-#define TRACKLIST (&PROJECT->tracklist)
+#define TRACKLIST (PROJECT->tracklist)
 #define MAX_TRACKS 3000
 
 typedef struct Track ChordTrack;
@@ -361,6 +361,13 @@ void
 tracklist_activate_all_plugins (
   Tracklist * self,
   bool        activate);
+
+Tracklist *
+tracklist_new (Project * project);
+
+void
+tracklist_free (
+  Tracklist * self);
 
 /**
  * Define guile module.

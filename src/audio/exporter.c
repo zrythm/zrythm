@@ -29,13 +29,13 @@
 #include "audio/exporter.h"
 #include "audio/marker_track.h"
 #include "audio/master_track.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/position.h"
-#include "audio/routing.h"
 #include "audio/tempo_track.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/math.h"
@@ -345,7 +345,7 @@ export_audio (
       engine_process_prepare (
         AUDIO_ENGINE, nframes);
       router_start_cycle (
-        &MIXER->router, nframes, 0, PLAYHEAD);
+        ROUTER, nframes, 0, PLAYHEAD);
       engine_post_process (
         AUDIO_ENGINE, nframes);
 

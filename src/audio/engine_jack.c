@@ -26,15 +26,15 @@
 #include "audio/engine_jack.h"
 #include "audio/ext_port.h"
 #include "audio/midi.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/port.h"
-#include "audio/routing.h"
 #include "audio/tempo_track.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -397,8 +397,7 @@ shutdown_cb (void *arg)
  */
 int
 engine_jack_midi_setup (
-  AudioEngine * self,
-  int           loading)
+  AudioEngine * self)
 {
   /* TODO: case 1 - no jack client (using another
    * backend)
@@ -413,61 +412,6 @@ engine_jack_midi_setup (
     jack_port_type_get_buffer_size (
       self->client, JACK_DEFAULT_MIDI_TYPE);
 #endif
-
-  /*if (loading)*/
-    /*{*/
-      /*self->midi_in->data =*/
-        /*(void *) jack_port_register (*/
-          /*self->client, "MIDI_in",*/
-          /*JACK_DEFAULT_MIDI_TYPE,*/
-          /*JackPortIsInput, 0);*/
-      /*self->midi_out->data =*/
-        /*(void *) jack_port_register (*/
-          /*self->client, "MIDI_out",*/
-          /*JACK_DEFAULT_MIDI_TYPE,*/
-          /*JackPortIsOutput, 0);*/
-    /*}*/
-  /*else*/
-    /*{*/
-      /*self->midi_in =*/
-        /*port_new_with_data (*/
-          /*INTERNAL_JACK_PORT,*/
-          /*TYPE_EVENT,*/
-          /*FLOW_INPUT,*/
-          /*"JACK MIDI In",*/
-          /*(void *) jack_port_register (*/
-            /*self->client, "MIDI_in",*/
-            /*JACK_DEFAULT_MIDI_TYPE,*/
-            /*JackPortIsInput, 0));*/
-      /*self->midi_in->identifier.owner_type =*/
-        /*PORT_OWNER_TYPE_BACKEND;*/
-      /*self->midi_out =*/
-        /*port_new_with_data (*/
-          /*INTERNAL_JACK_PORT,*/
-          /*TYPE_EVENT,*/
-          /*FLOW_OUTPUT,*/
-          /*"JACK MIDI Out",*/
-          /*(void *) jack_port_register (*/
-            /*self->client, "MIDI_out",*/
-            /*JACK_DEFAULT_MIDI_TYPE,*/
-            /*JackPortIsOutput, 0));*/
-      /*self->midi_out->identifier.owner_type =*/
-        /*PORT_OWNER_TYPE_BACKEND;*/
-    /*}*/
-
-  /* init queue */
-  /*self->midi_in->midi_events =*/
-    /*midi_events_new (*/
-      /*self->midi_in);*/
-  /*self->midi_out->midi_events =*/
-    /*midi_events_new (*/
-      /*self->midi_out);*/
-
-  /*if (!self->midi_in->data ||*/
-      /*!self->midi_out->data)*/
-    /*{*/
-      /*g_warning ("no more JACK ports available");*/
-    /*}*/
 
   return 0;
 }
@@ -548,8 +492,8 @@ engine_jack_test (
  * Sets up the audio engine to use jack.
  */
 int
-engine_jack_setup (AudioEngine * self,
-            int           loading)
+engine_jack_setup (
+  AudioEngine * self)
 {
   g_message ("Setting up JACK...");
 
@@ -558,12 +502,10 @@ engine_jack_setup (AudioEngine * self,
   jack_options_t options = JackNoStartServer;
   jack_status_t status;
 
-  // open a client connection to the JACK server
+  /* open a client connection to the JACK server */
   self->client =
-    jack_client_open (client_name,
-                      options,
-                      &status,
-                      server_name);
+    jack_client_open (
+      client_name, options, &status, server_name);
 
   if (!self->client)
     {
@@ -605,52 +547,6 @@ engine_jack_setup (AudioEngine * self,
 #ifdef JALV_JACK_SESSION
   /*jack_set_session_callback(client, &jack_session_cb, arg);*/
 #endif
-
-  /* create ports */
-  Port * monitor_out_l, * monitor_out_r;
-
-  const char * monitor_out_l_str =
-    "Monitor out L";
-  const char * monitor_out_r_str =
-    "Monitor out R";
-
-  if (loading)
-    {
-    }
-  else
-    {
-      monitor_out_l = port_new_with_type (
-        TYPE_AUDIO,
-        FLOW_OUTPUT,
-        monitor_out_l_str);
-      monitor_out_r = port_new_with_type (
-        TYPE_AUDIO,
-        FLOW_OUTPUT,
-        monitor_out_r_str);
-
-      monitor_out_l->id.owner_type =
-        PORT_OWNER_TYPE_BACKEND;
-      monitor_out_r->id.owner_type =
-        PORT_OWNER_TYPE_BACKEND;
-
-      self->monitor_out =
-        stereo_ports_new_from_existing (
-          monitor_out_l, monitor_out_r);
-
-      /* expose to jack */
-      port_set_expose_to_backend (
-        self->monitor_out->l, 1);
-      port_set_expose_to_backend (
-        self->monitor_out->r, 1);
-
-      if (!self->monitor_out->l->data ||
-          !self->monitor_out->r->data)
-        {
-          g_error (
-            "Failed to exponse monitor out ports to "
-            "JACK");
-        }
-    }
 
   /*engine_jack_rescan_ports (self);*/
 

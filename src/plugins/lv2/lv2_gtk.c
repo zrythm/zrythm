@@ -48,6 +48,7 @@
 #include "plugins/plugin_gtk.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/lilv.h"
 #include "utils/math.h"
 #include "zrythm.h"

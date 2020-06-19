@@ -27,11 +27,12 @@
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
 #include "audio/engine.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/quantize_options.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
+#include "gui/backend/file_manager.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/first_run_assistant.h"
 #include "gui/widgets/main_window.h"
@@ -72,12 +73,6 @@ ZrythmApp * zrythm_app = NULL;
 G_DEFINE_TYPE (
   ZrythmApp, zrythm_app,
   GTK_TYPE_APPLICATION);
-
-static SplashWindowWidget * splash;
-static GApplication * app;
-static FirstRunAssistantWidget * first_run_assistant;
-static ProjectAssistantWidget * assistant;
-static bool have_svg_loader = false;
 
 /**
  * Initializes/creates the default dirs/files.
@@ -170,19 +165,19 @@ init_templates ()
  */
 static void
 on_setup_main_window (
-  GSimpleAction  *action,
-  GVariant *parameter,
-  gpointer  user_data)
+  GSimpleAction * action,
+  GVariant *      parameter,
+  gpointer        data)
 {
-  zrythm_set_progress_status (
-    ZRYTHM,
-    _("Setting up main window"),
-    0.98);
+  ZrythmApp * self = ZRYTHM_APP (data);
+
+  zrythm_app_set_progress_status (
+    self, _("Setting up main window"), 0.98);
 
   main_window_widget_refresh (MAIN_WINDOW);
 
-  mixer_recalc_graph (MIXER);
-  g_atomic_int_set (&AUDIO_ENGINE->run, 1);
+  router_recalc_graph (ROUTER);
+  engine_set_run (AUDIO_ENGINE, true);
 
 #ifndef TRIAL_VER
   /* add timeout for auto-saving projects */
@@ -198,7 +193,7 @@ on_setup_main_window (
     }
 #endif
 
-  splash_window_widget_close (splash);
+  splash_window_widget_close (self->splash);
 }
 
 /**
@@ -214,8 +209,8 @@ static void on_load_project (
   GVariant *parameter,
   gpointer  user_data)
 {
-  zrythm_set_progress_status (
-    ZRYTHM,
+  zrythm_app_set_progress_status (
+    zrythm_app,
     _("Loading project"),
     0.8);
 
@@ -251,77 +246,68 @@ static void on_init_main_window (
   GVariant *parameter,
   void *          user_data)
 {
-  ZrythmApp * _app = (ZrythmApp *) user_data;
+  g_message ("%s: initing...", __func__);
 
-  zrythm_set_progress_status (
-    ZRYTHM,
+  ZrythmApp * z_app = (ZrythmApp *) user_data;
+
+  zrythm_app_set_progress_status (
+    zrythm_app,
     _("Initializing main window"),
     0.8);
 
-  ZRYTHM->main_window =
-    main_window_widget_new (_app);
+  z_app->main_window =
+    main_window_widget_new (z_app);
 
   g_action_group_activate_action (
-    G_ACTION_GROUP (_app),
-    "load_project",
-    NULL);
+    G_ACTION_GROUP (z_app),
+    "load_project", NULL);
 }
 
 static void *
 init_thread (
   gpointer data)
 {
-  zrythm_set_progress_status (
-    ZRYTHM,
-    _("Initializing settings"),
-    0.0);
-  settings_init (&ZRYTHM->settings);
+  ZrythmApp * self = ZRYTHM_APP (data);
+
+  zrythm_app_set_progress_status (
+    self, _("Initializing settings"), 0.0);
 
   ZRYTHM->debug =
     env_get_int ("ZRYTHM_DEBUG", 0);
   /* init zrythm folders ~/Zrythm */
-  zrythm_set_progress_status (
-    ZRYTHM,
-    _("Initializing Zrythm directories"),
-    0.01);
-  init_dirs_and_files ();
-  init_recent_projects ();
-  init_templates ();
+  zrythm_app_set_progress_status (
+    self,
+    _("Initializing Zrythm directories"), 0.01);
+  init_dirs_and_files (self);
+  init_recent_projects (self);
+  init_templates (self);
 
   /* init log */
-  zrythm_set_progress_status (
-    ZRYTHM,
-    _("Initializing logging system"),
-    0.02);
+  zrythm_app_set_progress_status (
+    self, _("Initializing logging system"), 0.02);
   log_init_with_file (LOG);
 
-  zrythm_set_progress_status (
-    ZRYTHM,
-    _("Initializing caches"),
-    0.05);
-  CAIRO_CACHES = z_cairo_caches_new ();
-  UI_CACHES = ui_caches_new ();
+  zrythm_app_set_progress_status (
+    self, _("Initializing caches"), 0.05);
+  self->ui_caches = ui_caches_new ();
 
-  zrythm_set_progress_status (
-    ZRYTHM,
-    _("Initializing file manager"),
-    0.15);
-  file_manager_init (&ZRYTHM->file_manager);
-  file_manager_load_files (&ZRYTHM->file_manager);
+  zrythm_app_set_progress_status (
+    self, _("Initializing file manager"), 0.15);
+  file_manager_load_files (FILE_MANAGER);
 
   if (!g_settings_get_boolean (
          S_GENERAL, "first-run"))
     {
-      zrythm_set_progress_status (
-        ZRYTHM,
-        _("Scanning plugins"),
-        0.4);
+      zrythm_app_set_progress_status (
+        self, _("Scanning plugins"), 0.4);
       plugin_manager_scan_plugins (
-        ZRYTHM->plugin_manager,
-        0.7, &ZRYTHM->progress);
+        ZRYTHM->plugin_manager, 0.7,
+        &ZRYTHM->progress);
     }
 
-  ZRYTHM->init_finished = 1;
+  self->init_finished = true;
+
+  g_message ("%s: done", __func__);
 
   return NULL;
 }
@@ -335,16 +321,15 @@ init_thread (
  */
 static int
 idle_func (
-  Zrythm * self)
+  ZrythmApp * self)
 {
   if (self->init_finished)
     {
-      log_init_writer_idle (&self->log);
+      log_init_writer_idle (ZRYTHM->log);
 
       g_action_group_activate_action (
-        G_ACTION_GROUP (zrythm_app),
-        "prompt_for_project",
-        NULL);
+        G_ACTION_GROUP (self),
+        "prompt_for_project", NULL);
 
       return G_SOURCE_REMOVE;
     }
@@ -360,18 +345,21 @@ static void *
 scan_plugins_after_first_run_thread (
   gpointer data)
 {
+  ZrythmApp * self = ZRYTHM_APP (data);
+
   plugin_manager_scan_plugins (
     ZRYTHM->plugin_manager,
     0.7, &ZRYTHM->progress);
 
-  ZRYTHM->init_finished = 1;
+  self->init_finished = true;
 
   return NULL;
 }
 
 static void
 on_first_run_assistant_apply (
-  GtkAssistant * _assistant)
+  GtkAssistant * _assistant,
+  ZrythmApp *    self)
 {
   g_message ("apply");
 
@@ -379,34 +367,34 @@ on_first_run_assistant_apply (
     S_GENERAL, "first-run", 0);
 
   /* start plugin scanning in another thread */
-  ZRYTHM->init_thread =
+  self->init_thread =
     g_thread_new (
       "scan_plugins_after_first_run_thread",
       (GThreadFunc)
       scan_plugins_after_first_run_thread,
-      ZRYTHM);
+      self);
 
   /* set a source func in the main GTK thread to
    * check when scanning finished */
-  ZRYTHM->init_finished = 0;
-  g_idle_add ((GSourceFunc) idle_func, ZRYTHM);
+  self->init_finished = 0;
+  g_idle_add ((GSourceFunc) idle_func, self);
 
   gtk_widget_set_visible (
-    GTK_WIDGET (first_run_assistant), 0);
+    GTK_WIDGET (self->first_run_assistant), 0);
 
   /* close the first run assistant if it ran
    * before */
-  if (assistant)
+  if (self->assistant)
     {
       DESTROY_LATER (_assistant);
-      first_run_assistant = NULL;
+      self->first_run_assistant = NULL;
     }
 }
 
 static void
 on_first_run_assistant_cancel ()
 {
-  g_message ("cancel");
+  g_message ("%s: cancel", __func__);
 
   exit (0);
 }
@@ -414,21 +402,23 @@ on_first_run_assistant_cancel ()
 /**
  * Called before on_load_project.
  *
- * Checks if a project was given in the command line. If not,
- * it prompts the user for a project (start assistant).
+ * Checks if a project was given in the command
+ * line. If not, it prompts the user for a project
+ * (start assistant).
  */
 static void on_prompt_for_project (
   GSimpleAction * action,
   GVariant *      parameter,
-  void *          user_data)
+  gpointer        data)
 {
-  ZrythmApp * _app = (ZrythmApp *) user_data;
-  g_message ("prompt for project");
+  g_message ("%s: prompting...", __func__);
+
+  ZrythmApp * self = zrythm_app;
 
   if (ZRYTHM->open_filename)
     {
       g_action_group_activate_action (
-        G_ACTION_GROUP (_app),
+        G_ACTION_GROUP (self),
         "init_main_window",
         NULL);
     }
@@ -442,8 +432,7 @@ static void on_prompt_for_project (
             GTK_DIALOG_DESTROY_WITH_PARENT;
           GtkWidget * dialog =
             gtk_message_dialog_new (
-              NULL,
-              flags,
+              NULL, flags,
               GTK_MESSAGE_INFO,
               GTK_BUTTONS_OK,
 "Copyright (C) 2018-2020 The Zrythm contributors\n"
@@ -469,31 +458,36 @@ Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou");
           gtk_dialog_run (GTK_DIALOG (dialog));
           gtk_widget_destroy (dialog);
 
-          first_run_assistant =
+          self->first_run_assistant =
             first_run_assistant_widget_new (
-              GTK_WINDOW (splash));
+              GTK_WINDOW (self->splash));
           g_signal_connect (
-            G_OBJECT (first_run_assistant), "apply",
-            G_CALLBACK (on_first_run_assistant_apply), NULL);
+            G_OBJECT (self->first_run_assistant),
+            "apply",
+            G_CALLBACK (
+              on_first_run_assistant_apply), self);
           g_signal_connect (
-            G_OBJECT (first_run_assistant), "cancel",
-            G_CALLBACK (on_first_run_assistant_cancel), NULL);
-          gtk_window_present (GTK_WINDOW (first_run_assistant));
+            G_OBJECT (self->first_run_assistant),
+            "cancel",
+            G_CALLBACK (
+              on_first_run_assistant_cancel),
+            NULL);
+          gtk_window_present (
+            GTK_WINDOW (
+              self->first_run_assistant));
 
           return;
         }
 
-      zrythm_set_progress_status (
-        ZRYTHM,
-        _("Waiting for project"),
-        0.8);
+      zrythm_app_set_progress_status (
+        self, _("Waiting for project"), 0.8);
 
       /* show the assistant */
-      assistant =
+      self->assistant =
         project_assistant_widget_new (
-          GTK_WINDOW(splash), 1);
+          GTK_WINDOW (self->splash), 1);
       gtk_widget_set_visible (
-        GTK_WIDGET (assistant), 1);
+        GTK_WIDGET (self->assistant), 1);
 
 #ifdef __APPLE__
   /* possibly not necessary / working, forces app *
@@ -501,6 +495,28 @@ Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou");
   show_on_top();
 #endif
     }
+
+  g_message ("%s: done", __func__);
+}
+
+/**
+ * Sets the current status and progress percentage
+ * during loading.
+ *
+ * The splash screen then reads these values from
+ * the Zrythm struct.
+ */
+void
+zrythm_app_set_progress_status (
+  ZrythmApp *  self,
+  const char * text,
+  const double perc)
+{
+  zix_sem_wait (&self->progress_status_lock);
+  g_message ("%s", text);
+  strcpy (self->status, text);
+  ZRYTHM->progress = perc;
+  zix_sem_post (&self->progress_status_lock);
 }
 
 /*
@@ -508,7 +524,8 @@ Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou");
  * command line.
  */
 static void
-zrythm_app_activate (GApplication * _app)
+zrythm_app_activate (
+  GApplication * _app)
 {
   /*g_message ("activate %d", *task_id);*/
 
@@ -551,6 +568,8 @@ print_gdk_pixbuf_format_info (
 {
   GdkPixbufFormat * format =
     (GdkPixbufFormat *) data;
+  ZrythmApp * self = ZRYTHM_APP (user_data);
+
   char * name =
     gdk_pixbuf_format_get_name (format);
   char * description =
@@ -581,7 +600,9 @@ print_gdk_pixbuf_format_info (
       strcat (extensions, tmp);
       strcat (extensions, ", ");
       if (g_str_has_prefix (tmp, "svg"))
-        have_svg_loader = true;
+        {
+          self->have_svg_loader = true;
+        }
     }
   extensions[strlen (extensions) - 2] = '\0';
   g_strfreev (_extensions);
@@ -606,25 +627,25 @@ print_gdk_pixbuf_format_info (
  */
 static void
 zrythm_app_startup (
-  GApplication* _app)
+  GApplication * app)
 {
-  log_init (LOG);
+  ZrythmApp * self = ZRYTHM_APP (app);
 
   g_message ("startup");
-  G_APPLICATION_CLASS (
-    zrythm_app_parent_class)->
-      startup (_app);
+  G_APPLICATION_CLASS (zrythm_app_parent_class)->
+    startup (G_APPLICATION (self));
   g_message (
     "called startup on G_APPLICATION_CLASS");
 
-  app = _app;
+  self->default_settings =
+    gtk_settings_get_default ();
 
   /* set theme */
   g_object_set (
-    gtk_settings_get_default (),
+    self->default_settings,
     "gtk-theme-name", "Matcha-dark-sea", NULL);
   g_object_set (
-    gtk_settings_get_default (),
+    self->default_settings,
     "gtk-application-prefer-dark-theme", 1, NULL);
   GdkDisplay * display =
     gdk_display_get_default ();
@@ -638,17 +659,17 @@ zrythm_app_startup (
     "Monitor scale factor: %d", scale_factor);
 #if defined(_WOE32)
   g_object_set (
-    gtk_settings_get_default (),
+    self->default_settings,
     "gtk-font-name", "Segoe UI Normal 10", NULL);
   g_object_set (
-    gtk_settings_get_default (),
+    self->default_settings,
     "gtk-cursor-theme-name", "Adwaita", NULL);
   /*g_object_set (*/
-    /*gtk_settings_get_default (),*/
+    /*self->default_settings,*/
     /*"gtk-icon-theme-name", "breeze-dark", NULL);*/
 #elif defined(__APPLE__)
   g_object_set (
-    gtk_settings_get_default (),
+    self->default_settings,
     "gtk-font-name", "Regular 10", NULL);
   /* explicitly set font scaling to 1.00 (for some
    * reason, a different value is used by default).
@@ -656,21 +677,19 @@ zrythm_app_startup (
    * code */
   /* TODO add an option to change the font scaling */
   g_object_set (
-    gtk_settings_get_default (),
+    self->default_settings,
     "gtk-xft-dpi", (int) (1.00 * 96 * 1024), NULL);
 #else
   g_object_set (
-    gtk_settings_get_default (),
+    self->default_settings,
     "gtk-font-name", "Cantarell Regular 10", NULL);
 #endif
   g_message ("Theme set");
 
   GtkIconTheme * icon_theme =
     gtk_icon_theme_get_default ();
-  GtkSettings * gtk_settings =
-    gtk_settings_get_default ();
   g_object_set (
-    gtk_settings, "gtk-icon-theme-name",
+    self->default_settings, "gtk-icon-theme-name",
     "zrythm-dark", NULL);
 
   /* prepend freedesktop system icons to search
@@ -724,13 +743,12 @@ zrythm_app_startup (
     gdk_pixbuf_get_formats ();
   g_slist_foreach (
     formats_list, print_gdk_pixbuf_format_info,
-    NULL);
+    self);
   g_slist_free (g_steal_pointer (&formats_list));
-  if (!have_svg_loader)
+  if (!self->have_svg_loader)
     {
       fprintf (
-        stderr,
-        "SVG loader was not found.\n");
+        stderr, "SVG loader was not found.\n");
       exit (-1);
     }
 
@@ -825,140 +843,100 @@ zrythm_app_startup (
   gtk_window_set_default_icon_name ("zrythm");
 
   /* show splash screen */
-  splash =
-    splash_window_widget_new (ZRYTHM_APP (app));
+  self->splash =
+    splash_window_widget_new (self);
   g_message ("created splash widget");
   gtk_window_present (
-    GTK_WINDOW (splash));
+    GTK_WINDOW (self->splash));
   g_message ("presented splash widget");
 
   /* start initialization in another thread */
-  zix_sem_init (&ZRYTHM->progress_status_lock, 1);
-  ZRYTHM->init_thread =
+  zix_sem_init (&self->progress_status_lock, 1);
+  self->init_thread =
     g_thread_new (
-      "init_thread",
-      (GThreadFunc) init_thread,
-      ZRYTHM);
+      "init_thread", (GThreadFunc) init_thread,
+      self);
 
   /* set a source func in the main GTK thread to
    * check when initialization finished */
-  g_idle_add ((GSourceFunc) idle_func, ZRYTHM);
+  g_idle_add ((GSourceFunc) idle_func, self);
 
   /* install accelerators for each action */
-  accel_install_primary_action_accelerator (
-    "<Alt>F4",
-    "app.quit");
-  accel_install_primary_action_accelerator (
-    "F11",
-    "app.fullscreen");
-  accel_install_primary_action_accelerator (
-    "<Control><Shift>p",
-    "app.preferences");
-  accel_install_primary_action_accelerator (
-    "<Control><Shift>question",
-    "app.shortcuts");
-  accel_install_primary_action_accelerator (
-    "<Control>n",
-    "win.new");
-  accel_install_primary_action_accelerator (
-    "<Control>o",
-    "win.open");
-  accel_install_primary_action_accelerator (
-    "<Control>s",
-    "win.save");
-  accel_install_primary_action_accelerator (
-    "<Control><Shift>s",
-    "win.save-as");
-  accel_install_primary_action_accelerator (
-    "<Control>e",
-    "win.export-as");
-  accel_install_primary_action_accelerator (
-    "<Control>z",
-    "win.undo");
-  accel_install_primary_action_accelerator (
-    "<Control><Shift>z",
-    "win.redo");
-  accel_install_primary_action_accelerator (
-    "<Control>x",
-    "win.cut");
-  accel_install_primary_action_accelerator (
-    "<Control>c",
-    "win.copy");
-  accel_install_primary_action_accelerator (
-    "<Control>v",
-    "win.paste");
-  accel_install_primary_action_accelerator (
-    "<Control>d",
-    "win.duplicate");
-  accel_install_primary_action_accelerator (
-    "Delete",
-    "win.delete");
-  accel_install_primary_action_accelerator (
-    "<Control>backslash",
-    "win.clear-selection");
-  accel_install_primary_action_accelerator (
-    "<Control>a",
-    "win.select-all");
-  accel_install_primary_action_accelerator (
-    "<Control><Shift>4",
-    "win.toggle-left-panel");
-  accel_install_primary_action_accelerator (
-    "<Control><Shift>6",
-    "win.toggle-right-panel");
-  accel_install_primary_action_accelerator (
-    "<Control><Shift>2",
-    "win.toggle-bot-panel");
-  accel_install_primary_action_accelerator (
-    "<Control>equal",
-    "win.zoom-in");
-  accel_install_primary_action_accelerator (
-    "<Control>minus",
-    "win.zoom-out");
-  accel_install_primary_action_accelerator (
-    "<Control>plus",
-    "win.original-size");
-  accel_install_primary_action_accelerator (
-    "<Control>bracketleft",
-    "win.best-fit");
-  accel_install_primary_action_accelerator (
-    "<Control>l",
-    "win.loop-selection");
-  accel_install_primary_action_accelerator (
-    "1",
-    "win.select-mode");
-  accel_install_primary_action_accelerator (
-    "2",
-    "win.edit-mode");
-  accel_install_primary_action_accelerator (
-    "3",
-    "win.cut-mode");
-  accel_install_primary_action_accelerator (
-    "4",
-    "win.eraser-mode");
-  accel_install_primary_action_accelerator (
-    "5",
-    "win.ramp-mode");
-  accel_install_primary_action_accelerator (
-    "6",
-    "win.audition-mode");
+#define INSTALL_ACCEL(keybind,action) \
+  accel_install_primary_action_accelerator ( \
+    keybind, action)
+
+  INSTALL_ACCEL ("<Alt>F4", "app.quit");
+  INSTALL_ACCEL ("F11", "app.fullscreen");
+  INSTALL_ACCEL (
+    "<Control><Shift>p", "app.preferences");
+  INSTALL_ACCEL (
+    "<Control><Shift>question", "app.shortcuts");
+  INSTALL_ACCEL ("<Control>n", "win.new");
+  INSTALL_ACCEL ("<Control>o", "win.open");
+  INSTALL_ACCEL ("<Control>s", "win.save");
+  INSTALL_ACCEL (
+    "<Control><Shift>s", "win.save-as");
+  INSTALL_ACCEL ("<Control>e", "win.export-as");
+  INSTALL_ACCEL ("<Control>z", "win.undo");
+  INSTALL_ACCEL (
+    "<Control><Shift>z", "win.redo");
+  INSTALL_ACCEL (
+    "<Control>x", "win.cut");
+  INSTALL_ACCEL (
+    "<Control>c", "win.copy");
+  INSTALL_ACCEL (
+    "<Control>v", "win.paste");
+  INSTALL_ACCEL (
+    "<Control>d", "win.duplicate");
+  INSTALL_ACCEL (
+    "Delete", "win.delete");
+  INSTALL_ACCEL (
+    "<Control>backslash", "win.clear-selection");
+  INSTALL_ACCEL (
+    "<Control>a", "win.select-all");
+  INSTALL_ACCEL (
+    "<Control><Shift>4", "win.toggle-left-panel");
+  INSTALL_ACCEL (
+    "<Control><Shift>6", "win.toggle-right-panel");
+  INSTALL_ACCEL (
+    "<Control><Shift>2", "win.toggle-bot-panel");
+  INSTALL_ACCEL (
+    "<Control>equal", "win.zoom-in");
+  INSTALL_ACCEL (
+    "<Control>minus", "win.zoom-out");
+  INSTALL_ACCEL (
+    "<Control>plus", "win.original-size");
+  INSTALL_ACCEL (
+    "<Control>bracketleft", "win.best-fit");
+  INSTALL_ACCEL (
+    "<Control>l", "win.loop-selection");
+  INSTALL_ACCEL (
+    "1", "win.select-mode");
+  INSTALL_ACCEL (
+    "2", "win.edit-mode");
+  INSTALL_ACCEL (
+    "3", "win.cut-mode");
+  INSTALL_ACCEL (
+    "4", "win.eraser-mode");
+  INSTALL_ACCEL (
+    "5", "win.ramp-mode");
+  INSTALL_ACCEL (
+    "6", "win.audition-mode");
   accel_install_action_accelerator (
-    "KP_4", "BackSpace",
-    "win.goto-prev-marker");
-  accel_install_primary_action_accelerator (
-    "KP_6",
-    "win.goto-next-marker");
-  accel_install_primary_action_accelerator (
-    "space",
-    "win.play-pause");
-  accel_install_primary_action_accelerator (
-    "Q",
-    "win.quick-quantize::global");
-  accel_install_primary_action_accelerator (
-    "<Alt>Q",
-    "win.quantize-options::global");
-  accel_install_primary_action_accelerator (
-    "<Shift>M",
-    "win.mute-selection::global");
+    "KP_4", "BackSpace", "win.goto-prev-marker");
+  INSTALL_ACCEL (
+    "KP_6", "win.goto-next-marker");
+  INSTALL_ACCEL (
+    "space", "win.play-pause");
+  INSTALL_ACCEL (
+    "Q", "win.quick-quantize::global");
+  INSTALL_ACCEL (
+    "<Alt>Q", "win.quantize-options::global");
+  INSTALL_ACCEL (
+    "<Shift>M", "win.mute-selection::global");
+
+#undef INSTALL_ACCEL
 }
 
 static void
@@ -998,6 +976,8 @@ zrythm_app_on_shutdown (
 #ifdef HAVE_GTK_SOURCE_VIEW_4
   gtk_source_finalize ();
 #endif
+
+  g_object_unref (self->default_settings);
 }
 
 /**
@@ -1014,6 +994,8 @@ zrythm_app_new (void)
     "resource-base-path", "/org/zrythm/Zrythm",
     "flags", G_APPLICATION_HANDLES_OPEN,
     NULL);
+
+  self->gtk_thread = g_thread_self ();
 
   lock_memory ();
   ZRYTHM = zrythm_new (true, false);

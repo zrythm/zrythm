@@ -56,7 +56,8 @@ meter_get_value (
         sizeof (float) *
         (size_t) AUDIO_ENGINE->block_length;
       size_t blocks_to_read =
-        read_space_avail / size;
+        size == 0 ?
+          0 : read_space_avail / size;
       /* if no blocks available, skip */
       if (blocks_to_read == 0)
         {

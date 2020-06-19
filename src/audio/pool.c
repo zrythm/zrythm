@@ -22,6 +22,7 @@
 #include "audio/clip.h"
 #include "audio/pool.h"
 #include "utils/arrays.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
@@ -99,4 +100,18 @@ audio_pool_add_clip (
     clip);
 
   return clip->pool_id;
+}
+
+void
+audio_pool_free (
+  AudioPool * self)
+{
+  for (int i = 0; i < self->num_clips; i++)
+    {
+      object_free_w_func_and_null (
+        audio_clip_free, self->clips[i]);
+    }
+  object_zero_and_free (self->clips);
+
+  object_zero_and_free (self);
 }

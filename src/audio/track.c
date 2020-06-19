@@ -37,6 +37,7 @@
 #include "audio/midi_group_track.h"
 #include "audio/midi_track.h"
 #include "audio/instrument_track.h"
+#include "audio/router.h"
 #include "audio/stretcher.h"
 #include "audio/tempo_track.h"
 #include "audio/track.h"
@@ -399,7 +400,7 @@ track_get_soloed (
 {
   g_return_val_if_fail (
     self && self->channel, false);
-  return fader_get_soloed (&self->channel->fader);
+  return fader_get_soloed (self->channel->fader);
 }
 
 /**
@@ -411,7 +412,7 @@ track_get_muted (
 {
   g_return_val_if_fail (
     self && self->channel, false);
-  return fader_get_muted (&self->channel->fader);
+  return fader_get_muted (self->channel->fader);
 }
 
 TrackType
@@ -497,7 +498,7 @@ track_set_muted (
 {
   g_return_if_fail (self && self->channel);
   fader_set_muted (
-    &self->channel->fader, mute, trigger_undo,
+    self->channel->fader, mute, trigger_undo,
     fire_events);
 }
 
@@ -685,7 +686,7 @@ track_set_soloed (
 {
   g_return_if_fail (self && self->channel);
   fader_set_soloed (
-    &self->channel->fader, solo, trigger_undo,
+    self->channel->fader, solo, trigger_undo,
     fire_events);
 }
 
@@ -808,7 +809,7 @@ track_generate_automation_tracks (
       /* fader */
       at =
         automation_track_new (
-          track->channel->fader.amp);
+          track->channel->fader->amp);
       automation_tracklist_add_at (atl, at);
       at->created = 1;
       at->visible = 1;
@@ -816,13 +817,13 @@ track_generate_automation_tracks (
       /* balance */
       at =
         automation_track_new (
-          track->channel->fader.balance);
+          track->channel->fader->balance);
       automation_tracklist_add_at (atl, at);
 
       /* mute */
       at =
         automation_track_new (
-          track->channel->fader.mute);
+          track->channel->fader->mute);
       automation_tracklist_add_at (atl, at);
     }
 
@@ -1127,7 +1128,9 @@ track_disconnect (
   free (ports);
 
   if (recalc_graph)
-    mixer_recalc_graph (MIXER);
+    {
+      router_recalc_graph (ROUTER);
+    }
 }
 
 /**
@@ -1278,7 +1281,7 @@ track_add_modulator (
                 track->num_modulators,
                 modulator);
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph (ROUTER);
 
   EVENTS_PUSH (ET_MODULATOR_ADDED, modulator);
 }

@@ -39,6 +39,7 @@
 #include "utils/io.h"
 #include "utils/string.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>

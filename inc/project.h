@@ -37,7 +37,6 @@
 #include "audio/quantize_options.h"
 #include "audio/region.h"
 #include "audio/region_link_group_manager.h"
-#include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/automation_selections.h"
@@ -54,6 +53,7 @@
 
 typedef struct Timeline Timeline;
 typedef struct Transport Transport;
+typedef struct Tracklist Tracklist;
 typedef struct Port Port;
 typedef struct Channel Channel;
 typedef struct Plugin Plugin;
@@ -128,7 +128,7 @@ typedef struct Project
 
   UndoManager        undo_manager;
 
-  Tracklist          tracklist;
+  Tracklist *        tracklist;
 
   /** Backend for the widget. */
   ClipEditor         clip_editor;
@@ -207,7 +207,7 @@ typedef struct Project
   /**
    * The audio backend
    */
-  AudioEngine        audio_engine;
+  AudioEngine *     audio_engine;
 
   /** MIDI bindings. */
   MidiMappings *    midi_mappings;
@@ -255,8 +255,7 @@ static const cyaml_schema_field_t
     "version", CYAML_FLAG_POINTER,
     Project, version,
     0, CYAML_UNLIMITED),
-  CYAML_FIELD_MAPPING (
-    "tracklist", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_PTR (
     Project, tracklist, tracklist_fields_schema),
   CYAML_FIELD_MAPPING (
     "clip_editor", CYAML_FLAG_DEFAULT,
@@ -268,8 +267,7 @@ static const cyaml_schema_field_t
     "quantize_opts_timeline", CYAML_FLAG_DEFAULT,
     Project, quantize_opts_timeline,
     quantize_options_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "audio_engine", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_PTR (
     Project, audio_engine, engine_fields_schema),
   CYAML_FIELD_MAPPING (
     "snap_grid_midi", CYAML_FLAG_DEFAULT,
@@ -478,10 +476,17 @@ void
 project_set_has_range (int has_range);
 
 /**
+ * Creates an empty project object.
+ */
+Project *
+project_new (
+  Zrythm * zrythm);
+
+/**
  * Tears down the project.
  */
 void
-project_tear_down (Project * self);
+project_free (Project * self);
 
 SERIALIZE_INC (Project, project)
 DESERIALIZE_INC (Project, project)

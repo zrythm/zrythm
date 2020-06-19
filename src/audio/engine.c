@@ -57,12 +57,13 @@
 #include "audio/engine_rtmidi.h"
 #include "audio/engine_sdl.h"
 #include "audio/engine_windows_mme.h"
+#include "audio/graph.h"
+#include "audio/graph_node.h"
 #include "audio/metronome.h"
 #include "audio/midi.h"
 #include "audio/midi_mapping.h"
-#include "audio/mixer.h"
 #include "audio/pool.h"
-#include "audio/routing.h"
+#include "audio/router.h"
 #include "audio/sample_playback.h"
 #include "audio/sample_processor.h"
 #include "audio/tempo_track.h"
@@ -74,6 +75,8 @@
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
+#include "settings/settings.h"
+#include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -105,7 +108,7 @@ engine_update_frames_per_tick (
 
   /* update positions */
   transport_update_position_frames (
-    &self->transport);
+    self->transport);
 
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
@@ -113,86 +116,175 @@ engine_update_frames_per_tick (
     }
 }
 
-static void
-init_midi (
-  AudioEngine * self,
-  int           loading)
+void
+engine_setup (
+  AudioEngine * self)
 {
-  g_message ("initializing MIDI...");
-
-  if (loading)
-    {
-    }
-  else
-    {
-      /* init midi editor manual press */
-      self->midi_editor_manual_press =
-        port_new_with_type (
-          TYPE_EVENT,
-          FLOW_INPUT,
-          "MIDI Editor Manual Press");
-      self->midi_editor_manual_press->id.flags |=
-        PORT_FLAG_MANUAL_PRESS;
-
-      /* init midi in */
-      self->midi_in =
-        port_new_with_type (
-          TYPE_EVENT,
-          FLOW_INPUT,
-          "MIDI in");
-    }
-
-  /* init MIDI queues */
-  self->midi_editor_manual_press->midi_events =
-    midi_events_new (
-      self->midi_editor_manual_press);
-  self->midi_in->midi_events =
-    midi_events_new (self->midi_in);
-
-  /* Expose midi in */
-  port_set_expose_to_backend (
-    self->midi_in, 1);
-}
-
-static void
-init_audio (
-  AudioEngine * self,
-  int           loading)
-{
-  g_message ("initializing audio...");
-
-  control_room_init (CONTROL_ROOM, loading);
+  g_return_if_fail (self && !self->setup);
 
 #ifdef TRIAL_VER
   self->zrythm_start_time =
     g_get_monotonic_time ();
 #endif
 
-  /*if (loading)*/
-    /*{*/
-      /*stereo_ports_init_loaded (self->stereo_in);*/
-      /*stereo_ports_init_loaded (self->monitor_out);*/
-    /*}*/
-  /*else*/
-    /*{*/
-    /*}*/
-  g_message ("Finished initializing audio");
+  int ret = 0;
+  switch (self->audio_backend)
+    {
+    case AUDIO_BACKEND_DUMMY:
+      ret =
+        engine_dummy_setup (self);
+      break;
+#ifdef HAVE_ALSA
+    case AUDIO_BACKEND_ALSA:
+      ret =
+        engine_alsa_setup(self);
+      break;
+#endif
+#ifdef HAVE_JACK
+    case AUDIO_BACKEND_JACK:
+      ret =
+        engine_jack_setup (self);
+      break;
+#endif
+#ifdef HAVE_PORT_AUDIO
+    case AUDIO_BACKEND_PORT_AUDIO:
+      ret =
+        engine_pa_setup (self);
+      break;
+#endif
+#ifdef HAVE_SDL
+    case AUDIO_BACKEND_SDL:
+      ret =
+        engine_sdl_setup (self);
+      break;
+#endif
+#ifdef HAVE_RTAUDIO
+    case AUDIO_BACKEND_RTAUDIO:
+      ret =
+        engine_rtaudio_setup (self);
+      break;
+#endif
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+  if (ret)
+    {
+      if (!ZRYTHM_TESTING)
+        {
+          char str[600];
+          sprintf (
+            str,
+            _("Failed to initialize the %s audio "
+              "backend. Will use the dummy backend "
+              "instead. Please check your backend "
+              "settings in the Preferences."),
+            engine_audio_backend_to_string (
+              self->audio_backend));
+          ui_show_message_full (
+            GTK_WINDOW (MAIN_WINDOW),
+            GTK_MESSAGE_WARNING, str);
+        }
+
+      self->audio_backend =
+        AUDIO_BACKEND_DUMMY;
+      self->midi_backend =
+        MIDI_BACKEND_DUMMY;
+      engine_dummy_setup (self);
+    }
+
+  /* init semaphores */
+  zix_sem_init (&self->port_operation_lock, 1);
+
+  /* set up midi */
+  int mret = 0;
+  switch (self->midi_backend)
+    {
+    case MIDI_BACKEND_DUMMY:
+      mret =
+        engine_dummy_midi_setup (self);
+      break;
+#ifdef HAVE_ALSA
+    case MIDI_BACKEND_ALSA:
+      mret =
+        engine_alsa_midi_setup (self);
+      break;
+#endif
+#ifdef HAVE_JACK
+    case MIDI_BACKEND_JACK:
+      mret =
+        engine_jack_midi_setup (self);
+      break;
+#endif
+#ifdef _WOE32
+    case MIDI_BACKEND_WINDOWS_MME:
+      mret =
+        engine_windows_mme_setup (self);
+      break;
+#endif
+#ifdef HAVE_RTMIDI
+    case MIDI_BACKEND_RTMIDI:
+      mret =
+        engine_rtmidi_setup (self);
+      break;
+#endif
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+  if (mret)
+    {
+      if (!ZRYTHM_TESTING)
+        {
+          char * str =
+            g_strdup_printf (
+              _("Failed to initialize the %s MIDI "
+                "backend. Will use the dummy backend "
+                "instead. Please check your backend "
+                "settings in the Preferences."),
+              engine_midi_backend_to_string (
+                self->midi_backend));
+          ui_show_message_full (
+            GTK_WINDOW (MAIN_WINDOW),
+            GTK_MESSAGE_WARNING, str);
+          g_free (str);
+        }
+
+      self->midi_backend = MIDI_BACKEND_DUMMY;
+      engine_dummy_midi_setup (self);
+    }
+
+  /* Expose ports */
+  port_set_expose_to_backend (
+    self->midi_in, true);
+  port_set_expose_to_backend (
+    self->monitor_out->l, true);
+  port_set_expose_to_backend (
+    self->monitor_out->r, true);
+
+  self->buf_size_set = false;
+
+  /* connect the sample processor to the engine
+   * output */
+  stereo_ports_connect (
+    self->sample_processor->stereo_out,
+    self->control_room->monitor_fader->stereo_in,
+    true);
+
+  /* connect fader to monitor out */
+  stereo_ports_connect (
+    self->control_room->monitor_fader->stereo_out,
+    self->monitor_out, true);
+
+  self->setup = true;
 }
 
-/**
- * Init audio engine.
- *
- * loading is 1 if loading a project.
- */
-void
-engine_init (
-  AudioEngine * self,
-  int           loading)
+static void
+init_common (
+  AudioEngine * self)
 {
-  g_message ("Initializing audio engine...");
-
-  transport_init (
-    &self->transport, loading);
+  self->metronome = metronome_new ();
+  self->router = router_new ();
 
   /* get audio backend */
   AudioBackend ab_code =
@@ -325,226 +417,151 @@ engine_init (
       g_settings_get_enum (
         S_P_DSP_PAN,
         "pan-algorithm");
+}
 
-  int ret = 0;
-  switch (self->audio_backend)
-    {
-    case AUDIO_BACKEND_DUMMY:
-      ret =
-        engine_dummy_setup (self, loading);
-      break;
-#ifdef HAVE_ALSA
-    case AUDIO_BACKEND_ALSA:
-      ret =
-        engine_alsa_setup(self, loading);
-      break;
-#endif
-#ifdef HAVE_JACK
-    case AUDIO_BACKEND_JACK:
-      ret =
-        engine_jack_setup (self, loading);
-      break;
-#endif
-#ifdef HAVE_PORT_AUDIO
-    case AUDIO_BACKEND_PORT_AUDIO:
-      ret =
-        engine_pa_setup (self, loading);
-      break;
-#endif
-#ifdef HAVE_SDL
-    case AUDIO_BACKEND_SDL:
-      ret =
-        engine_sdl_setup (self, loading);
-      break;
-#endif
-#ifdef HAVE_RTAUDIO
-    case AUDIO_BACKEND_RTAUDIO:
-      ret =
-        engine_rtaudio_setup (self, loading);
-      break;
-#endif
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-  if (ret)
-    {
-      if (!ZRYTHM_TESTING)
-        {
-          char str[600];
-          sprintf (
-            str,
-            _("Failed to initialize the %s audio "
-              "backend. Will use the dummy backend "
-              "instead. Please check your backend "
-              "settings in the Preferences."),
-            engine_audio_backend_to_string (
-              self->audio_backend));
-          ui_show_message_full (
-            GTK_WINDOW (MAIN_WINDOW),
-            GTK_MESSAGE_WARNING, str);
-        }
+void
+engine_init_loaded (
+  AudioEngine * self)
+{
+  audio_pool_init_loaded (self->pool);
+  transport_init_loaded (self->transport);
+  control_room_init_loaded (self->control_room);
+  sample_processor_init_loaded (
+    self->sample_processor);
 
-      self->audio_backend =
-        AUDIO_BACKEND_DUMMY;
-      self->midi_backend =
-        MIDI_BACKEND_DUMMY;
-      engine_dummy_setup (self, loading);
-    }
-
-  /* init semaphores */
-  zix_sem_init (&self->port_operation_lock, 1);
-
-  if (loading)
-    {
-      /* load */
-      mixer_init_loaded ();
-    }
-
-  /* init audio */
-  init_audio (self, loading);
-
-  /* connect fader to monitor out */
-  g_return_if_fail (
-    MONITOR_FADER &&
-    MONITOR_FADER->stereo_out &&
-    MONITOR_FADER->stereo_out->l &&
-    MONITOR_FADER->stereo_out->r &&
-    self->monitor_out &&
-    self->monitor_out->l &&
-    self->monitor_out->r);
-  stereo_ports_connect (
-    MONITOR_FADER->stereo_out,
-    self->monitor_out, 1);
-
-  /* set up midi */
-  int mret = 0;
-  switch (self->midi_backend)
-    {
-    case MIDI_BACKEND_DUMMY:
-      mret =
-        engine_dummy_midi_setup (self, loading);
-      break;
-#ifdef HAVE_ALSA
-    case MIDI_BACKEND_ALSA:
-      mret =
-        engine_alsa_midi_setup (self, loading);
-      break;
-#endif
-#ifdef HAVE_JACK
-    case MIDI_BACKEND_JACK:
-      mret =
-        engine_jack_midi_setup (self, loading);
-      break;
-#endif
-#ifdef _WOE32
-    case MIDI_BACKEND_WINDOWS_MME:
-      mret =
-        engine_windows_mme_setup (self, loading);
-      break;
-#endif
-#ifdef HAVE_RTMIDI
-    case MIDI_BACKEND_RTMIDI:
-      mret =
-        engine_rtmidi_setup (self, loading);
-      break;
-#endif
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-  if (mret)
-    {
-      if (!ZRYTHM_TESTING)
-        {
-          char * str =
-            g_strdup_printf (
-              _("Failed to initialize the %s MIDI "
-                "backend. Will use the dummy backend "
-                "instead. Please check your backend "
-                "settings in the Preferences."),
-              engine_midi_backend_to_string (
-                self->midi_backend));
-          ui_show_message_full (
-            GTK_WINDOW (MAIN_WINDOW),
-            GTK_MESSAGE_WARNING, str);
-          g_free (str);
-        }
-
-      self->midi_backend =
-        MIDI_BACKEND_DUMMY;
-      engine_dummy_midi_setup (self, loading);
-    }
-
-  /* init midi */
-  init_midi (self, loading);
-
-  self->buf_size_set = false;
-
-  metronome_init (METRONOME);
-  sample_processor_init (&self->sample_processor);
-
-  /* connect the sample processor to the engine
-   * output */
-  stereo_ports_connect (
-    self->sample_processor.stereo_out,
-    self->control_room.monitor_fader.stereo_in, 1);
-
-  /** init audio pool */
-  if (loading)
-    {
-      audio_pool_init_loaded (self->pool);
-    }
-  else
-    {
-      self->pool = audio_pool_new ();
-    }
+  init_common (self);
 }
 
 /**
- * Activates the audio engine to start receiving
- * events.
+ * Create a new audio engine.
+ *
+ * This only initializes the engine and doe snot
+ * connect to the backend.
+ */
+AudioEngine *
+engine_new (
+  Project * project)
+{
+  g_message (
+    "%s: Creating audio engine...", __func__);
+
+  AudioEngine * self = object_new (AudioEngine);
+
+  if (project)
+    {
+      project->audio_engine = self;
+    }
+
+  self->transport = transport_new (self);
+  self->pool = audio_pool_new ();
+  self->control_room = control_room_new ();
+  self->sample_processor = sample_processor_new ();
+
+  /* init midi editor manual press */
+  self->midi_editor_manual_press =
+    port_new_with_type (
+      TYPE_EVENT, FLOW_INPUT,
+      "MIDI Editor Manual Press");
+  self->midi_editor_manual_press->id.flags |=
+    PORT_FLAG_MANUAL_PRESS;
+
+  /* init midi in */
+  self->midi_in =
+    port_new_with_type (
+      TYPE_EVENT, FLOW_INPUT, "MIDI in");
+
+  /* init MIDI queues */
+  self->midi_editor_manual_press->midi_events =
+    midi_events_new (
+      self->midi_editor_manual_press);
+  self->midi_in->midi_events =
+    midi_events_new (self->midi_in);
+
+  /* create monitor out ports */
+  Port * monitor_out_l, * monitor_out_r;
+  monitor_out_l =
+    port_new_with_type (
+      TYPE_AUDIO, FLOW_OUTPUT, "Monitor Out L");
+  monitor_out_r =
+    port_new_with_type (
+      TYPE_AUDIO, FLOW_OUTPUT, "Monitor Out R");
+  monitor_out_l->id.owner_type =
+    PORT_OWNER_TYPE_BACKEND;
+  monitor_out_r->id.owner_type =
+    PORT_OWNER_TYPE_BACKEND;
+  self->monitor_out =
+    stereo_ports_new_from_existing (
+      monitor_out_l, monitor_out_r);
+
+  init_common (self);
+
+  return self;
+}
+
+/**
+ * Activates the audio engine to start processing
+ * and receiving events.
+ *
+ * @param activate Activate or deactivate.
  */
 void
 engine_activate (
-  AudioEngine * self)
+  AudioEngine * self,
+  bool          activate)
 {
-  g_message ("activating engine...");
+  if (activate)
+    {
+      g_message ("%s: Activating...", __func__);
+    }
+  else
+    {
+      g_message ("%s: Deactivating...", __func__);
+    }
 
-  engine_realloc_port_buffers (
-    self, self->block_length);
+  if (activate)
+    {
+      engine_realloc_port_buffers (
+        self, self->block_length);
 
 #ifdef HAVE_JACK
-  if (self->audio_backend == AUDIO_BACKEND_JACK &&
-      self->midi_backend == MIDI_BACKEND_JACK)
-    engine_jack_activate (self);
+      if (self->audio_backend == AUDIO_BACKEND_JACK &&
+          self->midi_backend == MIDI_BACKEND_JACK)
+        engine_jack_activate (self);
 #endif
-  if (self->audio_backend == AUDIO_BACKEND_DUMMY)
-    {
-      engine_dummy_activate (self);
-    }
+      if (self->audio_backend == AUDIO_BACKEND_DUMMY)
+        {
+          engine_dummy_activate (self);
+        }
 #ifdef _WOE32
-  if (self->midi_backend ==
-        MIDI_BACKEND_WINDOWS_MME)
-    {
-      engine_windows_mme_start_known_devices (self);
-    }
+      if (self->midi_backend ==
+            MIDI_BACKEND_WINDOWS_MME)
+        {
+          engine_windows_mme_start_known_devices (self);
+        }
 #endif
 #ifdef HAVE_RTMIDI
-  if (self->midi_backend ==
-        MIDI_BACKEND_RTMIDI)
-    {
-      engine_rtmidi_activate (self);
-    }
+      if (self->midi_backend ==
+            MIDI_BACKEND_RTMIDI)
+        {
+          engine_rtmidi_activate (self);
+        }
 #endif
 #ifdef HAVE_SDL
-  if (self->audio_backend == AUDIO_BACKEND_SDL)
-    engine_sdl_activate (self);
+      if (self->audio_backend == AUDIO_BACKEND_SDL)
+        engine_sdl_activate (self);
 #endif
 #ifdef HAVE_RTAUDIO
-  if (self->audio_backend == AUDIO_BACKEND_RTAUDIO)
-    engine_rtaudio_activate (self);
+      if (self->audio_backend == AUDIO_BACKEND_RTAUDIO)
+        engine_rtaudio_activate (self);
 #endif
+    }
+  else
+    {
+      /* TODO deactivate */
+    }
+
+
+  g_message ("%s: done", __func__);
 }
 
 void
@@ -557,8 +574,9 @@ engine_realloc_port_buffers (
   AUDIO_ENGINE->block_length = nframes;
   AUDIO_ENGINE->buf_size_set = true;
   g_message (
-    "Block length changed to %d",
-    AUDIO_ENGINE->block_length);
+    "%s: Block length changed to %d. "
+    "reallocating buffers...",
+    __func__, AUDIO_ENGINE->block_length);
 
   /** reallocate port buffers to new size */
   Port * port;
@@ -577,9 +595,11 @@ engine_realloc_port_buffers (
       g_warn_if_fail (port);
 
       port->buf =
-        realloc (port->buf,
-                 nframes * sizeof (float));
-      /* TODO memset */
+        realloc (
+          port->buf,
+          nframes * sizeof (float));
+      memset (
+        port->buf, 0, nframes * sizeof (float));
     }
   free (ports);
   for (i = 0; i < TRACKLIST->num_tracks; i++)
@@ -610,6 +630,8 @@ engine_realloc_port_buffers (
         }
     }
   AUDIO_ENGINE->nframes = nframes;
+
+  g_message ("%s: done", __func__);
 }
 
 /*void*/
@@ -701,7 +723,7 @@ engine_process_prepare (
       TRANSPORT->play_state = PLAYSTATE_ROLLING;
       self->remaining_latency_preroll =
         router_get_max_playback_latency (
-          &MIXER->router);
+          self->router);
 #ifdef HAVE_JACK
       if (self->audio_backend == AUDIO_BACKEND_JACK)
         jack_transport_start (
@@ -744,7 +766,7 @@ engine_process_prepare (
   port_clear_buffer (self->monitor_out->r);
 
   sample_processor_prepare_process (
-    &self->sample_processor, nframes);
+    self->sample_processor, nframes);
 
   /* prepare channels for this cycle */
   Channel * ch;
@@ -1017,12 +1039,11 @@ engine_process (
         MIN (
           _nframes, self->remaining_latency_preroll);
       for (i = 0;
-           i < MIXER->router.graph->
-             n_init_triggers;
+           i < self->router->graph->n_init_triggers;
            i++)
         {
           start_node =
-            MIXER->router.graph->
+            self->router->graph->
               init_trigger_list[i];
           route_latency =
             start_node->playback_latency;
@@ -1061,7 +1082,6 @@ engine_process (
 
       /* this will keep looping until everything was
        * processed in this cycle */
-      /*mixer_process (nframes);*/
       /*g_message (*/
         /*"======== processing at %d for %d samples "*/
         /*"(preroll: %ld)",*/
@@ -1069,7 +1089,7 @@ engine_process (
         /*num_samples,*/
         /*self->remaining_latency_preroll);*/
       router_start_cycle (
-        &MIXER->router, num_samples,
+        self->router, num_samples,
         _nframes - nframes,
         PLAYHEAD);
 
@@ -1098,7 +1118,7 @@ engine_process (
         /*nframes,*/
         /*self->remaining_latency_preroll);*/
       router_start_cycle (
-        &MIXER->router, nframes,
+        self->router, nframes,
         _nframes - nframes,
         PLAYHEAD);
     }
@@ -1323,52 +1343,13 @@ engine_reset_bounce_mode (
     }
 }
 
-/**
- * Closes any connections and free's data.
- */
 void
-engine_tear_down (
+engine_free (
   AudioEngine * self)
 {
-  g_message ("tearing down audio engine...");
+  g_message ("%s: freeing...", __func__);
 
-#ifdef HAVE_CARLA
-  /* close all carla plugin engines */
-  for (int i = 0; i < TRACKLIST->num_tracks;
-       i++)
-    {
-      Track * track = TRACKLIST->tracks[i];
-      if (track_type_has_channel (track->type))
-        {
-          Channel * ch =
-            track_get_channel (track);
-          for (int j = 0; j < STRIP_SIZE * 2 + 1;
-               j++)
-            {
-              Plugin * pl = NULL;
-              if (j < STRIP_SIZE)
-                pl = ch->midi_fx[j];
-              else if (j == STRIP_SIZE)
-                pl = ch->instrument;
-              else
-                pl =
-                  ch->inserts[
-                    j - (STRIP_SIZE + 1)];
-
-              if (!pl)
-                continue;
-
-              if (pl->descr->open_with_carla)
-                {
-                  carla_native_plugin_close (
-                    pl->carla);
-                }
-            }
-        }
-    }
-#endif
-
-  router_tear_down (&MIXER->router);
+  router_free (self->router);
 
   switch (self->audio_backend)
     {
@@ -1388,4 +1369,22 @@ engine_tear_down (
     default:
       break;
     }
+
+  stereo_ports_disconnect (self->monitor_out);
+  stereo_ports_free (self->monitor_out);
+
+  object_free_w_func_and_null (
+    sample_processor_free, self->sample_processor);
+  object_free_w_func_and_null (
+    metronome_free, self->metronome);
+  object_free_w_func_and_null (
+    audio_pool_free, self->pool);
+  object_free_w_func_and_null (
+    control_room_free, self->control_room);
+  object_free_w_func_and_null (
+    transport_free, self->transport);
+
+  object_zero_and_free (self);
+
+  g_message ("%s: done", __func__);
 }

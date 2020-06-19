@@ -41,7 +41,7 @@
 
 #include "audio/channel.h"
 #include "audio/engine.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/midi.h"
 #include "audio/transport.h"
 #include "project.h"

@@ -33,6 +33,7 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
@@ -751,13 +752,18 @@ track_processor_free_members (
   switch (track->in_signal_type)
     {
     case TYPE_AUDIO:
-      port_free (self->stereo_in->l);
-      port_free (self->stereo_in->r);
+      stereo_ports_disconnect (self->stereo_in);
+      object_free_w_func_and_null (
+        stereo_ports_free, self->stereo_in);
       break;
     case TYPE_EVENT:
+      port_disconnect_all (self->midi_in);
       port_free (self->midi_in);
       if (track_has_piano_roll (track))
-        port_free (self->piano_roll);
+        {
+          port_disconnect_all (self->piano_roll);
+          port_free (self->piano_roll);
+        }
       break;
     default:
       break;

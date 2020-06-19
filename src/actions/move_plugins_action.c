@@ -19,7 +19,7 @@
 
 #include "actions/move_plugins_action.h"
 #include "audio/channel.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/mixer_selections.h"
@@ -151,8 +151,8 @@ move_plugins_action_do (
 
       /* move and select plugin to to_slot + diff */
       to_slot = self->to_slot + i;
-      mixer_move_plugin (
-        MIXER, pl, to_ch, self->slot_type, to_slot);
+      plugin_move (
+        pl, to_ch, self->slot_type, to_slot);
 
       mixer_selections_add_slot (
         MIXER_SELECTIONS, to_ch, self->slot_type,
@@ -204,9 +204,8 @@ move_plugins_action_undo (
       g_return_val_if_fail (pl, -1);
 
       /* move plugin to its original slot */
-      mixer_move_plugin (
-        MIXER, pl, ch,
-        self->ms->type,
+      plugin_move (
+        pl, ch, self->ms->type,
         self->ms->plugins[i]->id.slot);
 
       /* add to mixer selections */

@@ -34,6 +34,7 @@
 #include "zix/sem.h"
 
 typedef struct TimelineSelections TimelineSelections;
+typedef struct AudioEngine AudioEngine;
 
 /**
  * @addtogroup audio
@@ -41,7 +42,7 @@ typedef struct TimelineSelections TimelineSelections;
  * @{
  */
 
-#define TRANSPORT (&AUDIO_ENGINE->transport)
+#define TRANSPORT (AUDIO_ENGINE->transport)
 #define TRANSPORT_DEFAULT_TOTAL_BARS 128
 #define TRANSPORT_MAX_BPM 420.f
 #define TRANSPORT_MIN_BPM 40.f
@@ -243,10 +244,13 @@ transport_schema =
 /**
  * Initialize transport
  */
+Transport *
+transport_new (
+  AudioEngine * engine);
+
 void
-transport_init (
-  Transport * self,
-  int         loading);
+transport_init_loaded (
+  Transport * self);
 
 /**
  * Prepares audio regions for stretching (sets the
@@ -425,6 +429,10 @@ transport_is_loop_point_met (
   const Transport * self,
   const long        g_start_frames,
   const nframes_t   nframes);
+
+void
+transport_free (
+  Transport * self);
 
 /**
  * @}

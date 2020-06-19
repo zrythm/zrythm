@@ -47,12 +47,14 @@
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
+#include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -802,8 +804,8 @@ plugin_manager_scan_plugins (
                 _("Skipped LV2 plugin at %s"),
                 uri_str);
             }
-          zrythm_set_progress_status (
-            ZRYTHM, prog_str, *progress);
+          zrythm_app_set_progress_status (
+            zrythm_app, prog_str, *progress);
         }
     }
   g_message (
@@ -930,8 +932,8 @@ plugin_manager_scan_plugins (
                     _("Skipped VST plugin at %s"),
                     plugin_path);
                 }
-              zrythm_set_progress_status (
-                ZRYTHM, prog_str, *progress);
+              zrythm_app_set_progress_status (
+                zrythm_app, prog_str, *progress);
             }
         }
       if (plugin_idx > 0)
@@ -1056,8 +1058,8 @@ plugin_manager_scan_plugins (
                     _("Skipped VST plugin at %s"),
                     plugin_path);
                 }
-              zrythm_set_progress_status (
-                ZRYTHM, prog_str, *progress);
+              zrythm_app_set_progress_status (
+                zrythm_app, prog_str, *progress);
             }
         }
       if (plugin_idx > 0)
@@ -1118,8 +1120,8 @@ plugin_manager_scan_plugins (
                 _("Skipped AU plugin at %u"),
                 i);
             }
-          zrythm_set_progress_status (
-            ZRYTHM, prog_str, *progress);
+          zrythm_app_set_progress_status (
+            zrythm_app, prog_str, *progress);
         }
     }
 #endif // __APPLE__
@@ -1191,8 +1193,9 @@ plugin_manager_scan_plugins (
                     "Scanned %s instrument: %s",
                     type,
                     descr->name);
-                  zrythm_set_progress_status (
-                    ZRYTHM, prog_str, *progress);
+                  zrythm_app_set_progress_status (
+                    zrythm_app, prog_str,
+                    *progress);
                 }
             }
           g_strfreev (sf_instruments);

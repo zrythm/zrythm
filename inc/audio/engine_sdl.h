@@ -37,8 +37,7 @@ typedef struct AudioEngine AudioEngine;
  */
 int
 engine_sdl_setup (
-  AudioEngine * self,
-  int           loading);
+  AudioEngine * self);
 
 /**
  * Returns a list of names inside \ref names that

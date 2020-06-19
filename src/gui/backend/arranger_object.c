@@ -60,6 +60,7 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 #define TYPE(x) \
   ARRANGER_OBJECT_TYPE_##x
@@ -744,6 +745,13 @@ init_loaded_midi_note (
 }
 
 static void
+init_loaded_scale_object (
+  ScaleObject * self)
+{
+  self->magic = SCALE_OBJECT_MAGIC;
+}
+
+static void
 init_loaded_region (
   ZRegion * self)
 {
@@ -826,6 +834,10 @@ arranger_object_init_loaded (
     case TYPE (MIDI_NOTE):
       init_loaded_midi_note (
         (MidiNote *) self);
+      break;
+    case TYPE (SCALE_OBJECT):
+      init_loaded_scale_object (
+        (ScaleObject *) self);
       break;
     default:
       /* nothing needed */
@@ -2380,7 +2392,7 @@ free_midi_note (
   if (G_IS_OBJECT (self->layout))
     g_object_unref (self->layout);
 
-  free (self);
+  object_zero_and_free (self);
 }
 
 /**
@@ -2402,34 +2414,34 @@ arranger_object_free (
       {
         Marker * marker = (Marker *) self;
         g_free (marker->name);
-        free (marker);
+        object_zero_and_free (marker);
       }
       return;
     case TYPE (CHORD_OBJECT):
       {
         ChordObject * co = (ChordObject *) self;
-        free (co);
+        object_zero_and_free (co);
       }
       return;
     case TYPE (SCALE_OBJECT):
       {
         ScaleObject * scale = (ScaleObject *) self;
         musical_scale_free (scale->scale);
-        free (scale);
+        object_zero_and_free (scale);
       }
       return;
     case TYPE (AUTOMATION_POINT):
       {
         AutomationPoint * ap =
           (AutomationPoint *) self;
-        free (ap);
+        object_zero_and_free (ap);
       }
       return;
     case TYPE (VELOCITY):
       {
         Velocity * vel =
           (Velocity *) self;
-        free (vel);
+        object_zero_and_free (vel);
       }
       return;
     default:

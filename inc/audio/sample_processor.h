@@ -27,6 +27,7 @@
 #define __AUDIO_SAMPLE_PROCESSOR_H__
 
 #include "audio/sample_playback.h"
+#include "audio/port.h"
 #include "utils/types.h"
 
 typedef struct StereoPorts StereoPorts;
@@ -39,7 +40,7 @@ typedef enum MetronomeType MetronomeType;
  */
 
 #define SAMPLE_PROCESSOR \
-  (&AUDIO_ENGINE->sample_processor)
+  (AUDIO_ENGINE->sample_processor)
 
 /**
  * A processor to be used in the routing graph for
@@ -56,12 +57,34 @@ typedef struct SampleProcessor
   StereoPorts *     stereo_out;
 } SampleProcessor;
 
+static const cyaml_schema_field_t
+sample_processor_fields_schema[] =
+{
+  YAML_FIELD_MAPPING_PTR (
+    SampleProcessor, stereo_out,
+    stereo_ports_fields_schema),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+sample_processor_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    SampleProcessor,
+    sample_processor_fields_schema),
+};
+
 /**
  * Initializes a SamplePlayback with a sample to
  * play back.
  */
+SampleProcessor *
+sample_processor_new (void);
+
 void
-sample_processor_init (
+sample_processor_init_loaded (
   SampleProcessor * self);
 
 /**
@@ -110,6 +133,14 @@ void
 sample_processor_queue_sample_from_file (
   SampleProcessor * self,
   const char *      path);
+
+void
+sample_processor_disconnect (
+  SampleProcessor * self);
+
+void
+sample_processor_free (
+  SampleProcessor * self);
 
 /**
  * @}

@@ -19,6 +19,7 @@
 
 #include "audio/midi_region.h"
 #include "audio/region.h"
+#include "audio/transport.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"
@@ -35,7 +36,6 @@ fixture_set_up (
   RegionFixture * fixture)
 {
   /* needed to set TRANSPORT */
-  transport_init (TRANSPORT, 0);
   engine_update_frames_per_tick (
     AUDIO_ENGINE, 4, 140, 44000);
 

@@ -513,7 +513,7 @@ engine_alsa_prepare_process (
 
 int
 engine_alsa_setup (
-  AudioEngine *self, int loading)
+  AudioEngine *self)
 {
   g_message ("setting up ALSA...");
 
@@ -523,31 +523,6 @@ engine_alsa_setup (
   self->alsa_out_buf =
     (float *) malloc (
       2 * sizeof (float) * self->block_length);
-
-  Port *monitor_out_l, *monitor_out_r;
-
-  /*const char * monitor_out_l_str =*/
-    /*"Monitor out L";*/
-  /*const char * monitor_out_r_str =*/
-    /*"Monitor out R";*/
-
-  monitor_out_l =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_OUTPUT,
-      "ALSA Monitor Out / L");
-  monitor_out_r =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_OUTPUT,
-      "ALSA Monitor Out / R");
-
-  monitor_out_l->id.owner_type =
-    PORT_OWNER_TYPE_BACKEND;
-  monitor_out_r->id.owner_type =
-    PORT_OWNER_TYPE_BACKEND;
-
-  self->monitor_out =
-    stereo_ports_new_from_existing (
-      monitor_out_l, monitor_out_r);
 
   pthread_t thread_id;
   int ret =

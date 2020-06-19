@@ -19,12 +19,13 @@
 
 #include "actions/create_plugins_action.h"
 #include "audio/channel.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/flags.h"
 #include "zrythm_app.h"
 
@@ -109,7 +110,7 @@ create_plugins_action_do (
         }
     }
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph ((ROUTER));
 
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED,
                ch);
@@ -139,7 +140,7 @@ create_plugins_action_undo (
                    ch);
     }
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph ((ROUTER));
 
   return 0;
 }

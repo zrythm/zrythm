@@ -64,6 +64,7 @@
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
+#include "zrythm_app.h"
 
 #include <ext/midilib/src/midifile.h>
 #include <ext/midilib/src/midiutil.h>

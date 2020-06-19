@@ -50,8 +50,7 @@ engine_alsa_test (
 
 int
 engine_alsa_midi_setup (
-  AudioEngine * self,
-  int           loading);
+  AudioEngine * self);
 
 /**
  * Prepares for processing.

@@ -80,14 +80,14 @@ typedef struct _ControlRoomWidget
 
 void
 control_room_widget_setup (
-  ControlRoomWidget * self);
+  ControlRoomWidget * self,
+  ControlRoom *       control_room);
 
 /**
  * Creates a ControlRoomWidget.
  */
 ControlRoomWidget *
-control_room_widget_new (
-  ControlRoom *       control_room);
+control_room_widget_new (void);
 
 /**
  * @}

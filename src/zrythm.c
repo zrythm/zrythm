@@ -27,13 +27,14 @@
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
 #include "audio/engine.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/quantize_options.h"
 #include "audio/recording_manager.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
 #include "gui/backend/event_manager.h"
+#include "gui/backend/file_manager.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/splash.h"
@@ -65,26 +66,6 @@ Zrythm * zrythm = NULL;
 
 /** Zrythm directory used during unit tests. */
 static char * testing_dir = NULL;
-
-/**
- * Sets the current status and progress percentage
- * during loading.
- *
- * The splash screen then reads these values from
- * the Zrythm struct.
- */
-void
-zrythm_set_progress_status (
-  Zrythm *     self,
-  const char * text,
-  const double perc)
-{
-  zix_sem_wait (&self->progress_status_lock);
-  g_message ("%s", text);
-  strcpy (self->status, text);
-  self->progress = perc;
-  zix_sem_post (&self->progress_status_lock);
-}
 
 /**
  * FIXME move somewhere else.
@@ -458,13 +439,12 @@ zrythm_free (
     "%s: deleting Zrythm instance...",
     __func__);
 
-  log_teardown (&self->log);
-
-  if (PROJECT && PROJECT->loaded)
-    {
-      project_tear_down (PROJECT);
-    }
-
+  object_free_w_func_and_null (
+    log_free, self->log);
+  object_free_w_func_and_null (
+    z_cairo_caches_free, self->cairo_caches);
+  object_free_w_func_and_null (
+    project_free, self->project);
   object_free_w_func_and_null (
     recording_manager_free,
     self->recording_manager);
@@ -473,6 +453,8 @@ zrythm_free (
     self->plugin_manager);
   object_free_w_func_and_null (
     event_manager_free, self->event_manager);
+  object_free_w_func_and_null (
+    file_manager_free, self->file_manager);
 
   /* free object utils last */
   object_free_w_func_and_null (
@@ -504,16 +486,18 @@ zrythm_new (
 
   self->have_ui = have_ui;
   self->testing = testing;
+  self->settings = settings_new ();
   self->object_utils = object_utils_new ();
   self->recording_manager =
     recording_manager_new ();
   self->plugin_manager = plugin_manager_new ();
-  self->project = object_new (Project);
   self->symap = symap_new ();
+  self->file_manager = file_manager_new ();
+  self->log = log_new ();
+  self->cairo_caches = z_cairo_caches_new ();
 
   if (have_ui)
     {
-      self->gtk_thread = g_thread_self ();
       self->event_manager =
         event_manager_new ();
     }

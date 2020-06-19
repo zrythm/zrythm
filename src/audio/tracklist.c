@@ -19,7 +19,7 @@
 
 #include "audio/channel.h"
 #include "audio/chord_track.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/tracklist.h"
 #include "audio/track.h"
 #include "gui/backend/event.h"
@@ -205,16 +205,24 @@ tracklist_insert_track (
   /* move other tracks */
   for (int i = 0;
        i < self->num_tracks; i++)
-    track_set_pos (self->tracks[i], i);
+    {
+      track_set_pos (self->tracks[i], i);
+    }
 
   if (track->channel)
-    channel_connect (track->channel);
+    {
+      channel_connect (track->channel);
+    }
 
   if (recalc_graph)
-    mixer_recalc_graph (MIXER);
+    {
+      router_recalc_graph (ROUTER);
+    }
 
   if (publish_events)
-    EVENTS_PUSH (ET_TRACK_ADDED, track);
+    {
+      EVENTS_PUSH (ET_TRACK_ADDED, track);
+    }
 }
 
 ChordTrack *
@@ -582,10 +590,14 @@ tracklist_remove_track (
     }
 
   if (recalc_graph)
-    mixer_recalc_graph (MIXER);
+    {
+      router_recalc_graph (ROUTER);
+    }
 
   if (publish_events)
-    EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
+    {
+      EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
+    }
 }
 
 /**
@@ -691,10 +703,14 @@ tracklist_move_track (
     TRACKLIST_SELECTIONS, track);
 
   if (recalc_graph)
-    mixer_recalc_graph (MIXER);
+    {
+      router_recalc_graph (ROUTER);
+    }
 
   if (publish_events)
-    EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
+    {
+      EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
+    }
 
   g_message ("%s: finished moving track", __func__);
 }
@@ -773,4 +789,38 @@ tracklist_get_num_visible_tracks (
     }
 
   return ret;
+}
+
+Tracklist *
+tracklist_new (Project * project)
+{
+  Tracklist * self = object_new (Tracklist);
+
+  if (project)
+    {
+      project->tracklist = self;
+    }
+
+  return self;
+}
+
+void
+tracklist_free (
+  Tracklist * self)
+{
+  g_message ("%s: freeing...", __func__);
+
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+      track_disconnect (
+        track, F_REMOVE_PL,
+        F_NO_RECALC_GRAPH);
+      object_free_w_func_and_null (
+        track_free, self->tracks[i]);
+    }
+
+  object_zero_and_free (self);
+
+  g_message ("%s: done", __func__);
 }

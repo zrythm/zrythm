@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,32 +36,9 @@ G_DEFINE_TYPE (ControlRoomWidget,
 
 void
 control_room_widget_setup (
-  ControlRoomWidget * self)
-{
-  KnobWidget * knob =
-    knob_widget_new_simple (
-      fader_get_fader_val,
-      fader_set_fader_val,
-      MONITOR_FADER,
-      0.f, 1.f, 78, 0.f);
-  self->volume =
-    knob_with_name_widget_new (
-      _("Monitor out"),
-      knob);
-  gtk_container_add (
-    GTK_CONTAINER (self->main_knob_placeholder),
-    GTK_WIDGET (self->volume));
-}
-
-/**
- * Creates a ControlRoomWidget.
- */
-ControlRoomWidget *
-control_room_widget_new (
+  ControlRoomWidget * self,
   ControlRoom *       control_room)
 {
-  ControlRoomWidget * self =
-    g_object_new (CONTROL_ROOM_WIDGET_TYPE, NULL);
   self->control_room = control_room;
 
   self->listen_dim_slider =
@@ -82,6 +59,30 @@ control_room_widget_new (
     /*GTK_CONTAINER (*/
       /*self->listen_dim_slider_placeholder),*/
     /*GTK_WIDGET (self->listen_dim_slider));*/
+
+  KnobWidget * knob =
+    knob_widget_new_simple (
+      fader_get_fader_val,
+      fader_set_fader_val,
+      MONITOR_FADER,
+      0.f, 1.f, 78, 0.f);
+  self->volume =
+    knob_with_name_widget_new (
+      _("Monitor out"),
+      knob);
+  gtk_container_add (
+    GTK_CONTAINER (self->main_knob_placeholder),
+    GTK_WIDGET (self->volume));
+}
+
+/**
+ * Creates a ControlRoomWidget.
+ */
+ControlRoomWidget *
+control_room_widget_new (void)
+{
+  ControlRoomWidget * self =
+    g_object_new (CONTROL_ROOM_WIDGET_TYPE, NULL);
 
   return self;
 }

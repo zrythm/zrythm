@@ -27,7 +27,6 @@
 #include "actions/undo_manager.h"
 #include "audio/master_track.h"
 #include "audio/meter.h"
-#include "audio/mixer.h"
 #include "audio/track.h"
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -38,10 +37,10 @@
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/expander_box.h"
 #include "gui/widgets/meter.h"
+#include "gui/widgets/mixer.h"
 #include "gui/widgets/fader.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/plugin_strip_expander.h"
-#include "gui/widgets/mixer.h"
 #include "gui/widgets/route_target_selector.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
@@ -781,7 +780,7 @@ channel_widget_new (Channel * channel)
     self->inserts, PLUGIN_SLOT_INSERT,
     PSE_POSITION_CHANNEL, channel->track);
   fader_widget_setup (
-    self->fader, &channel->fader, 38, -1);
+    self->fader, channel->fader, 38, -1);
   setup_meter (self);
   setup_balance_control (self);
   setup_channel_icon (self);

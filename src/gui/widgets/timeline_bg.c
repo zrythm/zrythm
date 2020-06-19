@@ -28,7 +28,7 @@
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/transport.h"

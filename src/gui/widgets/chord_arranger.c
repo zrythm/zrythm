@@ -34,7 +34,6 @@
 #include "audio/marker_track.h"
 #include "audio/master_track.h"
 #include "audio/midi_region.h"
-#include "audio/mixer.h"
 #include "audio/scale_object.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"

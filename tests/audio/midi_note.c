@@ -34,7 +34,6 @@ static void
 fixture_set_up (
   MidiNoteFixture * fixture)
 {
-  transport_init (TRANSPORT, 0);
   engine_update_frames_per_tick (
     AUDIO_ENGINE, 4, 140, 44000);
 

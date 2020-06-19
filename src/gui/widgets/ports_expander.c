@@ -18,7 +18,6 @@
  */
 
 #include "audio/engine.h"
-#include "audio/mixer.h"
 #include "audio/port.h"
 #include "audio/track.h"
 #include "gui/widgets/editable_label.h"
@@ -434,9 +433,9 @@ ports_expander_widget_setup_track (
       switch (type)
         {
         case PE_TRACK_PORT_TYPE_CONTROLS:
-          ADD_SINGLE (tr->channel->fader.amp);
-          ADD_SINGLE (tr->channel->fader.balance);
-          ADD_SINGLE (tr->channel->fader.mute);
+          ADD_SINGLE (tr->channel->fader->amp);
+          ADD_SINGLE (tr->channel->fader->balance);
+          ADD_SINGLE (tr->channel->fader->mute);
           break;
         case PE_TRACK_PORT_TYPE_SENDS:
           if (out_type == TYPE_AUDIO)
@@ -446,16 +445,16 @@ ports_expander_widget_setup_track (
               ADD_SINGLE (
                 tr->channel->prefader.stereo_out->r);
               ADD_SINGLE (
-                tr->channel->fader.stereo_out->l);
+                tr->channel->fader->stereo_out->l);
               ADD_SINGLE (
-                tr->channel->fader.stereo_out->r);
+                tr->channel->fader->stereo_out->r);
             }
           else if (out_type == TYPE_EVENT)
             {
               ADD_SINGLE (
                 tr->channel->prefader.midi_out);
               ADD_SINGLE (
-                tr->channel->fader.midi_out);
+                tr->channel->fader->midi_out);
             }
           break;
           break;

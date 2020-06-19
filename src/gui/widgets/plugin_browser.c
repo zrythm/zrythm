@@ -19,7 +19,6 @@
 
 #include "actions/create_tracks_action.h"
 #include "audio/engine.h"
-#include "audio/mixer.h"
 #include "gui/widgets/expander_box.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/center_dock.h"

@@ -35,6 +35,7 @@
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/transport_controls.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "utils/ui.h"

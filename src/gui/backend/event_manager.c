@@ -79,6 +79,7 @@
 #include "gui/widgets/tracklist_header.h"
 #include "gui/widgets/visibility.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/gtk.h"
 #include "utils/mpmc_queue.h"
@@ -86,6 +87,7 @@
 #include "utils/objects.h"
 #include "utils/stack.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

@@ -29,6 +29,8 @@
 #include <stdlib.h>
 
 #include "audio/channel.h"
+#include "audio/router.h"
+#include "audio/track.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -37,10 +39,10 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/main_window.h"
-#include "audio/track.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 /**
  * Inits the ClipEditor after a Project is loaded.
@@ -95,7 +97,7 @@ clip_editor_set_region (
     }
 
   if (recalc_graph)
-    mixer_recalc_graph (MIXER);
+    router_recalc_graph (ROUTER);
 
   /* if first time showing a region, show the
    * event viewer as necessary */

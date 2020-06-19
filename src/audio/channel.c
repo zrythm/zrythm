@@ -34,7 +34,7 @@
 #include "audio/master_track.h"
 #include "audio/midi.h"
 #include "audio/midi_track.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/modulator.h"
 #include "audio/pan.h"
 #include "audio/rtmidi_device.h"
@@ -371,7 +371,7 @@ channel_prepare_process (Channel * self)
     &tr->processor);
   passthrough_processor_clear_buffers (
     &self->prefader);
-  fader_clear_buffers (&self->fader);
+  fader_clear_buffers (self->fader);
 
   if (out_type == TYPE_AUDIO)
     {
@@ -426,11 +426,11 @@ channel_init_loaded (Channel * ch)
 
   /* fader */
   ch->prefader.track_pos = track->pos;
-  ch->fader.track_pos = track->pos;
+  ch->fader->track_pos = track->pos;
 
   passthrough_processor_init_loaded (
     &ch->prefader);
-  fader_init_loaded (&ch->fader);
+  fader_init_loaded (ch->fader);
 
   PortType out_type =
     track->out_signal_type;
@@ -839,9 +839,9 @@ channel_add_balance_control (
   Channel * channel = (Channel *) _channel;
 
   port_set_control_value (
-    channel->fader.balance,
+    channel->fader->balance,
     CLAMP (
-      channel->fader.balance->control + pan,
+      channel->fader->balance->control + pan,
       0.f, 1.f),
     0, 0);
 }
@@ -853,7 +853,7 @@ channel_add_balance_control (
 void
 channel_reset_fader (Channel * self)
 {
-  fader_set_amp (&self->fader, 1.0f);
+  fader_set_amp (self->fader, 1.0f);
 }
 
 /**
@@ -894,15 +894,15 @@ channel_connect (
        * fader */
       port_connect (
         ch->prefader.stereo_out->l,
-        ch->fader.stereo_in->l, 1);
+        ch->fader->stereo_in->l, 1);
       port_connect (
         ch->prefader.stereo_out->r,
-        ch->fader.stereo_in->r, 1);
+        ch->fader->stereo_in->r, 1);
       port_connect (
-        ch->fader.stereo_out->l,
+        ch->fader->stereo_out->l,
         ch->stereo_out->l, 1);
       port_connect (
-        ch->fader.stereo_out->r,
+        ch->fader->stereo_out->r,
         ch->stereo_out->r, 1);
     }
   else if (tr->out_signal_type ==
@@ -910,9 +910,9 @@ channel_connect (
     {
       port_connect (
         ch->prefader.midi_out,
-        ch->fader.midi_in, 1);
+        ch->fader->midi_in, 1);
       port_connect (
-        ch->fader.midi_out,
+        ch->fader->midi_out,
         ch->midi_out, 1);
     }
 
@@ -1010,7 +1010,7 @@ channel_update_output (
   else
     ch->has_output = 0;
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph ((ROUTER));
 
   EVENTS_PUSH (ET_CHANNEL_OUTPUT_CHANGED, ch);
 }
@@ -1164,10 +1164,10 @@ channel_append_all_ports (
       _ADD (ch->stereo_out->r);
 
       /* add fader ports */
-      _ADD (ch->fader.stereo_in->l);
-      _ADD (ch->fader.stereo_in->r);
-      _ADD (ch->fader.stereo_out->l);
-      _ADD (ch->fader.stereo_out->r);
+      _ADD (ch->fader->stereo_in->l);
+      _ADD (ch->fader->stereo_in->r);
+      _ADD (ch->fader->stereo_out->l);
+      _ADD (ch->fader->stereo_out->r);
 
       /* add prefader ports */
       _ADD (ch->prefader.stereo_in->l);
@@ -1180,8 +1180,8 @@ channel_append_all_ports (
       _ADD (ch->midi_out);
 
       /* add fader ports */
-      _ADD (ch->fader.midi_in);
-      _ADD (ch->fader.midi_out);
+      _ADD (ch->fader->midi_in);
+      _ADD (ch->fader->midi_out);
 
       /* add prefader ports */
       _ADD (ch->prefader.midi_in);
@@ -1190,10 +1190,10 @@ channel_append_all_ports (
 
   /* add fader amp and balance control */
   g_return_if_fail (
-    ch->fader.amp && ch->fader.balance);
-  _ADD (ch->fader.amp);
-  _ADD (ch->fader.balance);
-  _ADD (ch->fader.mute);
+    ch->fader->amp && ch->fader->balance);
+  _ADD (ch->fader->amp);
+  _ADD (ch->fader->balance);
+  _ADD (ch->fader->mute);
 
   Plugin * pl;
   if (include_plugins)
@@ -1359,8 +1359,7 @@ channel_new (
     track_get_fader_type (track);
   PassthroughProcessorType prefader_type =
     track_get_passthrough_processor_type (track);
-  fader_init (
-    &self->fader, fader_type, self);
+  self->fader = fader_new (fader_type, self);
   passthrough_processor_init (
     &self->prefader, prefader_type, self);
   track_processor_init (&track->processor, track);
@@ -1379,7 +1378,7 @@ void
 channel_set_phase (void * _channel, float phase)
 {
   Channel * channel = (Channel *) _channel;
-  channel->fader.phase = phase;
+  channel->fader->phase = phase;
 
   /* FIXME use an event */
   /*if (channel->widget)*/
@@ -1391,7 +1390,7 @@ float
 channel_get_phase (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
-  return channel->fader.phase;
+  return channel->fader->phase;
 }
 
 void
@@ -1401,7 +1400,7 @@ channel_set_balance_control (
 {
   Channel * channel = (Channel *) _channel;
   port_set_control_value (
-    channel->fader.balance, pan, 0, 0);
+    channel->fader->balance, pan, 0, 0);
 }
 
 float
@@ -1411,7 +1410,7 @@ channel_get_balance_control (
   Channel * channel = (Channel *) _channel;
   return
     port_get_control_value (
-      channel->fader.balance, 0);
+      channel->fader->balance, 0);
 }
 
 #if 0
@@ -1706,7 +1705,7 @@ channel_remove_plugin (
     /*}*/
 
   if (recalc_graph)
-    mixer_recalc_graph (MIXER);
+    router_recalc_graph ((ROUTER));
 }
 
 /**
@@ -1913,7 +1912,7 @@ channel_add_plugin (
     }
 
   if (recalc_graph)
-    mixer_recalc_graph (MIXER);
+    router_recalc_graph ((ROUTER));
 
   return 1;
 }
@@ -1965,7 +1964,7 @@ channel_update_track_pos (
       send->track_pos = pos;
     }
 
-  fader_update_track_pos (&self->fader, pos);
+  fader_update_track_pos (self->fader, pos);
   passthrough_processor_update_track_pos (
     &self->prefader, pos);
 }
@@ -1993,7 +1992,7 @@ channel_reattach_midi_editor_manual_press_port (
       track->processor.midi_in);
 
   if (recalc_graph)
-    mixer_recalc_graph (MIXER);
+    router_recalc_graph ((ROUTER));
 }
 
 /**
@@ -2073,9 +2072,9 @@ channel_clone (
         F_NO_PUBLISH_EVENTS);
     }
 
-  clone->fader.track_pos = clone->track_pos;
+  clone->fader->track_pos = clone->track_pos;
   clone->prefader.track_pos = clone->track_pos;
-  fader_copy_values (&ch->fader, &clone->fader);
+  fader_copy_values (ch->fader, clone->fader);
 
   /* TODO clone port connections, same for
    * plugins */
@@ -2176,7 +2175,7 @@ channel_free (Channel * self)
   Track * track = channel_get_track (self);
 
   track_processor_free_members (&track->processor);
-  fader_free_members (&self->fader);
+  fader_free (self->fader);
 
   object_free_w_func_and_null (
     stereo_ports_free, self->stereo_out);

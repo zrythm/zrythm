@@ -19,7 +19,7 @@
 
 #include "audio/engine.h"
 #include "audio/engine_dummy.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/port.h"
 #include "audio/tempo_track.h"
 #include "project.h"
@@ -54,8 +54,7 @@ process_cb (gpointer data)
 
 int
 engine_dummy_setup (
-  AudioEngine * self,
-  int           loading)
+  AudioEngine * self)
 {
   /* Set audio engine properties */
   self->sample_rate   = 44100;
@@ -66,38 +65,6 @@ engine_dummy_setup (
   g_warn_if_fail (
     TRANSPORT && TRANSPORT->beats_per_bar > 1);
 
-  /* create ports */
-  Port * monitor_out_l, * monitor_out_r;
-
-  const char * monitor_out_l_str =
-    "Monitor out L";
-  const char * monitor_out_r_str =
-    "Monitor out R";
-
-  if (loading)
-    {
-    }
-  else
-    {
-      monitor_out_l = port_new_with_type (
-        TYPE_AUDIO,
-        FLOW_OUTPUT,
-        monitor_out_l_str);
-      monitor_out_r = port_new_with_type (
-        TYPE_AUDIO,
-        FLOW_OUTPUT,
-        monitor_out_r_str);
-
-      monitor_out_l->id.owner_type =
-        PORT_OWNER_TYPE_BACKEND;
-      monitor_out_r->id.owner_type =
-        PORT_OWNER_TYPE_BACKEND;
-
-      self->monitor_out =
-        stereo_ports_new_from_existing (
-          monitor_out_l, monitor_out_r);
-    }
-
   g_message ("Dummy Engine set up");
 
   return 0;
@@ -105,24 +72,9 @@ engine_dummy_setup (
 
 int
 engine_dummy_midi_setup (
-  AudioEngine * self,
-  int           loading)
+  AudioEngine * self)
 {
   self->midi_buf_size = 4096;
-
-  /*if (loading)*/
-    /*{*/
-    /*}*/
-  /*else*/
-    /*{*/
-      /*self->midi_in =*/
-        /*port_new_with_type (*/
-          /*TYPE_EVENT,*/
-          /*FLOW_INPUT,*/
-          /*"Dummy MIDI In");*/
-      /*self->midi_in->identifier.owner_type =*/
-        /*PORT_OWNER_TYPE_BACKEND;*/
-    /*}*/
 
   return 0;
 }

@@ -25,6 +25,7 @@
 #include "gui/backend/arranger_object.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 
 /**
  * Creates a ScaleObject.
@@ -34,8 +35,9 @@ scale_object_new (
   MusicalScale * descr,
   int               is_main)
 {
-  ScaleObject * self =
-    calloc (1, sizeof (ScaleObject));
+  ScaleObject * self = object_new (ScaleObject);
+
+  self->magic = SCALE_OBJECT_MAGIC;
 
   ArrangerObject * obj =
     (ArrangerObject *) self;

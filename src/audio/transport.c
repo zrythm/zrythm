@@ -40,50 +40,18 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/top_bar.h"
+#include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 
-/**
- * Initialize transport
- */
-void
-transport_init (
-  Transport * self,
-  int         loading)
+static void
+init_common (
+  Transport * self)
 {
-  g_message ("Initializing transport");
-
-  if (loading)
-    {
-      transport_set_beat_unit (
-        self, self->beat_unit);
-    }
-  else
-    {
-      // set inital total number of beats
-      // this is applied to the ruler
-      self->total_bars =
-        TRANSPORT_DEFAULT_TOTAL_BARS;
-
-      /* set BPM related defaults */
-      self->beats_per_bar =
-        TRANSPORT_DEFAULT_BEATS_PER_BAR;
-      transport_set_beat_unit (self, 4);
-
-      // set positions of playhead, start/end markers
-      position_set_to_bar (&self->playhead_pos, 1);
-      position_set_to_bar (&self->cue_pos, 1);
-      /*position_set_to_bar (*/
-        /*&self->start_marker_pos, 1);*/
-      /*position_set_to_bar (*/
-        /*&self->end_marker_pos, 128);*/
-      position_set_to_bar (&self->loop_start_pos, 1);
-      position_set_to_bar (&self->loop_end_pos, 5);
-    }
-
   /* set playstate */
   self->play_state = PLAYSTATE_PAUSED;
 
@@ -96,8 +64,58 @@ transport_init (
     g_settings_get_boolean (
       S_TRANSPORT, "metronome-enabled");
 
-
   zix_sem_init (&self->paused, 0);
+}
+
+void
+transport_init_loaded (
+  Transport * self)
+{
+  transport_set_beat_unit (
+    self, self->beat_unit);
+
+  init_common (self);
+}
+
+/**
+ * Create a new transport.
+ */
+Transport *
+transport_new (
+  AudioEngine * engine)
+{
+  g_message ("%s: Creating transport...", __func__);
+
+  Transport * self = object_new (Transport);
+
+  if (engine)
+    {
+      engine->transport = self;
+    }
+
+  // set inital total number of beats
+  // this is applied to the ruler
+  self->total_bars =
+    TRANSPORT_DEFAULT_TOTAL_BARS;
+
+  /* set BPM related defaults */
+  self->beats_per_bar =
+    TRANSPORT_DEFAULT_BEATS_PER_BAR;
+  transport_set_beat_unit (self, 4);
+
+  // set positions of playhead, start/end markers
+  position_set_to_bar (&self->playhead_pos, 1);
+  position_set_to_bar (&self->cue_pos, 1);
+  /*position_set_to_bar (*/
+    /*&self->start_marker_pos, 1);*/
+  /*position_set_to_bar (*/
+    /*&self->end_marker_pos, 128);*/
+  position_set_to_bar (&self->loop_start_pos, 1);
+  position_set_to_bar (&self->loop_end_pos, 5);
+
+  init_common (self);
+
+  return self;
 }
 
 /**
@@ -245,7 +263,7 @@ get_ebeat_unit (
 void
 transport_set_beat_unit (
   Transport * self,
-  int beat_unit)
+  int         beat_unit)
 {
   self->beat_unit = beat_unit;
   self->ebeat_unit = get_ebeat_unit (beat_unit);
@@ -259,7 +277,7 @@ transport_set_beat_unit (
    * with the ticks per note
    */
   self->ticks_per_beat =
-    3840.0 / (double) TRANSPORT->beat_unit;
+    3840.0 / (double) self->beat_unit;
   self->ticks_per_bar =
     (self->ticks_per_beat * self->beats_per_bar);
   self->sixteenths_per_beat = 16 / self->beat_unit;
@@ -673,4 +691,13 @@ transport_is_loop_point_met (
          g_start_frames);
     }
   return 0;
+}
+
+void
+transport_free (
+  Transport * self)
+{
+  zix_sem_destroy (&self->paused);
+
+  object_zero_and_free (self);
 }

@@ -117,7 +117,7 @@ object_pool_free (
       self->free_func (obj);
     }
 
-  object_free_zero_and_null (self->obj_available);
+  object_zero_and_free (self->obj_available);
   self->num_obj_available = 0;
   self->max_objects = 0;
   zix_sem_post (&self->access_sem);

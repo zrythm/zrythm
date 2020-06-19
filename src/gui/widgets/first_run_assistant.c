@@ -28,6 +28,7 @@
 #include "audio/engine_pa.h"
 #include "gui/widgets/first_run_assistant.h"
 #include "gui/widgets/midi_controller_mb.h"
+#include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"

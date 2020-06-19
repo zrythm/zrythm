@@ -30,7 +30,6 @@
 
 #include "audio/control_room.h"
 #include "audio/ext_port.h"
-#include "audio/mixer.h"
 #include "audio/pan.h"
 #include "audio/pool.h"
 #include "audio/sample_processor.h"
@@ -67,6 +66,9 @@ typedef struct Tracklist Tracklist;
 typedef struct ExtPort ExtPort;
 typedef struct MidiMappings MidiMappings;
 typedef struct WindowsMmeDevice WindowsMmeDevice;
+typedef struct Router Router;
+typedef struct Metronome Metronome;
+typedef struct Project Project;
 
 /**
  * @addtogroup audio Audio
@@ -81,13 +83,18 @@ typedef struct WindowsMmeDevice WindowsMmeDevice;
   AUDIO_ENGINE->midi_in->midi_events->num_events
 
 
-#define AUDIO_ENGINE (&PROJECT->audio_engine)
+#define AUDIO_ENGINE (PROJECT->audio_engine)
 #define MANUAL_PRESS_EVENTS \
   (AUDIO_ENGINE->midi_editor_manual_press-> \
   midi_events)
 
 #define DENORMAL_PREVENTION_VAL \
   (AUDIO_ENGINE->denormal_prevention_val)
+
+/** Set whether engine should process (true) or
+ * skip (false). */
+#define engine_set_run(engine,_run) \
+  g_atomic_int_set (&engine->run, _run)
 
 /**
  * Buffer sizes to be used in combo boxes.
@@ -290,8 +297,8 @@ typedef struct AudioEngine
   /** True iff buffer size callback fired. */
   int               buf_size_set;
 
-  /** The mixer. */
-  Mixer             mixer;
+  /** The processing graph router. */
+  Router *          router;
 
   /**
    * Audio intefrace outputs (only 2 are used).
@@ -326,7 +333,7 @@ typedef struct AudioEngine
   Port *            midi_clock_in;
 
   /** The ControlRoom. */
-  ControlRoom       control_room;
+  ControlRoom *     control_room;
 
   /** Audio file pool. */
   AudioPool *       pool;
@@ -454,7 +461,7 @@ typedef struct AudioEngine
   /**
    * Timeline metadata like BPM, time signature, etc.
    */
-  Transport         transport;
+  Transport *       transport;
 
   /* note: these 2 are ignored at the moment */
   /** Pan law. */
@@ -482,7 +489,7 @@ typedef struct AudioEngine
    * nodes. */
   nframes_t         remaining_latency_preroll;
 
-  SampleProcessor   sample_processor;
+  SampleProcessor * sample_processor;
 
   /** To be set to 1 when the CC from the Midi in
    * port should be captured. */
@@ -531,6 +538,15 @@ typedef struct AudioEngine
    */
   BounceMode        bounce_mode;
 
+  /** The metronome. */
+  Metronome *       metronome;
+
+  /** Whether the engine is already set up. */
+  bool              setup;
+
+  /** Whether the engine is currently activated. */
+  bool              activated;
+
 } AudioEngine;
 
 static const cyaml_schema_field_t
@@ -547,33 +563,27 @@ engine_fields_schema[] =
   CYAML_FIELD_FLOAT (
     "frames_per_tick", CYAML_FLAG_DEFAULT,
     AudioEngine, frames_per_tick),
-  CYAML_FIELD_MAPPING (
-    "mixer", CYAML_FLAG_DEFAULT,
-    AudioEngine, mixer,
-    mixer_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "monitor_out", CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR (
     AudioEngine, monitor_out,
     stereo_ports_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "midi_editor_manual_press", CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR (
     AudioEngine, midi_editor_manual_press,
     port_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "midi_in", CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR (
     AudioEngine, midi_in,
     port_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "transport", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_PTR (
     AudioEngine, transport,
     transport_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "control_room", CYAML_FLAG_DEFAULT,
-    AudioEngine, control_room,
-    control_room_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     AudioEngine, pool,
     audio_pool_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    AudioEngine, control_room,
+    control_room_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    AudioEngine, sample_processor,
+    sample_processor_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -591,22 +601,38 @@ engine_realloc_port_buffers (
   AudioEngine * self,
   nframes_t     buf_size);
 
-/**
- * Init audio engine.
- *
- * loading is 1 if loading a project.
- */
 void
-engine_init (AudioEngine * self,
-             int           loading);
+engine_init_loaded (
+  AudioEngine * self);
 
 /**
- * Activates the audio engine to start receiving
- * events.
+ * Create a new audio engine.
+ *
+ * This only initializes the engine and doe snot
+ * connect to the backend.
+ */
+AudioEngine *
+engine_new (
+  Project * project);
+
+/**
+ * Set up the audio engine, ie, connect to the
+ * backend but does not start processing yet.
+ */
+void
+engine_setup (
+  AudioEngine * self);
+
+/**
+ * Activates the audio engine to start processing
+ * and receiving events.
+ *
+ * @param activate Activate or deactivate.
  */
 void
 engine_activate (
-  AudioEngine * self);
+  AudioEngine * self,
+  bool          activate);
 
 /**
  * Updates frames per tick based on the time sig,
@@ -679,14 +705,10 @@ engine_samplerate_enum_to_int (
  * control room port, otherwise 0.
  */
 #define engine_is_port_own(self,port) \
-  (port == \
-    CONTROL_ROOM->monitor_fader.stereo_in->l || \
-  port == \
-    CONTROL_ROOM->monitor_fader.stereo_in->r || \
-  port == \
-    CONTROL_ROOM->monitor_fader.stereo_out->l || \
-  port == \
-    CONTROL_ROOM->monitor_fader.stereo_out->r)
+  (port == MONITOR_FADER->stereo_in->l || \
+  port == MONITOR_FADER->stereo_in->r || \
+  port == MONITOR_FADER->stereo_out->l || \
+  port == MONITOR_FADER->stereo_out->r)
 
 /**
  * Returns the audio backend as a string.
@@ -720,7 +742,7 @@ engine_reset_bounce_mode (
  * Closes any connections and free's data.
  */
 void
-engine_tear_down (
+engine_free (
   AudioEngine * self);
 
 /**

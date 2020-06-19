@@ -19,14 +19,17 @@
 
 #include "utils/cairo.h"
 #include "utils/dictionary.h"
+#include "utils/objects.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 void
-z_cairo_draw_selection (cairo_t * cr,
-                        double    start_x,
-                        double    start_y,
-                        double    offset_x,
-                        double    offset_y)
+z_cairo_draw_selection (
+  cairo_t * cr,
+  double    start_x,
+  double    start_y,
+  double    offset_x,
+  double    offset_y)
 {
   cairo_set_source_rgba (cr, 0.9, 0.9, 0.9, 1.0);
   cairo_rectangle (
@@ -270,10 +273,20 @@ z_cairo_reset_caches (
 CairoCaches *
 z_cairo_caches_new (void)
 {
-  CairoCaches * self =
-    calloc (1, sizeof (CairoCaches));
+  CairoCaches * self = object_new (CairoCaches);
+
   self->icon_surface_dict =
     dictionary_new ();
 
   return self;
+}
+
+void
+z_cairo_caches_free (
+  CairoCaches * self)
+{
+  object_free_w_func_and_null (
+    dictionary_free, self->icon_surface_dict);
+
+  object_zero_and_free (self);
 }

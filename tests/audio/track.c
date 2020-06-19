@@ -22,6 +22,8 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include "tests/helpers/project.h"
+
 #include <glib.h>
 #include <locale.h>
 
@@ -61,9 +63,7 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  ZRYTHM = calloc (1, sizeof (Zrythm));
-  PROJECT = calloc (1, sizeof (Project));
-  AUDIO_ENGINE->block_length = 256;
+  test_helper_zrythm_init ();
 
 #define TEST_PREFIX "/audio/track/"
 

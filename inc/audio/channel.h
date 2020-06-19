@@ -104,12 +104,12 @@ typedef struct Channel
    *
    * If all_midi_ins is enabled, these are ignored.
    */
-  ExtPort *         ext_midi_ins[EXT_PORTS_MAX];
-  int               num_ext_midi_ins;
+  ExtPort *        ext_midi_ins[EXT_PORTS_MAX];
+  int              num_ext_midi_ins;
 
   /** If 1, the channel will connect to all MIDI ins
    * found. */
-  int               all_midi_ins;
+  int              all_midi_ins;
 
   /**
    * External audio L inputs that are currently
@@ -123,12 +123,12 @@ typedef struct Channel
    * If all_stereo_l_ins is enabled, these are
    * ignored.
    */
-  ExtPort *         ext_stereo_l_ins[EXT_PORTS_MAX];
-  int               num_ext_stereo_l_ins;
+  ExtPort *        ext_stereo_l_ins[EXT_PORTS_MAX];
+  int              num_ext_stereo_l_ins;
 
   /** If 1, the channel will connect to all
    * stereo L ins found. */
-  int               all_stereo_l_ins;
+  int              all_stereo_l_ins;
 
   /**
    * External audio R inputs that are currently
@@ -142,12 +142,12 @@ typedef struct Channel
    * If all_stereo_r_ins is enabled, these are
    * ignored.
    */
-  ExtPort *         ext_stereo_r_ins[EXT_PORTS_MAX];
-  int               num_ext_stereo_r_ins;
+  ExtPort *        ext_stereo_r_ins[EXT_PORTS_MAX];
+  int              num_ext_stereo_r_ins;
 
   /** If 1, the channel will connect to all
    * stereo R ins found. */
-  int               all_stereo_r_ins;
+  int              all_stereo_r_ins;
 
   /**
    * 1 or 0 flags for each channel to enable it or
@@ -156,15 +156,15 @@ typedef struct Channel
    * If all_midi_channels is enabled, this is
    * ignored.
    */
-  int               midi_channels[16];
+  int              midi_channels[16];
 
   /** If 1, the channel will accept MIDI messages
    * from all MIDI channels.
    */
-  int               all_midi_channels;
+  int              all_midi_channels;
 
   /** The channel fader. */
-  Fader            fader;
+  Fader *          fader;
 
   /**
    * Prefader.
@@ -244,7 +244,7 @@ channel_fields_schema[] =
   YAML_FIELD_MAPPING_EMBEDDED (
     Channel, prefader,
     passthrough_processor_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Channel, fader, fader_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Channel, midi_out,
@@ -603,9 +603,9 @@ channel_disconnect (
 /**
  * Frees the channel.
  *
- * Channels should never be free'd by themselves
- * in normal circumstances. Use track_free to
- * free them.
+ * @note Channels should never be free'd by
+ * themselves in normal circumstances. Use
+ * track_free() to free them.
  */
 void
 channel_free (Channel * channel);

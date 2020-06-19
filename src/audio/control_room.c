@@ -18,47 +18,19 @@
  */
 
 #include "audio/control_room.h"
+#include "audio/fader.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/control_room.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "settings/settings.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 
-/**
- * Inits the ControlRoom.
- *
- * @param loading 1 if loading.
- */
-void
-control_room_init (
-  ControlRoom * self,
-  int           loading)
+static void
+init_common (
+  ControlRoom * self)
 {
-  /* Init main fader */
-  if (loading)
-    {
-      self->monitor_fader.stereo_in->
-        l->id.owner_type =
-        PORT_OWNER_TYPE_MONITOR_FADER;
-      self->monitor_fader.stereo_in->
-        r->id.owner_type =
-        PORT_OWNER_TYPE_MONITOR_FADER;
-      self->monitor_fader.stereo_out->
-        l->id.owner_type =
-        PORT_OWNER_TYPE_MONITOR_FADER;
-      self->monitor_fader.stereo_out->
-        r->id.owner_type =
-        PORT_OWNER_TYPE_MONITOR_FADER;
-    }
-  else
-    {
-      fader_init (
-        &self->monitor_fader,
-        FADER_TYPE_MONITOR,
-        NULL);
-    }
-
   /* set the monitor volume */
   float amp =
     ZRYTHM_TESTING ?
@@ -67,13 +39,40 @@ control_room_init (
       g_settings_get_double (
         S_UI, "monitor-out-vol");
   fader_set_amp (
-    &self->monitor_fader, amp);
+    self->monitor_fader, amp);
 
   /* init listen vol fader */
-  fader_init (&self->listen_vol_fader,
-              FADER_TYPE_GENERIC,
-              NULL);
-  fader_set_amp (&self->listen_vol_fader, 0.1f);
+  self->listen_vol_fader =
+    fader_new (
+      FADER_TYPE_GENERIC, NULL);
+  fader_set_amp (self->listen_vol_fader, 0.1f);
+}
+
+/**
+ * Inits the control room from a project.
+ */
+void
+control_room_init_loaded (
+  ControlRoom * self)
+{
+  init_common (self);
+}
+
+/**
+ * Creates a new control room.
+ */
+ControlRoom *
+control_room_new (void)
+{
+  ControlRoom * self = object_new (ControlRoom);
+
+  self->monitor_fader =
+    fader_new (
+      FADER_TYPE_MONITOR, NULL);
+
+  init_common (self);
+
+  return self;
 }
 
 /**
@@ -86,4 +85,16 @@ control_room_set_dim_output (
   int           dim_output)
 {
   self->dim_output = dim_output;
+}
+
+void
+control_room_free (
+  ControlRoom * self)
+{
+  object_free_w_func_and_null (
+    fader_free, self->monitor_fader);
+  object_free_w_func_and_null (
+    fader_free, self->listen_vol_fader);
+
+  object_zero_and_free (self);
 }

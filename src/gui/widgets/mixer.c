@@ -18,7 +18,6 @@
  */
 
 #include "audio/channel.h"
-#include "audio/mixer.h"
 #include "audio/track.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
@@ -37,9 +36,8 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (MixerWidget,
-               mixer_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  MixerWidget, mixer_widget, GTK_TYPE_BOX)
 
 void
 mixer_widget_soft_refresh (MixerWidget * self)

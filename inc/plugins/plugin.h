@@ -293,6 +293,20 @@ plugin_activate (
   bool     activate);
 
 /**
+ * Moves the plugin to the given slot in
+ * the given channel.
+ *
+ * If a plugin already exists, it deletes it and
+ * replaces it.
+ */
+void
+plugin_move (
+  Plugin *       pl,
+  Channel *      ch,
+  PluginSlotType slot_type,
+  int            slot);
+
+/**
  * Sets the channel and slot on the plugin and
  * its ports.
  */

@@ -19,7 +19,6 @@
 
 #include "audio/engine.h"
 #include "audio/ext_port.h"
-#include "audio/mixer.h"
 #include "audio/track.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/track_input_expander.h"

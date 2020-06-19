@@ -46,7 +46,7 @@ typedef struct ArrangerSelections
  * @{
  */
 
-#define MAIN_WINDOW ZRYTHM->main_window
+#define MAIN_WINDOW zrythm_app->main_window
 #define MW MAIN_WINDOW
 
 #define MAIN_WINDOW_LAST_FOCUSED_IS(x) \

@@ -25,6 +25,7 @@
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
+#include "settings/settings.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>

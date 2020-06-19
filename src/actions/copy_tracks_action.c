@@ -18,6 +18,7 @@
  */
 
 #include "actions/copy_tracks_action.h"
+#include "audio/router.h"
 #include "audio/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -73,7 +74,7 @@ copy_tracks_action_do (
         F_NO_PUBLISH_EVENTS);
     }
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph (ROUTER);
 
   EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                NULL);
@@ -105,7 +106,7 @@ copy_tracks_action_undo (
         F_NO_RECALC_GRAPH);
     }
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph (ROUTER);
 
   EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                NULL);

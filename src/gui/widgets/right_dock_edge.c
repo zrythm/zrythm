@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -77,7 +77,8 @@ right_dock_edge_widget_setup (
   /*g_signal_connect (*/
     /*G_OBJECT (revealer), "notify::position",*/
     /*G_CALLBACK (on_divider_pos_changed), revealer);*/
-  control_room_widget_setup (self->control_room);
+  control_room_widget_setup (
+    self->control_room, CONTROL_ROOM);
 }
 
 static void
@@ -142,8 +143,7 @@ right_dock_edge_widget_init (
     notebook, GTK_WIDGET (box), img);
 
   /* add control room */
-  self->control_room =
-    control_room_widget_new (CONTROL_ROOM);
+  self->control_room = control_room_widget_new ();
   img =
     gtk_image_new_from_icon_name (
       "audio-headphones",

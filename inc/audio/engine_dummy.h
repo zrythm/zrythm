@@ -27,8 +27,7 @@ typedef struct AudioEngine AudioEngine;
  */
 int
 engine_dummy_setup (
-  AudioEngine * self,
-  int           loading);
+  AudioEngine * self);
 
 int
 engine_dummy_process (
@@ -39,8 +38,7 @@ engine_dummy_process (
  */
 int
 engine_dummy_midi_setup (
-  AudioEngine * self,
-  int           loading);
+  AudioEngine * self);
 
 int
 engine_dummy_activate (

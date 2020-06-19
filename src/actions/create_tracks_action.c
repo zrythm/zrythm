@@ -22,13 +22,14 @@
 #include "audio/channel.h"
 #include "audio/midi_file.h"
 #include "audio/midi_region.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/supported_file.h"
 #include "audio/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/ui.h"
@@ -287,7 +288,7 @@ create_tracks_action_do (
 
   EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph ((ROUTER));
 
   return 0;
 }
@@ -315,7 +316,7 @@ create_tracks_action_undo (
 
   EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph ((ROUTER));
 
   return 0;
 }

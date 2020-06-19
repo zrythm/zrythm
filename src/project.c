@@ -38,7 +38,7 @@
 #include "audio/engine.h"
 #include "audio/marker_track.h"
 #include "audio/midi_note.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/tempo_track.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -54,6 +54,7 @@
 #include "gui/widgets/track.h"
 #include "plugins/carla_native_plugin.h"
 #include "plugins/lv2_plugin.h"
+#include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/datetime.h"
 #include "utils/general.h"
@@ -234,25 +235,18 @@ _project_compress (
  * Tears down the project.
  */
 void
-project_tear_down (Project * self)
+project_free (Project * self)
 {
   g_message ("%s: tearing down...", __func__);
 
   PROJECT->loaded = 0;
 
-  if (self->title)
-    g_free (self->title);
+  g_free_and_null (self->title);
 
-  engine_tear_down (&self->audio_engine);
-
-  Track * chord_track = self->tracklist.chord_track;
-  if (chord_track)
-    {
-      track_disconnect (
-        chord_track, F_REMOVE_PL,
-        F_NO_RECALC_GRAPH);
-      track_free (chord_track);
-    }
+  object_free_w_func_and_null (
+    tracklist_free, self->tracklist);
+  object_free_w_func_and_null (
+    engine_free, self->audio_engine);
 
   object_zero_and_free (self);
 
@@ -453,7 +447,23 @@ create_and_set_dir_and_title (
 void
 project_sanity_check (Project * self)
 {
-  /* TODO */
+  g_message ("%s: checking...", __func__);
+
+  int max_size = 20;
+  Port ** ports =
+    calloc ((size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
+  Port * port;
+  port_get_all (
+    &ports, &max_size, true, &num_ports);
+  for (int i = 0; i < num_ports; i++)
+    {
+      port = ports[i];
+      port_update_identifier (port);
+    }
+  free (ports);
+
+  g_message ("%s: done", __func__);
 }
 
 static void
@@ -530,23 +540,27 @@ project_init_selections (Project * self)
 static void
 create_default (Project * self)
 {
-  int loading_while_running = self->loaded;
-  if (loading_while_running)
-    {
-      project_tear_down (self);
-      PROJECT = calloc (1, sizeof (Project));
-      self = PROJECT;
+  g_message (
+    "%s: creating default project...", __func__);
 
-      if (ZRYTHM_HAVE_UI)
-        {
-          destroy_prev_main_window ();
-        }
+  if (self)
+    {
+      project_free (self);
     }
+  self = project_new (ZRYTHM);
+
+  int loading_while_running = self->loaded;
+  if (loading_while_running && ZRYTHM_HAVE_UI)
+    {
+      destroy_prev_main_window ();
+    }
+
+  self->tracklist = tracklist_new (self);
 
   /* initialize selections */
   project_init_selections (self);
 
-  engine_init (&self->audio_engine, 0);
+  self->audio_engine = engine_new (self);
   undo_manager_init (&self->undo_manager, 0);
 
   /* init midi mappings */
@@ -594,6 +608,8 @@ create_default (Project * self)
   tracklist_selections_add_track (
     TRACKLIST_SELECTIONS, track, 0);
   self->last_selection = SELECTION_TYPE_TRACK;
+
+  engine_setup (self->audio_engine);
 
   engine_update_frames_per_tick (
     AUDIO_ENGINE, TRANSPORT->beats_per_bar,
@@ -645,6 +661,8 @@ create_default (Project * self)
       header_widget_set_subtitle (
         MW_HEADER, PROJECT->title);
     }
+
+  g_message ("%s: done", __func__);
 }
 
 /**
@@ -661,6 +679,12 @@ load (
 {
   g_warn_if_fail (filename);
   char * dir = io_get_dir (filename);
+
+  if (!PROJECT)
+    {
+      /* create a temporary project struct */
+      PROJECT = project_new (ZRYTHM);
+    }
 
   set_dir (PROJECT, dir);
 
@@ -728,8 +752,8 @@ load (
   strcpy (
     project_file_path, project_file_path_alloc);
   g_message (
-    "loading project file %s",
-    project_file_path);
+    "%s: loading project file %s",
+    __func__, project_file_path);
   g_file_get_contents (
     project_file_path, &compressed_pj,
     &compressed_pj_size, &err);
@@ -746,7 +770,8 @@ load (
     }
 
   /* decompress */
-  g_message ("decompressing project...");
+  g_message (
+    "%s: decompressing project...", __func__);
   char * yaml = NULL;
   size_t yaml_size;
   char * error_msg =
@@ -820,16 +845,17 @@ load (
         g_strdup (ZRYTHM->create_project_path);
     }
 
-  int loading_while_running = PROJECT->loaded;
-  if (loading_while_running)
-    {
-      project_tear_down (PROJECT);
-      PROJECT = prj;
+  int loading_while_running =
+    PROJECT && PROJECT->loaded;
 
-      if (ZRYTHM_HAVE_UI)
-        {
-          destroy_prev_main_window ();
-        }
+  if (PROJECT)
+    {
+      project_free (PROJECT);
+    }
+
+  if (loading_while_running && ZRYTHM_HAVE_UI)
+    {
+      destroy_prev_main_window ();
     }
 
   g_message ("initing loaded structures");
@@ -839,27 +865,28 @@ load (
   set_dir (prj, dir);
 
   /* set the tempo track */
-  for (int i = 0; i < prj->tracklist.num_tracks;
-       i++)
+  Tracklist * tracklist = prj->tracklist;
+  for (int i = 0; i < tracklist->num_tracks; i++)
     {
-      Track * track = prj->tracklist.tracks[i];
+      Track * track = tracklist->tracks[i];
 
       if (track->type == TRACK_TYPE_TEMPO)
         {
-          prj->tracklist.tempo_track = track;
+          tracklist->tempo_track = track;
           break;
         }
     }
 
-  undo_manager_init (&PROJECT->undo_manager, true);
-  engine_init (AUDIO_ENGINE, true);
-
   char * filepath_noext = g_path_get_basename (dir);
+  g_free (dir);
+
   PROJECT->title = filepath_noext;
 
-  g_free (dir);
+  undo_manager_init (&PROJECT->undo_manager, true);
+  engine_init_loaded (PROJECT->audio_engine);
+
   clip_editor_init_loaded (CLIP_EDITOR);
-  tracklist_init_loaded (&PROJECT->tracklist);
+  tracklist_init_loaded (PROJECT->tracklist);
 
   engine_update_frames_per_tick (
     AUDIO_ENGINE, TRANSPORT->beats_per_bar,
@@ -918,11 +945,13 @@ load (
   /* sanity check */
   project_sanity_check (PROJECT);
 
-  PROJECT->loaded = 1;
+  engine_setup (PROJECT->audio_engine);
+
+  PROJECT->loaded = true;
   g_message ("project loaded");
 
   /* recalculate the routing graph */
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph ((ROUTER));
 
   refresh_main_window (loading_while_running);
 
@@ -977,8 +1006,8 @@ project_load (
             return -1;
 
           g_message (
-            "creating project %s",
-            ZRYTHM->create_project_path);
+            "%s: creating project %s",
+            __func__, ZRYTHM->create_project_path);
           create_default (PROJECT);
         }
     }
@@ -987,7 +1016,7 @@ project_load (
       create_default (PROJECT);
     }
 
-  engine_activate (AUDIO_ENGINE);
+  engine_activate (AUDIO_ENGINE, true);
 
   /* connect channel inputs to hardware. has to
    * be done after engine activation */
@@ -1171,6 +1200,27 @@ project_get_project_file_path (
         self->dir,
         PROJECT_FILE,
         NULL);
+}
+
+/**
+ * Creates an empty project object.
+ */
+Project *
+project_new (
+  Zrythm * _zrythm)
+{
+  g_message ("%s: Creating...", __func__);
+
+  Project * self = object_new (Project);
+
+  if (_zrythm)
+    {
+      _zrythm->project = self;
+    }
+
+  g_message ("%s: done", __func__);
+
+  return self;
 }
 
 /**

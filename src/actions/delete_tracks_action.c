@@ -18,7 +18,7 @@
  */
 
 #include "actions/delete_tracks_action.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -71,7 +71,7 @@ delete_tracks_action_do (
   EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
   EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED, NULL);
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph ((ROUTER));
 
   return 0;
 }
@@ -102,7 +102,7 @@ delete_tracks_action_undo (
   EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
 
   /* recalculate graph */
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph ((ROUTER));
 
   return 0;
 }

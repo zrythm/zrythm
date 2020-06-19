@@ -25,6 +25,7 @@
 #include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/timeline_panel.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 

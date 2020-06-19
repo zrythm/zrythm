@@ -41,16 +41,15 @@
  * Routing graph.
  */
 
-#ifndef __AUDIO_ROUTING_H__
-#define __AUDIO_ROUTING_H__
+#ifndef __AUDIO_GRAPH_H__
+#define __AUDIO_GRAPH_H__
 
 #include <pthread.h>
 
+#include "audio/graph_node.h"
 #include "utils/types.h"
 
 #include "zix/sem.h"
-
-#include <gtk/gtk.h>
 
 typedef struct GraphNode GraphNode;
 typedef struct Graph Graph;
@@ -63,19 +62,14 @@ typedef struct Track Track;
 typedef struct SampleProcessor SampleProcessor;
 typedef struct Plugin Plugin;
 typedef struct Position Position;
-
-#ifdef HAVE_JACK
-#include <jack/jack.h>
-#include <jack/thread.h>
-#endif
+typedef struct GraphThread GraphThread;
+typedef struct Router Router;
 
 /**
  * @addtogroup audio
  *
  * @{
  */
-
-#define ROUTER (&MIXER->router)
 
 #define mpmc_queue_push_back_node(q,x) \
   mpmc_queue_push_back (q, (void *) x)
@@ -84,116 +78,6 @@ typedef struct Position Position;
   mpmc_queue_dequeue (q, (void *) x)
 
 #define MAX_GRAPH_THREADS 128
-
-/**
- * Graph nodes can be either ports or processors.
- *
- * Processors can be plugins, faders, etc.
- */
-typedef enum GraphNodeType
-{
-  /** Port. */
-  ROUTE_NODE_TYPE_PORT,
-  /** Plugin processor. */
-  ROUTE_NODE_TYPE_PLUGIN,
-  /** Track processor. */
-  ROUTE_NODE_TYPE_TRACK,
-  /** Fader/pan processor. */
-  ROUTE_NODE_TYPE_FADER,
-  /** Fader/pan processor for monitor. */
-  ROUTE_NODE_TYPE_MONITOR_FADER,
-  /** Pre-Fader passthrough processor. */
-  ROUTE_NODE_TYPE_PREFADER,
-  /** Sample processor. */
-  ROUTE_NODE_TYPE_SAMPLE_PROCESSOR,
-
-  /**
-   * Initial processor.
-   *
-   * The initial processor is a dummy processor
-   * in the chain processed before anything else.
-   */
-  ROUTE_NODE_TYPE_INITIAL_PROCESSOR,
-} GraphNodeType;
-
-/**
- * A node in the processing graph.
- */
-typedef struct GraphNode
-{
-  int           id;
-  /** Ref back to the graph so we don't have to
-   * pass it around. */
-  Graph *      graph;
-
-  /** outgoing edges
-   * downstream nodes to activate when this node
-   * has completed processed
-   */
-  GraphNode **  childnodes;
-  int           n_childnodes;
-
-  /** Incoming node count. */
-  volatile gint refcount;
-
-  /** Initial incoming node count. */
-  gint          init_refcount;
-
-  /** Used when creating the graph so we can
-   * traverse it backwards to set the latencies. */
-  GraphNode **  parentnodes;
-
-  /** Port, if not a plugin or fader. */
-  Port *        port;
-
-  /** Plugin, if plugin. */
-  Plugin *      pl;
-
-  /** Fader, if fader. */
-  Fader *       fader;
-
-  Track *       track;
-
-  /** Pre-Fader, if prefader node. */
-  PassthroughProcessor * prefader;
-
-  /** Sample processor, if sample processor. */
-  SampleProcessor * sample_processor;
-
-  /** For debugging. */
-  bool          terminal;
-  bool          initial;
-
-  /** The playback latency of the node, in
-   * samples. */
-  nframes_t     playback_latency;
-
-  /** The route's playback latency. */
-  nframes_t     route_playback_latency;
-
-  GraphNodeType type;
-} GraphNode;
-
-typedef struct Router Router;
-
-typedef struct GraphThread
-{
-#ifdef HAVE_JACK
-  jack_native_thread_t jthread;
-#endif
-  pthread_t            pthread;
-
-  /**
-   * Thread index in zrythm.
-   *
-   * The main thread will be -1 and the rest in
-   * sequence starting from 0.
-   */
-  int                  id;
-
-  /** Pointer back to the graph. */
-  Graph *              graph;
-} GraphThread;
 
 /**
  * Graph.
@@ -263,68 +147,11 @@ typedef struct Graph
 
   /* ------------------------------------ */
 
-  GraphThread          threads[MAX_GRAPH_THREADS];
-  GraphThread          main_thread;
+  GraphThread *        threads[MAX_GRAPH_THREADS];
+  GraphThread *        main_thread;
   gint                 num_threads;
 
 } Graph;
-
-typedef struct Router
-{
-  Graph * graph;
-
-  /** Number of samples to process in this cycle. */
-  nframes_t   nsamples;
-
-  /** Stored for the currently processing cycle */
-  nframes_t   max_playback_latency;
-
-  /** Current global latency offset (max latency
-   * of all routes - remaining latency from
-   * engine). */
-  nframes_t   global_offset;
-
-  /** Offset in the current cycle. */
-  nframes_t   local_offset;
-
-  /** Used when recalculating the graph. */
-  ZixSem      graph_access;
-
-} Router;
-
-void
-router_init (
-  Router * router);
-
-/**
- * Starts a new cycle.
- *
- * @param local_offset The local offset to start
- *   playing from in this cycle:
- *   (0 - <engine buffer size>)
- */
-void
-router_start_cycle (
-  Router *         self,
-  const nframes_t  nsamples,
-  const nframes_t  local_offset,
-  const Position * pos);
-
-/**
- * Returns the max playback latency of the trigger
- * nodes.
- */
-nframes_t
-router_get_max_playback_latency (
-  Router * router);
-
-/**
- * Returns if the current thread is a
- * processing thread.
- */
-int
-router_is_processing_thread (
-  Router * router);
 
 void
 graph_print (
@@ -333,15 +160,6 @@ graph_print (
 void
 graph_destroy (
   Graph * graph);
-
-/**
- * Returns a human friendly name of the node.
- *
- * Must be free'd.
- */
-char *
-graph_get_node_name (
-  GraphNode * node);
 
 GraphNode *
 graph_find_node_from_port (
@@ -378,6 +196,40 @@ graph_find_node_from_monitor_fader (
   Graph * graph,
   Fader * fader);
 
+GraphNode *
+graph_find_initial_processor_node (
+  Graph * graph);
+
+/**
+ * Creates a new node, adds it to the graph and
+ * returns it.
+ */
+GraphNode *
+graph_create_node (
+  Graph * graph,
+  GraphNodeType type,
+  void * data);
+
+/**
+ * Returns the max playback latency of the trigger
+ * nodes.
+ */
+nframes_t
+graph_get_max_playback_latency (
+  Graph * graph);
+
+/* called from a terminal node (from the Graph
+ * worked-thread) to indicate it has completed
+ * processing.
+ *
+ * The thread of the last terminal node that
+ * reaches here will inform the main-thread, wait,
+ * and kick off the next process cycle.
+ */
+void
+graph_on_reached_terminal_node (
+  Graph *  self);
+
 /*
  * Adds the graph nodes and connections, then
  * rechains.
@@ -397,11 +249,15 @@ graph_setup (
  * Adds a new connection for the given
  * src and dest ports and validates the graph.
  *
- * @return 1 for ok, 0 for invalid.
+ * @note The graph should be created before this call
+ *   with graph_new() and free'd after this call with
+ *   graph_free().
+ *
+ * @return True if ok, false if invalid.
  */
-int
-graph_validate (
-  Router *     router,
+bool
+graph_validate_with_connection (
+  Graph *      self,
   const Port * src,
   const Port * dest);
 
@@ -422,15 +278,18 @@ graph_new (
   Router * router);
 
 /**
+ * Tell all threads to terminate.
+ */
+void
+graph_terminate (
+  Graph * self);
+
+/**
  * Frees the graph and its members.
  */
 void
 graph_free (
   Graph * self);
-
-void
-router_tear_down (
-  Router * self);
 
 /**
  * @}

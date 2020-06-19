@@ -52,8 +52,7 @@ engine_rtmidi_rescan_ports (
  */
 int
 engine_rtmidi_setup (
-  AudioEngine * self,
-  int           loading);
+  AudioEngine * self);
 
 /**
  * Gets the number of input ports (devices).

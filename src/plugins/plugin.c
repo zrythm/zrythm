@@ -48,10 +48,13 @@
 #include "plugins/lv2/lv2_gtk.h"
 #include "plugins/lv2/lv2_state.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/dialogs.h"
 #include "utils/io.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -468,6 +471,73 @@ plugin_remove_ats_from_automation_tracklist (
             }
         }
     }
+}
+
+/**
+ * Moves the plugin to the given slot in
+ * the given channel.
+ *
+ * If a plugin already exists, it deletes it and
+ * replaces it.
+ */
+void
+plugin_move (
+  Plugin *       pl,
+  Channel *      ch,
+  PluginSlotType slot_type,
+  int            slot)
+{
+  g_return_if_fail (pl && ch);
+
+  /* confirm if another plugin exists */
+  Plugin * existing_pl = NULL;
+  switch (slot_type)
+    {
+    case PLUGIN_SLOT_MIDI_FX:
+      existing_pl = ch->midi_fx[slot];
+      break;
+    case PLUGIN_SLOT_INSTRUMENT:
+      existing_pl = ch->instrument;
+      break;
+    case PLUGIN_SLOT_INSERT:
+      existing_pl = ch->inserts[slot];
+      break;
+    }
+  if (existing_pl)
+    {
+      GtkDialog * dialog =
+        dialogs_get_overwrite_plugin_dialog (
+          GTK_WINDOW (MAIN_WINDOW));
+      int result =
+        gtk_dialog_run (dialog);
+      gtk_widget_destroy (GTK_WIDGET (dialog));
+
+      /* do nothing if not accepted */
+      if (result != GTK_RESPONSE_ACCEPT)
+        return;
+    }
+
+  int prev_slot = pl->id.slot;
+  PluginSlotType prev_slot_type =
+    pl->id.slot_type;
+  Channel * prev_ch = plugin_get_channel (pl);
+
+  /* move plugin's automation from src to dest */
+  plugin_move_automation (
+    pl, prev_ch, ch, slot_type, slot);
+
+  /* remove plugin from its channel */
+  channel_remove_plugin (
+    prev_ch, prev_slot_type, prev_slot,
+    0, 0, F_NO_RECALC_GRAPH);
+
+  /* add plugin to its new channel */
+  channel_add_plugin (
+    ch, slot_type, slot, pl, 0, 0, F_RECALC_GRAPH,
+    F_PUBLISH_EVENTS);
+
+  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, prev_ch);
+  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
 }
 
 /**
@@ -1883,29 +1953,37 @@ done2:
 }
 
 /**
- * To be called immediately when a channel or plugin
- * is deleted.
+ * To be called immediately when a channel or
+ * plugin is deleted.
  *
  * A call to plugin_free can be made at any point
  * later just to free the resources.
  */
 void
-plugin_disconnect (Plugin * plugin)
+plugin_disconnect (
+  Plugin * self)
 {
-  plugin->deleting = 1;
+  self->deleting = 1;
 
   /* disconnect all ports */
   ports_disconnect (
-    plugin->in_ports,
-    plugin->num_in_ports, 1);
+    self->in_ports,
+    self->num_in_ports, 1);
   ports_disconnect (
-    plugin->out_ports,
-    plugin->num_out_ports, 1);
+    self->out_ports,
+    self->num_out_ports, 1);
   g_message (
-    "DISCONNECTED ALL PORTS OF %p PLUGIN %d %d",
-    plugin,
-    plugin->num_in_ports,
-    plugin->num_out_ports);
+    "%s: DISCONNECTED ALL PORTS OF %s %d %d",
+    __func__, self->descr->name,
+    self->num_in_ports,
+    self->num_out_ports);
+
+#ifdef HAVE_CARLA
+  if (self->descr->open_with_carla)
+    {
+      carla_native_plugin_close (self->carla);
+    }
+#endif
 }
 
 /**

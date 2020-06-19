@@ -26,7 +26,7 @@
 #include "audio/engine_rtmidi.h"
 #include "audio/ext_port.h"
 #include "audio/midi.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/port.h"
 #include "audio/routing.h"
 #include "audio/rtmidi_device.h"
@@ -49,8 +49,7 @@
  */
 int
 engine_rtmidi_setup (
-  AudioEngine * self,
-  int           loading)
+  AudioEngine * self)
 {
   self->midi_buf_size = 4096;
 

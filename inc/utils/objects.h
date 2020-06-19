@@ -56,18 +56,8 @@
  *
  * @param ptr A pointer to a pointer to be free'd.
  */
-#define object_free_zero_and_null(ptr) \
-  { object_set_to_zero (ptr); \
-    free (ptr); ptr = NULL; }
-
-/**
- * Frees memory, sets the pointer to NULL and
- * zero's out the struct.
- *
- * @param ptr A pointer to a pointer to be free'd.
- */
 #define g_object_unref_and_null(ptr) \
-  { g_object_unref (ptr); ptr = NULL; }
+  if (ptr) { g_object_unref (ptr); ptr = NULL; }
 
 /**
  * Frees memory and sets the pointer to NULL.

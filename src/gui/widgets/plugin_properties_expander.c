@@ -18,7 +18,6 @@
  */
 
 #include "audio/engine.h"
-#include "audio/mixer.h"
 #include "audio/port.h"
 #include "audio/track.h"
 #include "gui/widgets/editable_label.h"

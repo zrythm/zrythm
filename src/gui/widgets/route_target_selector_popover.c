@@ -19,7 +19,6 @@
 
 #include "audio/channel.h"
 #include "audio/engine.h"
-#include "audio/mixer.h"
 #include "audio/track.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/route_target_selector.h"

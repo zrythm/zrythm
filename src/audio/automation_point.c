@@ -40,6 +40,7 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "zrythm_app.h"

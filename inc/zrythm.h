@@ -20,33 +20,24 @@
 /**
  * \file
  *
- * The Zrythm GTK application.
+ * The main Zrythm struct.
  */
 
 #ifndef __ZRYTHM_H__
 #define __ZRYTHM_H__
 
-#include "audio/metronome.h"
-#include "audio/snap_grid.h"
-#include "gui/backend/file_manager.h"
-#include "settings/settings.h"
-#include "utils/log.h"
-
 #include "zix/sem.h"
 
-#include <gtk/gtk.h>
-
-typedef struct _MainWindowWidget MainWindowWidget;
 typedef struct Project Project;
 typedef struct Symap Symap;
-typedef struct CairoCaches CairoCaches;
-typedef struct UiCaches UiCaches;
-typedef struct MPMCQueue MPMCQueue;
-typedef struct ObjectPool ObjectPool;
 typedef struct RecordingManager RecordingManager;
 typedef struct EventManager EventManager;
 typedef struct ObjectUtils ObjectUtils;
 typedef struct PluginManager PluginManager;
+typedef struct FileManager FileManager;
+typedef struct Settings Settings;
+typedef struct Log Log;
+typedef struct CairoCaches CairoCaches;
 
 /**
  * @addtogroup general
@@ -126,8 +117,8 @@ typedef enum ZrythmDirType
 /**
  * To be used throughout the program.
  *
- * Everything here should be global and function regardless
- * of the project.
+ * Everything here should be global and function
+ * regardless of the project.
  */
 typedef struct Zrythm
 {
@@ -136,13 +127,10 @@ typedef struct Zrythm
    */
   PluginManager *     plugin_manager;
 
-  /** Main window. */
-  MainWindowWidget *  main_window;
-
   /**
    * Application settings
    */
-  Settings            settings;
+  Settings *          settings;
 
   /**
    * Project data.
@@ -164,9 +152,6 @@ typedef struct Zrythm
   /** NULL terminated array of project template
    * absolute paths. */
   char **             templates;
-
-  /** The metronome. */
-  Metronome           metronome;
 
   /** Whether the open file is a template to be used
    * to create a new project from. */
@@ -195,16 +180,12 @@ typedef struct Zrythm
   RecordingManager *  recording_manager;
 
   /** File manager. */
-  FileManager         file_manager;
+  FileManager *       file_manager;
 
   /**
    * String interner for internal things.
    */
   Symap *             symap;
-
-  CairoCaches *       cairo_caches;
-
-  UiCaches *          ui_caches;
 
   /** Object utils. */
   ObjectUtils *       object_utils;
@@ -221,30 +202,8 @@ typedef struct Zrythm
    */
   bool                testing;
 
-  /** Initialization thread. */
-  GThread *           init_thread;
-
-  /**
-   * The GTK thread where the main GUI loop runs.
-   *
-   * This is stored for identification purposes
-   * in other threads.
-   */
-  GThread *           gtk_thread;
-
-  /** Status text to be used in the splash screen. */
-  char                status[800];
-
-  /** Semaphore for setting the progress in the
-   * splash screen from a non-gtk thread. */
-  ZixSem              progress_status_lock;
-
-  /** Log settings FIXME allocate. */
-  Log                 log;
-
-  /** Flag to set when initialization has
-   * finished. */
-  bool                init_finished;
+  /** Log settings. */
+  Log *               log;
 
   /**
    * Progress done (0.0 ~ 1.0).
@@ -257,6 +216,8 @@ typedef struct Zrythm
   /** 1 if Zrythm has a UI, 0 if headless (eg, when
    * unit-testing). */
   bool                have_ui;
+
+  CairoCaches *       cairo_caches;
 } Zrythm;
 
 /**
@@ -309,19 +270,6 @@ zrythm_get_default_user_dir (void);
 char *
 zrythm_get_dir (
   ZrythmDirType type);
-
-/**
- * Sets the current status and progress percentage
- * during loading.
- *
- * The splash screen then reads these values from
- * the Zrythm struct.
- */
-void
-zrythm_set_progress_status (
-  Zrythm *     self,
-  const char * text,
-  const double perc);
 
 /**
  * Returns the prefix or in the case of windows

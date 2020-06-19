@@ -20,6 +20,7 @@
 #include "gui/widgets/log_viewer.h"
 #include "project.h"
 #include "utils/io.h"
+#include "utils/log.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"

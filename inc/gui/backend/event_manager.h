@@ -80,7 +80,7 @@ typedef struct EventManager
  */
 #define EVENTS_PUSH(et,_arg) \
   if (EVENT_MANAGER && EVENT_QUEUE && \
-      (!AUDIO_ENGINE || \
+      (!PROJECT || !AUDIO_ENGINE || \
        !AUDIO_ENGINE->exporting)) \
     { \
       ZEvent * _ev = \

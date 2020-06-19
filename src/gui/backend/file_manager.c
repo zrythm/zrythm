@@ -23,30 +23,34 @@
 #include "audio/supported_file.h"
 #include "gui/backend/file_manager.h"
 #include "utils/io.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 
 #include "gtk/gtk.h"
 
 /**
- * Sets default values.
+ * Creates the file manager.
  */
-void
-file_manager_init (FileManager * self)
+FileManager *
+file_manager_new (void)
 {
+  FileManager * self = object_new (FileManager);
+
   self->num_files = 0;
   self->num_collections = 0;
 
-  FileBrowserLocation * fl;
-
   /* add locations */
-  fl = calloc (1, sizeof (FileBrowserLocation));
+  FileBrowserLocation * fl =
+    object_new (FileBrowserLocation);
   fl->label = g_strdup ("Home");
   fl->path = g_strdup (g_get_home_dir ());
   self->locations[0] = fl;
   self->num_locations = 1;
 
   file_manager_set_selection (
-    fl, FB_SELECTION_TYPE_LOCATIONS, 0);
+    self, fl, FB_SELECTION_TYPE_LOCATIONS, 0);
+
+  return self;
 }
 
 static int
@@ -166,4 +170,31 @@ file_manager_load_files (FileManager * self)
     {
       self->num_files = 0;
     }
+}
+
+void
+file_manager_set_selection (
+  FileManager *            self,
+  void *                   sel,
+  FileBrowserSelectionType sel_type,
+  bool                     load_files)
+{
+  self->selection = sel;
+  self->selection_type = sel_type;
+  if (load_files)
+    {
+      file_manager_load_files (self);
+    }
+}
+
+/**
+ * Frees the file manager.
+ */
+void
+file_manager_free (
+  FileManager * self)
+{
+  /* TODO */
+
+  object_zero_and_free (self);
 }

@@ -39,8 +39,7 @@ typedef struct AudioEngine AudioEngine;
  */
 int
 engine_rtaudio_setup (
-  AudioEngine * self,
-  int           loading);
+  AudioEngine * self);
 
 void
 engine_rtaudio_activate (

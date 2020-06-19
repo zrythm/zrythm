@@ -36,10 +36,12 @@
 #include "gui/widgets/main_window.h"
 #include "guile/guile.h"
 #include "utils/gtk.h"
+#include "utils/log.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 

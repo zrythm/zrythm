@@ -20,14 +20,17 @@
 #ifndef __GUI_BACKEND_FILE_MANAGER_H__
 #define __GUI_BACKEND_FILE_MANAGER_H__
 
+#include <stdbool.h>
+
 typedef struct SupportedFile SupportedFile;
 
-#define FILE_MANAGER (&ZRYTHM->file_manager)
-#define file_manager_set_selection(sel, sel_type, load_files) \
-  FILE_MANAGER->selection = (void *) sel; \
-  FILE_MANAGER->selection_type = sel_type; \
-  if (load_files) \
-    file_manager_load_files (FILE_MANAGER);
+/**
+ * @addtogroup gui_backend
+ *
+ * @{
+ */
+
+#define FILE_MANAGER (ZRYTHM->file_manager)
 
 /**
  * Locations to be used in the file browser.
@@ -90,15 +93,33 @@ typedef struct FileManager
 } FileManager;
 
 /**
- * Sets default values.
+ * Creates the file manager.
  */
-void
-file_manager_init (FileManager * self);
+FileManager *
+file_manager_new (void);
 
 /**
  * Loads the files under the current selection.
  */
 void
 file_manager_load_files (FileManager * self);
+
+void
+file_manager_set_selection (
+  FileManager *            self,
+  void *                   sel,
+  FileBrowserSelectionType sel_type,
+  bool                     load_files);
+
+/**
+ * Frees the file manager.
+ */
+void
+file_manager_free (
+  FileManager * self);
+
+/**
+ * @}
+ */
 
 #endif

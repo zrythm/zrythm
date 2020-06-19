@@ -32,6 +32,7 @@
 #include "gui/widgets/track_properties_expander.h"
 #include "gui/widgets/text_expander.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"

@@ -22,23 +22,34 @@
 #include "audio/port.h"
 #include "audio/sample_processor.h"
 #include "project.h"
+#include "utils/objects.h"
 
 #include <glib/gi18n.h>
+
+void
+sample_processor_init_loaded (
+  SampleProcessor * self)
+{
+}
 
 /**
  * Initializes a SamplePlayback with a sample to
  * play back.
  */
-void
-sample_processor_init (
-  SampleProcessor * self)
+SampleProcessor *
+sample_processor_new (void)
 {
+  SampleProcessor * self =
+    object_new (SampleProcessor);
+
   self->stereo_out =
     stereo_ports_new_generic (
       0, _("Sample Processor"),
       PORT_OWNER_TYPE_SAMPLE_PROCESSOR, self);
   g_warn_if_fail (
     self->stereo_out->l && self->stereo_out->r);
+
+  return self;
 }
 
 /**
@@ -268,4 +279,23 @@ sample_processor_queue_sample_from_file (
   const char *      path)
 {
   /* TODO */
+}
+
+void
+sample_processor_disconnect (
+  SampleProcessor * self)
+{
+  stereo_ports_disconnect (self->stereo_out);
+}
+
+void
+sample_processor_free (
+  SampleProcessor * self)
+{
+  sample_processor_disconnect (self);
+
+  object_free_w_func_and_null (
+    stereo_ports_free, self->stereo_out);
+
+  object_zero_and_free (self);
 }

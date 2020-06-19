@@ -105,6 +105,10 @@ audio_pool_add_clip (
   AudioPool * self,
   AudioClip * clip);
 
+void
+audio_pool_free (
+  AudioPool * self);
+
 /**
  * @}
  */

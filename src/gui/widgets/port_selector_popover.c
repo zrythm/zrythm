@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/mixer.h"
 #include "audio/port.h"
+#include "audio/router.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/widgets/main_window.h"
@@ -72,7 +72,7 @@ on_ok_clicked (
     {
       port_connect (
         src, dest, 0);
-      mixer_recalc_graph (MIXER);
+      router_recalc_graph (ROUTER);
 
       gtk_widget_destroy (GTK_WIDGET (self->owner));
       /*port_connections_popover_widget_refresh (*/
@@ -152,9 +152,9 @@ create_model_for_ports (
               ADD_ROW;
               port = ch->prefader.stereo_out->r;
               ADD_ROW;
-              port = ch->fader.stereo_out->l;
+              port = ch->fader->stereo_out->l;
               ADD_ROW;
-              port = ch->fader.stereo_out->r;
+              port = ch->fader->stereo_out->r;
               ADD_ROW;
             }
           else if (type == TYPE_EVENT &&
@@ -184,10 +184,10 @@ create_model_for_ports (
               if (track->channel)
                 {
                   port =
-                    track->channel->fader.amp;
+                    track->channel->fader->amp;
                   ADD_ROW;
                   port =
-                    track->channel->fader.balance;
+                    track->channel->fader->balance;
                   ADD_ROW;
                 }
             }

@@ -31,9 +31,11 @@
 #include "actions/copy_tracks_action.h"
 #include "actions/create_tracks_action.h"
 #include "actions/delete_tracks_action.h"
+#include "audio/graph.h"
 #include "audio/graph_export.h"
 #include "audio/instrument_track.h"
 #include "audio/midi.h"
+#include "audio/router.h"
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/backend/event.h"
@@ -82,11 +84,13 @@
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/dialogs.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/localization.h"
+#include "utils/log.h"
 #include "utils/resources.h"
 #include "utils/stack.h"
 #include "utils/string.h"
@@ -583,8 +587,10 @@ on_project_new_finish (
         quit = 1;
       gtk_widget_destroy (GTK_WIDGET (dialog));
 
-      g_message ("creating project %s",
-                 ZRYTHM->create_project_path);
+      g_message (
+        "%s (%s): creating project %s",
+        __func__, __FILE__,
+        ZRYTHM->create_project_path);
     }
 
   /* FIXME error if the assistant is deleted

@@ -33,8 +33,7 @@
  * @{
  */
 
-#define CONTROL_ROOM (&AUDIO_ENGINE->control_room)
-#define MONITOR_FADER (&CONTROL_ROOM->monitor_fader)
+#define CONTROL_ROOM (AUDIO_ENGINE->control_room)
 
 /**
  * The control room allows to specify how Listen will
@@ -51,23 +50,26 @@ typedef struct ControlRoom
    * Monitor fader.
    *
    * The Master stereo out should connect to this.
+   *
+   * @note This needs to be serialized because some
+   *   ports connect to it.
    */
-  Fader      monitor_fader;
+  Fader *    monitor_fader;
 
   /**
    * The volume to set other channels to when Listen
    * is enabled on a Channel.
    */
-  Fader      listen_vol_fader;
+  Fader *    listen_vol_fader;
 
 } ControlRoom;
 
 static const cyaml_schema_field_t
 control_room_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "monitor_fader", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_PTR (
     ControlRoom, monitor_fader, fader_fields_schema),
+
   CYAML_FIELD_END
 };
 
@@ -80,14 +82,21 @@ control_room_schema =
 };
 
 /**
- * Inits the ControlRoom.
- *
- * @param loading 1 if loading.
+ * Inits the control room from a project.
  */
 void
-control_room_init (
-  ControlRoom * self,
-  int           loading);
+control_room_init_loaded (
+  ControlRoom * self);
+
+/**
+ * Creates a new control room.
+ */
+ControlRoom *
+control_room_new (void);
+
+void
+control_room_free (
+  ControlRoom * self);
 
 /**
  * Sets dim_output to on/off and notifies interested

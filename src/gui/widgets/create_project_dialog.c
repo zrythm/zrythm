@@ -18,6 +18,7 @@
  */
 
 #include "gui/widgets/create_project_dialog.h"
+#include "settings/settings.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "zrythm.h"

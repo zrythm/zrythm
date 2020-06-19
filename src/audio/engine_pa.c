@@ -25,7 +25,7 @@
 #include "audio/engine.h"
 #include "audio/engine_pa.h"
 #include "audio/master_track.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/port.h"
 #include "project.h"
 #include "utils/ui.h"
@@ -151,8 +151,7 @@ open_stream (AudioEngine * self)
  */
 int
 engine_pa_setup (
-  AudioEngine * self,
-  int           loading)
+  AudioEngine * self)
 {
   g_message ("Setting up Port Audio...");
   PaError err = Pa_Initialize ();
@@ -178,38 +177,9 @@ engine_pa_setup (
     TRANSPORT->bpm,
     self->sample_rate);
 
-  /* create ports */
-  Port * monitor_out_l, * monitor_out_r;
-
-  if (loading)
-    {
-    }
-  else
-    {
-      monitor_out_l =
-        port_new_with_data (
-          INTERNAL_PA_PORT,
-          TYPE_AUDIO,
-          FLOW_OUTPUT,
-          "PortAudio Stereo Out / L",
-          NULL);
-      monitor_out_r =
-        port_new_with_data (
-          INTERNAL_PA_PORT,
-          TYPE_AUDIO,
-          FLOW_OUTPUT,
-          "PortAudio Stereo Out / R",
-          NULL);
-
-      self->monitor_out =
-        stereo_ports_new_from_existing (
-          monitor_out_l,
-          monitor_out_r);
-
-      self->pa_out_buf =
-        calloc (self->block_length * 2,
-                sizeof (float));
-    }
+  self->pa_out_buf =
+    calloc (self->block_length * 2,
+            sizeof (float));
 
   self->pa_stream = open_stream (self);
   g_return_val_if_fail (self->pa_stream, -1);

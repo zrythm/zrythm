@@ -224,7 +224,7 @@ setup_fader (
       Channel * ch =
         track_get_channel (self->track);
       fader_widget_setup (
-        self->fader, &ch->fader, 36, 128);
+        self->fader, ch->fader, 36, 128);
       gtk_widget_set_margin_start (
         GTK_WIDGET (self->fader), 12);
       gtk_widget_set_halign (

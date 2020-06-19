@@ -138,8 +138,7 @@ print_dev_info (
  */
 int
 engine_rtaudio_setup (
-  AudioEngine * self,
-  int           loading)
+  AudioEngine * self)
 {
   g_message (
     "Setting up RtAudio %s...", rtaudio_version ());
@@ -236,30 +235,6 @@ engine_rtaudio_setup (
     }
   self->block_length = buffer_size;
   self->sample_rate = (sample_rate_t) samplerate;
-
-  /* create ports */
-  Port * monitor_out_l, * monitor_out_r;
-  if (loading)
-    {
-    }
-  else
-    {
-      monitor_out_l =
-        port_new_with_type (
-          TYPE_AUDIO,
-          FLOW_OUTPUT,
-          "RtAudio Stereo Out / L");
-      monitor_out_r =
-        port_new_with_type (
-          TYPE_AUDIO,
-          FLOW_OUTPUT,
-          "RtAudio Stereo Out / R");
-
-      self->monitor_out =
-        stereo_ports_new_from_existing (
-          monitor_out_l,
-          monitor_out_r);
-    }
 
   g_message ("RtAudio set up");
 

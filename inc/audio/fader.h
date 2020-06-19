@@ -40,6 +40,11 @@ typedef struct Channel Channel;
  * @{
  */
 
+#define MONITOR_FADER (CONTROL_ROOM->monitor_fader)
+
+#define FADER_MAGIC 32548791
+#define IS_FADER(f) (f && f->magic == FADER_MAGIC)
+
 typedef enum FaderType
 {
   FADER_TYPE_NONE,
@@ -129,6 +134,8 @@ typedef struct Fader
 
   /** Track position, if channel fader. */
   int              track_pos;
+
+  int              magic;
 } Fader;
 
 static const cyaml_strval_t
@@ -205,15 +212,15 @@ fader_init_loaded (
   Fader * self);
 
 /**
- * Inits fader to default values.
+ * Creates a new fader.
  *
- * @param self The Fader to init.
+ * This assumes that the channel has no plugins.
+ *
  * @param type The FaderType.
  * @param ch Channel, if this is a channel Fader.
  */
-void
-fader_init (
-  Fader * self,
+Fader *
+fader_new (
   FaderType type,
   Channel * ch);
 
@@ -350,7 +357,7 @@ fader_update_track_pos (
  * Frees the fader members.
  */
 void
-fader_free_members (
+fader_free (
   Fader * self);
 
 /**

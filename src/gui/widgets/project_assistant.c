@@ -451,8 +451,10 @@ on_finish (
         quit = 1;
       gtk_widget_destroy (GTK_WIDGET (dialog));
 
-      g_message ("creating project %s",
-                 ZRYTHM->create_project_path);
+      g_message (
+        "%s (%s): creating project %s",
+        __func__, __FILE__,
+        ZRYTHM->create_project_path);
     }
 
   if (quit)

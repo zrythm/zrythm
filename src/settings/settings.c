@@ -35,9 +35,19 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-void
-settings_init (Settings * self)
+/**
+ * Initializes settings.
+ */
+Settings *
+settings_new (void)
 {
+  Settings * self = object_new (Settings);
+
+  if (ZRYTHM_TESTING)
+    {
+      return self;
+    }
+
   self->general =
     g_settings_new (
       GSETTINGS_ZRYTHM_PREFIX ".general");
@@ -60,7 +70,8 @@ settings_init (Settings * self)
   self->preferences_##a##_##b = \
     g_settings_new ( \
       PREFERENCES_PREFIX #a "." #b); \
-  g_return_if_fail (self->preferences_##a##_##b)
+  g_return_val_if_fail ( \
+    self->preferences_##a##_##b, NULL)
 
   NEW_PREFERENCES_SETTINGS (dsp, pan);
   NEW_PREFERENCES_SETTINGS (editing, audio);
@@ -75,10 +86,12 @@ settings_init (Settings * self)
 
 #undef PREFERENCES_PREFIX
 
-  g_return_if_fail (
+  g_return_val_if_fail (
     self->general &&
     self->export && self->ui &&
-    self->ui_inspector);
+    self->ui_inspector, NULL);
+
+  return self;
 }
 
 static int
@@ -292,16 +305,23 @@ settings_print (
  * Frees settings.
  */
 void
-settings_free_members (Settings * self)
+settings_free (
+  Settings * self)
 {
-  if (self->general)
-    g_object_unref_and_null (self->general);
-  if (self->export)
-    g_object_unref_and_null (self->export);
-  if (self->ui)
-    g_object_unref_and_null (self->ui);
-  if (self->ui_inspector)
-    g_object_unref_and_null (self->ui_inspector);
+  g_object_unref_and_null (self->general);
+  g_object_unref_and_null (
+    self->preferences_dsp_pan);
+  g_object_unref_and_null (
+    self->preferences_editing_audio);
+  g_object_unref_and_null (
+    self->preferences_editing_automation);
+  g_object_unref_and_null (
+    self->preferences_editing_undo);
+  g_object_unref_and_null (self->export);
+  g_object_unref_and_null (self->ui);
+  g_object_unref_and_null (self->ui_inspector);
 
   /* TODO more */
+
+  object_zero_and_free (self);
 }

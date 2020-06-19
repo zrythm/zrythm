@@ -46,6 +46,10 @@ typedef struct MusicalScale MusicalScale;
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
 
+#define SCALE_OBJECT_MAGIC 13187994
+#define IS_SCALE_OBJECT(tr) \
+  (tr && tr->magic == SCALE_OBJECT_MAGIC)
+
 /**
  * A ScaleObject to be shown in the
  * TimelineArrangerWidget.
@@ -59,8 +63,10 @@ typedef struct ScaleObject
 
   int             index;
 
+  int             magic;
+
   /** Cache layout for drawing the name. */
-  PangoLayout *      layout;
+  PangoLayout *   layout;
 } ScaleObject;
 
 static const cyaml_schema_field_t

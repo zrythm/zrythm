@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,6 +24,7 @@
 #include "audio/metronome.h"
 #include "utils/audio.h"
 #include "utils/io.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -32,19 +33,10 @@
  * Initializes the Metronome by loading the samples
  * into memory.
  */
-void
-metronome_init (
-  Metronome * self)
+Metronome *
+metronome_new (void)
 {
-  /* free if previously initialized */
-  if (self->emphasis_path)
-    g_free (self->emphasis_path);
-  if (self->normal_path)
-    g_free (self->normal_path);
-  if (self->emphasis)
-    free (self->emphasis);
-  if (self->normal)
-    free (self->normal);
+  Metronome * self = object_new (Metronome);
 
   if (ZRYTHM_TESTING)
     {
@@ -82,7 +74,7 @@ metronome_init (
             "Failed to load samples for metronome "
             "from %s",
             self->emphasis_path);
-          return;
+          return NULL;
         }
       audio_encoder_decode (enc, 0);
       self->emphasis =
@@ -92,7 +84,8 @@ metronome_init (
           sizeof (float));
       self->emphasis_size = enc->num_out_frames;
       self->emphasis_channels = enc->channels;
-      g_return_if_fail (enc->channels > 0);
+      g_return_val_if_fail (
+        enc->channels > 0, NULL);
       for (int i = 0;
            i < enc->num_out_frames * enc->channels;
            i++)
@@ -113,7 +106,7 @@ metronome_init (
           sizeof (float));
       self->normal_size = enc->num_out_frames;
       self->normal_channels = enc->channels;
-      g_return_if_fail (enc->channels > 0);
+      g_return_val_if_fail (enc->channels > 0, NULL);
       for (int i = 0;
            i < enc->num_out_frames * enc->channels;
            i++)
@@ -122,23 +115,18 @@ metronome_init (
         }
       audio_encoder_free (enc);
     }
+
+  return self;
 }
 
-/**
- * Fills the given frame buffer with metronome audio
- * based on the current position.
- *
- * @param buf The frame buffer.
- * @param g_start_frame The global start position in
- *   frames.
- * @param nframes Number of frames to fill. These must
- *   not exceed the buffer size.
- */
-/*void*/
-/*metronome_fill_buffer (*/
-  /*Metronome * self,*/
-  /*float *     buf,*/
-  /*const long  g_start_frame,*/
-  /*const int   nframes)*/
-/*{*/
-/*}*/
+void
+metronome_free (
+  Metronome * self)
+{
+  g_free_and_null (self->emphasis_path);
+  g_free_and_null (self->normal_path);
+  object_zero_and_free (self->emphasis);
+  object_zero_and_free (self->normal);
+
+  object_zero_and_free (self);
+}

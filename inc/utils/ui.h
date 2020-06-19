@@ -41,7 +41,7 @@ typedef struct Position Position;
  * @{
  */
 
-#define UI_CACHES (ZRYTHM->ui_caches)
+#define UI_CACHES (zrythm_app->ui_caches)
 #define UI_COLORS (&UI_CACHES->colors)
 
 /* FIXME remove these and use theme */

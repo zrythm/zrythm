@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -79,26 +79,28 @@ fader_init_loaded (
 }
 
 /**
- * Inits fader to default values.
+ * Creates a new fader.
  *
  * This assumes that the channel has no plugins.
  *
- * @param self The Fader to init.
  * @param type The FaderType.
  * @param ch Channel, if this is a channel Fader.
  */
-void
-fader_init (
-  Fader * self,
+Fader *
+fader_new (
   FaderType type,
   Channel * ch)
 {
-  g_return_if_fail (self);
+  Fader * self = object_new (Fader);
+
+  self->magic = FADER_MAGIC;
 
   self->type = type;
   if (type == FADER_TYPE_AUDIO_CHANNEL ||
       type == FADER_TYPE_MIDI_CHANNEL)
-    self->track_pos = ch->track_pos;
+    {
+      self->track_pos = ch->track_pos;
+    }
 
   /* set volume */
   self->volume = 0.0f;
@@ -159,7 +161,10 @@ fader_init (
       /* stereo in */
       self->stereo_in =
         stereo_ports_new_generic (
-        1, _("Fader in"),
+        1,
+        type == FADER_TYPE_AUDIO_CHANNEL ?
+          _("Ch Fader in") :
+          _("Monitor Fader in"),
         type == FADER_TYPE_AUDIO_CHANNEL ?
           PORT_OWNER_TYPE_FADER :
           PORT_OWNER_TYPE_MONITOR_FADER,
@@ -168,7 +173,10 @@ fader_init (
       /* stereo out */
       self->stereo_out =
         stereo_ports_new_generic (
-        0, _("Fader out"),
+        0,
+        type == FADER_TYPE_AUDIO_CHANNEL ?
+          _("Ch Fader out") :
+          _("Monitor Fader out"),
         type == FADER_TYPE_AUDIO_CHANNEL ?
           PORT_OWNER_TYPE_FADER :
           PORT_OWNER_TYPE_MONITOR_FADER,
@@ -179,12 +187,10 @@ fader_init (
     {
       /* MIDI in */
       char * pll =
-        g_strdup (_("MIDI fader in"));
+        g_strdup (_("Channel MIDI Fader in"));
       self->midi_in =
         port_new_with_type (
-          TYPE_EVENT,
-          FLOW_INPUT,
-          pll);
+          TYPE_EVENT, FLOW_INPUT, pll);
       self->midi_in->midi_events =
         midi_events_new (
           self->midi_in);
@@ -208,6 +214,8 @@ fader_init (
       port_set_owner_fader (
         self->midi_out, self);
     }
+
+  return self;
 }
 
 /**
@@ -592,7 +600,7 @@ fader_process (
  * Frees the fader members.
  */
 void
-fader_free_members (
+fader_free (
   Fader * self)
 {
   object_free_w_func_and_null (
@@ -611,4 +619,6 @@ fader_free_members (
     port_free, self->midi_in);
   object_free_w_func_and_null (
     port_free, self->midi_out);
+
+  object_zero_and_free (self);
 }

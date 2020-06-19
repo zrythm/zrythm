@@ -26,7 +26,6 @@
 #include "audio/channel.h"
 #include "audio/chord_track.h"
 #include "audio/instrument_track.h"
-#include "audio/mixer.h"
 #include "audio/scale.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -290,7 +289,7 @@ on_size_allocate (
   GdkRectangle *    allocation,
   TracklistWidget * self)
 {
-  if (!TRACKLIST)
+  if (!PROJECT || !TRACKLIST)
     return;
 
   EVENTS_PUSH (

@@ -163,7 +163,8 @@ free_log_event_obj (
   LogEvent * ev)
 {
   g_free_and_null (ev->message);
-  object_free_zero_and_null (ev);
+
+  object_zero_and_free (ev);
 }
 
 /**
@@ -249,19 +250,27 @@ log_init_with_file (
   self->initialized = true;
 }
 
-void
-log_init (
-  Log * self)
+/**
+ * Creates the logger and sets the writer func.
+ *
+ * This can be called from any thread.
+ */
+Log *
+log_new (void)
 {
+  Log * self = object_new (Log);
+
   g_log_set_writer_func (
     (GLogWriterFunc) log_writer, self, NULL);
+
+  return self;
 }
 
 /**
  * Stops logging and frees any allocated memory.
  */
 void
-log_teardown (
+log_free (
   Log * self)
 {
   g_message ("%s: Tearing down...", __func__);
@@ -285,6 +294,8 @@ log_teardown (
   object_free_w_func_and_null (
     mpmc_queue_free, self->mqueue);
   g_object_unref_and_null (self->messages_buf);
+
+  object_zero_and_free (self);
 
   g_message ("%s: done", __func__);
 }

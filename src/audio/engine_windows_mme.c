@@ -43,7 +43,7 @@
 #include "audio/engine.h"
 #include "audio/engine_windows_mme.h"
 #include "audio/master_track.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/port.h"
 #include "audio/windows_mme_device.h"
 #include "audio/windows_mmcss.h"
@@ -243,8 +243,7 @@ engine_windows_mme_rescan_devices (
  */
 int
 engine_windows_mme_setup (
-  AudioEngine * self,
-  int           loading)
+  AudioEngine * self)
 {
   g_message ("Initing MMCSS...");
   windows_mmcss_initialize ();

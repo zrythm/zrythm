@@ -607,6 +607,10 @@ stereo_ports_connect (
   int           locked);
 
 void
+stereo_ports_disconnect (
+  StereoPorts * self);
+
+void
 stereo_ports_free (
   StereoPorts * self);
 
@@ -1002,7 +1006,7 @@ ports_connected (
  * the connection will be valid and won't break the
  * acyclicity of the graph).
  */
-int
+bool
 ports_can_be_connected (
   const Port * src,
   const Port *dest);

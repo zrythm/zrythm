@@ -18,6 +18,7 @@
  */
 
 #include "audio/channel_send.h"
+#include "audio/router.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "project.h"
@@ -116,8 +117,8 @@ update_connections (
                 track->channel->prefader.
                   stereo_out->r) :
               (i == 0 ?
-                track->channel->fader.stereo_out->l :
-                track->channel->fader.stereo_out->r);
+                track->channel->fader->stereo_out->l :
+                track->channel->fader->stereo_out->r);
           dest_port =
             port_find_from_identifier (
               i == 0 ?
@@ -208,7 +209,7 @@ channel_send_connect_stereo (
   StereoPorts * self_stereo =
     channel_send_is_prefader (self) ?
       track->channel->prefader.stereo_out :
-      track->channel->fader.stereo_out;
+      track->channel->fader->stereo_out;
 
   /* connect */
   stereo_ports_connect (
@@ -219,7 +220,7 @@ channel_send_connect_stereo (
   /* set multipliers */
   update_connections (self);
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph (ROUTER);
 }
 
 /**
@@ -239,13 +240,13 @@ channel_send_connect_midi (
   Port * self_port =
     channel_send_is_prefader (self) ?
       track->channel->prefader.midi_out :
-      track->channel->fader.midi_out;
+      track->channel->fader->midi_out;
   port_connect (
     self_port, port, true);
 
   self->is_empty = false;
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph (ROUTER);
 }
 
 static void
@@ -256,7 +257,7 @@ disconnect_midi (
   Port * self_port =
     channel_send_is_prefader (self) ?
       track->channel->prefader.midi_out :
-      track->channel->fader.midi_out;
+      track->channel->fader->midi_out;
   Port * dest_port =
     port_find_from_identifier (&self->dest_midi_id);
   port_disconnect (self_port, dest_port);
@@ -270,7 +271,7 @@ disconnect_audio (
   StereoPorts * self_stereo =
     channel_send_is_prefader (self) ?
       track->channel->prefader.stereo_out :
-      track->channel->fader.stereo_out;
+      track->channel->fader->stereo_out;
   Port * port = self_stereo->l;
   Port * dest_port =
     port_find_from_identifier (&self->dest_l_id);
@@ -306,7 +307,7 @@ channel_send_disconnect (
 
   self->is_empty = true;
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph (ROUTER);
 }
 
 void

@@ -155,10 +155,12 @@ undo_manager_perform (
 
   undo_stack_clear (self->redo_stack);
 
-  if (MAIN_WINDOW && MW_HEADER &&
+  if (ZRYTHM_HAVE_UI && MAIN_WINDOW && MW_HEADER &&
       MW_HOME_TOOLBAR)
-    home_toolbar_widget_refresh_undo_redo_buttons (
-      MW_HOME_TOOLBAR);
+    {
+      home_toolbar_widget_refresh_undo_redo_buttons (
+        MW_HOME_TOOLBAR);
+    }
 }
 
 /**

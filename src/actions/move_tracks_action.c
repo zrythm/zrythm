@@ -18,7 +18,7 @@
  */
 
 #include "actions/move_tracks_action.h"
-#include "audio/mixer.h"
+#include "audio/router.h"
 #include "audio/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -85,7 +85,7 @@ move_tracks_action_do (
           TRACKLIST_SELECTIONS, prj_track, 0);
     }
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph ((ROUTER));
 
   EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
 
@@ -120,7 +120,7 @@ move_tracks_action_undo (
           TRACKLIST_SELECTIONS, prj_track, 0);
     }
 
-  mixer_recalc_graph (MIXER);
+  router_recalc_graph ((ROUTER));
 
   EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
 

@@ -395,9 +395,8 @@ on_row_activated (GtkTreeView       *tree_view,
       loc->path = descr->abs_path;
       loc->label = g_path_get_basename (loc->path);
       file_manager_set_selection (
-        loc,
-        FB_SELECTION_TYPE_LOCATIONS,
-        1);
+        FILE_MANAGER, loc,
+        FB_SELECTION_TYPE_LOCATIONS, true);
       self->files_tree_model =
         GTK_TREE_MODEL_FILTER (
           create_model_for_files (self));
