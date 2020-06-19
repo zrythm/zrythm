@@ -1699,10 +1699,10 @@ plugin_connect_to_prefader (
                 {
                   port_connect (
                     out_port,
-                    ch->prefader.stereo_in->l, 1);
+                    ch->prefader->stereo_in->l, 1);
                   port_connect (
                     out_port,
-                    ch->prefader.stereo_in->r, 1);
+                    ch->prefader->stereo_in->r, 1);
                   break;
                 }
             }
@@ -1723,14 +1723,14 @@ plugin_connect_to_prefader (
                 {
                   port_connect (
                     out_port,
-                    ch->prefader.stereo_in->l, 1);
+                    ch->prefader->stereo_in->l, 1);
                   last_index++;
                 }
               else if (last_index == 1)
                 {
                   port_connect (
                     out_port,
-                    ch->prefader.stereo_in->r, 1);
+                    ch->prefader->stereo_in->r, 1);
                   break;
                 }
             }
@@ -1761,16 +1761,16 @@ plugin_disconnect_from_prefader (
         {
           if (ports_connected (
                 out_port,
-                ch->prefader.stereo_in->l))
+                ch->prefader->stereo_in->l))
             port_disconnect (
               out_port,
-              ch->prefader.stereo_in->l);
+              ch->prefader->stereo_in->l);
           if (ports_connected (
                 out_port,
-                ch->prefader.stereo_in->r))
+                ch->prefader->stereo_in->r))
             port_disconnect (
               out_port,
-              ch->prefader.stereo_in->r);
+              ch->prefader->stereo_in->r);
         }
       else if (type == TYPE_EVENT &&
                out_port->id.type ==
@@ -1778,10 +1778,10 @@ plugin_disconnect_from_prefader (
         {
           if (ports_connected (
                 out_port,
-                ch->prefader.midi_in))
+                ch->prefader->midi_in))
             port_disconnect (
               out_port,
-              ch->prefader.midi_in);
+              ch->prefader->midi_in);
         }
     }
 }

@@ -388,36 +388,6 @@ connect_port (
     }
 }
 
-GraphNode *
-graph_find_node_from_plugin (
-  Graph * graph,
-  Plugin * pl);
-
-GraphNode *
-graph_find_node_from_track (
-  Graph * graph,
-  Track * track);
-
-GraphNode *
-graph_find_node_from_fader (
-  Graph * graph,
-  Fader * fader);
-
-GraphNode *
-graph_find_node_from_prefader (
-  Graph * graph,
-  PassthroughProcessor * prefader);
-
-GraphNode *
-graph_find_node_from_sample_processor (
-  Graph * graph,
-  SampleProcessor * sample_processor);
-
-GraphNode *
-graph_find_node_from_monitor_fader (
-  Graph * graph,
-  Fader * fader);
-
 /**
  * Returns the max playback latency of the trigger
  * nodes.
@@ -499,7 +469,7 @@ graph_setup (
       /* add the prefader */
       graph_create_node (
         self, ROUTE_NODE_TYPE_PREFADER,
-        &tr->channel->prefader);
+        tr->channel->prefader);
 
       /* add plugins */
       for (j = 0; j < STRIP_SIZE * 2 + 1; j++)
@@ -682,7 +652,7 @@ graph_setup (
       Fader * fader;
       PassthroughProcessor * prefader;
       fader = tr->channel->fader;
-      prefader = &tr->channel->prefader;
+      prefader = tr->channel->prefader;
 
       /* connect the fader */
       node =

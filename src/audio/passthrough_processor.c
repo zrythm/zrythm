@@ -24,6 +24,7 @@
 #include "audio/track.h"
 #include "project.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 
 #include <glib/gi18n.h>
 
@@ -65,19 +66,19 @@ passthrough_processor_init_loaded (
 }
 
 /**
- * Inits passthrough_processor to default values.
+ * Create a passthrough processor with default
+ * values.
  *
- * This assumes that the channel has no plugins.
- *
- * @param self The PassthroughProcessor to init.
  * @param ch Channel.
  */
-void
-passthrough_processor_init (
-  PassthroughProcessor * self,
+PassthroughProcessor *
+passthrough_processor_new (
   PassthroughProcessorType type,
   Channel * ch)
 {
+  PassthroughProcessor * self =
+    object_new (PassthroughProcessor);
+
   self->track_pos = ch->track_pos;
   self->type = type;
 
@@ -132,6 +133,8 @@ passthrough_processor_init (
       port_set_owner_prefader (
         self->midi_out, self);
     }
+
+  return self;
 }
 
 /**
@@ -262,4 +265,36 @@ passthrough_processor_process (
         self->midi_out->midi_events,
         start_frame, nframes, 0);
     }
+}
+
+void
+passthrough_processor_free (
+  PassthroughProcessor * self)
+{
+  if (self->stereo_in)
+    {
+      stereo_ports_disconnect (self->stereo_in);
+      object_free_w_func_and_null (
+        stereo_ports_free, self->stereo_in);
+    }
+  if (self->stereo_out)
+    {
+      stereo_ports_disconnect (self->stereo_out);
+      object_free_w_func_and_null (
+        stereo_ports_free, self->stereo_out);
+    }
+  if (self->midi_in)
+    {
+      port_disconnect_all (self->midi_in);
+      object_free_w_func_and_null (
+        port_free, self->midi_in);
+    }
+  if (self->midi_out)
+    {
+      port_disconnect_all (self->midi_out);
+      object_free_w_func_and_null (
+        port_free, self->midi_out);
+    }
+
+  object_zero_and_free (self);
 }

@@ -171,7 +171,7 @@ typedef struct Channel
    *
    * The last plugin should connect to this.
    */
-  PassthroughProcessor prefader;
+  PassthroughProcessor * prefader;
 
   /**
    * MIDI output for sending MIDI signals to other
@@ -241,7 +241,7 @@ channel_fields_schema[] =
     channel_send_schema, STRIP_SIZE),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Channel, instrument, plugin_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Channel, prefader,
     passthrough_processor_fields_schema),
   YAML_FIELD_MAPPING_PTR (

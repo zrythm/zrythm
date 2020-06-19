@@ -157,14 +157,13 @@ passthrough_processor_init_loaded (
   PassthroughProcessor * self);
 
 /**
- * Inits passthrough_processor to default values.
+ * Create a passthrough processor with default
+ * values.
  *
- * @param self The PassthroughProcessor to init.
  * @param ch Channel.
  */
-void
-passthrough_processor_init (
-  PassthroughProcessor * self,
+PassthroughProcessor *
+passthrough_processor_new (
   PassthroughProcessorType type,
   Channel * ch);
 
@@ -222,6 +221,10 @@ void
 passthrough_processor_update_track_pos (
   PassthroughProcessor * self,
   int     pos);
+
+void
+passthrough_processor_free (
+  PassthroughProcessor * self);
 
 /**
  * @}

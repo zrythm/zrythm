@@ -112,9 +112,9 @@ update_connections (
           self_port =
             channel_send_is_prefader (self) ?
               (i == 0 ?
-                track->channel->prefader.
+                track->channel->prefader->
                   stereo_out->l :
-                track->channel->prefader.
+                track->channel->prefader->
                   stereo_out->r) :
               (i == 0 ?
                 track->channel->fader->stereo_out->l :
@@ -208,7 +208,7 @@ channel_send_connect_stereo (
   Track * track = channel_send_get_track (self);
   StereoPorts * self_stereo =
     channel_send_is_prefader (self) ?
-      track->channel->prefader.stereo_out :
+      track->channel->prefader->stereo_out :
       track->channel->fader->stereo_out;
 
   /* connect */
@@ -239,7 +239,7 @@ channel_send_connect_midi (
   Track * track = channel_send_get_track (self);
   Port * self_port =
     channel_send_is_prefader (self) ?
-      track->channel->prefader.midi_out :
+      track->channel->prefader->midi_out :
       track->channel->fader->midi_out;
   port_connect (
     self_port, port, true);
@@ -256,7 +256,7 @@ disconnect_midi (
   Track * track = channel_send_get_track (self);
   Port * self_port =
     channel_send_is_prefader (self) ?
-      track->channel->prefader.midi_out :
+      track->channel->prefader->midi_out :
       track->channel->fader->midi_out;
   Port * dest_port =
     port_find_from_identifier (&self->dest_midi_id);
@@ -270,7 +270,7 @@ disconnect_audio (
   Track * track = channel_send_get_track (self);
   StereoPorts * self_stereo =
     channel_send_is_prefader (self) ?
-      track->channel->prefader.stereo_out :
+      track->channel->prefader->stereo_out :
       track->channel->fader->stereo_out;
   Port * port = self_stereo->l;
   Port * dest_port =

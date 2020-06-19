@@ -523,7 +523,7 @@ track_processor_disconnect_from_prefader (
 {
   Track * tr = track_processor_get_track (self);
   PassthroughProcessor * prefader =
-    &tr->channel->prefader;
+    tr->channel->prefader;
   switch (tr->in_signal_type)
     {
     case TYPE_AUDIO:
@@ -561,7 +561,7 @@ track_processor_connect_to_prefader (
 {
   Track * tr = track_processor_get_track (self);
   PassthroughProcessor * prefader =
-    &tr->channel->prefader;
+    tr->channel->prefader;
 
   /* connect only if signals match */
   if (tr->in_signal_type == TYPE_AUDIO &&
@@ -762,12 +762,39 @@ track_processor_free (
       break;
     case TYPE_EVENT:
       port_disconnect_all (self->midi_in);
-      port_free (self->midi_in);
+      object_free_w_func_and_null (
+        port_free, self->midi_in);
       if (track_has_piano_roll (track))
         {
           port_disconnect_all (self->piano_roll);
-          port_free (self->piano_roll);
+          object_free_w_func_and_null (
+            port_free, self->piano_roll);
+          for (int i = 0;
+               i < NUM_MIDI_AUTOMATABLES * 16; i++)
+            {
+              Port * port =
+                self->midi_automatables[i];
+              port_disconnect_all (port);
+              object_free_w_func_and_null (
+                port_free, port);
+            }
         }
+      break;
+    default:
+      break;
+    }
+
+  switch (track->out_signal_type)
+    {
+    case TYPE_AUDIO:
+      stereo_ports_disconnect (self->stereo_out);
+      object_free_w_func_and_null (
+        stereo_ports_free, self->stereo_out);
+      break;
+    case TYPE_EVENT:
+      port_disconnect_all (self->midi_out);
+      object_free_w_func_and_null (
+        port_free, self->midi_out);
       break;
     default:
       break;

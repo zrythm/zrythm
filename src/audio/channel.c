@@ -370,7 +370,7 @@ channel_prepare_process (Channel * self)
   track_processor_clear_buffers (
     tr->processor);
   passthrough_processor_clear_buffers (
-    &self->prefader);
+    self->prefader);
   fader_clear_buffers (self->fader);
 
   if (out_type == TYPE_AUDIO)
@@ -425,11 +425,11 @@ channel_init_loaded (Channel * ch)
   ch->magic = CHANNEL_MAGIC;
 
   /* fader */
-  ch->prefader.track_pos = track->pos;
+  ch->prefader->track_pos = track->pos;
   ch->fader->track_pos = track->pos;
 
   passthrough_processor_init_loaded (
-    &ch->prefader);
+    ch->prefader);
   fader_init_loaded (ch->fader);
 
   PortType out_type =
@@ -893,10 +893,10 @@ channel_connect (
       /* connect stereo in to stereo out through
        * fader */
       port_connect (
-        ch->prefader.stereo_out->l,
+        ch->prefader->stereo_out->l,
         ch->fader->stereo_in->l, 1);
       port_connect (
-        ch->prefader.stereo_out->r,
+        ch->prefader->stereo_out->r,
         ch->fader->stereo_in->r, 1);
       port_connect (
         ch->fader->stereo_out->l,
@@ -909,7 +909,7 @@ channel_connect (
              TYPE_EVENT)
     {
       port_connect (
-        ch->prefader.midi_out,
+        ch->prefader->midi_out,
         ch->fader->midi_in, 1);
       port_connect (
         ch->fader->midi_out,
@@ -1170,10 +1170,10 @@ channel_append_all_ports (
       _ADD (ch->fader->stereo_out->r);
 
       /* add prefader ports */
-      _ADD (ch->prefader.stereo_in->l);
-      _ADD (ch->prefader.stereo_in->r);
-      _ADD (ch->prefader.stereo_out->l);
-      _ADD (ch->prefader.stereo_out->r);
+      _ADD (ch->prefader->stereo_in->l);
+      _ADD (ch->prefader->stereo_in->r);
+      _ADD (ch->prefader->stereo_out->l);
+      _ADD (ch->prefader->stereo_out->r);
     }
   else if (out_type == TYPE_EVENT)
     {
@@ -1184,8 +1184,8 @@ channel_append_all_ports (
       _ADD (ch->fader->midi_out);
 
       /* add prefader ports */
-      _ADD (ch->prefader.midi_in);
-      _ADD (ch->prefader.midi_out);
+      _ADD (ch->prefader->midi_in);
+      _ADD (ch->prefader->midi_out);
     }
 
   /* add fader amp and balance control */
@@ -1360,8 +1360,9 @@ channel_new (
   PassthroughProcessorType prefader_type =
     track_get_passthrough_processor_type (track);
   self->fader = fader_new (fader_type, self);
-  passthrough_processor_init (
-    &self->prefader, prefader_type, self);
+  self->prefader =
+    passthrough_processor_new (
+      prefader_type, self);
 
   /* init sends */
   for (int i = 0; i < STRIP_SIZE; i++)
@@ -1965,7 +1966,7 @@ channel_update_track_pos (
 
   fader_update_track_pos (self->fader, pos);
   passthrough_processor_update_track_pos (
-    &self->prefader, pos);
+    self->prefader, pos);
 }
 
 /**
@@ -2072,7 +2073,7 @@ channel_clone (
     }
 
   clone->fader->track_pos = clone->track_pos;
-  clone->prefader.track_pos = clone->track_pos;
+  clone->prefader->track_pos = clone->track_pos;
   fader_copy_values (ch->fader, clone->fader);
 
   /* TODO clone port connections, same for
@@ -2174,6 +2175,7 @@ channel_free (Channel * self)
   Track * track = channel_get_track (self);
 
   track_processor_free (track->processor);
+  passthrough_processor_free (self->prefader);
   fader_free (self->fader);
 
   object_free_w_func_and_null (

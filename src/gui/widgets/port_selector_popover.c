@@ -148,9 +148,9 @@ create_model_for_ports (
               track->out_signal_type ==
                 TYPE_AUDIO)
             {
-              port = ch->prefader.stereo_out->l;
+              port = ch->prefader->stereo_out->l;
               ADD_ROW;
-              port = ch->prefader.stereo_out->r;
+              port = ch->prefader->stereo_out->r;
               ADD_ROW;
               port = ch->fader->stereo_out->l;
               ADD_ROW;

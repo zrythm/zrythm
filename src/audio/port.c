@@ -375,10 +375,10 @@ port_find_from_identifier (
           switch (id->flow)
             {
             case FLOW_INPUT:
-              return ch->prefader.midi_in;
+              return ch->prefader->midi_in;
               break;
             case FLOW_OUTPUT:
-              return ch->prefader.midi_out;
+              return ch->prefader->midi_out;
               break;
             default:
               break;
@@ -388,18 +388,18 @@ port_find_from_identifier (
           if (id->flow == FLOW_OUTPUT)
             {
               if (id->flags & PORT_FLAG_STEREO_L)
-                return ch->prefader.stereo_out->l;
+                return ch->prefader->stereo_out->l;
               else if (id->flags &
                          PORT_FLAG_STEREO_R)
-                return ch->prefader.stereo_out->r;
+                return ch->prefader->stereo_out->r;
             }
           else if (id->flow == FLOW_INPUT)
             {
               if (id->flags & PORT_FLAG_STEREO_L)
-                return ch->prefader.stereo_in->l;
+                return ch->prefader->stereo_in->l;
               else if (id->flags &
                          PORT_FLAG_STEREO_R)
-                return ch->prefader.stereo_in->r;
+                return ch->prefader->stereo_in->r;
             }
           break;
         default:

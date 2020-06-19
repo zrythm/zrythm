@@ -103,7 +103,7 @@ get_parent_graph (
               parent_node =
                 graph_find_node_from_prefader (
                   node->graph,
-                  &tr->channel->prefader);
+                  tr->channel->prefader);
             }
             break;
           case PORT_OWNER_TYPE_FADER:

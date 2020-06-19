@@ -441,9 +441,9 @@ ports_expander_widget_setup_track (
           if (out_type == TYPE_AUDIO)
             {
               ADD_SINGLE (
-                tr->channel->prefader.stereo_out->l);
+                tr->channel->prefader->stereo_out->l);
               ADD_SINGLE (
-                tr->channel->prefader.stereo_out->r);
+                tr->channel->prefader->stereo_out->r);
               ADD_SINGLE (
                 tr->channel->fader->stereo_out->l);
               ADD_SINGLE (
@@ -452,7 +452,7 @@ ports_expander_widget_setup_track (
           else if (out_type == TYPE_EVENT)
             {
               ADD_SINGLE (
-                tr->channel->prefader.midi_out);
+                tr->channel->prefader->midi_out);
               ADD_SINGLE (
                 tr->channel->fader->midi_out);
             }
