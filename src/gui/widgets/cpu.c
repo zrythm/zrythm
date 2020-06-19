@@ -46,9 +46,8 @@
 
 #include "zrythm_app.h"
 
-G_DEFINE_TYPE (CpuWidget,
-               cpu_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  CpuWidget, cpu_widget, GTK_TYPE_DRAWING_AREA)
 
 #define BAR_HEIGHT 12
 #define BAR_WIDTH 3
@@ -165,6 +164,11 @@ static gboolean
 refresh_dsp_load (
   CpuWidget * self)
 {
+  if (!PROJECT || !AUDIO_ENGINE)
+    {
+      return G_SOURCE_CONTINUE;
+    }
+
   if (g_atomic_int_get (&AUDIO_ENGINE->run))
     {
       gint64 block_latency =

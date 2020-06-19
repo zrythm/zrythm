@@ -44,6 +44,11 @@ live_waveform_draw_cb (
   cairo_t *         cr,
   LiveWaveformWidget * self)
 {
+  if (!PROJECT || !AUDIO_ENGINE)
+    {
+      return false;
+    }
+
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 

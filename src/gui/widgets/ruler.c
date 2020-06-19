@@ -546,19 +546,19 @@ ruler_draw_cb (
   cairo_t *     cr,
   RulerWidget * self)
 {
-  /*g_message ("drawing ruler %p", self);*/
   /* engine is run only set after everything is set
    * up so this is a good way to decide if we
    * should  draw or not */
-  if (!g_atomic_int_get (&AUDIO_ENGINE->run))
-    return FALSE;
+  if (!PROJECT || !AUDIO_ENGINE ||
+      !g_atomic_int_get (&AUDIO_ENGINE->run) ||
+      self->px_per_bar < 2.0)
+    {
+      return FALSE;
+    }
 
   GdkRectangle rect;
   gdk_cairo_get_clip_rectangle (
     cr, &rect);
-
-  if (self->px_per_bar < 2.0)
-    return FALSE;
 
   if (self->redraw ||
       !gdk_rectangle_equal (

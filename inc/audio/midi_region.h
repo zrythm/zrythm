@@ -214,9 +214,9 @@ midi_region_write_to_midi_file (
 void
 midi_region_export_to_midi_file (
   ZRegion * self,
-  const char *   full_path,
-  int            midi_version,
-  const int      export_full);
+  const char * full_path,
+  int          midi_version,
+  const int    export_full);
 
 /**
  * Returns the MIDI channel that this region should

@@ -467,10 +467,8 @@ static int
 sort_events_func (
   const void * _a, const void * _b)
 {
-  MidiEvent * a =
-    *(MidiEvent * const *) _a;
-  MidiEvent * b =
-    *(MidiEvent * const *) _b;
+  MidiEvent * a = (MidiEvent *) _a;
+  MidiEvent * b = (MidiEvent *) _b;
   return (int) a->time - (int) b->time;
 }
 
@@ -481,10 +479,9 @@ void
 midi_events_sort_by_time (
   MidiEvents * self)
 {
-  qsort (self->events,
-         (size_t) self->num_events,
-         sizeof (MidiEvent),
-         sort_events_func);
+  qsort (
+    self->events, (size_t) self->num_events,
+    sizeof (MidiEvent), sort_events_func);
 }
 
 #ifdef HAVE_JACK

@@ -57,6 +57,7 @@ if get_option ('tests')
     ['audio/midi', true],
     ['audio/midi_mapping', true],
     ['audio/midi_note', true],
+    ['audio/midi_region', true],
     ['audio/midi_track', true],
     ['audio/position', true],
     ['audio/region', true],
