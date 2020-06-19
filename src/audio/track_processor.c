@@ -230,16 +230,18 @@ init_stereo_out_ports (
 }
 
 /**
- * Inits the TrackProcessor to default values.
- *
- * @param self The TrackProcessor to init.
- * @param track The owner Track.
+ * Creates a new track processor for the given
+ * track.
  */
-void
-track_processor_init (
-  TrackProcessor * self,
+TrackProcessor *
+track_processor_new (
   Track *          tr)
 {
+  TrackProcessor * self =
+    object_new (TrackProcessor);
+
+  self->track_pos = tr->pos;
+  self->track = tr;
   self->l_port_db = 0.f;
   self->r_port_db = 0.f;
 
@@ -274,6 +276,8 @@ track_processor_init (
     default:
       break;
     }
+
+  return self;
 }
 
 /**
@@ -745,7 +749,7 @@ track_processor_set_track_pos (
  * Frees the members of the TrackProcessor.
  */
 void
-track_processor_free_members (
+track_processor_free (
   TrackProcessor * self)
 {
   Track * track = track_processor_get_track (self);
@@ -768,4 +772,6 @@ track_processor_free_members (
     default:
       break;
     }
+
+  object_zero_and_free (self);
 }

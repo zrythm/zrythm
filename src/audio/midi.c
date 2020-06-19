@@ -974,7 +974,7 @@ midi_panic_all (
 
       if (track_has_piano_roll (track))
         midi_events_panic (
-          track->processor.piano_roll->midi_events,
+          track->processor->piano_roll->midi_events,
           queued);
     }
 }

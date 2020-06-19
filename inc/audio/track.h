@@ -333,7 +333,7 @@ typedef struct Track
    * This is the starting point when processing
    * a Track.
    */
-  TrackProcessor      processor;
+  TrackProcessor *    processor;
 
   AutomationTracklist automation_tracklist;
 
@@ -420,7 +420,7 @@ track_fields_schema[] =
     Track, bpm_port, port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Track, time_sig_port, port_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Track, processor,
     track_processor_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (

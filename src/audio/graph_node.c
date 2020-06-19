@@ -318,7 +318,7 @@ graph_node_process (
           node->track->type != TRACK_TYPE_MARKER)
         {
           track_processor_process (
-            &node->track->processor,
+            node->track->processor,
             g_start_frames, local_offset,
             nframes);
         }

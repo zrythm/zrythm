@@ -81,7 +81,7 @@ connect_no_prev_no_next (
   /* channel stereo in is connected to channel
    * stereo out. disconnect it */
   track_processor_disconnect_from_prefader (
-    &track->processor);
+    track->processor);
 
   /* -------------------------------------------
    * connect input ports
@@ -89,7 +89,7 @@ connect_no_prev_no_next (
 
   /* connect channel stereo in to plugin */
   track_processor_connect_to_plugin (
-    &track->processor, pl);
+    track->processor, pl);
 
   /* --------------------------------------
    * connect output ports
@@ -116,7 +116,7 @@ connect_no_prev_next (
   /* channel stereo in is connected to next plugin.
    * disconnect it */
   track_processor_disconnect_from_plugin (
-    &track->processor, next_pl);
+    track->processor, next_pl);
 
   /* -------------------------------------------
    * connect input ports
@@ -124,7 +124,7 @@ connect_no_prev_next (
 
   /* connect channel stereo in to plugin */
   track_processor_connect_to_plugin (
-    &track->processor, pl);
+    track->processor, pl);
 
   /* --------------------------------------
    * connect output ports
@@ -223,7 +223,7 @@ disconnect_no_prev_no_next (
 
   /* disconnect channel stereo in from plugin */
   track_processor_disconnect_from_plugin (
-    &track->processor, pl);
+    track->processor, pl);
 
   /* --------------------------------------
    * disconnect output ports
@@ -239,7 +239,7 @@ disconnect_no_prev_no_next (
   /* channel stereo in should be connected to
    * channel stereo out. connect it */
   track_processor_connect_to_prefader (
-    &track->processor);
+    track->processor);
 }
 
 /**
@@ -259,7 +259,7 @@ disconnect_no_prev_next (
 
   /* disconnect channel stereo in from plugin */
   track_processor_disconnect_from_plugin (
-    &track->processor, pl);
+    track->processor, pl);
 
   /* --------------------------------------
    * Disconnect output ports
@@ -276,7 +276,7 @@ disconnect_no_prev_next (
   /* channel stereo in should be connected to next
    * plugin. connect it */
   track_processor_connect_to_plugin (
-    &track->processor, next_pl);
+    track->processor, next_pl);
 }
 
 /**
@@ -368,7 +368,7 @@ channel_prepare_process (Channel * self)
 
   /* clear buffers */
   track_processor_clear_buffers (
-    &tr->processor);
+    tr->processor);
   passthrough_processor_clear_buffers (
     &self->prefader);
   fader_clear_buffers (self->fader);
@@ -404,14 +404,14 @@ channel_prepare_process (Channel * self)
             MIDI_BACKEND_RTMIDI)
         {
           port_prepare_rtmidi_events (
-            tr->processor.midi_in);
+            tr->processor->midi_in);
         }
 #endif
 
       /* copy the cached MIDI events to the
        * MIDI events in the MIDI in port */
       midi_events_dequeue (
-        tr->processor.midi_in->midi_events);
+        tr->processor->midi_in->midi_events);
     }
 }
 
@@ -495,15 +495,15 @@ channel_expose_ports_to_backend (
         TYPE_AUDIO)
     {
       port_set_expose_to_backend (
-        tr->processor.stereo_in->l , 1);
+        tr->processor->stereo_in->l , 1);
       port_set_expose_to_backend (
-        tr->processor.stereo_in->r , 1);
+        tr->processor->stereo_in->r , 1);
     }
   if (tr->in_signal_type ==
         TYPE_EVENT)
     {
       port_set_expose_to_backend (
-        tr->processor.midi_in , 1);
+        tr->processor->midi_in , 1);
     }
   if (tr->out_signal_type ==
         TYPE_AUDIO)
@@ -584,7 +584,7 @@ reconnect_jack_ext_in (
   Track * track =
     channel_get_track (ch);
   TrackProcessor * processor =
-    &track->processor;
+    track->processor;
   const int is_midi_in =
     in_port == processor->midi_in;
   const int is_stereo_l_in =
@@ -703,7 +703,7 @@ reconnect_rtmidi_ext_in (
   Track * track =
     channel_get_track (ch);
   TrackProcessor * processor =
-    &track->processor;
+    track->processor;
   const int is_midi_in =
     in_port == processor->midi_in;
   if (!is_midi_in)
@@ -775,7 +775,7 @@ channel_reconnect_ext_input_ports (
       track->type == TRACK_TYPE_MIDI)
     {
       Port * midi_in =
-        track->processor.midi_in;
+        track->processor->midi_in;
 
       /* if the project was loaded with another
        * backend, the port might not be exposed
@@ -810,9 +810,9 @@ channel_reconnect_ext_input_ports (
        * backend, the port might not be exposed
        * yet, so expose it */
       port_set_expose_to_backend (
-        track->processor.stereo_in->l, 1);
+        track->processor->stereo_in->l, 1);
       port_set_expose_to_backend (
-        track->processor.stereo_in->r, 1);
+        track->processor->stereo_in->r, 1);
 
       if (AUDIO_ENGINE->audio_backend ==
             AUDIO_BACKEND_JACK &&
@@ -821,9 +821,9 @@ channel_reconnect_ext_input_ports (
         {
 #ifdef HAVE_JACK
           reconnect_jack_ext_in (
-            ch, track->processor.stereo_in->l);
+            ch, track->processor->stereo_in->l);
           reconnect_jack_ext_in (
-            ch, track->processor.stereo_in->r);
+            ch, track->processor->stereo_in->r);
 #endif
         }
     }
@@ -918,7 +918,7 @@ channel_connect (
 
   /** Connect MIDI in and piano roll to MIDI out. */
   track_processor_connect_to_prefader (
-    &tr->processor);
+    tr->processor);
 
   if (tr->type != TRACK_TYPE_MASTER)
     {
@@ -927,12 +927,12 @@ channel_connect (
           /* connect channel out ports to master */
           port_connect (
             ch->stereo_out->l,
-            P_MASTER_TRACK->processor.
+            P_MASTER_TRACK->processor->
               stereo_in->l,
             1);
           port_connect (
             ch->stereo_out->r,
-            P_MASTER_TRACK->processor.
+            P_MASTER_TRACK->processor->
               stereo_in->r,
             1);
         }
@@ -966,15 +966,15 @@ channel_update_output (
         case TYPE_AUDIO:
           port_disconnect (
             ch->stereo_out->l,
-            track->processor.stereo_in->l);
+            track->processor->stereo_in->l);
           port_disconnect (
             ch->stereo_out->r,
-            track->processor.stereo_in->r);
+            track->processor->stereo_in->r);
           break;
         case TYPE_EVENT:
           port_disconnect (
             ch->midi_out,
-            track->processor.midi_in);
+            track->processor->midi_in);
           break;
         default:
           break;
@@ -988,15 +988,15 @@ channel_update_output (
     case TYPE_AUDIO:
       port_connect (
         ch->stereo_out->l,
-        output->processor.stereo_in->l, 1);
+        output->processor->stereo_in->l, 1);
       port_connect (
         ch->stereo_out->r,
-        output->processor.stereo_in->r, 1);
+        output->processor->stereo_in->r, 1);
       break;
     case TYPE_EVENT:
       port_connect (
         ch->midi_out,
-        output->processor.midi_in, 1);
+        output->processor->midi_in, 1);
       break;
     default:
       break;
@@ -1132,28 +1132,28 @@ channel_append_all_ports (
   /* add channel ports */
   if (in_type == TYPE_AUDIO)
     {
-      g_warn_if_fail (tr->processor.stereo_in->l);
-      _ADD (tr->processor.stereo_in->l);
-      _ADD (tr->processor.stereo_in->r);
-      g_warn_if_fail (tr->processor.stereo_out->l);
-      _ADD (tr->processor.stereo_out->l);
-      _ADD (tr->processor.stereo_out->r);
+      g_warn_if_fail (tr->processor->stereo_in->l);
+      _ADD (tr->processor->stereo_in->l);
+      _ADD (tr->processor->stereo_in->r);
+      g_warn_if_fail (tr->processor->stereo_out->l);
+      _ADD (tr->processor->stereo_out->l);
+      _ADD (tr->processor->stereo_out->r);
     }
   else if (in_type == TYPE_EVENT)
     {
-      g_warn_if_fail (tr->processor.midi_in);
-      g_warn_if_fail (tr->processor.midi_out);
-      _ADD (tr->processor.midi_in);
-      _ADD (tr->processor.midi_out);
+      g_warn_if_fail (tr->processor->midi_in);
+      g_warn_if_fail (tr->processor->midi_out);
+      _ADD (tr->processor->midi_in);
+      _ADD (tr->processor->midi_out);
       if (track_has_piano_roll (tr))
         {
           for (int i = 0;
                i < NUM_MIDI_AUTOMATABLES * 16; i++)
             {
               g_warn_if_fail (
-                tr->processor.midi_automatables[i]);
+                tr->processor->midi_automatables[i]);
               _ADD (
-                tr->processor.midi_automatables[i]);
+                tr->processor->midi_automatables[i]);
             }
         }
     }
@@ -1362,7 +1362,6 @@ channel_new (
   self->fader = fader_new (fader_type, self);
   passthrough_processor_init (
     &self->prefader, prefader_type, self);
-  track_processor_init (&track->processor, track);
 
   /* init sends */
   for (int i = 0; i < STRIP_SIZE; i++)
@@ -1985,11 +1984,11 @@ channel_reattach_midi_editor_manual_press_port (
   if (connect)
     port_connect (
       AUDIO_ENGINE->midi_editor_manual_press,
-      track->processor.midi_in, 1);
+      track->processor->midi_in, 1);
   else
     port_disconnect (
       AUDIO_ENGINE->midi_editor_manual_press,
-      track->processor.midi_in);
+      track->processor->midi_in);
 
   if (recalc_graph)
     router_recalc_graph ((ROUTER));
@@ -2174,7 +2173,7 @@ channel_free (Channel * self)
 
   Track * track = channel_get_track (self);
 
-  track_processor_free_members (&track->processor);
+  track_processor_free (track->processor);
   fader_free (self->fader);
 
   object_free_w_func_and_null (

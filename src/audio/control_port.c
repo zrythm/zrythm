@@ -360,7 +360,7 @@ control_port_set_val_from_normalized (
         val * (self->maxf - self->minf);
       if (!math_floats_equal (
             val,
-            track->processor.midi_automatables[
+            track->processor->midi_automatables[
               self->id.port_index]->control))
         {
           EVENTS_PUSH (

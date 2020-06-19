@@ -225,32 +225,32 @@ port_find_from_identifier (
         case TYPE_EVENT:
           if (id->flow == FLOW_OUTPUT)
             {
-              return tr->processor.midi_out;
+              return tr->processor->midi_out;
             }
           else if (id->flow == FLOW_INPUT)
             {
               if (id->flags & PORT_FLAG_PIANO_ROLL)
-                return tr->processor.piano_roll;
+                return tr->processor->piano_roll;
               else
-                return tr->processor.midi_in;
+                return tr->processor->midi_in;
             }
           break;
         case TYPE_AUDIO:
           if (id->flow == FLOW_OUTPUT)
             {
               if (id->flags & PORT_FLAG_STEREO_L)
-                return tr->processor.stereo_out->l;
+                return tr->processor->stereo_out->l;
               else if (id->flags &
                          PORT_FLAG_STEREO_R)
-                return tr->processor.stereo_out->r;
+                return tr->processor->stereo_out->r;
             }
           else if (id->flow == FLOW_INPUT)
             {
               if (id->flags & PORT_FLAG_STEREO_L)
-                return tr->processor.stereo_in->l;
+                return tr->processor->stereo_in->l;
               else if (id->flags &
                          PORT_FLAG_STEREO_R)
-                return tr->processor.stereo_in->r;
+                return tr->processor->stereo_in->r;
             }
           break;
         case TYPE_CONTROL:
@@ -258,7 +258,7 @@ port_find_from_identifier (
                 PORT_FLAG_MIDI_AUTOMATABLE)
             {
               return
-                tr->processor.midi_automatables[
+                tr->processor->midi_automatables[
                   id->port_index];
             }
           break;

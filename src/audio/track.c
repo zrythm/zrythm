@@ -97,9 +97,9 @@ track_init_loaded (Track * track)
   /* init loaded channel */
   if (track->channel)
     {
-      track->processor.track = track;
+      track->processor->track = track;
       track_processor_init_loaded (
-        &track->processor);
+        track->processor);
 
       track->channel->track = track;
       channel_init_loaded (track->channel);
@@ -163,8 +163,6 @@ track_init (
   self->visible = 1;
   self->main_height = TRACK_DEF_HEIGHT;
   self->midi_ch = 1;
-  self->processor.track_pos = self->pos;
-  self->processor.track = self;
   self->magic = TRACK_MAGIC;
   self->comment = g_strdup ("");
   track_add_lane (self, 0);
@@ -187,109 +185,110 @@ track_new (
   char *    label,
   const int with_lane)
 {
-  Track * track =
-    calloc (1, sizeof (Track));
+  Track * self = object_new (Track);
 
-  track->pos = pos;
-  track->type = type;
-  track_init (track, with_lane);
+  self->pos = pos;
+  self->type = type;
+  track_init (self, with_lane);
 
-  track->name = g_strdup (label);
+  self->name = g_strdup (label);
 
   switch (type)
     {
     case TRACK_TYPE_INSTRUMENT:
-      track->in_signal_type =
+      self->in_signal_type =
         TYPE_EVENT;
-      track->out_signal_type =
+      self->out_signal_type =
         TYPE_AUDIO;
-      instrument_track_init (track);
+      instrument_track_init (self);
       break;
     case TRACK_TYPE_AUDIO:
-      track->in_signal_type =
+      self->in_signal_type =
         TYPE_AUDIO;
-      track->out_signal_type =
+      self->out_signal_type =
         TYPE_AUDIO;
-      audio_track_init (track);
+      audio_track_init (self);
       break;
     case TRACK_TYPE_MASTER:
-      track->in_signal_type =
+      self->in_signal_type =
         TYPE_AUDIO;
-      track->out_signal_type =
+      self->out_signal_type =
         TYPE_AUDIO;
-      master_track_init (track);
+      master_track_init (self);
       break;
     case TRACK_TYPE_AUDIO_BUS:
-      track->in_signal_type =
+      self->in_signal_type =
         TYPE_AUDIO;
-      track->out_signal_type =
+      self->out_signal_type =
         TYPE_AUDIO;
-      audio_bus_track_init (track);
+      audio_bus_track_init (self);
       break;
     case TRACK_TYPE_MIDI_BUS:
-      track->in_signal_type =
+      self->in_signal_type =
         TYPE_EVENT;
-      track->out_signal_type =
+      self->out_signal_type =
         TYPE_EVENT;
-      midi_bus_track_init (track);
+      midi_bus_track_init (self);
       break;
     case TRACK_TYPE_AUDIO_GROUP:
-      track->in_signal_type =
+      self->in_signal_type =
         TYPE_AUDIO;
-      track->out_signal_type =
+      self->out_signal_type =
         TYPE_AUDIO;
-      audio_group_track_init (track);
+      audio_group_track_init (self);
       break;
     case TRACK_TYPE_MIDI_GROUP:
-      track->in_signal_type =
+      self->in_signal_type =
         TYPE_EVENT;
-      track->out_signal_type =
+      self->out_signal_type =
         TYPE_EVENT;
-      midi_group_track_init (track);
+      midi_group_track_init (self);
       break;
     case TRACK_TYPE_MIDI:
-      track->in_signal_type =
+      self->in_signal_type =
         TYPE_EVENT;
-      track->out_signal_type =
+      self->out_signal_type =
         TYPE_EVENT;
-      midi_track_init (track);
+      midi_track_init (self);
       break;
     case TRACK_TYPE_CHORD:
-      track->in_signal_type =
+      self->in_signal_type =
         TYPE_EVENT;
-      track->out_signal_type =
+      self->out_signal_type =
         TYPE_EVENT;
-      chord_track_init (track);
+      chord_track_init (self);
       break;
     case TRACK_TYPE_MARKER:
-      track->in_signal_type =
+      self->in_signal_type =
         TYPE_UNKNOWN;
-      track->out_signal_type =
+      self->out_signal_type =
         TYPE_UNKNOWN;
-      marker_track_init (track);
+      marker_track_init (self);
       break;
     case TRACK_TYPE_TEMPO:
-      track->in_signal_type =
+      self->in_signal_type =
         TYPE_UNKNOWN;
-      track->out_signal_type =
+      self->out_signal_type =
         TYPE_UNKNOWN;
-      tempo_track_init (track);
+      tempo_track_init (self);
       break;
     default:
       g_return_val_if_reached (NULL);
     }
 
-  automation_tracklist_init (
-    &track->automation_tracklist, track);
+  self->processor = track_processor_new (self);
 
-  if (track_type_has_channel (track->type))
+  automation_tracklist_init (
+    &self->automation_tracklist, self);
+
+  if (track_type_has_channel (self->type))
     {
-      track->channel = channel_new (track);
+      self->channel = channel_new (self);
     }
 
-  track_generate_automation_tracks (track);
+  track_generate_automation_tracks (self);
 
-  return track;
+  return self;
 }
 
 /**
@@ -834,7 +833,7 @@ track_generate_automation_tracks (
            i < NUM_MIDI_AUTOMATABLES * 16; i++)
         {
           Port * cc =
-            track->processor.midi_automatables[i];
+            track->processor->midi_automatables[i];
           at = automation_track_new (cc);
           automation_tracklist_add_at (atl, at);
         }
@@ -1062,8 +1061,8 @@ track_set_pos (
     &track->automation_tracklist, track);
 
   track_processor_set_track_pos (
-    &track->processor, pos);
-  track->processor.track = track;
+    track->processor, pos);
+  track->processor->track = track;
 
   int max_size = 20;
   Port ** ports =

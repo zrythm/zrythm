@@ -615,36 +615,36 @@ graph_setup (
       g_warn_if_fail (node);
       if (tr->in_signal_type == TYPE_AUDIO)
         {
-          port = tr->processor.stereo_in->l;
+          port = tr->processor->stereo_in->l;
           node2 =
             graph_find_node_from_port (self, port);
           graph_node_connect (node2, node);
           graph_node_connect (
             initial_processor_node, node2);
-          port = tr->processor.stereo_in->r;
+          port = tr->processor->stereo_in->r;
           node2 =
             graph_find_node_from_port (self, port);
           graph_node_connect (node2, node);
           graph_node_connect (
             initial_processor_node, node2);
-          port = tr->processor.stereo_out->l;
+          port = tr->processor->stereo_out->l;
           node2 =
             graph_find_node_from_port (self, port);
           graph_node_connect (node, node2);
-          port = tr->processor.stereo_out->r;
+          port = tr->processor->stereo_out->r;
           node2 =
             graph_find_node_from_port (self, port);
           graph_node_connect (node, node2);
         }
       else if (tr->in_signal_type == TYPE_EVENT)
         {
-          port = tr->processor.midi_in;
+          port = tr->processor->midi_in;
           node2 =
             graph_find_node_from_port (self, port);
           graph_node_connect (node2, node);
           graph_node_connect (
             initial_processor_node, node2);
-          port = tr->processor.midi_out;
+          port = tr->processor->midi_out;
           node2 =
             graph_find_node_from_port (self, port);
           graph_node_connect (node, node2);
@@ -655,7 +655,7 @@ graph_setup (
                j < NUM_MIDI_AUTOMATABLES * 16; j++)
             {
               port =
-                tr->processor.midi_automatables[j];
+                tr->processor->midi_automatables[j];
               node2 =
                 graph_find_node_from_port (
                   self, port);

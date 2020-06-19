@@ -115,12 +115,12 @@ on_selection_changed (
         case TYPE_EVENT:
           channel_send_connect_midi (
             self->send_widget->send,
-            dest_track->processor.midi_in);
+            dest_track->processor->midi_in);
           break;
         case TYPE_AUDIO:
           channel_send_connect_stereo (
             self->send_widget->send,
-            dest_track->processor.stereo_in);
+            dest_track->processor->stereo_in);
           break;
         default:
           break;

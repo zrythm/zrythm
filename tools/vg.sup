@@ -45,3 +45,14 @@
   fun:lilv_*
   ...
 }
+
+{
+  <gtk_tree>
+  Memcheck:Leak
+  fun:realloc
+  fun:g_realloc
+  fun:_gtk_css_selector_tree_builder_build
+  ...
+  fun:g_object_set
+  ...
+}

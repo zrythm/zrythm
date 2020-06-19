@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -160,14 +160,11 @@ track_processor_init_loaded (
   TrackProcessor * self);
 
 /**
- * Inits the TrackProcessor to default values.
- *
- * @param self The TrackProcessor to init.
- * @param track The owner Track.
+ * Creates a new track processor for the given
+ * track.
  */
-void
-track_processor_init (
-  TrackProcessor * self,
+TrackProcessor *
+track_processor_new (
   Track *          track);
 
 /**
@@ -247,10 +244,10 @@ track_processor_set_track_pos (
   int              pos);
 
 /**
- * Frees the members of the TrackProcessor.
+ * Frees the TrackProcessor.
  */
 void
-track_processor_free_members (
+track_processor_free (
   TrackProcessor * self);
 
 /**

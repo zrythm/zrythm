@@ -174,10 +174,10 @@ create_model_for_ports (
                     TYPE_AUDIO)
                 {
                   port =
-                    track->processor.stereo_in->l;
+                    track->processor->stereo_in->l;
                   ADD_ROW;
                   port =
-                    track->processor.stereo_in->r;
+                    track->processor->stereo_in->r;
                   ADD_ROW;
                 }
 
@@ -195,7 +195,7 @@ create_model_for_ports (
                    track->in_signal_type ==
                      TYPE_EVENT)
             {
-              port = track->processor.midi_in;
+              port = track->processor->midi_in;
               ADD_ROW;
             }
         }

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This should be call from the zrythm root dir
+
 # add --undef-value-errors=no to stop condotion depends on
 # undefined value
 NO_SCAN_PLUGINS=1 \

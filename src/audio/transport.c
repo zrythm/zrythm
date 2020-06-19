@@ -433,7 +433,7 @@ transport_move_playhead (
                         midi_note, PLAYHEAD->frames))
                     {
                       midi_events =
-                        track->processor.
+                        track->processor->
                           piano_roll->
                             midi_events;
 

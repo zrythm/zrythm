@@ -123,9 +123,9 @@ midi_note_listen (
   Track * track =
     arranger_object_get_track (obj);
   g_return_if_fail (
-    track && track->processor.midi_in);
+    track && track->processor->midi_in);
   MidiEvents * events =
-    track->processor.midi_in->midi_events;
+    track->processor->midi_in->midi_events;
 
   if (listen)
     {
@@ -292,7 +292,7 @@ midi_note_set_val (
       g_return_if_fail (track);
 
       MidiEvents * midi_events =
-        track->processor.piano_roll->midi_events;
+        track->processor->piano_roll->midi_events;
 
       zix_sem_wait (&midi_events->access_sem);
       TrackLane * lane =
