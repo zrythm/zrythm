@@ -328,7 +328,7 @@ graph_node_process (
       /* decide what to do based on what port it
        * is */
       Port * port = node->port;
-      PortIdentifier * id = &port->id;
+      /*PortIdentifier * id = &port->id;*/
 
       /* if midi editor manual press */
       if (port == AUDIO_ENGINE->
@@ -338,45 +338,6 @@ graph_node_process (
             AUDIO_ENGINE->
               midi_editor_manual_press->
                 midi_events);
-        }
-
-      /* if channel stereo out port */
-      else if (
-        id->owner_type ==
-          PORT_OWNER_TYPE_TRACK &&
-        id->flow == FLOW_OUTPUT)
-        {
-          Track * track = port_get_track (port, 1);
-
-          /* clear it if any of the following is
-           * true:
-           * 1. muted
-           * 2. other track(s) is soloed and this
-           *   isn't
-           * 3. bounce mode and the track is set
-           *   to BOUNCE_OFF */
-          if (track_get_muted (track) ||
-              (tracklist_has_soloed (
-                TRACKLIST) &&
-                 !track_get_soloed (track) &&
-                 track != P_MASTER_TRACK) ||
-              (AUDIO_ENGINE->bounce_mode ==
-                 BOUNCE_ON &&
-               track->out_signal_type ==
-                 TYPE_AUDIO &&
-               track->type != TRACK_TYPE_MASTER &&
-               !track->bounce))
-            {
-              port_clear_buffer (port);
-            }
-          /* if not muted/soloed process it */
-          else
-            {
-              port_sum_signal_from_inputs (
-                port, g_start_frames,
-                local_offset,
-                nframes, noroll);
-            }
         }
 
       /* if exporting and the port is not a

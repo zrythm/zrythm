@@ -23,6 +23,7 @@
 #include "audio/control_room.h"
 #include "audio/engine.h"
 #include "audio/fader.h"
+#include "audio/master_track.h"
 #include "audio/midi.h"
 #include "audio/track.h"
 #include "gui/backend/event.h"
@@ -572,22 +573,52 @@ fader_process (
         BALANCE_CONTROL_ALGORITHM_LINEAR,
         pan, &calc_l, &calc_r);
 
-      while (start_frame < end)
+      Track * track = NULL;
+      if (self->type == FADER_TYPE_AUDIO_CHANNEL)
         {
-          /* 1. get input
-           * 2. apply fader
-           * 3. apply pan */
-          self->stereo_out->l->buf[start_frame] =
-            self->stereo_in->l->buf[start_frame] *
-              amp * calc_l;
-          self->stereo_out->r->buf[start_frame] =
-            self->stereo_in->r->buf[start_frame] *
-              amp * calc_r;
-          start_frame++;
+          track = fader_get_track (self);
+          g_return_if_fail (track);
+        }
+
+      /* clear it if any of the following is
+       * true:
+       * 1. muted
+       * 2. other track(s) is soloed and this
+       *   isn't
+       * 3. bounce mode and the track is set
+       *   to BOUNCE_OFF */
+      if (fader_get_muted (self) ||
+          (self->type == FADER_TYPE_AUDIO_CHANNEL &&
+            tracklist_has_soloed (TRACKLIST) &&
+            !fader_get_soloed (self) &&
+            track != P_MASTER_TRACK) ||
+          (AUDIO_ENGINE->bounce_mode == BOUNCE_ON &&
+           self->type == FADER_TYPE_AUDIO_CHANNEL &&
+           track->out_signal_type == TYPE_AUDIO &&
+           track->type != TRACK_TYPE_MASTER &&
+           !track->bounce))
+        {
+        }
+      else
+        {
+          while (start_frame < end)
+            {
+              /* 1. get input
+               * 2. apply fader
+               * 3. apply pan */
+              self->stereo_out->l->buf[
+                start_frame] =
+                  self->stereo_in->l->buf[
+                    start_frame] * amp * calc_l;
+              self->stereo_out->r->buf[
+                start_frame] =
+                  self->stereo_in->r->buf[
+                    start_frame] * amp * calc_r;
+              start_frame++;
+            }
         }
     }
-
-  if (self->type == FADER_TYPE_MIDI_CHANNEL)
+  else if (self->type == FADER_TYPE_MIDI_CHANNEL)
     {
       midi_events_append (
         self->midi_in->midi_events,
