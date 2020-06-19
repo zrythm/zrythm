@@ -218,6 +218,9 @@ typedef struct Zrythm
   bool                have_ui;
 
   CairoCaches *       cairo_caches;
+
+  /** Zrythm directory used during unit tests. */
+  char *              testing_dir;
 } Zrythm;
 
 /**

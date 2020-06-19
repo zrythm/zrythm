@@ -28,6 +28,7 @@
 #include "audio/router.h"
 #include "audio/port.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 

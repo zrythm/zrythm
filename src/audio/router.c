@@ -198,7 +198,7 @@ router_is_processing_thread (
 #ifndef HAVE_JACK
   if (pthread_equal (
         pthread_self (),
-        self->graph->main_thread.pthread))
+        self->graph->main_thread->pthread))
     return true;
 #endif
 

@@ -151,3 +151,9 @@ option (
   type: 'boolean',
   value: true,
   description: 'Turn on target machine-specific optimizations.')
+
+option (
+  'plugin_tests',
+  type: 'boolean',
+  value: false,
+  description: 'Whether to compile tests requiring test plugins')

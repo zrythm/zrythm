@@ -35,6 +35,7 @@
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>

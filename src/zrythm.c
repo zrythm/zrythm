@@ -64,9 +64,6 @@
 /** This is declared extern in zrythm.h. */
 Zrythm * zrythm = NULL;
 
-/** Zrythm directory used during unit tests. */
-static char * testing_dir = NULL;
-
 /**
  * FIXME move somewhere else.
  */
@@ -283,14 +280,14 @@ zrythm_get_user_dir (
 {
   if (ZRYTHM_TESTING)
     {
-      if (testing_dir)
-        return testing_dir;
+      if (ZRYTHM->testing_dir)
+        return ZRYTHM->testing_dir;
       else
         {
-          testing_dir =
+          ZRYTHM->testing_dir =
             g_dir_make_tmp (
               "zrythm_test_dir_XXXXXX", NULL);
-          return testing_dir;
+          return ZRYTHM->testing_dir;
         }
     }
 

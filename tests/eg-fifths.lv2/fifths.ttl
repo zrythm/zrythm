@@ -5,7 +5,8 @@
 @prefix midi:  <http://lv2plug.in/ns/ext/midi#> .
 
 <http://lv2plug.in/plugins/eg-fifths>
-	a lv2:Plugin ;
+	a lv2:Plugin ,
+    lv2:MIDIPlugin;
 	doap:name "Example Fifths22" ;
 	doap:license <http://opensource.org/licenses/isc> ;
 	lv2:project <http://lv2plug.in/ns/lv2> ;
