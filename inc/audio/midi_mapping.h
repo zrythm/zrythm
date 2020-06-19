@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -157,6 +157,10 @@ midi_mappings_get_for_port (
   MidiMappings * self,
   Port *         dest_port,
   int *          size);
+
+void
+midi_mappings_free (
+  MidiMappings * self);
 
 /**
  * @}

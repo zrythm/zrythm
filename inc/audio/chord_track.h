@@ -117,12 +117,6 @@ chord_track_clear (
   ChordTrack * self);
 
 /**
- * Frees the chord Track.
- */
-void
-chord_track_free (ChordTrack * self);
-
-/**
  * @}
  */
 

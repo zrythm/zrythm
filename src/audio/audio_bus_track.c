@@ -41,14 +41,3 @@ audio_bus_track_setup (AudioBusTrack * self)
 {
   channel_track_setup ((ChannelTrack *) self);
 }
-
-/**
- * Frees the track.
- *
- * TODO
- */
-void
-audio_bus_track_free (AudioBusTrack * track)
-{
-
-}

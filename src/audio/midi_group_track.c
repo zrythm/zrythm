@@ -41,14 +41,3 @@ midi_group_track_setup (Track * self)
 {
   channel_track_setup ((ChannelTrack *) self);
 }
-
-/**
- * Frees the track.
- *
- * TODO
- */
-void
-midi_group_track_free (Track * track)
-{
-
-}

@@ -181,9 +181,3 @@ tempo_track_clear (
   /* TODO */
   /*g_warn_if_reached ();*/
 }
-
-void
-tempo_track_free (Track * self)
-{
-  free (self);
-}

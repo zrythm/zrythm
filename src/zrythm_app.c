@@ -45,10 +45,11 @@
 #include "utils/cairo.h"
 #include "utils/env.h"
 #include "utils/gtk.h"
+#include "utils/io.h"
 #include "utils/localization.h"
 #include "utils/log.h"
 #include "utils/object_pool.h"
-#include "utils/io.h"
+#include "utils/objects.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -976,8 +977,6 @@ zrythm_app_on_shutdown (
 #ifdef HAVE_GTK_SOURCE_VIEW_4
   gtk_source_finalize ();
 #endif
-
-  g_object_unref (self->default_settings);
 }
 
 /**
@@ -1009,6 +1008,22 @@ zrythm_app_new (void)
 }
 
 static void
+finalize (
+  ZrythmApp * self)
+{
+  g_message (
+    "%s (%s): finalizing ZrythmApp...",
+    __func__, __FILE__);
+
+  g_object_unref (self->default_settings);
+
+  object_free_w_func_and_null (
+    ui_caches_free, self->ui_caches);
+
+  g_message ("%s: done", __func__);
+}
+
+static void
 zrythm_app_class_init (ZrythmAppClass *class)
 {
   G_APPLICATION_CLASS (class)->activate =
@@ -1019,6 +1034,10 @@ zrythm_app_class_init (ZrythmAppClass *class)
     zrythm_app_open;
   /*G_APPLICATION_CLASS (class)->shutdown =*/
     /*zrythm_app_shutdown;*/
+
+  GObjectClass * klass = G_OBJECT_CLASS (class);
+
+  klass->finalize = (GObjectFinalizeFunc) finalize;
 }
 
 static void

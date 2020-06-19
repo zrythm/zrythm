@@ -1373,6 +1373,14 @@ engine_free (
   stereo_ports_disconnect (self->monitor_out);
   stereo_ports_free (self->monitor_out);
 
+  port_disconnect_all (self->midi_in);
+  object_free_w_func_and_null (
+    port_free, self->midi_in);
+  port_disconnect_all (
+    self->midi_editor_manual_press);
+  object_free_w_func_and_null (
+    port_free, self->midi_editor_manual_press);
+
   object_free_w_func_and_null (
     sample_processor_free, self->sample_processor);
   object_free_w_func_and_null (

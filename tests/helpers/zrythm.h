@@ -100,6 +100,16 @@ test_helper_zrythm_init ()
 }
 
 /**
+ * To be called by every test's main at the end to
+ * clean up (TODO).
+ */
+void
+test_helper_zrythm_cleanup ()
+{
+  object_zero_and_free (ZRYTHM);
+}
+
+/**
  * To be called after test_helper_zrythm_init() to
  * initialize the UI (GTK).
  */

@@ -191,12 +191,3 @@ chord_track_remove_scale (
     ET_ARRANGER_OBJECT_REMOVED,
     ARRANGER_OBJECT_TYPE_SCALE_OBJECT);
 }
-
-void
-chord_track_free (ChordTrack * self)
-{
-  /* remove chords */
-  for (int i = 0; i < self->num_chord_regions; i++)
-    arranger_object_free (
-      (ArrangerObject *) self->chord_regions[i]);
-}

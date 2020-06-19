@@ -106,13 +106,3 @@ instrument_track_toggle_plugin_visible (
   EVENTS_PUSH (
     ET_PLUGIN_VISIBILITY_CHANGED, plugin);
 }
-
-/**
- * Frees the track.
- *
- * TODO
- */
-void
-instrument_track_free (InstrumentTrack * track)
-{
-}

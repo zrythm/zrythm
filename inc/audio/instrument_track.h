@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2020 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -73,14 +73,6 @@ instrument_track_is_plugin_visible (
 void
 instrument_track_toggle_plugin_visible (
   Track * self);
-
-/**
- * Frees the track.
- *
- * TODO
- */
-void
-instrument_track_free (InstrumentTrack * track);
 
 /**
  * @}

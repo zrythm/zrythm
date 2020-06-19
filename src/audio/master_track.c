@@ -39,15 +39,3 @@ master_track_setup (MasterTrack * self)
 
   audio_bus_track_setup (track);
 }
-
-/**
- * Frees the track.
- *
- * TODO
- */
-void
-master_track_free (MasterTrack * track)
-{
-
-}
-

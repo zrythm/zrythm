@@ -135,6 +135,10 @@ void
 cached_vst_descriptors_clear (
   CachedVstDescriptors * self);
 
+void
+cached_vst_descriptors_free (
+  CachedVstDescriptors * self);
+
 /**
  * @}
  */

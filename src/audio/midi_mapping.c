@@ -20,6 +20,7 @@
 #include "audio/control_port.h"
 #include "audio/midi_mapping.h"
 #include "utils/arrays.h"
+#include "utils/objects.h"
 
 /**
  * Initializes the MidiMappings after a Project
@@ -105,10 +106,23 @@ midi_mappings_apply (
 MidiMappings *
 midi_mappings_new ()
 {
-  MidiMappings * self =
-    calloc (1, sizeof (MidiMappings));
+  MidiMappings * self = object_new (MidiMappings);
 
   return self;
+}
+
+void
+midi_mappings_free (
+  MidiMappings * self)
+{
+  for (int i = 0; i < self->num_mappings; i++)
+    {
+      object_free_w_func_and_null (
+        ext_port_free,
+        self->mappings[i].device_port);
+    }
+
+  object_zero_and_free (self);
 }
 
 /**

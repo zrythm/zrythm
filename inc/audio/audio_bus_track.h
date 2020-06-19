@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,13 +36,5 @@ audio_bus_track_init (Track * track);
 
 void
 audio_bus_track_setup (AudioBusTrack * self);
-
-/**
- * Frees the track.
- *
- * TODO
- */
-void
-audio_bus_track_free (AudioBusTrack * track);
 
 #endif // __AUDIO_AUDIO_BUS_TRACK_H__

@@ -97,13 +97,6 @@ tempo_track_set_bpm (
   bool    fire_events);
 
 /**
- * Frees the Track.
- */
-void
-tempo_track_free (
-  Track * self);
-
-/**
  * @}
  */
 

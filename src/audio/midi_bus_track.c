@@ -41,14 +41,3 @@ midi_bus_track_setup (MidiBusTrack * self)
 {
   channel_track_setup ((ChannelTrack *) self);
 }
-
-/**
- * Frees the track.
- *
- * TODO
- */
-void
-midi_bus_track_free (MidiBusTrack * track)
-{
-
-}

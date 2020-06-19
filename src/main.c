@@ -543,7 +543,10 @@ main (int    argc,
   zrythm_app = zrythm_app_new ();
 
   g_message ("running Zrythm...");
-  return
+  int ret =
     g_application_run (
       G_APPLICATION (zrythm_app), argc, argv);
+  g_object_unref (zrythm_app);
+
+  return ret;
 }

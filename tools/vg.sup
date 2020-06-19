@@ -47,12 +47,55 @@
 }
 
 {
-  <gtk_tree>
+  <g_object_set>
   Memcheck:Leak
   fun:realloc
   fun:g_realloc
-  fun:_gtk_css_selector_tree_builder_build
   ...
   fun:g_object_set
+  ...
+}
+
+{
+  <g_object_set_malloc>
+  Memcheck:Leak
+  fun:malloc
+  fun:g_malloc
+  ...
+  fun:g_object_set
+  ...
+}
+
+{
+  <gtk_widget_init_template>
+  Memcheck:Leak
+  ...
+  fun:gtk_widget_init_template
+  ...
+}
+
+{
+  <gtk_scrolled_window_set_vadj>
+  Memcheck:Leak
+  ...
+  fun:g_object_set
+  fun:gtk_scrolled_window_set_vadjustment
+  ...
+}
+
+{
+  <gtk_scrolled_window_set_hadj>
+  Memcheck:Leak
+  ...
+  fun:g_object_set
+  fun:gtk_scrolled_window_set_hadjustment
+  ...
+}
+
+{
+  <pango_pixel_extents>
+  Memcheck:Leak
+  ...
+  fun:pango_layout_get_pixel_extents
   ...
 }

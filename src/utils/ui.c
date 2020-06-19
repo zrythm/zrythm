@@ -39,6 +39,7 @@
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/localization.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -1340,4 +1341,19 @@ ui_caches_new ()
     UI_COLOR_HIGHLIGHT_CHORD);
 
   return self;
+}
+
+void
+ui_caches_free (
+  UiCaches * self)
+{
+  for (int i = 0; i < self->num_cursors; i++)
+    {
+      UiCursor * cursor = &self->cursors[i];
+
+      g_object_unref (cursor->cursor);
+      g_object_unref (cursor->pixbuf);
+    }
+
+  object_zero_and_free (self);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,13 +34,5 @@ midi_group_track_init (Track * track);
 
 void
 midi_group_track_setup (Track * self);
-
-/**
- * Frees the track.
- *
- * TODO
- */
-void
-midi_group_track_free (Track * track);
 
 #endif // __MIDI_MIDI_BUS_TRACK_H__

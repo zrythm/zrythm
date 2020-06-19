@@ -1787,60 +1787,52 @@ track_append_all_ports (
  * Wrapper for each track type.
  */
 void
-track_free (Track * track)
+track_free (Track * self)
 {
-  if (track->name)
-    {
-      g_free (track->name);
-      track->name = NULL;
-    }
-  if (track->comment)
-    {
-      g_free (track->comment);
-      track->comment = NULL;
-    }
+  g_free_and_null (self->name);
+  g_free_and_null (self->comment);
 
   /* remove regions */
-  /* FIXME move inside *_track_free */
-  int i;
-  for (i = 0; i < track->num_lanes; i++)
-    track_lane_free (track->lanes[i]);
+  for (int i = 0; i < self->num_lanes; i++)
+    {
+      track_lane_free (self->lanes[i]);
+    }
 
   /* remove automation points, curves, tracks,
    * lanes*/
-  /* FIXME move inside *_track_free */
   automation_tracklist_free_members (
-    &track->automation_tracklist);
+    &self->automation_tracklist);
 
-#define _FREE_TRACK(type_caps,sc) \
-  case TRACK_TYPE_##type_caps: \
-    sc##_track_free (track); \
-    break
-
-  switch (track->type)
+  /* remove chords */
+  for (int i = 0; i < self->num_chord_regions; i++)
     {
-      _FREE_TRACK (INSTRUMENT, instrument);
-      _FREE_TRACK (MASTER, master);
-      _FREE_TRACK (AUDIO, audio);
-      _FREE_TRACK (CHORD, chord);
-      _FREE_TRACK (AUDIO_BUS, audio_bus);
-      _FREE_TRACK (MIDI_BUS, audio_bus);
-      _FREE_TRACK (AUDIO_GROUP, audio_group);
-      _FREE_TRACK (MIDI_GROUP, midi_group);
-    default:
-      /* TODO */
-      break;
+      arranger_object_free (
+        (ArrangerObject *) self->chord_regions[i]);
+      self->chord_regions[i] = NULL;
+    }
+
+  if (self->bpm_port)
+    {
+      port_disconnect_all (self->bpm_port);
+      object_free_w_func_and_null (
+        port_free, self->bpm_port);
+    }
+  if (self->time_sig_port)
+    {
+      port_disconnect_all (self->time_sig_port);
+      object_free_w_func_and_null (
+        port_free, self->time_sig_port);
     }
 
 #undef _FREE_TRACK
 
-  if (track->channel)
-    channel_free (track->channel);
+  if (self->channel)
+    channel_free (self->channel);
 
-  if (track->widget &&
-      GTK_IS_WIDGET (track->widget))
+  if (self->widget &&
+      GTK_IS_WIDGET (self->widget))
     gtk_widget_destroy (
-      GTK_WIDGET (track->widget));
+      GTK_WIDGET (self->widget));
 
-  object_zero_and_free (track);
+  object_zero_and_free (self);
 }

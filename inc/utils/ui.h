@@ -735,6 +735,10 @@ ui_get_normalized_draggable_value (
 UiCaches *
 ui_caches_new (void);
 
+void
+ui_caches_free (
+  UiCaches * self);
+
 /**
  * @}
  */

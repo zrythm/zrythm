@@ -247,6 +247,8 @@ project_free (Project * self)
     tracklist_free, self->tracklist);
   object_free_w_func_and_null (
     engine_free, self->audio_engine);
+  object_free_w_func_and_null (
+    midi_mappings_free, self->midi_mappings);
 
   object_zero_and_free (self);
 

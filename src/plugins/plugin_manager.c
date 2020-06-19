@@ -1232,6 +1232,10 @@ plugin_manager_free (
   zix_sem_destroy (&self->symap_lock);
   lilv_world_free (self->lv2_nodes.lilv_world);
 
+  object_free_w_func_and_null (
+    cached_vst_descriptors_free,
+    self->cached_vst_descriptors);
+
   object_zero_and_free (self);
 
   g_message ("%s: done", __func__);

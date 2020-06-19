@@ -414,14 +414,3 @@ audio_track_fill_stereo_ports_from_clip (
         }
     }
 }
-
-/**
- * Frees the track.
- *
- * TODO
- */
-void
-audio_track_free (AudioTrack * track)
-{
-
-}

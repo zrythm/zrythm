@@ -188,10 +188,3 @@ marker_track_remove_marker (
     ET_ARRANGER_OBJECT_REMOVED,
     ARRANGER_OBJECT_TYPE_MARKER);
 }
-
-void
-marker_track_free (MarkerTrack * self)
-{
-  /* TODO free Marker's */
-
-}

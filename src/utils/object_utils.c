@@ -219,8 +219,13 @@ object_utils_free (
     {
       free_later_source (self);
     }
+  object_free_w_func_and_null (
+    stack_free, self->free_stack_for_source);
 
   mpmc_queue_free (self->free_queue);
+
+  zix_sem_destroy (
+    &self->free_stack_for_source_lock);
 
   object_zero_and_free (self);
 
