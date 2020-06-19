@@ -28,7 +28,7 @@
 #include "audio/midi.h"
 #include "audio/router.h"
 #include "audio/port.h"
-#include "audio/routing.h"
+#include "audio/router.h"
 #include "audio/rtmidi_device.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
