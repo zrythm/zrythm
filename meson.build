@@ -90,6 +90,7 @@ cdata.set_quoted ('CONFIGURE_LIBDIR', libdir)
 cdata.set_quoted ('CONFIGURE_BINDIR', bindir)
 cdata.set_quoted ('LIB_SUFFIX', lib_suffix)
 cdata.set_quoted ('BIN_SUFFIX', bin_suffix)
+cdata.set_quoted ('GSCHEMAS_DIR', schemasdir)
 cdata.set_quoted (
   'BUILD_TYPE', get_option ('buildtype'))
 if get_option ('trial_ver')

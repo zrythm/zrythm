@@ -34,6 +34,7 @@
 #include <unistd.h>
 
 #include "gui/widgets/main_window.h"
+#include "utils/gdb.h"
 #include "guile/guile.h"
 #include "utils/gtk.h"
 #include "utils/log.h"
@@ -327,25 +328,28 @@ main (int    argc,
 #define OPT_PRETTY_PRINT 5914
 #define OPT_CONVERT_ZPJ_TO_YAML 4198
 #define OPT_CONVERT_YAML_TO_ZPJ 35173
+#define OPT_GDB 4124
+#define OPT_PROFILE 6843
 
   int c, option_index;
   static struct option long_options[] =
     {
-      {"version", no_argument, 0, OPT_VERSION},
-      {"help", no_argument, 0, OPT_HELP},
-      {"convert-zpj-to-yaml", required_argument, 0,
-        OPT_CONVERT_ZPJ_TO_YAML},
-      {"convert-yaml-to-zpj", required_argument, 0,
-        OPT_CONVERT_YAML_TO_ZPJ},
-      {"output", required_argument, 0,
-        OPT_OUTPUT},
-      {"print-settings", no_argument, 0,
-        OPT_PRINT_SETTINGS},
-      {"reset-to-factory", no_argument,
-        0, OPT_RESET_TO_FACTORY},
-      {"pretty", no_argument,
-        0, OPT_PRETTY_PRINT},
-      {0, 0, 0, 0}
+      { "version", no_argument, 0, OPT_VERSION},
+      { "help", no_argument, 0, OPT_HELP },
+      { "convert-zpj-to-yaml", required_argument, 0,
+        OPT_CONVERT_ZPJ_TO_YAML },
+      { "convert-yaml-to-zpj", required_argument, 0,
+        OPT_CONVERT_YAML_TO_ZPJ },
+      { "output", required_argument, 0,
+        OPT_OUTPUT },
+      { "print-settings", no_argument, 0,
+        OPT_PRINT_SETTINGS },
+      { "reset-to-factory", no_argument,
+        0, OPT_RESET_TO_FACTORY },
+      { "pretty", no_argument, 0, OPT_PRETTY_PRINT },
+      { "gdb", no_argument, 0, OPT_GDB },
+      { "profile", no_argument, 0, OPT_PROFILE },
+      { 0, 0, 0, 0 }
     };
   opterr = 0;
 
@@ -395,6 +399,11 @@ main (int    argc,
           break;
         case OPT_PRETTY_PRINT:
           pretty_print = true;
+          break;
+        case OPT_GDB:
+          gdb_exec (argv, true);
+          break;
+        case OPT_PROFILE:
           break;
         case '?':
           /* getopt_long already printed an error
