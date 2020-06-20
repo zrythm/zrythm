@@ -415,6 +415,11 @@ zrythm_get_dir (
             g_build_filename (
               user_dir, "themes", NULL);
           break;
+        case ZRYTHM_DIR_USER_PROFILING:
+          res =
+            g_build_filename (
+              user_dir, "profiling", NULL);
+          break;
         default:
           break;
         }

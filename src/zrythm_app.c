@@ -93,6 +93,7 @@ init_dirs_and_files ()
   MK_USER_DIR (PROJECTS);
   MK_USER_DIR (TEMPLATES);
   MK_USER_DIR (LOG);
+  MK_USER_DIR (PROFILING);
   MK_USER_DIR (THEMES);
 
 #undef MK_USER_DIR

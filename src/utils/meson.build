@@ -43,6 +43,7 @@ util_srcs = [
   'symap.c',
   'system.c',
   'ui.c',
+  'valgrind.c',
   'yaml.c',
   'windows_errors.c',
   ]

@@ -22,28 +22,41 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "utils/gdb.h"
+#include "utils/io.h"
+#include "utils/valgrind.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
-extern char ** environ;
-
 void
-gdb_exec (
-  char ** argv,
-  bool    break_at_warnings)
+valgrind_exec_callgrind (
+  char ** argv)
 {
-  char * gdb_prg = g_find_program_in_path ("gdb");
-  if (!gdb_prg)
+  char * valgrind_prg =
+    g_find_program_in_path ("valgrind");
+  if (!valgrind_prg)
     {
       g_error (
-        "gdb is not found. "
+        "valgrind is not found. "
         "Please install it first.");
     }
 
+  char * dir =
+    zrythm_get_dir (ZRYTHM_DIR_USER_PROFILING);
+  io_mkdir (dir);
+  char * out_file =
+    g_build_filename (dir, "callground.out.%p", NULL);
+  char * callgrind_out_file_arg =
+    g_strdup_printf (
+      "--callgrind-out-file=%s", out_file);
+  g_free (dir);
+  g_free (out_file);
+
   /* array of args */
-  char * gdb_args[] = {
-    "gdb", "-ex", "run", "--args", argv[0],  NULL };
+  char * valgrind_args[] = {
+    "valgrind", "--tool=callgrind",
+    callgrind_out_file_arg,
+    argv[0], NULL };
 
 #define PRINT_ENV \
   g_message ( \
@@ -53,7 +66,7 @@ gdb_exec (
   /* array of current env variables
    * + G_DEBUG */
   int max_size = 100;
-  char ** gdb_env =
+  char ** valgrind_env =
     calloc (max_size, sizeof (char *));
   int i = 1;
   char * env_var;
@@ -61,28 +74,19 @@ gdb_exec (
     {
       if (i + 6 > max_size)
         {
-          gdb_env =
+          valgrind_env =
             realloc (
-              gdb_env, max_size * sizeof (char *));
+              valgrind_env,
+              max_size * sizeof (char *));
         }
-      gdb_env[i - 2] = env_var;
+      valgrind_env[i - 2] = env_var;
       PRINT_ENV;
     }
-  if (break_at_warnings)
-    {
-      gdb_env[i - 2] =
-        "G_DEBUG=fatal_warnings";
-      PRINT_ENV;
-      gdb_env[i - 1] = NULL;
-    }
-  else
-    {
-      gdb_env[i - 2] = NULL;
-    }
+  valgrind_env[i - 2] = NULL;
 
-  /* run gdb */
+  /* run */
 #ifdef __linux__
-  execvpe ("gdb", gdb_args, gdb_env);
+  execvpe ("valgrind", valgrind_args, valgrind_env);
 #else
   g_error (
     "execvpe() is not available on your platform");

@@ -160,7 +160,7 @@ z_carla_discovery_parse_plugin_info (
   if (error)
     {
       g_free (error);
-      g_warning (
+      g_message (
         "error found for %s: %s",
         plugin_path, results);
       g_free (results);
@@ -168,7 +168,7 @@ z_carla_discovery_parse_plugin_info (
     }
   else if (string_is_equal ("", results, false))
     {
-      g_warning (
+      g_message (
         "No results returned for %s",
         plugin_path);
       g_free (results);

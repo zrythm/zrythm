@@ -41,6 +41,7 @@
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
+#include "utils/valgrind.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "zrythm.h"
@@ -329,7 +330,7 @@ main (int    argc,
 #define OPT_CONVERT_ZPJ_TO_YAML 4198
 #define OPT_CONVERT_YAML_TO_ZPJ 35173
 #define OPT_GDB 4124
-#define OPT_PROFILE 6843
+#define OPT_CALLGRIND 6843
 
   int c, option_index;
   static struct option long_options[] =
@@ -348,7 +349,7 @@ main (int    argc,
         0, OPT_RESET_TO_FACTORY },
       { "pretty", no_argument, 0, OPT_PRETTY_PRINT },
       { "gdb", no_argument, 0, OPT_GDB },
-      { "profile", no_argument, 0, OPT_PROFILE },
+      { "callgrind", no_argument, 0, OPT_CALLGRIND },
       { 0, 0, 0, 0 }
     };
   opterr = 0;
@@ -403,7 +404,9 @@ main (int    argc,
         case OPT_GDB:
           gdb_exec (argv, true);
           break;
-        case OPT_PROFILE:
+        case OPT_CALLGRIND:
+          ZRYTHM = zrythm_new (TRUE, FALSE);
+          valgrind_exec_callgrind (argv);
           break;
         case '?':
           /* getopt_long already printed an error

@@ -109,8 +109,13 @@ typedef enum ZrythmDirType
   /** Subdirs of \ref ZRYTHM_DIR_USER_TOP. */
   ZRYTHM_DIR_USER_PROJECTS,
   ZRYTHM_DIR_USER_TEMPLATES,
-  ZRYTHM_DIR_USER_LOG,
   ZRYTHM_DIR_USER_THEMES,
+
+  /** Log files. */
+  ZRYTHM_DIR_USER_LOG,
+
+  /** Profiling files. */
+  ZRYTHM_DIR_USER_PROFILING,
 
 } ZrythmDirType;
 
