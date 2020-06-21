@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -361,6 +361,17 @@ void
 tracklist_activate_all_plugins (
   Tracklist * self,
   bool        activate);
+
+/**
+ * Exposes each track's ports that should be
+ * exposed to the backend.
+ *
+ * This should be called after setting up the
+ * engine.
+ */
+void
+tracklist_expose_ports_to_backend (
+  Tracklist * self);
 
 Tracklist *
 tracklist_new (Project * project);

@@ -88,12 +88,6 @@ port_init_loaded (
       g_warn_if_fail (self->dests[i]);
     }
 
-  /* connect to backend if flag set */
-  if (port_is_exposed_to_backend (self))
-    {
-      port_set_expose_to_backend (self, 1);
-    }
-
   if (AUDIO_ENGINE->block_length > 0)
     {
       self->buf =
@@ -2715,6 +2709,9 @@ port_set_expose_to_backend (
   Port * self,
   int    expose)
 {
+  g_return_if_fail (
+    AUDIO_ENGINE && AUDIO_ENGINE->setup);
+
   if (self->id.type == TYPE_AUDIO)
     {
       switch (AUDIO_ENGINE->audio_backend)

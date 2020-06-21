@@ -791,6 +791,32 @@ tracklist_get_num_visible_tracks (
   return ret;
 }
 
+/**
+ * Exposes each track's ports that should be
+ * exposed to the backend.
+ *
+ * This should be called after setting up the
+ * engine.
+ */
+void
+tracklist_expose_ports_to_backend (
+  Tracklist * self)
+{
+  g_return_if_fail (self);
+
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+      g_return_if_fail (track);
+
+      if (track_type_has_channel (track->type))
+        {
+          Channel * ch = track_get_channel (track);
+          channel_expose_ports_to_backend (ch);
+        }
+    }
+}
+
 Tracklist *
 tracklist_new (Project * project)
 {

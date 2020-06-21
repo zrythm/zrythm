@@ -613,6 +613,9 @@ create_default (Project * self)
 
   engine_setup (self->audio_engine);
 
+  tracklist_expose_ports_to_backend (
+    self->tracklist);
+
   engine_update_frames_per_tick (
     AUDIO_ENGINE, TRANSPORT->beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
@@ -801,28 +804,26 @@ load (
       yaml_size + sizeof (char));
   yaml[yaml_size] = '\0';
 
-  Project * prj =
-    project_deserialize (yaml);
+  Project * self = project_deserialize (yaml);
   free (yaml);
-  if (!prj)
+  if (!self)
     {
       g_critical ("Failed to load project");
       return -1;
     }
-  prj->backup_dir =
+  self->backup_dir =
     g_strdup (PROJECT->backup_dir);
 
   char * version = zrythm_get_version (0);
   if (!string_is_equal (
-        prj->version,
-        version, 1))
+        self->version, version, 1))
     {
       char * str =
         g_strdup_printf (
           _("This project was created with a "
             "different version of Zrythm (%s). "
             "It may not work correctly."),
-          prj->version);
+          self->version);
       ui_show_message_full (
         GTK_WINDOW (MAIN_WINDOW),
         GTK_MESSAGE_WARNING, str);
@@ -830,7 +831,7 @@ load (
     }
   g_free (version);
 
-  if (prj == NULL)
+  if (self == NULL)
     {
       ui_show_error_message (
         MAIN_WINDOW,
@@ -852,7 +853,8 @@ load (
 
   if (PROJECT)
     {
-      project_free (PROJECT);
+      object_free_w_func_and_null (
+        project_free, PROJECT);
     }
 
   if (loading_while_running && ZRYTHM_HAVE_UI)
@@ -861,13 +863,13 @@ load (
     }
 
   g_message ("initing loaded structures");
-  PROJECT = prj;
+  PROJECT = self;
 
   /* re-update paths for the newly loaded project */
-  set_dir (prj, dir);
+  set_dir (self, dir);
 
   /* set the tempo track */
-  Tracklist * tracklist = prj->tracklist;
+  Tracklist * tracklist = self->tracklist;
   for (int i = 0; i < tracklist->num_tracks; i++)
     {
       Track * track = tracklist->tracks[i];
@@ -879,16 +881,17 @@ load (
         }
     }
 
-  char * filepath_noext = g_path_get_basename (dir);
+  char * filepath_noext =
+    g_path_get_basename (dir);
   g_free (dir);
 
-  PROJECT->title = filepath_noext;
+  self->title = filepath_noext;
 
-  undo_manager_init (&PROJECT->undo_manager, true);
-  engine_init_loaded (PROJECT->audio_engine);
+  undo_manager_init (&self->undo_manager, true);
+  engine_init_loaded (self->audio_engine);
 
   clip_editor_init_loaded (CLIP_EDITOR);
-  tracklist_init_loaded (PROJECT->tracklist);
+  tracklist_init_loaded (self->tracklist);
 
   engine_update_frames_per_tick (
     AUDIO_ENGINE, TRANSPORT->beats_per_bar,
@@ -909,35 +912,34 @@ load (
       port = ports[i];
       port_init_loaded (port);
     }
-  free (ports);
 
   midi_mappings_init_loaded (
-    PROJECT->midi_mappings);
+    self->midi_mappings);
 
   arranger_selections_init_loaded (
     (ArrangerSelections *)
-    &PROJECT->timeline_selections);
+    &self->timeline_selections);
   arranger_selections_init_loaded (
     (ArrangerSelections *)
-    &PROJECT->midi_arranger_selections);
+    &self->midi_arranger_selections);
   arranger_selections_init_loaded (
     (ArrangerSelections *)
-    &PROJECT->chord_selections);
+    &self->chord_selections);
   arranger_selections_init_loaded (
     (ArrangerSelections *)
-    &PROJECT->automation_selections);
+    &self->automation_selections);
 
   tracklist_selections_init_loaded (
-    &PROJECT->tracklist_selections);
+    &self->tracklist_selections);
 
   snap_grid_update_snap_points (
-    &PROJECT->snap_grid_timeline);
+    &self->snap_grid_timeline);
   snap_grid_update_snap_points (
-    &PROJECT->snap_grid_midi);
+    &self->snap_grid_midi);
   quantize_options_update_quantize_points (
-    &PROJECT->quantize_opts_timeline);
+    &self->quantize_opts_timeline);
   quantize_options_update_quantize_points (
-    &PROJECT->quantize_opts_editor);
+    &self->quantize_opts_editor);
 
   region_link_group_manager_init_loaded (
     REGION_LINK_GROUP_MANAGER);
@@ -945,11 +947,21 @@ load (
   RECREATE_MAIN_WINDOW;
 
   /* sanity check */
-  project_sanity_check (PROJECT);
+  project_sanity_check (self);
 
-  engine_setup (PROJECT->audio_engine);
+  engine_setup (self->audio_engine);
 
-  PROJECT->loaded = true;
+  for (int i = 0; i < num_ports; i++)
+    {
+      port = ports[i];
+      if (port_is_exposed_to_backend (port))
+        {
+          port_set_expose_to_backend (port, true);
+        }
+    }
+  free (ports);
+
+  self->loaded = true;
   g_message ("project loaded");
 
   /* recalculate the routing graph */
@@ -960,7 +972,7 @@ load (
   if (ZRYTHM_HAVE_UI)
     {
       header_widget_set_subtitle (
-        MW_HEADER, PROJECT->title);
+        MW_HEADER, self->title);
     }
 
   return 0;

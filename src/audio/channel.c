@@ -939,7 +939,10 @@ channel_connect (
     }
 
   /* expose ports to backend */
-  channel_expose_ports_to_backend (ch);
+  if (AUDIO_ENGINE && AUDIO_ENGINE->setup)
+    {
+      channel_expose_ports_to_backend (ch);
+    }
 
   /* connect the designated midi inputs */
   channel_reconnect_ext_input_ports (ch);

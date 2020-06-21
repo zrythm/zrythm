@@ -254,14 +254,6 @@ engine_setup (
       engine_dummy_midi_setup (self);
     }
 
-  /* Expose ports */
-  port_set_expose_to_backend (
-    self->midi_in, true);
-  port_set_expose_to_backend (
-    self->monitor_out->l, true);
-  port_set_expose_to_backend (
-    self->monitor_out->r, true);
-
   self->buf_size_set = false;
 
   /* connect the sample processor to the engine
@@ -277,6 +269,14 @@ engine_setup (
     self->monitor_out, true);
 
   self->setup = true;
+
+  /* Expose ports */
+  port_set_expose_to_backend (
+    self->midi_in, true);
+  port_set_expose_to_backend (
+    self->monitor_out->l, true);
+  port_set_expose_to_backend (
+    self->monitor_out->r, true);
 }
 
 static void
