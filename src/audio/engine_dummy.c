@@ -23,6 +23,7 @@
 #include "audio/port.h"
 #include "audio/tempo_track.h"
 #include "project.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 
@@ -57,10 +58,20 @@ engine_dummy_setup (
   AudioEngine * self)
 {
   /* Set audio engine properties */
-  self->sample_rate   = 44100;
-  /*self->block_length  = 16384;*/
-  self->block_length  = 256;
+  self->sample_rate = 44100;
   self->midi_buf_size = 4096;
+
+  if (ZRYTHM_HAVE_UI && zrythm_app->buf_size)
+    {
+      self->block_length =
+        (nframes_t)
+        strtol (
+          zrythm_app->buf_size, (char **)NULL, 10);
+    }
+  else
+    {
+      self->block_length = 256;
+    }
 
   g_warn_if_fail (
     TRANSPORT && TRANSPORT->beats_per_bar > 1);

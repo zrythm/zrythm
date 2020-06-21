@@ -264,9 +264,17 @@ print_help ()
     "  -p, --print-settings  print current settings\n"
     "  --pretty        print output in user-friendly way\n"
     "  --reset-to-factory  reset to factory settings\n"
+    "  --gdb           run Zrythm through GDB (debugger)\n"
+    "  --callgrind     run Zrythm through callgrind (profiler)\n"
+    "  --audio-backend  override the audio backend to use\n"
+    "  --midi-backend  override the MIDI backend to use\n"
+    "  --dummy         overrides both the audio and MIDI backends to dummy\n"
+    "  --buf-size      overrides the buffer size to use for the audio backend, if applicable\n"
+    "  --interactive   interactive mode, where applicable\n"
     "  -v, --version   output version information and exit\n\n"
     "Examples:\n"
     "  zrythm -v       print version\n"
+    "  zrythm --callgrind --dummy --buf-size=8192  profile Zrythm using the dummy backend and a buffer size of 8192\n"
     "  zrythm --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  convert a compressed zpj project to YAML\n"
     "  zrythm -p --pretty  pretty-print current settings\n\n"
     "Report bugs to %s\n"),
@@ -331,6 +339,11 @@ main (int    argc,
 #define OPT_CONVERT_YAML_TO_ZPJ 35173
 #define OPT_GDB 4124
 #define OPT_CALLGRIND 6843
+#define OPT_AUDIO_BACKEND 4811
+#define OPT_MIDI_BACKEND 9197
+#define OPT_DUMMY 2311
+#define OPT_BUF_SIZE 39145
+#define OPT_INTERACTIVE 34966
 
   int c, option_index;
   static struct option long_options[] =
@@ -347,9 +360,20 @@ main (int    argc,
         OPT_PRINT_SETTINGS },
       { "reset-to-factory", no_argument,
         0, OPT_RESET_TO_FACTORY },
-      { "pretty", no_argument, 0, OPT_PRETTY_PRINT },
+      { "pretty", no_argument, 0,
+        OPT_PRETTY_PRINT },
       { "gdb", no_argument, 0, OPT_GDB },
-      { "callgrind", no_argument, 0, OPT_CALLGRIND },
+      { "callgrind", no_argument, 0,
+        OPT_CALLGRIND },
+      { "audio-backend", required_argument, 0,
+        OPT_AUDIO_BACKEND },
+      { "midi-backend", required_argument, 0,
+        OPT_MIDI_BACKEND },
+      { "dummy", no_argument, 0, OPT_DUMMY },
+      { "buf-size", required_argument, 0,
+        OPT_BUF_SIZE },
+      { "interactive", no_argument, 0,
+        OPT_INTERACTIVE },
       { 0, 0, 0, 0 }
     };
   opterr = 0;
@@ -358,8 +382,14 @@ main (int    argc,
   bool print_settings = false;
   bool convert_yaml_to_zpj = false;
   bool convert_zpj_to_yaml = false;
+  bool run_gdb = false;
+  bool run_callgrind = false;
+  bool interactive = false;
   char * from_file = NULL;
   char * output = NULL;
+  char * audio_backend = NULL;
+  char * midi_backend = NULL;
+  char * buf_size = NULL;
   while (true)
     {
       c =
@@ -402,24 +432,26 @@ main (int    argc,
           pretty_print = true;
           break;
         case OPT_GDB:
-#ifdef __linux__
-          ZRYTHM = zrythm_new (TRUE, FALSE);
-          gdb_exec (argv, true);
-#else
-          g_error (
-            "This option is not available on your "
-            "platform");
-#endif
+          run_gdb = true;
           break;
         case OPT_CALLGRIND:
-#ifdef __linux__
-          ZRYTHM = zrythm_new (TRUE, FALSE);
-          valgrind_exec_callgrind (argv);
-#else
-          g_error (
-            "This option is not available on your "
-            "platform");
-#endif
+          run_callgrind = true;
+          break;
+        case OPT_INTERACTIVE:
+          interactive = true;
+          break;
+        case OPT_AUDIO_BACKEND:
+          audio_backend = optarg;
+          break;
+        case OPT_MIDI_BACKEND:
+          midi_backend = optarg;
+          break;
+        case OPT_DUMMY:
+          audio_backend = "none";
+          midi_backend = "none";
+          break;
+        case OPT_BUF_SIZE:
+          buf_size = optarg;
           break;
         case '?':
           /* getopt_long already printed an error
@@ -437,8 +469,29 @@ main (int    argc,
       settings_print (pretty_print);
       return 0;
     }
-
-  if (convert_yaml_to_zpj)
+  else if (run_gdb)
+    {
+#ifdef __linux__
+      ZRYTHM = zrythm_new (TRUE, FALSE);
+      gdb_exec (argv, true, interactive);
+#else
+      g_error (
+        "This option is not available on your "
+        "platform");
+#endif
+    }
+  else if (run_callgrind)
+    {
+#ifdef __linux__
+      ZRYTHM = zrythm_new (TRUE, FALSE);
+      valgrind_exec_callgrind (argv);
+#else
+      g_error (
+        "This option is not available on your "
+        "platform");
+#endif
+    }
+  else if (convert_yaml_to_zpj)
     {
       verify_output_exists (output);
       verify_file_exists (from_file);
@@ -565,12 +618,14 @@ main (int    argc,
 
   /* send activate signal */
   g_message ("Initing Zrythm app...");
-  zrythm_app = zrythm_app_new ();
+  zrythm_app =
+    zrythm_app_new (
+      audio_backend, midi_backend, buf_size);
 
   g_message ("running Zrythm...");
   int ret =
     g_application_run (
-      G_APPLICATION (zrythm_app), argc, argv);
+      G_APPLICATION (zrythm_app), 0, NULL);
   g_object_unref (zrythm_app);
 
   return ret;

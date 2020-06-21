@@ -41,7 +41,8 @@
 void
 gdb_exec (
   char ** argv,
-  bool    break_at_warnings);
+  bool    break_at_warnings,
+  bool    interactive);
 
 #endif
 

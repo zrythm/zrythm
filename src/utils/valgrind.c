@@ -64,22 +64,22 @@ valgrind_exec_callgrind (
   g_free (filename);
 
   /* array of args */
-  char * valgrind_args[] = {
+  const char * valgrind_args[] = {
     "valgrind", "--tool=callgrind",
     callgrind_out_file_arg,
     argv[0], NULL };
 
 #define PRINT_ENV \
   g_message ( \
-    "%s: added env %s at %d", __func__, \
+    "%s: added env %s at %zu", __func__, \
     env_var, i - 2)
 
   /* array of current env variables
    * + G_DEBUG */
-  int max_size = 100;
+  size_t max_size = 100;
   char ** valgrind_env =
     calloc (max_size, sizeof (char *));
-  int i = 1;
+  size_t i = 1;
   char * env_var;
   while ((env_var = *(environ + i++)))
     {
@@ -96,7 +96,9 @@ valgrind_exec_callgrind (
   valgrind_env[i - 2] = NULL;
 
   /* run */
-  execvpe ("valgrind", valgrind_args, valgrind_env);
+  execvpe (
+    "valgrind", (char * const *) valgrind_args,
+    (char * const *) valgrind_env);
 }
 
 #endif // __linux__

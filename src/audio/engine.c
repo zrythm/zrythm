@@ -287,13 +287,25 @@ init_common (
   self->router = router_new ();
 
   /* get audio backend */
-  AudioBackend ab_code =
-    ZRYTHM_TESTING ?
-      AUDIO_BACKEND_DUMMY :
-      (AudioBackend)
-      g_settings_get_enum (
-        S_P_GENERAL_ENGINE,
-        "audio-backend");
+  AudioBackend ab_code = AUDIO_BACKEND_DUMMY;
+  if (ZRYTHM_TESTING)
+    {
+      ab_code = AUDIO_BACKEND_DUMMY;
+    }
+  else if (zrythm_app->audio_backend)
+    {
+      ab_code =
+        engine_audio_backend_from_string (
+          zrythm_app->audio_backend);
+    }
+  else
+    {
+      ab_code =
+        (AudioBackend)
+        g_settings_get_enum (
+          S_P_GENERAL_ENGINE,
+          "audio-backend");
+    }
 
   int backend_reset_to_dummy = 0;
 
@@ -343,13 +355,26 @@ init_common (
     }
 
   /* get midi backend */
-  MidiBackend mb_code =
-    ZRYTHM_TESTING ?
-      MIDI_BACKEND_DUMMY :
-      (MidiBackend)
-      g_settings_get_enum (
-        S_P_GENERAL_ENGINE,
-        "midi-backend");
+  MidiBackend mb_code = MIDI_BACKEND_DUMMY;
+  if (ZRYTHM_TESTING)
+    {
+      mb_code = MIDI_BACKEND_DUMMY;
+    }
+  else if (zrythm_app->midi_backend)
+    {
+      mb_code =
+        engine_midi_backend_from_string (
+          zrythm_app->midi_backend);
+    }
+  else
+    {
+      mb_code =
+        (MidiBackend)
+        g_settings_get_enum (
+          S_P_GENERAL_ENGINE,
+          "midi-backend");
+    }
+
   switch (mb_code)
     {
     case MIDI_BACKEND_DUMMY:

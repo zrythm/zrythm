@@ -37,7 +37,8 @@ extern char ** environ;
 void
 gdb_exec (
   char ** argv,
-  bool    break_at_warnings)
+  bool    break_at_warnings,
+  bool    interactive)
 {
   char * gdb_prg = g_find_program_in_path ("gdb");
   if (!gdb_prg)
@@ -66,38 +67,62 @@ gdb_exec (
   g_free (datetime_str);
   g_free (filename);
 
+  /* see https://blog.cryptomilk.org/2010/12/23/gdb-backtrace-to-file/ and
+   * https://wiki.gentoo.org/wiki/Project:Quality_Assurance/Backtraces for more details */
+
   /* array of args */
-  char * gdb_args[] = {
-    "gdb", "-q", "--batch",
-    "-ex", "run",
-    "-ex", "set logging overwrite on",
-    "-ex", gdb_out_file_arg,
-    "-ex", "set logging on",
-    "-ex", "set pagination off",
-    "-ex", "handle SIG32 pass nostop noprint",
-    "-ex", "echo backtrace:\\n",
-    "-ex", "backtrace full",
-    "-ex", "echo \\n\\nregisters:\\n",
-    "-ex", "info registers",
-    "-ex", "echo \\n\\ncurrent instructions:\\n",
-    "-ex", "x/16i $pc",
-    "-ex", "echo \\n\\nthreads backtrace:\\n",
-    "-ex", "thread apply all backtrace",
-    "-ex", "set logging off",
-    "-ex", "quit",
-    "--args", argv[0],  NULL };
+  const char ** gdb_args;
+  if (interactive)
+    {
+      const char * _gdb_args[] = {
+        "gdb", "-q",
+        "-ex", "run",
+        "-ex", "set logging overwrite on",
+        "-ex", gdb_out_file_arg,
+        "-ex", "set logging on",
+        "-ex", "set pagination off",
+        "-ex", "handle SIG32 pass nostop noprint",
+        "-ex", "echo backtrace:\\n",
+        "-ex", "backtrace full",
+        "--args", argv[0],  NULL };
+      gdb_args = _gdb_args;
+    }
+  else
+    {
+      const char * _gdb_args[] = {
+        "gdb", "-q", "--batch",
+        "-ex", "run",
+        "-ex", "set logging overwrite on",
+        "-ex", gdb_out_file_arg,
+        "-ex", "set logging on",
+        "-ex", "set pagination off",
+        "-ex", "handle SIG32 pass nostop noprint",
+        "-ex", "echo backtrace:\\n",
+        "-ex", "backtrace full",
+        "-ex", "echo \\n\\nregisters:\\n",
+        "-ex", "info registers",
+        "-ex",
+        "echo \\n\\ncurrent instructions:\\n",
+        "-ex", "x/16i $pc",
+        "-ex", "echo \\n\\nthreads backtrace:\\n",
+        "-ex", "thread apply all backtrace",
+        "-ex", "set logging off",
+        "-ex", "quit",
+        "--args", argv[0],  NULL };
+      gdb_args = _gdb_args;
+    }
 
 #define PRINT_ENV \
   g_message ( \
-    "%s: added env %s at %d", __func__, \
+    "%s: added env %s at %zu", __func__, \
     gdb_env[i - 2], i - 2)
 
   /* array of current env variables
    * + G_DEBUG */
-  int max_size = 100;
-  char ** gdb_env =
+  size_t max_size = 100;
+  const char ** gdb_env =
     calloc (max_size, sizeof (char *));
-  int i = 1;
+  size_t i = 1;
   char * env_var;
   while ((env_var = *(environ + i++)))
     {
@@ -123,7 +148,9 @@ gdb_exec (
     }
 
   /* run gdb */
-  execvpe ("gdb", gdb_args, gdb_env);
+  execvpe (
+    "gdb", (char * const *) gdb_args,
+    (char * const *) gdb_env);
 }
 
 #endif // __linux__

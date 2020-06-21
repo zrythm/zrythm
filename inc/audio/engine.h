@@ -190,7 +190,7 @@ static const char * audio_backend_str[] =
   "ALSA",
   "JACK",
   "PortAudio",
-  "SDL2",
+  "SDL",
   "RtAudio",
 };
 
@@ -720,6 +720,27 @@ engine_audio_backend_to_string (
   return audio_backend_str[backend];
 }
 
+static inline AudioBackend
+engine_audio_backend_from_string (
+  char * str)
+{
+  for (int i = 0; i < NUM_AUDIO_BACKENDS; i++)
+    {
+      if (string_is_equal (
+            audio_backend_str[i], str, true))
+        {
+          return (AudioBackend) i;
+        }
+    }
+
+  if (string_is_equal (str, "none", true))
+    {
+      return AUDIO_BACKEND_DUMMY;
+    }
+
+  g_return_val_if_reached (AUDIO_BACKEND_DUMMY);
+}
+
 /**
  * Returns the MIDI backend as a string.
  */
@@ -728,6 +749,31 @@ engine_midi_backend_to_string (
   MidiBackend backend)
 {
   return midi_backend_str[backend];
+}
+
+static inline MidiBackend
+engine_midi_backend_from_string (
+  char * str)
+{
+  for (int i = 0; i < NUM_MIDI_BACKENDS; i++)
+    {
+      if (string_is_equal (
+            midi_backend_str[i], str, true))
+        {
+          return (MidiBackend) i;
+        }
+    }
+
+  if (string_is_equal (str, "none", true))
+    {
+      return MIDI_BACKEND_DUMMY;
+    }
+  else if (string_is_equal (str, "jack", true))
+    {
+      return MIDI_BACKEND_JACK;
+    }
+
+  g_return_val_if_reached (MIDI_BACKEND_DUMMY);
 }
 
 /**

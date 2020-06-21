@@ -987,7 +987,10 @@ zrythm_app_on_shutdown (
  * This also initializes the Zrythm struct.
  */
 ZrythmApp *
-zrythm_app_new (void)
+zrythm_app_new (
+  char * audio_backend,
+  char * midi_backend,
+  char * buf_size)
 {
   ZrythmApp * self =  g_object_new (
     ZRYTHM_APP_TYPE,
@@ -997,6 +1000,10 @@ zrythm_app_new (void)
     NULL);
 
   self->gtk_thread = g_thread_self ();
+
+  self->audio_backend = audio_backend;
+  self->midi_backend = midi_backend;
+  self->buf_size = buf_size;
 
   lock_memory ();
   ZRYTHM = zrythm_new (true, false);

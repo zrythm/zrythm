@@ -57,16 +57,16 @@ typedef struct UiCaches UiCaches;
  */
 struct _ZrythmApp
 {
-  GtkApplication      parent;
+  GtkApplication     parent;
 
   /**
    * Default settings (got from
    * gtk_settings_get_default()).
    */
-  GtkSettings *       default_settings;
+  GtkSettings *      default_settings;
 
   /** Main window. */
-  MainWindowWidget *  main_window;
+  MainWindowWidget * main_window;
 
   /**
    * The GTK thread where the main GUI loop runs.
@@ -74,24 +74,24 @@ struct _ZrythmApp
    * This is stored for identification purposes
    * in other threads.
    */
-  GThread *           gtk_thread;
+  GThread *          gtk_thread;
 
-  UiCaches *          ui_caches;
+  UiCaches *         ui_caches;
 
   /** Initialization thread. */
-  GThread *           init_thread;
+  GThread *          init_thread;
 
   /** Semaphore for setting the progress in the
    * splash screen from a non-gtk thread. */
-  ZixSem              progress_status_lock;
+  ZixSem             progress_status_lock;
 
   /** Flag to set when initialization has
    * finished. */
-  bool                init_finished;
+  bool               init_finished;
 
   /** Status text to be used in the splash
    * screen. */
-  char                status[800];
+  char               status[800];
 
   /** Splash screen. */
   SplashWindowWidget * splash;
@@ -102,7 +102,18 @@ struct _ZrythmApp
   /** Project selector. */
   ProjectAssistantWidget * assistant;
 
-  bool                 have_svg_loader;
+  bool               have_svg_loader;
+
+  /** Audio backend passed with --audio-backend=,
+   * if any. */
+  char *             audio_backend;
+
+  /** MIDI backend passed with --audio-backend=,
+   * if any. */
+  char *             midi_backend;
+
+  /** Buffer size passed with --buf-size=, if any. */
+  char *             buf_size;
 };
 
 /**
@@ -116,7 +127,10 @@ extern ZrythmApp * zrythm_app;
  * This also initializes the Zrythm struct.
  */
 ZrythmApp *
-zrythm_app_new (void);
+zrythm_app_new (
+  char * audio_backend,
+  char * midi_backend,
+  char * buf_size);
 
 /**
  * Sets the current status and progress percentage
