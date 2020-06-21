@@ -41,6 +41,13 @@ char *
 datetime_get_current_as_string (void);
 
 /**
+ * Get the current datetime to be used in filenames,
+ * eg, for the log file.
+ */
+char *
+datetime_get_for_filename (void);
+
+/**
  * @}
  */
 

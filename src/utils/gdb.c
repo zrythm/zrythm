@@ -25,7 +25,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "utils/datetime.h"
 #include "utils/gdb.h"
+#include "utils/io.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
@@ -44,14 +47,50 @@ gdb_exec (
         "Please install it first.");
     }
 
+  char * datetime_str =
+    datetime_get_for_filename ();
+  char * filename =
+    g_strdup_printf (
+      "gdb_%s.bt", datetime_str);
+  char * dir =
+    zrythm_get_dir (ZRYTHM_DIR_USER_GDB);
+  io_mkdir (dir);
+  char * out_file =
+    g_build_filename (
+      dir, filename, NULL);
+  char * gdb_out_file_arg =
+    g_strdup_printf (
+      "set logging file %s", out_file);
+  g_free (dir);
+  g_free (out_file);
+  g_free (datetime_str);
+  g_free (filename);
+
   /* array of args */
   char * gdb_args[] = {
-    "gdb", "-ex", "run", "--args", argv[0],  NULL };
+    "gdb", "-q", "--batch",
+    "-ex", "run",
+    "-ex", "set logging overwrite on",
+    "-ex", gdb_out_file_arg,
+    "-ex", "set logging on",
+    "-ex", "set pagination off",
+    "-ex", "handle SIG32 pass nostop noprint",
+    "-ex", "echo backtrace:\\n",
+    "-ex", "backtrace full",
+    "-ex", "echo \\n\\nregisters:\\n",
+    "-ex", "info registers",
+    "-ex", "echo \\n\\ncurrent instructions:\\n",
+    "-ex", "x/16i $pc",
+    "-ex", "echo \\n\\nthreads backtrace:\\n",
+    "-ex", "thread apply all backtrace",
+    "-ex", "set logging off",
+    "-ex", "quit",
+    "--args", argv[0],  NULL };
 
 #define PRINT_ENV \
   g_message ( \
     "%s: added env %s at %d", __func__, \
-    env_var, i - 2)
+    gdb_env[i - 2], i - 2)
 
   /* array of current env variables
    * + G_DEBUG */

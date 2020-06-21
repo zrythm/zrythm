@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "utils/datetime.h"
 #include "utils/io.h"
 #include "utils/valgrind.h"
 #include "zrythm.h"
@@ -43,16 +44,24 @@ valgrind_exec_callgrind (
         "Please install it first.");
     }
 
+  char * datetime_str =
+    datetime_get_for_filename ();
+  char * filename =
+    g_strdup_printf (
+      "callgrind.out_%s.%s", datetime_str, "%p");
   char * dir =
     zrythm_get_dir (ZRYTHM_DIR_USER_PROFILING);
   io_mkdir (dir);
   char * out_file =
-    g_build_filename (dir, "callground.out.%p", NULL);
+    g_build_filename (
+      dir, filename, NULL);
   char * callgrind_out_file_arg =
     g_strdup_printf (
       "--callgrind-out-file=%s", out_file);
   g_free (dir);
   g_free (out_file);
+  g_free (datetime_str);
+  g_free (filename);
 
   /* array of args */
   char * valgrind_args[] = {

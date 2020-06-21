@@ -117,6 +117,9 @@ typedef enum ZrythmDirType
   /** Profiling files. */
   ZRYTHM_DIR_USER_PROFILING,
 
+  /** Gdb backtrace files. */
+  ZRYTHM_DIR_USER_GDB,
+
 } ZrythmDirType;
 
 /**

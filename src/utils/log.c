@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "utils/datetime.h"
 #include "utils/mpmc_queue.h"
 #include "utils/io.h"
 #include "utils/log.h"
@@ -209,12 +210,8 @@ log_init_with_file (
   Log * self)
 {
   /* open file to write to */
-  GDateTime * datetime =
-    g_date_time_new_now_local ();
   char * str_datetime =
-    g_date_time_format (
-      datetime,
-      "%F_%H-%M-%S");
+    datetime_get_for_filename ();
   char * user_log_dir =
     zrythm_get_dir (ZRYTHM_DIR_USER_LOG);
   char * str =
@@ -229,7 +226,6 @@ log_init_with_file (
   g_free (user_log_dir);
   g_free (str);
   g_free (str_datetime);
-  g_date_time_unref (datetime);
 
   /* init buffers */
   self->messages_buf = gtk_text_buffer_new (NULL);

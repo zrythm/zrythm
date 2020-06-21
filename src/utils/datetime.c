@@ -44,3 +44,21 @@ datetime_get_current_as_string ()
 
   return str;
 }
+
+/**
+ * Get the current datetime to be used in filenames,
+ * eg, for the log file.
+ */
+char *
+datetime_get_for_filename (void)
+{
+  GDateTime * datetime =
+    g_date_time_new_now_local ();
+  char * str_datetime =
+    g_date_time_format (
+      datetime,
+      "%F_%H-%M-%S");
+  g_date_time_unref (datetime);
+
+  return str_datetime;
+}

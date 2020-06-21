@@ -420,6 +420,11 @@ zrythm_get_dir (
             g_build_filename (
               user_dir, "profiling", NULL);
           break;
+        case ZRYTHM_DIR_USER_GDB:
+          res =
+            g_build_filename (
+              user_dir, "gdb", NULL);
+          break;
         default:
           break;
         }

@@ -403,6 +403,7 @@ main (int    argc,
           break;
         case OPT_GDB:
 #ifdef __linux__
+          ZRYTHM = zrythm_new (TRUE, FALSE);
           gdb_exec (argv, true);
 #else
           g_error (
