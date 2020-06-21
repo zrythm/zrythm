@@ -17,6 +17,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
+#ifdef __linux__
+
 #define _GNU_SOURCE // for execvpe()
 
 #include <stdlib.h>
@@ -81,10 +84,7 @@ gdb_exec (
     }
 
   /* run gdb */
-#ifdef __linux__
   execvpe ("gdb", gdb_args, gdb_env);
-#else
-  g_error (
-    "execvpe() is not available on your platform");
-#endif
 }
+
+#endif // __linux__

@@ -34,9 +34,13 @@
  * @{
  */
 
+#ifdef __linux__
+
 void
 valgrind_exec_callgrind (
   char ** argv);
+
+#endif
 
 /**
  * @}

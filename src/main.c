@@ -402,11 +402,23 @@ main (int    argc,
           pretty_print = true;
           break;
         case OPT_GDB:
+#ifdef __linux__
           gdb_exec (argv, true);
+#else
+          g_error (
+            "This option is not available on your "
+            "platform");
+#endif
           break;
         case OPT_CALLGRIND:
+#ifdef __linux__
           ZRYTHM = zrythm_new (TRUE, FALSE);
           valgrind_exec_callgrind (argv);
+#else
+          g_error (
+            "This option is not available on your "
+            "platform");
+#endif
           break;
         case '?':
           /* getopt_long already printed an error

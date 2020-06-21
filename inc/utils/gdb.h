@@ -36,10 +36,14 @@
  * @{
  */
 
+#ifdef __linux__
+
 void
 gdb_exec (
   char ** argv,
   bool    break_at_warnings);
+
+#endif
 
 /**
  * @}

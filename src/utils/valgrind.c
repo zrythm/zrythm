@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifdef __linux__
+
 #define _GNU_SOURCE // for execvpe()
 
 #include <stdlib.h>
@@ -85,10 +87,7 @@ valgrind_exec_callgrind (
   valgrind_env[i - 2] = NULL;
 
   /* run */
-#ifdef __linux__
   execvpe ("valgrind", valgrind_args, valgrind_env);
-#else
-  g_error (
-    "execvpe() is not available on your platform");
-#endif
 }
+
+#endif // __linux__
