@@ -1785,8 +1785,7 @@ expose_to_rtaudio (
   Port * self,
   int    expose)
 {
-  Track * track =
-    port_get_track (self, 0);
+  Track * track = port_get_track (self, 0);
   if (!track)
     return;
 
@@ -2938,14 +2937,21 @@ port_get_track (
   const Port * self,
   int   warn_if_fail)
 {
-  g_return_val_if_fail (self && TRACKLIST, NULL);
+  Track * track = NULL;
+  if (self->id.track_pos != -1)
+    {
+      g_return_val_if_fail (
+        self && TRACKLIST, NULL);
 
-  Track * track =
-    TRACKLIST->tracks[self->id.track_pos];
+      track =
+        TRACKLIST->tracks[self->id.track_pos];
+    }
+
   if (!track && warn_if_fail)
     {
       g_warning ("%s: not found", __func__);
     }
+
   return track;
 }
 
