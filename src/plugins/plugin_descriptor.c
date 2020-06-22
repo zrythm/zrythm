@@ -21,7 +21,9 @@
 
 #include "audio/track.h"
 #include "plugins/plugin_descriptor.h"
+#include "plugins/plugin_manager.h"
 #include "plugins/plugin.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
@@ -69,6 +71,7 @@ plugin_descriptor_copy (
   dest->path = g_strdup (src->path);
   dest->uri = g_strdup (src->uri);
   dest->open_with_carla = src->open_with_carla;
+  dest->bridge_mode = src->bridge_mode;
   dest->ghash = src->ghash;
 }
 
@@ -342,6 +345,64 @@ plugin_descriptor_is_valid_for_slot_type (
       return self->num_midi_outs > 0;
       break;
     default:
+      break;
+    }
+
+  g_return_val_if_reached (false);
+}
+
+/**
+ * Returns if the Plugin has a supported custom
+ * UI.
+ */
+bool
+plugin_descriptor_has_custom_ui (
+  PluginDescriptor * self)
+{
+  switch (self->protocol)
+    {
+    case PROT_LV2:
+      {
+        LilvNode * uri =
+          lilv_new_uri (LILV_WORLD, self->uri);
+        const LilvPlugin * lilv_pl =
+          lilv_plugins_get_by_uri (
+            PM_LILV_NODES.lilv_plugins, uri);
+        LilvUIs * uis =
+          lilv_plugin_get_uis (lilv_pl);
+        const LilvUI * wrappable_ui;
+        const LilvUI * bridged_ui;
+        const LilvUI * external_ui;
+        lv2_plugin_pick_ui (
+          uis, LV2_PLUGIN_UI_WRAPPABLE,
+          &wrappable_ui, NULL);
+        lv2_plugin_pick_ui (
+          uis, LV2_PLUGIN_UI_FOR_BRIDGING,
+          &bridged_ui, NULL);
+        lv2_plugin_pick_ui (
+          uis, LV2_PLUGIN_UI_EXTERNAL,
+          &external_ui, NULL);
+        lilv_uis_free (uis);
+        lilv_node_free (uri);
+        if (wrappable_ui || bridged_ui ||
+            external_ui)
+          {
+            return true;
+          }
+        else
+          {
+            return false;
+          }
+      }
+      break;
+    case PROT_VST:
+    case PROT_VST3:
+    case PROT_AU:
+      /* assume true */
+      return true;
+      break;
+    default:
+      return false;
       break;
     }
 

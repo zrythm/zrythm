@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-config.h"
+
 #include "actions/create_tracks_action.h"
 #include "audio/engine.h"
 #include "gui/widgets/expander_box.h"
@@ -56,6 +58,20 @@ enum
   PL_NUM_COLUMNS
 };
 
+static void
+activate_plugin_descr (
+  PluginDescriptor * descr)
+{
+  TrackType tt =
+    track_get_type_from_plugin_descriptor (descr);
+
+  UndoableAction * ua =
+    create_tracks_action_new (
+      tt, descr, NULL, TRACKLIST->num_tracks, 1);
+
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
 /**
  * Called when row is double clicked.
  */
@@ -78,24 +94,7 @@ on_row_activated (
   PluginDescriptor * descr =
     g_value_get_pointer (&value);
 
-#ifndef HAVE_CARLA
-  if (descr->protocol == PROT_VST)
-    {
-      ui_show_error_message (
-        MAIN_WINDOW,
-        _("VST support without Carla is deprecated "
-        "and will be removed in future versions."));
-    }
-#endif
-
-  TrackType tt =
-    track_get_type_from_plugin_descriptor (descr);
-
-  UndoableAction * ua =
-    create_tracks_action_new (
-      tt, descr, NULL, TRACKLIST->num_tracks, 1);
-
-  undo_manager_perform (UNDO_MANAGER, ua);
+  activate_plugin_descr (descr);
 }
 
 /**
@@ -180,19 +179,78 @@ visible_func (
 }
 
 static void
+on_plugin_descr_activate (
+  GtkMenuItem *      menuitem,
+  PluginDescriptor * descr)
+{
+  g_message ("%s: activated", __func__);
+  activate_plugin_descr (descr);
+}
+
+static void
+delete_plugin_descr (
+  PluginDescriptor * descr,
+  GClosure *         closure)
+{
+  plugin_descriptor_free (descr);
+}
+
+static void
 show_context_menu (
   PluginBrowserWidget * self,
   PluginDescriptor *    descr)
 {
-  GtkWidget *menu;
-  /*GtkMenuItem *menuitem;*/
-  menu = gtk_menu_new();
+  GtkWidget *menuitem;
+  GtkWidget * menu = gtk_menu_new();
+  PluginDescriptor * new_descr;
 
-#define APPEND(mi) \
+  /* FIXME this is allocating memory every time */
+
+#define CREATE_WITH_LBL(lbl) \
+  menuitem = gtk_menu_item_new_with_label (lbl); \
+  gtk_widget_set_visible (menuitem, true); \
+  APPEND; \
+  new_descr = plugin_descriptor_clone (descr)
+
+#define CONNECT_SIGNAL \
+  g_signal_connect_data ( \
+    G_OBJECT (menuitem), "activate", \
+    G_CALLBACK (on_plugin_descr_activate), \
+    new_descr, \
+    (GClosureNotify) delete_plugin_descr, 0)
+
+#define APPEND \
   gtk_menu_shell_append ( \
     GTK_MENU_SHELL (menu), \
     GTK_WIDGET (menuitem));
 
+  if (!descr->open_with_carla)
+    {
+      CREATE_WITH_LBL (_("Add to project"));
+      CONNECT_SIGNAL;
+    }
+#ifdef HAVE_CARLA
+  CREATE_WITH_LBL (
+    _("Add to project (carla)"));
+  new_descr->open_with_carla = true;
+  CONNECT_SIGNAL;
+
+  if (plugin_descriptor_has_custom_ui (descr) &&
+      descr->bridge_mode == CARLA_BRIDGE_NONE)
+    {
+      CREATE_WITH_LBL (
+        _("Add to project (bridged UI)"));
+      new_descr->open_with_carla = true;
+      new_descr->bridge_mode = CARLA_BRIDGE_UI;
+      CONNECT_SIGNAL;
+    }
+
+  CREATE_WITH_LBL (
+    _("Add to project (bridged full)"));
+  new_descr->open_with_carla = true;
+  new_descr->bridge_mode = CARLA_BRIDGE_FULL;
+  CONNECT_SIGNAL;
+#endif
 
 #undef APPEND
 

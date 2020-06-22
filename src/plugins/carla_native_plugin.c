@@ -32,6 +32,7 @@
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
+#include "plugins/carla/carla_discovery.h"
 #include "plugins/carla_native_plugin.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -286,74 +287,43 @@ create_plugin (
     ENGINE_OPTION_PLUGIN_PATH, PLUGIN_LV2,
     PLUGIN_MANAGER->lv2_path);
 
-  if (descr->protocol == PROT_LV2)
+  /* if no bridge mode specified, calculate the
+   * bridge mode here */
+  CarlaBridgeMode bridge_mode = descr->bridge_mode;
+  if (bridge_mode == CARLA_BRIDGE_NONE)
     {
-      /* set bridging on if needed */
-      /* TODO if the UI and DSP binary is the same
-       * file, bridge the whole plugin */
-      LilvNode * lv2_uri =
-        lilv_new_uri (LILV_WORLD, descr->uri);
-      const LilvPlugin * lilv_plugin =
-        lilv_plugins_get_by_uri (
-          PM_LILV_NODES.lilv_plugins,
-          lv2_uri);
-      lilv_node_free (lv2_uri);
-      LilvUIs * uis =
-        lilv_plugin_get_uis (lilv_plugin);
-      const LilvUI * picked_ui;
-      const LilvNode * picked_ui_type;
-      bool needs_bridging =
-        lv2_plugin_pick_ui (
-          uis, LV2_PLUGIN_UI_FOR_BRIDGING,
-          &picked_ui, &picked_ui_type);
-      if (needs_bridging)
-        {
-          const LilvNode * ui_uri =
-            lilv_ui_get_uri (picked_ui);
-          LilvNodes * ui_required_features =
-            lilv_world_find_nodes (
-              LILV_WORLD, ui_uri,
-              PM_LILV_NODES.core_requiredFeature,
-              NULL);
-          if (lilv_nodes_contains (
-                ui_required_features,
-                PM_LILV_NODES.data_access) ||
-              lilv_nodes_contains (
-                ui_required_features,
-                PM_LILV_NODES.instance_access) ||
-              lilv_node_equals (
-                picked_ui_type,
-                PM_LILV_NODES.ui_Qt4UI) ||
-              lilv_node_equals (
-                picked_ui_type,
-                PM_LILV_NODES.ui_Qt5UI) ||
-              lilv_node_equals (
-                picked_ui_type,
-                PM_LILV_NODES.ui_GtkUI) ||
-              lilv_node_equals (
-                picked_ui_type,
-                PM_LILV_NODES.ui_Gtk3UI)
-              )
-            {
-              g_message (
-                "plugin must be bridged whole, "
-                "using plugin bridge");
-              carla_set_engine_option (
-                self->host_handle,
-                ENGINE_OPTION_PREFER_PLUGIN_BRIDGES,
-                true, NULL);
-            }
-          else
-            {
-              g_message ("using UI bridge only");
-              carla_set_engine_option (
-                self->host_handle,
-                ENGINE_OPTION_PREFER_UI_BRIDGES,
-                true, NULL);
-            }
-          lilv_nodes_free (ui_required_features);
-        }
-      lilv_uis_free (uis);
+      g_message (
+        "%s: recalculating bridge mode...",
+        __func__);
+      bridge_mode =
+        z_carla_discovery_get_bridge_mode (descr);
+    }
+
+  g_message (
+    "%s: using bridge mode %s", __func__,
+    carla_bridge_mode_strings[bridge_mode].str);
+
+  /* set bridging on if needed */
+  switch (bridge_mode)
+    {
+    case CARLA_BRIDGE_FULL:
+      g_message (
+        "plugin must be bridged whole, "
+        "using plugin bridge");
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_PREFER_PLUGIN_BRIDGES,
+        true, NULL);
+      break;
+    case CARLA_BRIDGE_UI:
+      g_message ("using UI bridge only");
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_PREFER_UI_BRIDGES,
+        true, NULL);
+      break;
+    default:
+      break;
     }
 
   int ret = 0;

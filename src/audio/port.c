@@ -561,6 +561,8 @@ void
 stereo_ports_disconnect (
   StereoPorts * self)
 {
+  g_return_if_fail (self);
+
   port_disconnect_all (self->l);
   port_disconnect_all (self->r);
 }

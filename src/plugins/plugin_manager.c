@@ -1178,6 +1178,9 @@ plugin_manager_scan_plugins (
               descr->protocol =
                 i == 0 ? PROT_SFZ : PROT_SF2;
               descr->open_with_carla = true;
+              descr->bridge_mode =
+                z_carla_discovery_get_bridge_mode (
+                  descr);
 
               array_append (
                 self->plugin_descriptors,

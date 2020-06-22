@@ -346,7 +346,8 @@ plugin_new_from_descr (
       descr->protocol == PROT_VST3 ||
       descr->protocol == PROT_AU ||
       descr->protocol == PROT_SFZ ||
-      descr->protocol == PROT_SF2)
+      descr->protocol == PROT_SF2 ||
+      descr->open_with_carla)
     {
 new_carla_plugin:
       plugin->descr->open_with_carla = true;
@@ -575,27 +576,6 @@ plugin_set_channel_and_slot (
       lv2_plugin_update_port_identifiers (
         pl->lv2);
     }
-}
-
-/**
- * Returns if the Plugin has a supported custom
- * UI.
- *
- * TODO
- */
-int
-plugin_has_supported_custom_ui (
-  Plugin * self)
-{
-  switch (self->descr->protocol)
-    {
-    case PROT_LV2:
-      break;
-    default:
-      g_return_val_if_reached (-1);
-      break;
-    }
-  g_return_val_if_reached (-1);
 }
 
 Track *

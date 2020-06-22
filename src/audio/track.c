@@ -1789,9 +1789,6 @@ track_append_all_ports (
 void
 track_free (Track * self)
 {
-  g_free_and_null (self->name);
-  g_free_and_null (self->comment);
-
   /* remove regions */
   for (int i = 0; i < self->num_lanes; i++)
     {
@@ -1833,6 +1830,9 @@ track_free (Track * self)
       GTK_IS_WIDGET (self->widget))
     gtk_widget_destroy (
       GTK_WIDGET (self->widget));
+
+  g_free_and_null (self->name);
+  g_free_and_null (self->comment);
 
   object_zero_and_free (self);
 }

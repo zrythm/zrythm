@@ -356,14 +356,6 @@ plugin_generate_state_dir (
   Plugin * pl,
   bool     mkdir);
 
-/**
- * Returns if the Plugin has a supported custom
- * UI.
- */
-int
-plugin_has_supported_custom_ui (
-  Plugin * self);
-
 Channel *
 plugin_get_channel (
   Plugin * self);

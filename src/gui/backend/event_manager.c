@@ -1599,17 +1599,11 @@ event_manager_stop_events (
       /* remove the source func */
       g_source_remove_and_zero (
         self->process_source_id);
+    }
 
-      /* process any remaining events - clear the
-       * queue. */
-      process_events (self);
-    }
-  else
-    {
-      g_message (
-        "%s: events already stopped. Doing nothing.",
-        __func__);
-    }
+  /* process any remaining events - clear the
+   * queue. */
+  process_events (self);
 }
 
 void

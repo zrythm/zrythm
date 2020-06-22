@@ -784,20 +784,17 @@ track_processor_free (
       break;
     }
 
-  switch (track->out_signal_type)
+  if (self->stereo_out)
     {
-    case TYPE_AUDIO:
       stereo_ports_disconnect (self->stereo_out);
       object_free_w_func_and_null (
         stereo_ports_free, self->stereo_out);
-      break;
-    case TYPE_EVENT:
+    }
+  if (self->midi_out)
+    {
       port_disconnect_all (self->midi_out);
       object_free_w_func_and_null (
         port_free, self->midi_out);
-      break;
-    default:
-      break;
     }
 
   object_zero_and_free (self);

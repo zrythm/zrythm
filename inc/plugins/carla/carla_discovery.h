@@ -99,6 +99,10 @@ z_carla_discovery_parse_plugin_info (
   const char * plugin_path,
   char * results);
 
+CarlaBridgeMode
+z_carla_discovery_get_bridge_mode (
+  const PluginDescriptor * descr);
+
 /**
  * @}
  */
