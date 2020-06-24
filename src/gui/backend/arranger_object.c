@@ -825,6 +825,8 @@ arranger_object_init_loaded (
   /* init positions */
   self->magic = ARRANGER_OBJECT_MAGIC;
 
+  g_warn_if_fail (self->pos.sub_tick < 1.0);
+
   switch (self->type)
     {
     case TYPE (REGION):
@@ -843,6 +845,8 @@ arranger_object_init_loaded (
       /* nothing needed */
       break;
     }
+
+  g_warn_if_fail (self->pos.sub_tick < 1.0);
 }
 
 /**

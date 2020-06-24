@@ -44,8 +44,10 @@ lv2_evbuf_new(uint32_t       capacity,
               uint32_t       atom_Sequence)
 {
   // FIXME: memory must be 64-bit aligned
-  LV2_Evbuf* evbuf = (LV2_Evbuf*)malloc(
-    sizeof(LV2_Atom_Sequence) + capacity);
+  LV2_Evbuf* evbuf =
+    malloc (
+      sizeof (LV2_Evbuf) +
+      sizeof(LV2_Atom_Sequence) + capacity);
   evbuf->capacity      = capacity;
   evbuf->atom_Chunk    = atom_Chunk;
   evbuf->atom_Sequence = atom_Sequence;

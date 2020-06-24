@@ -465,6 +465,9 @@ project_sanity_check (Project * self)
     }
   free (ports);
 
+  /* TODO add arranger_object_get_all and check
+   * positions (arranger_object_sanity_check) */
+
   g_message ("%s: done", __func__);
 }
 

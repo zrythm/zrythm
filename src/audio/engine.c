@@ -442,6 +442,12 @@ init_common (
       g_settings_get_enum (
         S_P_DSP_PAN,
         "pan-algorithm");
+
+  /* set a temporary block length */
+  if (self->block_length == 0)
+    {
+      self->block_length = 8192;
+    }
 }
 
 void
