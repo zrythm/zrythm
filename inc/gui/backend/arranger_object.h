@@ -380,12 +380,17 @@ static const cyaml_schema_value_t
    (_obj)->type == ARRANGER_OBJECT_TYPE_CHORD_OBJECT || \
    (_obj)->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
 
-  /** Whether or not this object supports cached
-   * drawing. */
+/** Whether or not this object supports cached
+ * drawing.
+ * FIXME off for now. */
 #define arranger_object_can_cache_drawing(_obj) \
+  (false)
+
+#if 0
   ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION && \
     region_type_can_fade ( \
       ((ZRegion *) _obj)->id.type))
+#endif
 
 /**
  * Gets the arranger for this arranger object.

@@ -43,6 +43,7 @@
 #include "utils/math.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
+#include "zrythm.h"
 
 #include <glib/gi18n-lib.h>
 
@@ -133,35 +134,42 @@ draw_background (
   gdk_cairo_set_source_rgba (
     cr, &color);
 
+  int vis_offset_x =
+    draw_rect->x - full_rect->x;
+  /*int visible_offset_y =*/
+    /*draw_rect->y - full_rect->y;*/
+  int vis_width = draw_rect->width;
+  /*int visible_height = draw_rect->height;*/
+  /*int full_offset_x = full_rect->x;*/
+  /*int full_offset_y = full_rect->y;*/
+  int full_width = full_rect->width;
+  int full_height = full_rect->height;
+
   /* if there are still region parts outside the
    * rect, add some padding so that the region
    * doesn't curve when it's not its edge */
-  int draw_x = draw_rect->x - rect->x;
-  int draw_x_has_padding = 0;
-  if (draw_rect->x > full_rect->x)
+  int added_x_pre_padding = 0;
+  int added_x_post_padding = 0;
+  if (vis_offset_x > 0)
     {
-      draw_x -=
-        MIN (draw_rect->x - full_rect->x, 4);
-      draw_x_has_padding = 1;
+      added_x_pre_padding =
+        MIN (vis_offset_x, 4);
     }
-  int draw_width = draw_rect->width;
-  if (draw_rect->x + draw_rect->width <
-      full_rect->x + full_rect->width)
+  if (vis_width < full_width)
     {
-      draw_width +=
-        MAX (
-          (draw_rect->x + draw_rect->width) -
-            (full_rect->x + full_rect->width), 4);
-    }
-  if (draw_x_has_padding)
-    {
-      draw_width += 4;
+      /* this is to prevent artifacts during
+       * playback when the playhead is on the
+       * region */
+      int diff =
+        (vis_offset_x + vis_width) - full_width;
+      added_x_post_padding = MIN (abs (diff), 4);
     }
 
   z_cairo_rounded_rectangle (
-    cr, draw_x, full_rect->y - rect->y,
-    draw_width, full_rect->height,
-    1.0, 4.0);
+    cr, vis_offset_x - added_x_pre_padding, 0,
+    vis_width + added_x_pre_padding +
+      added_x_post_padding,
+    full_height, 1.0, 4.0);
 
   /* clip this path so all drawing afterwards will
    * be confined inside it. preserve so we can
@@ -170,7 +178,11 @@ draw_background (
    * cairo_restore() to remove the clip when done */
   cairo_clip_preserve (cr);
 
-  cairo_fill (cr);
+  cairo_fill_preserve (cr);
+
+  /* draw a thin border */
+  cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.3);
+  cairo_stroke (cr);
 
   /* ---- draw applicable icons ---- */
 
@@ -180,17 +192,15 @@ draw_background (
       name, size, 1); \
   cairo_set_source_surface ( \
     cr, surface, \
-    (end_region_global - rect->x) - \
+    full_width - \
       (size + paddingh) * (icons_drawn + 1), \
-    (full_rect->y - rect->y) + paddingv); \
+    paddingv); \
   cairo_paint (cr); \
   icons_drawn++
 
   const int size = 16;
   const int paddingh = 2;
   const int paddingv = 0;
-  const double end_region_global =
-    full_rect->x + full_rect->width;
   int icons_drawn = 0;
 
   /* draw link icon if has linked parent */
@@ -249,26 +259,31 @@ draw_loop_points (
   int x_px =
     ui_pos_to_px_timeline (&tmp, 0);
 
-  /* convert x_px to global */
-  x_px += full_rect->x;
+  int vis_offset_x =
+    draw_rect->x - full_rect->x;
+  /*int vis_offset_y =*/
+    /*draw_rect->y - full_rect->y;*/
+  int vis_width = draw_rect->width;
+  /*int vis_height = draw_rect->height;*/
+  /*int full_offset_x = full_rect->x;*/
+  /*int full_offset_y = full_rect->y;*/
+  int full_width = full_rect->width;
+  int full_height = full_rect->height;
 
-  if (x_px != full_rect->x &&
+  if (x_px != 0 &&
       /* if px is inside region */
-      x_px >= full_rect->x &&
-      x_px < full_rect->x + full_rect->width &&
+      x_px >= 0 &&
+      x_px < full_width &&
       /* if loop px is visible */
-      x_px >= rect->x &&
-      x_px < rect->x + rect->width)
+      x_px >= vis_offset_x &&
+      x_px < vis_offset_x + vis_width)
     {
       gdk_cairo_set_source_rgba (
         cr, &UI_COLORS->bright_green);
       cairo_move_to (
-        cr, x_px - rect->x,
-        draw_rect->y - rect->y);
+        cr, x_px, 0);
       cairo_line_to (
-        cr, x_px - rect->x,
-        (draw_rect->y + draw_rect->height) -
-        rect->y);
+        cr, x_px, full_height);
       cairo_stroke (cr);
     }
 
@@ -283,29 +298,22 @@ draw_loop_points (
       position_add_ticks (
         &tmp, - clip_start_ticks);
 
-      /* note: this is relative to the region */
       x_px = ui_pos_to_px_timeline (&tmp, 0);
-
-      /* make px global */
-      x_px += full_rect->x;
 
       if (
           /* if px is vixible */
-          x_px >= rect->x &&
-          x_px <= rect->x + rect->width &&
+          x_px >= vis_offset_x &&
+          x_px <= vis_offset_x + vis_width &&
           /* if px is inside region */
-          x_px >= full_rect->x &&
-          x_px < full_rect->x + full_rect->width)
+          x_px >= 0 &&
+          x_px < full_width)
         {
           cairo_set_source_rgba (
             cr, 0, 0, 0, 1.0);
           cairo_move_to (
-            cr, x_px - rect->x,
-            draw_rect->y - rect->y);
+            cr, x_px, 0);
           cairo_line_to (
-            cr, x_px - rect->x,
-            (draw_rect->y + draw_rect->height) -
-              rect->y);
+            cr, x_px, full_height);
           cairo_stroke (cr);
         }
     }
@@ -360,6 +368,17 @@ draw_midi_region (
       obj);
   double clip_start_ticks =
     obj->clip_start_pos.total_ticks;
+
+  int vis_offset_x =
+    draw_rect->x - full_rect->x;
+  int vis_offset_y =
+    draw_rect->y - full_rect->y;
+  int vis_width = draw_rect->width;
+  int vis_height = draw_rect->height;
+  /*int full_offset_x = full_rect->x;*/
+  /*int full_offset_y = full_rect->y;*/
+  int full_width = full_rect->width;
+  int full_height = full_rect->height;
 
   for (int i = 0; i < self->num_midi_notes; i++)
     {
@@ -425,52 +444,50 @@ draw_midi_region (
               /* get actual values using the
                * ratios */
               x_start *=
-                (double) full_rect->width;
+                (double) full_width;
               x_end *=
-                (double) full_rect->width;
+                (double) full_width;
               y_start *=
-                (double) full_rect->height;
+                (double) full_height;
 
               /* the above values are local to the
                * region, convert to global */
-              x_start += full_rect->x;
-              x_end += full_rect->x;
-              y_start += full_rect->y;
+              /*x_start += full_rect->x;*/
+              /*x_end += full_rect->x;*/
+              /*y_start += full_rect->y;*/
 
               /* skip if any part of the note is
                * not visible in the region's rect */
-              if ((x_start >= draw_rect->x &&
+              if ((x_start >= vis_offset_x &&
                    x_start <
-                     draw_rect->x +
-                     draw_rect->width) ||
-                  (x_end >= draw_rect->x &&
+                     vis_offset_x + vis_width) ||
+                  (x_end >= vis_offset_x &&
                    x_end <
-                     draw_rect->x +
-                     draw_rect->width) ||
-                  (x_start < draw_rect->x &&
-                   x_end > draw_rect->x))
+                     vis_offset_x + vis_width) ||
+                  (x_start < vis_offset_x &&
+                   x_end > vis_offset_x))
                 {
                   double draw_x =
-                    MAX (x_start, draw_rect->x);
+                    MAX (x_start, vis_offset_x);
                   double draw_width =
                     MIN (
                       (x_end - x_start) -
                         (draw_x - x_start),
-                      (draw_rect->x +
-                        draw_rect->width) - draw_x);
+                      (vis_offset_x + vis_width) -
+                      draw_x);
                   double draw_y =
-                    MAX (y_start, draw_rect->y);
+                    MAX (y_start, vis_offset_y);
                   double draw_height =
                     MIN (
                       (y_note_size *
-                        (double) full_rect->height) -
+                        (double) full_height) -
                           (draw_y - y_start),
-                      (draw_rect->y +
-                        draw_rect->height) - draw_y);
+                      (vis_offset_y + vis_height) -
+                        draw_y);
                   cairo_rectangle (
                     cr,
-                    draw_x - rect->x,
-                    draw_y - rect->y,
+                    draw_x,
+                    draw_y,
                     draw_width,
                     draw_height);
                   cairo_fill (cr);
@@ -500,6 +517,17 @@ draw_chord_region (
   double ticks_in_region =
     arranger_object_get_length_in_ticks (obj);
   double x_start, x_end;
+
+  /*int vis_offset_x =*/
+    /*draw_rect->x - full_rect->x;*/
+  /*int vis_offset_y =*/
+    /*draw_rect->y - full_rect->y;*/
+  /*int vis_width = draw_rect->width;*/
+  /*int vis_height = draw_rect->height;*/
+  /*int full_offset_x = full_rect->x;*/
+  /*int full_offset_y = full_rect->y;*/
+  int full_width = full_rect->width;
+  int full_height = full_rect->height;
 
   /* draw chords notes */
   double loop_end_ticks =
@@ -600,23 +628,13 @@ draw_chord_region (
 
               /* get actual values using the
                * ratios */
-              x_start *=
-                (double) obj->full_rect.width;
-              x_end *=
-                (double) obj->full_rect.width;
-
-              /* the above values are local to the
-               * region, convert to global */
-              x_start += obj->full_rect.x;
-              x_end += obj->full_rect.x;
+              x_start *= (double) full_width;
+              x_end *= (double) full_width;
 
               /* draw */
               cairo_rectangle (
-                cr,
-                x_start - rect->x,
-                obj->full_rect.y - rect->y,
-                12.0,
-                obj->full_rect.height);
+                cr, x_start, 0,
+                12.0, full_height);
               cairo_fill (cr);
 
               cairo_set_source_rgba (
@@ -634,7 +652,7 @@ draw_chord_region (
                 descr_str,
                 (int)
                 ((double) x_start *
-                  (double) obj->full_rect.width + 2.0),
+                  (double) full_width + 2.0),
                 2);
             }
         }
@@ -662,6 +680,17 @@ draw_automation_region (
   double ticks_in_region =
     arranger_object_get_length_in_ticks (obj);
   double x_start, y_start, x_end, y_end;
+
+  /*int vis_offset_x =*/
+    /*draw_rect->x - full_rect->x;*/
+  /*int vis_offset_y =*/
+    /*draw_rect->y - full_rect->y;*/
+  /*int vis_width = draw_rect->width;*/
+  /*int vis_height = draw_rect->height;*/
+  /*int full_offset_x = full_rect->x;*/
+  /*int full_offset_y = full_rect->y;*/
+  int full_width = full_rect->width;
+  int full_height = full_rect->height;
 
   /* draw automation */
   double loop_end_ticks =
@@ -752,27 +781,23 @@ draw_automation_region (
                 }
 
               double x_start_real =
-                x_start * full_rect->width;
+                x_start * full_width;
               /*double x_end_real =*/
                 /*x_end * width;*/
               double y_start_real =
-                y_start * full_rect->height;
+                y_start * full_height;
               double y_end_real =
-                y_end * full_rect->height;
+                y_end * full_height;
 
               /* draw ap */
               if (x_start_real > 0.0 &&
-                  x_start_real < full_rect->width)
+                  x_start_real < full_width)
                 {
                   int padding = 1;
                   cairo_rectangle (
                     cr,
-                    (x_start_real +
-                       obj->full_rect.x) -
-                      (padding + rect->x),
-                    (y_start_real +
-                       obj->full_rect.y) -
-                      (padding + rect->y),
+                    x_start_real - padding,
+                    y_start_real - padding,
                     2 * padding,
                     2 * padding);
                   cairo_fill (cr);
@@ -784,10 +809,10 @@ draw_automation_region (
                   double new_x, ap_y, new_y;
                   double ac_height =
                     fabs (y_end - y_start);
-                  ac_height *= full_rect->height;
+                  ac_height *= full_height;
                   double ac_width =
                     fabs (x_end - x_start);
-                  ac_width *= full_rect->width;
+                  ac_width *= full_width;
                     cairo_set_line_width (
                       cr, 2.0);
                   for (double k =
@@ -821,31 +846,18 @@ draw_automation_region (
                       else
                         new_y = ap_y + y_start_real;
 
-                      if (new_x >=
-                            obj->full_rect.width)
+                      if (new_x >= full_width)
                         break;
 
                       if (math_doubles_equal (
                             k, 0.0))
                         {
                           cairo_move_to (
-                            cr,
-                            (new_x +
-                              obj->full_rect.x) -
-                              rect->x,
-                            (new_y +
-                              obj->full_rect.y) -
-                              rect->y);
+                            cr, new_x, new_y);
                         }
 
                       cairo_line_to (
-                        cr,
-                        (new_x +
-                          obj->full_rect.x) -
-                          rect->x,
-                        (new_y +
-                          obj->full_rect.y) -
-                          rect->y);
+                        cr, new_x, new_y);
                     }
                   cairo_stroke (cr);
                 }
@@ -877,26 +889,36 @@ draw_fades (
     cr, 0.2, 0.2, 0.2, 0.6);
   cairo_set_line_width (cr, 3);
 
-  /* get fade in px as global */
+  int vis_offset_x =
+    draw_rect->x - full_rect->x;
+  /*int vis_offset_y =*/
+    /*draw_rect->y - full_rect->y;*/
+  int vis_width = draw_rect->width;
+  /*int vis_height = draw_rect->height;*/
+  /*int full_offset_x = full_rect->x;*/
+  /*int full_offset_y = full_rect->y;*/
+  int full_width = full_rect->width;
+  int full_height = full_rect->height;
+
+  /* get fade in px */
   int fade_in_px =
-    full_rect->x +
     ui_pos_to_px_timeline (&obj->fade_in_pos, 0);
 
-  /* get start px as global */
-  int start_px = full_rect->x;
+  /* get start px */
+  int start_px = 0;
 
   /* get visible positions (where to draw) */
-  int visible_fade_in_px =
-    MIN (fade_in_px, rect->x + rect->width);
-  int visible_start_px =
-    MAX (start_px, rect->x);
+  int vis_fade_in_px =
+    MIN (fade_in_px, vis_offset_x + vis_width);
+  int vis_start_px =
+    MAX (start_px, vis_offset_x);
 
   if (fade_in_px - start_px != 0)
     {
       double local_px_diff =
         (double) (fade_in_px - start_px);
-      for (int i = visible_start_px;
-           i <= visible_fade_in_px; i++)
+      for (int i = vis_start_px;
+           i <= vis_fade_in_px; i++)
         {
           /* revert because cairo draws the other
            * way */
@@ -914,26 +936,23 @@ draw_fades (
               &obj->fade_in_opts, 1);
 
           /* if start */
-          if (i == visible_start_px)
+          if (i == vis_start_px)
             {
               cairo_move_to (
-                cr, i - rect->x,
-                (full_rect->y +
-                 val * full_rect->height) -
-                  rect->y);
+                cr, i - rect->x, val * full_height);
             }
 
           cairo_rel_line_to (
             cr, 1,
-            (next_val - val) * full_rect->height);
+            (next_val - val) * full_height);
 
           /* if end */
-          if (i == visible_fade_in_px)
+          if (i == vis_fade_in_px)
             {
               /* paint a gradient in the faded out
                * part */
               cairo_rel_line_to (
-                cr, 0, next_val - full_rect->height);
+                cr, 0, next_val - full_height);
               cairo_rel_line_to (
                 cr, - i, 0);
               cairo_close_path (cr);
@@ -944,19 +963,18 @@ draw_fades (
 
   /* ---- fade out ---- */
 
-  /* get fade out px as global */
+  /* get fade out px */
   int fade_out_px =
-    full_rect->x +
     ui_pos_to_px_timeline (&obj->fade_out_pos, 0);
 
-  /* get end px as global */
-  int end_px = full_rect->x + full_rect->width;
+  /* get end px */
+  int end_px = full_width;
 
   /* get visible positions (where to draw) */
   int visible_fade_out_px =
-    MAX (fade_out_px, rect->x);
+    MAX (fade_out_px, vis_offset_x);
   int visible_end_px =
-    MIN (end_px, rect->x + rect->width);
+    MIN (end_px, vis_offset_x + vis_width);
 
   if (end_px - fade_out_px != 0)
     {
@@ -986,15 +1004,12 @@ draw_fades (
           if (i == visible_fade_out_px)
             {
               cairo_move_to (
-                cr, i - rect->x,
-                (full_rect->y +
-                 val * full_rect->height) -
-                  rect->y);
+                cr, i, val * full_height);
             }
 
           cairo_rel_line_to (
             cr, 1,
-            (next_val - val) * full_rect->height);
+            (next_val - val) * full_height);
 
           /* if end, draw */
           if (i == visible_end_px)
@@ -1002,7 +1017,7 @@ draw_fades (
               /* paint a gradient in the faded out
                * part */
               cairo_rel_line_to (
-                cr, 0, - full_rect->height);
+                cr, 0, - full_height);
               cairo_rel_line_to (
                 cr, - i, 0);
               cairo_close_path (cr);
@@ -1024,10 +1039,12 @@ draw_audio_region (
   GdkRectangle * draw_rect,
   RegionCounterpart counterpart)
 {
+  g_message ("drawing audio region");
   ArrangerObject * obj = (ArrangerObject *) self;
   if (self->stretching)
     {
       arranger_object_queue_redraw (obj);
+      g_message ("%s: redraw later", __func__);
       return;
     }
 
@@ -1048,14 +1065,27 @@ draw_audio_region (
   long clip_start_frames =
     obj->clip_start_pos.frames;
 
-  double local_start_x =
-    (double) draw_rect->x - (double) full_rect->x;
+  int vis_offset_x =
+    draw_rect->x - full_rect->x;
+  /*int vis_offset_y =*/
+    /*draw_rect->y - full_rect->y;*/
+  int vis_width = draw_rect->width;
+  /*int vis_height = draw_rect->height;*/
+  /*int full_offset_x = full_rect->x;*/
+  /*int full_offset_y = full_rect->y;*/
+  /*int full_width = full_rect->width;*/
+  int full_height = full_rect->height;
+
+  double local_start_x = (double) vis_offset_x;
   double local_end_x =
-    local_start_x +
-    (double) draw_rect->width;
+    local_start_x + (double) vis_width;
   long prev_frames =
     (long) (multiplier * local_start_x);
   long curr_frames = prev_frames;
+  /*g_message ("cur frames %ld", curr_frames);*/
+  /*Position tmp;*/
+  /*position_from_frames (&tmp, curr_frames);*/
+  /*position_print (&tmp);*/
   for (double i = local_start_x + 0.5;
        i < (double) local_end_x; i += 0.5)
     {
@@ -1097,39 +1127,31 @@ draw_audio_region (
       /* normalize */
       min = (min + 1.f) / 2.f;
       max = (max + 1.f) / 2.f;
-      /* local from the full rect x */
-      double local_full_x = i - 0.5;
-      /* local from the draw rect x */
-      double local_draw_x =
-        local_full_x -
-        (draw_rect->x - full_rect->x);
+
       /* local from the full rect y */
-      double local_full_min_y =
+      double local_min_y =
         MAX (
           (double) min *
-            (double) full_rect->height, 0.0);
-      /* local from the draw rect y */
-      double local_draw_min_y =
-        local_full_min_y -
-        (draw_rect->y - full_rect->y);
+            (double) full_height, 0.0);
       /* local from the full rect y */
-      double local_full_max_y =
+      double local_max_y =
         MIN (
           (double) max *
-            (double) full_rect->height,
-          (double) full_rect->height);
-      /* local from the draw rect y */
-      double local_draw_max_y =
-        local_full_max_y -
-        (draw_rect->y - full_rect->y);
-      DRAW_VLINE (
-        cr,
-        /* x */
-        local_draw_x,
-        /* from y */
-        local_draw_min_y,
-        /* to y */
-        local_draw_max_y);
+            (double) full_height,
+          (double) full_height);
+
+      /* only draw if non-silent */
+      if (fabs (local_min_y - local_max_y) > 0.01)
+        {
+          DRAW_VLINE (
+            cr,
+            /* x */
+            i - 0.5,
+            /* from y */
+            local_min_y,
+            /* to y */
+            local_max_y);
+        }
 
       prev_frames = curr_frames;
     }
@@ -1170,10 +1192,21 @@ draw_name (
         }
     }
 
+  /*int vis_offset_x =*/
+    /*draw_rect->x - full_rect->x;*/
+  /*int vis_offset_y =*/
+    /*draw_rect->y - full_rect->y;*/
+  /*int vis_width = draw_rect->width;*/
+  /*int vis_height = draw_rect->height;*/
+  /*int full_offset_x = full_rect->x;*/
+  /*int full_offset_y = full_rect->y;*/
+  int full_width = full_rect->width;
+  /*int full_height = full_rect->height;*/
+
   /* draw dark bg behind text */
   recreate_pango_layouts (
     self,
-    MIN (full_rect->width, 800));
+    MIN (full_width, 800));
   PangoLayout * layout = self->layout;
   pango_layout_set_text (
     layout, str, -1);
@@ -1191,27 +1224,20 @@ draw_name (
   cairo_new_sub_path (cr);
   cairo_move_to (
     cr,
-    (pangorect.width + REGION_NAME_PADDING_R) +
-      (full_rect->x - rect->x),
-    full_rect->y - rect->y);
+    (pangorect.width + REGION_NAME_PADDING_R),
+    0);
   int black_box_height =
     pangorect.height + 2 * REGION_NAME_BOX_PADDING;
   cairo_arc (
     cr,
-    ((pangorect.width + REGION_NAME_PADDING_R) -
-      radius) +
-      (full_rect->x - rect->x),
-    (black_box_height - radius) +
-     (full_rect->y - rect->y),
-    radius,
+    (pangorect.width + REGION_NAME_PADDING_R) -
+      radius,
+    black_box_height - radius, radius,
     0 * degrees, 90 * degrees);
   cairo_line_to (
-    cr, full_rect->x - rect->x,
-    black_box_height +
-      (full_rect->y - rect->y));
+    cr, 0, black_box_height);
   cairo_line_to (
-    cr, full_rect->x - rect->x,
-    full_rect->y - rect->y);
+    cr, 0, 0);
   cairo_close_path (cr);
   cairo_fill (cr);
 
@@ -1220,10 +1246,8 @@ draw_name (
     cr, 1, 1, 1, 1);
   cairo_move_to (
     cr,
-    REGION_NAME_BOX_PADDING +
-      (full_rect->x - rect->x),
-    REGION_NAME_BOX_PADDING +
-      (full_rect->y - rect->y));
+    REGION_NAME_BOX_PADDING,
+    REGION_NAME_BOX_PADDING);
   pango_cairo_show_layout (cr, layout);
 }
 
@@ -1282,6 +1306,12 @@ region_draw (
       arranger_object_get_draw_rectangle (
         obj, rect, &full_rect, &draw_rect);
 
+      /* translate to the full rect */
+      cairo_translate (
+        cr,
+        full_rect.x - rect->x,
+        full_rect.y - rect->y);
+
       if (i == REGION_COUNTERPART_MAIN)
         {
           main_draw_rect = draw_rect;
@@ -1315,7 +1345,8 @@ region_draw (
 
           /* switch cr if caching */
           cairo_t * cr_to_use = cr;
-          if (arranger_object_can_cache_drawing (
+          if (!DEBUGGING &&
+              arranger_object_can_cache_drawing (
                 obj))
             {
               z_cairo_reset_caches (
@@ -1362,14 +1393,14 @@ region_draw (
           /* TODO draw cut line? */
         }
 
-      if (arranger_object_can_cache_drawing (obj))
+      if (!DEBUGGING &&
+          arranger_object_can_cache_drawing (obj))
         {
           cairo_save (cr);
 
-          int x = draw_rect.x - rect->x;
-          int y = draw_rect.y - rect->y;
-          cairo_translate (
-            cr, x, y);
+          int x = draw_rect.x - full_rect.x;
+          int y = draw_rect.y - full_rect.y;
+          cairo_translate (cr, x, y);
           if (MW_TIMELINE->action ==
                 UI_OVERLAY_ACTION_STRETCHING_R)
             {
@@ -1393,7 +1424,8 @@ region_draw (
       cairo_restore (cr);
     }
 
-  if (arranger_object_can_cache_drawing (obj))
+  if (!DEBUGGING &&
+      arranger_object_can_cache_drawing (obj))
     {
       self->last_main_draw_rect = main_draw_rect;
       self->last_main_full_rect = main_full_rect;

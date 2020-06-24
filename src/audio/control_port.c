@@ -330,13 +330,13 @@ control_port_set_val_from_normalized (
       Channel * ch = track_get_channel (track);
       if (!math_floats_equal (
             fader_get_fader_val (
-              &ch->fader), val))
+              ch->fader), val))
         {
           EVENTS_PUSH (
             ET_AUTOMATION_VALUE_CHANGED, self);
         }
       fader_set_amp (
-        &ch->fader,
+        ch->fader,
         (float)
         math_get_amp_val_from_fader (val));
     }

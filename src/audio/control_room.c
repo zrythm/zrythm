@@ -55,6 +55,8 @@ void
 control_room_init_loaded (
   ControlRoom * self)
 {
+  fader_init_loaded (self->monitor_fader);
+
   init_common (self);
 }
 

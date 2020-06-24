@@ -986,6 +986,14 @@ arranger_object_draw (
   cairo_t *        cr,
   GdkRectangle *   rect)
 {
+  if (!ui_rectangle_overlap (
+        &self->full_rect, rect))
+    {
+      g_message (
+        "%s: object not visible, skipping",
+        __func__);
+    }
+
   switch (self->type)
     {
     case TYPE (AUTOMATION_POINT):

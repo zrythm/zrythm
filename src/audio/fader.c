@@ -43,6 +43,8 @@ void
 fader_init_loaded (
   Fader * self)
 {
+  self->magic = FADER_MAGIC;
+
   switch (self->type)
     {
     case FADER_TYPE_AUDIO_CHANNEL:
@@ -336,6 +338,8 @@ void
 fader_set_amp (void * _fader, float amp)
 {
   Fader * self = (Fader *) _fader;
+  g_return_if_fail (IS_FADER (self));
+
   port_set_control_value (self->amp, amp, 0, 0);
 
   fader_update_volume_and_fader_val (
