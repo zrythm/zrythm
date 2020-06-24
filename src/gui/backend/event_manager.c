@@ -1471,6 +1471,7 @@ process_events (void * data)
             &PROJECT->quantize_opts_timeline);
           quantize_options_update_quantize_points (
             &PROJECT->quantize_opts_editor);
+          redraw_all_arranger_bgs ();
           break;
         case ET_CHANNEL_FADER_VAL_CHANGED:
           channel_widget_redraw_fader (

@@ -17,15 +17,18 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-config.h"
+
 #include <math.h>
 
 #include "audio/audio_bus_track.h"
+#include "audio/audio_region.h"
 #include "audio/automation_region.h"
 #include "audio/channel.h"
 #include "audio/fade.h"
 #include "audio/instrument_track.h"
+#include "audio/tempo_track.h"
 #include "audio/track.h"
-#include "zrythm-config.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/bot_bar.h"
@@ -1039,7 +1042,7 @@ draw_audio_region (
   GdkRectangle * draw_rect,
   RegionCounterpart counterpart)
 {
-  g_message ("drawing audio region");
+  /*g_message ("drawing audio region");*/
   ArrangerObject * obj = (ArrangerObject *) self;
   if (self->stretching)
     {
@@ -1048,22 +1051,35 @@ draw_audio_region (
       return;
     }
 
+  AudioClip * clip = audio_region_get_clip (self);
+
+  double frames_per_tick =
+    (double) AUDIO_ENGINE->frames_per_tick;
+  if (region_get_musical_mode (self))
+    {
+      frames_per_tick *=
+        (double) tempo_track_get_current_bpm (
+           P_TEMPO_TRACK) /
+        (double) clip->bpm;
+    }
   double multiplier =
-    (double) AUDIO_ENGINE->frames_per_tick /
-    MW_RULER->px_per_tick;
+    frames_per_tick / MW_RULER->px_per_tick;
 
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
 
-  AudioClip * clip =
-    AUDIO_POOL->clips[self->pool_id];
-
   long loop_end_frames =
-    obj->loop_end_pos.frames;
+    math_round_double_to_long (
+      obj->loop_end_pos.total_ticks *
+      frames_per_tick);
   long loop_frames =
-    arranger_object_get_loop_length_in_frames (
-      obj);
+    math_round_double_to_long (
+      arranger_object_get_loop_length_in_ticks (
+        obj) *
+      frames_per_tick);
   long clip_start_frames =
-    obj->clip_start_pos.frames;
+    math_round_double_to_long (
+      obj->clip_start_pos.total_ticks *
+      frames_per_tick);
 
   int vis_offset_x =
     draw_rect->x - full_rect->x;
@@ -1106,12 +1122,18 @@ draw_audio_region (
               long index =
                 j * (long) clip->channels +
                 (long) k;
-              g_return_if_fail (
-                index >= 0 &&
-                index <
+
+              /* if outside bounds */
+              if (
+                index < 0 ||
+                index >=
                 (long)
                   self->num_frames *
-                  (long) clip->channels);
+                  (long) clip->channels)
+                {
+                  /* skip */
+                  continue;
+                }
               float val =
                 self->frames[index];
               if (val > max)

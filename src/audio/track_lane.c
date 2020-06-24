@@ -87,12 +87,10 @@ void
 track_lane_update_frames (
   TrackLane * self)
 {
-  ZRegion * r;
   for (int i = 0; i < self->num_regions; i++)
     {
-      r = self->regions[i];
       ArrangerObject * r_obj =
-        (ArrangerObject *) r;
+        (ArrangerObject *) self->regions[i];
       arranger_object_update_frames (r_obj);
     }
 }

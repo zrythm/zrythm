@@ -491,33 +491,35 @@ channel_expose_ports_to_backend (
   Track * tr =
     channel_get_track (ch);
 
+  g_message ("%s: %s", __func__, tr->name);
+
   if (tr->in_signal_type ==
         TYPE_AUDIO)
     {
       port_set_expose_to_backend (
-        tr->processor->stereo_in->l , 1);
+        tr->processor->stereo_in->l , true);
       port_set_expose_to_backend (
-        tr->processor->stereo_in->r , 1);
+        tr->processor->stereo_in->r , true);
     }
   if (tr->in_signal_type ==
         TYPE_EVENT)
     {
       port_set_expose_to_backend (
-        tr->processor->midi_in , 1);
+        tr->processor->midi_in , true);
     }
   if (tr->out_signal_type ==
         TYPE_AUDIO)
     {
       port_set_expose_to_backend (
-        ch->stereo_out->l , 1);
+        ch->stereo_out->l , true);
       port_set_expose_to_backend (
-        ch->stereo_out->r , 1);
+        ch->stereo_out->r , true);
     }
   if (tr->out_signal_type ==
         TYPE_EVENT)
     {
       port_set_expose_to_backend (
-        ch->midi_out , 1);
+        ch->midi_out , true);
     }
 }
 

@@ -1465,6 +1465,8 @@ void
 track_update_frames (
   Track * self)
 {
+  /*g_message ("%s: %s", __func__, self->name);*/
+
   int i;
   for (i = 0; i < self->num_lanes; i++)
     {
