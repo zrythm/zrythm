@@ -27,6 +27,7 @@
 #include "audio/midi_region.h"
 #include "audio/instrument_track.h"
 #include "audio/pool.h"
+#include "audio/recording_manager.h"
 #include "audio/region.h"
 #include "audio/region_link_group_manager.h"
 #include "audio/stretcher.h"
@@ -1208,6 +1209,34 @@ region_generate_filename (ZRegion * region)
     g_strdup_printf (
       REGION_PRINTF_FILENAME, track->name,
       region->name);
+}
+
+/**
+ * Returns if this region is currently being
+ * recorded onto.
+ */
+bool
+region_is_recording (
+  ZRegion * self)
+{
+  if (!RECORDING_MANAGER->is_recording)
+    {
+      return false;
+    }
+
+  for (int i = 0;
+       i < RECORDING_MANAGER->num_recorded_ids;
+       i++)
+    {
+      if (region_identifier_is_equal (
+            &self->id,
+            &RECORDING_MANAGER->recorded_ids[i]))
+        {
+          return true;
+        }
+    }
+
+  return false;
 }
 
 /**

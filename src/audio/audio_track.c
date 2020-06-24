@@ -138,6 +138,9 @@ audio_track_fill_stereo_ports_from_clip (
         {
           r = lane->regions[i];
           r_obj = (ArrangerObject *) r;
+
+          g_return_if_fail (IS_REGION (r));
+
           if (r_obj->muted)
             continue;
 
@@ -184,8 +187,10 @@ audio_track_fill_stereo_ports_from_clip (
                 clip_start_frames;
               while (local_frames_start_adj >=
                      loop_end_frames)
-                local_frames_start_adj -=
-                  loop_frames;
+                {
+                  local_frames_start_adj -=
+                    loop_frames;
+                }
 
               buff_index = 0;
               AudioClip * clip =
@@ -242,6 +247,16 @@ audio_track_fill_stereo_ports_from_clip (
                     (double) cur_bpm,
                     (double) clip->bpm,
                     timestretch_ratio);
+                }
+
+              if (frames_to_process < 1)
+                {
+                  /*g_message (*/
+                    /*"%s: %s:%s "*/
+                    /*"no frames to process,"*/
+                    /*"skipping...",*/
+                    /*__func__, self->name, r->name);*/
+                  continue;
                 }
 
               /* buffers after timestretch */

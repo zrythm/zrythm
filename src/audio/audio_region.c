@@ -133,7 +133,8 @@ audio_region_init_frame_caches (
 {
   /* copy the clip frames to the cache. */
   self->frames =
-    malloc (
+    realloc (
+      self->frames,
       sizeof (float) *
         (size_t) clip->num_frames * clip->channels);
   self->num_frames = (size_t) clip->num_frames;
@@ -146,7 +147,8 @@ audio_region_init_frame_caches (
   for (unsigned int i = 0; i < clip->channels; i++)
     {
       self->ch_frames[i] =
-        malloc (
+        realloc (
+          self->ch_frames[i],
           sizeof (float) *
             (size_t) clip->num_frames);
       for (size_t j = 0;

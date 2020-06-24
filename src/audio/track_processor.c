@@ -287,24 +287,30 @@ void
 track_processor_clear_buffers (
   TrackProcessor * self)
 {
-  Track * track =
-    track_processor_get_track (self);
-  switch (track->in_signal_type)
+  /*Track * track =*/
+    /*track_processor_get_track (self);*/
+
+  if (self->stereo_in)
     {
-    case TYPE_AUDIO:
       port_clear_buffer (self->stereo_in->l);
       port_clear_buffer (self->stereo_in->r);
+    }
+  if (self->stereo_out)
+    {
       port_clear_buffer (self->stereo_out->l);
       port_clear_buffer (self->stereo_out->r);
-      break;
-    case TYPE_EVENT:
+    }
+  if (self->midi_in)
+    {
       port_clear_buffer (self->midi_in);
+    }
+  if (self->midi_out)
+    {
       port_clear_buffer (self->midi_out);
-      if (track_has_piano_roll (track))
-        port_clear_buffer (self->piano_roll);
-      break;
-    default:
-      break;
+    }
+  if (self->piano_roll)
+    {
+      port_clear_buffer (self->piano_roll);
     }
 }
 
@@ -371,6 +377,8 @@ track_processor_process (
 {
   Track * tr = track_processor_get_track (self);
   g_return_if_fail (tr);
+
+  /*g_message ("%s: %s", __func__, tr->name);*/
 
   /* set the audio clip contents to stereo out */
   if (tr->type == TRACK_TYPE_AUDIO)

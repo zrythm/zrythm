@@ -538,6 +538,14 @@ region_get_type_as_string (
   char *     buf);
 
 /**
+ * Returns if this region is currently being
+ * recorded onto.
+ */
+bool
+region_is_recording (
+  ZRegion * self);
+
+/**
  * Returns whether the region is effectively in
  * musical mode.
  *

@@ -123,6 +123,20 @@ on_stop_recording (
       (ArrangerSelections *) TL_SELECTIONS, true);
   undo_manager_perform (UNDO_MANAGER, action);
 
+  /* update frame caches */
+  for (int i = 0; i < self->num_recorded_ids; i++)
+    {
+      ZRegion * r =
+        region_find (&self->recorded_ids[i]);
+      if (r->id.type == REGION_TYPE_AUDIO)
+        {
+          AudioClip * clip =
+            audio_region_get_clip (r);
+          audio_region_init_frame_caches (
+            r, clip);
+        }
+    }
+
   /* restore the selections */
   arranger_selections_clear (
     (ArrangerSelections *) TL_SELECTIONS);
