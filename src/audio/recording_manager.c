@@ -741,14 +741,37 @@ handle_midi_event (
         {
           mn_obj =
             (ArrangerObject *) mn;
-          arranger_object_end_pos_setter (
-            mn_obj,
+          Position local_end_pos;
+          position_set_to_pos (
+            &local_end_pos,
             &TRANSPORT->loop_end_pos);
+          position_add_ticks (
+            &local_end_pos,
+            - ((ArrangerObject *)
+            region_before_loop_end)->pos.
+              total_ticks);
+          arranger_object_end_pos_setter (
+            mn_obj, &local_end_pos);
         }
     }
 
   if (!ev->has_midi_event)
     return;
+
+  /* get local positions */
+  Position local_pos, local_end_pos;
+  position_set_to_pos (
+    &local_pos, &start_pos);
+  position_set_to_pos (
+    &local_end_pos, &end_pos);
+  position_add_ticks (
+    &local_pos,
+    - ((ArrangerObject *) region)->pos.
+      total_ticks);
+  position_add_ticks (
+    &local_end_pos,
+    - ((ArrangerObject *) region)->pos.
+      total_ticks);
 
   /* convert MIDI data to midi notes */
   MidiEvent * mev = &ev->midi_event;
@@ -757,7 +780,7 @@ handle_midi_event (
       case MIDI_EVENT_TYPE_NOTE_ON:
         g_return_if_fail (region);
         midi_region_start_unended_note (
-          region, &start_pos, &end_pos,
+          region, &local_pos, &local_end_pos,
           mev->note_pitch, mev->velocity, 1);
         break;
       case MIDI_EVENT_TYPE_NOTE_OFF:
@@ -770,7 +793,7 @@ handle_midi_event (
             mn_obj =
               (ArrangerObject *) mn;
             arranger_object_end_pos_setter (
-              mn_obj, &end_pos);
+              mn_obj, &local_end_pos);
           }
         break;
       default:
