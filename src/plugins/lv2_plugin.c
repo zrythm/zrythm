@@ -682,7 +682,8 @@ lv2_plugin_allocate_port_buffers (
               (lv2_port->buf_size > 0) ?
               lv2_port->buf_size :
               AUDIO_ENGINE->midi_buf_size;
-            g_return_if_fail (plugin->map.map);
+            g_return_if_fail (
+              buf_size > 0 && plugin->map.map);
             lv2_port->evbuf =
               lv2_evbuf_new (
                 (uint32_t) buf_size,

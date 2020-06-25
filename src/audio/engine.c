@@ -443,10 +443,14 @@ init_common (
         S_P_DSP_PAN,
         "pan-algorithm");
 
-  /* set a temporary block length */
+  /* set a temporary buffer sizes */
   if (self->block_length == 0)
     {
       self->block_length = 8192;
+    }
+  if (self->midi_buf_size == 0)
+    {
+      self->midi_buf_size = 8192;
     }
 }
 
