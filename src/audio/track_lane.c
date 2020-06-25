@@ -246,6 +246,26 @@ track_lane_clear (
     }
 }
 
+/**
+ * Removes but does not free the region.
+ */
+void
+track_lane_remove_region (
+  TrackLane * self,
+  ZRegion *   region)
+{
+  array_delete (
+    self->regions, self->num_regions, region);
+
+  for (int i = region->id.idx; i < self->num_regions;
+       i++)
+    {
+      ZRegion * r = self->regions[i];
+      r->id.idx = i;
+      region_update_identifier (r);
+    }
+}
+
 Track *
 track_lane_get_track (
   TrackLane * self)

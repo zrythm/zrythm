@@ -600,6 +600,18 @@ region_get_arranger_selections (
   ZRegion * self);
 
 /**
+ * Sanity checking.
+ *
+ * @param is_project Whether this region ispart
+ *   of the project (as opposed to a clone in
+ *   the undo stack, etc.).
+ */
+bool
+region_sanity_check (
+  ZRegion * self,
+  bool      is_project);
+
+/**
  * Disconnects the region and anything using it.
  *
  * Does not free the ZRegion or its children's

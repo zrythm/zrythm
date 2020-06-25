@@ -110,7 +110,7 @@ audio_track_fill_stereo_ports_from_clip (
   g_return_if_fail (IS_TRACK (self) && stereo_ports);
 
   long region_end_frames,
-       local_frames_start,
+       frames_start_from_cycle_start,
        /*local_frames_end,*/
        loop_start_frames,
        loop_end_frames,
@@ -164,11 +164,11 @@ audio_track_fill_stereo_ports_from_clip (
             {
               region_end_frames =
                 r_obj->end_pos.frames;
-              local_frames_start =
+              frames_start_from_cycle_start =
                 cycle_start_frames -
                   r_obj->pos.frames;
               /*local_frames_end =*/
-                /*local_frames_start + nframes;*/
+                /*frames_start_from_cycle_start + nframes;*/
 
               loop_start_frames =
                 position_to_frames (
@@ -182,13 +182,13 @@ audio_track_fill_stereo_ports_from_clip (
               clip_start_frames =
                 position_to_frames (
                   &r_obj->clip_start_pos);
-              long local_frames_start_adj =
-                local_frames_start +
+              long frames_start_from_cycle_start_adj =
+                frames_start_from_cycle_start +
                 clip_start_frames;
-              while (local_frames_start_adj >=
+              while (frames_start_from_cycle_start_adj >=
                      loop_end_frames)
                 {
-                  local_frames_start_adj -=
+                  frames_start_from_cycle_start_adj -=
                     loop_frames;
                 }
 
@@ -199,11 +199,11 @@ audio_track_fill_stereo_ports_from_clip (
               /* frames to skip if the region starts
                * somewhere within this cycle */
               unsigned int frames_to_skip = 0;
-              if (local_frames_start_adj < 0)
+              if (frames_start_from_cycle_start_adj < 0)
                 {
                   frames_to_skip =
                     (unsigned int)
-                    (- local_frames_start_adj);
+                    (- frames_start_from_cycle_start_adj);
                 }
 
               /* frames to process if the region
@@ -222,7 +222,7 @@ audio_track_fill_stereo_ports_from_clip (
               frames_to_process -=
                 (long) frames_to_skip;
               long current_local_frames =
-                local_frames_start_adj;
+                frames_start_from_cycle_start_adj;
 
               /* restretch if necessary */
               Position g_start_pos;
@@ -281,7 +281,7 @@ audio_track_fill_stereo_ports_from_clip (
                    j++)
                 {
                   current_local_frames =
-                    local_frames_start_adj +
+                    frames_start_from_cycle_start_adj +
                     (long) j;
 
                   /* if loop point hit in the
@@ -385,10 +385,11 @@ audio_track_fill_stereo_ports_from_clip (
                    j++)
                 {
                   long local_frames =
-                    local_frames_start + j;
+                    frames_start_from_cycle_start + j;
                   float fade_in = 1.f;
                   float fade_out = 1.f;
-                  if (local_frames <
+                  if (local_frames >= 0 &&
+                      local_frames <
                         r_obj->fade_in_pos.frames)
                     {
                       fade_in =

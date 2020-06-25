@@ -121,10 +121,4 @@ void
 engine_dummy_tear_down (
   AudioEngine * self)
 {
-  g_message ("stopping dummy audio DSP thread");
-
-  self->stop_dummy_audio_thread = 1;
-
-  /* wait for the thread to stop */
-  g_thread_join (self->dummy_audio_thread);
 }

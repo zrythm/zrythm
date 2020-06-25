@@ -2099,6 +2099,17 @@ arranger_object_split (
     arranger_object_clone (
       self, ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
+  /* change to r1 if the original region was the
+   * clip editor region */
+  ZRegion * clip_editor_region =
+    clip_editor_get_region (CLIP_EDITOR);
+  bool set_clip_editor_region = false;
+  if (clip_editor_region == (ZRegion *) self)
+    {
+      set_clip_editor_region = true;
+      clip_editor_set_region (CLIP_EDITOR, NULL);
+    }
+
   /* get global/local positions (the local pos
    * is after traversing the loops) */
   Position globalp, localp;
@@ -2126,9 +2137,14 @@ arranger_object_split (
         }
     }
 
-  /* for first region just set the end pos */
+  /* for first region set the end pos and fade
+   * out pos */
   arranger_object_end_pos_setter (
     *r1, &globalp);
+  arranger_object_set_position (
+    *r1, &localp,
+    ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
+    F_NO_VALIDATE);
 
   /* for the second set the clip start and start
    * pos. */
@@ -2136,6 +2152,15 @@ arranger_object_split (
     *r2, &localp);
   arranger_object_pos_setter (
     *r2, &globalp);
+  Position r2_fade_out;
+  position_set_to_pos (
+    &r2_fade_out, &((*r2)->end_pos));
+  position_add_ticks (
+    &r2_fade_out, - (*r2)->pos.total_ticks);
+  arranger_object_set_position (
+    *r2, &r2_fade_out,
+    ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
+    F_NO_VALIDATE);
 
   /* add them to the parent */
   switch (self->type)
@@ -2194,16 +2219,6 @@ arranger_object_split (
   arranger_selections_add_object (
     sel, *r2);
 
-  /* change to r1 if the original region was the
-   * clip editor region */
-  ZRegion * clip_editor_region =
-    clip_editor_get_region (CLIP_EDITOR);
-  if (clip_editor_region == (ZRegion *) self)
-    {
-      clip_editor_set_region (
-        CLIP_EDITOR, (ZRegion *) *r1);
-    }
-
   /* remove and free the original object */
   switch (self->type)
     {
@@ -2230,6 +2245,12 @@ arranger_object_split (
       break;
     }
 
+  if (set_clip_editor_region)
+    {
+      clip_editor_set_region (
+        CLIP_EDITOR, (ZRegion *) *r1);
+    }
+
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, *r1);
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, *r2);
 }
@@ -2243,14 +2264,36 @@ arranger_object_unsplit (
   ArrangerObject *         r2,
   ArrangerObject **        obj)
 {
+  /* change to the original region if the clip
+   * editor region is r1 or r2 */
+  ZRegion * clip_editor_region =
+    clip_editor_get_region (CLIP_EDITOR);
+  bool set_clip_editor_region = false;
+  if (clip_editor_region == (ZRegion *) r1 ||
+      clip_editor_region == (ZRegion *) r2)
+    {
+      set_clip_editor_region = true;
+      clip_editor_set_region (CLIP_EDITOR, NULL);
+    }
+
   /* create the new object */
   *obj =
     arranger_object_clone (
       r1, ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
-  /* set the end pos to the end pos of r2 */
+  /* set the end pos to the end pos of r2 and
+   * fade out */
   arranger_object_end_pos_setter (
     *obj, &r2->end_pos);
+  Position fade_out_pos;
+  position_set_to_pos (
+    &fade_out_pos, &r2->end_pos);
+  position_add_ticks (
+    &fade_out_pos, - r2->pos.total_ticks);
+  arranger_object_set_position (
+    *obj, &fade_out_pos,
+    ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
+    F_NO_VALIDATE);
 
   /* add it to the parent */
   switch (r1->type)
@@ -2295,16 +2338,6 @@ arranger_object_unsplit (
   arranger_selections_add_object (
     sel, *obj);
 
-  /* change to r1 if the original region was the
-   * clip editor region */
-  ZRegion * clip_editor_region =
-    clip_editor_get_region (CLIP_EDITOR);
-  if (clip_editor_region == (ZRegion *) r1)
-    {
-      clip_editor_set_region (
-        CLIP_EDITOR, (ZRegion *) *obj);
-    }
-
   /* remove and free the original regions */
   switch (r1->type)
     {
@@ -2312,10 +2345,12 @@ arranger_object_unsplit (
       {
         track_remove_region (
           arranger_object_get_track (r1),
-          (ZRegion *) r1, F_PUBLISH_EVENTS, F_FREE);
+          (ZRegion *) r1, F_PUBLISH_EVENTS,
+          F_FREE);
         track_remove_region (
           arranger_object_get_track (r2),
-          (ZRegion *) r2, F_PUBLISH_EVENTS, F_FREE);
+          (ZRegion *) r2, F_PUBLISH_EVENTS,
+          F_FREE);
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
@@ -2336,6 +2371,12 @@ arranger_object_unsplit (
       break;
     default:
       break;
+    }
+
+  if (set_clip_editor_region)
+    {
+      clip_editor_set_region (
+        CLIP_EDITOR, (ZRegion *) *obj);
     }
 
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, *obj);

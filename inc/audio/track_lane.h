@@ -161,6 +161,14 @@ track_lane_add_region (
   ZRegion *    region);
 
 /**
+ * Removes but does not free the region.
+ */
+void
+track_lane_remove_region (
+  TrackLane * self,
+  ZRegion *   region);
+
+/**
  * Unselects all arranger objects.
  */
 void

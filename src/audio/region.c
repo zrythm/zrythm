@@ -412,6 +412,29 @@ region_type_has_lane (
     type == REGION_TYPE_AUDIO;
 }
 
+/**
+ * Sanity checking.
+ *
+ * @param is_project Whether this region ispart
+ *   of the project (as opposed to a clone in
+ *   the undo stack, etc.).
+ */
+bool
+region_sanity_check (
+  ZRegion * self,
+  bool      is_project)
+{
+  if (is_project)
+    {
+      if (!region_find (&self->id))
+        {
+          return false;
+        }
+    }
+
+  return true;
+}
+
 TrackLane *
 region_get_lane (
   const ZRegion * self)

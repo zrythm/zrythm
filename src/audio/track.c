@@ -1226,9 +1226,7 @@ track_remove_region (
     {
       TrackLane * lane =
         region_get_lane (region);
-      array_delete (
-        lane->regions, lane->num_regions,
-        region);
+      track_lane_remove_region (lane, region);
     }
   else if (region->id.type == REGION_TYPE_CHORD)
     {
