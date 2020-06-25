@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
 #include <stdlib.h>
 
 #include "audio/chord_object.h"
@@ -75,7 +76,8 @@ chord_object_is_equal (
   ArrangerObject * obj_b =
     (ArrangerObject *) b;
   return
-    position_is_equal (&obj_a->pos, &obj_b->pos) &&
+    position_is_equal_ticks (
+      &obj_a->pos, &obj_b->pos) &&
     a->chord_index == b->chord_index &&
     a->index == b->index;
 }

@@ -123,7 +123,8 @@ on_stop_recording (
       (ArrangerSelections *) TL_SELECTIONS, true);
   undo_manager_perform (UNDO_MANAGER, action);
 
-  /* update frame caches */
+  /* update frame caches and write audio clips to
+   * pool */
   for (int i = 0; i < self->num_recorded_ids; i++)
     {
       ZRegion * r =
@@ -134,6 +135,7 @@ on_stop_recording (
             audio_region_get_clip (r);
           audio_region_init_frame_caches (
             r, clip);
+          audio_clip_write_to_pool (clip);
         }
     }
 

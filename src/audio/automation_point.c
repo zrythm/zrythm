@@ -113,7 +113,8 @@ automation_point_is_equal (
   ArrangerObject * b_obj =
     (ArrangerObject *) b;
   return
-    position_is_equal (&a_obj->pos, &b_obj->pos) &&
+    position_is_equal_ticks (
+      &a_obj->pos, &b_obj->pos) &&
     math_floats_equal_epsilon (
       a->fvalue, b->fvalue, 0.001f);
 }

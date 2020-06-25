@@ -1547,9 +1547,9 @@ find_region (
   ArrangerObject * self_obj =
     (ArrangerObject *) self;
   g_warn_if_fail (
-    position_is_equal (
+    position_is_equal_ticks (
       &self_obj->pos, &obj->pos) &&
-    position_is_equal (
+    position_is_equal_ticks (
       &self_obj->end_pos, &obj->end_pos));
 
   return obj;

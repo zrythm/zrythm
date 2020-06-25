@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
 #include <stdlib.h>
 
 #include "audio/scale_object.h"
@@ -60,6 +61,7 @@ scale_object_is_equal (
   ArrangerObject * obj_b =
     (ArrangerObject *) b;
   return
-    position_is_equal (&obj_a->pos, &obj_b->pos) &&
+    position_is_equal_ticks (
+      &obj_a->pos, &obj_b->pos) &&
     musical_scale_is_equal (a->scale, b->scale);
 }

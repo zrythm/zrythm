@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
+
 #include "audio/midi.h"
 #include "audio/midi_note.h"
 #include "audio/position.h"
@@ -186,9 +188,9 @@ midi_note_is_equal (
   ArrangerObject * dest_obj =
     (ArrangerObject *) dest;
   return
-    position_is_equal (
+    position_is_equal_ticks (
       &src_obj->pos, &dest_obj->pos) &&
-    position_is_equal (
+    position_is_equal_ticks (
       &src_obj->end_pos, &dest_obj->end_pos) &&
     src->val == dest->val &&
     src->muted == dest->muted &&
