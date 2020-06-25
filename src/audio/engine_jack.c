@@ -351,7 +351,9 @@ timebase_cb (
   int new_pos,
   void *arg)
 {
-  /*AudioEngine * self = (AudioEngine *) arg;*/
+  AudioEngine * self = (AudioEngine *) arg;
+  if (!self->run)
+    return;
 
   /* Mandatory fields */
   pos->valid = JackPositionBBT;
