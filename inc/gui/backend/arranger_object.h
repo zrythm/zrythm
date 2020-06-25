@@ -242,6 +242,15 @@ typedef struct ArrangerObject
    * part of a region. */
   RegionIdentifier   region_id;
 
+  /**
+   * Whether deleted with delete tool.
+   *
+   * This is used to simply hide these objects
+   * until the action finishes so that they can
+   * be cloned for the actions.
+   */
+  bool               deleted_temporarily;
+
   /** 1 when hovering over the object. */
   //int                hover;
 

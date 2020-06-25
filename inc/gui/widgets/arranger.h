@@ -162,7 +162,11 @@ typedef struct _ArrangerWidget
 
   /** A clone of the ArrangerSelections on drag
    * begin. */
-  ArrangerSelections *  sel_at_start;
+  ArrangerSelections *   sel_at_start;
+
+  /** Selections to delete, used with the eraser
+   * tool. */
+  ArrangerSelections *   sel_to_delete;
 
   /** Start Position of the earliest object
    * currently. */

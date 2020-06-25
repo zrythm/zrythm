@@ -72,6 +72,7 @@
 #include "utils/cairo.h"
 #include "utils/gtk.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -1104,6 +1105,11 @@ add_object_if_overlap (
   int *              array_size,
   ArrangerObject *   obj)
 {
+  if (obj->deleted_temporarily)
+    {
+      return false;
+    }
+
   arranger_object_set_full_rectangle (
     obj, self);
   bool is_same_arranger =
@@ -1275,7 +1281,8 @@ get_hit_objects (
                                   &lane_rect,
                                   true, true, x, y,
                                   0, 0))) &&
-                              arranger_object_get_arranger (obj) ==  self)
+                              arranger_object_get_arranger (obj) ==  self &&
+                              !obj->deleted_temporarily)
                             {
                               array[*array_size] =
                                 obj;
@@ -3127,13 +3134,25 @@ select_in_range (
   double           offset_y,
   int              delete)
 {
-  int i;
-
   ArrangerSelections * prev_sel =
     arranger_selections_clone (
       arranger_widget_get_selections (self));
 
-  if (!delete)
+  if (delete)
+    {
+      int num_objs;
+      ArrangerObject ** objs =
+        arranger_selections_get_all_objects (
+          self->sel_to_delete, &num_objs);
+      for (int i = 0; i < num_objs; i++)
+        {
+          objs[i]->deleted_temporarily = false;
+        }
+      arranger_selections_clear (
+        self->sel_to_delete);
+      free (objs);
+    }
+  else
     {
       /* deselect all */
       arranger_widget_select_all (self, 0);
@@ -3157,18 +3176,14 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_CHORD_OBJECT,
         &rect, objs, &num_objs);
-      for (i = 0; i < num_objs; i++)
+      for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
-          ChordObject * co =
-            (ChordObject *) objs[i];
-
           if (delete)
             {
-              ZRegion * region =
-                region_find (&obj->region_id);
-              chord_region_remove_chord_object (
-                region, co, F_FREE);
+              arranger_selections_add_object (
+                self->sel_to_delete, obj);
+              obj->deleted_temporarily = true;
             }
           else
             {
@@ -3181,17 +3196,15 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT,
         &rect, objs, &num_objs);
-      for (i = 0; i < num_objs; i++)
+      for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
-          AutomationPoint * ap =
-            (AutomationPoint *) objs[i];
-          ZRegion * region =
-            region_find (&obj->region_id);
-
           if (delete)
-            automation_region_remove_ap (
-              region, ap, F_FREE);
+            {
+              arranger_selections_add_object (
+                self->sel_to_delete, obj);
+              obj->deleted_temporarily = true;
+            }
           else
             {
               arranger_object_select (
@@ -3203,20 +3216,14 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_REGION,
         &rect, objs, &num_objs);
-      for (i = 0; i < num_objs; i++)
+      for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
-          ZRegion * region =
-            (ZRegion *) obj;
-
           if (delete)
             {
-              Track * track =
-                arranger_object_get_track (obj);
-              /* delete the enclosed region */
-              track_remove_region (
-                track, region,
-                F_PUBLISH_EVENTS, F_FREE);
+              arranger_selections_add_object (
+                self->sel_to_delete, obj);
+              obj->deleted_temporarily = true;
             }
           else
             {
@@ -3228,16 +3235,14 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_SCALE_OBJECT,
         &rect, objs, &num_objs);
-      for (i = 0; i < num_objs; i++)
+      for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
-          ScaleObject * so =
-            (ScaleObject *) obj;
-
           if (delete)
             {
-              chord_track_remove_scale (
-                P_CHORD_TRACK, so, F_FREE);
+              arranger_selections_add_object (
+                self->sel_to_delete, obj);
+              obj->deleted_temporarily = true;
             }
           else
             {
@@ -3248,16 +3253,14 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_MARKER,
         &rect, objs, &num_objs);
-      for (i = 0; i < num_objs; i++)
+      for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
-          Marker * marker =
-            (Marker *) obj;
-
           if (delete)
             {
-              marker_track_remove_marker (
-                P_MARKER_TRACK, marker, F_FREE);
+              arranger_selections_add_object (
+                self->sel_to_delete, obj);
+              obj->deleted_temporarily = true;
             }
           else
             {
@@ -3270,19 +3273,14 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_MIDI_NOTE,
         &rect, objs, &num_objs);
-      for (i = 0; i < num_objs; i++)
+      for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
-          MidiNote * mn =
-            (MidiNote *) obj;
-          ZRegion * region =
-            region_find (&obj->region_id);
-
           if (delete)
             {
-              midi_region_remove_midi_note (
-                region, mn,
-                F_NO_FREE, F_PUBLISH_EVENTS);
+              arranger_selections_add_object (
+                self->sel_to_delete, obj);
+              obj->deleted_temporarily = true;
             }
           else
             {
@@ -3299,27 +3297,26 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_VELOCITY,
         &rect, objs, &num_objs);
-      for (i = 0; i < num_objs; i++)
+      for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
           Velocity * vel =
             (Velocity *) obj;
           MidiNote * mn =
             velocity_get_midi_note (vel);
-          ZRegion * region =
-            arranger_object_get_region (obj);
+          ArrangerObject * mn_obj =
+            (ArrangerObject *) mn;
 
           if (delete)
             {
-              midi_region_remove_midi_note (
-                region, mn, F_NO_FREE,
-                F_PUBLISH_EVENTS);
+              arranger_selections_add_object (
+                self->sel_to_delete, mn_obj);
+              obj->deleted_temporarily = true;
             }
           else
             {
               arranger_object_select (
-                (ArrangerObject *) mn,
-                F_SELECT, F_APPEND);
+                mn_obj, F_SELECT, F_APPEND);
             }
         }
       break;
@@ -3409,6 +3406,14 @@ drag_update (
     case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
       self->action =
         UI_OVERLAY_ACTION_DELETE_SELECTING;
+      {
+        ArrangerSelections * sel =
+          arranger_widget_get_selections (self);
+        arranger_selections_clear (sel);
+        self->sel_to_delete =
+          arranger_selections_clone (
+            arranger_widget_get_selections (self));
+      }
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
       if (self->alt_held &&
@@ -3660,116 +3665,129 @@ on_drag_end_automation (
         /*(ArrangerObjectWidget *) obj->widget, 0);*/
     }
 
-  if (self->action ==
-        UI_OVERLAY_ACTION_RESIZING_UP)
+  switch (self->action)
     {
-      UndoableAction * ua =
-        arranger_selections_action_new_edit (
-          self->sel_at_start,
-          (ArrangerSelections *)
-          AUTOMATION_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
-          F_ALREADY_EDITED);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
-  else if (self->action ==
-        UI_OVERLAY_ACTION_STARTING_MOVING)
-    {
-      /* if something was clicked with ctrl without
-       * moving*/
-      if (self->ctrl_held)
-        {
-          /*if (self->start_region &&*/
-              /*self->start_region_was_selected)*/
-            /*{*/
-              /*[> deselect it <]*/
-              /*[>ARRANGER_WIDGET_SELECT_REGION (<]*/
-                /*[>self, self->start_region,<]*/
-                /*[>F_NO_SELECT, F_APPEND);<]*/
-            /*}*/
-        }
-      else if (self->n_press == 2)
-        {
-          /* double click on object */
-          /*g_message ("DOUBLE CLICK");*/
-        }
-    }
-  else if (self->action ==
-             UI_OVERLAY_ACTION_MOVING)
-    {
-      AutomationSelections * sel_at_start =
-        (AutomationSelections *) self->sel_at_start;
-      AutomationPoint * start_ap =
-        sel_at_start->automation_points[0];
-      ArrangerObject * start_obj =
-        (ArrangerObject *) start_ap;
-      AutomationPoint * ap =
-        AUTOMATION_SELECTIONS->automation_points[0];
-      ArrangerObject * obj =
-        (ArrangerObject *) ap;
-      double ticks_diff =
-        obj->pos.total_ticks -
-        start_obj->pos.total_ticks;
-      double norm_value_diff =
-        (double)
-        (ap->normalized_val -
-         start_ap->normalized_val);
-      UndoableAction * ua =
-        arranger_selections_action_new_move_automation (
-          AUTOMATION_SELECTIONS,
-          ticks_diff, norm_value_diff,
-          F_ALREADY_MOVED);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
-  /* if copy-moved */
-  else if (self->action ==
-             UI_OVERLAY_ACTION_MOVING_COPY)
-    {
-      ArrangerObject * obj =
-        (ArrangerObject *) self->start_object;
-      double ticks_diff =
-        obj->pos.total_ticks -
-        obj->transient->pos.total_ticks;
-      float value_diff =
-        ((AutomationPoint *) obj)->normalized_val -
-        ((AutomationPoint *) obj->transient)->
-          normalized_val;
-      UndoableAction * ua = NULL;
-      ua =
-        (UndoableAction *)
-        arranger_selections_action_new_duplicate_automation (
-          (ArrangerSelections *)
+    case UI_OVERLAY_ACTION_RESIZING_UP:
+      {
+        UndoableAction * ua =
+          arranger_selections_action_new_edit (
+            self->sel_at_start,
+            (ArrangerSelections *)
             AUTOMATION_SELECTIONS,
-          ticks_diff, value_diff,
-          F_ALREADY_MOVED);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
-  else if (self->action ==
-             UI_OVERLAY_ACTION_NONE ||
-           self->action ==
-             UI_OVERLAY_ACTION_STARTING_SELECTION)
-    {
-      arranger_selections_clear (
-        (ArrangerSelections *)
-        AUTOMATION_SELECTIONS);
-    }
-  /* if something was created */
-  else if (self->action ==
-             UI_OVERLAY_ACTION_CREATING_MOVING)
-    {
-      UndoableAction * ua =
-        arranger_selections_action_new_create (
+            ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
+            F_ALREADY_EDITED);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING:
+      {
+        /* if something was clicked with ctrl without
+         * moving*/
+        if (self->ctrl_held)
+          {
+            /*if (self->start_region &&*/
+                /*self->start_region_was_selected)*/
+              /*{*/
+                /*[> deselect it <]*/
+                /*[>ARRANGER_WIDGET_SELECT_REGION (<]*/
+                  /*[>self, self->start_region,<]*/
+                  /*[>F_NO_SELECT, F_APPEND);<]*/
+              /*}*/
+          }
+        else if (self->n_press == 2)
+          {
+            /* double click on object */
+            /*g_message ("DOUBLE CLICK");*/
+          }
+      }
+    break;
+    case UI_OVERLAY_ACTION_MOVING:
+      {
+        AutomationSelections * sel_at_start =
+          (AutomationSelections *) self->sel_at_start;
+        AutomationPoint * start_ap =
+          sel_at_start->automation_points[0];
+        ArrangerObject * start_obj =
+          (ArrangerObject *) start_ap;
+        AutomationPoint * ap =
+          AUTOMATION_SELECTIONS->automation_points[0];
+        ArrangerObject * obj =
+          (ArrangerObject *) ap;
+        double ticks_diff =
+          obj->pos.total_ticks -
+          start_obj->pos.total_ticks;
+        double norm_value_diff =
+          (double)
+          (ap->normalized_val -
+           start_ap->normalized_val);
+        UndoableAction * ua =
+          arranger_selections_action_new_move_automation (
+            AUTOMATION_SELECTIONS,
+            ticks_diff, norm_value_diff,
+            F_ALREADY_MOVED);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
+      break;
+  /* if copy-moved */
+    case UI_OVERLAY_ACTION_MOVING_COPY:
+      {
+        ArrangerObject * obj =
+          (ArrangerObject *) self->start_object;
+        double ticks_diff =
+          obj->pos.total_ticks -
+          obj->transient->pos.total_ticks;
+        float value_diff =
+          ((AutomationPoint *) obj)->normalized_val -
+          ((AutomationPoint *) obj->transient)->
+            normalized_val;
+        UndoableAction * ua = NULL;
+        ua =
+          (UndoableAction *)
+          arranger_selections_action_new_duplicate_automation (
+            (ArrangerSelections *)
+              AUTOMATION_SELECTIONS,
+            ticks_diff, value_diff,
+            F_ALREADY_MOVED);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
+      break;
+    case UI_OVERLAY_ACTION_NONE:
+    case UI_OVERLAY_ACTION_STARTING_SELECTION:
+      {
+        arranger_selections_clear (
           (ArrangerSelections *)
           AUTOMATION_SELECTIONS);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
-  /* if didn't click on something */
-  else
-    {
+      }
+      break;
+    /* if something was created */
+    case UI_OVERLAY_ACTION_CREATING_MOVING:
+      {
+        UndoableAction * ua =
+          arranger_selections_action_new_create (
+            (ArrangerSelections *)
+            AUTOMATION_SELECTIONS);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
+      break;
+    case UI_OVERLAY_ACTION_DELETE_SELECTING:
+      {
+        UndoableAction * ua =
+          arranger_selections_action_new_delete (
+            self->sel_to_delete);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+        object_free_w_func_and_null (
+          arranger_selections_free_full,
+          self->sel_to_delete);
+      }
+      break;
+    /* if didn't click on something */
+    default:
+      break;
     }
 
   self->start_object = NULL;
@@ -3868,6 +3886,18 @@ on_drag_end_midi_modifier (
         if (ua)
           undo_manager_perform (
             UNDO_MANAGER, ua);
+      }
+      break;
+    case UI_OVERLAY_ACTION_DELETE_SELECTING:
+      {
+        UndoableAction * ua =
+          arranger_selections_action_new_delete (
+            self->sel_to_delete);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+        object_free_w_func_and_null (
+          arranger_selections_free_full,
+          self->sel_to_delete);
       }
       break;
     default:
@@ -3999,25 +4029,37 @@ on_drag_end_midi (
     }
       break;
     case UI_OVERLAY_ACTION_NONE:
-    {
-      arranger_selections_clear (
-        (ArrangerSelections *) MA_SELECTIONS);
-    }
+      {
+        arranger_selections_clear (
+          (ArrangerSelections *) MA_SELECTIONS);
+      }
       break;
     /* something was created */
     case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
-    {
-      UndoableAction * ua =
-        arranger_selections_action_new_create (
-          (ArrangerSelections *) MA_SELECTIONS);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
+      {
+        UndoableAction * ua =
+          arranger_selections_action_new_create (
+            (ArrangerSelections *) MA_SELECTIONS);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
+      break;
+    case UI_OVERLAY_ACTION_DELETE_SELECTING:
+      {
+        UndoableAction * ua =
+          arranger_selections_action_new_delete (
+            self->sel_to_delete);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+        object_free_w_func_and_null (
+          arranger_selections_free_full,
+          self->sel_to_delete);
+      }
       break;
     /* if didn't click on something */
     default:
-    {
-    }
+      {
+      }
       break;
     }
 
@@ -4103,6 +4145,18 @@ on_drag_end_chord (
             (ArrangerSelections *) CHORD_SELECTIONS);
         undo_manager_perform (
           UNDO_MANAGER, ua);
+      }
+      break;
+    case UI_OVERLAY_ACTION_DELETE_SELECTING:
+      {
+        UndoableAction * ua =
+          arranger_selections_action_new_delete (
+            self->sel_to_delete);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+        object_free_w_func_and_null (
+          arranger_selections_free_full,
+          self->sel_to_delete);
       }
       break;
     /* if didn't click on something */
@@ -4360,6 +4414,18 @@ on_drag_end_timeline (
             (ArrangerSelections *) TL_SELECTIONS);
         undo_manager_perform (
           UNDO_MANAGER, ua);
+      }
+      break;
+    case UI_OVERLAY_ACTION_DELETE_SELECTING:
+      {
+        UndoableAction * ua =
+          arranger_selections_action_new_delete (
+            self->sel_to_delete);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+        object_free_w_func_and_null (
+          arranger_selections_free_full,
+          self->sel_to_delete);
       }
       break;
     case UI_OVERLAY_ACTION_CUTTING:
