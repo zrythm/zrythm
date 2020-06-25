@@ -1511,6 +1511,18 @@ process_events (void * data)
                 }
             }
           break;
+        case ET_PROJECT_SAVED:
+          header_widget_set_subtitle (
+            MW_HEADER,
+            ((Project *) ev->arg)->title);
+          break;
+        case ET_PROJECT_LOADED:
+          header_widget_set_subtitle (
+            MW_HEADER,
+            ((Project *) ev->arg)->title);
+          home_toolbar_widget_refresh_undo_redo_buttons (
+            MW_HOME_TOOLBAR);
+          break;
         case ET_AUTOMATION_TRACKLIST_AT_REMOVED:
           /* TODO */
           break;

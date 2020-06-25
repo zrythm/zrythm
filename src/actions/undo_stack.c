@@ -64,19 +64,22 @@ undo_stack_init_loaded (
   size_t move_tracks_actions_idx = 0;
   size_t transport_actions_idx = 0;
 
+  size_t total_actions =
+    self->num_as_actions +
+    self->num_copy_plugins_actions +
+    self->num_copy_tracks_actions +
+    self->num_create_plugins_actions +
+    self->num_create_tracks_actions +
+    self->num_delete_plugins_actions +
+    self->num_delete_tracks_actions +
+    self->num_edit_plugins_actions +
+    self->num_edit_tracks_actions +
+    self->num_move_plugins_actions +
+    self->num_move_tracks_actions +
+    self->num_transport_actions;
+
   size_t i = 0;
-  while (i < self->num_as_actions ||
-         i < self->num_copy_plugins_actions ||
-         i < self->num_copy_tracks_actions ||
-         i < self->num_create_plugins_actions ||
-         i < self->num_create_tracks_actions ||
-         i < self->num_delete_plugins_actions ||
-         i < self->num_delete_tracks_actions ||
-         i < self->num_edit_plugins_actions ||
-         i < self->num_edit_tracks_actions ||
-         i < self->num_move_plugins_actions ||
-         i < self->num_move_tracks_actions ||
-         i < self->num_transport_actions)
+  while (i < total_actions)
     {
       /* if there are still actions of this type */
       if (as_actions_idx < self->num_as_actions)

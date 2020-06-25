@@ -152,6 +152,12 @@ typedef enum EventType
 
   /** Sent after the main window finishes loading. */
   ET_MAIN_WINDOW_LOADED,
+
+  /** Sent when a project is loaded. */
+  ET_PROJECT_LOADED,
+
+  /** Sent when a project is saved. */
+  ET_PROJECT_SAVED,
 } EventType;
 
 /**

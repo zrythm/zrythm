@@ -46,7 +46,6 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/create_project_dialog.h"
-#include "gui/widgets/header.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/splash.h"
@@ -487,7 +486,8 @@ destroy_prev_main_window (void)
 
 static void
 refresh_main_window (
-  bool loading_while_running)
+  Project * self,
+  bool      loading_while_running)
 {
   /* mimic behavior when starting the app */
   if (ZRYTHM_HAVE_UI)
@@ -498,6 +498,9 @@ refresh_main_window (
           main_window_widget_refresh (MAIN_WINDOW);
           g_atomic_int_set (&AUDIO_ENGINE->run, 1);
         }
+
+      EVENTS_PUSH (
+        ET_PROJECT_LOADED, self);
     }
 }
 
@@ -633,42 +636,36 @@ create_default (Project * self)
   self->loaded = 1;
 
   snap_grid_init (
-    &PROJECT->snap_grid_timeline,
+    &self->snap_grid_timeline,
     NOTE_LENGTH_1_1);
   quantize_options_init (
-    &PROJECT->quantize_opts_timeline,
+    &self->quantize_opts_timeline,
     NOTE_LENGTH_1_1);
   snap_grid_init (
-    &PROJECT->snap_grid_midi,
+    &self->snap_grid_midi,
     NOTE_LENGTH_1_8);
   quantize_options_init (
-    &PROJECT->quantize_opts_editor,
+    &self->quantize_opts_editor,
     NOTE_LENGTH_1_8);
-  clip_editor_init (&PROJECT->clip_editor);
+  clip_editor_init (&self->clip_editor);
   snap_grid_update_snap_points (
-    &PROJECT->snap_grid_timeline);
+    &self->snap_grid_timeline);
   snap_grid_update_snap_points (
-    &PROJECT->snap_grid_midi);
+    &self->snap_grid_midi);
   quantize_options_update_quantize_points (
-    &PROJECT->quantize_opts_timeline);
+    &self->quantize_opts_timeline);
   quantize_options_update_quantize_points (
-    &PROJECT->quantize_opts_editor);
+    &self->quantize_opts_editor);
 
   region_link_group_manager_init (
-    &PROJECT->region_link_group_manager);
+    &self->region_link_group_manager);
 
   position_set_to_bar (
-    &PROJECT->range_1, 1);
+    &self->range_1, 1);
   position_set_to_bar (
-    &PROJECT->range_2, 1);
+    &self->range_2, 1);
 
-  refresh_main_window (loading_while_running);
-
-  if (ZRYTHM_HAVE_UI)
-    {
-      header_widget_set_subtitle (
-        MW_HEADER, PROJECT->title);
-    }
+  refresh_main_window (self, loading_while_running);
 
   g_message ("%s: done", __func__);
 }
@@ -970,13 +967,7 @@ load (
   /* recalculate the routing graph */
   router_recalc_graph ((ROUTER));
 
-  refresh_main_window (loading_while_running);
-
-  if (ZRYTHM_HAVE_UI)
-    {
-      header_widget_set_subtitle (
-        MW_HEADER, self->title);
-    }
+  refresh_main_window (self, loading_while_running);
 
   return 0;
 }
@@ -1367,8 +1358,7 @@ project_idle_saved_cb (
 
   if (ZRYTHM_HAVE_UI)
     {
-      header_widget_set_subtitle (
-        MW_HEADER, PROJECT->title);
+      EVENTS_PUSH (ET_PROJECT_SAVED, PROJECT);
     }
 
   object_free_w_func_and_null (

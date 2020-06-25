@@ -39,7 +39,9 @@ undo_manager_init (
   UndoManager * self,
   int           loading)
 {
-  g_message ("Initializing undo manager...");
+  g_message (
+    "%s: Initializing%s...", __func__,
+    loading ? " (loading)" : "");
 
   if (loading)
     {
