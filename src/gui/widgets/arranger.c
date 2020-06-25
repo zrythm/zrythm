@@ -2870,10 +2870,6 @@ on_drag_begin_handle_hit_object (
             SET_ACTION (RESIZING_L_FADE);
           else if (is_fade_out_point)
             SET_ACTION (RESIZING_R_FADE);
-          else if (is_fade_in_outer)
-            SET_ACTION (RESIZING_UP_FADE_IN);
-          else if (is_fade_out_outer)
-            SET_ACTION (RESIZING_UP_FADE_OUT);
           else if (is_resize_l && is_resize_loop)
             SET_ACTION (RESIZING_L_LOOP);
           else if (is_resize_l)
@@ -2884,6 +2880,10 @@ on_drag_begin_handle_hit_object (
             SET_ACTION (RESIZING_R);
           else if (show_cut_lines)
             SET_ACTION (CUTTING);
+          else if (is_fade_in_outer)
+            SET_ACTION (RESIZING_UP_FADE_IN);
+          else if (is_fade_out_outer)
+            SET_ACTION (RESIZING_UP_FADE_OUT);
           else
             SET_ACTION (STARTING_MOVING);
           break;

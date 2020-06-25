@@ -1091,6 +1091,15 @@ arranger_object_resize (
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
                 F_NO_VALIDATE);
             }
+          if (arranger_object_can_fade (self))
+            {
+              tmp = self->fade_out_pos;
+              position_add_ticks (&tmp, - ticks);
+              arranger_object_set_position (
+                self, &tmp,
+                ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
+                F_NO_VALIDATE);
+            }
 
           /* move containing items */
           arranger_object_add_ticks_to_children (
@@ -1138,6 +1147,15 @@ arranger_object_resize (
               arranger_object_set_position (
                 self, &tmp,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
+                F_NO_VALIDATE);
+            }
+          if (arranger_object_can_fade (self))
+            {
+              tmp = self->fade_out_pos;
+              position_add_ticks (&tmp, ticks);
+              arranger_object_set_position (
+                self, &tmp,
+                ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
                 F_NO_VALIDATE);
             }
 

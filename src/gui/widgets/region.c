@@ -931,10 +931,15 @@ draw_fades (
               (double) (i - start_px) /
                 local_px_diff,
               &obj->fade_in_opts, 1);
+          /* FIXME doesn't work when only the
+           * region is drawn (not whole arranger) */
           double next_val =
             1.0 -
             fade_get_y_normalized (
-              (double) ((i + 1) - start_px) /
+              (double)
+                MIN (
+                  ((i + 1) - start_px),
+                  local_px_diff) /
                 local_px_diff,
               &obj->fade_in_opts, 1);
 
