@@ -101,6 +101,25 @@ on_stop_recording (
            id->type == REGION_TYPE_AUTOMATION))
         continue;
 
+      /* do some sanity checks for lane regions */
+      if (region_type_has_lane (id->type))
+        {
+          g_return_if_fail (
+            id->track_pos < TRACKLIST->num_tracks);
+          Track * track =
+            TRACKLIST->tracks[id->track_pos];
+          g_return_if_fail (track);
+
+          g_return_if_fail (
+            id->lane_pos < track->num_lanes);
+          TrackLane * lane =
+            track->lanes[id->lane_pos];
+          g_return_if_fail (lane);
+
+          g_return_if_fail (
+            id->idx <= lane->num_regions);
+        }
+
       /*region_identifier_print (id);*/
       ZRegion * region = region_find (id);
       g_return_if_fail (region);

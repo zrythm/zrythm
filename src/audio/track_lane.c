@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 
+#include "audio/audio_region.h"
 #include "audio/track.h"
 #include "audio/track_lane.h"
 #include "audio/tracklist.h"
@@ -118,6 +119,14 @@ track_lane_add_region (
   region->id.lane_pos = self->pos;
   region->id.idx = self->num_regions - 1;
   region_update_identifier (region);
+
+  if (region->id.type == REGION_TYPE_AUDIO)
+    {
+      AudioClip * clip =
+        audio_region_get_clip (region);
+      g_return_if_fail (clip);
+      audio_region_init_frame_caches (region, clip);
+    }
 }
 
 /**

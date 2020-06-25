@@ -557,18 +557,21 @@ region_find (
   if (id->type == REGION_TYPE_MIDI ||
       id->type == REGION_TYPE_AUDIO)
     {
-      if (id->track_pos >= TRACKLIST->num_tracks)
-        g_return_val_if_reached (NULL);
+      g_return_val_if_fail (
+        id->track_pos < TRACKLIST->num_tracks,
+        NULL);
+
       track =  TRACKLIST->tracks[id->track_pos];
       g_return_val_if_fail (track, NULL);
 
-      if (id->lane_pos >= track->num_lanes)
-        g_return_val_if_reached (NULL);
+      g_return_val_if_fail (
+        id->lane_pos < track->num_lanes, NULL);
       lane = track->lanes[id->lane_pos];
       g_return_val_if_fail (lane, NULL);
 
-      if (id->idx >= lane->num_regions)
-        g_return_val_if_reached (NULL);
+      g_return_val_if_fail (
+        id->idx < lane->num_regions, NULL);
+
       ZRegion * region = lane->regions[id->idx];
       g_return_val_if_fail (region, NULL);
 

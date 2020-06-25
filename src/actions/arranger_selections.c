@@ -1459,8 +1459,7 @@ do_or_undo_record (
       /* clear current selections in the project */
       arranger_selections_clear (sel);
 
-      /* if doing in a create action or undoing
-       * in a delete action */
+      /* if do/redoing */
       if (_do)
         {
           /* create the newly recorded objects */
