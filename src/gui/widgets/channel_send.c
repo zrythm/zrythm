@@ -369,7 +369,7 @@ channel_send_widget_init (
     GDK_LEAVE_NOTIFY_MASK);
 
   gtk_widget_set_size_request (
-    GTK_WIDGET (self), -1, 22);
+    GTK_WIDGET (self), -1, 20);
 
   self->cache_tooltip = NULL;
 

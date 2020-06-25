@@ -51,13 +51,17 @@ typedef struct _ChannelWidget
   GtkEventBox         parent_instance;
   GtkGrid *          grid;
   RouteTargetSelectorWidget * output;
-  ColorAreaWidget     * color;
+  ColorAreaWidget *   color;
   GtkEventBox *       icon_and_name_event_box;
   EditableLabelWidget * name;
-  GtkBox              * phase_controls;
-  GtkButton           * phase_invert;
-  GtkLabel            * phase_reading;
-  KnobWidget          * phase_knob;
+  GtkBox *            phase_controls;
+  GtkButton *         phase_invert;
+  GtkLabel *          phase_reading;
+  KnobWidget *        phase_knob;
+
+  /** Instrument slot. */
+  GtkBox *            instrument_box;
+  ChannelSlotWidget * instrument_slot;
 
   /* ----- Inserts ------ */
   PluginStripExpanderWidget * inserts;

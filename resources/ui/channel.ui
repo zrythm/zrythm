@@ -221,7 +221,7 @@
           </object>
           <packing>
             <property name="left_attach">1</property>
-            <property name="top_attach">5</property>
+            <property name="top_attach">6</property>
             <property name="width">2</property>
           </packing>
         </child>
@@ -275,7 +275,7 @@
           </object>
           <packing>
             <property name="left_attach">1</property>
-            <property name="top_attach">4</property>
+            <property name="top_attach">5</property>
             <property name="width">2</property>
           </packing>
         </child>
@@ -288,7 +288,7 @@
           </object>
           <packing>
             <property name="left_attach">1</property>
-            <property name="top_attach">6</property>
+            <property name="top_attach">7</property>
             <property name="width">2</property>
           </packing>
         </child>
@@ -305,12 +305,22 @@
           </packing>
         </child>
         <child>
-          <object class="PluginStripExpanderWidget" id="inserts">
+          <object class="GtkBox" id="instrument_box">
             <property name="visible">1</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
             <property name="top_attach">3</property>
+            <property name="width">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="PluginStripExpanderWidget" id="inserts">
+            <property name="visible">1</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">4</property>
             <property name="width">2</property>
           </packing>
         </child>

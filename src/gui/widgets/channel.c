@@ -793,6 +793,25 @@ channel_widget_new (Channel * channel)
     track_set_name_with_events);
   route_target_selector_widget_setup (
     self->output, self->channel);
+
+#if 0
+  /*if (self->channel->track->type ==*/
+        /*TRACK_TYPE_INSTRUMENT)*/
+    /*{*/
+      self->instrument_slot =
+        channel_slot_widget_new (
+          -1, self->channel, PLUGIN_SLOT_INSTRUMENT,
+          true);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->instrument_slot), true);
+      gtk_widget_set_hexpand (
+        GTK_WIDGET (self->instrument_slot), true);
+      gtk_container_add (
+        GTK_CONTAINER (self->instrument_box),
+        GTK_WIDGET (self->instrument_slot));
+    /*}*/
+#endif
+
   channel_widget_refresh (self);
 
   gtk_widget_add_tick_callback (
@@ -831,6 +850,7 @@ channel_widget_class_init (
   BIND_CHILD (icon_and_name_event_box);
   BIND_CHILD (name);
   BIND_CHILD (inserts);
+  BIND_CHILD (instrument_box);
   BIND_CHILD (e);
   BIND_CHILD (solo);
   BIND_CHILD (listen);
