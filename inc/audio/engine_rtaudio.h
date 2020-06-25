@@ -43,7 +43,8 @@ engine_rtaudio_setup (
 
 void
 engine_rtaudio_activate (
-  AudioEngine * self);
+  AudioEngine * self,
+  bool          activate);
 
 rtaudio_t
 engine_rtaudio_create_rtaudio (

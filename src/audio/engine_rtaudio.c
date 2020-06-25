@@ -243,11 +243,21 @@ engine_rtaudio_setup (
 
 void
 engine_rtaudio_activate (
-  AudioEngine * self)
+  AudioEngine * self,
+  bool          activate)
 {
-  rtaudio_start_stream (self->rtaudio);
+  if (activate)
+    {
+      g_message ("%s: activating...", __func__);
+      rtaudio_start_stream (self->rtaudio);
+    }
+  else
+    {
+      g_message ("%s: deactivating...", __func__);
+      rtaudio_stop_stream (self->rtaudio);
+    }
 
-  g_message ("RtAudio activated");
+  g_message ("%s: done", __func__);
 }
 
 /**

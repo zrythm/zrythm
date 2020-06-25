@@ -994,7 +994,9 @@ zrythm_app_new (
 {
   ZrythmApp * self =  g_object_new (
     ZRYTHM_APP_TYPE,
-    "application-id", "org.zrythm.Zrythm",
+    /* if an ID is provided, this application
+     * becomes unique (only one instance allowed) */
+    /*"application-id", "org.zrythm.Zrythm",*/
     "resource-base-path", "/org/zrythm/Zrythm",
     "flags", G_APPLICATION_HANDLES_OPEN,
     NULL);

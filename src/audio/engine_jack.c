@@ -686,78 +686,86 @@ engine_jack_fill_out_bufs (
 
 int
 engine_jack_activate (
-  AudioEngine * self)
+  AudioEngine * self,
+  bool          activate)
 {
-  /* Tell the JACK server that we are ready to roll.  Our
-   * process() callback will start running now. */
-  if (jack_activate (self->client))
+  if (activate)
     {
-      g_warning ("cannot activate client");
-      return -1;
+      /* Tell the JACK server that we are ready to roll.  Our
+       * process() callback will start running now. */
+      if (jack_activate (self->client))
+        {
+          g_warning ("cannot activate client");
+          return -1;
+        }
+      g_message ("Jack activated");
+
+      /* Connect the ports.  You can't do this before
+       * the client is
+       * activated, because we can't make connections
+       * to clients
+       * that aren't running.  Note the confusing (but
+       * necessary)
+       * orientation of the driver backend ports:
+       * playback ports are
+       * "input" to the backend, and capture ports are
+       * "output" from
+       * it.
+       */
+
+      /* FIXME this just connects to the first ports
+       * it finds. add a menu in the welcome screen to
+       * set up default output */
+      const char **ports =
+        jack_get_ports (
+          self->client, NULL, JACK_DEFAULT_AUDIO_TYPE,
+          JackPortIsPhysical|JackPortIsInput);
+      if (ports == NULL ||
+          ports[0] == NULL ||
+          ports[1] == NULL)
+        {
+          g_critical (
+            "no physical playback ports found");
+          return -1;
+        }
+
+      g_return_val_if_fail (
+        self->monitor_out->l->data &&
+          self->monitor_out->r->data,
+        -1);
+
+      g_message ("connecting to system out ports...");
+      if (jack_connect (
+            self->client,
+            jack_port_name (
+              JACK_PORT_T (
+                self->monitor_out->l->data)),
+            ports[0]))
+        {
+          g_critical ("cannot connect output ports");
+          return -1;
+        }
+
+      if (jack_connect (
+            self->client,
+            jack_port_name (
+              JACK_PORT_T (self->monitor_out->r->data)),
+            ports[1]))
+        {
+          g_critical ("cannot connect output ports");
+          return -1;
+        }
+
+      /* autoconnect MIDI controllers */
+      autoconnect_midi_controllers (
+        AUDIO_ENGINE);
+
+      jack_free (ports);
     }
-  g_message ("Jack activated");
-
-  /* Connect the ports.  You can't do this before
-   * the client is
-   * activated, because we can't make connections
-   * to clients
-   * that aren't running.  Note the confusing (but
-   * necessary)
-   * orientation of the driver backend ports:
-   * playback ports are
-   * "input" to the backend, and capture ports are
-   * "output" from
-   * it.
-   */
-
-  /* FIXME this just connects to the first ports
-   * it finds. add a menu in the welcome screen to
-   * set up default output */
-  const char **ports =
-    jack_get_ports (
-      self->client, NULL, JACK_DEFAULT_AUDIO_TYPE,
-      JackPortIsPhysical|JackPortIsInput);
-  if (ports == NULL ||
-      ports[0] == NULL ||
-      ports[1] == NULL)
+  else
     {
-      g_critical (
-        "no physical playback ports found");
-      return -1;
+      jack_deactivate (self->client);
     }
-
-  g_return_val_if_fail (
-    self->monitor_out->l->data &&
-      self->monitor_out->r->data,
-    -1);
-
-  g_message ("connecting to system out ports...");
-  if (jack_connect (
-        self->client,
-        jack_port_name (
-          JACK_PORT_T (
-            self->monitor_out->l->data)),
-        ports[0]))
-    {
-      g_critical ("cannot connect output ports");
-      return -1;
-    }
-
-  if (jack_connect (
-        self->client,
-        jack_port_name (
-          JACK_PORT_T (self->monitor_out->r->data)),
-        ports[1]))
-    {
-      g_critical ("cannot connect output ports");
-      return -1;
-    }
-
-  /* autoconnect MIDI controllers */
-  autoconnect_midi_controllers (
-    AUDIO_ENGINE);
-
-  jack_free (ports);
 
   return 0;
 }

@@ -75,8 +75,9 @@ engine_windows_mme_setup (
  * Starts all previously scanned devices.
  */
 int
-engine_windows_mme_start_known_devices (
-  AudioEngine * self);
+engine_windows_mme_activate (
+  AudioEngine * self,
+  bool          activate);
 
 /**
  * Rescans for MIDI devices, opens them and keeps

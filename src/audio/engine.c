@@ -551,46 +551,65 @@ engine_activate (
 
   if (activate)
     {
+      if (self->activated)
+        {
+          g_message (
+            "%s: already activated",  __func__);
+          return;
+        }
+
       engine_realloc_port_buffers (
         self, self->block_length);
-
-#ifdef HAVE_JACK
-      if (self->audio_backend == AUDIO_BACKEND_JACK &&
-          self->midi_backend == MIDI_BACKEND_JACK)
-        engine_jack_activate (self);
-#endif
-      if (self->audio_backend == AUDIO_BACKEND_DUMMY)
-        {
-          engine_dummy_activate (self);
-        }
-#ifdef _WOE32
-      if (self->midi_backend ==
-            MIDI_BACKEND_WINDOWS_MME)
-        {
-          engine_windows_mme_start_known_devices (self);
-        }
-#endif
-#ifdef HAVE_RTMIDI
-      if (self->midi_backend ==
-            MIDI_BACKEND_RTMIDI)
-        {
-          engine_rtmidi_activate (self);
-        }
-#endif
-#ifdef HAVE_SDL
-      if (self->audio_backend == AUDIO_BACKEND_SDL)
-        engine_sdl_activate (self);
-#endif
-#ifdef HAVE_RTAUDIO
-      if (self->audio_backend == AUDIO_BACKEND_RTAUDIO)
-        engine_rtaudio_activate (self);
-#endif
     }
   else
     {
-      /* TODO deactivate */
+      if (!self->activated)
+        {
+          g_message (
+            "%s: already deactivated",  __func__);
+          return;
+        }
+
+      /* wait to finish */
+      self->run = false;
+      g_usleep (100000);
+
+      self->activated = false;
     }
 
+#ifdef HAVE_JACK
+  if (self->audio_backend == AUDIO_BACKEND_JACK &&
+      self->midi_backend == MIDI_BACKEND_JACK)
+    engine_jack_activate (self, activate);
+#endif
+  if (self->audio_backend == AUDIO_BACKEND_DUMMY)
+    {
+      engine_dummy_activate (self, activate);
+    }
+#ifdef _WOE32
+  if (self->midi_backend ==
+        MIDI_BACKEND_WINDOWS_MME)
+    {
+      engine_windows_mme_activate (self, activate);
+    }
+#endif
+#ifdef HAVE_RTMIDI
+  if (self->midi_backend ==
+        MIDI_BACKEND_RTMIDI)
+    {
+      engine_rtmidi_activate (self, activate);
+    }
+#endif
+#ifdef HAVE_SDL
+  if (self->audio_backend == AUDIO_BACKEND_SDL)
+    engine_sdl_activate (self, activate);
+#endif
+#ifdef HAVE_RTAUDIO
+  if (self->audio_backend == AUDIO_BACKEND_RTAUDIO)
+    engine_rtaudio_activate (self, activate);
+#endif
+
+  self->activated = activate;
 
   g_message ("%s: done", __func__);
 }
@@ -1379,6 +1398,11 @@ engine_free (
   AudioEngine * self)
 {
   g_message ("%s: freeing...", __func__);
+
+  if (self->activated)
+    {
+      engine_activate (self, false);
+    }
 
   router_free (self->router);
 

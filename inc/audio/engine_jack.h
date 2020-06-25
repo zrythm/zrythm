@@ -108,7 +108,8 @@ engine_jack_tear_down (
 
 int
 engine_jack_activate (
-  AudioEngine * self);
+  AudioEngine * self,
+  bool          activate);
 
 /**
  * Returns the JACK type string.

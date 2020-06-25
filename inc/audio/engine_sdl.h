@@ -66,7 +66,8 @@ engine_sdl_test (
 
 void
 engine_sdl_activate (
-  AudioEngine * self);
+  AudioEngine * self,
+  bool          activate);
 
 /**
  * Closes Port Audio.

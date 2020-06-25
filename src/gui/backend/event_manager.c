@@ -1562,9 +1562,11 @@ void
 event_manager_start_events (
   EventManager * self)
 {
+  g_message ("%s: starting...", __func__);
+
   if (self->process_source_id)
     {
-      g_warning (
+      g_message (
         "%s: already processing events", __func__);
       return;
     }
@@ -1574,6 +1576,8 @@ event_manager_start_events (
 
   self->process_source_id =
     g_timeout_add (12, process_events, self);
+
+  g_message ("%s: done...", __func__);
 }
 
 /**

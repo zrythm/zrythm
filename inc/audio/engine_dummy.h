@@ -42,7 +42,8 @@ engine_dummy_midi_setup (
 
 int
 engine_dummy_activate (
-  AudioEngine * self);
+  AudioEngine * self,
+  bool          activate);
 
 void
 engine_dummy_tear_down (

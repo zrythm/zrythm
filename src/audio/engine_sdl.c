@@ -189,12 +189,21 @@ engine_sdl_setup (
 
 void
 engine_sdl_activate (
-  AudioEngine * self)
+  AudioEngine * self,
+  bool          activate)
 {
-  g_message ("Activating SDL...");
+  if (activate)
+    {
+      g_message ("%s: activating...", __func__);
+    }
+  else
+    {
+      g_message ("%s: deactivating...", __func__);
+    }
 
   /* start playing */
-  SDL_PauseAudioDevice (self->dev, 0);
+  SDL_PauseAudioDevice (
+    self->dev, !activate);
 
   switch (SDL_GetAudioDeviceStatus (self->dev))
     {
@@ -213,7 +222,7 @@ engine_sdl_activate (
         break;
     }
 
-  g_message ("SDL activated");
+  g_message ("%s: done", __func__);
 }
 
 /**

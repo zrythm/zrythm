@@ -92,14 +92,27 @@ engine_dummy_midi_setup (
 
 int
 engine_dummy_activate (
-  AudioEngine * self)
+  AudioEngine * self,
+  bool          activate)
 {
-  g_message ("Activating dummy audio engine");
+  if (activate)
+    {
+      g_message ("%s: activating...", __func__);
 
-  self->stop_dummy_audio_thread = 0;
-  self->dummy_audio_thread =
-    g_thread_new (
-      "process_cb", process_cb, self);
+      self->stop_dummy_audio_thread = false;
+      self->dummy_audio_thread =
+        g_thread_new (
+          "process_cb", process_cb, self);
+    }
+  else
+    {
+      g_message ("%s: deactivating...", __func__);
+
+      self->stop_dummy_audio_thread = true;
+      g_thread_join (self->dummy_audio_thread);
+    }
+
+  g_message ("%s: done", __func__);
 
   return 0;
 }
