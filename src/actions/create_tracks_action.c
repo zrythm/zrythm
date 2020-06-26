@@ -47,11 +47,10 @@
 static int
 create (
   CreateTracksAction * self,
-  int                  idx,
-  int                  add_to_project)
+  int                  idx)
 {
   Track * track;
-  int pos = self->pos + idx;
+  int pos = self->track_pos + idx;
 
   if (self->is_empty)
     {
@@ -64,10 +63,9 @@ create (
       track =
         track_new (
           self->type, pos, label, F_WITH_LANE);
-      if (add_to_project)
-        tracklist_insert_track (
-          TRACKLIST, track, pos,
-          F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+      tracklist_insert_track (
+        TRACKLIST, track, pos,
+        F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
     }
   else // track is not empty
     {
@@ -128,10 +126,9 @@ create (
             }
         }
 
-      if (add_to_project)
-        tracklist_insert_track (
-          TRACKLIST, track, track->pos,
-          F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+      tracklist_insert_track (
+        TRACKLIST, track, track->pos,
+        F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 
       if (track->channel && pl)
         {
@@ -152,25 +149,16 @@ create (
         {
           /* create an audio region & add to
            * track */
-          Position start_pos;
-          /* FIXME need to pass a position when
-           * creating this action, and the position
-           * should be used here to place the
-           * audio region to, but for now
-           * assume all audio clips are
-           * instantiated at 1.1.1.0 */
-          position_init (&start_pos);
           ZRegion * ar =
             audio_region_new (
-              add_to_project ? self->pool_id : -1,
-              add_to_project ?
-                NULL :
-                self->file_descr->abs_path,
+              self->pool_id,
+              self->pool_id == -1 ?
+                self->file_descr->abs_path :
+                NULL,
               NULL, 0, 0,
-              &start_pos, pos, 0, 0);
-          if (!add_to_project)
-            self->pool_id =
-              ar->pool_id;
+              &self->pos, pos, 0, 0);
+          self->pool_id =
+            ar->pool_id;
           track_add_region (
             track, ar, NULL, 0, F_GEN_NAME,
             F_PUBLISH_EVENTS);
@@ -205,8 +193,7 @@ create (
       if (pl && ZRYTHM_HAVE_UI &&
           g_settings_get_boolean (
             S_P_PLUGINS_UIS,
-            "open-on-instantiate") &&
-          add_to_project)
+            "open-on-instantiate"))
         {
           pl->visible = 1;
           EVENTS_PUSH (
@@ -227,7 +214,8 @@ create_tracks_action_new (
   TrackType          type,
   const PluginDescriptor * pl_descr,
   SupportedFile *    file,
-  int                pos,
+  int                track_pos,
+  Position *         pos,
   int                num_tracks)
 {
   CreateTracksAction * self =
@@ -250,8 +238,10 @@ create_tracks_action_new (
     {
       self->is_empty = 1;
     }
-  self->pos = pos;
+  self->track_pos = track_pos;
   self->type = type;
+  self->pool_id = -1;
+  position_set_to_pos (&self->pos, pos);
 
   /* calculate number of tracks */
   if (file && type == TRACK_TYPE_MIDI)
@@ -275,7 +265,7 @@ create_tracks_action_do (
   int ret;
   for (int i = 0; i < self->num_tracks; i++)
     {
-      ret = create (self, i, 1);
+      ret = create (self, i);
       g_return_val_if_fail (!ret, -1);
 
       /* TODO select each plugin that was selected */
@@ -299,7 +289,7 @@ create_tracks_action_undo (
   for (int i = self->num_tracks - 1; i >= 0; i--)
     {
       track =
-        TRACKLIST->tracks[self->pos + i];
+        TRACKLIST->tracks[self->track_pos + i];
       g_return_val_if_fail (track, -1);
 
       tracklist_remove_track (

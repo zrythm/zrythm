@@ -668,7 +668,7 @@ exporter_create_audio_track_after_bounce (
   UndoableAction * ua =
     create_tracks_action_new (
       TRACK_TYPE_AUDIO, NULL,
-      descr, track->pos + 1, 1);
+      descr, track->pos + 1, PLAYHEAD, 1);
   Position tmp;
   position_set_to_pos (&tmp, PLAYHEAD);
   transport_set_playhead_pos (

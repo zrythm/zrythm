@@ -199,9 +199,61 @@ host_dispatcher (
 {
   /* TODO */
   g_message ("host dispatcher");
+  switch (opcode)
+    {
+    case NATIVE_HOST_OPCODE_HOST_IDLE:
+      /* some expensive computation is happening.
+       * this is used so that the GTK ui does not
+       * block */
+      while (gtk_events_pending ())
+        {
+          gtk_main_iteration ();
+        }
+      break;
+    default:
+      break;
+    }
 
   return 0;
 }
+
+static void
+engine_callback (
+  void *               ptr,
+  EngineCallbackOpcode action,
+  uint                 plugin_id,
+  int                  val1,
+  int                  val2,
+  int                  val3,
+  float                valf,
+  const char *         val_str)
+{
+  CarlaNativePlugin * self =
+    (CarlaNativePlugin *) ptr;
+
+  switch (action)
+    {
+    case ENGINE_CALLBACK_UI_STATE_CHANGED:
+      switch (val1)
+        {
+        case 0:
+        case -1:
+          self->plugin->visible = false;
+          self->plugin->visible = false;
+          break;
+        case 1:
+          self->plugin->visible = true;
+          break;
+        }
+      EVENTS_PUSH (
+        ET_PLUGIN_VISIBILITY_CHANGED,
+        self->plugin);
+      break;
+    default:
+      break;
+    }
+}
+
 
 static CarlaNativePlugin *
 _create ()
@@ -385,6 +437,10 @@ create_plugin (
   ENABLE_OPTION (SEND_PITCHBEND);
   ENABLE_OPTION (SEND_ALL_SOUND_OFF);
   ENABLE_OPTION (SEND_PROGRAM_CHANGES);
+
+  /* add engine callback */
+  carla_set_engine_callback (
+    self->host_handle, engine_callback, self);
 
   return self;
 }

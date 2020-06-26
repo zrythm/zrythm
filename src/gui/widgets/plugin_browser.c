@@ -67,7 +67,8 @@ activate_plugin_descr (
 
   UndoableAction * ua =
     create_tracks_action_new (
-      tt, descr, NULL, TRACKLIST->num_tracks, 1);
+      tt, descr, NULL, TRACKLIST->num_tracks,
+      PLAYHEAD, 1);
 
   undo_manager_perform (UNDO_MANAGER, ua);
 }

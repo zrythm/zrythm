@@ -112,7 +112,8 @@ undo_manager_prepare_for_serialization (
  */
 void
 undo_manager_clear_stacks (
-  UndoManager * self);
+  UndoManager * self,
+  bool          free);
 
 void
 undo_manager_free (

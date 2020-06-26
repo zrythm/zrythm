@@ -170,20 +170,19 @@ undo_manager_perform (
     }
 }
 
-#if 0
 /**
  * Clears the undo and redo stacks.
  */
 void
 undo_manager_clear_stacks (
-  UndoManager * self)
+  UndoManager * self,
+  bool          free)
 {
   g_return_if_fail (
     self && self->undo_stack && self->redo_stack);
-  undo_stack_clear (self->undo_stack);
-  undo_stack_clear (self->redo_stack);
+  undo_stack_clear (self->undo_stack, free);
+  undo_stack_clear (self->redo_stack, free);
 }
-#endif
 
 void
 undo_manager_free (

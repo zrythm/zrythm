@@ -644,11 +644,18 @@ plugin_generate_window_title (
   g_return_val_if_fail (
     track_name && plugin_name, NULL);
 
+  char carla[8] = "";
+  if (plugin->descr->open_with_carla)
+    {
+      strcpy (carla, " c");
+    }
+
   char title[500];
   sprintf (
     title,
-    "%s (%s #%d)",
-    plugin_name, track_name, plugin->id.slot);
+    "%s (%s #%d%s)",
+    plugin_name, track_name, plugin->id.slot,
+    carla);
 
   switch (plugin->descr->protocol)
     {

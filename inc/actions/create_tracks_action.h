@@ -40,7 +40,11 @@ typedef struct CreateTracksAction
   /** Position to make the tracks at.
    *
    * Used when undoing too. */
-  int              pos;
+  int              track_pos;
+
+  /** Position to add the audio region to, if
+   * applicable. */
+  Position         pos;
 
   /** Number of tracks to make. */
   int              num_tracks;
@@ -77,33 +81,28 @@ typedef struct CreateTracksAction
 static const cyaml_schema_field_t
   create_tracks_action_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "parent_instance", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     CreateTracksAction, parent_instance,
     undoable_action_fields_schema),
   CYAML_FIELD_ENUM (
     "type", CYAML_FLAG_DEFAULT,
     CreateTracksAction, type, track_type_strings,
     CYAML_ARRAY_LEN (track_type_strings)),
-  CYAML_FIELD_MAPPING (
-    "pl_descr", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     CreateTracksAction, pl_descr,
     plugin_descriptor_fields_schema),
-  CYAML_FIELD_INT (
-    "is_empty", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     CreateTracksAction, is_empty),
-  CYAML_FIELD_INT (
-    "pos", CYAML_FLAG_DEFAULT,
-    CreateTracksAction, pos),
-  CYAML_FIELD_INT (
-    "num_tracks", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
+    CreateTracksAction, track_pos),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    CreateTracksAction, pos, position_fields_schema),
+  YAML_FIELD_INT (
     CreateTracksAction, num_tracks),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     CreateTracksAction, file_descr,
     supported_file_fields_schema),
-
-  CYAML_FIELD_INT (
-    "pool_id", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     CreateTracksAction, pool_id),
 
   CYAML_FIELD_END
@@ -127,7 +126,8 @@ create_tracks_action_new (
   TrackType          type,
   const PluginDescriptor * pl_descr,
   SupportedFile *    file_descr,
-  int                pos,
+  int                track_pos,
+  Position *         pos,
   int                num_tracks);
 
 int

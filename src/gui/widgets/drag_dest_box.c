@@ -277,7 +277,8 @@ on_drag_data_received (
           UndoableAction * ua =
             create_tracks_action_new (
               track_type, NULL, file,
-              TRACKLIST->num_tracks, 1);
+              TRACKLIST->num_tracks,
+              PLAYHEAD, 1);
           if (IS_URI_LIST)
             {
               supported_file_free (file);
@@ -314,7 +315,8 @@ on_drag_data_received (
           UndoableAction * ua =
             create_tracks_action_new (
               tt, pd, NULL,
-              TRACKLIST->num_tracks, 1);
+              TRACKLIST->num_tracks,
+              PLAYHEAD, 1);
 
           undo_manager_perform (UNDO_MANAGER, ua);
         }
