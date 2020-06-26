@@ -181,26 +181,6 @@ typedef struct Project
   double             timeline_zoom;
   double             piano_roll_zoom;
 
-  /* ---------------------- */
-  /** FIXME move the range stuff to Transport. */
-
-  /**
-   * Selected range.
-   *
-   * This is 2 points instead of start/end because
-   * the 2nd point can be dragged past the 1st
-   * point so the order gets swapped.
-   *
-   * Should be compared each time to see which one
-   * is first.
-   */
-  Position           range_1;
-  Position           range_2;
-
-  /** Whether range should be displayed or not. */
-  int                has_range;
-  /* ---------------------- */
-
   /** Manager for region link groups. */
   RegionLinkGroupManager region_link_group_manager;
 
@@ -243,71 +223,48 @@ typedef struct Project
 static const cyaml_schema_field_t
   project_fields_schema[] =
 {
-  CYAML_FIELD_STRING_PTR (
-    "title", CYAML_FLAG_POINTER,
-    Project, title,
-    0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "datetime_str", CYAML_FLAG_POINTER,
-    Project, datetime_str,
-    0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "version", CYAML_FLAG_POINTER,
-    Project, version,
-    0, CYAML_UNLIMITED),
+  YAML_FIELD_STRING_PTR (
+    Project, title),
+  YAML_FIELD_STRING_PTR (
+    Project, datetime_str),
+  YAML_FIELD_STRING_PTR (
+    Project, version),
   YAML_FIELD_MAPPING_PTR (
     Project, tracklist, tracklist_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     Project, clip_editor, clip_editor_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "snap_grid_timeline", CYAML_FLAG_DEFAULT,
-    Project, snap_grid_timeline, snap_grid_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "quantize_opts_timeline", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Project, snap_grid_timeline,
+    snap_grid_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
     Project, quantize_opts_timeline,
     quantize_options_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     Project, audio_engine, engine_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "snap_grid_midi", CYAML_FLAG_DEFAULT,
-    Project, snap_grid_midi, snap_grid_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "quantize_opts_editor", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Project, snap_grid_midi,
+    snap_grid_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
     Project, quantize_opts_editor,
     quantize_options_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "mixer_selections", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Project, mixer_selections,
     mixer_selections_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "timeline_selections", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Project, timeline_selections,
     timeline_selections_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "midi_arranger_selections", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Project, midi_arranger_selections,
     midi_arranger_selections_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "chord_selections", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Project, chord_selections,
     chord_selections_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "automation_selections", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Project, automation_selections,
     automation_selections_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "tracklist_selections", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Project, tracklist_selections,
     tracklist_selections_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "range_1", CYAML_FLAG_DEFAULT,
-    Project, range_1, position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "range_2", CYAML_FLAG_DEFAULT,
-    Project, range_2, position_fields_schema),
-  CYAML_FIELD_INT (
-    "has_range", CYAML_FLAG_DEFAULT,
-    Project, has_range),
   YAML_FIELD_MAPPING_EMBEDDED (
     Project, region_link_group_manager,
     region_link_group_manager_fields_schema),
@@ -467,12 +424,6 @@ _project_compress (
 
 #define project_decompress(a,b,c,d,e,f) \
   _project_compress (false, a, b, c, d, e, f)
-
-/**
- * Sets if the project has range and updates UI.
- */
-void
-project_set_has_range (int has_range);
 
 /**
  * Creates an empty project object.

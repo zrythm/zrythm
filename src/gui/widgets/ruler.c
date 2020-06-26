@@ -575,6 +575,8 @@ ruler_draw_cb (
         &self->cached_surface, rect.width,
         rect.height, cr);
 
+      cairo_t * cr_to_use = self->cached_cr;
+
       /* ----- ruler background ------- */
 
       int height =
@@ -582,7 +584,7 @@ ruler_draw_cb (
           GTK_WIDGET (self));
 
       gtk_render_background (
-        context, self->cached_cr,
+        context, cr_to_use,
         0, 0, rect.width, rect.height);
 
       /* if timeline, draw loop background */
@@ -609,11 +611,11 @@ ruler_draw_cb (
 
       if (TRANSPORT->loop)
         cairo_set_source_rgba (
-          self->cached_cr, 0, 0.9, 0.7, 0.25);
+          cr_to_use, 0, 0.9, 0.7, 0.25);
       else
         cairo_set_source_rgba (
-          self->cached_cr, 0.5, 0.5, 0.5, 0.25);
-      cairo_set_line_width (self->cached_cr, 2);
+          cr_to_use, 0.5, 0.5, 0.5, 0.25);
+      cairo_set_line_width (cr_to_use, 2);
 
       /* if transport loop start is within the
        * screen */
@@ -624,10 +626,10 @@ ruler_draw_cb (
           double x =
             (start_px - rect.x);
           cairo_move_to (
-            self->cached_cr, x, 0);
+            cr_to_use, x, 0);
           cairo_line_to (
-            self->cached_cr, x, rect.height);
-          cairo_stroke (self->cached_cr);
+            cr_to_use, x, rect.height);
+          cairo_stroke (cr_to_use);
         }
       /* if transport loop end is within the
        * screen */
@@ -638,10 +640,10 @@ ruler_draw_cb (
           double x =
             (end_px - rect.x);
           cairo_move_to (
-            self->cached_cr, x, 0);
+            cr_to_use, x, 0);
           cairo_line_to (
-            self->cached_cr, x, rect.height);
-          cairo_stroke (self->cached_cr);
+            cr_to_use, x, rect.height);
+          cairo_stroke (cr_to_use);
         }
 
       /* create gradient for loop area */
@@ -666,17 +668,17 @@ ruler_draw_cb (
       double loop_start_local_x =
         MAX (0, start_px - rect.x);
       cairo_rectangle (
-        self->cached_cr,
+        cr_to_use,
         loop_start_local_x, 0,
         end_px - MAX (rect.x, start_px),
         rect.height);
-      cairo_set_source (self->cached_cr, pat);
-      cairo_fill (self->cached_cr);
+      cairo_set_source (cr_to_use, pat);
+      cairo_fill (cr_to_use);
       cairo_pattern_destroy (pat);
 
       PangoLayout * layout =
         pango_cairo_create_layout (
-          self->cached_cr);
+          cr_to_use);
       PangoFontDescription *desc =
         pango_font_description_from_string (
           "Monospace 11");
@@ -716,28 +718,28 @@ ruler_draw_cb (
             continue;
 
           cairo_set_source_rgb (
-            self->cached_cr, 1, 1, 1);
+            cr_to_use, 1, 1, 1);
           cairo_set_line_width (
-            self->cached_cr, 1);
+            cr_to_use, 1);
           double x = curr_px - rect.x;
           cairo_move_to (
-            self->cached_cr, x, 0);
+            cr_to_use, x, 0);
           cairo_line_to (
-            self->cached_cr, x, height / 3);
-          cairo_stroke (self->cached_cr);
+            cr_to_use, x, height / 3);
+          cairo_stroke (cr_to_use);
           cairo_set_source_rgb (
-            self->cached_cr, 0.8, 0.8, 0.8);
+            cr_to_use, 0.8, 0.8, 0.8);
           sprintf (text, "%d", i + 1);
           pango_layout_set_markup (layout, text, -1);
           pango_layout_get_pixel_size (
             layout, &textw, &texth);
           cairo_move_to (
-            self->cached_cr,
+            cr_to_use,
             x - textw / 2, height / 3 + 2);
           pango_cairo_update_layout (
-            self->cached_cr, layout);
+            cr_to_use, layout);
           pango_cairo_show_layout (
-            self->cached_cr, layout);
+            cr_to_use, layout);
         }
       /* draw beats */
       desc =
@@ -759,21 +761,21 @@ ruler_draw_cb (
                 continue;
 
               cairo_set_source_rgb (
-                self->cached_cr, 0.7, 0.7, 0.7);
+                cr_to_use, 0.7, 0.7, 0.7);
               cairo_set_line_width (
-                self->cached_cr, 0.5);
+                cr_to_use, 0.5);
               double x = curr_px - rect.x;
               cairo_move_to (
-                self->cached_cr, x, 0);
+                cr_to_use, x, 0);
               cairo_line_to (
-                self->cached_cr, x, height / 4);
-              cairo_stroke (self->cached_cr);
+                cr_to_use, x, height / 4);
+              cairo_stroke (cr_to_use);
               if ((self->px_per_beat >
                      RW_PX_TO_HIDE_BEATS * 2) &&
                   i % beats_per_bar != 0)
                 {
                   cairo_set_source_rgb (
-                    self->cached_cr,
+                    cr_to_use,
                     0.5, 0.5, 0.5);
                   sprintf (
                     text, "%d.%d",
@@ -784,12 +786,12 @@ ruler_draw_cb (
                   pango_layout_get_pixel_size (
                     layout, &textw, &texth);
                   cairo_move_to (
-                    self->cached_cr, x - textw / 2,
+                    cr_to_use, x - textw / 2,
                     height / 4 + 2);
                   pango_cairo_update_layout (
-                    self->cached_cr, layout);
+                    cr_to_use, layout);
                   pango_cairo_show_layout (
-                    self->cached_cr, layout);
+                    cr_to_use, layout);
                 }
             }
         }
@@ -807,22 +809,22 @@ ruler_draw_cb (
                 continue;
 
               cairo_set_source_rgb (
-                self->cached_cr, 0.6, 0.6, 0.6);
+                cr_to_use, 0.6, 0.6, 0.6);
               cairo_set_line_width (
-                self->cached_cr, 0.3);
+                cr_to_use, 0.3);
               double x = curr_px - rect.x;
               cairo_move_to (
-                self->cached_cr, x, 0);
+                cr_to_use, x, 0);
               cairo_line_to (
-                self->cached_cr, x, height / 6);
-              cairo_stroke (self->cached_cr);
+                cr_to_use, x, height / 6);
+              cairo_stroke (cr_to_use);
 
               if ((self->px_per_sixteenth >
                      RW_PX_TO_HIDE_BEATS * 2) &&
                   i % sixteenths_per_beat != 0)
                 {
                   cairo_set_source_rgb (
-                    self->cached_cr, 0.5, 0.5, 0.5);
+                    cr_to_use, 0.5, 0.5, 0.5);
                   sprintf (
                     text, "%d.%d.%d",
                     i / TRANSPORT->
@@ -835,12 +837,12 @@ ruler_draw_cb (
                   pango_layout_get_pixel_size (
                     layout, &textw, &texth);
                   cairo_move_to (
-                    self->cached_cr, x - textw / 2,
+                    cr_to_use, x - textw / 2,
                     height / 4 + 2);
                   pango_cairo_update_layout (
-                    self->cached_cr, layout);
+                    cr_to_use, layout);
                   pango_cairo_show_layout (
-                    self->cached_cr, layout);
+                    cr_to_use, layout);
                 }
             }
         }
@@ -848,37 +850,56 @@ ruler_draw_cb (
 
       /* ----- draw range --------- */
 
-      int range1_first =
-        position_is_before_or_equal (
-          &PROJECT->range_1, &PROJECT->range_2);
+      if (TRANSPORT->has_range)
+        {
+          int range1_first =
+            position_is_before_or_equal (
+              &TRANSPORT->range_1,
+              &TRANSPORT->range_2);
 
-      GdkRectangle dr;
-      if (range1_first)
-        {
-          dr.x =
-            ui_pos_to_px_timeline (
-              &PROJECT->range_1,
-              1);
-          dr.width =
-            ui_pos_to_px_timeline (
-              &PROJECT->range_2,
-              1) - dr.x;
+          GdkRectangle dr;
+          if (range1_first)
+            {
+              dr.x =
+                ui_pos_to_px_timeline (
+                  &TRANSPORT->range_1, true);
+              dr.width =
+                ui_pos_to_px_timeline (
+                  &TRANSPORT->range_2, true) - dr.x;
+            }
+          else
+            {
+              dr.x =
+                ui_pos_to_px_timeline (
+                  &TRANSPORT->range_2, true);
+              dr.width =
+                ui_pos_to_px_timeline (
+                  &TRANSPORT->range_1, true) - dr.x;
+            }
+          dr.y = 0;
+          dr.height =
+            gtk_widget_get_allocated_height (
+              GTK_WIDGET (self)) /
+            RW_RANGE_HEIGHT_DIVISOR;
+
+          /* fill */
+          cairo_set_source_rgba (
+            cr_to_use, 1, 1, 1, 0.27);
+          cairo_rectangle (
+            cr_to_use, dr.x, dr.y,
+            dr.width, dr.height);
+          cairo_fill (cr_to_use);
+
+          /* draw edges */
+          cairo_set_source_rgba (
+            cr_to_use, 1, 1, 1, 0.7);
+          cairo_set_line_width (cr_to_use, 2);
+          z_cairo_draw_vertical_line (
+            cr_to_use, dr.x, dr.y, dr.height);
+          z_cairo_draw_vertical_line (
+            cr_to_use, dr.x + dr.width,
+            dr.y, dr.height);
         }
-      else
-        {
-          dr.x =
-            ui_pos_to_px_timeline (
-              &PROJECT->range_2,
-              1);
-          dr.width =
-            ui_pos_to_px_timeline (
-              &PROJECT->range_1,
-              1) - dr.x;
-        }
-      dr.y = 0;
-      dr.height =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (self)) / 4;
 
       /* ----- draw regions --------- */
 
@@ -890,15 +911,15 @@ ruler_draw_cb (
       /* ------ draw markers ------- */
 
       draw_cue_point (
-        self, self->cached_cr, &rect);
+        self, cr_to_use, &rect);
       draw_loop_start (
-        self, self->cached_cr, &rect);
+        self, cr_to_use, &rect);
       draw_loop_end (
-        self, self->cached_cr, &rect);
+        self, cr_to_use, &rect);
 
       /* --------- draw playhead ---------- */
 
-      draw_playhead (self, self->cached_cr, &rect);
+      draw_playhead (self, cr_to_use, &rect);
 
       self->redraw = 0;
     }
@@ -941,7 +962,7 @@ is_loop_end_hit (
     y >= rect.y && y <= rect.y + rect.height;
 }
 
-static int
+static bool
 is_clip_start_hit (
   RulerWidget * self,
   double        x,
@@ -957,7 +978,68 @@ is_clip_start_hit (
         y >= rect.y && y <= rect.y + rect.height;
     }
   else
-    return 0;
+    return false;
+}
+
+static void
+get_range_rect (
+  RulerWidget *  self,
+  RulerWidgetRangeType type,
+  GdkRectangle * rect)
+{
+  if (self->type == TYPE (TIMELINE))
+    {
+      Position tmp;
+      transport_get_range_pos (
+        TRANSPORT,
+        type == RW_RANGE_END ? false : true,
+        &tmp);
+      rect->x = ui_pos_to_px_timeline (&tmp, true);
+      if (type == RW_RANGE_END)
+        {
+          rect->x -= RW_CUE_MARKER_WIDTH;
+        }
+    }
+  rect->y = 0;
+  if (type == RW_RANGE_FULL)
+    {
+      Position tmp;
+      transport_get_range_pos (
+        TRANSPORT, false, &tmp);
+      double px =
+        ui_pos_to_px_timeline (&tmp, true);
+      rect->width = (int) px - rect->x;
+    }
+  else
+    {
+      rect->width = RW_CUE_MARKER_WIDTH;
+    }
+  rect->height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self)) /
+      RW_RANGE_HEIGHT_DIVISOR;
+}
+
+bool
+ruler_widget_is_range_hit (
+  RulerWidget *        self,
+  RulerWidgetRangeType type,
+  double               x,
+  double               y)
+{
+  if (self->type == TYPE (TIMELINE))
+    {
+      GdkRectangle rect;
+      get_range_rect (self, type, &rect);
+
+      return
+        x >= rect.x && x <= rect.x + rect.width &&
+        y >= rect.y && y <= rect.y + rect.height;
+    }
+  else
+    {
+      return false;
+    }
 }
 
 static gboolean
@@ -1010,7 +1092,8 @@ drag_begin (
     {
       self->range1_first =
         position_is_before_or_equal (
-          &PROJECT->range_1, &PROJECT->range_2);
+          &TRANSPORT->range_1,
+          &TRANSPORT->range_2);
     }
 
   int height =
@@ -1136,26 +1219,30 @@ on_motion (
       GTK_WIDGET (self));
   if (event->type == GDK_MOTION_NOTIFY)
     {
-      int loop_start_hit =
+      bool loop_start_hit =
         is_loop_start_hit (
           self, event->x, event->y);
-      int loop_end_hit =
+      bool loop_end_hit =
         is_loop_end_hit (
           self, event->x, event->y);
-      int clip_start_hit =
+      bool clip_start_hit =
         is_clip_start_hit (
           self, event->x, event->y);
-      /*g_message (*/
-        /*"loop start %d loop end %d clip start %d",*/
-        /*loop_start_hit, loop_end_hit,*/
-        /*clip_start_hit);*/
+      bool range_start_hit =
+        ruler_widget_is_range_hit (
+          self, RW_RANGE_START,
+          event->x, event->y);
+      bool range_end_hit =
+        ruler_widget_is_range_hit (
+          self, RW_RANGE_END, event->x, event->y);
 
-      if (loop_start_hit || clip_start_hit)
+      if (loop_start_hit || clip_start_hit ||
+          range_start_hit)
         {
           ui_set_cursor_from_name (
             GTK_WIDGET (self), "w-resize");
         }
-      else if (loop_end_hit)
+      else if (loop_end_hit || range_end_hit)
         {
           ui_set_cursor_from_name (
             GTK_WIDGET (self), "e-resize");
@@ -1169,9 +1256,19 @@ on_motion (
         }
       else /* upper 1/4th */
         {
-          /* set cursor to range selection */
-          ui_set_cursor_from_name (
-            GTK_WIDGET (self), "text");
+          if (ruler_widget_is_range_hit (
+                self, RW_RANGE_FULL, event->x,
+                event->y))
+            {
+              /* set cursor to movable */
+              ui_set_hand_cursor (self);
+            }
+          else
+            {
+              /* set cursor to range selection */
+              ui_set_cursor_from_name (
+                GTK_WIDGET (self), "text");
+            }
         }
     }
   else if (event->type == GDK_LEAVE_NOTIFY)

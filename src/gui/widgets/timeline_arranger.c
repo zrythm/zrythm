@@ -969,17 +969,17 @@ timeline_arranger_widget_snap_range_r (
       /* set range 1 at current point */
       ui_px_to_pos_timeline (
         self->start_x,
-        &PROJECT->range_1,
+        &TRANSPORT->range_1,
         1);
       if (SNAP_GRID_ANY_SNAP (
             self->snap_grid) &&
           !self->shift_held)
         position_snap_simple (
-          &PROJECT->range_1,
+          &TRANSPORT->range_1,
           SNAP_GRID_TIMELINE);
       position_set_to_pos (
-        &PROJECT->range_2,
-        &PROJECT->range_1);
+        &TRANSPORT->range_2,
+        &TRANSPORT->range_1);
 
       MW_TIMELINE->resizing_range_start = 0;
     }
@@ -991,11 +991,8 @@ timeline_arranger_widget_snap_range_r (
       pos,
       SNAP_GRID_TIMELINE);
   position_set_to_pos (
-    &PROJECT->range_2, pos);
-  project_set_has_range (1);
-
-  EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED,
-               NULL);
+    &TRANSPORT->range_2, pos);
+  transport_set_has_range (TRANSPORT, true);
 
   /*arranger_widget_refresh_all_backgrounds ();*/
 }

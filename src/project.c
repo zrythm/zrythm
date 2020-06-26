@@ -664,11 +664,6 @@ create_default (Project * self)
   region_link_group_manager_init (
     &self->region_link_group_manager);
 
-  position_set_to_bar (
-    &self->range_1, 1);
-  position_set_to_bar (
-    &self->range_2, 1);
-
   refresh_main_window (self, loading_while_running);
 
   g_message ("%s: done", __func__);
@@ -1101,17 +1096,6 @@ project_autosave_cb (
     }
 
   return G_SOURCE_CONTINUE;
-}
-
-/**
- * Sets if the project has range and updates UI.
- */
-void
-project_set_has_range (int has_range)
-{
-  PROJECT->has_range = has_range;
-
-  EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED, NULL);
 }
 
 /**

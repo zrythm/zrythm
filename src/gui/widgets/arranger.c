@@ -846,20 +846,24 @@ arranger_draw_cb (
         self, self->cached_cr, &rect);
 
       /* draw range */
-      if (PROJECT->has_range)
+      if (TRANSPORT->has_range)
         {
           /* in order they appear */
-          Position * range_first_pos, * range_second_pos;
+          Position * range_first_pos,
+                   * range_second_pos;
           if (position_is_before_or_equal (
-                &PROJECT->range_1, &PROJECT->range_2))
+                &TRANSPORT->range_1,
+                &TRANSPORT->range_2))
             {
-              range_first_pos = &PROJECT->range_1;
-              range_second_pos = &PROJECT->range_2;
+              range_first_pos = &TRANSPORT->range_1;
+              range_second_pos =
+                &TRANSPORT->range_2;
             }
           else
             {
-              range_first_pos = &PROJECT->range_2;
-              range_second_pos = &PROJECT->range_1;
+              range_first_pos = &TRANSPORT->range_2;
+              range_second_pos =
+                &TRANSPORT->range_1;
             }
 
           int range_first_px, range_second_px;
@@ -1867,7 +1871,7 @@ select_all_timeline (
    */
   if (!select)
     {
-      project_set_has_range (0);
+      transport_set_has_range (TRANSPORT, false);
     }
 }
 
@@ -1951,7 +1955,7 @@ select_all_automation (
    */
   if (!select)
     {
-      project_set_has_range (0);
+      transport_set_has_range (TRANSPORT, false);
     }
 }
 

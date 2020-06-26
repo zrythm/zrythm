@@ -37,6 +37,7 @@
 #define RW_CUE_MARKER_WIDTH 7
 #define RW_PLAYHEAD_TRIANGLE_WIDTH 12
 #define RW_PLAYHEAD_TRIANGLE_HEIGHT 8
+#define RW_RANGE_HEIGHT_DIVISOR 4
 
 /**
  * Minimum number of pixels between beat lines.
@@ -94,6 +95,19 @@ typedef enum RulerWidgetType
   RULER_WIDGET_TYPE_TIMELINE,
   RULER_WIDGET_TYPE_EDITOR,
 } RulerWidgetType;
+
+/**
+ * Range type.
+ */
+typedef enum RulerWidgetRangeType
+{
+  /** Range start. */
+  RW_RANGE_START,
+  /** Whole range. */
+  RW_RANGE_FULL,
+  /** Range end. */
+  RW_RANGE_END,
+} RulerWidgetRangeType;
 
 typedef struct _RulerWidget
 {
@@ -210,6 +224,13 @@ ruler_widget_redraw_whole (
 void
 ruler_widget_redraw_playhead (
   RulerWidget * self);
+
+bool
+ruler_widget_is_range_hit (
+  RulerWidget *        self,
+  RulerWidgetRangeType type,
+  double               x,
+  double               y);
 
 void
 ruler_widget_refresh (

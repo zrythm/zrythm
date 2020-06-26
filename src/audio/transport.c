@@ -103,15 +103,14 @@ transport_new (
     TRANSPORT_DEFAULT_BEATS_PER_BAR;
   transport_set_beat_unit (self, 4);
 
-  // set positions of playhead, start/end markers
+  /* set positions */
   position_set_to_bar (&self->playhead_pos, 1);
   position_set_to_bar (&self->cue_pos, 1);
-  /*position_set_to_bar (*/
-    /*&self->start_marker_pos, 1);*/
-  /*position_set_to_bar (*/
-    /*&self->end_marker_pos, 128);*/
   position_set_to_bar (&self->loop_start_pos, 1);
   position_set_to_bar (&self->loop_end_pos, 5);
+
+  position_set_to_bar (&self->range_1, 1);
+  position_set_to_bar (&self->range_2, 1);
 
   init_common (self);
 
@@ -691,6 +690,110 @@ transport_is_loop_point_met (
          g_start_frames);
     }
   return 0;
+}
+
+/**
+ * Sets if the project has range and updates UI.
+ */
+void
+transport_set_has_range (
+  Transport * self,
+  bool        has_range)
+{
+  self->has_range = has_range;
+
+  EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED, NULL);
+}
+
+/**
+ * Stores the position of the range in \ref pos.
+ */
+void
+transport_get_range_pos (
+  Transport * self,
+  bool        first,
+  Position *  pos)
+{
+  bool range1_first =
+    position_is_before_or_equal (
+      &self->range_1, &self->range_2);
+
+  if (first)
+    {
+      if (range1_first)
+        {
+          position_set_to_pos (pos, &self->range_1);
+        }
+      else
+        {
+          position_set_to_pos (pos, &self->range_2);
+        }
+    }
+  else
+    {
+      if (range1_first)
+        {
+          position_set_to_pos (pos, &self->range_2);
+        }
+      else
+        {
+          position_set_to_pos (pos, &self->range_1);
+        }
+    }
+}
+
+void
+transport_set_range1 (
+  Transport * self,
+  Position *  pos,
+  bool        snap)
+{
+  Position init_pos;
+  position_init (&init_pos);
+  if (position_is_before (pos, &init_pos))
+    {
+      position_set_to_pos (
+        &self->range_1, &init_pos);
+    }
+  else
+    {
+      position_set_to_pos (
+        &self->range_1, pos);
+    }
+
+  if (snap)
+    {
+      position_snap_simple (
+        &self->range_1,
+        SNAP_GRID_TIMELINE);
+    }
+}
+
+void
+transport_set_range2 (
+  Transport * self,
+  Position *  pos,
+  bool        snap)
+{
+  Position init_pos;
+  position_init (&init_pos);
+  if (position_is_before (pos, &init_pos))
+    {
+      position_set_to_pos (
+        &self->range_2, &init_pos);
+    }
+  else
+    {
+      position_set_to_pos (
+        &self->range_2, pos);
+    }
+
+  if (snap)
+    {
+      position_snap_simple (
+        &self->range_2,
+        SNAP_GRID_TIMELINE);
+    }
 }
 
 void

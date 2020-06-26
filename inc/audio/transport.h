@@ -104,6 +104,22 @@ typedef struct Transport
   Position      loop_end_pos;
 
   /**
+   * Selected range.
+   *
+   * This is 2 points instead of start/end because
+   * the 2nd point can be dragged past the 1st
+   * point so the order gets swapped.
+   *
+   * Should be compared each time to see which one
+   * is first.
+   */
+  Position           range_1;
+  Position           range_2;
+
+  /** Whether range should be displayed or not. */
+  int                has_range;
+
+  /**
    * Start marker position.
    *
    * This is where the song starts. Used when
@@ -186,48 +202,33 @@ beat_unit_strings[] =
 static const cyaml_schema_field_t
 transport_fields_schema[] =
 {
-  CYAML_FIELD_INT (
-    "total_bars", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Transport, total_bars),
-  CYAML_FIELD_MAPPING (
-    "playhead_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Transport, playhead_pos,
     position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "cue_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Transport, cue_pos,
     position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "loop_start_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Transport, loop_start_pos,
     position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "loop_end_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Transport, loop_end_pos,
     position_fields_schema),
-  //CYAML_FIELD_MAPPING (
-    //"start_marker_pos", CYAML_FLAG_DEFAULT,
-    //Transport, start_marker_pos,
-    //position_fields_schema),
-  //CYAML_FIELD_MAPPING (
-    //"end_marker_pos", CYAML_FLAG_DEFAULT,
-    //Transport, end_marker_pos,
-    //position_fields_schema),
-  CYAML_FIELD_INT (
-    "beats_per_bar", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Transport, range_1, position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Transport, range_2, position_fields_schema),
+  YAML_FIELD_INT (
+    Transport, has_range),
+  YAML_FIELD_INT (
     Transport, beats_per_bar),
-  CYAML_FIELD_INT (
-    "beat_unit", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Transport, beat_unit),
-  //CYAML_FIELD_ENUM (
-    //"ebeat_unit", CYAML_FLAG_DEFAULT,
-    //Transport, ebeat_unit, beat_unit_strings,
-    //CYAML_ARRAY_LEN (beat_unit_strings)),
-  CYAML_FIELD_INT (
-    "position", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Transport, position),
-  CYAML_FIELD_INT (
-    "recording", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Transport, recording),
 
   CYAML_FIELD_END
@@ -416,6 +417,35 @@ transport_set_ebeat_unit (
 double
 transport_get_ppqn (
   Transport * self);
+
+/**
+ * Stores the position of the range in \ref pos.
+ */
+void
+transport_get_range_pos (
+  Transport * self,
+  bool        first,
+  Position *  pos);
+
+/**
+ * Sets if the project has range and updates UI.
+ */
+void
+transport_set_has_range (
+  Transport * self,
+  bool        has_range);
+
+void
+transport_set_range1 (
+  Transport * self,
+  Position *  pos,
+  bool        snap);
+
+void
+transport_set_range2 (
+  Transport * self,
+  Position *  pos,
+  bool        snap);
 
 /**
  * Returns the number of processable frames until

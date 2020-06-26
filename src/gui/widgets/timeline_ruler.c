@@ -49,31 +49,61 @@
 #define TARGET_IS(x) \
   (self->target == RW_TARGET_##x)
 
-#if 0
+#define RESIZE_HANDLE_WIDTH 4
+
 static void
 on_drag_begin_range_hit (
   RulerWidget * self,
-  RulerRangeWidget *    rr)
+  double        x,
+  Position *    cur_pos)
 {
+  /*Position range_start, range_end;*/
+  /*transport_get_range_pos (*/
+    /*TRANSPORT, true, &range_start);*/
+  /*transport_get_range_pos (*/
+    /*TRANSPORT, false, &range_end);*/
+  /*double range_start_px =*/
+    /*ui_pos_to_px_timeline (&range_start, true);*/
+  /*double range_end_px =*/
+    /*ui_pos_to_px_timeline (&range_end, true);*/
+
+  /* check if resize l or resize r */
+  bool resize_l = false;
+  bool resize_r = false;
+
+  if (ruler_widget_is_range_hit (
+        self, RW_RANGE_START, x, 0))
+    {
+      resize_l = true;
+    }
+  if (ruler_widget_is_range_hit (
+        self, RW_RANGE_END, x, 0))
+    {
+      resize_r = true;
+    }
+
   /* update arranger action */
-  if (rr->cursor_state == UI_CURSOR_STATE_RESIZE_L)
-    self->action = UI_OVERLAY_ACTION_RESIZING_L;
-  else if (rr->cursor_state == UI_CURSOR_STATE_RESIZE_R)
-    self->action = UI_OVERLAY_ACTION_RESIZING_R;
+  if (resize_l)
+    {
+      self->action = UI_OVERLAY_ACTION_RESIZING_L;
+    }
+  else if (resize_r)
+    {
+      self->action = UI_OVERLAY_ACTION_RESIZING_R;
+    }
   else
     {
-      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
-      ui_set_cursor_from_name (GTK_WIDGET (rr), "grabbing");
+      self->action =
+        UI_OVERLAY_ACTION_STARTING_MOVING;
+      ui_set_cursor_from_name (
+        GTK_WIDGET (self), "grabbing");
     }
 
   position_set_to_pos (
-    &self->range1_start_pos,
-    &PROJECT->range_1);
+    &self->range1_start_pos, &TRANSPORT->range_1);
   position_set_to_pos (
-    &self->range2_start_pos,
-    &PROJECT->range_2);
+    &self->range2_start_pos, &TRANSPORT->range_2);
 }
-#endif
 
 void
 timeline_ruler_on_drag_end (
@@ -100,9 +130,9 @@ timeline_ruler_on_drag_end (
 void
 timeline_ruler_on_drag_begin_no_marker_hit (
   RulerWidget * self,
-  gdouble               start_x,
-  gdouble               start_y,
-  int                  height)
+  gdouble       start_x,
+  gdouble       start_y,
+  int           height)
 {
   /* if lower 3/4ths */
   if (start_y > (height * 1) / 4)
@@ -124,222 +154,188 @@ timeline_ruler_on_drag_begin_no_marker_hit (
     }
   else /* if upper 1/4th */
     {
-#if 0
       /* check if range is hit */
-      int range_hit =
-        ui_is_child_hit (
-          GTK_WIDGET (self),
-          GTK_WIDGET (self->range),
-          1, 1, start_x, start_y, 0, 0) &&
-        gtk_widget_get_visible (
-          GTK_WIDGET (self->range));
+      Position cur_pos;
+      ui_px_to_pos_timeline (
+        start_x, &cur_pos, true);
+      Position first_range, last_range;
+      transport_get_range_pos (
+        TRANSPORT, true, &first_range);
+      transport_get_range_pos (
+        TRANSPORT, false, &last_range);
+      bool range_hit =
+        position_is_after_or_equal (
+          &cur_pos, &first_range) &&
+        position_is_before_or_equal (
+          &cur_pos, &last_range);
+
+      g_message ("%s: has range %d range hit %d", __func__, TRANSPORT->has_range, range_hit);
+      position_print (&first_range);
+      position_print (&last_range);
+      position_print (&cur_pos);
 
       /* if within existing range */
-      if (PROJECT->has_range && range_hit)
+      if (TRANSPORT->has_range && range_hit)
         {
-          on_drag_begin_range_hit (self,
-                                   self->range);
+          on_drag_begin_range_hit (
+            self, start_x, &cur_pos);
         }
       else
         {
-          /* set range if project doesn't have range or range
-           * is not hit*/
-          PROJECT->has_range = 1;
+          /* set range if project doesn't have
+           * range or range is not hit*/
+          transport_set_has_range (TRANSPORT, true);
           self->action =
             UI_OVERLAY_ACTION_RESIZING_R;
           ui_px_to_pos_timeline (
-            start_x,
-            &PROJECT->range_1,
-            1);
+            start_x, &TRANSPORT->range_1, true);
           if (!self->shift_held)
-            position_snap_simple (
-              &PROJECT->range_1,
-              SNAP_GRID_TIMELINE);
+            {
+              position_snap_simple (
+                &TRANSPORT->range_1,
+                SNAP_GRID_TIMELINE);
+            }
           position_set_to_pos (
-            &PROJECT->range_2,
-            &PROJECT->range_1);
-          gtk_widget_set_visible (
-            GTK_WIDGET (self->range), 1);
+            &TRANSPORT->range_2,
+            &TRANSPORT->range_1);
         }
       self->target = RW_TARGET_RANGE;
-#endif
     }
 }
 
 void
 timeline_ruler_on_drag_update (
   RulerWidget * self,
-  gdouble               offset_x,
-  gdouble               offset_y)
+  gdouble       offset_x,
+  gdouble       offset_y)
 {
   /* handle x */
-  if (ACTION_IS (RESIZING_L))
+  switch (self->action)
     {
+    case UI_OVERLAY_ACTION_RESIZING_L:
+    case UI_OVERLAY_ACTION_RESIZING_R:
       if (self->target == RW_TARGET_RANGE)
         {
+          Position tmp;
+          ui_px_to_pos_timeline (
+            self->start_x + offset_x,
+            &tmp, true);
           if (self->range1_first)
             {
-              ui_px_to_pos_timeline (
-                self->start_x + offset_x,
-                &PROJECT->range_1,
-                1);
-              if (!self->shift_held)
-                position_snap_simple (
-                  &PROJECT->range_1,
-                  SNAP_GRID_TIMELINE);
+              g_message ("range1 first");
+              if (ACTION_IS (RESIZING_L))
+                {
+                  transport_set_range1 (
+                    TRANSPORT, &tmp,
+                    !self->shift_held);
+                }
+              else
+                {
+                  transport_set_range2 (
+                    TRANSPORT, &tmp,
+                    !self->shift_held);
+                }
             }
           else
             {
-              ui_px_to_pos_timeline (
-                self->start_x + offset_x,
-                &PROJECT->range_2,
-                1);
-              if (!self->shift_held)
-                position_snap_simple (
-                  &PROJECT->range_2,
-                  SNAP_GRID_TIMELINE);
+              g_message ("not range1 first");
+              if (ACTION_IS (RESIZING_L))
+                {
+                  transport_set_range2 (
+                    TRANSPORT, &tmp,
+                    !self->shift_held);
+                }
+              else
+                {
+                  transport_set_range1 (
+                    TRANSPORT, &tmp,
+                    !self->shift_held);
+                }
             }
-          EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED,
-                       NULL);
+          EVENTS_PUSH (
+            ET_RANGE_SELECTION_CHANGED, NULL);
         }
-    } /* endif RESIZING_L */
-
-  else if (ACTION_IS (RESIZING_R))
-    {
-      if (self->target ==
-            RW_TARGET_RANGE)
-        {
-          if (self->range1_first)
-            {
-              ui_px_to_pos_timeline (
-                self->start_x + offset_x,
-                &PROJECT->range_2,
-                1);
-              if (!self->shift_held)
-                position_snap_simple (
-                  &PROJECT->range_2,
-                  SNAP_GRID_TIMELINE);
-            }
-          else
-            {
-              ui_px_to_pos_timeline (
-                self->start_x + offset_x,
-                &PROJECT->range_1,
-                1);
-              if (!self->shift_held)
-                position_snap_simple (
-                  &PROJECT->range_1,
-                  SNAP_GRID_TIMELINE);
-            }
-          EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED,
-                       NULL);
-        }
-    } /*endif RESIZING_R */
-
-  /* if moving the selection */
-  else if (ACTION_IS (MOVING))
-    {
+      break;
+    case UI_OVERLAY_ACTION_MOVING:
       if (self->target == RW_TARGET_RANGE)
         {
           Position diff_pos;
           ui_px_to_pos_timeline (
-            fabs (offset_x),
-            &diff_pos,
-            0);
+            fabs (offset_x), &diff_pos, 0);
           double ticks_diff =
             position_to_ticks (&diff_pos);
+          if (offset_x < 0)
+            {
+              /*g_message ("offset %f", offset_x);*/
+              ticks_diff = - ticks_diff;
+            }
           double r1_ticks =
             position_to_ticks (
-              (&PROJECT->range_1));
+              (&TRANSPORT->range_1));
           double r2_ticks =
             position_to_ticks (
-              (&PROJECT->range_2));
+              (&TRANSPORT->range_2));
+          {
+            double r1_start_ticks =
+              position_to_ticks (
+                (&self->range1_start_pos));
+            double r2_start_ticks =
+              position_to_ticks (
+                (&self->range2_start_pos));
+          /*g_message ("ticks diff before %f r1 start ticks %f r2 start ticks %f", ticks_diff, r1_start_ticks, r2_start_ticks);*/
+            if (r1_start_ticks + ticks_diff < 0.0)
+              {
+                ticks_diff -=
+                  (ticks_diff + r1_start_ticks);
+              }
+            if (r2_start_ticks + ticks_diff < 0.0)
+              {
+                ticks_diff -=
+                  (ticks_diff + r2_start_ticks);
+              }
+          }
           double ticks_length =
             self->range1_first ?
             r2_ticks - r1_ticks :
             r1_ticks - r2_ticks;
 
-          if (offset_x >= 0)
+          /*g_message ("ticks diff %f", ticks_diff);*/
+
+          if (self->range1_first)
             {
-              if (self->range1_first)
-                {
-                  position_set_to_pos (
-                    &PROJECT->range_1,
-                    &self->range1_start_pos);
-                  position_add_ticks (
-                    &PROJECT->range_1,
-                    ticks_diff);
-                  if (!self->shift_held)
-                    position_snap_simple (
-                      &PROJECT->range_1,
-                      SNAP_GRID_TIMELINE);
-                  position_set_to_pos (
-                    &PROJECT->range_2,
-                    &PROJECT->range_1);
-                  position_add_ticks (
-                    &PROJECT->range_2,
-                    ticks_length);
-                }
-              else /* range_2 first */
-                {
-                  position_set_to_pos (
-                    &PROJECT->range_2,
-                    &self->range2_start_pos);
-                  position_add_ticks (
-                    &PROJECT->range_2,
-                    ticks_diff);
-                  if (!self->shift_held)
-                    position_snap_simple (
-                      &PROJECT->range_2,
-                      SNAP_GRID_TIMELINE);
-                  position_set_to_pos (
-                    &PROJECT->range_1,
-                    &PROJECT->range_2);
-                  position_add_ticks (
-                    &PROJECT->range_1,
-                    ticks_length);
-                }
+              position_set_to_pos (
+                &TRANSPORT->range_1,
+                &self->range1_start_pos);
+              position_add_ticks (
+                &TRANSPORT->range_1, ticks_diff);
+              if (!self->shift_held)
+                position_snap_simple (
+                  &TRANSPORT->range_1,
+                  SNAP_GRID_TIMELINE);
+              position_set_to_pos (
+                &TRANSPORT->range_2,
+                &TRANSPORT->range_1);
+              position_add_ticks (
+                &TRANSPORT->range_2,
+                ticks_length);
             }
-          else /* if negative offset */
+          else /* range_2 first */
             {
-              if (self->range1_first)
-                {
-                  position_set_to_pos (
-                    &PROJECT->range_1,
-                    &self->range1_start_pos);
-                  position_add_ticks (
-                    &PROJECT->range_1,
-                    -ticks_diff);
-                  if (!self->shift_held)
-                    position_snap_simple (
-                      &PROJECT->range_1,
-                      SNAP_GRID_TIMELINE);
-                  position_set_to_pos (
-                    &PROJECT->range_2,
-                    &PROJECT->range_1);
-                  position_add_ticks (
-                    &PROJECT->range_2,
-                    ticks_length);
-                }
-              else
-                {
-                  position_set_to_pos (
-                    &PROJECT->range_2,
-                    &self->range2_start_pos);
-                  position_add_ticks (
-                    &PROJECT->range_2,
-                    -ticks_diff);
-                  if (!self->shift_held)
-                    position_snap_simple (
-                      &PROJECT->range_2,
-                      SNAP_GRID_TIMELINE);
-                  position_set_to_pos (
-                    &PROJECT->range_1,
-                    &PROJECT->range_2);
-                  position_add_ticks (
-                    &PROJECT->range_1,
-                    ticks_length);
-                }
+              position_set_to_pos (
+                &TRANSPORT->range_2,
+                &self->range2_start_pos);
+              position_add_ticks (
+                &TRANSPORT->range_2, ticks_diff);
+              if (!self->shift_held)
+                position_snap_simple (
+                  &TRANSPORT->range_2,
+                  SNAP_GRID_TIMELINE);
+              position_set_to_pos (
+                &TRANSPORT->range_1,
+                &TRANSPORT->range_2);
+              position_add_ticks (
+                &TRANSPORT->range_1,
+                ticks_length);
             }
           EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED,
                        NULL);
@@ -425,5 +421,9 @@ timeline_ruler_on_drag_update (
                 }
             }
         }
-    } /* endif MOVING */
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
 }
