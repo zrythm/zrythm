@@ -205,10 +205,14 @@ host_dispatcher (
       /* some expensive computation is happening.
        * this is used so that the GTK ui does not
        * block */
+      /* note: disabled because some logic depends
+       * on this plugin being activated */
+#if 0
       while (gtk_events_pending ())
         {
           gtk_main_iteration ();
         }
+#endif
       break;
     default:
       break;
@@ -1151,11 +1155,20 @@ carla_native_plugin_save_state (
   self->state_file =
     g_build_filename (
       dir, CARLA_STATE_FILENAME, NULL);
-  int ret =
-    carla_save_plugin_state (
-      self->host_handle, 0, self->state_file);
-  g_warn_if_fail (file_exists (self->state_file));
-  return !ret;
+  char * state =
+    self->native_plugin_descriptor->get_state (
+      self->native_plugin_handle);
+  GError * err = NULL;
+  g_file_set_contents (
+    self->state_file, state, -1, &err);
+  if (err)
+    {
+      g_warning (
+        "%s: An error occurred saving the state: "
+        "%s", __func__, err->message);
+      return -1;
+    }
+  return 0;
 }
 
 /**
@@ -1184,11 +1197,23 @@ carla_native_plugin_load_state (
     }
 
   g_warn_if_fail (file_exists (state_file));
-  carla_load_plugin_state (
-    self->host_handle, 0, state_file);
+  char * state = NULL;
+  GError * err = NULL;
+  g_file_get_contents (
+    state_file, &state, NULL, &err);
+  if (err)
+    {
+      g_warning (
+        "%s: An error occurred reading the state: "
+        "%s", __func__, err->message);
+      return;
+    }
+  self->native_plugin_descriptor->set_state (
+    self->native_plugin_handle, state);
   g_message (
-    "loading carla plugin state from %s",
-    state_file);
+    "%s: loading carla plugin state from %s",
+    __func__, state_file);
+  g_free (state);
 
   if (dir)
     {
