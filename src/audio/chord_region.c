@@ -64,8 +64,9 @@ chord_region_new (
  */
 void
 chord_region_add_chord_object (
-  ZRegion *      self,
-  ChordObject * chord)
+  ZRegion *     self,
+  ChordObject * chord,
+  bool          fire_events)
 {
   array_double_size_if_full (
     self->chord_objects, self->num_chord_objects,
@@ -77,7 +78,11 @@ chord_region_add_chord_object (
   chord_object_set_region_and_index (
     chord, self, self->num_chord_objects - 1);
 
-  EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, chord);
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_CREATED, chord);
+    }
 }
 
 /**
@@ -87,26 +92,31 @@ chord_region_add_chord_object (
  */
 void
 chord_region_remove_chord_object (
-  ZRegion *      self,
+  ZRegion *     self,
   ChordObject * chord,
-  int           free)
+  int           free,
+  bool          fire_events)
 {
   /* deselect */
   arranger_object_select (
     (ArrangerObject *) chord, F_NO_SELECT,
     F_APPEND);
 
-  array_delete (self->chord_objects,
-                self->num_chord_objects,
-                chord);
-
+  array_delete (
+    self->chord_objects, self->num_chord_objects,
+    chord);
 
   if (free)
-    free_later (chord, arranger_object_free);
+    {
+      free_later (chord, arranger_object_free);
+    }
 
-  EVENTS_PUSH (
-    ET_ARRANGER_OBJECT_REMOVED,
-    ARRANGER_OBJECT_TYPE_CHORD_OBJECT);
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_REMOVED,
+        ARRANGER_OBJECT_TYPE_CHORD_OBJECT);
+    }
 }
 
 /**
@@ -120,8 +130,11 @@ chord_region_free_members (
 {
   int i;
   for (i = 0; i < self->num_chord_objects; i++)
-    chord_region_remove_chord_object (
-      self, self->chord_objects[i], F_FREE);
+    {
+      chord_region_remove_chord_object (
+        self, self->chord_objects[i], F_FREE,
+        F_NO_PUBLISH_EVENTS);
+    }
 
   free (self->chord_objects);
 }

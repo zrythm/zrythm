@@ -87,7 +87,7 @@ script:
       /tmp/meson/meson.py build -Dtests=true -Db_coverage=true
       ninja -C build
       ninja -C build test
-      #ninja -C build coverage-text
+      ninja -C build coverage-text
       coveralls -e ext -e tests -e subprojects -e doc -e build/resources -b build --gcov-options '\-lp'
       sudo ninja -C build install
       ;;

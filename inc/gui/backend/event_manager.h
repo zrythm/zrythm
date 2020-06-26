@@ -86,6 +86,9 @@ typedef struct EventManager
       ZEvent * _ev = \
         (ZEvent *) \
         object_pool_get (EVENT_MANAGER->obj_pool); \
+      _ev->file = __FILE__; \
+      _ev->func = __func__; \
+      _ev->lineno = __LINE__; \
       _ev->type = et; \
       _ev->arg = (void *) _arg; \
       event_queue_push_back_event (EVENT_QUEUE, _ev); \

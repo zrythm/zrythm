@@ -116,7 +116,7 @@ chord_selections_paste_to_pos (
       region =
         chord_object_get_region (cp);
       chord_region_add_chord_object (
-        region, cp);
+        region, cp, F_PUBLISH_EVENTS);
     }
 #undef DIFF
 }

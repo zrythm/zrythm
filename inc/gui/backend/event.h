@@ -167,6 +167,9 @@ typedef struct ZEvent
 {
   EventType     type;
   void *        arg;
+  const char *  file;
+  const char *  func;
+  int           lineno;
 } ZEvent;
 
 ZEvent *

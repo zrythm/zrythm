@@ -1463,6 +1463,10 @@ arranger_selections_remove_object (
   ArrangerSelections * self,
   ArrangerObject *     obj)
 {
+  g_return_if_fail (
+    IS_ARRANGER_SELECTIONS (self) &&
+    IS_ARRANGER_OBJECT (obj));
+
   TimelineSelections * ts;
   ChordSelections * cs;
   MidiArrangerSelections * mas;

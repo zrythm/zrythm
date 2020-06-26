@@ -112,14 +112,13 @@ chord_arranger_widget_create_chord (
 
   /* add it to chord region */
   chord_region_add_chord_object (
-    region, chord);
+    region, chord, F_PUBLISH_EVENTS);
 
   arranger_object_set_position (
     chord_obj, &local_pos,
     ARRANGER_OBJECT_POSITION_TYPE_START,
     F_NO_VALIDATE);
 
-  EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, chord);
   arranger_object_select (
     chord_obj, F_SELECT, F_NO_APPEND);
 }

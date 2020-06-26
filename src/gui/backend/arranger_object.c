@@ -1753,7 +1753,7 @@ clone_region (
                 ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
             midi_region_add_midi_note (
-              mr, mn, 0);
+              mr, mn, F_NO_PUBLISH_EVENTS);
           }
 
         new_region = (ZRegion *) mr;
@@ -1842,7 +1842,7 @@ clone_region (
                 ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
             chord_region_add_chord_object (
-              cr, dest_co);
+              cr, dest_co, F_NO_PUBLISH_EVENTS);
           }
 
         new_region = cr;

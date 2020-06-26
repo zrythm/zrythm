@@ -494,7 +494,7 @@ add_object_to_project (
 
         /* add it to the region */
         chord_region_add_chord_object (
-          region, chord);
+          region, chord, F_NO_PUBLISH_EVENTS);
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
@@ -504,7 +504,7 @@ add_object_to_project (
 
         /* add it to the region */
         midi_region_add_midi_note (
-          region, mn, 1);
+          region, mn, F_PUBLISH_EVENTS);
       }
       break;
     case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
@@ -622,7 +622,8 @@ remove_object_from_project (
         ZRegion * region =
           arranger_object_get_region (obj);
         chord_region_remove_chord_object (
-          region, chord, F_FREE);
+          region, chord, F_FREE,
+          F_NO_PUBLISH_EVENTS);
       }
       break;
     case ARRANGER_OBJECT_TYPE_REGION:

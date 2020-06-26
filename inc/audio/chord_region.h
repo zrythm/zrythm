@@ -26,6 +26,8 @@
 #ifndef __AUDIO_CHORD_REGION_H__
 #define __AUDIO_CHORD_REGION_H__
 
+#include <stdbool.h>
+
 typedef struct Position Position;
 typedef struct ChordObject ChordObject;
 typedef struct ZRegion ZRegion;
@@ -52,8 +54,9 @@ chord_region_new (
  */
 void
 chord_region_add_chord_object (
-  ZRegion *      self,
-  ChordObject * chord);
+  ZRegion *     self,
+  ChordObject * chord,
+  bool          fire_events);
 
 /**
  * Removes a ChordObject from the Region.
@@ -62,9 +65,10 @@ chord_region_add_chord_object (
  */
 void
 chord_region_remove_chord_object (
-  ZRegion *      self,
+  ZRegion *     self,
   ChordObject * chord,
-  int           free);
+  int           free,
+  bool          fire_events);
 
 /**
  * Frees members only but not the ZRegion itself.

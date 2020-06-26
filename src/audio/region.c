@@ -726,7 +726,8 @@ region_remove_all_children (
             MidiNote * mn =
               region->midi_notes[i];
             midi_region_remove_midi_note (
-              region, mn, true, false);
+              region, mn, F_FREE,
+              F_NO_PUBLISH_EVENTS);
           }
         g_warn_if_fail (
           region->num_midi_notes == 0);
@@ -742,7 +743,7 @@ region_remove_all_children (
           {
             AutomationPoint * ap = region->aps[i];
             automation_region_remove_ap (
-              region, ap, true);
+              region, ap, F_FREE);
           }
       }
       break;
@@ -754,7 +755,8 @@ region_remove_all_children (
             ChordObject * co =
               region->chord_objects[i];
             chord_region_remove_chord_object (
-              region, co, true);
+              region, co, F_FREE,
+              F_NO_PUBLISH_EVENTS);
           }
       }
       break;
@@ -799,7 +801,7 @@ region_copy_children (
                 ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
             midi_region_add_midi_note (
-              dest, mn, 0);
+              dest, mn, F_NO_PUBLISH_EVENTS);
           }
       }
       break;
@@ -840,7 +842,7 @@ region_copy_children (
                 ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
             chord_region_add_chord_object (
-              dest, dest_co);
+              dest, dest_co, F_NO_PUBLISH_EVENTS);
           }
       }
       break;
