@@ -1,6 +1,47 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.604] - 2020-06-26
+### Added
+- Add tempo track for BPM automation
+- Time-stretch audio regions in musical mode in real-time
+- Add musical mode selection to region context menu
+- Add --gdb, --cachegrind, --midi-backend, --audio-backend, --dummy, --buf-size and --interactive command line options
+- Add plugin browser context menu to open plugins with carla
+
+### Changed
+- Move mute and solo ports from track to fader
+- Add initial processor to routing graph
+- Routing code refactor: split to smaller files and simplify
+- ZrythmApp refactor: split code to Zrythm and ZrythmApp
+- Events code refactor: split to Event and EventManager
+- Other refactoring to allocate/free resources properly
+- Update French, Portuguese, Norwegian translations
+- Draw musical mode icon on regions
+- Disable region draw caching
+- Use cyaml v1.1.0 or above for precise float/double serialization
+- UI: make channel slots and sends shorter
+- Allow multiple Zrythm instances to be opened
+- Use the same naming scheme as native plugin UIs for carla plugin UI titles
+- Audio regions are now created at the playhead when creating new tracks
+- Use `get_state`/`set_state` for saving/loading the plugin state for carla plugins
+
+### Fixed
+- Fix editor quantization
+- Fix various memory leaks
+- Fix MIDI file export
+- Fix mute/solo not affecting the fader
+- Fix audio recording
+- Fix undo stack initialization when loading projects
+- Fix initialization of recorded regions on project load
+- Fix issues when resizing audio regions
+- Fix crash when cutting regions
+- Fix MIDI note positions being global instead of local during recording
+- Fix crash when undoing after using the eraser
+- Fix double instantiation of plugins when adding new tracks
+- Fix range selection
+- Fix crash when deleting a chord region
+
 ## [0.8.535] - 2020-06-06
 ### Added
 - Add image-missing fallback if icon is not found
