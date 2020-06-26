@@ -126,7 +126,7 @@ typedef struct Project
    */
   char *             backup_dir;
 
-  UndoManager        undo_manager;
+  UndoManager *      undo_manager;
 
   Tracklist *        tracklist;
 
@@ -315,7 +315,7 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_PTR (
     Project, midi_mappings,
     midi_mappings_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project, undo_manager,
     undo_manager_fields_schema),
 

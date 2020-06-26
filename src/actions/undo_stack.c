@@ -20,6 +20,7 @@
 #include "actions/undo_stack.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/objects.h"
 #include "utils/stack.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -169,6 +170,17 @@ void
 undo_stack_free (
   UndoStack * self)
 {
+  g_message ("%s: freeing...", __func__);
+
+  while (!undo_stack_is_empty (self))
+    {
+      UndoableAction * ua = undo_stack_pop (self);
+      undoable_action_free (ua);
+    }
+
+  object_zero_and_free (self);
+
+  g_message ("%s: done", __func__);
 }
 
 void
@@ -344,12 +356,21 @@ undo_stack_pop_last (
   return action;
 }
 
+/**
+ * Clears the stack, optionally freeing all the
+ * elements.
+ */
 void
 undo_stack_clear (
-  UndoStack * self)
+  UndoStack * self,
+  bool        free)
 {
   while (!undo_stack_is_empty (self))
     {
-      undo_stack_pop (self);
+      UndoableAction * ua = undo_stack_pop (self);
+      if (free)
+        {
+          undoable_action_free (ua);
+        }
     }
 }

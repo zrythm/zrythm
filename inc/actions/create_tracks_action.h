@@ -132,19 +132,19 @@ create_tracks_action_new (
 
 int
 create_tracks_action_do (
-	CreateTracksAction * self);
+  CreateTracksAction * self);
 
 int
 create_tracks_action_undo (
-	CreateTracksAction * self);
+  CreateTracksAction * self);
 
 char *
 create_tracks_action_stringize (
-	CreateTracksAction * self);
+  CreateTracksAction * self);
 
 void
 create_tracks_action_free (
-	CreateTracksAction * self);
+  CreateTracksAction * self);
 
 /**
  * @}

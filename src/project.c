@@ -248,6 +248,8 @@ project_free (Project * self)
     engine_free, self->audio_engine);
   object_free_w_func_and_null (
     midi_mappings_free, self->midi_mappings);
+  object_free_w_func_and_null (
+    undo_manager_free, self->undo_manager);
 
   object_zero_and_free (self);
 
@@ -569,7 +571,7 @@ create_default (Project * self)
   project_init_selections (self);
 
   self->audio_engine = engine_new (self);
-  undo_manager_init (&self->undo_manager, 0);
+  self->undo_manager = undo_manager_new ();
 
   /* init midi mappings */
   self->midi_mappings = midi_mappings_new ();
@@ -887,7 +889,7 @@ load (
 
   self->title = filepath_noext;
 
-  undo_manager_init (&self->undo_manager, true);
+  undo_manager_init_loaded (self->undo_manager);
   engine_init_loaded (self->audio_engine);
 
   clip_editor_init_loaded (CLIP_EDITOR);

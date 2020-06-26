@@ -213,9 +213,14 @@ undo_stack_pop_last (
 
 /* --- end wrappers --- */
 
+/**
+ * Clears the stack, optionally freeing all the
+ * elements.
+ */
 void
 undo_stack_clear (
-  UndoStack * self);
+  UndoStack * self,
+  bool        free);
 
 /**
  * @}

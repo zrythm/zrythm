@@ -264,11 +264,6 @@ create_tracks_action_new (
     {
       self->num_tracks = num_tracks;
     }
-  for (int i = 0; i < num_tracks; i++)
-    {
-      /* create clones for reference */
-      create (self, i, 0);
-    }
 
   return ua;
 }

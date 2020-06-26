@@ -940,7 +940,6 @@ carla_native_plugin_instantiate (
     create_ports (self, loading);
 
   g_message ("activating carla plugin...");
-  /* TODO need to call deactivate on clones */
   self->native_plugin_descriptor->activate (
     self->native_plugin_handle);
   g_message ("carla plugin activated");

@@ -24,35 +24,40 @@
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
+#include "utils/objects.h"
 #include "utils/stack.h"
 #include "zrythm_app.h"
 
 /**
- * Inits the undo manager by creating or
- * populating the undo/redo stacks.
- *
- * @param loading True if this is a loaded project,
- *   false if a new project.
+ * Inits the undo manager by populating the
+ * undo/redo stacks.
  */
 void
-undo_manager_init (
-  UndoManager * self,
-  int           loading)
+undo_manager_init_loaded (
+  UndoManager * self)
 {
-  g_message (
-    "%s: Initializing%s...", __func__,
-    loading ? " (loading)" : "");
+  g_message ("%s: loading...", __func__);
+  undo_stack_init_loaded (self->undo_stack);
+  undo_stack_init_loaded (self->redo_stack);
+  g_message ("%s: done", __func__);
+}
 
-  if (loading)
-    {
-      undo_stack_init_loaded (self->undo_stack);
-      undo_stack_init_loaded (self->redo_stack);
-    }
-  else
-    {
-      self->undo_stack = undo_stack_new ();
-      self->redo_stack = undo_stack_new ();
-    }
+/**
+ * Inits the undo manager by creating the undo/redo
+ * stacks.
+ */
+UndoManager *
+undo_manager_new (void)
+{
+  g_message ("%s: creating...", __func__);
+  UndoManager * self = object_new (UndoManager);
+
+  self->undo_stack = undo_stack_new ();
+  self->redo_stack = undo_stack_new ();
+
+  g_message ("%s: done", __func__);
+
+  return self;
 }
 
 /**
@@ -155,7 +160,7 @@ undo_manager_perform (
 
   undo_stack_push (self->undo_stack, action);
 
-  undo_stack_clear (self->redo_stack);
+  undo_stack_clear (self->redo_stack, true);
 
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW && MW_HEADER &&
       MW_HOME_TOOLBAR)
@@ -165,6 +170,7 @@ undo_manager_perform (
     }
 }
 
+#if 0
 /**
  * Clears the undo and redo stacks.
  */
@@ -176,4 +182,21 @@ undo_manager_clear_stacks (
     self && self->undo_stack && self->redo_stack);
   undo_stack_clear (self->undo_stack);
   undo_stack_clear (self->redo_stack);
+}
+#endif
+
+void
+undo_manager_free (
+  UndoManager * self)
+{
+  g_message ("%s: freeing...", __func__);
+
+  object_free_w_func_and_null (
+    undo_stack_free, self->undo_stack);
+  object_free_w_func_and_null (
+    undo_stack_free, self->redo_stack);
+
+  object_zero_and_free (self);
+
+  g_message ("%s: done", __func__);
 }

@@ -34,7 +34,7 @@
  * @{
  */
 
-#define UNDO_MANAGER (&PROJECT->undo_manager)
+#define UNDO_MANAGER (PROJECT->undo_manager)
 
 /**
  * Undo manager.
@@ -66,16 +66,19 @@ static const cyaml_schema_value_t
 };
 
 /**
- * Inits the undo manager by creating or
- * populating the undo/redo stacks.
- *
- * @param loading True if this is a loaded project,
- *   false if a new project.
+ * Inits the undo manager by populating the
+ * undo/redo stacks.
  */
 void
-undo_manager_init (
-  UndoManager * self,
-  int           loading);
+undo_manager_init_loaded (
+  UndoManager * self);
+
+/**
+ * Inits the undo manager by creating the undo/redo
+ * stacks.
+ */
+UndoManager *
+undo_manager_new (void);
 
 /**
  * Undo last action.
@@ -109,6 +112,10 @@ undo_manager_prepare_for_serialization (
  */
 void
 undo_manager_clear_stacks (
+  UndoManager * self);
+
+void
+undo_manager_free (
   UndoManager * self);
 
 /**
