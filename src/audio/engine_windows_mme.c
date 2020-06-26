@@ -260,7 +260,7 @@ engine_windows_mme_rescan_devices (
 
   if (start)
     {
-      engine_windows_mme_start_known_devices (self);
+      engine_windows_mme_activate (self, true);
     }
 
   return 0;

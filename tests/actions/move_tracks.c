@@ -96,9 +96,9 @@ test_move_tracks ()
 
   ChannelSend * send = &ins_track->channel->sends[0];
   StereoPorts * stereo_in =
-    fx_track->processor.stereo_in;
+    fx_track->processor->stereo_in;
   channel_send_connect_stereo (
-    send, fx_track->processor.stereo_in);
+    send, fx_track->processor->stereo_in);
 
   /* check that the sends are correct */
   g_assert_true (!send->is_empty);
@@ -124,7 +124,7 @@ test_move_tracks ()
     fx_track->type == TRACK_TYPE_AUDIO_BUS);
   send = &ins_track->channel->sends[0];
   stereo_in =
-    fx_track->processor.stereo_in;
+    fx_track->processor->stereo_in;
   g_assert_cmpint (
     stereo_in->l->id.track_pos, ==, 3);
   g_assert_cmpint (
@@ -149,7 +149,7 @@ test_move_tracks ()
     fx_track->type == TRACK_TYPE_AUDIO_BUS);
   send = &ins_track->channel->sends[0];
   stereo_in =
-    fx_track->processor.stereo_in;
+    fx_track->processor->stereo_in;
   g_assert_cmpint (
     stereo_in->l->id.track_pos, ==, 4);
   g_assert_cmpint (
