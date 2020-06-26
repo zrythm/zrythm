@@ -440,6 +440,10 @@ plugin_process (
   const nframes_t  local_offset,
   const nframes_t   nframes);
 
+char *
+plugin_generate_window_title (
+  Plugin * plugin);
+
 /**
  * Process show ui
  */

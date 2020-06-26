@@ -115,45 +115,15 @@ plugin_gtk_set_window_title (
   Plugin *    plugin,
   GtkWindow * window)
 {
-  g_return_if_fail (plugin && plugin->descr);
-  Track * track =
-    plugin_get_track (plugin);
-  const char* track_name = track->name;
-  const char* plugin_name = plugin->descr->name;
   g_return_if_fail (
-    track_name && plugin_name && window);
+    plugin && plugin->descr && window);
 
-  char title[500];
-  sprintf (
-    title,
-    "%s (%s #%d)",
-    plugin_name, track_name, plugin->id.slot);
-
-  switch (plugin->descr->protocol)
-    {
-    case PROT_LV2:
-      if (plugin->lv2->preset)
-        {
-          Lv2Plugin * lv2 = plugin->lv2;
-          const char* preset_label =
-            lilv_state_get_label (lv2->preset);
-          g_return_if_fail (preset_label);
-          char preset_part[500];
-          sprintf (
-            preset_part, " - %s",
-            preset_label);
-          strcat (
-            title, preset_part);
-        }
-      break;
-    case PROT_VST:
-      /* TODO */
-      break;
-    default:
-      break;
-    }
+  char * title =
+    plugin_generate_window_title (plugin);
 
   gtk_window_set_title (window, title);
+
+  g_free (title);
 }
 
 void

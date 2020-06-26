@@ -631,6 +631,50 @@ plugin_find (
   return ret;
 }
 
+char *
+plugin_generate_window_title (
+  Plugin * plugin)
+{
+  g_return_val_if_fail (
+    plugin && plugin->descr, NULL);
+  Track * track =
+    plugin_get_track (plugin);
+  const char* track_name = track->name;
+  const char* plugin_name = plugin->descr->name;
+  g_return_val_if_fail (
+    track_name && plugin_name, NULL);
+
+  char title[500];
+  sprintf (
+    title,
+    "%s (%s #%d)",
+    plugin_name, track_name, plugin->id.slot);
+
+  switch (plugin->descr->protocol)
+    {
+    case PROT_LV2:
+      if (!plugin->descr->open_with_carla &&
+          plugin->lv2->preset)
+        {
+          Lv2Plugin * lv2 = plugin->lv2;
+          const char* preset_label =
+            lilv_state_get_label (lv2->preset);
+          g_return_val_if_fail (preset_label, NULL);
+          char preset_part[500];
+          sprintf (
+            preset_part, " - %s",
+            preset_label);
+          strcat (
+            title, preset_part);
+        }
+      break;
+    default:
+      break;
+    }
+
+  return g_strdup (title);
+}
+
 void
 plugin_activate (
   Plugin * pl,

@@ -940,6 +940,7 @@ carla_native_plugin_instantiate (
     create_ports (self, loading);
 
   g_message ("activating carla plugin...");
+  /* TODO need to call deactivate on clones */
   self->native_plugin_descriptor->activate (
     self->native_plugin_handle);
   g_message ("carla plugin activated");
@@ -966,6 +967,12 @@ carla_native_plugin_open_ui (
     case PROT_LV2:
     case PROT_AU:
       {
+        char * title =
+          plugin_generate_window_title (
+            self->plugin);
+        carla_set_custom_ui_title (
+          self->host_handle, 0, title);
+        g_free (title);
         carla_show_custom_ui (
           self->host_handle, 0, show);
         self->plugin->visible = show;
