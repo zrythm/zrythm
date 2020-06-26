@@ -36,16 +36,21 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 
 #define TYPE(x) \
   (ARRANGER_SELECTIONS_TYPE_##x)
 
 /**
  * Inits the selections after loading a project.
+ *
+ * @param project Whether these are project
+ *   selections (as opposed to clones).
  */
 void
 arranger_selections_init_loaded (
-  ArrangerSelections * self)
+  ArrangerSelections * self,
+  bool                 project)
 {
   int i;
   TimelineSelections * ts;
@@ -60,9 +65,17 @@ arranger_selections_init_loaded (
       ArrangerObject * obj = \
         (ArrangerObject *) sel->sc##s[i]; \
       arranger_object_update_frames (obj); \
-      sel->sc##s[i] = \
-        (cc *) \
-        arranger_object_find (obj); \
+      if (project) \
+        { \
+          sel->sc##s[i] = \
+            (cc *) \
+            arranger_object_find (obj); \
+        } \
+      else \
+        { \
+          arranger_object_init_loaded ( \
+            (ArrangerObject *) sel->sc##s[i]); \
+        } \
     }
 
   switch (self->type)
@@ -82,9 +95,12 @@ arranger_selections_init_loaded (
             (ArrangerObject *) mn;
           arranger_object_update_frames (
             mn_obj);
-          mas->midi_notes[i] =
-            (MidiNote *)
-            arranger_object_find (mn_obj);
+          if (project)
+            {
+              mas->midi_notes[i] =
+                (MidiNote *)
+                arranger_object_find (mn_obj);
+            }
           g_warn_if_fail (mas->midi_notes[i]);
           arranger_object_free (mn_obj);
         }
@@ -1301,11 +1317,11 @@ arranger_selections_free_full (
 #define FREE_OBJS(sel,sc) \
   for (i = 0; i < sel->num_##sc##s; i++) \
     { \
-      ArrangerObject * obj = \
-        (ArrangerObject *) sel->sc##s[i]; \
-      arranger_object_free (obj); \
+      object_free_w_func_and_null_cast ( \
+        arranger_object_free, \
+        ArrangerObject *, sel->sc##s[i]); \
     } \
-    free (sel->sc##s)
+  object_zero_and_free (sel->sc##s)
 
   switch (self->type)
     {
@@ -1317,31 +1333,29 @@ arranger_selections_free_full (
         ts, scale_object);
       FREE_OBJS (
         ts, marker);
-      free (ts);
       break;
     case TYPE (MIDI):
       mas = (MidiArrangerSelections *) self;
       FREE_OBJS (
         mas, midi_note);
-      free (mas);
       break;
     case TYPE (AUTOMATION):
       as = (AutomationSelections *) self;
       FREE_OBJS (
         as, automation_point);
-      free (as);
       break;
     case TYPE (CHORD):
       cs = (ChordSelections *) self;
       FREE_OBJS (
         cs, chord_object);
-      free (cs);
       break;
     default:
       g_return_if_reached ();
     }
 
 #undef FREE_OBJS
+
+  object_zero_and_free (self);
 }
 
 /**

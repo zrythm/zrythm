@@ -350,7 +350,7 @@ test_project_rebootstrap_timeline (
   ChordObject * c =
     chord_object_new (&r->id, 0, 1);
   chord_region_add_chord_object (
-    r, c);
+    r, c, F_NO_PUBLISH_EVENTS);
   arranger_object_pos_setter (
     (ArrangerObject *) c, p1);
   arranger_selections_add_object (
@@ -359,7 +359,7 @@ test_project_rebootstrap_timeline (
   c =
     chord_object_new (&r->id, 0, 1);
   chord_region_add_chord_object (
-    r, c);
+    r, c, F_NO_PUBLISH_EVENTS);
   arranger_object_pos_setter (
     (ArrangerObject *) c, p2);
   arranger_selections_add_object (

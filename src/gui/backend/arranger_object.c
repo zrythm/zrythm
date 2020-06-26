@@ -752,6 +752,13 @@ init_loaded_scale_object (
 }
 
 static void
+init_loaded_chord_object (
+  ChordObject * self)
+{
+  self->magic = CHORD_OBJECT_MAGIC;
+}
+
+static void
 init_loaded_region (
   ZRegion * self)
 {
@@ -840,6 +847,10 @@ arranger_object_init_loaded (
     case TYPE (SCALE_OBJECT):
       init_loaded_scale_object (
         (ScaleObject *) self);
+      break;
+    case TYPE (CHORD_OBJECT):
+      init_loaded_chord_object (
+        (ChordObject *) self);
       break;
     default:
       /* nothing needed */
@@ -2421,11 +2432,6 @@ static void
 free_region (
   ZRegion * self)
 {
-  if (self->name)
-    g_free (self->name);
-  if (G_IS_OBJECT (self->layout))
-    g_object_unref (self->layout);
-
 #define FREE_R(type,sc) \
   case REGION_TYPE_##type: \
     sc##_region_free_members (self); \
@@ -2437,6 +2443,13 @@ free_region (
       FREE_R (AUDIO, audio);
       FREE_R (CHORD, chord);
       FREE_R (AUTOMATION, automation);
+    }
+
+  g_free_and_null (self->name);
+  if (G_IS_OBJECT (self->layout))
+    {
+      object_free_w_func_and_null (
+        g_object_unref, self->layout);
     }
 
 #undef FREE_R

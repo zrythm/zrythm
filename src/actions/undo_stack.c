@@ -45,6 +45,7 @@ undo_stack_init_loaded (
         self->sc##_actions[sc##_actions_idx]; \
       UndoableAction * ua = \
         (UndoableAction *) a; \
+      undoable_action_init_loaded (ua); \
       if (self->stack->top + 1 == ua->stack_idx) \
         { \
           STACK_PUSH (self->stack, ua); \
@@ -82,54 +83,7 @@ undo_stack_init_loaded (
   size_t i = 0;
   while (i < total_actions)
     {
-      /* if there are still actions of this type */
-      if (as_actions_idx < self->num_as_actions)
-        {
-          ArrangerSelectionsAction * a =
-            self->as_actions[as_actions_idx];
-          UndoableAction * ua =
-            (UndoableAction *) a;
-
-          if (self->stack->top + 1 == ua->stack_idx)
-            {
-#define DO_SELECTIONS(sc) \
-  if (a->sc##_sel) \
-    { \
-      a->sel = \
-        (ArrangerSelections *) \
-        a->sc##_sel; \
-      a->sel_after = \
-        (ArrangerSelections *) \
-        a->sc##_sel_after; \
-    }
-              DO_SELECTIONS (chord);
-              DO_SELECTIONS (tl);
-              DO_SELECTIONS (ma);
-              DO_SELECTIONS (automation);
-
-              for (int j = 0; j < a->num_split_objs; j++)
-                {
-                  if (a->region_r1[j])
-                    {
-                      a->r1[j] =
-                        (ArrangerObject *)
-                        a->region_r1[j];
-                      a->r2[j] =
-                        (ArrangerObject *)
-                        a->region_r2[j];
-                    }
-                  else if (a->mn_r1[j])
-                    {
-                      a->r1[j] =
-                        (ArrangerObject *) a->mn_r1[j];
-                      a->r2[j] =
-                        (ArrangerObject *) a->mn_r2[j];
-                    }
-                }
-              STACK_PUSH (self->stack, ua);
-              as_actions_idx++;
-            }
-        }
+      DO_SIMPLE (ArrangerSelections, as)
       DO_SIMPLE (CopyPlugins, copy_plugins)
       DO_SIMPLE (CopyTracks, copy_tracks)
       DO_SIMPLE (CreatePlugins, create_plugins)

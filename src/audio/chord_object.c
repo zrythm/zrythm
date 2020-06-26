@@ -48,6 +48,7 @@ chord_object_new (
   self->index = index;
   region_identifier_copy (
     &obj->region_id, region_id);
+  self->magic = CHORD_OBJECT_MAGIC;
 
   arranger_object_init (obj);
 

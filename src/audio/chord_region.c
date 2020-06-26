@@ -56,6 +56,8 @@ chord_region_new (
     self, start_pos, end_pos, P_CHORD_TRACK->pos,
     0, idx);
 
+  g_warn_if_fail (IS_REGION (self));
+
   return self;
 }
 
@@ -68,6 +70,8 @@ chord_region_add_chord_object (
   ChordObject * chord,
   bool          fire_events)
 {
+  g_return_if_fail (IS_REGION (self));
+
   array_double_size_if_full (
     self->chord_objects, self->num_chord_objects,
     self->chord_objects_size, ChordObject *);
@@ -97,10 +101,17 @@ chord_region_remove_chord_object (
   int           free,
   bool          fire_events)
 {
+  g_return_if_fail (
+    IS_REGION (self) &&
+    IS_CHORD_OBJECT (chord));
+
   /* deselect */
-  arranger_object_select (
-    (ArrangerObject *) chord, F_NO_SELECT,
-    F_APPEND);
+  if (CHORD_SELECTIONS)
+    {
+      arranger_object_select (
+        (ArrangerObject *) chord, F_NO_SELECT,
+        F_APPEND);
+    }
 
   array_delete (
     self->chord_objects, self->num_chord_objects,
@@ -128,6 +139,8 @@ void
 chord_region_free_members (
   ZRegion * self)
 {
+  g_return_if_fail (IS_REGION (self));
+
   int i;
   for (i = 0; i < self->num_chord_objects; i++)
     {

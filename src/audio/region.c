@@ -108,11 +108,13 @@ region_init (
  */
 void
 region_gen_name (
-  ZRegion *         region,
+  ZRegion *         self,
   const char *      base_name,
   AutomationTrack * at,
   Track *           track)
 {
+  g_return_if_fail (IS_REGION (self));
+
   /* Name to try to assign */
   char * orig_name = NULL;
   if (base_name)
@@ -126,7 +128,7 @@ region_gen_name (
   else
     orig_name = g_strdup (track->name);
 
-  region_set_name (region, orig_name, 0);
+  region_set_name (self, orig_name, 0);
   g_free (orig_name);
 }
 
@@ -138,7 +140,7 @@ region_set_lane (
   ZRegion *    self,
   TrackLane * lane)
 {
-  g_return_if_fail (lane);
+  g_return_if_fail (IS_REGION (self) && lane);
   self->id.lane_pos = lane->pos;
   self->id.track_pos = lane->track_pos;
 }
@@ -156,7 +158,7 @@ region_move_to_track (
   ZRegion *  region,
   Track *    track)
 {
-  g_return_if_fail (region && track);
+  g_return_if_fail (IS_REGION (region) && track);
 
   /*g_message ("moving region %s to track %s",*/
     /*region->name, track->name);*/
@@ -217,6 +219,8 @@ region_stretch (
   ZRegion * self,
   double    ratio)
 {
+  g_return_if_fail (IS_REGION (self));
+
   self->stretching = true;
   ArrangerObject * obj = (ArrangerObject *) self;
 
@@ -310,7 +314,7 @@ region_move_to_lane (
   ZRegion *    region,
   TrackLane * lane)
 {
-  g_return_if_fail (region && lane);
+  g_return_if_fail (IS_REGION (region) && lane);
 
   Track * region_track =
     arranger_object_get_track (
@@ -358,7 +362,7 @@ region_set_automation_track (
   ZRegion *         self,
   AutomationTrack * at)
 {
-  g_return_if_fail (at);
+  g_return_if_fail (IS_REGION (self) && at);
 
   /*int is_clip_editor_region = 0;*/
   if (region_identifier_is_equal (
@@ -424,6 +428,8 @@ region_sanity_check (
   ZRegion * self,
   bool      is_project)
 {
+  g_return_val_if_fail (IS_REGION (self), false);
+
   if (is_project)
     {
       if (!region_find (&self->id))
@@ -439,6 +445,8 @@ TrackLane *
 region_get_lane (
   const ZRegion * self)
 {
+  g_return_val_if_fail (IS_REGION (self), NULL);
+
   Track * track =
     arranger_object_get_track (
       (ArrangerObject *) self);

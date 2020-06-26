@@ -37,6 +37,86 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 
+void
+undoable_action_init_loaded (
+  UndoableAction * self)
+{
+  /* uppercase, camel case, snake case */
+#define INIT_LOADED(uc,sc,cc) \
+  case UA_##uc: \
+    sc##_action_init_loaded ((cc##Action *) self); \
+    break;
+
+  switch (self->type)
+    {
+    /*INIT_LOADED (CREATE_TRACKS,*/
+               /*create_tracks,*/
+               /*CreateTracks);*/
+    /*INIT_LOADED (MOVE_TRACKS,*/
+               /*move_tracks,*/
+               /*MoveTracks);*/
+    /*INIT_LOADED (EDIT_TRACKS,*/
+               /*edit_tracks,*/
+               /*EditTracks);*/
+    /*INIT_LOADED (COPY_TRACKS,*/
+               /*copy_tracks,*/
+               /*CopyTracks);*/
+    /*INIT_LOADED (DELETE_TRACKS,*/
+               /*delete_tracks,*/
+               /*DeleteTracks);*/
+    /*INIT_LOADED (CREATE_PLUGINS,*/
+               /*create_plugins,*/
+               /*CreatePlugins);*/
+    /*INIT_LOADED (MOVE_PLUGINS,*/
+               /*move_plugins,*/
+               /*MovePlugins);*/
+    /*INIT_LOADED (EDIT_PLUGINS,*/
+               /*edit_plugins,*/
+               /*EditPlugins);*/
+    /*INIT_LOADED (COPY_PLUGINS,*/
+               /*copy_plugins,*/
+               /*CopyPlugins);*/
+    /*INIT_LOADED (DELETE_PLUGINS,*/
+               /*delete_plugins,*/
+               /*DeletePlugins);*/
+    INIT_LOADED (CREATE_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    INIT_LOADED (MOVE_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    INIT_LOADED (LINK_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    INIT_LOADED (RECORD_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    INIT_LOADED (EDIT_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    INIT_LOADED (RESIZE_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    INIT_LOADED (DUPLICATE_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    INIT_LOADED (DELETE_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    INIT_LOADED (QUANTIZE_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    INIT_LOADED (SPLIT_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    /*INIT_LOADED (TRANSPORT, transport, Transport);*/
+    default:
+      break;
+    }
+
+#undef INIT_LOADED
+}
+
 /**
  * Performs the action.
  *

@@ -107,10 +107,14 @@ arranger_selections_cast (void * sel)
 
 /**
  * Inits the selections after loading a project.
+ *
+ * @param project Whether these are project
+ *   selections (as opposed to clones).
  */
 void
 arranger_selections_init_loaded (
-  ArrangerSelections * self);
+  ArrangerSelections * self,
+  bool                 project);
 
 /**
  * Initializes the selections.

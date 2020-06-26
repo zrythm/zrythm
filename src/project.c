@@ -886,8 +886,8 @@ load (
 
   self->title = filepath_noext;
 
-  undo_manager_init_loaded (self->undo_manager);
   engine_init_loaded (self->audio_engine);
+  undo_manager_init_loaded (self->undo_manager);
 
   clip_editor_init_loaded (CLIP_EDITOR);
   tracklist_init_loaded (self->tracklist);
@@ -917,16 +917,16 @@ load (
 
   arranger_selections_init_loaded (
     (ArrangerSelections *)
-    &self->timeline_selections);
+    &self->timeline_selections, true);
   arranger_selections_init_loaded (
     (ArrangerSelections *)
-    &self->midi_arranger_selections);
+    &self->midi_arranger_selections, true);
   arranger_selections_init_loaded (
     (ArrangerSelections *)
-    &self->chord_selections);
+    &self->chord_selections, true);
   arranger_selections_init_loaded (
     (ArrangerSelections *)
-    &self->automation_selections);
+    &self->automation_selections, true);
 
   tracklist_selections_init_loaded (
     &self->tracklist_selections);

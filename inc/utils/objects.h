@@ -72,6 +72,10 @@
 #define object_free_w_func_and_null(_func,_obj) \
   if (_obj) { _func (_obj); _obj = NULL; }
 
+#define object_free_w_func_and_null_cast(\
+  _func,_cast,_obj) \
+  if (_obj) { _func ((_cast)_obj); _obj = NULL; }
+
 #define g_source_remove_and_zero(src_id) \
   { g_source_remove (src_id); src_id = 0; }
 

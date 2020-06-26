@@ -44,6 +44,7 @@ track_lane_init_loaded (
   for (i = 0; i < lane->num_regions; i++)
     {
       region = lane->regions[i];
+      region->magic = REGION_MAGIC;
       ArrangerObject * r_obj =
         (ArrangerObject *) region;
       region_set_lane (region, lane);

@@ -157,6 +157,10 @@ static const cyaml_schema_value_t
     UndoableAction, undoable_action_fields_schema),
 };
 
+void
+undoable_action_init_loaded (
+  UndoableAction * self);
+
 /**
  * Performs the action.
  *

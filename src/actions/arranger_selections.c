@@ -38,6 +38,48 @@
 
 #include <glib/gi18n.h>
 
+void
+arranger_selections_action_init_loaded (
+  ArrangerSelectionsAction * self)
+{
+#define DO_SELECTIONS(sc) \
+  if (self->sc##_sel) \
+    { \
+      self->sel = \
+        (ArrangerSelections *) \
+        self->sc##_sel; \
+      self->sel_after = \
+        (ArrangerSelections *) \
+        self->sc##_sel_after; \
+      arranger_selections_init_loaded ( \
+        self->sel, false); \
+    }
+  DO_SELECTIONS (chord);
+  DO_SELECTIONS (tl);
+  DO_SELECTIONS (ma);
+  DO_SELECTIONS (automation);
+
+  for (int j = 0; j < self->num_split_objs; j++)
+    {
+      if (self->region_r1[j])
+        {
+          self->r1[j] =
+            (ArrangerObject *)
+            self->region_r1[j];
+          self->r2[j] =
+            (ArrangerObject *)
+            self->region_r2[j];
+        }
+      else if (self->mn_r1[j])
+        {
+          self->r1[j] =
+            (ArrangerObject *) self->mn_r1[j];
+          self->r2[j] =
+            (ArrangerObject *) self->mn_r2[j];
+        }
+    }
+}
+
 /**
  * Sets the selections used when serializing.
  *
@@ -2102,7 +2144,8 @@ void
 arranger_selections_action_free (
   ArrangerSelectionsAction * self)
 {
-  arranger_selections_free_full (self->sel);
+  object_free_w_func_and_null (
+    arranger_selections_free_full, self->sel);
 
-  free (self);
+  object_zero_and_free (self);
 }

@@ -40,6 +40,12 @@
  * @{
  */
 
+#define CHORD_OBJECT_MAGIC 4181694
+#define IS_CHORD_OBJECT(tr) \
+  ((ChordObject *) tr && \
+   ((ChordObject *) tr)->magic == \
+     CHORD_OBJECT_MAGIC)
+
 #define CHORD_OBJECT_WIDGET_TRIANGLE_W 10
 
 #define chord_object_is_selected(r) \
@@ -63,6 +69,8 @@ typedef struct ChordObject
   /** The index of the chord it belongs to
    * (0 topmost). */
   int             chord_index;
+
+  int             magic;
 
   /** Cache layout for drawing the name. */
   PangoLayout *   layout;

@@ -376,6 +376,10 @@ static const cyaml_schema_value_t
     arranger_selections_action_fields_schema),
 };
 
+void
+arranger_selections_action_init_loaded (
+  ArrangerSelectionsAction * self);
+
 /**
  * Creates a new action for creating/deleting objects.
  *
