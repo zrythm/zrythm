@@ -41,7 +41,7 @@ typedef struct ArrangerSelections ArrangerSelections;
  * @{
  */
 
-#define CLIP_EDITOR (&PROJECT->clip_editor)
+#define CLIP_EDITOR (PROJECT->clip_editor)
 
 /**
  * Clip editor serializable backend.
@@ -87,20 +87,16 @@ typedef struct ClipEditor
 static const cyaml_schema_field_t
 clip_editor_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "region_id", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ClipEditor, region_id,
     region_identifier_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "piano_roll", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ClipEditor, piano_roll,
     piano_roll_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "automation_editor", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ClipEditor, automation_editor,
     automation_editor_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "chord_editor", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ClipEditor, chord_editor,
     chord_editor_fields_schema),
 
@@ -122,9 +118,18 @@ void
 clip_editor_init_loaded (
   ClipEditor * self);
 
+/**
+ * Inits the clip editor.
+ */
 void
 clip_editor_init (
   ClipEditor * self);
+
+/**
+ * Creates a new clip editor.
+ */
+ClipEditor *
+clip_editor_new (void);
 
 /**
  * Sets the track and refreshes the piano roll widgets.
@@ -164,6 +169,10 @@ clip_editor_get_track (
  */
 void
 clip_editor_redraw_region (
+  ClipEditor * self);
+
+void
+clip_editor_free (
   ClipEditor * self);
 
 /**

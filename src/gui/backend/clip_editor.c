@@ -41,6 +41,7 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -51,8 +52,11 @@ void
 clip_editor_init_loaded (
   ClipEditor * self)
 {
-  g_message ("Initializing loaded Clip Editor...");
+  g_message ("%s: initing...", __func__);
+
   piano_roll_init_loaded (&self->piano_roll);
+
+  g_message ("%s: done", __func__);
 }
 
 /**
@@ -209,8 +213,23 @@ clip_editor_get_arranger_selections (
   return sel;
 }
 
+/**
+ * Creates a new clip editor.
+ */
+ClipEditor *
+clip_editor_new (void)
+{
+  ClipEditor * self = object_new (ClipEditor);
+
+  return self;
+}
+
+/**
+ * Inits the clip editor.
+ */
 void
-clip_editor_init (ClipEditor * self)
+clip_editor_init (
+  ClipEditor * self)
 {
   piano_roll_init (&self->piano_roll);
   audio_clip_editor_init (&self->audio_clip_editor);
@@ -218,3 +237,9 @@ clip_editor_init (ClipEditor * self)
   automation_editor_init (&self->automation_editor);
 }
 
+void
+clip_editor_free (
+  ClipEditor * self)
+{
+  object_zero_and_free (self);
+}

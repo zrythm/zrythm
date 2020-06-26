@@ -250,6 +250,8 @@ project_free (Project * self)
     midi_mappings_free, self->midi_mappings);
   object_free_w_func_and_null (
     undo_manager_free, self->undo_manager);
+  object_free_w_func_and_null (
+    clip_editor_free, self->clip_editor);
 
   object_zero_and_free (self);
 
@@ -649,7 +651,7 @@ create_default (Project * self)
   quantize_options_init (
     &self->quantize_opts_editor,
     NOTE_LENGTH_1_8);
-  clip_editor_init (&self->clip_editor);
+  clip_editor_init (self->clip_editor);
   snap_grid_update_snap_points (
     &self->snap_grid_timeline);
   snap_grid_update_snap_points (
@@ -1227,6 +1229,8 @@ project_new (
     {
       _zrythm->project = self;
     }
+
+  self->clip_editor = clip_editor_new ();
 
   g_message ("%s: done", __func__);
 

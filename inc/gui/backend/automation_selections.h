@@ -57,8 +57,7 @@ typedef struct AutomationSelections
 static const cyaml_schema_field_t
   automation_selections_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "base", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     AutomationSelections, base,
     arranger_selections_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (

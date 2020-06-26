@@ -131,7 +131,7 @@ typedef struct Project
   Tracklist *        tracklist;
 
   /** Backend for the widget. */
-  ClipEditor         clip_editor;
+  ClipEditor *       clip_editor;
 
   /** Snap/Grid info for the timeline. */
   SnapGrid           snap_grid_timeline;
@@ -257,8 +257,7 @@ static const cyaml_schema_field_t
     0, CYAML_UNLIMITED),
   YAML_FIELD_MAPPING_PTR (
     Project, tracklist, tracklist_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "clip_editor", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_PTR (
     Project, clip_editor, clip_editor_fields_schema),
   CYAML_FIELD_MAPPING (
     "snap_grid_timeline", CYAML_FLAG_DEFAULT,
