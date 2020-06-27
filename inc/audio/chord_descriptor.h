@@ -37,6 +37,8 @@
  * @{
  */
 
+#define CHORD_DESCRIPTOR_MAX_NOTES 48
+
 typedef enum MusicalNote
 {
   NOTE_C,
@@ -167,7 +169,7 @@ typedef struct ChordDescriptor
    *
    * Starts at C always.
    */
-  int            notes[48];
+  int            notes[CHORD_DESCRIPTOR_MAX_NOTES];
 
   /**
    * 0 no inversion,

@@ -987,23 +987,21 @@ get_range_rect (
   RulerWidgetRangeType type,
   GdkRectangle * rect)
 {
-  if (self->type == TYPE (TIMELINE))
+  g_return_if_fail (self->type == TYPE (TIMELINE));
+
+  Position tmp;
+  transport_get_range_pos (
+    TRANSPORT,
+    type == RW_RANGE_END ? false : true,
+    &tmp);
+  rect->x = ui_pos_to_px_timeline (&tmp, true);
+  if (type == RW_RANGE_END)
     {
-      Position tmp;
-      transport_get_range_pos (
-        TRANSPORT,
-        type == RW_RANGE_END ? false : true,
-        &tmp);
-      rect->x = ui_pos_to_px_timeline (&tmp, true);
-      if (type == RW_RANGE_END)
-        {
-          rect->x -= RW_CUE_MARKER_WIDTH;
-        }
+      rect->x -= RW_CUE_MARKER_WIDTH;
     }
   rect->y = 0;
   if (type == RW_RANGE_FULL)
     {
-      Position tmp;
       transport_get_range_pos (
         TRANSPORT, false, &tmp);
       double px =

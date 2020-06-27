@@ -19,6 +19,7 @@
 
 #include "gui/accel.h"
 #include "utils/gtk.h"
+#include "utils/io.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -595,4 +596,18 @@ z_gtk_flow_box_get_selected_child (
   g_list_free (list);
 
   return sel_child;
+}
+
+/**
+ * Callback to use for simple directory links.
+ */
+bool
+z_gtk_activate_dir_link_func (
+  GtkLabel * label,
+  char *     uri,
+  void *     data)
+{
+  io_open_directory (uri);
+
+  return TRUE;
 }

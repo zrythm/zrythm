@@ -31,6 +31,10 @@ error_code_get_message (
       return
         _("Plugin instantiation failed. "
           "See the logs for details");
+    case ERR_OBJECT_IS_NULL:
+      return
+        _("Object is null. "
+          "See the logs for details");
     default:
       break;
     }

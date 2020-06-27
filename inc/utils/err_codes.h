@@ -29,6 +29,7 @@
 typedef enum ErrorCode
 {
   ERR_PLUGIN_INSTANTIATION_FAILED = 1,
+  ERR_OBJECT_IS_NULL,
 } ErrorCode;
 
 /**

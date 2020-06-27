@@ -61,7 +61,8 @@ track_processor_init_loaded (
         self->stereo_out->r, self);
       break;
     case TYPE_EVENT:
-      if (track_has_piano_roll (tr))
+      if (track_has_piano_roll (tr) ||
+          tr->type == TRACK_TYPE_CHORD)
         {
           self->piano_roll->id.flags =
             PORT_FLAG_PIANO_ROLL;
@@ -70,13 +71,20 @@ track_processor_init_loaded (
           self->piano_roll->midi_events =
             midi_events_new (
               self->piano_roll);
-          for (int i = 0;
-               i < NUM_MIDI_AUTOMATABLES * 16; i++)
+
+          if (tr->type != TRACK_TYPE_CHORD)
             {
-              Port * cc = self->midi_automatables[i];
-              port_set_owner_track_processor (
-                cc, self);
-              cc->midi_events = midi_events_new (cc);
+              for (int i = 0;
+                   i < NUM_MIDI_AUTOMATABLES * 16;
+                   i++)
+                {
+                  Port * cc =
+                    self->midi_automatables[i];
+                  port_set_owner_track_processor (
+                    cc, self);
+                  cc->midi_events =
+                    midi_events_new (cc);
+                }
             }
         }
       self->midi_in->midi_events =
@@ -252,19 +260,21 @@ track_processor_new (
       init_midi_port (self, 1, 0);
 
       /* set up piano roll port */
-      if (track_has_piano_roll (tr))
+      if (track_has_piano_roll (tr) ||
+          tr->type == TRACK_TYPE_CHORD)
         {
           char *str = _("Piano Roll");
           self->piano_roll =
             port_new_with_type (
-              TYPE_EVENT,
-              FLOW_INPUT,
-              str);
+              TYPE_EVENT, FLOW_INPUT, str);
           self->piano_roll->id.flags =
             PORT_FLAG_PIANO_ROLL;
           port_set_owner_track_processor (
             self->piano_roll, self);
-          init_midi_cc_ports (self, false);
+          if (tr->type != TRACK_TYPE_CHORD)
+            {
+              init_midi_cc_ports (self, false);
+            }
         }
       break;
     case TYPE_AUDIO:
@@ -390,7 +400,8 @@ track_processor_process (
     }
 
   /* set the piano roll contents to midi out */
-  if (track_has_piano_roll (tr))
+  if (track_has_piano_roll (tr) ||
+      tr->type == TRACK_TYPE_CHORD)
     {
       Port * pr = self->piano_roll;
 
@@ -405,8 +416,8 @@ track_processor_process (
       else if (TRANSPORT->play_state ==
                PLAYSTATE_ROLLING)
         {
-          /* fill midi events to pass to
-           * ins plugin */
+          /* fill midi events from piano roll
+           * data */
           midi_track_fill_midi_events (
             tr, g_start_frames,
             local_offset, nframes,
@@ -422,44 +433,47 @@ track_processor_process (
 
       /* append midi events from modwheel and
        * pitchbend to MIDI out */
-      for (int i = 0;
-           i < NUM_MIDI_AUTOMATABLES * 16; i++)
+      if (tr->type != TRACK_TYPE_CHORD)
         {
-          Port * cc = self->midi_automatables[i];
-          if (math_floats_equal (
-                self->last_automatable_vals[i],
-                cc->control))
-            continue;
-
-          TrackProcessorMidiAutomatable type =
-            i % NUM_MIDI_AUTOMATABLES;
-          /* starting from 1 */
-          int channel =
-            i / NUM_MIDI_AUTOMATABLES + 1;
-          switch (type)
+          for (int i = 0;
+               i < NUM_MIDI_AUTOMATABLES * 16; i++)
             {
-            case MIDI_AUTOMATABLE_PITCH_BEND:
-              midi_events_add_pitchbend (
-                self->midi_out->midi_events,
-                channel,
-                math_round_float_to_int (
-                  cc->control),
-                local_offset, false);
-              break;
-            case MIDI_AUTOMATABLE_MOD_WHEEL:
-              midi_events_add_control_change (
-                self->midi_out->midi_events,
-                channel,
-                0x01,
-                math_round_float_to_type (
-                  cc->control * 127.f, midi_byte_t),
-                local_offset, false);
-              break;
-            default:
-              break;
+              Port * cc = self->midi_automatables[i];
+              if (math_floats_equal (
+                    self->last_automatable_vals[i],
+                    cc->control))
+                continue;
+
+              TrackProcessorMidiAutomatable type =
+                i % NUM_MIDI_AUTOMATABLES;
+              /* starting from 1 */
+              int channel =
+                i / NUM_MIDI_AUTOMATABLES + 1;
+              switch (type)
+                {
+                case MIDI_AUTOMATABLE_PITCH_BEND:
+                  midi_events_add_pitchbend (
+                    self->midi_out->midi_events,
+                    channel,
+                    math_round_float_to_int (
+                      cc->control),
+                    local_offset, false);
+                  break;
+                case MIDI_AUTOMATABLE_MOD_WHEEL:
+                  midi_events_add_control_change (
+                    self->midi_out->midi_events,
+                    channel,
+                    0x01,
+                    math_round_float_to_type (
+                      cc->control * 127.f, midi_byte_t),
+                    local_offset, false);
+                  break;
+                default:
+                  break;
+                }
+              self->last_automatable_vals[i] =
+                cc->control;
             }
-          self->last_automatable_vals[i] =
-            cc->control;
         }
       if (self->midi_out->midi_events->num_events > 0)
         g_message (
@@ -772,19 +786,24 @@ track_processor_free (
       port_disconnect_all (self->midi_in);
       object_free_w_func_and_null (
         port_free, self->midi_in);
-      if (track_has_piano_roll (track))
+      if (track_has_piano_roll (track) ||
+          track->type == TRACK_TYPE_CHORD)
         {
           port_disconnect_all (self->piano_roll);
           object_free_w_func_and_null (
             port_free, self->piano_roll);
-          for (int i = 0;
-               i < NUM_MIDI_AUTOMATABLES * 16; i++)
+          if (track->type != TRACK_TYPE_CHORD)
             {
-              Port * port =
-                self->midi_automatables[i];
-              port_disconnect_all (port);
-              object_free_w_func_and_null (
-                port_free, port);
+              for (int i = 0;
+                   i < NUM_MIDI_AUTOMATABLES * 16;
+                   i++)
+                {
+                  Port * port =
+                    self->midi_automatables[i];
+                  port_disconnect_all (port);
+                  object_free_w_func_and_null (
+                    port_free, port);
+                }
             }
         }
       break;

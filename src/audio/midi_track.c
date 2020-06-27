@@ -37,6 +37,7 @@
 #include "project.h"
 #include "gui/widgets/track.h"
 #include "utils/arrays.h"
+#include "utils/math.h"
 #include "utils/stoat.h"
 
 #include <gtk/gtk.h>
@@ -90,7 +91,8 @@ send_notes_off_at (
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
   MidiNote * mn;
-  ArrangerObject * mn_obj;
+  ChordObject * co;
+  ArrangerObject * mn_obj, * co_obj;
   switch (type)
     {
     case TYPE_TRANSPORT_LOOP:
@@ -100,10 +102,8 @@ send_notes_off_at (
            i < region->num_midi_notes;
            i++)
         {
-          mn =
-            region->midi_notes[i];
-          mn_obj =
-            (ArrangerObject *) mn;
+          mn = region->midi_notes[i];
+          mn_obj = (ArrangerObject *) mn;
           if (arranger_object_get_muted (mn_obj))
             continue;
 
@@ -114,6 +114,31 @@ send_notes_off_at (
             midi_region_get_midi_ch (region),
             mn->val,
             time, 1);
+        }
+      for (int i = 0;
+           i < region->num_chord_objects;
+           i++)
+        {
+          co = region->chord_objects[i];
+          co_obj = (ArrangerObject *) co;
+          if (arranger_object_get_muted (co_obj))
+            continue;
+
+          ChordDescriptor * descr =
+            chord_object_get_chord_descriptor (co);
+          for (int j = 0;
+               j < CHORD_DESCRIPTOR_MAX_NOTES; j++)
+            {
+              if (descr->notes[j])
+                {
+                  /* FIXME check if note is on
+                   * first */
+                  midi_events_add_note_off (
+                    midi_events, 1,
+                    j + 36, time,
+                    1);
+                }
+            }
         }
       break;
     case TYPE_REGION_END:
@@ -169,6 +194,61 @@ send_notes_off_at (
                   mn->val, time, 1);
               }
           }
+        for (int i = 0;
+             i < region->num_chord_objects;
+             i++)
+          {
+            co = region->chord_objects[i];
+            co_obj = (ArrangerObject *) co;
+            if (arranger_object_get_muted (co_obj))
+              continue;
+
+            /* add num_loops * loop_ticks to the
+             * midi note start & end poses to get
+             * last pos in region */
+            tmp_start =
+              co_obj->pos.frames;
+            tmp_end =
+              /* 1 beat */
+              math_round_double_to_type (
+                co_obj->pos.frames +
+                TRANSPORT->ticks_per_beat *
+                AUDIO_ENGINE->frames_per_tick,
+                nframes_t);
+            for (int j = 0; j < num_loops; j++)
+              {
+                tmp_start +=
+                  loop_length_frames;
+                tmp_end +=
+                  loop_length_frames;
+              }
+
+            /* if note is on at the boundary, send
+             * note off */
+            if (tmp_start <
+                  region_end_adjusted &&
+                tmp_end >=
+                  region_end_adjusted)
+              {
+                ChordDescriptor * descr =
+                  chord_object_get_chord_descriptor (
+                    co);
+                for (int j = 0;
+                     j < CHORD_DESCRIPTOR_MAX_NOTES;
+                     j++)
+                  {
+                    if (descr->notes[j])
+                      {
+                        /* FIXME check if note is on
+                         * first */
+                        midi_events_add_note_off (
+                          midi_events, 1,
+                          j + 36,
+                          time, 1);
+                      }
+                  }
+              }
+          }
       }
       break;
     case TYPE_REGION_LOOP_END:
@@ -201,6 +281,48 @@ send_notes_off_at (
                   mn->val, time, 1);
               }
           }
+        for (int i = 0;
+             i < region->num_chord_objects;
+             i++)
+          {
+            co = region->chord_objects[i];
+            co_obj = (ArrangerObject *) co;
+            if (arranger_object_get_muted (co_obj))
+              continue;
+
+            nframes_t co_end_frames =
+              /* 1 beat */
+              math_round_double_to_type (
+                co_obj->pos.frames +
+                TRANSPORT->ticks_per_beat *
+                AUDIO_ENGINE->frames_per_tick,
+                nframes_t);
+
+            /* if note is on at the boundary, send
+             * note off */
+            if (co_obj->pos.frames <
+                  region_loop_end_adj &&
+                co_end_frames >= region_loop_end_adj)
+              {
+                ChordDescriptor * descr =
+                  chord_object_get_chord_descriptor (
+                    co);
+                for (int k = 0;
+                     k < CHORD_DESCRIPTOR_MAX_NOTES;
+                     k++)
+                  {
+                    if (descr->notes[k])
+                      {
+                        /* FIXME check if note is on
+                         * first */
+                        midi_events_add_note_off (
+                          midi_events, 1,
+                          k + 36,
+                          time, 1);
+                      }
+                  }
+              }
+          }
       }
       break;
     }
@@ -214,6 +336,7 @@ static inline void
 note_ons_during_region_loop (
   MidiEvents *     midi_events,
   MidiNote *       mn,
+  ChordObject *    co,
   const long       r_local_pos,
   const long       r_local_end_pos,
   const long       g_frames_start,
@@ -227,7 +350,8 @@ note_ons_during_region_loop (
     return;
 
   ArrangerObject * mn_obj =
-    (ArrangerObject *) mn;
+    mn ?
+    (ArrangerObject *) mn : (ArrangerObject *) co;
   ZRegion * region =
     arranger_object_get_region (mn_obj);
   ArrangerObject * r_obj = (ArrangerObject *) region;
@@ -260,10 +384,30 @@ note_ons_during_region_loop (
       midi_time_t time =
         (midi_time_t)
         (mn_obj->pos.frames - r_local_pos);
-      midi_events_add_note_on (
-        midi_events,
-        midi_region_get_midi_ch (region),
-        mn->val, mn->vel->vel, time, 1);
+      if (mn)
+        {
+          midi_events_add_note_on (
+            midi_events,
+            midi_region_get_midi_ch (region),
+            mn->val, mn->vel->vel, time, 1);
+        }
+      else if (co)
+        {
+          ChordDescriptor * descr =
+            chord_object_get_chord_descriptor (co);
+          for (int i = 0;
+               i < CHORD_DESCRIPTOR_MAX_NOTES;
+               i++)
+            {
+              if (descr->notes[i])
+                {
+                  midi_events_add_note_on (
+                    midi_events, 1,
+                    i + 36,
+                    VELOCITY_DEFAULT, time, 1);
+                }
+            }
+        }
       g_warn_if_fail (
         time < local_start_frame + nframes);
       return;
@@ -288,10 +432,30 @@ note_ons_during_region_loop (
         (midi_time_t)
         (r_obj->loop_end_pos.frames -
            r_local_pos);
-      midi_events_add_note_on (
-        midi_events,
-        midi_region_get_midi_ch (region),
-        mn->val, mn->vel->vel, time, 1);
+      if (mn)
+        {
+          midi_events_add_note_on (
+            midi_events,
+            midi_region_get_midi_ch (region),
+            mn->val, mn->vel->vel, time, 1);
+        }
+      else if (co)
+        {
+          ChordDescriptor * descr =
+            chord_object_get_chord_descriptor (co);
+          for (int i = 0;
+               i < CHORD_DESCRIPTOR_MAX_NOTES;
+               i++)
+            {
+              if (descr->notes[i])
+                {
+                  midi_events_add_note_on (
+                    midi_events, 1,
+                    i + 36,
+                    VELOCITY_DEFAULT, time, 1);
+                }
+            }
+        }
       g_warn_if_fail (
         time < local_start_frame + nframes);
 
@@ -387,9 +551,10 @@ midi_track_fill_midi_events (
   int i, j, k, kk;
   long g_end_frames;
   long r_local_pos, r_local_end_pos;
-  ZRegion * r;
-  ArrangerObject * r_obj, * mn_obj;
-  MidiNote * mn;
+  ZRegion * r = NULL;
+  ArrangerObject * r_obj = NULL, * mn_obj = NULL;
+  MidiNote * mn = NULL;
+  ChordObject * co = NULL;
   midi_time_t time;
 
   g_end_frames =
@@ -421,13 +586,28 @@ midi_track_fill_midi_events (
    * (split the ranges in 2) */
   for (k = 0; k < transport_loop_met + 1; k++)
     {
-      for (j = 0; j < track->num_lanes; j++)
+      for (j = 0;
+           j <
+             (track->type == TRACK_TYPE_CHORD ?
+              1 : track->num_lanes);
+           j++)
         {
-          lane = track->lanes[j];
-
-          for (i = 0; i < lane->num_regions; i++)
+          if (track->type != TRACK_TYPE_CHORD)
             {
-              r = lane->regions[i];
+              lane = track->lanes[j];
+            }
+
+          for (i = 0;
+               i <
+                 (track->type == TRACK_TYPE_CHORD ?
+                  track->num_chord_regions :
+                  lane->num_regions);
+               i++)
+            {
+              r =
+                track->type == TRACK_TYPE_CHORD ?
+                track->chord_regions[i] :
+                lane->regions[i];
               r_obj = (ArrangerObject *) r;
               if (arranger_object_get_muted (r_obj))
                 continue;
@@ -563,12 +743,26 @@ midi_track_fill_midi_events (
                 }
 
               for (kk = 0;
-                   kk < r->num_midi_notes; kk++)
+                   kk <
+                     (track->type ==
+                        TRACK_TYPE_CHORD ?
+                      r->num_chord_objects :
+                      r->num_midi_notes);
+                   kk++)
                 {
-                  mn =
-                    r->midi_notes[kk];
-                  mn_obj =
-                    (ArrangerObject *) mn;
+                  if (track->type == TRACK_TYPE_CHORD)
+                    {
+                      co = r->chord_objects[kk];
+                      mn_obj =
+                        (ArrangerObject *) co;
+                    }
+                  else
+                    {
+                      mn =
+                        r->midi_notes[kk];
+                      mn_obj =
+                        (ArrangerObject *) mn;
+                    }
                   if (arranger_object_get_muted (
                         mn_obj))
                     continue;
@@ -578,7 +772,8 @@ midi_track_fill_midi_events (
                   if (region_loop_met)
                     {
                       note_ons_during_region_loop (
-                        midi_events, mn, r_local_pos,
+                        midi_events, mn, co,
+                        r_local_pos,
                         r_local_end_pos,
                         g_start_frames,
                         local_start_frame,
@@ -605,17 +800,46 @@ midi_track_fill_midi_events (
                         ((mn_obj->pos.frames -
                            r_local_pos) +
                          (long) diff_to_tp_loop_end);
-                      midi_events_add_note_on (
-                        midi_events,
-                        midi_region_get_midi_ch (
-                          r),
-                        mn->val,
-                        mn->vel->vel,
-                        time, 1);
+                      if (mn)
+                        {
+                          midi_events_add_note_on (
+                            midi_events,
+                            midi_region_get_midi_ch (
+                              r),
+                            mn->val,
+                            mn->vel->vel,
+                            time, 1);
+                        }
+                      else if (co)
+                        {
+                          ChordDescriptor * descr =
+                            chord_object_get_chord_descriptor (co);
+                          for (int l = 0;
+                               l < CHORD_DESCRIPTOR_MAX_NOTES;
+                               l++)
+                            {
+                              if (descr->notes[l])
+                                {
+                                  midi_events_add_note_on (
+                                    midi_events, 1,
+                                    l + 36,
+                                    VELOCITY_DEFAULT, time, 1);
+                                }
+                            }
+                        }
                       g_warn_if_fail (
                         time <
                         local_start_frame + nframes);
                     }
+
+                  long mn_obj_end_frames =
+                    (track->type == TRACK_TYPE_CHORD ?
+                      math_round_double_to_type (
+                        mn_obj->pos.frames +
+                          TRANSPORT->ticks_per_beat *
+                          AUDIO_ENGINE->frames_per_tick,
+                          long) :
+                      mn_obj->end_pos.frames);
 
                   /* note off event */
                   /* if note ends within the
@@ -623,24 +847,23 @@ midi_track_fill_midi_events (
                   if (
                     /* note ends after the cycle
                      * start */
-                    mn_obj->end_pos.frames >=
+                    mn_obj_end_frames >=
                       r_local_pos &&
                     /* either note ends before
                      * the cycle end or the region
                      * looped */
-                    ((mn_obj->end_pos.frames <=
+                    ((mn_obj_end_frames <=
                        r_local_end_pos) ||
                      region_loop_met))
                     {
                       /* note ends before the cycle
                        * end */
-                      if (mn_obj->end_pos.frames <=
+                      if (mn_obj_end_frames <=
                             r_local_end_pos)
                         {
                           time =
                             (midi_time_t)
-                            ((mn_obj->end_pos.
-                               frames -
+                            ((mn_obj_end_frames -
                                r_local_pos) +
                               diff_to_tp_loop_end);
                           /* need to do -1 for some
@@ -653,12 +876,32 @@ midi_track_fill_midi_events (
                           (midi_time_t)
                           ((r_obj->loop_end_pos.frames -
                               r_local_pos) - 1);
-                      midi_events_add_note_off (
-                        midi_events,
-                        midi_region_get_midi_ch (
-                          r),
-                        mn->val,
-                        time, 1);
+                      if (mn)
+                        {
+                          midi_events_add_note_off (
+                            midi_events,
+                            midi_region_get_midi_ch (
+                              r),
+                            mn->val,
+                            time, 1);
+                        }
+                      else if (co)
+                        {
+                          ChordDescriptor * descr =
+                            chord_object_get_chord_descriptor (co);
+                          for (int l = 0;
+                               l < CHORD_DESCRIPTOR_MAX_NOTES;
+                               l++)
+                            {
+                              if (descr->notes[l])
+                                {
+                                  midi_events_add_note_off (
+                                    midi_events, 1,
+                                    l + 36,
+                                    time, 1);
+                                }
+                            }
+                        }
                       if (time >= local_start_frame + nframes)
                         {
                           g_warning (
@@ -677,7 +920,7 @@ midi_track_fill_midi_events (
                               nframes) - 1);
                         }
                     }
-                }
+                } /* foreach midi note */
             }
         }
     }

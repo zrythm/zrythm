@@ -22,6 +22,7 @@
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
@@ -82,17 +83,6 @@ get_export_filename (ExportDialogWidget * self)
   return base;
 }
 
-static gboolean
-on_activate_export_path_link (
-  GtkLabel *label,
-  gchar    *uri,
-  ExportDialogWidget * self)
-{
-  io_open_directory (uri);
-
-  return TRUE;
-}
-
 static void
 update_text (ExportDialogWidget * self)
 {
@@ -128,7 +118,7 @@ update_text (ExportDialogWidget * self)
 
   g_signal_connect (
     G_OBJECT (self->output_label), "activate-link",
-    G_CALLBACK (on_activate_export_path_link), self);
+    G_CALLBACK (z_gtk_activate_dir_link_func), self);
 
 #undef ORANGIZE
 }

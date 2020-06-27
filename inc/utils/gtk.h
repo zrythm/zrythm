@@ -21,11 +21,12 @@
  * \file
  *
  * GTK utils.
- * TODO merge with UI
  */
 
 #ifndef __UTILS_GTK_H__
 #define __UTILS_GTK_H__
+
+#include <stdbool.h>
 
 #include <gtk/gtk.h>
 
@@ -497,6 +498,15 @@ z_gtk_widget_set_margin (
 GtkFlowBoxChild *
 z_gtk_flow_box_get_selected_child (
   GtkFlowBox * self);
+
+/**
+ * Callback to use for simple directory links.
+ */
+bool
+z_gtk_activate_dir_link_func (
+  GtkLabel * label,
+  char *     uri,
+  void *     data);
 
 /**
  * @}

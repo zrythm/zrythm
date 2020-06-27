@@ -46,6 +46,7 @@
 #include "plugins/plugin.h"
 #include "plugins/lv2/lv2_ui.h"
 #include "utils/arrays.h"
+#include "utils/err_codes.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/object_utils.h"
@@ -1328,7 +1329,7 @@ ports_connected (Port * src, Port * dest)
 int
 port_disconnect_all (Port * port)
 {
-  g_warn_if_fail (port);
+  g_return_val_if_fail (port, ERR_OBJECT_IS_NULL);
 
   FOREACH_SRCS (port)
     {

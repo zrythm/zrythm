@@ -167,7 +167,8 @@ create_model_for_types (
   TrackType type = owner_track->type;
   if (type == TRACK_TYPE_MIDI ||
       type == TRACK_TYPE_MIDI_GROUP ||
-      type == TRACK_TYPE_MIDI_BUS)
+      type == TRACK_TYPE_MIDI_BUS ||
+      type == TRACK_TYPE_CHORD)
     {
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (

@@ -129,7 +129,7 @@ math_dbfs_to_fader_val (
  * Rounds a double to an int.
  */
 #define math_round_double_to_type(x,type) \
-  ((type) (x + 0.5 - (x < 0.0)))
+  ((type) ((x) + 0.5 - ((x) < 0.0)))
 
 /**
  * Rounds a double to an int.

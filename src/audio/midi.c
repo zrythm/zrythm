@@ -729,6 +729,11 @@ midi_events_add_note_on (
   uint32_t     time,
   int          queued)
 {
+  g_message (
+    "%s: ch %"PRIu8", pitch %"PRIu8", vel %"PRIu8
+    ", time %"PRIu32,
+    __func__, channel, note_pitch, velocity, time);
+
   MidiEvent * ev;
   if (queued)
     ev =

@@ -851,13 +851,22 @@ activate_export_graph (
   char lbl[600];
   sprintf (
     lbl,
-    _("The graph will be exported to %s\n"
-    "Select a format to export as"), exports_dir);
-  label = gtk_label_new (lbl);
+    _("The graph will be exported to "
+    "<a href=\"%s\">%s</a>\n"
+    "Please select a format to export as"),
+    exports_dir, exports_dir);
+  label = gtk_label_new (NULL);
+  gtk_label_set_markup (
+    GTK_LABEL (label), lbl);
   gtk_widget_set_visible (label, true);
   gtk_label_set_justify (
     GTK_LABEL (label), GTK_JUSTIFY_CENTER);
   z_gtk_widget_set_margin (label, 3);
+
+  g_signal_connect (
+    G_OBJECT (label), "activate-link",
+    G_CALLBACK (z_gtk_activate_dir_link_func),
+    NULL);
 
  // Add the label, and show everything we’ve added
   gtk_container_add (
