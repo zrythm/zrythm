@@ -353,6 +353,7 @@ new_carla_plugin:
       plugin->descr->open_with_carla = true;
       carla_native_plugin_new_from_descriptor (
         plugin);
+      g_return_val_if_fail (plugin->carla, NULL);
     }
   else
     {
@@ -397,6 +398,8 @@ new_carla_plugin:
 #endif
             lv2_plugin_new_from_uri (
               plugin, descr->uri);
+            g_return_val_if_fail (
+              plugin->lv2, NULL);
           }
           break;
         default:

@@ -97,8 +97,10 @@ undo_manager_redo (
 /**
  * Performs the action and pushes it to the undo
  * stack.
+ *
+ * @return Non-zero if error.
  */
-void
+int
 undo_manager_perform (
   UndoManager *    self,
   UndoableAction * action);
