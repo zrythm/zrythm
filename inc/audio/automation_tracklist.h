@@ -181,7 +181,8 @@ void
 automation_tracklist_remove_at (
   AutomationTracklist * self,
   AutomationTrack *     at,
-  int                   free);
+  bool                  free,
+  bool                  fire_events);
 
 /**
  * Removes the AutomationTrack's associated with

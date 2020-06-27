@@ -1655,7 +1655,8 @@ channel_remove_plugin (
     plugin->id.track_pos == channel->track_pos);
 
   plugin_remove_ats_from_automation_tracklist (
-    plugin, deleting_plugin);
+    plugin, deleting_plugin,
+    !deleting_channel && !deleting_plugin);
 
   Track * track = channel_get_track (channel);
   g_message (
@@ -1673,8 +1674,7 @@ channel_remove_plugin (
         {
           mixer_selections_remove_slot (
             MIXER_SELECTIONS, plugin->id.slot,
-            slot_type,
-            F_PUBLISH_EVENTS);
+            slot_type, F_PUBLISH_EVENTS);
         }
 
       /* close the UI */
@@ -2094,7 +2094,8 @@ channel_clone (
  */
 static void
 channel_remove_ats_from_automation_tracklist (
-  Channel * ch)
+  Channel * ch,
+  bool      fire_events)
 {
   Track * track = channel_get_track (ch);
   AutomationTracklist * atl =
@@ -2110,7 +2111,7 @@ channel_remove_ats_from_automation_tracklist (
             PORT_FLAG_STEREO_BALANCE)
         {
           automation_tracklist_remove_at (
-            atl, at, F_NO_FREE);
+            atl, at, F_NO_FREE, fire_events);
         }
     }
 }
@@ -2191,7 +2192,7 @@ channel_free (Channel * self)
   /* remove automation tracks - they are already
    * free'd in track_free */
   channel_remove_ats_from_automation_tracklist (
-    self);
+    self, F_NO_PUBLISH_EVENTS);
 
   if (GTK_IS_WIDGET (self->widget))
     {

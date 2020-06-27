@@ -278,7 +278,8 @@ plugin_get_enabled_port (
 void
 plugin_remove_ats_from_automation_tracklist (
   Plugin * pl,
-  int      free_ats);
+  bool     free_ats,
+  bool     fire_events);
 
 /**
  * Clones the given plugin.
