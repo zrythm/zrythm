@@ -896,6 +896,8 @@ midi_region_get_as_events (
 void
 midi_region_free_members (ZRegion * self)
 {
+  g_return_if_fail (IS_REGION (self));
+
   for (int i = 0; i < self->num_midi_notes; i++)
     {
       arranger_object_free (

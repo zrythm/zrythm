@@ -52,20 +52,6 @@ create_plugins_action_new (
   plugin_descriptor_copy (descr, &self->descr);
   self->num_plugins = num_plugins;
 
-  for (int i = 0; i < num_plugins; i++)
-    {
-      self->plugins[i] =
-        plugin_new_from_descr (
-          &self->descr, track_pos, slot + i);
-      plugin_instantiate (
-        self->plugins[i]);
-    }
-  if (self->plugins[0]->lv2)
-    {
-      g_warn_if_fail (
-        self->plugins[0]->lv2->num_ports > 0);
-    }
-
   return ua;
 }
 

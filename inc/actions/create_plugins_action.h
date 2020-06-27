@@ -48,12 +48,6 @@ typedef struct CreatePluginsAction
   /** Position of track to create to. */
   int              track_pos;
 
-  /** Plugins for ID remembering.
-   *
-   * Do not necessarily have to be Plugin (can be
-   * int)
-   * but let's go with it for now. */
-  Plugin *         plugins[60];
   int              num_plugins;
 
   /**
@@ -76,10 +70,12 @@ static const cyaml_schema_field_t
     CreatePluginsAction, slot),
   YAML_FIELD_INT (
     CreatePluginsAction, track_pos),
+#if 0
   CYAML_FIELD_SEQUENCE_COUNT (
     "plugins", CYAML_FLAG_DEFAULT,
     CreatePluginsAction, plugins, num_plugins,
     &plugin_schema, 0, CYAML_UNLIMITED),
+#endif
   CYAML_FIELD_MAPPING (
     "descr", CYAML_FLAG_DEFAULT,
     CreatePluginsAction, descr,

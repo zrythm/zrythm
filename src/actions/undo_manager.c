@@ -136,17 +136,23 @@ undo_manager_redo (UndoManager * self)
 /**
  * Does performs the action and pushes it to the
  * undo stack, clearing the redo stack.
+ *
+ * @return Non-zero if error.
  */
-void
+int
 undo_manager_perform (
   UndoManager *    self,
   UndoableAction * action)
 {
   /* if error return */
-  if (undoable_action_do (action))
+  int err = undoable_action_do (action);
+  if (err)
     {
-      g_message ("action not performed");
-      return;
+      g_message (
+        "%s: action not performed (err %d)",
+        __func__, err);
+
+      return err;
     }
 
   /* if the undo stack is full, delete the last
@@ -168,6 +174,8 @@ undo_manager_perform (
       home_toolbar_widget_refresh_undo_redo_buttons (
         MW_HOME_TOOLBAR);
     }
+
+  return 0;
 }
 
 /**

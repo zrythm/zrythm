@@ -741,6 +741,7 @@ static void
 init_loaded_midi_note (
   MidiNote * self)
 {
+  self->magic = MIDI_NOTE_MAGIC;
   self->vel->midi_note = self;
 }
 
@@ -843,6 +844,9 @@ arranger_object_init_loaded (
     case TYPE (MIDI_NOTE):
       init_loaded_midi_note (
         (MidiNote *) self);
+      arranger_object_init_loaded (
+        (ArrangerObject *)
+        ((MidiNote *) self)->vel);
       break;
     case TYPE (SCALE_OBJECT):
       init_loaded_scale_object (
@@ -2461,7 +2465,8 @@ static void
 free_midi_note (
   MidiNote * self)
 {
-  g_return_if_fail (self->vel);
+  g_return_if_fail (
+    IS_MIDI_NOTE (self) && self->vel);
   arranger_object_free (
     (ArrangerObject *) self->vel);
 
@@ -2478,6 +2483,8 @@ void
 arranger_object_free (
   ArrangerObject * self)
 {
+  g_return_if_fail (IS_ARRANGER_OBJECT (self));
+
   switch (self->type)
     {
     case TYPE (REGION):

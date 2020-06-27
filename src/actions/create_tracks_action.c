@@ -30,6 +30,7 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/err_codes.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/ui.h"
@@ -43,6 +44,8 @@
  * @param add_to_project Used when the track to
  *   create is meant to be used in the project (ie
  *   not one of the tracks in CreateTracksAction.
+ *
+ * @return Non-zero if error.
  */
 static int
 create (
@@ -107,6 +110,8 @@ create (
           pl=
             plugin_new_from_descr (
               &self->pl_descr, track->pos, 0);
+          g_return_val_if_fail (
+            pl, ERR_PLUGIN_INSTANTIATION_FAILED);
 
           if (plugin_instantiate (pl) < 0)
             {
@@ -122,7 +127,8 @@ create (
                   message);
               g_free (message);
               plugin_free (pl);
-              return -1;
+              g_return_val_if_fail (
+                pl, ERR_PLUGIN_INSTANTIATION_FAILED);
             }
         }
 
@@ -266,7 +272,7 @@ create_tracks_action_do (
   for (int i = 0; i < self->num_tracks; i++)
     {
       ret = create (self, i);
-      g_return_val_if_fail (!ret, -1);
+      g_return_val_if_fail (ret == 0, ret);
 
       /* TODO select each plugin that was selected */
     }

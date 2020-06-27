@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -181,7 +181,8 @@ void
 automation_tracklist_remove_at (
   AutomationTracklist * self,
   AutomationTrack *     at,
-  int                   free);
+  bool                  free,
+  bool                  fire_events);
 
 /**
  * Removes the AutomationTrack's associated with

@@ -36,6 +36,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 
 /**
@@ -51,8 +52,9 @@ midi_note_new (
 {
   g_return_val_if_fail (region_id, NULL);
 
-  MidiNote * self =
-    calloc (1, sizeof (MidiNote));
+  MidiNote * self = object_new (MidiNote);
+
+  self->magic = MIDI_NOTE_MAGIC;
 
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -119,6 +121,10 @@ midi_note_listen (
   MidiNote * mn,
   int        listen)
 {
+  /*g_message (*/
+    /*"%s: %" PRIu8 " listen %d", __func__,*/
+    /*mn->val, listen);*/
+
   ArrangerObject * obj =
     (ArrangerObject *) mn;
 
@@ -136,14 +142,20 @@ midi_note_listen (
           mn->val != mn->last_listened_val)
         {
           /* create midi note off */
+          /*g_message (*/
+            /*"%s: adding note off for %" PRIu8,*/
+            /*__func__, mn->last_listened_val);*/
           midi_events_add_note_off (
             events, 1, mn->last_listened_val,
             0, 1);
 
           /* create note on at the new value */
+          /*g_message (*/
+            /*"%s: adding note on for %" PRIu8,*/
+            /*__func__, mn->val);*/
           midi_events_add_note_on (
             events, 1, mn->val, mn->vel->vel,
-            1, 1);
+            0, 1);
           mn->last_listened_val = mn->val;
         }
       /* if note is on and pitch is the same */
@@ -156,9 +168,12 @@ midi_note_listen (
       else if (!mn->currently_listened)
         {
           /* turn it on */
+          /*g_message (*/
+            /*"%s: adding note on for %" PRIu8,*/
+            /*__func__, mn->val);*/
           midi_events_add_note_on (
             events, 1, mn->val, mn->vel->vel,
-            1, 1);
+            0, 1);
           mn->last_listened_val = mn->val;
           mn->currently_listened = 1;
         }
@@ -167,6 +182,9 @@ midi_note_listen (
   else if (mn->currently_listened)
     {
       /* create midi note off */
+      /*g_message (*/
+        /*"%s: adding note off for %" PRIu8,*/
+        /*__func__, mn->last_listened_val);*/
       midi_events_add_note_off (
         events, 1, mn->last_listened_val,
         0, 1);

@@ -426,7 +426,8 @@ void
 automation_tracklist_remove_at (
   AutomationTracklist * self,
   AutomationTrack *     at,
-  int                   free)
+  bool                  free,
+  bool                  fire_events)
 {
   automation_track_clear (at);
 
@@ -449,7 +450,7 @@ automation_tracklist_remove_at (
             first_invisible_at->created = 1;
           first_invisible_at->visible = 1;
 
-          if (ZRYTHM_HAVE_UI)
+          if (fire_events)
             {
               EVENTS_PUSH (
                 ET_AUTOMATION_TRACK_ADDED,
@@ -461,8 +462,11 @@ automation_tracklist_remove_at (
   if (free)
     free_later (at, automation_track_free);
 
-  EVENTS_PUSH (
-    ET_AUTOMATION_TRACKLIST_AT_REMOVED, self)
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_AUTOMATION_TRACKLIST_AT_REMOVED, self);
+    }
 }
 
 /**

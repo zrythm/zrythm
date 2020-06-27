@@ -85,6 +85,8 @@ arranger_object_type_strings[] =
 {
   { "None",
     ARRANGER_OBJECT_TYPE_NONE },
+  { "All",
+    ARRANGER_OBJECT_TYPE_ALL },
   { "Region",
     ARRANGER_OBJECT_TYPE_REGION },
   { "MidiNote",

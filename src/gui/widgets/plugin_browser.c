@@ -30,6 +30,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/err_codes.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "utils/string.h"
@@ -70,7 +71,13 @@ activate_plugin_descr (
       tt, descr, NULL, TRACKLIST->num_tracks,
       PLAYHEAD, 1);
 
-  undo_manager_perform (UNDO_MANAGER, ua);
+  int err = undo_manager_perform (UNDO_MANAGER, ua);
+  if (err)
+    {
+      ui_show_error_message (
+        MAIN_WINDOW,
+        error_code_get_message (err));
+    }
 }
 
 /**

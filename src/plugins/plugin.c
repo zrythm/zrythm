@@ -353,6 +353,7 @@ new_carla_plugin:
       plugin->descr->open_with_carla = true;
       carla_native_plugin_new_from_descriptor (
         plugin);
+      g_return_val_if_fail (plugin->carla, NULL);
     }
   else
     {
@@ -397,6 +398,8 @@ new_carla_plugin:
 #endif
             lv2_plugin_new_from_uri (
               plugin, descr->uri);
+            g_return_val_if_fail (
+              plugin->lv2, NULL);
           }
           break;
         default:
@@ -449,7 +452,8 @@ plugin_new_dummy (
 void
 plugin_remove_ats_from_automation_tracklist (
   Plugin * pl,
-  int      free_ats)
+  bool     free_ats,
+  bool     fire_events)
 {
   Track * track = plugin_get_track (pl);
   AutomationTracklist * atl =
@@ -468,7 +472,7 @@ plugin_remove_ats_from_automation_tracklist (
                 pl->id.slot_type)
             {
               automation_tracklist_remove_at (
-                atl, at, free_ats);
+                atl, at, free_ats, fire_events);
             }
         }
     }

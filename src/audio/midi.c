@@ -469,6 +469,15 @@ sort_events_func (
 {
   MidiEvent * a = (MidiEvent *) _a;
   MidiEvent * b = (MidiEvent *) _b;
+
+  /* if same time put note ons first */
+  if (a->time == b->time)
+    {
+      return
+        a->type == MIDI_EVENT_TYPE_NOTE_ON ?
+          -1 : 1;
+    }
+
   return (int) a->time - (int) b->time;
 }
 
