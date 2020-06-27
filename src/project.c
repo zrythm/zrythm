@@ -242,6 +242,11 @@ project_free (Project * self)
 
   g_free_and_null (self->title);
 
+  if (self->audio_engine &&
+      self->audio_engine->activated)
+    {
+      engine_activate (self->audio_engine, false);
+    }
   object_free_w_func_and_null (
     tracklist_free, self->tracklist);
   object_free_w_func_and_null (
@@ -1227,20 +1232,20 @@ project_new (
 typedef struct ProjectSaveData
 {
   /** Project clone (with memcpy). */
-  Project  project;
+  Project   project;
 
   /** Full path to save to. */
-  char *   project_file_path;
+  char *    project_file_path;
 
-  bool     is_backup;
+  bool      is_backup;
 
   /** To be set to true when the thread finishes. */
-  bool     finished;
+  bool      finished;
 
-  bool     show_notification;
+  bool      show_notification;
 
   /** Whether an error occured during saving. */
-  bool     has_error;
+  bool      has_error;
 } ProjectSaveData;
 
 static void
@@ -1267,9 +1272,16 @@ serialize_project_thread (
   size_t compressed_size;
 
   /* generate yaml */
-  g_message ("serializing project to yaml...");
+  g_message (
+    "%s: serializing project to yaml...",
+    __func__);
   GError *err = NULL;
+  gint64 time_before = g_get_monotonic_time ();
   char * yaml = project_serialize (&data->project);
+  gint64 time_after = g_get_monotonic_time ();
+  g_message ("%s: time to serialize: %ldms",
+    __func__,
+    (long) (time_after - time_before) / 1000);
   if (!yaml)
     {
       data->has_error = true;
@@ -1297,7 +1309,8 @@ serialize_project_thread (
     }
 
   /* set file contents */
-  g_message ("saving project file...");
+  g_message (
+    "%s: saving project file...", __func__);
   g_file_set_contents (
     data->project_file_path, compressed_yaml,
     (gssize) compressed_size, &err);
@@ -1305,13 +1318,14 @@ serialize_project_thread (
   if (err != NULL)
     {
       g_warning (
-        "Unable to write project file: %s",
-        err->message);
+        "%s: Unable to write project file: %s",
+        __func__, err->message);
       g_error_free (err);
       data->has_error = true;
     }
 
-  g_message ("successfully saved project");
+  g_message (
+    "%s: successfully saved project", __func__);
 
 serialize_end:
   data->finished = true;

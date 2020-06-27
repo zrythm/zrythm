@@ -2478,6 +2478,8 @@ void
 arranger_object_free (
   ArrangerObject * self)
 {
+  g_return_if_fail (IS_ARRANGER_OBJECT (self));
+
   switch (self->type)
     {
     case TYPE (REGION):

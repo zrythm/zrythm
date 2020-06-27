@@ -161,7 +161,6 @@ void
 piano_keyboard_widget_refresh (
   PianoKeyboardWidget * self)
 {
-  g_message ("redrawing");
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
