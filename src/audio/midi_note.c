@@ -36,6 +36,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 
 /**
@@ -51,8 +52,9 @@ midi_note_new (
 {
   g_return_val_if_fail (region_id, NULL);
 
-  MidiNote * self =
-    calloc (1, sizeof (MidiNote));
+  MidiNote * self = object_new (MidiNote);
+
+  self->magic = MIDI_NOTE_MAGIC;
 
   ArrangerObject * obj =
     (ArrangerObject *) self;

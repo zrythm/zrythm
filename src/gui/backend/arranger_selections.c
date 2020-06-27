@@ -101,8 +101,13 @@ arranger_selections_init_loaded (
                 (MidiNote *)
                 arranger_object_find (mn_obj);
             }
+          else
+            {
+              arranger_object_init_loaded (
+                (ArrangerObject *)
+                mas->midi_notes[i]);
+            }
           g_warn_if_fail (mas->midi_notes[i]);
-          arranger_object_free (mn_obj);
         }
       break;
     case TYPE (AUTOMATION):

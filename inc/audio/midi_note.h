@@ -46,6 +46,11 @@ typedef struct Velocity Velocity;
  * @{
  */
 
+#define MIDI_NOTE_MAGIC 3588791
+#define IS_MIDI_NOTE(tr) \
+  ((MidiNote *) tr && \
+   ((MidiNote *) tr)->magic == MIDI_NOTE_MAGIC)
+
 #define midi_note_is_selected(r) \
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
@@ -81,6 +86,8 @@ typedef struct MidiNote
 
   /** Index in the parent region. */
   int             pos;
+
+  int             magic;
 
   /** Cache layout for drawing the name. */
   PangoLayout *   layout;
