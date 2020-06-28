@@ -555,7 +555,8 @@ tracklist_remove_track (
       arranger_object_get_track (
         (ArrangerObject *) region) == track)
     {
-      clip_editor_set_region (CLIP_EDITOR, NULL);
+      clip_editor_set_region (
+        CLIP_EDITOR, NULL, publish_events);
     }
 
   /* remove/deselect all objects */
@@ -650,7 +651,8 @@ tracklist_move_track (
       arranger_object_get_track (
         (ArrangerObject *) region) == track)
     {
-      clip_editor_set_region (CLIP_EDITOR, NULL);
+      clip_editor_set_region (
+        CLIP_EDITOR, NULL, publish_events);
     }
 
   /* deselect all objects */
@@ -853,9 +855,12 @@ tracklist_free (
   for (int i = self->num_tracks - 1; i >= 0; i--)
     {
       Track * track = self->tracks[i];
-      tracklist_remove_track (
-        self, track, true, F_FREE,
-        F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+      track_disconnect (
+        track, true, F_NO_RECALC_GRAPH);
+      track_set_pos (track, -1);
+
+      track_set_is_project (track, false);
+      track_free (track);
     }
 
   object_zero_and_free (self);

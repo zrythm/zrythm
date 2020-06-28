@@ -31,6 +31,14 @@
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
+void
+copy_tracks_action_init_loaded (
+  CopyTracksAction * self)
+{
+  tracklist_selections_init_loaded (
+    self->tls);
+}
+
 UndoableAction *
 copy_tracks_action_new (
   TracklistSelections * tls,

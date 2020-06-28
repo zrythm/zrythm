@@ -30,6 +30,14 @@
 
 #include <glib/gi18n.h>
 
+void
+edit_tracks_action_init_loaded (
+  EditTracksAction * self)
+{
+  tracklist_selections_init_loaded (
+    self->tls);
+}
+
 /**
  * All-in-one constructor.
  *

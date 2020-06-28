@@ -443,6 +443,65 @@ plugin_new_dummy (
   return self;
 }
 
+void
+plugin_append_ports (
+  Plugin *  pl,
+  Port ***  ports,
+  int *     max_size,
+  bool      is_dynamic,
+  int *     size)
+{
+#define _ADD(port) \
+  if (is_dynamic) \
+    { \
+      array_double_size_if_full ( \
+        *ports, (*size), (*max_size), Port *); \
+    } \
+  else if (*size == *max_size) \
+    { \
+      g_return_if_reached (); \
+    } \
+  array_append ( \
+    *ports, (*size), port)
+
+  for (int i = 0; i < pl->num_in_ports; i++)
+    {
+      Port * port = pl->in_ports[i];
+      g_return_if_fail (port);
+      _ADD (port);
+    }
+  for (int i = 0; i < pl->num_out_ports; i++)
+    {
+      Port * port = pl->out_ports[i];
+      g_return_if_fail (port);
+      _ADD (port);
+    }
+
+#undef _ADD
+}
+
+void
+plugin_set_is_project (
+  Plugin * self,
+  bool     is_project)
+{
+  self->is_project = is_project;
+
+  int max_size = 20;
+  Port ** ports =
+    calloc ((size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
+  Port * port;
+  plugin_append_ports (
+    self, &ports, &max_size, true, &num_ports);
+  for (int i = 0; i < num_ports; i++)
+    {
+      port = ports[i];
+      port_set_is_project (port, is_project);
+    }
+  free (ports);
+}
+
 /**
  * Removes the automation tracks associated with
  * this plugin from the automation tracklist in the
@@ -1057,6 +1116,7 @@ plugin_instantiate (
           {
             g_message ("state file: %s",
                        pl->lv2->state_file);
+            pl->lv2->plugin = pl;
             if (lv2_plugin_instantiate (
                   pl->lv2, project, NULL))
               {
@@ -2048,25 +2108,28 @@ plugin_disconnect (
 {
   self->deleting = 1;
 
-  /* disconnect all ports */
-  ports_disconnect (
-    self->in_ports,
-    self->num_in_ports, 1);
-  ports_disconnect (
-    self->out_ports,
-    self->num_out_ports, 1);
-  g_message (
-    "%s: DISCONNECTED ALL PORTS OF %s %d %d",
-    __func__, self->descr->name,
-    self->num_in_ports,
-    self->num_out_ports);
+  if (self->is_project)
+    {
+      /* disconnect all ports */
+      ports_disconnect (
+        self->in_ports,
+        self->num_in_ports, true);
+      ports_disconnect (
+        self->out_ports,
+        self->num_out_ports, true);
+      g_message (
+        "%s: DISCONNECTED ALL PORTS OF %s %d %d",
+        __func__, self->descr->name,
+        self->num_in_ports,
+        self->num_out_ports);
 
 #ifdef HAVE_CARLA
-  if (self->descr->open_with_carla)
-    {
-      carla_native_plugin_close (self->carla);
-    }
+      if (self->descr->open_with_carla)
+        {
+          carla_native_plugin_close (self->carla);
+        }
 #endif
+    }
 }
 
 /**

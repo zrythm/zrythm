@@ -281,9 +281,9 @@ init_thread (
   zrythm_app_set_progress_status (
     self,
     _("Initializing Zrythm directories"), 0.01);
-  init_dirs_and_files (self);
-  init_recent_projects (self);
-  init_templates (self);
+  init_dirs_and_files ();
+  init_recent_projects ();
+  init_templates ();
 
   /* init log */
   zrythm_app_set_progress_status (

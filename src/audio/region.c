@@ -339,7 +339,7 @@ region_move_to_lane (
   if (is_clip_editor_region)
     {
       clip_editor_set_region (
-        CLIP_EDITOR, region);
+        CLIP_EDITOR, region, true);
     }
 
   arranger_object_select (
@@ -369,7 +369,8 @@ region_set_automation_track (
         &self->id, &CLIP_EDITOR->region_id))
     {
       /*is_clip_editor_region = 1;*/
-      clip_editor_set_region (CLIP_EDITOR, NULL);
+      clip_editor_set_region (
+        CLIP_EDITOR, NULL, true);
     }
   self->id.at_idx = at->index;
   Track * track =
@@ -1290,7 +1291,7 @@ region_disconnect (
   if (clip_editor_region == self)
     {
       clip_editor_set_region (
-        CLIP_EDITOR, NULL);
+        CLIP_EDITOR, NULL, true);
     }
   if (TL_SELECTIONS)
     {

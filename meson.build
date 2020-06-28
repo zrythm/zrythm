@@ -737,6 +737,7 @@ summary ({
   'Build type': get_option('buildtype'),
   'Profiling': get_option('profiling'),
   'Strict flags': get_option('strict_flags'),
+  'Extra optimizations': get_option('extra_optimizations'),
   'Build tests': get_option('tests'),
   'Build GUI tests': get_option('gui_tests'),
   'Build/install manpage': get_option('manpage'),

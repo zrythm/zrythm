@@ -606,7 +606,8 @@ add_object_to_project (
 
         /* if region, also set is as the clip
          * editor region */
-        clip_editor_set_region (CLIP_EDITOR, r);
+        clip_editor_set_region (
+          CLIP_EDITOR, r, true);
       }
       break;
     default:

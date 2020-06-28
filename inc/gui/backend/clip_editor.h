@@ -26,6 +26,8 @@
 #ifndef __GUI_BACKEND_CLIP_EDITOR_H__
 #define __GUI_BACKEND_CLIP_EDITOR_H__
 
+#include <stdbool.h>
+
 #include "audio/region_identifier.h"
 #include "gui/backend/audio_clip_editor.h"
 #include "gui/backend/automation_editor.h"
@@ -139,7 +141,8 @@ clip_editor_new (void);
 void
 clip_editor_set_region (
   ClipEditor * self,
-  ZRegion *     region);
+  ZRegion *    region,
+  bool         fire_events);
 
 ZRegion *
 clip_editor_get_region (

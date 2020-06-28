@@ -30,6 +30,18 @@
 
 #include <glib/gi18n.h>
 
+void
+delete_plugins_action_init_loaded (
+  DeletePluginsAction * self)
+{
+  mixer_selections_init_loaded (self->ms, false);
+
+  for (int i = 0; i < self->num_ats; i++)
+    {
+      automation_track_init_loaded (self->ats[i]);
+    }
+}
+
 UndoableAction *
 delete_plugins_action_new (
   MixerSelections * ms)

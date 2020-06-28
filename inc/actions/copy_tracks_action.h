@@ -50,8 +50,7 @@ static const cyaml_schema_field_t
     "tls", CYAML_FLAG_POINTER,
     CopyTracksAction, tls,
     tracklist_selections_fields_schema),
-  CYAML_FIELD_INT (
-    "pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     CopyTracksAction, pos),
 
   CYAML_FIELD_END
@@ -64,6 +63,10 @@ static const cyaml_schema_value_t
     CYAML_FLAG_POINTER, CopyTracksAction,
     copy_tracks_action_fields_schema),
 };
+
+void
+copy_tracks_action_init_loaded (
+  CopyTracksAction * self);
 
 UndoableAction *
 copy_tracks_action_new (

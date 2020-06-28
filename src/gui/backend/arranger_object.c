@@ -2122,7 +2122,8 @@ arranger_object_split (
   if (clip_editor_region == (ZRegion *) self)
     {
       set_clip_editor_region = true;
-      clip_editor_set_region (CLIP_EDITOR, NULL);
+      clip_editor_set_region (
+        CLIP_EDITOR, NULL, true);
     }
 
   /* get global/local positions (the local pos
@@ -2263,7 +2264,7 @@ arranger_object_split (
   if (set_clip_editor_region)
     {
       clip_editor_set_region (
-        CLIP_EDITOR, (ZRegion *) *r1);
+        CLIP_EDITOR, (ZRegion *) *r1, true);
     }
 
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, *r1);
@@ -2288,7 +2289,8 @@ arranger_object_unsplit (
       clip_editor_region == (ZRegion *) r2)
     {
       set_clip_editor_region = true;
-      clip_editor_set_region (CLIP_EDITOR, NULL);
+      clip_editor_set_region (
+        CLIP_EDITOR, NULL, true);
     }
 
   /* create the new object */
@@ -2391,7 +2393,7 @@ arranger_object_unsplit (
   if (set_clip_editor_region)
     {
       clip_editor_set_region (
-        CLIP_EDITOR, (ZRegion *) *obj);
+        CLIP_EDITOR, (ZRegion *) *obj, true);
     }
 
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, *obj);

@@ -29,6 +29,14 @@
 
 #include <glib/gi18n.h>
 
+void
+move_tracks_action_init_loaded (
+  MoveTracksAction * self)
+{
+  tracklist_selections_init_loaded (
+    self->tls);
+}
+
 /**
  * Move tracks to given position.
  */

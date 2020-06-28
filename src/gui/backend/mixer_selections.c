@@ -33,8 +33,17 @@
 
 void
 mixer_selections_init_loaded (
-  MixerSelections * self)
+  MixerSelections * self,
+  bool              is_project)
 {
+  if (!is_project)
+    {
+      for (int i = 0; i < self->num_slots; i++)
+        {
+          plugin_init_loaded (
+            self->plugins[i], false);
+        }
+    }
 }
 
 /**

@@ -76,8 +76,7 @@ static const cyaml_schema_field_t
     CreatePluginsAction, plugins, num_plugins,
     &plugin_schema, 0, CYAML_UNLIMITED),
 #endif
-  CYAML_FIELD_MAPPING (
-    "descr", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     CreatePluginsAction, descr,
     plugin_descriptor_fields_schema),
 

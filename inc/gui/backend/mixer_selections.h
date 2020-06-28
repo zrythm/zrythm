@@ -43,6 +43,8 @@ typedef struct Plugin Plugin;
 #define MIXER_SELECTIONS \
   (&PROJECT->mixer_selections)
 
+#define MIXER_SELECTIONS_MAX_SLOTS 60
+
 /**
  * Selections to be used for the timeline's current
  * selections, copying, undoing, etc.
@@ -52,10 +54,10 @@ typedef struct MixerSelections
   PluginSlotType type;
 
   /** Slots selected. */
-  int       slots[60];
+  int       slots[MIXER_SELECTIONS_MAX_SLOTS];
 
   /** Cache, used in actions. */
-  Plugin *  plugins[60];
+  Plugin *  plugins[MIXER_SELECTIONS_MAX_SLOTS];
 
   int       num_slots;
 
@@ -77,6 +79,9 @@ static const cyaml_schema_field_t
     MixerSelections, slots,
     num_slots,
     &int_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_SEQUENCE_FIXED (
+    MixerSelections, plugins,
+    plugin_schema, MIXER_SELECTIONS_MAX_SLOTS),
   YAML_FIELD_INT (
     MixerSelections, track_pos),
   YAML_FIELD_INT (
@@ -95,7 +100,8 @@ mixer_selections_schema = {
 
 void
 mixer_selections_init_loaded (
-  MixerSelections * ms);
+  MixerSelections * ms,
+  bool              is_project);
 
 /**
  * Clone the struct for copying, undoing, etc.

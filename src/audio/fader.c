@@ -726,22 +726,30 @@ void
 fader_free (
   Fader * self)
 {
-  object_free_w_func_and_null (
-    port_free, self->amp);
-  object_free_w_func_and_null (
-    port_free, self->balance);
-  object_free_w_func_and_null (
-    port_free, self->mute);
+#define DISCONNECT_AND_FREE(x) \
+  if (x) \
+    port_disconnect_all (x); \
+  object_free_w_func_and_null ( \
+    port_free, x)
 
-  object_free_w_func_and_null (
-    stereo_ports_free, self->stereo_in);
-  object_free_w_func_and_null (
-    stereo_ports_free, self->stereo_out);
+  DISCONNECT_AND_FREE (self->amp);
+  DISCONNECT_AND_FREE (self->balance);
+  DISCONNECT_AND_FREE (self->mute);
 
-  object_free_w_func_and_null (
-    port_free, self->midi_in);
-  object_free_w_func_and_null (
-    port_free, self->midi_out);
+#define DISCONNECT_AND_FREE_STEREO(x) \
+  if (x) \
+    stereo_ports_disconnect (x); \
+  object_free_w_func_and_null ( \
+    stereo_ports_free, x)
+
+  DISCONNECT_AND_FREE_STEREO (self->stereo_in);
+  DISCONNECT_AND_FREE_STEREO (self->stereo_out);
+
+  DISCONNECT_AND_FREE (self->midi_in);
+  DISCONNECT_AND_FREE (self->midi_out);
+
+#undef DISCONNECT_AND_FREE
+#undef DISCONNECT_AND_FREE_STEREO
 
   object_zero_and_free (self);
 }

@@ -47,7 +47,8 @@ sample_processor_new (void)
       0, _("Sample Processor"),
       PORT_OWNER_TYPE_SAMPLE_PROCESSOR, self);
   g_warn_if_fail (
-    self->stereo_out->l && self->stereo_out->r);
+    IS_PORT (self->stereo_out->l) &&
+    IS_PORT (self->stereo_out->r));
 
   return self;
 }

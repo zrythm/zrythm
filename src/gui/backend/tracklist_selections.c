@@ -40,12 +40,15 @@ tracklist_selections_init_loaded (
   for (int i = 0; i < self->num_tracks; i++)
     {
       Track * track = self->tracks[i];
+      int track_pos = track->pos;
       track_init_loaded (track, false);
       if (self->is_project)
         {
           self->tracks[i] =
-            TRACKLIST->tracks[self->tracks[i]->pos];
-          track_free (track);
+            TRACKLIST->tracks[track_pos];
+          /* TODO */
+          /*track_disconnect (track, true, false);*/
+          /*track_free (track);*/
         }
     }
 }

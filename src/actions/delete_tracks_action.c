@@ -30,6 +30,14 @@
 
 #include <glib/gi18n.h>
 
+void
+delete_tracks_action_init_loaded (
+  DeleteTracksAction * self)
+{
+  tracklist_selections_init_loaded (
+    self->tls);
+}
+
 UndoableAction *
 delete_tracks_action_new (
   TracklistSelections * tls)

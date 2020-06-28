@@ -46,60 +46,20 @@ track_processor_init_loaded (
   TrackProcessor * self,
   bool             is_project)
 {
-  Track * tr =
-    track_processor_get_track (self);
-
-  switch (tr->in_signal_type)
+  int max_size = 20;
+  Port ** ports =
+    calloc ((size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
+  track_processor_append_ports (
+    self, &ports, &num_ports, true, &max_size);
+  for (int i = 0; i < num_ports; i++)
     {
-    case TYPE_AUDIO:
-      port_set_owner_track_processor (
-        self->stereo_in->l, self);
-      port_set_owner_track_processor (
-        self->stereo_in->r, self);
-      port_set_owner_track_processor (
-        self->stereo_out->l, self);
-      port_set_owner_track_processor (
-        self->stereo_out->r, self);
-      break;
-    case TYPE_EVENT:
-      if (track_has_piano_roll (tr) ||
-          tr->type == TRACK_TYPE_CHORD)
-        {
-          self->piano_roll->id.flags =
-            PORT_FLAG_PIANO_ROLL;
-          port_set_owner_track_processor (
-            self->piano_roll, self);
-          self->piano_roll->midi_events =
-            midi_events_new (
-              self->piano_roll);
-
-          if (tr->type != TRACK_TYPE_CHORD)
-            {
-              for (int i = 0;
-                   i < NUM_MIDI_AUTOMATABLES * 16;
-                   i++)
-                {
-                  Port * cc =
-                    self->midi_automatables[i];
-                  port_set_owner_track_processor (
-                    cc, self);
-                  cc->midi_events =
-                    midi_events_new (cc);
-                }
-            }
-        }
-      self->midi_in->midi_events =
-        midi_events_new (self->midi_in);
-      self->midi_out->midi_events =
-        midi_events_new (self->midi_out);
-      port_set_owner_track_processor (
-        self->midi_in, self);
-      port_set_owner_track_processor (
-        self->midi_out, self);
-      break;
-    default:
-      break;
+      Port * port = ports[i];
+      port->magic = PORT_MAGIC;
+      port->is_project = is_project;
+      port_set_owner_track_processor (port, self);
     }
+  free (ports);
 
   track_processor_set_is_project (self, is_project);
 }
@@ -126,6 +86,7 @@ init_midi_port (
       self->midi_in =
         port_new_with_type (
           TYPE_EVENT, FLOW_INPUT, "TP MIDI in");
+      g_warn_if_fail (IS_PORT (self->midi_in));
       port_set_owner_track_processor (
         self->midi_in, self);
       self->midi_in->id.flags |= PORT_FLAG_SENDABLE;
@@ -135,12 +96,10 @@ init_midi_port (
       self->midi_out =
         port_new_with_type (
           TYPE_EVENT, FLOW_OUTPUT, "TP MIDI out");
+      g_warn_if_fail (IS_PORT (self->midi_out));
       port_set_owner_track_processor (
         self->midi_out, self);
     }
-
-  g_warn_if_fail (
-    IS_PORT (in ? self->midi_in : self->midi_out));
 }
 
 static void
@@ -292,11 +251,78 @@ track_processor_new (
 }
 
 void
+track_processor_append_ports (
+  TrackProcessor * self,
+  Port ***         ports,
+  int *            size,
+  bool             is_dynamic,
+  int *            max_size)
+{
+#define _ADD(port) \
+  if (is_dynamic) \
+    { \
+      array_double_size_if_full ( \
+        *ports, (*size), (*max_size), Port *); \
+    } \
+  else if (*size == *max_size) \
+    { \
+      g_return_if_reached (); \
+    } \
+  g_warn_if_fail (port); \
+  array_append ( \
+    *ports, (*size), port)
+
+  if (self->stereo_in)
+    {
+      _ADD (self->stereo_in->l);
+      _ADD (self->stereo_in->r);
+    }
+  if (self->stereo_out)
+    {
+      _ADD (self->stereo_out->l);
+      _ADD (self->stereo_out->r);
+    }
+  if (self->midi_in)
+    {
+      _ADD (self->midi_in);
+    }
+  if (self->midi_out)
+    {
+      _ADD (self->midi_out);
+    }
+  if (self->piano_roll)
+    {
+      _ADD (self->piano_roll);
+    }
+  for (int i = 0; i < NUM_MIDI_AUTOMATABLES * 16;
+       i++)
+    {
+      if (self->midi_automatables[i])
+        {
+          _ADD (self->midi_automatables[i]);
+        }
+    }
+}
+
+void
 track_processor_set_is_project (
   TrackProcessor * self,
   bool             is_project)
 {
   self->is_project = is_project;
+
+  int max_size = 20;
+  Port ** ports =
+    calloc ((size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
+  track_processor_append_ports (
+    self, &ports, &num_ports, true, &max_size);
+  for (int i = 0; i < num_ports; i++)
+    {
+      Port * port = ports[i];
+      port_set_is_project (port, is_project);
+    }
+  free (ports);
 }
 
 /**
@@ -781,41 +807,34 @@ void
 track_processor_free (
   TrackProcessor * self)
 {
-  Track * track = track_processor_get_track (self);
-  switch (track->in_signal_type)
+  if (self->stereo_in)
     {
-    case TYPE_AUDIO:
       stereo_ports_disconnect (self->stereo_in);
       object_free_w_func_and_null (
         stereo_ports_free, self->stereo_in);
-      break;
-    case TYPE_EVENT:
+    }
+  if (IS_PORT (self->midi_in))
+    {
       port_disconnect_all (self->midi_in);
       object_free_w_func_and_null (
         port_free, self->midi_in);
-      if (track_has_piano_roll (track) ||
-          track->type == TRACK_TYPE_CHORD)
+    }
+  if (IS_PORT (self->piano_roll))
+    {
+      port_disconnect_all (self->piano_roll);
+      object_free_w_func_and_null (
+        port_free, self->piano_roll);
+    }
+  for (int i = 0; i < NUM_MIDI_AUTOMATABLES * 16;
+       i++)
+    {
+      Port * port = self->midi_automatables[i];
+      if (IS_PORT (port))
         {
-          port_disconnect_all (self->piano_roll);
+          port_disconnect_all (port);
           object_free_w_func_and_null (
-            port_free, self->piano_roll);
-          if (track->type != TRACK_TYPE_CHORD)
-            {
-              for (int i = 0;
-                   i < NUM_MIDI_AUTOMATABLES * 16;
-                   i++)
-                {
-                  Port * port =
-                    self->midi_automatables[i];
-                  port_disconnect_all (port);
-                  object_free_w_func_and_null (
-                    port_free, port);
-                }
-            }
+            port_free, port);
         }
-      break;
-    default:
-      break;
     }
 
   if (self->stereo_out)
@@ -824,7 +843,7 @@ track_processor_free (
       object_free_w_func_and_null (
         stereo_ports_free, self->stereo_out);
     }
-  if (self->midi_out)
+  if (IS_PORT (self->midi_out))
     {
       port_disconnect_all (self->midi_out);
       object_free_w_func_and_null (

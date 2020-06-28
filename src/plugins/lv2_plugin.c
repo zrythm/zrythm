@@ -575,6 +575,8 @@ lv2_create_or_init_ports (
   Lv2Plugin* self,
   bool       project)
 {
+  g_return_val_if_fail (self->plugin, -1);
+
   /* zrythm ports exist when loading a
    * project since they are serialized */
   int ports_exist =

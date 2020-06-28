@@ -67,7 +67,8 @@ clip_editor_init_loaded (
 void
 clip_editor_set_region (
   ClipEditor * self,
-  ZRegion *     region)
+  ZRegion *    region,
+  bool         fire_events)
 {
   int recalc_graph = 0;
   if (self->has_region)
@@ -105,7 +106,7 @@ clip_editor_set_region (
 
   /* if first time showing a region, show the
    * event viewer as necessary */
-  if (!self->has_region && region)
+  if (fire_events && !self->has_region && region)
     {
       EVENTS_PUSH (
         ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED,
@@ -125,7 +126,8 @@ clip_editor_set_region (
 
   self->region_changed = 1;
 
-  if (ZRYTHM_HAVE_UI && MW_CLIP_EDITOR)
+  if (fire_events && ZRYTHM_HAVE_UI &&
+      MAIN_WINDOW && MW_CLIP_EDITOR)
     {
       clip_editor_widget_on_region_changed (
         MW_CLIP_EDITOR);

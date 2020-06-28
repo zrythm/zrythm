@@ -251,6 +251,14 @@ track_processor_set_track_pos (
   TrackProcessor * self,
   int              pos);
 
+void
+track_processor_append_ports (
+  TrackProcessor * self,
+  Port ***         ports,
+  int *            size,
+  bool             is_dynamic,
+  int *            max_size);
+
 /**
  * Frees the TrackProcessor.
  */

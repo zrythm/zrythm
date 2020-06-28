@@ -60,52 +60,52 @@ typedef struct AutomationTrack AutomationTrack;
  */
 typedef struct Plugin
 {
-  PluginIdentifier     id;
+  PluginIdentifier  id;
 
   /**
    * Pointer back to plugin in its original format.
    */
-  Lv2Plugin *          lv2;
+  Lv2Plugin *       lv2;
 
   /** Pointer to Carla native plugin. */
-  CarlaNativePlugin *  carla;
+  CarlaNativePlugin * carla;
 
   /** Descriptor. */
-  PluginDescriptor *   descr;
+  PluginDescriptor * descr;
 
   /** Ports coming in as input. */
-  Port **             in_ports;
-  int                 num_in_ports;
-  size_t              in_ports_size;
+  Port **           in_ports;
+  int               num_in_ports;
+  size_t            in_ports_size;
 
   /** Outgoing ports. */
-  Port **             out_ports;
-  int                 num_out_ports;
-  size_t              out_ports_size;
+  Port **           out_ports;
+  int               num_out_ports;
+  size_t            out_ports_size;
 
   /** Control for plugin enabled. */
-  Port *              enabled;
+  Port *            enabled;
 
-  PluginBank **       banks;
-  int                 num_banks;
-  size_t              banks_size;
+  PluginBank **     banks;
+  int               num_banks;
+  size_t            banks_size;
 
   PluginPresetIdentifier selected_bank;
   PluginPresetIdentifier selected_preset;
 
   /** Whether plugin UI is opened or not. */
-  bool                visible;
+  bool              visible;
 
   /** The latency in samples. */
-  nframes_t           latency;
+  nframes_t         latency;
 
   /** Whether the plugin is currently instantiated
    * or not. */
-  bool                instantiated;
+  bool              instantiated;
 
   /** Whether the plugin is currently activated
    * or not. */
-  bool                activated;
+  bool              activated;
 
   /**
    * Whether the UI has finished instantiating.
@@ -119,15 +119,15 @@ typedef struct Plugin
    * then no UI updates should be sent to the
    * plugin.
    */
-  int                  ui_instantiated;
+  int               ui_instantiated;
 
   /** Update frequency of the UI, in Hz (times
    * per second). */
-  float                ui_update_hz;
+  float             ui_update_hz;
 
   /** Whether the plugin is currently being
    * deleted. */
-  bool                 deleting;
+  bool              deleting;
 
   /** Active preset item, if wrapped or generic
    * UI. */
@@ -145,23 +145,25 @@ typedef struct Plugin
    * are only not wrapped when they have external
    * UIs. In that case, this must be NULL.
    */
-  GtkWindow *          window;
+  GtkWindow *       window;
 
   /** The GdkWindow of this widget should be
    * somewhere inside \ref Plugin.window and will
    * be used for wrapping plugin UIs in. */
-  GtkEventBox *        ev_box;
+  GtkEventBox *     ev_box;
 
   /** Vbox containing the above ev_box for wrapping,
    * or used for packing generic UI controls. */
-  GtkBox *             vbox;
+  GtkBox *          vbox;
 
   /** ID of the delete-event signal for \ref
    * Plugin.window so that we can
    * deactivate before freeing the plugin. */
-  gulong             delete_event_id;
+  gulong            delete_event_id;
 
-  int                 magic;
+  int               magic;
+
+  bool              is_project;
 } Plugin;
 
 static const cyaml_schema_field_t
@@ -355,6 +357,19 @@ plugin_move_automation (
   Channel *      ch,
   PluginSlotType new_slot_type,
   int            new_slot);
+
+void
+plugin_set_is_project (
+  Plugin * self,
+  bool     is_project);
+
+void
+plugin_append_ports (
+  Plugin *  pl,
+  Port ***  ports,
+  int *     max_size,
+  bool      is_dynamic,
+  int *     size);
 
 /**
  * Returns the escaped name of the plugin.

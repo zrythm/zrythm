@@ -2832,7 +2832,7 @@ on_drag_begin_handle_hit_object (
   if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
     {
       clip_editor_set_region (
-        CLIP_EDITOR, (ZRegion *) obj);
+        CLIP_EDITOR, (ZRegion *) obj, true);
 
       /* if double click bring up piano roll */
       if (self->n_press == 2 &&

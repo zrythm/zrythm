@@ -68,6 +68,10 @@ static const cyaml_schema_value_t
     move_tracks_action_fields_schema),
 };
 
+void
+move_tracks_action_init_loaded (
+  MoveTracksAction * self);
+
 /**
  * Move tracks to given position.
  */

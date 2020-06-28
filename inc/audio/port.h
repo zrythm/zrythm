@@ -694,12 +694,16 @@ port_update_identifier (
  */
 static inline int
 port_get_dest_index (
-  Port * port,
+  Port * self,
   Port * dest)
 {
-  for (int i = 0; i < port->num_dests; i++)
+  g_return_val_if_fail (
+    IS_PORT (self) && IS_PORT (dest) &&
+    self->is_project && dest->is_project, -1);
+
+  for (int i = 0; i < self->num_dests; i++)
     {
-      if (port->dests[i] == dest)
+      if (self->dests[i] == dest)
         return i;
     }
   g_return_val_if_reached (-1);
@@ -711,12 +715,16 @@ port_get_dest_index (
  */
 static inline int
 port_get_src_index (
-  Port * port,
+  Port * self,
   Port * src)
 {
-  for (int i = 0; i < port->num_srcs; i++)
+  g_return_val_if_fail (
+    IS_PORT (self) && IS_PORT (src) &&
+    self->is_project && src->is_project, -1);
+
+  for (int i = 0; i < self->num_srcs; i++)
     {
-      if (port->srcs[i] == src)
+      if (self->srcs[i] == src)
         return i;
     }
   g_return_val_if_reached (-1);

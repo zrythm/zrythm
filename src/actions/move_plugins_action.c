@@ -30,6 +30,13 @@
 
 #include <glib/gi18n.h>
 
+void
+move_plugins_action_init_loaded (
+  MovePluginsAction * self)
+{
+  mixer_selections_init_loaded (self->ms, false);
+}
+
 /**
  * Create a new action.
  *

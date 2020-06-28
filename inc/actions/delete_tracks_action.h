@@ -65,25 +65,29 @@ static const cyaml_schema_value_t
     delete_tracks_action_fields_schema),
 };
 
+void
+delete_tracks_action_init_loaded (
+  DeleteTracksAction * self);
+
 UndoableAction *
 delete_tracks_action_new (
   TracklistSelections * tls);
 
 int
 delete_tracks_action_do (
-	DeleteTracksAction * self);
+  DeleteTracksAction * self);
 
 int
 delete_tracks_action_undo (
-	DeleteTracksAction * self);
+  DeleteTracksAction * self);
 
 char *
 delete_tracks_action_stringize (
-	DeleteTracksAction * self);
+  DeleteTracksAction * self);
 
 void
 delete_tracks_action_free (
-	DeleteTracksAction * self);
+  DeleteTracksAction * self);
 
 /**
  * @}

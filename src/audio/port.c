@@ -79,7 +79,7 @@ port_init_loaded (
 
   self->is_project = is_project;
 
-  if (is_project)
+  if (!is_project)
     return;
 
   PortIdentifier * id;
@@ -553,6 +553,9 @@ port_new_with_type (
 
   g_return_val_if_fail (IS_PORT (self), NULL);
 
+  g_return_val_if_fail (
+    self->magic == PORT_MAGIC, NULL);
+
   return self;
 }
 
@@ -974,17 +977,18 @@ port_get_all (
     { \
       g_return_if_reached (); \
     } \
+  g_warn_if_fail (port); \
   array_append ( \
     *ports, (*size), port)
 
   /* add fader ports */
+  _ADD (MONITOR_FADER->amp);
+  _ADD (MONITOR_FADER->balance);
+  _ADD (MONITOR_FADER->mute);
   _ADD (MONITOR_FADER->stereo_in->l);
   _ADD (MONITOR_FADER->stereo_in->r);
   _ADD (MONITOR_FADER->stereo_out->l);
   _ADD (MONITOR_FADER->stereo_out->r);
-  _ADD (MONITOR_FADER->amp);
-  _ADD (MONITOR_FADER->balance);
-  _ADD (MONITOR_FADER->mute);
 
   _ADD (AUDIO_ENGINE->monitor_out->l);
   _ADD (AUDIO_ENGINE->monitor_out->r);
@@ -1372,7 +1376,7 @@ port_disconnect_all (
 
   if (!self->is_project)
     {
-      g_warning (
+      g_message (
         "%s: %s (%p) is not a project port, "
         "skipping",
         __func__, self->id.label, self);
@@ -1421,28 +1425,31 @@ void
 port_update_identifier (
   Port * self)
 {
-  /* update in all sources */
-  for (int i = 0; i < self->num_srcs; i++)
+  if (self->is_project)
     {
-      Port * src = self->srcs[i];
-      int dest_idx =
-        port_get_dest_index (src, self);
-      port_identifier_copy (
-        &src->dest_ids[dest_idx], &self->id);
-      g_warn_if_fail (
-        src->dests[dest_idx] == self);
-    }
+      /* update in all sources */
+      for (int i = 0; i < self->num_srcs; i++)
+        {
+          Port * src = self->srcs[i];
+          int dest_idx =
+            port_get_dest_index (src, self);
+          port_identifier_copy (
+            &src->dest_ids[dest_idx], &self->id);
+          g_warn_if_fail (
+            src->dests[dest_idx] == self);
+        }
 
-  /* update in all dests */
-  for (int i = 0; i < self->num_dests; i++)
-    {
-      Port * dest = self->dests[i];
-      int src_idx =
-        port_get_src_index (dest, self);
-      port_identifier_copy (
-        &dest->src_ids[src_idx], &self->id);
-      g_warn_if_fail (
-        dest->srcs[src_idx] == self);
+      /* update in all dests */
+      for (int i = 0; i < self->num_dests; i++)
+        {
+          Port * dest = self->dests[i];
+          int src_idx =
+            port_get_src_index (dest, self);
+          port_identifier_copy (
+            &dest->src_ids[src_idx], &self->id);
+          g_warn_if_fail (
+            dest->srcs[src_idx] == self);
+        }
     }
 
   if (self->lv2_port)
@@ -2645,8 +2652,14 @@ port_sum_signal_from_inputs (
       break;
     case TYPE_CONTROL:
       {
-        if (port->id.flow != FLOW_INPUT)
-          break;
+        if (port->id.flow != FLOW_INPUT ||
+            port->id.owner_type ==
+              PORT_OWNER_TYPE_MONITOR_FADER ||
+            port->id.owner_type ==
+              PORT_OWNER_TYPE_PREFADER)
+          {
+            break;
+          }
 
         /* calculate value from automation track */
         g_warn_if_fail (
@@ -3134,11 +3147,13 @@ port_apply_pan (
 void
 port_free (Port * self)
 {
+  g_message (
+    "%s: freeing %s...", __func__, self->id.label);
+
   /* assert no connections */
   g_warn_if_fail (self->num_srcs == 0);
   g_warn_if_fail (self->num_dests == 0);
 
-  g_free_and_null (self->id.label);
   object_zero_and_free (self->buf);
   if (self->audio_ring)
     {
@@ -3161,6 +3176,8 @@ port_free (Port * self)
         self->rtmidi_ins[i], 1);
     }
 #endif
+
+  g_free_and_null (self->id.label);
 
   object_zero_and_free (self);
 }

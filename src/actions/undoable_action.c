@@ -52,33 +52,33 @@ undoable_action_init_loaded (
     /*INIT_LOADED (CREATE_TRACKS,*/
                /*create_tracks,*/
                /*CreateTracks);*/
-    /*INIT_LOADED (MOVE_TRACKS,*/
-               /*move_tracks,*/
-               /*MoveTracks);*/
-    /*INIT_LOADED (EDIT_TRACKS,*/
-               /*edit_tracks,*/
-               /*EditTracks);*/
-    /*INIT_LOADED (COPY_TRACKS,*/
-               /*copy_tracks,*/
-               /*CopyTracks);*/
-    /*INIT_LOADED (DELETE_TRACKS,*/
-               /*delete_tracks,*/
-               /*DeleteTracks);*/
+    INIT_LOADED (MOVE_TRACKS,
+               move_tracks,
+               MoveTracks);
+    INIT_LOADED (EDIT_TRACKS,
+               edit_tracks,
+               EditTracks);
+    INIT_LOADED (COPY_TRACKS,
+               copy_tracks,
+               CopyTracks);
+    INIT_LOADED (DELETE_TRACKS,
+               delete_tracks,
+               DeleteTracks);
     /*INIT_LOADED (CREATE_PLUGINS,*/
                /*create_plugins,*/
                /*CreatePlugins);*/
-    /*INIT_LOADED (MOVE_PLUGINS,*/
-               /*move_plugins,*/
-               /*MovePlugins);*/
-    /*INIT_LOADED (EDIT_PLUGINS,*/
-               /*edit_plugins,*/
-               /*EditPlugins);*/
-    /*INIT_LOADED (COPY_PLUGINS,*/
-               /*copy_plugins,*/
-               /*CopyPlugins);*/
-    /*INIT_LOADED (DELETE_PLUGINS,*/
-               /*delete_plugins,*/
-               /*DeletePlugins);*/
+    INIT_LOADED (MOVE_PLUGINS,
+               move_plugins,
+               MovePlugins);
+    INIT_LOADED (EDIT_PLUGINS,
+               edit_plugins,
+               EditPlugins);
+    INIT_LOADED (COPY_PLUGINS,
+               copy_plugins,
+               CopyPlugins);
+    INIT_LOADED (DELETE_PLUGINS,
+               delete_plugins,
+               DeletePlugins);
     INIT_LOADED (CREATE_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);

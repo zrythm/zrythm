@@ -79,8 +79,7 @@ static const cyaml_schema_field_t
     CopyPluginsAction, is_new_channel),
   YAML_FIELD_INT (
     CopyPluginsAction, track_pos),
-  CYAML_FIELD_MAPPING_PTR (
-    "ms", CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR (
     CopyPluginsAction, ms,
     mixer_selections_fields_schema),
 
@@ -94,6 +93,10 @@ static const cyaml_schema_value_t
     CopyPluginsAction,
     copy_plugins_action_fields_schema),
 };
+
+void
+copy_plugins_action_init_loaded (
+  CopyPluginsAction * self);
 
 /**
  * Create a new CopyPluginsAction.

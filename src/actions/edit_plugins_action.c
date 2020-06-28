@@ -26,6 +26,13 @@
 
 #include <glib/gi18n.h>
 
+void
+edit_plugins_action_init_loaded (
+  EditPluginsAction * self)
+{
+  mixer_selections_init_loaded (self->ms, false);
+}
+
 UndoableAction *
 edit_plugins_action_new (
   MixerSelections *     ms,

@@ -1057,44 +1057,6 @@ channel_get_output_track (
   return track;
 }
 
-static void
-add_plugin_ports (
-  Plugin *  pl,
-  Port ***  ports,
-  int *     max_size,
-  bool      is_dynamic,
-  int *     size)
-{
-
-#define _ADD(port) \
-  if (is_dynamic) \
-    { \
-      array_double_size_if_full ( \
-        *ports, (*size), (*max_size), Port *); \
-    } \
-  else if (*size == *max_size) \
-    { \
-      g_return_if_reached (); \
-    } \
-  array_append ( \
-    *ports, (*size), port)
-
-  for (int i = 0; i < pl->num_in_ports; i++)
-    {
-      Port * port = pl->in_ports[i];
-      g_return_if_fail (port);
-      _ADD (port);
-    }
-  for (int i = 0; i < pl->num_out_ports; i++)
-    {
-      Port * port = pl->out_ports[i];
-      g_return_if_fail (port);
-      _ADD (port);
-    }
-
-#undef _ADD
-}
-
 /**
  * Appends all channel ports and optionally
  * plugin ports to the array.
@@ -1113,13 +1075,7 @@ channel_append_all_ports (
   int *     max_size,
   bool      include_plugins)
 {
-  int j;
-  Track * tr = channel_get_track (ch);
-  g_warn_if_fail (tr);
-  PortType in_type =
-    tr->in_signal_type;
-  PortType out_type =
-    tr->out_signal_type;
+  g_return_if_fail (ch->track);
 
 #define _ADD(port) \
   if (is_dynamic) \
@@ -1131,40 +1087,12 @@ channel_append_all_ports (
     { \
       g_return_if_reached (); \
     } \
-  g_warn_if_fail (IS_PORT (port)); \
+  g_warn_if_fail (port); \
   array_append ( \
     *ports, (*size), port)
 
   /* add channel ports */
-  if (in_type == TYPE_AUDIO)
-    {
-      g_warn_if_fail (tr->processor->stereo_in->l);
-      _ADD (tr->processor->stereo_in->l);
-      _ADD (tr->processor->stereo_in->r);
-      g_warn_if_fail (tr->processor->stereo_out->l);
-      _ADD (tr->processor->stereo_out->l);
-      _ADD (tr->processor->stereo_out->r);
-    }
-  else if (in_type == TYPE_EVENT)
-    {
-      g_warn_if_fail (tr->processor->midi_in);
-      g_warn_if_fail (tr->processor->midi_out);
-      _ADD (tr->processor->midi_in);
-      _ADD (tr->processor->midi_out);
-      if (track_has_piano_roll (tr))
-        {
-          for (int i = 0;
-               i < NUM_MIDI_AUTOMATABLES * 16; i++)
-            {
-              g_warn_if_fail (
-                tr->processor->midi_automatables[i]);
-              _ADD (
-                tr->processor->midi_automatables[i]);
-            }
-        }
-    }
-
-  if (out_type == TYPE_AUDIO)
+  if (ch->track->out_signal_type == TYPE_AUDIO)
     {
       _ADD (ch->stereo_out->l);
       _ADD (ch->stereo_out->r);
@@ -1181,7 +1109,8 @@ channel_append_all_ports (
       _ADD (ch->prefader->stereo_out->l);
       _ADD (ch->prefader->stereo_out->r);
     }
-  else if (out_type == TYPE_EVENT)
+  else if (ch->track->out_signal_type ==
+             TYPE_EVENT)
     {
       _ADD (ch->midi_out);
 
@@ -1195,8 +1124,9 @@ channel_append_all_ports (
     }
 
   /* add fader amp and balance control */
-  g_return_if_fail (
-    ch->fader->amp && ch->fader->balance);
+  _ADD (ch->prefader->amp);
+  _ADD (ch->prefader->balance);
+  _ADD (ch->prefader->mute);
   _ADD (ch->fader->amp);
   _ADD (ch->fader->balance);
   _ADD (ch->fader->mute);
@@ -1205,12 +1135,12 @@ channel_append_all_ports (
   if (include_plugins)
     {
       /* add plugin ports */
-      for (j = 0; j < STRIP_SIZE; j++)
+      for (int j = 0; j < STRIP_SIZE; j++)
         {
           pl = ch->inserts[j];
           if (pl)
             {
-              add_plugin_ports (
+              plugin_append_ports (
                 pl, ports, max_size, is_dynamic,
                 size);
             }
@@ -1218,7 +1148,7 @@ channel_append_all_ports (
           pl = ch->midi_fx[j];
           if (pl)
             {
-              add_plugin_ports (
+              plugin_append_ports (
                 pl, ports, max_size, is_dynamic,
                 size);
             }
@@ -1226,19 +1156,20 @@ channel_append_all_ports (
 
       if (ch->instrument)
         {
-          add_plugin_ports (
+          plugin_append_ports (
             ch->instrument, ports, max_size,
             is_dynamic, size);
         }
     }
 
-  for (j = 0; j < tr->num_modulators; j++)
+  for (int j = 0; j < ch->track->num_modulators;
+       j++)
     {
-      pl = tr->modulators[j]->plugin;
+      pl = ch->track->modulators[j]->plugin;
 
       if (pl)
         {
-          add_plugin_ports (
+          plugin_append_ports (
             pl, ports, max_size, is_dynamic,
             size);
         }
@@ -1666,6 +1597,8 @@ channel_remove_plugin (
   channel_disconnect_plugin_from_strip (
     channel, slot, plugin);
 
+  plugin_set_is_project (plugin, false);
+
   /* if deleting plugin disconnect the plugin
    * entirely */
   if (deleting_plugin)
@@ -1888,6 +1821,8 @@ channel_add_plugin (
         }
     }
 
+  plugin_set_is_project (plugin, track->is_project);
+
   /* ------------------------------------------
    * connect ports
    * ------------------------------------------ */
@@ -2093,35 +2028,6 @@ channel_clone (
 }
 
 /**
- * Removes the AutomationTrack's associated with
- * this channel from the AutomationTracklist in the
- * corresponding Track.
- */
-static void
-channel_remove_ats_from_automation_tracklist (
-  Channel * ch,
-  bool      fire_events)
-{
-  Track * track = channel_get_track (ch);
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (track);
-  for (int i = 0; i < atl->num_ats; i++)
-    {
-      AutomationTrack * at = atl->ats[i];
-      if (at->port_id.flags &
-            PORT_FLAG_CHANNEL_FADER ||
-          at->port_id.flags &
-            PORT_FLAG_CHANNEL_MUTE ||
-          at->port_id.flags &
-            PORT_FLAG_STEREO_BALANCE)
-        {
-          automation_tracklist_remove_at (
-            atl, at, F_NO_FREE, fire_events);
-        }
-    }
-}
-
-/**
  * Disconnects the channel from the processing
  * chain.
  *
@@ -2183,10 +2089,6 @@ channel_free (Channel * self)
 {
   g_return_if_fail (self);
 
-  Track * track = channel_get_track (self);
-
-  object_free_w_func_and_null (
-    track_processor_free, track->processor);
   object_free_w_func_and_null (
     fader_free, self->prefader);
   object_free_w_func_and_null (
@@ -2196,11 +2098,6 @@ channel_free (Channel * self)
     stereo_ports_free, self->stereo_out);
   object_free_w_func_and_null (
     port_free, self->midi_out);
-
-  /* remove automation tracks - they are already
-   * free'd in track_free */
-  channel_remove_ats_from_automation_tracklist (
-    self, F_NO_PUBLISH_EVENTS);
 
   if (GTK_IS_WIDGET (self->widget))
     {

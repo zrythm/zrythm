@@ -640,6 +640,21 @@ create_default (Project * self)
   tracklist_expose_ports_to_backend (
     self->tracklist);
 
+  /* init ports */
+  int max_size = 20;
+  Port ** ports =
+    calloc ((size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
+  Port * port;
+  port_get_all (
+    &ports, &max_size, true, &num_ports);
+  g_message ("Initializing loaded Ports...");
+  for (int i = 0; i < num_ports; i++)
+    {
+      port = ports[i];
+      port_set_is_project (port, true);
+    }
+
   engine_update_frames_per_tick (
     AUDIO_ENGINE, TRANSPORT->beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
@@ -920,13 +935,12 @@ load (
   Port ** ports =
     calloc ((size_t) max_size, sizeof (Port *));
   int num_ports = 0;
-  Port * port;
   port_get_all (
     &ports, &max_size, true, &num_ports);
   g_message ("Initializing loaded Ports...");
   for (int i = 0; i < num_ports; i++)
     {
-      port = ports[i];
+      Port * port = ports[i];
       port_init_loaded (port, true);
     }
 
@@ -970,13 +984,13 @@ load (
 
   for (int i = 0; i < num_ports; i++)
     {
-      port = ports[i];
+      Port * port = ports[i];
       if (port_is_exposed_to_backend (port))
         {
           port_set_expose_to_backend (port, true);
         }
     }
-  free (ports);
+  object_zero_and_free (ports);
 
   self->loaded = true;
   g_message ("project loaded");

@@ -82,6 +82,10 @@ static const cyaml_schema_value_t
     delete_plugins_action_fields_schema),
 };
 
+void
+delete_plugins_action_init_loaded (
+  DeletePluginsAction * self);
+
 UndoableAction *
 delete_plugins_action_new (
   MixerSelections * ms);

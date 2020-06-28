@@ -124,6 +124,22 @@ track_init_loaded (
           1.0, true);
     }
 
+  /** set magic to all track ports */
+  int max_size = 20;
+  Port ** ports =
+    calloc ((size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
+  Port * port;
+  track_append_all_ports (
+    self, &ports, &num_ports, true, &max_size,
+    true);
+  for (int i = 0; i < num_ports; i++)
+    {
+      port = ports[i];
+      port->magic = PORT_MAGIC;
+    }
+  free (ports);
+
   track_set_is_project (self, project);
 }
 
@@ -283,9 +299,6 @@ track_new (
 
   self->processor = track_processor_new (self);
 
-  g_warn_if_fail (
-    IS_PORT (self->processor->midi_in));
-
   automation_tracklist_init (
     &self->automation_tracklist, self);
 
@@ -294,13 +307,7 @@ track_new (
       self->channel = channel_new (self);
     }
 
-  g_warn_if_fail (
-    IS_PORT (self->processor->midi_in));
-
   track_generate_automation_tracks (self);
-
-  g_warn_if_fail (
-    IS_PORT (self->processor->midi_in));
 
   return self;
 }
@@ -1837,6 +1844,9 @@ track_append_all_ports (
       channel_append_all_ports (
         self->channel, ports, size, is_dynamic,
         max_size, include_plugins);
+      track_processor_append_ports (
+        self->processor, ports, size, is_dynamic,
+        max_size);
     }
 
 #define _ADD(port) \
@@ -1849,7 +1859,7 @@ track_append_all_ports (
     { \
       g_return_if_reached (); \
     } \
-  g_warn_if_fail (IS_PORT (port)); \
+  g_warn_if_fail (port); \
   array_append ( \
     *ports, (*size), port)
 
@@ -1861,6 +1871,34 @@ track_append_all_ports (
     }
 
 #undef _ADD
+}
+
+/**
+ * Removes the AutomationTrack's associated with
+ * this channel from the AutomationTracklist in the
+ * corresponding Track.
+ */
+static void
+remove_ats_from_automation_tracklist (
+  Track * track,
+  bool    fire_events)
+{
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  for (int i = 0; i < atl->num_ats; i++)
+    {
+      AutomationTrack * at = atl->ats[i];
+      if (at->port_id.flags &
+            PORT_FLAG_CHANNEL_FADER ||
+          at->port_id.flags &
+            PORT_FLAG_CHANNEL_MUTE ||
+          at->port_id.flags &
+            PORT_FLAG_STEREO_BALANCE)
+        {
+          automation_tracklist_remove_at (
+            atl, at, F_NO_FREE, fire_events);
+        }
+    }
 }
 
 /**
@@ -1907,7 +1945,15 @@ track_free (Track * self)
 #undef _FREE_TRACK
 
   if (self->channel)
-    channel_free (self->channel);
+    {
+      /* remove automation tracks - they are
+       * already free'd by now */
+      remove_ats_from_automation_tracklist (
+        self, F_NO_PUBLISH_EVENTS);
+      object_free_w_func_and_null (
+        track_processor_free, self->processor);
+      channel_free (self->channel);
+    }
 
   if (self->widget &&
       GTK_IS_WIDGET (self->widget))

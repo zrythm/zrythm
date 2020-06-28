@@ -77,8 +77,7 @@ static const cyaml_schema_field_t
     MovePluginsAction, from_track_pos),
   YAML_FIELD_INT (
     MovePluginsAction, is_new_channel),
-  CYAML_FIELD_MAPPING_PTR (
-    "ms", CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR (
     MovePluginsAction, ms,
     mixer_selections_fields_schema),
 
@@ -92,6 +91,10 @@ static const cyaml_schema_value_t
     CYAML_FLAG_POINTER, MovePluginsAction,
     move_plugins_action_fields_schema),
 };
+
+void
+move_plugins_action_init_loaded (
+  MovePluginsAction * self);
 
 /**
  * Create a new action.

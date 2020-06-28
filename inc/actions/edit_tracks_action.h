@@ -92,20 +92,15 @@ static const cyaml_schema_field_t
     "tls", CYAML_FLAG_POINTER,
     EditTracksAction, tls,
     tracklist_selections_fields_schema),
-  CYAML_FIELD_INT (
-    "main_track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     EditTracksAction, main_track_pos),
-  CYAML_FIELD_INT (
-    "solo_new", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     EditTracksAction, solo_new),
-  CYAML_FIELD_INT (
-    "mute_new", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     EditTracksAction, mute_new),
-  CYAML_FIELD_FLOAT (
-    "vol_delta", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     EditTracksAction, vol_delta),
-  CYAML_FIELD_FLOAT (
-    "pan_delta", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     EditTracksAction, pan_delta),
 
   CYAML_FIELD_END
@@ -118,6 +113,10 @@ static const cyaml_schema_value_t
     CYAML_FLAG_POINTER, EditTracksAction,
     edit_tracks_action_fields_schema),
 };
+
+void
+edit_tracks_action_init_loaded (
+  EditTracksAction * self);
 
 /**
  * All-in-one constructor.
