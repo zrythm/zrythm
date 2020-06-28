@@ -41,7 +41,9 @@ delete_plugins_action_new (
   ua->type =
     UA_DELETE_PLUGINS;
 
-  self->ms = mixer_selections_clone (ms);
+  self->ms =
+    mixer_selections_clone (
+      ms, ms == MIXER_SELECTIONS);
 
   /* clone the automation tracks */
   Track * track =
@@ -134,7 +136,8 @@ delete_plugins_action_undo (
       int slot = self->ms->slots[i];
 
       /* clone the clone */
-      pl = plugin_clone (self->ms->plugins[i]);
+      pl =
+        plugin_clone (self->ms->plugins[i], false);
 
       g_return_val_if_fail (
         self->ms->plugins[i]->id.slot == slot, -1);

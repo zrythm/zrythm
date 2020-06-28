@@ -33,7 +33,6 @@
 #include "audio/channel_send.h"
 #include "audio/ext_port.h"
 #include "audio/fader.h"
-#include "audio/passthrough_processor.h"
 #include "plugins/plugin.h"
 #include "utils/audio.h"
 #include "utils/yaml.h"
@@ -171,7 +170,7 @@ typedef struct Channel
    *
    * The last plugin should connect to this.
    */
-  PassthroughProcessor * prefader;
+  Fader *          prefader;
 
   /**
    * MIDI output for sending MIDI signals to other
@@ -243,7 +242,7 @@ channel_fields_schema[] =
     Channel, instrument, plugin_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     Channel, prefader,
-    passthrough_processor_fields_schema),
+    fader_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     Channel, fader, fader_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
@@ -297,7 +296,9 @@ channel_schema =
 };
 
 void
-channel_init_loaded (Channel * channel);
+channel_init_loaded (
+  Channel * channel,
+  bool      project);
 
 /**
  * Handles the recording logic inside the process
@@ -575,12 +576,18 @@ channel_update_track_pos (
 /**
  * Clones the channel recursively.
  *
- * @param track The track to use for getting the name.
+ * @note The given track is not cloned.
+ *
+ * @param track The track to use for getting the
+ *   name.
+ * @bool src_is_project Whether \ref ch is a project
+ *   channel.
  */
 Channel *
 channel_clone (
   Channel * ch,
-  Track *   track);
+  Track *   track,
+  bool      src_is_project);
 
 /**
  * Disconnects the channel from the processing

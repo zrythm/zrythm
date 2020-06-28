@@ -51,6 +51,7 @@
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/dialogs.h"
+#include "utils/err_codes.h"
 #include "utils/io.h"
 #include "utils/flags.h"
 #include "utils/math.h"
@@ -67,7 +68,8 @@
 
 void
 plugin_init_loaded (
-  Plugin * self)
+  Plugin * self,
+  bool     project)
 {
   self->magic = PLUGIN_MAGIC;
 
@@ -86,7 +88,8 @@ plugin_init_loaded (
         case PROT_LV2:
           g_return_if_fail (self->lv2);
           self->lv2->plugin = self;
-          lv2_plugin_init_loaded (self->lv2);
+          lv2_plugin_init_loaded (
+            self->lv2, project);
           break;
         default:
           g_warn_if_reached ();
@@ -96,7 +99,7 @@ plugin_init_loaded (
     }
 #endif
 
-  plugin_instantiate (self);
+  plugin_instantiate (self, project);
 
   /*Track * track = plugin_get_track (self);*/
   /*plugin_generate_automation_tracks (self, track);*/
@@ -686,18 +689,26 @@ plugin_generate_window_title (
   return g_strdup (title);
 }
 
-void
+/**
+ * Activates or deactivates the plugin.
+ *
+ * @param activate True to activate, false to
+ *   deactivate.
+ */
+int
 plugin_activate (
   Plugin * pl,
   bool     activate)
 {
-  g_return_if_fail (pl);
+  g_return_val_if_fail (pl, ERR_OBJECT_IS_NULL);
 
   if (pl->descr->open_with_carla)
     {
 #ifdef HAVE_CARLA
-      carla_native_plugin_activate (
-        pl->carla, activate);
+      int ret =
+        carla_native_plugin_activate (
+          pl->carla, activate);
+      g_return_val_if_fail (ret == 0, ret);
 #endif
     }
   else
@@ -705,13 +716,22 @@ plugin_activate (
       switch (pl->descr->protocol)
         {
         case PROT_LV2:
-          lv2_plugin_activate (pl->lv2, activate);
+          {
+            int ret =
+              lv2_plugin_activate (
+                pl->lv2, activate);
+            g_return_val_if_fail (ret == 0, ret);
+          }
           break;
         default:
           g_warn_if_reached ();
           break;
         }
     }
+
+  pl->activated = activate;
+
+  return 0;
 }
 
 /**
@@ -1005,11 +1025,15 @@ plugin_set_track_pos (
 
 /**
  * Instantiates the plugin (e.g. when adding to a
- * channel).
+ * channel)
+ *
+ * @param project Whether this is a project plugin
+ *   (as opposed to a clone used in actions).
  */
 int
 plugin_instantiate (
-  Plugin * pl)
+  Plugin * pl,
+  bool     project)
 {
   g_message ("Instantiating %s...",
              pl->descr->name);
@@ -1034,7 +1058,7 @@ plugin_instantiate (
             g_message ("state file: %s",
                        pl->lv2->state_file);
             if (lv2_plugin_instantiate (
-                  pl->lv2, NULL))
+                  pl->lv2, project, NULL))
               {
                 g_warning ("lv2 instantiate failed");
                 return -1;
@@ -1049,6 +1073,8 @@ plugin_instantiate (
     }
   control_port_set_val_from_normalized (
     pl->enabled, 1.f, 0);
+
+  pl->instantiated = true;
 
   return 0;
 }
@@ -1241,10 +1267,14 @@ plugin_generate_state_dir (
 
 /**
  * Clones the given plugin.
+ *
+ * @bool src_is_project Whether the given plugin
+ *   is a project plugin.
  */
 Plugin *
 plugin_clone (
-  Plugin * pl)
+  Plugin * pl,
+  bool     src_is_project)
 {
   Plugin * clone = NULL;
 #ifdef HAVE_CARLA
@@ -1259,8 +1289,15 @@ plugin_clone (
         clone && clone->carla, NULL);
 
       /* instantiate */
-      int ret = plugin_instantiate (clone);
-      g_return_val_if_fail (!ret, NULL);
+      int ret = plugin_instantiate (clone, false);
+      g_return_val_if_fail (ret == 0, NULL);
+
+      /* also instantiate the source, if not
+       * already instantiated, so its state can
+       * be ready */
+      ret =
+        plugin_instantiate (pl, src_is_project);
+      g_return_val_if_fail (ret == 0, NULL);
 
       /* save the state of the original plugin */
       char * state_dir_pl =
@@ -1284,6 +1321,16 @@ plugin_clone (
            * I think you can use   lilv_state_restore (lilv_state_new_from_instance (..), ...)
            * and skip  lilv_state_new_from_file() ; lilv_state_save ()
            * lilv_state_new_from_instance() handles files and externals, too */
+
+          /* if src plugin not instantiated,
+           * instantiate it */
+          if (!pl->instantiated)
+            {
+              int ret =
+                plugin_instantiate (
+                  pl, src_is_project);
+              g_return_val_if_fail (ret == 0, NULL);
+            }
 
           /* save state to file */
           char * state_dir_plugin =
@@ -1309,7 +1356,8 @@ plugin_clone (
             g_strdup (pl->lv2->state_file);
 
           /* instantiate */
-          int ret = plugin_instantiate (clone);
+          int ret =
+            plugin_instantiate (clone, false);
           g_return_val_if_fail (!ret, NULL);
 
           g_return_val_if_fail (

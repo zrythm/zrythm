@@ -115,6 +115,8 @@ typedef struct TrackProcessor
 
   /** Pointer to parent track. */
   Track *          track;
+
+  bool             is_project;
 } TrackProcessor;
 
 static const cyaml_schema_field_t
@@ -157,7 +159,13 @@ track_processor_schema =
  */
 void
 track_processor_init_loaded (
-  TrackProcessor * self);
+  TrackProcessor * self,
+  bool             is_project);
+
+void
+track_processor_set_is_project (
+  TrackProcessor * self,
+  bool             is_project);
 
 /**
  * Creates a new track processor for the given

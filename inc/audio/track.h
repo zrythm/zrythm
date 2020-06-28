@@ -377,6 +377,9 @@ typedef struct Track
 
   int                  magic;
 
+  /** Whether this is a project track (as opposed
+   * to a clone used in actions). */
+  bool                 is_project;
 } Track;
 
 static const cyaml_schema_field_t
@@ -448,7 +451,9 @@ track_schema = {
 };
 
 void
-track_init_loaded (Track * track);
+track_init_loaded (
+  Track * track,
+  bool    project);
 
 /**
  * Inits the Track, optionally adding a single
@@ -482,9 +487,14 @@ track_new (
 
 /**
  * Clones the track and returns the clone.
+ *
+ * @bool src_is_project Whether \ref track is a
+ *   project track.
  */
 Track *
-track_clone (Track * track);
+track_clone (
+  Track * track,
+  bool    src_is_project);
 
 /**
  * Returns if the given TrackType is a type of
@@ -874,12 +884,12 @@ track_get_fader_type (
   const Track * track);
 
 /**
- * Returns the PassthroughProcessorType
+ * Returns the prefader type
  * corresponding to the given Track.
  */
-PassthroughProcessorType
-track_get_passthrough_processor_type (
-  const Track * track);
+FaderType
+track_type_get_prefader_type (
+  TrackType type);
 
 /**
  * Creates missing TrackLane's until pos.
@@ -923,6 +933,15 @@ track_set_comment (
 const char *
 track_get_comment (
   void *  track);
+
+/**
+ * Recursively marks the track and children as
+ * project objects or not.
+ */
+void
+track_set_is_project (
+  Track * self,
+  bool    is_project);
 
 /**
  * Appends all channel ports and optionally

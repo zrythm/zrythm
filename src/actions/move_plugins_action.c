@@ -57,7 +57,9 @@ move_plugins_action_new (
   else
     self->is_new_channel = 1;
 
-  self->ms = mixer_selections_clone (ms);
+  self->ms =
+    mixer_selections_clone (
+      ms, ms == MIXER_SELECTIONS);
   g_warn_if_fail (
     ms->slots[0] == self->ms->slots[0]);
 

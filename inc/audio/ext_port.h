@@ -30,7 +30,6 @@
 
 #include "audio/automatable.h"
 #include "audio/fader.h"
-#include "audio/passthrough_processor.h"
 #include "plugins/plugin.h"
 #include "utils/audio.h"
 #include "utils/types.h"

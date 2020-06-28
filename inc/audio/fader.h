@@ -97,10 +97,10 @@ typedef struct Fader
    * Control port for muting the (channel)
    * fader.
    */
-  Port *              mute;
+  Port *           mute;
 
   /** Soloed or not. */
-  int                 solo;
+  int              solo;
 
   /**
    * L & R audio input ports, if audio.
@@ -132,10 +132,16 @@ typedef struct Fader
 
   FaderType        type;
 
+  /** Whether this is a passthrough fader (like
+   * a prefader). */
+  bool             passthrough;
+
   /** Track position, if channel fader. */
   int              track_pos;
 
   int              magic;
+
+  bool             is_project;
 } Fader;
 
 static const cyaml_strval_t
@@ -192,6 +198,8 @@ fader_fields_schema[] =
     stereo_ports_fields_schema),
   YAML_FIELD_INT (
     Fader, track_pos),
+  YAML_FIELD_INT (
+    Fader, passthrough),
 
   CYAML_FIELD_END
 };
@@ -209,7 +217,8 @@ fader_schema =
  */
 void
 fader_init_loaded (
-  Fader * self);
+  Fader * self,
+  bool    is_project);
 
 /**
  * Creates a new fader.
@@ -222,7 +231,8 @@ fader_init_loaded (
 Fader *
 fader_new (
   FaderType type,
-  Channel * ch);
+  Channel * ch,
+  bool      passthrough);
 
 /**
  * Sets the amplitude of the fader. (0.0 to 2.0)
@@ -296,6 +306,11 @@ fader_get_channel (
 Track *
 fader_get_track (
   Fader * self);
+
+void
+fader_set_is_project (
+  Fader * self,
+  bool    is_project);
 
 void
 fader_update_volume_and_fader_val (

@@ -27,6 +27,8 @@
 #ifndef __AUDIO_PORTS_H__
 #define __AUDIO_PORTS_H__
 
+#include <stdbool.h>
+
 #include "audio/meter.h"
 #include "audio/port_identifier.h"
 #include "utils/types.h"
@@ -71,10 +73,9 @@ typedef enum PanLaw PanLaw;
  */
 
 #define PORT_MAGIC 456861194
-#define IS_PORT(tr) \
-  (tr && \
-   ((Port *) tr)->magic == \
-     PORT_MAGIC)
+#define IS_PORT(_p) \
+  ((_p) && \
+   ((Port *) (_p))->magic == PORT_MAGIC)
 
 #define MAX_DESTINATIONS 600
 #define FOREACH_SRCS(port) \
@@ -426,6 +427,9 @@ typedef struct Port
 
   /** Magic number to identify that this is a Port. */
   int                 magic;
+
+  /** Whether this is a project port. */
+  bool                is_project;
 } Port;
 
 static const cyaml_strval_t
@@ -542,14 +546,18 @@ static const cyaml_schema_value_t
  * yml.
  */
 void
-port_init_loaded (Port * port);
+port_init_loaded (
+  Port * self,
+  bool   is_project);
 
 Port *
 port_find_from_identifier (
   PortIdentifier * id);
 
 void
-stereo_ports_init_loaded (StereoPorts * sp);
+stereo_ports_init_loaded (
+  StereoPorts * sp,
+  bool          is_project);
 
 /**
  * Creates port.
@@ -835,6 +843,11 @@ port_get_control_value (
   Port *      self,
   const bool  normalize);
 
+void
+port_set_is_project (
+  Port * self,
+  bool   is_project);
+
 /**
  * Connets src to dest.
  *
@@ -969,6 +982,7 @@ port_set_owner_fader (
   Port *    port,
   Fader *   fader);
 
+#if 0
 /**
  * Sets the owner fader & its ID.
  */
@@ -976,6 +990,7 @@ void
 port_set_owner_prefader (
   Port *                 port,
   PassthroughProcessor * fader);
+#endif
 
 /**
  * Sets the owner plugin & its ID.

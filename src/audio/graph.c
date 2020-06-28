@@ -43,7 +43,6 @@
 #include "audio/graph_node.h"
 #include "audio/graph_thread.h"
 #include "audio/modulator.h"
-#include "audio/passthrough_processor.h"
 #include "audio/port.h"
 #include "audio/router.h"
 #include "audio/sample_processor.h"
@@ -650,7 +649,7 @@ graph_setup (
         continue;
 
       Fader * fader;
-      PassthroughProcessor * prefader;
+      Fader * prefader;
       fader = tr->channel->fader;
       prefader = tr->channel->prefader;
 
@@ -711,7 +710,7 @@ graph_setup (
           self, prefader);
       g_warn_if_fail (node);
       if (prefader->type ==
-            PP_TYPE_AUDIO_CHANNEL)
+            FADER_TYPE_AUDIO_CHANNEL)
         {
           port = prefader->stereo_in->l;
           node2 =
@@ -731,7 +730,7 @@ graph_setup (
           graph_node_connect (node, node2);
         }
       else if (prefader->type ==
-                 PP_TYPE_MIDI_CHANNEL)
+                 FADER_TYPE_MIDI_CHANNEL)
         {
           port = prefader->midi_in;
           node2 =
@@ -1102,7 +1101,7 @@ graph_find_node_from_fader (
 GraphNode *
 graph_find_node_from_prefader (
   Graph * graph,
-  PassthroughProcessor * prefader)
+  Fader * prefader)
 {
   GraphNode * node;
   for (size_t i = 0;

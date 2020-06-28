@@ -29,18 +29,25 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
-#include "utils/yaml.h"
+#include "utils/objects.h"
 
 #include <gtk/gtk.h>
 
 void
 tracklist_selections_init_loaded (
-  TracklistSelections * ts)
+  TracklistSelections * self)
 {
-  int i;
-  for (i = 0; i < ts->num_tracks; i++)
-    ts->tracks[i] =
-      TRACKLIST->tracks[ts->tracks[i]->pos];
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+      track_init_loaded (track, false);
+      if (self->is_project)
+        {
+          self->tracks[i] =
+            TRACKLIST->tracks[self->tracks[i]->pos];
+          track_free (track);
+        }
+    }
 }
 
 /**
@@ -89,6 +96,22 @@ tracklist_selections_get_lowest_track (
     }
 
   return max_track;
+}
+
+/**
+ * @param is_project Whether these selections are
+ *   the project selections (as opposed to clones).
+ */
+TracklistSelections *
+tracklist_selections_new (
+  bool  is_project)
+{
+  TracklistSelections * self =
+    object_new (TracklistSelections);
+
+  self->is_project = is_project;
+
+  return self;
 }
 
 /**
@@ -328,16 +351,15 @@ tracklist_selections_clone (
   TracklistSelections * src)
 {
   TracklistSelections * new_ts =
-    calloc (1, sizeof (TracklistSelections));
+    object_new (TracklistSelections);
 
   for (int i = 0; i < src->num_tracks; i++)
     {
       Track * r = src->tracks[i];
       Track * new_r =
-        track_clone (r);
+        track_clone (r, src->is_project);
       array_append (
-        new_ts->tracks,
-        new_ts->num_tracks,
+        new_ts->tracks, new_ts->num_tracks,
         new_r);
     }
 
@@ -380,9 +402,19 @@ tracklist_selections_mark_for_bounce (
 
 
 void
-tracklist_selections_free (TracklistSelections * self)
+tracklist_selections_free (
+  TracklistSelections * self)
 {
-  free (self);
+  if (!self->is_project)
+    {
+      for (int i = 0; i < self->num_tracks; i++)
+        {
+          object_free_w_func_and_null (
+            track_free, self->tracks[i]);
+        }
+    }
+
+  object_zero_and_free (self);
 }
 
 SERIALIZE_SRC (

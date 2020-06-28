@@ -144,6 +144,8 @@ init_feature (
  *
  * @param port_exists If zrythm port exists (when
  *   loading)
+ * @param is_project Whether the plugin is a
+ *   project plugin.
  *
  * @return Non-zero if fail.
 */
@@ -152,7 +154,8 @@ create_port (
   Lv2Plugin *    lv2_plugin,
   const uint32_t lv2_port_index,
   const float    default_value,
-  const int      port_exists)
+  const int      port_exists,
+  bool           is_project)
 {
   Lv2Port* const lv2_port =
     &lv2_plugin->ports[lv2_port_index];
@@ -166,7 +169,7 @@ create_port (
       lv2_port->lilv_port);
   const char * name_str =
     lilv_node_as_string (name_node);
-  if (port_exists)
+  if (port_exists && is_project)
     {
       lv2_port->port =
         port_find_from_identifier (
@@ -539,12 +542,17 @@ create_port (
 }
 
 void
-lv2_plugin_init_loaded (Lv2Plugin * lv2_plgn)
+lv2_plugin_init_loaded (
+  Lv2Plugin * self,
+  bool        project)
 {
+  if (!project)
+    return;
+
   Lv2Port * lv2_port;
-  for (int i = 0; i < lv2_plgn->num_ports; i++)
+  for (int i = 0; i < self->num_ports; i++)
     {
-      lv2_port = &lv2_plgn->ports[i];
+      lv2_port = &self->ports[i];
       lv2_port->port =
         port_find_from_identifier (
           &lv2_port->port_id);
@@ -559,10 +567,13 @@ lv2_plugin_init_loaded (Lv2Plugin * lv2_plgn)
 /**
  * Create port structures from data (via
  * create_port()) for all ports.
+ *
+ * @param project Whether this is a project plugin.
  */
 static int
 lv2_create_or_init_ports (
-  Lv2Plugin* self)
+  Lv2Plugin* self,
+  bool       project)
 {
   /* zrythm ports exist when loading a
    * project since they are serialized */
@@ -606,7 +617,8 @@ lv2_create_or_init_ports (
       g_return_val_if_fail (
         create_port (
           self, (uint32_t) i,
-          default_values[i], ports_exist) == 0,
+          default_values[i], ports_exist,
+          project) == 0,
         -1);
     }
 
@@ -1530,6 +1542,7 @@ lv2_plugin_pick_ui (
 int
 lv2_plugin_instantiate (
   Lv2Plugin *  self,
+  bool         project,
   char *       preset_uri)
 {
   int i;
@@ -1679,7 +1692,8 @@ lv2_plugin_instantiate (
 
   /* Set default values for all ports */
   g_return_val_if_fail (
-    lv2_create_or_init_ports (self) == 0, -1);
+    lv2_create_or_init_ports (
+      self, project) == 0, -1);
 
   self->control_in = -1;
 
@@ -1935,7 +1949,7 @@ lv2_plugin_instantiate (
   return 0;
 }
 
-void
+int
 lv2_plugin_activate (
   Lv2Plugin * self,
   bool        activate)
@@ -1948,6 +1962,8 @@ lv2_plugin_activate (
     {
       lilv_instance_deactivate (self->instance);
     }
+
+  return 0;
 }
 
 /**

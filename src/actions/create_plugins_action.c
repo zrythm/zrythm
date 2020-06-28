@@ -77,7 +77,7 @@ create_plugins_action_do (
       plugin_set_track_pos (pl, self->track_pos);
 
       /* instantiate */
-      int ret = plugin_instantiate (pl);
+      int ret = plugin_instantiate (pl, true);
       g_return_val_if_fail (!ret, -1);
 
       /* add to channel */

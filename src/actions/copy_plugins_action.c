@@ -52,7 +52,9 @@ copy_plugins_action_new (
     UA_COPY_PLUGINS;
 
   self->slot_type = slot_type;
-  self->ms = mixer_selections_clone (ms);
+  self->ms =
+    mixer_selections_clone (
+      ms, ms == MIXER_SELECTIONS);
   self->slot = slot;
 
   if (tr)
@@ -132,7 +134,8 @@ copy_plugins_action_do (
   for (int i = 0; i < self->ms->num_slots; i++)
     {
       /* clone the clone */
-      pl = plugin_clone (self->ms->plugins[i]);
+      pl =
+        plugin_clone (self->ms->plugins[i], false);
 
       /* add it to the channel */
       int new_slot = self->slot + i;

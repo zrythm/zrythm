@@ -99,10 +99,12 @@ typedef enum PortOwnerType
   PORT_OWNER_TYPE_BACKEND,
   PORT_OWNER_TYPE_PLUGIN,
   PORT_OWNER_TYPE_TRACK,
-  PORT_OWNER_TYPE_PREFADER,
 
   /* track fader */
   PORT_OWNER_TYPE_FADER,
+
+  /* track prefader */
+  PORT_OWNER_TYPE_PREFADER,
 
   /* monitor fader */
   PORT_OWNER_TYPE_MONITOR_FADER,

@@ -965,6 +965,8 @@ on_plugin_window_visibility_changed (
 static void
 on_plugin_visibility_changed (Plugin * pl)
 {
+  g_message (
+    "%s: visible: %d", __func__, pl->visible);
   if (pl->visible)
     plugin_open_ui (pl);
   else if (!pl->visible)

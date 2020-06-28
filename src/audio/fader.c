@@ -41,7 +41,8 @@
  */
 void
 fader_init_loaded (
-  Fader * self)
+  Fader * self,
+  bool    is_project)
 {
   self->magic = FADER_MAGIC;
 
@@ -79,6 +80,8 @@ fader_init_loaded (
   port_set_owner_fader (self->mute, self);
 
   fader_set_amp ((void *) self, self->amp->control);
+
+  fader_set_is_project (self, is_project);
 }
 
 /**
@@ -92,11 +95,14 @@ fader_init_loaded (
 Fader *
 fader_new (
   FaderType type,
-  Channel * ch)
+  Channel * ch,
+  bool      passthrough)
 {
   Fader * self = object_new (Fader);
 
   self->magic = FADER_MAGIC;
+
+  self->passthrough = passthrough;
 
   self->type = type;
   if (type == FADER_TYPE_AUDIO_CHANNEL ||
@@ -161,25 +167,52 @@ fader_new (
   if (type == FADER_TYPE_AUDIO_CHANNEL ||
       type == FADER_TYPE_MONITOR)
     {
+      const char * name = NULL;
+      if (type == FADER_TYPE_AUDIO_CHANNEL)
+        {
+          if (passthrough)
+            {
+              name = _("Ch Pre-Fader in");
+            }
+          else
+            {
+              name = _("Ch Fader in");
+            }
+        }
+      else
+        {
+          name =  _("Monitor Fader in");
+        }
+
       /* stereo in */
       self->stereo_in =
         stereo_ports_new_generic (
-        1,
-        type == FADER_TYPE_AUDIO_CHANNEL ?
-          _("Ch Fader in") :
-          _("Monitor Fader in"),
+        1, name,
         type == FADER_TYPE_AUDIO_CHANNEL ?
           PORT_OWNER_TYPE_FADER :
           PORT_OWNER_TYPE_MONITOR_FADER,
         self);
 
+      if (type == FADER_TYPE_AUDIO_CHANNEL)
+        {
+          if (passthrough)
+            {
+              name = _("Ch Pre-Fader out");
+            }
+          else
+            {
+              name = _("Ch Fader out");
+            }
+        }
+      else
+        {
+          name =  _("Monitor Fader out");
+        }
+
       /* stereo out */
       self->stereo_out =
         stereo_ports_new_generic (
-        0,
-        type == FADER_TYPE_AUDIO_CHANNEL ?
-          _("Ch Fader out") :
-          _("Monitor Fader out"),
+        0, name,
         type == FADER_TYPE_AUDIO_CHANNEL ?
           PORT_OWNER_TYPE_FADER :
           PORT_OWNER_TYPE_MONITOR_FADER,
@@ -189,28 +222,36 @@ fader_new (
   if (type == FADER_TYPE_MIDI_CHANNEL)
     {
       /* MIDI in */
-      char * pll =
-        g_strdup (_("Channel MIDI Fader in"));
+      const char * name = NULL;
+      if (passthrough)
+        {
+          name = _("Ch MIDI Pre-Fader in");
+        }
+      else
+        {
+          name = _("Ch MIDI Fader in");
+        }
       self->midi_in =
         port_new_with_type (
-          TYPE_EVENT, FLOW_INPUT, pll);
+          TYPE_EVENT, FLOW_INPUT, name);
       self->midi_in->midi_events =
-        midi_events_new (
-          self->midi_in);
-      g_free (pll);
+        midi_events_new (self->midi_in);
 
       /* MIDI out */
-      pll =
-        g_strdup (_("MIDI fader out"));
+      if (passthrough)
+        {
+          name = _("Ch MIDI Pre-Fader out");
+        }
+      else
+        {
+          name = _("Ch MIDI Fader out");
+        }
       self->midi_out =
         port_new_with_type (
-          TYPE_EVENT,
-          FLOW_OUTPUT,
-          pll);
+          TYPE_EVENT, FLOW_OUTPUT, name);
       self->midi_out->midi_events =
         midi_events_new (
           self->midi_out);
-      g_free (pll);
 
       port_set_owner_fader (
         self->midi_in, self);
@@ -430,6 +471,37 @@ fader_get_track (
   return track;
 }
 
+void
+fader_set_is_project (
+  Fader * self,
+  bool    is_project)
+{
+  self->is_project = is_project;
+
+  /* set volume */
+  self->amp->is_project = is_project;
+  self->balance->is_project = is_project;
+  self->mute->is_project = is_project;
+  if (self->stereo_in)
+    {
+      self->stereo_in->l->is_project = is_project;
+      self->stereo_in->r->is_project = is_project;
+    }
+  if (self->stereo_out)
+    {
+      self->stereo_out->l->is_project = is_project;
+      self->stereo_out->r->is_project = is_project;
+    }
+  if (self->midi_in)
+    {
+      self->midi_in->is_project = is_project;
+    }
+  if (self->midi_out)
+    {
+      self->midi_out->is_project = is_project;
+    }
+}
+
 /**
  * Clears all buffers.
  */
@@ -561,8 +633,6 @@ fader_process (
   nframes_t       start_frame,
   const nframes_t nframes)
 {
-  /*Track * track = self->channel->track;*/
-
   float pan =
     port_get_control_value (self->balance, 0);
   float amp =
@@ -571,59 +641,77 @@ fader_process (
   if (self->type == FADER_TYPE_AUDIO_CHANNEL ||
       self->type == FADER_TYPE_MONITOR)
     {
-      nframes_t end = start_frame + nframes;
-      float calc_l, calc_r;
-      balance_control_get_calc_lr (
-        BALANCE_CONTROL_ALGORITHM_LINEAR,
-        pan, &calc_l, &calc_r);
-
-      Track * track = NULL;
-      if (self->type == FADER_TYPE_AUDIO_CHANNEL)
+      if (self->passthrough)
         {
-          track = fader_get_track (self);
-          g_return_if_fail (track);
-        }
-
-      /* clear it if any of the following is
-       * true:
-       * 1. muted
-       * 2. other track(s) is soloed and this
-       *   isn't
-       * 3. bounce mode and the track is set
-       *   to BOUNCE_OFF */
-      if (fader_get_muted (self) ||
-          (self->type == FADER_TYPE_AUDIO_CHANNEL &&
-            tracklist_has_soloed (TRACKLIST) &&
-            !fader_get_soloed (self) &&
-            track != P_MASTER_TRACK) ||
-          (AUDIO_ENGINE->bounce_mode == BOUNCE_ON &&
-           self->type == FADER_TYPE_AUDIO_CHANNEL &&
-           track->out_signal_type == TYPE_AUDIO &&
-           track->type != TRACK_TYPE_MASTER &&
-           !track->bounce))
-        {
+          /* copy the input to output */
+          memcpy (
+            &self->stereo_out->l->buf[start_frame],
+            &self->stereo_in->l->buf[start_frame],
+            nframes * sizeof (float));
+          memcpy (
+            &self->stereo_out->r->buf[start_frame],
+            &self->stereo_in->r->buf[start_frame],
+            nframes * sizeof (float));
         }
       else
         {
-          while (start_frame < end)
+
+          nframes_t end = start_frame + nframes;
+          float calc_l, calc_r;
+          balance_control_get_calc_lr (
+            BALANCE_CONTROL_ALGORITHM_LINEAR,
+            pan, &calc_l, &calc_r);
+
+          Track * track = NULL;
+          if (self->type == FADER_TYPE_AUDIO_CHANNEL)
             {
-              /* 1. get input
-               * 2. apply fader
-               * 3. apply pan */
-              self->stereo_out->l->buf[
-                start_frame] =
-                  self->stereo_in->l->buf[
-                    start_frame] * amp * calc_l;
-              self->stereo_out->r->buf[
-                start_frame] =
-                  self->stereo_in->r->buf[
-                    start_frame] * amp * calc_r;
-              start_frame++;
+              track = fader_get_track (self);
+              g_return_if_fail (track);
+            }
+
+          /* clear it if any of the following is
+           * true:
+           * 1. muted
+           * 2. other track(s) is soloed and this
+           *   isn't
+           * 3. bounce mode and the track is set
+           *   to BOUNCE_OFF */
+          if (fader_get_muted (self) ||
+              (self->type == FADER_TYPE_AUDIO_CHANNEL &&
+                tracklist_has_soloed (TRACKLIST) &&
+                !fader_get_soloed (self) &&
+                track != P_MASTER_TRACK) ||
+              (AUDIO_ENGINE->bounce_mode == BOUNCE_ON &&
+               self->type == FADER_TYPE_AUDIO_CHANNEL &&
+               track->out_signal_type == TYPE_AUDIO &&
+               track->type != TRACK_TYPE_MASTER &&
+               !track->bounce))
+            {
+            }
+          else
+            {
+              while (start_frame < end)
+                {
+                  /* 1. get input
+                   * 2. apply fader
+                   * 3. apply pan */
+                  self->stereo_out->l->buf[
+                    start_frame] =
+                      self->stereo_in->l->buf[
+                        start_frame] * amp * calc_l;
+                  self->stereo_out->r->buf[
+                    start_frame] =
+                      self->stereo_in->r->buf[
+                        start_frame] * amp * calc_r;
+                  start_frame++;
+                }
             }
         }
     }
   else if (self->type == FADER_TYPE_MIDI_CHANNEL)
     {
+      /* TODO if not passthrough, apply volume
+       * changes */
       midi_events_append (
         self->midi_in->midi_events,
         self->midi_out->midi_events,

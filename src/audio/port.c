@@ -35,7 +35,6 @@
 #include "audio/router.h"
 #include "audio/modulator.h"
 #include "audio/pan.h"
-#include "audio/passthrough_processor.h"
 #include "audio/port.h"
 #include "audio/rtaudio_device.h"
 #include "audio/rtmidi_device.h"
@@ -69,9 +68,19 @@
  */
 void
 port_init_loaded (
-  Port * self)
+  Port * self,
+  bool   is_project)
 {
+  g_message (
+    "%s: %s, is project: %d", __func__,
+    self->id.label, is_project);
+
   self->magic = PORT_MAGIC;
+
+  self->is_project = is_project;
+
+  if (is_project)
+    return;
 
   PortIdentifier * id;
   for (int i = 0; i < self->num_srcs; i++)
@@ -124,6 +133,8 @@ port_init_loaded (
     default:
       break;
     }
+
+  g_message ("%s: done", __func__);
 }
 
 /**
@@ -440,10 +451,12 @@ port_find_from_identifier (
 }
 
 void
-stereo_ports_init_loaded (StereoPorts * sp)
+stereo_ports_init_loaded (
+  StereoPorts * sp,
+  bool          is_project)
 {
-  port_init_loaded (sp->l);
-  port_init_loaded (sp->r);
+  port_init_loaded (sp->l, is_project);
+  port_init_loaded (sp->r, is_project);
 }
 
 /**
@@ -458,26 +471,26 @@ _port_new (
   g_message (
     "%s: Creating port %s...", __func__, label);
 
-  Port * port = object_new (Port);
+  Port * self = object_new (Port);
 
-  port->id.plugin_id.slot = -1;
-  port->id.track_pos = -1;
-  port->magic = PORT_MAGIC;
+  self->id.plugin_id.slot = -1;
+  self->id.track_pos = -1;
+  self->magic = PORT_MAGIC;
 
-  port->num_dests = 0;
+  self->num_dests = 0;
   if (AUDIO_ENGINE->block_length != 0)
     {
-      port->buf =
+      self->buf =
         calloc (
           AUDIO_ENGINE->block_length,
           sizeof (float));
     }
-  port->id.flow = FLOW_UNKNOWN;
-  port->id.label = g_strdup (label);
+  self->id.flow = FLOW_UNKNOWN;
+  self->id.label = g_strdup (label);
 
-  g_message ("%s: done", __func__);
+  g_message ("%s: done (%p)", __func__, self);
 
-  return port;
+  return self;
 }
 
 /**
@@ -537,6 +550,8 @@ port_new_with_type (
     default:
       break;
     }
+
+  g_return_val_if_fail (IS_PORT (self), NULL);
 
   return self;
 }
@@ -967,6 +982,9 @@ port_get_all (
   _ADD (MONITOR_FADER->stereo_in->r);
   _ADD (MONITOR_FADER->stereo_out->l);
   _ADD (MONITOR_FADER->stereo_out->r);
+  _ADD (MONITOR_FADER->amp);
+  _ADD (MONITOR_FADER->balance);
+  _ADD (MONITOR_FADER->mute);
 
   _ADD (AUDIO_ENGINE->monitor_out->l);
   _ADD (AUDIO_ENGINE->monitor_out->r);
@@ -1095,7 +1113,14 @@ port_set_owner_fader (
       fader->type == FADER_TYPE_MIDI_CHANNEL)
     {
       id->track_pos = fader->track_pos;
-      id->owner_type = PORT_OWNER_TYPE_FADER;
+      if (fader->passthrough)
+        {
+          id->owner_type = PORT_OWNER_TYPE_PREFADER;
+        }
+      else
+        {
+          id->owner_type = PORT_OWNER_TYPE_FADER;
+        }
     }
   else
     {
@@ -1117,6 +1142,7 @@ port_set_owner_fader (
     }
 }
 
+#if 0
 /**
  * Sets the owner fader & its ID.
  */
@@ -1131,6 +1157,7 @@ port_set_owner_prefader (
   port->id.owner_type =
     PORT_OWNER_TYPE_PREFADER;
 }
+#endif
 
 /**
  * Returns whether the Port's can be connected (if
@@ -1189,6 +1216,16 @@ ports_disconnect (
                  port->num_srcs,
                  port->num_dests);
     }
+}
+
+void
+port_set_is_project (
+  Port * self,
+  bool   is_project)
+{
+  g_return_if_fail (IS_PORT (self));
+
+  self->is_project = is_project;
 }
 
 /**
@@ -1327,36 +1364,49 @@ ports_connected (Port * src, Port * dest)
  * Disconnects all srcs and dests from port.
  */
 int
-port_disconnect_all (Port * port)
+port_disconnect_all (
+  Port * self)
 {
-  g_return_val_if_fail (port, ERR_OBJECT_IS_NULL);
+  g_return_val_if_fail (
+    IS_PORT (self), ERR_PORT_MAGIC_FAILED);
 
-  FOREACH_SRCS (port)
+  if (!self->is_project)
     {
-      Port * src = port->srcs[i];
-      port_disconnect (src, port);
+      g_warning (
+        "%s: %s (%p) is not a project port, "
+        "skipping",
+        __func__, self->id.label, self);
+      self->num_srcs = 0;
+      self->num_dests = 0;
+      return 0;
     }
 
-  FOREACH_DESTS (port)
+  FOREACH_SRCS (self)
     {
-      Port * dest = port->dests[i];
-      port_disconnect (port, dest);
+      Port * src = self->srcs[i];
+      port_disconnect (src, self);
+    }
+
+  FOREACH_DESTS (self)
+    {
+      Port * dest = self->dests[i];
+      port_disconnect (self, dest);
     }
 
 #ifdef HAVE_JACK
-  if (port->internal_type == INTERNAL_JACK_PORT)
+  if (self->internal_type == INTERNAL_JACK_PORT)
     {
-      expose_to_jack (port, 0);
+      expose_to_jack (self, 0);
     }
 #endif
 
 #ifdef HAVE_RTMIDI
-  for (int i = port->num_rtmidi_ins - 1; i >= 0;
+  for (int i = self->num_rtmidi_ins - 1; i >= 0;
        i--)
     {
       rtmidi_device_close (
-        port->rtmidi_ins[i], 1);
-      port->num_rtmidi_ins--;
+        self->rtmidi_ins[i], 1);
+      self->num_rtmidi_ins--;
     }
 #endif
 
@@ -2241,16 +2291,11 @@ stereo_ports_new_generic (
   switch (owner_type)
     {
     case PORT_OWNER_TYPE_FADER:
+    case PORT_OWNER_TYPE_PREFADER:
       port_set_owner_fader (
         ports->l, (Fader *) owner);
       port_set_owner_fader (
         ports->r, (Fader *) owner);
-      break;
-    case PORT_OWNER_TYPE_PREFADER:
-      port_set_owner_prefader (
-        ports->l, (PassthroughProcessor *) owner);
-      port_set_owner_prefader (
-        ports->r, (PassthroughProcessor *) owner);
       break;
     case PORT_OWNER_TYPE_TRACK:
       port_set_owner_track (

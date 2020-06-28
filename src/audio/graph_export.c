@@ -21,7 +21,6 @@
 #include "audio/graph.h"
 #include "audio/graph_node.h"
 #include "audio/graph_export.h"
-#include "audio/passthrough_processor.h"
 #include "audio/port.h"
 #include "audio/router.h"
 #include "audio/track.h"
@@ -280,11 +279,9 @@ fill_anodes (
           break;
         case ROUTE_NODE_TYPE_PREFADER:
           {
-            PassthroughProcessor * prefader =
-              node->prefader;
+            Fader * prefader = node->prefader;
             Track * tr =
-              passthrough_processor_get_track (
-                prefader);
+              fader_get_track (prefader);
             parent_node =
               graph_find_node_from_track (
                 node->graph, tr);

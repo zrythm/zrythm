@@ -53,7 +53,6 @@
 #include "audio/midi_track.h"
 #include "audio/modulator.h"
 #include "audio/pan.h"
-#include "audio/passthrough_processor.h"
 #include "audio/port.h"
 #include "audio/router.h"
 #include "audio/stretcher.h"

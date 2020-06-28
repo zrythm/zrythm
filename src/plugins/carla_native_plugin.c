@@ -1056,13 +1056,15 @@ carla_native_plugin_open_ui (
     }
 }
 
-void
+int
 carla_native_plugin_activate (
   CarlaNativePlugin * self,
   bool                activate)
 {
   carla_set_active (
     self->host_handle, 0, activate);
+
+  return 0;
 }
 
 float

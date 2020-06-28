@@ -31,7 +31,7 @@
 Modulator *
 modulator_new (
   PluginDescriptor * descr,
-  Track *       track)
+  Track *            track)
 {
   Modulator * self = calloc (1, sizeof (Modulator));
 
@@ -44,7 +44,7 @@ modulator_new (
   self->plugin->id.track_pos = track->pos;
   plugin_generate_automation_tracks (
     self->plugin, track);
-  int ret = plugin_instantiate (self->plugin);
+  int ret = plugin_instantiate (self->plugin, true);
   g_warn_if_fail (!ret);
 
   /* FIXME check if unique */

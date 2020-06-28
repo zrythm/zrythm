@@ -45,6 +45,7 @@
 #include "audio/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/create_project_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
@@ -590,30 +591,38 @@ create_default (Project * self)
   /* init pinned tracks */
 
   /* chord */
+  g_message (
+    "%s: adding chord track...", __func__);
   Track * track = chord_track_new (0);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
   track->pinned = 1;
-  TRACKLIST->chord_track = track;
+  self->tracklist->chord_track = track;
 
   /* tempo */
+  g_message (
+    "%s: adding tempo track...", __func__);
   track = tempo_track_default (1);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
   track->pinned = 1;
-  TRACKLIST->tempo_track = track;
+  self->tracklist->tempo_track = track;
 
   /* marker */
+  g_message (
+    "%s: adding marker track...", __func__);
   track = marker_track_default (0);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
   track->pinned = 1;
-  TRACKLIST->marker_track = track;
+  self->tracklist->marker_track = track;
 
   /* add master channel to mixer and tracklist */
+  g_message (
+    "%s: adding master track...", __func__);
   track =
     track_new (
       TRACK_TYPE_MASTER, 2, _("Master"),
@@ -621,9 +630,9 @@ create_default (Project * self)
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
-  TRACKLIST->master_track = track;
+  self->tracklist->master_track = track;
   tracklist_selections_add_track (
-    TRACKLIST_SELECTIONS, track, 0);
+    self->tracklist_selections, track, 0);
   self->last_selection = SELECTION_TYPE_TRACK;
 
   engine_setup (self->audio_engine);
@@ -857,6 +866,9 @@ load (
 
   if (PROJECT)
     {
+      g_message (
+        "%s: freeing previous project...",
+        __func__);
       object_free_w_func_and_null (
         project_free, PROJECT);
     }
@@ -866,7 +878,8 @@ load (
       destroy_prev_main_window ();
     }
 
-  g_message ("initing loaded structures");
+  g_message (
+    "%s: initing loaded structures", __func__);
   PROJECT = self;
 
   /* re-update paths for the newly loaded project */
@@ -914,7 +927,7 @@ load (
   for (int i = 0; i < num_ports; i++)
     {
       port = ports[i];
-      port_init_loaded (port);
+      port_init_loaded (port, true);
     }
 
   midi_mappings_init_loaded (
@@ -934,7 +947,7 @@ load (
     &self->automation_selections, true);
 
   tracklist_selections_init_loaded (
-    &self->tracklist_selections);
+    self->tracklist_selections);
 
   snap_grid_update_snap_points (
     &self->snap_grid_timeline);
@@ -994,7 +1007,7 @@ project_load (
   const int is_template)
 {
   g_message (
-    "%s: filename <%s> is template <%d>",
+    "%s: filename: %s, is template: %d",
     __func__, filename, is_template);
 
   if (filename)
@@ -1220,6 +1233,8 @@ project_new (
     }
 
   self->clip_editor = clip_editor_new ();
+  self->tracklist_selections =
+    tracklist_selections_new (true);
 
   g_message ("%s: done", __func__);
 

@@ -99,10 +99,14 @@ mixer_selections_init_loaded (
 
 /**
  * Clone the struct for copying, undoing, etc.
+ *
+ * @bool src_is_project Whether \ref src are the
+ *   project selections.
  */
 MixerSelections *
 mixer_selections_clone (
-  MixerSelections * src);
+  MixerSelections * src,
+  bool              src_is_project);
 
 /**
  * Returns if there are any selections.

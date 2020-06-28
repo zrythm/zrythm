@@ -38,14 +38,15 @@ init_common (
       (float)
       g_settings_get_double (
         S_UI, "monitor-out-vol");
-  fader_set_amp (
-    self->monitor_fader, amp);
+  fader_set_amp (self->monitor_fader, amp);
 
   /* init listen vol fader */
   self->listen_vol_fader =
     fader_new (
-      FADER_TYPE_GENERIC, NULL);
+      FADER_TYPE_GENERIC, NULL, false);
   fader_set_amp (self->listen_vol_fader, 0.1f);
+  fader_set_is_project (
+    self->listen_vol_fader, true);
 }
 
 /**
@@ -55,7 +56,7 @@ void
 control_room_init_loaded (
   ControlRoom * self)
 {
-  fader_init_loaded (self->monitor_fader);
+  fader_init_loaded (self->monitor_fader, true);
 
   init_common (self);
 }
@@ -70,7 +71,8 @@ control_room_new (void)
 
   self->monitor_fader =
     fader_new (
-      FADER_TYPE_MONITOR, NULL);
+      FADER_TYPE_MONITOR, NULL, false);
+  fader_set_is_project (self->monitor_fader, true);
 
   init_common (self);
 

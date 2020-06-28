@@ -99,6 +99,14 @@ typedef struct Plugin
   /** The latency in samples. */
   nframes_t           latency;
 
+  /** Whether the plugin is currently instantiated
+   * or not. */
+  bool                instantiated;
+
+  /** Whether the plugin is currently activated
+   * or not. */
+  bool                activated;
+
   /**
    * Whether the UI has finished instantiating.
    *
@@ -201,7 +209,8 @@ static const cyaml_schema_value_t
 
 void
 plugin_init_loaded (
-  Plugin * self);
+  Plugin * self,
+  bool     project);
 
 /**
  * Adds an AutomationTrack to the Plugin.
@@ -283,12 +292,22 @@ plugin_remove_ats_from_automation_tracklist (
 
 /**
  * Clones the given plugin.
+ *
+ * @bool src_is_project Whether \ref pl is a project
+ *   plugin.
  */
 Plugin *
 plugin_clone (
-  Plugin * pl);
+  Plugin * pl,
+  bool     src_is_project);
 
-void
+/**
+ * Activates or deactivates the plugin.
+ *
+ * @param activate True to activate, false to
+ *   deactivate.
+ */
+int
 plugin_activate (
   Plugin * pl,
   bool     activate);
@@ -416,9 +435,14 @@ plugin_prepare_process (
 /**
  * Instantiates the plugin (e.g. when adding to a
  * channel)
+ *
+ * @param project Whether this is a project plugin
+ *   (as opposed to a clone used in actions).
  */
 int
-plugin_instantiate (Plugin * plugin);
+plugin_instantiate (
+  Plugin * self,
+  bool     project);
 
 /**
  * Sets the track and track_pos on the plugin.

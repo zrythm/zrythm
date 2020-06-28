@@ -44,7 +44,6 @@
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/mixer_selections.h"
 #include "gui/backend/timeline_selections.h"
-#include "gui/backend/tracklist_selections.h"
 #include "gui/backend/tool.h"
 #include "plugins/plugin.h"
 #include "zrythm.h"
@@ -54,13 +53,8 @@
 typedef struct Timeline Timeline;
 typedef struct Transport Transport;
 typedef struct Tracklist Tracklist;
-typedef struct Port Port;
-typedef struct Channel Channel;
-typedef struct Plugin Plugin;
-typedef struct Track Track;
-typedef struct ZRegion ZRegion;
-typedef struct MidiNote MidiNote;
-typedef struct Track ChordTrack;
+typedef struct TracklistSelections
+  TracklistSelections;
 
 /**
  * @addtogroup project Project
@@ -170,7 +164,7 @@ typedef struct Project
   /**
    * Selected Track's.
    */
-  TracklistSelections tracklist_selections;
+  TracklistSelections * tracklist_selections;
 
   /**
    * Plugin selections in the Mixer.
@@ -262,7 +256,7 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_EMBEDDED (
     Project, automation_selections,
     automation_selections_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project, tracklist_selections,
     tracklist_selections_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (

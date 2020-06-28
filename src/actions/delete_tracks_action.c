@@ -25,6 +25,7 @@
 #include "gui/backend/tracklist_selections.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -87,16 +88,25 @@ delete_tracks_action_undo (
   for (int i = 0; i < self->tls->num_tracks; i++)
     {
       /* clone the clone */
-      track = track_clone (self->tls->tracks[i]);
+      track =
+        track_clone (self->tls->tracks[i], false);
 
       /* insert it to the tracklist at its original
        * pos */
       tracklist_insert_track (
-        TRACKLIST,
-        track,
-        track->pos,
+        TRACKLIST, track, track->pos,
         F_NO_PUBLISH_EVENTS,
         F_NO_RECALC_GRAPH);
+
+      if (track->type == TRACK_TYPE_INSTRUMENT)
+        {
+          if (track->channel->instrument->visible)
+            {
+              EVENTS_PUSH (
+                ET_PLUGIN_VISIBILITY_CHANGED,
+                track->channel->instrument);
+            }
+        }
     }
 
   EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
@@ -123,7 +133,9 @@ void
 delete_tracks_action_free (
   DeleteTracksAction * self)
 {
-  tracklist_selections_free (self->tls);
-  free (self);
+  object_free_w_func_and_null (
+    tracklist_selections_free, self->tls);
+
+  object_zero_and_free (self);
 }
 

@@ -42,7 +42,6 @@
 #include "audio/graph.h"
 #include "audio/graph_node.h"
 #include "audio/master_track.h"
-#include "audio/passthrough_processor.h"
 #include "audio/port.h"
 #include "audio/router.h"
 #include "audio/sample_processor.h"
@@ -93,8 +92,7 @@ graph_node_get_name (
     case ROUTE_NODE_TYPE_PREFADER:
       {
         Track * track =
-          passthrough_processor_get_track (
-            node->prefader);
+          fader_get_track (node->prefader);
         return
           g_strdup_printf (
             "%s Pre-Fader", track->name);
@@ -301,7 +299,7 @@ graph_node_process (
     }
   else if (node->type == ROUTE_NODE_TYPE_PREFADER)
     {
-      passthrough_processor_process (
+      fader_process (
         node->prefader, local_offset, nframes);
     }
   else if (node->type ==
@@ -531,8 +529,7 @@ graph_node_new (
       node->fader = (Fader *) data;
       break;
     case ROUTE_NODE_TYPE_PREFADER:
-      node->prefader =
-        (PassthroughProcessor *) data;
+      node->prefader = (Fader *) data;
       break;
     case ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
       node->sample_processor =

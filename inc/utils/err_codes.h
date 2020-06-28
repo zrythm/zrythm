@@ -30,6 +30,7 @@ typedef enum ErrorCode
 {
   ERR_PLUGIN_INSTANTIATION_FAILED = 1,
   ERR_OBJECT_IS_NULL,
+  ERR_PORT_MAGIC_FAILED,
 } ErrorCode;
 
 /**

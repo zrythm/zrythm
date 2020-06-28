@@ -60,7 +60,7 @@ tracklist_init_loaded (
       else if (track->type == TRACK_TYPE_TEMPO)
         self->tempo_track = track;
 
-      track_init_loaded (track);
+      track_init_loaded (track, true);
     }
 }
 
@@ -180,6 +180,10 @@ tracklist_insert_track (
   int         publish_events,
   int         recalc_graph)
 {
+  g_message (
+    "%s: inserting %s at %d...",
+    __func__, track->name, pos);
+
   track_set_name (track, track->name, 0);
 
   /* if adding at the end, append it, otherwise
@@ -209,6 +213,8 @@ tracklist_insert_track (
       track_set_pos (self->tracks[i], i);
     }
 
+  track_set_is_project (track, true);
+
   if (track->channel)
     {
       channel_connect (track->channel);
@@ -223,6 +229,8 @@ tracklist_insert_track (
     {
       EVENTS_PUSH (ET_TRACK_ADDED, track);
     }
+
+  g_message ("%s: done", __func__);
 }
 
 ChordTrack *
@@ -525,11 +533,12 @@ tracklist_remove_track (
   Tracklist * self,
   Track *     track,
   bool        rm_pl,
-  bool        free,
+  bool        free_track,
   bool        publish_events,
   bool        recalc_graph)
 {
-  g_message ("removing %s", track->name);
+  g_message (
+    "%s: removing %s...", __func__, track->name);
 
   Track * prev_visible =
     tracklist_get_prev_visible_track (
@@ -558,7 +567,8 @@ tracklist_remove_track (
   g_warn_if_fail (
     track->pos == idx);
 
-  track_disconnect (track, rm_pl, F_NO_RECALC_GRAPH);
+  track_disconnect (
+    track, rm_pl, F_NO_RECALC_GRAPH);
 
   tracklist_selections_remove_track (
     TRACKLIST_SELECTIONS, track, publish_events);
@@ -578,13 +588,15 @@ tracklist_remove_track (
 
   track_set_pos (track, -1);
 
+  track_set_is_project (track, false);
+
   /* move all other tracks */
   for (int i = 0; i < self->num_tracks; i++)
     {
       track_set_pos (self->tracks[i], i);
     }
 
-  if (free)
+  if (free_track)
     {
       free_later (track, track_free);
     }
@@ -598,6 +610,8 @@ tracklist_remove_track (
     {
       EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
     }
+
+  g_message ("%s: done", __func__);
 }
 
 /**
@@ -836,14 +850,12 @@ tracklist_free (
 {
   g_message ("%s: freeing...", __func__);
 
-  for (int i = 0; i < self->num_tracks; i++)
+  for (int i = self->num_tracks - 1; i >= 0; i--)
     {
       Track * track = self->tracks[i];
-      track_disconnect (
-        track, F_REMOVE_PL,
-        F_NO_RECALC_GRAPH);
-      object_free_w_func_and_null (
-        track_free, self->tracks[i]);
+      tracklist_remove_track (
+        self, track, true, F_FREE,
+        F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
     }
 
   object_zero_and_free (self);

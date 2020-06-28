@@ -369,7 +369,7 @@ channel_prepare_process (Channel * self)
   /* clear buffers */
   track_processor_clear_buffers (
     tr->processor);
-  passthrough_processor_clear_buffers (
+  fader_clear_buffers (
     self->prefader);
   fader_clear_buffers (self->fader);
 
@@ -416,7 +416,9 @@ channel_prepare_process (Channel * self)
 }
 
 void
-channel_init_loaded (Channel * ch)
+channel_init_loaded (
+  Channel * ch,
+  bool      project)
 {
   g_message ("initing channel");
   Track * track = channel_get_track (ch);
@@ -428,9 +430,8 @@ channel_init_loaded (Channel * ch)
   ch->prefader->track_pos = track->pos;
   ch->fader->track_pos = track->pos;
 
-  passthrough_processor_init_loaded (
-    ch->prefader);
-  fader_init_loaded (ch->fader);
+  fader_init_loaded (ch->prefader, project);
+  fader_init_loaded (ch->fader, project);
 
   PortType out_type =
     track->out_signal_type;
@@ -460,7 +461,7 @@ channel_init_loaded (Channel * ch)
           pl->id.track_pos = ch->track_pos;
           pl->id.slot = i;
           pl->id.slot_type = PLUGIN_SLOT_INSERT;
-          plugin_init_loaded (pl);
+          plugin_init_loaded (pl, project);
         }
       pl = ch->midi_fx[i];
       if (pl)
@@ -468,7 +469,7 @@ channel_init_loaded (Channel * ch)
           pl->id.track_pos = ch->track_pos;
           pl->id.slot = i;
           pl->id.slot_type = PLUGIN_SLOT_MIDI_FX;
-          plugin_init_loaded (pl);
+          plugin_init_loaded (pl, project);
         }
     }
   if (ch->instrument)
@@ -477,7 +478,7 @@ channel_init_loaded (Channel * ch)
       pl->id.track_pos = ch->track_pos;
       pl->id.slot = 0;
       pl->id.slot_type = PLUGIN_SLOT_INSTRUMENT;
-      plugin_init_loaded (pl);
+      plugin_init_loaded (pl, project);
     }
 }
 
@@ -1130,7 +1131,7 @@ channel_append_all_ports (
     { \
       g_return_if_reached (); \
     } \
-  g_warn_if_fail (port); \
+  g_warn_if_fail (IS_PORT (port)); \
   array_append ( \
     *ports, (*size), port)
 
@@ -1362,12 +1363,11 @@ channel_new (
 
   FaderType fader_type =
     track_get_fader_type (track);
-  PassthroughProcessorType prefader_type =
-    track_get_passthrough_processor_type (track);
-  self->fader = fader_new (fader_type, self);
+  FaderType prefader_type =
+    track_type_get_prefader_type (track->type);
+  self->fader = fader_new (fader_type, self, false);
   self->prefader =
-    passthrough_processor_new (
-      prefader_type, self);
+    fader_new (prefader_type, self, true);
 
   /* init sends */
   for (int i = 0; i < STRIP_SIZE; i++)
@@ -1970,8 +1970,7 @@ channel_update_track_pos (
     }
 
   fader_update_track_pos (self->fader, pos);
-  passthrough_processor_update_track_pos (
-    self->prefader, pos);
+  fader_update_track_pos (self->prefader, pos);
 }
 
 /**
@@ -2025,15 +2024,18 @@ channel_get_automation_track (
 /**
  * Clones the channel recursively.
  *
- * Note the given track is not cloned.
+ * @note The given track is not cloned.
  *
  * @param track The track to use for getting the
  *   name.
+ * @bool src_is_project Whether \ref ch is a project
+ *   channel.
  */
 Channel *
 channel_clone (
   Channel * ch,
-  Track *   track)
+  Track *   track,
+  bool      src_is_project)
 {
   g_return_val_if_fail (track, NULL);
 
@@ -2045,7 +2047,8 @@ channel_clone (
       if (ch->inserts[i])
         {
           Plugin * clone_pl =
-            plugin_clone (ch->inserts[i]);
+            plugin_clone (
+              ch->inserts[i], src_is_project);
           channel_add_plugin (
             clone, PLUGIN_SLOT_INSERT,
             i, clone_pl, F_NO_CONFIRM,
@@ -2058,7 +2061,8 @@ channel_clone (
       if (ch->midi_fx[i])
         {
           Plugin * clone_pl =
-            plugin_clone (ch->midi_fx[i]);
+            plugin_clone (
+              ch->midi_fx[i], src_is_project);
           channel_add_plugin (
             clone, PLUGIN_SLOT_MIDI_FX,
             i, clone_pl, F_NO_CONFIRM,
@@ -2069,7 +2073,8 @@ channel_clone (
   if (ch->instrument)
     {
       Plugin * clone_pl =
-        plugin_clone (ch->instrument);
+        plugin_clone (
+          ch->instrument, src_is_project);
       channel_add_plugin (
         clone, PLUGIN_SLOT_INSTRUMENT,
         0, clone_pl, F_NO_CONFIRM,
@@ -2180,9 +2185,12 @@ channel_free (Channel * self)
 
   Track * track = channel_get_track (self);
 
-  track_processor_free (track->processor);
-  passthrough_processor_free (self->prefader);
-  fader_free (self->fader);
+  object_free_w_func_and_null (
+    track_processor_free, track->processor);
+  object_free_w_func_and_null (
+    fader_free, self->prefader);
+  object_free_w_func_and_null (
+    fader_free, self->fader);
 
   object_free_w_func_and_null (
     stereo_ports_free, self->stereo_out);

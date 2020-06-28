@@ -35,6 +35,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <inttypes.h>
 #include <math.h>
 #include <stdlib.h>
 #include <signal.h>

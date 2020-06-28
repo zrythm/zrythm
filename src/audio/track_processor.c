@@ -43,7 +43,8 @@
  */
 void
 track_processor_init_loaded (
-  TrackProcessor * self)
+  TrackProcessor * self,
+  bool             is_project)
 {
   Track * tr =
     track_processor_get_track (self);
@@ -99,6 +100,8 @@ track_processor_init_loaded (
     default:
       break;
     }
+
+  track_processor_set_is_project (self, is_project);
 }
 
 /**
@@ -116,21 +119,28 @@ track_processor_init_loaded (
 static void
 init_midi_port (
   TrackProcessor * self,
-  int              in,
-  int              loading)
+  int              in)
 {
-  const char * str =
-    in ? "MIDI in" : "(internal) MIDI out";
-  Port ** port =
-    in ? &self->midi_in : &self->midi_out;
-  PortFlow flow = in ? FLOW_INPUT : FLOW_OUTPUT;
-
-  *port =
-    port_new_with_type (TYPE_EVENT, flow, str);
-  port_set_owner_track_processor (*port, self);
-
   if (in)
-    (*port)->id.flags |= PORT_FLAG_SENDABLE;
+    {
+      self->midi_in =
+        port_new_with_type (
+          TYPE_EVENT, FLOW_INPUT, "TP MIDI in");
+      port_set_owner_track_processor (
+        self->midi_in, self);
+      self->midi_in->id.flags |= PORT_FLAG_SENDABLE;
+    }
+  else
+    {
+      self->midi_out =
+        port_new_with_type (
+          TYPE_EVENT, FLOW_OUTPUT, "TP MIDI out");
+      port_set_owner_track_processor (
+        self->midi_out, self);
+    }
+
+  g_warn_if_fail (
+    IS_PORT (in ? self->midi_in : self->midi_out));
 }
 
 static void
@@ -197,38 +207,31 @@ init_midi_cc_ports (
 static void
 init_stereo_out_ports (
   TrackProcessor * self,
-  int              in,
-  int              loading)
+  bool             in)
 {
-  char str[80];
-  strcpy (
-    str,
-    in ? "Stereo in" : "(internal) Stereo out");
   Port * l, * r;
   StereoPorts ** sp =
     in ? &self->stereo_in : &self->stereo_out;
   PortFlow flow = in ? FLOW_INPUT : FLOW_OUTPUT;
 
-  if (loading)
-    {
-      l = NULL;
-      r = NULL;
-    }
-  else
-    {
-      strcat (str, " L");
-      l = port_new_with_type (TYPE_AUDIO, flow, str);
+  l =
+    port_new_with_type (
+      TYPE_AUDIO, flow,
+      in ?
+        "TP Stereo in L" :
+        "TP Stereo out L");
 
-      str[10] = '\0';
-      strcat (str, " R");
-      r = port_new_with_type (TYPE_AUDIO, flow, str);
-    }
+  r =
+    port_new_with_type (
+      TYPE_AUDIO, flow,
+      in ?
+        "TP Stereo in R" :
+        "TP Stereo out R");
 
   port_set_owner_track_processor (l, self);
   port_set_owner_track_processor (r, self);
 
-  *sp =
-    stereo_ports_new_from_existing (l, r);
+  *sp = stereo_ports_new_from_existing (l, r);
 
   if (in)
     {
@@ -256,17 +259,17 @@ track_processor_new (
   switch  (tr->in_signal_type)
     {
     case TYPE_EVENT:
-      init_midi_port (self, 0, 0);
-      init_midi_port (self, 1, 0);
+      init_midi_port (self, 0);
+      init_midi_port (self, 1);
 
       /* set up piano roll port */
       if (track_has_piano_roll (tr) ||
           tr->type == TRACK_TYPE_CHORD)
         {
-          char *str = _("Piano Roll");
           self->piano_roll =
             port_new_with_type (
-              TYPE_EVENT, FLOW_INPUT, str);
+              TYPE_EVENT, FLOW_INPUT,
+              "TP Piano Roll");
           self->piano_roll->id.flags =
             PORT_FLAG_PIANO_ROLL;
           port_set_owner_track_processor (
@@ -278,16 +281,22 @@ track_processor_new (
         }
       break;
     case TYPE_AUDIO:
-      init_stereo_out_ports (
-        self, 0, 0);
-      init_stereo_out_ports (
-        self, 1, 0);
+      init_stereo_out_ports (self, false);
+      init_stereo_out_ports (self, true);
       break;
     default:
       break;
     }
 
   return self;
+}
+
+void
+track_processor_set_is_project (
+  TrackProcessor * self,
+  bool             is_project)
+{
+  self->is_project = is_project;
 }
 
 /**
@@ -544,8 +553,7 @@ track_processor_disconnect_from_prefader (
   TrackProcessor * self)
 {
   Track * tr = track_processor_get_track (self);
-  PassthroughProcessor * prefader =
-    tr->channel->prefader;
+  Fader * prefader = tr->channel->prefader;
   switch (tr->in_signal_type)
     {
     case TYPE_AUDIO:
@@ -582,8 +590,7 @@ track_processor_connect_to_prefader (
   TrackProcessor * self)
 {
   Track * tr = track_processor_get_track (self);
-  PassthroughProcessor * prefader =
-    tr->channel->prefader;
+  Fader * prefader = tr->channel->prefader;
 
   /* connect only if signals match */
   if (tr->in_signal_type == TYPE_AUDIO &&

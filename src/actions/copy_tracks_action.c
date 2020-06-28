@@ -58,7 +58,7 @@ copy_tracks_action_do (
     {
       /* create a new clone to use in the project */
       track =
-        track_clone (self->tls->tracks[i]);
+        track_clone (self->tls->tracks[i], false);
 
       /* add to tracklist at given pos */
       tracklist_insert_track (

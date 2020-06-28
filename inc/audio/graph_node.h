@@ -136,7 +136,7 @@ typedef struct GraphNode
   Track *       track;
 
   /** Pre-Fader, if prefader node. */
-  PassthroughProcessor * prefader;
+  Fader *       prefader;
 
   /** Sample processor, if sample processor. */
   SampleProcessor * sample_processor;

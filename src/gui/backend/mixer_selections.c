@@ -309,13 +309,17 @@ mixer_selections_clear (
 
 /**
  * Clone the struct for copying, undoing, etc.
+ *
+ * @bool src_is_project Whether \ref src are the
+ *   project selections.
  */
 MixerSelections *
 mixer_selections_clone (
-  MixerSelections * src)
+  MixerSelections * src,
+  bool              src_is_project)
 {
   MixerSelections * ms =
-    calloc (1, sizeof (MixerSelections));
+    object_new (MixerSelections);
 
   int i;
 
@@ -338,7 +342,8 @@ mixer_selections_clone (
           break;
         }
       g_return_val_if_fail (pl, NULL);
-      ms->plugins[i] = plugin_clone (pl);
+      ms->plugins[i] =
+        plugin_clone (pl, src_is_project);
       ms->slots[i] = src->slots[i];
     }
 

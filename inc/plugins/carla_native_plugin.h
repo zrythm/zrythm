@@ -206,7 +206,7 @@ carla_native_plugin_set_param_value (
   const uint32_t      id,
   float               val);
 
-void
+int
 carla_native_plugin_activate (
   CarlaNativePlugin * self,
   bool                activate);

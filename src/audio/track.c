@@ -60,66 +60,71 @@
 #include <glib/gi18n.h>
 
 void
-track_init_loaded (Track * track)
+track_init_loaded (
+  Track * self,
+  bool    project)
 {
-  track->magic = TRACK_MAGIC;
+  self->magic = TRACK_MAGIC;
 
   int i,j;
   TrackLane * lane;
-  for (j = 0; j < track->num_lanes; j++)
+  for (j = 0; j < self->num_lanes; j++)
     {
-      lane = track->lanes[j];
+      lane = self->lanes[j];
       track_lane_init_loaded (lane);
     }
   ScaleObject * scale;
-  for (i = 0; i < track->num_scales; i++)
+  for (i = 0; i < self->num_scales; i++)
     {
-      scale = track->scales[i];
+      scale = self->scales[i];
       arranger_object_init_loaded (
         (ArrangerObject *) scale);
     }
   Marker * marker;
-  for (i = 0; i < track->num_markers; i++)
+  for (i = 0; i < self->num_markers; i++)
     {
-      marker = track->markers[i];
+      marker = self->markers[i];
       arranger_object_init_loaded (
         (ArrangerObject *) marker);
     }
   ZRegion * region;
-  for (i = 0; i < track->num_chord_regions; i++)
+  for (i = 0; i < self->num_chord_regions; i++)
     {
-      region = track->chord_regions[i];
-      region->id.track_pos = track->pos;
+      region = self->chord_regions[i];
+      region->id.track_pos = self->pos;
       arranger_object_init_loaded (
         (ArrangerObject *) region);
     }
 
   /* init loaded channel */
-  if (track->channel)
+  if (self->channel)
     {
-      track->processor->track = track;
+      self->processor->track = self;
       track_processor_init_loaded (
-        track->processor);
+        self->processor, project);
 
-      track->channel->track = track;
-      channel_init_loaded (track->channel);
+      self->channel->track = self;
+      channel_init_loaded (
+        self->channel, project);
     }
 
   /* set track to automation tracklist */
   AutomationTracklist * atl =
-    track_get_automation_tracklist (track);
+    track_get_automation_tracklist (self);
   if (atl)
     {
       automation_tracklist_init_loaded (atl);
     }
 
-  if (track->type == TRACK_TYPE_AUDIO)
+  if (self->type == TRACK_TYPE_AUDIO)
     {
-      track->rt_stretcher =
+      self->rt_stretcher =
         stretcher_new_rubberband (
           AUDIO_ENGINE->sample_rate, 2, 1.0,
           1.0, true);
     }
+
+  track_set_is_project (self, project);
 }
 
 /**
@@ -278,6 +283,9 @@ track_new (
 
   self->processor = track_processor_new (self);
 
+  g_warn_if_fail (
+    IS_PORT (self->processor->midi_in));
+
   automation_tracklist_init (
     &self->automation_tracklist, self);
 
@@ -286,16 +294,27 @@ track_new (
       self->channel = channel_new (self);
     }
 
+  g_warn_if_fail (
+    IS_PORT (self->processor->midi_in));
+
   track_generate_automation_tracks (self);
+
+  g_warn_if_fail (
+    IS_PORT (self->processor->midi_in));
 
   return self;
 }
 
 /**
  * Clones the track and returns the clone.
+ *
+ * @bool src_is_project Whether \ref track is a
+ *   project track.
  */
 Track *
-track_clone (Track * track)
+track_clone (
+  Track * track,
+  bool    src_is_project)
 {
   int j;
   Track * new_track =
@@ -320,7 +339,9 @@ track_clone (Track * track)
   if (track->channel)
     {
       Channel * ch =
-        channel_clone (track->channel, new_track);
+        channel_clone (
+          track->channel, new_track,
+          src_is_project);
       new_track->channel = ch;
     }
 
@@ -796,8 +817,7 @@ track_generate_automation_tracks (
   Track * track)
 {
   g_message (
-    "Generating automation tracks for track %s",
-    track->name);
+    "%s: generating for %s", __func__, track->name);
 
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
@@ -852,6 +872,8 @@ track_generate_automation_tracks (
           track->time_sig_port);
       automation_tracklist_add_at (atl, at);
     }
+
+  g_message ("%s: done", __func__);
 }
 
 /**
@@ -1106,6 +1128,9 @@ track_disconnect (
   bool    remove_pl,
   bool    recalc_graph)
 {
+  g_message ("%s: disconnecting %s (%d)...",
+    __func__, self->name, self->pos);
+
   if (track_type_has_channel (self->type))
     {
       channel_disconnect (
@@ -1122,7 +1147,15 @@ track_disconnect (
     true, &max_size, false);
   for (int i = 0; i < num_ports; i++)
     {
-      port_disconnect_all (ports[i]);
+      Port * port = ports[i];
+      g_return_if_fail (IS_PORT (port));
+      g_message ("%s: %s (%p) was %d",
+        __func__, port->id.label,
+        port, port->is_project);
+      port_disconnect_all (port);
+      g_message ("%s: %s (%p) is %d",
+        __func__, port->id.label,
+        port, port->is_project);
     }
   free (ports);
 
@@ -1130,6 +1163,8 @@ track_disconnect (
     {
       router_recalc_graph (ROUTER);
     }
+
+  g_message ("%s: done", __func__);
 }
 
 /**
@@ -1428,30 +1463,30 @@ track_get_fader_type (
 }
 
 /**
- * Returns the PassthroughProcessorType
+ * Returns the prefader type
  * corresponding to the given Track.
  */
-PassthroughProcessorType
-track_get_passthrough_processor_type (
-  const Track * track)
+FaderType
+track_type_get_prefader_type (
+  TrackType type)
 {
-  switch (track->type)
+  switch (type)
     {
     case TRACK_TYPE_MIDI:
     case TRACK_TYPE_MIDI_BUS:
     case TRACK_TYPE_CHORD:
     case TRACK_TYPE_MIDI_GROUP:
-      return PP_TYPE_MIDI_CHANNEL;
+      return FADER_TYPE_MIDI_CHANNEL;
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_AUDIO_BUS:
     case TRACK_TYPE_MASTER:
     case TRACK_TYPE_AUDIO_GROUP:
-      return PP_TYPE_AUDIO_CHANNEL;
+      return FADER_TYPE_AUDIO_CHANNEL;
     case TRACK_TYPE_MARKER:
-      return PP_TYPE_NONE;
+      return FADER_TYPE_NONE;
     default:
-      g_return_val_if_reached (PP_TYPE_NONE);
+      g_return_val_if_reached (FADER_TYPE_NONE);
     }
 }
 
@@ -1734,6 +1769,51 @@ track_get_comment (
 }
 
 /**
+ * Recursively marks the track and children as
+ * project objects or not.
+ */
+void
+track_set_is_project (
+  Track * self,
+  bool    is_project)
+{
+  g_message ("%s: Setting %s to %d...",
+    __func__, self->name, is_project);
+
+  track_processor_set_is_project (
+    self->processor, is_project);
+  if (self->channel)
+    {
+      fader_set_is_project (
+        self->channel->fader, is_project);
+    }
+
+  /** set all track ports to non project */
+  int max_size = 20;
+  Port ** ports =
+    calloc ((size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
+  Port * port;
+  track_append_all_ports (
+    self, &ports, &num_ports, true, &max_size,
+    true);
+  for (int i = 0; i < num_ports; i++)
+    {
+      port = ports[i];
+      g_return_if_fail (IS_PORT (port));
+      g_message (
+        "%s: setting %s (%p) to %d",
+        __func__, port->id.label, port, is_project);
+      port_set_is_project (port, is_project);
+    }
+  free (ports);
+
+  self->is_project = is_project;
+
+  g_message ("%s: done", __func__);
+}
+
+/**
  * Appends all channel ports and optionally
  * plugin ports to the array.
  *
@@ -1769,7 +1849,7 @@ track_append_all_ports (
     { \
       g_return_if_reached (); \
     } \
-  g_warn_if_fail (port); \
+  g_warn_if_fail (IS_PORT (port)); \
   array_append ( \
     *ports, (*size), port)
 
@@ -1789,6 +1869,9 @@ track_append_all_ports (
 void
 track_free (Track * self)
 {
+  g_message ("%s: freeing %s (%d)...",
+    __func__, self->name, self->pos);
+
   /* remove regions */
   for (int i = 0; i < self->num_lanes; i++)
     {
@@ -1835,4 +1918,6 @@ track_free (Track * self)
   g_free_and_null (self->comment);
 
   object_zero_and_free (self);
+
+  g_message ("%s: done", __func__);
 }

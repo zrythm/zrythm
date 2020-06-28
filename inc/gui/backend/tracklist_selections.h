@@ -28,7 +28,7 @@
 #include "utils/yaml.h"
 
 #define TRACKLIST_SELECTIONS \
-  (&PROJECT->tracklist_selections)
+  (PROJECT->tracklist_selections)
 
 /**
  * Selections to be used for the tracklist's current
@@ -43,6 +43,9 @@ typedef struct TracklistSelections
   /** Selected Tracks. */
   Track *              tracks[600];
   int                  num_tracks;
+
+  /** Whether these are the project selections. */
+  bool                 is_project;
 } TracklistSelections;
 
 static const cyaml_schema_field_t
@@ -52,8 +55,10 @@ static const cyaml_schema_field_t
     "tracks", CYAML_FLAG_DEFAULT,
     TracklistSelections, tracks, num_tracks,
     &track_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_INT (
+    TracklistSelections, is_project),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
@@ -68,11 +73,19 @@ tracklist_selections_init_loaded (
   TracklistSelections * ts);
 
 /**
+ * @param is_project Whether these selections are
+ *   the project selections (as opposed to clones).
+ */
+TracklistSelections *
+tracklist_selections_new (
+  bool  is_project);
+
+/**
  * Clone the struct for copying, undoing, etc.
  */
 TracklistSelections *
 tracklist_selections_clone (
-  TracklistSelections * self);
+  TracklistSelections * src);
 
 /**
  * Gets highest track in the selections.

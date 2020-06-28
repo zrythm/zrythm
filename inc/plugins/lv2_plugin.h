@@ -257,7 +257,8 @@ static const cyaml_schema_value_t
 
 void
 lv2_plugin_init_loaded (
-  Lv2Plugin * lv2_plgn);
+  Lv2Plugin * self,
+  bool        project);
 
 /**
  * Returns a newly allocated plugin descriptor for
@@ -303,7 +304,8 @@ lv2_plugin_has_custom_ui (
 int
 lv2_plugin_instantiate (
   Lv2Plugin *  plugin,
-  char * preset_uri);
+  bool         project,
+  char *       preset_uri);
 
 /**
  * Creates a new LV2 plugin using the given Plugin
@@ -413,7 +415,7 @@ void
 lv2_plugin_allocate_port_buffers (
   Lv2Plugin* plugin);
 
-void
+int
 lv2_plugin_activate (
   Lv2Plugin * self,
   bool        activate);

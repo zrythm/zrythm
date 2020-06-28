@@ -53,8 +53,6 @@
 
 typedef struct GraphNode GraphNode;
 typedef struct Graph Graph;
-typedef struct PassthroughProcessor
-  PassthroughProcessor;
 typedef struct MPMCQueue MPMCQueue;
 typedef struct Port Port;
 typedef struct Fader Fader;
@@ -184,7 +182,7 @@ graph_find_node_from_fader (
 GraphNode *
 graph_find_node_from_prefader (
   Graph * graph,
-  PassthroughProcessor * prefader);
+  Fader * prefader);
 
 GraphNode *
 graph_find_node_from_sample_processor (
