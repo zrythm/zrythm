@@ -27,6 +27,7 @@ packages:
   - xdg-utils
   - lcov
   - gcovr
+  - rtaudio
   - zstd
 sources:
   - https://git.sr.ht/~alextee/zrythm
