@@ -1809,9 +1809,9 @@ track_set_is_project (
     {
       port = ports[i];
       g_return_if_fail (IS_PORT (port));
-      g_message (
-        "%s: setting %s (%p) to %d",
-        __func__, port->id.label, port, is_project);
+      /*g_message (*/
+        /*"%s: setting %s (%p) to %d",*/
+        /*__func__, port->id.label, port, is_project);*/
       port_set_is_project (port, is_project);
     }
   free (ports);

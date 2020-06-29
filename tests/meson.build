@@ -53,6 +53,7 @@ if get_option ('tests')
   # 1: is parallel
   tests = [
     ['actions/arranger_selections', true],
+    ['actions/create_tracks', true],
     ['audio/automation_track', true],
     ['audio/curve', true],
     ['audio/midi', true],

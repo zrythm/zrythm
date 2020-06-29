@@ -157,14 +157,14 @@ cc = meson.get_compiler ('c')
 find_program ('sed', required: true)
 find_program ('gettext', required: true)
 dot_bin = find_program ('dot', required: false)
+have_helm = false
+helm_bundle = 'N/A'
 if get_option ('tests')
   lv2ls_bin = find_program ('lv2ls', required: false)
   lv2info_bin = find_program (
     'lv2info', required: false)
   get_lv2_bundle_uri_bin = find_program (
     'tools/get_lv2_bundle_uri.sh')
-  have_helm = false
-  helm_bundle = 'not found'
   if lv2ls_bin.found () and lv2info_bin.found ()
     lv2ls_res = run_command (
       lv2ls_bin, check: true).stdout ()

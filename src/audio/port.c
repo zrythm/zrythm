@@ -134,7 +134,7 @@ port_init_loaded (
       break;
     }
 
-  g_message ("%s: done", __func__);
+  /*g_message ("%s: done", __func__);*/
 }
 
 /**
@@ -488,7 +488,7 @@ _port_new (
   self->id.flow = FLOW_UNKNOWN;
   self->id.label = g_strdup (label);
 
-  g_message ("%s: done (%p)", __func__, self);
+  /*g_message ("%s: done (%p)", __func__, self);*/
 
   return self;
 }

@@ -181,7 +181,7 @@ tracklist_insert_track (
   int         recalc_graph)
 {
   g_message (
-    "%s: inserting %s at %d...",
+    "------------------------------------- %s: inserting %s at %d...",
     __func__, track->name, pos);
 
   track_set_name (track, track->name, 0);

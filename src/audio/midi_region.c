@@ -335,8 +335,10 @@ midi_region_new_from_midi_file (
   int              idx_inside_lane,
   int              idx)
 {
-  ZRegion * self =
-    calloc (1, sizeof (MidiRegion));
+  g_message (
+    "%s: reading from %s...", __func__, abs_path);
+
+  ZRegion * self = object_new (ZRegion);
 
   self->id.type = REGION_TYPE_MIDI;
 
@@ -344,7 +346,7 @@ midi_region_new_from_midi_file (
     midiFileOpen (abs_path);
   g_return_val_if_fail (mf, NULL);
 
-  g_message ("reading region from midi file...");
+  bool print_details = false;
 
   char str[128];
   int ev;
@@ -373,7 +375,8 @@ midi_region_new_from_midi_file (
       if (i != idx)
         continue;
 
-      g_message("MIDI Track %d", i);
+      g_message (
+        "%s: reading MIDI Track %d", __func__, i);
       while(midiReadGetNextMessage (mf, i, &msg))
         {
           /* convert time to zrythm time */
@@ -381,7 +384,11 @@ midi_region_new_from_midi_file (
             ((double) msg.dwAbsPos * transport_ppqn) /
             ppqn;
           position_from_ticks (&pos, ticks);
-          g_message("dwAbsPos: %d ", msg.dwAbsPos);
+          if (print_details)
+            {
+              g_message (
+                "dwAbsPos: %d ", msg.dwAbsPos);
+            }
           position_print (&pos);
 
           if (ZRYTHM_HAVE_UI &&
@@ -404,17 +411,23 @@ midi_region_new_from_midi_file (
               ev = msg.iType;
             }
 
-          if (muGetMIDIMsgName (str, ev))
-            g_message("MIDI msg name: %s", str);
+          if (muGetMIDIMsgName (str, ev) &&
+              print_details)
+            {
+              g_message("MIDI msg name: %s", str);
+            }
           switch(ev)
             {
             case msgNoteOff:
-              g_message (
-                "Note off at %d "
-                "[ch %d pitch %d]",
-                msg.dwAbsPos,
-                msg.MsgData.NoteOff.iChannel,
-                msg.MsgData.NoteOff.iNote);
+              if (print_details)
+                {
+                  g_message (
+                    "Note off at %d "
+                    "[ch %d pitch %d]",
+                    msg.dwAbsPos,
+                    msg.MsgData.NoteOff.iChannel,
+                    msg.MsgData.NoteOff.iNote);
+                }
               mn =
                 midi_region_pop_unended_note (
                   self, msg.MsgData.NoteOff.iNote);
@@ -432,13 +445,16 @@ midi_region_new_from_midi_file (
                 }
               break;
             case msgNoteOn:
-              g_message (
-                "Note on at %d "
-                "[ch %d pitch %d vel %d]",
-                msg.dwAbsPos,
-                msg.MsgData.NoteOn.iChannel,
-                msg.MsgData.NoteOn.iNote,
-                msg.MsgData.NoteOn.iVolume);
+              if (print_details)
+                {
+                  g_message (
+                    "Note on at %d "
+                    "[ch %d pitch %d vel %d]",
+                    msg.dwAbsPos,
+                    msg.MsgData.NoteOn.iChannel,
+                    msg.MsgData.NoteOn.iNote,
+                    msg.MsgData.NoteOn.iVolume);
+                }
               midi_region_start_unended_note (
                 self, &pos, NULL,
                 msg.MsgData.NoteOn.iNote,
@@ -448,76 +464,106 @@ midi_region_new_from_midi_file (
               muGetNameFromNote (
                 str,
                 msg.MsgData.NoteKeyPressure.iNote);
-              g_message (
-                "(%.2d) %s %d",
-                msg.MsgData.NoteKeyPressure.
-                  iChannel,
-                str,
-                msg.MsgData.NoteKeyPressure.
-                  iPressure);
+              if (print_details)
+                {
+                  g_message (
+                    "(%.2d) %s %d",
+                    msg.MsgData.NoteKeyPressure.
+                      iChannel,
+                    str,
+                    msg.MsgData.NoteKeyPressure.
+                      iPressure);
+                }
               break;
             case  msgSetParameter:
               muGetControlName (
                 str,
                 msg.MsgData.NoteParameter.iControl);
-              g_message (
-                "(%.2d) %s -> %d",
-                msg.MsgData.NoteParameter.iChannel,
-                str,
-                msg.MsgData.NoteParameter.iParam);
+              if (print_details)
+                {
+                  g_message (
+                    "(%.2d) %s -> %d",
+                    msg.MsgData.NoteParameter.iChannel,
+                    str,
+                    msg.MsgData.NoteParameter.iParam);
+                }
               break;
             case  msgSetProgram:
               muGetInstrumentName (
                 str,
                 msg.MsgData.ChangeProgram.iProgram);
-              g_message (
-                "(%.2d) %s",
-                msg.MsgData.ChangeProgram.iChannel,
-                str);
+              if (print_details)
+                {
+                  g_message (
+                    "(%.2d) %s",
+                    msg.MsgData.ChangeProgram.iChannel,
+                    str);
+                }
               break;
             case msgChangePressure:
               muGetControlName (
                 str,
                 msg.MsgData.ChangePressure.
                   iPressure);
-              g_message (
-                "(%.2d) %s",
-                msg.MsgData.ChangePressure.iChannel,
-                str);
+              if (print_details)
+                {
+                  g_message (
+                    "(%.2d) %s",
+                    msg.MsgData.ChangePressure.iChannel,
+                    str);
+                }
               break;
             case msgSetPitchWheel:
-              g_message (
-                "(%.2d) %d",
-                msg.MsgData.PitchWheel.iChannel,
-                msg.MsgData.PitchWheel.iPitch);
+              if (print_details)
+                {
+                  g_message (
+                    "(%.2d) %d",
+                    msg.MsgData.PitchWheel.iChannel,
+                    msg.MsgData.PitchWheel.iPitch);
+                }
               break;
             case msgMetaEvent:
-              g_message ("---- meta events");
+              if (print_details)
+                {
+                  g_message ("---- meta events");
+                }
               switch(msg.MsgData.MetaEvent.iType)
                 {
                 case metaMIDIPort:
-                  g_message (
-                    "MIDI Port = %d",
-                    msg.MsgData.MetaEvent.Data.
-                      iMIDIPort);
+                  if (print_details)
+                    {
+                      g_message (
+                        "MIDI Port = %d",
+                        msg.MsgData.MetaEvent.Data.
+                          iMIDIPort);
+                    }
                   break;
                 case metaSequenceNumber:
-                  g_message (
-                    "Sequence Number = %d",
-                    msg.MsgData.MetaEvent.Data.
-                      iSequenceNumber);
+                  if (print_details)
+                    {
+                      g_message (
+                        "Sequence Number = %d",
+                        msg.MsgData.MetaEvent.Data.
+                          iSequenceNumber);
+                    }
                   break;
                 case  metaTextEvent:
-                  g_message (
-                    "Text = '%s'",
-                    msg.MsgData.MetaEvent.Data.Text.
-                      pData);
+                  if (print_details)
+                    {
+                      g_message (
+                        "Text = '%s'",
+                        msg.MsgData.MetaEvent.Data.Text.
+                          pData);
+                    }
                   break;
                 case  metaCopyright:
-                  g_message (
-                    "Copyright = '%s'",
-                    msg.MsgData.MetaEvent.Data.Text.
-                      pData);
+                  if (print_details)
+                    {
+                      g_message (
+                        "Copyright = '%s'",
+                        msg.MsgData.MetaEvent.Data.Text.
+                          pData);
+                    }
                   break;
                 case  metaTrackName:
                   {
@@ -633,7 +679,7 @@ midi_region_new_from_midi_file (
             {
             /* Already done a hex dump */
             }
-          else
+          else if (print_details)
             {
               char txt[600];
               char tmp[100];
@@ -658,6 +704,8 @@ midi_region_new_from_midi_file (
 
   midiReadFreeMessage(&msg);
   midiFileClose(mf);
+
+  g_message ("%s: done", __func__);
 
   return self;
 }
@@ -716,13 +764,17 @@ midi_region_start_unended_note (
  *   MIDI file as it would be played inside Zrythm.
  *   If this is 0, only the original region (from
  *   true start to true end) is exported.
+ * @param use_track_pos Whether to use the track
+ *   position in the MIDI data. The track will be
+ *   set to 1 if false.
  */
 void
 midi_region_write_to_midi_file (
-  ZRegion * self,
-  MIDI_FILE *    mf,
-  const int      add_region_start,
-  const int      export_full)
+  ZRegion *   self,
+  MIDI_FILE * mf,
+  const int   add_region_start,
+  bool        export_full,
+  bool        use_track_pos)
 {
   MidiEvents * events =
     midi_region_get_as_events (
@@ -742,7 +794,8 @@ midi_region_write_to_midi_file (
           ev->raw_buffer[1],
         ev->raw_buffer[2] };
       midiTrackAddRaw (
-        mf, track->pos, 3, tmp, 1,
+        mf, use_track_pos ? track->pos : 1, 3, tmp,
+        1,
         i == 0 ?
           (int) ev->time :
           (int)
@@ -798,7 +851,7 @@ midi_region_export_to_midi_file (
           TRANSPORT->ticks_per_beat));
 
       midi_region_write_to_midi_file (
-        self, mf, 0, export_full);
+        self, mf, 0, export_full, false);
 
       midiFileClose(mf);
     }

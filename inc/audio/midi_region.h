@@ -26,6 +26,7 @@
 #ifndef __AUDIO_MIDI_REGION_H__
 #define __AUDIO_MIDI_REGION_H__
 
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef struct Track Track;
@@ -194,13 +195,17 @@ midi_region_remove_all_midi_notes (
  *   MIDI file as it would be played inside Zrythm.
  *   If this is 0, only the original region (from
  *   true start to true end) is exported.
+ * @param use_track_pos Whether to use the track
+ *   position in the MIDI data. The track will be
+ *   set to 1 if false.
  */
 void
 midi_region_write_to_midi_file (
-  ZRegion * self,
-  MIDI_FILE *    mf,
-  const int      add_region_start,
-  const int      export_full);
+  ZRegion *   self,
+  MIDI_FILE * mf,
+  const int   add_region_start,
+  bool        export_full,
+  bool        use_track_pos);
 
 /**
  * Exports the ZRegion to a specified MIDI file.

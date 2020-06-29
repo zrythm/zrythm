@@ -312,7 +312,7 @@ track_lane_write_to_midi_file (
     {
       region = self->regions[i];
       midi_region_write_to_midi_file (
-        region, mf, 1, 1);
+        region, mf, 1, true, true);
     }
 }
 
