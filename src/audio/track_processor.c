@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-config.h"
+
 #include "audio/audio_region.h"
 #include "audio/audio_track.h"
 #include "audio/channel.h"

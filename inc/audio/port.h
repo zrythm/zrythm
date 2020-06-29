@@ -27,6 +27,8 @@
 #ifndef __AUDIO_PORTS_H__
 #define __AUDIO_PORTS_H__
 
+#include "zrythm-config.h"
+
 #include <stdbool.h>
 
 #include "audio/meter.h"

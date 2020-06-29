@@ -1028,6 +1028,7 @@ ruler_widget_is_range_hit (
   if (self->type == TYPE (TIMELINE))
     {
       GdkRectangle rect;
+      memset (&rect, 0, sizeof (GdkRectangle));
       get_range_rect (self, type, &rect);
 
       return
