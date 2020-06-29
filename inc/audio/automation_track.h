@@ -20,7 +20,6 @@
 #ifndef __AUDIO_AUTOMATION_TRACK_H__
 #define __AUDIO_AUTOMATION_TRACK_H__
 
-#include "audio/automatable.h"
 #include "audio/automation_point.h"
 #include "audio/port.h"
 #include "audio/position.h"

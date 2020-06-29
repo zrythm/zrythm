@@ -44,6 +44,8 @@
 #ifndef __AUDIO_ROUTING_H__
 #define __AUDIO_ROUTING_H__
 
+#include "zrythm-config.h"
+
 #include <pthread.h>
 
 #include "utils/types.h"

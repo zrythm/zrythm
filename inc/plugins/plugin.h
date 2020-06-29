@@ -28,7 +28,6 @@
 
 #include "zrythm-config.h"
 
-#include "audio/automatable.h"
 #include "audio/port.h"
 #include "plugins/carla_native_plugin.h"
 #include "plugins/lv2_plugin.h"

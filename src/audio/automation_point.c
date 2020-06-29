@@ -22,7 +22,6 @@
 
 #include <math.h>
 
-#include "audio/automatable.h"
 #include "audio/automation_point.h"
 #include "audio/automation_region.h"
 #include "audio/automation_track.h"

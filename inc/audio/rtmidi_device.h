@@ -17,12 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef __AUDIO_RTMIDI_DEVICE_H__
+#define __AUDIO_RTMIDI_DEVICE_H__
+
 #include "zrythm-config.h"
 
 #ifdef HAVE_RTMIDI
-
-#ifndef __AUDIO_RTMIDI_DEVICE_H__
-#define __AUDIO_RTMIDI_DEVICE_H__
 
 #include <stdint.h>
 
@@ -133,5 +133,5 @@ rtmidi_device_free (
  * @}
  */
 
-#endif
 #endif // HAVE_RTMIDI
+#endif

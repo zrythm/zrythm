@@ -17,12 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef __AUDIO_ENGINE_RTMIDI_H__
+#define __AUDIO_ENGINE_RTMIDI_H__
+
 #include "zrythm-config.h"
 
 #ifdef HAVE_RTMIDI
-
-#ifndef __AUDIO_ENGINE_RTMIDI_H__
-#define __AUDIO_ENGINE_RTMIDI_H__
 
 typedef struct AudioEngine AudioEngine;
 
@@ -82,5 +82,5 @@ engine_rtmidi_activate (
   AudioEngine * self,
   bool          activate);
 
-#endif
 #endif /* HAVE_RTMIDI */
+#endif

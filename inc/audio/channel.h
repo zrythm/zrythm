@@ -17,9 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __AUDIO_CHANNEL_H__
-#define __AUDIO_CHANNEL_H__
-
 /**
  * \file
  *
@@ -27,9 +24,11 @@
  * the mixer.
  */
 
+#ifndef __AUDIO_CHANNEL_H__
+#define __AUDIO_CHANNEL_H__
+
 #include "zrythm-config.h"
 
-#include "audio/automatable.h"
 #include "audio/channel_send.h"
 #include "audio/ext_port.h"
 #include "audio/fader.h"

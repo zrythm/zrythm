@@ -66,29 +66,28 @@ track_init_loaded (
 {
   self->magic = TRACK_MAGIC;
 
-  int i,j;
   TrackLane * lane;
-  for (j = 0; j < self->num_lanes; j++)
+  for (int j = 0; j < self->num_lanes; j++)
     {
       lane = self->lanes[j];
       track_lane_init_loaded (lane);
     }
   ScaleObject * scale;
-  for (i = 0; i < self->num_scales; i++)
+  for (int i = 0; i < self->num_scales; i++)
     {
       scale = self->scales[i];
       arranger_object_init_loaded (
         (ArrangerObject *) scale);
     }
   Marker * marker;
-  for (i = 0; i < self->num_markers; i++)
+  for (int i = 0; i < self->num_markers; i++)
     {
       marker = self->markers[i];
       arranger_object_init_loaded (
         (ArrangerObject *) marker);
     }
   ZRegion * region;
-  for (i = 0; i < self->num_chord_regions; i++)
+  for (int i = 0; i < self->num_chord_regions; i++)
     {
       region = self->chord_regions[i];
       region->id.track_pos = self->pos;

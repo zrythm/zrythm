@@ -28,7 +28,6 @@
 
 #include "zrythm-config.h"
 
-#include "audio/automatable.h"
 #include "audio/fader.h"
 #include "plugins/plugin.h"
 #include "utils/audio.h"

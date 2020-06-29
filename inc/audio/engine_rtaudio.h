@@ -17,12 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef __AUDIO_ENGINE_RTAUDIO_H__
+#define __AUDIO_ENGINE_RTAUDIO_H__
+
 #include "zrythm-config.h"
 
 #ifdef HAVE_RTAUDIO
-
-#ifndef __AUDIO_ENGINE_RTAUDIO_H__
-#define __AUDIO_ENGINE_RTAUDIO_H__
 
 #include <rtaudio/rtaudio_c.h>
 
@@ -86,5 +86,5 @@ engine_rtaudio_tear_down (
  * @}
  */
 
-#endif
 #endif // HAVE_RTAUDIO
+#endif

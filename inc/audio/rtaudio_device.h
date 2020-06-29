@@ -17,12 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef __AUDIO_RTAUDIO_DEVICE_H__
+#define __AUDIO_RTAUDIO_DEVICE_H__
+
 #include "zrythm-config.h"
 
 #ifdef HAVE_RTAUDIO
-
-#ifndef __AUDIO_RTAUDIO_DEVICE_H__
-#define __AUDIO_RTAUDIO_DEVICE_H__
 
 #define RTAUDIO_DEVICE_BUFFER_SIZE 32000
 
@@ -137,5 +137,5 @@ rtaudio_device_free (
  * @}
  */
 
-#endif
 #endif // HAVE_RTAUDIO
+#endif

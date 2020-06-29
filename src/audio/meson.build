@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -18,7 +18,6 @@
 audio_srcs = [
   'audio_region.c',
   'audio_track.c',
-  'automatable.c',
   'automation_point.c',
   'automation_region.c',
   'automation_track.c',

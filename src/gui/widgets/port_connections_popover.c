@@ -17,7 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/channel_track.h"
 #include "gui/widgets/port_connection_row.h"
