@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-06-24 20:45+0100\n"
-"PO-Revision-Date: 2020-06-05 11:41+0000\n"
+"PO-Revision-Date: 2020-06-29 20:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "gl/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:189
@@ -86,9 +86,8 @@ msgid "Marker"
 msgstr "Marcador"
 
 #: inc/audio/track.h:162 src/audio/tempo_track.c:85
-#, fuzzy
 msgid "Tempo"
-msgstr "Tempo/BPM"
+msgstr "Tempo"
 
 #: inc/audio/track.h:163
 msgid "Audio FX"
@@ -312,7 +311,7 @@ msgstr ""
 "Zrythm bloqueouse. Por favor, axúdanos a arranxar isto %sreportando o erro%s."
 
 #: src/main.c:258
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
 "\n"
@@ -347,19 +346,31 @@ msgstr ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
 "\n"
 "Opcións:\n"
-"  -h, --help     amosar esta mensaxe de axuda e saír\n"
-"  --convert-yaml-to-zpj  converter un proxecto yaml ao formato .zpj\n"
-"  --convert-zpj-to-yaml converter un proxecto .zpj ao formato YAML\n"
+"  -h, --help      amosar esta mensaxe e saír\n"
+"  --convert-yaml-to-zpj  converter un proxecto YAML ao formato .zpj\n"
+"  --convert-zpj-to-yaml  converter un proxecto .zpj ao formato YAML\n"
 "  -o, --output    especificar un ficheiro de saída\n"
-"  -p, --print-settings imprimir a configuración actual\n"
-"  --pretty        imprimir a saída dun xeito amigable para o usuario\n"
-"  --reset-to-factory  reiniciar á configuración de fábrica\n"
-"  -v, --version  amosar información da versión e saír\n"
+"  -p, --print-settings  amosar a configuración actual\n"
+"  --pretty        amosar dun xeito amigable ao usuario\n"
+"  --reset-to-factory  resetear a valores por defecto\n"
+"  --gdb           executar Zrythm no GDB (solucionador de erros)\n"
+"  --callgrind    executar Zrythm no callgrind (perfilador)\n"
+"  --audio-backend  anular o backend de audio a usar\n"
+"  --midi-backend  anular o backend de MIDI a usar\n"
+"  --dummy         anula tanto o backend de audio coma o de MIDI e activa o "
+"dummy\n"
+"  --buf-size      anula o tamaño do buffer a usar para o backend de audio, "
+"se é posible\n"
+"  --interactive   modo interactivo, onde se poida\n"
+"  -v, --version   dar información da versión e saír\n"
+"\n"
 "Exemplos:\n"
-"  zrythm -v       print version\n"
+"  zrythm -v       amosa a versión\n"
+"  zrythm --callgrind --dummy --buf-size=8192  configura Zrythm para usar o "
+"backend dummy e un tamaño de buffer de 8192\n"
 "  zrythm --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  "
-"convert a compressed zpj project to YAML\n"
-"  zrythm -p --pretty  pretty-print current settings\n"
+"converte un proxecto comprimido en zpj a YAML\n"
+"  zrythm -p --pretty  amosar a configuración actual dun xeito bonito\n"
 "\n"
 "Reportar erros a %s\n"
 
@@ -482,7 +493,7 @@ msgstr "Banco por defecto"
 
 #: src/plugins/carla_native_plugin.c:409 src/plugins/lv2_plugin.c:2395
 msgid "Init"
-msgstr "Init"
+msgstr "Iniciar"
 
 #: src/plugins/carla_native_plugin.c:836
 msgid "Audio in"
@@ -953,21 +964,20 @@ msgid "chord"
 msgstr "acorde"
 
 #: src/gui/widgets/plugin_browser.c:229
-#, fuzzy
 msgid "Add to project"
-msgstr "Gardar o proxecto"
+msgstr "Engadir ao proxecto"
 
 #: src/gui/widgets/plugin_browser.c:234
 msgid "Add to project (carla)"
-msgstr ""
+msgstr "Engadir ao proxecto (carla)"
 
 #: src/gui/widgets/plugin_browser.c:242
 msgid "Add to project (bridged UI)"
-msgstr ""
+msgstr "Engadir ao proxecto (IU ponteada)"
 
 #: src/gui/widgets/plugin_browser.c:249
 msgid "Add to project (bridged full)"
-msgstr ""
+msgstr "Engadir ao proxecto (ponteada ao completo)"
 
 #: src/gui/widgets/plugin_browser.c:1085 resources/ui/panel_file_browser.ui:63
 #: resources/ui/file_browser.ui:63
@@ -1088,9 +1098,8 @@ msgid "Elliptic"
 msgstr "Elíptico"
 
 #: src/gui/widgets/timeline_arranger.c:1376
-#, fuzzy
 msgid "Musical Mode"
-msgstr "Modo musical"
+msgstr "Modo Musical"
 
 #: src/gui/widgets/timeline_arranger.c:1508
 msgid "Export as MIDI file"
@@ -1755,11 +1764,11 @@ msgstr "Automatización"
 
 #: src/audio/tempo_track.c:51
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: src/audio/tempo_track.c:66
 msgid "Time Signature"
-msgstr ""
+msgstr "Compás"
 
 #: src/audio/engine.c:178
 #, c-format
@@ -1830,29 +1839,24 @@ msgid "Balance"
 msgstr "Balance"
 
 #: src/audio/fader.c:169
-#, fuzzy
 msgid "Ch Fader in"
-msgstr "Entrada do Fader"
+msgstr "Entrada do Fader da Canle"
 
 #: src/audio/fader.c:170
-#, fuzzy
 msgid "Monitor Fader in"
-msgstr "Entrada do Fader"
+msgstr "Entrada do Fader do Monitor"
 
 #: src/audio/fader.c:181
-#, fuzzy
 msgid "Ch Fader out"
-msgstr "Saída do Fader"
+msgstr "Saída do Fader da Canle"
 
 #: src/audio/fader.c:182
-#, fuzzy
 msgid "Monitor Fader out"
-msgstr "Saída de monitor"
+msgstr "Saída do Fader do Monitor"
 
 #: src/audio/fader.c:193
-#, fuzzy
 msgid "Channel MIDI Fader in"
-msgstr "Entrada MIDI do fader"
+msgstr "Entrada do Fader da Canle MIDI"
 
 #: src/audio/fader.c:204
 msgid "MIDI fader out"
@@ -3451,9 +3455,8 @@ msgid "Genre to use when exporting, if the file type supports it."
 msgstr "Xénero a empregar na exportación, se o tipo de ficheiro o permite."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:323
-#, fuzzy
 msgid "Artist to use when exporting, if the file type supports it."
-msgstr "Xénero a empregar na exportación, se o tipo de ficheiro o permite."
+msgstr "Artista a indicar na exportación, se o tipo de ficheiro o permite."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:327
 msgid "Time range"
@@ -3642,11 +3645,11 @@ msgstr "Abrir as IUs dos plugins aos iniciar."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:487
 msgid "Keep window on top"
-msgstr "Manter xanela enriba"
+msgstr "Manter ventá enriba"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:488
 msgid "Always show plugin UIs on top of the main window."
-msgstr "Manter sempre as xanelas das UI dos plugins enriba da xanela principal"
+msgstr "Manter sempre as IU dos plugins enriba da ventá principal."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:492
 msgid "Generic UIs"

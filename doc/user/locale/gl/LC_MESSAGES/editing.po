@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 14:21+0100\n"
-"PO-Revision-Date: 2020-06-05 11:41+0000\n"
+"PO-Revision-Date: 2020-06-29 20:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/gl/>\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:32
 msgid "Audio Editor"
-msgstr ""
+msgstr "Editor de Audio"
 
 #: ../../editing/clip-editors/audio-editor.rst:9
 msgid "The audio editor is displayed when an audio region is selected."
-msgstr ""
+msgstr "O editor de audio aparece cando se selecciona unha rexión de audio."
 
 #: ../../editing/clip-editors/audio-editor.rst:15
 msgid ""
@@ -35,42 +35,47 @@ msgid ""
 "besides changing the points in the ruler, as discussed in :ref:`editor-"
 "ruler`."
 msgstr ""
+"Actualmente só se usa para ver audio e non ten máis funcións, a parte de "
+"cambiar os puntos na regra, como se comenta en :ref:`editor-ruler`."
 
 #: ../../editing/clip-editors/audio-editor.rst:20
-#, fuzzy
 msgid "Audio Arranger"
-msgstr "Arranxador"
+msgstr "Xanela de Audio"
 
 #: ../../editing/clip-editors/audio-editor.rst:21
 msgid "The audio arranger refers to the arranger section of the audio editor."
-msgstr ""
+msgstr "A xanela de audio refírese á sección de arranxos do editor de audio."
 
 #: ../../editing/clip-editors/automation-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:28
-#, fuzzy
 msgid "Automation Editor"
 msgstr "Editor de Automatizacións"
 
 #: ../../editing/clip-editors/automation-editor.rst:9
 msgid "The automation editor is displayed when an automation region is selected."
 msgstr ""
+"O editor de automatizacións amósase cando se selecciona unha rexión de "
+"automatizacións."
 
 #: ../../editing/clip-editors/automation-editor.rst:15
 msgid ""
 "It is very similar to the piano roll, with the exception that the "
 "arranger contains automation points and curves instead of MIDI notes."
 msgstr ""
+"É moi similar ao piano roll, coa excepción de que a xanela contén puntos de "
+"automatización e curvas, en vez de notas MIDI."
 
 #: ../../editing/clip-editors/automation-editor.rst:20
-#, fuzzy
 msgid "Automation Arranger"
-msgstr "Editor de Automatizacións"
+msgstr "Xanela de Automatizacións"
 
 #: ../../editing/clip-editors/automation-editor.rst:21
 msgid ""
 "The automation arranger refers to the arranger section of the automation "
 "editor."
 msgstr ""
+"A xanela de automatizacións refírese á sección de arranxos do editor de "
+"automatizacións."
 
 #: ../../editing/clip-editors/automation-editor.rst:27
 msgid ""
@@ -78,6 +83,9 @@ msgid ""
 "curves connecting them. During playback, Zrythm will interpolate the "
 "value of the control being automated based on the curve."
 msgstr ""
+"A xanela de automatizacións contén puntos de automatización debuxados como "
+"círculos e curvas que os conectan. Na reprodución, Zrythm interpolará o "
+"valor do control automatizado baseándose na curva."
 
 #: ../../editing/clip-editors/automation-editor.rst:32
 msgid ""
@@ -85,32 +93,37 @@ msgid ""
 "modes` and :ref:`common-operations`, with the added feature that curves "
 "can be dragged up or down to change their `curviness`."
 msgstr ""
+"Editar na xanela de automatizacións segue polo xeral :ref:`edit-modes` e :ref"
+":`common-operations`, co engadido de que as curvas poden ser arrastradas "
+"arriba e abaixo para modificar a súa curvatura."
 
 #: ../../editing/clip-editors/automation-editor.rst:40
 msgid "Curves"
-msgstr ""
+msgstr "Curvas"
 
 #: ../../editing/clip-editors/automation-editor.rst:41
 msgid ""
 "Right-clicking on a curve allows you to change the curve algorithm used. "
 "The following curve algorithms are available."
 msgstr ""
+"Facendo clic dereito nunha curva permíteche cambiar o algoritmo de curva "
+"utilizado. Están dispoñibles os seguintes algoritmos."
 
 #: ../../editing/clip-editors/automation-editor.rst:44
 msgid "Exponent"
-msgstr ""
+msgstr "Exponente"
 
 #: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponential curve."
-msgstr ""
+msgstr "Curva exponencial."
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Superellipse"
-msgstr ""
+msgstr "Superelipse"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."
-msgstr ""
+msgstr "Curva elíptica."
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "Vital"
@@ -118,7 +131,7 @@ msgstr "Vital"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "The curve that Vital synth uses, similar to exponential curve."
-msgstr ""
+msgstr "A curva que usa o sintetizador Vital, similar á curva exponencial."
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse"
@@ -126,7 +139,7 @@ msgstr "Pulso"
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse wave."
-msgstr ""
+msgstr "Onda de pulso."
 
 #: ../../editing/clip-editors/automation-editor.rst:55
 #: ../../editing/clip-editors/chord-editor.rst:65
@@ -140,10 +153,12 @@ msgid ""
 "The event viewer in the automation editor is similar to the timeline "
 "event viewer discussed in :ref:`timeline-event-viewer`."
 msgstr ""
+"O visor de eventos no editor de automatizacións é similar ao visor de "
+"eventos da liña de tempo comentado en :ref:`timeline-event-viewer`."
 
 #: ../../editing/clip-editors/automation-editor.rst:63
 msgid "It displays information about each automation point and its curve."
-msgstr ""
+msgstr "Amosa información de cada punto de automatización e a súa curva."
 
 #: ../../editing/clip-editors/chord-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:36
@@ -152,13 +167,14 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:9
 msgid "The chord editor is displayed when a chord region is selected."
-msgstr ""
+msgstr "O editor de acordes amósase cando se selecciona unha rexión de acordes."
 
 #: ../../editing/clip-editors/chord-editor.rst:15
 msgid ""
 "Its ruler behaves similarly to the editor ruler explained in :ref"
 ":`editor-ruler`."
 msgstr ""
+"A súa regra compórtase parecido á do editor explicada en :ref:`editor-ruler`."
 
 #: ../../editing/clip-editors/chord-editor.rst:18
 msgid ""
@@ -166,32 +182,40 @@ msgid ""
 "changed, and an arranger on the right side for creating chord "
 "progressions."
 msgstr ""
+"O editor de acordes ten unha lista de acordes no lado esquerdo que se poden "
+"cambiar, e unha xanela á dereita para crear progresións de acordes."
 
 #: ../../editing/clip-editors/chord-editor.rst:23
 msgid "Chords"
-msgstr ""
+msgstr "Acordes"
 
 #: ../../editing/clip-editors/chord-editor.rst:24
 msgid ""
 "A chord in the context of the chord editor refers to a chord on the left "
 "side of the editor."
 msgstr ""
+"Un acorde no contexto do editor de acordes refírese a un acorde no lado "
+"dereito do editor."
 
 #: ../../editing/clip-editors/chord-editor.rst:30
 msgid ""
 "These chords act similarly to the piano roll keys explained in :ref"
 ":`piano-roll-keys`."
 msgstr ""
+"Estes acordes compórtanse similar ás teclas do piano roll explicadas en :ref"
+":`piano-roll-keys`."
 
 #: ../../editing/clip-editors/chord-editor.rst:34
 msgid "Chord Selector"
-msgstr ""
+msgstr "Selector de Acordes"
 
 #: ../../editing/clip-editors/chord-editor.rst:35
 msgid ""
 "Double-clicking on a chord will bring up the chord selector, which allows"
 " you to change that chord."
 msgstr ""
+"Dobre clic nun acorde activará o selector de acordes, que che permite "
+"cambiar ese acorde."
 
 #: ../../editing/clip-editors/chord-editor.rst:41
 msgid ""
@@ -199,6 +223,8 @@ msgid ""
 "created by selecting its root note, its type, its accent and its bass "
 "note."
 msgstr ""
+"Polo de agora, só funciona o creador de acordes. Un acorde pódese crear "
+"seleccionando a súa nota raíz, o tipo, o acento e a nota do baixo."
 
 #: ../../editing/clip-editors/chord-editor.rst:45
 msgid ""
@@ -207,42 +233,49 @@ msgid ""
 "region. This makes it easy to create chords that stay in the current "
 "scale."
 msgstr ""
+"Seleccionando :zbutton: `En escala` baixo `Visibilidade` só amosará opcións "
+"que correspondan a acordes dentro da escala activa ao comezo da rexión. Isto "
+"fai doado crear acordes que se manteñan dentro da escala actual."
 
 #: ../../editing/clip-editors/chord-editor.rst:51
-#, fuzzy
 msgid "Chord Arranger"
-msgstr "Arranxador"
+msgstr "Xanela de Acordes"
 
 #: ../../editing/clip-editors/chord-editor.rst:52
 msgid "The chord arranger refers to the arranger section of the chord editor."
-msgstr ""
+msgstr "A xanela de acordes é a sección de arranxos do editor de acordes."
 
 #: ../../editing/clip-editors/chord-editor.rst:58
 msgid ""
 "The chord editor contains `chord objects` that signify the start of a "
 "chord. Chord objects do not have a length."
 msgstr ""
+"O editor de acordes contén `obxectos de acordes` que simbolizan o comezo dun "
+"acorde. Os obxectos de acordes non teñen lonxitude."
 
 #: ../../editing/clip-editors/chord-editor.rst:61
 msgid ""
 "Editing in the chord arranger follows :ref:`edit-modes` and :ref:`common-"
 "operations`."
 msgstr ""
+"Editar na xanela de acordes faise seguindo  :ref: `edit-modes` e :ref"
+":`common-operations`."
 
 #: ../../editing/clip-editors/chord-editor.rst:66
 msgid ""
 "The event viewer in the chord editor is similar to the timeline event "
 "viewer discussed in :ref:`timeline-event-viewer`."
 msgstr ""
+"O visor de eventos no editor de acordes é similar ao visor de eventos da "
+"liña de tempo comentada en :ref:`timeline-event-viewer`."
 
 #: ../../editing/clip-editors/chord-editor.rst:73
 msgid "It displays information about each chord object."
-msgstr ""
+msgstr "Amosa información sobre cada obxecto de acordes."
 
 #: ../../editing/clip-editors/intro.rst:6
-#, fuzzy
 msgid "Editors"
-msgstr "Editores de Clips"
+msgstr "Editores"
 
 #: ../../editing/clip-editors/overview.rst:6
 #: ../../editing/overview.rst:6
@@ -258,6 +291,10 @@ msgid ""
 " common elements shared amongst each type of editor, the editor section "
 "will differ depending on the type of region selected."
 msgstr ""
+"Cando as rexións están seleccionadas na liña de tempo, os seus contidos "
+"amosaranse dentro da lapela Editor no :ref:`bottom-panel`. De calquera "
+"xeito, hai algúns elementos comúns compartidos con cada tipo de editor, a "
+"sección do editor cambiará segundo o tipo de rexión seleccionada."
 
 #: ../../editing/clip-editors/piano-roll.rst:8
 #: ../../editing/clip-editors/toolbar.rst:16
@@ -267,7 +304,7 @@ msgstr "Piano Roll"
 
 #: ../../editing/clip-editors/piano-roll.rst:10
 msgid "The piano roll is the main editor for editing MIDI regions."
-msgstr ""
+msgstr "O piano roll é o editor principal para rexións MIDI."
 
 #: ../../editing/clip-editors/piano-roll.rst:15
 msgid ""
@@ -277,17 +314,21 @@ msgid ""
 "(MIDI) arranger on the right and the MIDI note velocity editor at the "
 "bottom."
 msgstr ""
+"Consiste na barra de ferramentas comentada en :ref:`editor-toolbar` arriba "
+"de todo, un pequeno espazo que contén controis extra, a regra comentada en "
+":ref:`editor-ruler`, as teclas do piano rol na esquerda, a xanela do piano "
+"roll (MIDI) na dereita e o editor da intensidade das notas MIDI na parte de "
+"abaixo."
 
 #: ../../editing/clip-editors/piano-roll.rst:22
 msgid "Additional Controls"
-msgstr ""
+msgstr "Controis Adicionais"
 
 #: ../../editing/clip-editors/piano-roll.rst:23
 msgid "The piano roll contains the following additional controls."
-msgstr ""
+msgstr "O piano roll contén os seguintes controis adicionais."
 
 #: ../../editing/clip-editors/piano-roll.rst:32
-#, fuzzy
 msgid "Drum view"
 msgstr "Vista de Percusión"
 
@@ -297,35 +338,41 @@ msgid ""
 "view, where each MIDI note is drawn as a diamond and the piano roll keys "
 "display the name of each drum."
 msgstr ""
+"Activando isto cambiará a xanela ao modo vista de editor de percusión, onde "
+"cada nota MIDI aparece con forma de diamante e as teclas do piano roll "
+"indican o nome de cada instrumento de percusión."
 
 #: ../../editing/clip-editors/piano-roll.rst:34
 msgid "The drum view is not operational at the moment."
-msgstr ""
+msgstr "A vista de percusión non funciona polo de agora."
 
 #: ../../editing/clip-editors/piano-roll.rst:39
 msgid "Listen to notes"
-msgstr ""
+msgstr "Escoitar as notas"
 
 #: ../../editing/clip-editors/piano-roll.rst:37
 msgid ""
 "Enabling this will play back each note as you drag it inside the piano "
 "roll. This is useful if you want to `hear` what you are doing."
 msgstr ""
+"Activar isto reproducirá cada nota cando as marques no piano roll. Isto é "
+"útil se queres `escoitar` o que estás a facer."
 
 #: ../../editing/clip-editors/piano-roll.rst:44
-#, fuzzy
 msgid "Piano Roll Keys"
-msgstr "Piano Roll"
+msgstr "Teclas do Piano Roll"
 
 #: ../../editing/clip-editors/piano-roll.rst:45
 msgid "These are the keys corresponding to each key found on a piano."
-msgstr ""
+msgstr "Estas son as teclas de acordo ás teclas dun piano."
 
 #: ../../editing/clip-editors/piano-roll.rst:50
 msgid ""
 "Clicking on each key allows you to listen to it, much like pressing a key"
 " on a real piano."
 msgstr ""
+"Facendo clic en cada tecla permíteche escoitalas, coma premendo as teclas "
+"dun piano."
 
 #: ../../editing/clip-editors/piano-roll.rst:53
 msgid ""
@@ -333,21 +380,25 @@ msgid ""
 "in addition to any highlighting (if selected). See :ref:`chord-"
 "highlighting` for more information."
 msgstr ""
+"Cada tecla ten unha etiqueta ao lado esquerdo das teclas brancas e negras, a "
+"maiores do resaltado (se está seleccionada). Bota un ollo a :ref:`chord-"
+"highlighting` para máis información."
 
 #: ../../editing/clip-editors/piano-roll.rst:58
 msgid ""
 "The zoom level can be changed by holding down :zbutton:`Ctrl` and "
 ":zbutton:`Shift` and scrolling."
 msgstr ""
+"O nivel de zoom pódese cambiar mantendo premido :zbutton:`Ctrl` e :zbutton: "
+"`Shift` e dándolle á roda do rato."
 
 #: ../../editing/clip-editors/piano-roll.rst:62
-#, fuzzy
 msgid "MIDI Arranger"
-msgstr "Arranxador"
+msgstr "Xanela de MIDI"
 
 #: ../../editing/clip-editors/piano-roll.rst:63
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
-msgstr ""
+msgstr "A xanela de MIDI refírese á sección de arranxos do piano roll."
 
 #: ../../editing/clip-editors/piano-roll.rst:69
 msgid ""
@@ -356,22 +407,30 @@ msgid ""
 "signal when the start position of a note is reached, and a note off "
 "signal when the end position of a note is reached."
 msgstr ""
+"A xanela de MIDI contén notas MIDI debuxadas como rectángulos dende a súa "
+"posición de comezo ata a de fin. Zrythm enviará unha sinal de nota MIDI "
+"cando se alcance a posición de inicio dunha nota e unha sinal de fin da nota "
+"cando se chegue á posición final."
 
 #: ../../editing/clip-editors/piano-roll.rst:75
 msgid ""
 "Editing inside the MIDI arranger is covered in :ref:`edit-modes` and :ref"
 ":`common-operations`."
 msgstr ""
+"Editando dentro da xanela de MIDI é tratado en :`edit-modes` e en :ref"
+":`common-operations`."
 
 #: ../../editing/clip-editors/piano-roll.rst:79
 msgid "Velocity Editor"
-msgstr ""
+msgstr "Editor de Intensidade"
 
 #: ../../editing/clip-editors/piano-roll.rst:80
 msgid ""
 "There is another arranger at the bottom of the MIDI arranger for editing "
 "the velocity of each note."
 msgstr ""
+"Hai outra xanela na parte de abaixo da xanela MIDI para editar a intensidade "
+"de cada nota."
 
 #: ../../editing/clip-editors/piano-roll.rst:86
 msgid ""
@@ -380,6 +439,10 @@ msgid ""
 "a higher velocity will result in a louder or `stronger` note. Velocities "
 "are useful for adding expression to melodies."
 msgstr ""
+"Intensidade refírese á forza coa que se executa cada nota. Cada instrumento "
+"soporta de xeito distinto as intensidades para a mesma nota, pero polo xeral "
+"intensidade máis alta resultará nunha nota `máis forte`. As intensidades son "
+"útiles para darlle expresividade ás melodías."
 
 #: ../../editing/clip-editors/piano-roll.rst:92
 msgid ""
@@ -387,23 +450,29 @@ msgid ""
 "value. Clicking and dragging the tip of each velocity bar allows you to "
 "change it."
 msgstr ""
+"A intensidade de cada nota represéntase como unha barra, canto máis alta "
+"maior valor. Facendo clic e arrastrando a punta da barra de intensidade "
+"permíteche cambiala."
 
 #: ../../editing/clip-editors/piano-roll.rst:96
 msgid ""
 "You can also edit multiple velocities at once by selecting multiple MIDI "
 "notes before editing a velocity bar."
 msgstr ""
+"Tamén podes editar varias intensidades dunha soa vez, seleccionando varias "
+"notas MIDI antes de editar a barra de intensidade."
 
 #: ../../editing/clip-editors/piano-roll.rst:100
 msgid ""
 "The :ref:`ramp-mode` can also be used in the velocity editor to `ramp` "
 "velocities."
 msgstr ""
+"A :ref:`ramp-mode` pódese usar tamén no editor de intensidade para facer "
+"`ramplas` de intensidade."
 
 #: ../../editing/clip-editors/piano-roll.rst:107
-#, fuzzy
 msgid "Context Menu"
-msgstr "Menú Contextual das Rexións"
+msgstr "Menú Contextual"
 
 #: ../../editing/clip-editors/piano-roll.rst:108
 #: ../../editing/piano-roll-editing/arranger.rst:9
@@ -420,10 +489,12 @@ msgid ""
 "The event viewer in the piano roll is similar to the timeline event "
 "viewer discussed in :ref:`timeline-event-viewer`."
 msgstr ""
+"O visor de eventos no piano roll é parecido ao visor de eventos da liña de "
+"tempo comentado en :ref:`timeline-event-viewer`."
 
 #: ../../editing/clip-editors/piano-roll.rst:119
 msgid "It displays information about each MIDI note in the MIDI arranger."
-msgstr ""
+msgstr "Amosa información de cada nota MIDI na xanela de MIDI."
 
 #: ../../editing/clip-editors/ruler.rst:8
 #: ../../editing/piano-roll-editing/ruler.rst:6
@@ -436,115 +507,127 @@ msgid ""
 "The editor ruler is similar to the timeline ruler explained in :ref"
 ":`timeline-ruler`, with some differences."
 msgstr ""
+"A regra do editor é similar á regra da liña de tempo explicada en :ref"
+":`timeline-ruler`, con algunhas diferenzas."
 
 #: ../../editing/clip-editors/ruler.rst:15
 msgid ""
 "The ruler will display more or less information depending on the current "
 "zoom level. It will also display the following markers and indicators."
 msgstr ""
+"A regra amosará máis ou menos información dependendo do nivel de zoom. Tamén "
+"amosará os seguintes marcadores e indicadores."
 
 #: ../../editing/clip-editors/ruler.rst:20
-#, fuzzy
 msgid "Clip start position"
-msgstr "Modificar a Posición da Cabeza de Reprodución"
+msgstr "Posición de inicio do clip"
 
 #: ../../editing/clip-editors/ruler.rst:20
 msgid ""
 "Displayed as a blue, right-pointing arrow. This controls the position "
 "where the clip will start playback from."
 msgstr ""
+"Aparece como unha frecha azul cara a dereita. Controla a posición na que "
+"empezará a reprodución do clip."
 
 #: ../../editing/clip-editors/ruler.rst:23
 #: ../../editing/timeline/ruler.rst:22
-#, fuzzy
 msgid "Playhead position"
-msgstr "Modificar a Posición da Cabeza de Reprodución"
+msgstr "Posición da Cabeza de Reprodución"
 
 #: ../../editing/clip-editors/ruler.rst:23
 msgid ""
 "Shown as a grey, down-facing arrow. This is the current position of the "
 "playhead."
 msgstr ""
+"Aparece como unha frecha gris cara abaixo. É a posición actual da cabeza de "
+"reprodución."
 
 #: ../../editing/clip-editors/ruler.rst:28
 #: ../../editing/timeline/ruler.rst:27
 msgid "Loop points"
-msgstr ""
+msgstr "Puntos de bucle"
 
 #: ../../editing/clip-editors/ruler.rst:26
 msgid ""
 "Shown as 2 green arrows. These control where the clip will start looping "
 "at and where it will return to after looping."
 msgstr ""
+"Aparecen como dúas frechas verdes. Controlan onde empeza e remata o bucle do "
+"clip."
 
 #: ../../editing/clip-editors/ruler.rst:30
 msgid ""
 "Clicking and dragging on empty space in the ruler will allow you to "
 "reposition the playhead."
 msgstr ""
+"Facendo clic e arrastrando nun espazo baleiro da regra permitirache "
+"recolocar a cabeza de reprodución."
 
 #: ../../editing/clip-editors/ruler.rst:34
-#, fuzzy
 msgid "Setting Each Point"
-msgstr "Configurando o Punto de Referencia"
+msgstr "Configurando Cada Punto"
 
 #: ../../editing/clip-editors/ruler.rst:35
 msgid ""
 "To set the position of each point, click on it and drag it to the desired"
 " position."
 msgstr ""
+"Para configurar a posición de cada punto, fai clic e arrástrao á posición "
+"desexada."
 
 #: ../../editing/clip-editors/ruler.rst:38
 #: ../../editing/timeline/ruler.rst:33
 msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
 msgstr ""
+"Mantén premido :zbutton:`Shift` para desactivar temporalmente a ancoraxe"
 
 #: ../../editing/clip-editors/toolbar.rst:8
 msgid "Editor Toolbar"
-msgstr ""
+msgstr "Barra de ferramentas do Editor"
 
 #: ../../editing/clip-editors/toolbar.rst:9
 msgid ""
 "The editor toolbar contains controls and buttons for actions specific to "
 "the current editor."
 msgstr ""
+"A barra de ferramentas do editor contén controis e botóns para accións "
+"específicas do editor activo."
 
 #: ../../editing/clip-editors/toolbar.rst:17
 msgid "The piano roll toolbar consists of the following controls."
-msgstr ""
+msgstr "A barra de ferramentas do piano roll consiste os seguintes controis."
 
 #: ../../editing/clip-editors/toolbar.rst:20
 msgid "Grid/snap settings"
-msgstr ""
+msgstr "Configuración da grella/áncoras"
 
 #: ../../editing/clip-editors/toolbar.rst:20
 msgid "Snapping and grid options are explained in :ref:`snapping-grid-options`."
 msgstr ""
+"A ancoraxe e as opcións da grella explícanse en :ref:`snapping-grid-options`."
 
 #: ../../editing/clip-editors/toolbar.rst:22
-#, fuzzy
 msgid "Highlight"
-msgstr "Remarcar"
+msgstr "Resaltar"
 
 #: ../../editing/clip-editors/toolbar.rst:23
 msgid "Chord highlighting is explained in :ref:`chords-scales`."
-msgstr ""
+msgstr "O resaltado de acordes explícase en :ref:`chord-scales`."
 
 #: ../../editing/clip-editors/toolbar.rst:25
-#, fuzzy
 msgid "Quantize options"
-msgstr "Cuantizar a"
+msgstr "Opcións de Cuantizado"
 
 #: ../../editing/clip-editors/toolbar.rst:25
 msgid "Quantize options are explained in :ref:`quantization`."
-msgstr ""
+msgstr "As opcións de cuantizado explícanse en :ref:`cuantización`."
 
 #: ../../editing/clip-editors/toolbar.rst:29
 #: ../../editing/clip-editors/toolbar.rst:33
 #: ../../editing/clip-editors/toolbar.rst:37
-#, fuzzy
 msgid "No controls at the moment."
-msgstr "Sen uso polo de agora."
+msgstr "Sen controis polo de agora."
 
 #: ../../editing/common-operations.rst:8
 msgid "Common Operations"
@@ -703,17 +786,16 @@ msgid "Edit Modes"
 msgstr "Modos de Edición"
 
 #: ../../editing/edit-modes.rst:10
-#, fuzzy
 msgid ""
 "When working in each editor or arranger, you will most likely be using "
 "the cursor tools provided by Zrythm to create, edit and delete objects. "
 "Each cursor signifies a separate edit mode, and Zrythm offers the "
 "following edit modes."
 msgstr ""
-"Cando traballes en cada editor, empregarás principalmente as ferramentas "
-"de cursor de Zrythm para crear, editar e eliminar obxectos. Cada cursor "
-"representa un modo de edición distinto e Zrythm ofrece os seguintes modos"
-" de edición."
+"Cando traballes en cada editor, empregarás principalmente as ferramentas de "
+"cursor de Zrythm para crear, editar e eliminar obxectos. Cada cursor "
+"representa un modo de edición distinto e Zrythm ofrece os seguintes modos de "
+"edición."
 
 #: ../../editing/edit-modes.rst:19
 msgid "Select/Stretch Mode"
@@ -999,11 +1081,10 @@ msgid "Selecting Tracks"
 msgstr "Seleccionar Pistas"
 
 #: ../../editing/overview.rst:8
-#, fuzzy
 msgid "Editing refers to any work done in the timeline arranger and the editors."
 msgstr ""
-"Edición fai referencia a calquera traballo feito no arranxador da liña de"
-" tempo e os editores seguintes."
+"Edición fai referencia a calquera traballo feito na xanela da liña de tempo "
+"e nos editores."
 
 #: ../../editing/overview.rst:11
 msgid ""
@@ -1073,7 +1154,7 @@ msgid ""
 "Clicking the Quantize button will open up a popup that will let you "
 "specify the settings to quantize the current selection with."
 msgstr ""
-"Facendo Clic no botón Cuantizar abrirá unha ventá emerxente que che "
+"Facendo clic no botón Cuantizar abrirá unha ventá emerxente que che "
 "permitirá especificar os axustes de cuantización da selección."
 
 #: ../../editing/quantization.rst:25
@@ -1207,7 +1288,7 @@ msgstr "Tipo de nota para a lonxitude (normal/punteada/triplete)"
 
 #: ../../editing/timeline/arranger.rst:8
 msgid "Timeline Arranger"
-msgstr ""
+msgstr "Xanela da Liña de Tempo"
 
 #: ../../editing/timeline/arranger.rst:10
 msgid ""
@@ -1216,6 +1297,9 @@ msgid ""
 "time. Some events will open separate windows for further editing when "
 "clicked."
 msgstr ""
+"A xanela da liña de tempo é a área principal na que se compón a canción. "
+"Consiste nunha serie de eventos, como as rexións, colocadas no tempo. Algúns "
+"eventos abrirán ventás de edición diferentes ao facerlles clic."
 
 #: ../../editing/timeline/arranger.rst:18
 msgid ""
@@ -1223,93 +1307,97 @@ msgid ""
 "top and a bottom arranger below it. This way you can pin tracks you want "
 "to always be visible at the top."
 msgstr ""
+"A xanela da liña de tempo está partida nunha xanela superior que se mantén "
+"fixo arriba e outro debaixo. Deste xeito, podes manter as pistas que queiras "
+"sempre visibles na parte superior."
 
 #: ../../editing/timeline/arranger.rst:24
 msgid "Arranger Objects"
-msgstr ""
+msgstr "Obxectos de Xanela."
 
 #: ../../editing/timeline/arranger.rst:25
 msgid "The following arranger objects can exist inside the timeline."
-msgstr ""
+msgstr "Na liña de tempo pode haber os seguintes obxectos de xanela."
 
 #: ../../editing/timeline/arranger.rst:28
-#, fuzzy
 msgid "Regions"
-msgstr "Crear Rexións"
+msgstr "Rexións"
 
 #: ../../editing/timeline/arranger.rst:29
 msgid "Regions are containers for events or data (such as audio clips)."
-msgstr ""
+msgstr "As rexións son contedores para eventos ou datos (coma clips de audio)."
 
 #: ../../editing/timeline/arranger.rst:35
 msgid "The following types of regions exist."
-msgstr ""
+msgstr "Existen os seguintes tipos de rexións."
 
 #: ../../editing/timeline/arranger.rst:37
-#, fuzzy
 msgid "Audio region"
-msgstr "Sección de Rexión de Audio"
+msgstr "Rexión de Audio"
 
 #: ../../editing/timeline/arranger.rst:38
 msgid "Contains audio clips."
-msgstr ""
+msgstr "Contén clips de audio."
 
 #: ../../editing/timeline/arranger.rst:39
-#, fuzzy
 msgid "MIDI region"
-msgstr "Edición de Rexións"
+msgstr "Rexión MIDI"
 
 #: ../../editing/timeline/arranger.rst:40
 msgid "Contains MIDI notes."
-msgstr ""
+msgstr "Contén notas MIDI."
 
 #: ../../editing/timeline/arranger.rst:41
-#, fuzzy
 msgid "Automation region"
-msgstr "Editor de Automatizacións"
+msgstr "Rexión de Automatización"
 
 #: ../../editing/timeline/arranger.rst:42
 msgid "Contains automation events."
-msgstr ""
+msgstr "Contén eventos de automatización."
 
 #: ../../editing/timeline/arranger.rst:44
 msgid "Chord region"
-msgstr ""
+msgstr "Rexión de Acordes"
 
 #: ../../editing/timeline/arranger.rst:44
 msgid "Contains sequences of chords."
-msgstr ""
+msgstr "Contén secuencias de acordes."
 
 #: ../../editing/timeline/arranger.rst:47
 msgid "Markers"
-msgstr ""
+msgstr "Marcadores"
 
 #: ../../editing/timeline/arranger.rst:48
 msgid ""
 "Markers are used to mark the start of a logical section inside the song, "
 "such as `Chorus` or `Intro`."
 msgstr ""
+"Os marcadores empréganse para indicar o comezo dunha sección dentro da "
+"canción, coma `Refrán` ou `Introdución`."
 
 #: ../../editing/timeline/arranger.rst:54
 msgid ""
 "There are two special markers that signify the start and end of the song "
 "that are used for exporting the song and cannot be deleted."
 msgstr ""
+"Hai dous marcadores especiais que indican o comezo e o final da canción que "
+"se empregan para exportala e non se poden borrar."
 
 #: ../../editing/timeline/arranger.rst:59
 msgid "Scales"
-msgstr ""
+msgstr "Escalas"
 
 #: ../../editing/timeline/arranger.rst:60
 msgid ""
 "Scales are used in the Chord track to indicate the start of a section "
 "using a specific musical scale."
 msgstr ""
+"As escalas utilízanse na pista de acordes para indicar o comezo dunha "
+"sección utilizando unha escala musical específica."
 
 #: ../../editing/timeline/arranger.rst:67
-#, fuzzy
 msgid "Creating Objects"
-msgstr "Seleccionar Obxectos"
+msgstr "Creando Obxectos"
 
 #: ../../editing/timeline/arranger.rst:68
 msgid ""
@@ -1317,49 +1405,56 @@ msgid ""
 "inside the arranger and dragging, then releasing when you are satisfied "
 "with the position/size."
 msgstr ""
+"En modo seleccionar (por defecto), tódolos obxectos son creados facendo "
+"dobre clic dentro da xanela e arrastrando, a continuación solta cando estea "
+"na posición/tamaño axeitada."
 
 #: ../../editing/timeline/arranger.rst:72
 msgid "For creating objects in other modes, see :ref:`edit-modes`."
-msgstr ""
+msgstr "Para crear obxectos noutros modos, mira :ref:`edit-modes`."
 
 #: ../../editing/timeline/arranger.rst:75
-#, fuzzy
 msgid "Moving Objects"
-msgstr "Recortar Obxectos"
+msgstr "Movendo Obxectos"
 
 #: ../../editing/timeline/arranger.rst:76
 msgid ""
 "Objects are moved by clicking and dragging them around. You can move "
 "regions to other tracks if the track types are compatible."
 msgstr ""
+"Os obxectos móvense facendo clic e arrastrándoos. Podes mover rexións a "
+"outras pistas se os tipos de pista son compatibles."
 
 #: ../../editing/timeline/arranger.rst:81
-#, fuzzy
 msgid "Copy-Moving Objects"
-msgstr "Seleccionar Obxectos"
+msgstr "Copiando-Movendo Obxectos"
 
 #: ../../editing/timeline/arranger.rst:82
 msgid ""
 "Holding down :zbutton:`Ctrl` while moving objects will allow you to copy-"
 "and-move the objects to the new location."
 msgstr ""
+"Mantendo premido :zbutton:`Ctrl` mentres arrastras un obxecto permitirache "
+"copiar-e-mover o obxecto na nova localización."
 
 #: ../../editing/timeline/arranger.rst:86
-#, fuzzy
 msgid "Link-Moving Regions"
-msgstr "Mover Rexións"
+msgstr "Movendo-ligando Rexións"
 
 #: ../../editing/timeline/arranger.rst:87
 msgid "Linked regions can be created by holding down :zbutton:`Alt` while moving."
 msgstr ""
+"As rexións ligadas pódense crear mantendo premido :zbutton:`Alt` e "
+"arrastrando."
 
 #: ../../editing/timeline/arranger.rst:90
 msgid "Other editing capabilities were explained previously in :ref:`edit-modes`."
-msgstr ""
+msgstr "Outras posibilidades de edición explícanse antes en :ref:`edit-modes`."
 
 #: ../../editing/timeline/event-viewer.rst:10
 msgid "The event viewer displays all events in the timeline as a list."
 msgstr ""
+"O visor de eventos amosa tódolos eventos na liña de tempo como unha lista."
 
 #: ../../editing/timeline/intro.rst:8
 msgid "Timeline"
@@ -1371,19 +1466,22 @@ msgid ""
 "timeline section consists of the tracklist on the left and the "
 "ruler/arranger on the right side."
 msgstr ""
-"Editar na liña de tempo é a tarefa máis común dentro de Zrythm. A sección"
-" liña de tempo está composta pola lista de pistas na esquerda e a "
-"regla/arranxador do lado dereito."
+"Editar na liña de tempo é a tarefa máis común dentro de Zrythm. A sección "
+"liña de tempo está composta pola lista de pistas na esquerda e a regra/"
+"xanela do lado dereito."
 
 #: ../../editing/timeline/overview.rst:15
 msgid "Tracklist"
-msgstr "Lista de pistas"
+msgstr "Listado de pistas"
 
 #: ../../editing/timeline/overview.rst:17
 msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into"
 " the top (pinned) Tracklist and the bottom (main) Tracklist."
 msgstr ""
+"O listado de pistas contén tódalas Pistas no proxecto. Está partida na "
+"Listado de Pistas superior (ancorada) e Listado de Pistas inferior "
+"(principal)"
 
 #: ../../editing/timeline/overview.rst:24
 msgid ""
@@ -1391,25 +1489,21 @@ msgid ""
 " of total tracks is shown, as well as a search box for searching tracks "
 "by name (not operational at the moment)."
 msgstr ""
-"Na parte superior da lista de pistas, amósase o número de pistas visibles"
-" sobre o número de pistas totais, xunto cunha caixa de busca para "
-"procurar as pistas polo nome (non operativa polo de agora)."
+"Na parte superior do listado de pistas, amósase o número de pistas visibles "
+"sobre o número de pistas totais, xunto cunha caixa de busca para procurar as "
+"pistas polo nome (non operativa polo de agora)."
 
 #: ../../editing/timeline/overview.rst:29
-#, fuzzy
 msgid ""
 "You can pin tracks to make them stick to the top, and this is useful for "
 "chord progressions and markers, so you can always see them."
 msgstr ""
-"A lista de pistas divídese entre as pistas ancoradas na parte de arriba e"
-" as non ancoradas abaixo. Podes ancorar pistas para facelas manterse "
-"arriba, o que é útil para as progresións de acordes e marcadores, para "
-"poder velas sempre."
+"Podes ancorar pistas para facer que se queden sempre arriba, isto é útil "
+"para as progresións de acordes e os marcadores, para podelos ver sempre."
 
 #: ../../editing/timeline/overview.rst:33
-#, fuzzy
 msgid "The rest of the tracklist is briefly touched upon in :ref:`tracklist`."
-msgstr "O resto da lista de pistas coméntase por enriba en :ref:`tracklist`."
+msgstr "O resto do listado de pistas coméntase brevemente en :ref:`tracklist`."
 
 #: ../../editing/timeline/overview.rst:36
 msgid "For more details about track operations, see the :ref:`tracks` section."
@@ -1419,7 +1513,7 @@ msgstr ""
 
 #: ../../editing/timeline/overview.rst:40
 msgid "Minimap"
-msgstr ""
+msgstr "Minimapa"
 
 #: ../../editing/timeline/overview.rst:41
 msgid ""
@@ -1427,14 +1521,19 @@ msgid ""
 "area of the timeline. It can be moved around and resized to change the "
 "visible area."
 msgstr ""
+"O minimapa da liña de tempo é unha pequena caixa que representa a área "
+"actualmente visible da liña de tempo. Pódese mover e cambiar de tamaño para "
+"mudar a área visible."
 
 #: ../../editing/timeline/overview.rst:48
 msgid "The rest of the timeline elements are explained in the following sections."
 msgstr ""
+"O resto dos elementos da liña de tempo explícanse nas seguintes seccións."
 
 #: ../../editing/timeline/ruler.rst:10
 msgid "The ruler is mainly used to control looping and playback."
 msgstr ""
+"A regra utilízase fundamentalmente para controlar os bucles e a reprodución."
 
 #: ../../editing/timeline/ruler.rst:15
 msgid ""
@@ -1442,18 +1541,21 @@ msgid ""
 "zoom level. It will also display the following markers/indicators "
 "discussed in :ref:`loop-points-and-markers`."
 msgstr ""
+"A regra amosará máis ou menos información dependendo do nivel de zoom "
+"actual. Tamén amosará os seguintes marcadores/indicadores comentados en :ref"
+":`loop-points-and-markers`."
 
 #: ../../editing/timeline/ruler.rst:20
 msgid "Cue point"
-msgstr ""
+msgstr "Punto de referencia"
 
 #: ../../editing/timeline/ruler.rst:21
 msgid "Displayed as a blue, right-pointing arrow."
-msgstr ""
+msgstr "Aparece como unha frecha azul cara a dereita."
 
 #: ../../editing/timeline/ruler.rst:23
 msgid "Shown as a grey, down-facing arrow."
-msgstr ""
+msgstr "Aparece como unha frecha gris cara abaixo."
 
 #: ../../editing/timeline/ruler.rst:25
 msgid ""
@@ -1461,6 +1563,9 @@ msgid ""
 "green if loop is enabled, or grey if disabled. Can be dragged to "
 "reposition."
 msgstr ""
+"Aparecen como dúas frechas verdes, e a área entre elas en verde claro se o "
+"bucle está activo, ou gris se desactivado. Pódese arrastrar para cambiar a "
+"posición."
 
 #: ../../editing/timeline/ruler.rst:29
 msgid ""
@@ -1468,20 +1573,21 @@ msgid ""
 "part, which is used for selecting ranges) will allow you to reposition "
 "the playhead."
 msgstr ""
+"Facendo clic e arrastrando a un espazo baleiro da regra (que non sexa a "
+"parte superior, utilizada para seleccionar rangos) permitirache recolocar a "
+"cabeza de reprodución."
 
 #: ../../editing/timeline/ruler.rst:36
 msgid "Setting the Cue Point"
 msgstr "Configurando o Punto de Referencia"
 
 #: ../../editing/timeline/ruler.rst:37
-#, fuzzy
 msgid ""
 "Double click inside the ruler to set the cue point. This will be used to "
 "return to when playback is stopped."
 msgstr ""
-"Fai dobre clic dentro da regra para establecer o punto de referencia. "
-"Aquí volverase cando a reprodución se deteña. Preme :zbutton:`Shift`para "
-"evitar o axuste."
+"Fai dobre clic dentro da regra para colocar o punto de referencia. Usarase "
+"para volver cando pare a reprodución."
 
 #: ../../editing/timeline/toolbar.rst:8
 msgid "The timeline has its own toolbar for timeline-specific operations."
