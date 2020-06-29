@@ -601,7 +601,8 @@ if rtmidi_dep.found ()
 endif
 
 rtaudio_dep = dependency (
-  'rtaudio', required: get_option ('rtaudio'))
+  'rtaudio', required: get_option ('rtaudio'),
+  version: '>=5.1.0')
 if not rtaudio_dep.found() and not get_option ('rtaudio').disabled ()
   rtaudio_proj = subproject('rtaudio')
   rtaudio_dep = rtaudio_proj.get_variable(
