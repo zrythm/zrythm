@@ -31,7 +31,6 @@ if get_option ('tests')
   test_env.set ('G_DEBUG', 'gc-friendly')
   test_env.set ('MALLOC_CHECK', '2')
   test_env.set ('VST_PATH', '/tmp/zrythm_vst')
-  test_env.set ('LV2_PATH', '/tmp/zrythm_lv2')
 
   # FIXME create a zrythm-test-config.h
   test_cflags = [

@@ -52,6 +52,8 @@ typedef enum TestPluginType
 
 static TestPluginType pl_type;
 
+static bool bundle_loaded = false;
+
 /**
  * Bootstraps the test with test data.
  */
@@ -77,18 +79,19 @@ rebootstrap (
     TESTS_BUILDDIR, plugin_dir);
   g_message ("path is %s", path_str);
 
-  plugin_manager_free (PLUGIN_MANAGER);
-  ZRYTHM->plugin_manager = plugin_manager_new ();
-  LilvNode * path =
-    lilv_new_uri (LILV_WORLD, path_str);
-  lilv_world_load_bundle (
-    LILV_WORLD, path);
-  lilv_node_free (path);
-
-  plugin_manager_scan_plugins (
-    PLUGIN_MANAGER, 1.0, NULL);
-  g_assert_cmpint (
-    PLUGIN_MANAGER->num_plugins, ==, 1);
+  if (!bundle_loaded)
+    {
+      LilvNode * path =
+        lilv_new_uri (LILV_WORLD, path_str);
+      lilv_world_load_bundle (
+        LILV_WORLD, path);
+      lilv_node_free (path);
+      bundle_loaded = true;
+      plugin_manager_scan_plugins (
+        PLUGIN_MANAGER, 1.0, NULL);
+      g_assert_cmpint (
+        PLUGIN_MANAGER->num_plugins, ==, 1);
+    }
 
   /* remove any previous work */
   chord_track_clear (P_CHORD_TRACK);
@@ -457,7 +460,7 @@ test_move_plugins ()
     create_tracks_action_new (
       TRACK_TYPE_AUDIO_BUS,
       PLUGIN_MANAGER->plugin_descriptors[0], NULL,
-      TRACK_POS, 1);
+      TRACK_POS, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, action);
 
   /* check if track is selected */

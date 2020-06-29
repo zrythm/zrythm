@@ -36,8 +36,6 @@
 static void
 test ()
 {
-  plugin_manager_free (PLUGIN_MANAGER);
-  ZRYTHM->plugin_manager = plugin_manager_new ();
   LilvNode * path =
     lilv_new_uri (LILV_WORLD, HELM_BUNDLE);
   lilv_world_load_bundle (
@@ -49,11 +47,14 @@ test ()
   g_assert_cmpint (
     PLUGIN_MANAGER->num_plugins, ==, 1);
 
-  /* fix the descriptor (for some reason lv2info
-   * reports it as Plugin instead of Instrument) */
+  /* fix the descriptor (for some reason lilv
+   * reports it as Plugin instead of Instrument if
+   * you don't do lilv_world_load_all) */
   PluginDescriptor * descr =
     plugin_descriptor_clone (
       PLUGIN_MANAGER->plugin_descriptors[0]);
+  /*g_warn_if_fail (*/
+    /*descr->category == PC_INSTRUMENT);*/
   descr->category = PC_INSTRUMENT;
   g_free (descr->category_str);
   descr->category_str =

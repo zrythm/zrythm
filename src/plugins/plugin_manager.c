@@ -397,10 +397,25 @@ create_and_load_lilv_word (
         }
     }
   g_return_if_fail (lv2_path);
+  g_message (
+    "%s: LV2 path: %s", __func__, self->lv2_path);
   lilv_world_set_option (
     world, LILV_OPTION_LV2_PATH, lv2_path);
 #endif
-  lilv_world_load_all (world);
+  if (ZRYTHM_TESTING)
+    {
+      g_message (
+        "%s: loading specifications and plugin "
+        "classes...",  __func__);
+      lilv_world_load_specifications (world);
+      lilv_world_load_plugin_classes (world);
+    }
+  else
+    {
+      g_message (
+        "%s: loading all...", __func__);
+      lilv_world_load_all (world);
+    }
 }
 
 static void

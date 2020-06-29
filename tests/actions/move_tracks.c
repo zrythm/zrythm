@@ -47,8 +47,6 @@ rebootstrap (void)
     TESTS_BUILDDIR, "test-instrument.lv2");
   g_message ("path is %s", path_str);
 
-  plugin_manager_free (PLUGIN_MANAGER);
-  ZRYTHM->plugin_manager = plugin_manager_new ();
   LilvNode * path =
     lilv_new_uri (LILV_WORLD, path_str);
   lilv_world_load_bundle (
@@ -78,7 +76,7 @@ test_move_tracks ()
     create_tracks_action_new (
       TRACK_TYPE_INSTRUMENT,
       PLUGIN_MANAGER->plugin_descriptors[0], NULL,
-      3, 1);
+      3, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, action);
   Track * ins_track = TRACKLIST->tracks[3];
   g_assert_true (
@@ -88,7 +86,7 @@ test_move_tracks ()
   action =
     create_tracks_action_new (
       TRACK_TYPE_AUDIO_BUS, NULL, NULL,
-      4, 1);
+      4, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, action);
   Track * fx_track = TRACKLIST->tracks[4];
   g_assert_true (
