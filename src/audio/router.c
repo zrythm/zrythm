@@ -67,7 +67,7 @@
 #include "utils/stoat.h"
 
 #ifdef HAVE_JACK
-#include <jack/thread.h>
+#include "weak_libjack.h"
 #endif
 
 /**

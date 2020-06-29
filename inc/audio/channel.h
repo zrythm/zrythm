@@ -39,7 +39,7 @@
 #include <gdk/gdk.h>
 
 #ifdef HAVE_JACK
-#include <jack/jack.h>
+#include "weak_libjack.h"
 #endif
 
 typedef struct AutomationTrack AutomationTrack;

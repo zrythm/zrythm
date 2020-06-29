@@ -38,8 +38,7 @@
 #include "zix/sem.h"
 
 #ifdef HAVE_JACK
-#include <jack/jack.h>
-#include <jack/midiport.h>
+#include "weak_libjack.h"
 #endif
 
 #ifdef HAVE_PORT_AUDIO

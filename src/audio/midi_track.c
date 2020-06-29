@@ -579,7 +579,7 @@ midi_track_fill_midi_events (
 
   zix_sem_wait (&midi_events->access_sem);
 
-  TrackLane * lane;
+  TrackLane * lane = NULL;
 
   /* loop once if no loop met, twice if loop met
    * (split the ranges in 2) */

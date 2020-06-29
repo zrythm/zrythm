@@ -40,8 +40,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#include <jack/metadata.h>
-#include <jack/statistics.h>
+#include <jack/thread.h>
 
 /**
  * Adds a port to the array if it doesn't already

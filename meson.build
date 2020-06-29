@@ -131,6 +131,8 @@ midilib_inc = include_directories (
   join_paths ('ext', 'midilib'))
 zix_inc = include_directories (
   join_paths ('ext', 'zix'))
+weakjack_inc = include_directories (
+  join_paths ('ext', 'weakjack'))
 suil_inc = include_directories (
   join_paths ('inc', 'plugins', 'lv2'))
 all_inc = [
@@ -139,6 +141,7 @@ all_inc = [
   ext_inc,
   midilib_inc,
   zix_inc,
+  weakjack_inc,
   suil_inc,
   ]
 
@@ -238,6 +241,9 @@ endif
 have_jack = jack_dep.found () and not get_option ('jack').disabled ()
 if have_jack
   cdata.set('HAVE_JACK', 1)
+  if jack_dep.version().version_compare('>=1.0')
+    cdata.set('HAVE_JACK2', 1)
+  endif
   check_functions += [
     ['jack_set_property',[jack_dep]],
     # do not add support for this - it causes
@@ -275,6 +281,7 @@ test_cflags = [
 if os_windows
   test_cflags += [
     '-DPATH_SPLIT=";"',
+    '-DUSE_WEAK_JACK=1',
     ]
 else
   test_cflags += [
@@ -618,7 +625,6 @@ endif
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
-  jack_dep,
   gtk_dep,
   sndfile_dep,
   libgtop_dep,
@@ -671,6 +677,10 @@ if os_windows
   # msys2 provides a separate fftw3f entry in
   # pkg-config
   zrythm_deps += dependency('fftw3f')
+  zrythm_deps += jack_dep.partial_dependency (
+    link_args: false, links: false)
+else
+  zrythm_deps += jack_dep
 endif
 
 # for mingw on arch linux

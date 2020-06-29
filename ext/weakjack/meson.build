@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -15,7 +15,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-subdir ('midilib')
-subdir ('weakjack')
-subdir ('zix')
-subdir ('zita-resampler')
+weakjack_srcs = [
+  'weak_libjack.c',
+  ]
+
+ext_srcs += files (weakjack_srcs)
+

@@ -67,8 +67,7 @@ typedef struct Plugin Plugin;
 typedef struct Position Position;
 
 #ifdef HAVE_JACK
-#include <jack/jack.h>
-#include <jack/thread.h>
+#include "weak_libjack.h"
 #endif
 
 /**

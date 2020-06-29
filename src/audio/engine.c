@@ -85,8 +85,7 @@
 #include <glib/gi18n.h>
 
 #ifdef HAVE_JACK
-#include <jack/jack.h>
-#include <jack/midiport.h>
+#include "weak_libjack.h"
 #endif
 
 /**

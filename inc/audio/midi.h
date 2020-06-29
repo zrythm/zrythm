@@ -35,7 +35,7 @@
 #include "zix/sem.h"
 
 #ifdef HAVE_JACK
-#include <jack/midiport.h>
+#include "weak_libjack.h"
 #endif
 
 #include <gtk/gtk.h>

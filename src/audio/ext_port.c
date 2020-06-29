@@ -31,7 +31,7 @@
 #include "zrythm_app.h"
 
 #ifdef HAVE_JACK
-#include <jack/jack.h>
+#include "weak_libjack.h"
 #endif
 
 /**
