@@ -386,13 +386,15 @@ string_get_int_after_last_space (
       switch (rc)
         {
         case PCRE_ERROR_NOMATCH:
-          g_message ("String %s didn't match", str);
+          g_message (
+            "%s: String %s didn't match",
+            __func__, str);
           break;
 
         default:
           g_message (
-            "Error while matching \"%s\": %d",
-            str, rc);
+            "%s: Error while matching \"%s\": %d",
+            __func__, str, rc);
           break;
         }
       free (re);

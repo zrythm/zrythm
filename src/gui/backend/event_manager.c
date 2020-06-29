@@ -1059,6 +1059,14 @@ process_events (void * data)
           continue;
         }
 
+      if (!ZRYTHM_HAVE_UI)
+        {
+          g_message (
+            "%s: (%d) No UI, skipping",
+            __func__, i);
+          goto return_to_pool;
+        }
+
       /*g_message ("event type %d", ev->type);*/
 
       switch (ev->type)
@@ -1542,6 +1550,7 @@ process_events (void * data)
           break;
         }
 
+return_to_pool:
       object_pool_return (
         self->obj_pool, ev);
     }

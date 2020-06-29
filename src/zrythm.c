@@ -446,6 +446,8 @@ zrythm_free (
     "%s: deleting Zrythm instance...",
     __func__);
 
+  self->have_ui = false;
+
   object_free_w_func_and_null (
     log_free, self->log);
   object_free_w_func_and_null (
