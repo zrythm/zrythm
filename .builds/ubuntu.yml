@@ -24,7 +24,7 @@ packages:
   - libsamplerate0-dev
   - libyaml-dev
   - librubberband-dev
-  - librtaudio-dev
+  #- librtaudio-dev
   - libzstd-dev
   - python3
   - xdg-utils

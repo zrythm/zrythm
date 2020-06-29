@@ -19,7 +19,7 @@ packages:
   - libchromaprint-dev
   - libgtksourceview-3.0-dev
   - libgraphviz-dev
-  - librtaudio-dev
+  #- librtaudio-dev
   #- libsuil-dev
   #- lv2-dev
   - libsamplerate0-dev
