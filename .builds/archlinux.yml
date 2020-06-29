@@ -15,15 +15,16 @@ packages:
   - ffmpeg
   - python
   - gettext
+  - graphviz
   - gtksourceview4
-  - sed
+  - helm-synth
   - ninja
   - help2man
   - python-sphinx
   - ladspa
   - lv2
-  - graphviz
   - rubberband
+  - sed
   - xdg-utils
   - lcov
   - gcovr

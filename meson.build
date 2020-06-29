@@ -154,6 +154,27 @@ cc = meson.get_compiler ('c')
 find_program ('sed', required: true)
 find_program ('gettext', required: true)
 dot_bin = find_program ('dot', required: false)
+if get_option ('tests')
+  lv2ls_bin = find_program ('lv2ls', required: false)
+  lv2info_bin = find_program (
+    'lv2info', required: false)
+  get_lv2_bundle_uri_bin = find_program (
+    'tools/get_lv2_bundle_uri.sh')
+  have_helm = false
+  helm_bundle = 'not found'
+  if lv2ls_bin.found () and lv2info_bin.found ()
+    lv2ls_res = run_command (
+      lv2ls_bin, check: true).stdout ()
+    have_helm = lv2ls_res.contains (
+      'http://tytel.org/helm')
+    if have_helm
+      helm_bundle = run_command (
+        get_lv2_bundle_uri_bin, lv2info_bin,
+        'http://tytel.org/helm',
+        check: true).stdout ().strip ()
+    endif
+  endif
+endif
 
 # find command to open a directory
 if os_gnu or os_freebsd
@@ -738,12 +759,9 @@ summary ({
   'Profiling': get_option('profiling'),
   'Strict flags': get_option('strict_flags'),
   'Extra optimizations': get_option('extra_optimizations'),
-  'Build tests': get_option('tests'),
-  'Build GUI tests': get_option('gui_tests'),
   'Build/install manpage': get_option('manpage'),
   'Build/install user manual': get_option('user_manual'),
   'Install DSEG font': get_option('dseg_font'),
-  'Coverage reports': get_option('b_coverage'),
   }, section: 'General')
 
 summary ({
@@ -758,6 +776,13 @@ summary ({
   'Guile': have_guile,
   'GraphViz': have_graphviz,
   }, section: 'Features')
+
+summary ({
+  'Build tests': get_option('tests'),
+  'Build GUI tests': get_option('gui_tests'),
+  'Coverage reports': get_option('b_coverage'),
+  'Helm': helm_bundle,
+  }, section: 'Tests')
 
 summary ({
   'prefix': prefix,

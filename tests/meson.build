@@ -33,6 +33,7 @@ if get_option ('tests')
   test_env.set ('VST_PATH', '/tmp/zrythm_vst')
   test_env.set ('LV2_PATH', '/tmp/zrythm_lv2')
 
+  # FIXME create a zrythm-test-config.h
   test_cflags = [
     '-DTESTS_SRCDIR="' +
       meson.current_source_dir () +
@@ -42,6 +43,7 @@ if get_option ('tests')
       '"',
     '-DMIDILIB_TEST_MIDI_FILES_PATH="' +
       meson.source_root () / 'ext/midilib/MIDIFiles"',
+    '-DHELM_BUNDLE="@0@"'.format (helm_bundle),
   ]
 
   test_link_args = [
@@ -73,6 +75,12 @@ if get_option ('tests')
     tests += [
       ['integration/midi_file', true],
       ]
+    if have_helm
+      tests += [
+        ['integration/undo_redo_helm_track_creation',
+          true],
+      ]
+    endif
     if get_option ('plugin_tests')
       tests += [
         ['actions/mixer_selections', false],

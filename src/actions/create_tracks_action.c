@@ -247,7 +247,10 @@ create_tracks_action_new (
   self->track_pos = track_pos;
   self->type = type;
   self->pool_id = -1;
-  position_set_to_pos (&self->pos, pos);
+  if (pos)
+    {
+      position_set_to_pos (&self->pos, pos);
+    }
 
   /* calculate number of tracks */
   if (file && type == TRACK_TYPE_MIDI)

@@ -391,6 +391,8 @@ track_select (
   int     exclusive,
   int     fire_events)
 {
+  g_return_if_fail (IS_TRACK (self));
+
   if (select)
     {
       if (exclusive)
