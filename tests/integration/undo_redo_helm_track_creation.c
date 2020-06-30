@@ -31,7 +31,6 @@
 #include "tests/helpers/zrythm.h"
 
 #include <glib.h>
-#include <locale.h>
 
 static void
 test ()

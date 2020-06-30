@@ -38,8 +38,6 @@
                                  &num_selected);
 
 typedef struct AutomationTrack AutomationTrack;
-typedef struct _AutomationTracklistWidget
-  AutomationTracklistWidget;
 typedef struct Track Track;
 typedef struct Automatable Automatable;
 typedef struct AutomationLane AutomationLane;
@@ -83,8 +81,6 @@ typedef struct AutomationTracklist
    * This should be set during initialization.
    */
   int               track_pos;
-
-  AutomationTracklistWidget *  widget;
 } AutomationTracklist;
 
 static const cyaml_schema_field_t

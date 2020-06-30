@@ -77,6 +77,7 @@ if get_option ('tests')
       ]
     if have_helm
       tests += [
+        ['actions/copy_tracks', false],
         ['integration/undo_redo_helm_track_creation',
           true],
       ]

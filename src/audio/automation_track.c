@@ -582,6 +582,14 @@ automation_track_clone (
   dest->regions =
     malloc (
       dest->regions_size * sizeof (ZRegion *));
+  dest->visible = src->visible;
+  dest->created = src->created;
+  dest->index = src->index;
+  dest->y = src->y;
+  dest->automation_mode = src->automation_mode;
+  dest->record_mode = src->record_mode;
+  dest->height = src->height;
+  g_warn_if_fail (dest->height >= TRACK_MIN_HEIGHT);
 
   port_identifier_copy (
     &dest->port_id, &src->port_id);

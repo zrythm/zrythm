@@ -78,6 +78,10 @@ test_create_from_midi_file (void)
       NULL);
   test_num_tracks_with_file (midi_file, 1);
   g_free (midi_file);
+
+  g_assert_cmpint (
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->
+      lanes[0]->regions[0]->num_midi_notes, ==, 3);
 }
 
 int

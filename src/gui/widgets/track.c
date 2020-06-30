@@ -2314,6 +2314,9 @@ track_widget_on_show_automation_toggled (
 {
   Track * track = self->track;
 
+  g_message (
+    "%s: toggled on %s", __func__, track->name);
+
   /* set visibility flag */
   track_set_automation_visible (
     track, !track->automation_visible);

@@ -681,6 +681,7 @@ track_get_full_visible_height (
       for (int i = 0; i < self->num_lanes; i++)
         {
           TrackLane * lane = self->lanes[i];
+          g_warn_if_fail (lane->height > 0);
           height += lane->height;
         }
     }
@@ -693,6 +694,7 @@ track_get_full_visible_height (
           for (int i = 0; i < atl->num_ats; i++)
             {
               AutomationTrack * at = atl->ats[i];
+              g_warn_if_fail (at->height > 0);
               if (at->visible)
                 height += at->height;
             }

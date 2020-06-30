@@ -246,8 +246,14 @@ automation_tracklist_update_track_pos (
   int i;
   for (i = 0; i < self->num_ats; i++)
     {
-      self->ats[i]->port_id.track_pos =
-        track->pos;
+      AutomationTrack * at = self->ats[i];
+      at->port_id.track_pos = track->pos;
+      if (at->port_id.owner_type ==
+            PORT_OWNER_TYPE_PLUGIN)
+        {
+          at->port_id.plugin_id.track_pos =
+            track->pos;
+        }
     }
 }
 

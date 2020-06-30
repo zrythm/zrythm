@@ -1059,13 +1059,17 @@ plugin_update_identifier (
   int i;
   for (i = 0; i < self->num_in_ports; i++)
     {
+      Port * port = self->in_ports[i];
       port_update_track_pos (
-        self->in_ports[i], self->id.track_pos);
+        port, self->id.track_pos);
+      port->id.plugin_id = self->id;
     }
   for (i = 0; i < self->num_out_ports; i++)
     {
+      Port * port = self->out_ports[i];
       port_update_track_pos (
-        self->out_ports[i], self->id.track_pos);
+        port, self->id.track_pos);
+      port->id.plugin_id = self->id;
     }
 }
 
