@@ -51,7 +51,10 @@ typedef struct ObjectUtils
 /** Calls _free_later after doing the casting so the
  * caller doesn't have to. */
 #define free_later(obj,func) \
-  _free_later((void *)obj, (void (*) (void *)) func)
+  _free_later ( \
+    (void *)obj, \
+    (void (*) (void *)) func, \
+    __FILE__, __func__, __LINE__)
 
 /**
  * Frees the object after a while.
@@ -61,8 +64,11 @@ typedef struct ObjectUtils
  */
 void
 _free_later (
-  void * object,
-  void (*dfunc) (void *));
+  void *       object,
+  void         (*dfunc) (void *),
+  const char * file,
+  const char * func,
+  int          line);
 
 /**
  * Inits the subsystems for the object utils in this

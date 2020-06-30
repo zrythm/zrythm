@@ -1298,7 +1298,10 @@ track_remove_region (
     }
 
   if (free)
-    free_later (region, arranger_object_free);
+    {
+      arranger_object_free (
+        (ArrangerObject *) region);
+    }
 
   if (fire_events)
     {

@@ -17,12 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/copy_tracks_action.h"
+#include "actions/delete_tracks_action.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
 #include "audio/audio_region.h"
 #include "audio/automation_region.h"
 #include "audio/chord_region.h"
+#include "audio/control_port.h"
 #include "audio/master_track.h"
 #include "audio/midi_note.h"
 #include "audio/region.h"
@@ -100,7 +101,7 @@ check_port_identifiers_in_ats (
 }
 
 static void
-test_port_and_plugin_track_pos_after_duplication (void)
+test_undo_track_deletion (void)
 {
   LilvNode * path =
     lilv_new_uri (LILV_WORLD, HELM_BUNDLE);
@@ -136,34 +137,60 @@ test_port_and_plugin_track_pos_after_duplication (void)
 
   plugin_descriptor_free (descr);
 
-  int src_track_pos = TRACKLIST->num_tracks - 1;
-  int dest_track_pos = TRACKLIST->num_tracks;
-
   /* select it */
   Track * helm_track =
-    TRACKLIST->tracks[src_track_pos];
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
     helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
 
-  /* duplicate it */
+  /* get an automation track */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (helm_track);
+  AutomationTrack * at = atl->ats[40];
+  at->created = true;
+  at->visible = true;
+
+  /* create an automation region */
+  Position start_pos, end_pos;
+  position_set_to_bar (&start_pos, 2);
+  position_set_to_bar (&end_pos, 4);
+  ZRegion * region =
+    automation_region_new (
+      &start_pos, &end_pos, helm_track->pos,
+      at->index, at->num_regions);
+  automation_track_add_region (at, region);
+  arranger_object_select (
+    (ArrangerObject *) region, true, false);
   ua =
-    copy_tracks_action_new (
-      TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
 
-  Track * src_track = TRACKLIST->tracks[src_track_pos];
-  Track * dest_track =
-    TRACKLIST->tracks[dest_track_pos];
+  /* create some automation points */
+  Port * port = automation_track_get_port (at);
+  position_set_to_bar (&start_pos, 1);
+  AutomationPoint * ap =
+    automation_point_new_float (
+      port->deff,
+      control_port_real_val_to_normalized (
+        port, port->deff),
+      &start_pos);
+  automation_region_add_ap (
+    region, ap, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) ap, true, false);
+  ua =
+    arranger_selections_action_new_create (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
 
-  check_port_identifiers_in_track (
-    src_track, src_track_pos);
-  check_port_identifiers_in_track (
-    dest_track, dest_track_pos);
+  /* delete it */
+  ua =
+    delete_tracks_action_new (TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
 
-  check_port_identifiers_in_ats (
-    src_track, src_track_pos);
-  check_port_identifiers_in_ats (
-    dest_track, dest_track_pos);
+  /* undo deletion */
+  undo_manager_undo (UNDO_MANAGER);
 
   /* let the engine run */
   g_usleep (1000000);
@@ -176,13 +203,12 @@ main (int argc, char *argv[])
 
   test_helper_zrythm_init ();
 
-#define TEST_PREFIX "/actions/copy_tracks/"
+#define TEST_PREFIX "/actions/delete_tracks/"
 
   g_test_add_func (
-    TEST_PREFIX
-    "test port and plugin track pos after duplication",
-    (GTestFunc)
-    test_port_and_plugin_track_pos_after_duplication);
+    TEST_PREFIX "test undo track deletion",
+    (GTestFunc) test_undo_track_deletion);
 
   return g_test_run ();
 }
+

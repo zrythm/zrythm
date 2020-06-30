@@ -34,11 +34,20 @@
 typedef struct FreeElement
 {
   /** Time the element was added to the stack. */
-  gint64  time_added;
+  gint64       time_added;
   /** The object to be deleted. */
-  void * obj;
+  void *       obj;
   /** The delete function. */
-  void (*dfunc) (void *);
+  void         (*dfunc) (void *);
+
+  /** File. */
+  const char * file;
+
+  /** Func. */
+  const char * func;
+
+  /** Line. */
+  int          line;
 } FreeElement;
 
 static gboolean
@@ -144,10 +153,14 @@ free_later_thread_func (
  */
 void
 _free_later (
-  void * object,
-  void (*dfunc) (void *))
+  void *       object,
+  void         (*dfunc) (void *),
+  const char * file,
+  const char * func,
+  int          line)
 {
-  g_return_if_fail (OBJECT_UTILS->free_queue != NULL);
+  g_return_if_fail (
+    OBJECT_UTILS->free_queue != NULL);
 
   if (ZRYTHM_TESTING)
     {
@@ -156,10 +169,13 @@ _free_later (
     }
 
   FreeElement * free_element =
-    calloc (1, sizeof (FreeElement));
+    object_new (FreeElement);
   free_element->obj = object;
   free_element->dfunc = dfunc;
   free_element->time_added = g_get_monotonic_time ();
+  free_element->func = func;
+  free_element->line = line;
+  free_element->file = file;
   /*stack_push (free_stack, (void *) free_element);*/
   mpmc_queue_push_back (
     OBJECT_UTILS->free_queue, (void *) free_element);

@@ -256,7 +256,7 @@ automation_region_get_next_ap (
  */
 void
 automation_region_remove_ap (
-  ZRegion *          self,
+  ZRegion *         self,
   AutomationPoint * ap,
   int               free)
 {
@@ -269,7 +269,10 @@ automation_region_remove_ap (
     self->aps, self->num_aps, ap);
 
   if (free)
-    free_later (ap, arranger_object_free);
+    {
+      arranger_object_free (
+        (ArrangerObject *) ap);
+    }
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_REMOVED,
