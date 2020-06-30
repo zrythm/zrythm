@@ -23,6 +23,7 @@
 #include "audio/audio_region.h"
 #include "audio/automation_region.h"
 #include "audio/chord_region.h"
+#include "audio/control_port.h"
 #include "audio/master_track.h"
 #include "audio/midi_note.h"
 #include "audio/region.h"
@@ -34,70 +35,6 @@
 #include "tests/helpers/project.h"
 
 #include <glib.h>
-
-/**
- * Check that all ports in the track have the track
- * pos.
- */
-static void
-check_port_identifiers_in_track (
-  Track * track,
-  int     track_pos)
-{
-  int max_size = 20;
-  int num_ports = 0;
-  Port ** ports = calloc (max_size, sizeof (Port *));
-  track_append_all_ports (
-    track, &ports, &num_ports, true, &max_size,
-    true);
-  for (int i = 0; i < num_ports; i++)
-    {
-      Port * port = ports[i];
-      g_assert_cmpint (
-        port->id.track_pos, ==, track_pos);
-      if (port->id.owner_type ==
-            PORT_OWNER_TYPE_PLUGIN)
-        {
-          PluginIdentifier * pid = &port->id.plugin_id;
-          g_assert_cmpint (
-            pid->track_pos, ==, track_pos);
-          Plugin * pl = plugin_find (pid);
-          g_assert_true (
-            plugin_identifier_is_equal (&pl->id, pid));
-          g_assert_true (
-            pl == track->channel->instrument);
-        }
-    }
-  free (ports);
-}
-
-/**
- * Check the identifiers in each automation track.
- */
-static void
-check_port_identifiers_in_ats (
-  Track * track,
-  int     track_pos)
-{
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (track);
-  for (int i = 0; i < atl->num_ats; i++)
-    {
-      AutomationTrack * at = atl->ats[i];
-      g_assert_cmpint (
-        at->port_id.track_pos, ==, track_pos);
-      if (at->port_id.owner_type ==
-            PORT_OWNER_TYPE_PLUGIN)
-        {
-          g_assert_cmpint (
-            at->port_id.plugin_id.track_pos, ==,
-            track_pos);
-        }
-      g_assert_true (
-        automation_track_find_from_port_id (
-          &at->port_id) == at);
-    }
-}
 
 static void
 test_port_and_plugin_track_pos_after_duplication (void)
@@ -145,25 +82,79 @@ test_port_and_plugin_track_pos_after_duplication (void)
   track_select (
     helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
 
+  /* get an automation track */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (helm_track);
+  AutomationTrack * at = atl->ats[40];
+  at->created = true;
+  at->visible = true;
+
+  /* create an automation region */
+  Position start_pos, end_pos;
+  position_set_to_bar (&start_pos, 2);
+  position_set_to_bar (&end_pos, 4);
+  ZRegion * region =
+    automation_region_new (
+      &start_pos, &end_pos, helm_track->pos,
+      at->index, at->num_regions);
+  automation_track_add_region (at, region);
+  arranger_object_select (
+    (ArrangerObject *) region, true, false);
+  ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* create some automation points */
+  Port * port = automation_track_get_port (at);
+  position_set_to_bar (&start_pos, 1);
+  AutomationPoint * ap =
+    automation_point_new_float (
+      port->deff,
+      control_port_real_val_to_normalized (
+        port, port->deff),
+      &start_pos);
+  automation_region_add_ap (
+    region, ap, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) ap, true, false);
+  ua =
+    arranger_selections_action_new_create (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_true (
+    track_verify_identifiers (helm_track));
+
   /* duplicate it */
   ua =
     copy_tracks_action_new (
       TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
   undo_manager_perform (UNDO_MANAGER, ua);
 
-  Track * src_track = TRACKLIST->tracks[src_track_pos];
+  Track * src_track =
+    TRACKLIST->tracks[src_track_pos];
   Track * dest_track =
     TRACKLIST->tracks[dest_track_pos];
 
-  check_port_identifiers_in_track (
-    src_track, src_track_pos);
-  check_port_identifiers_in_track (
-    dest_track, dest_track_pos);
+  track_verify_identifiers (src_track);
+  track_verify_identifiers (dest_track);
 
-  check_port_identifiers_in_ats (
-    src_track, src_track_pos);
-  check_port_identifiers_in_ats (
-    dest_track, dest_track_pos);
+  /* move automation in 2nd track and undo/redo */
+  atl = track_get_automation_tracklist (dest_track);
+  ap = atl->ats[40]->regions[0]->aps[0];
+  arranger_object_select (
+    (ArrangerObject *) ap, true, false);
+  float prev_norm_val = ap->normalized_val;
+  automation_point_set_fvalue (
+    ap, prev_norm_val - 0.1, true);
+  ua =
+    arranger_selections_action_new_move_automation (
+      (ArrangerSelections *) AUTOMATION_SELECTIONS,
+      0, 0.1, F_ALREADY_MOVED);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
 
   /* let the engine run */
   g_usleep (1000000);

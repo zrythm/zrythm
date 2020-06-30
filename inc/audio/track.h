@@ -654,6 +654,16 @@ track_remove_region (
   int      free);
 
 /**
+ * Verifies the identifiers on a live Track
+ * (in the project, not a clone).
+ *
+ * @return True if pass.
+ */
+bool
+track_verify_identifiers (
+  Track * self);
+
+/**
  * Returns the region at the given position, or NULL.
  */
 ZRegion *

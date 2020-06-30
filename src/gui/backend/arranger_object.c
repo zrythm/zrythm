@@ -1655,8 +1655,7 @@ find_automation_point (
   g_return_val_if_fail (
     region && region->num_aps > src->index, NULL);
 
-  AutomationPoint * ap =
-    region->aps[src->index];
+  AutomationPoint * ap = region->aps[src->index];
   g_return_val_if_fail (
     automation_point_is_equal (src, ap), NULL);
 

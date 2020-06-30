@@ -262,6 +262,16 @@ int
 automation_tracklist_get_num_visible (
   AutomationTracklist * self);
 
+/**
+ * Verifies the identifiers on a live automation
+ * tracklist (in the project, not a clone).
+ *
+ * @return True if pass.
+ */
+bool
+automation_tracklist_verify_identifiers (
+  AutomationTracklist * self);
+
 void
 automation_tracklist_free_members (
   AutomationTracklist * self);

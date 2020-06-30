@@ -243,8 +243,8 @@ automation_tracklist_update_track_pos (
   AutomationTracklist * self,
   Track *               track)
 {
-  int i;
-  for (i = 0; i < self->num_ats; i++)
+  self->track_pos = track->pos;
+  for (int i = 0; i < self->num_ats; i++)
     {
       AutomationTrack * at = self->ats[i];
       at->port_id.track_pos = track->pos;
@@ -253,6 +253,12 @@ automation_tracklist_update_track_pos (
         {
           at->port_id.plugin_id.track_pos =
             track->pos;
+        }
+      for (int j = 0; j < at->num_regions; j++)
+        {
+          ZRegion * region = at->regions[j];
+          region->id.track_pos = track->pos;
+          region_update_identifier (region);
         }
     }
 }
@@ -496,33 +502,43 @@ automation_tracklist_get_num_visible (
   return count;
 }
 
-/*static void*/
-/*remove_automation_track (*/
-  /*AutomationTracklist * self,*/
-  /*AutomationTrack *     at)*/
-/*{*/
-  /*array_double_delete (*/
-    /*self->automation_tracks,*/
-    /*self->at_ids,*/
-    /*self->num_automation_tracks,*/
-    /*at, at->id);*/
-  /*project_remove_automation_track (at);*/
-  /*automation_track_free (at);*/
-/*}*/
-
-/*static void*/
-/*remove_automation_lane (*/
-  /*AutomationTracklist * self,*/
-  /*AutomationLane *     al)*/
-/*{*/
-  /*array_double_delete (*/
-    /*self->automation_lanes,*/
-    /*self->al_ids,*/
-    /*self->num_automation_lanes,*/
-    /*al, al->id);*/
-  /*project_remove_automation_lane (al);*/
-  /*automation_lane_free (al);*/
-/*}*/
+/**
+ * Verifies the identifiers on a live automation
+ * tracklist (in the project, not a clone).
+ *
+ * @return True if pass.
+ */
+bool
+automation_tracklist_verify_identifiers (
+  AutomationTracklist * self)
+{
+  int track_pos = self->track_pos;
+  for (int i = 0; i < self->num_ats; i++)
+    {
+      AutomationTrack * at = self->ats[i];
+      g_assert_cmpint (
+        at->port_id.track_pos, ==, track_pos);
+      if (at->port_id.owner_type ==
+            PORT_OWNER_TYPE_PLUGIN)
+        {
+          g_return_val_if_fail (
+            at->port_id.plugin_id.track_pos ==
+              track_pos, false);
+        }
+      g_return_val_if_fail (
+        automation_track_find_from_port_id (
+          &at->port_id) == at, false);
+      for (int j = 0; j < at->num_regions; j++)
+        {
+          ZRegion * r = at->regions[j];
+          g_return_val_if_fail (
+            r->id.track_pos == track_pos &&
+            r->id.at_idx == at->index &&
+            r->id.idx ==j, false);
+        }
+    }
+  return true;
+}
 
 void
 automation_tracklist_free_members (

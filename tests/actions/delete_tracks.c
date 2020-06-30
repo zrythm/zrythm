@@ -36,70 +36,6 @@
 
 #include <glib.h>
 
-/**
- * Check that all ports in the track have the track
- * pos.
- */
-static void
-check_port_identifiers_in_track (
-  Track * track,
-  int     track_pos)
-{
-  int max_size = 20;
-  int num_ports = 0;
-  Port ** ports = calloc (max_size, sizeof (Port *));
-  track_append_all_ports (
-    track, &ports, &num_ports, true, &max_size,
-    true);
-  for (int i = 0; i < num_ports; i++)
-    {
-      Port * port = ports[i];
-      g_assert_cmpint (
-        port->id.track_pos, ==, track_pos);
-      if (port->id.owner_type ==
-            PORT_OWNER_TYPE_PLUGIN)
-        {
-          PluginIdentifier * pid = &port->id.plugin_id;
-          g_assert_cmpint (
-            pid->track_pos, ==, track_pos);
-          Plugin * pl = plugin_find (pid);
-          g_assert_true (
-            plugin_identifier_is_equal (&pl->id, pid));
-          g_assert_true (
-            pl == track->channel->instrument);
-        }
-    }
-  free (ports);
-}
-
-/**
- * Check the identifiers in each automation track.
- */
-static void
-check_port_identifiers_in_ats (
-  Track * track,
-  int     track_pos)
-{
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (track);
-  for (int i = 0; i < atl->num_ats; i++)
-    {
-      AutomationTrack * at = atl->ats[i];
-      g_assert_cmpint (
-        at->port_id.track_pos, ==, track_pos);
-      if (at->port_id.owner_type ==
-            PORT_OWNER_TYPE_PLUGIN)
-        {
-          g_assert_cmpint (
-            at->port_id.plugin_id.track_pos, ==,
-            track_pos);
-        }
-      g_assert_true (
-        automation_track_find_from_port_id (
-          &at->port_id) == at);
-    }
-}
-
 static void
 test_undo_track_deletion (void)
 {
@@ -184,6 +120,9 @@ test_undo_track_deletion (void)
       AUTOMATION_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
 
+  g_assert_true (
+    track_verify_identifiers (helm_track));
+
   /* delete it */
   ua =
     delete_tracks_action_new (TRACKLIST_SELECTIONS);
@@ -191,6 +130,10 @@ test_undo_track_deletion (void)
 
   /* undo deletion */
   undo_manager_undo (UNDO_MANAGER);
+
+  g_assert_true (
+    track_verify_identifiers (
+      TRACKLIST->tracks[TRACKLIST->num_tracks -1]));
 
   /* let the engine run */
   g_usleep (1000000);

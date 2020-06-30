@@ -637,6 +637,63 @@ track_get_velocities_in_range (
 }
 
 /**
+ * Verifies the identifiers on a live Track
+ * (in the project, not a clone).
+ *
+ * @return True if pass.
+ */
+bool
+track_verify_identifiers (
+  Track * self)
+{
+  int track_pos = self->pos;
+
+  /* verify port identifiers */
+  int max_size = 20;
+  int num_ports = 0;
+  Port ** ports =
+    calloc ((size_t) max_size, sizeof (Port *));
+  track_append_all_ports (
+    self, &ports, &num_ports, true, &max_size,
+    true);
+  for (int i = 0; i < num_ports; i++)
+    {
+      Port * port = ports[i];
+      g_return_val_if_fail (
+        port->id.track_pos == track_pos, false);
+      if (port->id.owner_type ==
+            PORT_OWNER_TYPE_PLUGIN)
+        {
+          PluginIdentifier * pid =
+            &port->id.plugin_id;
+          g_return_val_if_fail (
+            pid->track_pos == track_pos, false);
+          Plugin * pl = plugin_find (pid);
+          g_return_val_if_fail (
+            plugin_identifier_is_equal (
+              &pl->id, pid), false);
+          if (pid->slot_type ==
+                PLUGIN_SLOT_INSTRUMENT)
+            {
+              g_return_val_if_fail (
+                pl == self->channel->instrument,
+                false);
+            }
+        }
+    }
+  free (ports);
+
+  /* verify tracklist identifiers */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (self);
+  g_return_val_if_fail (
+    automation_tracklist_verify_identifiers (atl),
+    false);
+
+  return true;
+}
+
+/**
  * Returns if the given TrackType can host the
  * given RegionType.
  */
