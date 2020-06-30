@@ -220,6 +220,9 @@ tracklist_insert_track (
       channel_connect (track->channel);
     }
 
+  /* verify */
+  track_verify_identifiers (track);
+
   if (recalc_graph)
     {
       router_recalc_graph (ROUTER);

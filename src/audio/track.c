@@ -686,9 +686,13 @@ track_verify_identifiers (
   /* verify tracklist identifiers */
   AutomationTracklist * atl =
     track_get_automation_tracklist (self);
-  g_return_val_if_fail (
-    automation_tracklist_verify_identifiers (atl),
-    false);
+  if (atl)
+    {
+      g_return_val_if_fail (
+        automation_tracklist_verify_identifiers (
+          atl),
+        false);
+    }
 
   return true;
 }

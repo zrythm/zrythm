@@ -535,6 +535,34 @@ automation_tracklist_verify_identifiers (
             r->id.track_pos == track_pos &&
             r->id.at_idx == at->index &&
             r->id.idx ==j, false);
+          for (int k = 0; k < r->num_aps; k++)
+            {
+              AutomationPoint * ap = r->aps[k];
+              ArrangerObject * obj =
+                (ArrangerObject *) ap;
+              g_return_val_if_fail (
+                obj->region_id.track_pos ==
+                  track_pos, false);
+            }
+          for (int k = 0; k < r->num_midi_notes; k++)
+            {
+              MidiNote * mn = r->midi_notes[k];
+              ArrangerObject * obj =
+                (ArrangerObject *) mn;
+              g_return_val_if_fail (
+                obj->region_id.track_pos ==
+                  track_pos, false);
+            }
+          for (int k = 0; k < r->num_chord_objects;
+               k++)
+            {
+              ChordObject * co = r->chord_objects[k];
+              ArrangerObject * obj =
+                (ArrangerObject *) co;
+              g_return_val_if_fail (
+                obj->region_id.track_pos ==
+                  track_pos, false);
+            }
         }
     }
   return true;
