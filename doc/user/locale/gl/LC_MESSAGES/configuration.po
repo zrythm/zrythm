@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 20:03+0100\n"
-"PO-Revision-Date: 2020-06-05 11:41+0000\n"
+"PO-Revision-Date: 2020-06-29 20:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -397,11 +397,11 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:75
 msgid "Keep window on top"
-msgstr "Manter xanela enriba"
+msgstr "Manter ventá enriba"
 
 #: ../../configuration/preferences/intro.rst:75
 msgid "Always show plugin UIs on top of the main window."
-msgstr "Manter sempre as xanelas das UI dos plugins enriba da xanela principal"
+msgstr "Manter sempre as IU dos plugins enriba da ventá principal."
 
 #: ../../configuration/preferences/intro.rst:79
 msgid "Bridge unsupported UIs"
@@ -541,9 +541,8 @@ msgid "Automation editing."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:161
-#, fuzzy
 msgid "Curve algorithm"
-msgstr "Algoritmo de Panorama"
+msgstr "Algoritmo de curva"
 
 #: ../../configuration/preferences/intro.rst:161
 msgid "Default curve algorithm to use for automation curves."
