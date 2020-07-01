@@ -39,7 +39,13 @@ before_install:
       brew link --overwrite python
       ;;
     linux)
-      sudo apt-get install -y libgtk-3-dev libjack-dev libsndfile1-dev ninja-build gettext sed help2man python3-sphinx ladspa-sdk libfftw3-dev libasound2-dev libavcodec-dev libavutil-dev libavformat-dev libchromaprint-dev libsamplerate0-dev libyaml-dev librubberband-dev python3 xdg-utils git lcov guile-2.2-dev libgtksourceview-3.0-dev libgraphviz-dev libzstd-dev python3 python3-pip python3-setuptools
+      sudo apt-get install -y libgtk-3-dev libjack-dev libsndfile1-dev ninja-build gettext sed help2man python3-sphinx ladspa-sdk libfftw3-dev libasound2-dev libavcodec-dev libavutil-dev libavformat-dev libchromaprint-dev libsamplerate0-dev libyaml-dev librubberband-dev python3 xdg-utils git lcov guile-2.2-dev libgtksourceview-3.0-dev libgraphviz-dev libzstd-dev python3 python3-pip python3-setuptools liblilv-dev lilv-utils lv2-dev
+      # kxstudio repos
+      sudo apt-get install -y apt-transport-https gpgv
+      wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos_10.0.3_all.deb
+      sudo dpkg -i kxstudio-repos_10.0.3_all.deb
+      sudo apt-get update
+      sudo apt-get install -y helm
       pip3 install --user gcovr cpp-coveralls meson
       ;;
   esac
