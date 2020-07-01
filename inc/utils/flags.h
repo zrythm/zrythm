@@ -133,4 +133,7 @@
 #define F_NORMALIZED 1
 #define F_NOT_NORMALIZED 0
 
+#define F_USE_COLOR 1
+#define F_NO_USE_COLOR 0
+
 #endif

@@ -888,7 +888,7 @@ track_generate_automation_tracks (
   Track * track)
 {
   g_message (
-    "%s: generating for %s", __func__, track->name);
+    "generating for %s", track->name);
 
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
@@ -944,7 +944,7 @@ track_generate_automation_tracks (
       automation_tracklist_add_at (atl, at);
     }
 
-  g_message ("%s: done", __func__);
+  g_message ("done");
 }
 
 /**
@@ -1141,8 +1141,8 @@ track_set_pos (
   int     pos)
 {
   g_message (
-    "%s: %s (%d) to %d",
-    __func__, track->name, track->pos, pos);
+    "%s (%d) to %d",
+    track->name, track->pos, pos);
   track->pos = pos;
 
   for (int i = 0; i < track->num_lanes; i++)
@@ -1199,8 +1199,8 @@ track_disconnect (
   bool    remove_pl,
   bool    recalc_graph)
 {
-  g_message ("%s: disconnecting %s (%d)...",
-    __func__, self->name, self->pos);
+  g_message ("disconnecting %s (%d)...",
+    self->name, self->pos);
 
   if (track_type_has_channel (self->type))
     {
@@ -1220,12 +1220,12 @@ track_disconnect (
     {
       Port * port = ports[i];
       g_return_if_fail (IS_PORT (port));
-      g_message ("%s: %s (%p) was %d",
-        __func__, port->id.label,
+      g_message ("%s (%p) was %d",
+        port->id.label,
         port, port->is_project);
       port_disconnect_all (port);
-      g_message ("%s: %s (%p) is %d",
-        __func__, port->id.label,
+      g_message ("%s (%p) is %d",
+        port->id.label,
         port, port->is_project);
     }
   free (ports);
@@ -1235,7 +1235,7 @@ track_disconnect (
       router_recalc_graph (ROUTER);
     }
 
-  g_message ("%s: done", __func__);
+  g_message ("done");
 }
 
 /**
@@ -1572,8 +1572,6 @@ void
 track_update_frames (
   Track * self)
 {
-  /*g_message ("%s: %s", __func__, self->name);*/
-
   int i;
   for (i = 0; i < self->num_lanes; i++)
     {
@@ -1851,8 +1849,8 @@ track_set_is_project (
   Track * self,
   bool    is_project)
 {
-  g_message ("%s: Setting %s to %d...",
-    __func__, self->name, is_project);
+  g_message ("Setting %s to %d...",
+    self->name, is_project);
 
   track_processor_set_is_project (
     self->processor, is_project);
@@ -1884,7 +1882,7 @@ track_set_is_project (
 
   self->is_project = is_project;
 
-  g_message ("%s: done", __func__);
+  g_message ("done");
 }
 
 /**
@@ -1974,8 +1972,8 @@ remove_ats_from_automation_tracklist (
 void
 track_free (Track * self)
 {
-  g_message ("%s: freeing %s (%d)...",
-    __func__, self->name, self->pos);
+  g_message ("freeing %s (%d)...",
+    self->name, self->pos);
 
   /* remove regions */
   for (int i = 0; i < self->num_lanes; i++)
@@ -2032,5 +2030,5 @@ track_free (Track * self)
 
   object_zero_and_free (self);
 
-  g_message ("%s: done", __func__);
+  g_message ("done");
 }

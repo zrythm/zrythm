@@ -72,7 +72,7 @@ port_init_loaded (
   bool   is_project)
 {
   g_message (
-    "%s: %s, is project: %d", __func__,
+    "%s, is project: %d",
     self->id.label, is_project);
 
   self->magic = PORT_MAGIC;
@@ -134,7 +134,6 @@ port_init_loaded (
       break;
     }
 
-  /*g_message ("%s: done", __func__);*/
 }
 
 /**
@@ -469,7 +468,7 @@ _port_new (
   const char * label)
 {
   g_message (
-    "%s: Creating port %s...", __func__, label);
+    "Creating port %s...", label);
 
   Port * self = object_new (Port);
 
@@ -1377,9 +1376,9 @@ port_disconnect_all (
   if (!self->is_project)
     {
       g_message (
-        "%s: %s (%p) is not a project port, "
+        "%s (%p) is not a project port, "
         "skipping",
-        __func__, self->id.label, self);
+        self->id.label, self);
       self->num_srcs = 0;
       self->num_dests = 0;
       return 0;
@@ -1816,11 +1815,11 @@ port_prepare_rtmidi_events (
           if (ev_time >= AUDIO_ENGINE->block_length)
             {
               g_warning (
-                "%s: event with invalid time %u "
+                "event with invalid time %u "
                 "received. the maximum allowed time "
                 "is %" PRIu32 ". setting it to "
                 "%u...",
-                __func__, ev_time,
+                ev_time,
                 AUDIO_ENGINE->block_length - 1,
                 AUDIO_ENGINE->block_length - 1);
               ev_time =
@@ -3010,7 +3009,7 @@ port_get_track (
 
   if (!track && warn_if_fail)
     {
-      g_warning ("%s: not found", __func__);
+      g_warning ("not found");
     }
 
   return track;
@@ -3031,8 +3030,7 @@ port_get_plugin (
       if (warn_if_fail)
         {
           g_warning (
-            "%s: No track found for port",
-            __func__);
+            "No track found for port");
         }
       return NULL;
     }
@@ -3148,7 +3146,7 @@ void
 port_free (Port * self)
 {
   g_message (
-    "%s: freeing %s...", __func__, self->id.label);
+    "freeing %s...", self->id.label);
 
   /* assert no connections */
   g_warn_if_fail (self->num_srcs == 0);

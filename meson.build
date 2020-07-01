@@ -276,6 +276,8 @@ test_cflags = [
   # dummy macro for extracting translatable strings
   # when we can't use gettext()
   '-D__(x)=x',
+  # use structured log
+  '-DG_LOG_USE_STRUCTURED=1',
   ]
 
 if os_windows

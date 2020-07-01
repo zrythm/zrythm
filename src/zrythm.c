@@ -449,8 +449,6 @@ zrythm_free (
   self->have_ui = false;
 
   object_free_w_func_and_null (
-    log_free, self->log);
-  object_free_w_func_and_null (
     z_cairo_caches_free, self->cairo_caches);
   object_free_w_func_and_null (
     project_free, self->project);
@@ -465,9 +463,12 @@ zrythm_free (
   object_free_w_func_and_null (
     file_manager_free, self->file_manager);
 
-  /* free object utils last */
+  /* free object utils around last */
   object_free_w_func_and_null (
     object_utils_free, self->object_utils);
+
+  object_free_w_func_and_null (
+    log_free, self->log);
 
   object_zero_and_free (self);
 

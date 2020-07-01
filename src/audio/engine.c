@@ -476,8 +476,7 @@ AudioEngine *
 engine_new (
   Project * project)
 {
-  g_message (
-    "%s: Creating audio engine...", __func__);
+  g_message ("Creating audio engine...");
 
   AudioEngine * self = object_new (AudioEngine);
 
@@ -545,19 +544,18 @@ engine_activate (
 {
   if (activate)
     {
-      g_message ("%s: Activating...", __func__);
+      g_message ("Activating...");
     }
   else
     {
-      g_message ("%s: Deactivating...", __func__);
+      g_message ("Deactivating...");
     }
 
   if (activate)
     {
       if (self->activated)
         {
-          g_message (
-            "%s: already activated",  __func__);
+          g_message ("already activated");
           return;
         }
 
@@ -568,8 +566,7 @@ engine_activate (
     {
       if (!self->activated)
         {
-          g_message (
-            "%s: already deactivated",  __func__);
+          g_message ("already deactivated");
           return;
         }
 
@@ -614,7 +611,7 @@ engine_activate (
 
   self->activated = activate;
 
-  g_message ("%s: done", __func__);
+  g_message ("done");
 }
 
 void
@@ -627,9 +624,9 @@ engine_realloc_port_buffers (
   AUDIO_ENGINE->block_length = nframes;
   AUDIO_ENGINE->buf_size_set = true;
   g_message (
-    "%s: Block length changed to %d. "
+    "Block length changed to %d. "
     "reallocating buffers...",
-    __func__, AUDIO_ENGINE->block_length);
+    AUDIO_ENGINE->block_length);
 
   /** reallocate port buffers to new size */
   Port * port;
@@ -684,7 +681,7 @@ engine_realloc_port_buffers (
     }
   AUDIO_ENGINE->nframes = nframes;
 
-  g_message ("%s: done", __func__);
+  g_message ("done");
 }
 
 /*void*/
@@ -1400,7 +1397,7 @@ void
 engine_free (
   AudioEngine * self)
 {
-  g_message ("%s: freeing...", __func__);
+  g_message ("freeing...");
 
   if (self->activated)
     {
@@ -1452,5 +1449,5 @@ engine_free (
 
   object_zero_and_free (self);
 
-  g_message ("%s: done", __func__);
+  g_message ("done");
 }
