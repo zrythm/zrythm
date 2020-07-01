@@ -143,8 +143,8 @@ track_lane_set_track_pos (
   const int   pos)
 {
   g_message (
-    "%s: lane: %d, track pos: %d, num regions: %d",
-    __func__, self->pos, pos, self->num_regions);
+    "lane: %d, track pos: %d, num regions: %d",
+    self->pos, pos, self->num_regions);
 
   self->track_pos = pos;
 

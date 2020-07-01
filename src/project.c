@@ -512,20 +512,15 @@ destroy_prev_main_window (
 }
 
 static void
-refresh_main_window (
-  Project * self,
-  bool      loading_while_running)
+setup_main_window (
+  Project * self)
 {
   /* mimic behavior when starting the app */
   if (ZRYTHM_HAVE_UI)
     {
-      g_message ("refreshing main window...");
+      g_message ("setting up main window...");
       event_manager_start_events (EVENT_MANAGER);
-      if (loading_while_running)
-        {
-          main_window_widget_setup (MAIN_WINDOW);
-          g_atomic_int_set (&AUDIO_ENGINE->run, 1);
-        }
+      main_window_widget_setup (MAIN_WINDOW);
 
       EVENTS_PUSH (
         ET_PROJECT_LOADED, self);
@@ -533,15 +528,11 @@ refresh_main_window (
 }
 
 static void
-recreate_main_window (
-  bool loading_while_running)
+recreate_main_window (void)
 {
-  if (loading_while_running)
-    {
-      g_message ("recreating main window..."); \
-      MAIN_WINDOW = \
-        main_window_widget_new (zrythm_app); \
-    }
+  g_message ("recreating main window...");
+  MAIN_WINDOW =
+    main_window_widget_new (zrythm_app);
 }
 
 /**
@@ -581,10 +572,10 @@ create_default (Project * self)
 {
   g_message ("creating default project...");
 
-  int loading_while_running = self && self->loaded;
   MainWindowWidget * mww = NULL;
-  if (loading_while_running && ZRYTHM_HAVE_UI)
+  if (ZRYTHM_HAVE_UI)
     {
+      g_message ("hiding prev window...");
       mww = hide_prev_main_window ();
     }
 
@@ -677,19 +668,18 @@ create_default (Project * self)
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate);
 
-  /* recalculate the routing graph */
-  router_recalc_graph (ROUTER);
-
   /* create untitled project */
   create_and_set_dir_and_title (
     self, ZRYTHM->create_project_path);
 
   if (ZRYTHM_HAVE_UI)
     {
-      recreate_main_window (loading_while_running);
+      g_message ("recreating main window...");
+      recreate_main_window ();
 
       if (mww)
         {
+          g_message ("destroying prev window...");
           destroy_prev_main_window (mww);
         }
     }
@@ -721,8 +711,13 @@ create_default (Project * self)
   region_link_group_manager_init (
     &self->region_link_group_manager);
 
-  g_message ("refreshing main window...");
-  refresh_main_window (self, loading_while_running);
+  g_message ("setting up main window...");
+  setup_main_window (self);
+
+  /* recalculate the routing graph */
+  router_recalc_graph (ROUTER);
+
+  engine_set_run (self->audio_engine, true);
 
   g_message ("done");
 }
@@ -782,8 +777,11 @@ load (
             GTK_WIN_POS_CENTER_ALWAYS);
           gtk_window_set_icon_name (
             GTK_WINDOW (dialog), "zrythm");
-          gtk_widget_set_visible (
-            GTK_WIDGET (MAIN_WINDOW), 0);
+          if (MAIN_WINDOW)
+            {
+              gtk_widget_set_visible (
+                GTK_WIDGET (MAIN_WINDOW), 0);
+            }
           int res =
             gtk_dialog_run (GTK_DIALOG (dialog));
           switch (res)
@@ -798,8 +796,11 @@ load (
               break;
             }
           gtk_widget_destroy (dialog);
-          gtk_widget_set_visible (
-            GTK_WIDGET (MAIN_WINDOW), 1);
+          if (MAIN_WINDOW)
+            {
+              gtk_widget_set_visible (
+                GTK_WIDGET (MAIN_WINDOW), 1);
+            }
         }
     }
 
@@ -905,12 +906,10 @@ load (
         g_strdup (ZRYTHM->create_project_path);
     }
 
-  int loading_while_running =
-    PROJECT && PROJECT->loaded;
-
   MainWindowWidget * mww = NULL;
-  if (loading_while_running && ZRYTHM_HAVE_UI)
+  if (ZRYTHM_HAVE_UI)
     {
+      g_message ("hiding prev window...");
       mww = hide_prev_main_window ();
     }
 
@@ -1007,10 +1006,12 @@ load (
 
   if (ZRYTHM_HAVE_UI)
     {
-      recreate_main_window (loading_while_running);
+      g_message ("recreating main window...");
+      recreate_main_window ();
 
       if (mww)
         {
+          g_message ("destroying prev window...");
           destroy_prev_main_window (mww);
         }
     }
@@ -1036,8 +1037,10 @@ load (
   /* recalculate the routing graph */
   router_recalc_graph (ROUTER);
 
-  g_message ("refreshing main window...");
-  refresh_main_window (self, loading_while_running);
+  g_message ("setting up main window...");
+  setup_main_window (self);
+
+  engine_set_run (self->audio_engine, true);
 
   return 0;
 }

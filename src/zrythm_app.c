@@ -187,10 +187,10 @@ on_setup_main_window (
   zrythm_app_set_progress_status (
     self, _("Setting up main window"), 0.98);
 
-  main_window_widget_setup (MAIN_WINDOW);
+  /*main_window_widget_setup (MAIN_WINDOW);*/
 
-  router_recalc_graph (ROUTER);
-  engine_set_run (AUDIO_ENGINE, true);
+  /*router_recalc_graph (ROUTER);*/
+  /*engine_set_run (AUDIO_ENGINE, true);*/
 
 #ifndef TRIAL_VER
   /* add timeout for auto-saving projects */
@@ -251,35 +251,6 @@ static void on_load_project (
     G_ACTION_GROUP (zrythm_app),
     "setup_main_window",
     NULL);
-}
-
-/**
- * Called after the user made a choice for a project or gave
- * the project filename in the command line.
- *
- * It initializes the main window and shows it (not set up
- * yet)
- */
-static void on_init_main_window (
-  GSimpleAction  *action,
-  GVariant *parameter,
-  void *          user_data)
-{
-  g_message ("initing...");
-
-  ZrythmApp * z_app = (ZrythmApp *) user_data;
-
-  zrythm_app_set_progress_status (
-    zrythm_app,
-    _("Initializing main window"),
-    0.8);
-
-  z_app->main_window =
-    main_window_widget_new (z_app);
-
-  g_action_group_activate_action (
-    G_ACTION_GROUP (z_app),
-    "load_project", NULL);
 }
 
 static void *
@@ -446,8 +417,7 @@ static void on_prompt_for_project (
     {
       g_action_group_activate_action (
         G_ACTION_GROUP (self),
-        "init_main_window",
-        NULL);
+        "load_project", NULL);
     }
   else
     {
@@ -1097,7 +1067,7 @@ zrythm_app_init (ZrythmApp * _app)
 
   const GActionEntry entries[] = {
     { "prompt_for_project", on_prompt_for_project },
-    { "init_main_window", on_init_main_window },
+    /*{ "init_main_window", on_init_main_window },*/
     { "setup_main_window", on_setup_main_window },
     { "load_project", on_load_project },
     { "about", activate_about },

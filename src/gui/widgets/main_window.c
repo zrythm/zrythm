@@ -216,6 +216,8 @@ void
 main_window_widget_setup (
   MainWindowWidget * self)
 {
+  g_return_if_fail (self);
+
   g_message ("Setting up...");
 
   if (self->setup)

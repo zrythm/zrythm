@@ -579,7 +579,7 @@ engine_activate (
         }
 
       /* wait to finish */
-      self->run = false;
+      g_atomic_int_set (&self->run, false);
       g_usleep (100000);
 
       self->activated = false;
@@ -806,8 +806,7 @@ engine_process_prepare (
     }
 
   int ret =
-    zix_sem_try_wait (
-      &self->port_operation_lock);
+    zix_sem_try_wait (&self->port_operation_lock);
 
   if (!ret && !self->exporting)
     {

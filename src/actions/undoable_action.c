@@ -136,6 +136,7 @@ undoable_action_do (UndoableAction * self)
   case UA_##uc: \
     g_message ("[DOING ACTION]: " #uc); \
     ret = sc##_action_do ((cc##Action *) self); \
+    g_message ("[DONE]: " #uc); \
     break;
 
   switch (self->type)
@@ -230,6 +231,7 @@ undoable_action_undo (UndoableAction * self)
   case UA_##uc: \
     g_message ("[UNDOING ACTION]: " #uc); \
     ret = sc##_action_undo ((cc##Action *) self); \
+    g_message ("[UNDONE]: " #uc); \
     break;
 
   switch (self->type)

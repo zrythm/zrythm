@@ -246,6 +246,9 @@ test_project_rebootstrap_timeline (
   Position * p1,
   Position * p2)
 {
+  bool was_active = AUDIO_ENGINE->activated;
+  engine_activate (AUDIO_ENGINE, false);
+
   /* remove any previous work */
   chord_track_clear (P_CHORD_TRACK);
   marker_track_clear (P_MARKER_TRACK);
@@ -441,6 +444,8 @@ test_project_rebootstrap_timeline (
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
+
+  engine_activate (AUDIO_ENGINE, was_active);
 }
 
 /**

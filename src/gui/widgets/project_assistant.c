@@ -468,8 +468,7 @@ on_finish (
         GTK_WIDGET (self), 0);
       g_action_group_activate_action (
         G_ACTION_GROUP (zrythm_app),
-        "init_main_window",
-        NULL);
+        "load_project", NULL);
     }
 }
 
