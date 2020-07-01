@@ -588,30 +588,8 @@ void *
 exporter_generic_export_thread (
   ExportSettings * info)
 {
-  /* stop engine and give it some time to stop
-   * running */
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  g_usleep (1000);
-  AUDIO_ENGINE->exporting = 1;
-  info->prev_loop = TRANSPORT->loop;
-  TRANSPORT->loop = 0;
-
-  /* deactivate and activate all plugins to make
-   * them reset their states */
-  /* TODO this doesn't reset the plugin state as
-   * expected, so sending note off is needed */
-  tracklist_activate_all_plugins (
-    TRACKLIST, false);
-  tracklist_activate_all_plugins (
-    TRACKLIST, true);
-
   /* export */
   exporter_export (info);
-
-  /* restart engine */
-  AUDIO_ENGINE->exporting = 0;
-  TRANSPORT->loop = info->prev_loop;
-  g_atomic_int_set (&AUDIO_ENGINE->run, 1);
 
   return NULL;
 }
@@ -685,6 +663,24 @@ exporter_create_audio_track_after_bounce (
 int
 exporter_export (ExportSettings * info)
 {
+  /* stop engine and give it some time to stop
+   * running */
+  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
+  zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
+  AUDIO_ENGINE->exporting = 1;
+  info->prev_loop = TRANSPORT->loop;
+  TRANSPORT->loop = 0;
+
+  /* deactivate and activate all plugins to make
+   * them reset their states */
+  /* TODO this doesn't reset the plugin state as
+   * expected, so sending note off is needed */
+  tracklist_activate_all_plugins (
+    TRACKLIST, false);
+  tracklist_activate_all_plugins (
+    TRACKLIST, true);
+
   if (info->format == AUDIO_FORMAT_MIDI)
     {
       return export_midi (info);
@@ -693,5 +689,10 @@ exporter_export (ExportSettings * info)
     {
       return export_audio (info);
     }
+
+  /* restart engine */
+  AUDIO_ENGINE->exporting = 0;
+  TRANSPORT->loop = info->prev_loop;
+  g_atomic_int_set (&AUDIO_ENGINE->run, 1);
 }
 

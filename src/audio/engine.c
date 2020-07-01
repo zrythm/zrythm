@@ -1214,13 +1214,10 @@ engine_post_process (
   AudioEngine * self,
   const nframes_t nframes)
 {
-  zix_sem_post (&self->port_operation_lock);
-
   if (!self->exporting)
     {
       /* fill in the external buffers */
-      engine_fill_out_bufs (
-        self, nframes);
+      engine_fill_out_bufs (self, nframes);
     }
 
   /* stop panicking */
@@ -1258,6 +1255,8 @@ engine_post_process (
       AUDIO_ENGINE->last_time_taken)
     AUDIO_ENGINE->max_time_taken =
       AUDIO_ENGINE->last_time_taken;
+
+  zix_sem_post (&self->port_operation_lock);
 }
 
 /**

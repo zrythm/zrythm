@@ -65,6 +65,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/err_codes.h"
 #include "utils/io.h"
 #include "utils/math.h"
 #include "utils/string.h"
@@ -1647,28 +1648,24 @@ lv2_plugin_instantiate (
           PROJECT, PROJECT->backup_dir != NULL);
       char * state_file_path =
         g_build_filename (
-          states_dir,
-          self->state_file,
-          NULL);
+          states_dir, self->state_file, NULL);
       g_free (states_dir);
       self->state =
         lilv_state_new_from_file (
-          LILV_WORLD,
-          &self->map,
-          NULL,
+          LILV_WORLD, &self->map, NULL,
           state_file_path);
       if (!self->state)
         {
-          g_warning (
+          g_critical (
             "Failed to load state from %s\n",
             state_file_path);
+          return ERR_FAILED_TO_LOAD_STATE_FROM_FILE;
         }
       g_free (state_file_path);
 
       LilvNode * lv2_uri =
         lilv_node_duplicate (
-          lilv_state_get_plugin_uri (
-            self->state));
+          lilv_state_get_plugin_uri (self->state));
 
       if (!lv2_uri)
         {
