@@ -1220,13 +1220,7 @@ track_disconnect (
     {
       Port * port = ports[i];
       g_return_if_fail (IS_PORT (port));
-      g_message ("%s (%p) was %d",
-        port->id.label,
-        port, port->is_project);
       port_disconnect_all (port);
-      g_message ("%s (%p) is %d",
-        port->id.label,
-        port, port->is_project);
     }
   free (ports);
 

@@ -763,9 +763,7 @@ static void
 on_destroy (
   ChannelWidget * self)
 {
-  self->channel->widget = NULL;
-
-  g_object_unref (self);
+  channel_widget_tear_down (self);
 }
 
 ChannelWidget *
@@ -826,7 +824,28 @@ channel_widget_new (Channel * channel)
 
   g_object_ref (self);
 
+  self->setup = true;
+
   return self;
+}
+
+/**
+ * Prepare for finalization.
+ */
+void
+channel_widget_tear_down (
+  ChannelWidget * self)
+{
+  g_message ("tearing down %p...", self);
+
+  if (self->setup)
+    {
+      g_object_unref (self);
+      self->channel->widget = NULL;
+      self->setup = false;
+    }
+
+  g_message ("done");
 }
 
 static void

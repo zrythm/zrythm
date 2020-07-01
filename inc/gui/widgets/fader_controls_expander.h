@@ -79,6 +79,13 @@ fader_controls_expander_widget_setup (
   Track *                     track);
 
 /**
+ * Prepare for finalization.
+ */
+void
+fader_controls_expander_widget_tear_down (
+  FaderControlsExpanderWidget * self);
+
+/**
  * @}
  */
 

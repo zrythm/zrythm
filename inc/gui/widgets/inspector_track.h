@@ -114,6 +114,13 @@ InspectorTrackWidget *
 inspector_track_widget_new (void);
 
 /**
+ * Prepare for finalization.
+ */
+void
+inspector_track_widget_tear_down (
+  InspectorTrackWidget * self);
+
+/**
  * @}
  */
 

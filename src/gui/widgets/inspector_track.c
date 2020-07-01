@@ -239,6 +239,24 @@ inspector_track_widget_new (void)
   return self;
 }
 
+/**
+ * Prepare for finalization.
+ */
+void
+inspector_track_widget_tear_down (
+  InspectorTrackWidget * self)
+{
+  g_message ("tearing down %p...", self);
+
+  if (self->fader)
+    {
+      fader_controls_expander_widget_tear_down (
+        self->fader);
+    }
+
+  g_message ("done");
+}
+
 static void
 inspector_track_widget_class_init (
   InspectorTrackWidgetClass * _klass)

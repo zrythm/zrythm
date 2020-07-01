@@ -82,6 +82,8 @@ typedef struct _TracklistWidget
    * the pinned timeline to the same height. */
   GtkSizeGroup *       pinned_size_group;
   GtkSizeGroup *       unpinned_size_group;
+
+  bool                 setup;
 } TracklistWidget;
 
 /**
@@ -91,6 +93,13 @@ void
 tracklist_widget_setup (
   TracklistWidget * self,
   Tracklist * tracklist);
+
+/**
+ * Prepare for finalization.
+ */
+void
+tracklist_widget_tear_down (
+  TracklistWidget * self);
 
 /**
  * Makes sure all the tracks for channels marked as

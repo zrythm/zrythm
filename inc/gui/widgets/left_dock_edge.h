@@ -67,4 +67,11 @@ void
 left_dock_edge_widget_setup (
   LeftDockEdgeWidget * self);
 
+/**
+ * Prepare for finalization.
+ */
+void
+left_dock_edge_widget_tear_down (
+  LeftDockEdgeWidget * self);
+
 #endif

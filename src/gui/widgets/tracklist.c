@@ -425,7 +425,8 @@ tracklist_widget_setup (
   TracklistWidget * self,
   Tracklist * tracklist)
 {
-  g_warn_if_fail (tracklist);
+  g_return_if_fail (tracklist);
+
   self->tracklist = tracklist;
   tracklist->widget = self;
 
@@ -450,6 +451,30 @@ tracklist_widget_setup (
     self->unpinned_size_group,
     GTK_WIDGET (
       MW_TIMELINE_PANEL->timeline));
+
+  self->setup = true;
+}
+
+/**
+ * Prepare for finalization.
+ */
+void
+tracklist_widget_tear_down (
+  TracklistWidget * self)
+{
+  g_message ("tearing down %p...", self);
+
+  if (self->setup)
+    {
+      g_object_unref (self->pinned_box);
+      g_object_unref (self->unpinned_scroll);
+      g_object_unref (self->unpinned_box);
+      g_object_unref (self->ddbox);
+
+      self->setup = false;
+    }
+
+  g_message ("done");
 }
 
 static void

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -124,18 +124,31 @@ mixer_widget_hard_refresh (MixerWidget * self)
 }
 
 void
-mixer_widget_setup (MixerWidget * self,
-                    Channel *     master)
+mixer_widget_setup (
+  MixerWidget * self,
+  Channel *     master)
 {
+  g_message ("Setting up...");
+
   if (!master->widget)
-    master->widget = channel_widget_new (master);
-  gtk_container_add (
-    GTK_CONTAINER (self->master_box),
-    GTK_WIDGET (master->widget));
+    {
+      master->widget = channel_widget_new (master);
+    }
+
+  if (!self->setup)
+    {
+      gtk_container_add (
+        GTK_CONTAINER (self->master_box),
+        GTK_WIDGET (master->widget));
+    }
   gtk_widget_set_hexpand (
-    GTK_WIDGET (self->master_box), 0);
+    GTK_WIDGET (self->master_box), false);
 
   mixer_widget_hard_refresh (self);
+
+  self->setup = true;
+
+  g_message ("done");
 }
 
 static void

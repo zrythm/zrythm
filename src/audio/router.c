@@ -101,6 +101,8 @@ router_start_cycle (
   const nframes_t  local_offset,
   const Position * pos)
 {
+  g_return_if_fail (self && self->graph);
+
   if (!zix_sem_try_wait (&self->graph_access))
     return;
 
@@ -122,6 +124,8 @@ void
 router_recalc_graph (
   Router * self)
 {
+  g_message ("Recalculating...");
+
   g_return_if_fail (self);
 
   if (!self->graph)
@@ -135,6 +139,8 @@ router_recalc_graph (
   zix_sem_wait (&self->graph_access);
   graph_setup (self->graph, 1, 1);
   zix_sem_post (&self->graph_access);
+
+  g_message ("done");
 }
 
 /**
@@ -145,9 +151,13 @@ router_recalc_graph (
 Router *
 router_new (void)
 {
+  g_message ("Creating new router...");
+
   Router * self = object_new (Router);
 
   zix_sem_init (&self->graph_access, 1);
+
+  g_message ("done");
 
   return self;
 }

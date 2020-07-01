@@ -480,16 +480,33 @@ project_sanity_check (Project * self)
   g_message ("%s: done", __func__);
 }
 
-static void
-destroy_prev_main_window (void)
+static MainWindowWidget *
+hide_prev_main_window (void)
 {
+  event_manager_stop_events (EVENT_MANAGER);
+
   MainWindowWidget * mww = MAIN_WINDOW;
   MAIN_WINDOW = NULL;
-  event_manager_stop_events (EVENT_MANAGER);
+  if (GTK_IS_WIDGET (mww))
+    {
+      g_message (
+        "hiding previous main window...");
+      gtk_widget_set_visible (
+        GTK_WIDGET (mww), false);
+    }
+
+  return mww;
+}
+
+static void
+destroy_prev_main_window (
+  MainWindowWidget * mww)
+{
   if (GTK_IS_WIDGET (mww))
     {
       g_message (
         "destroying previous main window...");
+      main_window_widget_tear_down (mww);
       gtk_widget_destroy (GTK_WIDGET (mww));
     }
 }
@@ -502,10 +519,11 @@ refresh_main_window (
   /* mimic behavior when starting the app */
   if (ZRYTHM_HAVE_UI)
     {
+      g_message ("refreshing main window...");
       event_manager_start_events (EVENT_MANAGER);
       if (loading_while_running)
         {
-          main_window_widget_refresh (MAIN_WINDOW);
+          main_window_widget_setup (MAIN_WINDOW);
           g_atomic_int_set (&AUDIO_ENGINE->run, 1);
         }
 
@@ -514,14 +532,17 @@ refresh_main_window (
     }
 }
 
-#define RECREATE_MAIN_WINDOW \
-  if (loading_while_running && \
-      ZRYTHM_HAVE_UI) \
-    { \
+static void
+recreate_main_window (
+  bool loading_while_running)
+{
+  if (loading_while_running)
+    {
       g_message ("recreating main window..."); \
       MAIN_WINDOW = \
         main_window_widget_new (zrythm_app); \
     }
+}
 
 /**
  * Initializes the selections in the project.
@@ -558,20 +579,20 @@ project_init_selections (Project * self)
 static void
 create_default (Project * self)
 {
-  g_message (
-    "%s: creating default project...", __func__);
+  g_message ("creating default project...");
+
+  int loading_while_running = self && self->loaded;
+  MainWindowWidget * mww = NULL;
+  if (loading_while_running && ZRYTHM_HAVE_UI)
+    {
+      mww = hide_prev_main_window ();
+    }
 
   if (self)
     {
       project_free (self);
     }
   self = project_new (ZRYTHM);
-
-  int loading_while_running = self->loaded;
-  if (loading_while_running && ZRYTHM_HAVE_UI)
-    {
-      destroy_prev_main_window ();
-    }
 
   self->tracklist = tracklist_new (self);
 
@@ -591,8 +612,7 @@ create_default (Project * self)
   /* init pinned tracks */
 
   /* chord */
-  g_message (
-    "%s: adding chord track...", __func__);
+  g_message ("adding chord track...");
   Track * track = chord_track_new (0);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
@@ -601,8 +621,7 @@ create_default (Project * self)
   self->tracklist->chord_track = track;
 
   /* tempo */
-  g_message (
-    "%s: adding tempo track...", __func__);
+  g_message ("adding tempo track...");
   track = tempo_track_default (1);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
@@ -611,8 +630,7 @@ create_default (Project * self)
   self->tracklist->tempo_track = track;
 
   /* marker */
-  g_message (
-    "%s: adding marker track...", __func__);
+  g_message ("adding marker track...");
   track = marker_track_default (0);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
@@ -621,8 +639,7 @@ create_default (Project * self)
   self->tracklist->marker_track = track;
 
   /* add master channel to mixer and tracklist */
-  g_message (
-    "%s: adding master track...", __func__);
+  g_message ("adding master track...");
   track =
     track_new (
       TRACK_TYPE_MASTER, 2, _("Master"),
@@ -660,11 +677,22 @@ create_default (Project * self)
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate);
 
+  /* recalculate the routing graph */
+  router_recalc_graph (ROUTER);
+
   /* create untitled project */
   create_and_set_dir_and_title (
     self, ZRYTHM->create_project_path);
 
-  RECREATE_MAIN_WINDOW;
+  if (ZRYTHM_HAVE_UI)
+    {
+      recreate_main_window (loading_while_running);
+
+      if (mww)
+        {
+          destroy_prev_main_window (mww);
+        }
+    }
 
   self->loaded = 1;
 
@@ -693,9 +721,10 @@ create_default (Project * self)
   region_link_group_manager_init (
     &self->region_link_group_manager);
 
+  g_message ("refreshing main window...");
   refresh_main_window (self, loading_while_running);
 
-  g_message ("%s: done", __func__);
+  g_message ("done");
 }
 
 /**
@@ -879,6 +908,12 @@ load (
   int loading_while_running =
     PROJECT && PROJECT->loaded;
 
+  MainWindowWidget * mww = NULL;
+  if (loading_while_running && ZRYTHM_HAVE_UI)
+    {
+      mww = hide_prev_main_window ();
+    }
+
   if (PROJECT)
     {
       g_message (
@@ -886,11 +921,6 @@ load (
         __func__);
       object_free_w_func_and_null (
         project_free, PROJECT);
-    }
-
-  if (loading_while_running && ZRYTHM_HAVE_UI)
-    {
-      destroy_prev_main_window ();
     }
 
   g_message (
@@ -975,7 +1005,15 @@ load (
   region_link_group_manager_init_loaded (
     REGION_LINK_GROUP_MANAGER);
 
-  RECREATE_MAIN_WINDOW;
+  if (ZRYTHM_HAVE_UI)
+    {
+      recreate_main_window (loading_while_running);
+
+      if (mww)
+        {
+          destroy_prev_main_window (mww);
+        }
+    }
 
   /* sanity check */
   project_sanity_check (self);
@@ -996,8 +1034,9 @@ load (
   g_message ("project loaded");
 
   /* recalculate the routing graph */
-  router_recalc_graph ((ROUTER));
+  router_recalc_graph (ROUTER);
 
+  g_message ("refreshing main window...");
   refresh_main_window (self, loading_while_running);
 
   return 0;

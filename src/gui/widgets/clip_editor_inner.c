@@ -87,7 +87,7 @@ void
 clip_editor_inner_widget_refresh (
   ClipEditorInnerWidget * self)
 {
-  g_message ("%s called", __func__);
+  g_message ("refreshing...");
 
   ZRegion * r =
     clip_editor_get_region (CLIP_EDITOR);
@@ -181,6 +181,8 @@ clip_editor_inner_widget_refresh (
           break;
         }
     }
+
+  g_message ("done");
 }
 
 void

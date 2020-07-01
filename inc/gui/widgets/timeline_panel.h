@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,11 +40,6 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _RulerWidget RulerWidget;
 typedef struct _TracklistWidget TracklistWidget;
-typedef struct _SnapGridWidget SnapGridWidget;
-typedef struct _LeftDockEdgeWidget LeftDockEdgeWidget;
-typedef struct _RightDockEdgeWidget
-  RightDockEdgeWidget;
-typedef struct _BotDockEdgeWidget BotDockEdgeWidget;
 typedef struct _TimelinePanelBotBoxWidget
   TimelinePanelBotBoxWidget;
 typedef struct _TracklistHeaderWidget
@@ -114,6 +109,13 @@ typedef struct _TimelinePanelWidget
 
 void
 timeline_panel_widget_setup (
+  TimelinePanelWidget * self);
+
+/**
+ * Prepare for finalization.
+ */
+void
+timeline_panel_widget_tear_down (
   TimelinePanelWidget * self);
 
 /**

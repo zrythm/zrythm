@@ -32,11 +32,15 @@ void
 region_link_group_manager_init_loaded (
   RegionLinkGroupManager * self)
 {
+  g_message ("Initializing...");
+
   for (int i = 0; i < self->num_groups; i++)
     {
       self->groups[i].magic =
         REGION_LINK_GROUP_MAGIC;
     }
+
+  g_message ("done");
 }
 
 /**

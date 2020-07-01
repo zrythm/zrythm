@@ -92,6 +92,25 @@ center_dock_widget_setup (
     self->center_paned);
 }
 
+/**
+ * Prepare for finalization.
+ */
+void
+center_dock_widget_tear_down (
+  CenterDockWidget * self)
+{
+  if (self->left_dock_edge)
+    {
+      left_dock_edge_widget_tear_down (
+        self->left_dock_edge);
+    }
+  if (self->timeline_panel)
+    {
+      timeline_panel_widget_tear_down (
+        self->timeline_panel);
+    }
+}
+
 static void
 center_dock_widget_init (CenterDockWidget * self)
 {

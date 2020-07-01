@@ -129,6 +129,8 @@ typedef struct _ChannelWidget
 
   /** Drag on the icon and name event box. */
   GtkGestureDrag       * drag;
+
+  bool                   setup;
 } ChannelWidget;
 
 /**
@@ -161,6 +163,10 @@ channel_widget_redraw_fader (
  */
 ChannelWidget *
 channel_widget_new (Channel * channel);
+
+void
+channel_widget_tear_down (
+  ChannelWidget * self);
 
 /**
  * Updates the meter reading

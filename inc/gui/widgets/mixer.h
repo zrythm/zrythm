@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,20 +39,15 @@ typedef struct Channel Channel;
 
 typedef struct _MixerWidget
 {
-  GtkBox                   parent_instance;
-  DragDestBoxWidget *      ddbox;  ///< for DNDing plugins
+  GtkBox              parent_instance;
+
+  /** Drag n drop dest box. */
+  DragDestBoxWidget * ddbox;
 
   /**
    * Box containing all channels except master.
    */
-  GtkBox *                 channels_box;
-
-  /** The track to drop before, used in
-   * drag-data-get.
-   *
-   * If this is null it means the last position
-   * (after invisible tracks). */
-  //Track *             drop_before;
+  GtkBox *            channels_box;
 
   /**
    * The track where dnd originated from.
@@ -62,16 +57,19 @@ typedef struct _MixerWidget
    */
   Track *             start_drag_track;
 
-  GtkButton *              channels_add;
-  GtkBox *                 master_box;
+  GtkButton *         channels_add;
+  GtkBox *            master_box;
+
+  bool                setup;
 } MixerWidget;
 
 /**
  * To be called once.
  */
 void
-mixer_widget_setup (MixerWidget * self,
-                    Channel *     master);
+mixer_widget_setup (
+  MixerWidget * self,
+  Channel *     master);
 
 /**
  * Deletes and readds all channels.

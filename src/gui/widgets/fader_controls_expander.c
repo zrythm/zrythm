@@ -59,9 +59,20 @@ fader_controls_expander_widget_setup (
 
   self->track = track;
 
-  fader_controls_grid_widget_setup (self->grid, track);
+  fader_controls_grid_widget_setup (
+    self->grid, track);
 
   fader_controls_expander_widget_refresh (self);
+}
+
+/**
+ * Prepare for finalization.
+ */
+void
+fader_controls_expander_widget_tear_down (
+  FaderControlsExpanderWidget * self)
+{
+  fader_controls_grid_widget_tear_down (self->grid);
 }
 
 static void

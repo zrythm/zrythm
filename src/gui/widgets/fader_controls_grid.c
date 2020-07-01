@@ -19,19 +19,26 @@
 
 #include "audio/track.h"
 #include "gui/widgets/balance_control.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/fader.h"
+#include "gui/widgets/fader_controls_expander.h"
 #include "gui/widgets/fader_controls_grid.h"
+#include "gui/widgets/inspector_track.h"
+#include "gui/widgets/left_dock_edge.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/meter.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  FaderControlsGridWidget, fader_controls_grid_widget,
+  FaderControlsGridWidget,
+  fader_controls_grid_widget,
   GTK_TYPE_GRID)
 
 static bool
@@ -40,11 +47,17 @@ update_meter_reading (
   GdkFrameClock * frame_clock,
   gpointer        user_data)
 {
-  if (!gtk_widget_get_mapped (
+  if (!MAIN_WINDOW ||
+      !gtk_widget_get_mapped (
         GTK_WIDGET (widget)) ||
       !widget->track)
     {
       return G_SOURCE_CONTINUE;
+    }
+
+  if (widget != MW_TRACK_INSPECTOR->fader->grid)
+    {
+      return G_SOURCE_REMOVE;
     }
 
   double prev = widget->meter_reading_val;
@@ -292,19 +305,59 @@ fader_controls_grid_widget_setup (
     }
 }
 
+/**
+ * Prepare for finalization.
+ */
+void
+fader_controls_grid_widget_tear_down (
+  FaderControlsGridWidget * self)
+{
+  g_message ("tearing down %p...", self);
+
+  if (self->tick_cb)
+    {
+      g_message ("removing tick callback...");
+      gtk_widget_remove_tick_callback (
+        GTK_WIDGET (self), self->tick_cb);
+      self->tick_cb = 0;
+    }
+
+  g_message ("done");
+}
+
 FaderControlsGridWidget *
 fader_controls_grid_widget_new (void)
 {
+  g_message ("creating...");
+
   FaderControlsGridWidget * self =
     g_object_new (
       FADER_CONTROLS_GRID_WIDGET_TYPE, NULL);
 
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self),
-    (GtkTickCallback) update_meter_reading,
-    self, NULL);
+  self->tick_cb =
+    gtk_widget_add_tick_callback (
+      GTK_WIDGET (self),
+      (GtkTickCallback) update_meter_reading,
+      self, NULL);
+
+  g_message ("done");
 
   return self;
+}
+
+static void
+fader_controls_grid_finalize (
+  FaderControlsGridWidget * self)
+{
+  g_message ("finalizing...");
+
+  fader_controls_grid_widget_tear_down (self);
+
+  G_OBJECT_CLASS (
+    fader_controls_grid_widget_parent_class)->
+      finalize (G_OBJECT (self));
+
+  g_message ("done");
 }
 
 static void
@@ -369,4 +422,10 @@ fader_controls_grid_widget_class_init (
   BIND_CHILD (meter_readings);
 
 #undef BIND_CHILD
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc)
+    fader_controls_grid_finalize;
 }

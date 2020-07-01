@@ -401,43 +401,6 @@ on_track_added (Track * track)
   EVENTS_PUSH (ET_REFRESH_ARRANGER, NULL);
 }
 
-#if 0
-static void
-on_clip_editor_region_changed ()
-{
-  /* TODO */
-  /*gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);*/
-  ZRegion * r =
-    clip_editor_get_region (CLIP_EDITOR);
-
-  if (r)
-    {
-      gtk_stack_set_visible_child (
-        GTK_STACK (MW_CLIP_EDITOR),
-        GTK_WIDGET (MW_CLIP_EDITOR->main_box));
-
-      clip_editor_inner_widget_refresh (
-        MW_CLIP_EDITOR_INNER);
-
-      g_idle_add (
-        refresh_editor_ruler_and_arranger,
-        NULL);
-
-      region_identifier_copy (
-        &CLIP_EDITOR->region_id_cache, &r->id);
-      CLIP_EDITOR->had_region = 1;
-    }
-  else
-    {
-      gtk_stack_set_visible_child (
-        GTK_STACK (MW_CLIP_EDITOR),
-        GTK_WIDGET (
-          MW_CLIP_EDITOR->no_selection_label));
-      CLIP_EDITOR->had_region = 0;
-    }
-}
-#endif
-
 static void
 on_automation_value_changed (
   Port * port)

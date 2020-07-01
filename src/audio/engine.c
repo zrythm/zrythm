@@ -119,6 +119,11 @@ void
 engine_setup (
   AudioEngine * self)
 {
+  g_message ("Setting up...");
+
+  /* init semaphores */
+  zix_sem_init (&self->port_operation_lock, 1);
+
   g_return_if_fail (self && !self->setup);
 
 #ifdef TRIAL_VER
@@ -191,9 +196,6 @@ engine_setup (
         MIDI_BACKEND_DUMMY;
       engine_dummy_setup (self);
     }
-
-  /* init semaphores */
-  zix_sem_init (&self->port_operation_lock, 1);
 
   /* set up midi */
   int mret = 0;
@@ -276,6 +278,8 @@ engine_setup (
     self->monitor_out->l, true);
   port_set_expose_to_backend (
     self->monitor_out->r, true);
+
+  g_message ("done");
 }
 
 static void
@@ -457,6 +461,8 @@ void
 engine_init_loaded (
   AudioEngine * self)
 {
+  g_message ("Initializing...");
+
   audio_pool_init_loaded (self->pool);
   transport_init_loaded (self->transport);
   control_room_init_loaded (self->control_room);
@@ -464,6 +470,8 @@ engine_init_loaded (
     self->sample_processor);
 
   init_common (self);
+
+  g_message ("done");
 }
 
 /**

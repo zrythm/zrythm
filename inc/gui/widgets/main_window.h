@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -87,6 +87,9 @@ typedef struct _MainWindowWidget
    * paste, etc. Can either be Arranger or piano roll.
    */
   GtkWidget *              last_focused;
+
+  /** Whether set up already or not. */
+  bool                     setup;
 } MainWindowWidget;
 
 /**
@@ -101,7 +104,14 @@ main_window_widget_new (
  * Refreshes the state of the main window.
  */
 void
-main_window_widget_refresh (
+main_window_widget_setup (
+  MainWindowWidget * self);
+
+/**
+ * Prepare for finalization.
+ */
+void
+main_window_widget_tear_down (
   MainWindowWidget * self);
 
 /**

@@ -107,6 +107,8 @@ init_dirs_and_files ()
 static void
 init_recent_projects ()
 {
+  g_message ("Initializing recent projects...");
+
   gchar ** recent_projects =
     g_settings_get_strv (
       S_GENERAL, "recent-projects");
@@ -144,6 +146,8 @@ init_recent_projects ()
   g_settings_set_strv (
     S_GENERAL, "recent-projects",
     (const char * const *) ZRYTHM->recent_projects);
+
+  g_message ("done");
 }
 
 /**
@@ -153,11 +157,15 @@ init_recent_projects ()
 static void
 init_templates ()
 {
+  g_message ("Initializing templates...");
+
   char * user_templates_dir =
     zrythm_get_dir (ZRYTHM_DIR_USER_TEMPLATES);
   ZRYTHM->templates =
     io_get_files_in_dir (user_templates_dir);
   g_free (user_templates_dir);
+
+  g_message ("done");
 }
 
 /**
@@ -172,12 +180,14 @@ on_setup_main_window (
   GVariant *      parameter,
   gpointer        data)
 {
+  g_message ("setting up...");
+
   ZrythmApp * self = ZRYTHM_APP (data);
 
   zrythm_app_set_progress_status (
     self, _("Setting up main window"), 0.98);
 
-  main_window_widget_refresh (MAIN_WINDOW);
+  main_window_widget_setup (MAIN_WINDOW);
 
   router_recalc_graph (ROUTER);
   engine_set_run (AUDIO_ENGINE, true);
@@ -196,7 +206,13 @@ on_setup_main_window (
     }
 #endif
 
-  splash_window_widget_close (self->splash);
+  if (self->splash)
+    {
+      splash_window_widget_close (self->splash);
+      self->splash = NULL;
+    }
+
+  g_message ("done");
 }
 
 /**
@@ -249,7 +265,7 @@ static void on_init_main_window (
   GVariant *parameter,
   void *          user_data)
 {
-  g_message ("%s: initing...", __func__);
+  g_message ("initing...");
 
   ZrythmApp * z_app = (ZrythmApp *) user_data;
 
@@ -270,6 +286,8 @@ static void *
 init_thread (
   gpointer data)
 {
+  g_message ("init thread starting...");
+
   ZrythmApp * self = ZRYTHM_APP (data);
 
   zrythm_app_set_progress_status (
@@ -310,7 +328,7 @@ init_thread (
 
   self->init_finished = true;
 
-  g_message ("%s: done", __func__);
+  g_message ("done");
 
   return NULL;
 }
@@ -348,6 +366,8 @@ static void *
 scan_plugins_after_first_run_thread (
   gpointer data)
 {
+  g_message ("scanning...");
+
   ZrythmApp * self = ZRYTHM_APP (data);
 
   plugin_manager_scan_plugins (
@@ -355,6 +375,8 @@ scan_plugins_after_first_run_thread (
     0.7, &ZRYTHM->progress);
 
   self->init_finished = true;
+
+  g_message ("done");
 
   return NULL;
 }
@@ -364,7 +386,7 @@ on_first_run_assistant_apply (
   GtkAssistant * _assistant,
   ZrythmApp *    self)
 {
-  g_message ("apply");
+  g_message ("on apply...");
 
   g_settings_set_boolean (
     S_GENERAL, "first-run", 0);
@@ -392,6 +414,8 @@ on_first_run_assistant_apply (
       DESTROY_LATER (_assistant);
       self->first_run_assistant = NULL;
     }
+
+  g_message ("done");
 }
 
 static void
@@ -414,7 +438,7 @@ static void on_prompt_for_project (
   GVariant *      parameter,
   gpointer        data)
 {
-  g_message ("%s: prompting...", __func__);
+  g_message ("prompting...");
 
   ZrythmApp * self = zrythm_app;
 
@@ -499,7 +523,7 @@ Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou");
 #endif
     }
 
-  g_message ("%s: done", __func__);
+  g_message ("done");
 }
 
 /**
@@ -530,6 +554,7 @@ static void
 zrythm_app_activate (
   GApplication * _app)
 {
+  g_message ("Activating...");
   /*g_message ("activate %d", *task_id);*/
 
   /* init localization, using system locale if
@@ -541,6 +566,8 @@ zrythm_app_activate (
     g_settings_get_boolean (
       prefs, "first-run"), true);
   g_object_unref (G_OBJECT (prefs));
+
+  g_message ("done");
 }
 
 /**
@@ -556,12 +583,16 @@ zrythm_app_open (
   gint           n_files,
   const gchar *  hint)
 {
+  g_message ("Opening...");
+
   g_warn_if_fail (n_files == 1);
 
   GFile * file = files[0];
   ZRYTHM->open_filename =
     g_file_get_path (file);
   g_message ("open %s", ZRYTHM->open_filename);
+
+  g_message ("done");
 }
 
 static void
@@ -632,9 +663,9 @@ static void
 zrythm_app_startup (
   GApplication * app)
 {
-  ZrythmApp * self = ZRYTHM_APP (app);
+  g_message ("Starting up...");
 
-  g_message ("startup");
+  ZrythmApp * self = ZRYTHM_APP (app);
   G_APPLICATION_CLASS (zrythm_app_parent_class)->
     startup (G_APPLICATION (self));
   g_message (
@@ -940,6 +971,8 @@ zrythm_app_startup (
     "<Shift>M", "win.mute-selection::global");
 
 #undef INSTALL_ACCEL
+
+  g_message ("done");
 }
 
 static void
@@ -969,7 +1002,7 @@ zrythm_app_on_shutdown (
   GApplication * application,
   ZrythmApp *    self)
 {
-  g_message ("%s: shutting down...", __func__);
+  g_message ("Shutting down...");
 
   if (ZRYTHM)
     {
@@ -979,6 +1012,8 @@ zrythm_app_on_shutdown (
 #ifdef HAVE_GTK_SOURCE_VIEW_4
   gtk_source_finalize ();
 #endif
+
+  g_message ("done");
 }
 
 /**

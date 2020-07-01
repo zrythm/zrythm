@@ -79,6 +79,8 @@ typedef struct _FaderControlsGridWidget
    * output. */
   gint64         last_midi_trigger_time;
 
+  guint          tick_cb;
+
 } FaderControlsGridWidget;
 
 void
@@ -97,6 +99,13 @@ void
 fader_controls_grid_widget_setup (
   FaderControlsGridWidget * self,
   Track *                   track);
+
+/**
+ * Prepare for finalization.
+ */
+void
+fader_controls_grid_widget_tear_down (
+  FaderControlsGridWidget * self);
 
 FaderControlsGridWidget *
 fader_controls_grid_widget_new (void);

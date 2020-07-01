@@ -86,6 +86,13 @@ center_dock_widget_setup (
   CenterDockWidget * self);
 
 /**
+ * Prepare for finalization.
+ */
+void
+center_dock_widget_tear_down (
+  CenterDockWidget * self);
+
+/**
  * @}
  */
 

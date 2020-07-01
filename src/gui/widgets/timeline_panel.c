@@ -130,6 +130,20 @@ timeline_panel_widget_setup (
     G_CALLBACK (on_hadj_value_changed), self);
 }
 
+/**
+ * Prepare for finalization.
+ */
+void
+timeline_panel_widget_tear_down (
+  TimelinePanelWidget * self)
+{
+  g_message ("tearing down %p...", self);
+
+  tracklist_widget_tear_down (self->tracklist);
+
+  g_message ("done");
+}
+
 static void
 timeline_panel_widget_init (
   TimelinePanelWidget * self)
