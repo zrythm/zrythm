@@ -11,6 +11,7 @@ os:
   - osx
   - linux
 dist: bionic
+python: 3.8
 
 before_install:
 - |-
@@ -38,7 +39,7 @@ before_install:
       brew link --overwrite python
       ;;
     linux)
-      sudo apt-get install -y libgtk-3-dev libjack-dev libsndfile1-dev ninja-build gettext sed help2man python3-sphinx ladspa-sdk libfftw3-dev libasound2-dev libavcodec-dev libavutil-dev libavformat-dev libchromaprint-dev libsamplerate0-dev libyaml-dev librubberband-dev python3 xdg-utils git lcov guile-2.2-dev libgtksourceview-3.0-dev libgraphviz-dev libzstd-dev
+      sudo apt-get install -y libgtk-3-dev libjack-dev libsndfile1-dev ninja-build gettext sed help2man python3-sphinx ladspa-sdk libfftw3-dev libasound2-dev libavcodec-dev libavutil-dev libavformat-dev libchromaprint-dev libsamplerate0-dev libyaml-dev librubberband-dev python3 xdg-utils git lcov guile-2.2-dev libgtksourceview-3.0-dev libgraphviz-dev libzstd-dev python3 python3-pip python3-setuptools
       pip3 install --user gcovr cpp-coveralls meson
       ;;
   esac

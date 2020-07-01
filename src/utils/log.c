@@ -36,6 +36,12 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-config.h"
+
+#ifdef _WOE32
+#include <process.h>
+#endif
+
 #include "utils/datetime.h"
 #include "utils/flags.h"
 #include "utils/io.h"
@@ -69,11 +75,21 @@
 
 static GLogLevelFlags g_log_msg_prefix = G_LOG_LEVEL_ERROR | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_DEBUG;
 
+static gboolean win32_keep_fatal_message = FALSE;
+
 typedef struct LogEvent
 {
   char *         message;
   GLogLevelFlags log_level;
 } LogEvent;
+
+#ifndef HAVE_G_GET_CONSOLE_CHARSET
+static gboolean
+g_get_console_charset (const char ** charset)
+{
+  return g_get_charset (charset);
+}
+#endif
 
 /**
  * @note from GLib.
@@ -429,7 +445,11 @@ log_writer_format_fields (
       (log_level & G_LOG_LEVEL_MASK))
     {
       const gchar *prg_name = g_get_prgname ();
+#ifdef _WOE32
+      gulong pid = (gulong) _getpid ();
+#else
       gulong pid = (gulong) getpid ();
+#endif
 
       if (prg_name == NULL)
         g_string_append_printf (gstring, "(process:%lu): ", pid);

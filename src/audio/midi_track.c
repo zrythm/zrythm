@@ -301,7 +301,8 @@ send_notes_off_at (
              * note off */
             if (co_obj->pos.frames <
                   region_loop_end_adj &&
-                co_end_frames >= region_loop_end_adj)
+                (long) co_end_frames >=
+                  region_loop_end_adj)
               {
                 ChordDescriptor * descr =
                   chord_object_get_chord_descriptor (

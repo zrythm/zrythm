@@ -256,6 +256,7 @@ glib_dep = dependency('glib-2.0')
 check_functions += [
   # use a fallback if this does not exist (glib < 2.58)
   ['g_canonicalize_filename',[glib_dep]],
+  ['g_get_console_charset',[glib_dep]],
   ]
 
 foreach func : check_functions
