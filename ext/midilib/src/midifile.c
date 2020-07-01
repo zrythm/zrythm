@@ -81,7 +81,7 @@ typedef struct {
 
 #define DT_DEF				32			/* assume maximum delta-time + msg is no more than 32 bytes */
 
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef HAVE_BIG_ENDIAN
 #define SWAP_WORD(w)		(w)
 #define SWAP__DWORD(d)	(d)
 #else

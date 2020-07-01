@@ -75,7 +75,9 @@
 
 static GLogLevelFlags g_log_msg_prefix = G_LOG_LEVEL_ERROR | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_DEBUG;
 
+#ifdef _WOE32
 static gboolean win32_keep_fatal_message = FALSE;
+#endif
 
 typedef struct LogEvent
 {

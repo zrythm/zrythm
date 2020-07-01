@@ -15,8 +15,18 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
+endianess_flag=''
+if host_machine.endian () == 'big'
+  endianess_flag = '-DHAVE_BIG_ENDIAN=1'
+elif host_machine.endian () == 'little'
+  endianess_flag = '-DHAVE_LITTLE_ENDIAN=1'
+endif
+
 midilib = static_library (
   'midilib',
   join_paths ('src', 'midifile.c'),
   join_paths ('src', 'midiutil.c'),
+  c_args: [
+    endianess_flag,
+    ],
   )
