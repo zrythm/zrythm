@@ -1826,15 +1826,10 @@ multipress_pressed (
       PROJECT->last_selection =
         SELECTION_TYPE_TRACK;
 
-      track_select (
-        track,
-        track_is_selected (track) &&
-        state_mask & GDK_CONTROL_MASK ?
-          F_NO_SELECT: F_SELECT,
-        (state_mask & GDK_SHIFT_MASK ||
-          state_mask & GDK_CONTROL_MASK) ?
-          0 : 1,
-        1);
+      bool ctrl = state_mask & GDK_CONTROL_MASK;
+      bool shift = state_mask & GDK_SHIFT_MASK;
+      tracklist_selections_handle_click (
+        track, ctrl, shift, false);
     }
 
   track_widget_force_redraw (self);
@@ -2057,9 +2052,10 @@ on_drag_begin (GtkGestureDrag *gesture,
           ctrl = self->ctrl_held_at_start;
 
           if (tracklist_selections_contains_track (
-                TRACKLIST_SELECTIONS,
-                track))
-            selected = 1;
+                TRACKLIST_SELECTIONS, track))
+            {
+              selected = 1;
+            }
 
           /* no control & not selected */
           if (!ctrl && !selected)

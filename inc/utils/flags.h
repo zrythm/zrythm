@@ -136,4 +136,7 @@
 #define F_USE_COLOR 1
 #define F_NO_USE_COLOR 0
 
+#define F_EXCLUSIVE 1
+#define F_NOT_EXCLUSIVE 0
+
 #endif

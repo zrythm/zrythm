@@ -582,7 +582,8 @@ tracklist_widget_init (TracklistWidget * self)
 }
 
 static void
-tracklist_widget_class_init (TracklistWidgetClass * _klass)
+tracklist_widget_class_init (
+  TracklistWidgetClass * _klass)
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);

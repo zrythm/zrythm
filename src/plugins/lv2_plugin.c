@@ -1280,7 +1280,7 @@ lv2_plugin_create_descriptor_from_lilv (
  */
 Lv2Plugin *
 lv2_plugin_new_from_uri (
-  Plugin    * pl,
+  Plugin    *  pl,
   const char * uri)
 {
   LilvNode * lv2_uri =
@@ -1548,7 +1548,10 @@ lv2_plugin_instantiate (
   bool         project,
   char *       preset_uri)
 {
-  int i;
+  g_message (
+    "Instantiating... project: %d, preset_uri: %s,"
+    "self->state_file: %s",
+    project, preset_uri, self->state_file);
 
   set_features (self);
 
@@ -1913,7 +1916,7 @@ lv2_plugin_instantiate (
     }
 
   /* Connect ports to buffers */
-  for (i = 0; i < self->num_ports; ++i)
+  for (int i = 0; i < self->num_ports; ++i)
     {
       connect_port (
         self, (uint32_t) i);
@@ -1922,7 +1925,8 @@ lv2_plugin_instantiate (
   /* Print initial control values */
   if (DEBUGGING)
     {
-      for (i = 0; i < self->controls.n_controls; ++i)
+      for (int i = 0;
+           i < self->controls.n_controls; ++i)
         {
           Lv2Control* control =
             self->controls.controls[i];
@@ -1941,9 +1945,11 @@ lv2_plugin_instantiate (
     }
 
   /* Activate plugin */
-  g_message ("Activating instance...");
+  g_message ("Activating lilv instance...");
   lilv_instance_activate (self->instance);
-  g_message ("Instance activated");
+  g_message ("Lilv instance activated");
+
+  g_message ("done");
 
   return 0;
 }

@@ -116,13 +116,14 @@ set_port_value (
   uint32_t    size,
   uint32_t    type)
 {
-  Lv2Plugin*        plugin = (Lv2Plugin*)user_data;
+  Lv2Plugin * plugin = (Lv2Plugin*)user_data;
   Lv2Port* port =
-    lv2_port_get_by_symbol (
-      plugin, port_symbol);
-  if (!port) {
-          fprintf(stderr, "error: Preset port `%s' is missing\n", port_symbol);
-          return;
+    lv2_port_get_by_symbol (plugin, port_symbol);
+  if (!port)
+    {
+      g_critical (
+        "Preset port %s is missing", port_symbol);
+      return;
   }
 
   float fvalue;
@@ -137,12 +138,15 @@ set_port_value (
   else
     {
       g_warning (
-        "Preset `%s' value has bad type <%s>\n",
+        "Preset `%s' value has bad type <%s>",
         port_symbol,
         plugin->unmap.unmap (
           plugin->unmap.handle, type));
       return;
     }
+  g_message (
+    "(lv2 state): setting %s=%f...",
+    port_symbol, (double) fvalue);
 
   if (TRANSPORT->play_state != PLAYSTATE_ROLLING)
     {
@@ -158,11 +162,12 @@ set_port_value (
   if (plugin->plugin->visible)
     {
       // Update UI
-      char buf[sizeof(Lv2ControlChange) + sizeof(fvalue)];
+      char buf[sizeof (Lv2ControlChange) +
+        sizeof (fvalue)];
       Lv2ControlChange* ev = (Lv2ControlChange*)buf;
-      ev->index    = port->index;
+      ev->index = port->index;
       ev->protocol = 0;
-      ev->size     = sizeof(fvalue);
+      ev->size = sizeof(fvalue);
       *(float*)ev->body = fvalue;
       zix_ring_write (
         plugin->plugin_to_ui_events, buf,
@@ -175,27 +180,30 @@ lv2_state_apply_state (
   Lv2Plugin* plugin,
   LilvState* state)
 {
-  bool must_pause = !plugin->safe_restore && TRANSPORT->play_state == PLAYSTATE_ROLLING;
+  bool must_pause =
+    !plugin->safe_restore &&
+    TRANSPORT->play_state == PLAYSTATE_ROLLING;
   if (state)
     {
       if (must_pause)
         {
           g_message ("must pause");
-          /*TRANSPORT->play_state = PLAYSTATE_PAUSE_REQUESTED;*/
+          TRANSPORT->play_state =
+            PLAYSTATE_PAUSE_REQUESTED;
+          g_usleep (10000);
           /*zix_sem_wait(&TRANSPORT->paused);*/
         }
 
       g_message ("applying state...");
-      lilv_state_restore (state,
-                          plugin->instance,
-                          set_port_value, plugin,
-                          0,
-                          plugin->state_features);
+      lilv_state_restore (
+        state, plugin->instance,
+        set_port_value, plugin, 0,
+        plugin->state_features);
 
       if (must_pause)
         {
           plugin->request_update = true;
-          TRANSPORT->play_state     = PLAYSTATE_ROLLING;
+          TRANSPORT->play_state = PLAYSTATE_ROLLING;
         }
     }
 }

@@ -116,7 +116,28 @@ void
 tracklist_selections_add_track (
   TracklistSelections * self,
   Track *               track,
-  int                   fire_events);
+  bool                  fire_events);
+
+void
+tracklist_selections_add_tracks_in_range (
+  TracklistSelections * self,
+  int                   min_pos,
+  int                   max_pos,
+  bool                  fire_events);
+
+void
+tracklist_selections_clear (
+  TracklistSelections * self);
+
+/**
+ * Handle a click selection.
+ */
+void
+tracklist_selections_handle_click (
+  Track * track,
+  bool    ctrl,
+  bool    shift,
+  bool    dragged);
 
 /**
  * Returns if the Track is selected or not.

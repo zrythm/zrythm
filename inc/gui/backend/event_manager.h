@@ -79,7 +79,8 @@ typedef struct EventManager
  * Push events.
  */
 #define EVENTS_PUSH(et,_arg) \
-  if (EVENT_MANAGER && EVENT_QUEUE && \
+  if (ZRYTHM_HAVE_UI && EVENT_MANAGER && \
+      EVENT_QUEUE && \
       (!PROJECT || !AUDIO_ENGINE || \
        !AUDIO_ENGINE->exporting)) \
     { \

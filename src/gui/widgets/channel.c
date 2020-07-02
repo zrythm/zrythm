@@ -451,36 +451,10 @@ on_btn_release (
             SELECTION_TYPE_TRACK;
         }
 
-      int ctrl = 0, selected = 0;
-
-      if (event->state & GDK_CONTROL_MASK)
-        ctrl = 1;
-
-      if (tracklist_selections_contains_track (
-            TRACKLIST_SELECTIONS,
-            track))
-        selected = 1;
-
-      /* no control & not selected */
-      if (!ctrl && !selected)
-        {
-          tracklist_selections_select_single (
-            TRACKLIST_SELECTIONS,
-            track);
-        }
-      else if (!ctrl && selected)
-        {
-        }
-      else if (ctrl && !selected)
-        {
-          tracklist_selections_add_track (
-            TRACKLIST_SELECTIONS, track, 1);
-        }
-      else if (ctrl && selected && !self->dragged)
-        {
-          tracklist_selections_remove_track (
-            TRACKLIST_SELECTIONS, track, 1);
-        }
+      bool ctrl = event->state & GDK_CONTROL_MASK;
+      bool shift = event->state & GDK_SHIFT_MASK;
+      tracklist_selections_handle_click (
+        track, ctrl, shift, self->dragged);
     }
 
   return FALSE;
