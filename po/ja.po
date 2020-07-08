@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-06-24 20:45+0100\n"
-"PO-Revision-Date: 2020-05-11 10:41+0000\n"
+"PO-Revision-Date: 2020-07-01 21:41+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:189
@@ -88,9 +88,8 @@ msgid "Marker"
 msgstr "マーカー"
 
 #: inc/audio/track.h:162 src/audio/tempo_track.c:85
-#, fuzzy
 msgid "Tempo"
-msgstr "テンポ/BPM"
+msgstr "テンポ"
 
 #: inc/audio/track.h:163
 msgid "Audio FX"
@@ -113,7 +112,7 @@ msgid "MIDI Group"
 msgstr "MIDIグループ"
 
 #: inc/audio/curve.h:90 src/audio/curve.c:39
-#, fuzzy, c-format
+#, c-format
 msgid "Exponent"
 msgstr "指数"
 
@@ -223,18 +222,18 @@ msgid "(trial) "
 msgstr "(トライアル) "
 
 #: src/project.c:126
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open file: %s"
-msgstr "スキーマ %s を表示できませんでした"
+msgstr "ファイルを開けませんでした：%s"
 
 #: src/project.c:170
 msgid "Project not compressed by zstd!"
-msgstr ""
+msgstr "プロジェクトは zstd で圧縮されていません!"
 
 #: src/project.c:183
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to decompress project file: %s"
-msgstr "スキーマ %s をリセットできませんでした"
+msgstr "プロジェクト・ファイルの解凍に失敗しました：%s"
 
 #: src/project.c:192
 msgid ""
