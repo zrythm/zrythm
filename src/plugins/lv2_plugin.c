@@ -34,6 +34,8 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include "zrythm-config.h"
+
 #define _POSIX_C_SOURCE 200809L /* for mkdtemp */
 #define _DARWIN_C_SOURCE        /* for mkdtemp on OSX */
 
@@ -1283,6 +1285,8 @@ lv2_plugin_new_from_uri (
   Plugin    *  pl,
   const char * uri)
 {
+  g_message ("Creating from uri: %s...", uri);
+
   LilvNode * lv2_uri =
     lilv_new_uri (LILV_WORLD, uri);
   const LilvPlugin * lilv_plugin =
@@ -1301,6 +1305,8 @@ lv2_plugin_new_from_uri (
   Lv2Plugin * lv2_plugin = lv2_plugin_new (pl);
 
   lv2_plugin->lilv_plugin = lilv_plugin;
+
+  g_message ("done");
 
   return lv2_plugin;
 }
@@ -1549,9 +1555,11 @@ lv2_plugin_instantiate (
   char *       preset_uri)
 {
   g_message (
-    "Instantiating... project: %d, preset_uri: %s,"
+    "Instantiating... uri: %s, project: %d, "
+    "preset_uri: %s, "
     "self->state_file: %s",
-    project, preset_uri, self->state_file);
+    self->plugin->descr->uri, project,
+    preset_uri, self->state_file);
 
   set_features (self);
 

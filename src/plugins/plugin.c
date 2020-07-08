@@ -366,20 +366,21 @@ new_carla_plugin:
         case PROT_LV2:
           {
 #ifdef HAVE_CARLA
+            LilvNode * lv2_uri =
+              lilv_new_uri (
+                LILV_WORLD, descr->uri);
+            const LilvPlugin * lilv_plugin =
+              lilv_plugins_get_by_uri (
+                PM_LILV_NODES.lilv_plugins,
+                lv2_uri);
+            lilv_node_free (lv2_uri);
+
             /* try to bridge bridgable plugins */
             if (!ZRYTHM_TESTING &&
                 g_settings_get_boolean (
                   S_P_PLUGINS_UIS,
                   "bridge-unsupported"))
               {
-                LilvNode * lv2_uri =
-                  lilv_new_uri (
-                    LILV_WORLD, descr->uri);
-                const LilvPlugin * lilv_plugin =
-                  lilv_plugins_get_by_uri (
-                    PM_LILV_NODES.lilv_plugins,
-                    lv2_uri);
-                lilv_node_free (lv2_uri);
                 LilvUIs * uis =
                   lilv_plugin_get_uis (lilv_plugin);
                 const LilvUI * picked_ui;
@@ -397,6 +398,24 @@ new_carla_plugin:
                   {
                     goto new_carla_plugin;
                   }
+              }
+
+            /** These plugins should be opened with
+             * carla */
+            LilvNode * kx_ui_interface =
+              lilv_new_uri (
+                LILV_WORLD,
+                "http://kxstudio.sf.net/ns/lv2ext/"
+                "programs#Interface");
+            if (lilv_plugin_has_extension_data (
+                  lilv_plugin, kx_ui_interface))
+              {
+                g_message (
+                  "plugin %s requires KX UI "
+                  "interface. "
+                  "will open with carla",
+                  descr->name);
+                goto new_carla_plugin;
               }
 #endif
             lv2_plugin_new_from_uri (

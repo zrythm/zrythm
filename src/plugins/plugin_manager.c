@@ -786,8 +786,7 @@ plugin_manager_scan_plugins (
       if (descriptor)
         {
           self->plugin_descriptors[
-            self->num_plugins++] =
-              descriptor;
+            self->num_plugins++] = descriptor;
           add_category (
             self, descriptor->category_str);
         }

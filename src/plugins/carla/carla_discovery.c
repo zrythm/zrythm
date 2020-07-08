@@ -393,6 +393,10 @@ z_carla_discovery_get_bridge_mode (
             }
           lilv_nodes_free (ui_required_features);
         }
+      else /* does not need bridging */
+        {
+          return CARLA_BRIDGE_NONE;
+        }
       lilv_uis_free (uis);
     }
   else
