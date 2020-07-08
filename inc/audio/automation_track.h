@@ -206,10 +206,19 @@ automation_record_mode_get_localized (
  * @note This is expensive and should only be used
  *   if \ref PortIdentifier.at_idx is not set. Use
  *   port_get_automation_track() instead.
+ *
+ * @param basic_search If true, only basic port
+ *   identifier members are checked.
  */
 AutomationTrack *
 automation_track_find_from_port_id (
-  PortIdentifier * id);
+  PortIdentifier * id,
+  bool             basic_search);
+
+AutomationTrack *
+automation_track_find_from_port (
+  Port * port,
+  bool   basic_search);
 
 static inline void
 automation_track_swap_record_mode (

@@ -140,6 +140,8 @@ char *
 io_path_get_parent_dir (
   const char * path)
 {
+  g_return_val_if_fail (path, NULL);
+
 #ifdef _WOE32
 #define PATH_SEP "\\\\"
 #define ROOT_REGEX "[A-Z]:" PATH_SEP

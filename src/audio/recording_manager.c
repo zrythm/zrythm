@@ -910,7 +910,7 @@ handle_automation_event (
   Track * tr = track_get_from_name (ev->track_name);
   AutomationTrack * at =
     automation_track_find_from_port_id (
-      &ev->port_id);
+      &ev->port_id, false);
   Port * port =
     automation_track_get_port (at);
   float value =
@@ -1166,7 +1166,7 @@ handle_start_recording (
     {
       at =
         automation_track_find_from_port_id (
-          &ev->port_id);
+          &ev->port_id, false);
       self->selections_before_start_automation =
           arranger_selections_clone (
             (ArrangerSelections *) TL_SELECTIONS);
@@ -1331,7 +1331,7 @@ events_process (
           {
             AutomationTrack * at =
               automation_track_find_from_port_id (
-                &ev->port_id);
+                &ev->port_id, false);
             g_warn_if_fail (at);
             if (at->recording_started)
               {
@@ -1355,7 +1355,7 @@ events_process (
           {
             AutomationTrack * at =
               automation_track_find_from_port_id (
-                &ev->port_id);
+                &ev->port_id, false);
             g_warn_if_fail (at);
             if (!at->recording_started)
               {

@@ -370,6 +370,7 @@ port_find_from_identifier (
         }
       break;
     case PORT_OWNER_TYPE_PREFADER:
+      g_warn_if_fail (id->track_pos > -1);
       tr = TRACKLIST->tracks[id->track_pos];
       g_warn_if_fail (tr);
       ch = tr->channel;
@@ -405,6 +406,26 @@ port_find_from_identifier (
               else if (id->flags &
                          PORT_FLAG_STEREO_R)
                 return ch->prefader->stereo_in->r;
+            }
+          break;
+        case TYPE_CONTROL:
+          if (id->flow == FLOW_INPUT)
+            {
+              if (id->flags &
+                    PORT_FLAG_AMPLITUDE)
+                {
+                  return ch->prefader->amp;
+                }
+              else if (id->flags &
+                         PORT_FLAG_STEREO_BALANCE)
+                {
+                  return ch->prefader->balance;
+                }
+              else if (id->flags &
+                         PORT_FLAG_CHANNEL_MUTE)
+                {
+                  return ch->prefader->mute;
+                }
             }
           break;
         default:
@@ -1458,19 +1479,17 @@ port_update_identifier (
         &port->port_id, &self->id);
     }
 
-  /* TODO */
-#if 0
-  if (self->id.flags & PORT_FLAG_AUTOMATABLE)
+  if (self->id.track_pos > -1 &&
+      self->id.flags & PORT_FLAG_AUTOMATABLE)
     {
       /* update automation track's port id */
       AutomationTrack * at =
         automation_track_find_from_port_id (
-          &self->id);
+          &self->id, true);
       g_return_if_fail (at);
       port_identifier_copy (
         &at->port_id, &self->id);
     }
-#endif
 }
 
 /**
@@ -2664,8 +2683,8 @@ port_sum_signal_from_inputs (
         g_warn_if_fail (
           port->id.flags & PORT_FLAG_AUTOMATABLE);
         AutomationTrack * at =
-          automation_track_find_from_port_id (
-            &port->id);
+          automation_track_find_from_port (
+            port, false);
         g_warn_if_fail (at);
         if (port->id.flags & PORT_FLAG_AUTOMATABLE &&
             automation_track_should_read_automation (

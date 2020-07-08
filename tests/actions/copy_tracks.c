@@ -37,7 +37,8 @@
 #include <glib.h>
 
 static void
-test_port_and_plugin_track_pos_after_duplication (void)
+_test_port_and_plugin_track_pos_after_duplication (
+  bool with_carla)
 {
   LilvNode * path =
     lilv_new_uri (LILV_WORLD, HELM_BUNDLE);
@@ -64,6 +65,9 @@ test_port_and_plugin_track_pos_after_duplication (void)
     plugin_descriptor_category_to_string (
       descr->category);
 
+  /* open with carla if requested */
+  descr->open_with_carla = with_carla;
+
   /* create an instrument track from helm */
   UndoableAction * ua =
     create_tracks_action_new (
@@ -77,14 +81,14 @@ test_port_and_plugin_track_pos_after_duplication (void)
   int dest_track_pos = TRACKLIST->num_tracks;
 
   /* select it */
-  Track * helm_track =
+  Track * src_track =
     TRACKLIST->tracks[src_track_pos];
   track_select (
-    helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
+    src_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
 
   /* get an automation track */
   AutomationTracklist * atl =
-    track_get_automation_tracklist (helm_track);
+    track_get_automation_tracklist (src_track);
   AutomationTrack * at = atl->ats[40];
   at->created = true;
   at->visible = true;
@@ -95,7 +99,7 @@ test_port_and_plugin_track_pos_after_duplication (void)
   position_set_to_bar (&end_pos, 4);
   ZRegion * region =
     automation_region_new (
-      &start_pos, &end_pos, helm_track->pos,
+      &start_pos, &end_pos, src_track->pos,
       at->index, at->num_regions);
   automation_track_add_region (at, region);
   arranger_object_select (
@@ -123,22 +127,23 @@ test_port_and_plugin_track_pos_after_duplication (void)
       AUTOMATION_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
 
-  g_assert_true (
-    track_verify_identifiers (helm_track));
-
   /* duplicate it */
   ua =
     copy_tracks_action_new (
       TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
+
+  g_assert_true (
+    track_verify_identifiers (src_track));
+
   undo_manager_perform (UNDO_MANAGER, ua);
 
-  Track * src_track =
-    TRACKLIST->tracks[src_track_pos];
   Track * dest_track =
     TRACKLIST->tracks[dest_track_pos];
 
-  track_verify_identifiers (src_track);
-  track_verify_identifiers (dest_track);
+  g_assert_true (
+    track_verify_identifiers (src_track));
+  g_assert_true (
+    track_verify_identifiers (dest_track));
 
   /* move automation in 2nd track and undo/redo */
   atl = track_get_automation_tracklist (dest_track);
@@ -160,12 +165,28 @@ test_port_and_plugin_track_pos_after_duplication (void)
   g_usleep (1000000);
 }
 
+static void
+test_port_and_plugin_track_pos_after_duplication (void)
+{
+  test_helper_zrythm_init ();
+
+  _test_port_and_plugin_track_pos_after_duplication (
+    false);
+}
+
+static void
+test_port_and_plugin_track_pos_after_duplication_with_carla (void)
+{
+  test_helper_zrythm_init ();
+
+  _test_port_and_plugin_track_pos_after_duplication (
+    true);
+}
+
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
-
-  test_helper_zrythm_init ();
 
 #define TEST_PREFIX "/actions/copy_tracks/"
 
@@ -174,6 +195,13 @@ main (int argc, char *argv[])
     "test port and plugin track pos after duplication",
     (GTestFunc)
     test_port_and_plugin_track_pos_after_duplication);
+#ifdef HAVE_CARLA
+  g_test_add_func (
+    TEST_PREFIX
+    "test port and plugin track pos after duplication with carla",
+    (GTestFunc)
+    test_port_and_plugin_track_pos_after_duplication_with_carla);
+#endif
 
   return g_test_run ();
 }

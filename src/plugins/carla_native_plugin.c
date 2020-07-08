@@ -54,6 +54,8 @@ carla_native_plugin_init_loaded (
   carla_native_plugin_new_from_descriptor (
     self->plugin);
 
+  g_return_if_fail (self->state_file);
+
   char * state_dir =
     io_path_get_parent_dir (
       self->state_file);
@@ -975,6 +977,8 @@ create_ports (
             self->plugin, port);
         }
     }
+
+  self->ports_created = true;
 }
 
 /**
@@ -995,18 +999,22 @@ carla_native_plugin_instantiate (
     self->native_plugin_descriptor->ui_show,
     -1);
 
-  /* create or load ports */
-  if (!loading)
-    create_ports (self, loading);
+  /* create ports */
+  if (!loading && !self->ports_created)
+    {
+      create_ports (self, false);
+    }
 
   g_message ("activating carla plugin...");
   self->native_plugin_descriptor->activate (
     self->native_plugin_handle);
   g_message ("carla plugin activated");
 
-  /* create or load ports */
+  /* load ports */
   if (loading)
-    create_ports (self, loading);
+    {
+      create_ports (self, true);
+    }
 
   return 0;
 }
@@ -1165,7 +1173,7 @@ carla_native_plugin_save_state (
     self->state_file, state, -1, &err);
   if (err)
     {
-      g_warning (
+      g_critical (
         "%s: An error occurred saving the state: "
         "%s", __func__, err->message);
       return -1;

@@ -80,6 +80,9 @@ typedef struct CarlaNativePlugin
   /** State file. */
   char *           state_file;
 
+  /** Whether ports are already created or not. */
+  bool             ports_created;
+
 } CarlaNativePlugin;
 
 static const cyaml_schema_field_t

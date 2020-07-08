@@ -103,7 +103,7 @@ engine_update_frames_per_tick (
     (((double) sample_rate * 60.0 *
        (double) beats_per_bar) /
     ((double) bpm *
-       (double) TRANSPORT->ticks_per_bar));
+       (double) self->transport->ticks_per_bar));
 
   /* update positions */
   transport_update_position_frames (
@@ -763,11 +763,11 @@ engine_process_prepare (
   self->last_time_taken = g_get_monotonic_time ();
   self->nframes = nframes;
 
-  if (TRANSPORT->play_state ==
-      PLAYSTATE_PAUSE_REQUESTED)
+  if (self->transport->play_state ==
+        PLAYSTATE_PAUSE_REQUESTED)
     {
       g_message ("pause requested handled");
-      TRANSPORT->play_state = PLAYSTATE_PAUSED;
+      self->transport->play_state = PLAYSTATE_PAUSED;
       /*zix_sem_post (&TRANSPORT->paused);*/
 #ifdef HAVE_JACK
       if (self->audio_backend == AUDIO_BACKEND_JACK)
@@ -775,10 +775,10 @@ engine_process_prepare (
           self->client);
 #endif
     }
-  else if (TRANSPORT->play_state ==
+  else if (self->transport->play_state ==
            PLAYSTATE_ROLL_REQUESTED)
     {
-      TRANSPORT->play_state = PLAYSTATE_ROLLING;
+      self->transport->play_state = PLAYSTATE_ROLLING;
       self->remaining_latency_preroll =
         router_get_max_playback_latency (
           self->router);
@@ -1007,7 +1007,7 @@ queue_metronome_events (
   position_set_to_pos (
     &unlooped_playhead, PLAYHEAD);
   transport_position_add_frames (
-    TRANSPORT, &pos, nframes);
+    self->transport, &pos, nframes);
   position_add_frames (
     &unlooped_playhead, (long) nframes);
   int loop_crossed =
@@ -1018,16 +1018,16 @@ queue_metronome_events (
       /* find each bar / beat change until loop
        * end */
       find_and_queue_metronome (
-        PLAYHEAD, &TRANSPORT->loop_end_pos,
+        PLAYHEAD, &self->transport->loop_end_pos,
         loffset);
 
       /* find each bar / beat change after loop
        * start */
       find_and_queue_metronome (
-        &TRANSPORT->loop_start_pos, &pos,
+        &self->transport->loop_start_pos, &pos,
         loffset +
           (nframes_t)
-          (TRANSPORT->loop_end_pos.frames -
+          (self->transport->loop_end_pos.frames -
            PLAYHEAD->frames));
     }
   else /* loop not crossed */
@@ -1161,7 +1161,7 @@ engine_process (
   if (nframes > 0)
     {
       /* queue metronome if met within this cycle */
-      if (TRANSPORT->metronome_enabled &&
+      if (self->transport->metronome_enabled &&
           TRANSPORT_IS_ROLLING)
         {
           queue_metronome_events (
@@ -1232,7 +1232,7 @@ engine_post_process (
       self->remaining_latency_preroll == 0)
     {
       transport_add_to_playhead (
-        TRANSPORT, nframes);
+        self->transport, nframes);
 #ifdef HAVE_JACK
       if (self->audio_backend ==
             AUDIO_BACKEND_JACK &&

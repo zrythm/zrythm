@@ -48,8 +48,7 @@ copy_tracks_action_new (
     calloc (1, sizeof (
                  CopyTracksAction));
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type =
-    UA_COPY_TRACKS;
+  ua->type = UA_COPY_TRACKS;
 
   self->tls = tracklist_selections_clone (tls);
   self->pos = pos;
@@ -70,9 +69,7 @@ copy_tracks_action_do (
 
       /* add to tracklist at given pos */
       tracklist_insert_track (
-        TRACKLIST,
-        track,
-        self->pos + i,
+        TRACKLIST, track, self->pos + i,
         F_NO_PUBLISH_EVENTS,
         F_NO_RECALC_GRAPH);
 

@@ -399,24 +399,6 @@ new_carla_plugin:
                     goto new_carla_plugin;
                   }
               }
-
-            /** These plugins should be opened with
-             * carla */
-            LilvNode * kx_ui_interface =
-              lilv_new_uri (
-                LILV_WORLD,
-                "http://kxstudio.sf.net/ns/lv2ext/"
-                "programs#Interface");
-            if (lilv_plugin_has_extension_data (
-                  lilv_plugin, kx_ui_interface))
-              {
-                g_message (
-                  "plugin %s requires KX UI "
-                  "interface. "
-                  "will open with carla",
-                  descr->name);
-                goto new_carla_plugin;
-              }
 #endif
             lv2_plugin_new_from_uri (
               plugin, descr->uri);
@@ -739,7 +721,7 @@ plugin_generate_window_title (
   sprintf (
     title,
     "%s (%s #%d%s)",
-    plugin_name, track_name, plugin->id.slot,
+    plugin_name, track_name, plugin->id.slot + 1,
     carla);
 
   switch (plugin->descr->protocol)
@@ -870,6 +852,10 @@ plugin_add_in_port (
   Port *   port)
 {
   ADD_PORT (in);
+  /*g_message (*/
+    /*"added input port %s to plugin %s at index %d",*/
+    /*port->id.label, pl->descr->name,*/
+    /*port->id.port_index);*/
 }
 
 /**
@@ -881,6 +867,10 @@ plugin_add_out_port (
   Port *   port)
 {
   ADD_PORT (out);
+  /*g_message (*/
+    /*"added output port %s to plugin %s at index %d",*/
+    /*port->id.label, pl->descr->name,*/
+    /*port->id.port_index);*/
 }
 #undef ADD_PORT
 
@@ -1384,8 +1374,7 @@ plugin_clone (
 
       /* save the state of the original plugin */
       char * state_dir_pl =
-        plugin_generate_state_dir (
-          pl, true);
+        plugin_generate_state_dir (pl, true);
       carla_native_plugin_save_state (
         pl->carla, state_dir_pl);
 

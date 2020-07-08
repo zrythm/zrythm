@@ -311,8 +311,7 @@ automation_tracklist_clone (
     {
       src_at = src->ats[i];
       dest->ats[i] =
-        automation_track_clone (
-          src_at);
+        automation_track_clone (src_at);
     }
 
   /* TODO create same automation lanes */
@@ -527,7 +526,7 @@ automation_tracklist_verify_identifiers (
         }
       g_return_val_if_fail (
         automation_track_find_from_port_id (
-          &at->port_id) == at, false);
+          &at->port_id, false) == at, false);
       for (int j = 0; j < at->num_regions; j++)
         {
           ZRegion * r = at->regions[j];

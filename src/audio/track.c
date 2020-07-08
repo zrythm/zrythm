@@ -342,6 +342,8 @@ track_clone (
   COPY_MEMBER (pos);
   COPY_MEMBER (midi_ch);
 
+#undef COPY_MEMBER
+
   if (track->channel)
     {
       Channel * ch =
@@ -372,7 +374,12 @@ track_clone (
     &track->automation_tracklist,
     &new_track->automation_tracklist);
 
-#undef COPY_MEMBER
+  /* check that source track is not affected
+   * during unit tests */
+  if (ZRYTHM_TESTING && src_is_project)
+    {
+      track_verify_identifiers (track);
+    }
 
   return new_track;
 }
@@ -646,6 +653,11 @@ bool
 track_verify_identifiers (
   Track * self)
 {
+  g_return_val_if_fail (self, false);
+
+  g_message (
+    "verifying %s identifiers...", self->name);
+
   int track_pos = self->pos;
 
   /* verify port identifiers */
@@ -656,6 +668,8 @@ track_verify_identifiers (
   track_append_all_ports (
     self, &ports, &num_ports, true, &max_size,
     true);
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (self);
   for (int i = 0; i < num_ports; i++)
     {
       Port * port = ports[i];
@@ -680,12 +694,24 @@ track_verify_identifiers (
                 false);
             }
         }
+
+      /* check that the automation track is there */
+      if (atl &&
+          port->id.flags & PORT_FLAG_AUTOMATABLE)
+        {
+          g_message ("checking %s", port->id.label);
+          AutomationTrack * at =
+            automation_track_find_from_port (
+              port, true);
+          g_return_val_if_fail (at, false);
+          g_return_val_if_fail (
+            automation_track_find_from_port (
+              port, false), false);
+        }
     }
   free (ports);
 
   /* verify tracklist identifiers */
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (self);
   if (atl)
     {
       g_return_val_if_fail (
@@ -693,6 +719,8 @@ track_verify_identifiers (
           atl),
         false);
     }
+
+  g_message ("done");
 
   return true;
 }
@@ -896,7 +924,9 @@ track_generate_automation_tracks (
 
   if (track_type_has_channel (track->type))
     {
-      /* fader */
+      /* -- fader -- */
+
+      /* volume */
       at =
         automation_track_new (
           track->channel->fader->amp);
@@ -914,6 +944,26 @@ track_generate_automation_tracks (
       at =
         automation_track_new (
           track->channel->fader->mute);
+      automation_tracklist_add_at (atl, at);
+
+      /*  -- prefader -- */
+
+      /* volume */
+      at =
+        automation_track_new (
+          track->channel->prefader->amp);
+      automation_tracklist_add_at (atl, at);
+
+      /* balance */
+      at =
+        automation_track_new (
+          track->channel->prefader->balance);
+      automation_tracklist_add_at (atl, at);
+
+      /* mute */
+      at =
+        automation_track_new (
+          track->channel->prefader->mute);
       automation_tracklist_add_at (atl, at);
     }
 

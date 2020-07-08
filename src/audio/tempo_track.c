@@ -98,7 +98,7 @@ tempo_track_get_bpm_at_pos (
 {
   AutomationTrack * at =
     automation_track_find_from_port_id (
-      &self->bpm_port->id);
+      &self->bpm_port->id, false);
   return
     automation_track_get_val_at_pos (
       at, pos, false);

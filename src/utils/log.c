@@ -780,7 +780,10 @@ log_free (
   g_message ("%s: Tearing down...", __func__);
 
   /* remove source func */
-  g_source_remove (self->writer_source_id);
+  if (self->writer_source_id)
+    {
+      g_source_remove (self->writer_source_id);
+    }
 
   /* clear the queue */
   log_idle_cb (self);
@@ -790,7 +793,11 @@ log_free (
     g_log_writer_default, NULL, NULL);
 
   /* close log file */
-  fclose (self->logfile);
+  if (self->logfile)
+    {
+      fclose (self->logfile);
+      self->logfile = NULL;
+    }
 
   /* free children */
   object_free_w_func_and_null (

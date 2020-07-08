@@ -217,18 +217,11 @@ automation_track_get_ap_before_pos (
   return NULL;
 }
 
-/**
- * @note This is expensive and should only be used
- *   if \ref PortIdentifier.at_idx is not set. Use
- *   port_get_automation_track() instead.
- */
 AutomationTrack *
-automation_track_find_from_port_id (
-  PortIdentifier * id)
+automation_track_find_from_port (
+  Port * port,
+  bool   basic_search)
 {
-  Port * port = port_find_from_identifier (id);
-  g_return_val_if_fail (port, NULL);
-
   Track * track = port_get_track (port, 1);
   g_return_val_if_fail (track, NULL);
 
@@ -237,12 +230,54 @@ automation_track_find_from_port_id (
   for (int i = 0; i < atl->num_ats; i++)
     {
       AutomationTrack * at = atl->ats[i];
-      if (port_identifier_is_equal (
-            id, &at->port_id))
-        return at;
+      if (basic_search)
+        {
+          PortIdentifier * src = &port->id;
+          PortIdentifier * dest = &at->port_id;
+          if (
+            string_is_equal (
+              dest->label, src->label, 0) &&
+            dest->owner_type == src->owner_type &&
+            dest->type == src->type &&
+            dest->flow == src->flow &&
+            dest->flags == src->flags &&
+            dest->track_pos == src->track_pos)
+            {
+              return at;
+            }
+        }
+      else if (port_identifier_is_equal (
+            &port->id, &at->port_id))
+        {
+          return at;
+        }
     }
 
   return NULL;
+}
+
+/**
+ * @note This is expensive and should only be used
+ *   if \ref PortIdentifier.at_idx is not set. Use
+ *   port_get_automation_track() instead.
+ *
+ * @param basic_search If true, only basic port
+ *   identifier members are checked.
+ */
+AutomationTrack *
+automation_track_find_from_port_id (
+  PortIdentifier * id,
+  bool             basic_search)
+{
+  Port * port = port_find_from_identifier (id);
+  g_return_val_if_fail (
+    port &&
+      port_identifier_is_equal (id, &port->id),
+    NULL);
+
+  return
+    automation_track_find_from_port (
+      port, basic_search);
 }
 
 /**
