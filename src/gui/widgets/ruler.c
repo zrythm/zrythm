@@ -893,12 +893,13 @@ ruler_draw_cb (
           /* draw edges */
           cairo_set_source_rgba (
             cr_to_use, 1, 1, 1, 0.7);
-          cairo_set_line_width (cr_to_use, 2);
-          z_cairo_draw_vertical_line (
-            cr_to_use, dr.x, dr.y, dr.height);
-          z_cairo_draw_vertical_line (
-            cr_to_use, dr.x + dr.width,
-            dr.y, dr.height);
+          cairo_rectangle (
+            cr_to_use, dr.x, dr.y, 2, dr.height);
+          cairo_fill (cr_to_use);
+          cairo_rectangle (
+            cr_to_use, dr.x + dr.width, dr.y, 2,
+            dr.height - dr.y);
+          cairo_fill (cr_to_use);
         }
 
       /* ----- draw regions --------- */

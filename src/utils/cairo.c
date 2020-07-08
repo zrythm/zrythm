@@ -31,6 +31,7 @@ z_cairo_draw_selection (
   double    offset_x,
   double    offset_y)
 {
+  cairo_set_line_width (cr, 1);
   cairo_set_source_rgba (cr, 0.9, 0.9, 0.9, 1.0);
   cairo_rectangle (
     cr, start_x, start_y, offset_x, offset_y);
@@ -47,13 +48,13 @@ z_cairo_draw_horizontal_line (
   double    y,
   double    from_x,
   double    to_x,
+  double    line_width,
   double    alpha)
 {
   cairo_set_source_rgba (cr, 0.7, 0.7, 0.7, alpha);
-  cairo_set_line_width (cr, 0.5);
-  cairo_move_to (cr, from_x, y);
-  cairo_line_to (cr, to_x, y);
-  cairo_stroke (cr);
+  cairo_rectangle (
+    cr, from_x, y, to_x - from_x, line_width);
+  cairo_fill (cr);
 }
 
 void
@@ -61,11 +62,12 @@ z_cairo_draw_vertical_line (
   cairo_t * cr,
   double    x,
   double    from_y,
-  double    to_y)
+  double    to_y,
+  double    line_width)
 {
-  cairo_move_to (cr, x, from_y);
-  cairo_line_to (cr, x, to_y);
-  cairo_stroke (cr);
+  cairo_rectangle (
+    cr, x, from_y, line_width, to_y - from_y);
+  cairo_fill (cr);
 }
 
 /**

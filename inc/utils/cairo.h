@@ -75,6 +75,7 @@ z_cairo_draw_horizontal_line (
   double    y,
   double    from_x,
   double    to_x,
+  double    line_width,
   double    alpha);
 
 void
@@ -82,7 +83,8 @@ z_cairo_draw_vertical_line (
   cairo_t * cr,
   double    x,
   double    from_y,
-  double    to_y);
+  double    to_y,
+  double    line_width);
 
 /**
  * @param aspect Aspect ratio.
