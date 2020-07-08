@@ -184,8 +184,10 @@ draw_bg (
         cr, 1, 1, 1, 0.4);
       cairo_set_line_width (cr, 0.5);
       z_cairo_rounded_rectangle (
-        cr, x, y, self->width, self->height,
-        self->aspect, self->corner_radius);
+        cr, (int) x, (int) y,
+        (int) self->width, (int) self->height,
+        (int) self->aspect,
+        (int) self->corner_radius);
       cairo_stroke (cr);
     }
 
@@ -253,13 +255,16 @@ draw_bg (
       if (rounded)
         {
           z_cairo_rounded_rectangle (
-            cr, new_x, y, new_width, self->height,
-            self->aspect, self->corner_radius);
+            cr, (int) new_x, (int) y,
+            (int) new_width, (int) self->height,
+            (int) self->aspect,
+            (int) self->corner_radius);
         }
       else
         {
-          cairo_rectangle (
-            cr, new_x, y, new_width, self->height);
+          z_cairo_rectangle (
+            cr, (int) new_x, (int) y,
+            (int) new_width, (int) self->height);
         }
       cairo_fill (cr);
     }
@@ -325,13 +330,13 @@ automation_mode_widget_draw (
       PangoLayout * layout = self->layout;
       cairo_set_source_rgba (
         cr, 1, 1, 1, 1);
-      cairo_move_to (
+      z_cairo_move_to (
         cr,
-        x + AUTOMATION_MODE_HPADDING +
+        (int) (x + AUTOMATION_MODE_HPADDING +
           i * (2 * AUTOMATION_MODE_HPADDING) +
-          total_text_widths,
-        (y + self->height / 2) -
-          self->text_heights[i] / 2);
+          total_text_widths),
+        (int) ((y + self->height / 2) -
+          self->text_heights[i] / 2));
       char mode_str[400];
       if (i == AUTOMATION_MODE_RECORD)
         {

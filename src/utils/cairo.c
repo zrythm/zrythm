@@ -26,17 +26,17 @@
 void
 z_cairo_draw_selection (
   cairo_t * cr,
-  double    start_x,
-  double    start_y,
-  double    offset_x,
-  double    offset_y)
+  int       start_x,
+  int       start_y,
+  int       offset_x,
+  int       offset_y)
 {
   cairo_set_source_rgba (cr, 0.9, 0.9, 0.9, 1.0);
-  cairo_rectangle (
+  z_cairo_rectangle (
     cr, start_x, start_y, offset_x, offset_y);
   cairo_stroke (cr);
   cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 0.3);
-  cairo_rectangle (
+  z_cairo_rectangle (
     cr, start_x, start_y, offset_x, offset_y);
   cairo_fill (cr);
 }
@@ -44,13 +44,13 @@ z_cairo_draw_selection (
 void
 z_cairo_draw_horizontal_line (
   cairo_t * cr,
-  double    y,
-  double    from_x,
-  double    to_x,
+  int       y,
+  int       from_x,
+  int       to_x,
   double    alpha)
 {
   cairo_set_source_rgba (cr, 0.7, 0.7, 0.7, alpha);
-  cairo_set_line_width (cr, 0.5);
+  cairo_set_line_width (cr, 1);
   cairo_move_to (cr, from_x, y);
   cairo_line_to (cr, to_x, y);
   cairo_stroke (cr);
@@ -59,9 +59,9 @@ z_cairo_draw_horizontal_line (
 void
 z_cairo_draw_vertical_line (
   cairo_t * cr,
-  double    x,
-  double    from_y,
-  double    to_y)
+  int       x,
+  int       from_y,
+  int       to_y)
 {
   cairo_move_to (cr, x, from_y);
   cairo_line_to (cr, x, to_y);
@@ -120,6 +120,68 @@ z_cairo_create_pango_layout_from_description (
     layout, descr);
 
   return layout;
+}
+
+/**
+ * Draws a diamond shape.
+ */
+void
+z_cairo_diamond (
+  cairo_t * cr,
+  int       x,
+  int       y,
+  int       width,
+  int       height)
+{
+  z_cairo_move_to (cr, x, (int) (height / 2));
+  z_cairo_line_to (cr, (int) (width / 2), y);
+  z_cairo_line_to (cr, width, height / 2);
+  z_cairo_line_to (cr, width / 2, height);
+  z_cairo_line_to (cr, x, height / 2);
+  cairo_close_path (cr);
+}
+
+/**
+ * @param aspect Aspect ratio.
+ * @param corner_radius Corner curvature radius.
+ */
+void
+z_cairo_rounded_rectangle (
+  cairo_t * cr,
+  int       x,
+  int       y,
+  int       width,
+  int       height,
+  double    aspect,
+  double    corner_radius)
+{
+  double radius = corner_radius / aspect;
+  double degrees = G_PI / 180.0;
+
+  cairo_new_sub_path (cr);
+  z_cairo_arc (
+    cr, (int) (x + width - radius),
+    (int) (y + radius),
+    (int) radius, (int) (-90 * degrees),
+    0 * degrees);
+  z_cairo_arc (
+    cr,
+    (int) (x + width - radius),
+    (int) (y + height - radius),
+    (int) radius, 0 * degrees,
+    (int) (90 * degrees));
+  z_cairo_arc (
+    cr,
+    (int) (x + radius),
+    (int) (y + height - radius),
+    (int) radius,
+    (int) (90 * degrees), (int) (180 * degrees));
+  z_cairo_arc (
+    cr,
+    (int) (x + radius),
+    (int) (y + radius), (int) radius,
+    (int) (180 * degrees), (int) (270 * degrees));
+  cairo_close_path (cr);
 }
 
 /**
@@ -188,12 +250,12 @@ z_cairo_draw_text_full (
 {
   g_return_if_fail (
     cr && layout && widget && text);
-  cairo_translate (cr, start_x, start_y);
+  z_cairo_translate (cr, start_x, start_y);
 
   pango_layout_set_markup (layout, text, -1);
   pango_cairo_show_layout (cr, layout);
 
-  cairo_translate (cr, - start_x, - start_y);
+  z_cairo_translate (cr, - start_x, - start_y);
 }
 
 /**

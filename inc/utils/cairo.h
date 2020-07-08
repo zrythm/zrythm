@@ -64,50 +64,39 @@ typedef struct CairoCaches
 void
 z_cairo_draw_selection (
   cairo_t * cr,
-  double    start_x,
-  double    start_y,
-  double    offset_x,
-  double    offset_y);
+  int       start_x,
+  int       start_y,
+  int       offset_x,
+  int       offset_y);
 
 void
 z_cairo_draw_horizontal_line (
   cairo_t * cr,
-  double    y,
-  double    from_x,
-  double    to_x,
+  int       y,
+  int       from_x,
+  int       to_x,
   double    alpha);
 
 void
 z_cairo_draw_vertical_line (
   cairo_t * cr,
-  double    x,
-  double    from_y,
-  double    to_y);
+  int       x,
+  int       from_y,
+  int       to_y);
 
 /**
  * @param aspect Aspect ratio.
  * @param corner_radius Corner curvature radius.
  */
-static inline void
+void
 z_cairo_rounded_rectangle (
   cairo_t * cr,
-  double    x,
-  double    y,
-  double    width,
-  double    height,
+  int       x,
+  int       y,
+  int       width,
+  int       height,
   double    aspect,
-  double    corner_radius)
-{
-  double radius = corner_radius / aspect;
-  double degrees = G_PI / 180.0;
-
-  cairo_new_sub_path (cr);
-  cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
-  cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);
-  cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
-  cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
-  cairo_close_path (cr);
-}
+  double    corner_radius);
 
 #define z_cairo_get_text_extents_for_widget( \
   _widget,_layout,_text,_width,_height) \
@@ -157,21 +146,13 @@ z_cairo_draw_text_full (
 /**
  * Draws a diamond shape.
  */
-static inline void
+void
 z_cairo_diamond (
   cairo_t * cr,
-  double    x,
-  double    y,
-  double    width,
-  double    height)
-{
-  cairo_move_to (cr, x, height / 2);
-  cairo_line_to (cr, width / 2, y);
-  cairo_line_to (cr, width, height / 2);
-  cairo_line_to (cr, width / 2, height);
-  cairo_line_to (cr, x, height / 2);
-  cairo_close_path (cr);
-}
+  int       x,
+  int       y,
+  int       width,
+  int       height);
 
 /**
  * Returns a surface for the icon name.
@@ -226,6 +207,95 @@ z_cairo_reset_caches (
   int                width,
   int                height,
   cairo_t *          new_cr);
+
+/**
+ * Wrapper using integers to prevent extra
+ * calculations in cairo. According to GTK devs,
+ * cairo will attempt to draw details when drawing
+ * non-integer coordinates.
+ */
+static inline void
+z_cairo_move_to (
+  cairo_t * cr,
+  int       x,
+  int       y)
+{
+  cairo_move_to (cr, (double) x, (double) y);
+}
+
+static inline void
+z_cairo_line_to (
+  cairo_t * cr,
+  int       x,
+  int       y)
+{
+  cairo_line_to (cr, (double) x, (double) y);
+}
+
+static inline void
+z_cairo_rel_line_to (
+  cairo_t * cr,
+  int       x,
+  int       y)
+{
+  cairo_rel_line_to (cr, (double) x, (double) y);
+}
+
+static inline void
+z_cairo_rectangle (
+  cairo_t * cr,
+  int       x,
+  int       y,
+  int       width,
+  int       height)
+{
+  cairo_rectangle (
+    cr, (double) x, (double) y,
+    (double) width, (double) height);
+}
+
+static inline void
+z_cairo_arc (
+  cairo_t * cr,
+  int       xc,
+  int       yc,
+  int       radius,
+  int       angle1,
+  int       angle2)
+{
+  cairo_arc (
+    cr, (double) xc, (double) yc,
+    (double) radius, (double) angle1,
+    (double) angle2);
+}
+
+static inline void
+z_cairo_translate (
+  cairo_t * cr,
+  int       x,
+  int       y)
+{
+  cairo_translate (cr, (double) x, (double) y);
+}
+
+static inline void
+z_cairo_set_source_surface (
+  cairo_t *         cr,
+  cairo_surface_t * surface,
+  int               x,
+  int               y)
+{
+  cairo_set_source_surface (
+    cr, surface, (double) x, (double) y);
+}
+
+static inline void
+z_cairo_set_line_width (
+  cairo_t * cr,
+  int       width)
+{
+  cairo_set_line_width (cr, (double) width);
+}
 
 CairoCaches *
 z_cairo_caches_new (void);

@@ -111,10 +111,12 @@ draw_bg (
     {
       cairo_set_source_rgba (
         cr, 1, 1, 1, 0.4);
-      cairo_set_line_width (cr, 0.5);
+      cairo_set_line_width (cr, 1);
       z_cairo_rounded_rectangle (
-        cr, x, y, self->size, self->size,
-        self->aspect, self->corner_radius);
+        cr, (int) x, (int) y,
+        (int) self->size, (int) self->size,
+        (int) self->aspect,
+        (int) self->corner_radius);
       cairo_stroke (cr);
     }
 
@@ -143,8 +145,9 @@ draw_bg (
   self->last_color = c;
 
   z_cairo_rounded_rectangle (
-    cr, x, y, width, self->size, self->aspect,
-    self->corner_radius);
+    cr, (int) x, (int) y, (int) width,
+    (int) self->size, (int) self->aspect,
+    (int) self->corner_radius);
   cairo_fill (cr);
 }
 
@@ -205,9 +208,10 @@ custom_button_widget_draw_with_text (
   /* draw text */
   cairo_set_source_rgba (
     cr, 1, 1, 1, 1);
-  cairo_move_to (
-    cr, x + self->size + 2,
-    (y + self->size / 2) - self->text_height / 2);
+  z_cairo_move_to (
+    cr, (int) (x + self->size + 2),
+    (int)
+    ((y + self->size / 2) - self->text_height / 2));
   PangoLayout * layout = self->layout;
   pango_layout_set_text (
     layout, self->text, -1);

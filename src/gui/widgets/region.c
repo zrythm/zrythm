@@ -169,10 +169,11 @@ draw_background (
     }
 
   z_cairo_rounded_rectangle (
-    cr, vis_offset_x - added_x_pre_padding, 0,
-    vis_width + added_x_pre_padding +
-      added_x_post_padding,
-    full_height, 1.0, 4.0);
+    cr, (int) (vis_offset_x - added_x_pre_padding),
+    0,
+    (int) (vis_width + added_x_pre_padding +
+      added_x_post_padding),
+    (int) full_height, 1, 4);
 
   /* clip this path so all drawing afterwards will
    * be confined inside it. preserve so we can
@@ -239,7 +240,7 @@ draw_loop_points (
   double dashes[] = { 5 };
   cairo_set_dash (
     cr, dashes, 1, 0);
-  cairo_set_line_width (cr, 1);
+  z_cairo_set_line_width (cr, 1);
 
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -283,10 +284,10 @@ draw_loop_points (
     {
       gdk_cairo_set_source_rgba (
         cr, &UI_COLORS->bright_green);
-      cairo_move_to (
-        cr, x_px, 0);
-      cairo_line_to (
-        cr, x_px, full_height);
+      z_cairo_move_to (
+        cr, (int) x_px, 0);
+      z_cairo_line_to (
+        cr, (int) x_px, (int) full_height);
       cairo_stroke (cr);
     }
 
@@ -313,10 +314,10 @@ draw_loop_points (
         {
           cairo_set_source_rgba (
             cr, 0, 0, 0, 1.0);
-          cairo_move_to (
-            cr, x_px, 0);
-          cairo_line_to (
-            cr, x_px, full_height);
+          z_cairo_move_to (
+            cr, (int) x_px, 0);
+          z_cairo_line_to (
+            cr, (int) x_px, (int) full_height);
           cairo_stroke (cr);
         }
     }
@@ -487,12 +488,12 @@ draw_midi_region (
                           (draw_y - y_start),
                       (vis_offset_y + vis_height) -
                         draw_y);
-                  cairo_rectangle (
+                  z_cairo_rectangle (
                     cr,
-                    draw_x,
-                    draw_y,
-                    draw_width,
-                    draw_height);
+                    (int) draw_x,
+                    (int) draw_y,
+                    (int) draw_width,
+                    (int) draw_height);
                   cairo_fill (cr);
                 }
             }
@@ -635,9 +636,9 @@ draw_chord_region (
               x_end *= (double) full_width;
 
               /* draw */
-              cairo_rectangle (
-                cr, x_start, 0,
-                12.0, full_height);
+              z_cairo_rectangle (
+                cr, (int) x_start, 0,
+                12, (int) full_height);
               cairo_fill (cr);
 
               cairo_set_source_rgba (
@@ -797,10 +798,10 @@ draw_automation_region (
                   x_start_real < full_width)
                 {
                   int padding = 1;
-                  cairo_rectangle (
+                  z_cairo_rectangle (
                     cr,
-                    x_start_real - padding,
-                    y_start_real - padding,
+                    (int) (x_start_real - padding),
+                    (int) (y_start_real - padding),
                     2 * padding,
                     2 * padding);
                   cairo_fill (cr);
@@ -816,8 +817,8 @@ draw_automation_region (
                   double ac_width =
                     fabs (x_end - x_start);
                   ac_width *= full_width;
-                    cairo_set_line_width (
-                      cr, 2.0);
+                    z_cairo_set_line_width (
+                      cr, 2);
                   for (double k =
                          MAX (x_start_real, 0.0);
                        k < (x_start_real) +
@@ -855,12 +856,14 @@ draw_automation_region (
                       if (math_doubles_equal (
                             k, 0.0))
                         {
-                          cairo_move_to (
-                            cr, new_x, new_y);
+                          z_cairo_move_to (
+                            cr, (int) new_x,
+                            (int) new_y);
                         }
 
-                      cairo_line_to (
-                        cr, new_x, new_y);
+                      z_cairo_line_to (
+                        cr, (int) new_x,
+                        (int) new_y);
                     }
                   cairo_stroke (cr);
                 }
@@ -890,7 +893,7 @@ draw_fades (
   /* set color */
   cairo_set_source_rgba (
     cr, 0.2, 0.2, 0.2, 0.6);
-  cairo_set_line_width (cr, 3);
+  z_cairo_set_line_width (cr, 3);
 
   int vis_offset_x =
     draw_rect->x - full_rect->x;
@@ -946,23 +949,26 @@ draw_fades (
           /* if start */
           if (i == vis_start_px)
             {
-              cairo_move_to (
-                cr, i - rect->x, val * full_height);
+              z_cairo_move_to (
+                cr,
+                (int) (i - rect->x),
+                (int) (val * full_height));
             }
 
-          cairo_rel_line_to (
+          z_cairo_rel_line_to (
             cr, 1,
-            (next_val - val) * full_height);
+            (int) ((next_val - val) * full_height));
 
           /* if end */
           if (i == vis_fade_in_px)
             {
               /* paint a gradient in the faded out
                * part */
-              cairo_rel_line_to (
-                cr, 0, next_val - full_height);
-              cairo_rel_line_to (
-                cr, - i, 0);
+              z_cairo_rel_line_to (
+                cr, 0,
+                (int) (next_val - full_height));
+              z_cairo_rel_line_to (
+                cr, (int) (- i), 0);
               cairo_close_path (cr);
               cairo_fill (cr);
             }
@@ -1011,23 +1017,24 @@ draw_fades (
           /* if start, move only */
           if (i == visible_fade_out_px)
             {
-              cairo_move_to (
-                cr, i, val * full_height);
+              z_cairo_move_to (
+                cr, (int) i,
+                (int) (val * full_height));
             }
 
-          cairo_rel_line_to (
+          z_cairo_rel_line_to (
             cr, 1,
-            (next_val - val) * full_height);
+            (int) ((next_val - val) * full_height));
 
           /* if end, draw */
           if (i == visible_end_px)
             {
               /* paint a gradient in the faded out
                * part */
-              cairo_rel_line_to (
-                cr, 0, - full_height);
-              cairo_rel_line_to (
-                cr, - i, 0);
+              z_cairo_rel_line_to (
+                cr, 0, (int) (- full_height));
+              z_cairo_rel_line_to (
+                cr, (int) (- i), 0);
               cairo_close_path (cr);
               cairo_fill (cr);
             }
@@ -1040,11 +1047,11 @@ draw_fades (
  */
 static void
 draw_audio_region (
-  ZRegion *       self,
-  cairo_t *      cr,
-  GdkRectangle * rect,
-  GdkRectangle * full_rect,
-  GdkRectangle * draw_rect,
+  ZRegion *         self,
+  cairo_t *         cr,
+  GdkRectangle *    rect,
+  GdkRectangle *    full_rect,
+  GdkRectangle *    draw_rect,
   RegionCounterpart counterpart)
 {
   /*g_message ("drawing audio region");*/
@@ -1107,8 +1114,8 @@ draw_audio_region (
   /*Position tmp;*/
   /*position_from_frames (&tmp, curr_frames);*/
   /*position_print (&tmp);*/
-  for (double i = local_start_x + 0.5;
-       i < (double) local_end_x; i += 0.5)
+  for (double i = local_start_x + 1;
+       i < (double) local_end_x; i += 1)
     {
       curr_frames = (long) (multiplier * i);
       /* current single channel frames */
@@ -1148,8 +1155,8 @@ draw_audio_region (
             }
         }
 #define DRAW_VLINE(cr,x,from_y,to_y) \
-  cairo_move_to (cr, x, from_y); \
-  cairo_line_to (cr, x, to_y)
+  z_cairo_move_to (cr, (int) x, (int) from_y); \
+  z_cairo_line_to (cr, (int) x, (int) to_y)
 
       /* normalize */
       min = (min + 1.f) / 2.f;
@@ -1173,7 +1180,7 @@ draw_audio_region (
           DRAW_VLINE (
             cr,
             /* x */
-            i - 0.5,
+            (int) (i - 0.5),
             /* from y */
             local_min_y,
             /* to y */
@@ -1249,21 +1256,22 @@ draw_name (
   double radius = REGION_NAME_BOX_CURVINESS / 1.0;
   double degrees = G_PI / 180.0;
   cairo_new_sub_path (cr);
-  cairo_move_to (
+  z_cairo_move_to (
     cr,
-    (pangorect.width + REGION_NAME_PADDING_R),
+    (int) (pangorect.width + REGION_NAME_PADDING_R),
     0);
   int black_box_height =
     pangorect.height + 2 * REGION_NAME_BOX_PADDING;
-  cairo_arc (
+  z_cairo_arc (
     cr,
-    (pangorect.width + REGION_NAME_PADDING_R) -
-      radius,
-    black_box_height - radius, radius,
-    0 * degrees, 90 * degrees);
-  cairo_line_to (
-    cr, 0, black_box_height);
-  cairo_line_to (
+    (int)
+    ((pangorect.width + REGION_NAME_PADDING_R) -
+      radius),
+    (int) (black_box_height - radius), (int) radius,
+    0 * degrees, (int) (90 * degrees));
+  z_cairo_line_to (
+    cr, 0, (int) black_box_height);
+  z_cairo_line_to (
     cr, 0, 0);
   cairo_close_path (cr);
   cairo_fill (cr);
@@ -1271,10 +1279,10 @@ draw_name (
   /* draw text */
   cairo_set_source_rgba (
     cr, 1, 1, 1, 1);
-  cairo_move_to (
+  z_cairo_move_to (
     cr,
-    REGION_NAME_BOX_PADDING,
-    REGION_NAME_BOX_PADDING);
+    (int) REGION_NAME_BOX_PADDING,
+    (int) REGION_NAME_BOX_PADDING);
   pango_cairo_show_layout (cr, layout);
 }
 
@@ -1334,10 +1342,10 @@ region_draw (
         obj, rect, &full_rect, &draw_rect);
 
       /* translate to the full rect */
-      cairo_translate (
+      z_cairo_translate (
         cr,
-        full_rect.x - rect->x,
-        full_rect.y - rect->y);
+        (int) (full_rect.x - rect->x),
+        (int) (full_rect.y - rect->y));
 
       if (i == REGION_COUNTERPART_MAIN)
         {
@@ -1427,15 +1435,15 @@ region_draw (
 
           int x = draw_rect.x - full_rect.x;
           int y = draw_rect.y - full_rect.y;
-          cairo_translate (cr, x, y);
+          z_cairo_translate (cr, x, y);
           if (MW_TIMELINE->action ==
                 UI_OVERLAY_ACTION_STRETCHING_R)
             {
               cairo_scale (
                 cr, self->stretch_ratio, 1);
             }
-          cairo_set_source_surface (
-            cr, obj->cached_surface[i], 0.0, 0.0);
+          z_cairo_set_source_surface (
+            cr, obj->cached_surface[i], 0, 0);
           cairo_paint (cr);
 
           cairo_restore (cr);

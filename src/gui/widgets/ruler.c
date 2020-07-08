@@ -192,9 +192,11 @@ draw_regions (
   px_end =
     ui_pos_to_px_editor (
       &region_obj->end_pos, 1);
-  cairo_rectangle (
-    cr, px_start - rect->x, - rect->y,
-    px_end - px_start, height / 4.0);
+  z_cairo_rectangle (
+    cr, (int) (px_start - rect->x),
+    (int) (- rect->y),
+    (int) (px_end - px_start),
+    (int) (height / 4.0));
   cairo_fill (cr);
 
   /* draw its transient if copy-moving TODO */
@@ -207,9 +209,11 @@ draw_regions (
       px_end =
         ui_pos_to_px_editor (
           &region_obj->end_pos, 1);
-      cairo_rectangle (
-        cr, px_start - rect->x, - rect->y,
-        px_end - px_start, height / 4.0);
+      z_cairo_rectangle (
+        cr, (int) (px_start - rect->x),
+        (int) (- rect->y),
+        (int) (px_end - px_start),
+        (int) (height / 4.0));
       cairo_fill (cr);
     }
 
@@ -241,9 +245,12 @@ draw_regions (
           px_end =
             ui_pos_to_px_editor (
               &other_region_obj->end_pos, 1);
-          cairo_rectangle (
-            cr, px_start - rect->x, - rect->y,
-            px_end - px_start, height / 4.0);
+          z_cairo_rectangle (
+            cr,
+            (int) (px_start - rect->x),
+            (int) (- rect->y),
+            (int) (px_end - px_start),
+            (int) (height / 4.0));
           cairo_fill (cr);
         }
     }
@@ -307,13 +314,17 @@ draw_loop_start (
         rect->x + rect->width)
     {
       cairo_set_source_rgb (cr, 0, 0.9, 0.7);
-      cairo_set_line_width (cr, 2);
-      cairo_move_to (
-        cr, dr.x - rect->x, dr.y);
-      cairo_line_to (
-        cr, dr.x - rect->x, dr.y + dr.height);
-      cairo_line_to (
-        cr, (dr.x + dr.width) - rect->x, dr.y);
+      z_cairo_set_line_width (cr, 2);
+      z_cairo_move_to (
+        cr, (int) (dr.x - rect->x),
+        (int) (dr.y));
+      z_cairo_line_to (
+        cr, (int) (dr.x - rect->x),
+        (int) (dr.y + dr.height));
+      z_cairo_line_to (
+        cr,
+        (int) ((dr.x + dr.width) - rect->x),
+        (int) (dr.y));
       cairo_fill (cr);
     }
 }
@@ -379,13 +390,16 @@ draw_loop_end (
         rect->x + rect->width)
     {
       cairo_set_source_rgb (cr, 0, 0.9, 0.7);
-      cairo_set_line_width (cr, 2);
-      cairo_move_to (cr, dr.x - rect->x, dr.y);
-      cairo_line_to (
-        cr, (dr.x + dr.width) - rect->x, dr.y);
-      cairo_line_to (
-        cr, (dr.x + dr.width) - rect->x,
-        dr.y + dr.height);
+      z_cairo_set_line_width (cr, 2);
+      z_cairo_move_to (
+        cr,
+        (int) (dr.x - rect->x), (int) dr.y);
+      z_cairo_line_to (
+        cr, (int) ((dr.x + dr.width) - rect->x),
+        (int) (dr.y));
+      z_cairo_line_to (
+        cr, (int) ((dr.x + dr.width) - rect->x),
+        (int) (dr.y + dr.height));
       cairo_fill (cr);
     }
 }
@@ -467,14 +481,17 @@ draw_cue_point (
         {
           cairo_set_source_rgb (cr, 0, 0.6, 0.9);
         }
-      cairo_set_line_width (cr, 2);
-      cairo_move_to (
-        cr, dr.x - rect->x, dr.y);
-      cairo_line_to (
-        cr, (dr.x + dr.width) - rect->x,
-        dr.y + dr.height / 2);
-      cairo_line_to (
-        cr, dr.x - rect->x, dr.y + dr.height);
+      z_cairo_set_line_width (cr, 2);
+      z_cairo_move_to (
+        cr, (int) (dr.x - rect->x), (int) dr.y);
+      z_cairo_line_to (
+        cr,
+        (int) ((dr.x + dr.width) - rect->x),
+        (int) (dr.y + dr.height / 2));
+      z_cairo_line_to (
+        cr,
+        (int) (dr.x - rect->x),
+        (int) (dr.y + dr.height));
       cairo_fill (cr);
     }
 }
@@ -530,12 +547,17 @@ draw_playhead (
 
       cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
       cairo_set_line_width (cr, 2);
-      cairo_move_to (cr, dr.x - rect->x, dr.y);
-      cairo_line_to (
-        cr, (dr.x + dr.width / 2) - rect->x,
-        dr.y + dr.height);
-      cairo_line_to (
-        cr, (dr.x + dr.width) - rect->x, dr.y);
+      z_cairo_move_to (
+        cr, (int) (dr.x - rect->x),
+        (int) dr.y);
+      z_cairo_line_to (
+        cr,
+        (int) ((dr.x + dr.width / 2) - rect->x),
+        (int) (dr.y + dr.height));
+      z_cairo_line_to (
+        cr,
+        (int) ((dr.x + dr.width) - rect->x),
+        (int) dr.y);
       cairo_fill (cr);
     }
 }
@@ -615,7 +637,7 @@ ruler_draw_cb (
       else
         cairo_set_source_rgba (
           cr_to_use, 0.5, 0.5, 0.5, 0.25);
-      cairo_set_line_width (cr_to_use, 2);
+      z_cairo_set_line_width (cr_to_use, 2);
 
       /* if transport loop start is within the
        * screen */
@@ -625,10 +647,10 @@ ruler_draw_cb (
           /* draw the loop start line */
           double x =
             (start_px - rect.x);
-          cairo_move_to (
-            cr_to_use, x, 0);
-          cairo_line_to (
-            cr_to_use, x, rect.height);
+          z_cairo_move_to (
+            cr_to_use, (int) x, 0);
+          z_cairo_line_to (
+            cr_to_use, (int) x, (int) rect.height);
           cairo_stroke (cr_to_use);
         }
       /* if transport loop end is within the
@@ -639,10 +661,10 @@ ruler_draw_cb (
           /* draw the loop end line */
           double x =
             (end_px - rect.x);
-          cairo_move_to (
-            cr_to_use, x, 0);
-          cairo_line_to (
-            cr_to_use, x, rect.height);
+          z_cairo_move_to (
+            cr_to_use, (int) x, 0);
+          z_cairo_line_to (
+            cr_to_use, (int) x, (int) rect.height);
           cairo_stroke (cr_to_use);
         }
 
@@ -667,11 +689,11 @@ ruler_draw_cb (
 
       double loop_start_local_x =
         MAX (0, start_px - rect.x);
-      cairo_rectangle (
+      z_cairo_rectangle (
         cr_to_use,
-        loop_start_local_x, 0,
-        end_px - MAX (rect.x, start_px),
-        rect.height);
+        (int) loop_start_local_x, 0,
+        (int) (end_px - MAX (rect.x, start_px)),
+        (int) (rect.height));
       cairo_set_source (cr_to_use, pat);
       cairo_fill (cr_to_use);
       cairo_pattern_destroy (pat);
@@ -885,9 +907,9 @@ ruler_draw_cb (
           /* fill */
           cairo_set_source_rgba (
             cr_to_use, 1, 1, 1, 0.27);
-          cairo_rectangle (
-            cr_to_use, dr.x, dr.y,
-            dr.width, dr.height);
+          z_cairo_rectangle (
+            cr_to_use, (int) dr.x, (int) dr.y,
+            (int) dr.width, (int) dr.height);
           cairo_fill (cr_to_use);
 
           /* draw edges */

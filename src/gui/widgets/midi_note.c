@@ -109,9 +109,10 @@ draw_midi_note_bg (
     }
 
   z_cairo_rounded_rectangle (
-    cr, draw_x, full_rect->y - arr_rect->y,
-    draw_width, full_rect->height, 1.0,
-    full_rect->height / 8.0f);
+    cr, (int) draw_x,
+    (int) (full_rect->y - arr_rect->y),
+    (int) draw_width, (int) full_rect->height, 1,
+    (int) (full_rect->height / 8.0f));
   /*cairo_rectangle (*/
     /*cr, draw_x, full_rect->y - rect->y,*/
     /*draw_width, full_rect->height);*/
@@ -202,10 +203,10 @@ midi_note_draw (
       if (PIANO_ROLL->drum_mode)
         {
           z_cairo_diamond (
-            cr, draw_rect.x - arr_rect->x,
-            draw_rect.y - arr_rect->y,
-            draw_rect.width,
-            draw_rect.height);
+            cr, (int) (draw_rect.x - arr_rect->x),
+            (int) (draw_rect.y - arr_rect->y),
+            (int) draw_rect.width,
+            (int) draw_rect.height);
         }
       else
         {
@@ -232,9 +233,10 @@ midi_note_draw (
       if (PIANO_ROLL->drum_mode)
         {
           z_cairo_diamond (
-            cr, draw_rect.x - arr_rect->x,
-            draw_rect.y - arr_rect->y,
-            draw_rect.width, draw_rect.height);
+            cr, (int) (draw_rect.x - arr_rect->x),
+            (int) (draw_rect.y - arr_rect->y),
+            (int) draw_rect.width,
+            (int) draw_rect.height);
         }
       else
         {
@@ -275,12 +277,13 @@ midi_note_draw (
       recreate_pango_layouts (
         self,
         MIN (full_rect.width, 400));
-      cairo_move_to (
+      z_cairo_move_to (
         cr,
-        REGION_NAME_BOX_PADDING +
-          (full_rect.x - arr_rect->x),
-        fontsize_ratio * REGION_NAME_BOX_PADDING +
-          (full_rect.y - arr_rect->y));
+        (int) (REGION_NAME_BOX_PADDING +
+          (full_rect.x - arr_rect->x)),
+        (int)
+        (fontsize_ratio * REGION_NAME_BOX_PADDING +
+          (full_rect.y - arr_rect->y)));
       PangoLayout * layout = self->layout;
       z_cairo_draw_text (
         cr,

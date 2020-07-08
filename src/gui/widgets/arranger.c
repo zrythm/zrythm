@@ -126,9 +126,9 @@ draw_selections (
     case UI_OVERLAY_ACTION_SELECTING:
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
       z_cairo_draw_selection (
-        cr, self->start_x - rect->x,
-        self->start_y - rect->y,
-        offset_x, offset_y);
+        cr, (int) (self->start_x - rect->x),
+        (int) (self->start_y - rect->y),
+        (int) offset_x, (int) offset_y);
       break;
     case UI_OVERLAY_ACTION_RAMPING:
       cairo_set_source_rgba (
