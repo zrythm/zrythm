@@ -584,8 +584,27 @@ draw_audio_bg (
         obj->pos.frames,
       0);
 
-  for (double i = local_start_x + 0.5;
-       i < local_end_x; i+= 2.0)
+  UiDetail detail = ui_get_detail_level ();
+  double increment;
+  double width;
+  switch (detail)
+    {
+    case UI_DETAIL_HIGH:
+      increment = 0.5;
+      width = 1;
+      break;
+    case UI_DETAIL_NORMAL:
+      increment = 1;
+      width = 1;
+      break;
+    case UI_DETAIL_LOW:
+      increment = 2;
+      width = 2;
+      break;
+    }
+
+  for (double i = local_start_x;
+       i < local_end_x; i += increment)
     {
       long curr_frames =
         ui_px_to_frames_editor (i, 1) -
@@ -618,23 +637,40 @@ draw_audio_bg (
                 min = val;
             }
         }
-#define DRAW_VLINE(cr,x,from_y,to_y) \
-  cairo_move_to (cr, x, from_y); \
-  cairo_line_to (cr, x, to_y)
+#define DRAW_VLINE(cr,x,from_y,_height) \
+  switch (detail) \
+    { \
+    case UI_DETAIL_HIGH: \
+      cairo_rectangle ( \
+        cr, x, from_y, \
+        width, _height); \
+      break; \
+    case UI_DETAIL_NORMAL: \
+    case UI_DETAIL_LOW: \
+      cairo_rectangle ( \
+        cr, (int) (x), (int) (from_y), \
+        width, (int) _height); \
+      break; \
+    } \
+  cairo_fill (cr)
 
       min = (min + 1.f) / 2.f; /* normallize */
       max = (max + 1.f) / 2.f; /* normalize */
+      double from_y =
+        MAX (
+          (double) min * (double) height, 0.0) - rect->y;
+      double draw_height =
+        (MIN (
+          (double) max * (double) height,
+          (double) height) - rect->y) - from_y;
       DRAW_VLINE (
         cr,
         /* x */
         i - rect->x,
         /* from y */
-        MAX (
-          (double) min * (double) height, 0.0) - rect->y,
+        from_y,
         /* to y */
-        MIN (
-          (double) max * (double) height,
-          (double) height) - rect->y);
+        draw_height);
 
       if (curr_frames >= clip->num_frames)
         break;
@@ -642,7 +678,7 @@ draw_audio_bg (
       prev_frames = curr_frames;
     }
 #undef DRAW_VLINE
-  cairo_stroke (cr);
+  cairo_fill (cr);
 }
 
 static gboolean

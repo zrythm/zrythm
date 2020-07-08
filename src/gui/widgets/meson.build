@@ -18,7 +18,6 @@
 widget_srcs = files([
   'arranger.c',
   'arranger_object.c',
-  'audio_arranger.c',
   'audio_editor_space.c',
   'automatable_selector_popover.c',
   'automation_arranger.c',

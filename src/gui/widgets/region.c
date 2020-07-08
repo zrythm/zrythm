@@ -1070,7 +1070,26 @@ draw_audio_region (
   double multiplier =
     frames_per_tick / MW_RULER->px_per_tick;
 
+  UiDetail detail = ui_get_detail_level ();
+
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
+  double increment;
+  double width;
+  switch (detail)
+    {
+    case UI_DETAIL_HIGH:
+      increment = 0.5;
+      width = 1;
+      break;
+    case UI_DETAIL_NORMAL:
+      increment = 1;
+      width = 1;
+      break;
+    case UI_DETAIL_LOW:
+      increment = 2;
+      width = 2;
+      break;
+    }
 
   long loop_end_frames =
     math_round_double_to_long (
@@ -1107,8 +1126,9 @@ draw_audio_region (
   /*Position tmp;*/
   /*position_from_frames (&tmp, curr_frames);*/
   /*position_print (&tmp);*/
-  for (double i = local_start_x + 0.5;
-       i < (double) local_end_x; i += 0.5)
+
+  for (double i = local_start_x;
+       i < (double) local_end_x; i += increment)
     {
       curr_frames = (long) (multiplier * i);
       /* current single channel frames */
@@ -1147,9 +1167,22 @@ draw_audio_region (
                 min = val;
             }
         }
-#define DRAW_VLINE(cr,x,from_y,to_y) \
-  cairo_move_to (cr, x, from_y); \
-  cairo_line_to (cr, x, to_y)
+#define DRAW_VLINE(cr,x,from_y,_height) \
+  switch (detail) \
+    { \
+    case UI_DETAIL_HIGH: \
+      cairo_rectangle ( \
+        cr, x, from_y, \
+        width, _height); \
+      break; \
+    case UI_DETAIL_NORMAL: \
+    case UI_DETAIL_LOW: \
+      cairo_rectangle ( \
+        cr, (int) (x), (int) (from_y), \
+        width, (int) _height); \
+      break; \
+    } \
+  cairo_fill (cr)
 
       /* normalize */
       min = (min + 1.f) / 2.f;
@@ -1173,11 +1206,11 @@ draw_audio_region (
           DRAW_VLINE (
             cr,
             /* x */
-            i - 0.5,
+            i,
             /* from y */
             local_min_y,
             /* to y */
-            local_max_y);
+            local_max_y - local_min_y);
         }
 
       prev_frames = curr_frames;
@@ -1336,8 +1369,8 @@ region_draw (
       /* translate to the full rect */
       cairo_translate (
         cr,
-        full_rect.x - rect->x,
-        full_rect.y - rect->y);
+        (int) (full_rect.x - rect->x),
+        (int) (full_rect.y - rect->y));
 
       if (i == REGION_COUNTERPART_MAIN)
         {

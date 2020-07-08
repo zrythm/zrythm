@@ -463,6 +463,9 @@ make_control (
             "UI", "General", "language",
             language_strings_full);
           SET_STRV_IF_MATCH (
+            "UI", "General", "graphic-detail",
+            ui_detail_str);
+          SET_STRV_IF_MATCH (
             "DSP", "Pan", "pan-algorithm",
             pan_algorithm_str);
           SET_STRV_IF_MATCH (

@@ -63,6 +63,27 @@ static const GdkRGBA UI_COLOR_BLACK = {
   0, 0, 0, 1
 };
 
+typedef enum UiDetail
+{
+  UI_DETAIL_HIGH,
+  UI_DETAIL_NORMAL,
+  UI_DETAIL_LOW,
+} UiDetail;
+
+static const char * ui_detail_str[] =
+{
+  __("High"),
+  __("Normal"),
+  __("Low"),
+};
+
+static inline const char *
+ui_detail_to_string (
+  UiDetail detail)
+{
+  return ui_detail_str[detail];
+}
+
 /**
  * Commonly used UI colors.
  */
@@ -460,6 +481,9 @@ ui_get_hit_child (
   double         x, ///< x in parent space
   double         y, ///< y in parent space
   GType          type); ///< type to look for
+
+UiDetail
+ui_get_detail_level (void);
 
 /**
  * Converts from pixels to position.
