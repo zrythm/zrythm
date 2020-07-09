@@ -1479,6 +1479,7 @@ port_update_identifier (
         &port->port_id, &self->id);
     }
 
+#if 0
   if (self->id.track_pos > -1 &&
       self->id.flags & PORT_FLAG_AUTOMATABLE)
     {
@@ -1490,6 +1491,7 @@ port_update_identifier (
       port_identifier_copy (
         &at->port_id, &self->id);
     }
+#endif
 }
 
 /**
