@@ -42,6 +42,9 @@
 #include <process.h>
 #endif
 
+#include "gui/widgets/dialogs/bug_report_dialog.h"
+#include "gui/widgets/main_window.h"
+#include "utils/backtrace.h"
 #include "utils/datetime.h"
 #include "utils/flags.h"
 #include "utils/io.h"
@@ -50,8 +53,10 @@
 #include "utils/object_pool.h"
 #include "utils/objects.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <glib.h>
+#include <glib/gi18n.h>
 #include <glib/gprintf.h>
 #include <glib/gstdio.h>
 
@@ -82,6 +87,9 @@ static gboolean win32_keep_fatal_message = FALSE;
 typedef struct LogEvent
 {
   char *         message;
+
+  /** Backtrace, if warning or critical. */
+  char *         backtrace;
   GLogLevelFlags log_level;
 } LogEvent;
 
@@ -591,8 +599,30 @@ log_idle_cb (
       self->mqueue, (void *) &ev))
     {
       write_str (self, ev->log_level, ev->message);
-      g_free (ev->message);
-      ev->message = NULL;
+
+      if (ev->backtrace)
+        {
+          g_message (
+            "Backtrace: %s", ev->backtrace);
+
+          if (ev->log_level ==
+                G_LOG_LEVEL_CRITICAL &&
+              ZRYTHM_HAVE_UI)
+            {
+              GtkWidget * dialog =
+                bug_report_dialog_new (
+                  GTK_WINDOW (MAIN_WINDOW),
+                  _("Zrythm has encountered a "
+                  "non-fatal error. It may "
+                  "continue to run but the "
+                  "behavior will be undefined. "),
+                  ev->backtrace);
+              gtk_dialog_run (GTK_DIALOG (dialog));
+              gtk_widget_destroy (dialog);
+            }
+        }
+
+      g_free_and_null (ev->message);
       object_pool_return (
         LOG->obj_pool, ev);
     }
@@ -630,6 +660,13 @@ log_writer (
         object_pool_get (self->obj_pool);
       ev->log_level = log_level;
       ev->message = str;
+
+      if (log_level == G_LOG_LEVEL_WARNING ||
+          log_level == G_LOG_LEVEL_CRITICAL)
+        {
+          ev->backtrace = backtrace_get ("", 100);
+        }
+
       mpmc_queue_push_back (
         self->mqueue, (void *) ev);
     }

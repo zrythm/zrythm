@@ -593,8 +593,8 @@ draw_audio_bg (
       0);
 
   UiDetail detail = ui_get_detail_level ();
-  double increment;
-  double width;
+  double increment = 1;
+  double width = 1;
   switch (detail)
     {
     case UI_DETAIL_HIGH:

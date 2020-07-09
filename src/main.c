@@ -22,9 +22,6 @@
 #include <ctype.h>
 #ifdef _WOE32
 #include <windows.h>
-#include <dbghelp.h>
-#else
-#include <execinfo.h>
 #endif
 #include <getopt.h>
 #include <signal.h>
@@ -34,6 +31,8 @@
 #include <unistd.h>
 
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/dialogs/bug_report_dialog.h"
+#include "utils/backtrace.h"
 #include "utils/gdb.h"
 #include "guile/guile.h"
 #include "utils/gtk.h"
@@ -68,168 +67,32 @@
 #include <X11/Xlib.h>
 #endif
 
-#define BACKTRACE_SIZE 100
-
 /** SIGSEGV handler. */
 static void
 segv_handler (int sig)
 {
-  char message[12000];
-  char current_line[2000];
-
-#ifdef _WOE32
-  unsigned int   i;
-  void         * stack[ 100 ];
-  unsigned short frames;
-  SYMBOL_INFO  * symbol;
-  HANDLE         process;
-
-  process = GetCurrentProcess();
-
-  SymInitialize (process, NULL, TRUE);
-
-  frames =
-    CaptureStackBackTrace (0, 100, stack, NULL);
-  symbol =
-    (SYMBOL_INFO *)
-    calloc (
-      sizeof (SYMBOL_INFO) + 256 * sizeof( char ),
-      1);
-  symbol->MaxNameLen = 255;
-  symbol->SizeOfStruct = sizeof (SYMBOL_INFO);
-
-  sprintf (
-    message,
-    _("Error - Backtrace:\n"), sig);
-  for (i = 0; i < frames; i++)
-    {
-      SymFromAddr (
-        process, (DWORD64) (stack[i]), 0,
-        symbol);
-
-      sprintf (
-        current_line,
-        "%u: %s - 0x%0X\n", frames - i - 1,
-        symbol->Name, symbol->Address);
-      strcat (message, current_line);
-    }
-  free (symbol);
-#else
-  void *array[BACKTRACE_SIZE];
-  char ** strings;
-
-  /* get void*'s for all entries on the stack */
-  int size = backtrace (array, BACKTRACE_SIZE);
-
-  /* print out all the frames to stderr */
   const char * signal_string = strsignal (sig);
+  char prefix[200];
   sprintf (
-    message,
+    prefix,
     _("Error: %s - Backtrace:\n"), signal_string);
-  strings = backtrace_symbols (array, size);
-  for (int i = 0; i < size; i++)
-    {
-      sprintf (current_line, "%s\n", strings[i]);
-      strcat (message, current_line);
-    }
-  free (strings);
-#endif
+  char * bt = backtrace_get (prefix, 100);
 
   /* call the callback to write queued messages
    * and get last few lines of the log, before
    * logging the backtrace */
   log_idle_cb (LOG);
-  char * log =
-    log_get_last_n_lines (LOG, 60);
-  g_message ("%s", message);
+  g_message ("%s", bt);
   log_idle_cb (LOG);
 
-  GtkDialogFlags flags =
-    GTK_DIALOG_DESTROY_WITH_PARENT;
   GtkWidget * dialog =
-    gtk_message_dialog_new_with_markup (
+    bug_report_dialog_new (
       GTK_WINDOW (MAIN_WINDOW),
-      flags,
-      GTK_MESSAGE_ERROR,
-      GTK_BUTTONS_CLOSE,
-      NULL);
-
-  /* %23 is hash, %0A is new line */
-  char ver_with_caps[2000];
-  zrythm_get_version_with_capabilities (
-    ver_with_caps);
-  char * report_template =
-    g_strdup_printf (
-      "# Steps to reproduce\n"
-      "> Write a list of steps to reproduce the "
-      "bug\n\n"
-      "# What happens?\n"
-      "> Please tell us what happened\n\n"
-      "# What is expected?\n"
-      "> What is expected to happen?\n\n"
-      "# Version\n%s\n"
-      "# Other info\n"
-      "> Context, distro, etc.\n\n"
-      "# Backtrace\n```\n%s```\n\n"
-      "# Log\n```\n%s```",
-      ver_with_caps, message, log);
-  char * report_template_escaped =
-    g_uri_escape_string (
-      report_template, NULL, FALSE);
-  char * atag =
-    g_strdup_printf (
-      "<a href=\"%s?issue[description]=%s\">",
-      NEW_ISSUE_URL,
-      report_template_escaped);
-  char * markup =
-    g_strdup_printf (
-      _("Zrythm has crashed. Please help us fix "
-        "this by "
-        "%ssubmitting a bug report%s."),
-      atag,
-      "</a>");
-
-  gtk_message_dialog_set_markup (
-    GTK_MESSAGE_DIALOG (dialog),
-    markup);
-  gtk_message_dialog_format_secondary_markup (
-    GTK_MESSAGE_DIALOG (dialog),
-    "%s", message);
-  GtkLabel * label =
-    z_gtk_message_dialog_get_label (
-      GTK_MESSAGE_DIALOG (dialog), 1);
-  gtk_label_set_selectable (
-    label, 1);
-
-  /* wrap the backtrace in a scrolled window */
-  GtkBox * box =
-    GTK_BOX (
-      gtk_message_dialog_get_message_area (
-        GTK_MESSAGE_DIALOG (dialog)));
-  GtkWidget * secondary_area =
-    z_gtk_container_get_nth_child (
-      GTK_CONTAINER (box), 1);
-  gtk_container_remove (
-    GTK_CONTAINER (box), secondary_area);
-  GtkWidget * scrolled_window =
-    gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_min_content_height (
-    GTK_SCROLLED_WINDOW (scrolled_window), 360);
-  gtk_container_add (
-    GTK_CONTAINER (scrolled_window),
-    secondary_area);
-  gtk_container_add (
-    GTK_CONTAINER (box), scrolled_window);
-  gtk_widget_show_all (GTK_WIDGET (box));
+      _("Zrythm has crashed. "), bt);
 
   /* run the dialog */
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
-
-  g_free (report_template);
-  g_free (atag);
-  g_free (markup);
-  g_free (report_template_escaped);
 
   exit(1);
 }

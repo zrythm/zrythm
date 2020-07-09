@@ -19,6 +19,7 @@ widget_srcs += files([
   'about_dialog.c',
   'arranger_object_info.c',
   'bounce_dialog.c',
+  'bug_report_dialog.c',
   'export_progress_dialog.c',
   'port_info.c',
   ])

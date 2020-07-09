@@ -196,7 +196,8 @@ typedef struct UiCaches
   char * text = g_strdup (msg); \
   g_message (msg); \
   g_idle_add ((GSourceFunc) ui_show_notification_idle_func, \
-              (void *) text)
+              (void *) text); \
+  g_free (text)
 
 /**
  * Wrapper to show error message so that no casting

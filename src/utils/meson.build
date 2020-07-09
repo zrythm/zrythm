@@ -18,6 +18,7 @@
 util_srcs = [
   'arrays.c',
   'audio.c',
+  'backtrace.c',
   'cairo.c',
   'cpu_windows.cpp',
   'datetime.c',
