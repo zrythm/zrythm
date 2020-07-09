@@ -1073,8 +1073,8 @@ draw_audio_region (
   UiDetail detail = ui_get_detail_level ();
 
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
-  double increment;
-  double width;
+  double increment = 1;
+  double width = 1;
   switch (detail)
     {
     case UI_DETAIL_HIGH:

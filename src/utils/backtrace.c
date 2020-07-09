@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #ifdef _WOE32
+#include <windows.h>
 #include <dbghelp.h>
 #else
 #include <execinfo.h>

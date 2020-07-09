@@ -71,11 +71,15 @@
 static void
 segv_handler (int sig)
 {
-  const char * signal_string = strsignal (sig);
   char prefix[200];
+#ifdef _WOE32
+  strcpy (
+    prefix, _("Error - Backtrace:\n"));
+#else
   sprintf (
     prefix,
-    _("Error: %s - Backtrace:\n"), signal_string);
+    _("Error: %s - Backtrace:\n"), strsignal (sig));
+#endif
   char * bt = backtrace_get (prefix, 100);
 
   /* call the callback to write queued messages
