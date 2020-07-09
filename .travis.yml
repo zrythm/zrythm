@@ -50,21 +50,6 @@ before_install:
       ;;
   esac
 
-before_cache:
-- |-
-  set -e
-  case $TRAVIS_OS_NAME in
-    windows)
-      # https://unix.stackexchange.com/a/137322/107554
-      $msys2 pacman --sync --clean --noconfirm
-      ;;
-  esac
-
-cache:
-  directories:
-  - $HOME/AppData/Local/Temp/chocolatey
-  - /C/tools/msys64
-
 script:
 - |-
   set -e
