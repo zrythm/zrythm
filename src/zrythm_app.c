@@ -626,6 +626,37 @@ print_gdk_pixbuf_format_info (
   g_free (license);
 }
 
+static void
+load_icon (
+  GtkIconTheme * icon_theme,
+  const char *   icon_name)
+{
+  g_message (
+    "Attempting to load an icon from the icon "
+    "theme...");
+  GError * err = NULL;
+  GdkPixbuf * icon =
+    gtk_icon_theme_load_icon (
+      icon_theme, icon_name, 48, 0, &err);
+  g_message ("icon: %p", icon);
+  if (err)
+    {
+      char err_msg[600];
+      sprintf (
+        err_msg,
+        "Failed to load icon from icon theme: %s. "
+        "Please install zrythm and breeze-icons.",
+        err->message);
+      g_critical ("%s", err_msg);
+      fprintf (stderr, "%s\n", err_msg);
+      ui_show_message_full (
+        NULL, GTK_MESSAGE_ERROR, err_msg);
+      g_error ("Failed to load icon");
+    }
+  g_object_unref (icon);
+  g_message ("Icon loaded.");
+}
+
 /**
  * First function that gets called.
  */
@@ -756,27 +787,11 @@ zrythm_app_startup (
       exit (-1);
     }
 
-  /* try to load an icon */
-  g_message (
-    "Attempting to load an icon from the icon theme...");
-  GError * err = NULL;
-  GdkPixbuf * icon =
-    gtk_icon_theme_load_icon (
-      icon_theme, "solo", 48, 0, &err);
-  g_message ("icon: %p", icon);
-  if (err)
-    {
-      g_critical (
-        "Failed to load icon from icon theme: %s",
-        err->message);
-      fprintf (
-        stderr,
-        "Failed to load icon from icon theme: %s.\n",
-        err->message);
-      g_error ("Failed to load icon");
-    }
-  g_object_unref (icon);
-  g_message ("Icon loaded.");
+  /* try to load some icons */
+  /* zrythm */
+  load_icon (icon_theme, "solo");
+  /* breeze dark */
+  load_icon (icon_theme, "node-type-cusp");
 
   g_message ("Setting gtk icon theme resource paths...");
   gtk_icon_theme_add_resource_path (
@@ -826,7 +841,7 @@ zrythm_app_startup (
           "zrythm-theme.css", NULL);
       g_free (system_themes_dir);
     }
-  err = NULL;
+  GError * err = NULL;
   gtk_css_provider_load_from_path (
     css_provider, css_theme_path, &err);
   if (err)
