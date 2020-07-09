@@ -158,7 +158,11 @@ find_program ('sed', required: true)
 find_program ('gettext', required: true)
 dot_bin = find_program ('dot', required: false)
 have_helm = false
+helm_uri = 'http://tytel.org/helm'
 helm_bundle = 'N/A'
+have_lsp_compressor = false
+lsp_compressor_uri = 'http://lsp-plug.in/plugins/lv2/compressor_stereo'
+lsp_compressor_bundle = 'N/A'
 if get_option ('tests')
   lv2ls_bin = find_program ('lv2ls', required: false)
   lv2info_bin = find_program (
@@ -168,12 +172,19 @@ if get_option ('tests')
   if lv2ls_bin.found () and lv2info_bin.found ()
     lv2ls_res = run_command (
       lv2ls_bin, check: true).stdout ()
-    have_helm = lv2ls_res.contains (
-      'http://tytel.org/helm')
+    have_helm = lv2ls_res.contains (helm_uri)
+    have_lsp_compressor = lv2ls_res.contains (
+      lsp_compressor_uri)
     if have_helm
       helm_bundle = run_command (
         get_lv2_bundle_uri_bin, lv2info_bin,
-        'http://tytel.org/helm',
+        helm_uri,
+        check: true).stdout ().strip ()
+    endif
+    if have_lsp_compressor
+      lsp_compressor_bundle = run_command (
+        get_lv2_bundle_uri_bin, lv2info_bin,
+        lsp_compressor_uri,
         check: true).stdout ().strip ()
     endif
   endif
@@ -797,6 +808,7 @@ summary ({
   'GUI tests': get_option('gui_tests'),
   'Coverage reports': get_option('b_coverage'),
   'Helm': helm_bundle,
+  'LSP Compressor': lsp_compressor_bundle,
   }, section: 'Tests')
 
 summary ({

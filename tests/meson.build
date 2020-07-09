@@ -42,8 +42,21 @@ if get_option ('tests')
       '"',
     '-DMIDILIB_TEST_MIDI_FILES_PATH="' +
       meson.source_root () / 'ext/midilib/MIDIFiles"',
-    '-DHELM_BUNDLE="@0@"'.format (helm_bundle),
   ]
+  if have_helm
+    test_cflags += [
+      '-DHAVE_HELM=1',
+      '-DHELM_BUNDLE="@0@"'.format (helm_bundle),
+      '-DHELM_URI="@0@"'.format (helm_uri),
+      ]
+  endif
+  if have_lsp_compressor
+    test_cflags += [
+      '-DHAVE_LSP_COMPRESSOR=1',
+      '-DLSP_COMPRESSOR_BUNDLE="@0@"'.format (lsp_compressor_bundle),
+      '-DLSP_COMPRESSOR_URI="@0@"'.format (lsp_compressor_uri),
+      ]
+  endif
 
   test_link_args = [
     '-fPIC',
@@ -74,15 +87,12 @@ if get_option ('tests')
   if os_gnu
     tests += [
       ['integration/midi_file', true],
+      ['actions/copy_tracks', true],
+      ['actions/create_plugins', true],
+      ['actions/delete_tracks', true],
+      ['integration/undo_redo_helm_track_creation',
+        true],
       ]
-    if have_helm
-      tests += [
-        ['actions/copy_tracks', true],
-        ['actions/delete_tracks', true],
-        ['integration/undo_redo_helm_track_creation',
-          true],
-      ]
-    endif
     if get_option ('plugin_tests')
       tests += [
         ['actions/mixer_selections', false],

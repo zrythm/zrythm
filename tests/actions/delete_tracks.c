@@ -37,10 +37,14 @@
 #include <glib.h>
 
 static void
-test_undo_track_deletion (void)
+_test_undo_track_deletion (
+  const char * pl_bundle,
+  const char * pl_uri,
+  bool         is_instrument,
+  bool         with_carla)
 {
   LilvNode * path =
-    lilv_new_uri (LILV_WORLD, HELM_BUNDLE);
+    lilv_new_uri (LILV_WORLD, pl_bundle);
   lilv_world_load_bundle (
     LILV_WORLD, path);
   lilv_node_free (path);
@@ -137,6 +141,15 @@ test_undo_track_deletion (void)
 
   /* let the engine run */
   g_usleep (1000000);
+}
+
+static void
+test_undo_track_deletion (void)
+{
+#ifdef HAVE_HELM
+  _test_undo_track_deletion (
+    HELM_BUNDLE, HELM_URI, true, false);
+#endif
 }
 
 int

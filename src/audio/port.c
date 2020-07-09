@@ -1479,9 +1479,9 @@ port_update_identifier (
         &port->port_id, &self->id);
     }
 
-#if 0
   if (self->id.track_pos > -1 &&
-      self->id.flags & PORT_FLAG_AUTOMATABLE)
+      self->id.flags & PORT_FLAG_AUTOMATABLE &&
+      self->is_project)
     {
       /* update automation track's port id */
       AutomationTrack * at =
@@ -1491,7 +1491,6 @@ port_update_identifier (
       port_identifier_copy (
         &at->port_id, &self->id);
     }
-#endif
 }
 
 /**
@@ -2156,9 +2155,6 @@ port_set_control_value (
   const bool  is_normalized,
   const bool  forward_event)
 {
-  g_return_if_fail (
-    self->id.type == TYPE_CONTROL);
-
   PortIdentifier * id = &self->id;
 
   /* set the base value */

@@ -86,7 +86,8 @@ create_plugins_action_do (
         self->slot + i, pl, 1, 1,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
-      if (g_settings_get_boolean (
+      if (ZRYTHM_HAVE_UI &&
+          g_settings_get_boolean (
             S_P_PLUGINS_UIS,
             "open-on-instantiate"))
         {

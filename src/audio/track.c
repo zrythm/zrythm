@@ -699,7 +699,7 @@ track_verify_identifiers (
       if (atl &&
           port->id.flags & PORT_FLAG_AUTOMATABLE)
         {
-          g_message ("checking %s", port->id.label);
+          /*g_message ("checking %s", port->id.label);*/
           AutomationTrack * at =
             automation_track_find_from_port (
               port, true);

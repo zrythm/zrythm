@@ -33,10 +33,14 @@
 #include <glib.h>
 
 static void
-test ()
+_test (
+  const char * pl_bundle,
+  const char * pl_uri,
+  bool         is_instrument,
+  bool         with_carla)
 {
   LilvNode * path =
-    lilv_new_uri (LILV_WORLD, HELM_BUNDLE);
+    lilv_new_uri (LILV_WORLD, pl_bundle);
   lilv_world_load_bundle (
     LILV_WORLD, path);
   lilv_node_free (path);
@@ -97,6 +101,15 @@ test ()
 
   /* let the engine run */
   g_usleep (1000000);
+}
+
+static void
+test (void)
+{
+#ifdef HAVE_HELM
+  _test (
+    HELM_BUNDLE, HELM_URI, true, false);
+#endif
 }
 
 int
