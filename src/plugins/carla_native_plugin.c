@@ -299,14 +299,18 @@ _create ()
     host_get_time_info;
   self->native_host_descriptor.write_midi_event =
     host_write_midi_event;
-  self->native_host_descriptor.ui_parameter_changed =
-    host_ui_parameter_changed;
-  self->native_host_descriptor.ui_custom_data_changed =
-    host_ui_custom_data_changed;
+  self->native_host_descriptor.
+    ui_parameter_changed =
+      host_ui_parameter_changed;
+  self->native_host_descriptor.
+    ui_custom_data_changed =
+      host_ui_custom_data_changed;
   self->native_host_descriptor.ui_closed =
     host_ui_closed;
-  self->native_host_descriptor.ui_open_file = NULL;
-  self->native_host_descriptor.ui_save_file = NULL;
+  self->native_host_descriptor.ui_open_file =
+    NULL;
+  self->native_host_descriptor.ui_save_file =
+    NULL;
   self->native_host_descriptor.dispatcher = host_dispatcher;
 
   self->time_info.bbt.valid = 1;
@@ -1054,9 +1058,12 @@ carla_native_plugin_open_ui (
               self, NULL);
           }
 
-          EVENTS_PUSH (
-            ET_PLUGIN_WINDOW_VISIBILITY_CHANGED,
-            self->plugin);
+        if (!ZRYTHM_TESTING)
+          {
+            EVENTS_PUSH (
+              ET_PLUGIN_WINDOW_VISIBILITY_CHANGED,
+              self->plugin);
+          }
       }
       break;
     default:

@@ -90,6 +90,7 @@ if get_option ('tests')
       ['actions/copy_tracks', true],
       ['actions/create_plugins', true],
       ['actions/delete_tracks', true],
+      ['actions/port_connection', true],
       ['integration/undo_redo_helm_track_creation',
         true],
       ]

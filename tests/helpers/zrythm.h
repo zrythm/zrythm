@@ -109,7 +109,8 @@ test_helper_zrythm_init ()
 void
 test_helper_zrythm_cleanup ()
 {
-  object_zero_and_free (ZRYTHM);
+  object_free_w_func_and_null (
+    zrythm_free, ZRYTHM);
 }
 
 /**

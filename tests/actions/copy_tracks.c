@@ -183,6 +183,13 @@ _test_port_and_plugin_track_pos_after_duplication (
 
   /* let the engine run */
   g_usleep (1000000);
+
+  /* go back to the start */
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
 }
 
 static void
@@ -199,6 +206,8 @@ test_port_and_plugin_track_pos_after_duplication (void)
     LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
     false, false);
 #endif
+
+  test_helper_zrythm_cleanup ();
 }
 
 static void
@@ -215,6 +224,8 @@ test_port_and_plugin_track_pos_after_duplication_with_carla (void)
     LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
     false, true);
 #endif
+
+  test_helper_zrythm_cleanup ();
 }
 
 int

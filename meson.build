@@ -160,6 +160,7 @@ dot_bin = find_program ('dot', required: false)
 
 # find plugins for testing
 ext_lv2_plugins = {
+  'ams_lfo': 'http://github.com/blablack/ams-lv2/lfo',
   'helm': 'http://tytel.org/helm',
   'lsp_compressor': 'http://lsp-plug.in/plugins/lv2/compressor_stereo',
   }
@@ -807,6 +808,7 @@ summary ({
   'Plugin tests': get_option('plugin_tests'),
   'GUI tests': get_option('gui_tests'),
   'Coverage reports': get_option('b_coverage'),
+  'AMS LFO': ext_lv2_plugin_bundles['ams_lfo'],
   'Helm': ext_lv2_plugin_bundles['helm'],
   'LSP Compressor': ext_lv2_plugin_bundles['lsp_compressor'],
   }, section: 'Tests')

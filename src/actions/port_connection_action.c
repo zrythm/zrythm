@@ -71,11 +71,14 @@ port_connection_action_do_or_undo (
             (self->type ==
                PORT_CONNECTION_DISCONNECT && !_do))
           {
+            g_return_val_if_fail (
+              ports_can_be_connected (
+                src, dest), -1);
             port_connect (src, dest, false);
           }
         else
           {
-              port_disconnect (src, dest);
+            port_disconnect (src, dest);
           }
         router_recalc_graph (ROUTER);
       }

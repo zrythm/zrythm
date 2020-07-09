@@ -19,7 +19,7 @@
 
 #include "zrythm-test-config.h"
 
-#include "actions/create_plugins_action.h"
+#include "actions/port_connection_action.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
 #include "audio/audio_region.h"
@@ -39,7 +39,7 @@
 #include <glib.h>
 
 static void
-_test_create_plugins (
+_test_port_connection (
   const char * pl_bundle,
   const char * pl_uri,
   bool         is_instrument,
@@ -86,6 +86,16 @@ _test_create_plugins (
   descr->open_with_carla = with_carla;
 
   UndoableAction * ua = NULL;
+
+  /* create an extra track */
+  ua =
+    create_tracks_action_new (
+      TRACK_TYPE_AUDIO_BUS, NULL, NULL,
+      TRACKLIST->num_tracks, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * target_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
   if (is_instrument)
     {
       /* create an instrument track from helm */
@@ -112,54 +122,82 @@ _test_create_plugins (
 
   plugin_descriptor_free (descr);
 
-  int src_track_pos = TRACKLIST->num_tracks - 1;
   Track * src_track =
-    TRACKLIST->tracks[src_track_pos];
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
-  /* duplicate the track */
-  track_select (
-    src_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
+  /* connect a plugin CV out to the track's balance */
+  Port * src_port = NULL;
+  int max_size = 20;
+  Port ** ports =
+    calloc ((size_t) max_size, sizeof (Port *));
+  int num_ports = 0;
+  track_append_all_ports (
+    src_track, &ports, &num_ports, true, &max_size,
+    true);
+  for (int i = 0; i < num_ports; i++)
+    {
+      Port * port = ports[i];
+      if (port->id.owner_type ==
+            PORT_OWNER_TYPE_PLUGIN &&
+          port->id.type == TYPE_CV &&
+          port->id.flow == FLOW_OUTPUT)
+        {
+          src_port = port;
+          break;
+        }
+    }
+  free (ports);
+
+  Port * dest_port = NULL;
+  max_size = 20;
+  ports =
+    calloc ((size_t) max_size, sizeof (Port *));
+  num_ports = 0;
+  track_append_all_ports (
+    target_track, &ports, &num_ports, true, &max_size,
+    true);
+  for (int i = 0; i < num_ports; i++)
+    {
+      Port * port = ports[i];
+      if (port->id.owner_type ==
+            PORT_OWNER_TYPE_FADER &&
+          port->id.flags & PORT_FLAG_STEREO_BALANCE)
+        {
+          dest_port = port;
+          break;
+        }
+    }
+  free (ports);
+
+  g_assert_nonnull (src_port);
+  g_assert_nonnull (dest_port);
+  g_assert_true (src_port->is_project);
+  g_assert_true (dest_port->is_project);
+
   ua =
-    copy_tracks_action_new (
-      TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
-  g_assert_true (
-    track_verify_identifiers (src_track));
+    port_connection_action_new (
+      PORT_CONNECTION_CONNECT, &src_port->id,
+      &dest_port->id);
   undo_manager_perform (UNDO_MANAGER, ua);
 
-  int dest_track_pos = TRACKLIST->num_tracks - 1;
-  Track * dest_track =
-    TRACKLIST->tracks[dest_track_pos];
-
-  g_assert_true (
-    track_verify_identifiers (src_track));
-  g_assert_true (
-    track_verify_identifiers (dest_track));
-
-  undo_manager_undo (UNDO_MANAGER);
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
-  undo_manager_redo (UNDO_MANAGER);
-
-  g_message ("letting engine run...");
 
   /* let the engine run */
   g_usleep (1000000);
 }
 
 static void
-test_create_plugins (void)
+test_port_connection (void)
 {
   test_helper_zrythm_init ();
 
-#ifdef HAVE_HELM
-  _test_create_plugins (
-    HELM_BUNDLE, HELM_URI, true, false);
+#ifdef HAVE_AMS_LFO
+  _test_port_connection (
+    AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
 #endif
-#ifdef HAVE_LSP_COMPRESSOR
-  _test_create_plugins (
-    LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
-    false, false);
-#endif
+
+  test_helper_zrythm_cleanup ();
 }
 
 int
@@ -167,16 +205,12 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  test_helper_zrythm_init ();
-
-#define TEST_PREFIX "/actions/create_plugins/"
+#define TEST_PREFIX "/actions/port_connection/"
 
   g_test_add_func (
-    TEST_PREFIX
-    "test_create_plugins",
-    (GTestFunc) test_create_plugins);
-
-  test_helper_zrythm_cleanup ();
+    TEST_PREFIX "test_port_connection",
+    (GTestFunc) test_port_connection);
 
   return g_test_run ();
 }
+
