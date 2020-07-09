@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 14:21+0100\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: 2020-01-22 19:47+0000\n"
 "Last-Translator: yu zhang <zhangyu201510@gmail.com>\n"
 "Language: zh\n"
@@ -234,7 +234,7 @@ msgstr ""
 msgid "It displays information about each chord object."
 msgstr ""
 
-#: ../../editing/clip-editors/intro.rst:6
+#: ../../editing/clip-editors/intro.rst:8
 msgid "Editors"
 msgstr ""
 
@@ -561,96 +561,96 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:26
 msgid ""
-"The shortcuts for undo and redo are :zbutton:`Control` + :zbutton:`Z` to "
-"Undo and :zbutton:`Control` + :zbutton:`Shift` + :zbutton:`Z` to Redo."
+"The shortcuts for undo and redo are :kbd:`Control-z` and :kbd:`Control-"
+"Shift-z`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:30
+#: ../../editing/common-operations.rst:29
 msgid ""
 "If you Undo and then perform a new action, the Redo history will be "
 "deleted."
 msgstr ""
 
-#: ../../editing/common-operations.rst:34
+#: ../../editing/common-operations.rst:33
 msgid "Object Operations"
 msgstr ""
 
-#: ../../editing/common-operations.rst:36
+#: ../../editing/common-operations.rst:35
 msgid "Cut"
 msgstr ""
 
-#: ../../editing/common-operations.rst:37
+#: ../../editing/common-operations.rst:36
 msgid ""
 "Delete and copy the selected objects and save them in the clipboard so "
 "that they can be pasted elsewhere. The shortcut for cutting is "
 ":zbutton:`Control` + :zbutton:`X`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:43
+#: ../../editing/common-operations.rst:42
 msgid "Copy"
 msgstr ""
 
-#: ../../editing/common-operations.rst:44
+#: ../../editing/common-operations.rst:43
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
 "elsewhere. The shortcut for copying is :zbutton:`Control` + :zbutton:`C`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:50
+#: ../../editing/common-operations.rst:49
 msgid "Paste"
 msgstr ""
 
-#: ../../editing/common-operations.rst:51
+#: ../../editing/common-operations.rst:50
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
 "position. The shortcut for pasting is :zbutton:`Control` + :zbutton:`V`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:57
+#: ../../editing/common-operations.rst:56
 msgid "Duplicate"
 msgstr ""
 
-#: ../../editing/common-operations.rst:58
+#: ../../editing/common-operations.rst:57
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
 "duplicating is :zbutton:`Control` + :zbutton:`D`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:63
+#: ../../editing/common-operations.rst:62
 msgid "Delete"
 msgstr ""
 
-#: ../../editing/common-operations.rst:64
+#: ../../editing/common-operations.rst:63
 msgid ""
 "Delete the selected objects. You can also press :zbutton:`Delete` on your"
 " keyboard to do this."
 msgstr ""
 
-#: ../../editing/common-operations.rst:69
+#: ../../editing/common-operations.rst:68
 msgid "Selections"
 msgstr ""
 
-#: ../../editing/common-operations.rst:71
+#: ../../editing/common-operations.rst:70
 msgid "Clear Selection"
 msgstr ""
 
-#: ../../editing/common-operations.rst:72
+#: ../../editing/common-operations.rst:71
 msgid "Clear current selection (unselect all objects)."
 msgstr ""
 
-#: ../../editing/common-operations.rst:75
+#: ../../editing/common-operations.rst:74
 msgid "Select All"
 msgstr ""
 
-#: ../../editing/common-operations.rst:76
+#: ../../editing/common-operations.rst:75
 msgid "Select all objects in the current editor."
 msgstr ""
 
-#: ../../editing/common-operations.rst:79
+#: ../../editing/common-operations.rst:78
 msgid "Loop Selection"
 msgstr ""
 
-#: ../../editing/common-operations.rst:80
+#: ../../editing/common-operations.rst:79
 msgid ""
 "Place the loop markers around the selection. The shortcut for this is "
 ":zbutton:`Control` + :zbutton:`L`."
@@ -916,8 +916,8 @@ msgstr ""
 #: ../../editing/overview.rst:11
 msgid ""
 "While each editor has its own toolbar to assist with various operations, "
-"there is a global Edit section in the top toolbar that has common "
-"features shared by each editor."
+"there is a global :guilabel:`Edit` section in the top toolbar that has "
+"common features shared by each editor."
 msgstr ""
 
 #: ../../editing/piano-roll-editing/arranger.rst:6
@@ -1609,5 +1609,21 @@ msgstr ""
 #~ "display the followin markers/indicators "
 #~ "discussed in :ref:`loop-points-and-"
 #~ "markers`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The shortcuts for undo and redo "
+#~ "are :zbutton:`Control` + :zbutton:`Z` to "
+#~ "Undo and :zbutton:`Control` + :zbutton:`Shift`"
+#~ " + :zbutton:`Z` to Redo."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "While each editor has its own "
+#~ "toolbar to assist with various "
+#~ "operations, there is a global Edit "
+#~ "section in the top toolbar that "
+#~ "has common features shared by each "
+#~ "editor."
 #~ msgstr ""
 

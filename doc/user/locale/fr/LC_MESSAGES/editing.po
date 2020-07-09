@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 14:21+0100\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: 2020-05-18 07:41+0000\n"
 "Last-Translator: JEHANNIN <sahaa.thyva@laposte.net>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
-"manualediting/fr/>\n"
 "Language: fr\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/zrythm/manualediting/fr/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -241,7 +240,7 @@ msgstr ""
 msgid "It displays information about each chord object."
 msgstr ""
 
-#: ../../editing/clip-editors/intro.rst:6
+#: ../../editing/clip-editors/intro.rst:8
 #, fuzzy
 msgid "Editors"
 msgstr "Éditeurs de clip"
@@ -590,15 +589,16 @@ msgstr ""
 " fois que vous le souhaitez."
 
 #: ../../editing/common-operations.rst:26
+#, fuzzy
 msgid ""
-"The shortcuts for undo and redo are :zbutton:`Control` + :zbutton:`Z` to "
-"Undo and :zbutton:`Control` + :zbutton:`Shift` + :zbutton:`Z` to Redo."
+"The shortcuts for undo and redo are :kbd:`Control-z` and :kbd:`Control-"
+"Shift-z`."
 msgstr ""
 "Les raccourcis pour annuler et refaire sont :zbutton:`Control` + "
 ":zbutton:`Z` pour Défaire et :zbutton:`Control` + :zbutton:`Shift` + "
 ":zbutton:`Z` pour Refaire."
 
-#: ../../editing/common-operations.rst:30
+#: ../../editing/common-operations.rst:29
 msgid ""
 "If you Undo and then perform a new action, the Redo history will be "
 "deleted."
@@ -606,15 +606,15 @@ msgstr ""
 "Si vous annuler puis effectuez une nouvelle action, l'historique de "
 "Refaire sera supprimé."
 
-#: ../../editing/common-operations.rst:34
+#: ../../editing/common-operations.rst:33
 msgid "Object Operations"
 msgstr "Opérations sur les objets"
 
-#: ../../editing/common-operations.rst:36
+#: ../../editing/common-operations.rst:35
 msgid "Cut"
 msgstr "Couper"
 
-#: ../../editing/common-operations.rst:37
+#: ../../editing/common-operations.rst:36
 msgid ""
 "Delete and copy the selected objects and save them in the clipboard so "
 "that they can be pasted elsewhere. The shortcut for cutting is "
@@ -624,11 +624,11 @@ msgstr ""
 "presse-papiers afin qu'ils puissent être collés plus tard. Le raccourci "
 "pour couper est :zbutton:`Control` + :zbutton:`X`."
 
-#: ../../editing/common-operations.rst:43
+#: ../../editing/common-operations.rst:42
 msgid "Copy"
 msgstr "Copier"
 
-#: ../../editing/common-operations.rst:44
+#: ../../editing/common-operations.rst:43
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
 "elsewhere. The shortcut for copying is :zbutton:`Control` + :zbutton:`C`."
@@ -637,11 +637,11 @@ msgstr ""
 " être collés ailleurs. Le raccourci pour copier est :zbutton:`Control` + "
 ":zbutton:`C`."
 
-#: ../../editing/common-operations.rst:50
+#: ../../editing/common-operations.rst:49
 msgid "Paste"
 msgstr "Coller"
 
-#: ../../editing/common-operations.rst:51
+#: ../../editing/common-operations.rst:50
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
 "position. The shortcut for pasting is :zbutton:`Control` + :zbutton:`V`."
@@ -649,11 +649,11 @@ msgstr ""
 "Colle les objets du presse-papiers à l'emplacement de la tête de lecture."
 " Le raccourci pour coller est :zbutton:`Control` + :zbutton:`V`."
 
-#: ../../editing/common-operations.rst:57
+#: ../../editing/common-operations.rst:56
 msgid "Duplicate"
 msgstr "Dupliquer"
 
-#: ../../editing/common-operations.rst:58
+#: ../../editing/common-operations.rst:57
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
 "duplicating is :zbutton:`Control` + :zbutton:`D`."
@@ -661,11 +661,11 @@ msgstr ""
 "Crée une copie adjacente aux objets sélectionnés. Le raccourci pour "
 "dupliquer est :zbutton:`Control` + :zbutton:`D`."
 
-#: ../../editing/common-operations.rst:63
+#: ../../editing/common-operations.rst:62
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ../../editing/common-operations.rst:64
+#: ../../editing/common-operations.rst:63
 msgid ""
 "Delete the selected objects. You can also press :zbutton:`Delete` on your"
 " keyboard to do this."
@@ -673,31 +673,31 @@ msgstr ""
 "Supprime les objets sélectionnés. Vous pouvez aussi utiliser la touche "
 ":zbutton:`Supprimer` de votre clavier."
 
-#: ../../editing/common-operations.rst:69
+#: ../../editing/common-operations.rst:68
 msgid "Selections"
 msgstr "Sélections"
 
-#: ../../editing/common-operations.rst:71
+#: ../../editing/common-operations.rst:70
 msgid "Clear Selection"
 msgstr "Déselectionner"
 
-#: ../../editing/common-operations.rst:72
+#: ../../editing/common-operations.rst:71
 msgid "Clear current selection (unselect all objects)."
 msgstr "Désélectionne la sélection actuelle. (Désélectionne tous les objets)."
 
-#: ../../editing/common-operations.rst:75
+#: ../../editing/common-operations.rst:74
 msgid "Select All"
 msgstr "Tout sélectionner"
 
-#: ../../editing/common-operations.rst:76
+#: ../../editing/common-operations.rst:75
 msgid "Select all objects in the current editor."
 msgstr "Sélectionnez tous les objets dans l'éditeur actuel."
 
-#: ../../editing/common-operations.rst:79
+#: ../../editing/common-operations.rst:78
 msgid "Loop Selection"
 msgstr "Sélection de la boucle"
 
-#: ../../editing/common-operations.rst:80
+#: ../../editing/common-operations.rst:79
 msgid ""
 "Place the loop markers around the selection. The shortcut for this is "
 ":zbutton:`Control` + :zbutton:`L`."
@@ -1022,10 +1022,11 @@ msgstr ""
 "temporelle et les éditeurs suivants."
 
 #: ../../editing/overview.rst:11
+#, fuzzy
 msgid ""
 "While each editor has its own toolbar to assist with various operations, "
-"there is a global Edit section in the top toolbar that has common "
-"features shared by each editor."
+"there is a global :guilabel:`Edit` section in the top toolbar that has "
+"common features shared by each editor."
 msgstr ""
 "Bien que chaque éditeur dispose de sa propre barre d'outils pour "
 "faciliter les différentes opérations, il y a une section d'édition "
@@ -1801,3 +1802,4 @@ msgstr ""
 #~ "discussed in :ref:`loop-points-and-"
 #~ "markers`."
 #~ msgstr ""
+

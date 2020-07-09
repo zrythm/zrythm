@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 17:47+0100\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -152,8 +152,8 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:13
 msgid ""
-"The playhead is the current position in the song. It is displayed as a "
-"red line inside arrangers."
+"The :dfn:`playhead` is the current position in the song. It is displayed "
+"as a red line inside arrangers."
 msgstr ""
 
 #: ../../playback-and-recording/overview.rst:18
@@ -397,5 +397,11 @@ msgstr ""
 #~ "Playback is mainly controlled by the "
 #~ "following Transport Controls, found in "
 #~ "the main toolbar."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The playhead is the current position "
+#~ "in the song. It is displayed as"
+#~ " a red line inside arrangers."
 #~ msgstr ""
 

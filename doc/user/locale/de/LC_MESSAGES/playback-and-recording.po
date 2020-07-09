@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 17:47+0100\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: 2019-09-22 21:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: de\n"
@@ -181,8 +181,8 @@ msgstr "Abspielkopf"
 #: ../../playback-and-recording/overview.rst:13
 #, fuzzy
 msgid ""
-"The playhead is the current position in the song. It is displayed as a "
-"red line inside arrangers."
+"The :dfn:`playhead` is the current position in the song. It is displayed "
+"as a red line inside arrangers."
 msgstr "Der Abspielkopf ist die aktuelle Position im Lied."
 
 #: ../../playback-and-recording/overview.rst:18

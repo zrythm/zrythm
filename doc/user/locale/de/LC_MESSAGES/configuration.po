@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 20:03+0100\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: 2019-12-19 16:46+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: de\n"
@@ -54,8 +54,8 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:27
 msgid ""
-"The ``zrythm`` binary comes with a ``--print-settings`` option (see :ref"
-":`command-line-options` for more details) that prints the whole "
+"The :program:`zrythm` binary comes with a ``--print-settings`` option "
+"(see :ref:`command-line-options` for more details) that prints the whole "
 "configuration to the command line. In combination with the ``--pretty`` "
 "option (ie, ``zrythm --print-settings --pretty`` or ``zrythm -p "
 "--pretty`` for short), you can get output like the following."
@@ -74,8 +74,8 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:45
 msgid ""
-"The ``zrythm`` binary also comes with a ``--reset-to-factory`` option for"
-" resetting Zrythm to its default state."
+"The :program:`zrythm` binary also comes with a ``--reset-to-factory`` "
+"option for resetting Zrythm to its default state."
 msgstr ""
 
 #: ../../configuration/additional-settings.rst:49
@@ -269,9 +269,11 @@ msgid "Preferences"
 msgstr "Einstellungen"
 
 #: ../../configuration/preferences/intro.rst:10
+#, fuzzy
 msgid ""
 "Zrythm has a Preferences dialog containing all of the global settings "
-"that can be accessed by clicking the gear icon or by ``Ctrl+Shift+P``."
+"that can be accessed by clicking the gear icon or with "
+":kbd:`Ctrl+Shift+P`."
 msgstr ""
 "Zrythm hat einen Präferenzendialog, der alle globalen Einstelllungen "
 "enthält, und auf den durch Klicken auf das Zahnradzeichen oder durch "
@@ -1147,5 +1149,24 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "The MIDI backend to use."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The ``zrythm`` binary comes with a "
+#~ "``--print-settings`` option (see :ref"
+#~ ":`command-line-options` for more details)"
+#~ " that prints the whole configuration "
+#~ "to the command line. In combination "
+#~ "with the ``--pretty`` option (ie, "
+#~ "``zrythm --print-settings --pretty`` or "
+#~ "``zrythm -p --pretty`` for short), you"
+#~ " can get output like the following."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The ``zrythm`` binary also comes with"
+#~ " a ``--reset-to-factory`` option for"
+#~ " resetting Zrythm to its default "
+#~ "state."
 #~ msgstr ""
 

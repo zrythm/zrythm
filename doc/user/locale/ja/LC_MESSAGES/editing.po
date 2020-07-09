@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 14:21+0100\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: 2020-07-01 21:41+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"manualediting/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/zrythm/manualediting/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -239,7 +238,7 @@ msgstr ""
 msgid "It displays information about each chord object."
 msgstr ""
 
-#: ../../editing/clip-editors/intro.rst:6
+#: ../../editing/clip-editors/intro.rst:8
 #, fuzzy
 msgid "Editors"
 msgstr "クリップエディター"
@@ -571,28 +570,29 @@ msgstr ""
 "ノートが再び作成され、元に戻す操作とやり直しの間に何度でも戻ることができます。"
 
 #: ../../editing/common-operations.rst:26
+#, fuzzy
 msgid ""
-"The shortcuts for undo and redo are :zbutton:`Control` + :zbutton:`Z` to "
-"Undo and :zbutton:`Control` + :zbutton:`Shift` + :zbutton:`Z` to Redo."
+"The shortcuts for undo and redo are :kbd:`Control-z` and :kbd:`Control-"
+"Shift-z`."
 msgstr ""
 "元に戻すショートカットは :zbutton:`Control` + :zbutton:`Z` で、やり直しのショートカットは "
 ":zbutton:`Ctrl` + :zbutton:`Shift` + :zbutton:`Z` です。"
 
-#: ../../editing/common-operations.rst:30
+#: ../../editing/common-operations.rst:29
 msgid ""
 "If you Undo and then perform a new action, the Redo history will be "
 "deleted."
 msgstr "元に戻して新しい操作を実行すると、やり直し履歴は削除されます。"
 
-#: ../../editing/common-operations.rst:34
+#: ../../editing/common-operations.rst:33
 msgid "Object Operations"
 msgstr "オブジェクト操作"
 
-#: ../../editing/common-operations.rst:36
+#: ../../editing/common-operations.rst:35
 msgid "Cut"
 msgstr "切り取り"
 
-#: ../../editing/common-operations.rst:37
+#: ../../editing/common-operations.rst:36
 msgid ""
 "Delete and copy the selected objects and save them in the clipboard so "
 "that they can be pasted elsewhere. The shortcut for cutting is "
@@ -601,11 +601,11 @@ msgstr ""
 "選択したオブジェクトを削除してコピーし、クリップボードに保存して、他の場所に貼り付けられるようにします。カットのショートカットは "
 ":zbutton:`Ctrl` + :zbutton:`X` です。"
 
-#: ../../editing/common-operations.rst:43
+#: ../../editing/common-operations.rst:42
 msgid "Copy"
 msgstr "コピー"
 
-#: ../../editing/common-operations.rst:44
+#: ../../editing/common-operations.rst:43
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
 "elsewhere. The shortcut for copying is :zbutton:`Control` + :zbutton:`C`."
@@ -613,11 +613,11 @@ msgstr ""
 "選択したオブジェクトをクリップボードにコピーして、他の場所に貼り付けることができます。コピーのショートカットは "
 ":zbutton:`Control` + :zbutton:`C` です。"
 
-#: ../../editing/common-operations.rst:50
+#: ../../editing/common-operations.rst:49
 msgid "Paste"
 msgstr "貼り付け"
 
-#: ../../editing/common-operations.rst:51
+#: ../../editing/common-operations.rst:50
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
 "position. The shortcut for pasting is :zbutton:`Control` + :zbutton:`V`."
@@ -625,51 +625,51 @@ msgstr ""
 "クリップボードに置かれているオブジェクトを再生ヘッド位置に貼り付けます。貼り付けのショートカットは次のとおりです。 "
 ":zbutton:`Control` + :zbutton:`V`"
 
-#: ../../editing/common-operations.rst:57
+#: ../../editing/common-operations.rst:56
 msgid "Duplicate"
 msgstr "複製"
 
-#: ../../editing/common-operations.rst:58
+#: ../../editing/common-operations.rst:57
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
 "duplicating is :zbutton:`Control` + :zbutton:`D`."
 msgstr "コピーを作成し、選択したオブジェクトに隣接します。 複製のショートカットは :zbutton:`Control`+:zbutton:`D` です。"
 
-#: ../../editing/common-operations.rst:63
+#: ../../editing/common-operations.rst:62
 msgid "Delete"
 msgstr "削除"
 
-#: ../../editing/common-operations.rst:64
+#: ../../editing/common-operations.rst:63
 msgid ""
 "Delete the selected objects. You can also press :zbutton:`Delete` on your"
 " keyboard to do this."
 msgstr "選択したオブジェクトを削除します。キーボードの :zbutton:`Delete` を押してこれを行うこともできます。"
 
-#: ../../editing/common-operations.rst:69
+#: ../../editing/common-operations.rst:68
 msgid "Selections"
 msgstr "選択範囲"
 
-#: ../../editing/common-operations.rst:71
+#: ../../editing/common-operations.rst:70
 msgid "Clear Selection"
 msgstr "選択をクリア"
 
-#: ../../editing/common-operations.rst:72
+#: ../../editing/common-operations.rst:71
 msgid "Clear current selection (unselect all objects)."
 msgstr "現在の選択を解除します(すべてのオブジェクトの選択を解除)。"
 
-#: ../../editing/common-operations.rst:75
+#: ../../editing/common-operations.rst:74
 msgid "Select All"
 msgstr "すべてを選択"
 
-#: ../../editing/common-operations.rst:76
+#: ../../editing/common-operations.rst:75
 msgid "Select all objects in the current editor."
 msgstr "現在のエディタですべてのオブジェクトを選択します。"
 
-#: ../../editing/common-operations.rst:79
+#: ../../editing/common-operations.rst:78
 msgid "Loop Selection"
 msgstr "ループ選択"
 
-#: ../../editing/common-operations.rst:80
+#: ../../editing/common-operations.rst:79
 msgid ""
 "Place the loop markers around the selection. The shortcut for this is "
 ":zbutton:`Control` + :zbutton:`L`."
@@ -941,8 +941,8 @@ msgstr ""
 #: ../../editing/overview.rst:11
 msgid ""
 "While each editor has its own toolbar to assist with various operations, "
-"there is a global Edit section in the top toolbar that has common "
-"features shared by each editor."
+"there is a global :guilabel:`Edit` section in the top toolbar that has "
+"common features shared by each editor."
 msgstr ""
 
 #: ../../editing/piano-roll-editing/arranger.rst:6
@@ -1623,3 +1623,13 @@ msgstr ""
 #~ "discussed in :ref:`loop-points-and-"
 #~ "markers`."
 #~ msgstr ""
+
+#~ msgid ""
+#~ "While each editor has its own "
+#~ "toolbar to assist with various "
+#~ "operations, there is a global Edit "
+#~ "section in the top toolbar that "
+#~ "has common features shared by each "
+#~ "editor."
+#~ msgstr ""
+

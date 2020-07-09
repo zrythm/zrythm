@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 17:47+0100\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: 2020-06-05 11:41+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
-"manualplayback-and-recording/fr/>\n"
 "Language: fr\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm"
+"/manualplayback-and-recording/fr/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
@@ -184,8 +183,8 @@ msgstr "Tête de lecture"
 #: ../../playback-and-recording/overview.rst:13
 #, fuzzy
 msgid ""
-"The playhead is the current position in the song. It is displayed as a "
-"red line inside arrangers."
+"The :dfn:`playhead` is the current position in the song. It is displayed "
+"as a red line inside arrangers."
 msgstr "La tête de lecture est la position actuelle dans le morceau."
 
 #: ../../playback-and-recording/overview.rst:18
@@ -392,3 +391,4 @@ msgstr ""
 
 #~ msgid "Song End Marker"
 #~ msgstr "Marqueur de fin de morceau"
+

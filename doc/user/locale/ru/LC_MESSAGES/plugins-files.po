@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-08 20:20+0100\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: 2020-03-30 12:27+0000\n"
 "Last-Translator: Viktor S <awsswa59@gmail.com>\n"
 "Language: ru\n"
@@ -401,8 +401,8 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:18
 msgid ""
-"Plugin scanning can be disabled by passing NO_SCAN_PLUGINS=1 when running"
-" Zrythm."
+"Plugin scanning can be disabled by passing ``NO_SCAN_PLUGINS=1`` when "
+"running Zrythm."
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:22
@@ -413,9 +413,9 @@ msgstr ""
 msgid ""
 "Zrythm will scan for LV2 plugins in the `standard paths specified here "
 "<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. You can "
-"bypass this behavior by passing the ``LV2_PATH`` environment variable to "
-"specify custom paths. For example, ``LV2_PATH=$HOME/custom-lv2-dir "
-"zrythm``."
+"bypass this behavior by passing the :envvar:`LV2_PATH` environment "
+"variable to specify custom paths. For example, ``LV2_PATH=$HOME/custom-"
+"lv2-dir zrythm``."
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:32
@@ -431,26 +431,26 @@ msgid "Zrythm will scan for VST2 and VST3 plugins in the following paths."
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:39
-msgid "``$HOME/.vst``"
+msgid ":file:`{$HOME}/.vst`"
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:40
-msgid "``$HOME/vst``"
+msgid ":file:`{$HOME}/vst`"
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:41
-msgid "``/usr/local/lib/vst``"
+msgid ":file:`/usr/local/lib/vst`"
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:42
-msgid "``/usr/lib/vst``"
+msgid ":file:`/usr/lib/vst`"
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:44
 msgid ""
-"You can bypass this behavior by passing the ``VST_PATH`` environment "
-"variable to specify custom paths. For example, ``VST_PATH=$HOME/custom-"
-"vst-dir zrythm``."
+"You can bypass this behavior by passing the :envvar:`VST_PATH` "
+"environment variable to specify custom paths. For example, "
+"``VST_PATH=$HOME/custom-vst-dir zrythm``."
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:48
@@ -479,11 +479,11 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:61
-msgid "``/Library/Audio/Plug-Ins/VST`` for VST2"
+msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:62
-msgid "``/Library/Audio/Plug-Ins/VST3`` for VST3"
+msgid ":file:`/Library/Audio/Plug-Ins/VST3` for VST3"
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:64
@@ -854,5 +854,47 @@ msgstr ""
 #~ msgid ""
 #~ "Plugin scanning can be disableld by "
 #~ "passing NO_SCAN_PLUGINS=1 when running Zrythm."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Plugin scanning can be disabled by "
+#~ "passing NO_SCAN_PLUGINS=1 when running Zrythm."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm will scan for LV2 plugins "
+#~ "in the `standard paths specified here"
+#~ " <https://lv2plug.in/pages/filesystem-hierarchy-"
+#~ "standard.html>`_. You can bypass this "
+#~ "behavior by passing the ``LV2_PATH`` "
+#~ "environment variable to specify custom "
+#~ "paths. For example, ``LV2_PATH=$HOME/custom-"
+#~ "lv2-dir zrythm``."
+#~ msgstr ""
+
+#~ msgid "``$HOME/.vst``"
+#~ msgstr ""
+
+#~ msgid "``$HOME/vst``"
+#~ msgstr ""
+
+#~ msgid "``/usr/local/lib/vst``"
+#~ msgstr ""
+
+#~ msgid "``/usr/lib/vst``"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "You can bypass this behavior by "
+#~ "passing the ``VST_PATH`` environment variable"
+#~ " to specify custom paths. For "
+#~ "example, ``VST_PATH=$HOME/custom-vst-dir "
+#~ "zrythm``."
+#~ msgstr ""
+
+#~ msgid "``/Library/Audio/Plug-Ins/VST`` for VST2"
+#~ msgstr ""
+
+#~ msgid "``/Library/Audio/Plug-Ins/VST3`` for VST3"
 #~ msgstr ""
 

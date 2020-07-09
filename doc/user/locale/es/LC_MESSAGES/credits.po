@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 20:03+0100\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,34 +22,38 @@ msgid "Credits"
 msgstr ""
 
 #: ../../credits/intro.rst:9
-msgid "Translators"
+msgid "Authors"
 msgstr ""
 
 #: ../../credits/intro.rst:10
 msgid ""
-"See the `TRANSLATORS file "
-"<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in the "
-"source distribution. These include translators for the software, the "
-"manual and the website."
+"See the `AUTHORS file "
+"<https://git.sr.ht/~alextee/zrythm/tree/master/AUTHORS>`_ in the source "
+"distribution. These include developers, graphic artists and other authors"
+" of copyrightable work."
+msgstr ""
+
+#: ../../credits/intro.rst:14
+msgid "Translators"
 msgstr ""
 
 #: ../../credits/intro.rst:15
+msgid ""
+"See the `TRANSLATORS file "
+"<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in the "
+"source distribution. These include translators of the software, the user "
+"manual and the website."
+msgstr ""
+
+#: ../../credits/intro.rst:20
 msgid "Other Contributors"
 msgstr ""
 
-#: ../../credits/intro.rst:16
+#: ../../credits/intro.rst:21
 msgid ""
 "See the `THANKS file "
 "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in the "
 "source distribution."
-msgstr ""
-
-#: ../../credits/intro.rst:19
-msgid "Icon Designers"
-msgstr ""
-
-#: ../../credits/intro.rst:20
-msgid "Carlos Han (C.K. Design)"
 msgstr ""
 
 #~ msgid "Portuguese:"
@@ -137,5 +141,19 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Designers"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "See the `TRANSLATORS file "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in"
+#~ " the source distribution. These include "
+#~ "translators for the software, the manual"
+#~ " and the website."
+#~ msgstr ""
+
+#~ msgid "Icon Designers"
+#~ msgstr ""
+
+#~ msgid "Carlos Han (C.K. Design)"
 #~ msgstr ""
 

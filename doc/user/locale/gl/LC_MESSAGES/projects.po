@@ -7,20 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-05 19:31+0000\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: 2020-03-07 13:49+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
-"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
-"manualprojects/gl/>\n"
 "Language: gl\n"
+"Language-Team: Galician "
+"<https://hosted.weblate.org/projects/zrythm/manualprojects/gl/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0-dev\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: ../../projects/intro.rst:6
+#: ../../projects/intro.rst:8
 msgid "Projects"
 msgstr "Proxectos"
 
@@ -34,9 +33,9 @@ msgid ""
 "folder with a YAML file describing the Project and additional files used "
 "such as MIDI and audio files."
 msgstr ""
-"En Zrythm, o teu traballo gárdase nun Proxecto. Os proxectos consisten nunha "
-"carpeta cun arquivo YAML que describe o Proxecto e os ficheiros adicionais, "
-"tales como os arquivos MIDI ou de audio."
+"En Zrythm, o teu traballo gárdase nun Proxecto. Os proxectos consisten "
+"nunha carpeta cun arquivo YAML que describe o Proxecto e os ficheiros "
+"adicionais, tales como os arquivos MIDI ou de audio."
 
 #: ../../projects/project-info.rst:14
 msgid "Project Structure"
@@ -73,7 +72,8 @@ msgstr "exportacións"
 #: ../../projects/project-info.rst:46
 msgid "Default directory for exporting files related to the project"
 msgstr ""
-"Directorio por defecto para os ficheiros exportados en relación co proxecto"
+"Directorio por defecto para os ficheiros exportados en relación co "
+"proxecto"
 
 #: ../../projects/project-info.rst:49
 msgid "pool"
@@ -106,10 +106,10 @@ msgid ""
 "compatibility will be maintained between version changes in order to give"
 " more time to feature development and fixes."
 msgstr ""
-"Alomenos polo de agora, Zrythm segue un modelo de lanzamento continuo e a "
-"estrutura do ficheiro dos proxectos é susceptible de se modificar en cada "
-"nova versión. Non se manterá a compatibilidade entre versións, co obxectivo "
-"de adicar máis tempo ao desenvolvemento e os axustes."
+"Alomenos polo de agora, Zrythm segue un modelo de lanzamento continuo e a"
+" estrutura do ficheiro dos proxectos é susceptible de se modificar en "
+"cada nova versión. Non se manterá a compatibilidade entre versións, co "
+"obxectivo de adicar máis tempo ao desenvolvemento e os axustes."
 
 #: ../../projects/project-management-and-compatibility.rst:19
 msgid ""
@@ -120,16 +120,16 @@ msgid ""
 msgstr ""
 "Quizais sexa posible abrir proxectos de versións anteriores se non houbo "
 "modificacións na estrutura dos ficheiros de proxecto, pero isto non está "
-"garantido, así que se queres abrir un proxecto feito nunha versión anterior "
-"por favor instala esa versión de Zrythm."
+"garantido, así que se queres abrir un proxecto feito nunha versión "
+"anterior por favor instala esa versión de Zrythm."
 
 #: ../../projects/project-management-and-compatibility.rst:28
 msgid ""
 "Each project file will mention the version of Zrythm it was made with and"
 " the date it was saved"
 msgstr ""
-"Cada ficheiro de proxecto mencionará a versión de Zrythm co que foi feito e "
-"a data na que se gardou"
+"Cada ficheiro de proxecto mencionará a versión de Zrythm co que foi feito"
+" e a data na que se gardou"
 
 #: ../../projects/saving-loading.rst:6
 msgid "Saving & Loading"
@@ -144,12 +144,13 @@ msgid ""
 "When Zrythm launches, it will ask you to select a project to load from a "
 "list of recent projects, or to create a new one."
 msgstr ""
-"Cando Zrythm arranque, pedirache que selecciones un proxecto para cargar da "
-"lista de proxectos recentes ou que crees un novo."
+"Cando Zrythm arranque, pedirache que selecciones un proxecto para cargar "
+"da lista de proxectos recentes ou que crees un novo."
 
 #: ../../projects/saving-loading.rst:18
+#, fuzzy
 msgid ""
-"When you select a project and click :zbutton:`Apply`, Zrythm will load "
+"When you select a project and click :guilabel:`Apply`, Zrythm will load "
 "that project."
 msgstr ""
 "Cando selecciones un proxecto e fagas clic en :zbutton:`Aplicar`, Zrythm "
@@ -160,8 +161,9 @@ msgid "Creating Projects"
 msgstr "Crear Proxectos"
 
 #: ../../projects/saving-loading.rst:24
+#, fuzzy
 msgid ""
-"In the menu above, if you select :zbutton:`Create new project`, Zrythm "
+"In the menu above, if you select :guilabel:`Create new project`, Zrythm "
 "will ask you for a template to use for creating the new Project."
 msgstr ""
 "No menú superior, se escolles :zbutton:`Create new project`, Zrythm "
@@ -169,45 +171,49 @@ msgstr ""
 "Proxecto."
 
 #: ../../projects/saving-loading.rst:31
+#, fuzzy
 msgid ""
-"A blank template is available, but you can create your own templates by "
-"copying a project folder to the ``Templates`` directory in the Zrythm "
-"installation path."
+"A blank template is available, and you can create your own templates by "
+"copying a project directory to :file:`{ZRYTHM_USER_DIR}/templates`."
 msgstr ""
-"Podes empregar un padrón baleiro, pero podes crear os teus propios padróns "
-"copiando a carpeta dun proxecto ao directorio ``Templates`` na localización "
-"de instalación de Zrythm."
+"Podes empregar un padrón baleiro, pero podes crear os teus propios "
+"padróns copiando a carpeta dun proxecto ao directorio ``Templates`` na "
+"localización de instalación de Zrythm."
 
 #: ../../projects/saving-loading.rst:35
+#, fuzzy
 msgid ""
-"Once a template (or blank) is selected and you click :zbutton:`Apply`, "
+"Once a template (or blank) is selected and you click :guilabel:`Apply`, "
 "Zrythm will ask you for a parent directory to save the Project in and a "
 "title for the Project."
 msgstr ""
-"Unha vez un padrón (ou proxecto baleiro) estea seleccionado e lle deas ao "
-":zbutton:`Aplicar`, Zrythm preguntarache por un directorio principal no que "
-"gardar o Proxecto e pedirache que introduzas un título para o teu Proxecto."
+"Unha vez un padrón (ou proxecto baleiro) estea seleccionado e lle deas ao"
+" :zbutton:`Aplicar`, Zrythm preguntarache por un directorio principal no "
+"que gardar o Proxecto e pedirache que introduzas un título para o teu "
+"Proxecto."
 
 #: ../../projects/saving-loading.rst:42
 msgid ""
 "Once you accept, the new Project will be set up and you will be ready to "
 "go."
 msgstr ""
-"Des que aceptes, o novo Proxecto estará configurado e listo para traballar."
+"Des que aceptes, o novo Proxecto estará configurado e listo para "
+"traballar."
 
 #: ../../projects/saving-loading.rst:46
 msgid "Saving Projects"
 msgstr "Gardar Proxectos"
 
 #: ../../projects/saving-loading.rst:48
+#, fuzzy
 msgid ""
-"Saving works as you would expect: :zbutton:`Save As...` will save the "
-"Project in a new location and :zbutton:`Save` will save the Project in "
+"Saving works as you would expect: :guilabel:`Save As...` will save the "
+"Project in a new location and :guilabel:`Save` will save the Project in "
 "the previous location."
 msgstr ""
 "Gardar funciona segundo o esperable: :zbutton:`Gardar Como...` gravará o "
-"Proxecto nunha nova localización e :zbutton:`Gardar` gardará o Proxecto na "
-"localización previa."
+"Proxecto nunha nova localización e :zbutton:`Gardar` gardará o Proxecto "
+"na localización previa."
 
 #: ../../projects/saving-loading.rst:52
 msgid "When saving projects, Zrythm expects you to give it a directory"
@@ -234,10 +240,13 @@ msgid ""
 "The auto-save interval can be changed (or disabled) in the preferences "
 "window."
 msgstr ""
-"O intervalo de gardado automático pódese modificar (ou desactivar) na xanela "
-"de preferencias."
+"O intervalo de gardado automático pódese modificar (ou desactivar) na "
+"xanela de preferencias."
 
 #: ../../projects/saving-loading.rst:69
-msgid "The backups are saved in the project's directory, under ``backups``"
+#, fuzzy
+msgid "The backups are saved in the project's directory, under :file:`backups`."
 msgstr ""
-"As copias de seguridade gárdanse no directorio do proxecto, baixo ``backups``"
+"As copias de seguridade gárdanse no directorio do proxecto, baixo "
+"``backups``"
+

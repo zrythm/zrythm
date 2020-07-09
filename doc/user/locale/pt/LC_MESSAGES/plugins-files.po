@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-08 20:20+0100\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: 2020-06-03 20:07+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualplugins-files/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
+"/manualplugins-files/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
@@ -76,8 +75,8 @@ msgid ""
 ":`file-browser` into a track."
 msgstr ""
 "O Zrythm pode importar ficheiros de MIDI e de áudio para o projeto. Os "
-"ficheiros podem ser importados arrastando e soltando do seu computador ou do "
-":ref:'file-browser' numa faixa."
+"ficheiros podem ser importados arrastando e soltando do seu computador ou"
+" do :ref:'file-browser' numa faixa."
 
 #: ../../plugins-files/audio-midi-files/overview.rst:14
 msgid "Supported Audio Formats"
@@ -132,8 +131,8 @@ msgid ""
 "Compatible ports can be connected to one another. See :ref:`making-"
 "connections` for more details."
 msgstr ""
-"Portas compatíveis podem ser conectadas umas às outras. Veja :ref:`making-"
-"connections` para obter mais detalhes."
+"Portas compatíveis podem ser conectadas umas às outras. Veja :ref"
+":`making-connections` para obter mais detalhes."
 
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
@@ -278,10 +277,10 @@ msgid ""
 "plugin. There are various types of plugins supported by Zrythm mentioned "
 "in :ref:`scanning-plugins`."
 msgstr ""
-"Um suplemento é um módulo externo que fornece recursos de processamento de "
-"áudio para Zrythm, como um instrumento SFZ ou um suplemento LV2 reverb. "
-"Existem vários tipos de suplementos suportados pela Zrythm mencionados em "
-":ref:'scaning-plugins'."
+"Um suplemento é um módulo externo que fornece recursos de processamento "
+"de áudio para Zrythm, como um instrumento SFZ ou um suplemento LV2 "
+"reverb. Existem vários tipos de suplementos suportados pela Zrythm "
+"mencionados em :ref:'scaning-plugins'."
 
 #: ../../plugins-files/plugins/plugin-info.rst:13
 msgid "In Zrythm, SFZ/SF2 are also used as plugins."
@@ -312,9 +311,9 @@ msgid ""
 "These plugins can be dragged into the insert slots of existing channels "
 "in the mixer or can be instantiated to create new FX tracks."
 msgstr ""
-"Esses suplementos podem ser arrastados para os compartimentos de inserção de "
-"canais existentes no misturador ou podem ser instanciados para criar faixas "
-"FX."
+"Esses suplementos podem ser arrastados para os compartimentos de inserção"
+" de canais existentes no misturador ou podem ser instanciados para criar "
+"faixas FX."
 
 #: ../../plugins-files/plugins/plugin-info.rst:30
 msgid "Modulators"
@@ -360,25 +359,25 @@ msgid ""
 "Plugins consist of controls (parameters) and a variety of audio, MIDI and"
 " CV ports. Ports are explained in :ref:`ports`."
 msgstr ""
-"Os suplementos consistem em controles (parâmetros) e uma variedade de portas "
-"de áudio, MIDI e CV. As portas são explicadas em :ref:'ports'."
+"Os suplementos consistem em controles (parâmetros) e uma variedade de "
+"portas de áudio, MIDI e CV. As portas são explicadas em :ref:'ports'."
 
 #: ../../plugins-files/plugins/plugin-info.rst:51
 msgid ""
 "Zrythm first creates all plugins with a special `Enabled` control port "
 "that controls bypassing, and the rest of the plugin's ports are appended."
 msgstr ""
-"Zrythm cria primeiro todos os suplementos com uma porta de controle especial "
-"'Ativado' que controla o desvio, e o resto das portas do suplemento são "
-"anexadas."
+"Zrythm cria primeiro todos os suplementos com uma porta de controle "
+"especial 'Ativado' que controla o desvio, e o resto das portas do "
+"suplemento são anexadas."
 
 #: ../../plugins-files/plugins/plugin-info.rst:55
 msgid ""
 "All of the plugin's ports can be found in the plugin inspector page "
 "described in :ref:`plugin-inspector-page`"
 msgstr ""
-"Todas as portas do suplemento podem ser encontradas na página do inspetor de "
-"suplementos descrita em :ref:'plugin-inspector-page'"
+"Todas as portas do suplemento podem ser encontradas na página do inspetor"
+" de suplementos descrita em :ref:'plugin-inspector-page'"
 
 #: ../../plugins-files/plugins/plugin-window.rst:6
 msgid "Plugin Window"
@@ -469,8 +468,8 @@ msgstr ""
 #: ../../plugins-files/plugins/scanning.rst:18
 #, fuzzy
 msgid ""
-"Plugin scanning can be disabled by passing NO_SCAN_PLUGINS=1 when running"
-" Zrythm."
+"Plugin scanning can be disabled by passing ``NO_SCAN_PLUGINS=1`` when "
+"running Zrythm."
 msgstr ""
 "A verificação de plug-in pode ser desativada passando NO_SCAN_PLUGINS = 1"
 " ao executar o Zrythm."
@@ -483,9 +482,9 @@ msgstr "Procurar LV2"
 msgid ""
 "Zrythm will scan for LV2 plugins in the `standard paths specified here "
 "<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. You can "
-"bypass this behavior by passing the ``LV2_PATH`` environment variable to "
-"specify custom paths. For example, ``LV2_PATH=$HOME/custom-lv2-dir "
-"zrythm``."
+"bypass this behavior by passing the :envvar:`LV2_PATH` environment "
+"variable to specify custom paths. For example, ``LV2_PATH=$HOME/custom-"
+"lv2-dir zrythm``."
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:32
@@ -502,29 +501,29 @@ msgid "Zrythm will scan for VST2 and VST3 plugins in the following paths."
 msgstr "No UNIX, o Zrythm procurará plug-ins VST nos seguintes caminhos."
 
 #: ../../plugins-files/plugins/scanning.rst:39
-#, fuzzy
-msgid "``$HOME/.vst``"
-msgstr "``~/.vst``"
+msgid ":file:`{$HOME}/.vst`"
+msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:40
-#, fuzzy
-msgid "``$HOME/vst``"
-msgstr "``~/vst``"
+msgid ":file:`{$HOME}/vst`"
+msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:41
-msgid "``/usr/local/lib/vst``"
+#, fuzzy
+msgid ":file:`/usr/local/lib/vst`"
 msgstr "``/usr/local/lib/vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:42
-msgid "``/usr/lib/vst``"
+#, fuzzy
+msgid ":file:`/usr/lib/vst`"
 msgstr "``/usr/lib/vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:44
 #, fuzzy
 msgid ""
-"You can bypass this behavior by passing the ``VST_PATH`` environment "
-"variable to specify custom paths. For example, ``VST_PATH=$HOME/custom-"
-"vst-dir zrythm``."
+"You can bypass this behavior by passing the :envvar:`VST_PATH` "
+"environment variable to specify custom paths. For example, "
+"``VST_PATH=$HOME/custom-vst-dir zrythm``."
 msgstr ""
 "Você pode ignorar esse comportamento passando a variável de ambiente `` "
 "VST_PATH`` para especificar caminhos personalizados. Por exemplo, `` "
@@ -560,11 +559,11 @@ msgstr ""
 "/en-us/articles/115000177084-VST-plug-in-locations-on-Windows>`_."
 
 #: ../../plugins-files/plugins/scanning.rst:61
-msgid "``/Library/Audio/Plug-Ins/VST`` for VST2"
+msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:62
-msgid "``/Library/Audio/Plug-Ins/VST3`` for VST3"
+msgid ":file:`/Library/Audio/Plug-Ins/VST3` for VST3"
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:64
@@ -909,3 +908,27 @@ msgstr ""
 
 #~ msgid "Plugins are classified in the following categories."
 #~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm will scan for LV2 plugins "
+#~ "in the `standard paths specified here"
+#~ " <https://lv2plug.in/pages/filesystem-hierarchy-"
+#~ "standard.html>`_. You can bypass this "
+#~ "behavior by passing the ``LV2_PATH`` "
+#~ "environment variable to specify custom "
+#~ "paths. For example, ``LV2_PATH=$HOME/custom-"
+#~ "lv2-dir zrythm``."
+#~ msgstr ""
+
+#~ msgid "``$HOME/.vst``"
+#~ msgstr "``~/.vst``"
+
+#~ msgid "``$HOME/vst``"
+#~ msgstr "``~/vst``"
+
+#~ msgid "``/Library/Audio/Plug-Ins/VST`` for VST2"
+#~ msgstr ""
+
+#~ msgid "``/Library/Audio/Plug-Ins/VST3`` for VST3"
+#~ msgstr ""
+

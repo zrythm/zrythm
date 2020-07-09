@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 17:47+0100\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: 2020-03-14 19:36+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -182,8 +182,8 @@ msgstr "Cabeza de Reprodución"
 #: ../../playback-and-recording/overview.rst:13
 #, fuzzy
 msgid ""
-"The playhead is the current position in the song. It is displayed as a "
-"red line inside arrangers."
+"The :dfn:`playhead` is the current position in the song. It is displayed "
+"as a red line inside arrangers."
 msgstr "A Cabeza de Reprodución indica a posición actual na canción."
 
 #: ../../playback-and-recording/overview.rst:18

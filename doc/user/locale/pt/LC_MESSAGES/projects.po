@@ -7,20 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-16 07:46+0000\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: 2019-12-19 16:46+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualprojects/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese "
+"<https://hosted.weblate.org/projects/zrythm/manualprojects/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: ../../projects/intro.rst:6
+#: ../../projects/intro.rst:8
 msgid "Projects"
 msgstr "Projetos"
 
@@ -128,8 +127,8 @@ msgid ""
 "Each project file will mention the version of Zrythm it was made with and"
 " the date it was saved"
 msgstr ""
-"Cada ficheiro de projeto mencionará a versão do Zrythm com a qual foi feito "
-"e a data em que foi gravado"
+"Cada ficheiro de projeto mencionará a versão do Zrythm com a qual foi "
+"feito e a data em que foi gravado"
 
 #: ../../projects/saving-loading.rst:6
 msgid "Saving & Loading"
@@ -148,8 +147,9 @@ msgstr ""
 "carregar de uma lista de projetos recentes ou para criar um."
 
 #: ../../projects/saving-loading.rst:18
+#, fuzzy
 msgid ""
-"When you select a project and click :zbutton:`Apply`, Zrythm will load "
+"When you select a project and click :guilabel:`Apply`, Zrythm will load "
 "that project."
 msgstr ""
 "Quando seleciona um projeto e clica em :zbutton:`Apply`, o Zrythm "
@@ -160,26 +160,28 @@ msgid "Creating Projects"
 msgstr "Criação de projetos"
 
 #: ../../projects/saving-loading.rst:24
+#, fuzzy
 msgid ""
-"In the menu above, if you select :zbutton:`Create new project`, Zrythm "
+"In the menu above, if you select :guilabel:`Create new project`, Zrythm "
 "will ask you for a template to use for creating the new Project."
 msgstr ""
 "No menu acima, se selecionar :zbutton:`Criar novo projeto`, o Zrythm irá "
 "pedir que use um modelo para criar o novo projeto."
 
 #: ../../projects/saving-loading.rst:31
+#, fuzzy
 msgid ""
-"A blank template is available, but you can create your own templates by "
-"copying a project folder to the ``Templates`` directory in the Zrythm "
-"installation path."
+"A blank template is available, and you can create your own templates by "
+"copying a project directory to :file:`{ZRYTHM_USER_DIR}/templates`."
 msgstr ""
 "Um modelo em branco está disponível, mas pode criar os seus próprios "
 "modelos copiando uma pasta de projeto para o diretório ``Templates`` no "
 "caminho de instalação do Zrythm."
 
 #: ../../projects/saving-loading.rst:35
+#, fuzzy
 msgid ""
-"Once a template (or blank) is selected and you click :zbutton:`Apply`, "
+"Once a template (or blank) is selected and you click :guilabel:`Apply`, "
 "Zrythm will ask you for a parent directory to save the Project in and a "
 "title for the Project."
 msgstr ""
@@ -200,9 +202,10 @@ msgid "Saving Projects"
 msgstr "Gravar Projetos"
 
 #: ../../projects/saving-loading.rst:48
+#, fuzzy
 msgid ""
-"Saving works as you would expect: :zbutton:`Save As...` will save the "
-"Project in a new location and :zbutton:`Save` will save the Project in "
+"Saving works as you would expect: :guilabel:`Save As...` will save the "
+"Project in a new location and :guilabel:`Save` will save the Project in "
 "the previous location."
 msgstr ""
 "Gravar funciona como esperaria: :zbutton:`Save As...` salvará o Projeto "
@@ -237,7 +240,8 @@ msgstr ""
 "janela de preferências."
 
 #: ../../projects/saving-loading.rst:69
-msgid "The backups are saved in the project's directory, under ``backups``"
+#, fuzzy
+msgid "The backups are saved in the project's directory, under :file:`backups`."
 msgstr "Os backups são gravados no diretório do projeto, em ``backups```"
 
 #~ msgid "Importing/Exporting Audio"
@@ -356,3 +360,4 @@ msgstr "Os backups são gravados no diretório do projeto, em ``backups```"
 #~ "carregue um projeto ou crie um "
 #~ "novo. Por padrão, o Zrythm usará "
 #~ "~/username/Zrythm para criar novos Projetos."
+

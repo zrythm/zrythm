@@ -7,20 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-16 07:46+0000\n"
+"POT-Creation-Date: 2020-07-09 18:46+0100\n"
 "PO-Revision-Date: 2020-01-24 23:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"manualprojects/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/zrythm/manualprojects/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.11-dev\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: ../../projects/intro.rst:6
+#: ../../projects/intro.rst:8
 msgid "Projects"
 msgstr "プロジェクト"
 
@@ -133,8 +132,9 @@ msgid ""
 msgstr "Zrythm が起動すると、最近のプロジェクトの一覧から読み込むプロジェクトを選択するか、新しいプロジェクトを作成するかを選択するよう求めます。"
 
 #: ../../projects/saving-loading.rst:18
+#, fuzzy
 msgid ""
-"When you select a project and click :zbutton:`Apply`, Zrythm will load "
+"When you select a project and click :guilabel:`Apply`, Zrythm will load "
 "that project."
 msgstr "プロジェクトを選択し、:zbutton:`適用`をクリックすると、Zrythmはそのプロジェクトを読み込みます。"
 
@@ -143,23 +143,25 @@ msgid "Creating Projects"
 msgstr "プロジェクトの作成"
 
 #: ../../projects/saving-loading.rst:24
+#, fuzzy
 msgid ""
-"In the menu above, if you select :zbutton:`Create new project`, Zrythm "
+"In the menu above, if you select :guilabel:`Create new project`, Zrythm "
 "will ask you for a template to use for creating the new Project."
 msgstr "上記のメニューで、:zbutton:`新しいプロジェクトを作成する`を選択すると、Zrythmは新しいプロジェクトの作成に使用するテンプレートを求めるメッセージを表示します。"
 
 #: ../../projects/saving-loading.rst:31
+#, fuzzy
 msgid ""
-"A blank template is available, but you can create your own templates by "
-"copying a project folder to the ``Templates`` directory in the Zrythm "
-"installation path."
+"A blank template is available, and you can create your own templates by "
+"copying a project directory to :file:`{ZRYTHM_USER_DIR}/templates`."
 msgstr ""
 "空白のテンプレートを使用できますが、Zrythm インストール パスの ``テンプレート``ディレクトリにプロジェクト "
 "フォルダをコピーして、独自のテンプレートを作成できます。"
 
 #: ../../projects/saving-loading.rst:35
+#, fuzzy
 msgid ""
-"Once a template (or blank) is selected and you click :zbutton:`Apply`, "
+"Once a template (or blank) is selected and you click :guilabel:`Apply`, "
 "Zrythm will ask you for a parent directory to save the Project in and a "
 "title for the Project."
 msgstr ""
@@ -177,9 +179,10 @@ msgid "Saving Projects"
 msgstr "プロジェクトの保存"
 
 #: ../../projects/saving-loading.rst:48
+#, fuzzy
 msgid ""
-"Saving works as you would expect: :zbutton:`Save As...` will save the "
-"Project in a new location and :zbutton:`Save` will save the Project in "
+"Saving works as you would expect: :guilabel:`Save As...` will save the "
+"Project in a new location and :guilabel:`Save` will save the Project in "
 "the previous location."
 msgstr ""
 "保存は期待どおりに機能します。:zbutton:``Save As "
@@ -211,7 +214,8 @@ msgid ""
 msgstr "自動保存間隔は、設定ウィンドウで変更 (または無効にすることが) できます。"
 
 #: ../../projects/saving-loading.rst:69
-msgid "The backups are saved in the project's directory, under ``backups``"
+#, fuzzy
+msgid "The backups are saved in the project's directory, under :file:`backups`."
 msgstr "バックアップは、プロジェクト・ディレクトリの``backups``の下に保存されます"
 
 #~ msgid "Importing/Exporting Audio"
@@ -337,3 +341,4 @@ msgstr "バックアップは、プロジェクト・ディレクトリの``back
 #~ "Zrythm "
 #~ "が最初に起動すると、プロジェクトを読み込むか、新しいプロジェクトを作成するかを選択します。デフォルトでは、Zrythm は"
 #~ " ~/ユーザー名/Zrythm を使用して新しいプロジェクトを作成します。"
+
