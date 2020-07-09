@@ -189,6 +189,7 @@ inc/gui/widgets/knob_with_name.h
 inc/gui/widgets/midi_activity_bar.h
 inc/gui/widgets/dialogs/export_progress_dialog.h
 inc/gui/widgets/dialogs/about_dialog.h
+inc/gui/widgets/dialogs/bug_report_dialog.h
 inc/gui/widgets/dialogs/port_info.h
 inc/gui/widgets/dialogs/arranger_object_info.h
 inc/gui/widgets/dialogs/bounce_dialog.h
@@ -236,7 +237,9 @@ inc/utils/objects.h
 inc/utils/string.h
 inc/utils/dictionary.h
 inc/utils/general.h
+inc/utils/zrythm_object.h
 inc/utils/math.h
+inc/utils/backtrace.h
 inc/utils/valgrind.h
 inc/utils/mpmc_queue.h
 inc/utils/object_pool.h
@@ -247,6 +250,7 @@ inc/utils/windows_errors.h
 inc/utils/object_utils.h
 inc/utils/log.h
 inc/utils/resources.h
+inc/utils/err_codes.h
 inc/utils/gtk.h
 inc/settings/settings.h
 inc/audio/midi.h
@@ -290,7 +294,6 @@ inc/audio/audio_region.h
 inc/audio/fader.h
 inc/audio/transport.h
 inc/audio/track.h
-inc/audio/passthrough_processor.h
 inc/audio/port_identifier.h
 inc/audio/rack_controller.h
 inc/audio/automation_point.h
@@ -306,7 +309,6 @@ inc/audio/pool.h
 inc/audio/sample_playback.h
 inc/audio/engine_sdl.h
 inc/audio/channel_track.h
-inc/audio/automatable.h
 inc/audio/track_lane.h
 inc/audio/chord_descriptor.h
 inc/audio/chord_region.h
@@ -524,7 +526,6 @@ src/gui/widgets/view_toolbar.c
 src/gui/widgets/knob.c
 src/gui/widgets/inspector_chord.c
 src/gui/widgets/editor_toolbar.c
-src/gui/widgets/audio_arranger.c
 src/gui/widgets/automation_editor_space.c
 src/gui/widgets/file_browser.c
 src/gui/widgets/inspector_track.c
@@ -546,6 +547,7 @@ src/gui/widgets/dialogs/bounce_dialog.c
 src/gui/widgets/dialogs/port_info.c
 src/gui/widgets/dialogs/about_dialog.c
 src/gui/widgets/dialogs/export_progress_dialog.c
+src/gui/widgets/dialogs/bug_report_dialog.c
 src/gui/backend/file_manager.c
 src/gui/backend/arranger_selections.c
 src/gui/backend/arranger_object.c
@@ -569,6 +571,7 @@ src/utils/object_utils.c
 src/utils/cairo.c
 src/utils/datetime.c
 src/utils/smf.c
+src/utils/err_codes.c
 src/utils/system.c
 src/utils/env.c
 src/utils/objects.c
@@ -591,6 +594,7 @@ src/utils/dictionary.c
 src/utils/gdb.c
 src/utils/symap.c
 src/utils/valgrind.c
+src/utils/backtrace.c
 src/utils/string.c
 src/settings/settings.c
 src/audio/midi_file.c
@@ -655,12 +659,10 @@ src/audio/graph_thread.c
 src/audio/stretcher.c
 src/audio/engine_rtaudio.c
 src/audio/ext_port.c
-src/audio/automatable.c
 src/audio/balance_control.c
 src/audio/router.c
 src/audio/audio_track.c
 src/audio/pan.c
-src/audio/passthrough_processor.c
 src/audio/automation_tracklist.c
 src/audio/control_port.c
 src/audio/audio_region.c
