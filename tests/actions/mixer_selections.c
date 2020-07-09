@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-test-config.h"
+
 #include "actions/arranger_selections.h"
 #include "actions/create_tracks_action.h"
 #include "actions/copy_plugins_action.h"

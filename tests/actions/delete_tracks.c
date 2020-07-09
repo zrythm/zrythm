@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-test-config.h"
+
 #include "actions/delete_tracks_action.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"

@@ -32,31 +32,31 @@ if get_option ('tests')
   test_env.set ('MALLOC_CHECK', '2')
   test_env.set ('VST_PATH', '/tmp/zrythm_vst')
 
-  # FIXME create a zrythm-test-config.h
-  test_cflags = [
-    '-DTESTS_SRCDIR="' +
-      meson.current_source_dir () +
-      '"',
-    '-DTESTS_BUILDDIR="' +
-      meson.current_build_dir () +
-      '"',
-    '-DMIDILIB_TEST_MIDI_FILES_PATH="' +
-      meson.source_root () / 'ext/midilib/MIDIFiles"',
-  ]
-  if have_helm
-    test_cflags += [
-      '-DHAVE_HELM=1',
-      '-DHELM_BUNDLE="@0@"'.format (helm_bundle),
-      '-DHELM_URI="@0@"'.format (helm_uri),
-      ]
-  endif
-  if have_lsp_compressor
-    test_cflags += [
-      '-DHAVE_LSP_COMPRESSOR=1',
-      '-DLSP_COMPRESSOR_BUNDLE="@0@"'.format (lsp_compressor_bundle),
-      '-DLSP_COMPRESSOR_URI="@0@"'.format (lsp_compressor_uri),
-      ]
-  endif
+  test_config = configuration_data ()
+  test_config.set_quoted (
+    'TESTS_SRCDIR', meson.current_source_dir ())
+  test_config.set_quoted (
+    'TESTS_BUILDDIR', meson.current_build_dir ())
+  test_config.set_quoted (
+    'MIDILIB_TEST_MIDI_FILES_PATH',
+    meson.source_root () / 'ext/midilib/MIDIFiles')
+  foreach name, uri : ext_lv2_plugins
+    have_plugin = have_ext_lv2_plugins.get (
+      name, false)
+    if have_plugin
+      plugin_bundle = ext_lv2_plugin_bundles[name]
+      test_config.set (
+        'HAVE_' + name.to_upper(), 1)
+      test_config.set_quoted (
+        name.to_upper() + '_URI', uri)
+      test_config.set_quoted (
+        name.to_upper() + '_BUNDLE', plugin_bundle)
+    endif
+  endforeach
+  test_config_h = configure_file (
+    output: 'zrythm-test-config.h',
+    configuration: test_config,
+    )
 
   test_link_args = [
     '-fPIC',
@@ -124,10 +124,10 @@ if get_option ('tests')
       test_name,
       sources: [
         source,
+        test_config_h,
         ],
       c_args : [
         common_cflags,
-        test_cflags,
         ],
       dependencies : [
         zrythm_deps,

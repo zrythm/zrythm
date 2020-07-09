@@ -26,6 +26,8 @@
 #ifndef __TEST_HELPERS_PROJECT_H__
 #define __TEST_HELPERS_PROJECT_H__
 
+#include "zrythm-test-config.h"
+
 #include "audio/audio_region.h"
 #include "audio/automation_region.h"
 #include "audio/chord_region.h"

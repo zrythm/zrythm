@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-test-config.h"
+
 #include "audio/master_track.h"
 #include "audio/midi_mapping.h"
 #include "helpers/project.h"

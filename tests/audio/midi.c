@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-test-config.h"
+
 #include "audio/midi.h"
 #include "helpers/project.h"
 #include "helpers/zrythm.h"

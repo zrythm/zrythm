@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-test-config.h"
+
 #include "actions/arranger_selections.h"
 #include "actions/undoable_action.h"
 #include "audio/audio_region.h"

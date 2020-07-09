@@ -26,6 +26,8 @@
 #ifndef __TEST_HELPERS_ZRYTHM_H__
 #define __TEST_HELPERS_ZRYTHM_H__
 
+#include "zrythm-test-config.h"
+
 #include "audio/chord_track.h"
 #include "audio/engine_dummy.h"
 #include "audio/marker_track.h"

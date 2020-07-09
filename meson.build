@@ -157,12 +157,14 @@ cc = meson.get_compiler ('c')
 find_program ('sed', required: true)
 find_program ('gettext', required: true)
 dot_bin = find_program ('dot', required: false)
-have_helm = false
-helm_uri = 'http://tytel.org/helm'
-helm_bundle = 'N/A'
-have_lsp_compressor = false
-lsp_compressor_uri = 'http://lsp-plug.in/plugins/lv2/compressor_stereo'
-lsp_compressor_bundle = 'N/A'
+
+# find plugins for testing
+ext_lv2_plugins = {
+  'helm': 'http://tytel.org/helm',
+  'lsp_compressor': 'http://lsp-plug.in/plugins/lv2/compressor_stereo',
+  }
+have_ext_lv2_plugins = {}
+ext_lv2_plugin_bundles = {}
 if get_option ('tests')
   lv2ls_bin = find_program ('lv2ls', required: false)
   lv2info_bin = find_program (
@@ -172,21 +174,19 @@ if get_option ('tests')
   if lv2ls_bin.found () and lv2info_bin.found ()
     lv2ls_res = run_command (
       lv2ls_bin, check: true).stdout ()
-    have_helm = lv2ls_res.contains (helm_uri)
-    have_lsp_compressor = lv2ls_res.contains (
-      lsp_compressor_uri)
-    if have_helm
-      helm_bundle = run_command (
-        get_lv2_bundle_uri_bin, lv2info_bin,
-        helm_uri,
-        check: true).stdout ().strip ()
-    endif
-    if have_lsp_compressor
-      lsp_compressor_bundle = run_command (
-        get_lv2_bundle_uri_bin, lv2info_bin,
-        lsp_compressor_uri,
-        check: true).stdout ().strip ()
-    endif
+    foreach name, uri : ext_lv2_plugins
+      have_ext_lv2 = lv2ls_res.contains (uri)
+      have_ext_lv2_plugins += {
+        name: have_ext_lv2
+        }
+      if have_ext_lv2
+        ext_lv2_plugin_bundles += {
+          name: run_command (
+            get_lv2_bundle_uri_bin, lv2info_bin,
+            uri, check: true).stdout ().strip ()
+          }
+      endif
+    endforeach
   endif
 endif
 
@@ -807,8 +807,8 @@ summary ({
   'Plugin tests': get_option('plugin_tests'),
   'GUI tests': get_option('gui_tests'),
   'Coverage reports': get_option('b_coverage'),
-  'Helm': helm_bundle,
-  'LSP Compressor': lsp_compressor_bundle,
+  'Helm': ext_lv2_plugin_bundles['helm'],
+  'LSP Compressor': ext_lv2_plugin_bundles['lsp_compressor'],
   }, section: 'Tests')
 
 summary ({
