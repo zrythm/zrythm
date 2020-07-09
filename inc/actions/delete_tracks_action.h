@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UNDO_DELETE_TRACKS_ACTION_H__
-#define __UNDO_DELETE_TRACKS_ACTION_H__
+#ifndef __ACTION_DELETE_TRACKS_ACTION_H__
+#define __ACTION_DELETE_TRACKS_ACTION_H__
 
 #include "actions/undoable_action.h"
 #include "gui/backend/tracklist_selections.h"

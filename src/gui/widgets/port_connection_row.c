@@ -17,11 +17,14 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/undoable_action.h"
+#include "actions/undo_manager.h"
 #include "audio/port.h"
 #include "gui/widgets/bar_slider.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/port_connection_row.h"
 #include "gui/widgets/port_connections_popover.h"
+#include "project.h"
 #include "utils/gtk.h"
 
 #include <gtk/gtk.h>
@@ -50,7 +53,12 @@ on_del_clicked (
   GtkButton *               btn,
   PortConnectionRowWidget * self)
 {
-  port_disconnect (self->src, self->dest);
+  UndoableAction * ua =
+    port_connection_action_new (
+      PORT_CONNECTION_DISCONNECT,
+      &self->src->id, &self->dest->id);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
   port_connections_popover_widget_refresh (
     self->parent);
 }

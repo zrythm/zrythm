@@ -39,7 +39,7 @@
  */
 typedef enum UndoableActionType
 {
-  /* --------- Track/Channel ---------- */
+  /* ---- Track/Channel ---- */
   UA_CREATE_TRACKS,
   UA_MOVE_TRACKS,
   /** Edit track/channel parameters. */
@@ -47,9 +47,9 @@ typedef enum UndoableActionType
   UA_COPY_TRACKS,
   UA_DELETE_TRACKS,
 
-  /* ---------------- end ----------------- */
+  /* ---- end ---- */
 
-  /* ---------------- Plugin --------------- */
+  /* ---- Plugin ---- */
 
   UA_CREATE_PLUGINS,
   UA_MOVE_PLUGINS,
@@ -57,9 +57,9 @@ typedef enum UndoableActionType
   UA_COPY_PLUGINS,
   UA_DELETE_PLUGINS,
 
-  /* ---------------- end ----------------- */
+  /* ---- end ---- */
 
-  /* --------- ARRANGER SELECTIONS ---------- */
+  /* ---- ARRANGER SELECTIONS ---- */
 
   UA_CREATE_ARRANGER_SELECTIONS,
   UA_MOVE_ARRANGER_SELECTIONS,
@@ -72,7 +72,13 @@ typedef enum UndoableActionType
   UA_DELETE_ARRANGER_SELECTIONS,
   UA_QUANTIZE_ARRANGER_SELECTIONS,
 
-  /* ---------------- end ----------------- */
+  /* ---- end ---- */
+
+  /* ---- port connection ---- */
+
+  UA_PORT_CONNECTION,
+
+  /* ---- end ---- */
 
   UA_TRANSPORT,
 
@@ -121,6 +127,7 @@ undoable_action_type_strings[] =
     UA_DELETE_ARRANGER_SELECTIONS },
   { "Quantize arranger selections",
     UA_QUANTIZE_ARRANGER_SELECTIONS },
+  { "Port connection", UA_PORT_CONNECTION },
   { "Transport", UA_TRANSPORT },
 };
 

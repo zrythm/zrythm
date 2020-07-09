@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/undoable_action.h"
+#include "actions/undo_manager.h"
 #include "audio/port.h"
 #include "audio/router.h"
 #include "audio/track.h"
@@ -70,9 +72,11 @@ on_ok_clicked (
 
   if (ports_can_be_connected (src, dest))
     {
-      port_connect (
-        src, dest, 0);
-      router_recalc_graph (ROUTER);
+      UndoableAction * ua =
+        port_connection_action_new (
+          PORT_CONNECTION_CONNECT,
+          &src->id, &dest->id);
+      undo_manager_perform (UNDO_MANAGER, ua);
 
       gtk_widget_destroy (GTK_WIDGET (self->owner));
       /*port_connections_popover_widget_refresh (*/

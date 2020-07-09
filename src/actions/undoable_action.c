@@ -109,6 +109,9 @@ undoable_action_init_loaded (
     INIT_LOADED (SPLIT_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
+    INIT_LOADED (
+      PORT_CONNECTION, port_connection,
+      PortConnection);
     /*INIT_LOADED (TRANSPORT, transport, Transport);*/
     default:
       break;
@@ -202,6 +205,9 @@ undoable_action_do (UndoableAction * self)
                arranger_selections,
                ArrangerSelections);
     DO_ACTION (TRANSPORT, transport, Transport);
+    DO_ACTION (
+      PORT_CONNECTION, port_connection,
+      PortConnection);
     default:
       g_warn_if_reached ();
       ret = -1;
@@ -296,6 +302,9 @@ undoable_action_undo (UndoableAction * self)
     UNDO_ACTION (SPLIT_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
+    UNDO_ACTION (
+      PORT_CONNECTION, port_connection,
+      PortConnection);
     UNDO_ACTION (TRANSPORT, transport, Transport);
     default:
       g_warn_if_reached ();
@@ -377,6 +386,9 @@ undoable_action_free (UndoableAction * self)
     FREE_ACTION (SPLIT_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
+    FREE_ACTION (
+      PORT_CONNECTION, port_connection,
+      PortConnection);
     FREE_ACTION (TRANSPORT, transport, Transport);
     default:
       g_warn_if_reached ();
@@ -463,6 +475,8 @@ undoable_action_stringize (
     STRINGIZE_UA (SPLIT_ARRANGER_SELECTIONS,
                ArrangerSelections,
                arranger_selections);
+    STRINGIZE_UA (
+      PORT_CONNECTION, PortConnection, port_connection);
     STRINGIZE_UA (
       TRANSPORT, Transport, transport);
     default:

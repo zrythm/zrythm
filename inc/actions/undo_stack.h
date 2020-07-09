@@ -37,6 +37,7 @@
 #include "actions/edit_tracks_action.h"
 #include "actions/move_plugins_action.h"
 #include "actions/move_tracks_action.h"
+#include "actions/port_connection_action.h"
 #include "actions/transport_action.h"
 #include "utils/stack.h"
 #include "utils/yaml.h"
@@ -106,6 +107,10 @@ typedef struct UndoStack
   size_t        num_move_tracks_actions;
   size_t        move_tracks_actions_size;
 
+  PortConnectionAction ** port_connection_actions;
+  size_t        num_port_connection_actions;
+  size_t        port_connection_actions_size;
+
   TransportAction ** transport_actions;
   size_t        num_transport_actions;
   size_t        transport_actions_size;
@@ -148,6 +153,9 @@ static const cyaml_schema_field_t
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, move_tracks_actions,
     move_tracks_action_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+    UndoStack, port_connection_actions,
+    port_connection_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, transport_actions,
     transport_action_schema),
