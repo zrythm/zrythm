@@ -1,7 +1,9 @@
-Contributors:
+Authors:
 
  Alexandros Theodotou <alex@zrythm.org>
    * Main developer
+   * Main author of user manual
+   * Main author of developer docs
  Sascha Bast <sash@mischkonsum.org>
    * Piano roll auto-scroll
  Georg Krause
@@ -9,6 +11,10 @@ Contributors:
  Carlos Han (C.K. Design)
    * Zrythm logo
    * Multiple icons
+ Sidar Talei
+   * Author of `Building on Windows` article
+ Matthieu Talbot
+   * Co-author of `Building on Windows` article
 
 ----
 

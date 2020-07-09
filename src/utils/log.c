@@ -614,7 +614,7 @@ log_idle_cb (
                   GTK_WINDOW (MAIN_WINDOW),
                   _("Zrythm has encountered a "
                   "non-fatal error. It may "
-                  "continue to run but the "
+                  "continue to run but "
                   "behavior will be undefined. "),
                   ev->backtrace);
               gtk_dialog_run (GTK_DIALOG (dialog));

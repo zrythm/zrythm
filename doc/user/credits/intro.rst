@@ -5,16 +5,17 @@
 Credits
 =======
 
+Authors
+-------
+See the `AUTHORS file <https://git.sr.ht/~alextee/zrythm/tree/master/AUTHORS>`_ in the source distribution.
+These include developers, graphic artists and other authors of copyrightable work.
+
 Translators
 -----------
 See the `TRANSLATORS file <https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in the source distribution.
-These include translators for the software, the manual
+These include translators of the software, the user manual
 and the website.
 
 Other Contributors
 ------------------
 See the `THANKS file <https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in the source distribution.
-
-Icon Designers
---------------
-Carlos Han (C.K. Design)
