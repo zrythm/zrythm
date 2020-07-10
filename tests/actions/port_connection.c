@@ -125,8 +125,10 @@ _test_port_connection (
   Track * src_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
-  /* connect a plugin CV out to the track's balance */
-  Port * src_port = NULL;
+  /* connect a plugin CV out to the track's
+   * balance */
+  Port * src_port1 = NULL;
+  Port * src_port2 = NULL;
   int max_size = 20;
   Port ** ports =
     calloc ((size_t) max_size, sizeof (Port *));
@@ -142,8 +144,16 @@ _test_port_connection (
           port->id.type == TYPE_CV &&
           port->id.flow == FLOW_OUTPUT)
         {
-          src_port = port;
-          break;
+          if (src_port1)
+            {
+              src_port2 = port;
+              break;
+            }
+          else
+            {
+              src_port1 = port;
+              continue;
+            }
         }
     }
   free (ports);
@@ -169,16 +179,61 @@ _test_port_connection (
     }
   free (ports);
 
-  g_assert_nonnull (src_port);
+  g_assert_nonnull (src_port1);
+  g_assert_nonnull (src_port2);
   g_assert_nonnull (dest_port);
-  g_assert_true (src_port->is_project);
+  g_assert_true (src_port1->is_project);
+  g_assert_true (src_port2->is_project);
   g_assert_true (dest_port->is_project);
 
   ua =
     port_connection_action_new (
-      PORT_CONNECTION_CONNECT, &src_port->id,
+      PORT_CONNECTION_CONNECT, &src_port1->id,
       &dest_port->id);
   undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_cmpint (dest_port->num_srcs, ==, 1);
+  g_assert_cmpint (src_port1->num_dests, ==, 1);
+
+  undo_manager_undo (UNDO_MANAGER);
+
+  g_assert_cmpint (dest_port->num_srcs, ==, 0);
+  g_assert_cmpint (src_port1->num_dests, ==, 0);
+
+  undo_manager_redo (UNDO_MANAGER);
+
+  g_assert_cmpint (dest_port->num_srcs, ==, 1);
+  g_assert_cmpint (src_port1->num_dests, ==, 1);
+
+  ua =
+    port_connection_action_new (
+      PORT_CONNECTION_CONNECT, &src_port2->id,
+      &dest_port->id);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_cmpint (dest_port->num_srcs, ==, 2);
+  g_assert_cmpint (src_port1->num_dests, ==, 1);
+  g_assert_cmpint (src_port2->num_dests, ==, 1);
+  g_assert_true (
+    port_identifier_is_equal (
+      &src_port1->dest_ids[0], &dest_port->id));
+  g_assert_true (
+    port_identifier_is_equal (
+      &dest_port->src_ids[0], &src_port1->id));
+  g_assert_true (
+    port_identifier_is_equal (
+      &src_port2->dest_ids[0], &dest_port->id));
+  g_assert_true (
+    port_identifier_is_equal (
+      &dest_port->src_ids[1], &src_port2->id));
+  g_assert_true (
+    dest_port->srcs[0] == src_port1);
+  g_assert_true (
+    dest_port == src_port1->dests[0]);
+  g_assert_true (
+    dest_port->srcs[1] == src_port2);
+  g_assert_true (
+    dest_port == src_port2->dests[0]);
 
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);

@@ -1252,12 +1252,7 @@ track_disconnect (
   g_message ("disconnecting %s (%d)...",
     self->name, self->pos);
 
-  if (track_type_has_channel (self->type))
-    {
-      channel_disconnect (
-        self->channel, remove_pl);
-    }
-
+  /* disconnect all ports */
   int max_size = 20;
   Port ** ports =
     calloc (
@@ -1265,7 +1260,7 @@ track_disconnect (
   int num_ports = 0;
   track_append_all_ports (
     self, &ports, &num_ports,
-    true, &max_size, false);
+    true, &max_size, true);
   for (int i = 0; i < num_ports; i++)
     {
       Port * port = ports[i];
@@ -1277,6 +1272,12 @@ track_disconnect (
   if (recalc_graph)
     {
       router_recalc_graph (ROUTER);
+    }
+
+  if (track_type_has_channel (self->type))
+    {
+      channel_disconnect (
+        self->channel, remove_pl);
     }
 
   g_message ("done");

@@ -2713,7 +2713,7 @@ port_sum_signal_from_inputs (
         float maxf, minf, depth_range, val_to_use;
         /* whether this is the first CV processed
          * on this control port */
-        int first_cv = 1;
+        bool first_cv = true;
         for (k = 0; k < port->num_srcs; k++)
           {
             src_port = port->srcs[k];
@@ -2743,13 +2743,11 @@ port_sum_signal_from_inputs (
                 if (first_cv)
                   {
                     val_to_use = port->base_value;
-                    first_cv = 0;
+                    first_cv = false;
                   }
                 else
                   {
-                    val_to_use =
-                      port->lv2_port->port->
-                        control;
+                    val_to_use = port->control;
                   }
 
                 float result =

@@ -389,9 +389,14 @@ add_feeds (
   GraphNode * self,
   GraphNode * dest)
 {
+  /* return if already added */
   for (int i = 0; i < self->n_childnodes; i++)
-    if (self->childnodes[i] == dest)
-      return;
+    {
+      if (self->childnodes[i] == dest)
+        {
+          return;
+        }
+    }
 
   self->childnodes =
     (GraphNode **) realloc (
@@ -399,6 +404,8 @@ add_feeds (
       (size_t) (1 + self->n_childnodes) *
         sizeof (GraphNode *));
   self->childnodes[self->n_childnodes++] = dest;
+
+  self->terminal = false;
 }
 
 static void
@@ -418,6 +425,8 @@ add_depends (
 
   self->parentnodes[self->init_refcount - 1] =
     src;
+
+  self->initial = false;
 }
 
 /**
