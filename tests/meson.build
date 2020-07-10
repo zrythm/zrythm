@@ -40,7 +40,8 @@ if get_option ('tests')
   test_config.set_quoted (
     'MIDILIB_TEST_MIDI_FILES_PATH',
     meson.source_root () / 'ext/midilib/MIDIFiles')
-  foreach name, uri : ext_lv2_plugins
+  foreach name, info : ext_lv2_plugins
+    uri = info[1]
     have_plugin = have_ext_lv2_plugins.get (
       name, false)
     if have_plugin

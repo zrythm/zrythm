@@ -485,7 +485,7 @@ automation_track_get_val_at_pos (
     arranger_object_get_region (ap_obj);
   long localp =
     region_timeline_frames_to_local (
-      region, pos->frames, 1);
+      region, pos->frames, true);
 
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
@@ -521,6 +521,7 @@ automation_track_get_val_at_pos (
   double ratio =
     (double) (localp - ap_frames) /
     (double) (next_ap_frames - ap_frames);
+  g_return_val_if_fail (ratio >= 0, 0.f);
 
   float result =
     (float)

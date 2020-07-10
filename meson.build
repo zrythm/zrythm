@@ -160,9 +160,9 @@ dot_bin = find_program ('dot', required: false)
 
 # find plugins for testing
 ext_lv2_plugins = {
-  'ams_lfo': 'http://github.com/blablack/ams-lv2/lfo',
-  'helm': 'http://tytel.org/helm',
-  'lsp_compressor': 'http://lsp-plug.in/plugins/lv2/compressor_stereo',
+  'ams_lfo': ['AMS LFO', 'http://github.com/blablack/ams-lv2/lfo'],
+  'helm': ['Helm', 'http://tytel.org/helm'],
+  'lsp_compressor': ['LSP Compressor', 'http://lsp-plug.in/plugins/lv2/compressor_stereo'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}
@@ -175,7 +175,8 @@ if get_option ('tests')
   if lv2ls_bin.found () and lv2info_bin.found ()
     lv2ls_res = run_command (
       lv2ls_bin, check: true).stdout ()
-    foreach name, uri : ext_lv2_plugins
+    foreach name, info : ext_lv2_plugins
+      uri = info[1]
       have_ext_lv2 = lv2ls_res.contains (uri)
       have_ext_lv2_plugins += {
         name: have_ext_lv2
@@ -803,15 +804,18 @@ summary ({
   'GraphViz': have_graphviz,
   }, section: 'Features')
 
-summary ({
+tests_summary = {
   'Build tests': get_option('tests'),
   'Plugin tests': get_option('plugin_tests'),
   'GUI tests': get_option('gui_tests'),
   'Coverage reports': get_option('b_coverage'),
-  'AMS LFO': ext_lv2_plugin_bundles['ams_lfo'],
-  'Helm': ext_lv2_plugin_bundles['helm'],
-  'LSP Compressor': ext_lv2_plugin_bundles['lsp_compressor'],
-  }, section: 'Tests')
+  }
+foreach name, info : ext_lv2_plugins
+  tests_summary += {
+    info[0]: ext_lv2_plugin_bundles.get(name, 'N/A')
+    }
+endforeach
+summary (tests_summary, section: 'Tests')
 
 summary ({
   'prefix': prefix,

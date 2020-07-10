@@ -19,6 +19,7 @@
 
 #include "zrythm-test-config.h"
 
+#include "actions/create_tracks_action.h"
 #include "audio/midi_region.h"
 #include "audio/region.h"
 #include "audio/transport.h"
@@ -205,6 +206,34 @@ test_new_region ()
     }
 }
 
+static void
+test_timeline_frames_to_local (void)
+{
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_MIDI, NULL, NULL,
+      TRACKLIST->num_tracks, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  Track * track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+  Position pos, end_pos;
+  position_init (&pos);
+  position_set_to_bar (&end_pos, 4);
+  ZRegion * region =
+    midi_region_new (
+      &pos, &end_pos, track->pos, 0, 0);
+  long localp =
+    region_timeline_frames_to_local (
+      region, 13000, true);
+  g_assert_cmpint (localp, ==, 13000);
+  localp =
+    region_timeline_frames_to_local (
+      region, 13000, false);
+  g_assert_cmpint (localp, ==, 13000);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -223,6 +252,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test region is hit by range",
     (GTestFunc) test_region_is_hit_by_range);
+  g_test_add_func (
+    TEST_PREFIX "test_timeline_frames_to_local",
+    (GTestFunc) test_timeline_frames_to_local);
 
   return g_test_run ();
 }
