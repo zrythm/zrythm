@@ -1367,6 +1367,7 @@ plugin_ensure_state_dir (
       "%s_XXXXXX", escaped_name);
   char * abs_state_dir_template =
     g_build_filename (parent_dir, tmp, NULL);
+  io_mkdir (parent_dir);
   char * abs_state_dir =
     g_mkdtemp (abs_state_dir_template);
   if (!abs_state_dir)
