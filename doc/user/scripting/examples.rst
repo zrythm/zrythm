@@ -35,6 +35,26 @@ Print track names
               (newline))
             (loop (+ i 1)))))))
 
+Create Geonkick track
+---------------------
+
+.. code-block:: scheme
+
+  (use-modules
+    (actions create-tracks-action)
+    (actions undo-manager)
+    (plugins plugin-manager))
+  (define zrythm-script
+    (lambda ()
+      (let*
+        ((action
+           (create-tracks-action-new-with-plugin
+             0
+             (plugin-manager-find-plugin-from-uri
+               "http://geontime.com/geonkick")
+             4 1)))
+        (undo-manager-perform action))))
+
 Create MIDI track with notes
 ----------------------------
 

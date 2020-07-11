@@ -1343,18 +1343,17 @@ serialize_project_thread (
   size_t compressed_size;
 
   /* generate yaml */
-  g_message (
-    "%s: serializing project to yaml...",
-    __func__);
+  g_message ("serializing project to yaml...");
   GError *err = NULL;
   gint64 time_before = g_get_monotonic_time ();
   char * yaml = project_serialize (&data->project);
   gint64 time_after = g_get_monotonic_time ();
-  g_message ("%s: time to serialize: %ldms",
-    __func__,
+  g_message (
+    "time to serialize: %ldms",
     (long) (time_after - time_before) / 1000);
   if (!yaml)
     {
+      g_critical ("Failed to serialize project");
       data->has_error = true;
       goto serialize_end;
     }
@@ -1369,7 +1368,7 @@ serialize_project_thread (
   g_free (yaml);
   if (error_msg)
     {
-      g_warning (
+      g_critical (
         "Failed to compress project file: %s",
         error_msg);
       ui_show_error_message (
@@ -1388,7 +1387,7 @@ serialize_project_thread (
   free (compressed_yaml);
   if (err != NULL)
     {
-      g_warning (
+      g_critical (
         "%s: Unable to write project file: %s",
         __func__, err->message);
       g_error_free (err);
