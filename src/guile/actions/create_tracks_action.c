@@ -17,74 +17,47 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
-
 #include "guile/modules.h"
 
 #ifndef SNARF_MODE
-#include "plugins/plugin_manager.h"
-#include "zrythm.h"
-#endif
-
-/**
- * Guile function to get the zrythm pointer.
- */
-#if 0
-static SCM
-get_ptr (void)
-{
-  return scm_from_pointer (ZRYTHM, NULL);
-}
+#include "actions/create_tracks_action.h"
+#include "project.h"
 #endif
 
 SCM_DEFINE (
-  s_zrythm_get_ver, "zrythm-get-ver", 0, 0, 0,
-  (),
-  "Return the Zrythm version as a string.")
+  s_create_tracks_action_new_with_plugin,
+  "create-tracks-action-new-with-plugin", 4, 0, 0,
+  (SCM type, SCM pl_descr,
+   SCM track_pos, SCM num_tracks),
+  "Returns a new Create Tracks action for a plugin.")
 {
-  char ver[1000];
-  zrythm_get_version_with_capabilities (ver);
-  return
-    scm_from_stringn (
-      ver, strlen (ver), "UTF8",
-      SCM_FAILED_CONVERSION_QUESTION_MARK);
-}
+  UndoableAction * ua =
+    create_tracks_action_new (
+      scm_to_int (type),
+      scm_to_pointer (pl_descr),
+      NULL,
+      scm_to_int (track_pos),
+      NULL,
+      scm_to_int (num_tracks));
 
-SCM_DEFINE (
-  s_zrythm_get_plugin_manager,
-  "zrythm-get-plugin-manager", 0, 0, 0,
-  (),
-  "Return the PluginManager instance.")
-{
   return
-    scm_from_pointer (PLUGIN_MANAGER, NULL);
-}
-
-SCM_DEFINE (
-  s_zrythm_null,
-  "zrythm-null", 0, 0, 0,
-  (),
-  "Returns a NULL pointer.")
-{
-  return NULL;
+    scm_from_pointer (ua, NULL);
 }
 
 static void
 init_module (void * data)
 {
 #ifndef SNARF_MODE
-#include "zrythm.x"
+#include "actions_create_tracks_action.x"
 #endif
+
   scm_c_export (
-    "zrythm-get-ver",
-    "zrythm-get-plugin-manager",
-    "zrythm-null",
-    NULL);
+    "create-tracks-action-new-with-plugin", NULL);
 }
 
 void
-guile_zrythm_define_module (void)
+guile_actions_create_tracks_action_define_module (void)
 {
   scm_c_define_module (
-    "zrythm", init_module, NULL);
+    "actions create-tracks-action", init_module, NULL);
 }

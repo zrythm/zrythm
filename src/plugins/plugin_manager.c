@@ -1239,6 +1239,24 @@ plugin_manager_scan_plugins (
   /*print_plugins ();*/
 }
 
+const PluginDescriptor *
+plugin_manager_find_plugin_from_uri (
+  PluginManager * self,
+  const char *    uri)
+{
+  for (int i = 0; i < self->num_plugins; i++)
+    {
+      PluginDescriptor * descr =
+        self->plugin_descriptors[i];
+      if (string_is_equal (uri, descr->uri, false))
+        {
+          return descr;
+        }
+    }
+
+  return NULL;
+}
+
 void
 plugin_manager_free (
   PluginManager * self)

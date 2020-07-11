@@ -17,74 +17,65 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
-
 #include "guile/modules.h"
 
 #ifndef SNARF_MODE
-#include "plugins/plugin_manager.h"
-#include "zrythm.h"
-#endif
-
-/**
- * Guile function to get the zrythm pointer.
- */
-#if 0
-static SCM
-get_ptr (void)
-{
-  return scm_from_pointer (ZRYTHM, NULL);
-}
+#include "actions/undo_manager.h"
+#include "project.h"
 #endif
 
 SCM_DEFINE (
-  s_zrythm_get_ver, "zrythm-get-ver", 0, 0, 0,
-  (),
-  "Return the Zrythm version as a string.")
+  s_undo_manager_perform,
+  "undo-manager-perform", 1, 0, 0,
+  (SCM action),
+  "Performs the given action and adds it to the undo stack.")
 {
-  char ver[1000];
-  zrythm_get_version_with_capabilities (ver);
-  return
-    scm_from_stringn (
-      ver, strlen (ver), "UTF8",
-      SCM_FAILED_CONVERSION_QUESTION_MARK);
+  undo_manager_perform (
+    UNDO_MANAGER,
+    (UndoableAction *) scm_to_pointer (action));
+
+  return SCM_BOOL_T;
 }
 
 SCM_DEFINE (
-  s_zrythm_get_plugin_manager,
-  "zrythm-get-plugin-manager", 0, 0, 0,
-  (),
-  "Return the PluginManager instance.")
+  s_undo_manager_undo,
+  "undo-manager-undo", 0, 0, 0,
+  (SCM action),
+  "Undoes the last action.")
 {
-  return
-    scm_from_pointer (PLUGIN_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER);
+
+  return SCM_BOOL_T;
 }
 
 SCM_DEFINE (
-  s_zrythm_null,
-  "zrythm-null", 0, 0, 0,
-  (),
-  "Returns a NULL pointer.")
+  s_undo_manager_redo,
+  "undo-manager-redo", 0, 0, 0,
+  (SCM action),
+  "Redoes the last undone action.")
 {
-  return NULL;
+  undo_manager_redo (UNDO_MANAGER);
+
+  return SCM_BOOL_T;
 }
 
 static void
 init_module (void * data)
 {
 #ifndef SNARF_MODE
-#include "zrythm.x"
+#include "actions_undo_manager.x"
 #endif
+
   scm_c_export (
-    "zrythm-get-ver",
-    "zrythm-get-plugin-manager",
-    "zrythm-null",
+    "undo-manager-perform",
+    "undo-manager-undo",
+    "undo-manager-redo",
     NULL);
 }
 
 void
-guile_zrythm_define_module (void)
+guile_actions_undo_manager_define_module (void)
 {
   scm_c_define_module (
-    "zrythm", init_module, NULL);
+    "actions undo-manager", init_module, NULL);
 }

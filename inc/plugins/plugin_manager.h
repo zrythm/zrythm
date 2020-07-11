@@ -203,6 +203,11 @@ plugin_manager_scan_plugins (
   const double    max_progress,
   double *        progress);
 
+const PluginDescriptor *
+plugin_manager_find_plugin_from_uri (
+  PluginManager * self,
+  const char *    uri);
+
 void
 plugin_manager_free (
   PluginManager * self);

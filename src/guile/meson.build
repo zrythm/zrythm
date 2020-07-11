@@ -15,18 +15,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-_guile_snarfable_srcs = [
-  join_paths ('audio', 'midi_note.c'),
-  join_paths ('audio', 'midi_region.c'),
-  join_paths ('audio', 'position.c'),
-  join_paths ('audio', 'track.c'),
-  join_paths ('audio', 'tracklist.c'),
-  'zrythm.c',
+guile_snarfable_srcs = [
+  join_paths (
+    meson.current_source_dir(), 'zrythm.c'),
   ]
-guile_snarfable_srcs = []
-foreach srcfile : _guile_snarfable_srcs
-  guile_snarfable_srcs += meson.current_source_dir() / srcfile
-endforeach
+
+subdir ('actions')
+subdir ('audio')
+subdir ('plugins')
 
 guile_srcs = [
   'guile.c',
