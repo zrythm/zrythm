@@ -1073,6 +1073,14 @@ int
 port_disconnect_all (Port * port);
 
 /**
+ * Verifies that the srcs and dests are correct
+ * for project ports.
+ */
+void
+port_verify_src_and_dests (
+  Port * self);
+
+/**
  * Applies the pan to the given L/R ports.
  */
 void

@@ -71,7 +71,8 @@ audio_clip_init_loaded (
     "%s: %p", __func__, self);
 
   char * pool_dir =
-    project_get_pool_dir (PROJECT);
+    project_get_path (
+      PROJECT, PROJECT_PATH_POOL, false);
   char * noext =
     io_file_strip_ext (self->name);
   char * tmp =
@@ -189,8 +190,8 @@ audio_clip_write_to_pool (
   /* generate a copy of the given filename in the
    * project dir */
   char * prj_pool_dir =
-    project_get_pool_dir (
-      PROJECT);
+    project_get_path (
+      PROJECT, PROJECT_PATH_POOL, false);
   g_warn_if_fail (
     file_exists (prj_pool_dir));
   char * without_ext =

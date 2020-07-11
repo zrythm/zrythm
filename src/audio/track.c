@@ -708,6 +708,8 @@ track_verify_identifiers (
             automation_track_find_from_port (
               port, false), false);
         }
+
+      port_verify_src_and_dests (port);
     }
   free (ports);
 

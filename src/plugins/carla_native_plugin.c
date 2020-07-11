@@ -37,6 +37,7 @@
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/file.h"
+#include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/string.h"
 #include "zrythm.h"
@@ -54,14 +55,8 @@ carla_native_plugin_init_loaded (
   carla_native_plugin_new_from_descriptor (
     self->plugin);
 
-  g_return_if_fail (self->state_file);
-
-  char * state_dir =
-    io_path_get_parent_dir (
-      self->state_file);
   carla_native_plugin_load_state (
-    self->plugin->carla, state_dir);
-  g_free (state_dir);
+    self->plugin->carla, NULL);
 
   carla_native_plugin_free (self);
 }
@@ -1156,61 +1151,82 @@ carla_native_plugin_get_port_from_param_id (
   g_return_val_if_reached (NULL);
 }
 
+
 /**
  * Saves the state inside the given directory.
  */
 int
 carla_native_plugin_save_state (
   CarlaNativePlugin * self,
-  char *              dir)
+  bool                is_backup)
 {
-  if (self->state_file)
-    {
-      g_free (self->state_file);
-    }
-  io_mkdir (dir);
-  self->state_file =
+  char * abs_state_dir =
+    plugin_get_abs_state_dir (
+      self->plugin, is_backup);
+  io_mkdir (abs_state_dir);
+  char * state_file_abs_path =
     g_build_filename (
-      dir, CARLA_STATE_FILENAME, NULL);
+      abs_state_dir, CARLA_STATE_FILENAME, NULL);
   char * state =
     self->native_plugin_descriptor->get_state (
       self->native_plugin_handle);
   GError * err = NULL;
   g_file_set_contents (
-    self->state_file, state, -1, &err);
+    state_file_abs_path, state, -1, &err);
   if (err)
     {
       g_critical (
-        "%s: An error occurred saving the state: "
-        "%s", __func__, err->message);
+        "An error occurred saving the state: %s",
+        err->message);
       return -1;
     }
+
+  g_warn_if_fail (self->plugin->state_dir);
+
   return 0;
 }
 
+char *
+carla_native_plugin_get_abs_state_file_path (
+  CarlaNativePlugin * self,
+  bool                is_backup)
+{
+  char * abs_state_dir =
+    plugin_get_abs_state_dir (
+      self->plugin, is_backup);
+  char * state_file_abs_path =
+    g_build_filename (
+      abs_state_dir, CARLA_STATE_FILENAME, NULL);
+
+  g_free (abs_state_dir);
+
+  return state_file_abs_path;
+}
+
 /**
- * Loads the state from the given directory or from
+ * Loads the state from the given file or from
  * its state file.
- *
- * @param dir The directory to save the state from,
- *   or NULL to use
- *   \ref CarlaNativePlugin.state_file.
  */
 void
 carla_native_plugin_load_state (
   CarlaNativePlugin * self,
-  char *              dir)
+  char *              abs_path)
 {
   char * state_file;
-  if (dir)
+  if (abs_path)
     {
-      state_file =
-        g_build_filename (
-          dir, CARLA_STATE_FILENAME, NULL);
+      state_file = g_strdup (abs_path);
     }
   else
     {
-      state_file = self->state_file;
+      char * state_dir_abs_path =
+        plugin_get_abs_state_dir (
+          self->plugin, F_NOT_BACKUP);
+      state_file =
+        g_build_filename (
+          state_dir_abs_path, CARLA_STATE_FILENAME,
+          NULL);
+      g_free (state_dir_abs_path);
     }
 
   g_warn_if_fail (file_exists (state_file));
@@ -1221,8 +1237,8 @@ carla_native_plugin_load_state (
   if (err)
     {
       g_warning (
-        "%s: An error occurred reading the state: "
-        "%s", __func__, err->message);
+        "An error occurred reading the state: %s",
+        err->message);
       return;
     }
   self->native_plugin_descriptor->set_state (
@@ -1230,12 +1246,9 @@ carla_native_plugin_load_state (
   g_message (
     "%s: loading carla plugin state from %s",
     __func__, state_file);
-  g_free (state);
 
-  if (dir)
-    {
-      g_free (state_file);
-    }
+  g_free (state);
+  g_free (state_file);
 }
 
 void

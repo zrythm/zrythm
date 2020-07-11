@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -77,9 +77,6 @@ typedef struct CarlaNativePlugin
   /** Plugin ID inside carla engine. */
   unsigned int     carla_plugin_id;
 
-  /** State file. */
-  char *           state_file;
-
   /** Whether ports are already created or not. */
   bool             ports_created;
 
@@ -88,8 +85,10 @@ typedef struct CarlaNativePlugin
 static const cyaml_schema_field_t
   carla_native_plugin_fields_schema[] =
 {
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    CarlaNativePlugin, state_file),
+  /** Not really needed but cyaml fails to load if
+   * nothing is here. */
+  YAML_FIELD_INT (
+    CarlaNativePlugin, carla_plugin_id),
 
   CYAML_FIELD_END
 };
@@ -134,20 +133,16 @@ carla_native_plugin_get_descriptor_from_cached (
 int
 carla_native_plugin_save_state (
   CarlaNativePlugin * self,
-  char *              dir);
+  bool                is_backup);
 
 /**
- * Loads the state from the given directory or from
+ * Loads the state from the given file or from
  * its state file.
- *
- * @param dir The directory to save the state from,
- *   or NULL to use
- *   \ref CarlaNativePlugin.state_file.
  */
 void
 carla_native_plugin_load_state (
   CarlaNativePlugin * self,
-  char *              dir);
+  char *              abs_path);
 
 void
 carla_native_plugin_populate_banks (
@@ -164,6 +159,11 @@ int
 carla_native_plugin_instantiate (
   CarlaNativePlugin * self,
   bool                loading);
+
+char *
+carla_native_plugin_get_abs_state_file_path (
+  CarlaNativePlugin * self,
+  bool                is_backup);
 
 /**
  * Processes the plugin for this cycle.

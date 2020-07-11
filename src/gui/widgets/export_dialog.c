@@ -61,7 +61,8 @@ get_export_filename (ExportDialogWidget * self)
                      "mixdown", // TODO replace
                      format);
   char * exports_dir =
-    project_get_exports_dir (PROJECT);
+    project_get_path (
+      PROJECT, PROJECT_PATH_EXPORTS, false);
   char * tmp =
     g_build_filename (
       exports_dir,
@@ -97,7 +98,8 @@ update_text (ExportDialogWidget * self)
   "foreground=\"" matcha "\">" x "</span>"
 
   char * exports_dir =
-    project_get_exports_dir (PROJECT);
+    project_get_path (
+      PROJECT, PROJECT_PATH_EXPORTS, false);
   char * str =
     g_strdup_printf (
       "The following files will be created:\n"
@@ -458,8 +460,8 @@ on_export_clicked (
     }
 
   char * exports_dir =
-    project_get_exports_dir (
-      PROJECT);
+    project_get_path (
+      PROJECT, PROJECT_PATH_EXPORTS, false);
   char * filename =
     get_export_filename (self);
   info.file_uri =

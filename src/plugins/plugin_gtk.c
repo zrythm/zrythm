@@ -76,6 +76,7 @@ on_save_activate (
     default:
       break;
     }
+#if 0
   GtkWidget* dialog = gtk_file_chooser_dialog_new(
     _("Save State"),
     (GtkWindow*)plugin->window,
@@ -96,7 +97,7 @@ on_save_activate (
       switch (plugin->descr->protocol)
         {
         case PROT_LV2:
-          lv2_state_save (plugin->lv2, base);
+          lv2_state_save_to_file (plugin->lv2, base);
           break;
         case PROT_VST:
           break;
@@ -106,8 +107,8 @@ on_save_activate (
       g_free(path);
       g_free(base);
     }
-
   gtk_widget_destroy(dialog);
+#endif
 }
 
 void

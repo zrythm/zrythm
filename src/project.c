@@ -54,6 +54,7 @@
 #include "gui/widgets/track.h"
 #include "plugins/carla_native_plugin.h"
 #include "plugins/lv2_plugin.h"
+#include "plugins/lv2/lv2_state.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/datetime.h"
@@ -306,7 +307,8 @@ get_newer_backup (
   time_t t2;
 
   char * filepath =
-    project_get_project_file_path (self, 0);
+    project_get_path (
+      self, PROJECT_PATH_PROJECT_FILE, false);
   if (stat (filepath, &stat_res) == 0)
     {
       orig_tm = localtime (&stat_res.st_mtime);
@@ -323,7 +325,8 @@ get_newer_backup (
 
   char * result = NULL;
   char * backups_dir =
-    project_get_backups_dir (self);
+    project_get_path (
+      self, PROJECT_PATH_BACKUPS, false);
   dir = g_dir_open (backups_dir, 0, &error);
   if (!dir)
     {
@@ -395,7 +398,8 @@ set_and_create_next_available_backup_dir (
     g_free (self->backup_dir);
 
   char * backups_dir =
-    project_get_backups_dir (self);
+    project_get_path (
+      self, PROJECT_PATH_BACKUPS, false);
 
   int i = 0;
   do
@@ -809,8 +813,9 @@ load (
   gsize compressed_pj_size;
   GError *err = NULL;
   char * project_file_path_alloc =
-    project_get_project_file_path (
-      PROJECT, PROJECT->backup_dir != NULL);
+    project_get_path (
+      PROJECT, PROJECT_PATH_PROJECT_FILE,
+      PROJECT->backup_dir != NULL);
   char project_file_path[1600];
   strcpy (
     project_file_path, project_file_path_alloc);
@@ -1173,103 +1178,98 @@ project_autosave_cb (
 }
 
 /**
- * Returns the backups dir for the given Project.
- */
-char *
-project_get_backups_dir (
-  Project * self)
-{
-  g_warn_if_fail (self->dir);
-  return
-    g_build_filename (
-      self->dir,
-      PROJECT_BACKUPS_DIR,
-      NULL);
-}
-
-/**
- * Returns the exports dir for the given Project.
+ * Returns the requested project path as a newly
+ * allocated string.
  *
- * Must be g_free()'d.
- */
-char *
-project_get_exports_dir (
-  Project * self)
-{
-  g_warn_if_fail (self->dir);
-  return
-    g_build_filename (
-      self->dir,
-      PROJECT_EXPORTS_DIR,
-      NULL);
-}
-
-/**
- * Returns the states dir for the given Project.
- *
- * @param is_backup 1 to get the states dir of the
+ * @param backup Whether to get the path for the
  *   current backup instead of the main project.
  */
 char *
-project_get_states_dir (
-  Project * self,
-  const int is_backup)
+project_get_path (
+  Project *     self,
+  ProjectPath   path,
+  bool          backup)
 {
-  g_warn_if_fail (self->dir);
-  if (is_backup)
-    return
-      g_build_filename (
-        self->backup_dir,
-        PROJECT_STATES_DIR,
-        NULL);
-  else
-    return
-      g_build_filename (
-        self->dir,
-        PROJECT_STATES_DIR,
-        NULL);
-}
-
-/**
- * Returns the audio dir for the given Project.
- */
-char *
-project_get_pool_dir (
-  Project * self)
-{
-  g_warn_if_fail (self->dir);
-  return
-    g_build_filename (
-      self->dir,
-      PROJECT_POOL_DIR,
-      NULL);
-}
-
-/**
- * Returns the full project file (project.yml)
- * path.
- *
- * @param is_backup 1 to get the states dir of the
- *   current backup instead of the main project.
- */
-char *
-project_get_project_file_path (
-  Project * self,
-  const int is_backup)
-{
-  g_warn_if_fail (self->dir);
-  if (is_backup)
-    return
-      g_build_filename (
-        self->backup_dir,
-        PROJECT_FILE,
-        NULL);
-  else
-    return
-      g_build_filename (
-        self->dir,
-        PROJECT_FILE,
-        NULL);
+  g_return_val_if_fail (self->dir, NULL);
+  char * dir =
+    backup ? self->backup_dir : self->dir;
+  switch (path)
+    {
+    case PROJECT_PATH_BACKUPS:
+      return
+        g_build_filename (
+          dir, PROJECT_BACKUPS_DIR, NULL);
+    case PROJECT_PATH_EXPORTS:
+      return
+        g_build_filename (
+          dir, PROJECT_EXPORTS_DIR, NULL);
+    case PROJECT_PATH_PLUGINS:
+      return
+        g_build_filename (
+          dir, PROJECT_PLUGINS_DIR, NULL);
+    case PROJECT_PATH_PLUGIN_STATES:
+      {
+        char * plugins_dir =
+          project_get_path (
+            self, PROJECT_PATH_PLUGINS, backup);
+        char * ret =
+          g_build_filename (
+            plugins_dir, PROJECT_PLUGIN_STATES_DIR,
+            NULL);
+        g_free (plugins_dir);
+        return ret;
+      }
+      break;
+    case PROJECT_PATH_PLUGIN_EXT_COPIES:
+      {
+        char * plugins_dir =
+          project_get_path (
+            self, PROJECT_PATH_PLUGINS, backup);
+        char * ret =
+          g_build_filename (
+            plugins_dir,
+            PROJECT_PLUGIN_EXT_COPIES_DIR,
+            NULL);
+        g_free (plugins_dir);
+        return ret;
+      }
+      break;
+    case PROJECT_PATH_PLUGIN_EXT_LINKS:
+      {
+        char * plugins_dir =
+          project_get_path (
+            self, PROJECT_PATH_PLUGINS, backup);
+        char * ret =
+          g_build_filename (
+            plugins_dir,
+            PROJECT_PLUGIN_EXT_LINKS_DIR,
+            NULL);
+        g_free (plugins_dir);
+        return ret;
+      }
+      break;
+    case PROJECT_PATH_POOL:
+      return
+        g_build_filename (
+          self->dir, PROJECT_POOL_DIR, NULL);
+    case PROJECT_PATH_PROJECT_FILE:
+      if (backup)
+        {
+          return
+            g_build_filename (
+              self->backup_dir, PROJECT_FILE, NULL);
+        }
+      else
+        {
+          return
+            g_build_filename (
+              self->dir, PROJECT_FILE, NULL);
+        }
+      break;
+    default:
+      g_return_val_if_reached (NULL);
+    }
+  g_return_val_if_reached (NULL);
 }
 
 /**
@@ -1459,8 +1459,8 @@ int
 project_save (
   Project *    self,
   const char * _dir,
-  const int    is_backup,
-  const int    show_notification,
+  const bool   is_backup,
+  const bool   show_notification,
   const bool   async)
 {
   int i, j;
@@ -1471,14 +1471,7 @@ project_save (
    * exist */
   set_dir (self, dir);
   io_mkdir (PROJECT->dir);
-  char * exports_dir =
-    project_get_exports_dir (PROJECT);
-  io_mkdir (exports_dir);
-  char * pool_dir =
-    project_get_pool_dir (PROJECT);
-  io_mkdir (pool_dir);
-  g_free (exports_dir);
-  g_free (pool_dir);
+  char * tmp;
 
   /* set the title */
   char * basename =
@@ -1494,13 +1487,24 @@ project_save (
   if (is_backup)
     set_and_create_next_available_backup_dir (self);
 
+#define MK_PROJECT_DIR(_path) \
+  tmp = \
+    project_get_path ( \
+      self, PROJECT_PATH_##_path, is_backup); \
+  io_mkdir (tmp); \
+  g_free_and_null (tmp)
+
+  MK_PROJECT_DIR (EXPORTS);
+  MK_PROJECT_DIR (POOL);
+  MK_PROJECT_DIR (PLUGIN_STATES);
+  MK_PROJECT_DIR (PLUGIN_EXT_COPIES);
+  MK_PROJECT_DIR (PLUGIN_EXT_LINKS);
+
   /* write plugin states, prepare channels for
    * serialization, */
   Track * track;
   Channel * ch;
   Plugin * pl;
-  char * states_dir =
-    project_get_states_dir (self, is_backup);
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
@@ -1523,6 +1527,7 @@ project_save (
           if (!pl)
             continue;
 
+#if 0
           /* save state */
           char tr_name[900];
           io_escape_dir_name (
@@ -1539,7 +1544,8 @@ project_save (
             {
               ret =
                 carla_native_plugin_save_state (
-                  pl->carla, state_dir_plugin);
+                  pl->carla, state_dir_plugin,
+                  false);
             }
           else
             {
@@ -1548,7 +1554,7 @@ project_save (
                 {
                 case PROT_LV2:
                   ret =
-                    lv2_plugin_save_state_to_file (
+                    lv2_state_save_to_file (
                       pl->lv2, state_dir_plugin);
                   break;
                 default:
@@ -1560,15 +1566,39 @@ project_save (
 #endif
           g_free (state_dir_plugin);
           g_return_val_if_fail (ret == 0, -1);
+#endif
+
+          /* save state */
+#ifdef HAVE_CARLA
+          if (pl->descr->open_with_carla)
+            {
+              carla_native_plugin_save_state (
+                pl->carla, is_backup);
+            }
+          else
+            {
+#endif
+              switch (pl->descr->protocol)
+                {
+                case PROT_LV2:
+                  lv2_state_save_to_file (
+                    pl->lv2, is_backup);
+                  break;
+                default:
+                  g_warn_if_reached ();
+                  break;
+                }
+#ifdef HAVE_CARLA
+            }
+#endif
         }
     }
-  g_free (states_dir);
 
   ProjectSaveData * data =
     object_new (ProjectSaveData);
   data->project_file_path =
-    project_get_project_file_path (
-      self, is_backup);
+    project_get_path (
+      self, PROJECT_PATH_PROJECT_FILE, is_backup);
   data->show_notification = show_notification;
   data->is_backup = is_backup;
   memcpy (

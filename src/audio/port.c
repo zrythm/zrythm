@@ -1438,6 +1438,48 @@ port_disconnect_all (
 }
 
 /**
+ * Verifies that the srcs and dests are correct
+ * for project ports.
+ */
+void
+port_verify_src_and_dests (
+  Port * self)
+{
+  if (self->is_project)
+    {
+      /* verify all sources */
+      for (int i = 0; i < self->num_srcs; i++)
+        {
+          Port * src = self->srcs[i];
+          int dest_idx =
+            port_get_dest_index (src, self);
+          g_warn_if_fail (
+            src->dests[dest_idx] == self &&
+            port_identifier_is_equal (
+              &src->dest_ids[dest_idx],
+              &self->id) &&
+            port_identifier_is_equal (
+              &src->id, &self->src_ids[i]));
+        }
+
+      /* verify all dests */
+      for (int i = 0; i < self->num_dests; i++)
+        {
+          Port * dest = self->dests[i];
+          int src_idx =
+            port_get_src_index (dest, self);
+          g_warn_if_fail (
+            dest->srcs[src_idx] == self &&
+            port_identifier_is_equal (
+              &dest->src_ids[src_idx],
+              &self->id) &&
+            port_identifier_is_equal (
+              &dest->id, &self->dest_ids[i]));
+        }
+    }
+}
+
+/**
  * To be called when the port's identifier changes
  * to update corresponding identifiers.
  */
@@ -1445,6 +1487,10 @@ void
 port_update_identifier (
   Port * self)
 {
+  /*g_message (*/
+    /*"updating identifier for %p %s (track pos %d)", */
+    /*self, self->id.label, self->id.track_pos);*/
+
   if (self->is_project)
     {
       /* update in all sources */

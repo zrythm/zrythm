@@ -68,6 +68,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/err_codes.h"
+#include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/math.h"
 #include "utils/string.h"
@@ -122,19 +123,6 @@ feature_is_supported (
         return 1;
     }
   return 0;
-}
-
-/**
- * Initializes the given feature.
- */
-static void
-init_feature (
-  LV2_Feature* const dest,
-  const char* const URI,
-  void* data)
-{
-  dest->URI = URI;
-  dest->data = data;
 }
 
 /**
@@ -578,7 +566,8 @@ lv2_create_or_init_ports (
   Lv2Plugin* self,
   bool       project)
 {
-  g_return_val_if_fail (self->plugin, -1);
+  g_return_val_if_fail (
+    self->plugin && self->lilv_plugin, -1);
 
   /* zrythm ports exist when loading a
    * project since they are serialized */
@@ -731,8 +720,8 @@ lv2_plugin_allocate_port_buffers (
  * This function MUST set size and type
  * appropriately.
  */
-static const void *
-lv2_get_port_value (
+const void *
+lv2_plugin_get_port_value (
   const char * port_sym,
   void       * user_data,
   uint32_t   * size,
@@ -956,12 +945,17 @@ connect_port(
     }
 }
 
-#define INIT_FEATURE(x,uri) \
-  init_feature (&plugin->x, uri, NULL)
-
+/**
+ * Initializes the plugin features.
+ *
+ * This is called on instantiation.
+ */
 static void
 set_features (Lv2Plugin * plugin)
 {
+#define INIT_FEATURE(x,uri) \
+  plugin->x.URI = uri; \
+  plugin->x.data = NULL
   plugin->ext_data.data_access = NULL;
 
   INIT_FEATURE (
@@ -969,7 +963,9 @@ set_features (Lv2Plugin * plugin)
   INIT_FEATURE (
     unmap_feature, LV2_URID__unmap);
   INIT_FEATURE (
-    make_path_feature, LV2_STATE__makePath);
+    make_path_feature_save, LV2_STATE__makePath);
+  INIT_FEATURE (
+    make_path_feature_temp, LV2_STATE__makePath);
   INIT_FEATURE (
     sched_feature, LV2_WORKER__schedule);
   INIT_FEATURE (
@@ -983,6 +979,8 @@ set_features (Lv2Plugin * plugin)
     options_feature, LV2_OPTIONS__options);
   INIT_FEATURE (
     def_state_feature, LV2_STATE__loadDefaultState);
+
+#undef INIT_FEATURE
 
   /** These features have no data */
   plugin->buf_size_features[0].URI =
@@ -1016,7 +1014,7 @@ set_features (Lv2Plugin * plugin)
   plugin->state_features[1] =
     &plugin->unmap_feature;
   plugin->state_features[2] =
-    &plugin->make_path_feature;
+    &plugin->make_path_feature_save;
   plugin->state_features[3] =
     &plugin->state_sched_feature;
   plugin->state_features[4] =
@@ -1535,6 +1533,23 @@ lv2_plugin_pick_ui (
   return false;
 }
 
+char *
+lv2_plugin_get_abs_state_file_path (
+  Lv2Plugin * self,
+  bool        is_backup)
+{
+  char * abs_state_dir =
+    plugin_get_abs_state_dir (
+      self->plugin, is_backup);
+  char * state_file_abs_path =
+    g_build_filename (
+      abs_state_dir, "state.ttl", NULL);
+
+  g_free (abs_state_dir);
+
+  return state_file_abs_path;
+}
+
 /**
  * Instantiate the plugin.
  *
@@ -1544,7 +1559,13 @@ lv2_plugin_pick_ui (
  * uri should be the state file path.
  *
  * @param self Plugin to instantiate.
+ * @param use_state_file Whether to use the plugin's
+ *   state file to instantiate the plugin.
  * @param preset_uri URI of preset to load.
+ * @param state State to load, if loading from
+ *   a state. This is used when cloning plugins
+ *   for example. The state of the original plugin
+ *   is passed here.
  *
  * @return 0 if OK, non-zero if error.
  */
@@ -1552,14 +1573,16 @@ int
 lv2_plugin_instantiate (
   Lv2Plugin *  self,
   bool         project,
-  char *       preset_uri)
+  bool         use_state_file,
+  char *       preset_uri,
+  LilvState *  state)
 {
   g_message (
     "Instantiating... uri: %s, project: %d, "
     "preset_uri: %s, "
-    "self->state_file: %s",
+    "state: %p",
     self->plugin->descr->uri, project,
-    preset_uri, self->state_file);
+    preset_uri, state);
 
   set_features (self);
 
@@ -1609,9 +1632,17 @@ lv2_plugin_instantiate (
     g_strjoin (NULL, templ, "/", NULL);
   g_free (templ);
 
-  self->make_path.handle = &self;
-  self->make_path.path = lv2_state_make_path;
-  self->make_path_feature.data = &self->make_path;
+  self->make_path_save.handle = &self;
+  self->make_path_save.path =
+    lv2_state_make_path_save;
+  self->make_path_feature_save.data =
+    &self->make_path_save;
+
+  self->make_path_temp.handle = &self;
+  self->make_path_temp.path =
+    lv2_state_make_path_temp;
+  self->make_path_feature_temp.data =
+    &self->make_path_temp;
 
   self->sched.handle = &self->worker;
   self->sched.schedule_work = lv2_worker_schedule;
@@ -1631,72 +1662,75 @@ lv2_plugin_instantiate (
   zix_sem_init(&self->worker.sem, 0);
 
   /* Load preset, if specified */
-  if (preset_uri)
+  if (!state)
     {
-      LilvNode* preset =
-        lilv_new_uri (
-          LILV_WORLD, preset_uri);
-
-      lv2_state_load_presets (
-        self, NULL, NULL);
-      self->state =
-        lilv_state_new_from_world (
-          LILV_WORLD, &self->map, preset);
-      self->preset = self->state;
-      lilv_node_free(preset);
-      if (!self->state)
+      if (preset_uri)
         {
-          g_warning (
-            "Failed to find preset <%s>\n",
-            preset_uri);
-          return -1;
-        }
-  }
-  else if (self->state_file)
-    {
-      char * states_dir =
-        project_get_states_dir (
-          PROJECT, PROJECT->backup_dir != NULL);
-      char * state_file_path =
-        g_build_filename (
-          states_dir, self->state_file, NULL);
-      g_free (states_dir);
-      self->state =
-        lilv_state_new_from_file (
-          LILV_WORLD, &self->map, NULL,
-          state_file_path);
-      if (!self->state)
-        {
-          g_critical (
-            "Failed to load state from %s\n",
-            state_file_path);
-          return ERR_FAILED_TO_LOAD_STATE_FROM_FILE;
-        }
-      g_free (state_file_path);
+          LilvNode* preset =
+            lilv_new_uri (
+              LILV_WORLD, preset_uri);
 
-      LilvNode * lv2_uri =
-        lilv_node_duplicate (
-          lilv_state_get_plugin_uri (self->state));
-
-      if (!lv2_uri)
+          lv2_state_load_presets (
+            self, NULL, NULL);
+          state =
+            lilv_state_new_from_world (
+              LILV_WORLD, &self->map, preset);
+          self->preset = state;
+          lilv_node_free(preset);
+          if (!state)
+            {
+              g_warning (
+                "Failed to find preset <%s>\n",
+                preset_uri);
+              return -1;
+            }
+      }
+      else if (use_state_file)
         {
-          g_warning ("Missing plugin URI, try lv2ls"
-                     " to list plugins");
-        }
+          char * state_file_path =
+            lv2_plugin_get_abs_state_file_path (
+              self, F_NOT_BACKUP);
+          state =
+            lilv_state_new_from_file (
+              LILV_WORLD, &self->map, NULL,
+              state_file_path);
+          if (!state)
+            {
+              g_critical (
+                "Failed to load state from %s",
+                state_file_path);
+              return
+                ERR_FAILED_TO_LOAD_STATE_FROM_FILE;
+            }
+          g_free (state_file_path);
 
-      /* Find plugin */
-      g_message ("Plugin: %s",
-                 lilv_node_as_string (lv2_uri));
-      g_return_val_if_fail (
-        PM_LILV_NODES.lilv_plugins, -1);
-      self->lilv_plugin =
-        lilv_plugins_get_by_uri (
-          PM_LILV_NODES.lilv_plugins,
-          lv2_uri);
-      lilv_node_free (lv2_uri);
-      if (!self->lilv_plugin)
-        {
-          g_warning ("Failed to find plugin");
+          LilvNode * lv2_uri =
+            lilv_node_duplicate (
+              lilv_state_get_plugin_uri (
+                state));
+
+          if (!lv2_uri)
+            {
+              g_warning (
+                "Missing plugin URI, try lv2ls"
+                " to list plugins");
+            }
+
+          /* Find plugin */
+          g_message (
+            "Plugin: %s",
+            lilv_node_as_string (lv2_uri));
+          g_return_val_if_fail (
+            PM_LILV_NODES.lilv_plugins, -1);
+          self->lilv_plugin =
+            lilv_plugins_get_by_uri (
+              PM_LILV_NODES.lilv_plugins,
+              lv2_uri);
+          lilv_node_free (lv2_uri);
+          if (!self->lilv_plugin)
+            {
+              g_warning ("Failed to find plugin");
+            }
         }
     }
 
@@ -1735,11 +1769,11 @@ lv2_plugin_instantiate (
       self->safe_restore = true;
     }
 
-  if (!self->state)
+  if (!state)
     {
       /* Not restoring state, load the plugin as a
        * preset to get default */
-      self->state =
+      state =
         lilv_state_new_from_world (
           LILV_WORLD, &self->map,
           lilv_plugin_get_uri (self->lilv_plugin));
@@ -1866,10 +1900,9 @@ lv2_plugin_instantiate (
     self->options, options,
     sizeof (self->options));
 
-  init_feature (
-    &self->options_feature,
-    LV2_OPTIONS__options,
-    (void*)self->options);
+  self->options_feature.URI = LV2_OPTIONS__options;
+  self->options_feature.data =
+    (void *) self->options;
 
   /* Create Plugin <=> UI communication buffers */
   self->ui_to_plugin_events =
@@ -1918,9 +1951,9 @@ lv2_plugin_instantiate (
 
   /* Apply loaded state to plugin instance if
    * necessary */
-  if (self->state)
+  if (state)
     {
-      lv2_state_apply_state (self, self->state);
+      lv2_state_apply_state (self, state);
     }
 
   /* Connect ports to buffers */
@@ -2310,53 +2343,6 @@ lv2_plugin_process (
     }
 }
 
-int
-lv2_plugin_save_state_to_file (
-  Lv2Plugin * lv2_plugin,
-  const char * dir)
-{
-  LilvState * state = lilv_state_new_from_instance (
-    lv2_plugin->lilv_plugin,
-    lv2_plugin->instance,
-    &lv2_plugin->map,
-    NULL,
-    dir,
-    dir,
-    /*dir, [> FIXME use lv2_plugin->save_dir when opening a project <]*/
-    dir, /* FIXME use lv2_plugin->save_dir when opening a project */
-    lv2_get_port_value,
-    (void *) lv2_plugin,
-    LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE,
-    lv2_plugin->state_features);
-
-  g_return_val_if_fail (state, -1);
-
-  char * escaped_name =
-    plugin_get_escaped_name (lv2_plugin->plugin);
-  char * label =
-    g_strdup_printf (
-      "%s.ttl", escaped_name);
-  g_free (escaped_name);
-  int rc =
-    lilv_state_save (
-      LILV_WORLD, &lv2_plugin->map,
-      &lv2_plugin->unmap, state, NULL,
-      dir, label);
-  if (rc)
-    {
-      g_warning ("Lilv save state failed");
-      return -1;
-    }
-  char * tmp = g_path_get_basename (dir);
-  lv2_plugin->state_file =
-    g_build_filename (tmp, label, NULL);
-  g_free (label);
-  g_free (tmp);
-  lilv_state_free (state);
-
-  return 0;
-}
-
 /**
  * Updates theh PortIdentifier's in the Lv2Plugin.
  */
@@ -2372,34 +2358,6 @@ lv2_plugin_update_port_identifiers (
         &port->port_id,
         &port->port->id);
     }
-}
-
-/**
- * Saves the current state to a string (returned).
- *
- * MUST be free'd by caller.
- */
-int
-lv2_plugin_save_state_to_str (
-  Lv2Plugin * lv2_plugin)
-{
-  g_warn_if_reached ();
-
-  /* TODO */
-  /*LilvState * state =*/
-    /*lilv_state_new_from_instance (*/
-      /*lv2_plugin->lilv_plugin,*/
-      /*lv2_plugin->instance,*/
-      /*&lv2_plugin->map,*/
-      /*NULL,*/
-      /*NULL,*/
-      /*NULL,*/
-      /*lv2_get_port_value,*/
-      /*(void *) lv2_plugin,*/
-      /*LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE,*/
-      /*lv2_plugin->state_features);*/
-
-  return -1;
 }
 
 /**

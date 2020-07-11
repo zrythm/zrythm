@@ -1112,6 +1112,12 @@ plugin_instantiate (
 
   plugin_set_ui_refresh_rate (pl);
 
+  if (!PROJECT->loaded)
+    {
+      g_return_val_if_fail (pl->state_dir, -1);
+    }
+  g_message ("state dir: %s", pl->state_dir);
+
   if (pl->descr->open_with_carla)
     {
 #ifdef HAVE_CARLA
@@ -1127,11 +1133,11 @@ plugin_instantiate (
         {
         case PROT_LV2:
           {
-            g_message ("state file: %s",
-                       pl->lv2->state_file);
             pl->lv2->plugin = pl;
             if (lv2_plugin_instantiate (
-                  pl->lv2, project, NULL))
+                  pl->lv2, project,
+                  pl->state_dir ? true : false,
+                  NULL, NULL))
               {
                 g_warning ("lv2 instantiate failed");
                 return -1;
@@ -1305,37 +1311,76 @@ plugin_is_selected (
 }
 
 /**
- * Generates a state directory path for the plugin.
- *
- * @param mkdir Create the directory at the path.
- *
- * @return The path. Must be free'd by caller with
- *   g_free().
+ * Returns the state dir as an absolute path.
  */
 char *
-plugin_generate_state_dir (
-  Plugin * pl,
-  bool     mkdir)
+plugin_get_abs_state_dir (
+  Plugin * self,
+  bool     is_backup)
 {
+  plugin_ensure_state_dir (self, is_backup);
+
+  char * parent_dir =
+    project_get_path (
+      PROJECT, PROJECT_PATH_PLUGIN_STATES,
+      is_backup);
+  char * full_path =
+    g_build_filename (
+      parent_dir, self->state_dir, NULL);
+
+  g_free (parent_dir);
+
+  return full_path;
+}
+
+/**
+ * Ensures the state dir exists or creates it.
+ */
+void
+plugin_ensure_state_dir (
+  Plugin * self,
+  bool     is_backup)
+{
+  if (self->state_dir)
+    {
+      char * parent_dir =
+        project_get_path (
+          PROJECT, PROJECT_PATH_PLUGIN_STATES,
+          is_backup);
+      char * abs_state_dir =
+        g_build_filename (
+          parent_dir, self->state_dir, NULL);
+      io_mkdir (abs_state_dir);
+      g_free (parent_dir);
+      g_free (abs_state_dir);
+      return;
+    }
+
   char * escaped_name =
-    plugin_get_escaped_name (pl);
+    plugin_get_escaped_name (self);
+  char * parent_dir =
+    project_get_path (
+      PROJECT, PROJECT_PATH_PLUGIN_STATES,
+      is_backup);
   char * tmp =
     g_strdup_printf (
-      "tmp_%s_XXXXXX", escaped_name);
-  char * states_dir =
-    project_get_states_dir (
-      PROJECT, PROJECT->backup_dir != NULL);
-  char * state_dir_plugin =
-    g_build_filename (
-      states_dir, tmp, NULL);
-  g_free (states_dir);
-  g_free (tmp);
+      "%s_XXXXXX", escaped_name);
+  char * abs_state_dir_template =
+    g_build_filename (parent_dir, tmp, NULL);
+  char * abs_state_dir =
+    g_mkdtemp (abs_state_dir_template);
+  if (!abs_state_dir)
+    {
+      g_critical (
+        "Failed to make state dir: %s",
+        strerror (errno));
+    }
+  self->state_dir =
+    g_path_get_basename (abs_state_dir);
   g_free (escaped_name);
-
-  if (mkdir)
-    io_mkdir (state_dir_plugin);
-
-  return state_dir_plugin;
+  g_free (parent_dir);
+  g_free (tmp);
+  g_free (abs_state_dir);
 }
 
 /**
@@ -1373,27 +1418,21 @@ plugin_clone (
       g_return_val_if_fail (ret == 0, NULL);
 
       /* save the state of the original plugin */
-      char * state_dir_pl =
-        plugin_generate_state_dir (pl, true);
       carla_native_plugin_save_state (
-        pl->carla, state_dir_pl);
+        pl->carla, F_NOT_BACKUP);
 
       /* load the state to the new plugin. */
+      char * state_file_abs_path =
+        carla_native_plugin_get_abs_state_file_path  (
+          pl->carla, F_NOT_BACKUP);
       carla_native_plugin_load_state (
-        clone->carla, state_dir_pl);
-
-      g_free (state_dir_pl);
+        clone->carla, state_file_abs_path);
     }
   else
     {
 #endif
       if (pl->descr->protocol == PROT_LV2)
         {
-          /* NOTE from rgareus:
-           * I think you can use   lilv_state_restore (lilv_state_new_from_instance (..), ...)
-           * and skip  lilv_state_new_from_file() ; lilv_state_save ()
-           * lilv_state_new_from_instance() handles files and externals, too */
-
           /* if src plugin not instantiated,
            * instantiate it */
           if (!pl->instantiated)
@@ -1404,42 +1443,34 @@ plugin_clone (
               g_return_val_if_fail (ret == 0, NULL);
             }
 
-          /* save state to file */
-          char * state_dir_plugin =
-            plugin_generate_state_dir (
-              pl, true);
-          lv2_plugin_save_state_to_file (
-            pl->lv2, state_dir_plugin);
-          g_free (state_dir_plugin);
-          g_return_val_if_fail (
-            pl->lv2->state_file, NULL);
+          /* Make a state */
+          LilvState * state =
+            lv2_state_save_to_file (
+              pl->lv2, F_NOT_BACKUP);
 
-          /* create a new plugin with same descriptor */
+          /* create a new plugin with same
+           * descriptor */
           clone =
             plugin_new_from_descr (
               pl->descr, pl->id.track_pos,
               pl->id.slot);
 
-          /* set the state file on the new Lv2Plugin
-           * as the state filed saved on the original
-           * so that it can be used when
-           * instantiating */
-          clone->lv2->state_file =
-            g_strdup (pl->lv2->state_file);
-
-          /* instantiate */
+          /* instantiate using the state */
           int ret =
-            plugin_instantiate (clone, false);
+            lv2_plugin_instantiate (
+              clone->lv2, false, false, NULL,
+              state);
           g_return_val_if_fail (!ret, NULL);
 
+          /* verify */
           g_return_val_if_fail (
             clone && clone->lv2 &&
             clone->lv2->num_ports ==
               pl->lv2->num_ports,
             NULL);
 
-          /* delete the state file */
-          io_remove (pl->lv2->state_file);
+          /* free the state */
+          lilv_state_free (state);
         }
 #ifdef HAVE_CARLA
     }

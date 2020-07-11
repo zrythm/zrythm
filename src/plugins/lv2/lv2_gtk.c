@@ -98,6 +98,9 @@ void
 lv2_gtk_on_save_activate (
   Lv2Plugin * plugin)
 {
+  return;
+
+# if 0
   GtkWidget* dialog = gtk_file_chooser_dialog_new(
     _("Save State"),
     plugin->plugin->window,
@@ -113,12 +116,13 @@ lv2_gtk_on_save_activate (
         GTK_FILE_CHOOSER(dialog));
     char* base =
       g_build_filename (path, "/", NULL);
-    lv2_state_save (plugin, base);
-    g_free(path);
-    g_free(base);
+    lv2_state_save_to_file (plugin, base);
+    g_free (path);
+    g_free (base);
   }
 
   gtk_widget_destroy(dialog);
+#endif
 }
 
 static char*

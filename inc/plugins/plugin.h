@@ -124,6 +124,16 @@ typedef struct Plugin
    * per second). */
   float             ui_update_hz;
 
+  /**
+   * State directory (only basename).
+   *
+   * Used for saving/loading the state.
+   *
+   * @note This is only the directory basename and
+   *   should go in project/plugins/states.
+   */
+  char *            state_dir;
+
   /** Whether the plugin is currently being
    * deleted. */
   bool              deleting;
@@ -196,6 +206,8 @@ plugin_fields_schema[] =
     Plugin, enabled, port_fields_schema),
   YAML_FIELD_INT (
     Plugin, visible),
+  YAML_FIELD_STRING_PTR (
+    Plugin, state_dir),
 
   CYAML_FIELD_END
 };
@@ -378,17 +390,20 @@ plugin_get_escaped_name (
   Plugin * pl);
 
 /**
- * Generates a state directory path for the plugin.
- *
- * @param mkdir Create the directory at the path.
- *
- * @return The path. Must be free'd by caller with
- *   g_free().
+ * Returns the state dir as an absolute path.
  */
 char *
-plugin_generate_state_dir (
-  Plugin * pl,
-  bool     mkdir);
+plugin_get_abs_state_dir (
+  Plugin * self,
+  bool     is_backup);
+
+/**
+ * Ensures the state dir exists or creates it.
+ */
+void
+plugin_ensure_state_dir (
+  Plugin * self,
+  bool     is_backup);
 
 Channel *
 plugin_get_channel (

@@ -202,7 +202,8 @@ test_export_wav ()
   settings.mode = EXPORT_MODE_FULL;
   settings.time_range = TIME_RANGE_LOOP;
   char * exports_dir =
-    project_get_exports_dir (PROJECT);
+    project_get_path (
+      PROJECT, PROJECT_PATH_EXPORTS, false);
   settings.file_uri =
     g_build_filename (
       exports_dir, "test_wav.wav", NULL);

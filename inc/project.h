@@ -66,9 +66,36 @@ typedef struct TracklistSelections
 #define DEFAULT_PROJECT_NAME    "Untitled Project"
 #define PROJECT_FILE            "project.zpj"
 #define PROJECT_BACKUPS_DIR     "backups"
-#define PROJECT_STATES_DIR      "states"
+#define PROJECT_PLUGINS_DIR     "plugins"
+#define PROJECT_PLUGIN_STATES_DIR "states"
+#define PROJECT_PLUGIN_EXT_COPIES_DIR "ext_file_copies"
+#define PROJECT_PLUGIN_EXT_LINKS_DIR "ext_file_links"
 #define PROJECT_EXPORTS_DIR     "exports"
 #define PROJECT_POOL_DIR        "pool"
+
+typedef enum ProjectPath
+{
+  PROJECT_PATH_PROJECT_FILE,
+  PROJECT_PATH_BACKUPS,
+
+  /** Plugins path. */
+  PROJECT_PATH_PLUGINS,
+
+  /** Path for state .ttl files. */
+  PROJECT_PATH_PLUGIN_STATES,
+
+  /** External files for plugin states, under the
+   * STATES dir. */
+  PROJECT_PATH_PLUGIN_EXT_COPIES,
+
+  /** External files for plugin states, under the
+   * STATES dir. */
+  PROJECT_PATH_PLUGIN_EXT_LINKS,
+
+  PROJECT_PATH_EXPORTS,
+
+  PROJECT_PATH_POOL,
+} ProjectPath;
 
 /**
  * Selection type, used for displaying info in the
@@ -316,8 +343,8 @@ int
 project_save (
   Project *    self,
   const char * _dir,
-  const int    is_backup,
-  const int    show_notification,
+  const bool   is_backup,
+  const bool   show_notification,
   const bool   async);
 
 /**
@@ -334,48 +361,17 @@ project_autosave_cb (
   void * data);
 
 /**
- * Returns the backups dir for the given Project.
- */
-char *
-project_get_backups_dir (
-  Project * self);
-
-/**
- * Returns the exports dir for the given Project.
- */
-char *
-project_get_exports_dir (
-  Project * self);
-
-/**
- * Returns the states dir for the given Project.
+ * Returns the requested project path as a newly
+ * allocated string.
  *
- * @param is_backup 1 to get the states dir of the
+ * @param backup Whether to get the path for the
  *   current backup instead of the main project.
  */
 char *
-project_get_states_dir (
-  Project * self,
-  const int is_backup);
-
-/**
- * Returns the pool dir for the given Project.
- */
-char *
-project_get_pool_dir (
-  Project * self);
-
-/**
- * Returns the full project file (project.yml)
- * path.
- *
- * @param is_backup 1 to get the project file of the
- *   current backup instead of the main project.
- */
-char *
-project_get_project_file_path (
-  Project * self,
-  const int is_backup);
+project_get_path (
+  Project *     self,
+  ProjectPath   path,
+  bool          backup);
 
 /**
  * Initializes the selections in the project.

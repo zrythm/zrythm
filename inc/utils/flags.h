@@ -139,4 +139,7 @@
 #define F_EXCLUSIVE 1
 #define F_NOT_EXCLUSIVE 0
 
+#define F_BACKUP 1
+#define F_NOT_BACKUP 0
+
 #endif

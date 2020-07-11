@@ -210,10 +210,18 @@ tracklist_insert_track (
   for (int i = 0;
        i < self->num_tracks; i++)
     {
+      if (i == pos)
+        continue;
+
       track_set_pos (self->tracks[i], i);
     }
 
   track_set_is_project (track, true);
+
+  /* this is needed again since "set_is_project"
+   * made some ports from non-project to project
+   * and they weren't considered before */
+  track_set_pos (track, pos);
 
   if (track->channel)
     {

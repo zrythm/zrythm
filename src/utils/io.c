@@ -52,6 +52,7 @@
 #include "utils/string.h"
 #include "utils/system.h"
 
+#include <glib/gstdio.h>
 #include <gtk/gtk.h>
 
 #ifdef MAC_RELEASE
@@ -209,8 +210,8 @@ int
 io_remove (
   const char * path)
 {
-
-  return 0;
+  g_message ("Removing %s", path);
+  return g_remove (path);
 }
 
 /**
@@ -221,10 +222,10 @@ io_rmdir (
   const char * path,
   int          force)
 {
-  /* TODO */
-  g_message ("Removing %s", path);
+  g_return_val_if_fail (!force, -1);
 
-  return 0;
+  g_message ("Removing %s", path);
+  return g_rmdir (path);
 }
 
 /**

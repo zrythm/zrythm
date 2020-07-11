@@ -21,16 +21,16 @@
 
 #include "lv2/atom/atom.h"
 #include "lv2/event/event.h"
-
 #include "plugins/lv2/lv2_evbuf.h"
+#include "utils/objects.h"
 
 #include <gtk/gtk.h>
 
 struct LV2_Evbuf_Impl {
-  uint32_t       capacity;
-  uint32_t       atom_Chunk;
-  uint32_t       atom_Sequence;
-              LV2_Atom_Sequence atom;
+  uint32_t          capacity;
+  uint32_t          atom_Chunk;
+  uint32_t          atom_Sequence;
+  LV2_Atom_Sequence atom;
 };
 
 static inline uint32_t
@@ -62,12 +62,13 @@ lv2_evbuf_new (
 void
 lv2_evbuf_free(LV2_Evbuf* evbuf)
 {
-  free(evbuf);
+  object_zero_and_free (evbuf);
 }
 
 void
 lv2_evbuf_reset(LV2_Evbuf* evbuf, bool input)
 {
+  g_return_if_fail (evbuf);
   if (input)
     {
       evbuf->atom.atom.size =

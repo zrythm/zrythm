@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -47,13 +47,45 @@ lv2_state_apply_state (
   Lv2Plugin* plugin,
   LilvState* state);
 
-void
-lv2_state_save (
-  Lv2Plugin* plugin,
-  const char* dir);
+/**
+ * Saves the plugin state to the filesystem and
+ * returns the state.
+ */
+LilvState *
+lv2_state_save_to_file (
+  Lv2Plugin *  pl,
+  bool         is_backup);
 
+/**
+ * Saves the plugin state into a new LilvState that
+ * can be applied to any plugin with the same URI
+ * (like clones).
+ *
+ * Must be free'd with lilv_state_free().
+ */
+LilvState *
+lv2_state_save_to_memory (
+  Lv2Plugin* plugin);
+
+/**
+ * LV2 State makePath feature for save only.
+ *
+ * Should be passed to LV2_State_Interface::save().
+ * and this function must return an absolute path.
+ */
 char *
-lv2_state_make_path (
+lv2_state_make_path_save (
+  LV2_State_Make_Path_Handle handle,
+  const char*                path);
+
+/**
+ * LV2 State makePath feature for temporary files.
+ *
+ * Should be passed to LV2_Descriptor::instantiate()
+ * and this function must return an absolute path.
+ */
+char *
+lv2_state_make_path_temp (
   LV2_State_Make_Path_Handle handle,
   const char*                path);
 

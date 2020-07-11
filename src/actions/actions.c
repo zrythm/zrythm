@@ -770,8 +770,8 @@ activate_save_as (GSimpleAction *action,
     chooser, TRUE);
 
   char * project_file_path =
-    project_get_project_file_path (
-      PROJECT, 0);
+    project_get_path (
+      PROJECT, PROJECT_PATH_PROJECT_FILE, false);
   char * str =
     io_path_get_parent_dir (
       project_file_path);
@@ -831,7 +831,8 @@ activate_export_graph (
   graph_setup (graph, false, false);
 
   char * exports_dir =
-    project_get_exports_dir (PROJECT);
+    project_get_path (
+      PROJECT, PROJECT_PATH_EXPORTS, false);
 
   GtkWidget *dialog, *label, *content_area;
   GtkDialogFlags flags;
