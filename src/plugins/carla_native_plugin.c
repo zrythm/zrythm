@@ -1221,7 +1221,8 @@ carla_native_plugin_load_state (
     {
       char * state_dir_abs_path =
         plugin_get_abs_state_dir (
-          self->plugin, F_NOT_BACKUP);
+          self->plugin,
+          PROJECT->loading_from_backup);
       state_file =
         g_build_filename (
           state_dir_abs_path, CARLA_STATE_FILENAME,

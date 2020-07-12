@@ -240,7 +240,7 @@ project_free (Project * self)
 {
   g_message ("%s: tearing down...", __func__);
 
-  PROJECT->loaded = 0;
+  PROJECT->loaded = false;
 
   g_free_and_null (self->title);
 
@@ -688,7 +688,7 @@ create_default (Project * self)
         }
     }
 
-  self->loaded = 1;
+  self->loaded = true;
 
   snap_grid_init (
     &self->snap_grid_timeline,
@@ -808,6 +808,9 @@ load (
         }
     }
 
+  bool use_backup = PROJECT->backup_dir != NULL;
+  PROJECT->loading_from_backup = use_backup;
+
   /* get file contents */
   char * compressed_pj;
   gsize compressed_pj_size;
@@ -815,7 +818,7 @@ load (
   char * project_file_path_alloc =
     project_get_path (
       PROJECT, PROJECT_PATH_PROJECT_FILE,
-      PROJECT->backup_dir != NULL);
+      use_backup);
   char project_file_path[1600];
   strcpy (
     project_file_path, project_file_path_alloc);
@@ -1037,6 +1040,8 @@ load (
   object_zero_and_free (ports);
 
   self->loaded = true;
+  self->loading_from_backup = false;
+
   g_message ("project loaded");
 
   /* recalculate the routing graph */

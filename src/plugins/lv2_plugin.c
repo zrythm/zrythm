@@ -1689,7 +1689,7 @@ lv2_plugin_instantiate (
         {
           char * state_file_path =
             lv2_plugin_get_abs_state_file_path (
-              self, F_NOT_BACKUP);
+              self, PROJECT->loading_from_backup);
           state =
             lilv_state_new_from_file (
               LILV_WORLD, &self->map, NULL,

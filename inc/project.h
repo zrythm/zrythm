@@ -217,7 +217,17 @@ typedef struct Project
    * Currently selected tool (select - normal,
    * select - stretch, edit, delete, ramp, audition)
    */
-  Tool               tool;
+  Tool              tool;
+
+  /**
+   * Whether the current is currently being loaded
+   * from a backup file.
+   *
+   * This is useful when instantiating plugins from
+   * state and should be set to false after the
+   * project is loaded.
+   */
+  bool              loading_from_backup;
 
   /**
    * If a project is currently loaded or not.
@@ -226,7 +236,7 @@ typedef struct Project
    * tear down when loading a new project while
    * another one is loaded.
    */
-  int               loaded;
+  bool              loaded;
 
   /**
    * The last thing selected in the GUI.
