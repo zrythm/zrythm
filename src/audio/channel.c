@@ -1642,6 +1642,11 @@ channel_remove_plugin (
         /*channel, pos, plugin);*/
     /*}*/
 
+  if (track->is_project)
+    {
+      track_verify_identifiers (channel->track);
+    }
+
   if (recalc_graph)
     router_recalc_graph ((ROUTER));
 }
@@ -1845,6 +1850,11 @@ channel_add_plugin (
   if (gen_automatables)
     plugin_generate_automation_tracks (
       plugin, track);
+
+  if (track->is_project)
+    {
+      track_verify_identifiers (track);
+    }
 
   if (pub_events)
     {

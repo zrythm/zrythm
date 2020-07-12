@@ -595,7 +595,8 @@ plugin_move (
 
   /* add plugin to its new channel */
   channel_add_plugin (
-    ch, slot_type, slot, pl, 0, 0, F_RECALC_GRAPH,
+    ch, slot_type, slot, pl, 0,
+    F_NO_GEN_AUTOMATABLES, F_RECALC_GRAPH,
     F_PUBLISH_EVENTS);
 
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, prev_ch);
@@ -924,6 +925,7 @@ plugin_move_automation (
       at->port_id.plugin_id.slot = new_slot;
       at->port_id.plugin_id.slot_type =
         new_slot_type;
+      at->port_id.plugin_id.track_pos = track->pos;
     }
 }
 
