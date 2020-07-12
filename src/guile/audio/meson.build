@@ -16,11 +16,13 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 _guile_snarfable_srcs = [
+  'channel.c',
   'midi_note.c',
   'midi_region.c',
   'position.c',
   'supported_file.c',
   'track.c',
+  'track_processor.c',
   'tracklist.c',
   ]
 

@@ -16,6 +16,7 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 _guile_snarfable_srcs = [
+  'channel_send_action.c',
   'create_tracks_action.c',
   'undo_manager.c',
   ]

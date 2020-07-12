@@ -52,6 +52,30 @@ SCM_DEFINE (
 }
 
 SCM_DEFINE (
+  s_track_get_processor,
+  "track-get-processor", 1, 0, 0,
+  (SCM track),
+  "Returns the processor of @var{track}.")
+{
+  Track * reftrack = scm_to_pointer (track);
+
+  return
+    scm_from_pointer (reftrack->processor, NULL);
+}
+
+SCM_DEFINE (
+  s_track_get_channel,
+  "track-get-channel", 1, 0, 0,
+  (SCM track),
+  "Returns the channel of @var{track}.")
+{
+  Track * reftrack = scm_to_pointer (track);
+
+  return
+    scm_from_pointer (reftrack->channel, NULL);
+}
+
+SCM_DEFINE (
   s_add_region, "track-add-lane-region", 3, 0, 0,
   (SCM track, SCM region, SCM lane_pos),
   "Adds @var{region} to track @var{track}. To "
@@ -76,7 +100,10 @@ init_module (void * data)
   scm_c_export (
     "midi-track-new",
     "track-add-lane-region",
-    "track-get-name", NULL);
+    "track-get-name",
+    "track-get-channel",
+    "track-get-processor",
+    NULL);
 }
 
 void

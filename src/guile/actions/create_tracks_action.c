@@ -44,6 +44,22 @@ SCM_DEFINE (
     scm_from_pointer (ua, NULL);
 }
 
+SCM_DEFINE (
+  s_create_tracks_action_new_audio_fx,
+  "create-tracks-action-new-audio-fx", 2, 0, 0,
+  (SCM track_pos, SCM num_tracks),
+  "Returns a new Create Tracks action for one or more empty Audio FX tracks.")
+{
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_AUDIO_BUS, NULL, NULL,
+      scm_to_int (track_pos), NULL,
+      scm_to_int (num_tracks));
+
+  return
+    scm_from_pointer (ua, NULL);
+}
+
 static void
 init_module (void * data)
 {
@@ -52,7 +68,9 @@ init_module (void * data)
 #endif
 
   scm_c_export (
-    "create-tracks-action-new-with-plugin", NULL);
+    "create-tracks-action-new-with-plugin",
+    "create-tracks-action-new-audio-fx",
+    NULL);
 }
 
 void
