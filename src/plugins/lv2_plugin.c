@@ -40,6 +40,7 @@
 #define _DARWIN_C_SOURCE        /* for mkdtemp on OSX */
 
 #include <assert.h>
+#include <inttypes.h>
 #include <math.h>
 #include <signal.h>
 #include <stdbool.h>
