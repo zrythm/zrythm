@@ -810,7 +810,13 @@ midi_events_add_event_from_buf (
   int           buf_size,
   int           queued)
 {
-  g_return_if_fail (buf_size == 3);
+  if (buf_size != 3)
+    {
+      g_critical (
+        "buf size of %d received, expected 3",
+        buf_size);
+      return;
+    }
 
   midi_byte_t type = buf[0] & 0xf0;
   midi_byte_t channel =
