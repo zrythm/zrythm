@@ -22,6 +22,7 @@
 #ifndef SNARF_MODE
 #include "audio/track.h"
 #include "project.h"
+#include "utils/flags.h"
 #endif
 
 SCM_DEFINE (
@@ -76,6 +77,21 @@ SCM_DEFINE (
 }
 
 SCM_DEFINE (
+  s_track_set_muted,
+  "track-set-muted", 2, 0, 0,
+  (SCM track, SCM muted),
+  "Sets whether @var{track} is muted or not. This creates an undoable action and performs it.")
+{
+  Track * reftrack = scm_to_pointer (track);
+
+  track_set_muted (
+    reftrack, scm_to_bool (muted), true,
+    F_PUBLISH_EVENTS);
+
+  return SCM_BOOL_T;
+}
+
+SCM_DEFINE (
   s_add_region, "track-add-lane-region", 3, 0, 0,
   (SCM track, SCM region, SCM lane_pos),
   "Adds @var{region} to track @var{track}. To "
@@ -103,6 +119,7 @@ init_module (void * data)
     "track-get-name",
     "track-get-channel",
     "track-get-processor",
+    "track-set-muted",
     NULL);
 }
 

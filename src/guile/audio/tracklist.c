@@ -68,7 +68,7 @@ SCM_DEFINE (
     scm_from_pointer (TRACKLIST, NULL);
 }
 
-void
+static void
 init_module (void * data)
 {
 #ifndef SNARF_MODE

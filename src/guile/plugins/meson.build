@@ -16,6 +16,7 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 _guile_snarfable_srcs = [
+  'plugin.c',
   'plugin_manager.c',
   ]
 

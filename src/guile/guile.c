@@ -54,15 +54,18 @@ guile_define_modules (void)
 {
   guile_actions_channel_send_action_define_module ();
   guile_actions_create_tracks_action_define_module ();
+  guile_actions_port_connection_action_define_module ();
   guile_actions_undo_manager_define_module ();
   guile_audio_channel_define_module ();
   guile_audio_midi_note_define_module ();
   guile_audio_midi_region_define_module ();
+  guile_audio_port_define_module ();
   guile_audio_position_define_module ();
   guile_audio_supported_file_define_module ();
   guile_audio_track_define_module ();
   guile_audio_track_processor_define_module ();
   guile_audio_tracklist_define_module ();
+  guile_plugins_plugin_define_module ();
   guile_plugins_plugin_manager_define_module ();
   guile_zrythm_define_module ();
 }

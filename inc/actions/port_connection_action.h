@@ -91,6 +91,11 @@ port_connection_action_new (
   PortIdentifier *         src_id,
   PortIdentifier *         dest_id);
 
+#define port_connection_action_new_connect( \
+  src_id,dest_id) \
+  port_connection_action_new ( \
+    PORT_CONNECTION_CONNECT, src_id, dest_id)
+
 int
 port_connection_action_do (
   PortConnectionAction * self);

@@ -18,6 +18,7 @@
 _guile_snarfable_srcs = [
   'channel_send_action.c',
   'create_tracks_action.c',
+  'port_connection_action.c',
   'undo_manager.c',
   ]
 

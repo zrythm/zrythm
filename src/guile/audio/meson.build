@@ -19,6 +19,7 @@ _guile_snarfable_srcs = [
   'channel.c',
   'midi_note.c',
   'midi_region.c',
+  'port.c',
   'position.c',
   'supported_file.c',
   'track.c',
