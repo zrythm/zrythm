@@ -44,7 +44,8 @@ modulator_new (
   self->plugin->id.track_pos = track->pos;
   plugin_generate_automation_tracks (
     self->plugin, track);
-  int ret = plugin_instantiate (self->plugin, true);
+  int ret =
+    plugin_instantiate (self->plugin, true, NULL);
   g_warn_if_fail (!ret);
 
   /* FIXME check if unique */

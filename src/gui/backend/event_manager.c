@@ -886,6 +886,7 @@ static void
 on_plugin_window_visibility_changed (
   Plugin * pl)
 {
+  g_message ("start");
   if (!IS_PLUGIN (pl) || pl->deleting)
     {
       return;
@@ -923,19 +924,21 @@ on_plugin_window_visibility_changed (
           break;
         }
     }
+  g_message ("done");
 }
 
 static void
 on_plugin_visibility_changed (Plugin * pl)
 {
   g_message (
-    "%s: visible: %d", __func__, pl->visible);
+    "start - visible: %d", pl->visible);
   if (pl->visible)
     plugin_open_ui (pl);
   else if (!pl->visible)
     plugin_close_ui (pl);
 
   on_plugin_window_visibility_changed (pl);
+  g_message ("done");
 }
 
 /*static int*/

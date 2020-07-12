@@ -37,6 +37,11 @@
 
 #include "zrythm-config.h"
 
+#define _XOPEN_SOURCE 500
+#include <stdio.h>
+#include <ftw.h>
+#include <unistd.h>
+
 #ifdef _WOE32
 #include <windows.h>
 #endif
@@ -214,15 +219,41 @@ io_remove (
   return g_remove (path);
 }
 
+static int
+unlink_cb (
+  const char *fpath,
+  const struct stat *sb,
+  int typeflag,
+  struct FTW *ftwbuf)
+{
+    int rv = remove(fpath);
+
+    if (rv)
+        perror(fpath);
+
+    return rv;
+}
+
 /**
  * Removes a dir, optionally forcing deletion.
+ *
+ * For safety reasons, this only accepts an
+ * absolute path with length greater than 25 if
+ * forced.
  */
 int
 io_rmdir (
   const char * path,
   int          force)
 {
-  g_return_val_if_fail (!force, -1);
+  if (force)
+    {
+      g_return_val_if_fail (
+        g_path_is_absolute (path) &&
+        strlen (path) > 25, -1);
+      nftw (
+        path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
+    }
 
   g_message ("Removing %s", path);
   return g_rmdir (path);

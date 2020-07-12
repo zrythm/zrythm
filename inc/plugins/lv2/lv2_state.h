@@ -68,6 +68,15 @@ lv2_state_save_to_memory (
   Lv2Plugin* plugin);
 
 /**
+ * Saves the plugin state to a string after writing
+ * the required files.
+ */
+LilvState *
+lv2_state_save_to_string (
+  Lv2Plugin *  pl,
+  bool         is_backup);
+
+/**
  * LV2 State makePath feature for save only.
  *
  * Should be passed to LV2_State_Interface::save().

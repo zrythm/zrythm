@@ -60,12 +60,6 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-/**
- * Plugin UI refresh rate limits.
- */
-#define MIN_REFRESH_RATE 30.f
-#define MAX_REFRESH_RATE 121.f
-
 void
 plugin_init_loaded (
   Plugin * self,
@@ -99,7 +93,7 @@ plugin_init_loaded (
     }
 #endif
 
-  plugin_instantiate (self, project);
+  plugin_instantiate (self, project, NULL);
 
   /*Track * track = plugin_get_track (self);*/
   /*plugin_generate_automation_tracks (self, track);*/
@@ -940,6 +934,8 @@ void
 plugin_set_ui_refresh_rate (
   Plugin * self)
 {
+  g_message ("setting refresh rate...");
+
   if (ZRYTHM_TESTING)
     {
       self->ui_update_hz = 30.f;
@@ -980,8 +976,8 @@ plugin_set_ui_refresh_rate (
     }
 
   /* clamp the refresh rate to sensible limits */
-  if (self->ui_update_hz < MIN_REFRESH_RATE ||
-      self->ui_update_hz > MAX_REFRESH_RATE)
+  if (self->ui_update_hz < PLUGIN_MIN_REFRESH_RATE ||
+      self->ui_update_hz > PLUGIN_MAX_REFRESH_RATE)
     {
       g_warning (
         "Invalid refresh rate of %.01f received, "
@@ -989,9 +985,13 @@ plugin_set_ui_refresh_rate (
         (double) self->ui_update_hz);
       self->ui_update_hz =
         CLAMP (
-          self->ui_update_hz, MIN_REFRESH_RATE,
-          MAX_REFRESH_RATE);
+          self->ui_update_hz,
+          PLUGIN_MIN_REFRESH_RATE,
+          PLUGIN_MAX_REFRESH_RATE);
     }
+
+  g_message ("refresh rate set to %f",
+    (double) self->ui_update_hz);
 }
 
 /**
@@ -1104,8 +1104,9 @@ plugin_set_track_pos (
  */
 int
 plugin_instantiate (
-  Plugin * pl,
-  bool     project)
+  Plugin *    pl,
+  bool        project,
+  LilvState * state)
 {
   g_message ("Instantiating %s...",
              pl->descr->name);
@@ -1137,7 +1138,7 @@ plugin_instantiate (
             if (lv2_plugin_instantiate (
                   pl->lv2, project,
                   pl->state_dir ? true : false,
-                  NULL, NULL))
+                  NULL, state))
               {
                 g_warning ("lv2 instantiate failed");
                 return -1;
@@ -1408,14 +1409,16 @@ plugin_clone (
         clone && clone->carla, NULL);
 
       /* instantiate */
-      int ret = plugin_instantiate (clone, false);
+      int ret =
+        plugin_instantiate (clone, false, NULL);
       g_return_val_if_fail (ret == 0, NULL);
 
       /* also instantiate the source, if not
        * already instantiated, so its state can
        * be ready */
       ret =
-        plugin_instantiate (pl, src_is_project);
+        plugin_instantiate (
+          pl, src_is_project, NULL);
       g_return_val_if_fail (ret == 0, NULL);
 
       /* save the state of the original plugin */
@@ -1428,6 +1431,13 @@ plugin_clone (
           pl->carla, F_NOT_BACKUP);
       carla_native_plugin_load_state (
         clone->carla, state_file_abs_path);
+
+      /* create a new state dir and save the state
+       * for the clone */
+      plugin_ensure_state_dir (
+        clone, F_NOT_BACKUP);
+      carla_native_plugin_save_state (
+        clone->carla, F_NOT_BACKUP);
     }
   else
     {
@@ -1440,7 +1450,7 @@ plugin_clone (
             {
               int ret =
                 plugin_instantiate (
-                  pl, src_is_project);
+                  pl, src_is_project, NULL);
               g_return_val_if_fail (ret == 0, NULL);
             }
 
@@ -1458,9 +1468,8 @@ plugin_clone (
 
           /* instantiate using the state */
           int ret =
-            lv2_plugin_instantiate (
-              clone->lv2, false, false, NULL,
-              state);
+            plugin_instantiate (
+              clone, false, state);
           g_return_val_if_fail (!ret, NULL);
 
           /* verify */
@@ -1472,6 +1481,13 @@ plugin_clone (
 
           /* free the state */
           lilv_state_free (state);
+
+          /* create a new state dir and save the
+           * state  for the clone */
+          plugin_ensure_state_dir (
+            clone, F_NOT_BACKUP);
+          lv2_state_save_to_file (
+            clone->lv2, F_NOT_BACKUP);
         }
 #ifdef HAVE_CARLA
     }
@@ -2174,6 +2190,24 @@ plugin_disconnect (
         }
 #endif
     }
+}
+
+/**
+ * Deletes any state files associated with this
+ * plugin.
+ *
+ * This should be called when a plugin instance is
+ * removed from the project (including undo stacks)
+ * to remove any files not needed anymore.
+ */
+void
+plugin_delete_state_files (
+  Plugin * self)
+{
+  g_return_if_fail (
+    g_path_is_absolute (self->state_dir));
+
+  io_rmdir (self->state_dir, true);
 }
 
 /**

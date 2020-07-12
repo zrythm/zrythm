@@ -54,6 +54,12 @@ typedef struct AutomationTrack AutomationTrack;
   (tr && tr->magic == PLUGIN_MAGIC)
 
 /**
+ * Plugin UI refresh rate limits.
+ */
+#define PLUGIN_MIN_REFRESH_RATE 30.f
+#define PLUGIN_MAX_REFRESH_RATE 121.f
+
+/**
  * The base plugin
  * Inheriting plugins must have this as a child
  */
@@ -206,7 +212,7 @@ plugin_fields_schema[] =
     Plugin, enabled, port_fields_schema),
   YAML_FIELD_INT (
     Plugin, visible),
-  YAML_FIELD_STRING_PTR (
+  YAML_FIELD_STRING_PTR_OPTIONAL (
     Plugin, state_dir),
 
   CYAML_FIELD_END
@@ -470,8 +476,9 @@ plugin_prepare_process (
  */
 int
 plugin_instantiate (
-  Plugin * self,
-  bool     project);
+  Plugin *    self,
+  bool        project,
+  LilvState * state);
 
 /**
  * Sets the track and track_pos on the plugin.
@@ -639,6 +646,18 @@ plugin_disconnect_from_prefader (
  */
 void
 plugin_disconnect (Plugin * plugin);
+
+/**
+ * Deletes any state files associated with this
+ * plugin.
+ *
+ * This should be called when a plugin instance is
+ * removed from the project (including undo stacks)
+ * to remove any files not needed anymore.
+ */
+void
+plugin_delete_state_files (
+  Plugin * self);
 
 /**
  * Frees given plugin, breaks all its port connections, and frees its ports

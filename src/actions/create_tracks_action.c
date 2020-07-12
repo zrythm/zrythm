@@ -113,7 +113,7 @@ create (
           g_return_val_if_fail (
             pl, ERR_PLUGIN_INSTANTIATION_FAILED);
 
-          if (plugin_instantiate (pl, true) < 0)
+          if (plugin_instantiate (pl, true, NULL) < 0)
             {
               char * message =
                 g_strdup_printf (

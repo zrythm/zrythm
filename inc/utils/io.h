@@ -95,6 +95,10 @@ io_remove (
 
 /**
  * Removes a dir, optionally forcing deletion.
+ *
+ * For safety reasons, this only accepts an
+ * absolute path with length greater than 25 if
+ * forced.
  */
 int
 io_rmdir (

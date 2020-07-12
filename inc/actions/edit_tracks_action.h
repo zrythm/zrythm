@@ -82,12 +82,9 @@ static const cyaml_schema_field_t
     "parent_instance", CYAML_FLAG_DEFAULT,
     EditTracksAction, parent_instance,
     undoable_action_fields_schema),
-  CYAML_FIELD_ENUM (
-    "type", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_ENUM (
     EditTracksAction, type,
-    edit_tracks_action_type_strings,
-    CYAML_ARRAY_LEN (
-      edit_tracks_action_type_strings)),
+    edit_tracks_action_type_strings),
   CYAML_FIELD_MAPPING_PTR (
     "tls", CYAML_FLAG_POINTER,
     EditTracksAction, tls,

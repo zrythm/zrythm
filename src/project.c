@@ -1526,47 +1526,6 @@ project_save (
           if (!pl)
             continue;
 
-#if 0
-          /* save state */
-          char tr_name[900];
-          io_escape_dir_name (
-            tr_name, track->name);
-          char tmp[980];
-          sprintf (
-            tmp, "%s_%d", tr_name, j);
-          char * state_dir_plugin =
-            g_build_filename (
-              states_dir, tmp, NULL);
-          int ret = -1;
-#ifdef HAVE_CARLA
-          if (pl->descr->open_with_carla)
-            {
-              ret =
-                carla_native_plugin_save_state (
-                  pl->carla, state_dir_plugin,
-                  false);
-            }
-          else
-            {
-#endif
-              switch (pl->descr->protocol)
-                {
-                case PROT_LV2:
-                  ret =
-                    lv2_state_save_to_file (
-                      pl->lv2, state_dir_plugin);
-                  break;
-                default:
-                  g_warn_if_reached ();
-                  break;
-                }
-#ifdef HAVE_CARLA
-            }
-#endif
-          g_free (state_dir_plugin);
-          g_return_val_if_fail (ret == 0, -1);
-#endif
-
           /* save state */
 #ifdef HAVE_CARLA
           if (pl->descr->open_with_carla)
