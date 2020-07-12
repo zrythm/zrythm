@@ -1126,6 +1126,9 @@ plugin_instantiate (
 #ifdef HAVE_CARLA
       carla_native_plugin_instantiate (
         pl->carla, !PROJECT->loaded);
+      /* save the state */
+      carla_native_plugin_save_state (
+        pl->carla, false);
 #else
       g_return_val_if_reached (-1);
 #endif
@@ -1145,6 +1148,9 @@ plugin_instantiate (
                 g_warning ("lv2 instantiate failed");
                 return -1;
               }
+            /* save the state */
+            lv2_state_save_to_file (
+              pl->lv2, F_NOT_BACKUP);
           }
           break;
         default:
