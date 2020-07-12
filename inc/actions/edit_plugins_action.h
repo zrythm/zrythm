@@ -104,19 +104,19 @@ edit_plugins_action_new (
 
 int
 edit_plugins_action_do (
-	EditPluginsAction * self);
+  EditPluginsAction * self);
 
 int
 edit_plugins_action_undo (
-	EditPluginsAction * self);
+  EditPluginsAction * self);
 
 char *
 edit_plugins_action_stringize (
-	EditPluginsAction * self);
+  EditPluginsAction * self);
 
 void
 edit_plugins_action_free (
-	EditPluginsAction * self);
+  EditPluginsAction * self);
 
 /**
  * @}

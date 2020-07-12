@@ -57,6 +57,8 @@ typedef struct _ChannelSendWidget
   double              start_x;
   double              last_offset_x;
 
+  float               send_amount_at_start;
+
   /** For multipress. */
   int                 n_press;
 

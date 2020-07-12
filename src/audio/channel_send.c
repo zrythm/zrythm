@@ -21,8 +21,15 @@
 #include "audio/router.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/channel_send.h"
+#include "gui/widgets/channel_sends_expander.h"
+#include "gui/widgets/inspector_track.h"
+#include "gui/widgets/left_dock_edge.h"
+#include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -192,18 +199,33 @@ channel_send_set_amount_from_widget (
 
 /**
  * Connects a send to stereo ports.
+ *
+ * This function takes either \ref stereo or both
+ * \ref l and \ref r.
  */
 void
 channel_send_connect_stereo (
   ChannelSend * self,
-  StereoPorts * stereo)
+  StereoPorts * stereo,
+  Port *        l,
+  Port *        r)
 {
   channel_send_disconnect (self);
 
-  port_identifier_copy (
-    &self->dest_l_id, &stereo->l->id);
-  port_identifier_copy (
-    &self->dest_r_id, &stereo->r->id);
+  if (stereo)
+    {
+      port_identifier_copy (
+        &self->dest_l_id, &stereo->l->id);
+      port_identifier_copy (
+        &self->dest_r_id, &stereo->r->id);
+    }
+  else
+    {
+      port_identifier_copy (
+        &self->dest_l_id, &l->id);
+      port_identifier_copy (
+        &self->dest_r_id, &r->id);
+    }
 
   Track * track = channel_send_get_track (self);
   StereoPorts * self_stereo =
@@ -212,8 +234,16 @@ channel_send_connect_stereo (
       track->channel->fader->stereo_out;
 
   /* connect */
-  stereo_ports_connect (
-    self_stereo, stereo, true);
+  if (stereo)
+    {
+      stereo_ports_connect (
+        self_stereo, stereo, true);
+    }
+  else
+    {
+      port_connect (self_stereo->l, l, true);
+      port_connect (self_stereo->r, r, true);
+    }
 
   self->is_empty = false;
 
@@ -241,8 +271,7 @@ channel_send_connect_midi (
     channel_send_is_prefader (self) ?
       track->channel->prefader->midi_out :
       track->channel->fader->midi_out;
-  port_connect (
-    self_port, port, true);
+  port_connect (self_port, port, true);
 
   self->is_empty = false;
 
@@ -369,4 +398,50 @@ channel_send_get_dest_name (
           break;
         }
     }
+}
+
+ChannelSend *
+channel_send_clone (
+  ChannelSend * self)
+{
+  ChannelSend * clone = object_new (ChannelSend);
+
+  *clone = *self;
+
+  return clone;
+}
+
+ChannelSendWidget *
+channel_send_find_widget (
+  ChannelSend * self)
+{
+  if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
+    {
+      return
+        MW_TRACK_INSPECTOR->sends->slots[self->slot];
+    }
+  return NULL;
+}
+
+/**
+ * Finds the project send from a given send instance.
+ */
+ChannelSend *
+channel_send_find (
+  ChannelSend * self)
+{
+  g_return_val_if_fail (
+    TRACKLIST->num_tracks > self->track_pos, NULL);
+
+  Track * track = channel_send_get_track (self);
+
+  return
+    &track->channel->sends[self->slot];
+}
+
+void
+channel_send_free (
+  ChannelSend * self)
+{
+  object_zero_and_free (self);
 }

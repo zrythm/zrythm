@@ -18,6 +18,7 @@
 action_srcs = [
   'actions.c',
   'arranger_selections.c',
+  'channel_send_action.c',
   'create_plugins_action.c',
   'copy_tracks_action.c',
   'create_tracks_action.c',

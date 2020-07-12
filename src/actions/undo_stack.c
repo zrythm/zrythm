@@ -60,6 +60,7 @@ undo_stack_init_loaded (
   size_t create_tracks_actions_idx = 0;
   size_t delete_plugins_actions_idx = 0;
   size_t delete_tracks_actions_idx = 0;
+  size_t channel_send_actions_idx = 0;
   size_t edit_plugins_actions_idx = 0;
   size_t edit_tracks_actions_idx = 0;
   size_t move_plugins_actions_idx = 0;
@@ -75,6 +76,7 @@ undo_stack_init_loaded (
     self->num_create_tracks_actions +
     self->num_delete_plugins_actions +
     self->num_delete_tracks_actions +
+    self->num_channel_send_actions +
     self->num_edit_plugins_actions +
     self->num_edit_tracks_actions +
     self->num_move_plugins_actions +
@@ -92,6 +94,7 @@ undo_stack_init_loaded (
       DO_SIMPLE (CreateTracks, create_tracks)
       DO_SIMPLE (DeletePlugins, delete_plugins)
       DO_SIMPLE (DeleteTracks, delete_tracks)
+      DO_SIMPLE (ChannelSend, channel_send)
       DO_SIMPLE (EditPlugins, edit_plugins)
       DO_SIMPLE (EditTracks, edit_tracks)
       DO_SIMPLE (MovePlugins, move_plugins)
@@ -180,6 +183,8 @@ undo_stack_push (
     APPEND_ELEMENT (
       DELETE_TRACKS, DeleteTracks, delete_tracks);
     APPEND_ELEMENT (
+      CHANNEL_SEND, ChannelSend, channel_send);
+    APPEND_ELEMENT (
       CREATE_PLUGINS, CreatePlugins, create_plugins);
     APPEND_ELEMENT (
       MOVE_PLUGINS, MovePlugins, move_plugins);
@@ -245,6 +250,8 @@ remove_action (
       COPY_TRACKS, CopyTracks, copy_tracks);
     REMOVE_ELEMENT (
       DELETE_TRACKS, DeleteTracks, delete_tracks);
+    REMOVE_ELEMENT (
+      CHANNEL_SEND, ChannelSend, channel_send);
     REMOVE_ELEMENT (
       CREATE_PLUGINS, CreatePlugins, create_plugins);
     REMOVE_ELEMENT (

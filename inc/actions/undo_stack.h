@@ -27,6 +27,7 @@
 #define __UNDO_UNDO_STACK_H__
 
 #include "actions/arranger_selections.h"
+#include "actions/channel_send_action.h"
 #include "actions/copy_plugins_action.h"
 #include "actions/copy_tracks_action.h"
 #include "actions/create_plugins_action.h"
@@ -91,6 +92,10 @@ typedef struct UndoStack
   size_t        num_delete_tracks_actions;
   size_t        delete_tracks_actions_size;
 
+  ChannelSendAction ** channel_send_actions;
+  size_t        num_channel_send_actions;
+  size_t        channel_send_actions_size;
+
   EditPluginsAction ** edit_plugins_actions;
   size_t        num_edit_plugins_actions;
   size_t        edit_plugins_actions_size;
@@ -141,6 +146,9 @@ static const cyaml_schema_field_t
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, delete_tracks_actions,
     delete_tracks_action_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+    UndoStack, channel_send_actions,
+    channel_send_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, edit_plugins_actions,
     edit_plugins_action_schema),

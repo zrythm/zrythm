@@ -155,6 +155,7 @@ on_drag_begin (
   ChannelSendWidget * self)
 {
   self->start_x = start_x;
+  self->send_amount_at_start = self->send->amount;
 }
 
 static void
@@ -194,6 +195,17 @@ on_drag_end (
 {
   self->start_x = 0;
   self->last_offset_x = 0;
+
+  float send_amount_at_end = self->send->amount;
+  self->send->amount = self->send_amount_at_start;
+
+  if (!self->send->is_empty && self->n_press != 2)
+    {
+      UndoableAction * ua =
+        channel_send_action_new_change_amount (
+          self->send, send_amount_at_end);
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
 }
 
 static void

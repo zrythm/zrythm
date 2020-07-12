@@ -1509,6 +1509,19 @@ process_events (void * data)
             _("Trial limit has been reached. "
             "Zrythm will now go silent"));
           break;
+        case ET_CHANNEL_SEND_CHANGED:
+          {
+            ChannelSend * send =
+              (ChannelSend *) ev->arg;
+            ChannelSendWidget * widget =
+              channel_send_find_widget (send);
+            if (widget)
+              {
+                gtk_widget_queue_draw (
+                  GTK_WIDGET (widget));
+              }
+          }
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

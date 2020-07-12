@@ -46,6 +46,7 @@ typedef enum UndoableActionType
   UA_EDIT_TRACKS,
   UA_COPY_TRACKS,
   UA_DELETE_TRACKS,
+  UA_CHANNEL_SEND,
 
   /* ---- end ---- */
 
@@ -97,6 +98,8 @@ undoable_action_type_strings[] =
     UA_COPY_TRACKS },
   { "Delete tracks",
     UA_DELETE_TRACKS },
+  { "Channel send",
+    UA_CHANNEL_SEND },
   { "Create plugins",
     UA_CREATE_PLUGINS },
   { "Move plugins",

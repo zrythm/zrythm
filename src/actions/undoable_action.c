@@ -64,6 +64,9 @@ undoable_action_init_loaded (
     INIT_LOADED (DELETE_TRACKS,
                delete_tracks,
                DeleteTracks);
+    INIT_LOADED (CHANNEL_SEND,
+               channel_send,
+               ChannelSend);
     /*INIT_LOADED (CREATE_PLUGINS,*/
                /*create_plugins,*/
                /*CreatePlugins);*/
@@ -159,6 +162,9 @@ undoable_action_do (UndoableAction * self)
     DO_ACTION (DELETE_TRACKS,
                delete_tracks,
                DeleteTracks);
+    DO_ACTION (CHANNEL_SEND,
+               channel_send,
+               ChannelSend);
     DO_ACTION (CREATE_PLUGINS,
                create_plugins,
                CreatePlugins);
@@ -257,6 +263,9 @@ undoable_action_undo (UndoableAction * self)
     UNDO_ACTION (DELETE_TRACKS,
                delete_tracks,
                DeleteTracks);
+    UNDO_ACTION (CHANNEL_SEND,
+               channel_send,
+               ChannelSend);
     UNDO_ACTION (CREATE_PLUGINS,
                create_plugins,
                CreatePlugins);
@@ -344,6 +353,9 @@ undoable_action_free (UndoableAction * self)
     FREE_ACTION (DELETE_TRACKS,
                delete_tracks,
                DeleteTracks);
+    FREE_ACTION (CHANNEL_SEND,
+               channel_send,
+               ChannelSend);
     FREE_ACTION (CREATE_PLUGINS,
                create_plugins,
                CreatePlugins);
@@ -430,6 +442,9 @@ undoable_action_stringize (
     STRINGIZE_UA (DELETE_TRACKS,
                   DeleteTracks,
                   delete_tracks);
+    STRINGIZE_UA (CHANNEL_SEND,
+               ChannelSend,
+               channel_send);
     STRINGIZE_UA (CREATE_PLUGINS,
                   CreatePlugins,
                   create_plugins);

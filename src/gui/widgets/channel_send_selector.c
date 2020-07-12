@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/channel_send_action.h"
 #include "audio/channel_send.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -103,24 +104,49 @@ on_selection_changed (
     channel_send_get_track (self->send_widget->send);
   Track * dest_track =
     get_track_from_target (target);
+  UndoableAction * ua = NULL;
   switch (target->type)
     {
     case TARGET_TYPE_NONE:
-      channel_send_disconnect (
-        self->send_widget->send);
+      if (!self->send_widget->send->is_empty)
+        {
+          ua =
+            channel_send_action_new_disconnect (
+              self->send_widget->send);
+          undo_manager_perform (UNDO_MANAGER, ua);
+        }
       break;
     case TARGET_TYPE_TRACK:
       switch (src_track->out_signal_type)
         {
         case TYPE_EVENT:
-          channel_send_connect_midi (
-            self->send_widget->send,
-            dest_track->processor->midi_in);
+          if (!port_identifier_is_equal (
+                &self->send_widget->send->
+                  dest_midi_id,
+                &dest_track->processor->midi_in->id))
+            {
+              ua =
+                channel_send_action_new_connect_midi (
+                  self->send_widget->send,
+                  dest_track->processor->midi_in);
+              undo_manager_perform (
+                UNDO_MANAGER, ua);
+            }
           break;
         case TYPE_AUDIO:
-          channel_send_connect_stereo (
-            self->send_widget->send,
-            dest_track->processor->stereo_in);
+          if (!port_identifier_is_equal (
+                &self->send_widget->send->
+                  dest_l_id,
+                &dest_track->processor->stereo_in->
+                  l->id))
+            {
+              ua =
+                channel_send_action_new_connect_audio (
+                  self->send_widget->send,
+                  dest_track->processor->stereo_in);
+              undo_manager_perform (
+                UNDO_MANAGER, ua);
+            }
           break;
         default:
           break;
