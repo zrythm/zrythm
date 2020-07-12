@@ -2315,10 +2315,23 @@ lv2_plugin_process (
                       PM_URIDS.
                         midi_MidiEvent)
                     {
-                      /* Write MIDI event to port */
-                      midi_events_add_event_from_buf (
-                        lv2_port->port->midi_events,
-                        frames, body, (int) size, 0);
+                      if (size != 3)
+                        {
+                          g_warning (
+                            "unhandled event from "
+                            "port %s of size %"
+                            PRIu32,
+                            pi->label, size);
+                        }
+                      else
+                        {
+                          /* Write MIDI event to port */
+                          midi_events_add_event_from_buf (
+                            lv2_port->port->
+                              midi_events,
+                            frames, body,
+                            (int) size, 0);
+                        }
                     }
 
                   /* if UI is instantiated */

@@ -678,10 +678,14 @@ log_writer (
 #endif
     }
 
+  (void) log_writer_standard_streams;
+
   /* call the default log writer */
   return
-    log_writer_standard_streams (
+    g_log_writer_default (
       log_level, fields, n_fields, self);
+    /*log_writer_standard_streams (*/
+      /*log_level, fields, n_fields, self);*/
 }
 
 /**
