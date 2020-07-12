@@ -29,6 +29,7 @@ SCM_DEFINE (
   "channel-get-insert", 2, 0, 0,
   (SCM channel, SCM insert_slot),
   "Returns the plugin at the given insert slot")
+#define FUNC_NAME s_
 {
   Channel * ch =
     (Channel *) scm_to_pointer (channel);
@@ -37,23 +38,27 @@ SCM_DEFINE (
     scm_from_pointer (
       ch->inserts[scm_to_int (insert_slot)], NULL);
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   s_channel_get_instrument,
   "channel-get-instrument", 1, 0, 0,
   (SCM channel),
   "Returns the instrument at the given channel")
+#define FUNC_NAME s_
 {
   Channel * ch =
     (Channel *) scm_to_pointer (channel);
 
   return scm_from_pointer (ch->instrument, NULL);
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   s_channel_get_send, "channel-get-send", 2, 0, 0,
   (SCM channel, SCM send_slot),
   "Returns the send instance at the given slot")
+#define FUNC_NAME s_
 {
   Channel * ch = (Channel *) scm_to_pointer (channel);
 
@@ -61,6 +66,7 @@ SCM_DEFINE (
     scm_from_pointer (
       &ch->sends[scm_to_int (send_slot)], NULL);
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)

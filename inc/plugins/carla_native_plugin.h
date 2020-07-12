@@ -87,8 +87,8 @@ static const cyaml_schema_field_t
 {
   /** Not really needed but cyaml fails to load if
    * nothing is here. */
-  YAML_FIELD_INT (
-    CarlaNativePlugin, carla_plugin_id),
+  //YAML_FIELD_INT (
+    //CarlaNativePlugin, carla_plugin_id),
 
   CYAML_FIELD_END
 };

@@ -29,6 +29,7 @@ SCM_DEFINE (
   "stereo-ports-get-port", 2, 0, 0,
   (SCM stereo_ports, SCM left),
   "Returns the left or right port of the stereo pair.")
+#define FUNC_NAME s_
 {
   StereoPorts * sp =
     (StereoPorts *) scm_to_pointer (stereo_ports);
@@ -41,16 +42,19 @@ SCM_DEFINE (
       return scm_from_pointer (sp->r, NULL);
     }
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   s_port_get_identifier,
   "port-get-identifier", 1, 0, 0,
   (SCM port),
   "Returns the identifier of @var{port}.")
+#define FUNC_NAME s_
 {
   Port * p = (Port *) scm_to_pointer (port);
   return scm_from_pointer (&p->id, NULL);
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)

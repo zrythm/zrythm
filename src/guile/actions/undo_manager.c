@@ -29,6 +29,7 @@ SCM_DEFINE (
   "undo-manager-perform", 1, 0, 0,
   (SCM action),
   "Performs the given action and adds it to the undo stack.")
+#define FUNC_NAME s_
 {
   undo_manager_perform (
     UNDO_MANAGER,
@@ -36,28 +37,33 @@ SCM_DEFINE (
 
   return SCM_BOOL_T;
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   s_undo_manager_undo,
-  "undo-manager-undo", 0, 0, 0,
+  "undo-manager-undo", 0, 1, 0,
   (SCM action),
   "Undoes the last action.")
+#define FUNC_NAME s_
 {
   undo_manager_undo (UNDO_MANAGER);
 
   return SCM_BOOL_T;
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   s_undo_manager_redo,
-  "undo-manager-redo", 0, 0, 0,
+  "undo-manager-redo", 0, 1, 0,
   (SCM action),
   "Redoes the last undone action.")
+#define FUNC_NAME s_
 {
   undo_manager_redo (UNDO_MANAGER);
 
   return SCM_BOOL_T;
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)
