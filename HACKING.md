@@ -131,7 +131,7 @@ To get a coverage report see
 # Profiling
 ## gprof
 To profile with gprof,
-use the `enable_profiling` option when running meson,
+use the `profiling` option when running meson,
 then build and run the program normally. The program
 must end gracefully (ie, not Ctrl-C). When the
 program ends, run

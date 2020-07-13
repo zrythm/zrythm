@@ -28,6 +28,10 @@ if get_option ('tests')
     'G_TEST_SRCDIR', meson.current_source_dir ())
   test_env.set (
     'G_TEST_BUILDDIR', meson.current_build_dir ())
+  test_env.set (
+    'G_TEST_BUILDDIR', meson.current_build_dir ())
+  test_env.set (
+    'GUILE_LOAD_PATH', '$GUILE_LOAD_PATH:' + meson.current_build_dir ())
   test_env.set ('G_DEBUG', 'gc-friendly')
   test_env.set ('MALLOC_CHECK', '2')
   test_env.set ('VST_PATH', '/tmp/zrythm_vst')
@@ -40,23 +44,47 @@ if get_option ('tests')
   test_config.set_quoted (
     'MIDILIB_TEST_MIDI_FILES_PATH',
     meson.source_root () / 'ext/midilib/MIDIFiles')
+
+  test_config_guile = configuration_data()
+  test_config_guile.merge_from (test_config)
   foreach name, info : ext_lv2_plugins
     uri = info[1]
     have_plugin = have_ext_lv2_plugins.get (
       name, false)
     if have_plugin
       plugin_bundle = ext_lv2_plugin_bundles[name]
+      # C
       test_config.set (
         'HAVE_' + name.to_upper(), 1)
       test_config.set_quoted (
         name.to_upper() + '_URI', uri)
       test_config.set_quoted (
         name.to_upper() + '_BUNDLE', plugin_bundle)
+      # Guile
+      test_config_guile.set (
+        'HAVE_' + name.to_upper(), '#t')
+      test_config_guile.set_quoted (
+        name.to_upper() + '_URI', uri)
+      test_config_guile.set_quoted (
+        name.to_upper() + '_BUNDLE', plugin_bundle)
+    else
+      # Guile
+      test_config_guile.set (
+        'HAVE_' + name.to_upper(), '#f')
+      test_config_guile.set_quoted (
+        name.to_upper() + '_URI', '')
+      test_config_guile.set_quoted (
+        name.to_upper() + '_BUNDLE', '')
     endif
   endforeach
   test_config_h = configure_file (
     output: 'zrythm-test-config.h',
     configuration: test_config,
+    )
+  test_config_scm = configure_file (
+    input: 'guile-config.scm.in',
+    output: 'zrythm-test-config.scm',
+    configuration: test_config_guile,
     )
 
   test_link_args = [
@@ -120,30 +148,57 @@ if get_option ('tests')
   foreach _test : tests
     test_name = _test[0]
     parallel = _test[1]
-    source = [ test_name + '.c' ]
     test_name = '_'.join(test_name.split('/'))
+    suite = _test[0].split('/')[0]
+    source = _test[0] + '.c'
 
-    exe = executable (
-      test_name,
-      sources: [
-        source,
-        test_config_h,
-        ],
-      c_args : [
-        common_cflags,
-        ],
-      dependencies : [
-        zrythm_deps,
-        ],
-      export_dynamic : false,
-      link_with: zrythm_lib,
-      include_directories : all_inc,
-    )
-
-    test (
-      test_name, exe,
-      env: test_env, suite: _test[0].split('/')[0],
-      is_parallel: parallel)
+    if fs.is_file (source)
+      # create C executable for C runner
+      exe = executable (
+        test_name,
+        sources: [
+          source,
+          test_config_h,
+          ],
+        c_args : [
+          common_cflags,
+          ],
+        dependencies : [
+          zrythm_deps,
+          ],
+        export_dynamic : false,
+        link_with: zrythm_lib,
+        include_directories : all_inc,
+      )
+      test (
+        test_name, exe,
+        env: test_env, suite: suite,
+        is_parallel: parallel)
+    else
+      # create C executable for Guile runner
+      source = _test[0] + '.scm'
+      exe = executable (
+        test_name,
+        sources: [
+          'guile_runner.c',
+          test_config_h,
+          ],
+        c_args : [
+          common_cflags,
+          ],
+        dependencies : [
+          zrythm_deps,
+          ],
+        export_dynamic : false,
+        link_with: zrythm_lib,
+        include_directories : all_inc,
+        )
+      test (
+        test_name, exe,
+        args: source,
+        env: test_env, suite: suite,
+        is_parallel: parallel)
+    endif
   endforeach
 
 endif

@@ -52,17 +52,18 @@ with meaningful stack traces and bug reports.
 ## Installation
 Once the program is built, it will need to be
 installed the first time before it can run (to
-install the [GSettings](https://developer.gnome.org/gio/stable/GSettings.html))
+install the [GSettings](https://developer.gnome.org/gio/stable/GSettings.html)) among other things.
 
     ninja -C build install
 
-Alternatively if you don't want to install anything
-on your system you can run
-`glib-compile-schemas data/` and then run zrythm
-using
-`GSETTINGS_SCHEMA_DIR=data ./build/src/zrythm`.
+If you don't want to install anything permanent on
+your system, you can install it somewhere
+temporary by configuring with
+`meson --prefix=/tmp/zrythm` for example, and then
+you can run it with
+`GSETTINGS_SCHEMA_DIR=/tmp/zrythm/share/glib-2.0/schemas ./build/src/zrythm`.
 The built program will be at `build/src/zrythm` by
-default
+default.
 
 ## Running
 

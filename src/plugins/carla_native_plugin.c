@@ -1173,6 +1173,9 @@ carla_native_plugin_save_state (
   GError * err = NULL;
   g_file_set_contents (
     state_file_abs_path, state, -1, &err);
+  g_free (abs_state_dir);
+  g_free (state_file_abs_path);
+  g_free (state);
   if (err)
     {
       g_critical (

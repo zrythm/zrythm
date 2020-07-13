@@ -1,0 +1,35 @@
+;;;  Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+;;;
+;;;  This file is part of Zrythm
+;;;
+;;;  Zrythm is free software: you can redistribute it and/or modify
+;;;  it under the terms of the GNU Affero General Public License as published by
+;;;  the Free Software Foundation, either version 3 of the License, or
+;;;  (at your option) any later version.
+;;;
+;;;  Zrythm is distributed in the hope that it will be useful,
+;;;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;;  GNU Affero General Public License for more details.
+;;;
+;;;  You should have received a copy of the GNU Affero General Public License
+;;;  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+;;;
+;;; Generate gtk.gresources.xml
+;;;
+;;; Usage: gen-gtk-gresources-xml SRCDIR_GTK [OUTPUT-FILE]
+
+(define-module (guile-config))
+
+(define TESTS_SRCDIR @TESTS_SRCDIR@)
+(define TESTS_BUILDDIR @TESTS_BUILDDIR@)
+(define MIDILIB_TEST_MIDI_FILES_PATH @MIDILIB_TEST_MIDI_FILES_PATH@)
+(define HAVE_HELM @HAVE_HELM@)
+(define HELM_URI @HELM_URI@)
+(define HELM_BUNDLE @HELM_BUNDLE@)
+(define HAVE_AMS_LFO @HAVE_AMS_LFO@)
+(define AMS_LFO_URI @AMS_LFO_URI@)
+(define AMS_LFO_BUNDLE @AMS_LFO_BUNDLE@)
+(define HAVE_LSP_COMPRESSOR @HAVE_LSP_COMPRESSOR@)
+(define LSP_COMPRESSOR_URI @LSP_COMPRESSOR_URI@)
+(define LSP_COMPRESSOR_BUNDLE @LSP_COMPRESSOR_BUNDLE@)

@@ -28,6 +28,7 @@ project (
   )
 
 gnome = import('gnome')
+fs = import('fs')
 
 prefix = get_option ('prefix')
 bindir = join_paths (prefix, get_option('bindir'))
