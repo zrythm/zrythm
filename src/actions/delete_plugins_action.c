@@ -189,6 +189,10 @@ delete_plugins_action_undo (
             }
         }
 
+      /* instantiate and activate it */
+      plugin_instantiate (pl, true, NULL);
+      plugin_activate (pl, F_ACTIVATE);
+
       /* select the plugin */
       mixer_selections_add_slot (
         MIXER_SELECTIONS, ch, self->ms->type,

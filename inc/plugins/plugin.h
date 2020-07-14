@@ -660,6 +660,14 @@ plugin_delete_state_files (
   Plugin * self);
 
 /**
+ * Cleans up an instantiated but not activated
+ * plugin.
+ */
+int
+plugin_cleanup (
+  Plugin * self);
+
+/**
  * Frees given plugin, breaks all its port connections, and frees its ports
  * and other internal pointers
  */

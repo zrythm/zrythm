@@ -95,6 +95,10 @@ create_plugins_action_do (
           EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
                        pl);
         }
+
+      /* activate */
+      ret = plugin_activate (pl, F_ACTIVATE);
+      g_return_val_if_fail (!ret, -1);
     }
 
   router_recalc_graph ((ROUTER));

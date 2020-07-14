@@ -444,6 +444,10 @@ void
 lv2_plugin_populate_banks (
   Lv2Plugin * self);
 
+int
+lv2_plugin_cleanup (
+  Lv2Plugin * self);
+
 /**
  * Frees the Lv2Plugin and all its components.
  */

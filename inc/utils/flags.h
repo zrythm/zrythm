@@ -142,4 +142,7 @@
 #define F_BACKUP 1
 #define F_NOT_BACKUP 0
 
+#define F_ACTIVATE 1
+#define F_NO_ACTIVATE 0
+
 #endif

@@ -93,7 +93,11 @@ plugin_init_loaded (
     }
 #endif
 
-  plugin_instantiate (self, project, NULL);
+  if (project)
+    {
+      plugin_instantiate (self, project, NULL);
+      plugin_activate (self, true);
+    }
 
   /*Track * track = plugin_get_track (self);*/
   /*plugin_generate_automation_tracks (self, track);*/
@@ -790,6 +794,55 @@ plugin_activate (
 }
 
 /**
+ * Cleans up an instantiated but not activated
+ * plugin.
+ */
+int
+plugin_cleanup (
+  Plugin * self)
+{
+  g_message (
+    "Cleaning up %s...", self->descr->name);
+
+  if (!self->activated && self->instantiated)
+    {
+      if (self->descr->open_with_carla)
+        {
+#ifdef HAVE_CARLA
+#if 0
+          /* TODO */
+          int ret =
+            carla_native_plugin_cleanup (
+              self->carla, activate);
+          g_return_val_if_fail (ret == 0, ret);
+#endif
+#endif
+        }
+      else
+        {
+          switch (self->descr->protocol)
+            {
+            case PROT_LV2:
+              {
+                int ret =
+                  lv2_plugin_cleanup (self->lv2);
+                g_return_val_if_fail (
+                  ret == 0, ret);
+              }
+              break;
+            default:
+              g_warn_if_reached ();
+              break;
+            }
+        }
+    }
+
+  g_message ("done");
+
+  return 0;
+}
+
+/**
  * Updates the plugin's latency.
  *
  * Calls the plugin format's get_latency()
@@ -1446,6 +1499,13 @@ plugin_clone (
         clone, F_NOT_BACKUP);
       carla_native_plugin_save_state (
         clone->carla, F_NOT_BACKUP);
+
+      /* cleanup the source if it wasnt in the
+       * project */
+      if (!src_is_project)
+        {
+          plugin_cleanup (pl);
+        }
     }
   else
     {
@@ -1496,6 +1556,13 @@ plugin_clone (
             clone, F_NOT_BACKUP);
           lv2_state_save_to_file (
             clone->lv2, F_NOT_BACKUP);
+
+          /* cleanup the source if it wasnt in the
+           * project */
+          if (!src_is_project)
+            {
+              plugin_cleanup (pl);
+            }
         }
 #ifdef HAVE_CARLA
     }

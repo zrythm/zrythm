@@ -72,6 +72,7 @@
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
@@ -1783,7 +1784,8 @@ lv2_plugin_instantiate (
   /* Get appropriate UI */
   self->uis =
     lilv_plugin_get_uis (self->lilv_plugin);
-  if (!ZRYTHM_TESTING &&
+  if (project &&
+      !ZRYTHM_TESTING &&
       !g_settings_get_boolean (
         S_P_PLUGINS_UIS, "generic"))
     {
@@ -1905,7 +1907,8 @@ lv2_plugin_instantiate (
   self->options_feature.data =
     (void *) self->options;
 
-  /* Create Plugin <=> UI communication buffers */
+  /* Create Plugin <=> UI communication
+   * buffers */
   self->ui_to_plugin_events =
     zix_ring_new (self->comm_buffer_size);
   self->plugin_to_ui_events =
@@ -1935,7 +1938,8 @@ lv2_plugin_instantiate (
   /* Create workers if necessary */
   if (lilv_plugin_has_extension_data (
         self->lilv_plugin,
-        PM_LILV_NODES.work_interface))
+        PM_LILV_NODES.work_interface) &&
+      project)
     {
       const LV2_Worker_Interface* iface =
         (const LV2_Worker_Interface*)
@@ -1986,11 +1990,6 @@ lv2_plugin_instantiate (
         }
     }
 
-  /* Activate plugin */
-  g_message ("Activating lilv instance...");
-  lilv_instance_activate (self->instance);
-  g_message ("Lilv instance activated");
-
   g_message ("done");
 
   return 0;
@@ -2001,13 +2000,30 @@ lv2_plugin_activate (
   Lv2Plugin * self,
   bool        activate)
 {
-  if (activate)
+  /* Activate plugin */
+  g_message (
+    "%s lilv instance...",
+    activate ? "Activating" :"Deactivating");
+  if (activate && !self->plugin->activated)
     {
       lilv_instance_activate (self->instance);
     }
-  else
+  else if (!activate && self->plugin->activated)
     {
       lilv_instance_deactivate (self->instance);
+    }
+
+  return 0;
+}
+
+int
+lv2_plugin_cleanup (
+  Lv2Plugin * self)
+{
+  if (self->plugin->instantiated)
+    {
+      object_free_w_func_and_null (
+        lilv_instance_free, self->instance);
     }
 
   return 0;
@@ -2021,10 +2037,14 @@ lv2_plugin_activate (
  */
 void
 lv2_plugin_process (
-  Lv2Plugin * lv2_plugin,
+  Lv2Plugin * self,
   const long  g_start_frames,
   const nframes_t   nframes)
 {
+  g_return_if_fail (
+    self->plugin->instantiated &&
+    self->plugin->activated);
+
 #ifdef HAVE_JACK
   jack_client_t * client = AUDIO_ENGINE->client;
 #endif
@@ -2033,12 +2053,12 @@ lv2_plugin_process (
   /* If transport state is not as expected, then
    * something has changed */
   const bool xport_changed =
-    lv2_plugin->rolling !=
+    self->rolling !=
       (TRANSPORT_IS_ROLLING) ||
-    lv2_plugin->gframes !=
+    self->gframes !=
       g_start_frames ||
     !math_floats_equal (
-      lv2_plugin->bpm,
+      self->bpm,
       tempo_track_get_current_bpm (P_TEMPO_TRACK));
 # if 0
   if (xport_changed)
@@ -2047,9 +2067,9 @@ lv2_plugin_process (
         "xport changed lv2_plugin_rolling %d, "
         "gframes vs g start frames %ld %ld, "
         "bpm %f %f",
-        lv2_plugin->rolling,
-        lv2_plugin->gframes, g_start_frames,
-        (double) lv2_plugin->bpm,
+        self->rolling,
+        self->gframes, g_start_frames,
+        (double) self->bpm,
         (double) TRANSPORT->bpm);
     }
 #endif
@@ -2058,7 +2078,7 @@ lv2_plugin_process (
    * changed */
   uint8_t   pos_buf[256];
   LV2_Atom * lv2_pos = (LV2_Atom*) pos_buf;
-  if (xport_changed && lv2_plugin->want_position)
+  if (xport_changed && self->want_position)
     {
       /* Build an LV2 position object to report
        * change to plugin */
@@ -2066,10 +2086,10 @@ lv2_plugin_process (
       position_from_frames (
         &start_pos, g_start_frames);
       lv2_atom_forge_set_buffer (
-        &lv2_plugin->forge,
+        &self->forge,
         pos_buf,
         sizeof(pos_buf));
-      LV2_Atom_Forge * forge = &lv2_plugin->forge;
+      LV2_Atom_Forge * forge = &self->forge;
       LV2_Atom_Forge_Frame frame;
       lv2_atom_forge_object (
         forge, &frame, 0,
@@ -2115,24 +2135,24 @@ lv2_plugin_process (
    * next cycle */
   if (TRANSPORT_IS_ROLLING)
     {
-      lv2_plugin->gframes =
+      self->gframes =
         transport_frames_add_frames (
-          TRANSPORT, lv2_plugin->gframes,
+          TRANSPORT, self->gframes,
           nframes);
-      lv2_plugin->rolling = 1;
+      self->rolling = 1;
     }
   else
     {
-      lv2_plugin->gframes = g_start_frames;
-      lv2_plugin->rolling = 0;
+      self->gframes = g_start_frames;
+      self->rolling = 0;
     }
-  lv2_plugin->bpm =
+  self->bpm =
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
 
   /* Prepare port buffers */
-  for (p = 0; p < lv2_plugin->num_ports; ++p)
+  for (p = 0; p < self->num_ports; ++p)
     {
-      Lv2Port * lv2_port = &lv2_plugin->ports[p];
+      Lv2Port * lv2_port = &self->ports[p];
       Port * port = lv2_port->port;
       PortIdentifier * id = &port->id;
       if (id->type == TYPE_AUDIO)
@@ -2140,7 +2160,7 @@ lv2_plugin_process (
           /* connect lv2 ports to plugin port
            * buffers */
           lilv_instance_connect_port (
-            lv2_plugin->instance,
+            self->instance,
             (uint32_t) p, port->buf);
         }
       else if (id->type == TYPE_CV)
@@ -2150,7 +2170,7 @@ lv2_plugin_process (
            * the docs it has the same size as an
            * audio port. */
           lilv_instance_connect_port (
-            lv2_plugin->instance,
+            self->instance,
             (uint32_t) p, port->buf);
         }
       else if (id->type == TYPE_EVENT &&
@@ -2172,7 +2192,7 @@ lv2_plugin_process (
                   LV2_ATOM_BODY (lv2_pos));
             }
 
-          if (lv2_plugin->request_update)
+          if (self->request_update)
             {
               /* Plugin state has changed, request
                * an update */
@@ -2227,21 +2247,21 @@ lv2_plugin_process (
             }
         }
     }
-  lv2_plugin->request_update = false;
+  self->request_update = false;
 
   /* Run plugin for this cycle */
   const bool send_ui_updates =
-    run (lv2_plugin, nframes) &&
+    run (self, nframes) &&
     !AUDIO_ENGINE->exporting &&
-    lv2_plugin->plugin->ui_instantiated;
+    self->plugin->ui_instantiated;
 
   /* Deliver MIDI output and UI events */
   Port * port;
-  for (p = 0; p < lv2_plugin->num_ports;
+  for (p = 0; p < self->num_ports;
        ++p)
     {
       Lv2Port* const lv2_port =
-        &lv2_plugin->ports[p];
+        &self->ports[p];
       port = lv2_port->port;
       PortIdentifier * pi = &port->id;
       switch (pi->type)
@@ -2254,10 +2274,10 @@ lv2_plugin_process (
                 {
                   if (!math_floats_equal (
                         (float)
-                        lv2_plugin->plugin_latency,
+                        self->plugin_latency,
                         lv2_port->port->control))
                     {
-                      lv2_plugin->plugin_latency =
+                      self->plugin_latency =
                         (uint32_t)
                         lv2_port->port->control;
 #ifdef HAVE_JACK
@@ -2272,12 +2292,12 @@ lv2_plugin_process (
               /* NEWWW */
               /* if UI is instantiated */
               if (send_ui_updates &&
-                  lv2_plugin->plugin->visible &&
+                  self->plugin->visible &&
                   !lv2_port->received_ui_event)
                 {
                   /* forward event to UI */
                   lv2_ui_send_control_val_event_from_plugin_to_ui (
-                    lv2_plugin, lv2_port);
+                    self, lv2_port);
                 }
               /* NEWWW END */
             }
@@ -2336,12 +2356,12 @@ lv2_plugin_process (
                     }
 
                   /* if UI is instantiated */
-                  if (lv2_plugin->plugin->visible &&
+                  if (self->plugin->visible &&
                       !lv2_port->old_api)
                     {
                       /* forward event to UI */
                       lv2_ui_send_event_from_plugin_to_ui (
-                        lv2_plugin, (uint32_t) p,
+                        self, (uint32_t) p,
                         type, size, body);
                     }
                 }

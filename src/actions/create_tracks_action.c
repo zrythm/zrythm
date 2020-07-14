@@ -130,6 +130,11 @@ create (
               g_return_val_if_fail (
                 pl, ERR_PLUGIN_INSTANTIATION_FAILED);
             }
+
+          /* activate */
+          g_return_val_if_fail (
+            plugin_activate (pl, F_ACTIVATE) == 0,
+            -1);
         }
 
       tracklist_insert_track (
