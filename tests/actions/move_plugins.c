@@ -182,6 +182,20 @@ _test_port_and_plugin_track_pos_after_move (
   g_assert_true (
     track_verify_identifiers (dest_track));
 
+  undo_manager_undo (UNDO_MANAGER);
+
+  /* move plugin from 1st slot to the 2nd slot and
+   * undo/redo */
+  mixer_selections_clear (
+    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, src_track->channel,
+    PLUGIN_SLOT_INSERT, 0);
+  ua =
+    move_plugins_action_new (
+      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+      src_track, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
 
   /* let the engine run */
   g_usleep (1000000);

@@ -572,6 +572,11 @@ channel_update_track_pos (
   Channel * self,
   int       pos);
 
+int
+channel_get_plugins (
+  Channel * self,
+  Plugin ** pls);
+
 /**
  * Clones the channel recursively.
  *

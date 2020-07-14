@@ -113,6 +113,10 @@ lv2_state_save_to_file (
   Lv2Plugin *  pl,
   bool         is_backup)
 {
+  g_return_val_if_fail (
+    pl && pl->plugin->instantiated &&
+    pl->instance, NULL);
+
   char * abs_state_dir =
     plugin_get_abs_state_dir (pl->plugin, is_backup);
   char * copy_dir =

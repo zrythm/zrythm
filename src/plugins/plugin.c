@@ -837,6 +837,7 @@ plugin_cleanup (
         }
     }
 
+  self->instantiated = false;
   g_message ("done");
 
   return 0;
@@ -1201,6 +1202,11 @@ plugin_instantiate (
                 g_warning ("lv2 instantiate failed");
                 return -1;
               }
+            else
+              {
+                pl->instantiated = true;
+              }
+            g_warn_if_fail (pl->lv2->instance);
             /* save the state */
             lv2_state_save_to_file (
               pl->lv2, F_NOT_BACKUP);
@@ -1519,8 +1525,12 @@ plugin_clone (
               int ret =
                 plugin_instantiate (
                   pl, src_is_project, NULL);
-              g_return_val_if_fail (ret == 0, NULL);
+              g_return_val_if_fail (
+                ret == 0, NULL);
             }
+          g_return_val_if_fail (
+            pl->instantiated &&
+            pl->lv2->instance, NULL);
 
           /* Make a state */
           LilvState * state =

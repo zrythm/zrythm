@@ -1927,6 +1927,20 @@ track_set_is_project (
     }
   free (ports);
 
+  /* activates/deactivates all plugins */
+  if (self->channel)
+    {
+      Plugin * plugins[60];
+      int num_plugins =
+        channel_get_plugins (
+          self->channel, plugins);
+      for (int i = 0; i < num_plugins; i++)
+        {
+          Plugin * pl = plugins[i];
+          plugin_activate (pl, is_project);
+        }
+    }
+
   self->is_project = is_project;
 
   g_message ("done");

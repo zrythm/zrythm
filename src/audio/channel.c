@@ -1642,7 +1642,15 @@ channel_remove_plugin (
         /*channel, pos, plugin);*/
     /*}*/
 
-  if (track->is_project)
+  if (track->is_project &&
+      /* only verify if we are deleting the plugin.
+       * if the plugin is moved to another slot
+       * this check fails because the port
+       * identifiers in the automation tracks are
+       * already updated to point to the next
+       * slot and the plugin is not found there
+       * yet */
+      deleting_plugin)
     {
       track_verify_identifiers (channel->track);
     }
@@ -2035,6 +2043,34 @@ channel_clone (
    * plugins */
 
   return clone;
+}
+
+int
+channel_get_plugins (
+  Channel * ch,
+  Plugin ** pls)
+{
+  int size = 0;
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      if (ch->inserts[i])
+        {
+          pls[size++] = ch->inserts[i];
+        }
+    }
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      if (ch->midi_fx[i])
+        {
+          pls[size++] = ch->midi_fx[i];
+        }
+    }
+  if (ch->instrument)
+    {
+      pls[size++] = ch->instrument;
+    }
+
+  return size;
 }
 
 /**
