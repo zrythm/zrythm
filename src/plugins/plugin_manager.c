@@ -1183,6 +1183,14 @@ plugin_manager_scan_plugins (
                   ins_path);
               char * parent_path =
                 io_path_get_parent_dir (ins_path);
+              if (!parent_path)
+                {
+                  g_warning (
+                    "Failed to get parent dir of "
+                    "%s", ins_path);
+                  plugin_descriptor_free (descr);
+                  continue;
+                }
               descr->author =
                 g_path_get_basename (parent_path);
               g_free (parent_path);
