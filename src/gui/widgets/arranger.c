@@ -2590,7 +2590,6 @@ multipress_pressed (
   gdouble               y,
   ArrangerWidget *      self)
 {
-
   /* set number of presses */
   self->n_press = n_press;
 

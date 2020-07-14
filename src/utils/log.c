@@ -78,11 +78,18 @@
  */
 #define FORMAT_UNSIGNED_BUFSIZE ((GLIB_SIZEOF_LONG * 3) + 3)
 
+/* these are emitted by the default log handler */
+#define DEFAULT_LEVELS (G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_MESSAGE)
+/* these are filtered by G_MESSAGES_DEBUG by the default log handler */
+#define INFO_LEVELS (G_LOG_LEVEL_INFO | G_LOG_LEVEL_DEBUG)
+
 static GLogLevelFlags g_log_msg_prefix = G_LOG_LEVEL_ERROR | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_DEBUG;
 
 #ifdef _WOE32
 static gboolean win32_keep_fatal_message = FALSE;
 #endif
+
+static GLogLevelFlags log_always_fatal = G_LOG_FATAL_MASK;
 
 typedef struct LogEvent
 {
@@ -100,6 +107,34 @@ g_get_console_charset (const char ** charset)
   return g_get_charset (charset);
 }
 #endif
+
+static void
+_log_abort (gboolean breakpoint)
+{
+  gboolean debugger_present;
+
+  if (g_test_subprocess ())
+    {
+      /* If this is a test case subprocess then it probably caused
+       * this error message on purpose, so just exit() rather than
+       * abort()ing, to avoid triggering any system crash-reporting
+       * daemon.
+       */
+      _exit (1);
+    }
+
+#ifdef G_OS_WIN32
+  debugger_present = IsDebuggerPresent ();
+#else
+  /* Assume GDB is attached. */
+  debugger_present = TRUE;
+#endif /* !G_OS_WIN32 */
+
+  if (debugger_present && breakpoint)
+    G_BREAKPOINT ();
+  else
+    g_abort ();
+}
 
 /**
  * @note from GLib.
@@ -630,6 +665,101 @@ log_idle_cb (
   return G_SOURCE_CONTINUE;
 }
 
+static gboolean
+log_is_old_api (const GLogField *fields,
+                gsize            n_fields)
+{
+  return (n_fields >= 1 &&
+          g_strcmp0 (fields[0].key, "GLIB_OLD_LOG_API") == 0 &&
+          g_strcmp0 (fields[0].value, "1") == 0);
+}
+
+static GLogWriterOutput
+log_writer_default_custom (GLogLevelFlags   log_level,
+                      const GLogField *fields,
+                      gsize            n_fields,
+                      gpointer         user_data)
+{
+  static gsize initialized = 0;
+  static gboolean stderr_is_journal = FALSE;
+
+  g_return_val_if_fail (fields != NULL, G_LOG_WRITER_UNHANDLED);
+  g_return_val_if_fail (n_fields > 0, G_LOG_WRITER_UNHANDLED);
+
+  /* Disable debug message output unless specified in G_MESSAGES_DEBUG. */
+  if (!(log_level & DEFAULT_LEVELS) && !(log_level >> G_LOG_LEVEL_USER_SHIFT))
+    {
+      const gchar *domains, *log_domain = NULL;
+      gsize i;
+
+      domains = g_getenv ("G_MESSAGES_DEBUG");
+
+      if ((log_level & INFO_LEVELS) == 0 ||
+          domains == NULL)
+        return G_LOG_WRITER_HANDLED;
+
+      for (i = 0; i < n_fields; i++)
+        {
+          if (g_strcmp0 (fields[i].key, "GLIB_DOMAIN") == 0)
+            {
+              log_domain = fields[i].value;
+              break;
+            }
+        }
+
+      if (strcmp (domains, "all") != 0 &&
+          (log_domain == NULL || !strstr (domains, log_domain)))
+        return G_LOG_WRITER_HANDLED;
+    }
+
+  /* Mark messages as fatal if they have a level set in
+   * g_log_set_always_fatal().
+   */
+  if ((log_level & log_always_fatal) && !log_is_old_api (fields, n_fields))
+    log_level |= G_LOG_FLAG_FATAL;
+
+  /* Try logging to the systemd journal as first choice. */
+  if (g_once_init_enter (&initialized))
+    {
+      stderr_is_journal = g_log_writer_is_journald (fileno (stderr));
+      g_once_init_leave (&initialized, TRUE);
+    }
+
+  if (stderr_is_journal &&
+      g_log_writer_journald (log_level, fields, n_fields, user_data) ==
+      G_LOG_WRITER_HANDLED)
+    goto handled;
+
+  /* FIXME: Add support for the Windows log. */
+
+  if (log_writer_standard_streams (log_level, fields, n_fields, user_data) ==
+      G_LOG_WRITER_HANDLED)
+    goto handled;
+
+  return G_LOG_WRITER_UNHANDLED;
+
+handled:
+  /* Abort if the message was fatal. */
+  if (log_level & G_LOG_FLAG_FATAL)
+    {
+#ifdef G_OS_WIN32
+      if (!g_test_initialized ())
+        {
+          gchar *locale_msg = NULL;
+
+          locale_msg = g_locale_from_utf8 (fatal_msg_buf, -1, NULL, NULL, NULL);
+          MessageBox (NULL, locale_msg, NULL,
+                      MB_ICONERROR | MB_SETFOREGROUND);
+          g_free (locale_msg);
+        }
+#endif /* !G_OS_WIN32 */
+
+      _log_abort (!(log_level & G_LOG_FLAG_RECURSION));
+    }
+
+  return G_LOG_WRITER_HANDLED;
+}
+
 /**
  * Log writer.
  *
@@ -678,11 +808,11 @@ log_writer (
 #endif
     }
 
-  (void) log_writer_standard_streams;
+  /*(void) log_writer_standard_streams;*/
 
   /* call the default log writer */
   return
-    g_log_writer_default (
+    log_writer_default_custom (
       log_level, fields, n_fields, self);
     /*log_writer_standard_streams (*/
       /*log_level, fields, n_fields, self);*/
@@ -795,6 +925,34 @@ log_init_with_file (
   self->initialized = true;
 }
 
+static guint
+g_parse_debug_envvar (const gchar     *envvar,
+                      const GDebugKey *keys,
+                      gint             n_keys,
+                      guint            default_value)
+{
+  const gchar *value;
+
+#ifdef OS_WIN32
+  /* "fatal-warnings,fatal-criticals,all,help" is pretty short */
+  gchar buffer[100];
+
+  if (GetEnvironmentVariable (envvar, buffer, 100) < 100)
+    value = buffer;
+  else
+    return 0;
+#else
+  value = getenv (envvar);
+#endif
+
+  if (value == NULL)
+    return default_value;
+
+  return
+    g_parse_debug_string (
+      value, keys, (guint) n_keys);
+}
+
 /**
  * Creates the logger and sets the writer func.
  *
@@ -804,6 +962,17 @@ Log *
 log_new (void)
 {
   Log * self = object_new (Log);
+
+  const GDebugKey keys[] = {
+    { "gc-friendly", 1 },
+    {"fatal-warnings",  G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL },
+    {"fatal-criticals", G_LOG_LEVEL_CRITICAL }
+  };
+  GLogLevelFlags flags;
+
+  flags = g_parse_debug_envvar ("G_DEBUG", keys, G_N_ELEMENTS (keys), 0);
+
+  log_always_fatal |= flags & G_LOG_LEVEL_MASK;
 
   g_log_set_writer_func (
     (GLogWriterFunc) log_writer, self, NULL);
