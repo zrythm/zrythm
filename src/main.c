@@ -257,6 +257,7 @@ main (int    argc,
   char * audio_backend = NULL;
   char * midi_backend = NULL;
   char * buf_size = NULL;
+  char * project_file = NULL;
   while (true)
     {
       c =
@@ -328,6 +329,12 @@ main (int    argc,
         default:
           abort ();
         }
+    }
+
+  /* get last non-option argument as project file */
+  for (int index = optind; index < argc; index++)
+    {
+      project_file = argv[index];
     }
 
   if (print_settings)
@@ -490,9 +497,25 @@ main (int    argc,
       audio_backend, midi_backend, buf_size);
 
   g_message ("running Zrythm...");
-  int ret =
-    g_application_run (
-      G_APPLICATION (zrythm_app), 0, NULL);
+  int ret = 0;
+  if (project_file)
+    {
+      int g_argc = 2;
+      char * g_argv[3] = {
+        argv[0], project_file,
+      };
+
+      ret =
+        g_application_run (
+          G_APPLICATION (zrythm_app),
+          g_argc, g_argv);
+    }
+  else
+    {
+      ret =
+        g_application_run (
+          G_APPLICATION (zrythm_app), 0, NULL);
+    }
   g_object_unref (zrythm_app);
 
   return ret;
