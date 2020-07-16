@@ -46,7 +46,8 @@ before_install:
       sudo dpkg -i kxstudio-repos_10.0.3_all.deb
       sudo apt-get update
       sudo apt-get install -y helm
-      pip3 install --user gcovr cpp-coveralls meson
+      pip3 install --user gcovr cpp-coveralls
+      pip3 install --user 'meson==0.53.0' --force-reinstall
       ;;
   esac
 
