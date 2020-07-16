@@ -610,7 +610,12 @@ write_str (
     }
   else if (self->logfd > -1)
     {
+#ifdef _WOE32
+      FlushFileBuffers (
+        (HANDLE) self->logfd);
+#else
       fsync (self->logfd);
+#endif
     }
 
   /* write to each buffer */
