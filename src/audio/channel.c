@@ -1906,14 +1906,15 @@ channel_update_track_pos (
 
   if (self->midi_out)
     {
-      port_update_track_pos (self->midi_out, pos);
+      port_update_track_pos (
+        self->midi_out, NULL, pos);
     }
   if (self->stereo_out)
     {
       port_update_track_pos (
-        self->stereo_out->l, pos);
+        self->stereo_out->l, NULL, pos);
       port_update_track_pos (
-        self->stereo_out->r, pos);
+        self->stereo_out->r, NULL, pos);
     }
 
   for (int i = 0; i < STRIP_SIZE; i++)

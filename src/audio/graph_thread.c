@@ -53,8 +53,9 @@ worker_thread (void * arg)
   Graph * graph = thread->graph;
   GraphNode* to_run = NULL;
 
-  g_message ("WORKER THREAD %d created",
-             thread->id);
+  g_message (
+    "WORKER THREAD %d created (num threads %d)",
+    thread->id, graph->num_threads);
 
   /* wait for all threads to get created */
   if (thread->id < graph->num_threads - 1)
@@ -111,20 +112,23 @@ worker_thread (void * arg)
           /* wait for work, fall asleep */
           g_atomic_int_inc (
             &graph->idle_thread_cnt);
+          int idle_thread_cnt =
+            g_atomic_int_get (
+              &graph->idle_thread_cnt);
           /*g_message (*/
             /*"[%d]: just increased idle thread count and waiting for work (idle threads %d)",*/
-            /*thread->id,*/
-            /*g_atomic_int_get (*/
-              /*&graph->idle_thread_cnt));*/
-          g_warn_if_fail (
-            g_atomic_int_get (
-              &graph->idle_thread_cnt) <=
-            graph->num_threads);
+            /*thread->id, idle_thread_cnt);*/
+          if (idle_thread_cnt > graph->num_threads)
+            {
+              g_warning (
+                "[%d]: idle thread count %d is greater than the number of threads %d. this should never occur",
+                thread->id, idle_thread_cnt,
+                graph->num_threads);
+            }
 
           zix_sem_wait (&graph->trigger);
 
-          if (g_atomic_int_get (
-                &graph->terminate))
+          if (g_atomic_int_get (&graph->terminate))
             return 0;
 
           g_atomic_int_dec_and_test (
@@ -164,7 +168,9 @@ main_thread (void * arg)
   while (
     g_atomic_int_get (&self->idle_thread_cnt) !=
       self->num_threads)
-    sched_yield ();
+    {
+      sched_yield ();
+    }
 
   /* wait for initial process callback */
   zix_sem_wait (&self->callback_start);

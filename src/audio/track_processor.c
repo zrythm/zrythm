@@ -91,7 +91,7 @@ init_midi_port (
       g_warn_if_fail (IS_PORT (self->midi_in));
       port_set_owner_track_processor (
         self->midi_in, self);
-      self->midi_in->id.flags |= PORT_FLAG_SENDABLE;
+      self->midi_in->id.flags |= PORT_FLAG_SEND_RECEIVABLE;
     }
   else
     {
@@ -196,8 +196,8 @@ init_stereo_out_ports (
 
   if (in)
     {
-      l->id.flags |= PORT_FLAG_SENDABLE;
-      r->id.flags |= PORT_FLAG_SENDABLE;
+      l->id.flags |= PORT_FLAG_SEND_RECEIVABLE;
+      r->id.flags |= PORT_FLAG_SEND_RECEIVABLE;
     }
 }
 
@@ -774,31 +774,31 @@ track_processor_set_track_pos (
   if (self->stereo_in)
     {
       port_update_track_pos (
-        self->stereo_in->l, pos);
+        self->stereo_in->l, NULL, pos);
       port_update_track_pos (
-        self->stereo_in->r, pos);
+        self->stereo_in->r, NULL, pos);
     }
   if (self->stereo_out)
     {
       port_update_track_pos (
-        self->stereo_out->l, pos);
+        self->stereo_out->l, NULL, pos);
       port_update_track_pos (
-        self->stereo_out->r, pos);
+        self->stereo_out->r, NULL, pos);
     }
   if (self->midi_in)
     {
       port_update_track_pos (
-        self->midi_in, pos);
+        self->midi_in, NULL, pos);
     }
   if (self->midi_out)
     {
       port_update_track_pos (
-        self->midi_out, pos);
+        self->midi_out, NULL, pos);
     }
   if (self->piano_roll)
     {
       port_update_track_pos (
-        self->piano_roll, pos);
+        self->piano_roll, NULL, pos);
     }
 }
 

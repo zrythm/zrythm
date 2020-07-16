@@ -277,7 +277,7 @@ init_thread (
   /* init log */
   zrythm_app_set_progress_status (
     self, _("Initializing logging system"), 0.02);
-  log_init_with_file (LOG);
+  log_init_with_file (LOG, false, -1);
 
   zrythm_app_set_progress_status (
     self, _("Initializing caches"), 0.05);
@@ -317,7 +317,7 @@ idle_func (
 {
   if (self->init_finished)
     {
-      log_init_writer_idle (ZRYTHM->log);
+      log_init_writer_idle (ZRYTHM->log, 3);
 
       g_action_group_activate_action (
         G_ACTION_GROUP (self),

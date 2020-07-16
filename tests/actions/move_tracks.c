@@ -37,52 +37,84 @@
 
 #include <glib.h>
 
-/**
- * Bootstraps the test with test data.
- */
 static void
-rebootstrap (void)
+_test_move_tracks (
+  const char * pl_bundle,
+  const char * pl_uri,
+  bool         is_instrument,
+  bool         with_carla)
 {
-  char path_str[6000];
-  sprintf (
-    path_str, "file://%s/%s/",
-    TESTS_BUILDDIR, "test-instrument.lv2");
-  g_message ("path is %s", path_str);
+  UndoableAction * action;
+
+  /* move markers track to the top */
+  int prev_pos = P_MARKER_TRACK->pos;
+  track_select (
+    P_MARKER_TRACK, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  action =
+    move_tracks_action_new (
+      TRACKLIST_SELECTIONS, 0);
+  undo_manager_perform (UNDO_MANAGER, action);
+
+  track_verify_identifiers (
+    TRACKLIST->tracks[prev_pos]);
+  track_verify_identifiers (
+    TRACKLIST->tracks[0]);
 
   LilvNode * path =
-    lilv_new_uri (LILV_WORLD, path_str);
+    lilv_new_uri (LILV_WORLD, pl_bundle);
   lilv_world_load_bundle (
     LILV_WORLD, path);
   lilv_node_free (path);
 
   plugin_manager_scan_plugins (
     PLUGIN_MANAGER, 1.0, NULL);
-  g_assert_cmpint (
-    PLUGIN_MANAGER->num_plugins, ==, 1);
+  /*g_assert_cmpint (*/
+    /*PLUGIN_MANAGER->num_plugins, ==, 1);*/
 
-  /* for some reason it gets labeled as a plugin,
-   * force instrument */
-  PLUGIN_MANAGER->plugin_descriptors[0]->category =
-    PC_INSTRUMENT;
-  PLUGIN_MANAGER->plugin_descriptors[0]->category_str =
-    g_strdup ("Instrument");
-}
+  PluginDescriptor * descr = NULL;
+  for (int i = 0; i < PLUGIN_MANAGER->num_plugins;
+       i++)
+    {
+      if (string_is_equal (
+            PLUGIN_MANAGER->plugin_descriptors[i]->
+              uri, pl_uri, true))
+        {
+          descr =
+            plugin_descriptor_clone (
+              PLUGIN_MANAGER->plugin_descriptors[i]);
+        }
+    }
 
-static void
-test_move_tracks ()
-{
-  rebootstrap ();
+  /* fix the descriptor (for some reason lilv
+   * reports it as Plugin instead of Instrument if
+   * you don't do lilv_world_load_all) */
+  if (is_instrument)
+    {
+      descr->category = PC_INSTRUMENT;
+    }
+  g_free (descr->category_str);
+  descr->category_str =
+    plugin_descriptor_category_to_string (
+      descr->category);
+
+  /* open with carla if requested */
+  descr->open_with_carla = with_carla;
 
   /* create a track with an instrument */
-  UndoableAction * action =
+  action =
     create_tracks_action_new (
-      TRACK_TYPE_INSTRUMENT,
-      PLUGIN_MANAGER->plugin_descriptors[0], NULL,
-      3, NULL, 1);
+      is_instrument ?
+        TRACK_TYPE_INSTRUMENT :
+        TRACK_TYPE_AUDIO_BUS,
+      descr, NULL, 3, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, action);
   Track * ins_track = TRACKLIST->tracks[3];
-  g_assert_true (
-    ins_track->type == TRACK_TYPE_INSTRUMENT);
+  if (is_instrument)
+    {
+      g_assert_true (
+        ins_track->type == TRACK_TYPE_INSTRUMENT);
+    }
 
   /* create an fx track and send to it */
   action =
@@ -98,7 +130,8 @@ test_move_tracks ()
   StereoPorts * stereo_in =
     fx_track->processor->stereo_in;
   channel_send_connect_stereo (
-    send, fx_track->processor->stereo_in);
+    send, fx_track->processor->stereo_in, NULL,
+    NULL);
 
   /* check that the sends are correct */
   g_assert_true (!send->is_empty);
@@ -118,8 +151,11 @@ test_move_tracks ()
   /* check that ids are updated */
   ins_track = TRACKLIST->tracks[4];
   fx_track = TRACKLIST->tracks[3];
-  g_assert_true (
-    ins_track->type == TRACK_TYPE_INSTRUMENT);
+  if (is_instrument)
+    {
+      g_assert_true (
+        ins_track->type == TRACK_TYPE_INSTRUMENT);
+    }
   g_assert_true (
     fx_track->type == TRACK_TYPE_AUDIO_BUS);
   send = &ins_track->channel->sends[0];
@@ -136,6 +172,35 @@ test_move_tracks ()
       &send->dest_l_id, &stereo_in->l->id) &&
     port_identifier_is_equal (
       &send->dest_r_id, &stereo_in->r->id));
+  track_verify_identifiers (ins_track);
+  track_verify_identifiers (fx_track);
+
+  /* check that the stereo out of the audio fx
+   * track points to the master track */
+  g_assert_true (
+    port_identifier_is_equal (
+      &fx_track->channel->stereo_out->l->
+        dest_ids[0],
+      &P_MASTER_TRACK->processor->stereo_in->l->
+        id));
+  g_assert_true (
+    port_identifier_is_equal (
+      &fx_track->channel->stereo_out->r->
+        dest_ids[0],
+      &P_MASTER_TRACK->processor->stereo_in->r->
+        id));
+
+  /* verify fx track out ports */
+  port_verify_src_and_dests (
+    fx_track->channel->stereo_out->l);
+  port_verify_src_and_dests (
+    fx_track->channel->stereo_out->r);
+
+  /* verify master track in ports */
+  port_verify_src_and_dests (
+    P_MASTER_TRACK->processor->stereo_in->l);
+  port_verify_src_and_dests (
+    P_MASTER_TRACK->processor->stereo_in->r);
 
   /* unswap tracks */
   undo_manager_undo (UNDO_MANAGER);
@@ -143,8 +208,11 @@ test_move_tracks ()
   /* check that ids are updated */
   ins_track = TRACKLIST->tracks[3];
   fx_track = TRACKLIST->tracks[4];
-  g_assert_true (
-    ins_track->type == TRACK_TYPE_INSTRUMENT);
+  if (is_instrument)
+    {
+      g_assert_true (
+        ins_track->type == TRACK_TYPE_INSTRUMENT);
+    }
   g_assert_true (
     fx_track->type == TRACK_TYPE_AUDIO_BUS);
   send = &ins_track->channel->sends[0];
@@ -161,6 +229,52 @@ test_move_tracks ()
       &send->dest_l_id, &stereo_in->l->id) &&
     port_identifier_is_equal (
       &send->dest_r_id, &stereo_in->r->id));
+  track_verify_identifiers (ins_track);
+  track_verify_identifiers (fx_track);
+
+  /* check that the stereo out of the audio fx
+   * track points to the master track */
+  g_assert_true (
+    port_identifier_is_equal (
+      &fx_track->channel->stereo_out->l->
+        dest_ids[0],
+      &P_MASTER_TRACK->processor->stereo_in->l->
+        id));
+  g_assert_true (
+    port_identifier_is_equal (
+      &fx_track->channel->stereo_out->r->
+        dest_ids[0],
+      &P_MASTER_TRACK->processor->stereo_in->r->
+        id));
+
+  /* verify fx track out ports */
+  port_verify_src_and_dests (
+    fx_track->channel->stereo_out->l);
+  port_verify_src_and_dests (
+    fx_track->channel->stereo_out->r);
+
+  /* verify master track in ports */
+  port_verify_src_and_dests (
+    P_MASTER_TRACK->processor->stereo_in->l);
+  port_verify_src_and_dests (
+    P_MASTER_TRACK->processor->stereo_in->r);
+}
+
+static void test_move_tracks ()
+{
+  test_helper_zrythm_init ();
+
+#ifdef HAVE_HELM
+  _test_move_tracks (
+    HELM_BUNDLE, HELM_URI, true, true);
+#endif
+#ifdef HAVE_LSP_COMPRESSOR
+  _test_move_tracks (
+    LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
+    false, true);
+#endif
+
+  test_helper_zrythm_cleanup ();
 }
 
 int

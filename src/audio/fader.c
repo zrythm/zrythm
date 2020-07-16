@@ -124,11 +124,12 @@ fader_new (
   port_set_owner_fader (self->amp, self);
   self->amp->id.flags |=
     PORT_FLAG_AMPLITUDE;
-  self->amp->id.flags |=
-    PORT_FLAG_AUTOMATABLE;
-  if (type == FADER_TYPE_AUDIO_CHANNEL ||
-      type == FADER_TYPE_MIDI_CHANNEL)
+  if ((type == FADER_TYPE_AUDIO_CHANNEL ||
+      type == FADER_TYPE_MIDI_CHANNEL) &&
+      !passthrough)
     {
+      self->amp->id.flags |=
+        PORT_FLAG_AUTOMATABLE;
       self->amp->id.flags |=
         PORT_FLAG_CHANNEL_FADER;
     }
@@ -147,8 +148,13 @@ fader_new (
   port_set_owner_fader (self->balance, self);
   self->balance->id.flags |=
     PORT_FLAG_STEREO_BALANCE;
-  self->balance->id.flags |=
-    PORT_FLAG_AUTOMATABLE;
+  if ((type == FADER_TYPE_AUDIO_CHANNEL ||
+      type == FADER_TYPE_MIDI_CHANNEL) &&
+      !passthrough)
+    {
+      self->balance->id.flags |=
+        PORT_FLAG_AUTOMATABLE;
+    }
 
   /* set mute */
   self->mute =
@@ -160,8 +166,13 @@ fader_new (
     PORT_FLAG_CHANNEL_MUTE;
   self->mute->id.flags |=
     PORT_FLAG_TOGGLE;
-  self->mute->id.flags |=
-    PORT_FLAG_AUTOMATABLE;
+  if ((type == FADER_TYPE_AUDIO_CHANNEL ||
+      type == FADER_TYPE_MIDI_CHANNEL) &&
+      !passthrough)
+    {
+      self->mute->id.flags |=
+        PORT_FLAG_AUTOMATABLE;
+    }
   port_set_owner_fader (self->mute, self);
 
   if (type == FADER_TYPE_AUDIO_CHANNEL ||
@@ -586,37 +597,40 @@ fader_update_track_pos (
 
   if (self->amp)
     {
-      port_update_track_pos (self->amp, pos);
+      port_update_track_pos (self->amp, NULL, pos);
     }
   if (self->balance)
     {
-      port_update_track_pos (self->balance, pos);
+      port_update_track_pos (
+        self->balance, NULL, pos);
     }
   if (self->mute)
     {
-      port_update_track_pos (self->mute, pos);
+      port_update_track_pos (self->mute, NULL, pos);
     }
   if (self->stereo_in)
     {
       port_update_track_pos (
-        self->stereo_in->l, pos);
+        self->stereo_in->l, NULL, pos);
       port_update_track_pos (
-        self->stereo_in->r, pos);
+        self->stereo_in->r, NULL, pos);
     }
   if (self->stereo_out)
     {
       port_update_track_pos (
-        self->stereo_out->l, pos);
+        self->stereo_out->l, NULL, pos);
       port_update_track_pos (
-        self->stereo_out->r, pos);
+        self->stereo_out->r, NULL, pos);
     }
   if (self->midi_in)
     {
-      port_update_track_pos (self->midi_in, pos);
+      port_update_track_pos (
+        self->midi_in, NULL, pos);
     }
   if (self->midi_out)
     {
-      port_update_track_pos (self->midi_out, pos);
+      port_update_track_pos (
+        self->midi_out, NULL, pos);
     }
 }
 

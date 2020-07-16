@@ -75,6 +75,8 @@ automation_track_new (
   port_identifier_copy (
     &self->port_id, &port->id);
 
+  port->at = self;
+
   return self;
 }
 
@@ -217,16 +219,28 @@ automation_track_get_ap_before_pos (
   return NULL;
 }
 
+/**
+ * Finds the AutomationTrack associated with
+ * `port`.
+ *
+ * @param track The track that owns the port, if
+ *   known.
+ */
 AutomationTrack *
 automation_track_find_from_port (
-  Port * port,
-  bool   basic_search)
+  Port *  port,
+  Track * track,
+  bool    basic_search)
 {
-  Track * track = port_get_track (port, 1);
+  if (!track)
+    {
+      track = port_get_track (port, 1);
+    }
   g_return_val_if_fail (track, NULL);
 
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
+  g_return_val_if_fail (atl, NULL);
   for (int i = 0; i < atl->num_ats; i++)
     {
       AutomationTrack * at = atl->ats[i];
@@ -277,7 +291,7 @@ automation_track_find_from_port_id (
 
   return
     automation_track_find_from_port (
-      port, basic_search);
+      port, NULL, basic_search);
 }
 
 /**

@@ -702,11 +702,11 @@ track_verify_identifiers (
           /*g_message ("checking %s", port->id.label);*/
           AutomationTrack * at =
             automation_track_find_from_port (
-              port, true);
+              port, self, true);
           g_return_val_if_fail (at, false);
           g_return_val_if_fail (
             automation_track_find_from_port (
-              port, false), false);
+              port, self, false), false);
         }
 
       port_verify_src_and_dests (port);
@@ -1189,25 +1189,26 @@ track_has_piano_roll (
  */
 void
 track_set_pos (
-  Track * track,
+  Track * self,
   int     pos)
 {
   g_message (
     "%s (%d) to %d",
-    track->name, track->pos, pos);
-  track->pos = pos;
+    self->name, self->pos, pos);
+  /*int prev_pos = self->pos;*/
+  self->pos = pos;
 
-  for (int i = 0; i < track->num_lanes; i++)
+  for (int i = 0; i < self->num_lanes; i++)
     {
       track_lane_set_track_pos (
-        track->lanes[i], pos);
+        self->lanes[i], pos);
     }
   automation_tracklist_update_track_pos (
-    &track->automation_tracklist, track);
+    &self->automation_tracklist, self);
 
   track_processor_set_track_pos (
-    track->processor, pos);
-  track->processor->track = track;
+    self->processor, pos);
+  self->processor->track = self;
 
   int max_size = 20;
   Port ** ports =
@@ -1215,19 +1216,19 @@ track_set_pos (
       (size_t) max_size, sizeof (Port *));
   int num_ports = 0;
   track_append_all_ports (
-    track, &ports, &num_ports, true,
+    self, &ports, &num_ports, true,
     &max_size, true);
   for (int i = 0; i < num_ports; i++)
     {
       g_warn_if_fail (ports[i]);
-      port_update_track_pos (ports[i], pos);
+      port_update_track_pos (ports[i], self, pos);
     }
   free (ports);
 
   /* update port identifier track positions */
-  if (track->channel)
+  if (self->channel)
     {
-      Channel * ch = track->channel;
+      Channel * ch = self->channel;
       channel_update_track_pos (ch, pos);
     }
 }
@@ -1266,7 +1267,13 @@ track_disconnect (
   for (int i = 0; i < num_ports; i++)
     {
       Port * port = ports[i];
-      g_return_if_fail (IS_PORT (port));
+      g_return_if_fail (
+        IS_PORT (port) &&
+        port->is_project == self->is_project);
+      if (ZRYTHM_TESTING)
+        {
+          port_verify_src_and_dests (port);
+        }
       port_disconnect_all (port);
     }
   free (ports);

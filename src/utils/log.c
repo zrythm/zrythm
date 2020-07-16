@@ -87,6 +87,7 @@ static GLogLevelFlags g_log_msg_prefix = G_LOG_LEVEL_ERROR | G_LOG_LEVEL_WARNING
 
 #ifdef _WOE32
 static gboolean win32_keep_fatal_message = FALSE;
+static gchar  fatal_msg_buf[1000] = "Unspecified fatal error encountered, aborting.";
 #endif
 
 static GLogLevelFlags log_always_fatal = G_LOG_FATAL_MASK;
@@ -129,6 +130,8 @@ _log_abort (gboolean breakpoint)
   /* Assume GDB is attached. */
   debugger_present = TRUE;
 #endif /* !G_OS_WIN32 */
+
+  g_warn_if_reached ();
 
   if (debugger_present && breakpoint)
     G_BREAKPOINT ();
@@ -599,9 +602,16 @@ write_str (
   char *         str)
 {
   /* write to file */
-  g_fprintf (
-    self->logfile, "%s\n", str);
-  fflush (self->logfile);
+  if (self->logfile)
+    {
+      g_fprintf (
+        self->logfile, "%s\n", str);
+      fflush (self->logfile);
+    }
+  else if (self->logfd > -1)
+    {
+      fsync (self->logfd);
+    }
 
   /* write to each buffer */
   GtkTextIter iter;
@@ -811,25 +821,40 @@ log_writer (
   /*(void) log_writer_standard_streams;*/
 
   /* call the default log writer */
-  return
-    log_writer_default_custom (
-      log_level, fields, n_fields, self);
-    /*log_writer_standard_streams (*/
-      /*log_level, fields, n_fields, self);*/
+  if (ZRYTHM_TESTING)
+    {
+      /* this is because the following doesn't
+       * send a trap when executed from non-gtk
+       * threads during testing */
+      return
+        g_log_writer_default (
+          log_level, fields, n_fields, self);
+    }
+  else
+    {
+      return
+        log_writer_default_custom (
+          log_level, fields, n_fields, self);
+        /*log_writer_standard_streams (*/
+          /*log_level, fields, n_fields, self);*/
+    }
 }
 
 /**
  * Initializes logging to a file.
  *
  * This must be called from the GTK thread.
+ *
+ * @param secs Number of timeout seconds.
  */
 void
 log_init_writer_idle (
-  Log * self)
+  Log *        self,
+  unsigned int secs)
 {
   self->writer_source_id =
     g_timeout_add_seconds (
-      3, (GSourceFunc) log_idle_cb, self);
+      secs, (GSourceFunc) log_idle_cb, self);
 }
 
 static void *
@@ -883,28 +908,41 @@ log_get_last_n_lines (
  * Initializes logging to a file.
  *
  * This can be called from any thread.
+ *
+ * @param use_file Whether to use the given
+ *   file or not.
  */
 void
 log_init_with_file (
-  Log * self)
+  Log * self,
+  bool  use_file,
+  int   file)
 {
   /* open file to write to */
-  char * str_datetime =
-    datetime_get_for_filename ();
-  char * user_log_dir =
-    zrythm_get_dir (ZRYTHM_DIR_USER_LOG);
-  char * str =
-    g_strdup_printf (
-      "%s%slog_%s.log",
-      user_log_dir,
-      G_DIR_SEPARATOR_S,
-      str_datetime);
-  io_mkdir (user_log_dir);
-  self->logfile = fopen (str, "a");
-  g_return_if_fail (self->logfile);
-  g_free (user_log_dir);
-  g_free (str);
-  g_free (str_datetime);
+  if (use_file)
+    {
+      self->logfd = file;
+      g_return_if_fail (self->logfd > -1);
+    }
+  else
+    {
+      char * str_datetime =
+        datetime_get_for_filename ();
+      char * user_log_dir =
+        zrythm_get_dir (ZRYTHM_DIR_USER_LOG);
+      char * file_path =
+        g_strdup_printf (
+          "%s%slog_%s.log",
+          user_log_dir,
+          G_DIR_SEPARATOR_S,
+          str_datetime);
+      io_mkdir (user_log_dir);
+      self->logfile = fopen (file_path, "a");
+      g_free (user_log_dir);
+      g_free (file_path);
+      g_free (str_datetime);
+      g_return_if_fail (self->logfile);
+    }
 
   /* init buffers */
   self->messages_buf = gtk_text_buffer_new (NULL);
@@ -974,6 +1012,8 @@ log_new (void)
 
   log_always_fatal |= flags & G_LOG_LEVEL_MASK;
 
+  self->logfd = -1;
+
   g_log_set_writer_func (
     (GLogWriterFunc) log_writer, self, NULL);
 
@@ -1007,6 +1047,11 @@ log_free (
     {
       fclose (self->logfile);
       self->logfile = NULL;
+    }
+
+  if (self->logfd > -1)
+    {
+      close (self->logfd);
     }
 
   /* free children */

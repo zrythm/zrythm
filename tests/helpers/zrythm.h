@@ -36,6 +36,8 @@
 #include "utils/cairo.h"
 #include "utils/objects.h"
 #include "utils/flags.h"
+#include "utils/io.h"
+#include "utils/log.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -96,6 +98,22 @@ test_helper_zrythm_init ()
     zrythm_free, ZRYTHM);
 
   ZRYTHM = zrythm_new (false, true);
+
+  /* init logging to custom file */
+  char * tmp_log_dir =
+    g_build_filename (
+      g_get_tmp_dir (), "zrythm_test_logs", NULL);
+  io_mkdir (tmp_log_dir);
+  char * tmp_log_file_template =
+    g_build_filename (
+      tmp_log_dir, "XXXXXX.log", NULL);
+  g_free (tmp_log_dir);
+  int tmp_log_file =
+    g_mkstemp (tmp_log_file_template);
+  g_free (tmp_log_file_template);
+  log_init_with_file (LOG, true, tmp_log_file);
+  log_init_writer_idle (LOG, 1);
+
   ZRYTHM->create_project_path =
     g_dir_make_tmp (
       "zrythm_test_project_XXXXXX", NULL);

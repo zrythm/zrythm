@@ -427,6 +427,13 @@ typedef struct Port
    */
   midi_byte_t         last_midi_status;
 
+  /**
+   * Automation track this port is attached to.
+   *
+   * To be set at runtime only (not serialized).
+   */
+  AutomationTrack *   at;
+
   /** Magic number to identify that this is a Port. */
   int                 magic;
 
@@ -685,10 +692,13 @@ port_get_plugin (
 /**
  * To be called when the port's identifier changes
  * to update corresponding identifiers.
+ *
+ * @param track The track that owns this port.
  */
 void
 port_update_identifier (
-  Port * port);
+  Port *  self,
+  Track * track);
 
 /**
  * Returns the index of the destination in the dest
@@ -907,11 +917,14 @@ port_get_num_unlocked_dests (Port * port);
 /**
  * Updates the track pos on a track port and
  * all its source/destination identifiers.
+ *
+ * @param track The track that owns this port.
  */
 void
 port_update_track_pos (
-  Port * port,
-  int    pos);
+  Port *  port,
+  Track * track,
+  int     pos);
 
 /**
  * Apply given fader value to port.

@@ -76,7 +76,7 @@ Hacking Zrythm
     └── TRANSLATORS                  # List of translators
 
 # Debugging
-Use `GDK_SYNCHRONIZE=1 G_DEBUG=fatal_warnings gdb build/src/zrythm`.
+Use `G_DEBUG=fatal_warnings gdb build/src/zrythm`.
 `G_DEBUG=fatal_warnings` will trigger break points at
 warning messages, and is very useful when debugging.
 
@@ -91,6 +91,11 @@ and it will automatically break there for you.
 
 For more information on warnings and assertions see
 <https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html>.
+
+We suggest building with `-Dextra_debug_info` which
+essentially adds `-g3` to the CFLAGS. This allows
+use of C macros in gdb so you can do `p TRACKLIST`
+instead of `p zrythm->project->tracklist`.
 
 ## Environment Variables
 In addition to GTK/GLib variables, Zrythm

@@ -40,6 +40,9 @@ typedef struct Log
 {
   FILE * logfile;
 
+  /** File descriptor if not using FILE. */
+  int    logfd;
+
   /* Buffers to fill in */
   GtkTextBuffer * messages_buf;
   GtkTextBuffer * warnings_buf;
@@ -65,10 +68,13 @@ typedef struct Log
  * Initializes logging to a file.
  *
  * This must be called from the GTK thread.
+ *
+ * @param secs Number of timeout seconds.
  */
 void
 log_init_writer_idle (
-  Log * self);
+  Log *        self,
+  unsigned int secs);
 
 /**
  * Idle callback.
@@ -92,10 +98,15 @@ log_get_last_n_lines (
  * Initializes logging to a file.
  *
  * This can be called from any thread.
+ *
+ * @param use_file Whether to use the given
+ *   file or not.
  */
 void
 log_init_with_file (
-  Log * self);
+  Log * self,
+  bool  use_file,
+  int   file);
 
 /**
  * Creates the logger and sets the writer func.

@@ -122,7 +122,7 @@ print_help ()
 {
   fprintf (
     stdout,
-    _("Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n\n"
+    _("Usage: zrythm [ OPTIONS ] [ PROJECT-FILE-PATH ]\n\n"
     "Options:\n"
     "  -h, --help      display this help message and exit\n"
     "  --convert-yaml-to-zpj  convert a yaml project to the .zpj format\n"

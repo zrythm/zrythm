@@ -332,6 +332,10 @@ if get_option ('extra_optimizations')
   endif
 endif
 
+if get_option ('extra_debug_info')
+  test_cflags += '-g3'
+endif
+
 common_cflags = cc.get_supported_arguments (
   test_cflags)
 

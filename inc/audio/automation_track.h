@@ -215,10 +215,18 @@ automation_track_find_from_port_id (
   PortIdentifier * id,
   bool             basic_search);
 
+/**
+ * Finds the AutomationTrack associated with
+ * `port`.
+ *
+ * @param track The track that owns the port, if
+ *   known.
+ */
 AutomationTrack *
 automation_track_find_from_port (
-  Port * port,
-  bool   basic_search);
+  Port *  port,
+  Track * track,
+  bool    basic_search);
 
 static inline void
 automation_track_swap_record_mode (

@@ -181,8 +181,8 @@ tracklist_insert_track (
   int         recalc_graph)
 {
   g_message (
-    "%s: inserting %s at %d...",
-    __func__, track->name, pos);
+    "inserting %s at %d...",
+    track->name, pos);
 
   track_set_name (track, track->name, 0);
 
@@ -626,6 +626,31 @@ tracklist_remove_track (
   g_message ("%s: done", __func__);
 }
 
+static void
+swap_tracks (
+  Tracklist * self,
+  int         src,
+  int         dest)
+{
+  Track * src_track = self->tracks[src];
+  Track * dest_track = self->tracks[dest];
+
+  /* move src somewhere temporarily */
+  self->tracks[src] = NULL;
+  self->tracks[self->num_tracks] = src_track;
+  track_set_pos (src_track, self->num_tracks);
+
+  /* move dest to src */
+  self->tracks[src] = dest_track;
+  self->tracks[dest] = NULL;
+  track_set_pos (dest_track, src);
+
+  /* move src from temp pos to dest */
+  self->tracks[dest] = src_track;
+  self->tracks[self->num_tracks] = NULL;
+  track_set_pos (src_track, dest);
+}
+
 /**
  * Moves a track from its current position to the
  * position given by \p pos.
@@ -645,6 +670,7 @@ tracklist_move_track (
   g_message (
     "%s: %s from %d to %d",
     __func__, track->name, track->pos, pos);
+  /*int prev_pos = track->pos;*/
   bool move_higher = pos < track->pos;
 
   Track * prev_visible =
@@ -692,38 +718,19 @@ tracklist_move_track (
   if (move_higher)
     {
       /* move all other tracks 1 track further */
-      for (int i = track->pos - 1; i >= pos; i--)
+      for (int i = track->pos; i > pos; i--)
         {
-          track_set_pos (self->tracks[i], i + 1);
+          swap_tracks (self, i, i - 1);
         }
     }
   else
     {
       /* move all other tracks 1 track earlier */
-      for (int i = track->pos + 1; i <= pos; i++)
+      for (int i = track->pos; i < pos; i++)
         {
-          track_set_pos (self->tracks[i], i - 1);
+          swap_tracks (self, i, i + 1);
         }
     }
-
-  array_delete (
-    self->tracks, self->num_tracks, track);
-
-  /* if adding at the end, append it, otherwise
-   * insert it */
-  if (pos == self->num_tracks)
-    {
-      array_append (
-        self->tracks, self->num_tracks, track);
-    }
-  else
-    {
-      array_insert (
-        self->tracks, self->num_tracks,
-        pos, track);
-    }
-
-  track_set_pos (track, pos);
 
   /* make the track the only selected track */
   tracklist_selections_select_single (

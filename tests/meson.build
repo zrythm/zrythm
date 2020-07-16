@@ -28,8 +28,7 @@ if get_option ('tests')
     'G_TEST_SRCDIR', meson.current_source_dir ())
   test_env.set (
     'G_TEST_BUILDDIR', meson.current_build_dir ())
-  test_env.set (
-    'G_TEST_BUILDDIR', meson.current_build_dir ())
+  test_env.set ('G_DEBUG', 'fatal-warnings')
   test_env.set (
     'GUILE_LOAD_PATH', '$GUILE_LOAD_PATH:' + meson.current_build_dir ())
   test_env.set ('G_DEBUG', 'gc-friendly')
@@ -119,6 +118,7 @@ if get_option ('tests')
       ['actions/copy_tracks', true],
       ['actions/create_plugins', true],
       ['actions/move_plugins', true],
+      ['actions/move_tracks', false],
       ['actions/delete_tracks', true],
       ['actions/port_connection', true],
       ['integration/undo_redo_helm_track_creation',
@@ -127,7 +127,6 @@ if get_option ('tests')
     if get_option ('plugin_tests')
       tests += [
         ['actions/mixer_selections', false],
-        ['actions/move_tracks', false],
         ]
     endif
   endif

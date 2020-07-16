@@ -474,7 +474,7 @@ project_sanity_check (Project * self)
   for (int i = 0; i < num_ports; i++)
     {
       port = ports[i];
-      port_update_identifier (port);
+      port_update_identifier (port, NULL);
     }
   free (ports);
 
@@ -643,6 +643,7 @@ create_default (Project * self)
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
   self->tracklist->master_track = track;
+  g_warn_if_fail (track->processor->stereo_in->l->is_project);
   tracklist_selections_add_track (
     self->tracklist_selections, track, 0);
   self->last_selection = SELECTION_TYPE_TRACK;

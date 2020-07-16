@@ -333,7 +333,8 @@ xrun_cb (
   if (cur_time - self->last_xrun_notification >
         6000000)
     {
-      ui_show_notification_idle (
+      /* FIXME make a notification message queue */
+      g_warning (
         _("XRUN occurred - check your JACK "
         "configuration"));
       self->last_xrun_notification = cur_time;

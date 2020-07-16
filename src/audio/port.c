@@ -134,6 +134,13 @@ port_init_loaded (
       break;
     }
 
+  if (self->id.flags & PORT_FLAG_AUTOMATABLE)
+    {
+      self->at =
+        automation_track_find_from_port (
+          self, NULL, false);
+      g_return_if_fail (self->at);
+    }
 }
 
 /**
@@ -1320,7 +1327,7 @@ port_connect (
 int
 port_disconnect (Port * src, Port * dest)
 {
-  g_warn_if_fail (src && dest);
+  g_warn_if_fail (IS_PORT (src) && IS_PORT (dest));
 
   int pos = -1;
   /* disconnect dest from src */
@@ -1341,10 +1348,7 @@ port_disconnect (Port * src, Port * dest)
   /* disconnect src from dest */
   pos = -1;
   array_delete_return_pos (
-    dest->srcs,
-    dest->num_srcs,
-    src,
-    pos);
+    dest->srcs, dest->num_srcs, src, pos);
   if (pos >= 0)
     {
       for (int i = pos;
@@ -1405,13 +1409,13 @@ port_disconnect_all (
       return 0;
     }
 
-  FOREACH_SRCS (self)
+  for (int i = self->num_srcs - 1; i >= 0; i--)
     {
       Port * src = self->srcs[i];
       port_disconnect (src, self);
     }
 
-  FOREACH_DESTS (self)
+  for (int i = self->num_dests - 1; i >= 0; i--)
     {
       Port * dest = self->dests[i];
       port_disconnect (self, dest);
@@ -1451,6 +1455,8 @@ port_verify_src_and_dests (
       for (int i = 0; i < self->num_srcs; i++)
         {
           Port * src = self->srcs[i];
+          g_return_if_fail (
+            IS_PORT (src) && src->is_project);
           int dest_idx =
             port_get_dest_index (src, self);
           g_warn_if_fail (
@@ -1466,6 +1472,8 @@ port_verify_src_and_dests (
       for (int i = 0; i < self->num_dests; i++)
         {
           Port * dest = self->dests[i];
+          g_return_if_fail (
+            IS_PORT (dest) && dest->is_project);
           int src_idx =
             port_get_src_index (dest, self);
           g_warn_if_fail (
@@ -1482,10 +1490,13 @@ port_verify_src_and_dests (
 /**
  * To be called when the port's identifier changes
  * to update corresponding identifiers.
+ *
+ * @param track The track that owns this port.
  */
 void
 port_update_identifier (
-  Port * self)
+  Port *  self,
+  Track * track)
 {
   /*g_message (*/
     /*"updating identifier for %p %s (track pos %d)", */
@@ -1530,9 +1541,10 @@ port_update_identifier (
       self->is_project)
     {
       /* update automation track's port id */
-      AutomationTrack * at =
-        automation_track_find_from_port_id (
-          &self->id, true);
+      self->at =
+        automation_track_find_from_port (
+          self, track, true);
+      AutomationTrack * at = self->at;
       g_return_if_fail (at);
       port_identifier_copy (
         &at->port_id, &self->id);
@@ -1542,13 +1554,16 @@ port_update_identifier (
 /**
  * Updates the track pos on a track port and
  * all its source/destination identifiers.
+ *
+ * @param track The track that owns this port.
  */
 void
 port_update_track_pos (
-  Port * self,
-  int    pos)
+  Port *  self,
+  Track * track,
+  int     pos)
 {
-  if (self->id.flags & PORT_FLAG_SENDABLE)
+  if (self->id.flags & PORT_FLAG_SEND_RECEIVABLE)
     {
       /* this could be a send receiver, so update
        * the sending channel if matching */
@@ -1611,7 +1626,11 @@ port_update_track_pos (
     }
 
   self->id.track_pos = pos;
-  port_update_identifier (self);
+  if (self->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
+    {
+      self->id.plugin_id.track_pos = pos;
+    }
+  port_update_identifier (self, track);
 }
 
 #ifdef HAVE_ALSA
@@ -2724,16 +2743,22 @@ port_sum_signal_from_inputs (
           }
 
         /* calculate value from automation track */
-        g_warn_if_fail (
+        g_return_if_fail (
           port->id.flags & PORT_FLAG_AUTOMATABLE);
-        AutomationTrack * at =
-          automation_track_find_from_port (
-            port, false);
+        AutomationTrack * at = port->at;
         if (!at)
           {
             g_critical (
               "No automation track found for port "
               "%s", port->id.label);
+          }
+        if (at && ZRYTHM_TESTING)
+          {
+            AutomationTrack * found_at =
+              automation_track_find_from_port (
+                port, NULL, true);
+            g_return_if_fail (
+              at == found_at);
           }
         if (at &&
             port->id.flags &
