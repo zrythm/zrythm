@@ -260,7 +260,7 @@ _test_move_tracks (
     P_MASTER_TRACK->processor->stereo_in->r);
 }
 
-static void test_move_tracks ()
+static void __test_move_tracks (bool with_carla)
 {
   test_helper_zrythm_init ();
 
@@ -277,6 +277,12 @@ static void test_move_tracks ()
   test_helper_zrythm_cleanup ();
 }
 
+static void test_move_tracks ()
+{
+  __test_move_tracks (false);
+  __test_move_tracks (true);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -287,7 +293,7 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/move_tracks/"
 
   g_test_add_func (
-    TEST_PREFIX "test move tracks",
+    TEST_PREFIX "test_move_tracks",
     (GTestFunc) test_move_tracks);
 
   return g_test_run ();
