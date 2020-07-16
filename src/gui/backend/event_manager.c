@@ -1217,6 +1217,8 @@ process_events (void * data)
           break;
         case ET_CLIP_EDITOR_REGION_CHANGED:
           /*on_clip_editor_region_changed ();*/
+          clip_editor_widget_on_region_changed (
+            MW_CLIP_EDITOR);
           break;
         case ET_TRACK_AUTOMATION_VISIBILITY_CHANGED:
           tracklist_widget_update_track_visibility (
