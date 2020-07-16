@@ -1,13 +1,78 @@
-Copyright (C) 2020 Carlos Han (C.K. Design)
-Copyright (C) 2019 Alexandros Theodotou
-
-These files are licensed under CC-BY-SA-4.0.
+Copyright (C) 2019-2020 Alexandros Theodotou
+The following files are licensed under CC-BY-SA-4.0.
 You should have received a copy of CC-BY-SA 4.0 along
 with Zrythm. If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 
+- add.svg
+- automate.svg
+- bus.svg
+- dim.svg
+- draw-cross.svg
+- event-viewer.svg
+- expose-to-jack.svg
+- fade-in.svg
+- fade-out.svg
+- jack-timebase-master.svg
+- jack-transport-client.svg
+- listen.svg
+- metronome.svg
+- mixer.svg
+- object-resize-left.svg
+- object-resize-loop-left.svg
+- object-resize-loop-right.svg
+- object-resize-right.svg
+- object-stretch-left.svg
+- object-stretch-right.svg
+- phase-invert.svg
+- piano-roll.svg
+- power.svg
+- quantize-options.svg
+- quick-quantize.svg
+- remove.svg
+- signal-audio.svg
+- signal-cv.svg
+- signal-midi.svg
+- snap-to-grid.svg
+- solo.svg
+- synth.svg
+- window-maximize.svg
+- window-minimize.svg
+- zrythm.svg
+- zrythm-splash.svg
+- zrythm-splash-png.png
+- zrythm-splash-png.xcf
+
 ----
 
-The following icons are from fontaudio (https://github.com/fefanto/fontaudio)
+Copyright (C) 2020 Carlos Han (C.K. Design)
+The following files are licensed under CC-BY-SA-4.0.
+You should have received a copy of CC-BY-SA 4.0 along
+with Zrythm. If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
+
+- bars.svg
+- draw-line.svg
+- edit-clear.svg
+- edit-copy.svg
+- edit-cut.svg
+- edit-delete.svg
+- edit-duplicate.svg
+- edit-paste.svg
+- edit-purge.svg
+- edit-redo.svg
+- edit-select-all.svg
+- edit-tool.svg
+- edit-undo.svg
+- face-smile.svg
+- media-playlist-repeat.svg
+- select-tool.svg
+- split.svg
+- track-inspector.svg
+- zoom-in.svg
+- zoom-out.svg
+
+----
+
+The following icons were copied from fontaudio (https://github.com/fefanto/fontaudio)
 and are licensed under CC-BY-SA-4.0.
 You should have received a copy of CC-BY-SA 4.0 along
 with Zrythm. If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
