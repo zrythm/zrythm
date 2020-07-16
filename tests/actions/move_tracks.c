@@ -267,12 +267,12 @@ static void __test_move_tracks (bool with_carla)
 
 #ifdef HAVE_HELM
   _test_move_tracks (
-    HELM_BUNDLE, HELM_URI, true, true);
+    HELM_BUNDLE, HELM_URI, true, with_carla);
 #endif
 #ifdef HAVE_LSP_COMPRESSOR
   _test_move_tracks (
     LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
-    false, true);
+    false, with_carla);
 #endif
 
   test_helper_zrythm_cleanup ();
