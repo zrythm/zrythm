@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-config.h"
 #include "zrythm-test-config.h"
 
 #include "actions/arranger_selections.h"
@@ -280,7 +281,9 @@ static void __test_move_tracks (bool with_carla)
 static void test_move_tracks ()
 {
   __test_move_tracks (false);
+#ifdef HAVE_CARLA
   __test_move_tracks (true);
+#endif
 }
 
 int
