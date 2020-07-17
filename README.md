@@ -87,9 +87,19 @@ individually.
 Some files, where specified, are licensed under
 different licenses.
 
-## Trademarks
-
-Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.
+### Additional terms under AGPLv3 Section 7
+Zrythm and the Zrythm logo are trademarks of
+Alexandros Theodotou and are governed by the Zrythm
+[Trademark Policy](https://www.zrythm.org/en/trademarks.html).
+You may distribute unaltered copies of Zrythm that
+include the Zrythm trademarks without express
+permission from Alexandros Theodotou. However,
+if you make any changes to Zrythm, you may not
+redistribute that product using any Zrythm trademark
+without Alexandros Theodotou’s prior written consent.
+For example, you may not distribute a modified form
+of Zrythm and continue to call it Zrythm, or
+include the Zrythm logo.
 
 ## Support
 If you would like to support this project please
