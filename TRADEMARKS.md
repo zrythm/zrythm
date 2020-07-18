@@ -76,4 +76,7 @@ includes the Zrythm trademarks please contact us with
 your request at trademarks@zrythm.org.
 
 # Newer Versions of this Policy
-This policy may be revised from time to time and updated versions shall be available at this webpage.
+This policy may be revised from time to time. The
+file `TRADEMARKS.md` in the source code releases will
+always contain the current policy at the time of
+each release.
