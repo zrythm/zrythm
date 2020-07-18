@@ -90,7 +90,7 @@ different licenses.
 ### Additional terms under AGPLv3 Section 7
 Zrythm and the Zrythm logo are trademarks of
 Alexandros Theodotou and are governed by the Zrythm
-[Trademark Policy](https://www.zrythm.org/en/trademarks.html).
+[Trademark Policy](TRADEMARKS.md).
 You may distribute unaltered copies of Zrythm that
 include the Zrythm trademarks without express
 permission from Alexandros Theodotou. However,
