@@ -1,6 +1,58 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.694] - 2020-07-18
+### Added
+- Allow routing from chord track to instrument tracks
+- Integration test for creating/deleting tracks using Helm
+- Add additional checks when tracks are added to the project
+- Add shift-selection for selecting multiple tracks or channels
+- Add option for level of UI detail (improves CPU usage on lower end machines)
+- Show bug report dialog on non-fatal errors
+- Add tests for creating plugins and port connection actions
+- Make port connections and channel sends undoable
+- Show error if icon is not found at startup
+- Add authors to credits section in the manual
+- Add Guile API for creating sends between tracks, connecting ports between a plugin and a track, and creating tracks as undoable actions
+- Add Guile test runner
+- Add Trademark Policy for Zrythm wordmark and logo
+- Add option to override the program name
+
+### Changed
+- Refactor: add `is_project` to many objects
+- Use weakjack on Windows
+- Add version requirement on RtAudio dependency
+- Only create MIDI notes on track 1 when exporting a MIDI region
+- Update German, Galician, Japanese translations
+- Print function name and line number in the log
+- Open plugins that require the KX UI interface with carla
+- Various drawing optimizations (by passing integers to cairo)
+- Use configuration file for tests
+- Each plugin instance now has its own state directory, including non-project plugin instances
+- Save plugin states when plugin instances are created
+- Ignore sysex messages from LV2 plugins for now
+- Update Guile API docs with more examples
+- Catch invalid SFZ/SF2 paths instead of crashing
+- Add detailed license information for each icon
+
+### Fixed
+- Fix crash when undoing twice after deleting a track
+- Fix crash when creating a new plugin fails
+- Fix MIDI note offs not being sent at the right time when moving MIDI notes
+- Fix issues with initialization of undoable actions when loading projects
+- Fix crash when closing Zrythm after resizing an automation region
+- Fix automation tracks not being cloned properly
+- Fix crash when undoing track deletion with automation
+- Fix automation regions not properly duplicated when duplicating tracks
+- Fix MIDI file import on Windows
+- Fix loading new projects from a loaded project
+- Fix an issue with exporting
+- Fix crash when connecting a plugin CV out port to another track's balance control
+- Fix automation track ID track positions not being updated when moving plugins from one track to another
+- Fix passing a project file as a command line argument not working
+- Fix crash when moving tracks
+- Fix editor not being refreshed when region owner track is deleted
+
 ## [0.8.604] - 2020-06-26
 ### Added
 - Add tempo track for BPM automation
