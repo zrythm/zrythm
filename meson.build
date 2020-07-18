@@ -70,7 +70,21 @@ elif host_machine.system() == 'windows'
   lib_suffix = '.dll'
 endif
 
+prog_name = get_option ('program_name')
+prog_name_lowercase = prog_name.to_lower()
+have_custom_name = prog_name != 'Zrythm'
+have_custom_logo_and_splash = get_option ('custom_logo_and_splash')
+
 cdata = configuration_data ()
+cdata.set_quoted ('PROGRAM_NAME', prog_name)
+cdata.set_quoted (
+  'PROGRAM_NAME_LOWERCASE', prog_name_lowercase)
+if have_custom_name
+  cdata.set ('HAVE_CUSTOM_NAME', 1)
+endif
+if have_custom_logo_and_splash
+  cdata.set ('HAVE_CUSTOM_LOGO_AND_SPLASH', 1)
+endif
 cdata.set_quoted (
   'PACKAGE_VERSION', '@VCS_TAG@')
 cdata.set_quoted (
@@ -787,6 +801,7 @@ meson.add_dist_script (
   'scripts' / 'meson_dist.sh')
 
 summary ({
+  'Program name': get_option('program_name'),
   'Build type': get_option('buildtype'),
   'Profiling': get_option('profiling'),
   'Strict flags': get_option('strict_flags'),
@@ -794,6 +809,7 @@ summary ({
   'Build/install manpage': get_option('manpage'),
   'Build/install user manual': get_option('user_manual'),
   'Install DSEG font': get_option('dseg_font'),
+  'Custom logo and splash': get_option('custom_logo_and_splash'),
   }, section: 'General')
 
 summary ({

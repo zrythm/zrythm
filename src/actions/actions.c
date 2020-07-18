@@ -352,9 +352,10 @@ activate_scripting_interface (
       GTK_BUTTONS_OK,
       _("Scripting extensibility with "
       "<a href=\"%s\">GNU Guile</a> "
-      "is not enabled in your Zrythm "
+      "is not enabled in your %s "
       "installation."),
-      "https://www.gnu.org/software/guile");
+      "https://www.gnu.org/software/guile",
+      PROGRAM_NAME);
   gtk_window_set_transient_for (
     GTK_WINDOW (dialog),
     GTK_WINDOW (MAIN_WINDOW));
@@ -615,10 +616,14 @@ activate_new (GSimpleAction *action,
                   gpointer       user_data)
 {
 #ifdef TRIAL_VER
-  ui_show_error_message (
-    MAIN_WINDOW,
+  char msg[600];
+  sprintf (
+    msg,
     _("Creating new projects is disabled. Please "
-    "restart Zrythm to start a new project"));
+    "restart %s to start a new project"),
+    PROGRAM_NAME);
+  ui_show_error_message (
+    MAIN_WINDOW, msg);
   return;
 #endif
 

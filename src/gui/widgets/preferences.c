@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-config.h"
+
 #include <locale.h>
 
 #include "audio/engine.h"
@@ -768,7 +770,8 @@ on_window_closed (
       GTK_MESSAGE_INFO,
       GTK_BUTTONS_OK,
       _("Some changes will only take "
-      "effect after you restart Zrythm"));
+      "effect after you restart %s"),
+      PROGRAM_NAME);
   gtk_window_set_transient_for (
     GTK_WINDOW (dialog),
     GTK_WINDOW (self));

@@ -18,6 +18,7 @@
  */
 
 #include "zrythm-config.h"
+
 #include "project.h"
 #include "actions/actions.h"
 #include "audio/master_track.h"
@@ -114,7 +115,7 @@ main_window_widget_new (ZrythmApp * _app)
   MainWindowWidget * self = g_object_new (
     MAIN_WINDOW_WIDGET_TYPE,
     "application", G_APPLICATION (_app),
-    "title", "Zrythm",
+    "title", PROGRAM_NAME,
     NULL);
 
   return self;

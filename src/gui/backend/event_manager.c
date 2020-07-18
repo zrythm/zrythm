@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-config.h"
+
 #include <math.h>
 
 #include "audio/audio_region.h"
@@ -1505,11 +1507,17 @@ process_events (void * data)
           /* TODO */
           break;
         case ET_TRIAL_LIMIT_REACHED:
-          ui_show_message_full (
-            GTK_WINDOW (MAIN_WINDOW),
-            GTK_MESSAGE_INFO,
-            _("Trial limit has been reached. "
-            "Zrythm will now go silent"));
+          {
+            char msg[500];
+            sprintf (
+              msg,
+              _("Trial limit has been reached. "
+              "%s will now go silent"),
+              PROGRAM_NAME);
+            ui_show_message_full (
+              GTK_WINDOW (MAIN_WINDOW),
+              GTK_MESSAGE_INFO, msg);
+          }
           break;
         case ET_CHANNEL_SEND_CHANGED:
           {

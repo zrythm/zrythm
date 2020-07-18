@@ -659,14 +659,18 @@ log_idle_cb (
                 G_LOG_LEVEL_CRITICAL &&
               ZRYTHM_HAVE_UI)
             {
+              char msg[500];
+              sprintf (
+                msg,
+                _("%s has encountered a "
+                "non-fatal error. It may "
+                "continue to run but "
+                "behavior will be undefined. "),
+                PROGRAM_NAME);
               GtkWidget * dialog =
                 bug_report_dialog_new (
                   GTK_WINDOW (MAIN_WINDOW),
-                  _("Zrythm has encountered a "
-                  "non-fatal error. It may "
-                  "continue to run but "
-                  "behavior will be undefined. "),
-                  ev->backtrace);
+                  msg, ev->backtrace);
               gtk_dialog_run (GTK_DIALOG (dialog));
               gtk_widget_destroy (dialog);
             }

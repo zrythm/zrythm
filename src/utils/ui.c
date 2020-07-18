@@ -141,7 +141,7 @@ ui_show_message_full (
       parent_window, flags, type,
       GTK_BUTTONS_CLOSE, "%s", message);
   gtk_window_set_title (
-    GTK_WINDOW (dialog), "Zrythm");
+    GTK_WINDOW (dialog), PROGRAM_NAME);
   gtk_window_set_icon_name (
     GTK_WINDOW (dialog), "zrythm");
   if (parent_window)
@@ -927,10 +927,10 @@ ui_get_locale_not_available_string (
 {
   /* show warning */
 #ifdef _WOE32
-  char * template =
+  char template =
     _("A locale for the language you have \
 selected (%s) is not available. Please install one first \
-and restart Zrythm");
+and restart %s");
 #else
   char * template =
     _("A locale for the language you have selected is \
@@ -940,13 +940,13 @@ the steps below and try again.\n\
 language code <b>%s</b> in <b>/etc/locale.gen</b> (needs \
 root privileges)\n\
 2. Run <b>locale-gen</b> as root\n\
-3. Restart Zrythm");
+3. Restart %s");
 #endif
 
   const char * code =
     localization_get_string_code (lang);
   char * str =
-    g_strdup_printf (template, code);
+    g_strdup_printf (template, code, PROGRAM_NAME);
 
   return str;
 }

@@ -9,11 +9,6 @@ to fetch tarballs. The project's home page is
 https://www.zrythm.org. The git repositories are
 on our [CGit instance](https://git.zrythm.org/cgit/).
 
-# Meson
-
-Zrythm needs a fairly recent version of Meson to build
-(around 0.50 and above).
-
 # Included Programs
 
 For various reasons, Zrythm ships with some libraries/resources
@@ -47,6 +42,24 @@ automatically.
 
 See the [post-install script](scripts/meson-post-install.scm)
 for more details.
+
+# Trademarks
+As mentioned in the
+[Trademark Policy](TRADEMARKS.md),
+if you wish to distribute modified versions of
+Zrythm, you must either get permission or replace
+the name and logo.
+
+To replace the trademarked name and logo, you can use
+the `program_name` and `custom_logo_and_splash` meson
+options, after replacing all files inside
+`data/icon-themes/zrythm-dark/scalable/apps`.
+
+# Issues
+Any issues should be reported to
+[our issue tracker](https://redmine.zrythm.org/projects/zrythm).
+If you have patches, please attach them to a new
+issue.
 
 ----
 

@@ -460,7 +460,7 @@ int
 engine_jack_test (
   GtkWindow * win)
 {
-  const char *client_name = "Zrythm";
+  const char *client_name = PROGRAM_NAME;
   const char *server_name = NULL;
   jack_options_t options = JackNoStartServer;
   jack_status_t status;
@@ -499,7 +499,7 @@ engine_jack_setup (
 {
   g_message ("Setting up JACK...");
 
-  const char *client_name = "Zrythm";
+  const char *client_name = PROGRAM_NAME;
   const char *server_name = NULL;
   jack_options_t options = JackNoStartServer;
   jack_status_t status;

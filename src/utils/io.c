@@ -593,9 +593,12 @@ io_get_registry_string_val (
 {
   char value[8192];
   DWORD BufferSize = 8192;
+  char prefix[500];
+  sprintf (
+    prefix, "Software\\%s\\%s\\Settings",
+    PROGRAM_NAME, PROGRAM_NAME);
   RegGetValue (
-    HKEY_LOCAL_MACHINE,
-    "Software\\Zrythm\\Zrythm\\Settings", path,
+    HKEY_LOCAL_MACHINE, prefix, path,
     RRF_RT_ANY, NULL, (PVOID) &value, &BufferSize);
   g_message ("reg value: %s", value);
   return g_strdup (value);

@@ -38,11 +38,11 @@
 /** \file
  * The audio engine of zyrthm. */
 
+#include "zrythm-config.h"
+
 #include <math.h>
 #include <stdlib.h>
 #include <signal.h>
-
-#include "zrythm-config.h"
 
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
@@ -421,11 +421,12 @@ init_common (
       sprintf (
         str,
         _("The selected MIDI/audio backend was not "
-          "found in the version of Zrythm you have "
+          "found in the version of %s you have "
           "installed. The audio and MIDI backends "
           "were set to \"Dummy\". Please set your "
           "preferred backend from the "
-          "preferences."));
+          "preferences."),
+        PROGRAM_NAME);
       ui_show_message_full (
         GTK_WINDOW (MAIN_WINDOW),
         GTK_MESSAGE_WARNING, str);

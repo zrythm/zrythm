@@ -22,6 +22,7 @@
 #include "guile/modules.h"
 
 #ifndef SNARF_MODE
+#include "zrythm-config.h"
 #include "plugins/plugin_manager.h"
 #include "zrythm.h"
 #endif
@@ -40,7 +41,13 @@ get_ptr (void)
 SCM_DEFINE (
   s_zrythm_get_ver, "zrythm-get-ver", 0, 0, 0,
   (),
-  "Return the Zrythm version as a string.")
+  "Return the "
+#ifdef SNARF_MODE
+  "Zrythm"
+#else
+  PROGRAM_NAME
+#endif
+  " version as a string.")
 {
   char ver[1000];
   zrythm_get_version_with_capabilities (ver);

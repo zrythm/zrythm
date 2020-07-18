@@ -17,9 +17,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
-
 #include "zrythm-config.h"
+
+#include <stdio.h>
 
 #include "audio/channel.h"
 #include "audio/engine.h"
@@ -237,7 +237,7 @@ export_audio (
   sf_set_string (
     sndfile, SF_STR_TITLE, PROJECT->title);
   sf_set_string (
-    sndfile, SF_STR_SOFTWARE, "Zrythm");
+    sndfile, SF_STR_SOFTWARE, PROGRAM_NAME);
   sf_set_string (
     sndfile, SF_STR_ARTIST, info->artist);
   sf_set_string (

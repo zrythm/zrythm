@@ -201,7 +201,7 @@ zrythm_get_version_with_capabilities (
 
   sprintf (
     str,
-    "Zrythm %s%s (%s)\n"
+    "%s %s%s (%s)\n"
     "  built with %s %s\n"
 #ifdef HAVE_CARLA
     "    +carla\n"
@@ -225,6 +225,7 @@ zrythm_get_version_with_capabilities (
     "    +sdl2\n"
 #endif
     "",
+    PROGRAM_NAME,
 #ifdef TRIAL_VER
     /* TRANSLATORS: please keep the space at the
      * end */

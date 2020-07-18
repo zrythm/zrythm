@@ -89,10 +89,12 @@ segv_handler (int sig)
   g_message ("%s", bt);
   log_idle_cb (LOG);
 
+  char str[500];
+  sprintf (
+    str, _("%s has crashed. "), PROGRAM_NAME);
   GtkWidget * dialog =
     bug_report_dialog_new (
-      GTK_WINDOW (MAIN_WINDOW),
-      _("Zrythm has crashed. "), bt);
+      GTK_WINDOW (MAIN_WINDOW), str, bt);
 
   /* run the dialog */
   gtk_dialog_run (GTK_DIALOG (dialog));
@@ -122,7 +124,7 @@ print_help ()
 {
   fprintf (
     stdout,
-    _("Usage: zrythm [ OPTIONS ] [ PROJECT-FILE-PATH ]\n\n"
+    _("Usage: %s [ OPTIONS ] [ PROJECT-FILE-PATH ]\n\n"
     "Options:\n"
     "  -h, --help      display this help message and exit\n"
     "  --convert-yaml-to-zpj  convert a yaml project to the .zpj format\n"
@@ -131,8 +133,8 @@ print_help ()
     "  -p, --print-settings  print current settings\n"
     "  --pretty        print output in user-friendly way\n"
     "  --reset-to-factory  reset to factory settings\n"
-    "  --gdb           run Zrythm through GDB (debugger)\n"
-    "  --callgrind     run Zrythm through callgrind (profiler)\n"
+    "  --gdb           run %s through GDB (debugger)\n"
+    "  --callgrind     run %s through callgrind (profiler)\n"
     "  --audio-backend  override the audio backend to use\n"
     "  --midi-backend  override the MIDI backend to use\n"
     "  --dummy         overrides both the audio and MIDI backends to dummy\n"
@@ -140,11 +142,15 @@ print_help ()
     "  --interactive   interactive mode, where applicable\n"
     "  -v, --version   output version information and exit\n\n"
     "Examples:\n"
-    "  zrythm -v       print version\n"
-    "  zrythm --callgrind --dummy --buf-size=8192  profile Zrythm using the dummy backend and a buffer size of 8192\n"
-    "  zrythm --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  convert a compressed zpj project to YAML\n"
-    "  zrythm -p --pretty  pretty-print current settings\n\n"
+    "  %s -v       print version\n"
+    "  %s --callgrind --dummy --buf-size=8192  profile %s using the dummy backend and a buffer size of 8192\n"
+    "  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  convert a compressed zpj project to YAML\n"
+    "  %s -p --pretty  pretty-print current settings\n\n"
     "Report bugs to %s\n"),
+    PROGRAM_NAME_LOWERCASE, PROGRAM_NAME,
+    PROGRAM_NAME, PROGRAM_NAME_LOWERCASE,
+    PROGRAM_NAME_LOWERCASE, PROGRAM_NAME,
+    PROGRAM_NAME_LOWERCASE, PROGRAM_NAME_LOWERCASE,
     ISSUE_TRACKER_URL);
 }
 
@@ -424,13 +430,14 @@ main (int    argc,
   char * ver = zrythm_get_version (0);
   fprintf (
     stdout,
-    _("Zrythm-%s Copyright (C) 2018-2020 The Zrythm contributors\n\n"
-    "Zrythm comes with ABSOLUTELY NO WARRANTY!\n\n"
+    _("%s-%s Copyright (C) 2018-2020 The Zrythm contributors\n\n"
+    "%s comes with ABSOLUTELY NO WARRANTY!\n\n"
     "This is free software, and you are welcome to redistribute it\n"
     "under certain conditions. See the file `COPYING' for details.\n\n"
     "Write comments and bugs to %s\n"
     "Support this project at https://liberapay.com/Zrythm\n\n"),
-    ver, ISSUE_TRACKER_URL);
+    PROGRAM_NAME, ver, PROGRAM_NAME,
+    ISSUE_TRACKER_URL);
   g_free (ver);
 
   char * cur_dir = g_get_current_dir ();

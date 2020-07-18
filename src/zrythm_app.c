@@ -240,10 +240,14 @@ static void on_load_project (
 
   if (ret != 0)
     {
+      char msg[600];
+      sprintf (
+        msg,
+        _("No project has been selected. %s "
+        "will now close."),
+        PROGRAM_NAME);
       ui_show_error_message (
-        NULL,
-        _("No project has been selected. Zrythm "
-        "will now close."));
+        NULL, msg);
       exit (0);
     }
 
@@ -267,9 +271,13 @@ init_thread (
   ZRYTHM->debug =
     env_get_int ("ZRYTHM_DEBUG", 0);
   /* init zrythm folders ~/Zrythm */
+  char msg[500];
+  sprintf (
+    msg,
+    _("Initializing %s directories"),
+    PROGRAM_NAME);
   zrythm_app_set_progress_status (
-    self,
-    _("Initializing Zrythm directories"), 0.01);
+    self, msg, 0.01);
   init_dirs_and_files ();
   init_recent_projects ();
   init_templates ();
@@ -445,8 +453,11 @@ static void on_prompt_for_project (
 "GNU Affero General Public License for more details.\n"
 "\n"
 "You should have received a copy of the GNU Affero General Public License\n"
-"along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.\n\n\
-Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou");
+"along with Zrythm.  If not, see <https://www.gnu.org/licenses/>."
+#if !defined(HAVE_CUSTOM_NAME) || !defined(HAVE_CUSTOM_LOGO_AND_SPLASH)
+"\n\nZrythm and the Zrythm logo are trademarks of Alexandros Theodotou"
+#endif
+);
           gtk_window_set_title (
             GTK_WINDOW (dialog),
             _("License Information"));

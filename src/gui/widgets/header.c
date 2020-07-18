@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-config.h"
+
 #include "gui/accel.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/help_toolbar.h"
@@ -92,6 +94,9 @@ header_widget_init (
     MAB_ANIMATION_FLASH);
 
   /* set tooltips */
+  char about_tooltip[500];
+  sprintf (
+    about_tooltip, _("About %s"), PROGRAM_NAME);
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
     GTK_ACTIONABLE (self->x), \

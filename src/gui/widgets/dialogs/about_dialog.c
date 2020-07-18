@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+#include "zrythm-config.h"
 
 /* auto-generated */
 #include "src/translators.h"
@@ -76,11 +78,16 @@ about_dialog_widget_new (
       GTK_TYPE_ABOUT_DIALOG,
       "artists", artists,
       "authors", authors,
-      "copyright", "Copyright © 2018-2020 The Zrythm contributors\nZrythm and the Zrythm logo are trademarks of Alexandros Theodotou",
+      "copyright", "Copyright © 2018-2020 The Zrythm contributors"
+#if !defined(HAVE_CUSTOM_LOGO_AND_SPLASH) || \
+  !defined (HAVE_CUSTOM_NAME)
+      "\nZrythm and the Zrythm logo are trademarks of Alexandros Theodotou"
+#endif
+      ,
       "documenters", documenters,
       /*"logo-icon-name", "z",*/
       "logo", pixbuf,
-      "program-name", "Zrythm",
+      "program-name", PROGRAM_NAME,
       "comments", _("a highly automated and intuitive digital audio workstation"),
       "license-type", GTK_LICENSE_AGPL_3_0,
       "translator-credits", translators,

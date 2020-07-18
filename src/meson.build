@@ -78,7 +78,7 @@ zrythm_lib = static_library (
 objects = []
 
 zrythm_exe = executable (
-  'zrythm',
+  prog_name_lowercase,
   sources: [
     zrythm_main,
     zrythm_resources,

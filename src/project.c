@@ -888,9 +888,9 @@ load (
       char * str =
         g_strdup_printf (
           _("This project was created with a "
-            "different version of Zrythm (%s). "
+            "different version of %s (%s). "
             "It may not work correctly."),
-          self->version);
+          PROGRAM_NAME, self->version);
       ui_show_message_full (
         GTK_WINDOW (MAIN_WINDOW),
         GTK_MESSAGE_WARNING, str);

@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm-config.h"
+
 #include "gui/widgets/splash.h"
 #include "utils/resources.h"
 #include "zrythm.h"
@@ -77,7 +79,7 @@ splash_window_widget_new (
     g_object_new (
       SPLASH_WINDOW_WIDGET_TYPE,
       "application", G_APPLICATION (app),
-      "title", "Zrythm",
+      "title", PROGRAM_NAME,
       NULL);
   g_return_val_if_fail (
     Z_IS_SPLASH_WINDOW_WIDGET (self), NULL);

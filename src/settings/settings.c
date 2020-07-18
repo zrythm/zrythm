@@ -23,6 +23,8 @@
  * Application settings.
  */
 
+#include "zrythm-config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -216,8 +218,8 @@ print_or_reset (
             {
               fprintf (
                 stderr,
-                _("Failed to find schema %s. Zrythm is likely not installed"),
-                schema_str);
+                _("Failed to find schema %s. %s is likely not installed"),
+                schema_str, PROGRAM_NAME);
               if (exit_on_finish)
                 exit (1);
               else
@@ -271,9 +273,10 @@ settings_reset_to_factory (
   if (confirm)
     {
       printf (
-        _("This will reset Zrythm to factory settings. "
+        _("This will reset %s to factory settings. "
         "You will lose all your preferences. Type 'y' "
-        "to continue: "));
+        "to continue: "),
+        PROGRAM_NAME);
       char c = getchar ();
       if (c != 'y')
         {
