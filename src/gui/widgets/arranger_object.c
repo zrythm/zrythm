@@ -64,6 +64,8 @@ void
 arranger_object_queue_redraw (
   ArrangerObject * self)
 {
+  g_return_if_fail (IS_ARRANGER_OBJECT (self));
+
   ArrangerWidget * arranger =
     arranger_object_get_arranger (self);
   g_return_if_fail (arranger);

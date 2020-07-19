@@ -175,6 +175,29 @@ arranger_selections_init (
 }
 
 /**
+ * Verify that the objects are not invalid.
+ */
+bool
+arranger_selections_verify (
+  ArrangerSelections * self)
+{
+  /* verify that all objects are arranger
+   * objects */
+  int size = 0;
+  ArrangerObject ** objs =
+    arranger_selections_get_all_objects (
+      self, &size);
+  for (int i = 0; i < size; i++)
+    {
+      g_return_val_if_fail (
+        IS_ARRANGER_OBJECT (objs[i]), false);
+    }
+  free (objs);
+
+  return true;
+}
+
+/**
  * Appends the given object to the selections.
  */
 void

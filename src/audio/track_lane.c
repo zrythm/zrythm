@@ -23,6 +23,7 @@
 #include "audio/track.h"
 #include "audio/track_lane.h"
 #include "audio/tracklist.h"
+#include "gui/widgets/arranger.h"
 #include "utils/arrays.h"
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiinfo.h"
@@ -255,8 +256,22 @@ track_lane_remove_region (
   TrackLane * self,
   ZRegion *   region)
 {
+  g_return_if_fail (IS_REGION (region));
+
   array_delete (
     self->regions, self->num_regions, region);
+
+  if (ZRYTHM_HAVE_UI)
+    {
+      ArrangerObject * obj =
+        (ArrangerObject *) region;
+      ArrangerWidget * arranger =
+        arranger_object_get_arranger (obj);
+      if (arranger->hovered_object == obj)
+        {
+          arranger->hovered_object = NULL;
+        }
+    }
 
   for (int i = region->id.idx; i < self->num_regions;
        i++)

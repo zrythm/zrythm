@@ -53,6 +53,11 @@ arranger_selections_action_init_loaded (
         self->sc##_sel_after; \
       arranger_selections_init_loaded ( \
         self->sel, false); \
+      if (self->sel_after) \
+        { \
+          arranger_selections_init_loaded ( \
+            self->sel_after, false); \
+        } \
     }
   DO_SELECTIONS (chord);
   DO_SELECTIONS (tl);
@@ -98,6 +103,13 @@ set_selections (
   if (clone)
     {
       sel = arranger_selections_clone (_sel);
+    }
+
+  if (ZRYTHM_TESTING)
+    {
+      arranger_selections_verify (_sel);
+      if (_sel != sel)
+        arranger_selections_verify (sel);
     }
 
   if (is_after)
@@ -936,6 +948,7 @@ move_obj_by_tracks_and_lanes (
   const int        tracks_diff,
   const int        lanes_diff)
 {
+  g_return_if_fail (IS_ARRANGER_OBJECT (obj));
   if (tracks_diff)
     {
       g_return_if_fail (
@@ -1010,6 +1023,10 @@ do_or_undo_duplicate_or_link (
   ArrangerObject ** objs =
     arranger_selections_get_all_objects (
       self->sel_after, &size);
+  if (ZRYTHM_TESTING)
+    {
+      arranger_selections_verify (self->sel_after);
+    }
   /* objects the duplication/link was based from */
   ArrangerObject ** orig_objs =
     arranger_selections_get_all_objects (
@@ -1047,6 +1064,7 @@ do_or_undo_duplicate_or_link (
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
       orig_objs[i]->flags |=
         ARRANGER_OBJECT_FLAG_NON_PROJECT;
+      g_warn_if_fail (IS_ARRANGER_OBJECT (objs[i]));
 
       ArrangerObject * obj;
       if (_do)

@@ -1363,7 +1363,8 @@ Track *
 arranger_object_get_track (
   ArrangerObject * self)
 {
-  g_return_val_if_fail (self, NULL);
+  g_return_val_if_fail (
+    IS_ARRANGER_OBJECT (self), NULL);
 
   Track * track = NULL;
 
@@ -1436,7 +1437,8 @@ ArrangerWidget *
 arranger_object_get_arranger (
   ArrangerObject * self)
 {
-  g_return_val_if_fail (self, NULL);
+  g_return_val_if_fail (
+    IS_ARRANGER_OBJECT (self), NULL);
 
   Track * track =
     arranger_object_get_track (self);
@@ -2074,6 +2076,8 @@ arranger_object_clone (
     {
       new_obj->muted = self->muted;
     }
+
+  new_obj->magic = ARRANGER_OBJECT_MAGIC;
 
   return new_obj;
 }

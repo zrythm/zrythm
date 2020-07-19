@@ -125,6 +125,13 @@ arranger_selections_init (
   ArrangerSelectionsType type);
 
 /**
+ * Verify that the objects are not invalid.
+ */
+bool
+arranger_selections_verify (
+  ArrangerSelections * self);
+
+/**
  * Appends the given object to the selections.
  */
 void
