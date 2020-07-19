@@ -539,6 +539,8 @@ lv2_plugin_init_loaded (
   Lv2Plugin * self,
   bool        project)
 {
+  self->magic = LV2_PLUGIN_MAGIC;
+
   if (!project)
     return;
 
@@ -1322,16 +1324,17 @@ lv2_plugin_new_from_uri (
  */
 Lv2Plugin *
 lv2_plugin_new (
-  Plugin *plugin)
+  Plugin * plugin)
 {
-  Lv2Plugin * lv2_plugin =
-    (Lv2Plugin *) calloc (1, sizeof (Lv2Plugin));
+  Lv2Plugin * self = object_new (Lv2Plugin);
+
+  self->magic = LV2_PLUGIN_MAGIC;
 
   /* set pointers to each other */
-  lv2_plugin->plugin = plugin;
-  plugin->lv2 = lv2_plugin;
+  self->plugin = plugin;
+  plugin->lv2 = self;
 
-  return lv2_plugin;
+  return self;
 }
 
 /**
@@ -1634,13 +1637,13 @@ lv2_plugin_instantiate (
     g_strjoin (NULL, templ, "/", NULL);
   g_free (templ);
 
-  self->make_path_save.handle = &self;
+  self->make_path_save.handle = self;
   self->make_path_save.path =
     lv2_state_make_path_save;
   self->make_path_feature_save.data =
     &self->make_path_save;
 
-  self->make_path_temp.handle = &self;
+  self->make_path_temp.handle = self;
   self->make_path_temp.path =
     lv2_state_make_path_temp;
   self->make_path_feature_temp.data =

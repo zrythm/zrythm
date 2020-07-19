@@ -73,14 +73,14 @@ _test_create_plugins (
   /* fix the descriptor (for some reason lilv
    * reports it as Plugin instead of Instrument if
    * you don't do lilv_world_load_all) */
-  if (is_instrument)
-    {
-      descr->category = PC_INSTRUMENT;
-    }
-  g_free (descr->category_str);
-  descr->category_str =
-    plugin_descriptor_category_to_string (
-      descr->category);
+  /*if (is_instrument)*/
+    /*{*/
+      /*descr->category = PC_INSTRUMENT;*/
+    /*}*/
+  /*g_free (descr->category_str);*/
+  /*descr->category_str =*/
+    /*plugin_descriptor_category_to_string (*/
+      /*descr->category);*/
 
   /* open with carla if requested */
   descr->open_with_carla = with_carla;
@@ -115,6 +115,15 @@ _test_create_plugins (
   int src_track_pos = TRACKLIST->num_tracks - 1;
   Track * src_track =
     TRACKLIST->tracks[src_track_pos];
+
+  if (is_instrument)
+    {
+      g_assert_true (src_track->channel->instrument);
+    }
+  else
+    {
+      g_assert_true (src_track->channel->inserts[0]);
+    }
 
   /* duplicate the track */
   track_select (
@@ -159,6 +168,11 @@ test_create_plugins (void)
   _test_create_plugins (
     LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
     false, false);
+#endif
+#ifdef HAVE_CARLA_RACK
+  _test_create_plugins (
+    CARLA_RACK_BUNDLE, CARLA_RACK_URI,
+    true, false);
 #endif
 }
 

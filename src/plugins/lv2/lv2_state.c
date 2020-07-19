@@ -56,6 +56,7 @@ lv2_state_make_path_save (
   const char*                path)
 {
   Lv2Plugin * pl = (Lv2Plugin *) handle;
+  g_return_val_if_fail (IS_LV2_PLUGIN (pl), NULL);
 
   char * full_path =
     plugin_get_abs_state_dir (
@@ -84,6 +85,7 @@ lv2_state_make_path_temp (
   const char*                path)
 {
   Lv2Plugin * pl = (Lv2Plugin *) handle;
+  g_return_val_if_fail (IS_LV2_PLUGIN (pl), NULL);
 
   /* if plugin already has a state dir, use it,
    * otherwise create it */
