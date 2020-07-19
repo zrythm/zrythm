@@ -178,6 +178,7 @@ ext_lv2_plugins = {
   'ams_lfo': ['AMS LFO', 'http://github.com/blablack/ams-lv2/lfo'],
   'helm': ['Helm', 'http://tytel.org/helm'],
   'lsp_compressor': ['LSP Compressor', 'http://lsp-plug.in/plugins/lv2/compressor_stereo'],
+  'carla_rack': ['Carla Rack', 'http://kxstudio.sf.net/carla/plugins/carlarack'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}

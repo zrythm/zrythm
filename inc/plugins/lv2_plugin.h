@@ -94,6 +94,10 @@ typedef struct PluginDescriptor PluginDescriptor;
  * @{
  */
 
+#define LV2_PLUGIN_MAGIC 58173672
+#define IS_LV2_PLUGIN(tr) \
+  (tr && tr->magic == LV2_PLUGIN_MAGIC)
+
 /**
  * LV2 plugin.
  */
@@ -241,6 +245,8 @@ typedef struct Lv2Plugin
   LV2_Worker_Schedule sched;
   LV2_Worker_Schedule ssched;
   LV2_Log_Log         llog;
+
+  int                 magic;
 
 } Lv2Plugin;
 

@@ -1057,6 +1057,8 @@ char *
 plugin_get_escaped_name (
   Plugin * pl)
 {
+  g_return_val_if_fail (pl->descr, NULL);
+
   char tmp[900];
   io_escape_dir_name (tmp, pl->descr->name);
   return g_strdup (tmp);

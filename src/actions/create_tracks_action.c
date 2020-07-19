@@ -145,8 +145,8 @@ create (
         {
           channel_add_plugin (
             track->channel,
-            self->pl_descr.category ==
-              PC_INSTRUMENT ?
+            plugin_descriptor_is_instrument (
+              &self->pl_descr) ?
                 PLUGIN_SLOT_INSTRUMENT :
                 PLUGIN_SLOT_INSERT,
             pl->id.slot, pl,
