@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-07-09 12:13+0100\n"
+"POT-Creation-Date: 2020-07-20 22:41+0100\n"
 "PO-Revision-Date: 2020-07-01 21:41+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -68,7 +68,7 @@ msgstr "すべてを選択"
 msgid "Duplicate"
 msgstr "複製"
 
-#: inc/utils/gtk.h:92 src/audio/fader.c:156
+#: inc/utils/gtk.h:92 src/audio/fader.c:162
 msgid "Mute"
 msgstr "無音"
 
@@ -86,7 +86,7 @@ msgstr "音源"
 msgid "Audio"
 msgstr "オーディオ"
 
-#: inc/audio/track.h:159 src/project.c:636
+#: inc/audio/track.h:159 src/project.c:640
 #: src/gui/widgets/route_target_selector_popover.c:153
 msgid "Master"
 msgstr "マスタ"
@@ -194,11 +194,11 @@ msgstr "ALSAシーケンサー"
 msgid "Inherit"
 msgstr "継承"
 
-#: inc/audio/region.h:85 src/audio/automation_track.c:98
+#: inc/audio/region.h:85 src/audio/automation_track.c:100
 msgid "Off"
 msgstr "無効"
 
-#: inc/audio/region.h:87 src/audio/automation_track.c:92
+#: inc/audio/region.h:87 src/audio/automation_track.c:94
 msgid "On"
 msgstr "有効"
 
@@ -231,36 +231,36 @@ msgstr "正弦"
 
 #. TRANSLATORS: please keep the space at the
 #. * end
-#: src/zrythm.c:231
+#: src/zrythm.c:232
 msgid "(trial) "
 msgstr "(トライアル) "
 
-#: src/project.c:126
+#: src/project.c:127
 #, c-format
 msgid "Failed to open file: %s"
 msgstr "ファイルを開けませんでした：%s"
 
-#: src/project.c:170
+#: src/project.c:171
 msgid "Project not compressed by zstd!"
 msgstr "プロジェクトは zstd で圧縮されていません!"
 
-#: src/project.c:183
+#: src/project.c:184
 #, c-format
 msgid "Failed to decompress project file: %s"
 msgstr "プロジェクト・ファイルの解凍に失敗しました：%s"
 
-#: src/project.c:192
+#: src/project.c:193
 msgid ""
 "uncompressed_size != frame_content_size impossible because zstd will check "
 "this condition!"
 msgstr ""
 
-#: src/project.c:224
+#: src/project.c:225
 #, fuzzy, c-format
 msgid "Failed to write file: %s"
 msgstr "スキーマ %s を表示できませんでした"
 
-#: src/project.c:769
+#: src/project.c:774
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -271,42 +271,42 @@ msgstr ""
 "  %s.\n"
 "新しいバックアップを使用しますか?"
 
-#: src/project.c:774
+#: src/project.c:779
 msgid "Backup found"
 msgstr "バックアップが見つかりました"
 
-#: src/project.c:828
+#: src/project.c:837
 #, fuzzy, c-format
 msgid "Unable to read file: %s"
 msgstr "内部クライアントをロードできませんでした"
 
-#: src/project.c:881
-#, c-format
+#: src/project.c:890
+#, fuzzy, c-format
 msgid ""
-"This project was created with a different version of Zrythm (%s). It may not "
+"This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr ""
 "このプロジェクトは、Zrythm (%s) の異なるバージョンで作成されました。正しく動"
 "作しない可能性があります。"
 
-#: src/project.c:896
+#: src/project.c:905
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "プロジェクトの読み込みに失敗しました。詳細については、ログを確認してくださ"
 "い。"
 
-#: src/project.c:1076
+#: src/project.c:1087
 #, fuzzy
 msgid "Failed to load project. Will create a new one instead."
 msgstr ""
 "プロジェクトの読み込みに失敗しました。詳細については、ログを確認してくださ"
 "い。"
 
-#: src/project.c:1421
+#: src/project.c:1426
 msgid "Backup saved."
 msgstr "バックアップが保存されました。"
 
-#: src/project.c:1431
+#: src/project.c:1436
 msgid "Project saved."
 msgstr "プロジェクトが保存されました。"
 
@@ -319,14 +319,15 @@ msgstr "エラー - バックトレース:\n"
 msgid "Error: %s - Backtrace:\n"
 msgstr "エラー: %s - バックトレース:\n"
 
-#: src/main.c:95
-msgid "Zrythm has crashed. "
+#: src/main.c:94
+#, c-format
+msgid "%s has crashed. "
 msgstr ""
 
-#: src/main.c:125
+#: src/main.c:127
 #, fuzzy, c-format
 msgid ""
-"Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
+"Usage: %s [ OPTIONS ] [ PROJECT-FILE-PATH ]\n"
 "\n"
 "Options:\n"
 "  -h, --help      display this help message and exit\n"
@@ -336,8 +337,8 @@ msgid ""
 "  -p, --print-settings  print current settings\n"
 "  --pretty        print output in user-friendly way\n"
 "  --reset-to-factory  reset to factory settings\n"
-"  --gdb           run Zrythm through GDB (debugger)\n"
-"  --callgrind     run Zrythm through callgrind (profiler)\n"
+"  --gdb           run %s through GDB (debugger)\n"
+"  --callgrind     run %s through callgrind (profiler)\n"
 "  --audio-backend  override the audio backend to use\n"
 "  --midi-backend  override the MIDI backend to use\n"
 "  --dummy         overrides both the audio and MIDI backends to dummy\n"
@@ -347,12 +348,12 @@ msgid ""
 "  -v, --version   output version information and exit\n"
 "\n"
 "Examples:\n"
-"  zrythm -v       print version\n"
-"  zrythm --callgrind --dummy --buf-size=8192  profile Zrythm using the dummy "
-"backend and a buffer size of 8192\n"
-"  zrythm --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  "
-"convert a compressed zpj project to YAML\n"
-"  zrythm -p --pretty  pretty-print current settings\n"
+"  %s -v       print version\n"
+"  %s --callgrind --dummy --buf-size=8192  profile %s using the dummy backend "
+"and a buffer size of 8192\n"
+"  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  convert a "
+"compressed zpj project to YAML\n"
+"  %s -p --pretty  pretty-print current settings\n"
 "\n"
 "Report bugs to %s\n"
 msgstr ""
@@ -371,49 +372,49 @@ msgstr ""
 "\n"
 "バグ報告は%sまでにください。\n"
 
-#: src/main.c:164
+#: src/main.c:170
 #, c-format
 msgid "File %s not found."
 msgstr ""
 
-#: src/main.c:185
+#: src/main.c:191
 msgid ""
 "An output file was not specified. Please pass one with `--output [FILE]`."
 msgstr ""
 
 #. getopt_long already printed an error
 #. * message
-#: src/main.c:326
+#: src/main.c:333
 #, c-format
 msgid "Unknown option\n"
 msgstr "オプションを認知できませんでした\n"
 
-#: src/main.c:375
+#: src/main.c:388
 #, c-format
 msgid "Project failed to compress: %s\n"
 msgstr ""
 
-#: src/main.c:384
+#: src/main.c:397
 #, c-format
 msgid "Project successfully compressed.\n"
 msgstr ""
 
-#: src/main.c:402
+#: src/main.c:415
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr ""
 
-#: src/main.c:411
+#: src/main.c:424
 #, c-format
 msgid "Project successfully decompressed.\n"
 msgstr ""
 
-#: src/main.c:420
+#: src/main.c:433
 #, fuzzy, c-format
 msgid ""
-"Zrythm-%s Copyright (C) 2018-2020 The Zrythm contributors\n"
+"%s-%s Copyright (C) 2018-2020 The Zrythm contributors\n"
 "\n"
-"Zrythm comes with ABSOLUTELY NO WARRANTY!\n"
+"%s comes with ABSOLUTELY NO WARRANTY!\n"
 "\n"
 "This is free software, and you are welcome to redistribute it\n"
 "under certain conditions. See the file `COPYING' for details.\n"
@@ -441,65 +442,66 @@ msgstr "メイン ウィンドウを設定中"
 msgid "Loading project"
 msgstr "プロジェクトを読み込み中"
 
-#: src/zrythm_app.c:245
-#, fuzzy
-msgid "No project has been selected. Zrythm will now close."
+#: src/zrythm_app.c:246
+#, fuzzy, c-format
+msgid "No project has been selected. %s will now close."
 msgstr "試用制限に達しました。 Zrythmはサイレントになります"
 
-#: src/zrythm_app.c:265
+#: src/zrythm_app.c:269
 msgid "Initializing settings"
 msgstr "設定を初期化中"
 
-#: src/zrythm_app.c:272
-msgid "Initializing Zrythm directories"
+#: src/zrythm_app.c:277
+#, fuzzy, c-format
+msgid "Initializing %s directories"
 msgstr "Zrythm ディレクトリを初期化中"
 
-#: src/zrythm_app.c:279
+#: src/zrythm_app.c:287
 msgid "Initializing logging system"
 msgstr "ログシステムを初期化中"
 
-#: src/zrythm_app.c:283
+#: src/zrythm_app.c:291
 msgid "Initializing caches"
 msgstr "キャッシュを初期化中"
 
-#: src/zrythm_app.c:287
+#: src/zrythm_app.c:295
 msgid "Initializing file manager"
 msgstr "ファイルマネージャを初期化中"
 
-#: src/zrythm_app.c:294
+#: src/zrythm_app.c:302
 msgid "Scanning plugins"
 msgstr "プラグインをスキャン中"
 
-#: src/zrythm_app.c:452
+#: src/zrythm_app.c:463
 msgid "License Information"
 msgstr "ライセンス情報"
 
-#: src/zrythm_app.c:480
+#: src/zrythm_app.c:491
 msgid "Waiting for project"
 msgstr "プロジェクトを待機中"
 
-#: src/plugins/carla_native_plugin.c:464 src/plugins/lv2_plugin.c:2418
+#: src/plugins/carla_native_plugin.c:463 src/plugins/lv2_plugin.c:2413
 #, fuzzy
 msgid "Default bank"
 msgstr "デフォルト値"
 
-#: src/plugins/carla_native_plugin.c:471 src/plugins/lv2_plugin.c:2425
+#: src/plugins/carla_native_plugin.c:470 src/plugins/lv2_plugin.c:2420
 msgid "Init"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:898
+#: src/plugins/carla_native_plugin.c:897
 msgid "Audio in"
 msgstr "オーディオ入力"
 
-#: src/plugins/carla_native_plugin.c:908
+#: src/plugins/carla_native_plugin.c:907
 msgid "Audio out"
 msgstr "オーディオ出力"
 
-#: src/plugins/carla_native_plugin.c:918
+#: src/plugins/carla_native_plugin.c:917
 msgid "MIDI in"
 msgstr "MIDI入力"
 
-#: src/plugins/carla_native_plugin.c:928
+#: src/plugins/carla_native_plugin.c:927
 msgid "MIDI out"
 msgstr "MIDI出力"
 
@@ -534,57 +536,57 @@ msgstr "AUプラグインをスキャンしました"
 msgid "Skipped AU plugin at %u"
 msgstr "%uのAUプラグインをスキップしました"
 
-#: src/plugins/plugin.c:135
+#: src/plugins/plugin.c:133
 msgid "Enabled"
 msgstr "有効"
 
-#: src/plugins/plugin_gtk.c:80 src/plugins/lv2/lv2_gtk.c:102
+#: src/plugins/plugin_gtk.c:81 src/plugins/lv2/lv2_gtk.c:105
 msgid "Save State"
 msgstr "状態を保存"
 
-#: src/plugins/plugin_gtk.c:83 src/plugins/lv2/lv2_gtk.c:105
-#: src/plugins/lv2/lv2_gtk.c:353 src/utils/dialogs.c:42 src/utils/dialogs.c:72
-#: src/actions/actions.c:762 resources/ui/export_midi_file_dialog.ui:54
+#: src/plugins/plugin_gtk.c:84 src/plugins/lv2/lv2_gtk.c:108
+#: src/plugins/lv2/lv2_gtk.c:357 src/utils/dialogs.c:42 src/utils/dialogs.c:72
+#: src/actions/actions.c:767 resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "取り消し(_C)"
 
-#: src/plugins/plugin_gtk.c:84 src/plugins/lv2/lv2_gtk.c:106
-#: src/actions/actions.c:764
+#: src/plugins/plugin_gtk.c:85 src/plugins/lv2/lv2_gtk.c:109
+#: src/actions/actions.c:769
 msgid "_Save"
 msgstr "保存(_S)"
 
-#: src/plugins/lv2_plugin.c:2457
+#: src/plugins/lv2_plugin.c:2452
 msgid "Unnamed bank"
 msgstr ""
 
-#: src/plugins/lv2/lv2_gtk.c:252
+#: src/plugins/lv2/lv2_gtk.c:256
 msgid "URI (Optional):"
 msgstr "URI（任意）："
 
-#: src/plugins/lv2/lv2_gtk.c:256
+#: src/plugins/lv2/lv2_gtk.c:260
 msgid "_Prefix plugin name"
 msgstr "_プレフィックスプラグイン名"
 
-#: src/plugins/lv2/lv2_gtk.c:348
+#: src/plugins/lv2/lv2_gtk.c:352
 msgid "Delete Preset?"
 msgstr "プリセットを削除しますか？"
 
-#: src/plugins/lv2/lv2_gtk.c:354 src/utils/dialogs.c:70
+#: src/plugins/lv2/lv2_gtk.c:358 src/utils/dialogs.c:70
 #: resources/ui/port_selector_popover.ui:227 resources/ui/marker_dialog.ui:61
 msgid "_OK"
 msgstr "_OK"
 
-#: src/plugins/lv2/lv2_gtk.c:568
+#: src/plugins/lv2/lv2_gtk.c:572
 msgid "Unknown widget type for value"
 msgstr "値が不明なウィジェットタイプ"
 
-#: src/plugins/lv2/lv2_gtk.c:594
+#: src/plugins/lv2/lv2_gtk.c:598
 msgid "Unknown widget type for value\n"
 msgstr "値が不明なウィジェットタイプ\n"
 
-#: src/plugins/lv2/lv2_gtk.c:1247
+#: src/plugins/lv2/lv2_gtk.c:1251
 msgid "Close"
 msgstr "閉じる"
 
@@ -653,7 +655,7 @@ msgstr "最大値"
 msgid "Expose port to JACK"
 msgstr "JACKへのポートの公開"
 
-#: src/gui/widgets/log_viewer.c:87
+#: src/gui/widgets/log_viewer.c:89
 msgid "Log Viewer"
 msgstr "ログビューア"
 
@@ -801,26 +803,26 @@ msgstr "インサート"
 msgid "Exporting MIDI region \"%s\""
 msgstr "MIDIリージョン 「%s」をエクスポート中"
 
-#: src/gui/widgets/port_selector_popover.c:53
+#: src/gui/widgets/port_selector_popover.c:55
 msgid "No port selected"
 msgstr "ポートが選択されていません"
 
-#: src/gui/widgets/port_selector_popover.c:85
+#: src/gui/widgets/port_selector_popover.c:89
 msgid "These ports cannot be connected"
 msgstr "これらのポートは接続できません"
 
-#: src/gui/widgets/port_selector_popover.c:319
+#: src/gui/widgets/port_selector_popover.c:323
 msgid "Track Ports"
 msgstr "トラックポート"
 
-#: src/gui/widgets/channel_send_selector.c:159
+#: src/gui/widgets/channel_send_selector.c:185
 #: src/gui/widgets/plugin_properties_expander.c:89
 #: src/gui/widgets/plugin_properties_expander.c:91
 #: resources/ui/editor_toolbar.ui:57
 msgid "None"
 msgstr "無し"
 
-#: src/gui/widgets/channel_send_selector.c:296
+#: src/gui/widgets/channel_send_selector.c:322
 #: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:24
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
 msgid "OK"
@@ -1118,19 +1120,24 @@ msgid "Curve algorithm"
 msgstr "カーブのアルゴリズム"
 
 #: src/gui/widgets/header.c:99
+#, fuzzy, c-format
+msgid "About %s"
+msgstr "Zrythmについて"
+
+#: src/gui/widgets/header.c:104
 msgid "About Zrythm"
 msgstr "Zrythmについて"
 
-#: src/gui/widgets/header.c:100 src/gui/widgets/preferences.c:790
+#: src/gui/widgets/header.c:105 src/gui/widgets/preferences.c:793
 #: resources/ui/shortcuts.ui:40 resources/ui/preferences.ui:27
 msgid "Preferences"
 msgstr "設定"
 
-#: src/gui/widgets/header.c:101
+#: src/gui/widgets/header.c:106
 msgid "Log viewer"
 msgstr "ログビューア"
 
-#: src/gui/widgets/header.c:103
+#: src/gui/widgets/header.c:108
 msgid "Scripting interface"
 msgstr "スクリプトインタフェース"
 
@@ -1278,17 +1285,18 @@ msgstr "【インサート%d】%s"
 msgid "Snap/Grid options"
 msgstr "スナップ/グリッド設定"
 
-#: src/gui/widgets/preferences.c:396 resources/ui/first_run_assistant.ui:120
+#: src/gui/widgets/preferences.c:398 resources/ui/first_run_assistant.ui:120
 msgid "Select a folder"
 msgstr "フォルダ選択"
 
-#: src/gui/widgets/preferences.c:397
+#: src/gui/widgets/preferences.c:399
 #, fuzzy
 msgid "Select a file"
 msgstr "フォルダ選択"
 
-#: src/gui/widgets/preferences.c:770
-msgid "Some changes will only take effect after you restart Zrythm"
+#: src/gui/widgets/preferences.c:772
+#, c-format
+msgid "Some changes will only take effect after you restart %s"
 msgstr ""
 
 #: src/gui/widgets/scripting_window.c:192
@@ -1303,11 +1311,11 @@ msgstr "スクリプトの実行に失敗しました"
 msgid "Scripting Interface"
 msgstr "スクリプトインタフェース"
 
-#: src/gui/widgets/port_connection_row.c:97
+#: src/gui/widgets/port_connection_row.c:105
 msgid "Enable/disable connection"
 msgstr "接続を有効/無効にする"
 
-#: src/gui/widgets/port_connection_row.c:138
+#: src/gui/widgets/port_connection_row.c:146
 msgid "Delete connection"
 msgstr "接続を削除"
 
@@ -1519,7 +1527,7 @@ msgstr "右側パネルの表示を切り替える"
 msgid "Comment"
 msgstr "コメント"
 
-#: src/gui/widgets/track.c:576 src/audio/track_lane.c:70
+#: src/gui/widgets/track.c:576 src/audio/track_lane.c:71
 #, c-format
 msgid "Lane %d"
 msgstr "レーン%d"
@@ -1595,11 +1603,11 @@ msgstr "なし"
 msgid "Port info"
 msgstr "ポート詳細"
 
-#: src/gui/widgets/dialogs/about_dialog.c:84
+#: src/gui/widgets/dialogs/about_dialog.c:91
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr "高度に自動化された直感的なデジタルオーディオワークステーション"
 
-#: src/gui/widgets/dialogs/about_dialog.c:88
+#: src/gui/widgets/dialogs/about_dialog.c:95
 msgid "Website"
 msgstr "ウェブサイト"
 
@@ -1618,8 +1626,9 @@ msgstr ""
 "Zrythmが異常終了しました。修正に役立ちますので、%sバグレポートを送信%sしてく"
 "ださい。"
 
-#: src/gui/backend/event_manager.c:1506
-msgid "Trial limit has been reached. Zrythm will now go silent"
+#: src/gui/backend/event_manager.c:1514
+#, fuzzy, c-format
+msgid "Trial limit has been reached. %s will now go silent"
 msgstr "試用制限に達しました。 Zrythmはサイレントになります"
 
 #: src/utils/err_codes.c:32
@@ -1636,10 +1645,11 @@ msgstr ""
 msgid "Unknown error"
 msgstr "オプションを認知できませんでした\n"
 
-#: src/utils/log.c:615
+#: src/utils/log.c:665
+#, c-format
 msgid ""
-"Zrythm has encountered a non-fatal error. It may continue to run but the "
-"behavior will be undefined. "
+"%s has encountered a non-fatal error. It may continue to run but behavior "
+"will be undefined. "
 msgstr ""
 
 #: src/utils/dialogs.c:44
@@ -1663,23 +1673,23 @@ msgid "Sine (Equal Power)"
 msgstr "正弦波（イコールパワー）"
 
 #: src/utils/ui.c:931
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
-"install one first and restart Zrythm"
+"install one first and restart %s"
 msgstr ""
 "選択した言語のロケール（%s）は利用できません。ロケールをインストールして、"
 "Zrythmを再起動してください"
 
 #: src/utils/ui.c:936
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
 "one first using the steps below and try again.\n"
 "1. Uncomment any locale starting with the language code <b>%s</b> in <b>/etc/"
 "locale.gen</b> (needs root privileges)\n"
 "2. Run <b>locale-gen</b> as root\n"
-"3. Restart Zrythm"
+"3. Restart %s"
 msgstr ""
 "選択した言語のロケールは利用できません。Please enable one first using the "
 "steps below and try again.\n"
@@ -1688,58 +1698,58 @@ msgstr ""
 "2. Run <b>locale-gen</b> as root\n"
 "3. Restart Zrythm"
 
-#: src/settings/settings.c:113
+#: src/settings/settings.c:115
 #, c-format
 msgid "Schema %s%s%s"
 msgstr "スキーマ %s%s%s"
 
-#: src/settings/settings.c:124
+#: src/settings/settings.c:126
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr "スキーマ %s をリセット中...\n"
 
-#: src/settings/settings.c:163
+#: src/settings/settings.c:165
 #, c-format
 msgid "skipping %s"
 msgstr "%sをスキップ"
 
-#: src/settings/settings.c:174
+#: src/settings/settings.c:176
 #, c-format
 msgid "resetting %s to %s"
 msgstr "%sを%sにリセット中"
 
-#: src/settings/settings.c:219
-#, c-format
-msgid "Failed to find schema %s. Zrythm is likely not installed"
+#: src/settings/settings.c:221
+#, fuzzy, c-format
+msgid "Failed to find schema %s. %s is likely not installed"
 msgstr ""
 "スキーマ %s が見つかりませんでした。Zrythmはおそらくインストールされていませ"
 "ん"
 
-#: src/settings/settings.c:234
+#: src/settings/settings.c:236
 #, c-format
 msgid "Failed to view schema %s"
 msgstr "スキーマ %s を表示できませんでした"
 
-#: src/settings/settings.c:241
+#: src/settings/settings.c:243
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr "スキーマ %s をリセットできませんでした"
 
-#: src/settings/settings.c:274
-#, c-format
+#: src/settings/settings.c:276
+#, fuzzy, c-format
 msgid ""
-"This will reset Zrythm to factory settings. You will lose all your "
-"preferences. Type 'y' to continue: "
+"This will reset %s to factory settings. You will lose all your preferences. "
+"Type 'y' to continue: "
 msgstr ""
 "これにより、Zrythm が初期設定にリセットされます。すべてのプリファレンスが失わ"
 "れます。続行するには「y」と入力してください： "
 
-#: src/settings/settings.c:280
+#: src/settings/settings.c:283
 #, c-format
 msgid "Aborting...\n"
 msgstr "中止しています...\n"
 
-#: src/settings/settings.c:291
+#: src/settings/settings.c:294
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr "初期設定にリセットされました\n"
@@ -1748,27 +1758,27 @@ msgstr "初期設定にリセットされました\n"
 msgid "Chords"
 msgstr "和音"
 
-#: src/audio/automation_track.c:95
+#: src/audio/automation_track.c:97
 msgid "Rec"
 msgstr "Rec"
 
-#: src/audio/automation_track.c:116
+#: src/audio/automation_track.c:118
 msgid "Touch"
 msgstr "タッチ"
 
-#: src/audio/automation_track.c:119
+#: src/audio/automation_track.c:121
 msgid "Latch"
 msgstr "ラッチ"
 
-#: src/audio/channel_send.c:340
+#: src/audio/channel_send.c:369
 msgid "Pre-fader send"
 msgstr "プリフェーダーセンド"
 
-#: src/audio/channel_send.c:342
+#: src/audio/channel_send.c:371
 msgid "Post-fader send"
 msgstr "ポストフェーダーセンド"
 
-#: src/audio/channel_send.c:365
+#: src/audio/channel_send.c:394
 #, c-format
 msgid "%s input"
 msgstr "%s入力"
@@ -1815,11 +1825,11 @@ msgstr ""
 "用します。環境設定でバックエンドの設定を確認してください。"
 
 #: src/audio/engine.c:423
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"The selected MIDI/audio backend was not found in the version of Zrythm you "
-"have installed. The audio and MIDI backends were set to \"Dummy\". Please "
-"set your preferred backend from the preferences."
+"The selected MIDI/audio backend was not found in the version of %s you have "
+"installed. The audio and MIDI backends were set to \"Dummy\". Please set "
+"your preferred backend from the preferences."
 msgstr ""
 "選択したMIDI /オーディオバックエンドは、インストールしたZrythmのバージョンで"
 "見つかりませんでした。オーディオとMIDIバックエンドは「ダミー」に設定されまし"
@@ -1843,123 +1853,123 @@ msgstr "未実装"
 msgid "Volume"
 msgstr "音量"
 
-#: src/audio/fader.c:144
+#: src/audio/fader.c:145
 msgid "Balance"
 msgstr "バランス"
 
-#: src/audio/fader.c:175
+#: src/audio/fader.c:186
 #, fuzzy
 msgid "Ch Pre-Fader in"
 msgstr "プレフェーダー入力"
 
-#: src/audio/fader.c:179
+#: src/audio/fader.c:190
 #, fuzzy
 msgid "Ch Fader in"
 msgstr "フェーダー入力"
 
-#: src/audio/fader.c:184
+#: src/audio/fader.c:195
 #, fuzzy
 msgid "Monitor Fader in"
 msgstr "フェーダー入力"
 
-#: src/audio/fader.c:200
+#: src/audio/fader.c:211
 #, fuzzy
 msgid "Ch Pre-Fader out"
 msgstr "プレフェーダー出力"
 
-#: src/audio/fader.c:204
+#: src/audio/fader.c:215
 #, fuzzy
 msgid "Ch Fader out"
 msgstr "フェーダー出力"
 
-#: src/audio/fader.c:209
+#: src/audio/fader.c:220
 #, fuzzy
 msgid "Monitor Fader out"
 msgstr "モニター出力"
 
-#: src/audio/fader.c:228
+#: src/audio/fader.c:239
 #, fuzzy
 msgid "Ch MIDI Pre-Fader in"
 msgstr "MIDIプレフェーダー入力"
 
-#: src/audio/fader.c:232
+#: src/audio/fader.c:243
 #, fuzzy
 msgid "Ch MIDI Fader in"
 msgstr "MIDIフェーダー入力"
 
-#: src/audio/fader.c:243
+#: src/audio/fader.c:254
 #, fuzzy
 msgid "Ch MIDI Pre-Fader out"
 msgstr "MIDIプレフェーダー出力"
 
-#: src/audio/fader.c:247
+#: src/audio/fader.c:258
 #, fuzzy
 msgid "Ch MIDI Fader out"
 msgstr "MIDIフェーダー出力"
 
-#: src/audio/engine_jack.c:337
+#: src/audio/engine_jack.c:338
 msgid "XRUN occurred - check your JACK configuration"
 msgstr "XRUNが発生しました - JACKの設定を確認してください"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:579
+#: src/audio/engine_jack.c:580
 msgid "Overall operation failed"
 msgstr "全体的な操作は失敗しました"
 
-#: src/audio/engine_jack.c:585
+#: src/audio/engine_jack.c:586
 msgid "The operation contained an invalid or unsupported option"
 msgstr "操作に無効またはサポートされていないオプションが含まれていました"
 
-#: src/audio/engine_jack.c:592
+#: src/audio/engine_jack.c:593
 msgid "The desired client name was not unique"
 msgstr "目的のクライアント名が一意ではありません"
 
-#: src/audio/engine_jack.c:598
+#: src/audio/engine_jack.c:599
 msgid "Unable to connect to the JACK server"
 msgstr "サーバーと接続できません"
 
-#: src/audio/engine_jack.c:604
+#: src/audio/engine_jack.c:605
 msgid "Communication error with the JACK server"
 msgstr "JACKサーバーとの通信エラー"
 
-#: src/audio/engine_jack.c:610
+#: src/audio/engine_jack.c:611
 msgid "Requested client does not exist"
 msgstr "要求されたクライアントは存在しません"
 
-#: src/audio/engine_jack.c:616
+#: src/audio/engine_jack.c:617
 msgid "Unable to load internal client"
 msgstr "内部クライアントをロードできませんでした"
 
-#: src/audio/engine_jack.c:622
+#: src/audio/engine_jack.c:623
 msgid "Unable to initialize client"
 msgstr "クライアントを初期化できませんでした"
 
-#: src/audio/engine_jack.c:628
+#: src/audio/engine_jack.c:629
 msgid "Unable to access shared memory"
 msgstr "共有メモリにアクセスできません"
 
-#: src/audio/engine_jack.c:634
+#: src/audio/engine_jack.c:635
 msgid "Client's protocol version does not match"
 msgstr "クライアントのプロトコルバージョンが一致しません"
 
-#: src/audio/engine_jack.c:638
+#: src/audio/engine_jack.c:639
 msgid "Backend error"
 msgstr "バックエンドエラー"
 
-#: src/audio/engine_jack.c:642
+#: src/audio/engine_jack.c:643
 msgid "Client zombie"
 msgstr "クライアントゾンビ"
 
-#: src/actions/arranger_selections.c:2141
+#: src/actions/arranger_selections.c:2159
 msgid "Edit arranger object(s)"
 msgstr "アレンジャーオブジェクトを編集"
 
-#: src/actions/create_plugins_action.c:141
+#: src/actions/create_plugins_action.c:145
 #, c-format
 msgid "Create %s"
 msgstr "%sを作成"
 
-#: src/actions/create_plugins_action.c:145
+#: src/actions/create_plugins_action.c:149
 #, c-format
 msgid "Create %d %ss"
 msgstr "%d個の%sを作成"
@@ -1974,64 +1984,64 @@ msgid "Delete %d Tracks"
 msgstr "%d個のトラックを削除"
 
 #: src/actions/actions.c:353
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
-"your Zrythm installation."
+"your %s installation."
 msgstr ""
 "<ahref=\"%s\">GNU Guile</a> によるスクリプト拡張機能は、使用中のZrythm インス"
 "トールでは有効になっていません。"
 
-#: src/actions/actions.c:620
+#: src/actions/actions.c:622
+#, fuzzy, c-format
 msgid ""
-"Creating new projects is disabled. Please restart Zrythm to start a new "
-"project"
+"Creating new projects is disabled. Please restart %s to start a new project"
 msgstr ""
 "新しいプロジェクトの作成は無効です。 Zrythmを再起動して新しいプロジェクトを開"
 "始してください"
 
-#: src/actions/actions.c:631 resources/ui/project_assistant.ui:86
+#: src/actions/actions.c:636 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
 msgid "Create new project"
 msgstr "プロジェクトの新規作成"
 
-#: src/actions/actions.c:634
+#: src/actions/actions.c:639
 msgid "Yes"
 msgstr "はい"
 
-#: src/actions/actions.c:636
+#: src/actions/actions.c:641
 msgid "No"
 msgstr "いいえ"
 
-#: src/actions/actions.c:641
+#: src/actions/actions.c:646
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr "現在のプロジェクトに保存されていない変更は失われます。続行しますか？"
 
-#: src/actions/actions.c:693
+#: src/actions/actions.c:698
 msgid "Loading is disabled in the trial version"
 msgstr "試用版では読み込みが無効になっています"
 
-#: src/actions/actions.c:721 src/actions/actions.c:747
+#: src/actions/actions.c:726 src/actions/actions.c:752
 msgid "Saving is disabled in the trial version"
 msgstr "試用版では保存が無効になっています"
 
-#: src/actions/actions.c:759
+#: src/actions/actions.c:764
 msgid "Save Project"
 msgstr "プロジェクトを保存"
 
-#: src/actions/actions.c:843
+#: src/actions/actions.c:849
 msgid "Export routing graph"
 msgstr "ルーティング図のエクスポート"
 
-#: src/actions/actions.c:845
+#: src/actions/actions.c:851
 msgid "Image (PNG)"
 msgstr "画像（PNG）"
 
-#: src/actions/actions.c:846
+#: src/actions/actions.c:852
 msgid "Dot graph"
 msgstr "ドット図"
 
-#: src/actions/actions.c:854
+#: src/actions/actions.c:860
 #, fuzzy, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
@@ -2040,12 +2050,12 @@ msgstr ""
 "グラフは %s にエクスポートされます\n"
 "エクスポートする形式を選択してください"
 
-#: src/actions/actions.c:904
+#: src/actions/actions.c:910
 msgid "Graph exported"
 msgstr "エクスポートしました"
 
-#: src/actions/actions.c:1091 src/actions/actions.c:1131
-#: src/actions/actions.c:1170 src/actions/actions.c:1210
+#: src/actions/actions.c:1097 src/actions/actions.c:1137
+#: src/actions/actions.c:1176 src/actions/actions.c:1216
 msgid "Can't paste selections"
 msgstr "貼り付けできません"
 
@@ -2059,10 +2069,20 @@ msgstr "%sをコピー"
 msgid "Copy %d Plugins"
 msgstr "%dプラグインをコピー"
 
+#: src/actions/port_connection_action.c:115
+#, fuzzy
+msgid "Port connection"
+msgstr "接続を削除"
+
 #: src/actions/transport_action.c:131
 #, fuzzy
 msgid "Change BPM"
 msgstr "パンを変更"
+
+#: src/actions/channel_send_action.c:193
+#, fuzzy
+msgid "Channel send connection"
+msgstr "接続を削除"
 
 #: src/actions/move_plugins_action.c:245
 #, c-format
@@ -2117,21 +2137,21 @@ msgstr "%sトラック"
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr "プラグイン%sのインスタンス化エラー。詳細はログを参照してください。"
 
-#: src/actions/create_tracks_action.c:327
+#: src/actions/create_tracks_action.c:332
 #, c-format
 msgid "Create %s Track"
 msgstr "%sトラックを作成"
 
-#: src/actions/create_tracks_action.c:330
+#: src/actions/create_tracks_action.c:335
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "%d個の%sトラックを作成"
 
-#: src/actions/delete_plugins_action.c:223
+#: src/actions/delete_plugins_action.c:227
 msgid "Delete Plugin"
 msgstr "プラグインを削除"
 
-#: src/actions/delete_plugins_action.c:226
+#: src/actions/delete_plugins_action.c:230
 #, c-format
 msgid "Delete %d Plugins"
 msgstr "%d個のプラグインを削除"
@@ -4294,9 +4314,6 @@ msgstr "チャンネルでパンをかけるときに使うパンの法則。"
 
 #~ msgid "_View"
 #~ msgstr "表示(_V)"
-
-#~ msgid "About"
-#~ msgstr "Zrythmについて"
 
 #~ msgid "Bottom Panel"
 #~ msgstr "下パネル"

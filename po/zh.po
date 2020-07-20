@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-07-09 12:13+0100\n"
+"POT-Creation-Date: 2020-07-20 22:41+0100\n"
 "PO-Revision-Date: 2020-04-29 23:30+0000\n"
 "Last-Translator: Arif Sarker\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -65,7 +65,7 @@ msgstr "全选"
 msgid "Duplicate"
 msgstr "重复"
 
-#: inc/utils/gtk.h:92 src/audio/fader.c:156
+#: inc/utils/gtk.h:92 src/audio/fader.c:162
 msgid "Mute"
 msgstr "静音"
 
@@ -83,7 +83,7 @@ msgstr "乐器"
 msgid "Audio"
 msgstr "音讯"
 
-#: inc/audio/track.h:159 src/project.c:636
+#: inc/audio/track.h:159 src/project.c:640
 #: src/gui/widgets/route_target_selector_popover.c:153
 msgid "Master"
 msgstr "Master"
@@ -191,11 +191,11 @@ msgstr "ALSA Sequencer"
 msgid "Inherit"
 msgstr "继承"
 
-#: inc/audio/region.h:85 src/audio/automation_track.c:98
+#: inc/audio/region.h:85 src/audio/automation_track.c:100
 msgid "Off"
 msgstr "关闭"
 
-#: inc/audio/region.h:87 src/audio/automation_track.c:92
+#: inc/audio/region.h:87 src/audio/automation_track.c:94
 msgid "On"
 msgstr "开"
 
@@ -228,38 +228,36 @@ msgstr "正弦"
 
 #. TRANSLATORS: please keep the space at the
 #. * end
-#: src/zrythm.c:231
+#: src/zrythm.c:232
 msgid "(trial) "
 msgstr "（试验）"
 
-#: src/project.c:126
+#: src/project.c:127
 #, c-format
 msgid "Failed to open file: %s"
 msgstr "无法打开文件:%s"
 
-#: src/project.c:170
+#: src/project.c:171
 msgid "Project not compressed by zstd!"
 msgstr "项目未被ZSTD压缩！"
 
-#: src/project.c:183
+#: src/project.c:184
 #, c-format
 msgid "Failed to decompress project file: %s"
 msgstr "无法解压缩项目文件:%s"
 
-#: src/project.c:192
+#: src/project.c:193
 msgid ""
 "uncompressed_size != frame_content_size impossible because zstd will check "
 "this condition!"
-msgstr ""
-"未压缩_大小！=结构_内容_大小 不可能，因为zstd将检查"
-"这个条件！"
+msgstr "未压缩_大小！=结构_内容_大小 不可能，因为zstd将检查这个条件！"
 
-#: src/project.c:224
+#: src/project.c:225
 #, c-format
 msgid "Failed to write file: %s"
 msgstr "无法写入文件:%s"
 
-#: src/project.c:769
+#: src/project.c:774
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -270,37 +268,35 @@ msgstr ""
 "%s.\n"
 "是否使用新的备份？"
 
-#: src/project.c:774
+#: src/project.c:779
 msgid "Backup found"
 msgstr "找到备份"
 
-#: src/project.c:828
+#: src/project.c:837
 #, c-format
 msgid "Unable to read file: %s"
 msgstr "无法读取文件:%s"
 
-#: src/project.c:881
+#: src/project.c:890
 #, c-format
 msgid ""
-"This project was created with a different version of Zrythm (%s). It may not "
+"This project was created with a different version of %s (%s). It may not "
 "work correctly."
-msgstr ""
-"此项目是使用不同版本Zrythm（%s）创建的。它可能没有"
-"正常运作。"
+msgstr "此项目是使用不同版本%s（%s）创建的。它可能没有正常运作。"
 
-#: src/project.c:896
+#: src/project.c:905
 msgid "Failed to load project. Please check the logs for more information."
 msgstr "无法加载项目。请检查日志，查看更多信息。"
 
-#: src/project.c:1076
+#: src/project.c:1087
 msgid "Failed to load project. Will create a new one instead."
 msgstr "无法加载项目。将创建一个新项目。"
 
-#: src/project.c:1421
+#: src/project.c:1426
 msgid "Backup saved."
 msgstr "备份已保存"
 
-#: src/project.c:1431
+#: src/project.c:1436
 msgid "Project saved."
 msgstr "项目已保存"
 
@@ -313,14 +309,15 @@ msgstr "错误-回溯:\n"
 msgid "Error: %s - Backtrace:\n"
 msgstr "错误:%s-回溯:\n"
 
-#: src/main.c:95
-msgid "Zrythm has crashed. "
-msgstr "Zrythm已崩溃。"
+#: src/main.c:94
+#, c-format
+msgid "%s has crashed. "
+msgstr "%s已崩溃。"
 
-#: src/main.c:125
+#: src/main.c:127
 #, c-format
 msgid ""
-"Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
+"Usage: %s [ OPTIONS ] [ PROJECT-FILE-PATH ]\n"
 "\n"
 "Options:\n"
 "  -h, --help      display this help message and exit\n"
@@ -330,8 +327,8 @@ msgid ""
 "  -p, --print-settings  print current settings\n"
 "  --pretty        print output in user-friendly way\n"
 "  --reset-to-factory  reset to factory settings\n"
-"  --gdb           run Zrythm through GDB (debugger)\n"
-"  --callgrind     run Zrythm through callgrind (profiler)\n"
+"  --gdb           run %s through GDB (debugger)\n"
+"  --callgrind     run %s through callgrind (profiler)\n"
 "  --audio-backend  override the audio backend to use\n"
 "  --midi-backend  override the MIDI backend to use\n"
 "  --dummy         overrides both the audio and MIDI backends to dummy\n"
@@ -341,16 +338,16 @@ msgid ""
 "  -v, --version   output version information and exit\n"
 "\n"
 "Examples:\n"
-"  zrythm -v       print version\n"
-"  zrythm --callgrind --dummy --buf-size=8192  profile Zrythm using the dummy "
-"backend and a buffer size of 8192\n"
-"  zrythm --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  "
-"convert a compressed zpj project to YAML\n"
-"  zrythm -p --pretty  pretty-print current settings\n"
+"  %s -v       print version\n"
+"  %s --callgrind --dummy --buf-size=8192  profile %s using the dummy backend "
+"and a buffer size of 8192\n"
+"  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  convert a "
+"compressed zpj project to YAML\n"
+"  %s -p --pretty  pretty-print current settings\n"
 "\n"
 "Report bugs to %s\n"
 msgstr ""
-"用法:zrythm[选项][项目-名称]\n"
+"用法:%s[选项][项目-名称]\n"
 "\n"
 "选项:\n"
 "  -h，--help    显示此帮助消息并退出\n"
@@ -365,64 +362,63 @@ msgstr ""
 "  --audio-backend    重写要使用的音频后端\n"
 "  --MIDI-Backend    重写要使用的MIDI后端\n"
 "  --dummy    将音频和MIDI后端重写到dummy\n"
-"  --buf-size重写用于音频后端的缓冲区大小，如果"
-"适用\n"
+"  --buf-size重写用于音频后端的缓冲区大小，如果适用\n"
 "  --interactive    交互模式（如果适用）\n"
 "  -v，--version    输出版本信息并退出\n"
 "\n"
 "示例:\n"
-"  zrythm -v       print version\n"
-"  zrythm --callgrind --dummy --buf-size=8192    使用dummy配置zrythm"
-"后端和缓冲区大小为8192\n"
-"  zrythm --convert-zpj-to-yaml myproject.zpj --output myproject.yaml"
-"将压缩的zpj项目转换为YAML\n"
-"  zrythm -p --pretty pretty-打印当前设置\n"
+"  %s -v       print version\n"
+"  %s --callgrind --dummy --buf-size=8192    使用dummy配置%s后端和缓冲"
+"区大小为8192\n"
+"  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml将压缩的"
+"zpj项目转换为YAML\n"
+"  %s -p --pretty pretty-打印当前设置\n"
 "\n"
 "向%s报告错误\n"
 
-#: src/main.c:164
+#: src/main.c:170
 #, c-format
 msgid "File %s not found."
 msgstr "文件%s未找到。"
 
-#: src/main.c:185
+#: src/main.c:191
 msgid ""
 "An output file was not specified. Please pass one with `--output [FILE]`."
 msgstr "未指定输出文件。请传递带有`--output[file]`的输出文件。"
 
 #. getopt_long already printed an error
 #. * message
-#: src/main.c:326
+#: src/main.c:333
 #, c-format
 msgid "Unknown option\n"
 msgstr "未知选项\n"
 
-#: src/main.c:375
+#: src/main.c:388
 #, c-format
 msgid "Project failed to compress: %s\n"
 msgstr "项目无法压缩:%s\n"
 
-#: src/main.c:384
+#: src/main.c:397
 #, c-format
 msgid "Project successfully compressed.\n"
 msgstr "项目已成功压缩。\n"
 
-#: src/main.c:402
+#: src/main.c:415
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "项目解压缩失败:%s\n"
 
-#: src/main.c:411
+#: src/main.c:424
 #, c-format
 msgid "Project successfully decompressed.\n"
 msgstr "项目已成功解压缩。\n"
 
-#: src/main.c:420
+#: src/main.c:433
 #, c-format
 msgid ""
-"Zrythm-%s Copyright (C) 2018-2020 The Zrythm contributors\n"
+"%s-%s Copyright (C) 2018-2020 The Zrythm contributors\n"
 "\n"
-"Zrythm comes with ABSOLUTELY NO WARRANTY!\n"
+"%s comes with ABSOLUTELY NO WARRANTY!\n"
 "\n"
 "This is free software, and you are welcome to redistribute it\n"
 "under certain conditions. See the file `COPYING' for details.\n"
@@ -431,9 +427,9 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"Zrythm-%s Copyright (C) 2018-2020 Zrythm贡献者\n"
+"%s-%s Copyright (C) 2018-2020 Zrythm贡献者\n"
 "\n"
-"Zrythm 绝对没有担保！\n"
+"%s 绝对没有担保！\n"
 "\n"
 "这是自由软件，欢迎您重新发布它\n"
 "在某些条件下。有关详细信息，请参阅文件`COPYING'。\n"
@@ -450,63 +446,65 @@ msgstr "设置主窗口"
 msgid "Loading project"
 msgstr "加载项目"
 
-#: src/zrythm_app.c:245
-msgid "No project has been selected. Zrythm will now close."
-msgstr "没有选择任何项目。Zrythm现在将关闭。"
+#: src/zrythm_app.c:246
+#, c-format
+msgid "No project has been selected. %s will now close."
+msgstr "没有选择任何项目。%s现在将关闭。"
 
-#: src/zrythm_app.c:265
+#: src/zrythm_app.c:269
 msgid "Initializing settings"
 msgstr "初始化设置"
 
-#: src/zrythm_app.c:272
-msgid "Initializing Zrythm directories"
-msgstr "初始化Zrythm目录"
+#: src/zrythm_app.c:277
+#, c-format
+msgid "Initializing %s directories"
+msgstr "初始化%s目录"
 
-#: src/zrythm_app.c:279
+#: src/zrythm_app.c:287
 msgid "Initializing logging system"
 msgstr "初始化日志记录系统"
 
-#: src/zrythm_app.c:283
+#: src/zrythm_app.c:291
 msgid "Initializing caches"
 msgstr "初始化缓存"
 
-#: src/zrythm_app.c:287
+#: src/zrythm_app.c:295
 msgid "Initializing file manager"
 msgstr "初始化文件管理器"
 
-#: src/zrythm_app.c:294
+#: src/zrythm_app.c:302
 msgid "Scanning plugins"
 msgstr "扫描插件"
 
-#: src/zrythm_app.c:452
+#: src/zrythm_app.c:463
 msgid "License Information"
 msgstr "许可证信息"
 
-#: src/zrythm_app.c:480
+#: src/zrythm_app.c:491
 msgid "Waiting for project"
 msgstr "等待项目"
 
-#: src/plugins/carla_native_plugin.c:464 src/plugins/lv2_plugin.c:2418
+#: src/plugins/carla_native_plugin.c:463 src/plugins/lv2_plugin.c:2413
 msgid "Default bank"
 msgstr "默认bank"
 
-#: src/plugins/carla_native_plugin.c:471 src/plugins/lv2_plugin.c:2425
+#: src/plugins/carla_native_plugin.c:470 src/plugins/lv2_plugin.c:2420
 msgid "Init"
 msgstr "初始化"
 
-#: src/plugins/carla_native_plugin.c:898
+#: src/plugins/carla_native_plugin.c:897
 msgid "Audio in"
 msgstr "音频输入"
 
-#: src/plugins/carla_native_plugin.c:908
+#: src/plugins/carla_native_plugin.c:907
 msgid "Audio out"
 msgstr "音频输出"
 
-#: src/plugins/carla_native_plugin.c:918
+#: src/plugins/carla_native_plugin.c:917
 msgid "MIDI in"
 msgstr "MIDI In"
 
-#: src/plugins/carla_native_plugin.c:928
+#: src/plugins/carla_native_plugin.c:927
 msgid "MIDI out"
 msgstr "MIDI Out"
 
@@ -541,57 +539,57 @@ msgstr "已扫描AU插件"
 msgid "Skipped AU plugin at %u"
 msgstr "跳过%u处的AU插件"
 
-#: src/plugins/plugin.c:135
+#: src/plugins/plugin.c:133
 msgid "Enabled"
 msgstr "已启用"
 
-#: src/plugins/plugin_gtk.c:80 src/plugins/lv2/lv2_gtk.c:102
+#: src/plugins/plugin_gtk.c:81 src/plugins/lv2/lv2_gtk.c:105
 msgid "Save State"
 msgstr "保存状态"
 
-#: src/plugins/plugin_gtk.c:83 src/plugins/lv2/lv2_gtk.c:105
-#: src/plugins/lv2/lv2_gtk.c:353 src/utils/dialogs.c:42 src/utils/dialogs.c:72
-#: src/actions/actions.c:762 resources/ui/export_midi_file_dialog.ui:54
+#: src/plugins/plugin_gtk.c:84 src/plugins/lv2/lv2_gtk.c:108
+#: src/plugins/lv2/lv2_gtk.c:357 src/utils/dialogs.c:42 src/utils/dialogs.c:72
+#: src/actions/actions.c:767 resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "取消（_C）"
 
-#: src/plugins/plugin_gtk.c:84 src/plugins/lv2/lv2_gtk.c:106
-#: src/actions/actions.c:764
+#: src/plugins/plugin_gtk.c:85 src/plugins/lv2/lv2_gtk.c:109
+#: src/actions/actions.c:769
 msgid "_Save"
 msgstr "保存（_S）"
 
-#: src/plugins/lv2_plugin.c:2457
+#: src/plugins/lv2_plugin.c:2452
 msgid "Unnamed bank"
 msgstr "未命名bank"
 
-#: src/plugins/lv2/lv2_gtk.c:252
+#: src/plugins/lv2/lv2_gtk.c:256
 msgid "URI (Optional):"
 msgstr "URI（可选）:"
 
-#: src/plugins/lv2/lv2_gtk.c:256
+#: src/plugins/lv2/lv2_gtk.c:260
 msgid "_Prefix plugin name"
 msgstr "_Prefix插件名称"
 
-#: src/plugins/lv2/lv2_gtk.c:348
+#: src/plugins/lv2/lv2_gtk.c:352
 msgid "Delete Preset?"
 msgstr "删除预设？"
 
-#: src/plugins/lv2/lv2_gtk.c:354 src/utils/dialogs.c:70
+#: src/plugins/lv2/lv2_gtk.c:358 src/utils/dialogs.c:70
 #: resources/ui/port_selector_popover.ui:227 resources/ui/marker_dialog.ui:61
 msgid "_OK"
 msgstr "_OK"
 
-#: src/plugins/lv2/lv2_gtk.c:568
+#: src/plugins/lv2/lv2_gtk.c:572
 msgid "Unknown widget type for value"
 msgstr "值的小部件类型未知"
 
-#: src/plugins/lv2/lv2_gtk.c:594
+#: src/plugins/lv2/lv2_gtk.c:598
 msgid "Unknown widget type for value\n"
 msgstr "值的小部件类型未知\n"
 
-#: src/plugins/lv2/lv2_gtk.c:1247
+#: src/plugins/lv2/lv2_gtk.c:1251
 msgid "Close"
 msgstr "关闭"
 
@@ -660,7 +658,7 @@ msgstr "最大值"
 msgid "Expose port to JACK"
 msgstr "将端口暴露给JACK"
 
-#: src/gui/widgets/log_viewer.c:87
+#: src/gui/widgets/log_viewer.c:89
 msgid "Log Viewer"
 msgstr "日志查看器"
 
@@ -808,26 +806,26 @@ msgstr "插入"
 msgid "Exporting MIDI region \"%s\""
 msgstr "正在导出MIDI区域\"%s\""
 
-#: src/gui/widgets/port_selector_popover.c:53
+#: src/gui/widgets/port_selector_popover.c:55
 msgid "No port selected"
 msgstr "未选择端口"
 
-#: src/gui/widgets/port_selector_popover.c:85
+#: src/gui/widgets/port_selector_popover.c:89
 msgid "These ports cannot be connected"
 msgstr "这些端口无法连接"
 
-#: src/gui/widgets/port_selector_popover.c:319
+#: src/gui/widgets/port_selector_popover.c:323
 msgid "Track Ports"
 msgstr "音轨端口"
 
-#: src/gui/widgets/channel_send_selector.c:159
+#: src/gui/widgets/channel_send_selector.c:185
 #: src/gui/widgets/plugin_properties_expander.c:89
 #: src/gui/widgets/plugin_properties_expander.c:91
 #: resources/ui/editor_toolbar.ui:57
 msgid "None"
 msgstr "无"
 
-#: src/gui/widgets/channel_send_selector.c:296
+#: src/gui/widgets/channel_send_selector.c:322
 #: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:24
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
 msgid "OK"
@@ -1121,19 +1119,23 @@ msgid "Curve algorithm"
 msgstr "曲线算法"
 
 #: src/gui/widgets/header.c:99
+msgid "About %s"
+msgstr "关于%s"
+
+#: src/gui/widgets/header.c:104
 msgid "About Zrythm"
 msgstr "关于Zrythm"
 
-#: src/gui/widgets/header.c:100 src/gui/widgets/preferences.c:790
+#: src/gui/widgets/header.c:105 src/gui/widgets/preferences.c:793
 #: resources/ui/shortcuts.ui:40 resources/ui/preferences.ui:27
 msgid "Preferences"
 msgstr "首选项"
 
-#: src/gui/widgets/header.c:101
+#: src/gui/widgets/header.c:106
 msgid "Log viewer"
 msgstr "日志查看器"
 
-#: src/gui/widgets/header.c:103
+#: src/gui/widgets/header.c:108
 msgid "Scripting interface"
 msgstr "脚本接口"
 
@@ -1279,17 +1281,18 @@ msgstr "[插入%d]%s"
 msgid "Snap/Grid options"
 msgstr "对齐/网格选项"
 
-#: src/gui/widgets/preferences.c:396 resources/ui/first_run_assistant.ui:120
+#: src/gui/widgets/preferences.c:398 resources/ui/first_run_assistant.ui:120
 msgid "Select a folder"
 msgstr "选择文件夹"
 
-#: src/gui/widgets/preferences.c:397
+#: src/gui/widgets/preferences.c:399
 msgid "Select a file"
 msgstr "选择文件"
 
-#: src/gui/widgets/preferences.c:770
-msgid "Some changes will only take effect after you restart Zrythm"
-msgstr "某些更改只有在您重新启动Zrythm后才会生效"
+#: src/gui/widgets/preferences.c:772
+#, c-format
+msgid "Some changes will only take effect after you restart %s"
+msgstr "某些更改只有在您重新启动%s后才会生效"
 
 #: src/gui/widgets/scripting_window.c:192
 msgid "Script execution successful"
@@ -1303,11 +1306,11 @@ msgstr "脚本执行失败"
 msgid "Scripting Interface"
 msgstr "脚本接口"
 
-#: src/gui/widgets/port_connection_row.c:97
+#: src/gui/widgets/port_connection_row.c:105
 msgid "Enable/disable connection"
 msgstr "启用/禁用连接"
 
-#: src/gui/widgets/port_connection_row.c:138
+#: src/gui/widgets/port_connection_row.c:146
 msgid "Delete connection"
 msgstr "删除连接"
 
@@ -1519,7 +1522,7 @@ msgstr "切换右面板"
 msgid "Comment"
 msgstr "注释"
 
-#: src/gui/widgets/track.c:576 src/audio/track_lane.c:70
+#: src/gui/widgets/track.c:576 src/audio/track_lane.c:71
 #, c-format
 msgid "Lane %d"
 msgstr "通道%d"
@@ -1595,11 +1598,11 @@ msgstr "N/A"
 msgid "Port info"
 msgstr "端口信息"
 
-#: src/gui/widgets/dialogs/about_dialog.c:84
+#: src/gui/widgets/dialogs/about_dialog.c:91
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr "一个高度自动化和直观的数字音频工作站"
 
-#: src/gui/widgets/dialogs/about_dialog.c:88
+#: src/gui/widgets/dialogs/about_dialog.c:95
 msgid "Website"
 msgstr "网站"
 
@@ -1616,9 +1619,10 @@ msgstr "导出进度"
 msgid "%sPlease help us fix this by %ssubmitting a bug report%s."
 msgstr "%s请通过%s提交错误报告%s来帮助我们解决此问题。"
 
-#: src/gui/backend/event_manager.c:1506
-msgid "Trial limit has been reached. Zrythm will now go silent"
-msgstr "已达到试用限制。Zrythm将变为静默状态"
+#: src/gui/backend/event_manager.c:1514
+#, c-format
+msgid "Trial limit has been reached. %s will now go silent"
+msgstr "已达到试用限制。%s将变为静默状态"
 
 #: src/utils/err_codes.c:32
 msgid "Plugin instantiation failed. See the logs for details"
@@ -1632,13 +1636,12 @@ msgstr "对象为空。有关详细信息，请参阅日志"
 msgid "Unknown error"
 msgstr "未知错误"
 
-#: src/utils/log.c:615
+#: src/utils/log.c:665
+#, c-format
 msgid ""
-"Zrythm has encountered a non-fatal error. It may continue to run but the "
-"behavior will be undefined. "
-msgstr ""
-"Zrythm遇到非致命错误。它可能继续运行，但"
-"行为将无法确定。"
+"%s has encountered a non-fatal error. It may continue to run but behavior "
+"will be undefined. "
+msgstr "%s遇到非致命错误。它可能继续运行，但行为将无法确定。"
 
 #: src/utils/dialogs.c:44
 msgid "_Open"
@@ -1664,10 +1667,8 @@ msgstr "正弦（等功率）"
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
-"install one first and restart Zrythm"
-msgstr ""
-"您选择的语言（%s）的区域设置不可用。请"
-"先安装一个，然后重新启动Zrythm"
+"install one first and restart %s"
+msgstr "您选择的语言（%s）的区域设置不可用。请先安装一个，然后重新启动%s"
 
 #: src/utils/ui.c:936
 #, c-format
@@ -1677,65 +1678,62 @@ msgid ""
 "1. Uncomment any locale starting with the language code <b>%s</b> in <b>/etc/"
 "locale.gen</b> (needs root privileges)\n"
 "2. Run <b>locale-gen</b> as root\n"
-"3. Restart Zrythm"
+"3. Restart %s"
 msgstr ""
-"所选语言的区域设置不可用。"
-"请先按照以下步骤启用一个，然后重试。\n"
-"1.取消注释中以语言代码<b>%s</b>开头的任何区域设置"
-"<b>/etc/locale.gen</b>（需要根权限）\n"
+"所选语言的区域设置不可用。请先按照以下步骤启用一个，然后重试。\n"
+"1.取消注释中以语言代码<b>%s</b>开头的任何区域设置<b>/etc/locale.gen</b>（需要"
+"根权限）\n"
 "2.以根用户身份运行<b>locale-gen</b>\n"
-"3.重新启动Zrythm"
+"3.重新启动%s"
 
-#: src/settings/settings.c:113
+#: src/settings/settings.c:115
 #, c-format
 msgid "Schema %s%s%s"
 msgstr "架构%s%s%s"
 
-#: src/settings/settings.c:124
+#: src/settings/settings.c:126
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr "正在重置架构%s.。。\n"
 
-#: src/settings/settings.c:163
+#: src/settings/settings.c:165
 #, c-format
 msgid "skipping %s"
 msgstr "跳过%s"
 
-#: src/settings/settings.c:174
+#: src/settings/settings.c:176
 #, c-format
 msgid "resetting %s to %s"
 msgstr "正在将%s重置为%s"
 
-#: src/settings/settings.c:219
+#: src/settings/settings.c:221
 #, c-format
-msgid "Failed to find schema %s. Zrythm is likely not installed"
-msgstr "找不到架构%s.可能没有安装Zrythm"
+msgid "Failed to find schema %s. %s is likely not installed"
+msgstr "找不到架构%s.可能没有安装%s"
 
-#: src/settings/settings.c:234
+#: src/settings/settings.c:236
 #, c-format
 msgid "Failed to view schema %s"
 msgstr "无法查看架构%s"
 
-#: src/settings/settings.c:241
+#: src/settings/settings.c:243
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr "无法重置架构%s"
 
-#: src/settings/settings.c:274
+#: src/settings/settings.c:276
 #, c-format
 msgid ""
-"This will reset Zrythm to factory settings. You will lose all your "
-"preferences. Type 'y' to continue: "
-msgstr ""
-"这会将Zrythm重置为出厂设置。您将丢失所有您的"
-"首选项。键”y“继续:"
+"This will reset %s to factory settings. You will lose all your preferences. "
+"Type 'y' to continue: "
+msgstr "这会将%s重置为出厂设置。您将丢失所有您的首选项。键”y“继续:"
 
-#: src/settings/settings.c:280
+#: src/settings/settings.c:283
 #, c-format
 msgid "Aborting...\n"
 msgstr "正在中止...\n"
 
-#: src/settings/settings.c:291
+#: src/settings/settings.c:294
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr "重置到出厂设置成功\n"
@@ -1744,27 +1742,27 @@ msgstr "重置到出厂设置成功\n"
 msgid "Chords"
 msgstr "和弦"
 
-#: src/audio/automation_track.c:95
+#: src/audio/automation_track.c:97
 msgid "Rec"
 msgstr "录制"
 
-#: src/audio/automation_track.c:116
+#: src/audio/automation_track.c:118
 msgid "Touch"
 msgstr "触摸"
 
-#: src/audio/automation_track.c:119
+#: src/audio/automation_track.c:121
 msgid "Latch"
 msgstr "锁存器"
 
-#: src/audio/channel_send.c:340
+#: src/audio/channel_send.c:369
 msgid "Pre-fader send"
 msgstr "前推子发送"
 
-#: src/audio/channel_send.c:342
+#: src/audio/channel_send.c:371
 msgid "Post-fader send"
 msgstr "后推子发送"
 
-#: src/audio/channel_send.c:365
+#: src/audio/channel_send.c:394
 #, c-format
 msgid "%s input"
 msgstr "%s输入"
@@ -1796,29 +1794,24 @@ msgstr "时间符号"
 msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
-msgstr ""
-"无法初始化%s音频后端。将使用虚拟后端"
-"代替。请检查首选项中的后端设置。"
+msgstr "无法初始化%s音频后端。将使用虚拟后端代替。请检查首选项中的后端设置。"
 
 #: src/audio/engine.c:242
 #, c-format
 msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
-msgstr ""
-"无法初始化%s MIDI后端。将使用虚拟后端"
-"代替。请检查首选项中的后端设置。"
+msgstr "无法初始化%s MIDI后端。将使用虚拟后端代替。请检查首选项中的后端设置。"
 
 #: src/audio/engine.c:423
 #, c-format
 msgid ""
-"The selected MIDI/audio backend was not found in the version of Zrythm you "
-"have installed. The audio and MIDI backends were set to \"Dummy\". Please "
-"set your preferred backend from the preferences."
+"The selected MIDI/audio backend was not found in the version of %s you have "
+"installed. The audio and MIDI backends were set to \"Dummy\". Please set "
+"your preferred backend from the preferences."
 msgstr ""
-"在你的Zrythm 版本中找不到所选的MIDI/Audio后端"
-"音频和MIDI后端将设置为\"虚拟\"。请"
-"从首选项中设置首选后端。"
+"在你的%s版本中找不到所选的MIDI/Audio后端音频和MIDI后端将设置为\"虚拟\"。"
+"请从首选项中设置首选后端。"
 
 #: src/audio/engine_alsa.c:342
 #, c-format
@@ -1838,113 +1831,113 @@ msgstr "未实现"
 msgid "Volume"
 msgstr "音量"
 
-#: src/audio/fader.c:144
+#: src/audio/fader.c:145
 msgid "Balance"
 msgstr "余额"
 
-#: src/audio/fader.c:175
+#: src/audio/fader.c:186
 msgid "Ch Pre-Fader in"
 msgstr "Ch预推子输入"
 
-#: src/audio/fader.c:179
+#: src/audio/fader.c:190
 msgid "Ch Fader in"
 msgstr "Ch推子输入"
 
-#: src/audio/fader.c:184
+#: src/audio/fader.c:195
 msgid "Monitor Fader in"
 msgstr "监视器推子输入"
 
-#: src/audio/fader.c:200
+#: src/audio/fader.c:211
 msgid "Ch Pre-Fader out"
 msgstr "Ch预推子输出"
 
-#: src/audio/fader.c:204
+#: src/audio/fader.c:215
 msgid "Ch Fader out"
 msgstr "Ch推子输出"
 
-#: src/audio/fader.c:209
+#: src/audio/fader.c:220
 msgid "Monitor Fader out"
 msgstr "监视器推子输出"
 
-#: src/audio/fader.c:228
+#: src/audio/fader.c:239
 msgid "Ch MIDI Pre-Fader in"
 msgstr "Ch MIDI预推子输入"
 
-#: src/audio/fader.c:232
+#: src/audio/fader.c:243
 msgid "Ch MIDI Fader in"
 msgstr "Ch MIDI推子输入"
 
-#: src/audio/fader.c:243
+#: src/audio/fader.c:254
 msgid "Ch MIDI Pre-Fader out"
 msgstr "Ch MIDI预推子输入"
 
-#: src/audio/fader.c:247
+#: src/audio/fader.c:258
 msgid "Ch MIDI Fader out"
 msgstr "Ch MIDI推子输出"
 
-#: src/audio/engine_jack.c:337
+#: src/audio/engine_jack.c:338
 msgid "XRUN occurred - check your JACK configuration"
 msgstr "Xrun发生-检查您的JACK配置"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:579
+#: src/audio/engine_jack.c:580
 msgid "Overall operation failed"
 msgstr "整体操作失败"
 
-#: src/audio/engine_jack.c:585
+#: src/audio/engine_jack.c:586
 msgid "The operation contained an invalid or unsupported option"
 msgstr "操作包含无效或不支持的选项"
 
-#: src/audio/engine_jack.c:592
+#: src/audio/engine_jack.c:593
 msgid "The desired client name was not unique"
 msgstr "所需的客户端名称不唯一"
 
-#: src/audio/engine_jack.c:598
+#: src/audio/engine_jack.c:599
 msgid "Unable to connect to the JACK server"
 msgstr "无法连接到JACK服务器"
 
-#: src/audio/engine_jack.c:604
+#: src/audio/engine_jack.c:605
 msgid "Communication error with the JACK server"
 msgstr "与JACK服务器的通信错误"
 
-#: src/audio/engine_jack.c:610
+#: src/audio/engine_jack.c:611
 msgid "Requested client does not exist"
 msgstr "请求的客户端不存在"
 
-#: src/audio/engine_jack.c:616
+#: src/audio/engine_jack.c:617
 msgid "Unable to load internal client"
 msgstr "无法加载内部客户端"
 
-#: src/audio/engine_jack.c:622
+#: src/audio/engine_jack.c:623
 msgid "Unable to initialize client"
 msgstr "无法初始化客户端"
 
-#: src/audio/engine_jack.c:628
+#: src/audio/engine_jack.c:629
 msgid "Unable to access shared memory"
 msgstr "无法访问共享内存"
 
-#: src/audio/engine_jack.c:634
+#: src/audio/engine_jack.c:635
 msgid "Client's protocol version does not match"
 msgstr "客户端的协议版本不匹配"
 
-#: src/audio/engine_jack.c:638
+#: src/audio/engine_jack.c:639
 msgid "Backend error"
 msgstr "后端错误"
 
-#: src/audio/engine_jack.c:642
+#: src/audio/engine_jack.c:643
 msgid "Client zombie"
 msgstr "客户端瘫痪"
 
-#: src/actions/arranger_selections.c:2141
+#: src/actions/arranger_selections.c:2159
 msgid "Edit arranger object(s)"
 msgstr "编辑排列器对象"
 
-#: src/actions/create_plugins_action.c:141
+#: src/actions/create_plugins_action.c:145
 #, c-format
 msgid "Create %s"
 msgstr "创建%s"
 
-#: src/actions/create_plugins_action.c:145
+#: src/actions/create_plugins_action.c:149
 #, c-format
 msgid "Create %d %ss"
 msgstr "创建%d%ss"
@@ -1962,61 +1955,57 @@ msgstr "删除%d首曲目"
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
-"your Zrythm installation."
-msgstr ""
-"您的Zrythm安装中"
-"未启用使用<a href=\"%s\">GNU Guile</a>的脚本扩展性。"
+"your %s installation."
+msgstr "您的%s安装中未启用使用<a href=\"%s\">GNU Guile</a>的脚本扩展性。"
 
-#: src/actions/actions.c:620
+#: src/actions/actions.c:622
+#, c-format
 msgid ""
-"Creating new projects is disabled. Please restart Zrythm to start a new "
-"project"
-msgstr ""
-"已禁用创建新项目。请重新启动Zrythm以启动新项目"
-"项目"
+"Creating new projects is disabled. Please restart %s to start a new project"
+msgstr "已禁用创建新项目。请重新启动%s以启动新项目项目"
 
-#: src/actions/actions.c:631 resources/ui/project_assistant.ui:86
+#: src/actions/actions.c:636 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
 msgid "Create new project"
 msgstr "创建新项目"
 
-#: src/actions/actions.c:634
+#: src/actions/actions.c:639
 msgid "Yes"
 msgstr "是"
 
-#: src/actions/actions.c:636
+#: src/actions/actions.c:641
 msgid "No"
 msgstr "否"
 
-#: src/actions/actions.c:641
+#: src/actions/actions.c:646
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr "任何未保存的对当前项目的更改都将丢失。是否继续？"
 
-#: src/actions/actions.c:693
+#: src/actions/actions.c:698
 msgid "Loading is disabled in the trial version"
 msgstr "加载在试用版中被禁用"
 
-#: src/actions/actions.c:721 src/actions/actions.c:747
+#: src/actions/actions.c:726 src/actions/actions.c:752
 msgid "Saving is disabled in the trial version"
 msgstr "在试用版中禁用保存"
 
-#: src/actions/actions.c:759
+#: src/actions/actions.c:764
 msgid "Save Project"
 msgstr "保存项目"
 
-#: src/actions/actions.c:843
+#: src/actions/actions.c:849
 msgid "Export routing graph"
 msgstr "导出路由图"
 
-#: src/actions/actions.c:845
+#: src/actions/actions.c:851
 msgid "Image (PNG)"
 msgstr "图像(PNG)"
 
-#: src/actions/actions.c:846
+#: src/actions/actions.c:852
 msgid "Dot graph"
 msgstr "dot图"
 
-#: src/actions/actions.c:854
+#: src/actions/actions.c:860
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
@@ -2025,12 +2014,12 @@ msgstr ""
 "图形将导出到<a href=\"%s\">%s</a>\n"
 "请选择导出格式"
 
-#: src/actions/actions.c:904
+#: src/actions/actions.c:910
 msgid "Graph exported"
 msgstr "图形导出"
 
-#: src/actions/actions.c:1091 src/actions/actions.c:1131
-#: src/actions/actions.c:1170 src/actions/actions.c:1210
+#: src/actions/actions.c:1097 src/actions/actions.c:1137
+#: src/actions/actions.c:1176 src/actions/actions.c:1216
 msgid "Can't paste selections"
 msgstr "无法粘贴所选内容"
 
@@ -2044,9 +2033,19 @@ msgstr "复制%s"
 msgid "Copy %d Plugins"
 msgstr "复制%d个插件"
 
+#: src/actions/port_connection_action.c:115
+#, fuzzy
+msgid "Port connection"
+msgstr "删除连接"
+
 #: src/actions/transport_action.c:131
 msgid "Change BPM"
 msgstr "更改BPM"
+
+#: src/actions/channel_send_action.c:193
+#, fuzzy
+msgid "Channel send connection"
+msgstr "删除连接"
 
 #: src/actions/move_plugins_action.c:245
 #, c-format
@@ -2101,21 +2100,21 @@ msgstr "%s音轨"
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr "实例化插件%s时出错。有关详细信息，请参阅日志。"
 
-#: src/actions/create_tracks_action.c:327
+#: src/actions/create_tracks_action.c:332
 #, c-format
 msgid "Create %s Track"
 msgstr "创建%s音轨"
 
-#: src/actions/create_tracks_action.c:330
+#: src/actions/create_tracks_action.c:335
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "创建%d%s曲目"
 
-#: src/actions/delete_plugins_action.c:223
+#: src/actions/delete_plugins_action.c:227
 msgid "Delete Plugin"
 msgstr "删除插件"
 
-#: src/actions/delete_plugins_action.c:226
+#: src/actions/delete_plugins_action.c:230
 #, c-format
 msgid "Delete %d Plugins"
 msgstr "删除%d个插件"
@@ -2131,8 +2130,7 @@ msgid ""
 "language."
 msgstr ""
 "欢迎使用Zrythm.\n"
-"这将指导您完成zrythm的基本设置。首先，选择您的"
-"语言。"
+"这将指导您完成zrythm的基本设置。首先，选择您的语言。"
 
 #: resources/ui/first_run_assistant.ui:89 resources/ui/preferences.ui:512
 msgid "Language"
@@ -2142,9 +2140,7 @@ msgstr "语言"
 msgid ""
 "Next, choose the location to use for saving temporary files and projects (or "
 "accept the default)"
-msgstr ""
-"接下来，选择用于保存临时文件和项目的位置（或"
-"接受默认值）"
+msgstr "接下来，选择用于保存临时文件和项目的位置（或接受默认值）"
 
 #: resources/ui/first_run_assistant.ui:134
 msgid "Resets the path to the default"
@@ -2780,9 +2776,8 @@ msgid ""
 "points), or \"Full region\" to save the whole region as Zrythm would play it "
 "(traversing loops)."
 msgstr ""
-"选择\"基本区域\"以保存原始区域（无循环/剪切"
-"起点），或选择\"完整区域\"以保存整个区域，因为Zrythm会播放该区域"
-"（遍历循环）。"
+"选择\"基本区域\"以保存原始区域（无循环/剪切起点），或选择\"完整区域\"以保存整"
+"个区域，因为Zrythm会播放该区域（遍历循环）。"
 
 #: resources/ui/export_midi_file_dialog.ui:120
 msgid "Base region"
@@ -3214,8 +3209,7 @@ msgid ""
 "Set the interval to auto-save project backups, in minutes. Setting this to 0 "
 "will disable auto-save"
 msgstr ""
-"将时间间隔设置为自动保存项目备份，以分钟为单位。将其设置为0"
-"将禁用自动保存"
+"将时间间隔设置为自动保存项目备份，以分钟为单位。将其设置为0将禁用自动保存"
 
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
@@ -3270,8 +3264,7 @@ msgstr "导出效果"
 #: build/data/org.zrythm.Zrythm.gschema.xml:203
 msgid ""
 "If set to true, the effects chain will be included in the bounced material."
-msgstr ""
-"如果设置为ON，效果链将包含在弹出的材料中。"
+msgstr "如果设置为ON，效果链将包含在弹出的材料中。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:207
 msgid "Bounce tail"
@@ -3281,9 +3274,7 @@ msgstr "导出尾"
 msgid ""
 "Tail to allow when bouncing (for example to catch reverb tails), in "
 "milliseconds."
-msgstr ""
-"弹跳时允许的尾翼（例如捕捉混响尾翼），按"
-"毫秒计算。"
+msgstr "弹跳时允许的尾翼（例如捕捉混响尾翼），按毫秒计算。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:212
 msgid "Timeline object length"
@@ -3302,8 +3293,7 @@ msgstr "时间线对象长度类型"
 #: build/data/org.zrythm.Zrythm.gschema.xml:228
 msgid ""
 "Default length type to use when creating timelinle objects, eg in edit mode."
-msgstr ""
-"创建时间轴对象时使用的默认长度类型（如在编辑模式下）。"
+msgstr "创建时间轴对象时使用的默认长度类型（如在编辑模式下）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:222
 msgid "Editor object length"
@@ -3321,9 +3311,7 @@ msgstr "音符记法"
 msgid ""
 "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, "
 "etc.)"
-msgstr ""
-"钢琴卷中音音调索引中使用的音符（C，C#，）"
-"等）"
+msgstr "钢琴卷中音音调索引中使用的音符（C，C#，）等）"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:238
 msgid ""
@@ -3331,9 +3319,8 @@ msgid ""
 "to events so that they match the project BPM. This mostly applies to audio "
 "regions."
 msgstr ""
-"是否使用音乐模式。如果打开此模式，将会把时间扩展"
-"应用于事件，以便它们与项目BPM匹配。这主要适用于音频"
-"区域。"
+"是否使用音乐模式。如果打开此模式，将会把时间扩展应用于事件，以便它们与项目BPM"
+"匹配。这主要适用于音频区域。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:242
 msgid "Listen to notes while they are moved"
@@ -3359,9 +3346,7 @@ msgstr "钢琴卷MIDI修改器"
 msgid ""
 "The MIDI modifier to display in the MIDI editor (only velocity is valid at "
 "the moment)."
-msgstr ""
-"在MIDI编辑器中显示的MIDI修饰符（只有速度在以下"
-"时刻有效）。"
+msgstr "在MIDI编辑器中显示的MIDI修饰符（只有速度在以下时刻有效）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:257
 msgid "Browser divider position"
@@ -3444,8 +3429,7 @@ msgid ""
 "A list of plugin favorites as strings separated by '::', where the first "
 "element is the name of the list."
 msgstr ""
-"以字符串形式显示的插件收藏夹列表，以”::“分隔，其中第一个"
-"元素是列表的名称。"
+"以字符串形式显示的插件收藏夹列表，以”::“分隔，其中第一个元素是列表的名称。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:308
 msgid "Transport display type"
@@ -3681,8 +3665,7 @@ msgid ""
 "Bridge unsupported UIs in another process instead of creating generic ones. "
 "This will lead to some performance loss."
 msgstr ""
-"桥接另一个进程中不受支持的UI，而不是创建泛型UI."
-"这会导致一些表现上的损失。"
+"桥接另一个进程中不受支持的UI，而不是创建泛型UI.这会导致一些表现上的损失。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:508
 msgid "Refresh rate"
@@ -3691,8 +3674,7 @@ msgstr "刷新率"
 #: build/data/org.zrythm.Zrythm.gschema.xml:509
 msgid ""
 "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
-msgstr ""
-"刷新率（以赫兹为单位）。如果设置为0，将使用屏幕的刷新率。"
+msgstr "刷新率（以赫兹为单位）。如果设置为0，将使用屏幕的刷新率。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:526
 msgid "VST plugins"
@@ -3702,9 +3684,7 @@ msgstr "VST插件"
 msgid ""
 "The search paths to scan for VST plugins in. Duplicate paths will be "
 "deduplicated."
-msgstr ""
-"要在其中扫描VST插件的搜索路径。重复路径将是"
-"重复数据删除。"
+msgstr "要在其中扫描VST插件的搜索路径。重复路径将是重复数据删除。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:531
 msgid "SFZ instruments"
@@ -3714,9 +3694,7 @@ msgstr "SFZ乐器"
 msgid ""
 "The search paths to scan for SFZ instruments in. Duplicate paths will be "
 "deduplicated."
-msgstr ""
-"要在其中扫描SFZ乐器的搜索路径。重复路径将是"
-"重复数据删除。"
+msgstr "要在其中扫描SFZ乐器的搜索路径。重复路径将是重复数据删除。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:536
 msgid "SF2 instruments"
@@ -3726,9 +3704,7 @@ msgstr "SF2乐器"
 msgid ""
 "The search paths to scan for SF2 instruments in. Duplicate paths will be "
 "deduplicated."
-msgstr ""
-"要在其中扫描SF2乐器的搜索路径。重复路径将是"
-"重复数据删除。"
+msgstr "要在其中扫描SF2乐器的搜索路径。重复路径将是重复数据删除。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:550
 msgid "Fade algorithm"
@@ -3755,8 +3731,8 @@ msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
 "this is set to 0."
 msgstr ""
-"自动保存项目的间隔，以分钟为单位。如果出现以下情况，将禁用自动保存。"
-"：设置为0时."
+"自动保存项目的间隔，以分钟为单位。如果出现以下情况，将禁用自动保存。：设置为0"
+"时."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:603
 msgid "UI"
@@ -3794,9 +3770,7 @@ msgstr "Pan算法"
 msgid ""
 "The panning algorithm to use when applying pan on mono signals (not used at "
 "the moment)."
-msgstr ""
-"对单声道信号应用摇摄时使用的摇摄算法（不用于"
-"那个时刻）。"
+msgstr "对单声道信号应用摇摄时使用的摇摄算法（不用于那个时刻）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:632
 msgid "Pan law"
@@ -3806,9 +3780,7 @@ msgstr "Pan定律"
 msgid ""
 "The pan law to use when applying pan on mono signals (not used at the "
 "moment)."
-msgstr ""
-"对单声道信号应用pan时使用的pan定律（不用于"
-"时刻）。"
+msgstr "对单声道信号应用pan时使用的pan定律（不用于时刻）。"
 
 #, fuzzy
 #~ msgid "PortAudio"

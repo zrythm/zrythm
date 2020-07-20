@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-07-09 12:13+0100\n"
+"POT-Creation-Date: 2020-07-20 22:41+0100\n"
 "PO-Revision-Date: 2020-04-30 23:31+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
@@ -72,7 +72,7 @@ msgstr "Seleccionar todo"
 msgid "Duplicate"
 msgstr "Duplicar"
 
-#: inc/utils/gtk.h:92 src/audio/fader.c:156
+#: inc/utils/gtk.h:92 src/audio/fader.c:162
 msgid "Mute"
 msgstr "Silenciar"
 
@@ -90,7 +90,7 @@ msgstr "Instrumento"
 msgid "Audio"
 msgstr "Audio"
 
-#: inc/audio/track.h:159 src/project.c:636
+#: inc/audio/track.h:159 src/project.c:640
 #: src/gui/widgets/route_target_selector_popover.c:153
 msgid "Master"
 msgstr ""
@@ -201,11 +201,11 @@ msgstr "Secuenciador de ALSA"
 msgid "Inherit"
 msgstr ""
 
-#: inc/audio/region.h:85 src/audio/automation_track.c:98
+#: inc/audio/region.h:85 src/audio/automation_track.c:100
 msgid "Off"
 msgstr ""
 
-#: inc/audio/region.h:87 src/audio/automation_track.c:92
+#: inc/audio/region.h:87 src/audio/automation_track.c:94
 msgid "On"
 msgstr ""
 
@@ -238,36 +238,36 @@ msgstr ""
 
 #. TRANSLATORS: please keep the space at the
 #. * end
-#: src/zrythm.c:231
+#: src/zrythm.c:232
 msgid "(trial) "
 msgstr ""
 
-#: src/project.c:126
+#: src/project.c:127
 #, c-format
 msgid "Failed to open file: %s"
 msgstr ""
 
-#: src/project.c:170
+#: src/project.c:171
 msgid "Project not compressed by zstd!"
 msgstr ""
 
-#: src/project.c:183
+#: src/project.c:184
 #, c-format
 msgid "Failed to decompress project file: %s"
 msgstr ""
 
-#: src/project.c:192
+#: src/project.c:193
 msgid ""
 "uncompressed_size != frame_content_size impossible because zstd will check "
 "this condition!"
 msgstr ""
 
-#: src/project.c:224
+#: src/project.c:225
 #, c-format
 msgid "Failed to write file: %s"
 msgstr ""
 
-#: src/project.c:769
+#: src/project.c:774
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -278,42 +278,42 @@ msgstr ""
 "  %s.\n"
 "¿Quiere utilizar la copia más reciente?"
 
-#: src/project.c:774
+#: src/project.c:779
 msgid "Backup found"
 msgstr "Se encontró una copia de respaldo"
 
-#: src/project.c:828
+#: src/project.c:837
 #, fuzzy, c-format
 msgid "Unable to read file: %s"
 msgstr "No se pudo cargar el cliente interno"
 
-#: src/project.c:881
-#, c-format
+#: src/project.c:890
+#, fuzzy, c-format
 msgid ""
-"This project was created with a different version of Zrythm (%s). It may not "
+"This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr ""
 "Este proyecto se creó con una versión distinta de Zrythm (%s). Puede que no "
 "funcione adecuadamente."
 
-#: src/project.c:896
+#: src/project.c:905
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "No se pudo cargar el proyecto. Revise los registros para obtener más "
 "información."
 
-#: src/project.c:1076
+#: src/project.c:1087
 #, fuzzy
 msgid "Failed to load project. Will create a new one instead."
 msgstr ""
 "No se pudo cargar el proyecto. Revise los registros para obtener más "
 "información."
 
-#: src/project.c:1421
+#: src/project.c:1426
 msgid "Backup saved."
 msgstr "Se guardó una copia de respaldo."
 
-#: src/project.c:1431
+#: src/project.c:1436
 msgid "Project saved."
 msgstr "Se guardó el proyecto."
 
@@ -326,14 +326,15 @@ msgstr "Error. Seguimiento regresivo:\n"
 msgid "Error: %s - Backtrace:\n"
 msgstr "Error: %s. Seguimiento regresivo:\n"
 
-#: src/main.c:95
-msgid "Zrythm has crashed. "
+#: src/main.c:94
+#, c-format
+msgid "%s has crashed. "
 msgstr ""
 
-#: src/main.c:125
+#: src/main.c:127
 #, fuzzy, c-format
 msgid ""
-"Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
+"Usage: %s [ OPTIONS ] [ PROJECT-FILE-PATH ]\n"
 "\n"
 "Options:\n"
 "  -h, --help      display this help message and exit\n"
@@ -343,8 +344,8 @@ msgid ""
 "  -p, --print-settings  print current settings\n"
 "  --pretty        print output in user-friendly way\n"
 "  --reset-to-factory  reset to factory settings\n"
-"  --gdb           run Zrythm through GDB (debugger)\n"
-"  --callgrind     run Zrythm through callgrind (profiler)\n"
+"  --gdb           run %s through GDB (debugger)\n"
+"  --callgrind     run %s through callgrind (profiler)\n"
 "  --audio-backend  override the audio backend to use\n"
 "  --midi-backend  override the MIDI backend to use\n"
 "  --dummy         overrides both the audio and MIDI backends to dummy\n"
@@ -354,12 +355,12 @@ msgid ""
 "  -v, --version   output version information and exit\n"
 "\n"
 "Examples:\n"
-"  zrythm -v       print version\n"
-"  zrythm --callgrind --dummy --buf-size=8192  profile Zrythm using the dummy "
-"backend and a buffer size of 8192\n"
-"  zrythm --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  "
-"convert a compressed zpj project to YAML\n"
-"  zrythm -p --pretty  pretty-print current settings\n"
+"  %s -v       print version\n"
+"  %s --callgrind --dummy --buf-size=8192  profile %s using the dummy backend "
+"and a buffer size of 8192\n"
+"  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  convert a "
+"compressed zpj project to YAML\n"
+"  %s -p --pretty  pretty-print current settings\n"
 "\n"
 "Report bugs to %s\n"
 msgstr ""
@@ -376,49 +377,49 @@ msgstr ""
 "Apoye este proyecto en https://liberapay.com/Zrythm\n"
 "Sitio web https://www.zrythm.org\n"
 
-#: src/main.c:164
+#: src/main.c:170
 #, c-format
 msgid "File %s not found."
 msgstr ""
 
-#: src/main.c:185
+#: src/main.c:191
 msgid ""
 "An output file was not specified. Please pass one with `--output [FILE]`."
 msgstr ""
 
 #. getopt_long already printed an error
 #. * message
-#: src/main.c:326
+#: src/main.c:333
 #, c-format
 msgid "Unknown option\n"
 msgstr "Opción desconocida\n"
 
-#: src/main.c:375
+#: src/main.c:388
 #, c-format
 msgid "Project failed to compress: %s\n"
 msgstr ""
 
-#: src/main.c:384
+#: src/main.c:397
 #, c-format
 msgid "Project successfully compressed.\n"
 msgstr ""
 
-#: src/main.c:402
+#: src/main.c:415
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr ""
 
-#: src/main.c:411
+#: src/main.c:424
 #, c-format
 msgid "Project successfully decompressed.\n"
 msgstr ""
 
-#: src/main.c:420
+#: src/main.c:433
 #, fuzzy, c-format
 msgid ""
-"Zrythm-%s Copyright (C) 2018-2020 The Zrythm contributors\n"
+"%s-%s Copyright (C) 2018-2020 The Zrythm contributors\n"
 "\n"
-"Zrythm comes with ABSOLUTELY NO WARRANTY!\n"
+"%s comes with ABSOLUTELY NO WARRANTY!\n"
 "\n"
 "This is free software, and you are welcome to redistribute it\n"
 "under certain conditions. See the file `COPYING' for details.\n"
@@ -448,68 +449,70 @@ msgstr "Configurando ventana principal"
 msgid "Loading project"
 msgstr "Cargando proyecto"
 
-#: src/zrythm_app.c:245
-msgid "No project has been selected. Zrythm will now close."
+#: src/zrythm_app.c:246
+#, c-format
+msgid "No project has been selected. %s will now close."
 msgstr ""
 
-#: src/zrythm_app.c:265
+#: src/zrythm_app.c:269
 msgid "Initializing settings"
 msgstr "Iniciando configuración"
 
-#: src/zrythm_app.c:272
-msgid "Initializing Zrythm directories"
+#: src/zrythm_app.c:277
+#, fuzzy, c-format
+msgid "Initializing %s directories"
 msgstr "Iniciando directorios de Zrythm"
 
-#: src/zrythm_app.c:279
+#: src/zrythm_app.c:287
 msgid "Initializing logging system"
 msgstr "Iniciando sistema de registros"
 
-#: src/zrythm_app.c:283
+#: src/zrythm_app.c:291
 msgid "Initializing caches"
 msgstr "Iniciando antememorias"
 
-#: src/zrythm_app.c:287
+#: src/zrythm_app.c:295
 #, fuzzy
 msgid "Initializing file manager"
 msgstr "Iniciando gestor de complementos"
 
-#: src/zrythm_app.c:294
+#: src/zrythm_app.c:302
 msgid "Scanning plugins"
 msgstr "Analizando complementos"
 
-#: src/zrythm_app.c:452
+#: src/zrythm_app.c:463
 msgid "License Information"
 msgstr "Información sobre la licencia"
 
-#: src/zrythm_app.c:480
+#: src/zrythm_app.c:491
 msgid "Waiting for project"
 msgstr "Esperando un proyecto"
 
-#: src/plugins/carla_native_plugin.c:464 src/plugins/lv2_plugin.c:2418
+#: src/plugins/carla_native_plugin.c:463 src/plugins/lv2_plugin.c:2413
 #, fuzzy
 msgid "Default bank"
 msgstr "Valor predeterminado"
 
-#: src/plugins/carla_native_plugin.c:471 src/plugins/lv2_plugin.c:2425
+#: src/plugins/carla_native_plugin.c:470 src/plugins/lv2_plugin.c:2420
 msgid "Init"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:898
+#: src/plugins/carla_native_plugin.c:897
 #, fuzzy
 msgid "Audio in"
 msgstr "Entradas de audio"
 
-#: src/plugins/carla_native_plugin.c:908
+#: src/plugins/carla_native_plugin.c:907
 #, fuzzy
 msgid "Audio out"
 msgstr "Salidas de audio"
 
-#: src/plugins/carla_native_plugin.c:918
+#: src/plugins/carla_native_plugin.c:917
 #, fuzzy
 msgid "MIDI in"
 msgstr "Entradas de MIDI"
 
-#: src/plugins/carla_native_plugin.c:928
+#: src/plugins/carla_native_plugin.c:927
 #, fuzzy
 msgid "MIDI out"
 msgstr "Nota de MIDI"
@@ -548,57 +551,57 @@ msgstr "Analizando complementos"
 msgid "Skipped AU plugin at %u"
 msgstr "Se saltó el plugin AU en %u"
 
-#: src/plugins/plugin.c:135
+#: src/plugins/plugin.c:133
 msgid "Enabled"
 msgstr "Activado"
 
-#: src/plugins/plugin_gtk.c:80 src/plugins/lv2/lv2_gtk.c:102
+#: src/plugins/plugin_gtk.c:81 src/plugins/lv2/lv2_gtk.c:105
 msgid "Save State"
 msgstr "Guardar estado"
 
-#: src/plugins/plugin_gtk.c:83 src/plugins/lv2/lv2_gtk.c:105
-#: src/plugins/lv2/lv2_gtk.c:353 src/utils/dialogs.c:42 src/utils/dialogs.c:72
-#: src/actions/actions.c:762 resources/ui/export_midi_file_dialog.ui:54
+#: src/plugins/plugin_gtk.c:84 src/plugins/lv2/lv2_gtk.c:108
+#: src/plugins/lv2/lv2_gtk.c:357 src/utils/dialogs.c:42 src/utils/dialogs.c:72
+#: src/actions/actions.c:767 resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "_Cancelar"
 
-#: src/plugins/plugin_gtk.c:84 src/plugins/lv2/lv2_gtk.c:106
-#: src/actions/actions.c:764
+#: src/plugins/plugin_gtk.c:85 src/plugins/lv2/lv2_gtk.c:109
+#: src/actions/actions.c:769
 msgid "_Save"
 msgstr "_Guardar"
 
-#: src/plugins/lv2_plugin.c:2457
+#: src/plugins/lv2_plugin.c:2452
 msgid "Unnamed bank"
 msgstr ""
 
-#: src/plugins/lv2/lv2_gtk.c:252
+#: src/plugins/lv2/lv2_gtk.c:256
 msgid "URI (Optional):"
 msgstr "URI (opcional):"
 
-#: src/plugins/lv2/lv2_gtk.c:256
+#: src/plugins/lv2/lv2_gtk.c:260
 msgid "_Prefix plugin name"
 msgstr "_Prefijar nombre de complemento"
 
-#: src/plugins/lv2/lv2_gtk.c:348
+#: src/plugins/lv2/lv2_gtk.c:352
 msgid "Delete Preset?"
 msgstr ""
 
-#: src/plugins/lv2/lv2_gtk.c:354 src/utils/dialogs.c:70
+#: src/plugins/lv2/lv2_gtk.c:358 src/utils/dialogs.c:70
 #: resources/ui/port_selector_popover.ui:227 resources/ui/marker_dialog.ui:61
 msgid "_OK"
 msgstr "_Aceptar"
 
-#: src/plugins/lv2/lv2_gtk.c:568
+#: src/plugins/lv2/lv2_gtk.c:572
 msgid "Unknown widget type for value"
 msgstr ""
 
-#: src/plugins/lv2/lv2_gtk.c:594
+#: src/plugins/lv2/lv2_gtk.c:598
 msgid "Unknown widget type for value\n"
 msgstr ""
 
-#: src/plugins/lv2/lv2_gtk.c:1247
+#: src/plugins/lv2/lv2_gtk.c:1251
 msgid "Close"
 msgstr "Cerrar"
 
@@ -667,7 +670,7 @@ msgstr "Máximo"
 msgid "Expose port to JACK"
 msgstr "Exponer puerto a JACK"
 
-#: src/gui/widgets/log_viewer.c:87
+#: src/gui/widgets/log_viewer.c:89
 msgid "Log Viewer"
 msgstr "Visor de registros"
 
@@ -817,26 +820,26 @@ msgstr ""
 msgid "Exporting MIDI region \"%s\""
 msgstr ""
 
-#: src/gui/widgets/port_selector_popover.c:53
+#: src/gui/widgets/port_selector_popover.c:55
 msgid "No port selected"
 msgstr ""
 
-#: src/gui/widgets/port_selector_popover.c:85
+#: src/gui/widgets/port_selector_popover.c:89
 msgid "These ports cannot be connected"
 msgstr "Estos puertos no pueden ser conectados"
 
-#: src/gui/widgets/port_selector_popover.c:319
+#: src/gui/widgets/port_selector_popover.c:323
 msgid "Track Ports"
 msgstr ""
 
-#: src/gui/widgets/channel_send_selector.c:159
+#: src/gui/widgets/channel_send_selector.c:185
 #: src/gui/widgets/plugin_properties_expander.c:89
 #: src/gui/widgets/plugin_properties_expander.c:91
 #: resources/ui/editor_toolbar.ui:57
 msgid "None"
 msgstr "Ninguna"
 
-#: src/gui/widgets/channel_send_selector.c:296
+#: src/gui/widgets/channel_send_selector.c:322
 #: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:24
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
 msgid "OK"
@@ -1136,19 +1139,24 @@ msgid "Curve algorithm"
 msgstr ""
 
 #: src/gui/widgets/header.c:99
+#, fuzzy, c-format
+msgid "About %s"
+msgstr "Acerca de Zrythm"
+
+#: src/gui/widgets/header.c:104
 msgid "About Zrythm"
 msgstr "Acerca de Zrythm"
 
-#: src/gui/widgets/header.c:100 src/gui/widgets/preferences.c:790
+#: src/gui/widgets/header.c:105 src/gui/widgets/preferences.c:793
 #: resources/ui/shortcuts.ui:40 resources/ui/preferences.ui:27
 msgid "Preferences"
 msgstr "Preferencias"
 
-#: src/gui/widgets/header.c:101
+#: src/gui/widgets/header.c:106
 msgid "Log viewer"
 msgstr "Visor de registros"
 
-#: src/gui/widgets/header.c:103
+#: src/gui/widgets/header.c:108
 msgid "Scripting interface"
 msgstr ""
 
@@ -1296,17 +1304,18 @@ msgstr ""
 msgid "Snap/Grid options"
 msgstr ""
 
-#: src/gui/widgets/preferences.c:396 resources/ui/first_run_assistant.ui:120
+#: src/gui/widgets/preferences.c:398 resources/ui/first_run_assistant.ui:120
 msgid "Select a folder"
 msgstr "Seleccionar carpeta"
 
-#: src/gui/widgets/preferences.c:397
+#: src/gui/widgets/preferences.c:399
 #, fuzzy
 msgid "Select a file"
 msgstr "Seleccionar carpeta"
 
-#: src/gui/widgets/preferences.c:770
-msgid "Some changes will only take effect after you restart Zrythm"
+#: src/gui/widgets/preferences.c:772
+#, c-format
+msgid "Some changes will only take effect after you restart %s"
 msgstr ""
 
 #: src/gui/widgets/scripting_window.c:192
@@ -1322,11 +1331,11 @@ msgstr ""
 msgid "Scripting Interface"
 msgstr "Interfaz"
 
-#: src/gui/widgets/port_connection_row.c:97
+#: src/gui/widgets/port_connection_row.c:105
 msgid "Enable/disable connection"
 msgstr "Activar/desactivar conexión"
 
-#: src/gui/widgets/port_connection_row.c:138
+#: src/gui/widgets/port_connection_row.c:146
 msgid "Delete connection"
 msgstr "Eliminar conexión"
 
@@ -1539,7 +1548,7 @@ msgstr "Conmutar panel derecho"
 msgid "Comment"
 msgstr ""
 
-#: src/gui/widgets/track.c:576 src/audio/track_lane.c:70
+#: src/gui/widgets/track.c:576 src/audio/track_lane.c:71
 #, c-format
 msgid "Lane %d"
 msgstr ""
@@ -1615,12 +1624,12 @@ msgstr ""
 msgid "Port info"
 msgstr "Información de puerto"
 
-#: src/gui/widgets/dialogs/about_dialog.c:84
+#: src/gui/widgets/dialogs/about_dialog.c:91
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
 "una estación de trabajo digital para audio altamente automatizada e intuitiva"
 
-#: src/gui/widgets/dialogs/about_dialog.c:88
+#: src/gui/widgets/dialogs/about_dialog.c:95
 msgid "Website"
 msgstr ""
 
@@ -1639,8 +1648,9 @@ msgstr ""
 "Zrythm se cerró repentinamente. Ayude a corregirlo %sinformándonos del "
 "problema%s."
 
-#: src/gui/backend/event_manager.c:1506
-msgid "Trial limit has been reached. Zrythm will now go silent"
+#: src/gui/backend/event_manager.c:1514
+#, c-format
+msgid "Trial limit has been reached. %s will now go silent"
 msgstr ""
 
 #: src/utils/err_codes.c:32
@@ -1656,10 +1666,11 @@ msgstr ""
 msgid "Unknown error"
 msgstr "Opción desconocida\n"
 
-#: src/utils/log.c:615
+#: src/utils/log.c:665
+#, c-format
 msgid ""
-"Zrythm has encountered a non-fatal error. It may continue to run but the "
-"behavior will be undefined. "
+"%s has encountered a non-fatal error. It may continue to run but behavior "
+"will be undefined. "
 msgstr ""
 
 #: src/utils/dialogs.c:44
@@ -1683,10 +1694,10 @@ msgid "Sine (Equal Power)"
 msgstr ""
 
 #: src/utils/ui.c:931
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
-"install one first and restart Zrythm"
+"install one first and restart %s"
 msgstr ""
 "No está disponible la configuración regional para el idioma que ha "
 "seleccionado (%s). Instálela primero y reinicie Zrythm"
@@ -1699,57 +1710,57 @@ msgid ""
 "1. Uncomment any locale starting with the language code <b>%s</b> in <b>/etc/"
 "locale.gen</b> (needs root privileges)\n"
 "2. Run <b>locale-gen</b> as root\n"
-"3. Restart Zrythm"
+"3. Restart %s"
 msgstr ""
 
-#: src/settings/settings.c:113
+#: src/settings/settings.c:115
 #, c-format
 msgid "Schema %s%s%s"
 msgstr ""
 
-#: src/settings/settings.c:124
+#: src/settings/settings.c:126
 #, c-format
 msgid "Resetting schema %s...\n"
 msgstr ""
 
-#: src/settings/settings.c:163
+#: src/settings/settings.c:165
 #, c-format
 msgid "skipping %s"
 msgstr ""
 
-#: src/settings/settings.c:174
+#: src/settings/settings.c:176
 #, c-format
 msgid "resetting %s to %s"
 msgstr ""
 
-#: src/settings/settings.c:219
+#: src/settings/settings.c:221
 #, c-format
-msgid "Failed to find schema %s. Zrythm is likely not installed"
+msgid "Failed to find schema %s. %s is likely not installed"
 msgstr ""
 
-#: src/settings/settings.c:234
+#: src/settings/settings.c:236
 #, c-format
 msgid "Failed to view schema %s"
 msgstr ""
 
-#: src/settings/settings.c:241
+#: src/settings/settings.c:243
 #, c-format
 msgid "Failed to reset schema %s"
 msgstr ""
 
-#: src/settings/settings.c:274
+#: src/settings/settings.c:276
 #, c-format
 msgid ""
-"This will reset Zrythm to factory settings. You will lose all your "
-"preferences. Type 'y' to continue: "
+"This will reset %s to factory settings. You will lose all your preferences. "
+"Type 'y' to continue: "
 msgstr ""
 
-#: src/settings/settings.c:280
+#: src/settings/settings.c:283
 #, c-format
 msgid "Aborting...\n"
 msgstr ""
 
-#: src/settings/settings.c:291
+#: src/settings/settings.c:294
 #, c-format
 msgid "Reset to factory settings successful\n"
 msgstr ""
@@ -1758,27 +1769,27 @@ msgstr ""
 msgid "Chords"
 msgstr "Acordes"
 
-#: src/audio/automation_track.c:95
+#: src/audio/automation_track.c:97
 msgid "Rec"
 msgstr ""
 
-#: src/audio/automation_track.c:116
+#: src/audio/automation_track.c:118
 msgid "Touch"
 msgstr ""
 
-#: src/audio/automation_track.c:119
+#: src/audio/automation_track.c:121
 msgid "Latch"
 msgstr ""
 
-#: src/audio/channel_send.c:340
+#: src/audio/channel_send.c:369
 msgid "Pre-fader send"
 msgstr ""
 
-#: src/audio/channel_send.c:342
+#: src/audio/channel_send.c:371
 msgid "Post-fader send"
 msgstr ""
 
-#: src/audio/channel_send.c:365
+#: src/audio/channel_send.c:394
 #, fuzzy, c-format
 msgid "%s input"
 msgstr "Ninguna entrada"
@@ -1822,9 +1833,9 @@ msgstr ""
 #: src/audio/engine.c:423
 #, c-format
 msgid ""
-"The selected MIDI/audio backend was not found in the version of Zrythm you "
-"have installed. The audio and MIDI backends were set to \"Dummy\". Please "
-"set your preferred backend from the preferences."
+"The selected MIDI/audio backend was not found in the version of %s you have "
+"installed. The audio and MIDI backends were set to \"Dummy\". Please set "
+"your preferred backend from the preferences."
 msgstr ""
 
 #: src/audio/engine_alsa.c:342
@@ -1845,116 +1856,116 @@ msgstr ""
 msgid "Volume"
 msgstr "Volumen"
 
-#: src/audio/fader.c:144
+#: src/audio/fader.c:145
 #, fuzzy
 msgid "Balance"
 msgstr "Control de nivelación"
 
-#: src/audio/fader.c:175
+#: src/audio/fader.c:186
 msgid "Ch Pre-Fader in"
 msgstr ""
 
-#: src/audio/fader.c:179
+#: src/audio/fader.c:190
 msgid "Ch Fader in"
 msgstr ""
 
-#: src/audio/fader.c:184
+#: src/audio/fader.c:195
 msgid "Monitor Fader in"
 msgstr ""
 
-#: src/audio/fader.c:200
+#: src/audio/fader.c:211
 msgid "Ch Pre-Fader out"
 msgstr ""
 
-#: src/audio/fader.c:204
+#: src/audio/fader.c:215
 msgid "Ch Fader out"
 msgstr ""
 
-#: src/audio/fader.c:209
+#: src/audio/fader.c:220
 msgid "Monitor Fader out"
 msgstr ""
 
-#: src/audio/fader.c:228
+#: src/audio/fader.c:239
 msgid "Ch MIDI Pre-Fader in"
 msgstr ""
 
-#: src/audio/fader.c:232
+#: src/audio/fader.c:243
 #, fuzzy
 msgid "Ch MIDI Fader in"
 msgstr "Entradas de MIDI"
 
-#: src/audio/fader.c:243
+#: src/audio/fader.c:254
 msgid "Ch MIDI Pre-Fader out"
 msgstr ""
 
-#: src/audio/fader.c:247
+#: src/audio/fader.c:258
 #, fuzzy
 msgid "Ch MIDI Fader out"
 msgstr "Nota de MIDI"
 
-#: src/audio/engine_jack.c:337
+#: src/audio/engine_jack.c:338
 msgid "XRUN occurred - check your JACK configuration"
 msgstr ""
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:579
+#: src/audio/engine_jack.c:580
 msgid "Overall operation failed"
 msgstr ""
 
-#: src/audio/engine_jack.c:585
+#: src/audio/engine_jack.c:586
 msgid "The operation contained an invalid or unsupported option"
 msgstr "La operación incluía una opción no válida o no admitida"
 
-#: src/audio/engine_jack.c:592
+#: src/audio/engine_jack.c:593
 msgid "The desired client name was not unique"
 msgstr "El nombre de cliente deseado no era único"
 
-#: src/audio/engine_jack.c:598
+#: src/audio/engine_jack.c:599
 msgid "Unable to connect to the JACK server"
 msgstr "No se pudo conectar con el servidor de JACK"
 
-#: src/audio/engine_jack.c:604
+#: src/audio/engine_jack.c:605
 msgid "Communication error with the JACK server"
 msgstr "Error de comunicación con el servidor de JACK"
 
-#: src/audio/engine_jack.c:610
+#: src/audio/engine_jack.c:611
 msgid "Requested client does not exist"
 msgstr "No existe el cliente solicitado"
 
-#: src/audio/engine_jack.c:616
+#: src/audio/engine_jack.c:617
 msgid "Unable to load internal client"
 msgstr "No se pudo cargar el cliente interno"
 
-#: src/audio/engine_jack.c:622
+#: src/audio/engine_jack.c:623
 msgid "Unable to initialize client"
 msgstr "No se pudo iniciar el cliente"
 
-#: src/audio/engine_jack.c:628
+#: src/audio/engine_jack.c:629
 msgid "Unable to access shared memory"
 msgstr "No se pudo acceder a la memoria compartida"
 
-#: src/audio/engine_jack.c:634
+#: src/audio/engine_jack.c:635
 msgid "Client's protocol version does not match"
 msgstr "La versión del protocolo del cliente no coincide"
 
-#: src/audio/engine_jack.c:638
+#: src/audio/engine_jack.c:639
 msgid "Backend error"
 msgstr ""
 
-#: src/audio/engine_jack.c:642
+#: src/audio/engine_jack.c:643
 msgid "Client zombie"
 msgstr ""
 
-#: src/actions/arranger_selections.c:2141
+#: src/actions/arranger_selections.c:2159
 msgid "Edit arranger object(s)"
 msgstr ""
 
-#: src/actions/create_plugins_action.c:141
+#: src/actions/create_plugins_action.c:145
 #, c-format
 msgid "Create %s"
 msgstr ""
 
-#: src/actions/create_plugins_action.c:145
+#: src/actions/create_plugins_action.c:149
 #, c-format
 msgid "Create %d %ss"
 msgstr ""
@@ -1972,71 +1983,71 @@ msgstr "Eliminar %d pistas"
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
-"your Zrythm installation."
+"your %s installation."
 msgstr ""
 
-#: src/actions/actions.c:620
+#: src/actions/actions.c:622
+#, c-format
 msgid ""
-"Creating new projects is disabled. Please restart Zrythm to start a new "
-"project"
+"Creating new projects is disabled. Please restart %s to start a new project"
 msgstr ""
 
-#: src/actions/actions.c:631 resources/ui/project_assistant.ui:86
+#: src/actions/actions.c:636 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
 msgid "Create new project"
 msgstr "Crear proyecto nuevo"
 
-#: src/actions/actions.c:634
+#: src/actions/actions.c:639
 msgid "Yes"
 msgstr "Sí"
 
-#: src/actions/actions.c:636
+#: src/actions/actions.c:641
 msgid "No"
 msgstr "No"
 
-#: src/actions/actions.c:641
+#: src/actions/actions.c:646
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
 "Se perderá cualquier cambio que no se haya guardado en el proyecto actual. "
 "¿Quiere continuar?"
 
-#: src/actions/actions.c:693
+#: src/actions/actions.c:698
 msgid "Loading is disabled in the trial version"
 msgstr "La carga no está disponible en la versión de prueba"
 
-#: src/actions/actions.c:721 src/actions/actions.c:747
+#: src/actions/actions.c:726 src/actions/actions.c:752
 msgid "Saving is disabled in the trial version"
 msgstr "El guardado no está disponible en la versión de prueba"
 
-#: src/actions/actions.c:759
+#: src/actions/actions.c:764
 msgid "Save Project"
 msgstr "Guardar proyecto"
 
-#: src/actions/actions.c:843
+#: src/actions/actions.c:849
 msgid "Export routing graph"
 msgstr ""
 
-#: src/actions/actions.c:845
+#: src/actions/actions.c:851
 msgid "Image (PNG)"
 msgstr ""
 
-#: src/actions/actions.c:846
+#: src/actions/actions.c:852
 msgid "Dot graph"
 msgstr ""
 
-#: src/actions/actions.c:854
+#: src/actions/actions.c:860
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
 "Please select a format to export as"
 msgstr ""
 
-#: src/actions/actions.c:904
+#: src/actions/actions.c:910
 msgid "Graph exported"
 msgstr ""
 
-#: src/actions/actions.c:1091 src/actions/actions.c:1131
-#: src/actions/actions.c:1170 src/actions/actions.c:1210
+#: src/actions/actions.c:1097 src/actions/actions.c:1137
+#: src/actions/actions.c:1176 src/actions/actions.c:1216
 msgid "Can't paste selections"
 msgstr ""
 
@@ -2050,10 +2061,20 @@ msgstr ""
 msgid "Copy %d Plugins"
 msgstr ""
 
+#: src/actions/port_connection_action.c:115
+#, fuzzy
+msgid "Port connection"
+msgstr "Eliminar conexión"
+
 #: src/actions/transport_action.c:131
 #, fuzzy
 msgid "Change BPM"
 msgstr "Canal %s"
+
+#: src/actions/channel_send_action.c:193
+#, fuzzy
+msgid "Channel send connection"
+msgstr "Eliminar conexión"
 
 #: src/actions/move_plugins_action.c:245
 #, c-format
@@ -2108,21 +2129,21 @@ msgstr ""
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
 
-#: src/actions/create_tracks_action.c:327
+#: src/actions/create_tracks_action.c:332
 #, c-format
 msgid "Create %s Track"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:330
+#: src/actions/create_tracks_action.c:335
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr ""
 
-#: src/actions/delete_plugins_action.c:223
+#: src/actions/delete_plugins_action.c:227
 msgid "Delete Plugin"
 msgstr "Eliminar complemento"
 
-#: src/actions/delete_plugins_action.c:226
+#: src/actions/delete_plugins_action.c:230
 #, c-format
 msgid "Delete %d Plugins"
 msgstr "Eliminar %d complementos"
