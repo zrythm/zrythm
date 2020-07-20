@@ -183,7 +183,13 @@ z_carla_discovery_parse_plugin_info (
     string_get_regex_group (
       results,
       "carla-discovery::name::(.*)" LINE_SEP, 1);
-  g_return_val_if_fail (descr->name,  NULL);
+  if (!descr->name)
+    {
+      g_warning (
+        "Failed to get plugin name for %s. "
+        "skipping...", plugin_path);
+      return NULL;
+    }
   descr->author =
     string_get_regex_group (
       results,

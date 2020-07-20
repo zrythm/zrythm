@@ -1,0 +1,46 @@
+image: ubuntu/lts # latest xx.04
+packages:
+  - libgtk-3-dev
+  - libjack-dev
+  #- liblilv-dev
+  - libsndfile1-dev
+  #- meson
+  - ninja-build
+  - gettext
+  - guile-2.2-dev
+  - help2man
+  - python3-sphinx
+  - ladspa-sdk
+  - libfftw3-dev
+  - libasound2-dev
+  - libavcodec-dev
+  - libavutil-dev
+  - libavformat-dev
+  - libchromaprint-dev
+  - libgtksourceview-3.0-dev
+  - libgraphviz-dev
+  #- libsuil-dev
+  #- lv2-dev
+  - libsamplerate0-dev
+  - libyaml-dev
+  - librubberband-dev
+  #- librtaudio-dev
+  - libzstd-dev
+  - python3
+  - xdg-utils
+sources:
+  - https://git.sr.ht/~alextee/zrythm
+  - https://github.com/mesonbuild/meson
+tasks:
+  - setup: |
+      cd zrythm
+      ../meson/meson.py build -Dtests=true -Dmanpage=true -Dffmpeg=enabled
+  - build: |
+      cd zrythm
+      ninja -C build
+  - test: |
+      cd zrythm
+      ninja -C build test
+  - install: |
+      cd zrythm
+      DESTDIR=/tmp ninja -C build install

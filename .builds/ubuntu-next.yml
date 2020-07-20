@@ -1,8 +1,10 @@
-image: ubuntu/18.04
+image: ubuntu/next # latest xx.10
 packages:
   - libgtk-3-dev
   - libjack-dev
+  #- liblilv-dev
   - libsndfile1-dev
+  #- meson
   - ninja-build
   - gettext
   - guile-2.2-dev
@@ -17,9 +19,12 @@ packages:
   - libchromaprint-dev
   - libgtksourceview-3.0-dev
   - libgraphviz-dev
+  #- libsuil-dev
+  #- lv2-dev
   - libsamplerate0-dev
   - libyaml-dev
   - librubberband-dev
+  #- librtaudio-dev
   - libzstd-dev
   - python3
   - xdg-utils
@@ -29,7 +34,7 @@ sources:
 tasks:
   - setup: |
       cd zrythm
-      ../meson/meson.py build -Dtests=true -Dmanpage=true
+      ../meson/meson.py build -Dtests=true -Dmanpage=true -Dffmpeg=enabled
   - build: |
       cd zrythm
       ninja -C build
