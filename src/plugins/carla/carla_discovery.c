@@ -405,6 +405,10 @@ z_carla_discovery_get_bridge_mode (
         }
       lilv_uis_free (uis);
     }
+  else if (descr->arch == ARCH_32)
+    {
+      return CARLA_BRIDGE_FULL;
+    }
   else
     {
       return CARLA_BRIDGE_NONE;

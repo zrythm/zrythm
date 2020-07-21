@@ -622,8 +622,20 @@ write_str (
   GtkTextIter iter;
   gtk_text_buffer_get_end_iter (
     self->messages_buf, &iter);
-  gtk_text_buffer_insert (
-    self->messages_buf, &iter, str, -1);
+  if (g_utf8_validate (str, -1, NULL))
+    {
+      gtk_text_buffer_insert (
+        self->messages_buf, &iter, str, -1);
+    }
+  else
+    {
+      g_message (
+        "Attempted to add a non-UTF8 string to "
+        "the log file: %s", str);
+      gtk_text_buffer_insert (
+        self->messages_buf, &iter,
+        "Non-UTF8 string!", -1);
+    }
   gtk_text_buffer_get_end_iter (
     self->messages_buf, &iter);
   gtk_text_buffer_insert (
