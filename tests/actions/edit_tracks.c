@@ -185,6 +185,15 @@ static void __test_edit_tracks (bool with_carla)
          EDIT_TRACK_ACTION_TYPE_SOLO;
        i <= EDIT_TRACK_ACTION_TYPE_DIRECT_OUT; i++)
     {
+      /* only check mute, solo and direct out for
+       * now */
+      if (i != EDIT_TRACK_ACTION_TYPE_SOLO &&
+          i != EDIT_TRACK_ACTION_TYPE_MUTE &&
+          i != EDIT_TRACK_ACTION_TYPE_DIRECT_OUT)
+        {
+          continue;
+        }
+
 #ifdef HAVE_HELM
       _test_edit_tracks (
         i, HELM_BUNDLE, HELM_URI, true, with_carla);
