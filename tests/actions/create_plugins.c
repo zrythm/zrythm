@@ -169,6 +169,12 @@ test_create_plugins (void)
     LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
     false, false);
 #endif
+#ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
+  _test_create_plugins (
+    SHERLOCK_ATOM_INSPECTOR_BUNDLE,
+    SHERLOCK_ATOM_INSPECTOR_URI,
+    false, false);
+#endif
 #ifdef HAVE_CARLA_RACK
   _test_create_plugins (
     CARLA_RACK_BUNDLE, CARLA_RACK_URI,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -94,6 +94,11 @@ typedef struct Lv2Control
   float       deff;
   bool        is_toggle;       ///< Boolean (0 and 1 only)
   bool        is_integer;      ///< Integer values only
+
+  /* FIXME are these used ? */
+
+  /** Control is a URI. */
+  bool        is_uri;
   bool        is_enumeration;  ///< Point values only
   bool        is_logarithmic;  ///< Logarithmic scale
   bool        is_writable;     ///< Writable (input)

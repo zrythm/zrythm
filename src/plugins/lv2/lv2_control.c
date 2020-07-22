@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,19 +19,19 @@
  * This file incorporates work covered by the following copyright and
  * permission notice:
  *
-  Copyright 2007-2016 David Robillard <http://drobilla.net>
-
-  Permission to use, copy, modify, and/or distribute this software for any
-  purpose with or without fee is hereby granted, provided that the above
-  copyright notice and this permission notice appear in all copies.
-
-  THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * Copyright 2007-2016 David Robillard <http://drobilla.net>
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #include "audio/engine.h"
@@ -198,10 +198,11 @@ has_range(Lv2Plugin* plugin, const LilvNode* subject, const char* range_uri)
 }
 
 Lv2Control*
-lv2_new_property_control(Lv2Plugin* plugin, const LilvNode* property)
+lv2_new_property_control (
+  Lv2Plugin *      plugin,
+  const LilvNode * property)
 {
-  Lv2Control* id =
-    (Lv2Control*) calloc (1, sizeof(Lv2Control));
+  Lv2Control* id = calloc (1, sizeof (Lv2Control));
   id->plugin = plugin;
   id->type = PROPERTY;
   id->node = lilv_node_duplicate (property);
@@ -236,24 +237,33 @@ lv2_new_property_control(Lv2Plugin* plugin, const LilvNode* property)
     LV2_ATOM__Bool,
     LV2_ATOM__String,
     LV2_ATOM__Path,
+    LV2_ATOM__URI,
     NULL
   };
 
   for (const char*const* t = types; *t; ++t) {
-    if (has_range(plugin, property, *t)) {
-      id->value_type = plugin->map.map(plugin, *t);
-      break;
-    }
+    if (has_range (plugin, property, *t))
+      {
+        id->value_type =
+          plugin->map.map (plugin, *t);
+        break;
+      }
   }
 
-  id->is_toggle  = (id->value_type == plugin->forge.Bool);
-  id->is_integer = (id->value_type == plugin->forge.Int ||
-                    id->value_type == plugin->forge.Long);
+  id->is_toggle  =
+    id->value_type == plugin->forge.Bool;
+  id->is_integer =
+    (id->value_type == plugin->forge.Int ||
+    id->value_type == plugin->forge.Long);
+  id->is_uri =
+    id->value_type == plugin->forge.URI;
 
   if (!id->value_type)
-    g_warning (
-      "Unknown value type for property <%s>\n",
-      lilv_node_as_string(property));
+    {
+      g_warning (
+        "Unknown value type for property <%s>",
+        lilv_node_as_string (property));
+    }
 
   return id;
 }

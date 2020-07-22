@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -56,9 +56,10 @@ create_model_for_routes (
 
   /* label, pointer to channel */
   list_store =
-    gtk_list_store_new (2,
-                        G_TYPE_STRING,
-                        G_TYPE_POINTER);
+    gtk_list_store_new (
+      2,
+      G_TYPE_STRING,
+      G_TYPE_POINTER);
 
   Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -139,9 +140,18 @@ create_model_for_types (
   GtkTreeIter iter;
 
   /* type name, type enum */
-  list_store = gtk_list_store_new (2,
-                                   G_TYPE_STRING,
-                                   G_TYPE_INT);
+  list_store =
+    gtk_list_store_new (
+      2,
+      G_TYPE_STRING,
+      G_TYPE_INT);
+
+  gtk_list_store_append (list_store, &iter);
+  gtk_list_store_set (
+    list_store, &iter,
+    0, _("None"),
+    1, ROUTE_TARGET_TYPE_NONE,
+    -1);
 
   Track * track =
     channel_get_track (self->owner->channel);
@@ -211,12 +221,9 @@ on_selection_changed (
 
       if (model == self->type_model)
         {
-          gtk_tree_model_get_value (model,
-                                    &iter,
-                                    1,
-                                    &value);
-          self->type =
-            g_value_get_int (&value);
+          gtk_tree_model_get_value (
+            model, &iter, 1, &value);
+          self->type = g_value_get_int (&value);
           self->route_model =
             create_model_for_routes (
               self, self->type);
@@ -233,9 +240,13 @@ on_selection_changed (
             GTK_WIDGET (self->route_treeview));
           update_info_label (self,
             _("No output selected"));
+
+          if (self->type == ROUTE_TARGET_TYPE_NONE)
+            {
+              self->new_track = NULL;
+            }
         }
-      else if (model ==
-                 self->route_model)
+      else if (model == self->route_model)
         {
           gtk_tree_model_get_value (model,
                                     &iter,
@@ -312,18 +323,28 @@ on_closed (
 {
   gtk_widget_destroy (GTK_WIDGET (self));
 
+  Track * prev_output_track =
+    channel_get_output_track (
+      self->owner->channel);
+
   /* if new track selected, update routing */
   if (self->new_track)
     {
-      Track * output_track =
-        channel_get_output_track (
-          self->owner->channel);
-      if (self->new_track != output_track)
+      if (self->new_track != prev_output_track)
         {
-          channel_update_output (
-            self->owner->channel,
-            self->new_track);
+          UndoableAction * ua =
+            edit_tracks_action_new_direct_out (
+              TRACKLIST_SELECTIONS, self->new_track);
+          undo_manager_perform (UNDO_MANAGER, ua);
         }
+    }
+  else if (self->type == ROUTE_TARGET_TYPE_NONE &&
+           prev_output_track != NULL)
+    {
+      UndoableAction * ua =
+        edit_tracks_action_new_direct_out (
+          TRACKLIST_SELECTIONS, NULL);
+      undo_manager_perform (UNDO_MANAGER, ua);
     }
 
   route_target_selector_widget_refresh (
@@ -361,7 +382,7 @@ select_group_func (
 }
 
 /**
- * Creates a digital meter with the given type (bpm or position).
+ * Creates a new RouteTargetSelectorPopoverWidget.
  */
 RouteTargetSelectorPopoverWidget *
 route_target_selector_popover_widget_new (
@@ -394,7 +415,8 @@ route_target_selector_popover_widget_new (
   else
     {
       self->route_model =
-        create_model_for_routes (self, -1);
+        create_model_for_routes (
+          self, ROUTE_TARGET_TYPE_NONE);
     }
   self->route_treeview =
     tree_view_create (
@@ -423,7 +445,7 @@ route_target_selector_popover_widget_new (
           /* select Master group */
           path =
             gtk_tree_path_new_from_string (
-              "0");
+              "1");
           gtk_tree_model_get_iter (
             self->type_model, &iter, path);
           GtkTreeSelection * tts =
@@ -450,7 +472,7 @@ route_target_selector_popover_widget_new (
         {
           path =
             gtk_tree_path_new_from_string (
-              "1");
+              "2");
           gtk_tree_model_get_iter (
             self->type_model, &iter, path);
           GtkTreeSelection * tts =

@@ -177,6 +177,7 @@ dot_bin = find_program ('dot', required: false)
 ext_lv2_plugins = {
   'ams_lfo': ['AMS LFO', 'http://github.com/blablack/ams-lv2/lfo'],
   'helm': ['Helm', 'http://tytel.org/helm'],
+  'sherlock_atom_inspector': ['Sherlock Atom Inspector', 'http://open-music-kontrollers.ch/lv2/sherlock#atom_inspector'],
   'lsp_compressor': ['LSP Compressor', 'http://lsp-plug.in/plugins/lv2/compressor_stereo'],
   'carla_rack': ['Carla Rack', 'http://kxstudio.sf.net/carla/plugins/carlarack'],
   }

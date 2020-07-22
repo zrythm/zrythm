@@ -29,6 +29,9 @@ typedef enum EditTracksActionType
   EDIT_TRACK_ACTION_TYPE_MUTE,
   EDIT_TRACK_ACTION_TYPE_VOLUME,
   EDIT_TRACK_ACTION_TYPE_PAN,
+
+  /** Direct out change. */
+  EDIT_TRACK_ACTION_TYPE_DIRECT_OUT,
 } EditTracksActionType;
 
 static const cyaml_strval_t
@@ -42,6 +45,8 @@ static const cyaml_strval_t
     EDIT_TRACK_ACTION_TYPE_VOLUME    },
   { "pan",
     EDIT_TRACK_ACTION_TYPE_PAN    },
+  { "direct out",
+    EDIT_TRACK_ACTION_TYPE_DIRECT_OUT    },
 };
 
 typedef struct Track Track;
@@ -68,6 +73,9 @@ typedef struct EditTracksAction
 
   /* -------------- end DELTAS ------------- */
 
+  /** Track position to direct output to. */
+  int                   new_direct_out_pos;
+
 } EditTracksAction;
 
 static const cyaml_schema_field_t
@@ -92,6 +100,8 @@ static const cyaml_schema_field_t
     EditTracksAction, vol_delta),
   YAML_FIELD_FLOAT (
     EditTracksAction, pan_delta),
+  YAML_FIELD_INT (
+    EditTracksAction, new_direct_out_pos),
 
   CYAML_FIELD_END
 };
@@ -116,12 +126,13 @@ edit_tracks_action_init_loaded (
  */
 UndoableAction *
 edit_tracks_action_new (
-  EditTracksActionType type,
+  EditTracksActionType  type,
   TracklistSelections * tls,
-  float                vol_delta,
-  float                pan_delta,
-  bool                 solo_new,
-  bool                 mute_new);
+  Track *               direct_out,
+  float                 vol_delta,
+  float                 pan_delta,
+  bool                  solo_new,
+  bool                  mute_new);
 
 /**
  * Wrapper over edit_tracks_action_new().
@@ -138,6 +149,14 @@ UndoableAction *
 edit_tracks_action_new_solo (
   TracklistSelections * tls,
   bool                  solo_new);
+
+/**
+ * Wrapper over edit_tracks_action_new().
+ */
+UndoableAction *
+edit_tracks_action_new_direct_out (
+  TracklistSelections * tls,
+  Track *               direct_out);
 
 int
 edit_tracks_action_do (

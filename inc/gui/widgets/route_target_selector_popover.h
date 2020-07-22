@@ -36,6 +36,8 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef enum RouteTargetSelectorType
 {
+  /** None. */
+  ROUTE_TARGET_TYPE_NONE,
   /** Master track. */
   ROUTE_TARGET_TYPE_MASTER,
   /** Compatible Group tracks. */
@@ -69,7 +71,7 @@ typedef struct _RouteTargetSelectorPopoverWidget
 } RouteTargetSelectorPopoverWidget;
 
 /**
- * Creates the popover.
+ * Creates a new RouteTargetSelectorPopoverWidget.
  */
 RouteTargetSelectorPopoverWidget *
 route_target_selector_popover_widget_new (

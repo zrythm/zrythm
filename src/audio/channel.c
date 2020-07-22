@@ -987,34 +987,36 @@ channel_update_output (
         }
     }
 
-  /* connect Channel's output to the given output
-   */
-  switch (output->in_signal_type)
-    {
-    case TYPE_AUDIO:
-      port_connect (
-        ch->stereo_out->l,
-        output->processor->stereo_in->l, 1);
-      port_connect (
-        ch->stereo_out->r,
-        output->processor->stereo_in->r, 1);
-      break;
-    case TYPE_EVENT:
-      port_connect (
-        ch->midi_out,
-        output->processor->midi_in, 1);
-      break;
-    default:
-      break;
-    }
-
   if (output)
     {
-      ch->has_output = 1;
+      /* connect Channel's output to the given
+       * output */
+      switch (output->in_signal_type)
+        {
+        case TYPE_AUDIO:
+          port_connect (
+            ch->stereo_out->l,
+            output->processor->stereo_in->l, 1);
+          port_connect (
+            ch->stereo_out->r,
+            output->processor->stereo_in->r, 1);
+          break;
+        case TYPE_EVENT:
+          port_connect (
+            ch->midi_out,
+            output->processor->midi_in, 1);
+          break;
+        default:
+          break;
+        }
+      ch->has_output = true;
       ch->output_pos = output->pos;
     }
   else
-    ch->has_output = 0;
+    {
+      ch->has_output = 0;
+      ch->output_pos = -1;
+    }
 
   router_recalc_graph ((ROUTER));
 
@@ -1046,6 +1048,9 @@ Track *
 channel_get_output_track (
   Channel * self)
 {
+  if (!self->has_output)
+    return NULL;
+
   g_return_val_if_fail (
     self &&
     self->output_pos < TRACKLIST->num_tracks,
@@ -2039,6 +2044,9 @@ channel_clone (
   clone->fader->track_pos = clone->track_pos;
   clone->prefader->track_pos = clone->track_pos;
   fader_copy_values (ch->fader, clone->fader);
+
+  clone->has_output = ch->has_output;
+  clone->output_pos = ch->output_pos;
 
   /* TODO clone port connections, same for
    * plugins */

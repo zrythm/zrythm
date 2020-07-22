@@ -342,6 +342,12 @@ on_track_state_changed (Track * track)
       channel_widget_unblock_all_signal_handlers (
         chan->widget);
     }
+
+  if (TRACKLIST_SELECTIONS->tracks[0] == track)
+    {
+      inspector_track_widget_show_tracks (
+        MW_TRACK_INSPECTOR, TRACKLIST_SELECTIONS);
+    }
 }
 
 static void

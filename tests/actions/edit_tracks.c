@@ -130,6 +130,45 @@ _test_edit_tracks (
           }
       }
       break;
+    case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
+      {
+        if (!is_instrument)
+          break;
+
+        /* create a MIDI track */
+        action =
+          create_tracks_action_new (
+            TRACK_TYPE_MIDI,
+            descr, NULL, 2, NULL, 1);
+        undo_manager_perform (UNDO_MANAGER, action);
+        Track * midi_track = TRACKLIST->tracks[2];
+        track_select (
+          midi_track, F_SELECT, F_EXCLUSIVE,
+          F_NO_PUBLISH_EVENTS);
+
+        g_assert_true (
+          !midi_track->channel->has_output);
+
+        /* change the direct out to the
+         * instrument */
+        UndoableAction * ua =
+          edit_tracks_action_new_direct_out (
+            TRACKLIST_SELECTIONS, ins_track);
+        undo_manager_perform (UNDO_MANAGER, ua);
+
+        /* verify direct out established */
+        g_assert_true (
+          midi_track->channel->has_output);
+        g_assert_cmpint (
+          midi_track->channel->output_pos, ==,
+          ins_track->pos);
+
+        /* undo and re-verify */
+        undo_manager_undo (UNDO_MANAGER);
+
+        g_assert_true (
+          !midi_track->channel->has_output);
+      }
     default:
       break;
     }
@@ -142,10 +181,9 @@ static void __test_edit_tracks (bool with_carla)
 {
   test_helper_zrythm_init ();
 
-  /* test only solo & mute for now */
   for (EditTracksActionType i =
          EDIT_TRACK_ACTION_TYPE_SOLO;
-       i <= EDIT_TRACK_ACTION_TYPE_MUTE; i++)
+       i <= EDIT_TRACK_ACTION_TYPE_DIRECT_OUT; i++)
     {
 #ifdef HAVE_HELM
       _test_edit_tracks (

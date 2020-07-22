@@ -50,9 +50,10 @@ set_label (RouteTargetSelectorWidget * self)
     }
   else
     {
-      gtk_label_set_markup (
-        self->label,
-        _("<tt><i>Engine</i></tt>"));
+      char str[100];
+      sprintf (
+        str, "<tt><i>%s</i></tt>", _("None"));
+      gtk_label_set_markup (self->label, str);
     }
 }
 
@@ -164,8 +165,8 @@ route_target_selector_widget_init (
     context, "route_target_selector");
 
   self->box =
-    GTK_BOX (gtk_box_new (
-              GTK_ORIENTATION_HORIZONTAL, 0));
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
   self->img =
     GTK_IMAGE (
       gtk_image_new_from_icon_name (
@@ -183,18 +184,14 @@ route_target_selector_widget_init (
   gtk_label_set_ellipsize (
     self->label, PANGO_ELLIPSIZE_END);
 
-  gtk_box_pack_start (self->box,
-                      GTK_WIDGET (self->img),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      1);
-  gtk_box_pack_start (self->box,
-                    GTK_WIDGET (self->label),
-                    Z_GTK_NO_EXPAND,
-                    Z_GTK_NO_FILL,
-                    1);
-  gtk_container_add (GTK_CONTAINER (self),
-                     GTK_WIDGET (self->box));
+  gtk_box_pack_start (
+    self->box, GTK_WIDGET (self->img),
+    Z_GTK_NO_EXPAND, Z_GTK_NO_FILL, 1);
+  gtk_box_pack_start (
+    self->box, GTK_WIDGET (self->label),
+    Z_GTK_NO_EXPAND, Z_GTK_NO_FILL, 1);
+  gtk_container_add (
+    GTK_CONTAINER (self), GTK_WIDGET (self->box));
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }
