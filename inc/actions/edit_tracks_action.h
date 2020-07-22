@@ -55,11 +55,6 @@ typedef struct EditTracksAction
 
   TracklistSelections * tls;
 
-  /**
-   * The track that originated the action.
-   */
-  int                   main_track_pos;
-
   /* --------------- DELTAS ---------------- */
 
   /** Difference in volume in the main track. */
@@ -89,8 +84,6 @@ static const cyaml_schema_field_t
     "tls", CYAML_FLAG_POINTER,
     EditTracksAction, tls,
     tracklist_selections_fields_schema),
-  YAML_FIELD_INT (
-    EditTracksAction, main_track_pos),
   YAML_FIELD_INT (
     EditTracksAction, solo_new),
   YAML_FIELD_INT (
@@ -124,12 +117,27 @@ edit_tracks_action_init_loaded (
 UndoableAction *
 edit_tracks_action_new (
   EditTracksActionType type,
-  Track *              main_track,
   TracklistSelections * tls,
   float                vol_delta,
   float                pan_delta,
-  int                  solo_new,
-  int                  mute_new);
+  bool                 solo_new,
+  bool                 mute_new);
+
+/**
+ * Wrapper over edit_tracks_action_new().
+ */
+UndoableAction *
+edit_tracks_action_new_mute (
+  TracklistSelections * tls,
+  bool                  mute_new);
+
+/**
+ * Wrapper over edit_tracks_action_new().
+ */
+UndoableAction *
+edit_tracks_action_new_solo (
+  TracklistSelections * tls,
+  bool                  solo_new);
 
 int
 edit_tracks_action_do (

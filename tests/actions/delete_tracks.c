@@ -83,7 +83,8 @@ _test_undo_track_deletion (
   Track * helm_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
-    helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
+    helm_track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
 
   /* get an automation track */
   AutomationTracklist * atl =

@@ -145,4 +145,7 @@
 #define F_ACTIVATE 1
 #define F_NO_ACTIVATE 0
 
+#define F_TRIGGER_UNDO 1
+#define F_NO_TRIGGER_UNDO 0
+
 #endif

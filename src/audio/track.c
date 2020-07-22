@@ -532,6 +532,10 @@ track_set_muted (
   bool    fire_events)
 {
   g_return_if_fail (self && self->channel);
+
+  g_message (
+    "Setting track %s muted (%d)",
+    self->name, mute);
   fader_set_muted (
     self->channel->fader, mute, trigger_undo,
     fire_events);

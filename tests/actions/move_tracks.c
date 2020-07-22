@@ -301,4 +301,3 @@ main (int argc, char *argv[])
 
   return g_test_run ();
 }
-

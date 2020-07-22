@@ -140,9 +140,15 @@ undoable_action_do (UndoableAction * self)
   /* uppercase, camel case, snake case */
 #define DO_ACTION(uc,sc,cc) \
   case UA_##uc: \
-    g_message ("[DOING ACTION]: " #uc); \
-    ret = sc##_action_do ((cc##Action *) self); \
-    g_message ("[DONE]: " #uc); \
+    { \
+      char * str = \
+        undoable_action_stringize (self); \
+      g_message ( \
+        "[DOING ACTION]: " #uc " (%s)", str); \
+      g_free (str); \
+      ret = sc##_action_do ((cc##Action *) self); \
+      g_message ("[DONE]: " #uc); \
+    } \
     break;
 
   switch (self->type)

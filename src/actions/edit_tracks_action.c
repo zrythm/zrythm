@@ -34,8 +34,7 @@ void
 edit_tracks_action_init_loaded (
   EditTracksAction * self)
 {
-  tracklist_selections_init_loaded (
-    self->tls);
+  tracklist_selections_init_loaded (self->tls);
 }
 
 /**
@@ -47,12 +46,11 @@ edit_tracks_action_init_loaded (
 UndoableAction *
 edit_tracks_action_new (
   EditTracksActionType type,
-  Track *              main_track,
   TracklistSelections * tls,
   float                vol_delta,
   float                pan_delta,
-  int                  solo_new,
-  int                  mute_new)
+  bool                 solo_new,
+  bool                 mute_new)
 {
   EditTracksAction * self =
     calloc (1, sizeof (EditTracksAction));
@@ -61,7 +59,6 @@ edit_tracks_action_new (
   ua->type = UA_EDIT_TRACKS;
 
   self->type = type;
-  self->main_track_pos = main_track->pos;
   self->vol_delta = vol_delta;
   self->pan_delta = pan_delta;
   self->solo_new = solo_new;
@@ -70,6 +67,36 @@ edit_tracks_action_new (
   self->tls = tracklist_selections_clone (tls);
 
   return ua;
+}
+
+/**
+ * Wrapper over edit_tracks_action_new().
+ */
+UndoableAction *
+edit_tracks_action_new_mute (
+  TracklistSelections * tls,
+  bool                  mute_new)
+{
+  UndoableAction * action =
+    edit_tracks_action_new (
+      EDIT_TRACK_ACTION_TYPE_MUTE, tls,
+      0.f, 0.f, false, mute_new);
+  return action;
+}
+
+/**
+ * Wrapper over edit_tracks_action_new().
+ */
+UndoableAction *
+edit_tracks_action_new_solo (
+  TracklistSelections * tls,
+  bool                  solo_new)
+{
+  UndoableAction * action =
+    edit_tracks_action_new (
+      EDIT_TRACK_ACTION_TYPE_MUTE, tls,
+      0.f, 0.f, solo_new, false);
+  return action;
 }
 
 int
@@ -95,7 +122,7 @@ edit_tracks_action_do (EditTracksAction * self)
         case EDIT_TRACK_ACTION_TYPE_MUTE:
           track_set_muted (
             track, self->mute_new,
-            false, F_NO_PUBLISH_EVENTS);
+            F_NO_TRIGGER_UNDO, F_NO_PUBLISH_EVENTS);
           break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
           g_return_val_if_fail (ch, -1);
@@ -113,8 +140,7 @@ edit_tracks_action_do (EditTracksAction * self)
           break;
         }
 
-      EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
-                   track);
+      EVENTS_PUSH (ET_TRACK_STATE_CHANGED, track);
     }
 
   return 0;

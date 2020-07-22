@@ -289,13 +289,14 @@ fader_set_muted (
 
   if (trigger_undo)
     {
-      TracklistSelections tls;
-      tls.tracks[0] = track;
-      tls.num_tracks = 1;
+      /* this is only supported if the fader track is
+       * the only track selected */
+      g_return_if_fail (
+        TRACKLIST_SELECTIONS->num_tracks == 1 &&
+        TRACKLIST_SELECTIONS->tracks[0] == track);
       UndoableAction * action =
-        edit_tracks_action_new (
-          EDIT_TRACK_ACTION_TYPE_MUTE, track, &tls,
-          0.f, 0.f, 0, mute);
+        edit_tracks_action_new_mute (
+          TRACKLIST_SELECTIONS, mute);
       undo_manager_perform (
         UNDO_MANAGER, action);
     }
@@ -349,13 +350,14 @@ fader_set_soloed (
 
   if (trigger_undo)
     {
-      TracklistSelections tls;
-      tls.tracks[0] = track;
-      tls.num_tracks = 1;
+      /* this is only supported if the fader track is
+       * the only track selected */
+      g_return_if_fail (
+        TRACKLIST_SELECTIONS->num_tracks == 1 &&
+        TRACKLIST_SELECTIONS->tracks[0] == track);
       UndoableAction * action =
-        edit_tracks_action_new (
-          EDIT_TRACK_ACTION_TYPE_SOLO, track, &tls,
-          0.f, 0.f, solo, 0);
+        edit_tracks_action_new_solo (
+          TRACKLIST_SELECTIONS, solo);
       undo_manager_perform (
         UNDO_MANAGER, action);
     }

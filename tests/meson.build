@@ -117,6 +117,7 @@ if get_option ('tests')
       ['integration/midi_file', true],
       ['actions/copy_tracks', true],
       ['actions/create_plugins', true],
+      ['actions/edit_tracks', true],
       ['actions/move_plugins', true],
       ['actions/move_tracks', false],
       ['actions/delete_tracks', true],
