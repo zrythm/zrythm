@@ -19,6 +19,7 @@
 
 #include "actions/edit_tracks_action.h"
 #include "audio/channel.h"
+#include "audio/group_target_track.h"
 #include "audio/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -159,12 +160,21 @@ edit_tracks_action_do (EditTracksAction * self)
           break;
         case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
           g_return_val_if_fail (ch, -1);
-          channel_update_output (
-            ch,
-            self->new_direct_out_pos == -1 ?
-              NULL :
-              TRACKLIST->tracks[
-                self->new_direct_out_pos]);
+          if (self->new_direct_out_pos == -1)
+            {
+              group_target_track_remove_child (
+                TRACKLIST->tracks[ch->output_pos],
+                ch->track->pos, F_DISCONNECT,
+                F_RECALC_GRAPH, F_PUBLISH_EVENTS);
+            }
+          else
+            {
+              group_target_track_add_child (
+                TRACKLIST->tracks[
+                  self->new_direct_out_pos],
+                ch->track->pos, F_CONNECT,
+                F_RECALC_GRAPH, F_PUBLISH_EVENTS);
+            }
           break;
         }
 
@@ -216,12 +226,22 @@ edit_tracks_action_undo (
           break;
         case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
           g_return_val_if_fail (ch, -1);
-          channel_update_output (
-            ch,
-            clone_track->channel->has_output ?
-              TRACKLIST->tracks[
-                clone_track->channel->output_pos] :
-              NULL);
+          if (clone_track->channel->has_output)
+            {
+              group_target_track_add_child (
+                TRACKLIST->tracks[
+                  clone_track->channel->output_pos],
+                ch->track->pos, F_CONNECT,
+                F_RECALC_GRAPH, F_PUBLISH_EVENTS);
+            }
+          else
+            {
+              group_target_track_remove_child (
+                TRACKLIST->tracks[ch->output_pos],
+                ch->track->pos,
+                F_DISCONNECT, F_RECALC_GRAPH,
+                F_PUBLISH_EVENTS);
+            }
           break;
         }
       EVENTS_PUSH (ET_TRACK_STATE_CHANGED,

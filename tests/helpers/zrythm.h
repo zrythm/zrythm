@@ -28,11 +28,14 @@
 
 #include "zrythm-test-config.h"
 
+#include <signal.h>
+
 #include "audio/chord_track.h"
 #include "audio/engine_dummy.h"
 #include "audio/marker_track.h"
 #include "audio/tracklist.h"
 #include <project.h>
+#include "utils/backtrace.h"
 #include "utils/cairo.h"
 #include "utils/objects.h"
 #include "utils/flags.h"
@@ -87,6 +90,25 @@
   } G_STMT_END
 #endif
 
+static void
+segv_handler (int sig)
+{
+  char prefix[200];
+#ifdef _WOE32
+  strcpy (
+    prefix, _("Error - Backtrace:\n"));
+#else
+  sprintf (
+    prefix,
+    _("Error: %s - Backtrace:\n"), strsignal (sig));
+#endif
+  char * bt = backtrace_get (prefix, 100);
+
+  g_warning ("%s", bt);
+
+  exit (sig);
+}
+
 /**
  * To be called by every test's main to initialize
  * Zrythm to default values.
@@ -118,6 +140,9 @@ test_helper_zrythm_init ()
     g_dir_make_tmp (
       "zrythm_test_project_XXXXXX", NULL);
   project_load (NULL, 0);
+
+  /* set a segv handler */
+  signal (SIGSEGV, segv_handler);
 }
 
 /**

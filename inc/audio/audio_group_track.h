@@ -17,17 +17,16 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Audio group track.
+ */
+
 #ifndef __AUDIO_AUDIO_GROUP_TRACK_H__
 #define __AUDIO_AUDIO_GROUP_TRACK_H__
 
-#include "audio/channel_track.h"
-#include "audio/track.h"
-
-typedef struct Position Position;
-typedef struct _TrackWidget TrackWidget;
-typedef struct Channel Channel;
-typedef struct AutomationTrack AutomationTrack;
-typedef struct Automatable Automatable;
+typedef struct Track Track;
 
 void
 audio_group_track_init (Track * track);

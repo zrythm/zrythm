@@ -287,6 +287,12 @@ init_thread (
     self, _("Initializing logging system"), 0.02);
   log_init_with_file (LOG, false, -1);
 
+#if defined (_WOE32) || defined (__APPLE__)
+  g_warning (
+    "Warning, you are running a non-free operating "
+    "system.");
+#endif
+
   zrythm_app_set_progress_status (
     self, _("Initializing caches"), 0.05);
   self->ui_caches = ui_caches_new ();

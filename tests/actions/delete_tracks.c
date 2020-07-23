@@ -155,6 +155,85 @@ test_undo_track_deletion (void)
 #endif
 }
 
+static void
+test_group_track_deletion (void)
+{
+  UndoableAction * ua;
+
+  /* create 2 audio fx tracks and route them to
+   * a new group track */
+  ua =
+    create_tracks_action_new_audio_fx (
+      NULL, TRACKLIST->num_tracks, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * audio_fx1 =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  ua =
+    create_tracks_action_new_audio_fx (
+      NULL, TRACKLIST->num_tracks, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * audio_fx2 =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  ua =
+    create_tracks_action_new_audio_group (
+      TRACKLIST->num_tracks, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * group =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+  g_assert_true (group->children);
+  g_assert_false (audio_fx1->children);
+  g_assert_false (audio_fx2->children);
+
+  /* route each fx track to the group */
+  track_select (
+    audio_fx1, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    edit_tracks_action_new_direct_out (
+      TRACKLIST_SELECTIONS, group);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  track_select (
+    audio_fx2, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    edit_tracks_action_new_direct_out (
+      TRACKLIST_SELECTIONS, group);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_cmpint (group->num_children, ==, 2);
+  g_assert_true (audio_fx1->channel->has_output);
+  g_assert_true (audio_fx2->channel->has_output);
+  g_assert_cmpint (
+    audio_fx1->channel->output_pos, ==, group->pos);
+  g_assert_cmpint (
+    audio_fx2->channel->output_pos, ==, group->pos);
+
+  /* delete the group track and check that each
+   * fx track has its output set to none */
+  int group_pos = group->pos;
+  track_select (
+    group, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    delete_tracks_action_new (TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_false (audio_fx1->channel->has_output);
+  g_assert_false (audio_fx2->channel->has_output);
+
+  /* undo and check that the connections are
+   * established again */
+  undo_manager_undo (UNDO_MANAGER);
+  group = TRACKLIST->tracks[group_pos];
+  g_assert_cmpint (group->num_children, ==, 2);
+  g_assert_true (audio_fx1->channel->has_output);
+  g_assert_true (audio_fx2->channel->has_output);
+  g_assert_cmpint (
+    audio_fx1->channel->output_pos, ==, group->pos);
+  g_assert_cmpint (
+    audio_fx2->channel->output_pos, ==, group->pos);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -167,6 +246,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test undo track deletion",
     (GTestFunc) test_undo_track_deletion);
+  g_test_add_func (
+    TEST_PREFIX "test group track deletion",
+    (GTestFunc) test_group_track_deletion);
 
   return g_test_run ();
 }

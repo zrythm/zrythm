@@ -375,6 +375,16 @@ typedef struct Track
    */
   bool                 bounce;
 
+  /**
+   * Tracks that are routed to this track, if
+   * group track.
+   *
+   * This is used when undoing track deletion.
+   */
+  int *                children;
+  int                  num_children;
+  int                  children_size;
+
   int                  magic;
 
   /** Whether this is a project track (as opposed
@@ -439,6 +449,8 @@ track_fields_schema[] =
   CYAML_FIELD_STRING_PTR (
     "comment", CYAML_FLAG_POINTER, Track, comment,
      0, CYAML_UNLIMITED),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    Track, children, int_schema),
 
   CYAML_FIELD_END
 };

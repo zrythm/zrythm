@@ -80,7 +80,7 @@ clip_editor_set_region (
               self->region_id.track_pos];
           channel_reattach_midi_editor_manual_press_port (
             track_get_channel (track),
-            F_DISCONNECT, F_NO_RECALC_GRAPH);
+            F_NO_CONNECT, F_NO_RECALC_GRAPH);
           recalc_graph = 1;
         }
     }

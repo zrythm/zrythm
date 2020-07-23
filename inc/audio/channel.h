@@ -504,15 +504,6 @@ channel_get_output_track (
   Channel * self);
 
 /**
- * Updates the output of the Channel (where the
- * Channel routes to.
- */
-void
-channel_update_output (
-  Channel * ch,
-  Track * output);
-
-/**
  * Called when the input has changed for Midi,
  * Instrument or Audio tracks.
  */

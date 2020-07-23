@@ -18,6 +18,7 @@
  */
 
 #include "actions/delete_tracks_action.h"
+#include "audio/group_target_track.h"
 #include "audio/router.h"
 #include "audio/tracklist.h"
 #include "gui/backend/event.h"
@@ -70,6 +71,14 @@ delete_tracks_action_do (
           self->tls->tracks[i]->pos];
       g_return_val_if_fail (track, -1);
 
+      /* if group track, remove all children */
+      if (TRACK_CAN_BE_GROUP_TARGET (track))
+        {
+          group_target_track_remove_all_children (
+            track, F_DISCONNECT, F_NO_RECALC_GRAPH,
+            F_NO_PUBLISH_EVENTS);
+        }
+
       /* remove it */
       g_message (
         "removing track %s...", track->name);
@@ -82,7 +91,7 @@ delete_tracks_action_do (
   EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
   EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED, NULL);
 
-  router_recalc_graph ((ROUTER));
+  router_recalc_graph (ROUTER);
 
   return 0;
 }
@@ -107,6 +116,17 @@ delete_tracks_action_undo (
         TRACKLIST, track, track->pos,
         F_NO_PUBLISH_EVENTS,
         F_NO_RECALC_GRAPH);
+
+      /* if group track, readd all children */
+      if (TRACK_CAN_BE_GROUP_TARGET (track))
+        {
+          track->num_children = 0;
+          group_target_track_add_children (
+            track, self->tls->tracks[i]->children,
+            self->tls->tracks[i]->num_children,
+            F_DISCONNECT, F_NO_RECALC_GRAPH,
+            F_NO_PUBLISH_EVENTS);
+        }
 
       if (track->type == TRACK_TYPE_INSTRUMENT)
         {

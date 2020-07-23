@@ -120,6 +120,7 @@ static const cyaml_schema_value_t
  * Creates a new CreateTracksAction.
  *
  * @param pos Position to make the tracks at.
+ * @param pl_descr Plugin descriptor, if any.
  */
 UndoableAction *
 create_tracks_action_new (
@@ -129,6 +130,26 @@ create_tracks_action_new (
   int                track_pos,
   Position *         pos,
   int                num_tracks);
+
+/**
+ * Creates a new CreateTracksAction for an
+ * audio FX track.
+ */
+#define create_tracks_action_new_audio_fx( \
+  pl_descr,track_pos,num_tracks) \
+  create_tracks_action_new ( \
+    TRACK_TYPE_AUDIO_BUS, pl_descr, NULL, \
+    track_pos, NULL, num_tracks)
+
+/**
+ * Creates a new CreateTracksAction for an
+ * audio group track.
+ */
+#define create_tracks_action_new_audio_group( \
+  track_pos,num_tracks) \
+  create_tracks_action_new ( \
+    TRACK_TYPE_AUDIO_GROUP, NULL, NULL, \
+    track_pos, NULL, num_tracks)
 
 int
 create_tracks_action_do (

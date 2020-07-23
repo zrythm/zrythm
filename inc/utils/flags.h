@@ -89,7 +89,10 @@
 #define F_WITHOUT_LANE 0
 
 #define F_CONNECT 1
-#define F_DISCONNECT 0
+#define F_NO_CONNECT 0
+
+#define F_DISCONNECT 1
+#define F_NO_DISCONNECT 0
 
 #define F_GLOBAL 1
 #define F_NOT_GLOBAL 0

@@ -27,6 +27,7 @@
 
 #include "audio/automation_tracklist.h"
 #include "audio/audio_group_track.h"
+#include "audio/channel_track.h"
 #include "project.h"
 
 void
@@ -39,5 +40,5 @@ audio_group_track_init (Track * track)
 void
 audio_group_track_setup (Track * self)
 {
-  channel_track_setup ((ChannelTrack *) self);
+  channel_track_setup (self);
 }

@@ -30,6 +30,7 @@
 #include "audio/channel.h"
 #include "audio/chord_track.h"
 #include "audio/control_port.h"
+#include "audio/group_target_track.h"
 #include "audio/instrument_track.h"
 #include "audio/marker_track.h"
 #include "audio/master_track.h"
@@ -65,6 +66,11 @@ track_init_loaded (
   bool    project)
 {
   self->magic = TRACK_MAGIC;
+
+  if (TRACK_CAN_BE_GROUP_TARGET (self))
+    {
+      group_target_track_init_loaded (self);
+    }
 
   TrackLane * lane;
   for (int j = 0; j < self->num_lanes; j++)
@@ -296,6 +302,11 @@ track_new (
       g_return_val_if_reached (NULL);
     }
 
+  if (TRACK_CAN_BE_GROUP_TARGET (self))
+    {
+      group_target_track_init (self);
+    }
+
   self->processor = track_processor_new (self);
 
   automation_tracklist_init (
@@ -373,6 +384,17 @@ track_clone (
   automation_tracklist_clone (
     &track->automation_tracklist,
     &new_track->automation_tracklist);
+
+  if (TRACK_CAN_BE_GROUP_TARGET (track))
+    {
+      for (int i = 0; i < track->num_children; i++)
+        {
+          group_target_track_add_child (
+            new_track, track->children[i],
+            false, F_NO_RECALC_GRAPH,
+            F_NO_PUBLISH_EVENTS);
+        }
+    }
 
   /* check that source track is not affected
    * during unit tests */
