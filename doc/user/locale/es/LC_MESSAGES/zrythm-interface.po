@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 18:06+0100\n"
-"PO-Revision-Date: 2020-03-01 10:34+0000\n"
-"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"PO-Revision-Date: 2020-07-22 14:41+0000\n"
+"Last-Translator: Gabriel García <gabriel.o.garcia@gmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -522,11 +523,13 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:125
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencias"
 
 #: ../../zrythm-interface/main-toolbar.rst:124
 msgid "Shows the preferences dialog. See :ref:`preferences` for more information."
 msgstr ""
+"Muestra el dialogo de preferencias. Vea :ref:`preferences` para más "
+"información."
 
 #: ../../zrythm-interface/main-toolbar.rst:127
 msgid ""
@@ -1233,4 +1236,3 @@ msgstr ""
 
 #~ msgid "TODO"
 #~ msgstr ""
-

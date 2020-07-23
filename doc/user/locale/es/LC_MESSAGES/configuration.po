@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 20:03+0100\n"
-"PO-Revision-Date: 2020-03-01 10:34+0000\n"
-"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"PO-Revision-Date: 2020-07-22 14:41+0000\n"
+"Last-Translator: Gabriel García <gabriel.o.garcia@gmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -31,6 +32,11 @@ msgid ""
 "line, or the optional GUI tool `dconf-editor "
 "<https://wiki.gnome.org/Apps/DconfEditor>`_."
 msgstr ""
+"Zrythm guarda toda su configuración usando el mecanismo GSettings, el cual "
+"viene con el comando `gsettings <https://developer.gnome.org/gio/stable/"
+"gsettings-tool.html>`_  para cambiar las opciones desde la línea de comando "
+"o la herramienta gráfica opcional `dconf-editor <https://wiki.gnome.org/Apps/"
+"DconfEditor>`_."
 
 #: ../../configuration/additional-settings.rst:14
 msgid ""
@@ -41,10 +47,16 @@ msgid ""
 "manually for some reason - for example if your selected backend causes "
 "Zrythm to crash."
 msgstr ""
+"Normalmente, no debería necesitar acceder a ninguna de estas opciones dado "
+"que la mayoría de estas se pueden encontrar desde la interfaz gráfica de "
+"Zrythm y no está recomendado editarlas dado que Zrythm valida algunas "
+"opciones antes de guardarlas o usa internamente algunas de estas opciones, "
+"pero en algunos casos tal vez quiera cambiarlas manualmente por algún motivo "
+"- por ej. si tu backend seleccionado provoca el fallo de Zrythm."
 
 #: ../../configuration/additional-settings.rst:25
 msgid "Viewing the Current Settings"
-msgstr ""
+msgstr "Viendo las Opciones Actuales"
 
 #: ../../configuration/additional-settings.rst:27
 msgid ""
@@ -54,6 +66,11 @@ msgid ""
 "option (ie, ``zrythm --print-settings --pretty`` or ``zrythm -p "
 "--pretty`` for short), you can get output like the following."
 msgstr ""
+"El binario ``zrythm`` viene con la opción ``--print-settings`` (vea :ref"
+":`command-line-options` para más detalles) que imprime toda la configuración "
+"a la línea de comando. En combinación con la opción ``--pretty`` (por ej., ``"
+"zrythm --print-settings --pretty`` o ``zrythm -p --pretty`` para abreviar), "
+"ud. puede obtener algo como la siguiente salida."
 
 #: ../../configuration/additional-settings.rst:38
 msgid ""
@@ -61,24 +78,29 @@ msgid ""
 "identify problems with user configurations, but feel free to use it if "
 "you are curious."
 msgstr ""
+"Esta característica es mayormente agregada para depurar y ayudarnos a "
+"identificar problemas con las configuraciones de los usuarios, pero sientase "
+"libre de usarlo si es curioso."
 
 #: ../../configuration/additional-settings.rst:43
 msgid "Reset to Factory Settings"
-msgstr ""
+msgstr "Volver a la Configuracion de Fábrica"
 
 #: ../../configuration/additional-settings.rst:45
 msgid ""
 "The ``zrythm`` binary also comes with a ``--reset-to-factory`` option for"
 " resetting Zrythm to its default state."
 msgstr ""
+"El binario ``zrythm`` también viene con la opción ``--reset-to-factory`` "
+"para llevar a Zrythm a su estado por defecto."
 
 #: ../../configuration/additional-settings.rst:49
 msgid "This will clear ALL your settings."
-msgstr ""
+msgstr "Esto va a limpiar TODAS sus opciones."
 
 #: ../../configuration/additional-settings.rst:51
 msgid "This will be added on the UI soon."
-msgstr ""
+msgstr "Esto se agregará pronto en la interfaz gráfica."
 
 #: ../../configuration/device-setup/intro.rst:6
 msgid "Device Setup"
@@ -96,6 +118,11 @@ msgid ""
 "below, and in most cases you don't need to use any external tools or "
 "auto-connect mechanism."
 msgstr ""
+"Dependiendo del backend seleccionado (cubierto en :ref:`preferences-engine`) "
+"la configuración difiere. Zrtyhm buscará automaticamente y le permitirá "
+"conectar a los dispositivos de entrada para grabación através del Track "
+"Inspector, como más abajo, y en la mayoría de los casos no necesitará hacer "
+"uso de herramientas externas o de mecanismos automaticos de conexión."
 
 #: ../../configuration/device-setup/intro.rst:22
 msgid "Auto-Connecting Devices"
@@ -114,6 +141,8 @@ msgid ""
 "You can select these in :ref:`midi_devices` in the welcome dialog as well"
 " as in :ref:`preferences`."
 msgstr ""
+"Puede seleccionar estos en :ref:`midi_devices`en el diálogo de bienvenida "
+"como así también en :ref:`preferences`."
 
 #: ../../configuration/device-setup/intro.rst:34
 msgid "JACK"
@@ -125,16 +154,22 @@ msgid ""
 "so devices can be attached there using a tool like `Qjackctl "
 "<https://qjackctl.sourceforge.io/>`_."
 msgstr ""
+"Cuando este usando el JACK de audio y el backend MIDI, Zrythm expone puertos "
+"al JACK, así los dispositivos pueden ser agregados ahí usando una "
+"herramienta como `Qjackctl <https://qjackctl.sourceforge.io/>`_."
 
 #: ../../configuration/device-setup/intro.rst:44
 msgid "For most users, everything can be accomplished from within Zrythm."
 msgstr ""
+"Para la mayoría de los usuarios, todo puede hacerse desde dentro de Zrythm."
 
 #: ../../configuration/device-setup/intro.rst:47
 msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
 "using ``a2jmidid``."
 msgstr ""
+"Dependiendo de tu instalación, los dispositivos MIDI podrían necesitar ser "
+"puenteados al JACK usando ``a2jmidid``."
 
 #: ../../configuration/first-run-wizard.rst:6
 msgid "First Run Wizard"
@@ -162,6 +197,7 @@ msgstr ""
 #: ../../configuration/first-run-wizard.rst:23
 msgid "You must have a locale enabled for the language you want to use."
 msgstr ""
+"Debería tener habilitado la localización para el lenguaje que quiera usar."
 
 #: ../../configuration/first-run-wizard.rst:27
 msgid "Path"
@@ -174,6 +210,10 @@ msgid ""
 "<https://specifications.freedesktop.org/basedir-spec/basedir-spec-"
 "latest.html>`_ on freedesktop-compliant systems."
 msgstr ""
+"Este es la ruta donde Zrythm guardará los proyectos, archivos temporale, "
+"audio exportado, etc. Por defecto es \"zrythm\" bajo `XDG_DATA_HOME "
+"<https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest."
+"html>`_ en sistemas que cumplen con freedesktop."
 
 #: ../../configuration/first-run-wizard.rst:39
 msgid "Audio/MIDI Backends"
@@ -186,10 +226,15 @@ msgid ""
 "your first time using it. If you choose to use JACK, JACK MIDI and the "
 "JACK audio backend must be chosen together."
 msgstr ""
+"Zrythm soporta múltiples motores backend de audio y MIDI. JACK es el "
+"recomendado para ambos, pero lleva un poco de tiempo instalarlo if esta es "
+"la primera vez que lo esté usando. Si elige usar JACK, debe usar JACK MIDI y "
+"el backend JACK audio."
 
 #: ../../configuration/first-run-wizard.rst:50
 msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
 msgstr ""
+"Si JACK no está disponible en su sistema, le recomendamos RtAudio and RtMidi."
 
 #: ../../configuration/first-run-wizard.rst:53
 msgid ""
@@ -201,7 +246,7 @@ msgstr ""
 msgid ""
 "If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
 "chosen together."
-msgstr ""
+msgstr "Si elige usar JACK, debe usar JACK MIDI y el backend JACK audio."
 
 #: ../../configuration/first-run-wizard.rst:62
 msgid "MIDI Devices"
@@ -280,18 +325,17 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:44
-#, fuzzy
 msgid "MIDI controllers"
 msgstr "Controladores MIDI"
 
 #: ../../configuration/preferences/intro.rst:44
 msgid "A list of controllers to auto-connect to."
-msgstr ""
+msgstr "Un lista de controladores a los cuales auto-conectarse."
 
 #: ../../configuration/preferences/intro.rst:47
 #: ../../configuration/preferences/intro.rst:91
 msgid "Paths"
-msgstr ""
+msgstr "Caminos"
 
 #: ../../configuration/preferences/intro.rst:49
 msgid "Global paths."
@@ -314,14 +358,12 @@ msgid "Plugin settings."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:63
-#, fuzzy
 msgid "UIs"
-msgstr "Complementos"
+msgstr "Interfaz Gráfica"
 
 #: ../../configuration/preferences/intro.rst:65
-#, fuzzy
 msgid "Plugin UIs."
-msgstr "Complementos"
+msgstr "Complementos de Interfaz Gráfica"
 
 #: ../../configuration/preferences/intro.rst:69
 msgid "Generic UIs"
@@ -482,9 +524,8 @@ msgid "Default curve algorithm to use for automation curves."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:164
-#, fuzzy
 msgid "Undo"
-msgstr "Audio"
+msgstr "Deshacer"
 
 #: ../../configuration/preferences/intro.rst:166
 msgid "Undo options."
@@ -1137,4 +1178,3 @@ msgstr ""
 
 #~ msgid "The MIDI backend to use."
 #~ msgstr ""
-
