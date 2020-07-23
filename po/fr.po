@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-07-20 22:41+0100\n"
+"POT-Creation-Date: 2020-07-23 18:12+0100\n"
 "PO-Revision-Date: 2020-06-22 21:41+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
@@ -82,7 +82,7 @@ msgid "Unmute"
 msgstr "Activer la piste muette"
 
 #: inc/audio/track.h:157 src/gui/widgets/track_properties_expander.c:133
-#: src/gui/widgets/route_target_selector_popover.c:176
+#: src/gui/widgets/route_target_selector_popover.c:186
 msgid "Instrument"
 msgstr "Instrument"
 
@@ -92,7 +92,7 @@ msgid "Audio"
 msgstr "Audio"
 
 #: inc/audio/track.h:159 src/project.c:640
-#: src/gui/widgets/route_target_selector_popover.c:153
+#: src/gui/widgets/route_target_selector_popover.c:163
 msgid "Master"
 msgstr "Master"
 
@@ -475,23 +475,23 @@ msgstr "Initialisation des répertoires de Zrythm"
 msgid "Initializing logging system"
 msgstr "Initialisation du système d'identification"
 
-#: src/zrythm_app.c:291
+#: src/zrythm_app.c:297
 msgid "Initializing caches"
 msgstr "Initialisation des caches"
 
-#: src/zrythm_app.c:295
+#: src/zrythm_app.c:301
 msgid "Initializing file manager"
 msgstr "Initialisation du gestionnaire de greffon"
 
-#: src/zrythm_app.c:302
+#: src/zrythm_app.c:308
 msgid "Scanning plugins"
 msgstr "Scan des greffons"
 
-#: src/zrythm_app.c:463
+#: src/zrythm_app.c:469
 msgid "License Information"
 msgstr "Informations de licence"
 
-#: src/zrythm_app.c:491
+#: src/zrythm_app.c:497
 msgid "Waiting for project"
 msgstr "En attente du projet"
 
@@ -836,6 +836,8 @@ msgstr "Ports de la Piste"
 #: src/gui/widgets/channel_send_selector.c:185
 #: src/gui/widgets/plugin_properties_expander.c:89
 #: src/gui/widgets/plugin_properties_expander.c:91
+#: src/gui/widgets/route_target_selector.c:55
+#: src/gui/widgets/route_target_selector_popover.c:152
 #: resources/ui/editor_toolbar.ui:57
 msgid "None"
 msgstr "Aucun"
@@ -1261,23 +1263,19 @@ msgstr "Banque de Pré-réglages"
 msgid "Presets"
 msgstr "Pré-réglages"
 
-#: src/gui/widgets/route_target_selector.c:55
-msgid "<tt><i>Engine</i></tt>"
-msgstr "<tt><i>Moteur</i></tt>"
-
-#: src/gui/widgets/route_target_selector.c:85
+#: src/gui/widgets/route_target_selector.c:86
 msgid "Cannot be routed"
 msgstr "Ne peut pas être routé"
 
-#: src/gui/widgets/route_target_selector.c:92
+#: src/gui/widgets/route_target_selector.c:93
 msgid "Routed to engine"
 msgstr "Routé vers le moteur"
 
-#: src/gui/widgets/route_target_selector.c:99
+#: src/gui/widgets/route_target_selector.c:100
 msgid "Select channel to route signal to"
 msgstr "Sélectionner le canal pour acheminer le signal"
 
-#: src/gui/widgets/route_target_selector.c:177
+#: src/gui/widgets/route_target_selector.c:178
 msgid "Stereo Out"
 msgstr "Sortie Stéréo"
 
@@ -1468,16 +1466,16 @@ msgstr "Entrée MIDI"
 msgid "MIDI Out"
 msgstr "Sortie MIDI"
 
-#: src/gui/widgets/route_target_selector_popover.c:161
+#: src/gui/widgets/route_target_selector_popover.c:171
 msgid "Group"
 msgstr "Groupe"
 
-#: src/gui/widgets/route_target_selector_popover.c:235
-#: src/gui/widgets/route_target_selector_popover.c:408
+#: src/gui/widgets/route_target_selector_popover.c:242
+#: src/gui/widgets/route_target_selector_popover.c:430
 msgid "No output selected"
 msgstr "Aucune sortie sélectionnée"
 
-#: src/gui/widgets/route_target_selector_popover.c:249
+#: src/gui/widgets/route_target_selector_popover.c:260
 #, c-format
 msgid "Routing to %s"
 msgstr "Routage vers %s"
@@ -1652,7 +1650,7 @@ msgstr ""
 "Zrythm a planté. Veuillez nous aider à corriger cela en %ssoumettant un "
 "rapport de bogue%s."
 
-#: src/gui/backend/event_manager.c:1514
+#: src/gui/backend/event_manager.c:1520
 #, fuzzy, c-format
 msgid "Trial limit has been reached. %s will now go silent"
 msgstr "La limite des essais a été atteinte. Zrythm va maintenant se taire"
@@ -1673,7 +1671,7 @@ msgstr ""
 msgid "Unknown error"
 msgstr "Option inconnue\n"
 
-#: src/utils/log.c:665
+#: src/utils/log.c:677
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
@@ -2007,11 +2005,11 @@ msgstr "Créer %s"
 msgid "Create %d %ss"
 msgstr "Créer %d %s"
 
-#: src/actions/delete_tracks_action.c:135
+#: src/actions/delete_tracks_action.c:155
 msgid "Delete Track"
 msgstr "Supprimer la piste"
 
-#: src/actions/delete_tracks_action.c:138
+#: src/actions/delete_tracks_action.c:158
 #, c-format
 msgid "Delete %d Tracks"
 msgstr "Supprimer %d Pistes"
@@ -2128,29 +2126,34 @@ msgstr "Déplacer %s"
 msgid "Move %d Plugins"
 msgstr "Déplacer %d Greffons"
 
-#: src/actions/edit_tracks_action.c:182
+#: src/actions/edit_tracks_action.c:265
 msgid "Solo Track"
 msgstr "Mettre la piste en Solo"
 
-#: src/actions/edit_tracks_action.c:185
+#: src/actions/edit_tracks_action.c:268
 msgid "Unsolo Track"
 msgstr "Enlever le Solo de la piste"
 
-#: src/actions/edit_tracks_action.c:189
+#: src/actions/edit_tracks_action.c:272
 msgid "Mute Track"
 msgstr "Rendre la piste muette"
 
-#: src/actions/edit_tracks_action.c:192
+#: src/actions/edit_tracks_action.c:275
 msgid "Unmute Track"
 msgstr "Activer la piste muette"
 
-#: src/actions/edit_tracks_action.c:195
+#: src/actions/edit_tracks_action.c:278
 msgid "Change Fader"
 msgstr "Changer le Fader"
 
-#: src/actions/edit_tracks_action.c:198
+#: src/actions/edit_tracks_action.c:281
 msgid "Change Pan"
 msgstr "Changer la panoramique"
+
+#: src/actions/edit_tracks_action.c:284
+#, fuzzy
+msgid "Change direct out"
+msgstr "Modifier la vélocité"
 
 #: src/actions/move_tracks_action.c:144
 msgid "Move Track"
@@ -3921,6 +3924,9 @@ msgid ""
 "moment)."
 msgstr ""
 
+#~ msgid "<tt><i>Engine</i></tt>"
+#~ msgstr "<tt><i>Moteur</i></tt>"
+
 #~ msgid "Initializing main window"
 #~ msgstr "Initialisation de la fenêtre principale"
 
@@ -4110,9 +4116,6 @@ msgstr ""
 
 #~ msgid "Resize MIDI Note(s)"
 #~ msgstr "Redimensionner la/les note/s MIDI"
-
-#~ msgid "Change Velocity"
-#~ msgstr "Modifier la vélocité"
 
 #~ msgid "Change Velocities"
 #~ msgstr "Modifier les vélocités"

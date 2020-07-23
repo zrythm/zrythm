@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-07-20 22:41+0100\n"
+"POT-Creation-Date: 2020-07-23 18:12+0100\n"
 "PO-Revision-Date: 2020-06-18 08:41+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
@@ -82,7 +82,7 @@ msgid "Unmute"
 msgstr "Opphev forstumming av spor"
 
 #: inc/audio/track.h:157 src/gui/widgets/track_properties_expander.c:133
-#: src/gui/widgets/route_target_selector_popover.c:176
+#: src/gui/widgets/route_target_selector_popover.c:186
 msgid "Instrument"
 msgstr "Instrument"
 
@@ -92,7 +92,7 @@ msgid "Audio"
 msgstr "Lyd"
 
 #: inc/audio/track.h:159 src/project.c:640
-#: src/gui/widgets/route_target_selector_popover.c:153
+#: src/gui/widgets/route_target_selector_popover.c:163
 msgid "Master"
 msgstr ""
 
@@ -441,25 +441,25 @@ msgstr "Henter innstillingene"
 msgid "Initializing logging system"
 msgstr "Henter innstillingene"
 
-#: src/zrythm_app.c:291
+#: src/zrythm_app.c:297
 #, fuzzy
 msgid "Initializing caches"
 msgstr "Henter lydmotoren"
 
-#: src/zrythm_app.c:295
+#: src/zrythm_app.c:301
 #, fuzzy
 msgid "Initializing file manager"
 msgstr "Henter programtilleggsbehandleren"
 
-#: src/zrythm_app.c:302
+#: src/zrythm_app.c:308
 msgid "Scanning plugins"
 msgstr ""
 
-#: src/zrythm_app.c:463
+#: src/zrythm_app.c:469
 msgid "License Information"
 msgstr ""
 
-#: src/zrythm_app.c:491
+#: src/zrythm_app.c:497
 #, fuzzy
 msgid "Waiting for project"
 msgstr "Laster prosjekt"
@@ -828,6 +828,8 @@ msgstr "Sporporter"
 #: src/gui/widgets/channel_send_selector.c:185
 #: src/gui/widgets/plugin_properties_expander.c:89
 #: src/gui/widgets/plugin_properties_expander.c:91
+#: src/gui/widgets/route_target_selector.c:55
+#: src/gui/widgets/route_target_selector_popover.c:152
 #: resources/ui/editor_toolbar.ui:57
 msgid "None"
 msgstr "Ingen"
@@ -1272,24 +1274,20 @@ msgstr ""
 msgid "Presets"
 msgstr "Tilbakestill"
 
-#: src/gui/widgets/route_target_selector.c:55
-msgid "<tt><i>Engine</i></tt>"
-msgstr ""
-
-#: src/gui/widgets/route_target_selector.c:85
+#: src/gui/widgets/route_target_selector.c:86
 msgid "Cannot be routed"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector.c:92
+#: src/gui/widgets/route_target_selector.c:93
 #, fuzzy
 msgid "Routed to engine"
 msgstr "Videresendt til stereo ut"
 
-#: src/gui/widgets/route_target_selector.c:99
+#: src/gui/widgets/route_target_selector.c:100
 msgid "Select channel to route signal to"
 msgstr "Velg kanal å videresende signal til"
 
-#: src/gui/widgets/route_target_selector.c:177
+#: src/gui/widgets/route_target_selector.c:178
 msgid "Stereo Out"
 msgstr "Stereo ut"
 
@@ -1503,17 +1501,17 @@ msgstr "MIDI-bakende"
 msgid "MIDI Out"
 msgstr "MIDI-utgang"
 
-#: src/gui/widgets/route_target_selector_popover.c:161
+#: src/gui/widgets/route_target_selector_popover.c:171
 msgid "Group"
 msgstr "Gruppe"
 
-#: src/gui/widgets/route_target_selector_popover.c:235
-#: src/gui/widgets/route_target_selector_popover.c:408
+#: src/gui/widgets/route_target_selector_popover.c:242
+#: src/gui/widgets/route_target_selector_popover.c:430
 #, fuzzy
 msgid "No output selected"
 msgstr "Ingen utgang valgt"
 
-#: src/gui/widgets/route_target_selector_popover.c:249
+#: src/gui/widgets/route_target_selector_popover.c:260
 #, c-format
 msgid "Routing to %s"
 msgstr "Videresender til %s"
@@ -1707,7 +1705,7 @@ msgstr "Eksporter som…"
 msgid "%sPlease help us fix this by %ssubmitting a bug report%s."
 msgstr ""
 
-#: src/gui/backend/event_manager.c:1514
+#: src/gui/backend/event_manager.c:1520
 #, c-format
 msgid "Trial limit has been reached. %s will now go silent"
 msgstr ""
@@ -1725,7 +1723,7 @@ msgstr ""
 msgid "Unknown error"
 msgstr "Bakende-feil"
 
-#: src/utils/log.c:665
+#: src/utils/log.c:677
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
@@ -2048,11 +2046,11 @@ msgstr "Opprett %s"
 msgid "Create %d %ss"
 msgstr "Opprett %d %s-er"
 
-#: src/actions/delete_tracks_action.c:135
+#: src/actions/delete_tracks_action.c:155
 msgid "Delete Track"
 msgstr "Slett spor"
 
-#: src/actions/delete_tracks_action.c:138
+#: src/actions/delete_tracks_action.c:158
 #, c-format
 msgid "Delete %d Tracks"
 msgstr "Slett %d spor"
@@ -2166,29 +2164,34 @@ msgstr "Flytt %s"
 msgid "Move %d Plugins"
 msgstr "Flytt %d programtillegg"
 
-#: src/actions/edit_tracks_action.c:182
+#: src/actions/edit_tracks_action.c:265
 msgid "Solo Track"
 msgstr ""
 
-#: src/actions/edit_tracks_action.c:185
+#: src/actions/edit_tracks_action.c:268
 msgid "Unsolo Track"
 msgstr ""
 
-#: src/actions/edit_tracks_action.c:189
+#: src/actions/edit_tracks_action.c:272
 msgid "Mute Track"
 msgstr "Forstum spor"
 
-#: src/actions/edit_tracks_action.c:192
+#: src/actions/edit_tracks_action.c:275
 msgid "Unmute Track"
 msgstr "Opphev forstumming av spor"
 
-#: src/actions/edit_tracks_action.c:195
+#: src/actions/edit_tracks_action.c:278
 msgid "Change Fader"
 msgstr ""
 
-#: src/actions/edit_tracks_action.c:198
+#: src/actions/edit_tracks_action.c:281
 msgid "Change Pan"
 msgstr ""
+
+#: src/actions/edit_tracks_action.c:284
+#, fuzzy
+msgid "Change direct out"
+msgstr "Åpne prosjekt"
 
 #: src/actions/move_tracks_action.c:144
 msgid "Move Track"

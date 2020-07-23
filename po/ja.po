@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-07-20 22:41+0100\n"
+"POT-Creation-Date: 2020-07-23 18:12+0100\n"
 "PO-Revision-Date: 2020-07-01 21:41+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -77,7 +77,7 @@ msgid "Unmute"
 msgstr "ミュートを解除"
 
 #: inc/audio/track.h:157 src/gui/widgets/track_properties_expander.c:133
-#: src/gui/widgets/route_target_selector_popover.c:176
+#: src/gui/widgets/route_target_selector_popover.c:186
 msgid "Instrument"
 msgstr "音源"
 
@@ -87,7 +87,7 @@ msgid "Audio"
 msgstr "オーディオ"
 
 #: inc/audio/track.h:159 src/project.c:640
-#: src/gui/widgets/route_target_selector_popover.c:153
+#: src/gui/widgets/route_target_selector_popover.c:163
 msgid "Master"
 msgstr "マスタ"
 
@@ -460,23 +460,23 @@ msgstr "Zrythm ディレクトリを初期化中"
 msgid "Initializing logging system"
 msgstr "ログシステムを初期化中"
 
-#: src/zrythm_app.c:291
+#: src/zrythm_app.c:297
 msgid "Initializing caches"
 msgstr "キャッシュを初期化中"
 
-#: src/zrythm_app.c:295
+#: src/zrythm_app.c:301
 msgid "Initializing file manager"
 msgstr "ファイルマネージャを初期化中"
 
-#: src/zrythm_app.c:302
+#: src/zrythm_app.c:308
 msgid "Scanning plugins"
 msgstr "プラグインをスキャン中"
 
-#: src/zrythm_app.c:463
+#: src/zrythm_app.c:469
 msgid "License Information"
 msgstr "ライセンス情報"
 
-#: src/zrythm_app.c:491
+#: src/zrythm_app.c:497
 msgid "Waiting for project"
 msgstr "プロジェクトを待機中"
 
@@ -818,6 +818,8 @@ msgstr "トラックポート"
 #: src/gui/widgets/channel_send_selector.c:185
 #: src/gui/widgets/plugin_properties_expander.c:89
 #: src/gui/widgets/plugin_properties_expander.c:91
+#: src/gui/widgets/route_target_selector.c:55
+#: src/gui/widgets/route_target_selector_popover.c:152
 #: resources/ui/editor_toolbar.ui:57
 msgid "None"
 msgstr "無し"
@@ -1238,23 +1240,19 @@ msgstr ""
 msgid "Presets"
 msgstr "リセット"
 
-#: src/gui/widgets/route_target_selector.c:55
-msgid "<tt><i>Engine</i></tt>"
-msgstr "<tt><i>エンジン</i></tt>"
-
-#: src/gui/widgets/route_target_selector.c:85
+#: src/gui/widgets/route_target_selector.c:86
 msgid "Cannot be routed"
 msgstr "ルーティングできません"
 
-#: src/gui/widgets/route_target_selector.c:92
+#: src/gui/widgets/route_target_selector.c:93
 msgid "Routed to engine"
 msgstr "エンジンにルーティング中"
 
-#: src/gui/widgets/route_target_selector.c:99
+#: src/gui/widgets/route_target_selector.c:100
 msgid "Select channel to route signal to"
 msgstr "信号をルーティングするチャンネルを選択"
 
-#: src/gui/widgets/route_target_selector.c:177
+#: src/gui/widgets/route_target_selector.c:178
 msgid "Stereo Out"
 msgstr "ステレオ出力"
 
@@ -1445,16 +1443,16 @@ msgstr "MIDI入力"
 msgid "MIDI Out"
 msgstr "MIDI出力"
 
-#: src/gui/widgets/route_target_selector_popover.c:161
+#: src/gui/widgets/route_target_selector_popover.c:171
 msgid "Group"
 msgstr "グループ"
 
-#: src/gui/widgets/route_target_selector_popover.c:235
-#: src/gui/widgets/route_target_selector_popover.c:408
+#: src/gui/widgets/route_target_selector_popover.c:242
+#: src/gui/widgets/route_target_selector_popover.c:430
 msgid "No output selected"
 msgstr "出力が選択されていません"
 
-#: src/gui/widgets/route_target_selector_popover.c:249
+#: src/gui/widgets/route_target_selector_popover.c:260
 #, c-format
 msgid "Routing to %s"
 msgstr "%sへルーティング中"
@@ -1626,7 +1624,7 @@ msgstr ""
 "Zrythmが異常終了しました。修正に役立ちますので、%sバグレポートを送信%sしてく"
 "ださい。"
 
-#: src/gui/backend/event_manager.c:1514
+#: src/gui/backend/event_manager.c:1520
 #, fuzzy, c-format
 msgid "Trial limit has been reached. %s will now go silent"
 msgstr "試用制限に達しました。 Zrythmはサイレントになります"
@@ -1645,7 +1643,7 @@ msgstr ""
 msgid "Unknown error"
 msgstr "オプションを認知できませんでした\n"
 
-#: src/utils/log.c:665
+#: src/utils/log.c:677
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
@@ -1974,11 +1972,11 @@ msgstr "%sを作成"
 msgid "Create %d %ss"
 msgstr "%d個の%sを作成"
 
-#: src/actions/delete_tracks_action.c:135
+#: src/actions/delete_tracks_action.c:155
 msgid "Delete Track"
 msgstr "トラックを削除"
 
-#: src/actions/delete_tracks_action.c:138
+#: src/actions/delete_tracks_action.c:158
 #, c-format
 msgid "Delete %d Tracks"
 msgstr "%d個のトラックを削除"
@@ -2094,29 +2092,34 @@ msgstr "%sを移動"
 msgid "Move %d Plugins"
 msgstr "%dプラグインを移動"
 
-#: src/actions/edit_tracks_action.c:182
+#: src/actions/edit_tracks_action.c:265
 msgid "Solo Track"
 msgstr "トラックをソロ"
 
-#: src/actions/edit_tracks_action.c:185
+#: src/actions/edit_tracks_action.c:268
 msgid "Unsolo Track"
 msgstr "トラックのソロを解除"
 
-#: src/actions/edit_tracks_action.c:189
+#: src/actions/edit_tracks_action.c:272
 msgid "Mute Track"
 msgstr "トラックを無音にする"
 
-#: src/actions/edit_tracks_action.c:192
+#: src/actions/edit_tracks_action.c:275
 msgid "Unmute Track"
 msgstr "トラックの無音を解除"
 
-#: src/actions/edit_tracks_action.c:195
+#: src/actions/edit_tracks_action.c:278
 msgid "Change Fader"
 msgstr "フェーダーを変更"
 
-#: src/actions/edit_tracks_action.c:198
+#: src/actions/edit_tracks_action.c:281
 msgid "Change Pan"
 msgstr "パンを変更"
+
+#: src/actions/edit_tracks_action.c:284
+#, fuzzy
+msgid "Change direct out"
+msgstr "ベロシティを変更"
 
 #: src/actions/move_tracks_action.c:144
 msgid "Move Track"
@@ -3913,6 +3916,9 @@ msgid ""
 "moment)."
 msgstr "チャンネルでパンをかけるときに使うパンの法則。"
 
+#~ msgid "<tt><i>Engine</i></tt>"
+#~ msgstr "<tt><i>エンジン</i></tt>"
+
 #~ msgid "Initializing main window"
 #~ msgstr "メイン ウィンドウを初期化中"
 
@@ -4114,9 +4120,6 @@ msgstr "チャンネルでパンをかけるときに使うパンの法則。"
 
 #~ msgid "Resize MIDI Note(s)"
 #~ msgstr "MIDI音符の長さを変更"
-
-#~ msgid "Change Velocity"
-#~ msgstr "ベロシティを変更"
 
 #~ msgid "Change Velocities"
 #~ msgstr "ベロシティを変更"

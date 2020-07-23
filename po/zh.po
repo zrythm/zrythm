@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-07-20 22:41+0100\n"
+"POT-Creation-Date: 2020-07-23 18:12+0100\n"
 "PO-Revision-Date: 2020-04-29 23:30+0000\n"
 "Last-Translator: Arif Sarker\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -74,7 +74,7 @@ msgid "Unmute"
 msgstr "取消静音"
 
 #: inc/audio/track.h:157 src/gui/widgets/track_properties_expander.c:133
-#: src/gui/widgets/route_target_selector_popover.c:176
+#: src/gui/widgets/route_target_selector_popover.c:186
 msgid "Instrument"
 msgstr "乐器"
 
@@ -84,7 +84,7 @@ msgid "Audio"
 msgstr "音讯"
 
 #: inc/audio/track.h:159 src/project.c:640
-#: src/gui/widgets/route_target_selector_popover.c:153
+#: src/gui/widgets/route_target_selector_popover.c:163
 msgid "Master"
 msgstr "Master"
 
@@ -368,10 +368,10 @@ msgstr ""
 "\n"
 "示例:\n"
 "  %s -v       print version\n"
-"  %s --callgrind --dummy --buf-size=8192    使用dummy配置%s后端和缓冲"
-"区大小为8192\n"
-"  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml将压缩的"
-"zpj项目转换为YAML\n"
+"  %s --callgrind --dummy --buf-size=8192    使用dummy配置%s后端和缓冲区大小为"
+"8192\n"
+"  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml将压缩的zpj项"
+"目转换为YAML\n"
 "  %s -p --pretty pretty-打印当前设置\n"
 "\n"
 "向%s报告错误\n"
@@ -464,23 +464,23 @@ msgstr "初始化%s目录"
 msgid "Initializing logging system"
 msgstr "初始化日志记录系统"
 
-#: src/zrythm_app.c:291
+#: src/zrythm_app.c:297
 msgid "Initializing caches"
 msgstr "初始化缓存"
 
-#: src/zrythm_app.c:295
+#: src/zrythm_app.c:301
 msgid "Initializing file manager"
 msgstr "初始化文件管理器"
 
-#: src/zrythm_app.c:302
+#: src/zrythm_app.c:308
 msgid "Scanning plugins"
 msgstr "扫描插件"
 
-#: src/zrythm_app.c:463
+#: src/zrythm_app.c:469
 msgid "License Information"
 msgstr "许可证信息"
 
-#: src/zrythm_app.c:491
+#: src/zrythm_app.c:497
 msgid "Waiting for project"
 msgstr "等待项目"
 
@@ -821,6 +821,8 @@ msgstr "音轨端口"
 #: src/gui/widgets/channel_send_selector.c:185
 #: src/gui/widgets/plugin_properties_expander.c:89
 #: src/gui/widgets/plugin_properties_expander.c:91
+#: src/gui/widgets/route_target_selector.c:55
+#: src/gui/widgets/route_target_selector_popover.c:152
 #: resources/ui/editor_toolbar.ui:57
 msgid "None"
 msgstr "无"
@@ -1119,6 +1121,7 @@ msgid "Curve algorithm"
 msgstr "曲线算法"
 
 #: src/gui/widgets/header.c:99
+#, c-format
 msgid "About %s"
 msgstr "关于%s"
 
@@ -1234,23 +1237,19 @@ msgstr "Banks"
 msgid "Presets"
 msgstr "预设"
 
-#: src/gui/widgets/route_target_selector.c:55
-msgid "<tt><i>Engine</i></tt>"
-msgstr "<tt><i>引擎</i></tt>"
-
-#: src/gui/widgets/route_target_selector.c:85
+#: src/gui/widgets/route_target_selector.c:86
 msgid "Cannot be routed"
 msgstr "无法路由"
 
-#: src/gui/widgets/route_target_selector.c:92
+#: src/gui/widgets/route_target_selector.c:93
 msgid "Routed to engine"
 msgstr "路由到引擎"
 
-#: src/gui/widgets/route_target_selector.c:99
+#: src/gui/widgets/route_target_selector.c:100
 msgid "Select channel to route signal to"
 msgstr "选择将信号路由到的通道"
 
-#: src/gui/widgets/route_target_selector.c:177
+#: src/gui/widgets/route_target_selector.c:178
 msgid "Stereo Out"
 msgstr "立体声输出"
 
@@ -1440,16 +1439,16 @@ msgstr "MIDI输入"
 msgid "MIDI Out"
 msgstr "MIDI输出"
 
-#: src/gui/widgets/route_target_selector_popover.c:161
+#: src/gui/widgets/route_target_selector_popover.c:171
 msgid "Group"
 msgstr "组"
 
-#: src/gui/widgets/route_target_selector_popover.c:235
-#: src/gui/widgets/route_target_selector_popover.c:408
+#: src/gui/widgets/route_target_selector_popover.c:242
+#: src/gui/widgets/route_target_selector_popover.c:430
 msgid "No output selected"
 msgstr "未选择输出"
 
-#: src/gui/widgets/route_target_selector_popover.c:249
+#: src/gui/widgets/route_target_selector_popover.c:260
 #, c-format
 msgid "Routing to %s"
 msgstr "路由到%s"
@@ -1619,7 +1618,7 @@ msgstr "导出进度"
 msgid "%sPlease help us fix this by %ssubmitting a bug report%s."
 msgstr "%s请通过%s提交错误报告%s来帮助我们解决此问题。"
 
-#: src/gui/backend/event_manager.c:1514
+#: src/gui/backend/event_manager.c:1520
 #, c-format
 msgid "Trial limit has been reached. %s will now go silent"
 msgstr "已达到试用限制。%s将变为静默状态"
@@ -1636,7 +1635,7 @@ msgstr "对象为空。有关详细信息，请参阅日志"
 msgid "Unknown error"
 msgstr "未知错误"
 
-#: src/utils/log.c:665
+#: src/utils/log.c:677
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
@@ -1810,8 +1809,8 @@ msgid ""
 "installed. The audio and MIDI backends were set to \"Dummy\". Please set "
 "your preferred backend from the preferences."
 msgstr ""
-"在你的%s版本中找不到所选的MIDI/Audio后端音频和MIDI后端将设置为\"虚拟\"。"
-"请从首选项中设置首选后端。"
+"在你的%s版本中找不到所选的MIDI/Audio后端音频和MIDI后端将设置为\"虚拟\"。请从"
+"首选项中设置首选后端。"
 
 #: src/audio/engine_alsa.c:342
 #, c-format
@@ -1942,11 +1941,11 @@ msgstr "创建%s"
 msgid "Create %d %ss"
 msgstr "创建%d%ss"
 
-#: src/actions/delete_tracks_action.c:135
+#: src/actions/delete_tracks_action.c:155
 msgid "Delete Track"
 msgstr "删除音轨"
 
-#: src/actions/delete_tracks_action.c:138
+#: src/actions/delete_tracks_action.c:158
 #, c-format
 msgid "Delete %d Tracks"
 msgstr "删除%d首曲目"
@@ -2057,29 +2056,34 @@ msgstr "移动%s"
 msgid "Move %d Plugins"
 msgstr "移动%d个插件"
 
-#: src/actions/edit_tracks_action.c:182
+#: src/actions/edit_tracks_action.c:265
 msgid "Solo Track"
 msgstr "独奏曲目"
 
-#: src/actions/edit_tracks_action.c:185
+#: src/actions/edit_tracks_action.c:268
 msgid "Unsolo Track"
 msgstr "非独奏曲目"
 
-#: src/actions/edit_tracks_action.c:189
+#: src/actions/edit_tracks_action.c:272
 msgid "Mute Track"
 msgstr "静音音轨"
 
-#: src/actions/edit_tracks_action.c:192
+#: src/actions/edit_tracks_action.c:275
 msgid "Unmute Track"
 msgstr "取消音轨静音"
 
-#: src/actions/edit_tracks_action.c:195
+#: src/actions/edit_tracks_action.c:278
 msgid "Change Fader"
 msgstr "更改推子"
 
-#: src/actions/edit_tracks_action.c:198
+#: src/actions/edit_tracks_action.c:281
 msgid "Change Pan"
 msgstr "更改Pan"
+
+#: src/actions/edit_tracks_action.c:284
+#, fuzzy
+msgid "Change direct out"
+msgstr "更改推子"
 
 #: src/actions/move_tracks_action.c:144
 msgid "Move Track"
@@ -3781,6 +3785,9 @@ msgid ""
 "The pan law to use when applying pan on mono signals (not used at the "
 "moment)."
 msgstr "对单声道信号应用pan时使用的pan定律（不用于时刻）。"
+
+#~ msgid "<tt><i>Engine</i></tt>"
+#~ msgstr "<tt><i>引擎</i></tt>"
 
 #, fuzzy
 #~ msgid "PortAudio"

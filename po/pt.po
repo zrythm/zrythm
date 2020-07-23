@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-07-20 22:41+0100\n"
+"POT-Creation-Date: 2020-07-23 18:12+0100\n"
 "PO-Revision-Date: 2020-07-23 15:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -82,7 +82,7 @@ msgid "Unmute"
 msgstr "Desativar Silenciar Faixa"
 
 #: inc/audio/track.h:157 src/gui/widgets/track_properties_expander.c:133
-#: src/gui/widgets/route_target_selector_popover.c:176
+#: src/gui/widgets/route_target_selector_popover.c:186
 msgid "Instrument"
 msgstr "Instrumento"
 
@@ -92,7 +92,7 @@ msgid "Audio"
 msgstr "Áudio"
 
 #: inc/audio/track.h:159 src/project.c:640
-#: src/gui/widgets/route_target_selector_popover.c:153
+#: src/gui/widgets/route_target_selector_popover.c:163
 msgid "Master"
 msgstr "Mestre"
 
@@ -469,24 +469,24 @@ msgstr "Inicialização de diretórios do Zrythm"
 msgid "Initializing logging system"
 msgstr "Inicialização do sistema de registro de dados"
 
-#: src/zrythm_app.c:291
+#: src/zrythm_app.c:297
 msgid "Initializing caches"
 msgstr "Inicialização de caches"
 
-#: src/zrythm_app.c:295
+#: src/zrythm_app.c:301
 #, fuzzy
 msgid "Initializing file manager"
 msgstr "A inicializar o gestor de plug-ins"
 
-#: src/zrythm_app.c:302
+#: src/zrythm_app.c:308
 msgid "Scanning plugins"
 msgstr "Procurar plugins"
 
-#: src/zrythm_app.c:463
+#: src/zrythm_app.c:469
 msgid "License Information"
 msgstr "Informações sobre a Licença"
 
-#: src/zrythm_app.c:491
+#: src/zrythm_app.c:497
 msgid "Waiting for project"
 msgstr "Aguardando projeto"
 
@@ -839,6 +839,8 @@ msgstr "Portas de Faixa"
 #: src/gui/widgets/channel_send_selector.c:185
 #: src/gui/widgets/plugin_properties_expander.c:89
 #: src/gui/widgets/plugin_properties_expander.c:91
+#: src/gui/widgets/route_target_selector.c:55
+#: src/gui/widgets/route_target_selector_popover.c:152
 #: resources/ui/editor_toolbar.ui:57
 msgid "None"
 msgstr "Nenhum"
@@ -1268,23 +1270,19 @@ msgstr ""
 msgid "Presets"
 msgstr "Redefinir"
 
-#: src/gui/widgets/route_target_selector.c:55
-msgid "<tt><i>Engine</i></tt>"
-msgstr "<tt><i>Motor</i></tt>"
-
-#: src/gui/widgets/route_target_selector.c:85
+#: src/gui/widgets/route_target_selector.c:86
 msgid "Cannot be routed"
 msgstr "Não pode ser roteado"
 
-#: src/gui/widgets/route_target_selector.c:92
+#: src/gui/widgets/route_target_selector.c:93
 msgid "Routed to engine"
 msgstr "Roteado para o motor"
 
-#: src/gui/widgets/route_target_selector.c:99
+#: src/gui/widgets/route_target_selector.c:100
 msgid "Select channel to route signal to"
 msgstr "Selecionar o canal para onde rotear o sinal"
 
-#: src/gui/widgets/route_target_selector.c:177
+#: src/gui/widgets/route_target_selector.c:178
 msgid "Stereo Out"
 msgstr "Saída Estéreo"
 
@@ -1477,16 +1475,16 @@ msgstr "Entradas MIDI"
 msgid "MIDI Out"
 msgstr "Saídas MIDI"
 
-#: src/gui/widgets/route_target_selector_popover.c:161
+#: src/gui/widgets/route_target_selector_popover.c:171
 msgid "Group"
 msgstr "Grupo"
 
-#: src/gui/widgets/route_target_selector_popover.c:235
-#: src/gui/widgets/route_target_selector_popover.c:408
+#: src/gui/widgets/route_target_selector_popover.c:242
+#: src/gui/widgets/route_target_selector_popover.c:430
 msgid "No output selected"
 msgstr "Nenhuma saída selecionada"
 
-#: src/gui/widgets/route_target_selector_popover.c:249
+#: src/gui/widgets/route_target_selector_popover.c:260
 #, c-format
 msgid "Routing to %s"
 msgstr "Roteamento para %s"
@@ -1662,7 +1660,7 @@ msgstr ""
 "Zrythm travou. Por favor, ajude-nos a corrigir isso %ssubmetendo um "
 "relatório de bug%s."
 
-#: src/gui/backend/event_manager.c:1514
+#: src/gui/backend/event_manager.c:1520
 #, c-format
 msgid "Trial limit has been reached. %s will now go silent"
 msgstr ""
@@ -1682,7 +1680,7 @@ msgstr ""
 msgid "Unknown error"
 msgstr "Erro backend"
 
-#: src/utils/log.c:665
+#: src/utils/log.c:677
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
@@ -2006,11 +2004,11 @@ msgstr "Criar %s"
 msgid "Create %d %ss"
 msgstr "Criar %d %ss"
 
-#: src/actions/delete_tracks_action.c:135
+#: src/actions/delete_tracks_action.c:155
 msgid "Delete Track"
 msgstr "Apagar Faixa"
 
-#: src/actions/delete_tracks_action.c:138
+#: src/actions/delete_tracks_action.c:158
 #, c-format
 msgid "Delete %d Tracks"
 msgstr "Apagar %d Faixas"
@@ -2124,29 +2122,34 @@ msgstr "Mover %s"
 msgid "Move %d Plugins"
 msgstr "Mover %d Plugins"
 
-#: src/actions/edit_tracks_action.c:182
+#: src/actions/edit_tracks_action.c:265
 msgid "Solo Track"
 msgstr "Fazer a Faixa Solo"
 
-#: src/actions/edit_tracks_action.c:185
+#: src/actions/edit_tracks_action.c:268
 msgid "Unsolo Track"
 msgstr "Desfazer a Faixa Solo"
 
-#: src/actions/edit_tracks_action.c:189
+#: src/actions/edit_tracks_action.c:272
 msgid "Mute Track"
 msgstr "Silenciar Faixa"
 
-#: src/actions/edit_tracks_action.c:192
+#: src/actions/edit_tracks_action.c:275
 msgid "Unmute Track"
 msgstr "Desativar Silenciar Faixa"
 
-#: src/actions/edit_tracks_action.c:195
+#: src/actions/edit_tracks_action.c:278
 msgid "Change Fader"
 msgstr "Modificar Fader"
 
-#: src/actions/edit_tracks_action.c:198
+#: src/actions/edit_tracks_action.c:281
 msgid "Change Pan"
 msgstr "Modificar Pan"
+
+#: src/actions/edit_tracks_action.c:284
+#, fuzzy
+msgid "Change direct out"
+msgstr "Modificar Velocidade"
 
 #: src/actions/move_tracks_action.c:144
 msgid "Move Track"
@@ -3931,6 +3934,9 @@ msgid ""
 "moment)."
 msgstr ""
 
+#~ msgid "<tt><i>Engine</i></tt>"
+#~ msgstr "<tt><i>Motor</i></tt>"
+
 #~ msgid "Initializing main window"
 #~ msgstr "Inicialização da janela principal"
 
@@ -4101,9 +4107,6 @@ msgstr ""
 
 #~ msgid "Resize MIDI Note(s)"
 #~ msgstr "Redimensionar nota(s) MIDI"
-
-#~ msgid "Change Velocity"
-#~ msgstr "Modificar Velocidade"
 
 #~ msgid "Change Velocities"
 #~ msgstr "Modificar Velocidades"

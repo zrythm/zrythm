@@ -260,6 +260,7 @@ inc/audio/midi_bus_track.h
 inc/audio/tracklist.h
 inc/audio/position.h
 inc/audio/audio_group_track.h
+inc/audio/group_target_track.h
 inc/audio/chord_track.h
 inc/audio/dir.h
 inc/audio/audio_bus_track.h
@@ -618,6 +619,7 @@ src/audio/port.c
 src/audio/peak_dsp.c
 src/audio/chord_region.c
 src/audio/master_track.c
+src/audio/group_target_track.c
 src/audio/engine_dummy.c
 src/audio/chord_descriptor.c
 src/audio/scale_object.c
