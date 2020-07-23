@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-07-20 22:41+0100\n"
-"PO-Revision-Date: 2020-06-11 20:41+0000\n"
+"PO-Revision-Date: 2020-07-23 15:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:188
@@ -199,9 +199,8 @@ msgid "ALSA Sequencer"
 msgstr "Sequenciador ALSA"
 
 #: inc/audio/region.h:83 src/gui/widgets/track.c:1693
-#, fuzzy
 msgid "Inherit"
-msgstr "%sHerdar"
+msgstr "Herdar"
 
 #: inc/audio/region.h:85 src/audio/automation_track.c:100
 msgid "Off"
@@ -276,9 +275,9 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
-"Encontrámos um backup mais recente:\n"
+"Encontrada cópia de segurança mais recente:\n"
 "  %s.\n"
-"Usar o backup mais recente?"
+"Utilizar a cópia mais recente?"
 
 #: src/project.c:779
 #, fuzzy
@@ -296,14 +295,14 @@ msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr ""
-"Este projeto foi criado com uma versão diferente do Zrythm (%s). Pode não "
-"funcionar corretamente."
+"Este projeto foi criado com uma versão diferente do Zrythm (%s). Este poderá "
+"não funcionar corretamente."
 
 #: src/project.c:905
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
-"Falha ao carregar o projeto. Por favor, verifique os registos para mais "
-"informações."
+"Não foi possível carregar o projeto. Por favor, verifique os registos para "
+"mais informação."
 
 #: src/project.c:1087
 #, fuzzy
@@ -314,7 +313,7 @@ msgstr ""
 
 #: src/project.c:1426
 msgid "Backup saved."
-msgstr "Backup guardado."
+msgstr "Cópia de segurança guardada."
 
 #: src/project.c:1436
 msgid "Project saved."
@@ -831,7 +830,7 @@ msgstr "Nenhuma porta selecionada"
 
 #: src/gui/widgets/port_selector_popover.c:89
 msgid "These ports cannot be connected"
-msgstr "Estas portas não podem ser conectadas"
+msgstr "Estas portas não podem ser ligadas"
 
 #: src/gui/widgets/port_selector_popover.c:323
 msgid "Track Ports"
@@ -1023,7 +1022,7 @@ msgstr "Cabeça de reprodução"
 
 #: src/gui/widgets/bot_bar.c:54
 msgid "Playhead [Jack Timebase Master]"
-msgstr "Cabeça de Reprodução [Base de tempo mestre Jack]"
+msgstr "Cabeça de Reprodução [Base de tempo máster Jack]"
 
 #: src/gui/widgets/bot_bar.c:56
 msgid "Playhead [Jack Client]"
@@ -1043,11 +1042,11 @@ msgstr "Tornar-se Mestre de Transporte JACK"
 
 #: src/gui/widgets/bot_bar.c:225
 msgid "Sync to JACK Transport"
-msgstr "Sincronizar com o transporte JACK"
+msgstr "Sincronizar para Transporte JACK"
 
 #: src/gui/widgets/bot_bar.c:247
 msgid "Unlink JACK Transport"
-msgstr "Desvincular o transporte JACK"
+msgstr "Desassociar para Transporte JACK"
 
 #: src/gui/widgets/bot_bar.c:305
 msgid "playhead"
@@ -1059,7 +1058,7 @@ msgstr "Cliente de transporte de JACK"
 
 #: src/gui/widgets/bot_bar.c:360
 msgid "JACK Timebase master"
-msgstr "JACK Base de tempo mestre"
+msgstr "Máster Base de Tempo JACK"
 
 #: src/gui/widgets/bot_bar.c:455 build/data/org.zrythm.Zrythm.gschema.xml:449
 msgid "Buffer size"
@@ -1224,7 +1223,7 @@ msgstr "Limpar Seleção"
 
 #: src/gui/widgets/home_toolbar.c:135
 msgid "Select All"
-msgstr "Selecionar todos"
+msgstr "Selecionar Tudo"
 
 #: src/gui/widgets/home_toolbar.c:137
 msgid "Loop Selection"
@@ -1523,11 +1522,11 @@ msgstr "Alternar Barra de Estado"
 
 #: src/gui/widgets/view_toolbar.c:40
 msgid "Zoom In"
-msgstr "Aumentar"
+msgstr "Zoom +"
 
 #: src/gui/widgets/view_toolbar.c:41
 msgid "Zoom Out"
-msgstr "Reduzir"
+msgstr "Zoom -"
 
 #: src/gui/widgets/view_toolbar.c:42
 msgid "Original Size"
@@ -2416,7 +2415,7 @@ msgstr "Selecionar um Projeto"
 
 #: resources/ui/project_assistant.ui:43
 msgid "Select a project"
-msgstr "Selecionar um projeto"
+msgstr "Selelcionar um projeto"
 
 #: resources/ui/project_assistant.ui:102
 msgid "Remove"
@@ -2540,11 +2539,11 @@ msgstr "VII"
 
 #: resources/ui/chord_selector_window.ui:866
 msgid "Diatonic"
-msgstr "Diatônico"
+msgstr "Diatónico"
 
 #: resources/ui/chord_selector_window.ui:898
 msgid "TODO"
-msgstr "A FAZER"
+msgstr "TAREFAS"
 
 #: resources/ui/chord_selector_window.ui:908
 msgid "Circle of Fifths"
@@ -2552,11 +2551,11 @@ msgstr "Círculo de Quintos"
 
 #: resources/ui/create_project_dialog.ui:70
 msgid "Parent directory"
-msgstr "Diretório acima"
+msgstr "Diretoria fonte"
 
 #: resources/ui/create_project_dialog.ui:83
 msgid "Select parent directory to save the project in"
-msgstr "Selecione o diretório acima para lá gravar o projeto"
+msgstr "Selecione a diretoria fonte para guardar o projeto lá"
 
 #: resources/ui/shortcuts.ui:31
 msgid "Global Shortcuts"
@@ -3298,17 +3297,17 @@ msgstr ""
 
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
-msgstr "Estação De Trabalho De Áudio Digital"
+msgstr "Estação de Trabalho de Áudio Digital"
 
 #: data/zrythm.desktop.in:13
 msgid "highly automated and intuitive digital audio workstation"
 msgstr ""
-"uma estação de trabalho de áudio digital altamente automatizada e intuitiva"
+"Uma estação de trabalho de áudio digital altamente automatizada e intuitiva"
 
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:16
 msgid "zrythm"
-msgstr "Zrythm"
+msgstr "zrythm"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:178
 #, fuzzy

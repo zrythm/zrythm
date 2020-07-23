@@ -4,13 +4,14 @@
 # Alexandros Theodotou <alex at zrythm dot org>, 2019.
 # Alexandros Theodotou <alextee@posteo.net>, 2019, 2020.
 # Anonymous <noreply@weblate.org>, 2020.
+# Gabriel García <gabriel.o.garcia@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-07-20 22:41+0100\n"
-"PO-Revision-Date: 2020-04-30 23:31+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2020-07-22 14:41+0000\n"
+"Last-Translator: Gabriel García <gabriel.o.garcia@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0.2\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:188
@@ -28,45 +29,39 @@ msgstr ""
 
 #: inc/utils/ui.h:75
 msgid "High"
-msgstr ""
+msgstr "Alto"
 
 #: inc/utils/ui.h:76
-#, fuzzy
 msgid "Normal"
-msgstr "normal"
+msgstr "Normal"
 
 #: inc/utils/ui.h:77
 msgid "Low"
-msgstr ""
+msgstr "Bajo"
 
 #: inc/utils/gtk.h:50
 msgid "Cu_t"
-msgstr ""
+msgstr "Cor_tar"
 
 #: inc/utils/gtk.h:56
-#, fuzzy
 msgid "_Copy"
-msgstr "Copiar"
+msgstr "_Copiar"
 
 #: inc/utils/gtk.h:62
-#, fuzzy
 msgid "_Paste"
-msgstr "Pegar"
+msgstr "_Pegar"
 
 #: inc/utils/gtk.h:68
-#, fuzzy
 msgid "_Delete"
-msgstr "Eliminar"
+msgstr "_Eliminar"
 
 #: inc/utils/gtk.h:74
-#, fuzzy
 msgid "Cle_ar Selection"
-msgstr "Vaciar selección"
+msgstr "V_aciar selección"
 
 #: inc/utils/gtk.h:80
-#, fuzzy
 msgid "Select A_ll"
-msgstr "Seleccionar todo"
+msgstr "Se_leccionar todo"
 
 #: inc/utils/gtk.h:86 src/gui/widgets/home_toolbar.c:129
 msgid "Duplicate"
@@ -103,12 +98,11 @@ msgstr "Acorde"
 
 #: inc/audio/track.h:161 src/gui/widgets/event_viewer.c:109
 msgid "Marker"
-msgstr ""
+msgstr "Marcador"
 
 #: inc/audio/track.h:162 src/audio/tempo_track.c:85
-#, fuzzy
 msgid "Tempo"
-msgstr "Tempo/BPM"
+msgstr "Tempo"
 
 #: inc/audio/track.h:163
 #, fuzzy
@@ -3657,27 +3651,25 @@ msgid "The MIDI backend to use."
 msgstr "Entradas de MIDI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:459
-#, fuzzy
 msgid "MIDI controllers"
 msgstr "Controladores MIDI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:460
 msgid "A list of controllers to auto-connect to."
-msgstr ""
+msgstr "Un lista de controladores a los cuales auto-conectarse."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:469
 #: build/data/org.zrythm.Zrythm.gschema.xml:518
 msgid "Paths"
-msgstr ""
+msgstr "Caminos"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:474
 msgid "The directory used to save user data in."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:483
-#, fuzzy
 msgid "UIs"
-msgstr "IGU"
+msgstr "Interfaz Gráfica"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:487
 msgid "Open UI on instantiation"

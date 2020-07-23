@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-02-26 11:34+0000\n"
-"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"PO-Revision-Date: 2020-07-22 14:41+0000\n"
+"Last-Translator: Gabriel García <gabriel.o.garcia@gmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualcontributing/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish "
-"<https://hosted.weblate.org/projects/zrythm/manualcontributing/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../contributing/intro.rst:6
@@ -28,6 +29,8 @@ msgid ""
 "We appreciate contributions of any type and size. Tell us how you would "
 "like to help, and we will do our best to guide you."
 msgstr ""
+"Apreciamos las contribuciones de cualquier tipo y tamaño. Digannos como le "
+"gustaría ayudar y nosotros haremos lo mejor posible para orientarlo."
 
 #: ../../contributing/intro.rst:11
 msgid ""
@@ -37,6 +40,11 @@ msgid ""
 "://contributor-covenant.org/. You can find the full pledge in our `Code "
 "of Conduct <https://forum.zrythm.org/t/code-of-conduct>`_."
 msgstr ""
+"Queremos suministrarle un entorno amigable y libre de acoso para que todos "
+"puedan contribuir con lo mejor de sus habilidades. Por este fin nuestro "
+"proyecto usa el `Pacto del Contribuyente` el cual fue adaptado desde https"
+"://contributor-covenant.org/. Usted puede encontrar el compromiso completo "
+"en `Código de Conducta <https://forum.zrythm.org/t/code-of-conduct>`_."
 
 #: ../../contributing/intro.rst:18
 msgid "Coding"
@@ -48,16 +56,20 @@ msgid ""
 "<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ in the "
 "source distribution."
 msgstr ""
+"Por favor vea el `archivo HACKING <https://git.sr.ht/~alextee/zrythm/tree/"
+"master/HACKING.md>`_ en la distribución fuente."
 
 #: ../../contributing/intro.rst:23
 msgid "Web Design"
-msgstr ""
+msgstr "Diseño Web"
 
 #: ../../contributing/intro.rst:24
 msgid ""
 "You are welcome to help us improve the looks and usability of the Zrythm "
 "website. Please join our chatrooms and talk to us."
 msgstr ""
+"Agradecemos su ayuda para mejorar el aspecto y usabilidad del sitio web "
+"Zrythm. Por favor, únase a nuestras salas de charla y háblenos."
 
 #: ../../contributing/intro.rst:29
 msgid "Artwork and Themes"
@@ -70,6 +82,11 @@ msgid ""
 "artwork such as icons you can start by creating your own themes and icons"
 " as discussed in :ref:`icon-themes` and :ref:`css`."
 msgstr ""
+"Zrythm es maquillable con temas CSS y también hace uso de muchos íconos, "
+"algunos personalizados y otros tomados prestados de otros temas. Si le "
+"gustaría contribuir con la artística de tales íconos, puede comenzar creando "
+"sus propios temas e íconos como se muestra en :ref:`icon-themes` and "
+":ref:`css`."
 
 #: ../../contributing/intro.rst:38
 msgid "Testing"
@@ -81,6 +98,9 @@ msgid ""
 "reporting bugs and feedback on `Redmine "
 "<https://redmine.zrythm.org/projects/zrythm/issues>`_."
 msgstr ""
+"Agradecemos se nos una para probar las últimas características en Zrythm, "
+"reportar errores y dejarnos comentarios en `Redmine <https://redmine.zrythm."
+"org/projects/zrythm/issues>`_."
 
 #: ../../contributing/intro.rst:44
 msgid ""
@@ -97,12 +117,16 @@ msgid ""
 "Zrythm is available for translation at `Weblate "
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
 msgstr ""
+"Zrythm está disponible para traducción en `Weblate <https://hosted.weblate."
+"org/engage/zrythm/?utm_source=widget>`_."
 
 #: ../../contributing/intro.rst:53
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
 "program, the website as well as sections of this manual."
 msgstr ""
+"El proyecto de traducción de Zrythm contiene las traducciones para el "
+"programa Zrythm, el sitio web como también las secciones de este manual."
 
 #: ../../contributing/intro.rst:57
 msgid ""
@@ -122,6 +146,9 @@ msgid ""
 "file the page exists in, find the file in the source distribution and "
 "edit it."
 msgstr ""
+"Haga click en el botón ``Ver Fuente``al tope de la página para encontrar en "
+"que archivo existe la página, encontrar el archivo en la distribución fuente "
+"y editarla."
 
 #: ../../contributing/intro.rst:70
 msgid ""
@@ -138,24 +165,28 @@ msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
 msgstr ""
+"Usamos los siguientes servicios para recibir donaciones. Cualquier monto, "
+"grande o pequeño se agradece y ayuda a sostener el desarrollo continuo:"
 
 #: ../../contributing/intro.rst:80
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
-msgstr ""
+msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
 #: ../../contributing/intro.rst:81
 msgid "`PayPal <https://paypal.me/zrythm>`_"
-msgstr ""
+msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
 #: ../../contributing/intro.rst:82
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
-msgstr ""
+msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
 #: ../../contributing/intro.rst:84
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer "
 "<https://www.zrythm.org/en/download.html>`_."
 msgstr ""
+"Alternativamente, usted puede `comprar un instalador Zrythm <https://www."
+"zrythm.org/en/download.html>`_."
 
 #~ msgid ""
 #~ "If you would like to help design"
@@ -455,4 +486,3 @@ msgstr ""
 #~ " purchase Zrythm binaries at "
 #~ "https://www.zrythm.org/en/download.html"
 #~ msgstr ""
-
