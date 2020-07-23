@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2019-08-12 00:18+0000\n"
-"Last-Translator: Waui <wau-wau@tutanota.de>\n"
+"PO-Revision-Date: 2020-07-12 15:41+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"manualmodulators/de/>\n"
 "Language: de\n"
-"Language-Team: German "
-"<https://hosted.weblate.org/projects/zrythm/manualmodulators/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../modulators/adding-modulators.rst:6
@@ -40,7 +41,7 @@ msgstr "Modulatoren"
 
 #: ../../modulators/intro.rst:8
 msgid "This feature is not available at the moment."
-msgstr ""
+msgstr "Diese Funktion ist zurzeit nicht verfügbar."
 
 #: ../../modulators/modulators-tab.rst:6
 msgid "Modulators Tab"
@@ -59,4 +60,3 @@ msgstr ""
 #: ../../modulators/routing-modulators.rst:6
 msgid "Routing Modulators"
 msgstr "Modulatoren routen"
-

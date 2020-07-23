@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 20:03+0100\n"
-"PO-Revision-Date: 2020-03-30 22:14+0000\n"
+"PO-Revision-Date: 2020-07-19 22:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -280,13 +281,12 @@ msgstr ""
 "engrenagem ou por ``Ctrl+Shift+P``."
 
 #: ../../configuration/preferences/intro.rst:14
-#, fuzzy
 msgid ""
 "Each section in the preferences dialog is explained in the following "
 "sections."
 msgstr ""
-"O diálogo Preferências é dividido nas seguintes secções, que são "
-"explicadas a seguir:"
+"O diálogo preferências é dividido nas seguintes secções, que são explicadas "
+"a seguir."
 
 #: ../../configuration/preferences/intro.rst:18
 #: ../../configuration/preferences/intro.rst:183
@@ -295,13 +295,12 @@ msgid "General"
 msgstr "Geral"
 
 #: ../../configuration/preferences/intro.rst:20
-#, fuzzy
 msgid "General settings."
-msgstr "Usar gsettings"
+msgstr "Configurações gerais."
 
 #: ../../configuration/preferences/intro.rst:28
 msgid "Engine"
-msgstr ""
+msgstr "Motor"
 
 #: ../../configuration/preferences/intro.rst:30
 msgid "Audio engine settings."
@@ -350,7 +349,6 @@ msgid "Global paths."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:52
-#, fuzzy
 msgid "Zrythm path"
 msgstr "Caminho do Zrythm"
 
@@ -363,9 +361,8 @@ msgid "Plugins"
 msgstr "Plugins"
 
 #: ../../configuration/preferences/intro.rst:57
-#, fuzzy
 msgid "Plugin settings."
-msgstr "Usar gsettings"
+msgstr "Configurações de suplemento."
 
 #: ../../configuration/preferences/intro.rst:63
 #, fuzzy
@@ -373,9 +370,8 @@ msgid "UIs"
 msgstr "Plugins"
 
 #: ../../configuration/preferences/intro.rst:65
-#, fuzzy
 msgid "Plugin UIs."
-msgstr "Plugins"
+msgstr "UIs de suplementos."
 
 #: ../../configuration/preferences/intro.rst:69
 msgid "Generic UIs"
@@ -509,7 +505,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:140
 msgid "Editing"
-msgstr ""
+msgstr "Edição"
 
 #: ../../configuration/preferences/intro.rst:142
 msgid "Editing options."
@@ -534,7 +530,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:156
 msgid "Automation"
-msgstr ""
+msgstr "Automação"
 
 #: ../../configuration/preferences/intro.rst:158
 msgid "Automation editing."
@@ -550,9 +546,8 @@ msgid "Default curve algorithm to use for automation curves."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:164
-#, fuzzy
 msgid "Undo"
-msgstr "Áudio"
+msgstr "Desfazer"
 
 #: ../../configuration/preferences/intro.rst:166
 msgid "Undo options."
@@ -1091,4 +1086,3 @@ msgstr "Alterar algumas dessas configurações requer um reinício do Zrythm."
 
 #~ msgid "The MIDI backend to use."
 #~ msgstr ""
-
