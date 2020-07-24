@@ -4,12 +4,13 @@
 # Alexandros Theodotou <alex at zrytm dot org>, 2019.
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
 # Alexandros Theodotou <alextee@posteo.net>, 2019, 2020.
+# Acid Chicken (硫酸鶏) <root@acid-chicken.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-07-23 18:12+0100\n"
-"PO-Revision-Date: 2020-07-01 21:41+0000\n"
+"PO-Revision-Date: 2020-07-24 14:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -42,27 +43,27 @@ msgstr ""
 
 #: inc/utils/gtk.h:50
 msgid "Cu_t"
-msgstr "切り取り"
+msgstr "切り取り (_T)"
 
 #: inc/utils/gtk.h:56
 msgid "_Copy"
-msgstr "コピー"
+msgstr "コピー (_C)"
 
 #: inc/utils/gtk.h:62
 msgid "_Paste"
-msgstr "貼り付け"
+msgstr "貼り付け (_P)"
 
 #: inc/utils/gtk.h:68
 msgid "_Delete"
-msgstr "削除"
+msgstr "削除 (_D)"
 
 #: inc/utils/gtk.h:74
 msgid "Cle_ar Selection"
-msgstr "選択をクリア"
+msgstr "選択をクリア (_A)"
 
 #: inc/utils/gtk.h:80
 msgid "Select A_ll"
-msgstr "すべてを選択"
+msgstr "すべてを選択 (_A)"
 
 #: inc/utils/gtk.h:86 src/gui/widgets/home_toolbar.c:129
 msgid "Duplicate"
@@ -325,7 +326,7 @@ msgid "%s has crashed. "
 msgstr ""
 
 #: src/main.c:127
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage: %s [ OPTIONS ] [ PROJECT-FILE-PATH ]\n"
 "\n"
@@ -357,20 +358,35 @@ msgid ""
 "\n"
 "Report bugs to %s\n"
 msgstr ""
-"使用方法: zrythm [ オプション ] [ プロジェクト名 ]\n"
+"使用方法: %s [ オプション ] [ プロジェクトファイルのパス ]\n"
 "\n"
 "オプション:\n"
-"  -h, --help      このメッセージを表示し終了\n"
-"  -p, --print-settings  現設定値を表示\n"
-"  --pretty        綺麗に表示\n"
-"  --reset-to-factory  初期設定に戻る\n"
-"  -v, --version   バージョン情報を表示し終了\n"
+"  -h, --help             このメッセージを表示して終了\n"
+"  --convert-yaml-to-zpj  yaml形式のプロジェクトをzpj形式に変換\n"
+"  --convert-zpj-to-yaml  zpj形式のプロジェクトをyaml形式に変換\n"
+"  -o, --output           出力ファイルを指定\n"
+"  -p, --print-settings   現在の設定値を表示\n"
+"  --pretty               整形して表示\n"
+"  --gdb                  GDB（デバッガー）を使用して%sを実行\n"
+"  --callgrind            callgrind（プロファイラー）を使用して%sを実行\n"
+"  --audio-backend        オーディオバックエンドを置換して使用\n"
+"  --midi-backend         MIDIバックエンドを置換して使用\n"
+"  --dummy                オーディオバックエンドとMIDIバックエンドをどちらもダミーに置換\n"
+"  --buf-size             可能な場合は、オーディオバックエンドで使用するバッファーサイズを置換\n"
+"  --interactive          可能な場合は、対話的モードにする\n"
+"  --reset-to-factory     初期設定に戻す\n"
+"  -v, --version          バージョン情報を表示して終了\n"
 "\n"
 "例:\n"
-"  zrythm -v       print version\n"
-"  zrythm -p --pretty  pretty-print current settings\n"
+"  %s -v                                                           バージョンを表示\n"
+"  %s --callgrind --dummy --buf-size=8192                          "
+"ダミーのバックエンドとバッファーサイズとして8192を使用して%sをプロファイル\n"
+"  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  "
+"圧縮されたzpj形式プロジェクトをyaml形式に変換\n"
+"  %s -p --pretty                                                  "
+"現在の設定値を整形して表示\n"
 "\n"
-"バグ報告は%sまでにください。\n"
+"バグは%sにご報告ください。\n"
 
 #: src/main.c:170
 #, c-format
@@ -410,7 +426,7 @@ msgid "Project successfully decompressed.\n"
 msgstr ""
 
 #: src/main.c:433
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s Copyright (C) 2018-2020 The Zrythm contributors\n"
 "\n"
@@ -423,16 +439,15 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"Zrythm-%s Copyright (C) 2018-2020 Alexandros Theodotou\n"
+"%s-%s Copyright (C) 2018-2020 Alexandros Theodotou\n"
 "\n"
-"Zrythm comes with ABSOLUTELY NO WARRANTY!\n"
+"%sは一切の保証を伴いません！\n"
 "\n"
-"This is free software, and you are welcome to redistribute it\n"
-"under certain conditions. See the file `COPYING' for details.\n"
+"これはフリーソフトウェアで、一定の条件の下で再頒布できます。\n"
+"詳細は `COPYING' をご覧ください。\n"
 "\n"
-"Write comments and bugs to %s\n"
-"Support this project at https://liberapay.com/Zrythm\n"
-"\n"
+"コメントやバグは %s\n"
+"プロジェクトの支援は https://liberapay.com/Zrythm\n"
 
 #: src/zrythm_app.c:188
 msgid "Setting up main window"
@@ -1671,16 +1686,14 @@ msgid "Sine (Equal Power)"
 msgstr "正弦波（イコールパワー）"
 
 #: src/utils/ui.c:931
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
 "install one first and restart %s"
-msgstr ""
-"選択した言語のロケール（%s）は利用できません。ロケールをインストールして、"
-"Zrythmを再起動してください"
+msgstr "選択した言語のロケール（%s）は利用できません。まずはじめにロケールをインストールして、%sを再起動してください。"
 
 #: src/utils/ui.c:936
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
 "one first using the steps below and try again.\n"
@@ -1689,12 +1702,11 @@ msgid ""
 "2. Run <b>locale-gen</b> as root\n"
 "3. Restart %s"
 msgstr ""
-"選択した言語のロケールは利用できません。Please enable one first using the "
-"steps below and try again.\n"
-"1. Uncomment any locale starting with the language code <b>%s</b> in <b>/etc/"
-"locale.gen</b> (needs root privileges)\n"
-"2. Run <b>locale-gen</b> as root\n"
-"3. Restart Zrythm"
+"選択した言語のロケールは利用できません。まずはじめに次の手順を使用して有効化し、再試行してください。\n"
+"1. <b>/etc/locale."
+"gen</b>ファイル内の<b>%s</b>から始まる言語コードのロケールのコメントを外します（root権限が必要です）\n"
+"2. rootで<b>locale-gen</b>を実行します\n"
+"3. %sを再起動します"
 
 #: src/settings/settings.c:115
 #, c-format
@@ -1734,13 +1746,11 @@ msgid "Failed to reset schema %s"
 msgstr "スキーマ %s をリセットできませんでした"
 
 #: src/settings/settings.c:276
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "This will reset %s to factory settings. You will lose all your preferences. "
 "Type 'y' to continue: "
-msgstr ""
-"これにより、Zrythm が初期設定にリセットされます。すべてのプリファレンスが失わ"
-"れます。続行するには「y」と入力してください： "
+msgstr "これにより、%sが初期設定にリセットされます。すべての設定が失われます。続行するには「y」と入力してください: "
 
 #: src/settings/settings.c:283
 #, c-format
@@ -1797,7 +1807,7 @@ msgstr "オートメーション"
 
 #: src/audio/tempo_track.c:51
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: src/audio/tempo_track.c:66
 #, fuzzy
@@ -1823,15 +1833,14 @@ msgstr ""
 "用します。環境設定でバックエンドの設定を確認してください。"
 
 #: src/audio/engine.c:423
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
 "installed. The audio and MIDI backends were set to \"Dummy\". Please set "
 "your preferred backend from the preferences."
 msgstr ""
-"選択したMIDI /オーディオバックエンドは、インストールしたZrythmのバージョンで"
-"見つかりませんでした。オーディオとMIDIバックエンドは「ダミー」に設定されまし"
-"た。設定から好みのバックエンドを設定してください。"
+"選択したMIDI/オーディオバックエンドは、インストールされたバージョンの%sで見つかりませんでした。オーディオおよびMIDIバックエンドは「ダミー」に設"
+"定されました。設定から適当なバックエンドを設定してください。"
 
 #: src/audio/engine_alsa.c:342
 #, c-format
@@ -2746,7 +2755,7 @@ msgstr "結果はここに表示されます"
 
 #: resources/ui/chord_key.ui:12
 msgid "Amin 7"
-msgstr ""
+msgstr "Amin 7"
 
 #: resources/ui/inspector_master.ui:43 resources/ui/inspector_ap.ui:43
 #: resources/ui/inspector_midi.ui:43

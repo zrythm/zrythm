@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the zrythm package.
 # alex <alex@zrythm.org>, 2019.
 # ssantos <ssantos@web.de>, 2020.
+# Alexandros Theodotou <alextee@posteo.net>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-07-23 18:12+0100\n"
-"PO-Revision-Date: 2020-07-23 15:41+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"PO-Revision-Date: 2020-07-24 14:02+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
 "Language: pt\n"
@@ -1831,11 +1832,11 @@ msgstr "Automação"
 
 #: src/audio/tempo_track.c:51
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: src/audio/tempo_track.c:66
 msgid "Time Signature"
-msgstr ""
+msgstr "Assinatura de tempo"
 
 #: src/audio/engine.c:182
 #, c-format
