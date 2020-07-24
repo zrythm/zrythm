@@ -11,7 +11,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-07-23 18:12+0100\n"
 "PO-Revision-Date: 2020-07-24 14:02+0000\n"
-"Last-Translator: Acid Chicken (硫酸鶏) <root@acid-chicken.com>\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -1807,7 +1807,7 @@ msgstr "オートメーション"
 
 #: src/audio/tempo_track.c:51
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: src/audio/tempo_track.c:66
 #, fuzzy

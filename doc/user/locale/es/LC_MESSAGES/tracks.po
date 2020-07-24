@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-03-01 10:34+0000\n"
-"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"PO-Revision-Date: 2020-07-24 14:02+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish "
-"<https://hosted.weblate.org/projects/zrythm/manualtracks/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -573,7 +574,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:102
 msgid "Peak"
-msgstr ""
+msgstr "Pico"
 
 #: ../../tracks/inspector-page.rst:103
 msgid "Peak signal value."
@@ -1320,4 +1321,3 @@ msgstr ""
 #~ "with additional options depending on its"
 #~ " type."
 #~ msgstr ""
-
