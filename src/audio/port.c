@@ -1285,8 +1285,11 @@ port_connect (
     &src->dest_ids[src->num_dests],
     &dest->id);
   src->multipliers[src->num_dests] = 1.f;
+  dest->src_multipliers[src->num_srcs] = 1.f;
   src->dest_locked[src->num_dests] = locked;
+  dest->src_locked[src->num_srcs] = locked;
   src->dest_enabled[src->num_dests] = 1;
+  dest->src_enabled[src->num_srcs] = 1;
   src->num_dests++;
   dest->srcs[dest->num_srcs] = src;
   port_identifier_copy (
@@ -3239,9 +3242,16 @@ port_free (Port * self)
   g_message (
     "freeing %s...", self->id.label);
 
-  /* assert no connections */
-  g_warn_if_fail (self->num_srcs == 0);
-  g_warn_if_fail (self->num_dests == 0);
+  /* assert no connections. some ports need to
+   * have fake connections (see delete tracks
+   * action) so check the first actual element
+   * instead */
+  g_warn_if_fail (
+    self->num_srcs == 0 ||
+    self->srcs[0] == 0);
+  g_warn_if_fail (
+    self->num_dests == 0 ||
+    self->dests[0] == 0);
 
   object_zero_and_free (self->buf);
   if (self->audio_ring)

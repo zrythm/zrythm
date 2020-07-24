@@ -136,6 +136,11 @@ update_connections (
               self_port, dest_port);
           port_set_multiplier_by_index (
             self_port, idx, self->amount);
+          idx =
+            port_get_src_index (
+              dest_port, self_port);
+          port_set_src_multiplier_by_index (
+            dest_port, idx, self->amount);
         }
       break;
     case TYPE_EVENT:

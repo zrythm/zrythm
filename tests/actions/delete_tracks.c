@@ -34,6 +34,7 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project.h"
 
 #include <glib.h>
@@ -286,12 +287,19 @@ test_group_track_deletion (void)
 /**
  * Asserts that src is connected/disconnected
  * to/from send.
+ *
+ * @param pl_out_port_idx Outgoing port index on
+ *   src track.
+ * @param pl_in_port_idx Incoming port index on
+ *   src track.
  */
 static void
 assert_sends_connected (
   Track * src,
   Track * dest,
-  bool    connected)
+  bool    connected,
+  int     pl_out_port_idx,
+  int     pl_in_port_idx)
 {
   if (src && dest)
     {
@@ -312,13 +320,21 @@ assert_sends_connected (
           src->channel->fader->stereo_out->r,
           dest->processor->stereo_in->r);
 
+      bool pl_ports_connected =
+        ports_connected (
+          src->channel->inserts[0]->out_ports[
+            pl_out_port_idx],
+          dest->channel->inserts[0]->in_ports[
+            pl_in_port_idx]);
+
       if (connected)
         {
           g_assert_true (
             prefader_l_connected &&
             prefader_r_connected &&
             fader_l_connected &&
-            fader_r_connected);
+            fader_r_connected &&
+            pl_ports_connected);
         }
       else
         {
@@ -326,7 +342,8 @@ assert_sends_connected (
             prefader_l_connected ||
             prefader_r_connected ||
             fader_l_connected ||
-            fader_r_connected);
+            fader_r_connected ||
+            pl_ports_connected);
         }
     }
 
@@ -338,44 +355,53 @@ assert_sends_connected (
         !src->channel->sends[
           CHANNEL_SEND_POST_FADER_START_SLOT].
             is_empty;
+      bool pl_ports_connected =
+        src->channel->inserts[0]->out_ports[
+          pl_out_port_idx]->num_dests > 0;
 
       if (connected)
         {
           g_assert_true (
             prefader_connected &&
-            fader_connected);
+            fader_connected &&
+            pl_ports_connected);
         }
       else
         {
           g_assert_false (
             prefader_connected ||
-            fader_connected);
+            fader_connected ||
+            pl_ports_connected);
         }
     }
 }
 
 static void
 test_track_deletion_with_sends (
-  bool test_deleting_target)
+  bool         test_deleting_target,
+  const char * pl_bundle,
+  const char * pl_uri)
 {
   UndoableAction * ua;
+
+  PluginDescriptor * descr =
+    test_plugin_manager_get_plugin_descriptor (
+      pl_bundle, pl_uri, false);
 
   /* create an audio fx track and send both prefader
    * and postfader to a new audio fx track */
   ua =
     create_tracks_action_new_audio_fx (
-      NULL, TRACKLIST->num_tracks, 1);
+      descr, TRACKLIST->num_tracks, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_fx_for_sending =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   ua =
     create_tracks_action_new_audio_fx (
-      NULL, TRACKLIST->num_tracks, 1);
+      descr, TRACKLIST->num_tracks, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
   Track * audio_fx_for_receiving =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
-
-  /* create sends */
   ua =
     channel_send_action_new_connect_audio (
       &audio_fx_for_sending->channel->sends[0],
@@ -390,9 +416,47 @@ test_track_deletion_with_sends (
         stereo_in);
   undo_manager_perform (UNDO_MANAGER, ua);
 
+  /* connect plugin from sending track to
+   * plugin on receiving track */
+  Port * out_port = NULL;
+  Port * in_port = NULL;
+  int out_port_idx = -1;
+  int in_port_idx = -1;
+  Plugin * pl =
+    audio_fx_for_sending->channel->inserts[0];
+  for (int i = 0; i < pl->num_out_ports; i++)
+    {
+      Port * port = pl->out_ports[i];
+      if (port->id.type == TYPE_CV)
+        {
+          /* connect the first out CV port */
+          out_port = port;
+          out_port_idx = i;
+          break;
+        }
+    }
+  pl = audio_fx_for_receiving->channel->inserts[0];
+  for (int i = 0; i < pl->num_in_ports; i++)
+    {
+      Port * port = pl->in_ports[i];
+      if (port->id.type == TYPE_CONTROL &&
+          port->id.flags & PORT_FLAG_PLUGIN_CONTROL)
+        {
+          /* connect the first in control port */
+          in_port = port;
+          in_port_idx = i;
+          break;
+        }
+    }
+  ua =
+    port_connection_action_new_connect (
+      &out_port->id, &in_port->id);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* assert they are connected */
   assert_sends_connected (
     audio_fx_for_sending, audio_fx_for_receiving,
-    true);
+    true, out_port_idx, in_port_idx);
 
   /* save and reload the project */
   int audio_fx_for_sending_pos =
@@ -407,7 +471,7 @@ test_track_deletion_with_sends (
 
   assert_sends_connected (
     audio_fx_for_sending, audio_fx_for_receiving,
-    true);
+    true, out_port_idx, in_port_idx);
 
   if (test_deleting_target)
     {
@@ -421,7 +485,8 @@ test_track_deletion_with_sends (
           TRACKLIST_SELECTIONS);
       undo_manager_perform (UNDO_MANAGER, ua);
       assert_sends_connected (
-        audio_fx_for_sending, NULL, false);
+        audio_fx_for_sending, NULL, false,
+        out_port_idx, in_port_idx);
       audio_fx_for_sending_pos =
         audio_fx_for_sending->pos;
 
@@ -433,7 +498,8 @@ test_track_deletion_with_sends (
         TRACKLIST->tracks[
           audio_fx_for_receiving_pos];
       assert_sends_connected (
-        audio_fx_for_sending, NULL, false);
+        audio_fx_for_sending, NULL, false,
+        out_port_idx, in_port_idx);
     }
   else
     {
@@ -463,7 +529,7 @@ test_track_deletion_with_sends (
     TRACKLIST->tracks[audio_fx_for_sending_pos];
   assert_sends_connected (
     audio_fx_for_sending, audio_fx_for_receiving,
-    true);
+    true, out_port_idx, in_port_idx);
 
   /* TODO test MIDI sends */
 }
@@ -471,13 +537,19 @@ test_track_deletion_with_sends (
 static void
 test_target_track_deletion_with_sends (void)
 {
-  test_track_deletion_with_sends (true);
+#ifdef HAVE_AMS_LFO
+  test_track_deletion_with_sends (
+    true, AMS_LFO_BUNDLE, AMS_LFO_URI);
+#endif
 }
 
 static void
 test_source_track_deletion_with_sends (void)
 {
-  test_track_deletion_with_sends (false);
+#ifdef HAVE_AMS_LFO
+  test_track_deletion_with_sends (
+    false, AMS_LFO_BUNDLE, AMS_LFO_URI);
+#endif
 }
 
 int

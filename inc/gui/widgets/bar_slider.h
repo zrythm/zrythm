@@ -137,6 +137,9 @@ typedef struct _BarSliderWidget
    * multipliers of the port. */
   int             dest_index;
 
+  /** Source index on the destination port. */
+  int             src_index;
+
   /** Cache layout. */
   PangoLayout *   layout;
 } BarSliderWidget;

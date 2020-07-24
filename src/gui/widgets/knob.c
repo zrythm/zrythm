@@ -76,12 +76,25 @@ G_DEFINE_TYPE (KnobWidget,
 /**
  * Sets real val
  */
-#define SET_REAL_VAL(real) \
-  (self->type == KNOB_TYPE_NORMAL ? \
-   ((*self->setter)(self->object, (float) real)) : \
-   port_set_multiplier_by_index ( \
-     (Port *) self->object, \
-     self->dest_index, (float) real))
+static void
+set_real_val (
+  KnobWidget * self,
+  float        real_val)
+{
+  if (self->type == KNOB_TYPE_NORMAL)
+    {
+      (*self->setter)(self->object, real_val);
+    }
+  else
+    {
+      Port * port = (Port *) self->object;
+      Port * dest = port->dests[self->dest_index];
+      port_set_multiplier_by_index (
+        port, self->dest_index, real_val);
+      port_set_src_multiplier_by_index (
+        dest, self->src_index, real_val);
+    }
+}
 
 /**
  * Draws the knob.
@@ -414,7 +427,8 @@ drag_update (
   int use_y =
     fabs (offset_y - self->last_y) >
     fabs (offset_x - self->last_x);
-  SET_REAL_VAL (
+  set_real_val (
+    self,
     REAL_VAL_FROM_KNOB (
       clamp (
         KNOB_VAL_FROM_REAL (GET_REAL_VAL) +
@@ -475,9 +489,14 @@ _knob_widget_new (
     {
       self->dest_index =
         port_get_dest_index ((Port *) object, dest);
+      self->src_index =
+        port_get_src_index (dest, (Port *) object);
     }
   else
-    self->dest_index = -1;
+    {
+      self->dest_index = -1;
+      self->src_index = -1;
+    }
   /*self->cur = get_knob_val (self)*/
   self->size = size; /* default 30 */
   self->hover = 0;

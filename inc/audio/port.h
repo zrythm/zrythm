@@ -159,6 +159,9 @@ typedef struct Port
    */
   float               multipliers[MAX_DESTINATIONS];
 
+  /** Same as above for sources. */
+  float               src_multipliers[MAX_DESTINATIONS];
+
   /**
    * These indicate whether the destination Port
    * can be removed or the multiplier edited by the
@@ -172,6 +175,9 @@ typedef struct Port
    */
   int                 dest_locked[MAX_DESTINATIONS];
 
+  /** Same as above for sources. */
+  int                 src_locked[MAX_DESTINATIONS];
+
   /**
    * These indicate whether the connection is
    * enabled.
@@ -183,6 +189,9 @@ typedef struct Port
    * 1 == enabled (connected).
    */
   int                 dest_enabled[MAX_DESTINATIONS];
+
+  /** Same as above for sources. */
+  int                 src_enabled[MAX_DESTINATIONS];
 
   /** Counters. */
   int                 num_srcs;
@@ -473,12 +482,24 @@ port_fields_schema[] =
     Port, multipliers, num_dests,
     &float_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
+    "src_multipliers", CYAML_FLAG_DEFAULT,
+    Port, src_multipliers, num_srcs,
+    &float_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
     "dest_locked", CYAML_FLAG_DEFAULT,
     Port, dest_locked, num_dests,
     &int_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
+    "src_locked", CYAML_FLAG_DEFAULT,
+    Port, src_locked, num_srcs,
+    &int_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
     "dest_enabled", CYAML_FLAG_DEFAULT,
     Port, dest_enabled, num_dests,
+    &int_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "src_enabled", CYAML_FLAG_DEFAULT,
+    Port, src_enabled, num_srcs,
     &int_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
     "internal_type", CYAML_FLAG_DEFAULT,
@@ -753,6 +774,19 @@ port_set_multiplier_by_index (
   float  val)
 {
   port->multipliers[idx] = val;
+}
+
+/**
+ * Set the multiplier for a destination by its
+ * index in the dest array.
+ */
+static inline void
+port_set_src_multiplier_by_index (
+  Port * port,
+  int    idx,
+  float  val)
+{
+  port->src_multipliers[idx] = val;
 }
 
 /**

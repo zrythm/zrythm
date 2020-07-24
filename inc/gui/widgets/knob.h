@@ -86,6 +86,9 @@ typedef struct _KnobWidget
   /** Destination index for the destination
    * multipliers of the port. */
   int                   dest_index;
+
+  /** Source index on the destination port. */
+  int             src_index;
 } KnobWidget;
 
 /**
