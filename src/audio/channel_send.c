@@ -321,6 +321,8 @@ channel_send_disconnect (
   if (self->is_empty)
     return;
 
+  g_message ("disconnecting send %p", self);
+
   Track * track = channel_send_get_track (self);
   switch (track->out_signal_type)
     {

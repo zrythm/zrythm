@@ -38,6 +38,12 @@ typedef struct DeleteTracksAction
 {
   UndoableAction  parent_instance;
 
+  /** Source sends that need to be deleted/
+   * recreated on do/undo. */
+  ChannelSend *   src_sends;
+  int             num_src_sends;
+  int             src_sends_size;
+
   /** Clone of the TracklistSelections to delete. */
   TracklistSelections * tls;
 } DeleteTracksAction;
@@ -53,6 +59,9 @@ static const cyaml_schema_field_t
     "tls", CYAML_FLAG_POINTER,
     DeleteTracksAction, tls,
     tracklist_selections_fields_schema),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+    DeleteTracksAction, src_sends,
+    channel_send_schema),
 
   CYAML_FIELD_END
 };

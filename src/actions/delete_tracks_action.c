@@ -25,6 +25,7 @@
 #include "gui/backend/event_manager.h"
 #include "gui/backend/tracklist_selections.h"
 #include "project.h"
+#include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
@@ -44,8 +45,7 @@ delete_tracks_action_new (
   TracklistSelections * tls)
 {
   DeleteTracksAction * self =
-    calloc (1, sizeof (
-      DeleteTracksAction));
+    object_new (DeleteTracksAction);
 
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
@@ -53,6 +53,42 @@ delete_tracks_action_new (
 
   self->tls = tracklist_selections_clone (tls);
   tracklist_selections_sort (self->tls);
+
+  /* save the incoming sends */
+  for (int k = 0; k < self->tls->num_tracks; k++)
+    {
+      int clone_track_pos =
+        self->tls->tracks[k]->pos;
+
+      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+        {
+          Track * track = TRACKLIST->tracks[i];
+          if (!track_type_has_channel (track->type))
+            continue;
+
+          for (int j = 0; j < STRIP_SIZE; j++)
+            {
+              ChannelSend * send =
+                &track->channel->sends[j];
+              if (send->is_empty)
+                continue;
+
+              Track * target_track =
+                channel_send_get_target_track (send);
+
+              if (target_track->pos ==
+                    clone_track_pos)
+                {
+                  array_double_size_if_full (
+                    self->src_sends, self->num_src_sends,
+                    self->src_sends_size, ChannelSend);
+                  self->src_sends[
+                    self->num_src_sends++] =
+                      *send;
+                }
+            }
+        }
+    }
 
   return ua;
 }
@@ -63,7 +99,20 @@ delete_tracks_action_do (
 {
   Track * track;
 
-  for (int i = self->tls->num_tracks - 1; i >= 0; i--)
+  /* remove any sends pointing to any track */
+  for (int i = 0; i < self->num_src_sends; i++)
+    {
+      ChannelSend * clone_send = &self->src_sends[i];
+
+      /* get the original send and disconnect it */
+      ChannelSend * send =
+        &TRACKLIST->tracks[clone_send->track_pos]->
+          channel->sends[clone_send->slot];
+      channel_send_disconnect (send);
+    }
+
+  for (int i = self->tls->num_tracks - 1;
+       i >= 0; i--)
     {
       /* get track from pos */
       track =
@@ -136,6 +185,39 @@ delete_tracks_action_undo (
                 ET_PLUGIN_VISIBILITY_CHANGED,
                 track->channel->instrument);
             }
+        }
+    }
+
+  /* re-connect any sends */
+  for (int i = 0; i < self->num_src_sends; i++)
+    {
+      ChannelSend * clone_send = &self->src_sends[i];
+
+      /* get the original send and connect it */
+      Track * orig_track =
+        TRACKLIST->tracks[clone_send->track_pos];
+      ChannelSend * send =
+        &orig_track->channel->sends[
+          clone_send->slot];
+
+      if (orig_track->out_signal_type == TYPE_AUDIO)
+        {
+          Port * l =
+            port_find_from_identifier (
+              &send->dest_l_id);
+          Port * r =
+            port_find_from_identifier (
+              &send->dest_r_id);
+          channel_send_connect_stereo (
+            send, NULL, l, r);
+        }
+      else if (orig_track->out_signal_type ==
+                 TYPE_EVENT)
+        {
+          Port * midi =
+            port_find_from_identifier (
+              &send->dest_midi_id);
+          channel_send_connect_midi (send, midi);
         }
     }
 

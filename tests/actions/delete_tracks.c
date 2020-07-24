@@ -283,6 +283,107 @@ test_group_track_deletion (void)
   g_assert_false (audio_fx2->channel->has_output);
 }
 
+static void
+test_target_track_deletion_with_sends (void)
+{
+  UndoableAction * ua;
+
+  /* create an audio fx track and send both prefader
+   * and postfader to a new audio fx track */
+  ua =
+    create_tracks_action_new_audio_fx (
+      NULL, TRACKLIST->num_tracks, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * audio_fx_for_sending =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  ua =
+    create_tracks_action_new_audio_fx (
+      NULL, TRACKLIST->num_tracks, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * audio_fx_for_receiving =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+  /* create sends */
+  ua =
+    channel_send_action_new_connect_audio (
+      &audio_fx_for_sending->channel->sends[0],
+      audio_fx_for_receiving->processor->
+        stereo_in);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  ua =
+    channel_send_action_new_connect_audio (
+      &audio_fx_for_sending->channel->sends[5],
+      audio_fx_for_receiving->processor->
+        stereo_in);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_false (
+    audio_fx_for_sending->channel->sends[0].
+      is_empty);
+
+  /* save and reload the project */
+  int audio_fx_for_sending_pos =
+    audio_fx_for_sending->pos;
+  int audio_fx_for_receiving_pos =
+    audio_fx_for_receiving->pos;
+  test_project_save_and_reload ();
+  audio_fx_for_sending =
+    TRACKLIST->tracks[audio_fx_for_sending_pos];
+  audio_fx_for_receiving =
+    TRACKLIST->tracks[audio_fx_for_receiving_pos];
+
+  g_assert_false (
+    audio_fx_for_sending->channel->sends[0].
+      is_empty);
+  g_assert_false (
+    audio_fx_for_sending->channel->sends[5].
+      is_empty);
+
+  /* delete the receiving track and check that the
+   * sends are gone */
+  track_select (
+    audio_fx_for_receiving, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+  ua =
+    delete_tracks_action_new (TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_true (
+    audio_fx_for_sending->channel->sends[0].
+      is_empty);
+  g_assert_true (
+    audio_fx_for_sending->channel->sends[5].
+      is_empty);
+
+  /* save and reload the project */
+  audio_fx_for_sending_pos =
+    audio_fx_for_sending->pos;
+  test_project_save_and_reload ();
+  audio_fx_for_sending =
+    TRACKLIST->tracks[audio_fx_for_sending_pos];
+  audio_fx_for_receiving =
+    TRACKLIST->tracks[audio_fx_for_receiving_pos];
+
+  g_assert_true (
+    audio_fx_for_sending->channel->sends[0].
+      is_empty);
+  g_assert_true (
+    audio_fx_for_sending->channel->sends[5].
+      is_empty);
+
+  /* undo and check that the sends are
+   * established again */
+  undo_manager_undo (UNDO_MANAGER);
+
+  g_assert_false (
+    audio_fx_for_sending->channel->sends[0].
+      is_empty);
+  g_assert_false (
+    audio_fx_for_sending->channel->sends[5].
+      is_empty);
+
+  /* TODO test MIDI sends */
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -298,7 +399,11 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test group track deletion",
     (GTestFunc) test_group_track_deletion);
+  g_test_add_func (
+    TEST_PREFIX
+    "test target track deletion with sends",
+    (GTestFunc)
+    test_target_track_deletion_with_sends);
 
   return g_test_run ();
 }
-

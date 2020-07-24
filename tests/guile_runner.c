@@ -113,8 +113,6 @@ guile_mode_func (void * data)
   g_free (script_path);
 
   SCM str_scm = scm_get_output_string (out_port);
-  char * str =
-    scm_to_locale_string (str_scm);
   str_scm =
     scm_get_output_string (error_out_port);
   char * err_str =
@@ -122,14 +120,13 @@ guile_mode_func (void * data)
   if (ret == SCM_BOOL_T)
     {
       g_message ("Test successful");
-      return 0;
     }
   else
     {
       g_error ("Test failed: %s", err_str);
     }
 
-  return 1;
+  return ret;
 }
 
 int
@@ -142,5 +139,13 @@ main (
       g_error ("Script path is required");
     }
 
-  return scm_with_guile (&guile_mode_func, argv[1]);
+  if (scm_with_guile (
+        &guile_mode_func, argv[1]) == SCM_BOOL_T)
+    {
+      return 0;
+    }
+  else
+    {
+      return 1;
+    }
 }
