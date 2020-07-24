@@ -30,7 +30,7 @@ Zrythm is currently in alpha. Most essential
 DAW features are implemented and we are working
 towards a stable release. [View the Roadmap](https://redmine.zrythm.org/projects/zrythm/roadmap)
 
-![screenshot](https://www.zrythm.org/static/images/jun-7-2020.png)
+![screenshot](https://www.zrythm.org/static/images/jun-26-2020.png)
 
 ### Supported plugins/instruments
 - Full support: LV2, VST2, AU, SFZ, SF2
