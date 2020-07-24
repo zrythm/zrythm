@@ -77,6 +77,9 @@ _test_undo_track_deletion (
       TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
+  /* save and reload the project */
+  test_project_save_and_reload ();
+
   plugin_descriptor_free (descr);
 
   /* select it */
@@ -101,7 +104,9 @@ _test_undo_track_deletion (
     automation_region_new (
       &start_pos, &end_pos, helm_track->pos,
       at->index, at->num_regions);
-  automation_track_add_region (at, region);
+  track_add_region (
+    helm_track, region, at, -1, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, true, false);
   ua =
@@ -130,13 +135,22 @@ _test_undo_track_deletion (
   g_assert_true (
     track_verify_identifiers (helm_track));
 
+  /* save and reload the project */
+  test_project_save_and_reload ();
+
   /* delete it */
   ua =
     delete_tracks_action_new (TRACKLIST_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
 
+  /* save and reload the project */
+  test_project_save_and_reload ();
+
   /* undo deletion */
   undo_manager_undo (UNDO_MANAGER);
+
+  /* save and reload the project */
+  test_project_save_and_reload ();
 
   g_assert_true (
     track_verify_identifiers (
@@ -209,9 +223,17 @@ test_group_track_deletion (void)
   g_assert_cmpint (
     audio_fx2->channel->output_pos, ==, group->pos);
 
+  /* save and reload the project */
+  int group_pos = group->pos;
+  int audio_fx1_pos = audio_fx1->pos;
+  int audio_fx2_pos = audio_fx2->pos;
+  test_project_save_and_reload ();
+  group = TRACKLIST->tracks[group_pos];
+  audio_fx1 = TRACKLIST->tracks[audio_fx1_pos];
+  audio_fx2 = TRACKLIST->tracks[audio_fx2_pos];
+
   /* delete the group track and check that each
    * fx track has its output set to none */
-  int group_pos = group->pos;
   track_select (
     group, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
@@ -221,17 +243,44 @@ test_group_track_deletion (void)
   g_assert_false (audio_fx1->channel->has_output);
   g_assert_false (audio_fx2->channel->has_output);
 
+  /* save and reload the project */
+  audio_fx1_pos = audio_fx1->pos;
+  audio_fx2_pos = audio_fx2->pos;
+  test_project_save_and_reload ();
+  audio_fx1 = TRACKLIST->tracks[audio_fx1_pos];
+  audio_fx2 = TRACKLIST->tracks[audio_fx2_pos];
+
+  g_assert_false (audio_fx1->channel->has_output);
+  g_assert_false (audio_fx2->channel->has_output);
+
   /* undo and check that the connections are
    * established again */
   undo_manager_undo (UNDO_MANAGER);
   group = TRACKLIST->tracks[group_pos];
   g_assert_cmpint (group->num_children, ==, 2);
+  g_assert_cmpint (
+    group->children[0], ==, audio_fx1->pos);
+  g_assert_cmpint (
+    group->children[1], ==, audio_fx2->pos);
   g_assert_true (audio_fx1->channel->has_output);
   g_assert_true (audio_fx2->channel->has_output);
   g_assert_cmpint (
     audio_fx1->channel->output_pos, ==, group->pos);
   g_assert_cmpint (
     audio_fx2->channel->output_pos, ==, group->pos);
+
+  /* save and reload the project */
+  audio_fx1_pos = audio_fx1->pos;
+  audio_fx2_pos = audio_fx2->pos;
+  test_project_save_and_reload ();
+  audio_fx1 = TRACKLIST->tracks[audio_fx1_pos];
+  audio_fx2 = TRACKLIST->tracks[audio_fx2_pos];
+
+  /* redo and check that the connections are
+   * gone again */
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_false (audio_fx1->channel->has_output);
+  g_assert_false (audio_fx2->channel->has_output);
 }
 
 int

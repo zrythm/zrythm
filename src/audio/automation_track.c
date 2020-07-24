@@ -127,6 +127,9 @@ automation_record_mode_get_localized (
 
 /**
  * Adds an automation ZRegion to the AutomationTrack.
+ *
+ * @note This must not be used directly. Use
+ *   track_add_region() instead.
  */
 void
 automation_track_add_region (

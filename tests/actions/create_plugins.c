@@ -153,6 +153,8 @@ _test_create_plugins (
 
   /* let the engine run */
   g_usleep (1000000);
+
+  g_message ("done");
 }
 
 static void

@@ -125,46 +125,46 @@ typedef struct UndoStack
 static const cyaml_schema_field_t
   undo_stack_fields_schema[] =
 {
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, as_actions,
     arranger_selections_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, copy_plugins_actions,
     copy_plugins_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, copy_tracks_actions,
     copy_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, create_plugins_actions,
     create_plugins_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, create_tracks_actions,
     create_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, delete_plugins_actions,
     delete_plugins_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, delete_tracks_actions,
     delete_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, channel_send_actions,
     channel_send_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, edit_plugins_actions,
     edit_plugins_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, edit_tracks_actions,
     edit_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, move_plugins_actions,
     move_plugins_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, move_tracks_actions,
     move_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, port_connection_actions,
     port_connection_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, transport_actions,
     transport_action_schema),
   YAML_FIELD_MAPPING_PTR (

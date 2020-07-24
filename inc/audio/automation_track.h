@@ -150,7 +150,7 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_EMBEDDED (
     AutomationTrack, port_id,
     port_identifier_fields_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     AutomationTrack, regions, region_schema),
   YAML_FIELD_INT (
     AutomationTrack, created),
@@ -284,6 +284,9 @@ automation_track_should_be_recording (
 
 /**
  * Adds an automation ZRegion to the AutomationTrack.
+ *
+ * @note This must not be used directly. Use
+ *   track_add_region() instead.
  */
 void
 automation_track_add_region (

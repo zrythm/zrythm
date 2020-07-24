@@ -446,10 +446,9 @@ track_fields_schema[] =
   CYAML_FIELD_UINT (
     "midi_ch", CYAML_FLAG_DEFAULT,
     Track, midi_ch),
-  CYAML_FIELD_STRING_PTR (
-    "comment", CYAML_FLAG_POINTER, Track, comment,
-     0, CYAML_UNLIMITED),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+  YAML_FIELD_STRING_PTR (
+    Track, comment),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT_PRIMITIVES (
     Track, children, int_schema),
 
   CYAML_FIELD_END

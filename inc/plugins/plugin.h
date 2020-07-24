@@ -200,7 +200,7 @@ plugin_fields_schema[] =
     Plugin, in_ports, port_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
     Plugin, out_ports, port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     Plugin, banks, plugin_bank_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
     Plugin, selected_bank,
