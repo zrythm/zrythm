@@ -146,17 +146,48 @@ delete_tracks_action_do (
 }
 
 /**
+ * Reconnects the given send.
+ *
+ * @note The given send must be the send on the
+ *   project track (not a clone).
+ */
+static void
+reconnect_send (
+  ChannelSend * send)
+{
+  Track * src = TRACKLIST->tracks[send->track_pos];
+
+  if (src->out_signal_type == TYPE_AUDIO)
+    {
+      Port * l =
+        port_find_from_identifier (
+          &send->dest_l_id);
+      Port * r =
+        port_find_from_identifier (
+          &send->dest_r_id);
+      channel_send_connect_stereo (
+        send, NULL, l, r);
+    }
+  else if (src->out_signal_type == TYPE_EVENT)
+    {
+      Port * midi =
+        port_find_from_identifier (
+          &send->dest_midi_id);
+      channel_send_connect_midi (send, midi);
+    }
+}
+
+/**
  * Undo deletion, create tracks.
  */
 int
 delete_tracks_action_undo (
   DeleteTracksAction * self)
 {
-  Track * track;
   for (int i = 0; i < self->tls->num_tracks; i++)
     {
       /* clone the clone */
-      track =
+      Track * track =
         track_clone (self->tls->tracks[i], false);
 
       /* insert it to the tracklist at its original
@@ -188,7 +219,30 @@ delete_tracks_action_undo (
         }
     }
 
-  /* re-connect any sends */
+  for (int i = 0; i < self->tls->num_tracks; i++)
+    {
+      /* get the project track */
+      Track * track =
+        TRACKLIST->tracks[self->tls->tracks[i]->pos];
+      if (!track_type_has_channel (track->type))
+        continue;
+
+      /* reconnect any sends sent from the track */
+      for (int j = 0; j < STRIP_SIZE; j++)
+        {
+          ChannelSend * clone_send =
+            &self->tls->tracks[i]->channel->sends[j];
+          ChannelSend * send =
+            &track->channel->sends[j];
+          *send = *clone_send;
+          if (clone_send->is_empty)
+            continue;
+
+          reconnect_send (send);
+        }
+    }
+
+  /* re-connect any source sends */
   for (int i = 0; i < self->num_src_sends; i++)
     {
       ChannelSend * clone_send = &self->src_sends[i];
@@ -200,25 +254,7 @@ delete_tracks_action_undo (
         &orig_track->channel->sends[
           clone_send->slot];
 
-      if (orig_track->out_signal_type == TYPE_AUDIO)
-        {
-          Port * l =
-            port_find_from_identifier (
-              &send->dest_l_id);
-          Port * r =
-            port_find_from_identifier (
-              &send->dest_r_id);
-          channel_send_connect_stereo (
-            send, NULL, l, r);
-        }
-      else if (orig_track->out_signal_type ==
-                 TYPE_EVENT)
-        {
-          Port * midi =
-            port_find_from_identifier (
-              &send->dest_midi_id);
-          channel_send_connect_midi (send, midi);
-        }
+      reconnect_send (send);
     }
 
   EVENTS_PUSH (ET_TRACKS_ADDED, NULL);

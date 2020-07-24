@@ -42,7 +42,14 @@ typedef struct _ChannelSendWidget ChannelSendWidget;
  * @{
  */
 
-#define channel_send_is_prefader(x) (x->slot < 6)
+/**
+ * The slot where post-fader sends begin (starting
+ * from 0).
+ */
+#define CHANNEL_SEND_POST_FADER_START_SLOT 6
+
+#define channel_send_is_prefader(x) \
+  (x->slot < CHANNEL_SEND_POST_FADER_START_SLOT)
 
 /**
  * Channel send.

@@ -1378,14 +1378,12 @@ port_disconnect (Port * src, Port * dest)
 /**
  * Returns if the two ports are connected or not.
  */
-int
+bool
 ports_connected (Port * src, Port * dest)
 {
-  if (array_contains ((void **)src->dests,
-                      src->num_dests,
-                      dest))
-    return 1;
-  return 0;
+  return
+    array_contains (
+      src->dests, src->num_dests, dest);
 }
 
 /**

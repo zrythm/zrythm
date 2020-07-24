@@ -86,8 +86,10 @@ typedef struct Channel
   /**
    * The sends strip.
    *
-   * The first 5 are pre-fader and the rest are
-   * post-fader.
+   * The first 6 (slots 0-5) are pre-fader and the
+   * rest are post-fader.
+   *
+   * @note See CHANNEL_SEND_POST_FADER_START_SLOT.
    */
   ChannelSend      sends[STRIP_SIZE];
 

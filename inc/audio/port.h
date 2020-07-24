@@ -1035,7 +1035,7 @@ port_is_connection_locked (
 /**
  * Returns if the two ports are connected or not.
  */
-int
+bool
 ports_connected (
   Port * src, Port * dest);
 

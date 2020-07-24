@@ -1976,6 +1976,11 @@ channel_clone (
   clone->has_output = ch->has_output;
   clone->output_pos = ch->output_pos;
 
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      clone->sends[i] = ch->sends[i];
+    }
+
   /* TODO clone port connections, same for
    * plugins */
 
