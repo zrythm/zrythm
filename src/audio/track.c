@@ -1306,7 +1306,7 @@ track_disconnect (
 
   if (recalc_graph)
     {
-      router_recalc_graph (ROUTER);
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
     }
 
   if (track_type_has_channel (self->type))
@@ -1467,7 +1467,7 @@ track_add_modulator (
                 track->num_modulators,
                 modulator);
 
-  router_recalc_graph (ROUTER);
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   EVENTS_PUSH (ET_MODULATOR_ADDED, modulator);
 }

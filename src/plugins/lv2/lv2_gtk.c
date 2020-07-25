@@ -716,8 +716,7 @@ lv2_gtk_ui_port_event (
   else if (protocol !=
            PM_URIDS.atom_eventTransfer)
     {
-      g_warning (
-        "Unknown port event protocol");
+      g_warning ("Unknown port event protocol");
       return;
     }
 

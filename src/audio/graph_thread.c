@@ -46,6 +46,9 @@
 #include "utils/mpmc_queue.h"
 #include "utils/objects.h"
 
+/* uncomment to show debug messages */
+/*#define DEBUG_THREADS 1*/
+
 static void *
 worker_thread (void * arg)
 {
@@ -76,12 +79,14 @@ worker_thread (void * arg)
             graph->trigger_queue, &to_run))
         {
           g_warn_if_fail (to_run);
-          /*g_message (*/
-            /*"[%d]: dequeued node (nodes left %d)",*/
-            /*thread->id,*/
-            /*g_atomic_int_get (*/
-              /*&graph->trigger_queue_size));*/
-          /*print_node (to_run);*/
+#ifdef DEBUG_THREADS
+          g_message (
+            "[%d]: dequeued node (nodes left %d)",
+            thread->id,
+            g_atomic_int_get (
+              &graph->trigger_queue_size));
+          graph_node_print (to_run);
+#endif
           /* Wake up idle threads, but at most as
            * many as there's work in the trigger
            * queue that can be processed by other
@@ -98,10 +103,12 @@ worker_thread (void * arg)
               &graph->trigger_queue_size);
           guint wakeup =
             MIN (idle_cnt + 1, work_avail);
-          /*g_message (*/
-            /*"[%d]: idle threads %u, work avail %u",*/
-            /*thread->id,*/
-            /*idle_cnt, work_avail);*/
+#ifdef DEBUG_THREADS
+          g_message (
+            "[%d]: idle threads %u, work avail %u",
+            thread->id,
+            idle_cnt, work_avail);
+#endif
 
           for (guint i = 1; i < wakeup; ++i)
             zix_sem_post (&graph->trigger);
@@ -115,9 +122,12 @@ worker_thread (void * arg)
           int idle_thread_cnt =
             g_atomic_int_get (
               &graph->idle_thread_cnt);
-          /*g_message (*/
-            /*"[%d]: just increased idle thread count and waiting for work (idle threads %d)",*/
-            /*thread->id, idle_thread_cnt);*/
+#ifdef DEBUG_THREADS
+          g_message (
+            "[%d]: just increased idle thread count "
+            "and waiting for work (idle threads %d)",
+            thread->id, idle_thread_cnt);
+#endif
           if (idle_thread_cnt > graph->num_threads)
             {
               g_warning (
@@ -133,11 +143,15 @@ worker_thread (void * arg)
 
           g_atomic_int_dec_and_test (
             &graph->idle_thread_cnt);
-          /*g_message (*/
-            /*"[%d]: work found, decremented idle thread count back to %d and dequeing node",*/
-            /*thread->id,*/
-            /*g_atomic_int_get (*/
-              /*&graph->idle_thread_cnt));*/
+#ifdef DEBUG_THREADS
+          g_message (
+            "[%d]: work found, decremented idle "
+            "thread count back to %d and dequeing "
+            "node",
+            thread->id,
+            g_atomic_int_get (
+              &graph->idle_thread_cnt));
+#endif
 
           /* try to find some work to do */
           mpmc_queue_dequeue_node (
@@ -148,8 +162,9 @@ worker_thread (void * arg)
       /* process graph-node */
       g_atomic_int_dec_and_test (
         &graph->trigger_queue_size);
-      /*g_message ("[%d]: running node",*/
-                 /*thread->id);*/
+#ifdef DEBUG_THREADS
+      g_message ("[%d]: running node", thread->id);
+#endif
       graph_node_process (
         to_run, graph->router->nsamples);
 

@@ -101,7 +101,7 @@ create_plugins_action_do (
       g_return_val_if_fail (!ret, -1);
     }
 
-  router_recalc_graph ((ROUTER));
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED,
                ch);
@@ -131,7 +131,7 @@ create_plugins_action_undo (
                    ch);
     }
 
-  router_recalc_graph ((ROUTER));
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   return 0;
 }

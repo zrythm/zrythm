@@ -151,4 +151,7 @@
 #define F_TRIGGER_UNDO 1
 #define F_NO_TRIGGER_UNDO 0
 
+#define F_SOFT 1
+#define F_NOT_SOFT 0
+
 #endif

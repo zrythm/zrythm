@@ -1589,7 +1589,7 @@ channel_remove_plugin (
     }
 
   if (recalc_graph)
-    router_recalc_graph ((ROUTER));
+    router_recalc_graph (ROUTER, F_NOT_SOFT);
 }
 
 /**
@@ -1803,7 +1803,7 @@ channel_add_plugin (
     }
 
   if (recalc_graph)
-    router_recalc_graph ((ROUTER));
+    router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   return 1;
 }
@@ -1883,7 +1883,7 @@ channel_reattach_midi_editor_manual_press_port (
       track->processor->midi_in);
 
   if (recalc_graph)
-    router_recalc_graph ((ROUTER));
+    router_recalc_graph (ROUTER, F_NOT_SOFT);
 }
 
 /**

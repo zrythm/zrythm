@@ -119,16 +119,19 @@ router_start_cycle (
 
 /**
  * Recalculates the process acyclic directed graph.
+ *
+ * @param soft If true, only readjusts latencies.
  */
 void
 router_recalc_graph (
-  Router * self)
+  Router * self,
+  bool     soft)
 {
   g_message ("Recalculating...");
 
   g_return_if_fail (self);
 
-  if (!self->graph)
+  if (!self->graph && !soft)
     {
       self->graph = graph_new (self);
       graph_setup (self->graph, 1, 1);
@@ -136,9 +139,18 @@ router_recalc_graph (
       return;
     }
 
-  zix_sem_wait (&self->graph_access);
-  graph_setup (self->graph, 1, 1);
-  zix_sem_post (&self->graph_access);
+  if (soft)
+    {
+      zix_sem_wait (&self->graph_access);
+      graph_update_latencies (self->graph, false);
+      zix_sem_post (&self->graph_access);
+    }
+  else
+    {
+      zix_sem_wait (&self->graph_access);
+      graph_setup (self->graph, 1, 1);
+      zix_sem_post (&self->graph_access);
+    }
 
   g_message ("done");
 }

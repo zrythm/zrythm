@@ -159,6 +159,10 @@ typedef enum EventType
 
   /** Sent when a project is saved. */
   ET_PROJECT_SAVED,
+
+  /** Sent when plugin latency changes, to update
+   * the graph. */
+  ET_PLUGIN_LATENCY_CHANGED,
 } EventType;
 
 /**

@@ -152,7 +152,7 @@ delete_tracks_action_do (
                   break;
                 }
             }
-          g_warn_if_fail (clone_port);
+          g_return_val_if_fail (clone_port, -1);
 
           clone_port->num_srcs = prj_port->num_srcs;
           clone_port->num_dests =
@@ -216,7 +216,10 @@ delete_tracks_action_do (
   EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
   EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED, NULL);
 
-  router_recalc_graph (ROUTER);
+  /* process the events now */
+  event_manager_process_now (EVENT_MANAGER);
+
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   return 0;
 }
@@ -407,7 +410,7 @@ delete_tracks_action_undo (
   EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
 
   /* recalculate graph */
-  router_recalc_graph ((ROUTER));
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   return 0;
 }

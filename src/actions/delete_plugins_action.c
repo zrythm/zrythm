@@ -100,7 +100,7 @@ delete_plugins_action_do (
         F_NO_RECALC_GRAPH);
     }
 
-  router_recalc_graph ((ROUTER));
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   return 0;
 }
@@ -210,7 +210,7 @@ delete_plugins_action_undo (
         }
     }
 
-  router_recalc_graph ((ROUTER));
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   EVENTS_PUSH (ET_PLUGINS_ADDED, ch);
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);

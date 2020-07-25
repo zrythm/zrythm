@@ -21,6 +21,7 @@
 #include "audio/port.h"
 #include "audio/router.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 
 #include <glib/gi18n.h>
@@ -80,7 +81,7 @@ port_connection_action_do_or_undo (
           {
             port_disconnect (src, dest);
           }
-        router_recalc_graph (ROUTER);
+        router_recalc_graph (ROUTER, F_NOT_SOFT);
       }
       break;
     case PORT_CONNECTION_EDIT:

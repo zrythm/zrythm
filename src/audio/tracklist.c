@@ -233,7 +233,7 @@ tracklist_insert_track (
 
   if (recalc_graph)
     {
-      router_recalc_graph (ROUTER);
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
     }
 
   if (publish_events)
@@ -615,7 +615,7 @@ tracklist_remove_track (
 
   if (recalc_graph)
     {
-      router_recalc_graph (ROUTER);
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
     }
 
   if (publish_events)
@@ -738,7 +738,7 @@ tracklist_move_track (
 
   if (recalc_graph)
     {
-      router_recalc_graph (ROUTER);
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
     }
 
   if (publish_events)

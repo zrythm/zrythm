@@ -287,7 +287,7 @@ create_tracks_action_do (
 
   EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
 
-  router_recalc_graph ((ROUTER));
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   return 0;
 }
@@ -315,7 +315,7 @@ create_tracks_action_undo (
 
   EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
 
-  router_recalc_graph ((ROUTER));
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   return 0;
 }

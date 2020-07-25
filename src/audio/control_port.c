@@ -255,7 +255,7 @@ control_port_set_val_from_normalized (
           float real_val = val;
           self->base_value = real_val;
           port_set_control_value (
-            self, real_val, 0, 1);
+            self, real_val, false, true);
           return;
         }
 

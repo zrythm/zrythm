@@ -28,6 +28,7 @@
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
@@ -255,7 +256,7 @@ channel_send_connect_stereo (
   /* set multipliers */
   update_connections (self);
 
-  router_recalc_graph (ROUTER);
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 }
 
 /**
@@ -280,7 +281,7 @@ channel_send_connect_midi (
 
   self->is_empty = false;
 
-  router_recalc_graph (ROUTER);
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 }
 
 static void
@@ -343,7 +344,7 @@ channel_send_disconnect (
 
   self->is_empty = true;
 
-  router_recalc_graph (ROUTER);
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 }
 
 void

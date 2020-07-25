@@ -55,6 +55,8 @@
 #include "audio/midi.h"
 #include "audio/tempo_track.h"
 #include "audio/transport.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_control.h"
@@ -1042,10 +1044,10 @@ lv2_plugin_get_latency (
   Lv2Plugin * pl)
 {
   lv2_plugin_process (
-    pl, PLAYHEAD->frames,
-    AUDIO_ENGINE->block_length);
+    pl, PLAYHEAD->frames, 0);
+    /*AUDIO_ENGINE->block_length);*/
 
-  return pl->plugin_latency;
+  return pl->plugin->latency;
 }
 
 /**
@@ -2272,27 +2274,37 @@ lv2_plugin_process (
         case TYPE_CONTROL:
           if (pi->flow == FLOW_OUTPUT)
             {
+              /* if latency changed, recalc graph */
               if (pi->flags &
-                    PORT_FLAG_REPORTS_LATENCY)
+                    PORT_FLAG_REPORTS_LATENCY &&
+                  self->plugin->latency !=
+                    (nframes_t)
+                    lv2_port->port->control)
                 {
-                  if (!math_floats_equal (
-                        (float)
-                        self->plugin_latency,
-                        lv2_port->port->control))
-                    {
-                      self->plugin_latency =
-                        (uint32_t)
-                        lv2_port->port->control;
+                  g_message (
+                    "%s: latency changed from %d "
+                    "to %f",
+                    pi->label,
+                    self->plugin->latency,
+                    (double)
+                    lv2_port->port->control);
+                  EVENTS_PUSH (
+                    ET_PLUGIN_LATENCY_CHANGED,
+                    NULL);
+                  self->plugin->latency =
+                    (nframes_t)
+                    lv2_port->port->control;
 #ifdef HAVE_JACK
-                      if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
-                        {
-                          jack_recompute_total_latencies (
-                            client);
-                        }
-#endif
+                  if (AUDIO_ENGINE->
+                        audio_backend ==
+                      AUDIO_BACKEND_JACK)
+                    {
+                      jack_recompute_total_latencies (
+                        client);
                     }
+#endif
                 }
-              /* NEWWW */
+
               /* if UI is instantiated */
               if (send_ui_updates &&
                   self->plugin->visible &&

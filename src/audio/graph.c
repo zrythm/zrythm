@@ -180,8 +180,9 @@ clear_setup (
   for (size_t i = 0;
        i < self->num_setup_graph_nodes; i++)
     {
-      free_later (
-        self->setup_graph_nodes[i], free);
+      object_free_w_func_and_null (
+        graph_node_free,
+        self->setup_graph_nodes[i]);
     }
   self->num_setup_graph_nodes = 0;
   self->num_setup_init_triggers = 0;
@@ -406,6 +407,38 @@ graph_get_max_playback_latency (
     }
 
   return max;
+}
+
+void
+graph_update_latencies (
+  Graph * self,
+  bool    use_setup_nodes)
+{
+  g_message ("updating graph latencies...");
+
+  for (size_t i = 0;
+       i <
+         (use_setup_nodes ?
+           self->num_setup_graph_nodes :
+           (size_t) self->n_graph_nodes);
+       i++)
+    {
+      GraphNode * node =
+        (use_setup_nodes ?
+          self->setup_graph_nodes[i] :
+          self->graph_nodes[i]);
+      if (node->terminal)
+        {
+          graph_node_set_playback_latency (node, 0);
+        }
+    }
+
+  g_message (
+    "Total latencies:\n"
+    "Playback: %d\n"
+    "Recording: %d\n",
+    graph_get_max_playback_latency (self),
+    0);
 }
 
 /*
@@ -827,12 +860,7 @@ graph_setup (
    * processor
    * ======================== */
 
-  for (size_t ii = 0;
-       ii < self->num_setup_terminal_nodes; ii++)
-    {
-      graph_node_set_playback_latency (
-        self->setup_terminal_nodes[ii], 0);
-    }
+  graph_update_latencies (self, true);
 
   /* ========================
    * set up caches to tracks, channels, plugins,

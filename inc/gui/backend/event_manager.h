@@ -117,6 +117,15 @@ void
 event_manager_stop_events (
   EventManager * self);
 
+/**
+ * Processes the events now.
+ *
+ * Must only be called from the GTK thread.
+ */
+void
+event_manager_process_now (
+  EventManager * self);
+
 void
 event_manager_free (
   EventManager * self);

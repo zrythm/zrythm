@@ -556,9 +556,10 @@ graph_node_new (
 
 void
 graph_node_free (
-  GraphNode * node)
+  GraphNode * self)
 {
-  free (node->childnodes);
-  free (node->parentnodes);
-  free (node);
+  free (self->childnodes);
+  free (self->parentnodes);
+
+  object_zero_and_free (self);
 }

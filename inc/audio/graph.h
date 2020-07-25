@@ -228,6 +228,11 @@ void
 graph_on_reached_terminal_node (
   Graph *  self);
 
+void
+graph_update_latencies (
+  Graph * self,
+  bool    use_setup_nodes);
+
 /*
  * Adds the graph nodes and connections, then
  * rechains.

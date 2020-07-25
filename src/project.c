@@ -720,7 +720,7 @@ create_default (Project * self)
   setup_main_window (self);
 
   /* recalculate the routing graph */
-  router_recalc_graph (ROUTER);
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   engine_set_run (self->audio_engine, true);
 
@@ -1046,7 +1046,7 @@ load (
   g_message ("project loaded");
 
   /* recalculate the routing graph */
-  router_recalc_graph (ROUTER);
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   g_message ("setting up main window...");
   setup_main_window (self);

@@ -102,7 +102,7 @@ clip_editor_set_region (
     }
 
   if (recalc_graph)
-    router_recalc_graph (ROUTER);
+    router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   /* if first time showing a region, show the
    * event viewer as necessary */

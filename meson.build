@@ -110,7 +110,7 @@ cdata.set_quoted (
   'BUILD_TYPE', get_option ('buildtype'))
 if get_option ('trial_ver')
   cdata.set ('TRIAL_VER', 1)
-  cdata.set ('TRIAL_LIMIT_MINS', 20)
+  cdata.set ('TRIAL_LIMIT_MINS', 30)
 endif
 if get_option ('windows_release')
   cdata.set ('WINDOWS_RELEASE', 1)

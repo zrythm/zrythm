@@ -79,7 +79,7 @@ copy_tracks_action_do (
         F_NO_PUBLISH_EVENTS);
     }
 
-  router_recalc_graph (ROUTER);
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                NULL);
@@ -111,7 +111,7 @@ copy_tracks_action_undo (
         F_NO_RECALC_GRAPH);
     }
 
-  router_recalc_graph (ROUTER);
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                NULL);

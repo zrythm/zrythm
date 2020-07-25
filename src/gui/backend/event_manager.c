@@ -29,6 +29,7 @@
 #include "audio/clip.h"
 #include "audio/modulator.h"
 #include "audio/pool.h"
+#include "audio/router.h"
 #include "audio/stretcher.h"
 #include "audio/track.h"
 #include "gui/backend/event.h"
@@ -83,6 +84,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
@@ -1045,6 +1047,9 @@ process_events (void * data)
 
       switch (ev->type)
         {
+        case ET_PLUGIN_LATENCY_CHANGED:
+          router_recalc_graph (ROUTER, F_SOFT);
+          break;
         case ET_TRACKS_REMOVED:
           if (MW_MIXER)
             mixer_widget_hard_refresh (MW_MIXER);
@@ -1626,6 +1631,19 @@ event_manager_stop_events (
 
   /* process any remaining events - clear the
    * queue. */
+  process_events (self);
+}
+
+/**
+ * Processes the events now.
+ *
+ * Must only be called from the GTK thread.
+ */
+void
+event_manager_process_now (
+  EventManager * self)
+{
+  /* process events now */
   process_events (self);
 }
 

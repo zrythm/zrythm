@@ -27,6 +27,7 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "zrythm.h"
 
 void
@@ -117,7 +118,7 @@ update_child_output (
 
   if (recalc_graph)
     {
-      router_recalc_graph ((ROUTER));
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
     }
 
   if (pub_events)

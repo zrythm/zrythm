@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -182,9 +182,6 @@ typedef struct Lv2Plugin
 
   /** Available Lv2Plugin controls. */
   Lv2Controls        controls;
-
-  /** Latency reported by the Lv2Plugin, if any. */
-  uint32_t           plugin_latency;
 
   /** Frames since last update sent to UI. */
   uint32_t           event_delta_t;

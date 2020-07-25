@@ -101,7 +101,8 @@ typedef struct Plugin
   /** Whether plugin UI is opened or not. */
   bool              visible;
 
-  /** The latency in samples. */
+  /** Latency reported by the Lv2Plugin, if any,
+   * in samples. */
   nframes_t         latency;
 
   /** Whether the plugin is currently instantiated

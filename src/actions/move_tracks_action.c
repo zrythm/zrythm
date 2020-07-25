@@ -93,7 +93,7 @@ move_tracks_action_do (
           TRACKLIST_SELECTIONS, prj_track, 0);
     }
 
-  router_recalc_graph ((ROUTER));
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
 
@@ -128,7 +128,7 @@ move_tracks_action_undo (
           TRACKLIST_SELECTIONS, prj_track, 0);
     }
 
-  router_recalc_graph ((ROUTER));
+  router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
 

@@ -106,10 +106,13 @@ router_new (void);
 
 /**
  * Recalculates the process acyclic directed graph.
+ *
+ * @param soft If true, only readjusts latencies.
  */
 void
 router_recalc_graph (
-  Router * self);
+  Router * self,
+  bool     soft);
 
 /**
  * Starts a new cycle.
