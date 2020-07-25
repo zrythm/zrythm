@@ -36,10 +36,9 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* for getline() */
-#define _GNU_SOURCE
-
 #include "zrythm-config.h"
+
+#include <stdio.h>
 
 #ifdef _WOE32
 #include <process.h>
@@ -898,11 +897,12 @@ free_log_event_obj (
   object_zero_and_free (ev);
 }
 
+#define LINE_SIZE 800
 typedef struct Line
 {
-  char *line; // content
+  char line[LINE_SIZE]; // content
   size_t storage_sz; // allocation size of line memory
-  ssize_t sz; // size of line, not including terminating null byte ('\0')
+  size_t sz; // size of line, not including terminating null byte ('\0')
 } Line;
 
 /**
@@ -941,12 +941,13 @@ log_get_last_n_lines (
 
   /* only keep track of the last couple of
    * lines */
-  while ((lines[end].sz =
-            getline (
-              &lines[end].line,
-              &lines[end].storage_sz,
-              fp)) != -1)
+  while (fgets (
+              &lines[end].line[0],
+              LINE_SIZE,
+              fp))
     {
+      lines[end].line[LINE_SIZE - 1] = '\0';
+      lines[end].sz = strlen (lines[end].line);
       end++;
       if (end > n)
         {
@@ -975,10 +976,6 @@ log_get_last_n_lines (
     }
 
   /* clear up memory after use */
-  for (int idx = 0; idx <= n; idx++)
-    {
-      free (lines[idx].line);
-    }
   free (lines);
 
   return g_string_free (str, false);

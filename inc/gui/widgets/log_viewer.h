@@ -30,14 +30,10 @@
 
 #include <gtk/gtk.h>
 
-#ifdef HAVE_GTK_SOURCE_VIEW_4
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <gtksourceview/gtksource.h>
 #pragma GCC diagnostic pop
-#else
-#include <gtksourceview/gtksource.h>
-#endif
 
 #define LOG_VIEWER_WIDGET_TYPE \
   (log_viewer_widget_get_type ())
