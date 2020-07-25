@@ -233,16 +233,16 @@ control_port_real_val_to_normalized (
  * value and must be translated to the actual value
  * before setting it.
  *
- * @param automating 1 if this is from an automation
- *   event. This will set Lv2Port's automating field
- *   to 1 which will cause the plugin to receive
- *   a UI event for this change.
+ * @param automating Whether this is from an
+ *   automation event. This will set Lv2Port's
+ *   automating field to true, which will cause the
+ *   plugin to receive a UI event for this change.
  */
 void
 control_port_set_val_from_normalized (
   Port * self,
   float  val,
-  int    automating)
+  bool   automating)
 {
   PortIdentifier * id = &self->id;
   if (id->flags & PORT_FLAG_PLUGIN_CONTROL)

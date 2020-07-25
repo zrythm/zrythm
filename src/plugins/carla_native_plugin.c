@@ -347,7 +347,8 @@ create_plugin (
     PLUGIN_MANAGER->lv2_path);
 
   /* set whether to keep window on top */
-  if (g_settings_get_boolean (
+  if (ZRYTHM_HAVE_UI &&
+      g_settings_get_boolean (
         S_P_PLUGINS_UIS, "stay-on-top"))
     {
 #ifdef HAVE_X11

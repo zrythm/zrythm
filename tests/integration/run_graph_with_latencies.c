@@ -17,11 +17,18 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/* This test was written because of an issue with not
+ * post-processing nodes properly when no roll was
+ * needed for them. This test will fail if it happens
+ * again */
+
 #include "zrythm-test-config.h"
 
 #include "actions/create_tracks_action.h"
 #include "actions/undo_manager.h"
+#include "audio/control_port.h"
 #include "audio/engine_dummy.h"
+#include "audio/router.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "utils/arrays.h"
@@ -42,64 +49,54 @@ _test (
   bool         is_instrument,
   bool         with_carla)
 {
-  /* fix the descriptor (for some reason lilv
-   * reports it as Plugin instead of Instrument if
-   * you don't do lilv_world_load_all) */
   PluginDescriptor * descr =
-    plugin_descriptor_clone (
-      test_plugin_manager_get_plugin_descriptor (
-        pl_bundle, pl_uri, with_carla));
-  descr->category = PC_INSTRUMENT;
-  g_free (descr->category_str);
-  descr->category_str =
-    plugin_descriptor_category_to_string (
-      descr->category);
+    test_plugin_manager_get_plugin_descriptor (
+      pl_bundle, pl_uri, with_carla);
 
-  /* 1. add helm */
+  /* 1. add no delay line */
   UndoableAction * ua =
     create_tracks_action_new (
-      TRACK_TYPE_INSTRUMENT, descr, NULL,
+      TRACK_TYPE_AUDIO_BUS, descr, NULL,
       TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
-  plugin_descriptor_free (descr);
-
-  /* select it */
-  Track * helm_track =
+  /* 2. set delay to high value */
+  Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
-  track_select (
-    helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
-
-  /* 2. delete track */
-  ua =
-    delete_tracks_action_new (TRACKLIST_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
-
-  /* 3. undo track deletion */
-  undo_manager_undo (UNDO_MANAGER);
+  Plugin * pl = track->channel->inserts[0];
+  Port * port = pl->in_ports[1];
+  control_port_set_val_from_normalized (
+    port, 0.5f, false);
 
   /* let the engine run */
   g_usleep (1000000);
 
+  /* recalculate graph to update latencies */
+  router_recalc_graph (ROUTER, F_SOFT);
+
+  /* let the engine run */
+  g_usleep (1000000);
+
+  /* 3. start playback */
+  transport_request_roll (TRANSPORT);
+
+  /* let the engine run */
+  g_usleep (4000000);
+
   /* 4. reload project */
   test_project_save_and_reload ();
-
-  /* 5. redo track deletion */
-  undo_manager_redo (UNDO_MANAGER);
-
-  /* 6. undo track deletion */
-  undo_manager_undo (UNDO_MANAGER);
 
   /* let the engine run */
   g_usleep (1000000);
 }
 
 static void
-test (void)
+run_graph_with_playback_latencies (void)
 {
-#ifdef HAVE_HELM
+#ifdef HAVE_NO_DELAY_LINE
   _test (
-    HELM_BUNDLE, HELM_URI, true, false);
+    NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI, false,
+    false);
 #endif
 }
 
@@ -110,11 +107,11 @@ main (int argc, char *argv[])
 
   test_helper_zrythm_init ();
 
-#define TEST_PREFIX "/integration/undo_redo_helm_track_creation/"
+#define TEST_PREFIX "/integration/run_graph_with_latencies/"
 
   g_test_add_func (
-    TEST_PREFIX "test",
-    (GTestFunc) test);
+    TEST_PREFIX "run graph with playback latencies",
+    (GTestFunc) run_graph_with_playback_latencies);
 
   return g_test_run ();
 }

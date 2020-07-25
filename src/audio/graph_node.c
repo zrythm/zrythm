@@ -224,7 +224,7 @@ graph_node_process (
 
   /*g_message (*/
     /*"processing %s", graph_node_get_name (node));*/
-  int noroll = 0;
+  bool noroll = false;
 
   nframes_t local_offset =
     node->graph->router->local_offset;
@@ -244,12 +244,14 @@ graph_node_process (
           /*node->port->identifier.label,*/
         /*node->route_playback_latency);*/
         }
-      noroll = 1;
+      noroll = true;
 
       /* if no-roll, only process terminal nodes
        * to set their buffers to 0 */
       if (!node->terminal)
-        return;
+        {
+          goto node_process_finish;
+        }
     }
 
   /* global positions in frames (samples) */
@@ -273,7 +275,7 @@ graph_node_process (
         transport_frames_add_frames (
           TRANSPORT, PLAYHEAD->frames,
           node->route_playback_latency -
-          AUDIO_ENGINE->remaining_latency_preroll);
+            AUDIO_ENGINE->remaining_latency_preroll);
     }
   else
     {
@@ -354,6 +356,7 @@ graph_node_process (
         }
     }
 
+node_process_finish:
   on_node_finish (node);
 }
 

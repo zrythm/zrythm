@@ -72,6 +72,9 @@ worker_thread (void * arg)
 
       if (g_atomic_int_get (&graph->terminate))
         {
+          g_message (
+            "[%d]: terminating thread",
+            thread->id);
           return 0;
         }
 
@@ -105,13 +108,15 @@ worker_thread (void * arg)
             MIN (idle_cnt + 1, work_avail);
 #ifdef DEBUG_THREADS
           g_message (
-            "[%d]: idle threads %u, work avail %u",
-            thread->id,
+            "[%d]: Waking up %u idle threads (idle count %u), work available -> %u",
+            thread->id, wakeup - 1,
             idle_cnt, work_avail);
 #endif
 
           for (guint i = 1; i < wakeup; ++i)
-            zix_sem_post (&graph->trigger);
+            {
+              zix_sem_post (&graph->trigger);
+            }
         }
 
       while (!to_run)
@@ -124,14 +129,18 @@ worker_thread (void * arg)
               &graph->idle_thread_cnt);
 #ifdef DEBUG_THREADS
           g_message (
-            "[%d]: just increased idle thread count "
-            "and waiting for work (idle threads %d)",
+            "[%d]: no node to run. just increased "
+            "idle thread count "
+            "and waiting for work "
+            "(current idle threads %d)",
             thread->id, idle_thread_cnt);
 #endif
           if (idle_thread_cnt > graph->num_threads)
             {
-              g_warning (
-                "[%d]: idle thread count %d is greater than the number of threads %d. this should never occur",
+              g_critical (
+                "[%d]: idle thread count %d is "
+                "greater than the number of threads "
+                "%d. this should never occur",
                 thread->id, idle_thread_cnt,
                 graph->num_threads);
             }
@@ -146,8 +155,8 @@ worker_thread (void * arg)
 #ifdef DEBUG_THREADS
           g_message (
             "[%d]: work found, decremented idle "
-            "thread count back to %d and dequeing "
-            "node",
+            "thread count (current count %d) and "
+            "dequeing node to process",
             thread->id,
             g_atomic_int_get (
               &graph->idle_thread_cnt));

@@ -216,8 +216,11 @@ delete_tracks_action_do (
   EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
   EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED, NULL);
 
-  /* process the events now */
-  event_manager_process_now (EVENT_MANAGER);
+  if (!ZRYTHM_TESTING)
+    {
+      /* process the events now */
+      event_manager_process_now (EVENT_MANAGER);
+    }
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 

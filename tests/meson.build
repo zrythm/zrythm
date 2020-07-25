@@ -114,7 +114,6 @@ if get_option ('tests')
 
   if os_gnu
     tests += [
-      ['integration/midi_file', true],
       ['actions/copy_tracks', true],
       ['actions/create_plugins', true],
       ['actions/edit_tracks', true],
@@ -122,6 +121,10 @@ if get_option ('tests')
       ['actions/move_tracks', false],
       ['actions/delete_tracks', true],
       ['actions/port_connection', true],
+      ['integration/midi_file', true],
+      # cannot be parallel because it needs multiple
+      # threads
+      ['integration/run_graph_with_latencies', false],
       ['integration/undo_redo_helm_track_creation',
         true],
       ]

@@ -1664,6 +1664,8 @@ void
 event_manager_process_now (
   EventManager * self)
 {
+  g_return_if_fail (self);
+
   /* process events now */
   process_events (self);
 }

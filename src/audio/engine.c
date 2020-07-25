@@ -1086,8 +1086,6 @@ engine_process (
   /* puts MIDI in events in the MIDI in port */
   receive_midi_events (self, _nframes, 1);
 
-  nframes_t route_latency = 0;
-  GraphNode * start_node;
   size_t i;
   nframes_t num_samples;
   nframes_t nframes = _nframes;
@@ -1100,14 +1098,14 @@ engine_process (
            i < self->router->graph->n_init_triggers;
            i++)
         {
-          start_node =
+          GraphNode * start_node =
             self->router->graph->
               init_trigger_list[i];
-          route_latency =
+          nframes_t route_latency =
             start_node->playback_latency;
 
           if (self->remaining_latency_preroll >
-              route_latency + num_samples)
+                route_latency + num_samples)
             {
               /* this route will no-roll for the
                * complete pre-roll cycle */
@@ -1115,7 +1113,7 @@ engine_process (
             }
 
           if (self->remaining_latency_preroll >
-              route_latency)
+                route_latency)
             {
               /* route may need partial no-roll
                * and partial roll from
@@ -1148,8 +1146,7 @@ engine_process (
         /*self->remaining_latency_preroll);*/
       router_start_cycle (
         self->router, num_samples,
-        _nframes - nframes,
-        PLAYHEAD);
+        _nframes - nframes, PLAYHEAD);
 
       self->remaining_latency_preroll -=
         num_samples;
