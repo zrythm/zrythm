@@ -60,6 +60,10 @@ typedef struct EventManager
 
   /** ID of the event processing source func. */
   guint              process_source_id;
+
+  /** A soft recalculation of the routing graph
+   * is pending. */
+  bool               pending_soft_recalc;
 } EventManager;
 
 #define EVENT_MANAGER (ZRYTHM->event_manager)

@@ -1003,6 +1003,20 @@ clean_duplicates_and_copy (
     }
 }
 
+static int
+soft_recalc_graph_when_paused (
+  void * data)
+{
+  EventManager * self = (EventManager *) data;
+  if (TRANSPORT->play_state == PLAYSTATE_PAUSED)
+    {
+      router_recalc_graph (ROUTER, F_SOFT);
+      self->pending_soft_recalc = false;
+      return G_SOURCE_REMOVE;
+    }
+  return G_SOURCE_CONTINUE;
+}
+
 /**
  * GSourceFunc to be added using idle add.
  *
@@ -1048,7 +1062,13 @@ process_events (void * data)
       switch (ev->type)
         {
         case ET_PLUGIN_LATENCY_CHANGED:
-          router_recalc_graph (ROUTER, F_SOFT);
+          if (!self->pending_soft_recalc)
+            {
+              self->pending_soft_recalc = true;
+              g_idle_add (
+                soft_recalc_graph_when_paused,
+                self);
+            }
           break;
         case ET_TRACKS_REMOVED:
           if (MW_MIXER)
