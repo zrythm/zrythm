@@ -1051,7 +1051,7 @@ queue_metronome_events (
 int
 engine_process (
   AudioEngine * self,
-  nframes_t     _nframes)
+  nframes_t     total_frames_to_process)
 {
   /* calculate timestamps (used for synchronizing
    * external events like Windows MME MIDI) */
@@ -1059,11 +1059,13 @@ engine_process (
     g_get_monotonic_time ();
   self->timestamp_end =
     self->timestamp_start +
-    (_nframes * 1000000) / self->sample_rate;
+    (total_frames_to_process * 1000000) /
+      self->sample_rate;
 
   /* Clear output buffers just in case we have to
    * return early */
-  clear_output_buffers (self, _nframes);
+  clear_output_buffers (
+    self, total_frames_to_process);
 
   if (!g_atomic_int_get (&self->run))
     {
@@ -1075,7 +1077,8 @@ engine_process (
   /*self->cycle = count;*/
 
   /* run pre-process code */
-  engine_process_prepare (self, _nframes);
+  engine_process_prepare (
+    self, total_frames_to_process);
 
   if (AUDIO_ENGINE->skip_cycle)
     {
@@ -1084,17 +1087,18 @@ engine_process (
     }
 
   /* puts MIDI in events in the MIDI in port */
-  receive_midi_events (self, _nframes, 1);
+  receive_midi_events (
+    self, total_frames_to_process, 1);
 
-  size_t i;
-  nframes_t num_samples;
-  nframes_t nframes = _nframes;
+  nframes_t total_frames_remaining =
+    total_frames_to_process;
   while (self->remaining_latency_preroll > 0)
     {
-      num_samples =
+      nframes_t num_preroll_frames =
         MIN (
-          _nframes, self->remaining_latency_preroll);
-      for (i = 0;
+          total_frames_to_process,
+          self->remaining_latency_preroll);
+      for (size_t i = 0;
            i < self->router->graph->n_init_triggers;
            i++)
         {
@@ -1105,7 +1109,7 @@ engine_process (
             start_node->playback_latency;
 
           if (self->remaining_latency_preroll >
-                route_latency + num_samples)
+                route_latency + num_preroll_frames)
             {
               /* this route will no-roll for the
                * complete pre-roll cycle */
@@ -1119,12 +1123,12 @@ engine_process (
                * and partial roll from
                * (transport_sample -
                *  remaining_latency_preroll) .. +
-               * num_samples.
+               * num_preroll_frames.
                * shorten and split the process
                * cycle */
-              num_samples =
+              num_preroll_frames =
                 MIN (
-                  num_samples,
+                  num_preroll_frames,
                   self->remaining_latency_preroll -
                     route_latency);
             }
@@ -1141,46 +1145,53 @@ engine_process (
       /*g_message (*/
         /*"======== processing at %d for %d samples "*/
         /*"(preroll: %ld)",*/
-        /*_nframes - nframes,*/
-        /*num_samples,*/
+        /*total_frames_to_process - total_frames_remaining,*/
+        /*num_preroll_frames,*/
         /*self->remaining_latency_preroll);*/
       router_start_cycle (
-        self->router, num_samples,
-        _nframes - nframes, PLAYHEAD);
+        self->router, num_preroll_frames,
+        total_frames_to_process -
+          total_frames_remaining,
+        PLAYHEAD);
 
       self->remaining_latency_preroll -=
-        num_samples;
-      nframes -= num_samples;
+        num_preroll_frames;
+      total_frames_remaining -= num_preroll_frames;
 
-      if (nframes == 0)
+      if (total_frames_remaining == 0)
         break;
     }
 
-  if (nframes > 0)
+  if (total_frames_remaining > 0)
     {
       /* queue metronome if met within this cycle */
       if (self->transport->metronome_enabled &&
           TRANSPORT_IS_ROLLING)
         {
           queue_metronome_events (
-            self, _nframes - nframes, nframes);
+            self,
+            total_frames_to_process -
+              total_frames_remaining,
+            total_frames_remaining);
         }
 
       /*g_message (*/
         /*"======== processing at %d for %d samples "*/
         /*"(preroll: %ld)",*/
-        /*_nframes - nframes,*/
-        /*nframes,*/
+        /*total_frames_to_process - total_frames_remaining,*/
+        /*total_frames_remaining,*/
         /*self->remaining_latency_preroll);*/
       router_start_cycle (
-        self->router, nframes,
-        _nframes - nframes,
+        self->router, total_frames_remaining,
+        total_frames_to_process -
+          total_frames_remaining,
         PLAYHEAD);
     }
   /*g_message ("end====================");*/
 
   /* run post-process code */
-  engine_post_process (self, nframes);
+  engine_post_process (
+    self, total_frames_remaining);
 
 #ifdef TRIAL_VER
   /* go silent if limit reached */
