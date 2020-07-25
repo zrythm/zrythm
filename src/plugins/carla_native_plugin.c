@@ -35,6 +35,7 @@
 #include "plugins/carla/carla_discovery.h"
 #include "plugins/carla_native_plugin.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/file.h"
 #include "utils/flags.h"
@@ -44,6 +45,9 @@
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+#ifdef HAVE_X11
+#include <gtk/gtkx.h>
+#endif
 #include <glib/gi18n.h>
 
 #include <CarlaHost.h>
@@ -265,10 +269,8 @@ _create ()
   self->native_host_descriptor.handle = self;
   self->native_host_descriptor.uiName =
     g_strdup ("Zrythm");
+
   self->native_host_descriptor.uiParentId = 0;
-    /*(uintptr_t)*/
-    /*z_gtk_widget_get_gdk_window_id (*/
-      /*GTK_WIDGET (MAIN_WINDOW));*/
 
   /* set resources dir */
   const char * carla_filename =
@@ -343,6 +345,24 @@ create_plugin (
     self->host_handle,
     ENGINE_OPTION_PLUGIN_PATH, PLUGIN_LV2,
     PLUGIN_MANAGER->lv2_path);
+
+  /* set whether to keep window on top */
+  if (g_settings_get_boolean (
+        S_P_PLUGINS_UIS, "stay-on-top"))
+    {
+#ifdef HAVE_X11
+      char xid[400];
+      sprintf (
+        xid, "%lx",
+        gdk_x11_window_get_xid (
+          gtk_widget_get_window (
+            GTK_WIDGET (MAIN_WINDOW))));
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_FRONTEND_WIN_ID, 0,
+        xid);
+#endif
+    }
 
   /* if no bridge mode specified, calculate the
    * bridge mode here */
