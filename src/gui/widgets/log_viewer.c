@@ -41,6 +41,21 @@ on_destroy (
   LOG->viewer = NULL;
 }
 
+static void
+result_func (
+  GtkSourceFileLoader * loader,
+  GAsyncResult *        res,
+  LogViewerWidget *     self)
+{
+  gboolean success = FALSE;
+
+  success =
+    gtk_source_file_loader_load_finish (
+      loader, res, NULL);
+  g_return_if_fail (success);
+}
+
+
 /**
  * Creates a log viewer widget.
  */
@@ -51,13 +66,33 @@ log_viewer_widget_new (void)
     g_object_new (
       LOG_VIEWER_WIDGET_TYPE, NULL);
 
-  return self;
-#if 0
-  g_return_val_if_fail (
-    GTK_IS_TEXT_BUFFER (LOG->messages_buf), NULL);
-  gtk_text_view_set_buffer (
-    self->text_view, LOG->messages_buf);
-#endif
+  g_return_val_if_fail (LOG->log_filepath, self);
+
+  GtkSourceBuffer * buf =
+    gtk_source_buffer_new (NULL);
+  self->src_view =
+    GTK_SOURCE_VIEW (
+      gtk_source_view_new_with_buffer (buf));
+  GtkSourceFile * src_file =
+    gtk_source_file_new ();
+  GFile * file =
+    g_file_new_for_path (LOG->log_filepath);
+  gtk_source_file_set_location (
+    src_file, file);
+  g_object_unref (file);
+  GtkSourceFileLoader * file_loader =
+    gtk_source_file_loader_new (
+      buf, src_file);
+  gtk_source_file_loader_load_async (
+    file_loader, G_PRIORITY_DEFAULT,
+    NULL, NULL, NULL, NULL,
+    (GAsyncReadyCallback) result_func, self);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->src_view), true);
+
+  gtk_container_add (
+    GTK_CONTAINER (self->source_view_box),
+    GTK_WIDGET (self->src_view));
 
   g_signal_connect (
     G_OBJECT (self), "destroy",
@@ -78,7 +113,7 @@ log_viewer_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, LogViewerWidget, x)
 
-  BIND_CHILD (text_view);
+  BIND_CHILD (source_view_box);
   BIND_CHILD (scrolled_win);
 }
 
