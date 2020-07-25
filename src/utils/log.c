@@ -618,6 +618,7 @@ write_str (
 #endif
     }
 
+#if 0
   /* write to each buffer */
   GtkTextIter iter;
   gtk_text_buffer_get_end_iter (
@@ -640,6 +641,7 @@ write_str (
     self->messages_buf, &iter);
   gtk_text_buffer_insert (
     self->messages_buf, &iter, "\n", -1);
+#endif
 
   return 0;
 }
@@ -893,9 +895,19 @@ free_log_event_obj (
   object_zero_and_free (ev);
 }
 
+typedef struct Line
+{
+  char *line; // content
+  size_t storage_sz; // allocation size of line memory
+  ssize_t sz; // size of line, not including terminating null byte ('\0')
+} Line;
+
 /**
  * Returns the last \ref n lines as a newly
  * allocated string.
+ *
+ * @note This must only be called from the GTK
+ *   thread.
  *
  * @param n Number of lines.
  */
@@ -904,25 +916,69 @@ log_get_last_n_lines (
   Log * self,
   int   n)
 {
-  if (!GTK_IS_TEXT_BUFFER (
-        self->messages_buf))
-    return NULL;
+  g_warn_if_fail (self->log_filepath);
 
-  int total_lines =
-    gtk_text_buffer_get_line_count (
-      self->messages_buf);
-  GtkTextIter start_iter;
-  gtk_text_buffer_get_iter_at_line_index (
-    self->messages_buf, &start_iter,
-    MAX (total_lines - n, 0), 0);
-  GtkTextIter end_iter;
-  gtk_text_buffer_get_end_iter (
-    self->messages_buf, &end_iter);
+  /* call idle_cb to write queued messages */
+  log_idle_cb (self);
 
-  return
-    gtk_text_buffer_get_text (
-      self->messages_buf, &start_iter,
-      &end_iter, false);
+  FILE * fp = fopen (self->log_filepath, "r");
+
+  /* the following algorithm is from
+   * https://stackoverflow.com/questions/54834969/print-last-few-lines-of-a-text-file
+   * licensed under CC-BY-SA 4.0
+   * authored by Bo R and edited
+   * by Alexandros Theodotou */
+
+  /* keep an extra slot for the last failed
+   * read at EOF */
+  Line * lines =
+    calloc ((size_t) n + 1, sizeof (Line));
+  int end = 0;
+  int size = 0;
+
+  /* only keep track of the last couple of
+   * lines */
+  while ((lines[end].sz =
+            getline (
+              &lines[end].line,
+              &lines[end].storage_sz,
+              fp)) != -1)
+    {
+      end++;
+      if (end > n)
+        {
+          end = 0;
+        }
+      if (size < n)
+        {
+          size++;
+        }
+    }
+
+  // time to print them back
+  int first = end - size;
+  if (first < 0) {
+      first += size + 1;
+  }
+  GString * str = g_string_new (NULL);
+  for (int count = size; count; count--)
+    {
+      g_string_append (str, lines[first].line);
+      first++;
+      if (first > size)
+        {
+          first = 0;
+        }
+    }
+
+  /* clear up memory after use */
+  for (int idx = 0; idx <= n; idx++)
+    {
+      free (lines[idx].line);
+    }
+  free (lines);
+
+  return g_string_free (str, false);
 }
 
 /**
@@ -951,22 +1007,22 @@ log_init_with_file (
         datetime_get_for_filename ();
       char * user_log_dir =
         zrythm_get_dir (ZRYTHM_DIR_USER_LOG);
-      char * file_path =
+      self->log_filepath =
         g_strdup_printf (
           "%s%slog_%s.log",
           user_log_dir,
           G_DIR_SEPARATOR_S,
           str_datetime);
       io_mkdir (user_log_dir);
-      self->logfile = fopen (file_path, "a");
+      self->logfile =
+        fopen (self->log_filepath, "a");
       g_free (user_log_dir);
-      g_free (file_path);
       g_free (str_datetime);
       g_return_if_fail (self->logfile);
     }
 
   /* init buffers */
-  self->messages_buf = gtk_text_buffer_new (NULL);
+  /*self->messages_buf = gtk_text_buffer_new (NULL);*/
 
   /* init the object pool for log events */
   self->obj_pool =
@@ -1080,7 +1136,7 @@ log_free (
     object_pool_free, self->obj_pool);
   object_free_w_func_and_null (
     mpmc_queue_free, self->mqueue);
-  g_object_unref_and_null (self->messages_buf);
+  /*g_object_unref_and_null (self->messages_buf);*/
 
   object_zero_and_free (self);
 

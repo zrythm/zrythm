@@ -51,10 +51,13 @@ log_viewer_widget_new (void)
     g_object_new (
       LOG_VIEWER_WIDGET_TYPE, NULL);
 
+  return self;
+#if 0
   g_return_val_if_fail (
     GTK_IS_TEXT_BUFFER (LOG->messages_buf), NULL);
   gtk_text_view_set_buffer (
     self->text_view, LOG->messages_buf);
+#endif
 
   g_signal_connect (
     G_OBJECT (self), "destroy",

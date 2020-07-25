@@ -43,10 +43,15 @@ typedef struct Log
   /** File descriptor if not using FILE. */
   int    logfd;
 
+#if 0
   /* Buffers to fill in */
   GtkTextBuffer * messages_buf;
   GtkTextBuffer * warnings_buf;
   GtkTextBuffer * critical_buf;
+#endif
+
+  /** Current log file path. */
+  char *          log_filepath;
 
   /** Message queue, for when messages are sent
    * from a non-gtk thread. */
@@ -86,6 +91,9 @@ log_idle_cb (
 /**
  * Returns the last \ref n lines as a newly
  * allocated string.
+ *
+ * @note This must only be called from the GTK
+ *   thread.
  *
  * @param n Number of lines.
  */

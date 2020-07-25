@@ -86,6 +86,7 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/log.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
 #include "utils/objects.h"

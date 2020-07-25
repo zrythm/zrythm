@@ -279,10 +279,10 @@ main (int    argc,
         {
         case OPT_VERSION:
           print_version ();
-          return 0;
+          return EXIT_SUCCESS;
         case OPT_HELP:
           print_help ();
-          return 0;
+          return EXIT_SUCCESS;
           break;
         case OPT_CONVERT_ZPJ_TO_YAML:
           convert_zpj_to_yaml = true;
@@ -300,7 +300,7 @@ main (int    argc,
           break;
         case OPT_RESET_TO_FACTORY:
           settings_reset_to_factory (1, 1);
-          return 0;
+          return EXIT_SUCCESS;
           break;
         case OPT_PRETTY_PRINT:
           pretty_print = true;
@@ -347,7 +347,7 @@ main (int    argc,
     {
       localization_init (false, false);
       settings_print (pretty_print);
-      return 0;
+      return EXIT_SUCCESS;
     }
   else if (run_gdb)
     {
@@ -395,7 +395,7 @@ main (int    argc,
           fprintf (
             stdout,
             _("Project successfully compressed.\n"));
-          return 0;
+          return EXIT_SUCCESS;
         }
     }
   else if (convert_zpj_to_yaml)
@@ -423,7 +423,7 @@ main (int    argc,
             stdout,
             _("Project successfully "
             "decompressed.\n"));
-          return 0;
+          return EXIT_SUCCESS;
         }
     }
 

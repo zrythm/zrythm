@@ -671,9 +671,13 @@ drag_dest_box_widget_new (
       symap_map (ZSYMAP, TARGET_ENTRY_TRACK),
     }
   };
+  /* disable for now */
+  (void) entries;
+#if 0
   gtk_drag_dest_set (
     GTK_WIDGET (self), GTK_DEST_DEFAULT_ALL,
     entries, G_N_ELEMENTS (entries), GDK_ACTION_COPY);
+#endif
   g_free (entry_track);
   g_free (entry_plugin);
   g_free (entry_plugin_descr);

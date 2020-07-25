@@ -181,6 +181,7 @@ ext_lv2_plugins = {
   'sherlock_atom_inspector': ['Sherlock Atom Inspector', 'http://open-music-kontrollers.ch/lv2/sherlock#atom_inspector'],
   'lsp_compressor': ['LSP Compressor', 'http://lsp-plug.in/plugins/lv2/compressor_stereo'],
   'carla_rack': ['Carla Rack', 'http://kxstudio.sf.net/carla/plugins/carlarack'],
+  'no_delay_line': ['No Delay Line', 'http://gareus.org/oss/lv2/nodelay'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}
