@@ -75,6 +75,20 @@ zrythm_lib = static_library (
   link_with: zrythm_link_libs,
   )
 
+# used in tests
+zrythm_shared_lib = shared_library (
+  'zrythm-lib',
+  sources: [
+    zrythm_lib_srcs,
+    ext_srcs,
+    ],
+  dependencies: zrythm_deps,
+  include_directories: all_inc,
+  c_args: [ common_cflags, strict_cflags ],
+  pic: true,
+  link_with: zrythm_link_libs,
+  )
+
 objects = []
 
 zrythm_exe = executable (

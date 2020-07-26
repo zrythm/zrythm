@@ -126,11 +126,13 @@ typedef struct ZRegion ZRegion;
  */
 typedef struct Position
 {
-  int       bars; ///< this is the size of the number of beats per bar (top part of time sig)
+  /* This is the size of the number of beats per
+   * bar (top part of time sig) */
+  int       bars;
 
   /**
-   * The size of the beat is the the beat unit (bot part
-   * of time sig).
+   * The size of the beat is the the beat unit (bot
+   * part of time sig).
    */
   int       beats;
 

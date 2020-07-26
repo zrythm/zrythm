@@ -21,7 +21,11 @@
 
 #include "zrythm-config.h"
 #include "audio/encoder.h"
+#include "audio/engine.h"
 #include "audio/metronome.h"
+#include "audio/position.h"
+#include "audio/transport.h"
+#include "project.h"
 #include "utils/audio.h"
 #include "utils/io.h"
 #include "utils/objects.h"
@@ -117,6 +121,165 @@ metronome_new (void)
   audio_encoder_free (enc);
 
   return self;
+}
+
+/**
+ * Finds all metronome events (beat and bar changes)
+ * within the given range and adds them to the
+ * queue of the sample processor.
+ *
+ * @param loffset Local offset.
+ */
+static void
+find_and_queue_metronome (
+  const Position * start_pos,
+  const Position * end_pos,
+  const nframes_t  loffset)
+{
+  /* find each bar / beat change from start
+   * to finish */
+  int num_bars_before =
+    position_get_total_bars (start_pos);
+  int num_bars_after =
+    position_get_total_bars (end_pos);
+
+#if 0
+  /* ignore bars right at the edge of the end
+   * pos (probably not needed) */
+  if (end_pos->beats == 1 &&
+      end_pos->sixteenths == 1 &&
+      end_pos->ticks == 0)
+    {
+      num_bars_after--;
+    }
+#endif
+
+  for (int i = num_bars_before + 1;
+       i <= num_bars_after;
+       i++)
+    {
+      Position bar_pos;
+      position_set_to_bar (
+        &bar_pos, i + 1);
+      long bar_offset_long =
+        bar_pos.frames - start_pos->frames;
+      g_return_if_fail (bar_offset_long >= 0);
+      long metronome_offset_long =
+        bar_offset_long + loffset;
+      g_return_if_fail (bar_offset_long >= 0);
+      nframes_t metronome_offset =
+        (nframes_t) metronome_offset_long;
+      g_return_if_fail (
+        metronome_offset <
+          AUDIO_ENGINE->block_length);
+      sample_processor_queue_metronome (
+        SAMPLE_PROCESSOR,
+        METRONOME_TYPE_EMPHASIS,
+        metronome_offset);
+    }
+
+  int num_beats_before =
+    position_get_total_beats (start_pos);
+  int num_beats_after =
+    position_get_total_beats (end_pos);
+
+#if 0
+  if (end_pos->sixteenths == 1 &&
+      end_pos->ticks == 0)
+    num_beats_after--;
+#endif
+
+  for (int i = num_beats_before + 1;
+       i <= num_beats_after;
+       i++)
+    {
+      Position beat_pos;
+      position_set_to_bar (
+        &beat_pos,
+        i / TRANSPORT->beats_per_bar);
+      position_set_beat (
+        &beat_pos,
+        i % TRANSPORT->beats_per_bar + 1);
+      if (beat_pos.beats != 1)
+        {
+          /* adjust position because even though
+           * the start and beat pos have the same
+           * ticks, their frames differ (the beat
+           * position might be before the start
+           * position in frames) */
+          if (beat_pos.frames < start_pos->frames)
+            beat_pos.frames = start_pos->frames;
+
+          long beat_offset_long =
+            beat_pos.frames - start_pos->frames;
+          g_return_if_fail (beat_offset_long >= 0);
+          long metronome_offset_long =
+            beat_offset_long + loffset;
+          g_return_if_fail (
+            metronome_offset_long >= 0);
+          nframes_t metronome_offset =
+            (nframes_t) metronome_offset_long;
+          g_return_if_fail (
+            metronome_offset <
+              AUDIO_ENGINE->block_length);
+          sample_processor_queue_metronome (
+            SAMPLE_PROCESSOR,
+            METRONOME_TYPE_NORMAL,
+            metronome_offset);
+        }
+    }
+}
+
+/**
+ * Queues metronome events (if any) within the
+ * current processing cycle.
+ *
+ * @param loffset Local offset in this cycle.
+ */
+void
+metronome_queue_events (
+ AudioEngine *   self,
+ const nframes_t loffset,
+ const nframes_t nframes)
+{
+  Position pos, bar_pos, beat_pos,
+           unlooped_playhead;
+  position_init (&bar_pos);
+  position_init (&beat_pos);
+  position_set_to_pos (&pos, PLAYHEAD);
+  position_set_to_pos (
+    &unlooped_playhead, PLAYHEAD);
+  transport_position_add_frames (
+    self->transport, &pos, nframes);
+  position_add_frames (
+    &unlooped_playhead, (long) nframes);
+  int loop_crossed =
+    unlooped_playhead.frames !=
+    pos.frames;
+  if (loop_crossed)
+    {
+      /* find each bar / beat change until loop
+       * end */
+      find_and_queue_metronome (
+        PLAYHEAD, &self->transport->loop_end_pos,
+        loffset);
+
+      /* find each bar / beat change after loop
+       * start */
+      find_and_queue_metronome (
+        &self->transport->loop_start_pos, &pos,
+        loffset +
+          (nframes_t)
+          (self->transport->loop_end_pos.frames -
+           PLAYHEAD->frames));
+    }
+  else /* loop not crossed */
+    {
+      /* find each bar / beat change from start
+       * to finish */
+      find_and_queue_metronome (
+        PLAYHEAD, &pos, loffset);
+    }
 }
 
 void

@@ -97,6 +97,7 @@ if get_option ('tests')
     ['actions/create_tracks', true],
     ['audio/automation_track', true],
     ['audio/curve', true],
+    ['audio/metronome', true],
     ['audio/midi', true],
     ['audio/midi_mapping', true],
     ['audio/midi_note', true],
@@ -170,7 +171,7 @@ if get_option ('tests')
           zrythm_deps,
           ],
         export_dynamic : false,
-        link_with: zrythm_lib,
+        link_with: zrythm_shared_lib,
         include_directories : all_inc,
       )
       test (
@@ -193,7 +194,7 @@ if get_option ('tests')
           zrythm_deps,
           ],
         export_dynamic : false,
-        link_with: zrythm_lib,
+        link_with: zrythm_shared_lib,
         include_directories : all_inc,
         )
       test (

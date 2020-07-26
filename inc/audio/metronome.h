@@ -28,6 +28,8 @@
 
 #include "utils/types.h"
 
+typedef struct AudioEngine AudioEngine;
+
 /**
  * @addtogroup audio
  *
@@ -80,6 +82,18 @@ typedef struct Metronome
  */
 Metronome *
 metronome_new (void);
+
+/**
+ * Queues metronome events (if any) within the
+ * current processing cycle.
+ *
+ * @param loffset Local offset in this cycle.
+ */
+void
+metronome_queue_events (
+ AudioEngine *   self,
+ const nframes_t loffset,
+ const nframes_t nframes);
 
 void
 metronome_free (
