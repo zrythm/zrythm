@@ -35,8 +35,11 @@ before_install:
     osx)
       brew update
       # use || true because it returns 1
-      brew install fftw meson libsamplerate sdl2 chromaprint libgtop lilv librsvg gtk+3 guile gtksourceview4 graphviz zstd || true
+      brew install fftw meson libsamplerate sdl2 chromaprint libgtop lilv librsvg gtk+3 guile gtksourceview4 graphviz zstd mda-lv2 || true
       brew link --overwrite python
+      # move mda to official path
+      sudo mkdir -p /Library/Audio/Plug-Ins/LV2/mda.lv2
+      for file in $(brew ls mda-lv2 | grep "mda\.lv2" | cut -d " " -f1); do sudo cp "$file" /Library/Audio/Plug-Ins/LV2/mda.lv2/ ; done
       ;;
     linux)
       sudo apt-get install -y libgtk-3-dev libjack-dev libsndfile1-dev ninja-build gettext sed help2man python3-sphinx ladspa-sdk libfftw3-dev libasound2-dev libavcodec-dev libavutil-dev libavformat-dev libchromaprint-dev libsamplerate0-dev libyaml-dev librubberband-dev python3 xdg-utils git lcov guile-2.2-dev libgtksourceview-3.0-dev libgraphviz-dev libzstd-dev python3 python3-pip python3-setuptools liblilv-dev lilv-utils lv2-dev

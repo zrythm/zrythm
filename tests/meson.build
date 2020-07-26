@@ -106,6 +106,7 @@ if get_option ('tests')
     ['audio/position', true],
     ['audio/region', true],
     ['audio/track', true],
+    ['plugins/plugin_manager', true],
     ['project', true],
     ['utils/arrays', true],
     ['utils/general', true],
@@ -113,7 +114,7 @@ if get_option ('tests')
     ['utils/string', true],
     ]
 
-  if os_gnu
+  if os_gnu or os_darwin
     tests += [
       ['actions/copy_tracks', true],
       ['actions/create_plugins', true],

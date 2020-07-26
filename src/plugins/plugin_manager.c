@@ -358,7 +358,7 @@ create_and_load_lilv_word (
   self->lv2_nodes.lilv_world = world;
 
   /* load all installed plugins on system */
-#ifndef _WOE32
+#if !defined (_WOE32) && !defined (__APPLE__)
   LilvNode * lv2_path = NULL;
   char * env_lv2_path = getenv ("LV2_PATH");
   if (env_lv2_path && (strlen (env_lv2_path) > 0))

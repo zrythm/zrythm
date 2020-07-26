@@ -182,6 +182,7 @@ ext_lv2_plugins = {
   'lsp_compressor': ['LSP Compressor', 'http://lsp-plug.in/plugins/lv2/compressor_stereo'],
   'carla_rack': ['Carla Rack', 'http://kxstudio.sf.net/carla/plugins/carlarack'],
   'no_delay_line': ['No Delay Line', 'http://gareus.org/oss/lv2/nodelay'],
+  'mda_ambience': ['mda Ambience', 'http://drobilla.net/plugins/mda/Ambience'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}
