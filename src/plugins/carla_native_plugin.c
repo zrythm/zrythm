@@ -346,25 +346,6 @@ create_plugin (
     ENGINE_OPTION_PLUGIN_PATH, PLUGIN_LV2,
     PLUGIN_MANAGER->lv2_path);
 
-  /* set whether to keep window on top */
-  if (ZRYTHM_HAVE_UI &&
-      g_settings_get_boolean (
-        S_P_PLUGINS_UIS, "stay-on-top"))
-    {
-#ifdef HAVE_X11
-      char xid[400];
-      sprintf (
-        xid, "%lx",
-        gdk_x11_window_get_xid (
-          gtk_widget_get_window (
-            GTK_WIDGET (MAIN_WINDOW))));
-      carla_set_engine_option (
-        self->host_handle,
-        ENGINE_OPTION_FRONTEND_WIN_ID, 0,
-        xid);
-#endif
-    }
-
   /* if no bridge mode specified, calculate the
    * bridge mode here */
   CarlaBridgeMode bridge_mode = descr->bridge_mode;
@@ -1060,6 +1041,26 @@ carla_native_plugin_open_ui (
         carla_set_custom_ui_title (
           self->host_handle, 0, title);
         g_free (title);
+
+        /* set whether to keep window on top */
+        if (ZRYTHM_HAVE_UI &&
+            g_settings_get_boolean (
+              S_P_PLUGINS_UIS, "stay-on-top"))
+          {
+#ifdef HAVE_X11
+            char xid[400];
+            sprintf (
+              xid, "%lx",
+              gdk_x11_window_get_xid (
+                gtk_widget_get_window (
+                  GTK_WIDGET (MAIN_WINDOW))));
+            carla_set_engine_option (
+              self->host_handle,
+              ENGINE_OPTION_FRONTEND_WIN_ID, 0,
+              xid);
+#endif
+          }
+
         carla_show_custom_ui (
           self->host_handle, 0, show);
         self->plugin->visible = show;
