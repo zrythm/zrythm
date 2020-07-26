@@ -62,21 +62,9 @@ if os_windows
   zrythm_lib_srcs += win_res
 endif
 
-zrythm_lib = static_library (
-  'zrythm-lib',
-  sources: [
-    zrythm_lib_srcs,
-    ext_srcs,
-    ],
-  dependencies: zrythm_deps,
-  include_directories: all_inc,
-  c_args: [ common_cflags, strict_cflags ],
-  pic: true,
-  link_with: zrythm_link_libs,
-  )
-
+# static is used in the executable and shared is
 # used in tests
-zrythm_shared_lib = shared_library (
+zrythm_lib = both_libraries (
   'zrythm-lib',
   sources: [
     zrythm_lib_srcs,
@@ -101,7 +89,7 @@ zrythm_exe = executable (
     zrythm_deps,
     ],
   link_with: [
-    zrythm_lib,
+    zrythm_lib.get_static_lib (),
     ],
   export_dynamic: true,
   gui_app: true,

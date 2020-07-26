@@ -172,7 +172,7 @@ if get_option ('tests')
           zrythm_deps,
           ],
         export_dynamic : false,
-        link_with: zrythm_shared_lib,
+        link_with: zrythm_lib.get_shared_lib (),
         include_directories : all_inc,
       )
       test (
@@ -195,7 +195,7 @@ if get_option ('tests')
           zrythm_deps,
           ],
         export_dynamic : false,
-        link_with: zrythm_shared_lib,
+        link_with: zrythm_lib.get_shared_lib (),
         include_directories : all_inc,
         )
       test (
