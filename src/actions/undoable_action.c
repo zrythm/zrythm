@@ -411,6 +411,9 @@ undoable_action_free (UndoableAction * self)
     FREE_ACTION (SPLIT_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
+    FREE_ACTION (RECORD_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
     FREE_ACTION (
       PORT_CONNECTION, port_connection,
       PortConnection);
