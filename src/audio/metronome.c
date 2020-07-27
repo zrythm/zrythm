@@ -128,6 +128,7 @@ metronome_new (void)
  * within the given range and adds them to the
  * queue of the sample processor.
  *
+ * @param end_pos End position, exclusive.
  * @param loffset Local offset.
  */
 static void
@@ -242,20 +243,20 @@ metronome_queue_events (
  const nframes_t loffset,
  const nframes_t nframes)
 {
-  Position pos, bar_pos, beat_pos,
+  Position playhead_pos, bar_pos, beat_pos,
            unlooped_playhead;
   position_init (&bar_pos);
   position_init (&beat_pos);
-  position_set_to_pos (&pos, PLAYHEAD);
+  position_set_to_pos (&playhead_pos, PLAYHEAD);
   position_set_to_pos (
     &unlooped_playhead, PLAYHEAD);
   transport_position_add_frames (
-    self->transport, &pos, nframes);
+    self->transport, &playhead_pos, nframes);
   position_add_frames (
     &unlooped_playhead, (long) nframes);
   int loop_crossed =
     unlooped_playhead.frames !=
-    pos.frames;
+    playhead_pos.frames;
   if (loop_crossed)
     {
       /* find each bar / beat change until loop
@@ -267,7 +268,8 @@ metronome_queue_events (
       /* find each bar / beat change after loop
        * start */
       find_and_queue_metronome (
-        &self->transport->loop_start_pos, &pos,
+        &self->transport->loop_start_pos,
+        &playhead_pos,
         loffset +
           (nframes_t)
           (self->transport->loop_end_pos.frames -
@@ -278,7 +280,7 @@ metronome_queue_events (
       /* find each bar / beat change from start
        * to finish */
       find_and_queue_metronome (
-        PLAYHEAD, &pos, loffset);
+        PLAYHEAD, &playhead_pos, loffset);
     }
 }
 

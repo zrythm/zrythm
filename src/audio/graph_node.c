@@ -271,11 +271,12 @@ graph_node_process (
        * position + frames is after loop end (there
        * is a loop inside the range), that should be
        * handled by the ports/processors instead */
-      g_start_frames =
-        transport_frames_add_frames (
-          TRANSPORT, PLAYHEAD->frames,
-          node->route_playback_latency -
-            AUDIO_ENGINE->remaining_latency_preroll);
+      Position playhead_copy = *PLAYHEAD;
+      transport_position_add_frames (
+        TRANSPORT, &playhead_copy,
+        node->route_playback_latency -
+          AUDIO_ENGINE->remaining_latency_preroll);
+      g_start_frames = playhead_copy.frames;
     }
   else
     {

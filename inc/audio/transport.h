@@ -381,6 +381,7 @@ void
 transport_update_position_frames (
   Transport * self);
 
+#if 0
 /**
  * Adds frames to the given global frames, while
  * adjusting the new frames to loop back if the
@@ -393,6 +394,7 @@ transport_frames_add_frames (
   const Transport * self,
   const long        gframes,
   const nframes_t   frames);
+#endif
 
 /**
  * Adds frames to the given position similar to

@@ -744,7 +744,18 @@ int
 position_get_total_bars (
   const Position * pos)
 {
-  return pos->bars - 1;
+  int bars = pos->bars - 1;
+
+  /* if we are at the start of the bar, don't
+   * count this bar */
+  Position pos_at_bar;
+  position_set_to_bar (&pos_at_bar, pos->bars);
+  if (pos_at_bar.frames == pos->frames)
+    {
+      bars--;
+    }
+
+  return bars;
 }
 
 /**

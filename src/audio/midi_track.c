@@ -557,9 +557,13 @@ midi_track_fill_midi_events (
   ChordObject * co = NULL;
   midi_time_t time;
 
-  g_end_frames =
-    transport_frames_add_frames (
-      TRANSPORT, g_start_frames, nframes);
+  Position g_end_pos;
+  position_from_frames (
+    &g_end_pos, g_start_frames);
+  transport_position_add_frames (
+    TRANSPORT, &g_end_pos, nframes);
+  g_end_frames = g_end_pos.frames;
+
   int transport_loop_met =
     g_end_frames < g_start_frames;
   unsigned int diff_to_tp_loop_end;

@@ -612,6 +612,7 @@ transport_set_loop (
   EVENTS_PUSH (ET_LOOP_TOGGLED, NULL);
 }
 
+#if 0
 /**
  * Adds frames to the given global frames, while
  * adjusting the new frames to loop back if the
@@ -641,6 +642,7 @@ transport_frames_add_frames (
 
   return new_frames;
 }
+#endif
 
 /**
  * Adds frames to the given position similar to
@@ -654,15 +656,33 @@ transport_position_add_frames (
   Position *        pos,
   const nframes_t   frames)
 {
-  long new_global_frames =
-    transport_frames_add_frames (
-      self, pos->frames, frames);
-  position_from_frames (
-    pos, new_global_frames);
+  Position pos_before_adding = *pos;
+  position_add_frames (pos, frames);
+
+  /* if start frames were before the loop-end point
+   * and the new frames are after (loop crossed) */
+  if (TRANSPORT_IS_LOOPING &&
+      pos_before_adding.total_ticks <
+        self->loop_end_pos.total_ticks &&
+      pos->total_ticks >=
+        self->loop_end_pos.total_ticks)
+    {
+      /* adjust the new frames */
+      position_add_ticks (
+        pos,
+        self->loop_start_pos.total_ticks -
+          self->loop_end_pos.total_ticks);
+    }
+
+  /*long new_global_frames =*/
+    /*transport_frames_add_frames (*/
+      /*self, pos->frames, frames);*/
+  /*position_from_frames (*/
+    /*pos, new_global_frames);*/
 
   /* set the frames manually again because
    * position_from_frames rounds them */
-  pos->frames = new_global_frames;
+  /*pos->frames = new_global_frames;*/
 }
 
 /**

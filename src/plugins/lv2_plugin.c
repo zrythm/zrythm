@@ -2140,10 +2140,11 @@ lv2_plugin_process (
    * next cycle */
   if (TRANSPORT_IS_ROLLING)
     {
-      self->gframes =
-        transport_frames_add_frames (
-          TRANSPORT, self->gframes,
-          nframes);
+      Position gpos;
+      position_from_frames (&gpos, self->gframes);
+      transport_position_add_frames (
+        TRANSPORT, &gpos, nframes);
+      self->gframes = gpos.frames;
       self->rolling = 1;
     }
   else
