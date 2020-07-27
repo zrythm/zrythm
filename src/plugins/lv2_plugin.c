@@ -1789,8 +1789,7 @@ lv2_plugin_instantiate (
   /* Get appropriate UI */
   self->uis =
     lilv_plugin_get_uis (self->lilv_plugin);
-  if (project &&
-      !ZRYTHM_TESTING &&
+  if (ZRYTHM_TESTING ||
       !g_settings_get_boolean (
         S_P_PLUGINS_UIS, "generic"))
     {

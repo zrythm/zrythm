@@ -46,30 +46,21 @@ _test_undo_track_deletion (
   bool         is_instrument,
   bool         with_carla)
 {
-  LilvNode * path =
-    lilv_new_uri (LILV_WORLD, pl_bundle);
-  lilv_world_load_bundle (
-    LILV_WORLD, path);
-  lilv_node_free (path);
-
-  plugin_manager_scan_plugins (
-    PLUGIN_MANAGER, 1.0, NULL);
-  g_assert_cmpint (
-    PLUGIN_MANAGER->num_plugins, ==, 1);
-
-  /* fix the descriptor (for some reason lilv
-   * reports it as Plugin instead of Instrument if
-   * you don't do lilv_world_load_all) */
   PluginDescriptor * descr =
-    plugin_descriptor_clone (
-      PLUGIN_MANAGER->plugin_descriptors[0]);
-  /*g_warn_if_fail (*/
-    /*descr->category == PC_INSTRUMENT);*/
-  descr->category = PC_INSTRUMENT;
-  g_free (descr->category_str);
-  descr->category_str =
-    plugin_descriptor_category_to_string (
-      descr->category);
+    test_plugin_manager_get_plugin_descriptor (
+      pl_bundle, pl_uri, with_carla);
+
+  if (is_instrument)
+    {
+      /* fix the descriptor (for some reason lilv
+       * reports it as Plugin instead of Instrument if
+       * you don't do lilv_world_load_all) */
+      descr->category = PC_INSTRUMENT;
+      g_free (descr->category_str);
+      descr->category_str =
+        plugin_descriptor_category_to_string (
+          descr->category);
+    }
 
   /* create an instrument track from helm */
   UndoableAction * ua =
@@ -80,8 +71,6 @@ _test_undo_track_deletion (
 
   /* save and reload the project */
   test_project_save_and_reload ();
-
-  plugin_descriptor_free (descr);
 
   /* select it */
   Track * helm_track =

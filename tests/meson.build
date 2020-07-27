@@ -116,6 +116,7 @@ if get_option ('tests')
 
   if os_gnu or os_darwin
     tests += [
+      ['actions/copy_plugins', true],
       ['actions/copy_tracks', true],
       ['actions/create_plugins', true],
       ['actions/edit_tracks', true],
