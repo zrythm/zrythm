@@ -29,33 +29,15 @@
 #include <glib.h>
 #include <locale.h>
 
-typedef struct
-{
-  Track *           ins_track;
-} TrackFixture;
-
 static void
-fixture_set_up (
-  TrackFixture * fixture)
+test_new_track ()
 {
-  fixture->ins_track =
+  Track * track =
     track_new (
       TRACK_TYPE_INSTRUMENT,
       TRACKLIST->num_tracks,
       "Test Instrument Track 1",
       F_WITH_LANE);
-}
-
-static void
-test_new_track ()
-{
-  TrackFixture _fixture;
-  TrackFixture * fixture =
-    &_fixture;
-  fixture_set_up (fixture);
-
-  Track * track =
-    fixture->ins_track;
 
   g_assert_nonnull (track->name);
 }
@@ -75,4 +57,3 @@ main (int argc, char *argv[])
 
   return g_test_run ();
 }
-

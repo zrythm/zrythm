@@ -160,8 +160,6 @@ track_add_lane (
   array_double_size_if_full (
     self->lanes, self->num_lanes,
     self->lanes_size, TrackLane *);
-  g_message ("-----num lanes %d, lanes size %d",
-    self->num_lanes, self->lanes_size);
   self->lanes[self->num_lanes++] =
     track_lane_new (self, self->num_lanes);
 
@@ -1237,6 +1235,18 @@ track_set_pos (
       Channel * ch = self->channel;
       channel_update_track_pos (ch, pos);
     }
+
+  /* update children */
+  for (int i = 0; i < self->num_children; i++)
+    {
+      Track * child =
+        TRACKLIST->tracks[self->children[i]];
+      g_warn_if_fail (
+        IS_TRACK (child) &&
+        child->out_signal_type ==
+          self->in_signal_type);
+      child->channel->output_pos = pos;
+    }
 }
 
 /**
@@ -1260,6 +1270,15 @@ track_disconnect (
 {
   g_message ("disconnecting %s (%d)...",
     self->name, self->pos);
+
+  /* if this is a group track and has children,
+   * remove them */
+  if (TRACK_CAN_BE_GROUP_TARGET (self))
+    {
+      group_target_track_remove_all_children (
+        self, F_DISCONNECT, F_NO_RECALC_GRAPH,
+        F_NO_PUBLISH_EVENTS);
+    }
 
   /* disconnect all ports */
   int max_size = 20;

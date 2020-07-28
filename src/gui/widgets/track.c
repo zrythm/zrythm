@@ -1857,6 +1857,14 @@ multipress_released (
           else if (string_is_equal (
                 cb->icon_name, ICON_NAME_SOLO, 1))
             {
+              /* if track not selected, select it */
+              if (!track_is_selected (self->track))
+                {
+                  track_select (
+                    self->track, F_SELECT,
+                    F_EXCLUSIVE,
+                    F_PUBLISH_EVENTS);
+                }
               track_set_soloed (
                 self->track,
                 !track_get_soloed (self->track),

@@ -117,7 +117,7 @@ _test_edit_tracks (
         action =
           create_tracks_action_new (
             TRACK_TYPE_MIDI,
-            descr, NULL, 2, NULL, 1);
+            NULL, NULL, 2, NULL, 1);
         undo_manager_perform (UNDO_MANAGER, action);
         Track * midi_track = TRACKLIST->tracks[2];
         track_select (
@@ -146,7 +146,89 @@ _test_edit_tracks (
 
         g_assert_true (
           !midi_track->channel->has_output);
+
+        /* redo and test moving track afterwards */
+        undo_manager_redo (UNDO_MANAGER);
+        ins_track = TRACKLIST->tracks[4];
+        g_assert_true (
+          ins_track->type == TRACK_TYPE_INSTRUMENT);
+        track_select (
+          ins_track, F_SELECT, F_EXCLUSIVE,
+          F_NO_PUBLISH_EVENTS);
+        ua =
+          move_tracks_action_new (
+            TRACKLIST_SELECTIONS, 1);
+        undo_manager_perform (UNDO_MANAGER, ua);
+        undo_manager_undo (UNDO_MANAGER);
       }
+      break;
+    case EDIT_TRACK_ACTION_TYPE_SOLO:
+      {
+        if (!is_instrument)
+          break;
+
+        /* create an audio group track */
+        action =
+          create_tracks_action_new (
+            TRACK_TYPE_AUDIO_GROUP,
+            NULL, NULL, 2, NULL, 1);
+        undo_manager_perform (UNDO_MANAGER, action);
+        Track * group_track = TRACKLIST->tracks[2];
+
+        g_assert_cmpint (
+          ins_track->channel->track_pos, !=,
+          ins_track->channel->output_pos);
+
+        /* route the instrument to the group
+         * track */
+        track_select (
+          ins_track, F_SELECT, F_EXCLUSIVE,
+          F_NO_PUBLISH_EVENTS);
+        UndoableAction * ua =
+          edit_tracks_action_new_direct_out (
+            TRACKLIST_SELECTIONS, group_track);
+        undo_manager_perform (UNDO_MANAGER, ua);
+
+        /* solo the group track */
+        track_select (
+          group_track, F_SELECT, F_EXCLUSIVE,
+          F_NO_PUBLISH_EVENTS);
+        ua =
+          edit_tracks_action_new_solo (
+            TRACKLIST_SELECTIONS, true);
+        undo_manager_perform (UNDO_MANAGER, ua);
+
+        /* play a note on the instrument track
+         * and verify that signal comes out
+         * in both tracks */
+        midi_events_add_note_on (
+          ins_track->processor->midi_in->
+            midi_events,
+          1, 62, 74, 2, true);
+
+        /* let engine run */
+        g_usleep (1000000);
+
+#if 0
+        bool has_signal = false;
+        Port * l =
+          ins_track->channel->fader->stereo_out->l;
+        for (nframes_t i = 0;
+             i < AUDIO_ENGINE->block_length; i++)
+          {
+            if (l->buf[i] > 0.0001f)
+              {
+                has_signal = true;
+                break;
+              }
+          }
+        g_assert_true (has_signal);
+#endif
+
+        /* undo and re-verify */
+        undo_manager_undo (UNDO_MANAGER);
+      }
+      break;
     default:
       break;
     }

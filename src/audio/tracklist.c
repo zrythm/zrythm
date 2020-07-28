@@ -166,6 +166,35 @@ tracklist_print_tracks (
   g_message ("------ end ------");
 }
 
+static void
+swap_tracks (
+  Tracklist * self,
+  int         src,
+  int         dest)
+{
+  self->swapping_tracks = true;
+
+  Track * src_track = self->tracks[src];
+  Track * dest_track = self->tracks[dest];
+
+  /* move src somewhere temporarily */
+  self->tracks[src] = NULL;
+  self->tracks[self->num_tracks] = src_track;
+  track_set_pos (src_track, self->num_tracks);
+
+  /* move dest to src */
+  self->tracks[src] = dest_track;
+  self->tracks[dest] = NULL;
+  track_set_pos (dest_track, src);
+
+  /* move src from temp pos to dest */
+  self->tracks[dest] = src_track;
+  self->tracks[self->num_tracks] = NULL;
+  track_set_pos (src_track, dest);
+
+  self->swapping_tracks = false;
+}
+
 /**
  * Adds given track to given spot in tracklist.
  *
@@ -184,37 +213,34 @@ tracklist_insert_track (
     "inserting %s at %d...",
     track->name, pos);
 
+  /* set to -1 so other logic knows it is a new
+   * track */
+  track->pos = -1;
+  if (track->channel)
+    {
+      track->channel->track_pos = -1;
+    }
+
   track_set_name (track, track->name, 0);
 
-  /* if adding at the end, append it, otherwise
-   * insert it */
-  if (pos == self->num_tracks)
-    {
-      array_append (
-        self->tracks, self->num_tracks, track);
-    }
-  else
-    {
-      array_insert (
-        self->tracks, self->num_tracks,
-        pos, track);
-    }
+  /* append the track at the end */
+  array_append (
+    self->tracks, self->num_tracks, track);
 
-  track_set_pos (track, pos);
+  /* if inserting it, swap until it reaches its
+   * position */
+  if (pos != self->num_tracks - 1)
+    {
+      for (int i = self->num_tracks - 1; i > pos;
+           i--)
+        {
+          swap_tracks (self, i, i - 1);
+        }
+    }
 
   /* make the track the only selected track */
   tracklist_selections_select_single (
     TRACKLIST_SELECTIONS, track);
-
-  /* move other tracks */
-  for (int i = 0;
-       i < self->num_tracks; i++)
-    {
-      if (i == pos)
-        continue;
-
-      track_set_pos (self->tracks[i], i);
-    }
 
   track_set_is_project (track, true);
 
@@ -230,6 +256,24 @@ tracklist_insert_track (
 
   /* verify */
   track_verify_identifiers (track);
+
+  if (ZRYTHM_TESTING)
+    {
+      for (int i = 0; i < self->num_tracks; i++)
+        {
+          Track * cur_track = self->tracks[i];
+          if (track_type_has_channel (
+                cur_track->type))
+            {
+              Channel * ch = cur_track->channel;
+              if (ch->has_output)
+                {
+                  g_return_if_fail (
+                    ch->output_pos != ch->track_pos);
+                }
+            }
+        }
+    }
 
   if (recalc_graph)
     {
@@ -579,6 +623,11 @@ tracklist_remove_track (
   g_warn_if_fail (
     track->pos == idx);
 
+  /* move track to the end */
+  tracklist_move_track (
+    self, track, TRACKLIST->num_tracks - 1,
+    F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+
   track_disconnect (
     track, rm_pl, F_NO_RECALC_GRAPH);
 
@@ -602,15 +651,18 @@ tracklist_remove_track (
 
   track_set_is_project (track, false);
 
+#if 0
   /* move all other tracks */
   for (int i = 0; i < self->num_tracks; i++)
     {
       track_set_pos (self->tracks[i], i);
     }
+#endif
 
   if (free_track)
     {
-      free_later (track, track_free);
+      object_free_w_func_and_null (
+        track_free, track);
     }
 
   if (recalc_graph)
@@ -624,31 +676,6 @@ tracklist_remove_track (
     }
 
   g_message ("%s: done", __func__);
-}
-
-static void
-swap_tracks (
-  Tracklist * self,
-  int         src,
-  int         dest)
-{
-  Track * src_track = self->tracks[src];
-  Track * dest_track = self->tracks[dest];
-
-  /* move src somewhere temporarily */
-  self->tracks[src] = NULL;
-  self->tracks[self->num_tracks] = src_track;
-  track_set_pos (src_track, self->num_tracks);
-
-  /* move dest to src */
-  self->tracks[src] = dest_track;
-  self->tracks[dest] = NULL;
-  track_set_pos (dest_track, src);
-
-  /* move src from temp pos to dest */
-  self->tracks[dest] = src_track;
-  self->tracks[self->num_tracks] = NULL;
-  track_set_pos (src_track, dest);
 }
 
 /**
@@ -870,15 +897,20 @@ tracklist_free (
 {
   g_message ("%s: freeing...", __func__);
 
-  for (int i = self->num_tracks - 1; i >= 0; i--)
+  int num_tracks = self->num_tracks;
+  for (int i = num_tracks - 1; i >= 0; i--)
     {
       Track * track = self->tracks[i];
-      track_disconnect (
-        track, true, F_NO_RECALC_GRAPH);
-      track_set_pos (track, -1);
+      /*track_disconnect (*/
+        /*track, true, F_NO_RECALC_GRAPH);*/
+      /*track_set_pos (track, -1);*/
 
-      track_set_is_project (track, false);
-      track_free (track);
+      /*track_set_is_project (track, false);*/
+      /*object_free_w_func_and_null (*/
+        /*track_free, track);*/
+      tracklist_remove_track (
+        self, track, F_REMOVE_PL, F_FREE,
+        F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
     }
 
   object_zero_and_free (self);

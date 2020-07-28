@@ -98,7 +98,7 @@ edit_tracks_action_new_solo (
 {
   UndoableAction * action =
     edit_tracks_action_new (
-      EDIT_TRACK_ACTION_TYPE_MUTE, tls, NULL,
+      EDIT_TRACK_ACTION_TYPE_SOLO, tls, NULL,
       0.f, 0.f, solo_new, false);
   return action;
 }
@@ -160,14 +160,17 @@ edit_tracks_action_do (EditTracksAction * self)
           break;
         case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
           g_return_val_if_fail (ch, -1);
-          if (self->new_direct_out_pos == -1)
+
+          /* remove previous direct out */
+          if (ch->has_output)
             {
               group_target_track_remove_child (
                 TRACKLIST->tracks[ch->output_pos],
                 ch->track->pos, F_DISCONNECT,
                 F_RECALC_GRAPH, F_PUBLISH_EVENTS);
             }
-          else
+
+          if (self->new_direct_out_pos != -1)
             {
               group_target_track_add_child (
                 TRACKLIST->tracks[
@@ -226,6 +229,18 @@ edit_tracks_action_undo (
           break;
         case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
           g_return_val_if_fail (ch, -1);
+
+          /* disconnect from the current track */
+          if (ch->has_output)
+            {
+              group_target_track_remove_child (
+                TRACKLIST->tracks[ch->output_pos],
+                ch->track->pos,
+                F_DISCONNECT, F_RECALC_GRAPH,
+                F_PUBLISH_EVENTS);
+            }
+
+          /* reconnect to the original track */
           if (clone_track->channel->has_output)
             {
               group_target_track_add_child (
@@ -233,14 +248,6 @@ edit_tracks_action_undo (
                   clone_track->channel->output_pos],
                 ch->track->pos, F_CONNECT,
                 F_RECALC_GRAPH, F_PUBLISH_EVENTS);
-            }
-          else
-            {
-              group_target_track_remove_child (
-                TRACKLIST->tracks[ch->output_pos],
-                ch->track->pos,
-                F_DISCONNECT, F_RECALC_GRAPH,
-                F_PUBLISH_EVENTS);
             }
           break;
         }

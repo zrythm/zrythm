@@ -145,9 +145,9 @@ undoable_action_do (UndoableAction * self)
         undoable_action_stringize (self); \
       g_message ( \
         "[DOING ACTION]: " #uc " (%s)", str); \
-      g_free (str); \
       ret = sc##_action_do ((cc##Action *) self); \
-      g_message ("[DONE]: " #uc); \
+      g_message ("[DONE]: " #uc " (%s)", str); \
+      g_free (str); \
     } \
     break;
 

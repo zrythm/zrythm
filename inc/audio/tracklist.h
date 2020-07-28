@@ -97,6 +97,10 @@ typedef struct Tracklist
 
   /** PinnedTracklistWidget. */
   PinnedTracklistWidget * pinned_widget;
+
+  /** When this is true, some tracks may temporarily
+   * be moved beyond num_tracks. */
+  bool                swapping_tracks;
 } Tracklist;
 
 static const cyaml_schema_field_t

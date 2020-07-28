@@ -35,6 +35,13 @@ group_target_track_init_loaded (
   Track * self)
 {
   self->children_size = self->num_children;
+  if (self->num_children == 0)
+    {
+      self->children_size = 1;
+      self->children =
+        calloc (
+          (size_t) self->children_size, sizeof (int));
+    }
 }
 
 void
@@ -58,6 +65,8 @@ update_child_output (
   bool      recalc_graph,
   bool      pub_events)
 {
+  g_return_if_fail (ch);
+
   if (ch->has_output)
     {
       Track * track =
@@ -127,6 +136,22 @@ update_child_output (
     }
 }
 
+static bool
+contains_child (
+  Track * self,
+  int     child_pos)
+{
+  for (int i = 0; i < self->num_children; i++)
+    {
+      if (self->children[i] == child_pos)
+        {
+          return true;
+        }
+    }
+
+  return false;
+}
+
 /**
  * Removes a child track from the list of children.
  */
@@ -138,12 +163,15 @@ group_target_track_remove_child (
   bool    recalc_graph,
   bool    pub_events)
 {
-  g_return_if_fail (child_pos != self->pos);
+  g_return_if_fail (
+    child_pos != self->pos &&
+    contains_child (self, child_pos));
 
   Track * child = TRACKLIST->tracks[child_pos];
+  g_return_if_fail (IS_TRACK (child));
   g_message (
     "removing %s (%d) from %s (%d) - disconnect %d",
-    self->name, self->pos, child->name, child->pos,
+    child->name, child->pos, self->name, self->pos,
     disconnect);
 
   if (disconnect)
@@ -154,6 +182,12 @@ group_target_track_remove_child (
     }
   array_delete_primitive (
     self->children, self->num_children, child_pos);
+
+  g_message (
+    "removed %s (%d) from %s (%d). "
+    "num children: %d",
+    child->name, child->pos, self->name, self->pos,
+    self->num_children);
 }
 
 /**
@@ -198,6 +232,9 @@ group_target_track_add_child (
         recalc_graph, pub_events);
     }
 
+  array_double_size_if_full (
+    self->children, self->num_children,
+    self->children_size, int);
   array_append (
     self->children, self->num_children, child_pos);
 }

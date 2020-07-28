@@ -30,6 +30,7 @@
 #include "audio/engine_jack.h"
 #include "audio/engine_rtmidi.h"
 #include "audio/ext_port.h"
+#include "audio/group_target_track.h"
 #include "audio/instrument_track.h"
 #include "audio/master_track.h"
 #include "audio/midi.h"
@@ -886,8 +887,9 @@ channel_connect (
     }
   else if (tr->out_signal_type == TYPE_AUDIO)
     {
-      ch->output_pos = P_MASTER_TRACK->pos;
-      ch->has_output = 1;
+      group_target_track_add_child (
+        P_MASTER_TRACK, ch->track_pos, F_CONNECT,
+        F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
     }
 
   if (tr->out_signal_type ==
@@ -922,24 +924,6 @@ channel_connect (
   /** Connect MIDI in and piano roll to MIDI out. */
   track_processor_connect_to_prefader (
     tr->processor);
-
-  if (tr->type != TRACK_TYPE_MASTER)
-    {
-      if (tr->out_signal_type == TYPE_AUDIO)
-        {
-          /* connect channel out ports to master */
-          port_connect (
-            ch->stereo_out->l,
-            P_MASTER_TRACK->processor->
-              stereo_in->l,
-            1);
-          port_connect (
-            ch->stereo_out->r,
-            P_MASTER_TRACK->processor->
-              stereo_in->r,
-            1);
-        }
-    }
 
   /* expose ports to backend */
   if (AUDIO_ENGINE && AUDIO_ENGINE->setup)
@@ -981,7 +965,8 @@ channel_get_output_track (
 
   g_return_val_if_fail (
     self &&
-    self->output_pos < TRACKLIST->num_tracks,
+    (TRACKLIST->swapping_tracks ||
+     self->output_pos < TRACKLIST->num_tracks),
     NULL);
   Track * track =
     TRACKLIST->tracks[self->output_pos];
@@ -1817,6 +1802,24 @@ channel_update_track_pos (
   Channel * self,
   int       pos)
 {
+  /* update output */
+  if (self->has_output && pos != -1 &&
+      pos != self->track_pos &&
+      self->track_pos != -1)
+    {
+      Track * out_track =
+        channel_get_output_track (self);
+      for (int i = 0; i < out_track->num_children;
+           i++)
+        {
+          if (out_track->children[i] ==
+                self->track_pos)
+            {
+              out_track->children[i] = pos;
+            }
+        }
+    }
+
   self->track_pos = pos;
 
   for (int i = 0; i < STRIP_SIZE; i++)
@@ -2030,38 +2033,49 @@ channel_get_plugins (
  */
 void
 channel_disconnect (
-  Channel * channel,
+  Channel * self,
   bool      remove_pl)
 {
   if (remove_pl)
     {
       FOREACH_STRIP
         {
-          if (channel->inserts[i])
+          if (self->inserts[i])
             {
               channel_remove_plugin (
-                channel,
+                self,
                 PLUGIN_SLOT_INSERT,
                 i, remove_pl, false,
                 F_NO_RECALC_GRAPH);
             }
-          if (channel->midi_fx[i])
+          if (self->midi_fx[i])
             {
               channel_remove_plugin (
-                channel,
+                self,
                 PLUGIN_SLOT_MIDI_FX,
                 i, remove_pl, false,
                 F_NO_RECALC_GRAPH);
             }
         }
-      if (channel->instrument)
+      if (self->instrument)
         {
           channel_remove_plugin (
-            channel,
+            self,
             PLUGIN_SLOT_INSTRUMENT,
             0, remove_pl, false,
             F_NO_RECALC_GRAPH);
         }
+    }
+
+  /* disconnect from output */
+  if (self->has_output)
+    {
+      Track * out_track =
+        channel_get_output_track (self);
+      g_warn_if_fail (IS_TRACK (out_track));
+      group_target_track_remove_child (
+        out_track, self->track_pos, F_DISCONNECT,
+        F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
     }
 }
 

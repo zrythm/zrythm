@@ -164,6 +164,9 @@ test_group_track_deletion (void)
 {
   UndoableAction * ua;
 
+  g_assert_cmpint (
+    P_MASTER_TRACK->num_children, ==, 1);
+
   /* create 2 audio fx tracks and route them to
    * a new group track */
   ua =
@@ -188,6 +191,8 @@ test_group_track_deletion (void)
   g_assert_true (group->children);
   g_assert_false (audio_fx1->children);
   g_assert_false (audio_fx2->children);
+  g_assert_cmpint (
+    P_MASTER_TRACK->num_children, ==, 4);
 
   /* route each fx track to the group */
   track_select (
@@ -197,6 +202,14 @@ test_group_track_deletion (void)
     edit_tracks_action_new_direct_out (
       TRACKLIST_SELECTIONS, group);
   undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpint (
+    P_MASTER_TRACK->num_children, ==, 3);
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_cmpint (
+    P_MASTER_TRACK->num_children, ==, 4);
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_cmpint (
+    P_MASTER_TRACK->num_children, ==, 3);
   track_select (
     audio_fx2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
@@ -204,6 +217,8 @@ test_group_track_deletion (void)
     edit_tracks_action_new_direct_out (
       TRACKLIST_SELECTIONS, group);
   undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmpint (
+    P_MASTER_TRACK->num_children, ==, 2);
 
   g_assert_cmpint (group->num_children, ==, 2);
   g_assert_true (audio_fx1->channel->has_output);

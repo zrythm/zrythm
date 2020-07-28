@@ -39,6 +39,8 @@
 
 #include <glib.h>
 
+static int num_master_children = 0;
+
 static void
 _test_copy_plugins (
   const char * pl_bundle,
@@ -70,11 +72,31 @@ _test_copy_plugins (
         TRACK_TYPE_AUDIO_BUS,
       descr, NULL, TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
+  num_master_children++;
+  g_assert_cmpint (
+    P_MASTER_TRACK->num_children, ==,
+    num_master_children);
+  g_assert_cmpint (
+    P_MASTER_TRACK->children[
+      num_master_children - 1], ==,
+    TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (
+    P_MASTER_TRACK->children[0], ==, 4);
 
   /* save and reload the project */
   test_project_save_and_reload ();
 
-  /* select tracj */
+  g_assert_cmpint (
+    P_MASTER_TRACK->num_children, ==,
+    num_master_children);
+  g_assert_cmpint (
+    P_MASTER_TRACK->children[
+      num_master_children - 1], ==,
+    TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (
+    P_MASTER_TRACK->children[0], ==, 4);
+
+  /* select track */
   Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
@@ -89,6 +111,18 @@ _test_copy_plugins (
         copy_tracks_action_new (
           TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
       undo_manager_perform (UNDO_MANAGER, ua);
+      num_master_children++;
+      g_assert_cmpint (
+        P_MASTER_TRACK->num_children, ==,
+        num_master_children);
+      g_assert_cmpint (
+        P_MASTER_TRACK->children[
+          num_master_children - 1], ==,
+        TRACKLIST->num_tracks - 1);
+      g_assert_cmpint (
+        P_MASTER_TRACK->children[0], ==, 4);
+      g_assert_cmpint (
+        P_MASTER_TRACK->children[1], ==, 5);
 
       Track * new_track =
         TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
