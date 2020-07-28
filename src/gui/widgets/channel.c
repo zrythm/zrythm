@@ -44,6 +44,7 @@
 #include "gui/widgets/route_target_selector.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/resources.h"
@@ -352,10 +353,11 @@ on_drag_motion (
 }
 
 static void
-on_drag_leave (GtkWidget      *widget,
-               GdkDragContext *context,
-               guint           time,
-               ChannelWidget * self)
+on_drag_leave (
+  GtkWidget *      widget,
+  GdkDragContext * context,
+  guint            time,
+  ChannelWidget *  self)
 {
   g_message ("on_drag_leave");
 
@@ -371,12 +373,6 @@ on_drag_leave (GtkWidget      *widget,
     GTK_WIDGET (self->highlight_right_box),
     -1, -1);
 }
-/*static void*/
-/*phase_invert_button_clicked (ChannelWidget * self,*/
-                             /*GtkButton     * button)*/
-/*{*/
-
-/*}*/
 
 /**
  * Callback when somewhere in the channel is
@@ -412,20 +408,22 @@ channel_widget_redraw_fader (
 }
 
 static void
-on_drag_begin (GtkGestureDrag *gesture,
-               gdouble         start_x,
-               gdouble         start_y,
-               ChannelWidget * self)
+on_drag_begin (
+  GtkGestureDrag * gesture,
+  gdouble          start_x,
+  gdouble          start_y,
+  ChannelWidget *  self)
 {
   self->selected_in_dnd = 0;
   self->dragged = 0;
 }
 
 static void
-on_drag_update (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               ChannelWidget * self)
+on_drag_update (
+  GtkGestureDrag * gesture,
+  gdouble          offset_x,
+  gdouble          offset_y,
+  ChannelWidget *  self)
 {
   self->dragged = 1;
 }
@@ -467,6 +465,12 @@ on_record_toggled (
 {
   Track * track =
     channel_get_track (self->channel);
+  if (!track_is_selected (track))
+    {
+      track_select (
+        track, F_SELECT, F_EXCLUSIVE,
+        F_PUBLISH_EVENTS);
+    }
   track_set_recording (
     track,
     gtk_toggle_button_get_active (btn), 1);
@@ -479,6 +483,12 @@ on_solo_toggled (
 {
   Track * track =
     channel_get_track (self->channel);
+  if (!track_is_selected (track))
+    {
+      track_select (
+        track, F_SELECT, F_EXCLUSIVE,
+        F_PUBLISH_EVENTS);
+    }
   track_set_soloed (
     track,
     gtk_toggle_button_get_active (btn), true, true);
@@ -490,6 +500,12 @@ on_mute_toggled (GtkToggleButton * btn,
 {
   Track * track =
     channel_get_track (self->channel);
+  if (!track_is_selected (track))
+    {
+      track_select (
+        track, F_SELECT, F_EXCLUSIVE,
+        F_PUBLISH_EVENTS);
+    }
   track_set_muted (
     track,
     gtk_toggle_button_get_active (btn),

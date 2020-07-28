@@ -459,6 +459,21 @@ track_get_soloed (
 }
 
 /**
+ * Returns whether the track is not soloed on its
+ * own but its direct out (or its direct out's direct
+ * out, etc.) is soloed.
+ */
+bool
+track_get_implied_soloed (
+  Track * self)
+{
+  g_return_val_if_fail (
+    self && self->channel, false);
+  return
+    fader_get_implied_soloed (self->channel->fader);
+}
+
+/**
  * Returns if the track is muted.
  */
 bool

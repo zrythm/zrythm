@@ -92,6 +92,9 @@ get_color_for_state (
     case CUSTOM_BUTTON_WIDGET_STATE_TOGGLED:
       *c = self->toggled_color;
       break;
+    case CUSTOM_BUTTON_WIDGET_STATE_SEMI_TOGGLED:
+      *c = self->def_color;
+      break;
     default:
       g_warn_if_reached ();
     }
@@ -145,7 +148,19 @@ draw_bg (
   z_cairo_rounded_rectangle (
     cr, x, y, width, self->size, self->aspect,
     self->corner_radius);
-  cairo_fill (cr);
+  if (state ==
+        CUSTOM_BUTTON_WIDGET_STATE_SEMI_TOGGLED)
+    {
+      cairo_fill_preserve (cr);
+      get_color_for_state (
+        self, CUSTOM_BUTTON_WIDGET_STATE_TOGGLED, &c);
+      gdk_cairo_set_source_rgba (cr, &c);
+      cairo_stroke (cr);
+    }
+  else
+    {
+      cairo_fill (cr);
+    }
 }
 
 static void

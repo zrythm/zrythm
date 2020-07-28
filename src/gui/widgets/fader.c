@@ -444,7 +444,6 @@ fader_widget_init (FaderWidget * self)
   g_signal_connect (
     G_OBJECT (right_mouse_mp), "pressed",
     G_CALLBACK (on_right_click), self);
-
 }
 
 static void

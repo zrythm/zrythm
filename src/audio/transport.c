@@ -662,16 +662,19 @@ transport_position_add_frames (
   /* if start frames were before the loop-end point
    * and the new frames are after (loop crossed) */
   if (TRANSPORT_IS_LOOPING &&
-      pos_before_adding.total_ticks <
-        self->loop_end_pos.total_ticks &&
-      pos->total_ticks >=
-        self->loop_end_pos.total_ticks)
+      pos_before_adding.frames <
+        self->loop_end_pos.frames &&
+      pos->frames >=
+        self->loop_end_pos.frames)
     {
       /* adjust the new frames */
       position_add_ticks (
         pos,
         self->loop_start_pos.total_ticks -
           self->loop_end_pos.total_ticks);
+
+      g_warn_if_fail (
+        pos->frames < self->loop_end_pos.frames);
     }
 
   /*long new_global_frames =*/

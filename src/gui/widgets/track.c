@@ -466,11 +466,19 @@ draw_buttons (
         }
       else if (string_is_equal (
                 cb->icon_name,
-                ICON_NAME_SOLO, 1) &&
-               track_get_soloed (self->track))
+                ICON_NAME_SOLO, 1))
         {
-          state =
-            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+          if (track_get_soloed (self->track))
+            {
+              state =
+                CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+            }
+          else if (track_get_implied_soloed (
+                     self->track))
+            {
+              state =
+                CUSTOM_BUTTON_WIDGET_STATE_SEMI_TOGGLED;
+            }
         }
       else if (string_is_equal (
                 cb->icon_name,

@@ -1312,8 +1312,14 @@ process_events (void * data)
             Z_RULER_WIDGET (EDITOR_RULER));
           break;
         case ET_TRACK_STATE_CHANGED:
-          on_track_state_changed (
-            (Track *) ev->arg);
+          /*on_track_state_changed (*/
+            /*(Track *) ev->arg);*/
+          for (int j = 0; j < TRACKLIST->num_tracks;
+               j++)
+            {
+              on_track_state_changed (
+                TRACKLIST->tracks[j]);
+            }
           break;
         case ET_TRACK_VISIBILITY_CHANGED:
           tracklist_widget_update_track_visibility (

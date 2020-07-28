@@ -335,6 +335,49 @@ fader_get_soloed (
 }
 
 /**
+ * Returns whether the fader is not soloed on its
+ * own but its direct out (or its direct out's direct
+ * out, etc.) is soloed.
+ */
+bool
+fader_get_implied_soloed (
+  Fader * self)
+{
+  /* only check channel faders */
+  if ((self->type != FADER_TYPE_AUDIO_CHANNEL &&
+       self->type != FADER_TYPE_MIDI_CHANNEL) ||
+      self->passthrough || self->solo)
+    {
+      return false;
+    }
+
+  Track * track = fader_get_track (self);
+  g_return_val_if_fail (track, false);
+
+  Track * out_track = track;
+  do
+    {
+      if (track_type_has_channel (out_track->type))
+        {
+          out_track =
+            channel_get_output_track (
+              out_track->channel);
+          if (out_track &&
+              track_get_soloed (out_track))
+            {
+              return true;
+            }
+        }
+      else
+        {
+          out_track = NULL;
+        }
+    } while (out_track);
+
+  return false;
+}
+
+/**
  * Sets track soloed and optionally adds the action
  * to the undo stack.
  */
@@ -696,6 +739,7 @@ fader_process (
               (self->type == FADER_TYPE_AUDIO_CHANNEL &&
                 tracklist_has_soloed (TRACKLIST) &&
                 !fader_get_soloed (self) &&
+                !fader_get_implied_soloed (self) &&
                 track != P_MASTER_TRACK) ||
               (AUDIO_ENGINE->bounce_mode == BOUNCE_ON &&
                self->type == FADER_TYPE_AUDIO_CHANNEL &&

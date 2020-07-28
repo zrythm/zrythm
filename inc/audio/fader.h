@@ -277,6 +277,15 @@ fader_get_soloed (
   Fader * self);
 
 /**
+ * Returns whether the fader is not soloed on its
+ * own but its direct out (or its direct out's direct
+ * out, etc.) is soloed.
+ */
+bool
+fader_get_implied_soloed (
+  Fader * self);
+
+/**
  * Sets track soloed and optionally adds the action
  * to the undo stack.
  */

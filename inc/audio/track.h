@@ -559,6 +559,15 @@ track_get_soloed (
   Track * self);
 
 /**
+ * Returns whether the track is not soloed on its
+ * own but its direct out (or its direct out's direct
+ * out, etc.) is soloed.
+ */
+bool
+track_get_implied_soloed (
+  Track * self);
+
+/**
  * Returns if the track is muted.
  */
 bool

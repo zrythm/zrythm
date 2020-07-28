@@ -42,6 +42,9 @@ typedef enum CustomButtonWidgetState
   CUSTOM_BUTTON_WIDGET_STATE_HOVERED,
   CUSTOM_BUTTON_WIDGET_STATE_ACTIVE,
   CUSTOM_BUTTON_WIDGET_STATE_TOGGLED,
+
+  /** Only border is toggled. */
+  CUSTOM_BUTTON_WIDGET_STATE_SEMI_TOGGLED,
 } CustomButtonWidgetState;
 
 typedef enum CustomButtonWidgetOwner
