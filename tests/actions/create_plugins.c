@@ -29,61 +29,43 @@
 #include "audio/master_track.h"
 #include "audio/midi_note.h"
 #include "audio/region.h"
+#include "plugins/carla/carla_discovery.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project.h"
 
 #include <glib.h>
 
 static void
 _test_create_plugins (
-  const char * pl_bundle,
-  const char * pl_uri,
-  bool         is_instrument,
-  bool         with_carla)
+  PluginProtocol prot,
+  const char *   pl_bundle,
+  const char *   pl_uri,
+  bool           is_instrument,
+  bool           with_carla)
 {
-  LilvNode * path =
-    lilv_new_uri (LILV_WORLD, pl_bundle);
-  lilv_world_load_bundle (
-    LILV_WORLD, path);
-  lilv_node_free (path);
-
-  plugin_manager_scan_plugins (
-    PLUGIN_MANAGER, 1.0, NULL);
-  /*g_assert_cmpint (*/
-    /*PLUGIN_MANAGER->num_plugins, ==, 1);*/
-
   PluginDescriptor * descr = NULL;
-  for (int i = 0; i < PLUGIN_MANAGER->num_plugins;
-       i++)
+
+  switch (prot)
     {
-      if (string_is_equal (
-            PLUGIN_MANAGER->plugin_descriptors[i]->
-              uri, pl_uri, true))
-        {
-          descr =
-            plugin_descriptor_clone (
-              PLUGIN_MANAGER->plugin_descriptors[i]);
-        }
+    case PROT_LV2:
+      descr =
+        plugin_descriptor_clone (
+          test_plugin_manager_get_plugin_descriptor (
+            pl_bundle, pl_uri, with_carla));
+      break;
+    case PROT_VST:
+      descr =
+        z_carla_discovery_create_vst_descriptor (
+          pl_bundle, ARCH_64, PROT_VST);
+      break;
+    default:
+      break;
     }
-
-  /* fix the descriptor (for some reason lilv
-   * reports it as Plugin instead of Instrument if
-   * you don't do lilv_world_load_all) */
-  /*if (is_instrument)*/
-    /*{*/
-      /*descr->category = PC_INSTRUMENT;*/
-    /*}*/
-  /*g_free (descr->category_str);*/
-  /*descr->category_str =*/
-    /*plugin_descriptor_category_to_string (*/
-      /*descr->category);*/
-
-  /* open with carla if requested */
-  descr->open_with_carla = with_carla;
 
   UndoableAction * ua = NULL;
   if (is_instrument)
@@ -97,7 +79,8 @@ _test_create_plugins (
     }
   else
     {
-      /* create an audio fx track and add the plugin */
+      /* create an audio fx track and add the
+       * plugin */
       ua =
         create_tracks_action_new (
           TRACK_TYPE_AUDIO_BUS, NULL, NULL,
@@ -111,6 +94,11 @@ _test_create_plugins (
     }
 
   plugin_descriptor_free (descr);
+
+  /* let the engine run */
+  g_usleep (1000000);
+
+  test_project_save_and_reload ();
 
   int src_track_pos = TRACKLIST->num_tracks - 1;
   Track * src_track =
@@ -154,6 +142,8 @@ _test_create_plugins (
   /* let the engine run */
   g_usleep (1000000);
 
+  test_project_save_and_reload ();
+
   g_message ("done");
 }
 
@@ -162,26 +152,42 @@ test_create_plugins (void)
 {
   test_helper_zrythm_init ();
 
+  for (int i = 0; i < 2; i++)
+    {
+      if (i == 1)
+        {
+#ifdef HAVE_CARLA
+#ifdef HAVE_NOIZEMAKER
+          _test_create_plugins (
+            PROT_VST, NOIZEMAKER_PATH, NULL,
+            true, i);
+#endif
+#else
+          break;
+#endif
+        }
+
 #ifdef HAVE_HELM
-  _test_create_plugins (
-    HELM_BUNDLE, HELM_URI, true, false);
+      _test_create_plugins (
+        PROT_LV2, HELM_BUNDLE, HELM_URI, true, i);
 #endif
 #ifdef HAVE_LSP_COMPRESSOR
-  _test_create_plugins (
-    LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
-    false, false);
+      _test_create_plugins (
+        PROT_LV2, LSP_COMPRESSOR_BUNDLE,
+        LSP_COMPRESSOR_URI, false, i);
 #endif
 #ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
-  _test_create_plugins (
-    SHERLOCK_ATOM_INSPECTOR_BUNDLE,
-    SHERLOCK_ATOM_INSPECTOR_URI,
-    false, false);
+      _test_create_plugins (
+        PROT_LV2, SHERLOCK_ATOM_INSPECTOR_BUNDLE,
+        SHERLOCK_ATOM_INSPECTOR_URI,
+        false, i);
 #endif
 #ifdef HAVE_CARLA_RACK
-  _test_create_plugins (
-    CARLA_RACK_BUNDLE, CARLA_RACK_URI,
-    true, false);
+      _test_create_plugins (
+        PROT_LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI,
+        true, i);
 #endif
+    }
 }
 
 int

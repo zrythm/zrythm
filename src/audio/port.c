@@ -1528,6 +1528,19 @@ port_update_identifier (
           g_warn_if_fail (
             dest->srcs[src_idx] == self);
         }
+
+      if (self->id.track_pos > -1 &&
+          self->id.flags & PORT_FLAG_AUTOMATABLE)
+        {
+          /* update automation track's port id */
+          self->at =
+            automation_track_find_from_port (
+              self, track, true);
+          AutomationTrack * at = self->at;
+          g_return_if_fail (at);
+          port_identifier_copy (
+            &at->port_id, &self->id);
+        }
     }
 
   if (self->lv2_port)
@@ -1535,20 +1548,6 @@ port_update_identifier (
       Lv2Port * port = self->lv2_port;
       port_identifier_copy (
         &port->port_id, &self->id);
-    }
-
-  if (self->id.track_pos > -1 &&
-      self->id.flags & PORT_FLAG_AUTOMATABLE &&
-      self->is_project)
-    {
-      /* update automation track's port id */
-      self->at =
-        automation_track_find_from_port (
-          self, track, true);
-      AutomationTrack * at = self->at;
-      g_return_if_fail (at);
-      port_identifier_copy (
-        &at->port_id, &self->id);
     }
 }
 
@@ -3112,7 +3111,7 @@ port_get_track (
 Plugin *
 port_get_plugin (
   Port * self,
-  int   warn_if_fail)
+  bool   warn_if_fail)
 {
   g_return_val_if_fail (self, NULL);
 

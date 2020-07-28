@@ -260,7 +260,35 @@ automation_track_find_from_port (
             dest->flags == src->flags &&
             dest->track_pos == src->track_pos)
             {
-              return at;
+              if (dest->owner_type ==
+                    PORT_OWNER_TYPE_PLUGIN)
+                {
+                  Plugin * pl =
+                    port_get_plugin (port, true);
+                  g_warn_if_fail (pl);
+                  /* if lv2, only search port by
+                   * name */
+                  if (pl->descr->protocol ==
+                        PROT_LV2)
+                    {
+                      return at;
+                    }
+                  /* if not lv2, also search by
+                   * index */
+                  else if (dest->port_index ==
+                             src->port_index)
+                    {
+                      return at;
+                    }
+                }
+              else
+                {
+                  if (dest->port_index ==
+                        src->port_index)
+                    {
+                      return at;
+                    }
+                }
             }
         }
       else if (port_identifier_is_equal (

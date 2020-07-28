@@ -1485,10 +1485,13 @@ plugin_clone (
       /* also instantiate the source, if not
        * already instantiated, so its state can
        * be ready */
-      ret =
-        plugin_instantiate (
-          pl, src_is_project, NULL);
-      g_return_val_if_fail (ret == 0, NULL);
+      if (!pl->instantiated)
+        {
+          ret =
+            plugin_instantiate (
+              pl, src_is_project, NULL);
+          g_return_val_if_fail (ret == 0, NULL);
+        }
 
       /* save the state of the original plugin */
       carla_native_plugin_save_state (

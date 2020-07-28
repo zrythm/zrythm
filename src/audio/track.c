@@ -973,26 +973,6 @@ track_generate_automation_tracks (
         automation_track_new (
           track->channel->fader->mute);
       automation_tracklist_add_at (atl, at);
-
-      /*  -- prefader -- */
-
-      /* volume */
-      at =
-        automation_track_new (
-          track->channel->prefader->amp);
-      automation_tracklist_add_at (atl, at);
-
-      /* balance */
-      at =
-        automation_track_new (
-          track->channel->prefader->balance);
-      automation_tracklist_add_at (atl, at);
-
-      /* mute */
-      at =
-        automation_track_new (
-          track->channel->prefader->mute);
-      automation_tracklist_add_at (atl, at);
     }
 
   if (track_has_piano_roll (track))

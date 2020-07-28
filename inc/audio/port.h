@@ -708,7 +708,7 @@ port_get_track (
 Plugin *
 port_get_plugin (
   Port * self,
-  int    warn_if_fail);
+  bool   warn_if_fail);
 
 /**
  * To be called when the port's identifier changes

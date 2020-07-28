@@ -186,12 +186,19 @@ ext_lv2_plugins = {
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}
+ext_vst_plugins = {
+  'noizemaker': 'TAL-NoiseMaker.so',
+  }
+have_ext_vst_plugins = {}
+ext_vst_plugin_paths = {}
 if get_option ('tests')
   lv2ls_bin = find_program ('lv2ls', required: false)
   lv2info_bin = find_program (
     'lv2info', required: false)
   get_lv2_bundle_uri_bin = find_program (
     'tools/get_lv2_bundle_uri.sh')
+  get_vst_path_bin = find_program (
+    'tools/get_vst_path.sh')
   if lv2ls_bin.found () and lv2info_bin.found ()
     lv2ls_res = run_command (
       lv2ls_bin, check: true).stdout ()
@@ -206,6 +213,23 @@ if get_option ('tests')
           name: run_command (
             get_lv2_bundle_uri_bin, lv2info_bin,
             uri, check: true).stdout ().strip ()
+          }
+      endif
+    endforeach
+  endif
+  if get_vst_path_bin.found ()
+    foreach name, filename : ext_vst_plugins
+      have_ext_vst = run_command (
+        get_vst_path_bin,
+        filename).returncode () == 0
+      have_ext_vst_plugins += {
+        name: have_ext_vst
+        }
+      if have_ext_vst
+        ext_vst_plugin_paths += {
+          name: run_command (
+            get_vst_path_bin, filename,
+            check: true).stdout ().strip ()
           }
       endif
     endforeach
@@ -839,6 +863,11 @@ tests_summary = {
 foreach name, info : ext_lv2_plugins
   tests_summary += {
     info[0]: ext_lv2_plugin_bundles.get(name, 'N/A')
+    }
+endforeach
+foreach name, filename : ext_vst_plugins
+  tests_summary += {
+    filename: ext_vst_plugin_paths.get(name, 'N/A')
     }
 endforeach
 summary (tests_summary, section: 'Tests')

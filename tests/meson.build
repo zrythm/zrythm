@@ -46,6 +46,8 @@ if get_option ('tests')
 
   test_config_guile = configuration_data()
   test_config_guile.merge_from (test_config)
+
+  # LV2
   foreach name, info : ext_lv2_plugins
     uri = info[1]
     have_plugin = have_ext_lv2_plugins.get (
@@ -74,6 +76,31 @@ if get_option ('tests')
         name.to_upper() + '_URI', '')
       test_config_guile.set_quoted (
         name.to_upper() + '_BUNDLE', '')
+    endif
+  endforeach
+
+  # VST
+  foreach name, filename : ext_vst_plugins
+    have_plugin = have_ext_vst_plugins.get (
+      name, false)
+    if have_plugin
+      path = ext_vst_plugin_paths[name]
+      # C
+      test_config.set (
+        'HAVE_' + name.to_upper(), 1)
+      test_config.set_quoted (
+        name.to_upper() + '_PATH', path)
+      # Guile
+      test_config_guile.set (
+        'HAVE_' + name.to_upper(), '#t')
+      test_config_guile.set_quoted (
+        name.to_upper() + '_PATH', path)
+    else
+      # Guile
+      test_config_guile.set (
+        'HAVE_' + name.to_upper(), '#f')
+      test_config_guile.set_quoted (
+        name.to_upper() + '_PATH', '')
     endif
   endforeach
   test_config_h = configure_file (
@@ -179,7 +206,8 @@ if get_option ('tests')
       test (
         test_name, exe,
         env: test_env, suite: suite,
-        is_parallel: parallel)
+        is_parallel: parallel,
+        timeout: 60)
     else
       # create C executable for Guile runner
       source = _test[0] + '.scm'
@@ -203,7 +231,8 @@ if get_option ('tests')
         test_name, exe,
         args: source,
         env: test_env, suite: suite,
-        is_parallel: parallel)
+        is_parallel: parallel,
+        timeout: 60)
     endif
   endforeach
 
