@@ -75,16 +75,16 @@
  * nodes.
  */
 nframes_t
-router_get_max_playback_latency (
+router_get_max_route_playback_latency (
   Router * router)
 {
   g_return_val_if_fail (
     router && router->graph, 0);
-  router->max_playback_latency =
-    graph_get_max_playback_latency (
-      router->graph);
+  router->max_route_playback_latency =
+    graph_get_max_route_playback_latency (
+      router->graph, false);
 
-  return router->max_playback_latency;
+  return router->max_route_playback_latency;
 }
 
 /**
@@ -102,13 +102,20 @@ router_start_cycle (
   const Position * pos)
 {
   g_return_if_fail (self && self->graph);
+  g_return_if_fail (
+    local_offset + nsamples <=
+      AUDIO_ENGINE->nframes);
 
   if (!zix_sem_try_wait (&self->graph_access))
-    return;
+    {
+      g_message (
+        "graph access is busy, returning...");
+      return;
+    }
 
   self->nsamples = nsamples;
   self->global_offset =
-    self->max_playback_latency -
+    self->max_route_playback_latency -
     AUDIO_ENGINE->remaining_latency_preroll;
   self->local_offset = local_offset;
   zix_sem_post (&self->graph->callback_start);
@@ -127,7 +134,8 @@ router_recalc_graph (
   Router * self,
   bool     soft)
 {
-  g_message ("Recalculating...");
+  g_message (
+    "Recalculating%s...", soft ? " (soft)" : "");
 
   g_return_if_fail (self);
 

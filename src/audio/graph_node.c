@@ -190,6 +190,7 @@ on_node_finish (
    * node */
   for (int i = 0; i < self->n_childnodes; ++i)
     {
+#if 0
       /* set the largest playback latency of this
        * route to the child as well */
       self->childnodes[i]->route_playback_latency =
@@ -198,6 +199,7 @@ on_node_finish (
           /*self->playback_latency,*/
           /*self->childnodes[i]->*/
             /*route_playback_latency);*/
+#endif
       graph_node_trigger (self->childnodes[i]);
       feeds = 1;
     }
@@ -231,7 +233,7 @@ graph_node_process (
 
   /* figure out if we are doing a no-roll */
   if (node->route_playback_latency <
-      AUDIO_ENGINE->remaining_latency_preroll)
+        AUDIO_ENGINE->remaining_latency_preroll)
     {
       /* no roll */
       if (node->type == ROUTE_NODE_TYPE_PLUGIN)
@@ -248,18 +250,17 @@ graph_node_process (
 
       /* if no-roll, only process terminal nodes
        * to set their buffers to 0 */
-      if (!node->terminal)
-        {
+      /*if (!node->terminal)*/
+        /*{*/
           goto node_process_finish;
-        }
+        /*}*/
     }
 
   /* global positions in frames (samples) */
   long g_start_frames;
 
   /* only compensate latency when rolling */
-  if (TRANSPORT->play_state ==
-        PLAYSTATE_ROLLING)
+  if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
     {
       /* if the playhead is before the loop-end
        * point and the latency-compensated position
@@ -272,6 +273,9 @@ graph_node_process (
        * is a loop inside the range), that should be
        * handled by the ports/processors instead */
       Position playhead_copy = *PLAYHEAD;
+      g_warn_if_fail (
+        node->route_playback_latency >=
+          AUDIO_ENGINE->remaining_latency_preroll);
       transport_position_add_frames (
         TRANSPORT, &playhead_copy,
         node->route_playback_latency -
@@ -468,33 +472,33 @@ graph_node_get_single_playback_latency (
  * latency so far.
  */
 void
-graph_node_set_playback_latency (
+graph_node_set_route_playback_latency (
   GraphNode * node,
   nframes_t   dest_latency)
 {
   /*long max_latency = 0, parent_latency;*/
 
-  /* set this node's latency */
-  node->playback_latency =
-    dest_latency +
-    graph_node_get_single_playback_latency (node);
-
-  /* set route playback latency if trigger node */
-  if (node->initial)
-    node->route_playback_latency =
-      node->playback_latency;
+  /* set route playback latency */
+  if (dest_latency > node->route_playback_latency)
+    {
+      node->route_playback_latency = dest_latency;
+    }
 
   GraphNode * parent;
   for (int i = 0; i < node->init_refcount; i++)
     {
       parent = node->parentnodes[i];
+      graph_node_set_route_playback_latency (
+        parent, node->route_playback_latency);
 #if 0
-      g_message ("adding playback latency from node to parent:");
-      print_node (node);
-      print_node (parent);
+      g_message (
+        "added %d route playback latency from node %s to "
+        "parent %s. Total route latency on parent: %d",
+        dest_latency,
+        graph_node_get_name (node),
+        graph_node_get_name (parent),
+        parent->route_playback_latency);
 #endif
-      graph_node_set_playback_latency (
-        parent, node->playback_latency);
     }
 }
 

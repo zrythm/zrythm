@@ -92,7 +92,7 @@ get_parent_graph (
                 port_get_track (node->port, true);
               parent_node =
                 graph_find_node_from_track (
-                  node->graph, tr);
+                  node->graph, tr, true);
             }
             break;
           case PORT_OWNER_TYPE_PREFADER:
@@ -121,7 +121,7 @@ get_parent_graph (
                 port_get_track (node->port, true);
               parent_node =
                 graph_find_node_from_track (
-                  node->graph, tr);
+                  node->graph, tr, true);
             }
             break;
           default:
@@ -152,12 +152,18 @@ create_anode (
   if (!aparent_graph)
     aparent_graph = aroot_graph;
 
-  char * node_name = graph_node_get_name (node);
-  /*node_name =*/
+  char * plain_node_name = graph_node_get_name (node);
+  char * node_name =
+    g_strdup_printf (
+      "%s\np:%d (%d) c:%d",
+      plain_node_name, node->playback_latency,
+      node->route_playback_latency, 0);
     /*g_strdup_printf (*/
-      /*"%s i:%d t:%d init refcount: %d", node_name,*/
+      /*"%s i:%d t:%d init refcount: %d",*/
+      /*plain_node_name,*/
       /*node->initial, node->terminal,*/
       /*node->init_refcount);*/
+  g_free (plain_node_name);
   Agnode_t * anode =
     agnode (aparent_graph, node_name, true);
   switch (node->type)
@@ -265,7 +271,7 @@ fill_anodes (
             Track * tr =  plugin_get_track (pl);
             parent_node =
               graph_find_node_from_track (
-                node->graph, tr);
+                node->graph, tr, true);
           }
           break;
         case ROUTE_NODE_TYPE_FADER:
@@ -274,7 +280,7 @@ fill_anodes (
             Track * tr =  fader_get_track (fader);
             parent_node =
               graph_find_node_from_track (
-                node->graph, tr);
+                node->graph, tr, true);
           }
           break;
         case ROUTE_NODE_TYPE_PREFADER:
@@ -284,7 +290,7 @@ fill_anodes (
               fader_get_track (prefader);
             parent_node =
               graph_find_node_from_track (
-                node->graph, tr);
+                node->graph, tr, true);
           }
           break;
         default:

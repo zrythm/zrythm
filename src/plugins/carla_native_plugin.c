@@ -976,7 +976,7 @@ create_ports (
           port->carla_param_id = (int) i;
           plugin_add_in_port (
             self->plugin, port);
-          g_message ("\n\n\n%d: %s", i, param_info->name);
+          g_message ("%d: %s", i, param_info->name);
         }
     }
 

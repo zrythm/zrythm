@@ -781,8 +781,12 @@ engine_process_prepare (
     {
       self->transport->play_state = PLAYSTATE_ROLLING;
       self->remaining_latency_preroll =
-        router_get_max_playback_latency (
+        router_get_max_route_playback_latency (
           self->router);
+      g_message (
+        "starting playback, remaining latency "
+        "preroll: %u",
+        self->remaining_latency_preroll);
 #ifdef HAVE_JACK
       if (self->audio_backend == AUDIO_BACKEND_JACK)
         jack_transport_start (
@@ -811,6 +815,9 @@ engine_process_prepare (
 
   if (!ret && !self->exporting)
     {
+      g_message (
+        "port operation lock is busy, skipping "
+        "cycle...");
       self->skip_cycle = 1;
       return;
     }
@@ -901,6 +908,8 @@ engine_process (
   AudioEngine * self,
   nframes_t     total_frames_to_process)
 {
+  /*g_message ("processing...");*/
+
   /* calculate timestamps (used for synchronizing
    * external events like Windows MME MIDI) */
   self->timestamp_start =
@@ -918,6 +927,7 @@ engine_process (
   if (!g_atomic_int_get (&self->run))
     {
       /*g_message ("ENGINE NOT RUNNING");*/
+      /*g_message ("skipping processing...");*/
       return 0;
     }
 
@@ -944,7 +954,7 @@ engine_process (
     {
       nframes_t num_preroll_frames =
         MIN (
-          total_frames_to_process,
+          total_frames_remaining,
           self->remaining_latency_preroll);
       for (size_t i = 0;
            i < self->router->graph->n_init_triggers;
@@ -954,13 +964,20 @@ engine_process (
             self->router->graph->
               init_trigger_list[i];
           nframes_t route_latency =
-            start_node->playback_latency;
+            start_node->route_playback_latency;
+#if 0
+          g_message ("route latency for %s is %u",
+            graph_node_get_name (start_node),
+            route_latency);
+#endif
 
           if (self->remaining_latency_preroll >
                 route_latency + num_preroll_frames)
             {
               /* this route will no-roll for the
                * complete pre-roll cycle */
+              /*g_message (*/
+                /*"no-roll for whole pre-roll cycle");*/
               continue;
             }
 
@@ -979,14 +996,29 @@ engine_process (
                   num_preroll_frames,
                   self->remaining_latency_preroll -
                     route_latency);
+#if 0
+              g_message (
+                "partial roll from %u",
+                num_preroll_frames);
+#endif
             }
           else
             {
               /* route will do a normal roll for the
                * complete pre-roll cycle */
+              /*g_message (*/
+                /*"normal roll for complete pre-roll "*/
+                /*"cycle");*/
             }
-        } // end foreach trigger node
+        } /* end foreach trigger node */
 
+      nframes_t preroll_offset =
+        total_frames_to_process -
+          total_frames_remaining;
+
+      g_warn_if_fail (
+        preroll_offset + num_preroll_frames <=
+          AUDIO_ENGINE->nframes);
 
       /* this will keep looping until everything was
        * processed in this cycle */
@@ -998,9 +1030,7 @@ engine_process (
         /*self->remaining_latency_preroll);*/
       router_start_cycle (
         self->router, num_preroll_frames,
-        total_frames_to_process -
-          total_frames_remaining,
-        PLAYHEAD);
+        preroll_offset, PLAYHEAD);
 
       self->remaining_latency_preroll -=
         num_preroll_frames;
@@ -1023,12 +1053,15 @@ engine_process (
             total_frames_remaining);
         }
 
-      /*g_message (*/
-        /*"======== processing at %d for %d samples "*/
-        /*"(preroll: %ld)",*/
-        /*total_frames_to_process - total_frames_remaining,*/
-        /*total_frames_remaining,*/
-        /*self->remaining_latency_preroll);*/
+#if 0
+      g_message (
+        "======== processing at %d for %d samples "
+        "(preroll: %u)",
+        total_frames_to_process -
+          total_frames_remaining,
+        total_frames_remaining,
+        self->remaining_latency_preroll);
+#endif
       router_start_cycle (
         self->router, total_frames_remaining,
         total_frames_to_process -
@@ -1061,6 +1094,7 @@ engine_process (
   /*
    * processing finished, return 0 (OK)
    */
+  /*g_message ("processing finished");*/
   return 0;
 }
 

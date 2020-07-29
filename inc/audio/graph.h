@@ -104,6 +104,7 @@ typedef struct Graph
   /** Number of graph nodes without an outgoing
    * edge. */
   gint          n_terminal_nodes;
+  GraphNode **  terminal_nodes;
 
   /** Remaining unprocessed terminal nodes in this
    * cycle. */
@@ -172,7 +173,8 @@ graph_find_node_from_plugin (
 GraphNode *
 graph_find_node_from_track (
   Graph * graph,
-  Track * track);
+  Track * track,
+  bool    use_setup_nodes);
 
 GraphNode *
 graph_find_node_from_fader (
@@ -213,8 +215,9 @@ graph_create_node (
  * nodes.
  */
 nframes_t
-graph_get_max_playback_latency (
-  Graph * graph);
+graph_get_max_route_playback_latency (
+  Graph * graph,
+  bool    use_setup_nodes);
 
 /* called from a terminal node (from the Graph
  * worked-thread) to indicate it has completed

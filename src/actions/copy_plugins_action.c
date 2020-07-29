@@ -206,6 +206,9 @@ copy_plugins_action_do (
         MIXER_SELECTIONS, ch, self->slot_type,
         new_slot);
 
+      /* activate the plugin */
+      plugin_activate (pl, F_ACTIVATE);
+
       /* show it if it was visible before */
       if (ZRYTHM_HAVE_UI &&
           self->ms->plugins[i]->visible)

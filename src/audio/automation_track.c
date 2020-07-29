@@ -263,6 +263,11 @@ automation_track_find_from_port (
               if (dest->owner_type ==
                     PORT_OWNER_TYPE_PLUGIN)
                 {
+                  if (!plugin_identifier_is_equal (
+                        &dest->plugin_id,
+                        &src->plugin_id))
+                    continue;
+
                   Plugin * pl =
                     port_get_plugin (port, true);
                   g_warn_if_fail (pl);

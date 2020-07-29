@@ -2049,9 +2049,6 @@ lv2_plugin_process (
     self->plugin->instantiated &&
     self->plugin->activated);
 
-#ifdef HAVE_JACK
-  jack_client_t * client = AUDIO_ENGINE->client;
-#endif
   int i, p;
 
   /* If transport state is not as expected, then
@@ -2294,14 +2291,23 @@ lv2_plugin_process (
                   self->plugin->latency =
                     (nframes_t)
                     lv2_port->port->control;
+/* this is probably not needed for plugin ports */
+#if 0
 #ifdef HAVE_JACK
                   if (AUDIO_ENGINE->
                         audio_backend ==
                       AUDIO_BACKEND_JACK)
                     {
+                      jack_client_t * client =
+                        AUDIO_ENGINE->client;
+                      g_message (
+                        "recomputing total JACK "
+                        "latencies...");
                       jack_recompute_total_latencies (
                         client);
+                      g_message ("done");
                     }
+#endif
 #endif
                 }
 

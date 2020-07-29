@@ -153,10 +153,12 @@ _test_undo_track_deletion (
 static void
 test_undo_track_deletion (void)
 {
+  test_helper_zrythm_init ();
 #ifdef HAVE_HELM
   _test_undo_track_deletion (
     HELM_BUNDLE, HELM_URI, true, false);
 #endif
+  test_helper_zrythm_cleanup ();
 }
 
 static void
@@ -164,8 +166,10 @@ test_group_track_deletion (void)
 {
   UndoableAction * ua;
 
+  test_helper_zrythm_init ();
+
   g_assert_cmpint (
-    P_MASTER_TRACK->num_children, ==, 1);
+    P_MASTER_TRACK->num_children, ==, 0);
 
   /* create 2 audio fx tracks and route them to
    * a new group track */
@@ -192,7 +196,7 @@ test_group_track_deletion (void)
   g_assert_false (audio_fx1->children);
   g_assert_false (audio_fx2->children);
   g_assert_cmpint (
-    P_MASTER_TRACK->num_children, ==, 4);
+    P_MASTER_TRACK->num_children, ==, 3);
 
   /* route each fx track to the group */
   track_select (
@@ -203,13 +207,13 @@ test_group_track_deletion (void)
       TRACKLIST_SELECTIONS, group);
   undo_manager_perform (UNDO_MANAGER, ua);
   g_assert_cmpint (
-    P_MASTER_TRACK->num_children, ==, 3);
+    P_MASTER_TRACK->num_children, ==, 2);
   undo_manager_undo (UNDO_MANAGER);
   g_assert_cmpint (
-    P_MASTER_TRACK->num_children, ==, 4);
+    P_MASTER_TRACK->num_children, ==, 3);
   undo_manager_redo (UNDO_MANAGER);
   g_assert_cmpint (
-    P_MASTER_TRACK->num_children, ==, 3);
+    P_MASTER_TRACK->num_children, ==, 2);
   track_select (
     audio_fx2, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
@@ -218,7 +222,7 @@ test_group_track_deletion (void)
       TRACKLIST_SELECTIONS, group);
   undo_manager_perform (UNDO_MANAGER, ua);
   g_assert_cmpint (
-    P_MASTER_TRACK->num_children, ==, 2);
+    P_MASTER_TRACK->num_children, ==, 1);
 
   g_assert_cmpint (group->num_children, ==, 2);
   g_assert_true (audio_fx1->channel->has_output);
@@ -286,6 +290,8 @@ test_group_track_deletion (void)
   undo_manager_redo (UNDO_MANAGER);
   g_assert_false (audio_fx1->channel->has_output);
   g_assert_false (audio_fx2->channel->has_output);
+
+  test_helper_zrythm_cleanup ();
 }
 
 /**
@@ -541,27 +547,29 @@ test_track_deletion_with_sends (
 static void
 test_target_track_deletion_with_sends (void)
 {
+  test_helper_zrythm_init ();
 #ifdef HAVE_AMS_LFO
   test_track_deletion_with_sends (
     true, AMS_LFO_BUNDLE, AMS_LFO_URI);
 #endif
+  test_helper_zrythm_cleanup ();
 }
 
 static void
 test_source_track_deletion_with_sends (void)
 {
+  test_helper_zrythm_init ();
 #ifdef HAVE_AMS_LFO
   test_track_deletion_with_sends (
     false, AMS_LFO_BUNDLE, AMS_LFO_URI);
 #endif
+  test_helper_zrythm_cleanup ();
 }
 
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
-
-  test_helper_zrythm_init ();
 
 #define TEST_PREFIX "/actions/delete_tracks/"
 

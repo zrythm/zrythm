@@ -103,29 +103,29 @@ _test_copy_plugins (
     track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
+  ua =
+    copy_tracks_action_new (
+      TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  num_master_children++;
+  g_assert_cmpint (
+    P_MASTER_TRACK->num_children, ==,
+    num_master_children);
+  g_assert_cmpint (
+    P_MASTER_TRACK->children[
+      num_master_children - 1], ==,
+    TRACKLIST->num_tracks - 1);
+  g_assert_cmpint (
+    P_MASTER_TRACK->children[0], ==, 4);
+  g_assert_cmpint (
+    P_MASTER_TRACK->children[1], ==, 5);
+  Track * new_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
   /* if instrument, copy tracks, otherwise copy
    * plugins */
   if (is_instrument)
     {
-      ua =
-        copy_tracks_action_new (
-          TRACKLIST_SELECTIONS, TRACKLIST->num_tracks);
-      undo_manager_perform (UNDO_MANAGER, ua);
-      num_master_children++;
-      g_assert_cmpint (
-        P_MASTER_TRACK->num_children, ==,
-        num_master_children);
-      g_assert_cmpint (
-        P_MASTER_TRACK->children[
-          num_master_children - 1], ==,
-        TRACKLIST->num_tracks - 1);
-      g_assert_cmpint (
-        P_MASTER_TRACK->children[0], ==, 4);
-      g_assert_cmpint (
-        P_MASTER_TRACK->children[1], ==, 5);
-
-      Track * new_track =
-        TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
       if (!with_carla)
         {
           g_assert_true (
@@ -134,10 +134,16 @@ _test_copy_plugins (
     }
   else
     {
+      mixer_selections_clear (
+        MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+      mixer_selections_add_slot (
+        MIXER_SELECTIONS, track->channel,
+        PLUGIN_SLOT_INSERT, 0);
       ua =
         copy_plugins_action_new (
           MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
-          track, 1);
+          new_track, 1);
+      undo_manager_perform (UNDO_MANAGER, ua);
     }
 }
 
@@ -150,8 +156,18 @@ test_copy_plugins (void)
 #ifdef HAVE_CARLA
   _test_copy_plugins (
     HELM_BUNDLE, HELM_URI, true, true);
-#endif
-#endif
+#endif /* HAVE_CARLA */
+#endif /* HAVE_HELM */
+#ifdef HAVE_NO_DELAY_LINE
+  _test_copy_plugins (
+    NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI,
+    false, false);
+#ifdef HAVE_CARLA
+  _test_copy_plugins (
+    NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI,
+    false, true);
+#endif /* HAVE_CARLA */
+#endif /* HAVE_NO_DELAY_LINE */
 }
 
 int

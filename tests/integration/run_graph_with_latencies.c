@@ -28,7 +28,9 @@
 #include "actions/undo_manager.h"
 #include "audio/control_port.h"
 #include "audio/engine_dummy.h"
+#include "audio/graph.h"
 #include "audio/router.h"
+#include "audio/tempo_track.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "utils/arrays.h"
@@ -42,6 +44,7 @@
 
 #include <glib.h>
 
+#ifdef HAVE_NO_DELAY_LINE
 static void
 _test (
   const char * pl_bundle,
@@ -53,29 +56,53 @@ _test (
     test_plugin_manager_get_plugin_descriptor (
       pl_bundle, pl_uri, with_carla);
 
-  /* 1. add no delay line */
+  /* 1. create instrument track */
   UndoableAction * ua =
     create_tracks_action_new (
-      TRACK_TYPE_AUDIO_BUS, descr, NULL,
-      TRACKLIST->num_tracks, NULL, 1);
+      is_instrument ?
+        TRACK_TYPE_INSTRUMENT : TRACK_TYPE_AUDIO_BUS,
+      descr, NULL, TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
-
-  /* 2. set delay to high value */
   Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  int orig_track_pos = track->pos;
+
+  descr =
+    test_plugin_manager_get_plugin_descriptor (
+      NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI,
+      with_carla);
+
+  /* 2. add no delay line */
+  ua =
+    create_plugins_action_new (
+      descr, PLUGIN_SLOT_INSERT,
+      TRACKLIST->num_tracks - 1, 0, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* 3. set delay to high value */
   Plugin * pl = track->channel->inserts[0];
   Port * port = pl->in_ports[1];
   control_port_set_val_from_normalized (
-    port, 0.5f, false);
+    port, 0.1f, false);
 
   /* let the engine run */
   g_usleep (1000000);
+  nframes_t latency = pl->latency;
+  g_assert_cmpint (latency, >, 0);
 
   /* recalculate graph to update latencies */
   router_recalc_graph (ROUTER, F_SOFT);
+  GraphNode * node =
+    graph_find_node_from_track (
+      ROUTER->graph, track, false);
+  g_assert_true (node);
+  g_assert_cmpint (
+    latency, ==, node->route_playback_latency);
 
   /* let the engine run */
   g_usleep (1000000);
+  g_assert_cmpint (
+    latency, ==, node->route_playback_latency);
 
   /* 3. start playback */
   transport_request_roll (TRANSPORT);
@@ -88,15 +115,99 @@ _test (
 
   /* let the engine run */
   g_usleep (1000000);
+
+  /* add another track with latency and check if
+   * OK */
+  descr =
+    test_plugin_manager_get_plugin_descriptor (
+      NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI,
+      with_carla);
+  ua =
+    create_tracks_action_new (
+      TRACK_TYPE_AUDIO_BUS,
+      descr, NULL, TRACKLIST->num_tracks, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * new_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+  pl = new_track->channel->inserts[0];
+  port = pl->in_ports[1];
+  control_port_set_val_from_normalized (
+    port, 0.2f, false);
+
+  /* let the engine run */
+  g_usleep (1000000);
+  nframes_t latency2 = pl->latency;
+  g_assert_cmpint (latency2, >, 0);
+  g_assert_cmpint (latency2, >, latency);
+
+  /* recalculate graph to update latencies */
+  router_recalc_graph (ROUTER, F_SOFT);
+  node =
+    graph_find_node_from_track (
+      ROUTER->graph, P_TEMPO_TRACK, false);
+  g_assert_true (node);
+  g_assert_cmpint (
+    latency2, ==, node->route_playback_latency);
+  node =
+    graph_find_node_from_track (
+      ROUTER->graph, new_track, false);
+  g_assert_true (node);
+  g_assert_cmpint (
+    latency2, ==, node->route_playback_latency);
+
+  /* let the engine run */
+  g_usleep (1000000);
+  g_assert_cmpint (
+    latency2, ==, node->route_playback_latency);
+
+  /* 3. start playback */
+  transport_request_roll (TRANSPORT);
+
+  /* let the engine run */
+  g_usleep (4000000);
+
+  /* set latencies to 0 and verify that the updated
+   * latency for tempo is 0 */
+  pl = new_track->channel->inserts[0];
+  port = pl->in_ports[1];
+  control_port_set_val_from_normalized (
+    port, 0.f, false);
+  track = TRACKLIST->tracks[orig_track_pos];
+  pl = track->channel->inserts[0];
+  port = pl->in_ports[1];
+  control_port_set_val_from_normalized (
+    port, 0.f, false);
+
+  g_usleep (1000000);
+  g_assert_cmpint (pl->latency, ==, 0);
+
+  /* recalculate graph to update latencies */
+  router_recalc_graph (ROUTER, F_SOFT);
+  node =
+    graph_find_node_from_track (
+      ROUTER->graph, P_TEMPO_TRACK, false);
+  g_assert_true (node);
+  g_assert_cmpint (
+    node->route_playback_latency, ==, 0);
 }
+#endif
 
 static void
 run_graph_with_playback_latencies (void)
 {
 #ifdef HAVE_NO_DELAY_LINE
+#ifdef HAVE_HELM
+  _test (
+    HELM_BUNDLE, HELM_URI, true, false);
+#endif
+#endif
+#if 0
+#ifdef HAVE_NO_DELAY_LINE
   _test (
     NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI, false,
     false);
+#endif
 #endif
 }
 

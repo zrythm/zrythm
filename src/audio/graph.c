@@ -209,9 +209,14 @@ graph_rechain (
     &self->n_init_triggers,
     &self->setup_init_trigger_list,
     &self->num_setup_init_triggers);
+  array_dynamic_swap (
+    &self->terminal_nodes,
+    &self->n_terminal_nodes,
+    &self->setup_terminal_nodes,
+    &self->num_setup_terminal_nodes);
 
-  self->n_terminal_nodes =
-    (int) self->num_setup_terminal_nodes;
+  /*self->n_terminal_nodes =*/
+    /*(int) self->num_setup_terminal_nodes;*/
   g_atomic_int_set (
     &self->terminal_refcnt,
     (guint) self->n_terminal_nodes);
@@ -393,17 +398,25 @@ connect_port (
  * nodes.
  */
 nframes_t
-graph_get_max_playback_latency (
-  Graph * graph)
+graph_get_max_route_playback_latency (
+  Graph * graph,
+  bool    use_setup_nodes)
 {
   nframes_t max = 0;
   GraphNode * node;
   for (size_t i = 0;
-       i < graph->n_init_triggers; i++)
+       i <
+         (use_setup_nodes ?
+            graph->num_setup_init_triggers :
+            graph->n_init_triggers);
+       i++)
     {
-      node =  graph->init_trigger_list[i];
-      if (node->playback_latency > max)
-        max = node->playback_latency;
+      node =
+        (use_setup_nodes ?
+           graph->setup_init_trigger_list[i] :
+           graph->init_trigger_list[i]);
+      if (node->route_playback_latency > max)
+        max = node->route_playback_latency;
     }
 
   return max;
@@ -416,6 +429,7 @@ graph_update_latencies (
 {
   g_message ("updating graph latencies...");
 
+  /* reset latencies */
   for (size_t i = 0;
        i <
          (use_setup_nodes ?
@@ -427,9 +441,28 @@ graph_update_latencies (
         (use_setup_nodes ?
           self->setup_graph_nodes[i] :
           self->graph_nodes[i]);
-      if (node->terminal)
+      node->playback_latency = 0;
+      node->route_playback_latency = 0;
+    }
+
+  for (size_t i = 0;
+       i <
+         (use_setup_nodes ?
+           self->num_setup_graph_nodes :
+           (size_t) self->n_graph_nodes);
+       i++)
+    {
+      GraphNode * node =
+        (use_setup_nodes ?
+          self->setup_graph_nodes[i] :
+          self->graph_nodes[i]);
+      node->playback_latency =
+        graph_node_get_single_playback_latency (
+          node);
+      if (node->playback_latency > 0)
         {
-          graph_node_set_playback_latency (node, 0);
+          graph_node_set_route_playback_latency (
+            node, node->playback_latency);
         }
     }
 
@@ -437,7 +470,8 @@ graph_update_latencies (
     "Total latencies:\n"
     "Playback: %d\n"
     "Recording: %d\n",
-    graph_get_max_playback_latency (self),
+    graph_get_max_route_playback_latency (
+      self, use_setup_nodes),
     0);
 }
 
@@ -613,7 +647,8 @@ graph_setup (
       tr = TRACKLIST->tracks[i];
 
       /* connect the track */
-      node = graph_find_node_from_track (self, tr);
+      node =
+        graph_find_node_from_track (self, tr, true);
       g_warn_if_fail (node);
       if (tr->in_signal_type == TYPE_AUDIO)
         {
@@ -640,6 +675,16 @@ graph_setup (
         }
       else if (tr->in_signal_type == TYPE_EVENT)
         {
+          if (track_has_piano_roll (tr) ||
+              tr->type == TRACK_TYPE_CHORD)
+            {
+              /* connect piano roll */
+              port = tr->processor->piano_roll;
+              node2 =
+                graph_find_node_from_port (
+                  self, port);
+              graph_node_connect (node2, node);
+            }
           port = tr->processor->midi_in;
           node2 =
             graph_find_node_from_port (self, port);
@@ -982,6 +1027,8 @@ graph_new (
   self->trigger_queue = mpmc_queue_new ();
   self->init_trigger_list =
     object_new (GraphNode *);
+  self->terminal_nodes =
+    object_new (GraphNode *);
   self->graph_nodes = object_new (GraphNode *);
 
   zix_sem_init (&self->callback_start, 0);
@@ -1095,13 +1142,21 @@ graph_find_node_from_plugin (
 GraphNode *
 graph_find_node_from_track (
   Graph * graph,
-  Track * track)
+  Track * track,
+  bool    use_setup_nodes)
 {
+  GraphNode ** nodes =
+    (use_setup_nodes ?
+       graph->setup_graph_nodes :
+       graph->graph_nodes);
+  size_t num_nodes =
+    (use_setup_nodes ?
+       graph->num_setup_graph_nodes :
+       (size_t) graph->n_graph_nodes);
   GraphNode * node;
-  for (size_t i = 0;
-       i < graph->num_setup_graph_nodes; i++)
+  for (size_t i = 0; i < num_nodes; i++)
     {
-      node = graph->setup_graph_nodes[i];
+      node = nodes[i];
       if (node->type == ROUTE_NODE_TYPE_TRACK &&
           node->track == track)
         return node;
@@ -1239,6 +1294,8 @@ graph_free (
   object_zero_and_free (self->setup_graph_nodes);
   object_zero_and_free (
     self->setup_init_trigger_list);
+  object_zero_and_free (
+    self->terminal_nodes);
 
   zix_sem_destroy (&self->callback_start);
   zix_sem_destroy (&self->callback_done);

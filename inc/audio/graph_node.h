@@ -149,7 +149,7 @@ typedef struct GraphNode
    * samples. */
   nframes_t     playback_latency;
 
-  /** The route's playback latency. */
+  /** The route's playback latency so far. */
   nframes_t     route_playback_latency;
 
   GraphNodeType type;
@@ -201,7 +201,7 @@ graph_node_get_single_playback_latency (
  * latency so far.
  */
 void
-graph_node_set_playback_latency (
+graph_node_set_route_playback_latency (
   GraphNode * node,
   nframes_t   dest_latency);
 

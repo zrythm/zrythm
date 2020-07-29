@@ -668,8 +668,11 @@ log_idle_cb (
 
       if (ev->backtrace)
         {
-          /*g_message (*/
-            /*"Backtrace: %s", ev->backtrace);*/
+          if (ZRYTHM_TESTING)
+            {
+              g_message (
+                "Backtrace: %s", ev->backtrace);
+            }
 
           if (ev->log_level ==
                 G_LOG_LEVEL_CRITICAL &&

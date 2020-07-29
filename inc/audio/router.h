@@ -86,7 +86,7 @@ typedef struct Router
   nframes_t   nsamples;
 
   /** Stored for the currently processing cycle */
-  nframes_t   max_playback_latency;
+  nframes_t   max_route_playback_latency;
 
   /** Current global latency offset (max latency
    * of all routes - remaining latency from
@@ -133,7 +133,7 @@ router_start_cycle (
  * nodes.
  */
 nframes_t
-router_get_max_playback_latency (
+router_get_max_route_playback_latency (
   Router * router);
 
 /**

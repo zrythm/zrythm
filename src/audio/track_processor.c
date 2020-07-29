@@ -455,6 +455,11 @@ track_processor_process (
         {
           /* fill midi events from piano roll
            * data */
+#if 0
+          g_message (
+            "filling midi events for %s from %ld",
+            tr->name, g_start_frames);
+#endif
           midi_track_fill_midi_events (
             tr, g_start_frames,
             local_offset, nframes,

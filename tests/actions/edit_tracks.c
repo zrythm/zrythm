@@ -23,6 +23,7 @@
 #include "actions/edit_tracks_action.h"
 #include "actions/undoable_action.h"
 #include "audio/master_track.h"
+#include "audio/router.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -207,9 +208,9 @@ _test_edit_tracks (
           1, 62, 74, 2, true);
 
         /* let engine run */
-        g_usleep (1000000);
+        g_usleep (2000000);
 
-#if 0
+        zix_sem_wait (&ROUTER->graph_access);
         bool has_signal = false;
         Port * l =
           ins_track->channel->fader->stereo_out->l;
@@ -223,7 +224,7 @@ _test_edit_tracks (
               }
           }
         g_assert_true (has_signal);
-#endif
+        zix_sem_post (&ROUTER->graph_access);
 
         /* undo and re-verify */
         undo_manager_undo (UNDO_MANAGER);

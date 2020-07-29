@@ -48,7 +48,7 @@ before_install:
       wget https://launchpad.net/~kxstudio-debian/+archive/kxstudio/+files/kxstudio-repos_10.0.3_all.deb
       sudo dpkg -i kxstudio-repos_10.0.3_all.deb
       sudo apt-get update
-      sudo apt-get install -y helm
+      sudo apt-get install -y helm x42-plugins
       pip3 install --user gcovr cpp-coveralls
       pip3 install --user 'meson==0.53.0' --force-reinstall
       ;;

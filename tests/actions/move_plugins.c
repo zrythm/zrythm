@@ -163,6 +163,9 @@ _test_port_and_plugin_track_pos_after_move (
 
   undo_manager_perform (UNDO_MANAGER, ua);
 
+  /* let the engine run */
+  g_usleep (1000000);
+
   g_assert_true (
     track_verify_identifiers (src_track));
   g_assert_true (
