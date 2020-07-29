@@ -1,5 +1,6 @@
 image: ubuntu/next # latest xx.10
 packages:
+  - cmake
   - libgtk-3-dev
   - libjack-dev
   #- liblilv-dev

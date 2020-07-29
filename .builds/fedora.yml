@@ -1,5 +1,6 @@
 image: fedora/latest
 packages:
+  - cmake
   - gcc-c++
   - gcc
   - pkgconfig

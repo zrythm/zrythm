@@ -1,5 +1,6 @@
 image: archlinux
 packages:
+  - cmake
   - meson
   - gtk3
   - chromaprint
