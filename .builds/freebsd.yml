@@ -38,10 +38,12 @@ packages:
   - zstd
 sources:
   - https://git.sr.ht/~alextee/zrythm
+  - https://github.com/mesonbuild/meson
 tasks:
   - setup: |
+      cd meson && git checkout 0.55.0 && cd ..
       cd zrythm
-      CFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib meson build -Dtests=true -Dmanpage=true
+      CFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ../meson/meson.py build -Dtests=true -Dmanpage=true
   - build: |
       cd zrythm
       ninja -C build

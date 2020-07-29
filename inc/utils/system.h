@@ -70,6 +70,8 @@ system_get_cmd_output (
  * Runs the given command in the background, waits
  * for it to finish and returns its exit code.
  *
+ * @note Only works for stdout for now.
+ *
  * @param args NULL-terminated array of args.
  * @param get_stdout Whether to get the standard out
  *   (true) or stderr (false).

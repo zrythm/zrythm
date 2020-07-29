@@ -37,8 +37,9 @@ secrets:
   - ffff20bf-6fd3-40d6-b26a-92f6c8dc1fcf
 tasks:
   - setup: |
+      cd meson && git checkout 0.55.0 && cd ..
       cd zrythm
-      meson build -Dtests=true -Dmanpage=true -Dffmpeg=enabled -Db_coverage=true
+      ../meson/meson.py build -Dtests=true -Dmanpage=true -Dffmpeg=enabled -Db_coverage=true
   - build: |
       cd zrythm
       ninja -C build
@@ -49,15 +50,15 @@ tasks:
       cat build/meson-logs/coverage.txt
   - test-multiple-options: |
       cd zrythm
-      meson build --reconfigure -Dffmpeg=disabled -Dgraphviz=enabled -Djack=disabled
+      ../meson/meson.py build --reconfigure -Dffmpeg=disabled -Dgraphviz=enabled -Djack=disabled
       ninja -C build test
-      meson build --reconfigure -Dsdl=enabled -Drtaudio=disabled -Drtmidi=disabled
+      ../meson/meson.py build --reconfigure -Dsdl=enabled -Drtaudio=disabled -Drtmidi=disabled
       ninja -C build test
-      meson build --reconfigure -Dgraphviz=disabled -Dtrial_ver=true -Dstrict_flags=true -Ddseg_font=false
+      ../meson/meson.py build --reconfigure -Dgraphviz=disabled -Dtrial_ver=true -Dstrict_flags=true -Ddseg_font=false
       ninja -C build test
-      meson build --reconfigure -Dstrict_flags=true -Duser_manual=true -Dguile=disabled
+      ../meson/meson.py build --reconfigure -Dstrict_flags=true -Duser_manual=true -Dguile=disabled
       ninja -C build test
-      meson build --reconfigure -Drtaudio=auto -Drtmidi=disabled
+      ../meson/meson.py build --reconfigure -Drtaudio=auto -Drtmidi=disabled
       ninja -C build test
   - install: |
       cd zrythm
