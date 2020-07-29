@@ -37,6 +37,7 @@ with meaningful stack traces and bug reports.
 - guile (GPLv3+): <https://www.gnu.org/software/guile/>
 - libcyaml (ISC): <https://github.com/tlsa/libcyaml/>
 - lilv (ISC): <https://drobilla.net/software/lilv>
+- reproc (MIT): <https://github.com/DaanDeMeyer/reproc>
 - zstd (3-Clause BSD): <https://github.com/facebook/zstd>
 
 ### Optional
