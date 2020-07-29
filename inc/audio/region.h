@@ -127,8 +127,10 @@ typedef struct ZRegion
    *
    * This is also used temporarily when reading
    * from MIDI files.
+   *
+   * FIXME allocate.
    */
-  MidiNote *      unended_notes[1200];
+  MidiNote *      unended_notes[12000];
   int             num_unended_notes;
 
   /* ==== MIDI REGION END ==== */
