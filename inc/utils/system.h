@@ -26,6 +26,8 @@
 #ifndef __UTILS_SYSTEM_H__
 #define __UTILS_SYSTEM_H__
 
+#include <stdbool.h>
+
 /**
  * @addtogroup utils
  *
@@ -63,6 +65,24 @@ system_get_cmd_output (
   char ** argv,
   long    ms_timer,
   bool    always_wait);
+
+/**
+ * Runs the given command in the background, waits
+ * for it to finish and returns its exit code.
+ *
+ * @param args NULL-terminated array of args.
+ * @param get_stdout Whether to get the standard out
+ *   (true) or stderr (false).
+ * @param[out] output A buffer to save the stdout or
+ *   stderr output.
+ */
+int
+system_run_cmd_w_args (
+  const char ** args,
+  int           ms_to_wait,
+  bool          get_stdout,
+  char *        output,
+  bool          warn_if_fail);
 
 /**
  * @}

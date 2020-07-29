@@ -19,7 +19,7 @@ project (
   'zrythm', ['c', 'cpp'],
   version: '0.8.694',
   license: 'AGPL-3-or-later',
-  meson_version: '>= 0.53.0',
+  meson_version: '>= 0.55.0',
   default_options: [
     'warning_level=2',
     'buildtype=debugoptimized',
@@ -27,8 +27,11 @@ project (
     ],
   )
 
-gnome = import('gnome')
-fs = import('fs')
+gnome = import ('gnome')
+fs = import ('fs')
+cmake = import ('cmake')
+cmake_opts = cmake.subproject_options ()
+cmake_opts.add_cmake_defines ({'CMAKE_POSITION_INDEPENDENT_CODE': 'ON'})
 
 prefix = get_option ('prefix')
 bindir = join_paths (prefix, get_option('bindir'))
@@ -610,7 +613,7 @@ if (carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla
     find_program (
       carla_libdir / 'carla-discovery-native.exe',
       carla_libdir /
-        'carla-discovery-native').path(),
+        'carla-discovery-native').full_path(),
     install_dir: bindir)
   cdata.set('HAVE_CARLA', 1)
 
@@ -620,12 +623,12 @@ if (carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla
     install_data (
       find_program (
         carla_libdir /
-          'carla-discovery-win32.exe').path(),
+          'carla-discovery-win32.exe').full_path(),
       install_dir: bindir)
     install_data (
       find_program (
         carla_libdir /
-          'carla-bridge-win32.exe').path(),
+          'carla-bridge-win32.exe').full_path(),
       install_dir: bindir)
   endif
 
@@ -639,7 +642,7 @@ if (carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla
     if carla_bridge.found() and (os_gnu or os_freebsd)
       cdata.set('HAVE_CARLA_BRIDGE_' + bridge_type.underscorify().to_upper(), 1)
       install_data (
-        carla_bridge.path(),
+        carla_bridge.full_path(),
         install_dir: bindir)
     endif
   endforeach
@@ -687,6 +690,14 @@ if not zstd_dep.found ()
   zstd_dep = cc.find_library ('zstd')
 endif
 
+reproc_dep = dependency ('reproc', required: false)
+if not reproc_dep.found ()
+  reproc_subproject = cmake.subproject (
+    'reproc', options: cmake_opts)
+  reproc_dep = reproc_subproject.dependency (
+    'reproc')
+endif
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -710,6 +721,7 @@ zrythm_deps = [
   rtmidi_dep,
   sdl_dep,
   zstd_dep,
+  reproc_dep,
   dependency('threads'),
   lilv_dep,
   dependency(

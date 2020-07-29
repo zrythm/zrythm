@@ -78,7 +78,7 @@ if guile_dep.found () and get_option ('guile_snarf_docs_path') != ''
         guile_dep.name(), '@INPUT0@',
         meson.build_root () / '@OUTPUT@',
         meson.build_root () / '@PRIVATE_DIR@',
-        guild.path (),
+        guild.full_path (),
         '-I' + meson.source_root () / 'inc',
         ],
       )

@@ -133,7 +133,7 @@ _log_abort (gboolean breakpoint)
   debugger_present = TRUE;
 #endif /* !G_OS_WIN32 */
 
-  g_warn_if_reached ();
+  /*g_warn_if_reached ();*/
 
   if (debugger_present && breakpoint)
     G_BREAKPOINT ();

@@ -330,13 +330,26 @@ z_carla_discovery_run (
     carla_discovery, arg1, arg2);
   g_message (
     "cmd: [[[\n%s\n]]]", cmd);
-  char * argv[] = {
+  const char * argv[] = {
     carla_discovery, (char *) arg1,
     (char *) arg2, NULL };
+#if 0
   char * results =
     system_get_cmd_output (argv, 1200, true);
-
-  return results;
+#endif
+  char res[8000];
+  int ret =
+    system_run_cmd_w_args (
+      argv, 4000, true, res, true);
+  if (ret == 0)
+    {
+      char * results = g_strdup (res);
+      return results;
+    }
+  else
+    {
+      return NULL;
+    }
 }
 
 CarlaBridgeMode

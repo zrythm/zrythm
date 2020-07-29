@@ -23,24 +23,24 @@ scripts_conf = {
 if os_windows
   scripts_conf += { 'GUILE': 'guile' }
 else
-  scripts_conf += { 'GUILE': guile.path() }
+  scripts_conf += { 'GUILE': guile.full_path() }
 endif
 if pandoc.found()
-  scripts_conf += { 'PANDOC_BIN': pandoc.path() }
+  scripts_conf += { 'PANDOC_BIN': pandoc.full_path() }
 endif
 if texi2html.found()
   scripts_conf += {
-    'TEXI2HTML_BIN': texi2html.path() }
+    'TEXI2HTML_BIN': texi2html.full_path() }
 endif
 if guile_snarf.found()
   scripts_conf += {
-    'GUILE_SNARF': guile_snarf.path() }
+    'GUILE_SNARF': guile_snarf.full_path() }
 endif
 if get_option('guile_snarf_docs_path') != ''
   scripts_conf += {
     'GUILE_SNARF_DOCS_BIN': get_option (
       'guile_snarf_docs_path'),
-    'GUILD_BIN': guild.path() }
+    'GUILD_BIN': guild.full_path() }
 endif
 
 # configure each guile script to build/scripts
