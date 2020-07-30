@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [version] - 2020-07-30
+## [0.8.755] - 2020-07-30
 ### Added
 - New dependency: reproc
 - Add None output to direct outs
