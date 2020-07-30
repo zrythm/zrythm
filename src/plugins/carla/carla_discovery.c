@@ -287,7 +287,12 @@ z_carla_discovery_create_vst_descriptor (
   char * results =
     z_carla_discovery_run (
       arch, type, path);
-  g_return_val_if_fail (results, NULL);
+  if (!results)
+    {
+      g_warning (
+        "Failed to get results for %s", path);
+      return NULL;
+    }
   g_message (
     "results: [[[\n%s\n]]]", results);
 
