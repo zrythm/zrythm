@@ -23,7 +23,7 @@
 #include "utils/string.h"
 #include "zrythm.h"
 
-#define CACHED_VST_DESCRIPTORS_VERSION 6
+#define CACHED_VST_DESCRIPTORS_VERSION 7
 
 static char *
 get_cached_vst_descriptors_file_path (void)
