@@ -36,7 +36,7 @@ All notable changes to this project will be documented in this file.
 - Fix sends being lost on undo after sending track is deleted
 - Fix custom port connections not being restored when undoing track deletion
 - Fix Carla plugin UIs not being shown on top
-- Fix DSP thread becoming deadlocked when nodes with playback exist
+- Fix DSP thread becoming deadlocked when nodes with playback latency exist
 - Fix metronome occasionally receiving invalid positions
 - Fix recording action not being free'd on exit (causing warnings)
 - Fix issue when loading project with Noisemaker VST
