@@ -37,12 +37,10 @@ Installer
 The installer supports the following
 distributions (and derivatives):
 
-- **Ubuntu 18.04, 19.10 & 20.04** - amd64
-- **LinuxMint 19.3** - amd64
-- **Debian 9 & 10** - amd64
+- **Ubuntu 18.04, 20.04 & 20.10** - amd64
+- **Debian 10 && 11** - amd64
 - **Arch Linux** - x86_64
-- **Fedora 32** - x86_64
-- **OpenSUSE Tumbleweed** - x86_64
+- **Fedora 31 && 32** - x86_64
 
 Distribution Package
 ~~~~~~~~~~~~~~~~~~~~
