@@ -1,6 +1,52 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [version] - 2020-07-30
+### Added
+- New dependency: reproc
+- Add None output to direct outs
+- Add test for finding installed LV2 plugins
+- Add test for copying plugins
+- Add VST tests
+
+### Changed
+- Bump meson version requirement to 0.55.0 (for reproc cmake subproject)
+- Use reproc to run processes with timeout instead of glib
+- Updated German, Portuguese, Chinese, Japanese, Spanish, French translations
+- Change trial period to 30 minutes
+- Do soft graph recalculation when plugin latency changes (wait for pause if playing)
+- Don't save log contents in memory
+- Use GtkSourceView for log viewer
+- Use shared lib when linking tests (dramatically improves linking time)
+- Don't show backtraces in the log file
+- Let children signals pass through when group track is soloed
+- Show latencies in exported graphs
+- Do not recompute JACK latencies during plugin processing
+- Show warning instead of critical when carla plugin discovery fails
+
+### Fixed
+- Fix carla rack not being instantiated as an instrument on the track
+- Fix arranger selections not being initialized for some actions
+- Fix multiple non-fatal errors on windows on first run
+- Fix VST scan sometimes hanging on Windows
+- Fix crash when muting instrument tracks
+- Fix LV2 plugin ports with URI parameter throwing warnings
+- Fix child tracks not being disconnected or reconnected when deleting a group track and undoing
+- Fix sends not being removed/readded when deleting the target track and undoing
+- Fix sends being lost on undo after sending track is deleted
+- Fix custom port connections not being restored when undoing track deletion
+- Fix Carla plugin UIs not being shown on top
+- Fix DSP thread becoming deadlocked when nodes with playback exist
+- Fix metronome occasionally receiving invalid positions
+- Fix recording action not being free'd on exit (causing warnings)
+- Fix issue when loading project with Noisemaker VST
+- Fix direct outs not being updated properly when moving/duplicating/deleting tracks
+- Fix playback latencies not being calculated properly
+- Fix number of frames miscalculation when starting playback when playback latencies exist
+- Fix duplicated plugin not being activated
+- Fix plugin identifier not being taken into account when searching for automation tracks from a port
+- Fix piano roll port not being connected to track processor in the graph
+
 ## [0.8.694] - 2020-07-18
 ### Added
 - Allow routing from chord track to instrument tracks
