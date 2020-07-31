@@ -22,6 +22,8 @@
 #include "audio/channel.h"
 #include "audio/fader.h"
 #include "audio/midi_mapping.h"
+#include "gui/backend/event_manager.h"
+#include "gui/backend/event.h"
 #include "gui/widgets/bind_cc_dialog.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/fader.h"
@@ -360,6 +362,38 @@ on_right_click (GtkGestureMultiPress *gesture,
     }
 }
 
+static int
+on_scroll (
+  GtkWidget *          widget,
+  GdkEventScroll *     event,
+  FaderWidget * self)
+{
+  /* add/substract *inc* amount */
+  float inc = 0.1f;
+  /* lower sensitivity if shift held */
+  GdkModifierType mask;
+  z_gtk_widget_get_mask (
+   GTK_WIDGET (self), &mask);
+  if (mask & GDK_SHIFT_MASK)
+    {
+      inc = 0.01f;
+    }
+  int up_down =
+    event->direction == GDK_SCROLL_UP ? 1 : -1;
+  float add_val = (float) up_down * inc;
+  float current_val =
+    fader_get_fader_val(self->fader);
+  float new_val = CLAMP(current_val + add_val, 0.0f, 1.0f);
+  fader_set_fader_val(self->fader, new_val);
+
+  Channel * channel =
+    fader_get_channel (self->fader);
+  EVENTS_PUSH (
+    ET_CHANNEL_FADER_VAL_CHANGED, channel);
+
+  return FALSE;
+}
+
 /**
  * Creates a new Fader widget and binds it to the
  * given Fader.
@@ -392,7 +426,7 @@ fader_widget_init (FaderWidget * self)
   gtk_widget_set_has_window (
     GTK_WIDGET (self), TRUE);
   int crossing_mask =
-    GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
+    GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_SCROLL_MASK;
   gtk_widget_add_events (
     GTK_WIDGET (self), crossing_mask);
 
@@ -412,8 +446,7 @@ fader_widget_init (FaderWidget * self)
     GTK_WIDGET (self->tooltip_label));
   gtk_window_set_position (
     self->tooltip_win, GTK_WIN_POS_MOUSE);
-
-  /* add right mouse multipress */
+     /* add right mouse multipress */
   GtkGestureMultiPress * right_mouse_mp =
     GTK_GESTURE_MULTI_PRESS (
       gtk_gesture_multi_press_new (
@@ -444,6 +477,9 @@ fader_widget_init (FaderWidget * self)
   g_signal_connect (
     G_OBJECT (right_mouse_mp), "pressed",
     G_CALLBACK (on_right_click), self);
+  g_signal_connect (
+    G_OBJECT (self), "scroll-event",
+    G_CALLBACK (on_scroll),  self);
 }
 
 static void

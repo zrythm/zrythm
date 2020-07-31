@@ -1494,6 +1494,8 @@ process_events (void * data)
         case ET_CHANNEL_FADER_VAL_CHANGED:
           channel_widget_redraw_fader (
             ((Channel *)ev->arg)->widget);
+          inspector_track_widget_show_tracks (
+            MW_TRACK_INSPECTOR, TRACKLIST_SELECTIONS);
           break;
         case ET_PIANO_ROLL_KEY_HEIGHT_CHANGED:
           midi_editor_space_widget_refresh (
