@@ -67,6 +67,28 @@ plugin_init_loaded (
 {
   self->magic = PLUGIN_MAGIC;
 
+  /* set enabled/gain ports */
+  for (int i = 0; i < self->num_in_ports; i++)
+    {
+      Port * port = self->in_ports[i];
+      if (!(port->id.type == TYPE_CONTROL &&
+            port->id.flags &
+              PORT_FLAG_GENERIC_PLUGIN_PORT))
+        continue;
+
+      if (port->id.flags &
+            PORT_FLAG_PLUGIN_ENABLED)
+        {
+          self->enabled = port;
+        }
+      if (port->id.flags &
+            PORT_FLAG_PLUGIN_GAIN)
+        {
+          self->gain = port;
+        }
+    }
+  g_return_if_fail (self->enabled && self->gain);
+
 #ifdef HAVE_CARLA
   if (self->descr->open_with_carla)
     {
@@ -138,6 +160,8 @@ plugin_init (
     PORT_FLAG_TOGGLE;
   port->id.flags |=
     PORT_FLAG_AUTOMATABLE;
+  port->id.flags |=
+    PORT_FLAG_GENERIC_PLUGIN_PORT;
   port->minf = 0.f;
   port->maxf = 1.f;
   port->zerof = 0.f;
@@ -145,6 +169,27 @@ plugin_init (
   port->control = 1.f;
   port->carla_param_id = -1;
   plugin->enabled = port;
+
+  /* add gain port */
+  port =
+    port_new_with_type (
+      TYPE_CONTROL, FLOW_INPUT, _("Gain"));
+  plugin_add_in_port (plugin, port);
+  port->id.flags |=
+    PORT_FLAG_PLUGIN_GAIN;
+  port->id.flags |=
+    PORT_FLAG_AUTOMATABLE;
+  port->id.flags |=
+    PORT_FLAG_GENERIC_PLUGIN_PORT;
+  port->minf = 0.f;
+  port->maxf = 8.f;
+  port->zerof = 0.f;
+  port->deff = 1.f;
+  port_set_control_value (
+    port, 1.f, F_NOT_NORMALIZED,
+    F_NO_PUBLISH_EVENTS);
+  port->carla_param_id = -1;
+  plugin->gain = port;
 
   plugin->selected_bank.bank_idx = -1;
   plugin->selected_bank.idx = -1;
@@ -341,6 +386,8 @@ plugin_new_from_descr (
   plugin->descr =
     plugin_descriptor_clone (descr);
   plugin_init (plugin, track_pos, slot);
+  g_return_val_if_fail (
+    plugin->gain && plugin->enabled, NULL);
 
 #ifdef HAVE_CARLA
   if (descr->protocol == PROT_VST ||
@@ -1312,8 +1359,42 @@ plugin_process (
         }
     }
 
-  /*g_atomic_int_set (&plugin->processed, 1);*/
-  /*zix_sem_post (&plugin->processed_sem);*/
+  /* if plugin has gain, apply it */
+  if (!math_floats_equal_epsilon (
+        plugin->gain->control, 1.f, 0.001f))
+    {
+      for (int i = 0; i < plugin->num_out_ports;
+           i++)
+        {
+          Port * port = plugin->out_ports[i];
+          if (port->id.type != TYPE_AUDIO)
+            continue;
+
+          /* if close to 0 set it to the denormal
+           * prevention val */
+          if (math_floats_equal_epsilon (
+                plugin->gain->control, 0.f,
+                0.00001f))
+            {
+              for (nframes_t j = local_offset;
+                   j < nframes; j++)
+                {
+                  port->buf[j] =
+                    DENORMAL_PREVENTION_VAL;
+                }
+            }
+          /* otherwise just apply gain */
+          else
+            {
+              for (nframes_t j = local_offset;
+                   j < nframes; j++)
+                {
+                  port->buf[j] *=
+                    plugin->gain->control;
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -1590,6 +1671,15 @@ plugin_clone (
     &clone->id, &pl->id);
   clone->magic = PLUGIN_MAGIC;
   clone->visible = pl->visible;
+
+  /* set generic port values since they are not
+   * saved in the state */
+  port_set_control_value (
+    clone->enabled, pl->enabled->control,
+    F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+  port_set_control_value (
+    clone->gain, pl->gain->control,
+    F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
   return clone;
 }

@@ -88,8 +88,19 @@ typedef struct Plugin
   int               num_out_ports;
   size_t            out_ports_size;
 
-  /** Control for plugin enabled. */
+  /**
+   * Control for plugin enabled, for convenience.
+   *
+   * This port is already in \ref Plugin.in_ports.
+   */
   Port *            enabled;
+
+  /**
+   * Control for plugin gain, for convenience.
+   *
+   * This port is already in \ref Plugin.in_ports.
+   */
+  Port *            gain;
 
   PluginBank **     banks;
   int               num_banks;
@@ -209,8 +220,6 @@ plugin_fields_schema[] =
   YAML_FIELD_MAPPING_EMBEDDED (
     Plugin, selected_preset,
     plugin_preset_identifier_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Plugin, enabled, port_fields_schema),
   YAML_FIELD_INT (
     Plugin, visible),
   YAML_FIELD_STRING_PTR_OPTIONAL (

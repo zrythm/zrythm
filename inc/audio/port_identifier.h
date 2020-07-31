@@ -145,6 +145,8 @@ typedef enum PortFlags
    * and http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainOutput. */
   PORT_FLAG_MAIN_PORT = 1 << 4,
   PORT_FLAG_MANUAL_PRESS = 1 << 5,
+
+  /** Amplitude port. */
   PORT_FLAG_AMPLITUDE = 1 << 6,
 
   /**
@@ -224,6 +226,18 @@ typedef enum PortFlags
 
   /** This is a time signature port. */
   PORT_FLAG_TIME_SIG = 1 << 23,
+
+  /**
+   * Generic plugin port not belonging to the
+   * underlying plugin.
+   *
+   * This is for ports that are added by Zrythm
+   * such as Enabled and Gain.
+   */
+  PORT_FLAG_GENERIC_PLUGIN_PORT = 1 << 24,
+
+  /** This is the plugin gain. */
+  PORT_FLAG_PLUGIN_GAIN = 1 << 25,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -253,6 +267,8 @@ port_flags_bitvals[] =
   { .name = "send_receivable", .offset = 21, .bits = 1 },
   { .name = "bpm", .offset = 22, .bits = 1 },
   { .name = "time_sig", .offset = 23, .bits = 1 },
+  { .name = "generic_plugin_port", .offset = 24, .bits = 1 },
+  { .name = "plugin_gain", .offset = 25, .bits = 1 },
 };
 
 /**

@@ -37,7 +37,7 @@ with meaningful stack traces and bug reports.
 - guile (GPLv3+): <https://www.gnu.org/software/guile/>
 - libcyaml (ISC): <https://github.com/tlsa/libcyaml/>
 - lilv (ISC): <https://drobilla.net/software/lilv>
-- reproc (MIT): <https://github.com/DaanDeMeyer/reproc>
+- reproc (Expat): <https://github.com/DaanDeMeyer/reproc>
 - zstd (3-Clause BSD): <https://github.com/facebook/zstd>
 
 ### Optional
@@ -46,8 +46,8 @@ with meaningful stack traces and bug reports.
 - graphviz (EPLv1.0): <http://graphviz.org/>
 - jack (LGPLv2.1+): <https://jackaudio.org/>
 - libgtop (GPLv2+): <https://developer.gnome.org/libgtop/>
-- rtaudio (MIT): <http://www.music.mcgill.ca/~gary/rtaudio/>
-- rtmidi (MIT): <https://www.music.mcgill.ca/~gary/rtmidi/>
+- rtaudio (Expat): <http://www.music.mcgill.ca/~gary/rtaudio/>
+- rtmidi (Expat): <https://www.music.mcgill.ca/~gary/rtmidi/>
 - SDL2 (zlib): <https://www.libsdl.org/>
 
 ## Installation

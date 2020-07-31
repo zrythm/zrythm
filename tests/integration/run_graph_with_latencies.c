@@ -45,6 +45,23 @@
 #include <glib.h>
 
 #ifdef HAVE_NO_DELAY_LINE
+static Port *
+get_delay_port (
+  Plugin * pl)
+{
+  for (int i = 0; i < pl->num_in_ports; i++)
+    {
+      if (string_is_equal (
+            pl->in_ports[i]->id.label,
+            "Delay Time", 1))
+        {
+          return pl->in_ports[i];
+          break;
+        }
+    }
+  g_assert_not_reached ();
+}
+
 static void
 _test (
   const char * pl_bundle,
@@ -81,7 +98,7 @@ _test (
 
   /* 3. set delay to high value */
   Plugin * pl = track->channel->inserts[0];
-  Port * port = pl->in_ports[1];
+  Port * port = get_delay_port (pl);;
   control_port_set_val_from_normalized (
     port, 0.1f, false);
 
@@ -131,7 +148,7 @@ _test (
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
   pl = new_track->channel->inserts[0];
-  port = pl->in_ports[1];
+  port = get_delay_port (pl);;
   control_port_set_val_from_normalized (
     port, 0.2f, false);
 
@@ -170,12 +187,12 @@ _test (
   /* set latencies to 0 and verify that the updated
    * latency for tempo is 0 */
   pl = new_track->channel->inserts[0];
-  port = pl->in_ports[1];
+  port = get_delay_port (pl);;
   control_port_set_val_from_normalized (
     port, 0.f, false);
   track = TRACKLIST->tracks[orig_track_pos];
   pl = track->channel->inserts[0];
-  port = pl->in_ports[1];
+  port = get_delay_port (pl);;
   control_port_set_val_from_normalized (
     port, 0.f, false);
 
