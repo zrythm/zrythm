@@ -1681,6 +1681,13 @@ plugin_clone (
     clone->gain, pl->gain->control,
     F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
+  /* verify same number of inputs and outputs */
+  g_return_val_if_fail (
+    pl->num_in_ports == clone->num_in_ports, NULL);
+  g_return_val_if_fail (
+    pl->num_out_ports == clone->num_out_ports,
+    NULL);
+
   return clone;
 }
 
