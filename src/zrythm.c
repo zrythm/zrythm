@@ -202,7 +202,7 @@ zrythm_get_version_with_capabilities (
   sprintf (
     str,
     "%s %s%s (%s)\n"
-    "  built with %s %s\n"
+    "  built with %s %s for %s\n"
 #ifdef HAVE_CARLA
     "    +carla\n"
 #endif
@@ -234,7 +234,7 @@ zrythm_get_version_with_capabilities (
     "",
 #endif
     ver, BUILD_TYPE,
-    COMPILER, COMPILER_VERSION);
+    COMPILER, COMPILER_VERSION, HOST_MACHINE_SYSTEM);
 
   g_free (ver);
 }

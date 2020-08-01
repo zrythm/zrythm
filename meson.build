@@ -89,6 +89,8 @@ if have_custom_logo_and_splash
   cdata.set ('HAVE_CUSTOM_LOGO_AND_SPLASH', 1)
 endif
 cdata.set_quoted (
+  'HOST_MACHINE_SYSTEM', host_machine.system ())
+cdata.set_quoted (
   'PACKAGE_VERSION', '@VCS_TAG@')
 cdata.set_quoted (
   'COMPILER',
