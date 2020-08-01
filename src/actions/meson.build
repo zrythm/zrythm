@@ -30,6 +30,7 @@ action_srcs = [
   'move_plugins_action.c',
   'move_tracks_action.c',
   'port_connection_action.c',
+  'range_action.c',
   'transport_action.c',
   'undoable_action.c',
   'undo_stack.c',

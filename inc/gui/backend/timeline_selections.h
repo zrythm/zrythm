@@ -112,6 +112,25 @@ timeline_selections_schema = {
 };
 
 /**
+ * Creates a new TimelineSelections instance.
+ */
+TimelineSelections *
+timeline_selections_new (void);
+
+/**
+ * Creates a new TimelineSelections instance for
+ * the given range.
+ *
+ * @bool clone_objs True to clone each object,
+ *   false to use pointers to project objects.
+ */
+TimelineSelections *
+timeline_selections_new_for_range (
+  Position * start_pos,
+  Position * end_pos,
+  bool       clone_objs);
+
+/**
  * Gets highest track in the selections.
  */
 Track *

@@ -498,6 +498,20 @@ arranger_object_select (
   const int        append);
 
 /**
+ * Returns whether the given object is hit by the
+ * given position or range.
+ *
+ * @param start Start position.
+ * @param end End position, or NULL to only check
+ *   for intersection with \ref start.
+ */
+bool
+arranger_object_is_hit (
+  ArrangerObject * self,
+  Position *       start,
+  Position *       end);
+
+/**
  * Returns the number of loops in the ArrangerObject,
  * optionally including incomplete ones.
  */

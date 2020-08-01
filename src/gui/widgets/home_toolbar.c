@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,6 +24,7 @@
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/range_action_buttons.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/toolbox.h"
 #include "project.h"
@@ -97,7 +98,8 @@ home_toolbar_widget_refresh_undo_redo_buttons (
 }
 
 void
-home_toolbar_widget_setup (HomeToolbarWidget * self)
+home_toolbar_widget_setup (
+  HomeToolbarWidget * self)
 {
   /* FIXME activate/deactivate actions instead */
   home_toolbar_widget_refresh_undo_redo_buttons (
@@ -107,8 +109,12 @@ home_toolbar_widget_setup (HomeToolbarWidget * self)
 }
 
 static void
-home_toolbar_widget_init (HomeToolbarWidget * self)
+home_toolbar_widget_init (
+  HomeToolbarWidget * self)
 {
+  g_type_ensure (SNAP_BOX_WIDGET_TYPE);
+  g_type_ensure (RANGE_ACTION_BUTTONS_WIDGET_TYPE);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
 #define SET_TOOLTIP(x, tooltip) \
@@ -139,7 +145,8 @@ home_toolbar_widget_init (HomeToolbarWidget * self)
 }
 
 static void
-home_toolbar_widget_class_init (HomeToolbarWidgetClass * _klass)
+home_toolbar_widget_class_init (
+  HomeToolbarWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
@@ -150,9 +157,7 @@ home_toolbar_widget_class_init (HomeToolbarWidgetClass * _klass)
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, \
-    HomeToolbarWidget, \
-    x)
+    klass, HomeToolbarWidget, x)
 
   BIND_CHILD (undo);
   BIND_CHILD (redo);
@@ -166,6 +171,7 @@ home_toolbar_widget_class_init (HomeToolbarWidgetClass * _klass)
   BIND_CHILD (loop_selection);
   BIND_CHILD (toolbox);
   BIND_CHILD (snap_box);
+  BIND_CHILD (range_action_buttons);
 
 #undef BIND_CHILD
 }

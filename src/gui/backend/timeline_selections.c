@@ -38,6 +38,102 @@
 #include <gtk/gtk.h>
 
 /**
+ * Creates a new TimelineSelections instance.
+ */
+TimelineSelections *
+timeline_selections_new (void)
+{
+  TimelineSelections * self =
+    object_new (TimelineSelections);
+
+  self->base.type =
+    ARRANGER_SELECTIONS_TYPE_TIMELINE;
+
+  return self;
+}
+
+/**
+ * Creates a new TimelineSelections instance for
+ * the given range.
+ *
+ * @bool clone_objs True to clone each object,
+ *   false to use pointers to project objects.
+ */
+TimelineSelections *
+timeline_selections_new_for_range (
+  Position * start_pos,
+  Position * end_pos,
+  bool       clone_objs)
+{
+  TimelineSelections * self =
+    timeline_selections_new ();
+
+#define ADD_OBJ(obj) \
+  if (arranger_object_is_hit ( \
+        (ArrangerObject *) (obj), \
+        start_pos, end_pos)) \
+    { \
+      ArrangerObject * _obj = \
+        (ArrangerObject *) (obj); \
+      if (clone_objs) \
+        { \
+          _obj =  \
+          arranger_object_clone ( \
+            _obj, \
+            ARRANGER_OBJECT_CLONE_COPY_MAIN); \
+        } \
+      arranger_selections_add_object ( \
+        (ArrangerSelections *) self, _obj); \
+    }
+
+  /* regions */
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      Track * track = TRACKLIST->tracks[i];
+      AutomationTracklist * atl =
+        track_get_automation_tracklist (track);
+      for (int j = 0; j < track->num_lanes; j++)
+        {
+          TrackLane * lane = track->lanes[j];
+          for (int k = 0; k < lane->num_regions; k++)
+            {
+              ADD_OBJ (lane->regions[k]);
+            }
+        }
+      for (int j = 0; j < track->num_chord_regions;
+           j++)
+        {
+          ADD_OBJ (track->chord_regions[j]);
+        }
+      if (atl)
+        {
+          for (int j = 0; j < atl->num_ats; j++)
+            {
+              AutomationTrack * at = atl->ats[j];
+
+              for (int k = 0; k < at->num_regions;
+                   k++)
+                {
+                  ADD_OBJ (at->regions[k]);
+                }
+            }
+        }
+      for (int j = 0; j < track->num_scales; j++)
+        {
+          ADD_OBJ (track->scales[j]);
+        }
+      for (int j = 0; j < track->num_markers; j++)
+        {
+          ADD_OBJ (track->markers[j]);
+        }
+    }
+
+#undef ADD_OBJ
+
+  return self;
+}
+
+/**
  * Gets highest track in the selections.
  */
 Track *

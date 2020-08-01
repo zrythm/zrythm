@@ -29,8 +29,9 @@
 #include "actions/edit_tracks_action.h"
 #include "actions/move_plugins_action.h"
 #include "actions/move_tracks_action.h"
-#include "actions/undoable_action.h"
+#include "actions/range_action.h"
 #include "actions/transport_action.h"
+#include "actions/undoable_action.h"
 #include "project.h"
 #include "zrythm_app.h"
 
@@ -116,6 +117,7 @@ undoable_action_init_loaded (
       PORT_CONNECTION, port_connection,
       PortConnection);
     /*INIT_LOADED (TRANSPORT, transport, Transport);*/
+    INIT_LOADED (RANGE, range, Range);
     default:
       break;
     }
@@ -217,6 +219,7 @@ undoable_action_do (UndoableAction * self)
                arranger_selections,
                ArrangerSelections);
     DO_ACTION (TRANSPORT, transport, Transport);
+    DO_ACTION (RANGE, range, Range);
     DO_ACTION (
       PORT_CONNECTION, port_connection,
       PortConnection);
@@ -328,6 +331,7 @@ undoable_action_undo (UndoableAction * self)
       PORT_CONNECTION, port_connection,
       PortConnection);
     UNDO_ACTION (TRANSPORT, transport, Transport);
+    UNDO_ACTION (RANGE, range, Range);
     default:
       g_warn_if_reached ();
       ret = -1;
@@ -418,6 +422,7 @@ undoable_action_free (UndoableAction * self)
       PORT_CONNECTION, port_connection,
       PortConnection);
     FREE_ACTION (TRANSPORT, transport, Transport);
+    FREE_ACTION (RANGE, range, Range);
     default:
       g_warn_if_reached ();
       break;
@@ -508,8 +513,8 @@ undoable_action_stringize (
                arranger_selections);
     STRINGIZE_UA (
       PORT_CONNECTION, PortConnection, port_connection);
-    STRINGIZE_UA (
-      TRANSPORT, Transport, transport);
+    STRINGIZE_UA (TRANSPORT, Transport, transport);
+    STRINGIZE_UA (RANGE, Range, range);
     default:
       g_return_val_if_reached (
         g_strdup (""));

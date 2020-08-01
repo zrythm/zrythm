@@ -31,6 +31,7 @@
 #include "actions/copy_tracks_action.h"
 #include "actions/create_tracks_action.h"
 #include "actions/delete_tracks_action.h"
+#include "actions/range_action.h"
 #include "audio/graph.h"
 #include "audio/graph_export.h"
 #include "audio/instrument_track.h"
@@ -101,6 +102,13 @@
 #include <glib/gi18n.h>
 
 static GtkWindow * file_browser_window = NULL;
+
+#define DEFINE_SIMPLE(x) \
+void \
+x ( \
+  GSimpleAction * action, \
+  GVariant *      variant, \
+  gpointer        user_data) \
 
 void
 action_enable_window_action (
@@ -1973,4 +1981,34 @@ activate_toggle_editor_event_viewer (
   gtk_widget_set_visible (
     GTK_WIDGET (MW_EDITOR_EVENT_VIEWER),
     new_visibility);
+}
+
+DEFINE_SIMPLE (activate_insert_silence)
+{
+  if (!TRANSPORT->has_range)
+    return;
+
+  Position start, end;
+  transport_get_range_pos (
+    TRANSPORT, true, &start);
+  transport_get_range_pos (
+    TRANSPORT, true, &end);
+  UndoableAction * ua =
+    range_action_new_insert_silence (&start, &end);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+DEFINE_SIMPLE (activate_remove_range)
+{
+  if (!TRANSPORT->has_range)
+    return;
+
+  Position start, end;
+  transport_get_range_pos (
+    TRANSPORT, true, &start);
+  transport_get_range_pos (
+    TRANSPORT, true, &end);
+  UndoableAction * ua =
+    range_action_new_remove (&start, &end);
+  undo_manager_perform (UNDO_MANAGER, ua);
 }

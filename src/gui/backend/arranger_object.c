@@ -347,6 +347,46 @@ arranger_object_get_region (
 }
 
 /**
+ * Returns whether the given object is hit by the
+ * given position or range.
+ *
+ * @param start Start position.
+ * @param end End position, or NULL to only check
+ *   for intersection with \ref start.
+ */
+bool
+arranger_object_is_hit (
+  ArrangerObject * self,
+  Position *       start,
+  Position *       end)
+{
+  if (end)
+    {
+      /* check range */
+      if (position_is_after (
+            &self->pos, end) ||
+          position_is_after (
+            end, &self->end_pos))
+        {
+          return false;
+        }
+      else
+        {
+          return true;
+        }
+    }
+  else
+    {
+      /* check position hit */
+      return
+        position_is_after_or_equal (
+          start, &self->pos) &&
+        position_is_before_or_equal (
+          start, &self->end_pos);
+    }
+}
+
+/**
  * Gets a pointer to the Position in the
  * ArrangerObject matching the given arguments.
  */

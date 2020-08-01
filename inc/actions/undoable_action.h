@@ -81,6 +81,12 @@ typedef enum UndoableActionType
 
   /* ---- end ---- */
 
+  /* ---- range ---- */
+
+  UA_RANGE,
+
+  /* ---- end ---- */
+
   UA_TRANSPORT,
 
 } UndoableActionType;
@@ -132,6 +138,7 @@ undoable_action_type_strings[] =
     UA_QUANTIZE_ARRANGER_SELECTIONS },
   { "Port connection", UA_PORT_CONNECTION },
   { "Transport", UA_TRANSPORT },
+  { "Range", UA_RANGE },
 };
 
 typedef struct UndoableAction

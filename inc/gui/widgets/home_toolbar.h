@@ -40,6 +40,8 @@ G_DECLARE_FINAL_TYPE (HomeToolbarWidget,
 typedef struct _ToolboxWidget ToolboxWidget;
 typedef struct _QuantizeMbWidget QuantizeMbWidget;
 typedef struct _SnapBoxWidget SnapBoxWidget;
+typedef struct _RangeActionButtonsWidget
+  RangeActionButtonsWidget;
 
 /**
  * The Home toolbar in the top.
@@ -59,6 +61,7 @@ typedef struct _HomeToolbarWidget
   GtkToolButton *    loop_selection;
   ToolboxWidget *    toolbox;
   SnapBoxWidget *    snap_box;
+  RangeActionButtonsWidget * range_action_buttons;
   //QuantizeMbWidget * quantize_mb;
 } HomeToolbarWidget;
 

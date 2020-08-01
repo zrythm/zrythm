@@ -412,6 +412,10 @@ main_window_widget_init (MainWindowWidget * self)
     { "quantize-options", activate_quantize_options,
       "s" },
 
+    /* range actions */
+    { "insert-silence", activate_insert_silence },
+    { "remove-range", activate_remove_range },
+
     /* musical mode */
     { "toggle-musical-mode", NULL, NULL,
       g_settings_get_boolean (

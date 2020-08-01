@@ -66,6 +66,7 @@ undo_stack_init_loaded (
   size_t move_plugins_actions_idx = 0;
   size_t move_tracks_actions_idx = 0;
   size_t port_connection_actions_idx = 0;
+  size_t range_actions_idx = 0;
   size_t transport_actions_idx = 0;
 
   size_t total_actions =
@@ -82,6 +83,7 @@ undo_stack_init_loaded (
     self->num_move_plugins_actions +
     self->num_move_tracks_actions +
     self->num_port_connection_actions +
+    self->num_range_actions +
     self->num_transport_actions;
 
   size_t i = 0;
@@ -100,6 +102,7 @@ undo_stack_init_loaded (
       DO_SIMPLE (MovePlugins, move_plugins)
       DO_SIMPLE (MoveTracks, move_tracks)
       DO_SIMPLE (PortConnection, port_connection)
+      DO_SIMPLE (Range, range)
       DO_SIMPLE (Transport, transport)
 
       i++;
@@ -198,6 +201,8 @@ undo_stack_push (
       PORT_CONNECTION, PortConnection,
       port_connection);
     APPEND_ELEMENT (
+      RANGE, Range, range);
+    APPEND_ELEMENT (
       TRANSPORT, Transport, transport);
     case UA_CREATE_ARRANGER_SELECTIONS:
     case UA_MOVE_ARRANGER_SELECTIONS:
@@ -265,6 +270,8 @@ remove_action (
     REMOVE_ELEMENT (
       PORT_CONNECTION, PortConnection,
       port_connection);
+    REMOVE_ELEMENT (
+      RANGE, Range, range);
     REMOVE_ELEMENT (
       TRANSPORT, Transport, transport);
     case UA_CREATE_ARRANGER_SELECTIONS:

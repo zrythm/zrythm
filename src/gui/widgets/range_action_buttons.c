@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,65 +23,39 @@
  */
 
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/snap_box.h"
-#include "gui/widgets/snap_grid.h"
+#include "gui/widgets/range_action_buttons.h"
 #include "project.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (SnapBoxWidget,
-               snap_box_widget,
-               GTK_TYPE_BUTTON_BOX)
-
-/**
- * Sets the snap_box toggled states after deactivating
- * the callbacks.
- */
-void
-snap_box_widget_refresh (
-  SnapBoxWidget * self,
-  SnapGrid *      sg)
-{
-  snap_grid_widget_setup (
-    self->snap_grid,
-    sg);
-
-  /* FIXME move to actions */
-  gtk_toggle_button_set_active (
-    self->snap_to_grid,
-    sg->snap_to_grid);
-  gtk_toggle_button_set_active (
-    self->snap_to_grid_keep_offset,
-    sg->snap_to_grid_keep_offset);
-  gtk_toggle_button_set_active (
-    self->snap_to_events,
-    sg->snap_to_events);
-}
+G_DEFINE_TYPE (
+  RangeActionButtonsWidget,
+  range_action_buttons_widget,
+  GTK_TYPE_BUTTON_BOX)
 
 static void
-snap_box_widget_class_init (
-  SnapBoxWidgetClass * _klass)
+range_action_buttons_widget_class_init (
+  RangeActionButtonsWidgetClass * _klass)
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass, "snap_box.ui");
+    klass, "range_action_buttons.ui");
   gtk_widget_class_set_css_name (
-    klass, "snap-box");
+    klass, "range-action-buttons");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, SnapBoxWidget, x)
+    klass, RangeActionButtonsWidget, x)
 
-  BIND_CHILD (snap_to_grid);
-  BIND_CHILD (snap_to_grid_keep_offset);
-  BIND_CHILD (snap_to_events);
-  BIND_CHILD (snap_grid);
+  BIND_CHILD (insert_silence);
+  BIND_CHILD (remove);
 
 #undef BIND_CHILD
 }
 
 static void
-snap_box_widget_init (SnapBoxWidget * self)
+range_action_buttons_widget_init (
+  RangeActionButtonsWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }

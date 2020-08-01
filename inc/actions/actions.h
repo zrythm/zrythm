@@ -487,6 +487,8 @@ DECLARE_SIMPLE (
   activate_toggle_timeline_event_viewer);
 DECLARE_SIMPLE (
   activate_toggle_editor_event_viewer);
+DECLARE_SIMPLE (activate_insert_silence);
+DECLARE_SIMPLE (activate_remove_range);
 
 /**
  * @}

@@ -253,8 +253,6 @@ arranger_selections_redraw (
  * Moves the selections by the given
  * amount of ticks.
  *
- * @param use_cached_pos Add the ticks to the cached
- *   Position's instead of the current Position's.
  * @param ticks Ticks to add.
  */
 void
