@@ -747,7 +747,7 @@ fader_process (
             &self->stereo_in->r->buf[start_frame],
             nframes * sizeof (float));
         }
-      else
+      else /* not prefader */
         {
           nframes_t end = start_frame + nframes;
           float calc_l, calc_r;
@@ -784,20 +784,17 @@ fader_process (
             }
           else /* if not muted */
             {
-              while (start_frame < end)
+              for (nframes_t i = start_frame;
+                   i < end; i++)
                 {
                   float in_l =
-                    self->stereo_in->l->buf[
-                      start_frame];
+                    self->stereo_in->l->buf[i];
                   float in_r =
-                    self->stereo_in->r->buf[
-                      start_frame];
+                    self->stereo_in->r->buf[i];
                   float * l =
-                    &self->stereo_out->l->buf[
-                      start_frame];
+                    &self->stereo_out->l->buf[i];
                   float * r =
-                    &self->stereo_out->r->buf[
-                      start_frame];
+                    &self->stereo_out->r->buf[i];
 
                   /* 1. get input
                    * 2. apply fader
@@ -820,12 +817,45 @@ fader_process (
                       *l = mono;
                       *r = mono;
                     }
-
-                  start_frame++;
                 }
             }
-        }
-    }
+
+          /* if not master, no more processing
+           * needed, return */
+          if (self->type ==
+                FADER_TYPE_AUDIO_CHANNEL &&
+              track->type != TRACK_TYPE_MASTER)
+            {
+                return;
+            }
+
+          /* hard limit the output */
+          for (nframes_t i = start_frame; i < end;
+               i++)
+            {
+              float * l =
+                &self->stereo_out->l->buf[i];
+              float * r =
+                &self->stereo_out->r->buf[i];
+              if (*l > 2.f)
+                {
+                  *l = 2.f;
+                }
+              else if (*l < -2.f)
+                {
+                  *l = -2.f;
+                }
+              if (*r > 2.f)
+                {
+                  *r = 2.f;
+                }
+              else if (*r < -2.f)
+                {
+                  *r = -2.f;
+                }
+            }
+        } /* fi not prefader */
+    } /* fi monitor/audio fader */
   else if (self->type == FADER_TYPE_MIDI_CHANNEL)
     {
       /* TODO if not passthrough, apply volume
