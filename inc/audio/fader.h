@@ -132,6 +132,10 @@ typedef struct Fader
 
   FaderType        type;
 
+  /** Whether mono compatibility switch is
+   * enabled. */
+  bool             mono_compat_enabled;
+
   /** Whether this is a passthrough fader (like
    * a prefader). */
   bool             passthrough;
@@ -200,6 +204,8 @@ fader_fields_schema[] =
     Fader, track_pos),
   YAML_FIELD_INT (
     Fader, passthrough),
+  YAML_FIELD_INT (
+    Fader, mono_compat_enabled),
 
   CYAML_FIELD_END
 };
@@ -303,6 +309,22 @@ fader_set_soloed (
 float
 fader_get_amp (
   void * self);
+
+/**
+ * Gets whether mono compatibility is enabled.
+ */
+bool
+fader_get_mono_compat_enabled (
+  Fader * self);
+
+/**
+ * Sets whether mono compatibility is enabled.
+ */
+void
+fader_set_mono_compat_enabled (
+  Fader * self,
+  bool    enabled,
+  bool    fire_events);
 
 float
 fader_get_fader_val (

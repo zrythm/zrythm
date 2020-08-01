@@ -339,11 +339,7 @@ on_track_state_changed (Track * track)
   Channel * chan = track_get_channel (track);
   if (chan && chan->widget)
     {
-      channel_widget_block_all_signal_handlers (
-        chan->widget);
       channel_widget_refresh (chan->widget);
-      channel_widget_unblock_all_signal_handlers (
-        chan->widget);
     }
 
   if (TRACKLIST_SELECTIONS->tracks[0] == track)

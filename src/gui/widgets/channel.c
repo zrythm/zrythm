@@ -34,6 +34,7 @@
 #include "gui/widgets/channel.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/fader_buttons.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/expander_box.h"
 #include "gui/widgets/meter.h"
@@ -459,74 +460,6 @@ on_btn_release (
 }
 
 static void
-on_record_toggled (
-  GtkToggleButton * btn,
-  ChannelWidget *   self)
-{
-  Track * track =
-    channel_get_track (self->channel);
-  if (!track_is_selected (track))
-    {
-      track_select (
-        track, F_SELECT, F_EXCLUSIVE,
-        F_PUBLISH_EVENTS);
-    }
-  track_set_recording (
-    track,
-    gtk_toggle_button_get_active (btn), 1);
-}
-
-static void
-on_solo_toggled (
-  GtkToggleButton * btn,
-  ChannelWidget *   self)
-{
-  Track * track =
-    channel_get_track (self->channel);
-  if (!track_is_selected (track))
-    {
-      track_select (
-        track, F_SELECT, F_EXCLUSIVE,
-        F_PUBLISH_EVENTS);
-    }
-  track_set_soloed (
-    track,
-    gtk_toggle_button_get_active (btn), true, true);
-}
-
-static void
-on_mute_toggled (GtkToggleButton * btn,
-                 ChannelWidget * self)
-{
-  Track * track =
-    channel_get_track (self->channel);
-  if (!track_is_selected (track))
-    {
-      track_select (
-        track, F_SELECT, F_EXCLUSIVE,
-        F_PUBLISH_EVENTS);
-    }
-  track_set_muted (
-    track,
-    gtk_toggle_button_get_active (btn),
-    true, true);
-}
-
-/*static void*/
-/*on_listen_toggled (GtkToggleButton * btn,*/
-                   /*ChannelWidget *   self)*/
-/*{*/
-
-/*}*/
-
-/*static void*/
-/*on_e_activate (GtkButton *     btn,*/
-               /*ChannelWidget * self)*/
-/*{*/
-
-/*}*/
-
-static void
 refresh_color (ChannelWidget * self)
 {
   Track * track =
@@ -606,6 +539,11 @@ setup_channel_icon (ChannelWidget * self)
     channel_get_track (self->channel);
   switch (track->type)
     {
+    case TRACK_TYPE_CHORD:
+      gtk_image_set_from_icon_name (
+        self->icon, "minuet-chords",
+        GTK_ICON_SIZE_BUTTON);
+      break;
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_MIDI:
       gtk_image_set_from_icon_name (
@@ -661,7 +599,8 @@ setup_balance_control (ChannelWidget * self)
 {
   self->balance_control =
     balance_control_widget_new (
-      channel_get_balance_control, channel_set_balance_control,
+      channel_get_balance_control,
+      channel_set_balance_control,
       self->channel, 12);
   gtk_box_pack_start (
     self->balance_control_box,
@@ -669,22 +608,19 @@ setup_balance_control (ChannelWidget * self)
     Z_GTK_NO_EXPAND, Z_GTK_FILL, 0);
 }
 
+static void
+setup_aux_buttons (
+  ChannelWidget * self)
+{
+}
+
 void
 channel_widget_refresh_buttons (
   ChannelWidget * self)
 {
-  channel_widget_block_all_signal_handlers (
-    self);
-  Track * track =
-    channel_get_track (self->channel);
-  gtk_toggle_button_set_active (
-    self->record, track->recording);
-  gtk_toggle_button_set_active (
-    self->solo, track_get_soloed (track));
-  gtk_toggle_button_set_active (
-    self->mute, track_get_muted (track));
-  channel_widget_unblock_all_signal_handlers (
-    self);
+  fader_buttons_widget_refresh (
+    self->fader_buttons,
+    channel_get_track (self->channel));
 }
 
 /**
@@ -719,36 +655,6 @@ channel_widget_refresh (ChannelWidget * self)
     }
 }
 
-/**
- * Blocks all signal handlers.
- */
-void
-channel_widget_block_all_signal_handlers (
-  ChannelWidget * self)
-{
-  g_signal_handler_block (
-    self->solo,
-    self->solo_toggled_handler_id);
-  g_signal_handler_block (
-    self->mute,
-    self->mute_toggled_handler_id);
-}
-
-/**
- * Unblocks all signal handlers.
- */
-void
-channel_widget_unblock_all_signal_handlers (
-  ChannelWidget * self)
-{
-  g_signal_handler_unblock (
-    self->solo,
-    self->solo_toggled_handler_id);
-  g_signal_handler_unblock (
-    self->mute,
-    self->mute_toggled_handler_id);
-}
-
 static void
 on_destroy (
   ChannelWidget * self)
@@ -767,6 +673,7 @@ channel_widget_new (Channel * channel)
   plugin_strip_expander_widget_setup (
     self->inserts, PLUGIN_SLOT_INSERT,
     PSE_POSITION_CHANNEL, channel->track);
+  setup_aux_buttons (self);
   fader_widget_setup (
     self->fader, channel->fader, 38, -1);
   setup_meter (self);
@@ -860,11 +767,7 @@ channel_widget_class_init (
   BIND_CHILD (name);
   BIND_CHILD (inserts);
   BIND_CHILD (instrument_box);
-  BIND_CHILD (e);
-  BIND_CHILD (solo);
-  BIND_CHILD (listen);
-  BIND_CHILD (mute);
-  BIND_CHILD (record);
+  BIND_CHILD (fader_buttons);
   BIND_CHILD (fader);
   BIND_CHILD (meter_area);
   BIND_CHILD (meter_l);
@@ -874,6 +777,7 @@ channel_widget_class_init (
   BIND_CHILD (balance_control_box);
   BIND_CHILD (highlight_left_box);
   BIND_CHILD (highlight_right_box);
+  BIND_CHILD (aux_buttons_box);
 
 #undef BIND_CHILD
 }
@@ -883,6 +787,7 @@ channel_widget_init (ChannelWidget * self)
 {
   g_type_ensure (ROUTE_TARGET_SELECTOR_WIDGET_TYPE);
   g_type_ensure (FADER_WIDGET_TYPE);
+  g_type_ensure (FADER_BUTTONS_WIDGET_TYPE);
   g_type_ensure (METER_WIDGET_TYPE);
   g_type_ensure (COLOR_AREA_WIDGET_TYPE);
   g_type_ensure (PLUGIN_STRIP_EXPANDER_WIDGET_TYPE);
@@ -941,34 +846,6 @@ channel_widget_init (ChannelWidget * self)
   gtk_widget_set_hexpand (
     GTK_WIDGET (self), 0);
 
-  z_gtk_container_destroy_all_children (
-    GTK_CONTAINER (self->record));
-  z_gtk_button_set_icon_name (
-    GTK_BUTTON (self->record),
-    "media-record");
-  context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self->record));
-  gtk_style_context_add_class (
-    context, "record-button");
-  context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self->solo));
-  gtk_style_context_add_class (
-    context, "solo-button");
-
-  self->solo_toggled_handler_id =
-    g_signal_connect (
-      G_OBJECT (self->solo), "toggled",
-      G_CALLBACK (on_solo_toggled), self);
-  self->mute_toggled_handler_id =
-    g_signal_connect (
-      G_OBJECT (self->mute), "toggled",
-      G_CALLBACK (on_mute_toggled), self);
-  self->record_toggled_handler_id =
-    g_signal_connect (
-      G_OBJECT (self->record), "toggled",
-      G_CALLBACK (on_record_toggled), self);
   g_signal_connect (
     G_OBJECT (self->mp), "pressed",
     G_CALLBACK (on_whole_channel_press), self);

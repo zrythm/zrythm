@@ -41,6 +41,8 @@ typedef struct _FaderWidget FaderWidget;
 typedef struct _MeterWidget MeterWidget;
 typedef struct _BalanceControlWidget
   BalanceControlWidget;
+typedef struct _FaderButtonsWidget
+  FaderButtonsWidget;
 
 /**
  * @addtogroup widgets
@@ -59,19 +61,11 @@ typedef struct _FaderControlsGridWidget
   BalanceControlWidget * balance_control;
   FaderWidget *  fader;
 
-  GtkButtonBox * fader_buttons;
-
   Track *        track;
 
-  GtkToggleButton * solo;
-  GtkToggleButton * mute;
-  GtkToggleButton * record;
+  FaderButtonsWidget * fader_buttons;
 
   GtkLabel *     meter_readings;
-
-  gulong         record_toggled_handler_id;
-  gulong         solo_toggled_handler_id;
-  gulong         mute_toggled_handler_id;
 
   double         meter_reading_val;
 
@@ -82,18 +76,6 @@ typedef struct _FaderControlsGridWidget
   guint          tick_cb;
 
 } FaderControlsGridWidget;
-
-void
-fader_controls_grid_widget_block_signal_handlers (
-  FaderControlsGridWidget * self);
-
-void
-fader_controls_grid_widget_unblock_signal_handlers (
-  FaderControlsGridWidget * self);
-
-void
-fader_controls_grid_widget_refresh (
-  FaderControlsGridWidget * self);
 
 void
 fader_controls_grid_widget_setup (

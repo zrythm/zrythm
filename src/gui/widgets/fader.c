@@ -34,9 +34,8 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (FaderWidget,
-               fader_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  FaderWidget, fader_widget, GTK_TYPE_DRAWING_AREA)
 
 static int
 fader_draw_cb (
@@ -364,12 +363,12 @@ on_right_click (GtkGestureMultiPress *gesture,
 
 static int
 on_scroll (
-  GtkWidget *          widget,
-  GdkEventScroll *     event,
-  FaderWidget * self)
+  GtkWidget *      widget,
+  GdkEventScroll * event,
+  FaderWidget *    self)
 {
   /* add/substract *inc* amount */
-  float inc = 0.1f;
+  float inc = 0.04f;
   /* lower sensitivity if shift held */
   GdkModifierType mask;
   z_gtk_widget_get_mask (
@@ -382,9 +381,10 @@ on_scroll (
     event->direction == GDK_SCROLL_UP ? 1 : -1;
   float add_val = (float) up_down * inc;
   float current_val =
-    fader_get_fader_val(self->fader);
-  float new_val = CLAMP(current_val + add_val, 0.0f, 1.0f);
-  fader_set_fader_val(self->fader, new_val);
+    fader_get_fader_val (self->fader);
+  float new_val =
+    CLAMP (current_val + add_val, 0.0f, 1.0f);
+  fader_set_fader_val (self->fader, new_val);
 
   Channel * channel =
     fader_get_channel (self->fader);

@@ -725,6 +725,15 @@ track_type_can_host_region_type (
   const RegionType rt);
 
 static inline bool
+track_type_has_mono_compat_switch (
+  const TrackType tt)
+{
+  return
+    tt == TRACK_TYPE_AUDIO_GROUP ||
+    tt == TRACK_TYPE_MASTER;
+}
+
+static inline bool
 track_type_is_fx (
   const TrackType type)
 {
@@ -743,7 +752,8 @@ track_type_can_record (
   return
     type == TRACK_TYPE_AUDIO ||
     type == TRACK_TYPE_MIDI ||
-    type == TRACK_TYPE_INSTRUMENT;
+    type == TRACK_TYPE_INSTRUMENT ||
+    type == TRACK_TYPE_CHORD;
 }
 
 /**

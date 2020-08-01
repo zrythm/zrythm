@@ -861,6 +861,30 @@ channel_reset_fader (Channel * self)
 }
 
 /**
+ * Gets whether mono compatibility is enabled.
+ */
+bool
+channel_get_mono_compat_enabled (
+  Channel * self)
+{
+  return
+    fader_get_mono_compat_enabled (self->fader);
+}
+
+/**
+ * Sets whether mono compatibility is enabled.
+ */
+void
+channel_set_mono_compat_enabled (
+  Channel * self,
+  bool      enabled,
+  bool      fire_events)
+{
+  fader_set_mono_compat_enabled (
+    self->fader, enabled, fire_events);
+}
+
+/**
  * Connects the channel's ports.
  *
  * This should only be called on new tracks.

@@ -69,6 +69,7 @@
 G_DEFINE_TYPE (
   TrackWidget, track_widget, GTK_TYPE_BOX)
 
+#define ICON_NAME_MONO_COMPAT "mono"
 #define ICON_NAME_RECORD "media-record"
 #define ICON_NAME_SOLO "solo"
 #define ICON_NAME_MUTE "mute"
@@ -494,6 +495,15 @@ draw_buttons (
                 ICON_NAME_MUTE, 1) &&
                track_get_muted (
                  self->track))
+        {
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+        }
+      else if (string_is_equal (
+                cb->icon_name,
+                ICON_NAME_MONO_COMPAT, 1) &&
+               channel_get_mono_compat_enabled (
+                 self->track->channel))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
@@ -1855,9 +1865,28 @@ multipress_released (
     {
       CustomButtonWidget * cb =
         self->clicked_button;
+
+      /* if track not selected, select it */
+      if (!track_is_selected (self->track))
+        {
+          track_select (
+            self->track, F_SELECT, F_EXCLUSIVE,
+            F_PUBLISH_EVENTS);
+        }
+
       if ((Track *) cb->owner == self->track)
         {
           if (string_is_equal (
+                cb->icon_name,
+                ICON_NAME_MONO_COMPAT, 1))
+            {
+              channel_set_mono_compat_enabled (
+                self->track->channel,
+                !channel_get_mono_compat_enabled (
+                  self->track->channel),
+                F_PUBLISH_EVENTS);
+            }
+          else if (string_is_equal (
                 cb->icon_name, ICON_NAME_RECORD, 1))
             {
               track_widget_on_record_toggled (self);
@@ -1865,14 +1894,6 @@ multipress_released (
           else if (string_is_equal (
                 cb->icon_name, ICON_NAME_SOLO, 1))
             {
-              /* if track not selected, select it */
-              if (!track_is_selected (self->track))
-                {
-                  track_select (
-                    self->track, F_SELECT,
-                    F_EXCLUSIVE,
-                    F_PUBLISH_EVENTS);
-                }
               track_set_soloed (
                 self->track,
                 !track_get_soloed (self->track),
@@ -2528,17 +2549,18 @@ track_widget_new (Track * track)
       add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (
-        self, 1, ICON_NAME_MUTE);
+        self, true, ICON_NAME_MUTE);
       add_button (
-        self, 1, ICON_NAME_SHOW_UI);
+        self, true, ICON_NAME_SHOW_UI);
       add_button (
-        self, 0, ICON_NAME_LOCK);
+        self, false, ICON_NAME_LOCK);
       add_button (
-        self, 0, ICON_NAME_FREEZE);
+        self, false, ICON_NAME_FREEZE);
       add_button (
-        self, 0, ICON_NAME_SHOW_TRACK_LANES);
+        self, false, ICON_NAME_SHOW_TRACK_LANES);
       add_button (
-        self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
+        self, false,
+        ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MIDI:
       strcpy (
@@ -2557,6 +2579,8 @@ track_widget_new (Track * track)
       break;
     case TRACK_TYPE_MASTER:
       strcpy (self->icon_name, ICON_NAME_BUS);
+      add_button (
+        self, 1, ICON_NAME_MONO_COMPAT);
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);
@@ -2598,6 +2622,8 @@ track_widget_new (Track * track)
       break;
     case TRACK_TYPE_AUDIO_GROUP:
       strcpy (self->icon_name, ICON_NAME_BUS);
+      add_button (
+        self, 1, ICON_NAME_MONO_COMPAT);
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);
@@ -2806,10 +2832,6 @@ track_widget_class_init (TrackWidgetClass * _klass)
     klass, TrackWidget, x)
 
   BIND_CHILD (drawing_area);
-  /*BIND_CHILD (color);*/
-  /*BIND_CHILD (paned);*/
-  /*BIND_CHILD (top_grid);*/
-  /*BIND_CHILD (event_box);*/
   BIND_CHILD (main_box);
   BIND_CHILD (meter_l);
   BIND_CHILD (meter_r);

@@ -726,10 +726,8 @@ graph_setup (
       if (!tr->channel)
         continue;
 
-      Fader * fader;
-      Fader * prefader;
-      fader = tr->channel->fader;
-      prefader = tr->channel->prefader;
+      Fader * prefader = tr->channel->prefader;
+      Fader * fader = tr->channel->fader;
 
       /* connect the fader */
       node =

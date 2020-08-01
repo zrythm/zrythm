@@ -571,6 +571,22 @@ channel_get_plugins (
   Plugin ** pls);
 
 /**
+ * Gets whether mono compatibility is enabled.
+ */
+bool
+channel_get_mono_compat_enabled (
+  Channel * self);
+
+/**
+ * Sets whether mono compatibility is enabled.
+ */
+void
+channel_set_mono_compat_enabled (
+  Channel * self,
+  bool      enabled,
+  bool      fire_events);
+
+/**
  * Clones the channel recursively.
  *
  * @note The given track is not cloned.

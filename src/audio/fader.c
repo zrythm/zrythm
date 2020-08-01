@@ -116,7 +116,9 @@ fader_new (
   float amp = 1.f;
   self->amp =
     port_new_with_type (
-      TYPE_CONTROL, FLOW_INPUT, _("Volume"));
+      TYPE_CONTROL, FLOW_INPUT,
+      passthrough ?
+        _("Prefader Volume") : _("Fader Volume"));
   self->amp->maxf = 2.f;
   port_set_control_value (self->amp, amp, 0, 0);
   self->fader_val =
@@ -142,7 +144,8 @@ fader_new (
   self->balance =
     port_new_with_type (
       TYPE_CONTROL, FLOW_INPUT,
-      _("Balance"));
+      passthrough ?
+        _("Prefader Balance") : _("Fader Balance"));
   port_set_control_value (
     self->balance, balance, 0, 0);
   port_set_owner_fader (self->balance, self);
@@ -159,7 +162,9 @@ fader_new (
   /* set mute */
   self->mute =
     port_new_with_type (
-      TYPE_CONTROL, FLOW_INPUT, _("Mute"));
+      TYPE_CONTROL, FLOW_INPUT,
+      passthrough ?
+        _("Prefader Mute") : _("Fader Mute"));
   port_set_control_value (
     self->mute, 0.f, 0, 0);
   self->mute->id.flags |=
@@ -469,6 +474,36 @@ fader_get_amp (void * _self)
   return self->amp->control;
 }
 
+/**
+ * Gets whether mono compatibility is enabled.
+ */
+bool
+fader_get_mono_compat_enabled (
+  Fader * self)
+{
+  return self->mono_compat_enabled;
+}
+
+/**
+ * Sets whether mono compatibility is enabled.
+ */
+void
+fader_set_mono_compat_enabled (
+  Fader * self,
+  bool    enabled,
+  bool    fire_events)
+{
+  self->mono_compat_enabled = enabled;
+
+  Track * track = fader_get_track (self);
+  g_return_if_fail (track);
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_TRACK_STATE_CHANGED, track);
+    }
+}
+
 float
 fader_get_fader_val (
   void * self)
@@ -714,7 +749,6 @@ fader_process (
         }
       else
         {
-
           nframes_t end = start_frame + nframes;
           float calc_l, calc_r;
           balance_control_get_calc_lr (
@@ -748,21 +782,45 @@ fader_process (
                !track->bounce))
             {
             }
-          else
+          else /* if not muted */
             {
               while (start_frame < end)
                 {
+                  float in_l =
+                    self->stereo_in->l->buf[
+                      start_frame];
+                  float in_r =
+                    self->stereo_in->r->buf[
+                      start_frame];
+                  float * l =
+                    &self->stereo_out->l->buf[
+                      start_frame];
+                  float * r =
+                    &self->stereo_out->r->buf[
+                      start_frame];
+
                   /* 1. get input
                    * 2. apply fader
                    * 3. apply pan */
-                  self->stereo_out->l->buf[
-                    start_frame] =
-                      self->stereo_in->l->buf[
-                        start_frame] * amp * calc_l;
-                  self->stereo_out->r->buf[
-                    start_frame] =
-                      self->stereo_in->r->buf[
-                        start_frame] * amp * calc_r;
+                  *l = in_l * amp * calc_l;
+                  *r = in_r * amp * calc_r;
+
+                  if (self->mono_compat_enabled)
+                    {
+                      /* make mono if mono compat
+                       * enabled. equal amplitude is
+                       * more suitable for mono
+                       * compatibility checking */
+                      /* for reference:
+                       * equal power sum =
+                       * (L+R) * 0.7079 (-3dB)
+                       * equal amplitude sum =
+                       * (L+R) /2 (-6.02dB) */
+                      float mono = (*l + *r) / 2.f;
+                      *l = mono;
+                      *r = mono;
+                    }
+
                   start_frame++;
                 }
             }

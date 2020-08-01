@@ -124,6 +124,7 @@ if get_option ('tests')
     ['actions/create_tracks', true],
     ['audio/automation_track', true],
     ['audio/curve', true],
+    ['audio/fader', true],
     ['audio/metronome', true],
     ['audio/midi', true],
     ['audio/midi_mapping', true],

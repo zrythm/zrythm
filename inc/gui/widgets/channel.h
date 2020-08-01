@@ -45,6 +45,8 @@ typedef struct _RouteTargetSelectorWidget
 typedef struct _BalanceControlWidget BalanceControlWidget;
 typedef struct _EditableLabelWidget
   EditableLabelWidget;
+typedef struct _FaderButtonsWidget
+  FaderButtonsWidget;
 
 typedef struct _ChannelWidget
 {
@@ -68,11 +70,7 @@ typedef struct _ChannelWidget
 
   /* -------- end --------- */
 
-  GtkButton           * e;
-  GtkToggleButton *      solo;
-  GtkToggleButton           * listen;
-  GtkToggleButton           * mute;
-  GtkToggleButton     * record;
+  FaderButtonsWidget *  fader_buttons;
   GtkBox              * meter_area;  ///< vertical including reading
   GtkBox *            balance_control_box;
   BalanceControlWidget * balance_control;
@@ -86,6 +84,13 @@ typedef struct _ChannelWidget
   /** Used for highlighting. */
   GtkBox *            highlight_left_box;
   GtkBox *            highlight_right_box;
+
+  /** Box for auxiliary buttons near the top of the
+   * widget. */
+  GtkBox *            aux_buttons_box;
+
+  /** Mono compatibility button. */
+  GtkToggleButton *   mono_compat_btn;
 
   /** Number of clicks, used when selecting/moving/
    * dragging channels. */
@@ -113,13 +118,6 @@ typedef struct _ChannelWidget
    */
   gint64              last_plugin_press;
 
-  /**
-   * Signal handler IDs.
-   */
-  gulong              record_toggled_handler_id;
-  gulong              solo_toggled_handler_id;
-  gulong              mute_toggled_handler_id;
-
   /** Last MIDI event trigger time, for MIDI
    * output. */
   gint64              last_midi_trigger_time;
@@ -138,20 +136,6 @@ typedef struct _ChannelWidget
  */
 void
 channel_widget_update_inserts (
-  ChannelWidget * self);
-
-/**
- * Blocks all signal handlers.
- */
-void
-channel_widget_block_all_signal_handlers (
-  ChannelWidget * self);
-
-/**
- * Unblocks all signal handlers.
- */
-void
-channel_widget_unblock_all_signal_handlers (
   ChannelWidget * self);
 
 void
