@@ -59,9 +59,11 @@ _test_create_plugins (
             pl_bundle, pl_uri, with_carla));
       break;
     case PROT_VST:
+#ifdef HAVE_CARLA
       descr =
         z_carla_discovery_create_vst_descriptor (
           pl_bundle, ARCH_64, PROT_VST);
+#endif
       break;
     default:
       break;
