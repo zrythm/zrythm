@@ -342,14 +342,13 @@ z_carla_discovery_run (
   char * results =
     system_get_cmd_output (argv, 1200, true);
 #endif
-  char res[8000];
+  char * res;
   int ret =
     system_run_cmd_w_args (
-      argv, 4000, true, res, true);
+      argv, 4000, true, &res, true);
   if (ret == 0)
     {
-      char * results = g_strdup (res);
-      return results;
+      return res;
     }
   else
     {

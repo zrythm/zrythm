@@ -75,15 +75,18 @@ system_get_cmd_output (
  * @param args NULL-terminated array of args.
  * @param get_stdout Whether to get the standard out
  *   (true) or stderr (false).
- * @param[out] output A buffer to save the stdout or
- *   stderr output.
+ * @param[out] output A pointer to save the newly
+ *   allocated stdout or stderr output.
+ * @param ms_timer A timer in ms to
+ *   kill the process, or negative to not
+ *   wait.
  */
 int
 system_run_cmd_w_args (
   const char ** args,
   int           ms_to_wait,
   bool          get_stdout,
-  char *        output,
+  char **       output,
   bool          warn_if_fail);
 
 /**

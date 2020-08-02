@@ -40,8 +40,8 @@
  * @param args NULL-terminated array of args.
  * @param get_stdout Whether to get the standard out
  *   (true) or stderr (false).
- * @param[out] output A buffer to save the stdout or
- *   stderr output.
+ * @param[out] output A pointer to save the newly
+ *   allocated stdout or stderr output.
  * @param ms_timer A timer in ms to
  *   kill the process, or negative to not
  *   wait.
@@ -51,12 +51,12 @@ system_run_cmd_w_args (
   const char ** args,
   int           ms_to_wait,
   bool          get_stdout,
-  char *        output,
+  char **       output,
   bool          warn_if_fail)
 {
   g_message ("ms to wait: %d", ms_to_wait);
 
-  char * _output = NULL;
+  *output = NULL;
   size_t size = 0;
   int r = REPROC_ENOMEM;
   reproc_event_source children[1];
@@ -166,7 +166,7 @@ system_run_cmd_w_args (
       size_t bytes_read = (size_t) r;
 
       char * result =
-        realloc (_output, size + bytes_read + 1);
+        realloc (*output, size + bytes_read + 1);
       if (result == NULL)
         {
           r = REPROC_ENOMEM;
@@ -174,11 +174,11 @@ system_run_cmd_w_args (
           goto finish;
         }
 
-      _output = result;
+      *output = result;
 
       // Copy new data into `output`.
-      memcpy(_output + size, buffer, bytes_read);
-      _output[size + bytes_read] = '\0';
+      memcpy(*output + size, buffer, bytes_read);
+      (*output)[size + bytes_read] = '\0';
       size += bytes_read;
 
       if (r == REPROC_EPIPE)
@@ -196,11 +196,9 @@ system_run_cmd_w_args (
       goto finish;
     }
 
-  if (_output)
+  if (*output)
     {
-      strcpy (output, _output);
-
-      g_message ("output:\n%s", output);
+      g_message ("output:\n%s", *output);
     }
   else
     {
@@ -223,11 +221,6 @@ system_run_cmd_w_args (
 
   finish:
   g_message ("finishing...");
-  if (_output)
-    {
-      g_message ("freeing output...");
-      free (_output);
-    }
 
   if (r < 0)
     {

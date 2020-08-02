@@ -72,6 +72,9 @@ if (position_is_after_or_equal ( \
       &TRANSPORT->x, \
       &self->start_pos)) \
   { \
+    g_message ( \
+      "adding frames to " #x ": %ld", \
+      range_size_frames); \
     transport_position_add_frames ( \
       TRANSPORT, &TRANSPORT->x, range_size_frames); \
   }

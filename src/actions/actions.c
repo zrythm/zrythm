@@ -1992,7 +1992,7 @@ DEFINE_SIMPLE (activate_insert_silence)
   transport_get_range_pos (
     TRANSPORT, true, &start);
   transport_get_range_pos (
-    TRANSPORT, true, &end);
+    TRANSPORT, false, &end);
   UndoableAction * ua =
     range_action_new_insert_silence (&start, &end);
   undo_manager_perform (UNDO_MANAGER, ua);
@@ -2007,7 +2007,7 @@ DEFINE_SIMPLE (activate_remove_range)
   transport_get_range_pos (
     TRANSPORT, true, &start);
   transport_get_range_pos (
-    TRANSPORT, true, &end);
+    TRANSPORT, false, &end);
   UndoableAction * ua =
     range_action_new_remove (&start, &end);
   undo_manager_perform (UNDO_MANAGER, ua);

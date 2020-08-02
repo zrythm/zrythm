@@ -28,7 +28,7 @@
 static void
 test_run_cmd_w_args ()
 {
-  char output[8000];
+  char * output;
   int ret;
 
   const char * args[] = {
@@ -37,41 +37,41 @@ test_run_cmd_w_args ()
     "bash", "-c", "sleep 6 && >&2 echo hello", NULL, };
   ret =
     system_run_cmd_w_args (
-      args, 1, true, output, false);
+      args, 1, true, &output, false);
   g_assert_cmpint (ret, !=, 0);
   ret =
     system_run_cmd_w_args (
-      args, 1, false, output, false);
+      args, 1, false, &output, false);
   g_assert_cmpint (ret, !=, 0);
   ret =
     system_run_cmd_w_args (
-      args_stderr, 1, true, output, false);
+      args_stderr, 1, true, &output, false);
   g_assert_cmpint (ret, !=, 0);
   ret =
     system_run_cmd_w_args (
-      args_stderr, 1, false, output, false);
-  g_assert_cmpint (ret, !=, 0);
-
-  ret =
-    system_run_cmd_w_args (
-      args, 2000, true, output, false);
-  g_assert_cmpint (ret, !=, 0);
-  ret =
-    system_run_cmd_w_args (
-      args, 2000, false, output, false);
-  g_assert_cmpint (ret, !=, 0);
-  ret =
-    system_run_cmd_w_args (
-      args_stderr, 2000, true, output, false);
-  g_assert_cmpint (ret, !=, 0);
-  ret =
-    system_run_cmd_w_args (
-      args_stderr, 2000, false, output, false);
+      args_stderr, 1, false, &output, false);
   g_assert_cmpint (ret, !=, 0);
 
   ret =
     system_run_cmd_w_args (
-      args, 8000, true, output, false);
+      args, 2000, true, &output, false);
+  g_assert_cmpint (ret, !=, 0);
+  ret =
+    system_run_cmd_w_args (
+      args, 2000, false, &output, false);
+  g_assert_cmpint (ret, !=, 0);
+  ret =
+    system_run_cmd_w_args (
+      args_stderr, 2000, true, &output, false);
+  g_assert_cmpint (ret, !=, 0);
+  ret =
+    system_run_cmd_w_args (
+      args_stderr, 2000, false, &output, false);
+  g_assert_cmpint (ret, !=, 0);
+
+  ret =
+    system_run_cmd_w_args (
+      args, 8000, true, &output, false);
   g_assert_cmpint (ret, ==, 0);
   g_assert_cmpstr (output, ==, "hello\n");
   output[0] = '\0';
