@@ -46,6 +46,7 @@ timeline_selections_new (void)
   TimelineSelections * self =
     object_new (TimelineSelections);
 
+  self->base.magic = ARRANGER_SELECTIONS_MAGIC;
   self->base.type =
     ARRANGER_SELECTIONS_TYPE_TIMELINE;
 

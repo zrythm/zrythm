@@ -861,13 +861,12 @@ arranger_object_clone (
   ArrangerObjectCloneFlag clone_flag);
 
 /**
- * Splits the given object at the given Position,
+ * Splits the given object at the given Position.
+ *
+ * if \ref is_project is true, it
  * deletes the original object and adds 2 new
  * objects in the same parent (Track or
  * AutomationTrack or Region).
- *
- * The given object must be the main object, as this
- * will create 2 new main objects.
  *
  * @param region The ArrangerObject to split. This
  *   ArrangerObject will be deleted.
@@ -878,14 +877,21 @@ arranger_object_clone (
  *   newly created ArrangerObject 1.
  * @param r2 Address to hold the pointer to the
  *   newly created ArrangerObject 2.
+ * @param is_project Whether the object being
+ *   passed is a project object. If true, it will
+ *   be removed from the project and the child
+ *   objects will be added to the project,
+ *   otherwise it will be untouched and the
+ *   children will be mere clones.
  */
 void
 arranger_object_split (
   ArrangerObject *  self,
   const Position *  pos,
-  const int         pos_is_local,
+  const bool        pos_is_local,
   ArrangerObject ** r1,
-  ArrangerObject ** r2);
+  ArrangerObject ** r2,
+  bool              is_project);
 
 /**
  * Undoes what arranger_object_split() did.
@@ -905,6 +911,24 @@ arranger_object_set_name (
   ArrangerObject * self,
   const char *     name,
   int              fire_events);
+
+/**
+ * Adds the ArrangerObject where it belongs in the
+ * project (eg, a Track).
+ *
+ * This is mostly used when undoing deletions.
+ */
+void
+arranger_object_add_to_project (
+  ArrangerObject * obj);
+
+/**
+ * Removes the object from its parent in the
+ * project.
+ */
+void
+arranger_object_remove_from_project (
+  ArrangerObject * obj);
 
 /**
  * @}

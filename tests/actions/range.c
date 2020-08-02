@@ -37,21 +37,30 @@
 
 #include <glib.h>
 
-#define PLAYHEAD_BEFORE 6
+#define PLAYHEAD_BEFORE 7
 #define LOOP_START_BEFORE 1
-#define LOOP_END_BEFORE 5
+#define LOOP_END_BEFORE 6
 
 #define RANGE_START_BAR 3
-#define RANGE_END_BAR 4
+#define RANGE_END_BAR 5
 #define RANGE_SIZE_IN_BARS \
   (RANGE_END_BAR - RANGE_START_BAR)
 
+/* audio region starts before the range start and
+ * ends in the middle of the range */
+#define AUDIO_REGION_START_BAR \
+  (RANGE_START_BAR - 1)
+#define AUDIO_REGION_END_BAR \
+  (RANGE_START_BAR + 1)
+
+/* midi region starts after the range end */
 #define MIDI_REGION_START_BAR \
   (RANGE_START_BAR + 2)
 #define MIDI_REGION_END_BAR \
   (MIDI_REGION_START_BAR + 2)
 
 static int midi_track_pos = -1;
+static int audio_track_pos = -1;
 
 static void
 test_prepare_common (void)
@@ -86,6 +95,51 @@ test_prepare_common (void)
     arranger_selections_action_new_create (
       (ArrangerSelections *) TL_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* create audio track with region */
+  char * filepath =
+    g_build_filename (
+      TESTS_SRCDIR, "test.wav", NULL);
+  SupportedFile * file =
+    supported_file_new_from_path (filepath);
+  g_free (filepath);
+  position_set_to_bar (
+    &start, AUDIO_REGION_START_BAR);
+  position_set_to_bar (
+    &end, AUDIO_REGION_END_BAR);
+  UndoableAction * action =
+    create_tracks_action_new (
+      TRACK_TYPE_AUDIO, NULL, file,
+      TRACKLIST->num_tracks, &start, 1);
+  undo_manager_perform (UNDO_MANAGER, action);
+  audio_track_pos = TRACKLIST->num_tracks - 1;
+  Track * audio_track =
+    TRACKLIST->tracks[audio_track_pos];
+  ZRegion * audio_region =
+    audio_track->lanes[0]->regions[0];
+
+  /* resize audio region */
+  arranger_object_select (
+    (ArrangerObject *) audio_region, F_SELECT,
+    F_NO_APPEND);
+  double audio_region_size_ticks =
+    arranger_object_get_length_in_ticks (
+      (ArrangerObject *) audio_region);
+  double missing_ticks  =
+    (end.total_ticks - start.total_ticks) -
+    audio_region_size_ticks;
+  arranger_object_resize (
+    (ArrangerObject *) audio_region, false,
+    ARRANGER_OBJECT_RESIZE_LOOP, missing_ticks,
+    false);
+  ua =
+    arranger_selections_action_new_resize (
+      (ArrangerSelections *) TL_SELECTIONS,
+      ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
+      missing_ticks);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_cmppos (
+    &end, &audio_region->base.end_pos);
 
   /* set transport positions */
   position_set_to_bar (
@@ -154,7 +208,7 @@ test_insert_silence_no_intersections (void)
   RangeAction * ra = (RangeAction *) ua;
   g_assert_cmpint (
     arranger_selections_get_num_objects (
-      (ArrangerSelections *) ra->sel_before), ==, 1);
+      (ArrangerSelections *) ra->sel_before), ==, 2);
 
   /* perform action */
   undo_manager_perform (UNDO_MANAGER, ua);

@@ -602,18 +602,6 @@ tracklist_remove_track (
     tracklist_get_next_visible_track (
       TRACKLIST, track);
 
-  /* clear the editor region if it exists and
-   * belongs to this track */
-  ZRegion * region =
-    clip_editor_get_region (CLIP_EDITOR);
-  if (region &&
-      arranger_object_get_track (
-        (ArrangerObject *) region) == track)
-    {
-      clip_editor_set_region (
-        CLIP_EDITOR, NULL, publish_events);
-    }
-
   /* remove/deselect all objects */
   track_clear (track);
 
@@ -650,14 +638,6 @@ tracklist_remove_track (
   track_set_pos (track, -1);
 
   track_set_is_project (track, false);
-
-#if 0
-  /* move all other tracks */
-  for (int i = 0; i < self->num_tracks; i++)
-    {
-      track_set_pos (self->tracks[i], i);
-    }
-#endif
 
   if (free_track)
     {
@@ -901,13 +881,6 @@ tracklist_free (
   for (int i = num_tracks - 1; i >= 0; i--)
     {
       Track * track = self->tracks[i];
-      /*track_disconnect (*/
-        /*track, true, F_NO_RECALC_GRAPH);*/
-      /*track_set_pos (track, -1);*/
-
-      /*track_set_is_project (track, false);*/
-      /*object_free_w_func_and_null (*/
-        /*track_free, track);*/
       tracklist_remove_track (
         self, track, F_REMOVE_PL, F_FREE,
         F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);

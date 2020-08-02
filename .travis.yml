@@ -83,7 +83,7 @@ script:
       ninja -C build
       ninja -C build test
       ninja -C build coverage-text
-      coveralls -e ext -e tests -e subprojects -e doc -e build/resources -b build --gcov-options '\-lp'
+      coveralls -e ext -e tests -e subprojects -e doc -e build/resources -e build/src/gui/widgets -b build --gcov-options '\-lp'
       sudo ninja -C build install
       ;;
   esac

@@ -212,6 +212,8 @@ test_export_wav ()
 
   check_fingerprint_similarity (
     filepath, settings.file_uri, 100);
+
+  g_free (filepath);
 }
 
 int

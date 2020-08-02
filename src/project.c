@@ -249,6 +249,10 @@ project_free (Project * self)
     {
       engine_activate (self->audio_engine, false);
     }
+  /* remove region from clip editor to avoid
+   * lookups for it when removing regions from
+   * track */
+  self->clip_editor->has_region = false;
   object_free_w_func_and_null (
     tracklist_free, self->tracklist);
   object_free_w_func_and_null (

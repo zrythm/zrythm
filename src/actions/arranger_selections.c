@@ -513,121 +513,6 @@ arranger_selections_action_new_quantize (
   return ua;
 }
 
-/**
- * Adds the ArrangerOjbect where it belongs in the
- * Project (eg a Track).
- */
-static void
-add_object_to_project (
-  ArrangerObject * obj)
-{
-  /* find the region (if owned by region) */
-  ZRegion * region = NULL;
-  if (arranger_object_owned_by_region (obj))
-    {
-      region = region_find (&obj->region_id);
-      g_return_if_fail (region);
-    }
-
-  switch (obj->type)
-    {
-    case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
-      {
-        AutomationPoint * ap =
-          (AutomationPoint *) obj;
-
-        /* add it to the region */
-        automation_region_add_ap (
-          region, ap, F_NO_PUBLISH_EVENTS);
-      }
-      break;
-    case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
-      {
-        ChordObject * chord =
-          (ChordObject *) obj;
-
-        /* add it to the region */
-        chord_region_add_chord_object (
-          region, chord, F_NO_PUBLISH_EVENTS);
-      }
-      break;
-    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
-      {
-        MidiNote * mn =
-          (MidiNote *) obj;
-
-        /* add it to the region */
-        midi_region_add_midi_note (
-          region, mn, F_PUBLISH_EVENTS);
-      }
-      break;
-    case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
-      {
-        ScaleObject * scale =
-          (ScaleObject *) obj;
-
-        /* add it to the track */
-        chord_track_add_scale (
-          P_CHORD_TRACK, scale);
-      }
-      break;
-    case ARRANGER_OBJECT_TYPE_MARKER:
-      {
-        Marker * marker =
-          (Marker *) obj;
-
-        /* add it to the track */
-        marker_track_add_marker (
-          P_MARKER_TRACK, marker);
-      }
-      break;
-    case ARRANGER_OBJECT_TYPE_REGION:
-      {
-        ZRegion * r = (ZRegion *) obj;
-
-        /* add it to track */
-        Track * track =
-          TRACKLIST->tracks[r->id.track_pos];
-        switch (r->id.type)
-          {
-          case REGION_TYPE_AUTOMATION:
-            {
-              AutomationTrack * at =
-                track->
-                  automation_tracklist.
-                    ats[r->id.at_idx];
-              track_add_region (
-                track, r, at, -1,
-                F_GEN_NAME,
-                F_PUBLISH_EVENTS);
-            }
-            break;
-          case REGION_TYPE_CHORD:
-            track_add_region (
-              P_CHORD_TRACK, r, NULL,
-              -1, F_GEN_NAME,
-              F_PUBLISH_EVENTS);
-            break;
-          default:
-            track_add_region (
-              track, r, NULL, r->id.lane_pos,
-              F_GEN_NAME,
-              F_PUBLISH_EVENTS);
-            break;
-          }
-
-        /* if region, also set is as the clip
-         * editor region */
-        clip_editor_set_region (
-          CLIP_EDITOR, r, true);
-      }
-      break;
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-}
-
 static void
 update_region_link_groups (
   ArrangerObject ** objs,
@@ -651,75 +536,6 @@ update_region_link_groups (
           /* shift all linked objects */
           region_update_link_group (region);
         }
-    }
-}
-
-static void
-remove_object_from_project (
-  ArrangerObject * obj)
-{
-  switch (obj->type)
-    {
-    case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
-      {
-        AutomationPoint * ap =
-          (AutomationPoint *) obj;
-        ZRegion * region =
-          arranger_object_get_region (obj);
-        automation_region_remove_ap (
-          region, ap, F_FREE);
-      }
-      break;
-    case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
-      {
-        ChordObject * chord =
-          (ChordObject *) obj;
-        ZRegion * region =
-          arranger_object_get_region (obj);
-        chord_region_remove_chord_object (
-          region, chord, F_FREE,
-          F_NO_PUBLISH_EVENTS);
-      }
-      break;
-    case ARRANGER_OBJECT_TYPE_REGION:
-      {
-        ZRegion * r =
-          (ZRegion *) obj;
-        track_remove_region (
-          arranger_object_get_track (obj),
-          r, F_PUBLISH_EVENTS, F_FREE);
-      }
-      break;
-    case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
-      {
-        ScaleObject * scale =
-          (ScaleObject *) obj;
-        chord_track_remove_scale (
-          P_CHORD_TRACK, scale,
-          F_FREE);
-      }
-      break;
-    case ARRANGER_OBJECT_TYPE_MARKER:
-      {
-        Marker * marker =
-          (Marker *) obj;
-        marker_track_remove_marker (
-          P_MARKER_TRACK, marker, F_FREE);
-      }
-      break;
-    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
-      {
-        MidiNote * mn =
-          (MidiNote *) obj;
-        ZRegion * region =
-          arranger_object_get_region (obj);
-        midi_region_remove_midi_note (
-          region, mn, F_FREE,
-          F_NO_PUBLISH_EVENTS);
-      }
-      break;
-    default:
-      break;
     }
 }
 
@@ -1144,7 +960,7 @@ do_or_undo_duplicate_or_link (
                 ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
           /* add to track */
-          add_object_to_project (obj);
+          arranger_object_add_to_project (obj);
 
           /* if we are linking, create the
            * necessary links */
@@ -1212,7 +1028,7 @@ do_or_undo_duplicate_or_link (
             }
 
           /* remove it */
-          remove_object_from_project (obj);
+          arranger_object_remove_from_project (obj);
 
         } /* endif undo */
 
@@ -1423,7 +1239,7 @@ do_or_undo_create_or_delete (
                   ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
               /* add it to the project */
-              add_object_to_project (obj);
+              arranger_object_add_to_project (obj);
 
               /* select it */
               arranger_object_select (
@@ -1462,7 +1278,7 @@ do_or_undo_create_or_delete (
                 }
 
               /* remove it */
-              remove_object_from_project (obj);
+              arranger_object_remove_from_project (obj);
             }
         }
     }
@@ -1537,7 +1353,7 @@ do_or_undo_record (
                   ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
               /* add it to the project */
-              add_object_to_project (obj);
+              arranger_object_add_to_project (obj);
 
               /* select it */
               arranger_object_select (
@@ -1562,7 +1378,7 @@ do_or_undo_record (
               g_return_val_if_fail (obj, -1);
 
               /* remove it */
-              remove_object_from_project (obj);
+              arranger_object_remove_from_project (obj);
             }
         }
 
@@ -1583,7 +1399,7 @@ do_or_undo_record (
               g_return_val_if_fail (obj, -1);
 
               /* remove it */
-              remove_object_from_project (obj);
+              arranger_object_remove_from_project (obj);
             }
 
           /* add the objects before the recording */
@@ -1599,7 +1415,7 @@ do_or_undo_record (
                   ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
               /* add it to the project */
-              add_object_to_project (obj);
+              arranger_object_add_to_project (obj);
 
               /* select it */
               arranger_object_select (
@@ -1837,7 +1653,7 @@ do_or_undo_split (
           /* split */
           arranger_object_split (
             obj, &self->pos, 0, &self->r1[i],
-            &self->r2[i]);
+            &self->r2[i], true);
 
           /* r1 and r2 are now inside the project,
            * clone them to keep copies */

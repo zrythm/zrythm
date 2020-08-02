@@ -260,7 +260,8 @@ test_project_rebootstrap_timeline (
     {
       Track * track = TRACKLIST->tracks[i];
       tracklist_remove_track (
-        TRACKLIST, track, 1, 1, 0, 0);
+        TRACKLIST, track, F_REMOVE_PL, F_FREE,
+        F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
     }
   track_clear (P_MASTER_TRACK);
 

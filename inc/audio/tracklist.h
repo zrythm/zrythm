@@ -192,7 +192,7 @@ tracklist_remove_track (
   Tracklist * self,
   Track *     track,
   bool        rm_pl,
-  bool        free,
+  bool        free_track,
   bool        publish_events,
   bool        recalc_graph);
 

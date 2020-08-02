@@ -205,6 +205,10 @@ arranger_selections_add_object (
   ArrangerSelections * self,
   ArrangerObject *     obj)
 {
+  g_return_if_fail (
+    IS_ARRANGER_SELECTIONS (self) &&
+    IS_ARRANGER_OBJECT (obj));
+
   /* check if object is allowed */
   switch (self->type)
     {
@@ -1335,6 +1339,11 @@ void
 arranger_selections_free_full (
   ArrangerSelections * self)
 {
+  g_return_if_fail (IS_ARRANGER_SELECTIONS (self));
+
+  g_message (
+    "freeing arranger selections %p...", self);
+
   int i;
   TimelineSelections * ts;
   ChordSelections * cs;
@@ -1349,7 +1358,8 @@ arranger_selections_free_full (
         arranger_object_free, \
         ArrangerObject *, sel->sc##s[i]); \
     } \
-  object_zero_and_free (sel->sc##s)
+  object_zero_and_free (sel->sc##s); \
+  sel->num_##sc##s = 0
 
   switch (self->type)
     {

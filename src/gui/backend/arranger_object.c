@@ -2123,13 +2123,12 @@ arranger_object_clone (
 }
 
 /**
- * Splits the given object at the given Position,
+ * Splits the given object at the given Position.
+ *
+ * if \ref is_project is true, it
  * deletes the original object and adds 2 new
  * objects in the same parent (Track or
  * AutomationTrack or Region).
- *
- * The given object must be the main object, as this
- * will create 2 new main objects.
  *
  * @param region The ArrangerObject to split. This
  *   ArrangerObject will be deleted.
@@ -2140,14 +2139,21 @@ arranger_object_clone (
  *   newly created ArrangerObject 1.
  * @param r2 Address to hold the pointer to the
  *   newly created ArrangerObject 2.
+ * @param is_project Whether the object being
+ *   passed is a project object. If true, it will
+ *   be removed from the project and the child
+ *   objects will be added to the project,
+ *   otherwise it will be untouched and the
+ *   children will be mere clones.
  */
 void
 arranger_object_split (
   ArrangerObject *  self,
   const Position *  pos,
-  const int         pos_is_local,
+  const bool        pos_is_local,
   ArrangerObject ** r1,
-  ArrangerObject ** r2)
+  ArrangerObject ** r2,
+  bool              is_project)
 {
   /* create the new objects */
   *r1 =
@@ -2157,16 +2163,19 @@ arranger_object_split (
     arranger_object_clone (
       self, ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
-  /* change to r1 if the original region was the
-   * clip editor region */
-  ZRegion * clip_editor_region =
-    clip_editor_get_region (CLIP_EDITOR);
   bool set_clip_editor_region = false;
-  if (clip_editor_region == (ZRegion *) self)
+  if (is_project)
     {
-      set_clip_editor_region = true;
-      clip_editor_set_region (
-        CLIP_EDITOR, NULL, true);
+      /* change to r1 if the original region was
+       * the clip editor region */
+      ZRegion * clip_editor_region =
+        clip_editor_get_region (CLIP_EDITOR);
+      if (clip_editor_region == (ZRegion *) self)
+        {
+          set_clip_editor_region = true;
+          clip_editor_set_region (
+            CLIP_EDITOR, NULL, true);
+        }
     }
 
   /* get global/local positions (the local pos
@@ -2221,6 +2230,12 @@ arranger_object_split (
     ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
     F_NO_VALIDATE);
 
+  /* skip rest if non-project object */
+  if (!is_project)
+    {
+      return;
+    }
+
   /* add them to the parent */
   switch (self->type)
     {
@@ -2261,11 +2276,6 @@ arranger_object_split (
     default:
       break;
     }
-
-  /* generate widgets so update visibility in the
-   * arranger can work */
-  /*arranger_object_gen_widget (*r1);*/
-  /*arranger_object_gen_widget (*r2);*/
 
   /* select them */
   ArrangerSelections * sel =
@@ -2477,10 +2487,204 @@ arranger_object_set_name (
     }
 }
 
+/**
+ * Adds the ArrangerObject where it belongs in the
+ * project (eg, a Track).
+ *
+ * This is mostly used when undoing deletions.
+ */
+void
+arranger_object_add_to_project (
+  ArrangerObject * obj)
+{
+  /* find the region (if owned by region) */
+  ZRegion * region = NULL;
+  if (arranger_object_owned_by_region (obj))
+    {
+      region = region_find (&obj->region_id);
+      g_return_if_fail (region);
+    }
+
+  switch (obj->type)
+    {
+    case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+      {
+        AutomationPoint * ap =
+          (AutomationPoint *) obj;
+
+        /* add it to the region */
+        automation_region_add_ap (
+          region, ap, F_NO_PUBLISH_EVENTS);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
+      {
+        ChordObject * chord =
+          (ChordObject *) obj;
+
+        /* add it to the region */
+        chord_region_add_chord_object (
+          region, chord, F_NO_PUBLISH_EVENTS);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+      {
+        MidiNote * mn =
+          (MidiNote *) obj;
+
+        /* add it to the region */
+        midi_region_add_midi_note (
+          region, mn, F_PUBLISH_EVENTS);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
+      {
+        ScaleObject * scale =
+          (ScaleObject *) obj;
+
+        /* add it to the track */
+        chord_track_add_scale (
+          P_CHORD_TRACK, scale);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_MARKER:
+      {
+        Marker * marker =
+          (Marker *) obj;
+
+        /* add it to the track */
+        marker_track_add_marker (
+          P_MARKER_TRACK, marker);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_REGION:
+      {
+        ZRegion * r = (ZRegion *) obj;
+
+        /* add it to track */
+        Track * track =
+          TRACKLIST->tracks[r->id.track_pos];
+        switch (r->id.type)
+          {
+          case REGION_TYPE_AUTOMATION:
+            {
+              AutomationTrack * at =
+                track->
+                  automation_tracklist.
+                    ats[r->id.at_idx];
+              track_add_region (
+                track, r, at, -1,
+                F_GEN_NAME,
+                F_PUBLISH_EVENTS);
+            }
+            break;
+          case REGION_TYPE_CHORD:
+            track_add_region (
+              P_CHORD_TRACK, r, NULL,
+              -1, F_GEN_NAME,
+              F_PUBLISH_EVENTS);
+            break;
+          default:
+            track_add_region (
+              track, r, NULL, r->id.lane_pos,
+              F_GEN_NAME,
+              F_PUBLISH_EVENTS);
+            break;
+          }
+
+        /* if region, also set is as the clip
+         * editor region */
+        clip_editor_set_region (
+          CLIP_EDITOR, r, true);
+      }
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+}
+
+/**
+ * Removes the object from its parent in the
+ * project.
+ */
+void
+arranger_object_remove_from_project (
+  ArrangerObject * obj)
+{
+  switch (obj->type)
+    {
+    case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+      {
+        AutomationPoint * ap =
+          (AutomationPoint *) obj;
+        ZRegion * region =
+          arranger_object_get_region (obj);
+        automation_region_remove_ap (
+          region, ap, F_FREE);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
+      {
+        ChordObject * chord =
+          (ChordObject *) obj;
+        ZRegion * region =
+          arranger_object_get_region (obj);
+        chord_region_remove_chord_object (
+          region, chord, F_FREE,
+          F_NO_PUBLISH_EVENTS);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_REGION:
+      {
+        ZRegion * r =
+          (ZRegion *) obj;
+        track_remove_region (
+          arranger_object_get_track (obj),
+          r, F_PUBLISH_EVENTS, F_FREE);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
+      {
+        ScaleObject * scale =
+          (ScaleObject *) obj;
+        chord_track_remove_scale (
+          P_CHORD_TRACK, scale,
+          F_FREE);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_MARKER:
+      {
+        Marker * marker =
+          (Marker *) obj;
+        marker_track_remove_marker (
+          P_MARKER_TRACK, marker, F_FREE);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+      {
+        MidiNote * mn =
+          (MidiNote *) obj;
+        ZRegion * region =
+          arranger_object_get_region (obj);
+        midi_region_remove_midi_note (
+          region, mn, F_FREE,
+          F_NO_PUBLISH_EVENTS);
+      }
+      break;
+    default:
+      break;
+    }
+}
+
 static void
 free_region (
   ZRegion * self)
 {
+  g_return_if_fail (IS_REGION (self));
+
+  g_message ("freeing region %s...", self->name);
+
 #define FREE_R(type,sc) \
   case REGION_TYPE_##type: \
     sc##_region_free_members (self); \
