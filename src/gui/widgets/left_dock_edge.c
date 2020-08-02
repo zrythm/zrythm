@@ -163,7 +163,7 @@ left_dock_edge_widget_init (
     inspector_track_widget_new ();
   img =
     gtk_image_new_from_icon_name (
-      "media-album-track",
+      "track-inspector",
       GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Track inspector"));

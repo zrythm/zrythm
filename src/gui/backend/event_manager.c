@@ -1118,6 +1118,10 @@ process_events (void * data)
           break;
         case ET_ARRANGER_SELECTIONS_ACTION_FINISHED:
           redraw_all_arranger_bgs ();
+          ruler_widget_redraw_whole (
+            (RulerWidget *) MW_RULER);
+          ruler_widget_redraw_whole (
+            (RulerWidget *) EDITOR_RULER);
           break;
         case ET_TRACKLIST_SELECTIONS_CHANGED:
           /* only refresh the inspector if the
@@ -1170,8 +1174,6 @@ process_events (void * data)
           clip_editor_redraw_region (CLIP_EDITOR);
           break;
         case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
-          gtk_widget_queue_allocate (
-            GTK_WIDGET (MW_RULER));
           ruler_widget_redraw_whole (
             (RulerWidget *) MW_RULER);
           ruler_widget_redraw_whole (

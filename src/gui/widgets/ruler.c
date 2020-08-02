@@ -882,6 +882,8 @@ ruler_draw_cb (
               GTK_WIDGET (self)) /
             RW_RANGE_HEIGHT_DIVISOR;
 
+          dr.x -= rect.x;
+
           /* fill */
           cairo_set_source_rgba (
             cr_to_use, 1, 1, 1, 0.27);

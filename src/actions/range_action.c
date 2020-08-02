@@ -72,11 +72,8 @@ if (position_is_after_or_equal ( \
       &TRANSPORT->x, \
       &self->start_pos)) \
   { \
-    g_message ( \
-      "adding frames to " #x ": %ld", \
-      range_size_frames); \
-    transport_position_add_frames ( \
-      TRANSPORT, &TRANSPORT->x, range_size_frames); \
+    position_add_ticks ( \
+      &TRANSPORT->x, range_size_ticks); \
   }
 
 int
@@ -91,9 +88,6 @@ range_action_do (
   double range_size_ticks =
     position_to_ticks (&self->end_pos) -
     position_to_ticks (&self->start_pos);
-  long range_size_frames =
-    position_to_frames (&self->end_pos) -
-    position_to_frames (&self->start_pos);
 
   switch (self->type)
     {
@@ -131,7 +125,6 @@ range_action_do (
 
       /* move transport markers */
       MOVE_TRANSPORT_MARKER (playhead_pos);
-      MOVE_TRANSPORT_MARKER (cue_pos);
       MOVE_TRANSPORT_MARKER (loop_start_pos);
       MOVE_TRANSPORT_MARKER (loop_end_pos);
       break;

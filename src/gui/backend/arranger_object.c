@@ -366,7 +366,7 @@ arranger_object_is_hit (
       if (position_is_after (
             &self->pos, end) ||
           position_is_after (
-            end, &self->end_pos))
+            start, &self->end_pos))
         {
           return false;
         }
