@@ -55,10 +55,32 @@ All other uses of a Zrythm trademark require our
 prior written permission. Contact
 trademarks@zrythm.org for more information.
 
-# Unaltered Software Distribution Policy
+# Software Distribution Policy
 You may distribute unaltered copies of Zrythm that
 include the Zrythm trademarks without express
 permission from Alexandros Theodotou.
+
+You may further distribute altered copies of Zrythm
+that include the Zrythm trademarks, provided that
+alterations solely serve the purposes of:
+- porting Zrythm to a free software distribution
+approved by the Free Software Foundation at
+https://www.gnu.org/distros/free-distros.html, OR
+- fixing a bug in Zrythm that has already been
+acknowledged by Alexandros Theodotou or CVE
+(https://cve.mitre.org/)
+
+In any case, you may not add or remove
+functionalities and you must preserve all messages
+presented to users in the user interface and the
+command line, including but not limited to:
+- URLs pointing to official Zrythm web pages
+- informational messages (popups, console output,
+etc.)
+
+You must also provide a link to the original source
+code as published by Alexandros Theodotou at
+https://www.zrythm.org/releases/.
 
 # Requirement of Written Permission for Modified Versions Including Trademarks
 Zrythm is
@@ -66,12 +88,13 @@ Zrythm is
 and its license allows you
 to freely download, modify and redistribute the
 source code. However, if you make any changes to
-Zrythm, you may not redistribute that product using
-any Zrythm trademark without Alexandros Theodotou’s
-prior written consent. For example, you may not
-distribute a modified form of Zrythm and continue to
-call it Zrythm, or include the Zrythm logo. If you
-wish to distribute a modified version of Zrythm that
+Zrythm not explicitly allowed above, you may not
+redistribute that product using any Zrythm trademark
+without Alexandros Theodotou’s prior written
+consent. For example, you may not distribute a
+modified form of Zrythm and continue to call it
+Zrythm, or include the Zrythm logo. If you wish to
+distribute a modified version of Zrythm that
 includes the Zrythm trademarks please contact us with
 your request at trademarks@zrythm.org.
 

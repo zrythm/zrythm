@@ -100,7 +100,8 @@ redistribute that product using any Zrythm trademark
 without Alexandros Theodotou’s prior written consent.
 For example, you may not distribute a modified form
 of Zrythm and continue to call it Zrythm, or
-include the Zrythm logo.
+include the Zrythm logo, unless explicitly allowed
+by the [Trademark Policy](TRADEMARKS.md).
 
 ## Support
 If you would like to support this project please
