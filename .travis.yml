@@ -26,7 +26,7 @@ before_install:
       export msys2+='& C:\\tools\\msys64\\msys2_shell.cmd -defterm -no-start'
       export mingw64="$msys2 -mingw64 -full-path -here -c \$\* --"
       export msys2+=" -msys2 -c \$\* --"
-      $msys2 pacman --sync --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-gtk3 mingw-w64-x86_64-meson mingw-w64-x86_64-libsamplerate mingw-w64-x86_64-fftw mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-libyaml mingw-w64-x86_64-libsndfile mingw-w64-x86_64-rubberband mingw-w64-x86_64-dlfcn mingw-w64-x86_64-SDL2 mingw-w64-x86_64-chromaprint guile libguile-devel mingw-w64-x86_64-gtksourceview3 mingw-w64-x86_64-graphviz mingw-w64-x86_64-zstd mingw-w64-x86_64-cmake
+      $msys2 pacman --sync --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-gtk3 mingw-w64-x86_64-meson mingw-w64-x86_64-libsamplerate mingw-w64-x86_64-fftw mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-libyaml mingw-w64-x86_64-libsndfile mingw-w64-x86_64-rubberband mingw-w64-x86_64-dlfcn mingw-w64-x86_64-SDL2 mingw-w64-x86_64-chromaprint guile libguile-devel mingw-w64-x86_64-gtksourceview3 mingw-w64-x86_64-graphviz mingw-w64-x86_64-zstd mingw-w64-x86_64-cmake mingw-w64-x86_64-python-pip
       ## Install more MSYS2 packages from https://packages.msys2.org/base here
       taskkill //IM gpg-agent.exe //F || true # https://travis-ci.community/t/4967
       export PATH=/C/tools/msys64/mingw64/bin:$PATH
@@ -65,6 +65,8 @@ script:
       sudo ninja -C build install
       ;;
     windows)
+      # install meson through pip
+      $mingw64 pip uninstall -y meson && pip install meson && meson --version
       # hack to enable tests
       $mingw64 sed -i -e '27s/false/true/' meson_options.txt
       # hack to enable sdl
