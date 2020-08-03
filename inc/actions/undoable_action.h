@@ -143,14 +143,14 @@ undoable_action_type_strings[] =
 
 typedef struct UndoableAction
 {
-  UndoableActionType         type;
+  UndoableActionType  type;
 
   /**
    * Index in the stack.
    *
    * Used during deserialization.
    */
-  int                        stack_idx;
+  int                 stack_idx;
 } UndoableAction;
 
 static const cyaml_schema_field_t

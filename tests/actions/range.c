@@ -173,11 +173,11 @@ check_after_common (void)
 }
 
 static void
-test_insert_silence_no_intersections (void)
+test_insert_silence (void)
 {
   test_prepare_common ();
 
-  /* get object */
+  /* get objects */
   Track * midi_track =
     TRACKLIST->tracks[midi_track_pos];
   ZRegion * midi_region =
@@ -213,7 +213,21 @@ test_insert_silence_no_intersections (void)
   /* perform action */
   undo_manager_perform (UNDO_MANAGER, ua);
 
-  /* get expected positions */
+  /* get new audio regions */
+  Track * audio_track =
+    TRACKLIST->tracks[audio_track_pos];
+  g_assert_cmpint (
+    audio_track->lanes[0]->num_regions, ==, 2);
+  ZRegion * audio_region1 =
+    audio_track->lanes[0]->regions[0];
+  ZRegion * audio_region2 =
+    audio_track->lanes[0]->regions[1];
+  ArrangerObject * audio_region_obj1 =
+    (ArrangerObject *) audio_region1;
+  ArrangerObject * audio_region_obj2 =
+    (ArrangerObject *) audio_region2;
+
+  /* check midi region positions */
   Position midi_region_start_after_expected,
            midi_region_end_after_expected;
   position_set_to_pos (
@@ -228,8 +242,6 @@ test_insert_silence_no_intersections (void)
   position_add_bars (
     &midi_region_end_after_expected,
     RANGE_SIZE_IN_BARS);
-
-  /* check start and end as expected */
   g_assert_cmppos (
     &midi_region_obj->pos,
     &midi_region_start_after_expected);
@@ -237,7 +249,59 @@ test_insert_silence_no_intersections (void)
     &midi_region_obj->end_pos,
     &midi_region_end_after_expected);
 
+  /* check audio region positions */
+  Position audio_region1_end_after_expected,
+           audio_region2_start_after_expected,
+           audio_region2_end_after_expected;
+  position_set_to_bar (
+    &audio_region1_end_after_expected,
+    RANGE_START_BAR);
+  position_set_to_bar (
+    &audio_region2_start_after_expected,
+    RANGE_END_BAR);
+  position_set_to_bar (
+    &audio_region2_end_after_expected,
+    AUDIO_REGION_END_BAR + RANGE_SIZE_IN_BARS);
+  g_assert_cmppos (
+    &audio_region_obj1->end_pos,
+    &audio_region1_end_after_expected);
+  g_assert_cmppos (
+    &audio_region_obj2->pos,
+    &audio_region2_start_after_expected);
+  g_assert_cmppos (
+    &audio_region_obj2->end_pos,
+    &audio_region2_end_after_expected);
+
   check_after_common ();
+
+  /* undo and verify things are back to previous
+   * state */
+  undo_manager_undo (UNDO_MANAGER);
+
+  midi_region =
+    midi_track->lanes[0]->regions[0];
+  g_assert_cmpint (
+    midi_track->lanes[0]->num_regions, ==, 1);
+  midi_region_obj = (ArrangerObject *) midi_region;
+  ZRegion * audio_region =
+    audio_track->lanes[0]->regions[0];
+  g_assert_cmpint (
+    audio_track->lanes[0]->num_regions, ==, 1);
+  ArrangerObject * audio_region_obj =
+    (ArrangerObject *) audio_region;
+
+  position_set_to_bar (
+    &start, MIDI_REGION_START_BAR);
+  position_set_to_bar (
+    &end, MIDI_REGION_END_BAR);
+  g_assert_cmppos (&midi_region_obj->pos, &start);
+  g_assert_cmppos (&midi_region_obj->end_pos, &end);
+  position_set_to_bar (
+    &start, AUDIO_REGION_START_BAR);
+  position_set_to_bar (
+    &end, AUDIO_REGION_END_BAR);
+  g_assert_cmppos (&audio_region_obj->pos, &start);
+  g_assert_cmppos (&audio_region_obj->end_pos, &end);
 
   test_helper_zrythm_cleanup ();
 }
@@ -251,9 +315,9 @@ main (int argc, char *argv[])
 
   g_test_add_func (
     TEST_PREFIX
-    "test insert silence no interesections",
+    "test insert silence",
     (GTestFunc)
-    test_insert_silence_no_intersections);
+    test_insert_silence);
 
   return g_test_run ();
 }

@@ -64,6 +64,9 @@ typedef struct RangeAction
   /** Selections after the action. */
   TimelineSelections * sel_after;
 
+  /** Whether this is the first run. */
+  bool           first_run;
+
 } RangeAction;
 
 static const cyaml_schema_field_t
@@ -87,6 +90,8 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_PTR (
     RangeAction, sel_after,
     timeline_selections_fields_schema),
+  YAML_FIELD_INT (
+    RangeAction, first_run),
 
   CYAML_FIELD_END
 };
