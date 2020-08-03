@@ -547,7 +547,7 @@ setup_channel_icon (ChannelWidget * self)
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_MIDI:
       gtk_image_set_from_icon_name (
-        self->icon, "synth",
+        self->icon, "audio-midi-plain",
         GTK_ICON_SIZE_BUTTON);
       break;
     case TRACK_TYPE_AUDIO:
@@ -559,7 +559,7 @@ setup_channel_icon (ChannelWidget * self)
     case TRACK_TYPE_AUDIO_GROUP:
     case TRACK_TYPE_MASTER:
       gtk_image_set_from_icon_name (
-        self->icon, "bus",
+        self->icon, "effect",
         GTK_ICON_SIZE_BUTTON);
       break;
     default:

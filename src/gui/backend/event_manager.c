@@ -226,7 +226,7 @@ on_arranger_selections_in_transit (
  */
 static void
 on_playhead_changed (
-  int manually)
+  bool manually)
 {
   if (MAIN_WINDOW)
     {
@@ -1242,10 +1242,10 @@ process_events (void * data)
             Z_RULER_WIDGET (EDITOR_RULER));
           break;
         case ET_PLAYHEAD_POS_CHANGED:
-          on_playhead_changed (0);
+          on_playhead_changed (false);
           break;
         case ET_PLAYHEAD_POS_CHANGED_MANUALLY:
-          on_playhead_changed (1);
+          on_playhead_changed (true);
           break;
         case ET_CLIP_EDITOR_REGION_CHANGED:
           /*on_clip_editor_region_changed ();*/

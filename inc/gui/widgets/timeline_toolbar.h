@@ -40,6 +40,8 @@ typedef struct _ToolboxWidget ToolboxWidget;
 typedef struct _QuantizeMbWidget QuantizeMbWidget;
 typedef struct _QuantizeBoxWidget QuantizeBoxWidget;
 typedef struct _SnapGridWidget SnapGridWidget;
+typedef struct _RangeActionButtonsWidget
+  RangeActionButtonsWidget;
 
 /**
  * @addtogroup widgets
@@ -60,6 +62,7 @@ typedef struct _TimelineToolbarWidget
   QuantizeBoxWidget * quantize_box;
   GtkToolButton *  event_viewer_toggle;
   GtkToggleToolButton *  musical_mode_toggle;
+  RangeActionButtonsWidget * range_action_buttons;
 } TimelineToolbarWidget;
 
 void

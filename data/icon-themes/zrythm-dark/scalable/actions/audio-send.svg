@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="18"
+   height="18"
+   viewBox="0 0 18 18"
+   fill="none"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="audio-send.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     inkscape:document-rotation="0"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1025"
+     id="namedview6"
+     showgrid="false"
+     inkscape:zoom="23.305556"
+     inkscape:cx="6.6881336"
+     inkscape:cy="8.7880021"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" />
+  <path
+     fill-rule="evenodd"
+     clip-rule="evenodd"
+     d="M 8.4668822,12.243886 7.192821,13.517947 2.6748737,9 7.192821,4.4820526 8.4668822,5.7561138 6.1356214,8.0964105 h 6.9305316 v 1.807179 H 9.9035895 6.1356214 Z M 15.325126,2.6748737 v 7.2287158 h 1.807179 V 2.6748737 c 0,-0.9939485 -0.81323,-1.807179 -1.807179,-1.807179 H 2.6748737 c -1.0029844,0 -1.807179,0.8132305 -1.807179,1.807179 v 3.6143579 h 1.807179 V 2.6748737 Z M 2.6748737,15.325126 h 7.2287158 v 1.807179 H 2.6748737 c -1.0029844,0 -1.807179,-0.81323 -1.807179,-1.807179 v -3.614358 h 1.807179 z M 14.245789,10.807179 v 3.210453 c -0.199965,-0.05864 -0.413754,-0.09 -0.633778,-0.09 -1.0169,0 -1.901243,0.670734 -1.901243,1.602335 0,0.93151 0.884343,1.602335 1.901243,1.602335 1.0169,0 1.901243,-0.670825 1.901243,-1.602335 v -2.327556 l 0.915968,0.617513 0.703083,-1.066597 z"
+     fill="black"
+     id="path2"
+     style="fill:#e6e6e6;stroke-width:0.903589" />
+</svg>

@@ -170,13 +170,13 @@ plugin_strip_expander_widget_setup (
     {
       expander_box_widget_set_icon_name (
         Z_EXPANDER_BOX_WIDGET (self),
-        "audio-midi");
+        "signal-midi");
     }
   else
     {
       expander_box_widget_set_icon_name (
         Z_EXPANDER_BOX_WIDGET (self),
-        "signal-audio");
+        "view-media-visualization");
     }
 
   if (track != self->track ||

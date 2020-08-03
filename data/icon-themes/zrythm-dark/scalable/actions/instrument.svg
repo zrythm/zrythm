@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="instrument.svg"
+   id="svg4"
+   version="1.1"
+   fill="none"
+   viewBox="0 0 22 12"
+   height="12"
+   width="22">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     inkscape:current-layer="svg4"
+     inkscape:window-maximized="1"
+     inkscape:window-y="27"
+     inkscape:window-x="0"
+     inkscape:cy="5.0010271"
+     inkscape:cx="8.5032288"
+     inkscape:zoom="30.590909"
+     showgrid="false"
+     id="namedview6"
+     inkscape:window-height="1025"
+     inkscape:window-width="1920"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     inkscape:document-rotation="0" />
+  <path
+     style="fill:#e6e6e6;stroke-width:0.950491"
+     id="path2"
+     fill="black"
+     d="M 21.455408,9.8019666 V 2.1980334 c 0,-1.0498845 -0.851071,-1.90098318 -1.900984,-1.90098318 H 2.4455753 c -1.0498845,0 -1.90098323,0.85109868 -1.90098323,1.90098318 v 7.6039332 c 0,1.0499124 0.85109873,1.9009834 1.90098323,1.9009834 H 19.554424 c 1.049913,0 1.900984,-0.851071 1.900984,-1.9009834 z M 2.4455753,2.1980334 H 4.3465585 V 6.9504917 H 6.2475419 V 2.1980334 H 8.1485251 V 6.9504917 H 10.049509 V 2.1980334 h 1.900982 v 4.7524583 h 1.900984 V 2.1980334 h 1.900983 v 4.7524583 h 1.900984 V 2.1980334 h 1.900982 V 9.8019666 H 2.4455753 Z"
+     clip-rule="evenodd"
+     fill-rule="evenodd" />
+</svg>

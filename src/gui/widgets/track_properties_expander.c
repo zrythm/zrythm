@@ -146,7 +146,7 @@ track_properties_expander_widget_setup (
     Z_EXPANDER_BOX_WIDGET (self),
     _("Track Properties"));
   expander_box_widget_set_icon_name (
-    Z_EXPANDER_BOX_WIDGET (self), "synth");
+    Z_EXPANDER_BOX_WIDGET (self), "info");
   expander_box_widget_set_orientation (
     Z_EXPANDER_BOX_WIDGET (self),
     GTK_ORIENTATION_VERTICAL);

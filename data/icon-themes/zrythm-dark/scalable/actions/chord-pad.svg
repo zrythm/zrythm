@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="20"
+   height="20"
+   viewBox="0 0 20 20"
+   fill="none"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="chord-pad.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     inkscape:document-rotation="0"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1025"
+     id="namedview6"
+     showgrid="false"
+     inkscape:zoom="20.975"
+     inkscape:cx="8.0317082"
+     inkscape:cy="11.34237"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" />
+  <path
+     fill-rule="evenodd"
+     clip-rule="evenodd"
+     d="M 18.912209,2.8702324 V 17.129768 c 0,0.984442 -0.797999,1.782441 -1.782441,1.782441 H 13.564884 6.4351162 2.8702324 c -0.9844159,0 -1.7824419,-0.797999 -1.7824419,-1.782441 V 2.8702324 c 0,-0.9844159 0.798026,-1.7824419 1.7824419,-1.7824419 h 3.5648838 7.1297678 3.564884 c 0.984442,0 1.782441,0.798026 1.782441,1.7824419 z m -5.347325,0 h 3.564884 V 9.1087791 H 13.564884 Z M 11.782442,10.891221 H 8.2175581 v 6.238547 H 11.782442 Z M 8.2175581,9.1087791 H 11.782442 V 2.8702324 H 8.2175581 Z m -1.7824419,0 H 2.8702324 V 2.8702324 h 3.5648838 z m 0,1.7824419 H 2.8702324 v 6.238547 h 3.5648838 z m 7.1297678,6.238547 v -6.238547 h 3.564884 v 6.238547 z"
+     fill="black"
+     id="path2"
+     style="fill:#e6e6e6;stroke-width:0.891221" />
+</svg>

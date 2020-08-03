@@ -57,7 +57,7 @@
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="icon-name">document-edit</property>
+            <property name="icon-name">pencil</property>
           </object>
         </child>
       </object>

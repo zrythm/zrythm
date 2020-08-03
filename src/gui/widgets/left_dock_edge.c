@@ -190,7 +190,7 @@ left_dock_edge_widget_init (
     inspector_plugin_widget_new ();
   img =
     gtk_image_new_from_icon_name (
-      "font-awesome-plug-solid-small",
+      "plug",
       GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Plugin inspector"));

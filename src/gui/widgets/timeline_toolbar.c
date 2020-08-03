@@ -23,6 +23,7 @@
 #include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/quantize_box.h"
+#include "gui/widgets/range_action_buttons.h"
 #include "gui/widgets/snap_grid.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -52,8 +53,9 @@ static void
 timeline_toolbar_widget_init (
   TimelineToolbarWidget * self)
 {
-  g_type_ensure (SNAP_GRID_WIDGET_TYPE);
   g_type_ensure (QUANTIZE_BOX_WIDGET_TYPE);
+  g_type_ensure (RANGE_ACTION_BUTTONS_WIDGET_TYPE);
+  g_type_ensure (SNAP_GRID_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }
@@ -78,4 +80,5 @@ timeline_toolbar_widget_class_init (
   BIND_CHILD (quantize_box);
   BIND_CHILD (event_viewer_toggle);
   BIND_CHILD (musical_mode_toggle);
+  BIND_CHILD (range_action_buttons);
 }

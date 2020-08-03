@@ -178,8 +178,7 @@ text_expander_widget_init (
     GTK_WIDGET (self->scroll));
 
   expander_box_widget_set_icon_name (
-    Z_EXPANDER_BOX_WIDGET (self),
-    "gnome-builder-xml-comment-symbolic-light");
+    Z_EXPANDER_BOX_WIDGET (self), "text-bubble");
 
   g_signal_connect (
     G_OBJECT (self->editor), "focus-out-event",

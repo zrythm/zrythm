@@ -169,27 +169,5 @@
         </child>
       </object>
     </child>
-    <child>
-      <object class="GtkSeparatorToolItem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">False</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkToolItem">
-        <property name="visible">1</property>
-        <child>
-          <object class="RangeActionButtonsWidget"
-            id="range_action_buttons">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-        </child>
-      </object>
-    </child>
   </template>
 </interface>

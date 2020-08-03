@@ -1,22 +1,20 @@
 Copyright (C) 2019-2020 Alexandros Theodotou
 The following files are licensed under CC-BY-SA-4.0.
 You should have received a copy of CC-BY-SA 4.0 along
-with Zrythm. If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
+with Zrythm. If not, see
+<https://creativecommons.org/licenses/by-sa/4.0/>.
 
 - add.svg
 - automate.svg
 - bus.svg
 - dim.svg
 - draw-cross.svg
-- event-viewer.svg
 - expose-to-jack.svg
 - fade-in.svg
 - fade-out.svg
 - jack-timebase-master.svg
 - jack-transport-client.svg
 - listen.svg
-- metronome.svg
-- mixer.svg
 - object-resize-left.svg
 - object-resize-loop-left.svg
 - object-resize-loop-right.svg
@@ -24,15 +22,11 @@ with Zrythm. If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 - object-stretch-left.svg
 - object-stretch-right.svg
 - phase-invert.svg
-- piano-roll.svg
 - power.svg
-- quantize-options.svg
-- quick-quantize.svg
 - remove.svg
 - signal-audio.svg
 - signal-cv.svg
 - signal-midi.svg
-- snap-to-grid.svg
 - solo.svg
 - synth.svg
 - window-maximize.svg
@@ -55,10 +49,19 @@ distribution, otherwise please replace these files.
 ----
 
 Copyright (C) 2020 Carlos Han (C.K. Design)
-The following files are licensed under CC-BY-SA-4.0.
+The following files are licensed under CC-BY-SA-4.0
+and have been modified.
 You should have received a copy of CC-BY-SA 4.0 along
-with Zrythm. If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
+with Zrythm. If not, see
+<https://creativecommons.org/licenses/by-sa/4.0/>.
 
+- audio-send.svg
+- audition.svg
+- category.svg
+- chord-pad.svg
+- cut-tool.svg
+- draw-eraser.svg
+- draw-line.svg
 - bars.svg
 - draw-line.svg
 - edit-clear.svg
@@ -69,23 +72,85 @@ with Zrythm. If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
 - edit-paste.svg
 - edit-purge.svg
 - edit-redo.svg
+- edit-select
 - edit-select-all.svg
 - edit-tool.svg
 - edit-undo.svg
+- effect.svg
+- event-viewer.svg
 - face-smile.svg
+- fader.svg
+- favorite.svg
+- info.svg
+- instrument.svg
+- media-playback-start.svg
+- media-playback-stop.svg
 - media-playlist-repeat.svg
-- select-tool.svg
+- media-record.svg
+- media-seek-backward.svg
+- media-seek-forward.svg
+- metronome.svg
+- midi-send.svg
+- mixer.svg
+- modulator.svg
+- musical-mode.svg
+- pencil.svg
+- piano-roll.svg
+- plug.svg
+- protocol.svg
+- quantize-options-vertical.svg
+- quantize-options.svg
+- quick-quantize.svg
+- signal-midi.svg
+- snap-to-grid.svg
 - split.svg
+- text-bubble.svg
 - track-inspector.svg
+- view-media-visualization.svg
+- view-visible.svg
 - zoom-in.svg
 - zoom-out.svg
 
 ----
 
-The following icons were copied from fontaudio (https://github.com/fefanto/fontaudio)
-and are licensed under CC-BY-SA-4.0.
+The following icons were taken from
+the gnome-builder project
+<https://gitlab.gnome.org/GNOME/gnome-builder/> on
+December 9, 2018 under
+the CC-BY-SA 3.0 license and have been modified.
+You should have received a copy of CC-BY-SA 3.0 along
+with Zrythm. If not, see
+<https://creativecommons.org/licenses/by-sa/3.0/>.
+
+For author information of the original icons, see
+git commit info in the gnome-builder project.
+
+- insert-silence.svg
+- remove-range.svg
+
+----
+
+The following icons are Copyright (C) 2014 Uri Herrera <uri_herrera@nitrux.in> and others.
+They were taken and modified from KDE's breeze-icons
+at <https://github.com/KDE/breeze-icons> on August 3,
+2020 under the GNU General Public License, version 3
+or later.
+You should have received a copy of the GNU General
+Public License version 3 along with Zrythm. If not,
+see <https://www.gnu.org/licenses/gpl-3.0.en.html>.
+
+- audio-midi-plain.svg
+- audio-midi.svg
+- audio-volume-high.svg
+
+----
+
+The following icons were copied from fontaudio
+(https://github.com/fefanto/fontaudio) and are
+licensed under CC-BY-SA-4.0.
 You should have received a copy of CC-BY-SA 4.0 along
-with Zrythm. If not, see <https://creativecommons.org/licenses/by-sa/4.0/>.
+with Zrythm. If not, see
+<https://creativecommons.org/licenses/by-sa/4.0/>.
 
 - cutter
 - logo-abletonlink

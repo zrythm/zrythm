@@ -309,15 +309,14 @@ typedef enum UiDragMode
   UI_DRAG_MODE_RELATIVE_WITH_MULTIPLIER,
 } UiDragMode;
 
-#define ui_set_pointer_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "edit-select", 5, 4);
+void
+ui_set_pointer_cursor (
+  GtkWidget * widget);
 
 #define ui_set_pencil_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "document-edit", 3, 18);
+    "pencil", 3, 18);
 
 #define ui_set_cut_clip_cursor(widget) \
   ui_set_cursor_from_icon_name ( \

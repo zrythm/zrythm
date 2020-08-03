@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Home toolbar.
+ */
+
 #ifndef __GUI_WIDGETS_HOME_TOOLBAR_H__
 #define __GUI_WIDGETS_HOME_TOOLBAR_H__
 
@@ -24,24 +30,22 @@
 
 #define HOME_TOOLBAR_WIDGET_TYPE \
   (home_toolbar_widget_get_type ())
-G_DECLARE_FINAL_TYPE (HomeToolbarWidget,
-                      home_toolbar_widget,
-                      Z,
-                      HOME_TOOLBAR_WIDGET,
-                      GtkToolbar)
-
-/**
- * \file
- */
-
-#define MW_HOME_TOOLBAR \
-  MW_HEADER->home_toolbar
+G_DECLARE_FINAL_TYPE (
+  HomeToolbarWidget, home_toolbar_widget,
+  Z, HOME_TOOLBAR_WIDGET, GtkToolbar)
 
 typedef struct _ToolboxWidget ToolboxWidget;
 typedef struct _QuantizeMbWidget QuantizeMbWidget;
 typedef struct _SnapBoxWidget SnapBoxWidget;
-typedef struct _RangeActionButtonsWidget
-  RangeActionButtonsWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+#define MW_HOME_TOOLBAR \
+  MW_HEADER->home_toolbar
 
 /**
  * The Home toolbar in the top.
@@ -61,7 +65,6 @@ typedef struct _HomeToolbarWidget
   GtkToolButton *    loop_selection;
   ToolboxWidget *    toolbox;
   SnapBoxWidget *    snap_box;
-  RangeActionButtonsWidget * range_action_buttons;
   //QuantizeMbWidget * quantize_mb;
 } HomeToolbarWidget;
 
@@ -75,5 +78,9 @@ home_toolbar_widget_refresh_undo_redo_buttons (
 void
 home_toolbar_widget_setup (
   HomeToolbarWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

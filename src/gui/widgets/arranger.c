@@ -1007,7 +1007,7 @@ arranger_widget_set_cursor (
   ArrangerCursor   cursor)
 {
 #define SET_X_CURSOR(x) \
-  ui_set_##x##_cursor (self); \
+  ui_set_##x##_cursor (GTK_WIDGET (self)); \
 
 #define SET_CURSOR_FROM_NAME(name) \
   ui_set_cursor_from_name ( \

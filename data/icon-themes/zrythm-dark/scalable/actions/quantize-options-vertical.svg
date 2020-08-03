@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="18"
+   height="22"
+   viewBox="0 0 18 22"
+   fill="none"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="quantize-options.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     inkscape:document-rotation="0"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1025"
+     id="namedview6"
+     showgrid="false"
+     inkscape:zoom="26.966482"
+     inkscape:cx="4.4297402"
+     inkscape:cy="9.5166535"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" />
+  <path
+     fill-rule="evenodd"
+     clip-rule="evenodd"
+     d="M 16.224136,2.8728464 V 1.0668123 H 1.7758635 V 2.8728464 Z M 15.321119,4.6788806 H 2.6788806 c -0.9974456,0 -1.80603415,0.8085885 -1.80603415,1.8060341 v 9.0301703 c 0,0.997473 0.80858855,1.806034 1.80603415,1.806034 H 15.321119 c 0.997473,0 1.806035,-0.808561 1.806035,-1.806034 V 6.4849147 c 0,-0.9974456 -0.808562,-1.8060341 -1.806035,-1.8060341 z M 2.6788806,15.515085 V 6.4849147 H 15.321119 v 9.0301703 z m 13.5452554,3.612069 v 1.806034 H 1.7758635 v -1.806034 z"
+     fill="black"
+     id="path2"
+     style="fill:#e6e6e6;stroke-width:0.903017" />
+</svg>

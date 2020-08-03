@@ -68,6 +68,7 @@
               <object class="GtkImage">
                 <property name="visible">1</property>
                 <property name="icon-name">piano-roll</property>
+                <property name="margin-end">3</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -106,6 +107,7 @@
               <object class="GtkImage">
                 <property name="visible">1</property>
                 <property name="icon-name">mixer</property>
+                <property name="margin-end">3</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -142,7 +144,8 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="icon-name">insert-math-expression</property>
+                <property name="icon-name">modulator</property>
+                <property name="margin-end">3</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -179,7 +182,8 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="icon-name">minuet-chords</property>
+                <property name="icon-name">chord-pad</property>
+                <property name="margin-end">3</property>
               </object>
               <packing>
                 <property name="expand">0</property>

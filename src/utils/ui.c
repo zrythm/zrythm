@@ -124,6 +124,14 @@ ui_set_cursor_from_name (
   gdk_window_set_cursor (win, cursor);
 }
 
+void
+ui_set_pointer_cursor (
+  GtkWidget * widget)
+{
+  ui_set_cursor_from_icon_name (
+    GTK_WIDGET (widget), "edit-select", 2, 2);
+}
+
 /**
  * Shows a popup message of the given type with the
  * given message.

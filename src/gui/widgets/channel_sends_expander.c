@@ -69,12 +69,12 @@ channel_sends_expander_widget_setup (
         case TYPE_AUDIO:
           expander_box_widget_set_icon_name (
             Z_EXPANDER_BOX_WIDGET (self),
-            "signal-audio");
+            "audio-send");
           break;
         case TYPE_EVENT:
           expander_box_widget_set_icon_name (
             Z_EXPANDER_BOX_WIDGET (self),
-            "audio-midi");
+            "midi-send");
           break;
         default:
           break;

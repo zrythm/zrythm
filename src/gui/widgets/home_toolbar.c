@@ -24,7 +24,6 @@
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/range_action_buttons.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/toolbox.h"
 #include "project.h"
@@ -113,7 +112,6 @@ home_toolbar_widget_init (
   HomeToolbarWidget * self)
 {
   g_type_ensure (SNAP_BOX_WIDGET_TYPE);
-  g_type_ensure (RANGE_ACTION_BUTTONS_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -171,7 +169,6 @@ home_toolbar_widget_class_init (
   BIND_CHILD (loop_selection);
   BIND_CHILD (toolbox);
   BIND_CHILD (snap_box);
-  BIND_CHILD (range_action_buttons);
 
 #undef BIND_CHILD
 }

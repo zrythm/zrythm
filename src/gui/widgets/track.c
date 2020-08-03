@@ -82,7 +82,7 @@ G_DEFINE_TYPE (
 #define ICON_NAME_FREEZE "fork-awesome-snowflake-o"
 #define ICON_NAME_PLUS "add"
 #define ICON_NAME_MINUS "remove"
-#define ICON_NAME_BUS "bus"
+#define ICON_NAME_BUS "effect"
 #define ICON_NAME_CHORDS "minuet-chords"
 #define ICON_NAME_SHOW_MARKERS \
   "kdenlive-show-markers"

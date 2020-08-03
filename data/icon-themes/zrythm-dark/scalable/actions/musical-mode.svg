@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="musical-mode.svg"
+   id="svg4"
+   version="1.1"
+   fill="none"
+   viewBox="0 0 20 21"
+   height="21"
+   width="20">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     inkscape:current-layer="svg4"
+     inkscape:window-maximized="1"
+     inkscape:window-y="27"
+     inkscape:window-x="0"
+     inkscape:cy="10.868053"
+     inkscape:cx="10.845734"
+     inkscape:zoom="28.2506"
+     showgrid="false"
+     id="namedview6"
+     inkscape:window-height="1025"
+     inkscape:window-width="1920"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     inkscape:document-rotation="0" />
+  <path
+     style="fill:#e6e6e6;stroke-width:0.838428"
+     id="path2"
+     fill="black"
+     d="M 8.3231445,10.447473 16.707423,9.0500817 v 3.5935693 c -0.49635,-0.249768 -1.070505,-0.391127 -1.676856,-0.391127 -1.82182,0 -3.353712,1.276506 -3.353712,2.934497 0,1.657907 1.531892,2.934497 3.353712,2.934497 1.821819,0 3.353711,-1.27659 3.353711,-2.934497 V 2.0400539 L 6.6462889,3.9963826 V 13.482078 C 6.1499732,13.23231 5.5757592,13.090952 4.9694333,13.090952 c -1.8218365,0 -3.3537112,1.276505 -3.3537112,2.934496 0,1.657908 1.5318747,2.934498 3.3537112,2.934498 1.8218365,0 3.3537112,-1.27659 3.3537112,-2.934498 z m 0,-1.6999967 V 5.4168973 L 16.707423,4.0195149 v 3.330579 z"
+     clip-rule="evenodd"
+     fill-rule="evenodd" />
+</svg>

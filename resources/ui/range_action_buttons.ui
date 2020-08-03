@@ -38,7 +38,7 @@
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="icon-name">gnome-builder-ui-packing-symbolic-light</property>
+            <property name="icon-name">insert-silence</property>
           </object>
         </child>
       </object>
@@ -60,7 +60,7 @@
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="icon-name">gnome-builder-widget-layout-symbolic-light</property>
+            <property name="icon-name">remove-range</property>
           </object>
         </child>
       </object>
