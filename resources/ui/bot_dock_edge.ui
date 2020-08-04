@@ -63,7 +63,7 @@
         <child type="tab">
           <object class="GtkBox">
             <property name="visible">1</property>
-            <property name="tooltip-text" translatable="yes">Piano roll panel</property>
+            <property name="tooltip-text" translatable="yes">Editor view</property>
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
@@ -102,7 +102,7 @@
         <child type="tab">
           <object class="GtkBox">
             <property name="visible">1</property>
-            <property name="tooltip-text" translatable="yes">Mixer panel</property>
+            <property name="tooltip-text" translatable="yes">Mixer view</property>
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
@@ -141,6 +141,7 @@
         <child type="tab">
           <object class="GtkBox">
             <property name="visible">1</property>
+            <property name="tooltip-text" translatable="yes">Modulators</property>
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
@@ -179,6 +180,7 @@
         <child type="tab">
           <object class="GtkBox">
             <property name="visible">1</property>
+            <property name="tooltip-text" translatable="yes">Chord pad</property>
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
