@@ -96,6 +96,24 @@ test_prepare_common (void)
       (ArrangerSelections *) TL_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
 
+  /* add another region to test problems with
+   * indices on undo */
+  position_add_bars (&start, 10);
+  position_add_bars (&end, 10);
+  midi_region =
+    midi_region_new (
+      &start, &end, midi_track_pos, 0, 0);
+  track_add_region (
+    midi_track, midi_region, NULL, 0, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) midi_region, F_SELECT,
+    F_NO_APPEND);
+  ua =
+    arranger_selections_action_new_create (
+      (ArrangerSelections *) TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
   /* create audio track with region */
   char * filepath =
     g_build_filename (
@@ -151,32 +169,44 @@ test_prepare_common (void)
 }
 
 static void
-check_after_common (void)
+check_before_insert ()
 {
-  /* get expected transport positions */
-  Position playhead_after_expected,
-           loop_end_after_expected;
-  position_set_to_bar (
-    &playhead_after_expected,
-    PLAYHEAD_BEFORE + RANGE_SIZE_IN_BARS);
-  position_set_to_bar (
-    &loop_end_after_expected,
-    LOOP_END_BEFORE + RANGE_SIZE_IN_BARS);
+  Track * midi_track =
+    TRACKLIST->tracks[midi_track_pos];
+  ZRegion * midi_region =
+    midi_track->lanes[0]->regions[0];
+  g_assert_cmpint (
+    midi_track->lanes[0]->num_regions, ==, 2);
+  ArrangerObject * midi_region_obj =
+    (ArrangerObject *) midi_region;
 
-  /* check that they match with actual positions */
-  g_assert_cmppos (
-    &playhead_after_expected,
-    &TRANSPORT->playhead_pos);
-  g_assert_cmppos (
-    &loop_end_after_expected,
-    &TRANSPORT->loop_end_pos);
+  Track * audio_track =
+    TRACKLIST->tracks[audio_track_pos];
+  ZRegion * audio_region =
+    audio_track->lanes[0]->regions[0];
+  g_assert_cmpint (
+    audio_track->lanes[0]->num_regions, ==, 1);
+  ArrangerObject * audio_region_obj =
+    (ArrangerObject *) audio_region;
+
+  Position start, end;
+  position_set_to_bar (
+    &start, MIDI_REGION_START_BAR);
+  position_set_to_bar (
+    &end, MIDI_REGION_END_BAR);
+  g_assert_cmppos (&midi_region_obj->pos, &start);
+  g_assert_cmppos (&midi_region_obj->end_pos, &end);
+  position_set_to_bar (
+    &start, AUDIO_REGION_START_BAR);
+  position_set_to_bar (
+    &end, AUDIO_REGION_END_BAR);
+  g_assert_cmppos (&audio_region_obj->pos, &start);
+  g_assert_cmppos (&audio_region_obj->end_pos, &end);
 }
 
 static void
-test_insert_silence (void)
+check_after_insert (void)
 {
-  test_prepare_common ();
-
   /* get objects */
   Track * midi_track =
     TRACKLIST->tracks[midi_track_pos];
@@ -188,30 +218,12 @@ test_insert_silence (void)
   /* get object info */
   Position midi_region_start_before,
            midi_region_end_before;
-  position_set_to_pos (
+  position_set_to_bar (
     &midi_region_start_before,
-    &midi_region_obj->pos);
-  position_set_to_pos (
+    MIDI_REGION_START_BAR);
+  position_set_to_bar (
     &midi_region_end_before,
-    &midi_region_obj->end_pos);
-
-  /* create inset silence action */
-  Position start, end;
-  position_set_to_bar (
-    &start, RANGE_START_BAR);
-  position_set_to_bar (
-    &end, RANGE_END_BAR);
-  UndoableAction * ua =
-    range_action_new_insert_silence (&start, &end);
-
-  /* verify that number of objects is as expected */
-  RangeAction * ra = (RangeAction *) ua;
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) ra->sel_before), ==, 2);
-
-  /* perform action */
-  undo_manager_perform (UNDO_MANAGER, ua);
+    MIDI_REGION_END_BAR);
 
   /* get new audio regions */
   Track * audio_track =
@@ -272,36 +284,61 @@ test_insert_silence (void)
     &audio_region_obj2->end_pos,
     &audio_region2_end_after_expected);
 
-  check_after_common ();
+  /* get expected transport positions */
+  Position playhead_after_expected,
+           loop_end_after_expected;
+  position_set_to_bar (
+    &playhead_after_expected,
+    PLAYHEAD_BEFORE + RANGE_SIZE_IN_BARS);
+  position_set_to_bar (
+    &loop_end_after_expected,
+    LOOP_END_BEFORE + RANGE_SIZE_IN_BARS);
+
+  /* check that they match with actual positions */
+  g_assert_cmppos (
+    &playhead_after_expected,
+    &TRANSPORT->playhead_pos);
+  g_assert_cmppos (
+    &loop_end_after_expected,
+    &TRANSPORT->loop_end_pos);
+}
+
+static void
+test_insert_silence (void)
+{
+  test_prepare_common ();
+
+  /* create inset silence action */
+  Position start, end;
+  position_set_to_bar (
+    &start, RANGE_START_BAR);
+  position_set_to_bar (
+    &end, RANGE_END_BAR);
+  UndoableAction * ua =
+    range_action_new_insert_silence (&start, &end);
+
+  /* verify that number of objects is as expected */
+  RangeAction * ra = (RangeAction *) ua;
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) ra->sel_before), ==, 3);
+
+  check_before_insert ();
+
+  /* perform action */
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  check_after_insert ();
 
   /* undo and verify things are back to previous
    * state */
   undo_manager_undo (UNDO_MANAGER);
 
-  midi_region =
-    midi_track->lanes[0]->regions[0];
-  g_assert_cmpint (
-    midi_track->lanes[0]->num_regions, ==, 1);
-  midi_region_obj = (ArrangerObject *) midi_region;
-  ZRegion * audio_region =
-    audio_track->lanes[0]->regions[0];
-  g_assert_cmpint (
-    audio_track->lanes[0]->num_regions, ==, 1);
-  ArrangerObject * audio_region_obj =
-    (ArrangerObject *) audio_region;
+  check_before_insert ();
 
-  position_set_to_bar (
-    &start, MIDI_REGION_START_BAR);
-  position_set_to_bar (
-    &end, MIDI_REGION_END_BAR);
-  g_assert_cmppos (&midi_region_obj->pos, &start);
-  g_assert_cmppos (&midi_region_obj->end_pos, &end);
-  position_set_to_bar (
-    &start, AUDIO_REGION_START_BAR);
-  position_set_to_bar (
-    &end, AUDIO_REGION_END_BAR);
-  g_assert_cmppos (&audio_region_obj->pos, &start);
-  g_assert_cmppos (&audio_region_obj->end_pos, &end);
+  undo_manager_redo (UNDO_MANAGER);
+
+  check_after_insert ();
 
   test_helper_zrythm_cleanup ();
 }
