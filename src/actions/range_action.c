@@ -74,7 +74,7 @@ if (position_is_after_or_equal ( \
       &self->start_pos)) \
   { \
     position_add_ticks ( \
-      &TRANSPORT->x, range_size_ticks); \
+      &TRANSPORT->x, _ticks); \
   }
 
 #define MOVE_TRANSPORT_MARKER(x) \
@@ -237,6 +237,204 @@ range_action_do (
       MOVE_TRANSPORT_MARKERS;
       break;
     case RANGE_ACTION_REMOVE:
+      if (self->first_run)
+        {
+          for (int i = 0; i < num_before_objs; i++)
+            {
+              ArrangerObject * obj = before_objs[i];
+
+              obj->flags |=
+                ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
+              /* get project object */
+              ArrangerObject * prj_obj =
+                arranger_object_find (obj);
+
+              /* object starts before the range and
+               * ends after the range start -
+               * split at range start */
+              if (arranger_object_is_hit (
+                    prj_obj, &self->start_pos,
+                    NULL) &&
+                  position_is_before (
+                    &prj_obj->pos, &self->start_pos))
+                {
+                  /* split at range start */
+                  ArrangerObject * part1, * part2;
+                  arranger_object_split (
+                    obj, &self->start_pos,
+                    false, &part1, &part2, false);
+
+                  /* if part 2 extends beyond the
+                   * range end, split it  and
+                   * remove the part before range
+                   * end */
+                  if (arranger_object_is_hit (
+                        part2, &self->end_pos,
+                        NULL))
+                    {
+                      ArrangerObject * part3,
+                                     * part4;
+                      arranger_object_split (
+                        part2, &self->end_pos,
+                        false, &part3, &part4,
+                        false);
+                      arranger_object_free (part2);
+                      arranger_object_free (part3);
+                      part2 = part4;
+                    }
+                  /* otherwise remove the whole
+                   * part2 */
+                  else
+                    {
+                      arranger_object_free (part2);
+                      part2 = NULL;
+                    }
+
+                  /* if a part2 exists, move it
+                   * back */
+                  if (part2)
+                    {
+                      arranger_object_move (
+                        part2, - range_size_ticks);
+                    }
+
+                  /* save new parts to sel_after */
+                  arranger_selections_add_object (
+                    (ArrangerSelections *)
+                    self->sel_after, part1);
+                  if (part2)
+                    {
+                      arranger_selections_add_object (
+                        (ArrangerSelections *)
+                        self->sel_after, part2);
+                    }
+
+                  /* remove previous object */
+                  arranger_object_remove_from_project (
+                    prj_obj);
+
+                  /* create clones and add to
+                   * project */
+                  ArrangerObject * prj_part1 =
+                    arranger_object_clone (
+                      part1,
+                      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                  arranger_object_add_to_project (
+                    prj_part1);
+                  arranger_object_copy_identifier (
+                    part1, prj_part1);
+                  if (part2)
+                    {
+                      ArrangerObject * prj_part2 =
+                        arranger_object_clone (
+                          part2,
+                          ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                      arranger_object_add_to_project (
+                        prj_part2);
+                      arranger_object_copy_identifier (
+                        part2, prj_part2);
+                    }
+                }
+              /* object starts before the range end
+               * and ends after the range end -
+               * split at range end */
+              else if (arranger_object_is_hit (
+                         prj_obj, &self->end_pos,
+                         NULL) &&
+                       position_is_after (
+                         &prj_obj->end_pos,
+                         &self->end_pos))
+                {
+                  /* split at range end */
+                  ArrangerObject * part1, * part2;
+                  arranger_object_split (
+                    obj, &self->end_pos,
+                    false, &part1, &part2, false);
+
+                  /* move part2 by the range
+                   * amount */
+                  arranger_object_move (
+                    part2, - range_size_ticks);
+
+                  /* discard part before range end */
+                  arranger_object_free (part1);
+
+                  /* save new part to sel_after */
+                  arranger_selections_add_object (
+                    (ArrangerSelections *)
+                    self->sel_after, part1);
+
+                  /* remove previous object */
+                  arranger_object_remove_from_project (
+                    prj_obj);
+
+                  /* create clones and add to
+                   * project */
+                  ArrangerObject * prj_part1 =
+                    arranger_object_clone (
+                      part1,
+                      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                  arranger_object_add_to_project (
+                    prj_part1);
+                  arranger_object_copy_identifier (
+                    part1, prj_part1);
+                }
+              /* object starts at or after range
+               * start - only needs a move */
+              else
+                {
+                  arranger_object_move (
+                    prj_obj, - range_size_ticks);
+
+                  /* clone and add to sel_after */
+                  ArrangerObject * obj_clone =
+                    arranger_object_clone (
+                      prj_obj,
+                      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                  arranger_selections_add_object (
+                    (ArrangerSelections *)
+                    self->sel_after,
+                    obj_clone);
+                  arranger_object_copy_identifier (
+                    obj_clone, prj_obj);
+                }
+            }
+          self->first_run = false;
+        }
+      else /* not first run */
+        {
+          /* remove all matching project objects
+           * from sel_before */
+          for (int i = num_before_objs - 1; i >= 0;
+               i--)
+            {
+              ArrangerObject * obj = before_objs[i];
+
+              /* get project object and remove it
+               * from the project */
+              ArrangerObject * prj_obj =
+                arranger_object_find (obj);
+              arranger_object_remove_from_project (
+                prj_obj);
+            }
+          /* add all objects from sel_after */
+          for (int i = 0; i < num_after_objs; i++)
+            {
+              ArrangerObject * obj = after_objs[i];
+
+              /* clone object and add to project */
+              ArrangerObject * prj_obj =
+                arranger_object_clone (
+                  obj,
+                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+              arranger_object_add_to_project (
+                prj_obj);
+            }
+        }
+
+      /* move transport markers */
+      UNMOVE_TRANSPORT_MARKERS;
       break;
     default:
       break;
@@ -273,38 +471,39 @@ range_action_undo (
     position_to_ticks (&self->end_pos) -
     position_to_ticks (&self->start_pos);
 
+  /* remove all matching project objects from
+   * sel_after */
+  for (int i = num_objs_after - 1; i >= 0; i--)
+    {
+      ArrangerObject * obj = objs_after[i];
+
+      /* get project object and remove it from
+       * the project */
+      ArrangerObject * prj_obj =
+        arranger_object_find (obj);
+      arranger_object_remove_from_project (
+        prj_obj);
+    }
+  /* add all objects from sel_before */
+  for (int i = 0; i < num_objs_before; i++)
+    {
+      ArrangerObject * obj = objs_before[i];
+
+      /* clone object and add to project */
+      ArrangerObject * prj_obj =
+        arranger_object_clone (
+          obj, ARRANGER_OBJECT_CLONE_COPY_MAIN);
+      arranger_object_add_to_project (prj_obj);
+    }
+
+  /* move transport markers */
   switch (self->type)
     {
     case RANGE_ACTION_INSERT_SILENCE:
-      /* remove all matching project objects from
-       * sel_after */
-      for (int i = num_objs_after - 1; i >= 0; i--)
-        {
-          ArrangerObject * obj = objs_after[i];
-
-          /* get project object and remove it from
-           * the project */
-          ArrangerObject * prj_obj =
-            arranger_object_find (obj);
-          arranger_object_remove_from_project (
-            prj_obj);
-        }
-      /* add all objects from sel_before */
-      for (int i = 0; i < num_objs_before; i++)
-        {
-          ArrangerObject * obj = objs_before[i];
-
-          /* clone object and add to project */
-          ArrangerObject * prj_obj =
-            arranger_object_clone (
-              obj, ARRANGER_OBJECT_CLONE_COPY_MAIN);
-          arranger_object_add_to_project (prj_obj);
-        }
-
-      /* move transport markers */
       UNMOVE_TRANSPORT_MARKERS;
       break;
     case RANGE_ACTION_REMOVE:
+      MOVE_TRANSPORT_MARKERS;
       break;
     default:
       break;
