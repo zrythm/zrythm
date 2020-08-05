@@ -916,11 +916,27 @@ arranger_object_set_name (
  * Adds the ArrangerObject where it belongs in the
  * project (eg, a Track).
  *
- * This is mostly used when undoing deletions.
+ * This is mostly used when undoing.
  */
 void
 arranger_object_add_to_project (
   ArrangerObject * obj);
+
+#if 0
+/**
+ * Inserts the ArrangerObject where it belongs in
+ * the project (eg, a Track).
+ *
+ * This function assumes that the object already
+ * knows the index where it should be inserted
+ * in its parent.
+ *
+ * This is mostly used when undoing.
+ */
+void
+arranger_object_insert_to_project (
+  ArrangerObject * obj);
+#endif
 
 /**
  * Removes the object from its parent in the

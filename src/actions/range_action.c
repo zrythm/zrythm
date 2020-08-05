@@ -99,6 +99,12 @@ int
 range_action_do (
   RangeAction * self)
 {
+  /* sort the selections in ascending order */
+  arranger_selections_sort_by_indices (
+    (ArrangerSelections *) self->sel_before, false);
+  arranger_selections_sort_by_indices (
+    (ArrangerSelections *) self->sel_after, false);
+
   int num_before_objs;
   ArrangerObject ** before_objs =
     arranger_selections_get_all_objects (
@@ -118,7 +124,8 @@ range_action_do (
     case RANGE_ACTION_INSERT_SILENCE:
       if (self->first_run)
         {
-          for (int i = 0; i < num_before_objs; i++)
+          for (int i = num_before_objs - 1; i >= 0;
+               i--)
             {
               ArrangerObject * obj = before_objs[i];
 
@@ -239,7 +246,8 @@ range_action_do (
     case RANGE_ACTION_REMOVE:
       if (self->first_run)
         {
-          for (int i = 0; i < num_before_objs; i++)
+          for (int i = num_before_objs - 1; i >= 0;
+               i--)
             {
               ArrangerObject * obj = before_objs[i];
 
@@ -458,6 +466,12 @@ int
 range_action_undo (
   RangeAction * self)
 {
+  /* sort the selections in ascending order */
+  arranger_selections_sort_by_indices (
+    (ArrangerSelections *) self->sel_before, false);
+  arranger_selections_sort_by_indices (
+    (ArrangerSelections *) self->sel_after, false);
+
   int num_objs_before;
   ArrangerObject ** objs_before =
     arranger_selections_get_all_objects (

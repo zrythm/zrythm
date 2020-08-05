@@ -77,8 +77,7 @@ midi_region_new (
   int              lane_pos,
   int              idx_inside_lane)
 {
-  ZRegion * self =
-    calloc (1, sizeof (MidiRegion));
+  ZRegion * self = object_new (MidiRegion);
 
   self->id.type = REGION_TYPE_MIDI;
 
@@ -107,26 +106,33 @@ midi_region_print_midi_notes (
     }
 }
 
-
 /**
- * Adds the MidiNote to the given ZRegion.
+ * Inserts the MidiNote to the given ZRegion.
  *
+ * @param idx Index to insert at.
  * @param pub_events Publish UI events or not.
  */
 void
-midi_region_add_midi_note (
-  ZRegion *  region,
+midi_region_insert_midi_note (
+  ZRegion *  self,
   MidiNote * midi_note,
+  int        idx,
   int        pub_events)
 {
   array_double_size_if_full (
-    region->midi_notes, region->num_midi_notes,
-    region->midi_notes_size, MidiNote *)
-  array_append (
-    region->midi_notes, region->num_midi_notes,
-    midi_note);
+    self->midi_notes, self->num_midi_notes,
+    self->midi_notes_size, MidiNote *)
+  for (int i = self->num_midi_notes; i > idx; i--)
+    {
+      self->midi_notes[i] = self->midi_notes[i - 1];
+      midi_note_set_region_and_index (
+        midi_note, self, i);
+    }
+  self->midi_notes[idx] = midi_note;
   midi_note_set_region_and_index (
-    midi_note, region, region->num_midi_notes - 1);
+    midi_note, self, idx);
+
+  self->num_midi_notes++;
 
   if (pub_events)
     {

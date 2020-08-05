@@ -77,10 +77,24 @@ midi_region_new_from_midi_file (
  *
  * @param pub_events Publish UI events or not.
  */
+#define midi_region_add_midi_note( \
+  region,midi_note,pub_events) \
+  midi_region_insert_midi_note ( \
+    region, midi_note, \
+    ((ZRegion *) (region))->num_midi_notes, \
+    pub_events)
+
+/**
+ * Inserts the MidiNote to the given ZRegion.
+ *
+ * @param idx Index to insert at.
+ * @param pub_events Publish UI events or not.
+ */
 void
-midi_region_add_midi_note (
+midi_region_insert_midi_note (
   ZRegion *  region,
   MidiNote * midi_note,
+  int        idx,
   int        pub_events);
 
 /**

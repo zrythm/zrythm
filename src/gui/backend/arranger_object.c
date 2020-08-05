@@ -2604,6 +2604,129 @@ arranger_object_add_to_project (
     }
 }
 
+#if 0
+/**
+ * Inserts the ArrangerObject where it belongs in
+ * the project (eg, a Track).
+ *
+ * This function assumes that the object already
+ * knows the index where it should be inserted
+ * in its parent.
+ *
+ * This is mostly used when undoing.
+ */
+void
+arranger_object_insert_to_project (
+  ArrangerObject * obj)
+{
+  /* find the region (if owned by region) */
+  ZRegion * region = NULL;
+  if (arranger_object_owned_by_region (obj))
+    {
+      region = region_find (&obj->region_id);
+      g_return_if_fail (region);
+    }
+
+  switch (obj->type)
+    {
+    case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+      {
+        AutomationPoint * ap =
+          (AutomationPoint *) obj;
+
+        /* add it to the region */
+        automation_region_add_ap (
+          region, ap, F_NO_PUBLISH_EVENTS);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
+      {
+        ChordObject * chord =
+          (ChordObject *) obj;
+
+        /* add it to the region */
+        chord_region_add_chord_object (
+          region, chord, F_NO_PUBLISH_EVENTS);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+      {
+        MidiNote * mn =
+          (MidiNote *) obj;
+
+        /* add it to the region */
+        midi_region_insert_midi_note (
+          region, mn, mn->pos, F_PUBLISH_EVENTS);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
+      {
+        ScaleObject * scale =
+          (ScaleObject *) obj;
+
+        /* add it to the track */
+        chord_track_add_scale (
+          P_CHORD_TRACK, scale);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_MARKER:
+      {
+        Marker * marker =
+          (Marker *) obj;
+
+        /* add it to the track */
+        marker_track_add_marker (
+          P_MARKER_TRACK, marker);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_REGION:
+      {
+        ZRegion * r = (ZRegion *) obj;
+
+        /* add it to track */
+        Track * track =
+          TRACKLIST->tracks[r->id.track_pos];
+        switch (r->id.type)
+          {
+          case REGION_TYPE_AUTOMATION:
+            {
+              AutomationTrack * at =
+                track->
+                  automation_tracklist.
+                    ats[r->id.at_idx];
+              track_add_region (
+                track, r, at, -1,
+                F_GEN_NAME,
+                F_PUBLISH_EVENTS);
+            }
+            break;
+          case REGION_TYPE_CHORD:
+            track_add_region (
+              P_CHORD_TRACK, r, NULL,
+              -1, F_GEN_NAME,
+              F_PUBLISH_EVENTS);
+            break;
+          default:
+            track_add_region (
+              track, r, NULL, r->id.lane_pos,
+              F_GEN_NAME,
+              F_PUBLISH_EVENTS);
+            break;
+          }
+
+        /* if region, also set is as the clip
+         * editor region */
+        clip_editor_set_region (
+          CLIP_EDITOR, r, true);
+      }
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+}
+#endif
+
 /**
  * Removes the object from its parent in the
  * project.

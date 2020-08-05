@@ -55,9 +55,14 @@
 
 /* midi region starts after the range end */
 #define MIDI_REGION_START_BAR \
-  (RANGE_START_BAR + 2)
+  (RANGE_END_BAR + 2)
 #define MIDI_REGION_END_BAR \
   (MIDI_REGION_START_BAR + 2)
+
+#define MIDI_REGION2_START_BAR \
+  (MIDI_REGION_START_BAR + 10)
+#define MIDI_REGION2_END_BAR \
+  (MIDI_REGION2_START_BAR + 8)
 
 static int midi_track_pos = -1;
 static int audio_track_pos = -1;
@@ -98,8 +103,10 @@ test_prepare_common (void)
 
   /* add another region to test problems with
    * indices on undo */
-  position_add_bars (&start, 10);
-  position_add_bars (&end, 10);
+  position_set_to_bar (
+    &start, MIDI_REGION2_START_BAR);
+  position_set_to_bar (
+    &end, MIDI_REGION2_END_BAR);
   midi_region =
     midi_region_new (
       &start, &end, midi_track_pos, 0, 0);
@@ -210,10 +217,16 @@ check_after_insert (void)
   /* get objects */
   Track * midi_track =
     TRACKLIST->tracks[midi_track_pos];
+  g_assert_cmpint (
+    midi_track->lanes[0]->num_regions, ==, 2);
   ZRegion * midi_region =
     midi_track->lanes[0]->regions[0];
+  ZRegion * midi_region2 =
+    midi_track->lanes[0]->regions[1];
   ArrangerObject * midi_region_obj =
     (ArrangerObject *) midi_region;
+  ArrangerObject * midi_region_obj2 =
+    (ArrangerObject *) midi_region2;
 
   /* get new audio regions */
   Track * audio_track =
@@ -243,6 +256,20 @@ check_after_insert (void)
     &midi_region_start_after_expected);
   g_assert_cmppos (
     &midi_region_obj->end_pos,
+    &midi_region_end_after_expected);
+
+  /* check 2nd midi region positions */
+  position_set_to_bar (
+    &midi_region_start_after_expected,
+    MIDI_REGION2_START_BAR + RANGE_SIZE_IN_BARS);
+  position_set_to_bar (
+    &midi_region_end_after_expected,
+    MIDI_REGION2_END_BAR + RANGE_SIZE_IN_BARS);
+  g_assert_cmppos (
+    &midi_region_obj2->pos,
+    &midi_region_start_after_expected);
+  g_assert_cmppos (
+    &midi_region_obj2->end_pos,
     &midi_region_end_after_expected);
 
   /* check audio region positions */
@@ -333,63 +360,73 @@ check_after_remove (void)
   /* get objects */
   Track * midi_track =
     TRACKLIST->tracks[midi_track_pos];
-  ZRegion * midi_region =
+  g_assert_cmpint (
+    midi_track->lanes[0]->num_regions, ==, 2);
+  ZRegion * midi_region1 =
     midi_track->lanes[0]->regions[0];
-  ArrangerObject * midi_region_obj =
-    (ArrangerObject *) midi_region;
+  ZRegion * midi_region2 =
+    midi_track->lanes[0]->regions[1];
+  ArrangerObject * midi_region_obj1 =
+    (ArrangerObject *) midi_region1;
+  ArrangerObject * midi_region_obj2 =
+    (ArrangerObject *) midi_region2;
 
   /* get new audio regions */
   Track * audio_track =
     TRACKLIST->tracks[audio_track_pos];
   g_assert_cmpint (
-    audio_track->lanes[0]->num_regions, ==, 2);
-  ZRegion * audio_region1 =
+    audio_track->lanes[0]->num_regions, ==, 1);
+  ZRegion * audio_region =
     audio_track->lanes[0]->regions[0];
-  ZRegion * audio_region2 =
-    audio_track->lanes[0]->regions[1];
-  ArrangerObject * audio_region_obj1 =
-    (ArrangerObject *) audio_region1;
-  ArrangerObject * audio_region_obj2 =
-    (ArrangerObject *) audio_region2;
+  ArrangerObject * audio_region_obj =
+    (ArrangerObject *) audio_region;
 
   /* check midi region positions */
-  Position midi_region_start_after_expected,
-           midi_region_end_after_expected;
+  Position midi_region1_start_after_expected,
+           midi_region1_end_after_expected;
   position_set_to_bar (
-    &midi_region_start_after_expected,
-    MIDI_REGION_START_BAR + RANGE_SIZE_IN_BARS);
+    &midi_region1_start_after_expected,
+    MIDI_REGION_START_BAR - RANGE_SIZE_IN_BARS);
   position_set_to_bar (
-    &midi_region_end_after_expected,
-    MIDI_REGION_END_BAR + RANGE_SIZE_IN_BARS);
+    &midi_region1_end_after_expected,
+    MIDI_REGION_END_BAR - RANGE_SIZE_IN_BARS);
   g_assert_cmppos (
-    &midi_region_obj->pos,
-    &midi_region_start_after_expected);
+    &midi_region_obj1->pos,
+    &midi_region1_start_after_expected);
   g_assert_cmppos (
-    &midi_region_obj->end_pos,
-    &midi_region_end_after_expected);
+    &midi_region_obj1->end_pos,
+    &midi_region1_end_after_expected);
+
+  Position midi_region2_start_after_expected,
+           midi_region2_end_after_expected;
+  position_set_to_bar (
+    &midi_region2_start_after_expected,
+    MIDI_REGION2_START_BAR - RANGE_SIZE_IN_BARS);
+  position_set_to_bar (
+    &midi_region2_end_after_expected,
+    MIDI_REGION2_END_BAR - RANGE_SIZE_IN_BARS);
+  g_assert_cmppos (
+    &midi_region_obj2->pos,
+    &midi_region2_start_after_expected);
+  g_assert_cmppos (
+    &midi_region_obj2->end_pos,
+    &midi_region2_end_after_expected);
 
   /* check audio region positions */
-  Position audio_region1_end_after_expected,
-           audio_region2_start_after_expected,
-           audio_region2_end_after_expected;
+  Position audio_region_start_after_expected,
+           audio_region_end_after_expected;
   position_set_to_bar (
-    &audio_region1_end_after_expected,
+    &audio_region_start_after_expected,
+    AUDIO_REGION_START_BAR);
+  position_set_to_bar (
+    &audio_region_end_after_expected,
     RANGE_START_BAR);
-  position_set_to_bar (
-    &audio_region2_start_after_expected,
-    RANGE_END_BAR);
-  position_set_to_bar (
-    &audio_region2_end_after_expected,
-    AUDIO_REGION_END_BAR + RANGE_SIZE_IN_BARS);
   g_assert_cmppos (
-    &audio_region_obj1->end_pos,
-    &audio_region1_end_after_expected);
+    &audio_region_obj->pos,
+    &audio_region_start_after_expected);
   g_assert_cmppos (
-    &audio_region_obj2->pos,
-    &audio_region2_start_after_expected);
-  g_assert_cmppos (
-    &audio_region_obj2->end_pos,
-    &audio_region2_end_after_expected);
+    &audio_region_obj->end_pos,
+    &audio_region_end_after_expected);
 
   /* get expected transport positions */
   Position playhead_after_expected,
@@ -445,7 +482,7 @@ test_remove_range (void)
 
   undo_manager_redo (UNDO_MANAGER);
 
-  check_after_insert ();
+  check_after_remove ();
 
   test_helper_zrythm_cleanup ();
 }
