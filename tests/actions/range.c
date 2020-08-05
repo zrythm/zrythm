@@ -215,16 +215,6 @@ check_after_insert (void)
   ArrangerObject * midi_region_obj =
     (ArrangerObject *) midi_region;
 
-  /* get object info */
-  Position midi_region_start_before,
-           midi_region_end_before;
-  position_set_to_bar (
-    &midi_region_start_before,
-    MIDI_REGION_START_BAR);
-  position_set_to_bar (
-    &midi_region_end_before,
-    MIDI_REGION_END_BAR);
-
   /* get new audio regions */
   Track * audio_track =
     TRACKLIST->tracks[audio_track_pos];
@@ -242,18 +232,12 @@ check_after_insert (void)
   /* check midi region positions */
   Position midi_region_start_after_expected,
            midi_region_end_after_expected;
-  position_set_to_pos (
+  position_set_to_bar (
     &midi_region_start_after_expected,
-    &midi_region_start_before);
-  position_add_bars (
-    &midi_region_start_after_expected,
-    RANGE_SIZE_IN_BARS);
-  position_set_to_pos (
+    MIDI_REGION_START_BAR + RANGE_SIZE_IN_BARS);
+  position_set_to_bar (
     &midi_region_end_after_expected,
-    &midi_region_end_before);
-  position_add_bars (
-    &midi_region_end_after_expected,
-    RANGE_SIZE_IN_BARS);
+    MIDI_REGION_END_BAR + RANGE_SIZE_IN_BARS);
   g_assert_cmppos (
     &midi_region_obj->pos,
     &midi_region_start_after_expected);
@@ -343,6 +327,129 @@ test_insert_silence (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+check_after_remove (void)
+{
+  /* get objects */
+  Track * midi_track =
+    TRACKLIST->tracks[midi_track_pos];
+  ZRegion * midi_region =
+    midi_track->lanes[0]->regions[0];
+  ArrangerObject * midi_region_obj =
+    (ArrangerObject *) midi_region;
+
+  /* get new audio regions */
+  Track * audio_track =
+    TRACKLIST->tracks[audio_track_pos];
+  g_assert_cmpint (
+    audio_track->lanes[0]->num_regions, ==, 2);
+  ZRegion * audio_region1 =
+    audio_track->lanes[0]->regions[0];
+  ZRegion * audio_region2 =
+    audio_track->lanes[0]->regions[1];
+  ArrangerObject * audio_region_obj1 =
+    (ArrangerObject *) audio_region1;
+  ArrangerObject * audio_region_obj2 =
+    (ArrangerObject *) audio_region2;
+
+  /* check midi region positions */
+  Position midi_region_start_after_expected,
+           midi_region_end_after_expected;
+  position_set_to_bar (
+    &midi_region_start_after_expected,
+    MIDI_REGION_START_BAR + RANGE_SIZE_IN_BARS);
+  position_set_to_bar (
+    &midi_region_end_after_expected,
+    MIDI_REGION_END_BAR + RANGE_SIZE_IN_BARS);
+  g_assert_cmppos (
+    &midi_region_obj->pos,
+    &midi_region_start_after_expected);
+  g_assert_cmppos (
+    &midi_region_obj->end_pos,
+    &midi_region_end_after_expected);
+
+  /* check audio region positions */
+  Position audio_region1_end_after_expected,
+           audio_region2_start_after_expected,
+           audio_region2_end_after_expected;
+  position_set_to_bar (
+    &audio_region1_end_after_expected,
+    RANGE_START_BAR);
+  position_set_to_bar (
+    &audio_region2_start_after_expected,
+    RANGE_END_BAR);
+  position_set_to_bar (
+    &audio_region2_end_after_expected,
+    AUDIO_REGION_END_BAR + RANGE_SIZE_IN_BARS);
+  g_assert_cmppos (
+    &audio_region_obj1->end_pos,
+    &audio_region1_end_after_expected);
+  g_assert_cmppos (
+    &audio_region_obj2->pos,
+    &audio_region2_start_after_expected);
+  g_assert_cmppos (
+    &audio_region_obj2->end_pos,
+    &audio_region2_end_after_expected);
+
+  /* get expected transport positions */
+  Position playhead_after_expected,
+           loop_end_after_expected;
+  position_set_to_bar (
+    &playhead_after_expected,
+    PLAYHEAD_BEFORE - RANGE_SIZE_IN_BARS);
+  position_set_to_bar (
+    &loop_end_after_expected,
+    LOOP_END_BEFORE - RANGE_SIZE_IN_BARS);
+
+  /* check that they match with actual positions */
+  g_assert_cmppos (
+    &playhead_after_expected,
+    &TRANSPORT->playhead_pos);
+  g_assert_cmppos (
+    &loop_end_after_expected,
+    &TRANSPORT->loop_end_pos);
+}
+
+static void
+test_remove_range (void)
+{
+  test_prepare_common ();
+
+  /* create remove range action */
+  Position start, end;
+  position_set_to_bar (
+    &start, RANGE_START_BAR);
+  position_set_to_bar (
+    &end, RANGE_END_BAR);
+  UndoableAction * ua =
+    range_action_new_remove (&start, &end);
+
+  /* verify that number of objects is as expected */
+  RangeAction * ra = (RangeAction *) ua;
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) ra->sel_before), ==, 3);
+
+  check_before_insert ();
+
+  /* perform action */
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  check_after_remove ();
+
+  /* undo and verify things are back to previous
+   * state */
+  undo_manager_undo (UNDO_MANAGER);
+
+  check_before_insert ();
+
+  undo_manager_redo (UNDO_MANAGER);
+
+  check_after_insert ();
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -351,10 +458,11 @@ main (int argc, char *argv[])
 #define TEST_PREFIX "/actions/range/"
 
   g_test_add_func (
-    TEST_PREFIX
-    "test insert silence",
-    (GTestFunc)
-    test_insert_silence);
+    TEST_PREFIX "test insert silence",
+    (GTestFunc) test_insert_silence);
+  g_test_add_func (
+    TEST_PREFIX "test remove range",
+    (GTestFunc) test_remove_range);
 
   return g_test_run ();
 }

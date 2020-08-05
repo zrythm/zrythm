@@ -358,12 +358,13 @@ range_action_do (
                     part2, - range_size_ticks);
 
                   /* discard part before range end */
-                  arranger_object_free (part1);
+                  object_free_w_func_and_null (
+                    arranger_object_free, part1);
 
                   /* save new part to sel_after */
                   arranger_selections_add_object (
                     (ArrangerSelections *)
-                    self->sel_after, part1);
+                    self->sel_after, part2);
 
                   /* remove previous object */
                   arranger_object_remove_from_project (
@@ -371,14 +372,14 @@ range_action_do (
 
                   /* create clones and add to
                    * project */
-                  ArrangerObject * prj_part1 =
+                  ArrangerObject * prj_part2 =
                     arranger_object_clone (
-                      part1,
+                      part2,
                       ARRANGER_OBJECT_CLONE_COPY_MAIN);
                   arranger_object_add_to_project (
-                    prj_part1);
+                    prj_part2);
                   arranger_object_copy_identifier (
-                    part1, prj_part1);
+                    part2, prj_part2);
                 }
               /* object starts at or after range
                * start - only needs a move */
