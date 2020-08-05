@@ -1068,6 +1068,39 @@ track_add_region (
   int      gen_name,
   int      fire_events)
 {
+  track_insert_region (
+    track, region, at, lane_pos, -1, gen_name,
+    fire_events);
+}
+
+/**
+ * Inserts a ZRegion to the given lane or
+ * AutomationTrack of the track, at the given
+ * index.
+ *
+ * The ZRegion must be the main region (see
+ * ArrangerObjectInfo).
+ *
+ * @param at The AutomationTrack of this ZRegion, if
+ *   automation region.
+ * @param lane_pos The position of the lane to add
+ *   to, if applicable.
+ * @param idx The index to insert the region at
+ *   inside its parent, or -1 to append.
+ * @param gen_name Generate a unique region name or
+ *   not. This will be 0 if the caller already
+ *   generated a unique name.
+ */
+void
+track_insert_region (
+  Track *           track,
+  ZRegion *         region,
+  AutomationTrack * at,
+  int               lane_pos,
+  int               idx,
+  int               gen_name,
+  int               fire_events)
+{
   if (region->id.type == REGION_TYPE_AUTOMATION)
     {
       track = automation_track_get_track (at);
@@ -1076,8 +1109,7 @@ track_add_region (
 
   if (gen_name)
     {
-      region_gen_name (
-        region, NULL, at, track);
+      region_gen_name (region, NULL, at, track);
     }
 
   int add_lane = 0, add_at = 0, add_chord = 0;
@@ -1103,27 +1135,47 @@ track_add_region (
       track_create_missing_lanes (track, lane_pos);
 
       g_warn_if_fail (track->lanes[lane_pos]);
-      track_lane_add_region (
-        track->lanes[lane_pos], region);
+      if (idx == -1)
+        {
+          track_lane_add_region (
+            track->lanes[lane_pos], region);
+        }
+      else
+        {
+          track_lane_insert_region (
+            track->lanes[lane_pos], region, idx);
+        }
+      g_warn_if_fail (region->id.idx >= 0);
     }
 
   if (add_at)
     {
-      automation_track_add_region (
-        at, region);
+      if (idx == -1)
+        {
+          automation_track_add_region (at, region);
+        }
+      else
+        {
+          automation_track_insert_region (
+            at, region, idx);
+        }
     }
 
   if (add_chord)
     {
       g_warn_if_fail (track == P_CHORD_TRACK);
-      array_double_size_if_full (
-        track->chord_regions,
-        track->num_chord_regions,
-        track->chord_regions_size, ZRegion *);
-      array_append (
-        track->chord_regions,
-        track->num_chord_regions, region);
-      region->id.idx = track->num_chord_regions - 1;
+
+      if (idx == -1)
+        {
+          chord_track_insert_chord_region (
+            track, region,
+            track->num_chord_regions);
+        }
+      else
+        {
+          chord_track_insert_chord_region (
+            track, region, idx);
+        }
     }
 
   /* write clip if audio region */

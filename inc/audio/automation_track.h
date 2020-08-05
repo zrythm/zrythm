@@ -294,6 +294,19 @@ automation_track_add_region (
   ZRegion *          region);
 
 /**
+ * Inserts an automation ZRegion to the
+ * AutomationTrack at the given index.
+ *
+ * @note This must not be used directly. Use
+ *   track_insert_region() instead.
+ */
+void
+automation_track_insert_region (
+  AutomationTrack * self,
+  ZRegion *         region,
+  int               idx);
+
+/**
  * Returns the visible y offset from the top of
  * the track widget.
  */

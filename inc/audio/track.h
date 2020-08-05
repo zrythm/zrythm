@@ -626,6 +626,34 @@ track_add_region (
   int               fire_events);
 
 /**
+ * Inserts a ZRegion to the given lane or
+ * AutomationTrack of the track, at the given
+ * index.
+ *
+ * The ZRegion must be the main region (see
+ * ArrangerObjectInfo).
+ *
+ * @param at The AutomationTrack of this ZRegion, if
+ *   automation region.
+ * @param lane_pos The position of the lane to add
+ *   to, if applicable.
+ * @param idx The index to insert the region at
+ *   inside its parent, or -1 to append.
+ * @param gen_name Generate a unique region name or
+ *   not. This will be 0 if the caller already
+ *   generated a unique name.
+ */
+void
+track_insert_region (
+  Track *           track,
+  ZRegion *         region,
+  AutomationTrack * at,
+  int               lane_pos,
+  int               idx,
+  int               gen_name,
+  int               fire_events);
+
+/**
  * Writes the track to the given MIDI file.
  */
 void

@@ -61,6 +61,16 @@ chord_track_init (
   Track * track);
 
 /**
+ * Inserts a chord region to the Track at the given
+ * index.
+ */
+void
+chord_track_insert_chord_region (
+  ChordTrack * track,
+  ZRegion *    region,
+  int          idx);
+
+/**
  * Adds a ChordObject to the Track.
  */
 void

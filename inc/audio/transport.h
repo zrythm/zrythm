@@ -254,6 +254,13 @@ transport_init_loaded (
   Transport * self);
 
 /**
+ * Clones the transport values.
+ */
+Transport *
+transport_clone (
+  Transport * self);
+
+/**
  * Prepares audio regions for stretching (sets the
  * \ref ZRegion.before_length).
  *

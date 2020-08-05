@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -153,12 +153,22 @@ track_lane_new (
   int     pos);
 
 /**
+ * Inserts a ZRegion to the given TrackLane at the
+ * given index.
+ */
+void
+track_lane_insert_region (
+  TrackLane * self,
+  ZRegion *   region,
+  int         idx);
+
+/**
  * Adds a ZRegion to the given TrackLane.
  */
 void
 track_lane_add_region (
   TrackLane * self,
-  ZRegion *    region);
+  ZRegion *   region);
 
 /**
  * Removes but does not free the region.

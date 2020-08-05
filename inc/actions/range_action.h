@@ -22,6 +22,7 @@
 
 #include "actions/undoable_action.h"
 #include "audio/position.h"
+#include "audio/transport.h"
 #include "gui/backend/timeline_selections.h"
 
 /**
@@ -64,6 +65,10 @@ typedef struct RangeAction
   /** Selections after the action. */
   TimelineSelections * sel_after;
 
+  /** A copy of the transport at the start of the
+   * action. */
+  Transport *    transport;
+
   /** Whether this is the first run. */
   bool           first_run;
 
@@ -92,6 +97,9 @@ static const cyaml_schema_field_t
     timeline_selections_fields_schema),
   YAML_FIELD_INT (
     RangeAction, first_run),
+  YAML_FIELD_MAPPING_PTR (
+    RangeAction, transport,
+    transport_fields_schema),
 
   CYAML_FIELD_END
 };

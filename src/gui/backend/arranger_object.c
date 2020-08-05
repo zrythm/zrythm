@@ -505,7 +505,10 @@ arranger_object_copy_identifier (
   ArrangerObject * dest,
   ArrangerObject * src)
 {
-  g_return_if_fail (dest->type == src->type);
+  g_return_if_fail (
+    IS_ARRANGER_OBJECT (dest) &&
+    IS_ARRANGER_OBJECT (src) &&
+    dest->type == src->type);
 
   if (arranger_object_owned_by_region (dest))
     {
@@ -643,9 +646,23 @@ arranger_object_print (
         self->pos.bars, self->pos.beats,
         self->pos.sixteenths, self->pos.ticks);
     }
+
+  char * extra_info = NULL;
+  if (self->type == ARRANGER_OBJECT_TYPE_REGION)
+    {
+      ZRegion * region = (ZRegion *) self;
+      extra_info =
+        g_strdup_printf (
+          " track: %d - idx: %d",
+          region->id.track_pos, region->id.idx);
+    }
+
   g_message (
-    "%s %s",
-    type, positions);
+    "%s %s%s",
+    type, positions, extra_info ? extra_info : "");
+
+  if (extra_info)
+    g_free (extra_info);
 }
 
 /**
@@ -1616,9 +1633,11 @@ static ArrangerObject *
 find_region (
   ZRegion * self)
 {
+  g_return_val_if_fail (IS_REGION (self), NULL);
   ArrangerObject * obj =
     (ArrangerObject *)
     region_find (&self->id);
+  g_return_val_if_fail (IS_REGION (obj), NULL);
   ArrangerObject * self_obj =
     (ArrangerObject *) self;
   g_warn_if_fail (
@@ -1914,7 +1933,7 @@ clone_region (
   /* set track to NULL and remember track pos */
   region_identifier_copy (
     &new_region->id, &region->id);
-  new_region->id.at_idx = region->id.at_idx;
+  g_warn_if_fail (new_region->id.idx >= 0);
 
   return (ArrangerObject *) new_region;
 }
@@ -2604,7 +2623,6 @@ arranger_object_add_to_project (
     }
 }
 
-#if 0
 /**
  * Inserts the ArrangerObject where it belongs in
  * the project (eg, a Track).
@@ -2694,22 +2712,22 @@ arranger_object_insert_to_project (
                 track->
                   automation_tracklist.
                     ats[r->id.at_idx];
-              track_add_region (
-                track, r, at, -1,
+              track_insert_region (
+                track, r, at, -1, r->id.idx,
                 F_GEN_NAME,
                 F_PUBLISH_EVENTS);
             }
             break;
           case REGION_TYPE_CHORD:
-            track_add_region (
+            track_insert_region (
               P_CHORD_TRACK, r, NULL,
-              -1, F_GEN_NAME,
+              -1, r->id.idx, F_GEN_NAME,
               F_PUBLISH_EVENTS);
             break;
           default:
-            track_add_region (
+            track_insert_region (
               track, r, NULL, r->id.lane_pos,
-              F_GEN_NAME,
+              r->id.idx, F_GEN_NAME,
               F_PUBLISH_EVENTS);
             break;
           }
@@ -2725,7 +2743,6 @@ arranger_object_insert_to_project (
       break;
     }
 }
-#endif
 
 /**
  * Removes the object from its parent in the

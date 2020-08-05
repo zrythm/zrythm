@@ -922,7 +922,6 @@ void
 arranger_object_add_to_project (
   ArrangerObject * obj);
 
-#if 0
 /**
  * Inserts the ArrangerObject where it belongs in
  * the project (eg, a Track).
@@ -936,7 +935,6 @@ arranger_object_add_to_project (
 void
 arranger_object_insert_to_project (
   ArrangerObject * obj);
-#endif
 
 /**
  * Removes the object from its parent in the

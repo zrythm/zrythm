@@ -104,22 +104,43 @@ track_lane_update_frames (
 void
 track_lane_add_region (
   TrackLane * self,
-  ZRegion *    region)
+  ZRegion *   region)
+{
+  track_lane_insert_region (
+    self, region, self->num_regions);
+}
+
+/**
+ * Inserts a ZRegion to the given TrackLane at the
+ * given index.
+ */
+void
+track_lane_insert_region (
+  TrackLane * self,
+  ZRegion *   region,
+  int         idx)
 {
   g_return_if_fail (
-    region->id.type == REGION_TYPE_AUDIO ||
-    region->id.type == REGION_TYPE_MIDI);
+    idx >= 0 &&
+    (region->id.type == REGION_TYPE_AUDIO ||
+     region->id.type == REGION_TYPE_MIDI));
 
   region_set_lane (region, self);
 
   array_double_size_if_full (
     self->regions, self->num_regions,
     self->regions_size, ZRegion *);
-  array_append (
-    self->regions, self->num_regions,
-    region);
+  for (int i = self->num_regions; i > idx; i--)
+    {
+      self->regions[i] = self->regions[i - 1];
+      self->regions[i]->id.idx = i;
+      region_update_identifier (
+        self->regions[i]);
+    }
+  self->num_regions++;
+  self->regions[idx] = region;
   region->id.lane_pos = self->pos;
-  region->id.idx = self->num_regions - 1;
+  region->id.idx = idx;
   region_update_identifier (region);
 
   if (region->id.type == REGION_TYPE_AUDIO)

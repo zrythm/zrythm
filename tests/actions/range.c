@@ -37,14 +37,20 @@
 
 #include <glib.h>
 
-#define PLAYHEAD_BEFORE 7
-#define LOOP_START_BEFORE 1
-#define LOOP_END_BEFORE 6
-
-#define RANGE_START_BAR 3
-#define RANGE_END_BAR 5
+#define RANGE_START_BAR 4
+#define RANGE_END_BAR 10
 #define RANGE_SIZE_IN_BARS \
-  (RANGE_END_BAR - RANGE_START_BAR)
+  (RANGE_END_BAR - RANGE_START_BAR) /* 6 */
+
+/* cue is before the range */
+#define CUE_BEFORE (RANGE_START_BAR - 1)
+
+/* playhead is after the range */
+#define PLAYHEAD_BEFORE (RANGE_END_BAR + 2)
+#define LOOP_START_BEFORE 1
+
+/* loop end is inside the range */
+#define LOOP_END_BEFORE (RANGE_START_BAR + 1)
 
 /* audio region starts before the range start and
  * ends in the middle of the range */
@@ -53,16 +59,50 @@
 #define AUDIO_REGION_END_BAR \
   (RANGE_START_BAR + 1)
 
-/* midi region starts after the range end */
+/* midi region starting after the range end */
 #define MIDI_REGION_START_BAR \
   (RANGE_END_BAR + 2)
 #define MIDI_REGION_END_BAR \
   (MIDI_REGION_START_BAR + 2)
 
+/* midi region starting even further after range
+ * end */
 #define MIDI_REGION2_START_BAR \
   (MIDI_REGION_START_BAR + 10)
 #define MIDI_REGION2_END_BAR \
   (MIDI_REGION2_START_BAR + 8)
+
+/* midi region starting before the range and ending
+ * inside the range */
+#define MIDI_REGION3_START_BAR \
+  (RANGE_START_BAR - 1)
+#define MIDI_REGION3_END_BAR \
+  (RANGE_START_BAR + 2)
+
+/* another midi region starting before the range and
+ * ending inside the range */
+#define MIDI_REGION4_START_BAR \
+  (RANGE_START_BAR - 2)
+#define MIDI_REGION4_END_BAR \
+  (RANGE_START_BAR + 1)
+
+/* midi region starting before the range and ending
+ * after the range */
+#define MIDI_REGION5_START_BAR \
+  (RANGE_START_BAR - 1)
+#define MIDI_REGION5_END_BAR \
+  (RANGE_END_BAR + 1)
+
+/* midi region starting inside the range and ending
+ * after the range */
+#define MIDI_REGION6_START_BAR \
+  (RANGE_START_BAR + 1)
+#define MIDI_REGION6_END_BAR \
+  (RANGE_END_BAR + 1)
+
+/* midi region ending before the range start */
+#define MIDI_REGION7_START_BAR 1
+#define MIDI_REGION7_END_BAR 2
 
 static int midi_track_pos = -1;
 static int audio_track_pos = -1;
@@ -82,44 +122,44 @@ test_prepare_common (void)
   Track * midi_track =
     TRACKLIST->tracks[midi_track_pos];
 
-  Position start, end;
-  position_set_to_bar (
-    &start, MIDI_REGION_START_BAR);
-  position_set_to_bar (
-    &end, MIDI_REGION_END_BAR);
-  ZRegion * midi_region =
-    midi_region_new (
-      &start, &end, midi_track_pos, 0, 0);
-  track_add_region (
-    midi_track, midi_region, NULL, 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
-  arranger_object_select (
-    (ArrangerObject *) midi_region, F_SELECT,
-    F_NO_APPEND);
-  ua =
-    arranger_selections_action_new_create (
-      (ArrangerSelections *) TL_SELECTIONS);
+#define ADD_MREGION(start_bar,end_bar) \
+  position_set_to_bar ( \
+    &start, start_bar); \
+  position_set_to_bar ( \
+    &end, end_bar); \
+  midi_region = \
+    midi_region_new ( \
+      &start, &end, midi_track_pos, 0, \
+      midi_track->lanes[0]->num_regions); \
+  track_add_region ( \
+    midi_track, midi_region, NULL, 0, F_GEN_NAME, \
+    F_NO_PUBLISH_EVENTS); \
+  g_assert_cmpint (midi_region->id.idx, >=, 0); \
+  arranger_object_select ( \
+    (ArrangerObject *) midi_region, F_SELECT, \
+    F_NO_APPEND); \
+  ua = \
+    arranger_selections_action_new_create ( \
+      (ArrangerSelections *) TL_SELECTIONS); \
   undo_manager_perform (UNDO_MANAGER, ua);
 
-  /* add another region to test problems with
-   * indices on undo */
-  position_set_to_bar (
-    &start, MIDI_REGION2_START_BAR);
-  position_set_to_bar (
-    &end, MIDI_REGION2_END_BAR);
-  midi_region =
-    midi_region_new (
-      &start, &end, midi_track_pos, 0, 0);
-  track_add_region (
-    midi_track, midi_region, NULL, 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
-  arranger_object_select (
-    (ArrangerObject *) midi_region, F_SELECT,
-    F_NO_APPEND);
-  ua =
-    arranger_selections_action_new_create (
-      (ArrangerSelections *) TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  /* add all the midi regions */
+  Position start, end;
+  ZRegion * midi_region;
+  ADD_MREGION (
+    MIDI_REGION_START_BAR, MIDI_REGION_END_BAR);
+  ADD_MREGION (
+    MIDI_REGION2_START_BAR, MIDI_REGION2_END_BAR);
+  ADD_MREGION (
+    MIDI_REGION3_START_BAR, MIDI_REGION3_END_BAR);
+  ADD_MREGION (
+    MIDI_REGION4_START_BAR, MIDI_REGION4_END_BAR);
+  ADD_MREGION (
+    MIDI_REGION5_START_BAR, MIDI_REGION5_END_BAR);
+  ADD_MREGION (
+    MIDI_REGION6_START_BAR, MIDI_REGION6_END_BAR);
+  ADD_MREGION (
+    MIDI_REGION7_START_BAR, MIDI_REGION7_END_BAR);
 
   /* create audio track with region */
   char * filepath =
@@ -168,6 +208,8 @@ test_prepare_common (void)
 
   /* set transport positions */
   position_set_to_bar (
+    &TRANSPORT->cue_pos, CUE_BEFORE);
+  position_set_to_bar (
     &TRANSPORT->playhead_pos, PLAYHEAD_BEFORE);
   position_set_to_bar (
     &TRANSPORT->loop_start_pos, LOOP_START_BEFORE);
@@ -180,12 +222,24 @@ check_before_insert ()
 {
   Track * midi_track =
     TRACKLIST->tracks[midi_track_pos];
-  ZRegion * midi_region =
-    midi_track->lanes[0]->regions[0];
   g_assert_cmpint (
-    midi_track->lanes[0]->num_regions, ==, 2);
-  ArrangerObject * midi_region_obj =
-    (ArrangerObject *) midi_region;
+    midi_track->lanes[0]->num_regions, ==, 7);
+
+#define GET_MIDI_REGION(name,idx) \
+  ZRegion * name = \
+    midi_track->lanes[0]->regions[idx]; \
+  ArrangerObject * name##_obj = \
+    (ArrangerObject *) name
+
+  GET_MIDI_REGION (midi_region, 0);
+  GET_MIDI_REGION (midi_region2, 1);
+  GET_MIDI_REGION (midi_region3, 2);
+  GET_MIDI_REGION (midi_region4, 3);
+  GET_MIDI_REGION (midi_region5, 4);
+  GET_MIDI_REGION (midi_region6, 5);
+  GET_MIDI_REGION (midi_region7, 6);
+
+#undef GET_MIDI_REGION
 
   Track * audio_track =
     TRACKLIST->tracks[audio_track_pos];
@@ -196,37 +250,68 @@ check_before_insert ()
   ArrangerObject * audio_region_obj =
     (ArrangerObject *) audio_region;
 
+#define CHECK_POS(obj,start_bar,end_bar) \
+  position_set_to_bar (&start, start_bar); \
+  position_set_to_bar (&end, end_bar); \
+  g_assert_cmppos (&obj->pos, &start); \
+  g_assert_cmppos (&obj->end_pos, &end)
+
   Position start, end;
-  position_set_to_bar (
-    &start, MIDI_REGION_START_BAR);
-  position_set_to_bar (
-    &end, MIDI_REGION_END_BAR);
-  g_assert_cmppos (&midi_region_obj->pos, &start);
-  g_assert_cmppos (&midi_region_obj->end_pos, &end);
-  position_set_to_bar (
-    &start, AUDIO_REGION_START_BAR);
-  position_set_to_bar (
-    &end, AUDIO_REGION_END_BAR);
-  g_assert_cmppos (&audio_region_obj->pos, &start);
-  g_assert_cmppos (&audio_region_obj->end_pos, &end);
+  CHECK_POS (
+    midi_region_obj,
+    MIDI_REGION_START_BAR, MIDI_REGION_END_BAR);
+  CHECK_POS (
+    midi_region2_obj,
+    MIDI_REGION2_START_BAR, MIDI_REGION2_END_BAR);
+  CHECK_POS (
+    midi_region3_obj,
+    MIDI_REGION3_START_BAR, MIDI_REGION3_END_BAR);
+  CHECK_POS (
+    midi_region4_obj,
+    MIDI_REGION4_START_BAR, MIDI_REGION4_END_BAR);
+  CHECK_POS (
+    midi_region5_obj,
+    MIDI_REGION5_START_BAR, MIDI_REGION5_END_BAR);
+  CHECK_POS (
+    midi_region6_obj,
+    MIDI_REGION6_START_BAR, MIDI_REGION6_END_BAR);
+  CHECK_POS (
+    midi_region7_obj,
+    MIDI_REGION7_START_BAR, MIDI_REGION7_END_BAR);
+  CHECK_POS (
+    audio_region_obj,
+    AUDIO_REGION_START_BAR, AUDIO_REGION_END_BAR);
+
+#undef CHECK_POS
 }
 
 static void
 check_after_insert (void)
 {
+
+#define GET_MIDI_REGION(name,idx) \
+  ZRegion * name = \
+    midi_track->lanes[0]->regions[idx]; \
+  ArrangerObject * name##_obj = \
+    (ArrangerObject *) name
+
   /* get objects */
   Track * midi_track =
     TRACKLIST->tracks[midi_track_pos];
   g_assert_cmpint (
-    midi_track->lanes[0]->num_regions, ==, 2);
-  ZRegion * midi_region =
-    midi_track->lanes[0]->regions[0];
-  ZRegion * midi_region2 =
-    midi_track->lanes[0]->regions[1];
-  ArrangerObject * midi_region_obj =
-    (ArrangerObject *) midi_region;
-  ArrangerObject * midi_region_obj2 =
-    (ArrangerObject *) midi_region2;
+    midi_track->lanes[0]->num_regions, ==, 10);
+  GET_MIDI_REGION (midi_region1, 0);
+  GET_MIDI_REGION (midi_region2, 1);
+  GET_MIDI_REGION (midi_region3, 2);
+  GET_MIDI_REGION (midi_region4, 3);
+  GET_MIDI_REGION (midi_region5, 4);
+  GET_MIDI_REGION (midi_region6, 5);
+  GET_MIDI_REGION (midi_region7, 6);
+  GET_MIDI_REGION (midi_region8, 7);
+  GET_MIDI_REGION (midi_region9, 8);
+  GET_MIDI_REGION (midi_region10, 9);
+
+#undef GET_MIDI_REGION
 
   /* get new audio regions */
   Track * audio_track =
@@ -242,35 +327,59 @@ check_after_insert (void)
   ArrangerObject * audio_region_obj2 =
     (ArrangerObject *) audio_region2;
 
-  /* check midi region positions */
-  Position midi_region_start_after_expected,
-           midi_region_end_after_expected;
-  position_set_to_bar (
-    &midi_region_start_after_expected,
-    MIDI_REGION_START_BAR + RANGE_SIZE_IN_BARS);
-  position_set_to_bar (
-    &midi_region_end_after_expected,
-    MIDI_REGION_END_BAR + RANGE_SIZE_IN_BARS);
-  g_assert_cmppos (
-    &midi_region_obj->pos,
-    &midi_region_start_after_expected);
-  g_assert_cmppos (
-    &midi_region_obj->end_pos,
-    &midi_region_end_after_expected);
+#define CHECK_POS(obj,start_bar,end_bar) \
+  position_set_to_bar (&start_expected, start_bar); \
+  position_set_to_bar (&end_expected, end_bar); \
+  g_assert_cmppos (&obj->pos, &start_expected); \
+  g_assert_cmppos (&obj->end_pos, &end_expected)
 
-  /* check 2nd midi region positions */
-  position_set_to_bar (
-    &midi_region_start_after_expected,
-    MIDI_REGION2_START_BAR + RANGE_SIZE_IN_BARS);
-  position_set_to_bar (
-    &midi_region_end_after_expected,
+  /* check midi region positions */
+  Position start_expected, end_expected;
+  CHECK_POS (
+    midi_region1_obj,
+    MIDI_REGION_START_BAR + RANGE_SIZE_IN_BARS,
+    MIDI_REGION_END_BAR + RANGE_SIZE_IN_BARS);
+  CHECK_POS (
+    midi_region2_obj,
+    MIDI_REGION2_START_BAR + RANGE_SIZE_IN_BARS,
     MIDI_REGION2_END_BAR + RANGE_SIZE_IN_BARS);
-  g_assert_cmppos (
-    &midi_region_obj2->pos,
-    &midi_region_start_after_expected);
-  g_assert_cmppos (
-    &midi_region_obj2->end_pos,
-    &midi_region_end_after_expected);
+
+  /* orig 3 */
+  CHECK_POS (
+    midi_region9_obj, MIDI_REGION3_START_BAR,
+    RANGE_START_BAR);
+  CHECK_POS (
+    midi_region10_obj, RANGE_END_BAR,
+    MIDI_REGION3_END_BAR + RANGE_SIZE_IN_BARS);
+
+  /* orig 4 */
+  CHECK_POS (
+    midi_region7_obj, MIDI_REGION4_START_BAR,
+    RANGE_START_BAR);
+  CHECK_POS (
+    midi_region8_obj, RANGE_END_BAR,
+    MIDI_REGION4_END_BAR + RANGE_SIZE_IN_BARS);
+
+  /* orig 5 */
+  CHECK_POS (
+    midi_region5_obj, MIDI_REGION5_START_BAR,
+    RANGE_START_BAR);
+  CHECK_POS (
+    midi_region6_obj, RANGE_END_BAR,
+    MIDI_REGION5_END_BAR + RANGE_SIZE_IN_BARS);
+
+  /* orig 6 */
+  CHECK_POS (
+    midi_region3_obj,
+    MIDI_REGION6_START_BAR + RANGE_SIZE_IN_BARS,
+    MIDI_REGION6_END_BAR + RANGE_SIZE_IN_BARS);
+
+  /* orig 7 */
+  CHECK_POS (
+    midi_region4_obj,
+    MIDI_REGION7_START_BAR, MIDI_REGION7_END_BAR);
+
+#undef CHECK_POS
 
   /* check audio region positions */
   Position audio_region1_end_after_expected,
@@ -295,23 +404,23 @@ check_after_insert (void)
     &audio_region_obj2->end_pos,
     &audio_region2_end_after_expected);
 
-  /* get expected transport positions */
-  Position playhead_after_expected,
-           loop_end_after_expected;
-  position_set_to_bar (
-    &playhead_after_expected,
-    PLAYHEAD_BEFORE + RANGE_SIZE_IN_BARS);
-  position_set_to_bar (
-    &loop_end_after_expected,
-    LOOP_END_BEFORE + RANGE_SIZE_IN_BARS);
+#define CHECK_TPOS(name,expected_bar) \
+  position_set_to_bar ( \
+    &start_expected, expected_bar); \
+  g_assert_cmppos ( \
+    &TRANSPORT->name, &start_expected); \
 
-  /* check that they match with actual positions */
-  g_assert_cmppos (
-    &playhead_after_expected,
-    &TRANSPORT->playhead_pos);
-  g_assert_cmppos (
-    &loop_end_after_expected,
-    &TRANSPORT->loop_end_pos);
+  /* check transport positions */
+  CHECK_TPOS (
+    playhead_pos,
+    PLAYHEAD_BEFORE + RANGE_SIZE_IN_BARS);
+  CHECK_TPOS (
+    loop_end_pos,
+    LOOP_END_BEFORE + RANGE_SIZE_IN_BARS);
+  CHECK_TPOS (
+    cue_pos, CUE_BEFORE);
+
+#undef CHECK_TPOS
 }
 
 static void
@@ -321,10 +430,8 @@ test_insert_silence (void)
 
   /* create inset silence action */
   Position start, end;
-  position_set_to_bar (
-    &start, RANGE_START_BAR);
-  position_set_to_bar (
-    &end, RANGE_END_BAR);
+  position_set_to_bar (&start, RANGE_START_BAR);
+  position_set_to_bar (&end, RANGE_END_BAR);
   UndoableAction * ua =
     range_action_new_insert_silence (&start, &end);
 
@@ -332,7 +439,7 @@ test_insert_silence (void)
   RangeAction * ra = (RangeAction *) ua;
   g_assert_cmpint (
     arranger_selections_get_num_objects (
-      (ArrangerSelections *) ra->sel_before), ==, 3);
+      (ArrangerSelections *) ra->sel_before), ==, 7);
 
   check_before_insert ();
 
@@ -357,19 +464,25 @@ test_insert_silence (void)
 static void
 check_after_remove (void)
 {
+#define GET_MIDI_REGION(name,idx) \
+  ZRegion * name = \
+    midi_track->lanes[0]->regions[idx]; \
+  ArrangerObject * name##_obj = \
+    (ArrangerObject *) name
+
   /* get objects */
   Track * midi_track =
     TRACKLIST->tracks[midi_track_pos];
   g_assert_cmpint (
-    midi_track->lanes[0]->num_regions, ==, 2);
-  ZRegion * midi_region1 =
-    midi_track->lanes[0]->regions[0];
-  ZRegion * midi_region2 =
-    midi_track->lanes[0]->regions[1];
-  ArrangerObject * midi_region_obj1 =
-    (ArrangerObject *) midi_region1;
-  ArrangerObject * midi_region_obj2 =
-    (ArrangerObject *) midi_region2;
+    midi_track->lanes[0]->num_regions, ==, 8);
+  GET_MIDI_REGION (midi_region1, 0);
+  GET_MIDI_REGION (midi_region2, 1);
+  GET_MIDI_REGION (midi_region3, 2);
+  GET_MIDI_REGION (midi_region4, 3);
+  GET_MIDI_REGION (midi_region5, 4);
+  GET_MIDI_REGION (midi_region6, 5);
+  GET_MIDI_REGION (midi_region7, 6);
+  GET_MIDI_REGION (midi_region8, 7);
 
   /* get new audio regions */
   Track * audio_track =
@@ -381,36 +494,58 @@ check_after_remove (void)
   ArrangerObject * audio_region_obj =
     (ArrangerObject *) audio_region;
 
-  /* check midi region positions */
-  Position midi_region1_start_after_expected,
-           midi_region1_end_after_expected;
-  position_set_to_bar (
-    &midi_region1_start_after_expected,
-    MIDI_REGION_START_BAR - RANGE_SIZE_IN_BARS);
-  position_set_to_bar (
-    &midi_region1_end_after_expected,
-    MIDI_REGION_END_BAR - RANGE_SIZE_IN_BARS);
-  g_assert_cmppos (
-    &midi_region_obj1->pos,
-    &midi_region1_start_after_expected);
-  g_assert_cmppos (
-    &midi_region_obj1->end_pos,
-    &midi_region1_end_after_expected);
+#define CHECK_POS(obj,start_bar,end_bar) \
+  position_set_to_bar (&start_expected, start_bar); \
+  position_set_to_bar (&end_expected, end_bar); \
+  g_assert_cmppos (&obj->pos, &start_expected); \
+  g_assert_cmppos (&obj->end_pos, &end_expected)
 
-  Position midi_region2_start_after_expected,
-           midi_region2_end_after_expected;
-  position_set_to_bar (
-    &midi_region2_start_after_expected,
-    MIDI_REGION2_START_BAR - RANGE_SIZE_IN_BARS);
-  position_set_to_bar (
-    &midi_region2_end_after_expected,
+  /* check midi region positions */
+  Position start_expected, end_expected;
+
+  /* orig 1 */
+  CHECK_POS (
+    midi_region1_obj,
+    MIDI_REGION_START_BAR - RANGE_SIZE_IN_BARS,
+    MIDI_REGION_END_BAR - RANGE_SIZE_IN_BARS);
+
+  /* orig 2 */
+  CHECK_POS (
+    midi_region2_obj,
+    MIDI_REGION2_START_BAR - RANGE_SIZE_IN_BARS,
     MIDI_REGION2_END_BAR - RANGE_SIZE_IN_BARS);
-  g_assert_cmppos (
-    &midi_region_obj2->pos,
-    &midi_region2_start_after_expected);
-  g_assert_cmppos (
-    &midi_region_obj2->end_pos,
-    &midi_region2_end_after_expected);
+
+  /* orig 3 */
+  CHECK_POS (
+    midi_region8_obj,
+    MIDI_REGION3_START_BAR, RANGE_START_BAR);
+
+  /* orig 4 */
+  CHECK_POS (
+    midi_region7_obj,
+    MIDI_REGION4_START_BAR, RANGE_START_BAR);
+
+  /* orig 5 */
+  CHECK_POS (
+    midi_region5_obj,
+    MIDI_REGION5_START_BAR, RANGE_START_BAR);
+  CHECK_POS (
+    midi_region6_obj,
+    RANGE_START_BAR,
+    MIDI_REGION5_END_BAR - RANGE_SIZE_IN_BARS);
+
+  /* orig 6 */
+  CHECK_POS (
+    midi_region4_obj,
+    RANGE_START_BAR,
+    MIDI_REGION6_END_BAR - RANGE_SIZE_IN_BARS);
+
+  /* orig 7 */
+  CHECK_POS (
+    midi_region3_obj,
+    MIDI_REGION7_START_BAR, MIDI_REGION7_END_BAR);
+
+#undef CHECK_POS
 
   /* check audio region positions */
   Position audio_region_start_after_expected,
@@ -428,23 +563,22 @@ check_after_remove (void)
     &audio_region_obj->end_pos,
     &audio_region_end_after_expected);
 
-  /* get expected transport positions */
-  Position playhead_after_expected,
-           loop_end_after_expected;
-  position_set_to_bar (
-    &playhead_after_expected,
-    PLAYHEAD_BEFORE - RANGE_SIZE_IN_BARS);
-  position_set_to_bar (
-    &loop_end_after_expected,
-    LOOP_END_BEFORE - RANGE_SIZE_IN_BARS);
+#define CHECK_TPOS(name,expected_bar) \
+  position_set_to_bar ( \
+    &start_expected, expected_bar); \
+  g_assert_cmppos ( \
+    &TRANSPORT->name, &start_expected); \
 
-  /* check that they match with actual positions */
-  g_assert_cmppos (
-    &playhead_after_expected,
-    &TRANSPORT->playhead_pos);
-  g_assert_cmppos (
-    &loop_end_after_expected,
-    &TRANSPORT->loop_end_pos);
+  /* check transport positions */
+  CHECK_TPOS (
+    playhead_pos,
+    PLAYHEAD_BEFORE - RANGE_SIZE_IN_BARS);
+  CHECK_TPOS (
+    loop_end_pos, RANGE_START_BAR);
+  CHECK_TPOS (
+    cue_pos, CUE_BEFORE);
+
+#undef CHECK_TPOS
 }
 
 static void
@@ -460,12 +594,6 @@ test_remove_range (void)
     &end, RANGE_END_BAR);
   UndoableAction * ua =
     range_action_new_remove (&start, &end);
-
-  /* verify that number of objects is as expected */
-  RangeAction * ra = (RangeAction *) ua;
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) ra->sel_before), ==, 3);
 
   check_before_insert ();
 

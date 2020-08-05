@@ -61,6 +61,36 @@ chord_track_new (
 }
 
 /**
+ * Inserts a chord region to the Track at the given
+ * index.
+ */
+void
+chord_track_insert_chord_region (
+  Track *   self,
+  ZRegion * region,
+  int       idx)
+{
+  g_return_if_fail (idx >= 0);
+  array_double_size_if_full (
+    self->chord_regions,
+    self->num_chord_regions,
+    self->chord_regions_size, ZRegion *);
+  for (int i = self->num_chord_regions;
+       i > idx; i--)
+    {
+      self->chord_regions[i] =
+        self->chord_regions[i - 1];
+      self->chord_regions[i]->id.idx = i;
+      region_update_identifier (
+        self->chord_regions[i]);
+    }
+  self->num_chord_regions++;
+  self->chord_regions[idx] = region;
+  region->id.idx = idx;
+  region_update_identifier (region);
+}
+
+/**
  * Adds a ChordObject to the Track.
  *
  * @param gen_widget Create a widget for the chord.

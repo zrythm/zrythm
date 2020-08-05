@@ -602,10 +602,12 @@ region_find (
       g_return_val_if_fail (lane, NULL);
 
       g_return_val_if_fail (
-        id->idx < lane->num_regions, NULL);
+        id->idx >= 0 &&
+          id->idx < lane->num_regions, NULL);
 
       ZRegion * region = lane->regions[id->idx];
-      g_return_val_if_fail (region, NULL);
+      g_return_val_if_fail (
+        IS_REGION (region), NULL);
 
       return region;
     }
@@ -626,7 +628,8 @@ region_find (
       if (id->idx >= at->num_regions)
         g_return_val_if_reached (NULL);
       ZRegion * region = at->regions[id->idx];
-      g_return_val_if_fail (region, NULL);
+      g_return_val_if_fail (
+        IS_REGION (region), NULL);
 
       return region;
     }
@@ -639,7 +642,8 @@ region_find (
         g_return_val_if_reached (NULL);
       ZRegion * region =
         track->chord_regions[id->idx];
-      g_return_val_if_fail (region, NULL);
+      g_return_val_if_fail (
+        IS_REGION (region), NULL);
 
       return region;
     }
@@ -912,11 +916,13 @@ region_print (
 {
   char * str =
     g_strdup_printf (
-      "%s [%s] - track pos %d - lane pos %d",
+      "%s [%s] - track pos %d - lane pos %d - "
+      "idx %d",
       self->name,
       region_type_bitvals[self->id.type].name,
       self->id.track_pos,
-      self->id.lane_pos);
+      self->id.lane_pos,
+      self->id.idx);
   g_message ("%s", str);
   g_free (str);
 }

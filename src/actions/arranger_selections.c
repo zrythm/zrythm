@@ -1278,7 +1278,8 @@ do_or_undo_create_or_delete (
                 }
 
               /* remove it */
-              arranger_object_remove_from_project (obj);
+              arranger_object_remove_from_project (
+                obj);
             }
         }
     }

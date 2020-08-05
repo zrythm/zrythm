@@ -370,7 +370,6 @@ ArrangerSelections *
 arranger_selections_clone (
   ArrangerSelections * self)
 {
-  int i;
   TimelineSelections * src_ts, * new_ts;
   ChordSelections * src_cs, * new_cs;
   MidiArrangerSelections * src_mas, * new_mas;
@@ -378,7 +377,7 @@ arranger_selections_clone (
 
 #define CLONE_OBJS(src_sel,new_sel,cc,sc) \
   cc * sc, * new_##sc; \
-    for (i = 0; i < src_sel->num_##sc##s; i++) \
+    for (int i = 0; i < src_sel->num_##sc##s; i++) \
     { \
       sc = src_sel->sc##s[i]; \
       ArrangerObject * sc_obj = \
@@ -400,8 +399,7 @@ arranger_selections_clone (
     {
     case TYPE (TIMELINE):
       src_ts = (TimelineSelections *) self;
-      new_ts =
-        calloc (1, sizeof (TimelineSelections));
+      new_ts = object_new (TimelineSelections);
       new_ts->base = src_ts->base;
       arranger_selections_init (
         (ArrangerSelections *) new_ts,

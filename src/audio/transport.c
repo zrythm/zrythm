@@ -118,6 +118,32 @@ transport_new (
 }
 
 /**
+ * Clones the transport values.
+ */
+Transport *
+transport_clone (
+  Transport * self)
+{
+  Transport * new_transport =
+    object_new (Transport);
+
+  position_set_to_pos (
+    &new_transport->loop_start_pos,
+    &self->loop_start_pos);
+  position_set_to_pos (
+    &new_transport->playhead_pos,
+    &self->playhead_pos);
+  position_set_to_pos (
+    &new_transport->loop_end_pos,
+    &self->loop_end_pos);
+  position_set_to_pos (
+    &new_transport->cue_pos,
+    &self->cue_pos);
+
+  return new_transport;
+}
+
+/**
  * Prepares audio regions for stretching (sets the
  * \ref ZRegion.before_length).
  *

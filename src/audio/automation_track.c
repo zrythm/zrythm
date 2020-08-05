@@ -134,21 +134,43 @@ automation_record_mode_get_localized (
 void
 automation_track_add_region (
   AutomationTrack * self,
-  ZRegion *          region)
+  ZRegion *         region)
 {
-  g_return_if_fail (self);
+  automation_track_insert_region (
+    self, region, self->num_regions);
+}
+
+/**
+ * Inserts an automation ZRegion to the
+ * AutomationTrack at the given index.
+ *
+ * @note This must not be used directly. Use
+ *   track_insert_region() instead.
+ */
+void
+automation_track_insert_region (
+  AutomationTrack * self,
+  ZRegion *         region,
+  int               idx)
+{
+  g_return_if_fail (self && idx >= 0);
   g_return_if_fail (
     region->id.type == REGION_TYPE_AUTOMATION);
 
   array_double_size_if_full (
     self->regions, self->num_regions,
     self->regions_size, ZRegion *);
-  array_append (self->regions,
-                self->num_regions,
-                region);
+  for (int i = self->num_regions; i > idx; i--)
+    {
+      self->regions[i] = self->regions[i - 1];
+      self->regions[i]->id.idx = i;
+      region_update_identifier (self->regions[i]);
+    }
+  self->num_regions++;
 
+  self->regions[idx] = region;
   region_set_automation_track (region, self);
-  region->id.idx = self->num_regions - 1;
+  region->id.idx = idx;
   region_update_identifier (region);
 }
 
