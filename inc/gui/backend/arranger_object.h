@@ -411,6 +411,13 @@ arranger_object_get_arranger (
   ArrangerObject * self);
 
 /**
+ * Sets the magic on the arranger object.
+ */
+void
+arranger_object_set_magic (
+  ArrangerObject * self);
+
+/**
  * If the object is part of a ZRegion, returns it,
  * otherwise returns NULL.
  */

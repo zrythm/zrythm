@@ -616,6 +616,29 @@ arranger_object_stringize_type (
 }
 
 /**
+ * Sets the magic on the arranger object.
+ */
+void
+arranger_object_set_magic (
+  ArrangerObject * self)
+{
+  self->magic = ARRANGER_OBJECT_MAGIC;
+
+  switch (self->type)
+    {
+    case TYPE (REGION):
+      ((ZRegion *) self)->magic = REGION_MAGIC;
+      break;
+    case TYPE (MIDI_NOTE):
+      ((MidiNote *) self)->magic = MIDI_NOTE_MAGIC;
+      break;
+    default:
+      /* nothing needed */
+      break;
+    }
+}
+
+/**
  * Prints debug information about the given
  * object.
  */
