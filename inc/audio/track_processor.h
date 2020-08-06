@@ -188,6 +188,14 @@ track_processor_new (
   Track *          track);
 
 /**
+ * Copy port values from \ref src to \ref dest.
+ */
+void
+track_processor_copy_values (
+  TrackProcessor * dest,
+  TrackProcessor * src);
+
+/**
  * Clears all buffers.
  */
 void

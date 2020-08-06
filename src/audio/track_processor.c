@@ -629,6 +629,25 @@ track_processor_process (
 }
 
 /**
+ * Copy port values from \ref src to \ref dest.
+ */
+void
+track_processor_copy_values (
+  TrackProcessor * dest,
+  TrackProcessor * src)
+{
+  if (src->input_gain)
+    {
+      dest->input_gain->control =
+        src->input_gain->control;
+    }
+  if (src->mono)
+    {
+      dest->mono->control = src->mono->control;
+    }
+}
+
+/**
  * Disconnect stereo in ports from the fader.
  *
  * Used when there is no plugin in the channel.

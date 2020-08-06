@@ -566,6 +566,51 @@ test_source_track_deletion_with_sends (void)
   test_helper_zrythm_cleanup ();
 }
 
+
+static void
+test_audio_track_deletion (void)
+{
+  test_helper_zrythm_init ();
+
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_AUDIO, NULL, NULL,
+      TRACKLIST->num_tracks, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* delete track and undo */
+  Track * track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  /* set input gain and mono */
+  port_set_control_value (
+    track->processor->input_gain, 1.4f, false,
+    false);
+  port_set_control_value (
+    track->processor->mono, 1.0f, false, false);
+
+  ua =
+    delete_tracks_action_new (TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  undo_manager_undo (UNDO_MANAGER);
+
+  track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  g_assert_cmpfloat_with_epsilon (
+    track->processor->input_gain->control,
+    1.4f, 0.001f);
+  g_assert_cmpfloat_with_epsilon (
+    track->processor->mono->control, 1.0f, 0.001f);
+
+  undo_manager_redo (UNDO_MANAGER);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -589,6 +634,9 @@ main (int argc, char *argv[])
     "test source track deletion with sends",
     (GTestFunc)
     test_source_track_deletion_with_sends);
+  g_test_add_func (
+    TEST_PREFIX "test audio track deletion",
+    (GTestFunc) test_audio_track_deletion);
 
   return g_test_run ();
 }

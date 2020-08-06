@@ -509,9 +509,11 @@ on_mono_toggled (
       self->track->type != TRACK_TYPE_AUDIO)
     return;
 
+  bool new_val = gtk_toggle_button_get_active (btn);
   control_port_set_val_from_normalized (
-    self->track->processor->mono,
-    gtk_toggle_button_get_active (btn), false);
+    self->track->processor->mono, new_val, false);
+  gtk_widget_set_sensitive (
+    GTK_WIDGET (self->stereo_r_input), !new_val);
 }
 
 /**
@@ -540,11 +542,13 @@ track_input_expander_widget_refresh (
   gtk_widget_set_visible (
     GTK_WIDGET (self->stereo_r_input), 0);
   gtk_widget_set_visible (
-    GTK_WIDGET (self->bot_widgets), 0);
+    GTK_WIDGET (self->gain_box), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->mono), 0);
   if (self->gain)
     {
       gtk_container_remove (
-        GTK_CONTAINER (self->bot_widgets),
+        GTK_CONTAINER (self->gain_box),
         GTK_WIDGET (self->gain));
     }
 
@@ -586,7 +590,7 @@ track_input_expander_widget_refresh (
       gtk_widget_set_visible (
         GTK_WIDGET (self->gain), true);
       gtk_container_add (
-        GTK_CONTAINER (self->bot_widgets),
+        GTK_CONTAINER (self->gain_box),
         GTK_WIDGET (self->gain));
 
       gtk_toggle_button_set_active (
@@ -595,7 +599,9 @@ track_input_expander_widget_refresh (
           track->processor->mono));
 
       gtk_widget_set_visible (
-        GTK_WIDGET (self->bot_widgets), true);
+        GTK_WIDGET (self->mono), true);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->gain_box), true);
 
       expander_box_widget_set_icon_name (
         Z_EXPANDER_BOX_WIDGET (self),
@@ -651,12 +657,35 @@ track_input_expander_widget_init (
     self->midi_channels, "changed",
     G_CALLBACK (on_midi_channels_changed), self);
 
+  self->audio_input_size_group =
+    gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
   /* setup audio inputs */
   self->stereo_l_input =
     GTK_COMBO_BOX (gtk_combo_box_text_new ());
-  two_col_expander_box_widget_add_single (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+  gtk_size_group_add_widget (
+    self->audio_input_size_group,
     GTK_WIDGET (self->stereo_l_input));
+  self->mono =
+    z_gtk_toggle_button_new_with_icon ("mono");
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->mono), true);
+  g_signal_connect (
+    self->mono, "toggled",
+    G_CALLBACK (on_mono_toggled), self);
+  two_col_expander_box_widget_add_pair (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    GTK_WIDGET (self->stereo_l_input),
+    GTK_WIDGET (self->mono));
+  GtkWidget * parent_box =
+    gtk_widget_get_parent (
+      GTK_WIDGET (self->mono));
+  gtk_box_set_child_packing (
+    GTK_BOX (parent_box),
+    GTK_WIDGET (self->mono), F_NO_EXPAND,
+    F_FILL, 1, GTK_PACK_START);
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->mono), _("Mono"));
   gtk_combo_box_set_row_separator_func (
     self->stereo_l_input,
     (GtkTreeViewRowSeparatorFunc)
@@ -668,9 +697,27 @@ track_input_expander_widget_init (
 
   self->stereo_r_input =
     GTK_COMBO_BOX (gtk_combo_box_text_new ());
-  two_col_expander_box_widget_add_single (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+  gtk_size_group_add_widget (
+    self->audio_input_size_group,
     GTK_WIDGET (self->stereo_r_input));
+  self->gain_box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->gain_box), true);
+  two_col_expander_box_widget_add_pair (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    GTK_WIDGET (self->stereo_r_input),
+    GTK_WIDGET (self->gain_box));
+  parent_box =
+    gtk_widget_get_parent (
+      GTK_WIDGET (self->gain_box));
+  gtk_box_set_child_packing (
+    GTK_BOX (parent_box),
+    GTK_WIDGET (self->gain_box), F_NO_EXPAND,
+    F_FILL, 2, GTK_PACK_START);
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->gain_box), _("Gain"));
   gtk_combo_box_set_row_separator_func (
     self->stereo_r_input,
     (GtkTreeViewRowSeparatorFunc)
@@ -679,30 +726,6 @@ track_input_expander_widget_init (
   g_signal_connect (
     self->stereo_r_input, "changed",
     G_CALLBACK (on_stereo_r_input_changed), self);
-
-  /* add bot widgets */
-  self->bot_widgets =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->bot_widgets), true);
-  self->mono =
-    z_gtk_toggle_button_new_with_icon ("mono");
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->mono), true);
-  gtk_container_add (
-    GTK_CONTAINER (self->bot_widgets),
-    GTK_WIDGET (self->mono));
-  g_signal_connect (
-    self->mono, "toggled",
-    G_CALLBACK (on_mono_toggled), self);
-  GtkWidget * gain_lbl = gtk_label_new (_("Gain"));
-  gtk_widget_set_visible (gain_lbl, true);
-  gtk_container_add (
-    GTK_CONTAINER (self->bot_widgets), gain_lbl);
-  two_col_expander_box_widget_add_single (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    GTK_WIDGET (self->bot_widgets));
 
   /* set name and icon */
   expander_box_widget_set_label (
@@ -720,4 +743,11 @@ track_input_expander_widget_init (
     self->stereo_r_input, PANGO_ELLIPSIZE_END);
   z_gtk_combo_box_set_ellipsize_mode (
     self->midi_channels, PANGO_ELLIPSIZE_END);
+
+  /* add css classes */
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self));
+  gtk_style_context_add_class (
+    context, "track-input-expander");
 }

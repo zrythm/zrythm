@@ -154,4 +154,10 @@
 #define F_SOFT 1
 #define F_NOT_SOFT 0
 
+#define F_EXPAND 1
+#define F_NO_EXPAND 0
+
+#define F_FILL 1
+#define F_NO_FILL 0
+
 #endif

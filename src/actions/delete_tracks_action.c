@@ -338,6 +338,9 @@ delete_tracks_action_undo (
           Port * prj_port =
             port_find_from_identifier (&port->id);
 
+          /* set value */
+          prj_port->control = port->control;
+
           /*char port_label[600];*/
           /*port_get_full_designation (*/
             /*port, port_label);*/

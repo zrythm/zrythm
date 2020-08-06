@@ -58,8 +58,14 @@ typedef struct _TrackInputExpanderWidget
   /** MIDI channels selector. */
   GtkComboBox *      midi_channels;
 
-  GtkBox *           bot_widgets;
+  /** Size group for audio inputs. */
+  GtkSizeGroup *     audio_input_size_group;
+
+  /** Mono switch for audio tracks. */
   GtkToggleButton *  mono;
+
+  /** Gain knob for audio tracks. */
+  GtkBox *           gain_box;
   KnobWidget *       gain;
 
   /** Track the TrackInputExpanderWidget is

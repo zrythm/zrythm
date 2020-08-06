@@ -18,6 +18,7 @@
 
 #include "gui/widgets/expander_box.h"
 #include "gui/widgets/two_col_expander_box.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 
 G_DEFINE_TYPE_WITH_PRIVATE (
@@ -113,24 +114,15 @@ two_col_expander_box_widget_add_pair (
   /* pack the widgets */
   gtk_box_pack_start (
     GTK_BOX (box),
-    widget1,
-    1, // expand
-    1, // fill
-    0); // spacing
+    widget1, F_EXPAND, F_FILL, 0);
   gtk_box_pack_start (
     GTK_BOX (box),
-    widget2,
-    1, // expand
-    1, // fill
-    0); // spacing
+    widget2, F_EXPAND, F_FILL, 0);
 
   /* pack the box to the original box */
   gtk_box_pack_start (
     GTK_BOX (prv->content),
-    box,
-    0, // expand
-    0, // fill
-    0); // spacing
+    box, F_NO_EXPAND, F_NO_FILL, 0);
 }
 
 /**
@@ -148,10 +140,7 @@ two_col_expander_box_widget_add_single (
   /* pack the widget to the original box */
   gtk_box_pack_start (
     GTK_BOX (prv->content),
-    widget,
-    0, // expand
-    0, // fill
-    0); // spacing
+    widget, F_NO_EXPAND, F_NO_FILL, 0);
 }
 
 /**

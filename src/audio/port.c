@@ -266,7 +266,16 @@ port_find_from_identifier (
             }
           break;
         case TYPE_CONTROL:
-          if (id->flags &
+          if (id->flags & PORT_FLAG_TP_MONO)
+            {
+              return tr->processor->mono;
+            }
+          else if (id->flags &
+                     PORT_FLAG_TP_INPUT_GAIN)
+            {
+              return tr->processor->input_gain;
+            }
+          else if (id->flags &
                 PORT_FLAG_MIDI_AUTOMATABLE)
             {
               return

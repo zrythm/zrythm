@@ -394,6 +394,13 @@ track_clone (
         }
     }
 
+  /* copy processor values */
+  if (track->processor)
+    {
+      track_processor_copy_values (
+        new_track->processor, track->processor);
+    }
+
   /* check that source track is not affected
    * during unit tests */
   if (ZRYTHM_TESTING && src_is_project)

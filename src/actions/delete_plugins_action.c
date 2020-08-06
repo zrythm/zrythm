@@ -210,6 +210,8 @@ delete_plugins_action_undo (
         }
     }
 
+  /* FIXME revert port connections */
+
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   EVENTS_PUSH (ET_PLUGINS_ADDED, ch);

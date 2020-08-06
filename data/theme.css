@@ -390,6 +390,13 @@ modulator-view two-col-expander-box
   border-bottom-right-radius: 6px;
 }
 
+/* make mono switch smaller */
+.track-input-expander button.toggle
+{
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
 .inspector expander-box >button,
 .inspector two-col-expander-box>button
 {

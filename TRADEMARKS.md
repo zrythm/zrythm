@@ -63,8 +63,8 @@ permission from Alexandros Theodotou.
 You may further distribute altered copies of Zrythm
 that include the Zrythm trademarks, provided that
 alterations solely serve the purposes of:
-- porting Zrythm to a free software distribution
-approved by the Free Software Foundation at
+- porting Zrythm to a free system distribution
+currently approved by the Free Software Foundation at
 https://www.gnu.org/distros/free-distros.html, OR
 - fixing a bug in Zrythm that has already been
 acknowledged by Alexandros Theodotou or CVE
