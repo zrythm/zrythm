@@ -238,6 +238,12 @@ typedef enum PortFlags
 
   /** This is the plugin gain. */
   PORT_FLAG_PLUGIN_GAIN = 1 << 25,
+
+  /** Track processor input mono switch. */
+  PORT_FLAG_TP_MONO = 1 << 26,
+
+  /** Track processor input gain. */
+  PORT_FLAG_TP_INPUT_GAIN = 1 << 27,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -269,6 +275,8 @@ port_flags_bitvals[] =
   { .name = "time_sig", .offset = 23, .bits = 1 },
   { .name = "generic_plugin_port", .offset = 24, .bits = 1 },
   { .name = "plugin_gain", .offset = 25, .bits = 1 },
+  { .name = "tp_mono", .offset = 26, .bits = 1 },
+  { .name = "tp_input_gain", .offset = 27, .bits = 1 },
 };
 
 /**

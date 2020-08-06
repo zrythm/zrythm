@@ -23,6 +23,7 @@
 #include "audio/audio_track.h"
 #include "audio/channel.h"
 #include "audio/clip.h"
+#include "audio/control_port.h"
 #include "audio/control_room.h"
 #include "audio/engine.h"
 #include "audio/fader.h"
@@ -244,6 +245,32 @@ track_processor_new (
     case TYPE_AUDIO:
       init_stereo_out_ports (self, false);
       init_stereo_out_ports (self, true);
+      if (tr->type == TRACK_TYPE_AUDIO)
+        {
+          self->mono =
+            port_new_with_type (
+              TYPE_CONTROL, FLOW_INPUT,
+              "TP Mono Toggle");
+          port_set_owner_track_processor (
+            self->mono, self);
+          self->mono->id.flags |= PORT_FLAG_TOGGLE;
+          self->mono->id.flags |= PORT_FLAG_TP_MONO;
+          self->input_gain =
+            port_new_with_type (
+              TYPE_CONTROL, FLOW_INPUT,
+              "TP Input Gain");
+          self->input_gain->minf = 0.f;
+          self->input_gain->maxf = 4.f;
+          self->input_gain->zerof = 0.f;
+          self->input_gain->deff = 1.f;
+          self->input_gain->id.flags |=
+            PORT_FLAG_TP_INPUT_GAIN;
+          port_set_control_value (
+            self->input_gain, 1.f, F_NOT_NORMALIZED,
+            F_NO_PUBLISH_EVENTS);
+          port_set_owner_track_processor (
+            self->input_gain, self);
+        }
       break;
     default:
       break;
@@ -278,6 +305,14 @@ track_processor_append_ports (
     {
       _ADD (self->stereo_in->l);
       _ADD (self->stereo_in->r);
+    }
+  if (self->mono)
+    {
+      _ADD (self->mono);
+    }
+  if (self->input_gain)
+    {
+      _ADD (self->input_gain);
     }
   if (self->stereo_out)
     {
@@ -374,6 +409,8 @@ track_processor_disconnect_all (
   switch (track->in_signal_type)
     {
     case TYPE_AUDIO:
+      port_disconnect_all (self->mono);
+      port_disconnect_all (self->input_gain);
       port_disconnect_all (self->stereo_in->l);
       port_disconnect_all (self->stereo_in->r);
       port_disconnect_all (self->stereo_out->l);
@@ -552,9 +589,24 @@ track_processor_process (
             l < AUDIO_ENGINE->block_length);
 
           self->stereo_out->l->buf[l] +=
-            self->stereo_in->l->buf[l];
-          self->stereo_out->r->buf[l] +=
-            self->stereo_in->r->buf[l];
+            self->stereo_in->l->buf[l] *
+            (self->input_gain ?
+              self->input_gain->control : 1.f);
+          if (self->mono &&
+              control_port_is_toggled (self->mono))
+            {
+              self->stereo_out->r->buf[l] +=
+                self->stereo_in->l->buf[l] *
+                (self->input_gain ?
+                  self->input_gain->control : 1.f);
+            }
+          else
+            {
+              self->stereo_out->r->buf[l] +=
+                self->stereo_in->r->buf[l] *
+                (self->input_gain ?
+                  self->input_gain->control : 1.f);
+            }
         }
       break;
     case TYPE_EVENT:
@@ -776,6 +828,16 @@ track_processor_set_track_pos (
 {
   self->track_pos = pos;
 
+  if (self->mono)
+    {
+      port_update_track_pos (
+        self->mono, NULL, pos);
+    }
+  if (self->input_gain)
+    {
+      port_update_track_pos (
+        self->input_gain, NULL, pos);
+    }
   if (self->stereo_in)
     {
       port_update_track_pos (
@@ -814,6 +876,18 @@ void
 track_processor_free (
   TrackProcessor * self)
 {
+  if (IS_PORT (self->mono))
+    {
+      port_disconnect_all (self->mono);
+      object_free_w_func_and_null (
+        port_free, self->mono);
+    }
+  if (IS_PORT (self->input_gain))
+    {
+      port_disconnect_all (self->input_gain);
+      object_free_w_func_and_null (
+        port_free, self->input_gain);
+    }
   if (self->stereo_in)
     {
       stereo_ports_disconnect (self->stereo_in);

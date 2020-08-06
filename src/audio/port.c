@@ -2737,7 +2737,10 @@ port_sum_signal_from_inputs (
             port->id.owner_type ==
               PORT_OWNER_TYPE_MONITOR_FADER ||
             port->id.owner_type ==
-              PORT_OWNER_TYPE_PREFADER)
+              PORT_OWNER_TYPE_PREFADER ||
+            port->id.flags & PORT_FLAG_TP_MONO ||
+            port->id.flags &
+              PORT_FLAG_TP_INPUT_GAIN)
           {
             break;
           }

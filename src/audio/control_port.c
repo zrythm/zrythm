@@ -46,7 +46,7 @@ control_port_get_val (
 /**
  * Returns if the control port is toggled.
  */
-int
+bool
 control_port_is_toggled (
   Port * self)
 {

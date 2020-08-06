@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,12 +17,15 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/control_port.h"
 #include "audio/engine.h"
 #include "audio/ext_port.h"
 #include "audio/track.h"
 #include "gui/widgets/editable_label.h"
+#include "gui/widgets/knob.h"
 #include "gui/widgets/track_input_expander.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/string.h"
 
@@ -486,6 +489,30 @@ setup_midi_channels_cb (
     _("MIDI channel to filter to"));
 }
 
+static void
+set_gain (
+  void * _port,
+  float  gain)
+{
+  Port * port = (Port *) _port;
+  g_return_if_fail (IS_PORT (port));
+  port_set_control_value (
+    port, gain, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
+}
+
+static void
+on_mono_toggled (
+  GtkToggleButton *          btn,
+  TrackInputExpanderWidget * self)
+{
+  if (!self->track ||
+      self->track->type != TRACK_TYPE_AUDIO)
+    return;
+
+  control_port_set_val_from_normalized (
+    self->track->processor->mono,
+    gtk_toggle_button_get_active (btn), false);
+}
 
 /**
  * Refreshes each field.
@@ -512,6 +539,14 @@ track_input_expander_widget_refresh (
     GTK_WIDGET (self->stereo_l_input), 0);
   gtk_widget_set_visible (
     GTK_WIDGET (self->stereo_r_input), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->bot_widgets), 0);
+  if (self->gain)
+    {
+      gtk_container_remove (
+        GTK_CONTAINER (self->bot_widgets),
+        GTK_WIDGET (self->gain));
+    }
 
   if (track->type == TRACK_TYPE_MIDI ||
       track->type == TRACK_TYPE_INSTRUMENT)
@@ -541,6 +576,26 @@ track_input_expander_widget_refresh (
        * input */
       setup_ext_ins_cb (self, 0, 1);
       setup_ext_ins_cb (self, 0, 0);
+
+      Port * port = track->processor->input_gain;
+      self->gain =
+        knob_widget_new_simple (
+          control_port_get_val, set_gain,
+          port, port->minf, port->maxf, 24,
+          port->zerof);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->gain), true);
+      gtk_container_add (
+        GTK_CONTAINER (self->bot_widgets),
+        GTK_WIDGET (self->gain));
+
+      gtk_toggle_button_set_active (
+        self->mono,
+        control_port_is_toggled (
+          track->processor->mono));
+
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->bot_widgets), true);
 
       expander_box_widget_set_icon_name (
         Z_EXPANDER_BOX_WIDGET (self),
@@ -624,6 +679,30 @@ track_input_expander_widget_init (
   g_signal_connect (
     self->stereo_r_input, "changed",
     G_CALLBACK (on_stereo_r_input_changed), self);
+
+  /* add bot widgets */
+  self->bot_widgets =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2));
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->bot_widgets), true);
+  self->mono =
+    z_gtk_toggle_button_new_with_icon ("mono");
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->mono), true);
+  gtk_container_add (
+    GTK_CONTAINER (self->bot_widgets),
+    GTK_WIDGET (self->mono));
+  g_signal_connect (
+    self->mono, "toggled",
+    G_CALLBACK (on_mono_toggled), self);
+  GtkWidget * gain_lbl = gtk_label_new (_("Gain"));
+  gtk_widget_set_visible (gain_lbl, true);
+  gtk_container_add (
+    GTK_CONTAINER (self->bot_widgets), gain_lbl);
+  two_col_expander_box_widget_add_single (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    GTK_WIDGET (self->bot_widgets));
 
   /* set name and icon */
   expander_box_widget_set_label (

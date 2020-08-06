@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,26 +40,31 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _EditableLabelWidget
   EditableLabelWidget;
 typedef struct Track Track;
+typedef struct _KnobWidget KnobWidget;
 
 typedef struct _TrackInputExpanderWidget
 {
   TwoColExpanderBoxWidget parent_instance;
 
   /** Track input port for midi. */
-  GtkComboBox *           midi_input;
+  GtkComboBox *      midi_input;
 
   /** Track input port for audio L. */
-  GtkComboBox *           stereo_l_input;
+  GtkComboBox *      stereo_l_input;
 
   /** Track input port for audio R. */
-  GtkComboBox *           stereo_r_input;
+  GtkComboBox *      stereo_r_input;
 
   /** MIDI channels selector. */
-  GtkComboBox *           midi_channels;
+  GtkComboBox *      midi_channels;
+
+  GtkBox *           bot_widgets;
+  GtkToggleButton *  mono;
+  KnobWidget *       gain;
 
   /** Track the TrackInputExpanderWidget is
    * associated with. */
-  Track *                 track;
+  Track *            track;
 } TrackInputExpanderWidget;
 
 /**

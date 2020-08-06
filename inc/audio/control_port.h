@@ -67,7 +67,7 @@ control_port_real_val_to_normalized (
 /**
  * Returns if the control port is toggled.
  */
-int
+bool
 control_port_is_toggled (
   Port * self);
 

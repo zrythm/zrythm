@@ -652,6 +652,23 @@ graph_setup (
       g_warn_if_fail (node);
       if (tr->in_signal_type == TYPE_AUDIO)
         {
+          if (tr->type == TRACK_TYPE_AUDIO)
+            {
+              port = tr->processor->mono;
+              node2 =
+                graph_find_node_from_port (
+                  self, port);
+              graph_node_connect (node2, node);
+              graph_node_connect (
+                initial_processor_node, node2);
+              port = tr->processor->input_gain;
+              node2 =
+                graph_find_node_from_port (
+                  self, port);
+              graph_node_connect (node2, node);
+              graph_node_connect (
+                initial_processor_node, node2);
+            }
           port = tr->processor->stereo_in->l;
           node2 =
             graph_find_node_from_port (self, port);

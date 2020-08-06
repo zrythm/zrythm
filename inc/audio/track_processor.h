@@ -62,6 +62,12 @@ typedef struct TrackProcessor
    */
   StereoPorts *    stereo_in;
 
+  /** Mono toggle, if audio. */
+  Port *           mono;
+
+  /** Input gain, if audio. */
+  Port *           input_gain;
+
   /**
    * L & R audio output ports, if audio.
    */
@@ -122,6 +128,12 @@ typedef struct TrackProcessor
 static const cyaml_schema_field_t
 track_processor_fields_schema[] =
 {
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    TrackProcessor, mono,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    TrackProcessor, input_gain,
+    port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor, midi_in,
     port_fields_schema),
