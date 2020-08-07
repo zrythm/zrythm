@@ -29,6 +29,7 @@ widget_srcs = files([
   'bind_cc_dialog.c',
   'bot_bar.c',
   'bot_dock_edge.c',
+  'button_with_menu.c',
   'center_dock.c',
   'channel.c',
   'channel_send.c',

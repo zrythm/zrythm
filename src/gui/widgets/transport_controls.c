@@ -20,13 +20,16 @@
 #include "project.h"
 #include "audio/transport.h"
 #include "audio/midi.h"
+#include "gui/widgets/button_with_menu.h"
 #include "gui/widgets/transport_controls.h"
 #include "settings/settings.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (TransportControlsWidget,
                transport_controls_widget,
@@ -133,7 +136,28 @@ static void
 transport_controls_widget_init (
   TransportControlsWidget * self)
 {
+  g_type_ensure (BUTTON_WITH_MENU_WIDGET_TYPE);
+
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  /* setup record button */
+  self->trans_record_btn =
+    z_gtk_toggle_button_new_with_icon (
+      "media-record");
+  z_gtk_widget_add_style_class (
+    GTK_WIDGET (self->trans_record_btn),
+    "record-button");
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->trans_record_btn), 20, -1);
+  button_with_menu_widget_setup (
+    self->trans_record,
+    GTK_BUTTON (self->trans_record_btn),
+    NULL, false, 38, _("Record"),
+    _("Record options"));
+
+  /* make play button bigger */
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->play), 30, -1);
 
   gtk_toggle_button_set_active (
     self->loop,
@@ -151,7 +175,7 @@ transport_controls_widget_init (
     GTK_WIDGET (self->stop), "clicked",
     G_CALLBACK (stop_clicked_cb), NULL);
   g_signal_connect (
-    GTK_WIDGET (self->trans_record), "toggled",
+    GTK_WIDGET (self->trans_record_btn), "toggled",
     G_CALLBACK (record_toggled_cb), NULL);
   g_signal_connect (
     GTK_WIDGET(self->forward), "clicked",

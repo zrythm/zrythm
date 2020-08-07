@@ -40,7 +40,15 @@
       </object>
     </child>
     <child>
-      <object class="GtkToggleButton" id="trans_record">
+      <object class="ButtonWithMenuWidget" id="trans_record">
+        <property name="visible">1</property>
+        <property name="can-focus">1</property>
+        <property name="receives-default">1</property>
+      </object>
+    </child>
+    <!--
+    <child>
+      <object class="GtkToggleButton" id="other_record">
         <style>
           <class name="record-button"/>
         </style>
@@ -57,6 +65,7 @@
         </child>
       </object>
     </child>
+    -->
     <child>
       <object class="GtkButton" id="play">
         <property name="visible">1</property>

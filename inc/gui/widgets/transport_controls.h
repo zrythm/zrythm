@@ -20,6 +20,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Transport controls widget.
+ */
+
 #ifndef __GUI_WIDGETS_TRANSPORT_CONTROLS_H__
 #define __GUI_WIDGETS_TRANSPORT_CONTROLS_H__
 
@@ -33,6 +39,18 @@ G_DECLARE_FINAL_TYPE (
   Z, TRANSPORT_CONTROLS_WIDGET,
   GtkBox)
 
+typedef struct _ButtonWithMenuWidget
+  ButtonWithMenuWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+/**
+ * Transport controls.
+ */
 typedef struct _TransportControlsWidget
 {
   GtkBox             parent_instance;
@@ -40,9 +58,14 @@ typedef struct _TransportControlsWidget
   GtkButton *        stop;
   GtkButton *        backward;
   GtkButton *        forward;
-  GtkToggleButton *  trans_record;
+  GtkToggleButton *  trans_record_btn;
+  ButtonWithMenuWidget * trans_record;
   GtkToggleButton *  loop;
   GtkToggleButton *  return_to_cue_toggle;
 } TransportControlsWidget;
+
+/**
+ * @}
+ */
 
 #endif
