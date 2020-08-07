@@ -74,6 +74,8 @@ typedef struct Metronome
   long       normal_size;
 
   channels_t normal_channels;
+
+  float      volume;
 } Metronome;
 
 /**
@@ -82,6 +84,11 @@ typedef struct Metronome
  */
 Metronome *
 metronome_new (void);
+
+void
+metronome_set_volume (
+  Metronome * self,
+  float       volume);
 
 /**
  * Queues metronome events (if any) within the

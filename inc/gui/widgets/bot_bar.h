@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -33,6 +33,8 @@ typedef struct _DigitalMeterWidget
 typedef struct _TransportControlsWidget
   TransportControlsWidget;
 typedef struct _CpuWidget CpuWidget;
+typedef struct _ButtonWithMenuWidget
+  ButtonWithMenuWidget;
 
 /**
  * @addtogroup widgets
@@ -53,6 +55,9 @@ G_DECLARE_FINAL_TYPE (
 #define MW_DIGITAL_BPM \
   MW_BOT_BAR->digital_bpm
 
+/**
+ * Bot bar.
+ */
 typedef struct _BotBarWidget
 {
   GtkBox                parent_instance;
@@ -65,44 +70,47 @@ typedef struct _BotBarWidget
   /** Status bar context id. */
   guint                 context_id;
 
-  GtkBox *                  digital_meters;
-  DigitalMeterWidget *      digital_bpm;
+  GtkBox *              digital_meters;
+  DigitalMeterWidget *  digital_bpm;
 
   /**
    * Overlay for showing things on top of the
    * playhead positionmeter.
    */
-  GtkOverlay *              playhead_overlay;
+  GtkOverlay *          playhead_overlay;
+
+  ButtonWithMenuWidget * metronome;
+  GtkToggleButton *     metronome_btn;
 
   /**
    * The playhead digital meter.
    */
-  DigitalMeterWidget *      digital_transport;
+  DigitalMeterWidget *  digital_transport;
 
   /** Jack timebase master image. */
-  GtkWidget *               master_img;
+  GtkWidget *           master_img;
 
   /** Jack client master image. */
-  GtkWidget *               client_img;
+  GtkWidget *           client_img;
 
   /**
    * Menuitems in context menu of digital transport.
    */
-  GtkCheckMenuItem *        bbt_display_check;
-  GtkCheckMenuItem *        time_display_check;
+  GtkCheckMenuItem *    bbt_display_check;
+  GtkCheckMenuItem *    time_display_check;
 
-  GtkCheckMenuItem *        timebase_master_check;
-  GtkCheckMenuItem *        transport_client_check;
-  GtkCheckMenuItem *        no_jack_transport_check;
+  GtkCheckMenuItem *    timebase_master_check;
+  GtkCheckMenuItem *    transport_client_check;
+  GtkCheckMenuItem *    no_jack_transport_check;
 
-  GtkBox *                  playhead_box;
+  GtkBox *              playhead_box;
 
-  DigitalMeterWidget *      digital_timesig;
+  DigitalMeterWidget *  digital_timesig;
   TransportControlsWidget * transport_controls;
-  CpuWidget *               cpu_load;
+  CpuWidget *           cpu_load;
 
   /** Color in hex to use in pango markups. */
-  char                      hex_color[8];
+  char                  hex_color[8];
 } BotBarWidget;
 
 void

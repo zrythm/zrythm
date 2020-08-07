@@ -39,7 +39,7 @@ void
 button_with_menu_widget_setup (
   ButtonWithMenuWidget * self,
   GtkButton *            btn,
-  GtkMenu *              menu,
+  GtkWidget *            menu_or_popover,
   bool                   downward_arrow,
   int                    height,
   const char *           btn_tooltip_text,

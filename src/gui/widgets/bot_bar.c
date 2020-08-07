@@ -27,8 +27,10 @@
 
 #include "audio/engine.h"
 #include "audio/engine_jack.h"
+#include "audio/metronome.h"
 #include "audio/transport.h"
 #include "gui/widgets/bot_bar.h"
+#include "gui/widgets/button_with_menu.h"
 #include "gui/widgets/cpu.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/main_window.h"
@@ -477,6 +479,57 @@ tick_cb (
   return G_SOURCE_CONTINUE;
 }
 
+static void
+on_metronome_volume_changed (
+  GtkRange *     range,
+  BotBarWidget * self)
+{
+  metronome_set_volume (
+    METRONOME, (float) gtk_range_get_value (range));
+}
+
+static void
+setup_metronome (
+  BotBarWidget * self)
+{
+  /* setup metronome button */
+  self->metronome_btn =
+    z_gtk_toggle_button_new_with_icon ("metronome");
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->metronome_btn), 18, -1);
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (self->metronome_btn),
+    "win.toggle-metronome");
+  button_with_menu_widget_setup (
+    self->metronome,
+    GTK_BUTTON (self->metronome_btn),
+    NULL, false, 38, _("metronome"), _("Volume"));
+
+  /* create popover for changing volume */
+  GtkPopover * popover =
+    GTK_POPOVER (
+      gtk_popover_new (
+        GTK_WIDGET (self->metronome->menu_btn)));
+  GtkScale * scale =
+    GTK_SCALE (
+      gtk_scale_new_with_range (
+        GTK_ORIENTATION_HORIZONTAL, 0.f, 2.f, 0.1f));
+  gtk_widget_set_size_request (
+    GTK_WIDGET (scale), 120, -1);
+  g_signal_connect (
+    scale, "value-changed",
+    G_CALLBACK (on_metronome_volume_changed),
+    self);
+  gtk_range_set_value (
+    GTK_RANGE (scale), METRONOME->volume);
+  gtk_widget_set_visible (GTK_WIDGET (scale), true);
+  gtk_container_add (
+    GTK_CONTAINER (popover), GTK_WIDGET (scale));
+
+  gtk_menu_button_set_popover (
+    self->metronome->menu_btn, GTK_WIDGET (popover));
+}
+
 /**
  * Sets up the bot bar.
  */
@@ -507,6 +560,7 @@ bot_bar_widget_class_init (
     klass, BotBarWidget, child)
 
   BIND_CHILD (digital_meters);
+  BIND_CHILD (metronome);
   BIND_CHILD (transport_controls);
   BIND_CHILD (cpu_load);
   BIND_CHILD (status_bar);
@@ -521,11 +575,14 @@ bot_bar_widget_init (BotBarWidget * self)
   g_type_ensure (DIGITAL_METER_WIDGET_TYPE);
   g_type_ensure (TRANSPORT_CONTROLS_WIDGET_TYPE);
   g_type_ensure (CPU_WIDGET_TYPE);
+  g_type_ensure (BUTTON_WITH_MENU_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
   ui_gdk_rgba_to_hex (
     &UI_COLORS->bright_orange, self->hex_color);
+
+  setup_metronome (self);
 
   /* setup digital meters */
   self->digital_bpm =

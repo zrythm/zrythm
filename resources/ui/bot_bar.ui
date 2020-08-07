@@ -51,19 +51,10 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToggleButton" id="metronome">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="receives_default">False</property>
-            <property name="tooltip_text" translatable="yes">Metronome</property>
-            <property name="action_name">win.toggle-metronome</property>
-            <child>
-              <object class="GtkImage">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="icon_name">metronome</property>
-              </object>
-            </child>
+          <object class="ButtonWithMenuWidget" id="metronome">
+            <property name="visible">1</property>
+            <property name="can-focus">1</property>
+            <property name="receives-default">1</property>
           </object>
           <packing>
             <property name="expand">False</property>

@@ -555,6 +555,11 @@ Args:
                  "metronome-enabled" "b" "false"
                  "Metronome enabled"
                  "Whether the metronome is enabled.")
+               (make-schema-key-with-range
+                 "metronome-volume" "d"
+                 "0.0" "2.0" "1.0"
+                 "Metronome volume"
+                 "The metronome volume in amplitude (0 to 2).")
              ))) ;; transport
 
          ;; -- print preferences schemas --

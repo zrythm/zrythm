@@ -256,7 +256,7 @@ sample_processor_queue_metronome (
         sp, &METRONOME->emphasis,
         METRONOME->emphasis_size,
         METRONOME->emphasis_channels,
-        0.1f, offset);
+        0.1f * METRONOME->volume, offset);
     }
   else if (type == METRONOME_TYPE_NORMAL)
     {
@@ -264,7 +264,7 @@ sample_processor_queue_metronome (
         sp, &METRONOME->normal,
         METRONOME->normal_size,
         METRONOME->normal_channels,
-        0.1f, offset);
+        0.1f * METRONOME->volume, offset);
     }
 
   self->num_current_samples++;

@@ -46,26 +46,6 @@
         <property name="receives-default">1</property>
       </object>
     </child>
-    <!--
-    <child>
-      <object class="GtkToggleButton" id="other_record">
-        <style>
-          <class name="record-button"/>
-        </style>
-        <property name="visible">1</property>
-        <property name="can-focus">1</property>
-        <property name="receives-default">1</property>
-        <property name="relief">none</property>
-        <property name="tooltip_text" translatable="yes">Record</property>
-        <child>
-          <object class="GtkImage">
-            <property name="visible">1</property>
-            <property name="icon-name">media-record</property>
-          </object>
-        </child>
-      </object>
-    </child>
-    -->
     <child>
       <object class="GtkButton" id="play">
         <property name="visible">1</property>

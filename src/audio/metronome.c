@@ -29,6 +29,7 @@
 #include "utils/audio.h"
 #include "utils/io.h"
 #include "utils/objects.h"
+#include "settings/settings.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -119,6 +120,12 @@ metronome_new (void)
       self->normal[i] = enc->out_frames[i];
     }
   audio_encoder_free (enc);
+
+  /* set volume */
+  self->volume =
+    (float)
+    g_settings_get_double (
+      S_TRANSPORT, "metronome-volume");
 
   return self;
 }
@@ -282,6 +289,18 @@ metronome_queue_events (
       find_and_queue_metronome (
         PLAYHEAD, &playhead_pos, loffset);
     }
+}
+
+void
+metronome_set_volume (
+  Metronome * self,
+  float       volume)
+{
+  self->volume = volume;
+
+  g_settings_set_double (
+    S_TRANSPORT, "metronome-volume",
+    (double) volume);
 }
 
 void
