@@ -560,6 +560,10 @@ Args:
                  "0.0" "2.0" "1.0"
                  "Metronome volume"
                  "The metronome volume in amplitude (0 to 2).")
+               (make-schema-key
+                 "punch-mode" "b" "false"
+                 "Punch mode enabled"
+                 "Whether punch in/out is enabled for recording.")
              ))) ;; transport
 
          ;; -- print preferences schemas --

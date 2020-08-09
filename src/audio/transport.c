@@ -63,6 +63,10 @@ init_common (
     ZRYTHM_TESTING ? true :
     g_settings_get_boolean (
       S_TRANSPORT, "metronome-enabled");
+  self->punch_mode =
+    ZRYTHM_TESTING ? true :
+    g_settings_get_boolean (
+      S_TRANSPORT, "punch-mode");
 
   zix_sem_init (&self->paused, 0);
 }
@@ -257,6 +261,16 @@ transport_stretch_audio_regions (
             }
         }
     }
+}
+
+void
+transport_set_punch_mode_enabled (
+  Transport * self,
+  bool        enabled)
+{
+  self->punch_mode = enabled;
+  g_settings_set_boolean (
+    S_TRANSPORT, "punch-mode", enabled);
 }
 
 /**

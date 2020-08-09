@@ -503,7 +503,7 @@ setup_metronome (
   button_with_menu_widget_setup (
     self->metronome,
     GTK_BUTTON (self->metronome_btn),
-    NULL, false, 38, _("metronome"), _("Volume"));
+    false, 38, _("Metronome"), _("Volume"));
 
   /* create popover for changing volume */
   GtkPopover * popover =

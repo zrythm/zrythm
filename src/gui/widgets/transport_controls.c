@@ -107,6 +107,61 @@ backward_clicked_cb (GtkButton * backward,
 }
 
 static void
+change_state_punch_mode (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  bool value = g_variant_get_boolean (variant);
+  transport_set_punch_mode_enabled (
+    TRANSPORT, value);
+  g_message ("setting punch mode to %d", value);
+  g_simple_action_set_state (action, variant);
+}
+
+static void
+setup_record_btn (
+  TransportControlsWidget * self)
+{
+  self->trans_record_btn =
+    z_gtk_toggle_button_new_with_icon (
+      "media-record");
+  z_gtk_widget_add_style_class (
+    GTK_WIDGET (self->trans_record_btn),
+    "record-button");
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->trans_record_btn), 20, -1);
+  button_with_menu_widget_setup (
+    self->trans_record,
+    GTK_BUTTON (self->trans_record_btn),
+    false, 38, _("Record"),
+    _("Record options"));
+
+  /* set menu */
+  GMenu * menu = g_menu_new ();
+  g_menu_append (
+    menu, _("Punch mode"),
+    "record-btn.punch-mode");
+  GSimpleActionGroup * action_group =
+    g_simple_action_group_new ();
+  GActionEntry actions[] = {
+    { "punch-mode", NULL, NULL,
+      (TRANSPORT->punch_mode ? "true" : "false"),
+      change_state_punch_mode },
+  };
+  g_action_map_add_action_entries (
+    G_ACTION_MAP (action_group), actions,
+    G_N_ELEMENTS (actions), self);
+  gtk_widget_insert_action_group (
+    GTK_WIDGET (self->trans_record),
+    "record-btn",
+    G_ACTION_GROUP (action_group));
+  gtk_menu_button_set_menu_model (
+    self->trans_record->menu_btn,
+    G_MENU_MODEL (menu));
+}
+
+static void
 transport_controls_widget_class_init (
   TransportControlsWidgetClass * _klass)
 {
@@ -141,19 +196,7 @@ transport_controls_widget_init (
   gtk_widget_init_template (GTK_WIDGET (self));
 
   /* setup record button */
-  self->trans_record_btn =
-    z_gtk_toggle_button_new_with_icon (
-      "media-record");
-  z_gtk_widget_add_style_class (
-    GTK_WIDGET (self->trans_record_btn),
-    "record-button");
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->trans_record_btn), 20, -1);
-  button_with_menu_widget_setup (
-    self->trans_record,
-    GTK_BUTTON (self->trans_record_btn),
-    NULL, false, 38, _("Record"),
-    _("Record options"));
+  setup_record_btn (self);
 
   /* make play button bigger */
   gtk_widget_set_size_request (

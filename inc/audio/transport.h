@@ -171,6 +171,9 @@ typedef struct Transport
   /** Looping or not. */
   bool              loop;
 
+  /** Whether punch in/out mode is enabled. */
+  bool              punch_mode;
+
   /** Recording or not. */
   int               recording;
 
@@ -290,6 +293,11 @@ transport_stretch_audio_regions (
   TimelineSelections * sel,
   bool                 with_fixed_ratio,
   double               time_ratio);
+
+void
+transport_set_punch_mode_enabled (
+  Transport * self,
+  bool        enabled);
 
 /**
  * Updates beat unit and anything depending on it.

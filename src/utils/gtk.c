@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -226,16 +226,18 @@ z_gtk_configure_simple_combo_box (
 }
 
 void
-z_gtk_button_set_icon_name (GtkButton * btn,
-                            const char * name)
+z_gtk_button_set_icon_name (
+  GtkButton * btn,
+  const char * name)
 {
   GtkWidget * img =
     gtk_image_new_from_icon_name (
       name,
       GTK_ICON_SIZE_BUTTON);
   gtk_widget_set_visible (img, 1);
-  gtk_container_add (GTK_CONTAINER (btn),
-                     img);
+  z_gtk_container_remove_all_children (
+    GTK_CONTAINER (btn));
+  gtk_container_add (GTK_CONTAINER (btn), img);
 }
 
 /**
