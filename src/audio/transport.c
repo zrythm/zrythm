@@ -112,6 +112,8 @@ transport_new (
   position_set_to_bar (&self->cue_pos, 1);
   position_set_to_bar (&self->loop_start_pos, 1);
   position_set_to_bar (&self->loop_end_pos, 5);
+  position_set_to_bar (&self->punch_in_pos, 3);
+  position_set_to_bar (&self->punch_out_pos, 5);
 
   position_set_to_bar (&self->range_1, 1);
   position_set_to_bar (&self->range_2, 1);
@@ -143,6 +145,12 @@ transport_clone (
   position_set_to_pos (
     &new_transport->cue_pos,
     &self->cue_pos);
+  position_set_to_pos (
+    &new_transport->punch_in_pos,
+    &self->punch_in_pos);
+  position_set_to_pos (
+    &new_transport->punch_out_pos,
+    &self->punch_out_pos);
 
   return new_transport;
 }
@@ -540,14 +548,14 @@ transport_update_position_frames (
     &self->playhead_pos);
   position_update_ticks_and_frames (
     &self->cue_pos);
-  /*position_update_ticks_and_frames (*/
-    /*&TRANSPORT->start_marker_pos);*/
-  /*position_update_ticks_and_frames (*/
-    /*&TRANSPORT->end_marker_pos);*/
   position_update_ticks_and_frames (
     &self->loop_start_pos);
   position_update_ticks_and_frames (
     &self->loop_end_pos);
+  position_update_ticks_and_frames (
+    &self->punch_in_pos);
+  position_update_ticks_and_frames (
+    &self->punch_out_pos);
 }
 
 #define GATHER_MARKERS \

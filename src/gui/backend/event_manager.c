@@ -1174,6 +1174,7 @@ process_events (void * data)
           clip_editor_redraw_region (CLIP_EDITOR);
           break;
         case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
+        case ET_TIMELINE_PUNCH_MARKER_POS_CHANGED:
           ruler_widget_redraw_whole (
             (RulerWidget *) MW_RULER);
           ruler_widget_redraw_whole (

@@ -103,6 +103,12 @@ typedef struct Transport
   /** Loop end position. */
   Position      loop_end_pos;
 
+  /** Punch in position. */
+  Position      punch_in_pos;
+
+  /** Punch out position. */
+  Position      punch_out_pos;
+
   /**
    * Selected range.
    *
@@ -218,6 +224,12 @@ transport_fields_schema[] =
     position_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
     Transport, loop_end_pos,
+    position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Transport, punch_in_pos,
+    position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Transport, punch_out_pos,
     position_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
     Transport, range_1, position_fields_schema),

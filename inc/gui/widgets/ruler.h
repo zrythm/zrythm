@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -86,6 +86,8 @@ typedef enum RWTarget
   RW_TARGET_PLAYHEAD,
   RW_TARGET_LOOP_START,
   RW_TARGET_LOOP_END,
+  RW_TARGET_PUNCH_IN,
+  RW_TARGET_PUNCH_OUT,
   RW_TARGET_CLIP_START,
   RW_TARGET_RANGE, ///< for timeline only
 } RWTarget;

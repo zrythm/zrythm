@@ -20,6 +20,8 @@
 #include "project.h"
 #include "audio/transport.h"
 #include "audio/midi.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/button_with_menu.h"
 #include "gui/widgets/transport_controls.h"
 #include "settings/settings.h"
@@ -117,6 +119,9 @@ change_state_punch_mode (
     TRANSPORT, value);
   g_message ("setting punch mode to %d", value);
   g_simple_action_set_state (action, variant);
+
+  EVENTS_PUSH (
+    ET_TIMELINE_PUNCH_MARKER_POS_CHANGED, NULL);
 }
 
 static void

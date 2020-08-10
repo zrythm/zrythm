@@ -383,6 +383,44 @@ timeline_ruler_on_drag_update (
                 /*self->playhead, 1);*/
             }
           else if (self->target ==
+                     RW_TARGET_PUNCH_IN)
+            {
+              g_message ("moving punch in");
+              /* if position is acceptable */
+              if (position_compare (
+                    &tmp, &timeline_start) >= 0 &&
+                  position_compare (
+                    &tmp,
+                    &TRANSPORT->punch_out_pos) < 0)
+                {
+                  position_set_to_pos (
+                    &TRANSPORT->punch_in_pos, &tmp);
+                  transport_update_position_frames (
+                    TRANSPORT);
+                  EVENTS_PUSH (
+                    ET_TIMELINE_PUNCH_MARKER_POS_CHANGED,
+                    NULL);
+                }
+            }
+          else if (self->target == RW_TARGET_PUNCH_OUT)
+            {
+              /* if position is acceptable */
+              if (position_compare (
+                    &tmp, &timeline_end) <= 0 &&
+                  position_compare (
+                    &tmp,
+                    &TRANSPORT->punch_in_pos) > 0)
+                {
+                  position_set_to_pos (
+                    &TRANSPORT->punch_out_pos, &tmp);
+                  transport_update_position_frames (
+                    TRANSPORT);
+                  EVENTS_PUSH (
+                    ET_TIMELINE_PUNCH_MARKER_POS_CHANGED,
+                    NULL);
+                }
+            }
+          else if (self->target ==
                      RW_TARGET_LOOP_START)
             {
               g_message ("moving loop start");

@@ -391,6 +391,87 @@ draw_loop_end (
 }
 
 static void
+get_punch_in_rect (
+  RulerWidget *  self,
+  GdkRectangle * rect)
+{
+  rect->x =
+    ui_pos_to_px_timeline (
+      &TRANSPORT->punch_in_pos, 1);
+  rect->y = RW_RULER_MARKER_SIZE;
+  rect->width = RW_RULER_MARKER_SIZE;
+  rect->height = RW_RULER_MARKER_SIZE;
+}
+
+static void
+draw_punch_in (
+  RulerWidget *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
+{
+  /* draw rect */
+  GdkRectangle dr;
+  get_punch_in_rect (self, &dr);
+
+  if (dr.x >=
+        rect->x - dr.width &&
+      dr.x <=
+        rect->x + rect->width)
+    {
+      cairo_set_source_rgb (cr, 0.9, 0.1, 0.1);
+      cairo_set_line_width (cr, 2);
+      cairo_move_to (
+        cr, dr.x - rect->x, dr.y);
+      cairo_line_to (
+        cr, dr.x - rect->x, dr.y + dr.height);
+      cairo_line_to (
+        cr, (dr.x + dr.width) - rect->x, dr.y);
+      cairo_fill (cr);
+    }
+}
+
+static void
+get_punch_out_rect (
+  RulerWidget *  self,
+  GdkRectangle * rect)
+{
+  rect->x =
+    ui_pos_to_px_timeline (
+      &TRANSPORT->punch_out_pos, 1) -
+    RW_RULER_MARKER_SIZE;
+  rect->y = RW_RULER_MARKER_SIZE;
+  rect->width = RW_RULER_MARKER_SIZE;
+  rect->height = RW_RULER_MARKER_SIZE;
+}
+
+static void
+draw_punch_out (
+  RulerWidget *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
+{
+  /* draw rect */
+  GdkRectangle dr;
+  get_punch_out_rect (self, &dr);
+
+  if (dr.x >=
+        rect->x - dr.width &&
+      dr.x <=
+        rect->x + rect->width)
+    {
+      cairo_set_source_rgb (cr, 0.9, 0.1, 0.1);
+      cairo_set_line_width (cr, 2);
+      cairo_move_to (cr, dr.x - rect->x, dr.y);
+      cairo_line_to (
+        cr, (dr.x + dr.width) - rect->x, dr.y);
+      cairo_line_to (
+        cr, (dr.x + dr.width) - rect->x,
+        dr.y + dr.height);
+      cairo_fill (cr);
+    }
+}
+
+static void
 get_clip_start_rect (
   RulerWidget *  self,
   GdkRectangle * rect)
@@ -920,6 +1001,15 @@ ruler_draw_cb (
       draw_loop_end (
         self, cr_to_use, &rect);
 
+      if (self->type == TYPE (TIMELINE) &&
+          TRANSPORT->punch_mode)
+        {
+          draw_punch_in (
+            self, cr_to_use, &rect);
+          draw_punch_out (
+            self, cr_to_use, &rect);
+        }
+
       /* --------- draw playhead ---------- */
 
       draw_playhead (self, cr_to_use, &rect);
@@ -959,6 +1049,34 @@ is_loop_end_hit (
 {
   GdkRectangle rect;
   get_loop_end_rect (self, &rect);
+
+  return
+    x >= rect.x && x <= rect.x + rect.width &&
+    y >= rect.y && y <= rect.y + rect.height;
+}
+
+static int
+is_punch_in_hit (
+  RulerWidget * self,
+  double        x,
+  double        y)
+{
+  GdkRectangle rect;
+  get_punch_in_rect (self, &rect);
+
+  return
+    x >= rect.x && x <= rect.x + rect.width &&
+    y >= rect.y && y <= rect.y + rect.height;
+}
+
+static int
+is_punch_out_hit (
+  RulerWidget * self,
+  double        x,
+  double        y)
+{
+  GdkRectangle rect;
+  get_punch_out_rect (self, &rect);
 
   return
     x >= rect.x && x <= rect.x + rect.width &&
@@ -1102,6 +1220,10 @@ drag_begin (
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
+  int punch_in_hit =
+    is_punch_in_hit (self, start_x, start_y);
+  int punch_out_hit =
+    is_punch_out_hit (self, start_x, start_y);
   int loop_start_hit =
     is_loop_start_hit (self, start_x, start_y);
   int loop_end_hit =
@@ -1110,7 +1232,21 @@ drag_begin (
     is_clip_start_hit (self, start_x, start_y);
 
   /* if one of the markers hit */
-  if (loop_start_hit)
+  if (punch_in_hit)
+    {
+      self->action =
+        UI_OVERLAY_ACTION_STARTING_MOVING;
+      self->target =
+        RW_TARGET_PUNCH_IN;
+    }
+  else if (punch_out_hit)
+    {
+      self->action =
+        UI_OVERLAY_ACTION_STARTING_MOVING;
+      self->target =
+        RW_TARGET_PUNCH_OUT;
+    }
+  else if (loop_start_hit)
     {
       self->action =
         UI_OVERLAY_ACTION_STARTING_MOVING;
@@ -1221,6 +1357,12 @@ on_motion (
       GTK_WIDGET (self));
   if (event->type == GDK_MOTION_NOTIFY)
     {
+      bool punch_in_hit =
+        is_punch_in_hit (
+          self, event->x, event->y);
+      bool punch_out_hit =
+        is_punch_out_hit (
+          self, event->x, event->y);
       bool loop_start_hit =
         is_loop_start_hit (
           self, event->x, event->y);
@@ -1238,13 +1380,15 @@ on_motion (
         ruler_widget_is_range_hit (
           self, RW_RANGE_END, event->x, event->y);
 
-      if (loop_start_hit || clip_start_hit ||
+      if (punch_in_hit ||
+          loop_start_hit || clip_start_hit ||
           range_start_hit)
         {
           ui_set_cursor_from_name (
             GTK_WIDGET (self), "w-resize");
         }
-      else if (loop_end_hit || range_end_hit)
+      else if (punch_out_hit ||
+               loop_end_hit || range_end_hit)
         {
           ui_set_cursor_from_name (
             GTK_WIDGET (self), "e-resize");
