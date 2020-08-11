@@ -19,6 +19,7 @@
 build
 builddir
 _build
+tmp_builddir
 /Makefile
 /doc/Doxyfile.cfg
 /config.h
