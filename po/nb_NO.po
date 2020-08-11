@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-07-23 18:12+0100\n"
-"PO-Revision-Date: 2020-07-24 14:02+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-08-11 11:32+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/nb_NO/>\n"
 "Language: nb_NO\n"
@@ -435,7 +435,7 @@ msgstr "Henter innstillingene"
 #: src/zrythm_app.c:277
 #, fuzzy, c-format
 msgid "Initializing %s directories"
-msgstr "Henter innstillingene"
+msgstr "Igangsetter %s kataloger"
 
 #: src/zrythm_app.c:287
 #, fuzzy
@@ -1147,9 +1147,9 @@ msgid "Curve algorithm"
 msgstr ""
 
 #: src/gui/widgets/header.c:99
-#, fuzzy, c-format
+#, c-format
 msgid "About %s"
-msgstr "Sett opp Zrythm"
+msgstr "Om %s"
 
 #: src/gui/widgets/header.c:104
 #, fuzzy
@@ -1662,7 +1662,7 @@ msgstr "MIDI-kanal %d"
 #: src/gui/widgets/track.c:1677
 #, fuzzy, c-format
 msgid "Lane %d MIDI Ch"
-msgstr "MIDI"
+msgstr "Spor %d MIDI-kanal"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:109
 #, fuzzy
@@ -1759,7 +1759,7 @@ msgid ""
 msgstr ""
 
 #: src/utils/ui.c:936
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
 "one first using the steps below and try again.\n"
@@ -1773,7 +1773,7 @@ msgstr ""
 "1. Kommenter ut enhver lokalitet som starter med språkkoden <b>%s</b> i <b>/"
 "etc/locale.gen</b> (superbrukertilgang kreves)\n"
 "2. kjør <b>locale-gen</b> som superbruker\n"
-"3. Start Zrythm på ny"
+"3. Start %s på ny"
 
 #: src/settings/settings.c:115
 #, c-format
@@ -1796,9 +1796,9 @@ msgid "resetting %s to %s"
 msgstr "tilbakestiller %s til %s"
 
 #: src/settings/settings.c:221
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find schema %s. %s is likely not installed"
-msgstr "Klarte ikke å finne planen %s. Zrythm er antagelig ikke installert"
+msgstr "Klarte ikke å finne planen %s. %s er antagelig ikke installert"
 
 #: src/settings/settings.c:236
 #, c-format
