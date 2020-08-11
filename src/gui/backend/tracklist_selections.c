@@ -25,7 +25,7 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/tracklist_selections.h"
-#include "gui/widgets/midi_region.h"
+#include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
@@ -175,10 +175,15 @@ tracklist_selections_add_tracks_in_range (
   g_message ("done");
 }
 
+/**
+ * Clears the selections.
+ */
 void
 tracklist_selections_clear (
   TracklistSelections * self)
 {
+  g_message ("clearing tracklist selections...");
+
   for (int i = self->num_tracks - 1; i >= 0; i--)
     {
       Track * track = self->tracks[i];
@@ -187,7 +192,16 @@ tracklist_selections_clear (
 
       if (track->is_project)
         {
-          EVENTS_PUSH (ET_TRACK_CHANGED, track);
+          /* process now because the track might
+           * get deleted after this */
+          if (GTK_IS_WIDGET (track->widget))
+            {
+              gtk_widget_set_visible (
+                GTK_WIDGET (track->widget),
+                track->visible);
+              track_widget_force_redraw (
+                track->widget);
+            }
         }
     }
 
@@ -196,6 +210,8 @@ tracklist_selections_clear (
       EVENTS_PUSH (
         ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
     }
+
+  g_message ("done");
 }
 
 /**
@@ -374,8 +390,8 @@ tracklist_selections_select_single (
   tracklist_selections_add_track (
     ts, track, 0);
 
-  EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
-               NULL);
+  EVENTS_PUSH (
+    ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
 }
 
 /**

@@ -3167,7 +3167,14 @@ port_get_plugin (
     return self->tmp_plugin;
   if (warn_if_fail)
     {
-      g_return_val_if_fail (pl, NULL);
+      g_critical (
+        "plugin at slot type %s (slot %d) not "
+        "found for port %s",
+        plugin_slot_type_to_string (
+          pl_id->slot_type),
+        pl_id->slot,
+        self->id.label);
+      return NULL;
     }
 
   /* unset \ref Port.tmp_plugin if a Plugin was

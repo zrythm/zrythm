@@ -125,6 +125,9 @@ tracklist_selections_add_tracks_in_range (
   int                   max_pos,
   bool                  fire_events);
 
+/**
+ * Clears the selections.
+ */
 void
 tracklist_selections_clear (
   TracklistSelections * self);
