@@ -74,6 +74,7 @@ inc/gui/widgets/digital_meter.h
 inc/gui/widgets/marker_track.h
 inc/gui/widgets/automation_track.h
 inc/gui/widgets/main_window.h
+inc/gui/widgets/fader_buttons.h
 inc/gui/widgets/master_track.h
 inc/gui/widgets/modulator.h
 inc/gui/widgets/inspector_plugin.h
@@ -87,6 +88,7 @@ inc/gui/widgets/snap_grid.h
 inc/gui/widgets/timeline_selection_info.h
 inc/gui/widgets/editor_ruler.h
 inc/gui/widgets/meter.h
+inc/gui/widgets/button_with_menu.h
 inc/gui/widgets/tracklist_header.h
 inc/gui/widgets/bot_bar.h
 inc/gui/widgets/transport_controls.h
@@ -110,6 +112,7 @@ inc/gui/widgets/audio_arranger.h
 inc/gui/widgets/scale_selector_window.h
 inc/gui/widgets/project_assistant.h
 inc/gui/widgets/automation_region.h
+inc/gui/widgets/range_action_buttons.h
 inc/gui/widgets/audio_editor_space.h
 inc/gui/widgets/mixer.h
 inc/gui/widgets/left_dock_edge.h
@@ -352,6 +355,7 @@ inc/actions/actions.h
 inc/actions/undo_manager.h
 inc/actions/create_plugins_action.h
 inc/actions/undoable_action.h
+inc/actions/range_action.h
 inc/actions/copy_plugins_action.h
 inc/actions/move_plugins_action.h
 inc/actions/arranger_selections.h
@@ -414,6 +418,7 @@ src/gui/widgets/midi_editor_space.c
 src/gui/widgets/chord_pad.c
 src/gui/widgets/slider_bar.c
 src/gui/widgets/log_viewer.c
+src/gui/widgets/range_action_buttons.c
 src/gui/widgets/track_properties_expander.c
 src/gui/widgets/channel.c
 src/gui/widgets/track_input_expander.c
@@ -445,6 +450,7 @@ src/gui/widgets/channel_send_selector.c
 src/gui/widgets/pinned_tracklist.c
 src/gui/widgets/midi_arranger_bg.c
 src/gui/widgets/editor_selection_info.c
+src/gui/widgets/fader_buttons.c
 src/gui/widgets/channel_send.c
 src/gui/widgets/bot_dock_edge.c
 src/gui/widgets/digital_meter.c
@@ -506,6 +512,7 @@ src/gui/widgets/live_waveform.c
 src/gui/widgets/ruler.c
 src/gui/widgets/audio_track.c
 src/gui/widgets/clip_editor_inner.c
+src/gui/widgets/button_with_menu.c
 src/gui/widgets/channel_sends_expander.c
 src/gui/widgets/track_lanelist.c
 src/gui/widgets/scale_selector_window.c
@@ -697,6 +704,7 @@ src/actions/undoable_action.c
 src/actions/channel_send_action.c
 src/actions/edit_plugins_action.c
 src/actions/move_plugins_action.c
+src/actions/range_action.c
 src/actions/copy_tracks_action.c
 src/actions/edit_tracks_action.c
 src/actions/move_tracks_action.c
@@ -765,6 +773,7 @@ resources/ui/port_selector_popover.ui
 resources/ui/audio_editor_space.ui
 resources/ui/header.ui
 resources/ui/inspector_track.ui
+resources/ui/fader_buttons.ui
 resources/ui/project_scale_popover.ui
 resources/ui/center_dock.ui
 resources/ui/transport_controls.ui
@@ -792,6 +801,7 @@ resources/ui/timeline_bot_box.ui
 resources/ui/toolbox.ui
 resources/ui/quantize_box.ui
 resources/ui/snap_grid_popover.ui
+resources/ui/range_action_buttons.ui
 resources/ui/editor_toolbar.ui
 resources/ui/project_toolbar.ui
 resources/ui/clip_editor_inner.ui
