@@ -2601,7 +2601,16 @@ port_sum_signal_from_inputs (
           break;
         }
 
-      if (port->id.flow == FLOW_INPUT)
+      /* only consider incoming external data if
+       * armed for recording (if the port is owner
+       * by a track), otherwise always consider
+       * incoming external data */
+      if ((port->id.owner_type !=
+             PORT_OWNER_TYPE_TRACK_PROCESSOR ||
+           (port->id.owner_type ==
+              PORT_OWNER_TYPE_TRACK_PROCESSOR &&
+            port_get_track (port, 1)->recording)) &&
+           port->id.flow == FLOW_INPUT)
         {
           switch (AUDIO_ENGINE->audio_backend)
             {
