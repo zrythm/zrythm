@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-07-23 18:12+0100\n"
-"PO-Revision-Date: 2020-07-24 14:02+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-08-03 17:41+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
 "Language: pt\n"
@@ -38,11 +38,11 @@ msgstr "normal"
 
 #: inc/utils/ui.h:77
 msgid "Low"
-msgstr ""
+msgstr "Baixo"
 
 #: inc/utils/gtk.h:50
 msgid "Cu_t"
-msgstr ""
+msgstr "Cor_tar"
 
 #: inc/utils/gtk.h:56
 #, fuzzy
@@ -142,58 +142,58 @@ msgstr "Exportar"
 #: inc/audio/curve.h:92 src/audio/curve.c:42
 #, c-format
 msgid "Superellipse"
-msgstr ""
+msgstr "Superellipse"
 
 #: inc/audio/curve.h:94 src/gui/widgets/timeline_arranger.c:1309
 #: src/audio/curve.c:45
 #, c-format
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: inc/audio/curve.h:96 src/audio/curve.c:48
 #, c-format
 msgid "Pulse"
-msgstr ""
+msgstr "Pulso"
 
 #: inc/audio/engine.h:123
 msgid "1,024"
-msgstr ""
+msgstr "1 024"
 
 #: inc/audio/engine.h:124
 msgid "2,048"
-msgstr ""
+msgstr "2 048"
 
 #: inc/audio/engine.h:125
 msgid "4,096"
-msgstr ""
+msgstr "4 096"
 
 #: inc/audio/engine.h:152
 msgid "22,050"
-msgstr ""
+msgstr "22 050"
 
 #: inc/audio/engine.h:153
 msgid "32,000"
-msgstr ""
+msgstr "32 000"
 
 #: inc/audio/engine.h:154
 msgid "44,100"
-msgstr ""
+msgstr "44 100"
 
 #: inc/audio/engine.h:155
 msgid "48,000"
-msgstr ""
+msgstr "48 000"
 
 #: inc/audio/engine.h:156
 msgid "88,200"
-msgstr ""
+msgstr "88 200"
 
 #: inc/audio/engine.h:157
 msgid "96,000"
-msgstr ""
+msgstr "96 000"
 
 #: inc/audio/engine.h:158
 msgid "192,000"
-msgstr ""
+msgstr "192 000"
 
 #: inc/audio/engine.h:231
 msgid "ALSA Sequencer"
@@ -205,24 +205,24 @@ msgstr "Herdar"
 
 #: inc/audio/region.h:85 src/audio/automation_track.c:100
 msgid "Off"
-msgstr ""
+msgstr "Desligado"
 
 #: inc/audio/region.h:87 src/audio/automation_track.c:94
 msgid "On"
-msgstr ""
+msgstr "Ligado"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
 msgid "0dB"
-msgstr ""
+msgstr "0dB"
 
 #: inc/audio/pan.h:53
 msgid "-3dB"
-msgstr ""
+msgstr "-3dB"
 
 #: inc/audio/pan.h:54
 msgid "-6dB"
-msgstr ""
+msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1306
@@ -242,7 +242,7 @@ msgstr ""
 #. * end
 #: src/zrythm.c:232
 msgid "(trial) "
-msgstr ""
+msgstr "(teste) "
 
 #: src/project.c:127
 #, fuzzy, c-format
@@ -251,7 +251,7 @@ msgstr "Falha em encontrar a propriedade %s em %s"
 
 #: src/project.c:171
 msgid "Project not compressed by zstd!"
-msgstr ""
+msgstr "Projeto não comprimido pela zstd!"
 
 #: src/project.c:184
 #, fuzzy, c-format
@@ -333,7 +333,7 @@ msgstr "Erro: sinal %d - Backtrace:"
 #: src/main.c:94
 #, c-format
 msgid "%s has crashed. "
-msgstr ""
+msgstr "%s caiu. "
 
 #: src/main.c:127
 #, fuzzy, c-format
@@ -384,39 +384,41 @@ msgstr ""
 #: src/main.c:170
 #, c-format
 msgid "File %s not found."
-msgstr ""
+msgstr "Ficheiro %s não encontrado."
 
 #: src/main.c:191
 msgid ""
 "An output file was not specified. Please pass one with `--output [FILE]`."
 msgstr ""
+"Nenhum ficheiro de saída foi especificado. Por favor, passe um com `--output "
+"[FICHEIRO]`."
 
 #. getopt_long already printed an error
 #. * message
 #: src/main.c:333
 #, c-format
 msgid "Unknown option\n"
-msgstr ""
+msgstr "Opção desconhecida\n"
 
 #: src/main.c:388
 #, c-format
 msgid "Project failed to compress: %s\n"
-msgstr ""
+msgstr "O projeto não pôde ser comprimido: %s\n"
 
 #: src/main.c:397
 #, c-format
 msgid "Project successfully compressed.\n"
-msgstr ""
+msgstr "O projeto foi comprimido com sucesso.\n"
 
 #: src/main.c:415
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr ""
+msgstr "Não foi possível descomprimir o projeto: %s\n"
 
 #: src/main.c:424
 #, c-format
 msgid "Project successfully decompressed.\n"
-msgstr ""
+msgstr "O projeto foi descomprimido com sucesso.\n"
 
 #: src/main.c:433
 #, fuzzy, c-format
@@ -455,7 +457,7 @@ msgstr "Carregando o projeto"
 #: src/zrythm_app.c:246
 #, c-format
 msgid "No project has been selected. %s will now close."
-msgstr ""
+msgstr "Nenhum projeto foi selecionado. %s vai fechar agora."
 
 #: src/zrythm_app.c:269
 msgid "Initializing settings"
@@ -493,11 +495,12 @@ msgstr "Aguardando projeto"
 
 #: src/plugins/carla_native_plugin.c:463 src/plugins/lv2_plugin.c:2413
 msgid "Default bank"
-msgstr ""
+msgstr "Banco predefinido"
 
 #: src/plugins/carla_native_plugin.c:470 src/plugins/lv2_plugin.c:2420
+#, fuzzy
 msgid "Init"
-msgstr ""
+msgstr "Init"
 
 #: src/plugins/carla_native_plugin.c:897
 #, fuzzy
@@ -531,7 +534,7 @@ msgstr "Procurar plugins"
 #: src/plugins/plugin_manager.c:818
 #, c-format
 msgid "Skipped LV2 plugin at %s"
-msgstr ""
+msgstr "O plugin LV2 em %s foi pulado"
 
 #: src/plugins/plugin_manager.c:939 src/plugins/plugin_manager.c:1065
 #, fuzzy
@@ -541,7 +544,7 @@ msgstr "Procurar plugins"
 #: src/plugins/plugin_manager.c:946 src/plugins/plugin_manager.c:1072
 #, c-format
 msgid "Skipped VST plugin at %s"
-msgstr ""
+msgstr "O VST plugin em %s foi pulado"
 
 #: src/plugins/plugin_manager.c:1127
 #, fuzzy
@@ -551,11 +554,11 @@ msgstr "Procurar plugins"
 #: src/plugins/plugin_manager.c:1134
 #, c-format
 msgid "Skipped AU plugin at %u"
-msgstr ""
+msgstr "O AU plugin em %u foi pulado"
 
 #: src/plugins/plugin.c:133
 msgid "Enabled"
-msgstr ""
+msgstr "Ativado"
 
 #: src/plugins/plugin_gtk.c:81 src/plugins/lv2/lv2_gtk.c:105
 msgid "Save State"
@@ -576,7 +579,7 @@ msgstr "_Gravar"
 
 #: src/plugins/lv2_plugin.c:2452
 msgid "Unnamed bank"
-msgstr ""
+msgstr "Banco sem nome"
 
 #: src/plugins/lv2/lv2_gtk.c:256
 msgid "URI (Optional):"
@@ -617,7 +620,7 @@ msgstr "Projeto sem título"
 
 #: src/gui/widgets/fader_controls_grid.c:91
 msgid "Peak"
-msgstr ""
+msgstr "Pico"
 
 #: src/gui/widgets/port_connections_popover.c:76
 msgid "INPUTS"
@@ -770,7 +773,7 @@ msgstr "Os backends selecionados estão operacionais"
 
 #: src/gui/widgets/first_run_assistant.c:173
 msgid "JACK MIDI can only be used with JACK audio"
-msgstr ""
+msgstr "O JACK MIDI só pode ser usado com JACK audio"
 
 #: src/gui/widgets/bind_cc_dialog.c:95
 msgid "Not a control change event"
@@ -957,16 +960,16 @@ msgstr "Instrumento"
 #: src/gui/widgets/channel_slot.c:177
 #, c-format
 msgid "Slot #%d"
-msgstr ""
+msgstr "Compartimento #%d"
 
 #: src/gui/widgets/channel_slot.c:330
 #, c-format
 msgid "Plugin %s cannot be added to this slot"
-msgstr ""
+msgstr "O suplemento %s não pode ser adicionado a este compartimento"
 
 #: src/gui/widgets/channel_slot.c:679
 msgid "Bypass"
-msgstr ""
+msgstr "Derivação"
 
 #: src/gui/widgets/channel_slot.c:692
 #, fuzzy
@@ -996,15 +999,15 @@ msgstr "Gravar o projeto"
 
 #: src/gui/widgets/plugin_browser.c:242
 msgid "Add to project (carla)"
-msgstr ""
+msgstr "Adicionar ao projeto (carla)"
 
 #: src/gui/widgets/plugin_browser.c:250
 msgid "Add to project (bridged UI)"
-msgstr ""
+msgstr "Adicionar ao projeto (IU em ponte)"
 
 #: src/gui/widgets/plugin_browser.c:257
 msgid "Add to project (bridged full)"
-msgstr ""
+msgstr "Adicionar ao projeto (em ponte completo)"
 
 #: src/gui/widgets/plugin_browser.c:1093 resources/ui/panel_file_browser.ui:63
 #: resources/ui/file_browser.ui:63
@@ -1033,11 +1036,11 @@ msgstr "Cabeça de Reprodução [Cliente Jack]"
 
 #: src/gui/widgets/bot_bar.c:157
 msgid "BBT display"
-msgstr ""
+msgstr "Visão BBT"
 
 #: src/gui/widgets/bot_bar.c:177
 msgid "Time display"
-msgstr ""
+msgstr "Visão do tempo"
 
 #: src/gui/widgets/bot_bar.c:207
 msgid "Become JACK Transport master"
@@ -1065,7 +1068,7 @@ msgstr "Máster Base de Tempo JACK"
 
 #: src/gui/widgets/bot_bar.c:455 build/data/org.zrythm.Zrythm.gschema.xml:449
 msgid "Buffer size"
-msgstr ""
+msgstr "Tamanho do buffer"
 
 #: src/gui/widgets/bot_bar.c:459
 #, fuzzy
@@ -1074,7 +1077,7 @@ msgstr "Processador de Exemplo"
 
 #: src/gui/widgets/bot_bar.c:533
 msgid "bpm"
-msgstr ""
+msgstr "bpm"
 
 #: src/gui/widgets/bot_bar.c:537
 msgid "time sig."
@@ -1120,11 +1123,11 @@ msgstr "Fader"
 
 #: src/gui/widgets/timeline_arranger.c:1307
 msgid "Exponential"
-msgstr ""
+msgstr "Exponencial"
 
 #: src/gui/widgets/timeline_arranger.c:1308
 msgid "Elliptic"
-msgstr ""
+msgstr "Elíptico"
 
 #: src/gui/widgets/timeline_arranger.c:1373
 #, fuzzy
@@ -1143,7 +1146,7 @@ msgstr "Quantificação rápida"
 
 #: src/gui/widgets/timeline_arranger.c:1551 src/gui/widgets/track.c:1580
 msgid "Bounce..."
-msgstr ""
+msgstr "Saltar..."
 
 #: src/gui/widgets/automation_arranger.c:251
 #: build/data/org.zrythm.Zrythm.gschema.xml:564
@@ -1172,7 +1175,7 @@ msgstr "Alternar visualizador de eventos"
 
 #: src/gui/widgets/header.c:108
 msgid "Scripting interface"
-msgstr ""
+msgstr "Interface de script"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
@@ -1264,7 +1267,7 @@ msgstr "Tipo"
 
 #: src/gui/widgets/plugin_properties_expander.c:166
 msgid "Banks"
-msgstr ""
+msgstr "Bancos"
 
 #: src/gui/widgets/plugin_properties_expander.c:182
 #, fuzzy
@@ -1303,7 +1306,7 @@ msgstr "Instrumento"
 #: src/gui/widgets/automatable_selector_popover.c:290
 #, c-format
 msgid "[MIDI FX %d] %s"
-msgstr ""
+msgstr "[MIDI FX %d] %s"
 
 #: src/gui/widgets/automatable_selector_popover.c:306
 #, fuzzy, c-format
@@ -1326,15 +1329,15 @@ msgstr "Selecione uma pasta"
 #: src/gui/widgets/preferences.c:772
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
-msgstr ""
+msgstr "Algumas alterações só terão efeito depois de reiniciar %s"
 
 #: src/gui/widgets/scripting_window.c:192
 msgid "Script execution successful"
-msgstr ""
+msgstr "Execução de script bem sucedida"
 
 #: src/gui/widgets/scripting_window.c:201
 msgid "Script execution failed"
-msgstr ""
+msgstr "A execução do script falhou"
 
 #: src/gui/widgets/scripting_window.c:228
 #, fuzzy
@@ -1343,7 +1346,7 @@ msgstr "Interface"
 
 #: src/gui/widgets/port_connection_row.c:105
 msgid "Enable/disable connection"
-msgstr ""
+msgstr "Ativar/desativar a coneção"
 
 #: src/gui/widgets/port_connection_row.c:146
 #, fuzzy
@@ -1557,7 +1560,7 @@ msgstr "Alternar Painel Direito"
 
 #: src/gui/widgets/inspector_track.c:146
 msgid "Comment"
-msgstr ""
+msgstr "Comentário"
 
 #: src/gui/widgets/track.c:576 src/audio/track_lane.c:71
 #, c-format
@@ -1606,7 +1609,7 @@ msgstr "Faixa Can MIDI"
 
 #: src/gui/widgets/track.c:1608
 msgid "Passthrough input"
-msgstr ""
+msgstr "Entrada de passagem"
 
 #: src/gui/widgets/track.c:1637 src/gui/widgets/track.c:1697
 #, fuzzy, c-format
@@ -1626,11 +1629,11 @@ msgstr "Processar objeto(s) arranjado(s)"
 #: src/gui/widgets/dialogs/port_info.c:59
 #, c-format
 msgid "%.1f to %.1f"
-msgstr ""
+msgstr "%.1f para %.1f"
 
 #: src/gui/widgets/dialogs/port_info.c:73
 msgid "N/A"
-msgstr ""
+msgstr "N/D"
 
 #: src/gui/widgets/dialogs/port_info.c:134
 #, fuzzy
@@ -1664,7 +1667,7 @@ msgstr ""
 #: src/gui/backend/event_manager.c:1520
 #, c-format
 msgid "Trial limit has been reached. %s will now go silent"
-msgstr ""
+msgstr "O limite de avaliação foi atingido. %s agora ficará silencioso"
 
 #: src/utils/err_codes.c:32
 #, fuzzy
@@ -1674,7 +1677,7 @@ msgstr ""
 
 #: src/utils/err_codes.c:36
 msgid "Object is null. See the logs for details"
-msgstr ""
+msgstr "O objeto é nulo. Veja os registos para mais detalhes"
 
 #: src/utils/err_codes.c:42
 #, fuzzy
@@ -1687,6 +1690,8 @@ msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
 "will be undefined. "
 msgstr ""
+"%s encontrou um erro não fatal. Pode continuar a ser executado, mas o "
+"comportamento será indefinido. "
 
 #: src/utils/dialogs.c:44
 msgid "_Open"
@@ -1715,6 +1720,8 @@ msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
 "install one first and restart %s"
 msgstr ""
+"Um local para o idioma que selecionou (%s) não está disponível. Por favor, "
+"instale um primeiro e reinicie %s"
 
 #: src/utils/ui.c:936
 #, fuzzy, c-format
@@ -1736,17 +1743,17 @@ msgstr ""
 #: src/settings/settings.c:115
 #, c-format
 msgid "Schema %s%s%s"
-msgstr ""
+msgstr "Esquema %s%s%s"
 
 #: src/settings/settings.c:126
 #, c-format
 msgid "Resetting schema %s...\n"
-msgstr ""
+msgstr "A redefinir o esquema %s ...\n"
 
 #: src/settings/settings.c:165
 #, c-format
 msgid "skipping %s"
-msgstr ""
+msgstr "a pular %s"
 
 #: src/settings/settings.c:176
 #, fuzzy, c-format
@@ -1756,7 +1763,7 @@ msgstr "Roteamento para %s"
 #: src/settings/settings.c:221
 #, c-format
 msgid "Failed to find schema %s. %s is likely not installed"
-msgstr ""
+msgstr "Falha ao encontrar o esquema %s. %s provavelmente não está instalado"
 
 #: src/settings/settings.c:236
 #, fuzzy, c-format
@@ -1774,6 +1781,8 @@ msgid ""
 "This will reset %s to factory settings. You will lose all your preferences. "
 "Type 'y' to continue: "
 msgstr ""
+"Isto irá reiniciar %s às configurações de fábrica. Perderá todas as suas "
+"preferências. Digite 'y' para continuar: "
 
 #: src/settings/settings.c:283
 #, fuzzy, c-format
@@ -1783,7 +1792,7 @@ msgstr "Exportando..."
 #: src/settings/settings.c:294
 #, c-format
 msgid "Reset to factory settings successful\n"
-msgstr ""
+msgstr "As configurações de fábrica foram redefinidas com sucesso\n"
 
 #: src/audio/chord_track.c:57 resources/ui/inspector_chord.ui:31
 msgid "Chords"
@@ -3301,7 +3310,7 @@ msgstr ""
 
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
-msgstr "Estação de Trabalho de Áudio Digital"
+msgstr "Estação De Trabalho De Áudio Digital"
 
 #: data/zrythm.desktop.in:13
 msgid "highly automated and intuitive digital audio workstation"
@@ -3744,7 +3753,7 @@ msgstr "Controladores MIDI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:460
 msgid "A list of controllers to auto-connect to."
-msgstr ""
+msgstr "Uma lista de controladores para conectar-los automaticamente."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:469
 #: build/data/org.zrythm.Zrythm.gschema.xml:518
@@ -3764,7 +3773,7 @@ msgstr "GUI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:487
 msgid "Open UI on instantiation"
-msgstr ""
+msgstr "Abrir a IU na instanciação"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:488
 msgid "Open plugin UIs when they are instantiated."
@@ -3782,11 +3791,13 @@ msgstr "Manter janelas de Ui do plugin por cima da janela principal"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:497
 msgid "Generic UIs"
-msgstr ""
+msgstr "IUs genéricas"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:498
 msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
 msgstr ""
+"Mostrar IUs de plugins genéricos gerados pela Zrythm em vez de IUs "
+"personalizadas."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:502
 msgid "Bridge unsupported UIs"

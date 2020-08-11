@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-03-30 22:04+0000\n"
+"PO-Revision-Date: 2020-08-06 16:32+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualediting/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese "
-"<https://hosted.weblate.org/projects/zrythm/manualediting/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -105,7 +106,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Superellipse"
-msgstr ""
+msgstr "Superellipse"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."
@@ -113,16 +114,15 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "The curve that Vital synth uses, similar to exponential curve."
 msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:52
-#, fuzzy
 msgid "Pulse"
-msgstr "Régua"
+msgstr "Pulso"
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse wave."
@@ -832,7 +832,7 @@ msgstr "Modo de Edição"
 
 #: ../../editing/edit-modes.rst:109
 msgid "This is a TODO feature."
-msgstr ""
+msgstr "Esta é uma função TODO."
 
 #: ../../editing/editing-basics/creating-midi-notes.rst:6
 msgid "Creating MIDI Notes"
@@ -1692,4 +1692,3 @@ msgstr ""
 #~ "has common features shared by each "
 #~ "editor."
 #~ msgstr ""
-

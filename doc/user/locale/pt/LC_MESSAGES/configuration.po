@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-07-19 22:41+0000\n"
+"PO-Revision-Date: 2020-08-03 17:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/pt/>\n"
@@ -32,9 +32,13 @@ msgid ""
 "line, or the optional GUI tool `dconf-editor "
 "<https://wiki.gnome.org/Apps/DconfEditor>`_."
 msgstr ""
+"A Zrythm armazena todas as suas configurações utilizando o mecanismo "
+"GSettings, que vem com o comando `gsettings <https://developer.gnome.org/gio/"
+"stable/gsettings-tool.html>`_ para alterar configurações da linha de comando "
+"ou a ferramenta opcional GUI `dconf-editor <https://wiki.gnome.org/Apps/"
+"DconfEditor>`_."
 
 #: ../../configuration/additional-settings.rst:14
-#, fuzzy
 msgid ""
 "Normally, you shouldn't need to access any of these settings as most of "
 "them are found inside Zrythm's UI, and it is not recommended to edit them"
@@ -43,15 +47,14 @@ msgid ""
 "manually for some reason - for example if your selected backend causes "
 "Zrythm to crash."
 msgstr ""
-"Normalmente você não deve precisar acessar nenhuma dessas configurações, "
-"pois a maioria delas encontra-se dentro da interface do Zrythm e não é "
-"recomendado editá-las, pois o Zrythm valida algumas configurações antes "
-"de gravá-las, mas em alguns casos você pode querer alterá-las manualmente"
-" por algum motivo."
+"Normalmente não deve precisar acessar nenhuma dessas configurações, pois a "
+"maioria delas encontra-se dentro da interface do Zrythm e não é recomendado "
+"editá-las, pois o Zrythm valida algumas configurações antes de gravá-las, "
+"mas em alguns casos pode querer alterá-las manualmente por algum motivo."
 
 #: ../../configuration/additional-settings.rst:25
 msgid "Viewing the Current Settings"
-msgstr ""
+msgstr "Ver as definições atuais"
 
 #: ../../configuration/additional-settings.rst:27
 msgid ""
@@ -61,6 +64,11 @@ msgid ""
 "option (ie, ``zrythm --print-settings --pretty`` or ``zrythm -p "
 "--pretty`` for short), you can get output like the following."
 msgstr ""
+"O binário :program:`zrythm` vem com uma opção ``-print-settings`` (veja :ref"
+":`command-line-options` para mais detalhes) que imprime toda a configuração "
+"para a linha de comando. Em combinação com a opção ``--pretty'' (ou seja, ``"
+"zrythm --print-settings --pretty'' ou ``zrythm -p --pretty'' para encurtar) "
+"pode obter uma saída como a seguinte."
 
 #: ../../configuration/additional-settings.rst:38
 msgid ""
@@ -68,24 +76,29 @@ msgid ""
 "identify problems with user configurations, but feel free to use it if "
 "you are curious."
 msgstr ""
+"Este recurso é adicionado principalmente para fins de depuração e para nos "
+"ajudar a identificar problemas com as configurações do utilizador, mas sinta-"
+"se à vontade a usá-lo se estiver curioso."
 
 #: ../../configuration/additional-settings.rst:43
 msgid "Reset to Factory Settings"
-msgstr ""
+msgstr "Redefinir para configurações de fábrica"
 
 #: ../../configuration/additional-settings.rst:45
 msgid ""
 "The :program:`zrythm` binary also comes with a ``--reset-to-factory`` "
 "option for resetting Zrythm to its default state."
 msgstr ""
+"O binário :program:`zrythm` também vem com a opção ``--reset-to-factory`` "
+"para redefinir o Zrythm ao seu estado padrão."
 
 #: ../../configuration/additional-settings.rst:49
 msgid "This will clear ALL your settings."
-msgstr ""
+msgstr "Isto irá limpar TODAS as suas configurações."
 
 #: ../../configuration/additional-settings.rst:51
 msgid "This will be added on the UI soon."
-msgstr ""
+msgstr "Isto será adicionado na IU em breve."
 
 #: ../../configuration/device-setup/intro.rst:6
 msgid "Device Setup"
@@ -130,6 +143,8 @@ msgid ""
 "You can select these in :ref:`midi_devices` in the welcome dialog as well"
 " as in :ref:`preferences`."
 msgstr ""
+"Pode selecioná-los em :ref:`midi_devices` no diálogo de boas-vindas, bem "
+"como em :ref:`preferences`."
 
 #: ../../configuration/device-setup/intro.rst:34
 msgid "JACK"
@@ -150,12 +165,15 @@ msgstr ""
 #: ../../configuration/device-setup/intro.rst:44
 msgid "For most users, everything can be accomplished from within Zrythm."
 msgstr ""
+"Para a maioria dos utilizadores, tudo pode ser realizado de dentro da Zrythm."
 
 #: ../../configuration/device-setup/intro.rst:47
 msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
 "using ``a2jmidid``."
 msgstr ""
+"Dependendo da sua configuração, os aparelhos MIDI podem precisar ser ligados "
+"ao JACK usando ``a2jmidid``."
 
 #: ../../configuration/first-run-wizard.rst:6
 msgid "First Run Wizard"
@@ -203,6 +221,10 @@ msgid ""
 "<https://specifications.freedesktop.org/basedir-spec/basedir-spec-"
 "latest.html>`_ on freedesktop-compliant systems."
 msgstr ""
+"Este é o caminho onde a Zrythm irá gravar projetos, ficheiros temporários, "
+"áudio exportado, etc. A predefinição é \"zrythm\" em `XDG_DATA_HOME "
+"<https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest."
+"html>`_ em sistemas compatíveis com o freedesktop."
 
 #: ../../configuration/first-run-wizard.rst:39
 msgid "Audio/MIDI Backends"
@@ -224,6 +246,8 @@ msgstr ""
 #: ../../configuration/first-run-wizard.rst:50
 msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
 msgstr ""
+"Se o JACK não estiver disponível no seu sistema, recomendamos o RtAudio e o "
+"RtMidi."
 
 #: ../../configuration/first-run-wizard.rst:53
 msgid ""
@@ -238,6 +262,8 @@ msgid ""
 "If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
 "chosen together."
 msgstr ""
+"Se optar por usar JACK, JACK MIDI e o backend de áudio JACK devem ser "
+"escolhidos em conjunto."
 
 #: ../../configuration/first-run-wizard.rst:62
 msgid "MIDI Devices"
@@ -306,7 +332,7 @@ msgstr "Motor"
 
 #: ../../configuration/preferences/intro.rst:30
 msgid "Audio engine settings."
-msgstr ""
+msgstr "Configurações do mecanismo de áudio."
 
 #: ../../configuration/preferences/intro.rst:35
 #, fuzzy
@@ -318,6 +344,8 @@ msgid ""
 "The audio backend to use. The available backends are JACK, RtAudio and "
 "SDL2. We recommend using JACK when possible, otherwise RtAudio."
 msgstr ""
+"O backend de áudio a usar. Os backends disponíveis são JACK, RtAudio e SDL2. "
+"Recomendamos o uso do JACK quando possível, caso contrário use o RtAudio."
 
 #: ../../configuration/preferences/intro.rst:41
 #, fuzzy
@@ -330,6 +358,9 @@ msgid ""
 " WindowsMME (Windows only). We recommend using JACK MIDI when possible, "
 "otherwise RtMidi."
 msgstr ""
+"O backend MIDI para usar. Os backends disponíveis são JACK MIDI, RtMidi e "
+"WindowsMME (somente Windows). Recomendamos usar o JACK MIDI quando possível, "
+"caso contrário use o RtMidi."
 
 #: ../../configuration/preferences/intro.rst:44
 #, fuzzy
@@ -338,7 +369,7 @@ msgstr "Controladores MIDI"
 
 #: ../../configuration/preferences/intro.rst:44
 msgid "A list of controllers to auto-connect to."
-msgstr ""
+msgstr "Uma lista de controladores para conectar-los automaticamente."
 
 #: ../../configuration/preferences/intro.rst:47
 #: ../../configuration/preferences/intro.rst:91
@@ -348,7 +379,7 @@ msgstr "Caminho"
 
 #: ../../configuration/preferences/intro.rst:49
 msgid "Global paths."
-msgstr ""
+msgstr "Caminhos globais."
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "Zrythm path"
@@ -356,7 +387,7 @@ msgstr "Caminho do Zrythm"
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "The directory to save user data in."
-msgstr ""
+msgstr "O diretório para gravar os dados do utilizador."
 
 #: ../../configuration/preferences/intro.rst:55
 msgid "Plugins"
@@ -377,15 +408,17 @@ msgstr "UIs de suplementos."
 
 #: ../../configuration/preferences/intro.rst:69
 msgid "Generic UIs"
-msgstr ""
+msgstr "IUs genéricas"
 
 #: ../../configuration/preferences/intro.rst:68
 msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
 msgstr ""
+"Mostrar IUs de plugins genéricos gerados pela Zrythm em vez de IUs "
+"personalizadas."
 
 #: ../../configuration/preferences/intro.rst:72
 msgid "Open UI on instantiation"
-msgstr ""
+msgstr "Abrir a IU na instanciação"
 
 #: ../../configuration/preferences/intro.rst:72
 msgid "Open plugin NUIs when they are instantiated."
