@@ -1571,6 +1571,18 @@ process_events (void * data)
               }
           }
           break;
+        case ET_RULER_DISPLAY_TYPE_CHANGED:
+          redraw_all_arranger_bgs ();
+          if (EDITOR_RULER)
+            {
+              ruler_widget_redraw_whole (
+                EDITOR_RULER);
+            }
+          if (MW_RULER)
+            {
+              ruler_widget_redraw_whole (MW_RULER);
+            }
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

@@ -121,6 +121,10 @@ typedef struct _RulerWidget
   double            px_per_bar;
   double            px_per_sixteenth;
   double            px_per_tick;
+  double            px_per_min;
+  double            px_per_10sec;
+  double            px_per_sec;
+  double            px_per_100ms;
   double            total_px;
 
   /**
@@ -184,6 +188,11 @@ typedef struct _RulerWidget
 
   /** Rectangle in the last call. */
   GdkRectangle      last_rect;
+  /**
+   * Menuitems in context menu.
+   */
+  GtkCheckMenuItem * bbt_display_check;
+  GtkCheckMenuItem * time_display_check;
 } RulerWidget;
 
 /**
@@ -211,6 +220,20 @@ ruler_widget_get_beat_interval (
  */
 int
 ruler_widget_get_sixteenth_interval (
+  RulerWidget * self);
+
+/**
+ * Returns the 10 sec interval.
+ */
+int
+ruler_widget_get_10sec_interval (
+  RulerWidget * self);
+
+/**
+ * Returns the sec interval.
+ */
+int
+ruler_widget_get_sec_interval (
   RulerWidget * self);
 
 /**

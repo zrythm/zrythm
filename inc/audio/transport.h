@@ -119,11 +119,11 @@ typedef struct Transport
    * Should be compared each time to see which one
    * is first.
    */
-  Position           range_1;
-  Position           range_2;
+  Position      range_1;
+  Position      range_2;
 
   /** Whether range should be displayed or not. */
-  int                has_range;
+  int           has_range;
 
   /**
    * Start marker position.
@@ -149,42 +149,42 @@ typedef struct Transport
    * Example: 4/4 = 4 (top) 1/4th (bot) notes per bar.
    * 2/8 = 2 (top) 1/8th (bot) notes per bar.
    */
-  int                beats_per_bar;
+  int           beats_per_bar;
 
   /**
    * Bottom part of the time signature.
    *
    * Power of 2.
    */
-  int                beat_unit;
-  BeatUnit           ebeat_unit;
+  int           beat_unit;
+  BeatUnit      ebeat_unit;
 
   /* ---------- CACHE -------------- */
-  double             ticks_per_beat;
-  double             ticks_per_bar;
-  int                sixteenths_per_beat;
-  int                sixteenths_per_bar;
+  double        ticks_per_beat;
+  double        ticks_per_bar;
+  int           sixteenths_per_beat;
+  int           sixteenths_per_bar;
 
   /* ------------------------------- */
 
   /** Transport position in frames.
    * FIXME is this used? */
-  nframes_t          position;
+  nframes_t     position;
 
   /** Transport speed (0=stop, 1=play). */
-  int               rolling;
+  int           rolling;
 
   /** Looping or not. */
-  bool              loop;
+  bool          loop;
 
   /** Whether punch in/out mode is enabled. */
-  bool              punch_mode;
+  bool          punch_mode;
 
   /** Recording or not. */
-  int               recording;
+  int           recording;
 
   /** Metronome enabled or not. */
-  bool              metronome_enabled;
+  bool          metronome_enabled;
 
   /**
    * This is set when record is toggled and is used to check
@@ -195,8 +195,11 @@ typedef struct Transport
    */
   //int               starting_recording;
 
-  ZixSem             paused;         ///< Paused signal from process thread
-  Play_State         play_state;     ///< play state
+  /** Paused signal from process thread. */
+  ZixSem        paused;
+
+  /** Play state. */
+  Play_State    play_state;
 } Transport;
 
 static const cyaml_strval_t

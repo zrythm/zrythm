@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -48,6 +48,7 @@
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
   RulerWidget,
@@ -69,6 +70,10 @@ G_DEFINE_TYPE (
 #define ACTION_IS(x) \
   (self->action == UI_OVERLAY_ACTION_##x)
 
+/**
+ * Returns the beat interval for drawing vertical
+ * lines.
+ */
 int
 ruler_widget_get_beat_interval (
   RulerWidget * self)
@@ -108,6 +113,10 @@ ruler_widget_get_beat_interval (
   return beat_interval;
 }
 
+/**
+ * Returns the sixteenth interval for drawing
+ * vertical lines.
+ */
 int
 ruler_widget_get_sixteenth_interval (
   RulerWidget * self)
@@ -146,6 +155,91 @@ ruler_widget_get_sixteenth_interval (
     }
 
   return sixteenth_interval;
+}
+
+/**
+ * Returns the 10 sec interval.
+ */
+int
+ruler_widget_get_10sec_interval (
+  RulerWidget * self)
+{
+  int i;
+
+  /* gather divisors of the number of beats per
+   * bar */
+#define ten_secs_per_min 6
+  int ten_sec_divisors[36];
+  int num_ten_sec_divisors = 0;
+  for (i = 1; i <= ten_secs_per_min; i++)
+    {
+      if (ten_secs_per_min % i == 0)
+        ten_sec_divisors[num_ten_sec_divisors++] = i;
+    }
+
+  /* decide the raw interval to keep between
+   * 10 secs */
+  int _10sec_interval =
+    MAX (
+      (int)
+      (RW_PX_TO_HIDE_BEATS / self->px_per_10sec),
+      1);
+
+  /* round the interval to the divisors */
+  int ten_sec_interval = -1;
+  for (i = 0; i < num_ten_sec_divisors; i++)
+    {
+      if (_10sec_interval <= ten_sec_divisors[i])
+        {
+          if (ten_sec_divisors[i] != ten_secs_per_min)
+            ten_sec_interval = ten_sec_divisors[i];
+          break;
+        }
+    }
+
+  return ten_sec_interval;
+}
+
+/**
+ * Returns the sec interval.
+ */
+int
+ruler_widget_get_sec_interval (
+  RulerWidget * self)
+{
+  int i;
+
+  /* gather divisors of the number of sixteenths per
+   * beat */
+#define secs_per_10_sec 10
+  int divisors[16];
+  int num_divisors = 0;
+  for (i = 1; i <= secs_per_10_sec; i++)
+    {
+      if (secs_per_10_sec % i == 0)
+        divisors[num_divisors++] = i;
+    }
+
+  /* decide the raw interval to keep between secs */
+  int _sec_interval =
+    MAX (
+      (int)
+      (RW_PX_TO_HIDE_BEATS /
+      self->px_per_sec), 1);
+
+  /* round the interval to the divisors */
+  int sec_interval = -1;
+  for (i = 0; i < num_divisors; i++)
+    {
+      if (_sec_interval <= divisors[i])
+        {
+          if (divisors[i] != secs_per_10_sec)
+            sec_interval = divisors[i];
+          break;
+        }
+    }
+
+  return sec_interval;
 }
 
 /**
@@ -621,6 +715,344 @@ draw_playhead (
     }
 }
 
+/**
+ * Draws the grid lines and labels.
+ *
+ * @param rect Clip rectangle.
+ */
+static void
+draw_lines_and_labels (
+  RulerWidget *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
+{
+  /* draw lines */
+  int i = 0;
+  double curr_px;
+  char text[40];
+  int textw, texth;
+
+  PangoLayout * layout =
+    pango_cairo_create_layout (cr);
+  PangoFontDescription *desc =
+    pango_font_description_from_string (
+      "Monospace 11");
+  pango_layout_set_font_description (
+    layout, desc);
+  pango_font_description_free (desc);
+
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+
+  /* if time display */
+  if (g_settings_get_enum (
+        S_UI, "ruler-display") ==
+          TRANSPORT_DISPLAY_TIME)
+    {
+      /* get sec interval */
+      int sec_interval =
+        ruler_widget_get_sec_interval (self);
+
+      /* get 10 sec interval */
+      int ten_sec_interval =
+        ruler_widget_get_10sec_interval (self);
+
+      /* get the interval for mins */
+      int min_interval =
+        (int)
+        MAX ((RW_PX_TO_HIDE_BEATS) /
+             (double) self->px_per_min, 1.0);
+
+      /* draw mins */
+      i = - min_interval;
+      while (
+        (curr_px =
+           self->px_per_min * (i += min_interval) +
+             SPACE_BEFORE_START) <
+         rect->x + rect->width + 20.0)
+        {
+          if (curr_px + 20.0 < rect->x)
+            continue;
+
+          cairo_set_source_rgb (cr, 1, 1, 1);
+          cairo_set_line_width (cr, 1);
+          double x = curr_px - rect->x;
+          cairo_move_to (cr, x, 0);
+          cairo_line_to (cr, x, height / 3);
+          cairo_stroke (cr);
+          cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
+          sprintf (text, "%d", i);
+          pango_layout_set_markup (
+            layout, text, -1);
+          pango_layout_get_pixel_size (
+            layout, &textw, &texth);
+          cairo_move_to (
+            cr,
+            x - textw / 2, height / 3 + 2);
+          pango_cairo_update_layout (cr, layout);
+          pango_cairo_show_layout (cr, layout);
+        }
+      /* draw 10secs */
+      desc =
+        pango_font_description_from_string (
+          "Monospace 6");
+      pango_layout_set_font_description (
+        layout, desc);
+      pango_font_description_free (desc);
+      i = 0;
+      if (ten_sec_interval > 0)
+        {
+          while ((curr_px =
+                  self->px_per_10sec *
+                    (i += ten_sec_interval) +
+                  SPACE_BEFORE_START) <
+                 rect->x + rect->width)
+            {
+              if (curr_px < rect->x)
+                continue;
+
+              cairo_set_source_rgb (
+                cr, 0.7, 0.7, 0.7);
+              cairo_set_line_width (
+                cr, 0.5);
+              double x = curr_px - rect->x;
+              cairo_move_to (
+                cr, x, 0);
+              cairo_line_to (
+                cr, x, height / 4);
+              cairo_stroke (cr);
+              if ((self->px_per_10sec >
+                     RW_PX_TO_HIDE_BEATS * 2) &&
+                  i % ten_secs_per_min != 0)
+                {
+                  cairo_set_source_rgb (
+                    cr,
+                    0.5, 0.5, 0.5);
+                  sprintf (
+                    text, "%d:%02d",
+                    i / ten_secs_per_min,
+                    (i % ten_secs_per_min) * 10);
+                  pango_layout_set_markup (
+                    layout, text, -1);
+                  pango_layout_get_pixel_size (
+                    layout, &textw, &texth);
+                  cairo_move_to (
+                    cr, x - textw / 2,
+                    height / 4 + 2);
+                  pango_cairo_update_layout (
+                    cr, layout);
+                  pango_cairo_show_layout (
+                    cr, layout);
+                }
+            }
+        }
+      /* draw secs */
+      i = 0;
+      if (sec_interval > 0)
+        {
+          while ((curr_px =
+                  self->px_per_sec *
+                    (i += sec_interval) +
+                  SPACE_BEFORE_START) <
+                 rect->x + rect->width)
+            {
+              if (curr_px < rect->x)
+                continue;
+
+              cairo_set_source_rgb (
+                cr, 0.6, 0.6, 0.6);
+              cairo_set_line_width (
+                cr, 0.3);
+              double x = curr_px - rect->x;
+              cairo_move_to (
+                cr, x, 0);
+              cairo_line_to (
+                cr, x, height / 6);
+              cairo_stroke (cr);
+
+              if ((self->px_per_sec >
+                     RW_PX_TO_HIDE_BEATS * 2) &&
+                  i % secs_per_10_sec != 0)
+                {
+                  cairo_set_source_rgb (
+                    cr, 0.5, 0.5, 0.5);
+                  int secs_per_min = 60;
+                  sprintf (
+                    text, "%d:%02d",
+                    i / secs_per_min,
+                    ((i / secs_per_10_sec) %
+                      ten_secs_per_min) * 10 +
+                    i % secs_per_10_sec);
+                  pango_layout_set_markup (
+                    layout, text, -1);
+                  pango_layout_get_pixel_size (
+                    layout, &textw, &texth);
+                  cairo_move_to (
+                    cr, x - textw / 2,
+                    height / 4 + 2);
+                  pango_cairo_update_layout (
+                    cr, layout);
+                  pango_cairo_show_layout (
+                    cr, layout);
+                }
+            }
+        }
+    }
+  else /* else if BBT display */
+    {
+      /* get sixteenth interval */
+      int sixteenth_interval =
+        ruler_widget_get_sixteenth_interval (self);
+
+      /* get beat interval */
+      int beat_interval =
+        ruler_widget_get_beat_interval (self);
+
+      /* get the interval for bars */
+      int bar_interval =
+        (int)
+        MAX ((RW_PX_TO_HIDE_BEATS) /
+             (double) self->px_per_bar, 1.0);
+
+      /* draw bars */
+      i = - bar_interval;
+      while (
+        (curr_px =
+           self->px_per_bar * (i += bar_interval) +
+             SPACE_BEFORE_START) <
+         rect->x + rect->width + 20.0)
+        {
+          if (curr_px + 20.0 < rect->x)
+            continue;
+
+          cairo_set_source_rgb (cr, 1, 1, 1);
+          cairo_set_line_width (cr, 1);
+          double x = curr_px - rect->x;
+          cairo_move_to (cr, x, 0);
+          cairo_line_to (cr, x, height / 3);
+          cairo_stroke (cr);
+          cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
+          sprintf (text, "%d", i + 1);
+          pango_layout_set_markup (
+            layout, text, -1);
+          pango_layout_get_pixel_size (
+            layout, &textw, &texth);
+          cairo_move_to (
+            cr,
+            x - textw / 2, height / 3 + 2);
+          pango_cairo_update_layout (cr, layout);
+          pango_cairo_show_layout (cr, layout);
+        }
+      /* draw beats */
+      desc =
+        pango_font_description_from_string (
+          "Monospace 6");
+      pango_layout_set_font_description (
+        layout, desc);
+      pango_font_description_free (desc);
+      i = 0;
+      if (beat_interval > 0)
+        {
+          while ((curr_px =
+                  self->px_per_beat *
+                    (i += beat_interval) +
+                  SPACE_BEFORE_START) <
+                 rect->x + rect->width)
+            {
+              if (curr_px < rect->x)
+                continue;
+
+              cairo_set_source_rgb (
+                cr, 0.7, 0.7, 0.7);
+              cairo_set_line_width (
+                cr, 0.5);
+              double x = curr_px - rect->x;
+              cairo_move_to (
+                cr, x, 0);
+              cairo_line_to (
+                cr, x, height / 4);
+              cairo_stroke (cr);
+              if ((self->px_per_beat >
+                     RW_PX_TO_HIDE_BEATS * 2) &&
+                  i % beats_per_bar != 0)
+                {
+                  cairo_set_source_rgb (
+                    cr,
+                    0.5, 0.5, 0.5);
+                  sprintf (
+                    text, "%d.%d",
+                    i / beats_per_bar + 1,
+                    i % beats_per_bar + 1);
+                  pango_layout_set_markup (
+                    layout, text, -1);
+                  pango_layout_get_pixel_size (
+                    layout, &textw, &texth);
+                  cairo_move_to (
+                    cr, x - textw / 2,
+                    height / 4 + 2);
+                  pango_cairo_update_layout (
+                    cr, layout);
+                  pango_cairo_show_layout (
+                    cr, layout);
+                }
+            }
+        }
+      /* draw sixteenths */
+      i = 0;
+      if (sixteenth_interval > 0)
+        {
+          while ((curr_px =
+                  self->px_per_sixteenth *
+                    (i += sixteenth_interval) +
+                  SPACE_BEFORE_START) <
+                 rect->x + rect->width)
+            {
+              if (curr_px < rect->x)
+                continue;
+
+              cairo_set_source_rgb (
+                cr, 0.6, 0.6, 0.6);
+              cairo_set_line_width (
+                cr, 0.3);
+              double x = curr_px - rect->x;
+              cairo_move_to (
+                cr, x, 0);
+              cairo_line_to (
+                cr, x, height / 6);
+              cairo_stroke (cr);
+
+              if ((self->px_per_sixteenth >
+                     RW_PX_TO_HIDE_BEATS * 2) &&
+                  i % sixteenths_per_beat != 0)
+                {
+                  cairo_set_source_rgb (
+                    cr, 0.5, 0.5, 0.5);
+                  sprintf (
+                    text, "%d.%d.%d",
+                    i / TRANSPORT->
+                      sixteenths_per_bar + 1,
+                    ((i / sixteenths_per_beat) %
+                      beats_per_bar) + 1,
+                    i % sixteenths_per_beat + 1);
+                  pango_layout_set_markup (
+                    layout, text, -1);
+                  pango_layout_get_pixel_size (
+                    layout, &textw, &texth);
+                  cairo_move_to (
+                    cr, x - textw / 2,
+                    height / 4 + 2);
+                  pango_cairo_update_layout (
+                    cr, layout);
+                  pango_cairo_show_layout (
+                    cr, layout);
+                }
+            }
+        }
+    }
+  g_object_unref (layout);
+}
+
 static gboolean
 ruler_draw_cb (
   GtkWidget *   widget,
@@ -638,8 +1070,7 @@ ruler_draw_cb (
     }
 
   GdkRectangle rect;
-  gdk_cairo_get_clip_rectangle (
-    cr, &rect);
+  gdk_cairo_get_clip_rectangle (cr, &rect);
 
   if (self->redraw ||
       !gdk_rectangle_equal (
@@ -757,177 +1188,8 @@ ruler_draw_cb (
       cairo_fill (cr_to_use);
       cairo_pattern_destroy (pat);
 
-      PangoLayout * layout =
-        pango_cairo_create_layout (
-          cr_to_use);
-      PangoFontDescription *desc =
-        pango_font_description_from_string (
-          "Monospace 11");
-      pango_layout_set_font_description (
-        layout, desc);
-      pango_font_description_free (desc);
-
-      /* draw lines */
-      int i = 0;
-      double curr_px;
-      char text[40];
-      int textw, texth;
-
-      /* get sixteenth interval */
-      int sixteenth_interval =
-        ruler_widget_get_sixteenth_interval (self);
-
-      /* get beat interval */
-      int beat_interval =
-        ruler_widget_get_beat_interval (self);
-
-      /* get the interval for bars */
-      int bar_interval =
-        (int)
-        MAX ((RW_PX_TO_HIDE_BEATS) /
-             (double) self->px_per_bar, 1.0);
-
-      /* draw bars */
-      i = - bar_interval;
-      while (
-        (curr_px =
-           self->px_per_bar * (i += bar_interval) +
-             SPACE_BEFORE_START) <
-         rect.x + rect.width + 20.0)
-        {
-          if (curr_px + 20.0 < rect.x)
-            continue;
-
-          cairo_set_source_rgb (
-            cr_to_use, 1, 1, 1);
-          cairo_set_line_width (
-            cr_to_use, 1);
-          double x = curr_px - rect.x;
-          cairo_move_to (
-            cr_to_use, x, 0);
-          cairo_line_to (
-            cr_to_use, x, height / 3);
-          cairo_stroke (cr_to_use);
-          cairo_set_source_rgb (
-            cr_to_use, 0.8, 0.8, 0.8);
-          sprintf (text, "%d", i + 1);
-          pango_layout_set_markup (layout, text, -1);
-          pango_layout_get_pixel_size (
-            layout, &textw, &texth);
-          cairo_move_to (
-            cr_to_use,
-            x - textw / 2, height / 3 + 2);
-          pango_cairo_update_layout (
-            cr_to_use, layout);
-          pango_cairo_show_layout (
-            cr_to_use, layout);
-        }
-      /* draw beats */
-      desc =
-        pango_font_description_from_string (
-          "Monospace 6");
-      pango_layout_set_font_description (
-        layout, desc);
-      pango_font_description_free (desc);
-      i = 0;
-      if (beat_interval > 0)
-        {
-          while ((curr_px =
-                  self->px_per_beat *
-                    (i += beat_interval) +
-                  SPACE_BEFORE_START) <
-                 rect.x + rect.width)
-            {
-              if (curr_px < rect.x)
-                continue;
-
-              cairo_set_source_rgb (
-                cr_to_use, 0.7, 0.7, 0.7);
-              cairo_set_line_width (
-                cr_to_use, 0.5);
-              double x = curr_px - rect.x;
-              cairo_move_to (
-                cr_to_use, x, 0);
-              cairo_line_to (
-                cr_to_use, x, height / 4);
-              cairo_stroke (cr_to_use);
-              if ((self->px_per_beat >
-                     RW_PX_TO_HIDE_BEATS * 2) &&
-                  i % beats_per_bar != 0)
-                {
-                  cairo_set_source_rgb (
-                    cr_to_use,
-                    0.5, 0.5, 0.5);
-                  sprintf (
-                    text, "%d.%d",
-                    i / beats_per_bar + 1,
-                    i % beats_per_bar + 1);
-                  pango_layout_set_markup (
-                    layout, text, -1);
-                  pango_layout_get_pixel_size (
-                    layout, &textw, &texth);
-                  cairo_move_to (
-                    cr_to_use, x - textw / 2,
-                    height / 4 + 2);
-                  pango_cairo_update_layout (
-                    cr_to_use, layout);
-                  pango_cairo_show_layout (
-                    cr_to_use, layout);
-                }
-            }
-        }
-      /* draw sixteenths */
-      i = 0;
-      if (sixteenth_interval > 0)
-        {
-          while ((curr_px =
-                  self->px_per_sixteenth *
-                    (i += sixteenth_interval) +
-                  SPACE_BEFORE_START) <
-                 rect.x + rect.width)
-            {
-              if (curr_px < rect.x)
-                continue;
-
-              cairo_set_source_rgb (
-                cr_to_use, 0.6, 0.6, 0.6);
-              cairo_set_line_width (
-                cr_to_use, 0.3);
-              double x = curr_px - rect.x;
-              cairo_move_to (
-                cr_to_use, x, 0);
-              cairo_line_to (
-                cr_to_use, x, height / 6);
-              cairo_stroke (cr_to_use);
-
-              if ((self->px_per_sixteenth >
-                     RW_PX_TO_HIDE_BEATS * 2) &&
-                  i % sixteenths_per_beat != 0)
-                {
-                  cairo_set_source_rgb (
-                    cr_to_use, 0.5, 0.5, 0.5);
-                  sprintf (
-                    text, "%d.%d.%d",
-                    i / TRANSPORT->
-                      sixteenths_per_bar + 1,
-                    ((i / sixteenths_per_beat) %
-                      beats_per_bar) + 1,
-                    i % sixteenths_per_beat + 1);
-                  pango_layout_set_markup (
-                    layout, text, -1);
-                  pango_layout_get_pixel_size (
-                    layout, &textw, &texth);
-                  cairo_move_to (
-                    cr_to_use, x - textw / 2,
-                    height / 4 + 2);
-                  pango_cairo_update_layout (
-                    cr_to_use, layout);
-                  pango_cairo_show_layout (
-                    cr_to_use, layout);
-                }
-            }
-        }
-      g_object_unref (layout);
+      draw_lines_and_labels (
+        self, cr_to_use, &rect);
 
       /* ----- draw range --------- */
 
@@ -1199,6 +1461,90 @@ multipress_pressed (
 }
 
 static void
+on_display_type_changed (
+  GtkCheckMenuItem * menuitem,
+  RulerWidget *      self)
+{
+  if (menuitem == self->bbt_display_check &&
+        gtk_check_menu_item_get_active (menuitem))
+    {
+      g_settings_set_enum (
+        S_UI, "ruler-display",
+        TRANSPORT_DISPLAY_BBT);
+    }
+  else if (menuitem == self->time_display_check &&
+             gtk_check_menu_item_get_active (
+               menuitem))
+    {
+      g_settings_set_enum (
+        S_UI, "ruler-display",
+        TRANSPORT_DISPLAY_TIME);
+    }
+
+  EVENTS_PUSH (ET_RULER_DISPLAY_TYPE_CHANGED, NULL);
+}
+
+static gboolean
+multipress_right_pressed (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  RulerWidget *         self)
+{
+  /* right click */
+  if (n_press == 1)
+    {
+      GtkWidget *menu, *menuitem;
+      menu = gtk_menu_new();
+
+      /* switch display */
+      GSList *group = NULL;
+      menuitem =
+        gtk_radio_menu_item_new_with_label (
+          group, _("BBT display"));
+      group =
+        gtk_radio_menu_item_get_group (
+          GTK_RADIO_MENU_ITEM (menuitem));
+      gtk_check_menu_item_set_active (
+        GTK_CHECK_MENU_ITEM (menuitem),
+        g_settings_get_enum (
+          S_UI, "ruler-display") ==
+          TRANSPORT_DISPLAY_BBT);
+      g_signal_connect (
+        G_OBJECT (menuitem), "toggled",
+        G_CALLBACK (on_display_type_changed), self);
+      self->bbt_display_check =
+        GTK_CHECK_MENU_ITEM (menuitem);
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (menu), menuitem);
+
+      menuitem =
+        gtk_radio_menu_item_new_with_label (
+          group, _("Time display"));
+      gtk_check_menu_item_set_active (
+        GTK_CHECK_MENU_ITEM (menuitem),
+        g_settings_get_enum (
+          S_UI, "ruler-display") ==
+          TRANSPORT_DISPLAY_TIME);
+      g_signal_connect (
+        G_OBJECT (menuitem), "toggled",
+        G_CALLBACK (on_display_type_changed), self);
+      self->time_display_check =
+        GTK_CHECK_MENU_ITEM (menuitem);
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (menu), menuitem);
+
+      gtk_widget_show_all (menu);
+
+      gtk_menu_popup_at_pointer (
+        GTK_MENU (menu), NULL);
+    }
+
+  return FALSE;
+}
+
+static void
 drag_begin (
   GtkGestureDrag * gesture,
   gdouble          start_x,
@@ -1306,7 +1652,7 @@ on_grab_broken (
   GdkEvent  *event,
   gpointer   user_data)
 {
-  g_warning ("ruler grab broken");
+  g_message ("ruler grab broken");
   return FALSE;
 }
 
@@ -1539,6 +1885,16 @@ ruler_widget_refresh (RulerWidget * self)
     self->px_per_beat * TRANSPORT->beats_per_bar;
 
   Position pos;
+  position_from_seconds (&pos, 1.0);
+  self->px_per_min =
+    60.0 * pos.total_ticks * self->px_per_tick;
+  self->px_per_10sec =
+    10.0 * pos.total_ticks * self->px_per_tick;
+  self->px_per_sec =
+    pos.total_ticks * self->px_per_tick;
+  self->px_per_100ms =
+    0.1 * pos.total_ticks * self->px_per_tick;
+
   position_set_to_bar (
     &pos, TRANSPORT->total_bars + 1);
   self->total_px =
@@ -1624,6 +1980,13 @@ ruler_widget_init (RulerWidget * self)
   self->multipress = GTK_GESTURE_MULTI_PRESS (
     gtk_gesture_multi_press_new (
       GTK_WIDGET (self)));
+  GtkGestureMultiPress * right_mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self)));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (right_mp),
+    GDK_BUTTON_SECONDARY);
 
   g_signal_connect (
     G_OBJECT (self), "draw",
@@ -1649,6 +2012,9 @@ ruler_widget_init (RulerWidget * self)
   g_signal_connect (
     G_OBJECT (self->multipress), "pressed",
     G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (
+    G_OBJECT (right_mp), "pressed",
+    G_CALLBACK (multipress_right_pressed), self);
 }
 
 static void

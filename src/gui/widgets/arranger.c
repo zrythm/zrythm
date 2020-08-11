@@ -689,6 +689,179 @@ draw_audio_bg (
   cairo_fill (cr);
 }
 
+static void
+draw_vertical_lines (
+  ArrangerWidget * self,
+  RulerWidget *    ruler,
+  cairo_t *        cr,
+  GdkRectangle *   rect)
+{
+  /* if time display */
+  if (g_settings_get_enum (
+        S_UI, "ruler-display") ==
+          TRANSPORT_DISPLAY_TIME)
+    {
+      /* get sec interval */
+      int sec_interval =
+        ruler_widget_get_sec_interval (ruler);
+
+      /* get 10 sec interval */
+      int ten_sec_interval =
+        ruler_widget_get_10sec_interval (ruler);
+
+      /* get the interval for mins */
+      int min_interval =
+        (int)
+        MAX ((RW_PX_TO_HIDE_BEATS) /
+             (double) ruler->px_per_min, 1.0);
+
+      int i = 0;
+      double curr_px;
+      while (
+        (curr_px =
+           ruler->px_per_min * (i += min_interval) +
+             SPACE_BEFORE_START) <
+         rect->x + rect->width)
+        {
+          if (curr_px < rect->x)
+            continue;
+
+          cairo_set_source_rgb (
+            cr, 0.3, 0.3, 0.3);
+          double x = curr_px - rect->x;
+          cairo_rectangle (
+            cr, (int) x, 0,
+            1, rect->height);
+          cairo_fill (cr);
+        }
+      i = 0;
+      if (ten_sec_interval > 0)
+        {
+          while ((curr_px =
+                  ruler->px_per_10sec *
+                    (i += ten_sec_interval) +
+                  SPACE_BEFORE_START) <
+                 rect->x + rect->width)
+            {
+              if (curr_px < rect->x)
+                continue;
+
+              cairo_set_source_rgba (
+                cr, 0.25, 0.25, 0.25,
+                0.6);
+              double x = curr_px - rect->x;
+              cairo_rectangle (
+                cr, (int) x, 0,
+                1, rect->height);
+              cairo_fill (cr);
+            }
+        }
+      i = 0;
+      if (sec_interval > 0)
+        {
+          while ((curr_px =
+                  ruler->px_per_sec *
+                    (i += sec_interval) +
+                  SPACE_BEFORE_START) <
+                 rect->x + rect->width)
+            {
+              if (curr_px < rect->x)
+                continue;
+
+              cairo_set_source_rgb (
+                cr, 0.2, 0.2, 0.2);
+              cairo_set_line_width (cr, 0.5);
+              double x = curr_px - rect->x;
+              cairo_move_to (cr, x, 0);
+              cairo_line_to (cr, x, rect->height);
+              cairo_stroke (cr);
+            }
+        }
+    }
+  /* else if BBT display */
+  else
+    {
+      /* get sixteenth interval */
+      int sixteenth_interval =
+        ruler_widget_get_sixteenth_interval (
+          ruler);
+
+      /* get the beat interval */
+      int beat_interval =
+        ruler_widget_get_beat_interval (
+          ruler);
+
+      /* get the interval for bars */
+      int bar_interval =
+        (int)
+        MAX ((RW_PX_TO_HIDE_BEATS) /
+             (double) ruler->px_per_bar, 1.0);
+
+      int i = 0;
+      double curr_px;
+      while (
+        (curr_px =
+           ruler->px_per_bar * (i += bar_interval) +
+             SPACE_BEFORE_START) <
+         rect->x + rect->width)
+        {
+          if (curr_px < rect->x)
+            continue;
+
+          cairo_set_source_rgb (
+            cr, 0.3, 0.3, 0.3);
+          double x = curr_px - rect->x;
+          cairo_rectangle (
+            cr, (int) x, 0,
+            1, rect->height);
+          cairo_fill (cr);
+        }
+      i = 0;
+      if (beat_interval > 0)
+        {
+          while ((curr_px =
+                  ruler->px_per_beat *
+                    (i += beat_interval) +
+                  SPACE_BEFORE_START) <
+                 rect->x + rect->width)
+            {
+              if (curr_px < rect->x)
+                continue;
+
+              cairo_set_source_rgba (
+                cr, 0.25, 0.25, 0.25,
+                0.6);
+              double x = curr_px - rect->x;
+              cairo_rectangle (
+                cr, (int) x, 0,
+                1, rect->height);
+              cairo_fill (cr);
+            }
+        }
+      i = 0;
+      if (sixteenth_interval > 0)
+        {
+          while ((curr_px =
+                  ruler->px_per_sixteenth *
+                    (i += sixteenth_interval) +
+                  SPACE_BEFORE_START) <
+                 rect->x + rect->width)
+            {
+              if (curr_px < rect->x)
+                continue;
+
+              cairo_set_source_rgb (
+                cr, 0.2, 0.2, 0.2);
+              cairo_set_line_width (cr, 0.5);
+              double x = curr_px - rect->x;
+              cairo_move_to (cr, x, 0);
+              cairo_line_to (cr, x, rect->height);
+              cairo_stroke (cr);
+            }
+        }
+    }
+}
+
 static gboolean
 arranger_draw_cb (
   GtkWidget *widget,
@@ -715,7 +888,6 @@ arranger_draw_cb (
         /*"(%d, %d) width: %d height %d)",*/
         /*rect.x, rect.y, rect.width, rect.height);*/
       self->last_rect = rect;
-      int i = 0;
 
       GtkStyleContext *context =
         gtk_widget_get_style_context (widget);
@@ -797,87 +969,8 @@ arranger_draw_cb (
 
       /* --- handle vertical drawing --- */
 
-      /* get sixteenth interval */
-      int sixteenth_interval =
-        ruler_widget_get_sixteenth_interval (
-          ruler);
-
-      /* get the beat interval */
-      int beat_interval =
-        ruler_widget_get_beat_interval (
-          ruler);
-
-      /* get the interval for bars */
-      int bar_interval =
-        (int)
-        MAX ((RW_PX_TO_HIDE_BEATS) /
-             (double) ruler->px_per_bar, 1.0);
-
-      i = 0;
-      double curr_px;
-      while (
-        (curr_px =
-           ruler->px_per_bar * (i += bar_interval) +
-             SPACE_BEFORE_START) <
-         rect.x + rect.width)
-        {
-          if (curr_px < rect.x)
-            continue;
-
-          cairo_set_source_rgb (
-            self->cached_cr, 0.3, 0.3, 0.3);
-          double x = curr_px - rect.x;
-          cairo_rectangle (
-            self->cached_cr, (int) x, 0,
-            1, rect.height);
-          cairo_fill (self->cached_cr);
-        }
-      i = 0;
-      if (beat_interval > 0)
-        {
-          while ((curr_px =
-                  ruler->px_per_beat *
-                    (i += beat_interval) +
-                  SPACE_BEFORE_START) <
-                 rect.x + rect.width)
-            {
-              if (curr_px < rect.x)
-                continue;
-
-              cairo_set_source_rgba (
-                self->cached_cr, 0.25, 0.25, 0.25,
-                0.6);
-              double x = curr_px - rect.x;
-              cairo_rectangle (
-                self->cached_cr, (int) x, 0,
-                1, rect.height);
-              cairo_fill (self->cached_cr);
-            }
-        }
-      i = 0;
-      if (sixteenth_interval > 0)
-        {
-          while ((curr_px =
-                  ruler->px_per_sixteenth *
-                    (i += sixteenth_interval) +
-                  SPACE_BEFORE_START) <
-                 rect.x + rect.width)
-            {
-              if (curr_px < rect.x)
-                continue;
-
-              cairo_set_source_rgb (
-                self->cached_cr, 0.2, 0.2, 0.2);
-              cairo_set_line_width (
-                self->cached_cr, 0.5);
-              double x = curr_px - rect.x;
-              cairo_move_to (
-                self->cached_cr, x, 0);
-              cairo_line_to (
-                self->cached_cr, x, rect.height);
-              cairo_stroke (self->cached_cr);
-            }
-        }
+      draw_vertical_lines (
+        self, ruler, self->cached_cr, &rect);
 
       /* draw range */
       if (TRANSPORT->has_range)

@@ -448,6 +448,11 @@ Args:
                  "Transport display type"
                  "Selected transport display type (BBT/time).")
                (make-schema-key-with-enum
+                 "ruler-display"
+                 "transport-display" "bbt"
+                 "Ruler display type"
+                 "Selected ruler display type (BBT/time).")
+               (make-schema-key-with-enum
                  "selected-tool"
                  "tool" "select-normal"
                  "Selected editing tool"
