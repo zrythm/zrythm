@@ -471,26 +471,6 @@ handle_audio_event (
   long end_frames =
     start_frames + (long) nframes;
 
-  /* adjust for transport loop end */
-  int loop_met = 0;
-  nframes_t frames_till_loop = 0;
-  (void) frames_till_loop;
-
-#if 0
-  if ((frames_till_loop =
-         transport_is_loop_point_met (
-           TRANSPORT, start_frames, nframes)))
-    {
-      loop_met = 1;
-      start_frames =
-        TRANSPORT->loop_start_pos.frames;
-      end_frames =
-        (end_frames -
-           TRANSPORT->loop_end_pos.frames) +
-        start_frames;
-    }
-#endif
-
   Position start_pos, end_pos;
   position_from_frames (
     &start_pos, start_frames);
@@ -503,181 +483,48 @@ handle_audio_event (
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
 
-  /* the region before the loop point, if
-   * loop point is met */
-  ZRegion * region_before_loop_end = NULL;
-  ArrangerObject * r_obj_before_loop_end;
-
   /* the clip */
   AudioClip * clip = NULL;
-  AudioClip * clip_before_loop_end = NULL;
 
   clip = audio_region_get_clip (region);
 
-  if (loop_met)
-    {
-      region_before_loop_end = region;
-      r_obj_before_loop_end =
-        (ArrangerObject *)
-        region;
-      clip_before_loop_end = clip;
+  /* set region end pos */
+  arranger_object_end_pos_setter (
+    r_obj, &end_pos);
+  r_obj->end_pos.frames =
+    end_pos.frames;
 
-      /* set current region end pos  to
-       * transport loop end */
-      arranger_object_end_pos_setter (
-        r_obj, &TRANSPORT->loop_end_pos);
-      r_obj->end_pos.frames =
-        TRANSPORT->loop_end_pos.frames;
+  clip->num_frames =
+    r_obj->end_pos.frames - r_obj->pos.frames;
+  clip->frames =
+    (sample_t *)
+    realloc (
+      clip->frames,
+      (size_t)
+      (clip->num_frames *
+         (long) clip->channels) *
+      sizeof (sample_t));
+  region->frames =
+    (sample_t *) realloc (
+      region->frames,
+      (size_t)
+      (clip->num_frames *
+         (long) clip->channels) *
+      sizeof (sample_t));
+  region->num_frames = (size_t) clip->num_frames;
+  memcpy (
+    &region->frames[0], &clip->frames[0],
+    sizeof (float) * (size_t) clip->num_frames *
+    clip->channels);
 
-      clip->num_frames =
-        r_obj->end_pos.frames -
-        r_obj->pos.frames;
-      clip->frames =
-        (sample_t *) realloc (
-          clip->frames,
-          (size_t)
-          (clip->num_frames *
-             (long) clip->channels) *
-          sizeof (sample_t));
-      region->frames =
-        (sample_t *) realloc (
-          region->frames,
-          (size_t)
-          (clip->num_frames *
-             (long) clip->channels) *
-          sizeof (sample_t));
-      region->num_frames = (size_t) clip->num_frames;
-      memcpy (
-        &region->frames[0], &clip->frames[0],
-        sizeof (float) * (size_t) clip->num_frames *
-        clip->channels);
+  position_from_frames (
+    &r_obj->loop_end_pos,
+    r_obj->end_pos.frames -
+      r_obj->pos.frames);
 
-      position_from_frames (
-        &r_obj->loop_end_pos,
-        r_obj->end_pos.frames -
-          r_obj->pos.frames);
-
-      /* start new region in new lane at
-       * TRANSPORT loop start */
-      int new_lane_pos = region->id.lane_pos + 1;
-      ZRegion * new_region =
-        audio_region_new (
-          -1, NULL, NULL, (long) nframes, 2,
-          &TRANSPORT->loop_start_pos, tr->pos,
-          new_lane_pos,
-          tr->num_lanes > new_lane_pos ?
-            tr->lanes[new_lane_pos]->num_regions :
-            0);
-      track_add_region (
-        tr, new_region, NULL,
-        new_lane_pos, F_GEN_NAME,
-        F_PUBLISH_EVENTS);
-      region = new_region;
-      add_recorded_id (
-        RECORDING_MANAGER, new_region);
-
-      clip =
-        audio_region_get_clip (region);
-    }
-  else /* loop not met */
-    {
-      /* set region end pos */
-      arranger_object_end_pos_setter (
-        r_obj, &end_pos);
-      r_obj->end_pos.frames =
-        end_pos.frames;
-
-      clip->num_frames =
-        r_obj->end_pos.frames -
-        r_obj->pos.frames;
-      clip->frames =
-        (sample_t *) realloc (
-        clip->frames,
-        (size_t)
-        (clip->num_frames *
-           (long) clip->channels) *
-        sizeof (sample_t));
-      region->frames =
-        (sample_t *) realloc (
-          region->frames,
-          (size_t)
-          (clip->num_frames *
-             (long) clip->channels) *
-          sizeof (sample_t));
-      region->num_frames = (size_t) clip->num_frames;
-      memcpy (
-        &region->frames[0], &clip->frames[0],
-        sizeof (float) * (size_t) clip->num_frames *
-        clip->channels);
-
-      position_from_frames (
-        &r_obj->loop_end_pos,
-        r_obj->end_pos.frames -
-          r_obj->pos.frames);
-    }
   r_obj->fade_out_pos = r_obj->loop_end_pos;
 
   tr->recording_region = region;
-
-  if (loop_met)
-    {
-      /* handle the samples until loop end */
-      if (region_before_loop_end)
-        {
-          long clip_offset_before_loop =
-            start_frames -
-            r_obj_before_loop_end->pos.frames;
-          for (
-            nframes_t i =
-              local_offset;
-            i <
-              local_offset +
-                frames_till_loop;
-            i++)
-            {
-              g_warn_if_fail (
-                clip_offset_before_loop >= 0 &&
-                clip_offset_before_loop <
-                  clip_before_loop_end->
-                    num_frames);
-              g_warn_if_fail (
-                i >= local_offset &&
-                i < local_offset + nframes);
-              clip_before_loop_end->frames[
-                clip_before_loop_end->channels *
-                  clip_offset_before_loop] =
-                    ev->lbuf[i];
-              clip_before_loop_end->frames[
-                clip_before_loop_end->channels *
-                  (clip_offset_before_loop++)] =
-                    ev->rbuf[i];
-            }
-        }
-
-      /* handle samples after loop start */
-      long clip_offset = 0;
-      for (
-        nframes_t i =
-          nframes -
-            (local_offset + frames_till_loop);
-        i < nframes;
-        i++)
-        {
-          g_warn_if_fail (
-            clip_offset >= 0 &&
-            clip_offset <
-              clip->num_frames);
-          g_warn_if_fail (
-            i >= local_offset &&
-            i < local_offset + nframes);
-          clip->frames[
-            clip->channels * clip_offset] =
-              ev->lbuf[i];
-          clip->frames[
-            clip->channels * (clip_offset++)] =
-              ev->rbuf[i];
-        }
-    }
 
   /* handle the samples normally */
   nframes_t cur_local_offset =
@@ -1127,26 +974,6 @@ handle_midi_event (
   long end_frames =
     start_frames + (long) nframes;
 
-  /* adjust for transport loop end */
-  int loop_met = 0;
-  nframes_t frames_till_loop = 0;
-  (void) frames_till_loop;
-
-#if 0
-  if ((frames_till_loop =
-         transport_is_loop_point_met (
-           TRANSPORT, start_frames, nframes)))
-    {
-      loop_met = 1;
-      start_frames =
-        TRANSPORT->loop_start_pos.frames;
-      end_frames =
-        (end_frames -
-           TRANSPORT->loop_end_pos.frames) +
-        start_frames;
-    }
-#endif
-
   Position start_pos, end_pos;
   position_from_frames (
     &start_pos, start_frames);
@@ -1159,88 +986,20 @@ handle_midi_event (
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
 
-  /* the region before the loop point, if
-   * loop point is met */
-  /*ZRegion * region_before_loop_end = NULL;*/
-
-  if (loop_met)
-    {
-#if 0
-      region_before_loop_end = region;
-
-      /* set current region end pos  to
-       * transport loop end */
-      arranger_object_end_pos_setter (
-        r_obj, &TRANSPORT->loop_end_pos);
-      r_obj->end_pos.frames =
-        TRANSPORT->loop_end_pos.frames;
-      arranger_object_loop_end_pos_setter (
-        r_obj, &TRANSPORT->loop_end_pos);
-      r_obj->loop_end_pos.frames =
-        TRANSPORT->loop_end_pos.frames;
-
-      /* start new region in new lane at
-       * TRANSPORT loop start */
-      int new_lane_pos = region->id.lane_pos + 1;
-      ZRegion * new_region =
-        midi_region_new (
-          &TRANSPORT->loop_start_pos,
-          &end_pos, tr->pos, new_lane_pos,
-          tr->num_lanes > new_lane_pos ?
-            tr->lanes[new_lane_pos]->num_regions :
-            0);
-      track_add_region (
-        tr, new_region, NULL,
-        new_lane_pos, F_GEN_NAME,
-        F_PUBLISH_EVENTS);
-      add_recorded_id (
-        RECORDING_MANAGER, new_region);
-      region = new_region;
-#endif
-    }
-  else /* loop not met */
-    {
-      /* set region end pos */
-      arranger_object_end_pos_setter (
-        r_obj, &end_pos);
-      r_obj->end_pos.frames =
-        end_pos.frames;
-      arranger_object_loop_end_pos_setter (
-        r_obj, &end_pos);
-      r_obj->loop_end_pos.frames =
-        end_pos.frames;
-    }
+  /* set region end pos */
+  arranger_object_end_pos_setter (
+    r_obj, &end_pos);
+  r_obj->end_pos.frames =
+    end_pos.frames;
+  arranger_object_loop_end_pos_setter (
+    r_obj, &end_pos);
+  r_obj->loop_end_pos.frames =
+    end_pos.frames;
 
   tr->recording_region = region;
 
   MidiNote * mn;
   ArrangerObject * mn_obj;
-
-#if 0
-  /* add midi note off if loop met */
-  if (loop_met)
-    {
-      while (
-        (mn =
-          midi_region_pop_unended_note (
-            region_before_loop_end, -1)))
-        {
-          mn_obj =
-            (ArrangerObject *) mn;
-          Position local_end_pos;
-          position_set_to_pos (
-            &local_end_pos,
-            &TRANSPORT->loop_end_pos);
-          position_add_ticks (
-            &local_end_pos,
-            - ((ArrangerObject *)
-            region_before_loop_end)->pos.
-              total_ticks);
-          arranger_object_end_pos_setter (
-            mn_obj, &local_end_pos);
-        }
-    }
-#endif
 
   if (!ev->has_midi_event)
     return;
@@ -1318,26 +1077,6 @@ handle_automation_event (
   long end_frames =
     start_frames + (long) nframes;
 
-  /* adjust for transport loop end */
-  int loop_met = 0;
-  nframes_t frames_till_loop = 0;
-  (void) frames_till_loop;
-
-#if 0
-  if ((frames_till_loop =
-         transport_is_loop_point_met (
-           TRANSPORT, start_frames, nframes)))
-    {
-      loop_met = 1;
-      start_frames =
-        TRANSPORT->loop_start_pos.frames;
-      end_frames =
-        (end_frames -
-           TRANSPORT->loop_end_pos.frames) +
-        start_frames;
-    }
-#endif
-
   Position start_pos, end_pos;
   position_from_frames (
     &start_pos, start_frames);
@@ -1362,13 +1101,9 @@ handle_automation_event (
       g_message ("no region");
     }
 
-  ZRegion * region_at_end = NULL;
-  if (!loop_met)
-    {
-      region_at_end =
-        automation_track_get_region_before_pos (
-          at, &end_pos);
-    }
+  ZRegion * region_at_end =
+    automation_track_get_region_before_pos (
+      at, &end_pos);
   if (!region && automation_value_changed)
     {
       /* create region */
@@ -1379,12 +1114,6 @@ handle_automation_event (
             (ArrangerObject *) region_at_end;
           position_set_to_pos (
             &pos_to_end_new_r, &r_at_end_obj->pos);
-        }
-      else if (loop_met)
-        {
-          position_set_to_pos (
-            &pos_to_end_new_r,
-            &TRANSPORT->loop_end_pos);
         }
       else
         {
@@ -1409,146 +1138,40 @@ handle_automation_event (
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
 
-  /* the region before the loop point, if
-   * loop point is met */
-  ZRegion * region_before_loop_end = NULL;
-
-  if (loop_met)
+  if (new_region_created ||
+      (r_obj &&
+       position_is_before (
+         &r_obj->end_pos, &end_pos)))
     {
-      region_before_loop_end = region;
+      /* set region end pos */
+      arranger_object_end_pos_setter (
+        r_obj, &end_pos);
+      r_obj->end_pos.frames =
+        end_pos.frames;
 
-      if (region)
-        {
-          /* set current region end pos to
-           * transport loop end */
-          arranger_object_end_pos_setter (
-            r_obj, &TRANSPORT->loop_end_pos);
-          r_obj->end_pos.frames =
-            TRANSPORT->loop_end_pos.frames;
-
-          position_from_frames (
-            &r_obj->loop_end_pos,
-            r_obj->end_pos.frames -
-              r_obj->pos.frames);
-        }
-
-      /* get or start new region at
-       * TRANSPORT loop start */
-      ZRegion * new_region =
-        automation_track_get_region_before_pos (
-          at, &TRANSPORT->loop_start_pos);
-      region_at_end =
-        automation_track_get_region_before_pos (
-          at, &end_pos);
-      if (!new_region &&
-          automation_track_should_be_recording (
-            at, cur_time, false))
-        {
-          /* create region */
-          Position pos_to_end_new_r;
-          if (region_at_end)
-            {
-              ArrangerObject * r_at_end_obj =
-                (ArrangerObject *) region_at_end;
-              position_set_to_pos (
-                &pos_to_end_new_r,
-                &r_at_end_obj->pos);
-            }
-          else
-            {
-              position_set_to_pos (
-                &pos_to_end_new_r, &end_pos);
-            }
-          new_region =
-            automation_region_new (
-              &TRANSPORT->loop_start_pos,
-              &end_pos, tr->pos,
-              at->index, at->num_regions);
-          g_return_if_fail (new_region);
-          track_add_region (
-            tr, new_region, at, -1,
-            F_GEN_NAME, F_PUBLISH_EVENTS);
-        }
-      region = new_region;
-      if (region)
-        {
-          add_recorded_id (
-            RECORDING_MANAGER, new_region);
-        }
-    }
-  else /* loop not met */
-    {
-      if (new_region_created ||
-          (r_obj &&
-           position_is_before (
-             &r_obj->end_pos, &end_pos)))
-        {
-          /* set region end pos */
-          arranger_object_end_pos_setter (
-            r_obj, &end_pos);
-          r_obj->end_pos.frames =
-            end_pos.frames;
-
-          position_from_frames (
-            &r_obj->loop_end_pos,
-            r_obj->end_pos.frames -
-              r_obj->pos.frames);
-        }
+      position_from_frames (
+        &r_obj->loop_end_pos,
+        r_obj->end_pos.frames -
+          r_obj->pos.frames);
     }
 
   at->recording_region = region;
 
-  if (loop_met)
+  /* handle the samples normally */
+  if (automation_value_changed)
     {
-      /* handle the samples until loop end */
-      if (region_before_loop_end)
-        {
-          if (automation_value_changed)
-            {
-              create_automation_point (
-                at, region_before_loop_end,
-                value, normalized_value,
-                &start_pos);
-              at->last_recorded_value = value;
-            }
-        }
-
-      if (automation_track_should_be_recording (
-            at, cur_time, true))
-        {
-          while (position_is_equal (
-                   &((ArrangerObject *)
-                      region->aps[0])->pos,
-                   &TRANSPORT->loop_start_pos))
-            {
-              automation_region_remove_ap (
-                region, region->aps[0], true);
-            }
-
-          /* create/replace ap at loop start */
-          create_automation_point (
-            at, region, value, normalized_value,
-            &TRANSPORT->loop_start_pos);
-        }
+      create_automation_point (
+        at, region,
+        value, normalized_value,
+        &start_pos);
+      at->last_recorded_value = value;
     }
-  else
+  else if (at->record_mode ==
+             AUTOMATION_RECORD_MODE_LATCH)
     {
-      /* handle the samples normally */
-      if (automation_value_changed)
-        {
-          create_automation_point (
-            at, region,
-            value, normalized_value,
-            &start_pos);
-          at->last_recorded_value = value;
-        }
-      else if (at->record_mode ==
-                 AUTOMATION_RECORD_MODE_LATCH)
-        {
-          g_warn_if_fail (region);
-          delete_automation_points (
-            at, region, &start_pos);
-        }
+      g_warn_if_fail (region);
+      delete_automation_points (
+        at, region, &start_pos);
     }
 
   /* if we left touch mode, set last recorded ap

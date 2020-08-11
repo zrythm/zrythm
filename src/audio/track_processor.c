@@ -445,6 +445,10 @@ track_processor_get_track (
 #endif
 }
 
+/**
+ * Splits the cycle and handles recording for each
+ * slot.
+ */
 static void
 handle_recording (
   TrackProcessor * self,
