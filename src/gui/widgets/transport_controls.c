@@ -33,9 +33,10 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (TransportControlsWidget,
-               transport_controls_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  TransportControlsWidget,
+  transport_controls_widget,
+  GTK_TYPE_BOX)
 
 static void
 play_clicked_cb (

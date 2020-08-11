@@ -130,6 +130,8 @@ arranger_object_select (
   const int        select,
   const int        append)
 {
+  g_return_if_fail (IS_ARRANGER_OBJECT (self));
+
   ArrangerSelections * selections =
     arranger_object_get_selections_for_type (
       self->type);

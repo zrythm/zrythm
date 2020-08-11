@@ -445,6 +445,211 @@ track_processor_get_track (
 #endif
 }
 
+static void
+handle_recording (
+  TrackProcessor * self,
+  const long       g_start_frames,
+  const nframes_t  local_offset,
+  const nframes_t  nframes)
+{
+  long split_points[6];
+  long each_nframes[6];
+  int num_split_points = 1;
+
+  long start_frames = g_start_frames + local_offset;
+  long end_frames = start_frames + nframes;
+
+  /* split the cycle at loop and punch points and
+   * record */
+  bool loop_hit = false;
+  bool punch_in_hit = false;
+  /*bool punch_out_hit = false;*/
+  int loop_end_idx = -1;
+  split_points[0] = start_frames;
+  each_nframes[0] = nframes;
+  if (TRANSPORT->loop)
+    {
+      if (position_between_frames_excl2 (
+            &TRANSPORT->loop_end_pos,
+            start_frames, end_frames))
+        {
+          loop_hit = true;
+          num_split_points = 2;
+
+          /* adjust start slot */
+          each_nframes[0] =
+            TRANSPORT->loop_end_pos.frames -
+            start_frames;
+          loop_end_idx = 0;
+
+          /* add loop end */
+          split_points[1] =
+            TRANSPORT->loop_start_pos.frames;
+          each_nframes[1] =
+            nframes - each_nframes[0];
+        }
+    }
+  if (TRANSPORT->punch_mode)
+    {
+      if (loop_hit)
+        {
+          /* before loop */
+          if (position_between_frames_excl2 (
+                &TRANSPORT->punch_in_pos,
+                start_frames,
+                TRANSPORT->loop_end_pos.frames))
+            {
+              punch_in_hit = true;
+              num_split_points = 3;
+
+              /* move loop start to next slot */
+              each_nframes[2] = each_nframes[1];
+              split_points[2] = split_points[1];
+
+              /* add punch in pos */
+              split_points[1] =
+                TRANSPORT->punch_in_pos.frames;
+              each_nframes[1] =
+                TRANSPORT->loop_end_pos.frames -
+                TRANSPORT->punch_in_pos.frames;
+              loop_end_idx = 1;
+
+              /* adjust num frames for initial
+               * pos */
+              each_nframes[0] -= each_nframes[1];
+            }
+          if (position_between_frames_excl2 (
+                &TRANSPORT->punch_out_pos,
+                start_frames,
+                TRANSPORT->loop_end_pos.frames))
+            {
+              /*punch_out_hit = true;*/
+              if (punch_in_hit)
+                {
+                  num_split_points = 4;
+
+                  /* move loop start to next slot */
+                  each_nframes[3] = each_nframes[2];
+                  split_points[3] = split_points[2];
+
+                  /* add punch out pos */
+                  split_points[2] =
+                    TRANSPORT->punch_out_pos.frames;
+                  each_nframes[2] =
+                    TRANSPORT->loop_end_pos.frames -
+                    TRANSPORT->punch_out_pos.frames;
+                  loop_end_idx = 2;
+
+                  /* adjust num frames for punch in
+                   * pos */
+                  each_nframes[1] -= each_nframes[2];
+                }
+              else
+                {
+                  num_split_points = 3;
+
+                  /* move loop start to next slot */
+                  each_nframes[2] = each_nframes[1];
+                  split_points[2] = split_points[1];
+
+                  /* add punch out pos */
+                  split_points[1] =
+                    TRANSPORT->punch_out_pos.frames;
+                  each_nframes[1] =
+                    TRANSPORT->loop_end_pos.frames -
+                    TRANSPORT->punch_out_pos.frames;
+                  loop_end_idx = 1;
+
+                  /* adjust num frames for init
+                   * pos */
+                  each_nframes[0] -= each_nframes[1];
+                }
+            }
+        }
+      else /* loop not hit */
+        {
+          if (position_between_frames_excl2 (
+                &TRANSPORT->punch_in_pos,
+                start_frames, end_frames))
+            {
+              punch_in_hit = true;
+              num_split_points = 2;
+
+              /* add punch in pos */
+              split_points[1] =
+                TRANSPORT->punch_in_pos.frames;
+              each_nframes[1] =
+                end_frames -
+                TRANSPORT->punch_in_pos.frames;
+
+              /* adjust num frames for initial
+               * pos */
+              each_nframes[0] -= each_nframes[1];
+            }
+          if (position_between_frames_excl2 (
+                &TRANSPORT->punch_out_pos,
+                start_frames, end_frames))
+            {
+              /*punch_out_hit = true;*/
+              if (punch_in_hit)
+                {
+                  num_split_points = 3;
+
+                  /* add punch out pos */
+                  split_points[2] =
+                    TRANSPORT->punch_out_pos.frames;
+                  each_nframes[2] =
+                    end_frames -
+                    TRANSPORT->punch_out_pos.frames;
+
+                  /* adjust num frames for punch in
+                   * pos */
+                  each_nframes[1] -= each_nframes[2];
+                }
+              else
+                {
+                  num_split_points = 2;
+
+                  /* add punch out pos */
+                  split_points[1] =
+                    TRANSPORT->punch_out_pos.frames;
+                  each_nframes[1] =
+                    end_frames -
+                    TRANSPORT->punch_out_pos.frames;
+
+                  /* adjust num frames for init
+                   * pos */
+                  each_nframes[0] -= each_nframes[1];
+                }
+            }
+        }
+    }
+
+  long split_point = -1;
+  bool is_loop_end_idx = false;
+  for (int i = 0; i < num_split_points; i++)
+    {
+      g_warn_if_fail (
+        split_points[i] >= 0 &&
+        each_nframes[i] > 0 &&
+        (split_points[i] > split_point ||
+         is_loop_end_idx));
+
+      /* skip if same as previous point */
+      if (split_points[i] == split_point)
+        continue;
+
+      split_point = split_points[i];
+
+      is_loop_end_idx =
+        loop_hit && i == loop_end_idx;
+
+      recording_manager_handle_recording (
+        RECORDING_MANAGER, self, split_point,
+        0, each_nframes[i], is_loop_end_idx);
+    }
+}
+
 /**
  * Process the TrackProcessor.
  *
@@ -573,9 +778,9 @@ track_processor_process (
       /* handle recording. this will only create
        * events in regions. it will not copy the
        * input content to the output ports */
-      recording_manager_handle_recording (
-        RECORDING_MANAGER, self, g_start_frames,
-        local_offset, nframes);
+      handle_recording (
+        self, g_start_frames, local_offset,
+        nframes);
     }
 
   /* add inputs to outputs */

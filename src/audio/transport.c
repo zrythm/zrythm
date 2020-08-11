@@ -867,6 +867,16 @@ transport_set_range2 (
     }
 }
 
+bool
+transport_position_is_inside_punch_range (
+  Transport * self,
+  Position *  pos)
+{
+  return
+    pos->frames >= self->punch_in_pos.frames &&
+    pos->frames < self->punch_out_pos.frames;
+}
+
 void
 transport_free (
   Transport * self)

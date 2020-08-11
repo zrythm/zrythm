@@ -221,3 +221,35 @@ void array_shuffle (
         }
     }
 }
+
+static int
+cmp_float_func (const void * a, const void * b)
+{
+  return ( *(float*)a - *(float*)b ) < 0.f ? -1 : 1;
+}
+
+void
+array_sort_float (
+  float * array,
+  int     size)
+{
+  qsort (
+    array, (size_t) size, sizeof (long),
+    cmp_float_func);
+}
+
+static int
+cmp_long_func (const void * a, const void * b)
+{
+  return ( *(long*)a - *(long*)b );
+}
+
+void
+array_sort_long (
+  long * array,
+  int     size)
+{
+  qsort (
+    array, (size_t) size, sizeof (long),
+    cmp_long_func);
+}

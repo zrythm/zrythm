@@ -489,6 +489,11 @@ transport_is_loop_point_met (
   const long        g_start_frames,
   const nframes_t   nframes);
 
+bool
+transport_position_is_inside_punch_range (
+  Transport * self,
+  Position *  pos);
+
 void
 transport_free (
   Transport * self);

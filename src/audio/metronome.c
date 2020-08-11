@@ -123,9 +123,11 @@ metronome_new (void)
 
   /* set volume */
   self->volume =
-    (float)
-    g_settings_get_double (
-      S_TRANSPORT, "metronome-volume");
+    ZRYTHM_TESTING ?
+      1.f :
+      (float)
+      g_settings_get_double (
+        S_TRANSPORT, "metronome-volume");
 
   return self;
 }

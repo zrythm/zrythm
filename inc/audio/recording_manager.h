@@ -77,16 +77,20 @@ typedef struct RecordingManager
  * The MidiEvents are already dequeued at this
  * point.
  *
- * @param g_start_frames Global start frames.
+ * @param g_frames_start Global start frames.
  * @param nframes Number of frames to process.
+ * @param reached_loop_end Whether this range is
+ *   ending at loop end and expecting another call
+ *   when back to loop start.
  */
 void
 recording_manager_handle_recording (
   RecordingManager * self,
-  TrackProcessor * track_processor,
-  const long       g_start_frames,
-  const nframes_t  local_offset,
-  const nframes_t  nframes);
+  TrackProcessor *   track_processor,
+  const long         g_start_frames,
+  const nframes_t    local_offset,
+  const nframes_t    nframes,
+  bool               reached_loop_end);
 
 /**
  * Creates the event queue and starts the event loop.

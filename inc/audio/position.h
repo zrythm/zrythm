@@ -55,6 +55,13 @@
   position_snap (0, pos, 0, 0, sg)
 
 /**
+ * Whether the position starts on or after f1 and
+ * before f2.
+ */
+#define position_between_frames_excl2(pos,f1,f2) \
+  ((pos)->frames >= f1 && (pos)->frames < f2)
+
+/**
  * Compares 2 positions based on their frames.
  *
  * negative = p1 is earlier

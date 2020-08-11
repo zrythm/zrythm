@@ -49,7 +49,9 @@ typedef struct _ArrangerObjectWidget
 #define IS_ARRANGER_OBJECT(tr) \
   (tr && \
    ((ArrangerObject *) tr)->magic == \
-     ARRANGER_OBJECT_MAGIC)
+     ARRANGER_OBJECT_MAGIC && \
+   ((ArrangerObject *) tr)->type >= ARRANGER_OBJECT_TYPE_REGION && \
+   ((ArrangerObject *) tr)->type <= ARRANGER_OBJECT_TYPE_VELOCITY)
 
 /**
  * Flag used in some functions.

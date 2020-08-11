@@ -261,12 +261,25 @@ _array_contains_cmp (
  * -1 if not.
  */
 int
-_array_index_of (void ** array,
-                int size, void * element);
+_array_index_of (
+  void ** array,
+  int     size,
+  void *  element);
 
 void
-array_sort_alphabetically (char ** array,
-                           int     size,
-                           int     case_sensitive);
+array_sort_alphabetically (
+  char ** array,
+  int     size,
+  int     case_sensitive);
+
+void
+array_sort_float (
+  float * array,
+  int     size);
+
+void
+array_sort_long (
+  long * array,
+  int    size);
 
 #endif /* __UTILS_ARRAYS_H__ */

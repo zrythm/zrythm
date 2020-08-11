@@ -137,6 +137,9 @@ automation_region_add_ap (
   AutomationPoint * ap,
   int               pub_events)
 {
+  g_return_if_fail (
+    IS_REGION (self) && IS_ARRANGER_OBJECT (ap));
+
   /* add point */
   array_double_size_if_full (
     self->aps, self->num_aps, self->aps_size,
@@ -149,6 +152,7 @@ automation_region_add_ap (
 
   if (pub_events)
     {
+      g_message ("pub events %p", ap);
       EVENTS_PUSH (
         ET_ARRANGER_OBJECT_CREATED, ap);
     }
@@ -260,18 +264,28 @@ automation_region_remove_ap (
   AutomationPoint * ap,
   int               free)
 {
+  g_return_if_fail (
+    IS_REGION (self) && IS_ARRANGER_OBJECT (ap));
+
+  g_message ("removing %p", ap);
   /* deselect */
   arranger_object_select (
     (ArrangerObject *) ap, F_NO_SELECT,
     F_APPEND);
+
+  if (self->last_recorded_ap == ap)
+    {
+      self->last_recorded_ap = NULL;
+    }
 
   array_delete (
     self->aps, self->num_aps, ap);
 
   if (free)
     {
-      arranger_object_free (
-        (ArrangerObject *) ap);
+      /* free later otherwise causes problems
+       * while recording */
+      free_later (ap, arranger_object_free);
     }
 
   EVENTS_PUSH (

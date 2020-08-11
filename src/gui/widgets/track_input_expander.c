@@ -550,6 +550,7 @@ track_input_expander_widget_refresh (
       gtk_container_remove (
         GTK_CONTAINER (self->gain_box),
         GTK_WIDGET (self->gain));
+      self->gain = NULL;
     }
 
   if (track->type == TRACK_TYPE_MIDI ||
