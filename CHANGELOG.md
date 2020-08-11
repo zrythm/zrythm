@@ -1,6 +1,35 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.797] - 2020-08-11
+### Added
+- Add plugin gain port
+- Add scroll wheel support for fader
+- Add mono compat switch on group tracks and master
+- Add insert silence/remove range actions
+- Add mono toggle and gain knob on audio track inputs
+- Add test for audio track deletion
+- Add new widget for buttons with menus
+- Add volume slider for metronome
+- Add punch mode switch to record button for punch in/out recording
+- Ruler: add option to switch to real time display
+
+### Changed
+- Refactor fader buttons into separate widget
+- Show host system type in version info
+- Check number of ports are the same when cloning plugins
+- Hard limit master bus and monitor out to +6db
+- Allocate system command output instead of passing buffer
+- Integrate new icons
+- Revise trademark policy to allow modifications by FSF-approved distros or for fixing acknowledged bugs and CVE vulnerabilities
+- Update bot panel tab tooltips
+- Refactor recording code: split cycle at punch and loop points
+- Update Arabic, Portuguese, Interlingua, Norwegian translations
+- Only enable external audio input when audio track is rec-armed
+
+### Fixed
+- Fix range not being drawn properly in ruler when scrolling horizontally
+
 ## [0.8.757] - 2020-07-30
 ### Added
 - New dependency: reproc
