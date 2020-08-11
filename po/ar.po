@@ -3,22 +3,23 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Weblate <noreply@weblate.org>, 2019.
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
+# YoGo <officialyogomusic@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-07-23 18:12+0100\n"
-"PO-Revision-Date: 2019-11-01 13:18+0000\n"
-"Last-Translator: AymenStudios <aymencarbonaro@gmail.com>\n"
-"Language-Team: Arabic <https://hosted.weblate.org/projects/zrythm/zrythm/ar/"
-">\n"
+"PO-Revision-Date: 2020-07-29 15:41+0000\n"
+"Last-Translator: YoGo <officialyogomusic@gmail.com>\n"
+"Language-Team: Arabic <https://hosted.weblate.org/projects/zrythm/zrythm/ar/>"
+"\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:188
@@ -28,43 +29,43 @@ msgstr ""
 
 #: inc/utils/ui.h:75
 msgid "High"
-msgstr ""
+msgstr "عالي"
 
 #: inc/utils/ui.h:76
 msgid "Normal"
-msgstr ""
+msgstr "متوسط"
 
 #: inc/utils/ui.h:77
 msgid "Low"
-msgstr ""
+msgstr "منخفض"
 
 #: inc/utils/gtk.h:50
 msgid "Cu_t"
-msgstr ""
+msgstr "قطع"
 
 #: inc/utils/gtk.h:56
 msgid "_Copy"
-msgstr ""
+msgstr "نسخ"
 
 #: inc/utils/gtk.h:62
 msgid "_Paste"
-msgstr ""
+msgstr "لصق"
 
 #: inc/utils/gtk.h:68
 msgid "_Delete"
-msgstr ""
+msgstr "مسح"
 
 #: inc/utils/gtk.h:74
 msgid "Cle_ar Selection"
-msgstr ""
+msgstr "مسح الاختيار"
 
 #: inc/utils/gtk.h:80
 msgid "Select A_ll"
-msgstr ""
+msgstr "اختر الكل"
 
 #: inc/utils/gtk.h:86 src/gui/widgets/home_toolbar.c:129
 msgid "Duplicate"
-msgstr ""
+msgstr "تكرير"
 
 #: inc/utils/gtk.h:92 src/audio/fader.c:162
 msgid "Mute"
@@ -72,7 +73,7 @@ msgstr ""
 
 #: inc/utils/gtk.h:98
 msgid "Unmute"
-msgstr ""
+msgstr "إلغاء كتم الصوت"
 
 #: inc/audio/track.h:157 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:186
@@ -97,121 +98,121 @@ msgstr ""
 
 #: inc/audio/track.h:161 src/gui/widgets/event_viewer.c:109
 msgid "Marker"
-msgstr ""
+msgstr "علامة"
 
 #: inc/audio/track.h:162 src/audio/tempo_track.c:85
 msgid "Tempo"
-msgstr ""
+msgstr "زمن"
 
 #: inc/audio/track.h:163
 msgid "Audio FX"
-msgstr ""
+msgstr "صوت اف اكس"
 
 #: inc/audio/track.h:164
 msgid "Audio Group"
-msgstr ""
+msgstr "مجموعة صوتية"
 
 #: inc/audio/track.h:165 src/audio/region.c:393
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: inc/audio/track.h:166
 msgid "MIDI FX"
-msgstr ""
+msgstr "MIDI اف اكس"
 
 #: inc/audio/track.h:167
 msgid "MIDI Group"
-msgstr ""
+msgstr "مجموعة MIDI"
 
 #: inc/audio/curve.h:90 src/audio/curve.c:39
 #, c-format
 msgid "Exponent"
-msgstr ""
+msgstr "الأس"
 
 #: inc/audio/curve.h:92 src/audio/curve.c:42
 #, c-format
 msgid "Superellipse"
-msgstr ""
+msgstr "القطع الناقص الفائق"
 
 #: inc/audio/curve.h:94 src/gui/widgets/timeline_arranger.c:1309
 #: src/audio/curve.c:45
 #, c-format
 msgid "Vital"
-msgstr ""
+msgstr "مهم للغاية"
 
 #: inc/audio/curve.h:96 src/audio/curve.c:48
 #, c-format
 msgid "Pulse"
-msgstr ""
+msgstr "نبض"
 
 #: inc/audio/engine.h:123
 msgid "1,024"
-msgstr ""
+msgstr "١,٠٢٤"
 
 #: inc/audio/engine.h:124
 msgid "2,048"
-msgstr ""
+msgstr "٢,٠٤٨"
 
 #: inc/audio/engine.h:125
 msgid "4,096"
-msgstr ""
+msgstr "٤,٠٩٦"
 
 #: inc/audio/engine.h:152
 msgid "22,050"
-msgstr ""
+msgstr "٢٢,٠٥٠"
 
 #: inc/audio/engine.h:153
 msgid "32,000"
-msgstr ""
+msgstr "٣٢,٠٠٠"
 
 #: inc/audio/engine.h:154
 msgid "44,100"
-msgstr ""
+msgstr "٤٤,١٠٠"
 
 #: inc/audio/engine.h:155
 msgid "48,000"
-msgstr ""
+msgstr "٤٨,٠٠٠"
 
 #: inc/audio/engine.h:156
 msgid "88,200"
-msgstr ""
+msgstr "٨٨,٢٠٠"
 
 #: inc/audio/engine.h:157
 msgid "96,000"
-msgstr ""
+msgstr "٩٦,٠٠٠"
 
 #: inc/audio/engine.h:158
 msgid "192,000"
-msgstr ""
+msgstr "١٩٢,٠٠٠"
 
 #: inc/audio/engine.h:231
 msgid "ALSA Sequencer"
-msgstr ""
+msgstr "تسلسل السا"
 
 #: inc/audio/region.h:83 src/gui/widgets/track.c:1693
 msgid "Inherit"
-msgstr ""
+msgstr "يرث"
 
 #: inc/audio/region.h:85 src/audio/automation_track.c:100
 msgid "Off"
-msgstr ""
+msgstr "إيقاف"
 
 #: inc/audio/region.h:87 src/audio/automation_track.c:94
 msgid "On"
-msgstr ""
+msgstr "تشغيل"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
 msgid "0dB"
-msgstr ""
+msgstr "دب٠"
 
 #: inc/audio/pan.h:53
 msgid "-3dB"
-msgstr ""
+msgstr "٣- دب"
 
 #: inc/audio/pan.h:54
 msgid "-6dB"
-msgstr ""
+msgstr "٦- دب"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1306
@@ -225,38 +226,39 @@ msgstr ""
 
 #: inc/audio/pan.h:78
 msgid "Sine"
-msgstr ""
+msgstr "جيب"
 
 #. TRANSLATORS: please keep the space at the
 #. * end
 #: src/zrythm.c:232
 msgid "(trial) "
-msgstr ""
+msgstr "(التجربة) "
 
 #: src/project.c:127
 #, c-format
 msgid "Failed to open file: %s"
-msgstr ""
+msgstr "فشل فتح ملف: %s"
 
 #: src/project.c:171
 msgid "Project not compressed by zstd!"
-msgstr ""
+msgstr "المشروع غير مضغوط بواسطة zstd!"
 
 #: src/project.c:184
 #, c-format
 msgid "Failed to decompress project file: %s"
-msgstr ""
+msgstr "فشل فك ضغط ملف المشروع: %s"
 
 #: src/project.c:193
 msgid ""
 "uncompressed_size != frame_content_size impossible because zstd will check "
 "this condition!"
 msgstr ""
+"uncompressed_size! = frame_content_size مستحيل لأن zstd سيتحقق من هذا الشرط!"
 
 #: src/project.c:225
 #, c-format
 msgid "Failed to write file: %s"
-msgstr ""
+msgstr "فشلت كتابة الملف: %s"
 
 #: src/project.c:774
 #, c-format
@@ -265,38 +267,39 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"تم العثور على نسخة احتياطية أحدث:\n"
+"%s\n"
+"هل تريد استخدام النسخة الاحتياطية الأحدث؟"
 
 #: src/project.c:779
-#, fuzzy
 msgid "Backup found"
-msgstr "تم حفظ النسخة الاحتياطية"
+msgstr "تم العثور على نسخة احتياطية"
 
 #: src/project.c:837
 #, c-format
 msgid "Unable to read file: %s"
-msgstr ""
+msgstr "غير قادر على قراءة ملف: %s"
 
 #: src/project.c:890
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr ""
-"هذا المشروع تم انشائه بإستخدام اصدار مختلف من نفس البرنامج (%s)\n"
-"قد لا يعمل بالشكل الصحيح"
+"هذا المشروع تم انشائه بإستخدام اصدار مختلف من نفس البرنامج (%s) %s قد لا "
+"يعمل بالشكل الصحيح"
 
 #: src/project.c:905
 msgid "Failed to load project. Please check the logs for more information."
-msgstr "فشلت عملية تحميل المشروع ، رجاءا تحقق من السجلات للمزيد من المعلومات"
+msgstr "فشلت عملية تحميل المشروع ، رجاءا تحقق من السجلات للمزيد من المعلومات."
 
 #: src/project.c:1087
-#, fuzzy
 msgid "Failed to load project. Will create a new one instead."
-msgstr "فشلت عملية تحميل المشروع ، رجاءا تحقق من السجلات للمزيد من المعلومات"
+msgstr "فشلت عملية تحميل المشروع. رجاء تحقق من السجلات للمزيد من المعلومات."
 
 #: src/project.c:1426
 msgid "Backup saved."
-msgstr "تم حفظ النسخة الاحتياطية"
+msgstr "تم حفظ النسخة الاحتياطية."
 
 #: src/project.c:1436
 msgid "Project saved."
@@ -304,17 +307,17 @@ msgstr "تم حفظ المشروع"
 
 #: src/main.c:77
 msgid "Error - Backtrace:\n"
-msgstr ""
+msgstr "خطأ - التراجع:\n"
 
 #: src/main.c:81
 #, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr ""
+msgstr "خطأ:%s - التتبع للخلف:\n"
 
 #: src/main.c:94
 #, c-format
 msgid "%s has crashed. "
-msgstr ""
+msgstr "%s تعطل. "
 
 #: src/main.c:127
 #, c-format
@@ -353,39 +356,39 @@ msgstr ""
 #: src/main.c:170
 #, c-format
 msgid "File %s not found."
-msgstr ""
+msgstr "لم يتم العثور على الملف %s."
 
 #: src/main.c:191
 msgid ""
 "An output file was not specified. Please pass one with `--output [FILE]`."
-msgstr ""
+msgstr "لم يتم تحديد ملف الإخراج. يرجى تمرير واحد مع '--إخراج [FILE]`."
 
 #. getopt_long already printed an error
 #. * message
 #: src/main.c:333
 #, c-format
 msgid "Unknown option\n"
-msgstr ""
+msgstr "خيار غير معروف\n"
 
 #: src/main.c:388
 #, c-format
 msgid "Project failed to compress: %s\n"
-msgstr ""
+msgstr "فشل المشروع في ضغط: %s\n"
 
 #: src/main.c:397
 #, c-format
 msgid "Project successfully compressed.\n"
-msgstr ""
+msgstr "تم ضغط المشروع بنجاح.\n"
 
 #: src/main.c:415
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr ""
+msgstr "فشل المشروع في فك الضغط: %s\n"
 
 #: src/main.c:424
 #, c-format
 msgid "Project successfully decompressed.\n"
-msgstr ""
+msgstr "تم فك ضغط المشروع بنجاح.\n"
 
 #: src/main.c:433
 #, c-format
@@ -401,6 +404,16 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
+"%s%-s حقوق النشر (C) 2018-2020 المساهمون في Zrythm\n"
+"\n"
+"يأتي٪s بدون أي ضمانات على الإطلاق!\n"
+"\n"
+"هذا برنامج مجاني ، وأنت مدعو لإعادة توزيعه\n"
+"تحت ظروف معينة. راجع ملف \"النسخ\" للحصول على التفاصيل.\n"
+"\n"
+"اكتب التعليقات والأخطاء إلى %s\n"
+"ادعم هذا المشروع على https://liberapay.com/Zrythm\n"
+"\n"
 
 #: src/zrythm_app.c:188
 msgid "Setting up main window"
@@ -413,16 +426,16 @@ msgstr "تحميل المشروع"
 #: src/zrythm_app.c:246
 #, c-format
 msgid "No project has been selected. %s will now close."
-msgstr ""
+msgstr "لم يتم اختيار مشروع. s٪ سيتم إغلاق الآن."
 
 #: src/zrythm_app.c:269
 msgid "Initializing settings"
 msgstr "تحضير الإعدادات"
 
 #: src/zrythm_app.c:277
-#, fuzzy, c-format
+#, c-format
 msgid "Initializing %s directories"
-msgstr "تحضير مجلدات Zrythm"
+msgstr "تحضير %s مجلدات"
 
 #: src/zrythm_app.c:287
 msgid "Initializing logging system"
@@ -433,7 +446,6 @@ msgid "Initializing caches"
 msgstr "تحضير الملفات المؤقتة"
 
 #: src/zrythm_app.c:301
-#, fuzzy
 msgid "Initializing file manager"
 msgstr "تحضير مدير الإضافات"
 
@@ -451,7 +463,7 @@ msgstr "انتظار المشروع"
 
 #: src/plugins/carla_native_plugin.c:463 src/plugins/lv2_plugin.c:2413
 msgid "Default bank"
-msgstr ""
+msgstr "البنك الافتراضي"
 
 #: src/plugins/carla_native_plugin.c:470 src/plugins/lv2_plugin.c:2420
 msgid "Init"
@@ -459,19 +471,19 @@ msgstr ""
 
 #: src/plugins/carla_native_plugin.c:897
 msgid "Audio in"
-msgstr ""
+msgstr "مدخل الصوت"
 
 #: src/plugins/carla_native_plugin.c:907
 msgid "Audio out"
-msgstr ""
+msgstr "مخرج الصوت"
 
 #: src/plugins/carla_native_plugin.c:917
 msgid "MIDI in"
-msgstr ""
+msgstr "MIDI داخل"
 
 #: src/plugins/carla_native_plugin.c:927
 msgid "MIDI out"
-msgstr ""
+msgstr "MIDI خارج"
 
 #: src/plugins/plugin_manager.c:516
 msgid "Error loading LV2 bundle dir: "
@@ -485,31 +497,29 @@ msgstr "فحص الإضافات"
 #: src/plugins/plugin_manager.c:818
 #, c-format
 msgid "Skipped LV2 plugin at %s"
-msgstr ""
+msgstr "تخطي البرنامج المساعد LV2 في %s"
 
 #: src/plugins/plugin_manager.c:939 src/plugins/plugin_manager.c:1065
-#, fuzzy
 msgid "Scanned VST plugin"
-msgstr "فحص الإضافات"
+msgstr "فحص الإضافات ال VST"
 
 #: src/plugins/plugin_manager.c:946 src/plugins/plugin_manager.c:1072
 #, c-format
 msgid "Skipped VST plugin at %s"
-msgstr ""
+msgstr "تم تخطي مكون VST الإضافي في %s"
 
 #: src/plugins/plugin_manager.c:1127
-#, fuzzy
 msgid "Scanned AU plugin"
-msgstr "فحص الإضافات"
+msgstr "فحص الإضافات ال AU"
 
 #: src/plugins/plugin_manager.c:1134
 #, c-format
 msgid "Skipped AU plugin at %u"
-msgstr ""
+msgstr "تم تخطي المكوّن الإضافي AU في %u"
 
 #: src/plugins/plugin.c:133
 msgid "Enabled"
-msgstr ""
+msgstr "مفعل"
 
 #: src/plugins/plugin_gtk.c:81 src/plugins/lv2/lv2_gtk.c:105
 msgid "Save State"
@@ -530,7 +540,7 @@ msgstr "_حفظ"
 
 #: src/plugins/lv2_plugin.c:2452
 msgid "Unnamed bank"
-msgstr ""
+msgstr "بنك بدون اسم"
 
 #: src/plugins/lv2/lv2_gtk.c:256
 msgid "URI (Optional):"
@@ -571,7 +581,7 @@ msgstr ""
 
 #: src/gui/widgets/fader_controls_grid.c:91
 msgid "Peak"
-msgstr ""
+msgstr "قمة"
 
 #: src/gui/widgets/port_connections_popover.c:76
 msgid "INPUTS"
@@ -3168,7 +3178,7 @@ msgstr ""
 
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
-msgstr ""
+msgstr "محطة عمل الصوت الرقمي"
 
 #: data/zrythm.desktop.in:13
 msgid "highly automated and intuitive digital audio workstation"
