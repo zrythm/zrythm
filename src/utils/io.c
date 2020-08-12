@@ -118,6 +118,8 @@ io_touch_file (const char * filename)
 char *
 io_file_strip_ext (const char * filename)
 {
+  g_return_val_if_fail (filename, NULL);
+
   char ** parts = g_strsplit (filename, ".", 2);
   char * file_part =
     g_strdup (parts[0]);

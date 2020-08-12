@@ -83,6 +83,19 @@ typedef enum TransportDisplay
   TRANSPORT_DISPLAY_TIME,
 } TransportDisplay;
 
+typedef enum TransportRecordingMode
+{
+  /** Merge events in existing region. */
+  RECORDING_MODE_MERGE_EVENTS,
+
+  /** Events get put in new lanes on loop. */
+  RECORDING_MODE_TAKES,
+
+  /** Same as takes, except previous takes are
+   * muted. */
+  RECORDING_MODE_TAKES_MUTED,
+} TransportRecordingMode;
+
 /**
  * The transport.
  */
@@ -185,6 +198,8 @@ typedef struct Transport
 
   /** Metronome enabled or not. */
   bool          metronome_enabled;
+
+  TransportRecordingMode recording_mode;
 
   /**
    * This is set when record is toggled and is used to check
@@ -313,6 +328,11 @@ void
 transport_set_punch_mode_enabled (
   Transport * self,
   bool        enabled);
+
+void
+transport_set_recording_mode (
+  Transport * self,
+  TransportRecordingMode mode);
 
 /**
  * Updates beat unit and anything depending on it.

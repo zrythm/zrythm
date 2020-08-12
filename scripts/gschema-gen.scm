@@ -312,6 +312,9 @@ Args:
          (print-enum
            "graphic-detail"
            '("high" "normal" "low"))
+         (print-enum
+           "recording-mode"
+           '("merge-events" "takes" "muted-takes"))
          (newline)
 
          ;; -- print normal schemas --
@@ -569,6 +572,10 @@ Args:
                  "punch-mode" "b" "false"
                  "Punch mode enabled"
                  "Whether punch in/out is enabled for recording.")
+               (make-schema-key-with-enum
+                 "recording-mode" "recording-mode"
+                 "takes" "Recording mode"
+                 "Recording mode.")
              ))) ;; transport
 
          ;; -- print preferences schemas --

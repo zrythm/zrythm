@@ -64,6 +64,7 @@ on_path_entry_changed (
 {
   char * str =
     gtk_editable_get_chars (editable, 0, -1);
+  g_return_if_fail (str);
   char ** split_str =
     g_strsplit (str, PATH_SPLIT, 0);
   g_settings_set_strv (

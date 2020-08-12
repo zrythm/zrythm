@@ -1095,6 +1095,7 @@ ui_update_vst_paths_from_entry (
 {
   const char * txt =
     gtk_entry_get_text (entry);
+  g_return_if_fail (txt);
   char ** paths =
     g_strsplit (txt, ";", 0);
   g_settings_set_strv (

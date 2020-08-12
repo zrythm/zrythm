@@ -126,6 +126,37 @@ change_state_punch_mode (
 }
 
 static void
+activate_recording_mode (
+  GSimpleAction *action,
+  GVariant      *_variant,
+  gpointer       user_data)
+{
+  g_return_if_fail (_variant);
+
+  gsize size;
+  const char * variant =
+    g_variant_get_string (_variant, &size);
+  g_simple_action_set_state (action, _variant);
+  if (string_is_equal (variant, "merge", 1))
+    {
+      transport_set_recording_mode (
+        TRANSPORT, RECORDING_MODE_MERGE_EVENTS);
+    }
+  else if (string_is_equal (variant, "takes", 1))
+    {
+      transport_set_recording_mode (
+        TRANSPORT, RECORDING_MODE_TAKES);
+    }
+  else if (string_is_equal (
+             variant, "takes-muted", 1))
+    {
+      transport_set_recording_mode (
+        TRANSPORT, RECORDING_MODE_TAKES_MUTED);
+    }
+  g_message ("recording mode changed");
+}
+
+static void
 setup_record_btn (
   TransportControlsWidget * self)
 {
@@ -145,15 +176,39 @@ setup_record_btn (
 
   /* set menu */
   GMenu * menu = g_menu_new ();
+  GMenu * punch_section = g_menu_new ();
   g_menu_append (
-    menu, _("Punch mode"),
+    punch_section, _("Punch in/out"),
     "record-btn.punch-mode");
+  g_menu_append_section (
+    menu, _("Punch mode"),
+    G_MENU_MODEL (punch_section));
+  g_object_unref (punch_section);
+  GMenu * modes_section = g_menu_new ();
+  g_menu_append (
+    modes_section, _("Merge events"),
+    "record-btn.recording-mode::merge");
+  g_menu_append (
+    modes_section, _("Takes"),
+    "record-btn.recording-mode::takes");
+  g_menu_append (
+    modes_section, _("Takes (mute previous)"),
+    "record-btn.recording-mode::takes-muted");
+  g_menu_append_section (
+    menu, _("Recording mode"),
+    G_MENU_MODEL (modes_section));
+  g_object_unref (modes_section);
   GSimpleActionGroup * action_group =
     g_simple_action_group_new ();
+  const char * recording_modes[] = {
+    "'merge'", "'takes'", "'takes-muted'", };
   GActionEntry actions[] = {
     { "punch-mode", NULL, NULL,
       (TRANSPORT->punch_mode ? "true" : "false"),
       change_state_punch_mode },
+    { "recording-mode",
+      activate_recording_mode, "s",
+      recording_modes[TRANSPORT->recording_mode] },
   };
   g_action_map_add_action_entries (
     G_ACTION_MAP (action_group), actions,

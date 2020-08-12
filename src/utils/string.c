@@ -165,6 +165,8 @@ string_get_substr_before_suffix (
   const char * str,
   const char * suffix)
 {
+  g_return_val_if_fail (str, NULL);
+
   /* get the part without the suffix */
   char ** parts =
     g_strsplit (
@@ -184,6 +186,8 @@ string_remove_until_after_first_match (
   const char * str,
   const char * match)
 {
+  g_return_val_if_fail (str, NULL);
+
   char ** parts =
     g_strsplit (
       str, match, 2);

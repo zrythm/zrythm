@@ -67,6 +67,10 @@ init_common (
     ZRYTHM_TESTING ? true :
     g_settings_get_boolean (
       S_TRANSPORT, "punch-mode");
+  self->recording_mode =
+    ZRYTHM_TESTING ? RECORDING_MODE_TAKES :
+    g_settings_get_enum (
+      S_TRANSPORT, "recording-mode");
 
   zix_sem_init (&self->paused, 0);
 }
@@ -279,6 +283,16 @@ transport_set_punch_mode_enabled (
   self->punch_mode = enabled;
   g_settings_set_boolean (
     S_TRANSPORT, "punch-mode", enabled);
+}
+
+void
+transport_set_recording_mode (
+  Transport * self,
+  TransportRecordingMode mode)
+{
+  self->recording_mode = mode;
+  g_settings_set_enum (
+    S_TRANSPORT, "recording-mode", mode);
 }
 
 /**

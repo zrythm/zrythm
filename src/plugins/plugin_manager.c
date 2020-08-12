@@ -602,6 +602,7 @@ get_vst_paths (
         "using %s from the environment (VST_PATH)",
         vst_path);
     }
+  g_return_val_if_fail (vst_path, NULL);
   char ** paths =
     g_strsplit (vst_path, PATH_SPLIT, 0);
   g_free (vst_path);
@@ -710,7 +711,8 @@ get_sf_paths (
   char ** paths = NULL;
   if (ZRYTHM_TESTING)
     {
-      paths = g_strsplit (PATH_SPLIT, PATH_SPLIT, -1);
+      paths =
+        g_strsplit (PATH_SPLIT, PATH_SPLIT, -1);
     }
   else
     {

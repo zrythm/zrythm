@@ -2,8 +2,9 @@ Trademark Policy
 ================
 
 # Applicable Trademarks
-The word "Zrythm" and the Zrythm logo are trademarks
-of Alexandros Theodotou pending registration.
+Zrythm is a registered trademark of Alexandros
+Theodotou in the United Kingdom. The Zrythm logo is a
+trademark of Alexandros Theodotou pending registration.
 
 # Objective of this Policy
 The objective of this trademark policy is:
@@ -11,7 +12,8 @@ The objective of this trademark policy is:
 Zrythm trademarks
 - to clarify proper usage of Zrythm trademarks by
 third parties
-- to prevent misuse of Zrythm trademarks that can confuse or mislead users with respect to Zrythm
+- to prevent misuse of Zrythm trademarks that can
+confuse or mislead users with respect to Zrythm
 
 Following are the guidelines for the proper use of
 Zrythm trademarks by publishers and other third
