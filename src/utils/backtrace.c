@@ -186,9 +186,9 @@ _backtrace_get (
 
   IMAGEHLP_LINE64 * line =
     calloc (
-      sizeof (IMAGEHLP_LINE64) + 256 * sizeof( char ),
+      sizeof (IMAGEHLP_LINE64) +
+        256 * sizeof( char ),
       1);
-  memset (line, 0, sizeof (IMAGEHLP_LINE64));
   line->SizeOfStruct = sizeof(IMAGEHLP_LINE64);
 
   for (i = 0; i < frames; i++)
@@ -226,6 +226,7 @@ _backtrace_get (
       strcat (message, current_line);
     }
   free (symbol);
+  free (line);
 #else
   void * array[max_lines];
   char ** strings;
