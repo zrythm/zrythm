@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-05-11 10:41+0000\n"
+"PO-Revision-Date: 2020-08-14 22:35+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -31,9 +32,11 @@ msgid ""
 "line, or the optional GUI tool `dconf-editor "
 "<https://wiki.gnome.org/Apps/DconfEditor>`_."
 msgstr ""
+"Zrythmは　`gsettings <https://developer.gnome.org/gio/stable/gsettings-tool."
+"html>`_ のコマンドや　`dconf-editor <https://wiki.gnome.org/Apps/DconfEditor>`_　"
+"のGUIツールがあるGSettingsを使用し、設定を保存しています。"
 
 #: ../../configuration/additional-settings.rst:14
-#, fuzzy
 msgid ""
 "Normally, you shouldn't need to access any of these settings as most of "
 "them are found inside Zrythm's UI, and it is not recommended to edit them"
@@ -41,11 +44,13 @@ msgid ""
 "settings internally, but in some cases you may want to change them "
 "manually for some reason - for example if your selected backend causes "
 "Zrythm to crash."
-msgstr "通常、これらの設定のほとんどは Zrythm の UI 内に存在するので、これらの設定にアクセスする必要はありません。"
+msgstr ""
+"通常、これらの設定のほとんどは Zrythm の UI "
+"内に存在するので、これらの設定にアクセスする必要はないし、Zrythmはこれらの設定を保存する前にチェックしているが、手動で編集することが可能です。"
 
 #: ../../configuration/additional-settings.rst:25
 msgid "Viewing the Current Settings"
-msgstr ""
+msgstr "現設定を表示"
 
 #: ../../configuration/additional-settings.rst:27
 msgid ""
@@ -562,7 +567,7 @@ msgstr "自動保存間隔"
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
 "if this is set to 0."
-msgstr ""
+msgstr "プロジェクトのバックアップを自動保存する間隔を分単位で設定します。これを 0 に設定すると、自動保存が無効になります。"
 
 #: ../../configuration/preferences/intro.rst:191
 msgid ""
@@ -910,4 +915,3 @@ msgstr "これらの設定の一部の変更を適用するには、Zrythm を�
 #~ " resetting Zrythm to its default "
 #~ "state."
 #~ msgstr ""
-

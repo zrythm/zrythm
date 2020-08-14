@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-08-11 15:29+0100\n"
-"PO-Revision-Date: 2020-07-24 14:02+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-08-14 22:35+0000\n"
+"Last-Translator: Acid Chicken (硫酸鶏) <root@acid-chicken.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -3983,13 +3983,10 @@ msgid "Maximum undo history stack length. Set to -1 for unlimited."
 msgstr "取り消し履歴の最大スタック長。無制限にするには-1に設定します。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:611
-#, fuzzy
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
 "this is set to 0."
-msgstr ""
-"プロジェクトのバックアップを自動保存する間隔を分単位で設定します。これを 0 に"
-"設定すると、自動保存が無効になります"
+msgstr "プロジェクトのバックアップを自動保存する間隔を分単位で設定します。これを 0 に設定すると、自動保存が無効になります。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:619
 #, fuzzy
