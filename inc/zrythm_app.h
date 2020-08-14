@@ -59,6 +59,9 @@ struct _ZrythmApp
 {
   GtkApplication     parent;
 
+  /** argv[0]. */
+  const char *       exe_path;
+
   /**
    * Default settings (got from
    * gtk_settings_get_default()).
@@ -128,6 +131,7 @@ extern ZrythmApp * zrythm_app;
  */
 ZrythmApp *
 zrythm_app_new (
+  const char * exe_path,
   char * audio_backend,
   char * midi_backend,
   char * buf_size);

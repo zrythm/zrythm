@@ -80,7 +80,10 @@ segv_handler (int sig)
     prefix,
     _("Error: %s - Backtrace:\n"), strsignal (sig));
 #endif
-  char * bt = backtrace_get (prefix, 100);
+  char * bt =
+    _backtrace_get (
+      zrythm_app ? zrythm_app->exe_path : NULL,
+      prefix, 100, zrythm_app ? true : false);
 
   /* call the callback to write queued messages
    * and get last few lines of the log, before
@@ -501,7 +504,8 @@ main (int    argc,
   g_message ("Initing Zrythm app...");
   zrythm_app =
     zrythm_app_new (
-      audio_backend, midi_backend, buf_size);
+      argv[0], audio_backend, midi_backend,
+      buf_size);
 
   g_message ("running Zrythm...");
   int ret = 0;

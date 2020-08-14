@@ -42,6 +42,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/backtrace.h"
 #include "utils/cairo.h"
 #include "utils/env.h"
 #include "utils/gtk.h"
@@ -1025,9 +1026,10 @@ zrythm_app_on_shutdown (
  */
 ZrythmApp *
 zrythm_app_new (
-  char * audio_backend,
-  char * midi_backend,
-  char * buf_size)
+  const char * exe_path,
+  char *       audio_backend,
+  char *       midi_backend,
+  char *       buf_size)
 {
   ZrythmApp * self =  g_object_new (
     ZRYTHM_APP_TYPE,
@@ -1037,6 +1039,10 @@ zrythm_app_new (
     "resource-base-path", "/org/zrythm/Zrythm",
     "flags", G_APPLICATION_HANDLES_OPEN,
     NULL);
+
+  zrythm_app = self;
+
+  self->exe_path = exe_path;
 
   self->gtk_thread = g_thread_self ();
 

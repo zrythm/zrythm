@@ -26,6 +26,8 @@
 #ifndef __UTILS_BACKTRACE_H__
 #define __UTILS_BACKTRACE_H__
 
+#include <stdbool.h>
+
 /**
  * @addtogroup utils
  *
@@ -33,13 +35,28 @@
  */
 
 /**
- * Returns the backtrace with \ref max_lines number of
- * lines and a string prefix.
+ * Returns the backtrace with \ref max_lines
+ * number of lines and a string prefix.
+ *
+ * @param exe_path Executable path for running
+ *   addr2line.
+ * @param with_lines Whether to show line numbers.
+ *   This is very slow.
  */
 char *
-backtrace_get (
+_backtrace_get (
+  const char * exe_path,
   const char * prefix,
-  int          max_lines);
+  int          max_lines,
+  bool         with_lines);
+
+#define backtrace_get(prefix,max_lines) \
+  _backtrace_get ( \
+    zrythm_app->exe_path, prefix, max_lines, false)
+
+#define backtrace_get_with_lines(prefix,max_lines) \
+  _backtrace_get ( \
+    zrythm_app->exe_path, prefix, max_lines, true)
 
 /**
  * @}

@@ -832,7 +832,8 @@ log_writer (
       if (log_level == G_LOG_LEVEL_WARNING ||
           log_level == G_LOG_LEVEL_CRITICAL)
         {
-          ev->backtrace = backtrace_get ("", 100);
+          ev->backtrace =
+            backtrace_get_with_lines ("", 100);
         }
 
       mpmc_queue_push_back (
