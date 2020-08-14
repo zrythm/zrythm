@@ -314,7 +314,8 @@ Args:
            '("high" "normal" "low"))
          (print-enum
            "recording-mode"
-           '("merge-events" "takes" "muted-takes"))
+           '("overwrite-events" "merge-events"
+             "takes" "muted-takes"))
          (newline)
 
          ;; -- print normal schemas --
@@ -379,7 +380,7 @@ Args:
                  "Note notation"
                  "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, etc.)")
                (make-schema-key
-                 "musical-mode" "b" "true"
+                 "musical-mode" "b" "false"
                  "Musical mode"
                  "Whether to use musical mode. If this is on, time-stretching will be applied to events so that they match the project BPM. This mostly applies to audio regions.")
                (make-schema-key
@@ -572,6 +573,10 @@ Args:
                  "punch-mode" "b" "false"
                  "Punch mode enabled"
                  "Whether punch in/out is enabled for recording.")
+               (make-schema-key
+                 "start-on-midi-input" "b" "false"
+                 "Start playback on MIDI input"
+                 "Whether to start playback on MIDI input.")
                (make-schema-key-with-enum
                  "recording-mode" "recording-mode"
                  "takes" "Recording mode"

@@ -267,9 +267,34 @@ typedef struct Track
    * ZRegion currently recording on.
    *
    * This must only be set by the RecordingManager
-   * and should not be touched by anything else.
+   * when processing an event and should not
+   * be touched by anything else.
    */
-  ZRegion *            recording_region;
+  ZRegion *           recording_region;
+
+  /**
+   * This is a flag to let the recording manager
+   * know that a START signal was already sent for
+   * recording.
+   *
+   * This is because \ref Track.recording_region
+   * takes a cycle or 2 to become non-NULL.
+   */
+  bool                recording_start_sent;
+
+  /**
+   * This must only be set by the RecordingManager
+   * when temporarily pausing recording, eg when
+   * looping or leaving the punch range.
+   *
+   * See \ref
+   * RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING.
+   */
+  bool                recording_paused;
+
+  /** Lane index of region before recording
+   * paused. */
+  int                 last_lane_idx;
 
   /* ==== INSTRUMENT/MIDI/AUDIO TRACK END ==== */
 
@@ -690,16 +715,16 @@ track_clear (
   Track * self);
 
 /**
- * Removes the region from the track.
+ * Only removes the region from the track.
  *
  * @pararm free Also free the Region.
  */
 void
 track_remove_region (
-  Track *  track,
+  Track *   self,
   ZRegion * region,
-  int      fire_events,
-  int      free);
+  bool      fire_events,
+  bool      free);
 
 /**
  * Verifies the identifiers on a live Track

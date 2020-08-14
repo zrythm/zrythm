@@ -67,6 +67,10 @@ init_common (
     ZRYTHM_TESTING ? true :
     g_settings_get_boolean (
       S_TRANSPORT, "punch-mode");
+  self->start_playback_on_midi_input =
+    ZRYTHM_TESTING ? false :
+    g_settings_get_boolean (
+      S_TRANSPORT, "start-on-midi-input");
   self->recording_mode =
     ZRYTHM_TESTING ? RECORDING_MODE_TAKES :
     g_settings_get_enum (
@@ -283,6 +287,16 @@ transport_set_punch_mode_enabled (
   self->punch_mode = enabled;
   g_settings_set_boolean (
     S_TRANSPORT, "punch-mode", enabled);
+}
+
+void
+transport_set_start_playback_on_midi_input (
+  Transport * self,
+  bool        enabled)
+{
+  self->start_playback_on_midi_input = enabled;
+  g_settings_set_boolean (
+    S_TRANSPORT, "start-on-midi-input", enabled);
 }
 
 void

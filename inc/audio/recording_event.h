@@ -64,16 +64,20 @@ typedef enum RecordingEventType
   RECORDING_EVENT_TYPE_START_TRACK_RECORDING,
   RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING,
 
-  /** These events are for processing any range
-   * except the one below */
+  /** These events are for processing any range. */
   RECORDING_EVENT_TYPE_MIDI,
   RECORDING_EVENT_TYPE_AUDIO,
   RECORDING_EVENT_TYPE_AUTOMATION,
 
-  /** These events are for processing the range from
-   * the start pos to loop end */
-  RECORDING_EVENT_TYPE_SPLIT_TRACK_RECORDING,
-  RECORDING_EVENT_TYPE_SPLIT_AUTOMATION_RECORDING,
+  /**
+   * These events are for temporarily stopping
+   * recording (eg, when outside the punch range or
+   * when looping).
+   *
+   * The nframes must always be 0 for these events.
+   */
+  RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING,
+  RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING,
 
   RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING,
   RECORDING_EVENT_TYPE_STOP_AUTOMATION_RECORDING,
@@ -126,7 +130,20 @@ typedef struct RecordingEvent
 
   /** Number of frames processed in this event. */
   nframes_t  nframes;
+
+  /* debug info */
+  const char * file;
+  const char * func;
+  int          lineno;
 } RecordingEvent;
+
+/**
+ * Inits an already allocated recording event.
+ */
+#define recording_event_init(re) \
+  re->file = __FILE__; \
+  re->func = __func__; \
+  re->lineno = __LINE__
 
 RecordingEvent *
 recording_event_new (void);

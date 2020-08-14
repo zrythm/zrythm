@@ -57,6 +57,7 @@
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -1197,6 +1198,12 @@ track_insert_region (
     {
       EVENTS_PUSH (
         ET_ARRANGER_OBJECT_CREATED, region);
+
+      if (add_lane)
+        {
+          EVENTS_PUSH (
+            ET_TRACK_LANE_ADDED, NULL);
+        }
     }
 }
 
@@ -1472,17 +1479,19 @@ track_clear (
  */
 void
 track_remove_region (
-  Track *  track,
+  Track *   self,
   ZRegion * region,
-  int      fire_events,
-  int      free)
+  bool      fire_events,
+  bool      free)
 {
   region_disconnect (region);
 
   g_warn_if_fail (region->id.lane_pos >= 0);
 
+  bool has_lane = false;
   if (region_type_has_lane (region->id.type))
     {
+      has_lane = true;
       TrackLane * lane =
         region_get_lane (region);
       track_lane_remove_region (lane, region);
@@ -1490,15 +1499,15 @@ track_remove_region (
   else if (region->id.type == REGION_TYPE_CHORD)
     {
       array_delete (
-        track->chord_regions,
-        track->num_chord_regions,
+        self->chord_regions,
+        self->num_chord_regions,
         region);
     }
   else if (region->id.type ==
              REGION_TYPE_AUTOMATION)
     {
       AutomationTracklist * atl =
-        &track->automation_tracklist;
+        &self->automation_tracklist;
       for (int i = 0; i < atl->num_ats; i++)
         {
           AutomationTrack * at = atl->ats[i];
@@ -1522,6 +1531,11 @@ track_remove_region (
       EVENTS_PUSH (
         ET_ARRANGER_OBJECT_REMOVED,
         ARRANGER_OBJECT_TYPE_REGION);
+
+      if (has_lane)
+        {
+          track_remove_empty_last_lanes (self);
+        }
     }
 }
 

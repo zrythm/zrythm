@@ -122,7 +122,28 @@ typedef struct AutomationTrack
   bool                 recording_started;
 
   /** Region currently recording to. */
-  ZRegion *            recording_region;
+  ZRegion *           recording_region;
+
+  /**
+   * This is a flag to let the recording manager
+   * know that a START signal was already sent for
+   * recording.
+   *
+   * This is because \ref
+   * AutomationTrack.recording_region
+   * takes a cycle or 2 to become non-NULL.
+   */
+  bool                recording_start_sent;
+
+  /**
+   * This must only be set by the RecordingManager
+   * when temporarily pausing recording, eg when
+   * looping or leaving the punch range.
+   *
+   * See \ref
+   * RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING.
+   */
+  bool                recording_paused;
 
   /** Buttons used by the track widget */
   CustomButtonWidget * top_right_buttons[8];

@@ -23,6 +23,8 @@
 #include "gui/backend/event.h"
 #include "utils/objects.h"
 
+#include <gtk/gtk.h>
+
 ZEvent *
 event_new (void)
 {
@@ -34,5 +36,9 @@ event_new (void)
 void
 event_free (ZEvent * self)
 {
+  if (self->backtrace)
+    {
+      g_free_and_null (self->backtrace);
+    }
   object_zero_and_free (self);
 }

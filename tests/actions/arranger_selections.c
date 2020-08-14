@@ -162,13 +162,15 @@ check_timeline_objects_deleted (
 
   /* check midi region */
   g_assert_cmpint (
-    midi_track->lanes[MIDI_REGION_LANE]->
-      num_regions, ==, 0);
+    midi_track->num_lanes, ==, 1);
+  g_assert_cmpint (
+    midi_track->lanes[0]->num_regions, ==, 0);
 
   /* check audio region */
   g_assert_cmpint (
-    audio_track->lanes[AUDIO_REGION_LANE]->
-      num_regions, ==, 0);
+    midi_track->num_lanes, ==, 1);
+  g_assert_cmpint (
+    audio_track->lanes[0]->num_regions, ==, 0);
 
   /* check automation region */
   AutomationTracklist * atl =

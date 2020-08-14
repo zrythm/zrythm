@@ -26,6 +26,7 @@
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

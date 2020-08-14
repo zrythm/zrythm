@@ -29,6 +29,7 @@
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 void
 group_target_track_init_loaded (

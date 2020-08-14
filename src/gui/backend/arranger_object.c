@@ -2777,6 +2777,10 @@ void
 arranger_object_remove_from_project (
   ArrangerObject * obj)
 {
+  /* TODO make sure no event contains this object */
+  /*event_manager_remove_events_for_obj (*/
+    /*EVENT_MANAGER, obj);*/
+
   switch (obj->type)
     {
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:

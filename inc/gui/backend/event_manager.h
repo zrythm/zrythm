@@ -29,6 +29,7 @@
 #ifndef __GUI_BACKEND_EVENT_MANAGER_H__
 #define __GUI_BACKEND_EVENT_MANAGER_H__
 
+#include "utils/backtrace.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
 
@@ -46,7 +47,6 @@ typedef struct ZEvent ZEvent;
  */
 typedef struct EventManager
 {
-
   /**
    * Event queue, mainly for GUI events.
    */
@@ -96,7 +96,13 @@ typedef struct EventManager
       _ev->lineno = __LINE__; \
       _ev->type = et; \
       _ev->arg = (void *) _arg; \
-      event_queue_push_back_event (EVENT_QUEUE, _ev); \
+      if (zrythm_app->gtk_thread == \
+            g_thread_self ()) \
+        { \
+          _ev->backtrace = backtrace_get ("", 40); \
+        } \
+      event_queue_push_back_event ( \
+        EVENT_QUEUE, _ev); \
     }
 
 /**
@@ -129,6 +135,15 @@ event_manager_stop_events (
 void
 event_manager_process_now (
   EventManager * self);
+
+/**
+ * Removes events where the arg matches the
+ * given object.
+ */
+void
+event_manager_remove_events_for_obj (
+  EventManager * self,
+  void *         obj);
 
 void
 event_manager_free (

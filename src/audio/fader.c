@@ -33,6 +33,7 @@
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 

@@ -83,16 +83,50 @@ typedef enum TransportDisplay
   TRANSPORT_DISPLAY_TIME,
 } TransportDisplay;
 
+/**
+ * Recording mode for MIDI and audio.
+ *
+ * In all cases, only objects created during the
+ * current recording cycle can be changed. Previous
+ * objects shall not be touched.
+ */
 typedef enum TransportRecordingMode
 {
-  /** Merge events in existing region. */
+  /**
+   * Overwrite events in first recorded region.
+   *
+   * In the case of MIDI, this will remove existing
+   * MIDI notes during recording.
+   *
+   * In the case of audio, this will split the
+   * previous region while writing a new one, until
+   * the previous region is completely replaced.
+   */
+  RECORDING_MODE_OVERWRITE_EVENTS,
+
+  /**
+   * Merge events in existing region.
+   *
+   * In the case of MIDI, this will append MIDI
+   * notes.
+   *
+   * In the case of audio, this will act exactly
+   * the same as \ref RECORDING_MODE_TAKES.
+   */
   RECORDING_MODE_MERGE_EVENTS,
 
-  /** Events get put in new lanes on loop. */
+  /**
+   * Events get put in new lanes each time recording
+   * starts/resumes (eg, when looping or
+   * entering/leaving the punch range).
+   */
   RECORDING_MODE_TAKES,
 
-  /** Same as takes, except previous takes are
-   * muted. */
+  /**
+   * Same as \ref RECORDING_MODE_TAKES, except
+   * previous takes (since recording started) are
+   * muted.
+   */
   RECORDING_MODE_TAKES_MUTED,
 } TransportRecordingMode;
 
@@ -198,6 +232,9 @@ typedef struct Transport
 
   /** Metronome enabled or not. */
   bool          metronome_enabled;
+
+  /** Whether to start playback on MIDI input. */
+  bool          start_playback_on_midi_input;
 
   TransportRecordingMode recording_mode;
 
@@ -326,6 +363,11 @@ transport_stretch_audio_regions (
 
 void
 transport_set_punch_mode_enabled (
+  Transport * self,
+  bool        enabled);
+
+void
+transport_set_start_playback_on_midi_input (
   Transport * self,
   bool        enabled);
 

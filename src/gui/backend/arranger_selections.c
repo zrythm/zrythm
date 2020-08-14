@@ -37,6 +37,7 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 #define TYPE(x) \
   (ARRANGER_SELECTIONS_TYPE_##x)

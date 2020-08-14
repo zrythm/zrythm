@@ -468,7 +468,7 @@ handle_recording (
   bool loop_hit = false;
   bool punch_in_hit = false;
   /*bool punch_out_hit = false;*/
-  int loop_end_idx = -1;
+  /*int loop_end_idx = -1;*/
   split_points[0] = start_frames;
   each_nframes[0] = nframes;
   if (TRANSPORT->loop)
@@ -478,18 +478,23 @@ handle_recording (
             start_frames, end_frames))
         {
           loop_hit = true;
-          num_split_points = 2;
+          num_split_points = 3;
 
-          /* adjust start slot */
+          /* adjust start slot until loop end */
           each_nframes[0] =
             TRANSPORT->loop_end_pos.frames -
             start_frames;
-          loop_end_idx = 0;
+          /*loop_end_idx = 0;*/
 
-          /* add loop end */
+          /* add loop end pause */
           split_points[1] =
+            TRANSPORT->loop_end_pos.frames;
+          each_nframes[1] = 0;
+
+          /* add part after looping */
+          split_points[2] =
             TRANSPORT->loop_start_pos.frames;
-          each_nframes[1] =
+          each_nframes[2] =
             nframes - each_nframes[0];
         }
     }
@@ -504,9 +509,11 @@ handle_recording (
                 TRANSPORT->loop_end_pos.frames))
             {
               punch_in_hit = true;
-              num_split_points = 3;
+              num_split_points = 4;
 
               /* move loop start to next slot */
+              each_nframes[3] = each_nframes[2];
+              split_points[3] = split_points[2];
               each_nframes[2] = each_nframes[1];
               split_points[2] = split_points[1];
 
@@ -516,7 +523,7 @@ handle_recording (
               each_nframes[1] =
                 TRANSPORT->loop_end_pos.frames -
                 TRANSPORT->punch_in_pos.frames;
-              loop_end_idx = 1;
+              /*loop_end_idx = 1;*/
 
               /* adjust num frames for initial
                * pos */
@@ -530,11 +537,13 @@ handle_recording (
               /*punch_out_hit = true;*/
               if (punch_in_hit)
                 {
-                  num_split_points = 4;
+                  num_split_points = 6;
 
                   /* move loop start to next slot */
-                  each_nframes[3] = each_nframes[2];
-                  split_points[3] = split_points[2];
+                  each_nframes[5] = each_nframes[3];
+                  split_points[5] = split_points[3];
+                  each_nframes[4] = each_nframes[2];
+                  split_points[4] = split_points[2];
 
                   /* add punch out pos */
                   split_points[2] =
@@ -542,7 +551,13 @@ handle_recording (
                   each_nframes[2] =
                     TRANSPORT->loop_end_pos.frames -
                     TRANSPORT->punch_out_pos.frames;
-                  loop_end_idx = 2;
+
+                  /* add pause */
+                  split_points[3] =
+                    split_points[2] +
+                    each_nframes[2];
+                  each_nframes[3] = 0;
+                  /*loop_end_idx = 2;*/
 
                   /* adjust num frames for punch in
                    * pos */
@@ -550,11 +565,13 @@ handle_recording (
                 }
               else
                 {
-                  num_split_points = 3;
+                  num_split_points = 5;
 
                   /* move loop start to next slot */
-                  each_nframes[2] = each_nframes[1];
-                  split_points[2] = split_points[1];
+                  each_nframes[4] = each_nframes[2];
+                  split_points[4] = split_points[2];
+                  each_nframes[3] = each_nframes[1];
+                  split_points[3] = split_points[1];
 
                   /* add punch out pos */
                   split_points[1] =
@@ -562,7 +579,13 @@ handle_recording (
                   each_nframes[1] =
                     TRANSPORT->loop_end_pos.frames -
                     TRANSPORT->punch_out_pos.frames;
-                  loop_end_idx = 1;
+                  /*loop_end_idx = 1;*/
+
+                  /* add pause */
+                  split_points[2] =
+                    split_points[1] +
+                    each_nframes[1];
+                  each_nframes[2] = 0;
 
                   /* adjust num frames for init
                    * pos */
@@ -597,7 +620,7 @@ handle_recording (
               /*punch_out_hit = true;*/
               if (punch_in_hit)
                 {
-                  num_split_points = 3;
+                  num_split_points = 4;
 
                   /* add punch out pos */
                   split_points[2] =
@@ -606,13 +629,19 @@ handle_recording (
                     end_frames -
                     TRANSPORT->punch_out_pos.frames;
 
+                  /* add pause */
+                  split_points[3] =
+                    split_points[2] +
+                    each_nframes[2];
+                  each_nframes[3] = 0;
+
                   /* adjust num frames for punch in
                    * pos */
                   each_nframes[1] -= each_nframes[2];
                 }
               else
                 {
-                  num_split_points = 2;
+                  num_split_points = 3;
 
                   /* add punch out pos */
                   split_points[1] =
@@ -621,23 +650,28 @@ handle_recording (
                     end_frames -
                     TRANSPORT->punch_out_pos.frames;
 
+                  /* add pause */
+                  split_points[2] =
+                    split_points[1] +
+                    each_nframes[1];
+                  each_nframes[2] = 0;
+
                   /* adjust num frames for init
                    * pos */
-                  each_nframes[0] -= each_nframes[1];
+                  each_nframes[0] -=
+                    each_nframes[1];
                 }
             }
         }
     }
 
   long split_point = -1;
-  bool is_loop_end_idx = false;
+  /*bool is_loop_end_idx = false;*/
   for (int i = 0; i < num_split_points; i++)
     {
       g_warn_if_fail (
         split_points[i] >= 0 &&
-        each_nframes[i] > 0 &&
-        (split_points[i] > split_point ||
-         is_loop_end_idx));
+        each_nframes[i] >= 0);
 
       /* skip if same as previous point */
       if (split_points[i] == split_point)
@@ -645,12 +679,17 @@ handle_recording (
 
       split_point = split_points[i];
 
-      is_loop_end_idx =
-        loop_hit && i == loop_end_idx;
+      /*is_loop_end_idx =*/
+        /*loop_hit && i == loop_end_idx;*/
+
+#if 0
+      g_message ("sending %ld for %ld frames",
+        split_point, each_nframes[i]);
+#endif
 
       recording_manager_handle_recording (
         RECORDING_MANAGER, self, split_point,
-        0, each_nframes[i], is_loop_end_idx);
+        0, each_nframes[i]);
     }
 }
 

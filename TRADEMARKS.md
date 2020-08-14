@@ -3,8 +3,9 @@ Trademark Policy
 
 # Applicable Trademarks
 Zrythm is a registered trademark of Alexandros
-Theodotou in the United Kingdom. The Zrythm logo is a
-trademark of Alexandros Theodotou pending registration.
+Theodotou in the United Kingdom. The Zrythm logo is
+a trademark of Alexandros Theodotou pending
+registration.
 
 # Objective of this Policy
 The objective of this trademark policy is:

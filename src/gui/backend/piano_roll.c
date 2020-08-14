@@ -35,6 +35,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "zrythm_app.h"
 
 DRUM_LABELS;
 

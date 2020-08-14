@@ -126,6 +126,20 @@ change_state_punch_mode (
 }
 
 static void
+change_start_on_midi_input (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  bool value = g_variant_get_boolean (variant);
+  transport_set_start_playback_on_midi_input (
+    TRANSPORT, value);
+  g_message (
+    "setting start on MIDI input to %d", value);
+  g_simple_action_set_state (action, variant);
+}
+
+static void
 activate_recording_mode (
   GSimpleAction *action,
   GVariant      *_variant,
@@ -137,6 +151,11 @@ activate_recording_mode (
   const char * variant =
     g_variant_get_string (_variant, &size);
   g_simple_action_set_state (action, _variant);
+  if (string_is_equal (variant, "overwrite", 1))
+    {
+      transport_set_recording_mode (
+        TRANSPORT, RECORDING_MODE_OVERWRITE_EVENTS);
+    }
   if (string_is_equal (variant, "merge", 1))
     {
       transport_set_recording_mode (
@@ -180,19 +199,25 @@ setup_record_btn (
   g_menu_append (
     punch_section, _("Punch in/out"),
     "record-btn.punch-mode");
+  g_menu_append (
+    punch_section, _("Start on MIDI input"),
+    "record-btn.start-on-midi-input");
   g_menu_append_section (
-    menu, _("Punch mode"),
+    menu, _("Options"),
     G_MENU_MODEL (punch_section));
   g_object_unref (punch_section);
   GMenu * modes_section = g_menu_new ();
   g_menu_append (
+    modes_section, _("Overwrite events"),
+    "record-btn.recording-mode::overwrite");
+  g_menu_append (
     modes_section, _("Merge events"),
     "record-btn.recording-mode::merge");
   g_menu_append (
-    modes_section, _("Takes"),
+    modes_section, _("Create takes"),
     "record-btn.recording-mode::takes");
   g_menu_append (
-    modes_section, _("Takes (mute previous)"),
+    modes_section, _("Create takes (mute previous)"),
     "record-btn.recording-mode::takes-muted");
   g_menu_append_section (
     menu, _("Recording mode"),
@@ -206,6 +231,10 @@ setup_record_btn (
     { "punch-mode", NULL, NULL,
       (TRANSPORT->punch_mode ? "true" : "false"),
       change_state_punch_mode },
+    { "start-on-midi-input", NULL, NULL,
+      (TRANSPORT->start_playback_on_midi_input ?
+         "true" : "false"),
+      change_start_on_midi_input },
     { "recording-mode",
       activate_recording_mode, "s",
       recording_modes[TRANSPORT->recording_mode] },

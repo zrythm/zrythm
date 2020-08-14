@@ -173,11 +173,12 @@ typedef enum EventType
  */
 typedef struct ZEvent
 {
-  EventType     type;
-  void *        arg;
-  const char *  file;
-  const char *  func;
-  int           lineno;
+  EventType    type;
+  void *       arg;
+  const char * file;
+  const char * func;
+  int          lineno;
+  char *       backtrace;
 } ZEvent;
 
 ZEvent *

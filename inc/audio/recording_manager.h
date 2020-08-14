@@ -78,10 +78,10 @@ typedef struct RecordingManager
  * point.
  *
  * @param g_frames_start Global start frames.
- * @param nframes Number of frames to process.
- * @param reached_loop_end Whether this range is
- *   ending at loop end and expecting another call
- *   when back to loop start.
+ * @param nframes Number of frames to process. If
+ *   this is zero, a pause will be added. See \ref
+ *   RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING and
+ *   RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING.
  */
 void
 recording_manager_handle_recording (
@@ -89,8 +89,7 @@ recording_manager_handle_recording (
   TrackProcessor *   track_processor,
   const long         g_start_frames,
   const nframes_t    local_offset,
-  const nframes_t    nframes,
-  bool               reached_loop_end);
+  const nframes_t    nframes);
 
 /**
  * Creates the event queue and starts the event loop.

@@ -1689,6 +1689,33 @@ event_manager_process_now (
   process_events (self);
 }
 
+/**
+ * Removes events where the arg matches the
+ * given object.
+ *
+ * FIXME doesn't work - infinite loop.
+ */
+void
+event_manager_remove_events_for_obj (
+  EventManager * self,
+  void *         obj)
+{
+  MPMCQueue * q = self->mqueue;
+  ZEvent * event;
+  while (event_queue_dequeue_event (q, &event))
+    {
+      if (event->arg == obj)
+        {
+          object_pool_return (
+            self->obj_pool, event);
+        }
+      else
+        {
+          event_queue_push_back_event (q, event);
+        }
+    }
+}
+
 void
 event_manager_free (
   EventManager * self)

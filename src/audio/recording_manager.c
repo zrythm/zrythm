@@ -75,7 +75,7 @@ free_temp_selections (
 }
 
 static void
-on_stop_recording (
+handle_stop_recording (
   RecordingManager * self,
   bool               is_automation)
 {
@@ -186,10 +186,10 @@ on_stop_recording (
  * point.
  *
  * @param g_frames_start Global start frames.
- * @param nframes Number of frames to process.
- * @param reached_loop_end Whether this range is
- *   ending at loop end and expecting another call
- *   when back to loop start.
+ * @param nframes Number of frames to process. If
+ *   this is zero, a pause will be added. See \ref
+ *   RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING and
+ *   RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING.
  */
 void
 recording_manager_handle_recording (
@@ -197,15 +197,19 @@ recording_manager_handle_recording (
   TrackProcessor *   track_processor,
   const long         g_start_frames,
   const nframes_t    local_offset,
-  const nframes_t    nframes,
-  bool               reached_loop_end)
+  const nframes_t    nframes)
 {
   Track * tr =
     track_processor_get_track (track_processor);
   AutomationTracklist * atl =
     track_get_automation_tracklist (tr);
   gint64 cur_time = g_get_monotonic_time ();
-  bool stop_recording = false;
+
+  /* whether to skip adding any recording events */
+  bool skip_adding_events = false;
+
+  /* whether we are inside the punch range in
+   * punch mode or true if otherwise */
   bool inside_punch_range = false;
 
   g_return_if_fail (
@@ -225,11 +229,15 @@ recording_manager_handle_recording (
       inside_punch_range = true;
     }
 
+  /* ---- handle start/stop/pause recording events
+   * ---- */
+
+  /* if not recording at all (recording stopped) */
   if (!TRANSPORT->recording ||
       !tr->recording ||
-      !TRANSPORT_IS_ROLLING ||
-      !inside_punch_range)
+      !TRANSPORT_IS_ROLLING)
     {
+      /* if track had previously recorded */
       if (track_type_can_record (tr->type) &&
           tr->recording_region)
         {
@@ -238,6 +246,7 @@ recording_manager_handle_recording (
             (RecordingEvent *)
             object_pool_get (
               RECORDING_MANAGER->event_obj_pool);
+          recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING;
           re->g_start_frames = g_start_frames;
@@ -247,52 +256,64 @@ recording_manager_handle_recording (
           recording_event_queue_push_back_event (
             RECORDING_MANAGER->event_queue, re);
         }
-      stop_recording = true;
+      skip_adding_events = true;
     }
-  else
+  /* if pausing */
+  else if (nframes == 0)
     {
-      if (inside_punch_range &&
-          track_type_can_record (tr->type))
+      /* send pause event */
+      RecordingEvent * re =
+        (RecordingEvent *)
+        object_pool_get (
+          RECORDING_MANAGER->event_obj_pool);
+      recording_event_init (re);
+      re->type =
+        RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING;
+      re->g_start_frames = g_start_frames;
+      re->local_offset = local_offset;
+      re->nframes = nframes;
+      strcpy (re->track_name, tr->name);
+      recording_event_queue_push_back_event (
+        RECORDING_MANAGER->event_queue, re);
+
+      skip_adding_events = true;
+    }
+  /* if recording and inside punch range */
+  else if (inside_punch_range)
+    {
+      /* if no recording started yet */
+      if (track_type_can_record (tr->type) &&
+          !tr->recording_region &&
+          !tr->recording_start_sent)
         {
-          if (reached_loop_end &&
-              tr->recording_region)
-            {
-              /* send split recording event */
-              RecordingEvent * re =
-                (RecordingEvent *)
-                object_pool_get (
-                  RECORDING_MANAGER->event_obj_pool);
-              re->type =
-                RECORDING_EVENT_TYPE_SPLIT_TRACK_RECORDING;
-              re->g_start_frames = g_start_frames;
-              re->local_offset = local_offset;
-              re->nframes = nframes;
-              strcpy (re->track_name, tr->name);
-              recording_event_queue_push_back_event (
-                RECORDING_MANAGER->event_queue, re);
-            }
-          else if (!tr->recording_region)
-            {
-              /* send start recording event */
-              RecordingEvent * re =
-                (RecordingEvent *)
-                object_pool_get (
-                  RECORDING_MANAGER->event_obj_pool);
-              re->type =
-                RECORDING_EVENT_TYPE_START_TRACK_RECORDING;
-              re->g_start_frames = g_start_frames;
-              re->local_offset = local_offset;
-              re->nframes = nframes;
-              strcpy (re->track_name, tr->name);
-              recording_event_queue_push_back_event (
-                RECORDING_MANAGER->event_queue, re);
-            }
+          tr->recording_start_sent = true;
+
+          /* send start recording event */
+          RecordingEvent * re =
+            (RecordingEvent *)
+            object_pool_get (
+              RECORDING_MANAGER->event_obj_pool);
+          recording_event_init (re);
+          re->type =
+            RECORDING_EVENT_TYPE_START_TRACK_RECORDING;
+          re->g_start_frames = g_start_frames;
+          re->local_offset = local_offset;
+          re->nframes = nframes;
+          strcpy (re->track_name, tr->name);
+          recording_event_queue_push_back_event (
+            RECORDING_MANAGER->event_queue, re);
         }
+    }
+  else if (!inside_punch_range)
+    {
+      skip_adding_events = true;
     }
 
   for (int i = 0; i < atl->num_ats; i++)
     {
       AutomationTrack * at = atl->ats[i];
+
+      /* if should stop automation recording */
       if ((!TRANSPORT_IS_ROLLING ||
            !inside_punch_range ||
            !automation_track_should_be_recording (
@@ -304,6 +325,7 @@ recording_manager_handle_recording (
             (RecordingEvent *)
             object_pool_get (
               RECORDING_MANAGER->event_obj_pool);
+          recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_STOP_AUTOMATION_RECORDING;
           re->g_start_frames = g_start_frames;
@@ -314,41 +336,27 @@ recording_manager_handle_recording (
           strcpy (re->track_name, tr->name);
           recording_event_queue_push_back_event (
             RECORDING_MANAGER->event_queue, re);
+
+          skip_adding_events = true;
         }
+      /* if automatmion should be recording */
       if (TRANSPORT_IS_ROLLING &&
           inside_punch_range &&
           automation_track_should_be_recording (
             at, cur_time, false))
         {
-          bool at_split = false;
-          if (at->recording_started &&
-              reached_loop_end)
+          /* if recording hasn't started yet */
+          if (!at->recording_started &&
+              !at->recording_start_sent)
             {
-              /* send split recording event */
-              RecordingEvent * re =
-                (RecordingEvent *)
-                object_pool_get (
-                  RECORDING_MANAGER->event_obj_pool);
-              re->type =
-                RECORDING_EVENT_TYPE_SPLIT_AUTOMATION_RECORDING;
-              re->g_start_frames = g_start_frames;
-              re->local_offset = local_offset;
-              re->nframes = nframes;
-              port_identifier_copy (
-                &re->port_id, &at->port_id);
-              strcpy (re->track_name, tr->name);
-              recording_event_queue_push_back_event (
-                RECORDING_MANAGER->event_queue, re);
+              at->recording_start_sent = true;
 
-              at_split = true;
-            }
-          else if (!at->recording_started)
-            {
               /* send start recording event */
               RecordingEvent * re =
                 (RecordingEvent *)
                 object_pool_get (
                   RECORDING_MANAGER->event_obj_pool);
+              recording_event_init (re);
               re->type =
                 RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING;
               re->g_start_frames = g_start_frames;
@@ -360,30 +368,13 @@ recording_manager_handle_recording (
               recording_event_queue_push_back_event (
                 RECORDING_MANAGER->event_queue, re);
             }
-
-          if (!at_split)
-            {
-              /* add recorded automation material to
-               * event queue */
-              RecordingEvent * re =
-                (RecordingEvent *)
-                object_pool_get (
-                  RECORDING_MANAGER->event_obj_pool);
-              re->type =
-                RECORDING_EVENT_TYPE_AUTOMATION;
-              re->g_start_frames = g_start_frames;
-              re->local_offset = local_offset;
-              re->nframes = nframes;
-              strcpy (re->track_name, tr->name);
-              port_identifier_copy (
-                &re->port_id, &at->port_id);
-              recording_event_queue_push_back_event (
-                RECORDING_MANAGER->event_queue, re);
-            }
         }
     }
 
-  if (stop_recording)
+  /* ---- end handling start/stop/pause recording
+   * events ---- */
+
+  if (skip_adding_events)
     return;
 
   /* add recorded track material to event queue */
@@ -403,6 +394,7 @@ recording_manager_handle_recording (
             (RecordingEvent *)
             object_pool_get (
               RECORDING_MANAGER->event_obj_pool);
+          recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_MIDI;
           re->g_start_frames = g_start_frames;
           re->local_offset = local_offset;
@@ -420,6 +412,7 @@ recording_manager_handle_recording (
             (RecordingEvent *)
             object_pool_get (
               RECORDING_MANAGER->event_obj_pool);
+          recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_MIDI;
           re->g_start_frames = g_start_frames;
           re->local_offset = local_offset;
@@ -436,6 +429,7 @@ recording_manager_handle_recording (
         (RecordingEvent *)
         object_pool_get (
           RECORDING_MANAGER->event_obj_pool);
+      recording_event_init (re);
       re->type = RECORDING_EVENT_TYPE_AUDIO;
       re->g_start_frames = g_start_frames;
       re->local_offset = local_offset;
@@ -453,105 +447,6 @@ recording_manager_handle_recording (
       strcpy (re->track_name, tr->name);
       recording_event_queue_push_back_event (
         RECORDING_MANAGER->event_queue, re);
-    }
-}
-
-static void
-handle_audio_event (
-  RecordingEvent * ev)
-{
-  long g_start_frames = ev->g_start_frames;
-  nframes_t nframes = ev->nframes;
-  nframes_t local_offset = ev->local_offset;
-  Track * tr = track_get_from_name (ev->track_name);
-
-  /* get end position */
-  long start_frames =
-    g_start_frames + ev->local_offset;
-  long end_frames =
-    start_frames + (long) nframes;
-
-  Position start_pos, end_pos;
-  position_from_frames (
-    &start_pos, start_frames);
-  position_from_frames (
-    &end_pos, end_frames);
-
-  /* get the recording region */
-  ZRegion * region = tr->recording_region;
-  g_return_if_fail (region);
-  ArrangerObject * r_obj =
-    (ArrangerObject *) region;
-
-  /* the clip */
-  AudioClip * clip = NULL;
-
-  clip = audio_region_get_clip (region);
-
-  /* set region end pos */
-  arranger_object_end_pos_setter (
-    r_obj, &end_pos);
-  r_obj->end_pos.frames =
-    end_pos.frames;
-
-  clip->num_frames =
-    r_obj->end_pos.frames - r_obj->pos.frames;
-  clip->frames =
-    (sample_t *)
-    realloc (
-      clip->frames,
-      (size_t)
-      (clip->num_frames *
-         (long) clip->channels) *
-      sizeof (sample_t));
-  region->frames =
-    (sample_t *) realloc (
-      region->frames,
-      (size_t)
-      (clip->num_frames *
-         (long) clip->channels) *
-      sizeof (sample_t));
-  region->num_frames = (size_t) clip->num_frames;
-  memcpy (
-    &region->frames[0], &clip->frames[0],
-    sizeof (float) * (size_t) clip->num_frames *
-    clip->channels);
-
-  position_from_frames (
-    &r_obj->loop_end_pos,
-    r_obj->end_pos.frames -
-      r_obj->pos.frames);
-
-  r_obj->fade_out_pos = r_obj->loop_end_pos;
-
-  tr->recording_region = region;
-
-  /* handle the samples normally */
-  nframes_t cur_local_offset =
-    local_offset;
-  g_return_if_fail (region);
-  r_obj =
-    (ArrangerObject *) region;
-  for (long i =
-         start_frames -
-           r_obj->pos.frames;
-       i <
-         end_frames -
-           r_obj->pos.frames; i++)
-    {
-      g_warn_if_fail (
-        i >= 0 &&
-        i < clip->num_frames);
-      g_warn_if_fail (
-        cur_local_offset >= local_offset &&
-        cur_local_offset <
-          local_offset + nframes);
-      clip->frames[
-        i * clip->channels] =
-          ev->lbuf[cur_local_offset];
-      clip->frames[
-        i * clip->channels + 1] =
-          ev->rbuf[cur_local_offset++];
     }
 }
 
@@ -658,73 +553,30 @@ create_automation_point (
 }
 
 static void
-handle_split_event (
+handle_pause_event (
   RecordingEvent * ev)
 {
   Track * tr = track_get_from_name (ev->track_name);
-  gint64 cur_time = g_get_monotonic_time ();
 
-  /* start position before loop end */
-  Position start_pos;
+  /* pausition to pause at */
+  Position pause_pos;
   position_from_frames (
-    &start_pos, ev->g_start_frames);
-  /* tmp end position after loop end */
-  Position end_pos;
-  position_from_frames (
-    &end_pos,
-    TRANSPORT->loop_start_pos.frames + 1);
+    &pause_pos, ev->g_start_frames);
 
-  nframes_t local_offset = ev->local_offset;
-  nframes_t nframes = ev->nframes;
-  long g_start_frames = ev->g_start_frames;
-
-  if (ev->type == RECORDING_EVENT_TYPE_SPLIT_TRACK_RECORDING)
+  if (ev->type ==
+        RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING)
     {
+      tr->recording_paused = true;
+
       /* get the recording region */
       ZRegion * region = tr->recording_region;
       g_return_if_fail (region);
-      ArrangerObject * r_obj =
-        (ArrangerObject *) region;
 
-      /* set current region end pos to
-       * transport loop end */
-      arranger_object_end_pos_setter (
-        r_obj, &TRANSPORT->loop_end_pos);
-      r_obj->end_pos.frames =
-        TRANSPORT->loop_end_pos.frames;
-
-      /* set loop end pos to same point */
-      Position r_loop_end;
-      position_set_to_pos (
-        &r_loop_end, &TRANSPORT->loop_end_pos);
-      position_add_ticks (
-        &r_loop_end, - r_obj->pos.total_ticks);
-      arranger_object_loop_end_pos_setter (
-        r_obj, &r_loop_end);
+      /* remember lane index */
+      tr->last_lane_idx = region->id.lane_pos;
 
       if (tr->in_signal_type == TYPE_EVENT)
         {
-          /* start new region in new lane at
-           * TRANSPORT loop start */
-          int new_lane_pos =
-            region->id.lane_pos + 1;
-
-          ZRegion * new_region =
-            midi_region_new (
-              &TRANSPORT->loop_start_pos,
-              &end_pos, tr->pos, new_lane_pos,
-              tr->num_lanes > new_lane_pos ?
-                tr->lanes[new_lane_pos]->num_regions :
-                0);
-          track_add_region (
-            tr, new_region, NULL,
-            new_lane_pos, F_GEN_NAME,
-            F_PUBLISH_EVENTS);
-
-          add_recorded_id (
-            RECORDING_MANAGER, new_region);
-          tr->recording_region = new_region;
-
           /* add midi note offs at the end */
           MidiNote * mn;
           while (
@@ -735,237 +587,170 @@ handle_split_event (
               ArrangerObject * mn_obj =
                 (ArrangerObject *) mn;
               arranger_object_end_pos_setter (
-                mn_obj, &r_loop_end);
-            }
-        }
-      else if (tr->in_signal_type == TYPE_AUDIO)
-        {
-          AudioClip * clip =
-            audio_region_get_clip (region);
-
-          /* finalize clip */
-          clip->num_frames =
-            r_obj->end_pos.frames -
-            r_obj->pos.frames;
-          clip->frames =
-            (sample_t *) realloc (
-              clip->frames,
-              (size_t)
-              (clip->num_frames *
-                 (long) clip->channels) *
-              sizeof (sample_t));
-          region->frames =
-            (sample_t *) realloc (
-              region->frames,
-              (size_t)
-              (clip->num_frames *
-                 (long) clip->channels) *
-              sizeof (sample_t));
-          region->num_frames =
-            (size_t) clip->num_frames;
-          memcpy (
-            &region->frames[0], &clip->frames[0],
-            sizeof (float) *
-              (size_t) clip->num_frames *
-              clip->channels);
-
-          /* start new region in new lane at
-           * TRANSPORT loop start */
-          int new_lane_pos =
-            region->id.lane_pos + 1;
-          ZRegion * new_region =
-            audio_region_new (
-              -1, NULL, NULL, 1, 2,
-              &TRANSPORT->loop_start_pos, tr->pos,
-              new_lane_pos,
-              tr->num_lanes > new_lane_pos ?
-                tr->lanes[new_lane_pos]->num_regions :
-                0);
-          track_add_region (
-            tr, new_region, NULL,
-            new_lane_pos, F_GEN_NAME,
-            F_PUBLISH_EVENTS);
-
-          add_recorded_id (
-            RECORDING_MANAGER, new_region);
-          tr->recording_region = new_region;
-
-          r_obj->fade_out_pos = r_obj->loop_end_pos;
-
-          /* handle the samples until loop end */
-          if (region)
-            {
-              long clip_offset_before_loop =
-                g_start_frames - r_obj->pos.frames;
-              for (
-                nframes_t i = local_offset;
-                i < local_offset + nframes;
-                i++)
-                {
-                  g_warn_if_fail (
-                    clip_offset_before_loop >= 0 &&
-                    clip_offset_before_loop <
-                      clip->num_frames);
-                  g_warn_if_fail (
-                    i >= local_offset &&
-                    i < local_offset + nframes);
-                  clip->frames[
-                    clip->channels *
-                      clip_offset_before_loop] =
-                        ev->lbuf[i];
-                  clip->frames[
-                    clip->channels *
-                      (clip_offset_before_loop++)] =
-                        ev->rbuf[i];
-                }
+                mn_obj, &pause_pos);
             }
         }
     }
-  else if (ev->type == RECORDING_EVENT_TYPE_SPLIT_AUTOMATION_RECORDING)
+  else if (ev->type ==
+             RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING)
+    {
+
+      AutomationTrack * at =
+        automation_track_find_from_port_id (
+          &ev->port_id, false);
+
+      at->recording_paused = true;
+    }
+}
+
+/**
+ * Handles cases where recording events are first
+ * received after pausing recording.
+ *
+ * This should be called on every
+ * \ref RECORDING_EVENT_TYPE_MIDI,
+ * \ref RECORDING_EVENT_TYPE_AUDIO and
+ * \ref RECORDING_EVENT_TYPE_AUTOMATION event
+ * and it will handle resume logic automatically
+ * if needed.
+ *
+ * Adds new regions if necessary, etc.
+ */
+static void
+handle_resume_event (
+  RecordingEvent * ev)
+{
+  Track * tr = track_get_from_name (ev->track_name);
+  gint64 cur_time = g_get_monotonic_time ();
+
+  /* position to resume from */
+  Position resume_pos;
+  position_from_frames (
+    &resume_pos,
+    ev->g_start_frames + ev->local_offset);
+
+  /* position 1 frame afterwards */
+  Position end_pos;
+  position_from_frames (
+    &end_pos,
+    ev->g_start_frames + ev->local_offset + 1);
+
+  if (ev->type == RECORDING_EVENT_TYPE_MIDI ||
+      ev->type == RECORDING_EVENT_TYPE_AUDIO)
+    {
+      /* not paused, nothing to do */
+      if (!tr->recording_paused)
+        {
+          return;
+        }
+
+      tr->recording_paused = false;
+
+      /* TODO split logic depending on recording
+       * mode */
+
+      /* start new region in new lane */
+      int new_lane_pos =
+        tr->last_lane_idx + 1;
+      int idx_inside_lane =
+        tr->num_lanes > new_lane_pos ?
+          tr->lanes[new_lane_pos]->num_regions : 0;
+      ZRegion * new_region = NULL;
+      if (tr->in_signal_type == TYPE_EVENT)
+        {
+          new_region =
+            midi_region_new (
+              &resume_pos, &end_pos, tr->pos,
+              new_lane_pos, idx_inside_lane);
+        }
+      else if (tr->in_signal_type == TYPE_AUDIO)
+        {
+          new_region =
+            audio_region_new (
+              -1, NULL, NULL, 1, 2, &resume_pos,
+              tr->pos, new_lane_pos,
+              idx_inside_lane);
+        }
+      g_return_if_fail (new_region);
+      track_add_region (
+        tr, new_region, NULL, new_lane_pos,
+        F_GEN_NAME, F_PUBLISH_EVENTS);
+
+      /* remember region */
+      add_recorded_id (
+        RECORDING_MANAGER, new_region);
+      tr->recording_region = new_region;
+    }
+  else if (ev->type ==
+             RECORDING_EVENT_TYPE_AUTOMATION)
     {
       AutomationTrack * at =
         automation_track_find_from_port_id (
           &ev->port_id, false);
+
+      /* not paused, nothing to do */
+      if (!at->recording_paused)
+        return;
+
       Port * port =
         automation_track_get_port (at);
       float value =
         port_get_control_value (port, false);
       float normalized_value =
         port_get_control_value (port, true);
-      bool automation_value_changed =
-        !port->value_changed_from_reading &&
-        !math_floats_equal (
-          value, at->last_recorded_value);
 
-      /* get region before loop end */
-      ZRegion * region =
-        automation_track_get_region_before_pos (
-          at, &TRANSPORT->loop_end_pos);
-      ZRegion * region_before_loop_end = region;
-
-      if (!region && automation_value_changed)
-        {
-          /* create region */
-          Position pos_to_end_new_r;
-          position_set_to_pos (
-            &pos_to_end_new_r,
-            &TRANSPORT->loop_end_pos);
-        }
-
-      at->recording_region = region;
-      ArrangerObject * r_obj =
-        (ArrangerObject *) region;
-
-      if (region)
-        {
-          /* set current region end pos to
-           * transport loop end */
-          arranger_object_end_pos_setter (
-            r_obj, &TRANSPORT->loop_end_pos);
-          r_obj->end_pos.frames =
-            TRANSPORT->loop_end_pos.frames;
-
-          position_from_frames (
-            &r_obj->loop_end_pos,
-            r_obj->end_pos.frames -
-              r_obj->pos.frames);
-        }
-
-      /* get or start new region at
-       * TRANSPORT loop start */
+      /* get or start new region at resume pos */
       ZRegion * new_region =
         automation_track_get_region_before_pos (
-          at, &TRANSPORT->loop_start_pos);
-      ZRegion * region_at_end =
-        automation_track_get_region_before_pos (
-          at, &end_pos);
+          at, &resume_pos);
       if (!new_region &&
           automation_track_should_be_recording (
             at, cur_time, false))
         {
           /* create region */
-          Position pos_to_end_new_r;
-          if (region_at_end)
-            {
-              ArrangerObject * r_at_end_obj =
-                (ArrangerObject *) region_at_end;
-              position_set_to_pos (
-                &pos_to_end_new_r,
-                &r_at_end_obj->pos);
-            }
-          else
-            {
-              position_set_to_pos (
-                &pos_to_end_new_r, &end_pos);
-            }
           new_region =
             automation_region_new (
-              &TRANSPORT->loop_start_pos,
-              &end_pos, tr->pos,
+              &resume_pos, &end_pos, tr->pos,
               at->index, at->num_regions);
           g_return_if_fail (new_region);
           track_add_region (
             tr, new_region, at, -1,
             F_GEN_NAME, F_PUBLISH_EVENTS);
         }
-      region = new_region;
-      if (region)
-        {
-          add_recorded_id (
-            RECORDING_MANAGER, new_region);
-        }
-
-      /* handle the samples until loop end */
-      if (region_before_loop_end)
-        {
-          if (automation_value_changed)
-            {
-              create_automation_point (
-                at, region_before_loop_end,
-                value, normalized_value,
-                &start_pos);
-              at->last_recorded_value = value;
-            }
-        }
+      add_recorded_id (
+        RECORDING_MANAGER, new_region);
 
       if (automation_track_should_be_recording (
             at, cur_time, true))
         {
-          while (region->num_aps > 0 &&
+          while (new_region->num_aps > 0 &&
                  position_is_equal (
                    &((ArrangerObject *)
-                      region->aps[0])->pos,
-                   &TRANSPORT->loop_start_pos))
+                      new_region->aps[0])->pos,
+                   &resume_pos))
             {
               automation_region_remove_ap (
-                region, region->aps[0], true);
+                new_region, new_region->aps[0],
+                true);
             }
 
           /* create/replace ap at loop start */
           create_automation_point (
-            at, region, value, normalized_value,
-            &TRANSPORT->loop_start_pos);
-        }
-
-      /* if we left touch mode, set last recorded ap
-       * to NULL */
-      if (at->record_mode ==
-            AUTOMATION_RECORD_MODE_TOUCH &&
-          !automation_track_should_be_recording (
-            at, cur_time, true))
-        {
-          at->recording_region->last_recorded_ap =
-            NULL;
+            at, new_region, value, normalized_value,
+            &resume_pos);
         }
     }
 }
 
 static void
-handle_midi_event (
+handle_audio_event (
   RecordingEvent * ev)
 {
+  handle_resume_event (ev);
+
   long g_start_frames = ev->g_start_frames;
   nframes_t nframes = ev->nframes;
+  nframes_t local_offset = ev->local_offset;
   Track * tr = track_get_from_name (ev->track_name);
 
   /* get end position */
@@ -983,6 +768,94 @@ handle_midi_event (
   /* get the recording region */
   ZRegion * region = tr->recording_region;
   g_return_if_fail (region);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
+
+  /* the clip */
+  AudioClip * clip = NULL;
+
+  clip = audio_region_get_clip (region);
+
+  /* set region end pos */
+  arranger_object_end_pos_setter (
+    r_obj, &end_pos);
+  r_obj->end_pos.frames =
+    end_pos.frames;
+
+  clip->num_frames =
+    r_obj->end_pos.frames - r_obj->pos.frames;
+  clip->frames =
+    (sample_t *)
+    realloc (
+      clip->frames,
+      (size_t)
+      (clip->num_frames *
+         (long) clip->channels) *
+      sizeof (sample_t));
+  region->frames =
+    (sample_t *) realloc (
+      region->frames,
+      (size_t)
+      (clip->num_frames *
+         (long) clip->channels) *
+      sizeof (sample_t));
+  region->num_frames = (size_t) clip->num_frames;
+  memcpy (
+    &region->frames[0], &clip->frames[0],
+    sizeof (float) * (size_t) clip->num_frames *
+    clip->channels);
+
+  position_from_frames (
+    &r_obj->loop_end_pos,
+    r_obj->end_pos.frames - r_obj->pos.frames);
+
+  r_obj->fade_out_pos = r_obj->loop_end_pos;
+
+  /* handle the samples normally */
+  nframes_t cur_local_offset =
+    local_offset;
+  for (long i = start_frames - r_obj->pos.frames;
+       i < end_frames - r_obj->pos.frames;
+       i++)
+    {
+      g_warn_if_fail (
+        i >= 0 && i < clip->num_frames);
+      g_warn_if_fail (
+        cur_local_offset >= local_offset &&
+        cur_local_offset < local_offset + nframes);
+      clip->frames[i * clip->channels] =
+        ev->lbuf[cur_local_offset];
+      clip->frames[i * clip->channels + 1] =
+        ev->rbuf[cur_local_offset++];
+    }
+}
+
+static void
+handle_midi_event (
+  RecordingEvent * ev)
+{
+  handle_resume_event (ev);
+
+  long g_start_frames = ev->g_start_frames;
+  nframes_t nframes = ev->nframes;
+  Track * tr = track_get_from_name (ev->track_name);
+
+  g_return_if_fail (tr->recording_region);
+
+  /* get end position */
+  long start_frames =
+    g_start_frames + ev->local_offset;
+  long end_frames =
+    start_frames + (long) nframes;
+
+  Position start_pos, end_pos;
+  position_from_frames (
+    &start_pos, start_frames);
+  position_from_frames (
+    &end_pos, end_frames);
+
+  /* get the recording region */
+  ZRegion * region = tr->recording_region;
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
 
@@ -1052,6 +925,8 @@ static void
 handle_automation_event (
   RecordingEvent * ev)
 {
+  handle_resume_event (ev);
+
   long g_start_frames = ev->g_start_frames;
   nframes_t nframes = ev->nframes;
   /*nframes_t local_offset = ev->local_offset;*/
@@ -1244,6 +1119,8 @@ handle_start_recording (
 
   if (is_automation)
     {
+      at->recording_paused = false;
+
       /* nothing, wait for event to start
        * writing data */
       Port * port =
@@ -1270,6 +1147,8 @@ handle_start_recording (
     }
   else
     {
+      tr->recording_paused = false;
+
       if (track_has_piano_roll (tr))
         {
           /* create region */
@@ -1285,7 +1164,8 @@ handle_start_recording (
             F_GEN_NAME, F_PUBLISH_EVENTS);
 
           tr->recording_region = region;
-          add_recorded_id (RECORDING_MANAGER, region);
+          add_recorded_id (
+            RECORDING_MANAGER, region);
         }
       else if (tr->type == TRACK_TYPE_AUDIO)
         {
@@ -1302,7 +1182,8 @@ handle_start_recording (
             F_GEN_NAME, F_PUBLISH_EVENTS);
 
           tr->recording_region = region;
-          add_recorded_id (RECORDING_MANAGER, region);
+          add_recorded_id (
+            RECORDING_MANAGER, region);
         }
     }
 }
@@ -1344,13 +1225,13 @@ events_process (
           g_message ("-------- RECORD AUTOMATION");
           handle_automation_event (ev);
           break;
-        case RECORDING_EVENT_TYPE_SPLIT_TRACK_RECORDING:
-          g_message ("-------- SPLIT TRACK RECORDING");
-          handle_split_event (ev);
+        case RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING:
+          g_message ("-------- PAUSE TRACK RECORDING");
+          handle_pause_event (ev);
           break;
-        case RECORDING_EVENT_TYPE_SPLIT_AUTOMATION_RECORDING:
-          g_message ("-------- SPLIT AUTOMATION RECORDING");
-          handle_split_event (ev);
+        case RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING:
+          g_message ("-------- PAUSE AUTOMATION RECORDING");
+          handle_pause_event (ev);
           break;
         case RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING:
           g_message ("-------- STOP TRACK RECORDING");
@@ -1360,10 +1241,11 @@ events_process (
             g_warn_if_fail (track);
             if (self->is_recording)
               {
-                on_stop_recording (self, false);
+                handle_stop_recording (self, false);
               }
             self->is_recording = 0;
             track->recording_region = NULL;
+            track->recording_start_sent = false;
           }
           break;
         case RECORDING_EVENT_TYPE_STOP_AUTOMATION_RECORDING:
@@ -1375,9 +1257,10 @@ events_process (
             g_warn_if_fail (at);
             if (at->recording_started)
               {
-                on_stop_recording (self, true);
+                handle_stop_recording (self, true);
               }
             at->recording_started = false;
+            at->recording_start_sent = false;
             at->recording_region = NULL;
           }
           break;

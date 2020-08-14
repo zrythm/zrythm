@@ -52,6 +52,7 @@
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zix/ring.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 
@@ -3165,7 +3166,8 @@ port_get_plugin (
     }
   if (!pl && self->tmp_plugin)
     return self->tmp_plugin;
-  if (warn_if_fail)
+
+  if (!pl && warn_if_fail)
     {
       g_critical (
         "plugin at slot type %s (slot %d) not "
