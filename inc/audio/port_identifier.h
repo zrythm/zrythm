@@ -423,6 +423,15 @@ port_identifier_is_equal (
   return eq;
 }
 
+static inline void
+port_identifier_print (
+  PortIdentifier * self)
+{
+  g_message (
+    "[PortIdentifier]\nlabel: %s",
+    self->label);
+}
+
 /**
  * @}
  */

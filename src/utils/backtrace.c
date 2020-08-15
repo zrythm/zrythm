@@ -204,6 +204,13 @@ _backtrace_get (
             SymGetLineFromAddr64 (
               process, (DWORD64) (stack[i]), 0,
               line);
+
+          if (!got_line)
+            {
+              g_message (
+                "failed to get line info for %s",
+                symbol->Name);
+            }
         }
 
       if (got_line)

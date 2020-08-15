@@ -710,7 +710,7 @@ track_processor_process (
   Track * tr = track_processor_get_track (self);
   g_return_if_fail (tr);
 
-  /*g_message ("%s: %s", __func__, tr->name);*/
+  /*g_message ("processing %s", tr->name);*/
 
   /* set the audio clip contents to stereo out */
   if (tr->type == TRACK_TYPE_AUDIO)
@@ -816,7 +816,8 @@ track_processor_process (
         nframes, false);
     }
 
-  if (track_type_can_record (tr->type))
+  if (track_type_can_record (tr->type) ||
+      tr->automation_tracklist.num_ats > 0)
     {
       /* handle recording. this will only create
        * events in regions. it will not copy the

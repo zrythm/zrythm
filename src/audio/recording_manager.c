@@ -205,8 +205,13 @@ recording_manager_handle_recording (
     track_get_automation_tracklist (tr);
   gint64 cur_time = g_get_monotonic_time ();
 
-  /* whether to skip adding any recording events */
-  bool skip_adding_events = false;
+  /* whether to skip adding track recording
+   * events */
+  bool skip_adding_track_events = false;
+
+  /* whether to skip adding automation recording
+   * events */
+  bool skip_adding_automation_events = false;
 
   /* whether we are inside the punch range in
    * punch mode or true if otherwise */
@@ -256,7 +261,7 @@ recording_manager_handle_recording (
           recording_event_queue_push_back_event (
             RECORDING_MANAGER->event_queue, re);
         }
-      skip_adding_events = true;
+      skip_adding_track_events = true;
     }
   /* if pausing */
   else if (nframes == 0)
@@ -276,7 +281,7 @@ recording_manager_handle_recording (
       recording_event_queue_push_back_event (
         RECORDING_MANAGER->event_queue, re);
 
-      skip_adding_events = true;
+      skip_adding_track_events = true;
     }
   /* if recording and inside punch range */
   else if (inside_punch_range)
@@ -306,7 +311,7 @@ recording_manager_handle_recording (
     }
   else if (!inside_punch_range)
     {
-      skip_adding_events = true;
+      skip_adding_track_events = true;
     }
 
   for (int i = 0; i < atl->num_ats; i++)
@@ -315,7 +320,6 @@ recording_manager_handle_recording (
 
       /* if should stop automation recording */
       if ((!TRANSPORT_IS_ROLLING ||
-           !inside_punch_range ||
            !automation_track_should_be_recording (
              at, cur_time, false)) &&
            at->recording_started)
@@ -337,11 +341,34 @@ recording_manager_handle_recording (
           recording_event_queue_push_back_event (
             RECORDING_MANAGER->event_queue, re);
 
-          skip_adding_events = true;
+          skip_adding_automation_events = true;
         }
+      /* if pausing (only at loop end) */
+      else if (at->recording_start_sent &&
+               nframes == 0 &&
+               g_start_frames + local_offset ==
+                 TRANSPORT->loop_end_pos.frames)
+        {
+          /* send pause event */
+          RecordingEvent * re =
+            (RecordingEvent *)
+            object_pool_get (
+              RECORDING_MANAGER->event_obj_pool);
+          recording_event_init (re);
+          re->type =
+            RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING;
+          re->g_start_frames = g_start_frames;
+          re->local_offset = local_offset;
+          re->nframes = nframes;
+          strcpy (re->track_name, tr->name);
+          recording_event_queue_push_back_event (
+            RECORDING_MANAGER->event_queue, re);
+
+          skip_adding_automation_events = true;
+        }
+
       /* if automatmion should be recording */
       if (TRANSPORT_IS_ROLLING &&
-          inside_punch_range &&
           automation_track_should_be_recording (
             at, cur_time, false))
         {
@@ -374,8 +401,10 @@ recording_manager_handle_recording (
   /* ---- end handling start/stop/pause recording
    * events ---- */
 
-  if (skip_adding_events)
-    return;
+  if (skip_adding_track_events)
+    {
+      goto add_automation_events;
+    }
 
   /* add recorded track material to event queue */
 
@@ -447,6 +476,41 @@ recording_manager_handle_recording (
       strcpy (re->track_name, tr->name);
       recording_event_queue_push_back_event (
         RECORDING_MANAGER->event_queue, re);
+    }
+
+add_automation_events:
+
+  if (skip_adding_automation_events)
+    return;
+
+  /* add automation events */
+  for (int i = 0; i < atl->num_ats; i++)
+    {
+      AutomationTrack * at = atl->ats[i];
+
+      /* if automation should be recording */
+      if (TRANSPORT_IS_ROLLING &&
+          at->recording_start_sent &&
+          automation_track_should_be_recording (
+            at, cur_time, false))
+        {
+          /* send recording event */
+          RecordingEvent * re =
+            (RecordingEvent *)
+            object_pool_get (
+              RECORDING_MANAGER->event_obj_pool);
+          recording_event_init (re);
+          re->type =
+            RECORDING_EVENT_TYPE_AUTOMATION;
+          re->g_start_frames = g_start_frames;
+          re->local_offset = local_offset;
+          re->nframes = nframes;
+          port_identifier_copy (
+            &re->port_id, &at->port_id);
+          strcpy (re->track_name, tr->name);
+          recording_event_queue_push_back_event (
+            RECORDING_MANAGER->event_queue, re);
+        }
     }
 }
 
@@ -594,11 +658,9 @@ handle_pause_event (
   else if (ev->type ==
              RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING)
     {
-
       AutomationTrack * at =
         automation_track_find_from_port_id (
           &ev->port_id, false);
-
       at->recording_paused = true;
     }
 }
@@ -1119,7 +1181,9 @@ handle_start_recording (
 
   if (is_automation)
     {
-      at->recording_paused = false;
+      /* don't unset recording paused, this will
+       * be unset by handle_resume() */
+      /*at->recording_paused = false;*/
 
       /* nothing, wait for event to start
        * writing data */

@@ -72,9 +72,16 @@ worker_thread (void * arg)
 
       if (g_atomic_int_get (&graph->terminate))
         {
-          g_message (
-            "[%d]: terminating thread",
-            thread->id);
+          if (thread->id == -1)
+            {
+              g_message ("terminating main thread");
+            }
+          else
+            {
+              g_message (
+                "[%d]: terminating thread",
+                thread->id);
+            }
           return 0;
         }
 
