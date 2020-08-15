@@ -135,6 +135,7 @@ if get_option ('tests')
     ['audio/position', true],
     ['audio/region', true],
     ['audio/track', true],
+    ['integration/recording', true],
     ['plugins/plugin_manager', true],
     ['project', true],
     ['utils/arrays', true],

@@ -130,6 +130,9 @@ typedef enum ZrythmDirType
  */
 typedef struct Zrythm
 {
+  /** argv[0]. */
+  const char *        exe_path;
+
   /**
    * Manages plugins (loading, instantiating, etc.)
    */
@@ -318,8 +321,9 @@ zrythm_get_user_dir (
  */
 Zrythm *
 zrythm_new (
-  bool have_ui,
-  bool testing);
+  const char * exe_path,
+  bool         have_ui,
+  bool         testing);
 
 /**
  * Frees the instance and any unfreed members.

@@ -1042,8 +1042,6 @@ zrythm_app_new (
 
   zrythm_app = self;
 
-  self->exe_path = exe_path;
-
   self->gtk_thread = g_thread_self ();
 
   self->audio_backend = audio_backend;
@@ -1051,7 +1049,7 @@ zrythm_app_new (
   self->buf_size = buf_size;
 
   lock_memory ();
-  ZRYTHM = zrythm_new (true, false);
+  ZRYTHM = zrythm_new (exe_path, true, false);
 
   /* add shutdown handler */
   g_signal_connect (

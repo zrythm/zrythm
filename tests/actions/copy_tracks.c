@@ -34,6 +34,7 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project.h"
 
 #include <glib.h>
@@ -45,42 +46,21 @@ _test_port_and_plugin_track_pos_after_duplication (
   bool         is_instrument,
   bool         with_carla)
 {
-  LilvNode * path =
-    lilv_new_uri (LILV_WORLD, pl_bundle);
-  lilv_world_load_bundle (
-    LILV_WORLD, path);
-  lilv_node_free (path);
+  PluginDescriptor * descr =
+    test_plugin_manager_get_plugin_descriptor (
+      pl_bundle, pl_uri, with_carla);
 
-  plugin_manager_scan_plugins (
-    PLUGIN_MANAGER, 1.0, NULL);
-  /*g_assert_cmpint (*/
-    /*PLUGIN_MANAGER->num_plugins, ==, 1);*/
-
-  PluginDescriptor * descr = NULL;
-  for (int i = 0; i < PLUGIN_MANAGER->num_plugins;
-       i++)
-    {
-      if (string_is_equal (
-            PLUGIN_MANAGER->plugin_descriptors[i]->
-              uri, pl_uri, true))
-        {
-          descr =
-            plugin_descriptor_clone (
-              PLUGIN_MANAGER->plugin_descriptors[i]);
-        }
-    }
-
-  /* fix the descriptor (for some reason lilv
-   * reports it as Plugin instead of Instrument if
-   * you don't do lilv_world_load_all) */
   if (is_instrument)
     {
+      /* fix the descriptor (for some reason lilv
+       * reports it as Plugin instead of Instrument if
+       * you don't do lilv_world_load_all) */
       descr->category = PC_INSTRUMENT;
+      g_free (descr->category_str);
+      descr->category_str =
+        plugin_descriptor_category_to_string (
+          descr->category);
     }
-  g_free (descr->category_str);
-  descr->category_str =
-    plugin_descriptor_category_to_string (
-      descr->category);
 
   /* open with carla if requested */
   descr->open_with_carla = with_carla;

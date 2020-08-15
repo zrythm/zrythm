@@ -52,11 +52,14 @@ _backtrace_get (
 
 #define backtrace_get(prefix,max_lines) \
   _backtrace_get ( \
-    zrythm_app->exe_path, prefix, max_lines, false)
+    NULL, prefix, max_lines, false)
 
 #define backtrace_get_with_lines(prefix,max_lines) \
   _backtrace_get ( \
-    zrythm_app->exe_path, prefix, max_lines, true)
+    (ZRYTHM && ZRYTHM->exe_path) ? \
+      ZRYTHM->exe_path : NULL, prefix, \
+    max_lines, \
+    ZRYTHM && ZRYTHM->exe_path ? true : false)
 
 /**
  * @}

@@ -839,10 +839,9 @@ handle_audio_event (
   clip = audio_region_get_clip (region);
 
   /* set region end pos */
-  arranger_object_end_pos_setter (
+  arranger_object_set_end_pos_full_size (
     r_obj, &end_pos);
-  r_obj->end_pos.frames =
-    end_pos.frames;
+  /*r_obj->end_pos.frames = end_pos.frames;*/
 
   clip->num_frames =
     r_obj->end_pos.frames - r_obj->pos.frames;
@@ -922,14 +921,8 @@ handle_midi_event (
     (ArrangerObject *) region;
 
   /* set region end pos */
-  arranger_object_end_pos_setter (
+  arranger_object_set_end_pos_full_size (
     r_obj, &end_pos);
-  r_obj->end_pos.frames =
-    end_pos.frames;
-  arranger_object_loop_end_pos_setter (
-    r_obj, &end_pos);
-  r_obj->loop_end_pos.frames =
-    end_pos.frames;
 
   tr->recording_region = region;
 
@@ -1081,15 +1074,8 @@ handle_automation_event (
          &r_obj->end_pos, &end_pos)))
     {
       /* set region end pos */
-      arranger_object_end_pos_setter (
+      arranger_object_set_end_pos_full_size (
         r_obj, &end_pos);
-      r_obj->end_pos.frames =
-        end_pos.frames;
-
-      position_from_frames (
-        &r_obj->loop_end_pos,
-        r_obj->end_pos.frames -
-          r_obj->pos.frames);
     }
 
   at->recording_region = region;
@@ -1256,9 +1242,13 @@ handle_start_recording (
  * GSourceFunc to be added using idle add.
  *
  * This will loop indefinintely.
+ *
+ * It can also be called to process the events
+ * immediately. Should only be called from the
+ * GTK thread.
  */
-static int
-events_process (
+int
+recording_manager_process_events (
   RecordingManager * self)
 {
   /*gint64 curr_time = g_get_monotonic_time ();*/
@@ -1389,7 +1379,9 @@ recording_manager_new (void)
 
   self->source_id =
     g_timeout_add (
-      12, (GSourceFunc) events_process, self);
+      12,
+      (GSourceFunc)
+      recording_manager_process_events, self);
 
   return self;
 }
@@ -1404,7 +1396,7 @@ recording_manager_free (
   g_source_remove_and_zero (self->source_id);
 
   /* process pending events */
-  events_process (self);
+  recording_manager_process_events (self);
 
   /* free objects */
   object_free_w_func_and_null (

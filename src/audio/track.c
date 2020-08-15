@@ -556,6 +556,17 @@ track_set_recording (
 
   track->recording = recording;
 
+  if (recording)
+    {
+      g_message (
+        "enabled recording on %s", track->name);
+    }
+  else
+    {
+      g_message (
+        "disabled recording on %s", track->name);
+    }
+
   if (fire_events)
     {
       EVENTS_PUSH (ET_TRACK_STATE_CHANGED,

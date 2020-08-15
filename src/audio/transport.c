@@ -285,8 +285,12 @@ transport_set_punch_mode_enabled (
   bool        enabled)
 {
   self->punch_mode = enabled;
-  g_settings_set_boolean (
-    S_TRANSPORT, "punch-mode", enabled);
+
+  if (!ZRYTHM_TESTING)
+    {
+      g_settings_set_boolean (
+        S_TRANSPORT, "punch-mode", enabled);
+    }
 }
 
 void
@@ -305,8 +309,12 @@ transport_set_recording_mode (
   TransportRecordingMode mode)
 {
   self->recording_mode = mode;
-  g_settings_set_enum (
-    S_TRANSPORT, "recording-mode", mode);
+
+  if (!ZRYTHM_TESTING)
+    {
+      g_settings_set_enum (
+        S_TRANSPORT, "recording-mode", mode);
+    }
 }
 
 /**
@@ -682,8 +690,12 @@ transport_set_loop (
   bool        enabled)
 {
   self->loop = enabled;
-  g_settings_set_boolean (
-    S_TRANSPORT, "loop", enabled);
+
+  if (!ZRYTHM_TESTING)
+    {
+      g_settings_set_boolean (
+        S_TRANSPORT, "loop", enabled);
+    }
 
   EVENTS_PUSH (ET_LOOP_TOGGLED, NULL);
 }

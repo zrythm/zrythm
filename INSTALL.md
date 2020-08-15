@@ -42,7 +42,6 @@ with meaningful stack traces and bug reports.
 
 ### Optional
 - carla (GPLv2+): <https://kx.studio/Applications:Carla>
-- ffmpeg (LGPLv2.1+, GPLv2+): <https://ffmpeg.org/>
 - graphviz (EPLv1.0): <http://graphviz.org/>
 - jack (LGPLv2.1+): <https://jackaudio.org/>
 - libgtop (GPLv2+): <https://developer.gnome.org/libgtop/>

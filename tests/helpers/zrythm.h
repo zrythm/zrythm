@@ -119,7 +119,7 @@ test_helper_zrythm_init ()
   object_free_w_func_and_null (
     zrythm_free, ZRYTHM);
 
-  ZRYTHM = zrythm_new (false, true);
+  ZRYTHM = zrythm_new (NULL, false, true);
 
   /* init logging to custom file */
   char * tmp_log_dir =

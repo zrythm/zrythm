@@ -485,8 +485,9 @@ zrythm_free (
  */
 Zrythm *
 zrythm_new (
-  bool have_ui,
-  bool testing)
+  const char * exe_path,
+  bool         have_ui,
+  bool         testing)
 {
   g_message (
     "%s: allocating Zrythm instance...",
@@ -494,6 +495,8 @@ zrythm_new (
 
   Zrythm * self = object_new (Zrythm);
   ZRYTHM = self;
+
+  self->exe_path = exe_path;
 
   self->have_ui = have_ui;
   self->testing = testing;

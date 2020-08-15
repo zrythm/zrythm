@@ -2532,6 +2532,36 @@ arranger_object_set_name (
 }
 
 /**
+ * Sets the end position of the ArrangerObject and
+ * also sets the loop end and fade out to that
+ * position.
+ */
+void
+arranger_object_set_end_pos_full_size (
+  ArrangerObject * obj,
+  Position *       pos)
+{
+  arranger_object_end_pos_setter (obj, pos);
+
+  if (arranger_object_type_can_loop (obj->type))
+    {
+      double ticks =
+        arranger_object_get_length_in_ticks (obj);
+      position_from_ticks (
+        &obj->loop_end_pos, ticks);
+    }
+  if (arranger_object_can_fade (obj))
+    {
+      double ticks =
+        arranger_object_get_length_in_ticks (obj);
+      position_from_ticks (
+        &obj->fade_out_pos, ticks);
+    }
+  g_warn_if_fail (
+    pos->frames == obj->end_pos.frames);
+}
+
+/**
  * Adds the ArrangerObject where it belongs in the
  * project (eg, a Track).
  *

@@ -81,9 +81,7 @@ segv_handler (int sig)
     _("Error: %s - Backtrace:\n"), strsignal (sig));
 #endif
   char * bt =
-    _backtrace_get (
-      zrythm_app ? zrythm_app->exe_path : NULL,
-      prefix, 100, zrythm_app ? true : false);
+    backtrace_get_with_lines (prefix, 100);
 
   /* call the callback to write queued messages
    * and get last few lines of the log, before
@@ -355,7 +353,7 @@ main (int    argc,
   else if (run_gdb)
     {
 #ifdef __linux__
-      ZRYTHM = zrythm_new (TRUE, FALSE);
+      ZRYTHM = zrythm_new (argv[0], TRUE, FALSE);
       gdb_exec (argv, true, interactive);
 #else
       g_error (
@@ -366,7 +364,7 @@ main (int    argc,
   else if (run_callgrind)
     {
 #ifdef __linux__
-      ZRYTHM = zrythm_new (TRUE, FALSE);
+      ZRYTHM = zrythm_new (argv[0], TRUE, FALSE);
       valgrind_exec_callgrind (argv);
 #else
       g_error (

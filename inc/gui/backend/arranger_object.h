@@ -922,6 +922,16 @@ arranger_object_set_name (
   int              fire_events);
 
 /**
+ * Sets the end position of the ArrangerObject and
+ * also sets the loop end and fade out to that
+ * position.
+ */
+void
+arranger_object_set_end_pos_full_size (
+  ArrangerObject * obj,
+  Position *       pos);
+
+/**
  * Adds the ArrangerObject where it belongs in the
  * project (eg, a Track).
  *

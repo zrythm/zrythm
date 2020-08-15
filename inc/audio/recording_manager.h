@@ -92,6 +92,19 @@ recording_manager_handle_recording (
   const nframes_t    nframes);
 
 /**
+ * GSourceFunc to be added using idle add.
+ *
+ * This will loop indefinintely.
+ *
+ * It can also be called to process the events
+ * immediately. Should only be called from the
+ * GTK thread.
+ */
+int
+recording_manager_process_events (
+  RecordingManager * self);
+
+/**
  * Creates the event queue and starts the event loop.
  *
  * Must be called from a GTK thread.
