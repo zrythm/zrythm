@@ -34,7 +34,6 @@ sources:
   - https://github.com/mesonbuild/meson
 tasks:
   - setup: |
-      cd meson && git checkout 0.55.0 && cd ..
       cd zrythm
       ../meson/meson.py build -Dtests=true -Dmanpage=true -Dffmpeg=enabled
   - build: |

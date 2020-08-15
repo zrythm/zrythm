@@ -38,7 +38,6 @@ secrets:
   - ffff20bf-6fd3-40d6-b26a-92f6c8dc1fcf
 tasks:
   - setup: |
-      cd meson && git checkout 0.55.0 && cd ..
       cd zrythm
       ../meson/meson.py build -Dtests=true -Dmanpage=true -Dffmpeg=enabled -Db_coverage=true
   - build: |
