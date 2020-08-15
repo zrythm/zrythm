@@ -34,12 +34,6 @@ option (
   description: 'Whether to compile GUI unit tests')
 
 option (
-  'ffmpeg',
-  type: 'feature',
-  value: 'disabled',
-  description: 'Compile with ffmpeg (for MP3 support)')
-
-option (
   'portaudio',
   type: 'feature',
   value: 'disabled',

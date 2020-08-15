@@ -531,7 +531,7 @@ if not cyaml_dep.found()
     'zrythm_cyaml_dep')
 endif
 audec_dep = dependency(
-  'audec', version: '>=0.2.1',
+  'audec', version: '>=0.2.3',
   fallback: ['libaudec', 'libaudec_dep'],
   required: true)
 
@@ -585,19 +585,6 @@ endif
 have_guile = guile_dep.found () and not get_option ('guile').disabled ()
 if have_guile
   cdata.set('HAVE_GUILE', 1)
-endif
-
-libavcodec_dep = dependency (
-  'libavcodec',
-  required: get_option ('ffmpeg'))
-libavformat_dep = dependency (
-  'libavformat',
-  required: get_option ('ffmpeg'))
-libavutil_dep = dependency (
-  'libavformat',
-  required: get_option ('ffmpeg'))
-if libavcodec_dep.found () and libavformat_dep.found () and libavutil_dep.found ()
-  cdata.set('HAVE_FFMPEG', 1)
 endif
 
 carla_native_plugin_dep = dependency (
@@ -712,9 +699,6 @@ zrythm_deps = [
   libcgraph_dep,
   libgvc_dep,
   guile_dep,
-  libavcodec_dep,
-  libavformat_dep,
-  libavutil_dep,
   carla_native_plugin_dep,
   carla_standalone_dep,
   carla_utils_dep,
@@ -856,7 +840,6 @@ summary ({
   }, section: 'General')
 
 summary ({
-  'FFmpeg': libavcodec_dep.found () and libavformat_dep.found () and libavutil_dep.found (),
   'Jack': have_jack,
   'PortAudio': portaudio_dep.found (),
   'RtMidi': rtmidi_dep.found (),
