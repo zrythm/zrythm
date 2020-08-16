@@ -56,6 +56,8 @@ typedef struct AudioClip AudioClip;
  * @param frames Float array, if loading from
  *   float array, otherwise NULL.
  * @param nframes Number of frames per channel.
+ * @param clip_name Name of audio clip, if not
+ *   loading from file.
  */
 ZRegion *
 audio_region_new (
@@ -63,6 +65,7 @@ audio_region_new (
   const char *     filename,
   const float *    frames,
   const long       nframes,
+  const char *     clip_name,
   const channels_t channels,
   const Position * start_pos,
   int              track_pos,

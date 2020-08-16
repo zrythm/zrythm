@@ -43,6 +43,8 @@
  * @param frames Float array, if loading from
  *   float array, otherwise NULL.
  * @param nframes Number of frames per channel.
+ * @param clip_name Name of audio clip, if not
+ *   loading from file.
  */
 ZRegion *
 audio_region_new (
@@ -50,6 +52,7 @@ audio_region_new (
   const char *     filename,
   const float *    frames,
   const long       nframes,
+  const char *     clip_name,
   const channels_t channels,
   const Position * start_pos,
   int              track_pos,
@@ -75,16 +78,16 @@ audio_region_new (
         }
       else if (frames)
         {
+          g_return_val_if_fail (clip_name, NULL);
           clip =
             audio_clip_new_from_float_array (
-              frames, nframes, channels,
-              "new audio clip");
+              frames, nframes, channels, clip_name);
         }
       else
         {
           clip =
             audio_clip_new_recording (
-              2, nframes, "new recording clip");
+              2, nframes, clip_name);
           recording = 1;
         }
       g_return_val_if_fail (clip, NULL);

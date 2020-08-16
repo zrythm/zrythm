@@ -166,7 +166,7 @@ create (
               self->pool_id == -1 ?
                 self->file_descr->abs_path :
                 NULL,
-              NULL, 0, 0,
+              NULL, 0, NULL, 0,
               &self->pos, pos, 0, 0);
           self->pool_id =
             ar->pool_id;

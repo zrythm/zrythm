@@ -315,6 +315,11 @@ do_takes_no_loop_no_punch (
   engine_process (AUDIO_ENGINE, CYCLE_SIZE);
   recording_manager_process_events (
     RECORDING_MANAGER);
+
+  /* save and undo/redo */
+  test_project_save_and_reload ();
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
 }
 
 static void

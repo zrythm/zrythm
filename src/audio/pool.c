@@ -21,6 +21,7 @@
 
 #include "audio/clip.h"
 #include "audio/pool.h"
+#include "audio/track.h"
 #include "utils/arrays.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -59,6 +60,52 @@ audio_pool_new ()
   return self;
 }
 
+static bool
+name_exists (
+  AudioPool *  self,
+  const char * name)
+{
+  AudioClip * clip;
+  for (int i = 0; i < self->num_clips; i++)
+    {
+      clip = self->clips[i];
+      if (string_is_equal (clip->name, name, false))
+        {
+          return true;
+        }
+    }
+  return false;
+}
+
+/**
+ * Ensures that the name of the clip is unique.
+ *
+ * The clip must not be part of the pool yet.
+ *
+ * If the clip name is not unique, it will be
+ * replaced by a unique name.
+ */
+void
+audio_pool_ensure_unique_clip_name (
+  AudioPool * self,
+  AudioClip * clip)
+{
+  int i = 1;
+  char * orig_name = clip->name;
+  char * new_name = g_strdup (orig_name);
+
+  while (name_exists (self, new_name))
+    {
+      g_free (new_name);
+      new_name =
+        g_strdup_printf (
+          "%s (%d)", orig_name, i++);
+    }
+
+  g_free (clip->name);
+  clip->name = new_name;
+}
+
 /**
  * Adds an audio clip to the pool.
  *
@@ -76,21 +123,7 @@ audio_pool_add_clip (
     self->clips, self->num_clips, self->clips_size,
     AudioClip *);
 
-  /* check for name collisions */
-  AudioClip * other_clip;
-  for (int i = 0; i < self->num_clips; i++)
-    {
-      other_clip = self->clips[i];
-      if (string_is_equal (
-            clip->name, other_clip->name, 0))
-        {
-          /* TODO set new name */
-
-          /* reset counter to check again with the
-           * new name */
-          /*i = 0;*/
-        }
-    }
+  audio_pool_ensure_unique_clip_name (self, clip);
 
   clip->pool_id = self->num_clips;
 
@@ -100,6 +133,23 @@ audio_pool_add_clip (
     clip);
 
   return clip->pool_id;
+}
+
+/**
+ * Generates a name for a recording clip.
+ */
+char *
+audio_pool_gen_name_for_recording_clip (
+  AudioPool * pool,
+  Track *     track,
+  int         lane)
+{
+  return
+    g_strdup_printf (
+      "%s - lane %d - recording",
+      track->name,
+      /* add 1 to get human friendly index */
+      lane + 1);
 }
 
 void

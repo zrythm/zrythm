@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -132,7 +132,7 @@ audio_clip_new_from_float_array (
   self->name = g_strdup (name);
   self->pool_id = -1;
   for (long i = 0; i < nframes * (long) channels;
-		  i++)
+      i++)
     {
       self->frames[i] = (sample_t) arr[i];
     }

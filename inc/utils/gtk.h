@@ -84,7 +84,7 @@
 #define CREATE_DUPLICATE_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
     _("Duplicate"), \
-    "edit-copy", \
+    "edit-duplicate", \
     ICON_TYPE_ZRYTHM, NULL, 0, action)
 
 #define CREATE_MUTE_MENU_ITEM(action) \

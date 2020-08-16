@@ -426,7 +426,7 @@ test_project_rebootstrap_timeline (
     "test.wav");
   r =
     audio_region_new (
-      -1, audio_file_path, NULL, 0, 0,
+      -1, audio_file_path, NULL, 0, NULL, 0,
       p1, track->pos, AUDIO_REGION_LANE, 0);
   AudioClip * clip =
     audio_region_get_clip (r);

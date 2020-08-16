@@ -283,6 +283,16 @@ typedef struct Track
   bool                recording_start_sent;
 
   /**
+   * This is a flag to let the recording manager
+   * know that a STOP signal was already sent for
+   * recording.
+   *
+   * This is because \ref Track.recording_region
+   * takes a cycle or 2 to become NULL.
+   */
+  bool                recording_stop_sent;
+
+  /**
    * This must only be set by the RecordingManager
    * when temporarily pausing recording, eg when
    * looping or leaving the punch range.

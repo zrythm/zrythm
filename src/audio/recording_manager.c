@@ -250,8 +250,11 @@ recording_manager_handle_recording (
     {
       /* if track had previously recorded */
       if (track_type_can_record (tr->type) &&
-          tr->recording_region)
+          tr->recording_region &&
+          !tr->recording_stop_sent)
         {
+          tr->recording_stop_sent = true;
+
           /* send stop recording event */
           RecordingEvent * re =
             (RecordingEvent *)
@@ -733,9 +736,13 @@ handle_resume_event (
         }
       else if (tr->in_signal_type == TYPE_AUDIO)
         {
+          char * name =
+            audio_pool_gen_name_for_recording_clip (
+              AUDIO_POOL, tr, new_lane_pos);
           new_region =
             audio_region_new (
-              -1, NULL, NULL, 1, 2, &resume_pos,
+              -1, NULL, NULL, 1, name, 2,
+              &resume_pos,
               tr->pos, new_lane_pos,
               idx_inside_lane);
         }
@@ -1235,9 +1242,12 @@ handle_start_recording (
         {
           /* create region */
           int new_lane_pos = tr->num_lanes - 1;
+          char * name =
+            audio_pool_gen_name_for_recording_clip (
+              AUDIO_POOL, tr, new_lane_pos);
           ZRegion * region =
             audio_region_new (
-              -1, NULL, NULL, ev->nframes, 2,
+              -1, NULL, NULL, ev->nframes, name, 2,
               &start_pos, tr->pos, new_lane_pos,
               tr->lanes[new_lane_pos]->num_regions);
           g_return_if_fail (region);
@@ -1314,6 +1324,7 @@ recording_manager_process_events (
             handle_stop_recording (self, false);
             track->recording_region = NULL;
             track->recording_start_sent = false;
+            track->recording_stop_sent = false;
           }
           g_message (
             "num active recordings: %d",

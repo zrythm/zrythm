@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,6 +28,8 @@
 
 #include "audio/clip.h"
 #include "utils/yaml.h"
+
+typedef struct Track Track;
 
 /**
  * @addtogroup audio
@@ -104,6 +106,28 @@ int
 audio_pool_add_clip (
   AudioPool * self,
   AudioClip * clip);
+
+/**
+ * Ensures that the name of the clip is unique.
+ *
+ * The clip must not be part of the pool yet.
+ *
+ * If the clip name is not unique, it will be
+ * replaced by a unique name.
+ */
+void
+audio_pool_ensure_unique_clip_name (
+  AudioPool * pool,
+  AudioClip * clip);
+
+/**
+ * Generates a name for a recording clip.
+ */
+char *
+audio_pool_gen_name_for_recording_clip (
+  AudioPool * pool,
+  Track *     track,
+  int         lane);
 
 void
 audio_pool_free (
