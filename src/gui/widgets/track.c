@@ -1148,6 +1148,106 @@ get_lane_to_resize (
   return NULL;
 }
 
+static void
+set_tooltip_from_button (
+  TrackWidget *        self,
+  CustomButtonWidget * cb)
+{
+#define ICON_IS(name) \
+  (string_is_equal ( \
+    cb->icon_name, ICON_NAME_##name, true))
+#define SET_TOOLTIP(txt) \
+  gtk_widget_set_has_tooltip ( \
+    GTK_WIDGET (self), true); \
+  self->tooltip_text = txt
+
+  if (!cb)
+    {
+      gtk_widget_set_has_tooltip (
+        GTK_WIDGET (self), false);
+    }
+  else if (ICON_IS (SOLO))
+    {
+      SET_TOOLTIP (_("Solo"));
+    }
+  else if (ICON_IS (SHOW_UI))
+    {
+      if (instrument_track_is_plugin_visible (
+            self->track))
+        {
+          SET_TOOLTIP (_("Hide instrument UI"));
+        }
+      else
+        {
+          SET_TOOLTIP (_("Show instrument UI"));
+        }
+    }
+  else if (ICON_IS (MUTE))
+    {
+      if (track_get_muted (self->track))
+        {
+          SET_TOOLTIP (_("Unmute"));
+        }
+      else
+        {
+          SET_TOOLTIP (_("Mute"));
+        }
+    }
+  else if (ICON_IS (MONO_COMPAT))
+    {
+      SET_TOOLTIP (_("Mono compatibility"));
+    }
+  else if (ICON_IS (RECORD))
+    {
+      if (self->track->recording)
+        {
+          SET_TOOLTIP (_("Disarm"));
+        }
+      else
+        {
+          SET_TOOLTIP (_("Arm for recording"));
+        }
+    }
+  else if (ICON_IS (SHOW_TRACK_LANES))
+    {
+      if (self->track->lanes_visible)
+        {
+          SET_TOOLTIP (_("Hide lanes"));
+        }
+      else
+        {
+          SET_TOOLTIP (_("Show lanes"));
+        }
+    }
+  else if (ICON_IS (SHOW_AUTOMATION_LANES))
+    {
+      if (self->track->automation_visible)
+        {
+          SET_TOOLTIP (_("Hide automation"));
+        }
+      else
+        {
+          SET_TOOLTIP (_("Show automation"));
+        }
+    }
+  else if (ICON_IS (PLUS))
+    {
+      SET_TOOLTIP (_("Add"));
+    }
+  else if (ICON_IS (MINUS))
+    {
+      SET_TOOLTIP (_("Remove"));
+    }
+  else
+    {
+      /* tooltip missing */
+      g_warn_if_reached ();
+    }
+
+#undef ICON_IS
+#undef SET_TOOLTIP
+}
+
 static gboolean
 on_motion (
   GtkWidget *      widget,
@@ -1237,6 +1337,21 @@ on_motion (
     }
   else
     {
+      /* set tooltips */
+      if (event->type == GDK_MOTION_NOTIFY)
+        {
+          GdkEventMotion * motion_ev =
+            (GdkEventMotion *) event;
+
+          CustomButtonWidget * hovered_btn =
+            get_hovered_button (
+              self,
+              (int) motion_ev->x,
+              (int) motion_ev->y);
+          set_tooltip_from_button (
+            self, hovered_btn);
+        }
+
       self->bg_hovered = 1;
     }
   track_widget_force_redraw (self);
@@ -1245,6 +1360,22 @@ on_motion (
   self->last_y = event->y;
 
   return FALSE;
+}
+
+static bool
+on_query_tooltip (
+  GtkWidget *   widget,
+  gint          x,
+  gint          y,
+  gboolean      keyboard_mode,
+  GtkTooltip *  tooltip,
+  TrackWidget * self)
+{
+  /* TODO set tooltip rect */
+  gtk_tooltip_set_text (
+    tooltip, self->tooltip_text);
+
+  return true;
 }
 
 /**
@@ -2814,6 +2945,9 @@ track_widget_init (TrackWidget * self)
   g_signal_connect (
     G_OBJECT (self->drawing_area), "size-allocate",
     G_CALLBACK (on_size_allocate),  self);
+  g_signal_connect (
+    G_OBJECT (self), "query-tooltip",
+    G_CALLBACK (on_query_tooltip),  self);
 
   g_object_ref (self);
 

@@ -26,6 +26,8 @@
 #ifndef __GUI_WIDGETS_TRACK_H__
 #define __GUI_WIDGETS_TRACK_H__
 
+#include <stdbool.h>
+
 #include <gtk/gtk.h>
 
 #define TRACK_WIDGET_TYPE \
@@ -67,29 +69,29 @@ typedef enum TrackWidgetResizeTarget
  */
 typedef struct _TrackWidget
 {
-  GtkBox               parent_instance;
+  GtkBox            parent_instance;
 
   /** Main box containing the drawing area and the
    * meters on the right. */
-  GtkBox *             main_box;
+  GtkBox *          main_box;
 
   /** Track icon, currently not placed anywhere
    * but used by the ColorAreaWidget to get the
    * pixbuf. */
-  char                 icon_name[60];
+  char              icon_name[60];
 
-  GtkGestureDrag *          drag;
-  GtkGestureMultiPress *    multipress;
+  GtkGestureDrag *  drag;
+  GtkGestureMultiPress * multipress;
 
   /** Right-click gesture. */
-  GtkGestureMultiPress *    right_mouse_mp;
+  GtkGestureMultiPress * right_mouse_mp;
 
   /** If drag update was called at least once. */
-  int                 dragged;
+  int               dragged;
 
   /** Number of clicks, used when selecting/moving/
    * dragging channels. */
-  int                 n_press;
+  int               n_press;
 
   /**
    * Set between enter-leave signals.
@@ -99,7 +101,7 @@ typedef struct _TrackWidget
    * hovering over other overlayed widgets (buttons,
    * etc.).
    */
-  int                 bg_hovered;
+  bool              bg_hovered;
 
   /**
    * Set when the drag should resize instead of dnd.
@@ -107,48 +109,48 @@ typedef struct _TrackWidget
    * This is used to determine if we should resize
    * on drag begin.
    */
-  int                 resize;
+  int               resize;
 
   /** Set during the whole resizing action. */
-  int                 resizing;
+  int               resizing;
 
   /** Resize target type (track/at/lane). */
   TrackWidgetResizeTarget  resize_target_type;
 
   /** The object to resize. */
-  void *                   resize_target;
+  void *            resize_target;
 
   /** Associated Track. */
-  Track *                   track;
+  Track *           track;
 
   /** Control held down on drag begin. */
-  int                 ctrl_held_at_start;
+  int               ctrl_held_at_start;
 
   /** Used for highlighting. */
-  GtkBox *            highlight_top_box;
-  GtkBox *            highlight_bot_box;
+  GtkBox *          highlight_top_box;
+  GtkBox *          highlight_bot_box;
 
   /** The track selection processing was done in
    * the dnd callbacks, so no need to do it in
    * drag_end. */
-  int                 selected_in_dnd;
+  int               selected_in_dnd;
 
   /** Cache layout for drawing the name. */
-  PangoLayout *       layout;
+  PangoLayout *     layout;
 
   /** For drag actions. */
-  double              start_x;
-  double              start_y;
-  double              last_offset_y;
+  double            start_x;
+  double            start_y;
+  double            last_offset_y;
 
   /** Used during hovering to remember the last
    * known cursor position. */
-  double              last_x;
-  double              last_y;
+  double            last_x;
+  double            last_y;
 
   /** Used when mouse button is held down to
    * mark buttons as clicked. */
-  int                 button_pressed;
+  int               button_pressed;
 
   /** Currently clicked button. */
   CustomButtonWidget * clicked_button;
@@ -156,7 +158,7 @@ typedef struct _TrackWidget
   /** Currently clicked automation mode button. */
   AutomationModeWidget * clicked_am;
 
-  GtkDrawingArea *    drawing_area;
+  GtkDrawingArea *  drawing_area;
 
   /**
    * Signal handler IDs for tracks that have them.
@@ -170,23 +172,28 @@ typedef struct _TrackWidget
 
   /** Buttons to be drawin in order. */
   CustomButtonWidget * top_buttons[8];
-  int                  num_top_buttons;
+  int               num_top_buttons;
   CustomButtonWidget * bot_buttons[8];
-  int                  num_bot_buttons;
+  int               num_bot_buttons;
 
-  MeterWidget *        meter_l;
-  MeterWidget *        meter_r;
+  MeterWidget *     meter_l;
+  MeterWidget *     meter_r;
+
+  /**
+   * Current tooltip text.
+   */
+  char *            tooltip_text;
 
   /** Last MIDI event trigger time, for MIDI
    * ports. */
   gint64            last_midi_out_trigger_time;
 
   /** Set to 1 to redraw. */
-  int                redraw;
+  int               redraw;
 
   /** Cairo caches. */
-  cairo_t *          cached_cr;
-  cairo_surface_t *  cached_surface;
+  cairo_t *         cached_cr;
+  cairo_surface_t * cached_surface;
 } TrackWidget;
 
 /**
