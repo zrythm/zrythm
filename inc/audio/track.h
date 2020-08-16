@@ -516,10 +516,10 @@ track_init (
  */
 Track *
 track_new (
-  TrackType type,
-  int       pos,
-  char *    label,
-  const int with_lane);
+  TrackType    type,
+  int          pos,
+  const char * label,
+  const int    with_lane);
 
 /**
  * Clones the track and returns the clone.

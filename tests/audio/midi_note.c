@@ -27,6 +27,7 @@
 
 #include <glib.h>
 
+#if 0
 typedef struct
 {
   ZRegion * region;
@@ -101,6 +102,7 @@ test_new_midi_note ()
   g_assert_cmpint (
     midi_note_is_equal (mn, mn_clone), ==, 1);
 }
+#endif
 
 int
 main (int argc, char *argv[])

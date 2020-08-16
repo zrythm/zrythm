@@ -67,10 +67,10 @@ test_array_dynamic_swap ()
 
   /* test swap with the above */
   array_dynamic_swap (&arr1, &sz1, &arr2, &sz2);
-  g_assert_cmpint (sz1, ==, 2);
+  g_assert_cmpuint (sz1, ==, 2);
   g_assert_cmpint (*arr1[0], ==, 3);
   g_assert_cmpint (*arr1[1], ==, 4);
-  g_assert_cmpint (sz2, ==, 3);
+  g_assert_cmpuint (sz2, ==, 3);
   g_assert_cmpint (*arr2[0], ==, 0);
   g_assert_cmpint (*arr2[1], ==, 1);
   g_assert_cmpint (*arr2[2], ==, 2);
@@ -91,10 +91,10 @@ test_array_dynamic_swap ()
 
   /* test swap with the above */
   array_dynamic_swap (&arr1, &sz1, &arr2, &sz2);
-  g_assert_cmpint (sz1, ==, 2);
+  g_assert_cmpuint (sz1, ==, 2);
   g_assert_cmpint (*arr1[0], ==, 3);
   g_assert_cmpint (*arr1[1], ==, 4);
-  g_assert_cmpint (sz2, ==, 0);
+  g_assert_cmpuint (sz2, ==, 0);
 }
 
 int

@@ -27,7 +27,7 @@
 #include "audio/control_room.h"
 #include "audio/engine.h"
 #include "audio/fader.h"
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "audio/midi_track.h"
 #include "audio/recording_manager.h"
 #include "audio/track.h"

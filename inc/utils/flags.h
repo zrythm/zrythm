@@ -160,4 +160,7 @@
 #define F_FILL 1
 #define F_NO_FILL 0
 
+#define F_QUEUED 1
+#define F_NOT_QUEUED 0
+
 #endif

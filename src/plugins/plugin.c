@@ -35,6 +35,7 @@
 #include "audio/channel.h"
 #include "audio/control_port.h"
 #include "audio/engine.h"
+#include "audio/midi_event.h"
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/backend/event.h"

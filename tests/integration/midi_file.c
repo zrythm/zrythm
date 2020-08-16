@@ -20,7 +20,7 @@
 #include "zrythm-test-config.h"
 
 #include "audio/engine_dummy.h"
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "audio/midi_track.h"
 #include "project.h"
 #include "utils/arrays.h"
@@ -67,7 +67,8 @@ test_midi_file_playback ()
   while ((midi_file = midi_files[count++]));
   srandom ((unsigned int) time (NULL));
   array_shuffle (
-    midi_files, count - 1, sizeof (char *));
+    midi_files, (size_t) (count - 1),
+    sizeof (char *));
 
   int iter = 0;
   Position init_pos;
@@ -130,8 +131,8 @@ test_midi_file_playback ()
           for (int j = 0; j < BUFFER_SIZE; j++)
             {
               midi_track_fill_midi_events (
-                track, i,
-                j, BUFFER_SIZE, events);
+                track, i, (nframes_t) j,
+                BUFFER_SIZE, events);
               midi_events_clear (events, true);
             }
         }

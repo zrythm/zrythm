@@ -60,7 +60,7 @@
 #include "audio/graph.h"
 #include "audio/graph_node.h"
 #include "audio/metronome.h"
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "audio/midi_mapping.h"
 #include "audio/pool.h"
 #include "audio/router.h"

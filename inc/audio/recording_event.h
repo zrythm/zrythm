@@ -27,7 +27,7 @@
 #ifndef __AUDIO_RECORDING_EVENTS_H__
 #define __AUDIO_RECORDING_EVENTS_H__
 
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "audio/port_identifier.h"
 #include "utils/types.h"
 

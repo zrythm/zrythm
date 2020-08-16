@@ -23,6 +23,7 @@
 #include "actions/edit_tracks_action.h"
 #include "actions/undoable_action.h"
 #include "audio/master_track.h"
+#include "audio/midi_event.h"
 #include "audio/router.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"

@@ -79,6 +79,15 @@ audio_region_init_frame_caches (
   AudioClip *   clip);
 
 /**
+ * Updates the region's channel caches from the
+ * region's frames.
+ */
+void
+audio_region_update_channel_caches (
+  ZRegion *   self,
+  AudioClip * clip);
+
+/**
  * Returns the audio clip associated with the
  * Region.
  */

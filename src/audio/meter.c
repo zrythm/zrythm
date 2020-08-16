@@ -20,6 +20,7 @@
 #include "audio/engine.h"
 #include "audio/meter.h"
 #include "audio/kmeter_dsp.h"
+#include "audio/midi_event.h"
 #include "audio/peak_dsp.h"
 #include "audio/port.h"
 #include "audio/track.h"

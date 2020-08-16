@@ -24,7 +24,7 @@
 #include "audio/engine.h"
 #include "audio/fader.h"
 #include "audio/master_track.h"
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "audio/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

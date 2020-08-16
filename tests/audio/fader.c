@@ -20,6 +20,7 @@
 #include "zrythm-test-config.h"
 
 #include "audio/fader.h"
+#include "audio/midi_event.h"
 #include "audio/router.h"
 #include "utils/math.h"
 

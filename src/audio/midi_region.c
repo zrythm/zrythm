@@ -39,7 +39,7 @@
 
 #include "audio/channel.h"
 #include "audio/exporter.h"
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
 #include "audio/region.h"

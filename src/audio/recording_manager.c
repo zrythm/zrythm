@@ -60,17 +60,11 @@ static void
 free_temp_selections (
   RecordingManager * self)
 {
-  if (self->selections_before_start_track)
+  if (self->selections_before_start)
     {
       object_free_w_func_and_null (
         arranger_selections_free,
-        self->selections_before_start_track);
-    }
-  if (self->selections_before_start_automation)
-    {
-      object_free_w_func_and_null (
-        arranger_selections_free,
-        self->selections_before_start_automation);
+        self->selections_before_start);
     }
 }
 
@@ -79,6 +73,16 @@ handle_stop_recording (
   RecordingManager * self,
   bool               is_automation)
 {
+  g_return_if_fail (
+    self->num_active_recordings > 0);
+
+  /* skip if still recording */
+  if (self->num_active_recordings > 1)
+    {
+      self->num_active_recordings--;
+      return;
+    }
+
   g_message (
     "%s%s", "----- stopped recording",
     is_automation ? " (automation)" : "");
@@ -136,9 +140,7 @@ handle_stop_recording (
   /* perform the create action */
   UndoableAction * action =
     arranger_selections_action_new_record (
-      is_automation ?
-        self->selections_before_start_automation :
-        self->selections_before_start_track,
+      self->selections_before_start,
       (ArrangerSelections *) TL_SELECTIONS, true);
   undo_manager_perform (UNDO_MANAGER, action);
 
@@ -176,6 +178,10 @@ handle_stop_recording (
 
   /* free the temporary selections */
   free_temp_selections (self);
+
+  self->num_active_recordings--;
+  self->num_recorded_ids = 0;
+  g_warn_if_fail (self->num_active_recordings == 0);
 }
 
 /**
@@ -464,15 +470,15 @@ recording_manager_handle_recording (
       re->local_offset = local_offset;
       re->nframes = nframes;
       memcpy (
-        re->lbuf,
-        track_processor->stereo_in->l->buf,
-        sizeof (float) *
-          (size_t) AUDIO_ENGINE->block_length);
+        &re->lbuf[local_offset],
+        &track_processor->stereo_in->l->buf[
+          local_offset],
+        sizeof (float) * (size_t) nframes);
       memcpy (
-        re->rbuf,
-        track_processor->stereo_in->r->buf,
-        sizeof (float) *
-          (size_t) AUDIO_ENGINE->block_length);
+        &re->rbuf[local_offset],
+        &track_processor->stereo_in->r->buf[
+          local_offset],
+        sizeof (float) * (size_t) nframes);
       strcpy (re->track_name, tr->name);
       recording_event_queue_push_back_event (
         RECORDING_MANAGER->event_queue, re);
@@ -873,8 +879,7 @@ handle_audio_event (
   r_obj->fade_out_pos = r_obj->loop_end_pos;
 
   /* handle the samples normally */
-  nframes_t cur_local_offset =
-    local_offset;
+  nframes_t cur_local_offset = 0;
   for (long i = start_frames - r_obj->pos.frames;
        i < end_frames - r_obj->pos.frames;
        i++)
@@ -884,11 +889,21 @@ handle_audio_event (
       g_warn_if_fail (
         cur_local_offset >= local_offset &&
         cur_local_offset < local_offset + nframes);
+
+      /* set both clip and region frames */
       clip->frames[i * clip->channels] =
         ev->lbuf[cur_local_offset];
       clip->frames[i * clip->channels + 1] =
-        ev->rbuf[cur_local_offset++];
+        ev->rbuf[cur_local_offset];
+      region->frames[i * clip->channels] =
+        ev->lbuf[cur_local_offset];
+      region->frames[i * clip->channels + 1] =
+        ev->rbuf[cur_local_offset];
+
+      cur_local_offset++;
     }
+
+  audio_region_update_channel_caches (region, clip);
 }
 
 static void
@@ -1122,13 +1137,11 @@ handle_start_recording (
       at =
         automation_track_find_from_port_id (
           &ev->port_id, false);
-      self->selections_before_start_automation =
-          arranger_selections_clone (
-            (ArrangerSelections *) TL_SELECTIONS);
     }
-  else
+
+  if (self->num_active_recordings == 0)
     {
-      self->selections_before_start_track =
+      self->selections_before_start =
           arranger_selections_clone (
             (ArrangerSelections *) TL_SELECTIONS);
     }
@@ -1137,7 +1150,8 @@ handle_start_recording (
    * if already processed */
   if (tr->recording_region && !is_automation)
     {
-      g_message ("record start already processed");
+      g_warning ("record start already processed");
+      self->num_active_recordings++;
       return;
     }
 
@@ -1236,6 +1250,8 @@ handle_start_recording (
             RECORDING_MANAGER, region);
         }
     }
+
+  self->num_active_recordings++;
 }
 
 /**
@@ -1288,19 +1304,20 @@ recording_manager_process_events (
           handle_pause_event (ev);
           break;
         case RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING:
-          g_message ("-------- STOP TRACK RECORDING");
+          g_message (
+            "-------- STOP TRACK RECORDING (%s)",
+            ev->track_name);
           {
             Track * track =
               track_get_from_name (ev->track_name);
             g_warn_if_fail (track);
-            if (self->is_recording)
-              {
-                handle_stop_recording (self, false);
-              }
-            self->is_recording = 0;
+            handle_stop_recording (self, false);
             track->recording_region = NULL;
             track->recording_start_sent = false;
           }
+          g_message (
+            "num active recordings: %d",
+            self->num_active_recordings);
           break;
         case RECORDING_EVENT_TYPE_STOP_AUTOMATION_RECORDING:
           g_message ("-------- STOP AUTOMATION RECORDING");
@@ -1317,18 +1334,22 @@ recording_manager_process_events (
             at->recording_start_sent = false;
             at->recording_region = NULL;
           }
+          g_message (
+            "num active recordings: %d",
+            self->num_active_recordings);
           break;
         case RECORDING_EVENT_TYPE_START_TRACK_RECORDING:
-          g_message ("-------- START TRACK RECORDING");
-          if (!self->is_recording)
-            {
-              self->num_recorded_ids = 0;
-            }
-          self->is_recording = 1;
+          g_message (
+            "-------- START TRACK RECORDING (%s)",
+            ev->track_name);
           handle_start_recording (self, ev, false);
+          g_message (
+            "num active recordings: %d",
+            self->num_active_recordings);
           break;
         case RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING:
-          g_message ("-------- START AUTOMATION RECORDING");
+          g_message (
+            "-------- START AUTOMATION RECORDING");
           {
             AutomationTrack * at =
               automation_track_find_from_port_id (
@@ -1341,6 +1362,9 @@ recording_manager_process_events (
               }
             at->recording_started = true;
           }
+          g_message (
+            "num active recordings: %d",
+            self->num_active_recordings);
           break;
         default:
           g_warning (

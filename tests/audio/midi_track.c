@@ -20,7 +20,7 @@
 #include "zrythm-test-config.h"
 
 #include "audio/engine_dummy.h"
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "audio/midi_track.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -64,7 +64,7 @@ fixture_set_up (
  * the ZRegion start position and ending at the
  * region end position.
  */
-ZRegion *
+static ZRegion *
 prepare_region_with_note_at_start_to_end (
   Track * track,
   midi_byte_t pitch,
@@ -145,8 +145,8 @@ test_fill_midi_events ()
     ev->note_pitch, ==, pitch1);
   g_assert_cmpuint (
     ev->velocity, ==, vel1);
-  g_assert_cmpuint (
-    ev->time, ==, pos.frames);
+  g_assert_cmpint (
+    (long) ev->time, ==, pos.frames);
   midi_events_clear (events, 1);
 
   /*

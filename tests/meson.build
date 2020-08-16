@@ -198,7 +198,7 @@ if get_option ('tests')
           test_config_h,
           ],
         c_args : [
-          common_cflags,
+          common_cflags, strict_cflags,
           ],
         dependencies : [
           zrythm_deps,
@@ -222,7 +222,7 @@ if get_option ('tests')
           test_config_h,
           ],
         c_args : [
-          common_cflags,
+          common_cflags, strict_cflags,
           ],
         dependencies : [
           zrythm_deps,

@@ -31,7 +31,7 @@
 #include "audio/engine_jack.h"
 #endif
 #include "audio/graph.h"
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "audio/router.h"
 #include "audio/modulator.h"
 #include "audio/pan.h"
@@ -928,6 +928,50 @@ get_internal_jack_port (
 }
 #endif
 #endif /* HAVE_JACK */
+
+/**
+ * Sums the inputs coming in from JACK, before the
+ * port is processed.
+ */
+static void
+sum_data_from_dummy (
+  Port * self,
+  const nframes_t start_frame,
+  const nframes_t nframes)
+{
+  if (self->id.owner_type ==
+        PORT_OWNER_TYPE_BACKEND ||
+      self->id.flow !=
+        FLOW_INPUT ||
+      self->id.type != TYPE_AUDIO ||
+      AUDIO_ENGINE->audio_backend !=
+        AUDIO_BACKEND_DUMMY ||
+      AUDIO_ENGINE->midi_backend !=
+        MIDI_BACKEND_DUMMY)
+    return;
+
+  if (AUDIO_ENGINE->dummy_input)
+    {
+      if (self->id.flags & PORT_FLAG_STEREO_L)
+        {
+          Port * l = AUDIO_ENGINE->dummy_input->l;
+          for (unsigned int i = start_frame;
+               i < start_frame + nframes; i++)
+            {
+              self->buf[i] += l->buf[i];
+            }
+        }
+      else if (self->id.flags & PORT_FLAG_STEREO_R)
+        {
+          Port * r = AUDIO_ENGINE->dummy_input->r;
+          for (unsigned int i = start_frame;
+               i < start_frame + nframes; i++)
+            {
+              self->buf[i] += r->buf[i];
+            }
+        }
+    }
+}
 
 /**
  * Connects the internal ports using
@@ -2621,6 +2665,10 @@ port_sum_signal_from_inputs (
                 port, start_frame, nframes);
               break;
 #endif
+            case AUDIO_BACKEND_DUMMY:
+              sum_data_from_dummy (
+                port, start_frame, nframes);
+              break;
             default:
               break;
             }

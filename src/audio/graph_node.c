@@ -42,6 +42,7 @@
 #include "audio/graph.h"
 #include "audio/graph_node.h"
 #include "audio/master_track.h"
+#include "audio/midi_event.h"
 #include "audio/port.h"
 #include "audio/router.h"
 #include "audio/sample_processor.h"

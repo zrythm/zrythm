@@ -63,9 +63,9 @@
 #define MN_VEL 23
 
 /** First AP value. */
-#define AP_VAL1 0.6
+#define AP_VAL1 0.6f
 /** Second AP value. */
-#define AP_VAL2 0.9
+#define AP_VAL2 0.9f
 
 /** Marker name. */
 #define MARKER_NAME "Marker name"
@@ -93,6 +93,18 @@
 /* TODO test moving lanes */
 #define TARGET_MIDI_REGION_LANE 0
 #define TARGET_AUDIO_REGION_LANE 5
+
+void
+test_project_save_and_reload (void);
+void
+test_project_check_vs_original_state (
+  Position * p1,
+  Position * p2,
+  int check_selections);
+void
+test_project_rebootstrap_timeline (
+  Position * p1,
+  Position * p2);
 
 void
 test_project_save_and_reload (void)

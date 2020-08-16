@@ -42,9 +42,8 @@ typedef struct MPMCQueue MPMCQueue;
 
 typedef struct RecordingManager
 {
-  /** Whether recording is currently in progress or
-   * not. */
-  bool               is_recording;
+  /** Number of recordings currently in progress. */
+  int                num_active_recordings;
 
   /** Event queue. */
   MPMCQueue *        event_queue;
@@ -56,16 +55,17 @@ typedef struct RecordingManager
   ObjectPool *       event_obj_pool;
 
   /** Cloned selections before starting recording. */
-  ArrangerSelections * selections_before_start_track;
-
-  /** Cloned selections before starting recording. */
-  ArrangerSelections * selections_before_start_automation;
+  ArrangerSelections * selections_before_start;
 
   /** Source func ID. */
   guint              source_id;
 
-  /** Recorded region identifiers, to be used for
-   * creating the undoable actions. */
+  /**
+   * Recorded region identifiers, to be used for
+   * creating the undoable actions.
+   *
+   * TODO use region pointers ?
+   */
   RegionIdentifier   recorded_ids[8000];
   int                num_recorded_ids;
 } RecordingManager;

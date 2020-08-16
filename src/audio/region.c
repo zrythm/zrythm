@@ -933,9 +933,9 @@ region_print (
  */
 void
 region_set_name (
-  ZRegion * self,
-  char *   name,
-  int      fire_events)
+  ZRegion *    self,
+  const char * name,
+  int          fire_events)
 {
   arranger_object_set_name (
     (ArrangerObject *) self, name, fire_events);
@@ -1262,7 +1262,7 @@ bool
 region_is_recording (
   ZRegion * self)
 {
-  if (!RECORDING_MANAGER->is_recording)
+  if (RECORDING_MANAGER->num_active_recordings == 0)
     {
       return false;
     }

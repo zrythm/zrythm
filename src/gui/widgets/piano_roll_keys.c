@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +19,7 @@
 
 #include "audio/chord_object.h"
 #include "audio/chord_track.h"
+#include "audio/midi_event.h"
 #include "audio/scale_object.h"
 #include "audio/tracklist.h"
 #include "gui/backend/clip_editor.h"

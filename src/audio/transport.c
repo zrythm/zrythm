@@ -23,7 +23,7 @@
 #include "audio/engine.h"
 #include "audio/marker.h"
 #include "audio/marker_track.h"
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "audio/transport.h"
 #include "project.h"
 #include "gui/backend/event.h"

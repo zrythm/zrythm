@@ -48,6 +48,12 @@ PluginDescriptor *
 test_plugin_manager_get_plugin_descriptor (
   const char * pl_bundle,
   const char * pl_uri,
+  bool         with_carla);
+
+PluginDescriptor *
+test_plugin_manager_get_plugin_descriptor (
+  const char * pl_bundle,
+  const char * pl_uri,
   bool         with_carla)
 {
   LilvNode * path =

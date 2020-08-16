@@ -338,6 +338,14 @@ typedef struct AudioEngine
   AudioPool *       pool;
 
   /**
+   * Used during tests to pass input data for
+   * recording.
+   *
+   * Will be ignored if NULL.
+   */
+  StereoPorts *     dummy_input;
+
+  /**
    * Monitor - these should be the last ports in
    * the signal chain.
    */

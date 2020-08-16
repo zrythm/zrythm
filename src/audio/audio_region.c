@@ -143,6 +143,18 @@ audio_region_init_frame_caches (
     sizeof (float) * (size_t) clip->num_frames *
     clip->channels);
 
+  audio_region_update_channel_caches (self, clip);
+}
+
+/**
+ * Updates the region's channel caches from the
+ * region's frames.
+ */
+void
+audio_region_update_channel_caches (
+  ZRegion *   self,
+  AudioClip * clip)
+{
   /* copy the frames to the channel caches */
   for (unsigned int i = 0; i < clip->channels; i++)
     {

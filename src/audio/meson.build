@@ -64,6 +64,7 @@ audio_srcs = [
   'metronome.c',
   'midi.c',
   'midi_bus_track.c',
+  'midi_event.c',
   'midi_file.c',
   'midi_group_track.c',
   'midi_mapping.c',

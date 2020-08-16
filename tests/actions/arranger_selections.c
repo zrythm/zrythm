@@ -90,9 +90,13 @@ check_has_single_undo ()
   g_assert_cmpint (
     UNDO_MANAGER->redo_stack->stack->top, ==, -1);
   g_assert_cmpint (
-    UNDO_MANAGER->undo_stack->num_as_actions, ==, 1);
+    (int)
+    UNDO_MANAGER->undo_stack->num_as_actions, ==,
+    1);
   g_assert_cmpint (
-    UNDO_MANAGER->redo_stack->num_as_actions, ==, 0);
+    (int)
+    UNDO_MANAGER->redo_stack->num_as_actions, ==,
+    0);
 }
 
 /**
@@ -102,12 +106,16 @@ static void
 check_has_single_redo ()
 {
   g_assert_cmpint (
+    (int)
     UNDO_MANAGER->undo_stack->stack->top, ==, -1);
   g_assert_cmpint (
+    (int)
     UNDO_MANAGER->redo_stack->stack->top, ==, 0);
   g_assert_cmpint (
+    (int)
     UNDO_MANAGER->undo_stack->num_as_actions, ==, 0);
   g_assert_cmpint (
+    (int)
     UNDO_MANAGER->redo_stack->num_as_actions, ==, 1);
 }
 
@@ -513,10 +521,10 @@ test_move_timeline ()
       g_assert_cmpint (
         UNDO_MANAGER->redo_stack->stack->top, ==,
         i ? 0 : -1);
-      g_assert_cmpint (
+      g_assert_cmpuint (
         UNDO_MANAGER->undo_stack->num_as_actions,
           ==, 0);
-      g_assert_cmpint (
+      g_assert_cmpuint (
         UNDO_MANAGER->redo_stack->num_as_actions,
           ==, i ? 1 : 0);
 

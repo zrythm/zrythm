@@ -19,7 +19,7 @@
 
 #include <math.h>
 
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "audio/midi_note.h"
 #include "audio/position.h"
 #include "audio/track.h"

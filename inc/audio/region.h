@@ -530,9 +530,9 @@ region_generate_filename (ZRegion * region);
  */
 void
 region_set_name (
-  ZRegion * region,
-  char *    name,
-  int       fire_events);
+  ZRegion *    region,
+  const char * name,
+  int          fire_events);
 
 void
 region_get_type_as_string (

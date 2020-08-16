@@ -54,6 +54,14 @@
  * @{
  */
 
+void
+test_helper_zrythm_init (void);
+void
+test_helper_zrythm_cleanup (void);
+void
+test_helper_zrythm_gui_init (
+  int argc, char *argv[]);
+
 /** Time to run fishbowl, in seconds */
 #define DEFAULT_FISHBOWL_TIME 20
 
@@ -84,6 +92,17 @@
   n1,n2,epsilon) \
   G_STMT_START { \
     double __n1 = (n1), __n2 = (n2), __epsilon = (epsilon); \
+    if (G_APPROX_VALUE (__n1,  __n2, __epsilon)) ; else \
+      g_assertion_message_cmpnum (G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, \
+      #n1 " == " #n2 " (+/- " #epsilon ")", __n1, "==", __n2, 'f'); \
+  } G_STMT_END
+#endif
+
+#ifndef g_assert_cmpfloat
+#define g_assert_cmpfloat( \
+  n1,n2) \
+  G_STMT_START { \
+    double __n1 = (n1), __n2 = (n2), __epsilon = (FLT_EPSILON); \
     if (G_APPROX_VALUE (__n1,  __n2, __epsilon)) ; else \
       g_assertion_message_cmpnum (G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, \
       #n1 " == " #n2 " (+/- " #epsilon ")", __n1, "==", __n2, 'f'); \

@@ -33,7 +33,7 @@
 #include "audio/group_target_track.h"
 #include "audio/instrument_track.h"
 #include "audio/master_track.h"
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "audio/midi_track.h"
 #include "audio/router.h"
 #include "audio/modulator.h"
