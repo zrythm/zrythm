@@ -41,7 +41,7 @@
 
 #include "audio/engine.h"
 #include "audio/engine_windows_mme.h"
-#include "audio/midi.h"
+#include "audio/midi_event.h"
 #include "audio/windows_mmcss.h"
 #include "audio/windows_mme_device.h"
 #include "project.h"

@@ -22,6 +22,7 @@
 #ifdef HAVE_RTMIDI
 
 #include "audio/engine.h"
+#include "audio/midi_event.h"
 #include "audio/port.h"
 #include "audio/rtmidi_device.h"
 #include "project.h"
