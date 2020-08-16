@@ -60,9 +60,9 @@ void *
 object_pool_get (
   ObjectPool * self)
 {
+  zix_sem_wait (&self->access_sem);
   g_return_val_if_fail (
     self->num_obj_available > 0, NULL);
-  zix_sem_wait (&self->access_sem);
   void * obj =
     self->obj_available[--self->num_obj_available];
   zix_sem_post (&self->access_sem);
@@ -120,7 +120,7 @@ object_pool_free (
   object_zero_and_free (self->obj_available);
   self->num_obj_available = 0;
   self->max_objects = 0;
-  zix_sem_post (&self->access_sem);
+  /*zix_sem_post (&self->access_sem);*/
 
   zix_sem_destroy (&self->access_sem);
 

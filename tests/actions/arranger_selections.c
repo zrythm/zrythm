@@ -51,7 +51,8 @@ static void
 select_audio_and_midi_regions_only ()
 {
   arranger_selections_clear (
-    (ArrangerSelections *) TL_SELECTIONS);
+    (ArrangerSelections *) TL_SELECTIONS,
+    F_NO_FREE);
   g_assert_cmpint (
     TL_SELECTIONS->num_regions, ==, 0);
 

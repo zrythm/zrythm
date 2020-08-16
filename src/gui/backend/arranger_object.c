@@ -141,7 +141,7 @@ arranger_object_select (
       if (!append)
         {
           arranger_selections_clear (
-            selections);
+            selections, F_NO_FREE);
         }
       arranger_selections_add_object (
         selections, self);
@@ -2569,7 +2569,8 @@ arranger_object_set_end_pos_full_size (
  */
 void
 arranger_object_add_to_project (
-  ArrangerObject * obj)
+  ArrangerObject * obj,
+  bool             fire_events)
 {
   /* find the region (if owned by region) */
   ZRegion * region = NULL;
@@ -2588,7 +2589,7 @@ arranger_object_add_to_project (
 
         /* add it to the region */
         automation_region_add_ap (
-          region, ap, F_NO_PUBLISH_EVENTS);
+          region, ap, fire_events);
       }
       break;
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
@@ -2598,7 +2599,7 @@ arranger_object_add_to_project (
 
         /* add it to the region */
         chord_region_add_chord_object (
-          region, chord, F_NO_PUBLISH_EVENTS);
+          region, chord, fire_events);
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
@@ -2608,7 +2609,7 @@ arranger_object_add_to_project (
 
         /* add it to the region */
         midi_region_add_midi_note (
-          region, mn, F_PUBLISH_EVENTS);
+          region, mn, fire_events);
       }
       break;
     case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
@@ -2649,20 +2650,20 @@ arranger_object_add_to_project (
               track_add_region (
                 track, r, at, -1,
                 F_GEN_NAME,
-                F_PUBLISH_EVENTS);
+                fire_events);
             }
             break;
           case REGION_TYPE_CHORD:
             track_add_region (
               P_CHORD_TRACK, r, NULL,
               -1, F_GEN_NAME,
-              F_PUBLISH_EVENTS);
+              fire_events);
             break;
           default:
             track_add_region (
               track, r, NULL, r->id.lane_pos,
               F_GEN_NAME,
-              F_PUBLISH_EVENTS);
+              fire_events);
             break;
           }
 

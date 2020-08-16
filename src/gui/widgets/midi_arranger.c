@@ -85,12 +85,17 @@ midi_arranger_widget_create_note (
     region_obj->pos.total_ticks);
 
   /* set action */
-  if (PIANO_ROLL->drum_mode)
-    self->action =
-      UI_OVERLAY_ACTION_MOVING;
-  else
-    self->action =
-      UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+  bool autofilling =
+    self->action == UI_OVERLAY_ACTION_AUTOFILLING;
+  if (!autofilling)
+    {
+      if (PIANO_ROLL->drum_mode)
+        self->action =
+          UI_OVERLAY_ACTION_MOVING;
+      else
+        self->action =
+          UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+    }
 
   /* create midi note */
   MidiNote * midi_note =
@@ -133,7 +138,8 @@ midi_arranger_widget_create_note (
 
   /* select it */
   arranger_object_select (
-    midi_note_obj, F_SELECT, F_NO_APPEND);
+    midi_note_obj, F_SELECT,
+    autofilling ? F_APPEND : F_NO_APPEND);
 }
 
 /**
@@ -518,7 +524,8 @@ midi_arranger_show_context_menu (
       arranger_widget_select_all (
         (ArrangerWidget *) self, F_NO_SELECT);
       arranger_selections_clear (
-        (ArrangerSelections *) MA_SELECTIONS);
+        (ArrangerSelections *) MA_SELECTIONS,
+        F_NO_FREE);
 
       menu_item =
         CREATE_PASTE_MENU_ITEM ("win.paste");

@@ -865,7 +865,7 @@ do_or_undo_duplicate_or_link (
       (float) - self->delta_normalized_amount;
 
   /* clear current selections in the project */
-  arranger_selections_clear (sel);
+  arranger_selections_clear (sel, F_NO_FREE);
 
   /* this is used for automation points to
    * keep track of which automation point in the
@@ -960,7 +960,8 @@ do_or_undo_duplicate_or_link (
                 ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
           /* add to track */
-          arranger_object_add_to_project (obj);
+          arranger_object_add_to_project (
+            obj, F_NO_PUBLISH_EVENTS);
 
           /* if we are linking, create the
            * necessary links */
@@ -1220,7 +1221,7 @@ do_or_undo_create_or_delete (
   if (!self->first_run || !create)
     {
       /* clear current selections in the project */
-      arranger_selections_clear (sel);
+      arranger_selections_clear (sel, F_NO_FREE);
 
       for (int i = 0; i < size; i++)
         {
@@ -1239,7 +1240,8 @@ do_or_undo_create_or_delete (
                   ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
               /* add it to the project */
-              arranger_object_add_to_project (obj);
+              arranger_object_add_to_project (
+                obj, F_NO_PUBLISH_EVENTS);
 
               /* select it */
               arranger_object_select (
@@ -1336,7 +1338,7 @@ do_or_undo_record (
   if (!self->first_run)
     {
       /* clear current selections in the project */
-      arranger_selections_clear (sel);
+      arranger_selections_clear (sel, F_NO_FREE);
 
       /* if do/redoing */
       if (_do)
@@ -1354,7 +1356,8 @@ do_or_undo_record (
                   ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
               /* add it to the project */
-              arranger_object_add_to_project (obj);
+              arranger_object_add_to_project (
+                obj, F_NO_PUBLISH_EVENTS);
 
               /* select it */
               arranger_object_select (
@@ -1416,7 +1419,8 @@ do_or_undo_record (
                   ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
               /* add it to the project */
-              arranger_object_add_to_project (obj);
+              arranger_object_add_to_project (
+                obj, F_NO_PUBLISH_EVENTS);
 
               /* select it */
               arranger_object_select (

@@ -425,7 +425,7 @@ timeline_selections_paste_to_pos (
     TRACKLIST_SELECTIONS->tracks[0];
 
   arranger_selections_clear (
-    (ArrangerSelections *) TL_SELECTIONS);
+    (ArrangerSelections *) TL_SELECTIONS, F_NO_FREE);
 
   double pos_ticks = position_to_ticks (pos);
 

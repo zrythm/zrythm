@@ -94,7 +94,8 @@ handle_stop_recording (
 
   /* select all the recorded regions */
   arranger_selections_clear (
-    (ArrangerSelections *) TL_SELECTIONS);
+    (ArrangerSelections *) TL_SELECTIONS,
+    F_NO_FREE);
   for (int i = 0; i < self->num_recorded_ids; i++)
     {
       RegionIdentifier * id = &self->recorded_ids[i];
@@ -162,7 +163,8 @@ handle_stop_recording (
 
   /* restore the selections */
   arranger_selections_clear (
-    (ArrangerSelections *) TL_SELECTIONS);
+    (ArrangerSelections *) TL_SELECTIONS,
+    F_NO_FREE);
   int num_objs;
   ArrangerObject ** objs =
     arranger_selections_get_all_objects (

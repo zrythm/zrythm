@@ -323,15 +323,24 @@ timeline_arranger_on_bounce_clicked (
  */
 void
 timeline_arranger_widget_create_region (
-  ArrangerWidget * self,
-  const RegionType         type,
-  Track *                  track,
-  TrackLane *              lane,
-  AutomationTrack *        at,
-  const Position *         pos)
+  ArrangerWidget *  self,
+  const RegionType  type,
+  Track *           track,
+  TrackLane *       lane,
+  AutomationTrack * at,
+  const Position *  pos)
 {
-  self->action =
-    UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+  bool autofilling =
+    self->action == UI_OVERLAY_ACTION_AUTOFILLING;
+
+  /* if autofilling, the action is already set */
+  if (!autofilling)
+    {
+      self->action =
+        UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+    }
+
+  g_message ("creating region");
 
   Position end_pos;
   position_set_min_size (
@@ -421,7 +430,8 @@ timeline_arranger_widget_create_region (
     ARRANGER_OBJECT_POSITION_TYPE_END,
     F_NO_VALIDATE);
   arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND);
+    r_obj, F_SELECT,
+    autofilling ? F_APPEND : F_NO_APPEND);
 }
 
 /**

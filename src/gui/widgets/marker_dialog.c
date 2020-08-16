@@ -53,7 +53,8 @@ on_response (
       /* TODO validate, if false return */
 
       arranger_selections_clear (
-        (ArrangerSelections *) TL_SELECTIONS);
+        (ArrangerSelections *) TL_SELECTIONS,
+        F_NO_FREE);
       arranger_selections_add_object (
         (ArrangerSelections *) TL_SELECTIONS,
         (ArrangerObject *) self->marker);

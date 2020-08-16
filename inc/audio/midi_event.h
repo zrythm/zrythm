@@ -47,7 +47,7 @@
  */
 
 /** Max events to hold in queues. */
-#define MAX_MIDI_EVENTS 256
+#define MAX_MIDI_EVENTS 2560
 
 /**
  * Type of MIDI event.

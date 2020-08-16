@@ -318,6 +318,11 @@ ui_set_pointer_cursor (
     GTK_WIDGET (widget), \
     "pencil", 3, 18);
 
+#define ui_set_brush_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "draw-brush", 3, 18);
+
 #define ui_set_cut_clip_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \

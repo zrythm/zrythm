@@ -69,6 +69,7 @@ typedef enum ArrangerCursor
   ARRANGER_CURSOR_NONE,
   ARRANGER_CURSOR_SELECT,
   ARRANGER_CURSOR_EDIT,
+  ARRANGER_CURSOR_AUTOFILL,
   ARRANGER_CURSOR_CUT,
   ARRANGER_CURSOR_ERASER,
   ARRANGER_CURSOR_AUDITION,
@@ -110,39 +111,39 @@ typedef enum ArrangerWidgetType
  */
 typedef struct _ArrangerWidget
 {
-  GtkDrawingArea       parent_instance;
+  GtkDrawingArea parent_instance;
 
   /** Type of arranger this is. */
-  ArrangerWidgetType   type;
+  ArrangerWidgetType type;
 
-  GtkGestureDrag *     drag;
+  GtkGestureDrag * drag;
   GtkGestureMultiPress * multipress;
   GtkGestureMultiPress * right_mouse_mp;
   GtkEventControllerMotion * motion_controller;
 
   /** Used when dragging. */
-  double               last_offset_x;
-  double               last_offset_y;
+  double         last_offset_x;
+  double         last_offset_y;
 
-  UiOverlayAction      action;
+  UiOverlayAction action;
 
   /** X-axis coordinate at start of drag. */
-  double               start_x;
+  double         start_x;
 
   /** Y-axis coordinate at start of drag. */
-  double               start_y;
+  double         start_y;
 
   /** X-axis coordinate at the start of the drag,
    * in pixels. */
-  double               start_pos_px;
+  double         start_pos_px;
 
   /** Whether an object exists, so we can use the
    * earliest_obj_start_pos. */
-  int                  earliest_obj_exists;
+  int            earliest_obj_exists;
 
   /** Start Position of the earliest object
    * at the start of the drag. */
-  Position             earliest_obj_start_pos;
+  Position       earliest_obj_start_pos;
 
   /**
    * The object that was clicked in this drag
@@ -151,22 +152,22 @@ typedef struct _ArrangerWidget
    * This is the ArrangerObject that was clicked,
    * even though there could be more selected.
    */
-  ArrangerObject *       start_object;
+  ArrangerObject * start_object;
 
   /** Object currently hovered. */
-  ArrangerObject *       hovered_object;
+  ArrangerObject * hovered_object;
 
   /** Whether the start object was selected before
    * drag_begin. */
-  int                    start_object_was_selected;
+  int            start_object_was_selected;
 
   /** A clone of the ArrangerSelections on drag
    * begin. */
-  ArrangerSelections *   sel_at_start;
+  ArrangerSelections * sel_at_start;
 
   /** Selections to delete, used with the eraser
    * tool. */
-  ArrangerSelections *   sel_to_delete;
+  ArrangerSelections * sel_to_delete;
 
   /** Start Position of the earliest object
    * currently. */
@@ -174,76 +175,76 @@ typedef struct _ArrangerWidget
 
   /** The absolute (not snapped) Position at the
    * start of a drag, translated from start_x. */
-  Position             start_pos;
+  Position       start_pos;
 
   /** The absolute (not snapped) current diff in
    * ticks from the curr_pos to the start_pos. */
-  double               curr_ticks_diff_from_start;
+  double         curr_ticks_diff_from_start;
 
   /** The adjusted diff in ticks to use for moving
    * objects starting from their cached start
    * positions. */
-  double               adj_ticks_diff;
+  double         adj_ticks_diff;
 
   /** adj_ticks_diff in last cycle. */
-  double               last_adj_ticks_diff;
+  double         last_adj_ticks_diff;
 
   /** The absolute (not snapped) Position as of the
    * current action. */
-  Position             curr_pos;
+  Position       curr_pos;
 
-  Position             end_pos; ///< for moving regions
-  gboolean             key_is_pressed;
+  Position       end_pos; ///< for moving regions
+  gboolean       key_is_pressed;
 
   /** Current hovering positions. */
-  double               hover_x;
-  double               hover_y;
+  double         hover_x;
+  double         hover_y;
 
   /** Number of clicks in current action. */
-  int                  n_press;
+  int            n_press;
 
   /** Associated SnapGrid. */
-  SnapGrid *           snap_grid;
+  SnapGrid *     snap_grid;
 
   /** Whether shift button is held down. */
-  int                  shift_held;
+  int            shift_held;
 
   /** Whether Ctrl button is held down. */
-  int                  ctrl_held;
+  int            ctrl_held;
 
   /** Whether Alt is currently held down. */
-  int                  alt_held;
+  int            alt_held;
 
-  gint64               last_frame_time;
+  gint64         last_frame_time;
 
   /* ----- TIMELINE ------ */
 
   /** The number of visible tracks moved during a
    * moving operation between tracks up to the last
    * cycle. */
-  int                  visible_track_diff;
+  int            visible_track_diff;
 
   /** The number of lanes moved during a
    * moving operation between lanes, up to the last
    * cycle. */
-  int                  lane_diff;
+  int            lane_diff;
 
-  int                  last_timeline_obj_bars;
+  int            last_timeline_obj_bars;
 
   /** Whether this TimelineArrangerWidget is for
    * the PinnedTracklist or not. */
-  int                  is_pinned;
+  int            is_pinned;
 
   /**
    * 1 if resizing range.
    */
-  int                  resizing_range;
+  int            resizing_range;
 
   /**
    * 1 if this is the first call to resize the range,
    * so range1 can be set.
    */
-  int                  resizing_range_start;
+  int            resizing_range_start;
 
   /** Cache for chord object height, used during
    * child size allocation. */
@@ -254,7 +255,7 @@ typedef struct _ArrangerWidget
   /* ------ MIDI (PIANO ROLL) ---- */
 
   /** The note currently hovering over */
-  int                      hovered_note;
+  int            hovered_note;
 
   /* ------ END MIDI (PIANO ROLL) ---- */
 
@@ -278,24 +279,24 @@ typedef struct _ArrangerWidget
   /* ------- CHORD ------- */
 
   /** Index of the chord being hovered on. */
-  int             hovered_chord_index;
+  int            hovered_chord_index;
 
   /* ------- END CHORD ------- */
 
   /** Px the playhead was last drawn at, so we can
    * redraw this and the new px only when the
    * playhead changes position. */
-  int               last_playhead_px;
+  int            last_playhead_px;
 
   /** Set to 1 to redraw. */
-  int               redraw;
+  int            redraw;
 
-  cairo_t *         cached_cr;
+  cairo_t *      cached_cr;
 
   cairo_surface_t * cached_surface;
 
   /** Rectangle in the last call. */
-  GdkRectangle      last_rect;
+  GdkRectangle   last_rect;
 
   /**
    * Whether the current selections can link
@@ -303,7 +304,7 @@ typedef struct _ArrangerWidget
    *
    * To be set on drag begin.
    */
-  bool              can_link;
+  bool           can_link;
 
 } ArrangerWidget;
 

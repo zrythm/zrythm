@@ -497,6 +497,10 @@ arranger_object_set_full_rectangle (
   ArrangerObject * self,
   ArrangerWidget * arranger)
 {
+  g_return_if_fail (
+    Z_IS_ARRANGER_WIDGET (arranger) &&
+    IS_ARRANGER_OBJECT (self));
+
 #define WARN_IF_HAS_NEGATIVE_DIMENSIONS \
   g_warn_if_fail ( \
     self->full_rect.x >= 0 && \

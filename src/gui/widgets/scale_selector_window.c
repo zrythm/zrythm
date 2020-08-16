@@ -24,6 +24,7 @@
 #include "gui/widgets/scale_selector_window.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
@@ -42,7 +43,8 @@ on_delete_event (
   ScaleSelectorWindowWidget * self)
 {
   arranger_selections_clear (
-    (ArrangerSelections *) TL_SELECTIONS);
+    (ArrangerSelections *) TL_SELECTIONS,
+    F_NO_FREE);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) self->scale);

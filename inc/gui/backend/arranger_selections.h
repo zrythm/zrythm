@@ -265,7 +265,8 @@ arranger_selections_add_ticks (
  */
 void
 arranger_selections_clear (
-  ArrangerSelections * self);
+  ArrangerSelections * self,
+  bool                 free);
 
 /**
  * Code to run after deserializing.

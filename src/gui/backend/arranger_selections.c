@@ -1117,7 +1117,8 @@ arranger_selections_add_ticks (
  */
 void
 arranger_selections_clear (
-  ArrangerSelections * self)
+  ArrangerSelections * self,
+  bool                 _free)
 {
   int i;
   TimelineSelections * ts;
@@ -1140,6 +1141,10 @@ arranger_selections_clear (
         ArrangerObject * sc = sc##s[i]; \
         arranger_selections_remove_object ( \
           self, sc); \
+        if (_free) \
+          { \
+            arranger_object_free (sc); \
+          } \
         EVENTS_PUSH ( \
           ET_ARRANGER_SELECTIONS_CHANGED, \
           self); \

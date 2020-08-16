@@ -935,11 +935,12 @@ arranger_object_set_end_pos_full_size (
  * Adds the ArrangerObject where it belongs in the
  * project (eg, a Track).
  *
- * This is mostly used when undoing.
+ * This is mostly used when undoing deletions.
  */
 void
 arranger_object_add_to_project (
-  ArrangerObject * obj);
+  ArrangerObject * obj,
+  bool             fire_events);
 
 /**
  * Inserts the ArrangerObject where it belongs in

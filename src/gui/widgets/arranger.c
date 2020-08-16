@@ -1114,6 +1114,9 @@ arranger_widget_set_cursor (
     case ARRANGER_CURSOR_EDIT:
       SET_X_CURSOR (pencil);
       break;
+    case ARRANGER_CURSOR_AUTOFILL:
+      SET_X_CURSOR (brush);
+      break;
     case ARRANGER_CURSOR_CUT:
       SET_X_CURSOR (cut_clip);
       break;
@@ -1240,13 +1243,15 @@ add_object_if_overlap (
   int *              array_size,
   ArrangerObject *   obj)
 {
+  g_return_val_if_fail (
+    IS_ARRANGER_OBJECT (obj), false);
+
   if (obj->deleted_temporarily)
     {
       return false;
     }
 
-  arranger_object_set_full_rectangle (
-    obj, self);
+  arranger_object_set_full_rectangle (obj, self);
   bool is_same_arranger =
     arranger_object_get_arranger (obj) == self;
   bool add = false;
@@ -1391,6 +1396,8 @@ get_hit_objects (
                     {
                       ZRegion *r =
                         lane->regions[k];
+                      g_warn_if_fail (
+                        IS_REGION (r));
                       obj =
                         (ArrangerObject *) r;
                       bool ret =
@@ -2101,7 +2108,7 @@ arranger_widget_select_all (
       ArrangerSelections * sel = \
         arranger_widget_get_selections ( \
           (ArrangerWidget *) self); \
-      arranger_selections_clear (sel); \
+      arranger_selections_clear (sel, F_NO_FREE); \
       select_all_##sc ( \
         self, select); \
     } \
@@ -2699,12 +2706,16 @@ multipress_pressed (
 /**
  * Called when an item needs to be created at the
  * given position.
+ *
+ * @param autofilling Whether this is part of an
+ *   autofill action.
  */
 static void
 create_item (
   ArrangerWidget * self,
   double           start_x,
-  double           start_y)
+  double           start_y,
+  bool             autofilling)
 {
   /* something will be created */
   Position pos;
@@ -2715,14 +2726,22 @@ create_item (
 
   /* get the position */
   arranger_widget_px_to_pos (
-    self, start_x, &pos, 1);
+    self, start_x, &pos, true);
 
   /* snap it */
   if (!self->shift_held &&
       SNAP_GRID_ANY_SNAP (self->snap_grid))
-    position_snap (
-      NULL, &pos, NULL, NULL,
-      self->snap_grid);
+    {
+      position_snap (
+        NULL, &pos, NULL, NULL,
+        self->snap_grid);
+      /*start_x =*/
+        /*arranger_widget_pos_to_px (*/
+          /*self, &pos, true);*/
+    }
+
+  g_message (
+    "creating item at %f,%f", start_x, start_y);
 
   switch (self->type)
     {
@@ -2831,10 +2850,61 @@ create_item (
       break;
     }
 
-  /* set the start selections */
-  self->sel_at_start =
-    arranger_selections_clone (
-      arranger_widget_get_selections (self));
+  if (!autofilling)
+    {
+      /* set the start selections */
+      self->sel_at_start =
+        arranger_selections_clone (
+          arranger_widget_get_selections (self));
+    }
+}
+
+/**
+ * Called to autofill at the given position.
+ *
+ * In the case of velocities, this will set the
+ * velocity wherever hit.
+ *
+ * In the case of automation, this will create or
+ * edit the automation point at the given position.
+ *
+ * In other cases, this will create an object with
+ * the default length at the given position, unless
+ * an object already exists there.
+ */
+static void
+autofill (
+  ArrangerWidget * self,
+  double           x,
+  double           y)
+{
+  /* start autofill if not started yet */
+  if (self->action != UI_OVERLAY_ACTION_AUTOFILLING)
+    {
+      self->action =
+        UI_OVERLAY_ACTION_AUTOFILLING;
+      ArrangerSelections * sel =
+        arranger_widget_get_selections (self);
+
+      /* clear the actual selections to append
+       * created objects */
+      arranger_selections_clear (sel, F_NO_FREE);
+    }
+
+  ArrangerObject * obj =
+    arranger_widget_get_hit_arranger_object (
+      self, ARRANGER_OBJECT_TYPE_ALL, x, y);
+
+  /* don't write over object */
+  if (obj)
+    {
+      g_message (
+        "object already exists at %f,%f, skipping",
+        x, y);
+      return;
+    }
+
+  create_item (self, x, y, true);
 }
 
 static void
@@ -3201,15 +3271,17 @@ drag_begin (
                 }
               break;
             case TOOL_EDIT:
-              if (!self->ctrl_held)
+              if (self->ctrl_held)
                 {
-                  /* something is created */
-                  create_item (
+                  /* autofill */
+                  autofill (
                     self, start_x, start_y);
                 }
               else
                 {
-                  /* autofill */
+                  /* something is created */
+                  create_item (
+                    self, start_x, start_y, false);
                 }
               break;
             case TOOL_ERASER:
@@ -3234,7 +3306,7 @@ drag_begin (
             case TOOL_SELECT_STRETCH:
             case TOOL_EDIT:
               create_item (
-                self, start_x, start_y);
+                self, start_x, start_y, false);
               break;
             case TOOL_ERASER:
               /* delete selection */
@@ -3283,7 +3355,7 @@ select_in_range (
           objs[i]->deleted_temporarily = false;
         }
       arranger_selections_clear (
-        self->sel_to_delete);
+        self->sel_to_delete, F_NO_FREE);
       free (objs);
     }
   else
@@ -3543,7 +3615,8 @@ drag_update (
       {
         ArrangerSelections * sel =
           arranger_widget_get_selections (self);
-        arranger_selections_clear (sel);
+        arranger_selections_clear (
+          sel, F_NO_FREE);
         self->sel_to_delete =
           arranger_selections_clone (
             arranger_widget_get_selections (self));
@@ -3739,8 +3812,11 @@ drag_update (
       move_items_y (self, offset_y);
       break;
     case UI_OVERLAY_ACTION_AUTOFILLING:
-      /* TODO */
       g_message ("autofilling");
+      autofill (
+        self,
+        self->start_x + offset_x,
+        self->start_y + offset_y);
       break;
     case UI_OVERLAY_ACTION_AUDITIONING:
       /* TODO */
@@ -3786,19 +3862,6 @@ static void
 on_drag_end_automation (
   ArrangerWidget * self)
 {
-  /*AutomationPoint * ap;*/
-  for (int i = 0;
-       i < AUTOMATION_SELECTIONS->
-             num_automation_points; i++)
-    {
-      /*ap =*/
-        /*AUTOMATION_SELECTIONS->automation_points[i];*/
-      /*ArrangerObject * obj =*/
-        /*(ArrangerObject *) ap;*/
-      /*arranger_object_widget_update_tooltip (*/
-        /*(ArrangerObjectWidget *) obj->widget, 0);*/
-    }
-
   switch (self->action)
     {
     case UI_OVERLAY_ACTION_RESIZING_UP:
@@ -3893,7 +3956,7 @@ on_drag_end_automation (
       {
         arranger_selections_clear (
           (ArrangerSelections *)
-          AUTOMATION_SELECTIONS);
+          AUTOMATION_SELECTIONS, F_NO_FREE);
       }
       break;
     /* if something was created */
@@ -3931,33 +3994,6 @@ static void
 on_drag_end_midi_modifier (
   ArrangerWidget * self)
 {
-  MidiNote * midi_note;
-  /*Velocity * vel;*/
-  for (int i = 0;
-       i < MA_SELECTIONS->num_midi_notes;
-       i++)
-    {
-      midi_note =
-        MA_SELECTIONS->midi_notes[i];
-      /*vel = midi_note->vel;*/
-
-      /*ArrangerObject * vel_obj =*/
-        /*(ArrangerObject *) vel;*/
-      /*if (Z_IS_ARRANGER_OBJECT_WIDGET (*/
-            /*vel_obj->widget))*/
-        /*{*/
-          /*arranger_object_widget_update_tooltip (*/
-            /*(ArrangerObjectWidget *)*/
-            /*vel_obj->widget, 0);*/
-        /*}*/
-
-      EVENTS_PUSH (
-        ET_ARRANGER_OBJECT_CHANGED, midi_note);
-    }
-
-  /*arranger_widget_update_visibility (*/
-    /*(ArrangerWidget *) self);*/
-
   switch (self->action)
     {
     case UI_OVERLAY_ACTION_RESIZING_UP:
@@ -4044,28 +4080,6 @@ on_drag_end_midi (
   ArrangerWidget * self)
 {
   midi_arranger_listen_notes (self, 0);
-
-  MidiNote * midi_note;
-  for (int i = 0;
-       i < MA_SELECTIONS->num_midi_notes;
-       i++)
-    {
-      midi_note =
-        MA_SELECTIONS->midi_notes[i];
-      /*ArrangerObject * mn_obj =*/
-        /*(ArrangerObject *) midi_note;*/
-
-      /*if (Z_IS_ARRANGER_OBJECT_WIDGET (*/
-            /*mn_obj->widget))*/
-        /*{*/
-          /*arranger_object_widget_update_tooltip (*/
-            /*Z_ARRANGER_OBJECT_WIDGET (*/
-              /*mn_obj->widget), 0);*/
-        /*}*/
-
-      EVENTS_PUSH (
-        ET_ARRANGER_OBJECT_CREATED, midi_note);
-    }
 
   switch (self->action)
     {
@@ -4165,11 +4179,13 @@ on_drag_end_midi (
     case UI_OVERLAY_ACTION_NONE:
       {
         arranger_selections_clear (
-          (ArrangerSelections *) MA_SELECTIONS);
+          (ArrangerSelections *) MA_SELECTIONS,
+          F_NO_FREE);
       }
       break;
     /* something was created */
     case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
+    case UI_OVERLAY_ACTION_AUTOFILLING:
       {
         UndoableAction * ua =
           arranger_selections_action_new_create (
@@ -4269,7 +4285,7 @@ on_drag_end_chord (
       {
         arranger_selections_clear (
           (ArrangerSelections *)
-          CHORD_SELECTIONS);
+          CHORD_SELECTIONS, F_NO_FREE);
       }
       break;
     case UI_OVERLAY_ACTION_CREATING_MOVING:
@@ -4305,13 +4321,8 @@ static void
 on_drag_end_timeline (
   ArrangerWidget * self)
 {
-  /* clear tmp_lane from selected regions */
-  /*for (int i = 0; i < TL_SELECTIONS->num_regions;*/
-       /*i++)*/
-    /*{*/
-      /*ZRegion * region = TL_SELECTIONS->regions[i];*/
-      /*region->tmp_lane = NULL;*/
-    /*}*/
+  ArrangerSelections * sel =
+    arranger_widget_get_selections (self);
 
   switch (self->action)
     {
@@ -4536,19 +4547,20 @@ on_drag_end_timeline (
       break;
     case UI_OVERLAY_ACTION_NONE:
     case UI_OVERLAY_ACTION_STARTING_SELECTION:
-      arranger_selections_clear (
-        (ArrangerSelections *) TL_SELECTIONS);
+      arranger_selections_clear (sel, F_NO_FREE);
       break;
     /* if something was created */
     case UI_OVERLAY_ACTION_CREATING_MOVING:
     case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
-      {
-        UndoableAction * ua =
-          arranger_selections_action_new_create (
-            (ArrangerSelections *) TL_SELECTIONS);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
-      }
+    case UI_OVERLAY_ACTION_AUTOFILLING:
+      if (arranger_selections_has_any (sel))
+        {
+          UndoableAction * ua =
+            arranger_selections_action_new_create (
+              sel);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
       {
@@ -4599,6 +4611,8 @@ drag_end (
   gdouble         offset_y,
   ArrangerWidget * self)
 {
+  g_message ("arranger drag end");
+
   if (ACTION_IS (SELECTING) ||
       ACTION_IS (DELETE_SELECTING))
     {
@@ -5962,6 +5976,7 @@ get_timeline_cursor (
     case UI_OVERLAY_ACTION_STRETCHING_R:
       ac = ARRANGER_CURSOR_STRETCHING_R;
       break;
+    case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
     case UI_OVERLAY_ACTION_RESIZING_R:
       if (self->resizing_range)
         ac = ARRANGER_CURSOR_RANGE;
@@ -5980,7 +5995,15 @@ get_timeline_cursor (
     case UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT:
       ac = ARRANGER_CURSOR_FADE_OUT;
       break;
+    case UI_OVERLAY_ACTION_AUTOFILLING:
+      ac = ARRANGER_CURSOR_AUTOFILL;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_SELECTION:
+    case UI_OVERLAY_ACTION_SELECTING:
+      ac = ARRANGER_CURSOR_SELECT;
+      break;
     default:
+      g_warn_if_reached ();
       ac = ARRANGER_CURSOR_SELECT;
       break;
     }
@@ -6088,6 +6111,9 @@ get_midi_arranger_cursor (
     case UI_OVERLAY_ACTION_SELECTING:
       ac = ARRANGER_CURSOR_SELECT;
       /* TODO depends on tool */
+      break;
+    case UI_OVERLAY_ACTION_AUTOFILLING:
+      ac = ARRANGER_CURSOR_AUTOFILL;
       break;
     default:
       g_warn_if_reached ();

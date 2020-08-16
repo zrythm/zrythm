@@ -207,14 +207,14 @@ range_action_do (
                       part1,
                       ARRANGER_OBJECT_CLONE_COPY_MAIN);
                   arranger_object_add_to_project (
-                    prj_part1);
+                    prj_part1, F_NO_PUBLISH_EVENTS);
 
                   ArrangerObject * prj_part2 =
                     arranger_object_clone (
                       part2,
                       ARRANGER_OBJECT_CLONE_COPY_MAIN);
                   arranger_object_add_to_project (
-                    prj_part2);
+                    prj_part2, F_NO_PUBLISH_EVENTS);
 
                   g_message (
                     "object split and moved into the"
@@ -359,7 +359,7 @@ range_action_do (
                       part1,
                       ARRANGER_OBJECT_CLONE_COPY_MAIN);
                   arranger_object_add_to_project (
-                    prj_part1);
+                    prj_part1, F_NO_PUBLISH_EVENTS);
                   ADD_AFTER (prj_part1, part1);
 
                   if (part2)
@@ -369,7 +369,8 @@ range_action_do (
                           part2,
                           ARRANGER_OBJECT_CLONE_COPY_MAIN);
                       arranger_object_add_to_project (
-                        prj_part2);
+                        prj_part2,
+                        F_NO_PUBLISH_EVENTS);
                       g_message (
                         "object split to the "
                         "following:");
@@ -424,7 +425,7 @@ range_action_do (
                       part2,
                       ARRANGER_OBJECT_CLONE_COPY_MAIN);
                   arranger_object_add_to_project (
-                    prj_part2);
+                    prj_part2, F_NO_PUBLISH_EVENTS);
                   ADD_AFTER (prj_part2, part2);
 
                   g_message (

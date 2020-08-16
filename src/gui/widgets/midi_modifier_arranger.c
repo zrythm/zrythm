@@ -120,7 +120,8 @@ midi_modifier_arranger_widget_select_vels_in_range (
       self, offset_x, &num_velocities, true);
 
   arranger_selections_clear (
-    (ArrangerSelections *) MA_SELECTIONS);
+    (ArrangerSelections *) MA_SELECTIONS,
+    F_NO_FREE);
   for (int i = 0; i < num_velocities; i++)
     {
       Velocity * vel = velocities[i];

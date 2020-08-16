@@ -101,6 +101,9 @@ typedef struct EventManager
         { \
           _ev->backtrace = backtrace_get ("", 40); \
         } \
+      g_message ( \
+        "pushing UI event " #et \
+        " (%s:%d)", __func__, __LINE__); \
       event_queue_push_back_event ( \
         EVENT_QUEUE, _ev); \
     }
