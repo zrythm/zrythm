@@ -459,27 +459,28 @@ draw_buttons (
       CustomButtonWidgetState state =
         CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
 
+      bool is_solo =
+        string_is_equal (
+          cb->icon_name, ICON_NAME_SOLO, 1);
+
       if (cb == self->clicked_button)
         {
           /* currently clicked button */
           state =
             CUSTOM_BUTTON_WIDGET_STATE_ACTIVE;
         }
-      else if (string_is_equal (
-                cb->icon_name,
-                ICON_NAME_SOLO, 1))
+      else if (is_solo &&
+               track_get_soloed (self->track))
         {
-          if (track_get_soloed (self->track))
-            {
-              state =
-                CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
-            }
-          else if (track_get_implied_soloed (
-                     self->track))
-            {
-              state =
-                CUSTOM_BUTTON_WIDGET_STATE_SEMI_TOGGLED;
-            }
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+        }
+      else if (is_solo &&
+               track_get_implied_soloed (
+                 self->track))
+        {
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_SEMI_TOGGLED;
         }
       else if (string_is_equal (
                 cb->icon_name,
