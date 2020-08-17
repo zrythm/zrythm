@@ -132,6 +132,14 @@ arranger_object_select (
 {
   g_return_if_fail (IS_ARRANGER_OBJECT (self));
 
+  if (self->type == ARRANGER_OBJECT_TYPE_VELOCITY)
+    {
+      self =
+        (ArrangerObject *)
+        velocity_get_midi_note ((Velocity *) self);
+      g_return_if_fail (IS_MIDI_NOTE (self));
+    }
+
   ArrangerSelections * selections =
     arranger_object_get_selections_for_type (
       self->type);

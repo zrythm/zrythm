@@ -1231,6 +1231,9 @@ get_regions_in_editor_rect (
  * be added if the cursor is on the automation
  * point or within n px from the curve.
  *
+ * @param x X, or -1 to not check x.
+ * @param y Y, or -1 to not check y.
+ *
  * @return Whether the object was added or not.
  */
 static bool
@@ -1273,15 +1276,19 @@ add_object_if_overlap (
   else if (
     is_same_arranger &&
     (ui_is_point_in_rect_hit (
-      &obj->full_rect, true, true, x, y,
-      0, 0) ||
+       &obj->full_rect,
+       x >= 0 ? true : false,
+       y >= 0 ? true : false,
+       x, y, 0, 0) ||
     /* also check original (transient) */
     (arranger_object_should_orig_be_visible (
        obj) &&
      obj->transient &&
      ui_is_point_in_rect_hit (
-       &obj->transient->full_rect, true,
-       true, x, y, 0, 0))))
+       &obj->transient->full_rect,
+       x >= 0 ? true : false,
+       y >= 0 ? true : false,
+       x, y, 0, 0))))
     {
       /* object to check for automation point
        * curve cross (either main object or
@@ -1290,8 +1297,10 @@ add_object_if_overlap (
         (arranger_object_should_orig_be_visible (
           obj) && obj->transient &&
          ui_is_point_in_rect_hit (
-           &obj->transient->full_rect, true,
-           true, x, y, 0, 0)) ?
+           &obj->transient->full_rect,
+           x >= 0 ? true : false,
+           y >= 0 ? true : false,
+           x, y, 0, 0)) ?
         obj->transient : obj;
 
       /** handle special case for automation
@@ -1554,9 +1563,12 @@ get_hit_objects (
                i++)
             {
               MidiNote * mn = r->midi_notes[i];
+              g_return_if_fail (
+                IS_MIDI_NOTE (mn));
               Velocity * vel = mn->vel;
-              obj =
-                (ArrangerObject *) vel;
+              g_return_if_fail (
+                IS_ARRANGER_OBJECT (vel));
+              obj = (ArrangerObject *) vel;
               add_object_if_overlap (
                 self, rect, x, y, array,
                 array_size, obj);
@@ -2889,22 +2901,50 @@ autofill (
       /* clear the actual selections to append
        * created objects */
       arranger_selections_clear (sel, F_NO_FREE);
+
+      /* also clear the selections at start so we
+       * can append the affected objects */
+      if (self->sel_at_start)
+        {
+          arranger_selections_clear (
+            self->sel_at_start, F_FREE);
+        }
+      if (!self->sel_at_start)
+        {
+          self->sel_at_start =
+            arranger_selections_clone (sel);
+        }
     }
 
-  ArrangerObject * obj =
-    arranger_widget_get_hit_arranger_object (
-      self, ARRANGER_OBJECT_TYPE_ALL, x, y);
-
-  /* don't write over object */
-  if (obj)
+  if (self->type == TYPE (MIDI_MODIFIER))
     {
-      g_message (
-        "object already exists at %f,%f, skipping",
-        x, y);
-      return;
+      midi_modifier_arranger_set_hit_velocity_vals (
+        self, x, y, true);
     }
+  else if (self->type == TYPE (AUTOMATION))
+    {
+      /* get all velocities in the range */
+      Position pos;
+      ui_px_to_pos_editor (x, &pos, true);
 
-  create_item (self, x, y, true);
+    }
+  else
+    {
+      ArrangerObject * obj =
+        arranger_widget_get_hit_arranger_object (
+          self, ARRANGER_OBJECT_TYPE_ALL, x, y);
+
+      /* don't write over object */
+      if (obj)
+        {
+          g_message (
+            "object already exists at %f,%f, "
+            "skipping",
+            x, y);
+          return;
+        }
+      create_item (self, x, y, true);
+    }
 }
 
 static void
@@ -3271,17 +3311,33 @@ drag_begin (
                 }
               break;
             case TOOL_EDIT:
-              if (self->ctrl_held)
+              if (self->type == TYPE (TIMELINE) ||
+                  self->type == TYPE (MIDI) ||
+                  self->type == TYPE (CHORD))
                 {
-                  /* autofill */
-                  autofill (
-                    self, start_x, start_y);
+                  if (self->ctrl_held)
+                    {
+                      /* autofill */
+                      autofill (
+                        self, start_x, start_y);
+                    }
+                  else
+                    {
+                      /* something is created */
+                      create_item (
+                        self, start_x, start_y,
+                        false);
+                    }
                 }
-              else
+              else if (self->type ==
+                         TYPE (MIDI_MODIFIER) ||
+                       self->type ==
+                         TYPE (AUTOMATION))
                 {
-                  /* something is created */
-                  create_item (
-                    self, start_x, start_y, false);
+                  /* autofill (also works for
+                   * manual edit for velocity and
+                   * automation */
+                  autofill (self, start_x, start_y);
                 }
               break;
             case TOOL_ERASER:
@@ -4069,6 +4125,21 @@ on_drag_end_midi_modifier (
           arranger_selections_free_full,
           self->sel_to_delete);
       }
+      break;
+    case UI_OVERLAY_ACTION_AUTOFILLING:
+      if (arranger_selections_has_any (
+            (ArrangerSelections *) MA_SELECTIONS))
+        {
+          UndoableAction * ua =
+            arranger_selections_action_new_edit (
+              self->sel_at_start,
+              (ArrangerSelections *) MA_SELECTIONS,
+              ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
+              true);
+          if (ua)
+            undo_manager_perform (
+              UNDO_MANAGER, ua);
+        }
       break;
     default:
       break;
@@ -5507,8 +5578,7 @@ get_midi_modifier_arranger_cursor (
     {
     case UI_OVERLAY_ACTION_NONE:
       if (tool == TOOL_SELECT_NORMAL ||
-          tool == TOOL_SELECT_STRETCH ||
-          tool == TOOL_EDIT)
+          tool == TOOL_SELECT_STRETCH)
         {
           ArrangerObject * vel_obj =
             arranger_widget_get_hit_arranger_object (
@@ -5533,11 +5603,7 @@ get_midi_modifier_arranger_cursor (
                 }
             }
 
-          /* set cursor to whatever it is */
-          if (tool == TOOL_EDIT)
-            return ARRANGER_CURSOR_EDIT;
-          else
-            return ARRANGER_CURSOR_SELECT;
+          return ARRANGER_CURSOR_SELECT;
         }
       else if (P_TOOL == TOOL_EDIT)
         ac = ARRANGER_CURSOR_EDIT;
@@ -5582,6 +5648,10 @@ get_midi_modifier_arranger_cursor (
     case UI_OVERLAY_ACTION_STARTING_RAMP:
     case UI_OVERLAY_ACTION_RAMPING:
       ac = ARRANGER_CURSOR_RAMP;
+      break;
+    /* editing */
+    case UI_OVERLAY_ACTION_AUTOFILLING:
+      ac = ARRANGER_CURSOR_EDIT;
       break;
     default:
       g_warn_if_reached ();
@@ -5754,7 +5824,11 @@ get_automation_arranger_cursor (
     case UI_OVERLAY_ACTION_RESIZING_UP:
       ac = ARRANGER_CURSOR_GRABBING;
       break;
+    case UI_OVERLAY_ACTION_AUTOFILLING:
+      ac = ARRANGER_CURSOR_AUTOFILL;
+      break;
     default:
+      g_warn_if_reached ();
       ac = ARRANGER_CURSOR_SELECT;
       break;
     }

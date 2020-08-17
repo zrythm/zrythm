@@ -257,7 +257,12 @@ typedef enum UiOverlayAction
 
   UI_OVERLAY_ACTION_AUDITIONING,
 
-  /** Auto-filling in edit mode. */
+  /**
+   * Auto-filling in edit mode.
+   *
+   * @note This is also used for the pencil tool in
+   *   velocity and automation editors.
+   */
   UI_OVERLAY_ACTION_AUTOFILLING,
 
   /** Erasing. */

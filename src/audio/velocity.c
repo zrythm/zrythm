@@ -92,6 +92,8 @@ velocity_set_val (
   Velocity *    self,
   const int     val)
 {
+  g_return_if_fail (IS_ARRANGER_OBJECT (self));
+
   self->vel =
     (uint8_t) CLAMP (val, 0, 127);
 
@@ -122,6 +124,9 @@ MidiNote *
 velocity_get_midi_note (
   Velocity * self)
 {
+  g_return_val_if_fail (
+    IS_MIDI_NOTE (self->midi_note), NULL);
+
   return self->midi_note;
 
 #if 0

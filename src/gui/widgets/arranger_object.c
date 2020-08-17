@@ -889,7 +889,7 @@ arranger_object_set_full_rectangle (
           ((float) height *
             ((float) vel->vel / 127.f));
         self->full_rect.y = height - vel_px;
-        self->full_rect.width = 12;
+        self->full_rect.width = VELOCITY_WIDTH;
         self->full_rect.height = vel_px;
 
         WARN_IF_HAS_NEGATIVE_DIMENSIONS;

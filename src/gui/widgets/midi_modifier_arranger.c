@@ -135,6 +135,41 @@ midi_modifier_arranger_widget_select_vels_in_range (
 }
 
 /**
+ * Gets velocities hit by the given point, or x
+ * only.
+ *
+ * @param y Y or -1 to ignore.
+ */
+/*void*/
+/*midi_modifier_arranger_widget_get_hit_velocities (*/
+  /*ArrangerWidget *  self,*/
+  /*double            x,*/
+  /*double            y,*/
+  /*ArrangerObject ** objs,*/
+  /*int *             num_objs)*/
+/*{*/
+  /*ZRegion * r = clip_editor_get_region (CLIP_EDITOR);*/
+  /*if (!r)*/
+    /*break;*/
+
+  /*for (int i = 0; i < r->num_midi_notes; i++)*/
+    /*{*/
+      /*MidiNote * mn = r->midi_notes[i];*/
+      /*Velocity * vel = mn->vel;*/
+      /*obj = (ArrangerObject *) vel;*/
+
+      /*if (obj->deleted_temporarily)*/
+        /*continue;*/
+
+      /*arranger_object_set_full_rectangle (obj, self);*/
+
+      /*add_object_if_overlap (*/
+        /*self, rect, x, y, array,*/
+        /*array_size, obj);*/
+    /*}*/
+/*}*/
+
+/**
  * Draws a ramp from the start coordinates to the
  * given coordinates.
  */
@@ -216,7 +251,7 @@ midi_modifier_arranger_widget_ramp (
 void
 midi_modifier_arranger_widget_resize_velocities (
   ArrangerWidget * self,
-  double                       offset_y)
+  double           offset_y)
 {
   int height =
     gtk_widget_get_allocated_height (
@@ -273,186 +308,64 @@ midi_modifier_arranger_widget_resize_velocities (
 }
 
 /**
- * Called on drag end.
+ * Sets the value of each velocity hit at x to the
+ * value corresponding to y.
  *
- * Sets default cursors back and sets the start midi note
- * to NULL if necessary.
+ * Used with the pencil tool.
+ *
+ * @param append_to_selections Append the hit
+ *   velocities to the selections.
  */
-/*void*/
-/*midi_modifier_arranger_widget_on_drag_end (*/
-  /*ArrangerWidget * self)*/
-/*{*/
+void
+midi_modifier_arranger_set_hit_velocity_vals (
+  ArrangerWidget * self,
+  double           x,
+  double           y,
+  bool             append_to_selections)
+{
+  ArrangerObject * objs[800];
+  int              num_objs;
+  arranger_widget_get_hit_objects_at_point (
+    self, ARRANGER_OBJECT_TYPE_VELOCITY, x, -1,
+    objs, &num_objs);
+  g_message ("%d velocities hit", num_objs);
 
-  /*MidiNote * midi_note;*/
-  /*Velocity * vel;*/
-  /*for (int i = 0;*/
-       /*i < MA_SELECTIONS->num_midi_notes;*/
-       /*i++)*/
-    /*{*/
-      /*midi_note =*/
-        /*MA_SELECTIONS->midi_notes[i];*/
-      /*vel = midi_note->vel;*/
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+  double ratio = 1.0 - y / (double) height;
+  int val = CLAMP ((int) (ratio * 127.0), 1, 127);
 
-      /*ArrangerObject * vel_obj =*/
-        /*(ArrangerObject *) vel;*/
-      /*if (Z_IS_ARRANGER_OBJECT_WIDGET (*/
-            /*vel_obj->widget))*/
-        /*{*/
-          /*arranger_object_widget_update_tooltip (*/
-            /*(ArrangerObjectWidget *)*/
-            /*vel_obj->widget, 0);*/
-        /*}*/
+  for (int i = 0; i < num_objs; i++)
+    {
+      ArrangerObject * obj = objs[i];
+      Velocity * vel = (Velocity *) obj;
+      MidiNote * mn = velocity_get_midi_note (vel);
+      ArrangerObject * mn_obj =
+        (ArrangerObject *) mn;
 
-      /*EVENTS_PUSH (*/
-        /*ET_ARRANGER_OBJECT_CHANGED, midi_note);*/
-    /*}*/
+      /* if object not already selected, add to
+       * selections */
+      if (!arranger_selections_contains_object (
+            (ArrangerSelections *) MA_SELECTIONS,
+            mn_obj))
+        {
+          /* add a clone of midi note before the
+           * change to sel_at_start */
+          ArrangerObject * clone =
+            arranger_object_clone (
+              (ArrangerObject *) mn,
+              ARRANGER_OBJECT_CLONE_COPY_MAIN);
+          arranger_selections_add_object (
+            self->sel_at_start, clone);
 
-  /*arranger_widget_update_visibility (*/
-    /*(ArrangerWidget *) self);*/
+          if (append_to_selections)
+            {
+              arranger_object_select (
+                obj, F_SELECT, F_APPEND);
+            }
+        }
 
-  /*switch (self->action)*/
-    /*{*/
-    /*case UI_OVERLAY_ACTION_RESIZING_UP:*/
-      /*{*/
-        /*[> FIXME <]*/
-        /*UndoableAction * ua =*/
-          /*arranger_selections_action_new_edit (*/
-            /*(ArrangerSelections *) MA_SELECTIONS,*/
-            /*(ArrangerSelections *) MA_SELECTIONS,*/
-            /*ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);*/
-        /*undo_manager_perform (*/
-          /*UNDO_MANAGER, ua);*/
-      /*}*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_RAMPING:*/
-      /*{*/
-        /*Position selection_start_pos,*/
-                 /*selection_end_pos;*/
-        /*ui_px_to_pos_editor (*/
-          /*self->start_x,*/
-          /*self->last_offset_x >= 0 ?*/
-            /*&selection_start_pos :*/
-            /*&selection_end_pos,*/
-          /*F_PADDING);*/
-        /*ui_px_to_pos_editor (*/
-          /*self->start_x + self->last_offset_x,*/
-          /*self->last_offset_x >= 0 ?*/
-            /*&selection_end_pos :*/
-            /*&selection_start_pos,*/
-          /*F_PADDING);*/
-        /*UndoableAction * ua =*/
-          /*arranger_selections_action_new_edit (*/
-            /*(ArrangerSelections *) MA_SELECTIONS,*/
-            /*(ArrangerSelections *) MA_SELECTIONS,*/
-            /*ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);*/
-        /*if (ua)*/
-          /*undo_manager_perform (*/
-            /*UNDO_MANAGER, ua);*/
-      /*}*/
-      /*break;*/
-    /*default:*/
-      /*break;*/
-    /*}*/
-/*}*/
-
-/**
- * Returns the appropriate cursor based on the
- * current hover_x and y.
- */
-/*ArrangerCursor*/
-/*midi_modifier_arranger_widget_get_cursor (*/
-  /*ArrangerWidget * self,*/
-  /*UiOverlayAction              action,*/
-  /*Tool                         tool)*/
-/*{*/
-  /*ArrangerCursor ac = ARRANGER_CURSOR_SELECT;*/
-
-  /*switch (action)*/
-    /*{*/
-    /*case UI_OVERLAY_ACTION_NONE:*/
-      /*if (tool == TOOL_SELECT_NORMAL ||*/
-          /*tool == TOOL_SELECT_STRETCH ||*/
-          /*tool == TOOL_EDIT)*/
-        /*{*/
-          /*ArrangerObject * vel_obj =*/
-            /*arranger_widget_get_hit_arranger_object (*/
-              /*(ArrangerWidget *) self,*/
-              /*ARRANGER_OBJECT_TYPE_VELOCITY,*/
-              /*self->hover_x, self->hover_y);*/
-          /*int is_hit = vel_obj != NULL;*/
-          /*int is_resize = 0;*/
-
-          /*if (is_hit)*/
-            /*{*/
-                /*vel_obj->widget);*/
-              /*is_resize = ao_prv->resize_up;*/
-            /*}*/
-
-          /*[>g_message ("hit resize %d %d",<]*/
-                     /*[>is_hit, is_resize);<]*/
-          /*if (is_hit && is_resize)*/
-            /*{*/
-              /*return ARRANGER_CURSOR_RESIZING_UP;*/
-            /*}*/
-          /*else*/
-            /*{*/
-              /*[> set cursor to whatever it is <]*/
-              /*if (tool == TOOL_EDIT)*/
-                /*return ARRANGER_CURSOR_EDIT;*/
-              /*else*/
-                /*return ARRANGER_CURSOR_SELECT;*/
-            /*}*/
-        /*}*/
-      /*else if (P_TOOL == TOOL_EDIT)*/
-        /*ac = ARRANGER_CURSOR_EDIT;*/
-      /*else if (P_TOOL == TOOL_ERASER)*/
-        /*ac = ARRANGER_CURSOR_ERASER;*/
-      /*else if (P_TOOL == TOOL_RAMP)*/
-        /*ac = ARRANGER_CURSOR_RAMP;*/
-      /*else if (P_TOOL == TOOL_AUDITION)*/
-        /*ac = ARRANGER_CURSOR_AUDITION;*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:*/
-    /*case UI_OVERLAY_ACTION_DELETE_SELECTING:*/
-    /*case UI_OVERLAY_ACTION_ERASING:*/
-      /*ac = ARRANGER_CURSOR_ERASER;*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_STARTING_MOVING_COPY:*/
-    /*case UI_OVERLAY_ACTION_MOVING_COPY:*/
-      /*ac = ARRANGER_CURSOR_GRABBING_COPY;*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_STARTING_MOVING:*/
-    /*case UI_OVERLAY_ACTION_MOVING:*/
-      /*ac = ARRANGER_CURSOR_GRABBING;*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:*/
-    /*case UI_OVERLAY_ACTION_MOVING_LINK:*/
-      /*ac = ARRANGER_CURSOR_GRABBING_LINK;*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_RESIZING_L:*/
-      /*ac = ARRANGER_CURSOR_RESIZING_L;*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_RESIZING_R:*/
-      /*ac = ARRANGER_CURSOR_RESIZING_R;*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_RESIZING_UP:*/
-      /*ac = ARRANGER_CURSOR_RESIZING_UP;*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_STARTING_SELECTION:*/
-    /*case UI_OVERLAY_ACTION_SELECTING:*/
-      /*ac = ARRANGER_CURSOR_SELECT;*/
-      /*[> TODO depends on tool <]*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_STARTING_RAMP:*/
-    /*case UI_OVERLAY_ACTION_RAMPING:*/
-      /*ac = ARRANGER_CURSOR_RAMP;*/
-      /*break;*/
-    /*default:*/
-      /*g_warn_if_reached ();*/
-      /*ac = ARRANGER_CURSOR_SELECT;*/
-      /*break;*/
-    /*}*/
-
-  /*return ac;*/
-
-/*}*/
+      velocity_set_val (vel, val);
+    }
+}

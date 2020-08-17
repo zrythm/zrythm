@@ -57,6 +57,22 @@ midi_modifier_arranger_widget_resize_velocities (
   double           offset_y);
 
 /**
+ * Sets the value of each velocity hit at x to the
+ * value corresponding to y.
+ *
+ * Used with the pencil tool.
+ *
+ * @param append_to_selections Append the hit
+ *   velocities to the selections.
+ */
+void
+midi_modifier_arranger_set_hit_velocity_vals (
+  ArrangerWidget * self,
+  double           x,
+  double           y,
+  bool             append_to_selections);
+
+/**
  * Draws a ramp from the start coordinates to the
  * given coordinates.
  */
