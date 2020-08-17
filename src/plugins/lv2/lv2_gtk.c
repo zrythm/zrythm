@@ -1393,18 +1393,18 @@ lv2_gtk_open_ui (
           g_message (
             "Instantiating external UI...");
 
-          LV2_External_UI_Host extui;
-          extui.ui_closed = on_external_ui_closed;
+          plugin->extui.ui_closed =
+            on_external_ui_closed;
           LilvNode* name =
             lilv_plugin_get_name (
               plugin->lilv_plugin);
-          extui.plugin_human_id =
+          plugin->extui.plugin_human_id =
             lilv_node_as_string (name);
           lilv_node_free (name);
           lv2_ui_instantiate (
             plugin,
             lilv_node_as_uri (plugin->ui_type),
-            &extui);
+            &plugin->extui);
         }
       else
         {

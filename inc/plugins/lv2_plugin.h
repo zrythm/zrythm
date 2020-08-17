@@ -233,6 +233,9 @@ typedef struct Lv2Plugin
   /** Base Plugin instance (parent). */
   Plugin *           plugin;
 
+  /** Used for external UIs. */
+  LV2_External_UI_Host extui;
+
   /* ---- plugin feature data ---- */
 
   /** Make path feature data. */

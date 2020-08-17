@@ -2926,7 +2926,6 @@ autofill (
       /* get all velocities in the range */
       Position pos;
       ui_px_to_pos_editor (x, &pos, true);
-
     }
   else
     {
