@@ -845,15 +845,15 @@ summary ({
   }, section: 'General')
 
 summary ({
-  'Jack': have_jack,
-  'PortAudio': portaudio_dep.found (),
-  'RtMidi': rtmidi_dep.found (),
-  'RtAudio': rtaudio_dep.found (),
-  'SDL': sdl_dep.found (),
   'Carla': carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla_utils_dep.found (),
+  'GraphViz': have_graphviz,
   'Gtop': libgtop_dep.found(),
   'Guile': have_guile,
-  'GraphViz': have_graphviz,
+  'Jack': have_jack,
+  'PortAudio': portaudio_dep.found (),
+  'RtAudio': rtaudio_dep.found (),
+  'RtMidi': rtmidi_dep.found (),
+  'SDL': sdl_dep.found (),
   }, section: 'Features')
 
 tests_summary = {

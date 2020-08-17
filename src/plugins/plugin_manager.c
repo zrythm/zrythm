@@ -613,7 +613,6 @@ get_vst_paths (
   return paths;
 }
 
-#if defined (_WOE32) || defined (__APPLE__)
 static char **
 get_vst3_paths (
   PluginManager * self)
@@ -630,6 +629,47 @@ get_vst3_paths (
     g_strsplit (
       "/Library/Audio/Plug-ins/VST3" PATH_SPLIT,
       PATH_SPLIT, -1);
+#else
+  char * vst_path =
+    g_strdup (getenv ("VST3_PATH"));
+  if (!vst_path || (strlen (vst_path) == 0))
+    {
+      if (string_is_equal (
+            LIBDIR_NAME, "lib", false))
+        {
+          vst_path =
+            g_strdup_printf (
+              "%s/.vst3:"
+              "/usr/lib/vst3:"
+              "/usr/local/lib/vst3",
+              g_get_home_dir ());
+        }
+      else
+        {
+          vst_path =
+            g_strdup_printf (
+              "%s/.vst3:"
+              "/usr/lib/vst3:"
+              "/usr/" LIBDIR_NAME "/vst3:"
+              "/usr/local/lib/vst3:"
+              "/usr/local/" LIBDIR_NAME "/vst3",
+              g_get_home_dir ());
+        }
+
+      g_message (
+        "Using standard VST paths: %s", vst_path);
+    }
+  else
+    {
+      g_message (
+        "using %s from the environment (VST_PATH)",
+        vst_path);
+    }
+  g_return_val_if_fail (vst_path, NULL);
+  char ** paths =
+    g_strsplit (vst_path, PATH_SPLIT, 0);
+  g_free (vst_path);
+  return paths;
 #endif // __APPLE__
 }
 
@@ -665,7 +705,6 @@ get_vst3_count (
 
   return count;
 }
-#endif // _WOE32 || __APPLE__
 
 static int
 get_vst_count (
@@ -764,9 +803,7 @@ plugin_manager_scan_plugins (
     (double) lilv_plugins_size (lilv_plugins);
 #ifdef HAVE_CARLA
   size += (double) get_vst_count (self);
-#  if defined (_WOE32) || defined (__APPLE__)
   size += (double) get_vst3_count (self);
-#  endif
 #  ifdef __APPLE__
   size +=
     carla_get_cached_plugin_count (PLUGIN_AU, NULL);
@@ -961,7 +998,6 @@ plugin_manager_scan_plugins (
     }
   g_strfreev (paths);
 
-#if defined (_WOE32) || defined (__APPLE__)
   /* scan vst3 */
   g_message ("Scanning VST3 plugins...");
   paths = get_vst3_paths (self);
@@ -1086,7 +1122,6 @@ plugin_manager_scan_plugins (
       g_strfreev (vst_plugins);
     }
   g_strfreev (paths);
-#endif // _WOE32 || __APPLE__
 
 #ifdef __APPLE__
   /* scan AU plugins */
