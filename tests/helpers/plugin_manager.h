@@ -78,6 +78,8 @@ test_plugin_manager_get_plugin_descriptor (
         }
     }
 
+  g_return_val_if_fail (descr, NULL);
+
   /* open with carla if requested */
   descr->open_with_carla = with_carla;
 
