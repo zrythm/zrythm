@@ -83,6 +83,17 @@ arranger_selections_action_init_loaded (
             (ArrangerObject *) self->mn_r2[j];
         }
     }
+
+  if (self->region_before)
+    {
+      arranger_object_init_loaded (
+        (ArrangerObject *) self->region_before);
+    }
+  if (self->region_after)
+    {
+      arranger_object_init_loaded (
+        (ArrangerObject *) self->region_after);
+    }
 }
 
 /**
@@ -436,6 +447,48 @@ arranger_selections_action_new_edit (
   else
     {
       set_selections (self, sel_after, true, true);
+    }
+
+  return ua;
+}
+
+/**
+ * Creates a new action for automation autofill.
+ *
+ * @param region_before The region before the
+ *   change.
+ * @param region_after The region after the
+ *   change.
+ * @param already_changed Whether the change was
+ *   already made.
+ */
+UndoableAction *
+arranger_selections_action_new_automation_fill (
+  ZRegion * region_before,
+  ZRegion * region_after,
+  bool      already_changed)
+{
+  ArrangerSelectionsAction * self =
+    calloc (1, sizeof (ArrangerSelectionsAction));
+  self->first_run = true;
+
+  UndoableAction * ua = (UndoableAction *) self;
+  ua->type = UA_AUTOMATION_FILL;
+
+  self->region_before =
+    (ZRegion *)
+    arranger_object_clone (
+      (ArrangerObject *) region_before,
+      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+  self->region_after =
+    (ZRegion *)
+    arranger_object_clone (
+      (ArrangerObject *) region_after,
+      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+
+  if (!already_changed)
+    {
+      self->first_run = 0;
     }
 
   return ua;
@@ -1631,6 +1684,83 @@ do_or_undo_edit (
  * Does or undoes the action.
  *
  * @param _do 1 to do, 0 to undo.
+ * @param create 1 to create, 0 to delete. This just
+ *   reverses the actions done by undo/redo.
+ */
+static int
+do_or_undo_automation_fill (
+  ArrangerSelectionsAction * self,
+  const int                  _do)
+{
+  if (!self->first_run)
+    {
+      /* clear current selections in the project */
+      arranger_selections_clear (
+        (ArrangerSelections *) TL_SELECTIONS,
+        F_NO_FREE);
+
+      /* get the actual object from the
+       * project */
+      ArrangerObject * obj =
+        arranger_object_find (
+          _do ?
+          (ArrangerObject *) self->region_before :
+          (ArrangerObject *) self->region_after);
+      g_return_val_if_fail (obj, -1);
+
+      /* remove link */
+      ZRegion * region =
+        (ZRegion *) obj;
+      if (region_has_link_group (
+            region))
+        {
+          region_unlink (region);
+
+          /* unlink remembered link
+           * groups */
+          region =
+            _do ?
+              self->region_before :
+              self->region_after;
+          region_unlink (region);
+        }
+
+      /* remove it */
+      arranger_object_remove_from_project (obj);
+
+      /* clone the clone */
+      obj =
+        arranger_object_clone (
+          _do ?
+          (ArrangerObject *) self->region_after :
+          (ArrangerObject *) self->region_before,
+          ARRANGER_OBJECT_CLONE_COPY_MAIN);
+
+      /* add it to the project */
+      arranger_object_add_to_project (
+        obj, F_NO_PUBLISH_EVENTS);
+
+      /* select it */
+      arranger_object_select (
+        obj, F_SELECT, F_APPEND);
+
+      /* remember new info */
+      arranger_object_copy_identifier (
+        _do ?
+          (ArrangerObject *) self->region_after :
+          (ArrangerObject *) self->region_before,
+        obj);
+    }
+
+  self->first_run = false;
+
+  return 0;
+}
+
+/**
+ * Does or undoes the action.
+ *
+ * @param _do 1 to do, 0 to undo.
  */
 static int
 do_or_undo_split (
@@ -1913,6 +2043,9 @@ arranger_selections_action_do (
     case UA_EDIT_ARRANGER_SELECTIONS:
       return do_or_undo_edit (self, true);
       break;
+    case UA_AUTOMATION_FILL:
+      return do_or_undo_automation_fill (
+        self, true);
     case UA_SPLIT_ARRANGER_SELECTIONS:
       return do_or_undo_split (self, true);
       break;
@@ -1959,6 +2092,9 @@ arranger_selections_action_undo (
           self, true, false);
     case UA_EDIT_ARRANGER_SELECTIONS:
       return do_or_undo_edit (self, false);
+    case UA_AUTOMATION_FILL:
+      return do_or_undo_automation_fill (
+        self, false);
     case UA_SPLIT_ARRANGER_SELECTIONS:
       return do_or_undo_split (self, false);
     case UA_RESIZE_ARRANGER_SELECTIONS:

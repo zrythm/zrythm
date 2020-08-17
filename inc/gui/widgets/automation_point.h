@@ -45,8 +45,8 @@
  * This function assumes that the point is already
  * inside the full rect of the automation point.
  *
- * @param x X in global coordinates.
- * @param y Y in global coordinates.
+ * @param x X, or -1 to not check x.
+ * @param y Y, or -1 to not check y.
  *
  * @note the transient is also checked.
  */

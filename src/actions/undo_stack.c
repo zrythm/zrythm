@@ -219,6 +219,7 @@ undo_stack_push (
     case UA_DUPLICATE_ARRANGER_SELECTIONS:
     case UA_DELETE_ARRANGER_SELECTIONS:
     case UA_QUANTIZE_ARRANGER_SELECTIONS:
+    case UA_AUTOMATION_FILL:
       array_double_size_if_full (
         self->as_actions,
         self->num_as_actions,
@@ -289,6 +290,7 @@ remove_action (
     case UA_DUPLICATE_ARRANGER_SELECTIONS:
     case UA_DELETE_ARRANGER_SELECTIONS:
     case UA_QUANTIZE_ARRANGER_SELECTIONS:
+    case UA_AUTOMATION_FILL:
       array_delete (
         self->as_actions,
         self->num_as_actions,

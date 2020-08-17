@@ -62,9 +62,10 @@ typedef struct _RegionWidget RegionWidget;
 void
 automation_arranger_widget_create_ap (
   ArrangerWidget * self,
-  const Position *           pos,
-  const double               start_y,
-  ZRegion *                   region);
+  const Position * pos,
+  const double     start_y,
+  ZRegion *        region,
+  bool             autofilling);
 
 /**
  * Change curviness of selected curves.
@@ -79,6 +80,17 @@ automation_arranger_widget_resize_curves (
  */
 void
 automation_arranger_widget_show_context_menu (
+  ArrangerWidget * self,
+  double           x,
+  double           y);
+
+/**
+ * Called when using the edit tool.
+ *
+ * @return Whether an automation point was moved.
+ */
+bool
+automation_arranger_move_hit_aps (
   ArrangerWidget * self,
   double           x,
   double           y);

@@ -95,9 +95,10 @@
 void
 automation_arranger_widget_create_ap (
   ArrangerWidget * self,
-  const Position *   pos,
-  const double       start_y,
-  ZRegion *           region)
+  const Position * pos,
+  const double     start_y,
+  ZRegion *        region,
+  bool             autofilling)
 {
   AutomationTrack * at =
     region_get_automation_track (region);
@@ -106,8 +107,11 @@ automation_arranger_widget_create_ap (
     automation_track_get_port (at);
   g_return_if_fail (port);
 
-  self->action =
-    UI_OVERLAY_ACTION_CREATING_MOVING;
+  if (!autofilling)
+    {
+      self->action =
+        UI_OVERLAY_ACTION_CREATING_MOVING;
+    }
 
   ArrangerObject * region_obj =
     (ArrangerObject *) region;
@@ -152,8 +156,7 @@ automation_arranger_widget_create_ap (
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_CREATED, ap);
   arranger_object_select (
-    ap_obj, F_SELECT,
-    F_NO_APPEND);
+    ap_obj, F_SELECT, F_NO_APPEND);
 }
 
 /**
@@ -301,4 +304,68 @@ automation_arranger_widget_show_context_menu (
   gtk_widget_show_all (GTK_WIDGET (menu));
   gtk_menu_popup_at_pointer (
     GTK_MENU (menu), NULL);
+}
+
+/**
+ * Called when using the edit tool.
+ *
+ * @return Whether an automation point was moved.
+ */
+bool
+automation_arranger_move_hit_aps (
+  ArrangerWidget * self,
+  double           x,
+  double           y)
+{
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+
+  /* get snapped x */
+  Position pos;
+  arranger_widget_px_to_pos (
+    self, x, &pos, true);
+  if (!self->shift_held &&
+      SNAP_GRID_ANY_SNAP (self->snap_grid))
+    {
+      position_snap (
+        NULL, &pos, NULL, NULL,
+        self->snap_grid);
+      x =
+        arranger_widget_pos_to_px (
+          self, &pos, true);
+    }
+
+  /* move any hit automation points */
+  ArrangerObject * obj =
+    arranger_widget_get_hit_arranger_object (
+      self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT,
+      x, -1);
+  if (obj)
+    {
+      AutomationPoint * ap = (AutomationPoint *) obj;
+      if (automation_point_is_point_hit (ap, x, -1))
+        {
+          arranger_object_select (
+            obj, F_SELECT, F_APPEND);
+
+          Port * port =
+            automation_point_get_port (ap);
+          g_return_val_if_fail (port, false);
+
+          /* move it to the y value */
+          /* do height - because it's uside down */
+          float normalized_val =
+            (float) ((height - y) / height);
+          float value =
+            control_port_normalized_val_to_real (
+              port, normalized_val);
+          automation_point_set_fvalue (
+            ap, value, F_NOT_NORMALIZED);
+
+          return true;
+        }
+    }
+
+  return false;
 }

@@ -72,6 +72,7 @@ typedef enum UndoableActionType
   UA_DUPLICATE_ARRANGER_SELECTIONS,
   UA_DELETE_ARRANGER_SELECTIONS,
   UA_QUANTIZE_ARRANGER_SELECTIONS,
+  UA_AUTOMATION_FILL,
 
   /* ---- end ---- */
 
@@ -136,6 +137,8 @@ undoable_action_type_strings[] =
     UA_DELETE_ARRANGER_SELECTIONS },
   { "Quantize arranger selections",
     UA_QUANTIZE_ARRANGER_SELECTIONS },
+  { "Automation autofill",
+    UA_AUTOMATION_FILL },
   { "Port connection", UA_PORT_CONNECTION },
   { "Transport", UA_TRANSPORT },
   { "Range", UA_RANGE },

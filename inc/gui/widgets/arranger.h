@@ -161,9 +161,21 @@ typedef struct _ArrangerWidget
    * drag_begin. */
   int            start_object_was_selected;
 
-  /** A clone of the ArrangerSelections on drag
-   * begin. */
+  /**
+   * A clone of the ArrangerSelections on drag
+   * begin.
+   *
+   * When autofilling velocities, this is used to
+   * store the affected objects before editing.
+   *
+   * This must contain clones only.
+   */
   ArrangerSelections * sel_at_start;
+
+  /**
+   * Region on drag begin, if editing automation.
+   */
+  ZRegion *            region_at_start;
 
   /** Selections to delete, used with the eraser
    * tool. */
@@ -399,10 +411,10 @@ arranger_widget_get_visible_rect (
  * of the given type that appear in the given
  * ranger.
  *
- * @param x Global x.
- * @param y Global y.
  * @param type The type of arranger objects to find,
  *   or -1 to look for all objects.
+ * @param x X, or -1 to not check x.
+ * @param y Y, or -1 to not check y.
  * @param array The array to fill.
  * @param array_size The size of the array to fill.
  */
@@ -440,6 +452,8 @@ arranger_widget_get_hit_objects_in_rect (
  *
  * @param type The arranger object type, or -1 to
  *   search for all types.
+ * @param x X, or -1 to not check x.
+ * @param y Y, or -1 to not check y.
  */
 ArrangerObject *
 arranger_widget_get_hit_arranger_object (

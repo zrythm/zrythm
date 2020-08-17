@@ -113,6 +113,9 @@ undoable_action_init_loaded (
     INIT_LOADED (SPLIT_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
+    INIT_LOADED (AUTOMATION_FILL,
+               arranger_selections,
+               ArrangerSelections);
     INIT_LOADED (
       PORT_CONNECTION, port_connection,
       PortConnection);
@@ -216,6 +219,9 @@ undoable_action_do (UndoableAction * self)
                arranger_selections,
                ArrangerSelections);
     DO_ACTION (SPLIT_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    DO_ACTION (AUTOMATION_FILL,
                arranger_selections,
                ArrangerSelections);
     DO_ACTION (TRANSPORT, transport, Transport);
@@ -327,6 +333,9 @@ undoable_action_undo (UndoableAction * self)
     UNDO_ACTION (SPLIT_ARRANGER_SELECTIONS,
                arranger_selections,
                ArrangerSelections);
+    UNDO_ACTION (AUTOMATION_FILL,
+               arranger_selections,
+               ArrangerSelections);
     UNDO_ACTION (
       PORT_CONNECTION, port_connection,
       PortConnection);
@@ -416,6 +425,9 @@ undoable_action_free (UndoableAction * self)
                arranger_selections,
                ArrangerSelections);
     FREE_ACTION (RECORD_ARRANGER_SELECTIONS,
+               arranger_selections,
+               ArrangerSelections);
+    FREE_ACTION (AUTOMATION_FILL,
                arranger_selections,
                ArrangerSelections);
     FREE_ACTION (
@@ -509,6 +521,9 @@ undoable_action_stringize (
                ArrangerSelections,
                arranger_selections);
     STRINGIZE_UA (SPLIT_ARRANGER_SELECTIONS,
+               ArrangerSelections,
+               arranger_selections);
+    STRINGIZE_UA (AUTOMATION_FILL,
                ArrangerSelections,
                arranger_selections);
     STRINGIZE_UA (

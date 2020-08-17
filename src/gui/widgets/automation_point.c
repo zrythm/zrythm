@@ -198,8 +198,8 @@ automation_point_draw (
  * This function assumes that the point is already
  * inside the full rect of the automation point.
  *
- * @param x X in global coordinates.
- * @param y Y in global coordinates.
+ * @param x X, or -1 to not check x.
+ * @param y Y, or -1 to not check y.
  *
  * @note the transient is also checked.
  */
@@ -211,17 +211,25 @@ automation_point_is_point_hit (
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
-  bool curves_up =
-    automation_point_curves_up (self);
+  bool x_ok =
+    (obj->full_rect.x - x) < AP_WIDGET_POINT_SIZE;
 
-  if ((obj->full_rect.x - x) <
-        AP_WIDGET_POINT_SIZE &&
-      curves_up ?
-        (obj->full_rect.y + obj->full_rect.height) -
-          y < AP_WIDGET_POINT_SIZE :
-        y - obj->full_rect.y <
-           AP_WIDGET_POINT_SIZE)
-    return true;
+  if (y < 0)
+    {
+      return x_ok;
+    }
+  else
+    {
+      bool curves_up =
+        automation_point_curves_up (self);
+      if (x_ok &&
+          curves_up ?
+            (obj->full_rect.y + obj->full_rect.height) -
+              y < AP_WIDGET_POINT_SIZE :
+            y - obj->full_rect.y <
+               AP_WIDGET_POINT_SIZE)
+        return true;
+    }
 
   return false;
 }

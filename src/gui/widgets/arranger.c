@@ -1338,6 +1338,8 @@ add_object_if_overlap (
  * @param rect The rectangle to search in.
  * @param type The type of arranger objects to find,
  *   or -1 to look for all objects.
+ * @param x X, or -1 to not check x.
+ * @param y Y, or -1 to not check y.
  * @param array The array to fill.
  * @param array_size The size of the array to fill.
  */
@@ -1658,10 +1660,10 @@ arranger_widget_get_hit_objects_in_rect (
  * of the given type that appear in the given
  * ranger.
  *
- * @param x Global x.
- * @param y Global y.
  * @param type The type of arranger objects to find,
  *   or -1 to look for all objects.
+ * @param x X, or -1 to not check x.
+ * @param y Y, or -1 to not check y.
  * @param array The array to fill.
  * @param array_size The size of the array to fill.
  */
@@ -2857,7 +2859,8 @@ create_item (
       if (region)
         {
           automation_arranger_widget_create_ap (
-            self, &pos, start_y, region);
+            self, &pos, start_y, region,
+            autofilling);
         }
       break;
     }
@@ -2914,6 +2917,13 @@ autofill (
           self->sel_at_start =
             arranger_selections_clone (sel);
         }
+
+      self->region_at_start =
+        (ZRegion *)
+        arranger_object_clone (
+          (ArrangerObject *)
+          clip_editor_get_region (CLIP_EDITOR),
+          ARRANGER_OBJECT_CLONE_COPY_MAIN);
     }
 
   if (self->type == TYPE (MIDI_MODIFIER))
@@ -2923,9 +2933,12 @@ autofill (
     }
   else if (self->type == TYPE (AUTOMATION))
     {
-      /* get all velocities in the range */
-      Position pos;
-      ui_px_to_pos_editor (x, &pos, true);
+      /* move aps or create ap */
+      if (!automation_arranger_move_hit_aps (
+            self, x, y))
+        {
+          create_item (self, x, y, true);
+        }
     }
   else
     {
@@ -4030,11 +4043,20 @@ on_drag_end_automation (
         UndoableAction * ua =
           arranger_selections_action_new_delete (
             self->sel_to_delete);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+        undo_manager_perform (UNDO_MANAGER, ua);
         object_free_w_func_and_null (
           arranger_selections_free_full,
           self->sel_to_delete);
+      }
+      break;
+    case UI_OVERLAY_ACTION_AUTOFILLING:
+      {
+        ZRegion * region =
+          clip_editor_get_region (CLIP_EDITOR);
+        UndoableAction * ua =
+          arranger_selections_action_new_automation_fill (
+            self->region_at_start, region, true);
+        undo_manager_perform (UNDO_MANAGER, ua);
       }
       break;
     /* if didn't click on something */
@@ -4741,6 +4763,11 @@ drag_end (
         self->sel_at_start);
       self->sel_at_start = NULL;
     }
+  if (self->region_at_start)
+    {
+      arranger_object_free (
+        (ArrangerObject *) self->region_at_start);
+    }
 
   /* reset action */
   self->action = UI_OVERLAY_ACTION_NONE;
@@ -4851,6 +4878,8 @@ get_hit_timeline_object (
  *
  * @param type The arranger object type, or -1 to
  *   search for all types.
+ * @param x X, or -1 to not check x.
+ * @param y Y, or -1 to not check y.
  */
 ArrangerObject *
 arranger_widget_get_hit_arranger_object (

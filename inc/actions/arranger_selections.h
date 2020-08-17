@@ -151,12 +151,16 @@ typedef struct ArrangerSelectionsAction
 {
   UndoableAction       parent_instance;
 
-  /** A clone of the ArrangerSelections. */
+  /**
+   * A clone of the ArrangerSelections.
+   */
   ArrangerSelections * sel;
 
-  /** A clone of the ArrangerSelections after the
+  /**
+   * A clone of the ArrangerSelections after the
    * change (used in the EDIT action and
-   * quantize). */
+   * quantize).
+   */
   ArrangerSelections * sel_after;
 
   /** Type of edit action, if an Edit action. */
@@ -237,6 +241,10 @@ typedef struct ArrangerSelectionsAction
   MidiNote *           mn_r1[800];
   MidiNote *           mn_r2[800];
 
+  /** Used for automation autofill action. */
+  ZRegion *            region_before;
+  ZRegion *            region_after;
+
   /* single objects */
 #if 0
   ZRegion *            region;
@@ -293,36 +301,30 @@ static const cyaml_schema_field_t
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ArrangerSelectionsAction, tl_sel,
     timeline_selections_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "ma_sel",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ArrangerSelectionsAction, ma_sel,
     midi_arranger_selections_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "automation_sel",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ArrangerSelectionsAction, automation_sel,
     automation_selections_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "chord_sel_after",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ArrangerSelectionsAction, chord_sel_after,
     chord_selections_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "tl_sel_after",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ArrangerSelectionsAction, tl_sel_after,
     timeline_selections_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "ma_sel_after",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ArrangerSelectionsAction, ma_sel_after,
     midi_arranger_selections_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "automation_sel_after",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ArrangerSelectionsAction, automation_sel_after,
     automation_selections_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    ArrangerSelectionsAction, region_before,
+    region_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    ArrangerSelectionsAction, region_after,
+    region_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
     "region_r1", CYAML_FLAG_DEFAULT,
     ArrangerSelectionsAction, region_r1,
@@ -529,6 +531,22 @@ arranger_selections_action_new_edit (
   ArrangerSelections *             sel_after,
   ArrangerSelectionsActionEditType type,
   bool                             already_edited);
+
+/**
+ * Creates a new action for automation autofill.
+ *
+ * @param region_before The region before the
+ *   change.
+ * @param region_after The region after the
+ *   change.
+ * @param already_changed Whether the change was
+ *   already made.
+ */
+UndoableAction *
+arranger_selections_action_new_automation_fill (
+  ZRegion * region_before,
+  ZRegion * region_after,
+  bool      already_changed);
 
 /**
  * Creates a new action for splitting
