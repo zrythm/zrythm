@@ -17,9 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <math.h>
+#include <string.h>
 
 #include "audio/port.h"
 #include "gui/widgets/bar_slider.h"

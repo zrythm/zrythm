@@ -335,6 +335,7 @@ test_cflags = [
   '-Wno-sequence-point',
   '-Wignored-qualifiers',
   '-Wno-cast-function-type',
+  '-Walloca',
   '-fno-common',
   # dummy macro for extracting translatable strings
   # when we can't use gettext()
@@ -420,8 +421,12 @@ test_strict_cflags = [
   '-Werror=shadow',
   '-Werror=undef',
   '-Werror=unused',
-  '-Werror=strict-aliasing',
+  # TODO enable following 2 lines to catch VLAs
+  #'-Wvla',
+  #'-Werror=vla',
   '-fstrict-aliasing',
+  '-Wstrict-aliasing=2',
+  '-Werror=strict-aliasing',
   #'-Werror=strict-overflow',
   '-Wstrict-overflow=2',
   '-fstrict-overflow',

@@ -190,6 +190,7 @@ test_port_and_plugin_track_pos_after_duplication (void)
   test_helper_zrythm_cleanup ();
 }
 
+#ifdef HAVE_CARLA
 static void
 test_port_and_plugin_track_pos_after_duplication_with_carla (void)
 {
@@ -207,6 +208,7 @@ test_port_and_plugin_track_pos_after_duplication_with_carla (void)
 
   test_helper_zrythm_cleanup ();
 }
+#endif
 
 int
 main (int argc, char *argv[])

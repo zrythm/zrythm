@@ -86,6 +86,7 @@ _test_move_tracks (
               PLUGIN_MANAGER->plugin_descriptors[i]);
         }
     }
+  g_return_if_fail (descr);
 
   /* fix the descriptor (for some reason lilv
    * reports it as Plugin instead of Instrument if

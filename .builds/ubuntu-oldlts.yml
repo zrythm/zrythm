@@ -1,6 +1,6 @@
 image: ubuntu/oldlts # old xx.04
 packages:
-  - cmake
+  #- cmake
   - libgtk-3-dev
   - libjack-dev
   - libsndfile1-dev
@@ -12,9 +12,9 @@ packages:
   - ladspa-sdk
   - libfftw3-dev
   - libasound2-dev
-  - libavcodec-dev
-  - libavutil-dev
-  - libavformat-dev
+  #- libavcodec-dev
+  #- libavutil-dev
+  #- libavformat-dev
   - libchromaprint-dev
   - libgtksourceview-3.0-dev
   - libgraphviz-dev
@@ -23,12 +23,16 @@ packages:
   - librubberband-dev
   - libzstd-dev
   - python3
+  - python3-pip
   - xdg-utils
 sources:
   - https://git.sr.ht/~alextee/zrythm
   - https://github.com/mesonbuild/meson
 tasks:
+  - install_cmake:
+      sudo pip3 install cmake
   - setup: |
+      export PATH=/usr/local/bin:$PATH
       cd zrythm
       ../meson/meson.py build -Dtests=true -Dmanpage=true
   - build: |

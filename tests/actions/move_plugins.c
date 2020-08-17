@@ -38,6 +38,7 @@
 
 #include <glib.h>
 
+#ifdef HAVE_LSP_COMPRESSOR
 static void
 _test_port_and_plugin_track_pos_after_move (
   const char * pl_bundle,
@@ -210,6 +211,7 @@ _test_port_and_plugin_track_pos_after_move (
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_undo (UNDO_MANAGER);
 }
+#endif
 
 static void
 test_port_and_plugin_track_pos_after_move (void)
@@ -225,6 +227,7 @@ test_port_and_plugin_track_pos_after_move (void)
   test_helper_zrythm_cleanup ();
 }
 
+#ifdef HAVE_CARLA
 static void
 test_port_and_plugin_track_pos_after_move_with_carla (void)
 {
@@ -238,6 +241,7 @@ test_port_and_plugin_track_pos_after_move_with_carla (void)
 
   test_helper_zrythm_cleanup ();
 }
+#endif
 
 int
 main (int argc, char *argv[])

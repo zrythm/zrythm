@@ -294,6 +294,7 @@ test_group_track_deletion (void)
   test_helper_zrythm_cleanup ();
 }
 
+#ifdef HAVE_AMS_LFO
 /**
  * Asserts that src is connected/disconnected
  * to/from send.
@@ -543,6 +544,7 @@ test_track_deletion_with_sends (
 
   /* TODO test MIDI sends */
 }
+#endif
 
 static void
 test_target_track_deletion_with_sends (void)

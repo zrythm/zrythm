@@ -33,6 +33,7 @@ packages:
   - gettext-runtime
   - gtk3
   - pango
+  - python3
   - fftw3
   - fftw3-float
   - rubberband

@@ -30,6 +30,7 @@ packages:
   - lcov
   - gcovr
   - rtaudio
+  - vim
   - zstd
 sources:
   - https://git.sr.ht/~alextee/zrythm
