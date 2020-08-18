@@ -49,10 +49,6 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#ifdef HAVE_LIBGTOP
-#include <glibtop.h>
-#endif
-
 #ifdef HAVE_GTK_SOURCE_VIEW_4
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -474,12 +470,6 @@ main (int    argc,
   /* init audio decoder */
   g_message ("Initing audio decoder...");
   audec_init ();
-
-  /* init glibtop */
-#ifdef HAVE_LIBGTOP
-  g_message ("Initing libgtop...");
-  glibtop_init ();
-#endif
 
   /* init random */
   g_message ("Initing random...");

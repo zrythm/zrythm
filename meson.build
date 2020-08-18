@@ -510,13 +510,6 @@ if os_windows
 endif
 
 # set config defines
-libgtop_dep = dependency(
-  'libgtop-2.0', required: false)
-# disable for now
-if libgtop_dep.found () and false
-  cdata.set('HAVE_LIBGTOP', 1)
-  cdata.set('TIME_WITH_SYS_TIME', 0)
-endif
 if not os_darwin
   x11_dep = dependency('x11', required: false)
   if (x11_dep.found ())
@@ -697,7 +690,6 @@ endif
 zrythm_deps = [
   gtk_dep,
   sndfile_dep,
-  libgtop_dep,
   alsa_dep,
   cyaml_dep,
   audec_dep,
@@ -847,7 +839,6 @@ summary ({
 summary ({
   'Carla': carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla_utils_dep.found (),
   'GraphViz': have_graphviz,
-  'Gtop': libgtop_dep.found(),
   'Guile': have_guile,
   'Jack': have_jack,
   'PortAudio': portaudio_dep.found (),

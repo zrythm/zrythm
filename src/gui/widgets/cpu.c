@@ -31,12 +31,6 @@
 #include "utils/cpu_windows.h"
 #include "utils/cairo.h"
 
-#ifdef HAVE_LIBGTOP
-#include <glibtop.h>
-#include <glibtop/cpu.h>
-#include <glibtop/loadavg.h>
-#endif
-
 #ifdef __APPLE__
 #include <mach/mach_init.h>
 #include <mach/mach_error.h>
@@ -148,10 +142,6 @@ cpu_draw_cb (
 	return 0;
 }
 
-#if defined(HAVE_LIBGTOP)
-unsigned long prev_total, prev_idle;
-#endif
-
 /**
  * Refreshes DSP load percentage.
  *
@@ -188,7 +178,7 @@ refresh_dsp_load (
   return G_SOURCE_CONTINUE;
 }
 
-#if defined(__linux__) && !defined(HAVE_LIBGTOP)
+#if defined(__linux__)
 static long double a[4], b[4] = {0,0,0,0}, loadavg;
 #endif
 
@@ -214,19 +204,7 @@ static int
 refresh_cpu_load (
   CpuWidget * self)
 {
-#ifdef HAVE_LIBGTOP
-  glibtop_cpu cpu;
-  glibtop_get_cpu (&cpu);
-  self->cpu =
-    (int)
-    (100.f -
-      (float) (cpu.idle - prev_idle) /
-      (float) (cpu.total - prev_total) * 100.f);
-
-  prev_total = cpu.total;
-  prev_idle = cpu.idle;
-
-#elif defined(__linux__)
+#if defined(__linux__)
 
   /* ======= non libgtop ====== */
   FILE *fp;

@@ -33,20 +33,29 @@ VST2/VST3 Scan
 
 GNU/Linux and FreeBSD
 ~~~~~~~~~~~~~~~~~~~~~
-Zrythm will scan for VST2 and VST3 plugins in the
-following paths.
+Zrythm will scan for VST2 plugins in the following
+paths,
 
 - :file:`{$HOME}/.vst`
 - :file:`{$HOME}/vst`
 - :file:`/usr/local/lib/vst`
 - :file:`/usr/lib/vst`
 
-You can bypass this behavior by passing the
-:envvar:`VST_PATH` environment variable to specify custom
-paths. For example, ``VST_PATH=$HOME/custom-vst-dir zrythm``.
+and VST3 plugins in the following paths.
 
-.. note:: ``lib`` will be replaced with ``lib64`` depending
-   on your system.
+- :file:`{$HOME}/.vst3`
+- :file:`/usr/local/lib/vst3`
+- :file:`/usr/lib/vst3`
+
+You can bypass this behavior by passing the
+:envvar:`VST_PATH` or :envvar:`VST3_PATH`
+environment variables to specify custom paths. For
+example,
+``VST_PATH=$HOME/custom-vst-dir zrythm``.
+
+.. note:: If your system uses a libdir other than
+   ``lib`` (for example ``lib64``), Zrythm will scan
+   for plugins in both locations.
 
 Windows
 ~~~~~~~
