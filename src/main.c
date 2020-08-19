@@ -58,8 +58,8 @@
 
 #include <audec/audec.h>
 #include <fftw3.h>
-#if 0
-#include <lsp-plug.in/dsp/dsp_c.h>
+#ifdef HAVE_LSP_DSP
+#include <lsp-plug.in/dsp/dsp.h>
 #endif
 #include <suil/suil.h>
 #ifdef HAVE_X11
@@ -474,10 +474,25 @@ main (int    argc,
   g_message ("Initing audio decoder...");
   audec_init ();
 
-#if 0
-  /* init lsp dsp lib */
+#ifdef HAVE_LSP_DSP
+  /* init lsp dsp */
   g_message ("Initing LSP DSP...");
-  lsp_dsp_lib_dsp_init ();
+  lsp_dsp_init();
+
+  /* output information about the system */
+  info_t *info = lsp_dsp_info();
+  if (info)
+    {
+      printf("Architecture:   %s\n", info->arch);
+      printf("Processor:      %s\n", info->cpu);
+      printf("Model:          %s\n", info->model);
+      printf("Features:       %s\n", info->features);
+      free(info);
+    }
+  else
+    {
+      g_warning ("Failed to get system info");
+    }
 #endif
 
   /* init random */

@@ -686,8 +686,9 @@ if not reproc_dep.found ()
 endif
 
 lsp_dsp_dep = dependency (
-  'lsp-dsp-lib', required: false)
-if lsp_dsp_dep.found ()
+  'lsp-dsp-lib', version: '>=0.5.5', required: false)
+have_lsp_dsp = lsp_dsp_dep.found () and not get_option ('lsp_dsp').disabled ()
+if have_lsp_dsp
   cdata.set('HAVE_LSP_DSP', 1)
 endif
 
@@ -848,6 +849,7 @@ summary ({
   'GraphViz': have_graphviz,
   'Guile': have_guile,
   'Jack': have_jack,
+  'LSP DSP': have_lsp_dsp,
   'PortAudio': portaudio_dep.found (),
   'RtAudio': rtaudio_dep.found (),
   'RtMidi': rtmidi_dep.found (),

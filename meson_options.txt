@@ -82,6 +82,12 @@ option (
   description: 'Build with libguile support for scripting')
 
 option (
+  'lsp_dsp',
+  type: 'feature',
+  value: 'auto',
+  description: 'Build with LSP DSP support for optimized DSP')
+
+option (
   'manpage',
   type: 'boolean',
   value: true,
