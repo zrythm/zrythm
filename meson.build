@@ -685,6 +685,12 @@ if not reproc_dep.found ()
     'reproc')
 endif
 
+lsp_dsp_dep = dependency (
+  'lsp-dsp-lib', required: false)
+if lsp_dsp_dep.found ()
+  cdata.set('HAVE_LSP_DSP', 1)
+endif
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -724,6 +730,7 @@ zrythm_deps = [
   chromaprint_dep,
   fftw3_dep,
   gtksource_dep,
+  lsp_dsp_dep,
 
   # these are needed for gentoo
   dependency('fftw3_threads', required: false),

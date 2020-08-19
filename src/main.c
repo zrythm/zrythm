@@ -58,6 +58,9 @@
 
 #include <audec/audec.h>
 #include <fftw3.h>
+#if 0
+#include <lsp-plug.in/dsp/dsp_c.h>
+#endif
 #include <suil/suil.h>
 #ifdef HAVE_X11
 #include <X11/Xlib.h>
@@ -470,6 +473,12 @@ main (int    argc,
   /* init audio decoder */
   g_message ("Initing audio decoder...");
   audec_init ();
+
+#if 0
+  /* init lsp dsp lib */
+  g_message ("Initing LSP DSP...");
+  lsp_dsp_lib_dsp_init ();
+#endif
 
   /* init random */
   g_message ("Initing random...");
