@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2019-09-02 00:21+0000\n"
-"Last-Translator: Swann Martinet <swann.ranskassa@laposte.net>\n"
+"PO-Revision-Date: 2020-08-19 21:44+0000\n"
+"Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
+"manualediting/it/>\n"
 "Language: it\n"
-"Language-Team: Italian "
-"<https://hosted.weblate.org/projects/zrythm/manualediting/it/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -98,7 +99,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponential curve."
-msgstr ""
+msgstr "Curva esponenziale."
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Superellipse"
@@ -511,7 +512,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:22
 msgid "Highlight"
-msgstr ""
+msgstr "Evidenziare"
 
 #: ../../editing/clip-editors/toolbar.rst:23
 msgid "Chord highlighting is explained in :ref:`chords-scales`."
@@ -529,7 +530,7 @@ msgstr ""
 #: ../../editing/clip-editors/toolbar.rst:33
 #: ../../editing/clip-editors/toolbar.rst:37
 msgid "No controls at the moment."
-msgstr ""
+msgstr "Nessun controllo al momento."
 
 #: ../../editing/common-operations.rst:8
 msgid "Common Operations"
@@ -543,7 +544,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:15
 msgid "Undo/Redo"
-msgstr ""
+msgstr "Annulla/Rifai"
 
 #: ../../editing/common-operations.rst:16
 msgid ""
@@ -578,7 +579,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:35
 msgid "Cut"
-msgstr ""
+msgstr "Taglia"
 
 #: ../../editing/common-operations.rst:36
 msgid ""
@@ -589,7 +590,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:42
 msgid "Copy"
-msgstr ""
+msgstr "Copia"
 
 #: ../../editing/common-operations.rst:43
 msgid ""
@@ -599,7 +600,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:49
 msgid "Paste"
-msgstr ""
+msgstr "Incolla"
 
 #: ../../editing/common-operations.rst:50
 msgid ""
@@ -609,7 +610,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:56
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplica"
 
 #: ../../editing/common-operations.rst:57
 msgid ""
@@ -619,7 +620,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:62
 msgid "Delete"
-msgstr ""
+msgstr "Cancella"
 
 #: ../../editing/common-operations.rst:63
 msgid ""
@@ -629,7 +630,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:68
 msgid "Selections"
-msgstr ""
+msgstr "Selezioni"
 
 #: ../../editing/common-operations.rst:70
 msgid "Clear Selection"
@@ -641,7 +642,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:74
 msgid "Select All"
-msgstr ""
+msgstr "Seleziona tutto"
 
 #: ../../editing/common-operations.rst:75
 msgid "Select all objects in the current editor."
@@ -1074,7 +1075,7 @@ msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:31
 msgid "Length"
-msgstr ""
+msgstr "Lunghezza"
 
 #: ../../editing/snapping-grid-options.rst:32
 msgid "Note length to snap to."
@@ -1627,4 +1628,3 @@ msgstr ""
 #~ "has common features shared by each "
 #~ "editor."
 #~ msgstr ""
-

@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the zrythm package.
 # Alexandros Theodotou <alex at zrythm dot org>, 2019.
 #
+# Roberto Albano De Rosa <robertoaldm@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-08-14 23:36+0100\n"
-"PO-Revision-Date: 2019-09-02 00:20+0000\n"
-"Last-Translator: Swann Martinet <swann.ranskassa@laposte.net>\n"
+"PO-Revision-Date: 2020-08-19 21:44+0000\n"
+"Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
 "Language: it\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:188
@@ -63,7 +64,7 @@ msgstr ""
 
 #: inc/utils/gtk.h:86 src/gui/widgets/home_toolbar.c:133
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplica"
 
 #: inc/utils/gtk.h:92 resources/ui/fader_buttons.ui:99
 msgid "Mute"
@@ -1190,19 +1191,19 @@ msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:127
 msgid "Cut"
-msgstr ""
+msgstr "Taglia"
 
 #: src/gui/widgets/home_toolbar.c:129
 msgid "Copy"
-msgstr ""
+msgstr "Copia"
 
 #: src/gui/widgets/home_toolbar.c:131
 msgid "Paste"
-msgstr ""
+msgstr "Incolla"
 
 #: src/gui/widgets/home_toolbar.c:135
 msgid "Delete"
-msgstr ""
+msgstr "Cancella"
 
 #: src/gui/widgets/home_toolbar.c:137
 msgid "Clear Selection"
@@ -1210,7 +1211,7 @@ msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:139
 msgid "Select All"
-msgstr ""
+msgstr "Seleziona tutto"
 
 #: src/gui/widgets/home_toolbar.c:141
 msgid "Loop Selection"
@@ -3132,7 +3133,7 @@ msgstr ""
 
 #: resources/ui/editor_toolbar.ui:47
 msgid "Highlight"
-msgstr ""
+msgstr "Evidenziare"
 
 #: resources/ui/editor_toolbar.ui:60
 msgid "Both"
@@ -3246,7 +3247,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:626
 msgid "Autosave interval"
-msgstr ""
+msgstr "Intervallo di salvataggio automatico"
 
 #: resources/ui/preferences.ui:595
 msgid ""
@@ -3722,7 +3723,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:524
 msgid "Keep window on top"
-msgstr ""
+msgstr "Mantieni la finestra in cima"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:525
 msgid "Always show plugin UIs on top of the main window."
@@ -3767,7 +3768,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:563
 msgid "SFZ instruments"
-msgstr ""
+msgstr "Strumenti SFZ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:564
 msgid ""
@@ -3777,7 +3778,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:568
 msgid "SF2 instruments"
-msgstr ""
+msgstr "Strumenti SF2"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:569
 msgid ""
@@ -3811,6 +3812,8 @@ msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
 "this is set to 0."
 msgstr ""
+"Intervallo, in minuti, per autosalvare il progetto. L'autosalvataggio verrà "
+"disabilitato se impostato a 0."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:635
 msgid "UI"
@@ -3826,11 +3829,11 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:645
 msgid "User interface language"
-msgstr ""
+msgstr "Lingua dell'interfaccia utente"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:646
 msgid "The language to use for the user interface."
-msgstr ""
+msgstr "La lingua da usare per l'interfaccia utente."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:654
 msgid "DSP"
