@@ -1238,6 +1238,14 @@ set_tooltip_from_button (
     {
       SET_TOOLTIP (_("Remove"));
     }
+  else if (ICON_IS (FREEZE))
+    {
+      SET_TOOLTIP (_("Freeze/unfreeze"));
+    }
+  else if (ICON_IS (LOCK))
+    {
+      SET_TOOLTIP (_("Lock/unlock"));
+    }
   else
     {
       /* tooltip missing */

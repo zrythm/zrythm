@@ -57,8 +57,8 @@
 #endif
 
 #include <audec/audec.h>
-#include <suil/suil.h>
 #include <fftw3.h>
+#include <suil/suil.h>
 #ifdef HAVE_X11
 #include <X11/Xlib.h>
 #endif

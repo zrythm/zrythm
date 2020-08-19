@@ -215,6 +215,18 @@ host_dispatcher (
         }
 #endif
       break;
+#if 0
+    case NATIVE_HOST_OPCODE_INTERNAL_PLUGIN:
+      /* falktx: you will need to call the new
+       * juce functions, then return 1 on the
+       * INTERNAL_PLUGIN host opcode.
+       * when that opcode returns 1, carla-plugin
+       * will let the host do the juce idling
+       * which is for the best here, since you want
+       * to show UIs without carla itself */
+      return 1;
+      break;
+#endif
     default:
       break;
     }
