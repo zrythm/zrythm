@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2019-09-02 00:20+0000\n"
-"Last-Translator: Swann Martinet <swann.ranskassa@laposte.net>\n"
+"PO-Revision-Date: 2020-08-19 21:44+0000\n"
+"Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/it/>\n"
 "Language: it\n"
-"Language-Team: Italian "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/it/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -74,11 +75,11 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:49
 msgid "This will clear ALL your settings."
-msgstr ""
+msgstr "Questo cancellerà TUTTE le tue impostazioni."
 
 #: ../../configuration/additional-settings.rst:51
 msgid "This will be added on the UI soon."
-msgstr ""
+msgstr "Questo verrà aggiunto all'Interfaccia Utente presto."
 
 #: ../../configuration/device-setup/intro.rst:6
 msgid "Device Setup"
@@ -189,7 +190,7 @@ msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:50
 msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
-msgstr ""
+msgstr "Se JACK non è disponibile sul tuo sistema consigliamo RtAudio e RtMidi."
 
 #: ../../configuration/first-run-wizard.rst:53
 msgid ""
@@ -249,7 +250,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:20
 msgid "General settings."
-msgstr ""
+msgstr "Impostazioni generali."
 
 #: ../../configuration/preferences/intro.rst:28
 msgid "Engine"
@@ -303,7 +304,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "The directory to save user data in."
-msgstr ""
+msgstr "La cartella in cui salvare i dati utente."
 
 #: ../../configuration/preferences/intro.rst:55
 msgid "Plugins"
@@ -339,7 +340,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:75
 msgid "Keep window on top"
-msgstr ""
+msgstr "Mantieni la finestra in cima"
 
 #: ../../configuration/preferences/intro.rst:75
 msgid "Always show plugin UIs on top of the main window."
@@ -383,7 +384,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:101
 msgid "SFZ instruments"
-msgstr ""
+msgstr "Strumenti SFZ"
 
 #: ../../configuration/preferences/intro.rst:101
 msgid "The search paths to scan for SFZ instruments in."
@@ -391,7 +392,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:104
 msgid "SF2 instruments"
-msgstr ""
+msgstr "Strumenti SF2"
 
 #: ../../configuration/preferences/intro.rst:104
 msgid "The search paths to scan for SF2 instruments in."
@@ -504,27 +505,31 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:177
 msgid "Project settings."
-msgstr ""
+msgstr "Impostazioni del progetto."
 
 #: ../../configuration/preferences/intro.rst:185
 msgid "General project settings."
-msgstr ""
+msgstr "Impostazioni generali del progetto."
 
 #: ../../configuration/preferences/intro.rst:189
 msgid "Autosave interval"
-msgstr ""
+msgstr "Intervallo di salvataggio automatico"
 
 #: ../../configuration/preferences/intro.rst:188
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
 "if this is set to 0."
 msgstr ""
+"Intervallo, in minuti, per autosalvare il progetto. L'autosalvataggio verrà "
+"disabilitato se impostato a 0."
 
 #: ../../configuration/preferences/intro.rst:191
 msgid ""
 "This refers to automatic back-ups. The main project will not be "
 "overwritten unless you explicitly save it."
 msgstr ""
+"Questo si riferisce ai back-up automatici. Il progetto principale non verrà "
+"sovrascritto se non lo salverai di proposito."
 
 #: ../../configuration/preferences/intro.rst:195
 msgid "UI"
@@ -532,29 +537,32 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:197
 msgid "User interface options."
-msgstr ""
+msgstr "Opzioni dell'interfaccia utente."
 
 #: ../../configuration/preferences/intro.rst:205
 msgid "General user interface options."
-msgstr ""
+msgstr "Opzioni generali dell'interfaccia utente."
 
 #: ../../configuration/preferences/intro.rst:208
 msgid "User interface language"
-msgstr ""
+msgstr "Lingua dell'interfaccia utente"
 
 #: ../../configuration/preferences/intro.rst:208
 msgid "The language to use for the user interface."
-msgstr ""
+msgstr "La lingua da usare per l'interfaccia utente."
 
 #: ../../configuration/preferences/intro.rst:210
 msgid ""
 "For a list of supported languages and their translation status see "
 "`Weblate <https://hosted.weblate.org/projects/zrythm/>`_."
 msgstr ""
+"Per una lista delle lingue supportate e il loro stato di traduzione vedere `"
+"Weblate <https://hosted.weblate.org/projects/zrythm/>`_."
 
 #: ../../configuration/preferences/intro.rst:214
 msgid "Some of these settings require a restart of Zrythm to take effect."
 msgstr ""
+"Alcune di queste opzioni necessitato un riavvio di Zrythm per avere effetto."
 
 #~ msgid ""
 #~ "Zrythm exposes ports to JACK. Devices"
@@ -1162,4 +1170,3 @@ msgstr ""
 #~ " that can be accessed by clicking "
 #~ "the gear icon or by ``Ctrl+Shift+P``."
 #~ msgstr ""
-
