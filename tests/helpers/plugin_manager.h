@@ -50,6 +50,14 @@ test_plugin_manager_get_plugin_descriptor (
   const char * pl_uri,
   bool         with_carla);
 
+int
+test_plugin_manager_create_tracks_from_plugin (
+  const char * pl_bundle,
+  const char * pl_uri,
+  bool         is_instrument,
+  bool         with_carla,
+  int          num_tracks);
+
 PluginDescriptor *
 test_plugin_manager_get_plugin_descriptor (
   const char * pl_bundle,
@@ -61,6 +69,7 @@ test_plugin_manager_get_plugin_descriptor (
   lilv_world_load_bundle (LILV_WORLD, path);
   lilv_node_free (path);
 
+  plugin_manager_clear_plugins (PLUGIN_MANAGER);
   plugin_manager_scan_plugins (
     PLUGIN_MANAGER, 1.0, NULL);
 
@@ -83,7 +92,47 @@ test_plugin_manager_get_plugin_descriptor (
   /* open with carla if requested */
   descr->open_with_carla = with_carla;
 
+  /* run the logger to avoid too many messages
+   * being queued */
+  log_idle_cb (LOG);
+
   return descr;
+}
+
+int
+test_plugin_manager_create_tracks_from_plugin (
+  const char * pl_bundle,
+  const char * pl_uri,
+  bool         is_instrument,
+  bool         with_carla,
+  int          num_tracks)
+{
+  PluginDescriptor * descr =
+    test_plugin_manager_get_plugin_descriptor (
+      pl_bundle, pl_uri, with_carla);
+
+  TrackType track_type = TRACK_TYPE_AUDIO_BUS;
+  if (is_instrument)
+    {
+      /* fix the descriptor (for some reason lilv
+       * reports it as Plugin instead of Instrument if
+       * you don't do lilv_world_load_all) */
+      descr->category = PC_INSTRUMENT;
+      g_free (descr->category_str);
+      descr->category_str =
+        plugin_descriptor_category_to_string (
+          descr->category);
+      track_type = TRACK_TYPE_INSTRUMENT;
+    }
+
+  /* create a track from the plugin */
+  UndoableAction * ua =
+    create_tracks_action_new (
+      track_type, descr, NULL,
+      TRACKLIST->num_tracks, NULL, num_tracks);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  return TRACKLIST->num_tracks - 1;
 }
 
 /**

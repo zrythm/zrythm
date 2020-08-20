@@ -487,7 +487,8 @@ Zrythm *
 zrythm_new (
   const char * exe_path,
   bool         have_ui,
-  bool         testing)
+  bool         testing,
+  bool         optimized_dsp)
 {
   g_message (
     "%s: allocating Zrythm instance...",
@@ -500,6 +501,7 @@ zrythm_new (
 
   self->have_ui = have_ui;
   self->testing = testing;
+  self->use_optimized_dsp = optimized_dsp;
   self->settings = settings_new ();
   self->object_utils = object_utils_new ();
   self->recording_manager =

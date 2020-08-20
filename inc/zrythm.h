@@ -53,6 +53,8 @@ typedef struct CairoCaches CairoCaches;
 #define DEBUGGING (ZRYTHM->debug)
 #define ZRYTHM_TESTING (ZRYTHM->testing)
 #define ZRYTHM_HAVE_UI (ZRYTHM->have_ui)
+#define ZRYTHM_USE_OPTIMIZED_DSP \
+  (ZRYTHM->use_optimized_dsp)
 
 /**
  * Type of Zrythm directory.
@@ -228,6 +230,10 @@ typedef struct Zrythm
    * unit-testing). */
   bool                have_ui;
 
+  /** Whether to use optimized DSP when
+   * available. */
+  bool                use_optimized_dsp;
+
   CairoCaches *       cairo_caches;
 
   /** Zrythm directory used during unit tests. */
@@ -323,7 +329,8 @@ Zrythm *
 zrythm_new (
   const char * exe_path,
   bool         have_ui,
-  bool         testing);
+  bool         testing,
+  bool         optimized_dsp);
 
 /**
  * Frees the instance and any unfreed members.

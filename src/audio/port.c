@@ -45,6 +45,7 @@
 #include "plugins/plugin.h"
 #include "plugins/lv2/lv2_ui.h"
 #include "utils/arrays.h"
+#include "utils/dsp.h"
 #include "utils/err_codes.h"
 #include "utils/flags.h"
 #include "utils/math.h"
@@ -726,11 +727,9 @@ port_receive_audio_data_from_jack (
       JACK_PORT_T (port->data),
       AUDIO_ENGINE->nframes);
 
-  for (unsigned int i = start_frames;
-       i < start_frames + nframes; i++)
-    {
-      port->buf[i] += in[i];
-    }
+  dsp_mix2 (
+    &port->buf[start_frames],
+    &in[start_frames], 1.f, 1.f, nframes);
 }
 
 static void
@@ -2492,7 +2491,6 @@ port_sum_signal_from_inputs (
 {
   Port * src_port;
   int k;
-  unsigned int l;
 
   g_warn_if_fail (
     start_frame + nframes <=
@@ -2703,24 +2701,25 @@ port_sum_signal_from_inputs (
           depth_range =
             (maxf - minf) / 2.f;
 
-          /* sum the signals */
-          for (l = start_frame; l < nframes; l++)
+          if (port->id.type == TYPE_AUDIO)
             {
-              if (port->id.type == TYPE_AUDIO)
-                {
-                  minf = -2.f;
-                  maxf = 2.f;
-                }
-              port->buf[l] =
-                CLAMP (
-                  port->buf[l] +
-                    depth_range *
-                      src_port->buf[l] *
-                      src_port->multipliers[
-                        port_get_dest_index (
-                          src_port, port)],
-                  minf, maxf);
+              minf = -2.f;
+              maxf = 2.f;
             }
+
+          /* sum the signals */
+          float multiplier =
+            depth_range *
+              src_port->multipliers[
+                port_get_dest_index (
+                  src_port, port)];
+          dsp_mix2 (
+            &port->buf[start_frame],
+            &src_port->buf[start_frame],
+            1.f, multiplier, nframes);
+          dsp_clamp (
+            &port->buf[start_frame],
+            minf, maxf, nframes);
         }
 
       if (port->id.flow == FLOW_OUTPUT)
@@ -2784,16 +2783,15 @@ port_sum_signal_from_inputs (
                   TIME_TO_RESET_PEAK)
                 port->peak = -1.f;
 
-              for (l = start_frame; l < nframes;
-                   l++)
+              bool changed =
+                dsp_abs_peak (
+                  &port->buf[start_frame],
+                  &port->peak,
+                  nframes);
+              if (changed)
                 {
-                  float val = fabsf (port->buf[l]);
-                  if (val > port->peak)
-                    {
-                      port->peak = val;
-                      port->peak_timestamp =
-                        g_get_monotonic_time ();
-                    }
+                  port->peak_timestamp =
+                    g_get_monotonic_time ();
                 }
             }
         }
@@ -3115,15 +3113,10 @@ port_clear_buffer (Port * port)
   if ((pi->type == TYPE_AUDIO ||
        pi->type == TYPE_CV) && port->buf)
     {
-      /* copy the value locally to have it on the
-       * stack */
-      float denormal_prevention_val =
-        DENORMAL_PREVENTION_VAL;
-      for (nframes_t i = 0;
-           i < AUDIO_ENGINE->block_length; i++)
-        {
-          port->buf[i] = denormal_prevention_val;
-        }
+      dsp_fill (
+        port->buf, DENORMAL_PREVENTION_VAL,
+        AUDIO_ENGINE->block_length);
+
       return;
     }
   if (port->id.type == TYPE_EVENT &&
@@ -3297,6 +3290,7 @@ port_apply_pan (
   nframes_t end = start_frame + nframes;
   int is_stereo_r =
     port->id.flags & PORT_FLAG_STEREO_R;
+  /* FIXME */
   while (start_frame < end)
     {
       if (is_stereo_r)

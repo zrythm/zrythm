@@ -57,6 +57,8 @@
 void
 test_helper_zrythm_init (void);
 void
+test_helper_zrythm_init_optimized (void);
+void
 test_helper_zrythm_cleanup (void);
 void
 test_helper_zrythm_gui_init (
@@ -128,17 +130,14 @@ segv_handler (int sig)
   exit (sig);
 }
 
-/**
- * To be called by every test's main to initialize
- * Zrythm to default values.
- */
-void
-test_helper_zrythm_init ()
+static void
+_test_helper_zrythm_init (
+  bool optimized)
 {
   object_free_w_func_and_null (
     zrythm_free, ZRYTHM);
 
-  ZRYTHM = zrythm_new (NULL, false, true);
+  ZRYTHM = zrythm_new (NULL, false, true, optimized);
 
   /* init logging to custom file */
   char * tmp_log_dir =
@@ -162,6 +161,22 @@ test_helper_zrythm_init ()
 
   /* set a segv handler */
   signal (SIGSEGV, segv_handler);
+}
+
+/**
+ * To be called by every test's main to initialize
+ * Zrythm to default values.
+ */
+void
+test_helper_zrythm_init ()
+{
+  _test_helper_zrythm_init (false);
+}
+
+void
+test_helper_zrythm_init_optimized ()
+{
+  _test_helper_zrythm_init (true);
 }
 
 /**

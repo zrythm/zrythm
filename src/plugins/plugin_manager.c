@@ -989,7 +989,8 @@ plugin_manager_scan_plugins (
                 zrythm_app, prog_str, *progress);
             }
         }
-      if (plugin_idx > 0)
+      if (plugin_idx > 0 &&
+          !ZRYTHM_TESTING)
         {
           cached_vst_descriptors_serialize_to_file (
             self->cached_vst_descriptors);
@@ -1114,7 +1115,8 @@ plugin_manager_scan_plugins (
                 zrythm_app, prog_str, *progress);
             }
         }
-      if (plugin_idx > 0)
+      if (plugin_idx > 0 &&
+          !ZRYTHM_TESTING)
         {
           cached_vst_descriptors_serialize_to_file (
             self->cached_vst_descriptors);
@@ -1303,6 +1305,26 @@ plugin_manager_find_plugin_from_uri (
 }
 
 void
+plugin_manager_clear_plugins (
+  PluginManager * self)
+{
+  for (int i = 0; i < self->num_plugins; i++)
+    {
+      object_free_w_func_and_null (
+        plugin_descriptor_free,
+        self->plugin_descriptors[i]);
+    }
+  self->num_plugins = 0;
+
+  for (int i = 0; i < self->num_plugin_categories;
+       i++)
+    {
+      g_free_and_null (self->plugin_categories[i]);
+    }
+  self->num_plugin_categories = 0;
+}
+
+void
 plugin_manager_free (
   PluginManager * self)
 {
@@ -1311,6 +1333,8 @@ plugin_manager_free (
   symap_free (self->symap);
   zix_sem_destroy (&self->symap_lock);
   lilv_world_free (self->lv2_nodes.lilv_world);
+
+  plugin_manager_clear_plugins (self);
 
   object_free_w_func_and_null (
     cached_vst_descriptors_free,

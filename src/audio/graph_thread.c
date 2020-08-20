@@ -66,6 +66,13 @@ worker_thread (void * arg)
       sched_yield ();
     }
 
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_start (&thread->lsp_ctx);
+    }
+#endif
+
   for (;;)
     {
       to_run = NULL;
@@ -82,7 +89,7 @@ worker_thread (void * arg)
                 "[%d]: terminating thread",
                 thread->id);
             }
-          return 0;
+          goto terminate_thread;
         }
 
       if (mpmc_queue_dequeue_node (
@@ -155,7 +162,9 @@ worker_thread (void * arg)
           zix_sem_wait (&graph->trigger);
 
           if (g_atomic_int_get (&graph->terminate))
-            return 0;
+            {
+              goto terminate_thread;
+            }
 
           g_atomic_int_dec_and_test (
             &graph->idle_thread_cnt);
@@ -185,6 +194,16 @@ worker_thread (void * arg)
         to_run, graph->router->nsamples);
 
     }
+
+terminate_thread:
+
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_finish (&thread->lsp_ctx);
+    }
+#endif
+
   return 0;
 }
 

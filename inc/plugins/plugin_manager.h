@@ -163,7 +163,7 @@ typedef struct PluginDescriptor PluginDescriptor;
  */
 typedef struct PluginManager
 {
-  PluginDescriptor *     plugin_descriptors[10000];
+  PluginDescriptor *     plugin_descriptors[40000];
   char *                 plugin_categories[50];
   char *                 collections[50]; ///< TODO
   int                    num_plugin_categories;
@@ -207,6 +207,10 @@ const PluginDescriptor *
 plugin_manager_find_plugin_from_uri (
   PluginManager * self,
   const char *    uri);
+
+void
+plugin_manager_clear_plugins (
+  PluginManager * self);
 
 void
 plugin_manager_free (

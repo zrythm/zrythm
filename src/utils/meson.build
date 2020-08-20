@@ -24,6 +24,7 @@ util_srcs = [
   'datetime.c',
   'dialogs.c',
   'dictionary.c',
+  'dsp.c',
   'env.c',
   'err_codes.c',
   'gdb.c',

@@ -1049,7 +1049,7 @@ zrythm_app_new (
   self->buf_size = buf_size;
 
   lock_memory ();
-  ZRYTHM = zrythm_new (exe_path, true, false);
+  ZRYTHM = zrythm_new (exe_path, true, false, true);
 
   /* add shutdown handler */
   g_signal_connect (

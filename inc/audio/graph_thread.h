@@ -57,6 +57,10 @@
 #include "weak_libjack.h"
 #endif
 
+#ifdef HAVE_LSP_DSP
+#include <lsp-plug.in/dsp/dsp.h>
+#endif
+
 typedef struct Graph Graph;
 
 /**
@@ -70,7 +74,7 @@ typedef struct GraphThread
 #ifdef HAVE_JACK
   jack_native_thread_t jthread;
 #endif
-  pthread_t            pthread;
+  pthread_t         pthread;
 
   /**
    * Thread index in zrythm.
@@ -78,10 +82,15 @@ typedef struct GraphThread
    * The main thread will be -1 and the rest in
    * sequence starting from 0.
    */
-  int                  id;
+  int               id;
 
   /** Pointer back to the graph. */
-  Graph *              graph;
+  Graph *           graph;
+
+#ifdef HAVE_LSP_DSP
+  /** LSP DSP context. */
+  lsp_dsp_context_t lsp_ctx;
+#endif
 } GraphThread;
 
 /**

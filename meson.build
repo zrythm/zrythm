@@ -432,7 +432,7 @@ test_strict_cflags = [
   '-fstrict-overflow',
   '-Werror=duplicated-branches',
   '-Werror=duplicated-cond',
-  '-Werror=null-dereference',
+  #'-Werror=null-dereference',
   '-Werror=init-self',
   '-Werror=jump-misses-init',
   '-Werror=missing-prototypes',

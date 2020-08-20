@@ -44,7 +44,7 @@ with meaningful stack traces and bug reports.
 - carla (GPLv2+): <https://kx.studio/Applications:Carla>
 - graphviz (EPLv1.0): <http://graphviz.org/>
 - jack (LGPLv2.1+): <https://jackaudio.org/>
-- libgtop (GPLv2+): <https://developer.gnome.org/libgtop/>
+- lsp-dsp-lib (LGPLv3): <https://github.com/sadko4u/lsp-dsp-lib>
 - rtaudio (Expat): <http://www.music.mcgill.ca/~gary/rtaudio/>
 - rtmidi (Expat): <https://www.music.mcgill.ca/~gary/rtmidi/>
 - SDL2 (zlib): <https://www.libsdl.org/>

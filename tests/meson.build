@@ -34,6 +34,7 @@ if get_option ('tests')
   test_env.set ('G_DEBUG', 'gc-friendly')
   test_env.set ('MALLOC_CHECK', '2')
   test_env.set ('VST_PATH', '/tmp/zrythm_vst')
+  test_env.set ('VST3_PATH', '/tmp/zrythm_vst3')
 
   test_config = configuration_data ()
   test_config.set_quoted (
@@ -135,6 +136,7 @@ if get_option ('tests')
     ['audio/position', true],
     ['audio/region', true],
     ['audio/track', true],
+    ['benchmarks/dsp', true],
     ['integration/recording', true],
     ['plugins/plugin_manager', true],
     ['project', true],
@@ -211,7 +213,7 @@ if get_option ('tests')
         test_name, exe,
         env: test_env, suite: suite,
         is_parallel: parallel,
-        timeout: 60)
+        timeout: 80)
     else
       # create C executable for Guile runner
       source = _test[0] + '.scm'
@@ -236,7 +238,7 @@ if get_option ('tests')
         args: source,
         env: test_env, suite: suite,
         is_parallel: parallel,
-        timeout: 60)
+        timeout: 80)
     endif
   endforeach
 

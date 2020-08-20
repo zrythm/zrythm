@@ -352,7 +352,8 @@ main (int    argc,
   else if (run_gdb)
     {
 #ifdef __linux__
-      ZRYTHM = zrythm_new (argv[0], TRUE, FALSE);
+      ZRYTHM =
+        zrythm_new (argv[0], TRUE, FALSE, true);
       gdb_exec (argv, true, interactive);
 #else
       g_error (
@@ -363,7 +364,8 @@ main (int    argc,
   else if (run_callgrind)
     {
 #ifdef __linux__
-      ZRYTHM = zrythm_new (argv[0], TRUE, FALSE);
+      ZRYTHM =
+        zrythm_new (argv[0], TRUE, FALSE, true);
       valgrind_exec_callgrind (argv);
 #else
       g_error (
@@ -480,7 +482,7 @@ main (int    argc,
   lsp_dsp_init();
 
   /* output information about the system */
-  info_t *info = lsp_dsp_info();
+  lsp_dsp_info_t * info = lsp_dsp_info();
   if (info)
     {
       printf("Architecture:   %s\n", info->arch);
@@ -493,6 +495,7 @@ main (int    argc,
     {
       g_warning ("Failed to get system info");
     }
+
 #endif
 
   /* init random */
