@@ -904,12 +904,14 @@ plugin_manager_scan_plugins (
               g_message (
                 "Found cached VST %s",
                 descriptor->name);
+              PluginDescriptor * clone =
+                plugin_descriptor_clone (
+                  descriptor);
               array_append (
                 self->plugin_descriptors,
-                self->num_plugins,
-                descriptor);
+                self->num_plugins, clone);
               add_category (
-                self, descriptor->category_str);
+                self, clone->category_str);
             }
           else
             {
@@ -947,9 +949,13 @@ plugin_manager_scan_plugins (
                       g_message (
                         "Caching VST %s",
                         descriptor->name);
+
+                      PluginDescriptor * clone =
+                        plugin_descriptor_clone (
+                          descriptor);
                       cached_vst_descriptors_add (
                         self->cached_vst_descriptors,
-                        descriptor, 0);
+                        clone, 0);
                     }
                   else
                     {
@@ -1032,12 +1038,14 @@ plugin_manager_scan_plugins (
               g_message (
                 "Found cached VST %s",
                 descriptor->name);
+              PluginDescriptor * clone =
+                plugin_descriptor_clone (
+                  descriptor);
               array_append (
                 self->plugin_descriptors,
-                self->num_plugins,
-                descriptor);
+                self->num_plugins, clone);
               add_category (
-                self, descriptor->category_str);
+                self, clone->category_str);
             }
           else
             {
@@ -1073,9 +1081,12 @@ plugin_manager_scan_plugins (
                       g_message (
                         "Caching VST %s",
                         descriptor->name);
+                      PluginDescriptor * clone =
+                        plugin_descriptor_clone (
+                          descriptor);
                       cached_vst_descriptors_add (
                         self->cached_vst_descriptors,
-                        descriptor, 0);
+                        clone, 0);
                     }
                   else
                     {
