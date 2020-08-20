@@ -25,6 +25,7 @@
 #include "audio/tempo_track.h"
 #include "project.h"
 #include "utils/audio.h"
+#include "utils/dsp.h"
 #include "utils/file.h"
 #include "utils/math.h"
 #include "utils/io.h"
@@ -47,9 +48,8 @@ audio_clip_init_from_file (
   self->frames =
     calloc (arr_size, sizeof (float));
   self->num_frames = enc->num_out_frames;
-  memcpy (
-    self->frames, enc->out_frames,
-    arr_size * sizeof (float));
+  dsp_copy (
+    self->frames, enc->out_frames, arr_size);
   self->name = g_path_get_basename (full_path);
   self->channels = enc->nfo.channels;
   self->bpm =
@@ -131,11 +131,9 @@ audio_clip_new_from_float_array (
   self->channels = channels;
   self->name = g_strdup (name);
   self->pool_id = -1;
-  for (long i = 0; i < nframes * (long) channels;
-      i++)
-    {
-      self->frames[i] = (sample_t) arr[i];
-    }
+  dsp_copy (
+    self->frames, arr,
+    (size_t) nframes * (size_t) channels);
   self->bpm =
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
 
@@ -171,11 +169,9 @@ audio_clip_new_recording (
   self->pool_id = -1;
   self->bpm =
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
-  for (long i = 0; i < nframes * (long) channels;
-       i++)
-    {
-      self->frames[i] = 0.f;
-    }
+  dsp_fill (
+    self->frames, DENORMAL_PREVENTION_VAL,
+    (size_t) nframes * (size_t) channels);
 
   return self;
 }

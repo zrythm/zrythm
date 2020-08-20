@@ -27,6 +27,7 @@
 #include "audio/transport.h"
 #include "project.h"
 #include "utils/audio.h"
+#include "utils/dsp.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "settings/settings.h"
@@ -92,12 +93,10 @@ metronome_new (void)
   self->emphasis_channels = enc->channels;
   g_return_val_if_fail (
     enc->channels > 0, NULL);
-  for (int i = 0;
-       i < enc->num_out_frames * enc->channels;
-       i++)
-    {
-      self->emphasis[i] = enc->out_frames[i];
-    }
+  dsp_copy (
+    self->emphasis, enc->out_frames,
+    (size_t) enc->num_out_frames *
+      (size_t) enc->channels);
   audio_encoder_free (enc);
 
   enc =
@@ -113,12 +112,10 @@ metronome_new (void)
   self->normal_size = enc->num_out_frames;
   self->normal_channels = enc->channels;
   g_return_val_if_fail (enc->channels > 0, NULL);
-  for (int i = 0;
-       i < enc->num_out_frames * enc->channels;
-       i++)
-    {
-      self->normal[i] = enc->out_frames[i];
-    }
+  dsp_copy (
+    self->normal, enc->out_frames,
+    (size_t) enc->num_out_frames *
+    (size_t) enc->channels);
   audio_encoder_free (enc);
 
   /* set volume */

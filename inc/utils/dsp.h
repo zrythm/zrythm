@@ -36,22 +36,62 @@ dsp_fill (
  * Clamp the buffer to min/max.
  */
 void
-dsp_clamp (
+dsp_limit1 (
   float * buf,
   float   minf,
   float   maxf,
   size_t  size);
 
+void
+dsp_copy (
+  float *       dest,
+  const float * src,
+  size_t        size);
+
 /**
- * Gets the absolute peak of the buffer.
+ * Scale: dst[i] = dst[i] * k.
+ */
+void
+dsp_mul_k2 (
+  float * dest,
+  float   k,
+  size_t  size);
+
+/**
+ * Gets the absolute max of the buffer.
  *
  * @return Whether the peak changed.
  */
 bool
-dsp_abs_peak (
+dsp_abs_max (
   float * buf,
   float * cur_peak,
   size_t  size);
+
+/**
+ * Gets the minimum of the buffer.
+ */
+float
+dsp_min (
+  float * buf,
+  size_t  size);
+
+/**
+ * Gets the maximum of the buffer.
+ */
+float
+dsp_max (
+  float * buf,
+  size_t  size);
+
+/**
+ * Calculate dst[i] = dst[i] + src[i].
+ */
+void
+dsp_add2 (
+  float *       dest,
+  const float * src,
+  size_t        count);
 
 /**
  * Calculate dest[i] = dest[i] * k1 + src[i] * k2.

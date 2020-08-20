@@ -61,45 +61,210 @@ dsp_fill (
  * Clamp the buffer to min/max.
  */
 void
-dsp_clamp (
+dsp_limit1 (
   float * buf,
   float   minf,
   float   maxf,
   size_t  size)
 {
-  for (size_t i = 0; i < size; i++)
+#ifdef HAVE_LSP_DSP
+#if 0
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      buf[i] = CLAMP (buf[i], minf, maxf);
+      lsp_dsp_limit1 (buf, minf, maxf, size);
     }
+  else
+#endif
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          buf[i] = CLAMP (buf[i], minf, maxf);
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
 }
 
 /**
- * Gets the absolute peak of the buffer.
+ * Gets the absolute max of the buffer.
  *
  * @return Whether the peak changed.
  */
 bool
-dsp_abs_peak (
+dsp_abs_max (
   float * buf,
   float * cur_peak,
   size_t  size)
 {
   float new_peak = *cur_peak;
 
-  for (size_t i = 0; i < size; i++)
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      float val = fabsf (buf[i]);
-      if (val > new_peak)
-        {
-          new_peak = val;
-        }
+      new_peak =
+        lsp_dsp_abs_max (buf, size);
     }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          float val = fabsf (buf[i]);
+          if (val > new_peak)
+            {
+              new_peak = val;
+            }
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
 
   bool changed =
     !math_floats_equal (new_peak, *cur_peak);
   *cur_peak = new_peak;
 
   return changed;
+}
+
+/**
+ * Gets the minimum of the buffer.
+ */
+float
+dsp_min (
+  float * buf,
+  size_t  size)
+{
+  float min = 1000.f;
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      min = lsp_dsp_min (buf, size);
+    }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          if (buf[i] < min)
+            {
+              min = buf[i];
+            }
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+
+  return min;
+}
+
+/**
+ * Gets the maximum of the buffer.
+ */
+float
+dsp_max (
+  float * buf,
+  size_t  size)
+{
+  float max = - 1000.f;
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      max = lsp_dsp_max (buf, size);
+    }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          if (buf[i] > max)
+            {
+              max = buf[i];
+            }
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+
+  return max;
+}
+
+/**
+ * Compute dest[i] = src[i].
+ */
+void
+dsp_copy (
+  float *       dest,
+  const float * src,
+  size_t        size)
+{
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_copy (dest, src, size);
+    }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          dest[i] = src[i];
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+}
+
+/**
+ * Calculate dst[i] = dst[i] + src[i].
+ */
+void
+dsp_add2 (
+  float *       dest,
+  const float * src,
+  size_t        size)
+{
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_add2 (dest, src, size);
+    }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          dest[i] = dest[i] + src[i];
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+}
+
+/**
+ * Scale: dst[i] = dst[i] * k.
+ */
+void
+dsp_mul_k2 (
+  float * dest,
+  float   k,
+  size_t  size)
+{
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_mul_k2 (dest, k, size);
+    }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          dest[i] *= k;
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
 }
 
 /**

@@ -26,6 +26,7 @@
 #include "gui/widgets/region.h"
 #include "project.h"
 #include "utils/audio.h"
+#include "utils/dsp.h"
 #include "utils/io.h"
 #include "zrythm_app.h"
 
@@ -141,10 +142,9 @@ audio_region_init_frame_caches (
       sizeof (float) *
         (size_t) clip->num_frames * clip->channels);
   self->num_frames = (size_t) clip->num_frames;
-  memcpy (
+  dsp_copy (
     &self->frames[0], &clip->frames[0],
-    sizeof (float) * (size_t) clip->num_frames *
-    clip->channels);
+    (size_t) clip->num_frames * clip->channels);
 
   audio_region_update_channel_caches (self, clip);
 }

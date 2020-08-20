@@ -125,6 +125,35 @@ _test_dsp_fill (
   LOOP_END ("fill", optimized);
 
   LOOP_START
+  dsp_limit1 (buf, -1.0f, 1.1f, buf_size);
+  LOOP_END ("limit1", optimized);
+
+  LOOP_START
+  dsp_add2 (buf, src, buf_size);
+  LOOP_END ("add2", optimized);
+
+  float cur_peak = 0.3f;
+  LOOP_START
+  dsp_abs_max (buf, &cur_peak, buf_size);
+  LOOP_END ("abs_max", optimized);
+
+  LOOP_START
+  dsp_min (buf, buf_size);
+  LOOP_END ("min", optimized);
+
+  LOOP_START
+  dsp_max (buf, buf_size);
+  LOOP_END ("max", optimized);
+
+  LOOP_START
+  dsp_mul_k2 (buf, 0.99f, buf_size);
+  LOOP_END ("mul_k2", optimized);
+
+  LOOP_START
+  dsp_copy (buf, src, buf_size);
+  LOOP_END ("copy", optimized);
+
+  LOOP_START
   dsp_mix2 (buf, src, 0.1f, 0.2f, buf_size);
   LOOP_END ("mix2", optimized);
 

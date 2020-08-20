@@ -727,9 +727,9 @@ port_receive_audio_data_from_jack (
       JACK_PORT_T (port->data),
       AUDIO_ENGINE->nframes);
 
-  dsp_mix2 (
+  dsp_add2 (
     &port->buf[start_frames],
-    &in[start_frames], 1.f, 1.f, nframes);
+    &in[start_frames], nframes);
 }
 
 static void
@@ -769,18 +769,20 @@ send_audio_data_to_jack (
       JACK_PORT_T (port->data),
       AUDIO_ENGINE->nframes);
 
-  for (unsigned int i = start_frames;
-       i < start_frames + nframes; i++)
-    {
 #ifdef TRIAL_VER
-      if (AUDIO_ENGINE->limit_reached)
-        {
-          out[i] = 0;
-          continue;
-        }
-#endif
-      out[i] = port->buf[i];
+  if (AUDIO_ENGINE->limit_reached)
+    {
+      dsp_fill (&out[start_frames], 0.f, nframes);
     }
+  else
+    {
+#endif
+      dsp_copy (
+        &out[start_frames],
+        &port->buf[start_frames], nframes);
+#ifdef TRIAL_VER
+    }
+#endif
 }
 
 /**
@@ -929,7 +931,7 @@ get_internal_jack_port (
 #endif /* HAVE_JACK */
 
 /**
- * Sums the inputs coming in from JACK, before the
+ * Sums the inputs coming in from dummy, before the
  * port is processed.
  */
 static void
@@ -951,23 +953,21 @@ sum_data_from_dummy (
 
   if (AUDIO_ENGINE->dummy_input)
     {
+      Port * port = NULL;
       if (self->id.flags & PORT_FLAG_STEREO_L)
         {
-          Port * l = AUDIO_ENGINE->dummy_input->l;
-          for (unsigned int i = start_frame;
-               i < start_frame + nframes; i++)
-            {
-              self->buf[i] += l->buf[i];
-            }
+          port = AUDIO_ENGINE->dummy_input->l;
         }
       else if (self->id.flags & PORT_FLAG_STEREO_R)
         {
-          Port * r = AUDIO_ENGINE->dummy_input->r;
-          for (unsigned int i = start_frame;
-               i < start_frame + nframes; i++)
-            {
-              self->buf[i] += r->buf[i];
-            }
+          port = AUDIO_ENGINE->dummy_input->r;
+        }
+
+      if (port)
+        {
+          dsp_add2 (
+            &self->buf[start_frame],
+            &port->buf[start_frame], nframes);
         }
     }
 }
@@ -2638,9 +2638,9 @@ port_sum_signal_from_inputs (
     case TYPE_CV:
       if (noroll)
         {
-          memset (
-            &port->buf[start_frame], 0,
-            nframes * sizeof (float));
+          dsp_fill (
+            &port->buf[start_frame],
+            DENORMAL_PREVENTION_VAL, nframes);
           break;
         }
 
@@ -2717,7 +2717,7 @@ port_sum_signal_from_inputs (
             &port->buf[start_frame],
             &src_port->buf[start_frame],
             1.f, multiplier, nframes);
-          dsp_clamp (
+          dsp_limit1 (
             &port->buf[start_frame],
             minf, maxf, nframes);
         }
@@ -2784,7 +2784,7 @@ port_sum_signal_from_inputs (
                 port->peak = -1.f;
 
               bool changed =
-                dsp_abs_peak (
+                dsp_abs_max (
                   &port->buf[start_frame],
                   &port->peak,
                   nframes);
@@ -3287,19 +3287,17 @@ port_apply_pan (
   pan_get_calc_lr (
     pan_law, pan_algo, pan, &calc_l, &calc_r);
 
-  nframes_t end = start_frame + nframes;
-  int is_stereo_r =
-    port->id.flags & PORT_FLAG_STEREO_R;
-  /* FIXME */
-  while (start_frame < end)
+  /* if stereo R */
+  if (port->id.flags & PORT_FLAG_STEREO_R)
     {
-      if (is_stereo_r)
-        {
-          port->buf[start_frame++] *= calc_r;
-          continue;
-        }
-
-      port->buf[start_frame++] *= calc_l;
+      dsp_mul_k2 (
+        &port->buf[start_frame], calc_r, nframes);
+    }
+  /* else if stereo L */
+  else
+    {
+      dsp_mul_k2 (
+        &port->buf[start_frame], calc_l, nframes);
     }
 }
 

@@ -30,6 +30,7 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/dsp.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "zrythm.h"
@@ -739,18 +740,17 @@ fader_process (
       if (self->passthrough)
         {
           /* copy the input to output */
-          memcpy (
+          dsp_copy (
             &self->stereo_out->l->buf[start_frame],
             &self->stereo_in->l->buf[start_frame],
-            nframes * sizeof (float));
-          memcpy (
+            nframes);
+          dsp_copy (
             &self->stereo_out->r->buf[start_frame],
             &self->stereo_in->r->buf[start_frame],
-            nframes * sizeof (float));
+            nframes);
         }
       else /* not prefader */
         {
-          nframes_t end = start_frame + nframes;
           float calc_l, calc_r;
           balance_control_get_calc_lr (
             BALANCE_CONTROL_ALGORITHM_LINEAR,
@@ -785,39 +785,46 @@ fader_process (
             }
           else /* if not muted */
             {
-              for (nframes_t i = start_frame;
-                   i < end; i++)
+              /* apply fader and pan */
+              dsp_mix2 (
+                &self->stereo_out->l->buf[
+                  start_frame],
+                &self->stereo_in->l->buf[
+                  start_frame],
+                1.f,
+                amp * calc_l,
+                nframes);
+              dsp_mix2 (
+                &self->stereo_out->r->buf[
+                  start_frame],
+                &self->stereo_in->r->buf[
+                  start_frame],
+                1.f,
+                amp * calc_r,
+                nframes);
+
+              /* make mono if mono compat
+               * enabled. equal amplitude is
+               * more suitable for mono
+               * compatibility checking */
+              /* for reference:
+               * equal power sum =
+               * (L+R) * 0.7079 (-3dB)
+               * equal amplitude sum =
+               * (L+R) /2 (-6.02dB) */
+              if (self->mono_compat_enabled)
                 {
-                  float in_l =
-                    self->stereo_in->l->buf[i];
-                  float in_r =
-                    self->stereo_in->r->buf[i];
-                  float * l =
-                    &self->stereo_out->l->buf[i];
-                  float * r =
-                    &self->stereo_out->r->buf[i];
-
-                  /* 1. get input
-                   * 2. apply fader
-                   * 3. apply pan */
-                  *l = in_l * amp * calc_l;
-                  *r = in_r * amp * calc_r;
-
-                  if (self->mono_compat_enabled)
-                    {
-                      /* make mono if mono compat
-                       * enabled. equal amplitude is
-                       * more suitable for mono
-                       * compatibility checking */
-                      /* for reference:
-                       * equal power sum =
-                       * (L+R) * 0.7079 (-3dB)
-                       * equal amplitude sum =
-                       * (L+R) /2 (-6.02dB) */
-                      float mono = (*l + *r) / 2.f;
-                      *l = mono;
-                      *r = mono;
-                    }
+                  dsp_mix2 (
+                    &self->stereo_out->l->buf[
+                      start_frame],
+                    &self->stereo_out->r->buf[
+                      start_frame],
+                    0.5f, 0.5f, nframes);
+                  dsp_copy (
+                    &self->stereo_out->r->buf[
+                      start_frame],
+                    &self->stereo_out->r->buf[
+                      start_frame], nframes);
                 }
             }
 
@@ -831,30 +838,12 @@ fader_process (
             }
 
           /* hard limit the output */
-          for (nframes_t i = start_frame; i < end;
-               i++)
-            {
-              float * l =
-                &self->stereo_out->l->buf[i];
-              float * r =
-                &self->stereo_out->r->buf[i];
-              if (*l > 2.f)
-                {
-                  *l = 2.f;
-                }
-              else if (*l < -2.f)
-                {
-                  *l = -2.f;
-                }
-              if (*r > 2.f)
-                {
-                  *r = 2.f;
-                }
-              else if (*r < -2.f)
-                {
-                  *r = -2.f;
-                }
-            }
+          dsp_limit1 (
+            &self->stereo_out->l->buf[start_frame],
+            - 2.f, 2.f, nframes);
+          dsp_limit1 (
+            &self->stereo_out->r->buf[start_frame],
+            - 2.f, 2.f, nframes);
         } /* fi not prefader */
     } /* fi monitor/audio fader */
   else if (self->type == FADER_TYPE_MIDI_CHANNEL)

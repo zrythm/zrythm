@@ -52,6 +52,7 @@
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/dialogs.h"
+#include "utils/dsp.h"
 #include "utils/err_codes.h"
 #include "utils/io.h"
 #include "utils/flags.h"
@@ -1377,22 +1378,17 @@ plugin_process (
                 plugin->gain->control, 0.f,
                 0.00001f))
             {
-              for (nframes_t j = local_offset;
-                   j < nframes; j++)
-                {
-                  port->buf[j] =
-                    DENORMAL_PREVENTION_VAL;
-                }
+              dsp_fill (
+                &port->buf[local_offset],
+                DENORMAL_PREVENTION_VAL,
+                nframes);
             }
           /* otherwise just apply gain */
           else
             {
-              for (nframes_t j = local_offset;
-                   j < nframes; j++)
-                {
-                  port->buf[j] *=
-                    plugin->gain->control;
-                }
+              dsp_mul_k2 (
+                &port->buf[local_offset],
+                plugin->gain->control, nframes);
             }
         }
     }
@@ -1748,10 +1744,10 @@ plugin_process_passthrough (
               if (out_port->id.type == TYPE_AUDIO)
                 {
                   /* copy */
-                  memcpy (
+                  dsp_copy (
                     &out_port->buf[local_offset],
                     &in_port->buf[local_offset],
-                    sizeof (float) * nframes);
+                    nframes);
 
                   last_audio_idx = j + 1;
                   goto_next = true;

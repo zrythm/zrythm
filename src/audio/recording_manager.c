@@ -30,6 +30,7 @@
 #include "gui/backend/arranger_object.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/mpmc_queue.h"
@@ -876,10 +877,9 @@ handle_audio_event (
          (long) clip->channels) *
       sizeof (sample_t));
   region->num_frames = (size_t) clip->num_frames;
-  memcpy (
+  dsp_copy (
     &region->frames[0], &clip->frames[0],
-    sizeof (float) * (size_t) clip->num_frames *
-    clip->channels);
+    (size_t) clip->num_frames * clip->channels);
 
   position_from_frames (
     &r_obj->loop_end_pos,
