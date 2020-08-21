@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-08-19 21:44+0000\n"
+"PO-Revision-Date: 2020-08-21 18:36+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/it/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.2.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -45,7 +45,7 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:25
 msgid "Viewing the Current Settings"
-msgstr ""
+msgstr "Visualizzare le impostazioni attuali"
 
 #: ../../configuration/additional-settings.rst:27
 msgid ""
@@ -269,10 +269,12 @@ msgid ""
 "The audio backend to use. The available backends are JACK, RtAudio and "
 "SDL2. We recommend using JACK when possible, otherwise RtAudio."
 msgstr ""
+"Il backend audio da usare. I backend disponibili sono: JACK, RtAudio e SDL2. "
+"Raccomandiamo di utilizzare JACK quando possibile, diversamente RtAudio."
 
 #: ../../configuration/preferences/intro.rst:41
 msgid "MIDI backend"
-msgstr ""
+msgstr "Backend MIDI"
 
 #: ../../configuration/preferences/intro.rst:38
 msgid ""
@@ -280,6 +282,9 @@ msgid ""
 " WindowsMME (Windows only). We recommend using JACK MIDI when possible, "
 "otherwise RtMidi."
 msgstr ""
+"Il backend MIDI da usare. I backend disponibili sono JACK MIDI, RtMidi e "
+"WindowsMME (solo su Windows). Raccomandiamo di utilizzare JACK MIDI quando "
+"possibile, diversamente RtMidi."
 
 #: ../../configuration/preferences/intro.rst:44
 msgid "MIDI controllers"
@@ -404,7 +409,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:109
 msgid "Digital signal processing."
-msgstr ""
+msgstr "Elaborazione numerica dei segnali."
 
 #: ../../configuration/preferences/intro.rst:115
 msgid "Pan"
