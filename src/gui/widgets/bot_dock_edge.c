@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -48,6 +48,8 @@ bot_dock_edge_widget_setup (
   event_viewer_widget_setup (
     self->event_viewer,
     EVENT_VIEWER_TYPE_EDITOR);
+
+  chord_pad_widget_setup (self->chord_pad);
 
   /* set event viewer visibility */
   int visibility = 0;
@@ -103,4 +105,5 @@ bot_dock_edge_widget_class_init (
   BIND_CHILD (mixer);
   BIND_CHILD (event_viewer);
   BIND_CHILD (modulator_view);
+  BIND_CHILD (chord_pad);
 }

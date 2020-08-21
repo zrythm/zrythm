@@ -41,6 +41,7 @@
 #include <signal.h>
 
 #include "audio/channel.h"
+#include "audio/chord_descriptor.h"
 #include "audio/engine.h"
 #include "audio/midi_event.h"
 #include "audio/router.h"
@@ -639,6 +640,52 @@ midi_events_add_note_on (
     self->num_queued_events++;
   else
     self->num_events++;
+}
+
+/**
+ * Adds a note on for each note in the chord.
+ */
+void
+midi_events_add_note_ons_from_chord_descr (
+  MidiEvents *      self,
+  ChordDescriptor * descr,
+  midi_byte_t       channel,
+  midi_byte_t       velocity,
+  midi_byte_t       time,
+  bool              queued)
+{
+  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES;
+       i++)
+    {
+      if (descr->notes[i])
+        {
+          midi_events_add_note_on (
+            self, channel, i + 36,
+            velocity, time, queued);
+        }
+    }
+}
+
+/**
+ * Adds a note off for each note in the chord.
+ */
+void
+midi_events_add_note_offs_from_chord_descr (
+  MidiEvents *      self,
+  ChordDescriptor * descr,
+  midi_byte_t       channel,
+  midi_byte_t       time,
+  bool              queued)
+{
+  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES;
+       i++)
+    {
+      if (descr->notes[i])
+        {
+          midi_events_add_note_off (
+            self, channel, i + 36, time, queued);
+        }
+    }
 }
 
 /**

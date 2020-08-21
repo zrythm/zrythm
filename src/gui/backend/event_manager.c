@@ -49,6 +49,7 @@
 #include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/chord_key.h"
+#include "gui/widgets/chord_pad.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/editor_selection_info.h"
@@ -1443,6 +1444,8 @@ process_events (void * data)
                       chord_keys[j]);
                   break;
                 }
+              chord_pad_widget_refresh (
+                MW_CHORD_PAD);
             }
           break;
         case ET_JACK_TRANSPORT_TYPE_CHANGED:

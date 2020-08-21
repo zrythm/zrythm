@@ -36,6 +36,7 @@
 #include "project.h"
 #include "gui/widgets/track.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/stoat.h"
 
@@ -125,19 +126,8 @@ send_notes_off_at (
 
           ChordDescriptor * descr =
             chord_object_get_chord_descriptor (co);
-          for (int j = 0;
-               j < CHORD_DESCRIPTOR_MAX_NOTES; j++)
-            {
-              if (descr->notes[j])
-                {
-                  /* FIXME check if note is on
-                   * first */
-                  midi_events_add_note_off (
-                    midi_events, 1,
-                    j + 36, time,
-                    1);
-                }
-            }
+          midi_events_add_note_offs_from_chord_descr (
+            midi_events, descr, 1, time, F_QUEUED);
         }
       break;
     case TYPE_REGION_END:
@@ -232,20 +222,9 @@ send_notes_off_at (
                 ChordDescriptor * descr =
                   chord_object_get_chord_descriptor (
                     co);
-                for (int j = 0;
-                     j < CHORD_DESCRIPTOR_MAX_NOTES;
-                     j++)
-                  {
-                    if (descr->notes[j])
-                      {
-                        /* FIXME check if note is on
-                         * first */
-                        midi_events_add_note_off (
-                          midi_events, 1,
-                          j + 36,
-                          time, 1);
-                      }
-                  }
+                midi_events_add_note_offs_from_chord_descr (
+                  midi_events, descr, 1, time,
+                  F_QUEUED);
               }
           }
       }
@@ -307,20 +286,9 @@ send_notes_off_at (
                 ChordDescriptor * descr =
                   chord_object_get_chord_descriptor (
                     co);
-                for (int k = 0;
-                     k < CHORD_DESCRIPTOR_MAX_NOTES;
-                     k++)
-                  {
-                    if (descr->notes[k])
-                      {
-                        /* FIXME check if note is on
-                         * first */
-                        midi_events_add_note_off (
-                          midi_events, 1,
-                          k + 36,
-                          time, 1);
-                      }
-                  }
+                midi_events_add_note_offs_from_chord_descr (
+                  midi_events, descr, 1, time,
+                  F_QUEUED);
               }
           }
       }
@@ -395,18 +363,9 @@ note_ons_during_region_loop (
         {
           ChordDescriptor * descr =
             chord_object_get_chord_descriptor (co);
-          for (int i = 0;
-               i < CHORD_DESCRIPTOR_MAX_NOTES;
-               i++)
-            {
-              if (descr->notes[i])
-                {
-                  midi_events_add_note_on (
-                    midi_events, 1,
-                    i + 36,
-                    VELOCITY_DEFAULT, time, 1);
-                }
-            }
+          midi_events_add_note_ons_from_chord_descr (
+            midi_events, descr, 1,
+            VELOCITY_DEFAULT, time, F_QUEUED);
         }
       g_warn_if_fail (
         time < local_start_frame + nframes);
@@ -443,18 +402,9 @@ note_ons_during_region_loop (
         {
           ChordDescriptor * descr =
             chord_object_get_chord_descriptor (co);
-          for (int i = 0;
-               i < CHORD_DESCRIPTOR_MAX_NOTES;
-               i++)
-            {
-              if (descr->notes[i])
-                {
-                  midi_events_add_note_on (
-                    midi_events, 1,
-                    i + 36,
-                    VELOCITY_DEFAULT, time, 1);
-                }
-            }
+          midi_events_add_note_ons_from_chord_descr (
+            midi_events, descr, 1,
+            VELOCITY_DEFAULT, time, F_QUEUED);
         }
       g_warn_if_fail (
         time < local_start_frame + nframes);
@@ -812,24 +762,16 @@ midi_track_fill_midi_events (
                               r),
                             mn->val,
                             mn->vel->vel,
-                            time, 1);
+                            time, F_QUEUED);
                         }
                       else if (co)
                         {
                           ChordDescriptor * descr =
                             chord_object_get_chord_descriptor (co);
-                          for (int l = 0;
-                               l < CHORD_DESCRIPTOR_MAX_NOTES;
-                               l++)
-                            {
-                              if (descr->notes[l])
-                                {
-                                  midi_events_add_note_on (
-                                    midi_events, 1,
-                                    l + 36,
-                                    VELOCITY_DEFAULT, time, 1);
-                                }
-                            }
+                          midi_events_add_note_ons_from_chord_descr (
+                            midi_events, descr, 1,
+                            VELOCITY_DEFAULT, time,
+                            F_QUEUED);
                         }
                       g_warn_if_fail (
                         time <

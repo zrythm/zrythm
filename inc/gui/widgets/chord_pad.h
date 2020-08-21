@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,6 +28,14 @@
 
 #include <gtk/gtk.h>
 
+typedef struct _ChordWidget ChordWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 #define CHORD_PAD_WIDGET_TYPE \
   (chord_pad_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -47,14 +55,28 @@ G_DECLARE_FINAL_TYPE (
     MW_CHORD_PAD->bot_notebook, 3)
 
 /**
- * The ChordPadWidget contains the
- * ModulatorWidgets for the selected Track.
+ * Tab for chord pads.
  */
 typedef struct _ChordPadWidget
 {
-  GtkGrid            parent_instance;
+  GtkGrid          parent_instance;
 
-  GtkOverlay *       pads_overlay;
+  GtkGrid *        chords_grid;
+
+  /** Chords inside the grid. */
+  ChordWidget *    chords[12];
 } ChordPadWidget;
+
+void
+chord_pad_widget_setup (
+  ChordPadWidget * self);
+
+void
+chord_pad_widget_refresh (
+  ChordPadWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

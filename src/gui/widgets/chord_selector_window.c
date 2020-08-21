@@ -553,6 +553,7 @@ chord_selector_window_widget_new (
 
   self->descr = descr;
 
+#if 0
   ArrangerObject * region_obj =
     (ArrangerObject *)
     clip_editor_get_region (CLIP_EDITOR);
@@ -562,6 +563,10 @@ chord_selector_window_widget_new (
     chord_track_get_scale_at_pos (
       P_CHORD_TRACK,
       &region_obj->pos);
+#endif
+  self->scale =
+    chord_track_get_scale_at_pos (
+      P_CHORD_TRACK, PLAYHEAD);
 
   gtk_window_set_transient_for (
     GTK_WINDOW (self),

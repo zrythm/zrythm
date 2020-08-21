@@ -36,6 +36,7 @@ widget_srcs = files([
   'channel_send_selector.c',
   'channel_sends_expander.c',
   'channel_slot.c',
+  'chord.c',
   'chord_arranger.c',
   'chord_button.c',
   'chord_editor_space.c',

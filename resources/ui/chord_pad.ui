@@ -60,11 +60,13 @@
       </packing>
     </child>
     <child>
-      <object class="GtkOverlay" id="pads_overlay">
+      <object class="GtkGrid" id="chords_grid">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="hexpand">True</property>
         <property name="vexpand">True</property>
+        <property name="column-homogeneous">True</property>
+        <property name="row-homogeneous">True</property>
         <child>
           <placeholder/>
         </child>

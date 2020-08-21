@@ -2980,4 +2980,6 @@ track_widget_class_init (TrackWidgetClass * _klass)
   BIND_CHILD (meter_r);
   BIND_CHILD (highlight_top_box);
   BIND_CHILD (highlight_bot_box);
+
+#undef BIND_CHILD
 }

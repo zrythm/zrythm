@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -167,7 +167,7 @@ typedef struct ChordDescriptor
    *
    * 4 octaves, 1st octave is for bass note.
    *
-   * Starts at C always.
+   * Starts at C always, from MIDI pitch 36.
    */
   int            notes[CHORD_DESCRIPTOR_MAX_NOTES];
 

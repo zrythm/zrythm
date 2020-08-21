@@ -190,6 +190,10 @@ if get_option ('tests')
     test_name = '_'.join(test_name.split('/'))
     suite = _test[0].split('/')[0]
     source = _test[0] + '.c'
+    timeout = 120
+    if suite.contains ('benchmark')
+      timeout = 180
+    endif
 
     if fs.is_file (source)
       # create C executable for C runner
@@ -213,7 +217,7 @@ if get_option ('tests')
         test_name, exe,
         env: test_env, suite: suite,
         is_parallel: parallel,
-        timeout: 80)
+        timeout: timeout)
     else
       # create C executable for Guile runner
       source = _test[0] + '.scm'
@@ -238,7 +242,7 @@ if get_option ('tests')
         args: source,
         env: test_env, suite: suite,
         is_parallel: parallel,
-        timeout: 80)
+        timeout: timeout)
     endif
   endforeach
 

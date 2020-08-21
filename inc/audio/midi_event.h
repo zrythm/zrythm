@@ -40,6 +40,8 @@
 
 #include <gtk/gtk.h>
 
+typedef struct ChordDescriptor ChordDescriptor;
+
 /**
  * @addtogroup audio
  *
@@ -229,6 +231,29 @@ midi_events_add_note_on (
   midi_byte_t  velocity,
   midi_time_t  time,
   int          queued);
+
+/**
+ * Adds a note on for each note in the chord.
+ */
+void
+midi_events_add_note_ons_from_chord_descr (
+  MidiEvents *      self,
+  ChordDescriptor * descr,
+  midi_byte_t       channel,
+  midi_byte_t       velocity,
+  midi_byte_t       time,
+  bool              queued);
+
+/**
+ * Adds a note off for each note in the chord.
+ */
+void
+midi_events_add_note_offs_from_chord_descr (
+  MidiEvents *      self,
+  ChordDescriptor * descr,
+  midi_byte_t       channel,
+  midi_byte_t       time,
+  bool              queued);
 
 /**
  * Returrns if the MidiEvents have any note on

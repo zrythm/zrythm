@@ -447,6 +447,14 @@ channel_init_loaded (
         PORT_OWNER_TYPE_TRACK;
       break;
     case TYPE_AUDIO:
+      /* make sure master is expoed to backend */
+      if (track->type == TRACK_TYPE_MASTER)
+        {
+          ch->stereo_out->l->exposed_to_backend =
+            true;
+          ch->stereo_out->r->exposed_to_backend =
+            true;
+        }
       break;
     default:
       break;
