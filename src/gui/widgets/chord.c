@@ -49,14 +49,19 @@ on_chord_pressed (
   GdkEvent *    event,
   ChordWidget * self)
 {
-  ChordDescriptor * descr =
-    get_chord_descriptor (self);
+  Track * track = TRACKLIST_SELECTIONS->tracks[0];
 
-  /* send note ons at time 0 */
-  Port * port = P_CHORD_TRACK->processor->midi_in;
-  midi_events_add_note_ons_from_chord_descr (
-    port->midi_events, descr, 1, VELOCITY_DEFAULT,
-    0, F_QUEUED);
+  if (track && track->in_signal_type == TYPE_EVENT)
+    {
+      ChordDescriptor * descr =
+        get_chord_descriptor (self);
+
+      /* send note ons at time 0 */
+      Port * port = track->processor->midi_in;
+      midi_events_add_note_ons_from_chord_descr (
+        port->midi_events, descr, 1,
+        VELOCITY_DEFAULT, 0, F_QUEUED);
+    }
 
   return FALSE;
 }
@@ -67,13 +72,18 @@ on_chord_released (
   GdkEvent *    event,
   ChordWidget * self)
 {
-  ChordDescriptor * descr =
-    get_chord_descriptor (self);
+  Track * track = TRACKLIST_SELECTIONS->tracks[0];
 
-  /* send note offs at time 1 */
-  Port * port = P_CHORD_TRACK->processor->midi_in;
-  midi_events_add_note_offs_from_chord_descr (
-    port->midi_events, descr, 1, 1, F_QUEUED);
+  if (track && track->in_signal_type == TYPE_EVENT)
+    {
+      ChordDescriptor * descr =
+        get_chord_descriptor (self);
+
+      /* send note offs at time 1 */
+      Port * port = track->processor->midi_in;
+      midi_events_add_note_offs_from_chord_descr (
+        port->midi_events, descr, 1, 1, F_QUEUED);
+    }
 
   return FALSE;
 }
