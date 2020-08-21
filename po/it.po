@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-08-14 23:36+0100\n"
-"PO-Revision-Date: 2020-08-19 21:44+0000\n"
+"PO-Revision-Date: 2020-08-21 18:36+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.2.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:188
@@ -2888,7 +2888,7 @@ msgstr ""
 
 #: resources/ui/fader_buttons.ui:120
 msgid "Listen"
-msgstr ""
+msgstr "Ascolta"
 
 #: resources/ui/fader_buttons.ui:141
 msgid "Channel settings"
@@ -3686,7 +3686,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:486
 msgid "MIDI backend"
-msgstr ""
+msgstr "Backend MIDI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:487
 msgid "The MIDI backend to use."

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 20:03+0100\n"
-"PO-Revision-Date: 2020-08-19 21:44+0000\n"
+"PO-Revision-Date: 2020-08-21 18:36+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualgetting-started/it/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.2.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../getting-started/getting-plugins.rst:6
@@ -87,6 +87,8 @@ msgid ""
 "The `LSP Project <https://lsp-plug.in/>`_ has a wide variety of effect "
 "plugins."
 msgstr ""
+"Il `Progetto LSP <https://lsp-plug.in/>`_ ha un'ampia varietà di effetti "
+"plugin."
 
 #: ../../getting-started/getting-plugins.rst:50
 msgid ""
@@ -101,6 +103,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:56
 msgid "`Helm <https://tytel.org/helm/>`_ is a powerful subtractive synthesizer."
 msgstr ""
+"`Helm <https://tytel.org/helm/>`_ è un potente sintetizzatore sottrattivo."
 
 #: ../../getting-started/getting-plugins.rst:59
 msgid ""
@@ -159,6 +162,9 @@ msgid ""
 " system using an installer from the `Download "
 "<https://www.zrythm.org/en/download.html>`_ page on our website."
 msgstr ""
+"Puoi installare l'ultima versione di Zrythm per la tua distribuzione o "
+"sistema operativo utilizzando l'installatore dalla pagina di `Download "
+"<https://www.zrythm.org/en/download.html>`_ sul nostro sito."
 
 #: ../../getting-started/installation.rst:18
 msgid ""
@@ -185,7 +191,6 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/installation.rst:33
-#, fuzzy
 msgid "GNU/Linux"
 msgstr "GNU/Linux"
 
@@ -203,12 +208,14 @@ msgid "**Ubuntu 18.04, 19.10 & 20.04** - amd64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:41
+#, fuzzy
 msgid "**LinuxMint 19.3** - amd64"
-msgstr ""
+msgstr "**LinuxMint 19.3** - amd64"
 
 #: ../../getting-started/installation.rst:42
+#, fuzzy
 msgid "**Debian 9 & 10** - amd64"
-msgstr ""
+msgstr "**Debian 9 & 10** - amd64"
 
 #: ../../getting-started/installation.rst:43
 msgid "**Arch Linux** - x86_64"
@@ -219,8 +226,9 @@ msgid "**Fedora 32** - x86_64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:45
+#, fuzzy
 msgid "**OpenSUSE Tumbleweed** - x86_64"
-msgstr ""
+msgstr "**OpenSUSE Tumbleweed** - x86_64"
 
 #: ../../getting-started/installation.rst:48
 msgid "Distribution Package"
@@ -233,12 +241,13 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/installation.rst:53
+#, fuzzy
 msgid "Windows & MacOS"
-msgstr ""
+msgstr "Windows & MacOS"
 
 #: ../../getting-started/installation.rst:54
 msgid "The installers above fully support Windows 64bit and MacOS."
-msgstr ""
+msgstr "L'installatore sopra supporta interamente Windows 64bit e MacOS."
 
 #: ../../getting-started/installation.rst:57
 msgid "FreeBSD"
@@ -297,6 +306,8 @@ msgid ""
 "For smooth operation, it is recommended to use a CPU with at least 2GHz "
 "clock speed and at least 4 cores in total."
 msgstr ""
+"Per un'operatività fluida è raccomandato utilizzare un processore con almeno "
+"2GHz di velocità e almeno 4 core in totale."
 
 #: ../../getting-started/system-requirements.rst:23
 msgid "Monitor"
@@ -307,6 +318,8 @@ msgid ""
 "It is recommended to have at least 16 inches of monitor space to work "
 "efficiently with Zrythm."
 msgstr ""
+"Per lavorare efficientemente con Zrythm è raccomandato avere uno schermo di "
+"almeno 16 pollici."
 
 #: ../../getting-started/system-requirements.rst:26
 msgid "Audio interface"
@@ -317,6 +330,8 @@ msgid ""
 "An audio interface offers low latency and better quality than integrated "
 "sound cards (especially if recording audio)."
 msgstr ""
+"Un'interfaccia audio offre bassa latenza e una migliore qualità rispetto a "
+"una scheda audio integrata (soprattutto per registrare)."
 
 #: ../../getting-started/system-requirements.rst:29
 msgid "MIDI keyboard"
