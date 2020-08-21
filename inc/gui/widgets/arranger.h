@@ -105,6 +105,16 @@ typedef enum ArrangerWidgetType
   ARRANGER_WIDGET_TYPE_AUTOMATION,
 } ArrangerWidgetType;
 
+#if 0
+typedef enum ArrangerWidgetHoverType
+{
+  ARRANGER_WIDGET_HOVER_TYPE_NONE,
+  ARRANGER_WIDGET_HOVER_TYPE_TRACK,
+  ARRANGER_WIDGET_HOVER_TYPE_TRACK_LANE,
+  ARRANGER_WIDGET_HOVER_TYPE_AUTOMATION_TRACK,
+} ArrangerWidgetHoverType;
+#endif
+
 /**
  * The arranger widget is a canvas that draws all
  * the arranger objects it contains.
@@ -317,6 +327,13 @@ typedef struct _ArrangerWidget
    * To be set on drag begin.
    */
   bool           can_link;
+
+  /** Whether a rectangle is highlighted for DND. */
+  bool           is_highlighted;
+
+  /** The rectangle to highlight. */
+  GdkRectangle   highlight_rect;
+  //GdkRectangle   prev_highlight_rect;
 
 } ArrangerWidget;
 
@@ -564,6 +581,17 @@ void
 arranger_widget_get_min_possible_position (
   ArrangerWidget * self,
   Position *       pos);
+
+/**
+ * Sets the highlight rectangle.
+ *
+ * @param rect The rectangle, or NULL to
+ *   unset/unhighlight.
+ */
+void
+arranger_widget_set_highlight_rect (
+  ArrangerWidget * self,
+  GdkRectangle *   rect);
 
 /**
  * @}

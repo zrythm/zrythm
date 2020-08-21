@@ -166,6 +166,9 @@ typedef enum EventType
   /** Sent when plugin latency changes, to update
    * the graph. */
   ET_PLUGIN_LATENCY_CHANGED,
+
+  /** Arranger highlight rectangle changed. */
+  ET_ARRANGER_HIGHLIGHT_CHANGED,
 } EventType;
 
 /**

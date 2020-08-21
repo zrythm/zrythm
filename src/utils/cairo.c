@@ -24,6 +24,30 @@
 #include "zrythm_app.h"
 
 void
+z_cairo_draw_selection_with_color (
+  cairo_t * cr,
+  GdkRGBA * color,
+  double    start_x,
+  double    start_y,
+  double    offset_x,
+  double    offset_y)
+{
+  cairo_set_line_width (cr, 1);
+  cairo_set_source_rgba (
+    cr, color->red, color->green, color->blue,
+    color->alpha);
+  cairo_rectangle (
+    cr, start_x, start_y, offset_x, offset_y);
+  cairo_stroke (cr);
+  cairo_set_source_rgba (
+    cr, color->red / 3.0, color->green / 3.0,
+    color->blue / 3.0, color->alpha / 3.0);
+  cairo_rectangle (
+    cr, start_x, start_y, offset_x, offset_y);
+  cairo_fill (cr);
+}
+
+void
 z_cairo_draw_selection (
   cairo_t * cr,
   double    start_x,
@@ -31,15 +55,10 @@ z_cairo_draw_selection (
   double    offset_x,
   double    offset_y)
 {
-  cairo_set_line_width (cr, 1);
-  cairo_set_source_rgba (cr, 0.9, 0.9, 0.9, 1.0);
-  cairo_rectangle (
-    cr, start_x, start_y, offset_x, offset_y);
-  cairo_stroke (cr);
-  cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 0.3);
-  cairo_rectangle (
-    cr, start_x, start_y, offset_x, offset_y);
-  cairo_fill (cr);
+  GdkRGBA color = { 0.9, 0.9, 0.9, 1.0 };
+  z_cairo_draw_selection_with_color (
+    cr, &color, start_x, start_y, offset_x,
+    offset_y);
 }
 
 void

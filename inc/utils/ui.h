@@ -163,6 +163,11 @@ typedef struct UiCaches
  */
 #define TARGET_ENTRY_TRACK "TRACK"
 
+/**
+ * Chord descriptor target entry.
+ */
+#define TARGET_ENTRY_CHORD_DESCR "CHORD_DESCR"
+
 /* */
 #define TARGET_ENTRY_TL_SELECTIONS \
   "TL_SELECTIONS"

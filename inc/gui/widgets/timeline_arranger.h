@@ -271,6 +271,13 @@ timeline_arranger_widget_fade_up (
   int              fade_in);
 
 /**
+ * Sets up the timeline arranger as a drag dest.
+ */
+void
+timeline_arranger_setup_drag_dest (
+  ArrangerWidget * self);
+
+/**
  * @}
  */
 

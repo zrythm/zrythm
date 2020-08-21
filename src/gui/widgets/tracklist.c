@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -15,9 +15,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-/** \file
  */
 
 #include "actions/copy_tracks_action.h"
@@ -74,7 +71,7 @@ on_drag_leave (
 }
 
 static void
-on_drag_motion (
+on_dnd_motion (
   GtkWidget *widget,
   GdkDragContext *context,
   gint x,
@@ -83,12 +80,17 @@ on_drag_motion (
   TracklistWidget * self)
 {
   GdkModifierType mask;
-  z_gtk_widget_get_mask (
-    widget, &mask);
+  z_gtk_widget_get_mask (widget, &mask);
   if (mask & GDK_CONTROL_MASK)
-    gdk_drag_status (context, GDK_ACTION_COPY, time);
+    {
+      gdk_drag_status (
+        context, GDK_ACTION_COPY, time);
+    }
   else
-    gdk_drag_status (context, GDK_ACTION_MOVE, time);
+    {
+      gdk_drag_status (
+        context, GDK_ACTION_MOVE, time);
+    }
 
   TrackWidget * hit_tw = NULL;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -130,17 +132,17 @@ on_drag_motion (
 }
 
 static void
-on_drag_data_received (
-  GtkWidget        *widget,
-  GdkDragContext   *context,
-  gint              x,
-  gint              y,
-  GtkSelectionData *data,
-  guint             info,
-  guint             time,
-  TracklistWidget * self)
+on_dnd_drag_data_received (
+  GtkWidget        * widget,
+  GdkDragContext   * context,
+  gint               x,
+  gint               y,
+  GtkSelectionData * data,
+  guint              info,
+  guint              time,
+  TracklistWidget *  self)
 {
-  g_message ("drag data received on tracklist");
+  g_message ("dnd data received on tracklist");
 
   /* get track widget at the x,y point */
   TrackWidget * hit_tw = NULL;
@@ -541,11 +543,10 @@ tracklist_widget_init (TracklistWidget * self)
     GTK_WIDGET (self),
     GDK_ALL_EVENTS_MASK);
 
-  char * entry_track =
-    g_strdup (TARGET_ENTRY_TRACK);
   GtkTargetEntry entries[] = {
     {
-      entry_track, GTK_TARGET_SAME_APP,
+      (char *) TARGET_ENTRY_TRACK,
+      GTK_TARGET_SAME_APP,
       symap_map (ZSYMAP, TARGET_ENTRY_TRACK),
     },
   };
@@ -559,14 +560,13 @@ tracklist_widget_init (TracklistWidget * self)
       GTK_DEST_DEFAULT_DROP,
     entries, G_N_ELEMENTS (entries),
     GDK_ACTION_MOVE | GDK_ACTION_COPY);
-  g_free (entry_track);
 
   g_signal_connect (
     GTK_WIDGET (self), "drag-data-received",
-    G_CALLBACK(on_drag_data_received), self);
+    G_CALLBACK (on_dnd_drag_data_received), self);
   g_signal_connect (
     GTK_WIDGET (self), "drag-motion",
-    G_CALLBACK (on_drag_motion), self);
+    G_CALLBACK (on_dnd_motion), self);
   g_signal_connect (
     GTK_WIDGET (self), "drag-leave",
     G_CALLBACK (on_drag_leave), self);

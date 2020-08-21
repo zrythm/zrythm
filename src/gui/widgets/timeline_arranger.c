@@ -17,63 +17,32 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/arranger_selections.h"
-#include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
 #include "audio/automation_region.h"
-#include "audio/automation_track.h"
-#include "audio/automation_tracklist.h"
-#include "audio/audio_track.h"
-#include "audio/audio_bus_track.h"
-#include "audio/channel.h"
-#include "audio/chord_object.h"
 #include "audio/chord_region.h"
 #include "audio/chord_track.h"
 #include "audio/exporter.h"
-#include "audio/instrument_track.h"
 #include "audio/marker_track.h"
-#include "audio/master_track.h"
-#include "audio/midi_region.h"
-#include "audio/scale_object.h"
-#include "audio/track.h"
-#include "audio/tracklist.h"
-#include "audio/transport.h"
+#include "gui/backend/arranger_object.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/automation_point.h"
-#include "gui/widgets/automation_region.h"
-#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/arranger_object.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/chord_object.h"
-#include "gui/widgets/color_area.h"
 #include "gui/widgets/dialogs/bounce_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/export_midi_file_dialog.h"
-#include "gui/widgets/foldable_notebook.h"
-#include "gui/widgets/main_window.h"
-#include "gui/widgets/marker.h"
-#include "gui/widgets/midi_arranger.h"
-#include "gui/widgets/midi_arranger_bg.h"
-#include "gui/widgets/midi_region.h"
-#include "gui/widgets/midi_note.h"
-#include "gui/widgets/region.h"
-#include "gui/widgets/scale_object.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
-#include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
-#include "gui/widgets/tracklist.h"
 #include "project.h"
-#include "settings/settings.h"
-#include "utils/arrays.h"
-#include "utils/cairo.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
+#include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -1611,4 +1580,214 @@ timeline_arranger_widget_fade_up (
       opts->curviness =
         CLAMP (opts->curviness + delta, - 1.0, 1.0);
     }
+}
+
+static void
+on_dnd_data_received (
+  GtkWidget        * widget,
+  GdkDragContext   * context,
+  gint               x,
+  gint               y,
+  GtkSelectionData * data,
+  guint              info,
+  guint              time,
+  ArrangerWidget *   self)
+{
+  g_message ("dnd data received (timeline)");
+
+  GdkAtom target =
+    gtk_selection_data_get_target (data);
+
+  /* determine if moving or copying */
+  GdkDragAction action =
+    gdk_drag_context_get_selected_action (
+      context);
+
+  Track * track =
+    timeline_arranger_widget_get_track_at_y (
+      self, y);
+  TrackLane * lane =
+    timeline_arranger_widget_get_track_lane_at_y (
+      self, y);
+
+  if (target ==
+        GET_ATOM (TARGET_ENTRY_CHORD_DESCR) &&
+      self->is_highlighted)
+    {
+      ChordDescriptor * descr = NULL;
+      const guchar * my_data =
+        gtk_selection_data_get_data (data);
+      memcpy (&descr, my_data, sizeof (descr));
+
+      /* create chord region */
+      Position pos, end_pos;
+      ui_px_to_pos_timeline (
+        self->highlight_rect.x, &pos, true);
+      ui_px_to_pos_timeline (
+        self->highlight_rect.x +
+          self->highlight_rect.width,
+        &end_pos, true);
+      int lane_pos =
+        lane ? lane->pos :
+        (track->num_lanes == 1 ?
+         0 : track->num_lanes - 2);
+      int idx_in_lane =
+        track->lanes[lane_pos]->num_regions;
+      /* TODO use midi_region_new_from_chord_descr */
+      ZRegion * region =
+        midi_region_new (
+          &pos, &end_pos, track->pos, lane_pos,
+          idx_in_lane);
+      track_add_region (
+        track, region, NULL, lane_pos,
+        F_GEN_NAME, F_PUBLISH_EVENTS);
+      arranger_object_select (
+        (ArrangerObject *) region, F_SELECT,
+        F_NO_APPEND);
+
+      UndoableAction * ua =
+        arranger_selections_action_new_create (
+          TL_SELECTIONS);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
+
+  if (action == GDK_ACTION_COPY)
+    {
+    }
+  else if (action == GDK_ACTION_MOVE)
+    {
+    }
+
+  arranger_widget_set_highlight_rect (self, NULL);
+}
+
+static gboolean
+on_dnd_motion (
+  GtkWidget      * widget,
+  GdkDragContext * context,
+  gint             x,
+  gint             y,
+  guint            time,
+  ArrangerWidget * self)
+{
+  g_message ("dnd motion");
+
+  AutomationTrack * at =
+    timeline_arranger_widget_get_at_at_y (self, y);
+  TrackLane * lane =
+    timeline_arranger_widget_get_track_lane_at_y (
+      self, y);
+  (void) lane;
+  Track * track =
+    timeline_arranger_widget_get_track_at_y (
+      self, y);
+
+  GdkModifierType mask;
+  z_gtk_widget_get_mask (widget, &mask);
+
+  arranger_widget_set_highlight_rect (self, NULL);
+
+  GdkAtom target =
+    gtk_drag_dest_find_target (
+      widget, context, NULL);
+  if (target == GDK_NONE)
+    {
+      g_message ("target is none");
+      gdk_drag_status (context, 0, time);
+    }
+  else if (GET_ATOM (TARGET_ENTRY_CHORD_DESCR))
+    {
+      if (at || !track ||
+          !track_has_piano_roll (track))
+        {
+          /* nothing to do */
+          return false;
+        }
+
+      /* highlight track */
+
+      /* get default size */
+      int ticks =
+        snap_grid_get_note_ticks (
+          SNAP_GRID_TIMELINE->note_length,
+          SNAP_GRID_TIMELINE->note_type);
+      Position length_pos;
+      position_from_ticks (&length_pos, ticks);
+      int width_px =
+        ui_pos_to_px_timeline (&length_pos, false);
+
+      /* get snapped x */
+      Position pos;
+      ui_px_to_pos_timeline (x, &pos, true);
+      if (!(mask & GDK_SHIFT_MASK))
+        {
+          position_snap_simple (
+            &pos, SNAP_GRID_TIMELINE);
+          x = ui_pos_to_px_timeline (&pos, true);
+        }
+
+      /* get y and height */
+      int height = track->main_height;
+      int track_y_local =
+        track_widget_get_local_y (
+          track->widget, self, (int) y);
+      if (lane)
+        {
+          y -= track_y_local - lane->y;
+          height = lane->height;
+        }
+      else
+        {
+          y -= track_y_local;
+        }
+      GdkRectangle highlight_rect = {
+        x, y, width_px, height };
+      arranger_widget_set_highlight_rect (
+        self, &highlight_rect);
+
+      if (mask & GDK_SHIFT_MASK)
+        {
+        }
+      else
+        {
+        }
+
+      return true;
+    }
+  else
+    {
+    }
+
+  return true;
+}
+
+/**
+ * Sets up the timeline arranger as a drag dest.
+ */
+void
+timeline_arranger_setup_drag_dest (
+  ArrangerWidget * self)
+{
+  /* set as drag dest */
+  GtkTargetEntry entries[] = {
+    {
+      (char *) TARGET_ENTRY_CHORD_DESCR,
+      GTK_TARGET_SAME_APP,
+      symap_map (ZSYMAP, TARGET_ENTRY_CHORD_DESCR),
+    },
+  };
+  gtk_drag_dest_set (
+    GTK_WIDGET (self),
+    GTK_DEST_DEFAULT_MOTION |
+      GTK_DEST_DEFAULT_DROP,
+    entries, G_N_ELEMENTS (entries),
+    GDK_ACTION_MOVE | GDK_ACTION_COPY);
+
+  g_signal_connect (
+    GTK_WIDGET (self), "drag-data-received",
+    G_CALLBACK (on_dnd_data_received), self);
+  g_signal_connect (
+    GTK_WIDGET (self), "drag-motion",
+    G_CALLBACK (on_dnd_motion), self);
 }

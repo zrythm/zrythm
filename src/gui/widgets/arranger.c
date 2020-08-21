@@ -72,6 +72,7 @@
 #include "utils/cairo.h"
 #include "utils/gtk.h"
 #include "utils/flags.h"
+#include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
@@ -148,6 +149,25 @@ draw_selections (
     default:
       break;
     }
+}
+
+static void
+draw_highlight (
+  ArrangerWidget * self,
+  cairo_t *        cr,
+  GdkRectangle *   rect)
+{
+  if (!self->is_highlighted)
+    {
+      return;
+    }
+
+  z_cairo_draw_selection_with_color (
+    cr, &UI_COLORS->bright_orange,
+    (self->highlight_rect.x + 1) - rect->x,
+    (self->highlight_rect.y + 1) - rect->y,
+    self->highlight_rect.width - 1,
+    self->highlight_rect.height - 1);
 }
 
 /**
@@ -1073,6 +1093,10 @@ arranger_draw_cb (
             self, objs[j], self->cached_cr,
             &rect);
         }
+
+      /* draw dnd highlight */
+      draw_highlight (
+        self, self->cached_cr, &rect);
 
       /* draw selections */
       draw_selections (
@@ -2687,6 +2711,32 @@ arranger_widget_on_key_action (
     /*auto_scroll (self);*/
 
   return FALSE;
+}
+
+/**
+ * Sets the highlight rectangle.
+ *
+ * @param rect The rectangle, or NULL to
+ *   unset/unhighlight.
+ */
+void
+arranger_widget_set_highlight_rect (
+  ArrangerWidget * self,
+  GdkRectangle *   rect)
+{
+  if (rect)
+    {
+      self->is_highlighted = true;
+      /*self->prev_highlight_rect =*/
+        /*self->highlight_rect;*/
+      self->highlight_rect = *rect;
+    }
+  else
+    {
+      self->is_highlighted = false;
+    }
+
+  EVENTS_PUSH (ET_ARRANGER_HIGHLIGHT_CHANGED, self);
 }
 
 /**
@@ -5412,80 +5462,6 @@ on_grab_broken (GtkWidget *widget,
   return FALSE;
 }
 
-void
-arranger_widget_setup (
-  ArrangerWidget *   self,
-  ArrangerWidgetType type,
-  SnapGrid *         snap_grid)
-{
-  g_return_if_fail (
-    self &&
-    type >= ARRANGER_WIDGET_TYPE_TIMELINE &&
-    snap_grid);
-  self->type = type;
-  self->snap_grid = snap_grid;
-
-  /* connect signals */
-  g_signal_connect (
-    G_OBJECT(self->drag), "drag-begin",
-    G_CALLBACK (drag_begin),  self);
-  g_signal_connect (
-    G_OBJECT(self->drag), "drag-update",
-    G_CALLBACK (drag_update),  self);
-  g_signal_connect (
-    G_OBJECT(self->drag), "drag-end",
-    G_CALLBACK (drag_end),  self);
-  g_signal_connect (
-    G_OBJECT (self->drag), "cancel",
-    G_CALLBACK (drag_cancel), self);
-  g_signal_connect (
-    G_OBJECT (self->multipress), "pressed",
-    G_CALLBACK (multipress_pressed), self);
-  g_signal_connect (
-    G_OBJECT (self->right_mouse_mp), "pressed",
-    G_CALLBACK (on_right_click), self);
-  g_signal_connect (
-    G_OBJECT (self), "scroll-event",
-    G_CALLBACK (on_scroll), self);
-  g_signal_connect (
-    G_OBJECT (self), "key-press-event",
-    G_CALLBACK (arranger_widget_on_key_action),
-    self);
-  g_signal_connect (
-    G_OBJECT (self), "key-release-event",
-    G_CALLBACK (arranger_widget_on_key_release),
-    self);
-  g_signal_connect (
-    G_OBJECT(self), "motion-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT (self), "leave-notify-event",
-    G_CALLBACK (on_motion), self);
-  g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion), self);
-  g_signal_connect (
-    G_OBJECT (self), "focus-out-event",
-    G_CALLBACK (on_focus_out), self);
-  g_signal_connect (
-    G_OBJECT (self), "grab-focus",
-    G_CALLBACK (on_focus), self);
-  g_signal_connect (
-    G_OBJECT (self), "grab-broken-event",
-    G_CALLBACK (on_grab_broken), self);
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (arranger_draw_cb), self);
-
-  /*gtk_widget_add_tick_callback (*/
-    /*GTK_WIDGET (self),*/
-    /*(GtkTickCallback) arranger_tick_cb,*/
-    /*self, NULL);*/
-
-  gtk_widget_set_focus_on_click (
-    GTK_WIDGET (self), 1);
-}
-
 /**
  * Wrapper for ui_px_to_pos depending on the arranger
  * type.
@@ -6432,6 +6408,86 @@ arranger_widget_get_min_possible_position (
       }
       break;
     }
+}
+
+void
+arranger_widget_setup (
+  ArrangerWidget *   self,
+  ArrangerWidgetType type,
+  SnapGrid *         snap_grid)
+{
+  g_return_if_fail (
+    self &&
+    type >= ARRANGER_WIDGET_TYPE_TIMELINE &&
+    snap_grid);
+  self->type = type;
+  self->snap_grid = snap_grid;
+
+  /* if timeline, make drag dest */
+  if (type == TYPE (TIMELINE))
+    {
+      timeline_arranger_setup_drag_dest (self);
+    }
+
+  /* connect signals */
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-begin",
+    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (self->drag), "cancel",
+    G_CALLBACK (drag_cancel), self);
+  g_signal_connect (
+    G_OBJECT (self->multipress), "pressed",
+    G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (
+    G_OBJECT (self->right_mouse_mp), "pressed",
+    G_CALLBACK (on_right_click), self);
+  g_signal_connect (
+    G_OBJECT (self), "scroll-event",
+    G_CALLBACK (on_scroll), self);
+  g_signal_connect (
+    G_OBJECT (self), "key-press-event",
+    G_CALLBACK (arranger_widget_on_key_action),
+    self);
+  g_signal_connect (
+    G_OBJECT (self), "key-release-event",
+    G_CALLBACK (arranger_widget_on_key_release),
+    self);
+  g_signal_connect (
+    G_OBJECT(self), "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT (self), "leave-notify-event",
+    G_CALLBACK (on_motion), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_motion), self);
+  g_signal_connect (
+    G_OBJECT (self), "focus-out-event",
+    G_CALLBACK (on_focus_out), self);
+  g_signal_connect (
+    G_OBJECT (self), "grab-focus",
+    G_CALLBACK (on_focus), self);
+  g_signal_connect (
+    G_OBJECT (self), "grab-broken-event",
+    G_CALLBACK (on_grab_broken), self);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (arranger_draw_cb), self);
+
+  /*gtk_widget_add_tick_callback (*/
+    /*GTK_WIDGET (self),*/
+    /*(GtkTickCallback) arranger_tick_cb,*/
+    /*self, NULL);*/
+
+  gtk_widget_set_focus_on_click (
+    GTK_WIDGET (self), 1);
 }
 
 static void

@@ -1586,6 +1586,14 @@ process_events (void * data)
               ruler_widget_redraw_whole (MW_RULER);
             }
           break;
+        case ET_ARRANGER_HIGHLIGHT_CHANGED:
+          {
+            ArrangerWidget * arranger =
+              Z_ARRANGER_WIDGET (ev->arg);
+            arranger_widget_redraw_whole (
+              arranger);
+           }
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

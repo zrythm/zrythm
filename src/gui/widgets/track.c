@@ -2338,23 +2338,33 @@ on_drag_update (
 
 static void
 on_drag_end (
-  GtkGestureDrag *gesture,
-  gdouble         offset_x,
-  gdouble         offset_y,
-  TrackWidget * self)
+  GtkGestureDrag * gesture,
+  gdouble          offset_x,
+  gdouble          offset_y,
+  TrackWidget *    self)
 {
   self->resizing = 0;
   self->last_offset_y = 0;
 }
 
 static void
-on_drag_data_get (
-  GtkWidget        *widget,
-  GdkDragContext   *context,
-  GtkSelectionData *data,
-  guint             info,
-  guint             time,
-  TrackWidget * self)
+on_dnd_drag_begin (
+  GtkWidget *      widget,
+  GdkDragContext * context,
+  TrackWidget *    self)
+{
+  gtk_drag_set_icon_name (
+    context, "track-inspector", 0, 0);
+}
+
+static void
+on_dnd_drag_data_get (
+  GtkWidget        * widget,
+  GdkDragContext   * context,
+  GtkSelectionData * data,
+  guint              info,
+  guint              time,
+  TrackWidget *      self)
 {
   /* Not really needed since the selections are
    * used. just send master */
@@ -2941,9 +2951,11 @@ track_widget_init (TrackWidget * self)
     G_OBJECT (self->drag), "drag-end",
     G_CALLBACK (on_drag_end), self);
   g_signal_connect (
-    GTK_WIDGET (self),
-    "drag-data-get",
-    G_CALLBACK (on_drag_data_get), self);
+    GTK_WIDGET (self), "drag-begin",
+    G_CALLBACK (on_dnd_drag_begin), self);
+  g_signal_connect (
+    GTK_WIDGET (self), "drag-data-get",
+    G_CALLBACK (on_dnd_drag_data_get), self);
   g_signal_connect (
     G_OBJECT(self), "destroy",
     G_CALLBACK (on_destroy),  NULL);

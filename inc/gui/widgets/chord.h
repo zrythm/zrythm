@@ -26,6 +26,8 @@
 #ifndef __GUI_WIDGETS_CHORD_H__
 #define __GUI_WIDGETS_CHORD_H__
 
+#include <stdbool.h>
+
 #include <gtk/gtk.h>
 
 /**
@@ -49,6 +51,11 @@ typedef struct _ChordWidget
 
   /** Button. */
   GtkButton *   btn;
+
+  GtkGestureDrag * btn_drag;
+
+  /** Whether the drag has started. */
+  bool          drag_started;
 
   GtkButton *   edit_chord_btn;
 

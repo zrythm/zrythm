@@ -34,6 +34,7 @@ typedef struct Position Position;
 typedef struct MidiNote MidiNote;
 typedef struct ZRegion ZRegion;
 typedef struct MidiEvents MidiEvents;
+typedef struct ChordDescriptor ChordDescriptor;
 typedef ZRegion MidiRegion;
 typedef void MIDI_FILE;
 
@@ -71,6 +72,22 @@ midi_region_new_from_midi_file (
   int              lane_pos,
   int              idx_inside_lane,
   int              idx);
+
+/**
+ * Create a region from the chord descriptor.
+ *
+ * Default size will be timeline snap and default
+ * notes size will be editor snap.
+ *
+ * TODO
+ */
+ZRegion *
+midi_region_new_from_chord_descr (
+  const Position *  pos,
+  ChordDescriptor * descr,
+  int               track_pos,
+  int               lane_pos,
+  int               idx_inside_lane);
 
 /**
  * Adds the MidiNote to the given ZRegion.

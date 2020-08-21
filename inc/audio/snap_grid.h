@@ -185,8 +185,9 @@ snap_grid_update_snap_points (
  * Gets given note length and type in ticks.
  */
 int
-snap_grid_get_note_ticks (NoteLength note_length,
-                          NoteType   note_type);
+snap_grid_get_note_ticks (
+  NoteLength note_length,
+  NoteType   note_type);
 
 /**
  * Sets note type and re-calculates snap points.
@@ -201,8 +202,9 @@ snap_grid_get_note_ticks (NoteLength note_length,
  * Must be free'd.
  */
 char *
-snap_grid_stringize (NoteLength note_length,
-                     NoteType   note_type);
+snap_grid_stringize (
+  NoteLength note_length,
+  NoteType   note_type);
 
 /**
  * Returns the next or previous SnapGrid point.
@@ -216,7 +218,7 @@ snap_grid_stringize (NoteLength note_length,
  */
 Position *
 snap_grid_get_nearby_snap_point (
-  SnapGrid * self,
+  SnapGrid *       self,
   const Position * pos,
   const int        return_prev);
 
