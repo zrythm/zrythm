@@ -560,6 +560,14 @@ arranger_selections_action_new_split (
   const Position *     pos);
 
 /**
+ * Creates a new action for merging
+ * ArrangerObject's.
+ */
+UndoableAction *
+arranger_selections_action_new_merge (
+  ArrangerSelections * sel);
+
+/**
  * Creates a new action for resizing
  * ArrangerObject's.
  *

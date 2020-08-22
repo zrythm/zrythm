@@ -972,6 +972,8 @@ zrythm_app_startup (
     "<Alt>Q", "win.quantize-options::global");
   INSTALL_ACCEL (
     "<Shift>M", "win.mute-selection::global");
+  INSTALL_ACCEL (
+    "<Control>J", "win.merge-selection");
 
 #undef INSTALL_ACCEL
 

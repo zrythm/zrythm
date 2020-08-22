@@ -1888,6 +1888,16 @@ activate_mute_selection (
   g_message ("mute/unmute selections");
 }
 
+DEFINE_SIMPLE (activate_merge_selection)
+{
+  g_message ("merge selections activated");
+
+  UndoableAction * ua =
+    arranger_selections_action_new_merge (
+      (ArrangerSelections *) TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
 void
 activate_set_timebase_master (
   GSimpleAction *action,

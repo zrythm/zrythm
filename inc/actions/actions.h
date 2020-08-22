@@ -463,6 +463,7 @@ activate_quantize_options (
   gpointer       user_data);
 
 DECLARE_SIMPLE (activate_mute_selection);
+DECLARE_SIMPLE (activate_merge_selection);
 
 void
 activate_set_timebase_master (

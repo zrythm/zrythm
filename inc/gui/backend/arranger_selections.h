@@ -312,6 +312,15 @@ arranger_selections_remove_object (
   ArrangerSelections * self,
   ArrangerObject *     obj);
 
+/**
+ * Merges the given selections into one region.
+ *
+ * @note All selections must be on the same lane.
+ */
+void
+arranger_selections_merge (
+  ArrangerSelections * self);
+
 double
 arranger_selections_get_length_in_ticks (
   ArrangerSelections * self);

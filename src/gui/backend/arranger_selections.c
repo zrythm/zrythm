@@ -1594,6 +1594,86 @@ arranger_selections_get_length_in_ticks (
 }
 
 /**
+ * Merges the given selections into one region.
+ *
+ * @note All selections must be on the same lane.
+ */
+void
+arranger_selections_merge (
+  ArrangerSelections * self)
+{
+  double ticks_length =
+    arranger_selections_get_length_in_ticks (self);
+  Position pos, end_pos;
+  arranger_selections_get_start_pos (
+    self, &pos, F_GLOBAL);
+  position_from_ticks (
+    &end_pos, pos.total_ticks + ticks_length);
+
+  ArrangerObject * first_obj =
+    arranger_selections_get_first_object (self);
+  g_return_if_fail (
+    first_obj->type == ARRANGER_OBJECT_TYPE_REGION);
+  ZRegion * first_r = (ZRegion *) first_obj;
+
+  int size = 0;
+  ArrangerObject ** objs =
+    arranger_selections_get_all_objects (
+      self, &size);
+
+  ZRegion * new_r = NULL;
+  switch (first_r->id.type)
+    {
+    case REGION_TYPE_MIDI:
+      new_r =
+        midi_region_new (
+          &pos, &end_pos, first_r->id.track_pos,
+          first_r->id.lane_pos, first_r->id.idx);
+      for (int i = 0; i < size; i++)
+        {
+          ArrangerObject * r_obj = objs[i];
+          ZRegion * r = (ZRegion *) r_obj;
+          double ticks_diff =
+            r_obj->pos.total_ticks -
+              first_obj->pos.total_ticks;
+
+          /* copy all midi notes */
+          for (int j = 0; j < r->num_midi_notes;
+               j++)
+            {
+              MidiNote * mn = r->midi_notes[j];
+              ArrangerObject * new_obj =
+                arranger_object_clone (
+                  (ArrangerObject *) mn,
+                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+              MidiNote * new_mn =
+                (MidiNote *) new_obj;
+
+              /* move by diff from first object */
+              arranger_object_move (
+                new_obj, ticks_diff);
+
+              midi_region_add_midi_note (
+                new_r, new_mn, F_NO_PUBLISH_EVENTS);
+            }
+        }
+      break;
+    case REGION_TYPE_AUDIO:
+      break;
+    case REGION_TYPE_CHORD:
+      break;
+    case REGION_TYPE_AUTOMATION:
+      break;
+    }
+
+  /* clear/free previous selections and add the
+   * new region */
+  arranger_selections_clear (self, F_FREE);
+  arranger_selections_add_object (
+    self, (ArrangerObject *) new_r);
+}
+
+/**
  * Returns all objects in the selections in a
  * newly allocated array that should be free'd.
  *

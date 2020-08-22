@@ -521,6 +521,22 @@ arranger_selections_action_new_split (
 }
 
 /**
+ * Creates a new action for merging
+ * ArrangerObject's.
+ */
+UndoableAction *
+arranger_selections_action_new_merge (
+  ArrangerSelections * sel)
+{
+  ArrangerSelectionsAction * self =
+    _create_action (sel);
+  UndoableAction * ua = (UndoableAction *) self;
+  ua->type = UA_MERGE_ARRANGER_SELECTIONS;
+
+  return ua;
+}
+
+/**
  * Creates a new action for resizing
  * ArrangerObject's.
  *
@@ -1837,6 +1853,87 @@ do_or_undo_split (
  * @param _do 1 to do, 0 to undo.
  */
 static int
+do_or_undo_merge (
+  ArrangerSelectionsAction * self,
+  const bool                 _do)
+{
+  /* if first run, merge */
+  if (self->first_run)
+    {
+      self->sel_after =
+        arranger_selections_clone (self->sel);
+      arranger_selections_merge (self->sel_after);
+    }
+
+  arranger_selections_sort_by_indices (
+    self->sel, !_do);
+  arranger_selections_sort_by_indices (
+    self->sel_after, !_do);
+
+  int before_size = 0;
+  ArrangerObject ** before_objs =
+    arranger_selections_get_all_objects (
+      _do ? self->sel : self->sel_after,
+      &before_size);
+  int after_size = 0;
+  ArrangerObject ** after_objs =
+    arranger_selections_get_all_objects (
+      _do ? self->sel_after : self->sel,
+      &after_size);
+
+  /* remove the before objects from the project */
+  for (int i = before_size - 1; i >= 0; i--)
+    {
+      before_objs[i]->flags |=
+        ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
+      /* find the actual object */
+      ArrangerObject * prj_obj =
+        arranger_object_find (before_objs[i]);
+      g_return_val_if_fail (prj_obj, -1);
+
+      /* remove */
+      arranger_object_remove_from_project (prj_obj);
+    }
+
+  /* add the after objects to the project */
+  for (int i = 0; i < after_size; i++)
+    {
+      after_objs[i]->flags |=
+        ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
+      ArrangerObject * clone_obj =
+        arranger_object_clone (
+          after_objs[i],
+          ARRANGER_OBJECT_CLONE_COPY_MAIN);
+
+      arranger_object_add_to_project (
+        clone_obj, F_NO_PUBLISH_EVENTS);
+
+      /* remember positions */
+      arranger_object_copy_identifier (
+        after_objs[i], clone_obj);
+    }
+
+  free (before_objs);
+  free (after_objs);
+
+  ArrangerSelections * sel =
+    get_actual_arranger_selections (self);
+  EVENTS_PUSH (
+    ET_ARRANGER_SELECTIONS_CHANGED, sel);
+
+  self->first_run = 0;
+
+  return 0;
+}
+
+/**
+ * Does or undoes the action.
+ *
+ * @param _do 1 to do, 0 to undo.
+ */
+static int
 do_or_undo_resize (
   ArrangerSelectionsAction * self,
   const int                  _do)
@@ -2049,6 +2146,9 @@ arranger_selections_action_do (
     case UA_SPLIT_ARRANGER_SELECTIONS:
       return do_or_undo_split (self, true);
       break;
+    case UA_MERGE_ARRANGER_SELECTIONS:
+      return do_or_undo_merge (self, true);
+      break;
     case UA_RESIZE_ARRANGER_SELECTIONS:
       return do_or_undo_resize (self, true);
       break;
@@ -2097,6 +2197,8 @@ arranger_selections_action_undo (
         self, false);
     case UA_SPLIT_ARRANGER_SELECTIONS:
       return do_or_undo_split (self, false);
+    case UA_MERGE_ARRANGER_SELECTIONS:
+      return do_or_undo_merge (self, false);
     case UA_RESIZE_ARRANGER_SELECTIONS:
       return do_or_undo_resize (self, false);
     case UA_QUANTIZE_ARRANGER_SELECTIONS:

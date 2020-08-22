@@ -416,6 +416,9 @@ main_window_widget_init (MainWindowWidget * self)
     { "insert-silence", activate_insert_silence },
     { "remove-range", activate_remove_range },
 
+    /* merge actions */
+    { "merge-selection", activate_merge_selection },
+
     /* musical mode */
     { "toggle-musical-mode", NULL, NULL,
       g_settings_get_boolean (
