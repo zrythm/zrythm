@@ -1892,6 +1892,26 @@ DEFINE_SIMPLE (activate_merge_selection)
 {
   g_message ("merge selections activated");
 
+  if (TL_SELECTIONS->num_regions == 0)
+    {
+      ui_show_error_message (
+        MAIN_WINDOW, _("No regions selected"));
+      return;
+    }
+  if (!arranger_selections_all_on_same_lane (
+        (ArrangerSelections *) TL_SELECTIONS))
+    {
+      ui_show_error_message (
+        MAIN_WINDOW,
+        _("Selections must be on the same lane"));
+      return;
+    }
+  if (TL_SELECTIONS->num_regions == 1)
+    {
+      /* nothing to do */
+      return;
+    }
+
   UndoableAction * ua =
     arranger_selections_action_new_merge (
       (ArrangerSelections *) TL_SELECTIONS);

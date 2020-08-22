@@ -63,6 +63,7 @@ typedef struct _TimelineToolbarWidget
   GtkToolButton *  event_viewer_toggle;
   GtkToggleToolButton *  musical_mode_toggle;
   RangeActionButtonsWidget * range_action_buttons;
+  GtkToolButton *  merge_btn;
 } TimelineToolbarWidget;
 
 void

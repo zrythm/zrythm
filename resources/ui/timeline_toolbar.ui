@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <!--
 
-  Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+  Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -79,6 +79,19 @@
             <property name="can_focus">False</property>
           </object>
         </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="merge_btn">
+        <property name="visible">True</property>
+        <property name="action-name">win.merge-selection</property>
+        <property name="icon-name">merge</property>
+        <property name="tooltip-text" translatable="yes">Merge selections</property>
       </object>
     </child>
     <!-- extra space so we can add widgets at the

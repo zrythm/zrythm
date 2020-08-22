@@ -81,4 +81,5 @@ timeline_toolbar_widget_class_init (
   BIND_CHILD (event_viewer_toggle);
   BIND_CHILD (musical_mode_toggle);
   BIND_CHILD (range_action_buttons);
+  BIND_CHILD (merge_btn);
 }

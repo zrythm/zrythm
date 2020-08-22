@@ -74,6 +74,7 @@
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
+#include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/timeline_selection_info.h"
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/top_bar.h"
@@ -560,6 +561,13 @@ on_arranger_selections_changed (
   refresh_for_selections_type (sel->type);
   left_dock_edge_widget_refresh (
     MW_LEFT_DOCK_EDGE);
+
+  /* enable/disable merge button */
+  gtk_widget_set_sensitive (
+    GTK_WIDGET (MW_TIMELINE_TOOLBAR->merge_btn),
+    TL_SELECTIONS->num_regions > 1 &&
+    arranger_selections_all_on_same_lane (
+      (ArrangerSelections *) TL_SELECTIONS));
 }
 
 static void
