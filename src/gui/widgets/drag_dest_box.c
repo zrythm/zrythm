@@ -73,7 +73,8 @@ on_drag_leave (
       /* unhighlight bottom part of last track */
       Track * track =
         tracklist_get_last_track (
-          TRACKLIST, 0, 1);
+          TRACKLIST,
+          TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
       track_widget_do_highlight (
         track->widget, 0, 0, 0);
     }
@@ -154,7 +155,8 @@ on_drag_motion (
       /* highlight bottom part of last track */
       Track * track =
         tracklist_get_last_track (
-          TRACKLIST, 0, 1);
+          TRACKLIST,
+          TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
       int track_height =
         gtk_widget_get_allocated_height (
           GTK_WIDGET (track->widget));
@@ -191,6 +193,7 @@ on_drag_data_received (
   if (IS_URI_LIST || IS_SUPPORTED_FILE)
     {
       SupportedFile * file = NULL;
+      char ** uris = NULL;
       if (IS_SUPPORTED_FILE)
         {
           const guchar *my_data =
@@ -199,101 +202,12 @@ on_drag_data_received (
         }
       else
         {
-          char * filepath = NULL;
-          char ** uris =
-            gtk_selection_data_get_uris (data);
-          if (uris)
-            {
-              char * uri;
-              int i = 0;
-              while ((uri = uris[i++]) != NULL)
-                {
-                  /* strip "file://" */
-                  if (!string_contains_substr (
-                        uri, "file://", 0))
-                    continue;
-
-                  if (filepath)
-                    g_free (filepath);
-                  GError * err = NULL;
-                  filepath =
-                    g_filename_from_uri (
-                      uri, NULL, &err);
-                  if (err)
-                    {
-                      g_warning (
-                        "%s", err->message);
-                    }
-
-                  /* only accept 1 file for now */
-                  break;
-                }
-              g_strfreev (uris);
-            }
-
-          if (filepath)
-            {
-              file =
-                supported_file_new_from_path (
-                  filepath);
-              g_free (filepath);
-            }
+          uris = gtk_selection_data_get_uris (data);
         }
 
-      if (file)
-        {
-          TrackType track_type = 0;
-          if (supported_file_type_is_supported (
-                file->type) &&
-              supported_file_type_is_audio (
-                file->type))
-            {
-              track_type = TRACK_TYPE_AUDIO;
-            }
-          else if (supported_file_type_is_midi (
-                     file->type))
-            {
-              track_type = TRACK_TYPE_MIDI;
-            }
-          else
-            {
-              char * descr =
-                supported_file_type_get_description (
-                  file->type);
-              char * msg =
-                g_strdup_printf (
-                  _("Unsupported file type %s"),
-                  descr);
-              g_free (descr);
-              if (IS_URI_LIST)
-                {
-                  supported_file_free (file);
-                }
-              ui_show_error_message (
-                MAIN_WINDOW, msg);
-              return;
-            }
-
-          UndoableAction * ua =
-            create_tracks_action_new (
-              track_type, NULL, file,
-              TRACKLIST->num_tracks,
-              PLAYHEAD, 1);
-          if (IS_URI_LIST)
-            {
-              supported_file_free (file);
-            }
-
-          undo_manager_perform (UNDO_MANAGER, ua);
-          return;
-        }
-      else
-        {
-          ui_show_error_message (
-            MAIN_WINDOW,
-            _("No file found"));
-          return;
-        }
+      tracklist_handle_file_drop (
+        TRACKLIST, uris, file, NULL, NULL, NULL,
+        true);
     }
   else if (target ==
             GET_ATOM (TARGET_ENTRY_PLUGIN_DESCR))
@@ -376,7 +290,8 @@ on_drag_data_received (
     {
       int pos =
         tracklist_get_last_pos (
-          TRACKLIST, 0, 1);
+          TRACKLIST,
+          TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
 
       /* determine if moving or copying */
       GdkDragAction action =

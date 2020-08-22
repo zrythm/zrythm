@@ -60,13 +60,9 @@ supported_file_type_is_supported (
     {
       if (type == FILE_TYPE_FLAC ||
           type == FILE_TYPE_OGG ||
-          type == FILE_TYPE_WAV)
+          type == FILE_TYPE_WAV ||
+          type == FILE_TYPE_MP3)
         return 1;
-
-#ifdef HAVE_FFMPEG
-      if (type == FILE_TYPE_MP3)
-        return 1;
-#endif
     }
   if (supported_file_type_is_midi (type))
     return 1;
@@ -110,6 +106,8 @@ supported_file_clone (
 
   dest->type = src->type;
   dest->abs_path = g_strdup (src->abs_path);
+  dest->hidden = src->hidden;
+  dest->label = g_strdup (src->label);
 
   return dest;
 }
@@ -131,7 +129,6 @@ supported_file_type_get_description (
       break;
     case FILE_TYPE_MP3:
       return g_strdup ("MP3");
-      break;
       break;
     case FILE_TYPE_FLAC:
       return g_strdup ("FLAC");
@@ -208,7 +205,6 @@ supported_file_type_get_ext (
       break;
     case FILE_TYPE_MP3:
       return g_strdup ("mp3");
-      break;
       break;
     case FILE_TYPE_FLAC:
       return g_strdup ("FLAC");

@@ -29,21 +29,31 @@
 #include "audio/engine.h"
 #include "audio/track.h"
 
+typedef struct Track Track;
+typedef struct _TracklistWidget TracklistWidget;
+typedef struct _PinnedTracklistWidget
+  PinnedTracklistWidget;
+typedef struct Track ChordTrack;
+typedef struct SupportedFile SupportedFile;
+
 /**
  * @addtogroup audio
  *
  * @{
  */
 
-typedef struct Track Track;
-typedef struct _TracklistWidget TracklistWidget;
-typedef struct _PinnedTracklistWidget
-  PinnedTracklistWidget;
-
 #define TRACKLIST (PROJECT->tracklist)
 #define MAX_TRACKS 3000
 
-typedef struct Track ChordTrack;
+/**
+ * Used in track search functions.
+ */
+typedef enum TracklistPinOption
+{
+  TRACKLIST_PIN_OPTION_PINNED_ONLY,
+  TRACKLIST_PIN_OPTION_UNPINNED_ONLY,
+  TRACKLIST_PIN_OPTION_BOTH,
+} TracklistPinOption;
 
 /**
  * The Tracklist contains all the tracks in the
@@ -269,28 +279,28 @@ tracklist_get_prev_visible_track (
 /**
  * Returns the index of the last Track.
  *
- * @param pinned_only Only consider pinned Track's.
+ * @param pin_opt Pin option.
  * @param visible_only Only consider visible
  *   Track's.
  */
 int
 tracklist_get_last_pos (
-  Tracklist * self,
-  const int   pinned_only,
-  const int   visible_only);
+  Tracklist *              self,
+  const TracklistPinOption pin_opt,
+  const bool               visible_only);
 
 /**
  * Returns the last Track.
  *
- * @param pinned_only Only consider pinned Track's.
+ * @param pin_opt Pin option.
  * @param visible_only Only consider visible
  *   Track's.
  */
 Track*
 tracklist_get_last_track (
-  Tracklist * self,
-  const int   pinned_only,
-  const int   visible_only);
+  Tracklist *              self,
+  const TracklistPinOption pin_opt,
+  const int                visible_only);
 
 /**
  * Returns the next visible Track in the same
@@ -328,6 +338,30 @@ tracklist_get_visible_track_diff (
   Tracklist *   self,
   const Track * src,
   const Track * dest);
+
+/**
+ * Handles a file drop inside the timeline or in
+ * empty space in the tracklist.
+ *
+ * @param uri_list URI list, if URI list was dropped.
+ * @param file File, if SupportedFile was dropped.
+ * @param track Track, if any.
+ * @param lane TrackLane, if any.
+ * @param pos Position the file was dropped at, if
+ *   inside track.
+ * @param perform_actions Whether to perform
+ *   undoable actions in addition to creating the
+ *   regions/tracks.
+ */
+void
+tracklist_handle_file_drop (
+  Tracklist *     self,
+  char **         uri_list,
+  SupportedFile * orig_file,
+  Track *         track,
+  TrackLane *     lane,
+  Position *      pos,
+  bool            perform_actions);
 
 /**
  * Returns 1 if the track name is not taken.

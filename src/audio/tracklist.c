@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/audio_region.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
 #include "audio/router.h"
@@ -38,6 +39,8 @@
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 /**
  * Initializes the tracklist when loading a project.
@@ -351,27 +354,39 @@ tracklist_get_track_pos (
 /**
  * Returns the index of the last Track.
  *
- * @param pinned_only Only consider pinned Track's.
+ * @param pin_opt Pin option.
  * @param visible_only Only consider visible
  *   Track's.
  */
 int
 tracklist_get_last_pos (
-  Tracklist * self,
-  const int   pinned_only,
-  const int   visible_only)
+  Tracklist *              self,
+  const TracklistPinOption pin_opt,
+  const bool               visible_only)
 {
   Track * tr;
   for (int i = self->num_tracks - 1; i >= 0; i--)
     {
       tr = self->tracks[i];
-      if (((pinned_only && tr->pinned) ||
-           !pinned_only) &&
-          ((visible_only && tr->visible) ||
-           !visible_only))
+
+      if (pin_opt ==
+            TRACKLIST_PIN_OPTION_PINNED_ONLY &&
+          !tr->pinned)
         {
-          return i;
+          continue;
         }
+      if (pin_opt ==
+            TRACKLIST_PIN_OPTION_UNPINNED_ONLY &&
+          tr->pinned)
+        {
+          continue;
+        }
+      if (visible_only && !tr->visible)
+        {
+          continue;
+        }
+
+      return i;
     }
 
   /* no track with given options found,
@@ -382,19 +397,19 @@ tracklist_get_last_pos (
 /**
  * Returns the last Track.
  *
- * @param pinned_only Only consider pinned Track's.
+ * @param pin_opt Pin option.
  * @param visible_only Only consider visible
  *   Track's.
  */
 Track*
 tracklist_get_last_track (
-  Tracklist * self,
-  const int   pinned_only,
-  const int   visible_only)
+  Tracklist *              self,
+  const TracklistPinOption pin_opt,
+  const int                visible_only)
 {
   int idx =
     tracklist_get_last_pos (
-      self, pinned_only, visible_only);
+      self, pin_opt, visible_only);
   g_return_val_if_fail (
     idx >= 0 && idx < self->num_tracks, NULL);
   Track * tr =
@@ -516,7 +531,8 @@ tracklist_set_track_pinned (
 
   int last_pinned_pos =
     tracklist_get_last_pos (
-      self, 1, 0);
+      self,
+      TRACKLIST_PIN_OPTION_PINNED_ONLY, false);
   if (pinned)
     {
       /* move track to last pinned pos + 1 */
@@ -856,6 +872,184 @@ tracklist_expose_ports_to_backend (
           channel_expose_ports_to_backend (ch);
         }
     }
+}
+
+/**
+ * Handles a file drop inside the timeline or in
+ * empty space in the tracklist.
+ *
+ * @param uri_list URI list, if URI list was dropped.
+ * @param file File, if SupportedFile was dropped.
+ * @param track Track, if any.
+ * @param lane TrackLane, if any.
+ * @param pos Position the file was dropped at, if
+ *   inside track.
+ * @param perform_actions Whether to perform
+ *   undoable actions in addition to creating the
+ *   regions/tracks.
+ */
+void
+tracklist_handle_file_drop (
+  Tracklist *     self,
+  char **         uri_list,
+  SupportedFile * orig_file,
+  Track *         track,
+  TrackLane *     lane,
+  Position *      pos,
+  bool            perform_actions)
+{
+  /* get a local file */
+  SupportedFile * file = NULL;
+  if (orig_file)
+    {
+      file = supported_file_clone (orig_file);
+    }
+  else
+    {
+      g_return_if_fail (uri_list);
+
+      char * uri, * filepath = NULL;
+      int i = 0;
+      while ((uri = uri_list[i++]) != NULL)
+        {
+          /* strip "file://" */
+          if (!string_contains_substr (
+                uri, "file://", 0))
+            continue;
+
+          if (filepath)
+            g_free (filepath);
+          GError * err = NULL;
+          filepath =
+            g_filename_from_uri (
+              uri, NULL, &err);
+          if (err)
+            {
+              g_warning (
+                "%s", err->message);
+            }
+
+          /* only accept 1 file for now */
+          break;
+        }
+
+      if (filepath)
+        {
+          file =
+            supported_file_new_from_path (
+              filepath);
+          g_free (filepath);
+        }
+    }
+
+  if (!file)
+    {
+      ui_show_error_message (
+        MAIN_WINDOW, _("No file was found"));
+
+      return;
+    }
+
+  TrackType track_type = 0;
+  if (supported_file_type_is_supported (
+        file->type) &&
+      supported_file_type_is_audio (
+        file->type))
+    {
+      track_type = TRACK_TYPE_AUDIO;
+    }
+  else if (supported_file_type_is_midi (
+             file->type))
+    {
+      track_type = TRACK_TYPE_MIDI;
+    }
+  else
+    {
+      char * descr =
+        supported_file_type_get_description (
+          file->type);
+      char * msg =
+        g_strdup_printf (
+          _("Unsupported file type %s"),
+          descr);
+      g_free (descr);
+      ui_show_error_message (
+        MAIN_WINDOW, msg);
+
+      goto free_file_and_return;
+    }
+
+  if (perform_actions)
+    {
+      /* if current track exists and track type are
+       * incompatible, do nothing */
+      if (track)
+        {
+          if (track_type == TRACK_TYPE_MIDI)
+            {
+              ui_show_error_message (
+                MAIN_WINDOW,
+                _("Cannot drop MIDI files into "
+                "existing tracks"));
+              goto free_file_and_return;
+            }
+
+          if (track_type == TRACK_TYPE_AUDIO &&
+              track->type != TRACK_TYPE_AUDIO)
+            {
+              ui_show_error_message (
+                MAIN_WINDOW,
+                _("Can only drop audio files on "
+                "audio tracks"));
+              goto free_file_and_return;
+            }
+
+          /* create audio region in audio track */
+          int lane_pos =
+            lane ? lane->pos :
+            (track->num_lanes == 1 ?
+             0 : track->num_lanes - 2);
+          int idx_in_lane =
+            track->lanes[lane_pos]->num_regions;
+          ZRegion * region =
+            audio_region_new (
+              -1, file->abs_path, NULL, -1, NULL,
+              0, pos, track->pos, lane_pos,
+              idx_in_lane);
+          track_add_region (
+            track, region, NULL, lane_pos,
+            F_GEN_NAME, F_PUBLISH_EVENTS);
+          arranger_object_select (
+            (ArrangerObject *) region, F_SELECT,
+            F_NO_APPEND);
+
+          UndoableAction * ua =
+            arranger_selections_action_new_create (
+              TL_SELECTIONS);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+
+          goto free_file_and_return;
+        }
+      else
+        {
+          UndoableAction * ua =
+            create_tracks_action_new (
+              track_type, NULL, file,
+              TRACKLIST->num_tracks,
+              PLAYHEAD, 1);
+          undo_manager_perform (UNDO_MANAGER, ua);
+        }
+    }
+  else
+    {
+      g_warning ("operation not supported yet");
+    }
+
+free_file_and_return:
+  supported_file_free (file);
+
+  return;
 }
 
 Tracklist *

@@ -1609,6 +1609,11 @@ on_dnd_data_received (
   TrackLane * lane =
     timeline_arranger_widget_get_track_lane_at_y (
       self, y);
+  AutomationTrack * at =
+    timeline_arranger_widget_get_at_at_y (
+      self, y);
+
+  arranger_widget_set_highlight_rect (self, NULL);
 
   if (target ==
         GET_ATOM (TARGET_ENTRY_CHORD_DESCR) &&
@@ -1650,6 +1655,38 @@ on_dnd_data_received (
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
+  else if (target ==
+             GET_ATOM (TARGET_ENTRY_URI_LIST) ||
+           target ==
+             GET_ATOM (TARGET_ENTRY_SUPPORTED_FILE))
+    {
+      if (at)
+        {
+          /* nothing to do */
+          return;
+        }
+
+      SupportedFile * file = NULL;
+      char ** uris = NULL;
+      if (target ==
+            GET_ATOM (TARGET_ENTRY_SUPPORTED_FILE))
+        {
+          const guchar *my_data =
+            gtk_selection_data_get_data (data);
+          memcpy (&file, my_data, sizeof (file));
+        }
+      else
+        {
+          uris = gtk_selection_data_get_uris (data);
+        }
+
+      Position pos;
+      ui_px_to_pos_timeline (
+        self->highlight_rect.x, &pos, true);
+      tracklist_handle_file_drop (
+        TRACKLIST, uris, file, track, lane, &pos,
+        true);
+    }
 
   if (action == GDK_ACTION_COPY)
     {
@@ -1657,8 +1694,79 @@ on_dnd_data_received (
   else if (action == GDK_ACTION_MOVE)
     {
     }
+}
 
-  arranger_widget_set_highlight_rect (self, NULL);
+static void
+highlight_timeline (
+  ArrangerWidget * self,
+  GdkModifierType  mask,
+  int              x,
+  int              y,
+  Track *          track,
+  TrackLane *      lane)
+{
+  /* get default size */
+  int ticks =
+    snap_grid_get_note_ticks (
+      SNAP_GRID_TIMELINE->note_length,
+      SNAP_GRID_TIMELINE->note_type);
+  Position length_pos;
+  position_from_ticks (&length_pos, ticks);
+  int width_px =
+    ui_pos_to_px_timeline (&length_pos, false);
+
+  /* get snapped x */
+  Position pos;
+  ui_px_to_pos_timeline (x, &pos, true);
+  if (!(mask & GDK_SHIFT_MASK))
+    {
+      position_snap_simple (
+        &pos, SNAP_GRID_TIMELINE);
+      x = ui_pos_to_px_timeline (&pos, true);
+    }
+
+  int height = TRACK_DEF_HEIGHT;
+  /* if track, get y/height inside track */
+  if (track)
+    {
+      height = track->main_height;
+      int track_y_local =
+        track_widget_get_local_y (
+          track->widget, self, (int) y);
+      if (lane)
+        {
+          y -= track_y_local - lane->y;
+          height = lane->height;
+        }
+      else
+        {
+          y -= track_y_local;
+        }
+    }
+  /* else if no track, get y/height under last
+   * visible track */
+  else
+    {
+      /* get y below the track */
+      int y_after_last_track = 0;
+      for (int i = 0; i < TRACKLIST->num_tracks;
+           i++)
+        {
+          Track * t = TRACKLIST->tracks[i];
+          if (t->visible &&
+              t->pinned == self->is_pinned)
+            {
+              y_after_last_track +=
+                track_get_full_visible_height (t);
+            }
+        }
+      y = y_after_last_track;
+    }
+
+  GdkRectangle highlight_rect = {
+    x, y, width_px, height };
+  arranger_widget_set_highlight_rect (
+    self, &highlight_rect);
 }
 
 static gboolean
@@ -1695,7 +1803,8 @@ on_dnd_motion (
       g_message ("target is none");
       gdk_drag_status (context, 0, time);
     }
-  else if (GET_ATOM (TARGET_ENTRY_CHORD_DESCR))
+  else if (target ==
+             GET_ATOM (TARGET_ENTRY_CHORD_DESCR))
     {
       if (at || !track ||
           !track_has_piano_roll (track))
@@ -1705,60 +1814,58 @@ on_dnd_motion (
         }
 
       /* highlight track */
-
-      /* get default size */
-      int ticks =
-        snap_grid_get_note_ticks (
-          SNAP_GRID_TIMELINE->note_length,
-          SNAP_GRID_TIMELINE->note_type);
-      Position length_pos;
-      position_from_ticks (&length_pos, ticks);
-      int width_px =
-        ui_pos_to_px_timeline (&length_pos, false);
-
-      /* get snapped x */
-      Position pos;
-      ui_px_to_pos_timeline (x, &pos, true);
-      if (!(mask & GDK_SHIFT_MASK))
-        {
-          position_snap_simple (
-            &pos, SNAP_GRID_TIMELINE);
-          x = ui_pos_to_px_timeline (&pos, true);
-        }
-
-      /* get y and height */
-      int height = track->main_height;
-      int track_y_local =
-        track_widget_get_local_y (
-          track->widget, self, (int) y);
-      if (lane)
-        {
-          y -= track_y_local - lane->y;
-          height = lane->height;
-        }
-      else
-        {
-          y -= track_y_local;
-        }
-      GdkRectangle highlight_rect = {
-        x, y, width_px, height };
-      arranger_widget_set_highlight_rect (
-        self, &highlight_rect);
-
-      if (mask & GDK_SHIFT_MASK)
-        {
-        }
-      else
-        {
-        }
+      highlight_timeline (
+        self, mask, x, y, track, lane);
 
       return true;
+    }
+  else if (target ==
+             GET_ATOM (TARGET_ENTRY_URI_LIST) ||
+           target ==
+             GET_ATOM (TARGET_ENTRY_SUPPORTED_FILE))
+    {
+      /* if current track exists and current track
+       * supports dnd highlight */
+      if (track)
+        {
+          if (track->type != TRACK_TYPE_MIDI &&
+               track->type !=
+                 TRACK_TYPE_INSTRUMENT &&
+              track->type != TRACK_TYPE_AUDIO)
+            {
+              return false;
+            }
+
+          /* track is compatible, highlight */
+          highlight_timeline (
+            self, mask, x, y, track, lane);
+          g_message ("HIGHLIGHTING");
+
+          return true;
+        }
+      /* else if no track, highlight below the
+       * last track  TODO */
+      else
+        {
+          highlight_timeline (
+            self, mask, x, y, NULL, NULL);
+        }
     }
   else
     {
     }
 
   return true;
+}
+
+static void
+on_dnd_leave (
+  GtkWidget      * widget,
+  GdkDragContext * context,
+  guint            time,
+  ArrangerWidget * self)
+{
+  arranger_widget_set_highlight_rect (self, NULL);
 }
 
 /**
@@ -1775,6 +1882,22 @@ timeline_arranger_setup_drag_dest (
       GTK_TARGET_SAME_APP,
       symap_map (ZSYMAP, TARGET_ENTRY_CHORD_DESCR),
     },
+    {
+      (char *) TARGET_ENTRY_SUPPORTED_FILE,
+      GTK_TARGET_SAME_APP,
+      symap_map (
+        ZSYMAP, TARGET_ENTRY_SUPPORTED_FILE),
+    },
+    {
+      (char *) TARGET_ENTRY_URI_LIST,
+      GTK_TARGET_SAME_APP,
+      symap_map (ZSYMAP, TARGET_ENTRY_URI_LIST),
+    },
+    {
+      (char *) TARGET_ENTRY_URI_LIST,
+      GTK_TARGET_OTHER_APP,
+      symap_map (ZSYMAP, TARGET_ENTRY_URI_LIST),
+    },
   };
   gtk_drag_dest_set (
     GTK_WIDGET (self),
@@ -1789,4 +1912,7 @@ timeline_arranger_setup_drag_dest (
   g_signal_connect (
     GTK_WIDGET (self), "drag-motion",
     G_CALLBACK (on_dnd_motion), self);
+  g_signal_connect (
+    GTK_WIDGET (self), "drag-leave",
+    G_CALLBACK (on_dnd_leave), self);
 }

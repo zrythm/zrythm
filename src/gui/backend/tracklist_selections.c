@@ -405,7 +405,8 @@ tracklist_selections_select_last_visible (
 {
   Track * track =
     tracklist_get_last_track (
-      TRACKLIST, 0, 1);
+      TRACKLIST,
+      TRACKLIST_PIN_OPTION_BOTH, true);
   g_warn_if_fail (track);
   tracklist_selections_select_single (
     ts, track);
