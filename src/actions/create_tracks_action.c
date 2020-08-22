@@ -187,6 +187,7 @@ create (
               &start_pos,
               self->file_descr->abs_path,
               pos, 0, 0, idx);
+          g_warn_if_fail (mr);
           if (mr)
             {
               track_add_region (

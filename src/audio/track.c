@@ -1087,6 +1087,7 @@ track_add_region (
   int      gen_name,
   int      fire_events)
 {
+  g_message ("adding region to %s...", track->name);
   track_insert_region (
     track, region, at, lane_pos, -1, gen_name,
     fire_events);
@@ -1130,6 +1131,11 @@ track_insert_region (
     {
       region_gen_name (region, NULL, at, track);
     }
+
+  g_message (
+    "inserting region %s to track %s at lane %d "
+    "(idx %d)",
+    region->name, track->name, lane_pos, idx);
 
   int add_lane = 0, add_at = 0, add_chord = 0;
   switch (region->id.type)

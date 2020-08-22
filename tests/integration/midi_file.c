@@ -92,7 +92,8 @@ test_midi_file_playback ()
 
       Track * track =
         tracklist_get_last_track (
-          TRACKLIST, false, true);
+          TRACKLIST, TRACKLIST_PIN_OPTION_BOTH,
+          true);
 
       ZRegion * region =
         track->lanes[0]->regions[0];

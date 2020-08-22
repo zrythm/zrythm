@@ -61,10 +61,15 @@ test_export (void)
 
       Track * track =
         tracklist_get_last_track (
-          TRACKLIST, false, true);
+          TRACKLIST, TRACKLIST_PIN_OPTION_BOTH,
+          true);
 
+      g_assert_cmpint (track->num_lanes, >, 0);
+      g_assert_cmpint (
+        track->lanes[0]->num_regions, >, 0);
       ZRegion * region =
         track->lanes[0]->regions[0];
+      g_assert_true (IS_REGION (region));
 
       char * basename =
         g_path_get_basename (midi_file);
