@@ -17,8 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
 #include <stdlib.h>
 
+#include "audio/audio_region.h"
 #include "audio/automation_region.h"
 #include "audio/chord_object.h"
 #include "audio/engine.h"
@@ -35,6 +37,7 @@
 #include "gui/widgets/arranger_object.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
@@ -1594,6 +1597,78 @@ arranger_selections_get_length_in_ticks (
 }
 
 /**
+ * Returns whether all the selections are on the
+ * same lane (track lane or automation lane).
+ */
+bool
+arranger_selections_all_on_same_lane (
+  ArrangerSelections * self)
+{
+  bool ret = true;
+  int size = 0;
+  ArrangerObject ** objs =
+    arranger_selections_get_all_objects (
+      self, &size);
+
+  /* return if not all regions on the same lane or
+   * automation track */
+  RegionIdentifier id;
+  for (int i = 0; i < size; i++)
+    {
+      ArrangerObject * obj = objs[i];
+      if (obj->type != ARRANGER_OBJECT_TYPE_REGION)
+        {
+          ret = false;
+          goto free_objs_and_return;
+        }
+
+      /* verify that region is of same type as
+       * first */
+      ZRegion * r = (ZRegion *) obj;
+      if (i == 0)
+        {
+          id = r->id;
+        }
+      else
+        {
+          if (id.type != r->id.type)
+            {
+              ret = false;
+              goto free_objs_and_return;
+            }
+        }
+
+      switch (id.type)
+        {
+        case REGION_TYPE_MIDI:
+        case REGION_TYPE_AUDIO:
+          if (r->id.track_pos != id.track_pos ||
+              r->id.lane_pos != id.lane_pos)
+            {
+              ret = false;
+              goto free_objs_and_return;
+            }
+          break;
+        case REGION_TYPE_CHORD:
+          break;
+        case REGION_TYPE_AUTOMATION:
+          if (r->id.track_pos != id.track_pos ||
+              r->id.at_idx != id.at_idx)
+            {
+              ret = false;
+              goto free_objs_and_return;
+            }
+          break;
+        }
+    }
+
+free_objs_and_return:
+  free (objs);
+
+  return ret;
+}
+
+/**
  * Merges the given selections into one region.
  *
  * @note All selections must be on the same lane.
@@ -1602,8 +1677,28 @@ void
 arranger_selections_merge (
   ArrangerSelections * self)
 {
+  /* return if not all regions on the same lane or
+   * automation track */
+  bool same_lane =
+    arranger_selections_all_on_same_lane (self);
+  if (!same_lane)
+    {
+      g_warning ("selections not on same lane");
+      return;
+    }
+
+  int size = 0;
+  ArrangerObject ** objs =
+    arranger_selections_get_all_objects (
+      self, &size);
+
   double ticks_length =
     arranger_selections_get_length_in_ticks (self);
+  long num_frames =
+    (long)
+    ceil (
+      (double) AUDIO_ENGINE->frames_per_tick *
+      ticks_length);
   Position pos, end_pos;
   arranger_selections_get_start_pos (
     self, &pos, F_GLOBAL);
@@ -1615,11 +1710,6 @@ arranger_selections_merge (
   g_return_if_fail (
     first_obj->type == ARRANGER_OBJECT_TYPE_REGION);
   ZRegion * first_r = (ZRegion *) first_obj;
-
-  int size = 0;
-  ArrangerObject ** objs =
-    arranger_selections_get_all_objects (
-      self, &size);
 
   ZRegion * new_r = NULL;
   switch (first_r->id.type)
@@ -1659,6 +1749,48 @@ arranger_selections_merge (
         }
       break;
     case REGION_TYPE_AUDIO:
+      {
+        float lframes[num_frames];
+        float rframes[num_frames];
+        float frames[num_frames * 2];
+        dsp_fill (lframes, 0, (size_t) num_frames);
+        dsp_fill (rframes, 0, (size_t) num_frames);
+        AudioClip * first_r_clip =
+          audio_region_get_clip (first_r);
+        g_warn_if_fail (first_r_clip->name);
+        for (int i = 0; i < size; i++)
+          {
+            ArrangerObject * r_obj = objs[i];
+            ZRegion * r = (ZRegion *) r_obj;
+            long frames_diff =
+              r_obj->pos.frames -
+                first_obj->pos.frames;
+            long r_frames_length =
+              arranger_object_get_length_in_frames (
+                r_obj);
+
+            /* add all audio data */
+            dsp_add2 (
+              &lframes[frames_diff],
+              r->ch_frames[0],
+              (size_t) r_frames_length);
+          }
+
+        /* interleave */
+        for (long i = 0; i < num_frames; i++)
+          {
+            frames[i * 2] = lframes[i];
+            frames[i * 2 + 1] = rframes[i];
+          }
+
+        /* create new region using frames */
+        new_r =
+          audio_region_new (
+            -1, NULL, frames, num_frames,
+            first_r_clip->name, 2,
+            &pos, first_r->id.track_pos,
+            first_r->id.lane_pos, first_r->id.idx);
+      }
       break;
     case REGION_TYPE_CHORD:
       break;
@@ -1671,6 +1803,8 @@ arranger_selections_merge (
   arranger_selections_clear (self, F_FREE);
   arranger_selections_add_object (
     self, (ArrangerObject *) new_r);
+
+  free (objs);
 }
 
 /**

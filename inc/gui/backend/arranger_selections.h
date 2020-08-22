@@ -261,6 +261,14 @@ arranger_selections_add_ticks (
   const double             ticks);
 
 /**
+ * Returns whether all the selections are on the
+ * same lane (track lane or automation lane).
+ */
+bool
+arranger_selections_all_on_same_lane (
+  ArrangerSelections * self);
+
+/**
  * Clears selections.
  */
 void
