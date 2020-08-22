@@ -23,6 +23,7 @@
 #include "audio/audio_region.h"
 #include "audio/automation_region.h"
 #include "audio/chord_object.h"
+#include "audio/chord_region.h"
 #include "audio/engine.h"
 #include "audio/marker.h"
 #include "audio/scale_object.h"
@@ -1793,8 +1794,72 @@ arranger_selections_merge (
       }
       break;
     case REGION_TYPE_CHORD:
+      new_r =
+        chord_region_new (
+          &pos, &end_pos, first_r->id.idx);
+      for (int i = 0; i < size; i++)
+        {
+          ArrangerObject * r_obj = objs[i];
+          ZRegion * r = (ZRegion *) r_obj;
+          double ticks_diff =
+            r_obj->pos.total_ticks -
+              first_obj->pos.total_ticks;
+
+          /* copy all chord objects */
+          for (int j = 0; j < r->num_chord_objects;
+               j++)
+            {
+              ChordObject * co =
+                r->chord_objects[j];
+              ArrangerObject * new_obj =
+                arranger_object_clone (
+                  (ArrangerObject *) co,
+                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+              ChordObject * new_co =
+                (ChordObject *) new_obj;
+
+              /* move by diff from first object */
+              arranger_object_move (
+                new_obj, ticks_diff);
+
+              chord_region_add_chord_object (
+                new_r, new_co, F_NO_PUBLISH_EVENTS);
+            }
+        }
       break;
     case REGION_TYPE_AUTOMATION:
+      new_r =
+        automation_region_new (
+          &pos, &end_pos, first_r->id.track_pos,
+          first_r->id.at_idx, first_r->id.idx);
+      for (int i = 0; i < size; i++)
+        {
+          ArrangerObject * r_obj = objs[i];
+          ZRegion * r = (ZRegion *) r_obj;
+          double ticks_diff =
+            r_obj->pos.total_ticks -
+              first_obj->pos.total_ticks;
+
+          /* copy all chord objects */
+          for (int j = 0; j < r->num_aps;
+               j++)
+            {
+              AutomationPoint * ap = r->aps[j];
+              ArrangerObject * new_obj =
+                arranger_object_clone (
+                  (ArrangerObject *) ap,
+                  ARRANGER_OBJECT_CLONE_COPY_MAIN);
+              AutomationPoint * new_ap =
+                (AutomationPoint *) new_obj;
+
+              /* move by diff from first object */
+              arranger_object_move (
+                new_obj, ticks_diff);
+
+              automation_region_add_ap (
+                new_r, new_ap, F_NO_PUBLISH_EVENTS);
+            }
+        }
       break;
     }
 

@@ -3110,6 +3110,9 @@ on_drag_begin_handle_hit_object (
         {
           arranger_object_select (
             obj, F_SELECT, F_APPEND);
+          EVENTS_PUSH (
+            ET_ARRANGER_SELECTIONS_CHANGED,
+            arranger_widget_get_selections (self));
         }
       /* if ctrl not held & not selected, make it
        * the only
@@ -3118,6 +3121,9 @@ on_drag_begin_handle_hit_object (
         {
           arranger_object_select (
             obj, F_SELECT, F_NO_APPEND);
+          EVENTS_PUSH (
+            ET_ARRANGER_SELECTIONS_CHANGED,
+            arranger_widget_get_selections (self));
         }
       break;
     case TOOL_CUT:
@@ -4626,6 +4632,9 @@ on_drag_end_timeline (
               arranger_object_select (
                 self->start_object,
                 F_NO_SELECT, F_APPEND);
+              EVENTS_PUSH (
+                ET_ARRANGER_SELECTIONS_CHANGED,
+                TL_SELECTIONS);
             }
         }
       else if (self->n_press == 2)
@@ -5830,6 +5839,11 @@ get_automation_arranger_cursor (
       break;
     case UI_OVERLAY_ACTION_AUTOFILLING:
       ac = ARRANGER_CURSOR_AUTOFILL;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_SELECTION:
+    case UI_OVERLAY_ACTION_SELECTING:
+    case UI_OVERLAY_ACTION_CREATING_MOVING:
+      ac = ARRANGER_CURSOR_SELECT;
       break;
     default:
       g_warn_if_reached ();
