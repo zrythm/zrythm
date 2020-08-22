@@ -60,6 +60,7 @@
 #include "gui/widgets/timeline_panel.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
@@ -86,6 +87,65 @@ midi_region_new (
     lane_pos, idx_inside_lane);
 
    return self;
+}
+
+/**
+ * Create a region from the chord descriptor.
+ *
+ * Default size will be timeline snap and default
+ * notes size will be editor snap.
+ */
+ZRegion *
+midi_region_new_from_chord_descr (
+  const Position *  pos,
+  ChordDescriptor * descr,
+  int               track_pos,
+  int               lane_pos,
+  int               idx_inside_lane)
+{
+  int r_length_ticks =
+    snap_grid_get_note_ticks (
+      SNAP_GRID_TIMELINE->note_length,
+      SNAP_GRID_TIMELINE->note_type);
+  int mn_length_ticks =
+    snap_grid_get_note_ticks (
+      SNAP_GRID_MIDI->note_length,
+      SNAP_GRID_MIDI->note_type);
+
+  /* get region end pos */
+  Position r_end_pos;
+  position_from_ticks (
+    &r_end_pos,
+    pos->total_ticks + (double) r_length_ticks);
+
+  /* create region */
+  ZRegion * r =
+    midi_region_new (
+      pos, &r_end_pos, track_pos, lane_pos,
+      idx_inside_lane);
+
+  /* get midi note positions */
+  Position mn_pos, mn_end_pos;
+  position_init (&mn_pos);
+  position_from_ticks (
+    &mn_end_pos, mn_length_ticks);
+
+  /* create midi notes */
+  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES;
+       i++)
+    {
+      if (descr->notes[i])
+        {
+          MidiNote * mn =
+            midi_note_new (
+              &r->id, &mn_pos, &mn_end_pos,
+              i + 36, VELOCITY_DEFAULT);
+          midi_region_add_midi_note (
+            r, mn, F_NO_PUBLISH_EVENTS);
+        }
+    }
+
+  return r;
 }
 
 /**

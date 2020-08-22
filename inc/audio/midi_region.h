@@ -78,8 +78,6 @@ midi_region_new_from_midi_file (
  *
  * Default size will be timeline snap and default
  * notes size will be editor snap.
- *
- * TODO
  */
 ZRegion *
 midi_region_new_from_chord_descr (

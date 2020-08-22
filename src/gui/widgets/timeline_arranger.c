@@ -1633,10 +1633,9 @@ on_dnd_data_received (
          0 : track->num_lanes - 2);
       int idx_in_lane =
         track->lanes[lane_pos]->num_regions;
-      /* TODO use midi_region_new_from_chord_descr */
       ZRegion * region =
-        midi_region_new (
-          &pos, &end_pos, track->pos, lane_pos,
+        midi_region_new_from_chord_descr (
+          &pos, descr, track->pos, lane_pos,
           idx_in_lane);
       track_add_region (
         track, region, NULL, lane_pos,
