@@ -187,7 +187,6 @@ create (
               &start_pos,
               self->file_descr->abs_path,
               pos, 0, 0, idx);
-          g_warn_if_fail (mr);
           if (mr)
             {
               track_add_region (
@@ -199,6 +198,13 @@ create (
                 mr->name ?
                   F_NO_GEN_NAME : F_GEN_NAME,
                 F_NO_PUBLISH_EVENTS);
+            }
+          else
+            {
+              g_message (
+                "Failed to create MIDI region from "
+                "file %s",
+                self->file_descr->abs_path);
             }
         }
 

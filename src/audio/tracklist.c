@@ -31,6 +31,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/arrays.h"
@@ -276,6 +277,12 @@ tracklist_insert_track (
                 }
             }
         }
+    }
+
+  if (ZRYTHM_HAVE_UI)
+    {
+      /* generate track widget */
+      track->widget = track_widget_new (track);
     }
 
   if (recalc_graph)

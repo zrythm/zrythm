@@ -488,9 +488,6 @@ arranger_object_get_full_rect_x_for_region_child (
 }
 
 /**
- * @param is_transient Whether or not this object
- *   is a transient (object at original position
- *   during copy-moving).
  */
 void
 arranger_object_set_full_rectangle (
@@ -928,6 +925,16 @@ arranger_object_set_full_rectangle (
     }
 
 #undef WARN_IF_HAS_NEGATIVE_DIMENSIONS
+
+  /* make sure width/height are > 0 */
+  if (self->full_rect.width < 1)
+    {
+      self->full_rect.width = 1;
+    }
+  if (self->full_rect.height < 1)
+    {
+      self->full_rect.height = 1;
+    }
 }
 
 /**
