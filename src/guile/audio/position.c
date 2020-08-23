@@ -30,6 +30,7 @@ SCM_DEFINE (
   "Return a newly-created position as @var{bars}.\
 @var{beats}.@var{sixteenths}.@var{ticks}.\
 @var{sub_tick}.")
+#define FUNC_NAME s_
 {
   /* Allocate the Position.  Because we
      use scm_gc_malloc, this memory block will
@@ -52,12 +53,14 @@ SCM_DEFINE (
   return
     scm_from_pointer (pos, NULL);
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   print_position, "position-print", 1, 0, 0,
   (SCM pos),
   "Prints the position as `bars.beats.sixteenths.\
 ticks.sub_tick`.")
+#define FUNC_NAME s_
 {
   Position * refpos = scm_to_pointer (pos);
 
@@ -71,6 +74,7 @@ ticks.sub_tick`.")
 
   return SCM_UNSPECIFIED;
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)

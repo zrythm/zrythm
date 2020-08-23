@@ -29,6 +29,7 @@ SCM_DEFINE (
   "channel-send-action-new-connect-audio", 2, 0, 0,
   (SCM send, SCM stereo_ports),
   "Returns a new action for creating a send connection.")
+#define FUNC_NAME s_
 {
   UndoableAction * ua =
     channel_send_action_new_connect_audio (
@@ -38,6 +39,7 @@ SCM_DEFINE (
   return
     scm_from_pointer (ua, NULL);
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)

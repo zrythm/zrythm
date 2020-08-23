@@ -29,6 +29,7 @@ SCM_DEFINE (
   "plugin-get-in-port", 2, 0, 0,
   (SCM plugin, SCM port_idx),
   "Returns the input port of the plugin at the given index.")
+#define FUNC_NAME s_
 {
   Plugin * pl = (Plugin *) scm_to_pointer (plugin);
 
@@ -36,12 +37,14 @@ SCM_DEFINE (
     scm_from_pointer (
       pl->in_ports[scm_to_int (port_idx)], NULL);
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   s_plugin_get_out_port,
   "plugin-get-out-port", 2, 0, 0,
   (SCM plugin, SCM port_idx),
   "Returns the output port of the plugin at the given index.")
+#define FUNC_NAME s_
 {
   Plugin * pl = (Plugin *) scm_to_pointer (plugin);
 
@@ -49,6 +52,7 @@ SCM_DEFINE (
     scm_from_pointer (
       pl->out_ports[scm_to_int (port_idx)], NULL);
 }
+#undef FUNC_NAME
 
 static  void
 init_module (void * data)

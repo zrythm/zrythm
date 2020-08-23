@@ -29,6 +29,7 @@ SCM_DEFINE (
   "plugin-manager-find-plugin-from-uri", 1, 0, 0,
   (SCM uri),
   "Returns the PluginDescriptor matching the given URI.")
+#define FUNC_NAME s_
 {
   const PluginDescriptor * descr =
     plugin_manager_find_plugin_from_uri (
@@ -38,6 +39,7 @@ SCM_DEFINE (
   return
     scm_from_pointer ((void *) descr, NULL);
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)

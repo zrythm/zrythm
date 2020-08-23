@@ -48,6 +48,7 @@ SCM_DEFINE (
   PROGRAM_NAME
 #endif
   " version as a string.")
+#define FUNC_NAME s_
 {
   char ver[1000];
   zrythm_get_version_with_capabilities (ver);
@@ -56,25 +57,30 @@ SCM_DEFINE (
       ver, strlen (ver), "UTF8",
       SCM_FAILED_CONVERSION_QUESTION_MARK);
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   s_zrythm_get_plugin_manager,
   "zrythm-get-plugin-manager", 0, 0, 0,
   (),
   "Return the PluginManager instance.")
+#define FUNC_NAME s_
 {
   return
     scm_from_pointer (PLUGIN_MANAGER, NULL);
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   s_zrythm_null,
   "zrythm-null", 0, 0, 0,
   (),
   "Returns a NULL pointer.")
+#define FUNC_NAME s_
 {
   return NULL;
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)

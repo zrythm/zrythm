@@ -29,6 +29,7 @@ SCM_DEFINE (
   "track-processor-get-stereo-in", 1, 0, 0,
   (SCM track_processor),
   "Returns the stereo in ports instance of the track processor.")
+#define FUNC_NAME s_
 {
   TrackProcessor * tp =
     (TrackProcessor *)
@@ -37,6 +38,7 @@ SCM_DEFINE (
   return
     scm_from_pointer (tp->stereo_in, NULL);
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)

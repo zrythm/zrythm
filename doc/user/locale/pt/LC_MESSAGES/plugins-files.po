@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-09 18:46+0100\n"
+"POT-Creation-Date: 2020-08-23 13:41+0100\n"
 "PO-Revision-Date: 2020-08-13 17:32+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualplugins-files/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
+"/manualplugins-files/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
@@ -394,8 +393,8 @@ msgid ""
 "displayed, if the plugin ships with its own UI. This window will contain "
 "additions by Zrythm (such as the `File` and `Presets` menus)."
 msgstr ""
-"Quando as IUs de suplementos são abertas, uma janela como a seguinte será "
-"exibida, se o suplemento for fornecido com a própria IU dele."
+"Quando as IUs de suplementos são abertas, uma janela como a seguinte será"
+" exibida, se o suplemento for fornecido com a própria IU dele."
 
 #: ../../plugins-files/plugins/plugin-window.rst:19
 msgid ""
@@ -428,10 +427,10 @@ msgid ""
 " not compatible with Zrythm and need to be bridged (run as separate "
 "processes)."
 msgstr ""
-"A maioria dos suplementos são instanciados no mesmo processo que o Zrythm. "
-"Isto tem a vantagem de que o processamento DSP é muito rápido, no entanto, "
-"algumas IU de suplementos não são compatíveis com o Zrythm e precisam ser "
-"ligados (executados como processos separados)."
+"A maioria dos suplementos são instanciados no mesmo processo que o "
+"Zrythm. Isto tem a vantagem de que o processamento DSP é muito rápido, no"
+" entanto, algumas IU de suplementos não são compatíveis com o Zrythm e "
+"precisam ser ligados (executados como processos separados)."
 
 #: ../../plugins-files/plugins/plugin-window.rst:40
 msgid ""
@@ -440,18 +439,18 @@ msgid ""
 "plugin is required, this will have some performance implications, since "
 "it is required to communicate with the plugin in another process."
 msgstr ""
-"Quando for possível fazer a ponte apenas a IU, a Zrythm o fará e isto não "
-"terá implicações de desempenho no DSP. Se for necessário fazer a ponte entre "
-"todo o suplemento, isso terá algumas implicações de desempenho, já que é "
-"necessário comunicar com o suplemento em outro processo."
+"Quando for possível fazer a ponte apenas a IU, a Zrythm o fará e isto não"
+" terá implicações de desempenho no DSP. Se for necessário fazer a ponte "
+"entre todo o suplemento, isso terá algumas implicações de desempenho, já "
+"que é necessário comunicar com o suplemento em outro processo."
 
 #: ../../plugins-files/plugins/plugin-window.rst:47
 msgid ""
 "This process is transparent to the user and only mentioned here for "
 "reference."
 msgstr ""
-"Este processo é transparente para o utilizador e apenas mencionado aqui para "
-"referência."
+"Este processo é transparente para o utilizador e apenas mencionado aqui "
+"para referência."
 
 #: ../../plugins-files/plugins/scanning.rst:8
 msgid "Scanning for Plugins"
@@ -463,9 +462,9 @@ msgid ""
 "until it is closed. Zrythm supports LV2, VST2, VST3 and AU plugins. LV2 "
 "is the recommended standard."
 msgstr ""
-"A Zrythm procurará suplementos na inicialização e se lembrará deles até que "
-"seja fechado. A Zrythm suporta plugins LV2 e VST, embora LV2 seja o padrão "
-"recomendado."
+"A Zrythm procurará suplementos na inicialização e se lembrará deles até "
+"que seja fechado. A Zrythm suporta plugins LV2 e VST, embora LV2 seja o "
+"padrão recomendado."
 
 #: ../../plugins-files/plugins/scanning.rst:15
 msgid ""
@@ -480,8 +479,8 @@ msgid ""
 "Plugin scanning can be disabled by passing ``NO_SCAN_PLUGINS=1`` when "
 "running Zrythm."
 msgstr ""
-"A procura por suplementos pode ser desativada a passar NO_SCAN_PLUGINS = 1 "
-"ao executar o Zrythm."
+"A procura por suplementos pode ser desativada a passar NO_SCAN_PLUGINS = "
+"1 ao executar o Zrythm."
 
 #: ../../plugins-files/plugins/scanning.rst:22
 msgid "LV2 Scan"
@@ -495,11 +494,11 @@ msgid ""
 "variable to specify custom paths. For example, ``LV2_PATH=$HOME/custom-"
 "lv2-dir zrythm``."
 msgstr ""
-"A Zrythm irá procurar por plugins LV2 nos \"caminhos padrão especificados "
-"aqui <https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. Pode "
-"ignorar este comportamento passando a variável de ambiente :envvar:`LV2_PATH`"
-" para especificar caminhos personalizados. Por exemplo, ``LV2_PATH=$HOME/"
-"custom-lv2-dir zrythm``."
+"A Zrythm irá procurar por plugins LV2 nos \"caminhos padrão especificados"
+" aqui <https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. "
+"Pode ignorar este comportamento passando a variável de ambiente "
+":envvar:`LV2_PATH` para especificar caminhos personalizados. Por exemplo,"
+" ``LV2_PATH=$HOME/custom-lv2-dir zrythm``."
 
 #: ../../plugins-files/plugins/scanning.rst:32
 msgid "VST2/VST3 Scan"
@@ -510,7 +509,8 @@ msgid "GNU/Linux and FreeBSD"
 msgstr "GNU/Linux e FreeBSD"
 
 #: ../../plugins-files/plugins/scanning.rst:36
-msgid "Zrythm will scan for VST2 and VST3 plugins in the following paths."
+#, fuzzy
+msgid "Zrythm will scan for VST2 plugins in the following paths,"
 msgstr "No UNIX, o Zrythm procurará suplementos VST nos caminhos seguintes."
 
 #: ../../plugins-files/plugins/scanning.rst:39
@@ -530,89 +530,112 @@ msgid ":file:`/usr/lib/vst`"
 msgstr ":file:`/usr/lib/vst`"
 
 #: ../../plugins-files/plugins/scanning.rst:44
-msgid ""
-"You can bypass this behavior by passing the :envvar:`VST_PATH` "
-"environment variable to specify custom paths. For example, "
-"``VST_PATH=$HOME/custom-vst-dir zrythm``."
-msgstr ""
-"Pode ignorar esse comportamento passando a variável de ambiente ` VST_PATH` "
-"para especificar caminhos personalizados. Por exemplo, `` VST_PATH =~/dir-"
-"vst-personalizado zrythm``."
+#, fuzzy
+msgid "and VST3 plugins in the following paths."
+msgstr "No UNIX, o Zrythm procurará suplementos VST nos caminhos seguintes."
+
+#: ../../plugins-files/plugins/scanning.rst:46
+#, fuzzy
+msgid ":file:`{$HOME}/.vst3`"
+msgstr ":file:`{$HOME}/.vst`"
+
+#: ../../plugins-files/plugins/scanning.rst:47
+#, fuzzy
+msgid ":file:`/usr/local/lib/vst3`"
+msgstr ":file:`/usr/local/lib/vst`"
 
 #: ../../plugins-files/plugins/scanning.rst:48
-msgid "``lib`` will be replaced with ``lib64`` depending on your system."
-msgstr "O ``lib`` será substituído por ``lib64`` dependendo do seu sistema."
+#, fuzzy
+msgid ":file:`/usr/lib/vst3`"
+msgstr ":file:`/usr/lib/vst`"
 
-#: ../../plugins-files/plugins/scanning.rst:52
+#: ../../plugins-files/plugins/scanning.rst:50
+#, fuzzy
+msgid ""
+"You can bypass this behavior by passing the :envvar:`VST_PATH` or "
+":envvar:`VST3_PATH` environment variables to specify custom paths. For "
+"example, ``VST_PATH=$HOME/custom-vst-dir zrythm``."
+msgstr ""
+"Pode ignorar esse comportamento passando a variável de ambiente ` "
+"VST_PATH` para especificar caminhos personalizados. Por exemplo, `` "
+"VST_PATH =~/dir-vst-personalizado zrythm``."
+
+#: ../../plugins-files/plugins/scanning.rst:56
+msgid ""
+"If your system uses a libdir other than ``lib`` (for example ``lib64``), "
+"Zrythm will scan for plugins in both locations."
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:61
 msgid "Windows"
 msgstr "Windows"
 
-#: ../../plugins-files/plugins/scanning.rst:53
+#: ../../plugins-files/plugins/scanning.rst:62
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in :ref:`vst-"
 "paths`."
 msgstr ""
-"Zrythm irá procurar por suplementos VST nos caminhos especificados em :ref"
-":`vst-paths'."
+"Zrythm irá procurar por suplementos VST nos caminhos especificados em "
+":ref:`vst-paths'."
 
-#: ../../plugins-files/plugins/scanning.rst:57
+#: ../../plugins-files/plugins/scanning.rst:66
 msgid "MacOS"
 msgstr "MacOS"
 
-#: ../../plugins-files/plugins/scanning.rst:58
+#: ../../plugins-files/plugins/scanning.rst:67
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in `VST plug-in "
 "locations on Mac OS X and macOS <https://helpcenter.steinberg.de/hc/en-"
 "us/articles/115000171310>`_."
 msgstr ""
-"Zrythm irá procurar por suplementos VST nos caminhos especificados em `VST "
-"plug-in locais no Mac OS X e macOS <https://helpcenter.steinberg.de/hc/en-us/"
-"articles/115000171310>`_."
+"Zrythm irá procurar por suplementos VST nos caminhos especificados em "
+"`VST plug-in locais no Mac OS X e macOS "
+"<https://helpcenter.steinberg.de/hc/en-us/articles/115000171310>`_."
 
-#: ../../plugins-files/plugins/scanning.rst:61
+#: ../../plugins-files/plugins/scanning.rst:70
 msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
 msgstr ":file:`/Library/Audio/Plug-Ins/VST` para VST2"
 
-#: ../../plugins-files/plugins/scanning.rst:62
+#: ../../plugins-files/plugins/scanning.rst:71
 msgid ":file:`/Library/Audio/Plug-Ins/VST3` for VST3"
 msgstr ":file:`/Library/Audio/Plug-Ins/VST3` para VST3"
 
-#: ../../plugins-files/plugins/scanning.rst:64
+#: ../../plugins-files/plugins/scanning.rst:73
 msgid ""
 "Since scanning VST plugins takes a long time, Zrythm will remember "
 "scanned VST plugins and save this information in "
 "``$ZRYTHM_PATH/cached_vst_descriptors.yaml``."
 msgstr ""
 "Como a procurar suplemento VST leva muito tempo, Zrythm lembrará-se dos "
-"suplementos VST procurados e gravará esta informação em ``ZRYTHM_PATH/"
-"cached_vst_descriptors.yaml```."
+"suplementos VST procurados e gravará esta informação em "
+"``ZRYTHM_PATH/cached_vst_descriptors.yaml```."
 
-#: ../../plugins-files/plugins/scanning.rst:69
+#: ../../plugins-files/plugins/scanning.rst:78
 msgid ""
 "New plugins will be scanned on each start-up, and you can delete or edit "
 "this file to force a re-scan of previously scanned plugins."
 msgstr ""
-"Novos suplementos serão procurados em cada arranque e você pode apagar ou "
-"editar este ficheiro para forçar uma nova procurar de suplementos "
+"Novos suplementos serão procurados em cada arranque e você pode apagar ou"
+" editar este ficheiro para forçar uma nova procurar de suplementos "
 "previamente procurados."
 
-#: ../../plugins-files/plugins/scanning.rst:74
+#: ../../plugins-files/plugins/scanning.rst:83
 msgid "AU Scan"
 msgstr "Varredura AU"
 
-#: ../../plugins-files/plugins/scanning.rst:75
+#: ../../plugins-files/plugins/scanning.rst:84
 msgid ""
 "On MacOS, AUs will be scanned at their default location ``/Library/Audio"
 "/Plug-Ins/Components``."
 msgstr ""
-"No MacOS, os AUs serão procurados no local padrão ``/Library/Audio/Plug-Ins/"
-"Components''."
+"No MacOS, os AUs serão procurados no local padrão ``/Library/Audio/Plug-"
+"Ins/Components''."
 
-#: ../../plugins-files/plugins/scanning.rst:78
+#: ../../plugins-files/plugins/scanning.rst:87
 msgid "SFZ/SF2 Scan"
 msgstr "Varredura SFZ/SF2"
 
-#: ../../plugins-files/plugins/scanning.rst:79
+#: ../../plugins-files/plugins/scanning.rst:88
 msgid ""
 "SFZ and SF2 instruments will be scanned in all directories and "
 "subdirectories specified in :ref:`vst-paths`."
@@ -940,3 +963,7 @@ msgstr ""
 
 #~ msgid "``/Library/Audio/Plug-Ins/VST3`` for VST3"
 #~ msgstr ""
+
+#~ msgid "``lib`` will be replaced with ``lib64`` depending on your system."
+#~ msgstr "O ``lib`` será substituído por ``lib64`` dependendo do seu sistema."
+

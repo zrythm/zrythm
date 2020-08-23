@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 20:03+0100\n"
+"POT-Creation-Date: 2020-08-23 13:41+0100\n"
 "PO-Revision-Date: 2020-03-01 10:34+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language: es\n"
@@ -195,7 +195,7 @@ msgid "GNU/Linux"
 msgstr ""
 
 #: ../../getting-started/installation.rst:36
-#: ../../getting-started/installation.rst:60
+#: ../../getting-started/installation.rst:58
 msgid "Installer"
 msgstr "Instalador"
 
@@ -206,64 +206,57 @@ msgstr "El instalador admite las distribuciones siguientes (y sus derivadas):"
 
 #: ../../getting-started/installation.rst:40
 #, fuzzy
-msgid "**Ubuntu 18.04, 19.10 & 20.04** - amd64"
+msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
 msgstr "**Ubuntu 18.04 y 19.04**, amd64"
 
 #: ../../getting-started/installation.rst:41
-msgid "**LinuxMint 19.3** - amd64"
-msgstr "**Linux Mint 19.3**, amd64"
-
-#: ../../getting-started/installation.rst:42
-msgid "**Debian 9 & 10** - amd64"
+#, fuzzy
+msgid "**Debian 10 && 11** - amd64"
 msgstr "**Debian 9 y 10**, amd64"
 
-#: ../../getting-started/installation.rst:43
+#: ../../getting-started/installation.rst:42
 msgid "**Arch Linux** - x86_64"
 msgstr "**Arch Linux**, x86_64"
 
-#: ../../getting-started/installation.rst:44
+#: ../../getting-started/installation.rst:43
 #, fuzzy
-msgid "**Fedora 32** - x86_64"
+msgid "**Fedora 31 && 32** - x86_64"
 msgstr "**Fedora 31**, x86_64"
 
-#: ../../getting-started/installation.rst:45
-msgid "**OpenSUSE Tumbleweed** - x86_64"
-msgstr "**OpenSUSE Tumbleweed**, x86_64"
-
-#: ../../getting-started/installation.rst:48
+#: ../../getting-started/installation.rst:46
 #, fuzzy
 msgid "Distribution Package"
 msgstr "Paquete de distribución"
 
-#: ../../getting-started/installation.rst:49
+#: ../../getting-started/installation.rst:47
 msgid ""
 "If your distribution provides a Zrythm package you can also install it "
 "from there."
 msgstr ""
 
-#: ../../getting-started/installation.rst:53
+#: ../../getting-started/installation.rst:51
 msgid "Windows & MacOS"
 msgstr ""
 
-#: ../../getting-started/installation.rst:54
+#: ../../getting-started/installation.rst:52
 msgid "The installers above fully support Windows 64bit and MacOS."
 msgstr ""
 
-#: ../../getting-started/installation.rst:57
+#: ../../getting-started/installation.rst:55
 msgid "FreeBSD"
 msgstr "FreeBSD"
 
-#: ../../getting-started/installation.rst:61
+#: ../../getting-started/installation.rst:59
 msgid ""
 "We plan to add FreeBSD support to the installer mentioned above in the "
 "future."
 msgstr ""
 
-#: ../../getting-started/installation.rst:65
+#: ../../getting-started/installation.rst:63
 msgid "Port"
 msgstr "Puerto"
 
-#: ../../getting-started/installation.rst:66
+#: ../../getting-started/installation.rst:64
 msgid ""
 "You can also install Zrythm from `freshports "
 "<https://www.freshports.org/audio/zrythm/>`_."
@@ -1319,4 +1312,10 @@ msgstr ""
 #~ " to configure JACK, so we will "
 #~ "skip this part."
 #~ msgstr ""
+
+#~ msgid "**LinuxMint 19.3** - amd64"
+#~ msgstr "**Linux Mint 19.3**, amd64"
+
+#~ msgid "**OpenSUSE Tumbleweed** - x86_64"
+#~ msgstr "**OpenSUSE Tumbleweed**, x86_64"
 

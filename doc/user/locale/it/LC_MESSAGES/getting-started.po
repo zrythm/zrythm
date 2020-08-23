@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 20:03+0100\n"
+"POT-Creation-Date: 2020-08-23 13:41+0100\n"
 "PO-Revision-Date: 2020-08-21 18:36+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
-"manualgetting-started/it/>\n"
 "Language: it\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm"
+"/manualgetting-started/it/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../getting-started/getting-plugins.rst:6
@@ -102,8 +101,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:56
 msgid "`Helm <https://tytel.org/helm/>`_ is a powerful subtractive synthesizer."
-msgstr ""
-"`Helm <https://tytel.org/helm/>`_ è un potente sintetizzatore sottrattivo."
+msgstr "`Helm <https://tytel.org/helm/>`_ è un potente sintetizzatore sottrattivo."
 
 #: ../../getting-started/getting-plugins.rst:59
 msgid ""
@@ -195,7 +193,7 @@ msgid "GNU/Linux"
 msgstr "GNU/Linux"
 
 #: ../../getting-started/installation.rst:36
-#: ../../getting-started/installation.rst:60
+#: ../../getting-started/installation.rst:58
 msgid "Installer"
 msgstr ""
 
@@ -204,66 +202,57 @@ msgid "The installer supports the following distributions (and derivatives):"
 msgstr ""
 
 #: ../../getting-started/installation.rst:40
-msgid "**Ubuntu 18.04, 19.10 & 20.04** - amd64"
-msgstr ""
+#, fuzzy
+msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+msgstr "**Debian 9 & 10** - amd64"
 
 #: ../../getting-started/installation.rst:41
 #, fuzzy
-msgid "**LinuxMint 19.3** - amd64"
-msgstr "**LinuxMint 19.3** - amd64"
-
-#: ../../getting-started/installation.rst:42
-#, fuzzy
-msgid "**Debian 9 & 10** - amd64"
+msgid "**Debian 10 && 11** - amd64"
 msgstr "**Debian 9 & 10** - amd64"
 
-#: ../../getting-started/installation.rst:43
+#: ../../getting-started/installation.rst:42
 msgid "**Arch Linux** - x86_64"
 msgstr ""
 
-#: ../../getting-started/installation.rst:44
-msgid "**Fedora 32** - x86_64"
+#: ../../getting-started/installation.rst:43
+msgid "**Fedora 31 && 32** - x86_64"
 msgstr ""
 
-#: ../../getting-started/installation.rst:45
-#, fuzzy
-msgid "**OpenSUSE Tumbleweed** - x86_64"
-msgstr "**OpenSUSE Tumbleweed** - x86_64"
-
-#: ../../getting-started/installation.rst:48
+#: ../../getting-started/installation.rst:46
 msgid "Distribution Package"
 msgstr ""
 
-#: ../../getting-started/installation.rst:49
+#: ../../getting-started/installation.rst:47
 msgid ""
 "If your distribution provides a Zrythm package you can also install it "
 "from there."
 msgstr ""
 
-#: ../../getting-started/installation.rst:53
+#: ../../getting-started/installation.rst:51
 #, fuzzy
 msgid "Windows & MacOS"
 msgstr "Windows & MacOS"
 
-#: ../../getting-started/installation.rst:54
+#: ../../getting-started/installation.rst:52
 msgid "The installers above fully support Windows 64bit and MacOS."
 msgstr "L'installatore sopra supporta interamente Windows 64bit e MacOS."
 
-#: ../../getting-started/installation.rst:57
+#: ../../getting-started/installation.rst:55
 msgid "FreeBSD"
 msgstr ""
 
-#: ../../getting-started/installation.rst:61
+#: ../../getting-started/installation.rst:59
 msgid ""
 "We plan to add FreeBSD support to the installer mentioned above in the "
 "future."
 msgstr ""
 
-#: ../../getting-started/installation.rst:65
+#: ../../getting-started/installation.rst:63
 msgid "Port"
 msgstr ""
 
-#: ../../getting-started/installation.rst:66
+#: ../../getting-started/installation.rst:64
 msgid ""
 "You can also install Zrythm from `freshports "
 "<https://www.freshports.org/audio/zrythm/>`_."
@@ -306,8 +295,8 @@ msgid ""
 "For smooth operation, it is recommended to use a CPU with at least 2GHz "
 "clock speed and at least 4 cores in total."
 msgstr ""
-"Per un'operatività fluida è raccomandato utilizzare un processore con almeno "
-"2GHz di velocità e almeno 4 core in totale."
+"Per un'operatività fluida è raccomandato utilizzare un processore con "
+"almeno 2GHz di velocità e almeno 4 core in totale."
 
 #: ../../getting-started/system-requirements.rst:23
 msgid "Monitor"
@@ -318,8 +307,8 @@ msgid ""
 "It is recommended to have at least 16 inches of monitor space to work "
 "efficiently with Zrythm."
 msgstr ""
-"Per lavorare efficientemente con Zrythm è raccomandato avere uno schermo di "
-"almeno 16 pollici."
+"Per lavorare efficientemente con Zrythm è raccomandato avere uno schermo "
+"di almeno 16 pollici."
 
 #: ../../getting-started/system-requirements.rst:26
 msgid "Audio interface"
@@ -330,8 +319,8 @@ msgid ""
 "An audio interface offers low latency and better quality than integrated "
 "sound cards (especially if recording audio)."
 msgstr ""
-"Un'interfaccia audio offre bassa latenza e una migliore qualità rispetto a "
-"una scheda audio integrata (soprattutto per registrare)."
+"Un'interfaccia audio offre bassa latenza e una migliore qualità rispetto "
+"a una scheda audio integrata (soprattutto per registrare)."
 
 #: ../../getting-started/system-requirements.rst:29
 msgid "MIDI keyboard"
@@ -1345,3 +1334,16 @@ msgstr ""
 #~ " to configure JACK, so we will "
 #~ "skip this part."
 #~ msgstr ""
+
+#~ msgid "**Ubuntu 18.04, 19.10 & 20.04** - amd64"
+#~ msgstr ""
+
+#~ msgid "**LinuxMint 19.3** - amd64"
+#~ msgstr "**LinuxMint 19.3** - amd64"
+
+#~ msgid "**Fedora 32** - x86_64"
+#~ msgstr ""
+
+#~ msgid "**OpenSUSE Tumbleweed** - x86_64"
+#~ msgstr "**OpenSUSE Tumbleweed** - x86_64"
+

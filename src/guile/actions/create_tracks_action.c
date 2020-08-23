@@ -30,6 +30,7 @@ SCM_DEFINE (
   (SCM type, SCM pl_descr,
    SCM track_pos, SCM num_tracks),
   "Returns a new Create Tracks action for a plugin.")
+#define FUNC_NAME s_
 {
   UndoableAction * ua =
     create_tracks_action_new (
@@ -43,12 +44,14 @@ SCM_DEFINE (
   return
     scm_from_pointer (ua, NULL);
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   s_create_tracks_action_new_audio_fx,
   "create-tracks-action-new-audio-fx", 2, 0, 0,
   (SCM track_pos, SCM num_tracks),
   "Returns a new Create Tracks action for one or more empty Audio FX tracks.")
+#define FUNC_NAME s_
 {
   UndoableAction * ua =
     create_tracks_action_new (
@@ -59,6 +62,7 @@ SCM_DEFINE (
   return
     scm_from_pointer (ua, NULL);
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)

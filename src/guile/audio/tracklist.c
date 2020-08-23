@@ -31,6 +31,7 @@ SCM_DEFINE (
   (SCM track, SCM idx),
   "Inserts track @var{track} at index @var{idx} in "
   "the tracklist.")
+#define FUNC_NAME s_
 {
   tracklist_insert_track (
     TRACKLIST, scm_to_pointer (track),
@@ -38,35 +39,42 @@ SCM_DEFINE (
 
   return SCM_BOOL_T;
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   get_track_at_pos, "tracklist-get-track-at-pos",
   1, 0, 0,
   (SCM pos),
   "Returns the track at @var{pos} in the tracklist.")
+#define FUNC_NAME s_
 {
   return
     scm_from_pointer (
       TRACKLIST->tracks[scm_to_int (pos)], NULL);
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   get_num_tracks, "tracklist-get-num-tracks", 0, 0, 0,
   (),
   "Returns the number of tracks in the tracklist.")
+#define FUNC_NAME s_
 {
   return
     scm_from_int (TRACKLIST->num_tracks);
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   get_tracklist, "tracklist-get", 0, 0, 0,
   (),
   "Returns the tracklist for the current project.")
+#define FUNC_NAME s_
 {
   return
     scm_from_pointer (TRACKLIST, NULL);
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)

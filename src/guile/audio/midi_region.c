@@ -29,6 +29,7 @@ SCM_DEFINE (
   (SCM start_pos, SCM end_pos, SCM track_idx,
    SCM lane_idx, SCM idx_inside_lane),
   "Returns a new midi region.")
+#define FUNC_NAME s_
 {
   ZRegion * region =
     midi_region_new (
@@ -41,11 +42,13 @@ SCM_DEFINE (
   return
     scm_from_pointer (region, NULL);
 }
+#undef FUNC_NAME
 
 SCM_DEFINE (
   s_add_note, "midi-region-add-midi-note", 2, 0, 0,
   (SCM region, SCM midi_note),
   "Adds a midi note to @var{region}.")
+#define FUNC_NAME s_
 {
   midi_region_add_midi_note (
     scm_to_pointer (region),
@@ -53,6 +56,7 @@ SCM_DEFINE (
 
   return SCM_BOOL_T;
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)

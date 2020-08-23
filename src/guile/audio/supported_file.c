@@ -29,6 +29,7 @@ SCM_DEFINE (
   "supported-file-new-from-path", 1, 0, 0,
   (SCM path),
   "Returns an instance of SupportedFile.")
+#define FUNC_NAME s_
 {
   SupportedFile * file =
     supported_file_new_from_path (
@@ -37,6 +38,7 @@ SCM_DEFINE (
   return
     scm_from_pointer (file, NULL);
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)

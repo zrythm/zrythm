@@ -29,6 +29,7 @@ SCM_DEFINE (
   (SCM region, SCM start_pos, SCM end_pos,
    SCM pitch, SCM velocity),
   "Returns a new midi note.")
+#define FUNC_NAME s_
 {
   ZRegion * midi_region = scm_to_pointer (region);
   MidiNote * mn =
@@ -42,6 +43,7 @@ SCM_DEFINE (
   return
     scm_from_pointer (mn, NULL);
 }
+#undef FUNC_NAME
 
 static void
 init_module (void * data)

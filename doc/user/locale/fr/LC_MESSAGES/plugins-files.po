@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-09 18:46+0100\n"
+"POT-Creation-Date: 2020-08-23 13:41+0100\n"
 "PO-Revision-Date: 2020-06-22 21:41+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language: fr\n"
@@ -501,7 +501,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:36
 #, fuzzy
-msgid "Zrythm will scan for VST2 and VST3 plugins in the following paths."
+msgid "Zrythm will scan for VST2 plugins in the following paths,"
 msgstr "Sous UNIX, Zrythm recherchera des greffons VST dans les chemins suivants."
 
 #: ../../plugins-files/plugins/scanning.rst:39
@@ -524,34 +524,55 @@ msgstr "``/usr/lib/vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:44
 #, fuzzy
+msgid "and VST3 plugins in the following paths."
+msgstr "Sous UNIX, Zrythm recherchera des greffons VST dans les chemins suivants."
+
+#: ../../plugins-files/plugins/scanning.rst:46
+msgid ":file:`{$HOME}/.vst3`"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:47
+#, fuzzy
+msgid ":file:`/usr/local/lib/vst3`"
+msgstr "``/usr/local/lib/vst``"
+
+#: ../../plugins-files/plugins/scanning.rst:48
+#, fuzzy
+msgid ":file:`/usr/lib/vst3`"
+msgstr "``/usr/lib/vst``"
+
+#: ../../plugins-files/plugins/scanning.rst:50
+#, fuzzy
 msgid ""
-"You can bypass this behavior by passing the :envvar:`VST_PATH` "
-"environment variable to specify custom paths. For example, "
-"``VST_PATH=$HOME/custom-vst-dir zrythm``."
+"You can bypass this behavior by passing the :envvar:`VST_PATH` or "
+":envvar:`VST3_PATH` environment variables to specify custom paths. For "
+"example, ``VST_PATH=$HOME/custom-vst-dir zrythm``."
 msgstr ""
 "Vous pouvez contourner ce comportement en passant la variable "
 "d'environnement ``VST_PATH`` pour spécifier des chemins personnalisés. "
 "Par exemple, ``VST_PATH=~/custom-vst-dir zrythm``."
 
-#: ../../plugins-files/plugins/scanning.rst:48
-msgid "``lib`` will be replaced with ``lib64`` depending on your system."
-msgstr "``lib`` sera remplacé par \"lib64\" selon votre système."
+#: ../../plugins-files/plugins/scanning.rst:56
+msgid ""
+"If your system uses a libdir other than ``lib`` (for example ``lib64``), "
+"Zrythm will scan for plugins in both locations."
+msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:52
+#: ../../plugins-files/plugins/scanning.rst:61
 msgid "Windows"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:53
+#: ../../plugins-files/plugins/scanning.rst:62
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in :ref:`vst-"
 "paths`."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:57
+#: ../../plugins-files/plugins/scanning.rst:66
 msgid "MacOS"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:58
+#: ../../plugins-files/plugins/scanning.rst:67
 #, fuzzy
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in `VST plug-in "
@@ -563,15 +584,15 @@ msgstr ""
 "<https://helpcenter.steinberg.de/hc/en-us/articles/115000177084-VST-plug-"
 "in-locations-on-Windows>`_."
 
-#: ../../plugins-files/plugins/scanning.rst:61
+#: ../../plugins-files/plugins/scanning.rst:70
 msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:62
+#: ../../plugins-files/plugins/scanning.rst:71
 msgid ":file:`/Library/Audio/Plug-Ins/VST3` for VST3"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:64
+#: ../../plugins-files/plugins/scanning.rst:73
 #, fuzzy
 msgid ""
 "Since scanning VST plugins takes a long time, Zrythm will remember "
@@ -585,7 +606,7 @@ msgstr ""
 "modifier ce fichier pour forcer un nouveau scan des greffons précédemment"
 " scannés."
 
-#: ../../plugins-files/plugins/scanning.rst:69
+#: ../../plugins-files/plugins/scanning.rst:78
 #, fuzzy
 msgid ""
 "New plugins will be scanned on each start-up, and you can delete or edit "
@@ -598,21 +619,21 @@ msgstr ""
 "modifier ce fichier pour forcer un nouveau scan des greffons précédemment"
 " scannés."
 
-#: ../../plugins-files/plugins/scanning.rst:74
+#: ../../plugins-files/plugins/scanning.rst:83
 msgid "AU Scan"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:75
+#: ../../plugins-files/plugins/scanning.rst:84
 msgid ""
 "On MacOS, AUs will be scanned at their default location ``/Library/Audio"
 "/Plug-Ins/Components``."
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:78
+#: ../../plugins-files/plugins/scanning.rst:87
 msgid "SFZ/SF2 Scan"
 msgstr ""
 
-#: ../../plugins-files/plugins/scanning.rst:79
+#: ../../plugins-files/plugins/scanning.rst:88
 msgid ""
 "SFZ and SF2 instruments will be scanned in all directories and "
 "subdirectories specified in :ref:`vst-paths`."
@@ -939,4 +960,7 @@ msgstr ""
 
 #~ msgid "``/Library/Audio/Plug-Ins/VST3`` for VST3"
 #~ msgstr ""
+
+#~ msgid "``lib`` will be replaced with ``lib64`` depending on your system."
+#~ msgstr "``lib`` sera remplacé par \"lib64\" selon votre système."
 

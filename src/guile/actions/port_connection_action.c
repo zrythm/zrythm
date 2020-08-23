@@ -29,6 +29,7 @@ SCM_DEFINE (
   "port-connection-action-new-connect", 2, 0, 0,
   (SCM src_port_id, SCM dest_port_id),
   "Creates an action for connecting 2 ports.")
+#define FUNC_NAME s_
 {
   PortIdentifier * src_id =
     (PortIdentifier *) scm_to_pointer (src_port_id);
@@ -41,6 +42,7 @@ SCM_DEFINE (
 
   return scm_from_pointer (ua, NULL);
 }
+#undef FUNC_NAME
 
 void
 init_module (void * data)
