@@ -688,7 +688,7 @@ endif
 lsp_dsp_dep = dependency (
   'lsp-dsp-lib', version: '>=0.5.5',
   static: get_option ('static_lsp_dsp'),
-  required: false)
+  required: get_option ('lsp_dsp'))
 have_lsp_dsp = lsp_dsp_dep.found () and not get_option ('lsp_dsp').disabled ()
 if have_lsp_dsp
   cdata.set('HAVE_LSP_DSP', 1)
