@@ -2984,12 +2984,21 @@ autofill (
             arranger_selections_clone (sel);
         }
 
-      self->region_at_start =
-        (ZRegion *)
-        arranger_object_clone (
-          (ArrangerObject *)
-          clip_editor_get_region (CLIP_EDITOR),
-          ARRANGER_OBJECT_CLONE_COPY_MAIN);
+      ZRegion * clip_editor_region =
+        clip_editor_get_region (CLIP_EDITOR);
+      if (clip_editor_region)
+        {
+          self->region_at_start =
+            (ZRegion *)
+            arranger_object_clone (
+              (ArrangerObject *)
+              clip_editor_region,
+              ARRANGER_OBJECT_CLONE_COPY_MAIN);
+        }
+      else
+        {
+          self->region_at_start = NULL;
+        }
     }
 
   if (self->type == TYPE (MIDI_MODIFIER))

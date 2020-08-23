@@ -234,7 +234,10 @@ automation_point_get_normalized_value_in_curve (
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
       region, self, true, true);
-  g_return_val_if_fail (next_ap, self->fvalue);
+  if (!next_ap)
+    {
+      return self->fvalue;
+    }
 
   double dy;
 
