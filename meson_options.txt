@@ -88,6 +88,12 @@ option (
   description: 'Build with LSP DSP support for optimized DSP')
 
 option (
+  'static_lsp_dsp',
+  type: 'boolean',
+  value: 'false',
+  description: 'Build with static LSP DSP lib')
+
+option (
   'manpage',
   type: 'boolean',
   value: true,
