@@ -99,8 +99,11 @@ undo_manager_undo (UndoManager * self)
   /* push action to the redo stack */
   undo_stack_push (self->redo_stack, action);
 
-  /* process UI events now */
-  event_manager_process_now (EVENT_MANAGER);
+  if (ZRYTHM_HAVE_UI)
+    {
+      /* process UI events now */
+      event_manager_process_now (EVENT_MANAGER);
+    }
 }
 
 /**
@@ -140,8 +143,11 @@ undo_manager_redo (UndoManager * self)
   /* push action to the undo stack */
   undo_stack_push (self->undo_stack, action);
 
-  /* process UI events now */
-  event_manager_process_now (EVENT_MANAGER);
+  if (ZRYTHM_HAVE_UI)
+    {
+      /* process UI events now */
+      event_manager_process_now (EVENT_MANAGER);
+    }
 }
 
 /**
@@ -186,8 +192,11 @@ undo_manager_perform (
         MW_HOME_TOOLBAR);
     }
 
-  /* process UI events now */
-  event_manager_process_now (EVENT_MANAGER);
+  if (ZRYTHM_HAVE_UI)
+    {
+      /* process UI events now */
+      event_manager_process_now (EVENT_MANAGER);
+    }
 
   return 0;
 }
