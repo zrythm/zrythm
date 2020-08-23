@@ -50,6 +50,7 @@ meter_get_value (
   if (port->id.type == TYPE_AUDIO ||
       port->id.type == TYPE_CV)
     {
+      g_return_if_fail (port->audio_ring);
       int num_cycles = 4;
       size_t read_space_avail =
         zix_ring_read_space (port->audio_ring);
