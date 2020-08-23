@@ -180,7 +180,7 @@ automation_point_set_fvalue (
     automation_point_get_port (self);
   if (is_normalized)
     {
-      g_message ("received val %f",
+      g_message ("received normalized val %f",
         (double) real_val);
       self->normalized_val =
         CLAMP (real_val, 0.f, 1.f);
@@ -190,6 +190,8 @@ automation_point_set_fvalue (
     }
   else
     {
+      g_message (
+        "reveived real val %f", (double) real_val);
       real_val =
         CLAMP (real_val, port->minf, port->maxf);
       self->normalized_val =

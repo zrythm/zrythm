@@ -1272,6 +1272,10 @@ add_object_if_overlap (
 {
   g_return_val_if_fail (
     IS_ARRANGER_OBJECT (obj), false);
+  g_return_val_if_fail (
+    (math_doubles_equal (x, -1) || x >= 0.0) &&
+    (math_doubles_equal (y, -1) || y >= 0.0),
+    false);
 
   if (obj->deleted_temporarily)
     {
@@ -2792,6 +2796,14 @@ create_item (
   arranger_widget_px_to_pos (
     self, start_x, &pos, true);
 
+  /* make sure the position is positive */
+  Position init_pos;
+  position_init (&init_pos);
+  if (position_is_before (&pos, &init_pos))
+    {
+      position_init (&pos);
+    }
+
   /* snap it */
   if (!self->shift_held &&
       SNAP_GRID_ANY_SNAP (self->snap_grid))
@@ -2943,6 +2955,10 @@ autofill (
   double           x,
   double           y)
 {
+  /* make sure values are valid */
+  x = MAX (x, 0);
+  y = MAX (y, 0);
+
   /* start autofill if not started yet */
   if (self->action != UI_OVERLAY_ACTION_AUTOFILLING)
     {
@@ -5357,8 +5373,8 @@ on_motion (
   GdkEventMotion * event,
   ArrangerWidget * self)
 {
-  self->hover_x = event->x;
-  self->hover_y = event->y;
+  self->hover_x = MAX (event->x, 0.0);
+  self->hover_y = MAX (event->y, 0.0);
 
   GdkModifierType state;
   int has_state =

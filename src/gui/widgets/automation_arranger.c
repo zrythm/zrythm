@@ -129,6 +129,13 @@ automation_arranger_widget_create_ap (
   /* do height - because it's uside down */
   float normalized_val =
     (float) ((height - start_y) / height);
+  g_message (
+    "normalized val is %f", (double) normalized_val);
+
+  /* clamp the value because the cursor might be
+   * outside the widget */
+  normalized_val = CLAMP (normalized_val, 0.f, 1.f);
+
   float value =
     control_port_normalized_val_to_real (
       port, normalized_val);
@@ -357,6 +364,11 @@ automation_arranger_move_hit_aps (
           /* do height - because it's uside down */
           float normalized_val =
             (float) ((height - y) / height);
+
+          /* clamp the value because the cursor might
+           * be outside the widget */
+          normalized_val =
+            CLAMP (normalized_val, 0.f, 1.f);
           float value =
             control_port_normalized_val_to_real (
               port, normalized_val);

@@ -612,17 +612,11 @@ arranger_object_set_full_rectangle (
               get_automation_point_y (
                 next_ap, arranger);
 
-            int y =
-              (cur_y > next_y ?
-               next_y : cur_y) -
-              AP_WIDGET_POINT_SIZE / 2;
-            if (y < 0)
-              {
-                g_message (
-                  "y was %d, clamping to 0", y);
-                y = 0;
-              }
-            self->full_rect.y = y;
+            self->full_rect.y =
+              MAX (
+                (cur_y > next_y ? next_y : cur_y) -
+                  AP_WIDGET_POINT_SIZE / 2,
+                0);
 
             /* make sure y is not negative */
 
@@ -638,9 +632,10 @@ arranger_object_set_full_rectangle (
         else
           {
             self->full_rect.y =
-              get_automation_point_y (
-                 ap, arranger) -
-              AP_WIDGET_POINT_SIZE / 2;
+              MAX (
+                get_automation_point_y (
+                   ap, arranger) -
+                AP_WIDGET_POINT_SIZE / 2, 0);
 
             self->full_rect.width =
               AP_WIDGET_POINT_SIZE;

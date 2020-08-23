@@ -38,7 +38,9 @@ math_get_fader_val_from_amp (
   /* to prevent weird values when amp is very
    * small */
   if (amp <= 0.00001f)
-    return 1e-20f;
+    {
+      return 1e-20f;
+    }
   else
     {
       sample_t fader =
