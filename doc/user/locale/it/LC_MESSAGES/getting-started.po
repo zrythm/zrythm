@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 20:03+0100\n"
-"PO-Revision-Date: 2020-08-21 18:36+0000\n"
+"PO-Revision-Date: 2020-08-23 12:48+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualgetting-started/it/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:6
 msgid "Getting Plugins, Instruments and Samples"
-msgstr ""
+msgstr "Ottenere plugin, strumenti e campioni"
 
 #: ../../getting-started/getting-plugins.rst:9
 msgid "Plugins"
@@ -34,18 +34,25 @@ msgid ""
 "users are expected to download and install their own plugins that suit "
 "their preferences."
 msgstr ""
+"Zrythm viene fornito con alcuni plugin per aiutare gli utenti a cominciare, "
+"ma ci si aspetta che questi scarichino e installino i propri in base alle "
+"rispettive esigenze."
 
 #: ../../getting-started/getting-plugins.rst:15
 msgid ""
 "There are many plugins to choose from. This guide will show you a few "
 "ways you can install plugins on GNU/Linux systems."
 msgstr ""
+"Ci sono molti plugin fra cui scegliere. Questa guida ti mostrerà alcuni modi "
+"per installare i plugin sui sistemi GNU/Linux."
 
 #: ../../getting-started/getting-plugins.rst:19
 msgid ""
 "For other systems, you can find a `list of free software plugins here "
 "<https://github.com/webprofusion/OpenAudio>`_."
 msgstr ""
+"Per gli altri sistemi puoi trovare una `lista dei plugin liberi "
+"<https://github.com/webprofusion/OpenAudio>`_."
 
 #: ../../getting-started/getting-plugins.rst:23
 msgid "See :ref:`scanning-plugins` for paths where plugins will be scanned in."
@@ -130,23 +137,27 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:74
 msgid "SFZ/SF2 Instruments"
-msgstr ""
+msgstr "Strumenti SFZ/SF2"
 
 #: ../../getting-started/getting-plugins.rst:76
 msgid ""
 "You can find a list of SFZ instruments under free licenses at `sfz "
 "instruments <https://sfzinstruments.github.io/>`_."
 msgstr ""
+"Puoi trovare una lista di strumenti SFZ sotto licenza libera su `sfz "
+"instruments <https://sfzinstruments.github.io/>`_."
 
 #: ../../getting-started/getting-plugins.rst:80
 msgid "Samples"
-msgstr ""
+msgstr "Campioni"
 
 #: ../../getting-started/getting-plugins.rst:82
 msgid ""
 "We recommend using `Freesound <https://freesound.org/>`_ for collecting "
 "CC-licensed samples."
 msgstr ""
+"Raccomandiamo di usare `Freesound <https://freesound.org/>`_ per la raccolta "
+"di campioni con licenza CC."
 
 #: ../../getting-started/installation.rst:6
 msgid "Installation"
@@ -239,6 +250,8 @@ msgid ""
 "If your distribution provides a Zrythm package you can also install it "
 "from there."
 msgstr ""
+"Se la tua distribuzione fornisce un pacchetto di Zrythm puoi anche "
+"installarlo da lì."
 
 #: ../../getting-started/installation.rst:53
 #, fuzzy
@@ -268,6 +281,8 @@ msgid ""
 "You can also install Zrythm from `freshports "
 "<https://www.freshports.org/audio/zrythm/>`_."
 msgstr ""
+"Puoi anche installare Zrythm da `freshports <https://www.freshports.org/"
+"audio/zrythm/>`_."
 
 #: ../../getting-started/intro.rst:6
 msgid "Getting Started"
@@ -283,7 +298,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:10
 msgid "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) or aarch64 (ARMv8)"
-msgstr ""
+msgstr "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) o aarch64 (ARMv8)"
 
 #: ../../getting-started/system-requirements.rst:13
 msgid "Operating System"
@@ -291,7 +306,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:14
 msgid "GNU/Linux, FreeBSD, Windows or MacOS"
-msgstr ""
+msgstr "GNU/Linux, FreeBSD, Windows o MacOS"
 
 #: ../../getting-started/system-requirements.rst:17
 msgid "Recommendations"
@@ -339,7 +354,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:29
 msgid "For quickly trying out melodies or recording."
-msgstr ""
+msgstr "Per provare rapidamente melodie o registrare."
 
 #: ../../getting-started/system-requirements.rst:32
 msgid "JACK"

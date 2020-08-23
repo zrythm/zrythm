@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-08-19 21:44+0000\n"
+"PO-Revision-Date: 2020-08-23 12:48+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/it/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.2.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -276,7 +276,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:22
 msgid "Additional Controls"
-msgstr ""
+msgstr "Controlli aggiuntivi"
 
 #: ../../editing/clip-editors/piano-roll.rst:23
 msgid "The piano roll contains the following additional controls."

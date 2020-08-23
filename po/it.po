@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-08-14 23:36+0100\n"
-"PO-Revision-Date: 2020-08-21 18:36+0000\n"
+"PO-Revision-Date: 2020-08-23 12:48+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
@@ -1165,7 +1165,7 @@ msgstr ""
 
 #: src/gui/widgets/help_toolbar.c:40
 msgid "Manual"
-msgstr ""
+msgstr "Manuale"
 
 #: src/gui/widgets/help_toolbar.c:41 resources/ui/shortcuts.ui:47
 msgid "Keyboard Shortcuts"
@@ -1177,7 +1177,7 @@ msgstr ""
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Report a Bug"
-msgstr ""
+msgstr "Riporta un bug"
 
 #: src/gui/widgets/home_toolbar.c:60 src/gui/widgets/home_toolbar.c:123
 #: resources/ui/home_toolbar.ui:35 build/data/org.zrythm.Zrythm.gschema.xml:606
@@ -1236,7 +1236,7 @@ msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:121
 msgid "Plugin Properties"
-msgstr ""
+msgstr "Proprietà del plugin"
 
 #: src/gui/widgets/plugin_properties_expander.c:150
 #: src/gui/widgets/event_viewer.c:452 resources/ui/chord_selector_window.ui:239
@@ -1472,15 +1472,15 @@ msgstr ""
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
-msgstr ""
+msgstr "Nuovo progetto"
 
 #: src/gui/widgets/project_toolbar.c:40
 msgid "Save"
-msgstr ""
+msgstr "Salva"
 
 #: src/gui/widgets/project_toolbar.c:41
 msgid "Save As"
-msgstr ""
+msgstr "Salva come"
 
 #: src/gui/widgets/project_toolbar.c:42 src/utils/dialogs.c:39
 msgid "Open Project"
@@ -1488,7 +1488,7 @@ msgstr ""
 
 #: src/gui/widgets/project_toolbar.c:43
 msgid "Export As"
-msgstr ""
+msgstr "Esporta come"
 
 #: src/gui/widgets/project_toolbar.c:44
 msgid "Export Graph"
@@ -1500,15 +1500,15 @@ msgstr ""
 
 #: src/gui/widgets/view_toolbar.c:40
 msgid "Zoom In"
-msgstr ""
+msgstr "Ingrandire"
 
 #: src/gui/widgets/view_toolbar.c:41
 msgid "Zoom Out"
-msgstr ""
+msgstr "Rimpicciolire"
 
 #: src/gui/widgets/view_toolbar.c:42
 msgid "Original Size"
-msgstr ""
+msgstr "Dimensione originale"
 
 #: src/gui/widgets/view_toolbar.c:43
 msgid "Best Fit"
@@ -2715,7 +2715,7 @@ msgstr ""
 
 #: resources/ui/help_toolbar.ui:58
 msgid "News"
-msgstr ""
+msgstr "Novità"
 
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"

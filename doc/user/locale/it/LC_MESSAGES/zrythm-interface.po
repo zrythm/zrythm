@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 18:06+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-08-23 12:48+0000\n"
+"Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/it/>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.2.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -182,7 +185,7 @@ msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Interface"
-msgstr ""
+msgstr "Interfaccia"
 
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
@@ -212,11 +215,11 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:26
 msgid "The plugin inspector shows various options for the selected plugin."
-msgstr ""
+msgstr "L'ispettore dei plugin mostra varie opzioni per il plugin selezionato."
 
 #: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
-msgstr ""
+msgstr "Proprietà del plugin"
 
 #: ../../zrythm-interface/left-panel.rst:34
 msgid ""
@@ -251,7 +254,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:58
 msgid "Track Visibility"
-msgstr ""
+msgstr "Visibilità della traccia"
 
 #: ../../zrythm-interface/left-panel.rst:60
 msgid "See :ref:`track-visibility`."
@@ -308,48 +311,52 @@ msgid ""
 "The Project menu contains various project-related actions such as saving,"
 " loading and exporting MIDI or audio."
 msgstr ""
+"Il menù del Progetto contiene alcune operazioni riguardo al progetto come il "
+"salvataggio, il caricamento e l'esportazione MIDI o audio."
 
 #: ../../zrythm-interface/main-toolbar.rst:44
 msgid "New Project"
-msgstr ""
+msgstr "Nuovo progetto"
 
 #: ../../zrythm-interface/main-toolbar.rst:44
 msgid "Create a new project."
-msgstr ""
+msgstr "Crea un nuovo progetto."
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save"
-msgstr ""
+msgstr "Salva"
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save the current project at its current location."
-msgstr ""
+msgstr "Salva il progetto corrente nella sua posizione attuale."
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save As"
-msgstr ""
+msgstr "Salva come"
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save the current project at a new location."
-msgstr ""
+msgstr "Salva il progetto corrente in una nuova posizione."
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load"
-msgstr ""
+msgstr "Carica"
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load a project."
-msgstr ""
+msgstr "Carica un progetto."
 
 #: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Export As"
-msgstr ""
+msgstr "Esporta come"
 
 #: ../../zrythm-interface/main-toolbar.rst:56
 msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for"
 " more details."
 msgstr ""
+"Esporta il progetto come audio o MIDI. Vedere :ref:`export-audio-and-midi` "
+"per maggiori dettagli."
 
 #: ../../zrythm-interface/main-toolbar.rst:61
 msgid "Export Graph"
@@ -377,27 +384,27 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:72
 msgid "Zoom In"
-msgstr ""
+msgstr "Ingrandire"
 
 #: ../../zrythm-interface/main-toolbar.rst:72
 msgid "Zooms in."
-msgstr ""
+msgstr "Ingrandisce."
 
 #: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zoom Out"
-msgstr ""
+msgstr "Rimpicciolire"
 
 #: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zooms out."
-msgstr ""
+msgstr "Rimpicciolisce."
 
 #: ../../zrythm-interface/main-toolbar.rst:78
 msgid "Original Size"
-msgstr ""
+msgstr "Dimensione originale"
 
 #: ../../zrythm-interface/main-toolbar.rst:78
 msgid "Zooms back to the default zoom level."
-msgstr ""
+msgstr "Torna al livello di zoom predefinito."
 
 #: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Best Fit"
@@ -427,13 +434,15 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:91
 msgid "Help Menu"
-msgstr ""
+msgstr "Menù aiuto"
 
 #: ../../zrythm-interface/main-toolbar.rst:92
 msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
 msgstr ""
+"Il menù Aiuto contiene collegamenti per segnalare bug, donare, chattare e "
+"altri collegamenti utili."
 
 #: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Chat"
@@ -445,23 +454,23 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Manual"
-msgstr ""
+msgstr "Manuale"
 
 #: ../../zrythm-interface/main-toolbar.rst:98
 msgid "View the user manual."
-msgstr ""
+msgstr "Visualizza il manuale utente."
 
 #: ../../zrythm-interface/main-toolbar.rst:99
 msgid "News"
-msgstr ""
+msgstr "Novità"
 
 #: ../../zrythm-interface/main-toolbar.rst:100
 msgid "Show the latest changelog."
-msgstr ""
+msgstr "Mostra la lista degli ultimi cambiamenti."
 
 #: ../../zrythm-interface/main-toolbar.rst:101
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Tasti rapidi"
 
 #: ../../zrythm-interface/main-toolbar.rst:102
 msgid "Show all the available keyboard shortcuts."
@@ -469,23 +478,23 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:103
 msgid "Donate"
-msgstr ""
+msgstr "Dona"
 
 #: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Donate to Zrythm through LiberaPay."
-msgstr ""
+msgstr "Dona a Zrythm attraverso LiberaPay."
 
 #: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Report a Bug"
-msgstr ""
+msgstr "Riporta un bug"
 
 #: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Opens the page to report a new bug."
-msgstr ""
+msgstr "Apre la pagina per riportare un nuovo bug."
 
 #: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Additional Controls"
-msgstr ""
+msgstr "Controlli aggiuntivi"
 
 #: ../../zrythm-interface/main-toolbar.rst:110
 msgid "The main toolbar also contains the following widgets."
@@ -513,7 +522,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:125
 msgid "Preferences"
-msgstr ""
+msgstr "Preferenze"
 
 #: ../../zrythm-interface/main-toolbar.rst:124
 msgid "Shows the preferences dialog. See :ref:`preferences` for more information."
@@ -655,15 +664,15 @@ msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:6
 msgid "Interface Overview"
-msgstr ""
+msgstr "Panoramica dell'interfaccia"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:8
 msgid "The Zrythm interface is split into various sub-modules."
-msgstr ""
+msgstr "L'interfaccia di Zrythm è suddivisa in vari sotto-moduli."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:12
 msgid "Each sub-module is explained in its own section."
-msgstr ""
+msgstr "Ogni sotto-modulo è spiegato nella propria sezione."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:14
 msgid ":ref:`timeline` (1)"
@@ -1230,4 +1239,3 @@ msgstr ""
 
 #~ msgid "TODO"
 #~ msgstr ""
-
