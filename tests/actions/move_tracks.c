@@ -143,6 +143,29 @@ _test_move_tracks (
     port_identifier_is_equal (
       &send->dest_r_id, &stereo_in->r->id));
 
+  /* create an automation region on the fx track */
+  Position pos, end_pos;
+  position_init (&pos);
+  position_init (&end_pos);
+  position_add_ticks (&end_pos, 600);
+  ZRegion * ar =
+    automation_region_new (
+      &pos, &end_pos, fx_track->pos, 0, 0);
+  track_add_region (
+    fx_track, ar,
+    fx_track->automation_tracklist.ats[0],
+    -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) ar, F_SELECT, F_NO_APPEND);
+  action =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, action);
+
+  /* make the region the clip editor region */
+  clip_editor_set_region (
+    CLIP_EDITOR, ar, F_NO_PUBLISH_EVENTS);
+
   /* swap tracks */
   track_select (ins_track, true, true, false);
   action =
@@ -176,6 +199,11 @@ _test_move_tracks (
       &send->dest_r_id, &stereo_in->r->id));
   track_verify_identifiers (ins_track);
   track_verify_identifiers (fx_track);
+
+  /* check that the clip editor region is updated */
+  ZRegion * clip_editor_region =
+    clip_editor_get_region (CLIP_EDITOR);
+  g_assert_true (clip_editor_region == ar);
 
   /* check that the stereo out of the audio fx
    * track points to the master track */

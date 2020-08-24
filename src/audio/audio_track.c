@@ -31,6 +31,7 @@
 #include "audio/tempo_track.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/dsp.h"
 #include "utils/math.h"
 #include "zrythm_app.h"
 
@@ -262,14 +263,12 @@ audio_track_fill_stereo_ports_from_clip (
               /* buffers after timestretch */
               float lbuf_after_ts[frames_to_process];
               float rbuf_after_ts[frames_to_process];
-              memset (
+              dsp_fill (
                 lbuf_after_ts, 0,
-                (size_t) frames_to_process *
-                  sizeof (float));
-              memset (
+                (size_t) frames_to_process);
+              dsp_fill (
                 rbuf_after_ts, 0,
-                (size_t) frames_to_process *
-                  sizeof (float));
+                (size_t) frames_to_process);
               unsigned int prev_j_offset =
                 frames_to_skip;
 

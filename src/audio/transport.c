@@ -237,6 +237,13 @@ transport_stretch_audio_regions (
         {
           ZRegion * region =
             TL_SELECTIONS->regions[i];
+
+          /* don't stretch regions with musical
+           * mode off */
+          if (region->musical_mode ==
+                REGION_MUSICAL_MODE_OFF)
+            continue;
+
           ArrangerObject * r_obj =
             (ArrangerObject *) region;
           double ratio =
@@ -265,6 +272,13 @@ transport_stretch_audio_regions (
                 {
                   ZRegion * region =
                     lane->regions[k];
+
+                  /* don't stretch regions with
+                   * musical mode off */
+                  if (region->musical_mode ==
+                        REGION_MUSICAL_MODE_OFF)
+                    continue;
+
                   ArrangerObject * r_obj =
                     (ArrangerObject *) region;
                   double ratio =

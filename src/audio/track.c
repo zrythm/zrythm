@@ -1297,7 +1297,8 @@ track_set_pos (
   g_message (
     "%s (%d) to %d",
     self->name, self->pos, pos);
-  /*int prev_pos = self->pos;*/
+
+  int prev_pos = self->pos;
   self->pos = pos;
 
   for (int i = 0; i < self->num_lanes; i++)
@@ -1344,6 +1345,21 @@ track_set_pos (
         child->out_signal_type ==
           self->in_signal_type);
       child->channel->output_pos = pos;
+    }
+
+  if (self->is_project)
+    {
+      /* change the clip editor region */
+      if (CLIP_EDITOR->has_region &&
+          CLIP_EDITOR->region_id.track_pos ==
+            prev_pos)
+        {
+          g_message (
+            "updating clip editor region track pos "
+            "from %d to %d",
+            CLIP_EDITOR->region_id.track_pos, pos);
+          CLIP_EDITOR->region_id.track_pos = pos;
+        }
     }
 }
 

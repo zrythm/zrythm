@@ -576,6 +576,12 @@ draw_audio_bg (
 {
   ZRegion * ar =
     clip_editor_get_region (CLIP_EDITOR);
+  if (!ar)
+    {
+      g_message (
+        "audio region not found, skipping draw");
+      return;
+    }
   if (ar->stretching)
     {
       arranger_widget_redraw_whole (self);

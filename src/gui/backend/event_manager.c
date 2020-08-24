@@ -648,6 +648,13 @@ static void
 on_arranger_selections_removed (
   ArrangerSelections * sel)
 {
+  MW_TIMELINE->hovered_object = NULL;
+  MW_MIDI_ARRANGER->hovered_object = NULL;
+  MW_MIDI_MODIFIER_ARRANGER->hovered_object = NULL;
+  MW_AUTOMATION_ARRANGER->hovered_object = NULL;
+  MW_AUDIO_ARRANGER->hovered_object = NULL;
+  MW_CHORD_ARRANGER->hovered_object = NULL;
+
   arranger_selections_change_redraw_everything (
     sel);
 
