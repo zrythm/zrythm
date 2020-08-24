@@ -4851,6 +4851,7 @@ drag_end (
     {
       arranger_object_free (
         (ArrangerObject *) self->region_at_start);
+      self->region_at_start = NULL;
     }
 
   /* reset action */
