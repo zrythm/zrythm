@@ -1044,7 +1044,7 @@ tracklist_handle_file_drop (
             create_tracks_action_new (
               track_type, NULL, file,
               TRACKLIST->num_tracks,
-              PLAYHEAD, 1);
+              pos, 1);
           undo_manager_perform (UNDO_MANAGER, ua);
         }
     }
