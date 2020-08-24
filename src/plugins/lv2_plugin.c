@@ -1692,7 +1692,7 @@ lv2_plugin_instantiate (
                 preset_uri);
               return -1;
             }
-      }
+        } /* end if preset uri */
       else if (use_state_file)
         {
           char * state_file_path =
@@ -1739,8 +1739,9 @@ lv2_plugin_instantiate (
             {
               g_warning ("Failed to find plugin");
             }
-        }
+        } /* end if use state file */
     }
+  g_warn_if_fail (self->lilv_plugin);
 
   /* Set default values for all ports */
   g_return_val_if_fail (
@@ -1749,7 +1750,9 @@ lv2_plugin_instantiate (
 
   self->control_in = -1;
 
-  /* Check that any required features are supported */
+  /* Check that any required features are
+   * supported */
+  g_message ("checking required features");
   LilvNodes* req_feats =
     lilv_plugin_get_required_features (
       self->lilv_plugin);
@@ -1758,15 +1761,50 @@ lv2_plugin_instantiate (
       const char* uri =
         lilv_node_as_uri (
           lilv_nodes_get (req_feats, f));
-      if (!feature_is_supported (self, uri))
+      if (feature_is_supported (self, uri))
+        {
+          g_message (
+            "Feature %s is supported", uri);
+        }
+      else
         {
           g_warning (
-            "Feature %s is not supported\n", uri);
+            "Feature %s is not supported", uri);
           lilv_nodes_free (req_feats);
           return -1;
         }
     }
   lilv_nodes_free (req_feats);
+
+  g_message ("checking optional features");
+  LilvNodes* optional_features =
+    lilv_plugin_get_optional_features (
+      self->lilv_plugin);
+  LILV_FOREACH (nodes, f, optional_features)
+    {
+      const char* uri =
+        lilv_node_as_uri (
+          lilv_nodes_get (optional_features, f));
+      g_message (
+        "Feature %s is %ssupported", uri,
+        feature_is_supported (self, uri) ?
+          "" : "not ");
+    }
+  lilv_nodes_free (optional_features);
+
+  g_message ("checking extension data");
+  LilvNodes* ext_data =
+    lilv_plugin_get_extension_data (
+      self->lilv_plugin);
+  LILV_FOREACH (nodes, f, ext_data)
+    {
+      const char* uri =
+        lilv_node_as_uri (
+          lilv_nodes_get (ext_data, f));
+      g_message (
+        "Plugin has extension data: %s", uri);
+    }
+  lilv_nodes_free (ext_data);
 
   /* Check for thread-safe state restore()
    * method. */
@@ -1943,9 +1981,10 @@ lv2_plugin_instantiate (
   /* Create workers if necessary */
   if (lilv_plugin_has_extension_data (
         self->lilv_plugin,
-        PM_LILV_NODES.work_interface) &&
-      project)
+        PM_LILV_NODES.work_interface))
     {
+      g_message ("Instantiating workers");
+
       const LV2_Worker_Interface* iface =
         (const LV2_Worker_Interface*)
         lilv_instance_get_extension_data (
@@ -1954,23 +1993,34 @@ lv2_plugin_instantiate (
       lv2_worker_init (
         self, &self->worker, iface, true);
       if (self->safe_restore)
-        lv2_worker_init (
-          self, &self->state_worker,
-          iface, false);
+        {
+          lv2_worker_init (
+            self, &self->state_worker,
+            iface, false);
+        }
+    }
+  else
+    {
+      g_message ("no workers to instantiate");
     }
 
   /* Apply loaded state to plugin instance if
    * necessary */
   if (state)
     {
+      g_message ("applying state");
       lv2_state_apply_state (self, state);
+    }
+  else
+    {
+      g_message ("no state to apply");
     }
 
   /* Connect ports to buffers */
+  g_message ("connecting ports");
   for (int i = 0; i < self->num_ports; ++i)
     {
-      connect_port (
-        self, (uint32_t) i);
+      connect_port (self, (uint32_t) i);
     }
 
   /* Print initial control values */

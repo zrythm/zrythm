@@ -613,6 +613,41 @@ test_audio_track_deletion (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_track_deletion_with_lv2_worker (void)
+{
+  test_helper_zrythm_init ();
+
+#ifdef HAVE_LSP_MULTISAMPLER_24_DO
+  PluginDescriptor * descr =
+    test_plugin_manager_get_plugin_descriptor (
+      LSP_MULTISAMPLER_24_DO_BUNDLE,
+      LSP_MULTISAMPLER_24_DO_URI, false);
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_INSTRUMENT, descr, NULL,
+      TRACKLIST->num_tracks, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* delete track and undo */
+  Track * track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  ua =
+    delete_tracks_action_new (TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  undo_manager_undo (UNDO_MANAGER);
+
+  undo_manager_redo (UNDO_MANAGER);
+#endif
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -639,6 +674,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test audio track deletion",
     (GTestFunc) test_audio_track_deletion);
+  g_test_add_func (
+    TEST_PREFIX "test track deletion with lv2 worker",
+    (GTestFunc) test_track_deletion_with_lv2_worker);
 
   return g_test_run ();
 }

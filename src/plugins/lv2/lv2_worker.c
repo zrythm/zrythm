@@ -95,16 +95,22 @@ lv2_worker_init (
   const LV2_Worker_Interface * iface,
   bool                         threaded)
 {
+  g_message (
+    "initializing worker for LV2 plugin %s",
+    plugin->plugin->descr->name);
+  g_return_if_fail (plugin && worker && iface);
   worker->iface = iface;
   worker->threaded = threaded;
-  if (threaded) {
-    zix_thread_create(&worker->thread, 4096, worker_func, worker);
-    worker->requests = zix_ring_new(4096);
-    zix_ring_mlock(worker->requests);
-  }
-  worker->responses = zix_ring_new(4096);
-  worker->response  = malloc(4096);
-  zix_ring_mlock(worker->responses);
+  if (threaded)
+    {
+      zix_thread_create (
+        &worker->thread, 4096, worker_func, worker);
+      worker->requests = zix_ring_new (4096);
+      zix_ring_mlock (worker->requests);
+    }
+  worker->responses = zix_ring_new (4096);
+  worker->response  = malloc (4096);
+  zix_ring_mlock (worker->responses);
 }
 
 void
@@ -134,6 +140,11 @@ lv2_worker_schedule (
     {
       /* Execute work immediately in this thread */
       zix_sem_wait (&plugin->work_lock);
+      if (!worker->iface)
+        {
+          g_warning ("Worker interface is NULL");
+          return LV2_WORKER_ERR_UNKNOWN;
+        }
       worker->iface->work (
         plugin->instance->lv2_handle,
         lv2_worker_respond, worker, size, data);

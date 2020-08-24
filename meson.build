@@ -185,6 +185,7 @@ ext_lv2_plugins = {
   'helm': ['Helm', 'http://tytel.org/helm'],
   'sherlock_atom_inspector': ['Sherlock Atom Inspector', 'http://open-music-kontrollers.ch/lv2/sherlock#atom_inspector'],
   'lsp_compressor': ['LSP Compressor', 'http://lsp-plug.in/plugins/lv2/compressor_stereo'],
+  'lsp_multisampler_24_do': ['LSP MultiSampler x24 Direct Out', 'http://lsp-plug.in/plugins/lv2/multisampler_x24_do'],
   'carla_rack': ['Carla Rack', 'http://kxstudio.sf.net/carla/plugins/carlarack'],
   'no_delay_line': ['No Delay Line', 'http://gareus.org/oss/lv2/nodelay'],
   'mda_ambience': ['mda Ambience', 'http://drobilla.net/plugins/mda/Ambience'],
