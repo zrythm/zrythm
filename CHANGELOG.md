@@ -1,6 +1,51 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.868] - 2020-08-24
+### Added
+- Add recording mode selector
+- Show line numbers in backtraces when possible
+- Add recording test
+- Add tooltips to track buttons
+- Implement autofill for piano roll and timeline
+- Implement free drawing in velocity editor
+- Implement free drawing in automation editor
+- Enable VST3 on GNU/Linux
+- New optional dependency: lsp-dsp-lib
+- Add chord pads
+- Play chord on selected track when chord pad is pressed
+- Allow drag and drop from chord pad to MIDI/instrument tracks
+- Allow dragging MIDI and audio files directly into the timeline
+- Add region merge action
+
+### Changed
+- Refactor recording code: use pause/resume for punch in/out and looping
+- Update Portuguese, German, Japanese, Italian translations
+- Use libaudec with minimp3 for mp3 import support
+- Only create undoable action when all recording is finished (instead of per track/automation track)
+- Ensure that recorded audio clip name is unique (fixes recorded audio being lost due to writing to the same file)
+- Use SIMD-optimized DSP routines when available through lsp-dsp-lib
+- Update user manual
+- Ensure all drawn arranger objects are at least 1 pixel
+- Process UI events immediately when performing actions
+- Simplify code of conduct
+
+### Fixed
+- Fix segfault when opening project from the edit menu
+- Fix backtrace memory leak on Windows
+- Fix track solo not being drawn as hovered when hovered
+- Fix Carla Rack (LV2) segfault on UI close
+- Fix same descriptor instance being added to both cached VST descriptors and plugin manager
+- Fix automation point coordinates sometimes being negative when drawing in the automation arranger
+- Arranger: fix `region_at_start` not being set to NULL after freeing
+- Fix crash when moving tracks when clip editor region was in the affected tracks
+- Recording: fix track pause events being sent when nothing is being recorded
+- Fix crash when undoing deletion of tracks with LV2 plugins with worker interfaces
+
+### Removed
+- Remove ffmpeg dependency
+- Remove libgtop related code
+
 ## [0.8.797] - 2020-08-11
 ### Added
 - Add plugin gain port
