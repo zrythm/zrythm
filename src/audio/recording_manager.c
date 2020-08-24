@@ -278,22 +278,27 @@ recording_manager_handle_recording (
   /* if pausing */
   else if (nframes == 0)
     {
-      /* send pause event */
-      RecordingEvent * re =
-        (RecordingEvent *)
-        object_pool_get (
-          RECORDING_MANAGER->event_obj_pool);
-      recording_event_init (re);
-      re->type =
-        RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING;
-      re->g_start_frames = g_start_frames;
-      re->local_offset = local_offset;
-      re->nframes = nframes;
-      strcpy (re->track_name, tr->name);
-      recording_event_queue_push_back_event (
-        RECORDING_MANAGER->event_queue, re);
+      if (track_type_can_record (tr->type) &&
+            (tr->recording_region ||
+             tr->recording_start_sent))
+        {
+          /* send pause event */
+          RecordingEvent * re =
+            (RecordingEvent *)
+            object_pool_get (
+              RECORDING_MANAGER->event_obj_pool);
+          recording_event_init (re);
+          re->type =
+            RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING;
+          re->g_start_frames = g_start_frames;
+          re->local_offset = local_offset;
+          re->nframes = nframes;
+          strcpy (re->track_name, tr->name);
+          recording_event_queue_push_back_event (
+            RECORDING_MANAGER->event_queue, re);
 
-      skip_adding_track_events = true;
+          skip_adding_track_events = true;
+        }
     }
   /* if recording and inside punch range */
   else if (inside_punch_range)

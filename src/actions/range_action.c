@@ -611,12 +611,18 @@ void
 range_action_free (
   RangeAction * self)
 {
-  arranger_selections_free_full (
-    (ArrangerSelections *) self->sel_before);
-  self->sel_before = NULL;
-  arranger_selections_free_full (
-    (ArrangerSelections *) self->sel_after);
-  self->sel_after = NULL;
+  if (self->sel_before)
+    {
+      arranger_selections_free_full (
+        (ArrangerSelections *) self->sel_before);
+      self->sel_before = NULL;
+    }
+  if (self->sel_after)
+    {
+      arranger_selections_free_full (
+        (ArrangerSelections *) self->sel_after);
+      self->sel_after = NULL;
+    }
 
   object_zero_and_free (self);
 }
