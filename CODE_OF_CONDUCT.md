@@ -19,9 +19,7 @@ environment for our community include:
 viewpoints, and experiences
 * Giving and gracefully accepting constructive
 feedback
-* Accepting responsibility and apologizing to those
-affected by our mistakes, and learning from the
-experience
+* Accepting responsibility for mistakes
 * Focusing on what is best not just for us as
 individuals, but for the overall community
 * Assuming that other participants are posting in
@@ -43,9 +41,11 @@ inappropriate in a professional setting
 Raising unrelated political issues should be avoided
 in Zrythm project discussions, because they are
 off-topic. The only political positions that Zrythm
-endorses are (1) that all software should be
+endorses are:
+
+* All software should be
 [free](https://www.fsf.org/about/what-is-free-software)
-and (2) supporting basic human rights in computing.
+* Supporting basic human rights in computing
 
 ## Enforcement Responsibilities
 

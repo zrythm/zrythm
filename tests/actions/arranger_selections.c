@@ -1039,6 +1039,59 @@ test_link_timeline ()
     }
 }
 
+static void
+test_edit_marker ()
+{
+  /* clear undo/redo stacks */
+  undo_manager_clear_stacks (UNDO_MANAGER, true);
+
+  rebootstrap_timeline ();
+
+  /* create marker with name "aa" */
+  Marker * marker = marker_new ("aa");
+  ArrangerObject * marker_obj =
+    (ArrangerObject *) marker;
+  arranger_object_select (
+    marker_obj, F_SELECT, F_NO_APPEND);
+  arranger_object_add_to_project (
+    marker_obj, F_NO_PUBLISH_EVENTS);
+  UndoableAction * ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* change name */
+  ArrangerSelections * clone_sel =
+    arranger_selections_clone (
+      (ArrangerSelections *) TL_SELECTIONS);
+  marker_set_name (
+    ((TimelineSelections *) clone_sel)->markers[0],
+    "bb");
+  ua =
+    arranger_selections_action_new_edit (
+      (ArrangerSelections *) TL_SELECTIONS,
+      clone_sel,
+      ARRANGER_SELECTIONS_ACTION_EDIT_NAME,
+      F_NOT_ALREADY_EDITED);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* assert name changed */
+  g_assert_true (
+    string_is_equal (marker->name, "bb", true));
+
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_true (
+    string_is_equal (marker->name, "aa", true));
+
+  /* undo again and check that all objects are at
+   * original state */
+  undo_manager_undo (UNDO_MANAGER);
+
+  /* redo and check that the name is changed */
+  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1064,6 +1117,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test link timeline",
     (GTestFunc) test_link_timeline);
+  g_test_add_func (
+    TEST_PREFIX "test edit marker",
+    (GTestFunc) test_edit_marker);
 
   return g_test_run ();
 }

@@ -439,10 +439,18 @@ arranger_selections_action_new_edit (
   if (!already_edited)
     {
       self->first_run = 0;
-      /* set as sel_after to avoid segfault, it
-       * will be ignored anyway */
-      set_selections (
-        self, sel_before, true, true);
+      if (sel_after)
+        {
+          set_selections (
+            self, sel_after, true, true);
+        }
+      else
+        {
+          /* set as sel_after to avoid segfault, it
+           * will be ignored anyway */
+          set_selections (
+            self, sel_before, true, true);
+        }
     }
   else
     {
@@ -1680,8 +1688,7 @@ do_or_undo_edit (
         }
     }
 
-  update_region_link_groups (
-    _do ? dest_objs : src_objs, size);
+  update_region_link_groups (dest_objs, size);
 
   free (src_objs);
   free (dest_objs);

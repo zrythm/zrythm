@@ -58,6 +58,7 @@
 #include "gui/widgets/piano_roll_keys.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/scale_object.h"
+#include "gui/widgets/scale_selector_window.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/timeline_bot_box.h"
@@ -3197,6 +3198,25 @@ on_drag_begin_handle_hit_object (
             marker_dialog_widget_new (
               (Marker *) obj);
           gtk_widget_show_all (GTK_WIDGET (dialog));
+          self->action = UI_OVERLAY_ACTION_NONE;
+          return true;
+        }
+    }
+  /* if double click on scale, open scale
+   * selector */
+  else if (obj->type ==
+             ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
+    {
+      if (self->n_press == 2 && !self->ctrl_held)
+        {
+          ScaleSelectorWindowWidget *
+            scale_selector =
+              scale_selector_window_widget_new (
+                (ScaleObject *) obj);
+          gtk_widget_show_all (
+            GTK_WIDGET (scale_selector));
+          self->action = UI_OVERLAY_ACTION_NONE;
+          return true;
         }
     }
 
@@ -6079,6 +6099,7 @@ get_timeline_cursor (
       ac = ARRANGER_CURSOR_GRABBING_LINK;
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
+    case UI_OVERLAY_ACTION_CREATING_MOVING:
     case UI_OVERLAY_ACTION_MOVING:
       ac = ARRANGER_CURSOR_GRABBING;
       break;

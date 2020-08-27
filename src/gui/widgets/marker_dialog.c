@@ -77,13 +77,10 @@ on_response (
         arranger_selections_action_new_edit (
           before, after,
           ARRANGER_SELECTIONS_ACTION_EDIT_NAME,
-          true);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-      arranger_selections_free_full (
-        before);
-      arranger_selections_free_full (
-        after);
+          F_NOT_ALREADY_EDITED);
+      undo_manager_perform (UNDO_MANAGER, ua);
+      arranger_selections_free_full (before);
+      arranger_selections_free_full (after);
 
       /* the action doesn't actually run the first
        * time, so change the name manually */
