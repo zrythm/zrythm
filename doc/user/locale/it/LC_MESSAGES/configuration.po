@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-08-21 18:36+0000\n"
+"PO-Revision-Date: 2020-08-28 17:34+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/it/>\n"
@@ -32,6 +32,12 @@ msgid ""
 "line, or the optional GUI tool `dconf-editor "
 "<https://wiki.gnome.org/Apps/DconfEditor>`_."
 msgstr ""
+"Zrythm conserva tutte le sue configurazioni utilizzando il meccanismo "
+"GSettings, che è disponibile nel comando `gsettings <https://developer.gnome."
+"org/gio/stable/gsettings-tool.html>`_ che permette di cambiare le "
+"impostazioni dalla linea di comando o per mezzo dello strumento facoltativo "
+"con interfaccia grafica `dconf-editor <https://wiki.gnome.org/Apps/"
+"DconfEditor>`_."
 
 #: ../../configuration/additional-settings.rst:14
 msgid ""
@@ -42,6 +48,13 @@ msgid ""
 "manually for some reason - for example if your selected backend causes "
 "Zrythm to crash."
 msgstr ""
+"Generalmente non dovresti aver bisogno di accedere a nessuna di queste "
+"impostazioni in quanto la maggior parte di esse si trova all'interno "
+"dell'interfaccia di Zrythm e non è consigliato modificarle poiché Zrythm "
+"modifica alcune di queste impostazioni prima di salvarle o ne utilizza "
+"alcune internamente. In alcuni casi, comunque, potresti volerle cambiare "
+"manualmente per qualche ragione - per esempio se il tuo backend selezionato "
+"fa crashare Zrythm."
 
 #: ../../configuration/additional-settings.rst:25
 msgid "Viewing the Current Settings"
@@ -62,10 +75,13 @@ msgid ""
 "identify problems with user configurations, but feel free to use it if "
 "you are curious."
 msgstr ""
+"Questa funzione è aggiunta prevalentemente per il debugging e per aiutarci a "
+"identificare i problemi con le configurazioni dell'utente, ma sentiti libero "
+"di usarla se sei curioso."
 
 #: ../../configuration/additional-settings.rst:43
 msgid "Reset to Factory Settings"
-msgstr ""
+msgstr "Ripristina alle impostazioni di fabbrica"
 
 #: ../../configuration/additional-settings.rst:45
 msgid ""
@@ -130,12 +146,16 @@ msgstr ""
 #: ../../configuration/device-setup/intro.rst:44
 msgid "For most users, everything can be accomplished from within Zrythm."
 msgstr ""
+"Per la maggior parte degli utenti tutto può essere realizzato all'interno di "
+"Zrythm."
 
 #: ../../configuration/device-setup/intro.rst:47
 msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
 "using ``a2jmidid``."
 msgstr ""
+"A seconda delle tue impostazioni i dispositivi MIDI potrebbero necessitare "
+"di essere interfacciati tramite JACK utilizzando ``a2jmidid``."
 
 #: ../../configuration/first-run-wizard.rst:6
 msgid "First Run Wizard"
@@ -163,6 +183,7 @@ msgstr ""
 #: ../../configuration/first-run-wizard.rst:23
 msgid "You must have a locale enabled for the language you want to use."
 msgstr ""
+"Devi avere la localizzazione abilitata per la lingua che vuoi utilizzare."
 
 #: ../../configuration/first-run-wizard.rst:27
 msgid "Path"
@@ -203,6 +224,8 @@ msgid ""
 "If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
 "chosen together."
 msgstr ""
+"Se scegli di usare JACK, i backend JACK MIDI e JACK AUDIO devono essere "
+"scelti insieme."
 
 #: ../../configuration/first-run-wizard.rst:62
 msgid "MIDI Devices"
@@ -220,6 +243,9 @@ msgid ""
 "All of the settings mentioned here are also available in the "
 ":ref:`preferences`, so don't worry if you selected the wrong settings."
 msgstr ""
+"Tutte le impostazioni qui menzionate sono anche disponbiili nelle "
+":ref:`preferences` quindi non preoccuparti se selezioni le impostazioni "
+"errate."
 
 #: ../../configuration/intro.rst:6
 msgid "Configuration"
@@ -241,6 +267,8 @@ msgid ""
 "Each section in the preferences dialog is explained in the following "
 "sections."
 msgstr ""
+"Ogni parte della finestra di dialogo delle preferenze è spiegata nelle "
+"sezioni seguenti."
 
 #: ../../configuration/preferences/intro.rst:18
 #: ../../configuration/preferences/intro.rst:183
@@ -254,15 +282,15 @@ msgstr "Impostazioni generali."
 
 #: ../../configuration/preferences/intro.rst:28
 msgid "Engine"
-msgstr ""
+msgstr "Motore"
 
 #: ../../configuration/preferences/intro.rst:30
 msgid "Audio engine settings."
-msgstr ""
+msgstr "Impostazioni del motore audio."
 
 #: ../../configuration/preferences/intro.rst:35
 msgid "Audio backend"
-msgstr ""
+msgstr "Backend audio"
 
 #: ../../configuration/preferences/intro.rst:33
 msgid ""
@@ -288,16 +316,16 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:44
 msgid "MIDI controllers"
-msgstr ""
+msgstr "Controller MIDI"
 
 #: ../../configuration/preferences/intro.rst:44
 msgid "A list of controllers to auto-connect to."
-msgstr ""
+msgstr "Una lista di controller audio a cui autoconnettersi."
 
 #: ../../configuration/preferences/intro.rst:47
 #: ../../configuration/preferences/intro.rst:91
 msgid "Paths"
-msgstr ""
+msgstr "Percorso"
 
 #: ../../configuration/preferences/intro.rst:49
 msgid "Global paths."
@@ -305,7 +333,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "Zrythm path"
-msgstr ""
+msgstr "Percorso di Zrythm"
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "The directory to save user data in."
@@ -317,7 +345,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:57
 msgid "Plugin settings."
-msgstr ""
+msgstr "Impostazioni del plugin."
 
 #: ../../configuration/preferences/intro.rst:63
 msgid "UIs"
@@ -363,15 +391,17 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:81
 msgid "This may lead to performance loss for some plugins."
-msgstr ""
+msgstr "Questo potrebbe causare una perdita di prestazioni in alcuni plugin."
 
 #: ../../configuration/preferences/intro.rst:86
 msgid "Refresh rate"
-msgstr ""
+msgstr "Frequenza d'aggiornamento"
 
 #: ../../configuration/preferences/intro.rst:85
 msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr ""
+"Frequenza d'aggiornamento in Hz. Se impostata a 0 verrà utilizzata la "
+"frequenza di aggiornamento dello schermo."
 
 #: ../../configuration/preferences/intro.rst:94
 msgid "VST plugins"
