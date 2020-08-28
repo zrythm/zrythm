@@ -3372,6 +3372,16 @@ drag_begin (
     self, start_x, &self->start_pos, 1);
   self->start_y = start_y;
 
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * ev =
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture), sequence);
+  g_warn_if_fail (
+    gdk_event_get_button (
+      ev, &self->drag_start_btn));
+
   /* check if selections can create links */
   self->can_link =
     TYPE_IS (TIMELINE) &&
@@ -3392,107 +3402,111 @@ drag_begin (
     position_get_ticks_diff (
       &self->curr_pos, &self->start_pos, NULL);
 
-  /* handle hit object */
-  int objects_hit =
-    on_drag_begin_handle_hit_object (
-      self, start_x, start_y);
-  g_message ("objects hit %d", objects_hit);
-
-  if (objects_hit)
+  if (P_TOOL != TOOL_SELECT_NORMAL ||
+      self->drag_start_btn != GDK_BUTTON_SECONDARY)
     {
-      ArrangerSelections * sel =
-        arranger_widget_get_selections (self);
-      self->sel_at_start =
-        arranger_selections_clone (sel);
-    }
-  /* if nothing hit */
-  else
-    {
-      self->sel_at_start = NULL;
+      /* handle hit object */
+      int objects_hit =
+        on_drag_begin_handle_hit_object (
+          self, start_x, start_y);
+      g_message ("objects hit %d", objects_hit);
 
-      /* single click */
-      if (self->n_press == 1)
+      if (objects_hit)
         {
-          switch (P_TOOL)
-            {
-            case TOOL_SELECT_NORMAL:
-            case TOOL_SELECT_STRETCH:
-              /* selection */
-              self->action =
-                UI_OVERLAY_ACTION_STARTING_SELECTION;
-
-              /* deselect all */
-              arranger_widget_select_all (self, 0);
-
-              /* if timeline, set either selecting
-               * objects or selecting range */
-              if (self->type == TYPE (TIMELINE))
-                {
-                  timeline_arranger_widget_set_select_type (
-                    self, start_y);
-                }
-              break;
-            case TOOL_EDIT:
-              if (self->type == TYPE (TIMELINE) ||
-                  self->type == TYPE (MIDI) ||
-                  self->type == TYPE (CHORD))
-                {
-                  if (self->ctrl_held)
-                    {
-                      /* autofill */
-                      autofill (
-                        self, start_x, start_y);
-                    }
-                  else
-                    {
-                      /* something is created */
-                      create_item (
-                        self, start_x, start_y,
-                        false);
-                    }
-                }
-              else if (self->type ==
-                         TYPE (MIDI_MODIFIER) ||
-                       self->type ==
-                         TYPE (AUTOMATION))
-                {
-                  /* autofill (also works for
-                   * manual edit for velocity and
-                   * automation */
-                  autofill (self, start_x, start_y);
-                }
-              break;
-            case TOOL_ERASER:
-              /* delete selection */
-              self->action =
-                UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
-              break;
-            case TOOL_RAMP:
-              self->action =
-                UI_OVERLAY_ACTION_STARTING_RAMP;
-              break;
-            default:
-              break;
-            }
+          ArrangerSelections * sel =
+            arranger_widget_get_selections (self);
+          self->sel_at_start =
+            arranger_selections_clone (sel);
         }
-      /* double click */
-      else if (self->n_press == 2)
+      /* if nothing hit */
+      else
         {
-          switch (P_TOOL)
+          self->sel_at_start = NULL;
+
+          /* single click */
+          if (self->n_press == 1)
             {
-            case TOOL_SELECT_NORMAL:
-            case TOOL_SELECT_STRETCH:
-            case TOOL_EDIT:
-              create_item (
-                self, start_x, start_y, false);
-              break;
-            case TOOL_ERASER:
-              /* delete selection */
-              self->action =
-                UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
-              break;
-            default:
-              break;
+              switch (P_TOOL)
+                {
+                case TOOL_SELECT_NORMAL:
+                case TOOL_SELECT_STRETCH:
+                  /* selection */
+                  self->action =
+                    UI_OVERLAY_ACTION_STARTING_SELECTION;
+
+                  /* deselect all */
+                  arranger_widget_select_all (self, 0);
+
+                  /* if timeline, set either selecting
+                   * objects or selecting range */
+                  if (self->type == TYPE (TIMELINE))
+                    {
+                      timeline_arranger_widget_set_select_type (
+                        self, start_y);
+                    }
+                  break;
+                case TOOL_EDIT:
+                  if (self->type == TYPE (TIMELINE) ||
+                      self->type == TYPE (MIDI) ||
+                      self->type == TYPE (CHORD))
+                    {
+                      if (self->ctrl_held)
+                        {
+                          /* autofill */
+                          autofill (
+                            self, start_x, start_y);
+                        }
+                      else
+                        {
+                          /* something is created */
+                          create_item (
+                            self, start_x, start_y,
+                            false);
+                        }
+                    }
+                  else if (self->type ==
+                             TYPE (MIDI_MODIFIER) ||
+                           self->type ==
+                             TYPE (AUTOMATION))
+                    {
+                      /* autofill (also works for
+                       * manual edit for velocity and
+                       * automation */
+                      autofill (self, start_x, start_y);
+                    }
+                  break;
+                case TOOL_ERASER:
+                  /* delete selection */
+                  self->action =
+                    UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
+                  break;
+                case TOOL_RAMP:
+                  self->action =
+                    UI_OVERLAY_ACTION_STARTING_RAMP;
+                  break;
+                default:
+                  break;
+                }
+            }
+          /* double click */
+          else if (self->n_press == 2)
+            {
+              switch (P_TOOL)
+                {
+                case TOOL_SELECT_NORMAL:
+                case TOOL_SELECT_STRETCH:
+                case TOOL_EDIT:
+                  create_item (
+                    self, start_x, start_y, false);
+                  break;
+                case TOOL_ERASER:
+                  /* delete selection */
+                  self->action =
+                    UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
+                  break;
+                default:
+                  break;
+                }
             }
         }
     }
@@ -3508,21 +3522,25 @@ drag_begin (
  * Selects objects for the given arranger in the
  * range from start_* to offset_*.
  *
- * @param[in] delete If this is a select-delete
- *   operation
+ * @param[in] delete Whether this is a select-delete
+ *   operation.
+ * @param[in] in_range Whether to select/delete
+ *   objects in the range or exactly at the current
+ *   point.
  */
 static void
 select_in_range (
   ArrangerWidget * self,
   double           offset_x,
   double           offset_y,
-  int              delete)
+  bool             in_range,
+  bool             delete)
 {
   ArrangerSelections * prev_sel =
     arranger_selections_clone (
       arranger_widget_get_selections (self));
 
-  if (delete)
+  if (delete && in_range)
     {
       int num_objs;
       ArrangerObject ** objs =
@@ -3536,7 +3554,7 @@ select_in_range (
         self->sel_to_delete, F_NO_FREE);
       free (objs);
     }
-  else
+  else if (!delete)
     {
       /* deselect all */
       arranger_widget_select_all (self, 0);
@@ -3544,16 +3562,31 @@ select_in_range (
 
   ArrangerObject * objs[800];
   int              num_objs = 0;
-  GdkRectangle rect = {
-    .x = (int) offset_x >= 0 ?
-      (int) self->start_x :
-      (int) (self->start_x + offset_x),
-    .y = (int) offset_y >= 0 ?
-      (int) self->start_y :
-      (int) (self->start_y + offset_y),
-    .width = abs ((int) offset_x),
-    .height = abs ((int) offset_y),
-  };
+  GdkRectangle rect;
+  if (in_range)
+    {
+      GdkRectangle _rect = {
+        .x = (int) offset_x >= 0 ?
+          (int) self->start_x :
+          (int) (self->start_x + offset_x),
+        .y = (int) offset_y >= 0 ?
+          (int) self->start_y :
+          (int) (self->start_y + offset_y),
+        .width = abs ((int) offset_x),
+        .height = abs ((int) offset_y),
+      };
+      rect = _rect;
+    }
+  else
+    {
+      GdkRectangle _rect = {
+        .x = (int) (self->start_x + offset_x),
+        .y = (int) (self->start_y + offset_y),
+        .width = 1, .height = 1,
+      };
+      rect = _rect;
+    }
+
   switch (self->type)
     {
     case TYPE (CHORD):
@@ -3709,7 +3742,9 @@ select_in_range (
     }
 
   if (prev_sel)
-    arranger_selections_free (prev_sel);
+    {
+      arranger_selections_free (prev_sel);
+    }
 }
 
 static void
@@ -3731,15 +3766,6 @@ drag_update (
     self->ctrl_held = 1;
   else
     self->ctrl_held = 0;
-
-  GdkEventSequence *sequence =
-    gtk_gesture_single_get_current_sequence (
-      GTK_GESTURE_SINGLE (gesture));
-  const GdkEvent * ev =
-    gtk_gesture_get_last_event (
-      GTK_GESTURE (gesture), sequence);
-  guint btn;
-  g_warn_if_fail (gdk_event_get_button (ev, &btn));
 
   /* get current pos */
   arranger_widget_px_to_pos (
@@ -3784,10 +3810,20 @@ drag_update (
           NULL);
     }
 
-  g_message ("cur action: %d", self->action);
+  /* if right clicking, start erasing action */
+  if (self->drag_start_btn ==
+        GDK_BUTTON_SECONDARY &&
+      P_TOOL == TOOL_SELECT_NORMAL &&
+      self->action !=
+        UI_OVERLAY_ACTION_STARTING_ERASING &&
+      self->action != UI_OVERLAY_ACTION_ERASING)
+    {
+      self->action =
+        UI_OVERLAY_ACTION_STARTING_ERASING;
+    }
 
-  /* set action to selecting if starting selection.
-   * this
+  /* set action to selecting if starting
+   * selection. this
    * is because drag_update never gets called if
    * it's just
    * a click, so we can check at drag_end and see if
@@ -3801,6 +3837,18 @@ drag_update (
     case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
       self->action =
         UI_OVERLAY_ACTION_DELETE_SELECTING;
+      {
+        ArrangerSelections * sel =
+          arranger_widget_get_selections (self);
+        arranger_selections_clear (
+          sel, F_NO_FREE);
+        self->sel_to_delete =
+          arranger_selections_clone (
+            arranger_widget_get_selections (self));
+      }
+      break;
+    case UI_OVERLAY_ACTION_STARTING_ERASING:
+      self->action = UI_OVERLAY_ACTION_ERASING;
       {
         ArrangerSelections * sel =
           arranger_widget_get_selections (self);
@@ -3875,7 +3923,8 @@ drag_update (
     case UI_OVERLAY_ACTION_SELECTING:
       /* find and select objects inside selection */
       select_in_range (
-        self, offset_x, offset_y, F_NO_DELETE);
+        self, offset_x, offset_y, F_IN_RANGE,
+        F_NO_DELETE);
       EVENTS_PUSH (
         ET_SELECTING_IN_ARRANGER, self);
       break;
@@ -3883,9 +3932,16 @@ drag_update (
       /* find and delete objects inside
        * selection */
       select_in_range (
-        self, offset_x, offset_y, F_DELETE);
+        self, offset_x, offset_y, F_IN_RANGE,
+        F_DELETE);
       EVENTS_PUSH (
         ET_SELECTING_IN_ARRANGER, self);
+      break;
+    case UI_OVERLAY_ACTION_ERASING:
+      /* delete anything touched */
+      select_in_range (
+        self, offset_x, offset_y, F_NOT_IN_RANGE,
+        F_DELETE);
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_FADE:
     case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
@@ -4160,13 +4216,14 @@ on_drag_end_automation (
       }
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_ERASING:
       {
         UndoableAction * ua =
           arranger_selections_action_new_delete (
             self->sel_to_delete);
         undo_manager_perform (UNDO_MANAGER, ua);
         object_free_w_func_and_null (
-          arranger_selections_free_full,
+          arranger_selections_free,
           self->sel_to_delete);
       }
       break;
@@ -4257,14 +4314,14 @@ on_drag_end_midi_modifier (
       }
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_ERASING:
       {
         UndoableAction * ua =
           arranger_selections_action_new_delete (
             self->sel_to_delete);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+        undo_manager_perform (UNDO_MANAGER, ua);
         object_free_w_func_and_null (
-          arranger_selections_free_full,
+          arranger_selections_free,
           self->sel_to_delete);
       }
       break;
@@ -4408,14 +4465,14 @@ on_drag_end_midi (
       }
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_ERASING:
       {
         UndoableAction * ua =
           arranger_selections_action_new_delete (
             self->sel_to_delete);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+        undo_manager_perform (UNDO_MANAGER, ua);
         object_free_w_func_and_null (
-          arranger_selections_free_full,
+          arranger_selections_free,
           self->sel_to_delete);
       }
       break;
@@ -4511,14 +4568,14 @@ on_drag_end_chord (
       }
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_ERASING:
       {
         UndoableAction * ua =
           arranger_selections_action_new_delete (
             self->sel_to_delete);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+        undo_manager_perform (UNDO_MANAGER, ua);
         object_free_w_func_and_null (
-          arranger_selections_free_full,
+          arranger_selections_free,
           self->sel_to_delete);
       }
       break;
@@ -4779,14 +4836,14 @@ on_drag_end_timeline (
         }
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_ERASING:
       {
         UndoableAction * ua =
           arranger_selections_action_new_delete (
             self->sel_to_delete);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
+        undo_manager_perform (UNDO_MANAGER, ua);
         object_free_w_func_and_null (
-          arranger_selections_free_full,
+          arranger_selections_free,
           self->sel_to_delete);
       }
       break;

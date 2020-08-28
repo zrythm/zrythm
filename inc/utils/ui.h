@@ -272,6 +272,7 @@ typedef enum UiOverlayAction
 
   /** Erasing. */
   UI_OVERLAY_ACTION_ERASING,
+  UI_OVERLAY_ACTION_STARTING_ERASING,
 
   /**
    * To be set in drag_start.

@@ -335,6 +335,10 @@ typedef struct _ArrangerWidget
   GdkRectangle   highlight_rect;
   //GdkRectangle   prev_highlight_rect;
 
+  /** Drag start button (primary, secondary,
+   * etc.). */
+  guint          drag_start_btn;
+
 } ArrangerWidget;
 
 /**

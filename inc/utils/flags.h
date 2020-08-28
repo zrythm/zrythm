@@ -163,4 +163,7 @@
 #define F_QUEUED 1
 #define F_NOT_QUEUED 0
 
+#define F_IN_RANGE 1
+#define F_NOT_IN_RANGE 0
+
 #endif
