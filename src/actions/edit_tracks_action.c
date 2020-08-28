@@ -137,6 +137,10 @@ edit_tracks_action_new_track_float (
     }
   else if (type == EDIT_TRACK_ACTION_TYPE_PAN)
     {
+      channel_set_balance_control (
+        clone->channel, val_before);
+      channel_set_balance_control (
+        clone_with_change->channel, val_after);
     }
   else
     {
@@ -247,10 +251,10 @@ edit_tracks_action_do (EditTracksAction * self)
           break;
         case EDIT_TRACK_ACTION_TYPE_PAN:
           g_return_val_if_fail (ch, -1);
-          /* FIXME this is not really gonna work for
-           * multi tracks either */
-          channel_add_balance_control (
-            ch, self->pan_delta);
+          channel_set_balance_control (
+            ch,
+            channel_get_balance_control (
+              clone_track->channel));
           break;
         case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
           g_return_val_if_fail (ch, -1);
@@ -329,10 +333,10 @@ edit_tracks_action_undo (
           break;
         case EDIT_TRACK_ACTION_TYPE_PAN:
           g_return_val_if_fail (ch, -1);
-          /* FIXME this is not really gonna work for
-           * multi tracks either */
-          channel_add_balance_control (
-            ch, - self->pan_delta);
+          channel_set_balance_control (
+            ch,
+            channel_get_balance_control (
+              clone_track_before->channel));
           break;
         case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
           g_return_val_if_fail (ch, -1);

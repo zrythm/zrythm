@@ -20,12 +20,16 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "actions/edit_tracks_action.h"
+#include "actions/undo_manager.h"
 #include "audio/midi_mapping.h"
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/bind_cc_dialog.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/main_window.h"
+#include "project.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -219,6 +223,16 @@ on_motion (
 }
 
 static void
+drag_begin (
+  GtkGestureDrag * gesture,
+  double           start_x,
+  double           start_y,
+  BalanceControlWidget * self)
+{
+  self->balance_at_start = GET_VAL;
+}
+
+static void
 drag_update (
   GtkGestureDrag * gesture,
   gdouble         offset_x,
@@ -269,15 +283,31 @@ drag_update (
 
 static void
 drag_end (
-  GtkGestureDrag *gesture,
-  gdouble         offset_x,
-  gdouble         offset_y,
-  BalanceControlWidget *     self)
+  GtkGestureDrag *       gesture,
+  gdouble                offset_x,
+  gdouble                offset_y,
+  BalanceControlWidget * self)
 {
   self->last_x = 0;
   self->last_y = 0;
   self->dragged = 0;
   gtk_widget_hide (GTK_WIDGET (self->tooltip_win));
+
+  if (IS_CHANNEL ((Channel *) self->object) &&
+      !math_floats_equal_epsilon (
+        self->balance_at_start, GET_VAL, 0.0001f))
+    {
+      Track * track =
+        channel_get_track ((Channel *) self->object);
+        {
+          UndoableAction * ua =
+            edit_tracks_action_new_track_float (
+              EDIT_TRACK_ACTION_TYPE_PAN,
+              track, self->balance_at_start,
+              GET_VAL, true);
+          undo_manager_perform (UNDO_MANAGER, ua);
+        }
+    }
 }
 
 static void
@@ -400,6 +430,9 @@ balance_control_widget_new (
   g_signal_connect (
     G_OBJECT(self), "leave-notify-event",
     G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-begin",
+    G_CALLBACK (drag_begin),  self);
   g_signal_connect (
     G_OBJECT(self->drag), "drag-update",
     G_CALLBACK (drag_update),  self);

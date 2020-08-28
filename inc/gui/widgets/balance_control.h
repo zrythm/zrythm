@@ -62,6 +62,9 @@ typedef struct _BalanceControlWidget
 
   /** BalanceControlgo layout for drawing text. */
   PangoLayout *      layout;
+
+  /** Balance at start of drag. */
+  float              balance_at_start;
 } BalanceControlWidget;
 
 /**

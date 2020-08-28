@@ -259,35 +259,81 @@ _test_edit_tracks (
       }
       break;
     case EDIT_TRACK_ACTION_TYPE_VOLUME:
+    case EDIT_TRACK_ACTION_TYPE_PAN:
       {
         float new_val = 0.23f;
         float val_before =
           fader_get_amp (
             ins_track->channel->fader);
+        if (type == EDIT_TRACK_ACTION_TYPE_PAN)
+          {
+            val_before =
+              channel_get_balance_control (
+                ins_track->channel);
+          }
         UndoableAction * ua =
           edit_tracks_action_new_track_float (
-            EDIT_TRACK_ACTION_TYPE_VOLUME,
+            type,
             ins_track, val_before, new_val,
             false);
         undo_manager_perform (UNDO_MANAGER, ua);
 
         /* verify */
-        g_assert_cmpfloat_with_epsilon (
-          new_val,
-          fader_get_amp (ins_track->channel->fader),
-          0.0001f);
+        if (type == EDIT_TRACK_ACTION_TYPE_PAN)
+          {
+            g_assert_cmpfloat_with_epsilon (
+              new_val,
+              channel_get_balance_control (
+                ins_track->channel),
+              0.0001f);
+          }
+        else if (type ==
+                   EDIT_TRACK_ACTION_TYPE_VOLUME)
+          {
+            g_assert_cmpfloat_with_epsilon (
+              new_val,
+              fader_get_amp (
+                ins_track->channel->fader),
+              0.0001f);
+          }
 
         /* undo/redo and re-verify */
         undo_manager_undo (UNDO_MANAGER);
-        g_assert_cmpfloat_with_epsilon (
-          val_before,
-          fader_get_amp (ins_track->channel->fader),
-          0.0001f);
+        if (type == EDIT_TRACK_ACTION_TYPE_PAN)
+          {
+            g_assert_cmpfloat_with_epsilon (
+              val_before,
+              channel_get_balance_control (
+                ins_track->channel),
+              0.0001f);
+          }
+        else if (type ==
+                   EDIT_TRACK_ACTION_TYPE_VOLUME)
+          {
+            g_assert_cmpfloat_with_epsilon (
+              val_before,
+              fader_get_amp (
+                ins_track->channel->fader),
+              0.0001f);
+          }
         undo_manager_redo (UNDO_MANAGER);
-        g_assert_cmpfloat_with_epsilon (
-          new_val,
-          fader_get_amp (ins_track->channel->fader),
-          0.0001f);
+        if (type == EDIT_TRACK_ACTION_TYPE_PAN)
+          {
+            g_assert_cmpfloat_with_epsilon (
+              new_val,
+              channel_get_balance_control (
+                ins_track->channel),
+              0.0001f);
+          }
+        else if (type ==
+                   EDIT_TRACK_ACTION_TYPE_VOLUME)
+          {
+            g_assert_cmpfloat_with_epsilon (
+              new_val,
+              fader_get_amp (
+                ins_track->channel->fader),
+              0.0001f);
+          }
 
         /* undo to go back to original state */
         undo_manager_undo (UNDO_MANAGER);
@@ -309,17 +355,6 @@ static void __test_edit_tracks (bool with_carla)
          EDIT_TRACK_ACTION_TYPE_SOLO;
        i <= EDIT_TRACK_ACTION_TYPE_RENAME; i++)
     {
-      /* only check mute, solo and direct out for
-       * now */
-      if (i != EDIT_TRACK_ACTION_TYPE_SOLO &&
-          i != EDIT_TRACK_ACTION_TYPE_MUTE &&
-          i != EDIT_TRACK_ACTION_TYPE_DIRECT_OUT &&
-          i != EDIT_TRACK_ACTION_TYPE_RENAME &&
-          i != EDIT_TRACK_ACTION_TYPE_VOLUME)
-        {
-          continue;
-        }
-
 #ifdef HAVE_HELM
       _test_edit_tracks (
         i, HELM_BUNDLE, HELM_URI, true, with_carla);
