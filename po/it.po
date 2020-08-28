@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-08-14 23:36+0100\n"
-"PO-Revision-Date: 2020-08-23 12:48+0000\n"
+"PO-Revision-Date: 2020-08-28 17:34+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
@@ -72,7 +72,7 @@ msgstr ""
 
 #: inc/utils/gtk.h:98
 msgid "Unmute"
-msgstr ""
+msgstr "Riattivare"
 
 #: inc/audio/track.h:157 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:186
@@ -145,44 +145,52 @@ msgid "Pulse"
 msgstr ""
 
 #: inc/audio/engine.h:123
+#, fuzzy
 msgid "1,024"
-msgstr ""
+msgstr "1,024"
 
 #: inc/audio/engine.h:124
+#, fuzzy
 msgid "2,048"
-msgstr ""
+msgstr "2,048"
 
 #: inc/audio/engine.h:125
+#, fuzzy
 msgid "4,096"
-msgstr ""
+msgstr "4,096"
 
 #: inc/audio/engine.h:152
 msgid "22,050"
-msgstr ""
+msgstr "22,050"
 
 #: inc/audio/engine.h:153
 msgid "32,000"
-msgstr ""
+msgstr "32,000"
 
 #: inc/audio/engine.h:154
+#, fuzzy
 msgid "44,100"
-msgstr ""
+msgstr "44,100"
 
 #: inc/audio/engine.h:155
+#, fuzzy
 msgid "48,000"
-msgstr ""
+msgstr "48,000"
 
 #: inc/audio/engine.h:156
+#, fuzzy
 msgid "88,200"
-msgstr ""
+msgstr "88,200"
 
 #: inc/audio/engine.h:157
+#, fuzzy
 msgid "96,000"
-msgstr ""
+msgstr "96,000"
 
 #: inc/audio/engine.h:158
+#, fuzzy
 msgid "192,000"
-msgstr ""
+msgstr "192,000"
 
 #: inc/audio/engine.h:231
 msgid "ALSA Sequencer"
@@ -202,16 +210,19 @@ msgstr ""
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
+#, fuzzy
 msgid "0dB"
-msgstr ""
+msgstr "0dB"
 
 #: inc/audio/pan.h:53
+#, fuzzy
 msgid "-3dB"
-msgstr ""
+msgstr "-3dB"
 
 #: inc/audio/pan.h:54
+#, fuzzy
 msgid "-6dB"
-msgstr ""
+msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1306
@@ -225,27 +236,27 @@ msgstr ""
 
 #: inc/audio/pan.h:78
 msgid "Sine"
-msgstr ""
+msgstr "Sinusoide"
 
 #. TRANSLATORS: please keep the space at the
 #. * end
 #: src/zrythm.c:232
 msgid "(trial) "
-msgstr ""
+msgstr "(prova) "
 
 #: src/project.c:127
 #, c-format
 msgid "Failed to open file: %s"
-msgstr ""
+msgstr "Fallita l'apertura del file: %s"
 
 #: src/project.c:171
 msgid "Project not compressed by zstd!"
-msgstr ""
+msgstr "Progetto non compresso da zstd!"
 
 #: src/project.c:184
 #, c-format
 msgid "Failed to decompress project file: %s"
-msgstr ""
+msgstr "Fallita la decompressione del file progetto: %s"
 
 #: src/project.c:193
 msgid ""
@@ -281,18 +292,22 @@ msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr ""
+"Questo progetto è stato creato con una versione differente di %s (%s). "
+"Potrebbe non funzionare correttamente."
 
 #: src/project.c:909
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
+"Fallito il caricamento del progetto. Per favore controllare il log per "
+"maggiori informazioni."
 
 #: src/project.c:1091
 msgid "Failed to load project. Will create a new one instead."
-msgstr ""
+msgstr "Fallito il caricamento del progetto. Ne verrà quindi creato uno nuovo."
 
 #: src/project.c:1430
 msgid "Backup saved."
-msgstr ""
+msgstr "Backup salvato."
 
 #: src/project.c:1440
 msgid "Project saved."
@@ -3172,9 +3187,8 @@ msgid "The pan law to use"
 msgstr ""
 
 #: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:505
-#, fuzzy
 msgid "Zrythm path"
-msgstr "Zrythm"
+msgstr "Percorso di Zrythm"
 
 #: resources/ui/preferences.ui:245
 msgid "The global Zrythm working path for non-project related files"
@@ -3654,7 +3668,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:461
 msgid "Audio backend"
-msgstr ""
+msgstr "Backend audio"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:462
 msgid "The audio backend to use."
@@ -3694,16 +3708,16 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:491
 msgid "MIDI controllers"
-msgstr ""
+msgstr "Controller MIDI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:492
 msgid "A list of controllers to auto-connect to."
-msgstr ""
+msgstr "Una lista di controller audio a cui autoconnettersi."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:501
 #: build/data/org.zrythm.Zrythm.gschema.xml:550
 msgid "Paths"
-msgstr ""
+msgstr "Percorso"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:506
 msgid "The directory used to save user data in."
@@ -3749,12 +3763,14 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:540
 msgid "Refresh rate"
-msgstr ""
+msgstr "Frequenza d'aggiornamento"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:541
 msgid ""
 "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr ""
+"Frequenza d'aggiornamento in Hz. Se impostata a 0 verrà utilizzata la "
+"frequenza di aggiornamento dello schermo."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:558
 msgid "VST plugins"
