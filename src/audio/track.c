@@ -1846,7 +1846,7 @@ track_set_name_with_action (
   UndoableAction * ua =
     edit_tracks_action_new_generic (
       EDIT_TRACK_ACTION_TYPE_RENAME,
-      sel_before, sel_after);
+      sel_before, sel_after, false);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   tracklist_selections_free (sel_before);

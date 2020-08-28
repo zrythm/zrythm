@@ -88,18 +88,73 @@ UndoableAction *
 edit_tracks_action_new_generic (
   EditTracksActionType  type,
   TracklistSelections * tls_before,
-  TracklistSelections * tls_after)
+  TracklistSelections * tls_after,
+  bool                  already_edited)
 {
   EditTracksAction * self =
     object_new (EditTracksAction);
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_EDIT_TRACKS;
 
-  self->type = EDIT_TRACK_ACTION_TYPE_RENAME;
+  self->type = type;
   self->tls_before =
     tracklist_selections_clone (tls_before);
   self->tls_after =
     tracklist_selections_clone (tls_after);
+
+  self->already_edited = already_edited;
+
+  return ua;
+}
+
+/**
+ * Generic edit action.
+ */
+UndoableAction *
+edit_tracks_action_new_track_float (
+  EditTracksActionType  type,
+  Track *               track,
+  float                 val_before,
+  float                 val_after,
+  bool                  already_edited)
+{
+  TracklistSelections * sel_before =
+    tracklist_selections_new (false);
+  TracklistSelections * sel_after =
+    tracklist_selections_new (false);
+  Track * clone =
+    track_clone (track, true);
+  Track * clone_with_change =
+    track_clone (track, true);
+
+  if (type == EDIT_TRACK_ACTION_TYPE_VOLUME)
+    {
+      fader_set_amp (
+        clone->channel->fader, val_before);
+      fader_set_amp (
+        clone_with_change->channel->fader,
+        val_after);
+    }
+  else if (type == EDIT_TRACK_ACTION_TYPE_PAN)
+    {
+    }
+  else
+    {
+      g_warn_if_reached ();
+    }
+
+  tracklist_selections_add_track (
+    sel_before, clone, F_NO_PUBLISH_EVENTS);
+  tracklist_selections_add_track (
+    sel_after, clone_with_change,
+    F_NO_PUBLISH_EVENTS);
+
+  UndoableAction * ua =
+    edit_tracks_action_new_generic (
+      type, sel_before, sel_after, already_edited);
+
+  tracklist_selections_free (sel_before);
+  tracklist_selections_free (sel_after);
 
   return ua;
 }
@@ -153,6 +208,12 @@ edit_tracks_action_new_direct_out (
 int
 edit_tracks_action_do (EditTracksAction * self)
 {
+  if (self->already_edited)
+    {
+      self->already_edited = false;
+      return 0;
+    }
+
   int i;
   Channel * ch;
   for (i = 0; i < self->tls_before->num_tracks; i++)
@@ -179,10 +240,10 @@ edit_tracks_action_do (EditTracksAction * self)
           break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
           g_return_val_if_fail (ch, -1);
-          /* FIXME this is not really gonna work for
-           * multi tracks */
-          fader_add_amp (
-            &ch->fader, self->vol_delta);
+          fader_set_amp (
+            ch->fader,
+            fader_get_amp (
+              clone_track->channel->fader));
           break;
         case EDIT_TRACK_ACTION_TYPE_PAN:
           g_return_val_if_fail (ch, -1);
@@ -261,10 +322,10 @@ edit_tracks_action_undo (
           break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
           g_return_val_if_fail (ch, -1);
-          /* FIXME this is not really gonna work for
-           * multi tracks */
           fader_set_amp (
-            &ch->fader, - self->vol_delta);
+            ch->fader,
+            fader_get_amp (
+              clone_track_before->channel->fader));
           break;
         case EDIT_TRACK_ACTION_TYPE_PAN:
           g_return_val_if_fail (ch, -1);

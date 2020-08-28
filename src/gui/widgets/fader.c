@@ -28,6 +28,7 @@
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/fader.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "zrythm_app.h"
@@ -186,13 +187,12 @@ on_motion (GtkWidget * widget, GdkEvent *event)
 }
 
 static void
-drag_begin (GtkGestureDrag *gesture,
-            double           start_x,
-            double           start_y,
-            gpointer        user_data)
+drag_begin (
+  GtkGestureDrag * gesture,
+  double           start_x,
+  double           start_y,
+  FaderWidget *    self)
 {
-  FaderWidget * self = (FaderWidget *) user_data;
-
   GdkEventSequence *sequence =
     gtk_gesture_single_get_current_sequence (
       GTK_GESTURE_SINGLE (gesture));
@@ -211,6 +211,8 @@ drag_begin (GtkGestureDrag *gesture,
     self->tooltip_label, string);
   g_free (string);
   gtk_window_present (self->tooltip_win);
+
+  self->amp_at_start = fader_get_amp (self->fader);
 }
 
 static void
@@ -276,6 +278,20 @@ drag_end (
   self->last_x = 0;
   self->last_y = 0;
   gtk_widget_hide (GTK_WIDGET (self->tooltip_win));
+
+  Track * track = fader_get_track (self->fader);
+  float cur_amp = fader_get_amp (self->fader);
+  if (!math_floats_equal_epsilon (
+        self->amp_at_start,
+        fader_get_amp (self->fader),
+        0.0001f))
+    {
+      UndoableAction * ua =
+        edit_tracks_action_new_track_float (
+          EDIT_TRACK_ACTION_TYPE_VOLUME,
+          track, self->amp_at_start, cur_amp, true);
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
 }
 
 static void

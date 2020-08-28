@@ -17,12 +17,31 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Edit tracks action.
+ */
+
 #ifndef __UNDO_EDIT_TRACKS_ACTION_H__
 #define __UNDO_EDIT_TRACKS_ACTION_H__
 
 #include "actions/undoable_action.h"
 #include "gui/backend/tracklist_selections.h"
 
+typedef struct Track Track;
+typedef struct TracklistSelections
+  TracklistSelections;
+
+/**
+ * @addtogroup actions
+ *
+ * @{
+ */
+
+/**
+ * Action type.
+ */
 typedef enum EditTracksActionType
 {
   EDIT_TRACK_ACTION_TYPE_SOLO,
@@ -54,10 +73,9 @@ static const cyaml_strval_t
     EDIT_TRACK_ACTION_TYPE_RENAME    },
 };
 
-typedef struct Track Track;
-typedef struct TracklistSelections
-  TracklistSelections;
-
+/**
+ * Edit tracks action.
+ */
 typedef struct EditTracksAction
 {
   UndoableAction        parent_instance;
@@ -87,6 +105,9 @@ typedef struct EditTracksAction
 
   /** Track position to direct output to. */
   int                   new_direct_out_pos;
+
+  /** Skip do if true. */
+  bool                  already_edited;
 
 } EditTracksAction;
 
@@ -154,7 +175,19 @@ UndoableAction *
 edit_tracks_action_new_generic (
   EditTracksActionType  type,
   TracklistSelections * tls_before,
-  TracklistSelections * tls_after);
+  TracklistSelections * tls_after,
+  bool                  already_edited);
+
+/**
+ * Generic edit action.
+ */
+UndoableAction *
+edit_tracks_action_new_track_float (
+  EditTracksActionType  type,
+  Track *               track,
+  float                 val_before,
+  float                 val_after,
+  bool                  already_edited);
 
 /**
  * Wrapper over edit_tracks_action_new().
@@ -195,5 +228,9 @@ edit_tracks_action_stringize (
 void
 edit_tracks_action_free (
   EditTracksAction * self);
+
+/**
+ * @}
+ */
 
 #endif

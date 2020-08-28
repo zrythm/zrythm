@@ -56,6 +56,9 @@ typedef struct _FaderWidget
   GtkLabel *         tooltip_label;
   GdkRGBA            start_color;
   GdkRGBA            end_color;
+
+  /** Value at start. */
+  float              amp_at_start;
 } FaderWidget;
 
 /**
