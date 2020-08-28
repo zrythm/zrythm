@@ -2252,6 +2252,8 @@ on_right_click (
   gdouble               y,
   ArrangerWidget *      self)
 {
+  g_message ("right mb released");
+#if 0
   if (n_press != 1)
     return;
 
@@ -2273,6 +2275,7 @@ on_right_click (
     }
 
   show_context_menu (self, x, y);
+#endif
 }
 
 static void
@@ -3729,6 +3732,15 @@ drag_update (
   else
     self->ctrl_held = 0;
 
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * ev =
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture), sequence);
+  guint btn;
+  g_warn_if_fail (gdk_event_get_button (ev, &btn));
+
   /* get current pos */
   arranger_widget_px_to_pos (
     self, self->start_x + offset_x,
@@ -3771,6 +3783,8 @@ drag_update (
           &self->earliest_obj_start_pos,
           NULL);
     }
+
+  g_message ("cur action: %d", self->action);
 
   /* set action to selecting if starting selection.
    * this
@@ -4854,6 +4868,41 @@ drag_end (
         "clicked on empty space, deselecting all");
       arranger_widget_select_all (self, 0);
       /*arranger_widget_update_visibility (self);*/
+    }
+
+  /* if object clicked and object is unselected,
+   * select it */
+  ArrangerObject * obj =
+    arranger_widget_get_hit_arranger_object (
+      (ArrangerWidget *) self,
+      ARRANGER_OBJECT_TYPE_ALL,
+      self->start_x + offset_x,
+      self->start_y + offset_y);
+  if (obj)
+    {
+      if (!arranger_object_is_selected (obj))
+        {
+          arranger_object_select (
+            obj, F_SELECT, F_NO_APPEND);
+        }
+    }
+
+  /* if right click, show context */
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * ev =
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture), sequence);
+  guint btn;
+  g_warn_if_fail (gdk_event_get_button (ev, &btn));
+  if (btn == GDK_BUTTON_SECONDARY &&
+      self->action !=
+        UI_OVERLAY_ACTION_ERASING)
+    {
+      show_context_menu (
+        self, self->start_x + offset_x,
+        self->start_y + offset_y);
     }
 
   /* reset start coordinates and offsets */
@@ -6513,7 +6562,7 @@ arranger_widget_setup (
     G_OBJECT (self->multipress), "pressed",
     G_CALLBACK (multipress_pressed), self);
   g_signal_connect (
-    G_OBJECT (self->right_mouse_mp), "pressed",
+    G_OBJECT (self->right_mouse_mp), "released",
     G_CALLBACK (on_right_click), self);
   g_signal_connect (
     G_OBJECT (self), "scroll-event",
@@ -6584,6 +6633,11 @@ arranger_widget_init (
   gtk_event_controller_set_propagation_phase (
     GTK_EVENT_CONTROLLER (self->drag),
     GTK_PHASE_CAPTURE);
+
+  /* allow all buttons for drag */
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (self->drag), 0);
+
   self->multipress =
     GTK_GESTURE_MULTI_PRESS (
       gtk_gesture_multi_press_new (
