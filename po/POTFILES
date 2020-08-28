@@ -177,6 +177,7 @@ inc/gui/widgets/inspector_port.h
 inc/gui/widgets/scripting_window.h
 inc/gui/widgets/center_dock.h
 inc/gui/widgets/drag_dest_box.h
+inc/gui/widgets/chord.h
 inc/gui/widgets/inspector_ap.h
 inc/gui/widgets/top_bar.h
 inc/gui/widgets/midi_modifier_arranger.h
@@ -233,6 +234,7 @@ inc/utils/arrays.h
 inc/utils/io.h
 inc/utils/cpu_windows.h
 inc/utils/stack.h
+inc/utils/dsp.h
 inc/utils/localization.h
 inc/utils/gdb.h
 inc/utils/stoat.h
@@ -325,6 +327,7 @@ inc/audio/engine.h
 inc/audio/graph_thread.h
 inc/audio/engine_alsa.h
 inc/audio/engine_rtmidi.h
+inc/audio/midi_event.h
 inc/audio/scale.h
 inc/audio/instrument_track.h
 inc/audio/balance_control.h
@@ -545,6 +548,7 @@ src/gui/widgets/midi_activity_bar.c
 src/gui/widgets/track.c
 src/gui/widgets/midi_track.c
 src/gui/widgets/color_area.c
+src/gui/widgets/chord.c
 src/gui/widgets/timeline_bot_box.c
 src/gui/widgets/inspector_midi.c
 src/gui/widgets/chord_editor_space.c
@@ -598,6 +602,7 @@ src/utils/arrays.c
 src/utils/gtk.c
 src/utils/dialogs.c
 src/utils/ui.c
+src/utils/dsp.c
 src/utils/resources.c
 src/utils/mpmc_queue.c
 src/utils/dictionary.c
@@ -626,6 +631,7 @@ src/audio/port.c
 src/audio/peak_dsp.c
 src/audio/chord_region.c
 src/audio/master_track.c
+src/audio/midi_event.c
 src/audio/group_target_track.c
 src/audio/engine_dummy.c
 src/audio/chord_descriptor.c

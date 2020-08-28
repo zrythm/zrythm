@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-08-14 23:36+0100\n"
+"POT-Creation-Date: 2020-08-28 18:35+0100\n"
 "PO-Revision-Date: 2020-04-30 23:31+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: English (United Kingdom) <https://hosted.weblate.org/projects/"
@@ -70,11 +70,12 @@ msgstr "Select All"
 msgid "Duplicate"
 msgstr "Duplicate"
 
-#: inc/utils/gtk.h:92 resources/ui/fader_buttons.ui:99
+#: inc/utils/gtk.h:92 src/gui/widgets/track.c:1193
+#: resources/ui/fader_buttons.ui:99
 msgid "Mute"
 msgstr ""
 
-#: inc/utils/gtk.h:98
+#: inc/utils/gtk.h:98 src/gui/widgets/track.c:1189
 msgid "Unmute"
 msgstr ""
 
@@ -140,7 +141,7 @@ msgstr "Exported"
 msgid "Superellipse"
 msgstr ""
 
-#: inc/audio/curve.h:94 src/gui/widgets/timeline_arranger.c:1309
+#: inc/audio/curve.h:94 src/gui/widgets/timeline_arranger.c:1288
 #: src/audio/curve.c:45
 #, c-format
 msgid "Vital"
@@ -195,7 +196,7 @@ msgstr ""
 msgid "ALSA Sequencer"
 msgstr ""
 
-#: inc/audio/region.h:83 src/gui/widgets/track.c:1711
+#: inc/audio/region.h:83 src/gui/widgets/track.c:1851
 msgid "Inherit"
 msgstr ""
 
@@ -221,7 +222,7 @@ msgid "-6dB"
 msgstr ""
 
 #. TRANSLATORS: Pan algorithm
-#: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1306
+#: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1285
 #: src/utils/ui.c:767
 msgid "Linear"
 msgstr ""
@@ -312,22 +313,22 @@ msgstr "Backup saved."
 msgid "Project saved."
 msgstr "Project saved."
 
-#: src/main.c:77
+#: src/main.c:76
 #, fuzzy
 msgid "Error - Backtrace:\n"
 msgstr "Error: signal %d - Backtrace:"
 
-#: src/main.c:81
+#: src/main.c:80
 #, fuzzy, c-format
 msgid "Error: %s - Backtrace:\n"
 msgstr "Error: signal %d - Backtrace:"
 
-#: src/main.c:97
+#: src/main.c:94
 #, c-format
 msgid "%s has crashed. "
 msgstr ""
 
-#: src/main.c:130
+#: src/main.c:127
 #, fuzzy, c-format
 msgid ""
 "Usage: %s [ OPTIONS ] [ PROJECT-FILE-PATH ]\n"
@@ -373,44 +374,44 @@ msgstr ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "Website https://www.zrythm.org\n"
 
-#: src/main.c:173
+#: src/main.c:170
 #, c-format
 msgid "File %s not found."
 msgstr ""
 
-#: src/main.c:194
+#: src/main.c:191
 msgid ""
 "An output file was not specified. Please pass one with `--output [FILE]`."
 msgstr ""
 
 #. getopt_long already printed an error
 #. * message
-#: src/main.c:336
+#: src/main.c:333
 #, c-format
 msgid "Unknown option\n"
 msgstr ""
 
-#: src/main.c:391
+#: src/main.c:390
 #, c-format
 msgid "Project failed to compress: %s\n"
 msgstr ""
 
-#: src/main.c:400
+#: src/main.c:399
 #, c-format
 msgid "Project successfully compressed.\n"
 msgstr ""
 
-#: src/main.c:418
+#: src/main.c:417
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr ""
 
-#: src/main.c:427
+#: src/main.c:426
 #, c-format
 msgid "Project successfully decompressed.\n"
 msgstr ""
 
-#: src/main.c:436
+#: src/main.c:435
 #, fuzzy, c-format
 msgid ""
 "%s-%s Copyright (C) 2018-2020 The Zrythm contributors\n"
@@ -483,30 +484,30 @@ msgstr "License Information"
 msgid "Waiting for project"
 msgstr "Waiting for project"
 
-#: src/plugins/carla_native_plugin.c:465 src/plugins/lv2_plugin.c:2432
+#: src/plugins/carla_native_plugin.c:477 src/plugins/lv2_plugin.c:2482
 msgid "Default bank"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:472 src/plugins/lv2_plugin.c:2439
+#: src/plugins/carla_native_plugin.c:484 src/plugins/lv2_plugin.c:2489
 msgid "Init"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:899
+#: src/plugins/carla_native_plugin.c:911
 #, fuzzy
 msgid "Audio in"
 msgstr "Audio Bus"
 
-#: src/plugins/carla_native_plugin.c:909
+#: src/plugins/carla_native_plugin.c:921
 #, fuzzy
 msgid "Audio out"
 msgstr "Audio Group"
 
-#: src/plugins/carla_native_plugin.c:919
+#: src/plugins/carla_native_plugin.c:931
 #, fuzzy
 msgid "MIDI in"
 msgstr "MIDI Bus"
 
-#: src/plugins/carla_native_plugin.c:929
+#: src/plugins/carla_native_plugin.c:941
 #, fuzzy
 msgid "MIDI out"
 msgstr "MIDI Group"
@@ -515,41 +516,41 @@ msgstr "MIDI Group"
 msgid "Error loading LV2 bundle dir: "
 msgstr "Error loading LV2 bundle dir: "
 
-#: src/plugins/plugin_manager.c:809
+#: src/plugins/plugin_manager.c:846
 #, fuzzy
 msgid "Scanned LV2 plugin"
 msgstr "Scanning plugins"
 
-#: src/plugins/plugin_manager.c:820
+#: src/plugins/plugin_manager.c:857
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:941 src/plugins/plugin_manager.c:1067
+#: src/plugins/plugin_manager.c:984 src/plugins/plugin_manager.c:1115
 #, fuzzy
 msgid "Scanned VST plugin"
 msgstr "Scanning plugins"
 
-#: src/plugins/plugin_manager.c:948 src/plugins/plugin_manager.c:1074
+#: src/plugins/plugin_manager.c:991 src/plugins/plugin_manager.c:1122
 #, c-format
 msgid "Skipped VST plugin at %s"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1129
+#: src/plugins/plugin_manager.c:1177
 #, fuzzy
 msgid "Scanned AU plugin"
 msgstr "Scanning plugins"
 
-#: src/plugins/plugin_manager.c:1136
+#: src/plugins/plugin_manager.c:1184
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr ""
 
-#: src/plugins/plugin.c:155
+#: src/plugins/plugin.c:157
 msgid "Enabled"
 msgstr ""
 
-#: src/plugins/plugin.c:176 src/gui/widgets/track_input_expander.c:721
+#: src/plugins/plugin.c:178 src/gui/widgets/track_input_expander.c:721
 msgid "Gain"
 msgstr ""
 
@@ -570,7 +571,7 @@ msgstr "_Cancel"
 msgid "_Save"
 msgstr "_Save"
 
-#: src/plugins/lv2_plugin.c:2471
+#: src/plugins/lv2_plugin.c:2521
 msgid "Unnamed bank"
 msgstr ""
 
@@ -623,7 +624,7 @@ msgstr "INPUTS"
 msgid "OUTPUTS"
 msgstr "OUTPUTS"
 
-#: src/gui/widgets/port_connections_popover.c:200
+#: src/gui/widgets/port_connections_popover.c:200 src/gui/widgets/track.c:1235
 msgid "Add"
 msgstr "Add"
 
@@ -635,12 +636,12 @@ msgstr "note length"
 msgid "note type"
 msgstr "note type"
 
-#: src/gui/widgets/inspector_port.c:182 src/gui/widgets/balance_control.c:336
-#: src/gui/widgets/fader.c:338 resources/ui/bind_cc_dialog.ui:27
+#: src/gui/widgets/inspector_port.c:182 src/gui/widgets/balance_control.c:366
+#: src/gui/widgets/fader.c:354 resources/ui/bind_cc_dialog.ui:27
 msgid "Bind MIDI CC"
 msgstr "Bind MIDI CC"
 
-#: src/gui/widgets/inspector_port.c:192 src/gui/widgets/midi_arranger.c:510
+#: src/gui/widgets/inspector_port.c:192 src/gui/widgets/midi_arranger.c:516
 msgid "View info"
 msgstr ""
 
@@ -884,29 +885,20 @@ msgstr "Position"
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "Time Signature - Beats per bar / Beat unit"
 
-#: src/gui/widgets/drag_dest_box.c:265
-#, c-format
-msgid "Unsupported file type %s"
-msgstr "Unsupported file type %s"
-
-#: src/gui/widgets/drag_dest_box.c:294
-msgid "No file found"
-msgstr "No file found"
-
-#: src/gui/widgets/drag_dest_box.c:474
+#: src/gui/widgets/drag_dest_box.c:389
 msgid "Add _MIDI Track"
 msgstr "Add _MIDI Track"
 
-#: src/gui/widgets/drag_dest_box.c:486
+#: src/gui/widgets/drag_dest_box.c:401
 msgid "Add Audio Track"
 msgstr "Add Audio Track"
 
-#: src/gui/widgets/drag_dest_box.c:518
+#: src/gui/widgets/drag_dest_box.c:433
 #, fuzzy
 msgid "Add FX Track"
 msgstr "Add Bus Track"
 
-#: src/gui/widgets/drag_dest_box.c:548
+#: src/gui/widgets/drag_dest_box.c:463
 msgid "Add Group Track"
 msgstr "Add Group Track"
 
@@ -973,15 +965,15 @@ msgstr "Inspector"
 msgid "empty slot"
 msgstr "empty slot"
 
-#: src/gui/widgets/piano_roll_keys.c:137
+#: src/gui/widgets/piano_roll_keys.c:138
 msgid "both"
 msgstr "both"
 
-#: src/gui/widgets/piano_roll_keys.c:153
+#: src/gui/widgets/piano_roll_keys.c:154
 msgid "scale"
 msgstr "scale"
 
-#: src/gui/widgets/piano_roll_keys.c:169
+#: src/gui/widgets/piano_roll_keys.c:170
 msgid "chord"
 msgstr ""
 
@@ -1152,39 +1144,39 @@ msgstr ""
 msgid "Recording mode"
 msgstr "Record"
 
-#: src/gui/widgets/timeline_arranger.c:524
+#: src/gui/widgets/timeline_arranger.c:503
 msgid "Custom Marker"
 msgstr "Custom Marker"
 
-#: src/gui/widgets/timeline_arranger.c:1280
+#: src/gui/widgets/timeline_arranger.c:1259
 msgid "Fade preset"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1307
+#: src/gui/widgets/timeline_arranger.c:1286
 msgid "Exponential"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1308
+#: src/gui/widgets/timeline_arranger.c:1287
 msgid "Elliptic"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1373
+#: src/gui/widgets/timeline_arranger.c:1352
 msgid "Musical Mode"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1505
+#: src/gui/widgets/timeline_arranger.c:1484
 msgid "Export as MIDI file"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1540 src/gui/widgets/track.c:1586
+#: src/gui/widgets/timeline_arranger.c:1519 src/gui/widgets/track.c:1726
 msgid "Quick bounce"
 msgstr ""
 
-#: src/gui/widgets/timeline_arranger.c:1551 src/gui/widgets/track.c:1598
+#: src/gui/widgets/timeline_arranger.c:1530 src/gui/widgets/track.c:1738
 msgid "Bounce..."
 msgstr ""
 
-#: src/gui/widgets/automation_arranger.c:251
+#: src/gui/widgets/automation_arranger.c:261
 #: build/data/org.zrythm.Zrythm.gschema.xml:596
 msgid "Curve algorithm"
 msgstr ""
@@ -1323,7 +1315,7 @@ msgstr "Select channel to route signal to"
 msgid "Stereo Out"
 msgstr "Stereo Out"
 
-#: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:423
+#: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:439
 msgid "Fader"
 msgstr ""
 
@@ -1384,7 +1376,7 @@ msgstr ""
 msgid "Delete connection"
 msgstr ""
 
-#: src/gui/widgets/balance_control.c:327 src/gui/widgets/fader.c:329
+#: src/gui/widgets/balance_control.c:357 src/gui/widgets/fader.c:345
 #: resources/ui/first_run_assistant.ui:130
 msgid "Reset"
 msgstr ""
@@ -1593,61 +1585,119 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
-#: src/gui/widgets/track.c:594 src/audio/track_lane.c:71
+#: src/gui/widgets/track.c:595 src/audio/track_lane.c:71
 #, c-format
 msgid "Lane %d"
 msgstr ""
 
-#: src/gui/widgets/track.c:1518
+#: src/gui/widgets/track.c:1171 resources/ui/fader_buttons.ui:78
+msgid "Solo"
+msgstr ""
+
+#: src/gui/widgets/track.c:1178
+#, fuzzy
+msgid "Hide instrument UI"
+msgstr "No inputs"
+
+#: src/gui/widgets/track.c:1182
+#, fuzzy
+msgid "Show instrument UI"
+msgstr "No inputs"
+
+#: src/gui/widgets/track.c:1198 resources/ui/fader_buttons.ui:36
+msgid "Mono compatibility"
+msgstr ""
+
+#: src/gui/widgets/track.c:1204
+msgid "Disarm"
+msgstr ""
+
+#: src/gui/widgets/track.c:1208
+#, fuzzy
+msgid "Arm for recording"
+msgstr "MIDI inputs for recording"
+
+#: src/gui/widgets/track.c:1215
+msgid "Hide lanes"
+msgstr ""
+
+#: src/gui/widgets/track.c:1219
+#, fuzzy
+msgid "Show lanes"
+msgstr "Show track lanes"
+
+#: src/gui/widgets/track.c:1226
+#, fuzzy
+msgid "Hide automation"
+msgstr "Show automation lanes"
+
+#: src/gui/widgets/track.c:1230
+#, fuzzy
+msgid "Show automation"
+msgstr "Show automation lanes"
+
+#: src/gui/widgets/track.c:1239 resources/ui/project_assistant.ui:102
+msgid "Remove"
+msgstr ""
+
+#: src/gui/widgets/track.c:1243
+msgid "Freeze/unfreeze"
+msgstr ""
+
+#: src/gui/widgets/track.c:1247
+msgid "Lock/unlock"
+msgstr ""
+
+#: src/gui/widgets/track.c:1658
 msgid "_Delete Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:1521
+#: src/gui/widgets/track.c:1661
 msgid "_Delete Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:1532
+#: src/gui/widgets/track.c:1672
 msgid "_Duplicate Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:1535
+#: src/gui/widgets/track.c:1675
 msgid "_Duplicate Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:1553
+#: src/gui/widgets/track.c:1693
 msgid "Add Region"
 msgstr ""
 
-#: src/gui/widgets/track.c:1562
+#: src/gui/widgets/track.c:1702
 msgid "Hide Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:1563
+#: src/gui/widgets/track.c:1703
 msgid "Hide Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:1571
+#: src/gui/widgets/track.c:1711
 msgid "Pin/Unpin Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:1572
+#: src/gui/widgets/track.c:1712
 msgid "Pin/Unpin Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:1614
+#: src/gui/widgets/track.c:1754
 msgid "Track MIDI Ch"
 msgstr ""
 
-#: src/gui/widgets/track.c:1626
+#: src/gui/widgets/track.c:1766
 msgid "Passthrough input"
 msgstr ""
 
-#: src/gui/widgets/track.c:1655 src/gui/widgets/track.c:1715
+#: src/gui/widgets/track.c:1795 src/gui/widgets/track.c:1855
 #, fuzzy, c-format
 msgid "MIDI Channel %d"
 msgstr "Channel %s"
 
-#: src/gui/widgets/track.c:1695
+#: src/gui/widgets/track.c:1835
 #, c-format
 msgid "Lane %d MIDI Ch"
 msgstr ""
@@ -1691,7 +1741,7 @@ msgid "%sPlease help us fix this by %ssubmitting a bug report%s."
 msgstr ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
 
-#: src/gui/backend/event_manager.c:1553
+#: src/gui/backend/event_manager.c:1571
 #, c-format
 msgid "Trial limit has been reached. %s will now go silent"
 msgstr ""
@@ -1811,6 +1861,24 @@ msgstr ""
 msgid "Reset to factory settings successful\n"
 msgstr ""
 
+#: src/audio/tracklist.c:955
+#, fuzzy
+msgid "No file was found"
+msgstr "No file found"
+
+#: src/audio/tracklist.c:980
+#, c-format
+msgid "Unsupported file type %s"
+msgstr "Unsupported file type %s"
+
+#: src/audio/tracklist.c:999
+msgid "Cannot drop MIDI files into existing tracks"
+msgstr ""
+
+#: src/audio/tracklist.c:1009
+msgid "Can only drop audio files on audio tracks"
+msgstr ""
+
 #: src/audio/chord_track.c:57 resources/ui/inspector_chord.ui:31
 msgid "Chords"
 msgstr ""
@@ -1899,74 +1967,74 @@ msgstr ""
 msgid "Unimplemented"
 msgstr ""
 
-#: src/audio/fader.c:122
+#: src/audio/fader.c:123
 #, fuzzy
 msgid "Prefader Volume"
 msgstr "Monitor out"
 
-#: src/audio/fader.c:122
+#: src/audio/fader.c:123
 msgid "Fader Volume"
 msgstr ""
 
-#: src/audio/fader.c:149
+#: src/audio/fader.c:150
 #, fuzzy
 msgid "Prefader Balance"
 msgstr "Preferences"
 
-#: src/audio/fader.c:149
+#: src/audio/fader.c:150
 msgid "Fader Balance"
 msgstr ""
 
-#: src/audio/fader.c:168
+#: src/audio/fader.c:169
 #, fuzzy
 msgid "Prefader Mute"
 msgstr "Monitor out"
 
-#: src/audio/fader.c:168
+#: src/audio/fader.c:169
 #, fuzzy
 msgid "Fader Mute"
 msgstr "Monitor out"
 
-#: src/audio/fader.c:192
+#: src/audio/fader.c:193
 msgid "Ch Pre-Fader in"
 msgstr ""
 
-#: src/audio/fader.c:196
+#: src/audio/fader.c:197
 msgid "Ch Fader in"
 msgstr ""
 
-#: src/audio/fader.c:201
+#: src/audio/fader.c:202
 msgid "Monitor Fader in"
 msgstr ""
 
-#: src/audio/fader.c:217
+#: src/audio/fader.c:218
 #, fuzzy
 msgid "Ch Pre-Fader out"
 msgstr "Monitor out"
 
-#: src/audio/fader.c:221
+#: src/audio/fader.c:222
 msgid "Ch Fader out"
 msgstr ""
 
-#: src/audio/fader.c:226
+#: src/audio/fader.c:227
 #, fuzzy
 msgid "Monitor Fader out"
 msgstr "Monitor out"
 
-#: src/audio/fader.c:245
+#: src/audio/fader.c:246
 msgid "Ch MIDI Pre-Fader in"
 msgstr ""
 
-#: src/audio/fader.c:249
+#: src/audio/fader.c:250
 #, fuzzy
 msgid "Ch MIDI Fader in"
 msgstr "MIDI Bus"
 
-#: src/audio/fader.c:260
+#: src/audio/fader.c:261
 msgid "Ch MIDI Pre-Fader out"
 msgstr ""
 
-#: src/audio/fader.c:264
+#: src/audio/fader.c:265
 #, fuzzy
 msgid "Ch MIDI Fader out"
 msgstr "Monitor out"
@@ -2024,7 +2092,7 @@ msgstr ""
 msgid "Client zombie"
 msgstr ""
 
-#: src/actions/arranger_selections.c:1976
+#: src/actions/arranger_selections.c:2225
 msgid "Edit arranger object(s)"
 msgstr ""
 
@@ -2119,6 +2187,15 @@ msgstr "Exported"
 msgid "Can't paste selections"
 msgstr ""
 
+#: src/actions/actions.c:1898
+#, fuzzy
+msgid "No regions selected"
+msgstr "No port selected"
+
+#: src/actions/actions.c:1906
+msgid "Selections must be on the same lane"
+msgstr ""
+
 #: src/actions/copy_plugins_action.c:289
 #, c-format
 msgid "Copy %s"
@@ -2152,43 +2229,48 @@ msgstr ""
 msgid "Move %d Plugins"
 msgstr ""
 
-#: src/actions/range_action.c:598 resources/ui/range_action_buttons.ui:36
+#: src/actions/range_action.c:599 resources/ui/range_action_buttons.ui:36
 #, fuzzy
 msgid "Insert silence"
 msgstr "Inserts"
 
-#: src/actions/range_action.c:601
+#: src/actions/range_action.c:602
 #, fuzzy
 msgid "Delete range"
 msgstr "Delete Preset?"
 
-#: src/actions/edit_tracks_action.c:272
+#: src/actions/edit_tracks_action.c:388
 msgid "Solo Track"
 msgstr ""
 
-#: src/actions/edit_tracks_action.c:275
+#: src/actions/edit_tracks_action.c:391
 msgid "Unsolo Track"
 msgstr ""
 
-#: src/actions/edit_tracks_action.c:279
+#: src/actions/edit_tracks_action.c:395
 msgid "Mute Track"
 msgstr ""
 
-#: src/actions/edit_tracks_action.c:282
+#: src/actions/edit_tracks_action.c:398
 msgid "Unmute Track"
 msgstr ""
 
-#: src/actions/edit_tracks_action.c:285
+#: src/actions/edit_tracks_action.c:401
 msgid "Change Fader"
 msgstr ""
 
-#: src/actions/edit_tracks_action.c:288
+#: src/actions/edit_tracks_action.c:404
 msgid "Change Pan"
 msgstr ""
 
-#: src/actions/edit_tracks_action.c:291
+#: src/actions/edit_tracks_action.c:407
 msgid "Change direct out"
 msgstr ""
+
+#: src/actions/edit_tracks_action.c:410
+#, fuzzy
+msgid "Rename track"
+msgstr "Freeze track"
 
 #: src/actions/move_tracks_action.c:144
 msgid "Move Track"
@@ -2209,12 +2291,12 @@ msgstr ""
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
 
-#: src/actions/create_tracks_action.c:332
+#: src/actions/create_tracks_action.c:339
 #, c-format
 msgid "Create %s Track"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:335
+#: src/actions/create_tracks_action.c:342
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr ""
@@ -2444,7 +2526,12 @@ msgstr ""
 msgid "Musical mode"
 msgstr ""
 
-#: resources/ui/timeline_toolbar.ui:104 resources/ui/editor_toolbar.ui:103
+#: resources/ui/timeline_toolbar.ui:94
+#, fuzzy
+msgid "Merge selections"
+msgstr "Clear Selection"
+
+#: resources/ui/timeline_toolbar.ui:117 resources/ui/editor_toolbar.ui:103
 msgid "Toggle event viewer"
 msgstr ""
 
@@ -2454,10 +2541,6 @@ msgstr ""
 
 #: resources/ui/project_assistant.ui:43
 msgid "Select a project"
-msgstr ""
-
-#: resources/ui/project_assistant.ui:102
-msgid "Remove"
 msgstr ""
 
 #: resources/ui/project_assistant.ui:106
@@ -2953,14 +3036,6 @@ msgstr ""
 
 #: resources/ui/header.ui:225
 msgid "MIDI in activity"
-msgstr ""
-
-#: resources/ui/fader_buttons.ui:36
-msgid "Mono compatibility"
-msgstr ""
-
-#: resources/ui/fader_buttons.ui:78
-msgid "Solo"
 msgstr ""
 
 #: resources/ui/fader_buttons.ui:120
