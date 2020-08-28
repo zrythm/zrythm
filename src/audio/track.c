@@ -1819,14 +1819,38 @@ track_get_name (Track * track)
 }
 
 /**
- * Setter to be used by the UI.
+ * Setter to be used by the UI to create an
+ * undoable action.
  */
 void
-track_set_name_with_events (
+track_set_name_with_action (
   Track *      track,
   const char * name)
 {
-  track_set_name (track, name, F_PUBLISH_EVENTS);
+  TracklistSelections * sel_before =
+    tracklist_selections_new (false);
+  TracklistSelections * sel_after =
+    tracklist_selections_new (false);
+  Track * clone =
+    track_clone (track, true);
+  Track * clone_with_change =
+    track_clone (track, true);
+  clone_with_change->name = g_strdup (name);
+
+  tracklist_selections_add_track (
+    sel_before, clone, F_NO_PUBLISH_EVENTS);
+  tracklist_selections_add_track (
+    sel_after, clone_with_change,
+    F_NO_PUBLISH_EVENTS);
+
+  UndoableAction * ua =
+    edit_tracks_action_new_generic (
+      EDIT_TRACK_ACTION_TYPE_RENAME,
+      sel_before, sel_after);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  tracklist_selections_free (sel_before);
+  tracklist_selections_free (sel_after);
 }
 
 int
@@ -1919,7 +1943,7 @@ void
 track_set_name (
   Track *      track,
   const char * _name,
-  int          pub_events)
+  bool         pub_events)
 {
   char name[800];
   strcpy (name, _name);

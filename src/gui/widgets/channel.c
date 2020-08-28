@@ -685,7 +685,7 @@ channel_widget_new (Channel * channel)
     self->name, track,
     (EditableLabelWidgetTextGetter) track_get_name,
     (EditableLabelWidgetTextSetter)
-    track_set_name_with_events);
+    track_set_name_with_action);
   route_target_selector_widget_setup (
     self->output, self->channel);
 

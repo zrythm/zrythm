@@ -27,6 +27,7 @@
 #include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -35,7 +36,10 @@ void
 edit_tracks_action_init_loaded (
   EditTracksAction * self)
 {
-  tracklist_selections_init_loaded (self->tls);
+  tracklist_selections_init_loaded (
+    self->tls_before);
+  tracklist_selections_init_loaded (
+    self->tls_after);
 }
 
 /**
@@ -68,7 +72,34 @@ edit_tracks_action_new (
   self->new_direct_out_pos =
     direct_out ? direct_out->pos : -1;
 
-  self->tls = tracklist_selections_clone (tls);
+  self->tls_before =
+    tracklist_selections_clone (tls);
+  /* FIXME */
+  self->tls_after =
+    tracklist_selections_clone (tls);
+
+  return ua;
+}
+
+/**
+ * Generic edit action.
+ */
+UndoableAction *
+edit_tracks_action_new_generic (
+  EditTracksActionType  type,
+  TracklistSelections * tls_before,
+  TracklistSelections * tls_after)
+{
+  EditTracksAction * self =
+    object_new (EditTracksAction);
+  UndoableAction * ua = (UndoableAction *) self;
+  ua->type = UA_EDIT_TRACKS;
+
+  self->type = EDIT_TRACK_ACTION_TYPE_RENAME;
+  self->tls_before =
+    tracklist_selections_clone (tls_before);
+  self->tls_after =
+    tracklist_selections_clone (tls_after);
 
   return ua;
 }
@@ -123,12 +154,14 @@ int
 edit_tracks_action_do (EditTracksAction * self)
 {
   int i;
-  Track * track;
   Channel * ch;
-  for (i = 0; i < self->tls->num_tracks; i++)
+  for (i = 0; i < self->tls_before->num_tracks; i++)
     {
-      track =
-        TRACKLIST->tracks[self->tls->tracks[i]->pos];
+      Track * track =
+        TRACKLIST->tracks[
+          self->tls_before->tracks[i]->pos];
+      Track * clone_track =
+        self->tls_after->tracks[i];
       g_return_val_if_fail (track, -1);
       ch = track->channel;
 
@@ -179,6 +212,15 @@ edit_tracks_action_do (EditTracksAction * self)
                 F_RECALC_GRAPH, F_PUBLISH_EVENTS);
             }
           break;
+        case EDIT_TRACK_ACTION_TYPE_RENAME:
+          track_set_name (
+            track, clone_track->name,
+            F_NO_PUBLISH_EVENTS);
+
+          /* remember the new name */
+          g_free (clone_track->name);
+          clone_track->name = g_strdup (track->name);
+          break;
         }
 
       EVENTS_PUSH (ET_TRACK_STATE_CHANGED, track);
@@ -193,11 +235,15 @@ edit_tracks_action_undo (
 {
   int i;
   Channel * ch;
-  for (i = 0; i < self->tls->num_tracks; i++)
+  for (i = 0; i < self->tls_after->num_tracks; i++)
     {
-      Track * clone_track = self->tls->tracks[i];
+      Track * clone_track_before =
+        self->tls_before->tracks[i];
+      Track * clone_track_after =
+        self->tls_after->tracks[i];
       Track * track =
-        TRACKLIST->tracks[self->tls->tracks[i]->pos];
+        TRACKLIST->tracks[
+          self->tls_after->tracks[i]->pos];
       g_return_val_if_fail (track, -1);
       ch = track_get_channel (track);
 
@@ -241,14 +287,19 @@ edit_tracks_action_undo (
             }
 
           /* reconnect to the original track */
-          if (clone_track->channel->has_output)
+          if (clone_track_after->channel->has_output)
             {
               group_target_track_add_child (
                 TRACKLIST->tracks[
-                  clone_track->channel->output_pos],
+                  clone_track_after->channel->output_pos],
                 ch->track->pos, F_CONNECT,
                 F_RECALC_GRAPH, F_PUBLISH_EVENTS);
             }
+          break;
+        case EDIT_TRACK_ACTION_TYPE_RENAME:
+          track_set_name (
+            track, clone_track_before->name,
+            F_NO_PUBLISH_EVENTS);
           break;
         }
       EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
@@ -262,7 +313,7 @@ char *
 edit_tracks_action_stringize (
   EditTracksAction * self)
 {
-  if (self->tls->num_tracks == 1)
+  if (self->tls_before->num_tracks == 1)
     {
       switch (self->type)
         {
@@ -289,6 +340,9 @@ edit_tracks_action_stringize (
         case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
           return g_strdup (
             _("Change direct out"));
+        case EDIT_TRACK_ACTION_TYPE_RENAME:
+          return g_strdup (
+            _("Rename track"));
         default:
           g_return_val_if_reached (
             g_strdup (""));
@@ -301,6 +355,11 @@ edit_tracks_action_stringize (
 void
 edit_tracks_action_free (EditTracksAction * self)
 {
+  object_free_w_func_and_null (
+    tracklist_selections_free, self->tls_before);
+  object_free_w_func_and_null (
+    tracklist_selections_free, self->tls_after);
+
   free (self);
 }
 

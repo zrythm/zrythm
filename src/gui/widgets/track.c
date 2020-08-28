@@ -1948,7 +1948,7 @@ show_edit_name_popover (
     GTK_WIDGET (self), self->track,
     (EditableLabelWidgetTextGetter) track_get_name,
     (EditableLabelWidgetTextSetter)
-    track_set_name_with_events);
+    track_set_name_with_action);
 }
 
 static void

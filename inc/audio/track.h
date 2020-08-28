@@ -910,10 +910,11 @@ const char *
 track_get_name (Track * track);
 
 /**
- * Setter to be used by the UI.
+ * Setter to be used by the UI to create an
+ * undoable action.
  */
 void
-track_set_name_with_events (
+track_set_name_with_action (
   Track *      track,
   const char * name);
 
@@ -929,7 +930,7 @@ void
 track_set_name (
   Track *      track,
   const char * _name,
-  int          pub_events);
+  bool         pub_events);
 
 /**
  * Returns the Track from the Project matching

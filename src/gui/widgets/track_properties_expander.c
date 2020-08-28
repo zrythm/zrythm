@@ -59,7 +59,7 @@ track_properties_expander_widget_refresh (
         (EditableLabelWidgetTextGetter)
         track_get_name,
         (EditableLabelWidgetTextSetter)
-        track_set_name_with_events);
+        track_set_name_with_action);
 
       bool is_instrument =
         track->type == TRACK_TYPE_INSTRUMENT;

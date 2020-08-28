@@ -32,6 +32,9 @@ typedef enum EditTracksActionType
 
   /** Direct out change. */
   EDIT_TRACK_ACTION_TYPE_DIRECT_OUT,
+
+  /** Rename track. */
+  EDIT_TRACK_ACTION_TYPE_RENAME,
 } EditTracksActionType;
 
 static const cyaml_strval_t
@@ -47,6 +50,8 @@ static const cyaml_strval_t
     EDIT_TRACK_ACTION_TYPE_PAN    },
   { "direct out",
     EDIT_TRACK_ACTION_TYPE_DIRECT_OUT    },
+  { "Rename",
+    EDIT_TRACK_ACTION_TYPE_RENAME    },
 };
 
 typedef struct Track Track;
@@ -58,7 +63,14 @@ typedef struct EditTracksAction
   UndoableAction        parent_instance;
   EditTracksActionType  type;
 
-  TracklistSelections * tls;
+  /** Tracklist selections before the change */
+  TracklistSelections * tls_before;
+
+  /** Tracklist selections after the change */
+  TracklistSelections * tls_after;
+
+  /* TODO remove the following and use
+   * before/after */
 
   /* --------------- DELTAS ---------------- */
 
@@ -81,16 +93,17 @@ typedef struct EditTracksAction
 static const cyaml_schema_field_t
   edit_tracks_action_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "parent_instance", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     EditTracksAction, parent_instance,
     undoable_action_fields_schema),
   YAML_FIELD_ENUM (
     EditTracksAction, type,
     edit_tracks_action_type_strings),
-  CYAML_FIELD_MAPPING_PTR (
-    "tls", CYAML_FLAG_POINTER,
-    EditTracksAction, tls,
+  YAML_FIELD_MAPPING_PTR (
+    EditTracksAction, tls_before,
+    tracklist_selections_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    EditTracksAction, tls_after,
     tracklist_selections_fields_schema),
   YAML_FIELD_INT (
     EditTracksAction, solo_new),
@@ -133,6 +146,15 @@ edit_tracks_action_new (
   float                 pan_delta,
   bool                  solo_new,
   bool                  mute_new);
+
+/**
+ * Generic edit action.
+ */
+UndoableAction *
+edit_tracks_action_new_generic (
+  EditTracksActionType  type,
+  TracklistSelections * tls_before,
+  TracklistSelections * tls_after);
 
 /**
  * Wrapper over edit_tracks_action_new().
