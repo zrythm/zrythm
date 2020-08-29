@@ -404,6 +404,37 @@ bot_bar_widget_refresh (BotBarWidget * self)
   gtk_container_add (
     GTK_CONTAINER (self->playhead_box),
     GTK_WIDGET (self->playhead_overlay));
+
+  bot_bar_widget_update_status (self);
+}
+
+static bool
+activate_link (
+  GtkWidget   * label,
+  const gchar * uri,
+  gpointer      data)
+{
+  ui_show_error_message (
+    MAIN_WINDOW,
+    _("This feature is not available at the "
+    "moment"));
+  return false;
+
+  g_message ("link activated");
+  if (g_strcmp0 (uri, "enable") == 0)
+    {
+      g_message ("enable pressed");
+      engine_activate (AUDIO_ENGINE, true);
+      return true;
+    }
+  else if (g_strcmp0 (uri, "disable") == 0)
+    {
+      g_message ("disable pressed");
+      engine_activate (AUDIO_ENGINE, false);
+      return true;
+    }
+
+  return false;
 }
 
 static void
@@ -413,8 +444,7 @@ on_text_pushed (
   gchar        *text,
   BotBarWidget * self)
 {
-  gtk_label_set_markup (
-    self->label, text);
+  gtk_label_set_markup (self->label, text);
 }
 
 /**
@@ -434,15 +464,29 @@ bot_bar_widget_update_status (
     "<span foreground=\"%s\">",
     self->hex_color);
   char color_suffix[40] = "</span>";
+  char green_prefix[60];
+  sprintf (
+    green_prefix,
+    "<span foreground=\"%s\">",
+    self->green_hex);
+  char red_prefix[60];
+  sprintf (
+    red_prefix,
+    "<span foreground=\"%s\">",
+    self->red_hex);
 
-  char str[460];
+  /* TODO show xruns on status */
+
+  char str[860];
   sprintf (
     str,
     "<span size=\"small\">"
     "%s: %s%s%s | "
-    "%s: %s%s%s \n"
+    "%s: %s%s%s | "
+    "%s: %s%s%s\n"
     "%s: %s%d frames%s | "
-    "%s: %s%d Hz%s"
+    "%s: %s%d Hz%s | "
+    "<a href=\"%s\">%s</a>"
     "</span>",
     _("Audio"),
     color_prefix,
@@ -454,29 +498,30 @@ bot_bar_widget_update_status (
     engine_midi_backend_to_string (
       AUDIO_ENGINE->midi_backend),
     color_suffix,
-    _("Buffer size"),
-    color_prefix,
-    AUDIO_ENGINE->block_length,
+    _("Status"),
+    AUDIO_ENGINE->activated ?
+      green_prefix : red_prefix,
+    AUDIO_ENGINE->activated ? _("On") : _("Off"),
     color_suffix,
-    _("Sample rate"),
+    /* TRANSLATORS: buffer size, please keep the
+     * translation short */
+    _("Buf sz"),
     color_prefix,
-    AUDIO_ENGINE->sample_rate,
-    color_suffix);
+    AUDIO_ENGINE->activated ?
+      AUDIO_ENGINE->block_length : 0,
+    color_suffix,
+    /* TRANSLATORS: sample rate */
+    _("Rate"),
+    color_prefix,
+    AUDIO_ENGINE->activated ?
+      AUDIO_ENGINE->sample_rate : 0,
+    color_suffix,
+    AUDIO_ENGINE->activated ? "disable" : "enable",
+    AUDIO_ENGINE->activated ?
+      _("Disable") : _("Enable"));
 
-  gtk_statusbar_push (MW_STATUS_BAR,
-                      MW_BOT_BAR->context_id,
-                      str);
-}
-
-static gboolean
-tick_cb (
-  GtkWidget *     widget,
-  GdkFrameClock * frame_clock,
-  BotBarWidget *  self)
-{
-  bot_bar_widget_update_status (self);
-
-  return G_SOURCE_CONTINUE;
+  gtk_statusbar_push (
+    MW_STATUS_BAR, MW_BOT_BAR->context_id, str);
 }
 
 static void
@@ -537,10 +582,6 @@ void
 bot_bar_widget_setup (
   BotBarWidget * self)
 {
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) tick_cb,
-    self, NULL);
-
   bot_bar_widget_refresh (self);
 }
 
@@ -581,6 +622,10 @@ bot_bar_widget_init (BotBarWidget * self)
 
   ui_gdk_rgba_to_hex (
     &UI_COLORS->bright_orange, self->hex_color);
+  ui_gdk_rgba_to_hex (
+    &UI_COLORS->bright_green, self->green_hex);
+  ui_gdk_rgba_to_hex (
+    &UI_COLORS->record_checked, self->red_hex);
 
   setup_metronome (self);
 
@@ -628,4 +673,7 @@ bot_bar_widget_init (BotBarWidget * self)
     self->status_bar, "text-pushed",
     G_CALLBACK (on_text_pushed),
     self);
+  g_signal_connect (
+    self->label, "activate-link",
+    G_CALLBACK (activate_link), self);
 }

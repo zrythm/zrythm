@@ -43,69 +43,6 @@
 #include <jack/thread.h>
 
 /**
- * Adds a port to the array if it doesn't already
- * exist.
- */
-/*static void*/
-/*add_port_if_not_exists (*/
-  /*Port **       ports,*/
-  /*int *         num_ports,*/
-  /*jack_port_t * jport)*/
-/*{*/
-  /*int found = 0;*/
-  /*Port * port = NULL;*/
-  /*const char * jport_name =*/
-    /*jack_port_short_name (jport);*/
-  /*for (int i = 0; i < * num_ports; i++)*/
-    /*{*/
-      /*port = ports[i];*/
-
-      /*if (g_strstr_len (*/
-            /*port->identifier.label,*/
-            /*(gssize)*/
-              /*strlen (port->identifier.label),*/
-            /*jport_name))*/
-        /*{*/
-          /*found = 1;*/
-        /*}*/
-    /*}*/
-
-  /*if (found)*/
-    /*return;*/
-
-  /*PortType type;*/
-  /*PortFlow flow;*/
-
-  /*const char * jtype =*/
-    /*jack_port_type (jport);*/
-  /*if (g_strcmp0 (*/
-        /*jtype, JACK_DEFAULT_AUDIO_TYPE))*/
-    /*type = TYPE_EVENT;*/
-  /*else if (g_strcmp0 (*/
-        /*jtype, JACK_DEFAULT_MIDI_TYPE))*/
-    /*type = TYPE_AUDIO;*/
-  /*else*/
-    /*return;*/
-
-  /*int jflags = jack_port_flags (jport);*/
-  /*if (jflags & JackPortIsInput)*/
-    /*flow = FLOW_INPUT;*/
-  /*else if (jflags & JackPortIsOutput)*/
-    /*flow = FLOW_OUTPUT;*/
-  /*else*/
-    /*return;*/
-
-  /*port = port_new_with_data (*/
-    /*INTERNAL_JACK_PORT,*/
-    /*type,*/
-    /*flow,*/
-    /*jport_name,*/
-    /*(void *) jport);*/
-
-  /*ports[(*num_ports)++] = port;*/
-/*}*/
-
-/**
  * Refreshes the list of external ports.
  */
 void
@@ -304,13 +241,16 @@ engine_jack_prepare_process (
 
 /**
  * The process callback for this JACK application is
- * called in a special realtime thread once for each audio
- * cycle.
+ * called in a special realtime thread once for
+ * each audio cycle.
+ *
+ * @param nframes The number of frames to process.
+ * @param data User data.
  */
 static int
 process_cb (
-  nframes_t nframes, ///< the number of frames to fill
-  void *    data) ///< user data
+  nframes_t nframes,
+  void *    data)
 {
   return
     engine_process (
@@ -391,7 +331,7 @@ static void
 shutdown_cb (void *arg)
 {
   // TODO
-  g_warning ("Jack shutting down...");
+  g_message ("Jack shutting down...");
 }
 
 /**
@@ -693,8 +633,9 @@ engine_jack_activate (
 {
   if (activate)
     {
-      /* Tell the JACK server that we are ready to roll.  Our
-       * process() callback will start running now. */
+      /* Tell the JACK server that we are ready to
+       * roll.  Our process() callback will start
+       * running now. */
       if (jack_activate (self->client))
         {
           g_warning ("cannot activate client");
@@ -716,8 +657,8 @@ engine_jack_activate (
        */
 
       /* FIXME this just connects to the first ports
-       * it finds. add a menu in the welcome screen to
-       * set up default output */
+       * it finds. add a menu in the welcome screen
+       * to set up default output */
       const char **ports =
         jack_get_ports (
           self->client, NULL, JACK_DEFAULT_AUDIO_TYPE,
@@ -766,7 +707,16 @@ engine_jack_activate (
     }
   else
     {
-      jack_deactivate (self->client);
+      int ret = jack_deactivate (self->client);
+      if (ret != 0)
+        {
+          char msg[600];
+          engine_jack_get_error_message (
+            ret, msg);
+          g_critical (
+            "Failed deactivating JACK client: %s",
+            msg);
+        }
     }
 
   return 0;

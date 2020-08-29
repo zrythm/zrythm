@@ -111,6 +111,8 @@ typedef struct _BotBarWidget
 
   /** Color in hex to use in pango markups. */
   char                  hex_color[8];
+  char                  green_hex[8];
+  char                  red_hex[8];
 } BotBarWidget;
 
 void

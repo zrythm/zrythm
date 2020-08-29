@@ -169,6 +169,8 @@ typedef enum EventType
 
   /** Arranger highlight rectangle changed. */
   ET_ARRANGER_HIGHLIGHT_CHANGED,
+
+  ET_ENGINE_ACTIVATE_CHANGED,
 } EventType;
 
 /**

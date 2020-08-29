@@ -1086,6 +1086,7 @@ port_get_all (
     }
 }
 
+#if 0
 /**
  * Creates port and adds given data to it.
  */
@@ -1108,6 +1109,7 @@ port_new_with_data (
 
   return port;
 }
+#endif
 
 /**
  * Sets the owner plugin & its slot.

@@ -101,8 +101,10 @@ typedef struct UiColors
   GdkRGBA       highlight_in_chord;
   GdkRGBA       prefader_send;
   GdkRGBA       postfader_send;
-  GdkRGBA       solo_checked;
+  GdkRGBA       record_active;
+  GdkRGBA       record_checked;
   GdkRGBA       solo_active;
+  GdkRGBA       solo_checked;
 } UiColors;
 
 /**

@@ -1337,8 +1337,8 @@ ui_caches_new ()
   GET_COLOR_FROM_THEME (matcha);
   GET_COLOR_FROM_THEME (prefader_send);
   GET_COLOR_FROM_THEME (postfader_send);
-  GET_COLOR_FROM_THEME (solo_checked);
   GET_COLOR_FROM_THEME (solo_active);
+  GET_COLOR_FROM_THEME (solo_checked);
 
 #undef GET_COLOR_FROM_THEME
 
@@ -1348,6 +1348,11 @@ ui_caches_new ()
     &colors->dark_text, UI_COLOR_DARK_TEXT);
   gdk_rgba_parse (
     &colors->bright_text, UI_COLOR_BRIGHT_TEXT);
+  gdk_rgba_parse (
+    &colors->record_active, UI_COLOR_RECORD_ACTIVE);
+  gdk_rgba_parse (
+    &colors->record_checked,
+    UI_COLOR_RECORD_CHECKED);
   gdk_rgba_parse (
     &colors->highlight_both,
     UI_COLOR_HIGHLIGHT_BOTH);

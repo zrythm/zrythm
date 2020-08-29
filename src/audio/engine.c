@@ -619,6 +619,13 @@ engine_activate (
 #endif
 
   self->activated = activate;
+  g_atomic_int_set (&self->run, activate);
+
+  if (ZRYTHM_HAVE_UI)
+    {
+      EVENTS_PUSH (
+        ET_ENGINE_ACTIVATE_CHANGED, NULL);
+    }
 
   g_message ("done");
 }
@@ -628,8 +635,6 @@ engine_realloc_port_buffers (
   AudioEngine * self,
   nframes_t     nframes)
 {
-  int i, j;
-
   AUDIO_ENGINE->block_length = nframes;
   AUDIO_ENGINE->buf_size_set = true;
   g_message (
@@ -638,7 +643,6 @@ engine_realloc_port_buffers (
     AUDIO_ENGINE->block_length);
 
   /** reallocate port buffers to new size */
-  Port * port;
   Channel * ch;
   Plugin * pl;
   int max_size = 20;
@@ -648,9 +652,9 @@ engine_realloc_port_buffers (
   int num_ports = 0;
   port_get_all (
     &ports, &max_size, true, &num_ports);
-  for (i = 0; i < num_ports; i++)
+  for (int i = 0; i < num_ports; i++)
     {
-      port = ports[i];
+      Port * port = ports[i];
       g_warn_if_fail (port);
 
       port->buf =
@@ -661,14 +665,14 @@ engine_realloc_port_buffers (
         port->buf, 0, nframes * sizeof (float));
     }
   free (ports);
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       ch = TRACKLIST->tracks[i]->channel;
 
       if (!ch)
         continue;
 
-      for (j = 0; j < STRIP_SIZE * 2 + 1; j++)
+      for (int j = 0; j < STRIP_SIZE * 2 + 1; j++)
         {
           if (j < STRIP_SIZE)
             pl = ch->midi_fx[j];

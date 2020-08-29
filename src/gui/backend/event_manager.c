@@ -1609,6 +1609,11 @@ process_events (void * data)
               arranger);
            }
           break;
+        case ET_ENGINE_ACTIVATE_CHANGED:
+          bot_bar_widget_refresh (MW_BOT_BAR);
+          ruler_widget_redraw_whole (EDITOR_RULER);
+          ruler_widget_redraw_whole (MW_RULER);
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

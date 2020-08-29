@@ -598,6 +598,7 @@ port_new_with_type (
   PortFlow     flow,
   const char * label);
 
+#if 0
 /**
  * Creates port and adds given data to it.
  *
@@ -611,6 +612,7 @@ port_new_with_data (
   PortFlow     flow,
   const char * label,
   void *       data);
+#endif
 
 /**
  * Creates blank stereo ports.
