@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -63,7 +63,8 @@ typedef enum LocalizationLanguage
   LL_PT_BR,
   LL_RU,
   LL_SV,
-  LL_ZH,
+  LL_ZH_HANS,
+  LL_ZH_HANT,
   NUM_LL_LANGUAGES,
 } LocalizationLanguage;
 
@@ -92,7 +93,8 @@ static const char * language_strings[] = {
   "pt_BR",
   "ru",
   "sv",
-  "zh",
+  "zh_Hans",
+  "zh_Hant",
 };
 
 static const char * language_strings_full[] = {
@@ -120,7 +122,8 @@ static const char * language_strings_full[] = {
   "Português BR [pt_BR]",
   "русский [ru]",
   "Svenska [sv]",
-  "中文 [zh]",
+  "简体中文 [zh_Hans]",
+  "繁體中文 [zh_Hant]",
 };
 
 static inline const char *

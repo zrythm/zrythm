@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-08-28 18:35+0100\n"
+"POT-Creation-Date: 2020-08-29 16:28+0100\n"
 "PO-Revision-Date: 2020-08-14 22:35+0000\n"
 "Last-Translator: Acid Chicken (硫酸鶏) <root@acid-chicken.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -83,7 +83,7 @@ msgstr "ミュートを解除"
 msgid "Instrument"
 msgstr "音源"
 
-#: inc/audio/track.h:158 src/gui/widgets/bot_bar.c:447 src/audio/region.c:396
+#: inc/audio/track.h:158 src/gui/widgets/bot_bar.c:491 src/audio/region.c:396
 #: build/data/org.zrythm.Zrythm.gschema.xml:578
 msgid "Audio"
 msgstr "オーディオ"
@@ -196,11 +196,13 @@ msgstr "ALSAシーケンサー"
 msgid "Inherit"
 msgstr "継承"
 
-#: inc/audio/region.h:85 src/audio/automation_track.c:100
+#: inc/audio/region.h:85 src/gui/widgets/bot_bar.c:504
+#: src/audio/automation_track.c:100
 msgid "Off"
 msgstr "無効"
 
-#: inc/audio/region.h:87 src/audio/automation_track.c:94
+#: inc/audio/region.h:87 src/gui/widgets/bot_bar.c:504
+#: src/audio/automation_track.c:94
 msgid "On"
 msgstr "有効"
 
@@ -219,11 +221,11 @@ msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1285
-#: src/utils/ui.c:767
+#: src/utils/ui.c:768
 msgid "Linear"
 msgstr "直線"
 
-#: inc/audio/pan.h:77 src/utils/ui.c:768
+#: inc/audio/pan.h:77 src/utils/ui.c:769
 msgid "Square Root"
 msgstr "平方根"
 
@@ -646,7 +648,7 @@ msgid "note type"
 msgstr "音符の種類"
 
 #: src/gui/widgets/inspector_port.c:182 src/gui/widgets/balance_control.c:366
-#: src/gui/widgets/fader.c:354 resources/ui/bind_cc_dialog.ui:27
+#: src/gui/widgets/fader.c:368 resources/ui/bind_cc_dialog.ui:27
 msgid "Bind MIDI CC"
 msgstr "MIDI CC をバインドする"
 
@@ -1057,27 +1059,47 @@ msgstr "JACKトランスポートクライアント"
 msgid "JACK Timebase master"
 msgstr "JACKタイムベースマスター"
 
-#: src/gui/widgets/bot_bar.c:457 build/data/org.zrythm.Zrythm.gschema.xml:481
-msgid "Buffer size"
-msgstr "バッファサイズ"
+#: src/gui/widgets/bot_bar.c:419
+msgid "This feature is not available at the moment"
+msgstr ""
 
-#: src/gui/widgets/bot_bar.c:461
-msgid "Sample rate"
-msgstr "サンプルレート"
+#: src/gui/widgets/bot_bar.c:501
+msgid "Status"
+msgstr ""
 
-#: src/gui/widgets/bot_bar.c:506
+#. TRANSLATORS: buffer size, please keep the
+#. * translation short
+#: src/gui/widgets/bot_bar.c:508
+msgid "Buf sz"
+msgstr ""
+
+#. TRANSLATORS: sample rate
+#: src/gui/widgets/bot_bar.c:514
+msgid "Rate"
+msgstr ""
+
+#: src/gui/widgets/bot_bar.c:521
+msgid "Disable"
+msgstr ""
+
+#: src/gui/widgets/bot_bar.c:521
+#, fuzzy
+msgid "Enable"
+msgstr "有効"
+
+#: src/gui/widgets/bot_bar.c:551
 msgid "Metronome"
 msgstr "メトロノーム"
 
-#: src/gui/widgets/bot_bar.c:506
+#: src/gui/widgets/bot_bar.c:551
 msgid "Volume"
 msgstr "音量"
 
-#: src/gui/widgets/bot_bar.c:590
+#: src/gui/widgets/bot_bar.c:635
 msgid "bpm"
 msgstr "bpm"
 
-#: src/gui/widgets/bot_bar.c:594
+#: src/gui/widgets/bot_bar.c:639
 msgid "time sig."
 msgstr "拍子記号"
 
@@ -1326,7 +1348,7 @@ msgstr "信号をルーティングするチャンネルを選択"
 msgid "Stereo Out"
 msgstr "ステレオ出力"
 
-#: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:439
+#: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:453
 msgid "Fader"
 msgstr "フェーダー"
 
@@ -1387,7 +1409,7 @@ msgstr "接続を有効/無効にする"
 msgid "Delete connection"
 msgstr "接続を削除"
 
-#: src/gui/widgets/balance_control.c:357 src/gui/widgets/fader.c:345
+#: src/gui/widgets/balance_control.c:357 src/gui/widgets/fader.c:359
 #: resources/ui/first_run_assistant.ui:130
 msgid "Reset"
 msgstr "リセット"
@@ -1795,11 +1817,11 @@ msgstr "選択したスロットにプラグインが既に存在します。上
 msgid "Error instantiating plugin. Please see log for details."
 msgstr "プラグイン%sのインスタンス化エラー。詳細はログを参照してください。"
 
-#: src/utils/ui.c:769
+#: src/utils/ui.c:770
 msgid "Sine (Equal Power)"
 msgstr "正弦波（イコールパワー）"
 
-#: src/utils/ui.c:939
+#: src/utils/ui.c:940
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
@@ -1808,7 +1830,7 @@ msgstr ""
 "選択した言語のロケール（%s）は利用できません。まずはじめにロケールをインス"
 "トールして、%sを再起動してください。"
 
-#: src/utils/ui.c:944
+#: src/utils/ui.c:945
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -2074,56 +2096,56 @@ msgstr "MIDIプレフェーダー出力"
 msgid "Ch MIDI Fader out"
 msgstr "MIDIフェーダー出力"
 
-#: src/audio/engine_jack.c:338
+#: src/audio/engine_jack.c:278
 msgid "XRUN occurred - check your JACK configuration"
 msgstr "XRUNが発生しました - JACKの設定を確認してください"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:580
+#: src/audio/engine_jack.c:520
 msgid "Overall operation failed"
 msgstr "全体的な操作は失敗しました"
 
-#: src/audio/engine_jack.c:586
+#: src/audio/engine_jack.c:526
 msgid "The operation contained an invalid or unsupported option"
 msgstr "操作に無効またはサポートされていないオプションが含まれていました"
 
-#: src/audio/engine_jack.c:593
+#: src/audio/engine_jack.c:533
 msgid "The desired client name was not unique"
 msgstr "目的のクライアント名が一意ではありません"
 
-#: src/audio/engine_jack.c:599
+#: src/audio/engine_jack.c:539
 msgid "Unable to connect to the JACK server"
 msgstr "サーバーと接続できません"
 
-#: src/audio/engine_jack.c:605
+#: src/audio/engine_jack.c:545
 msgid "Communication error with the JACK server"
 msgstr "JACKサーバーとの通信エラー"
 
-#: src/audio/engine_jack.c:611
+#: src/audio/engine_jack.c:551
 msgid "Requested client does not exist"
 msgstr "要求されたクライアントは存在しません"
 
-#: src/audio/engine_jack.c:617
+#: src/audio/engine_jack.c:557
 msgid "Unable to load internal client"
 msgstr "内部クライアントをロードできませんでした"
 
-#: src/audio/engine_jack.c:623
+#: src/audio/engine_jack.c:563
 msgid "Unable to initialize client"
 msgstr "クライアントを初期化できませんでした"
 
-#: src/audio/engine_jack.c:629
+#: src/audio/engine_jack.c:569
 msgid "Unable to access shared memory"
 msgstr "共有メモリにアクセスできません"
 
-#: src/audio/engine_jack.c:635
+#: src/audio/engine_jack.c:575
 msgid "Client's protocol version does not match"
 msgstr "クライアントのプロトコルバージョンが一致しません"
 
-#: src/audio/engine_jack.c:639
+#: src/audio/engine_jack.c:579
 msgid "Backend error"
 msgstr "バックエンドエラー"
 
-#: src/audio/engine_jack.c:643
+#: src/audio/engine_jack.c:583
 msgid "Client zombie"
 msgstr "クライアントゾンビ"
 
@@ -3947,6 +3969,10 @@ msgstr "開くRtAudioデバイスの名前です。"
 msgid "Samplerate to pass to the backend."
 msgstr "バックエンドに渡すサンプレート。"
 
+#: build/data/org.zrythm.Zrythm.gschema.xml:481
+msgid "Buffer size"
+msgstr "バッファサイズ"
+
 #: build/data/org.zrythm.Zrythm.gschema.xml:482
 #, fuzzy
 msgid "Buffer size to pass to the backend."
@@ -4166,6 +4192,9 @@ msgid ""
 "The pan law to use when applying pan on mono signals (not used at the "
 "moment)."
 msgstr "チャンネルでパンをかけるときに使うパンの法則。"
+
+#~ msgid "Sample rate"
+#~ msgstr "サンプルレート"
 
 #~ msgid "Piano roll panel"
 #~ msgstr "ピアノロールパネル"

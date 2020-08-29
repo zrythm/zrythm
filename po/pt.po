@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-08-28 18:35+0100\n"
+"POT-Creation-Date: 2020-08-29 16:28+0100\n"
 "PO-Revision-Date: 2020-08-03 17:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -88,7 +88,7 @@ msgstr "Desativar Silenciar Faixa"
 msgid "Instrument"
 msgstr "Instrumento"
 
-#: inc/audio/track.h:158 src/gui/widgets/bot_bar.c:447 src/audio/region.c:396
+#: inc/audio/track.h:158 src/gui/widgets/bot_bar.c:491 src/audio/region.c:396
 #: build/data/org.zrythm.Zrythm.gschema.xml:578
 msgid "Audio"
 msgstr "Áudio"
@@ -204,11 +204,13 @@ msgstr "Sequenciador ALSA"
 msgid "Inherit"
 msgstr "Herdar"
 
-#: inc/audio/region.h:85 src/audio/automation_track.c:100
+#: inc/audio/region.h:85 src/gui/widgets/bot_bar.c:504
+#: src/audio/automation_track.c:100
 msgid "Off"
 msgstr "Desligado"
 
-#: inc/audio/region.h:87 src/audio/automation_track.c:94
+#: inc/audio/region.h:87 src/gui/widgets/bot_bar.c:504
+#: src/audio/automation_track.c:94
 msgid "On"
 msgstr "Ligado"
 
@@ -227,11 +229,11 @@ msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1285
-#: src/utils/ui.c:767
+#: src/utils/ui.c:768
 msgid "Linear"
 msgstr "Linear"
 
-#: inc/audio/pan.h:77 src/utils/ui.c:768
+#: inc/audio/pan.h:77 src/utils/ui.c:769
 msgid "Square Root"
 msgstr "Raiz Quadrada"
 
@@ -648,7 +650,7 @@ msgid "note type"
 msgstr "tipo de nota"
 
 #: src/gui/widgets/inspector_port.c:182 src/gui/widgets/balance_control.c:366
-#: src/gui/widgets/fader.c:354 resources/ui/bind_cc_dialog.ui:27
+#: src/gui/widgets/fader.c:368 resources/ui/bind_cc_dialog.ui:27
 msgid "Bind MIDI CC"
 msgstr "Ligar MIDI CC"
 
@@ -1067,28 +1069,47 @@ msgstr "Cliente de transporte de JACK"
 msgid "JACK Timebase master"
 msgstr "Máster Base de Tempo JACK"
 
-#: src/gui/widgets/bot_bar.c:457 build/data/org.zrythm.Zrythm.gschema.xml:481
-msgid "Buffer size"
-msgstr "Tamanho do buffer"
+#: src/gui/widgets/bot_bar.c:419
+msgid "This feature is not available at the moment"
+msgstr ""
 
-#: src/gui/widgets/bot_bar.c:461
+#: src/gui/widgets/bot_bar.c:501
+msgid "Status"
+msgstr ""
+
+#. TRANSLATORS: buffer size, please keep the
+#. * translation short
+#: src/gui/widgets/bot_bar.c:508
+msgid "Buf sz"
+msgstr ""
+
+#. TRANSLATORS: sample rate
+#: src/gui/widgets/bot_bar.c:514
+msgid "Rate"
+msgstr ""
+
+#: src/gui/widgets/bot_bar.c:521
+msgid "Disable"
+msgstr ""
+
+#: src/gui/widgets/bot_bar.c:521
 #, fuzzy
-msgid "Sample rate"
-msgstr "Processador de Exemplo"
+msgid "Enable"
+msgstr "Ativado"
 
-#: src/gui/widgets/bot_bar.c:506
+#: src/gui/widgets/bot_bar.c:551
 msgid "Metronome"
 msgstr "Metrónomo"
 
-#: src/gui/widgets/bot_bar.c:506
+#: src/gui/widgets/bot_bar.c:551
 msgid "Volume"
 msgstr ""
 
-#: src/gui/widgets/bot_bar.c:590
+#: src/gui/widgets/bot_bar.c:635
 msgid "bpm"
 msgstr "bpm"
 
-#: src/gui/widgets/bot_bar.c:594
+#: src/gui/widgets/bot_bar.c:639
 msgid "time sig."
 msgstr "sig. de tempo"
 
@@ -1342,7 +1363,7 @@ msgstr "Selecionar o canal para onde rotear o sinal"
 msgid "Stereo Out"
 msgstr "Saída Estéreo"
 
-#: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:439
+#: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:453
 msgid "Fader"
 msgstr "Fader"
 
@@ -1405,7 +1426,7 @@ msgstr "Ativar/desativar a coneção"
 msgid "Delete connection"
 msgstr "Apagar Objeto(s)"
 
-#: src/gui/widgets/balance_control.c:357 src/gui/widgets/fader.c:345
+#: src/gui/widgets/balance_control.c:357 src/gui/widgets/fader.c:359
 #: resources/ui/first_run_assistant.ui:130
 msgid "Reset"
 msgstr "Redefinir"
@@ -1821,11 +1842,11 @@ msgid "Error instantiating plugin. Please see log for details."
 msgstr ""
 "Erro ao instanciar o plugin. Por favor, veja o registo para mais detalhes."
 
-#: src/utils/ui.c:769
+#: src/utils/ui.c:770
 msgid "Sine (Equal Power)"
 msgstr "Seno (Potência Igual)"
 
-#: src/utils/ui.c:939
+#: src/utils/ui.c:940
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
@@ -1834,7 +1855,7 @@ msgstr ""
 "Um local para o idioma que selecionou (%s) não está disponível. Por favor, "
 "instale um primeiro e reinicie %s"
 
-#: src/utils/ui.c:944
+#: src/utils/ui.c:945
 #, fuzzy, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -2097,56 +2118,56 @@ msgstr "Pré-fader MIDI saída"
 msgid "Ch MIDI Fader out"
 msgstr "Fader MIDI saída"
 
-#: src/audio/engine_jack.c:338
+#: src/audio/engine_jack.c:278
 msgid "XRUN occurred - check your JACK configuration"
 msgstr ""
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:580
+#: src/audio/engine_jack.c:520
 msgid "Overall operation failed"
 msgstr "Operação geral falhou"
 
-#: src/audio/engine_jack.c:586
+#: src/audio/engine_jack.c:526
 msgid "The operation contained an invalid or unsupported option"
 msgstr "A operação continha uma opção inválida ou não suportada"
 
-#: src/audio/engine_jack.c:593
+#: src/audio/engine_jack.c:533
 msgid "The desired client name was not unique"
 msgstr "O nome do cliente desejado não foi exclusivo"
 
-#: src/audio/engine_jack.c:599
+#: src/audio/engine_jack.c:539
 msgid "Unable to connect to the JACK server"
 msgstr "Impossível conectar ao servidor JACK"
 
-#: src/audio/engine_jack.c:605
+#: src/audio/engine_jack.c:545
 msgid "Communication error with the JACK server"
 msgstr "Erro de comunicação com o servidor JACK"
 
-#: src/audio/engine_jack.c:611
+#: src/audio/engine_jack.c:551
 msgid "Requested client does not exist"
 msgstr "O cliente solicitado não existe"
 
-#: src/audio/engine_jack.c:617
+#: src/audio/engine_jack.c:557
 msgid "Unable to load internal client"
 msgstr "Impossível carregar o cliente interno"
 
-#: src/audio/engine_jack.c:623
+#: src/audio/engine_jack.c:563
 msgid "Unable to initialize client"
 msgstr "Impossível inicializar o cliente"
 
-#: src/audio/engine_jack.c:629
+#: src/audio/engine_jack.c:569
 msgid "Unable to access shared memory"
 msgstr "Impossível acessar a memória compartilhada"
 
-#: src/audio/engine_jack.c:635
+#: src/audio/engine_jack.c:575
 msgid "Client's protocol version does not match"
 msgstr "A versão de protocolo do cliente não corresponde"
 
-#: src/audio/engine_jack.c:639
+#: src/audio/engine_jack.c:579
 msgid "Backend error"
 msgstr "Erro backend"
 
-#: src/audio/engine_jack.c:643
+#: src/audio/engine_jack.c:583
 msgid "Client zombie"
 msgstr "Cliente zumbi"
 
@@ -3963,6 +3984,10 @@ msgstr "O backend de áudio para se conectar"
 msgid "Samplerate to pass to the backend."
 msgstr ""
 
+#: build/data/org.zrythm.Zrythm.gschema.xml:481
+msgid "Buffer size"
+msgstr "Tamanho do buffer"
+
 #: build/data/org.zrythm.Zrythm.gschema.xml:482
 #, fuzzy
 msgid "Buffer size to pass to the backend."
@@ -4177,6 +4202,10 @@ msgid ""
 "The pan law to use when applying pan on mono signals (not used at the "
 "moment)."
 msgstr ""
+
+#, fuzzy
+#~ msgid "Sample rate"
+#~ msgstr "Processador de Exemplo"
 
 #~ msgid "Piano roll panel"
 #~ msgstr "Painel cílindros de piano"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-08-28 18:35+0100\n"
+"POT-Creation-Date: 2020-08-29 16:28+0100\n"
 "PO-Revision-Date: 2020-04-29 23:30+0000\n"
 "Last-Translator: Arif Sarker\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -79,7 +79,7 @@ msgstr "取消静音"
 msgid "Instrument"
 msgstr "乐器"
 
-#: inc/audio/track.h:158 src/gui/widgets/bot_bar.c:447 src/audio/region.c:396
+#: inc/audio/track.h:158 src/gui/widgets/bot_bar.c:491 src/audio/region.c:396
 #: build/data/org.zrythm.Zrythm.gschema.xml:578
 msgid "Audio"
 msgstr "音讯"
@@ -192,11 +192,13 @@ msgstr "ALSA Sequencer"
 msgid "Inherit"
 msgstr "继承"
 
-#: inc/audio/region.h:85 src/audio/automation_track.c:100
+#: inc/audio/region.h:85 src/gui/widgets/bot_bar.c:504
+#: src/audio/automation_track.c:100
 msgid "Off"
 msgstr "关闭"
 
-#: inc/audio/region.h:87 src/audio/automation_track.c:94
+#: inc/audio/region.h:87 src/gui/widgets/bot_bar.c:504
+#: src/audio/automation_track.c:94
 msgid "On"
 msgstr "开"
 
@@ -215,11 +217,11 @@ msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1285
-#: src/utils/ui.c:767
+#: src/utils/ui.c:768
 msgid "Linear"
 msgstr "线性"
 
-#: inc/audio/pan.h:77 src/utils/ui.c:768
+#: inc/audio/pan.h:77 src/utils/ui.c:769
 msgid "Square Root"
 msgstr "平方根"
 
@@ -631,7 +633,7 @@ msgid "note type"
 msgstr "note类型"
 
 #: src/gui/widgets/inspector_port.c:182 src/gui/widgets/balance_control.c:366
-#: src/gui/widgets/fader.c:354 resources/ui/bind_cc_dialog.ui:27
+#: src/gui/widgets/fader.c:368 resources/ui/bind_cc_dialog.ui:27
 msgid "Bind MIDI CC"
 msgstr "绑定MIDI CC"
 
@@ -1039,27 +1041,47 @@ msgstr "JACK 客户传输"
 msgid "JACK Timebase master"
 msgstr "JACK时基Master"
 
-#: src/gui/widgets/bot_bar.c:457 build/data/org.zrythm.Zrythm.gschema.xml:481
-msgid "Buffer size"
-msgstr "缓冲区大小"
+#: src/gui/widgets/bot_bar.c:419
+msgid "This feature is not available at the moment"
+msgstr ""
 
-#: src/gui/widgets/bot_bar.c:461
-msgid "Sample rate"
-msgstr "采样速率"
+#: src/gui/widgets/bot_bar.c:501
+msgid "Status"
+msgstr ""
 
-#: src/gui/widgets/bot_bar.c:506
+#. TRANSLATORS: buffer size, please keep the
+#. * translation short
+#: src/gui/widgets/bot_bar.c:508
+msgid "Buf sz"
+msgstr ""
+
+#. TRANSLATORS: sample rate
+#: src/gui/widgets/bot_bar.c:514
+msgid "Rate"
+msgstr ""
+
+#: src/gui/widgets/bot_bar.c:521
+msgid "Disable"
+msgstr ""
+
+#: src/gui/widgets/bot_bar.c:521
+#, fuzzy
+msgid "Enable"
+msgstr "已启用"
+
+#: src/gui/widgets/bot_bar.c:551
 msgid "Metronome"
 msgstr "节拍器"
 
-#: src/gui/widgets/bot_bar.c:506
+#: src/gui/widgets/bot_bar.c:551
 msgid "Volume"
 msgstr "音量"
 
-#: src/gui/widgets/bot_bar.c:590
+#: src/gui/widgets/bot_bar.c:635
 msgid "bpm"
 msgstr "BPM"
 
-#: src/gui/widgets/bot_bar.c:594
+#: src/gui/widgets/bot_bar.c:639
 msgid "time sig."
 msgstr "时间符号"
 
@@ -1305,7 +1327,7 @@ msgstr "选择将信号路由到的通道"
 msgid "Stereo Out"
 msgstr "立体声输出"
 
-#: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:439
+#: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:453
 msgid "Fader"
 msgstr "推子"
 
@@ -1365,7 +1387,7 @@ msgstr "启用/禁用连接"
 msgid "Delete connection"
 msgstr "删除连接"
 
-#: src/gui/widgets/balance_control.c:357 src/gui/widgets/fader.c:345
+#: src/gui/widgets/balance_control.c:357 src/gui/widgets/fader.c:359
 #: resources/ui/first_run_assistant.ui:130
 msgid "Reset"
 msgstr "重置"
@@ -1769,18 +1791,18 @@ msgstr "所选插槽中已存在一个插件。要覆盖它吗？"
 msgid "Error instantiating plugin. Please see log for details."
 msgstr "实例化插件时出错。有关详细信息，请参阅日志。"
 
-#: src/utils/ui.c:769
+#: src/utils/ui.c:770
 msgid "Sine (Equal Power)"
 msgstr "正弦（等功率）"
 
-#: src/utils/ui.c:939
+#: src/utils/ui.c:940
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
 "install one first and restart %s"
 msgstr "您选择的语言（%s）的区域设置不可用。请先安装一个，然后重新启动%s"
 
-#: src/utils/ui.c:944
+#: src/utils/ui.c:945
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -2025,56 +2047,56 @@ msgstr "Ch MIDI预推子输入"
 msgid "Ch MIDI Fader out"
 msgstr "Ch MIDI推子输出"
 
-#: src/audio/engine_jack.c:338
+#: src/audio/engine_jack.c:278
 msgid "XRUN occurred - check your JACK configuration"
 msgstr "Xrun发生-检查您的JACK配置"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:580
+#: src/audio/engine_jack.c:520
 msgid "Overall operation failed"
 msgstr "整体操作失败"
 
-#: src/audio/engine_jack.c:586
+#: src/audio/engine_jack.c:526
 msgid "The operation contained an invalid or unsupported option"
 msgstr "操作包含无效或不支持的选项"
 
-#: src/audio/engine_jack.c:593
+#: src/audio/engine_jack.c:533
 msgid "The desired client name was not unique"
 msgstr "所需的客户端名称不唯一"
 
-#: src/audio/engine_jack.c:599
+#: src/audio/engine_jack.c:539
 msgid "Unable to connect to the JACK server"
 msgstr "无法连接到JACK服务器"
 
-#: src/audio/engine_jack.c:605
+#: src/audio/engine_jack.c:545
 msgid "Communication error with the JACK server"
 msgstr "与JACK服务器的通信错误"
 
-#: src/audio/engine_jack.c:611
+#: src/audio/engine_jack.c:551
 msgid "Requested client does not exist"
 msgstr "请求的客户端不存在"
 
-#: src/audio/engine_jack.c:617
+#: src/audio/engine_jack.c:557
 msgid "Unable to load internal client"
 msgstr "无法加载内部客户端"
 
-#: src/audio/engine_jack.c:623
+#: src/audio/engine_jack.c:563
 msgid "Unable to initialize client"
 msgstr "无法初始化客户端"
 
-#: src/audio/engine_jack.c:629
+#: src/audio/engine_jack.c:569
 msgid "Unable to access shared memory"
 msgstr "无法访问共享内存"
 
-#: src/audio/engine_jack.c:635
+#: src/audio/engine_jack.c:575
 msgid "Client's protocol version does not match"
 msgstr "客户端的协议版本不匹配"
 
-#: src/audio/engine_jack.c:639
+#: src/audio/engine_jack.c:579
 msgid "Backend error"
 msgstr "后端错误"
 
-#: src/audio/engine_jack.c:643
+#: src/audio/engine_jack.c:583
 msgid "Client zombie"
 msgstr "客户端瘫痪"
 
@@ -3838,6 +3860,10 @@ msgstr "要使用的SDL设备的名称。"
 msgid "Samplerate to pass to the backend."
 msgstr "要传递到后端的采样"
 
+#: build/data/org.zrythm.Zrythm.gschema.xml:481
+msgid "Buffer size"
+msgstr "缓冲区大小"
+
 #: build/data/org.zrythm.Zrythm.gschema.xml:482
 msgid "Buffer size to pass to the backend."
 msgstr "要传递到后端的缓冲区大小。"
@@ -4020,6 +4046,9 @@ msgid ""
 "The pan law to use when applying pan on mono signals (not used at the "
 "moment)."
 msgstr "对单声道信号应用pan时使用的pan定律（不用于时刻）。"
+
+#~ msgid "Sample rate"
+#~ msgstr "采样速率"
 
 #~ msgid "Piano roll panel"
 #~ msgstr "钢琴卷板"

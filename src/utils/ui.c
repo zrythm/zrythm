@@ -668,7 +668,8 @@ ui_create_language_model ()
     "Português BR",
     "русский",
     "Svenska",
-    "中文",
+    "简体中文",
+    "繁體中文",
   };
 
   CREATE_SIMPLE_MODEL_BOILERPLATE;

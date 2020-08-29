@@ -175,7 +175,8 @@ localization_locale_exists (
     IS_MATCH (PT, "pt_");
     IS_MATCH (RU, "ru_");
     IS_MATCH (SV, "sv_");
-    IS_MATCH (ZH, "zh_");
+    IS_MATCH (ZH_HANS, "zh_Hans");
+    IS_MATCH (ZH_HANT, "zh_Hant");
     default:
       g_warn_if_reached ();
       break;
