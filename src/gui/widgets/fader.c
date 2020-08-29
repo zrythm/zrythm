@@ -31,6 +31,7 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
+#include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -138,20 +139,24 @@ fader_draw_cb (
 
   /* draw fader line */
   cairo_set_source_rgba (cr, 0, 0, 0, 1);
-  cairo_set_line_width (cr, 16.0);
+  cairo_set_line_width (cr, 10.0);
   cairo_set_line_cap  (cr, CAIRO_LINE_CAP_SQUARE);
   cairo_move_to (cr, x, y + (height - value_px));
   cairo_line_to (cr, x+ width, y + (height - value_px));
   cairo_stroke (cr);
   /*cairo_set_source_rgba (cr, 0.4, 0.1, 0.05, 1);*/
-  GdkRGBA color;
-  gdk_rgba_parse (&color,
-                  "#9D3955");
-  cairo_set_source_rgba (cr,
-                         color.red,
-                         color.green,
-                         color.blue,
-                         1);
+
+  if (self->hover || self->dragging)
+    {
+      GdkRGBA color;
+      gdk_rgba_parse (&color, "#9D3955");
+      gdk_cairo_set_source_rgba (cr, &color);
+    }
+  else
+    {
+      cairo_set_source_rgba (
+        cr, 0.6, 0.6, 0.6, 1.0);
+    }
   cairo_set_line_width (cr, 3.0);
   cairo_move_to (
     cr, x, y + (height - value_px));
@@ -171,16 +176,22 @@ on_motion (GtkWidget * widget, GdkEvent *event)
   if (gdk_event_get_event_type (event) ==
         GDK_ENTER_NOTIFY)
     {
+#if 0
       gtk_widget_set_state_flags (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT, 0);
+#endif
+      self->hover = true;
     }
   else if (gdk_event_get_event_type (event) ==
              GDK_LEAVE_NOTIFY)
     {
+#if 0
       gtk_widget_unset_state_flags (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT);
+#endif
+      self->hover = false;
     }
 
   return FALSE;
@@ -213,6 +224,7 @@ drag_begin (
   gtk_window_present (self->tooltip_win);
 
   self->amp_at_start = fader_get_amp (self->fader);
+  self->dragging = true;
 }
 
 static void
@@ -292,6 +304,8 @@ drag_end (
           track, self->amp_at_start, cur_amp, true);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
+
+  self->dragging = false;
 }
 
 static void
