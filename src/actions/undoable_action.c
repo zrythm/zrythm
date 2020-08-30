@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -124,6 +124,7 @@ undoable_action_init_loaded (
     INIT_LOADED (
       PORT_CONNECTION, port_connection,
       PortConnection);
+    INIT_LOADED (PORT, port, Port);
     /*INIT_LOADED (TRANSPORT, transport, Transport);*/
     INIT_LOADED (RANGE, range, Range);
     default:
@@ -237,6 +238,7 @@ undoable_action_do (UndoableAction * self)
     DO_ACTION (
       PORT_CONNECTION, port_connection,
       PortConnection);
+    DO_ACTION (PORT, port, Port);
     DO_ACTION (
       MIDI_MAPPING, midi_mapping, MidiMapping);
     default:
@@ -354,6 +356,7 @@ undoable_action_undo (UndoableAction * self)
     UNDO_ACTION (
       PORT_CONNECTION, port_connection,
       PortConnection);
+    UNDO_ACTION (PORT, port, Port);
     UNDO_ACTION (TRANSPORT, transport, Transport);
     UNDO_ACTION (RANGE, range, Range);
     default:
@@ -453,6 +456,7 @@ undoable_action_free (UndoableAction * self)
     FREE_ACTION (
       PORT_CONNECTION, port_connection,
       PortConnection);
+    FREE_ACTION (PORT, port, Port);
     FREE_ACTION (TRANSPORT, transport, Transport);
     FREE_ACTION (RANGE, range, Range);
     default:
@@ -554,6 +558,7 @@ undoable_action_stringize (
     STRINGIZE_UA (
       PORT_CONNECTION, PortConnection,
       port_connection);
+    STRINGIZE_UA (PORT, Port, port);
     STRINGIZE_UA (TRANSPORT, Transport, transport);
     STRINGIZE_UA (RANGE, Range, range);
     default:

@@ -65,6 +65,7 @@ undo_stack_init_loaded (
   size_t edit_tracks_actions_idx = 0;
   size_t move_plugins_actions_idx = 0;
   size_t move_tracks_actions_idx = 0;
+  size_t port_actions_idx = 0;
   size_t port_connection_actions_idx = 0;
   size_t midi_mapping_actions_idx = 0;
   size_t range_actions_idx = 0;
@@ -84,6 +85,7 @@ undo_stack_init_loaded (
     self->num_move_plugins_actions +
     self->num_move_tracks_actions +
     self->num_midi_mapping_actions +
+    self->num_port_actions +
     self->num_port_connection_actions +
     self->num_range_actions +
     self->num_transport_actions;
@@ -104,6 +106,7 @@ undo_stack_init_loaded (
       DO_SIMPLE (MovePlugins, move_plugins)
       DO_SIMPLE (MoveTracks, move_tracks)
       DO_SIMPLE (PortConnection, port_connection)
+      DO_SIMPLE (Port, port)
       DO_SIMPLE (MidiMapping, midi_mapping)
       DO_SIMPLE (Range, range)
       DO_SIMPLE (Transport, transport)
@@ -208,6 +211,7 @@ undo_stack_push (
     APPEND_ELEMENT (
       PORT_CONNECTION, PortConnection,
       port_connection);
+    APPEND_ELEMENT (PORT, Port, port);
     APPEND_ELEMENT (
       MIDI_MAPPING, MidiMapping,
       midi_mapping);
@@ -283,6 +287,7 @@ remove_action (
     REMOVE_ELEMENT (
       PORT_CONNECTION, PortConnection,
       port_connection);
+    REMOVE_ELEMENT (PORT, Port, port);
     REMOVE_ELEMENT (
       MIDI_MAPPING, MidiMapping,
       midi_mapping);

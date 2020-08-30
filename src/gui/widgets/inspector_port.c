@@ -31,6 +31,7 @@
 #include "gui/widgets/inspector_port.h"
 #include "gui/widgets/port_connections_popover.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/string.h"
@@ -319,7 +320,19 @@ val_change_finished (
   if (!math_floats_equal (
         val, self->normalized_init_port_val))
     {
-      /* TODO port value change action */
+      /* set port to previous val */
+      port_set_control_value (
+        self->port,
+        control_port_normalized_val_to_real (
+          self->port,
+          self->normalized_init_port_val),
+        F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+
+      UndoableAction * ua =
+        port_action_new (
+          PORT_ACTION_SET_CONTROL_VAL,
+          &self->port->id, val, F_NORMALIZED);
+      undo_manager_perform (UNDO_MANAGER, ua);
     }
 }
 
