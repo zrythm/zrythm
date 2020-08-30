@@ -250,7 +250,7 @@ Args:
            '("ar" "cs" "da" "de" "en" "en_GB" "el"
              "es" "et" "fi" "fr" "gd" "gl" "hi" "it"
              "ja" "ko" "nb_NO" "nl" "pl" "pt" "pt_BR"
-             "ru" "sv" "zh"))
+             "ru" "sv" "zh_Hans" "zh_Hant"))
          (print-enum
            "export-time-range"
            '("loop" "song" "custom"))
