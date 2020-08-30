@@ -188,9 +188,8 @@ _test_port_connection (
   g_assert_true (dest_port->is_project);
 
   ua =
-    port_connection_action_new (
-      PORT_CONNECTION_CONNECT, &src_port1->id,
-      &dest_port->id);
+    port_connection_action_new_connect (
+      &src_port1->id, &dest_port->id, true);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   g_assert_cmpint (dest_port->num_srcs, ==, 1);
@@ -207,9 +206,8 @@ _test_port_connection (
   g_assert_cmpint (src_port1->num_dests, ==, 1);
 
   ua =
-    port_connection_action_new (
-      PORT_CONNECTION_CONNECT, &src_port2->id,
-      &dest_port->id);
+    port_connection_action_new_connect (
+      &src_port2->id, &dest_port->id, true);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   g_assert_cmpint (dest_port->num_srcs, ==, 2);

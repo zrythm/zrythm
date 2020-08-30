@@ -222,6 +222,22 @@ drag_begin (
     return;
 
   self->start_x = offset_x;
+
+  if (self->init_setter)
+    {
+      int width =
+        gtk_widget_get_allocated_width (
+          GTK_WIDGET (self));
+      double normalized_val =
+        ui_get_normalized_draggable_value (
+          width,
+          BAR_SLIDER_VAL_FROM_REAL (GET_REAL_VAL),
+          self->start_x, self->start_x,
+          self->start_x, 1.0, self->mode);
+      self->init_setter (
+        self->object,
+        REAL_VAL_FROM_BAR_SLIDER (normalized_val));
+    }
 }
 
 static void
@@ -260,6 +276,23 @@ drag_end (
 {
   if (!self->editable)
     return;
+
+  if (self->end_setter)
+    {
+      int width =
+        gtk_widget_get_allocated_width (
+          GTK_WIDGET (self));
+      double normalized_val =
+        ui_get_normalized_draggable_value (
+          width,
+          BAR_SLIDER_VAL_FROM_REAL (GET_REAL_VAL),
+          self->start_x, self->start_x + offset_x,
+          self->start_x + self->last_x,
+          1.0, self->mode);
+      self->end_setter (
+        self->object,
+        REAL_VAL_FROM_BAR_SLIDER (normalized_val));
+    }
 
   self->last_x = 0;
   self->start_x = 0;

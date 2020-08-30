@@ -72,6 +72,9 @@ typedef struct _InspectorPortWidget
   float             maxf;
   float             zerof;
 
+  /** Normalized value at the start of an action. */
+  float             normalized_init_port_val;
+
   /** Port name cache. */
   char              port_str[400];
 

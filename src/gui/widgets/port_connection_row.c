@@ -54,9 +54,8 @@ on_del_clicked (
   PortConnectionRowWidget * self)
 {
   UndoableAction * ua =
-    port_connection_action_new (
-      PORT_CONNECTION_DISCONNECT,
-      &self->src->id, &self->dest->id);
+    port_connection_action_new_connect (
+      &self->src->id, &self->dest->id, false);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   port_connections_popover_widget_refresh (

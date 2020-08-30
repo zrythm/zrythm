@@ -33,7 +33,9 @@ typedef enum PortConnectionActionType
 {
   PORT_CONNECTION_CONNECT,
   PORT_CONNECTION_DISCONNECT,
-  PORT_CONNECTION_EDIT,
+  PORT_CONNECTION_ENABLE,
+  PORT_CONNECTION_DISABLE,
+  PORT_CONNECTION_CHANGE_MULTIPLIER,
 } PortConnectionActionType;
 
 static const cyaml_strval_t
@@ -41,7 +43,10 @@ port_connection_action_type_strings[] =
 {
   { "connect",     PORT_CONNECTION_CONNECT },
   { "disconnect",  PORT_CONNECTION_CONNECT },
-  { "edit",        PORT_CONNECTION_EDIT },
+  { "enable",      PORT_CONNECTION_ENABLE },
+  { "disable",     PORT_CONNECTION_DISABLE },
+  { "change multiplier",
+    PORT_CONNECTION_CHANGE_MULTIPLIER },
 };
 
 typedef struct PortConnectionAction
@@ -52,6 +57,13 @@ typedef struct PortConnectionAction
 
   PortIdentifier  src_port_id;
   PortIdentifier  dest_port_id;
+
+  /**
+   * Value before/after the change.
+   *
+   * To be swapped on undo/redo.
+   */
+  float           val;
 } PortConnectionAction;
 
 static const cyaml_schema_field_t
@@ -69,6 +81,8 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_EMBEDDED (
     PortConnectionAction, dest_port_id,
     port_identifier_fields_schema),
+  YAML_FIELD_FLOAT (
+    PortConnectionAction, val),
 
   CYAML_FIELD_END
 };
@@ -85,16 +99,37 @@ void
 port_connection_action_init_loaded (
   PortConnectionAction * self);
 
+/**
+ * Create a new action.
+ */
 UndoableAction *
 port_connection_action_new (
   PortConnectionActionType type,
   PortIdentifier *         src_id,
-  PortIdentifier *         dest_id);
+  PortIdentifier *         dest_id,
+  float                    new_val);
 
 #define port_connection_action_new_connect( \
-  src_id,dest_id) \
+  src_id,dest_id,connect) \
   port_connection_action_new ( \
-    PORT_CONNECTION_CONNECT, src_id, dest_id)
+    connect ? \
+      PORT_CONNECTION_CONNECT : \
+      PORT_CONNECTION_DISCONNECT, \
+    src_id, dest_id, 0.f)
+
+#define port_connection_action_new_enable( \
+  src_id,dest_id,enable) \
+  port_connection_action_new ( \
+    enable ? \
+      PORT_CONNECTION_ENABLE : \
+      PORT_CONNECTION_DISABLE, \
+    src_id, dest_id, 0.f)
+
+#define port_connection_action_new_change_multiplier( \
+  src_id,dest_id, new_multiplier) \
+  port_connection_action_new ( \
+    PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, \
+    dest_id, new_multiplier)
 
 int
 port_connection_action_do (

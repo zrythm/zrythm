@@ -72,13 +72,13 @@ on_ok_clicked (
 
   if (ports_can_be_connected (src, dest))
     {
+      gtk_widget_destroy (GTK_WIDGET (self->owner));
+
       UndoableAction * ua =
-        port_connection_action_new (
-          PORT_CONNECTION_CONNECT,
-          &src->id, &dest->id);
+        port_connection_action_new_connect (
+          &src->id, &dest->id, true);
       undo_manager_perform (UNDO_MANAGER, ua);
 
-      gtk_widget_destroy (GTK_WIDGET (self->owner));
       /*port_connections_popover_widget_refresh (*/
         /*self->owner);*/
     }

@@ -20,9 +20,12 @@
 #include "actions/port_connection_action.h"
 #include "audio/port.h"
 #include "audio/router.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -33,11 +36,15 @@ port_connection_action_init_loaded (
   /* no need */
 }
 
+/**
+ * Create a new action.
+ */
 UndoableAction *
 port_connection_action_new (
   PortConnectionActionType type,
   PortIdentifier *         src_id,
-  PortIdentifier *         dest_id)
+  PortIdentifier *         dest_id,
+  float                    new_val)
 {
   PortConnectionAction * self =
     object_new (PortConnectionAction);
@@ -47,6 +54,7 @@ port_connection_action_new (
   self->src_port_id = *src_id;
   self->dest_port_id = *dest_id;
   self->type = type;
+  self->val = new_val;
 
   return ua;
 }
@@ -56,39 +64,52 @@ port_connection_action_do_or_undo (
   PortConnectionAction * self,
   bool                   _do)
 {
+  Port * src =
+    port_find_from_identifier (&self->src_port_id);
+  Port * dest =
+    port_find_from_identifier (&self->dest_port_id);
+
   switch (self->type)
     {
     case PORT_CONNECTION_CONNECT:
     case PORT_CONNECTION_DISCONNECT:
-      {
-        Port * src =
-          port_find_from_identifier (
-            &self->src_port_id);
-        Port * dest =
-          port_find_from_identifier (
-            &self->dest_port_id);
-        if ((self->type ==
-               PORT_CONNECTION_CONNECT && _do) ||
-            (self->type ==
-               PORT_CONNECTION_DISCONNECT && !_do))
-          {
-            g_return_val_if_fail (
-              ports_can_be_connected (
-                src, dest), -1);
-            port_connect (src, dest, false);
-          }
-        else
-          {
-            port_disconnect (src, dest);
-          }
-        router_recalc_graph (ROUTER, F_NOT_SOFT);
-      }
+      if ((self->type ==
+             PORT_CONNECTION_CONNECT && _do) ||
+          (self->type ==
+             PORT_CONNECTION_DISCONNECT && !_do))
+        {
+          g_return_val_if_fail (
+            ports_can_be_connected (
+              src, dest), -1);
+          port_connect (src, dest, false);
+        }
+      else
+        {
+          port_disconnect (src, dest);
+        }
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
       break;
-    case PORT_CONNECTION_EDIT:
+    case PORT_CONNECTION_ENABLE:
+      port_set_enabled (
+        src, dest, _do ? true : false);
+      break;
+    case PORT_CONNECTION_DISABLE:
+      port_set_enabled (
+        src, dest, _do ? false : true);
+      break;
+    case PORT_CONNECTION_CHANGE_MULTIPLIER:
+      {
+        float val_before =
+          port_get_multiplier (src, dest);
+        port_set_multiplier (src, dest, self->val);
+        self->val = val_before;
+      }
       break;
     default:
       break;
     }
+
+  EVENTS_PUSH (ET_PORT_CONNECTION_CHANGED, NULL);
 
   return 0;
 }
@@ -113,7 +134,27 @@ char *
 port_connection_action_stringize (
   PortConnectionAction * self)
 {
-  return g_strdup (_("Port connection"));
+  switch (self->type)
+    {
+    case PORT_CONNECTION_CONNECT:
+      return g_strdup (_("Connect ports"));
+      break;
+    case PORT_CONNECTION_DISCONNECT:
+      return g_strdup (_("Disconnect ports"));
+      break;
+    case PORT_CONNECTION_ENABLE:
+      return g_strdup (_("Enable port connection"));
+      break;
+    case PORT_CONNECTION_DISABLE:
+      return g_strdup (_("Disable port connection"));
+      break;
+    case PORT_CONNECTION_CHANGE_MULTIPLIER:
+      return g_strdup (_("Change port connection"));
+      break;
+    default:
+      g_warn_if_reached ();
+    }
+  g_return_val_if_reached (NULL);
 }
 
 void

@@ -37,6 +37,8 @@ typedef struct _InspectorTrackWidget
 typedef struct _InspectorPluginWidget
   InspectorPluginWidget;
 typedef struct _CcBindingsWidget CcBindingsWidget;
+typedef struct _PortConnectionsWidget
+  PortConnectionsWidget;
 
 /**
  * @addtogroup widgets
@@ -73,6 +75,7 @@ typedef struct _LeftDockEdgeWidget
   InspectorPluginWidget * plugin_inspector;
 
   CcBindingsWidget *      cc_bindings;
+  PortConnectionsWidget * port_connections;
 } LeftDockEdgeWidget;
 
 void

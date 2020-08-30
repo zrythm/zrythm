@@ -38,7 +38,7 @@ SCM_DEFINE (
 
   UndoableAction * ua =
     port_connection_action_new_connect (
-      src_id, dest_id);
+      src_id, dest_id, true);
 
   return scm_from_pointer (ua, NULL);
 }

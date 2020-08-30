@@ -299,6 +299,30 @@ set_port_value (
       self->port, val), false, true);
 }
 
+static void
+set_init_port_value (
+  InspectorPortWidget * self,
+  float                 val)
+{
+  /*g_message (*/
+    /*"val change started: %f", (double) val);*/
+  self->normalized_init_port_val = val;
+}
+
+static void
+val_change_finished (
+  InspectorPortWidget * self,
+  float                 val)
+{
+  /*g_message (*/
+    /*"val change finished: %f", (double) val);*/
+  if (!math_floats_equal (
+        val, self->normalized_init_port_val))
+    {
+      /* TODO port value change action */
+    }
+}
+
 static gboolean
 bar_slider_tick_cb (
   GtkWidget *       widget,
@@ -416,6 +440,10 @@ inspector_port_widget_new (
           str, "");
       self->bar_slider->show_value = 0;
       self->bar_slider->editable = editable;
+      self->bar_slider->init_setter =
+        (GenericFloatSetter) set_init_port_value;
+      self->bar_slider->end_setter =
+        (GenericFloatSetter) val_change_finished;
       gtk_container_add (
         GTK_CONTAINER (self),
         GTK_WIDGET (self->bar_slider));

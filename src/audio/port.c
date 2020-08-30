@@ -3304,6 +3304,50 @@ port_apply_pan (
     }
 }
 
+void
+port_set_multiplier (
+  Port * src,
+  Port * dest,
+  float  val)
+{
+  int dest_idx = port_get_dest_index (src, dest);
+  int src_idx = port_get_src_index (dest, src);
+  port_set_multiplier_by_index (src, dest_idx, val);
+  port_set_src_multiplier_by_index (
+    dest, src_idx, val);
+}
+
+float
+port_get_multiplier (
+  Port * src,
+  Port * dest)
+{
+  int dest_idx = port_get_dest_index (src, dest);
+  return
+    port_get_multiplier_by_index (src, dest_idx);
+}
+
+void
+port_set_enabled (
+  Port * src,
+  Port * dest,
+  bool   enabled)
+{
+  int dest_idx = port_get_dest_index (src, dest);
+  int src_idx = port_get_src_index (dest, src);
+  src->dest_enabled[dest_idx] = enabled;
+  dest->src_enabled[src_idx] = enabled;
+}
+
+bool
+port_get_enabled (
+  Port * src,
+  Port * dest)
+{
+  int dest_idx = port_get_dest_index (src, dest);
+  return src->dest_enabled[dest_idx];
+}
+
 /**
  * Deletes port, doing required cleanup and
  * updating counters.

@@ -23,13 +23,13 @@
  * CC Bindings matrix.
  */
 
-#ifndef __GUI_WIDGETS_CC_BINDINGS_H__
-#define __GUI_WIDGETS_CC_BINDINGS_H__
+#ifndef __GUI_WIDGETS_PORT_CONNECTIONS_H__
+#define __GUI_WIDGETS_PORT_CONNECTIONS_H__
 
 #include <gtk/gtk.h>
 
-typedef struct _CcBindingsTreeWidget
-  CcBindingsTreeWidget;
+typedef struct _PortConnectionsTreeWidget
+  PortConnectionsTreeWidget;
 
 /**
  * @addtogroup widgets
@@ -37,30 +37,30 @@ typedef struct _CcBindingsTreeWidget
  * @{
  */
 
-#define CC_BINDINGS_WIDGET_TYPE \
-  (cc_bindings_widget_get_type ())
+#define PORT_CONNECTIONS_WIDGET_TYPE \
+  (port_connections_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  CcBindingsWidget,
-  cc_bindings_widget,
-  Z, CC_BINDINGS_WIDGET,
+  PortConnectionsWidget,
+  port_connections_widget,
+  Z, PORT_CONNECTIONS_WIDGET,
   GtkBox)
 
 /**
  * Left dock widget.
  */
-typedef struct _CcBindingsWidget
+typedef struct _PortConnectionsWidget
 {
   GtkBox           parent_instance;
 
-  CcBindingsTreeWidget * bindings_tree;
-} CcBindingsWidget;
+  PortConnectionsTreeWidget * bindings_tree;
+} PortConnectionsWidget;
 
-CcBindingsWidget *
-cc_bindings_widget_new (void);
+PortConnectionsWidget *
+port_connections_widget_new (void);
 
 void
-cc_bindings_widget_refresh (
-  CcBindingsWidget * self);
+port_connections_widget_refresh (
+  PortConnectionsWidget * self);
 
 /**
  * @}

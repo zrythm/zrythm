@@ -679,7 +679,8 @@ if not zstd_dep.found ()
   zstd_dep = cc.find_library ('zstd')
 endif
 
-reproc_dep = dependency ('reproc', required: false)
+reproc_dep = dependency (
+  'reproc', version: '>14.0.0', required: false)
 if not reproc_dep.found ()
   reproc_subproject = cmake.subproject (
     'reproc', options: cmake_opts)

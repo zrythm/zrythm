@@ -1620,6 +1620,10 @@ process_events (void * data)
           left_dock_edge_widget_refresh (
             MW_LEFT_DOCK_EDGE);
           break;
+        case ET_PORT_CONNECTION_CHANGED:
+          left_dock_edge_widget_refresh (
+            MW_LEFT_DOCK_EDGE);
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

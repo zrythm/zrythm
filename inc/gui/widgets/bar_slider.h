@@ -26,6 +26,7 @@
 #ifndef __GUI_WIDGETS_BAR_SLIDER_H__
 #define __GUI_WIDGETS_BAR_SLIDER_H__
 
+#include "utils/types.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -87,10 +88,16 @@ typedef struct _BarSliderWidget
   float              zero;
 
   /** Float getter. */
-  float (*getter)(void*);
+  GenericFloatGetter getter;
 
   /** Float setter. */
-  void (*setter)(void*, float);
+  GenericFloatSetter setter;
+
+  /** Float setter for drag begin. */
+  GenericFloatSetter init_setter;
+
+  /** Float setter for drag end. */
+  GenericFloatSetter end_setter;
 
   /** Port, if control port. */
   Port *          port;

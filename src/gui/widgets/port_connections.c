@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/cc_bindings.h"
-#include "gui/widgets/cc_bindings_tree.h"
+#include "gui/widgets/port_connections.h"
+#include "gui/widgets/port_connections_tree.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
@@ -30,27 +30,28 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  CcBindingsWidget, cc_bindings_widget, GTK_TYPE_BOX)
+  PortConnectionsWidget, port_connections_widget,
+  GTK_TYPE_BOX)
 
 /**
- * Refreshes the cc_bindings widget.
+ * Refreshes the port_connections widget.
  */
 void
-cc_bindings_widget_refresh (
-  CcBindingsWidget * self)
+port_connections_widget_refresh (
+  PortConnectionsWidget * self)
 {
-  cc_bindings_tree_widget_refresh (
+  port_connections_tree_widget_refresh (
     self->bindings_tree);
 }
 
-CcBindingsWidget *
-cc_bindings_widget_new ()
+PortConnectionsWidget *
+port_connections_widget_new ()
 {
-  CcBindingsWidget * self =
-    g_object_new (CC_BINDINGS_WIDGET_TYPE, NULL);
+  PortConnectionsWidget * self =
+    g_object_new (PORT_CONNECTIONS_WIDGET_TYPE, NULL);
 
   self->bindings_tree =
-    cc_bindings_tree_widget_new ();
+    port_connections_tree_widget_new ();
   gtk_box_pack_start (
     GTK_BOX (self),
     GTK_WIDGET (self->bindings_tree),
@@ -64,16 +65,16 @@ cc_bindings_widget_new ()
 }
 
 static void
-cc_bindings_widget_class_init (
-  CcBindingsWidgetClass * _klass)
+port_connections_widget_class_init (
+  PortConnectionsWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
-    klass, "cc-bindings");
+    klass, "port-connections");
 }
 
 static void
-cc_bindings_widget_init (
-  CcBindingsWidget * self)
+port_connections_widget_init (
+  PortConnectionsWidget * self)
 {
 }

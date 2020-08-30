@@ -803,6 +803,28 @@ port_get_multiplier_by_index (
   return port->multipliers[idx];
 }
 
+void
+port_set_multiplier (
+  Port * src,
+  Port * dest,
+  float  val);
+
+float
+port_get_multiplier (
+  Port * src,
+  Port * dest);
+
+void
+port_set_enabled (
+  Port * src,
+  Port * dest,
+  bool   enabled);
+
+bool
+port_get_enabled (
+  Port * src,
+  Port * dest);
+
 #ifdef HAVE_RTMIDI
 /**
  * Dequeue the midi events from the ring

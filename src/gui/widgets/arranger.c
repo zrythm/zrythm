@@ -4929,12 +4929,18 @@ drag_end (
 
   /* if object clicked and object is unselected,
    * select it */
+  int width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (self));
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
   ArrangerObject * obj =
     arranger_widget_get_hit_arranger_object (
       (ArrangerWidget *) self,
       ARRANGER_OBJECT_TYPE_ALL,
-      self->start_x + offset_x,
-      self->start_y + offset_y);
+      CLAMP (self->start_x + offset_x, 0, width),
+      CLAMP (self->start_y + offset_y, 0, height));
   if (obj)
     {
       if (!arranger_object_is_selected (obj))
