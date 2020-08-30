@@ -77,8 +77,9 @@ typedef enum UndoableActionType
 
   /* ---- end ---- */
 
-  /* ---- port connection ---- */
+  /* ---- connections ---- */
 
+  UA_MIDI_MAPPING,
   UA_PORT_CONNECTION,
 
   /* ---- end ---- */
@@ -142,6 +143,7 @@ undoable_action_type_strings[] =
     UA_QUANTIZE_ARRANGER_SELECTIONS },
   { "Automation autofill",
     UA_AUTOMATION_FILL },
+  { "MIDI mapping", UA_MIDI_MAPPING },
   { "Port connection", UA_PORT_CONNECTION },
   { "Transport", UA_TRANSPORT },
   { "Range", UA_RANGE },

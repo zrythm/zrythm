@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 
+#include "actions/midi_mapping_action.h"
 #include "audio/channel.h"
 #include "audio/fader.h"
 #include "audio/midi_mapping.h"
@@ -139,7 +140,7 @@ fader_draw_cb (
 
   /* draw fader line */
   cairo_set_source_rgba (cr, 0, 0, 0, 1);
-  cairo_set_line_width (cr, 10.0);
+  cairo_set_line_width (cr, 12.0);
   cairo_set_line_cap  (cr, CAIRO_LINE_CAP_SQUARE);
   cairo_move_to (cr, x, y + (height - value_px));
   cairo_line_to (cr, x+ width, y + (height - value_px));
@@ -148,9 +149,13 @@ fader_draw_cb (
 
   if (self->hover || self->dragging)
     {
+#if 0
       GdkRGBA color;
       gdk_rgba_parse (&color, "#9D3955");
       gdk_cairo_set_source_rgba (cr, &color);
+#endif
+      cairo_set_source_rgba (
+        cr, 0.8, 0.8, 0.8, 1.0);
     }
   else
     {
@@ -164,7 +169,7 @@ fader_draw_cb (
     cr, x+ width, y + (height - value_px));
   cairo_stroke (cr);
 
-	return FALSE;
+  return FALSE;
 }
 
 
@@ -338,9 +343,10 @@ on_bind_midi_cc (
     {
       if (dialog->cc[0])
         {
-          midi_mappings_bind (
-            MIDI_MAPPINGS, dialog->cc,
-            NULL, self->fader->amp);
+          UndoableAction * ua =
+            midi_mapping_action_new_bind (
+            dialog->cc, NULL, self->fader->amp);
+          undo_manager_perform (UNDO_MANAGER, ua);
         }
     }
   gtk_widget_destroy (GTK_WIDGET (dialog));

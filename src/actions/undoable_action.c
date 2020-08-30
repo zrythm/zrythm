@@ -120,6 +120,8 @@ undoable_action_init_loaded (
                arranger_selections,
                ArrangerSelections);
     INIT_LOADED (
+      MIDI_MAPPING, midi_mapping, MidiMapping);
+    INIT_LOADED (
       PORT_CONNECTION, port_connection,
       PortConnection);
     /*INIT_LOADED (TRANSPORT, transport, Transport);*/
@@ -235,6 +237,8 @@ undoable_action_do (UndoableAction * self)
     DO_ACTION (
       PORT_CONNECTION, port_connection,
       PortConnection);
+    DO_ACTION (
+      MIDI_MAPPING, midi_mapping, MidiMapping);
     default:
       g_warn_if_reached ();
       ret = -1;
@@ -346,6 +350,8 @@ undoable_action_undo (UndoableAction * self)
                arranger_selections,
                ArrangerSelections);
     UNDO_ACTION (
+      MIDI_MAPPING, midi_mapping, MidiMapping);
+    UNDO_ACTION (
       PORT_CONNECTION, port_connection,
       PortConnection);
     UNDO_ACTION (TRANSPORT, transport, Transport);
@@ -442,6 +448,8 @@ undoable_action_free (UndoableAction * self)
     FREE_ACTION (AUTOMATION_FILL,
                arranger_selections,
                ArrangerSelections);
+    FREE_ACTION (
+      MIDI_MAPPING, midi_mapping, MidiMapping);
     FREE_ACTION (
       PORT_CONNECTION, port_connection,
       PortConnection);
@@ -542,7 +550,10 @@ undoable_action_stringize (
                ArrangerSelections,
                arranger_selections);
     STRINGIZE_UA (
-      PORT_CONNECTION, PortConnection, port_connection);
+      MIDI_MAPPING, MidiMapping, midi_mapping);
+    STRINGIZE_UA (
+      PORT_CONNECTION, PortConnection,
+      port_connection);
     STRINGIZE_UA (TRANSPORT, Transport, transport);
     STRINGIZE_UA (RANGE, Range, range);
     default:

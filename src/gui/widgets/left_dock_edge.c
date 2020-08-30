@@ -18,6 +18,7 @@
  */
 
 #include "gui/backend/tracklist_selections.h"
+#include "gui/widgets/cc_bindings.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/main_window.h"
@@ -76,6 +77,8 @@ left_dock_edge_widget_refresh (
       inspector_plugin_widget_show (
         self->plugin_inspector, MIXER_SELECTIONS);
     }
+
+  cc_bindings_widget_refresh (self->cc_bindings);
 }
 
 void
@@ -233,6 +236,32 @@ left_dock_edge_widget_init (
     img);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->visibility),
+    min_width, -1);
+
+  /* setup CC bindings */
+  img =
+    gtk_image_new_from_icon_name (
+      "labplot-matrix",
+      GTK_ICON_SIZE_LARGE_TOOLBAR);
+  gtk_widget_set_tooltip_text (
+    img, _("CC Bindings"));
+  self->cc_bindings = cc_bindings_widget_new ();
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->cc_bindings), 1);
+  GtkBox * cc_bindings_box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_container_add (
+    GTK_CONTAINER (cc_bindings_box),
+    GTK_WIDGET (self->cc_bindings));
+  gtk_widget_set_visible (
+    GTK_WIDGET (cc_bindings_box), 1);
+  gtk_notebook_append_page (
+    GTK_NOTEBOOK (self->inspector_notebook),
+    GTK_WIDGET (cc_bindings_box),
+    img);
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->cc_bindings),
     min_width, -1);
 }
 

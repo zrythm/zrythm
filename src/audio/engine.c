@@ -619,7 +619,6 @@ engine_activate (
 #endif
 
   self->activated = activate;
-  g_atomic_int_set (&self->run, activate);
 
   if (ZRYTHM_HAVE_UI)
     {

@@ -19,8 +19,12 @@
 
 #include "audio/control_port.h"
 #include "audio/midi_mapping.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
+#include "project.h"
 #include "utils/arrays.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 /**
  * Initializes the MidiMappings after a Project
@@ -39,21 +43,54 @@ midi_mappings_init_loaded (
     }
 }
 
+static void
+move_mapping (
+  MidiMappings * self,
+  int            dest_idx,
+  int            src_idx)
+{
+  MidiMapping * src_mapping =
+    &self->mappings[src_idx];
+  MidiMapping * dest_mapping =
+    &self->mappings[dest_idx];
+  memcpy (
+    dest_mapping->key, src_mapping->key,
+    sizeof (midi_byte_t) * 3);
+  dest_mapping->device_port =
+    src_mapping->device_port;
+  dest_mapping->dest_id = src_mapping->dest_id;
+  dest_mapping->dest = src_mapping->dest;
+  g_atomic_int_set (
+    &dest_mapping->enabled,
+    (guint)
+    g_atomic_int_get (&src_mapping->enabled));
+}
+
 /**
  * Binds the CC represented by the given raw buffer
  * (must be size 3) to the given Port.
+ *
+ * @param idx Index to insert at.
  */
 void
-midi_mappings_bind (
+midi_mappings_bind_at (
   MidiMappings * self,
   midi_byte_t *  buf,
   ExtPort *      device_port,
-  Port *         dest_port)
+  Port *         dest_port,
+  int            idx,
+  bool           fire_events)
 {
   g_return_if_fail (
     self && buf && dest_port);
-  MidiMapping * mapping =
-    &self->mappings[self->num_mappings];
+
+  for (int i = self->num_mappings; i > idx; i--)
+    {
+      move_mapping (self, i, i - 1);
+    }
+  self->num_mappings++;
+
+  MidiMapping * mapping = &self->mappings[idx];
   memcpy (
     mapping->key, buf, sizeof (midi_byte_t) * 3);
   if (device_port)
@@ -63,7 +100,8 @@ midi_mappings_bind (
     }
   mapping->dest_id = dest_port->id;
   mapping->dest = dest_port;
-  self->num_mappings++;
+  g_atomic_int_set (
+    &mapping->enabled, (guint) true);
 
   char str[100];
   midi_ctrl_change_get_ch_and_description (
@@ -71,6 +109,64 @@ midi_mappings_bind (
   g_message (
     "bounded MIDI mapping from %s to %s",
     str, dest_port->id.label);
+
+  if (fire_events && ZRYTHM_HAVE_UI)
+    {
+      EVENTS_PUSH (ET_MIDI_BINDINGS_CHANGED, NULL);
+    }
+}
+
+/**
+ * Unbinds the given binding.
+ *
+ * @note This must be called inside a port operation
+ *   lock, such as inside an undoable action.
+ */
+void
+midi_mappings_unbind (
+  MidiMappings * self,
+  int            idx,
+  bool           fire_events)
+{
+  g_return_if_fail (self && idx >= 0);
+
+  MidiMapping * mapping_before =
+    &self->mappings[idx];
+  object_free_w_func_and_null (
+    ext_port_free, mapping_before->device_port);
+
+  for (int i = self->num_mappings - 2; i >= idx; i--)
+    {
+      move_mapping (self, i, i + 1);
+    }
+  self->num_mappings--;
+
+  if (fire_events && ZRYTHM_HAVE_UI)
+    {
+      EVENTS_PUSH (ET_MIDI_BINDINGS_CHANGED, NULL);
+    }
+}
+
+void
+midi_mapping_set_enabled (
+  MidiMapping * self,
+  bool          enabled)
+{
+  g_atomic_int_set (
+    &self->enabled, (guint) enabled);
+}
+
+int
+midi_mapping_get_index (
+  MidiMappings * self,
+  MidiMapping *  mapping)
+{
+  for (int i = 0; i < self->num_mappings; i++)
+    {
+      if (&self->mappings[i] == mapping)
+        return i;
+    }
+  g_return_val_if_reached (-1);
 }
 
 /**
@@ -85,7 +181,8 @@ midi_mappings_apply (
     {
       MidiMapping * mapping = &self->mappings[i];
 
-      if (mapping->key[0] == buf[0] &&
+      if (g_atomic_int_get (&mapping->enabled) &&
+          mapping->key[0] == buf[0] &&
           mapping->key[1] == buf[1])
         {
           g_return_if_fail (mapping->dest);

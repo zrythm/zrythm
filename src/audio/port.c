@@ -2496,7 +2496,8 @@ port_sum_signal_from_inputs (
 
   g_warn_if_fail (
     start_frame + nframes <=
-    AUDIO_ENGINE->nframes);
+      AUDIO_ENGINE->nframes);
+  g_return_if_fail (IS_PORT (port));
 
   switch (port->id.type)
     {

@@ -55,6 +55,9 @@ typedef struct MidiMapping
 
   /** Destination pointer, for convenience. */
   Port *         dest;
+
+  /** Whether this binding is enabled. */
+  volatile int   enabled;
 } MidiMapping;
 
 /**
@@ -62,7 +65,7 @@ typedef struct MidiMapping
  */
 typedef struct MidiMappings
 {
-  MidiMapping     mappings[1028];
+  MidiMapping     mappings[2046];
   int             num_mappings;
 } MidiMappings;
 
@@ -79,6 +82,8 @@ midi_mapping_fields_schema[] =
   YAML_FIELD_MAPPING_EMBEDDED (
     MidiMapping, dest_id,
     port_identifier_fields_schema),
+  YAML_FIELD_INT (
+    MidiMapping, enabled),
 
   CYAML_FIELD_END
 };
@@ -125,16 +130,48 @@ midi_mappings_init_loaded (
 MidiMappings *
 midi_mappings_new (void);
 
+#define midi_mappings_bind( \
+  self,buf,dev_port,dest_port,fire_events) \
+  midi_mappings_bind_at ( \
+    self, buf, dev_port, dest_port, \
+    (self)->num_mappings, fire_events)
+
 /**
  * Binds the CC represented by the given raw buffer
  * (must be size 3) to the given Port.
+ *
+ * @param idx Index to insert at.
  */
 void
-midi_mappings_bind (
+midi_mappings_bind_at (
   MidiMappings * self,
   midi_byte_t *  buf,
   ExtPort *      device_port,
-  Port *         dest_port);
+  Port *         dest_port,
+  int            idx,
+  bool           fire_events);
+
+/**
+ * Unbinds the given binding.
+ *
+ * @note This must be called inside a port operation
+ *   lock, such as inside an undoable action.
+ */
+void
+midi_mappings_unbind (
+  MidiMappings * self,
+  int            idx,
+  bool           fire_events);
+
+void
+midi_mapping_set_enabled (
+  MidiMapping * self,
+  bool          enabled);
+
+int
+midi_mapping_get_index (
+  MidiMappings * self,
+  MidiMapping *  mapping);
 
 /**
  * Applies the given buffer to the matching ports.

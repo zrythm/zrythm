@@ -2187,7 +2187,7 @@ show_context_menu_audio (
   menu = gtk_menu_new();
 
   menuitem =
-    gtk_menu_item_new_with_label("Do something");
+    gtk_menu_item_new_with_label ("Do something");
 
   gtk_menu_shell_append (
     GTK_MENU_SHELL(menu), menuitem);

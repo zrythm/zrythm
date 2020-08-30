@@ -270,11 +270,11 @@ show_context_menu (
 
 static void
 on_plugin_right_click (
-  GtkGestureMultiPress *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  PluginBrowserWidget * self)
+  GtkGestureMultiPress * gesture,
+  gint                   n_press,
+  gdouble                x_dbl,
+  gdouble                y_dbl,
+  PluginBrowserWidget *  self)
 {
   if (n_press != 1)
     return;
@@ -282,17 +282,24 @@ on_plugin_right_click (
   GtkTreePath *path;
   GtkTreeViewColumn *column;
 
+  int x, y;
+  gtk_tree_view_convert_widget_to_bin_window_coords (
+    GTK_TREE_VIEW (self->plugin_tree_view),
+    (int) x_dbl, (int) y_dbl, &x, &y);
+
   GtkTreeSelection * selection =
     gtk_tree_view_get_selection (
       (self->plugin_tree_view));
-  if (!gtk_tree_view_get_path_at_pos
-      (GTK_TREE_VIEW(self->plugin_tree_view),
-       (int) x, (int) y,
-       &path, &column, NULL, NULL))
-
+  if (!gtk_tree_view_get_path_at_pos (
+        GTK_TREE_VIEW (self->plugin_tree_view),
+        x, y,
+        &path, &column, NULL, NULL))
+    {
+      g_message ("no path at position %d %d", x, y);
       // if we can't find path at pos, we surely don't
       // want to pop up the menu
       return;
+    }
 
   gtk_tree_selection_unselect_all(selection);
   gtk_tree_selection_select_path(selection, path);
@@ -313,7 +320,6 @@ on_plugin_right_click (
 
   show_context_menu (self, descr);
 }
-
 
 static int
 update_plugin_info_label (PluginBrowserWidget * self,

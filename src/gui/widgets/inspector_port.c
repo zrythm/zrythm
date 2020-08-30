@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +19,7 @@
 
 #include "zrythm-config.h"
 
+#include "actions/midi_mapping_action.h"
 #include "audio/control_port.h"
 #include "audio/engine.h"
 #include "audio/midi.h"
@@ -156,9 +157,10 @@ on_bind_midi_cc (
     {
       if (dialog->cc[0])
         {
-          midi_mappings_bind (
-            MIDI_MAPPINGS, dialog->cc,
-            NULL, self->port);
+          UndoableAction * ua =
+            midi_mapping_action_new_bind (
+            dialog->cc, NULL, self->port);
+          undo_manager_perform (UNDO_MANAGER, ua);
         }
     }
   gtk_widget_destroy (GTK_WIDGET (dialog));

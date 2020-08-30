@@ -27,6 +27,7 @@ action_srcs = [
   'delete_plugins_action.c',
   'edit_plugins_action.c',
   'edit_tracks_action.c',
+  'midi_mapping_action.c',
   'move_plugins_action.c',
   'move_tracks_action.c',
   'port_connection_action.c',

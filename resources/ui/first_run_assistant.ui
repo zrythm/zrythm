@@ -48,9 +48,13 @@
           <object class="GtkLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Welcome to Zrythm.
- This will guide you through the basic setup of Zrythm. First, choose your language.</property>
+            <property name="use-markup">True</property>
+            <property name="label" translatable="yes">&lt;b&gt;&lt;i&gt;Note: Zrythm is currently in alpha&lt;/i&gt;&lt;/b&gt;
+
+Welcome to Zrythm.
+This will guide you through the basic setup of Zrythm. First, choose your language.</property>
             <property name="wrap">True</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="expand">False</property>

@@ -43,7 +43,8 @@ test_midi_mappping ()
   midi_byte_t buf[3] = { 0xB0, 0x07, 121 };
   midi_mappings_bind (
     MIDI_MAPPINGS, buf, ext_port,
-    P_MASTER_TRACK->channel->fader->amp);
+    P_MASTER_TRACK->channel->fader->amp,
+    F_NO_PUBLISH_EVENTS);
   g_assert_cmpint (
     MIDI_MAPPINGS->num_mappings, ==, 1);
 
@@ -53,8 +54,7 @@ test_midi_mappping ()
     P_MASTER_TRACK->channel->fader->amp, &size);
   g_assert_cmpint (size, ==, 1);
 
-  midi_mappings_apply (
-    MIDI_MAPPINGS, buf);
+  midi_mappings_apply (MIDI_MAPPINGS, buf);
 
   test_project_save_and_reload ();
 

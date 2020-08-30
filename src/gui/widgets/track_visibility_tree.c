@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,9 +39,10 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (TrackVisibilityTreeWidget,
-               track_visibility_tree_widget,
-               GTK_TYPE_PANED)
+G_DEFINE_TYPE (
+  TrackVisibilityTreeWidget,
+  track_visibility_tree_widget,
+  GTK_TYPE_SCROLLED_WINDOW)
 
 enum
 {
@@ -139,7 +140,7 @@ tree_view_setup (
     G_CALLBACK (visibility_toggled), self);
   column =
     gtk_tree_view_column_new_with_attributes (
-      "Visible", renderer,
+      _("Visible"), renderer,
       "active", COL_CHECKBOX,
       NULL);
 
@@ -159,7 +160,7 @@ tree_view_setup (
     gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      "Track Name", renderer,
+      _("Track Name"), renderer,
       "text", COL_NAME,
       NULL);
   gtk_tree_view_append_column (

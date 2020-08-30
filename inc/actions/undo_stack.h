@@ -36,6 +36,7 @@
 #include "actions/delete_tracks_action.h"
 #include "actions/edit_plugins_action.h"
 #include "actions/edit_tracks_action.h"
+#include "actions/midi_mapping_action.h"
 #include "actions/move_plugins_action.h"
 #include "actions/move_tracks_action.h"
 #include "actions/port_connection_action.h"
@@ -117,6 +118,10 @@ typedef struct UndoStack
   size_t        num_port_connection_actions;
   size_t        port_connection_actions_size;
 
+  MidiMappingAction ** midi_mapping_actions;
+  size_t        num_midi_mapping_actions;
+  size_t        midi_mapping_actions_size;
+
   RangeAction ** range_actions;
   size_t        num_range_actions;
   size_t        range_actions_size;
@@ -169,6 +174,9 @@ static const cyaml_schema_field_t
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, port_connection_actions,
     port_connection_action_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    UndoStack, midi_mapping_actions,
+    midi_mapping_action_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     UndoStack, range_actions,
     range_action_schema),

@@ -83,7 +83,7 @@ etc.)
 
 You must also provide a link to the original source
 code as published by Alexandros Theodotou at
-https://www.zrythm.org/releases/.
+https://www.zrythm.org/.
 
 # Requirement of Written Permission for Modified Versions Including Trademarks
 Zrythm is

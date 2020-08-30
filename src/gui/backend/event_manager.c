@@ -1511,8 +1511,10 @@ process_events (void * data)
         case ET_CHANNEL_FADER_VAL_CHANGED:
           channel_widget_redraw_fader (
             ((Channel *)ev->arg)->widget);
+#if 0
           inspector_track_widget_show_tracks (
             MW_TRACK_INSPECTOR, TRACKLIST_SELECTIONS);
+#endif
           break;
         case ET_PIANO_ROLL_KEY_HEIGHT_CHANGED:
           midi_editor_space_widget_refresh (
@@ -1613,6 +1615,10 @@ process_events (void * data)
           bot_bar_widget_refresh (MW_BOT_BAR);
           ruler_widget_redraw_whole (EDITOR_RULER);
           ruler_widget_redraw_whole (MW_RULER);
+          break;
+        case ET_MIDI_BINDINGS_CHANGED:
+          left_dock_edge_widget_refresh (
+            MW_LEFT_DOCK_EDGE);
           break;
         default:
           g_warning (

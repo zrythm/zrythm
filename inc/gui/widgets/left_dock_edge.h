@@ -1,7 +1,5 @@
 /*
- * gui/widgets/left_dock_edge.h - Main window widget
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,10 +17,32 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file
+ *
+ * Left dock.
+ */
+
 #ifndef __GUI_WIDGETS_LEFT_DOCK_EDGE_H__
 #define __GUI_WIDGETS_LEFT_DOCK_EDGE_H__
 
 #include <gtk/gtk.h>
+
+typedef struct _InspectorWidget InspectorWidget;
+typedef struct _VisibilityWidget VisibilityWidget;
+typedef struct _FoldableNotebookWidget
+  FoldableNotebookWidget;
+typedef struct _InspectorTrackWidget
+  InspectorTrackWidget;
+typedef struct _InspectorPluginWidget
+  InspectorPluginWidget;
+typedef struct _CcBindingsWidget CcBindingsWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 #define LEFT_DOCK_EDGE_WIDGET_TYPE \
   (left_dock_edge_widget_get_type ())
@@ -35,15 +55,9 @@ G_DECLARE_FINAL_TYPE (
 #define MW_LEFT_DOCK_EDGE \
   MW_CENTER_DOCK->left_dock_edge
 
-typedef struct _InspectorWidget InspectorWidget;
-typedef struct _VisibilityWidget VisibilityWidget;
-typedef struct _FoldableNotebookWidget
-  FoldableNotebookWidget;
-typedef struct _InspectorTrackWidget
-  InspectorTrackWidget;
-typedef struct _InspectorPluginWidget
-  InspectorPluginWidget;
-
+/**
+ * Left dock widget.
+ */
 typedef struct _LeftDockEdgeWidget
 {
   GtkBox                   parent_instance;
@@ -57,6 +71,8 @@ typedef struct _LeftDockEdgeWidget
 
   /** For MixerSelections. */
   InspectorPluginWidget * plugin_inspector;
+
+  CcBindingsWidget *      cc_bindings;
 } LeftDockEdgeWidget;
 
 void
@@ -73,5 +89,9 @@ left_dock_edge_widget_setup (
 void
 left_dock_edge_widget_tear_down (
   LeftDockEdgeWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

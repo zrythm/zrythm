@@ -49,6 +49,8 @@ track_processor_init_loaded (
   TrackProcessor * self,
   bool             is_project)
 {
+  self->magic = TRACK_PROCESSOR_MAGIC;
+
   int max_size = 20;
   Port ** ports =
     calloc ((size_t) max_size, sizeof (Port *));
@@ -213,6 +215,7 @@ track_processor_new (
   TrackProcessor * self =
     object_new (TrackProcessor);
 
+  self->magic = TRACK_PROCESSOR_MAGIC;
   self->track_pos = tr->pos;
   self->track = tr;
   self->l_port_db = 0.f;
@@ -431,6 +434,10 @@ Track *
 track_processor_get_track (
   TrackProcessor * self)
 {
+  g_return_val_if_fail (
+    IS_TRACK_PROCESSOR (self) &&
+      IS_TRACK (self->track), NULL);
+
   return self->track;
 
 #if 0

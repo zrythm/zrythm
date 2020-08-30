@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,20 +20,20 @@
 /**
  * \file
  *
- * Track visibility list store.
+ * CC Bindings tree.
  */
 
-#ifndef __GUI_WIDGETS_TRACK_VISIBILITY_TREE_H__
-#define __GUI_WIDGETS_TRACK_VISIBILITY_TREE_H__
+#ifndef __GUI_WIDGETS_CC_BINDINGS_TREE_H__
+#define __GUI_WIDGETS_CC_BINDINGS_TREE_H__
 
 #include <gtk/gtk.h>
 
-#define TRACK_VISIBILITY_TREE_WIDGET_TYPE \
-  (track_visibility_tree_widget_get_type ())
+#define CC_BINDINGS_TREE_WIDGET_TYPE \
+  (cc_bindings_tree_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  TrackVisibilityTreeWidget,
-  track_visibility_tree_widget,
-  Z, TRACK_VISIBILITY_TREE_WIDGET,
+  CcBindingsTreeWidget,
+  cc_bindings_tree_widget,
+  Z, CC_BINDINGS_TREE_WIDGET,
   GtkScrolledWindow)
 
 /**
@@ -42,30 +42,27 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MW_TRACK_VISIBILITY_TREE \
-  MW_VISIBILITY->track_visibility
-
-typedef struct _TrackVisibilityTreeWidget
+typedef struct _CcBindingsTreeWidget
 {
   GtkScrolledWindow    parent_instance;
 
   /* The tree views */
   GtkTreeView *        tree;
   GtkTreeModel *       tree_model;
-} TrackVisibilityTreeWidget;
+} CcBindingsTreeWidget;
 
 /**
  * Refreshes the tree model.
  */
 void
-track_visibility_tree_widget_refresh (
-  TrackVisibilityTreeWidget * self);
+cc_bindings_tree_widget_refresh (
+  CcBindingsTreeWidget * self);
 
 /**
- * Instantiates a new TrackVisibilityTreeWidget.
+ * Instantiates a new CcBindingsTreeWidget.
  */
-TrackVisibilityTreeWidget *
-track_visibility_tree_widget_new (void);
+CcBindingsTreeWidget *
+cc_bindings_tree_widget_new (void);
 
 /**
  * @}

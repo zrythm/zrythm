@@ -320,11 +320,17 @@ graph_node_process (
   else if (node->type ==
            ROUTE_NODE_TYPE_TRACK)
     {
-      if (node->track->type != TRACK_TYPE_TEMPO &&
-          node->track->type != TRACK_TYPE_MARKER)
+      Track * track = node->track;
+      if (!IS_TRACK (track))
+        {
+          g_warn_if_reached ();
+          goto node_process_finish;
+        }
+      if (track->type != TRACK_TYPE_TEMPO &&
+          track->type != TRACK_TYPE_MARKER)
         {
           track_processor_process (
-            node->track->processor,
+            track->processor,
             g_start_frames, local_offset,
             nframes);
         }

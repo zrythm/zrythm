@@ -41,6 +41,10 @@ typedef struct Track Track;
  * @{
  */
 
+#define TRACK_PROCESSOR_MAGIC 81213128
+#define IS_TRACK_PROCESSOR(tr) \
+  ((tr) && (tr)->magic == TRACK_PROCESSOR_MAGIC)
+
 /**
  * Automatable MIDI signals.
  */
@@ -122,7 +126,11 @@ typedef struct TrackProcessor
   /** Pointer to parent track. */
   Track *          track;
 
+  /** Whether this is part of the project (as
+   * opposed to a clone). */
   bool             is_project;
+
+  int              magic;
 } TrackProcessor;
 
 static const cyaml_schema_field_t

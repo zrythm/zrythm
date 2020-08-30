@@ -34,11 +34,6 @@ bundle: html #latexpdf #epub
 	for lang in $(LANGUAGES) ; do \
 		mkdir -p $(RENDERDIR)/$$lang && \
 		cp -R $(BUILDDIR)/$$lang/html/* $(RENDERDIR)/$$lang/ ; \
-		if [[ "x$$lang" == "xzh" ]] ; then \
-			echo "skipping $$lang pdf" ; \
-		else \
-			cp $(BUILDDIR)/$$lang/latex/Zrythm.pdf $(RENDERDIR)/$$lang/ || true ; \
-		fi ; \
 		cp $(BUILDDIR)/$$lang/epub/Zrythm.epub $(RENDERDIR)/$$lang/ || true && \
 		zip -r $(RENDERDIR)/$$lang/Zrythm-html.zip $(BUILDDIR)/$$lang/html/* ; \
 	done

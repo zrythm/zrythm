@@ -537,6 +537,13 @@ textview {
   min-height: 24px;
 }
 
+/* make dock tab height */
+left-dock-edge notebook tab,
+right-dock-edge notebook tab
+{
+  min-height: 24px;
+}
+
 /*.button-with-menu separator*/
 /*{*/
   /*background-color: alpha (grey, 0.6);*/

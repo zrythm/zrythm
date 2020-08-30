@@ -505,6 +505,8 @@ ExtPort *
 ext_port_clone (
   ExtPort * ext_port)
 {
+  g_return_val_if_fail (ext_port, NULL);
+
   ExtPort * newport =
     calloc (1, sizeof (ExtPort));
 

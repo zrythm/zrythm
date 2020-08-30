@@ -30,6 +30,8 @@ widget_srcs = files([
   'bot_bar.c',
   'bot_dock_edge.c',
   'button_with_menu.c',
+  'cc_bindings.c',
+  'cc_bindings_tree.c',
   'center_dock.c',
   'channel.c',
   'channel_send.c',
