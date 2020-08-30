@@ -29,7 +29,9 @@
 
 #include <gtk/gtk.h>
 
+#include <reproc/drain.h>
 #include <reproc/reproc.h>
+#include <reproc/run.h>
 
 /**
  * Runs the given command in the background, waits
@@ -57,188 +59,37 @@ system_run_cmd_w_args (
   g_message ("ms to wait: %d", ms_to_wait);
 
   *output = NULL;
-  size_t size = 0;
-  int r = REPROC_ENOMEM;
-  reproc_event_source children[1];
-  bool have_events = false;
-  bool read_once = false;
 
   reproc_options opts;
   memset (&opts, 0, sizeof (reproc_options));
   opts.stop.first.action = REPROC_STOP_WAIT;
-  opts.stop.first.timeout = 100;
+  opts.stop.first.timeout = REPROC_DEADLINE;
   opts.stop.second.action = REPROC_STOP_TERMINATE;
-  opts.stop.second.timeout = 100;
+  opts.stop.second.timeout = 1000;
   opts.stop.third.action = REPROC_STOP_KILL;
-  opts.stop.third.timeout = 100;
+  opts.stop.third.timeout = REPROC_INFINITE;
   opts.deadline = ms_to_wait;
-  opts.nonblocking = true;
 
-#if 0
-  reproc_stop_actions stop;
-  stop.first.action = REPROC_STOP_WAIT;
-  stop.first.timeout = 100;
-  stop.second.action = REPROC_STOP_TERMINATE;
-  stop.second.timeout = 100;
-  stop.third.action = REPROC_STOP_KILL;
-  stop.third.timeout = 10;
-#endif
+  reproc_sink sink = reproc_sink_string (output);
+  int r =
+    reproc_run_ex (
+      args, opts,
+      get_stdout ? sink : REPROC_SINK_NULL,
+      get_stdout ? REPROC_SINK_NULL : sink);
 
-  reproc_t * process = reproc_new ();
-
-  char err_str[8000];
-
-  if (!process)
-    {
-      sprintf (
-        err_str,
-        "create process failed for %s", args[0]);
-      goto finish;
-    }
-
-  g_message ("starting...");
-  r = reproc_start (process, args, opts);
-  if (r < 0)
-    {
-      sprintf (
-        err_str,
-        "process failed to start for %s",
-        args[0]);
-      goto finish;
-    }
-
-  g_message ("closing...");
-  r = reproc_close (process, REPROC_STREAM_IN);
-  if (r < 0)
-    {
-      sprintf (
-        err_str,
-        "process failed to close for %s",
-        args[0]);
-      goto finish;
-    }
-
-  children[0].process = process;
-  children[0].interests =
-    get_stdout ? REPROC_EVENT_OUT : REPROC_EVENT_ERR;
-
-  for (;;)
-    {
-      if (r < 0)
-        {
-          r = r == REPROC_EPIPE ? 0 : r;
-          goto finish;
-        }
-
-      uint8_t buffer[4096];
-      g_message ("polling for %d ms...", ms_to_wait);
-      reproc_poll (children, 1, ms_to_wait);
-      g_message ("polled");
-      if (children[0].events)
-        {
-          have_events = true;
-        }
-      else
-        {
-          g_message ("no events");
-          break;
-        }
-
-      g_message ("reading...");
-      r =
-        reproc_read (
-          process,
-          get_stdout ?
-            REPROC_STREAM_OUT : REPROC_STREAM_ERR,
-          buffer, sizeof (buffer));
-      if (r < 0)
-        {
-          g_message ("failed during read");
-          if (read_once)
-            {
-              r = 0;
-            }
-          break;
-        }
-      g_message ("read");
-      read_once = true;
-
-      size_t bytes_read = (size_t) r;
-
-      char * result =
-        realloc (*output, size + bytes_read + 1);
-      if (result == NULL)
-        {
-          r = REPROC_ENOMEM;
-          g_message ("ENOMEM");
-          goto finish;
-        }
-
-      *output = result;
-
-      // Copy new data into `output`.
-      memcpy(*output + size, buffer, bytes_read);
-      (*output)[size + bytes_read] = '\0';
-      size += bytes_read;
-
-      if (r == REPROC_EPIPE)
-        {
-          break;
-        }
-    }
-
-  if (have_events && !read_once && r < 0)
-    {
-      sprintf (
-        err_str,
-        "failed to get output from process %s",
-        args[0]);
-      goto finish;
-    }
-
-  if (*output)
-    {
-      g_message ("output:\n%s", *output);
-    }
-  else
-    {
-      g_message ("no output");
-    }
-
-  g_message ("waiting...");
-  /* uses deadline */
-  r = reproc_wait (process, REPROC_DEADLINE);
-  g_message ("waited");
-
-  if (r < 0)
-    {
-      sprintf (
-        err_str,
-        "failed to wait for process %s",
-        args[0]);
-      goto finish;
-    }
-
-  finish:
-  g_message ("finishing...");
+  g_message ("output: %s", *output);
 
   if (r < 0)
     {
       if (warn_if_fail)
         {
-          g_warning ("%s", err_str);
           g_warning ("%s", reproc_strerror (r));
         }
       else
         {
-          g_message ("%s", err_str);
           g_message ("%s", reproc_strerror (r));
         }
     }
-
-  g_message ("destroying...");
-  reproc_destroy (process);
-  g_message ("destroyed");
 
   return (r < 0) ? r : 0;
 }
