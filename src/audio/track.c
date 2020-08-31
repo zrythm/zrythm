@@ -37,6 +37,7 @@
 #include "audio/midi_bus_track.h"
 #include "audio/midi_group_track.h"
 #include "audio/midi_track.h"
+#include "audio/modulator_track.h"
 #include "audio/instrument_track.h"
 #include "audio/router.h"
 #include "audio/stretcher.h"
@@ -72,6 +73,10 @@ track_init_loaded (
     {
       group_target_track_init_loaded (self);
     }
+  else if (self->type == TRACK_TYPE_MODULATOR)
+    {
+      modulator_track_init_loaded (self, project);
+    }
 
   TrackLane * lane;
   for (int j = 0; j < self->num_lanes; j++)
@@ -102,13 +107,17 @@ track_init_loaded (
         (ArrangerObject *) region);
     }
 
-  /* init loaded channel */
-  if (self->channel)
+  /* init loaded track processor */
+  if (self->processor)
     {
       self->processor->track = self;
       track_processor_init_loaded (
         self->processor, project);
+    }
 
+  /* init loaded channel */
+  if (self->channel)
+    {
       self->channel->track = self;
       channel_init_loaded (
         self->channel, project);
@@ -297,6 +306,13 @@ track_new (
         TYPE_UNKNOWN;
       tempo_track_init (self);
       break;
+    case TRACK_TYPE_MODULATOR:
+      self->in_signal_type =
+        TYPE_UNKNOWN;
+      self->out_signal_type =
+        TYPE_UNKNOWN;
+      modulator_track_init (self);
+      break;
     default:
       g_return_val_if_reached (NULL);
     }
@@ -319,6 +335,27 @@ track_new (
   track_generate_automation_tracks (self);
 
   return self;
+}
+
+/**
+ * Returns if the given TrackType is a type of
+ * Track that has a Channel.
+ */
+bool
+track_type_has_channel (
+  TrackType type)
+{
+  switch (type)
+    {
+    case TRACK_TYPE_MARKER:
+    case TRACK_TYPE_TEMPO:
+    case TRACK_TYPE_MODULATOR:
+      return false;
+    default:
+      break;
+    }
+
+  return true;
 }
 
 /**
@@ -1489,6 +1526,8 @@ void
 track_clear (
   Track * self)
 {
+  g_return_if_fail (IS_TRACK (self));
+
   /* remove lane regions */
   for (int i = 0; i < self->num_lanes; i++)
     {
@@ -1573,32 +1612,14 @@ track_remove_region (
 }
 
 /**
- * Adds and connects a Modulator to the Track.
- */
-void
-track_add_modulator (
-  Track * track,
-  Modulator * modulator)
-{
-  array_double_size_if_full (
-    track->modulators, track->num_modulators,
-    track->modulators_size, Modulator *);
-  array_append (track->modulators,
-                track->num_modulators,
-                modulator);
-
-  router_recalc_graph (ROUTER, F_NOT_SOFT);
-
-  EVENTS_PUSH (ET_MODULATOR_ADDED, modulator);
-}
-
-/**
  * Returns the automation tracklist if the track type has one,
  * or NULL if it doesn't (like chord tracks).
  */
 AutomationTracklist *
 track_get_automation_tracklist (Track * track)
 {
+  g_return_val_if_fail (IS_TRACK (track), NULL);
+
   switch (track->type)
     {
     case TRACK_TYPE_MARKER:
@@ -1613,6 +1634,7 @@ track_get_automation_tracklist (Track * track)
     case TRACK_TYPE_MASTER:
     case TRACK_TYPE_MIDI:
     case TRACK_TYPE_TEMPO:
+    case TRACK_TYPE_MODULATOR:
       return &track->automation_tracklist;
     default:
       g_warn_if_reached ();
@@ -2171,6 +2193,18 @@ track_append_all_ports (
       /* add bpm/time sig ports */
       _ADD (self->bpm_port);
       _ADD (self->time_sig_port);
+    }
+  else if (self->type == TRACK_TYPE_MODULATOR)
+    {
+      for (int j = 0;
+           j < self->num_modulators; j++)
+        {
+          Plugin * pl = self->modulators[j];
+
+          plugin_append_ports (
+            pl, ports, max_size, is_dynamic,
+            size);
+        }
     }
 
 #undef _ADD

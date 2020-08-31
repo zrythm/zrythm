@@ -57,6 +57,7 @@
 #include "utils/io.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
@@ -383,7 +384,7 @@ plugin_new_from_descr (
     plugin_protocol_strings[descr->protocol].str,
     track_pos, slot);
 
-  Plugin * plugin = calloc (1, sizeof (Plugin));
+  Plugin * plugin = object_new (Plugin);
 
   plugin->descr =
     plugin_descriptor_clone (descr);
@@ -598,24 +599,27 @@ plugin_remove_ats_from_automation_tracklist (
 void
 plugin_move (
   Plugin *       pl,
-  Channel *      ch,
+  Track *        track,
   PluginSlotType slot_type,
   int            slot)
 {
-  g_return_if_fail (pl && ch);
+  g_return_if_fail (pl && track);
 
   /* confirm if another plugin exists */
   Plugin * existing_pl = NULL;
   switch (slot_type)
     {
     case PLUGIN_SLOT_MIDI_FX:
-      existing_pl = ch->midi_fx[slot];
+      existing_pl = track->channel->midi_fx[slot];
       break;
     case PLUGIN_SLOT_INSTRUMENT:
-      existing_pl = ch->instrument;
+      existing_pl = track->channel->instrument;
       break;
     case PLUGIN_SLOT_INSERT:
-      existing_pl = ch->inserts[slot];
+      existing_pl = track->channel->inserts[slot];
+      break;
+    case PLUGIN_SLOT_MODULATOR:
+      existing_pl = track->modulators[slot];
       break;
     }
   if (existing_pl)
@@ -635,11 +639,12 @@ plugin_move (
   int prev_slot = pl->id.slot;
   PluginSlotType prev_slot_type =
     pl->id.slot_type;
+  Track * prev_track = plugin_get_track (pl);
   Channel * prev_ch = plugin_get_channel (pl);
 
   /* move plugin's automation from src to dest */
   plugin_move_automation (
-    pl, prev_ch, ch, slot_type, slot);
+    pl, prev_track, track, slot_type, slot);
 
   /* remove plugin from its channel */
   channel_remove_plugin (
@@ -648,12 +653,13 @@ plugin_move (
 
   /* add plugin to its new channel */
   channel_add_plugin (
-    ch, slot_type, slot, pl, 0,
+    track->channel, slot_type, slot, pl, 0,
     F_NO_GEN_AUTOMATABLES, F_RECALC_GRAPH,
     F_PUBLISH_EVENTS);
 
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, prev_ch);
-  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
+  EVENTS_PUSH (
+    ET_CHANNEL_SLOTS_CHANGED, track->channel);
 }
 
 /**
@@ -661,13 +667,13 @@ plugin_move (
  * its ports.
  */
 void
-plugin_set_channel_and_slot (
+plugin_set_track_and_slot (
   Plugin *       pl,
-  Channel *      ch,
+  int            track_pos,
   PluginSlotType slot_type,
   int            slot)
 {
-  pl->id.track_pos = ch->track_pos;
+  pl->id.track_pos = track_pos;
   pl->id.slot = slot;
   pl->id.slot_type = slot_type;
 
@@ -688,8 +694,7 @@ plugin_set_channel_and_slot (
     !pl->descr->open_with_carla &&
       pl->descr->protocol == PROT_LV2)
     {
-      lv2_plugin_update_port_identifiers (
-        pl->lv2);
+      lv2_plugin_update_port_identifiers (pl->lv2);
     }
 }
 
@@ -727,7 +732,12 @@ plugin_find (
   Plugin plugin;
   plugin_identifier_copy (
     &plugin.id, id);
-  Channel * ch = plugin_get_channel (&plugin);
+  Track * track = plugin_get_track (&plugin);
+  Channel * ch = NULL;
+  if (track->type != TRACK_TYPE_MODULATOR)
+    {
+      ch = plugin_get_channel (&plugin);
+    }
   Plugin * ret = NULL;
   switch (id->slot_type)
     {
@@ -739,6 +749,9 @@ plugin_find (
       break;
     case PLUGIN_SLOT_INSERT:
       ret = ch->inserts[id->slot];
+      break;
+    case PLUGIN_SLOT_MODULATOR:
+      ret = track->modulators[id->slot];
       break;
     }
   g_return_val_if_fail (ret, NULL);
@@ -979,16 +992,13 @@ plugin_add_out_port (
 void
 plugin_move_automation (
   Plugin *       pl,
-  Channel *      prev_ch,
-  Channel *      ch,
+  Track *        prev_track,
+  Track *        track,
   PluginSlotType new_slot_type,
   int            new_slot)
 {
-  Track * prev_track =
-    channel_get_track (prev_ch);
   AutomationTracklist * prev_atl =
     track_get_automation_tracklist (prev_track);
-  Track * track = channel_get_track (ch);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
 
@@ -2392,6 +2402,62 @@ plugin_delete_state_files (
     g_path_is_absolute (self->state_dir));
 
   io_rmdir (self->state_dir, true);
+}
+
+/**
+ * Exposes or unexposes plugin ports to the backend.
+ *
+ * @param expose Expose or not.
+ * @param inputs Expose/unexpose inputs.
+ * @param outputs Expose/unexpose outputs.
+ */
+void
+plugin_expose_ports (
+  Plugin * pl,
+  bool     expose,
+  bool     inputs,
+  bool     outputs)
+{
+  if (inputs)
+    {
+      for (int i = 0; i < pl->num_in_ports; i++)
+        {
+          Port * port = pl->in_ports[i];
+
+          bool is_exposed =
+            port_is_exposed_to_backend (port);
+          if (expose && !is_exposed)
+            {
+              port_set_expose_to_backend (
+                port, true);
+            }
+          else if (!expose && is_exposed)
+            {
+              port_set_expose_to_backend (
+                port, false);
+            }
+        }
+    }
+  if (outputs)
+    {
+      for (int i = 0; i < pl->num_out_ports; i++)
+        {
+          Port * port = pl->out_ports[i];
+
+          bool is_exposed =
+            port_is_exposed_to_backend (port);
+          if (expose && !is_exposed)
+            {
+              port_set_expose_to_backend (
+                port, true);
+            }
+          else if (!expose && is_exposed)
+            {
+              port_set_expose_to_backend (
+                port, false);
+            }
+        }
+    }
 }
 
 /**

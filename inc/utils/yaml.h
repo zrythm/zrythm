@@ -181,6 +181,11 @@
     #member, CYAML_FLAG_DEFAULT, \
     owner, member)
 
+#define YAML_FIELD_UINT(owner,member) \
+  CYAML_FIELD_UINT ( \
+    #member, CYAML_FLAG_DEFAULT, \
+    owner, member)
+
 #define YAML_FIELD_FLOAT(owner,member) \
   CYAML_FIELD_FLOAT ( \
     #member, CYAML_FLAG_DEFAULT, \

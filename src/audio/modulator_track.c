@@ -1,0 +1,256 @@
+/*
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#include <stdlib.h>
+
+#include "audio/automation_track.h"
+#include "audio/port.h"
+#include "audio/modulator_track.h"
+#include "audio/router.h"
+#include "audio/track.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
+#include "gui/widgets/main_window.h"
+#include "project.h"
+#include "utils/arrays.h"
+#include "utils/dialogs.h"
+#include "utils/flags.h"
+#include "utils/objects.h"
+#include "utils/object_utils.h"
+#include "zrythm_app.h"
+
+#include <gtk/gtk.h>
+#include <glib/gi18n.h>
+
+void
+modulator_track_init_loaded (
+  Track * self,
+  bool    is_project)
+{
+  for (int i = 0; i < self->num_modulators; i++)
+    {
+      plugin_init_loaded (
+        self->modulators[i], is_project);
+    }
+}
+
+/**
+ * Inits the modulator track.
+ */
+void
+modulator_track_init (
+  Track * self)
+{
+  self->type = TRACK_TYPE_MODULATOR;
+  self->main_height = TRACK_DEF_HEIGHT / 2;
+
+  gdk_rgba_parse (&self->color, "#222222");
+
+  /* set invisible */
+  self->visible = false;
+}
+
+/**
+ * Creates the default modulator track.
+ */
+Track *
+modulator_track_default (
+  int   track_pos)
+{
+  Track * self =
+    track_new (
+      TRACK_TYPE_MODULATOR, track_pos,
+      _("Modulators"), F_WITHOUT_LANE);
+
+  return self;
+}
+
+/**
+ * Adds and connects a Modulator to the Track.
+ */
+void
+modulator_track_add_modulator (
+  Track *  self,
+  int      slot,
+  Plugin * modulator,
+  bool     confirm,
+  bool     gen_automatables,
+  bool     recalc_graph,
+  bool     pub_events)
+{
+  g_return_if_fail (
+    IS_TRACK (self) && IS_PLUGIN (modulator) &&
+    slot <= self->num_modulators);
+
+  /* confirm if another plugin exists */
+  Plugin * existing_pl =
+    slot < self->num_modulators ?
+      self->modulators[slot] : NULL;
+  if (confirm && existing_pl)
+    {
+      GtkDialog * dialog =
+        dialogs_get_overwrite_plugin_dialog (
+          GTK_WINDOW (MAIN_WINDOW));
+      int result =
+        gtk_dialog_run (dialog);
+      gtk_widget_destroy (GTK_WIDGET (dialog));
+
+      /* do nothing if not accepted */
+      if (result != GTK_RESPONSE_ACCEPT)
+        {
+          return;
+        }
+    }
+
+  /* free current plugin */
+  if (existing_pl)
+    {
+      modulator_track_remove_modulator (
+        self, slot, F_REPLACING, F_DELETING_PLUGIN,
+        F_NOT_DELETING_TRACK, F_NO_RECALC_GRAPH);
+    }
+
+  g_message (
+    "Inserting modulator %s at %s:%d",
+    modulator->descr->name, self->name, slot);
+  if (slot == self->num_modulators)
+    {
+      array_double_size_if_full (
+        self->modulators, self->num_modulators,
+        self->modulators_size, Modulator *);
+      self->num_modulators++;
+    }
+  self->modulators[slot] = modulator;
+  plugin_set_track_and_slot (
+    modulator, self->pos, PLUGIN_SLOT_MODULATOR, slot);
+
+  plugin_set_is_project (
+    modulator, self->is_project);
+
+  if (gen_automatables)
+    {
+      plugin_generate_automation_tracks (
+        modulator, self);
+    }
+
+  if (self->is_project)
+    {
+      track_verify_identifiers (self);
+    }
+
+  if (pub_events)
+    {
+      EVENTS_PUSH (ET_MODULATOR_ADDED, modulator);
+    }
+
+  if (recalc_graph)
+    {
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
+    }
+}
+
+/**
+ * Removes a plugin at pos from the track.
+ *
+ * @param replacing Whether replacing the modulator.
+ *   If this is false, modulators after this slot
+ *   will be pushed back.
+ * @param deleting_modulator
+ * @param deleting_track If true, the automation
+ *   tracks associated with the plugin are not
+ *   deleted at this time.
+ * @param recalc_graph Recalculate mixer graph.
+ */
+void
+modulator_track_remove_modulator (
+  Track * self,
+  int     slot,
+  bool    replacing,
+  bool    deleting_modulator,
+  bool    deleting_track,
+  bool    recalc_graph)
+{
+  Plugin * plugin = self->modulators[slot];
+  g_return_if_fail (IS_PLUGIN (plugin));
+  g_warn_if_fail (
+    plugin->id.track_pos == self->pos);
+
+  plugin_remove_ats_from_automation_tracklist (
+    plugin, deleting_modulator,
+    !deleting_track && !deleting_modulator);
+
+  g_message (
+    "Removing %s from %s:%d",
+    plugin->descr->name, self->name, slot);
+
+  /* unexpose all JACK ports */
+  plugin_expose_ports (
+    plugin, F_NOT_EXPOSE, true, true);
+
+  plugin_set_is_project (plugin, false);
+
+  /* if deleting plugin disconnect the plugin
+   * entirely */
+  if (deleting_modulator)
+    {
+      if (plugin_is_selected (plugin))
+        {
+          mixer_selections_remove_slot (
+            MIXER_SELECTIONS, plugin->id.slot,
+            PLUGIN_SLOT_MODULATOR, F_PUBLISH_EVENTS);
+        }
+
+      /* close the UI */
+      plugin_close_ui (plugin);
+
+      plugin_disconnect (plugin);
+      free_later (plugin, plugin_free);
+    }
+
+  if (!replacing)
+    {
+      for (int i = self->num_modulators - 2; i >= slot;
+           i--)
+        {
+          self->modulators[i] =
+            self->modulators[i + 1];
+          plugin_set_track_and_slot (
+            self->modulators[i], self->pos,
+            PLUGIN_SLOT_MODULATOR, i);
+        }
+    }
+
+  if (self->is_project &&
+      /* only verify if we are deleting the plugin.
+       * if the plugin is moved to another slot
+       * this check fails because the port
+       * identifiers in the automation tracks are
+       * already updated to point to the next
+       * slot and the plugin is not found there
+       * yet */
+      deleting_modulator)
+    {
+      track_verify_identifiers (self);
+    }
+
+  if (recalc_graph)
+    {
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
+    }
+}

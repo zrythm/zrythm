@@ -204,8 +204,9 @@ plugin_strip_expander_widget_setup (
               {
                 ChannelSlotWidget * csw =
                   channel_slot_widget_new (
-                    i, ch, slot_type,
-                    position == PSE_POSITION_CHANNEL);
+                    i, track, slot_type,
+                    position ==
+                      PSE_POSITION_CHANNEL);
                 self->slots[i] = csw;
                 gtk_box_pack_start (
                   strip_box, GTK_WIDGET (csw), 1, 1, 0);

@@ -63,6 +63,8 @@ tracklist_init_loaded (
         self->master_track = track;
       else if (track->type == TRACK_TYPE_TEMPO)
         self->tempo_track = track;
+      else if (track->type == TRACK_TYPE_MODULATOR)
+        self->modulator_track = track;
 
       track_init_loaded (track, true);
     }

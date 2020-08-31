@@ -81,7 +81,7 @@ _test_copy_plugins (
       num_master_children - 1], ==,
     TRACKLIST->num_tracks - 1);
   g_assert_cmpint (
-    P_MASTER_TRACK->children[0], ==, 4);
+    P_MASTER_TRACK->children[0], ==, 5);
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -94,7 +94,7 @@ _test_copy_plugins (
       num_master_children - 1], ==,
     TRACKLIST->num_tracks - 1);
   g_assert_cmpint (
-    P_MASTER_TRACK->children[0], ==, 4);
+    P_MASTER_TRACK->children[0], ==, 5);
 
   /* select track */
   Track * track =
@@ -116,9 +116,9 @@ _test_copy_plugins (
       num_master_children - 1], ==,
     TRACKLIST->num_tracks - 1);
   g_assert_cmpint (
-    P_MASTER_TRACK->children[0], ==, 4);
+    P_MASTER_TRACK->children[0], ==, 5);
   g_assert_cmpint (
-    P_MASTER_TRACK->children[1], ==, 5);
+    P_MASTER_TRACK->children[1], ==, 6);
   Track * new_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 

@@ -144,8 +144,10 @@ create_model_for_ports (
       char icon_name[256];
 
       Port * port = NULL;
-      if (type == AS_TYPE_MIDI)
+      Plugin * plugin = NULL;
+      switch (type)
         {
+        case AS_TYPE_MIDI:
           /* skip non-channel automation tracks */
           port =
             automation_track_get_port (at);
@@ -159,9 +161,8 @@ create_model_for_ports (
           strcpy (
             icon_name,
             "audio-midi");
-        }
-      else if (type == AS_TYPE_CHANNEL)
-        {
+          break;
+        case AS_TYPE_CHANNEL:
           /* skip non-channel automation tracks */
           port =
             automation_track_get_port (at);
@@ -176,34 +177,58 @@ create_model_for_ports (
           strcpy (
             icon_name,
             "text-x-csrc");
-        }
-      else if (type > AS_TYPE_CHANNEL)
-        {
-          Plugin * plugin = NULL;
-          if (type > AS_TYPE_INSTRUMENT)
-            plugin =
-              track->channel->inserts[
-                type - AS_TYPE_INSERT_0];
-          else if (type == AS_TYPE_INSTRUMENT)
-            plugin = track->channel->instrument;
-          else
-            plugin =
-              track->channel->midi_fx[
-                type = AS_TYPE_MIDI_FX_0];
-
+          break;
+        case AS_TYPE_MIDI_FX_0:
+        case AS_TYPE_MIDI_FX_1:
+        case AS_TYPE_MIDI_FX_2:
+        case AS_TYPE_MIDI_FX_3:
+        case AS_TYPE_MIDI_FX_4:
+        case AS_TYPE_MIDI_FX_5:
+        case AS_TYPE_MIDI_FX_6:
+        case AS_TYPE_MIDI_FX_7:
+        case AS_TYPE_MIDI_FX_8:
+          plugin =
+            track->channel->midi_fx[
+              type = AS_TYPE_MIDI_FX_0];
+          break;
+        case AS_TYPE_INSERT_0:
+        case AS_TYPE_INSERT_1:
+        case AS_TYPE_INSERT_2:
+        case AS_TYPE_INSERT_3:
+        case AS_TYPE_INSERT_4:
+        case AS_TYPE_INSERT_5:
+        case AS_TYPE_INSERT_6:
+        case AS_TYPE_INSERT_7:
+        case AS_TYPE_INSERT_8:
+          plugin =
+            track->channel->inserts[
+              type - AS_TYPE_INSERT_0];
           if (!plugin)
             continue;
+          break;
+        case AS_TYPE_INSTRUMENT:
+            plugin = track->channel->instrument;
+          if (!plugin)
+            continue;
+          break;
+        case AS_TYPE_MODULATOR_0:
+          plugin =
+            track->modulators[
+              type - AS_TYPE_MODULATOR_0];
+          if (!plugin)
+            continue;
+          break;
+        }
 
+      if (plugin)
+        {
           /* skip non-plugin automation tracks */
-          port =
-            automation_track_get_port (at);
+          port = automation_track_get_port (at);
           if (port->id.owner_type !=
                 PORT_OWNER_TYPE_PLUGIN)
             continue;
 
-          strcpy (
-            icon_name,
-            "plugins");
+          strcpy (icon_name, "plugins");
         }
 
       if (!port)
@@ -525,6 +550,10 @@ automatable_selector_popover_widget_new (
         case PLUGIN_SLOT_INSERT:
           self->selected_type =
             (int) AS_TYPE_INSERT_0 + pl_id->slot;
+          break;
+        case PLUGIN_SLOT_MODULATOR:
+          self->selected_type =
+            (int) AS_TYPE_MODULATOR_0 + pl_id->slot;
           break;
         }
     }

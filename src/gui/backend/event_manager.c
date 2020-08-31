@@ -27,7 +27,7 @@
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/clip.h"
-#include "audio/modulator.h"
+#include "audio/modulator_track.h"
 #include "audio/pool.h"
 #include "audio/router.h"
 #include "audio/stretcher.h"
@@ -462,22 +462,25 @@ on_plugin_state_changed (Plugin * pl)
 }
 
 static void
-on_modulator_added (Modulator * modulator)
+on_modulator_added (Plugin * modulator)
 {
-  on_plugin_added (modulator->plugin);
+  on_plugin_added (modulator);
 
+  Track * track = plugin_get_track (modulator);
   modulator_view_widget_refresh (
-    MW_MODULATOR_VIEW,
-    modulator->track);
+    MW_MODULATOR_VIEW, track);
 }
 
 static void
-on_plugins_removed (Channel * ch)
+on_plugins_removed (Track * tr)
 {
   /* redraw slots */
-  plugin_strip_expander_widget_set_state_flags (
-    ch->widget->inserts, -1,
-    GTK_STATE_FLAG_SELECTED, false);
+  if (tr->channel)
+    {
+      plugin_strip_expander_widget_set_state_flags (
+        tr->channel->widget->inserts, -1,
+        GTK_STATE_FLAG_SELECTED, false);
+    }
 
   /* change inspector page */
   left_dock_edge_widget_refresh (
@@ -923,7 +926,8 @@ on_plugin_window_visibility_changed (
         track->widget))
     track_widget_force_redraw (track->widget);
 
-  if (track->channel->widget &&
+  if (track->channel &&
+      track->channel->widget &&
       Z_IS_CHANNEL_WIDGET (
         track->channel->widget))
     {
@@ -1368,14 +1372,14 @@ process_events (void * data)
             (AutomationTrack *) ev->arg);
           break;
         case ET_PLUGINS_ADDED:
-          on_plugins_removed ((Channel *)ev->arg);
+          on_plugins_removed ((Track *)ev->arg);
           break;
         case ET_PLUGIN_ADDED:
           on_plugin_added (
             (Plugin *) ev->arg);
           break;
         case ET_PLUGINS_REMOVED:
-          on_plugins_removed ((Channel *)ev->arg);
+          on_plugins_removed ((Track *)ev->arg);
           break;
         case ET_MIXER_SELECTIONS_CHANGED:
           on_mixer_selections_changed ();
@@ -1418,7 +1422,7 @@ process_events (void * data)
             MW_MIDI_EDITOR_SPACE);
           break;
         case ET_MODULATOR_ADDED:
-          on_modulator_added ((Modulator *)ev->arg);
+          on_modulator_added ((Plugin *)ev->arg);
           break;
         case ET_PINNED_TRACKLIST_SIZE_CHANGED:
           /*gtk_widget_set_size_request (*/
@@ -1548,6 +1552,13 @@ process_events (void * data)
                   if (pl->visible)
                     plugin_open_ui (pl);
                 }
+            }
+          /* refresh modulator view */
+          if (MW_MODULATOR_VIEW)
+            {
+              modulator_view_widget_refresh (
+                MW_MODULATOR_VIEW,
+                P_MODULATOR_TRACK);
             }
           break;
         case ET_PROJECT_SAVED:

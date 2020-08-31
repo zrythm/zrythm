@@ -33,7 +33,6 @@
 #include "audio/graph.h"
 #include "audio/midi_event.h"
 #include "audio/router.h"
-#include "audio/modulator.h"
 #include "audio/pan.h"
 #include "audio/port.h"
 #include "audio/rtaudio_device.h"
@@ -213,6 +212,10 @@ port_find_from_identifier (
           pl =
             tr->channel->inserts[
               id->plugin_id.slot];
+          break;
+        case PLUGIN_SLOT_MODULATOR:
+          pl =
+            tr->modulators[id->plugin_id.slot];
           break;
         }
       g_warn_if_fail (IS_PLUGIN (pl));
@@ -3183,8 +3186,12 @@ port_get_plugin (
 
   Track * track = port_get_track (self, 0);
   if (!track && self->tmp_plugin)
-    return self->tmp_plugin;
-  if (!track || !track->channel)
+    {
+      return self->tmp_plugin;
+    }
+  if (!track ||
+      (track->type != TRACK_TYPE_MODULATOR &&
+         !track->channel))
     {
       if (warn_if_fail)
         {
@@ -3206,6 +3213,9 @@ port_get_plugin (
       break;
     case PLUGIN_SLOT_INSERT:
       pl = track->channel->inserts[pl_id->slot];
+      break;
+    case PLUGIN_SLOT_MODULATOR:
+      pl = track->modulators[pl_id->slot];
       break;
     }
   if (!pl && self->tmp_plugin)

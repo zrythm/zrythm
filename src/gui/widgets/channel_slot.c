@@ -60,17 +60,24 @@ get_plugin (
     {
     case PLUGIN_SLOT_INSERT:
       return
-        self->channel->inserts[self->slot_index];
+        self->track->channel->inserts[
+          self->slot_index];
       break;
     case PLUGIN_SLOT_MIDI_FX:
       return
-        self->channel->midi_fx[self->slot_index];
+        self->track->channel->midi_fx[
+          self->slot_index];
       break;
     case PLUGIN_SLOT_INSTRUMENT:
-      if (self->channel)
+      if (self->track && self->track->channel)
         {
-          return self->channel->instrument;
+          return self->track->channel->instrument;
         }
+      break;
+    case PLUGIN_SLOT_MODULATOR:
+      return
+        self->track->modulators[
+          self->slot_index];
       break;
     }
 
@@ -247,15 +254,15 @@ on_drag_data_received (
       g_warn_if_fail (pl);
 
       /* if plugin not at original position */
-      Channel * orig_ch =
-        plugin_get_channel (pl);
-      if (self->channel != orig_ch ||
+      Track * orig_track =
+        plugin_get_track (pl);
+      if (self->track != orig_track ||
           self->slot_index != pl->id.slot ||
           self->type != pl->id.slot_type)
         {
           if (plugin_descriptor_is_valid_for_slot_type (
                 pl->descr, self->type,
-                self->channel->track->type))
+                self->track->type))
             {
               /* determine if moving or copying */
               GdkDragAction action =
@@ -269,7 +276,7 @@ on_drag_data_received (
                     copy_plugins_action_new (
                       MIXER_SELECTIONS,
                       self->type,
-                      self->channel->track,
+                      self->track,
                       self->slot_index);
                 }
               else if (action == GDK_ACTION_MOVE)
@@ -278,7 +285,7 @@ on_drag_data_received (
                     move_plugins_action_new (
                       MIXER_SELECTIONS,
                       self->type,
-                      self->channel->track,
+                      self->track,
                       self->slot_index);
                 }
               g_warn_if_fail (ua);
@@ -305,12 +312,12 @@ on_drag_data_received (
       /* validate */
       if (plugin_descriptor_is_valid_for_slot_type (
             descr, self->type,
-            self->channel->track->type))
+            self->track->type))
         {
           UndoableAction * ua =
             create_plugins_action_new (
               descr, self->type,
-              self->channel->track_pos,
+              self->track->pos,
               self->slot_index, 1);
 
           undo_manager_perform (
@@ -374,7 +381,7 @@ select_no_ctrl_pl_no_ch (
 
   mixer_selections_add_slot (
     MIXER_SELECTIONS,
-    self->channel,
+    self->track->channel,
     self->type,
     self->slot_index);
 }
@@ -399,7 +406,7 @@ select_no_ctrl_pl_ch (
 
       mixer_selections_add_slot (
         MIXER_SELECTIONS,
-        self->channel,
+        self->track->channel,
         self->type,
         self->slot_index);
     }
@@ -442,7 +449,7 @@ select_ctrl_pl_no_ch (
     F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
     MIXER_SELECTIONS,
-    self->channel,
+    self->track->channel,
     self->type,
     self->slot_index);
 }
@@ -471,7 +478,7 @@ select_ctrl_pl_ch (
     {
       mixer_selections_add_slot (
         MIXER_SELECTIONS,
-        self->channel,
+        self->track->channel,
         self->type,
         self->slot_index);
     }
@@ -507,8 +514,8 @@ select_plugin (
     pl = true;
 
   /* if same channel as selections */
-  if (self->channel &&
-      self->channel->track_pos ==
+  if (self->track->channel &&
+      self->track->pos ==
         MIXER_SELECTIONS->track_pos)
     ch = true;
 
@@ -530,12 +537,10 @@ select_plugin (
     select_ctrl_pl_ch (self);
 
   /* select channel */
-  if (self->channel)
+  if (self->track)
     {
-      Track * track =
-        channel_get_track (self->channel);
       tracklist_selections_select_single (
-        TRACKLIST_SELECTIONS, track);
+        TRACKLIST_SELECTIONS, self->track);
     }
 }
 
@@ -576,8 +581,9 @@ drag_end (
 
   if (pl)
     {
-      self->channel->widget->last_plugin_press =
-        g_get_monotonic_time ();
+      self->track->channel->widget->
+        last_plugin_press =
+          g_get_monotonic_time ();
     }
   g_message ("drag end %d", self->n_press);
 }
@@ -609,7 +615,7 @@ on_plugin_delete (
   UndoableAction * ua =
     delete_plugins_action_new (MIXER_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
-  EVENTS_PUSH (ET_PLUGINS_REMOVED, self->channel);
+  EVENTS_PUSH (ET_PLUGINS_REMOVED, self->track);
 }
 
 static void
@@ -925,13 +931,14 @@ channel_slot_widget_set_state_flags (
 void
 channel_slot_widget_set_instrument (
   ChannelSlotWidget * self,
-  Channel *           ch)
+  Track *             track)
 {
-  self->channel = ch;
+  self->track = track;
   channel_slot_widget_set_state_flags (
     self, GTK_STATE_FLAG_SELECTED,
-    ch->instrument &&
-    plugin_is_selected (ch->instrument));
+    track->channel->instrument &&
+    plugin_is_selected (
+      track->channel->instrument));
 }
 
 /**
@@ -941,7 +948,7 @@ channel_slot_widget_set_instrument (
 ChannelSlotWidget *
 channel_slot_widget_new (
   int       slot_index,
-  Channel * ch,
+  Track *   track,
   PluginSlotType type,
   bool      open_plugin_inspector_on_click)
 {
@@ -950,7 +957,7 @@ channel_slot_widget_new (
       CHANNEL_SLOT_WIDGET_TYPE, NULL);
   self->slot_index = slot_index;
   self->type = type;
-  self->channel = ch;
+  self->track = track;
   self->open_plugin_inspector_on_click =
     open_plugin_inspector_on_click;
 
@@ -1000,7 +1007,7 @@ channel_slot_widget_new_instrument (void)
       CHANNEL_SLOT_WIDGET_TYPE, NULL);
   self->slot_index = -1;
   self->type = PLUGIN_SLOT_INSTRUMENT;
-  self->channel = NULL;
+  self->track = NULL;
   self->open_plugin_inspector_on_click = false;
 
   return self;

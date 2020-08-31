@@ -71,7 +71,7 @@ test_save_load_with_data ()
   marker_track_clear (P_MARKER_TRACK);
   tempo_track_clear (P_TEMPO_TRACK);
   for (int i = TRACKLIST->num_tracks - 1;
-       i >= 4; i--)
+       i > P_MASTER_TRACK->pos; i--)
     {
       Track * track = TRACKLIST->tracks[i];
       tracklist_remove_track (

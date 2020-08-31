@@ -492,10 +492,10 @@ channel_add_plugin (
   PluginSlotType slot_type,
   int       pos,
   Plugin *  plugin,
-  int       confirm,
-  int       gen_automatables,
-  int       recalc_graph,
-  int       pub_events);
+  bool      confirm,
+  bool      gen_automatables,
+  bool      recalc_graph,
+  bool      pub_events);
 
 Track *
 channel_get_track (
@@ -532,29 +532,24 @@ channel_get_automation_track (
   Channel *       channel,
   PortFlags       type);
 
+
 /**
  * Removes a plugin at pos from the channel.
  *
- * If deleting_channel is 1, the automation tracks
- * associated with he plugin are not deleted at
- * this time.
- *
- * This function will always recalculate the graph
- * in order to avoid situations where the plugin
- * might be used during processing.
- *
  * @param deleting_plugin
- * @param deleting_channel
+ * @param deleting_channel If true, the automation
+ *   tracks associated with the plugin are not
+ *   deleted at this time.
  * @param recalc_graph Recalculate mixer graph.
  */
 void
 channel_remove_plugin (
-  Channel * channel,
-  PluginSlotType type,
-  int       pos,
-  bool      deleting_plugin,
-  bool      deleting_channel,
-  bool      recalc_graph);
+  Channel *      channel,
+  PluginSlotType slot_type,
+  int            slot,
+  bool           deleting_plugin,
+  bool           deleting_channel,
+  bool           recalc_graph);
 
 /**
  * Updates the track position in the channel and

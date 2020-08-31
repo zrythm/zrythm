@@ -26,7 +26,7 @@
 #include "actions/move_plugins_action.h"
 #include "actions/move_tracks_action.h"
 #include "audio/channel.h"
-#include "audio/modulator.h"
+#include "audio/modulator_track.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
@@ -236,16 +236,16 @@ on_drag_data_received (
         }
       else
         {
-          Track * track =
-            TRACKLIST_SELECTIONS->tracks[0];
-          Modulator * modulator =
-            modulator_new (pd, track);
-          track_add_modulator (
-            track, modulator);
+          UndoableAction * ua =
+            create_plugins_action_new (
+              pd, PLUGIN_SLOT_MODULATOR,
+              P_MODULATOR_TRACK->pos,
+              P_MODULATOR_TRACK->num_modulators, 1);
+          undo_manager_perform (UNDO_MANAGER, ua);
         }
     }
   else if (target ==
-            GET_ATOM (TARGET_ENTRY_PLUGIN))
+             GET_ATOM (TARGET_ENTRY_PLUGIN))
     {
       /* NOTE this is a cloned pointer, don't use
        * it */
@@ -586,14 +586,10 @@ drag_dest_box_widget_new (
       symap_map (ZSYMAP, TARGET_ENTRY_TRACK),
     }
   };
-  /* disable for now */
-  if (type != DRAG_DEST_BOX_TYPE_MODULATORS)
-    {
-      gtk_drag_dest_set (
-        GTK_WIDGET (self), GTK_DEST_DEFAULT_ALL,
-        entries, G_N_ELEMENTS (entries),
-        GDK_ACTION_COPY);
-    }
+  gtk_drag_dest_set (
+    GTK_WIDGET (self), GTK_DEST_DEFAULT_ALL,
+    entries, G_N_ELEMENTS (entries),
+    GDK_ACTION_COPY);
   g_free (entry_track);
   g_free (entry_plugin);
   g_free (entry_plugin_descr);

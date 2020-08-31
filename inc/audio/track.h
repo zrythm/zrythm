@@ -35,12 +35,12 @@
 #include "audio/scale_object.h"
 #include "audio/track_lane.h"
 #include "audio/track_processor.h"
+#include "plugins/plugin.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
 
 #define MAX_REGIONS 300
-#define MAX_MODULATORS 14
 
 typedef struct AutomationTracklist
   AutomationTracklist;
@@ -119,6 +119,11 @@ typedef enum TrackType
   TRACK_TYPE_TEMPO,
 
   /**
+   * Special track to contain global Modulator's.
+   */
+  TRACK_TYPE_MODULATOR,
+
+  /**
    * Buses are channels that receive audio input
    * and have effects on their channel strip. They
    * are similar to Group Tracks, except that they
@@ -160,6 +165,7 @@ track_type_strings[] =
   { __("Chord"),        TRACK_TYPE_CHORD   },
   { __("Marker"),       TRACK_TYPE_MARKER   },
   { __("Tempo"),        TRACK_TYPE_TEMPO   },
+  { __("Modulator"),    TRACK_TYPE_MODULATOR   },
   { __("Audio FX"),     TRACK_TYPE_AUDIO_BUS   },
   { __("Audio Group"),  TRACK_TYPE_AUDIO_GROUP   },
   { __("MIDI"),         TRACK_TYPE_MIDI   },
@@ -234,6 +240,8 @@ typedef struct Track
    * Active (enabled) or not.
    *
    * Disabled tracks should be ignored in routing.
+   *
+   * TODO explain what functionality this provides.
    */
   bool                active;
 
@@ -355,6 +363,15 @@ typedef struct Track
 
   /* ==== TEMPO TRACK END ==== */
 
+  /* ==== MODULATOR TRACK ==== */
+
+  /** Modulators. */
+  Plugin **         modulators;
+  int               num_modulators;
+  int               modulators_size;
+
+  /* ==== MODULATOR TRACK END ==== */
+
   /* ==== CHANNEL TRACK ==== */
 
   /** 1 Track has 0 or 1 Channel. */
@@ -371,11 +388,6 @@ typedef struct Track
   TrackProcessor *    processor;
 
   AutomationTracklist automation_tracklist;
-
-  /** Modulators for this Track. */
-  Modulator **        modulators;
-  int                 num_modulators;
-  int                 modulators_size;
 
   /**
    * Flag to tell the UI that this channel had
@@ -468,6 +480,8 @@ track_fields_schema[] =
     Track, bpm_port, port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Track, time_sig_port, port_fields_schema),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+    Track, modulators, plugin_schema),
   YAML_FIELD_MAPPING_PTR (
     Track, processor,
     track_processor_fields_schema),
@@ -546,21 +560,9 @@ track_clone (
  * Returns if the given TrackType is a type of
  * Track that has a Channel.
  */
-static inline bool
+bool
 track_type_has_channel (
-  TrackType type)
-{
-  switch (type)
-    {
-    case TRACK_TYPE_MARKER:
-    case TRACK_TYPE_TEMPO:
-      return 0;
-    default:
-      break;
-    }
-
-  return 1;
-}
+  TrackType type);
 
 /**
  * Sets track muted and optionally adds the action
@@ -945,14 +947,6 @@ track_get_from_name (
 const char *
 track_stringize_type (
   TrackType type);
-
-/**
- * Adds and connects a Modulator to the Track.
- */
-void
-track_add_modulator (
-  Track * track,
-  Modulator * modulator);
 
 /**
  * Returns if regions in tracks from type1 can

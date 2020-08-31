@@ -94,10 +94,10 @@ static const cyaml_schema_value_t
 UndoableAction *
 create_plugins_action_new (
   const PluginDescriptor * descr,
-  PluginSlotType  slot_type,
-  int       track_pos,
-  int       slot,
-  int       num_plugins);
+  PluginSlotType           slot_type,
+  int                      track_pos,
+  int                      slot,
+  int                      num_plugins);
 
 int
 create_plugins_action_do (

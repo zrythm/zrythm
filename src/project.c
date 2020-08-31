@@ -38,6 +38,7 @@
 #include "audio/engine.h"
 #include "audio/marker_track.h"
 #include "audio/midi_note.h"
+#include "audio/modulator_track.h"
 #include "audio/router.h"
 #include "audio/tempo_track.h"
 #include "audio/track.h"
@@ -612,7 +613,8 @@ create_default (Project * self)
 
   /* chord */
   g_message ("adding chord track...");
-  Track * track = chord_track_new (0);
+  Track * track =
+    chord_track_new (TRACKLIST->num_tracks);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
@@ -621,16 +623,28 @@ create_default (Project * self)
 
   /* tempo */
   g_message ("adding tempo track...");
-  track = tempo_track_default (1);
+  track =
+    tempo_track_default (TRACKLIST->num_tracks);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
   track->pinned = 1;
   self->tracklist->tempo_track = track;
 
+  /* modulator */
+  g_message ("adding modulator track...");
+  track =
+    modulator_track_default (TRACKLIST->num_tracks);
+  tracklist_append_track (
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
+    F_NO_RECALC_GRAPH);
+  track->pinned = 1;
+  self->tracklist->modulator_track = track;
+
   /* marker */
   g_message ("adding marker track...");
-  track = marker_track_default (0);
+  track =
+    marker_track_default (TRACKLIST->num_tracks);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
@@ -641,8 +655,8 @@ create_default (Project * self)
   g_message ("adding master track...");
   track =
     track_new (
-      TRACK_TYPE_MASTER, 2, _("Master"),
-      F_WITHOUT_LANE);
+      TRACK_TYPE_MASTER, TRACKLIST->num_tracks,
+      _("Master"), F_WITHOUT_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);

@@ -42,7 +42,6 @@
 #include "audio/graph.h"
 #include "audio/graph_node.h"
 #include "audio/graph_thread.h"
-#include "audio/modulator.h"
 #include "audio/port.h"
 #include "audio/router.h"
 #include "audio/sample_processor.h"
@@ -557,7 +556,7 @@ graph_setup (
         }
       for (j = 0; j < tr->num_modulators; j++)
         {
-          pl = tr->modulators[j]->plugin;
+          pl = tr->modulators[j];
 
           if (!pl || pl->deleting)
             continue;
@@ -852,7 +851,7 @@ graph_setup (
 
       for (j = 0; j < tr->num_modulators; j++)
         {
-          pl = tr->modulators[j]->plugin;
+          pl = tr->modulators[j];
 
           if (pl && !pl->deleting)
             connect_plugin (self, pl);

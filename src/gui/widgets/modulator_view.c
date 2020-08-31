@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,19 +17,21 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/modulator.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/drag_dest_box.h"
+#include "gui/widgets/modulator.h"
 #include "gui/widgets/modulator_view.h"
+#include "plugins/plugin.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (ModulatorViewWidget,
-               modulator_view_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  ModulatorViewWidget,
+  modulator_view_widget,
+  GTK_TYPE_BOX)
 
 void
 modulator_view_widget_refresh (
@@ -37,6 +39,9 @@ modulator_view_widget_refresh (
   Track *               track)
 {
   self->track = track;
+  gtk_label_set_text (self->track_name, track->name);
+  color_area_widget_set_color (
+    self->color, &track->color);
 
   z_gtk_container_remove_all_children (
     GTK_CONTAINER (self->modulators_box));
@@ -45,11 +50,15 @@ modulator_view_widget_refresh (
        i < self->track->num_modulators;
        i++)
     {
-      Modulator * modulator =
-        track->modulators[i];
+      Plugin * modulator = track->modulators[i];
+      if (!modulator->modulator_widget)
+        {
+          modulator->modulator_widget =
+            modulator_widget_new (modulator);
+        }
       gtk_container_add (
         GTK_CONTAINER (self->modulators_box),
-        GTK_WIDGET (modulator->widget));
+        GTK_WIDGET (modulator->modulator_widget));
     }
 
   DragDestBoxWidget * drag_dest =

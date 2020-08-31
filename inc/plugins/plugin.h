@@ -42,6 +42,7 @@
 typedef struct Channel Channel;
 typedef struct VstPlugin VstPlugin;
 typedef struct AutomationTrack AutomationTrack;
+typedef struct _ModulatorWidget ModulatorWidget;
 
 /**
  * @addtogroup plugins
@@ -191,6 +192,9 @@ typedef struct Plugin
   int               magic;
 
   bool              is_project;
+
+  /** Modulator widget, if modulator. */
+  ModulatorWidget * modulator_widget;
 } Plugin;
 
 static const cyaml_schema_field_t
@@ -278,8 +282,8 @@ plugin_add_out_port (
 Plugin *
 plugin_new_from_descr (
   PluginDescriptor * descr,
-  int                      track_pos,
-  int                      slot);
+  int                track_pos,
+  int                slot);
 
 /**
  * Create a dummy plugin for tests.
@@ -351,7 +355,7 @@ plugin_activate (
 void
 plugin_move (
   Plugin *       pl,
-  Channel *      ch,
+  Track *        track,
   PluginSlotType slot_type,
   int            slot);
 
@@ -360,9 +364,9 @@ plugin_move (
  * its ports.
  */
 void
-plugin_set_channel_and_slot (
+plugin_set_track_and_slot (
   Plugin *       pl,
-  Channel *      ch,
+  int            track_pos,
   PluginSlotType slot_type,
   int            slot);
 
@@ -380,8 +384,8 @@ plugin_descriptor_is_instrument (
 void
 plugin_move_automation (
   Plugin *       pl,
-  Channel *      prev_ch,
-  Channel *      ch,
+  Track *        prev_track,
+  Track *        track,
   PluginSlotType new_slot_type,
   int            new_slot);
 
@@ -397,6 +401,20 @@ plugin_append_ports (
   int *     max_size,
   bool      is_dynamic,
   int *     size);
+
+/**
+ * Exposes or unexposes plugin ports to the backend.
+ *
+ * @param expose Expose or not.
+ * @param inputs Expose/unexpose inputs.
+ * @param outputs Expose/unexpose outputs.
+ */
+void
+plugin_expose_ports (
+  Plugin * pl,
+  bool     expose,
+  bool     inputs,
+  bool     outputs);
 
 /**
  * Returns the escaped name of the plugin.

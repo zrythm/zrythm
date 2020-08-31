@@ -214,7 +214,7 @@ delete_plugins_action_undo (
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 
-  EVENTS_PUSH (ET_PLUGINS_ADDED, ch);
+  EVENTS_PUSH (ET_PLUGINS_ADDED, track);
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
 
   return 0;

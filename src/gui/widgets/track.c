@@ -88,6 +88,7 @@ G_DEFINE_TYPE (
   "kdenlive-show-markers"
 #define ICON_NAME_MIDI "audio-midi"
 #define ICON_NAME_TEMPO "filename-bpm-amarok"
+#define ICON_NAME_MODULATOR "modulator"
 
 #ifdef _WOE32
 #define NAME_FONT "9"
@@ -2750,6 +2751,12 @@ track_widget_new (Track * track)
       break;
     case TRACK_TYPE_TEMPO:
       strcpy (self->icon_name, ICON_NAME_TEMPO);
+      add_button (
+        self, true,
+        ICON_NAME_SHOW_AUTOMATION_LANES);
+      break;
+    case TRACK_TYPE_MODULATOR:
+      strcpy (self->icon_name, ICON_NAME_MODULATOR);
       add_button (
         self, true,
         ICON_NAME_SHOW_AUTOMATION_LANES);

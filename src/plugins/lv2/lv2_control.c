@@ -386,6 +386,12 @@ lv2_control_get_from_port (
               port->port->id.track_pos]->
                 channel->inserts[pl_id->slot];
           break;
+        case PLUGIN_SLOT_MODULATOR:
+          pl =
+            TRACKLIST->tracks[
+              port->port->id.track_pos]->
+                modulators[pl_id->slot];
+          break;
         }
     }
 

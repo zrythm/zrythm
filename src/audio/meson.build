@@ -71,7 +71,7 @@ audio_srcs = [
   'midi_note.c',
   'midi_region.c',
   'midi_track.c',
-  'modulator.c',
+  'modulator_track.c',
   'peak_dsp.c',
   'pool.c',
   'port.c',

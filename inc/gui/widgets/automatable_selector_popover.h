@@ -63,6 +63,7 @@ typedef enum AutomatableSelectorType
   AS_TYPE_INSERT_6,
   AS_TYPE_INSERT_7,
   AS_TYPE_INSERT_8,
+  AS_TYPE_MODULATOR_0,
 } AutomatableSelectorType;
 
 /**

@@ -72,7 +72,7 @@ track_properties_expander_widget_refresh (
       if (is_instrument)
         {
           channel_slot_widget_set_instrument (
-            self->instrument_slot, track->channel);
+            self->instrument_slot, track);
         }
     }
 }

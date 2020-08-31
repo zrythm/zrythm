@@ -78,10 +78,12 @@ move_plugins_action_do (
   MovePluginsAction * self)
 {
   Plugin * pl = NULL;
-  Channel * from_ch =
-    TRACKLIST->tracks[self->from_track_pos]->channel;
+  Track * from_tr =
+    TRACKLIST->tracks[self->from_track_pos];
+  Channel * from_ch = from_tr->channel;
   g_return_val_if_fail (from_ch, -1);
   Channel * to_ch = NULL;
+  Track * to_tr = NULL;
   if (self->is_new_channel)
     {
       /* get the clone */
@@ -116,14 +118,15 @@ move_plugins_action_do (
       /* remember track pos */
       self->to_track_pos = new_track->pos;
 
+      to_tr = new_track;
       to_ch = new_track->channel;
     }
   else
     {
-      to_ch =
-        TRACKLIST->tracks[self->to_track_pos]->
-          channel;
-      g_return_val_if_fail (to_ch, -1);
+      to_tr =
+        TRACKLIST->tracks[self->to_track_pos];
+      to_ch = to_tr->channel;
+      g_return_val_if_fail (to_tr, -1);
     }
 
   /*int highest_slot =*/
@@ -153,15 +156,19 @@ move_plugins_action_do (
             from_ch->inserts[
               self->ms->plugins[i]->id.slot];
           break;
+        case PLUGIN_SLOT_MODULATOR:
+          pl =
+            from_tr->modulators[
+              self->ms->plugins[i]->id.slot];
+          break;
         }
       g_warn_if_fail (
-        pl &&
-        pl->id.track_pos == from_ch->track_pos);
+        pl && pl->id.track_pos == from_tr->pos);
 
       /* move and select plugin to to_slot + diff */
       to_slot = self->to_slot + i;
       plugin_move (
-        pl, to_ch, self->slot_type, to_slot);
+        pl, to_tr, self->slot_type, to_slot);
 
       mixer_selections_add_slot (
         MIXER_SELECTIONS, to_ch, self->slot_type,
@@ -178,14 +185,15 @@ move_plugins_action_undo (
   MovePluginsAction * self)
 {
   /* get original channel */
-  Channel * ch =
-    TRACKLIST->tracks[
-      self->from_track_pos]->channel;
-  g_return_val_if_fail (ch, -1);
+  Track * track =
+    TRACKLIST->tracks[self->from_track_pos];
+  Channel * ch = track->channel;
+  g_return_val_if_fail (track, -1);
 
   /* get the channel the plugins were moved to */
-  Channel * current_ch =
-    TRACKLIST->tracks[self->to_track_pos]->channel;
+  Track * current_tr =
+    TRACKLIST->tracks[self->to_track_pos];
+  Channel * current_ch = current_tr->channel;
   g_return_val_if_fail (current_ch, -1);
 
   /* clear selections to readd each plugin moved */
@@ -209,12 +217,17 @@ move_plugins_action_undo (
           pl =
             current_ch->inserts[self->to_slot + i];
           break;
+        case PLUGIN_SLOT_MODULATOR:
+          pl =
+            current_tr->modulators[
+              self->to_slot + i];
+          break;
         }
       g_return_val_if_fail (pl, -1);
 
       /* move plugin to its original slot */
       plugin_move (
-        pl, ch, self->ms->type,
+        pl, track, self->ms->type,
         self->ms->plugins[i]->id.slot);
 
       /* add to mixer selections */

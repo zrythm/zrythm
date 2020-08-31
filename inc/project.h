@@ -130,13 +130,13 @@ typedef enum ProjectCompressionFlag
 typedef struct Project
 {
   /** Project title. */
-  char *             title;
+  char *            title;
 
   /** Datetime string to add to the project file. */
-  char *             datetime_str;
+  char *            datetime_str;
 
   /** Path to save the project in. */
-  char *             dir;
+  char *            dir;
 
   /**
    * Backup dir to save the project during
@@ -145,26 +145,26 @@ typedef struct Project
    * For example, \ref Project.dir
    * /backups/myproject.bak3.
    */
-  char *             backup_dir;
+  char *            backup_dir;
 
-  UndoManager *      undo_manager;
+  UndoManager *     undo_manager;
 
-  Tracklist *        tracklist;
+  Tracklist *       tracklist;
 
   /** Backend for the widget. */
-  ClipEditor *       clip_editor;
+  ClipEditor *      clip_editor;
 
   /** Snap/Grid info for the timeline. */
-  SnapGrid           snap_grid_timeline;
+  SnapGrid          snap_grid_timeline;
 
   /** Quantize info for the timeline. */
-  QuantizeOptions    quantize_opts_timeline;
+  QuantizeOptions   quantize_opts_timeline;
 
   /** Snap/Grid info for the piano roll. */
   SnapGrid          snap_grid_midi;
 
   /** Quantize info for the piano roll. */
-  QuantizeOptions    quantize_opts_editor;
+  QuantizeOptions   quantize_opts_editor;
 
   /**
    * Selected objects in the
@@ -176,7 +176,7 @@ typedef struct Project
    * Selected objects in the
    * ChordObjectArrangerWidget.
    */
-  ChordSelections      chord_selections;
+  ChordSelections   chord_selections;
 
   /**
    * Selected objects in the TimelineArrangerWidget.
@@ -196,11 +196,11 @@ typedef struct Project
   /**
    * Plugin selections in the Mixer.
    */
-  MixerSelections    mixer_selections;
+  MixerSelections   mixer_selections;
 
   /** Zoom levels. TODO & move to clip_editor */
-  double             timeline_zoom;
-  double             piano_roll_zoom;
+  double            timeline_zoom;
+  double            piano_roll_zoom;
 
   /** Manager for region link groups. */
   RegionLinkGroupManager region_link_group_manager;
@@ -243,7 +243,7 @@ typedef struct Project
    *
    * Used in inspector_widget_refresh.
    */
-  SelectionType   last_selection;
+  SelectionType     last_selection;
 
   /** Zrythm version, for zerialization */
   char *            version;

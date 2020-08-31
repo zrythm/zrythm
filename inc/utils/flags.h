@@ -166,4 +166,19 @@
 #define F_IN_RANGE 1
 #define F_NOT_IN_RANGE 0
 
+#define F_EXPOSE 1
+#define F_NOT_EXPOSE 0
+
+#define F_DELETING_PLUGIN 1
+#define F_NOT_DELETING_PLUGIN 0
+
+#define F_DELETING_CHANNEL 1
+#define F_NOT_DELETING_CHANNEL 0
+
+#define F_DELETING_TRACK 1
+#define F_NOT_DELETING_TRACK 0
+
+#define F_REPLACING 1
+#define F_NOT_REPLACING 0
+
 #endif

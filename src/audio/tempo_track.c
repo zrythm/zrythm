@@ -72,6 +72,9 @@ tempo_track_init (
     PORT_FLAG_TIME_SIG;
   self->time_sig_port->id.flags |=
     PORT_FLAG_AUTOMATABLE;
+
+  /* set invisible */
+  self->visible = false;
 }
 
 /**

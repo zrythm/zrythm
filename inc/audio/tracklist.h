@@ -99,6 +99,9 @@ typedef struct Tracklist
   /** The tempo track, for convenience. */
   Track *             tempo_track;
 
+  /** The modulator track, for convenience. */
+  Track *             modulator_track;
+
   /** The master track, for convenience. */
   Track *             master_track;
 

@@ -72,7 +72,7 @@ typedef struct TrackLane
   int                 solo;
 
   /** Regions in this track. */
-  ZRegion **           regions;
+  ZRegion **          regions;
   int                 num_regions;
   size_t              regions_size;
 
@@ -89,47 +89,36 @@ typedef struct TrackLane
 
   /** Buttons used by the track widget. */
   CustomButtonWidget * buttons[8];
-  int                  num_buttons;
+  int                 num_buttons;
 
 } TrackLane;
 
 static const cyaml_schema_field_t
 track_lane_fields_schema[] =
 {
-	CYAML_FIELD_INT (
-    "pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     TrackLane, pos),
-  CYAML_FIELD_STRING_PTR (
-    "name", CYAML_FLAG_POINTER,
-    TrackLane, name,
-   	0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
-    "height", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_STRING_PTR (
+    TrackLane, name),
+  YAML_FIELD_INT (
     TrackLane, height),
-	CYAML_FIELD_INT (
-    "mute", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     TrackLane, mute),
-	CYAML_FIELD_INT (
-    "solo", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     TrackLane, solo),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "regions",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    TrackLane, regions, num_regions,
-    &region_schema, 0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+    TrackLane, regions, region_schema),
+  YAML_FIELD_INT (
     TrackLane, track_pos),
-	CYAML_FIELD_UINT (
-    "midi_ch", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_UINT (
     TrackLane, midi_ch),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 track_lane_schema = {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
     TrackLane, track_lane_fields_schema),
 };

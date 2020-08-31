@@ -36,6 +36,7 @@
 #include "audio/marker_track.h"
 #include "audio/master_track.h"
 #include "audio/midi_note.h"
+#include "audio/modulator_track.h"
 #include "audio/region.h"
 #include "audio/tempo_track.h"
 #include "audio/tracklist.h"
@@ -267,8 +268,9 @@ test_project_rebootstrap_timeline (
   chord_track_clear (P_CHORD_TRACK);
   marker_track_clear (P_MARKER_TRACK);
   tempo_track_clear (P_TEMPO_TRACK);
+  //modulator_track_clear (P_MODULATOR_TRACK);
   for (int i = TRACKLIST->num_tracks - 1;
-       i >= 4; i--)
+       i > P_MASTER_TRACK->pos; i--)
     {
       Track * track = TRACKLIST->tracks[i];
       tracklist_remove_track (

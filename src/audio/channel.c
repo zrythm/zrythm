@@ -36,7 +36,6 @@
 #include "audio/midi_event.h"
 #include "audio/midi_track.h"
 #include "audio/router.h"
-#include "audio/modulator.h"
 #include "audio/pan.h"
 #include "audio/rtmidi_device.h"
 #include "audio/track.h"
@@ -1111,19 +1110,6 @@ channel_append_all_ports (
             is_dynamic, size);
         }
     }
-
-  for (int j = 0; j < ch->track->num_modulators;
-       j++)
-    {
-      pl = ch->track->modulators[j]->plugin;
-
-      if (pl)
-        {
-          plugin_append_ports (
-            pl, ports, max_size, is_dynamic,
-            size);
-        }
-    }
 #undef _ADD
 }
 
@@ -1474,38 +1460,17 @@ channel_disconnect_plugin_from_strip (
       ch, prev_plugin, pl, next_plugin);
 
   /* unexpose all JACK ports */
-  Port * port;
-  for (i = 0; i < pl->num_in_ports; i++)
-    {
-      port = pl->in_ports[i];
-
-      if (port->internal_type !=
-            INTERNAL_NONE)
-        port_set_expose_to_backend (port, 0);
-    }
-  for (i = 0; i < pl->num_out_ports; i++)
-    {
-      port = pl->out_ports[i];
-
-      if (port->internal_type !=
-            INTERNAL_NONE)
-        port_set_expose_to_backend (port, 0);
-    }
+  plugin_expose_ports (
+    pl, F_NOT_EXPOSE, true, true);
 }
 
 /**
  * Removes a plugin at pos from the channel.
  *
- * If deleting_channel is true, the automation tracks
- * associated with the plugin are not deleted at
- * this time.
- *
- * This function will always recalculate the graph
- * in order to avoid situations where the plugin
- * might be used during processing.
- *
  * @param deleting_plugin
- * @param deleting_channel
+ * @param deleting_channel If true, the automation
+ *   tracks associated with the plugin are not
+ *   deleted at this time.
  * @param recalc_graph Recalculate mixer graph.
  */
 void
@@ -1610,7 +1575,8 @@ channel_remove_plugin (
 }
 
 /**
- * Adds given plugin to given position in the strip.
+ * Adds given plugin to given position in the
+ * strip.
  *
  * The plugin must be already instantiated at this
  * point.
@@ -1635,10 +1601,10 @@ channel_add_plugin (
   PluginSlotType slot_type,
   int       slot,
   Plugin *  plugin,
-  int       confirm,
-  int       gen_automatables,
-  int       recalc_graph,
-  int       pub_events)
+  bool      confirm,
+  bool      gen_automatables,
+  bool      recalc_graph,
+  bool      pub_events)
 {
   int i;
   Track * track = channel_get_track (self);
@@ -1700,8 +1666,8 @@ channel_add_plugin (
     {
       plugins[slot] = plugin;
     }
-  plugin_set_channel_and_slot (
-    plugin, self, slot_type, slot);
+  plugin_set_track_and_slot (
+    plugin, self->track_pos, slot_type, slot);
 
   Plugin ** prev_plugins = NULL;
   switch (slot_type)
@@ -1784,7 +1750,8 @@ channel_add_plugin (
         }
     }
 
-  plugin_set_is_project (plugin, track->is_project);
+  plugin_set_is_project (
+    plugin, track->is_project);
 
   /* ------------------------------------------
    * connect ports

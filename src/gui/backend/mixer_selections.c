@@ -283,6 +283,9 @@ mixer_selections_get_first_plugin (
           return
             track->channel->midi_fx[
               self->slots[0]];
+        case PLUGIN_SLOT_MODULATOR:
+          return
+            track->modulators[self->slots[0]];
         }
     }
 

@@ -19,6 +19,7 @@
 
 #include "actions/create_plugins_action.h"
 #include "audio/channel.h"
+#include "audio/modulator_track.h"
 #include "audio/router.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -59,15 +60,15 @@ int
 create_plugins_action_do (
   CreatePluginsAction * self)
 {
-  Plugin * pl;
-  Channel * ch =
-    TRACKLIST->tracks[self->track_pos]->channel;
-  g_return_val_if_fail (ch, -1);
+  Track * track =
+    TRACKLIST->tracks[self->track_pos];
+  Channel * ch = track->channel;
+  g_return_val_if_fail (track, -1);
 
   for (int i = 0; i < self->num_plugins; i++)
     {
       /* create new plugin */
-      pl =
+      Plugin * pl =
         plugin_new_from_descr (
           &self->descr, self->track_pos,
           self->slot + i);
@@ -80,11 +81,22 @@ create_plugins_action_do (
       int ret = plugin_instantiate (pl, true, NULL);
       g_return_val_if_fail (!ret, -1);
 
-      /* add to channel */
-      channel_add_plugin (
-        ch, self->slot_type,
-        self->slot + i, pl, 1, 1,
-        F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
+      if (self->slot_type == PLUGIN_SLOT_MODULATOR)
+        {
+          modulator_track_add_modulator (
+            P_MODULATOR_TRACK, self->slot + i, pl,
+            F_CONFIRM, F_GEN_AUTOMATABLES,
+            F_NO_RECALC_GRAPH, F_PUBLISH_EVENTS);
+        }
+      else
+        {
+          /* add to channel */
+          channel_add_plugin (
+            ch, self->slot_type,
+            self->slot + i, pl, F_CONFIRM,
+            F_GEN_AUTOMATABLES,
+            F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
+        }
 
       if (ZRYTHM_HAVE_UI &&
           g_settings_get_boolean (
@@ -92,8 +104,8 @@ create_plugins_action_do (
             "open-on-instantiate"))
         {
           pl->visible = 1;
-          EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
-                       pl);
+          EVENTS_PUSH (
+            ET_PLUGIN_VISIBILITY_CHANGED, pl);
         }
 
       /* activate */
@@ -103,8 +115,10 @@ create_plugins_action_do (
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 
-  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED,
-               ch);
+  if (ch)
+    {
+      EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
+    }
 
   return 0;
 }
@@ -116,19 +130,33 @@ int
 create_plugins_action_undo (
   CreatePluginsAction * self)
 {
-  Channel * ch =
-    TRACKLIST->tracks[self->track_pos]->channel;
-  g_return_val_if_fail (ch, -1);
+  Track * track =
+    TRACKLIST->tracks[self->track_pos];
+  Channel * ch = track->channel;
+  g_return_val_if_fail (track, -1);
 
   for (int i = 0; i < self->num_plugins; i++)
     {
       /* remove the plugin */
-      channel_remove_plugin (
-        ch, self->slot_type, self->slot + i, 1, 0,
-        F_NO_RECALC_GRAPH);
+      if (self->slot_type == PLUGIN_SLOT_MODULATOR)
+        {
+          modulator_track_remove_modulator (
+            track, self->slot + i,
+            F_NOT_REPLACING,
+            F_DELETING_PLUGIN,
+            F_NOT_DELETING_TRACK,
+            F_NO_RECALC_GRAPH);
+        }
+      else
+        {
+          channel_remove_plugin (
+            ch, self->slot_type, self->slot + i,
+            F_DELETING_PLUGIN,
+            F_NOT_DELETING_CHANNEL,
+            F_NO_RECALC_GRAPH);
+        }
 
-      EVENTS_PUSH (ET_PLUGINS_REMOVED,
-                   ch);
+      EVENTS_PUSH (ET_PLUGINS_REMOVED, track);
     }
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);

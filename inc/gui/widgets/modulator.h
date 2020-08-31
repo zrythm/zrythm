@@ -41,24 +41,25 @@ typedef struct _ModulatorWidget
   TwoColExpanderBoxWidget  parent_instance;
 
   /** The controls box on the left. */
-  GtkBox *                 controls_box;
+  GtkBox *          controls_box;
 
-  KnobWithNameWidget *     knobs[MAX_MODULATORS];
-  int                      num_knobs;
+  KnobWithNameWidget ** knobs;
+  int               num_knobs;
+  int               knobs_size;
 
   /** The graph on the right. */
-  GtkDrawingArea *         graph;
+  GtkDrawingArea *  graph;
 
   /** Width is 60 so 59 previous points per
-   * CV out (max 6). */
-  double                   prev_points[6][60];
+   * CV out (max 16). */
+  double            prev_points[16][60];
 
   /** Pointer back to the Modulator. */
-  Modulator *              modulator;
+  Plugin *          modulator;
 } ModulatorWidget;
 
 ModulatorWidget *
 modulator_widget_new (
-  Modulator * modulator);
+  Plugin * modulator);
 
 #endif

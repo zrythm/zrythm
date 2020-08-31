@@ -74,31 +74,19 @@ typedef struct TimelineSelections
 static const cyaml_schema_field_t
   timeline_selections_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "base", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     TimelineSelections, base,
     arranger_selections_fields_schema),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "regions",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    TimelineSelections, regions, num_regions,
-    &region_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "scale_objects",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+    TimelineSelections, regions, region_schema),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     TimelineSelections, scale_objects,
-    num_scale_objects,
-    &scale_object_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "markers",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    TimelineSelections, markers, num_markers,
-    &marker_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "chord_track_vis_index", CYAML_FLAG_DEFAULT,
+    scale_object_schema),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+    TimelineSelections, markers, marker_schema),
+  YAML_FIELD_INT (
     TimelineSelections, chord_track_vis_index),
-  CYAML_FIELD_INT (
-    "marker_track_vis_index", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     TimelineSelections, marker_track_vis_index),
 
   CYAML_FIELD_END

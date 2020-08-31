@@ -51,8 +51,9 @@ typedef struct _ChannelSlotWidget
 
   PluginSlotType      type;
 
-  /** The Channel this belongs to. */
-  Channel *            channel;
+  /** The Track this belongs to. */
+  Track *             track;
+
   /** The Channel slot index. */
   int                  slot_index;
   GtkGestureMultiPress * multipress;
@@ -99,14 +100,14 @@ channel_slot_widget_new_instrument (void);
 ChannelSlotWidget *
 channel_slot_widget_new (
   int       slot_index,
-  Channel * ch,
+  Track *   track,
   PluginSlotType type,
   bool      open_plugin_inspector_on_click);
 
 void
 channel_slot_widget_set_instrument (
   ChannelSlotWidget * self,
-  Channel *           ch);
+  Track *             track);
 
 /**
  * Sets or unsets state flags and redraws the

@@ -39,6 +39,9 @@ typedef enum PluginSlotType
   PLUGIN_SLOT_INSERT,
   PLUGIN_SLOT_MIDI_FX,
   PLUGIN_SLOT_INSTRUMENT,
+
+  /** Plugin is part of a modulator. */
+  PLUGIN_SLOT_MODULATOR,
 } PluginSlotType;
 
 static const cyaml_strval_t
@@ -47,6 +50,7 @@ plugin_slot_type_strings[] =
   { "Insert",     PLUGIN_SLOT_INSERT     },
   { "MIDI FX",    PLUGIN_SLOT_MIDI_FX    },
   { "Instrument", PLUGIN_SLOT_INSTRUMENT },
+  { "Modulator",  PLUGIN_SLOT_MODULATOR },
 };
 
 static inline const char *
@@ -65,7 +69,8 @@ typedef struct PluginIdentifier
   /** The Channel this plugin belongs to. */
   int              track_pos;
 
-  /** The slot this plugin is in in the channel. */
+  /** The slot this plugin is in in the channel, or
+   * thie index if this is part of a modulator. */
   int              slot;
 } PluginIdentifier;
 

@@ -17,11 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/modulator.h"
 #include "audio/track.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/knob_with_name.h"
 #include "gui/widgets/modulator.h"
+#include "plugins/plugin.h"
 #include "utils/arrays.h"
 
 #include <gtk/gtk.h>
@@ -34,8 +34,8 @@ G_DEFINE_TYPE (ModulatorWidget,
 
 static gboolean
 modulator_graph_draw (
-  GtkWidget    *widget,
-  cairo_t *cr,
+  GtkWidget *       widget,
+  cairo_t *         cr,
   ModulatorWidget * self)
 {
   GtkStyleContext *context =
@@ -55,14 +55,15 @@ modulator_graph_draw (
   cairo_set_source_rgba (
     cr, 0, 1, 0.5, 1);
 
-  Plugin * pl =
-    self->modulator->plugin;
+  Plugin * pl = self->modulator;
+  g_return_val_if_fail (IS_PLUGIN (pl), false);
+
   /*int num_cv_outs =*/
     /*pl->descr->num_cv_outs;*/
   Port * port;
   float maxf, minf, sizef, normalized_val;
   int i, j;
-  for (i = 0; i < pl->num_out_ports; i++)
+  for (i = 0; i < MIN (pl->num_out_ports, 16); i++)
     {
       port = pl->out_ports[i];
 
@@ -134,8 +135,10 @@ set_control_value (
 
 ModulatorWidget *
 modulator_widget_new (
-  Modulator * modulator)
+  Plugin * modulator)
 {
+  g_return_val_if_fail (IS_PLUGIN (modulator), NULL);
+
   ModulatorWidget * self =
     g_object_new (MODULATOR_WIDGET_TYPE, NULL);
 
@@ -144,10 +147,10 @@ modulator_widget_new (
 
   expander_box_widget_set_label (
     Z_EXPANDER_BOX_WIDGET (self),
-    modulator->name);
+    modulator->descr->name);
   expander_box_widget_set_icon_name (
     Z_EXPANDER_BOX_WIDGET (self),
-    "insert-math-expression");
+    "modulator");
 
   self->controls_box =
     GTK_BOX (
@@ -157,32 +160,30 @@ modulator_widget_new (
 
   Port * port;
   for (int i = 0;
-       i < modulator->plugin->num_in_ports; i++)
+       i < modulator->num_in_ports; i++)
     {
-      port = modulator->plugin->in_ports[i];
+      port = modulator->in_ports[i];
 
       if (port->id.type != TYPE_CONTROL ||
           port->id.flow != FLOW_INPUT)
         continue;
 
-
       KnobWidget * knob =
         knob_widget_new_simple (
-          get_control_value,
-          set_control_value,
-          port,
-          port->lv2_port->lv2_control->minf,
-          port->lv2_port->lv2_control->maxf,
-          24,
-          port->lv2_port->lv2_control->minf);
+          get_control_value, set_control_value,
+          port, port->minf, port->maxf,
+          24, port->zerof);
       KnobWithNameWidget * knob_with_name =
         knob_with_name_widget_new (
           port->id.label,
           knob);
 
-      array_append (self->knobs,
-                    self->num_knobs,
-                    knob_with_name);
+      array_double_size_if_full (
+        self->knobs, self->num_knobs,
+        self->knobs_size, KnobWithNameWidget *);
+      array_append (
+        self->knobs, self->num_knobs,
+        knob_with_name);
 
       gtk_container_add (
         GTK_CONTAINER (self->controls_box),
@@ -217,11 +218,22 @@ modulator_widget_new (
 }
 
 static void
+finalize (
+  ModulatorWidget * self)
+{
+  free (self->knobs);
+
+  G_OBJECT_CLASS (
+    modulator_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
+static void
 modulator_widget_class_init (
   ModulatorWidgetClass * _klass)
 {
-  /*GtkWidgetClass * klass =*/
-    /*GTK_WIDGET_CLASS (_klass);*/
+  GObjectClass * klass = G_OBJECT_CLASS (_klass);
+  klass->finalize = (GObjectFinalizeFunc) finalize;
 }
 
 static void
@@ -231,4 +243,8 @@ modulator_widget_init (
   expander_box_widget_set_orientation (
     Z_EXPANDER_BOX_WIDGET (self),
     GTK_ORIENTATION_HORIZONTAL);
+
+  self->knobs =
+    calloc (1, sizeof (KnobWithNameWidget *));
+  self->knobs_size = 1;
 }
