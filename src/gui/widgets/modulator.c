@@ -155,6 +155,12 @@ modulator_widget_new (
   self->controls_box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 2));
+  gtk_widget_set_margin_start (
+    GTK_WIDGET (self->controls_box), 1);
+  gtk_widget_set_margin_end (
+    GTK_WIDGET (self->controls_box), 1);
+  gtk_widget_set_margin_top (
+    GTK_WIDGET (self->controls_box), 3);
   gtk_widget_set_visible (
     GTK_WIDGET (self->controls_box), 1);
 
@@ -176,7 +182,7 @@ modulator_widget_new (
       KnobWithNameWidget * knob_with_name =
         knob_with_name_widget_new (
           port->id.label,
-          knob);
+          knob, GTK_ORIENTATION_HORIZONTAL, 3);
 
       array_double_size_if_full (
         self->knobs, self->num_knobs,

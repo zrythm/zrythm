@@ -28,14 +28,17 @@ G_DEFINE_TYPE (KnobWithNameWidget,
 
 KnobWithNameWidget *
 knob_with_name_widget_new (
-  const char * name,
-  KnobWidget * knob)
+  const char *   name,
+  KnobWidget *   knob,
+  GtkOrientation orientation,
+  int            spacing)
 {
   KnobWithNameWidget * self =
-    g_object_new (KNOB_WITH_NAME_WIDGET_TYPE,
-                  "orientation",
-                  GTK_ORIENTATION_VERTICAL,
-                  NULL);
+    g_object_new (
+      KNOB_WITH_NAME_WIDGET_TYPE,
+      "orientation", orientation,
+      "spacing", 2,
+      NULL);
 
   gtk_container_add (
     GTK_CONTAINER (self),

@@ -49,7 +49,9 @@ typedef struct _KnobWithNameWidget
 
 KnobWithNameWidget *
 knob_with_name_widget_new (
-  const char * name,
-  KnobWidget * knob);
+  const char *   name,
+  KnobWidget *   knob,
+  GtkOrientation orientation,
+  int            spacing);
 
 #endif

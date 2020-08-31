@@ -117,7 +117,7 @@ knob_draw_cb (
     context, cr, 0, 0, width, height);
   cairo_pattern_t* shade_pattern;
 
-  const float scale = (float) width;
+  const float scale = (float) MIN (width, height);
   /* if the knob is 80 pixels wide, we want a
    * 3px line on it */
   const float pointer_thickness =
@@ -510,7 +510,8 @@ _knob_widget_new (
   self->last_y = 0;
 
   /* set size */
-  gtk_widget_set_size_request (GTK_WIDGET (self), size, size);
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self), size, size);
 
   /* connect signals */
   g_signal_connect (

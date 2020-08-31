@@ -69,7 +69,7 @@ control_room_widget_setup (
   self->volume =
     knob_with_name_widget_new (
       _("Monitor out"),
-      knob);
+      knob, GTK_ORIENTATION_VERTICAL, 2);
   gtk_container_add (
     GTK_CONTAINER (self->main_knob_placeholder),
     GTK_WIDGET (self->volume));
