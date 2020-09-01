@@ -1,6 +1,38 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.911] - 2020-09-01
+### Added
+- Add right click + drag to delete objects with select tool
+- Add MIDI CC bindings table
+- Add port connections table
+- Add modulator track
+- Add ability to drop modulators in modulators tab
+- Allow connecting modulators to controls
+
+### Changed
+- Make changing track name undoable
+- Make changing fader value undoable
+- Make balance control changes undoable
+- Make control port value changes undoable
+- Make MIDI CC binding actions undoable
+- Update Italian, Portuguese, Chinese, Spanish translations
+- Split Chinese translations to Simple and Traditional
+- Minor fader redesign (use thinner handle with white line)
+- Use `reproc_run_ex` API for running external commands
+- Update minimum reproc dependency version to v14.1.0
+- Change how knobs and bar sliders get their values (add snapped getter)
+- Add scrollbars to port selector popover
+
+### Fixed
+- Fix scales not being editable
+- Fix issue with editing markers
+- Fix invalid knob drawing when zero point is negative
+- Fix range action not being initialized on project load
+- Fix enabling/disabling the port connection in port connections popover not being undoable
+- Fix missing icon for Add button in port connections popover
+- Fix drag n drop of chords from the chord pad into the timeline not working
+
 ## [0.8.868] - 2020-08-24
 ### Added
 - Add recording mode selector
