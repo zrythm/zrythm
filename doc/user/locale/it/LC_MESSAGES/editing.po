@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-08-23 12:48+0000\n"
+"PO-Revision-Date: 2020-09-01 18:40+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/it/>\n"
@@ -23,11 +23,12 @@ msgstr ""
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:32
 msgid "Audio Editor"
-msgstr ""
+msgstr "Editor audio"
 
 #: ../../editing/clip-editors/audio-editor.rst:9
 msgid "The audio editor is displayed when an audio region is selected."
 msgstr ""
+"L'editor audio viene visualizzato quando viene selezionata una regione audio."
 
 #: ../../editing/clip-editors/audio-editor.rst:15
 msgid ""
@@ -38,11 +39,13 @@ msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:20
 msgid "Audio Arranger"
-msgstr ""
+msgstr "Arrangiatore audio"
 
 #: ../../editing/clip-editors/audio-editor.rst:21
 msgid "The audio arranger refers to the arranger section of the audio editor."
 msgstr ""
+"L'arrangiatore audio si riferisce alla sezione arrangiatore dell'editor "
+"audio."
 
 #: ../../editing/clip-editors/automation-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:28
@@ -85,17 +88,19 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:40
 msgid "Curves"
-msgstr ""
+msgstr "Curve"
 
 #: ../../editing/clip-editors/automation-editor.rst:41
 msgid ""
 "Right-clicking on a curve allows you to change the curve algorithm used. "
 "The following curve algorithms are available."
 msgstr ""
+"Facendo un click con il tasto destro su una curva ti permette di cambiarne "
+"l'algoritmo utilizzato. Sono disponibili i seguenti algoritmi di curva."
 
 #: ../../editing/clip-editors/automation-editor.rst:44
 msgid "Exponent"
-msgstr ""
+msgstr "Esponente"
 
 #: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponential curve."
@@ -103,11 +108,11 @@ msgstr "Curva esponenziale."
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Superellipse"
-msgstr ""
+msgstr "Superellisse"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."
-msgstr ""
+msgstr "Curva ellittica."
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "Vital"
@@ -183,13 +188,15 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:34
 msgid "Chord Selector"
-msgstr ""
+msgstr "Selettore di accordo"
 
 #: ../../editing/clip-editors/chord-editor.rst:35
 msgid ""
 "Double-clicking on a chord will bring up the chord selector, which allows"
 " you to change that chord."
 msgstr ""
+"Facendo doppio click su un accordo verrò avviato il selettore di accordo che "
+"ti permetterà di cambiarlo."
 
 #: ../../editing/clip-editors/chord-editor.rst:41
 msgid ""
@@ -280,7 +287,7 @@ msgstr "Controlli aggiuntivi"
 
 #: ../../editing/clip-editors/piano-roll.rst:23
 msgid "The piano roll contains the following additional controls."
-msgstr ""
+msgstr "Il piano roll contiene i seguenti controlli aggiuntivi."
 
 #: ../../editing/clip-editors/piano-roll.rst:32
 msgid "Drum view"
@@ -309,11 +316,11 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:44
 msgid "Piano Roll Keys"
-msgstr ""
+msgstr "Tasti del piano roll"
 
 #: ../../editing/clip-editors/piano-roll.rst:45
 msgid "These are the keys corresponding to each key found on a piano."
-msgstr ""
+msgstr "Questi sono i tasti corrispondenti a ciascun tasto di un pianoforte."
 
 #: ../../editing/clip-editors/piano-roll.rst:50
 msgid ""

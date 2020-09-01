@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-08-19 21:44+0000\n"
+"PO-Revision-Date: 2020-09-01 18:40+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualcontributing/it/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.2.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../contributing/intro.rst:6
@@ -29,6 +29,8 @@ msgid ""
 "We appreciate contributions of any type and size. Tell us how you would "
 "like to help, and we will do our best to guide you."
 msgstr ""
+"Apprezziamo contributi di qualsiasi tipo. Dicci come vorresti aiutare e "
+"faremo del nostro meglio per guidarti."
 
 #: ../../contributing/intro.rst:11
 msgid ""
@@ -82,6 +84,9 @@ msgid ""
 "reporting bugs and feedback on `Redmine "
 "<https://redmine.zrythm.org/projects/zrythm/issues>`_."
 msgstr ""
+"Sei il benvenuto a unirti per testare le ultime funzionalità di Zrythm e "
+"segnalare bug e riscontri su `Redmine <https://redmine.zrythm.org/projects/"
+"zrythm/issues>`_."
 
 #: ../../contributing/intro.rst:44
 msgid ""
@@ -150,12 +155,14 @@ msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
 #: ../../contributing/intro.rst:81
+#, fuzzy
 msgid "`PayPal <https://paypal.me/zrythm>`_"
-msgstr ""
+msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
 #: ../../contributing/intro.rst:82
+#, fuzzy
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
-msgstr ""
+msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
 #: ../../contributing/intro.rst:84
 msgid ""

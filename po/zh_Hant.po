@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-08-29 16:28+0100\n"
-"PO-Revision-Date: 2020-08-30 13:41+0000\n"
+"PO-Revision-Date: 2020-09-01 18:40+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
@@ -601,7 +601,7 @@ msgstr ""
 
 #: src/gui/widgets/inspector_port.c:192 src/gui/widgets/midi_arranger.c:516
 msgid "View info"
-msgstr "查看資訊"
+msgstr "顯示詳細資訊"
 
 #: src/gui/widgets/inspector_port.c:324
 msgid "Incoming signals"
@@ -625,7 +625,7 @@ msgstr "最大值"
 
 #: src/gui/widgets/inspector_port.c:460
 msgid "Expose port to JACK"
-msgstr ""
+msgstr "連接到 JACK"
 
 #: src/gui/widgets/log_viewer.c:127
 msgid "Log Viewer"
@@ -661,11 +661,11 @@ msgstr ""
 
 #: src/gui/widgets/track_input_expander.c:349
 msgid "No left input"
-msgstr ""
+msgstr "關閉左聲道"
 
 #: src/gui/widgets/track_input_expander.c:350
 msgid "No right input"
-msgstr ""
+msgstr "關閉右聲道"
 
 #: src/gui/widgets/track_input_expander.c:353
 #, c-format
@@ -759,11 +759,11 @@ msgstr "專案幫手"
 
 #: src/gui/widgets/left_dock_edge.c:169
 msgid "Track inspector"
-msgstr "音軌檢視器"
+msgstr "音軌面板"
 
 #: src/gui/widgets/left_dock_edge.c:196
 msgid "Plugin inspector"
-msgstr "外掛檢視器"
+msgstr "外掛面板"
 
 #: src/gui/widgets/left_dock_edge.c:218
 #: resources/ui/chord_selector_window.ui:683
@@ -852,11 +852,11 @@ msgstr "新增音訊軌"
 
 #: src/gui/widgets/drag_dest_box.c:433
 msgid "Add FX Track"
-msgstr ""
+msgstr "新增 FX 軌"
 
 #: src/gui/widgets/drag_dest_box.c:463
 msgid "Add Group Track"
-msgstr ""
+msgstr "新增群組軌"
 
 #: src/gui/widgets/instrument_track.c:219
 #: src/gui/widgets/transport_controls.c:193 src/gui/widgets/midi_track.c:190
@@ -866,7 +866,7 @@ msgstr ""
 
 #: src/gui/widgets/instrument_track.c:253 src/gui/widgets/midi_track.c:218
 msgid "Show automation lanes"
-msgstr ""
+msgstr "顯示自動控制軌"
 
 #: src/gui/widgets/instrument_track.c:259 src/gui/widgets/audio_track.c:205
 #: src/gui/widgets/midi_track.c:224
@@ -875,11 +875,11 @@ msgstr ""
 
 #: src/gui/widgets/instrument_track.c:265 src/gui/widgets/midi_track.c:230
 msgid "Lock track"
-msgstr ""
+msgstr "鎖定"
 
 #: src/gui/widgets/instrument_track.c:271
 msgid "Freeze track"
-msgstr ""
+msgstr "凍結"
 
 #: src/gui/widgets/control_room.c:50
 msgid "Listen dim level"
@@ -895,25 +895,25 @@ msgstr ""
 
 #: src/gui/widgets/channel_slot.c:172
 msgid "No instrument"
-msgstr ""
+msgstr "無虛擬樂器"
 
 #: src/gui/widgets/channel_slot.c:177
 #, c-format
 msgid "Slot #%d"
-msgstr ""
+msgstr "Slot #%d"
 
 #: src/gui/widgets/channel_slot.c:330
 #, c-format
 msgid "Plugin %s cannot be added to this slot"
-msgstr ""
+msgstr "無法新增外掛"
 
 #: src/gui/widgets/channel_slot.c:679
 msgid "Bypass"
-msgstr ""
+msgstr "Bypass"
 
 #: src/gui/widgets/channel_slot.c:692
 msgid "Inspect"
-msgstr ""
+msgstr "詳細資訊"
 
 #: src/gui/widgets/channel_slot.c:1025
 msgid "empty slot"
@@ -921,7 +921,7 @@ msgstr ""
 
 #: src/gui/widgets/piano_roll_keys.c:138
 msgid "both"
-msgstr ""
+msgstr "顯示全部"
 
 #: src/gui/widgets/piano_roll_keys.c:154
 msgid "scale"
@@ -933,11 +933,11 @@ msgstr "和弦"
 
 #: src/gui/widgets/plugin_browser.c:237
 msgid "Add to project"
-msgstr ""
+msgstr "新增到專案"
 
 #: src/gui/widgets/plugin_browser.c:242
 msgid "Add to project (carla)"
-msgstr ""
+msgstr "新增到專案 (carla)"
 
 #: src/gui/widgets/plugin_browser.c:250
 msgid "Add to project (bridged UI)"
@@ -958,7 +958,7 @@ msgstr ""
 
 #: src/gui/widgets/plugin_browser.c:1127
 msgid "Protocol"
-msgstr ""
+msgstr "協定"
 
 #: src/gui/widgets/bot_bar.c:54 src/gui/widgets/ruler_marker.c:169
 msgid "Playhead"
@@ -1010,52 +1010,52 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:501
 msgid "Status"
-msgstr ""
+msgstr "目前狀態"
 
 #. TRANSLATORS: buffer size, please keep the
 #. * translation short
 #: src/gui/widgets/bot_bar.c:508
 msgid "Buf sz"
-msgstr ""
+msgstr "緩衝區大小"
 
 #. TRANSLATORS: sample rate
 #: src/gui/widgets/bot_bar.c:514
 msgid "Rate"
-msgstr ""
+msgstr "取樣頻率"
 
 #: src/gui/widgets/bot_bar.c:521
 msgid "Disable"
-msgstr ""
+msgstr "停用"
 
 #: src/gui/widgets/bot_bar.c:521
 msgid "Enable"
-msgstr ""
+msgstr "啟用"
 
 #: src/gui/widgets/bot_bar.c:551
 msgid "Metronome"
-msgstr ""
+msgstr "節拍器"
 
 #: src/gui/widgets/bot_bar.c:551
 msgid "Volume"
-msgstr ""
+msgstr "音量"
 
 #: src/gui/widgets/bot_bar.c:635
 msgid "bpm"
-msgstr ""
+msgstr "bpm"
 
 #: src/gui/widgets/bot_bar.c:639
 msgid "time sig."
-msgstr ""
+msgstr "拍號"
 
 #: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:64
 #: resources/ui/quantize_dialog.ui:143
 msgid "start"
-msgstr ""
+msgstr "開始"
 
 #: src/gui/widgets/timeline_selection_info.c:275 src/audio/marker_track.c:71
 #: resources/ui/quantize_dialog.ui:156
 msgid "end"
-msgstr ""
+msgstr "結束"
 
 #: src/gui/widgets/timeline_selection_info.c:285
 msgid "clip start (rel.)"
@@ -1078,7 +1078,7 @@ msgstr ""
 
 #: src/gui/widgets/transport_controls.c:194
 msgid "Record options"
-msgstr ""
+msgstr "錄音選項"
 
 #: src/gui/widgets/transport_controls.c:200
 msgid "Punch in/out"
@@ -1090,7 +1090,7 @@ msgstr ""
 
 #: src/gui/widgets/transport_controls.c:206
 msgid "Options"
-msgstr ""
+msgstr "選項"
 
 #: src/gui/widgets/transport_controls.c:211
 msgid "Overwrite events"
@@ -1111,7 +1111,7 @@ msgstr ""
 #: src/gui/widgets/transport_controls.c:223
 #: build/data/org.zrythm.Zrythm.gschema.xml:447
 msgid "Recording mode"
-msgstr ""
+msgstr "錄音模式"
 
 #: src/gui/widgets/timeline_arranger.c:503
 msgid "Custom Marker"
@@ -1135,7 +1135,7 @@ msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1484
 msgid "Export as MIDI file"
-msgstr ""
+msgstr "輸出成MIDI檔"
 
 #: src/gui/widgets/timeline_arranger.c:1519 src/gui/widgets/track.c:1726
 msgid "Quick bounce"
@@ -1153,11 +1153,11 @@ msgstr ""
 #: src/gui/widgets/header.c:99
 #, c-format
 msgid "About %s"
-msgstr ""
+msgstr "關於 %s"
 
 #: src/gui/widgets/header.c:104
 msgid "About Zrythm"
-msgstr ""
+msgstr "關於 Zrythm"
 
 #: src/gui/widgets/header.c:105 src/gui/widgets/preferences.c:794
 #: resources/ui/shortcuts.ui:40 resources/ui/preferences.ui:27
@@ -1166,7 +1166,7 @@ msgstr ""
 
 #: src/gui/widgets/header.c:106
 msgid "Log viewer"
-msgstr ""
+msgstr "事件檢視器"
 
 #: src/gui/widgets/header.c:108
 msgid "Scripting interface"
@@ -1174,11 +1174,11 @@ msgstr ""
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
-msgstr ""
+msgstr "討論版 (Matrix)"
 
 #: src/gui/widgets/help_toolbar.c:40
 msgid "Manual"
-msgstr ""
+msgstr "使用手冊"
 
 #: src/gui/widgets/help_toolbar.c:41 resources/ui/shortcuts.ui:47
 msgid "Keyboard Shortcuts"
@@ -1190,7 +1190,7 @@ msgstr ""
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Report a Bug"
-msgstr ""
+msgstr "回報錯誤"
 
 #: src/gui/widgets/home_toolbar.c:60 src/gui/widgets/home_toolbar.c:123
 #: resources/ui/home_toolbar.ui:35 build/data/org.zrythm.Zrythm.gschema.xml:606
@@ -1204,27 +1204,27 @@ msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:127
 msgid "Cut"
-msgstr ""
+msgstr "剪下"
 
 #: src/gui/widgets/home_toolbar.c:129
 msgid "Copy"
-msgstr ""
+msgstr "複製"
 
 #: src/gui/widgets/home_toolbar.c:131
 msgid "Paste"
-msgstr ""
+msgstr "貼上"
 
 #: src/gui/widgets/home_toolbar.c:135
 msgid "Delete"
-msgstr ""
+msgstr "刪除"
 
 #: src/gui/widgets/home_toolbar.c:137
 msgid "Clear Selection"
-msgstr ""
+msgstr "取消選取"
 
 #: src/gui/widgets/home_toolbar.c:139
 msgid "Select All"
-msgstr ""
+msgstr "全選"
 
 #: src/gui/widgets/home_toolbar.c:141
 msgid "Loop Selection"
@@ -1245,11 +1245,11 @@ msgstr ""
 
 #: src/gui/widgets/right_dock_edge.c:179
 msgid "Show file browser"
-msgstr ""
+msgstr "顯示檔案瀏覽器"
 
 #: src/gui/widgets/plugin_properties_expander.c:121
 msgid "Plugin Properties"
-msgstr ""
+msgstr "外掛屬性"
 
 #: src/gui/widgets/plugin_properties_expander.c:150
 #: src/gui/widgets/event_viewer.c:452 resources/ui/chord_selector_window.ui:239
@@ -1294,7 +1294,7 @@ msgstr ""
 #: src/gui/widgets/automatable_selector_popover.c:272
 #, c-format
 msgid "[Instrument] %s"
-msgstr ""
+msgstr "[虛擬樂器] %s"
 
 #: src/gui/widgets/automatable_selector_popover.c:290
 #, c-format
@@ -1316,32 +1316,32 @@ msgstr ""
 
 #: src/gui/widgets/preferences.c:400
 msgid "Select a file"
-msgstr ""
+msgstr "選擇一個檔案"
 
 #: src/gui/widgets/preferences.c:773
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
-msgstr ""
+msgstr "有些設定必須重新啟動後 %s 才會生效"
 
 #: src/gui/widgets/scripting_window.c:192
 msgid "Script execution successful"
-msgstr ""
+msgstr "腳本執行完成"
 
 #: src/gui/widgets/scripting_window.c:201
 msgid "Script execution failed"
-msgstr ""
+msgstr "腳本無法執行"
 
 #: src/gui/widgets/scripting_window.c:228
 msgid "Scripting Interface"
-msgstr ""
+msgstr "腳本界面"
 
 #: src/gui/widgets/port_connection_row.c:105
 msgid "Enable/disable connection"
-msgstr ""
+msgstr "啟用/停用連接"
 
 #: src/gui/widgets/port_connection_row.c:146
 msgid "Delete connection"
-msgstr ""
+msgstr "刪除連接"
 
 #: src/gui/widgets/balance_control.c:357 src/gui/widgets/fader.c:359
 #: resources/ui/first_run_assistant.ui:130
@@ -1350,7 +1350,7 @@ msgstr ""
 
 #: src/gui/widgets/live_waveform.c:210
 msgid "Live waveform indicator"
-msgstr ""
+msgstr "示波器"
 
 #: src/gui/widgets/clip_editor_inner.c:248
 msgid "Select a region..."
@@ -1373,7 +1373,7 @@ msgstr ""
 
 #: src/gui/widgets/event_viewer.c:115
 msgid "MIDI note"
-msgstr ""
+msgstr "MIDI 音符"
 
 #: src/gui/widgets/event_viewer.c:121
 msgid "Automation point"
@@ -1381,7 +1381,7 @@ msgstr ""
 
 #: src/gui/widgets/event_viewer.c:463 src/gui/widgets/event_viewer.c:559
 msgid "Start"
-msgstr ""
+msgstr "開始"
 
 #: src/gui/widgets/event_viewer.c:474
 msgid "Clip start"
@@ -1397,29 +1397,29 @@ msgstr ""
 
 #: src/gui/widgets/event_viewer.c:507 src/gui/widgets/event_viewer.c:570
 msgid "End"
-msgstr ""
+msgstr "結束"
 
 #: src/gui/widgets/event_viewer.c:526
 msgid "Note"
-msgstr ""
+msgstr "音符"
 
 #: src/gui/widgets/event_viewer.c:537
 msgid "Pitch"
-msgstr ""
+msgstr "音高"
 
 #: src/gui/widgets/event_viewer.c:548 resources/ui/midi_editor_space.ui:134
 #: resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:115
 msgid "Velocity"
-msgstr ""
+msgstr "力度"
 
 #: src/gui/widgets/event_viewer.c:619
 msgid "Index"
-msgstr ""
+msgstr "索引"
 
 #: src/gui/widgets/event_viewer.c:641
 msgid "Value"
-msgstr ""
+msgstr "值"
 
 #: src/gui/widgets/event_viewer.c:652
 msgid "Curviness"
@@ -1427,7 +1427,7 @@ msgstr ""
 
 #: src/gui/widgets/ports_expander.c:172 src/gui/widgets/ports_expander.c:374
 msgid "Controls"
-msgstr ""
+msgstr "控制"
 
 #: src/gui/widgets/ports_expander.c:175
 msgid "Control Outs"
@@ -1459,7 +1459,7 @@ msgstr ""
 
 #: src/gui/widgets/ports_expander.c:388
 msgid "Stereo In"
-msgstr ""
+msgstr "立體聲輸入"
 
 #: src/gui/widgets/ports_expander.c:395
 msgid "MIDI In"
@@ -1485,15 +1485,15 @@ msgstr ""
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
-msgstr ""
+msgstr "建立新專案"
 
 #: src/gui/widgets/project_toolbar.c:40
 msgid "Save"
-msgstr ""
+msgstr "儲存"
 
 #: src/gui/widgets/project_toolbar.c:41
 msgid "Save As"
-msgstr ""
+msgstr "另存新檔"
 
 #: src/gui/widgets/project_toolbar.c:42 src/utils/dialogs.c:39
 msgid "Open Project"
@@ -1501,7 +1501,7 @@ msgstr ""
 
 #: src/gui/widgets/project_toolbar.c:43
 msgid "Export As"
-msgstr ""
+msgstr "輸出成"
 
 #: src/gui/widgets/project_toolbar.c:44
 msgid "Export Graph"
@@ -1509,15 +1509,15 @@ msgstr ""
 
 #: src/gui/widgets/view_toolbar.c:39
 msgid "Toggle Status Bar"
-msgstr ""
+msgstr "顯示/隱藏狀態列"
 
 #: src/gui/widgets/view_toolbar.c:40
 msgid "Zoom In"
-msgstr ""
+msgstr "放大"
 
 #: src/gui/widgets/view_toolbar.c:41
 msgid "Zoom Out"
-msgstr ""
+msgstr "缩小"
 
 #: src/gui/widgets/view_toolbar.c:42
 msgid "Original Size"
@@ -1525,31 +1525,31 @@ msgstr ""
 
 #: src/gui/widgets/view_toolbar.c:43
 msgid "Best Fit"
-msgstr ""
+msgstr "最適大小"
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Fullscreen"
-msgstr ""
+msgstr "全螢幕"
 
 #: src/gui/widgets/view_toolbar.c:45
 msgid "Toggle Left Panel"
-msgstr ""
+msgstr "顯示/隱藏左邊面板"
 
 #: src/gui/widgets/view_toolbar.c:46
 msgid "Toggle Bottom Panel"
-msgstr ""
+msgstr "顯示/隱藏底部面板"
 
 #: src/gui/widgets/view_toolbar.c:47
 msgid "Toggle Top Panel"
-msgstr ""
+msgstr "顯示/隱藏頂部面板"
 
 #: src/gui/widgets/view_toolbar.c:49
 msgid "Toggle Right Panel"
-msgstr ""
+msgstr "顯示/隱藏右邊面板"
 
 #: src/gui/widgets/inspector_track.c:146
 msgid "Comment"
-msgstr ""
+msgstr "註解"
 
 #: src/gui/widgets/track.c:595 src/audio/track_lane.c:71
 #, c-format
@@ -1582,19 +1582,19 @@ msgstr ""
 
 #: src/gui/widgets/track.c:1215
 msgid "Hide lanes"
-msgstr ""
+msgstr "隱藏子音軌"
 
 #: src/gui/widgets/track.c:1219
 msgid "Show lanes"
-msgstr ""
+msgstr "顯示子音軌"
 
 #: src/gui/widgets/track.c:1226
 msgid "Hide automation"
-msgstr ""
+msgstr "隱藏自動控制軌"
 
 #: src/gui/widgets/track.c:1230
 msgid "Show automation"
-msgstr ""
+msgstr "顯示自動控制軌"
 
 #: src/gui/widgets/track.c:1239 resources/ui/project_assistant.ui:102
 msgid "Remove"
@@ -1602,11 +1602,11 @@ msgstr ""
 
 #: src/gui/widgets/track.c:1243
 msgid "Freeze/unfreeze"
-msgstr ""
+msgstr "凍結/取消凍結"
 
 #: src/gui/widgets/track.c:1247
 msgid "Lock/unlock"
-msgstr ""
+msgstr "鎖定/取消鎖定"
 
 #: src/gui/widgets/track.c:1658
 msgid "_Delete Track"
@@ -1622,7 +1622,7 @@ msgstr ""
 
 #: src/gui/widgets/track.c:1675
 msgid "_Duplicate Tracks"
-msgstr ""
+msgstr "複製這些音軌"
 
 #: src/gui/widgets/track.c:1693
 msgid "Add Region"
@@ -1630,19 +1630,19 @@ msgstr ""
 
 #: src/gui/widgets/track.c:1702
 msgid "Hide Track"
-msgstr ""
+msgstr "隱藏音軌"
 
 #: src/gui/widgets/track.c:1703
 msgid "Hide Tracks"
-msgstr ""
+msgstr "隱藏所選音軌"
 
 #: src/gui/widgets/track.c:1711
 msgid "Pin/Unpin Track"
-msgstr ""
+msgstr "釘選/取消釘選"
 
 #: src/gui/widgets/track.c:1712
 msgid "Pin/Unpin Tracks"
-msgstr ""
+msgstr "釘選/取消釘選全部"
 
 #: src/gui/widgets/track.c:1754
 msgid "Track MIDI Ch"
@@ -1685,15 +1685,15 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/about_dialog.c:95
 msgid "Website"
-msgstr ""
+msgstr "網站"
 
 #: src/gui/widgets/dialogs/export_progress_dialog.c:89
 msgid "Exported"
-msgstr ""
+msgstr "輸出完成"
 
 #: src/gui/widgets/dialogs/export_progress_dialog.c:163
 msgid "Export Progress"
-msgstr ""
+msgstr "輸出進度"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:79
 #, c-format
@@ -1715,7 +1715,7 @@ msgstr ""
 
 #: src/utils/err_codes.c:42
 msgid "Unknown error"
-msgstr ""
+msgstr "不明的錯誤"
 
 #: src/utils/log.c:684
 #, c-format
@@ -1872,7 +1872,7 @@ msgstr ""
 
 #: src/audio/region.c:399 build/data/org.zrythm.Zrythm.gschema.xml:592
 msgid "Automation"
-msgstr ""
+msgstr "自動控制"
 
 #: src/audio/tempo_track.c:52
 msgid "BPM"
@@ -1880,7 +1880,7 @@ msgstr ""
 
 #: src/audio/tempo_track.c:67
 msgid "Time Signature"
-msgstr ""
+msgstr "拍號"
 
 #: src/audio/engine.c:182
 #, c-format
@@ -2152,7 +2152,7 @@ msgstr ""
 
 #: src/actions/transport_action.c:131
 msgid "Change BPM"
-msgstr ""
+msgstr "更改 BPM"
 
 #: src/actions/channel_send_action.c:194
 msgid "Channel send connection"
@@ -2303,11 +2303,11 @@ msgstr ""
 
 #: resources/ui/bind_cc_dialog.ui:81
 msgid "Press a key or move a knob on your MIDI device"
-msgstr ""
+msgstr "在MIDI控制器上按一個鍵或是旋轉一個旋鈕"
 
 #: resources/ui/bind_cc_dialog.ui:94
 msgid "Waiting for input..."
-msgstr ""
+msgstr "等待輸入中..."
 
 #: resources/ui/log_viewer.ui:25
 msgid "Log Level"
@@ -2315,11 +2315,11 @@ msgstr ""
 
 #: resources/ui/log_viewer.ui:75
 msgid "Save As..."
-msgstr ""
+msgstr "另存新檔..."
 
 #: resources/ui/scale_selector_window.ui:51
 msgid "Root Key"
-msgstr ""
+msgstr "根音"
 
 #: resources/ui/scale_selector_window.ui:80
 #: resources/ui/chord_selector_window.ui:79
@@ -2395,19 +2395,19 @@ msgstr ""
 
 #: resources/ui/scale_selector_window.ui:267
 msgid "Chromatic"
-msgstr ""
+msgstr "半音階"
 
 #: resources/ui/scale_selector_window.ui:280
 msgid "Ionian (Major)"
-msgstr ""
+msgstr "大調音階"
 
 #: resources/ui/scale_selector_window.ui:293
 msgid "Aeolian (Natural Minor)"
-msgstr ""
+msgstr "自然小音階"
 
 #: resources/ui/scale_selector_window.ui:306
 msgid "Harmonic Minor"
-msgstr ""
+msgstr "和聲小音階"
 
 #: resources/ui/scale_selector_window.ui:342
 #: resources/ui/chord_selector_window.ui:747
@@ -2426,7 +2426,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:66
 msgid "Editor view"
-msgstr ""
+msgstr "編輯"
 
 #: resources/ui/bot_dock_edge.ui:82
 msgid "Editor"
@@ -2434,7 +2434,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:105
 msgid "Mixer view"
-msgstr ""
+msgstr "混音"
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Mixer"
@@ -2463,7 +2463,7 @@ msgstr ""
 
 #: resources/ui/timeline_toolbar.ui:94
 msgid "Merge selections"
-msgstr ""
+msgstr "合併全部"
 
 #: resources/ui/timeline_toolbar.ui:117 resources/ui/editor_toolbar.ui:103
 msgid "Toggle event viewer"
@@ -2603,15 +2603,15 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:908
 msgid "Circle of Fifths"
-msgstr ""
+msgstr "五度圈"
 
 #: resources/ui/create_project_dialog.ui:70
 msgid "Parent directory"
-msgstr ""
+msgstr "上一層目錄"
 
 #: resources/ui/create_project_dialog.ui:83
 msgid "Select parent directory to save the project in"
-msgstr ""
+msgstr "選擇一個目錄來存放專案"
 
 #: resources/ui/shortcuts.ui:31
 msgid "Global Shortcuts"
@@ -2873,7 +2873,7 @@ msgstr ""
 
 #: resources/ui/port_info_dialog.ui:197
 msgid "Default value"
-msgstr ""
+msgstr "預設值"
 
 #: resources/ui/port_info_dialog.ui:222
 msgid "Current value"
@@ -2889,11 +2889,11 @@ msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:36
 msgid "Select MIDI file"
-msgstr ""
+msgstr "選擇MIDI檔"
 
 #: resources/ui/export_midi_file_dialog.ui:69
 msgid "_Export"
-msgstr ""
+msgstr "輸出"
 
 #: resources/ui/export_midi_file_dialog.ui:104
 msgid "Region content"
@@ -2953,7 +2953,7 @@ msgstr ""
 
 #: resources/ui/header.ui:74
 msgid "Edit"
-msgstr ""
+msgstr "編輯"
 
 #: resources/ui/header.ui:111
 msgid "View"
@@ -3009,7 +3009,7 @@ msgstr ""
 
 #: resources/ui/export_progress_dialog.ui:25
 msgid "Open Directory"
-msgstr ""
+msgstr "開啟目錄"
 
 #: resources/ui/export_progress_dialog.ui:28
 msgid "Opens the containing directory"
@@ -3017,7 +3017,7 @@ msgstr ""
 
 #: resources/ui/export_progress_dialog.ui:69
 msgid "Exporting..."
-msgstr ""
+msgstr "輸出中..."
 
 #: resources/ui/event_viewer.ui:13
 msgid "Event Viewer"
@@ -3049,11 +3049,11 @@ msgstr ""
 
 #: resources/ui/automation_track.ui:143
 msgid "Remove automation track"
-msgstr ""
+msgstr "移除自動控制軌"
 
 #: resources/ui/automation_track.ui:164
 msgid "Add automation track"
-msgstr ""
+msgstr "新增自動控制軌"
 
 #: resources/ui/marker_dialog.ui:94
 msgid "Marker name"
@@ -3265,15 +3265,15 @@ msgstr ""
 
 #: resources/ui/preferences.ui:266
 msgid "Device Name"
-msgstr ""
+msgstr "裝置名稱"
 
 #: resources/ui/preferences.ui:301
 msgid "Buffer Size"
-msgstr ""
+msgstr "緩衝區大小"
 
 #: resources/ui/preferences.ui:325 build/data/org.zrythm.Zrythm.gschema.xml:476
 msgid "Samplerate"
-msgstr ""
+msgstr "取樣頻率"
 
 #: resources/ui/preferences.ui:380 resources/ui/preferences.ui:449
 #: build/data/org.zrythm.Zrythm.gschema.xml:514
@@ -3597,7 +3597,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:349
 msgid "Format to export to."
-msgstr ""
+msgstr "輸出格式。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:354
 msgid "Add dither while exporting, if applicable."

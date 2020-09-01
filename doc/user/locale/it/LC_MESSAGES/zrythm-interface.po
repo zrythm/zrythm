@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 18:06+0100\n"
-"PO-Revision-Date: 2020-08-23 12:48+0000\n"
+"PO-Revision-Date: 2020-09-01 18:40+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/it/>\n"
@@ -87,7 +87,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
-msgstr ""
+msgstr "Pannello inferiore"
 
 #: ../../zrythm-interface/bottom-panel.rst:10
 msgid ""
@@ -143,7 +143,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:57
 msgid "Audio Editor"
-msgstr ""
+msgstr "Editor audio"
 
 #: ../../zrythm-interface/bottom-panel.rst:58
 msgid ""
@@ -189,7 +189,7 @@ msgstr "Interfaccia"
 
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
-msgstr ""
+msgstr "Pannello di sinistra"
 
 #: ../../zrythm-interface/left-panel.rst:10
 msgid "The left panel contains the inspectors and track visibility options."
@@ -262,13 +262,16 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:8
 msgid "Main Toolbar"
-msgstr ""
+msgstr "Barra degli strumenti principale"
 
 #: ../../zrythm-interface/main-toolbar.rst:10
 msgid ""
 "The main toolbar contains global actions, such as saving and loading a "
 "project or opening the preferences window."
 msgstr ""
+"La barra degli strumenti principale contiene azioni globali, come il "
+"salvataggio e il caricamento di un progetto o l'apertura della finestra "
+"delle preferenze."
 
 #: ../../zrythm-interface/main-toolbar.rst:17
 msgid "About Dialog"
@@ -304,7 +307,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:39
 msgid "Project Menu"
-msgstr ""
+msgstr "Menù del progetto"
 
 #: ../../zrythm-interface/main-toolbar.rst:40
 msgid ""

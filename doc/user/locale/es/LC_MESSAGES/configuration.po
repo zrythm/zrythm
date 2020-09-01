@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-07-24 14:02+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-01 18:40+0000\n"
+"Last-Translator: Israel Barrera <izraelbarrera@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/es/>\n"
 "Language: es\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.2.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -264,6 +264,8 @@ msgid ""
 "All of the settings mentioned here are also available in the "
 ":ref:`preferences`, so don't worry if you selected the wrong settings."
 msgstr ""
+"Todas las configuraciones mencionadas aqui tambien estan disponibles en :ref:"
+" `Preferencias`, no se preocupe si ha elegido la configuracion incorrecta."
 
 #: ../../configuration/intro.rst:6
 msgid "Configuration"
@@ -279,12 +281,17 @@ msgid ""
 "that can be accessed by clicking the gear icon or with "
 ":kbd:`Ctrl+Shift+P`."
 msgstr ""
+"Zrythm tiene un cuadro de diálogo de Preferencias que contiene todas las "
+"configuraciones globales a las que se puede acceder haciendo clic en el "
+"ícono de ajustes o con: kbd: `Ctrl + Shift + P`."
 
 #: ../../configuration/preferences/intro.rst:14
 msgid ""
 "Each section in the preferences dialog is explained in the following "
 "sections."
 msgstr ""
+"Cada sección del cuadro de diálogo de preferencias se explica en las "
+"siguientes secciones."
 
 #: ../../configuration/preferences/intro.rst:18
 #: ../../configuration/preferences/intro.rst:183
@@ -294,7 +301,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:20
 msgid "General settings."
-msgstr ""
+msgstr "Configuración general."
 
 #: ../../configuration/preferences/intro.rst:28
 msgid "Engine"
@@ -340,15 +347,15 @@ msgstr "Caminos"
 
 #: ../../configuration/preferences/intro.rst:49
 msgid "Global paths."
-msgstr ""
+msgstr "Directorios globales."
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "Zrythm path"
-msgstr ""
+msgstr "Directorio de Zrythm"
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "The directory to save user data in."
-msgstr ""
+msgstr "El directorio para guardar los datos del usuario."
 
 #: ../../configuration/preferences/intro.rst:55
 msgid "Plugins"
@@ -420,53 +427,64 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:94
 #, fuzzy
 msgid "VST plugins"
-msgstr "Complementos"
+msgstr "Complementos VST"
 
 #: ../../configuration/preferences/intro.rst:94
+#, fuzzy
 msgid "The search paths to scan for VST plugins in."
-msgstr ""
+msgstr "Los directorios de búsqueda para buscar complementos VST."
 
 #: ../../configuration/preferences/intro.rst:96
+#, fuzzy
 msgid ""
 "This option is only available on Windows. On GNU/Linux and MacOS the "
 "paths are fixed. See :ref:`plugin-paths` for details."
 msgstr ""
+"Esta opción esta disponible solo en Windows. En GNU/Linux y MacOs el "
+"directorio está establecido. Ver :ref: `Directorio de Complementos` para mas "
+"detalles."
 
 #: ../../configuration/preferences/intro.rst:101
 msgid "SFZ instruments"
-msgstr ""
+msgstr "Instrumentos SFZ"
 
 #: ../../configuration/preferences/intro.rst:101
+#, fuzzy
 msgid "The search paths to scan for SFZ instruments in."
-msgstr ""
+msgstr "Los directorios de búsqueda para buscar instrumentos SFZ."
 
 #: ../../configuration/preferences/intro.rst:104
 msgid "SF2 instruments"
-msgstr ""
+msgstr "Instrumentos SF2"
 
 #: ../../configuration/preferences/intro.rst:104
+#, fuzzy
 msgid "The search paths to scan for SF2 instruments in."
-msgstr ""
+msgstr "Los directorios para buscar instrumentos SF2."
 
 #: ../../configuration/preferences/intro.rst:107
 msgid "DSP"
 msgstr "DSP"
 
 #: ../../configuration/preferences/intro.rst:109
+#, fuzzy
 msgid "Digital signal processing."
-msgstr ""
+msgstr "Procesador Digital de Señal"
 
 #: ../../configuration/preferences/intro.rst:115
+#, fuzzy
 msgid "Pan"
-msgstr "Pan"
+msgstr "Balance"
 
 #: ../../configuration/preferences/intro.rst:117
+#, fuzzy
 msgid "Panning options for mono signals (not used at the moment)."
-msgstr ""
+msgstr "Opciones de balance para señales mono (no utilizadas por el momento)."
 
 #: ../../configuration/preferences/intro.rst:134
+#, fuzzy
 msgid "Pan algorithm"
-msgstr ""
+msgstr "Algoritmo de balance."
 
 #: ../../configuration/preferences/intro.rst:120
 msgid ""
@@ -517,7 +535,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:156
 msgid "Automation"
-msgstr ""
+msgstr "Automatización"
 
 #: ../../configuration/preferences/intro.rst:158
 msgid "Automation editing."
