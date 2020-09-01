@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:44+0100\n"
-"PO-Revision-Date: 2020-08-30 13:41+0000\n"
+"PO-Revision-Date: 2020-09-01 18:40+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/manualzrythm-interface/zh_Hant/>\n"
@@ -219,7 +219,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
-msgstr ""
+msgstr "外掛屬性"
 
 #: ../../zrythm-interface/left-panel.rst:34
 msgid ""
@@ -314,7 +314,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:44
 msgid "New Project"
-msgstr ""
+msgstr "建立新專案"
 
 #: ../../zrythm-interface/main-toolbar.rst:44
 msgid "Create a new project."
@@ -322,7 +322,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save"
-msgstr ""
+msgstr "儲存"
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save the current project at its current location."
@@ -330,7 +330,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save As"
-msgstr ""
+msgstr "另存新檔"
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save the current project at a new location."
@@ -346,7 +346,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Export As"
-msgstr ""
+msgstr "輸出成"
 
 #: ../../zrythm-interface/main-toolbar.rst:56
 msgid ""
@@ -380,7 +380,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:72
 msgid "Zoom In"
-msgstr ""
+msgstr "放大"
 
 #: ../../zrythm-interface/main-toolbar.rst:72
 msgid "Zooms in."
@@ -388,7 +388,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zoom Out"
-msgstr ""
+msgstr "缩小"
 
 #: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zooms out."
@@ -404,7 +404,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Best Fit"
-msgstr ""
+msgstr "最適大小"
 
 #: ../../zrythm-interface/main-toolbar.rst:81
 msgid ""
@@ -448,7 +448,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Manual"
-msgstr ""
+msgstr "使用手冊"
 
 #: ../../zrythm-interface/main-toolbar.rst:98
 msgid "View the user manual."
@@ -480,7 +480,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Report a Bug"
-msgstr ""
+msgstr "回報錯誤"
 
 #: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Opens the page to report a new bug."
@@ -500,7 +500,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:119
 msgid "Scripting Interface"
-msgstr ""
+msgstr "腳本界面"
 
 #: ../../zrythm-interface/main-toolbar.rst:119
 msgid "Shows the scripting interface. See :ref:`scripting` for more information."

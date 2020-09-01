@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:44+0100\n"
-"PO-Revision-Date: 2020-08-30 13:41+0000\n"
+"PO-Revision-Date: 2020-09-01 18:40+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/manualtracks/zh_Hant/>\n"
@@ -252,7 +252,7 @@ msgstr ""
 
 #: ../../tracks/automation.rst:8
 msgid "Automation"
-msgstr ""
+msgstr "自動控制"
 
 #: ../../tracks/automation.rst:11
 msgid "Automation Lanes"

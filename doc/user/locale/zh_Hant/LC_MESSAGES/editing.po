@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:44+0100\n"
-"PO-Revision-Date: 2020-08-30 13:41+0000\n"
+"PO-Revision-Date: 2020-08-31 15:36+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/manualediting/zh_Hant/>\n"
@@ -578,7 +578,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:35
 msgid "Cut"
-msgstr ""
+msgstr "剪下"
 
 #: ../../editing/common-operations.rst:36
 msgid ""
@@ -589,7 +589,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:42
 msgid "Copy"
-msgstr ""
+msgstr "複製"
 
 #: ../../editing/common-operations.rst:43
 msgid ""
@@ -599,7 +599,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:49
 msgid "Paste"
-msgstr ""
+msgstr "貼上"
 
 #: ../../editing/common-operations.rst:50
 msgid ""
@@ -619,7 +619,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:62
 msgid "Delete"
-msgstr ""
+msgstr "刪除"
 
 #: ../../editing/common-operations.rst:63
 msgid ""
@@ -633,7 +633,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:70
 msgid "Clear Selection"
-msgstr ""
+msgstr "取消選取"
 
 #: ../../editing/common-operations.rst:71
 msgid "Clear current selection (unselect all objects)."
@@ -641,7 +641,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:74
 msgid "Select All"
-msgstr ""
+msgstr "全選"
 
 #: ../../editing/common-operations.rst:75
 msgid "Select all objects in the current editor."
