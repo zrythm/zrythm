@@ -1583,120 +1583,6 @@ timeline_arranger_widget_fade_up (
 }
 
 static void
-on_dnd_data_received (
-  GtkWidget        * widget,
-  GdkDragContext   * context,
-  gint               x,
-  gint               y,
-  GtkSelectionData * data,
-  guint              info,
-  guint              time,
-  ArrangerWidget *   self)
-{
-  g_message ("dnd data received (timeline)");
-
-  GdkAtom target =
-    gtk_selection_data_get_target (data);
-
-  /* determine if moving or copying */
-  GdkDragAction action =
-    gdk_drag_context_get_selected_action (
-      context);
-
-  Track * track =
-    timeline_arranger_widget_get_track_at_y (
-      self, y);
-  TrackLane * lane =
-    timeline_arranger_widget_get_track_lane_at_y (
-      self, y);
-  AutomationTrack * at =
-    timeline_arranger_widget_get_at_at_y (
-      self, y);
-
-  arranger_widget_set_highlight_rect (self, NULL);
-
-  if (target ==
-        GET_ATOM (TARGET_ENTRY_CHORD_DESCR) &&
-      self->is_highlighted)
-    {
-      ChordDescriptor * descr = NULL;
-      const guchar * my_data =
-        gtk_selection_data_get_data (data);
-      memcpy (&descr, my_data, sizeof (descr));
-
-      /* create chord region */
-      Position pos, end_pos;
-      ui_px_to_pos_timeline (
-        self->highlight_rect.x, &pos, true);
-      ui_px_to_pos_timeline (
-        self->highlight_rect.x +
-          self->highlight_rect.width,
-        &end_pos, true);
-      int lane_pos =
-        lane ? lane->pos :
-        (track->num_lanes == 1 ?
-         0 : track->num_lanes - 2);
-      int idx_in_lane =
-        track->lanes[lane_pos]->num_regions;
-      ZRegion * region =
-        midi_region_new_from_chord_descr (
-          &pos, descr, track->pos, lane_pos,
-          idx_in_lane);
-      track_add_region (
-        track, region, NULL, lane_pos,
-        F_GEN_NAME, F_PUBLISH_EVENTS);
-      arranger_object_select (
-        (ArrangerObject *) region, F_SELECT,
-        F_NO_APPEND);
-
-      UndoableAction * ua =
-        arranger_selections_action_new_create (
-          TL_SELECTIONS);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
-  else if (target ==
-             GET_ATOM (TARGET_ENTRY_URI_LIST) ||
-           target ==
-             GET_ATOM (TARGET_ENTRY_SUPPORTED_FILE))
-    {
-      if (at)
-        {
-          /* nothing to do */
-          return;
-        }
-
-      SupportedFile * file = NULL;
-      char ** uris = NULL;
-      if (target ==
-            GET_ATOM (TARGET_ENTRY_SUPPORTED_FILE))
-        {
-          const guchar *my_data =
-            gtk_selection_data_get_data (data);
-          memcpy (&file, my_data, sizeof (file));
-        }
-      else
-        {
-          uris = gtk_selection_data_get_uris (data);
-        }
-
-      Position pos;
-      ui_px_to_pos_timeline (
-        self->highlight_rect.x, &pos, true);
-      tracklist_handle_file_drop (
-        TRACKLIST, uris, file, track, lane, &pos,
-        true);
-    }
-
-  if (action == GDK_ACTION_COPY)
-    {
-    }
-  else if (action == GDK_ACTION_MOVE)
-    {
-    }
-}
-
-static void
 highlight_timeline (
   ArrangerWidget * self,
   GdkModifierType  mask,
@@ -1769,6 +1655,131 @@ highlight_timeline (
     self, &highlight_rect);
 }
 
+static void
+on_dnd_data_received (
+  GtkWidget        * widget,
+  GdkDragContext   * context,
+  gint               x,
+  gint               y,
+  GtkSelectionData * data,
+  guint              info,
+  guint              time,
+  ArrangerWidget *   self)
+{
+  GdkAtom target =
+    gtk_selection_data_get_target (data);
+  char * target_name = gdk_atom_name (target);
+
+  Track * track =
+    timeline_arranger_widget_get_track_at_y (
+      self, y);
+  TrackLane * lane =
+    timeline_arranger_widget_get_track_lane_at_y (
+      self, y);
+  AutomationTrack * at =
+    timeline_arranger_widget_get_at_at_y (
+      self, y);
+
+  GdkModifierType mask;
+  z_gtk_widget_get_mask (widget, &mask);
+
+  highlight_timeline (
+    self, mask, x, y, track, lane);
+
+  g_message (
+    "(%u) dnd data received (timeline - is "
+    "highlighted %d): %s",
+    time, self->is_highlighted, target_name);
+
+  /* determine if moving or copying */
+  GdkDragAction action =
+    gdk_drag_context_get_selected_action (
+      context);
+
+  if (target ==
+        GET_ATOM (TARGET_ENTRY_CHORD_DESCR) &&
+      self->is_highlighted)
+    {
+      ChordDescriptor * descr = NULL;
+      const guchar * my_data =
+        gtk_selection_data_get_data (data);
+      memcpy (&descr, my_data, sizeof (descr));
+
+      /* create chord region */
+      Position pos, end_pos;
+      ui_px_to_pos_timeline (
+        self->highlight_rect.x, &pos, true);
+      ui_px_to_pos_timeline (
+        self->highlight_rect.x +
+          self->highlight_rect.width,
+        &end_pos, true);
+      int lane_pos =
+        lane ? lane->pos :
+        (track->num_lanes == 1 ?
+         0 : track->num_lanes - 2);
+      int idx_in_lane =
+        track->lanes[lane_pos]->num_regions;
+      ZRegion * region =
+        midi_region_new_from_chord_descr (
+          &pos, descr, track->pos, lane_pos,
+          idx_in_lane);
+      track_add_region (
+        track, region, NULL, lane_pos,
+        F_GEN_NAME, F_PUBLISH_EVENTS);
+      arranger_object_select (
+        (ArrangerObject *) region, F_SELECT,
+        F_NO_APPEND);
+
+      UndoableAction * ua =
+        arranger_selections_action_new_create (
+          TL_SELECTIONS);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
+  else if (target ==
+             GET_ATOM (TARGET_ENTRY_URI_LIST) ||
+           target ==
+             GET_ATOM (TARGET_ENTRY_SUPPORTED_FILE))
+    {
+      if (at)
+        {
+          /* nothing to do */
+          goto finish_data_received;
+        }
+
+      SupportedFile * file = NULL;
+      char ** uris = NULL;
+      if (target ==
+            GET_ATOM (TARGET_ENTRY_SUPPORTED_FILE))
+        {
+          const guchar *my_data =
+            gtk_selection_data_get_data (data);
+          memcpy (&file, my_data, sizeof (file));
+        }
+      else
+        {
+          uris = gtk_selection_data_get_uris (data);
+        }
+
+      Position pos;
+      ui_px_to_pos_timeline (
+        self->highlight_rect.x, &pos, true);
+      tracklist_handle_file_drop (
+        TRACKLIST, uris, file, track, lane, &pos,
+        true);
+    }
+
+  if (action == GDK_ACTION_COPY)
+    {
+    }
+  else if (action == GDK_ACTION_MOVE)
+    {
+    }
+
+finish_data_received:
+  arranger_widget_set_highlight_rect (self, NULL);
+}
+
 static gboolean
 on_dnd_motion (
   GtkWidget      * widget,
@@ -1778,8 +1789,6 @@ on_dnd_motion (
   guint            time,
   ArrangerWidget * self)
 {
-  g_message ("dnd motion");
-
   AutomationTrack * at =
     timeline_arranger_widget_get_at_at_y (self, y);
   TrackLane * lane =
@@ -1839,7 +1848,7 @@ on_dnd_motion (
           /* track is compatible, highlight */
           highlight_timeline (
             self, mask, x, y, track, lane);
-          g_message ("HIGHLIGHTING");
+          g_message ("highlighting track");
 
           return true;
         }
@@ -1865,6 +1874,11 @@ on_dnd_leave (
   guint            time,
   ArrangerWidget * self)
 {
+  g_message (
+    "(%u) dnd leaving timeline, unhighlighting "
+    "rect",
+    time);
+
   arranger_widget_set_highlight_rect (self, NULL);
 }
 
