@@ -47,6 +47,8 @@ inc/gui/widgets/channel_send_selector.h
 inc/gui/widgets/piano_keyboard.h
 inc/gui/widgets/automation_arranger_bg.h
 inc/gui/widgets/timeline_bg.h
+inc/gui/widgets/cc_bindings_tree.h
+inc/gui/widgets/port_connections.h
 inc/gui/widgets/chord_track.h
 inc/gui/widgets/quantize_box.h
 inc/gui/widgets/event_viewer.h
@@ -113,6 +115,7 @@ inc/gui/widgets/scale_selector_window.h
 inc/gui/widgets/project_assistant.h
 inc/gui/widgets/automation_region.h
 inc/gui/widgets/range_action_buttons.h
+inc/gui/widgets/cc_bindings.h
 inc/gui/widgets/audio_editor_space.h
 inc/gui/widgets/mixer.h
 inc/gui/widgets/left_dock_edge.h
@@ -182,6 +185,7 @@ inc/gui/widgets/inspector_ap.h
 inc/gui/widgets/top_bar.h
 inc/gui/widgets/midi_modifier_arranger.h
 inc/gui/widgets/color_area.h
+inc/gui/widgets/port_connections_tree.h
 inc/gui/widgets/midi_track.h
 inc/gui/widgets/automatable_selector_popover.h
 inc/gui/widgets/chord_key.h
@@ -285,12 +289,12 @@ inc/audio/marker_track.h
 inc/audio/automation_track.h
 inc/audio/master_track.h
 inc/audio/midi_file.h
-inc/audio/modulator.h
 inc/audio/midi_group_track.h
 inc/audio/graph.h
 inc/audio/clip.h
 inc/audio/graph_export.h
 inc/audio/snap_grid.h
+inc/audio/modulator_track.h
 inc/audio/engine_jack.h
 inc/audio/engine_dummy.h
 inc/audio/meter.h
@@ -355,7 +359,9 @@ inc/actions/delete_plugins_action.h
 inc/actions/channel_send_action.h
 inc/actions/create_tracks_action.h
 inc/actions/actions.h
+inc/actions/midi_mapping_action.h
 inc/actions/undo_manager.h
+inc/actions/port_action.h
 inc/actions/create_plugins_action.h
 inc/actions/undoable_action.h
 inc/actions/range_action.h
@@ -484,6 +490,7 @@ src/gui/widgets/header.c
 src/gui/widgets/panel_file_browser.c
 src/gui/widgets/help_toolbar.c
 src/gui/widgets/timeline_ruler.c
+src/gui/widgets/port_connections_tree.c
 src/gui/widgets/region.c
 src/gui/widgets/audio_bus_track.c
 src/gui/widgets/track_lane.c
@@ -509,6 +516,7 @@ src/gui/widgets/track_top_grid.c
 src/gui/widgets/marker_dialog.c
 src/gui/widgets/scripting_window.c
 src/gui/widgets/port_connection_row.c
+src/gui/widgets/port_connections.c
 src/gui/widgets/ruler_marker.c
 src/gui/widgets/balance_control.c
 src/gui/widgets/live_waveform.c
@@ -523,10 +531,12 @@ src/gui/widgets/bar_slider.c
 src/gui/widgets/timeline_panel.c
 src/gui/widgets/timeline_toolbar.c
 src/gui/widgets/event_viewer.c
+src/gui/widgets/cc_bindings_tree.c
 src/gui/widgets/automation_mode.c
 src/gui/widgets/ports_expander.c
 src/gui/widgets/arranger_playhead.c
 src/gui/widgets/foldable_notebook.c
+src/gui/widgets/cc_bindings.c
 src/gui/widgets/export_dialog.c
 src/gui/widgets/chord_object.c
 src/gui/widgets/timeline_minimap_selection.c
@@ -644,11 +654,11 @@ src/audio/automation_region.c
 src/audio/windows_mmcss.c
 src/audio/channel_send.c
 src/audio/instrument_track.c
-src/audio/modulator.c
 src/audio/marker_track.c
 src/audio/control_room.c
 src/audio/engine_sdl.c
 src/audio/fade.c
+src/audio/modulator_track.c
 src/audio/transport.c
 src/audio/exporter.c
 src/audio/supported_file.c
@@ -662,6 +672,7 @@ src/audio/true_peak_dsp.c
 src/audio/curve.c
 src/audio/track_lane.c
 src/audio/marker.c
+src/audio/port_identifier.c
 src/audio/engine_rtmidi.c
 src/audio/position.c
 src/audio/rtaudio_device.c
@@ -699,9 +710,11 @@ src/audio/clip.c
 src/audio/region_link_group.c
 src/audio/fader.c
 src/audio/engine_jack.c
+src/actions/port_action.c
 src/actions/arranger_selections.c
 src/actions/create_plugins_action.c
 src/actions/delete_tracks_action.c
+src/actions/midi_mapping_action.c
 src/actions/actions.c
 src/actions/copy_plugins_action.c
 src/actions/port_connection_action.c
