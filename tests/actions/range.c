@@ -470,6 +470,8 @@ check_after_remove (void)
   ArrangerObject * name##_obj = \
     (ArrangerObject *) name
 
+  test_project_save_and_reload ();
+
   /* get objects */
   Track * midi_track =
     TRACKLIST->tracks[midi_track_pos];

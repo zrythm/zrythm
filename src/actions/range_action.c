@@ -35,6 +35,18 @@ void
 range_action_init_loaded (
   RangeAction * self)
 {
+  if (self->sel_before)
+    {
+      arranger_selections_init_loaded (
+        (ArrangerSelections *) self->sel_before,
+        F_NOT_PROJECT);
+    }
+  if (self->sel_after)
+    {
+      arranger_selections_init_loaded (
+        (ArrangerSelections *) self->sel_after,
+        F_NOT_PROJECT);
+    }
 }
 
 /**
