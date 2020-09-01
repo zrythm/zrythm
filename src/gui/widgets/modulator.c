@@ -122,10 +122,6 @@ static float
 get_control_value (
   Port * port)
 {
-  if (string_is_equal (port->id.label, "Range max"))
-    {
-      g_warn_if_reached ();
-    }
   return
     port_get_control_value (port, F_NOT_NORMALIZED);
 }

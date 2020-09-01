@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -41,6 +41,7 @@
 
 #include "audio/port.h"
 #include "gui/widgets/knob.h"
+#include "utils/string.h"
 
 #include <gtk/gtk.h>
 
@@ -124,17 +125,20 @@ knob_draw_cb (
     3.f * (scale / 80.f);
 
   const float start_angle =
-    ((180.f - ARC_CUT_ANGLE) * (float) G_PI) / 180.f;
+    ((180.f - ARC_CUT_ANGLE) * (float) G_PI) /
+      180.f;
   const float end_angle =
-    ((360.f + ARC_CUT_ANGLE) * (float) G_PI) / 180.f;
+    ((360.f + ARC_CUT_ANGLE) * (float) G_PI) /
+      180.f;
 
   const float value =
     KNOB_VAL_FROM_REAL (GET_REAL_VAL);
   const float value_angle = start_angle
     + value * (end_angle - start_angle);
-  const float zero_angle =
+  float zero_angle =
     start_angle +
-    (self->zero * (end_angle - start_angle));
+    ((self->zero - self->min) *
+     (end_angle - start_angle));
 
   float value_x = cosf (value_angle);
   float value_y = sinf (value_angle);
