@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,15 +31,14 @@ G_DECLARE_FINAL_TYPE (
   Z, PORT_CONNECTIONS_POPOVER_WIDGET,
   GtkPopover)
 
-typedef struct _InspectorPortWidget
-  InspectorPortWidget;
+typedef struct Port Port;
 
 typedef struct _PortConnectionsPopoverWidget
 {
-  GtkPopover              parent_instance;
+  GtkPopover       parent_instance;
 
-  /** The owner button. */
-  InspectorPortWidget * owner;
+  /** The port. */
+  Port *           port;
 
   /** The main vertical box containing everything. */
   GtkBox *         main_box;
@@ -56,10 +55,14 @@ typedef struct _PortConnectionsPopoverWidget
 
 /**
  * Creates the popover.
+ *
+ * @param owner Owner widget to pop up at.
+ * @param port Owner port.
  */
 PortConnectionsPopoverWidget *
 port_connections_popover_widget_new (
-  InspectorPortWidget * owner);
+  GtkWidget * owner,
+  Port *      port);
 
 /**
  * Refreshes the popover.

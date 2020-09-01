@@ -243,7 +243,8 @@ on_double_click (
   g_message ("double click");
 
   PortConnectionsPopoverWidget * popover =
-    port_connections_popover_widget_new (self);
+    port_connections_popover_widget_new (
+      GTK_WIDGET (self), self->port);
   /*gtk_popover_popdown (GTK_POPOVER (popover));*/
   gtk_widget_show_all (GTK_WIDGET (popover));
 

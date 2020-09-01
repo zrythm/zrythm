@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/port_connection_action.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
 #include "audio/port.h"
@@ -40,10 +41,12 @@ on_enable_toggled (
   GtkToggleButton *         btn,
   PortConnectionRowWidget * self)
 {
-  int dest_idx =
-    port_get_dest_index (self->src, self->dest);
-  self->src->dest_enabled[dest_idx] =
-    gtk_toggle_button_get_active (btn);
+  UndoableAction * ua =
+    port_connection_action_new_enable (
+      &self->src->id, &self->dest->id,
+      gtk_toggle_button_get_active (btn));
+  undo_manager_perform (UNDO_MANAGER, ua);
+
   port_connections_popover_widget_refresh (
     self->parent);
 }

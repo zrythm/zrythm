@@ -210,8 +210,9 @@ z_gtk_configure_simple_combo_box (
   GtkTreeModel * model);
 
 void
-z_gtk_button_set_icon_name (GtkButton * btn,
-                            const char * name);
+z_gtk_button_set_icon_name (
+  GtkButton * btn,
+  const char * name);
 
 /**
  * Creates a button with the given icon name.

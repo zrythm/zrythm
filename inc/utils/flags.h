@@ -181,4 +181,7 @@
 #define F_REPLACING 1
 #define F_NOT_REPLACING 0
 
+#define F_PROJECT 1
+#define F_NOT_PROJECT 0
+
 #endif

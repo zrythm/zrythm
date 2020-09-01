@@ -23,9 +23,11 @@
 #include "gui/widgets/knob_with_name.h"
 #include "gui/widgets/live_waveform.h"
 #include "gui/widgets/modulator.h"
+#include "gui/widgets/port_connections_popover.h"
 #include "plugins/plugin.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
@@ -152,6 +154,36 @@ set_control_value (
     F_NO_PUBLISH_EVENTS);
 }
 
+static void
+on_automate_clicked (
+  GtkButton *       btn,
+  ModulatorWidget * self)
+{
+  int index = -1;
+  for (int i = 0; i < 16; i++)
+    {
+      if (self->waveform_automate_buttons[i] ==
+            btn)
+        {
+          index = i;
+          break;
+        }
+    }
+  g_return_if_fail (index >= 0);
+
+  PortConnectionsPopoverWidget * popover =
+    port_connections_popover_widget_new (
+      GTK_WIDGET (btn), self->ports[index]);
+  gtk_widget_show_all (GTK_WIDGET (popover));
+
+  /* TODO update label on closed */
+#if 0
+  g_signal_connect (
+    G_OBJECT (popover), "closed",
+    G_CALLBACK (on_popover_closed), self);
+#endif
+}
+
 ModulatorWidget *
 modulator_widget_new (
   Plugin * modulator)
@@ -189,7 +221,8 @@ modulator_widget_new (
       Port * port = modulator->in_ports[i];
 
       if (port->id.type != TYPE_CONTROL ||
-          port->id.flow != FLOW_INPUT)
+          port->id.flow != FLOW_INPUT ||
+          port->id.flags & PORT_FLAG_NOT_ON_GUI)
         continue;
 
       KnobWidget * knob =
@@ -249,15 +282,57 @@ modulator_widget_new (
         continue;
 
       int index = self->num_waveforms++;
+
+      self->ports[index] = port;
+
+      /* create waveform */
       self->waveforms[index] =
         live_waveform_widget_new_port (port);
       gtk_widget_set_size_request (
         GTK_WIDGET (self->waveforms[index]), 48, 48);
       gtk_widget_set_visible (
         GTK_WIDGET (self->waveforms[index]), true);
+
+      /* create waveform overlay */
+      self->waveform_overlays[index] =
+        GTK_OVERLAY (gtk_overlay_new ());
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->waveform_overlays[index]),
+        true);
+      gtk_container_add (
+        GTK_CONTAINER (
+          self->waveform_overlays[index]),
+        GTK_WIDGET (self->waveforms[index]));
+
+      /* add button for selecting automatable */
+      self->waveform_automate_buttons[index] =
+        GTK_BUTTON (
+          z_gtk_button_new_with_icon ("automate"));
+      gtk_widget_set_visible (
+        GTK_WIDGET (
+          self->waveform_automate_buttons[index]),
+        true);
+      gtk_overlay_add_overlay (
+        self->waveform_overlays[index],
+        GTK_WIDGET (
+          self->waveform_automate_buttons[index]));
+      gtk_widget_set_halign (
+        GTK_WIDGET (
+          self->waveform_automate_buttons[index]),
+        GTK_ALIGN_END);
+      gtk_widget_set_valign (
+        GTK_WIDGET (
+          self->waveform_automate_buttons[index]),
+        GTK_ALIGN_START);
+      g_signal_connect (
+        G_OBJECT (
+          self->waveform_automate_buttons[index]),
+        "clicked",
+        G_CALLBACK (on_automate_clicked), self);
+
       gtk_container_add (
         GTK_CONTAINER (self->waveforms_box),
-        GTK_WIDGET (self->waveforms[index]));
+        GTK_WIDGET (self->waveform_overlays[index]));
 
       if (self->num_waveforms == 16)
         break;

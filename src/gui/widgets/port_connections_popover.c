@@ -24,6 +24,7 @@
 #include "gui/widgets/port_connections_popover.h"
 #include "gui/widgets/port_selector_popover.h"
 #include "plugins/plugin.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -42,7 +43,7 @@ on_add_clicked (
 {
   PortSelectorPopoverWidget * psp =
     port_selector_popover_widget_new (
-      self, self->owner->port);
+      self, self->port);
   gtk_popover_set_relative_to (
     GTK_POPOVER (psp), GTK_WIDGET (btn));
   gtk_popover_set_position (
@@ -54,11 +55,6 @@ void
 port_connections_popover_widget_refresh (
   PortConnectionsPopoverWidget * self)
 {
-  InspectorPortWidget * owner =
-    self->owner;
-  g_return_if_fail (
-    Z_IS_INSPECTOR_PORT_WIDGET (self->owner));
-
   z_gtk_container_destroy_all_children (
     GTK_CONTAINER (self->ports_box));
 
@@ -68,7 +64,7 @@ port_connections_popover_widget_refresh (
   /*if (owner->port->identifier.owner_type ==*/
         /*PORT_OWNER_TYPE_PLUGIN)*/
     /*{*/
-      if (owner->port->id.flow == FLOW_INPUT)
+      if (self->port->id.flow == FLOW_INPUT)
         {
           if (GTK_IS_LABEL (self->title))
             {
@@ -77,23 +73,23 @@ port_connections_popover_widget_refresh (
             }
 
           for (int i = 0;
-               i < owner->port->num_srcs; i++)
+               i < self->port->num_srcs; i++)
             {
-              port = owner->port->srcs[i];
+              port = self->port->srcs[i];
 
               if (!port_is_connection_locked (
-                     port, owner->port))
+                     port, self->port))
                 {
                   pcr =
                     port_connection_row_widget_new (
-                      self, port, owner->port, 1);
+                      self, port, self->port, 1);
                   gtk_container_add (
                     GTK_CONTAINER (self->ports_box),
                     GTK_WIDGET (pcr));
                 }
             }
         }
-      else if (owner->port->id.flow ==
+      else if (self->port->id.flow ==
                  FLOW_OUTPUT)
         {
           if (GTK_IS_LABEL (self->title))
@@ -103,16 +99,16 @@ port_connections_popover_widget_refresh (
             }
 
           for (int i = 0;
-               i < owner->port->num_dests; i++)
+               i < self->port->num_dests; i++)
             {
-              port = owner->port->dests[i];
+              port = self->port->dests[i];
 
               if (!port_is_connection_locked (
-                     owner->port, port))
+                     self->port, port))
                 {
                   pcr =
                     port_connection_row_widget_new (
-                      self, owner->port, port, 0);
+                      self, self->port, port, 0);
                   gtk_container_add (
                     GTK_CONTAINER (self->ports_box),
                     GTK_WIDGET (pcr));
@@ -123,17 +119,24 @@ port_connections_popover_widget_refresh (
 }
 
 /**
- * Creates a digital meter with the given type (bpm or position).
+ * Creates the popover.
+ *
+ * @param owner Owner widget to pop up at.
+ * @param port Owner port.
  */
 PortConnectionsPopoverWidget *
 port_connections_popover_widget_new (
-  InspectorPortWidget * owner)
+  GtkWidget * owner,
+  Port *      port)
 {
+  g_return_val_if_fail (
+    GTK_IS_WIDGET (owner) && IS_PORT (port), NULL);
+
   PortConnectionsPopoverWidget * self =
     g_object_new (
       PORT_CONNECTIONS_POPOVER_WIDGET_TYPE, NULL);
 
-  self->owner = owner;
+  self->port = port;
   gtk_popover_set_relative_to (
     GTK_POPOVER (self),
     GTK_WIDGET (owner));
@@ -184,18 +187,17 @@ port_connections_popover_widget_init (
   self->add =
     GTK_BUTTON (gtk_button_new ());
   gtk_widget_set_visible (
-    GTK_WIDGET (self->add), 1);
+    GTK_WIDGET (self->add), true);
   GtkWidget * btn_box =
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_visible (btn_box, 1);
+  gtk_widget_set_visible (btn_box, true);
   GtkWidget * img =
-    gtk_image_new_from_resource ("");
-  resources_set_image_icon (
-    GTK_IMAGE (img), ICON_TYPE_ZRYTHM, "plus.svg");
-  gtk_widget_set_visible (img, 1);
+    gtk_image_new_from_icon_name (
+      "add", GTK_ICON_SIZE_BUTTON);
+  gtk_widget_set_visible (img, true);
   gtk_box_pack_start (
     GTK_BOX (btn_box), img,
-    0, 0, 0);
+    F_NO_EXPAND, F_NO_FILL, 0);
   GtkWidget * lbl =
     gtk_label_new (_("Add"));
   gtk_widget_set_visible (lbl, 1);
@@ -215,29 +217,17 @@ port_connections_popover_widget_init (
 
   /* add to each other */
   gtk_box_pack_start (
-    self->main_box,
-    GTK_WIDGET (self->title),
-    0, // expand
-    0, // fill
-    0); // extra padding
+    self->main_box, GTK_WIDGET (self->title),
+    F_NO_EXPAND,  F_NO_FILL, 0);
   gtk_box_pack_start (
-    self->main_box,
-    separator,
-    0, // expand
-    0, // fill
-    0); // extra padding
+    self->main_box, separator,
+    F_NO_EXPAND, F_NO_FILL, 0);
   gtk_box_pack_start (
-    self->main_box,
-    GTK_WIDGET (self->ports_box),
-    0, // expand
-    0, // fill
-    0); // extra padding
+    self->main_box, GTK_WIDGET (self->ports_box),
+    F_NO_EXPAND, F_NO_FILL, 0);
   gtk_box_pack_start (
-    self->main_box,
-    GTK_WIDGET (self->add),
-    0, // expand
-    0, // fill
-    0); // extra padding
+    self->main_box, GTK_WIDGET (self->add),
+    F_NO_EXPAND, F_NO_FILL, 0);
 
   /* add to popover */
   gtk_container_add (

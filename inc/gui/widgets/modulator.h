@@ -35,6 +35,8 @@ typedef struct _KnobWithNameWidget
   KnobWithNameWidget;
 typedef struct _LiveWaveformWidget
   LiveWaveformWidget;
+typedef struct _PortConnectionsPopoverWidget
+  PortConnectionsPopoverWidget;
 typedef struct Modulator Modulator;
 
 /**
@@ -67,8 +69,14 @@ typedef struct _ModulatorWidget
 
   /** The graphs on the right. */
   GtkBox *          waveforms_box;
+  GtkOverlay *      waveform_overlays[16];
+  GtkButton *       waveform_automate_buttons[16];
+  //PortConnectionsPopoverWidget *
+    //waveform_popovers[16];
   LiveWaveformWidget * waveforms[16];
   int               num_waveforms;
+
+  Port *            ports[16];
 
   //GtkDrawingArea *  graph;
 

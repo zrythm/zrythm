@@ -54,13 +54,15 @@ typedef enum IconType
  * @return a GtkImage.
  */
 GtkWidget *
-resources_get_icon (IconType     icon_type,
-                    const char * filename);
+resources_get_icon (
+  IconType     icon_type,
+  const char * filename);
 
 void
-resources_set_image_icon (GtkImage *   img,
-                          IconType     icon_type,
-                          const char * path);
+resources_set_image_icon (
+  GtkImage *   img,
+  IconType     icon_type,
+  const char * path);
 
 /**
  * Sets class template from resource.
