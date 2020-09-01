@@ -140,19 +140,9 @@ automation_tracklist_init (
 
   self->ats_size = 12;
   self->ats =
-    calloc (self->ats_size,
-            sizeof (AutomationTrack *));
-
-  /* add all automation tracks */
-  //automation_tracklist_update (self);
-
-  /* create a visible lane for the fader */
-  /*Automatable * fader =*/
-    /*track_get_fader_automatable (self->track);*/
-  /*AutomationTrack * fader_at =*/
-    /*automatable_get_automation_track (fader);*/
-  /*fader_at->created = 1;*/
-  /*fader_at->visible = 1;*/
+    calloc (
+      self->ats_size,
+      sizeof (AutomationTrack *));
 }
 
 /**

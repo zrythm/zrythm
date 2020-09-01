@@ -54,11 +54,14 @@ typedef struct _PortSelectorPopoverWidget
   /** The owner Port. */
   Port            * port;
 
+  GtkScrolledWindow * track_scroll;
   GtkTreeView *     track_treeview;
   GtkTreeModel *    track_model;
+  GtkScrolledWindow * plugin_scroll;
   GtkTreeView *     plugin_treeview;
   GtkTreeModel *    plugin_model;
   GtkSeparator *    plugin_separator;
+  GtkScrolledWindow * port_scroll;
   GtkTreeView *     port_treeview;
   GtkTreeModel *    port_model;
 

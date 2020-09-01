@@ -67,11 +67,20 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkTreeView" id="track_treeview">
+                  <object class="GtkScrolledWindow"
+                          id="track_scroll">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child internal-child="selection">
-                      <object class="GtkTreeSelection"/>
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="propagate-natural-height">True</property>
+                    <property name="vexpand">True</property>
+                    <child>
+                      <object class="GtkTreeView" id="track_treeview">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
+                      </object>
                     </child>
                   </object>
                   <packing>
@@ -120,11 +129,20 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkTreeView" id="plugin_treeview">
+                  <object class="GtkScrolledWindow"
+                          id="plugin_scroll">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child internal-child="selection">
-                      <object class="GtkTreeSelection"/>
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="propagate-natural-height">True</property>
+                    <property name="vexpand">True</property>
+                    <child>
+                      <object class="GtkTreeView" id="plugin_treeview">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
+                      </object>
                     </child>
                   </object>
                   <packing>
@@ -173,11 +191,20 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkTreeView" id="port_treeview">
+                  <object class="GtkScrolledWindow"
+                          id="port_scroll">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child internal-child="selection">
-                      <object class="GtkTreeSelection"/>
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="propagate-natural-height">True</property>
+                    <property name="vexpand">True</property>
+                    <child>
+                      <object class="GtkTreeView" id="port_treeview">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
+                      </object>
                     </child>
                   </object>
                   <packing>

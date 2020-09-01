@@ -609,30 +609,21 @@ port_selector_popover_widget_class_init (
   resources_set_class_template (
     klass, "port_selector_popover.ui");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    PortSelectorPopoverWidget,
-    track_treeview);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PortSelectorPopoverWidget,
-    plugin_treeview);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PortSelectorPopoverWidget,
-    plugin_separator);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PortSelectorPopoverWidget,
-    port_treeview);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PortSelectorPopoverWidget,
-    ok);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PortSelectorPopoverWidget,
-    cancel);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, PortSelectorPopoverWidget, x)
+
+  BIND_CHILD (track_scroll);
+  BIND_CHILD (track_treeview);
+  BIND_CHILD (plugin_scroll);
+  BIND_CHILD (plugin_treeview);
+  BIND_CHILD (plugin_separator);
+  BIND_CHILD (port_scroll);
+  BIND_CHILD (port_treeview);
+  BIND_CHILD (ok);
+  BIND_CHILD (cancel);
+
+#undef BIND_CHILD
 }
 
 static void
@@ -640,6 +631,15 @@ port_selector_popover_widget_init (
   PortSelectorPopoverWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  /* set max height */
+  int max_height = 380;
+  gtk_scrolled_window_set_max_content_height (
+    self->track_scroll, max_height);
+  gtk_scrolled_window_set_max_content_height (
+    self->plugin_scroll, max_height);
+  gtk_scrolled_window_set_max_content_height (
+    self->port_scroll, max_height);
 
   g_signal_connect (
     G_OBJECT (self->ok), "clicked",
