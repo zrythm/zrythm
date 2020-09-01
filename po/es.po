@@ -5,13 +5,14 @@
 # Alexandros Theodotou <alextee@posteo.net>, 2019, 2020.
 # Anonymous <noreply@weblate.org>, 2020.
 # Gabriel García <gabriel.o.garcia@gmail.com>, 2020.
+# Israel Barrera <izraelbarrera@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-08-29 16:28+0100\n"
-"PO-Revision-Date: 2020-07-24 14:02+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-01 18:40+0000\n"
+"Last-Translator: Israel Barrera <izraelbarrera@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.2.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:188
@@ -3366,7 +3367,7 @@ msgstr "La ley del pan a utilizar"
 
 #: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:505
 msgid "Zrythm path"
-msgstr "Ruta de Zrythm"
+msgstr "Directorio de Zrythm"
 
 #: resources/ui/preferences.ui:245
 msgid "The global Zrythm working path for non-project related files"
@@ -4013,7 +4014,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:558
 #, fuzzy
 msgid "VST plugins"
-msgstr "Analizando complementos"
+msgstr "Complementos VST"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:559
 #, fuzzy
@@ -4025,9 +4026,8 @@ msgstr ""
 "predeterminadas)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:563
-#, fuzzy
 msgid "SFZ instruments"
-msgstr "Instrumento"
+msgstr "Instrumentos SFZ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:564
 #, fuzzy
@@ -4039,9 +4039,8 @@ msgstr ""
 "predeterminadas)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:568
-#, fuzzy
 msgid "SF2 instruments"
-msgstr "Instrumento"
+msgstr "Instrumentos SF2"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:569
 #, fuzzy
@@ -4112,13 +4111,14 @@ msgid "DSP"
 msgstr "DSP"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:655
+#, fuzzy
 msgid "Pan"
-msgstr "Pan"
+msgstr "Balance"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:659
 #, fuzzy
 msgid "Pan algorithm"
-msgstr "Punto de automatización"
+msgstr "Algoritmo de balance."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:660
 msgid ""
