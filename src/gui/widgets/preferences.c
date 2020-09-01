@@ -32,6 +32,7 @@
 #include "utils/localization.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -53,9 +54,9 @@ typedef struct CallbackData
 } CallbackData;
 
 #define KEY_IS(a,b,c) \
-  (string_is_equal (group, _(a), true) && \
-  string_is_equal (subgroup, _(b), true) && \
-  string_is_equal (key, c, true))
+  (string_is_equal (group, _(a)) && \
+  string_is_equal (subgroup, _(b)) && \
+  string_is_equal (key, c))
 
 static void
 on_path_entry_changed (
@@ -241,7 +242,7 @@ make_control (
 #define TYPE_EQUALS(type2) \
   string_is_equal ( \
     (const char *) type,  \
-    (const char *) G_VARIANT_TYPE_##type2, true)
+    (const char *) G_VARIANT_TYPE_##type2)
 
   GtkWidget * widget = NULL;
   if (KEY_IS (
@@ -550,7 +551,7 @@ make_control (
 #if 0
   else if (string_is_equal (
              g_variant_get_type_string (
-               current_var), "ai", true))
+               current_var), "ai"))
     {
     }
 #endif
@@ -599,7 +600,7 @@ add_subgroup (
         _(g_settings_schema_key_get_description (
           schema_key));
 
-      if (string_is_equal (key, "info", true) ||
+      if (string_is_equal (key, "info") ||
           should_be_hidden (
             info->group_name, info->name, key))
         continue;

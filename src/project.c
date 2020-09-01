@@ -900,8 +900,7 @@ load (
     g_strdup (PROJECT->backup_dir);
 
   char * version = zrythm_get_version (0);
-  if (!string_is_equal (
-        self->version, version, 1))
+  if (!string_is_equal (self->version, version))
     {
       char * str =
         g_strdup_printf (

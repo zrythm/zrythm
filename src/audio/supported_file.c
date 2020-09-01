@@ -165,24 +165,24 @@ supported_file_get_type (
 
   if (g_file_test (file, G_FILE_TEST_IS_DIR))
     type = FILE_TYPE_DIR;
-  else if (string_is_equal (ext, "", 1))
+  else if (string_is_equal (ext, ""))
     type = FILE_TYPE_OTHER;
   else if (
-      string_is_equal (ext, "MID", 1) ||
-      string_is_equal (ext, "MIDI", 1) ||
-      string_is_equal (ext, "SMF", 1))
+      string_is_equal_ignore_case (ext, "MID") ||
+      string_is_equal_ignore_case (ext, "MIDI") ||
+      string_is_equal_ignore_case (ext, "SMF"))
     type = FILE_TYPE_MIDI;
   else if (
-      string_is_equal (ext, "mp3", 1))
+      string_is_equal_ignore_case (ext, "mp3"))
     type = FILE_TYPE_MP3;
   else if (
-      string_is_equal (ext, "flac", 1))
+      string_is_equal_ignore_case (ext, "flac"))
     type = FILE_TYPE_FLAC;
   else if (
-      string_is_equal (ext, "ogg", 1))
+      string_is_equal_ignore_case (ext, "ogg"))
     type = FILE_TYPE_OGG;
   else if (
-      string_is_equal (ext, "wav", 1))
+      string_is_equal_ignore_case (ext, "wav"))
     type = FILE_TYPE_WAV;
   else
     type = FILE_TYPE_OTHER;

@@ -66,7 +66,7 @@ ui_set_cursor_from_icon_name (
     {
       UiCursor * cursor =
         &UI_CACHES->cursors[i];
-      if (string_is_equal (name, cursor->name, 1) &&
+      if (string_is_equal (name, cursor->name) &&
           cursor->offset_x == offset_x &&
           cursor->offset_y == offset_y)
         {
@@ -1030,7 +1030,7 @@ ui_setup_device_name_combo_box (
     for (int i = 0; i < num_names; i++) \
       { \
         if (string_is_equal ( \
-              names[i], current_device, 0)) \
+              names[i], current_device)) \
           { \
             gtk_combo_box_set_active ( \
               GTK_COMBO_BOX (cb), i); \

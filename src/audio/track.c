@@ -647,7 +647,7 @@ track_get_from_name (
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * track = TRACKLIST->tracks[i];
-      if (string_is_equal (track->name, name, 1))
+      if (string_is_equal (track->name, name))
         {
           return track;
         }

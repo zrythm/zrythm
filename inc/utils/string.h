@@ -65,13 +65,21 @@ string_contains_substr (
   const bool   accept_alternatives);
 
 /**
- * Returns if the two strings are equal.
+ * Returns if the two strings are exactly equal.
  */
-int
+bool
 string_is_equal (
   const char * str1,
-  const char * str2,
-  int          ignore_case);
+  const char * str2);
+
+/**
+ * Returns if the two strings are equal ignoring
+ * case.
+ */
+bool
+string_is_equal_ignore_case (
+  const char * str1,
+  const char * str2);
 
 /**
  * Returns a newly allocated string that is a

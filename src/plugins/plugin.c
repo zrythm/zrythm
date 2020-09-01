@@ -58,6 +58,7 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
@@ -211,14 +212,14 @@ plugin_add_bank_if_not_exists (
       PluginBank * bank = self->banks[i];
       if (uri)
         {
-          if (string_is_equal (bank->uri, uri, 0))
+          if (string_is_equal (bank->uri, uri))
             {
               return bank;
             }
         }
       else
         {
-          if (string_is_equal (bank->name, name, 0))
+          if (string_is_equal (bank->name, name))
             {
               return bank;
             }

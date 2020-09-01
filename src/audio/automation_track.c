@@ -36,6 +36,7 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -275,7 +276,7 @@ automation_track_find_from_port (
           PortIdentifier * dest = &at->port_id;
           if (
             string_is_equal (
-              dest->label, src->label, 0) &&
+              dest->label, src->label) &&
             dest->owner_type == src->owner_type &&
             dest->type == src->type &&
             dest->flow == src->flow &&

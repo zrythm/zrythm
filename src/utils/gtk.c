@@ -87,15 +87,17 @@ z_gtk_message_dialog_get_label (
       const char * name =
       gtk_widget_class_get_css_name (
         GTK_WIDGET_GET_CLASS (label));
-      if (string_is_equal (
-            name, "label", 1) &&
+      if (string_is_equal (name, "label") &&
           !secondary)
-        break;
+        {
+          break;
+        }
       else if (
-        string_is_equal (
-          name, "secondary_label", 1) &&
+        string_is_equal (name, "secondary_label") &&
         secondary)
-        break;
+        {
+          break;
+        }
     }
   g_list_free (children);
 

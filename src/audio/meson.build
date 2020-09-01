@@ -75,6 +75,7 @@ audio_srcs = [
   'peak_dsp.c',
   'pool.c',
   'port.c',
+  'port_identifier.c',
   'position.c',
   'quantize_options.c',
   'pan.c',

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,6 +23,8 @@
 #include "gui/widgets/modulator.h"
 #include "plugins/plugin.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
+#include "utils/string.h"
 
 #include <gtk/gtk.h>
 
@@ -120,7 +122,12 @@ static float
 get_control_value (
   Port * port)
 {
-  return port_get_control_value (port, 0);
+  if (string_is_equal (port->id.label, "Range max"))
+    {
+      g_warn_if_reached ();
+    }
+  return
+    port_get_control_value (port, F_NOT_NORMALIZED);
 }
 
 /** Setter for the KnobWidget. */
@@ -130,7 +137,8 @@ set_control_value (
   float  value)
 {
   port_set_control_value (
-    port, value, 0, 0);
+    port, value, F_NOT_NORMALIZED,
+    F_NO_PUBLISH_EVENTS);
 }
 
 ModulatorWidget *
@@ -162,7 +170,7 @@ modulator_widget_new (
   gtk_widget_set_margin_top (
     GTK_WIDGET (self->controls_box), 3);
   gtk_widget_set_visible (
-    GTK_WIDGET (self->controls_box), 1);
+    GTK_WIDGET (self->controls_box), true);
 
   Port * port;
   for (int i = 0;
@@ -217,6 +225,9 @@ modulator_widget_new (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->controls_box),
     GTK_WIDGET (self->graph));
+  two_col_expander_box_widget_set_scroll_policy (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 
   g_object_ref (self);
 
@@ -239,6 +250,7 @@ modulator_widget_class_init (
   ModulatorWidgetClass * _klass)
 {
   GObjectClass * klass = G_OBJECT_CLASS (_klass);
+
   klass->finalize = (GObjectFinalizeFunc) finalize;
 }
 

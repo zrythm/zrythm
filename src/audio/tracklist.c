@@ -330,7 +330,7 @@ tracklist_find_track_by_name (
   for (int i = 0; i < self->num_tracks; i++)
     {
       track = self->tracks[i];
-      if (string_is_equal (name, track->name, 0))
+      if (string_is_equal (name, track->name))
         return track;
     }
   return NULL;

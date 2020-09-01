@@ -31,6 +31,7 @@
 #include "utils/flags.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 /**
@@ -116,7 +117,7 @@ automation_tracklist_get_plugin_at (
           slot_type ==
             at->port_id.plugin_id.slot_type &&
           string_is_equal (
-            label, at->port_id.label, 0))
+            label, at->port_id.label))
         {
           return at;
         }

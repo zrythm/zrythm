@@ -29,6 +29,7 @@
 #include "audio/region.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/string.h"
 #include "zrythm.h"
 
 #include "tests/helpers/project.h"
@@ -1077,11 +1078,11 @@ test_edit_marker ()
 
   /* assert name changed */
   g_assert_true (
-    string_is_equal (marker->name, "bb", true));
+    string_is_equal (marker->name, "bb"));
 
   undo_manager_undo (UNDO_MANAGER);
   g_assert_true (
-    string_is_equal (marker->name, "aa", true));
+    string_is_equal (marker->name, "aa"));
 
   /* undo again and check that all objects are at
    * original state */

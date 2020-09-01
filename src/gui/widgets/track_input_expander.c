@@ -47,13 +47,13 @@ on_midi_channels_changed (
     return;
 
   Channel * ch = self->track->channel;
-  if (string_is_equal (id, "all", 1))
+  if (string_is_equal (id, "all"))
     {
       if (ch->all_midi_channels)
         return;
       ch->all_midi_channels = 1;
     }
-  else if (string_is_equal (id, "none", 1))
+  else if (string_is_equal (id, "none"))
     {
       ch->all_midi_channels = 0;
       for (int i = 0; i < 16; i++)
@@ -77,8 +77,7 @@ on_midi_channels_changed (
           str =
             g_strdup_printf (
               "%d", i + 1);
-          if (string_is_equal (
-                str, id, 1))
+          if (string_is_equal (str, id))
             {
               ch->midi_channels[i] = 1;
               g_free (str);
@@ -105,7 +104,7 @@ on_ext_input_changed (
     return;
 
   Channel * ch = self->track->channel;
-  if (string_is_equal (id, "all", 1))
+  if (string_is_equal (id, "all"))
     {
       if (midi)
         {
@@ -126,7 +125,7 @@ on_ext_input_changed (
           ch->all_stereo_r_ins = 1;
         }
     }
-  else if (string_is_equal (id, "none", 1))
+  else if (string_is_equal (id, "none"))
     {
       if (midi)
         {
@@ -190,8 +189,7 @@ on_ext_input_changed (
           /*g_message ("checking %s",*/
                      /*port->full_name);*/
 
-          if (string_is_equal (
-                port->full_name, id, 1))
+          if (string_is_equal (port->full_name, id))
             {
               if (midi)
                 {
@@ -255,7 +253,7 @@ row_separator_func (
   gtk_tree_model_get_value (model, iter, 0, &a);
   const char * val = g_value_get_string (&a);
   int ret;
-  if (val && string_is_equal (val, "separator", 1))
+  if (val && string_is_equal (val, "separator"))
     ret = 1;
   else
     ret = 0;

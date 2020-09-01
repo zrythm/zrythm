@@ -39,7 +39,7 @@ get_category_from_carla_category (
   const char * category)
 {
 #define EQUALS(x) \
-  string_is_equal (category, x, false)
+  string_is_equal (category, x)
 
   if (EQUALS ("synth"))
     return PC_INSTRUMENT;
@@ -168,7 +168,7 @@ z_carla_discovery_parse_plugin_info (
       g_free (results);
       return NULL;
     }
-  else if (string_is_equal ("", results, false))
+  else if (string_is_equal ("", results))
     {
       g_message (
         "No results returned for %s",

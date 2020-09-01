@@ -113,21 +113,21 @@ static const bool show_hidden = 1;
  * Returns whether Zrythm supports the given
  * feature.
  */
-static int
+static bool
 feature_is_supported (
   Lv2Plugin * plugin,
   const char* uri)
 {
-  if (string_is_equal (uri, LV2_CORE__isLive, 1))
-    return 1;
+  if (string_is_equal (uri, LV2_CORE__isLive))
+    return true;
 
   for (const LV2_Feature * const * f =
          plugin->features; *f; ++f)
     {
-      if (string_is_equal (uri, (*f)->URI, 1))
-        return 1;
+      if (string_is_equal (uri, (*f)->URI))
+        return true;
     }
-  return 0;
+  return false;
 }
 
 /**
@@ -1457,8 +1457,7 @@ lv2_plugin_pick_ui (
             case LV2_PLUGIN_UI_EXTERNAL:
               if (string_is_equal (
                     ui_type_uri,
-                    KX_EXTERNAL_UI_WIDGET,
-                    true))
+                    KX_EXTERNAL_UI_WIDGET))
                 {
                   acceptable = true;
                   if (out_ui_type)
@@ -1472,8 +1471,7 @@ lv2_plugin_pick_ui (
                 }
               else if (string_is_equal (
                          ui_type_uri,
-                         LV2_UI_PREFIX "external",
-                         true))
+                         LV2_UI_PREFIX "external"))
                 {
                   acceptable = true;
                   if (out_ui_type)

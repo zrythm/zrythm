@@ -69,7 +69,7 @@ name_exists (
   for (int i = 0; i < self->num_clips; i++)
     {
       clip = self->clips[i];
-      if (string_is_equal (clip->name, name, false))
+      if (string_is_equal (clip->name, name))
         {
           return true;
         }

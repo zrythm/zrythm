@@ -77,6 +77,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -1258,6 +1259,52 @@ engine_samplerate_enum_to_int (
       break;
     }
   g_return_val_if_reached (-1);
+}
+
+AudioBackend
+engine_audio_backend_from_string (
+  char * str)
+{
+  for (int i = 0; i < NUM_AUDIO_BACKENDS; i++)
+    {
+      if (string_is_equal (
+            audio_backend_str[i], str))
+        {
+          return (AudioBackend) i;
+        }
+    }
+
+  if (string_is_equal (str, "none"))
+    {
+      return AUDIO_BACKEND_DUMMY;
+    }
+
+  g_return_val_if_reached (AUDIO_BACKEND_DUMMY);
+}
+
+MidiBackend
+engine_midi_backend_from_string (
+  char * str)
+{
+  for (int i = 0; i < NUM_MIDI_BACKENDS; i++)
+    {
+      if (string_is_equal (
+            midi_backend_str[i], str))
+        {
+          return (MidiBackend) i;
+        }
+    }
+
+  if (string_is_equal (str, "none"))
+    {
+      return MIDI_BACKEND_DUMMY;
+    }
+  else if (string_is_equal (str, "jack"))
+    {
+      return MIDI_BACKEND_JACK;
+    }
+
+  g_return_val_if_reached (MIDI_BACKEND_DUMMY);
 }
 
 /**

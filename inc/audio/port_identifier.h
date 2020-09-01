@@ -26,8 +26,11 @@
 #ifndef __AUDIO_PORT_IDENTIFIER_H__
 #define __AUDIO_PORT_IDENTIFIER_H__
 
+#include "zrythm-config.h"
+
+#include <stdbool.h>
+
 #include "plugins/plugin_identifier.h"
-#include "utils/string.h"
 #include "utils/yaml.h"
 
 /**
@@ -376,61 +379,22 @@ port_identifier_schema_default = {
     PortIdentifier, port_identifier_fields_schema),
 };
 
-static inline void
+void
 port_identifier_copy (
   PortIdentifier * dest,
-  PortIdentifier * src)
-{
-  g_return_if_fail (dest && src);
-  if (dest->label)
-    g_free (dest->label);
-  dest->label = g_strdup (src->label);
-  dest->owner_type = src->owner_type;
-  dest->type = src->type;
-  dest->flow = src->flow;
-  dest->flags = src->flags;
-  plugin_identifier_copy (
-    &dest->plugin_id, &src->plugin_id);
-  dest->track_pos = src->track_pos;
-  dest->port_index = src->port_index;
-}
+  PortIdentifier * src);
 
 /**
  * Returns if the 2 PortIdentifier's are equal.
  */
-static inline int
+bool
 port_identifier_is_equal (
   PortIdentifier * src,
-  PortIdentifier * dest)
-{
-  bool eq =
-    string_is_equal (
-      dest->label, src->label, 0) &&
-    dest->owner_type == src->owner_type &&
-    dest->type == src->type &&
-    dest->flow == src->flow &&
-    dest->flags == src->flags &&
-    dest->track_pos == src->track_pos &&
-    dest->port_index == src->port_index;
-  if (dest->owner_type == PORT_OWNER_TYPE_PLUGIN)
-    {
-      eq =
-        eq &&
-        plugin_identifier_is_equal (
-          &dest->plugin_id, &src->plugin_id);
-    }
+  PortIdentifier * dest);
 
-  return eq;
-}
-
-static inline void
+void
 port_identifier_print (
-  PortIdentifier * self)
-{
-  g_message (
-    "[PortIdentifier]\nlabel: %s",
-    self->label);
-}
+  PortIdentifier * self);
 
 /**
  * @}

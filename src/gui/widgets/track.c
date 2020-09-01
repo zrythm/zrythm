@@ -129,6 +129,12 @@ G_DEFINE_TYPE (
         BUTTON_PADDING_FROM_EDGE) * 2 + \
      BUTTON_PADDING)
 
+#define ICON_IS(x,name) \
+  (string_is_equal (x, ICON_NAME_##name))
+
+#define CB_ICON_IS(name) \
+  ICON_IS (cb->icon_name, name)
+
 static CustomButtonWidget *
 get_hovered_button (
   TrackWidget * self,
@@ -460,9 +466,7 @@ draw_buttons (
       CustomButtonWidgetState state =
         CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
 
-      bool is_solo =
-        string_is_equal (
-          cb->icon_name, ICON_NAME_SOLO, 1);
+      bool is_solo = CB_ICON_IS (SOLO);
 
       if (cb == self->clicked_button)
         {
@@ -483,53 +487,41 @@ draw_buttons (
           state =
             CUSTOM_BUTTON_WIDGET_STATE_SEMI_TOGGLED;
         }
-      else if (string_is_equal (
-                cb->icon_name,
-                ICON_NAME_SHOW_UI, 1) &&
+      else if (CB_ICON_IS (SHOW_UI) &&
                instrument_track_is_plugin_visible (
                  self->track))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
-      else if (string_is_equal (
-                cb->icon_name,
-                ICON_NAME_MUTE, 1) &&
+      else if (CB_ICON_IS (MUTE) &&
                track_get_muted (
                  self->track))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
-      else if (string_is_equal (
-                cb->icon_name,
-                ICON_NAME_MONO_COMPAT, 1) &&
+      else if (CB_ICON_IS (MONO_COMPAT) &&
                channel_get_mono_compat_enabled (
                  self->track->channel))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
-      else if (string_is_equal (
-                cb->icon_name,
-                ICON_NAME_RECORD, 1) &&
+      else if (CB_ICON_IS (RECORD) &&
                self->track->recording)
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
-      else if (string_is_equal (
-                cb->icon_name,
-                ICON_NAME_SHOW_TRACK_LANES, 1) &&
+      else if (CB_ICON_IS (SHOW_TRACK_LANES) &&
                self->track->lanes_visible)
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
-      else if (string_is_equal (
-                cb->icon_name,
-                ICON_NAME_SHOW_AUTOMATION_LANES,
-                1) &&
+      else if (CB_ICON_IS (
+                 SHOW_AUTOMATION_LANES) &&
                self->track->automation_visible)
         {
           state =
@@ -648,17 +640,13 @@ draw_lanes (
               state =
                 CUSTOM_BUTTON_WIDGET_STATE_ACTIVE;
             }
-          else if (string_is_equal (
-                    cb->icon_name,
-                    ICON_NAME_SOLO, 1) &&
+          else if (CB_ICON_IS (SOLO) &&
                    lane->solo)
             {
               state =
                 CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
             }
-          else if (string_is_equal (
-                    cb->icon_name,
-                    ICON_NAME_MUTE, 1) &&
+          else if (CB_ICON_IS (MUTE) &&
                    lane->mute)
             {
               state =
@@ -1154,9 +1142,6 @@ set_tooltip_from_button (
   TrackWidget *        self,
   CustomButtonWidget * cb)
 {
-#define ICON_IS(name) \
-  (string_is_equal ( \
-    cb->icon_name, ICON_NAME_##name, true))
 #define SET_TOOLTIP(txt) \
   gtk_widget_set_has_tooltip ( \
     GTK_WIDGET (self), true); \
@@ -1167,11 +1152,11 @@ set_tooltip_from_button (
       gtk_widget_set_has_tooltip (
         GTK_WIDGET (self), false);
     }
-  else if (ICON_IS (SOLO))
+  else if (CB_ICON_IS (SOLO))
     {
       SET_TOOLTIP (_("Solo"));
     }
-  else if (ICON_IS (SHOW_UI))
+  else if (CB_ICON_IS (SHOW_UI))
     {
       if (instrument_track_is_plugin_visible (
             self->track))
@@ -1183,7 +1168,7 @@ set_tooltip_from_button (
           SET_TOOLTIP (_("Show instrument UI"));
         }
     }
-  else if (ICON_IS (MUTE))
+  else if (CB_ICON_IS (MUTE))
     {
       if (track_get_muted (self->track))
         {
@@ -1194,11 +1179,11 @@ set_tooltip_from_button (
           SET_TOOLTIP (_("Mute"));
         }
     }
-  else if (ICON_IS (MONO_COMPAT))
+  else if (CB_ICON_IS (MONO_COMPAT))
     {
       SET_TOOLTIP (_("Mono compatibility"));
     }
-  else if (ICON_IS (RECORD))
+  else if (CB_ICON_IS (RECORD))
     {
       if (self->track->recording)
         {
@@ -1209,7 +1194,7 @@ set_tooltip_from_button (
           SET_TOOLTIP (_("Arm for recording"));
         }
     }
-  else if (ICON_IS (SHOW_TRACK_LANES))
+  else if (CB_ICON_IS (SHOW_TRACK_LANES))
     {
       if (self->track->lanes_visible)
         {
@@ -1220,7 +1205,7 @@ set_tooltip_from_button (
           SET_TOOLTIP (_("Show lanes"));
         }
     }
-  else if (ICON_IS (SHOW_AUTOMATION_LANES))
+  else if (CB_ICON_IS (SHOW_AUTOMATION_LANES))
     {
       if (self->track->automation_visible)
         {
@@ -1231,19 +1216,19 @@ set_tooltip_from_button (
           SET_TOOLTIP (_("Show automation"));
         }
     }
-  else if (ICON_IS (PLUS))
+  else if (CB_ICON_IS (PLUS))
     {
       SET_TOOLTIP (_("Add"));
     }
-  else if (ICON_IS (MINUS))
+  else if (CB_ICON_IS (MINUS))
     {
       SET_TOOLTIP (_("Remove"));
     }
-  else if (ICON_IS (FREEZE))
+  else if (CB_ICON_IS (FREEZE))
     {
       SET_TOOLTIP (_("Freeze/unfreeze"));
     }
-  else if (ICON_IS (LOCK))
+  else if (CB_ICON_IS (LOCK))
     {
       SET_TOOLTIP (_("Lock/unlock"));
     }
@@ -1253,7 +1238,6 @@ set_tooltip_from_button (
       g_warn_if_reached ();
     }
 
-#undef ICON_IS
 #undef SET_TOOLTIP
 }
 
@@ -2017,9 +2001,7 @@ multipress_released (
 
       if ((Track *) cb->owner == self->track)
         {
-          if (string_is_equal (
-                cb->icon_name,
-                ICON_NAME_MONO_COMPAT, 1))
+          if (CB_ICON_IS (MONO_COMPAT))
             {
               channel_set_mono_compat_enabled (
                 self->track->channel,
@@ -2027,47 +2009,36 @@ multipress_released (
                   self->track->channel),
                 F_PUBLISH_EVENTS);
             }
-          else if (string_is_equal (
-                cb->icon_name, ICON_NAME_RECORD, 1))
+          else if (CB_ICON_IS (RECORD))
             {
               track_widget_on_record_toggled (self);
             }
-          else if (string_is_equal (
-                cb->icon_name, ICON_NAME_SOLO, 1))
+          else if (CB_ICON_IS (SOLO))
             {
               track_set_soloed (
                 self->track,
                 !track_get_soloed (self->track),
                 true, true);
             }
-          else if (string_is_equal (
-                cb->icon_name, ICON_NAME_MUTE, 1))
+          else if (CB_ICON_IS (MUTE))
             {
               track_set_muted (
                 self->track,
                 !track_get_muted (self->track),
                 true, true);
             }
-          else if (string_is_equal (
-                cb->icon_name,
-                ICON_NAME_SHOW_TRACK_LANES, 1))
+          else if (CB_ICON_IS (SHOW_TRACK_LANES))
             {
               track_widget_on_show_lanes_toggled (
                 self);
             }
-          else if (
-            string_is_equal (
-              cb->icon_name,
-              ICON_NAME_SHOW_UI, 1))
+          else if (CB_ICON_IS (SHOW_UI))
             {
               instrument_track_toggle_plugin_visible (
                 self->track);
             }
-          else if (
-            string_is_equal (
-              cb->icon_name,
-              ICON_NAME_SHOW_AUTOMATION_LANES,
-              true))
+          else if (CB_ICON_IS (
+                     SHOW_AUTOMATION_LANES))
             {
               track_widget_on_show_automation_toggled (
                 self);
@@ -2092,8 +2063,7 @@ multipress_released (
               at);
           g_return_if_fail (atl);
 
-          if (string_is_equal (
-                cb->icon_name, ICON_NAME_PLUS, 1))
+          if (CB_ICON_IS (PLUS))
             {
               AutomationTrack * new_at =
                 automation_tracklist_get_first_invisible_at (
@@ -2118,9 +2088,7 @@ multipress_released (
                     new_at);
                 }
             }
-          else if (
-            string_is_equal (
-              cb->icon_name, ICON_NAME_MINUS, 0))
+          else if (CB_ICON_IS (MINUS))
             {
               /* don't allow deleting if no other
                * visible automation tracks */
@@ -2135,10 +2103,8 @@ multipress_released (
                     at);
                 }
             }
-          else if (
-            string_is_equal (
-              cb->icon_name,
-              ICON_NAME_SHOW_AUTOMATION_LANES, 0))
+          else if (CB_ICON_IS (
+                     SHOW_AUTOMATION_LANES))
             {
               AutomatableSelectorPopoverWidget * popover =
                 automatable_selector_popover_widget_new (at);

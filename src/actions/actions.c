@@ -1740,7 +1740,7 @@ activate_quick_quantize (
   gsize size;
   const char * variant =
     g_variant_get_string (_variant, &size);
-  if (string_is_equal (variant, "timeline", 1))
+  if (string_is_equal (variant, "timeline"))
     {
       UndoableAction * ua =
         arranger_selections_action_new_quantize (
@@ -1749,7 +1749,7 @@ activate_quick_quantize (
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
-  else if (string_is_equal (variant, "editor", 1))
+  else if (string_is_equal (variant, "editor"))
     {
       ArrangerSelections * sel =
         clip_editor_get_arranger_selections (
@@ -1761,7 +1761,7 @@ activate_quick_quantize (
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
-  else if (string_is_equal (variant, "global", 1))
+  else if (string_is_equal (variant, "global"))
     {
       if (MAIN_WINDOW->last_focused ==
           GTK_WIDGET (MW_TIMELINE))
@@ -1791,7 +1791,7 @@ activate_quantize_options (
   gsize size;
   const char * variant =
     g_variant_get_string (_variant, &size);
-  if (string_is_equal (variant, "timeline", 1))
+  if (string_is_equal (variant, "timeline"))
     {
       QuantizeDialogWidget * quant =
         quantize_dialog_widget_new (
@@ -1802,7 +1802,7 @@ activate_quantize_options (
       gtk_dialog_run (GTK_DIALOG (quant));
       gtk_widget_destroy (GTK_WIDGET (quant));
     }
-  else if (string_is_equal (variant, "editor", 1))
+  else if (string_is_equal (variant, "editor"))
     {
       QuantizeDialogWidget * quant =
         quantize_dialog_widget_new (
@@ -1813,7 +1813,7 @@ activate_quantize_options (
       gtk_dialog_run (GTK_DIALOG (quant));
       gtk_widget_destroy (GTK_WIDGET (quant));
     }
-  else if (string_is_equal (variant, "global", 1))
+  else if (string_is_equal (variant, "global"))
     {
       if (MAIN_WINDOW->last_focused ==
           GTK_WIDGET (MW_TIMELINE))
@@ -1847,15 +1847,15 @@ activate_mute_selection (
   const char * variant =
     g_variant_get_string (_variant, &size);
   ArrangerSelections * sel = NULL;
-  if (string_is_equal (variant, "timeline", 1))
+  if (string_is_equal (variant, "timeline"))
     {
       sel = (ArrangerSelections *) TL_SELECTIONS;
     }
-  else if (string_is_equal (variant, "editor", 1))
+  else if (string_is_equal (variant, "editor"))
     {
       sel = (ArrangerSelections *) MA_SELECTIONS;
     }
-  else if (string_is_equal (variant, "global", 1))
+  else if (string_is_equal (variant, "global"))
     {
       if (MAIN_WINDOW->last_focused ==
           GTK_WIDGET (MW_TIMELINE))

@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file
+ *
+ * Modulator.
+ */
+
 #ifndef __GUI_WIDGETS_MODULATOR_H__
 #define __GUI_WIDGETS_MODULATOR_H__
 
@@ -24,6 +30,16 @@
 #include "gui/widgets/two_col_expander_box.h"
 
 #include <gtk/gtk.h>
+
+typedef struct _KnobWithNameWidget
+  KnobWithNameWidget;
+typedef struct Modulator Modulator;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 #define MODULATOR_WIDGET_TYPE \
   (modulator_widget_get_type ())
@@ -33,9 +49,9 @@ G_DECLARE_FINAL_TYPE (
   Z, MODULATOR_WIDGET,
   TwoColExpanderBoxWidget)
 
-typedef struct _KnobWithNameWidget KnobWithNameWidget;
-typedef struct Modulator Modulator;
-
+/**
+ * Modulator.
+ */
 typedef struct _ModulatorWidget
 {
   TwoColExpanderBoxWidget  parent_instance;
@@ -61,5 +77,9 @@ typedef struct _ModulatorWidget
 ModulatorWidget *
 modulator_widget_new (
   Plugin * modulator);
+
+/**
+ * @}
+ */
 
 #endif

@@ -186,15 +186,16 @@ two_col_expander_box_widget_init (
     GTK_SCROLLED_WINDOW (
       gtk_scrolled_window_new (NULL, NULL));
   gtk_widget_set_visible (
-    GTK_WIDGET (prv->scroll), 1);
+    GTK_WIDGET (prv->scroll), true);
   gtk_scrolled_window_set_policy (
     prv->scroll,
     GTK_POLICY_NEVER,
     GTK_POLICY_NEVER);
   prv->content =
     GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL,
-                   prv->vertical_spacing));
+      gtk_box_new (
+        GTK_ORIENTATION_VERTICAL,
+        prv->vertical_spacing));
   gtk_widget_set_visible (
     GTK_WIDGET (prv->content), 1);
   gtk_container_add (
@@ -207,4 +208,8 @@ two_col_expander_box_widget_init (
   gtk_container_add (
     GTK_CONTAINER (prv_exp_box->content),
     GTK_WIDGET (prv->scroll));
+  gtk_box_set_child_packing (
+    GTK_BOX (prv_exp_box->content),
+    GTK_WIDGET (prv->scroll), F_EXPAND, F_FILL,
+    0, GTK_PACK_START);
 }

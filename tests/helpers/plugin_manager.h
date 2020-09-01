@@ -33,6 +33,7 @@
 #include "project.h"
 #include "utils/objects.h"
 #include "utils/flags.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 
@@ -44,6 +45,10 @@
  * @{
  */
 
+/**
+ * Get a plugin descriptor clone from the given
+ * URI in the given bundle.
+ */
 PluginDescriptor *
 test_plugin_manager_get_plugin_descriptor (
   const char * pl_bundle,
@@ -58,6 +63,10 @@ test_plugin_manager_create_tracks_from_plugin (
   bool         with_carla,
   int          num_tracks);
 
+/**
+ * Get a plugin descriptor clone from the given
+ * URI in the given bundle.
+ */
 PluginDescriptor *
 test_plugin_manager_get_plugin_descriptor (
   const char * pl_bundle,
@@ -79,7 +88,7 @@ test_plugin_manager_get_plugin_descriptor (
     {
       if (string_is_equal (
             PLUGIN_MANAGER->plugin_descriptors[i]->
-              uri, pl_uri, true))
+              uri, pl_uri))
         {
           descr =
             plugin_descriptor_clone (

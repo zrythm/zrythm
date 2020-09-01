@@ -240,17 +240,17 @@ _test_edit_tracks (
           ins_track, new_name);
         g_assert_true (
           string_is_equal (
-            ins_track->name, new_name, false));
+            ins_track->name, new_name));
 
         /* undo/redo and re-verify */
         undo_manager_undo (UNDO_MANAGER);
         g_assert_true (
           string_is_equal (
-            ins_track->name, name_before, false));
+            ins_track->name, name_before));
         undo_manager_redo (UNDO_MANAGER);
         g_assert_true (
           string_is_equal (
-            ins_track->name, new_name, false));
+            ins_track->name, new_name));
 
         g_free (name_before);
 

@@ -25,6 +25,7 @@
 #include "audio/engine_rtaudio.h"
 #include "settings/settings.h"
 #include "project.h"
+#include "utils/string.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -174,7 +175,7 @@ engine_rtaudio_setup (
       g_message (
         "RtAudio device %d: %s", i, dev_nfo_str);
       if (string_is_equal (
-            dev_nfo.name, out_device, 1) &&
+            dev_nfo.name, out_device) &&
           dev_nfo.output_channels > 0)
         {
           out_device_id = i;

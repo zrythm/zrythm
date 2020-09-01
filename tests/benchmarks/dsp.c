@@ -64,7 +64,7 @@ benchmark_find (
     {
       DspBenchmark * benchmark = &benchmarks[i];
       if (string_is_equal (
-            benchmark->func_name, func_name, true))
+            benchmark->func_name, func_name))
         {
           return benchmark;
         }

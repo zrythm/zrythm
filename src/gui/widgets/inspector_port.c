@@ -382,7 +382,7 @@ bar_slider_tick_cb (
       /* if the tooltip changed, update it */
       char * cur_tooltip =
         gtk_widget_get_tooltip_markup (widget);
-      if (!string_is_equal (cur_tooltip, str, 0))
+      if (!string_is_equal (cur_tooltip, str))
         {
           gtk_widget_set_tooltip_markup (
             widget, str);

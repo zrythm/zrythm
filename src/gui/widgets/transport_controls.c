@@ -28,6 +28,7 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
@@ -151,23 +152,22 @@ activate_recording_mode (
   const char * variant =
     g_variant_get_string (_variant, &size);
   g_simple_action_set_state (action, _variant);
-  if (string_is_equal (variant, "overwrite", 1))
+  if (string_is_equal (variant, "overwrite"))
     {
       transport_set_recording_mode (
         TRANSPORT, RECORDING_MODE_OVERWRITE_EVENTS);
     }
-  if (string_is_equal (variant, "merge", 1))
+  if (string_is_equal (variant, "merge"))
     {
       transport_set_recording_mode (
         TRANSPORT, RECORDING_MODE_MERGE_EVENTS);
     }
-  else if (string_is_equal (variant, "takes", 1))
+  else if (string_is_equal (variant, "takes"))
     {
       transport_set_recording_mode (
         TRANSPORT, RECORDING_MODE_TAKES);
     }
-  else if (string_is_equal (
-             variant, "takes-muted", 1))
+  else if (string_is_equal (variant, "takes-muted"))
     {
       transport_set_recording_mode (
         TRANSPORT, RECORDING_MODE_TAKES_MUTED);

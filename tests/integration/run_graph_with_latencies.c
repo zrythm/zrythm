@@ -51,9 +51,9 @@ get_delay_port (
 {
   for (int i = 0; i < pl->num_in_ports; i++)
     {
-      if (string_is_equal (
+      if (string_is_equal_ignore_case (
             pl->in_ports[i]->id.label,
-            "Delay Time", 1))
+            "Delay Time"))
         {
           return pl->in_ports[i];
           break;

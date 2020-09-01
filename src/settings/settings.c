@@ -160,7 +160,7 @@ print_or_reset_schema (
         }
       else if (
         /* don't reset install-dir */
-        string_is_equal (key, "install-dir", 1))
+        string_is_equal (key, "install-dir"))
         {
           sprintf (tmp, _("skipping %s"), key);
           printf ("  %s\n", tmp);

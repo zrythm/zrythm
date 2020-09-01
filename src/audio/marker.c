@@ -71,5 +71,5 @@ marker_is_equal (
     (ArrangerObject *) b;
   return
     position_is_equal (&obj_a->pos, &obj_b->pos) &&
-    string_is_equal (a->name, b->name, 1);
+    string_is_equal (a->name, b->name);
 }

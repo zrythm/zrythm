@@ -178,8 +178,7 @@ cached_vst_descriptors_is_blacklisted (
         self->blacklisted[i];
       GFile * file =
         g_file_new_for_path (descr->path);
-      if (string_is_equal (
-            descr->path, abs_path, 0) &&
+      if (string_is_equal (descr->path, abs_path) &&
           descr->ghash == g_file_hash (file))
         {
           g_object_unref (file);
@@ -206,8 +205,7 @@ cached_vst_descriptors_get (
         self->descriptors[i];
       GFile * file =
         g_file_new_for_path (descr->path);
-      if (string_is_equal (
-            descr->path, abs_path, 0) &&
+      if (string_is_equal (descr->path, abs_path) &&
           descr->ghash == g_file_hash (file))
         {
           g_object_unref (file);

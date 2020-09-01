@@ -369,8 +369,7 @@ create_and_load_lilv_word (
     }
   else
     {
-      if (string_is_equal (
-            LIBDIR_NAME, "lib", 0))
+      if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           self->lv2_path =
             g_strdup_printf (
@@ -571,8 +570,7 @@ get_vst_paths (
     g_strdup (getenv ("VST_PATH"));
   if (!vst_path || (strlen (vst_path) == 0))
     {
-      if (string_is_equal (
-            LIBDIR_NAME, "lib", false))
+      if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           vst_path =
             g_strdup_printf (
@@ -634,8 +632,7 @@ get_vst3_paths (
     g_strdup (getenv ("VST3_PATH"));
   if (!vst_path || (strlen (vst_path) == 0))
     {
-      if (string_is_equal (
-            LIBDIR_NAME, "lib", false))
+      if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           vst_path =
             g_strdup_printf (
@@ -1306,7 +1303,7 @@ plugin_manager_find_plugin_from_uri (
     {
       PluginDescriptor * descr =
         self->plugin_descriptors[i];
-      if (string_is_equal (uri, descr->uri, false))
+      if (string_is_equal (uri, descr->uri))
         {
           return descr;
         }
