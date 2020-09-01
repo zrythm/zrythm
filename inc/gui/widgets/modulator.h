@@ -33,6 +33,8 @@
 
 typedef struct _KnobWithNameWidget
   KnobWithNameWidget;
+typedef struct _LiveWaveformWidget
+  LiveWaveformWidget;
 typedef struct Modulator Modulator;
 
 /**
@@ -63,12 +65,16 @@ typedef struct _ModulatorWidget
   int               num_knobs;
   int               knobs_size;
 
-  /** The graph on the right. */
-  GtkDrawingArea *  graph;
+  /** The graphs on the right. */
+  GtkBox *          waveforms_box;
+  LiveWaveformWidget * waveforms[16];
+  int               num_waveforms;
+
+  //GtkDrawingArea *  graph;
 
   /** Width is 60 so 59 previous points per
    * CV out (max 16). */
-  double            prev_points[16][60];
+  //double            prev_points[16][60];
 
   /** Pointer back to the Modulator. */
   Plugin *          modulator;

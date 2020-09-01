@@ -71,10 +71,13 @@ graph_node_get_name (
   switch (node->type)
     {
     case ROUTE_NODE_TYPE_PLUGIN:
-      return
-        g_strdup_printf (
-          "%s (Plugin)",
-          node->pl->descr->name);
+      {
+        Track * track = plugin_get_track (node->pl);
+        return
+          g_strdup_printf (
+            "%s/%s (Plugin)",
+            track->name, node->pl->descr->name);
+      }
     case ROUTE_NODE_TYPE_PORT:
       port_get_full_designation (node->port, str);
       return g_strdup (str);

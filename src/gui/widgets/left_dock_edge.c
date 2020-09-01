@@ -274,7 +274,7 @@ left_dock_edge_widget_init (
       "standard-connector",
       GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_set_tooltip_text (
-    img, _("CC Bindings"));
+    img, _("Port connections"));
   self->port_connections =
     port_connections_widget_new ();
   gtk_widget_set_visible (

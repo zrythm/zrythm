@@ -523,6 +523,17 @@ graph_setup (
       graph_create_node (
         self, ROUTE_NODE_TYPE_TRACK, tr);
 
+      for (j = 0; j < tr->num_modulators; j++)
+        {
+          pl = tr->modulators[j];
+
+          if (!pl || pl->deleting)
+            continue;
+
+          add_plugin (self, pl);
+          plugin_update_latency (pl);
+        }
+
       if (!tr->channel)
         continue;
 
@@ -547,16 +558,6 @@ graph_setup (
             pl =
               tr->channel->inserts[
                 j - (STRIP_SIZE + 1)];
-
-          if (!pl || pl->deleting)
-            continue;
-
-          add_plugin (self, pl);
-          plugin_update_latency (pl);
-        }
-      for (j = 0; j < tr->num_modulators; j++)
-        {
-          pl = tr->modulators[j];
 
           if (!pl || pl->deleting)
             continue;
@@ -738,6 +739,19 @@ graph_setup (
           graph_node_connect (
             node, initial_processor_node);
         }
+      if (tr->type == TRACK_TYPE_MODULATOR)
+        {
+          graph_node_connect (
+            initial_processor_node, node);
+
+          for (j = 0; j < tr->num_modulators; j++)
+            {
+              pl = tr->modulators[j];
+
+              if (pl && !pl->deleting)
+                connect_plugin (self, pl);
+            }
+        }
 
       if (!tr->channel)
         continue;
@@ -844,14 +858,6 @@ graph_setup (
             pl =
               tr->channel->inserts[
                 j - (STRIP_SIZE + 1)];
-
-          if (pl && !pl->deleting)
-            connect_plugin (self, pl);
-        }
-
-      for (j = 0; j < tr->num_modulators; j++)
-        {
-          pl = tr->modulators[j];
 
           if (pl && !pl->deleting)
             connect_plugin (self, pl);

@@ -21,6 +21,7 @@
 #include "audio/track.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/knob_with_name.h"
+#include "gui/widgets/live_waveform.h"
 #include "gui/widgets/modulator.h"
 #include "plugins/plugin.h"
 #include "utils/arrays.h"
@@ -35,6 +36,7 @@ G_DEFINE_TYPE (ModulatorWidget,
                modulator_widget,
                TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 
+#if 0
 static gboolean
 modulator_graph_draw (
   GtkWidget *       widget,
@@ -117,6 +119,7 @@ graph_tick_callback (
 
   return G_SOURCE_CONTINUE;
 }
+#endif
 
 static float
 get_snapped_control_value (
@@ -180,11 +183,10 @@ modulator_widget_new (
   gtk_widget_set_visible (
     GTK_WIDGET (self->controls_box), true);
 
-  Port * port;
   for (int i = 0;
        i < modulator->num_in_ports; i++)
     {
-      port = modulator->in_ports[i];
+      Port * port = modulator->in_ports[i];
 
       if (port->id.type != TYPE_CONTROL ||
           port->id.flow != FLOW_INPUT)
@@ -215,6 +217,7 @@ modulator_widget_new (
         GTK_WIDGET (knob_with_name));
     }
 
+#if 0
   self->graph =
     GTK_DRAWING_AREA (
       gtk_drawing_area_new ());
@@ -225,17 +228,45 @@ modulator_widget_new (
     GTK_WIDGET (self->graph),
     60, -1);
   gtk_widget_set_visible (
-    GTK_WIDGET (self->graph), 1);
+    GTK_WIDGET (self->graph), true);
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self->graph),
     (GtkTickCallback) graph_tick_callback,
     self,
     NULL);
+#endif
+
+  self->waveforms_box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_VERTICAL, 2));
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->waveforms_box), true);
+
+  for (int i = 0; i < modulator->num_out_ports; i++)
+    {
+      Port * port = modulator->out_ports[i];
+      if (port->id.type != TYPE_CV)
+        continue;
+
+      int index = self->num_waveforms++;
+      self->waveforms[index] =
+        live_waveform_widget_new_port (port);
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self->waveforms[index]), 48, 48);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->waveforms[index]), true);
+      gtk_container_add (
+        GTK_CONTAINER (self->waveforms_box),
+        GTK_WIDGET (self->waveforms[index]));
+
+      if (self->num_waveforms == 16)
+        break;
+    }
 
   two_col_expander_box_widget_add_pair (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->controls_box),
-    GTK_WIDGET (self->graph));
+    GTK_WIDGET (self->waveforms_box));
   two_col_expander_box_widget_set_scroll_policy (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);

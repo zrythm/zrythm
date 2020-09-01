@@ -389,7 +389,7 @@ typedef struct Port
    * 1, and when unmapped (invisible) it should
    * be set to 0.
    */
-  int                 write_ring_buffers;
+  bool                write_ring_buffers;
 
   /** Whether the port has midi events not yet
    * processed by the UI. */
@@ -407,6 +407,8 @@ typedef struct Port
    * This should contain blocks of block_length
    * samples and should maintain at least 10
    * cycles' worth of buffers.
+   *
+   * This is also used for CV.
    */
   ZixRing *           audio_ring;
 

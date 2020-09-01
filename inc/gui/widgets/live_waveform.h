@@ -36,15 +36,25 @@ G_DECLARE_FINAL_TYPE (
   Z, LIVE_WAVEFORM_WIDGET,
   GtkDrawingArea)
 
+typedef struct Port Port;
+
 /**
  * @addtogroup widgets
  *
  * @{
  */
 
+typedef enum LiveWaveformType
+{
+  LIVE_WAVEFORM_ENGINE,
+  LIVE_WAVEFORM_PORT,
+} LiveWaveformType;
+
 typedef struct _LiveWaveformWidget
 {
   GtkDrawingArea parent_instance;
+
+  LiveWaveformType type;
 
   /** Draw border or not. */
   int            draw_border;
@@ -52,6 +62,9 @@ typedef struct _LiveWaveformWidget
   /** Used for drawing. */
   GdkRGBA        color_green;
   GdkRGBA        color_white;
+
+  /** Port, if port. */
+  Port *         port;
 
 } LiveWaveformWidget;
 
@@ -62,6 +75,13 @@ typedef struct _LiveWaveformWidget
 void
 live_waveform_widget_setup_engine (
   LiveWaveformWidget * self);
+
+/**
+ * Creates a LiveWaveformWidget for a port.
+ */
+LiveWaveformWidget *
+live_waveform_widget_new_port (
+  Port *               port);
 
 /**
  * @}
