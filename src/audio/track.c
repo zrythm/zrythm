@@ -1487,13 +1487,32 @@ track_set_lanes_visible (
  */
 void
 track_set_automation_visible (
-  Track *   track,
-  const int visible)
+  Track *    self,
+  const bool visible)
 {
-  track->automation_visible = visible;
+  self->automation_visible = visible;
+
+  if (visible)
+    {
+      /* if no visible automation tracks, set the
+       * first one visible */
+      AutomationTracklist * atl =
+        track_get_automation_tracklist (self);
+      int num_visible =
+        automation_tracklist_get_num_visible (atl);
+
+      if (num_visible == 0)
+        {
+          AutomationTrack * at =
+            automation_tracklist_get_first_invisible_at (
+              atl);
+          at->created = true;
+          at->visible = true;
+        }
+    }
 
   EVENTS_PUSH (
-    ET_TRACK_AUTOMATION_VISIBILITY_CHANGED, track);
+    ET_TRACK_AUTOMATION_VISIBILITY_CHANGED, self);
 }
 
 /**

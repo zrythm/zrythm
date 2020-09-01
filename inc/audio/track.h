@@ -777,8 +777,8 @@ track_set_lanes_visible (
  */
 void
 track_set_automation_visible (
-  Track *   track,
-  const int visible);
+  Track *    track,
+  const bool visible);
 
 /**
  * Returns if the given TrackType can host the

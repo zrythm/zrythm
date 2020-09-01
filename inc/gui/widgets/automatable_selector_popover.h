@@ -42,28 +42,23 @@ typedef struct _AutomatableSelectorButtonWidget
 
 typedef enum AutomatableSelectorType
 {
+  /** Midi automatable (modwheel etc.). */
   AS_TYPE_MIDI,
+
+  /** Channel. */
   AS_TYPE_CHANNEL,
-  AS_TYPE_MIDI_FX_0,
-  AS_TYPE_MIDI_FX_1,
-  AS_TYPE_MIDI_FX_2,
-  AS_TYPE_MIDI_FX_3,
-  AS_TYPE_MIDI_FX_4,
-  AS_TYPE_MIDI_FX_5,
-  AS_TYPE_MIDI_FX_6,
-  AS_TYPE_MIDI_FX_7,
-  AS_TYPE_MIDI_FX_8,
+
+  /** Plugin at Track MIDI fx slot. */
+  AS_TYPE_MIDI_FX,
+
+  /** Instrument plugin. */
   AS_TYPE_INSTRUMENT,
-  AS_TYPE_INSERT_0,
-  AS_TYPE_INSERT_1,
-  AS_TYPE_INSERT_2,
-  AS_TYPE_INSERT_3,
-  AS_TYPE_INSERT_4,
-  AS_TYPE_INSERT_5,
-  AS_TYPE_INSERT_6,
-  AS_TYPE_INSERT_7,
-  AS_TYPE_INSERT_8,
-  AS_TYPE_MODULATOR_0,
+
+  /** Insert plugin. */
+  AS_TYPE_INSERT,
+
+  /** Modulator plugin. */
+  AS_TYPE_MODULATOR,
 } AutomatableSelectorType;
 
 /**
@@ -91,6 +86,7 @@ typedef struct _AutomatableSelectorPopoverWidget
   int                     selecting_manually;
 
   AutomatableSelectorType selected_type;
+  int                     selected_slot;
 
   /**
    * The selected Port will be stored here

@@ -252,17 +252,19 @@ create_model_for_tracks (
 
   /* icon, name, pointer to channel */
   list_store =
-    gtk_list_store_new (3,
-                        G_TYPE_STRING,
-                        G_TYPE_STRING,
-                        G_TYPE_POINTER);
+    gtk_list_store_new (
+      3,
+      G_TYPE_STRING,
+      G_TYPE_STRING,
+      G_TYPE_POINTER);
 
   Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
 
-      if (!track->channel)
+      if (track->type != TRACK_TYPE_MODULATOR &&
+          !track->channel)
         continue;
 
       // Add a new row to the model
@@ -278,21 +280,51 @@ create_model_for_tracks (
   return GTK_TREE_MODEL (list_store);
 }
 
+static void
+add_plugin (
+  PortSelectorPopoverWidget * self,
+  Plugin *                    pl,
+  GtkListStore *              list_store,
+  GtkTreeIter *               iter)
+{
+  Port * port = self->port;
+  PortIdentifier * id = &port->id;
+
+  /* skip if no plugin or the plugin is the
+   * port's plugin */
+  if (!pl ||
+      (id->owner_type == PORT_OWNER_TYPE_PLUGIN &&
+       pl == port_get_plugin (self->port, true)))
+    {
+      return;
+    }
+
+  // Add a new row to the model
+  gtk_list_store_append (list_store, iter);
+  gtk_list_store_set (
+    list_store, iter,
+    0, "plugins",
+    1, pl->descr->name,
+    2, pl,
+    -1);
+}
+
 /* FIXME leaking if model already exists */
 static GtkTreeModel *
 create_model_for_plugins (
   PortSelectorPopoverWidget * self,
   Track *                     track)
 {
-  GtkListStore *list_store;
+  GtkListStore * list_store;
   GtkTreeIter iter;
 
   /* icon, name, pointer to plugin */
   list_store =
-    gtk_list_store_new (3,
-                        G_TYPE_STRING,
-                        G_TYPE_STRING,
-                        G_TYPE_POINTER);
+    gtk_list_store_new (
+      3,
+      G_TYPE_STRING,
+      G_TYPE_STRING,
+      G_TYPE_POINTER);
 
   Port * port = self->port;
   PortIdentifier * id = &port->id;
@@ -328,73 +360,28 @@ create_model_for_plugins (
       Channel * ch = track->channel;
       Plugin * pl;
 
-      for (int i = 0; i < STRIP_SIZE; i++)
+      if (ch)
         {
-          pl = ch->midi_fx[i];
-
-          /* skip if no plugin or the plugin is the
-           * port's plugin */
-          if (!pl ||
-              (id->owner_type ==
-                 PORT_OWNER_TYPE_PLUGIN &&
-               pl ==
-                 port_get_plugin (self->port, 1)))
+          for (int i = 0; i < STRIP_SIZE; i++)
             {
-              continue;
+              pl = ch->midi_fx[i];
+              add_plugin (
+                self, pl, list_store, &iter);
+            }
+          for (int i = 0; i < STRIP_SIZE; i++)
+            {
+              pl = ch->inserts[i];
+              add_plugin (
+                self, pl, list_store, &iter);
             }
 
-          // Add a new row to the model
-          gtk_list_store_append (list_store, &iter);
-          gtk_list_store_set (
-            list_store, &iter,
-            0, "plugins",
-            1, pl->descr->name,
-            2, pl,
-            -1);
+          add_plugin  (
+            self, ch->instrument, list_store, &iter);
         }
-      for (int i = 0; i < STRIP_SIZE; i++)
+      for (int i = 0; i < track->num_modulators; i++)
         {
-          pl = ch->inserts[i];
-
-          /* skip if no plugin or the plugin is the
-           * port's plugin */
-          if (!pl ||
-              (id->owner_type ==
-                 PORT_OWNER_TYPE_PLUGIN &&
-               pl ==
-                 port_get_plugin (self->port, 1)))
-            {
-              continue;
-            }
-
-          // Add a new row to the model
-          gtk_list_store_append (list_store, &iter);
-          gtk_list_store_set (
-            list_store, &iter,
-            0, "plugins",
-            1, pl->descr->name,
-            2, pl,
-            -1);
-        }
-
-      pl = ch->instrument;
-
-      /* skip if no plugin or the plugin is the
-       * port's plugin */
-      if (pl &&
-          !(id->owner_type ==
-             PORT_OWNER_TYPE_PLUGIN &&
-           pl ==
-             port_get_plugin (self->port, 1)))
-        {
-          // Add a new row to the model
-          gtk_list_store_append (list_store, &iter);
-          gtk_list_store_set (
-            list_store, &iter,
-            0, "plugins",
-            1, pl->descr->name,
-            2, pl,
-            -1);
+          pl = track->modulators[i];
+          add_plugin (self, pl, list_store, &iter);
         }
     }
 
