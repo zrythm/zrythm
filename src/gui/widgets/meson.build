@@ -88,7 +88,6 @@ widget_srcs = files([
   'log_viewer.c',
   'main_window.c',
   'marker.c',
-  'marker_dialog.c',
   'meter.c',
   'midi_activity_bar.c',
   'midi_arranger.c',

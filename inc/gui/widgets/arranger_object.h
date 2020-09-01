@@ -53,13 +53,13 @@
  *   If this is false, the whole fade area will
  *   be considered.
  */
-int
+bool
 arranger_object_is_fade_in (
   ArrangerObject * self,
   const int        x,
   const int        y,
-  int              only_handle,
-  int              only_outer);
+  bool             only_handle,
+  bool             only_outer);
 
 /**
  * Returns if the current position is for moving the
@@ -74,13 +74,13 @@ arranger_object_is_fade_in (
  *   If this is false, the whole fade area will
  *   be considered.
  */
-int
+bool
 arranger_object_is_fade_out (
   ArrangerObject * self,
   const int        x,
   const int        y,
-  int              only_handle,
-  int              only_outer);
+  bool             only_handle,
+  bool             only_outer);
 
 /**
  * Returns if the current position is for resizing
@@ -88,7 +88,7 @@ arranger_object_is_fade_out (
  *
  * @param x X in local coordinates.
  */
-int
+bool
 arranger_object_is_resize_l (
   ArrangerObject * self,
   const int        x);
@@ -99,7 +99,7 @@ arranger_object_is_resize_l (
  *
  * @param x X in local coordinates.
  */
-int
+bool
 arranger_object_is_resize_r (
   ArrangerObject * self,
   const int        x);
@@ -111,7 +111,7 @@ arranger_object_is_resize_r (
  * @param x X in local coordinates.
  * @param y Y in local coordinates.
  */
-int
+bool
 arranger_object_is_resize_up (
   ArrangerObject * self,
   const int        x,
@@ -123,9 +123,22 @@ arranger_object_is_resize_up (
  *
  * @param y Y in local coordinates.
  */
-int
+bool
 arranger_object_is_resize_loop (
   ArrangerObject * self,
+  const int        y);
+
+/**
+ * Returns if the current position is for renaming
+ * the object.
+ *
+ * @param x X in local coordinates.
+ * @param y Y in local coordinates.
+ */
+bool
+arranger_object_is_rename (
+  ArrangerObject * self,
+  const int        x,
   const int        y);
 
 /**
@@ -138,10 +151,10 @@ arranger_object_is_resize_loop (
  * @param alt_pressed Whether alt is currently
  *   pressed.
  */
-int
+bool
 arranger_object_should_show_cut_lines (
   ArrangerObject * self,
-  int              alt_pressed);
+  bool             alt_pressed);
 
 /**
  * Gets the full rectangle for a linked object.

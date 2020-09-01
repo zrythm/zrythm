@@ -47,10 +47,10 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/marker_dialog.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
@@ -1207,6 +1207,9 @@ arranger_widget_set_cursor (
       break;
     case ARRANGER_CURSOR_FADE_OUT:
       SET_X_CURSOR (fade_out);
+      break;
+    case ARRANGER_CURSOR_RENAME:
+      SET_CURSOR_FROM_NAME ("text");
       break;
     default:
       g_warn_if_reached ();
@@ -3077,6 +3080,54 @@ set_earliest_obj (
 }
 
 /**
+ * Setter for string entry dialogs.
+ */
+static void
+set_arranger_object_name (
+  ArrangerObject * obj,
+  const char *     name)
+{
+  /* validate */
+  if (!arranger_object_validate_name (obj, name))
+    {
+      char * msg =
+        g_strdup_printf (
+          _("Invalid object name %s"), name);
+      ui_show_error_message (MAIN_WINDOW, msg);
+      return;
+    }
+
+  ArrangerObject * clone_obj =
+    arranger_object_clone (
+      obj, ARRANGER_OBJECT_CLONE_COPY_MAIN);
+
+  /* prepare the before/after selections to
+   * create the undoable action */
+  ArrangerSelections * before =
+    arranger_selections_clone (
+      (ArrangerSelections *) TL_SELECTIONS);
+  arranger_selections_clear (before, F_FREE);
+  arranger_selections_add_object (
+    before, clone_obj);
+  ArrangerSelections * after =
+    arranger_selections_clone (
+      (ArrangerSelections *) before);
+  ArrangerObject * after_obj =
+    arranger_selections_get_first_object (after);
+  arranger_object_set_name (
+    after_obj, name, F_NO_PUBLISH_EVENTS);
+
+  UndoableAction * ua =
+    arranger_selections_action_new_edit (
+      before, after,
+      ARRANGER_SELECTIONS_ACTION_EDIT_NAME,
+      F_NOT_ALREADY_EDITED);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_free_full (before);
+  arranger_selections_free_full (after);
+}
+
+/**
  * Checks for the first object hit, sets the
  * appropriate action and selects it.
  *
@@ -3097,39 +3148,37 @@ on_drag_begin_handle_hit_object (
       return false;
     }
 
-  /* get x as local to the object */
-  int wx =
-    (int) x - obj->full_rect.x;
-
-  /* TODO get y as local to the object */
-  int wy =
-    (int) y - obj->full_rect.y;
+  /* get x,y as local to the object */
+  int wx = (int) x - obj->full_rect.x;
+  int wy = (int) y - obj->full_rect.y;
 
   /* remember object and pos */
   self->start_object = obj;
   self->start_pos_px = x;
 
   /* get flags */
-  int is_fade_in_point =
+  bool is_fade_in_point =
     arranger_object_is_fade_in (obj, wx, wy, 1, 0);
-  int is_fade_out_point =
+  bool is_fade_out_point =
     arranger_object_is_fade_out (obj, wx, wy, 1, 0);
-  int is_fade_in_outer =
+  bool is_fade_in_outer =
     arranger_object_is_fade_in (obj, wx, wy, 0, 1);
-  int is_fade_out_outer =
+  bool is_fade_out_outer =
     arranger_object_is_fade_out (obj, wx, wy, 0, 1);
-  int is_resize_l =
+  bool is_resize_l =
     arranger_object_is_resize_l (obj, wx);
-  int is_resize_r =
+  bool is_resize_r =
     arranger_object_is_resize_r (obj, wx);
-  int is_resize_up =
+  bool is_resize_up =
     arranger_object_is_resize_up (obj, wx, wy);
-  int is_resize_loop =
+  bool is_resize_loop =
     arranger_object_is_resize_loop (obj, wy);
-  int show_cut_lines =
+  bool show_cut_lines =
     arranger_object_should_show_cut_lines (
       obj, self->alt_held);
-  int is_selected =
+  bool is_rename =
+    arranger_object_is_rename (obj, wx, wy);
+  bool is_selected =
     arranger_object_is_selected (obj);
   self->start_object_was_selected = is_selected;
 
@@ -3150,8 +3199,7 @@ on_drag_begin_handle_hit_object (
             arranger_widget_get_selections (self));
         }
       /* if ctrl not held & not selected, make it
-       * the only
-       * selection */
+       * the only selection */
       else if (!self->ctrl_held && !is_selected)
         {
           arranger_object_select (
@@ -3197,9 +3245,13 @@ on_drag_begin_handle_hit_object (
     {
       if (self->n_press == 2 && !self->ctrl_held)
         {
-          MarkerDialogWidget * dialog =
-            marker_dialog_widget_new (
-              (Marker *) obj);
+          StringEntryDialogWidget * dialog =
+            string_entry_dialog_widget_new (
+              _("Marker name"), obj,
+              (GenericStringGetter)
+              arranger_object_get_name,
+              (GenericStringSetter)
+              set_arranger_object_name);
           gtk_widget_show_all (GTK_WIDGET (dialog));
           self->action = UI_OVERLAY_ACTION_NONE;
           return true;
@@ -3251,6 +3303,8 @@ on_drag_begin_handle_hit_object (
             SET_ACTION (RESIZING_R_LOOP);
           else if (is_resize_r)
             SET_ACTION (RESIZING_R);
+          else if (is_rename)
+            SET_ACTION (RENAMING);
           else if (show_cut_lines)
             SET_ACTION (CUTTING);
           else if (is_fade_in_outer)
@@ -4867,6 +4921,26 @@ on_drag_end_timeline (
           UNDO_MANAGER, ua);
       }
       break;
+    case UI_OVERLAY_ACTION_RENAMING:
+      {
+        const char * obj_type_str =
+          arranger_object_get_type_as_string (
+            self->start_object->type);
+        char * str =
+          g_strdup_printf (
+            _("%s name"), obj_type_str);
+        StringEntryDialogWidget * dialog =
+          string_entry_dialog_widget_new (
+            str, self->start_object,
+            (GenericStringGetter)
+            arranger_object_get_name,
+            (GenericStringSetter)
+            set_arranger_object_name);
+        gtk_widget_show_all (GTK_WIDGET (dialog));
+        self->action = UI_OVERLAY_ACTION_NONE;
+        g_free (str);
+      }
+      break;
     default:
       break;
     }
@@ -6059,49 +6133,36 @@ get_timeline_cursor (
                 {
                   if (self->alt_held)
                     return ARRANGER_CURSOR_CUT;
+                  int wx =
+                    (int) self->hover_x -
+                    r_obj->full_rect.x;
+                  int wy =
+                    (int) self->hover_y -
+                    r_obj->full_rect.y;
                   int is_fade_in_point =
                     arranger_object_is_fade_in (
-                      r_obj,
-                      (int) self->hover_x -
-                        r_obj->full_rect.x,
-                      (int) self->hover_y -
-                        r_obj->full_rect.y, 1, 0);
+                      r_obj, wx, wy, 1, 0);
                   int is_fade_out_point =
                     arranger_object_is_fade_out (
-                      r_obj,
-                      (int) self->hover_x -
-                        r_obj->full_rect.x,
-                      (int) self->hover_y -
-                        r_obj->full_rect.y, 1, 0);
+                      r_obj, wx, wy, 1, 0);
                   int is_fade_in_outer_region =
                     arranger_object_is_fade_in (
-                      r_obj,
-                      (int) self->hover_x -
-                        r_obj->full_rect.x,
-                      (int) self->hover_y -
-                        r_obj->full_rect.y, 0, 1);
+                      r_obj, wx, wy, 0, 1);
                   int is_fade_out_outer_region =
                     arranger_object_is_fade_out (
-                      r_obj,
-                      (int) self->hover_x -
-                        r_obj->full_rect.x,
-                      (int) self->hover_y -
-                        r_obj->full_rect.y, 0, 1);
+                      r_obj, wx, wy, 0, 1);
                   int is_resize_l =
                     arranger_object_is_resize_l (
-                      r_obj,
-                      (int) self->hover_x -
-                        r_obj->full_rect.x);
+                      r_obj, wx);
                   int is_resize_r =
                     arranger_object_is_resize_r (
-                      r_obj,
-                      (int) self->hover_x -
-                        r_obj->full_rect.x);
+                      r_obj, wx);
                   int is_resize_loop =
                     arranger_object_is_resize_loop (
-                      r_obj,
-                      (int) self->hover_y -
-                        r_obj->full_rect.y);
+                      r_obj, wy);
+                  bool is_rename =
+                    arranger_object_is_rename (
+                      r_obj, wx, wy);
                   if (is_fade_in_point)
                     return
                       ARRANGER_CURSOR_FADE_IN;
@@ -6148,6 +6209,8 @@ get_timeline_cursor (
                   else if (is_fade_out_outer_region)
                     return
                       ARRANGER_CURSOR_FADE_OUT;
+                  else if (is_rename)
+                    return ARRANGER_CURSOR_RENAME;
                 }
               return ARRANGER_CURSOR_GRAB;
             }
@@ -6258,6 +6321,9 @@ get_timeline_cursor (
     case UI_OVERLAY_ACTION_STARTING_SELECTION:
     case UI_OVERLAY_ACTION_SELECTING:
       ac = ARRANGER_CURSOR_SELECT;
+      break;
+    case UI_OVERLAY_ACTION_RENAMING:
+      ac = ARRANGER_CURSOR_RENAME;
       break;
     default:
       g_warn_if_reached ();

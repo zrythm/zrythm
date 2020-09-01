@@ -21,7 +21,7 @@
 #include "audio/marker.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/marker_dialog.h"
+#include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/marker.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -32,8 +32,8 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  MarkerDialogWidget,
-  marker_dialog_widget,
+  StringEntryDialogWidget,
+  string_entry_dialog_widget,
   GTK_TYPE_DIALOG)
 
 /**
@@ -43,50 +43,14 @@ static void
 on_response (
   GtkDialog *          dialog,
   gint                 response,
-  MarkerDialogWidget * self)
+  StringEntryDialogWidget * self)
 {
   if (response == GTK_RESPONSE_ACCEPT)
     {
       const char * text =
         gtk_entry_get_text (self->entry);
 
-      /* TODO validate, if false return */
-
-      arranger_selections_clear (
-        (ArrangerSelections *) TL_SELECTIONS,
-        F_NO_FREE);
-      arranger_selections_add_object (
-        (ArrangerSelections *) TL_SELECTIONS,
-        (ArrangerObject *) self->marker);
-
-      /* prepare the before/after selections to
-       * create the undoable action */
-      ArrangerSelections * before =
-        arranger_selections_clone (
-          (ArrangerSelections *) TL_SELECTIONS);
-      ArrangerSelections * after =
-        arranger_selections_clone (
-          (ArrangerSelections *) TL_SELECTIONS);
-      TimelineSelections * tl_after =
-        (TimelineSelections *) after;
-      arranger_object_set_name (
-        (ArrangerObject *) tl_after->markers[0],
-        text, F_NO_PUBLISH_EVENTS);
-
-      UndoableAction * ua =
-        arranger_selections_action_new_edit (
-          before, after,
-          ARRANGER_SELECTIONS_ACTION_EDIT_NAME,
-          F_NOT_ALREADY_EDITED);
-      undo_manager_perform (UNDO_MANAGER, ua);
-      arranger_selections_free_full (before);
-      arranger_selections_free_full (after);
-
-      /* the action doesn't actually run the first
-       * time, so change the name manually */
-      arranger_object_set_name (
-        (ArrangerObject *) self->marker, text,
-        F_PUBLISH_EVENTS);
+      self->setter (self->obj, text);
     }
 
   gtk_widget_destroy (GTK_WIDGET (self));
@@ -95,7 +59,7 @@ on_response (
 static void
 on_entry_activate (
   GtkEntry * btn,
-  MarkerDialogWidget * self)
+  StringEntryDialogWidget * self)
 {
   gtk_dialog_response (
     GTK_DIALOG (self),
@@ -105,52 +69,58 @@ on_entry_activate (
 /**
  * Creates the popover.
  */
-MarkerDialogWidget *
-marker_dialog_widget_new (
-  Marker * owner)
+StringEntryDialogWidget *
+string_entry_dialog_widget_new (
+  const char *        label,
+  void *              obj,
+  GenericStringGetter getter,
+  GenericStringSetter setter)
 {
-  MarkerDialogWidget * self =
+  StringEntryDialogWidget * self =
     g_object_new (
-      MARKER_DIALOG_WIDGET_TYPE,
+      STRING_ENTRY_DIALOG_WIDGET_TYPE,
       NULL);
 
-  self->marker = owner;
+  self->obj = obj;
+  self->getter = getter;
+  self->setter = setter;
 
   gtk_window_set_transient_for (
-    GTK_WINDOW (self),
-    GTK_WINDOW (MAIN_WINDOW));
+    GTK_WINDOW (self), GTK_WINDOW (MAIN_WINDOW));
+
+  gtk_label_set_text (self->label, label);
 
   /* setup text */
-  gtk_entry_set_text (
-    self->entry, self->marker->name);
+  gtk_entry_set_text (self->entry, getter (obj));
 
   return self;
 }
 
 static void
-marker_dialog_widget_class_init (
-  MarkerDialogWidgetClass * _klass)
+string_entry_dialog_widget_class_init (
+  StringEntryDialogWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass, "marker_dialog.ui");
+    klass, "string_entry_dialog.ui");
 
 #define BIND_CHILD(child) \
   gtk_widget_class_bind_template_child ( \
     klass, \
-    MarkerDialogWidget, \
+    StringEntryDialogWidget, \
     child)
 
   BIND_CHILD (ok);
   BIND_CHILD (cancel);
   BIND_CHILD (entry);
+  BIND_CHILD (label);
 
 #undef BIND_CHILD
 }
 
 static void
-marker_dialog_widget_init (
-  MarkerDialogWidget * self)
+string_entry_dialog_widget_init (
+  StringEntryDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 

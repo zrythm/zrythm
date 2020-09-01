@@ -25,7 +25,6 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/marker.h"
-#include "gui/widgets/marker_dialog.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_panel.h"
 #include "project.h"

@@ -1022,8 +1022,8 @@ track_activate_all_plugins (
  */
 void
 track_set_comment (
-  void *  track,
-  char *  comment);
+  void *        track,
+  const char *  comment);
 
 /**
  * Comment getter.

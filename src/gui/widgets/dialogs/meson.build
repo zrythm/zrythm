@@ -22,4 +22,5 @@ widget_srcs += files([
   'bug_report_dialog.c',
   'export_progress_dialog.c',
   'port_info.c',
+  'string_entry_dialog.c',
   ])

@@ -436,25 +436,13 @@ arranger_selections_action_new_edit (
 
   self->edit_type = type;
 
+  set_selections (
+    self, sel_before, F_CLONE, F_NOT_IS_AFTER);
+  set_selections (
+    self, sel_after, F_CLONE, F_IS_AFTER);
   if (!already_edited)
     {
       self->first_run = 0;
-      if (sel_after)
-        {
-          set_selections (
-            self, sel_after, true, true);
-        }
-      else
-        {
-          /* set as sel_after to avoid segfault, it
-           * will be ignored anyway */
-          set_selections (
-            self, sel_before, true, true);
-        }
-    }
-  else
-    {
-      set_selections (self, sel_after, true, true);
     }
 
   return ua;
@@ -1698,7 +1686,7 @@ do_or_undo_edit (
   EVENTS_PUSH (
     ET_ARRANGER_SELECTIONS_CHANGED, sel);
 
-  self->first_run = 0;
+  self->first_run = false;
 
   return 0;
 }

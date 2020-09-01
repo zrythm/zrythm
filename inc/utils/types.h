@@ -80,8 +80,8 @@ typedef const char * (*GenericStringGetter) (
  * Setter prototype for float values.
  */
 typedef void (*GenericStringSetter) (
-  void * object,
-  char * val);
+  void *       object,
+  const char * val);
 
 typedef enum AudioValueFormat
 {

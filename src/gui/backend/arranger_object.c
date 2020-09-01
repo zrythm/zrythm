@@ -307,7 +307,7 @@ arranger_object_set_to_object (
 /**
  * Returns if the object is in the selections.
  */
-int
+bool
 arranger_object_is_selected (
   ArrangerObject * self)
 {
@@ -1444,6 +1444,36 @@ arranger_object_validate_pos (
     }
 
   return 1;
+}
+
+/**
+ * Validates the given name.
+ *
+ * @return True if valid, false otherwise.
+ */
+bool
+arranger_object_validate_name (
+  ArrangerObject * self,
+  const char *     name)
+{
+  switch (self->type)
+    {
+    case ARRANGER_OBJECT_TYPE_REGION:
+      return true;
+    case ARRANGER_OBJECT_TYPE_MARKER:
+      if (marker_find_by_name (name))
+        {
+          return false;
+        }
+      else
+        {
+          return true;
+        }
+      break;
+    default:
+      g_warn_if_reached ();
+    }
+  return false;
 }
 
 /**

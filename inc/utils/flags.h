@@ -125,7 +125,7 @@
 #define F_NO_CLONE 0
 
 #define F_IS_AFTER 1
-#define F_IS_NOT_AFTER 0
+#define F_NOT_IS_AFTER 0
 
 #define F_RECURSIVE 1
 #define F_NO_RECURSIVE 0

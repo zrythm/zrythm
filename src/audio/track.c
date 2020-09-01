@@ -2082,8 +2082,8 @@ track_activate_all_plugins (
  */
 void
 track_set_comment (
-  void *  track,
-  char *  comment)
+  void *        track,
+  const char *  comment)
 {
   Track * self = (Track *) track;
   g_return_if_fail (IS_TRACK (self));

@@ -57,6 +57,23 @@ marker_set_track (
   marker->track_pos = track->pos;
 }
 
+Marker *
+marker_find_by_name (
+  const char * name)
+{
+  for (int i = 0; i < P_MARKER_TRACK->num_markers;
+       i++)
+    {
+      Marker * marker = P_MARKER_TRACK->markers[i];
+      if (string_is_equal (name, marker->name))
+        {
+          return marker;
+        }
+    }
+
+  return NULL;
+}
+
 /**
  * Returns if the two Marker's are equal.
  */

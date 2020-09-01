@@ -1224,7 +1224,7 @@ draw_audio_region (
  */
 static void
 draw_name (
-  ZRegion *          self,
+  ZRegion *         self,
   cairo_t *         cr,
   GdkRectangle *    rect,
   GdkRectangle *    full_rect,
@@ -1309,6 +1309,15 @@ draw_name (
     REGION_NAME_BOX_PADDING,
     REGION_NAME_BOX_PADDING);
   pango_cairo_show_layout (cr, layout);
+
+  /* save rect */
+  ArrangerObject * obj = (ArrangerObject *) self;
+  obj->last_name_rect.x = 0;
+  obj->last_name_rect.y = 0;
+  obj->last_name_rect.width =
+    pangorect.width + REGION_NAME_PADDING_R;
+  obj->last_name_rect.height =
+    pangorect.height + REGION_NAME_PADDING_R;
 }
 
 /**

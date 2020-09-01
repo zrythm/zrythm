@@ -153,7 +153,7 @@ arranger_object_queue_redraw (
  *
  * @param x X in local coordinates.
  */
-int
+bool
 arranger_object_is_resize_l (
   ArrangerObject * self,
   const int        x)
@@ -174,7 +174,7 @@ arranger_object_is_resize_l (
  *
  * @param x X in local coordinates.
  */
-int
+bool
 arranger_object_is_resize_r (
   ArrangerObject * self,
   const int        x)
@@ -212,16 +212,16 @@ arranger_object_is_resize_r (
  *   If this is false, the whole fade area will
  *   be considered.
  */
-int
+bool
 arranger_object_is_fade_in (
   ArrangerObject * self,
   const int        x,
   const int        y,
-  int              only_handle,
-  int              only_outer)
+  bool             only_handle,
+  bool             only_outer)
 {
   if (!arranger_object_can_fade (self))
-    return 0;
+    return false;
 
   int fade_in_px =
     ui_pos_to_px_timeline (&self->fade_in_pos, 0);
@@ -266,13 +266,13 @@ arranger_object_is_fade_in (
  *   If this is false, the whole fade area will
  *   be considered.
  */
-int
+bool
 arranger_object_is_fade_out (
   ArrangerObject * self,
   const int        x,
   const int        y,
-  int              only_handle,
-  int              only_outer)
+  bool             only_handle,
+  bool             only_outer)
 {
   if (!arranger_object_can_fade (self))
     return 0;
@@ -317,7 +317,7 @@ arranger_object_is_fade_out (
  * @param x X in local coordinates.
  * @param y Y in local coordinates.
  */
-int
+bool
 arranger_object_is_resize_up (
   ArrangerObject * self,
   const int        x,
@@ -359,7 +359,7 @@ arranger_object_is_resize_up (
  *
  * @param y Y in local coordinates.
  */
-int
+bool
 arranger_object_is_resize_loop (
   ArrangerObject * self,
   const int        y)
@@ -405,6 +405,32 @@ arranger_object_is_resize_loop (
 }
 
 /**
+ * Returns if the current position is for renaming
+ * the object.
+ *
+ * @param x X in local coordinates.
+ * @param y Y in local coordinates.
+ */
+bool
+arranger_object_is_rename (
+  ArrangerObject * self,
+  const int        x,
+  const int        y)
+{
+  if (self->type != ARRANGER_OBJECT_TYPE_REGION)
+    return false;
+
+  if (ui_is_point_in_rect_hit (
+        &self->last_name_rect, true, true,
+        x, y, 0, 0))
+    {
+      return true;
+    }
+
+  return false;
+}
+
+/**
  * Returns if arranger_object widgets should show
  * cut lines.
  *
@@ -414,10 +440,10 @@ arranger_object_is_resize_loop (
  * @param alt_pressed Whether alt is currently
  *   pressed.
  */
-int
+bool
 arranger_object_should_show_cut_lines (
   ArrangerObject * self,
-  int              alt_pressed)
+  bool             alt_pressed)
 {
   if (!arranger_object_type_has_length (self->type))
     return 0;

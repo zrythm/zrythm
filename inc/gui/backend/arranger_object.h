@@ -85,23 +85,23 @@ typedef enum ArrangerObjectType
 static const cyaml_strval_t
 arranger_object_type_strings[] =
 {
-  { "None",
+  { __("None"),
     ARRANGER_OBJECT_TYPE_NONE },
-  { "All",
+  { __("All"),
     ARRANGER_OBJECT_TYPE_ALL },
-  { "Region",
+  { __("Region"),
     ARRANGER_OBJECT_TYPE_REGION },
-  { "MidiNote",
+  { __("Midi Note"),
     ARRANGER_OBJECT_TYPE_MIDI_NOTE },
-  { "ChordObject",
+  { __("Chord Object"),
     ARRANGER_OBJECT_TYPE_CHORD_OBJECT },
-  { "ScaleObject",
+  { __("Scale Object"),
     ARRANGER_OBJECT_TYPE_SCALE_OBJECT },
-  { "Marker",
+  { __("Marker"),
     ARRANGER_OBJECT_TYPE_MARKER },
-  { "AutomationPoint",
+  { __("Automation Point"),
     ARRANGER_OBJECT_TYPE_AUTOMATION_POINT },
-  { "Velocity",
+  { __("Velocity"),
     ARRANGER_OBJECT_TYPE_VELOCITY },
 };
 
@@ -294,6 +294,10 @@ typedef struct ArrangerObject
    *   ArrangerObject.can_cache_drawing is true.
    */
   cairo_surface_t *  cached_surface[2];
+
+  /** Last drawn name rectangle, if object has a
+   * name. */
+  GdkRectangle       last_name_rect;
 } ArrangerObject;
 
 static const cyaml_schema_field_t
@@ -532,7 +536,7 @@ arranger_object_get_num_loops (
 /**
  * Returns if the object is in the selections.
  */
-int
+bool
 arranger_object_is_selected (
   ArrangerObject * self);
 
@@ -824,13 +828,12 @@ Track *
 arranger_object_get_track (
   ArrangerObject * self);
 
-/**
- * Returns the widget type for the given
- * ArrangerObjectType.
- */
-//GType
-//arranger_object_get_widget_type_for_type (
-  //ArrangerObjectType type);
+static inline const char *
+arranger_object_get_type_as_string (
+  ArrangerObjectType type)
+{
+  return arranger_object_type_strings[type].str;
+}
 
 void
 arranger_object_post_deserialize (
@@ -846,6 +849,16 @@ arranger_object_validate_pos (
   ArrangerObject *           self,
   const Position *           pos,
   ArrangerObjectPositionType type);
+
+/**
+ * Validates the given name.
+ *
+ * @return True if valid, false otherwise.
+ */
+bool
+arranger_object_validate_name (
+  ArrangerObject * self,
+  const char *     name);
 
 /**
  * Returns the ArrangerObject matching the

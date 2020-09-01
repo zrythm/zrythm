@@ -375,7 +375,7 @@ region_set_lane (
  */
 void
 region_gen_name (
-  ZRegion *          region,
+  ZRegion *         region,
   const char *      base_name,
   AutomationTrack * at,
   Track *           track);

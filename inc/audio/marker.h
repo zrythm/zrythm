@@ -145,6 +145,10 @@ marker_set_track (
   Marker * marker,
   Track *  track);
 
+Marker *
+marker_find_by_name (
+  const char * name);
+
 /**
  * Sets the name to all the Marker's counterparts.
  */
