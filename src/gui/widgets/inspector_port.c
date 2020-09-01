@@ -280,13 +280,29 @@ get_port_value (
     case TYPE_CONTROL:
       return
         control_port_real_val_to_normalized (
-          port,
-          port_get_control_value (port, 0));
+          port, port->unsnapped_control);
       break;
     default:
       break;
     }
   return 0.f;
+}
+
+static float
+get_snapped_port_value (
+  InspectorPortWidget * self)
+{
+  Port * port = self->port;
+  if (port->id.type == TYPE_CONTROL)
+    {
+      return
+        control_port_real_val_to_normalized (
+          port, port->control);
+    }
+  else
+    {
+      return get_port_value (self);
+    }
 }
 
 static void
@@ -442,8 +458,8 @@ inspector_port_widget_new (
       self->bar_slider =
         _bar_slider_widget_new (
           BAR_SLIDER_TYPE_NORMAL,
-          (float (*) (void *)) get_port_value,
-          (void (*) (void *, float)) set_port_value,
+          (GenericFloatGetter) get_port_value,
+          (GenericFloatSetter) set_port_value,
           (void *) self, NULL,
           /* use normalized vals for controls */
           is_control ? 0.f : minf,
@@ -451,6 +467,9 @@ inspector_port_widget_new (
           is_control ? 0.f : zerof, 0, 2,
           UI_DRAG_MODE_CURSOR,
           str, "");
+      self->bar_slider->snapped_getter =
+        (GenericFloatGetter)
+        get_snapped_port_value;
       self->bar_slider->show_value = 0;
       self->bar_slider->editable = editable;
       self->bar_slider->init_setter =

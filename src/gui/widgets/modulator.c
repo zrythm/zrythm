@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/control_port.h"
 #include "audio/track.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/knob_with_name.h"
@@ -117,13 +118,24 @@ graph_tick_callback (
   return G_SOURCE_CONTINUE;
 }
 
+static float
+get_snapped_control_value (
+  Port * port)
+{
+  float val =
+    port_get_control_value (port, F_NOT_NORMALIZED);
+
+  return val;
+}
+
 /** Getter for the KnobWidget. */
 static float
 get_control_value (
   Port * port)
 {
-  return
-    port_get_control_value (port, F_NOT_NORMALIZED);
+  float val = port->unsnapped_control;
+
+  return val;
 }
 
 /** Setter for the KnobWidget. */
@@ -183,6 +195,9 @@ modulator_widget_new (
           get_control_value, set_control_value,
           port, port->minf, port->maxf,
           24, port->zerof);
+      knob->snapped_getter =
+        (GenericFloatGetter)
+        get_snapped_control_value;
       KnobWithNameWidget * knob_with_name =
         knob_with_name_widget_new (
           port->id.label,

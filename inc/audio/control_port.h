@@ -72,6 +72,44 @@ control_port_is_toggled (
   Port * self);
 
 /**
+ * Checks if the given value is toggled.
+ */
+bool
+control_port_is_val_toggled (
+  float val);
+
+/**
+ * Gets the control value for an integer port.
+ */
+int
+control_port_get_int (
+  Port * self);
+
+/**
+ * Gets the control value for an integer port.
+ */
+int
+control_port_get_int_from_val (
+  float val);
+
+/**
+ * Returns the snapped value (eg, if toggle,
+ * returns 0.f or 1.f).
+ */
+float
+control_port_get_snapped_val (
+  Port * self);
+
+/**
+ * Returns the snapped value (eg, if toggle,
+ * returns 0.f or 1.f).
+ */
+float
+control_port_get_snapped_val_from_val (
+  Port * self,
+  float  val);
+
+/**
  * Get the current real value of the control.
  *
  * TODO "normalize" parameter.

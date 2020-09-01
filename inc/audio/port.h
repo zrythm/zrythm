@@ -302,8 +302,14 @@ typedef struct Port
    * FIXME for fader, this should be the
    * fader_val (0.0 to 1.0) and not the
    * amplitude.
+   *
+   * This value will be snapped (eg, if integer or
+   * toggle).
    */
   float               control;
+
+  /** Unsnapped value, used by widgets. */
+  float               unsnapped_control;
 
   /** Flag that the value of the port changed from
    * reading automation. */

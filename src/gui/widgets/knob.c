@@ -51,14 +51,30 @@ G_DEFINE_TYPE (KnobWidget,
 
 #define ARC_CUT_ANGLE 60.f
 
-/**
- * Macro to get real value.
- */
-#define GET_REAL_VAL \
-  (self->type == KNOB_TYPE_NORMAL ? \
-   ((*self->getter) (self->object)) : \
-   port_get_multiplier_by_index ( \
-     (Port *) self->object, self->dest_index))
+static float
+get_real_val (
+  KnobWidget * self,
+  bool         snapped)
+{
+  if (self->type == KNOB_TYPE_NORMAL)
+    {
+      if (snapped && self->snapped_getter)
+        {
+          return
+            self->snapped_getter (self->object);
+        }
+      else
+        {
+          return self->getter (self->object);
+        }
+    }
+  else
+    {
+      return
+        port_get_multiplier_by_index (
+          (Port *) self->object, self->dest_index);
+    }
+}
 
 /**
  * MAcro to get real value from knob value.
@@ -132,7 +148,8 @@ knob_draw_cb (
       180.f;
 
   const float value =
-    KNOB_VAL_FROM_REAL (GET_REAL_VAL);
+    KNOB_VAL_FROM_REAL (
+      get_real_val (self, true));
   const float value_angle = start_angle
     + value * (end_angle - start_angle);
   float zero_angle =
@@ -414,12 +431,6 @@ on_crossing (
   gtk_widget_queue_draw (widget);
 }
 
-static double clamp
-(double x, double upper, double lower)
-{
-    return MIN(upper, MAX(x, lower));
-}
-
 static void
 drag_update (
   GtkGestureDrag *gesture,
@@ -434,13 +445,14 @@ drag_update (
   set_real_val (
     self,
     REAL_VAL_FROM_KNOB (
-      clamp (
-        KNOB_VAL_FROM_REAL (GET_REAL_VAL) +
+      CLAMP (
+        KNOB_VAL_FROM_REAL (
+          get_real_val (self, false)) +
           0.004f * (
             use_y ?
             (float) (offset_y - self->last_y) :
             (float) (offset_x - self->last_x)),
-         1.0f, 0.0f)));
+         0.f, 1.f)));
   self->last_x = offset_x;
   self->last_y = offset_y;
   gtk_widget_queue_draw ((GtkWidget *)self);
@@ -468,15 +480,15 @@ drag_end (
  */
 KnobWidget *
 _knob_widget_new (
-  float (*get_val)(void *),
-  void (*set_val)(void *, float),
-  void * object,
-  KnobType type,
-  Port * dest,
-  float  min,
-  float  max,
-  int    size,
-  float  zero)
+  GenericFloatGetter get_val,
+  GenericFloatSetter set_val,
+  void *             object,
+  KnobType           type,
+  Port *             dest,
+  float              min,
+  float              max,
+  int                size,
+  float              zero)
 {
   g_warn_if_fail (object);
 

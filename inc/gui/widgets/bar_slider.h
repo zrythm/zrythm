@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -89,6 +89,9 @@ typedef struct _BarSliderWidget
 
   /** Float getter. */
   GenericFloatGetter getter;
+
+  /** Float getter for snapped values (optional). */
+  GenericFloatGetter snapped_getter;
 
   /** Float setter. */
   GenericFloatSetter setter;

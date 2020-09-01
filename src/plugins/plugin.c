@@ -171,6 +171,7 @@ plugin_init (
   port->zerof = 0.f;
   port->deff = 1.f;
   port->control = 1.f;
+  port->unsnapped_control = 1.f;
   port->carla_param_id = -1;
   plugin->enabled = port;
 

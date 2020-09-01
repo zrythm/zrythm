@@ -26,14 +26,16 @@
 #ifndef __GUI_WIDGETS_KNOB_H__
 #define __GUI_WIDGETS_KNOB_H__
 
+#include <stdbool.h>
+
+#include "utils/types.h"
+
 #include <gtk/gtk.h>
 
 #define KNOB_WIDGET_TYPE \
   (knob_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  KnobWidget,
-  knob_widget,
-  Z, KNOB_WIDGET,
+  KnobWidget, knob_widget, Z, KNOB_WIDGET,
   GtkDrawingArea)
 
 /**
@@ -55,32 +57,57 @@ typedef struct Port Port;
 
 typedef struct _KnobWidget
 {
-  GtkDrawingArea        parent_instance;
+  GtkDrawingArea      parent_instance;
 
-  KnobType              type;
+  KnobType            type;
 
-  /** Getter. */
-  float (*getter)(void*);
+  /** Getter for the actual value. */
+  GenericFloatGetter  getter;
+
+  /** Getter for a snapped value (used if
+   * passed). */
+  GenericFloatGetter  snapped_getter;
 
   /** Setter. */
-  void (*setter)(void*, float);
+  GenericFloatSetter  setter;
+
+  /** Float setter for drag begin. */
+  GenericFloatSetter  init_setter;
+
+  /** Float setter for drag end. */
+  GenericFloatSetter  end_setter;
 
   /** Object to call get/set with. */
-  void *                object;
+  void *              object;
 
-  int                   size;  ///< size in px
-  int                   hover;   ///< used to detect if hovering or not
-  float                 zero;   ///<   zero point 0.0-1.0 */
-  int                   arc;    ///< draw arc around the knob or not
-  int                   bevel;  ///< bevel
-  int                   flat;    ///< flat or 3D
-  float                 min;    ///< min value (eg. 1)
-  float                 max;    ///< max value (eg. 180)
-  GdkRGBA              start_color;    ///< color away from zero point
-  GdkRGBA              end_color;     ///< color close to zero point
-  GtkGestureDrag        *drag;     ///< used for drag gesture
-  double                last_x;    ///< used in gesture drag
-  double                last_y;    ///< used in gesture drag
+  /** Size in px. */
+  int                 size;
+  /** Whether hovering or not. */
+  bool                hover;
+  /** Zero point 0.0-1.0. */
+  float               zero;
+  /** Draw arc around the knob or not. */
+  bool                arc;
+  /** Bevel. */
+  int                 bevel;
+  /** Flat or 3D. */
+  bool                flat;
+  /** Min value (eg, 1). */
+  float               min;
+  /** Max value (eg, 180). */
+  float               max;
+
+  /** Color away from zero point. */
+  GdkRGBA             start_color;
+  /** Color closer to zero point. */
+  GdkRGBA             end_color;
+
+  /** Used in drag gesture. */
+  GtkGestureDrag *    drag;
+  /** Used in gesture drag. */
+  double              last_x;
+  /** Used in gesture drag. */
+  double              last_y;
 
   /* ----- FOR PORTS ONLY ------- */
   /** Destination index for the destination
@@ -103,20 +130,20 @@ typedef struct _KnobWidget
  */
 KnobWidget *
 _knob_widget_new (
-  float (*get_val)(void *),
-  void (*set_val)(void *, float),
-  void * object,
-  KnobType type,
-  Port * dest,
-  float  min,
-  float  max,
-  int    size,
-  float  zero);
+  GenericFloatGetter get_val,
+  GenericFloatSetter set_val,
+  void *             object,
+  KnobType           type,
+  Port *             dest,
+  float              min,
+  float              max,
+  int                size,
+  float              zero);
 
 #define knob_widget_new_simple(getter,setter,obj,min,max,size,zero) \
   _knob_widget_new ( \
-    (float (*) (void *)) getter, \
-    (void (*) (void *, float)) setter, \
+    (GenericFloatGetter) getter, \
+    (GenericFloatSetter) setter, \
     (void *) obj, \
     KNOB_TYPE_NORMAL, NULL, min, max, size, zero)
 

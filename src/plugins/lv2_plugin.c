@@ -246,6 +246,7 @@ create_port (
   lv2_port->buf_size = 0;
   lv2_port->index = lv2_port_index;
   port->control = 0.0f;
+  port->unsnapped_control = 0.0f;
 
   const bool optional =
     lilv_port_has_property (
@@ -291,6 +292,8 @@ create_port (
       lv2_port->port->control =
         isnan (default_value) ?
           0.0f : default_value;
+      lv2_port->port->unsnapped_control =
+        lv2_port->port->control;
       if (show_hidden ||
           !lilv_port_has_property (
             lv2_plugin->lilv_plugin,

@@ -313,8 +313,7 @@ lv2_control_set_control (
         &control->plugin->ports[control->index];
       g_return_if_fail (port->port);
       port->port->control = *(float*)body;
-      /*g_message ("set to %f",*/
-                 /*port->control);*/
+      port->port->unsnapped_control = *(float*)body;
     }
   else if (control->type == PROPERTY)
     {

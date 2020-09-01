@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,13 +34,32 @@ G_DEFINE_TYPE (
   GTK_TYPE_DRAWING_AREA)
 
 /**
- * Macro to get real value.
+ * Get the real value.
  */
-#define GET_REAL_VAL \
-  (self->type == BAR_SLIDER_TYPE_PORT_MULTIPLIER ? \
-   port_get_multiplier_by_index ( \
-     (Port *) self->object, self->dest_index) :  \
-   ((*self->getter) (self->object)))
+static float
+get_real_val (
+  BarSliderWidget * self,
+  bool              snapped)
+{
+  if (self->type == BAR_SLIDER_TYPE_PORT_MULTIPLIER)
+    {
+      return
+        port_get_multiplier_by_index (
+          (Port *) self->object, self->dest_index);
+    }
+  else
+    {
+      if (snapped && self->snapped_getter)
+        {
+          return
+            self->snapped_getter (self->object);
+        }
+      else
+        {
+          return self->getter (self->object);
+        }
+    }
+}
 
 /**
  * Macro to get real value from bar_slider value.
@@ -102,7 +121,7 @@ bar_slider_draw_cb (
   const float real_min = self->min;
   const float real_max = self->max;
   const float real_zero = self->zero;
-  const float real_val = GET_REAL_VAL;
+  const float real_val = get_real_val (self, true);
 
   /* get absolute values in pixels */
   /*const float min_px = 0.f;*/
@@ -231,7 +250,8 @@ drag_begin (
       double normalized_val =
         ui_get_normalized_draggable_value (
           width,
-          BAR_SLIDER_VAL_FROM_REAL (GET_REAL_VAL),
+          BAR_SLIDER_VAL_FROM_REAL (
+            get_real_val (self, false)),
           self->start_x, self->start_x,
           self->start_x, 1.0, self->mode);
       self->init_setter (
@@ -256,7 +276,8 @@ drag_update (
   double new_normalized_val =
     ui_get_normalized_draggable_value (
       width,
-      BAR_SLIDER_VAL_FROM_REAL (GET_REAL_VAL),
+      BAR_SLIDER_VAL_FROM_REAL (
+        get_real_val (self, false)),
       self->start_x, self->start_x + offset_x,
       self->start_x + self->last_x,
       1.0, self->mode);
@@ -285,7 +306,8 @@ drag_end (
       double normalized_val =
         ui_get_normalized_draggable_value (
           width,
-          BAR_SLIDER_VAL_FROM_REAL (GET_REAL_VAL),
+          BAR_SLIDER_VAL_FROM_REAL (
+            get_real_val (self, false)),
           self->start_x, self->start_x + offset_x,
           self->start_x + self->last_x,
           1.0, self->mode);

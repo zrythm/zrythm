@@ -79,6 +79,7 @@ port_init_loaded (
   self->magic = PORT_MAGIC;
 
   self->is_project = is_project;
+  self->unsnapped_control = self->control;
 
   if (!is_project)
     return;
@@ -2293,16 +2294,10 @@ port_set_control_value (
       self->base_value = val;
     }
 
-  /* adjust if toggled or integer */
-  if (id->flags & PORT_FLAG_TOGGLE)
-    {
-      self->base_value = val > 0.001f;
-    }
-  else if (id->flags & PORT_FLAG_INTEGER)
-    {
-      self->base_value =
-        math_round_float_to_int (val);
-    }
+  self->unsnapped_control = self->base_value;
+  self->base_value =
+    control_port_get_snapped_val_from_val (
+      self, self->unsnapped_control);
 
   if (!math_floats_equal (
         self->control, self->base_value))

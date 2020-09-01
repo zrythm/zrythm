@@ -50,7 +50,78 @@ bool
 control_port_is_toggled (
   Port * self)
 {
-  return self->control > 0.001f;
+  return control_port_is_val_toggled (self->control);
+}
+
+/**
+ * Checks if the given value is toggled.
+ */
+bool
+control_port_is_val_toggled (
+  float val)
+{
+  return val > 0.001f;
+}
+
+/**
+ * Gets the control value for an integer port.
+ */
+int
+control_port_get_int (
+  Port * self)
+{
+  return
+    control_port_get_int_from_val (self->control);
+}
+
+/**
+ * Gets the control value for an integer port.
+ */
+int
+control_port_get_int_from_val (
+  float val)
+{
+  return math_round_float_to_int (val);
+}
+
+/**
+ * Returns the snapped value (eg, if toggle,
+ * returns 0.f or 1.f).
+ */
+float
+control_port_get_snapped_val (
+  Port * self)
+{
+  float val = control_port_get_val (self);
+
+  return
+    control_port_get_snapped_val_from_val (
+      self, val);
+}
+
+/**
+ * Returns the snapped value (eg, if toggle,
+ * returns 0.f or 1.f).
+ */
+float
+control_port_get_snapped_val_from_val (
+  Port * self,
+  float  val)
+{
+  PortFlags flags = self->id.flags;
+  if (flags & PORT_FLAG_TOGGLE)
+    {
+      return
+        control_port_is_val_toggled (val) ?
+          1.f : 0.f;
+    }
+  else if (flags & PORT_FLAG_INTEGER)
+    {
+      return
+        (float) control_port_get_int_from_val (val);
+    }
+
+  return val;
 }
 
 /**
