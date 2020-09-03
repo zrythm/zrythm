@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,18 +26,15 @@
 
 #include <gtk/gtk.h>
 
-/**
- * Gets given note length and type in ticks.
- */
 int
-snap_grid_get_note_ticks (
-  NoteLength note_length,
-  NoteType   note_type)
+snap_grid_get_ticks_from_length_and_type (
+  NoteLength length,
+  NoteType   type)
 {
-  switch (note_length)
+  switch (length)
     {
     case NOTE_LENGTH_2_1:
-      switch (note_type)
+      switch (type)
         {
         case NOTE_TYPE_NORMAL:
           return 8 * TICKS_PER_QUARTER_NOTE;
@@ -51,7 +48,7 @@ snap_grid_get_note_ticks (
         }
       break;
     case NOTE_LENGTH_1_1:
-      switch (note_type)
+      switch (type)
         {
         case NOTE_TYPE_NORMAL:
           return 4 * TICKS_PER_QUARTER_NOTE;
@@ -65,7 +62,7 @@ snap_grid_get_note_ticks (
         }
       break;
     case NOTE_LENGTH_1_2:
-      switch (note_type)
+      switch (type)
         {
         case NOTE_TYPE_NORMAL:
           return 2 * TICKS_PER_QUARTER_NOTE;
@@ -79,7 +76,7 @@ snap_grid_get_note_ticks (
         }
       break;
     case NOTE_LENGTH_1_4:
-      switch (note_type)
+      switch (type)
         {
         case NOTE_TYPE_NORMAL:
           return TICKS_PER_QUARTER_NOTE;
@@ -93,7 +90,7 @@ snap_grid_get_note_ticks (
         }
       break;
     case NOTE_LENGTH_1_8:
-      switch (note_type)
+      switch (type)
         {
         case NOTE_TYPE_NORMAL:
           return TICKS_PER_QUARTER_NOTE / 2;
@@ -107,7 +104,7 @@ snap_grid_get_note_ticks (
         }
       break;
     case NOTE_LENGTH_1_16:
-      switch (note_type)
+      switch (type)
         {
         case NOTE_TYPE_NORMAL:
           return TICKS_PER_QUARTER_NOTE / 4;
@@ -121,7 +118,7 @@ snap_grid_get_note_ticks (
         }
       break;
     case NOTE_LENGTH_1_32:
-      switch (note_type)
+      switch (type)
         {
         case NOTE_TYPE_NORMAL:
           return TICKS_PER_QUARTER_NOTE / 8;
@@ -135,7 +132,7 @@ snap_grid_get_note_ticks (
         }
       break;
     case NOTE_LENGTH_1_64:
-      switch (note_type)
+      switch (type)
         {
         case NOTE_TYPE_NORMAL:
           return TICKS_PER_QUARTER_NOTE / 16;
@@ -149,7 +146,7 @@ snap_grid_get_note_ticks (
         }
       break;
     case NOTE_LENGTH_1_128:
-      switch (note_type)
+      switch (type)
         {
         case NOTE_TYPE_NORMAL:
           return TICKS_PER_QUARTER_NOTE / 32;
@@ -165,6 +162,38 @@ snap_grid_get_note_ticks (
     }
   g_warn_if_reached ();
   return -1;
+}
+
+/**
+ * Gets a snap point's length in ticks.
+ */
+int
+snap_grid_get_snap_ticks (
+  SnapGrid * self)
+{
+  return
+    snap_grid_get_ticks_from_length_and_type (
+      self->snap_note_length, self->snap_note_type);
+}
+
+/**
+ * Gets a the default length in ticks.
+ */
+int
+snap_grid_get_default_ticks (
+  SnapGrid * self)
+{
+  if (self->link)
+    {
+      return snap_grid_get_snap_ticks (self);
+    }
+  else
+    {
+      return
+        snap_grid_get_ticks_from_length_and_type (
+          self->default_note_length,
+          self->default_note_type);
+    }
 }
 
 static void
@@ -193,9 +222,7 @@ snap_grid_update_snap_points (SnapGrid * self)
     TRANSPORT->total_bars + 1);
   self->num_snap_points = 0;
   add_snap_point (self, &tmp);
-  long ticks =
-    snap_grid_get_note_ticks (
-      self->note_length, self->note_type);
+  long ticks = snap_grid_get_snap_ticks (self);
   g_warn_if_fail (TRANSPORT->ticks_per_bar > 0);
   while (position_is_before (&tmp, &end_pos))
     {
@@ -210,9 +237,11 @@ snap_grid_init (
   NoteLength   note_length)
 {
   self->grid_auto = 1;
-  self->note_length = note_length;
   self->num_snap_points = 0;
-  self->note_type = NOTE_TYPE_NORMAL;
+  self->snap_note_length = note_length;
+  self->snap_note_type = NOTE_TYPE_NORMAL;
+  self->default_note_length = note_length;
+  self->default_note_type = NOTE_TYPE_NORMAL;
   self->snap_to_grid = 1;
 
   self->snap_points =
@@ -235,22 +264,22 @@ get_note_length_str (
 }
 
 /**
- * Returns the grid intensity as a human-readable string.
+ * Returns the grid intensity as a human-readable
+ * string.
  *
  * Must be free'd.
  */
 char *
-snap_grid_stringize (NoteLength note_length,
-                     NoteType   note_type)
+snap_grid_stringize (
+  NoteLength note_length,
+  NoteType   note_type)
 {
   const char * c =
     get_note_type_str (note_type);
   const char * first_part =
     get_note_length_str (note_length);
 
-  return g_strdup_printf ("%s%s",
-                          first_part,
-                          c);
+  return  g_strdup_printf ("%s%s", first_part, c);
 }
 
 /**

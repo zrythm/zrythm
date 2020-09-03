@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -553,3 +553,8 @@ right-dock-edge notebook tab
   /*margin-right: 0px;*/
   /*min-height: 24px;*/
 /*}*/
+
+/* make snap grid popover buttons small */
+popover.snap-grid-popover button.note-type {
+  padding: 0px 4px 0px 4px;
+}

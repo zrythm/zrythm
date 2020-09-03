@@ -1593,9 +1593,8 @@ highlight_timeline (
 {
   /* get default size */
   int ticks =
-    snap_grid_get_note_ticks (
-      SNAP_GRID_TIMELINE->note_length,
-      SNAP_GRID_TIMELINE->note_type);
+    snap_grid_get_default_ticks (
+      SNAP_GRID_TIMELINE);
   Position length_pos;
   position_from_ticks (&length_pos, ticks);
   int width_px =

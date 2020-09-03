@@ -2543,8 +2543,7 @@ arranger_widget_on_key_action (
                   self);
               move_ticks =
                 (double)
-                snap_grid_get_note_ticks (
-                  sg->note_length, sg->note_type);
+                snap_grid_get_snap_ticks (sg);
             }
 
           /* check arrow movement */

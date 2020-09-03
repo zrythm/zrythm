@@ -104,13 +104,11 @@ midi_region_new_from_chord_descr (
   int               idx_inside_lane)
 {
   int r_length_ticks =
-    snap_grid_get_note_ticks (
-      SNAP_GRID_TIMELINE->note_length,
-      SNAP_GRID_TIMELINE->note_type);
+    snap_grid_get_default_ticks (
+      SNAP_GRID_TIMELINE);
   int mn_length_ticks =
-    snap_grid_get_note_ticks (
-      SNAP_GRID_MIDI->note_length,
-      SNAP_GRID_MIDI->note_type);
+    snap_grid_get_default_ticks (
+      SNAP_GRID_MIDI);
 
   /* get region end pos */
   Position r_end_pos;

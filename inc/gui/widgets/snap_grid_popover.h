@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,38 +17,84 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file
+ *
+ * Snap grid popover.
+ */
+
 #ifndef __GUI_WIDGETS_SNAP_GRID_POPOVER_H__
 #define __GUI_WIDGETS_SNAP_GRID_POPOVER_H__
 
-
 #include <gtk/gtk.h>
+
+typedef struct _DigitalMeterWidget
+  DigitalMeterWidget;
+typedef struct _SnapGridWidget SnapGridWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 #define SNAP_GRID_POPOVER_WIDGET_TYPE \
   (snap_grid_popover_widget_get_type ())
-G_DECLARE_FINAL_TYPE (SnapGridPopoverWidget,
-                      snap_grid_popover_widget,
-                      Z,
-                      SNAP_GRID_POPOVER_WIDGET,
-                      GtkPopover)
+G_DECLARE_FINAL_TYPE (
+  SnapGridPopoverWidget,
+  snap_grid_popover_widget,
+  Z, SNAP_GRID_POPOVER_WIDGET,
+  GtkPopover)
 
-typedef struct _DigitalMeterWidget DigitalMeterWidget;
-typedef struct _SnapGridWidget SnapGridWidget;
-
+/**
+ * Snap grid popover.
+ */
 typedef struct _SnapGridPopoverWidget
 {
-  GtkPopover              parent_instance;
-  SnapGridWidget          * owner; ///< the owner
-  GtkCheckButton          * grid_adaptive;
-  GtkBox *                note_length_box;
-  DigitalMeterWidget      * dm_note_length; ///< digital meter for density
-  GtkBox *                note_type_box;
-  DigitalMeterWidget      * dm_note_type; ///< digital meter for note type
+  GtkPopover         parent_instance;
+
+  /** Owner button. */
+  SnapGridWidget *   owner;
+
+  /* --- snap --- */
+  GtkBox *           snap_length_box;
+  DigitalMeterWidget * snap_length_dm;
+  GtkBox *           snap_type_box;
+  //DigitalMeterWidget * snap_type_dm;
+  GtkToggleButton *  snap_triplet_toggle;
+  gulong             snap_triplet_toggle_handler;
+  GtkToggleButton *  snap_dotted_toggle;
+  gulong             snap_dotted_toggle_handler;
+  GtkCheckButton *   snap_adaptive;
+  gulong             snap_adaptive_handler;
+
+  /* --- default --- */
+  GtkBox *           default_length_box;
+  DigitalMeterWidget * default_length_dm;
+  GtkBox *           default_type_box;
+  //DigitalMeterWidget * default_type_dm;
+  GtkToggleButton *  default_triplet_toggle;
+  gulong             default_triplet_toggle_handler;
+  GtkToggleButton *  default_dotted_toggle;
+  gulong             default_dotted_toggle_handler;
+  GtkCheckButton *   default_adaptive;
+  gulong             default_adaptive_handler;
+
+  /** Toggle to link snap to default. */
+  GtkToggleButton *  link_toggle;
+  gulong             link_handler;
+
 } SnapGridPopoverWidget;
 
 /**
  * Creates the popover.
  */
 SnapGridPopoverWidget *
-snap_grid_popover_widget_new (SnapGridWidget * owner);
+snap_grid_popover_widget_new (
+  SnapGridWidget * owner);
+
+/**
+ * @}
+ */
 
 #endif

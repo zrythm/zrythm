@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,7 +26,15 @@
 #ifndef __AUDIO_SNAP_GRID_H__
 #define __AUDIO_SNAP_GRID_H__
 
+#include <stdbool.h>
+
 #include "audio/position.h"
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
 
 #define SNAP_GRID_IS_MIDI(sg) \
   (&PROJECT->snap_grid_midi == sg)
@@ -65,22 +73,32 @@ typedef enum NoteType
 typedef struct SnapGrid
 {
   /**
-   * If this is on, the grid will chose the note length
-   * automatically.
+   * If this is on, the snap note length will be
+   * determined automatically based on the current
+   * zoom level.
    *
-   * The note type still applies.
+   * The snap note type still applies.
    */
-  int              grid_auto;
+  bool             grid_auto;
 
-  /**
-   * These two determine the divisions of the grid.
-   */
-  NoteLength       note_length;
-  NoteType         note_type;
+  /** Snap note length. */
+  NoteLength       snap_note_length;
 
-  int              snap_to_grid;
-  int              snap_to_grid_keep_offset;
-  int              snap_to_events;
+  /** Snap note type. */
+  NoteType         snap_note_type;
+
+  bool             snap_to_grid;
+  bool             snap_to_grid_keep_offset;
+  bool             snap_to_events;
+
+  /** Default note length. */
+  NoteLength       default_note_length;
+  /** Default note type. */
+  NoteType         default_note_type;
+
+  /** Whether to use the "snap" options as default
+   * length or not. */
+  bool             link;
 
   /**
    * Snap points to be used by the grid and by
@@ -131,25 +149,24 @@ note_type_short_strings[] =
 static const cyaml_schema_field_t
   snap_grid_fields_schema[] =
 {
-  CYAML_FIELD_INT (
-    "grid_auto", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     SnapGrid, grid_auto),
-  CYAML_FIELD_ENUM (
-    "note_length", CYAML_FLAG_DEFAULT,
-    SnapGrid, note_length, note_length_strings,
-    CYAML_ARRAY_LEN (note_length_strings)),
-  CYAML_FIELD_ENUM (
-    "note_type", CYAML_FLAG_DEFAULT,
-    SnapGrid, note_type, note_type_strings,
-    CYAML_ARRAY_LEN (note_type_strings)),
-  CYAML_FIELD_INT (
-    "snap_to_grid", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_ENUM (
+    SnapGrid, snap_note_length, note_length_strings),
+  YAML_FIELD_ENUM (
+    SnapGrid, snap_note_type, note_type_strings),
+  YAML_FIELD_ENUM (
+    SnapGrid, default_note_length,
+    note_length_strings),
+  YAML_FIELD_ENUM (
+    SnapGrid, default_note_type, note_type_strings),
+  YAML_FIELD_INT (
+    SnapGrid, link),
+  YAML_FIELD_INT (
     SnapGrid, snap_to_grid),
-  CYAML_FIELD_INT (
-    "snap_to_grid_keep_offset", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     SnapGrid, snap_to_grid_keep_offset),
-  CYAML_FIELD_INT (
-    "snap_to_events", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     SnapGrid, snap_to_events),
 
   CYAML_FIELD_END
@@ -167,6 +184,11 @@ snap_grid_init (
   SnapGrid *   self,
   NoteLength   note_length);
 
+int
+snap_grid_get_ticks_from_length_and_type (
+  NoteLength length,
+  NoteType   type);
+
 /**
  * Updates snap points.
  */
@@ -175,29 +197,22 @@ snap_grid_update_snap_points (
   SnapGrid * self);
 
 /**
- * Sets note length and re-calculates snap points.
- */
-//void
-//snap_grid_set_note_length (SnapGrid * self,
-                           //NoteLength note_length);
-
-/**
- * Gets given note length and type in ticks.
+ * Gets a snap point's length in ticks.
  */
 int
-snap_grid_get_note_ticks (
-  NoteLength note_length,
-  NoteType   note_type);
+snap_grid_get_snap_ticks (
+  SnapGrid * self);
 
 /**
- * Sets note type and re-calculates snap points.
+ * Gets a the default length in ticks.
  */
-//void
-//snap_grid_set_note_type (SnapGrid *self,
-                         //NoteType   note_type);
+int
+snap_grid_get_default_ticks (
+  SnapGrid * self);
 
 /**
- * Returns the grid intensity as a human-readable string.
+ * Returns the grid intensity as a human-readable
+ * string.
  *
  * Must be free'd.
  */
@@ -221,5 +236,9 @@ snap_grid_get_nearby_snap_point (
   SnapGrid *       self,
   const Position * pos,
   const int        return_prev);
+
+/**
+ * @}
+ */
 
 #endif

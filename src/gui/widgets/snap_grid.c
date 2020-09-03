@@ -35,18 +35,36 @@ static void
 on_clicked (GtkButton * button,
             SnapGridWidget * self)
 {
-  gtk_widget_show_all (GTK_WIDGET (self->popover));
+  /*gtk_widget_show_all (GTK_WIDGET (self->popover));*/
 }
 
 static void
 set_label (SnapGridWidget * self)
 {
-  char * string =
+  SnapGrid * sg = self->snap_grid;
+  char * snap_str =
     snap_grid_stringize (
-      self->snap_grid->note_length,
-      self->snap_grid->note_type);
-  gtk_label_set_text (self->label, string);
-  g_free (string);
+      sg->snap_note_length,
+      sg->snap_note_type);
+  char * default_str =
+    snap_grid_stringize (
+      sg->default_note_length,
+      sg->default_note_type);
+
+  char new_str[600];
+  if (sg->link)
+    {
+      sprintf (new_str, "%s", snap_str);
+    }
+  else
+    {
+      sprintf (
+        new_str, "%s - %s", snap_str, default_str);
+    }
+  gtk_label_set_text (self->label, new_str);
+
+  g_free (snap_str);
+  g_free (default_str);
 }
 
 void
@@ -59,7 +77,7 @@ snap_grid_widget_refresh (
 void
 snap_grid_widget_setup (
   SnapGridWidget * self,
-  SnapGrid * snap_grid)
+  SnapGrid *       snap_grid)
 {
   self->snap_grid = snap_grid;
   self->popover =
@@ -81,8 +99,8 @@ static void
 snap_grid_widget_init (SnapGridWidget * self)
 {
   self->box =
-    GTK_BOX (gtk_box_new (
-               GTK_ORIENTATION_HORIZONTAL, 0));
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
   self->img =
     GTK_IMAGE (
       gtk_image_new_from_icon_name (
@@ -93,22 +111,17 @@ snap_grid_widget_init (SnapGridWidget * self)
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->box),
     _("Snap/Grid options"));
-  gtk_box_pack_start (self->box,
-                      GTK_WIDGET (self->img),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      1);
-  gtk_box_pack_end (self->box,
-                    GTK_WIDGET (self->label),
-                    Z_GTK_NO_EXPAND,
-                    Z_GTK_NO_FILL,
-                    1);
-  gtk_container_add (GTK_CONTAINER (self),
-                     GTK_WIDGET (self->box));
-  g_signal_connect (G_OBJECT (self),
-                    "clicked",
-                    G_CALLBACK (on_clicked),
-                    self);
+  gtk_box_pack_start (
+    self->box, GTK_WIDGET (self->img),
+    Z_GTK_NO_EXPAND, Z_GTK_NO_FILL, 1);
+  gtk_box_pack_end (
+    self->box, GTK_WIDGET (self->label),
+    Z_GTK_NO_EXPAND, Z_GTK_NO_FILL, 1);
+  gtk_container_add (
+    GTK_CONTAINER (self), GTK_WIDGET (self->box));
+  g_signal_connect (
+    G_OBJECT (self), "clicked",
+    G_CALLBACK (on_clicked), self);
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }

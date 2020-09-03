@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,23 +30,37 @@ G_DECLARE_FINAL_TYPE (SnapGridWidget,
                       SNAP_GRID_WIDGET,
                       GtkMenuButton)
 
-typedef struct _SnapGridPopoverWidget SnapGridPopoverWidget;
+typedef struct _SnapGridPopoverWidget
+  SnapGridPopoverWidget;
 typedef struct SnapGrid SnapGrid;
 
 typedef struct _SnapGridWidget
 {
-  GtkMenuButton           parent_instance;
-  GtkBox *                box; ///< the box
-  GtkImage *              img; ///< img to show next to the label
-  GtkLabel                * label; ///< label to show
-  SnapGridPopoverWidget   * popover; ///< the popover to show
-  GtkBox                  * content; ///< popover content holder
-  SnapGrid                * snap_grid;
+  GtkMenuButton      parent_instance;
+
+  /** The box. */
+  GtkBox *           box;
+
+  /** Image to show next to the label. */
+  GtkImage *         img;
+
+  /** Label to show. */
+  GtkLabel *         label;
+
+  /** Popover. */
+  SnapGridPopoverWidget * popover;
+
+  /** Popover content holder. */
+  GtkBox *           content;
+
+  /** Associated snap grid options. */
+  SnapGrid *         snap_grid;
 } SnapGridWidget;
 
 void
-snap_grid_widget_setup (SnapGridWidget * self,
-                        SnapGrid * snap_grid);
+snap_grid_widget_setup (
+  SnapGridWidget * self,
+  SnapGrid * snap_grid);
 
 void
 snap_grid_widget_refresh (

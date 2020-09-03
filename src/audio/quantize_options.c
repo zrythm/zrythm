@@ -46,7 +46,7 @@ quantize_options_update_quantize_points (
     &self->q_points[self->num_q_points++],
     &tmp);
   long ticks =
-    snap_grid_get_note_ticks (
+    snap_grid_get_ticks_from_length_and_type (
       self->note_length,
       self->note_type);
   long swing_offset =

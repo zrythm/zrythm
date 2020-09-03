@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -104,8 +104,16 @@ digital_meter_draw_cb (
 
   /* draw caption and get its extents */
   int caption_textw, caption_texth;
-  cairo_set_source_rgba (
-    cr, 1.0, 1.0, 1.0, 1.0);
+  if (gtk_widget_is_sensitive (GTK_WIDGET (self)))
+    {
+      cairo_set_source_rgba (
+        cr, 1.0, 1.0, 1.0, 1.0);
+    }
+  else
+    {
+      cairo_set_source_rgba (
+        cr, 0.6, 0.6, 0.6, 1.0);
+    }
   z_cairo_get_text_extents_for_widget (
     self, self->caption_layout, self->caption,
     &caption_textw, &caption_texth);
@@ -137,8 +145,16 @@ digital_meter_draw_cb (
   /*GdkRGBA color;*/
   /*gdk_rgba_parse (&color, "#D68A0C");*/
   /*gdk_cairo_set_source_rgba (cr, &color);*/
-  cairo_set_source_rgba (
-    cr, 0.0, 1.0, 0.1, 1.0);
+  if (gtk_widget_is_sensitive (GTK_WIDGET (self)))
+    {
+      cairo_set_source_rgba (
+        cr, 0.0, 1.0, 0.1, 1.0);
+    }
+  else
+    {
+      cairo_set_source_rgba (
+        cr, 0.0, 0.6, 0.06, 1.0);
+    }
   char text[20];
   char * heap_text = NULL;
   int num_part, dec_part, bars, beats, sixteenths, ticks;

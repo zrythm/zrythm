@@ -243,8 +243,7 @@ setup_record_btn (
     G_ACTION_MAP (action_group), actions,
     G_N_ELEMENTS (actions), self);
   gtk_widget_insert_action_group (
-    GTK_WIDGET (self->trans_record),
-    "record-btn",
+    GTK_WIDGET (self->trans_record), "record-btn",
     G_ACTION_GROUP (action_group));
   gtk_menu_button_set_menu_model (
     self->trans_record->menu_btn,

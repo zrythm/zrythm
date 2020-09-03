@@ -434,7 +434,8 @@ snap_pos (
 }
 
 /**
- * Sets the end position to be 1 snap point away from the start pos.
+ * Sets the end position to be 1 snap point away
+ * from  the start pos.
  *
  * FIXME rename to something more meaningful.
  * @param start_pos Start Position.
@@ -450,8 +451,7 @@ position_set_min_size (
   position_set_to_pos (end_pos, start_pos);
   position_add_ticks (
     end_pos,
-    snap_grid_get_note_ticks (
-      snap->note_length, snap->note_type));
+    snap_grid_get_default_ticks (snap));
 }
 
 /**
