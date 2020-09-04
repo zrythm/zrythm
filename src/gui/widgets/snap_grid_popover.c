@@ -177,7 +177,7 @@ on_type_toggled (
   else if (btn ==
              GTK_TOGGLE_BUTTON (self->snap_adaptive))
     {
-      sg->grid_auto = active;
+      sg->snap_adaptive = active;
       gtk_widget_set_sensitive (
         GTK_WIDGET (self->snap_length_dm), !active);
     }
@@ -185,7 +185,7 @@ on_type_toggled (
              GTK_TOGGLE_BUTTON (
                self->default_adaptive))
     {
-      sg->grid_auto = active;
+      sg->default_adaptive = active;
       gtk_widget_set_sensitive (
         GTK_WIDGET (self->default_length_dm),
         !active);

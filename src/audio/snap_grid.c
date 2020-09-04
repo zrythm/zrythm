@@ -236,13 +236,13 @@ snap_grid_init (
   SnapGrid *   self,
   NoteLength   note_length)
 {
-  self->grid_auto = 1;
   self->num_snap_points = 0;
   self->snap_note_length = note_length;
   self->snap_note_type = NOTE_TYPE_NORMAL;
   self->default_note_length = note_length;
   self->default_note_type = NOTE_TYPE_NORMAL;
   self->snap_to_grid = 1;
+  self->link = true;
 
   self->snap_points =
     calloc (1, sizeof (Position));

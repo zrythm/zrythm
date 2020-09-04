@@ -382,7 +382,7 @@ digital_meter_draw_cb (
           *self->note_length,
           *self->note_type);
       z_cairo_get_text_extents_for_widget (
-        widget, self->normal_layout, heap_text,
+        widget, self->seg7_layout, heap_text,
         &textw, &texth);
       self->height_start_pos =
         PADDING_TOP +
@@ -390,7 +390,7 @@ digital_meter_draw_cb (
       self->height_end_pos =
         self->height_start_pos + texth;
       z_cairo_draw_text_full (
-        cr, widget, self->normal_layout,
+        cr, widget, self->seg7_layout,
         heap_text, width / 2 - textw / 2,
         self->height_start_pos);
       g_free (heap_text);

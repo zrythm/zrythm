@@ -78,8 +78,10 @@ typedef struct SnapGrid
    * zoom level.
    *
    * The snap note type still applies.
+   *
+   * TODO this will be done after v1.
    */
-  bool             grid_auto;
+  bool             snap_adaptive;
 
   /** Snap note length. */
   NoteLength       snap_note_length;
@@ -95,6 +97,17 @@ typedef struct SnapGrid
   NoteLength       default_note_length;
   /** Default note type. */
   NoteType         default_note_type;
+
+  /**
+   * If this is on, the default note length will be
+   * determined automatically based on the current
+   * zoom level.
+   *
+   * The default note type still applies.
+   *
+   * TODO this will be done after v1.
+   */
+  bool             default_adaptive;
 
   /** Whether to use the "snap" options as default
    * length or not. */
@@ -149,17 +162,19 @@ note_type_short_strings[] =
 static const cyaml_schema_field_t
   snap_grid_fields_schema[] =
 {
-  YAML_FIELD_INT (
-    SnapGrid, grid_auto),
   YAML_FIELD_ENUM (
     SnapGrid, snap_note_length, note_length_strings),
   YAML_FIELD_ENUM (
     SnapGrid, snap_note_type, note_type_strings),
+  YAML_FIELD_INT (
+    SnapGrid, snap_adaptive),
   YAML_FIELD_ENUM (
     SnapGrid, default_note_length,
     note_length_strings),
   YAML_FIELD_ENUM (
     SnapGrid, default_note_type, note_type_strings),
+  YAML_FIELD_INT (
+    SnapGrid, default_adaptive),
   YAML_FIELD_INT (
     SnapGrid, link),
   YAML_FIELD_INT (
