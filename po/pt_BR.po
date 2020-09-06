@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-09-01 19:42+0100\n"
+"POT-Creation-Date: 2020-09-06 16:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -20,6 +20,54 @@ msgstr ""
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:188
 #: inc/audio/engine.h:230
 msgid "Dummy"
+msgstr ""
+
+#: inc/gui/backend/arranger_object.h:88
+#: src/gui/widgets/channel_send_selector.c:185
+#: src/gui/widgets/plugin_properties_expander.c:89
+#: src/gui/widgets/plugin_properties_expander.c:91
+#: src/gui/widgets/route_target_selector.c:55
+#: src/gui/widgets/route_target_selector_popover.c:152
+#: resources/ui/editor_toolbar.ui:57
+msgid "None"
+msgstr ""
+
+#: inc/gui/backend/arranger_object.h:90
+#: resources/ui/chord_selector_window.ui:701
+msgid "All"
+msgstr ""
+
+#: inc/gui/backend/arranger_object.h:92 src/gui/widgets/event_viewer.c:106
+#: resources/ui/inspector_master.ui:31 resources/ui/inspector_ap.ui:31
+#: resources/ui/inspector_midi.ui:31
+msgid "Region"
+msgstr ""
+
+#: inc/gui/backend/arranger_object.h:94
+msgid "Midi Note"
+msgstr ""
+
+#: inc/gui/backend/arranger_object.h:96
+msgid "Chord Object"
+msgstr ""
+
+#: inc/gui/backend/arranger_object.h:98
+msgid "Scale Object"
+msgstr ""
+
+#: inc/gui/backend/arranger_object.h:100 inc/audio/track.h:166
+#: src/gui/widgets/event_viewer.c:109
+msgid "Marker"
+msgstr ""
+
+#: inc/gui/backend/arranger_object.h:102
+msgid "Automation Point"
+msgstr ""
+
+#: inc/gui/backend/arranger_object.h:104 src/gui/widgets/event_viewer.c:548
+#: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
+#: resources/ui/automation_editor_space.ui:115
+msgid "Velocity"
 msgstr ""
 
 #: inc/utils/ui.h:75
@@ -90,10 +138,6 @@ msgstr ""
 #: src/gui/widgets/event_viewer.c:589 src/audio/region.c:402
 #: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
-msgstr ""
-
-#: inc/audio/track.h:166 src/gui/widgets/event_viewer.c:109
-msgid "Marker"
 msgstr ""
 
 #: inc/audio/track.h:167 src/audio/tempo_track.c:89
@@ -517,9 +561,9 @@ msgstr ""
 
 #: src/plugins/plugin_gtk.c:84 src/plugins/lv2/lv2_gtk.c:108
 #: src/plugins/lv2/lv2_gtk.c:357 src/utils/dialogs.c:42 src/utils/dialogs.c:72
-#: src/actions/actions.c:775 resources/ui/export_midi_file_dialog.ui:54
-#: resources/ui/port_selector_popover.ui:240 resources/ui/marker_dialog.ui:47
-#: resources/ui/quantize_dialog.ui:38
+#: src/actions/actions.c:775 resources/ui/string_entry_dialog.ui:47
+#: resources/ui/export_midi_file_dialog.ui:54
+#: resources/ui/port_selector_popover.ui:240 resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr ""
 
@@ -545,7 +589,8 @@ msgid "Delete Preset?"
 msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:358 src/utils/dialogs.c:70
-#: resources/ui/port_selector_popover.ui:254 resources/ui/marker_dialog.ui:61
+#: resources/ui/string_entry_dialog.ui:61
+#: resources/ui/port_selector_popover.ui:254
 msgid "_OK"
 msgstr ""
 
@@ -799,15 +844,6 @@ msgstr ""
 msgid "Track Ports"
 msgstr ""
 
-#: src/gui/widgets/channel_send_selector.c:185
-#: src/gui/widgets/plugin_properties_expander.c:89
-#: src/gui/widgets/plugin_properties_expander.c:91
-#: src/gui/widgets/route_target_selector.c:55
-#: src/gui/widgets/route_target_selector_popover.c:152
-#: resources/ui/editor_toolbar.ui:57
-msgid "None"
-msgstr ""
-
 #: src/gui/widgets/channel_send_selector.c:322
 #: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:24
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
@@ -823,29 +859,29 @@ msgstr ""
 msgid "No object selected"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:387
+#: src/gui/widgets/digital_meter.c:403
 msgid "normal"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:390
+#: src/gui/widgets/digital_meter.c:406
 msgid "dotted"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:393
+#: src/gui/widgets/digital_meter.c:409
 msgid "triplet"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:1114
+#: src/gui/widgets/digital_meter.c:1130
 msgid "Tempo/BPM"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:1128 src/gui/widgets/event_viewer.c:600
+#: src/gui/widgets/digital_meter.c:1144 src/gui/widgets/event_viewer.c:600
 #: src/gui/widgets/event_viewer.c:630 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:1158
+#: src/gui/widgets/digital_meter.c:1174
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr ""
 
@@ -924,6 +960,20 @@ msgstr ""
 
 #: src/gui/widgets/channel_slot.c:1032
 msgid "empty slot"
+msgstr ""
+
+#: src/gui/widgets/arranger.c:3094
+#, c-format
+msgid "Invalid object name %s"
+msgstr ""
+
+#: src/gui/widgets/arranger.c:3249 resources/ui/string_entry_dialog.ui:94
+msgid "Marker name"
+msgstr ""
+
+#: src/gui/widgets/arranger.c:4930
+#, c-format
+msgid "%s name"
 msgstr ""
 
 #: src/gui/widgets/piano_roll_keys.c:138
@@ -1276,7 +1326,7 @@ msgstr ""
 #: src/gui/widgets/event_viewer.c:452 resources/ui/chord_selector_window.ui:239
 #: resources/ui/arranger_object_info_dialog.ui:114
 #: resources/ui/port_info_dialog.ui:161 resources/ui/panel_file_browser.ui:84
-#: resources/ui/file_browser.ui:84 resources/ui/snap_grid_popover.ui:127
+#: resources/ui/file_browser.ui:84
 msgid "Type"
 msgstr ""
 
@@ -1332,7 +1382,7 @@ msgstr ""
 msgid "[Modulator %d] %s"
 msgstr ""
 
-#: src/gui/widgets/snap_grid.c:95
+#: src/gui/widgets/snap_grid.c:113
 msgid "Snap/Grid options"
 msgstr ""
 
@@ -1387,11 +1437,6 @@ msgstr ""
 msgid "Sends"
 msgstr ""
 
-#: src/gui/widgets/event_viewer.c:106 resources/ui/inspector_master.ui:31
-#: resources/ui/inspector_ap.ui:31 resources/ui/inspector_midi.ui:31
-msgid "Region"
-msgstr ""
-
 #: src/gui/widgets/event_viewer.c:112 resources/ui/scale_selector_window.ui:240
 #: resources/ui/inspector_chord.ui:43 resources/ui/editor_toolbar.ui:59
 msgid "Scale"
@@ -1431,12 +1476,6 @@ msgstr ""
 
 #: src/gui/widgets/event_viewer.c:537
 msgid "Pitch"
-msgstr ""
-
-#: src/gui/widgets/event_viewer.c:548 resources/ui/midi_editor_space.ui:134
-#: resources/ui/chord_editor_space.ui:153
-#: resources/ui/automation_editor_space.ui:115
-msgid "Velocity"
 msgstr ""
 
 #: src/gui/widgets/event_viewer.c:619
@@ -2082,7 +2121,7 @@ msgstr ""
 msgid "Set control value"
 msgstr ""
 
-#: src/actions/arranger_selections.c:2225
+#: src/actions/arranger_selections.c:2213
 msgid "Edit arranger object(s)"
 msgstr ""
 
@@ -2634,10 +2673,6 @@ msgstr ""
 msgid "Bass Note"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:701
-msgid "All"
-msgstr ""
-
 #: resources/ui/chord_selector_window.ui:717
 msgid "In scale"
 msgstr ""
@@ -2927,7 +2962,7 @@ msgid "Color"
 msgstr ""
 
 #: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
-#: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:88
+#: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:344
 msgid "Length"
 msgstr ""
 
@@ -3132,10 +3167,6 @@ msgstr ""
 msgid "Add automation track"
 msgstr ""
 
-#: resources/ui/marker_dialog.ui:94
-msgid "Marker name"
-msgstr ""
-
 #: resources/ui/bounce_dialog.ui:32
 msgid "Bounce Options"
 msgstr ""
@@ -3268,24 +3299,36 @@ msgstr ""
 msgid "Full Quantize..."
 msgstr ""
 
-#: resources/ui/snap_grid_popover.ui:37
-msgid "Grid"
+#: resources/ui/snap_grid_popover.ui:122 resources/ui/snap_grid_popover.ui:244
+msgid "Note length"
 msgstr ""
 
-#: resources/ui/snap_grid_popover.ui:47
-msgid "Adaptive Grid"
+#: resources/ui/snap_grid_popover.ui:142 resources/ui/snap_grid_popover.ui:264
+msgid "t"
 msgstr ""
 
-#: resources/ui/snap_grid_popover.ui:66
+#: resources/ui/snap_grid_popover.ui:146 resources/ui/snap_grid_popover.ui:268
+msgid "Triplet"
+msgstr ""
+
+#: resources/ui/snap_grid_popover.ui:162 resources/ui/snap_grid_popover.ui:284
+msgid "Dotted"
+msgstr ""
+
+#: resources/ui/snap_grid_popover.ui:188 resources/ui/snap_grid_popover.ui:310
+msgid "Adaptive"
+msgstr ""
+
+#: resources/ui/snap_grid_popover.ui:192 resources/ui/snap_grid_popover.ui:314
+msgid "Adaptive length"
+msgstr ""
+
+#: resources/ui/snap_grid_popover.ui:209
 msgid "Snap"
 msgstr ""
 
-#: resources/ui/snap_grid_popover.ui:87
-msgid "Note length to snap to"
-msgstr ""
-
-#: resources/ui/snap_grid_popover.ui:126
-msgid "Note type"
+#: resources/ui/snap_grid_popover.ui:325
+msgid "Link"
 msgstr ""
 
 #: resources/ui/range_action_buttons.ui:58

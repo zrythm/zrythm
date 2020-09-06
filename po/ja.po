@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-09-01 19:42+0100\n"
+"POT-Creation-Date: 2020-09-06 16:31+0100\n"
 "PO-Revision-Date: 2020-08-14 22:35+0000\n"
 "Last-Translator: Acid Chicken (硫酸鶏) <root@acid-chicken.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -26,6 +26,58 @@ msgstr ""
 #: inc/audio/engine.h:230
 msgid "Dummy"
 msgstr "ダミー"
+
+#: inc/gui/backend/arranger_object.h:88
+#: src/gui/widgets/channel_send_selector.c:185
+#: src/gui/widgets/plugin_properties_expander.c:89
+#: src/gui/widgets/plugin_properties_expander.c:91
+#: src/gui/widgets/route_target_selector.c:55
+#: src/gui/widgets/route_target_selector_popover.c:152
+#: resources/ui/editor_toolbar.ui:57
+msgid "None"
+msgstr "無し"
+
+#: inc/gui/backend/arranger_object.h:90
+#: resources/ui/chord_selector_window.ui:701
+msgid "All"
+msgstr "全部"
+
+#: inc/gui/backend/arranger_object.h:92 src/gui/widgets/event_viewer.c:106
+#: resources/ui/inspector_master.ui:31 resources/ui/inspector_ap.ui:31
+#: resources/ui/inspector_midi.ui:31
+msgid "Region"
+msgstr "リージョン"
+
+#: inc/gui/backend/arranger_object.h:94
+#, fuzzy
+msgid "Midi Note"
+msgstr "注:"
+
+#: inc/gui/backend/arranger_object.h:96
+#, fuzzy
+msgid "Chord Object"
+msgstr "オブジェクトを作成"
+
+#: inc/gui/backend/arranger_object.h:98
+#, fuzzy
+msgid "Scale Object"
+msgstr "プロジェクトを保存"
+
+#: inc/gui/backend/arranger_object.h:100 inc/audio/track.h:166
+#: src/gui/widgets/event_viewer.c:109
+msgid "Marker"
+msgstr "マーカー"
+
+#: inc/gui/backend/arranger_object.h:102
+#, fuzzy
+msgid "Automation Point"
+msgstr "オートメーションポイント"
+
+#: inc/gui/backend/arranger_object.h:104 src/gui/widgets/event_viewer.c:548
+#: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
+#: resources/ui/automation_editor_space.ui:115
+msgid "Velocity"
+msgstr "ベロシティ"
 
 #: inc/utils/ui.h:75
 #, fuzzy
@@ -98,10 +150,6 @@ msgstr "マスタ"
 #: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr "和音"
-
-#: inc/audio/track.h:166 src/gui/widgets/event_viewer.c:109
-msgid "Marker"
-msgstr "マーカー"
 
 #: inc/audio/track.h:167 src/audio/tempo_track.c:89
 msgid "Tempo"
@@ -577,9 +625,9 @@ msgstr "状態を保存"
 
 #: src/plugins/plugin_gtk.c:84 src/plugins/lv2/lv2_gtk.c:108
 #: src/plugins/lv2/lv2_gtk.c:357 src/utils/dialogs.c:42 src/utils/dialogs.c:72
-#: src/actions/actions.c:775 resources/ui/export_midi_file_dialog.ui:54
-#: resources/ui/port_selector_popover.ui:240 resources/ui/marker_dialog.ui:47
-#: resources/ui/quantize_dialog.ui:38
+#: src/actions/actions.c:775 resources/ui/string_entry_dialog.ui:47
+#: resources/ui/export_midi_file_dialog.ui:54
+#: resources/ui/port_selector_popover.ui:240 resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "取り消し(_C)"
 
@@ -605,7 +653,8 @@ msgid "Delete Preset?"
 msgstr "プリセットを削除しますか？"
 
 #: src/plugins/lv2/lv2_gtk.c:358 src/utils/dialogs.c:70
-#: resources/ui/port_selector_popover.ui:254 resources/ui/marker_dialog.ui:61
+#: resources/ui/string_entry_dialog.ui:61
+#: resources/ui/port_selector_popover.ui:254
 msgid "_OK"
 msgstr "_OK"
 
@@ -860,15 +909,6 @@ msgstr "これらのポートは接続できません"
 msgid "Track Ports"
 msgstr "トラックポート"
 
-#: src/gui/widgets/channel_send_selector.c:185
-#: src/gui/widgets/plugin_properties_expander.c:89
-#: src/gui/widgets/plugin_properties_expander.c:91
-#: src/gui/widgets/route_target_selector.c:55
-#: src/gui/widgets/route_target_selector_popover.c:152
-#: resources/ui/editor_toolbar.ui:57
-msgid "None"
-msgstr "無し"
-
 #: src/gui/widgets/channel_send_selector.c:322
 #: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:24
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
@@ -884,29 +924,29 @@ msgstr "開始位置"
 msgid "No object selected"
 msgstr "オブジェクトが選択されていません"
 
-#: src/gui/widgets/digital_meter.c:387
+#: src/gui/widgets/digital_meter.c:403
 msgid "normal"
 msgstr "普通音符"
 
-#: src/gui/widgets/digital_meter.c:390
+#: src/gui/widgets/digital_meter.c:406
 msgid "dotted"
 msgstr "付点音符"
 
-#: src/gui/widgets/digital_meter.c:393
+#: src/gui/widgets/digital_meter.c:409
 msgid "triplet"
 msgstr "３連音符"
 
-#: src/gui/widgets/digital_meter.c:1114
+#: src/gui/widgets/digital_meter.c:1130
 msgid "Tempo/BPM"
 msgstr "テンポ/BPM"
 
-#: src/gui/widgets/digital_meter.c:1128 src/gui/widgets/event_viewer.c:600
+#: src/gui/widgets/digital_meter.c:1144 src/gui/widgets/event_viewer.c:600
 #: src/gui/widgets/event_viewer.c:630 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr "位置"
 
-#: src/gui/widgets/digital_meter.c:1158
+#: src/gui/widgets/digital_meter.c:1174
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "拍子 - 小節あたりの拍数/拍単位"
 
@@ -988,6 +1028,20 @@ msgstr "詳細"
 #: src/gui/widgets/channel_slot.c:1032
 msgid "empty slot"
 msgstr "空のスロット"
+
+#: src/gui/widgets/arranger.c:3094
+#, c-format
+msgid "Invalid object name %s"
+msgstr ""
+
+#: src/gui/widgets/arranger.c:3249 resources/ui/string_entry_dialog.ui:94
+msgid "Marker name"
+msgstr "目印の名称"
+
+#: src/gui/widgets/arranger.c:4930
+#, c-format
+msgid "%s name"
+msgstr ""
 
 #: src/gui/widgets/piano_roll_keys.c:138
 msgid "both"
@@ -1350,7 +1404,7 @@ msgstr "プラグインの属性"
 #: src/gui/widgets/event_viewer.c:452 resources/ui/chord_selector_window.ui:239
 #: resources/ui/arranger_object_info_dialog.ui:114
 #: resources/ui/port_info_dialog.ui:161 resources/ui/panel_file_browser.ui:84
-#: resources/ui/file_browser.ui:84 resources/ui/snap_grid_popover.ui:127
+#: resources/ui/file_browser.ui:84
 msgid "Type"
 msgstr "種類"
 
@@ -1407,7 +1461,7 @@ msgstr "【インサート%d】%s"
 msgid "[Modulator %d] %s"
 msgstr "モジュレーター"
 
-#: src/gui/widgets/snap_grid.c:95
+#: src/gui/widgets/snap_grid.c:113
 msgid "Snap/Grid options"
 msgstr "スナップ/グリッド設定"
 
@@ -1463,11 +1517,6 @@ msgstr "リージョンを選択してください…"
 msgid "Sends"
 msgstr "センド"
 
-#: src/gui/widgets/event_viewer.c:106 resources/ui/inspector_master.ui:31
-#: resources/ui/inspector_ap.ui:31 resources/ui/inspector_midi.ui:31
-msgid "Region"
-msgstr "リージョン"
-
 #: src/gui/widgets/event_viewer.c:112 resources/ui/scale_selector_window.ui:240
 #: resources/ui/inspector_chord.ui:43 resources/ui/editor_toolbar.ui:59
 msgid "Scale"
@@ -1508,12 +1557,6 @@ msgstr "注:"
 #: src/gui/widgets/event_viewer.c:537
 msgid "Pitch"
 msgstr "ピッチ"
-
-#: src/gui/widgets/event_viewer.c:548 resources/ui/midi_editor_space.ui:134
-#: resources/ui/chord_editor_space.ui:153
-#: resources/ui/automation_editor_space.ui:115
-msgid "Velocity"
-msgstr "ベロシティ"
 
 #: src/gui/widgets/event_viewer.c:619
 msgid "Index"
@@ -2210,7 +2253,7 @@ msgstr "クライアントゾンビ"
 msgid "Set control value"
 msgstr "コントロールが選択されていません"
 
-#: src/actions/arranger_selections.c:2225
+#: src/actions/arranger_selections.c:2213
 msgid "Edit arranger object(s)"
 msgstr "アレンジャーオブジェクトを編集"
 
@@ -2788,10 +2831,6 @@ msgstr "6/13"
 msgid "Bass Note"
 msgstr "低音符"
 
-#: resources/ui/chord_selector_window.ui:701
-msgid "All"
-msgstr "全部"
-
 #: resources/ui/chord_selector_window.ui:717
 msgid "In scale"
 msgstr "音階内"
@@ -3081,7 +3120,7 @@ msgid "Color"
 msgstr "色"
 
 #: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
-#: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:88
+#: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:344
 msgid "Length"
 msgstr "長さ"
 
@@ -3290,10 +3329,6 @@ msgstr "オートメーション トラックを削除"
 msgid "Add automation track"
 msgstr "オートメーション トラックを追加"
 
-#: resources/ui/marker_dialog.ui:94
-msgid "Marker name"
-msgstr "目印の名称"
-
 #: resources/ui/bounce_dialog.ui:32
 msgid "Bounce Options"
 msgstr "バウンスの設定"
@@ -3428,25 +3463,42 @@ msgstr "クリップが選択されていません"
 msgid "Full Quantize..."
 msgstr "詳細量子化…"
 
-#: resources/ui/snap_grid_popover.ui:37
-msgid "Grid"
-msgstr "グリッド"
+#: resources/ui/snap_grid_popover.ui:122 resources/ui/snap_grid_popover.ui:244
+#, fuzzy
+msgid "Note length"
+msgstr "音符の長さ"
 
-#: resources/ui/snap_grid_popover.ui:47
-msgid "Adaptive Grid"
+#: resources/ui/snap_grid_popover.ui:142 resources/ui/snap_grid_popover.ui:264
+msgid "t"
+msgstr ""
+
+#: resources/ui/snap_grid_popover.ui:146 resources/ui/snap_grid_popover.ui:268
+#, fuzzy
+msgid "Triplet"
+msgstr "３連音符"
+
+#: resources/ui/snap_grid_popover.ui:162 resources/ui/snap_grid_popover.ui:284
+#, fuzzy
+msgid "Dotted"
+msgstr "付点音符"
+
+#: resources/ui/snap_grid_popover.ui:188 resources/ui/snap_grid_popover.ui:310
+#, fuzzy
+msgid "Adaptive"
 msgstr "適応型グリッド"
 
-#: resources/ui/snap_grid_popover.ui:66
+#: resources/ui/snap_grid_popover.ui:192 resources/ui/snap_grid_popover.ui:314
+#, fuzzy
+msgid "Adaptive length"
+msgstr "音符の長さ"
+
+#: resources/ui/snap_grid_popover.ui:209
 msgid "Snap"
 msgstr "スナップ"
 
-#: resources/ui/snap_grid_popover.ui:87
-msgid "Note length to snap to"
-msgstr "スナップするノートの長さ"
-
-#: resources/ui/snap_grid_popover.ui:126
-msgid "Note type"
-msgstr "ノートの種類"
+#: resources/ui/snap_grid_popover.ui:325
+msgid "Link"
+msgstr ""
 
 #: resources/ui/range_action_buttons.ui:58
 #, fuzzy
@@ -4287,6 +4339,15 @@ msgid ""
 "moment)."
 msgstr "チャンネルでパンをかけるときに使うパンの法則。"
 
+#~ msgid "Grid"
+#~ msgstr "グリッド"
+
+#~ msgid "Note length to snap to"
+#~ msgstr "スナップするノートの長さ"
+
+#~ msgid "Note type"
+#~ msgstr "ノートの種類"
+
 #~ msgid "Sample rate"
 #~ msgstr "サンプルレート"
 
@@ -4503,9 +4564,6 @@ msgstr "チャンネルでパンをかけるときに使うパンの法則。"
 
 #~ msgid "Move Automation"
 #~ msgstr "自動操作イベントを移動"
-
-#~ msgid "Create Object(s)"
-#~ msgstr "オブジェクトを作成"
 
 #~ msgid "Quantize Object(s)"
 #~ msgstr "オブジェクトをクオンタイズ"

@@ -124,7 +124,6 @@ inc/gui/widgets/selection_info.h
 inc/gui/widgets/live_waveform.h
 inc/gui/widgets/expander_box.h
 inc/gui/widgets/visibility.h
-inc/gui/widgets/marker_dialog.h
 inc/gui/widgets/inspector_chord.h
 inc/gui/widgets/fader_controls_grid.h
 inc/gui/widgets/track_lane.h
@@ -196,6 +195,7 @@ inc/gui/widgets/quantize_dialog.h
 inc/gui/widgets/knob_with_name.h
 inc/gui/widgets/midi_activity_bar.h
 inc/gui/widgets/dialogs/export_progress_dialog.h
+inc/gui/widgets/dialogs/string_entry_dialog.h
 inc/gui/widgets/dialogs/about_dialog.h
 inc/gui/widgets/dialogs/bug_report_dialog.h
 inc/gui/widgets/dialogs/port_info.h
@@ -513,7 +513,6 @@ src/gui/widgets/snap_grid.c
 src/gui/widgets/automation_point.c
 src/gui/widgets/preferences.c
 src/gui/widgets/track_top_grid.c
-src/gui/widgets/marker_dialog.c
 src/gui/widgets/scripting_window.c
 src/gui/widgets/port_connection_row.c
 src/gui/widgets/port_connections.c
@@ -568,6 +567,7 @@ src/gui/widgets/chord_key.c
 src/gui/widgets/arranger_bg.c
 src/gui/widgets/dialogs/arranger_object_info.c
 src/gui/widgets/dialogs/bounce_dialog.c
+src/gui/widgets/dialogs/string_entry_dialog.c
 src/gui/widgets/dialogs/port_info.c
 src/gui/widgets/dialogs/about_dialog.c
 src/gui/widgets/dialogs/export_progress_dialog.c
@@ -773,6 +773,7 @@ resources/ui/channel.ui
 resources/ui/midi_editor_space.ui
 resources/ui/automatable_selector.ui
 resources/ui/help_toolbar.ui
+resources/ui/string_entry_dialog.ui
 resources/ui/inspector_chord.ui
 resources/ui/arranger_object_info_dialog.ui
 resources/ui/timeline_panel.ui
@@ -805,7 +806,6 @@ resources/ui/export_progress_dialog.ui
 resources/ui/event_viewer.ui
 resources/ui/automation_track.ui
 resources/ui/file_browser.ui
-resources/ui/marker_dialog.ui
 resources/ui/bounce_dialog.ui
 resources/ui/inspector_editor.ui
 resources/ui/snap_box.ui
