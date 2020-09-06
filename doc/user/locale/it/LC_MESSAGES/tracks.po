@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-08-21 18:36+0000\n"
+"PO-Revision-Date: 2020-09-06 14:36+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/it/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2.1-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -252,7 +252,7 @@ msgstr ""
 
 #: ../../tracks/automation.rst:8
 msgid "Automation"
-msgstr ""
+msgstr "Automazione"
 
 #: ../../tracks/automation.rst:11
 msgid "Automation Lanes"
@@ -465,7 +465,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:18
 msgid "Track Properties"
-msgstr ""
+msgstr "Proprietà della traccia"
 
 #: ../../tracks/inspector-page.rst:20
 msgid "Track properties are basic properties that the track has."

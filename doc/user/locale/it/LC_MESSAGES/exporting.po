@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-09-06 14:36+0000\n"
+"Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
+"manualexporting/it/>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../exporting/audio-and-midi.rst:8
@@ -143,6 +146,8 @@ msgid ""
 "For large projects, it may take a while to generate the PNG graph and the"
 " resulting image will be extremely large."
 msgstr ""
+"Per progetti di grandi dimensioni potrebbe essere necessario un po' di tempo "
+"per generare il grafico PNG e l'immagine risultante sarà estremamente grande."
 
 #~ msgid "Exporting MIDI Files"
 #~ msgstr ""
@@ -152,4 +157,3 @@ msgstr ""
 
 #~ msgid "Overview"
 #~ msgstr ""
-
