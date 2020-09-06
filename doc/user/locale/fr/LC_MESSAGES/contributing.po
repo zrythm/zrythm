@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2019-12-23 18:21+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2020-09-04 18:36+0000\n"
+"Last-Translator: Samuel Aubert <baohm26@gmail.com>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualcontributing/fr/>\n"
 "Language: fr\n"
-"Language-Team: French "
-"<https://hosted.weblate.org/projects/zrythm/manualcontributing/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../contributing/intro.rst:6
@@ -28,8 +29,12 @@ msgid ""
 "We appreciate contributions of any type and size. Tell us how you would "
 "like to help, and we will do our best to guide you."
 msgstr ""
+"Nous apprécions toute contribution quels que soient le type ou la taille. "
+"Dites nous comment vous souhaitez aider et nous ferons de notre mieux pour "
+"vous accompagner."
 
 #: ../../contributing/intro.rst:11
+#, fuzzy
 msgid ""
 "We want to provide a friendly and harassment-free environment so that "
 "everyone can contribute to the best of their abilities. To this end our "
@@ -37,6 +42,12 @@ msgid ""
 "://contributor-covenant.org/. You can find the full pledge in our `Code "
 "of Conduct <https://forum.zrythm.org/t/code-of-conduct>`_."
 msgstr ""
+"Nous voulons offrir un environnement accueillant et sain  afin que chacun "
+"puisse contribuer au mieux de ses capacités. Pour cela, notre projet possède "
+"une charte de bonne conduite inspirée de https://www.contributor-covenant."
+"org/fr/version/1/4/code-of-conduct/.\n"
+"Vous trouverez l'intégralité de nos engagements dans la section Code de "
+"bonne conduite <https://forum.zrythm.org/t/code-of-conduct>"
 
 #: ../../contributing/intro.rst:18
 msgid "Coding"
@@ -48,16 +59,21 @@ msgid ""
 "<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ in the "
 "source distribution."
 msgstr ""
+"Veuillez vous référer au fichier `HACKING <https://git.sr.ht/~alextee/zrythm/"
+"tree/master/HACKING.md>`_ dans la distribution des sources."
 
 #: ../../contributing/intro.rst:23
 msgid "Web Design"
-msgstr ""
+msgstr "Conception web"
 
 #: ../../contributing/intro.rst:24
 msgid ""
 "You are welcome to help us improve the looks and usability of the Zrythm "
 "website. Please join our chatrooms and talk to us."
 msgstr ""
+"Nous vous invitons à participer à l'amélioration de l'apparence et de "
+"l'ergonomie du site internet de Zrythm. Prenez contact avec nous via notre "
+"salle de chat."
 
 #: ../../contributing/intro.rst:29
 msgid "Artwork and Themes"
@@ -70,6 +86,11 @@ msgid ""
 "artwork such as icons you can start by creating your own themes and icons"
 " as discussed in :ref:`icon-themes` and :ref:`css`."
 msgstr ""
+"Le thème d'apparence de Zrythm est modifiable avec des CSS et utilise de "
+"nombreuses icônes. Certaines sont personnalisées, d'autres empruntées à "
+"divers thèmes. Si vous souhaitez contribuer aux visuels tels que les thèmes "
+"ou les icônes, vous pouvez créer les vôtres en suivant ces lignes "
+"directrices : :ref:`icon-themes` and :ref:`css`."
 
 #: ../../contributing/intro.rst:38
 msgid "Testing"
@@ -116,6 +137,8 @@ msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
 "program, the website as well as sections of this manual."
 msgstr ""
+"Le projet de traduction de Zrythm comprend les traductions du logiciel "
+"Zrythm, de son site internet et que des sections de ce manuel."
 
 #: ../../contributing/intro.rst:57
 msgid ""
@@ -161,18 +184,21 @@ msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
 msgstr ""
+"Nous utilisons les services suivants afin de recevoir des dons. Toutes "
+"contribution financière est appréciée, de la plus petite à la plus grande, "
+"et aide à soutenir un développement continu :"
 
 #: ../../contributing/intro.rst:80
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
-msgstr ""
+msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
 #: ../../contributing/intro.rst:81
 msgid "`PayPal <https://paypal.me/zrythm>`_"
-msgstr ""
+msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
 #: ../../contributing/intro.rst:82
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
-msgstr ""
+msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
 #: ../../contributing/intro.rst:84
 msgid ""
@@ -480,4 +506,3 @@ msgstr ""
 #~ "récurrents. Alternativement, vous pouvez "
 #~ "acheter des binaires Zrythm sur "
 #~ "https://www.zrythm.org/en/download.html"
-
