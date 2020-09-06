@@ -1506,8 +1506,17 @@ track_set_automation_visible (
           AutomationTrack * at =
             automation_tracklist_get_first_invisible_at (
               atl);
-          at->created = true;
-          at->visible = true;
+          if (at)
+            {
+              at->created = true;
+              at->visible = true;
+            }
+          else
+            {
+              g_message (
+                "no automation tracks found for %s",
+                self->name);
+            }
         }
     }
 
