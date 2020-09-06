@@ -262,7 +262,7 @@ recording_manager_handle_recording (
           RecordingEvent * re =
             (RecordingEvent *)
             object_pool_get (
-              RECORDING_MANAGER->event_obj_pool);
+              self->event_obj_pool);
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING;
@@ -271,7 +271,7 @@ recording_manager_handle_recording (
           re->nframes = nframes;
           strcpy (re->track_name, tr->name);
           recording_event_queue_push_back_event (
-            RECORDING_MANAGER->event_queue, re);
+            self->event_queue, re);
         }
       skip_adding_track_events = true;
     }
@@ -286,7 +286,7 @@ recording_manager_handle_recording (
           RecordingEvent * re =
             (RecordingEvent *)
             object_pool_get (
-              RECORDING_MANAGER->event_obj_pool);
+              self->event_obj_pool);
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING;
@@ -295,7 +295,7 @@ recording_manager_handle_recording (
           re->nframes = nframes;
           strcpy (re->track_name, tr->name);
           recording_event_queue_push_back_event (
-            RECORDING_MANAGER->event_queue, re);
+            self->event_queue, re);
 
           skip_adding_track_events = true;
         }
@@ -314,7 +314,7 @@ recording_manager_handle_recording (
           RecordingEvent * re =
             (RecordingEvent *)
             object_pool_get (
-              RECORDING_MANAGER->event_obj_pool);
+              self->event_obj_pool);
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_START_TRACK_RECORDING;
@@ -323,7 +323,7 @@ recording_manager_handle_recording (
           re->nframes = nframes;
           strcpy (re->track_name, tr->name);
           recording_event_queue_push_back_event (
-            RECORDING_MANAGER->event_queue, re);
+            self->event_queue, re);
         }
     }
   else if (!inside_punch_range)
@@ -345,7 +345,7 @@ recording_manager_handle_recording (
           RecordingEvent * re =
             (RecordingEvent *)
             object_pool_get (
-              RECORDING_MANAGER->event_obj_pool);
+              self->event_obj_pool);
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_STOP_AUTOMATION_RECORDING;
@@ -356,7 +356,7 @@ recording_manager_handle_recording (
             &re->port_id, &at->port_id);
           strcpy (re->track_name, tr->name);
           recording_event_queue_push_back_event (
-            RECORDING_MANAGER->event_queue, re);
+            self->event_queue, re);
 
           skip_adding_automation_events = true;
         }
@@ -370,7 +370,7 @@ recording_manager_handle_recording (
           RecordingEvent * re =
             (RecordingEvent *)
             object_pool_get (
-              RECORDING_MANAGER->event_obj_pool);
+              self->event_obj_pool);
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING;
@@ -379,7 +379,7 @@ recording_manager_handle_recording (
           re->nframes = nframes;
           strcpy (re->track_name, tr->name);
           recording_event_queue_push_back_event (
-            RECORDING_MANAGER->event_queue, re);
+            self->event_queue, re);
 
           skip_adding_automation_events = true;
         }
@@ -399,7 +399,7 @@ recording_manager_handle_recording (
               RecordingEvent * re =
                 (RecordingEvent *)
                 object_pool_get (
-                  RECORDING_MANAGER->event_obj_pool);
+                  self->event_obj_pool);
               recording_event_init (re);
               re->type =
                 RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING;
@@ -410,7 +410,7 @@ recording_manager_handle_recording (
                 &re->port_id, &at->port_id);
               strcpy (re->track_name, tr->name);
               recording_event_queue_push_back_event (
-                RECORDING_MANAGER->event_queue, re);
+                self->event_queue, re);
             }
         }
     }
@@ -439,7 +439,7 @@ recording_manager_handle_recording (
           RecordingEvent * re =
             (RecordingEvent *)
             object_pool_get (
-              RECORDING_MANAGER->event_obj_pool);
+              self->event_obj_pool);
           recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_MIDI;
           re->g_start_frames = g_start_frames;
@@ -449,7 +449,7 @@ recording_manager_handle_recording (
           midi_event_copy (me, &re->midi_event);
           strcpy (re->track_name, tr->name);
           recording_event_queue_push_back_event (
-            RECORDING_MANAGER->event_queue, re);
+            self->event_queue, re);
         }
 
       if (midi_events->num_events == 0)
@@ -457,7 +457,7 @@ recording_manager_handle_recording (
           RecordingEvent * re =
             (RecordingEvent *)
             object_pool_get (
-              RECORDING_MANAGER->event_obj_pool);
+              self->event_obj_pool);
           recording_event_init (re);
           re->type = RECORDING_EVENT_TYPE_MIDI;
           re->g_start_frames = g_start_frames;
@@ -466,7 +466,7 @@ recording_manager_handle_recording (
           re->has_midi_event = 0;
           strcpy (re->track_name, tr->name);
           recording_event_queue_push_back_event (
-            RECORDING_MANAGER->event_queue, re);
+            self->event_queue, re);
         }
     }
   else if (tr->type == TRACK_TYPE_AUDIO)
@@ -474,7 +474,7 @@ recording_manager_handle_recording (
       RecordingEvent * re =
         (RecordingEvent *)
         object_pool_get (
-          RECORDING_MANAGER->event_obj_pool);
+          self->event_obj_pool);
       recording_event_init (re);
       re->type = RECORDING_EVENT_TYPE_AUDIO;
       re->g_start_frames = g_start_frames;
@@ -492,7 +492,7 @@ recording_manager_handle_recording (
         sizeof (float) * (size_t) nframes);
       strcpy (re->track_name, tr->name);
       recording_event_queue_push_back_event (
-        RECORDING_MANAGER->event_queue, re);
+        self->event_queue, re);
     }
 
 add_automation_events:
@@ -515,7 +515,7 @@ add_automation_events:
           RecordingEvent * re =
             (RecordingEvent *)
             object_pool_get (
-              RECORDING_MANAGER->event_obj_pool);
+              self->event_obj_pool);
           recording_event_init (re);
           re->type =
             RECORDING_EVENT_TYPE_AUTOMATION;
@@ -526,7 +526,7 @@ add_automation_events:
             &re->port_id, &at->port_id);
           strcpy (re->track_name, tr->name);
           recording_event_queue_push_back_event (
-            RECORDING_MANAGER->event_queue, re);
+            self->event_queue, re);
         }
     }
 }
@@ -635,6 +635,7 @@ create_automation_point (
 
 static void
 handle_pause_event (
+  RecordingManager * self,
   RecordingEvent * ev)
 {
   Track * tr = track_get_from_name (ev->track_name);
@@ -697,6 +698,7 @@ handle_pause_event (
  */
 static void
 handle_resume_event (
+  RecordingManager * self,
   RecordingEvent * ev)
 {
   Track * tr = track_get_from_name (ev->track_name);
@@ -761,7 +763,7 @@ handle_resume_event (
 
       /* remember region */
       add_recorded_id (
-        RECORDING_MANAGER, new_region);
+        self, new_region);
       tr->recording_region = new_region;
     }
   else if (ev->type ==
@@ -801,7 +803,7 @@ handle_resume_event (
             F_GEN_NAME, F_PUBLISH_EVENTS);
         }
       add_recorded_id (
-        RECORDING_MANAGER, new_region);
+        self, new_region);
 
       if (automation_track_should_be_recording (
             at, cur_time, true))
@@ -827,9 +829,10 @@ handle_resume_event (
 
 static void
 handle_audio_event (
+  RecordingManager * self,
   RecordingEvent * ev)
 {
-  handle_resume_event (ev);
+  handle_resume_event (self, ev);
 
   long g_start_frames = ev->g_start_frames;
   nframes_t nframes = ev->nframes;
@@ -922,9 +925,10 @@ handle_audio_event (
 
 static void
 handle_midi_event (
+  RecordingManager * self,
   RecordingEvent * ev)
 {
-  handle_resume_event (ev);
+  handle_resume_event (self, ev);
 
   long g_start_frames = ev->g_start_frames;
   nframes_t nframes = ev->nframes;
@@ -1007,9 +1011,10 @@ handle_midi_event (
 
 static void
 handle_automation_event (
+  RecordingManager * self,
   RecordingEvent * ev)
 {
-  handle_resume_event (ev);
+  handle_resume_event (self, ev);
 
   long g_start_frames = ev->g_start_frames;
   nframes_t nframes = ev->nframes;
@@ -1090,7 +1095,7 @@ handle_automation_event (
         F_GEN_NAME, F_PUBLISH_EVENTS);
 
       add_recorded_id (
-        RECORDING_MANAGER, region);
+        self, region);
     }
 
   at->recording_region = region;
@@ -1243,7 +1248,7 @@ handle_start_recording (
 
           tr->recording_region = region;
           add_recorded_id (
-            RECORDING_MANAGER, region);
+            self, region);
         }
       else if (tr->type == TRACK_TYPE_AUDIO)
         {
@@ -1264,7 +1269,7 @@ handle_start_recording (
 
           tr->recording_region = region;
           add_recorded_id (
-            RECORDING_MANAGER, region);
+            self, region);
         }
     }
 
@@ -1302,23 +1307,23 @@ recording_manager_process_events (
         {
         case RECORDING_EVENT_TYPE_MIDI:
           /*g_message ("-------- RECORD MIDI");*/
-          handle_midi_event (ev);
+          handle_midi_event (self, ev);
           break;
         case RECORDING_EVENT_TYPE_AUDIO:
           /*g_message ("-------- RECORD AUDIO");*/
-          handle_audio_event (ev);
+          handle_audio_event (self, ev);
           break;
         case RECORDING_EVENT_TYPE_AUTOMATION:
           g_message ("-------- RECORD AUTOMATION");
-          handle_automation_event (ev);
+          handle_automation_event (self, ev);
           break;
         case RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING:
           g_message ("-------- PAUSE TRACK RECORDING");
-          handle_pause_event (ev);
+          handle_pause_event (self, ev);
           break;
         case RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING:
           g_message ("-------- PAUSE AUTOMATION RECORDING");
-          handle_pause_event (ev);
+          handle_pause_event (self, ev);
           break;
         case RECORDING_EVENT_TYPE_STOP_TRACK_RECORDING:
           g_message (
