@@ -359,13 +359,12 @@ create_and_load_lilv_word (
 
   /* load all installed plugins on system */
 #if !defined (_WOE32) && !defined (__APPLE__)
+  self->lv2_path = NULL;
   LilvNode * lv2_path = NULL;
   char * env_lv2_path = getenv ("LV2_PATH");
   if (env_lv2_path && (strlen (env_lv2_path) > 0))
     {
       self->lv2_path = g_strdup (env_lv2_path);
-      lv2_path =
-        lilv_new_string (world, env_lv2_path);
     }
   else
     {
@@ -376,9 +375,6 @@ create_and_load_lilv_word (
               "%s/.lv2:/usr/local/lib/lv2:"
               "/usr/lib/lv2",
               g_get_home_dir ());
-          lv2_path =
-            lilv_new_string (
-              world, self->lv2_path);
         }
       else
         {
@@ -390,12 +386,20 @@ create_and_load_lilv_word (
                * LIBDIR_NAME so hardcode these */
               "/usr/local/lib/lv2:/usr/lib/lv2",
               g_get_home_dir ());
-          lv2_path =
-            lilv_new_string (
-              world, self->lv2_path);
         }
     }
-  g_return_if_fail (lv2_path);
+  g_return_if_fail (self->lv2_path);
+
+  /* add zrythm custom path for installer */
+  char * before_path = self->lv2_path;
+  self->lv2_path =
+    g_strdup_printf (
+      "%s:/usr/lib/zrythm/lib/lv2", before_path);
+  g_free (before_path);
+
+  lv2_path =
+    lilv_new_string (world, self->lv2_path);
+
   g_message (
     "%s: LV2 path: %s", __func__, self->lv2_path);
   lilv_world_set_option (

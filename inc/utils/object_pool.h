@@ -72,6 +72,17 @@ object_pool_get (
   ObjectPool * self);
 
 /**
+ * Returns the number of available objects.
+ *
+ * @note This is not accurate (since the number may
+ *   change after it's called) and is used only
+ *   for debugging purposes.
+ */
+int
+object_pool_get_num_available (
+  ObjectPool * self);
+
+/**
  * Puts an object back in the pool.
  */
 void

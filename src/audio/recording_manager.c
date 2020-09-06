@@ -1410,14 +1410,15 @@ recording_manager_new (void)
   RecordingManager * self =
     object_new (RecordingManager);
 
+  const size_t max_events = 20000;
   self->event_obj_pool =
     object_pool_new (
       (ObjectCreatorFunc) recording_event_new,
       (ObjectFreeFunc) recording_event_free,
-      200);
+      (int) max_events);
   self->event_queue = mpmc_queue_new ();
   mpmc_queue_reserve (
-    self->event_queue, (size_t) 200);
+    self->event_queue, max_events);
 
   self->source_id =
     g_timeout_add (

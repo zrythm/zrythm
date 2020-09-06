@@ -54,6 +54,24 @@ object_pool_new (
 }
 
 /**
+ * Returns the number of available objects.
+ *
+ * @note This is not accurate (since the number may
+ *   change after it's called) and is used only
+ *   for debugging purposes.
+ */
+int
+object_pool_get_num_available (
+  ObjectPool * self)
+{
+  zix_sem_wait (&self->access_sem);
+  int num_available = self->num_obj_available;
+  zix_sem_post (&self->access_sem);
+
+  return num_available;
+}
+
+/**
  * Returns an available object.
  */
 void *
