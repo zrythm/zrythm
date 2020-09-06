@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-08-28 17:34+0000\n"
+"PO-Revision-Date: 2020-09-06 14:36+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/it/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2.1-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -423,7 +423,7 @@ msgstr "Strumenti SFZ"
 
 #: ../../configuration/preferences/intro.rst:101
 msgid "The search paths to scan for SFZ instruments in."
-msgstr ""
+msgstr "I percorsi in cui cercare gli strumenti SFZ."
 
 #: ../../configuration/preferences/intro.rst:104
 msgid "SF2 instruments"
@@ -431,7 +431,7 @@ msgstr "Strumenti SF2"
 
 #: ../../configuration/preferences/intro.rst:104
 msgid "The search paths to scan for SF2 instruments in."
-msgstr ""
+msgstr "I percorsi in cui cercare gli strumenti SF2."
 
 #: ../../configuration/preferences/intro.rst:107
 msgid "DSP"
@@ -480,7 +480,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:142
 msgid "Editing options."
-msgstr ""
+msgstr "Opzioni di modifica."
 
 #: ../../configuration/preferences/intro.rst:148
 msgid "Audio"
@@ -488,7 +488,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:150
 msgid "Audio editing."
-msgstr ""
+msgstr "Modifica dell'audio."
 
 #: ../../configuration/preferences/intro.rst:153
 msgid "Fade algorithm"
@@ -500,27 +500,28 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:156
 msgid "Automation"
-msgstr ""
+msgstr "Automazione"
 
 #: ../../configuration/preferences/intro.rst:158
 msgid "Automation editing."
-msgstr ""
+msgstr "Modifica dell'automazione."
 
 #: ../../configuration/preferences/intro.rst:161
 msgid "Curve algorithm"
-msgstr ""
+msgstr "Algoritmo della curva"
 
 #: ../../configuration/preferences/intro.rst:161
 msgid "Default curve algorithm to use for automation curves."
 msgstr ""
+"Algoritmo di curva predefinito da utilizzare per le curve di automazione."
 
 #: ../../configuration/preferences/intro.rst:164
 msgid "Undo"
-msgstr ""
+msgstr "Annulla"
 
 #: ../../configuration/preferences/intro.rst:166
 msgid "Undo options."
-msgstr ""
+msgstr "Annulla opzioni."
 
 #: ../../configuration/preferences/intro.rst:169
 msgid "Undo stack length"
@@ -532,7 +533,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:171
 msgid "We recommend leaving it at 128."
-msgstr ""
+msgstr "Consigliamo di lasciarlo a 128."
 
 #: ../../configuration/preferences/intro.rst:175
 msgid "Projects"

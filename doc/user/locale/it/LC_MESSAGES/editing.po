@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-09-01 18:40+0000\n"
+"PO-Revision-Date: 2020-09-06 14:36+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/it/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2.1-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -50,7 +50,7 @@ msgstr ""
 #: ../../editing/clip-editors/automation-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:28
 msgid "Automation Editor"
-msgstr ""
+msgstr "Editor di automazione"
 
 #: ../../editing/clip-editors/automation-editor.rst:9
 msgid "The automation editor is displayed when an automation region is selected."
@@ -121,6 +121,7 @@ msgstr ""
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "The curve that Vital synth uses, similar to exponential curve."
 msgstr ""
+"La curva che il sintetizzatore Vital usa, simile alla curva esponenziale."
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse"
@@ -146,7 +147,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:63
 msgid "It displays information about each automation point and its curve."
-msgstr ""
+msgstr "Mostra informazioni su ogni punto di automazione e la sua curva."
 
 #: ../../editing/clip-editors/chord-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:36
@@ -215,11 +216,13 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:51
 msgid "Chord Arranger"
-msgstr ""
+msgstr "Arrangiatore di accordi"
 
 #: ../../editing/clip-editors/chord-editor.rst:52
 msgid "The chord arranger refers to the arranger section of the chord editor."
 msgstr ""
+"L'arrangiatore di accordi fa riferimento alla sezione arrangiatore "
+"dell'editor degli accordi."
 
 #: ../../editing/clip-editors/chord-editor.rst:58
 msgid ""
@@ -306,7 +309,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:39
 msgid "Listen to notes"
-msgstr ""
+msgstr "Ascolta le note"
 
 #: ../../editing/clip-editors/piano-roll.rst:37
 msgid ""
@@ -340,10 +343,12 @@ msgid ""
 "The zoom level can be changed by holding down :zbutton:`Ctrl` and "
 ":zbutton:`Shift` and scrolling."
 msgstr ""
+"Il livello di zoom si può cambiare tenendo premuto :zbutton:`Ctrl` e "
+":zbutton:`Shift` e scorrendo."
 
 #: ../../editing/clip-editors/piano-roll.rst:62
 msgid "MIDI Arranger"
-msgstr ""
+msgstr "Arrangiatore MIDI"
 
 #: ../../editing/clip-editors/piano-roll.rst:63
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
@@ -402,7 +407,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:107
 msgid "Context Menu"
-msgstr ""
+msgstr "Menù contestuale"
 
 #: ../../editing/clip-editors/piano-roll.rst:108
 #: ../../editing/piano-roll-editing/arranger.rst:9
@@ -423,6 +428,7 @@ msgstr ""
 #: ../../editing/clip-editors/piano-roll.rst:119
 msgid "It displays information about each MIDI note in the MIDI arranger."
 msgstr ""
+"Visualizza le informazioni su ciascuna nota MIDI nell'arrangiatore MIDI."
 
 #: ../../editing/clip-editors/ruler.rst:8
 #: ../../editing/piano-roll-editing/ruler.rst:6
@@ -482,7 +488,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:34
 msgid "Setting Each Point"
-msgstr ""
+msgstr "Impostare ogni punto"
 
 #: ../../editing/clip-editors/ruler.rst:35
 msgid ""
@@ -497,7 +503,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:8
 msgid "Editor Toolbar"
-msgstr ""
+msgstr "Barra degli strumenti dell'editor"
 
 #: ../../editing/clip-editors/toolbar.rst:9
 msgid ""
@@ -641,7 +647,7 @@ msgstr "Selezioni"
 
 #: ../../editing/common-operations.rst:70
 msgid "Clear Selection"
-msgstr ""
+msgstr "Cancella selezione"
 
 #: ../../editing/common-operations.rst:71
 msgid "Clear current selection (unselect all objects)."
@@ -1365,7 +1371,7 @@ msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:21
 msgid "Musical Mode"
-msgstr ""
+msgstr "Modalità musicale"
 
 #: ../../editing/timeline/toolbar.rst:22
 msgid ""
