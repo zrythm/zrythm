@@ -612,11 +612,14 @@ carla_host_plugin_dep = dependency (
   required: get_option ('carla'),
   static: all_static)
 if (carla_host_plugin_dep.found ())
-  carla_libdir = carla_host_plugin_dep.get_pkgconfig_variable('libdir')
+  carla_bins_dir = get_option ('carla_binaries_dir')
+  if carla_bins_dir == ''
+    carla_bins_dir = carla_host_plugin_dep.get_pkgconfig_variable('libdir')
+  endif
   install_data (
     find_program (
-      carla_libdir / 'carla-discovery-native.exe',
-      carla_libdir /
+      carla_bins_dir / 'carla-discovery-native.exe',
+      carla_bins_dir /
         'carla-discovery-native').full_path(),
     install_dir: bindir)
   cdata.set('HAVE_CARLA', 1)
@@ -626,12 +629,12 @@ if (carla_host_plugin_dep.found ())
   if os_windows
     install_data (
       find_program (
-        carla_libdir /
+        carla_bins_dir /
           'carla-discovery-win32.exe').full_path(),
       install_dir: bindir)
     install_data (
       find_program (
-        carla_libdir /
+        carla_bins_dir /
           'carla-bridge-win32.exe').full_path(),
       install_dir: bindir)
   endif
@@ -641,7 +644,7 @@ if (carla_host_plugin_dep.found ())
     'native', 'lv2-gtk2', 'lv2-gtk3', 'lv2-qt4',
     'lv2-qt5' ]
     carla_bridge = find_program (
-        carla_libdir / 'carla-bridge-' + bridge_type,
+        carla_bins_dir / 'carla-bridge-' + bridge_type,
         required: false)
     if carla_bridge.found() and (os_gnu or os_freebsd)
       cdata.set('HAVE_CARLA_BRIDGE_' + bridge_type.underscorify().to_upper(), 1)

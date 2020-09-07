@@ -186,4 +186,10 @@ option (
   'static_deps',
   type: 'boolean',
   value: false,
-  description: 'Use static dependencies where possible')
+  description: 'Use static dependencies where possible.')
+
+option (
+  'carla_binaries_dir',
+  type: 'string',
+  value: '',
+  description: 'Location to collect carla discovery and bridge binaries.')
