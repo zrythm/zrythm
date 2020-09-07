@@ -181,3 +181,9 @@ option (
   type: 'boolean',
   value: false,
   description: 'Set this to true when replacing the logo and splash screen.')
+
+option (
+  'static_deps',
+  type: 'boolean',
+  value: false,
+  description: 'Use static dependencies where possible')

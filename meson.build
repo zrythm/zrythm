@@ -286,20 +286,27 @@ foreach h : check_headers
   endif
 endforeach
 
+# --- Check for dependencies/libraries ---
+
+all_static = get_option ('static_deps')
+
 # Maths functions might be implemented in libm
-libm = cc.find_library('m', required: false)
+libm = cc.find_library (
+  'm', required: false, static: all_static)
 
 check_functions = [
-  ['mlock',libm],
+  ['mlock', libm],
   ]
 
 # prefer jack1
 jack_dep = dependency (
-  'jack', required: false, version: '<1.0')
+  'jack', required: false, version: '<1.0',
+  static: all_static)
 if not jack_dep.found ()
   jack_dep = dependency (
     'jack',
-    required: get_option ('jack'))
+    required: get_option ('jack'),
+    static: all_static)
 endif
 have_jack = jack_dep.found () and not get_option ('jack').disabled ()
 if have_jack
@@ -315,7 +322,7 @@ if have_jack
     ]
 endif
 
-glib_dep = dependency('glib-2.0')
+glib_dep = dependency ('glib-2.0', static: all_static)
 check_functions += [
   # use a fallback if this does not exist (glib < 2.58)
   ['g_canonicalize_filename',[glib_dep]],
@@ -513,18 +520,21 @@ endif
 
 # set config defines
 if not os_darwin
-  x11_dep = dependency('x11', required: false)
+  x11_dep = dependency (
+    'x11', required: false, static: all_static)
   if (x11_dep.found ())
     cdata.set('HAVE_X11', 1)
   endif
 endif
-alsa_dep = dependency('alsa', required: false)
+alsa_dep = dependency (
+  'alsa', required: false, static: all_static)
 if (alsa_dep.found ())
   # disable as it's not working
   # cdata.set('HAVE_ALSA', 1)
 endif
 cyaml_dep = dependency(
-  'libcyaml', required: false, version: '>=1.1.0')
+  'libcyaml', required: false, version: '>=1.1.0',
+  static: all_static)
 if not cyaml_dep.found()
   cyaml_proj = subproject('libcyaml')
   cyaml_dep = cyaml_proj.get_variable(
@@ -533,54 +543,65 @@ endif
 audec_dep = dependency(
   'audec', version: '>=0.2.3',
   fallback: ['libaudec', 'libaudec_dep'],
-  required: true)
+  required: true, static: all_static)
 
-gtk_dep = dependency('gtk+-3.0', version: '>=3.22')
-sndfile_dep = dependency('sndfile', version: '>=1.0.25')
+gtk_dep = dependency (
+  'gtk+-3.0', version: '>=3.22', static: all_static)
+sndfile_dep = dependency (
+  'sndfile', version: '>=1.0.25', static: all_static)
 lv2_dep = dependency(
-  'lv2', version: '>=1.16.0', required: false)
+  'lv2', version: '>=1.16.0', required: false,
+  static: all_static)
 if not lv2_dep.found()
   lilv_proj = subproject('lilv')
   lv2_dep = lilv_proj.get_variable('lv2_dep')
 endif
 lilv_dep = dependency (
   'lilv-0', version: '>=0.24.6',
-  fallback: ['lilv', 'lilv_dep'])
-fftw3_dep = dependency('fftw3', version: '>=3.3.5')
+  fallback: ['lilv', 'lilv_dep'],
+  static: all_static)
+fftw3_dep = dependency (
+  'fftw3', version: '>=3.3.5', static: all_static)
 
 chromaprint_dep = dependency (
-  'libchromaprint', required: false)
+  'libchromaprint', required: false,
+  static: all_static)
 if (chromaprint_dep.found ())
   cdata.set('HAVE_CHROMAPRINT', 1)
 endif
 
 gtksource_dep = dependency (
-  'gtksourceview-4', required: false)
+  'gtksourceview-4', required: false,
+  static: all_static)
 if gtksource_dep.found()
   cdata.set('HAVE_GTK_SOURCE_VIEW_4', 1)
 else
   gtksource_dep = dependency (
-    'gtksourceview-3.0')
+    'gtksourceview-3.0', static: all_static)
   cdata.set('HAVE_GTK_SOURCE_VIEW_3', 1)
 endif
 
 libcgraph_dep = dependency (
   'libcgraph',
-  required: get_option ('graphviz'))
+  required: get_option ('graphviz'),
+  static: all_static)
 libgvc_dep = dependency (
   'libgvc',
-  required: get_option ('graphviz'))
+  required: get_option ('graphviz'),
+  static: all_static)
 have_graphviz = libcgraph_dep.found () and libgvc_dep.found ()
 if have_graphviz
   cdata.set('HAVE_CGRAPH', 1)
 endif
 
 guile_dep = dependency (
-  'guile-3.0', required: false)
+  'guile-3.0', required: false,
+  static: all_static)
 if not guile_dep.found ()
   guile_dep = dependency (
     'guile-2.2',
-    required: get_option ('guile'))
+    required: get_option ('guile'),
+    static: all_static)
 endif
 have_guile = guile_dep.found () and not get_option ('guile').disabled ()
 if have_guile
@@ -589,13 +610,16 @@ endif
 
 carla_native_plugin_dep = dependency (
   'carla-native-plugin', version: '>=2.1.0',
-  required: get_option ('carla'))
+  required: get_option ('carla'),
+  static: all_static)
 carla_standalone_dep = dependency (
   'carla-standalone', version: '>=2.1.0',
-  required: get_option ('carla'))
+  required: get_option ('carla'),
+  static: all_static)
 carla_utils_dep = dependency (
   'carla-utils', version: '>=2.1.0',
-  required: get_option ('carla'))
+  required: get_option ('carla'),
+  static: all_static)
 if (carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla_utils_dep.found ())
   carla_libdir = carla_native_plugin_dep.get_pkgconfig_variable('libdir')
   install_data (
@@ -640,13 +664,15 @@ endif
 portaudio_dep = dependency (
   # disable until it works
   'portaudio-2.0-dont-use-yet',
-  required: get_option ('portaudio'))
+  required: get_option ('portaudio'),
+  static: all_static)
 if portaudio_dep.found ()
   cdata.set('HAVE_PORT_AUDIO', 1)
 endif
 
 rtmidi_dep = dependency (
-  'rtmidi', required: get_option ('rtmidi'))
+  'rtmidi', required: get_option ('rtmidi'),
+  static: all_static)
 if not rtmidi_dep.found () and not get_option ('rtmidi').disabled ()
   rtmidi_proj = subproject('rtmidi')
   rtmidi_dep = rtmidi_proj.get_variable(
@@ -658,7 +684,8 @@ endif
 
 rtaudio_dep = dependency (
   'rtaudio', required: get_option ('rtaudio'),
-  version: '>=5.1.0')
+  version: '>=5.1.0',
+  static: all_static)
 if not rtaudio_dep.found() and not get_option ('rtaudio').disabled ()
   rtaudio_proj = subproject('rtaudio')
   rtaudio_dep = rtaudio_proj.get_variable(
@@ -669,18 +696,23 @@ if rtaudio_dep.found ()
 endif
 
 sdl_dep = dependency (
-  'sdl2', required: get_option ('sdl'))
+  'sdl2', required: get_option ('sdl'),
+  static: all_static)
 if sdl_dep.found ()
   cdata.set('HAVE_SDL', 1)
 endif
 
-zstd_dep = dependency ('libzstd', required: false)
+zstd_dep = dependency (
+  'libzstd', required: false,
+  static: all_static)
 if not zstd_dep.found ()
-  zstd_dep = cc.find_library ('zstd')
+  zstd_dep = cc.find_library (
+    'zstd', static: all_static)
 endif
 
 reproc_dep = dependency (
-  'reproc', version: '>=14.1.0', required: false)
+  'reproc', version: '>=14.1.0', required: false,
+  static: all_static)
 if not reproc_dep.found ()
   reproc_subproject = cmake.subproject (
     'reproc', options: cmake_opts)
@@ -690,7 +722,7 @@ endif
 
 lsp_dsp_dep = dependency (
   'lsp-dsp-lib', version: '>=0.5.5',
-  static: get_option ('static_lsp_dsp'),
+  static: all_static or get_option ('static_lsp_dsp'),
   required: get_option ('lsp_dsp'))
 have_lsp_dsp = lsp_dsp_dep.found () and not get_option ('lsp_dsp').disabled ()
 if have_lsp_dsp
@@ -717,21 +749,27 @@ zrythm_deps = [
   sdl_dep,
   zstd_dep,
   reproc_dep,
-  dependency('threads'),
+  dependency ('threads'),
   lilv_dep,
-  dependency(
+  dependency (
     'sratom-0',
-    fallback: ['lilv', 'sratom_dep']),
-  dependency(
+    fallback: ['lilv', 'sratom_dep'],
+    static: all_static),
+  dependency (
     'serd-0',
-    fallback: ['lilv', 'serd_dep']),
-  dependency(
+    fallback: ['lilv', 'serd_dep'],
+    static: all_static),
+  dependency (
     'sord-0',
-    fallback: ['lilv', 'sord_dep']),
-  dependency('samplerate', version: '>=0.1.8'),
-  dependency('rubberband'),
-  dependency ('libpcre'),
-  cc.find_library('dl'),
+    fallback: ['lilv', 'sord_dep'],
+    static: all_static),
+  dependency (
+    'samplerate', version: '>=0.1.8',
+    static: all_static),
+  dependency (
+    'rubberband', static: all_static),
+  dependency ('libpcre', static: all_static),
+  cc.find_library ('dl', static: all_static),
   lv2_dep,
   chromaprint_dep,
   fftw3_dep,
@@ -739,17 +777,34 @@ zrythm_deps = [
   lsp_dsp_dep,
 
   # these are needed for gentoo
-  dependency('fftw3_threads', required: false),
-  dependency('fftw3f_threads', required: false),
+  dependency (
+    'fftw3_threads', required: false,
+    static: all_static),
+  dependency (
+    'fftw3f_threads', required: false,
+    static: all_static),
 
   libm,
 ]
 
+if all_static
+  zrythm_deps += [
+    # provided by bzip2
+    cc.find_library (
+      'bz2', static: all_static),
+    # provided by lzip
+    cc.find_library (
+      'lzma', static: all_static),
+    ]
+endif
+
 if os_windows
-  zrythm_deps += cc.find_library('dbghelp')
+  zrythm_deps += cc.find_library (
+    'dbghelp', static: all_static)
   # msys2 provides a separate fftw3f entry in
   # pkg-config
-  zrythm_deps += dependency('fftw3f')
+  zrythm_deps += dependency (
+    'fftw3f', static: all_static)
   zrythm_deps += jack_dep.partial_dependency (
     link_args: false, links: false)
 else
@@ -757,11 +812,16 @@ else
 endif
 
 # for mingw on arch linux
-zrythm_deps += cc.find_library('fftw3_threads', required: false)
-zrythm_deps += cc.find_library('fftw3f_threads', required: false)
+zrythm_deps += cc.find_library (
+  'fftw3_threads', required: false,
+  static: all_static)
+zrythm_deps += cc.find_library (
+  'fftw3f_threads', required: false,
+  static: all_static)
 
 if os_gnu
-  zrythm_deps += cc.find_library('rt')
+  zrythm_deps += cc.find_library (
+    'rt', static: all_static)
 endif
 
 if (os_darwin)
@@ -773,7 +833,6 @@ if (os_darwin)
       'appkit',
       ])
 else
-  zrythm_deps += cc.find_library('m')
   zrythm_deps += x11_dep
 endif
 
@@ -838,15 +897,16 @@ meson.add_dist_script (
   'scripts' / 'meson_dist.sh')
 
 summary ({
-  'Program name': get_option('program_name'),
-  'Build type': get_option('buildtype'),
-  'Profiling': get_option('profiling'),
-  'Strict flags': get_option('strict_flags'),
-  'Extra optimizations': get_option('extra_optimizations'),
-  'Build/install manpage': get_option('manpage'),
-  'Build/install user manual': get_option('user_manual'),
-  'Install DSEG font': get_option('dseg_font'),
-  'Custom logo and splash': get_option('custom_logo_and_splash'),
+  'Program name': get_option ('program_name'),
+  'Build type': get_option ('buildtype'),
+  'Profiling': get_option ('profiling'),
+  'Strict flags': get_option ('strict_flags'),
+  'Static deps': get_option ('static_deps'),
+  'Extra optimizations': get_option ('extra_optimizations'),
+  'Build/install manpage': get_option ('manpage'),
+  'Build/install user manual': get_option ('user_manual'),
+  'Install DSEG font': get_option ('dseg_font'),
+  'Custom logo and splash': get_option ('custom_logo_and_splash'),
   }, section: 'General')
 
 summary ({
