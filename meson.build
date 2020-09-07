@@ -611,11 +611,7 @@ carla_host_plugin_dep = dependency (
   'carla-host-plugin', version: '>=2.1.0',
   required: get_option ('carla'),
   static: all_static)
-carla_native_plugin_dep = dependency (
-  'carla-native-plugin', version: '>=2.1.0',
-  required: get_option ('carla'),
-  static: all_static)
-have_carla = carla_host_plugin_dep.found () and carla_native_plugin_dep.found ()
+have_carla = carla_host_plugin_dep.found ()
 if have_carla
   carla_bins_dir = get_option ('carla_binaries_dir')
   if carla_bins_dir == ''
@@ -741,7 +737,6 @@ zrythm_deps = [
   libgvc_dep,
   guile_dep,
   carla_host_plugin_dep,
-  carla_native_plugin_dep,
   portaudio_dep,
   rtaudio_dep,
   rtmidi_dep,
