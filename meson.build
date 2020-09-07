@@ -322,7 +322,7 @@ if have_jack
     ]
 endif
 
-glib_dep = dependency ('glib-2.0', static: all_static)
+glib_dep = dependency ('glib-2.0')
 check_functions += [
   # use a fallback if this does not exist (glib < 2.58)
   ['g_canonicalize_filename',[glib_dep]],
@@ -546,9 +546,9 @@ audec_dep = dependency(
   required: true, static: all_static)
 
 gtk_dep = dependency (
-  'gtk+-3.0', version: '>=3.22', static: all_static)
+  'gtk+-3.0', version: '>=3.22')
 sndfile_dep = dependency (
-  'sndfile', version: '>=1.0.25', static: all_static)
+  'sndfile', version: '>=1.0.25')
 lv2_dep = dependency(
   'lv2', version: '>=1.16.0', required: false,
   static: all_static)
@@ -571,13 +571,12 @@ if (chromaprint_dep.found ())
 endif
 
 gtksource_dep = dependency (
-  'gtksourceview-4', required: false,
-  static: all_static)
+  'gtksourceview-4', required: false)
 if gtksource_dep.found()
   cdata.set('HAVE_GTK_SOURCE_VIEW_4', 1)
 else
   gtksource_dep = dependency (
-    'gtksourceview-3.0', static: all_static)
+    'gtksourceview-3.0')
   cdata.set('HAVE_GTK_SOURCE_VIEW_3', 1)
 endif
 
@@ -764,11 +763,10 @@ zrythm_deps = [
     fallback: ['lilv', 'sord_dep'],
     static: all_static),
   dependency (
-    'samplerate', version: '>=0.1.8',
-    static: all_static),
+    'samplerate', version: '>=0.1.8'),
   dependency (
-    'rubberband', static: all_static),
-  dependency ('libpcre', static: all_static),
+    'rubberband'),
+  dependency ('libpcre'),
   cc.find_library ('dl', static: all_static),
   lv2_dep,
   chromaprint_dep,

@@ -363,7 +363,8 @@ recording_manager_handle_recording (
       /* if pausing (only at loop end) */
       else if (at->recording_start_sent &&
                nframes == 0 &&
-               g_start_frames + local_offset ==
+               (long)
+               (g_start_frames + local_offset) ==
                  TRANSPORT->loop_end_pos.frames)
         {
           /* send pause event */

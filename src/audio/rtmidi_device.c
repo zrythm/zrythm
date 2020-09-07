@@ -53,7 +53,7 @@ midi_in_cb (
   char portname[900];
   port_get_full_designation (self->port, portname);
   g_message (
-    "[%s] message received of size %lu at %ld",
+    "[%s] message received of size %zu at %ld",
     portname, message_size, ts);
 
   /* add to ring buffer */
