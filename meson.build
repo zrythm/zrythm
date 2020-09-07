@@ -560,8 +560,54 @@ lilv_dep = dependency (
   'lilv-0', version: '>=0.24.6',
   fallback: ['lilv', 'lilv_dep'],
   static: all_static)
-fftw3_dep = dependency (
-  'fftw3', version: '>=3.3.5', static: all_static)
+
+# fftw
+fftw3_deps = [
+  dependency (
+    'fftw3', version: '>=3.3.5', static: all_static),
+  dependency (
+    'fftw3_threads', required: false,
+    static: all_static),
+  dependency (
+    'fftw3f_threads', required: false,
+    static: all_static),
+  ]
+if os_darwin
+  fftw3_deps += [
+    cc.find_library (
+      'fftw3_threads', required: false,
+      static: all_static,
+      dirs: [ '/usr/lib', '/usr/local/lib' ]),
+    cc.find_library (
+      'fftw3f_threads', required: false,
+      static: all_static,
+      dirs: [ '/usr/lib', '/usr/local/lib' ])
+    ]
+else
+  fftw3_deps += [
+    cc.find_library (
+      'fftw3_threads', required: false,
+      static: all_static),
+    cc.find_library (
+      'fftw3f_threads', required: false,
+      static: all_static)
+    ]
+endif
+if os_windows
+  # msys2 provides a separate fftw3f entry in
+  # pkg-config
+  fftw3_deps += dependency (
+    'fftw3f', static: all_static)
+endif
+fftw3_funcs = [
+  'fftw_make_planner_thread_safe',
+  'fftwf_make_planner_thread_safe',
+  ]
+foreach func : fftw3_funcs
+  if not cc.has_function (func, dependencies: fftw3_deps)
+    error (func + ' missing')
+  endif
+endforeach
 
 chromaprint_dep = dependency (
   'libchromaprint', required: false,
@@ -765,17 +811,9 @@ zrythm_deps = [
   cc.find_library ('dl', static: all_static),
   lv2_dep,
   chromaprint_dep,
-  fftw3_dep,
+  fftw3_deps,
   gtksource_dep,
   lsp_dsp_dep,
-
-  # these are needed for gentoo
-  dependency (
-    'fftw3_threads', required: false,
-    static: all_static),
-  dependency (
-    'fftw3f_threads', required: false,
-    static: all_static),
 
   libm,
 ]
@@ -794,23 +832,11 @@ endif
 if os_windows
   zrythm_deps += cc.find_library (
     'dbghelp', static: all_static)
-  # msys2 provides a separate fftw3f entry in
-  # pkg-config
-  zrythm_deps += dependency (
-    'fftw3f', static: all_static)
   zrythm_deps += jack_dep.partial_dependency (
     link_args: false, links: false)
 else
   zrythm_deps += jack_dep
 endif
-
-# for mingw on arch linux
-zrythm_deps += cc.find_library (
-  'fftw3_threads', required: false,
-  static: all_static)
-zrythm_deps += cc.find_library (
-  'fftw3f_threads', required: false,
-  static: all_static)
 
 if os_gnu
   zrythm_deps += cc.find_library (

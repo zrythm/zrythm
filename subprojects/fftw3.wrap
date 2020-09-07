@@ -1,0 +1,6 @@
+[wrap-file]
+directory = fftw-3.3.8
+
+source_url = http://fftw.org/fftw-3.3.8.tar.gz
+source_filename = fftw-3.3.8.tar.gz
+source_hash = 5ebeea0dfb75d090ea0e7ff84799b2a7a1550db3fe61eb5f6f61c2e971e57663
