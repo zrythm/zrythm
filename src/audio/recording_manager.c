@@ -473,8 +473,7 @@ recording_manager_handle_recording (
     {
       RecordingEvent * re =
         (RecordingEvent *)
-        object_pool_get (
-          self->event_obj_pool);
+        object_pool_get (self->event_obj_pool);
       recording_event_init (re);
       re->type = RECORDING_EVENT_TYPE_AUDIO;
       re->g_start_frames = g_start_frames;

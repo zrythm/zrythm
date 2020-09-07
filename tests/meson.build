@@ -136,7 +136,6 @@ if get_option ('tests')
     ['audio/position', true],
     ['audio/region', true],
     ['audio/track', true],
-    ['benchmarks/dsp', true],
     ['integration/recording', true],
     ['plugins/plugin_manager', true],
     ['project', true],
@@ -157,6 +156,7 @@ if get_option ('tests')
       ['actions/move_tracks', false],
       ['actions/delete_tracks', true],
       ['actions/port_connection', true],
+      ['benchmarks/dsp', true],
       ['integration/midi_file', true],
       # cannot be parallel because it needs multiple
       # threads
