@@ -766,8 +766,8 @@ midi_region_new_from_midi_file (
         }
     }
 
-  midiReadFreeMessage(&msg);
-  midiFileClose(mf);
+  midiReadFreeMessage (&msg);
+  midiFileClose (mf);
 
   g_message ("%s: done", __func__);
 

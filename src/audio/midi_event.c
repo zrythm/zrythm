@@ -166,7 +166,7 @@ midi_events_check_for_note_on (
   int          note,
   int          queued)
 {
-  g_message ("waiting check note on");
+  /*g_message ("waiting check note on");*/
   zix_sem_wait (&self->access_sem);
 
   MidiEvent * ev;
@@ -187,7 +187,7 @@ midi_events_check_for_note_on (
     }
 
   zix_sem_post (&self->access_sem);
-  g_message ("posted check note on");
+  /*g_message ("posted check note on");*/
 
   return 0;
 }
@@ -202,7 +202,7 @@ midi_events_delete_note_on (
   int note,
   int queued)
 {
-  g_message ("waiting delete note on");
+  /*g_message ("waiting delete note on");*/
   zix_sem_wait (&self->access_sem);
 
   MidiEvent * ev, * ev2, * next_ev;
@@ -612,10 +612,12 @@ midi_events_add_note_on (
   uint32_t     time,
   int          queued)
 {
+#if 0
   g_message (
     "%s: ch %"PRIu8", pitch %"PRIu8", vel %"PRIu8
     ", time %"PRIu32,
     __func__, channel, note_pitch, velocity, time);
+#endif
 
   MidiEvent * ev;
   if (queued)

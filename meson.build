@@ -607,20 +607,12 @@ if have_guile
   cdata.set('HAVE_GUILE', 1)
 endif
 
-carla_native_plugin_dep = dependency (
-  'carla-native-plugin', version: '>=2.1.0',
+carla_host_plugin_dep = dependency (
+  'carla-host-plugin', version: '>=2.1.0',
   required: get_option ('carla'),
   static: all_static)
-carla_standalone_dep = dependency (
-  'carla-standalone', version: '>=2.1.0',
-  required: get_option ('carla'),
-  static: all_static)
-carla_utils_dep = dependency (
-  'carla-utils', version: '>=2.1.0',
-  required: get_option ('carla'),
-  static: all_static)
-if (carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla_utils_dep.found ())
-  carla_libdir = carla_native_plugin_dep.get_pkgconfig_variable('libdir')
+if (carla_host_plugin_dep.found ())
+  carla_libdir = carla_host_plugin_dep.get_pkgconfig_variable('libdir')
   install_data (
     find_program (
       carla_libdir / 'carla-discovery-native.exe',
@@ -739,9 +731,7 @@ zrythm_deps = [
   libcgraph_dep,
   libgvc_dep,
   guile_dep,
-  carla_native_plugin_dep,
-  carla_standalone_dep,
-  carla_utils_dep,
+  carla_host_plugin_dep,
   portaudio_dep,
   rtaudio_dep,
   rtmidi_dep,
@@ -908,7 +898,7 @@ summary ({
   }, section: 'General')
 
 summary ({
-  'Carla': carla_native_plugin_dep.found () and carla_standalone_dep.found () and carla_utils_dep.found (),
+  'Carla': carla_host_plugin_dep.found (),
   'GraphViz': have_graphviz,
   'Guile': have_guile,
   'Jack': have_jack,
