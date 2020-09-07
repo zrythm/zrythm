@@ -611,7 +611,12 @@ carla_host_plugin_dep = dependency (
   'carla-host-plugin', version: '>=2.1.0',
   required: get_option ('carla'),
   static: all_static)
-if (carla_host_plugin_dep.found ())
+carla_native_plugin_dep = dependency (
+  'carla-native-plugin', version: '>=2.1.0',
+  required: get_option ('carla'),
+  static: all_static)
+have_carla = carla_host_plugin_dep.found () and carla_native_plugin_dep.found ()
+if have_carla
   carla_bins_dir = get_option ('carla_binaries_dir')
   if carla_bins_dir == ''
     carla_bins_dir = carla_host_plugin_dep.get_pkgconfig_variable('libdir')
@@ -640,9 +645,10 @@ if (carla_host_plugin_dep.found ())
   endif
 
   # install gnu/linux bridges
-  foreach bridge_type : [
+  bridge_types = [
     'native', 'lv2-gtk2', 'lv2-gtk3', 'lv2-qt4',
     'lv2-qt5' ]
+  foreach bridge_type : bridge_types
     carla_bridge = find_program (
         carla_bins_dir / 'carla-bridge-' + bridge_type,
         required: false)
@@ -735,6 +741,7 @@ zrythm_deps = [
   libgvc_dep,
   guile_dep,
   carla_host_plugin_dep,
+  carla_native_plugin_dep,
   portaudio_dep,
   rtaudio_dep,
   rtmidi_dep,
@@ -901,7 +908,7 @@ summary ({
   }, section: 'General')
 
 summary ({
-  'Carla': carla_host_plugin_dep.found (),
+  'Carla': have_carla,
   'GraphViz': have_graphviz,
   'Guile': have_guile,
   'Jack': have_jack,
@@ -911,6 +918,12 @@ summary ({
   'RtMidi': rtmidi_dep.found (),
   'SDL': sdl_dep.found (),
   }, section: 'Features')
+
+if have_carla
+  # TODO
+  summary ({
+    }, section: 'Carla bridges')
+endif
 
 tests_summary = {
   'Build tests': get_option('tests'),
