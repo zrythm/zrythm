@@ -51,6 +51,7 @@
 
 #include <gtk/gtk.h>
 
+#ifndef _WOE32
 /**
  * Resolve symbol name and source location given
  * the path to the executable and an address.
@@ -71,10 +72,12 @@ addr2line (
 
   /* have addr2line map the address to the relent line in the code */
   #ifdef __APPLE__
-    /* apple does things differently... */
-    sprintf(addr2line_cmd,"atos -o %.256s %p", program_name, addr);
+  /* apple does things differently... */
+  /* FIXME re-enable */
+  // sprintf(addr2line_cmd,"atos -o %.256s %p", program_name, addr);
+  return 1;
   #else
-    sprintf(addr2line_cmd,"addr2line -f -e %.256s %p", program_name, addr);
+  sprintf(addr2line_cmd,"addr2line -f -e %.256s %p", program_name, addr);
   #endif
 
   /* This will print a nicely formatted string specifying the
@@ -141,6 +144,7 @@ addr2line (
 
   return 0;
 }
+#endif
 
 /**
  * Returns the backtrace with \ref max_lines
