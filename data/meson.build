@@ -17,7 +17,7 @@
 
 gschema_top = 'org.zrythm.Zrythm'
 gschema = configure_file (
-  input: gschema_gen_wrap,
+  input: gen_gschema_wrap,
   output: gschema_top + '.gschema.xml',
   command: [
     '@INPUT0@', '@OUTPUT@', gschema_top,

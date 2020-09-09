@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16mm"
+   height="16mm"
+   viewBox="0 0 16 16"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="articulation-portato.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.9195959"
+     inkscape:cx="48.468382"
+     inkscape:cy="29.485419"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1025"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       transform="translate(0,0.61793647)"
+       id="g873">
+      <g
+         id="g866">
+        <path
+           style="fill:#f2f2f2;stroke:#f2f2f2;stroke-width:1.46731;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="M 5.8326887,6.0273228 V 14.07298"
+           id="path835" />
+        <ellipse
+           style="fill:#f2f2f2;stroke:#f2f2f2;stroke-width:1.0155;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+           id="path837"
+           cx="8"
+           cy="6.1802144"
+           rx="2.4187772"
+           ry="1.701679" />
+      </g>
+      <circle
+         r="0.42851612"
+         cy="1.0996432"
+         cx="8"
+         id="path839"
+         style="fill:#f2f2f2;stroke:#f2f2f2;stroke-width:1.42727;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none" />
+      <path
+         style="fill:#f2f2f2;stroke:#f2f2f2;stroke-width:0.840482;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 10.384571,3.1062901 H 5.6154286"
+         id="path835-7" />
+    </g>
+  </g>
+</svg>

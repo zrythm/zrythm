@@ -53,6 +53,7 @@
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/editor_selection_info.h"
+#include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/header.h"
@@ -1634,6 +1635,10 @@ process_events (void * data)
         case ET_PORT_CONNECTION_CHANGED:
           left_dock_edge_widget_refresh (
             MW_LEFT_DOCK_EDGE);
+          break;
+        case ET_MIDI_FUNCTION_APPLIED:
+          editor_toolbar_widget_refresh (
+            MW_EDITOR_TOOLBAR);
           break;
         default:
           g_warning (

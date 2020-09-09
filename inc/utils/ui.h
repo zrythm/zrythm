@@ -341,7 +341,7 @@ ui_set_pointer_cursor (
 #define ui_set_cut_clip_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "cutter", 9, 6);
+    "cut-tool", 9, 6);
 
 #define ui_set_eraser_cursor(widget) \
   ui_set_cursor_from_icon_name ( \

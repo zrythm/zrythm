@@ -420,9 +420,12 @@ arranger_object_is_rename (
   if (self->type != ARRANGER_OBJECT_TYPE_REGION)
     return false;
 
+  GdkRectangle rect = self->last_name_rect;
+  /* make the clickable height area a little
+   * smaller */
+  rect.height = MAX (1, rect.height - 4);
   if (ui_is_point_in_rect_hit (
-        &self->last_name_rect, true, true,
-        x, y, 0, 0))
+        &rect, true, true, x, y, 0, 0))
     {
       return true;
     }

@@ -5,6 +5,10 @@ with Zrythm. If not, see
 <https://creativecommons.org/licenses/by-sa/4.0/>.
 
 - add.svg
+- articulation-portato.svg
+- articulation-staccato2.svg
+- strum.svg
+- dynamics-crescendo.svg
 - augmentation-dot.svg
 - automate.svg
 - bus.svg
@@ -173,3 +177,20 @@ with Zrythm. If not, see
 - speaker
 - stereo
 - waveform
+
+----
+
+The following icons are authored by [Denelson83](https://commons.wikimedia.org/wiki/User:Denelson83),
+vectorized by [Ekips39](https://commons.wikimedia.org/wiki/User:Ekips39) and modified.
+They are licensed under [Creative Commons Attribution-Share Alike 3.0 Unported](https://creativecommons.org/licenses/by-sa/3.0/deed.en).
+
+- articulation-legato.svg
+- articulation-staccato.svg
+
+----
+
+The following icons are authored by Vladimir Morozov
+on Visualhunt.com and modified.
+They are licensed under [Creative Commons Attribution 2.0 Generic](https://creativecommons.org/licenses/by/2.0/).
+
+- drum-flam.svg

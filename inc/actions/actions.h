@@ -143,11 +143,6 @@ activate_quit (GSimpleAction *action,
                gpointer       user_data);
 
 void
-activate_shortcuts (GSimpleAction *action,
-                    GVariant      *variant,
-                    gpointer       user_data);
-
-void
 activate_zoom_in (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);
@@ -490,6 +485,9 @@ DECLARE_SIMPLE (
   activate_toggle_editor_event_viewer);
 DECLARE_SIMPLE (activate_insert_silence);
 DECLARE_SIMPLE (activate_remove_range);
+
+/* MIDI functions. */
+DECLARE_SIMPLE (activate_midi_function);
 
 /**
  * @}

@@ -38,6 +38,7 @@ if dot_bin.found()
                   'CONTRIBUTING.md'),
       'mainpage.h',
       'cyaml_schemas.h',
+      'gtk_tips.md',
       'processing_cycle.h',
       'release_checklist.h',
       'weblate.h',

@@ -27,6 +27,8 @@
 #ifndef __GUI_BACKEND_ARRANGER_SELECTIONS_H__
 #define __GUI_BACKEND_ARRANGER_SELECTIONS_H__
 
+#include <stdbool.h>
+
 #include "utils/yaml.h"
 
 typedef struct ArrangerObject ArrangerObject;

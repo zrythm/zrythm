@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <!--
 
-  Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+  Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -23,6 +23,10 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <template class="EditorToolbarWidget" parent="GtkToolbar">
+    <style>
+      <class name="arranger-toolbar" />
+      <class name="editor-toolbar" />
+    </style>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
@@ -36,28 +40,25 @@
       </object>
     </child>
     <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkToolItem">
         <property name="visible">True</property>
         <child>
           <object class="GtkBox">
             <property name="visible">1</property>
             <child>
-              <object class="GtkLabel">
-                <property name="visible">1</property>
-                <property name="label" translatable="yes">Highlight</property>
-                <property name="margin-start">3</property>
-                <property name="margin-end">3</property>
-              </object>
-            </child>
-            <child>
               <object class="GtkComboBoxText" id="chord_highlighting">
                 <property name="visible">1</property>
                 <property name="active-id">highlight_both</property>
                 <items>
-                  <item translatable="yes" id="highlight_none">None</item>
-                  <item translatable="yes" id="highlight_chord">Chord</item>
-                  <item translatable="yes" id="highlight_scale">Scale</item>
-                  <item translatable="yes" id="highlight_both">Both</item>
+                  <item translatable="yes" id="highlight_none">No Highlight</item>
+                  <item translatable="yes" id="highlight_chord">Highlight Chord</item>
+                  <item translatable="yes" id="highlight_scale">Highlight Scale</item>
+                  <item translatable="yes" id="highlight_both">Highlight Both</item>
                 </items>
               </object>
             </child>
@@ -70,12 +71,33 @@
       </packing>
     </child>
     <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkToolItem">
         <property name="visible">True</property>
         <child>
           <object class="QuantizeBoxWidget"
             id="quantize_box">
             <property name="visible">1</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolItem">
+        <property name="visible">True</property>
+        <child>
+          <object class="ButtonWithMenuWidget"
+            id="functions_btn">
+            <property name="visible">True</property>
           </object>
         </child>
       </object>
@@ -104,4 +126,59 @@
       </object>
     </child>
   </template>
+  <menu id="midi_functions_menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Crescendo</attribute>
+        <attribute name="action">win.midi-function</attribute>
+        <attribute name="target">crescendo</attribute>
+        <attribute name="icon">dynamics-crescendo</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Flam</attribute>
+        <attribute name="action">win.midi-function</attribute>
+        <attribute name="target">flam</attribute>
+        <attribute name="icon">drum-flam</attribute>
+      </item>
+      <submenu>
+        <attribute name="label" translatable="yes">Flip</attribute>
+        <item>
+          <attribute name="label" translatable="yes">Horizontal</attribute>
+          <attribute name="icon">object-flip-horizontal</attribute>
+          <attribute name="action">win.midi-function</attribute>
+          <attribute name="target">flip-horizontal</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">Vertical</attribute>
+          <attribute name="icon">object-flip-vertical</attribute>
+          <attribute name="action">win.midi-function</attribute>
+          <attribute name="target">flip-vertical</attribute>
+        </item>
+      </submenu>
+      <item>
+        <attribute name="label" translatable="yes">Legato</attribute>
+        <attribute name="action">win.midi-function</attribute>
+        <attribute name="target">legato</attribute>
+        <attribute name="icon">articulation-legato</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Portato</attribute>
+        <attribute name="action">win.midi-function</attribute>
+        <attribute name="target">portato</attribute>
+        <attribute name="icon">articulation-portato</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Staccato</attribute>
+        <attribute name="action">win.midi-function</attribute>
+        <attribute name="target">staccato</attribute>
+        <attribute name="icon">articulation-staccato2</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Strum</attribute>
+        <attribute name="action">win.midi-function</attribute>
+        <attribute name="target">strum</attribute>
+        <attribute name="icon">strum</attribute>
+      </item>
+    </section>
+  </menu>
 </interface>

@@ -79,6 +79,8 @@ string_entry_dialog_widget_new (
   StringEntryDialogWidget * self =
     g_object_new (
       STRING_ENTRY_DIALOG_WIDGET_TYPE,
+      "icon-name", "zrythm",
+      "title", _("Please enter a value"),
       NULL);
 
   self->obj = obj;

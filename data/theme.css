@@ -179,7 +179,7 @@ bot-bar toolbar,
 assistant,
 buttonbox,
 timeline-selection-info,
-timeline-toolbar,
+.timeline-toolbar,
 piano-roll-selection-info,
 piano-roll-toolbar,
 browser toolbar,
@@ -215,7 +215,7 @@ help-toolbar separator
   margin: 4px;
 }
 
-timeline-toolbar separator
+.arranger-toolbar separator
 {
   background-color: alpha (grey, 0.6);
   margin: 4px;

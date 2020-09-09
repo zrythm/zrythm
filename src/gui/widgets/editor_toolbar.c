@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,7 @@
 #include "audio/quantize_options.h"
 #include "gui/accel.h"
 #include "gui/backend/event_manager.h"
+#include "gui/widgets/button_with_menu.h"
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/quantize_box.h"
@@ -48,6 +49,32 @@ on_highlighting_changed (
     gtk_combo_box_get_active (widget));
 }
 
+/**
+ * Refreshes relevant widgets.
+ */
+void
+editor_toolbar_widget_refresh (
+  EditorToolbarWidget * self)
+{
+  MidiFunctionType type =
+    g_settings_get_int (S_UI, "midi-function");
+  char * str =
+    g_strdup_printf (
+      _("Apply %s"),
+    _(midi_function_type_to_string (type)));
+  char * tooltip_str =
+    g_strdup_printf (
+      _("Apply %s with previous settings"),
+    _(midi_function_type_to_string (type)));
+  gtk_button_set_label (
+    self->apply_function_btn, str);
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->apply_function_btn),
+    tooltip_str);
+  g_free (str);
+  g_free (tooltip_str);
+}
+
 void
 editor_toolbar_widget_setup (
   EditorToolbarWidget * self)
@@ -68,9 +95,10 @@ editor_toolbar_widget_setup (
 
   /* setup signals */
   g_signal_connect (
-    G_OBJECT(self->chord_highlighting),
-    "changed",
+    G_OBJECT (self->chord_highlighting), "changed",
     G_CALLBACK (on_highlighting_changed),  self);
+
+  editor_toolbar_widget_refresh (self);
 }
 
 static void
@@ -87,6 +115,32 @@ editor_toolbar_widget_init (
     _(tooltip))
   /*SET_TOOLTIP (loop_selection, "Loop Selection");*/
 #undef SET_TOOLTIP
+
+  const char * str = "Legato";
+  self->apply_function_btn =
+    GTK_BUTTON (
+      gtk_button_new_from_icon_name (
+        "mathmode",
+        GTK_ICON_SIZE_SMALL_TOOLBAR));
+  gtk_actionable_set_detailed_action_name (
+    GTK_ACTIONABLE (self->apply_function_btn),
+    "win.midi-function::current");
+  gtk_button_set_label (
+    self->apply_function_btn, str);
+  gtk_button_set_always_show_image (
+    self->apply_function_btn, true);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->apply_function_btn), true);
+  button_with_menu_widget_setup (
+    self->functions_btn,
+    self->apply_function_btn,
+    NULL, self->midi_functions_menu,
+    true, -1, str, _("Select function"));
+
+  GtkMenuButton * menu_btn =
+    button_with_menu_widget_get_menu_button (
+      self->functions_btn);
+  gtk_menu_button_set_use_popover (menu_btn, false);
 }
 
 static void
@@ -107,4 +161,6 @@ editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
   BIND_CHILD (snap_grid_midi);
   BIND_CHILD (quantize_box);
   BIND_CHILD (event_viewer_toggle);
+  BIND_CHILD (midi_functions_menu);
+  BIND_CHILD (functions_btn);
 }

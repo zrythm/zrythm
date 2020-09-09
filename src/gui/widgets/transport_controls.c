@@ -179,6 +179,7 @@ static void
 setup_record_btn (
   TransportControlsWidget * self)
 {
+  /* create main button */
   self->trans_record_btn =
     z_gtk_toggle_button_new_with_icon (
       "media-record");
@@ -187,11 +188,6 @@ setup_record_btn (
     "record-button");
   gtk_widget_set_size_request (
     GTK_WIDGET (self->trans_record_btn), 20, -1);
-  button_with_menu_widget_setup (
-    self->trans_record,
-    GTK_BUTTON (self->trans_record_btn),
-    false, 38, _("Record"),
-    _("Record options"));
 
   /* set menu */
   GMenu * menu = g_menu_new ();
@@ -245,9 +241,14 @@ setup_record_btn (
   gtk_widget_insert_action_group (
     GTK_WIDGET (self->trans_record), "record-btn",
     G_ACTION_GROUP (action_group));
-  gtk_menu_button_set_menu_model (
-    self->trans_record->menu_btn,
-    G_MENU_MODEL (menu));
+
+  /* setup button with menu widget */
+  button_with_menu_widget_setup (
+    self->trans_record,
+    GTK_BUTTON (self->trans_record_btn),
+    NULL, G_MENU_MODEL (menu),
+    false, 38, _("Record"),
+    _("Record options"));
 }
 
 static void

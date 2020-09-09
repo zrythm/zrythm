@@ -690,6 +690,29 @@ zrythm_app_startup (
   g_message (
     "called startup on G_APPLICATION_CLASS");
 
+  bool ret =
+    g_application_get_is_registered (
+      G_APPLICATION (self));
+  bool remote =
+    g_application_get_is_remote (
+      G_APPLICATION (self));
+  GMenuModel * app_menu_model =
+    gtk_application_get_app_menu (
+      GTK_APPLICATION (app));
+  bool prefers_app_menu =
+    gtk_application_prefers_app_menu (
+      GTK_APPLICATION (app));
+  g_message (
+    "application registered: %d, is remote %d, "
+    "app menu exists: %d, prefers app menu: %d",
+    ret, remote, app_menu_model ? true : false,
+    prefers_app_menu);
+
+  g_message (
+    "application resources base path: %s",
+    g_application_get_resource_base_path (
+      G_APPLICATION (app)));
+
   self->default_settings =
     gtk_settings_get_default ();
 
@@ -907,8 +930,6 @@ zrythm_app_startup (
   INSTALL_ACCEL ("F11", "app.fullscreen");
   INSTALL_ACCEL (
     "<Control><Shift>p", "app.preferences");
-  INSTALL_ACCEL (
-    "<Control><Shift>question", "app.shortcuts");
   INSTALL_ACCEL ("<Control>n", "win.new");
   INSTALL_ACCEL ("<Control>o", "win.open");
   INSTALL_ACCEL ("<Control>s", "win.save");
@@ -1095,7 +1116,8 @@ zrythm_app_class_init (ZrythmAppClass *class)
 }
 
 static void
-zrythm_app_init (ZrythmApp * _app)
+zrythm_app_init (
+  ZrythmApp * self)
 {
   g_message ("initing zrythm app");
 
@@ -1121,14 +1143,11 @@ zrythm_app_init (ZrythmApp * _app)
     { "scripting-interface",
       activate_scripting_interface },
     { "quit", activate_quit },
-    { "shortcuts", activate_shortcuts },
   };
 
   g_action_map_add_action_entries (
-    G_ACTION_MAP (_app),
-    entries,
-    G_N_ELEMENTS (entries),
-    _app);
+    G_ACTION_MAP (self), entries,
+    G_N_ELEMENTS (entries), self);
 
   g_message ("added action entries");
 }

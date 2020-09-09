@@ -53,6 +53,9 @@ static const cyaml_strval_t
     CHANNEL_SEND_ACTION_DISCONNECT },
 };
 
+/**
+ * Action for channel send changes.
+ */
 typedef struct ChannelSendAction
 {
   UndoableAction  parent_instance;

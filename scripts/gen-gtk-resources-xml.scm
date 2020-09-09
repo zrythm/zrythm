@@ -148,9 +148,14 @@ Args:
            '("gnome-builder" "ext"
              "fork-awesome" "font-awesome"))
 
-         ;; add theme and close
+         ;; insert standard gtk menus
+         ;; (see GtkApplication docs)
          (display
 "  </gresource>
+  <gresource prefix='/org/zrythm/Zrythm'>
+    <file preprocess='xml-stripblanks'>gtk/menus.ui</file>
+    <file preprocess='xml-stripblanks'>gtk/help-overlay.ui</file>
+  </gresource>
 </gresources>"))))))
 
 (apply main (program-arguments))

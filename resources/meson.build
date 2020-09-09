@@ -15,11 +15,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
+# gen resources XML
+resource_files = files ([
+  'gtk/help-overlay.ui',
+  'gtk/menus.ui',
+  ])
+
+subdir ('ui')
+
 zrythm_gresources_xml = configure_file (
   output: 'zrythm.gresources.xml',
-  input: gen_gtk_resources_xml_wrap,
+  input: [
+    gen_gtk_resources_xml_wrap,
+    resource_files,
+    ],
   command: [
-    '@INPUT@',
+    '@INPUT0@',
     meson.current_source_dir(),
     '@OUTPUT@'
     ])

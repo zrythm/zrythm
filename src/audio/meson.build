@@ -66,6 +66,7 @@ audio_srcs = [
   'midi_bus_track.c',
   'midi_event.c',
   'midi_file.c',
+  'midi_function.c',
   'midi_group_track.c',
   'midi_mapping.c',
   'midi_note.c',

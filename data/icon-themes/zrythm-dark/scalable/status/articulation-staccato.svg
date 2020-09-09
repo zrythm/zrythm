@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="200"
+   height="200"
+   version="1.1"
+   id="svg18"
+   sodipodi:docname="articulation-staccato.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
+  <metadata
+     id="metadata24">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs22" />
+  <sodipodi:namedview
+     inkscape:guide-bbox="true"
+     showguides="true"
+     inkscape:document-rotation="0"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1025"
+     id="namedview20"
+     showgrid="false"
+     inkscape:zoom="2.0975"
+     inkscape:cx="82.274311"
+     inkscape:cy="83.9151"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg18" />
+  <path
+     sodipodi:nodetypes="ccscscccc"
+     d="M 89.336496,183.51626 H 79.299389 V 67.878361 c 0,-5.853277 3.426308,-10.136162 7.138142,-14.276284 5.996039,-4.9967 12.563129,-6.709854 19.986799,-6.709854 9.13682,0 14.27628,5.853277 14.27628,11.849316 -0.42829,12.277604 -17.55983,22.842054 -27.981514,22.413766 -3.854597,-0.142763 -3.258927,-1.298016 -3.258927,-1.298016 z"
+     style="fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:1.42763"
+     id="path14" />
+  <path
+     style="fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:3.6397"
+     d="m 113.98772,22.194252 a 14.558774,14.558774 0 1 1 -29.117544,0 14.558774,14.558774 0 1 1 29.117544,0 z"
+     id="path16" />
+</svg>

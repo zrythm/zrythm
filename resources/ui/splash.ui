@@ -35,6 +35,7 @@
     <property name="decorated">False</property>
     <property name="deletable">False</property>
     <property name="icon_name">zrythm</property>
+    <property name="title" translatable="yes">Splash</property>
     <child>
       <placeholder/>
     </child>

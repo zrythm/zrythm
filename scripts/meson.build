@@ -68,11 +68,11 @@ meson_post_install_wrap = configure_file (
   )
 
 # create the gschema generator wrap
-gschema_gen_wrap = configure_file (
-  output: 'gschema_gen_wrap.sh',
+gen_gschema_wrap = configure_file (
+  output: 'gen_gschema_wrap.sh',
   input: generic_guile_wrap_name,
   configuration: scripts_conf + {
-    'SCRIPT_NAME': 'gschema-gen.scm'},
+    'SCRIPT_NAME': 'gen-gschema.scm'},
   )
 
 # create the translators C-string header generator

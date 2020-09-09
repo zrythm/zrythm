@@ -508,6 +508,9 @@ main_window_widget_init (MainWindowWidget * self)
       activate_toggle_timeline_event_viewer },
     { "toggle-editor-event-viewer",
       activate_toggle_editor_event_viewer },
+
+    /* MIDI functions */
+    { "midi-function", activate_midi_function, "s" },
   };
 
   g_action_map_add_action_entries (

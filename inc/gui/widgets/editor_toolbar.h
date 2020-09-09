@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -41,6 +41,8 @@ typedef struct _ToolboxWidget ToolboxWidget;
 typedef struct _QuantizeMbWidget QuantizeMbWidget;
 typedef struct _QuantizeBoxWidget QuantizeBoxWidget;
 typedef struct _SnapGridWidget SnapGridWidget;
+typedef struct _ButtonWithMenuWidget
+  ButtonWithMenuWidget;
 
 /**
  * The PianoRoll toolbar in the top.
@@ -52,7 +54,17 @@ typedef struct _EditorToolbarWidget
   SnapGridWidget *    snap_grid_midi;
   QuantizeBoxWidget * quantize_box;
   GtkToolButton *     event_viewer_toggle;
+  ButtonWithMenuWidget * functions_btn;
+  GtkButton *         apply_function_btn;
+  GMenuModel *        midi_functions_menu;
 } EditorToolbarWidget;
+
+/**
+ * Refreshes relevant widgets.
+ */
+void
+editor_toolbar_widget_refresh (
+  EditorToolbarWidget * self);
 
 void
 editor_toolbar_widget_setup (

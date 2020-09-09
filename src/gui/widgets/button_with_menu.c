@@ -34,11 +34,19 @@ G_DEFINE_TYPE (
 /**
  * This must only be called once to set up the
  * widget.
+ *
+ * @param btn The main button.
+ * @param menu Optional GtkMenu to set for the
+ *   arrow button.
+ * @param menu Optional GMenuModel to set for the
+ *   arrow button.
  */
 void
 button_with_menu_widget_setup (
   ButtonWithMenuWidget * self,
   GtkButton *            btn,
+  GtkMenu *              menu,
+  GMenuModel *           gmenu_model,
   bool                   downward_arrow,
   int                    height,
   const char *           btn_tooltip_text,
@@ -92,6 +100,12 @@ button_with_menu_widget_setup (
     GTK_WIDGET (btn), btn_tooltip_text);
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->menu_btn), menu_tooltip_text);
+
+  if (gmenu_model)
+    {
+      gtk_menu_button_set_menu_model (
+        self->menu_btn, gmenu_model);
+    }
 }
 
 static void

@@ -36,6 +36,7 @@
 #include "audio/graph_export.h"
 #include "audio/instrument_track.h"
 #include "audio/midi.h"
+#include "audio/midi_function.h"
 #include "audio/router.h"
 #include "audio/track.h"
 #include "audio/transport.h"
@@ -260,27 +261,6 @@ activate_quit (GSimpleAction *action,
                gpointer       user_data)
 {
   g_application_quit (G_APPLICATION (user_data));
-}
-
-void
-activate_shortcuts (GSimpleAction *action,
-                    GVariant      *variant,
-                    gpointer       user_data)
-{
-  GtkBuilder *builder;
-  GtkWidget *overlay;
-
-  builder =
-    gtk_builder_new_from_resource (
-      RESOURCE_PATH TEMPLATE_PATH "shortcuts.ui");
-  overlay =
-    GTK_WIDGET (
-      gtk_builder_get_object (builder, "shortcuts-builder"));
-  gtk_window_set_transient_for (
-    GTK_WINDOW (overlay),
-    GTK_WINDOW (MAIN_WINDOW));
-  gtk_widget_show (overlay);
-  g_object_unref (builder);
 }
 
 /**
@@ -2041,4 +2021,74 @@ DEFINE_SIMPLE (activate_remove_range)
   UndoableAction * ua =
     range_action_new_remove (&start, &end);
   undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+/**
+ * Common routine for applying undoable MIDI
+ * functions.
+ */
+static void
+do_midi_func (
+  MidiFunctionType type)
+{
+  ArrangerSelections * sel =
+    (ArrangerSelections *) MA_SELECTIONS;
+  if (!arranger_selections_has_any (sel))
+    {
+      g_message ("no selections, doing nothing");
+      return;
+    }
+
+  UndoableAction * ua =
+    arranger_selections_action_new_edit_midi_function (
+      sel, type);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+DEFINE_SIMPLE (activate_midi_function)
+{
+  size_t size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+  if (string_is_equal (str, "crescendo"))
+    {
+      do_midi_func (MIDI_FUNCTION_CRESCENDO);
+    }
+  else if (string_is_equal (str, "current"))
+    {
+      do_midi_func (
+        g_settings_get_int (S_UI, "midi-function"));
+    }
+  else if (string_is_equal (str, "flam"))
+    {
+      do_midi_func (MIDI_FUNCTION_FLAM);
+    }
+  else if (string_is_equal (str, "flip-horizontal"))
+    {
+      do_midi_func (MIDI_FUNCTION_FLIP_HORIZONTAL);
+    }
+  else if (string_is_equal (str, "flip-vertical"))
+    {
+      do_midi_func (MIDI_FUNCTION_FLIP_VERTICAL);
+    }
+  else if (string_is_equal (str, "legato"))
+    {
+      do_midi_func (MIDI_FUNCTION_LEGATO);
+    }
+  else if (string_is_equal (str, "portato"))
+    {
+      do_midi_func (MIDI_FUNCTION_PORTATO);
+    }
+  else if (string_is_equal (str, "staccato"))
+    {
+      do_midi_func (MIDI_FUNCTION_STACCATO);
+    }
+  else if (string_is_equal (str, "strum"))
+    {
+      do_midi_func (MIDI_FUNCTION_STRUM);
+    }
+  else
+    {
+      g_return_if_reached ();
+    }
 }

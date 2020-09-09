@@ -449,6 +449,31 @@ arranger_selections_action_new_edit (
 }
 
 /**
+ * Wrapper over
+ * arranger_selections_action_new_edit() for MIDI
+ * functions.
+ */
+UndoableAction *
+arranger_selections_action_new_edit_midi_function (
+  ArrangerSelections * sel_before,
+  MidiFunctionType     midi_func_type)
+{
+  ArrangerSelections * sel_after =
+    arranger_selections_clone (sel_before);
+  midi_function_apply (sel_after, midi_func_type);
+
+  UndoableAction * ua =
+    arranger_selections_action_new_edit (
+      sel_before, sel_after,
+      ARRANGER_SELECTIONS_ACTION_EDIT_MIDI_FUNCTION,
+      F_ALREADY_EDITED);
+
+  arranger_selections_free_full (sel_after);
+
+  return ua;
+}
+
+/**
  * Creates a new action for automation autofill.
  *
  * @param region_before The region before the

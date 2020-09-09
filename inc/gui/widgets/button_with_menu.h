@@ -60,7 +60,7 @@ typedef struct _ButtonWithMenuWidget
   GtkMenuButton *  menu_btn;
 
   /** The menu to show when arrow is clicked. */
-  GtkMenu *        menu;
+  //GtkMenu *        menu;
 } ButtonWithMenuWidget;
 
 /**
@@ -70,14 +70,29 @@ typedef struct _ButtonWithMenuWidget
 /**
  * This must only be called once to set up the
  * widget.
+ *
+ * @param btn The main button.
+ * @param menu Optional GtkMenu to set for the
+ *   arrow button.
+ * @param menu Optional GMenuModel to set for the
+ *   arrow button.
  */
 void
 button_with_menu_widget_setup (
   ButtonWithMenuWidget * self,
   GtkButton *            btn,
+  GtkMenu *              menu,
+  GMenuModel *           gmenu_model,
   bool                   downward_arrow,
   int                    height,
   const char *           btn_tooltip_text,
   const char *           menu_tooltip_text);
+
+static inline GtkMenuButton *
+button_with_menu_widget_get_menu_button (
+  ButtonWithMenuWidget * self)
+{
+  return self->menu_btn;
+}
 
 #endif

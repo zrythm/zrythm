@@ -20,7 +20,7 @@
 
 (add-to-load-path "@SCRIPTS_DIR@")
 
-(define-module (gschema-gen)
+(define-module (gen-gschema)
   #:use-module (guile-utils)
   #:use-module (ice-9 string-fun)
   #:use-module (ice-9 format)
@@ -461,6 +461,10 @@ Args:
                  "tool" "select-normal"
                  "Selected editing tool"
                  "Selected editing tool.")
+               (make-schema-key
+                 "midi-function" "i" "0"
+                 "Last used MIDI function"
+                 "Last used MIDI function (index corresponding to enum in midi function action).")
              ))) ;; ui
 
          (schema-print
