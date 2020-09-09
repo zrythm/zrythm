@@ -838,13 +838,15 @@ if all_static
 endif
 
 if os_windows
-  #zrythm_deps += cc.find_library (
-    #'dbghelp', static: all_static)
-  drmingw_subproject = cmake.subproject (
-    'drmingw', options: cmake_opts)
-  drmingw_dep = drmingw_subproject.dependency (
-    'drmingw')
-  zrythm_deps += drmingw_dep
+  # TODO disable dbghelp and enable drmingw when
+  # meson issue is fixed
+  zrythm_deps += cc.find_library (
+    'dbghelp', static: all_static)
+  #drmingw_subproject = cmake.subproject (
+  #  'drmingw', options: cmake_opts)
+  #drmingw_dep = drmingw_subproject.dependency (
+  #  'drmingw')
+  #zrythm_deps += drmingw_dep
   zrythm_deps += jack_dep.partial_dependency (
     link_args: false, links: false)
 else
