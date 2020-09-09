@@ -374,8 +374,6 @@ if get_option ('extra_optimizations')
   if host_machine.cpu() == 'x86_64'
     test_cflags += [
       '-ffast-math',
-      # this may break the backtrace
-      '-fomit-frame-pointer',
       '-fstrength-reduce',
       '-DPIC',
       '-fdata-sections',
@@ -385,6 +383,16 @@ if get_option ('extra_optimizations')
       '-msse2',
       '-mfpmath=sse',
       #'-fvisibility=hidden',
+      ]
+  endif
+  if get_option ('extra_debug_info') or get_option ('debug') or get_option ('buildtype').contains ('debug')
+    test_cflags += [
+      '-fno-omit-frame-pointer',
+      ]
+  else
+    # note: this may break the backtrace
+    test_cflags += [
+      '-fomit-frame-pointer',
       ]
   endif
 endif
@@ -830,8 +838,13 @@ if all_static
 endif
 
 if os_windows
-  zrythm_deps += cc.find_library (
-    'dbghelp', static: all_static)
+  #zrythm_deps += cc.find_library (
+    #'dbghelp', static: all_static)
+  drmingw_subproject = cmake.subproject (
+    'drmingw', options: cmake_opts)
+  drmingw_dep = drmingw_subproject.dependency (
+    'drmingw')
+  zrythm_deps += drmingw_dep
   zrythm_deps += jack_dep.partial_dependency (
     link_args: false, links: false)
 else
