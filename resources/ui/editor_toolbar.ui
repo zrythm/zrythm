@@ -51,15 +51,9 @@
           <object class="GtkBox">
             <property name="visible">1</property>
             <child>
-              <object class="GtkComboBoxText" id="chord_highlighting">
+              <object class="GtkComboBox"
+                id="chord_highlighting">
                 <property name="visible">1</property>
-                <property name="active-id">highlight_both</property>
-                <items>
-                  <item translatable="yes" id="highlight_none">No Highlight</item>
-                  <item translatable="yes" id="highlight_chord">Highlight Chord</item>
-                  <item translatable="yes" id="highlight_scale">Highlight Scale</item>
-                  <item translatable="yes" id="highlight_both">Highlight Both</item>
-                </items>
               </object>
             </child>
           </object>

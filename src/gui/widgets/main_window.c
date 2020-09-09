@@ -494,6 +494,8 @@ main_window_widget_init (MainWindowWidget * self)
         S_UI, "listen-notes") ?
         "true" : "false",
       change_state_listen_notes },
+    { "midi-editor.highlighting",
+      activate_midi_editor_highlighting, "s" },
 
     /* control room */
     { "toggle-dim-output", NULL, NULL,

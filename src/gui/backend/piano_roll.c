@@ -276,8 +276,8 @@ piano_roll_set_highlighting (
     S_UI, "piano-roll-highlight",
     highlighting);
 
-  EVENTS_PUSH (ET_PIANO_ROLL_HIGHLIGHTING_CHANGED,
-               NULL);
+  EVENTS_PUSH (
+    ET_PIANO_ROLL_HIGHLIGHTING_CHANGED, NULL);
 }
 
 /**

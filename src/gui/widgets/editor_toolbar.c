@@ -75,6 +75,13 @@ editor_toolbar_widget_refresh (
   g_free (tooltip_str);
 }
 
+typedef enum HighlightColumns
+{
+  ICON_NAME_COL,
+  LABEL_COL,
+  ACTION_COL,
+} HighlightColumns;
+
 void
 editor_toolbar_widget_setup (
   EditorToolbarWidget * self)
@@ -88,10 +95,60 @@ editor_toolbar_widget_setup (
     QUANTIZE_OPTIONS_EDITOR);
 
   /* setup highlighting */
+  GtkTreeIter iter;
+  GtkListStore * list_store =
+    gtk_list_store_new (
+      3, G_TYPE_STRING, G_TYPE_STRING,
+      G_TYPE_STRING);
+  gtk_list_store_append (list_store, &iter);
+  gtk_list_store_set (
+    list_store, &iter,
+    0, "draw-highlight",
+    1, _("No Highlight"),
+    2, "highlight",
+    -1);
+  gtk_list_store_append (list_store, &iter);
+  gtk_list_store_set (
+    list_store, &iter,
+    0, "draw-highlight",
+    1, _("Highlight Chord"),
+    2, "chord",
+    -1);
+  gtk_list_store_append (list_store, &iter);
+  gtk_list_store_set (
+    list_store, &iter,
+    0, "draw-highlight",
+    1, _("Highlight Scale"),
+    2, "scale",
+    -1);
+  gtk_list_store_append (list_store, &iter);
+  gtk_list_store_set (
+    list_store, &iter,
+    0, "draw-highlight",
+    1, _("Highlight Both"),
+    2, "both",
+    -1);
+  GtkComboBox * combo =
+    GTK_COMBO_BOX (self->chord_highlighting);
+  gtk_combo_box_set_model (
+    combo,
+    GTK_TREE_MODEL (list_store));
   gtk_combo_box_set_active (
-    GTK_COMBO_BOX (
-      self->chord_highlighting),
+    combo,
     PIANO_ROLL->highlighting);
+  GtkCellRenderer * cell =
+    gtk_cell_renderer_pixbuf_new ();
+  gtk_cell_layout_pack_start (
+    GTK_CELL_LAYOUT (combo), cell, TRUE);
+  gtk_cell_layout_set_attributes (
+    GTK_CELL_LAYOUT (combo), cell,
+    "icon-name", ICON_NAME_COL, NULL);
+  cell = gtk_cell_renderer_text_new ();
+  gtk_cell_layout_pack_start (
+    GTK_CELL_LAYOUT (combo), cell, TRUE);
+  gtk_cell_layout_set_attributes (
+    GTK_CELL_LAYOUT (combo), cell,
+    "text", LABEL_COL, NULL);
 
   /* setup signals */
   g_signal_connect (

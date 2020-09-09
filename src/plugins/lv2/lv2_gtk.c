@@ -889,45 +889,61 @@ new_controller(GtkSpinButton* spin, GtkWidget* control)
 }
 
 static PluginGtkController*
-make_combo(Lv2Control* record, float value)
+make_combo (
+  Lv2Control * record,
+  float        value)
 {
-  GtkListStore* list_store = gtk_list_store_new(
-    2, G_TYPE_FLOAT, G_TYPE_STRING);
+  GtkListStore* list_store =
+    gtk_list_store_new (
+      2, G_TYPE_FLOAT, G_TYPE_STRING);
   int active = -1;
-  for (size_t i = 0; i < record->n_points; ++i) {
-    const Lv2ScalePoint* point = &record->points[i];
-    GtkTreeIter       iter;
-    gtk_list_store_append(list_store, &iter);
-    gtk_list_store_set(list_store, &iter,
-                       0, point->value,
-                       1, point->label,
-                       -1);
-    if (fabs(value - point->value) < FLT_EPSILON) {
-      active = i;
+  for (size_t i = 0; i < record->n_points; ++i)
+    {
+      const Lv2ScalePoint * point =
+        &record->points[i];
+      GtkTreeIter       iter;
+      gtk_list_store_append(list_store, &iter);
+      gtk_list_store_set(list_store, &iter,
+                         0, point->value,
+                         1, point->label,
+                         -1);
+      if (fabs(value - point->value) < FLT_EPSILON)
+        {
+          active = i;
+        }
     }
-  }
 
-  GtkWidget* combo = gtk_combo_box_new_with_model(GTK_TREE_MODEL(list_store));
-  gtk_combo_box_set_active(GTK_COMBO_BOX(combo), active);
-  g_object_unref(list_store);
+  GtkWidget* combo =
+    gtk_combo_box_new_with_model (
+      GTK_TREE_MODEL (list_store));
+  gtk_combo_box_set_active (
+    GTK_COMBO_BOX (combo), active);
+  g_object_unref (list_store);
 
-  gtk_widget_set_sensitive(combo, record->is_writable);
+  gtk_widget_set_sensitive (
+    combo, record->is_writable);
 
-  GtkCellRenderer* cell = gtk_cell_renderer_text_new();
-  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo), cell, TRUE);
-  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), cell, "text", 1, NULL);
+  GtkCellRenderer * cell =
+    gtk_cell_renderer_text_new ();
+  gtk_cell_layout_pack_start (
+    GTK_CELL_LAYOUT (combo), cell, TRUE);
+  gtk_cell_layout_set_attributes (
+    GTK_CELL_LAYOUT (combo), cell, "text", 1, NULL);
 
-  if (record->is_writable) {
-    g_signal_connect (
-      G_OBJECT (combo), "changed",
-      G_CALLBACK (combo_changed), record);
-  }
+  if (record->is_writable)
+    {
+      g_signal_connect (
+        G_OBJECT (combo), "changed",
+        G_CALLBACK (combo_changed), record);
+    }
 
-  return new_controller(NULL, combo);
+  return new_controller (NULL, combo);
 }
 
-static PluginGtkController*
-make_log_slider(Lv2Control* record, float value)
+static PluginGtkController *
+make_log_slider (
+  Lv2Control * record,
+  float        value)
 {
   const float min =
     lilv_get_float_from_node_with_fallback (

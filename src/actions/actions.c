@@ -2092,3 +2092,25 @@ DEFINE_SIMPLE (activate_midi_function)
       g_return_if_reached ();
     }
 }
+
+DEFINE_SIMPLE (
+  activate_midi_editor_highlighting)
+{
+  size_t size;
+  const char * str =
+    g_variant_get_string (variant, &size);
+
+#define SET_HIGHLIGHT(txt,hl_type) \
+  if (string_is_equal (str, txt)) \
+    { \
+      piano_roll_set_highlighting ( \
+        PIANO_ROLL, PR_HIGHLIGHT_##hl_type); \
+    }
+
+  SET_HIGHLIGHT ("none", NONE);
+  SET_HIGHLIGHT ("chord", CHORD);
+  SET_HIGHLIGHT ("scale", SCALE);
+  SET_HIGHLIGHT ("both", BOTH);
+
+#undef SET_HIGHLIGHT
+}

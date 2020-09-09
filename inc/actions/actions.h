@@ -489,6 +489,9 @@ DECLARE_SIMPLE (activate_remove_range);
 /* MIDI functions. */
 DECLARE_SIMPLE (activate_midi_function);
 
+DECLARE_SIMPLE (
+  activate_midi_editor_highlighting);
+
 /**
  * @}
  */
