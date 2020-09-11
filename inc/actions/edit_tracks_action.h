@@ -54,6 +54,8 @@ typedef enum EditTracksActionType
 
   /** Rename track. */
   EDIT_TRACK_ACTION_TYPE_RENAME,
+
+  EDIT_TRACK_ACTION_TYPE_COLOR,
 } EditTracksActionType;
 
 static const cyaml_strval_t
@@ -71,6 +73,8 @@ static const cyaml_strval_t
     EDIT_TRACK_ACTION_TYPE_DIRECT_OUT    },
   { "Rename",
     EDIT_TRACK_ACTION_TYPE_RENAME    },
+  { "Color",
+    EDIT_TRACK_ACTION_TYPE_COLOR    },
 };
 
 /**
@@ -106,6 +110,8 @@ typedef struct EditTracksAction
   /** Track position to direct output to. */
   int                   new_direct_out_pos;
 
+  GdkRGBA               new_color;
+
   /** Skip do if true. */
   bool                  already_edited;
 
@@ -136,6 +142,9 @@ static const cyaml_schema_field_t
     EditTracksAction, pan_delta),
   YAML_FIELD_INT (
     EditTracksAction, new_direct_out_pos),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    EditTracksAction, new_color,
+    gdk_rgba_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -212,6 +221,14 @@ UndoableAction *
 edit_tracks_action_new_direct_out (
   TracklistSelections * tls,
   Track *               direct_out);
+
+/**
+ * Wrapper over edit_tracks_action_new().
+ */
+UndoableAction *
+edit_tracks_action_new_color (
+  TracklistSelections * tls,
+  GdkRGBA *             color);
 
 int
 edit_tracks_action_do (

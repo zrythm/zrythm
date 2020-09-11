@@ -2764,11 +2764,11 @@ arranger_widget_set_highlight_rect (
  */
 static void
 multipress_pressed (
-  GtkGestureMultiPress *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  ArrangerWidget *      self)
+  GtkGestureMultiPress * gesture,
+  gint                   n_press,
+  gdouble                x,
+  gdouble                y,
+  ArrangerWidget *       self)
 {
   /* set number of presses */
   self->n_press = n_press;

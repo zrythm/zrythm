@@ -70,9 +70,11 @@ typedef struct _ColorAreaWidget
   /** Set to 1 to redraw. */
   int               redraw;
 
-  cairo_t *                cached_cr;
+  bool              hovered;
 
-  cairo_surface_t *        cached_surface;
+  cairo_t *         cached_cr;
+
+  cairo_surface_t * cached_surface;
 } ColorAreaWidget;
 
 /**

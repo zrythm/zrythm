@@ -40,6 +40,7 @@
 #include "gui/widgets/custom_button.h"
 #include "gui/widgets/dialogs/bounce_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
+#include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/meter.h"
@@ -53,6 +54,7 @@
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/cairo.h"
+#include "utils/color.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
@@ -290,8 +292,12 @@ draw_color_area (
     z_cairo_get_surface_from_icon_name (
       self->icon_name, 16, 0);
 
-  gdk_cairo_set_source_rgba (
-    cr, &self->track->color);
+  GdkRGBA bg_color = self->track->color;
+  if (self->color_area_hovered)
+    {
+      color_brighten_default (&bg_color);
+    }
+  gdk_cairo_set_source_rgba (cr, &bg_color);
   cairo_rectangle (
     cr, 0, 0, COLOR_AREA_WIDTH, height);
   cairo_fill (cr);
@@ -1253,6 +1259,8 @@ on_motion (
   /* show resize cursor or not */
   if (self->bg_hovered)
     {
+      self->color_area_hovered =
+        event->x < COLOR_AREA_WIDTH;
       CustomButtonWidget * cb =
         get_hovered_button (
           self, (int) event->x, (int) event->y);
@@ -1268,7 +1276,9 @@ on_motion (
       TrackLane * resizing_lane =
         get_lane_to_resize (self, (int) event->y);
       if (self->resizing)
-        self->resize = 1;
+        {
+          self->resize = 1;
+        }
       else if (!cb && !am && resizing_track)
         {
           self->resize = 1;
@@ -1315,7 +1325,7 @@ on_motion (
 
   if (event->type == GDK_ENTER_NOTIFY)
     {
-      self->bg_hovered = 1;
+      self->bg_hovered = true;
       self->resize = 0;
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
@@ -1323,7 +1333,8 @@ on_motion (
       ui_set_pointer_cursor (widget);
       if (!self->resizing)
         {
-          self->bg_hovered = 0;
+          self->bg_hovered = false;
+          self->color_area_hovered = false;
           self->resize = 0;
           self->button_pressed = 0;
         }
@@ -1973,6 +1984,15 @@ multipress_pressed (
       bool shift = state_mask & GDK_SHIFT_MASK;
       tracklist_selections_handle_click (
         track, ctrl, shift, false);
+    }
+
+  if (self->color_area_hovered)
+    {
+      ObjectColorChooserDialogWidget * color_chooser =
+        object_color_chooser_dialog_widget_new_for_track (
+          self->track);
+      object_color_chooser_dialog_widget_run (
+        color_chooser);
     }
 
   track_widget_force_redraw (self);

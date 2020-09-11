@@ -533,6 +533,10 @@ tracklist_selections_free (
     {
       for (int i = 0; i < self->num_tracks; i++)
         {
+          /* skip project tracks */
+          if (self->tracks[i]->is_project)
+            continue;
+
           object_free_w_func_and_null (
             track_free, self->tracks[i]);
         }

@@ -209,6 +209,32 @@ edit_tracks_action_new_direct_out (
   return action;
 }
 
+/**
+ * Wrapper over edit_tracks_action_new().
+ */
+UndoableAction *
+edit_tracks_action_new_color (
+  TracklistSelections * tls,
+  GdkRGBA *             color)
+{
+  EditTracksAction * self =
+    object_new (EditTracksAction);
+
+  UndoableAction * ua = (UndoableAction *) self;
+  ua->type = UA_EDIT_TRACKS;
+
+  self->type = EDIT_TRACK_ACTION_TYPE_COLOR;
+  self->new_color = *color;
+
+  self->tls_before =
+    tracklist_selections_clone (tls);
+  /* FIXME */
+  self->tls_after =
+    tracklist_selections_clone (self->tls_before);
+
+  return ua;
+}
+
 int
 edit_tracks_action_do (EditTracksAction * self)
 {
@@ -285,6 +311,11 @@ edit_tracks_action_do (EditTracksAction * self)
           /* remember the new name */
           g_free (clone_track->name);
           clone_track->name = g_strdup (track->name);
+          break;
+        case EDIT_TRACK_ACTION_TYPE_COLOR:
+          track_set_color (
+            track, &self->new_color,
+            F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
           break;
         }
 
@@ -366,6 +397,11 @@ edit_tracks_action_undo (
             track, clone_track_before->name,
             F_NO_PUBLISH_EVENTS);
           break;
+        case EDIT_TRACK_ACTION_TYPE_COLOR:
+          track_set_color (
+            track, &clone_track_before->color,
+            F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
+          break;
         }
       EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
                    track);
@@ -408,6 +444,9 @@ edit_tracks_action_stringize (
         case EDIT_TRACK_ACTION_TYPE_RENAME:
           return g_strdup (
             _("Rename track"));
+        case EDIT_TRACK_ACTION_TYPE_COLOR:
+          return g_strdup (
+            _("Change color"));
         default:
           g_return_val_if_reached (
             g_strdup (""));

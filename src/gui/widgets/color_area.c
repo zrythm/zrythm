@@ -18,17 +18,22 @@
  */
 
 #include "audio/track.h"
+#include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/track_top_grid.h"
 #include "utils/cairo.h"
+#include "utils/color.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (ColorAreaWidget,
-               color_area_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  ColorAreaWidget, color_area_widget,
+  GTK_TYPE_DRAWING_AREA)
 
 /**
  * Draws the color picker.
@@ -65,6 +70,11 @@ color_area_draw_cb (
         color = self->track->color;
       else
         color = self->color;
+
+      if (self->hovered)
+        {
+          color_brighten_default (&color);
+        }
 
       cairo_rectangle (
         self->cached_cr, 0, 0, width, height);
@@ -119,12 +129,52 @@ color_area_draw_cb (
 }
 
 static void
+multipress_pressed (
+  GtkGestureMultiPress * gesture,
+  gint                   n_press,
+  gdouble                x,
+  gdouble                y,
+  ColorAreaWidget *      self)
+{
+  if (n_press == 1 && self->track)
+    {
+      ObjectColorChooserDialogWidget * color_chooser =
+        object_color_chooser_dialog_widget_new_for_track (
+          self->track);
+      object_color_chooser_dialog_widget_run (
+        color_chooser);
+    }
+}
+
+static void
 on_size_allocate (
   GtkWidget    *widget,
   GdkRectangle *allocation,
   ColorAreaWidget * self)
 {
   self->redraw = true;
+}
+
+static gboolean
+on_motion (
+  GtkWidget *       widget,
+  GdkEventMotion *  event,
+  ColorAreaWidget * self)
+{
+  if (event->type == GDK_ENTER_NOTIFY)
+    {
+      self->hovered = true;
+      gtk_widget_queue_draw (GTK_WIDGET (self));
+      self->redraw = true;
+    }
+  else if (event->type == GDK_LEAVE_NOTIFY)
+    {
+      self->hovered = false;
+      gtk_widget_queue_draw (GTK_WIDGET (self));
+      self->redraw = true;
+    }
+
+  return FALSE;
 }
 
 /**
@@ -152,6 +202,9 @@ color_area_widget_setup_track (
   self->track = track;
   self->type = COLOR_AREA_TYPE_TRACK;
   self->redraw = true;
+
+  g_message (
+    "setting up track %s for %p", track->name, self);
 }
 
 /**
@@ -174,12 +227,32 @@ color_area_widget_set_color (
 static void
 color_area_widget_init (ColorAreaWidget * self)
 {
+  /* make able to notify */
+  gtk_widget_add_events (
+    GTK_WIDGET (self),
+    GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK |
+    GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
+
+
+  GtkGestureMultiPress * mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self)));
+  g_signal_connect (
+    G_OBJECT (mp), "pressed",
+    G_CALLBACK (multipress_pressed), self);
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
     G_CALLBACK (on_size_allocate), self);
   g_signal_connect (
     G_OBJECT (self), "draw",
     G_CALLBACK (color_area_draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT (self), "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
   self->redraw = true;
 }
 

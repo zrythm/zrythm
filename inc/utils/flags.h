@@ -184,4 +184,7 @@
 #define F_PROJECT 1
 #define F_NOT_PROJECT 0
 
+#define F_UNDOABLE 1
+#define F_NOT_UNDOABLE 0
+
 #endif

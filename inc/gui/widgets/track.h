@@ -104,6 +104,15 @@ typedef struct _TrackWidget
   bool              bg_hovered;
 
   /**
+   * Whether color area is currently hoverred.
+   *
+   * This is not mutually exclusive with
+   * \ref TrackWidget.bg_hovered. The color area
+   * is considered part of the BG.
+   */
+  bool              color_area_hovered;
+
+  /**
    * Set when the drag should resize instead of dnd.
    *
    * This is used to determine if we should resize

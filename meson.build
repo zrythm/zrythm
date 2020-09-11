@@ -479,6 +479,7 @@ test_strict_cflags = [
   '-Werror=format',
   '-Werror=endif-labels',
   '-Werror=logical-not-parentheses',
+  '-Werror=comment',
   ]
 
 if cc.get_id() == 'gcc'

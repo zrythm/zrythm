@@ -2115,6 +2115,39 @@ track_get_comment (
 }
 
 /**
+ * Sets the track color.
+ */
+void
+track_set_color (
+  Track *   self,
+  GdkRGBA * color,
+  bool      undoable,
+  bool      fire_events)
+{
+  if (undoable)
+    {
+      TracklistSelections * sel =
+        tracklist_selections_new (false);
+      tracklist_selections_add_track (
+        sel, self, F_NO_PUBLISH_EVENTS);
+      UndoableAction * ua =
+        edit_tracks_action_new_color (sel, color);
+      tracklist_selections_free (sel);
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+  else
+    {
+      self->color = *color;
+
+      if (fire_events)
+        {
+          EVENTS_PUSH (
+            ET_TRACK_COLOR_CHANGED, self);
+        }
+    }
+}
+
+/**
  * Recursively marks the track and children as
  * project objects or not.
  */

@@ -36,7 +36,7 @@
 typedef struct Position Position;
 
 /**
- * @addtogroup widgets
+ * @addtogroup utils
  *
  * @{
  */

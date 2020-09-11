@@ -177,7 +177,8 @@ editor_toolbar_widget_init (
   self->apply_function_btn =
     GTK_BUTTON (
       gtk_button_new_from_icon_name (
-        "mathmode",
+        /*"mathmode",*/
+        "code-context",
         GTK_ICON_SIZE_SMALL_TOOLBAR));
   gtk_actionable_set_detailed_action_name (
     GTK_ACTIONABLE (self->apply_function_btn),

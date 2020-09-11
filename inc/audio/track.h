@@ -1033,6 +1033,16 @@ track_get_comment (
   void *  track);
 
 /**
+ * Sets the track color.
+ */
+void
+track_set_color (
+  Track *   self,
+  GdkRGBA * color,
+  bool      undoable,
+  bool      fire_events);
+
+/**
  * Recursively marks the track and children as
  * project objects or not.
  */

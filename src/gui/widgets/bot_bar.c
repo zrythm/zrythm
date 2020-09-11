@@ -477,11 +477,16 @@ bot_bar_widget_update_status (
 
   /* TODO show xruns on status */
 
-  const char * pipewire_str =
-    (AUDIO_ENGINE->audio_backend ==
-       AUDIO_BACKEND_JACK &&
-     engine_jack_is_pipewire (AUDIO_ENGINE)) ?
-      " (pw)" : "";
+  const char * pipewire_str = "";
+  if (AUDIO_ENGINE->audio_backend ==
+        AUDIO_BACKEND_JACK)
+    {
+#ifdef HAVE_JACK
+      pipewire_str =
+        engine_jack_is_pipewire (AUDIO_ENGINE) ?
+          " (pw)" : "";
+#endif
+    }
 
   char str[860];
   sprintf (

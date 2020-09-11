@@ -688,6 +688,8 @@ channel_widget_new (Channel * channel)
     track_set_name_with_action);
   route_target_selector_widget_setup (
     self->output, self->channel);
+  color_area_widget_setup_track (
+    self->color, track);
 
 #if 0
   /*if (self->channel->track->type ==*/
