@@ -182,6 +182,7 @@ typedef enum AudioBackend
   NUM_AUDIO_BACKENDS,
 } AudioBackend;
 
+__attribute__ ((unused))
 static const char * audio_backend_str[] =
 {
   /* TRANSLATORS: Dummy backend */
@@ -720,12 +721,9 @@ engine_samplerate_enum_to_int (
 /**
  * Returns the audio backend as a string.
  */
-static inline const char *
+const char *
 engine_audio_backend_to_string (
-  AudioBackend backend)
-{
-  return audio_backend_str[backend];
-}
+  AudioBackend backend);
 
 AudioBackend
 engine_audio_backend_from_string (

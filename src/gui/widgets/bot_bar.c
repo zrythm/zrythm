@@ -477,12 +477,18 @@ bot_bar_widget_update_status (
 
   /* TODO show xruns on status */
 
+  const char * pipewire_str =
+    (AUDIO_ENGINE->audio_backend ==
+       AUDIO_BACKEND_JACK &&
+     engine_jack_is_pipewire (AUDIO_ENGINE)) ?
+      " (pw)" : "";
+
   char str[860];
   sprintf (
     str,
     "<span size=\"small\">"
-    "%s: %s%s%s | "
-    "%s: %s%s%s | "
+    "%s: %s%s%s%s | "
+    "%s: %s%s%s%s | "
     "%s: %s%s%s\n"
     "%s: %s%d frames%s | "
     "%s: %s%d Hz%s | "
@@ -492,11 +498,13 @@ bot_bar_widget_update_status (
     color_prefix,
     engine_audio_backend_to_string (
       AUDIO_ENGINE->audio_backend),
+    pipewire_str,
     color_suffix,
     "MIDI",
     color_prefix,
     engine_midi_backend_to_string (
       AUDIO_ENGINE->midi_backend),
+    pipewire_str,
     color_suffix,
     _("Status"),
     AUDIO_ENGINE->activated ?

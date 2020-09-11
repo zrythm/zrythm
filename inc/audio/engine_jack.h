@@ -118,5 +118,12 @@ const char *
 engine_jack_get_jack_type (
   PortType type);
 
-#endif
+/**
+ * Returns if this is a pipewire session.
+ */
+bool
+engine_jack_is_pipewire (
+  AudioEngine * self);
+
+#endif /* header guard */
 #endif /* HAVE_JACK */

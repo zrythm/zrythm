@@ -29,12 +29,12 @@ with meaningful stack traces and bug reports.
 
 ## Dependencies
 ### Required
-- audec (AGPLv3+): <https://git.zrythm.org/cgit/libaudec/>
 - breeze-icons (LGPLv3+): <https://github.com/KDE/breeze-icons>
 - fftw (GPLv2+): <http://www.fftw.org/>
 - gtk+3 (LGPLv2.1+): <https://gitlab.gnome.org/GNOME/gtk>
 - gtksourceview (LGPLv2.1+): <https://wiki.gnome.org/Projects/GtkSourceView>
 - guile (GPLv3+): <https://www.gnu.org/software/guile/>
+- libaudec (AGPLv3+): <https://git.zrythm.org/cgit/libaudec/>
 - libcyaml (ISC): <https://github.com/tlsa/libcyaml/>
 - lilv (ISC): <https://drobilla.net/software/lilv>
 - reproc (Expat): <https://github.com/DaanDeMeyer/reproc>
@@ -59,8 +59,8 @@ install the [GSettings](https://developer.gnome.org/gio/stable/GSettings.html)) 
 If you don't want to install anything permanent on
 your system, you can install it somewhere
 temporary by configuring with
-`meson --prefix=/tmp/zrythm` for example, and then
-you can run it with
+`meson build --prefix=/tmp/zrythm` for example, and
+then you can run it with
 `GSETTINGS_SCHEMA_DIR=/tmp/zrythm/share/glib-2.0/schemas ./build/src/zrythm`.
 The built program will be at `build/src/zrythm` by
 default.
@@ -70,8 +70,8 @@ default.
 When running Zrythm from the command line, it is
 recommended to use `zrythm_launch` instead of
 running the `zrythm` binary directly. This takes
-care of using the correct GSettings schemas in the
-installed prefix.
+care of using the correct GSettings schemas and
+other resources in the installed prefix.
 
 ----
 

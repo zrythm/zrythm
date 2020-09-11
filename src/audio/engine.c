@@ -90,6 +90,16 @@
 #endif
 
 /**
+ * Returns the audio backend as a string.
+ */
+const char *
+engine_audio_backend_to_string (
+  AudioBackend backend)
+{
+  return audio_backend_str[backend];
+}
+
+/**
  * Updates frames per tick based on the time sig,
  * the BPM, and the sample rate
  */

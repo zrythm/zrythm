@@ -35,6 +35,7 @@
 #include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -740,6 +741,45 @@ engine_jack_get_jack_type (
     default:
       return NULL;
     }
+}
+
+/**
+ * Returns if this is a pipewire session.
+ */
+bool
+engine_jack_is_pipewire (
+  AudioEngine * self)
+{
+#if defined (_WOE32) || defined (__APPLE__)
+  return false;
+#else
+  void * lib_handle =
+    dlopen ("libjack.so", RTLD_LAZY);
+  g_return_val_if_fail (lib_handle, false);
+
+  const char * func_name = "jack_get_version_string";
+
+  const char * (*jack_get_version_string)(void);
+  * (void **) (&jack_get_version_string) =
+    dlsym (lib_handle, func_name);
+  if (!jack_get_version_string)
+    {
+      g_message (
+        "%s () not found in libjack.so", func_name);
+      return false;
+    }
+  else
+    {
+      g_message (
+        "%s () found in libjack.so", func_name);
+      const char * ver =
+        (*jack_get_version_string) ();
+      g_message ("ver %s", ver);
+      return
+        string_contains_substr (
+          ver, "PipeWire", true);
+    }
+#endif
 }
 
 #endif /* HAVE_JACK */

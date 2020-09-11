@@ -222,7 +222,8 @@ setup_record_btn (
   GSimpleActionGroup * action_group =
     g_simple_action_group_new ();
   const char * recording_modes[] = {
-    "'merge'", "'takes'", "'takes-muted'", };
+    "'overwrite'", "'merge'", "'takes'",
+    "'takes-muted'", };
   GActionEntry actions[] = {
     { "punch-mode", NULL, NULL,
       (TRANSPORT->punch_mode ? "true" : "false"),
