@@ -9,6 +9,46 @@ to fetch tarballs. The project's home page is
 https://www.zrythm.org. The git repositories are
 on our [CGit instance](https://git.zrythm.org/cgit/).
 
+# Versioning
+
+Starting from v1.0.0-beta.0.0.0, Zrythm follows
+the following
+[Semantic Versioning (SemVer)](https://semver.org/)
+scheme:
+
+```yaml
+---
+API changes: project file/directory, user directory and settings changes
+MAJOR: Manually incremented for breaking API changes
+MINOR: Manually incremented for non-breaking API changes
+PATCH: Automatically incremented based on number of commits since ${MAJOR}.${MINOR}.0
+
+release tags:
+  pre-alpha:
+    description: Starts when work on a new major version starts (including 0)
+    identifier: ${unreleased major ver}.0.0-DEV.${MAJOR}.${MINOR}.{PATCH}
+    examples: 2.0.0-DEV.0.0.0, 2.0.0-DEV.0.32.1
+  alpha:
+    description: Starts when a major version under development is somewhat usable
+    identifier: ${unreleased major ver}.0.0-alpha.${MAJOR}.${MINOR}.{PATCH}
+    examples: 2.0.0-alpha.0.0.0, 2.0.0-alpha.0.32.1
+  beta:
+    description: Starts when all features expected to break API are implemented
+    identifier: ${unreleased major ver}.0.0-beta.${MAJOR}.${MINOR}.{PATCH}
+    examples: 2.0.0-beta.0.0.0, 2.0.0-beta.0.32.1
+  rc:
+    description: Starts when ALL features are implemented and only bug fixes remain
+    identifier: ${unreleased major ver}.0.0-rc.${manually incremented for each release}
+    examples: 2.0.0-rc.0, 2.0.0-rc.32
+  v1, 2, 3, etc.:
+    description: Starts when all features for the major ver are stable
+    identifier: ${MAJOR}.${MINOR}.${PATCH}
+    examples: 2.0.0, 2.32.1
+
+nightlies:
+  - ${release tag}+r${number of commits since lasts tag}.g${commit hash}
+```
+
 # Included Programs
 
 For various reasons, Zrythm ships with some libraries/resources

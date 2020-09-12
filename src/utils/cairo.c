@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,6 +20,7 @@
 #include "utils/cairo.h"
 #include "utils/dictionary.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -240,10 +241,22 @@ z_cairo_get_surface_from_icon_name (
           NULL);
       if (!pixbuf)
         {
-          g_critical (
+          g_message (
             "failed to load pixbuf from icon %s",
             icon_name);
-          return NULL;
+
+          /* return a warning icon if not found */
+          if (string_is_equal (
+                icon_name, "data-warning"))
+            {
+              return NULL;
+            }
+          else
+            {
+              return
+                z_cairo_get_surface_from_icon_name (
+                  "data-warning", size, scale);
+            }
         }
 
       surface =

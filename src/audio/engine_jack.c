@@ -753,8 +753,9 @@ engine_jack_is_pipewire (
 #if defined (_WOE32) || defined (__APPLE__)
   return false;
 #else
+  const char * libname = "libjack.so.0";
   void * lib_handle =
-    dlopen ("libjack.so", RTLD_LAZY);
+    dlopen (libname, RTLD_LAZY);
   g_return_val_if_fail (lib_handle, false);
 
   const char * func_name = "jack_get_version_string";
@@ -765,13 +766,14 @@ engine_jack_is_pipewire (
   if (!jack_get_version_string)
     {
       g_message (
-        "%s () not found in libjack.so", func_name);
+        "%s () not found in %s", func_name, libname);
       return false;
     }
   else
     {
       g_message (
-        "%s () found in libjack.so", func_name);
+        "%s () found in %s", func_name,
+        libname);
       const char * ver =
         (*jack_get_version_string) ();
       g_message ("ver %s", ver);

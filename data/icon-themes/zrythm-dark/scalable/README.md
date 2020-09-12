@@ -149,6 +149,8 @@ see <https://www.gnu.org/licenses/gpl-3.0.en.html>.
 - audio-midi-plain.svg
 - audio-midi.svg
 - audio-volume-high.svg
+- data-warning.svg
+- markers.svg
 
 ----
 
