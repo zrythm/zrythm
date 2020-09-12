@@ -337,14 +337,63 @@ modulator_widget_new (
       if (self->num_waveforms == 16)
         break;
     }
-
-  two_col_expander_box_widget_add_pair (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    GTK_WIDGET (self->controls_box),
+  self->content_box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4));
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->content_box), true);
+  self->content_scroll =
+    GTK_SCROLLED_WINDOW (
+      gtk_scrolled_window_new (NULL, NULL));
+  gtk_widget_set_vexpand (
+    GTK_WIDGET (self->content_scroll), true);
+  gtk_scrolled_window_set_policy (
+    self->content_scroll,
+    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->content_scroll), true);
+  gtk_container_add (
+    GTK_CONTAINER (self->content_scroll),
+    GTK_WIDGET (self->content_box));
+  gtk_container_add (
+    GTK_CONTAINER (self->content_box),
+    GTK_WIDGET (self->controls_box));
+  gtk_container_add (
+    GTK_CONTAINER (self->content_box),
     GTK_WIDGET (self->waveforms_box));
+
+  self->toolbar =
+    GTK_TOOLBAR (gtk_toolbar_new ());
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->toolbar), true);
+
+  self->main_box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->main_box), true);
+  gtk_container_add (
+    GTK_CONTAINER (self->main_box),
+    GTK_WIDGET (self->toolbar));
+  gtk_container_add (
+    GTK_CONTAINER (self->main_box),
+    GTK_WIDGET (self->content_scroll));
+  gtk_widget_set_vexpand (
+    GTK_WIDGET (self->main_box), true);
+
+  two_col_expander_box_widget_add_single (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    GTK_WIDGET (self->main_box));
   two_col_expander_box_widget_set_scroll_policy (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+    GTK_POLICY_NEVER, GTK_POLICY_NEVER);
+
+  GtkBox * box =
+    two_col_expander_box_widget_get_content_box (
+      Z_TWO_COL_EXPANDER_BOX_WIDGET (self));
+  gtk_box_set_child_packing (
+    box, GTK_WIDGET (self->main_box),
+    F_NO_EXPAND, F_FILL, 0, GTK_PACK_START);
 
   g_object_ref (self);
 

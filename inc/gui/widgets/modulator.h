@@ -60,6 +60,19 @@ typedef struct _ModulatorWidget
 {
   TwoColExpanderBoxWidget  parent_instance;
 
+  /** Main box (top toolbar and bot content box. */
+  GtkBox *          main_box;
+
+  /** Toolbar above the content. */
+  GtkToolbar *      toolbar;
+
+  /** Scrolled window for the content box. */
+  GtkScrolledWindow * content_scroll;
+
+  /** Box containing the content (controls +
+   * waveforms). */
+  GtkBox *          content_box;
+
   /** The controls box on the left. */
   GtkBox *          controls_box;
 

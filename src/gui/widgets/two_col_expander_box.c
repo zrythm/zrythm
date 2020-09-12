@@ -93,6 +93,19 @@ two_col_expander_box_widget_set_min_max_size (
 }
 
 /**
+ * Gets the content box.
+ */
+GtkBox *
+two_col_expander_box_widget_get_content_box (
+  TwoColExpanderBoxWidget * self)
+{
+  TwoColExpanderBoxWidgetPrivate * prv =
+    two_col_expander_box_widget_get_private (self);
+
+  return prv->content;
+}
+
+/**
  * Adds the two widgets in a horizontal box with the
  * given spacing.
  */

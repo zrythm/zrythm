@@ -11,9 +11,9 @@ on our [CGit instance](https://git.zrythm.org/cgit/).
 
 # Versioning
 
-Starting from v1.0.0-beta.0.0.0, Zrythm follows
+Starting from v1.0.0-beta.0.1.0, Zrythm follows
 the following
-[Semantic Versioning (SemVer)](https://semver.org/)
+[Semantic Versioning (SemVer) 2.0.0](https://semver.org/)
 scheme:
 
 ```yaml
@@ -25,17 +25,17 @@ PATCH: Automatically incremented based on number of commits since ${MAJOR}.${MIN
 
 release tags:
   pre-alpha:
-    description: Starts when work on a new major version starts (including 0)
+    description: Starts when work on a new major version starts
     identifier: ${unreleased major ver}.0.0-DEV.${MAJOR}.${MINOR}.{PATCH}
-    examples: 2.0.0-DEV.0.0.0, 2.0.0-DEV.0.32.1
+    examples: 2.0.0-DEV.0.1.0, 2.0.0-DEV.0.32.1
   alpha:
     description: Starts when a major version under development is somewhat usable
     identifier: ${unreleased major ver}.0.0-alpha.${MAJOR}.${MINOR}.{PATCH}
-    examples: 2.0.0-alpha.0.0.0, 2.0.0-alpha.0.32.1
+    examples: 2.0.0-alpha.0.1.0, 2.0.0-alpha.0.32.1
   beta:
     description: Starts when all features expected to break API are implemented
     identifier: ${unreleased major ver}.0.0-beta.${MAJOR}.${MINOR}.{PATCH}
-    examples: 2.0.0-beta.0.0.0, 2.0.0-beta.0.32.1
+    examples: 2.0.0-beta.0.1.0, 2.0.0-beta.0.32.1
   rc:
     description: Starts when ALL features are implemented and only bug fixes remain
     identifier: ${unreleased major ver}.0.0-rc.${manually incremented for each release}

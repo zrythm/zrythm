@@ -28,8 +28,7 @@
 G_DECLARE_DERIVABLE_TYPE (
   TwoColExpanderBoxWidget,
   two_col_expander_box_widget,
-  Z,
-  TWO_COL_EXPANDER_BOX_WIDGET,
+  Z, TWO_COL_EXPANDER_BOX_WIDGET,
   ExpanderBoxWidget)
 
 #define TWO_COL_EXPANDER_BOX_DEFAULT_HORIZONTAL_SPACING 4
@@ -140,6 +139,13 @@ two_col_expander_box_widget_add_single (
  */
 void
 two_col_expander_box_widget_remove_children (
+  TwoColExpanderBoxWidget * self);
+
+/**
+ * Gets the content box.
+ */
+GtkBox *
+two_col_expander_box_widget_get_content_box (
   TwoColExpanderBoxWidget * self);
 
 #endif
