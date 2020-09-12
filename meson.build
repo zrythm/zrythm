@@ -614,7 +614,7 @@ fftw3_funcs = [
   ]
 foreach func : fftw3_funcs
   if not cc.has_function (func, dependencies: fftw3_deps)
-    error (func + ' missing')
+    warning (func + ' missing')
   endif
 endforeach
 

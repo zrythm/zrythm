@@ -45,6 +45,8 @@ tempo_track_init (
   self->main_height = TRACK_DEF_HEIGHT / 2;
 
   gdk_rgba_parse (&self->color, "#2f6c52");
+  self->icon_name =
+    g_strdup ("filename-bpm-amarok");
 
   /* create bpm port */
   self->bpm_port =

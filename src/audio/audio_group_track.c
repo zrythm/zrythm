@@ -31,10 +31,12 @@
 #include "project.h"
 
 void
-audio_group_track_init (Track * track)
+audio_group_track_init (
+  Track * self)
 {
-  track->type = TRACK_TYPE_AUDIO_GROUP;
-  gdk_rgba_parse (&track->color, "#D9DADD");
+  self->type = TRACK_TYPE_AUDIO_GROUP;
+  gdk_rgba_parse (&self->color, "#D9DADD");
+  self->icon_name = g_strdup ("effect");
 }
 
 void

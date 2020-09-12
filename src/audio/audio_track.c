@@ -41,6 +41,7 @@ audio_track_init (
 {
   self->type = TRACK_TYPE_AUDIO;
   gdk_rgba_parse (&self->color, "#19664c");
+  self->icon_name = g_strdup ("signal-audio");
 
   self->rt_stretcher =
     stretcher_new_rubberband (

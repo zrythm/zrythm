@@ -205,6 +205,9 @@ typedef struct Track
   /** Track name, used in channel too. */
   char *              name;
 
+  /** Icon name of the track. */
+  char *              icon_name;
+
   /**
    * Track Widget created dynamically.
    * 1 track has 1 widget.
@@ -443,6 +446,7 @@ static const cyaml_schema_field_t
 track_fields_schema[] =
 {
   YAML_FIELD_STRING_PTR (Track, name),
+  YAML_FIELD_STRING_PTR (Track, icon_name),
   YAML_FIELD_ENUM (
     Track, type, track_type_strings),
   YAML_FIELD_INT (
@@ -1037,10 +1041,20 @@ track_get_comment (
  */
 void
 track_set_color (
-  Track *   self,
-  GdkRGBA * color,
-  bool      undoable,
-  bool      fire_events);
+  Track *         self,
+  const GdkRGBA * color,
+  bool            undoable,
+  bool            fire_events);
+
+/**
+ * Sets the track icon.
+ */
+void
+track_set_icon (
+  Track *      self,
+  const char * icon_name,
+  bool         undoable,
+  bool         fire_events);
 
 /**
  * Recursively marks the track and children as

@@ -151,13 +151,13 @@ if get_option ('tests')
       ['actions/copy_plugins', true],
       ['actions/copy_tracks', true],
       ['actions/create_plugins', true],
-      ['actions/edit_tracks', true],
+      ['actions/edit_tracks', false],
       ['actions/move_plugins', true],
       ['actions/move_tracks', false],
       ['actions/delete_tracks', true],
       ['actions/port_connection', true],
       ['benchmarks/dsp', true],
-      ['integration/midi_file', true],
+      ['integration/midi_file', false],
       # cannot be parallel because it needs multiple
       # threads
       ['integration/run_graph_with_latencies', false],

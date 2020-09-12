@@ -27,6 +27,7 @@
 #include "audio/router.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "utils/color.h"
 #include "utils/flags.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -35,6 +36,12 @@
 #include "tests/helpers/project.h"
 
 #include <glib.h>
+
+static Track *
+get_ins_track (void)
+{
+  return TRACKLIST->tracks[3];
+}
 
 static void
 _test_edit_tracks (
@@ -58,7 +65,7 @@ _test_edit_tracks (
         TRACK_TYPE_AUDIO_BUS,
       descr, NULL, 3, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, action);
-  Track * ins_track = TRACKLIST->tracks[3];
+  Track * ins_track = get_ins_track ();
   if (is_instrument)
     {
       g_assert_true (
@@ -81,11 +88,12 @@ _test_edit_tracks (
     ins_track, F_SELECT, F_EXCLUSIVE,
     F_NO_PUBLISH_EVENTS);
 
+  UndoableAction * ua = NULL;
   switch (type)
     {
     case EDIT_TRACK_ACTION_TYPE_MUTE:
       {
-        UndoableAction * ua =
+        ua =
           edit_tracks_action_new_mute (
             TRACKLIST_SELECTIONS, true);
         undo_manager_perform (
@@ -131,7 +139,7 @@ _test_edit_tracks (
 
         /* change the direct out to the
          * instrument */
-        UndoableAction * ua =
+        ua =
           edit_tracks_action_new_direct_out (
             TRACKLIST_SELECTIONS, ins_track);
         undo_manager_perform (UNDO_MANAGER, ua);
@@ -186,7 +194,7 @@ _test_edit_tracks (
         track_select (
           ins_track, F_SELECT, F_EXCLUSIVE,
           F_NO_PUBLISH_EVENTS);
-        UndoableAction * ua =
+        ua =
           edit_tracks_action_new_direct_out (
             TRACKLIST_SELECTIONS, group_track);
         undo_manager_perform (UNDO_MANAGER, ua);
@@ -271,7 +279,7 @@ _test_edit_tracks (
               channel_get_balance_control (
                 ins_track->channel);
           }
-        UndoableAction * ua =
+        ua =
           edit_tracks_action_new_track_float (
             type,
             ins_track, val_before, new_val,
@@ -339,6 +347,69 @@ _test_edit_tracks (
         undo_manager_undo (UNDO_MANAGER);
       }
       break;
+    case EDIT_TRACK_ACTION_TYPE_COLOR:
+      {
+        GdkRGBA new_color = {
+          .red = 0.8, .green = 0.7,
+          .blue = 0.2, .alpha = 1.0 };
+        GdkRGBA color_before = ins_track->color;
+        track_set_color (
+          ins_track, &new_color, F_UNDOABLE,
+          F_NO_PUBLISH_EVENTS);
+        g_assert_true (
+          color_is_same (
+            &ins_track->color, &new_color));
+
+        test_project_save_and_reload ();
+
+        ins_track = get_ins_track ();
+
+        /* undo/redo and re-verify */
+        undo_manager_undo (UNDO_MANAGER);
+        g_assert_true (
+          color_is_same (
+            &ins_track->color, &color_before));
+        undo_manager_redo (UNDO_MANAGER);
+        g_assert_true (
+          color_is_same (
+            &ins_track->color, &new_color));
+
+        /* undo to go back to original state */
+        undo_manager_undo (UNDO_MANAGER);
+      }
+      break;
+    case EDIT_TRACK_ACTION_TYPE_ICON:
+      {
+        const char * new_icon = "icon2";
+        char * icon_before =
+          g_strdup (ins_track->icon_name);
+        track_set_icon (
+          ins_track, new_icon, F_UNDOABLE,
+          F_NO_PUBLISH_EVENTS);
+        g_assert_true (
+          string_is_equal (
+            ins_track->icon_name, new_icon));
+
+        test_project_save_and_reload ();
+
+        ins_track = get_ins_track ();
+
+        /* undo/redo and re-verify */
+        undo_manager_undo (UNDO_MANAGER);
+        g_assert_true (
+          string_is_equal (
+            ins_track->icon_name, icon_before));
+        undo_manager_redo (UNDO_MANAGER);
+        g_assert_true (
+          string_is_equal (
+            ins_track->icon_name, new_icon));
+
+        /* undo to go back to original state */
+        undo_manager_undo (UNDO_MANAGER);
+
+        g_free (icon_before);
+      }
+      break;
     default:
       break;
     }
@@ -353,7 +424,7 @@ static void __test_edit_tracks (bool with_carla)
 
   for (EditTracksActionType i =
          EDIT_TRACK_ACTION_TYPE_SOLO;
-       i <= EDIT_TRACK_ACTION_TYPE_RENAME; i++)
+       i <= EDIT_TRACK_ACTION_TYPE_ICON; i++)
     {
 #ifdef HAVE_HELM
       _test_edit_tracks (

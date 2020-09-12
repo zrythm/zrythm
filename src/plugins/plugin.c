@@ -1617,6 +1617,7 @@ plugin_clone (
            * instantiate it */
           if (!pl->instantiated)
             {
+              g_message ("source plugin not instantiated, instantiating it...");
               int ret =
                 plugin_instantiate (
                   pl, src_is_project, NULL);

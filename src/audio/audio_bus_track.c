@@ -30,10 +30,12 @@
 #include "project.h"
 
 void
-audio_bus_track_init (Track * track)
+audio_bus_track_init (
+  Track * self)
 {
-  track->type = TRACK_TYPE_AUDIO_BUS;
-  gdk_rgba_parse (&track->color, "#F9CA1B");
+  self->type = TRACK_TYPE_AUDIO_BUS;
+  gdk_rgba_parse (&self->color, "#F9CA1B");
+  self->icon_name = g_strdup ("effect");
 }
 
 void

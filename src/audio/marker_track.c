@@ -42,6 +42,8 @@ marker_track_init (
 {
   self->type = TRACK_TYPE_MARKER;
   self->main_height = TRACK_DEF_HEIGHT / 2;
+  self->icon_name =
+    g_strdup ("kdenlive-show-markers");
 
   gdk_rgba_parse (&self->color, "#a328aa");
 }

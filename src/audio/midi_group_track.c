@@ -30,10 +30,12 @@
 #include "project.h"
 
 void
-midi_group_track_init (Track * track)
+midi_group_track_init (
+  Track * self)
 {
-  track->type = TRACK_TYPE_MIDI_GROUP;
-  gdk_rgba_parse (&track->color, "#D9DADD");
+  self->type = TRACK_TYPE_MIDI_GROUP;
+  gdk_rgba_parse (&self->color, "#D9DADD");
+  self->icon_name = g_strdup ("audio-midi");
 }
 
 void

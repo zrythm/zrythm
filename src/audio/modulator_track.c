@@ -61,6 +61,7 @@ modulator_track_init (
   self->main_height = TRACK_DEF_HEIGHT / 2;
 
   gdk_rgba_parse (&self->color, "#222222");
+  self->icon_name = g_strdup ("modulator");
 
   /* set invisible */
   self->visible = false;

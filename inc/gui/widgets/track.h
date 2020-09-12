@@ -75,11 +75,6 @@ typedef struct _TrackWidget
    * meters on the right. */
   GtkBox *          main_box;
 
-  /** Track icon, currently not placed anywhere
-   * but used by the ColorAreaWidget to get the
-   * pixbuf. */
-  char              icon_name[60];
-
   GtkGestureDrag *  drag;
   GtkGestureMultiPress * multipress;
 
@@ -111,6 +106,16 @@ typedef struct _TrackWidget
    * is considered part of the BG.
    */
   bool              color_area_hovered;
+
+  /**
+   * Whether the icon in the color area is
+   * currently hoverred.
+   *
+   * This is not mutually exclusive with
+   * \ref TrackWidget.color_area_hovered. The
+   * icon is considered part of the color area.
+   */
+  bool              icon_hovered;
 
   /**
    * Set when the drag should resize instead of dnd.

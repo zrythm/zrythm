@@ -46,10 +46,13 @@
  * Initializes an midi track.
  */
 void
-midi_track_init (Track * track)
+midi_track_init (
+  Track * self)
 {
-  track->type = TRACK_TYPE_MIDI;
-  gdk_rgba_parse (&track->color, "#F79616");
+  self->type = TRACK_TYPE_MIDI;
+  gdk_rgba_parse (&self->color, "#F79616");
+
+  self->icon_name = g_strdup ("audio-midi");
 }
 
 void

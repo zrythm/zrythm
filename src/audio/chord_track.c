@@ -41,8 +41,8 @@ chord_track_init (
   Track * self)
 {
   self->type = TRACK_TYPE_CHORD;
-
   gdk_rgba_parse (&self->color, "#0348fa");
+  self->icon_name = g_strdup ("minuet-chords");
 }
 
 /**

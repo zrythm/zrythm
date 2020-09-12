@@ -26,10 +26,12 @@
 #include <gtk/gtk.h>
 
 void
-master_track_init (Track * track)
+master_track_init (
+  Track * self)
 {
-  track->type = TRACK_TYPE_MASTER;
-  gdk_rgba_parse (&track->color, "#f01010");
+  self->type = TRACK_TYPE_MASTER;
+  gdk_rgba_parse (&self->color, "#f01010");
+  self->icon_name = g_strdup ("effect");
 }
 
 void

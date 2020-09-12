@@ -19,7 +19,7 @@
 Name=Zrythm Dark
 Comment=Zrythm Dark by the Zrythm authors
 Inherits=breeze-dark,default
-Directories=scalable/actions,scalable/apps,scalable/devices,scalable/emotes,scalable/mimetypes,scalable/places,scalable/status
+Directories=scalable/actions,scalable/apps,scalable/devices,scalable/emotes,scalable/mimetypes,scalable/places,scalable/status,scalable/tracktypes
 
 [scalable/actions]
 Size=48
@@ -69,3 +69,12 @@ Type=Scalable
 MinSize=1
 MaxSize=256
 Context=Status
+
+# These will be shown when selecting a track icon.
+# They can be symlinks of existing icons.
+[scalable/tracktypes]
+Size=48
+Type=Scalable
+MinSize=1
+MaxSize=256
+Context=TrackTypes

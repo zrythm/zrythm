@@ -215,7 +215,7 @@ edit_tracks_action_new_direct_out (
 UndoableAction *
 edit_tracks_action_new_color (
   TracklistSelections * tls,
-  GdkRGBA *             color)
+  const GdkRGBA *       color)
 {
   EditTracksAction * self =
     object_new (EditTracksAction);
@@ -225,6 +225,32 @@ edit_tracks_action_new_color (
 
   self->type = EDIT_TRACK_ACTION_TYPE_COLOR;
   self->new_color = *color;
+
+  self->tls_before =
+    tracklist_selections_clone (tls);
+  /* FIXME */
+  self->tls_after =
+    tracklist_selections_clone (self->tls_before);
+
+  return ua;
+}
+
+/**
+ * Wrapper over edit_tracks_action_new().
+ */
+UndoableAction *
+edit_tracks_action_new_icon (
+  TracklistSelections * tls,
+  const char *          icon)
+{
+  EditTracksAction * self =
+    object_new (EditTracksAction);
+
+  UndoableAction * ua = (UndoableAction *) self;
+  ua->type = UA_EDIT_TRACKS;
+
+  self->type = EDIT_TRACK_ACTION_TYPE_ICON;
+  self->new_icon = g_strdup (icon);
 
   self->tls_before =
     tracklist_selections_clone (tls);
@@ -317,6 +343,11 @@ edit_tracks_action_do (EditTracksAction * self)
             track, &self->new_color,
             F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
           break;
+        case EDIT_TRACK_ACTION_TYPE_ICON:
+          track_set_icon (
+            track, self->new_icon,
+            F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
+          break;
         }
 
       EVENTS_PUSH (ET_TRACK_STATE_CHANGED, track);
@@ -402,6 +433,11 @@ edit_tracks_action_undo (
             track, &clone_track_before->color,
             F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
           break;
+        case EDIT_TRACK_ACTION_TYPE_ICON:
+          track_set_icon (
+            track, clone_track_before->icon_name,
+            F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
+          break;
         }
       EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
                    track);
@@ -447,6 +483,9 @@ edit_tracks_action_stringize (
         case EDIT_TRACK_ACTION_TYPE_COLOR:
           return g_strdup (
             _("Change color"));
+        case EDIT_TRACK_ACTION_TYPE_ICON:
+          return g_strdup (
+            _("Change icon"));
         default:
           g_return_val_if_reached (
             g_strdup (""));

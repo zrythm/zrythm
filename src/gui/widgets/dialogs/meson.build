@@ -24,4 +24,5 @@ widget_srcs += files([
   'object_color_chooser_dialog.c',
   'port_info.c',
   'string_entry_dialog.c',
+  'track_icon_chooser_dialog.c',
   ])

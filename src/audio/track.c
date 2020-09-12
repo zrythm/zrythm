@@ -375,6 +375,11 @@ track_clone (
       track->type, track->pos, track->name,
       F_WITHOUT_LANE);
 
+  new_track->icon_name =
+    g_strdup (track->icon_name);
+  new_track->comment =
+    g_strdup (track->comment);
+
 #define COPY_MEMBER(a) \
   new_track->a = track->a
 
@@ -2119,20 +2124,19 @@ track_get_comment (
  */
 void
 track_set_color (
-  Track *   self,
-  GdkRGBA * color,
-  bool      undoable,
-  bool      fire_events)
+  Track *         self,
+  const GdkRGBA * color,
+  bool            undoable,
+  bool            fire_events)
 {
   if (undoable)
     {
-      TracklistSelections * sel =
-        tracklist_selections_new (false);
-      tracklist_selections_add_track (
-        sel, self, F_NO_PUBLISH_EVENTS);
+      track_select (
+        self, F_SELECT, F_EXCLUSIVE,
+        F_NO_PUBLISH_EVENTS);
       UndoableAction * ua =
-        edit_tracks_action_new_color (sel, color);
-      tracklist_selections_free (sel);
+        edit_tracks_action_new_color (
+          TRACKLIST_SELECTIONS, color);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
   else
@@ -2143,6 +2147,37 @@ track_set_color (
         {
           EVENTS_PUSH (
             ET_TRACK_COLOR_CHANGED, self);
+        }
+    }
+}
+
+/**
+ * Sets the track icon.
+ */
+void
+track_set_icon (
+  Track *      self,
+  const char * icon_name,
+  bool         undoable,
+  bool         fire_events)
+{
+  if (undoable)
+    {
+      track_select (
+        self, F_SELECT, F_EXCLUSIVE,
+        F_NO_PUBLISH_EVENTS);
+      UndoableAction * ua =
+        edit_tracks_action_new_icon (
+          TRACKLIST_SELECTIONS, icon_name);
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+  else
+    {
+      self->icon_name = g_strdup (icon_name);
+
+      if (fire_events)
+        {
+          /* TODO */
         }
     }
 }
@@ -2360,6 +2395,7 @@ track_free (Track * self)
 
   g_free_and_null (self->name);
   g_free_and_null (self->comment);
+  g_free_and_null (self->icon_name);
 
   object_zero_and_free (self);
 

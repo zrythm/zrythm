@@ -40,6 +40,7 @@
 #include "gui/widgets/custom_button.h"
 #include "gui/widgets/dialogs/bounce_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
+#include "gui/widgets/dialogs/track_icon_chooser_dialog.h"
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/main_window.h"
@@ -290,7 +291,7 @@ draw_color_area (
 {
   cairo_surface_t * surface =
     z_cairo_get_surface_from_icon_name (
-      self->icon_name, 16, 0);
+      self->track->icon_name, 16, 0);
 
   GdkRGBA bg_color = self->track->color;
   if (self->color_area_hovered)
@@ -316,6 +317,10 @@ draw_color_area (
   cairo_fill (cr);
 
   /* add main icon */
+  if (self->icon_hovered)
+    {
+      color_brighten_default (&c2);
+    }
   cairo_set_source_rgba (
     cr, c2.red, c2.green, c2.blue, 1);
   /*cairo_set_source_surface (*/
@@ -1338,15 +1343,16 @@ on_motion (
           self->resize = 0;
           self->button_pressed = 0;
         }
+      self->icon_hovered = false;
     }
   else
     {
-      /* set tooltips */
       if (event->type == GDK_MOTION_NOTIFY)
         {
           GdkEventMotion * motion_ev =
             (GdkEventMotion *) event;
 
+          /* set tooltips */
           CustomButtonWidget * hovered_btn =
             get_hovered_button (
               self,
@@ -1354,9 +1360,22 @@ on_motion (
               (int) motion_ev->y);
           set_tooltip_from_button (
             self, hovered_btn);
+
+          /* set whether icon is covered */
+          if (motion_ev->x >= 1 &&
+              motion_ev->y >= 1 &&
+              motion_ev->x < 18 &&
+              motion_ev->y < 18)
+            {
+              self->icon_hovered = true;
+            }
+          else
+            {
+              self->icon_hovered = false;
+            }
         }
 
-      self->bg_hovered = 1;
+      self->bg_hovered = true;
     }
   track_widget_force_redraw (self);
 
@@ -1986,7 +2005,15 @@ multipress_pressed (
         track, ctrl, shift, false);
     }
 
-  if (self->color_area_hovered)
+  if (self->icon_hovered)
+    {
+      TrackIconChooserDialogWidget * icon_chooser =
+        track_icon_chooser_dialog_widget_new (
+          self->track);
+      track_icon_chooser_dialog_widget_run (
+        icon_chooser);
+    }
+  else if (self->color_area_hovered)
     {
       ObjectColorChooserDialogWidget * color_chooser =
         object_color_chooser_dialog_widget_new_for_track (
@@ -2680,9 +2707,6 @@ track_widget_new (Track * track)
   switch (track->type)
     {
     case TRACK_TYPE_INSTRUMENT:
-      strcpy (
-        self->icon_name,
-        ICON_NAME_MIDI);
       add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (
@@ -2700,9 +2724,6 @@ track_widget_new (Track * track)
         ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MIDI:
-      strcpy (
-        self->icon_name,
-        ICON_NAME_MIDI);
       add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (
@@ -2715,7 +2736,6 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MASTER:
-      strcpy (self->icon_name, ICON_NAME_BUS);
       add_button (
         self, 1, ICON_NAME_MONO_COMPAT);
       add_solo_button (self, 1);
@@ -2725,30 +2745,24 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_CHORD:
-      strcpy (self->icon_name, ICON_NAME_CHORDS);
       add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);
       break;
     case TRACK_TYPE_MARKER:
-      strcpy (
-        self->icon_name, ICON_NAME_SHOW_MARKERS);
       break;
     case TRACK_TYPE_TEMPO:
-      strcpy (self->icon_name, ICON_NAME_TEMPO);
       add_button (
         self, true,
         ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MODULATOR:
-      strcpy (self->icon_name, ICON_NAME_MODULATOR);
       add_button (
         self, true,
         ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_AUDIO_BUS:
-      strcpy (self->icon_name, ICON_NAME_BUS);
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);
@@ -2756,7 +2770,6 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MIDI_BUS:
-      strcpy (self->icon_name, ICON_NAME_BUS);
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);
@@ -2764,7 +2777,6 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_AUDIO_GROUP:
-      strcpy (self->icon_name, ICON_NAME_BUS);
       add_button (
         self, 1, ICON_NAME_MONO_COMPAT);
       add_solo_button (self, 1);
@@ -2774,7 +2786,6 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MIDI_GROUP:
-      strcpy (self->icon_name, ICON_NAME_BUS);
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);
@@ -2782,7 +2793,6 @@ track_widget_new (Track * track)
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_AUDIO:
-      strcpy (self->icon_name, "signal-audio");
       add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (
