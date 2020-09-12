@@ -1697,7 +1697,8 @@ on_dnd_data_received (
 
   if (target ==
         GET_ATOM (TARGET_ENTRY_CHORD_DESCR) &&
-      self->is_highlighted)
+      self->is_highlighted && track &&
+      track_has_piano_roll (track))
     {
       ChordDescriptor * descr = NULL;
       const guchar * my_data =
