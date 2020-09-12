@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:44+0100\n"
-"PO-Revision-Date: 2020-08-31 15:36+0000\n"
+"PO-Revision-Date: 2020-09-11 17:17+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/manualediting/zh_Hant/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.2.1-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -166,7 +166,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:23
 msgid "Chords"
-msgstr ""
+msgstr "和弦"
 
 #: ../../editing/clip-editors/chord-editor.rst:24
 msgid ""
@@ -629,7 +629,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:68
 msgid "Selections"
-msgstr ""
+msgstr "選取"
 
 #: ../../editing/common-operations.rst:70
 msgid "Clear Selection"
@@ -1074,7 +1074,7 @@ msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:31
 msgid "Length"
-msgstr ""
+msgstr "長度"
 
 #: ../../editing/snapping-grid-options.rst:32
 msgid "Note length to snap to."

@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-06 16:31+0100\n"
-"PO-Revision-Date: 2020-09-11 05:53+0000\n"
-"Last-Translator: xunil-cloud <freed602om@gmail.com>\n"
+"PO-Revision-Date: 2020-09-11 17:17+0000\n"
+"Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
 "Language: zh_Hant\n"
@@ -2939,7 +2939,7 @@ msgstr "標籤"
 
 #: resources/ui/help_toolbar.ui:58
 msgid "News"
-msgstr ""
+msgstr "最新資訊"
 
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
@@ -3444,17 +3444,17 @@ msgstr ""
 
 #: resources/ui/preferences.ui:465
 msgid "Main Window"
-msgstr ""
+msgstr "主視窗"
 
 #: resources/ui/preferences.ui:482 build/data/org.zrythm.Zrythm.gschema.xml:578
 #: build/data/org.zrythm.Zrythm.gschema.xml:592
 #: build/data/org.zrythm.Zrythm.gschema.xml:606
 msgid "Editing"
-msgstr ""
+msgstr "編輯"
 
 #: resources/ui/preferences.ui:498
 msgid "Interface"
-msgstr ""
+msgstr "介面"
 
 #: resources/ui/preferences.ui:523
 msgid "The language of the Zrythm interface"
@@ -3462,12 +3462,12 @@ msgstr ""
 
 #: resources/ui/preferences.ui:555
 msgid "GUI"
-msgstr ""
+msgstr "圖形化介面"
 
 #: resources/ui/preferences.ui:572 resources/ui/preferences.ui:618
 #: build/data/org.zrythm.Zrythm.gschema.xml:621
 msgid "Projects"
-msgstr ""
+msgstr "專案"
 
 #: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:627
 msgid "Autosave interval"
