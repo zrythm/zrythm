@@ -36,7 +36,8 @@
 
 #define BUFFER_SIZE 20
 #define LARGE_BUFFER_SIZE 2000
-#define MAX_FILES 100
+/* around 100 causes OOM in various CIs */
+#define MAX_FILES 60
 
 static void
 test_midi_file_playback ()
@@ -137,6 +138,9 @@ test_midi_file_playback ()
               midi_events_clear (events, true);
             }
         }
+
+      /* sleep to avoid being killed */
+      g_usleep (10000);
 
       if (iter == MAX_FILES)
         break;
