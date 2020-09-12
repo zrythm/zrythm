@@ -49,6 +49,8 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
+#include "ext/whereami/whereami.h"
+
 #ifdef HAVE_GTK_SOURCE_VIEW_4
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -517,10 +519,22 @@ main (int    argc,
 
   /* send activate signal */
   g_message ("Initing Zrythm app...");
+  char * exe_path = NULL;
+  int length, dirname_length;
+  length =
+    wai_getExecutablePath (NULL, 0, &dirname_length);
+  if (length > 0)
+  {
+    exe_path = (char *) malloc (length + 1);
+    wai_getExecutablePath (
+      exe_path, length, &dirname_length);
+    exe_path[length] = '\0';
+  }
+  g_message ("executable path found: %s", exe_path);
   zrythm_app =
     zrythm_app_new (
-      argv[0], audio_backend, midi_backend,
-      buf_size);
+      exe_path ? exe_path : argv[0],
+      audio_backend, midi_backend, buf_size);
 
   g_message ("running Zrythm...");
   int ret = 0;

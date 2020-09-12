@@ -77,7 +77,9 @@ addr2line (
   // sprintf(addr2line_cmd,"atos -o %.256s %p", program_name, addr);
   return 1;
   #else
-  sprintf(addr2line_cmd,"addr2line -f -e %.256s %p", program_name, addr);
+  sprintf (
+    addr2line_cmd, "addr2line -f -e %.256s %p",
+    program_name, addr);
   #endif
 
   /* This will print a nicely formatted string specifying the
@@ -88,7 +90,8 @@ addr2line (
   char outLine2[1035];
 
   /* Open the command for reading. */
-  fp = popen(addr2line_cmd, "r");
+  /* FIXME use reproc, this uses fork () */
+  fp = popen (addr2line_cmd, "r");
   if (fp == NULL)
     return 1;
 

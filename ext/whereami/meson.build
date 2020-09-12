@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -15,8 +15,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-subdir ('midilib')
-subdir ('weakjack')
-subdir ('whereami')
-subdir ('zix')
-subdir ('zita-resampler')
+whereami_srcs = [
+  'whereami.c',
+  ]
+
+whereami_lib = static_library (
+  'whereami',
+  whereami_srcs,
+  c_args: [
+    '-DWAI_FUNCSPEC=',
+    ],
+  )

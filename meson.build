@@ -150,6 +150,8 @@ inc_inc = include_directories ('inc')
 ext_inc = include_directories ('ext')
 midilib_inc = include_directories (
   join_paths ('ext', 'midilib'))
+whereami_inc = include_directories (
+  join_paths ('ext', 'whereami'))
 zix_inc = include_directories (
   join_paths ('ext', 'zix'))
 weakjack_inc = include_directories (
@@ -161,6 +163,7 @@ all_inc = [
   inc_inc,
   ext_inc,
   midilib_inc,
+  whereami_inc,
   zix_inc,
   weakjack_inc,
   suil_inc,

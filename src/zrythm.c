@@ -497,7 +497,7 @@ zrythm_new (
   Zrythm * self = object_new (Zrythm);
   ZRYTHM = self;
 
-  self->exe_path = exe_path;
+  self->exe_path = g_strdup (exe_path);
 
   self->have_ui = have_ui;
   self->testing = testing;

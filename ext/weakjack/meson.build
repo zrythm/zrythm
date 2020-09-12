@@ -22,4 +22,3 @@ weakjack_srcs = [
 if have_jack
 ext_srcs += files (weakjack_srcs)
 endif
-

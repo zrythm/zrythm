@@ -49,6 +49,7 @@ zrythm_link_libs = [
   lv2_lib,
   widgets_lib,
   midilib,
+  whereami_lib,
   zita_resampler_lib,
   ]
 
