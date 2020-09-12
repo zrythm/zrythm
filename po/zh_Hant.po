@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-06 16:31+0100\n"
-"PO-Revision-Date: 2020-09-01 18:40+0000\n"
+"PO-Revision-Date: 2020-09-11 17:17+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.2.1-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:188
@@ -120,7 +120,7 @@ msgstr "拷貝"
 #: inc/utils/gtk.h:92 src/gui/widgets/track.c:1179
 #: resources/ui/fader_buttons.ui:99
 msgid "Mute"
-msgstr ""
+msgstr "靜音"
 
 #: inc/utils/gtk.h:98 src/gui/widgets/track.c:1175
 msgid "Unmute"
@@ -129,12 +129,12 @@ msgstr "取消靜音"
 #: inc/audio/track.h:162 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:186
 msgid "Instrument"
-msgstr ""
+msgstr "虛擬樂器"
 
 #: inc/audio/track.h:163 src/gui/widgets/bot_bar.c:491 src/audio/region.c:396
 #: build/data/org.zrythm.Zrythm.gschema.xml:579
 msgid "Audio"
-msgstr ""
+msgstr "音訊"
 
 #: inc/audio/track.h:164 src/project.c:659
 #: src/gui/widgets/route_target_selector_popover.c:163
@@ -145,7 +145,7 @@ msgstr ""
 #: src/gui/widgets/event_viewer.c:589 src/audio/region.c:402
 #: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
-msgstr ""
+msgstr "和弦"
 
 #: inc/audio/track.h:167 src/audio/tempo_track.c:89
 msgid "Tempo"
@@ -320,6 +320,9 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"有新的備份：\n"
+"  %s。\n"
+"是否要套用新的備份？"
 
 #: src/project.c:797
 msgid "Backup found"
@@ -352,7 +355,7 @@ msgstr "已完成備份。"
 
 #: src/project.c:1453
 msgid "Project saved."
-msgstr ""
+msgstr "專案已儲存。"
 
 #: src/main.c:76
 msgid "Error - Backtrace:\n"
@@ -460,7 +463,7 @@ msgstr ""
 
 #: src/zrythm_app.c:234
 msgid "Loading project"
-msgstr ""
+msgstr "載入專案中"
 
 #: src/zrythm_app.c:247
 #, c-format
@@ -573,12 +576,12 @@ msgstr ""
 #: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:240 resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
-msgstr ""
+msgstr "取消"
 
 #: src/plugins/plugin_gtk.c:85 src/plugins/lv2/lv2_gtk.c:109
 #: src/actions/actions.c:777
 msgid "_Save"
-msgstr ""
+msgstr "儲存"
 
 #: src/plugins/lv2_plugin.c:2522
 msgid "Unnamed bank"
@@ -600,7 +603,7 @@ msgstr ""
 #: resources/ui/string_entry_dialog.ui:61
 #: resources/ui/port_selector_popover.ui:254
 msgid "_OK"
-msgstr ""
+msgstr "確定"
 
 #: src/plugins/lv2/lv2_gtk.c:572
 msgid "Unknown widget type for value"
@@ -612,7 +615,7 @@ msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:1250
 msgid "Close"
-msgstr ""
+msgstr "關閉"
 
 #: src/gui/widgets/create_project_dialog.c:111
 msgid "Create New Project"
@@ -620,7 +623,7 @@ msgstr "建立新專案"
 
 #: src/gui/widgets/create_project_dialog.c:125
 msgid "Untitled Project"
-msgstr ""
+msgstr "未命名的專案"
 
 #: src/gui/widgets/fader_controls_grid.c:92
 msgid "Peak"
@@ -733,7 +736,7 @@ msgstr "L"
 #: src/gui/widgets/track_input_expander.c:353
 #: resources/ui/automation_track.ui:100
 msgid "R"
-msgstr ""
+msgstr "R"
 
 #: src/gui/widgets/track_input_expander.c:423
 msgid "All Channels"
@@ -763,7 +766,7 @@ msgstr "輸入"
 #: src/gui/widgets/midi_controller_mb.c:47
 #: src/gui/widgets/midi_controller_mb.c:123
 msgid "Select..."
-msgstr ""
+msgstr "選擇..."
 
 #: src/gui/widgets/midi_controller_mb.c:126
 msgid "Click to enable MIDI controllers to be connected automatically"
@@ -791,12 +794,12 @@ msgstr ""
 #: resources/ui/arranger_object_info_dialog.ui:72
 #: resources/ui/port_info_dialog.ui:72
 msgid "Name"
-msgstr ""
+msgstr "名稱"
 
 #: src/gui/widgets/project_assistant.c:276
 #: resources/ui/first_run_assistant.ui:148
 msgid "Path"
-msgstr ""
+msgstr "路徑"
 
 #: src/gui/widgets/project_assistant.c:286
 msgid "Last Modified"
@@ -839,7 +842,7 @@ msgstr ""
 #: src/gui/widgets/export_midi_file_dialog.c:83
 #, c-format
 msgid "Exporting MIDI region \"%s\""
-msgstr ""
+msgstr "正在輸出 MIDI 片段 \"%s\""
 
 #: src/gui/widgets/port_selector_popover.c:55
 msgid "No port selected"
@@ -857,7 +860,7 @@ msgstr ""
 #: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:24
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
 msgid "OK"
-msgstr ""
+msgstr "確定"
 
 #: src/gui/widgets/editor_selection_info.c:58
 msgid "start position"
@@ -915,7 +918,7 @@ msgstr "新增群組軌"
 #: src/gui/widgets/transport_controls.c:193 src/gui/widgets/midi_track.c:190
 #: resources/ui/fader_buttons.ui:57
 msgid "Record"
-msgstr ""
+msgstr "錄音"
 
 #: src/gui/widgets/instrument_track.c:253 src/gui/widgets/midi_track.c:218
 msgid "Show automation lanes"
@@ -924,7 +927,7 @@ msgstr "顯示自動控制軌"
 #: src/gui/widgets/instrument_track.c:259 src/gui/widgets/audio_track.c:205
 #: src/gui/widgets/midi_track.c:224
 msgid "Show track lanes"
-msgstr ""
+msgstr "顯示子音軌"
 
 #: src/gui/widgets/instrument_track.c:265 src/gui/widgets/midi_track.c:230
 msgid "Lock track"
@@ -984,7 +987,7 @@ msgstr ""
 #: src/gui/widgets/arranger.c:4930
 #, c-format
 msgid "%s name"
-msgstr ""
+msgstr "%s 名稱"
 
 #: src/gui/widgets/piano_roll_keys.c:138
 msgid "both"
@@ -1021,7 +1024,7 @@ msgstr ""
 
 #: src/gui/widgets/plugin_browser.c:1123
 msgid "Category"
-msgstr ""
+msgstr "類別"
 
 #: src/gui/widgets/plugin_browser.c:1133
 msgid "Protocol"
@@ -1229,7 +1232,7 @@ msgstr "關於 Zrythm"
 #: src/gui/widgets/header.c:105 src/gui/widgets/preferences.c:795
 #: resources/ui/shortcuts.ui:40 resources/ui/preferences.ui:27
 msgid "Preferences"
-msgstr ""
+msgstr "選項"
 
 #: src/gui/widgets/header.c:106
 msgid "Log viewer"
@@ -1249,11 +1252,11 @@ msgstr "使用手冊"
 
 #: src/gui/widgets/help_toolbar.c:41 resources/ui/shortcuts.ui:47
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "鍵盤快速鍵"
 
 #: src/gui/widgets/help_toolbar.c:42
 msgid "Donate"
-msgstr ""
+msgstr "捐款"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Report a Bug"
@@ -1280,12 +1283,12 @@ msgstr ""
 #: src/gui/widgets/home_toolbar.c:60 src/gui/widgets/home_toolbar.c:123
 #: resources/ui/home_toolbar.ui:35 build/data/org.zrythm.Zrythm.gschema.xml:607
 msgid "Undo"
-msgstr ""
+msgstr "復原"
 
 #: src/gui/widgets/home_toolbar.c:61 src/gui/widgets/home_toolbar.c:125
 #: resources/ui/home_toolbar.ui:48
 msgid "Redo"
-msgstr ""
+msgstr "重做"
 
 #: src/gui/widgets/home_toolbar.c:127
 msgid "Cut"
@@ -1313,12 +1316,12 @@ msgstr ""
 
 #: src/gui/widgets/right_dock_edge.c:105
 msgid "Plugin Browser"
-msgstr ""
+msgstr "外掛瀏覽器"
 
 #: src/gui/widgets/right_dock_edge.c:133
 #: src/gui/widgets/file_browser_window.c:38
 msgid "File Browser"
-msgstr ""
+msgstr "檔案瀏覽器"
 
 #: src/gui/widgets/right_dock_edge.c:152
 msgid "Control Room"
@@ -1362,7 +1365,7 @@ msgstr ""
 
 #: src/gui/widgets/route_target_selector.c:178
 msgid "Stereo Out"
-msgstr ""
+msgstr "立體聲輸出"
 
 #: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:459
 msgid "Fader"
@@ -1398,7 +1401,7 @@ msgstr ""
 
 #: src/gui/widgets/preferences.c:400 resources/ui/first_run_assistant.ui:124
 msgid "Select a folder"
-msgstr ""
+msgstr "選擇一個資料夾"
 
 #: src/gui/widgets/preferences.c:401
 msgid "Select a file"
@@ -1432,7 +1435,7 @@ msgstr "刪除連接"
 #: src/gui/widgets/balance_control.c:357 src/gui/widgets/fader.c:365
 #: resources/ui/first_run_assistant.ui:134
 msgid "Reset"
-msgstr ""
+msgstr "重設"
 
 #: src/gui/widgets/live_waveform.c:286
 msgid "Live waveform indicator"
@@ -1450,7 +1453,7 @@ msgstr ""
 #: src/gui/widgets/event_viewer.c:112 resources/ui/scale_selector_window.ui:240
 #: resources/ui/inspector_chord.ui:43 resources/ui/editor_toolbar.ui:59
 msgid "Scale"
-msgstr ""
+msgstr "調式"
 
 #: src/gui/widgets/event_viewer.c:115
 msgid "MIDI note"
@@ -1556,12 +1559,12 @@ msgstr ""
 
 #: src/gui/widgets/route_target_selector_popover.c:171
 msgid "Group"
-msgstr ""
+msgstr "群組"
 
 #: src/gui/widgets/route_target_selector_popover.c:242
 #: src/gui/widgets/route_target_selector_popover.c:430
 msgid "No output selected"
-msgstr ""
+msgstr "未選擇輸出"
 
 #: src/gui/widgets/route_target_selector_popover.c:260
 #, c-format
@@ -1582,7 +1585,7 @@ msgstr "另存新檔"
 
 #: src/gui/widgets/project_toolbar.c:42 src/utils/dialogs.c:39
 msgid "Open Project"
-msgstr ""
+msgstr "開啟專案"
 
 #: src/gui/widgets/project_toolbar.c:43
 msgid "Export As"
@@ -1606,7 +1609,7 @@ msgstr "缩小"
 
 #: src/gui/widgets/view_toolbar.c:42
 msgid "Original Size"
-msgstr ""
+msgstr "原始大小"
 
 #: src/gui/widgets/view_toolbar.c:43
 msgid "Best Fit"
@@ -1687,7 +1690,7 @@ msgstr "顯示自動控制軌"
 
 #: src/gui/widgets/track.c:1225 resources/ui/project_assistant.ui:102
 msgid "Remove"
-msgstr ""
+msgstr "移除"
 
 #: src/gui/widgets/track.c:1229
 msgid "Freeze/unfreeze"
@@ -1699,15 +1702,15 @@ msgstr "鎖定/取消鎖定"
 
 #: src/gui/widgets/track.c:1643
 msgid "_Delete Track"
-msgstr ""
+msgstr "刪除音軌"
 
 #: src/gui/widgets/track.c:1646
 msgid "_Delete Tracks"
-msgstr ""
+msgstr "刪除所選音軌"
 
 #: src/gui/widgets/track.c:1657
 msgid "_Duplicate Track"
-msgstr ""
+msgstr "複製音軌"
 
 #: src/gui/widgets/track.c:1660
 msgid "_Duplicate Tracks"
@@ -1769,8 +1772,9 @@ msgid "Port info"
 msgstr ""
 
 #: src/gui/widgets/dialogs/about_dialog.c:91
+#, fuzzy
 msgid "a highly automated and intuitive digital audio workstation"
-msgstr ""
+msgstr "一個直觀且能高度自動化控制參數的數位音樂工作站"
 
 #: src/gui/widgets/dialogs/about_dialog.c:95
 msgid "Website"
@@ -1815,7 +1819,7 @@ msgstr ""
 
 #: src/utils/dialogs.c:44
 msgid "_Open"
-msgstr ""
+msgstr "開啟"
 
 #: src/utils/dialogs.c:67
 msgid "Overwrite Plugin"
@@ -1896,12 +1900,12 @@ msgstr ""
 #: src/settings/settings.c:283
 #, c-format
 msgid "Aborting...\n"
-msgstr ""
+msgstr "正在退出...\n"
 
 #: src/settings/settings.c:294
 #, c-format
 msgid "Reset to factory settings successful\n"
-msgstr ""
+msgstr "已恢復原廠設定\n"
 
 #: src/audio/tracklist.c:957
 msgid "No file was found"
@@ -1910,7 +1914,7 @@ msgstr ""
 #: src/audio/tracklist.c:982
 #, c-format
 msgid "Unsupported file type %s"
-msgstr ""
+msgstr "不支援的檔案格式 %s"
 
 #: src/audio/tracklist.c:1001
 msgid "Cannot drop MIDI files into existing tracks"
@@ -1918,11 +1922,11 @@ msgstr ""
 
 #: src/audio/tracklist.c:1011
 msgid "Can only drop audio files on audio tracks"
-msgstr ""
+msgstr "音訊軌只支援音訊檔"
 
 #: src/audio/chord_track.c:57 resources/ui/inspector_chord.ui:31
 msgid "Chords"
-msgstr ""
+msgstr "和弦"
 
 #: src/audio/automation_track.c:98
 msgid "Rec"
@@ -2095,7 +2099,7 @@ msgstr ""
 
 #: src/audio/engine_jack.c:539
 msgid "Unable to connect to the JACK server"
-msgstr ""
+msgstr "無法連接到 JACK"
 
 #: src/audio/engine_jack.c:545
 msgid "Communication error with the JACK server"
@@ -2140,21 +2144,21 @@ msgstr ""
 #: src/actions/create_plugins_action.c:173
 #, c-format
 msgid "Create %s"
-msgstr ""
+msgstr "建立 %s"
 
 #: src/actions/create_plugins_action.c:177
 #, c-format
 msgid "Create %d %ss"
-msgstr ""
+msgstr "建立 %d 個 %s"
 
 #: src/actions/delete_tracks_action.c:429
 msgid "Delete Track"
-msgstr ""
+msgstr "刪除音軌"
 
 #: src/actions/delete_tracks_action.c:432
 #, c-format
 msgid "Delete %d Tracks"
-msgstr ""
+msgstr "刪除 %d 個音軌"
 
 #: src/actions/midi_mapping_action.c:211
 msgid "MIDI mapping enable"
@@ -2188,19 +2192,19 @@ msgstr ""
 #: src/actions/actions.c:644 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
 msgid "Create new project"
-msgstr ""
+msgstr "建立新專案"
 
 #: src/actions/actions.c:647
 msgid "Yes"
-msgstr ""
+msgstr "是"
 
 #: src/actions/actions.c:649
 msgid "No"
-msgstr ""
+msgstr "否"
 
 #: src/actions/actions.c:654
 msgid "Any unsaved changes to the current project will be lost. Continue?"
-msgstr ""
+msgstr "專案尚未儲存，確定要繼續？"
 
 #: src/actions/actions.c:706
 msgid "Loading is disabled in the trial version"
@@ -2212,7 +2216,7 @@ msgstr ""
 
 #: src/actions/actions.c:772
 msgid "Save Project"
-msgstr ""
+msgstr "儲存專案"
 
 #: src/actions/actions.c:857
 msgid "Export routing graph"
@@ -2220,7 +2224,7 @@ msgstr ""
 
 #: src/actions/actions.c:859
 msgid "Image (PNG)"
-msgstr ""
+msgstr "圖片 (PNG)"
 
 #: src/actions/actions.c:860
 msgid "Dot graph"
@@ -2253,12 +2257,12 @@ msgstr ""
 #: src/actions/copy_plugins_action.c:289
 #, c-format
 msgid "Copy %s"
-msgstr ""
+msgstr "複製 %s"
 
 #: src/actions/copy_plugins_action.c:293
 #, c-format
 msgid "Copy %d Plugins"
-msgstr ""
+msgstr "複製 %d 個外掛"
 
 #: src/actions/port_connection_action.c:140
 msgid "Connect ports"
@@ -2343,17 +2347,17 @@ msgstr "重新命名"
 
 #: src/actions/move_tracks_action.c:144
 msgid "Move Track"
-msgstr ""
+msgstr "移動音軌"
 
 #: src/actions/move_tracks_action.c:147
 #, c-format
 msgid "Move %d Tracks"
-msgstr ""
+msgstr "移動 %d 個音軌"
 
 #: src/actions/create_tracks_action.c:64
 #, c-format
 msgid "%s Track"
-msgstr ""
+msgstr "%s 音軌"
 
 #: src/actions/create_tracks_action.c:120
 #, c-format
@@ -2363,25 +2367,25 @@ msgstr ""
 #: src/actions/create_tracks_action.c:339
 #, c-format
 msgid "Create %s Track"
-msgstr ""
+msgstr "新增 %s 音軌"
 
 #: src/actions/create_tracks_action.c:342
 #, c-format
 msgid "Create %d %s Tracks"
-msgstr ""
+msgstr "新增 %d 個 %s 音軌"
 
 #: src/actions/delete_plugins_action.c:229
 msgid "Delete Plugin"
-msgstr ""
+msgstr "刪除外掛"
 
 #: src/actions/delete_plugins_action.c:232
 #, c-format
 msgid "Delete %d Plugins"
-msgstr ""
+msgstr "刪除 %d 個外掛"
 
 #: resources/ui/first_run_assistant.ui:27
 msgid "Setup Zrythm"
-msgstr ""
+msgstr "設定 Zrythm"
 
 #: resources/ui/first_run_assistant.ui:52
 msgid ""
@@ -2394,7 +2398,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:93 resources/ui/preferences.ui:512
 msgid "Language"
-msgstr ""
+msgstr "語言"
 
 #: resources/ui/first_run_assistant.ui:111
 msgid ""
@@ -2404,7 +2408,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:138
 msgid "Resets the path to the default"
-msgstr ""
+msgstr "將路徑設成預設值"
 
 #: resources/ui/first_run_assistant.ui:165
 msgid "Select the audio and MIDI engine backends to use"
@@ -2434,7 +2438,7 @@ msgstr ""
 #: resources/ui/bounce_dialog.ui:51 resources/ui/export_dialog.ui:46
 #: resources/ui/preferences.ui:58
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 #: resources/ui/bind_cc_dialog.ui:81
 msgid "Press a key or move a knob on your MIDI device"
@@ -2547,7 +2551,7 @@ msgstr "和聲小音階"
 #: resources/ui/scale_selector_window.ui:342
 #: resources/ui/chord_selector_window.ui:747
 msgid "Creator"
-msgstr ""
+msgstr "創作者"
 
 #: resources/ui/scale_selector_window.ui:358
 #: resources/ui/chord_selector_window.ui:877
@@ -2573,7 +2577,7 @@ msgstr "混音"
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Mixer"
-msgstr ""
+msgstr "混音器"
 
 #: resources/ui/bot_dock_edge.ui:183
 msgid "Chord pad"
@@ -2602,23 +2606,23 @@ msgstr ""
 
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
-msgstr ""
+msgstr "選擇專案"
 
 #: resources/ui/project_assistant.ui:43
 msgid "Select a project"
-msgstr ""
+msgstr "選擇一個專案"
 
 #: resources/ui/project_assistant.ui:106
 msgid "Removes selected project from the list"
-msgstr ""
+msgstr "從清單中移除所選專案"
 
 #: resources/ui/project_assistant.ui:130
 msgid "Select a template"
-msgstr ""
+msgstr "選擇一個模板"
 
 #: resources/ui/chord_selector_window.ui:52
 msgid "Root Note"
-msgstr ""
+msgstr "根音"
 
 #: resources/ui/chord_selector_window.ui:265
 msgid "maj"
@@ -2758,11 +2762,11 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:61
 msgid "Quit"
-msgstr ""
+msgstr "離開"
 
 #: resources/ui/shortcuts.ui:71
 msgid "Panels"
-msgstr ""
+msgstr "面板"
 
 #: resources/ui/shortcuts.ui:75
 msgid "Toggle left panel"
@@ -2778,35 +2782,35 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:99 resources/ui/header.ui:92
 msgid "Project"
-msgstr ""
+msgstr "專案"
 
 #: resources/ui/shortcuts.ui:111
 msgid "Open a project"
-msgstr ""
+msgstr "開啟專案"
 
 #: resources/ui/shortcuts.ui:118
 msgid "Save the project"
-msgstr ""
+msgstr "儲存專案"
 
 #: resources/ui/shortcuts.ui:127
 msgid "Copy and Paste"
-msgstr ""
+msgstr "複製和貼上"
 
 #: resources/ui/shortcuts.ui:132
 msgid "Copy selection to clipboard"
-msgstr ""
+msgstr "複製到剪貼簿"
 
 #: resources/ui/shortcuts.ui:139
 msgid "Cut selection to clipboard"
-msgstr ""
+msgstr "剪下到剪貼簿"
 
 #: resources/ui/shortcuts.ui:146
 msgid "Paste from clipboard"
-msgstr ""
+msgstr "從剪貼簿貼上"
 
 #: resources/ui/shortcuts.ui:155
 msgid "Undo and Redo"
-msgstr ""
+msgstr "復原和重做"
 
 #: resources/ui/shortcuts.ui:160
 msgid "Undo previous command"
@@ -2818,23 +2822,23 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:176
 msgid "Selections"
-msgstr ""
+msgstr "選取"
 
 #: resources/ui/shortcuts.ui:181
 msgid "Select all"
-msgstr ""
+msgstr "全選"
 
 #: resources/ui/shortcuts.ui:188
 msgid "Unselect all"
-msgstr ""
+msgstr "取消全部的選取"
 
 #: resources/ui/shortcuts.ui:200
 msgid "Editor Shortcuts"
-msgstr ""
+msgstr "編輯器快速鍵"
 
 #: resources/ui/shortcuts.ui:204
 msgid "Tool"
-msgstr ""
+msgstr "工具"
 
 #: resources/ui/shortcuts.ui:208
 msgid "Select/Stretch tool"
@@ -2842,11 +2846,11 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:215
 msgid "Pencil tool"
-msgstr ""
+msgstr "鉛筆工具"
 
 #: resources/ui/shortcuts.ui:222
 msgid "Eraser tool"
-msgstr ""
+msgstr "橡皮擦工具"
 
 #: resources/ui/shortcuts.ui:229
 msgid "Ramp tool"
@@ -2854,27 +2858,27 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:236
 msgid "Audition tool"
-msgstr ""
+msgstr "試聽工具"
 
 #: resources/ui/shortcuts.ui:246
 msgid "Zooming"
-msgstr ""
+msgstr "縮放"
 
 #: resources/ui/shortcuts.ui:251
 msgid "Zoom in"
-msgstr ""
+msgstr "放大"
 
 #: resources/ui/shortcuts.ui:258
 msgid "Zoom out"
-msgstr ""
+msgstr "缩小"
 
 #: resources/ui/shortcuts.ui:265
 msgid "Best fit"
-msgstr ""
+msgstr "最適大小"
 
 #: resources/ui/shortcuts.ui:272
 msgid "Original size"
-msgstr ""
+msgstr "原始大小"
 
 #: resources/ui/shortcuts.ui:281
 msgid "Quantizing"
@@ -2931,11 +2935,11 @@ msgstr ""
 #: resources/ui/port_info_dialog.ui:186 resources/ui/port_info_dialog.ui:211
 #: resources/ui/port_info_dialog.ui:236 resources/ui/port_info_dialog.ui:247
 msgid "label"
-msgstr ""
+msgstr "標籤"
 
 #: resources/ui/help_toolbar.ui:58
 msgid "News"
-msgstr ""
+msgstr "最新資訊"
 
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
@@ -2951,7 +2955,7 @@ msgstr ""
 
 #: resources/ui/scripting_window.ui:50
 msgid "Execute"
-msgstr ""
+msgstr "執行"
 
 #: resources/ui/scripting_window.ui:90
 msgid "The result will be printed here"
@@ -2974,12 +2978,12 @@ msgstr ""
 #: resources/ui/inspector_master.ui:67 resources/ui/inspector_ap.ui:67
 #: resources/ui/inspector_midi.ui:67
 msgid "Color"
-msgstr ""
+msgstr "顏色"
 
 #: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
 #: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:344
 msgid "Length"
-msgstr ""
+msgstr "長度"
 
 #: resources/ui/inspector_master.ui:113 resources/ui/inspector_ap.ui:113
 #: resources/ui/inspector_midi.ui:113
@@ -3004,7 +3008,7 @@ msgstr "預設值"
 
 #: resources/ui/port_info_dialog.ui:222
 msgid "Current value"
-msgstr ""
+msgstr "目前的值"
 
 #: resources/ui/port_info_dialog.ui:268
 msgid "Port Info"
@@ -3056,7 +3060,7 @@ msgstr ""
 
 #: resources/ui/modulator_view.ui:53 resources/ui/clip_editor_inner.ui:53
 msgid "Track name"
-msgstr ""
+msgstr "音軌名稱"
 
 #: resources/ui/panel_file_browser.ui:107 resources/ui/file_browser.ui:107
 msgid "Location"
@@ -3068,11 +3072,11 @@ msgstr ""
 
 #: resources/ui/port_selector_popover.ui:61
 msgid "Track"
-msgstr ""
+msgstr "音軌"
 
 #: resources/ui/port_selector_popover.ui:123
 msgid "Plugin"
-msgstr ""
+msgstr "外掛"
 
 #: resources/ui/port_selector_popover.ui:185
 msgid "Port"
@@ -3084,15 +3088,15 @@ msgstr "編輯"
 
 #: resources/ui/header.ui:111
 msgid "View"
-msgstr ""
+msgstr "顯示"
 
 #: resources/ui/header.ui:130
 msgid "Help"
-msgstr ""
+msgstr "幫助"
 
 #: resources/ui/header.ui:157
 msgid "Project name"
-msgstr ""
+msgstr "專案名稱"
 
 #: resources/ui/header.ui:225
 msgid "MIDI in activity"
@@ -3112,19 +3116,19 @@ msgstr ""
 
 #: resources/ui/transport_controls.ui:55
 msgid "Play"
-msgstr ""
+msgstr "播放"
 
 #: resources/ui/transport_controls.ui:70
 msgid "Stop"
-msgstr ""
+msgstr "停止"
 
 #: resources/ui/transport_controls.ui:85
 msgid "Backward"
-msgstr ""
+msgstr "倒退"
 
 #: resources/ui/transport_controls.ui:100
 msgid "Forward"
-msgstr ""
+msgstr "前進"
 
 #: resources/ui/transport_controls.ui:114 resources/ui/export_dialog.ui:239
 msgid "Loop"
@@ -3132,7 +3136,7 @@ msgstr ""
 
 #: resources/ui/splash.ui:66
 msgid "Initializing..."
-msgstr ""
+msgstr "正在初始化..."
 
 #: resources/ui/export_progress_dialog.ui:25
 msgid "Open Directory"
@@ -3232,25 +3236,25 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:27
 msgid "Export As..."
-msgstr ""
+msgstr "輸出成..."
 
 #: resources/ui/export_dialog.ui:60
 msgid "Export"
-msgstr ""
+msgstr "輸出"
 
 #: resources/ui/export_dialog.ui:87
 #: build/data/org.zrythm.Zrythm.gschema.xml:339
 msgid "Artist"
-msgstr ""
+msgstr "藝人"
 
 #: resources/ui/export_dialog.ui:98
 #: build/data/org.zrythm.Zrythm.gschema.xml:334
 msgid "Genre"
-msgstr ""
+msgstr "音樂類型"
 
 #: resources/ui/export_dialog.ui:109 data/zrythm.desktop.in:10
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:120
 msgid "Electronic"
@@ -3259,7 +3263,7 @@ msgstr ""
 #: resources/ui/export_dialog.ui:131
 #: build/data/org.zrythm.Zrythm.gschema.xml:349
 msgid "Format"
-msgstr ""
+msgstr "格式"
 
 #: resources/ui/export_dialog.ui:150
 #: build/data/org.zrythm.Zrythm.gschema.xml:354
@@ -3287,7 +3291,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:227
 msgid "Song"
-msgstr ""
+msgstr "歌曲"
 
 #: resources/ui/export_dialog.ui:265
 msgid "Time Range"
@@ -3300,7 +3304,7 @@ msgstr ""
 #: resources/ui/export_dialog.ui:298
 #: build/data/org.zrythm.Zrythm.gschema.xml:359
 msgid "Bit depth"
-msgstr ""
+msgstr "位元深度"
 
 #: resources/ui/main_window.ui:120
 msgid "This is an app-notification. Click the button to dismiss"
@@ -3416,7 +3420,7 @@ msgstr "取樣頻率"
 #: build/data/org.zrythm.Zrythm.gschema.xml:515
 #: build/data/org.zrythm.Zrythm.gschema.xml:550
 msgid "Plugins"
-msgstr ""
+msgstr "外掛"
 
 #: resources/ui/preferences.ui:390
 msgid "Always open plugin UIs"
@@ -3440,17 +3444,17 @@ msgstr ""
 
 #: resources/ui/preferences.ui:465
 msgid "Main Window"
-msgstr ""
+msgstr "主視窗"
 
 #: resources/ui/preferences.ui:482 build/data/org.zrythm.Zrythm.gschema.xml:578
 #: build/data/org.zrythm.Zrythm.gschema.xml:592
 #: build/data/org.zrythm.Zrythm.gschema.xml:606
 msgid "Editing"
-msgstr ""
+msgstr "編輯"
 
 #: resources/ui/preferences.ui:498
 msgid "Interface"
-msgstr ""
+msgstr "介面"
 
 #: resources/ui/preferences.ui:523
 msgid "The language of the Zrythm interface"
@@ -3458,12 +3462,12 @@ msgstr ""
 
 #: resources/ui/preferences.ui:555
 msgid "GUI"
-msgstr ""
+msgstr "圖形化介面"
 
 #: resources/ui/preferences.ui:572 resources/ui/preferences.ui:618
 #: build/data/org.zrythm.Zrythm.gschema.xml:621
 msgid "Projects"
-msgstr ""
+msgstr "專案"
 
 #: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:627
 msgid "Autosave interval"
