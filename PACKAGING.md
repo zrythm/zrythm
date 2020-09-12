@@ -37,7 +37,7 @@ release tags:
     identifier: ${unreleased major ver}.0.0-beta.${MAJOR}.${MINOR}.{PATCH}
     examples: 2.0.0-beta.0.1.0, 2.0.0-beta.0.32.1
   rc:
-    description: Starts when ALL features are implemented and only bug fixes remain
+    description: Starts when all features are implemented and all known bugs are fixed
     identifier: ${unreleased major ver}.0.0-rc.${manually incremented for each release}
     examples: 2.0.0-rc.0, 2.0.0-rc.32
   v1, 2, 3, etc.:

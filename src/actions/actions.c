@@ -1299,7 +1299,7 @@ activate_duplicate (GSimpleAction *action,
     main_window_get_last_focused_arranger_selections (
       MAIN_WINDOW);
 
-  if (sel)
+  if (sel && arranger_selections_has_any (sel))
     {
       double length =
         arranger_selections_get_length_in_ticks (

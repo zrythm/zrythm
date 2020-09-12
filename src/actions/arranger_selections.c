@@ -307,6 +307,10 @@ arranger_selections_action_new_move_or_duplicate (
   const double         delta_normalized_amount,
   const bool           already_moved)
 {
+  g_return_val_if_fail (
+    IS_ARRANGER_SELECTIONS (sel) &&
+    arranger_selections_has_any (sel), NULL);
+
   ArrangerSelectionsAction * self =
     _create_action (sel);
   UndoableAction * ua = (UndoableAction *) self;
