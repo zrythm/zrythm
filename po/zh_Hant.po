@@ -11,7 +11,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-06 16:31+0100\n"
 "PO-Revision-Date: 2020-09-11 05:53+0000\n"
-"Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
+"Last-Translator: xunil-cloud <freed602om@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
 "Language: zh_Hant\n"
@@ -2782,7 +2782,7 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:99 resources/ui/header.ui:92
 msgid "Project"
-msgstr ""
+msgstr "專案"
 
 #: resources/ui/shortcuts.ui:111
 msgid "Open a project"
@@ -3254,7 +3254,7 @@ msgstr "音樂類型"
 
 #: resources/ui/export_dialog.ui:109 data/zrythm.desktop.in:10
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:120
 msgid "Electronic"
@@ -3420,7 +3420,7 @@ msgstr "取樣頻率"
 #: build/data/org.zrythm.Zrythm.gschema.xml:515
 #: build/data/org.zrythm.Zrythm.gschema.xml:550
 msgid "Plugins"
-msgstr ""
+msgstr "外掛"
 
 #: resources/ui/preferences.ui:390
 msgid "Always open plugin UIs"
