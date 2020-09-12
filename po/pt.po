@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-06 16:31+0100\n"
-"PO-Revision-Date: 2020-08-03 17:41+0000\n"
+"PO-Revision-Date: 2020-09-12 00:54+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:188
@@ -1411,9 +1411,8 @@ msgid "Show file browser"
 msgstr "Mostrar navegador de ficheiros"
 
 #: src/gui/widgets/plugin_properties_expander.c:121
-#, fuzzy
 msgid "Plugin Properties"
-msgstr "Propriedades do plugin"
+msgstr "Propriedades do suplemento"
 
 #: src/gui/widgets/plugin_properties_expander.c:150
 #: src/gui/widgets/event_viewer.c:452 resources/ui/chord_selector_window.ui:239
@@ -1665,7 +1664,7 @@ msgstr "Gravar"
 
 #: src/gui/widgets/project_toolbar.c:41
 msgid "Save As"
-msgstr "Gravar Como"
+msgstr "Gravar como"
 
 #: src/gui/widgets/project_toolbar.c:42 src/utils/dialogs.c:39
 msgid "Open Project"
@@ -1673,12 +1672,11 @@ msgstr "Abrir Projeto"
 
 #: src/gui/widgets/project_toolbar.c:43
 msgid "Export As"
-msgstr "Exportar Como"
+msgstr "Exportar como"
 
 #: src/gui/widgets/project_toolbar.c:44
-#, fuzzy
 msgid "Export Graph"
-msgstr "Exportar Como"
+msgstr "Exportar gráfico"
 
 #: src/gui/widgets/view_toolbar.c:39
 msgid "Toggle Status Bar"
@@ -1686,19 +1684,19 @@ msgstr "Alternar Barra de Estado"
 
 #: src/gui/widgets/view_toolbar.c:40
 msgid "Zoom In"
-msgstr "Zoom +"
+msgstr "Aumentar"
 
 #: src/gui/widgets/view_toolbar.c:41
 msgid "Zoom Out"
-msgstr "Zoom -"
+msgstr "Reduzir"
 
 #: src/gui/widgets/view_toolbar.c:42
 msgid "Original Size"
-msgstr "Tamanho Original"
+msgstr "Tamanho original"
 
 #: src/gui/widgets/view_toolbar.c:43
 msgid "Best Fit"
-msgstr "Melhor Ajuste"
+msgstr "Melhor ajuste"
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Fullscreen"
@@ -2330,7 +2328,7 @@ msgstr ""
 #: src/actions/actions.c:644 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
 msgid "Create new project"
-msgstr "Criar novo projeto"
+msgstr "Criar projeto"
 
 #: src/actions/actions.c:647
 msgid "Yes"

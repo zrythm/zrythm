@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:41+0100\n"
-"PO-Revision-Date: 2020-08-13 17:32+0000\n"
+"PO-Revision-Date: 2020-09-08 21:36+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
-"/manualplugins-files/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
@@ -509,9 +510,8 @@ msgid "GNU/Linux and FreeBSD"
 msgstr "GNU/Linux e FreeBSD"
 
 #: ../../plugins-files/plugins/scanning.rst:36
-#, fuzzy
 msgid "Zrythm will scan for VST2 plugins in the following paths,"
-msgstr "No UNIX, o Zrythm procurará suplementos VST nos caminhos seguintes."
+msgstr "O Zrythm procurará suplementos VST nos caminhos seguintes,"
 
 #: ../../plugins-files/plugins/scanning.rst:39
 msgid ":file:`{$HOME}/.vst`"
@@ -530,41 +530,38 @@ msgid ":file:`/usr/lib/vst`"
 msgstr ":file:`/usr/lib/vst`"
 
 #: ../../plugins-files/plugins/scanning.rst:44
-#, fuzzy
 msgid "and VST3 plugins in the following paths."
-msgstr "No UNIX, o Zrythm procurará suplementos VST nos caminhos seguintes."
+msgstr "e suplementos de VST3 nos seguintes caminhos."
 
 #: ../../plugins-files/plugins/scanning.rst:46
-#, fuzzy
 msgid ":file:`{$HOME}/.vst3`"
-msgstr ":file:`{$HOME}/.vst`"
+msgstr ":file:`{$HOME}/.vst3`"
 
 #: ../../plugins-files/plugins/scanning.rst:47
-#, fuzzy
 msgid ":file:`/usr/local/lib/vst3`"
-msgstr ":file:`/usr/local/lib/vst`"
+msgstr ":file:`/usr/local/lib/vst3`"
 
 #: ../../plugins-files/plugins/scanning.rst:48
-#, fuzzy
 msgid ":file:`/usr/lib/vst3`"
-msgstr ":file:`/usr/lib/vst`"
+msgstr ":file:`/usr/lib/vst3`"
 
 #: ../../plugins-files/plugins/scanning.rst:50
-#, fuzzy
 msgid ""
 "You can bypass this behavior by passing the :envvar:`VST_PATH` or "
 ":envvar:`VST3_PATH` environment variables to specify custom paths. For "
 "example, ``VST_PATH=$HOME/custom-vst-dir zrythm``."
 msgstr ""
-"Pode ignorar esse comportamento passando a variável de ambiente ` "
-"VST_PATH` para especificar caminhos personalizados. Por exemplo, `` "
-"VST_PATH =~/dir-vst-personalizado zrythm``."
+"Pode ignorar este comportamento a passar as variáveis de ambiente "
+":envvar:`VST_PATH` ou :envvar:`VST3_PATH` para especificar caminhos "
+"personalizados. Por exemplo, ``VST_PATH=$HOME/custom-vst-dir zrythm``."
 
 #: ../../plugins-files/plugins/scanning.rst:56
 msgid ""
 "If your system uses a libdir other than ``lib`` (for example ``lib64``), "
 "Zrythm will scan for plugins in both locations."
 msgstr ""
+"Se o seu sistema utiliza uma libdir diferente de ``lib`` (por exemplo "
+"``lib64``), Zrythm irá procurar por suplementos em ambas as localizações."
 
 #: ../../plugins-files/plugins/scanning.rst:61
 msgid "Windows"
@@ -966,4 +963,3 @@ msgstr ""
 
 #~ msgid "``lib`` will be replaced with ``lib64`` depending on your system."
 #~ msgstr "O ``lib`` será substituído por ``lib64`` dependendo do seu sistema."
-
