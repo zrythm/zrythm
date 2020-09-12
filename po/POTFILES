@@ -199,7 +199,9 @@ inc/gui/widgets/dialogs/string_entry_dialog.h
 inc/gui/widgets/dialogs/about_dialog.h
 inc/gui/widgets/dialogs/bug_report_dialog.h
 inc/gui/widgets/dialogs/port_info.h
+inc/gui/widgets/dialogs/object_color_chooser_dialog.h
 inc/gui/widgets/dialogs/arranger_object_info.h
+inc/gui/widgets/dialogs/track_icon_chooser_dialog.h
 inc/gui/widgets/dialogs/bounce_dialog.h
 inc/gui/backend/audio_clip_editor.h
 inc/gui/backend/event.h
@@ -236,6 +238,7 @@ inc/utils/yaml.h
 inc/utils/dialogs.h
 inc/utils/arrays.h
 inc/utils/io.h
+inc/utils/color.h
 inc/utils/cpu_windows.h
 inc/utils/stack.h
 inc/utils/dsp.h
@@ -329,6 +332,7 @@ inc/audio/peak_dsp.h
 inc/audio/audio_file.h
 inc/audio/engine.h
 inc/audio/graph_thread.h
+inc/audio/midi_function.h
 inc/audio/engine_alsa.h
 inc/audio/engine_rtmidi.h
 inc/audio/midi_event.h
@@ -572,6 +576,8 @@ src/gui/widgets/dialogs/port_info.c
 src/gui/widgets/dialogs/about_dialog.c
 src/gui/widgets/dialogs/export_progress_dialog.c
 src/gui/widgets/dialogs/bug_report_dialog.c
+src/gui/widgets/dialogs/object_color_chooser_dialog.c
+src/gui/widgets/dialogs/track_icon_chooser_dialog.c
 src/gui/backend/file_manager.c
 src/gui/backend/arranger_selections.c
 src/gui/backend/arranger_object.c
@@ -594,6 +600,7 @@ src/utils/io.c
 src/utils/object_utils.c
 src/utils/cairo.c
 src/utils/datetime.c
+src/utils/color.c
 src/utils/smf.c
 src/utils/err_codes.c
 src/utils/system.c
@@ -642,6 +649,7 @@ src/audio/peak_dsp.c
 src/audio/chord_region.c
 src/audio/master_track.c
 src/audio/midi_event.c
+src/audio/midi_function.c
 src/audio/group_target_track.c
 src/audio/engine_dummy.c
 src/audio/chord_descriptor.c
@@ -748,6 +756,8 @@ src/guile/actions/port_connection_action.c
 src/guile/actions/channel_send_action.c
 src/guile/actions/create_tracks_action.c
 src/guile/actions/undo_manager.c
+resources/gtk/menus.ui
+resources/gtk/help-overlay.ui
 resources/ui/fader_controls_grid.ui
 resources/ui/inspector_plugin.ui
 resources/ui/first_run_assistant.ui
@@ -766,7 +776,6 @@ resources/ui/project_assistant.ui
 resources/ui/left_dock_edge.ui
 resources/ui/chord_selector_window.ui
 resources/ui/create_project_dialog.ui
-resources/ui/shortcuts.ui
 resources/ui/chord_pad.ui
 resources/ui/midi_controller_popover.ui
 resources/ui/channel.ui
