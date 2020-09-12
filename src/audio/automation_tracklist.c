@@ -515,9 +515,11 @@ automation_tracklist_verify_identifiers (
             at->port_id.plugin_id.track_pos ==
               track_pos, false);
         }
-      g_return_val_if_fail (
+      AutomationTrack * found_at =
         automation_track_find_from_port_id (
-          &at->port_id, false) == at, false);
+          &at->port_id, false);
+      g_return_val_if_fail (
+        found_at == at, false);
       for (int j = 0; j < at->num_regions; j++)
         {
           ZRegion * r = at->regions[j];

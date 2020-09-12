@@ -63,6 +63,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
+#include "gui/widgets/modulator.h"
 #include "gui/widgets/modulator_view.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/mixer.h"
@@ -476,7 +477,7 @@ static void
 on_plugins_removed (Track * tr)
 {
   /* redraw slots */
-  if (tr->channel)
+  if (tr && tr->channel)
     {
       plugin_strip_expander_widget_set_state_flags (
         tr->channel->widget->inserts, -1,
@@ -486,6 +487,10 @@ on_plugins_removed (Track * tr)
   /* change inspector page */
   left_dock_edge_widget_refresh (
     MW_LEFT_DOCK_EDGE);
+
+  /* refresh modulator view */
+  modulator_view_widget_refresh (
+    MW_MODULATOR_VIEW, P_MODULATOR_TRACK);
 }
 
 static void
@@ -951,6 +956,12 @@ on_plugin_window_visibility_changed (
         default:
           break;
         }
+    }
+
+  if (pl->modulator_widget)
+    {
+      modulator_widget_refresh (
+        pl->modulator_widget);
     }
   g_message ("done");
 }

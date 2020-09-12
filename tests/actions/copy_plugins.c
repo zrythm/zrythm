@@ -137,7 +137,7 @@ _test_copy_plugins (
       mixer_selections_clear (
         MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, track->channel,
+        MIXER_SELECTIONS, track,
         PLUGIN_SLOT_INSERT, 0);
       ua =
         copy_plugins_action_new (

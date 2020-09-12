@@ -103,6 +103,9 @@ mixer_selections_init_loaded (
   MixerSelections * ms,
   bool              is_project);
 
+MixerSelections *
+mixer_selections_new (void);
+
 /**
  * Clone the struct for copying, undoing, etc.
  *
@@ -175,13 +178,13 @@ mixer_selections_contains_plugin (
  *
  * The selections can only be from one channel.
  *
- * @param ch The channel.
+ * @param track The track.
  * @param slot The slot to add to the selections.
  */
 void
 mixer_selections_add_slot (
   MixerSelections * ms,
-  Channel *         ch,
+  Track *           track,
   PluginSlotType   type,
   int               slot);
 

@@ -99,6 +99,7 @@ widget_srcs = files([
   'editor_ruler.c',
   'mixer.c',
   'modulator.c',
+  'modulator_inner.c',
   'modulator_view.c',
   'panel_file_browser.c',
   'piano_keyboard.c',

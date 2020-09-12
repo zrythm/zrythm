@@ -1130,6 +1130,11 @@ port_set_owner_plugin (
   port->id.track_pos = pl->id.track_pos;
   port->id.owner_type =
     PORT_OWNER_TYPE_PLUGIN;
+
+  if (port->at)
+    {
+      port->at->port_id = port->id;
+    }
 }
 
 /**

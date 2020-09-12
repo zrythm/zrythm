@@ -132,7 +132,7 @@ _test_port_and_plugin_track_pos_after_move (
   mixer_selections_clear (
     MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, src_track->channel,
+    MIXER_SELECTIONS, src_track,
     PLUGIN_SLOT_INSERT, 0);
   ua =
     move_plugins_action_new (
@@ -170,7 +170,7 @@ _test_port_and_plugin_track_pos_after_move (
   mixer_selections_clear (
     MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, src_track->channel,
+    MIXER_SELECTIONS, src_track,
     PLUGIN_SLOT_INSERT, 0);
   ua =
     move_plugins_action_new (

@@ -83,13 +83,20 @@ modulator_track_default (
 }
 
 /**
- * Adds and connects a Modulator to the Track.
+ * Inserts and connects a Modulator to the Track.
+ *
+ * @param replace_mode Whether to perform the
+ *   operation in replace mode (replace current
+ *   modulator if true, not touching other
+ *   modulators, or push other modulators forward
+ *   if false).
  */
 void
-modulator_track_add_modulator (
+modulator_track_insert_modulator (
   Track *  self,
   int      slot,
   Plugin * modulator,
+  bool     replace_mode,
   bool     confirm,
   bool     gen_automatables,
   bool     recalc_graph,
@@ -99,47 +106,86 @@ modulator_track_add_modulator (
     IS_TRACK (self) && IS_PLUGIN (modulator) &&
     slot <= self->num_modulators);
 
-  /* confirm if another plugin exists */
-  Plugin * existing_pl =
-    slot < self->num_modulators ?
-      self->modulators[slot] : NULL;
-  if (confirm && existing_pl)
+  if (replace_mode)
     {
-      GtkDialog * dialog =
-        dialogs_get_overwrite_plugin_dialog (
-          GTK_WINDOW (MAIN_WINDOW));
-      int result =
-        gtk_dialog_run (dialog);
-      gtk_widget_destroy (GTK_WIDGET (dialog));
-
-      /* do nothing if not accepted */
-      if (result != GTK_RESPONSE_ACCEPT)
+      Plugin * existing_pl =
+        slot < self->num_modulators ?
+          self->modulators[slot] : NULL;
+      if (existing_pl)
         {
-          return;
+          /* confirm if another plugin exists */
+          if (confirm)
+            {
+              GtkDialog * dialog =
+                dialogs_get_overwrite_plugin_dialog (
+                  GTK_WINDOW (MAIN_WINDOW));
+              int result =
+                gtk_dialog_run (dialog);
+              gtk_widget_destroy (GTK_WIDGET (dialog));
+
+              /* do nothing if not accepted */
+              if (result != GTK_RESPONSE_ACCEPT)
+                {
+                  return;
+                }
+            }
+
+          /* free current plugin */
+          if (existing_pl)
+            {
+              modulator_track_remove_modulator (
+                self, slot, F_REPLACING,
+                F_DELETING_PLUGIN,
+                F_NOT_DELETING_TRACK,
+                F_NO_RECALC_GRAPH);
+            }
+        }
+
+      g_message (
+        "Inserting modulator %s at %s:%d",
+        modulator->descr->name, self->name, slot);
+      if (slot == self->num_modulators)
+        {
+          array_double_size_if_full (
+            self->modulators, self->num_modulators,
+            self->modulators_size, Modulator *);
+          self->num_modulators++;
         }
     }
-
-  /* free current plugin */
-  if (existing_pl)
-    {
-      modulator_track_remove_modulator (
-        self, slot, F_REPLACING, F_DELETING_PLUGIN,
-        F_NOT_DELETING_TRACK, F_NO_RECALC_GRAPH);
-    }
-
-  g_message (
-    "Inserting modulator %s at %s:%d",
-    modulator->descr->name, self->name, slot);
-  if (slot == self->num_modulators)
+  else
     {
       array_double_size_if_full (
         self->modulators, self->num_modulators,
         self->modulators_size, Modulator *);
+
+      /* push other modulators forward (make
+       * space for new modulator) */
       self->num_modulators++;
+      for (int i = self->num_modulators - 1;
+           i > slot; i--)
+        {
+          self->modulators[i] =
+            self->modulators[i - 1];
+          g_message (
+            "setting modulator %s from slot %d "
+            "to slot %d",
+            self->modulators[i]->descr->name,
+            i - 1, i);
+          plugin_set_track_and_slot (
+            self->modulators[i], self->pos,
+            PLUGIN_SLOT_MODULATOR, i);
+        }
     }
+
+  /* add the modulator */
   self->modulators[slot] = modulator;
+  g_message (
+    "setting modulator %s to slot %d",
+    modulator->descr->name, slot);
+
   plugin_set_track_and_slot (
-    modulator, self->pos, PLUGIN_SLOT_MODULATOR, slot);
+    modulator, self->pos, PLUGIN_SLOT_MODULATOR,
+    slot);
 
   plugin_set_is_project (
     modulator, self->is_project);
@@ -221,13 +267,14 @@ modulator_track_remove_modulator (
       plugin_close_ui (plugin);
 
       plugin_disconnect (plugin);
+
       free_later (plugin, plugin_free);
     }
 
   if (!replacing)
     {
-      for (int i = self->num_modulators - 2; i >= slot;
-           i--)
+      for (int i = slot;
+           i < self->num_modulators - 1; i++)
         {
           self->modulators[i] =
             self->modulators[i + 1];
@@ -235,6 +282,7 @@ modulator_track_remove_modulator (
             self->modulators[i], self->pos,
             PLUGIN_SLOT_MODULATOR, i);
         }
+      self->num_modulators--;
     }
 
   if (self->is_project &&

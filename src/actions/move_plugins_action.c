@@ -171,7 +171,7 @@ move_plugins_action_do (
         pl, to_tr, self->slot_type, to_slot);
 
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, to_ch, self->slot_type,
+        MIXER_SELECTIONS, to_tr, self->slot_type,
         to_slot);
     }
 
@@ -232,7 +232,7 @@ move_plugins_action_undo (
 
       /* add to mixer selections */
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, ch, self->ms->type,
+        MIXER_SELECTIONS, track, self->ms->type,
         pl->id.slot);
     }
 

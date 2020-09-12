@@ -47,6 +47,15 @@ mixer_selections_init_loaded (
     }
 }
 
+MixerSelections *
+mixer_selections_new (void)
+{
+  MixerSelections * self =
+    object_new (MixerSelections);
+
+  return self;
+}
+
 /**
  * Returns if there are any selections.
  */
@@ -121,25 +130,25 @@ mixer_selections_get_track (
  *
  * The selections can only be from one channel.
  *
- * @param ch The channel.
+ * @param track The track.
  * @param slot The slot to add to the selections.
  */
 void
 mixer_selections_add_slot (
   MixerSelections * ms,
-  Channel *         ch,
+  Track *           track,
   PluginSlotType    type,
   int               slot)
 {
   if (!ms->has_any ||
-      ch->track_pos != ms->track_pos ||
+      track->pos != ms->track_pos ||
       type != ms->type)
     {
       mixer_selections_clear (
         ms, F_NO_PUBLISH_EVENTS);
     }
   g_message ("added slot");
-  ms->track_pos = ch->track_pos;
+  ms->track_pos = track->pos;
   ms->type = type;
   ms->has_any = true;
 
@@ -148,15 +157,26 @@ mixer_selections_add_slot (
       !array_contains_int (
         ms->slots, ms->num_slots, slot))
     {
-      pl =
-        type == PLUGIN_SLOT_MIDI_FX ?
-          ch->midi_fx[slot] : ch->inserts[slot];
+      switch (type)
+        {
+        case PLUGIN_SLOT_MIDI_FX:
+          pl = track->channel->midi_fx[slot];
+          break;
+        case PLUGIN_SLOT_INSERT:
+          pl = track->channel->inserts[slot];
+          break;
+        case PLUGIN_SLOT_MODULATOR:
+          pl = track->modulators[slot];
+          break;
+        default:
+          break;
+        }
       array_double_append (
         ms->slots, ms->plugins, ms->num_slots,
         slot, pl);
     }
 
-  if (pl)
+  if (pl && pl->is_project)
     {
       EVENTS_PUSH (
         ET_MIXER_SELECTIONS_CHANGED, pl);
@@ -350,6 +370,11 @@ mixer_selections_clone (
           pl =
             TRACKLIST->tracks[src->track_pos]->
               channel->inserts[src->slots[i]];
+          break;
+        case PLUGIN_SLOT_MODULATOR:
+          pl =
+            TRACKLIST->tracks[src->track_pos]->
+              modulators[src->slots[i]];
           break;
         default:
           break;

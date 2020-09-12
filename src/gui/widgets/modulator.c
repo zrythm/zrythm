@@ -23,6 +23,7 @@
 #include "gui/widgets/knob_with_name.h"
 #include "gui/widgets/live_waveform.h"
 #include "gui/widgets/modulator.h"
+#include "gui/widgets/modulator_inner.h"
 #include "gui/widgets/port_connections_popover.h"
 #include "plugins/plugin.h"
 #include "utils/arrays.h"
@@ -34,154 +35,15 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (ModulatorWidget,
-               modulator_widget,
-               TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
+G_DEFINE_TYPE (
+  ModulatorWidget, modulator_widget,
+  TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 
-#if 0
-static gboolean
-modulator_graph_draw (
-  GtkWidget *       widget,
-  cairo_t *         cr,
+void
+modulator_widget_refresh (
   ModulatorWidget * self)
 {
-  GtkStyleContext *context =
-    gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
-  cairo_set_source_rgba (
-    cr, 0, 0, 0, 1);
-  cairo_rectangle (
-    cr, 0, 0, width, height);
-  cairo_set_source_rgba (
-    cr, 0, 1, 0.5, 1);
-
-  Plugin * pl = self->modulator;
-  g_return_val_if_fail (IS_PLUGIN (pl), false);
-
-  /*int num_cv_outs =*/
-    /*pl->descr->num_cv_outs;*/
-  Port * port;
-  float maxf, minf, sizef, normalized_val;
-  int i, j;
-  for (i = 0; i < MIN (pl->num_out_ports, 16); i++)
-    {
-      port = pl->out_ports[i];
-
-      if (port->id.type != TYPE_CV ||
-          port->id.flow != FLOW_OUTPUT)
-        continue;
-
-      maxf = 1.f;
-      minf = -1.f;
-      sizef = maxf - minf;
-
-      normalized_val =
-        (port->buf[0] - minf) / sizef;
-
-      self->prev_points[i][59] =
-        (double) normalized_val *
-        (double) height;
-
-      /* draw prev points */
-      for (j = 0; j < 59; j++)
-        {
-          cairo_move_to (
-            cr, j,
-            self->prev_points[i][j]);
-          cairo_line_to (
-            cr, j,
-            self->prev_points[i][j + 1]);
-          cairo_stroke (cr);
-
-          /* replace already processed point */
-          self->prev_points[i][j] =
-            self->prev_points[i][j + 1];
-        }
-      if (i == 0)
-        break;
-    }
-
-  return FALSE;
-}
-
-static gboolean
-graph_tick_callback (
-  GtkWidget *widget,
-  GdkFrameClock *frame_clock,
-  ModulatorWidget * self)
-{
-  gtk_widget_queue_draw (widget);
-
-  return G_SOURCE_CONTINUE;
-}
-#endif
-
-static float
-get_snapped_control_value (
-  Port * port)
-{
-  float val =
-    port_get_control_value (port, F_NOT_NORMALIZED);
-
-  return val;
-}
-
-/** Getter for the KnobWidget. */
-static float
-get_control_value (
-  Port * port)
-{
-  float val = port->unsnapped_control;
-
-  return val;
-}
-
-/** Setter for the KnobWidget. */
-static void
-set_control_value (
-  Port * port,
-  float  value)
-{
-  port_set_control_value (
-    port, value, F_NOT_NORMALIZED,
-    F_NO_PUBLISH_EVENTS);
-}
-
-static void
-on_automate_clicked (
-  GtkButton *       btn,
-  ModulatorWidget * self)
-{
-  int index = -1;
-  for (int i = 0; i < 16; i++)
-    {
-      if (self->waveform_automate_buttons[i] ==
-            btn)
-        {
-          index = i;
-          break;
-        }
-    }
-  g_return_if_fail (index >= 0);
-
-  PortConnectionsPopoverWidget * popover =
-    port_connections_popover_widget_new (
-      GTK_WIDGET (btn), self->ports[index]);
-  gtk_widget_show_all (GTK_WIDGET (popover));
-
-  /* TODO update label on closed */
-#if 0
-  g_signal_connect (
-    G_OBJECT (popover), "closed",
-    G_CALLBACK (on_popover_closed), self);
-#endif
+  modulator_inner_widget_refresh (self->inner);
 }
 
 ModulatorWidget *
@@ -194,7 +56,8 @@ modulator_widget_new (
     g_object_new (MODULATOR_WIDGET_TYPE, NULL);
 
   self->modulator = modulator;
-  g_warn_if_fail (modulator);
+
+  self->inner = modulator_inner_widget_new (self);
 
   expander_box_widget_set_label (
     Z_EXPANDER_BOX_WIDGET (self),
@@ -203,187 +66,9 @@ modulator_widget_new (
     Z_EXPANDER_BOX_WIDGET (self),
     "modulator");
 
-  self->controls_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 2));
-  gtk_widget_set_margin_start (
-    GTK_WIDGET (self->controls_box), 1);
-  gtk_widget_set_margin_end (
-    GTK_WIDGET (self->controls_box), 1);
-  gtk_widget_set_margin_top (
-    GTK_WIDGET (self->controls_box), 3);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->controls_box), true);
-
-  for (int i = 0;
-       i < modulator->num_in_ports; i++)
-    {
-      Port * port = modulator->in_ports[i];
-
-      if (port->id.type != TYPE_CONTROL ||
-          port->id.flow != FLOW_INPUT ||
-          port->id.flags & PORT_FLAG_NOT_ON_GUI)
-        continue;
-
-      KnobWidget * knob =
-        knob_widget_new_simple (
-          get_control_value, set_control_value,
-          port, port->minf, port->maxf,
-          24, port->zerof);
-      knob->snapped_getter =
-        (GenericFloatGetter)
-        get_snapped_control_value;
-      KnobWithNameWidget * knob_with_name =
-        knob_with_name_widget_new (
-          port->id.label,
-          knob, GTK_ORIENTATION_HORIZONTAL, 3);
-
-      array_double_size_if_full (
-        self->knobs, self->num_knobs,
-        self->knobs_size, KnobWithNameWidget *);
-      array_append (
-        self->knobs, self->num_knobs,
-        knob_with_name);
-
-      gtk_container_add (
-        GTK_CONTAINER (self->controls_box),
-        GTK_WIDGET (knob_with_name));
-    }
-
-#if 0
-  self->graph =
-    GTK_DRAWING_AREA (
-      gtk_drawing_area_new ());
-  g_signal_connect (
-    G_OBJECT (self->graph), "draw",
-    G_CALLBACK (modulator_graph_draw), self);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->graph),
-    60, -1);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->graph), true);
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self->graph),
-    (GtkTickCallback) graph_tick_callback,
-    self,
-    NULL);
-#endif
-
-  self->waveforms_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 2));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->waveforms_box), true);
-
-  for (int i = 0; i < modulator->num_out_ports; i++)
-    {
-      Port * port = modulator->out_ports[i];
-      if (port->id.type != TYPE_CV)
-        continue;
-
-      int index = self->num_waveforms++;
-
-      self->ports[index] = port;
-
-      /* create waveform */
-      self->waveforms[index] =
-        live_waveform_widget_new_port (port);
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self->waveforms[index]), 48, 48);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->waveforms[index]), true);
-
-      /* create waveform overlay */
-      self->waveform_overlays[index] =
-        GTK_OVERLAY (gtk_overlay_new ());
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->waveform_overlays[index]),
-        true);
-      gtk_container_add (
-        GTK_CONTAINER (
-          self->waveform_overlays[index]),
-        GTK_WIDGET (self->waveforms[index]));
-
-      /* add button for selecting automatable */
-      self->waveform_automate_buttons[index] =
-        GTK_BUTTON (
-          z_gtk_button_new_with_icon ("automate"));
-      gtk_widget_set_visible (
-        GTK_WIDGET (
-          self->waveform_automate_buttons[index]),
-        true);
-      gtk_overlay_add_overlay (
-        self->waveform_overlays[index],
-        GTK_WIDGET (
-          self->waveform_automate_buttons[index]));
-      gtk_widget_set_halign (
-        GTK_WIDGET (
-          self->waveform_automate_buttons[index]),
-        GTK_ALIGN_END);
-      gtk_widget_set_valign (
-        GTK_WIDGET (
-          self->waveform_automate_buttons[index]),
-        GTK_ALIGN_START);
-      g_signal_connect (
-        G_OBJECT (
-          self->waveform_automate_buttons[index]),
-        "clicked",
-        G_CALLBACK (on_automate_clicked), self);
-
-      gtk_container_add (
-        GTK_CONTAINER (self->waveforms_box),
-        GTK_WIDGET (self->waveform_overlays[index]));
-
-      if (self->num_waveforms == 16)
-        break;
-    }
-  self->content_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->content_box), true);
-  self->content_scroll =
-    GTK_SCROLLED_WINDOW (
-      gtk_scrolled_window_new (NULL, NULL));
-  gtk_widget_set_vexpand (
-    GTK_WIDGET (self->content_scroll), true);
-  gtk_scrolled_window_set_policy (
-    self->content_scroll,
-    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->content_scroll), true);
-  gtk_container_add (
-    GTK_CONTAINER (self->content_scroll),
-    GTK_WIDGET (self->content_box));
-  gtk_container_add (
-    GTK_CONTAINER (self->content_box),
-    GTK_WIDGET (self->controls_box));
-  gtk_container_add (
-    GTK_CONTAINER (self->content_box),
-    GTK_WIDGET (self->waveforms_box));
-
-  self->toolbar =
-    GTK_TOOLBAR (gtk_toolbar_new ());
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->toolbar), true);
-
-  self->main_box =
-    GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->main_box), true);
-  gtk_container_add (
-    GTK_CONTAINER (self->main_box),
-    GTK_WIDGET (self->toolbar));
-  gtk_container_add (
-    GTK_CONTAINER (self->main_box),
-    GTK_WIDGET (self->content_scroll));
-  gtk_widget_set_vexpand (
-    GTK_WIDGET (self->main_box), true);
-
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    GTK_WIDGET (self->main_box));
+    GTK_WIDGET (self->inner));
   two_col_expander_box_widget_set_scroll_policy (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_POLICY_NEVER, GTK_POLICY_NEVER);
@@ -392,7 +77,7 @@ modulator_widget_new (
     two_col_expander_box_widget_get_content_box (
       Z_TWO_COL_EXPANDER_BOX_WIDGET (self));
   gtk_box_set_child_packing (
-    box, GTK_WIDGET (self->main_box),
+    box, GTK_WIDGET (self->inner),
     F_NO_EXPAND, F_FILL, 0, GTK_PACK_START);
 
   g_object_ref (self);
@@ -404,8 +89,6 @@ static void
 finalize (
   ModulatorWidget * self)
 {
-  free (self->knobs);
-
   G_OBJECT_CLASS (
     modulator_widget_parent_class)->
       finalize (G_OBJECT (self));
@@ -427,8 +110,4 @@ modulator_widget_init (
   expander_box_widget_set_orientation (
     Z_EXPANDER_BOX_WIDGET (self),
     GTK_ORIENTATION_HORIZONTAL);
-
-  self->knobs =
-    calloc (1, sizeof (KnobWithNameWidget *));
-  self->knobs_size = 1;
 }

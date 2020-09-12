@@ -46,7 +46,7 @@ release tags:
     examples: 2.0.0, 2.32.1
 
 nightlies:
-  - ${release tag}+r${number of commits since lasts tag}.g${commit hash}
+  - ${release tag}+r${number of commits since last tag}.g${commit hash}
 ```
 
 # Included Programs

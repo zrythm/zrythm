@@ -45,13 +45,20 @@ modulator_track_init_loaded (
   bool    is_project);
 
 /**
- * Adds and connects a Modulator to the Track.
+ * Inserts and connects a Modulator to the Track.
+ *
+ * @param replace_mode Whether to perform the
+ *   operation in replace mode (replace current
+ *   modulator if true, not touching other
+ *   modulators, or push other modulators forward
+ *   if false).
  */
 void
-modulator_track_add_modulator (
+modulator_track_insert_modulator (
   Track *  self,
   int      slot,
   Plugin * modulator,
+  bool     replace_mode,
   bool     confirm,
   bool     gen_automatables,
   bool     recalc_graph,

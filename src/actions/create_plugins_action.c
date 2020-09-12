@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -83,8 +83,9 @@ create_plugins_action_do (
 
       if (self->slot_type == PLUGIN_SLOT_MODULATOR)
         {
-          modulator_track_add_modulator (
+          modulator_track_insert_modulator (
             P_MODULATOR_TRACK, self->slot + i, pl,
+            F_NOT_REPLACING,
             F_CONFIRM, F_GEN_AUTOMATABLES,
             F_NO_RECALC_GRAPH, F_PUBLISH_EVENTS);
         }
@@ -103,10 +104,14 @@ create_plugins_action_do (
             S_P_PLUGINS_UIS,
             "open-on-instantiate"))
         {
-          pl->visible = 1;
-          EVENTS_PUSH (
-            ET_PLUGIN_VISIBILITY_CHANGED, pl);
+          pl->visible = true;
         }
+      else
+        {
+          pl->visible = false;
+        }
+      EVENTS_PUSH (
+        ET_PLUGIN_VISIBILITY_CHANGED, pl);
 
       /* activate */
       ret = plugin_activate (pl, F_ACTIVATE);

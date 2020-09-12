@@ -203,7 +203,7 @@ copy_plugins_action_do (
 
       /* select it */
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, ch, self->slot_type,
+        MIXER_SELECTIONS, track, self->slot_type,
         new_slot);
 
       /* activate the plugin */
@@ -260,13 +260,12 @@ copy_plugins_action_undo (
     }
 
   /* reselect the previous plugins */
-  Channel * prev_ch =
-    TRACKLIST->tracks[self->ms->track_pos]->
-      channel;
+  Track * prev_track =
+    TRACKLIST->tracks[self->ms->track_pos];
   for (int i = 0; i < self->ms->num_slots; i++)
     {
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, prev_ch,
+        MIXER_SELECTIONS, prev_track,
         self->ms->type,
         self->ms->slots[i]);
       /*g_message ("readding slot %d",*/

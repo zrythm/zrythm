@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -70,12 +70,8 @@ static const cyaml_schema_field_t
     CreatePluginsAction, slot),
   YAML_FIELD_INT (
     CreatePluginsAction, track_pos),
-#if 0
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "plugins", CYAML_FLAG_DEFAULT,
-    CreatePluginsAction, plugins, num_plugins,
-    &plugin_schema, 0, CYAML_UNLIMITED),
-#endif
+  YAML_FIELD_INT (
+    CreatePluginsAction, num_plugins),
   YAML_FIELD_MAPPING_EMBEDDED (
     CreatePluginsAction, descr,
     plugin_descriptor_fields_schema),
@@ -101,19 +97,19 @@ create_plugins_action_new (
 
 int
 create_plugins_action_do (
-	CreatePluginsAction * self);
+  CreatePluginsAction * self);
 
 int
 create_plugins_action_undo (
-	CreatePluginsAction * self);
+  CreatePluginsAction * self);
 
 char *
 create_plugins_action_stringize (
-	CreatePluginsAction * self);
+  CreatePluginsAction * self);
 
 void
 create_plugins_action_free (
-	CreatePluginsAction * self);
+  CreatePluginsAction * self);
 
 /**
  * @}

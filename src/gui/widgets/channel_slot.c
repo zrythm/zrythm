@@ -380,9 +380,7 @@ select_no_ctrl_pl_no_ch (
     F_NO_PUBLISH_EVENTS);
 
   mixer_selections_add_slot (
-    MIXER_SELECTIONS,
-    self->track->channel,
-    self->type,
+    MIXER_SELECTIONS, self->track, self->type,
     self->slot_index);
 }
 
@@ -405,9 +403,7 @@ select_no_ctrl_pl_ch (
         F_NO_PUBLISH_EVENTS);
 
       mixer_selections_add_slot (
-        MIXER_SELECTIONS,
-        self->track->channel,
-        self->type,
+        MIXER_SELECTIONS, self->track, self->type,
         self->slot_index);
     }
 }
@@ -448,9 +444,7 @@ select_ctrl_pl_no_ch (
     MIXER_SELECTIONS,
     F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS,
-    self->track->channel,
-    self->type,
+    MIXER_SELECTIONS, self->track, self->type,
     self->slot_index);
 }
 
@@ -477,8 +471,7 @@ select_ctrl_pl_ch (
   else
     {
       mixer_selections_add_slot (
-        MIXER_SELECTIONS,
-        self->track->channel,
+        MIXER_SELECTIONS, self->track,
         self->type,
         self->slot_index);
     }

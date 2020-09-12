@@ -19,6 +19,7 @@
 
 #include "actions/delete_plugins_action.h"
 #include "audio/channel.h"
+#include "audio/modulator_track.h"
 #include "audio/router.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -87,20 +88,38 @@ int
 delete_plugins_action_do (
   DeletePluginsAction * self)
 {
-  Channel * ch =
-    TRACKLIST->tracks[self->ms->track_pos]->channel;
-  g_return_val_if_fail (ch, -1);
+  Track * track =
+    TRACKLIST->tracks[self->ms->track_pos];
+  g_return_val_if_fail (track, -1);
+  Channel * ch = track->channel;
 
-  for (int i = 0; i < self->ms->num_slots; i++)
+  if (self->ms->type == PLUGIN_SLOT_MODULATOR)
     {
-      /* remove the plugin at given slot */
-      channel_remove_plugin (
-        ch, self->ms->type,
-        self->ms->plugins[i]->id.slot, 1, 0,
-        F_NO_RECALC_GRAPH);
+      for (int i = 0; i < self->ms->num_slots; i++)
+        {
+          /* remove the plugin at given slot */
+          modulator_track_remove_modulator (
+            track, self->ms->plugins[i]->id.slot,
+            F_NOT_REPLACING, F_DELETING_PLUGIN,
+            F_NOT_DELETING_TRACK,
+            F_NO_RECALC_GRAPH);
+        }
+    }
+  else
+    {
+      for (int i = 0; i < self->ms->num_slots; i++)
+        {
+          /* remove the plugin at given slot */
+          channel_remove_plugin (
+            ch, self->ms->type,
+            self->ms->plugins[i]->id.slot, 1, 0,
+            F_NO_RECALC_GRAPH);
+        }
     }
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
+
+  EVENTS_PUSH (ET_PLUGINS_REMOVED, NULL);
 
   return 0;
 }
@@ -140,8 +159,8 @@ delete_plugins_action_undo (
   Plugin * pl;
   Track * track =
     TRACKLIST->tracks[self->ms->track_pos];
+  g_return_val_if_fail (track, -1);
   Channel * ch = track->channel;
-  g_return_val_if_fail (ch, -1);
 
   for (int i = 0; i < self->ms->num_slots; i++)
     {
@@ -154,13 +173,22 @@ delete_plugins_action_undo (
       g_return_val_if_fail (
         self->ms->plugins[i]->id.slot == slot, -1);
 
-      /* add plugin to channel at original slot */
-      channel_add_plugin (
-        ch, self->ms->type, slot, pl,
-        F_NO_CONFIRM,
-        F_GEN_AUTOMATABLES,
-        F_NO_RECALC_GRAPH,
-        F_NO_PUBLISH_EVENTS);
+      /* add plugin to parent at original slot */
+      if (self->ms->type == PLUGIN_SLOT_MODULATOR)
+        {
+          modulator_track_insert_modulator (
+            track, slot, pl, F_NOT_REPLACING,
+            F_NO_CONFIRM,
+            F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
+            F_NO_PUBLISH_EVENTS);
+        }
+      else
+        {
+          channel_add_plugin (
+            ch, self->ms->type, slot, pl,
+            F_NO_CONFIRM, F_GEN_AUTOMATABLES,
+            F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
+        }
 
       /* copy automation */
       AutomationTracklist * atl =
@@ -195,12 +223,12 @@ delete_plugins_action_undo (
 
       /* select the plugin */
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, ch, self->ms->type,
+        MIXER_SELECTIONS, track, self->ms->type,
         pl->id.slot);
 
       /* show it if it was visible before */
       if (ZRYTHM_HAVE_UI &&
-          self->ms->plugins[i]->visible)
+            self->ms->plugins[i]->visible)
         {
       g_message ("visible plugin at %d",
         pl->id.slot);
@@ -215,7 +243,10 @@ delete_plugins_action_undo (
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   EVENTS_PUSH (ET_PLUGINS_ADDED, track);
-  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
+  if (ch)
+    {
+      EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
+    }
 
   return 0;
 }
