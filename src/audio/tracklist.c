@@ -617,6 +617,7 @@ tracklist_remove_track (
   bool        publish_events,
   bool        recalc_graph)
 {
+  g_return_if_fail (self && IS_TRACK (track));
   g_message (
     "%s: removing %s...", __func__, track->name);
 
@@ -633,8 +634,7 @@ tracklist_remove_track (
   int idx =
     array_index_of (
       self->tracks, self->num_tracks, track);
-  g_warn_if_fail (
-    track->pos == idx);
+  g_warn_if_fail (track->pos == idx);
 
   /* move track to the end */
   tracklist_move_track (
