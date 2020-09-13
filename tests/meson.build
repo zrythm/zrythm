@@ -121,7 +121,7 @@ if get_option ('tests')
   # 0: path
   # 1: is parallel
   tests = [
-    ['actions/arranger_selections', true],
+    ['actions/arranger_selections', false],
     ['actions/create_tracks', true],
     ['actions/range', true],
     ['audio/automation_track', true],

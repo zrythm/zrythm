@@ -59,10 +59,10 @@ _test_loading_non_existing_plugin (
   LOG->min_log_level_for_test_console =
     G_LOG_LEVEL_WARNING;
   g_test_expect_message (
-    NULL, G_LOG_LEVEL_WARNING,
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
     "*lv2 instantiate failed*");
   g_test_expect_message (
-    NULL, G_LOG_LEVEL_WARNING,
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
     "*Instantiation failed for plugin *");
   test_project_save_and_reload ();
 

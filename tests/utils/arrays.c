@@ -36,7 +36,7 @@ test_array_dynamic_swap ()
 
   /* test arr1 allocated and arr2 NULL */
   g_test_expect_message (
-    NULL, G_LOG_LEVEL_CRITICAL,
+    G_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL,
     "* assertion*failed");
   array_dynamic_swap (&arr1, &sz1, &arr2, &sz2);
   g_test_assert_expected_messages ();
@@ -44,7 +44,7 @@ test_array_dynamic_swap ()
   /* test arr2 allocated and arr1 NULL */
   arr2 = arr1; arr1 = NULL;
   g_test_expect_message (
-    NULL, G_LOG_LEVEL_CRITICAL,
+    G_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL,
     "* assertion*failed");
   array_dynamic_swap (&arr1, &sz1, &arr2, &sz2);
   g_test_assert_expected_messages ();

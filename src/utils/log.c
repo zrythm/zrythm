@@ -868,7 +868,9 @@ log_writer (
           if (log_level <=
                 self->min_log_level_for_test_console)
             {
-              g_log (NULL, log_level, "%s", str);
+              g_log (
+                G_LOG_DOMAIN, log_level,
+                "%s", str);
             }
           return 0;
         }
