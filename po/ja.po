@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-12 01:56+0100\n"
-"PO-Revision-Date: 2020-09-08 21:36+0000\n"
+"PO-Revision-Date: 2020-09-13 22:28+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -238,36 +238,37 @@ msgstr "ALSAシーケンサー"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:126
 msgid "Crescendo"
-msgstr ""
+msgstr "クレッシェンド"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:132
 msgid "Flam"
-msgstr ""
+msgstr "フラム"
 
 #: inc/audio/midi_function.h:58
+#, fuzzy
 msgid "Flip H"
-msgstr ""
+msgstr "H反転"
 
 #: inc/audio/midi_function.h:59
+#, fuzzy
 msgid "Flip V"
-msgstr ""
+msgstr "V反転"
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:153
 msgid "Legato"
-msgstr ""
+msgstr "レガート"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:159
-#, fuzzy
 msgid "Portato"
-msgstr "ポート"
+msgstr "ポルタート"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:165
 msgid "Staccato"
-msgstr ""
+msgstr "スタッカート"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:171
 msgid "Strum"
-msgstr ""
+msgstr "ストラム"
 
 #: inc/audio/region.h:83 src/gui/widgets/track.c:1866
 msgid "Inherit"
@@ -1723,7 +1724,7 @@ msgstr "%sをコピー"
 #: src/gui/widgets/editor_toolbar.c:67
 #, c-format
 msgid "Apply %s with previous settings"
-msgstr ""
+msgstr "以前の設定で %s を適用する"
 
 #: src/gui/widgets/editor_toolbar.c:107
 #, fuzzy
@@ -1779,12 +1780,13 @@ msgid "Show instrument UI"
 msgstr "音源"
 
 #: src/gui/widgets/track.c:1195 resources/ui/fader_buttons.ui:36
+#, fuzzy
 msgid "Mono compatibility"
-msgstr ""
+msgstr "モノ"
 
 #: src/gui/widgets/track.c:1201
 msgid "Disarm"
-msgstr ""
+msgstr "解除"
 
 #: src/gui/widgets/track.c:1205
 #, fuzzy
@@ -1816,12 +1818,14 @@ msgid "Remove"
 msgstr "削除"
 
 #: src/gui/widgets/track.c:1240
+#, fuzzy
 msgid "Freeze/unfreeze"
-msgstr ""
+msgstr "フリーズ/フリーズ解除"
 
 #: src/gui/widgets/track.c:1244
+#, fuzzy
 msgid "Lock/unlock"
-msgstr ""
+msgstr "ロック/ロック解除"
 
 #: src/gui/widgets/track.c:1673
 msgid "_Delete Track"
@@ -1883,7 +1887,7 @@ msgstr "アレンジャーオブジェクト詳細"
 
 #: src/gui/widgets/dialogs/string_entry_dialog.c:83
 msgid "Please enter a value"
-msgstr ""
+msgstr "値を入力してください"
 
 #: src/gui/widgets/dialogs/port_info.c:59
 #, c-format
@@ -1952,8 +1956,9 @@ msgid "Plugin instantiation failed. See the logs for details"
 msgstr "プラグイン%sのインスタンス化エラー。詳細はログを参照してください。"
 
 #: src/utils/err_codes.c:36
+#, fuzzy
 msgid "Object is null. See the logs for details"
-msgstr ""
+msgstr "オブジェクトが null です。詳細については、ログを参照してください"
 
 #: src/utils/err_codes.c:42
 #, fuzzy
@@ -1961,11 +1966,11 @@ msgid "Unknown error"
 msgstr "オプションを認知できませんでした\n"
 
 #: src/utils/log.c:684
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
 "will be undefined. "
-msgstr ""
+msgstr "%s で致命的でないエラーが発生しました。実行を続行できますが、動作は未定義になります。 "
 
 #: src/utils/dialogs.c:44
 msgid "_Open"
@@ -2080,12 +2085,13 @@ msgid "Unsupported file type %s"
 msgstr "サポートされていないファイルの種類 %s"
 
 #: src/audio/tracklist.c:1001
+#, fuzzy
 msgid "Cannot drop MIDI files into existing tracks"
-msgstr ""
+msgstr "既存のトラックにMIDIファイルをドロップできません"
 
 #: src/audio/tracklist.c:1011
 msgid "Can only drop audio files on audio tracks"
-msgstr ""
+msgstr "オーディオトラックにオーディオファイルのみをドロップできます"
 
 #: src/audio/chord_track.c:57 resources/ui/inspector_chord.ui:31
 msgid "Chords"
@@ -2350,19 +2356,21 @@ msgstr "%d個のトラックを削除"
 
 #: src/actions/midi_mapping_action.c:211
 msgid "MIDI mapping enable"
-msgstr ""
+msgstr "MIDIマッピングを有効にする"
 
 #: src/actions/midi_mapping_action.c:214
 msgid "MIDI mapping disable"
-msgstr ""
+msgstr "MIDIマッピングを無効にする"
 
 #: src/actions/midi_mapping_action.c:217
+#, fuzzy
 msgid "MIDI mapping bind"
-msgstr ""
+msgstr "MIDIマッピングをバインド"
 
 #: src/actions/midi_mapping_action.c:220
+#, fuzzy
 msgid "MIDI mapping unbind"
-msgstr ""
+msgstr "MIDI マッピングのバインド解除"
 
 #: src/actions/actions.c:341
 #, fuzzy, c-format
@@ -2447,7 +2455,7 @@ msgstr "ポートが選択されていません"
 
 #: src/actions/actions.c:1886
 msgid "Selections must be on the same lane"
-msgstr ""
+msgstr "選択は同じレーン上にある必要があります"
 
 #: src/actions/copy_plugins_action.c:289
 #, c-format
@@ -2461,11 +2469,11 @@ msgstr "%dプラグインをコピー"
 
 #: src/actions/port_connection_action.c:140
 msgid "Connect ports"
-msgstr ""
+msgstr "ポートを接続する"
 
 #: src/actions/port_connection_action.c:143
 msgid "Disconnect ports"
-msgstr ""
+msgstr "ポートを切断する"
 
 #: src/actions/port_connection_action.c:146
 #, fuzzy
@@ -3328,7 +3336,7 @@ msgstr "MIDI IN発動"
 
 #: resources/ui/fader_buttons.ui:120
 msgid "Listen"
-msgstr ""
+msgstr "聴く"
 
 #: resources/ui/fader_buttons.ui:141
 #, fuzzy
@@ -3337,7 +3345,7 @@ msgstr "チャンネル%s"
 
 #: resources/ui/transport_controls.ui:33
 msgid "Return to cue point on stop"
-msgstr ""
+msgstr "停止時にキューポイントに戻る"
 
 #: resources/ui/transport_controls.ui:55
 msgid "Play"
@@ -3361,7 +3369,7 @@ msgstr "ループ"
 
 #: resources/ui/splash.ui:38
 msgid "Splash"
-msgstr ""
+msgstr "スプラッシュ"
 
 #: resources/ui/splash.ui:67
 msgid "Initializing..."
@@ -3556,7 +3564,7 @@ msgstr "音符の長さ"
 
 #: resources/ui/snap_grid_popover.ui:142 resources/ui/snap_grid_popover.ui:264
 msgid "t"
-msgstr ""
+msgstr "t"
 
 #: resources/ui/snap_grid_popover.ui:146 resources/ui/snap_grid_popover.ui:268
 #, fuzzy
@@ -3584,7 +3592,7 @@ msgstr "スナップ"
 
 #: resources/ui/snap_grid_popover.ui:325
 msgid "Link"
-msgstr ""
+msgstr "リンク"
 
 #: resources/ui/range_action_buttons.ui:58
 #, fuzzy
@@ -3593,15 +3601,15 @@ msgstr "時間の範囲"
 
 #: resources/ui/editor_toolbar.ui:138
 msgid "Flip"
-msgstr ""
+msgstr "フリップ"
 
 #: resources/ui/editor_toolbar.ui:140
 msgid "Horizontal"
-msgstr ""
+msgstr "水平方向"
 
 #: resources/ui/editor_toolbar.ui:146
 msgid "Vertical"
-msgstr ""
+msgstr "垂直方向"
 
 #: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:463
 msgid "Engine"
@@ -3970,7 +3978,7 @@ msgstr "プラグインの属性"
 msgid ""
 "A list of plugin favorites as strings separated by '::', where the first "
 "element is the name of the list."
-msgstr ""
+msgstr "「::」で区切られた文字列としてのプラグインのお気に入りのリスト。最初の要素はリストの名前です。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:315
 #, fuzzy
@@ -3978,8 +3986,9 @@ msgid "Transport display type"
 msgstr "サポートされていないファイルの種類 %s"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:316
+#, fuzzy
 msgid "Selected transport display type (BBT/time)."
-msgstr ""
+msgstr "選択したトランスポート表示(BBT/時刻)。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:320
 #, fuzzy
@@ -3987,8 +3996,9 @@ msgid "Ruler display type"
 msgstr "サポートされていないファイルの種類 %s"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:321
+#, fuzzy
 msgid "Selected ruler display type (BBT/time)."
-msgstr ""
+msgstr "選択したルーラー表示(BBT/時間)。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:325
 #, fuzzy
@@ -4002,13 +4012,14 @@ msgstr "選択・ストレッチツール"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:330
 msgid "Last used MIDI function"
-msgstr ""
+msgstr "最後に使用したMIDI関数"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:331
+#, fuzzy
 msgid ""
 "Last used MIDI function (index corresponding to enum in midi function "
 "action)."
-msgstr ""
+msgstr "最後に使用したMIDI関数（MIDI関数アクションのenumに対するインデックス）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:340
 #, fuzzy
@@ -4131,7 +4142,7 @@ msgstr "メトロノーム"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:427
 msgid "Return to cue"
-msgstr ""
+msgstr "キューに戻る"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:428
 #, fuzzy
@@ -4170,15 +4181,15 @@ msgstr "メトロノーム"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:448
 msgid "Start playback on MIDI input"
-msgstr ""
+msgstr "MIDI 入力時に再生を開始する"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:449
 msgid "Whether to start playback on MIDI input."
-msgstr ""
+msgstr "MIDI入力で再生を開始するかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:454
 msgid "Recording mode."
-msgstr ""
+msgstr "録音モード。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:467
 #, fuzzy
@@ -4292,13 +4303,14 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:540
 msgid "Bridge unsupported UIs"
-msgstr ""
+msgstr "サポートされていない UI をブリッジする"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:541
+#, fuzzy
 msgid ""
 "Bridge unsupported UIs in another process instead of creating generic ones. "
 "This will lead to some performance loss."
-msgstr ""
+msgstr "サポートされていない UI を汎用的なものを作成するのではなく、別のプロセスでブリッジする。これはパフォーマンスの低下につながります。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:546
 #, fuzzy

@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-12 01:56+0100\n"
-"PO-Revision-Date: 2020-09-11 17:17+0000\n"
+"PO-Revision-Date: 2020-09-13 04:36+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
@@ -48,17 +48,16 @@ msgid "Region"
 msgstr ""
 
 #: inc/gui/backend/arranger_object.h:94
-#, fuzzy
 msgid "Midi Note"
-msgstr "音符"
+msgstr "MIDI 音符"
 
 #: inc/gui/backend/arranger_object.h:96
 msgid "Chord Object"
-msgstr ""
+msgstr "和弦物件"
 
 #: inc/gui/backend/arranger_object.h:98
 msgid "Scale Object"
-msgstr ""
+msgstr "調式物件"
 
 #: inc/gui/backend/arranger_object.h:100 inc/audio/track.h:166
 #: src/gui/widgets/event_viewer.c:109
@@ -128,7 +127,7 @@ msgstr "取消靜音"
 #: inc/audio/track.h:162 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:186
 msgid "Instrument"
-msgstr "虛擬樂器"
+msgstr "樂器"
 
 #: inc/audio/track.h:163 src/gui/widgets/bot_bar.c:502 src/audio/region.c:396
 #: build/data/org.zrythm.Zrythm.gschema.xml:584
@@ -151,15 +150,15 @@ msgstr "節拍"
 
 #: inc/audio/track.h:168
 msgid "Modulator"
-msgstr ""
+msgstr "調變器"
 
 #: inc/audio/track.h:169
 msgid "Audio FX"
-msgstr "聲音效果器"
+msgstr "音訊效果"
 
 #: inc/audio/track.h:170
 msgid "Audio Group"
-msgstr ""
+msgstr "音訊組"
 
 #: inc/audio/track.h:171 src/audio/region.c:393
 msgid "MIDI"
@@ -167,11 +166,11 @@ msgstr "MIDI"
 
 #: inc/audio/track.h:172
 msgid "MIDI FX"
-msgstr ""
+msgstr "MIDI 效果"
 
 #: inc/audio/track.h:173
 msgid "MIDI Group"
-msgstr ""
+msgstr "MIDI 組"
 
 #: inc/audio/curve.h:90 src/audio/curve.c:39
 #, c-format
@@ -368,7 +367,7 @@ msgstr "無法開啟檔案: %s"
 msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
-msgstr "此專案由不同版本的 %s (%s) 所建立。可能無法正常運作。"
+msgstr "此專案由不同版本的 %s (%s) 所建立。軟體可能無法正常運作。"
 
 #: src/project.c:922
 #, fuzzy
@@ -519,7 +518,7 @@ msgstr "初始化快取"
 
 #: src/zrythm_app.c:302
 msgid "Initializing file manager"
-msgstr ""
+msgstr "初始化檔案管理器"
 
 #: src/zrythm_app.c:309
 msgid "Scanning plugins"
@@ -527,7 +526,7 @@ msgstr "尋找外掛"
 
 #: src/zrythm_app.c:470
 msgid "License Information"
-msgstr "條款資訊"
+msgstr "授權條款"
 
 #: src/zrythm_app.c:498
 msgid "Waiting for project"
@@ -671,7 +670,7 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:202 src/gui/widgets/track.c:1232
 msgid "Add"
-msgstr ""
+msgstr "添加"
 
 #: src/gui/widgets/quantize_dialog.c:122
 msgid "note length"
@@ -944,7 +943,7 @@ msgstr "新增 FX 軌"
 
 #: src/gui/widgets/drag_dest_box.c:463
 msgid "Add Group Track"
-msgstr "新增群組軌"
+msgstr "新增群組音軌"
 
 #: src/gui/widgets/instrument_track.c:219
 #: src/gui/widgets/transport_controls.c:251 src/gui/widgets/midi_track.c:190
