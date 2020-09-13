@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-08-06 16:32+0000\n"
+"PO-Revision-Date: 2020-09-13 22:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/pt/>\n"
@@ -17,13 +17,13 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:32
 msgid "Audio Editor"
-msgstr ""
+msgstr "Editor de áudio"
 
 #: ../../editing/clip-editors/audio-editor.rst:9
 msgid "The audio editor is displayed when an audio region is selected."
@@ -37,9 +37,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:20
-#, fuzzy
 msgid "Audio Arranger"
-msgstr "Arranjador"
+msgstr "Arranjador de áudio"
 
 #: ../../editing/clip-editors/audio-editor.rst:21
 msgid "The audio arranger refers to the arranger section of the audio editor."
@@ -47,9 +46,8 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:28
-#, fuzzy
 msgid "Automation Editor"
-msgstr "Editor de Automação"
+msgstr "Editor de automação"
 
 #: ../../editing/clip-editors/automation-editor.rst:9
 msgid "The automation editor is displayed when an automation region is selected."
@@ -62,9 +60,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:20
-#, fuzzy
 msgid "Automation Arranger"
-msgstr "Editor de Automação"
+msgstr "Arranjador de automação"
 
 #: ../../editing/clip-editors/automation-editor.rst:21
 msgid ""
@@ -98,7 +95,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:44
 msgid "Exponent"
-msgstr ""
+msgstr "Exponente"
 
 #: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponential curve."
@@ -132,9 +129,8 @@ msgstr ""
 #: ../../editing/clip-editors/chord-editor.rst:65
 #: ../../editing/clip-editors/piano-roll.rst:111
 #: ../../editing/timeline/event-viewer.rst:8
-#, fuzzy
 msgid "Event Viewer"
-msgstr "Sinopse"
+msgstr "Visualizador de eventos"
 
 #: ../../editing/clip-editors/automation-editor.rst:56
 msgid ""
@@ -210,9 +206,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:51
-#, fuzzy
 msgid "Chord Arranger"
-msgstr "Arranjador"
+msgstr "Arranjador de acordes"
 
 #: ../../editing/clip-editors/chord-editor.rst:52
 msgid "The chord arranger refers to the arranger section of the chord editor."
@@ -280,16 +275,15 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:22
 msgid "Additional Controls"
-msgstr ""
+msgstr "Controles adicionais"
 
 #: ../../editing/clip-editors/piano-roll.rst:23
 msgid "The piano roll contains the following additional controls."
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:32
-#, fuzzy
 msgid "Drum view"
-msgstr "Vista do Tambor"
+msgstr "Vista de tambor"
 
 #: ../../editing/clip-editors/piano-roll.rst:29
 msgid ""
@@ -313,9 +307,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:44
-#, fuzzy
 msgid "Piano Roll Keys"
-msgstr "Cílindros de Piano"
+msgstr "Teclas de cilindros de piano"
 
 #: ../../editing/clip-editors/piano-roll.rst:45
 msgid "These are the keys corresponding to each key found on a piano."
@@ -341,9 +334,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:62
-#, fuzzy
 msgid "MIDI Arranger"
-msgstr "Arranjador"
+msgstr "Arranjador de MIDI"
 
 #: ../../editing/clip-editors/piano-roll.rst:63
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
@@ -401,9 +393,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:107
-#, fuzzy
 msgid "Context Menu"
-msgstr "Menu de Contexto da Região"
+msgstr "Menu de contexto"
 
 #: ../../editing/clip-editors/piano-roll.rst:108
 #: ../../editing/piano-roll-editing/arranger.rst:9
@@ -519,18 +510,16 @@ msgid "Snapping and grid options are explained in :ref:`snapping-grid-options`."
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:22
-#, fuzzy
 msgid "Highlight"
-msgstr "Destaque"
+msgstr "Destacar"
 
 #: ../../editing/clip-editors/toolbar.rst:23
 msgid "Chord highlighting is explained in :ref:`chords-scales`."
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:25
-#, fuzzy
 msgid "Quantize options"
-msgstr "Quantização"
+msgstr "Opções de quantificação"
 
 #: ../../editing/clip-editors/toolbar.rst:25
 msgid "Quantize options are explained in :ref:`quantization`."
@@ -539,9 +528,8 @@ msgstr ""
 #: ../../editing/clip-editors/toolbar.rst:29
 #: ../../editing/clip-editors/toolbar.rst:33
 #: ../../editing/clip-editors/toolbar.rst:37
-#, fuzzy
 msgid "No controls at the moment."
-msgstr "Não usado de momento."
+msgstr "Sem controles no momento."
 
 #: ../../editing/common-operations.rst:8
 msgid "Common Operations"
@@ -585,13 +573,12 @@ msgid ""
 msgstr ""
 
 #: ../../editing/common-operations.rst:33
-#, fuzzy
 msgid "Object Operations"
-msgstr "Outras Operações"
+msgstr "Operações de objetos"
 
 #: ../../editing/common-operations.rst:35
 msgid "Cut"
-msgstr ""
+msgstr "Cortar"
 
 #: ../../editing/common-operations.rst:36
 msgid ""
@@ -602,7 +589,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:42
 msgid "Copy"
-msgstr ""
+msgstr "Copiar"
 
 #: ../../editing/common-operations.rst:43
 msgid ""
@@ -612,7 +599,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:49
 msgid "Paste"
-msgstr ""
+msgstr "Colar"
 
 #: ../../editing/common-operations.rst:50
 msgid ""
@@ -622,7 +609,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:56
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplicar"
 
 #: ../../editing/common-operations.rst:57
 msgid ""
@@ -632,7 +619,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:62
 msgid "Delete"
-msgstr ""
+msgstr "Apagar"
 
 #: ../../editing/common-operations.rst:63
 msgid ""
@@ -641,14 +628,12 @@ msgid ""
 msgstr ""
 
 #: ../../editing/common-operations.rst:68
-#, fuzzy
 msgid "Selections"
-msgstr "Ferramenta de Seleção"
+msgstr "Seleções"
 
 #: ../../editing/common-operations.rst:70
-#, fuzzy
 msgid "Clear Selection"
-msgstr "Fazer Seleções"
+msgstr "Limpar seleção"
 
 #: ../../editing/common-operations.rst:71
 msgid "Clear current selection (unselect all objects)."
@@ -656,7 +641,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:74
 msgid "Select All"
-msgstr ""
+msgstr "Selecionar tudo"
 
 #: ../../editing/common-operations.rst:75
 msgid "Select all objects in the current editor."
@@ -664,7 +649,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:78
 msgid "Loop Selection"
-msgstr ""
+msgstr "Seleção de loop"
 
 #: ../../editing/common-operations.rst:79
 msgid ""
@@ -673,9 +658,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/edit-modes.rst:8
-#, fuzzy
 msgid "Edit Modes"
-msgstr "Modo de Edição"
+msgstr "Modos de edição"
 
 #: ../../editing/edit-modes.rst:10
 msgid ""
@@ -686,9 +670,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/edit-modes.rst:19
-#, fuzzy
 msgid "Select/Stretch Mode"
-msgstr "Selecionar o Modo"
+msgstr "Modo de selecionar/esticar"
 
 #: ../../editing/edit-modes.rst:20
 msgid "This can be toggled to switch between Select and Stretch."
@@ -708,9 +691,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/edit-modes.rst:32
-#, fuzzy
 msgid "Selecting Objects"
-msgstr "Selecionar Faixas"
+msgstr "Selecionar objetos"
 
 #: ../../editing/edit-modes.rst:33
 msgid ""
@@ -790,9 +772,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/edit-modes.rst:86
-#, fuzzy
 msgid "Cut Mode"
-msgstr "Selecionar o Modo"
+msgstr "Modo de corte"
 
 #: ../../editing/edit-modes.rst:87
 msgid ""
@@ -802,18 +783,16 @@ msgid ""
 msgstr ""
 
 #: ../../editing/edit-modes.rst:92
-#, fuzzy
 msgid "Erase Mode"
-msgstr "Ferramenta de Apagar"
+msgstr "Modo de apagar"
 
 #: ../../editing/edit-modes.rst:93
-#, fuzzy
 msgid ""
 "You can just click on objects to delete them, or click and drag to make a"
 " selection, deleting all objects inside it."
 msgstr ""
-"Para selecionar objetos no Modo Selecionar, clique e arraste para criar "
-"um retângulo de seleção."
+"Para apagar objetos basta apenas clicar neles ou clicar e arrastar para "
+"fazer uma seleção, a apagar todos os objetos dentro dela."
 
 #: ../../editing/edit-modes.rst:99
 msgid "Ramp Mode"
@@ -826,9 +805,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/edit-modes.rst:108
-#, fuzzy
 msgid "Audition Mode"
-msgstr "Modo de Edição"
+msgstr "Modo de Audição"
 
 #: ../../editing/edit-modes.rst:109
 msgid "This is a TODO feature."
@@ -935,9 +913,10 @@ msgid "Selecting Tracks"
 msgstr "Selecionar Faixas"
 
 #: ../../editing/overview.rst:8
-#, fuzzy
 msgid "Editing refers to any work done in the timeline arranger and the editors."
-msgstr "A edição refere-se a qualquer trabalho feito nos arranjadores:"
+msgstr ""
+"A edição refere-se a qualquer trabalho feito no organizador da cronologia e "
+"nos editores."
 
 #: ../../editing/overview.rst:11
 msgid ""
@@ -994,9 +973,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/quantization.rst:17
-#, fuzzy
 msgid "Quantize"
-msgstr "Quantização"
+msgstr "Quantificar"
 
 #: ../../editing/quantization.rst:18
 msgid ""
@@ -1005,9 +983,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/quantization.rst:25
-#, fuzzy
 msgid "Quantize to"
-msgstr "Quantização"
+msgstr "Quantificar para"
 
 #: ../../editing/quantization.rst:26
 msgid "Select the note length and type to quantize to."
@@ -1015,7 +992,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:28
 msgid "Adjust"
-msgstr ""
+msgstr "Ajustar"
 
 #: ../../editing/quantization.rst:28
 msgid ""
@@ -1025,7 +1002,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:32
 msgid "Amount"
-msgstr ""
+msgstr "Quantidade"
 
 #: ../../editing/quantization.rst:31
 msgid ""
@@ -1035,16 +1012,15 @@ msgstr ""
 
 #: ../../editing/quantization.rst:34
 msgid "Swing"
-msgstr ""
+msgstr "Balanço"
 
 #: ../../editing/quantization.rst:35
 msgid "Select a swing amount."
 msgstr ""
 
 #: ../../editing/quantization.rst:39
-#, fuzzy
 msgid "Randomization"
-msgstr "Quantização"
+msgstr "Randomização"
 
 #: ../../editing/quantization.rst:37
 msgid ""
@@ -1106,7 +1082,7 @@ msgstr "Não usado de momento."
 
 #: ../../editing/snapping-grid-options.rst:31
 msgid "Length"
-msgstr ""
+msgstr "Comprimento"
 
 #: ../../editing/snapping-grid-options.rst:32
 msgid "Note length to snap to."
@@ -1148,9 +1124,8 @@ msgid "The following arranger objects can exist inside the timeline."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:28
-#, fuzzy
 msgid "Regions"
-msgstr "Criar Regiões"
+msgstr "Regiões"
 
 #: ../../editing/timeline/arranger.rst:29
 msgid "Regions are containers for events or data (such as audio clips)."
@@ -1169,18 +1144,16 @@ msgid "Contains audio clips."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:39
-#, fuzzy
 msgid "MIDI region"
-msgstr "Editar Regiões"
+msgstr "Região MIDI"
 
 #: ../../editing/timeline/arranger.rst:40
 msgid "Contains MIDI notes."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:41
-#, fuzzy
 msgid "Automation region"
-msgstr "Editor de Automação"
+msgstr "Região de automação"
 
 #: ../../editing/timeline/arranger.rst:42
 msgid "Contains automation events."
@@ -1196,7 +1169,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:47
 msgid "Markers"
-msgstr ""
+msgstr "Marcadores"
 
 #: ../../editing/timeline/arranger.rst:48
 msgid ""
@@ -1221,9 +1194,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:67
-#, fuzzy
 msgid "Creating Objects"
-msgstr "Selecionar Faixas"
+msgstr "Criação de objetos"
 
 #: ../../editing/timeline/arranger.rst:68
 msgid ""
@@ -1237,9 +1209,8 @@ msgid "For creating objects in other modes, see :ref:`edit-modes`."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:75
-#, fuzzy
 msgid "Moving Objects"
-msgstr "Selecionar Faixas"
+msgstr "Mover objetos"
 
 #: ../../editing/timeline/arranger.rst:76
 msgid ""
@@ -1248,9 +1219,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:81
-#, fuzzy
 msgid "Copy-Moving Objects"
-msgstr "Selecionar Faixas"
+msgstr "Copiar-mover objetos"
 
 #: ../../editing/timeline/arranger.rst:82
 msgid ""
@@ -1259,9 +1229,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:86
-#, fuzzy
 msgid "Link-Moving Regions"
-msgstr "Mover regiões"
+msgstr "Ligar-mover regiões"
 
 #: ../../editing/timeline/arranger.rst:87
 msgid "Linked regions can be created by holding down :zbutton:`Alt` while moving."
@@ -1396,7 +1365,7 @@ msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:21
 msgid "Musical Mode"
-msgstr ""
+msgstr "Modo musical"
 
 #: ../../editing/timeline/toolbar.rst:22
 msgid ""

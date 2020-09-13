@@ -1,15 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# ssantos <ssantos@web.de>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-23 12:35+0100\n"
-"PO-Revision-Date: 2019-10-28 15:53+0000\n"
-"Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
+"PO-Revision-Date: 2020-09-13 07:20+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese (Portugal) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_PT/>\n"
 "Language: pt_PT\n"
@@ -17,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.9.1\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #: src/zrythm.c:286
 msgid "Initializing settings"
@@ -2098,7 +2097,7 @@ msgstr "Nome do projeto"
 
 #: resources/ui/quantize_dialog.ui:7
 msgid "Quantize Options"
-msgstr "Opções de Quantificação"
+msgstr "Opções de quantificação"
 
 #: resources/ui/quantize_dialog.ui:23
 msgid "_Quantize"
