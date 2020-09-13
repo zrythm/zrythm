@@ -29,7 +29,8 @@ install_icons = configure_file (
     'BASH': bash.full_path (),
     'TRACK_TYPES_DIR': theme_iconsdir / 'zrythm-dark' / 'scalable' / 'tracktypes',
     'CMD1': os_windows ? 'cp' : 'ln',
-    'CMD2': os_windows ? '' : '-s',
+    'CMD2': os_windows ? '-f' : '-s',
+    'CMD3': os_windows ? '' : '-f',
     })
 
 # create symlinks/copies for track icons
