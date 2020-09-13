@@ -888,7 +888,11 @@ carla_native_plugin_new_from_descriptor (
 {
   CarlaNativePlugin * self =
     create_from_descr (plugin->descr);
-  g_return_if_fail (self);
+  if (!self)
+    {
+      g_warning ("failed to create plugin");
+      return;
+    }
 
   plugin->carla = self;
   self->plugin = plugin;

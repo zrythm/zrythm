@@ -428,7 +428,11 @@ new_carla_plugin:
       plugin->descr->open_with_carla = true;
       carla_native_plugin_new_from_descriptor (
         plugin);
-      g_return_val_if_fail (plugin->carla, NULL);
+      if (!plugin->carla)
+        {
+          g_warning ("failed to create plugin");
+          return NULL;
+        }
     }
   else
     {

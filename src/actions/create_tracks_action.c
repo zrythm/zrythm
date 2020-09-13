@@ -110,8 +110,12 @@ create (
           pl=
             plugin_new_from_descr (
               &self->pl_descr, track->pos, 0);
-          g_return_val_if_fail (
-            pl, ERR_PLUGIN_INSTANTIATION_FAILED);
+          if (!pl)
+            {
+              g_warning (
+                "plugin instantiation failed");
+              return ERR_PLUGIN_INSTANTIATION_FAILED;
+            }
 
           if (plugin_instantiate (pl, true, NULL) < 0)
             {
@@ -287,7 +291,11 @@ create_tracks_action_do (
   for (int i = 0; i < self->num_tracks; i++)
     {
       ret = create (self, i);
-      g_return_val_if_fail (ret == 0, ret);
+      if (ret != 0)
+        {
+          g_warn_if_reached ();
+          return ret;
+        }
 
       /* TODO select each plugin that was selected */
     }
