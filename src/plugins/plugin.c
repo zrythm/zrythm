@@ -1435,6 +1435,11 @@ plugin_process (
 void
 plugin_open_ui (Plugin *plugin)
 {
+  if (plugin->instantiation_failed)
+    {
+      return;
+    }
+
   if (plugin->descr->open_with_carla)
     {
 #ifdef HAVE_CARLA

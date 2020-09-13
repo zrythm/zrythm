@@ -893,7 +893,7 @@ load (
   free (yaml);
   if (!self)
     {
-      g_critical ("Failed to load project");
+      g_warning ("Failed to load project");
       return -1;
     }
   self->backup_dir =
