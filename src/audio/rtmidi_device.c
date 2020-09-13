@@ -136,6 +136,7 @@ rtmidi_device_open (
     self->port, designation);
   char lbl[1200];
   sprintf (lbl, "%s [%u]", designation, self->id);
+  rtmidi_close_port (self->in_handle);
   rtmidi_open_port (self->in_handle, self->id, lbl);
   if (!self->in_handle->ok)
     {
