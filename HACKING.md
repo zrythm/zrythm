@@ -89,6 +89,9 @@ An easy way to test something is to add a
 `g_warn_if_reached ();`
 and it will automatically break there for you.
 
+Debug messages can be enabled with
+`G_MESSAGES_DEBUG=zrythm`.
+
 For more information on warnings and assertions see
 <https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html>.
 

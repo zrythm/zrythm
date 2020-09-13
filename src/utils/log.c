@@ -713,10 +713,11 @@ log_is_old_api (const GLogField *fields,
 }
 
 static GLogWriterOutput
-log_writer_default_custom (GLogLevelFlags   log_level,
-                      const GLogField *fields,
-                      gsize            n_fields,
-                      gpointer         user_data)
+log_writer_default_custom (
+  GLogLevelFlags   log_level,
+  const GLogField *fields,
+  gsize            n_fields,
+  gpointer         user_data)
 {
   static gsize initialized = 0;
   static gboolean stderr_is_journal = FALSE;
@@ -725,7 +726,8 @@ log_writer_default_custom (GLogLevelFlags   log_level,
   g_return_val_if_fail (n_fields > 0, G_LOG_WRITER_UNHANDLED);
 
   /* Disable debug message output unless specified in G_MESSAGES_DEBUG. */
-  if (!(log_level & DEFAULT_LEVELS) && !(log_level >> G_LOG_LEVEL_USER_SHIFT))
+  if (!(log_level & DEFAULT_LEVELS) &&
+      !(log_level >> G_LOG_LEVEL_USER_SHIFT))
     {
       const gchar *domains, *log_domain = NULL;
       gsize i;
@@ -864,7 +866,7 @@ log_writer (
       else
         {
           if (log_level <=
-                self->min_log_level_for_console)
+                self->min_log_level_for_test_console)
             {
               g_log (NULL, log_level, "%s", str);
             }
@@ -1099,15 +1101,15 @@ log_new (void)
     {"fatal-warnings",  G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL },
     {"fatal-criticals", G_LOG_LEVEL_CRITICAL }
   };
-  GLogLevelFlags flags;
-
-  flags = g_parse_debug_envvar ("G_DEBUG", keys, G_N_ELEMENTS (keys), 0);
+  GLogLevelFlags flags =
+    g_parse_debug_envvar (
+      "G_DEBUG", keys, G_N_ELEMENTS (keys), 0);
 
   log_always_fatal |= flags & G_LOG_LEVEL_MASK;
 
   self->logfd = -1;
   self->use_structured_for_console = true;
-  self->min_log_level_for_console =
+  self->min_log_level_for_test_console =
     G_LOG_LEVEL_MESSAGE;
 
   g_log_set_writer_func (

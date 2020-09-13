@@ -353,6 +353,7 @@ test_cflags = [
   '-D__(x)=x',
   # use structured log
   '-DG_LOG_USE_STRUCTURED=1',
+  '-DG_LOG_DOMAIN="zrythm"',
   ]
 
 if os_windows

@@ -56,7 +56,7 @@ _test_loading_non_existing_plugin (
 
   /* reload project and expect messages */
   LOG->use_structured_for_console = false;
-  LOG->min_log_level_for_console =
+  LOG->min_log_level_for_test_console =
     G_LOG_LEVEL_WARNING;
   g_test_expect_message (
     NULL, G_LOG_LEVEL_WARNING,

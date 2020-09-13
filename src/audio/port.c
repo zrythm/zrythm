@@ -702,7 +702,7 @@ port_receive_midi_events_from_jack (
       char designation[600];
       port_get_full_designation (
         self, designation);
-      g_message (
+      g_debug (
         "JACK MIDI (%s): have %d events\n"
         "first event is: [%u] %hhx %hhx %hhx",
         designation, num_events,

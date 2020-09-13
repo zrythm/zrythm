@@ -75,7 +75,7 @@ typedef struct Log
    *
    * Used during tests.
    */
-  GLogLevelFlags  min_log_level_for_console;
+  GLogLevelFlags  min_log_level_for_test_console;
 
   /** Currently opened log viewer. */
   LogViewerWidget * viewer;
