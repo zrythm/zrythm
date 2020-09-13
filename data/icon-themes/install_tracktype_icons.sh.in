@@ -1,0 +1,20 @@
+#!@BASH@
+
+tracktypes_dir="$DESTDIR/@TRACK_TYPES_DIR@"
+
+# 'cp' or 'ln'
+cmd1="@CMD1@"
+# '-s' or 'empty'
+cmd2="@CMD2@"
+
+declare -a icons=(
+  "actions/bus"
+  "actions/markers"
+  "status/bars"
+  "status/signal-audio"
+  "status/signal-midi")
+
+cd $tracktypes_dir
+for icon in "${icons[@]}"; do
+  $cmd1 $cmd2 ../$icon.svg ./
+done

@@ -95,6 +95,8 @@ Debug messages can be enabled with
 For more information on warnings and assertions see
 <https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html>.
 
+Also see [Running GLib Applications](https://developer.gnome.org/glib/stable/glib-running.html).
+
 We suggest building with `-Dextra_debug_info` which
 essentially adds `-g3` to the CFLAGS. This allows
 use of C macros in gdb so you can do `p TRACKLIST`

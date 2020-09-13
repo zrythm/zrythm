@@ -78,16 +78,7 @@ if os_gnu or os_freebsd
   endif
 endif
 
-# install icon theme
-install_subdir (
-  'icon-themes/zrythm-dark',
-  install_dir: themesdir / 'icons')
-
-# install app icon
-install_data (
-  'icon-themes/zrythm-dark/scalable/apps/zrythm.svg',
-  install_dir:
-    datadir / 'icons/hicolor/scalable/apps')
+subdir ('icon-themes')
 
 # Zrythm project MIME type
 install_data (

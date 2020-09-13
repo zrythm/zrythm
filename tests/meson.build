@@ -28,6 +28,7 @@ if get_option ('tests')
     'G_TEST_SRCDIR', meson.current_source_dir ())
   test_env.set (
     'G_TEST_BUILDDIR', meson.current_build_dir ())
+  test_env.set ('G_SLICE', 'debug-blocks')
   test_env.set (
     'GUILE_LOAD_PATH', '$GUILE_LOAD_PATH:' + meson.current_build_dir ())
   test_env.set ('G_DEBUG', 'gc-friendly')

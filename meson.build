@@ -178,8 +178,9 @@ cc = meson.get_compiler ('c')
 
 # --- Check for programs ---
 
-find_program ('sed', required: true)
-find_program ('gettext', required: true)
+find_program ('sed')
+find_program ('gettext')
+bash = find_program ('bash')
 dot_bin = find_program ('dot', required: false)
 
 # find plugins for testing
