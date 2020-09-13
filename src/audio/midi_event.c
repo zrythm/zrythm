@@ -742,9 +742,9 @@ midi_events_add_event_from_buf (
 {
   if (buf_size != 3)
     {
-      g_warning (
+      g_message (
         "buf size of %d received (%"PRIu8" %"
-        PRIu8" %"PRIu8"), expected 3",
+        PRIu8" %"PRIu8"), expected 3, skipping...",
         buf_size > 0 ? buf[0] : 0,
         buf_size > 1 ? buf[1] : 0,
         buf_size > 2 ? buf[2] : 0, buf_size);

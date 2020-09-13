@@ -662,8 +662,6 @@ port_receive_midi_events_from_jack (
   jack_midi_event_t jack_ev;
   for(unsigned i = 0; i < num_events; i++)
     {
-      /* this is guaranteed to be a 3-byte
-       * MIDI event */
       jack_midi_event_get (
         &jack_ev, port_buf, i);
 
@@ -687,7 +685,7 @@ port_receive_midi_events_from_jack (
             {
               /* different channel */
             }
-          else
+          else if (jack_ev.size == 3)
             {
               midi_events_add_event_from_buf (
                 self->midi_events,
