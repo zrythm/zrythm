@@ -14,6 +14,13 @@
 extern "C" {
 #endif
 
+#ifndef WAI_FUNCSPEC
+  #define WAI_FUNCSPEC
+#endif
+#ifndef WAI_PREFIX
+#define WAI_PREFIX(function) wai_##function
+#endif
+
 #if !defined(WAI_MALLOC) || !defined(WAI_FREE) || !defined(WAI_REALLOC)
 #include <stdlib.h>
 #endif
@@ -184,8 +191,6 @@ int WAI_PREFIX(getModulePath)(char* out, int capacity, int* dirname_length)
 #define WAI_PROC_SELF_EXE "/proc/self/exe"
 #endif
 #endif
-
-#define WAI_PREFIX(x) wai_##x
 
 WAI_FUNCSPEC
 int WAI_PREFIX(getExecutablePath)(char* out, int capacity, int* dirname_length)

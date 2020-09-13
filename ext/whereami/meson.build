@@ -22,7 +22,4 @@ whereami_srcs = [
 whereami_lib = static_library (
   'whereami',
   whereami_srcs,
-  c_args: [
-    '-DWAI_FUNCSPEC=',
-    ],
   )
