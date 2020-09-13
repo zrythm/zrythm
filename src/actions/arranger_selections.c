@@ -382,8 +382,12 @@ arranger_selections_action_new_link (
 UndoableAction *
 arranger_selections_action_new_create_or_delete (
   ArrangerSelections * sel,
-  const int            create)
+  const bool           create)
 {
+  g_return_val_if_fail (
+    IS_ARRANGER_SELECTIONS (sel) &&
+    arranger_selections_has_any (sel), NULL);
+
   ArrangerSelectionsAction * self =
     _create_action (sel);
   UndoableAction * ua = (UndoableAction *) self;

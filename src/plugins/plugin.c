@@ -59,6 +59,7 @@
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
@@ -121,8 +122,29 @@ plugin_init_loaded (
 
   if (project)
     {
-      plugin_instantiate (self, project, NULL);
-      plugin_activate (self, true);
+      int ret =
+        plugin_instantiate (self, project, NULL);
+      if (ret == 0)
+        {
+          plugin_activate (self, true);
+        }
+      else
+        {
+          /* disable plugin, instantiation failed */
+          char * msg =
+            g_strdup_printf (
+              _("Instantiation failed for "
+              "plugin '%s'. Disabling..."),
+              self->descr->name);
+          g_warning ("%s", msg);
+          if (ZRYTHM_HAVE_UI)
+            {
+              ui_show_error_message (
+                MAIN_WINDOW, msg);
+            }
+          g_free (msg);
+          self->instantiation_failed = true;
+        }
     }
 
   /*Track * track = plugin_get_track (self);*/
@@ -1262,7 +1284,8 @@ plugin_instantiate (
                   pl->state_dir ? true : false,
                   NULL, state))
               {
-                g_warning ("lv2 instantiate failed");
+                g_warning (
+                  "lv2 instantiate failed");
                 return -1;
               }
             else

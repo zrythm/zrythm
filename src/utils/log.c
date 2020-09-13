@@ -852,12 +852,24 @@ log_writer (
   /* call the default log writer */
   if (ZRYTHM_TESTING)
     {
-      /* this is because the following doesn't
-       * send a trap when executed from non-gtk
-       * threads during testing */
-      return
-        g_log_writer_default (
-          log_level, fields, n_fields, self);
+      if (self->use_structured_for_console)
+        {
+          /* this is because the following doesn't
+           * send a trap when executed from non-gtk
+           * threads during testing */
+          return
+            g_log_writer_default (
+              log_level, fields, n_fields, self);
+        }
+      else
+        {
+          if (log_level <=
+                self->min_log_level_for_console)
+            {
+              g_log (NULL, log_level, "%s", str);
+            }
+          return 0;
+        }
     }
   else
     {
@@ -1094,6 +1106,9 @@ log_new (void)
   log_always_fatal |= flags & G_LOG_LEVEL_MASK;
 
   self->logfd = -1;
+  self->use_structured_for_console = true;
+  self->min_log_level_for_console =
+    G_LOG_LEVEL_MESSAGE;
 
   g_log_set_writer_func (
     (GLogWriterFunc) log_writer, self, NULL);

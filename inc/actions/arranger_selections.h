@@ -396,7 +396,7 @@ arranger_selections_action_init_loaded (
 UndoableAction *
 arranger_selections_action_new_create_or_delete (
   ArrangerSelections * sel,
-  const int            create);
+  const bool           create);
 
 #define \
 arranger_selections_action_new_create(sel) \

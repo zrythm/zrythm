@@ -19,6 +19,8 @@
 
 #include "zrythm-test-config.h"
 
+#include <lilv/lilv.h>
+
 #include "audio/fader.h"
 #include "audio/midi_event.h"
 #include "audio/router.h"
@@ -27,8 +29,10 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm.h"
 
+#include <glib.h>
+
 static void
-test_fader_process_with_instrument (
+_test_loading_non_existing_plugin (
   const char * pl_bundle,
   const char * pl_uri,
   bool         with_carla)
@@ -43,46 +47,39 @@ test_fader_process_with_instrument (
       TRACK_TYPE_INSTRUMENT,
       descr, NULL, TRACKLIST->num_tracks, NULL, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
-  Track * track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
-  /* send a note then wait for playback */
-  midi_events_add_note_on (
-    track->processor->midi_in->midi_events,
-    1, 82, 74, 2, true);
+  /* unload bundle so plugin can't be found */
+  LilvNode * path =
+    lilv_new_uri (LILV_WORLD, pl_bundle);
+  lilv_world_unload_bundle (LILV_WORLD, path);
+  lilv_node_free (path);
 
-  /* run engine twice (running one is not enough to
-   * make the note make sound) */
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  /* reload project and expect messages */
+  LOG->use_structured_for_console = false;
+  LOG->min_log_level_for_console =
+    G_LOG_LEVEL_WARNING;
+  g_test_expect_message (
+    NULL, G_LOG_LEVEL_WARNING,
+    "*lv2 instantiate failed*");
+  g_test_expect_message (
+    NULL, G_LOG_LEVEL_WARNING,
+    "*Instantiation failed for plugin *");
+  test_project_save_and_reload ();
 
-  /* test fader */
-  zix_sem_wait (&ROUTER->graph_access);
-  bool has_signal = false;
-  Port * l = track->channel->fader->stereo_out->l;
-  /*g_warn_if_reached ();*/
-  for (nframes_t i = 0;
-       i < AUDIO_ENGINE->block_length; i++)
-    {
-      if (l->buf[i] > 0.0001f)
-        {
-          has_signal = true;
-          break;
-        }
-    }
-  g_assert_true (has_signal);
-  zix_sem_post (&ROUTER->graph_access);
+  /* let engine run */
+  g_usleep (600000);
+
+  /* assert expected messages */
+  g_test_assert_expected_messages ();
 }
 
 static void
-test_fader_process ()
+test_loading_non_existing_plugin ()
 {
   test_helper_zrythm_init ();
 
 #ifdef HAVE_HELM
-  test_fader_process_with_instrument (
+  _test_loading_non_existing_plugin (
     HELM_BUNDLE, HELM_URI, false);
 #endif
 
@@ -94,11 +91,11 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-#define TEST_PREFIX "/audio/fader/"
+#define TEST_PREFIX "/plugins/plugin/"
 
   g_test_add_func (
-    TEST_PREFIX "test fader process",
-    (GTestFunc) test_fader_process);
+    TEST_PREFIX "test loading non-existing plugin",
+    (GTestFunc) test_loading_non_existing_plugin);
 
   return g_test_run ();
 }

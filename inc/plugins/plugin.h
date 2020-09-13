@@ -121,6 +121,10 @@ typedef struct Plugin
    * or not. */
   bool              instantiated;
 
+  /** Set to true if instantiation failed and the
+   * plugin will be treated as disabled. */
+  bool              instantiation_failed;
+
   /** Whether the plugin is currently activated
    * or not. */
   bool              activated;

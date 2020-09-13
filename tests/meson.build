@@ -28,7 +28,6 @@ if get_option ('tests')
     'G_TEST_SRCDIR', meson.current_source_dir ())
   test_env.set (
     'G_TEST_BUILDDIR', meson.current_build_dir ())
-  test_env.set ('G_DEBUG', 'fatal-warnings')
   test_env.set (
     'GUILE_LOAD_PATH', '$GUILE_LOAD_PATH:' + meson.current_build_dir ())
   test_env.set ('G_DEBUG', 'gc-friendly')
@@ -137,6 +136,7 @@ if get_option ('tests')
     ['audio/region', true],
     ['audio/track', true],
     ['integration/recording', true],
+    ['plugins/plugin', true],
     ['plugins/plugin_manager', true],
     ['project', true],
     ['utils/arrays', true],
@@ -190,9 +190,9 @@ if get_option ('tests')
     test_name = '_'.join(test_name.split('/'))
     suite = _test[0].split('/')[0]
     source = _test[0] + '.c'
-    timeout = 120
+    timeout = 180
     if suite.contains ('benchmark')
-      timeout = 180
+      timeout = 240
     endif
 
     if fs.is_file (source)

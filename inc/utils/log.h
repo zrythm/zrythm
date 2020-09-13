@@ -62,6 +62,21 @@ typedef struct Log
 
   bool            initialized;
 
+  /**
+   * Whether to use structured log when writing
+   * to the console.
+   *
+   * Used during tests.
+   */
+  bool            use_structured_for_console;
+
+  /**
+   * Minimum log level for the console.
+   *
+   * Used during tests.
+   */
+  GLogLevelFlags  min_log_level_for_console;
+
   /** Currently opened log viewer. */
   LogViewerWidget * viewer;
 

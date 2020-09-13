@@ -76,6 +76,7 @@
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
@@ -1588,10 +1589,10 @@ lv2_plugin_instantiate (
 {
   g_message (
     "Instantiating... uri: %s, project: %d, "
-    "preset_uri: %s, "
+    "preset_uri: %s, use_state_file: %d"
     "state: %p",
     self->plugin->descr->uri, project,
-    preset_uri, state);
+    preset_uri, use_state_file, state);
 
   set_features (self);
 
@@ -1726,20 +1727,37 @@ lv2_plugin_instantiate (
             }
 
           /* Find plugin */
+          const char * lv2_uri_str =
+            lilv_node_as_string (lv2_uri);
           g_message (
-            "Plugin: %s",
-            lilv_node_as_string (lv2_uri));
+            "Plugin URI: %s", lv2_uri_str);
           g_return_val_if_fail (
             PM_LILV_NODES.lilv_plugins, -1);
           self->lilv_plugin =
             lilv_plugins_get_by_uri (
               PM_LILV_NODES.lilv_plugins,
               lv2_uri);
-          lilv_node_free (lv2_uri);
           if (!self->lilv_plugin)
             {
-              g_warning ("Failed to find plugin");
+              if (ZRYTHM_HAVE_UI)
+                {
+                  char * msg =
+                    g_strdup_printf (
+                      _("Failed to find plugin "
+                      "with URI: %s"),
+                      lv2_uri_str);
+                  g_warning ("%s", msg);
+                  if (ZRYTHM_HAVE_UI)
+                    {
+                      ui_show_error_message (
+                        MAIN_WINDOW, msg);
+                    }
+                  g_free (msg);
+                }
+              lilv_node_free (lv2_uri);
+              return -1;
             }
+          lilv_node_free (lv2_uri);
         } /* end if use state file */
     }
   g_warn_if_fail (self->lilv_plugin);
@@ -2097,6 +2115,12 @@ lv2_plugin_process (
   const long  g_start_frames,
   const nframes_t   nframes)
 {
+  if (self->plugin->instantiation_failed)
+    {
+      /* ignore */
+      return;
+    }
+
   g_return_if_fail (
     self->plugin->instantiated &&
     self->plugin->activated);

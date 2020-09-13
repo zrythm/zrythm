@@ -2232,7 +2232,10 @@ track_set_is_project (
       for (int i = 0; i < num_plugins; i++)
         {
           Plugin * pl = plugins[i];
-          plugin_activate (pl, is_project);
+          if (!pl->instantiation_failed)
+            {
+              plugin_activate (pl, is_project);
+            }
         }
     }
 

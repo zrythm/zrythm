@@ -691,7 +691,7 @@ engine_realloc_port_buffers (
           else
             pl = ch->inserts[j - (STRIP_SIZE + 1)];
 
-          if (pl)
+          if (pl && !pl->instantiation_failed)
             {
               if (pl->descr->protocol == PROT_LV2 &&
                   !pl->descr->open_with_carla)
