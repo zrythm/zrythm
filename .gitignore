@@ -176,3 +176,6 @@ results*
 # subprojects
 subprojects/**/*
 !subprojects/*.wrap
+
+#VS Code config
+.vscode
