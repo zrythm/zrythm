@@ -772,8 +772,9 @@ log_writer_default_custom (
 
   /* FIXME: Add support for the Windows log. */
 
-  if (log_writer_standard_streams (log_level, fields, n_fields, user_data) ==
-      G_LOG_WRITER_HANDLED)
+  if (log_writer_standard_streams (
+        log_level, fields, n_fields, user_data) ==
+          G_LOG_WRITER_HANDLED)
     goto handled;
 
   return G_LOG_WRITER_UNHANDLED;

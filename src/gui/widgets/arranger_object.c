@@ -781,15 +781,16 @@ arranger_object_set_full_rectangle (
         position_from_ticks (
           &tmp,
           region_start_ticks +
-          self->pos.total_ticks);
+            self->pos.total_ticks);
         self->full_rect.x =
-          ui_pos_to_px_editor (
-            &tmp, 1);
+          ui_pos_to_px_editor (&tmp, 1);
         self->full_rect.y =
           (int)
           (adj_px_per_key *
-           piano_roll_find_midi_note_descriptor_by_val (
-             PIANO_ROLL, mn->val)->index);
+           (127 -
+              piano_roll_find_midi_note_descriptor_by_val (
+               PIANO_ROLL, mn->val)->value));
+             /*PIANO_ROLL, mn->val)->index);*/
 
         self->full_rect.height =
           (int) adj_px_per_key;
@@ -800,7 +801,7 @@ arranger_object_set_full_rectangle (
             self->full_rect.x -=
               self->full_rect.width / 2;
 
-            WARN_IF_HAS_NEGATIVE_DIMENSIONS;
+            /*WARN_IF_HAS_NEGATIVE_DIMENSIONS;*/
           }
         else
           {
@@ -930,7 +931,9 @@ arranger_object_set_full_rectangle (
       break;
     }
 
-  if (self->full_rect.x < 0 ||
+  if ((self->full_rect.x < 0 &&
+         self->type != TYPE (MIDI_NOTE) &&
+         !PIANO_ROLL->drum_mode) ||
       self->full_rect.y < 0 ||
       self->full_rect.width < 0 ||
       self->full_rect.height < 0)

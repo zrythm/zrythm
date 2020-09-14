@@ -81,41 +81,58 @@ draw_midi_note_bg (
   GdkRectangle * full_rect,
   GdkRectangle * draw_rect)
 {
-  /* if there are still midi note parts
-   * outside the
-   * rect, add some padding so that the
-   * midi note
-   * doesn't curve when it's not its edge */
-  int draw_x = draw_rect->x - arr_rect->x;
-  int draw_x_has_padding = 0;
-  if (draw_rect->x > full_rect->x)
+  if (PIANO_ROLL->drum_mode)
     {
-      draw_x -=
-        MIN (draw_rect->x - full_rect->x, 4);
-      draw_x_has_padding = 1;
+      cairo_save (cr);
+      /* translate to the full rect */
+      cairo_translate (
+        cr,
+        (int) (full_rect->x - arr_rect->x),
+        (int) (full_rect->y - arr_rect->y));
+      z_cairo_diamond (
+        cr, 0, 0,
+        full_rect->width,
+        full_rect->height);
+      cairo_restore (cr);
     }
-  int draw_width = draw_rect->width;
-  if (draw_rect->x + draw_rect->width <
-      full_rect->x + full_rect->width)
+  else
     {
-      draw_width +=
-        MAX (
-          (draw_rect->x + draw_rect->width) -
-            (full_rect->x + full_rect->width), 4);
-    }
-  if (draw_x_has_padding)
-    {
-      draw_width += 4;
-    }
+      /* if there are still midi note parts
+       * outside the
+       * rect, add some padding so that the
+       * midi note
+       * doesn't curve when it's not its edge */
+      int draw_x = draw_rect->x - arr_rect->x;
+      int draw_x_has_padding = 0;
+      if (draw_rect->x > full_rect->x)
+        {
+          draw_x -=
+            MIN (draw_rect->x - full_rect->x, 4);
+          draw_x_has_padding = 1;
+        }
+      int draw_width = draw_rect->width;
+      if (draw_rect->x + draw_rect->width <
+          full_rect->x + full_rect->width)
+        {
+          draw_width +=
+            MAX (
+              (draw_rect->x + draw_rect->width) -
+                (full_rect->x + full_rect->width), 4);
+        }
+      if (draw_x_has_padding)
+        {
+          draw_width += 4;
+        }
 
-  z_cairo_rounded_rectangle (
-    cr, draw_x, full_rect->y - arr_rect->y,
-    draw_width, full_rect->height, 1.0,
-    full_rect->height / 8.0f);
-  /*cairo_rectangle (*/
-    /*cr, draw_x, full_rect->y - rect->y,*/
-    /*draw_width, full_rect->height);*/
-  /*cairo_fill (cr);*/
+      z_cairo_rounded_rectangle (
+        cr, draw_x, full_rect->y - arr_rect->y,
+        draw_width, full_rect->height, 1.0,
+        full_rect->height / 8.0f);
+      /*cairo_rectangle (*/
+        /*cr, draw_x, full_rect->y - rect->y,*/
+        /*draw_width, full_rect->height);*/
+      /*cairo_fill (cr);*/
+    }
 }
 
 /**
@@ -199,20 +216,9 @@ midi_note_draw (
       gdk_cairo_set_source_rgba (
         cr, &color);
 
-      if (PIANO_ROLL->drum_mode)
-        {
-          z_cairo_diamond (
-            cr, draw_rect.x - arr_rect->x,
-            draw_rect.y - arr_rect->y,
-            draw_rect.width,
-            draw_rect.height);
-        }
-      else
-        {
-          draw_midi_note_bg (
-            self, cr, arr_rect,
-            &full_rect, &draw_rect);
-        }
+      draw_midi_note_bg (
+        self, cr, arr_rect,
+        &full_rect, &draw_rect);
       cairo_fill (cr);
     }
   /* draw other notes */
@@ -229,19 +235,9 @@ midi_note_draw (
       gdk_cairo_set_source_rgba (
         cr, &color);
 
-      if (PIANO_ROLL->drum_mode)
-        {
-          z_cairo_diamond (
-            cr, draw_rect.x - arr_rect->x,
-            draw_rect.y - arr_rect->y,
-            draw_rect.width, draw_rect.height);
-        }
-      else
-        {
-          draw_midi_note_bg (
-            self, cr, arr_rect,
-            &full_rect, &draw_rect);
-        }
+      draw_midi_note_bg (
+        self, cr, arr_rect,
+        &full_rect, &draw_rect);
       cairo_fill (cr);
     }
 
