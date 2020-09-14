@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -18,13 +18,13 @@
  */
 
 /**
- * @file
+ * \file
  *
- * Audio clip editor backend.
+ * Timeline backend.
  */
 
-#ifndef __AUDIO_AUDIO_CLIP_EDITOR_H__
-#define __AUDIO_AUDIO_CLIP_EDITOR_H__
+#ifndef __GUI_BACKEND_TIMELINE_H__
+#define __GUI_BACKEND_TIMELINE_H__
 
 #include "utils/yaml.h"
 
@@ -34,47 +34,75 @@
  * @{
  */
 
-#define AUDIO_CLIP_EDITOR \
-  (&CLIP_EDITOR->audio_clip_editor)
+#define PRJ_TIMELINE (PROJECT->timeline)
 
 /**
- * Audio clip editor serializable backend.
+ * Clip editor serializable backend.
  *
  * The actual widgets should reflect the
  * information here.
  */
-typedef struct AudioClipEditor
+typedef struct Timeline
 {
   /** Horizontal scroll start position. */
-  int             scroll_start_x;
+  int            scroll_start_x;
 
   /** Vertical scroll start position. */
-  int             scroll_start_y;
-} AudioClipEditor;
+  int            scroll_start_y;
+
+  /** Horizontal scroll start position. */
+  int            pinned_scroll_start_x;
+
+  /** Vertical scroll start position. */
+  int            pinned_scroll_start_y;
+} Timeline;
 
 static const cyaml_schema_field_t
-audio_clip_editor_fields_schema[] =
+timeline_fields_schema[] =
 {
   YAML_FIELD_INT (
-    AudioClipEditor, scroll_start_x),
+    Timeline, scroll_start_x),
   YAML_FIELD_INT (
-    AudioClipEditor, scroll_start_y),
+    Timeline, scroll_start_y),
+  YAML_FIELD_INT (
+    Timeline, pinned_scroll_start_x),
+  YAML_FIELD_INT (
+    Timeline, pinned_scroll_start_y),
 
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
-audio_clip_editor_schema =
+timeline_schema =
 {
   CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-    AudioClipEditor,
-    audio_clip_editor_fields_schema),
+    Timeline, timeline_fields_schema),
 };
 
+/**
+ * Inits the Timeline after a Project is loaded.
+ */
 void
-audio_clip_editor_init (
-  AudioClipEditor * self);
+timeline_init_loaded (
+  Timeline * self);
+
+/**
+ * Inits the Timeline instance.
+ */
+void
+timeline_init (
+  Timeline * self);
+
+/**
+ * Creates a new Timeline instance.
+ */
+Timeline *
+timeline_new (void);
+
+void
+timeline_free (
+  Timeline * self);
 
 /**
  * @}

@@ -47,10 +47,24 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/tracklist_selections.h"
+#include "gui/widgets/audio_arranger.h"
+#include "gui/widgets/audio_editor_space.h"
+#include "gui/widgets/automation_arranger.h"
+#include "gui/widgets/automation_editor_space.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_arranger.h"
+#include "gui/widgets/chord_editor_space.h"
+#include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/create_project_dialog.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/splash.h"
+#include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "plugins/carla_native_plugin.h"
@@ -264,6 +278,8 @@ project_free (Project * self)
     undo_manager_free, self->undo_manager);
   object_free_w_func_and_null (
     clip_editor_free, self->clip_editor);
+  object_free_w_func_and_null (
+    timeline_free, self->timeline);
 
   object_zero_and_free (self);
 
@@ -722,6 +738,7 @@ create_default (Project * self)
     &self->quantize_opts_editor,
     NOTE_LENGTH_1_8);
   clip_editor_init (self->clip_editor);
+  timeline_init (self->timeline);
   snap_grid_update_snap_points (
     &self->snap_grid_timeline);
   snap_grid_update_snap_points (
@@ -977,7 +994,8 @@ load (
   engine_init_loaded (self->audio_engine);
   undo_manager_init_loaded (self->undo_manager);
 
-  clip_editor_init_loaded (CLIP_EDITOR);
+  clip_editor_init_loaded (self->clip_editor);
+  timeline_init_loaded (self->timeline);
   tracklist_init_loaded (self->tracklist);
 
   engine_update_frames_per_tick (
@@ -1312,6 +1330,7 @@ project_new (
     }
 
   self->clip_editor = clip_editor_new ();
+  self->timeline = timeline_new ();
   self->tracklist_selections =
     tracklist_selections_new (true);
 
@@ -1572,6 +1591,107 @@ project_save (
 #ifdef HAVE_CARLA
             }
 #endif
+        }
+    }
+
+  /* save UI positions */
+  if (ZRYTHM_HAVE_UI)
+    {
+      if (MW_TIMELINE)
+        {
+          GtkScrolledWindow * scroll =
+            arranger_widget_get_scrolled_window (
+              MW_TIMELINE);
+          GtkAdjustment * adj =
+            gtk_scrolled_window_get_hadjustment (
+              scroll);
+          PRJ_TIMELINE->scroll_start_x =
+            (int) gtk_adjustment_get_value (adj);
+          adj =
+            gtk_scrolled_window_get_vadjustment (
+              scroll);
+          PRJ_TIMELINE->scroll_start_y =
+            (int) gtk_adjustment_get_value (adj);
+        }
+      if (MW_PINNED_TIMELINE)
+        {
+          GtkScrolledWindow * scroll =
+            arranger_widget_get_scrolled_window (
+              MW_PINNED_TIMELINE);
+          GtkAdjustment * adj =
+            gtk_scrolled_window_get_hadjustment (
+              scroll);
+          PRJ_TIMELINE->pinned_scroll_start_x =
+            (int) gtk_adjustment_get_value (adj);
+          adj =
+            gtk_scrolled_window_get_vadjustment (
+              scroll);
+          PRJ_TIMELINE->pinned_scroll_start_y =
+            (int) gtk_adjustment_get_value (adj);
+        }
+      if (MW_MIDI_ARRANGER)
+        {
+          GtkScrolledWindow * scroll =
+            arranger_widget_get_scrolled_window (
+              MW_MIDI_ARRANGER);
+          GtkAdjustment * adj =
+            gtk_scrolled_window_get_hadjustment (
+              scroll);
+          PIANO_ROLL->scroll_start_x =
+            (int) gtk_adjustment_get_value (adj);
+          adj =
+            gtk_scrolled_window_get_vadjustment (
+              scroll);
+          PIANO_ROLL->scroll_start_y =
+            (int) gtk_adjustment_get_value (adj);
+        }
+      if (MW_AUTOMATION_ARRANGER)
+        {
+          GtkScrolledWindow * scroll =
+            arranger_widget_get_scrolled_window (
+              MW_AUTOMATION_ARRANGER);
+          GtkAdjustment * adj =
+            gtk_scrolled_window_get_hadjustment (
+              scroll);
+          AUTOMATION_EDITOR->scroll_start_x =
+            (int) gtk_adjustment_get_value (adj);
+          adj =
+            gtk_scrolled_window_get_vadjustment (
+              scroll);
+          AUTOMATION_EDITOR->scroll_start_y =
+            (int) gtk_adjustment_get_value (adj);
+        }
+      if (MW_AUDIO_ARRANGER)
+        {
+          GtkScrolledWindow * scroll =
+            arranger_widget_get_scrolled_window (
+              MW_AUDIO_ARRANGER);
+          GtkAdjustment * adj =
+            gtk_scrolled_window_get_hadjustment (
+              scroll);
+          AUDIO_CLIP_EDITOR->scroll_start_x =
+            (int) gtk_adjustment_get_value (adj);
+          adj =
+            gtk_scrolled_window_get_vadjustment (
+              scroll);
+          AUDIO_CLIP_EDITOR->scroll_start_y =
+            (int) gtk_adjustment_get_value (adj);
+        }
+      if (MW_CHORD_ARRANGER)
+        {
+          GtkScrolledWindow * scroll =
+            arranger_widget_get_scrolled_window (
+              MW_CHORD_ARRANGER);
+          GtkAdjustment * adj =
+            gtk_scrolled_window_get_hadjustment (
+              scroll);
+          CHORD_EDITOR->scroll_start_x =
+            (int) gtk_adjustment_get_value (adj);
+          adj =
+            gtk_scrolled_window_get_vadjustment (
+              scroll);
+          CHORD_EDITOR->scroll_start_y =
+            (int) gtk_adjustment_get_value (adj);
         }
     }
 

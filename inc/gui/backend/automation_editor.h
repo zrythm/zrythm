@@ -18,7 +18,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Automation editor backend.
  */
@@ -26,7 +26,7 @@
 #ifndef __GUI_BACKEND_AUTOMATION_EDITOR_H__
 #define __GUI_BACKEND_AUTOMATION_EDITOR_H__
 
-#include <cyaml/cyaml.h>
+#include "utils/yaml.h"
 
 /**
  * @addtogroup gui_backend
@@ -44,15 +44,20 @@ typedef struct ZRegion ZRegion;
  */
 typedef struct AutomationEditor
 {
-  int    fixme;
+  /** Horizontal scroll start position. */
+  int             scroll_start_x;
+
+  /** Vertical scroll start position. */
+  int             scroll_start_y;
 } AutomationEditor;
 
 static const cyaml_schema_field_t
 automation_editor_fields_schema[] =
 {
-  CYAML_FIELD_INT (
-    "fixme", CYAML_FLAG_DEFAULT,
-    AutomationEditor, fixme),
+  YAML_FIELD_INT (
+    AutomationEditor, scroll_start_x),
+  YAML_FIELD_INT (
+    AutomationEditor, scroll_start_y),
 
   CYAML_FIELD_END
 };

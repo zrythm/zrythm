@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -54,6 +54,12 @@ typedef struct ChordEditor
    */
   ChordDescriptor * chords[128];
   int               num_chords;
+
+  /** Horizontal scroll start position. */
+  int             scroll_start_x;
+
+  /** Vertical scroll start position. */
+  int             scroll_start_y;
 } ChordEditor;
 
 static const cyaml_schema_field_t
@@ -63,6 +69,10 @@ chord_editor_fields_schema[] =
   "chords", CYAML_FLAG_DEFAULT,
   ChordEditor, chords, num_chords,
   &chord_descriptor_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_INT (
+    ChordEditor, scroll_start_x),
+  YAML_FIELD_INT (
+    ChordEditor, scroll_start_y),
 
   CYAML_FIELD_END
 };

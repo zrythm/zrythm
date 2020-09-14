@@ -340,6 +340,15 @@ typedef struct _ArrangerWidget
    * etc.). */
   guint          drag_start_btn;
 
+  /**
+   * Whether this is the first time the widget is
+   * drawn.
+   *
+   * This is used for loading back the scroll
+   * positions saved in the project.
+   */
+  bool           first_draw;
+
 } ArrangerWidget;
 
 /**

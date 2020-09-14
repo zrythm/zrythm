@@ -902,6 +902,65 @@ arranger_draw_cb (
   if (ruler->px_per_bar < 2.0)
     return FALSE;
 
+  if (self->first_draw)
+    {
+      self->first_draw = false;
+
+      GtkScrolledWindow * scroll =
+        arranger_widget_get_scrolled_window (self);
+      GtkAdjustment * hadj =
+        gtk_scrolled_window_get_hadjustment (
+          scroll);
+      GtkAdjustment * vadj =
+        gtk_scrolled_window_get_vadjustment (
+          scroll);
+
+      int new_x = 0;
+      int new_y = 0;
+      if (self->type == TYPE (TIMELINE))
+        {
+          new_x =
+            self->is_pinned ?
+              PRJ_TIMELINE->pinned_scroll_start_x :
+              PRJ_TIMELINE->scroll_start_x;
+          new_y =
+            self->is_pinned ?
+              PRJ_TIMELINE->pinned_scroll_start_y :
+              PRJ_TIMELINE->scroll_start_y;
+        }
+      if (self->type == TYPE (MIDI) ||
+          self->type == TYPE (MIDI_MODIFIER))
+        {
+          new_x = PIANO_ROLL->scroll_start_x;
+          if (self->type == TYPE (MIDI))
+            {
+              new_y = PIANO_ROLL->scroll_start_y;
+            }
+        }
+      if (self->type == TYPE (CHORD))
+        {
+          new_x = CHORD_EDITOR->scroll_start_x;
+          new_y = CHORD_EDITOR->scroll_start_y;
+        }
+      if (self->type == TYPE (AUTOMATION))
+        {
+          new_x = AUTOMATION_EDITOR->scroll_start_x;
+          new_y = AUTOMATION_EDITOR->scroll_start_y;
+        }
+      if (self->type == TYPE (AUDIO))
+        {
+          new_x = AUDIO_CLIP_EDITOR->scroll_start_x;
+          new_y = AUDIO_CLIP_EDITOR->scroll_start_y;
+        }
+
+      g_debug (
+        "setting arranger adjustment to %d, %d",
+        new_x, new_y);
+
+      gtk_adjustment_set_value (hadj, new_x);
+      gtk_adjustment_set_value (vadj, new_y);
+    }
+
   GdkRectangle rect;
   gdk_cairo_get_clip_rectangle (
     cr, &rect);
@@ -5530,15 +5589,18 @@ on_scroll (
   GdkEventScroll  *event,
   ArrangerWidget * self)
 {
+  double x = event->x,
+         y = event->y,
+         adj_val,
+         diff;
+
+  g_debug ("scrolled to %f, %f", x, y);
+
   if (!(event->state & GDK_CONTROL_MASK))
     return FALSE;
 
-  double x = event->x,
-         /*y = event->y,*/
-         adj_val,
-         diff;
   Position cursor_pos;
-   GtkScrolledWindow * scroll =
+  GtkScrolledWindow * scroll =
     arranger_widget_get_scrolled_window (self);
   GtkAdjustment * adj;
   int new_x;
@@ -6660,6 +6722,15 @@ arranger_widget_get_min_possible_position (
     }
 }
 
+static bool
+on_arranger_map_event (
+  GtkWidget *      widget,
+  GdkEvent *       event,
+  ArrangerWidget * self)
+{
+  return FALSE;
+}
+
 void
 arranger_widget_setup (
   ArrangerWidget *   self,
@@ -6730,6 +6801,9 @@ arranger_widget_setup (
   g_signal_connect (
     G_OBJECT (self), "draw",
     G_CALLBACK (arranger_draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "map-event",
+    G_CALLBACK (on_arranger_map_event), self);
 
   /*gtk_widget_add_tick_callback (*/
     /*GTK_WIDGET (self),*/
@@ -6750,6 +6824,8 @@ static void
 arranger_widget_init (
   ArrangerWidget *self)
 {
+  self->first_draw = true;
+
   /* make widget able to notify */
   gtk_widget_add_events (
     GTK_WIDGET (self),

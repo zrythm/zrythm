@@ -1572,6 +1572,14 @@ process_events (void * data)
                 MW_MODULATOR_VIEW,
                 P_MODULATOR_TRACK);
             }
+
+          /* show clip editor if clip selected */
+          if (MW_CLIP_EDITOR &&
+              CLIP_EDITOR->has_region)
+            {
+              clip_editor_widget_on_region_changed (
+                MW_CLIP_EDITOR);
+            }
           break;
         case ET_PROJECT_SAVED:
           header_widget_set_subtitle (

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -165,7 +165,7 @@ typedef struct MidiNoteDescriptor
 typedef struct PianoRoll
 {
   /** Notes zoom level. */
-  float             notes_zoom;
+  float           notes_zoom;
 
   /** Selected MidiModifier. */
   MidiModifier    midi_modifier;
@@ -175,8 +175,8 @@ typedef struct PianoRoll
 
   /** Currently pressed notes (used only at
    * runtime). */
-  int                  current_notes[128];
-  int                  num_current_notes;
+  int             current_notes[128];
+  int             num_current_notes;
 
   /**
    * Piano roll mode descriptors.
@@ -201,6 +201,12 @@ typedef struct PianoRoll
    * be sorted at the end of the array.
    */
   MidiNoteDescriptor drum_descriptors[128];
+
+  /** Horizontal scroll start position. */
+  int             scroll_start_x;
+
+  /** Vertical scroll start position. */
+  int             scroll_start_y;
 } PianoRoll;
 
 static const cyaml_strval_t
@@ -215,16 +221,18 @@ midi_modifier_strings[] =
 static const cyaml_schema_field_t
 piano_roll_fields_schema[] =
 {
-  CYAML_FIELD_FLOAT (
-    "notes_zoom", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     PianoRoll, notes_zoom),
   CYAML_FIELD_ENUM (
     "midi_modifier", CYAML_FLAG_DEFAULT,
     PianoRoll, midi_modifier, midi_modifier_strings,
     CYAML_ARRAY_LEN (midi_modifier_strings)),
-  CYAML_FIELD_INT (
-    "drum_mode", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     PianoRoll, drum_mode),
+  YAML_FIELD_INT (
+    PianoRoll, scroll_start_x),
+  YAML_FIELD_INT (
+    PianoRoll, scroll_start_y),
 
   CYAML_FIELD_END
 };

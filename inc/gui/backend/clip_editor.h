@@ -66,7 +66,7 @@ typedef struct ClipEditor
   //RegionIdentifier  region_id_cache;
 
   /** Whether \ref region_id is a valid region. */
-  int              has_region;
+  bool             has_region;
 
   /**
    * Whether \ref region_id_cache is a valid
@@ -92,6 +92,8 @@ clip_editor_fields_schema[] =
   YAML_FIELD_MAPPING_EMBEDDED (
     ClipEditor, region_id,
     region_identifier_fields_schema),
+  YAML_FIELD_INT (
+    ClipEditor, has_region),
   YAML_FIELD_MAPPING_EMBEDDED (
     ClipEditor, piano_roll,
     piano_roll_fields_schema),
@@ -101,6 +103,9 @@ clip_editor_fields_schema[] =
   YAML_FIELD_MAPPING_EMBEDDED (
     ClipEditor, chord_editor,
     chord_editor_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ClipEditor, audio_clip_editor,
+    audio_clip_editor_fields_schema),
 
   CYAML_FIELD_END
 };

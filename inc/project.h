@@ -43,6 +43,7 @@
 #include "gui/backend/chord_selections.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/mixer_selections.h"
+#include "gui/backend/timeline.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tool.h"
 #include "plugins/plugin.h"
@@ -154,6 +155,9 @@ typedef struct Project
   /** Backend for the widget. */
   ClipEditor *      clip_editor;
 
+  /** Timeline widget backend. */
+  Timeline *        timeline;
+
   /** Snap/Grid info for the timeline. */
   SnapGrid          snap_grid_timeline;
 
@@ -263,7 +267,11 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_PTR (
     Project, tracklist, tracklist_fields_schema),
   YAML_FIELD_MAPPING_PTR (
-    Project, clip_editor, clip_editor_fields_schema),
+    Project, clip_editor,
+    clip_editor_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    Project, timeline,
+    timeline_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
     Project, snap_grid_timeline,
     snap_grid_fields_schema),

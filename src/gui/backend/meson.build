@@ -30,6 +30,7 @@ backend_srcs = [
   'midi_arranger_selections.c',
   'mixer_selections.c',
   'piano_roll.c',
+  'timeline.c',
   'timeline_selections.c',
   'tracklist_selections.c',
   ]

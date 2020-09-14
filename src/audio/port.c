@@ -72,7 +72,7 @@ port_init_loaded (
   Port * self,
   bool   is_project)
 {
-  g_message (
+  g_debug (
     "%s, is project: %d",
     self->id.label, is_project);
 
