@@ -746,11 +746,17 @@ send_midi_events_to_jack (
         TYPE_EVENT)
     return;
 
+  jack_port_t * jport = JACK_PORT_T (port->data);
+
+  if (jack_port_connected (jport) <= 0)
+    {
+      return;
+    }
+
   midi_events_copy_to_jack (
     port->midi_events,
     jack_port_get_buffer (
-      JACK_PORT_T (port->data),
-      AUDIO_ENGINE->nframes));
+      jport, AUDIO_ENGINE->nframes));
 }
 
 static void
@@ -764,12 +770,18 @@ send_audio_data_to_jack (
       port->id.type != TYPE_AUDIO)
     return;
 
+  jack_port_t * jport = JACK_PORT_T (port->data);
+
+  if (jack_port_connected (jport) <= 0)
+    {
+      return;
+    }
+
   float * out;
   out =
     (float *)
     jack_port_get_buffer (
-      JACK_PORT_T (port->data),
-      AUDIO_ENGINE->nframes);
+      jport, AUDIO_ENGINE->nframes);
 
 #ifdef TRIAL_VER
   if (AUDIO_ENGINE->limit_reached)
