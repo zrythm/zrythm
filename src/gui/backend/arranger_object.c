@@ -449,10 +449,16 @@ arranger_object_is_position_valid (
         {
           Position * end_pos = &self->end_pos;
           is_valid =
-            position_is_before (
-              pos, end_pos) &&
-            position_is_after_or_equal (
-              pos, &POSITION_START);
+            position_is_before (pos, end_pos);
+
+          if (!arranger_object_owned_by_region (
+                self))
+            {
+              is_valid =
+                is_valid &&
+                position_is_after_or_equal (
+                  pos, &POSITION_START);
+            }
         }
       else if (arranger_object_type_has_global_pos (
                  self->type))
@@ -503,6 +509,11 @@ arranger_object_is_position_valid (
     default:
       break;
     }
+
+  g_debug (
+    "%s position with ticks %f",
+    is_valid ? "Valid" : "Invalid",
+    pos->total_ticks);
 
   return is_valid;
 }
@@ -608,9 +619,7 @@ arranger_object_set_position (
     return;
 
   Position * pos_ptr;
-  pos_ptr =
-    get_position_ptr (
-      self, pos_type);
+  pos_ptr = get_position_ptr (self, pos_type);
   g_return_if_fail (pos_ptr);
   position_set_to_pos (pos_ptr, pos);
 }

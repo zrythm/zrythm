@@ -167,11 +167,11 @@ midi_arranger_widget_snap_midi_notes_l (
 
   /* get delta with first clicked note's start
    * pos */
-  double delta;
-  delta =
+  double delta =
     pos->total_ticks -
     (self->start_object->pos.total_ticks +
       r_obj->pos.total_ticks);
+  g_debug ("delta %f", delta);
 
   Position new_start_pos, new_global_start_pos;
   MidiNote * midi_note;
@@ -184,11 +184,9 @@ midi_arranger_widget_snap_midi_notes_l (
       mn_obj =
         (ArrangerObject *) midi_note;
 
-      /* calculate new start pos by adding
-       * delta to the cached start pos */
+      /* calculate new start pos */
       position_set_to_pos (
-        &new_start_pos,
-        &mn_obj->pos);
+        &new_start_pos, &mn_obj->pos);
       position_add_ticks (
         &new_start_pos, delta);
 
@@ -207,10 +205,12 @@ midi_arranger_widget_snap_midi_notes_l (
       if (SNAP_GRID_ANY_SNAP (
             self->snap_grid) &&
           !self->shift_held)
-        position_snap (
-          NULL, &new_global_start_pos,
-          NULL, clip_editor_region,
-          self->snap_grid);
+        {
+          position_snap (
+            NULL, &new_global_start_pos,
+            NULL, clip_editor_region,
+            self->snap_grid);
+        }
 
       /* convert it back to a local pos */
       position_set_to_pos (
@@ -226,7 +226,9 @@ midi_arranger_widget_snap_midi_notes_l (
           position_is_after_or_equal (
             &new_start_pos,
             &mn_obj->end_pos))
-        return -1;
+        {
+          return -1;
+        }
       else if (!dry_run)
         {
           arranger_object_pos_setter (
