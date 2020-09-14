@@ -266,6 +266,23 @@ engine_setup (
       engine_dummy_midi_setup (self);
     }
 
+  if ((self->audio_backend == AUDIO_BACKEND_JACK &&
+       self->midi_backend != MIDI_BACKEND_JACK) ||
+      (self->audio_backend != AUDIO_BACKEND_JACK &&
+       self->midi_backend == MIDI_BACKEND_JACK))
+    {
+      char * str =
+        g_strdup (
+          _("Your selected combination of backends "
+          "may not work properly. If you want to "
+          "use JACK, please select JACK as both "
+          "your audio and MIDI backend."));
+      ui_show_message_full (
+        GTK_WINDOW (MAIN_WINDOW),
+        GTK_MESSAGE_WARNING, str);
+      g_free (str);
+    }
+
   self->buf_size_set = false;
 
   /* connect the sample processor to the engine

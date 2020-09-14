@@ -742,8 +742,7 @@ send_midi_events_to_jack (
 {
   if (port->internal_type !=
         INTERNAL_JACK_PORT ||
-      port->id.type !=
-        TYPE_EVENT)
+      port->id.type != TYPE_EVENT)
     return;
 
   jack_port_t * jport = JACK_PORT_T (port->data);
@@ -811,23 +810,25 @@ sum_data_from_jack (
 {
   if (self->id.owner_type ==
         PORT_OWNER_TYPE_BACKEND ||
-      self->internal_type !=
-        INTERNAL_JACK_PORT ||
-      self->id.flow !=
-        FLOW_INPUT ||
-      AUDIO_ENGINE->audio_backend !=
-        AUDIO_BACKEND_JACK ||
-      AUDIO_ENGINE->midi_backend !=
-        MIDI_BACKEND_JACK)
+      self->internal_type != INTERNAL_JACK_PORT ||
+      self->id.flow != FLOW_INPUT)
     return;
 
   /* append events from JACK if any */
-  port_receive_midi_events_from_jack (
-    self, start_frame, nframes);
+  if (AUDIO_ENGINE->midi_backend ==
+        MIDI_BACKEND_JACK)
+    {
+      port_receive_midi_events_from_jack (
+        self, start_frame, nframes);
+    }
 
   /* audio */
-  port_receive_audio_data_from_jack (
-    self, start_frame, nframes);
+  if (AUDIO_ENGINE->audio_backend ==
+        AUDIO_BACKEND_JACK)
+    {
+      port_receive_audio_data_from_jack (
+        self, start_frame, nframes);
+    }
 }
 
 /**
@@ -840,23 +841,25 @@ send_data_to_jack (
   const nframes_t start_frame,
   const nframes_t nframes)
 {
-  if (self->internal_type !=
-        INTERNAL_JACK_PORT ||
-      self->id.flow !=
-        FLOW_OUTPUT ||
-      AUDIO_ENGINE->audio_backend !=
-        AUDIO_BACKEND_JACK ||
-      AUDIO_ENGINE->midi_backend !=
-        MIDI_BACKEND_JACK)
+  if (self->internal_type != INTERNAL_JACK_PORT ||
+      self->id.flow != FLOW_OUTPUT)
     return;
 
   /* send midi events */
-  send_midi_events_to_jack (
-    self, start_frame, nframes);
+  if (AUDIO_ENGINE->midi_backend ==
+        MIDI_BACKEND_JACK)
+    {
+      send_midi_events_to_jack (
+        self, start_frame, nframes);
+    }
 
   /* send audio data */
-  send_audio_data_to_jack (
-    self, start_frame, nframes);
+  if (AUDIO_ENGINE->audio_backend ==
+        AUDIO_BACKEND_JACK)
+    {
+      send_audio_data_to_jack (
+        self, start_frame, nframes);
+    }
 }
 
 /**
