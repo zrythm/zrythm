@@ -15,6 +15,11 @@ inside `meson_options.txt`.
 
     meson configure build
 
+To clean the build directory while keeping the
+current configuration
+
+    meson compile --clean -C build
+
 ## Optimization
 
 The default build type is `debugoptmized`, which
