@@ -75,9 +75,9 @@ midi_arranger_widget_create_note (
  */
 int
 midi_arranger_widget_snap_midi_notes_l (
-  ArrangerWidget *self,
-  Position *          pos,
-  int                 dry_run);
+  ArrangerWidget * self,
+  Position *       pos,
+  bool             dry_run);
 
 /**
  * Called during drag_update in the parent when
@@ -94,9 +94,9 @@ midi_arranger_widget_snap_midi_notes_l (
  */
 int
 midi_arranger_widget_snap_midi_notes_r (
-  ArrangerWidget *self,
-  Position *          pos,
-  int                 dry_run);
+  ArrangerWidget * self,
+  Position *       pos,
+  bool             dry_run);
 
 /**
  * Sets the currently hovered note and queues a

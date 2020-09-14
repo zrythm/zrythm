@@ -87,18 +87,15 @@ block_or_unblock_all_handlers (
 }
 
 static void
-on_linked_toggled (
-  GtkToggleButton *       btn,
+refresh_link (
   SnapGridPopoverWidget * self)
 {
   block_or_unblock_all_handlers (self, true);
 
-  SnapGrid * sg = self->owner->snap_grid;
-  bool link = gtk_toggle_button_get_active (btn);
-  sg->link = link;
-
   /* whether default controls should be visible */
-  bool visible = !link;
+  bool visible = !self->owner->snap_grid->link;
+  gtk_toggle_button_set_active (
+    self->link_toggle, !visible);
   gtk_widget_set_visible (
     GTK_WIDGET (self->default_length_box), visible);
   gtk_widget_set_visible (
@@ -111,6 +108,17 @@ on_linked_toggled (
     GTK_WIDGET (self->default_adaptive), visible);
 
   block_or_unblock_all_handlers (self, false);
+}
+
+static void
+on_linked_toggled (
+  GtkToggleButton *       btn,
+  SnapGridPopoverWidget * self)
+{
+  bool link = gtk_toggle_button_get_active (btn);
+  self->owner->snap_grid->link = link;
+
+  refresh_link (self);
 }
 
 static void
@@ -283,6 +291,8 @@ snap_grid_popover_widget_new (
     g_signal_connect (
       GTK_WIDGET (self->link_toggle), "toggled",
       G_CALLBACK (on_linked_toggled), self);
+
+  refresh_link (self);
 
   return self;
 }

@@ -188,7 +188,7 @@ on_key_action (
   GdkEventKey *event,
   ArrangerWidget * self)
 {
-  g_message ("main window key press");
+  g_debug ("main window key press");
 
   if (!z_gtk_keyval_is_arrow (event->keyval))
     return FALSE;

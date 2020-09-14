@@ -187,4 +187,7 @@
 #define F_UNDOABLE 1
 #define F_NOT_UNDOABLE 0
 
+#define F_DRY_RUN 1
+#define F_NOT_DRY_RUN 0
+
 #endif

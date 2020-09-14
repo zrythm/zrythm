@@ -4063,20 +4063,26 @@ drag_update (
             {
               int ret =
                 timeline_arranger_widget_snap_regions_r (
-                  self, &self->curr_pos, 1);
+                  self, &self->curr_pos, F_DRY_RUN);
               if (!ret)
-                timeline_arranger_widget_snap_regions_r (
-                  self, &self->curr_pos, 0);
+                {
+                  timeline_arranger_widget_snap_regions_r (
+                    self, &self->curr_pos,
+                    F_NOT_DRY_RUN);
+                }
             }
         }
       else if (self->type == TYPE (MIDI))
         {
           int ret =
             midi_arranger_widget_snap_midi_notes_r (
-              self, &self->curr_pos, 1);
+              self, &self->curr_pos, F_DRY_RUN);
           if (!ret)
-            midi_arranger_widget_snap_midi_notes_r (
-              self, &self->curr_pos, 0);
+            {
+              midi_arranger_widget_snap_midi_notes_r (
+                self, &self->curr_pos,
+                F_NOT_DRY_RUN);
+            }
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_UP:

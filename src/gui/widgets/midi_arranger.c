@@ -157,9 +157,9 @@ midi_arranger_widget_create_note (
  */
 int
 midi_arranger_widget_snap_midi_notes_l (
-  ArrangerWidget *self,
-  Position *          pos,
-  int                 dry_run)
+  ArrangerWidget * self,
+  Position *       pos,
+  bool             dry_run)
 {
   ArrangerObject * r_obj =
     (ArrangerObject *)
@@ -302,9 +302,9 @@ midi_arranger_widget_set_hovered_note (
  */
 int
 midi_arranger_widget_snap_midi_notes_r (
-  ArrangerWidget *self,
-  Position *          pos,
-  int                 dry_run)
+  ArrangerWidget * self,
+  Position *       pos,
+  bool             dry_run)
 {
   ArrangerObject * r_obj =
     (ArrangerObject *)
@@ -316,6 +316,7 @@ midi_arranger_widget_snap_midi_notes_r (
     pos->total_ticks -
     (self->start_object->end_pos.total_ticks +
       r_obj->pos.total_ticks);
+  g_debug ("delta %f", delta);
 
   MidiNote * midi_note;
   Position new_end_pos, new_global_end_pos;
@@ -334,8 +335,8 @@ midi_arranger_widget_snap_midi_notes_r (
       /* get new end pos by adding delta
        * to the cached end pos */
       position_set_to_pos (
-        &new_end_pos,
-        &self->start_object->end_pos);
+        &new_end_pos, &midi_note->base.end_pos);
+        /*&self->start_object->end_pos);*/
       position_add_ticks (
         &new_end_pos, delta);
 

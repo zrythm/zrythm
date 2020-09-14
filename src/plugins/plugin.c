@@ -178,7 +178,8 @@ plugin_init (
   /* add enabled port */
   Port * port =
     port_new_with_type (
-      TYPE_CONTROL, FLOW_INPUT, _("Enabled"));
+      TYPE_CONTROL, FLOW_INPUT,
+      _("[Zrythm] Enabled"));
   plugin_add_in_port (plugin, port);
   port->id.flags |=
     PORT_FLAG_PLUGIN_ENABLED;
@@ -200,7 +201,8 @@ plugin_init (
   /* add gain port */
   port =
     port_new_with_type (
-      TYPE_CONTROL, FLOW_INPUT, _("Gain"));
+      TYPE_CONTROL, FLOW_INPUT,
+      _("[Zrythm] Gain"));
   plugin_add_in_port (plugin, port);
   port->id.flags |=
     PORT_FLAG_PLUGIN_GAIN;
