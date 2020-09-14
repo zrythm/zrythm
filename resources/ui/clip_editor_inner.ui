@@ -70,11 +70,14 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkBox" id="left_of_ruler_box">
+                        <style>
+                          <class name="left-of-ruler-box"/>
+                        </style>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">horizontal</property>
                         <child>
-                          <object class="GtkButton" id="toggle_notation">
+                          <object class="GtkToggleButton" id="toggle_notation">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -90,6 +93,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
+                            <property name="pack-type">end</property>
                           </packing>
                         </child>
                         <child>
@@ -109,6 +113,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
+                            <property name="pack-type">end</property>
                           </packing>
                         </child>
                       </object>

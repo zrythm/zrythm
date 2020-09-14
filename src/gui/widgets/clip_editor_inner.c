@@ -286,9 +286,7 @@ clip_editor_inner_widget_class_init (
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, \
-    ClipEditorInnerWidget, \
-    x);
+    klass, ClipEditorInnerWidget, x);
 
   BIND_CHILD (color_bar);
   BIND_CHILD (bot_of_arranger_toolbar);

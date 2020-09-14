@@ -26,6 +26,8 @@
 #ifndef __GUI_BACKEND_PIANO_ROLL_H__
 #define __GUI_BACKEND_PIANO_ROLL_H__
 
+#include <stdbool.h>
+
 #include <cyaml/cyaml.h>
 
 typedef struct Track Track;
@@ -171,7 +173,7 @@ typedef struct PianoRoll
   MidiModifier    midi_modifier;
 
   /** Whether we are in drum mode or not. */
-  int             drum_mode;
+  bool            drum_mode;
 
   /** Currently pressed notes (used only at
    * runtime). */

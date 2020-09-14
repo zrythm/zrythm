@@ -524,6 +524,11 @@ textview {
   padding: 0px;
 }
 
+.left-of-ruler-box button
+{
+  min-width: 24px;
+}
+
 .inspector_label
 {
   font-size: small;

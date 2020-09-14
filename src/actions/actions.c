@@ -1398,24 +1398,22 @@ activate_toggle_status_bar (GSimpleAction *action,
       GTK_WIDGET (MW_BOT_BAR)));
 }
 
-/**
- * Toggle drum mode in the piano roll.
- */
 void
-activate_toggle_drum_mode (
-  GSimpleAction *action,
-  GVariant      *variant,
-  gpointer       user_data)
+change_state_piano_roll_drum_mode (
+  GSimpleAction * action,
+  GVariant *      value,
+  gpointer        user_data)
 {
-  PIANO_ROLL->drum_mode = !PIANO_ROLL->drum_mode;
+  int enabled = g_variant_get_boolean (value);
+
+  g_simple_action_set_state (action, value);
+
+  PIANO_ROLL->drum_mode = enabled;
 
   EVENTS_PUSH (ET_DRUM_MODE_CHANGED, NULL);
 }
 
-void
-activate_fullscreen (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+DEFINE_SIMPLE (activate_fullscreen)
 {
   if (MAIN_WINDOW->is_fullscreen)
     {

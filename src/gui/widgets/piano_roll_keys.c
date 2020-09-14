@@ -54,7 +54,8 @@ piano_roll_keys_draw (
 
   GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
-  int width = gtk_widget_get_allocated_width (widget);
+  int width =
+    gtk_widget_get_allocated_width (widget);
   gtk_render_background (
     context, cr, 0, 0, width, rect.height);
 
@@ -67,6 +68,10 @@ piano_roll_keys_draw (
 
   double label_width =
     (double) width * 0.55;
+  if (DRUM_MODE)
+    {
+      label_width = width - 8;
+    }
   double key_width =
     (double) width - label_width;
   double px_per_key = self->px_per_key + 1.0;
@@ -82,39 +87,43 @@ piano_roll_keys_draw (
             (double) (127 - i) * px_per_key)
         continue;
 
+      /* check if in scale and in chord */
+      int in_scale =
+        so && musical_scale_is_key_in_scale (
+          so->scale, i % 12);
+      int in_chord =
+        co && chord_descriptor_is_key_in_chord (
+          chord_object_get_chord_descriptor (co),
+          i % 12);
+
+      /* ---- draw label ---- */
+
+      const MidiNoteDescriptor * descr =
+        piano_roll_find_midi_note_descriptor_by_val (
+          PIANO_ROLL, i);
+
+      char fontize_str[120];
+      int fontsize =
+        piano_roll_keys_widget_get_font_size (
+          self);
+      sprintf (
+        fontize_str, "<span size=\"%d\">",
+        fontsize * 1000 - 4000);
+      strcat (fontize_str, "%s</span>");
+      char note_name[120];
+      sprintf (
+        note_name, fontize_str,
+        DRUM_MODE ?
+          descr->custom_name :
+          descr->note_name_pango);
+
       if (DRUM_MODE)
         {
+          strcpy (str, note_name);
         }
       else
         {
-          /* ---- draw label ---- */
-
-          const MidiNoteDescriptor * descr =
-            piano_roll_find_midi_note_descriptor_by_val (
-              PIANO_ROLL, i);
-
-          char fontize_str[120];
-          int fontsize =
-            piano_roll_keys_widget_get_font_size (
-              self);
-          sprintf (
-            fontize_str, "<span size=\"%d\">",
-            fontsize * 1000 - 4000);
-          strcat (fontize_str, "%s</span>");
-
-          /* highlight if in chord/scale */
-          int in_scale =
-            so && musical_scale_is_key_in_scale (
-              so->scale, i % 12);
-          int in_chord =
-            co && chord_descriptor_is_key_in_chord (
-              chord_object_get_chord_descriptor (co),
-              i % 12);
-
-          char note_name[120];
-          sprintf (
-            note_name, fontize_str,
-            descr->note_name_pango);
+          /* ---- draw background ---- */
 
           int has_color = 0;
           if (PIANO_ROLL->highlighting ==
@@ -183,71 +192,73 @@ piano_roll_keys_draw (
                 label_width, px_per_key);
               cairo_fill (cr);
             }
+        }
 
-          /* only show text if large enough */
-          if (px_per_key > 16.0)
-            {
-              g_return_val_if_fail (
-                self->layout, FALSE);
-              cairo_set_source_rgba (
-                cr, 1, 1, 1, 1);
-              pango_layout_set_markup (
-                self->layout, str, -1);
-              int ww, hh;
-              pango_layout_get_pixel_size (
-                self->layout, &ww, &hh);
-              double text_y_start =
-                /* y start of the note */
-                (127 - i) * px_per_key +
-                /* half of the space remaining excluding
-                 * hh */
-                (px_per_key - (double) hh) / 2.0;
-              cairo_move_to (
-                cr, 4, text_y_start);
-              pango_cairo_show_layout (
-                cr, self->layout);
-            }
+      /* ---- draw label ---- */
 
-          /* ---- draw key ---- */
+      /* only show text if large enough */
+      if (px_per_key > 16.0)
+        {
+          g_return_val_if_fail (
+            self->layout, FALSE);
+          cairo_set_source_rgba (
+            cr, 1, 1, 1, 1);
+          pango_layout_set_markup (
+            self->layout, str, -1);
+          int ww, hh;
+          pango_layout_get_pixel_size (
+            self->layout, &ww, &hh);
+          double text_y_start =
+            /* y start of the note */
+            (127 - i) * px_per_key +
+            /* half of the space remaining excluding
+             * hh */
+            (px_per_key - (double) hh) / 2.0;
+          cairo_move_to (
+            cr, 4, text_y_start);
+          pango_cairo_show_layout (
+            cr, self->layout);
+        }
 
-          /* draw note */
-          int black_note =
-            piano_roll_is_key_black (i);
+      /* ---- draw key ---- */
 
+      /* draw note */
+      int black_note =
+        piano_roll_is_key_black (i);
+
+      if (black_note)
+        cairo_set_source_rgb (cr, 0, 0, 0);
+      else
+        cairo_set_source_rgb (cr, 1, 1, 1);
+      cairo_rectangle (
+        cr, label_width, (127 - i) * px_per_key,
+        key_width, px_per_key);
+      cairo_fill (cr);
+
+      /* add shade if currently pressed note */
+      if (piano_roll_contains_current_note (
+            PIANO_ROLL, i))
+        {
           if (black_note)
-            cairo_set_source_rgb (cr, 0, 0, 0);
+            cairo_set_source_rgba (
+              cr, 1, 1, 1, 0.1);
           else
-            cairo_set_source_rgb (cr, 1, 1, 1);
+            cairo_set_source_rgba (
+              cr, 0, 0, 0, 0.3);
           cairo_rectangle (
             cr, label_width, (127 - i) * px_per_key,
             key_width, px_per_key);
           cairo_fill (cr);
-
-          /* add shade if currently pressed note */
-          if (piano_roll_contains_current_note (
-                PIANO_ROLL, i))
-            {
-              if (black_note)
-                cairo_set_source_rgba (
-                  cr, 1, 1, 1, 0.1);
-              else
-                cairo_set_source_rgba (
-                  cr, 0, 0, 0, 0.3);
-              cairo_rectangle (
-                cr, label_width, (127 - i) * px_per_key,
-                key_width, px_per_key);
-              cairo_fill (cr);
-            }
-
-          /* add border below */
-          double y = ((127 - i) + 1) * px_per_key;
-          cairo_set_source_rgba (
-            cr, 0.7, 0.7, 0.7, 1.0);
-          cairo_set_line_width (cr, 0.3);
-          cairo_move_to (cr, 0, y);
-          cairo_line_to (cr, width, y);
-          cairo_stroke (cr);
         }
+
+      /* add border below */
+      double y = ((127 - i) + 1) * px_per_key;
+      cairo_set_source_rgba (
+        cr, 0.7, 0.7, 0.7, 1.0);
+      cairo_set_line_width (cr, 0.3);
+      cairo_move_to (cr, 0, y);
+      cairo_line_to (cr, width, y);
+      cairo_stroke (cr);
     }
 
   return FALSE;

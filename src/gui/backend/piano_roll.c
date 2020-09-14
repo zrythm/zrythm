@@ -113,7 +113,8 @@ init_descriptors (
       descr->visible = 1;
       descr->custom_name =
         g_strdup_printf (
-          "%s%d",
+          "#%d: %s%d",
+          i,
           chord_descriptor_note_to_string (i % 12),
           i / 12 - 1);
 
