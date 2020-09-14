@@ -1,6 +1,8 @@
 #!@BASH@
 
-tracktypes_dir="$DESTDIR/@TRACK_TYPES_DIR@"
+set -e
+
+tracktypes_dir="$MESON_INSTALL_DESTDIR_PREFIX/@TRACK_TYPES_DIR@"
 
 # 'cp' or 'ln'
 cmd1="@CMD1@"
@@ -16,7 +18,8 @@ declare -a icons=(
   "status/signal-audio"
   "status/signal-midi")
 
-cd $tracktypes_dir
+mkdir -p "$tracktypes_dir"
+cd "$tracktypes_dir"
 for icon in "${icons[@]}"; do
   $cmd1 $cmd2 $cmd3 ../$icon.svg ./
 done

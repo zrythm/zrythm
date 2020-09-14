@@ -27,7 +27,7 @@ install_icons = configure_file (
   input: 'install_tracktype_icons.sh.in',
   configuration: {
     'BASH': bash.full_path (),
-    'TRACK_TYPES_DIR': theme_iconsdir / 'zrythm-dark' / 'scalable' / 'tracktypes',
+    'TRACK_TYPES_DIR': get_option ('datadir') / 'zrythm/themes/icons/zrythm-dark/scalable/tracktypes',
     'CMD1': os_windows ? 'cp' : 'ln',
     'CMD2': os_windows ? '-f' : '-s',
     'CMD3': os_windows ? '' : '-f',
