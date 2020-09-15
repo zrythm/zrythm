@@ -376,6 +376,8 @@ ArrangerSelections *
 arranger_selections_clone (
   ArrangerSelections * self)
 {
+  g_return_val_if_fail (self, NULL);
+
   TimelineSelections * src_ts, * new_ts;
   ChordSelections * src_cs, * new_cs;
   MidiArrangerSelections * src_mas, * new_mas;

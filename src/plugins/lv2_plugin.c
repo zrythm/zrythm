@@ -2094,11 +2094,17 @@ int
 lv2_plugin_cleanup (
   Lv2Plugin * self)
 {
+  g_message (
+    "Cleaning up LV2 plugin %s...",
+    self->plugin->descr->name);
+
   if (self->plugin->instantiated)
     {
       object_free_w_func_and_null (
         lilv_instance_free, self->instance);
     }
+
+  g_message ("done");
 
   return 0;
 }
