@@ -239,12 +239,19 @@ Args:
          ;; print enums
          (print-enum
            "audio-backend"
-           '("none" "alsa" "jack" "portaudio" "sdl"
-             "rtaudio"))
+           '("none" "none-libsoundio" "alsa"
+             "alsa-libsoundio" "alsa-rtaudio" "jack"
+             "jack-libsoundio" "jack-rtaudio"
+             "pulseaudio-libsoundio"
+             "pulseaudio-rtaudio"
+             "coreaudio-libsoundio" "coreaudio-rtaudio"
+             "sdl" "wasapi-libsoundio"
+             "wasapi-rtaudio" "asio-rtaudio"))
          (print-enum
            "midi-backend"
-           '("none" "alsa" "jack" "windows-mme"
-             "rtmidi"))
+           '("none" "alsa" "alsa-rtmidi" "jack"
+             "jack-rtmidi" "wmme" "wmme-rtmidi"
+             "coremidi-rtmidi"))
          (print-enum
            "language"
            '("ar" "cs" "da" "de" "en" "en_GB" "el"

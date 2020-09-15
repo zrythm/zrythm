@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if 0
+
 #ifdef HAVE_ALSA
 
 #ifndef __AUDIO_ENGINE_ALSA_H__
@@ -83,3 +85,4 @@ engine_alsa_tear_down (void);
 
 #endif // header guard
 #endif // HAVE_ALSA
+#endif

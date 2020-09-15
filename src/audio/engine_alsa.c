@@ -19,6 +19,8 @@
 
 #include "zrythm-config.h"
 
+#if 0
+
 #ifdef HAVE_ALSA
 
 #include <math.h>
@@ -567,5 +569,7 @@ engine_alsa_midi_setup (
 
   return 0;
 }
+
+#endif
 
 #endif

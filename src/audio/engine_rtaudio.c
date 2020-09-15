@@ -32,6 +32,53 @@
 
 #include <rtaudio/rtaudio_c.h>
 
+static rtaudio_api_t
+get_api_from_audio_backend (
+  AudioBackend backend)
+{
+  const rtaudio_api_t * apis =
+    rtaudio_compiled_api ();
+  unsigned int num_apis =
+    rtaudio_get_num_compiled_apis ();
+  for (unsigned int i = 0; i < num_apis; i++)
+    {
+      if (backend == AUDIO_BACKEND_ALSA_RTAUDIO &&
+            apis[i] == RTAUDIO_API_LINUX_ALSA)
+        {
+          return apis[i];
+        }
+      if (backend == AUDIO_BACKEND_JACK_RTAUDIO &&
+            apis[i] == RTAUDIO_API_UNIX_JACK)
+        {
+          return apis[i];
+        }
+      if (backend ==
+            AUDIO_BACKEND_PULSEAUDIO_RTAUDIO &&
+            apis[i] == RTAUDIO_API_LINUX_PULSE)
+        {
+          return apis[i];
+        }
+      if (backend ==
+            AUDIO_BACKEND_COREAUDIO_RTAUDIO &&
+            apis[i] == RTAUDIO_API_MACOSX_CORE)
+        {
+          return apis[i];
+        }
+      if (backend == AUDIO_BACKEND_WASAPI_RTAUDIO &&
+            apis[i] == RTAUDIO_API_WINDOWS_WASAPI)
+        {
+          return apis[i];
+        }
+      if (backend == AUDIO_BACKEND_ASIO_RTAUDIO &&
+            apis[i] == RTAUDIO_API_WINDOWS_ASIO)
+        {
+          return apis[i];
+        }
+    }
+
+  return RTAUDIO_API_DUMMY;
+}
+
 static int
 audio_cb (
   float *                 out_buf,
@@ -87,16 +134,31 @@ rtaudio_t
 engine_rtaudio_create_rtaudio (
   AudioEngine * self)
 {
-  rtaudio_t rtaudio =
-    rtaudio_create (
-#ifdef _WOE32
-      RTAUDIO_API_WINDOWS_WASAPI
-#elif defined(__APPLE__)
-      RTAUDIO_API_MACOSX_CORE
-#else
-      RTAUDIO_API_LINUX_ALSA
-#endif
-      );
+  rtaudio_t rtaudio;
+
+  const rtaudio_api_t * apis =
+    rtaudio_compiled_api ();
+  unsigned int num_apis =
+    rtaudio_get_num_compiled_apis ();
+  for (unsigned int i = 0; i < num_apis; i++)
+    {
+      g_message (
+        "RtAudio API found: %s",
+        rtaudio_api_name (apis[i]));
+    }
+
+  rtaudio_api_t api =
+    get_api_from_audio_backend (self->audio_backend);
+  if (api == RTAUDIO_API_DUMMY)
+    {
+      g_critical (
+        "RtAudio API for %s not enabled",
+        audio_backend_str[self->audio_backend]);
+      return NULL;
+    }
+
+  rtaudio = rtaudio_create (api);
+
   if (rtaudio_error (rtaudio))
     {
       g_critical (

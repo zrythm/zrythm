@@ -542,9 +542,14 @@ if not os_darwin
 endif
 alsa_dep = dependency (
   'alsa', required: false, static: all_static)
-if (alsa_dep.found ())
-  # disable as it's not working
-  # cdata.set('HAVE_ALSA', 1)
+have_alsa = alsa_dep.found ()
+if (have_alsa)
+  cdata.set('HAVE_ALSA', 1)
+endif
+pulseaudio_dep = dependency (
+  'pulseaudio', required: false, static: all_static)
+if (pulseaudio_dep.found ())
+  cdata.set('HAVE_PULSEAUDIO', 1)
 endif
 cyaml_dep = dependency(
   'libcyaml', required: false, version: '>=1.1.0',
@@ -791,6 +796,7 @@ zrythm_deps = [
   gtk_dep,
   sndfile_dep,
   alsa_dep,
+  pulseaudio_dep,
   cyaml_dep,
   audec_dep,
   libcgraph_dep,
@@ -950,6 +956,7 @@ summary ({
   }, section: 'General')
 
 summary ({
+  'ALSA': have_alsa,
   'Carla': have_carla,
   'GraphViz': have_graphviz,
   'Guile': have_guile,

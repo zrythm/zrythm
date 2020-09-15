@@ -400,8 +400,8 @@ channel_prepare_process (Channel * self)
 #ifdef HAVE_RTMIDI
       /* extract the midi events from the ring
        * buffer */
-      if (AUDIO_ENGINE->midi_backend ==
-            MIDI_BACKEND_RTMIDI)
+      if (midi_backend_is_rtmidi (
+            AUDIO_ENGINE->midi_backend))
         {
           port_prepare_rtmidi_events (
             tr->processor->midi_in);
@@ -807,7 +807,10 @@ channel_reconnect_ext_input_ports (
           break;
 #endif
 #ifdef HAVE_RTMIDI
-        case MIDI_BACKEND_RTMIDI:
+        case MIDI_BACKEND_ALSA_RTMIDI:
+        case MIDI_BACKEND_JACK_RTMIDI:
+        case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
+        case MIDI_BACKEND_COREMIDI_RTMIDI:
           reconnect_rtmidi_ext_in (ch, midi_in);
           break;
 #endif

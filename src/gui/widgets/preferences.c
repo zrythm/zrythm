@@ -196,8 +196,8 @@ should_be_hidden (
      KEY_IS (
        "General", "Engine",
        "sdl-audio-device-name")) ||
-    (AUDIO_ENGINE->audio_backend !=
-       AUDIO_BACKEND_RTAUDIO &&
+    (!audio_backend_is_rtaudio (
+       AUDIO_ENGINE->audio_backend) &&
      KEY_IS (
        "General", "Engine",
        "rtaudio-audio-device-name")) ||

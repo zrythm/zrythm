@@ -680,39 +680,107 @@ ui_create_audio_backends_model (void)
 {
   const int values[] = {
     AUDIO_BACKEND_DUMMY,
+#ifdef HAVE_LIBSOUNDIO
+    AUDIO_BACKEND_DUMMY_LIBSOUNDIO,
+#endif
 #ifdef HAVE_ALSA
     AUDIO_BACKEND_ALSA,
-#endif
+  #ifdef HAVE_LIBSOUNDIO
+    AUDIO_BACKEND_ALSA_LIBSOUNDIO,
+  #endif
+  #ifdef HAVE_RTAUDIO
+    AUDIO_BACKEND_ALSA_RTAUDIO,
+  #endif
+#endif /* HAVE_ALSA */
 #ifdef HAVE_JACK
     AUDIO_BACKEND_JACK,
-#endif
-#ifdef HAVE_PORT_AUDIO
-    AUDIO_BACKEND_PORT_AUDIO,
-#endif
+  #ifdef HAVE_LIBSOUNDIO
+    AUDIO_BACKEND_JACK_LIBSOUNDIO,
+  #endif
+  #ifdef HAVE_RTAUDIO
+    AUDIO_BACKEND_JACK_RTAUDIO,
+  #endif
+#endif /* HAVE_JACK */
+#ifdef HAVE_PULSEAUDIO
+  #ifdef HAVE_LIBSOUNDIO
+    AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO,
+  #endif
+  #ifdef HAVE_RTAUDIO
+    AUDIO_BACKEND_PULSEAUDIO_RTAUDIO,
+  #endif
+#endif /* HAVE_PULSEAUDIO */
+#ifdef __APPLE__
+  #ifdef HAVE_LIBSOUNDIO
+    AUDIO_BACKEND_COREAUDIO_LIBSOUNDIO,
+  #endif
+  #ifdef HAVE_RTAUDIO
+    AUDIO_BACKEND_COREAUDIO_RTAUDIO,
+  #endif
+#endif /* __APPLE__ */
 #ifdef HAVE_SDL
     AUDIO_BACKEND_SDL,
 #endif
-#ifdef HAVE_RTAUDIO
-    AUDIO_BACKEND_RTAUDIO,
-#endif
+#ifdef _WOE32
+  #ifdef HAVE_LIBSOUNDIO
+    AUDIO_BACKEND_WASAPI_LIBSOUNDIO,
+  #endif
+  #ifdef HAVE_RTAUDIO
+    AUDIO_BACKEND_WASAPI_RTAUDIO,
+    AUDIO_BACKEND_ASIO_RTAUDIO,
+  #endif
+#endif /* _WOE32 */
   };
   const gchar *labels[] = {
     _(audio_backend_str[AUDIO_BACKEND_DUMMY]),
+#ifdef HAVE_LIBSOUNDIO
+    _(audio_backend_str[AUDIO_BACKEND_DUMMY_LIBSOUNDIO]),
+#endif
 #ifdef HAVE_ALSA
     _(audio_backend_str[AUDIO_BACKEND_ALSA]),
-#endif
+  #ifdef HAVE_LIBSOUNDIO
+    _(audio_backend_str[AUDIO_BACKEND_ALSA_LIBSOUNDIO]),
+  #endif
+  #ifdef HAVE_RTAUDIO
+    _(audio_backend_str[AUDIO_BACKEND_ALSA_RTAUDIO]),
+  #endif
+#endif /* HAVE_ALSA */
 #ifdef HAVE_JACK
     _(audio_backend_str[AUDIO_BACKEND_JACK]),
-#endif
-#ifdef HAVE_PORT_AUDIO
-    _(audio_backend_str[AUDIO_BACKEND_PORT_AUDIO]),
-#endif
+  #ifdef HAVE_LIBSOUNDIO
+    _(audio_backend_str[AUDIO_BACKEND_JACK_LIBSOUNDIO]),
+  #endif
+  #ifdef HAVE_RTAUDIO
+    _(audio_backend_str[AUDIO_BACKEND_JACK_RTAUDIO]),
+  #endif
+#endif /* HAVE_JACK */
+#ifdef HAVE_PULSEAUDIO
+  #ifdef HAVE_LIBSOUNDIO
+    _(audio_backend_str[AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO]),
+  #endif
+  #ifdef HAVE_RTAUDIO
+    _(audio_backend_str[AUDIO_BACKEND_PULSEAUDIO_RTAUDIO]),
+  #endif
+#endif /* HAVE_PULSEAUDIO */
+#ifdef __APPLE__
+  #ifdef HAVE_LIBSOUNDIO
+    _(audio_backend_str[AUDIO_BACKEND_COREAUDIO_LIBSOUNDIO]),
+  #endif
+  #ifdef HAVE_RTAUDIO
+    _(audio_backend_str[AUDIO_BACKEND_COREAUDIO_RTAUDIO]),
+  #endif
+#endif /* __APPLE__ */
 #ifdef HAVE_SDL
     _(audio_backend_str[AUDIO_BACKEND_SDL]),
 #endif
-#ifdef HAVE_RTAUDIO
-    _(audio_backend_str[AUDIO_BACKEND_RTAUDIO]),
-#endif
+#ifdef _WOE32
+  #ifdef HAVE_LIBSOUNDIO
+    _(audio_backend_str[AUDIO_BACKEND_WASAPI_LIBSOUNDIO]),
+  #endif
+  #ifdef HAVE_RTAUDIO
+    _(audio_backend_str[AUDIO_BACKEND_WASAPI_RTAUDIO]),
+    _(audio_backend_str[AUDIO_BACKEND_ASIO_RTAUDIO]),
+  #endif
+#endif /* _WOE32 */
   };
 
   CREATE_SIMPLE_MODEL_BOILERPLATE;
@@ -724,30 +792,52 @@ ui_create_midi_backends_model (void)
     MIDI_BACKEND_DUMMY,
 #ifdef HAVE_ALSA
     MIDI_BACKEND_ALSA,
+  #ifdef HAVE_RTMIDI
+    MIDI_BACKEND_ALSA_RTMIDI,
+  #endif
 #endif
 #ifdef HAVE_JACK
     MIDI_BACKEND_JACK,
+  #ifdef HAVE_RTMIDI
+    MIDI_BACKEND_JACK_RTMIDI,
+  #endif
 #endif
 #ifdef _WOE32
     MIDI_BACKEND_WINDOWS_MME,
+  #ifdef HAVE_RTMIDI
+    MIDI_BACKEND_WINDOWS_MME_RTMIDI,
+  #endif
 #endif
-#ifdef HAVE_RTMIDI
-    MIDI_BACKEND_RTMIDI,
+#ifdef __APPLE__
+  #ifdef HAVE_RTMIDI
+    MIDI_BACKEND_COREMIDI_RTMIDI,
+  #endif
 #endif
   };
   const gchar * labels[] = {
     _(midi_backend_str[MIDI_BACKEND_DUMMY]),
 #ifdef HAVE_ALSA
     _(midi_backend_str[MIDI_BACKEND_ALSA]),
+  #ifdef HAVE_RTMIDI
+    _(midi_backend_str[MIDI_BACKEND_ALSA_RTMIDI]),
+  #endif
 #endif
 #ifdef HAVE_JACK
     _(midi_backend_str[MIDI_BACKEND_JACK]),
+  #ifdef HAVE_RTMIDI
+    _(midi_backend_str[MIDI_BACKEND_JACK_RTMIDI]),
+  #endif
 #endif
 #ifdef _WOE32
     _(midi_backend_str[MIDI_BACKEND_WINDOWS_MME]),
+  #ifdef HAVE_RTMIDI
+    _(midi_backend_str[MIDI_BACKEND_WINDOWS_MME_RTMIDI]),
+  #endif
 #endif
-#ifdef HAVE_RTMIDI
-    _(midi_backend_str[MIDI_BACKEND_RTMIDI]),
+#ifdef __APPLE__
+  #ifdef HAVE_RTMIDI
+    _(midi_backend_str[MIDI_BACKEND_COREMIDI_RTMIDI]),
+  #endif
 #endif
   };
 
@@ -1048,7 +1138,12 @@ ui_setup_device_name_combo_box (
       break;
 #endif
 #ifdef HAVE_RTAUDIO
-    case AUDIO_BACKEND_RTAUDIO:
+    case AUDIO_BACKEND_ALSA_RTAUDIO:
+    case AUDIO_BACKEND_JACK_RTAUDIO:
+    case AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
+    case AUDIO_BACKEND_COREAUDIO_RTAUDIO:
+    case AUDIO_BACKEND_WASAPI_RTAUDIO:
+    case AUDIO_BACKEND_ASIO_RTAUDIO:
       SETUP_DEVICES (rtaudio);
       break;
 #endif

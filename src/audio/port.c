@@ -1711,6 +1711,7 @@ port_update_track_pos (
 }
 
 #ifdef HAVE_ALSA
+#if 0
 
 /**
  * Returns the Port matching the given ALSA
@@ -1793,6 +1794,7 @@ expose_to_alsa (
     }
   self->exposed_to_backend = expose;
 }
+#endif
 #endif // HAVE_ALSA
 
 #ifdef HAVE_RTMIDI
@@ -1858,8 +1860,8 @@ sum_data_from_rtmidi (
 {
   g_return_if_fail (
     self->id.flow == FLOW_INPUT &&
-    AUDIO_ENGINE->midi_backend ==
-      MIDI_BACKEND_RTMIDI);
+    midi_backend_is_rtmidi (
+      AUDIO_ENGINE->midi_backend));
 
   for (int i = 0; i < self->num_rtmidi_ins; i++)
     {
@@ -1927,8 +1929,8 @@ port_prepare_rtmidi_events (
 {
   g_return_if_fail (
     self->id.flow == FLOW_INPUT &&
-    AUDIO_ENGINE->midi_backend ==
-      MIDI_BACKEND_RTMIDI);
+    midi_backend_is_rtmidi (
+      AUDIO_ENGINE->midi_backend));
 
   gint64 cur_time = g_get_monotonic_time ();
   for (int i = 0; i < self->num_rtmidi_ins; i++)
@@ -2547,7 +2549,10 @@ port_sum_signal_from_inputs (
               break;
 #endif
 #ifdef HAVE_RTMIDI
-            case MIDI_BACKEND_RTMIDI:
+            case MIDI_BACKEND_ALSA_RTMIDI:
+            case MIDI_BACKEND_JACK_RTMIDI:
+            case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
+            case MIDI_BACKEND_COREMIDI_RTMIDI:
               sum_data_from_rtmidi (
                 port, start_frame, nframes);
               break;
@@ -2961,7 +2966,12 @@ port_set_expose_to_backend (
           break;
 #endif
 #ifdef HAVE_RTAUDIO
-        case AUDIO_BACKEND_RTAUDIO:
+        case AUDIO_BACKEND_ALSA_RTAUDIO:
+        case AUDIO_BACKEND_JACK_RTAUDIO:
+        case AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
+        case AUDIO_BACKEND_COREAUDIO_RTAUDIO:
+        case AUDIO_BACKEND_WASAPI_RTAUDIO:
+        case AUDIO_BACKEND_ASIO_RTAUDIO:
           expose_to_rtaudio (self, expose);
           break;
 #endif
@@ -2980,11 +2990,16 @@ port_set_expose_to_backend (
 #endif
 #ifdef HAVE_ALSA
         case MIDI_BACKEND_ALSA:
+#if 0
           expose_to_alsa (self, expose);
+#endif
           break;
 #endif
 #ifdef HAVE_RTMIDI
-        case MIDI_BACKEND_RTMIDI:
+        case MIDI_BACKEND_ALSA_RTMIDI:
+        case MIDI_BACKEND_JACK_RTMIDI:
+        case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
+        case MIDI_BACKEND_COREMIDI_RTMIDI:
           expose_to_rtmidi (self, expose);
           break;
 #endif

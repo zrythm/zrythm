@@ -151,8 +151,10 @@ engine_setup (
       break;
 #ifdef HAVE_ALSA
     case AUDIO_BACKEND_ALSA:
+#if 0
       ret =
         engine_alsa_setup(self);
+#endif
       break;
 #endif
 #ifdef HAVE_JACK
@@ -174,7 +176,12 @@ engine_setup (
       break;
 #endif
 #ifdef HAVE_RTAUDIO
-    case AUDIO_BACKEND_RTAUDIO:
+    case AUDIO_BACKEND_ALSA_RTAUDIO:
+    case AUDIO_BACKEND_JACK_RTAUDIO:
+    case AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
+    case AUDIO_BACKEND_COREAUDIO_RTAUDIO:
+    case AUDIO_BACKEND_WASAPI_RTAUDIO:
+    case AUDIO_BACKEND_ASIO_RTAUDIO:
       ret =
         engine_rtaudio_setup (self);
       break;
@@ -218,8 +225,10 @@ engine_setup (
       break;
 #ifdef HAVE_ALSA
     case MIDI_BACKEND_ALSA:
+#if 0
       mret =
         engine_alsa_midi_setup (self);
+#endif
       break;
 #endif
 #ifdef HAVE_JACK
@@ -235,7 +244,10 @@ engine_setup (
       break;
 #endif
 #ifdef HAVE_RTMIDI
-    case MIDI_BACKEND_RTMIDI:
+    case MIDI_BACKEND_ALSA_RTMIDI:
+    case MIDI_BACKEND_JACK_RTMIDI:
+    case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
+    case MIDI_BACKEND_COREMIDI_RTMIDI:
       mret =
         engine_rtmidi_setup (self);
       break;
@@ -354,7 +366,9 @@ init_common (
 #endif
 #ifdef HAVE_ALSA
     case AUDIO_BACKEND_ALSA:
+#if 0
       self->audio_backend = AUDIO_BACKEND_ALSA;
+#endif
       break;
 #endif
 #ifdef HAVE_PORT_AUDIO
@@ -369,8 +383,13 @@ init_common (
       break;
 #endif
 #ifdef HAVE_RTAUDIO
-    case AUDIO_BACKEND_RTAUDIO:
-      self->audio_backend = AUDIO_BACKEND_RTAUDIO;
+    case AUDIO_BACKEND_ALSA_RTAUDIO:
+    case AUDIO_BACKEND_JACK_RTAUDIO:
+    case AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
+    case AUDIO_BACKEND_COREAUDIO_RTAUDIO:
+    case AUDIO_BACKEND_WASAPI_RTAUDIO:
+    case AUDIO_BACKEND_ASIO_RTAUDIO:
+      self->audio_backend = ab_code;
       break;
 #endif
     default:
@@ -413,7 +432,9 @@ init_common (
       break;
 #ifdef HAVE_ALSA
     case MIDI_BACKEND_ALSA:
+#if 0
       self->midi_backend = MIDI_BACKEND_ALSA;
+#endif
       break;
 #endif
 #ifdef HAVE_JACK
@@ -427,8 +448,11 @@ init_common (
       break;
 #endif
 #ifdef HAVE_RTMIDI
-    case MIDI_BACKEND_RTMIDI:
-      self->midi_backend = MIDI_BACKEND_RTMIDI;
+    case MIDI_BACKEND_ALSA_RTMIDI:
+    case MIDI_BACKEND_JACK_RTMIDI:
+    case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
+    case MIDI_BACKEND_COREMIDI_RTMIDI:
+      self->midi_backend = mb_code;
       break;
 #endif
     default:
@@ -631,8 +655,7 @@ engine_activate (
     }
 #endif
 #ifdef HAVE_RTMIDI
-  if (self->midi_backend ==
-        MIDI_BACKEND_RTMIDI)
+  if (midi_backend_is_rtmidi (self->midi_backend))
     {
       engine_rtmidi_activate (self, activate);
     }
@@ -642,8 +665,11 @@ engine_activate (
     engine_sdl_activate (self, activate);
 #endif
 #ifdef HAVE_RTAUDIO
-  if (self->audio_backend == AUDIO_BACKEND_RTAUDIO)
-    engine_rtaudio_activate (self, activate);
+  if (audio_backend_is_rtaudio (
+        self->audio_backend))
+    {
+      engine_rtaudio_activate (self, activate);
+    }
 #endif
 
   self->activated = activate;
@@ -834,7 +860,9 @@ engine_process_prepare (
 #endif
 #ifdef HAVE_ALSA
     case AUDIO_BACKEND_ALSA:
+#if 0
       engine_alsa_prepare_process (self);
+#endif
       break;
 #endif
     default:
@@ -1197,7 +1225,9 @@ engine_fill_out_bufs (
       break;
 #ifdef HAVE_ALSA
     case AUDIO_BACKEND_ALSA:
+#if 0
       engine_alsa_fill_out_bufs (self, nframes);
+#endif
       break;
 #endif
 #ifdef HAVE_JACK
@@ -1216,8 +1246,8 @@ engine_fill_out_bufs (
       break;
 #endif
 #ifdef HAVE_RTAUDIO
-    case AUDIO_BACKEND_RTAUDIO:
-      break;
+    /*case AUDIO_BACKEND_RTAUDIO:*/
+      /*break;*/
 #endif
     default:
       break;
@@ -1389,7 +1419,12 @@ engine_free (
       break;
 #endif
 #ifdef HAVE_RTAUDIO
-    case AUDIO_BACKEND_RTAUDIO:
+    case AUDIO_BACKEND_ALSA_RTAUDIO:
+    case AUDIO_BACKEND_JACK_RTAUDIO:
+    case AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
+    case AUDIO_BACKEND_COREAUDIO_RTAUDIO:
+    case AUDIO_BACKEND_WASAPI_RTAUDIO:
+    case AUDIO_BACKEND_ASIO_RTAUDIO:
       engine_rtaudio_tear_down (self);
       break;
 #endif

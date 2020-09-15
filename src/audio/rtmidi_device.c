@@ -29,6 +29,49 @@
 
 #include <gtk/gtk.h>
 
+static enum RtMidiApi
+get_api_from_midi_backend (
+  MidiBackend backend)
+{
+  enum RtMidiApi apis[20];
+  int num_apis =
+    (int) rtmidi_get_compiled_api (apis, 20);
+  if (num_apis < 0)
+    {
+      g_critical (
+        "RtMidi: an error occurred fetching "
+        "compiled APIs");
+      return -1;
+    }
+  for (int i = 0; i < num_apis; i++)
+    {
+      if (backend == MIDI_BACKEND_ALSA_RTMIDI &&
+            apis[i] == RTMIDI_API_LINUX_ALSA)
+        {
+          return apis[i];
+        }
+      if (backend == MIDI_BACKEND_JACK_RTMIDI &&
+            apis[i] == RTMIDI_API_UNIX_JACK)
+        {
+          return apis[i];
+        }
+      if (backend ==
+            MIDI_BACKEND_WINDOWS_MME_RTMIDI &&
+            apis[i] == RTMIDI_API_WINDOWS_MM)
+        {
+          return apis[i];
+        }
+      if (backend ==
+            MIDI_BACKEND_COREMIDI_RTMIDI &&
+            apis[i] == RTMIDI_API_MACOSX_CORE)
+        {
+          return apis[i];
+        }
+    }
+
+  return RTMIDI_API_RTMIDI_DUMMY;
+}
+
 /**
  * Midi message callback.
  *
@@ -78,6 +121,34 @@ rtmidi_device_new (
   RtMidiDevice * self =
     calloc (1, sizeof (RtMidiDevice));
 
+  enum RtMidiApi apis[20];
+  int num_apis =
+    (int) rtmidi_get_compiled_api (apis, 20);
+  if (num_apis < 0)
+    {
+      g_critical (
+        "RtMidi: an error occurred fetching "
+        "compiled APIs");
+    }
+  for (int i = 0; i < num_apis; i++)
+    {
+      g_message (
+        "RtMidi API found: %s",
+        rtmidi_api_name (apis[i]));
+    }
+
+  enum RtMidiApi api =
+    get_api_from_midi_backend (
+      AUDIO_ENGINE->midi_backend);
+  if (api == RTMIDI_API_RTMIDI_DUMMY)
+    {
+      g_critical (
+        "RtMidi API for %s not enabled",
+        midi_backend_str[
+          AUDIO_ENGINE->midi_backend]);
+      return NULL;
+    }
+
   self->is_input = is_input;
   self->id = device_id;
   self->port = port;
@@ -85,14 +156,7 @@ rtmidi_device_new (
     {
       self->in_handle =
         rtmidi_in_create (
-#ifdef _WOE32
-          RTMIDI_API_WINDOWS_MM,
-#elif defined(__APPLE__)
-          RTMIDI_API_MACOSX_CORE,
-#else
-          RTMIDI_API_LINUX_ALSA,
-#endif
-          "Zrythm",
+          api, "Zrythm",
           AUDIO_ENGINE->midi_buf_size);
       if (!self->in_handle->ok)
         {

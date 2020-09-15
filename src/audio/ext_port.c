@@ -440,7 +440,12 @@ ext_ports_get (
           break;
 #endif
 #ifdef HAVE_RTAUDIO
-        case AUDIO_BACKEND_RTAUDIO:
+        case AUDIO_BACKEND_ALSA_RTAUDIO:
+        case AUDIO_BACKEND_JACK_RTAUDIO:
+        case AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
+        case AUDIO_BACKEND_COREAUDIO_RTAUDIO:
+        case AUDIO_BACKEND_WASAPI_RTAUDIO:
+        case AUDIO_BACKEND_ASIO_RTAUDIO:
           get_ext_ports_from_rtaudio (
             flow, arr, size);
           break;
@@ -474,7 +479,10 @@ ext_ports_get (
           break;
 #endif
 #ifdef HAVE_RTMIDI
-        case MIDI_BACKEND_RTMIDI:
+        case MIDI_BACKEND_ALSA_RTMIDI:
+        case MIDI_BACKEND_JACK_RTMIDI:
+        case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
+        case MIDI_BACKEND_COREMIDI_RTMIDI:
           get_ext_ports_from_rtmidi (
             flow, arr, size);
           break;

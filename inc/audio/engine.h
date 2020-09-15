@@ -174,24 +174,57 @@ engine_sample_rate_to_string (
 typedef enum AudioBackend
 {
   AUDIO_BACKEND_DUMMY,
+  AUDIO_BACKEND_DUMMY_LIBSOUNDIO,
   AUDIO_BACKEND_ALSA,
+  AUDIO_BACKEND_ALSA_LIBSOUNDIO,
+  AUDIO_BACKEND_ALSA_RTAUDIO,
   AUDIO_BACKEND_JACK,
-  AUDIO_BACKEND_PORT_AUDIO,
+  AUDIO_BACKEND_JACK_LIBSOUNDIO,
+  AUDIO_BACKEND_JACK_RTAUDIO,
+  AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO,
+  AUDIO_BACKEND_PULSEAUDIO_RTAUDIO,
+  AUDIO_BACKEND_COREAUDIO_LIBSOUNDIO,
+  AUDIO_BACKEND_COREAUDIO_RTAUDIO,
   AUDIO_BACKEND_SDL,
-  AUDIO_BACKEND_RTAUDIO,
+  AUDIO_BACKEND_WASAPI_LIBSOUNDIO,
+  AUDIO_BACKEND_WASAPI_RTAUDIO,
+  AUDIO_BACKEND_ASIO_RTAUDIO,
   NUM_AUDIO_BACKENDS,
 } AudioBackend;
+
+static inline bool
+audio_backend_is_rtaudio (
+  AudioBackend backend)
+{
+  return
+    backend == AUDIO_BACKEND_ALSA_RTAUDIO ||
+    backend == AUDIO_BACKEND_JACK_RTAUDIO ||
+    backend == AUDIO_BACKEND_PULSEAUDIO_RTAUDIO ||
+    backend == AUDIO_BACKEND_COREAUDIO_RTAUDIO ||
+    backend == AUDIO_BACKEND_WASAPI_RTAUDIO ||
+    backend == AUDIO_BACKEND_ASIO_RTAUDIO;
+}
 
 __attribute__ ((unused))
 static const char * audio_backend_str[] =
 {
   /* TRANSLATORS: Dummy backend */
   __("Dummy"),
-  "ALSA",
+  __("Dummy (libsoundio)"),
+  "ALSA (not working)",
+  "ALSA (libsoundio)",
+  "ALSA (rtaudio)",
   "JACK",
-  "PortAudio",
+  "JACK (libsoundio)",
+  "JACK (rtaudio)",
+  "PulseAudio (libsoundio)",
+  "PulseAudio (rtaudio)",
+  "CoreAudio (libsoundio)",
+  "CoreAudio (rtaudio)",
   "SDL",
-  "RtAudio",
+  "WASAPI (libsoundio)",
+  "WASAPI (rtaudio)",
+  "ASIO (rtaudio)",
 };
 
 /**
@@ -219,20 +252,37 @@ typedef enum MidiBackend
 {
   MIDI_BACKEND_DUMMY,
   MIDI_BACKEND_ALSA,
+  MIDI_BACKEND_ALSA_RTMIDI,
   MIDI_BACKEND_JACK,
+  MIDI_BACKEND_JACK_RTMIDI,
   MIDI_BACKEND_WINDOWS_MME,
-  MIDI_BACKEND_RTMIDI,
+  MIDI_BACKEND_WINDOWS_MME_RTMIDI,
+  MIDI_BACKEND_COREMIDI_RTMIDI,
   NUM_MIDI_BACKENDS,
 } MidiBackend;
+
+static inline bool
+midi_backend_is_rtmidi (
+  MidiBackend backend)
+{
+  return
+    backend == MIDI_BACKEND_ALSA_RTMIDI ||
+    backend == MIDI_BACKEND_JACK_RTMIDI ||
+    backend == MIDI_BACKEND_WINDOWS_MME_RTMIDI ||
+    backend == MIDI_BACKEND_COREMIDI_RTMIDI;
+}
 
 static const char * midi_backend_str[] =
 {
   /* TRANSLATORS: Dummy backend */
   __("Dummy"),
-  __("ALSA Sequencer"),
+  __("ALSA Sequencer (not working)"),
+  __("ALSA Sequencer (rtmidi)"),
   "JACK MIDI",
+  "JACK MIDI (rtmidi)",
   "Windows MME",
-  "RtMidi",
+  "Windows MME (rtmidi)",
+  "CoreMIDI (rtmidi)",
 };
 
 typedef enum AudioEngineJackTransportType
