@@ -548,8 +548,15 @@ if (have_alsa)
 endif
 pulseaudio_dep = dependency (
   'pulseaudio', required: false, static: all_static)
-if (pulseaudio_dep.found ())
+have_pulseaudio = pulseaudio_dep.found ()
+if (have_pulseaudio)
   cdata.set('HAVE_PULSEAUDIO', 1)
+endif
+libsoundio_dep = cc.find_library (
+  'soundio', required: false, static: all_static)
+have_libsoundio = libsoundio_dep.found ()
+if (have_libsoundio)
+  cdata.set('HAVE_LIBSOUNDIO', 1)
 endif
 cyaml_dep = dependency(
   'libcyaml', required: false, version: '>=1.1.0',
@@ -797,6 +804,7 @@ zrythm_deps = [
   sndfile_dep,
   alsa_dep,
   pulseaudio_dep,
+  libsoundio_dep,
   cyaml_dep,
   audec_dep,
   libcgraph_dep,
@@ -961,8 +969,10 @@ summary ({
   'GraphViz': have_graphviz,
   'Guile': have_guile,
   'Jack': have_jack,
+  'SoundIO': have_libsoundio,
   'LSP DSP': have_lsp_dsp,
   'PortAudio': portaudio_dep.found (),
+  'PulseAudio': have_pulseaudio,
   'RtAudio': rtaudio_dep.found (),
   'RtMidi': rtmidi_dep.found (),
   'SDL': sdl_dep.found (),

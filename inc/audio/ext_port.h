@@ -137,32 +137,18 @@ typedef struct ExtPort
 static const cyaml_schema_field_t
 ext_port_fields_schema[] =
 {
-  CYAML_FIELD_STRING_PTR (
-    "full_name", CYAML_FLAG_POINTER,
-    ExtPort, full_name,
-     0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "short_name",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ExtPort, short_name,
-     0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "alias1",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ExtPort, alias1,
-     0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "alias2",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ExtPort, alias2,
-     0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "num_aliases", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_STRING_PTR (
+    ExtPort, full_name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    ExtPort, short_name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    ExtPort, alias1),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    ExtPort, alias2),
+  YAML_FIELD_INT (
     ExtPort, num_aliases),
-  CYAML_FIELD_ENUM (
-    "type", CYAML_FLAG_DEFAULT,
-    ExtPort, type, ext_port_type_strings,
-    CYAML_ARRAY_LEN (ext_port_type_strings)),
+  YAML_FIELD_ENUM (
+    ExtPort, type, ext_port_type_strings),
 
   CYAML_FIELD_END
 };
@@ -170,8 +156,7 @@ ext_port_fields_schema[] =
 static const cyaml_schema_value_t
 ext_port_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     ExtPort, ext_port_fields_schema),
 };
 
