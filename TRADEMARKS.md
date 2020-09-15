@@ -69,9 +69,36 @@ alterations solely serve the purposes of:
 - porting Zrythm to a free system distribution
 currently approved by the Free Software Foundation at
 https://www.gnu.org/distros/free-distros.html, OR
+- porting Zrythm to the Debian operating system, as
+published by the Debian project at
+https://debian.org/, OR
+- porting Zrythm to the Fedora Workstation operating
+system, as published by the Fedora Project at
+https://getfedora.org/, OR
+- porting Zrythm to the FreeBSD operating
+system, as published by the The FreeBSD Project at
+https://www.freebsd.org/, OR
 - fixing a bug in Zrythm that has already been
 acknowledged by Alexandros Theodotou or CVE
 (https://cve.mitre.org/)
+
+Derivative operating systems of the operating
+systems mentioned above, namely:
+- any free system distribution currently approved
+by the Free Software Foundation at
+https://www.gnu.org/distros/free-distros.html, OR
+- the Debian operating system, as published by the
+Debian project at https://debian.org/, OR
+- the Fedora Workstation operating system, as
+published by the Fedora Project at
+https://getfedora.org/, OR
+- the FreeBSD operating system, as published by The
+FreeBSD Project at https://www.freebsd.org/,
+may redistribute unaltered copies of Zrythm that
+include the Zrythm trademarks as published by the
+originating operating system (for example, Ubuntu
+may redistribute the Zrythm package from Debian,
+provided that no further modifications are made).
 
 In any case, you may not add or remove
 functionalities and you must preserve all messages

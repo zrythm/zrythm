@@ -15,12 +15,41 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Copyright (C) 2005-2019 Paul Davis <paul@linuxaudiosystems.com>
+ * Copyright (C) 2005 Taybin Rutkin <taybin@taybin.com>
+ * Copyright (C) 2006-2008 Doug McLain <doug@nostar.net>
+ * Copyright (C) 2006-2015 David Robillard <d@drobilla.net>
+ * Copyright (C) 2006-2017 Tim Mayberry <mojofunk@gmail.com>
+ * Copyright (C) 2006 Sampo Savolainen <v2@iki.fi>
+ * Copyright (C) 2009-2012 Carl Hetherington <carl@carlh.net>
+ * Copyright (C) 2012-2019 Robin Gareus <robin@gareus.org>
+ * Copyright (C) 2013-2015 John Emmas <john@creativepost.co.uk>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "zrythm-config.h"
 
-#ifndef _WOE32
+#ifdef _WOE32
+#include <stdio.h>   // for _setmaxstdio
+#else
 #include <sys/mman.h>
+#include <sys/resource.h>
 #endif
 #include <stdlib.h>
 
@@ -1018,6 +1047,88 @@ lock_memory (void)
 }
 
 /**
+ * lotsa_files_please() from ardour
+ * (libs/ardour/globals.cc).
+ */
+static void
+raise_open_file_limit ()
+{
+#ifdef _WOE32
+  /* this only affects stdio. 2048 is the maxium possible (512 the default).
+   *
+   * If we want more, we'll have to replaces the POSIX I/O interfaces with
+   * Win32 API calls (CreateFile, WriteFile, etc) which allows for 16K.
+   *
+   * see http://stackoverflow.com/questions/870173/is-there-a-limit-on-number-of-open-files-in-windows
+   * and http://bugs.mysql.com/bug.php?id=24509
+   */
+  int newmax = _setmaxstdio (2048);
+  if (newmax > 0)
+    {
+      g_message (
+        "Your system is configured to limit %s to "
+        "%d open files",
+        PROGRAM_NAME, newmax);
+    }
+  else
+    {
+      g_warning (
+        "Could not set system open files limit. "
+        "Current limit is %d open files",
+        _getmaxstdio ());
+    }
+#else /* else if not _WOE32 */
+  struct rlimit rl;
+
+  if (getrlimit (RLIMIT_NOFILE, &rl) == 0)
+    {
+#ifdef __APPLE__
+      /* See the COMPATIBILITY note on the Apple setrlimit() man page */
+      rl.rlim_cur =
+        MIN ((rlim_t) OPEN_MAX, rl.rlim_max);
+#else
+      rl.rlim_cur = rl.rlim_max;
+#endif
+
+      if (setrlimit (RLIMIT_NOFILE, &rl) != 0)
+        {
+          if (rl.rlim_cur == RLIM_INFINITY)
+            {
+
+              g_warning (
+                "Could not set system open files "
+                "limit to \"unlimited\"");
+            }
+          else
+            {
+              g_warning (
+                "Could not set system open files "
+                "limit to %lu",
+                rl.rlim_cur);
+            }
+
+        }
+      else
+        {
+          if (rl.rlim_cur != RLIM_INFINITY)
+            {
+              g_message (
+                "Your system is configured to "
+                "limit %s to %lu open files",
+                PROGRAM_NAME, rl.rlim_cur);
+            }
+        }
+    }
+  else
+    {
+      g_warning (
+        "Could not get system open files limit (%s)",
+        strerror (errno));
+    }
+#endif
+}
+
+/**
  * Called immediately after the main GTK loop
  * terminates.
  *
@@ -1070,6 +1181,10 @@ zrythm_app_new (
   self->audio_backend = audio_backend;
   self->midi_backend = midi_backend;
   self->buf_size = buf_size;
+
+  /* allow maximum number of open files (taken from
+   * ardour) */
+  raise_open_file_limit ();
 
   lock_memory ();
   ZRYTHM = zrythm_new (exe_path, true, false, true);

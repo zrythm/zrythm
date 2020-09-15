@@ -631,7 +631,14 @@ fftw3_funcs = [
   ]
 foreach func : fftw3_funcs
   if not cc.has_function (func, dependencies: fftw3_deps)
-    warning (func + ' missing')
+    warning (
+      func + ' missing. ' +
+      'If linking fails, on some systems you ' +
+      'may have to point zrythm to the ' +
+      'library that provides it directly, eg., ' +
+      'LDFLAGS="$LDFLAGS ' +
+      '/usr/lib/libfftw3_threads.so ' +
+      '/usr/lib/libfftw3f_threads.so')
   endif
 endforeach
 

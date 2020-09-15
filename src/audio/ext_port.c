@@ -222,7 +222,7 @@ get_ext_ports_from_jack (
 
 #ifdef _WOE32
 /**
- * Creates an ExtPort from a JACK port.
+ * Creates an ExtPort from a Windows MME device.
  */
 static ExtPort *
 ext_port_from_windows_mme_device (
