@@ -867,8 +867,7 @@ endif
 if os_windows
   # TODO disable dbghelp and enable drmingw when
   # meson issue is fixed
-  zrythm_deps += cc.find_library (
-    'dbghelp', static: all_static)
+  zrythm_deps += cc.find_library ('dbghelp')
   #drmingw_subproject = cmake.subproject (
   #  'drmingw', options: cmake_opts)
   #drmingw_dep = drmingw_subproject.dependency (

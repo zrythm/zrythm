@@ -37,6 +37,7 @@
 #include "settings/settings.h"
 #include "utils/string.h"
 #include "utils/ui.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -325,14 +326,20 @@ timebase_cb (
 }
 
 /**
- * JACK calls this shutdown_callback if the server ever
- * shuts down or decides to disconnect the client.
+ * JACK calls this shutdown_callback if the server
+ * ever shuts down or decides to disconnect the
+ * client.
  */
 static void
 shutdown_cb (void *arg)
 {
-  // TODO
-  g_message ("Jack shutting down...");
+  g_warning ("Jack shutting down...");
+
+  if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
+    {
+      char * msg = _("JACK has shut down");
+      ui_show_error_message (MAIN_WINDOW, msg);
+    }
 }
 
 /**
