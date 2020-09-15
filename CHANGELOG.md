@@ -1,6 +1,43 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.982] - 2020-09-15
+### Added
+- Allow renaming regions
+- Add option to build with static libs where possible
+- Add option to get Carla bridge/discovery binaries from custom dirs
+- Add GOVERNANCE document
+- Add framework for MIDI functions (such as legato)
+- Allow changing track color and icon
+- Add versioning info in PACKAGING.md
+- Add toolbar to modulators with show UI/delete buttons
+- Remember clip visibility status in the clip editor and scroll positions in each arranger when saving/loading projects
+
+### Changed
+- Rework snap options
+- Update Spanish, Italian, French, Japanese, Portuguese, Chinese (traditional) translations
+- Use new carla-host-plugin dependency instead of carla standalone, carla utils and carla native plugin
+- Improve fftw dependency discovery
+- Show icons in piano roll highlight combo box
+- Show "(pw)" indicator if JACK is running through PipeWire
+- Do nothing when duplicate action is invoked with nothing selected
+- Use whereami to get absolute executable path (for passing to addr2line)
+- Disable plugins that fail to instantiate when loading projects
+- Skip MIDI events not 3 bytes long
+- Add glib log domain (so that `G_MESSAGES_DEBUG=zrythm` works)
+- Close RtMidi ports before attempting to open
+- Only send data to JACK ports if they have connections
+- Show warning when using JACK audio/MIDI backend with non-JACK audio/MIDI backend
+
+### Fixed
+- Fix crash when attempting to open automation tracklist on tracks without any automation tracks
+- Fix markers icon missing on Windows
+- Fix plugin creation action not remembering the number of plugins to create
+- Fix crash when dragging chords into invalid locations in the timeline
+- Fix all note ends becoming the same position when resizing MIDI notes
+- Fix not being able to resize MIDI note start positions beyond region start position when resizing from left side
+- Fix piano roll drum mode
+
 ## [0.8.911] - 2020-09-01
 ### Added
 - Add right click + drag to delete objects with select tool
