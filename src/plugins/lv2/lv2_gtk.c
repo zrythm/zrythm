@@ -405,7 +405,14 @@ set_control (
   LV2_URID         type,
   const void*      body)
 {
-  /*g_message ("set_control");*/
+#if 0
+  g_debug (
+    "%s (%s) %s - updating %d",
+    __FILE__, __func__,
+    lilv_node_as_string (control->symbol),
+    control->plugin->updating);
+#endif
+
   if (!control->plugin->updating)
     {
       lv2_control_set_control (
@@ -488,11 +495,14 @@ lv2_gtk_set_float_control (
 
 static double
 get_atom_double (
-  Lv2Plugin* plugin,
-  uint32_t size,
-  LV2_URID type,
-  const void* body)
+  Lv2Plugin *  plugin,
+  uint32_t     size,
+  LV2_URID     type,
+  const void * body,
+  bool *       is_nan)
 {
+  *is_nan = false;
+
   if (type == plugin->forge.Int ||
       type == plugin->forge.Bool)
     return *(const int32_t*)body;
@@ -502,6 +512,8 @@ get_atom_double (
     return *(const float*)body;
   else if (type == plugin->forge.Double)
     return *(const double*)body;
+
+  *is_nan = true;
 
   return NAN;
 }
@@ -519,10 +531,12 @@ control_changed (
   const void* body)
 {
   GtkWidget * widget = controller->control;
+  bool is_nan = false;
   const double fvalue =
-    get_atom_double (plugin, size, type, body);
+    get_atom_double (
+      plugin, size, type, body, &is_nan);
 
-  if (!isnan(fvalue))
+  if (!is_nan)
     {
       if (GTK_IS_COMBO_BOX(widget))
         {
@@ -657,24 +671,37 @@ patch_put_get(
   return 0;
 }
 
+/**
+ * Called when a property changed when delivering a
+ * port event to the plugin UI.
+ *
+ * This applies to both generic and custom UIs.
+ */
 static void
 property_changed (
   Lv2Plugin* plugin,
   LV2_URID key,
   const LV2_Atom* value)
 {
-  g_message ("property changed");
   Lv2Control* control =
     lv2_get_property_control (
       &plugin->controls, key);
   if (control)
     {
+      g_message (
+        "LV2 plugin property for %s changed",
+        lilv_node_as_string (control->symbol));
       control_changed (
         plugin,
         (PluginGtkController*)control->widget,
         value->size,
         value->type,
         value + 1);
+    }
+  else
+    {
+      g_message (
+        "Unknown LV2 plugin property changed");
     }
 }
 
@@ -734,8 +761,10 @@ lv2_gtk_ui_port_event (
           const LV2_Atom*      value    = NULL;
           if (!patch_set_get (
                  plugin, obj, &property, &value))
-            property_changed (
-              plugin, property->body, value);
+            {
+              property_changed (
+                plugin, property->body, value);
+            }
         }
       else if (obj->body.otype ==
                PM_URIDS.patch_Put)
@@ -876,7 +905,9 @@ file_changed (
   const char* filename = gtk_file_chooser_get_filename(
     GTK_FILE_CHOOSER(widget));
 
-  set_control(control, strlen(filename), plugin->forge.Path, filename);
+  set_control (
+    control, strlen (filename),
+    plugin->forge.Path, filename);
 }
 
 static PluginGtkController*

@@ -75,12 +75,6 @@
 
 #include <suil/suil.h>
 
-#ifdef __clang__
-#  define REALTIME __attribute__((annotate("realtime")))
-#else
-#  define REALTIME
-#endif
-
 typedef struct Lv2Plugin Lv2Plugin;
 typedef struct _GtkWidget GtkWidget;
 typedef struct _GtkCheckMenuItem GtkCheckMenuItem;

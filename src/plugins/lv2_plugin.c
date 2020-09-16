@@ -1762,12 +1762,12 @@ lv2_plugin_instantiate (
     }
   g_warn_if_fail (self->lilv_plugin);
 
+  self->control_in = -1;
+
   /* Set default values for all ports */
   g_return_val_if_fail (
     lv2_create_or_init_ports (
       self, project) == 0, -1);
-
-  self->control_in = -1;
 
   /* Check that any required features are
    * supported */

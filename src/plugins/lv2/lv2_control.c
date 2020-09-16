@@ -295,7 +295,8 @@ lv2_get_property_control (
 }
 
 /**
- * Called when a generic UI control changes.
+ * Called when a generic UI control changes from the
+ * UI thread.
  */
 void
 lv2_control_set_control (
@@ -304,11 +305,15 @@ lv2_control_set_control (
   LV2_URID          type,
   const void*       body)
 {
-  /*g_message ("lv2_control_set_control");*/
   Lv2Plugin* plugin = control->plugin;
   if (control->type == PORT &&
       type == plugin->forge.Float)
     {
+      g_debug (
+        "setting float control '%s' to '%f'",
+        lilv_node_as_string (control->symbol),
+        (double) * (float *) body);
+
       Lv2Port* port =
         &control->plugin->ports[control->index];
       g_return_if_fail (port->port);
@@ -317,6 +322,11 @@ lv2_control_set_control (
     }
   else if (control->type == PROPERTY)
     {
+      g_debug (
+        "setting property control '%s' to '%s'",
+        lilv_node_as_string (control->symbol),
+        (char *) body);
+
       // Copy forge since it is used by process thread
       LV2_Atom_Forge       forge = plugin->forge;
       LV2_Atom_Forge_Frame frame;
@@ -333,10 +343,17 @@ lv2_control_set_control (
       const LV2_Atom* atom =
         lv2_atom_forge_deref (
           &forge, frame.ref);
+      g_return_if_fail (
+        plugin->control_in >= 0 &&
+        plugin->control_in < 400000);
       lv2_ui_send_event_from_ui_to_plugin (
         plugin, plugin->control_in,
-        lv2_atom_total_size(atom),
+        lv2_atom_total_size (atom),
         PM_URIDS.atom_eventTransfer, atom);
+    }
+  else
+    {
+      g_warning ("control change not handled");
     }
 }
 

@@ -42,7 +42,7 @@
 
 #include <lv2/instance-access/instance-access.h>
 
-static const bool dump = false;
+static const bool dump = true;
 
 /**
  * Returns if the UI of the plugin is resizable.
@@ -109,15 +109,16 @@ get_port_index (
  *
  * @param nframes Used for event ports.
  */
+REALTIME
 void
 lv2_ui_read_and_apply_events (
   Lv2Plugin * plugin,
   uint32_t nframes)
 {
-  if (!lv2_plugin_has_custom_ui (plugin))
-    {
-      return;
-    }
+  /*if (!lv2_plugin_has_custom_ui (plugin))*/
+    /*{*/
+      /*return;*/
+    /*}*/
 
   Lv2ControlChange ev;
   const size_t space =
@@ -139,20 +140,35 @@ lv2_ui_read_and_apply_events (
             "Error reading from UI ring buffer");
           break;
         }
-      g_warn_if_fail (
+      g_return_if_fail (
+        (int) ev.index >= 0 &&
         (int) ev.index < plugin->num_ports);
       Lv2Port* const port =
         &plugin->ports[ev.index];
-      if (ev.protocol == 0)
+
+      /* float control change - this is only for
+       * plugins with custom UIs */
+      if (ev.protocol == 0 &&
+          lv2_plugin_has_custom_ui (plugin))
         {
-          assert(ev.size == sizeof(float));
+          assert (ev.size == sizeof (float));
           g_return_if_fail (port->port);
           port_set_control_value (
             port->port, * (float *) body, 0, 0);
           port->received_ui_event = 1;
+
+          /* note: should not be printing in the
+           * realtime thread */
+          g_debug (
+            "plugin %s float control '%s' change: "
+            "%f - has custom UI %d",
+            plugin->plugin->descr->name,
+            port->port->id.label,
+            (double) * (float *) body,
+            lv2_plugin_has_custom_ui (plugin));
         }
       else if (ev.protocol ==
-               PM_URIDS.atom_eventTransfer)
+                 PM_URIDS.atom_eventTransfer)
         {
           LV2_Evbuf_Iterator e =
             lv2_evbuf_end (port->evbuf);
@@ -162,6 +178,15 @@ lv2_ui_read_and_apply_events (
             &e, nframes, 0, atom->type, atom->size,
             (const uint8_t*)
               LV2_ATOM_BODY_CONST(atom));
+
+          /* note: should not be printing in the
+           * realtime thread */
+          g_debug (
+            "%s: plugin %s event transfer "
+            "event for %s - has custom UI %d",
+            __func__, plugin->plugin->descr->name,
+            port->port->id.label,
+            lv2_plugin_has_custom_ui (plugin));
         }
       else
         {
@@ -186,6 +211,14 @@ lv2_ui_send_control_val_event_from_plugin_to_ui (
 {
   if (!lv2_plugin->plugin->visible)
     return;
+
+  g_debug ("%s: %s: %s (%d)",
+    __func__, lv2_plugin->plugin->descr->name,
+    lv2_port->lv2_control ?
+      lilv_node_as_string (
+        lv2_port->lv2_control->symbol) :
+      "",
+    lv2_port->index);
 
   char buf[sizeof(Lv2ControlChange) +
     sizeof(float)];
@@ -219,6 +252,7 @@ lv2_ui_send_control_val_event_from_plugin_to_ui (
  *
  * @param type Atom type.
  */
+REALTIME
 int
 lv2_ui_send_event_from_plugin_to_ui (
   Lv2Plugin *  plugin,
@@ -276,9 +310,25 @@ lv2_ui_send_event_from_ui_to_plugin (
   Lv2Plugin *    plugin,
   uint32_t       port_index,
   uint32_t       buffer_size,
-  uint32_t       protocol, ///< format
+  uint32_t       protocol,
   const void*    buffer)
 {
+  if ((int) port_index < 0 ||
+      (int) port_index >= plugin->num_ports)
+    {
+      g_warning (
+        "UI write to out of range port index %d",
+        port_index);
+      return;
+    }
+
+  Lv2Port * lv2_port = &plugin->ports[port_index];
+
+  g_debug ("%s: port %d (%s)",
+    __func__, port_index,
+    lv2_port->lv2_control ?
+    lilv_node_as_string (
+      lv2_port->lv2_control->symbol) : "");
   if (protocol != 0 &&
       protocol != PM_URIDS.atom_eventTransfer)
     {
@@ -286,14 +336,6 @@ lv2_ui_send_event_from_ui_to_plugin (
         "UI write with unsupported protocol %d (%s)",
         protocol,
         lv2_urid_unmap_uri (plugin, protocol));
-      return;
-    }
-
-  if ((int) port_index >= plugin->num_ports)
-    {
-      g_warning (
-        "UI write to out of range port index %d",
-        port_index);
       return;
     }
 

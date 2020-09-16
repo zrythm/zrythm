@@ -358,6 +358,16 @@ test_cflags = [
   '-DG_LOG_DOMAIN="zrythm"',
   ]
 
+if cc.get_id() == 'clang'
+  test_cflags += [
+    '-DREALTIME=__attribute__((annotate("realtime")))',
+    ]
+else
+  test_cflags += [
+    '-DREALTIME=',
+    ]
+endif
+
 if os_windows
   test_cflags += [
     '-DPATH_SPLIT=";"',
