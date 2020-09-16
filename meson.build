@@ -598,14 +598,14 @@ fftw3_deps = [
     'fftw3f_threads', required: false,
     static: all_static),
   ]
-if os_darwin
+if os_darwin or os_freebsd
   fftw3_deps += [
     cc.find_library (
-      'fftw3_threads', required: false,
+      'fftw3_threads', required: true,
       static: all_static,
       dirs: [ '/usr/lib', '/usr/local/lib' ]),
     cc.find_library (
-      'fftw3f_threads', required: false,
+      'fftw3f_threads', required: true,
       static: all_static,
       dirs: [ '/usr/lib', '/usr/local/lib' ])
     ]

@@ -34,6 +34,7 @@ packages:
   - gtk3
   - pango
   - python3
+  - reproc
   - fftw3
   - fftw3-float
   - rubberband
