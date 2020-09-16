@@ -572,7 +572,9 @@ audec_dep = dependency(
   required: true, static: all_static)
 
 gtk_dep = dependency (
-  'gtk+-3.0', version: '>=3.22')
+  'gtk+-3.0', version: '>=3.22',
+  fallback: ['gtk3', 'libgtk_dep'],
+  static: all_static)
 sndfile_dep = dependency (
   'sndfile', version: '>=1.0.25')
 lv2_dep = dependency(

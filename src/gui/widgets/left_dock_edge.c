@@ -65,6 +65,8 @@ void
 left_dock_edge_widget_refresh (
   LeftDockEdgeWidget * self)
 {
+  g_debug ("refreshing left dock edge...");
+
   if (PROJECT->last_selection ==
         SELECTION_TYPE_TRACK)
     {

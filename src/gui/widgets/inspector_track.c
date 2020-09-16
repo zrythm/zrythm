@@ -99,6 +99,8 @@ inspector_track_widget_show_tracks (
   InspectorTrackWidget * self,
   TracklistSelections *  tls)
 {
+  g_debug ("showing %d tracks", tls->num_tracks);
+
   if (gtk_notebook_get_current_page (
         GTK_NOTEBOOK (
           MW_LEFT_DOCK_EDGE->inspector_notebook)) !=
@@ -114,6 +116,7 @@ inspector_track_widget_show_tracks (
   if (tls->num_tracks > 0)
     {
       track = tls->tracks[0];
+      g_debug ("track %s", track->name);
 
       setup_color (self, track);
 

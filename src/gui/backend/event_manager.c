@@ -1761,8 +1761,12 @@ event_manager_process_now (
 {
   g_return_if_fail (self);
 
+  g_message ("processing events now...");
+
   /* process events now */
   process_events (self);
+
+  g_message ("done");
 }
 
 /**

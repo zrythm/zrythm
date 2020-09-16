@@ -55,6 +55,10 @@ static Plugin *
 get_plugin (
   ChannelSlotWidget * self)
 {
+  g_return_val_if_fail (
+    self->type == PLUGIN_SLOT_INSTRUMENT ||
+    IS_TRACK (self->track), NULL);
+
   Plugin * plugin = NULL;
   switch (self->type)
     {
@@ -636,6 +640,11 @@ tick_cb (
   GdkFrameClock *     frame_clock,
   ChannelSlotWidget * self)
 {
+  if (!gtk_widget_is_visible (widget))
+    {
+      return G_SOURCE_CONTINUE;
+    }
+
   Plugin * pl = get_plugin (self);
   bool is_selected = pl && plugin_is_selected (pl);
   if (is_selected != self->was_selected)

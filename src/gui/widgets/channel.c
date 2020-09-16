@@ -735,7 +735,7 @@ void
 channel_widget_tear_down (
   ChannelWidget * self)
 {
-  g_message ("tearing down %p...", self);
+  g_debug ("tearing down %p...", self);
 
   if (self->setup)
     {
@@ -744,7 +744,7 @@ channel_widget_tear_down (
       self->setup = false;
     }
 
-  g_message ("done");
+  g_debug ("done");
 }
 
 static void

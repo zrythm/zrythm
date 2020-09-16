@@ -1478,7 +1478,7 @@ port_disconnect_all (
 
   if (!self->is_project)
     {
-      g_message (
+      g_debug (
         "%s (%p) is not a project port, "
         "skipping",
         self->id.label, self);
@@ -3393,7 +3393,7 @@ port_get_enabled (
 void
 port_free (Port * self)
 {
-  g_message (
+  g_debug (
     "freeing %s...", self->id.label);
 
   /* assert no connections. some ports need to
