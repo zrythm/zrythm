@@ -346,29 +346,17 @@ create_plugin (
       self->native_plugin_handle);
   self->carla_plugin_id = 0;
 
-  const CarlaPluginInfo * info =
-    carla_get_plugin_info (
-      self->host_handle, 0);
-
   /* set binary paths */
-  if (info->optionsAvailable &
-        ENGINE_OPTION_PATH_BINARIES)
-    {
-      carla_set_engine_option (
-        self->host_handle,
-        ENGINE_OPTION_PATH_BINARIES, 0,
-        CONFIGURE_BINDIR);
-    }
+  carla_set_engine_option (
+    self->host_handle,
+    ENGINE_OPTION_PATH_BINARIES, 0,
+    CONFIGURE_BINDIR);
 
   /* set lv2 path */
-  if (info->optionsAvailable &
-        ENGINE_OPTION_PLUGIN_PATH)
-    {
-      carla_set_engine_option (
-        self->host_handle,
-        ENGINE_OPTION_PLUGIN_PATH, PLUGIN_LV2,
-        PLUGIN_MANAGER->lv2_path);
-    }
+  carla_set_engine_option (
+    self->host_handle,
+    ENGINE_OPTION_PLUGIN_PATH, PLUGIN_LV2,
+    PLUGIN_MANAGER->lv2_path);
 
   /* if no bridge mode specified, calculate the
    * bridge mode here */
@@ -393,25 +381,17 @@ create_plugin (
       g_message (
         "plugin must be bridged whole, "
         "using plugin bridge");
-      if (info->optionsAvailable &
-            ENGINE_OPTION_PREFER_PLUGIN_BRIDGES)
-        {
-          carla_set_engine_option (
-            self->host_handle,
-            ENGINE_OPTION_PREFER_PLUGIN_BRIDGES,
-            true, NULL);
-        }
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_PREFER_PLUGIN_BRIDGES,
+        true, NULL);
       break;
     case CARLA_BRIDGE_UI:
       g_message ("using UI bridge only");
-      if (info->optionsAvailable &
-            ENGINE_OPTION_PREFER_UI_BRIDGES)
-        {
-          carla_set_engine_option (
-            self->host_handle,
-            ENGINE_OPTION_PREFER_UI_BRIDGES,
-            true, NULL);
-        }
+      carla_set_engine_option (
+        self->host_handle,
+        ENGINE_OPTION_PREFER_UI_BRIDGES,
+        true, NULL);
       break;
     default:
       break;
@@ -1091,17 +1071,10 @@ carla_native_plugin_open_ui (
               gdk_x11_window_get_xid (
                 gtk_widget_get_window (
                   GTK_WIDGET (MAIN_WINDOW))));
-            const CarlaPluginInfo * info =
-              carla_get_plugin_info (
-                self->host_handle, 0);
-            if (info->optionsAvailable &
-                  ENGINE_OPTION_FRONTEND_WIN_ID)
-              {
-                carla_set_engine_option (
-                  self->host_handle,
-                  ENGINE_OPTION_FRONTEND_WIN_ID, 0,
-                  xid);
-              }
+            carla_set_engine_option (
+              self->host_handle,
+              ENGINE_OPTION_FRONTEND_WIN_ID, 0,
+              xid);
 #endif
           }
 
