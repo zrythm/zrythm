@@ -155,6 +155,7 @@ if get_option ('tests')
       ['actions/edit_tracks', false],
       ['actions/move_plugins', true],
       ['actions/move_tracks', false],
+      ['actions/delete_plugins', true],
       ['actions/delete_tracks', true],
       ['actions/port_connection', true],
       ['benchmarks/dsp', true],

@@ -1505,6 +1505,45 @@ plugin_is_selected (
 }
 
 /**
+ * Selects the plugin in the MixerSelections.
+ *
+ * @param select Select or deselect.
+ * @param exclusive Whether to make this the only
+ *   selected plugin or add it to the selections.
+ */
+void
+plugin_select (
+  Plugin * pl,
+  bool     select,
+  bool     exclusive)
+{
+  g_return_if_fail (
+    IS_PLUGIN (pl) && pl->is_project);
+
+  if (exclusive)
+    {
+      mixer_selections_clear (
+        MIXER_SELECTIONS, F_PUBLISH_EVENTS);
+    }
+
+  Track * track = plugin_get_track (pl);
+  g_return_if_fail (IS_TRACK (track));
+
+  if (select)
+    {
+      mixer_selections_add_slot (
+        MIXER_SELECTIONS, track, pl->id.slot_type,
+        pl->id.slot);
+    }
+  else
+    {
+      mixer_selections_remove_slot (
+        MIXER_SELECTIONS, pl->id.slot,
+        pl->id.slot_type, F_PUBLISH_EVENTS);
+    }
+}
+
+/**
  * Returns the state dir as an absolute path.
  */
 char *
@@ -2421,6 +2460,12 @@ plugin_disconnect (
         }
 #endif
     }
+  else
+    {
+      g_debug (
+        "%s is not a project plugin, skipping "
+        "disconnect", self->descr->name);
+    }
 }
 
 /**
@@ -2502,20 +2547,20 @@ plugin_expose_ports (
  * and other internal pointers
  */
 void
-plugin_free (Plugin *plugin)
+plugin_free (
+  Plugin * self)
 {
+  g_return_if_fail (IS_PLUGIN (self));
+
   g_message ("FREEING PLUGIN %s",
-             plugin->descr->name);
-  g_warn_if_fail (plugin);
+             self->descr->name);
 
   ports_remove (
-    plugin->in_ports,
-    &plugin->num_in_ports);
+    self->in_ports, &self->num_in_ports);
   ports_remove (
-    plugin->out_ports,
-    &plugin->num_out_ports);
+    self->out_ports, &self->num_out_ports);
 
-  free (plugin);
+  object_zero_and_free (self);
 }
 
 SERIALIZE_SRC (Plugin, plugin);

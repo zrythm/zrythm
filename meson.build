@@ -193,6 +193,7 @@ ext_lv2_plugins = {
   'carla_rack': ['Carla Rack', 'http://kxstudio.sf.net/carla/plugins/carlarack'],
   'no_delay_line': ['No Delay Line', 'http://gareus.org/oss/lv2/nodelay'],
   'mda_ambience': ['mda Ambience', 'http://drobilla.net/plugins/mda/Ambience'],
+  'midi_cc_map': ['MIDI CC Map', 'http://gareus.org/oss/lv2/midifilter#mapcc'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}

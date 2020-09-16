@@ -552,6 +552,19 @@ plugin_is_selected (
   Plugin * pl);
 
 /**
+ * Selects the plugin in the MixerSelections.
+ *
+ * @param select Select or deselect.
+ * @param exclusive Whether to make this the only
+ *   selected plugin or add it to the selections.
+ */
+void
+plugin_select (
+  Plugin * pl,
+  bool     select,
+  bool     exclusive);
+
+/**
  * Returns whether the plugin is enabled.
  */
 bool

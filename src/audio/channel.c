@@ -1515,8 +1515,6 @@ channel_remove_plugin (
   channel_disconnect_plugin_from_strip (
     channel, slot, plugin);
 
-  plugin_set_is_project (plugin, false);
-
   /* if deleting plugin disconnect the plugin
    * entirely */
   if (deleting_plugin)
@@ -1534,6 +1532,8 @@ channel_remove_plugin (
       plugin_disconnect (plugin);
       free_later (plugin, plugin_free);
     }
+
+  /*plugin_set_is_project (plugin, false);*/
 
   switch (slot_type)
     {

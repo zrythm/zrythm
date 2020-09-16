@@ -198,7 +198,7 @@ void
 mixer_selections_remove_slot (
   MixerSelections * ms,
   int               slot,
-  PluginSlotType   type,
+  PluginSlotType    type,
   int               publish_events);
 
 /**

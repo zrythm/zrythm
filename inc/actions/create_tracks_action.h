@@ -151,6 +151,16 @@ create_tracks_action_new (
     TRACK_TYPE_AUDIO_GROUP, NULL, NULL, \
     track_pos, NULL, num_tracks)
 
+/**
+ * Creates a new CreateTracksAction for a MIDI
+ * track.
+ */
+#define create_tracks_action_new_midi( \
+  track_pos,num_tracks) \
+  create_tracks_action_new ( \
+    TRACK_TYPE_MIDI, NULL, NULL, \
+    track_pos, NULL, num_tracks)
+
 int
 create_tracks_action_do (
   CreateTracksAction * self);
