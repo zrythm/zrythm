@@ -128,7 +128,7 @@ create_tracks_action_new (
   const PluginDescriptor * pl_descr,
   SupportedFile *    file_descr,
   int                track_pos,
-  Position *         pos,
+  const Position *   pos,
   int                num_tracks);
 
 /**

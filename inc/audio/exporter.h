@@ -175,10 +175,14 @@ exporter_generic_export_thread (
  * To be called to create and perform an undoable
  * action for creating an audio track with the
  * bounced material.
+ *
+ * @param pos Position to place the audio region
+ *   at.
  */
 void
 exporter_create_audio_track_after_bounce (
-  ExportSettings * settings);
+  ExportSettings * settings,
+  const Position * pos);
 
 /**
  * Returns the audio format as string.
@@ -192,6 +196,8 @@ exporter_stringize_audio_format (
 /**
  * Exports an audio file based on the given
  * settings.
+ *
+ * @return Non-zero if fail.
  */
 int
 exporter_export (ExportSettings * info);

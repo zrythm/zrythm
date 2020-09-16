@@ -208,6 +208,7 @@ test_export_wav ()
     g_build_filename (
       exports_dir, "test_wav.wav", NULL);
   ret = exporter_export (&settings);
+  g_assert_false (AUDIO_ENGINE->exporting);
   g_assert_cmpint (ret, ==, 0);
 
   check_fingerprint_similarity (

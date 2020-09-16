@@ -1620,8 +1620,10 @@ on_quick_bounce_clicked (
   g_thread_join (thread);
 
   /* create audio track with bounced material */
+  Position init_pos;
+  position_init (&init_pos);
   exporter_create_audio_track_after_bounce (
-    &settings);
+    &settings, &init_pos);
 
   export_settings_free_members (&settings);
 }

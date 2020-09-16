@@ -165,7 +165,7 @@ undo_manager_perform (
   int err = undoable_action_do (action);
   if (err)
     {
-      g_message (
+      g_warning (
         "%s: action not performed (err %d)",
         __func__, err);
 

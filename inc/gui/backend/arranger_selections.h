@@ -179,7 +179,8 @@ arranger_selections_has_any (
 /**
  * Returns the position of the leftmost object.
  *
- * @param pos The return value will be stored here.
+ * @param pos[out] The return value will be stored
+ *   here.
  * @param global Return global (timeline) Position,
  *   otherwise returns the local (from the start
  *   of the Region) Position.

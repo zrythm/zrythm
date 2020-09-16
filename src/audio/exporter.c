@@ -616,11 +616,18 @@ export_settings_free (
  * To be called to create and perform an undoable
  * action for creating an audio track with the
  * bounced material.
+ *
+ * @param pos Position to place the audio region
+ *   at.
  */
 void
 exporter_create_audio_track_after_bounce (
-  ExportSettings * settings)
+  ExportSettings * settings,
+  const Position * pos)
 {
+  /* assert exporting is finished */
+  g_return_if_fail (!AUDIO_ENGINE->exporting);
+
   SupportedFile * descr =
     supported_file_new_from_path (
       settings->file_uri);
@@ -646,7 +653,7 @@ exporter_create_audio_track_after_bounce (
   UndoableAction * ua =
     create_tracks_action_new (
       TRACK_TYPE_AUDIO, NULL,
-      descr, track->pos + 1, PLAYHEAD, 1);
+      descr, track->pos + 1, pos, 1);
   Position tmp;
   position_set_to_pos (&tmp, PLAYHEAD);
   transport_set_playhead_pos (
@@ -659,18 +666,24 @@ exporter_create_audio_track_after_bounce (
 /**
  * Exports an audio file based on the given
  * settings.
+ *
+ * @return Non-zero if fail.
  */
 int
 exporter_export (ExportSettings * info)
 {
+  g_return_val_if_fail (info && info->file_uri, -1);
+
+  g_message ("exporting to %s", info->file_uri);
+
   /* stop engine and give it some time to stop
    * running */
   g_atomic_int_set (&AUDIO_ENGINE->run, 0);
   zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
   zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
-  AUDIO_ENGINE->exporting = 1;
+  AUDIO_ENGINE->exporting = true;
   info->prev_loop = TRANSPORT->loop;
-  TRANSPORT->loop = 0;
+  TRANSPORT->loop = false;
 
   /* deactivate and activate all plugins to make
    * them reset their states */
@@ -681,18 +694,30 @@ exporter_export (ExportSettings * info)
   tracklist_activate_all_plugins (
     TRACKLIST, true);
 
+  int ret = 0;
   if (info->format == AUDIO_FORMAT_MIDI)
     {
-      return export_midi (info);
+      ret = export_midi (info);
     }
   else
     {
-      return export_audio (info);
+      ret = export_audio (info);
     }
 
   /* restart engine */
-  AUDIO_ENGINE->exporting = 0;
+  AUDIO_ENGINE->exporting = false;
   TRANSPORT->loop = info->prev_loop;
-  g_atomic_int_set (&AUDIO_ENGINE->run, 1);
+  g_atomic_int_set (&AUDIO_ENGINE->run, true);
+
+  if (ret)
+    {
+      g_warning ("export failed");
+    }
+  else
+    {
+      g_message ("done");
+    }
+
+  return ret;
 }
 

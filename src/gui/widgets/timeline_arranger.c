@@ -233,7 +233,7 @@ timeline_arranger_on_export_as_midi_file_clicked (
 void
 timeline_arranger_on_quick_bounce_clicked (
   GtkMenuItem * menuitem,
-  ZRegion *      r)
+  ZRegion *     r)
 {
   ExportSettings settings;
   timeline_selections_mark_for_bounce (
@@ -262,8 +262,12 @@ timeline_arranger_on_quick_bounce_clicked (
   g_thread_join (thread);
 
   /* create audio track with bounced material */
+  Position first_pos;
+  arranger_selections_get_start_pos (
+    (ArrangerSelections *) TL_SELECTIONS,
+    &first_pos, F_GLOBAL);
   exporter_create_audio_track_after_bounce (
-    &settings);
+    &settings, &first_pos);
 
   export_settings_free_members (&settings);
 }

@@ -176,7 +176,7 @@ create (
             ar->pool_id;
           track_add_region (
             track, ar, NULL, 0, F_GEN_NAME,
-            F_PUBLISH_EVENTS);
+            F_NO_PUBLISH_EVENTS);
         }
       else if (self->type == TRACK_TYPE_MIDI &&
                self->file_descr)
@@ -237,7 +237,7 @@ create_tracks_action_new (
   const PluginDescriptor * pl_descr,
   SupportedFile *    file,
   int                track_pos,
-  Position *         pos,
+  const Position *   pos,
   int                num_tracks)
 {
   CreateTracksAction * self =

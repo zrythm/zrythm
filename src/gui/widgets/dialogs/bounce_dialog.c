@@ -25,6 +25,7 @@
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
@@ -51,12 +52,17 @@ on_bounce_clicked (
   BounceDialogWidget * self)
 {
   ExportSettings settings;
+  Position start_pos;
+  position_init (&start_pos);
   switch (self->type)
     {
     case BOUNCE_DIALOG_REGIONS:
       timeline_selections_mark_for_bounce (
         TL_SELECTIONS);
       settings.mode = EXPORT_MODE_REGIONS;
+      arranger_selections_get_start_pos (
+        (ArrangerSelections *) TL_SELECTIONS,
+        &start_pos, F_GLOBAL);
       break;
     case BOUNCE_DIALOG_TRACKS:
       tracklist_selections_mark_for_bounce (
@@ -98,7 +104,7 @@ on_bounce_clicked (
     {
       /* create audio track with bounced material */
       exporter_create_audio_track_after_bounce (
-        &settings);
+        &settings, &start_pos);
     }
 
   export_settings_free_members (&settings);
