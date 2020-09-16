@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -49,18 +49,48 @@ on_divider_pos_changed (
   GParamSpec *pspec,
   GtkPaned * paned)
 {
+  int new_pos = gtk_paned_get_position (paned);
+  g_debug (
+    "saving bot panel divider pos: %d", new_pos);
   g_settings_set_int (
-    S_UI, "bot-panel-divider-position",
-    gtk_paned_get_position (paned));
+    S_UI, "bot-panel-divider-position", new_pos);
+}
+
+static bool
+on_center_dock_draw (
+  GtkWidget *        widget,
+  cairo_t *          cr,
+  CenterDockWidget * self)
+{
+  if (self->first_draw)
+    {
+      self->first_draw = false;
+
+      /* fetch divider position */
+      int pos =
+        g_settings_get_int (
+          S_UI, "bot-panel-divider-position");
+      g_debug (
+        "loading bot panel divider pos: %d", pos);
+      gtk_paned_set_position (
+        self->center_paned, pos);
+
+      g_signal_connect (
+        G_OBJECT (self->center_paned),
+        "notify::position",
+        G_CALLBACK (on_divider_pos_changed),
+        self->center_paned);
+    }
+
+  return false;
 }
 
 void
 center_dock_widget_setup (
   CenterDockWidget * self)
 {
-  gtk_paned_set_position (
-    self->center_paned,
-    2000);
+  /*gtk_paned_set_position (*/
+    /*self->center_paned, 2000);*/
 
   timeline_panel_widget_setup (
     self->timeline_panel);
@@ -81,15 +111,9 @@ center_dock_widget_setup (
   right_dock_edge_widget_setup (
     self->right_dock_edge);
 
-  /* remember divider position */
-  gtk_paned_set_position (
-    self->center_paned,
-    g_settings_get_int (
-      S_UI, "bot-panel-divider-position"));
   g_signal_connect (
-    G_OBJECT (self->center_paned), "notify::position",
-    G_CALLBACK (on_divider_pos_changed),
-    self->center_paned);
+    G_OBJECT (self), "draw",
+    G_CALLBACK (on_center_dock_draw), self);
 }
 
 /**
@@ -112,8 +136,11 @@ center_dock_widget_tear_down (
 }
 
 static void
-center_dock_widget_init (CenterDockWidget * self)
+center_dock_widget_init (
+  CenterDockWidget * self)
 {
+  self->first_draw = true;
+
   g_type_ensure (BOT_DOCK_EDGE_WIDGET_TYPE);
   g_type_ensure (RIGHT_DOCK_EDGE_WIDGET_TYPE);
   g_type_ensure (LEFT_DOCK_EDGE_WIDGET_TYPE);
@@ -142,7 +169,8 @@ center_dock_widget_init (CenterDockWidget * self)
 
 
 static void
-center_dock_widget_class_init (CenterDockWidgetClass * _klass)
+center_dock_widget_class_init (
+  CenterDockWidgetClass * _klass)
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);

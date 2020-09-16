@@ -79,6 +79,9 @@ typedef struct _CenterDockWidget
   RightDockEdgeWidget * right_dock_edge;
   BotDockEdgeWidget *   bot_dock_edge;
   GtkPaned *            center_paned;
+
+  /** Hack to remember paned position. */
+  bool                  first_draw;
 } CenterDockWidget;
 
 void
