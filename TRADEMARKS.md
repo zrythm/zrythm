@@ -25,9 +25,9 @@ trademarks, or use of marks that are confusingly
 similar to Zrythm trademarks, is prohibited and may
 violate the trademark rights of Alexandros Theodotou.
 
-Any use of Zrythm trademarks in a misleading and false
-manner, such as untruthful advertising, is always
-prohibited.
+Any use of Zrythm trademarks in a misleading and
+false manner, such as untruthful advertising, is
+always prohibited.
 
 # Usage Guidelines
 This Trademark Policy explicitly affirms your
@@ -59,31 +59,37 @@ prior written permission. Contact
 trademarks@zrythm.org for more information.
 
 # Software Distribution Policy
-You may distribute unaltered copies of Zrythm that
+You may distribute unaltered copies of the Zrythm
+digital audio workstation (DAW) and related software
+(hereinafter collectively referred to as "the
+software") published by Alexandros Theodotou that
 include the Zrythm trademarks without express
-permission from Alexandros Theodotou.
+permission from Alexandros Theodotou (provided that
+the license of the software in question allows it).
 
-You may further distribute altered copies of Zrythm
-that include the Zrythm trademarks, provided that
-alterations solely serve the purposes of:
-- porting Zrythm to a free system distribution
+You may further distribute altered copies of the
+software that include the Zrythm trademarks,
+provided that alterations solely serve the purposes
+of:
+- porting the software to a free system distribution
 currently approved by the Free Software Foundation at
 https://www.gnu.org/distros/free-distros.html, OR
-- porting Zrythm to the Debian operating system, as
-published by the Debian project at
+- porting the software to the Debian operating
+system, as published by the Debian project at
 https://debian.org/, OR
-- porting Zrythm to the Fedora Workstation operating
-system, as published by the Fedora Project at
-https://getfedora.org/, OR
-- porting Zrythm to the FreeBSD operating
+- porting the software to the Fedora Workstation
+operating system, as published by the Fedora Project
+at https://getfedora.org/, OR
+- porting the software to the FreeBSD operating
 system, as published by the The FreeBSD Project at
 https://www.freebsd.org/, OR
-- fixing a bug in Zrythm that has already been
+- fixing a bug in the software that has already been
 acknowledged by Alexandros Theodotou or CVE
 (https://cve.mitre.org/)
 
-Derivative operating systems of the operating
-systems mentioned above, namely:
+You may further redistribute copies of the software
+as published by the aforementioned software
+distributors, namely:
 - any free system distribution currently approved
 by the Free Software Foundation at
 https://www.gnu.org/distros/free-distros.html, OR
@@ -94,11 +100,8 @@ published by the Fedora Project at
 https://getfedora.org/, OR
 - the FreeBSD operating system, as published by The
 FreeBSD Project at https://www.freebsd.org/,
-may redistribute unaltered copies of Zrythm that
-include the Zrythm trademarks as published by the
-originating operating system (for example, Ubuntu
-may redistribute the Zrythm package from Debian,
-provided that no further modifications are made).
+
+provided that no further modifications are made.
 
 In any case, you may not add or remove
 functionalities and you must preserve all messages
@@ -113,23 +116,29 @@ code as published by Alexandros Theodotou at
 https://www.zrythm.org/.
 
 # Requirement of Written Permission for Modified Versions Including Trademarks
-Zrythm is
-[free software](http://www.gnu.org/philosophy/free-sw.html),
-and its license allows you
-to freely download, modify and redistribute the
-source code. However, if you make any changes to
-Zrythm not explicitly allowed above, you may not
+If you make any changes to the software not
+explicitly allowed above, you may not
 redistribute that product using any Zrythm trademark
 without Alexandros Theodotou’s prior written
 consent. For example, you may not distribute a
-modified form of Zrythm and continue to call it
-Zrythm, or include the Zrythm logo. If you wish to
-distribute a modified version of Zrythm that
-includes the Zrythm trademarks please contact us with
+modified form of the Zrythm DAW and continue to call
+it Zrythm, or include the Zrythm logo. If you wish to
+distribute modified versions of the software that
+include the Zrythm trademarks please contact us with
 your request at trademarks@zrythm.org.
 
 # Newer Versions of this Policy
-This policy may be revised from time to time. The
-file `TRADEMARKS.md` in the source code releases will
-always contain the current policy at the time of
-each release.
+This policy may be revised from time to time. New
+versions will be similar in spirit to the present
+version, but may differ in detail to address new
+problems or concerns. The file `TRADEMARKS.md` in
+the source code releases will always contain the
+current policy at the time of each release.
+
+----
+
+Copyright (C) 2020 Alexandros Theodotou
+
+Everyone is permitted to copy and distribute
+verbatim copies of this document, but changing it is
+not allowed.
