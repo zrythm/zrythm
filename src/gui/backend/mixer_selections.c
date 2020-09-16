@@ -253,6 +253,8 @@ mixer_selections_contains_plugin (
   MixerSelections * ms,
   Plugin *          pl)
 {
+  g_return_val_if_fail (ms && IS_PLUGIN (pl), false);
+
   if (ms->track_pos != pl->id.track_pos)
     return false;
 

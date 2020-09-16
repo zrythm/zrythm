@@ -31,6 +31,7 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project.h"
 
 #include <glib.h>
@@ -60,6 +61,8 @@ test_num_tracks_with_file (
 static void
 test_create_from_midi_file (void)
 {
+  test_helper_zrythm_init ();
+
   char * midi_file;
 
   /* TODO this should pass in the future */
@@ -84,6 +87,35 @@ test_create_from_midi_file (void)
   g_assert_cmpint (
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->
       lanes[0]->regions[0]->num_midi_notes, ==, 3);
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
+test_create_ins_when_redo_stack_nonempty (void)
+{
+  test_helper_zrythm_init ();
+
+  UndoableAction * ua =
+    create_tracks_action_new_midi (
+      TRACKLIST->num_tracks, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  undo_manager_undo (UNDO_MANAGER);
+
+#ifdef HAVE_HELM
+  test_plugin_manager_create_tracks_from_plugin (
+    HELM_BUNDLE, HELM_URI, true, false, 1);
+  undo_manager_undo (UNDO_MANAGER);
+
+  test_plugin_manager_create_tracks_from_plugin (
+    HELM_BUNDLE, HELM_URI, true, false, 1);
+  undo_manager_undo (UNDO_MANAGER);
+#endif
+
+  undo_manager_redo (UNDO_MANAGER);
+
+  test_helper_zrythm_cleanup ();
 }
 
 int
@@ -91,13 +123,17 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  test_helper_zrythm_init ();
-
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
     TEST_PREFIX "test create from midi file",
     (GTestFunc) test_create_from_midi_file);
+  g_test_add_func (
+    TEST_PREFIX
+    "test create instrument when redo stack "
+    "non-empty",
+    (GTestFunc)
+    test_create_ins_when_redo_stack_nonempty);
 
   return g_test_run ();
 }

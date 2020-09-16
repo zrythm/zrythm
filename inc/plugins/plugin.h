@@ -421,6 +421,16 @@ plugin_expose_ports (
   bool     outputs);
 
 /**
+ * Gets a port by its symbol.
+ *
+ * Only works for LV2 plugins.
+ */
+Port *
+plugin_get_port_by_symbol (
+  Plugin *     pl,
+  const char * sym);
+
+/**
  * Returns the escaped name of the plugin.
  */
 char *

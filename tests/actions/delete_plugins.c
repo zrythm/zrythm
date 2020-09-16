@@ -56,15 +56,28 @@ test_midi_fx_slot_deletion (void)
       TRACKLIST->num_tracks - 1, slot, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
 
-  /* delete slot and undo/redo */
   Track * track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->midi_fx[slot];
+
+  /* set the value to check if it is brought
+   * back on undo */
+  Port * port =
+    plugin_get_port_by_symbol (pl, "ccin");
+  port_set_control_value (
+    port, 120.f, F_NOT_NORMALIZED, false);
+
+  /* delete slot */
   plugin_select (pl, F_SELECT, F_EXCLUSIVE);
   ua = delete_plugins_action_new (MIXER_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
 
+  /* undo and check port value is restored */
   undo_manager_undo (UNDO_MANAGER);
+  pl = track->channel->midi_fx[slot];
+  port = plugin_get_port_by_symbol (pl, "ccin");
+  g_assert_cmpfloat_with_epsilon (
+    port->control, 120.f, 0.0001f);
 
   undo_manager_redo (UNDO_MANAGER);
 #endif

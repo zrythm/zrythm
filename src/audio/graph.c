@@ -1302,7 +1302,7 @@ void
 graph_free (
   Graph * self)
 {
-  g_message ("%s: freeing...", __func__);
+  g_debug ("%s: freeing...", __func__);
 
   for (int i = 0; i < self->n_graph_nodes; ++i)
     {
@@ -1326,5 +1326,5 @@ graph_free (
 
   object_zero_and_free (self);
 
-  g_message ("%s: done", __func__);
+  g_debug ("%s: done", __func__);
 }

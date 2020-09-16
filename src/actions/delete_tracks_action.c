@@ -292,7 +292,8 @@ delete_tracks_action_undo (
 
       if (track->type == TRACK_TYPE_INSTRUMENT)
         {
-          if (track->channel->instrument->visible)
+          if (self->tls->tracks[i]->channel->
+                instrument->visible)
             {
               EVENTS_PUSH (
                 ET_PLUGIN_VISIBILITY_CHANGED,

@@ -2191,7 +2191,8 @@ track_set_is_project (
   Track * self,
   bool    is_project)
 {
-  g_message ("Setting %s to %d...",
+  g_debug (
+    "Setting track %s is_project to %d...",
     self->name, is_project);
 
   track_processor_set_is_project (
@@ -2241,7 +2242,7 @@ track_set_is_project (
 
   self->is_project = is_project;
 
-  g_message ("done");
+  g_debug ("done");
 }
 
 /**

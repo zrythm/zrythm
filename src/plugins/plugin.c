@@ -1500,6 +1500,8 @@ int
 plugin_is_selected (
   Plugin * pl)
 {
+  g_return_val_if_fail (IS_PLUGIN (pl), false);
+
   return mixer_selections_contains_plugin (
     MIXER_SELECTIONS, pl);
 }
@@ -2540,6 +2542,40 @@ plugin_expose_ports (
             }
         }
     }
+}
+
+/**
+ * Gets a port by its symbol.
+ *
+ * Only works for LV2 plugins.
+ */
+Port *
+plugin_get_port_by_symbol (
+  Plugin *     pl,
+  const char * sym)
+{
+  g_return_val_if_fail (
+    IS_PLUGIN (pl) &&
+      pl->descr->protocol == PROT_LV2 &&
+      !pl->descr->open_with_carla,
+    NULL);
+
+  Lv2Plugin * lv2 = pl->lv2;
+  g_return_val_if_fail (lv2, NULL);
+
+  Lv2Port * lv2_port =
+    lv2_port_get_by_symbol (lv2, sym);
+  g_return_val_if_fail (lv2_port, NULL);
+  Port * port =
+    port_find_from_identifier (&lv2_port->port_id);
+
+  if (!port)
+    {
+      g_warning (
+        "failed to find port with symbol %s", sym);
+    }
+
+  return port;
 }
 
 /**

@@ -237,7 +237,7 @@ void
 router_free (
   Router * self)
 {
-  g_message ("%s: freeing...", __func__);
+  g_debug ("%s: freeing...", __func__);
 
   if (self->graph)
     graph_destroy (self->graph);
@@ -248,5 +248,5 @@ router_free (
 
   object_zero_and_free (self);
 
-  g_message ("%s: done", __func__);
+  g_debug ("%s: done", __func__);
 }

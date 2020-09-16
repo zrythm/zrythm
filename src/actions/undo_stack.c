@@ -146,7 +146,7 @@ undo_stack_free (
       UndoableAction * ua = undo_stack_pop (self);
       char * type_str =
         undoable_action_stringize (ua);
-      g_message (
+      g_debug (
         "%s: freeing %s", __func__, type_str);
       g_free (type_str);
       undoable_action_free (ua);
