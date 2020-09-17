@@ -387,7 +387,8 @@ io_get_next_available_filepath (
 }
 
 /* fallback for glib < 2.58 */
-#ifndef HAVE_G_CANONICALIZE_FILENAME
+#if !defined (GLIB_SUBPROJECT) && \
+  !defined (HAVE_G_CANONICALIZE_FILENAME)
 /**
  * g_canonicalize_filename:
  * @filename: (type filename): the name of the file

@@ -328,14 +328,19 @@ if have_jack
 endif
 
 glib_dep = dependency (
-  'glib-2.0',
-  fallback: ['glib', 'libglib_dep'],
+  'glib-2.0', required: false,
   static: all_static)
-check_functions += [
-  # use a fallback if this does not exist (glib < 2.58)
-  ['g_canonicalize_filename',[glib_dep]],
-  ['g_get_console_charset',[glib_dep]],
-  ]
+if glib_dep.found()
+  check_functions += [
+    # use a fallback if this does not exist (glib < 2.58)
+    ['g_canonicalize_filename',[glib_dep]],
+    ['g_get_console_charset',[glib_dep]],
+    ]
+else
+  cdata.set ('GLIB_SUBPROJECT', 1)
+  glib_proj = subproject ('glib')
+  glib_dep = glib_proj.get_variable ('libglib_dep')
+endif
 
 foreach func : check_functions
   if cc.has_function(func[0], dependencies: func[1])

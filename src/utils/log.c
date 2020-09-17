@@ -103,7 +103,8 @@ typedef struct LogEvent
   GLogLevelFlags log_level;
 } LogEvent;
 
-#ifndef HAVE_G_GET_CONSOLE_CHARSET
+#if !defined (GLIB_SUBPROJECT) && \
+  !defined (HAVE_G_GET_CONSOLE_CHARSET)
 static gboolean
 g_get_console_charset (const char ** charset)
 {
