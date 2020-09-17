@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-12 01:56+0100\n"
-"PO-Revision-Date: 2020-09-13 04:36+0000\n"
+"PO-Revision-Date: 2020-09-17 11:36+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
@@ -45,7 +45,7 @@ msgstr ""
 #: resources/ui/inspector_master.ui:31 resources/ui/inspector_ap.ui:31
 #: resources/ui/inspector_midi.ui:31
 msgid "Region"
-msgstr ""
+msgstr "片段"
 
 #: inc/gui/backend/arranger_object.h:94
 msgid "Midi Note"
@@ -65,9 +65,8 @@ msgid "Marker"
 msgstr "標記"
 
 #: inc/gui/backend/arranger_object.h:102
-#, fuzzy
 msgid "Automation Point"
-msgstr "自動控制"
+msgstr "自動控制參數點"
 
 #: inc/gui/backend/arranger_object.h:104 src/gui/widgets/event_viewer.c:548
 #: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
@@ -239,31 +238,31 @@ msgstr "ALSA Sequencer"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:126
 msgid "Crescendo"
-msgstr ""
+msgstr "漸強"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:132
 msgid "Flam"
-msgstr ""
+msgstr "裝飾音"
 
 #: inc/audio/midi_function.h:58
 msgid "Flip H"
-msgstr ""
+msgstr "水平翻轉"
 
 #: inc/audio/midi_function.h:59
 msgid "Flip V"
-msgstr ""
+msgstr "垂直翻轉"
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:153
 msgid "Legato"
-msgstr ""
+msgstr "圓滑奏"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:159
 msgid "Portato"
-msgstr ""
+msgstr "半斷奏"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:165
 msgid "Staccato"
-msgstr ""
+msgstr "斷奏"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:171
 msgid "Strum"
@@ -271,7 +270,7 @@ msgstr ""
 
 #: inc/audio/region.h:83 src/gui/widgets/track.c:1866
 msgid "Inherit"
-msgstr ""
+msgstr "使用全域的設定"
 
 #: inc/audio/region.h:85 src/gui/widgets/bot_bar.c:517
 #: src/audio/automation_track.c:101
@@ -589,7 +588,7 @@ msgstr ""
 
 #: src/plugins/plugin.c:159
 msgid "Enabled"
-msgstr "啟用"
+msgstr "已啟用"
 
 #: src/plugins/plugin.c:181 src/gui/widgets/track_input_expander.c:719
 msgid "Gain"
@@ -662,11 +661,11 @@ msgstr "峰值"
 
 #: src/gui/widgets/port_connections_popover.c:72
 msgid "INPUTS"
-msgstr ""
+msgstr "輸入"
 
 #: src/gui/widgets/port_connections_popover.c:98
 msgid "OUTPUTS"
-msgstr ""
+msgstr "輸出"
 
 #: src/gui/widgets/port_connections_popover.c:202 src/gui/widgets/track.c:1232
 msgid "Add"
@@ -683,7 +682,7 @@ msgstr "音符類型"
 #: src/gui/widgets/inspector_port.c:185 src/gui/widgets/balance_control.c:366
 #: src/gui/widgets/fader.c:374 resources/ui/bind_cc_dialog.ui:27
 msgid "Bind MIDI CC"
-msgstr ""
+msgstr "綁定 MIDI CC"
 
 #: src/gui/widgets/inspector_port.c:195 src/gui/widgets/midi_arranger.c:516
 msgid "View info"
@@ -714,6 +713,7 @@ msgid "Expose port to JACK"
 msgstr "連接到 JACK"
 
 #: src/gui/widgets/log_viewer.c:127
+#, fuzzy
 msgid "Log Viewer"
 msgstr "事件檢視器"
 
@@ -732,7 +732,7 @@ msgstr "音軌屬性"
 
 #: src/gui/widgets/track_input_expander.c:292
 msgid "All MIDI Inputs"
-msgstr "所有MIDI輸入"
+msgstr "所有 MIDI 輸入"
 
 #: src/gui/widgets/track_input_expander.c:296
 msgid "All Audio Inputs"
@@ -771,20 +771,20 @@ msgstr "R"
 
 #: src/gui/widgets/track_input_expander.c:423
 msgid "All Channels"
-msgstr ""
+msgstr "所有通道"
 
 #: src/gui/widgets/track_input_expander.c:432
 #, c-format
 msgid "Channel %s"
-msgstr ""
+msgstr "通道 %s"
 
 #: src/gui/widgets/track_input_expander.c:447
 msgid "No channel"
-msgstr ""
+msgstr "關閉通道"
 
 #: src/gui/widgets/track_input_expander.c:487
 msgid "MIDI channel to filter to"
-msgstr ""
+msgstr "選擇欲使用的 MIDI 通道"
 
 #: src/gui/widgets/track_input_expander.c:687
 msgid "Mono"
@@ -801,7 +801,7 @@ msgstr "選擇..."
 
 #: src/gui/widgets/midi_controller_mb.c:126
 msgid "Click to enable MIDI controllers to be connected automatically"
-msgstr ""
+msgstr "點擊可使 MIDI 控制器自動連接"
 
 #: src/gui/widgets/first_run_assistant.c:127
 msgid "Backend combination not supported"
@@ -813,7 +813,7 @@ msgstr ""
 
 #: src/gui/widgets/first_run_assistant.c:173
 msgid "JACK MIDI can only be used with JACK audio"
-msgstr ""
+msgstr "JACK MIDI 必須搭配 JACK audio 一起使用"
 
 #: src/gui/widgets/bind_cc_dialog.c:95
 msgid "Not a control change event"
@@ -834,7 +834,7 @@ msgstr "路徑"
 
 #: src/gui/widgets/project_assistant.c:286
 msgid "Last Modified"
-msgstr ""
+msgstr "上次修改"
 
 #: src/gui/widgets/project_assistant.c:529
 msgid "Blank project"
@@ -859,7 +859,7 @@ msgstr ""
 
 #: src/gui/widgets/left_dock_edge.c:250
 msgid "CC Bindings"
-msgstr ""
+msgstr "CC 綁定"
 
 #: src/gui/widgets/left_dock_edge.c:277
 #, fuzzy
@@ -908,11 +908,11 @@ msgstr "一般"
 
 #: src/gui/widgets/digital_meter.c:406
 msgid "dotted"
-msgstr ""
+msgstr "附點"
 
 #: src/gui/widgets/digital_meter.c:409
 msgid "triplet"
-msgstr ""
+msgstr "三連音"
 
 #: src/gui/widgets/digital_meter.c:1130
 msgid "Tempo/BPM"
@@ -931,7 +931,7 @@ msgstr "拍號"
 
 #: src/gui/widgets/drag_dest_box.c:389
 msgid "Add _MIDI Track"
-msgstr "新增 _MIDI 軌"
+msgstr "新增 MIDI 軌"
 
 #: src/gui/widgets/drag_dest_box.c:401
 msgid "Add Audio Track"
@@ -939,7 +939,7 @@ msgstr "新增音訊軌"
 
 #: src/gui/widgets/drag_dest_box.c:433
 msgid "Add FX Track"
-msgstr "新增 FX 軌"
+msgstr "新增效果軌"
 
 #: src/gui/widgets/drag_dest_box.c:463
 msgid "Add Group Track"
@@ -962,11 +962,11 @@ msgstr "顯示子音軌"
 
 #: src/gui/widgets/instrument_track.c:265 src/gui/widgets/midi_track.c:230
 msgid "Lock track"
-msgstr "鎖定"
+msgstr "鎖定音軌"
 
 #: src/gui/widgets/instrument_track.c:271
 msgid "Freeze track"
-msgstr "凍結"
+msgstr "凍結音軌"
 
 #: src/gui/widgets/control_room.c:50
 msgid "Listen dim level"
@@ -978,11 +978,11 @@ msgstr ""
 
 #: src/gui/widgets/control_room.c:71
 msgid "Monitor out"
-msgstr ""
+msgstr "監聽輸出"
 
 #: src/gui/widgets/channel_slot.c:179
 msgid "No instrument"
-msgstr "無虛擬樂器"
+msgstr "沒有樂器"
 
 #: src/gui/widgets/channel_slot.c:184
 #, c-format
@@ -1013,7 +1013,7 @@ msgstr ""
 
 #: src/gui/widgets/arranger.c:3249 resources/ui/string_entry_dialog.ui:94
 msgid "Marker name"
-msgstr ""
+msgstr "標記的名稱"
 
 #: src/gui/widgets/arranger.c:4930
 #, c-format
@@ -1051,7 +1051,7 @@ msgstr ""
 #: src/gui/widgets/plugin_browser.c:1113 resources/ui/panel_file_browser.ui:63
 #: resources/ui/file_browser.ui:63
 msgid "Collection"
-msgstr ""
+msgstr "收藏"
 
 #: src/gui/widgets/plugin_browser.c:1123
 msgid "Category"
@@ -1107,7 +1107,7 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:419
 msgid "This feature is not available at the moment"
-msgstr ""
+msgstr "這項功能目前無法使用"
 
 #: src/gui/widgets/bot_bar.c:514
 msgid "Status"
@@ -1232,7 +1232,7 @@ msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1352
 msgid "Musical Mode"
-msgstr ""
+msgstr "音樂模式"
 
 #: src/gui/widgets/timeline_arranger.c:1484
 msgid "Export as MIDI file"
@@ -1240,16 +1240,16 @@ msgstr "輸出成MIDI檔"
 
 #: src/gui/widgets/timeline_arranger.c:1519 src/gui/widgets/track.c:1741
 msgid "Quick bounce"
-msgstr ""
+msgstr "快速轉換成音訊"
 
 #: src/gui/widgets/timeline_arranger.c:1530 src/gui/widgets/track.c:1753
 msgid "Bounce..."
-msgstr ""
+msgstr "轉換成音訊..."
 
 #: src/gui/widgets/automation_arranger.c:261
 #: build/data/org.zrythm.Zrythm.gschema.xml:602
 msgid "Curve algorithm"
-msgstr ""
+msgstr "曲線演算法"
 
 #: src/gui/widgets/header.c:99
 #, c-format
@@ -1373,7 +1373,7 @@ msgstr "外掛屬性"
 #: resources/ui/port_info_dialog.ui:161 resources/ui/panel_file_browser.ui:84
 #: resources/ui/file_browser.ui:84
 msgid "Type"
-msgstr ""
+msgstr "類型"
 
 #: src/gui/widgets/plugin_properties_expander.c:166
 msgid "Banks"
@@ -1410,7 +1410,7 @@ msgstr ""
 #: src/gui/widgets/automatable_selector_popover.c:314
 #, c-format
 msgid "[Instrument] %s"
-msgstr "[虛擬樂器] %s"
+msgstr "[樂器] %s"
 
 #: src/gui/widgets/automatable_selector_popover.c:334
 #, c-format
@@ -1475,7 +1475,7 @@ msgstr "示波器"
 
 #: src/gui/widgets/clip_editor_inner.c:248
 msgid "Select a region..."
-msgstr ""
+msgstr "選擇一個片段..."
 
 #: src/gui/widgets/channel_sends_expander.c:63
 #: src/gui/widgets/ports_expander.c:381
@@ -1668,9 +1668,9 @@ msgid "Toggle Right Panel"
 msgstr "顯示/隱藏右邊面板"
 
 #: src/gui/widgets/editor_toolbar.c:63
-#, fuzzy, c-format
+#, c-format
 msgid "Apply %s"
-msgstr "複製 %s"
+msgstr ""
 
 #: src/gui/widgets/editor_toolbar.c:67
 #, c-format
@@ -1678,9 +1678,8 @@ msgid "Apply %s with previous settings"
 msgstr ""
 
 #: src/gui/widgets/editor_toolbar.c:107
-#, fuzzy
 msgid "No Highlight"
-msgstr "關閉右聲道"
+msgstr ""
 
 #: src/gui/widgets/editor_toolbar.c:114
 msgid "Highlight Chord"
@@ -1695,9 +1694,8 @@ msgid "Highlight Both"
 msgstr ""
 
 #: src/gui/widgets/editor_toolbar.c:196
-#, fuzzy
 msgid "Select function"
-msgstr "選取"
+msgstr ""
 
 #: src/gui/widgets/inspector_track.c:146
 msgid "Comment"
@@ -1782,7 +1780,7 @@ msgstr "複製這些音軌"
 
 #: src/gui/widgets/track.c:1708
 msgid "Add Region"
-msgstr ""
+msgstr "新增片段"
 
 #: src/gui/widgets/track.c:1717
 msgid "Hide Track"
@@ -1824,7 +1822,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/string_entry_dialog.c:83
 msgid "Please enter a value"
-msgstr ""
+msgstr "請輸入一個值"
 
 #: src/gui/widgets/dialogs/port_info.c:59
 #, c-format
@@ -3576,7 +3574,7 @@ msgstr "專案"
 
 #: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:632
 msgid "Autosave interval"
-msgstr ""
+msgstr "自動儲存時間間隔"
 
 #: resources/ui/preferences.ui:595
 msgid ""
@@ -4139,7 +4137,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:617
 msgid "Undo stack length"
-msgstr ""
+msgstr "復原次數限制"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:618
 msgid "Maximum undo history stack length. Set to -1 for unlimited."

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:44+0100\n"
-"PO-Revision-Date: 2020-09-11 17:17+0000\n"
+"PO-Revision-Date: 2020-09-15 05:36+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/manualediting/zh_Hant/>\n"
@@ -1357,7 +1357,7 @@ msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:21
 msgid "Musical Mode"
-msgstr ""
+msgstr "音樂模式"
 
 #: ../../editing/timeline/toolbar.rst:22
 msgid ""
