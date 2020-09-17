@@ -595,7 +595,13 @@ gtk_dep = dependency (
   fallback: ['gtk3', 'libgtk_dep'],
   static: all_static)
 sndfile_dep = dependency (
-  'sndfile', version: '>=1.0.25')
+  'sndfile', version: '>=1.0.29', required: false)
+if not sndfile_dep.found ()
+  sndfile_subproject = cmake.subproject (
+    'sndfile', options: cmake_opts)
+  sndfile_dep = sndfile_subproject.dependency (
+    'sndfile')
+endif
 lv2_dep = dependency(
   'lv2', version: '>=1.16.0', required: false,
   static: all_static)

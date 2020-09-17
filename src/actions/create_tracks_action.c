@@ -164,6 +164,13 @@ create (
         {
           /* create an audio region & add to
            * track */
+          Position start_pos;
+          position_init (&start_pos);
+          if (self->have_pos)
+            {
+              position_set_to_pos (
+                &start_pos, &self->pos);
+            }
           ZRegion * ar =
             audio_region_new (
               self->pool_id,
@@ -171,7 +178,7 @@ create (
                 self->file_descr->abs_path :
                 NULL,
               NULL, 0, NULL, 0,
-              &self->pos, pos, 0, 0);
+              &start_pos, pos, 0, 0);
           self->pool_id =
             ar->pool_id;
           track_add_region (
@@ -266,6 +273,7 @@ create_tracks_action_new (
   if (pos)
     {
       position_set_to_pos (&self->pos, pos);
+      self->have_pos = true;
     }
 
   /* calculate number of tracks */

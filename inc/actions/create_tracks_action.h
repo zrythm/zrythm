@@ -46,6 +46,8 @@ typedef struct CreateTracksAction
    * applicable. */
   Position         pos;
 
+  bool             have_pos;
+
   /** Number of tracks to make. */
   int              num_tracks;
 
@@ -95,6 +97,8 @@ static const cyaml_schema_field_t
     CreateTracksAction, is_empty),
   YAML_FIELD_INT (
     CreateTracksAction, track_pos),
+  YAML_FIELD_INT (
+    CreateTracksAction, have_pos),
   YAML_FIELD_MAPPING_EMBEDDED (
     CreateTracksAction, pos, position_fields_schema),
   YAML_FIELD_INT (
