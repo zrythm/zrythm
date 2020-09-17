@@ -1,0 +1,5 @@
+[wrap-git]
+directory=librsvg
+url=https://gitlab.gnome.org/nirbheek/librsvg.git
+push-url=git@gitlab.gnome.org:nirbheek/librsvg.git
+revision=wip/meson-2-40

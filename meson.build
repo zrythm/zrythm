@@ -327,7 +327,10 @@ if have_jack
     ]
 endif
 
-glib_dep = dependency ('glib-2.0')
+glib_dep = dependency (
+  'glib-2.0',
+  fallback: ['glib', 'libglib_dep'],
+  static: all_static)
 check_functions += [
   # use a fallback if this does not exist (glib < 2.58)
   ['g_canonicalize_filename',[glib_dep]],
