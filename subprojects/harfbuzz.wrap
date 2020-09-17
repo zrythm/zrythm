@@ -1,0 +1,5 @@
+[wrap-git]
+directory=harfbuzz
+url=https://github.com/centricular/harfbuzz.git
+push-url=git@github.com:centricular/harfbuzz.git
+revision=meson

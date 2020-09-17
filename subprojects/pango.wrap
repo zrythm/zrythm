@@ -1,0 +1,5 @@
+[wrap-git]
+directory=pango
+url=https://gitlab.gnome.org/GNOME/pango.git
+push-url=git@gitlab.gnome.org:GNOME/pango.git
+revision=master

@@ -1,0 +1,5 @@
+[wrap-git]
+directory=libcroco
+url=https://gitlab.gnome.org/GNOME/libcroco.git
+push-url=git@gitlab.gnome.org:GNOME/libcroco.git
+revision=wip/meson

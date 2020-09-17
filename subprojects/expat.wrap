@@ -1,0 +1,10 @@
+[wrap-file]
+directory = expat-2.2.5
+
+source_url = https://github.com/libexpat/libexpat/releases/download/R_2_2_5/expat-2.2.5.tar.bz2
+source_filename = expat-2.2.5.tar.bz2
+source_hash = d9dc32efba7e74f788fcc4f212a43216fc37cf5f23f4c2339664d473353aedf6
+
+patch_url = https://wrapdb.mesonbuild.com/v1/projects/expat/2.2.5/5/get_zip
+patch_filename = expat-2.2.5-5-wrap.zip
+patch_hash = 95e02942b13ebe237494419c0f7d56d99b8b4e0a2dc04002e055b2325c960e11
