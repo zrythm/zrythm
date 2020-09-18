@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:44+0100\n"
-"PO-Revision-Date: 2020-09-11 17:17+0000\n"
+"PO-Revision-Date: 2020-09-17 11:36+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/manualconfiguration/zh_Hant/>\n"
@@ -473,7 +473,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:161
 msgid "Curve algorithm"
-msgstr ""
+msgstr "曲線演算法"
 
 #: ../../configuration/preferences/intro.rst:161
 msgid "Default curve algorithm to use for automation curves."
@@ -489,7 +489,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:169
 msgid "Undo stack length"
-msgstr ""
+msgstr "復原次數限制"
 
 #: ../../configuration/preferences/intro.rst:169
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
@@ -513,7 +513,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:189
 msgid "Autosave interval"
-msgstr ""
+msgstr "自動儲存時間間隔"
 
 #: ../../configuration/preferences/intro.rst:188
 msgid ""
