@@ -1001,6 +1001,7 @@ summary ({
   'Build/install user manual': get_option ('user_manual'),
   'Install DSEG font': get_option ('dseg_font'),
   'Custom logo and splash': get_option ('custom_logo_and_splash'),
+  'Trial version': get_option ('trial_ver'),
   }, section: 'General')
 
 summary ({
