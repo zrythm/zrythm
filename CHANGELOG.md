@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.0.1.1] - 2020-09-18
+### Added
+- Increase open file limit on app startup
+- Show popup when JACK shuts down
+- Add test for deleting plugins
+- Add more meson subprojects
+
+### Changed
+- Show underlying backends instead of RtAudio/RtMidi
+- Place bounced material where the first region starts if bouncing regions
+- Revise Trademark Policy
+- Update Chinese (Traditional) translations
+
+### Fixed
+- Fix broken export/bounce (WAV and FLAC)
+- Fix FreeBSD build
+- Fix skipping setting of Carla engine options
+- Fix crash when deleting a newly created MIDI track on an empty project
+- Fix remembering position of divider between timeline and clip editor
+- Fix crash when deleting a MIDI FX slot on a MIDI track
+- Fix LV2 plugins not applying file selection changes
+
 ## [0.8.982] - 2020-09-15
 ### Added
 - Allow renaming regions

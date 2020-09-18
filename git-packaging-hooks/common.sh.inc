@@ -49,13 +49,21 @@ function init()
   [ "$CURRENT_BRANCH" == "$PACKAGING_BRANCH" ] && readonly IS_PACKAGING_BRANCH=1 || \
                                                   readonly IS_PACKAGING_BRANCH=0
 
+  # detect empty commit message
+  readonly GIT_COMMIT_MSG_FILE=.git/COMMIT_EDITMSG
+  [ "$(grep --invert-match "^\s*#" $GIT_COMMIT_MSG_FILE)" ] && IS_EMPTY_COMMIT_MSG=0 || \
+                                                               IS_EMPTY_COMMIT_MSG=1
+
+  # detect commit message
+  commit_msg=`cat "$GIT_COMMIT_MSG_FILE"`
+
   # misc string constants
   readonly PRE_ALPHA_REGEX='^v[0-9]+\.[0-9]+\.[0-9]+-DEV\.[0-9]+\.[0-9]+$'
   readonly ALPHA_REGEX='^v[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+\.[0-9]+$'
   readonly BETA_REGEX='^v[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+\.[0-9]+$'
   readonly RC_REGEX='^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$'
   readonly STABLE_REGEX='^v[0-9]+\.[0-9]+\.[0-9]+$'
-  case "$1" in
+  case "$commit_msg" in
     "release-pre-alpha:"*)
       readonly MINOR_VERSION_REGEX="$PRE_ALPHA_REGEX"
       readonly IS_RC=0
@@ -107,16 +115,11 @@ function init()
   [ "$*" == '.git/COMMIT_EDITMSG' ] && readonly IS_PRE_COMMIT_STAGE=1 || \
                                        readonly IS_PRE_COMMIT_STAGE=0
 
-  # detect empty commit message
-  readonly GIT_COMMIT_MSG_FILE=.git/COMMIT_EDITMSG
-  [ "$(grep --invert-match "^\s*#" $GIT_COMMIT_MSG_FILE)" ] && IS_EMPTY_COMMIT_MSG=0 || \
-                                                               IS_EMPTY_COMMIT_MSG=1
-
   # get existing revision tags
   local ifs=$IFS ; IFS=' ' ;
-  local branch_minor_tags=$(git tag --list --merged    HEAD   | grep $MINOR_VERSION_REGEX)
-  local branch_rev_tags=$(  git tag --list --merged    HEAD   | grep $REVISION_REGEX     )
-  local unmerged_rev_tags=$(git tag --list --no-merged master | grep $REVISION_REGEX     )
+  local branch_minor_tags=$(git tag --list --merged    HEAD   | grep -E $MINOR_VERSION_REGEX)
+  local branch_rev_tags=$(  git tag --list --merged    HEAD   | grep -E $REVISION_REGEX     )
+  local unmerged_rev_tags=$(git tag --list --no-merged master | grep -E $REVISION_REGEX     )
   readonly MINOR_VERSION_TAG=$(echo $branch_minor_tags | sort --version-sort | tail --lines=1)
   readonly LAST_REVISION_TAG=$(echo $branch_rev_tags   | sort --version-sort | tail --lines=1)
   readonly HIGHEST_REV_TAG=$(  echo $unmerged_rev_tags | sort --version-sort | tail --lines=1)
@@ -137,7 +140,7 @@ function init()
        if (($IS_RC)); then
          readonly VERSION_STRING=$MINOR_VERSION_TAG
        else
-         readonly VERSION_STRING=$MINOR_VERSION_TAG.$(printf '%03d' $N_REVISIONS_AHEAD)
+         readonly VERSION_STRING=$MINOR_VERSION_TAG.$(printf '%d' $N_REVISIONS_AHEAD)
        fi
   else readonly N_REVISIONS_AHEAD='n/a'
        readonly SHOULD_INCREMENT_REVISION='n/a'
