@@ -315,6 +315,86 @@ z_carla_discovery_create_vst_descriptor (
 }
 
 /**
+ * Create a descriptor using carla discovery.
+ *
+ * @path Path to the plugin bundle.
+ * @arch Architecture.
+ */
+PluginDescriptor *
+z_carla_discovery_create_dssi_descriptor (
+  const char *       path,
+  PluginArchitecture arch)
+{
+  char * results =
+    z_carla_discovery_run (arch, "dssi", path);
+  if (!results)
+    {
+      g_warning (
+        "Failed to get results for %s", path);
+      return NULL;
+    }
+  g_message (
+    "results: [[[\n%s\n]]]", results);
+
+  PluginDescriptor * descr =
+    z_carla_discovery_parse_plugin_info (
+      path, results);
+  if (!descr)
+    return NULL;
+
+  descr->protocol = PROT_DSSI;
+  descr->arch = arch;
+  descr->path = g_strdup (path);
+
+  /* open all DSSI plugins with carla */
+  descr->open_with_carla = true;
+
+  g_free (results);
+
+  return descr;
+}
+
+/**
+ * Create a descriptor using carla discovery.
+ *
+ * @path Path to the plugin bundle.
+ * @arch Architecture.
+ */
+PluginDescriptor *
+z_carla_discovery_create_ladspa_descriptor (
+  const char *       path,
+  PluginArchitecture arch)
+{
+  char * results =
+    z_carla_discovery_run (arch, "ladspa", path);
+  if (!results)
+    {
+      g_warning (
+        "Failed to get results for %s", path);
+      return NULL;
+    }
+  g_message (
+    "results: [[[\n%s\n]]]", results);
+
+  PluginDescriptor * descr =
+    z_carla_discovery_parse_plugin_info (
+      path, results);
+  if (!descr)
+    return NULL;
+
+  descr->protocol = PROT_LADSPA;
+  descr->arch = arch;
+  descr->path = g_strdup (path);
+
+  /* open all LADSPA plugins with carla */
+  descr->open_with_carla = true;
+
+  g_free (results);
+
+  return descr;
+}
+
+/**
  * Runs carla discovery for the given arch with the
  * given arguments and returns the output as a
  * newly allocated string.

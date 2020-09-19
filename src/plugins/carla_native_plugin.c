@@ -414,6 +414,14 @@ create_plugin (
           type, descr->path, descr->name,
           descr->name, 0, NULL, 0);
       break;
+    case PROT_DSSI:
+    case PROT_LADSPA:
+      ret =
+        carla_add_plugin (
+          self->host_handle, BINARY_NATIVE,
+          type, descr->path, descr->name,
+          NULL, 0, NULL, 0);
+      break;
     case PROT_SFZ:
     case PROT_SF2:
       ret =
@@ -546,6 +554,8 @@ carla_native_plugin_proces (
     case PROT_LV2:
     case PROT_VST:
     case PROT_VST3:
+    case PROT_DSSI:
+    case PROT_LADSPA:
     case PROT_AU:
     case PROT_SFZ:
     case PROT_SF2:
@@ -854,6 +864,14 @@ create_from_descr (
       self =
         create_plugin (descr, PLUGIN_SF2);
       break;
+    case PROT_DSSI:
+      self =
+        create_plugin (descr, PLUGIN_DSSI);
+      break;
+    case PROT_LADSPA:
+      self =
+        create_plugin (descr, PLUGIN_LADSPA);
+      break;
 #if 0
     case PROT_CARLA_INTERNAL:
       create_carla_internal (
@@ -1065,6 +1083,7 @@ carla_native_plugin_open_ui (
     {
     case PROT_VST:
     case PROT_VST3:
+    case PROT_DSSI:
     case PROT_LV2:
     case PROT_AU:
       {

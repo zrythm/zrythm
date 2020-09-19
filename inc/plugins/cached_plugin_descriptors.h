@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __PLUGINS_CACHED_VST_DESCRIPTORS_H__
-#define __PLUGINS_CACHED_VST_DESCRIPTORS_H__
+#ifndef __PLUGINS_CACHED_PLUGIN_DESCRIPTORS_H__
+#define __PLUGINS_CACHED_PLUGIN_DESCRIPTORS_H__
 
 #include "plugins/plugin_descriptor.h"
 #include "utils/yaml.h"
@@ -32,7 +32,7 @@
 /**
  * Descriptors to be cached.
  */
-typedef struct CachedVstDescriptors
+typedef struct CachedPluginDescriptors
 {
   /** Version of the file. */
   unsigned int        version;
@@ -44,22 +44,22 @@ typedef struct CachedVstDescriptors
    * when scanning */
   PluginDescriptor *  blacklisted[1000];
   int                 num_blacklisted;
-} CachedVstDescriptors;
+} CachedPluginDescriptors;
 
 static const cyaml_schema_field_t
-cached_vst_descriptors_fields_schema[] =
+cached_plugin_descriptors_fields_schema[] =
 {
   CYAML_FIELD_UINT (
     "version", CYAML_FLAG_DEFAULT,
-    CachedVstDescriptors, version),
+    CachedPluginDescriptors, version),
   CYAML_FIELD_SEQUENCE_COUNT (
     "descriptors", CYAML_FLAG_DEFAULT,
-    CachedVstDescriptors, descriptors,
+    CachedPluginDescriptors, descriptors,
     num_descriptors,
     &plugin_descriptor_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
     "blacklisted", CYAML_FLAG_DEFAULT,
-    CachedVstDescriptors, blacklisted,
+    CachedPluginDescriptors, blacklisted,
     num_blacklisted,
     &plugin_descriptor_schema, 0, CYAML_UNLIMITED),
 
@@ -67,31 +67,31 @@ cached_vst_descriptors_fields_schema[] =
 };
 
 static const cyaml_schema_value_t
-cached_vst_descriptors_schema =
+cached_plugin_descriptors_schema =
 {
   CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-    CachedVstDescriptors,
-    cached_vst_descriptors_fields_schema),
+    CachedPluginDescriptors,
+    cached_plugin_descriptors_fields_schema),
 };
 
 /**
  * Reads the file and fills up the object.
  */
-CachedVstDescriptors *
-cached_vst_descriptors_new (void);
+CachedPluginDescriptors *
+cached_plugin_descriptors_new (void);
 
 void
-cached_vst_descriptors_serialize_to_file (
-  CachedVstDescriptors * self);
+cached_plugin_descriptors_serialize_to_file (
+  CachedPluginDescriptors * self);
 
 /**
  * Returns if the plugin at the given path is
  * blacklisted or not.
  */
 int
-cached_vst_descriptors_is_blacklisted (
-  CachedVstDescriptors * self,
+cached_plugin_descriptors_is_blacklisted (
+  CachedPluginDescriptors * self,
   const char *           abs_path);
 
 /**
@@ -100,8 +100,8 @@ cached_vst_descriptors_is_blacklisted (
  * the MD5 hash matches.
  */
 PluginDescriptor *
-cached_vst_descriptors_get (
-  CachedVstDescriptors * self,
+cached_plugin_descriptors_get (
+  CachedPluginDescriptors * self,
   const char *           abs_path);
 
 /**
@@ -111,8 +111,8 @@ cached_vst_descriptors_get (
  *   now.
  */
 void
-cached_vst_descriptors_blacklist (
-  CachedVstDescriptors * self,
+cached_plugin_descriptors_blacklist (
+  CachedPluginDescriptors * self,
   const char *           abs_path,
   int                    _serialize);
 
@@ -123,8 +123,8 @@ cached_vst_descriptors_blacklist (
  *   now.
  */
 void
-cached_vst_descriptors_add (
-  CachedVstDescriptors * self,
+cached_plugin_descriptors_add (
+  CachedPluginDescriptors * self,
   PluginDescriptor *     descr,
   int                    _serialize);
 
@@ -132,20 +132,20 @@ cached_vst_descriptors_add (
  * Clears the descriptors and removes the cache file.
  */
 void
-cached_vst_descriptors_clear (
-  CachedVstDescriptors * self);
+cached_plugin_descriptors_clear (
+  CachedPluginDescriptors * self);
 
 void
-cached_vst_descriptors_free (
-  CachedVstDescriptors * self);
+cached_plugin_descriptors_free (
+  CachedPluginDescriptors * self);
 
 /**
  * @}
  */
 
 SERIALIZE_INC (
-  CachedVstDescriptors, cached_vst_descriptors);
+  CachedPluginDescriptors, cached_plugin_descriptors);
 DESERIALIZE_INC (
-  CachedVstDescriptors, cached_vst_descriptors);
+  CachedPluginDescriptors, cached_plugin_descriptors);
 
 #endif

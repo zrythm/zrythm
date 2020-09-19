@@ -42,7 +42,7 @@
 #include <ctype.h>
 
 #include "gui/widgets/main_window.h"
-#include "plugins/cached_vst_descriptors.h"
+#include "plugins/cached_plugin_descriptors.h"
 #include "plugins/carla/carla_discovery.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
@@ -544,9 +544,9 @@ plugin_manager_new (void)
   init_symap (self);
   load_bundled_lv2_plugins (self);
 
-  /* init vst */
-  self->cached_vst_descriptors =
-    cached_vst_descriptors_new ();
+  /* init vst/dssi/ladspa */
+  self->cached_plugin_descriptors =
+    cached_plugin_descriptors_new ();
 
   return self;
 }
@@ -767,7 +767,160 @@ get_sf_paths (
 
   return paths;
 }
+
+static char **
+get_dssi_paths (
+  PluginManager * self)
+{
+  g_debug ("%s: getting paths...", __func__);
+
+  char * dssi_path =
+    g_strdup (getenv ("DSSI_PATH"));
+  if (!dssi_path || (strlen (dssi_path) == 0))
+    {
+      if (string_is_equal (LIBDIR_NAME, "lib"))
+        {
+          dssi_path =
+            g_strdup (
+              "/usr/" LIBDIR_NAME "/dssi"
+              "/usr/local/" LIBDIR_NAME "/dssi");
+        }
+      else
+        {
+          dssi_path =
+            g_strdup (
+              "/usr/lib/dssi:"
+              "/usr/" LIBDIR_NAME "/dssi:"
+              "/usr/local/lib/dssi:"
+              "/usr/local/" LIBDIR_NAME "/dssi");
+        }
+
+      g_message (
+        "Using standard DSSI paths: %s", dssi_path);
+    }
+  else
+    {
+      g_message (
+        "using %s from the environment (DSSI_PATH)",
+        dssi_path);
+    }
+  char ** paths =
+    g_strsplit (dssi_path, PATH_SPLIT, 0);
+  g_free (dssi_path);
+
+  g_debug ("%s: done", __func__);
+
+  return paths;
+}
+
+static char **
+get_ladspa_paths (
+  PluginManager * self)
+{
+  g_debug ("%s: getting paths...", __func__);
+
+  char * ladspa_path =
+    g_strdup (getenv ("LADSPA_PATH"));
+  if (!ladspa_path || (strlen (ladspa_path) == 0))
+    {
+      if (string_is_equal (LIBDIR_NAME, "lib"))
+        {
+          ladspa_path =
+            g_strdup (
+              "/usr/" LIBDIR_NAME "/ladspa"
+              "/usr/local/" LIBDIR_NAME "/ladspa");
+        }
+      else
+        {
+          ladspa_path =
+            g_strdup (
+              "/usr/lib/ladspa:"
+              "/usr/" LIBDIR_NAME "/ladspa:"
+              "/usr/local/lib/ladspa:"
+              "/usr/local/" LIBDIR_NAME "/ladspa");
+        }
+
+      g_message (
+        "Using standard LADSPA paths: %s",
+        ladspa_path);
+    }
+  else
+    {
+      g_message (
+        "using %s from the environment (LADSPA)",
+        ladspa_path);
+    }
+  char ** paths =
+    g_strsplit (ladspa_path, PATH_SPLIT, 0);
+  g_free (ladspa_path);
+
+  g_debug ("%s: done", __func__);
+
+  return paths;
+}
 #endif // HAVE_CARLA
+
+/**
+ * Returns if the plugin manager supports the given
+ * plugin protocol.
+ */
+bool
+plugin_manager_supports_protocol (
+  PluginManager * self,
+  PluginProtocol  protocol)
+{
+  switch (protocol)
+    {
+    case PROT_DUMMY:
+    case PROT_LV2:
+      return true;
+    case PROT_DSSI:
+    case PROT_LADSPA:
+    case PROT_VST:
+    case PROT_VST3:
+    case PROT_AU:
+    case PROT_SFZ:
+    case PROT_SF2:
+      {
+#ifdef HAVE_CARLA
+        /* FIXME undefined reference */
+#if 0
+        const char* const * carla_features =
+          carla_get_supported_features ();
+        const char * feature;
+        int i = 0;
+        while ((feature = carla_features[i++]))
+          {
+#define CHECK_FEATURE(str,format) \
+  if (string_is_equal (feature, str) && \
+        PROT_##format) \
+    return true
+
+            CHECK_FEATURE ("sf2", SF2);
+            CHECK_FEATURE ("osc", DSSI);
+            CHECK_FEATURE ("vst3", VST3);
+            CHECK_FEATURE ("au", AU);
+#undef CHECK_FEATURE
+          }
+        if (protocol == PROT_VST ||
+            protocol == PROT_SFZ ||
+            protocol == PROT_LADSPA
+            )
+          {
+            return true;
+          }
+        if (protocol == PROT_LADSPA)
+          {
+            return true;
+          }
+#endif
+        return true;
+#endif /* HAVE_CARLA */
+        return false;
+      }
+    }
+  return false;
+}
 
 /**
  * Scans for plugins, optionally updating the
@@ -866,6 +1019,267 @@ plugin_manager_scan_plugins (
     "%s: Scanned %d LV2 plugins", __func__, count);
 
 #ifdef HAVE_CARLA
+
+#if !defined (_WOE32) && !defined (__APPLE__)
+  /* scan ladspa */
+  if (plugin_manager_supports_protocol (
+        self, PROT_LADSPA))
+    {
+      g_message ("Scanning LADSPA plugins...");
+      char ** paths = get_ladspa_paths (self);
+      int path_idx = 0;
+      char * path;
+      while ((path = paths[path_idx++]) != NULL)
+        {
+          if (!g_file_test (path, G_FILE_TEST_EXISTS))
+            continue;
+
+          g_message ("scanning for LADSPA in %s", path);
+
+          char ** ladspa_plugins =
+            io_get_files_in_dir_ending_in (
+              path, 1, LIB_SUFFIX);
+          if (!ladspa_plugins)
+            continue;
+
+          char * plugin_path;
+          int plugin_idx = 0;
+          while ((plugin_path = ladspa_plugins[plugin_idx++]) !=
+                   NULL)
+            {
+              PluginDescriptor * descriptor =
+                cached_plugin_descriptors_get (
+                  self->cached_plugin_descriptors,
+                  plugin_path);
+
+              if (descriptor)
+                {
+                  g_message (
+                    "Found cached DSSI %s",
+                    descriptor->name);
+                  PluginDescriptor * clone =
+                    plugin_descriptor_clone (
+                      descriptor);
+                  array_append (
+                    self->plugin_descriptors,
+                    self->num_plugins, clone);
+                  add_category (
+                    self, clone->category_str);
+                }
+              else
+                {
+                  if (
+                    cached_plugin_descriptors_is_blacklisted (
+                      self->cached_plugin_descriptors,
+                      plugin_path))
+                    {
+                      g_message (
+                        "Ignoring blacklisted LADSPA "
+                        "plugin: %s", plugin_path);
+                    }
+                  else
+                    {
+                      descriptor =
+                        z_carla_discovery_create_ladspa_descriptor (
+                          plugin_path, ARCH_64);
+
+                      if (descriptor)
+                        {
+                          array_append (
+                            self->plugin_descriptors,
+                            self->num_plugins,
+                            descriptor);
+                          add_category (
+                            self, descriptor->category_str);
+                          g_message (
+                            "Caching LADSPA %s",
+                            descriptor->name);
+
+                          PluginDescriptor * clone =
+                            plugin_descriptor_clone (
+                              descriptor);
+                          cached_plugin_descriptors_add (
+                            self->cached_plugin_descriptors,
+                            clone, 0);
+                        }
+                      else
+                        {
+                          g_message (
+                            "Blacklisting LADSPA %s",
+                            plugin_path);
+                          cached_plugin_descriptors_blacklist (
+                            self->cached_plugin_descriptors,
+                            plugin_path, 0);
+                        }
+                    }
+                }
+              count++;
+
+              if (progress)
+                {
+                  *progress =
+                    start_progress +
+                    ((double) count / size) *
+                      (max_progress - start_progress);
+                  char prog_str[800];
+                  if (descriptor)
+                    {
+                      sprintf (
+                        prog_str, "%s: %s",
+                        _("Scanned LADSPA plugin"),
+                        descriptor->name);
+                    }
+                  else
+                    {
+                      sprintf (
+                        prog_str,
+                        _("Skipped LADSPA plugin at %s"),
+                        plugin_path);
+                    }
+                  zrythm_app_set_progress_status (
+                    zrythm_app, prog_str, *progress);
+                }
+            }
+          if (plugin_idx > 0 && !ZRYTHM_TESTING)
+            {
+              cached_plugin_descriptors_serialize_to_file (
+                self->cached_plugin_descriptors);
+            }
+          g_strfreev (ladspa_plugins);
+        }
+      g_strfreev (paths);
+    }
+
+  /* scan dssi */
+  if (plugin_manager_supports_protocol (
+        self, PROT_DSSI))
+    {
+      g_message ("Scanning DSSI plugins...");
+      char ** paths = get_dssi_paths (self);
+      int path_idx = 0;
+      char * path;
+      while ((path = paths[path_idx++]) != NULL)
+        {
+          if (!g_file_test (path, G_FILE_TEST_EXISTS))
+            continue;
+
+          g_message ("scanning for DSSI in %s", path);
+
+          char ** dssi_plugins =
+            io_get_files_in_dir_ending_in (
+              path, 1, LIB_SUFFIX);
+          if (!dssi_plugins)
+            continue;
+
+          char * plugin_path;
+          int plugin_idx = 0;
+          while ((plugin_path = dssi_plugins[plugin_idx++]) !=
+                   NULL)
+            {
+              PluginDescriptor * descriptor =
+                cached_plugin_descriptors_get (
+                  self->cached_plugin_descriptors,
+                  plugin_path);
+
+              if (descriptor)
+                {
+                  g_message (
+                    "Found cached DSSI %s",
+                    descriptor->name);
+                  PluginDescriptor * clone =
+                    plugin_descriptor_clone (
+                      descriptor);
+                  array_append (
+                    self->plugin_descriptors,
+                    self->num_plugins, clone);
+                  add_category (
+                    self, clone->category_str);
+                }
+              else
+                {
+                  if (
+                    cached_plugin_descriptors_is_blacklisted (
+                      self->cached_plugin_descriptors,
+                      plugin_path))
+                    {
+                      g_message (
+                        "Ignoring blacklisted DSSI "
+                        "plugin: %s", plugin_path);
+                    }
+                  else
+                    {
+                      descriptor =
+                        z_carla_discovery_create_dssi_descriptor (
+                          plugin_path, ARCH_64);
+
+                      if (descriptor)
+                        {
+                          array_append (
+                            self->plugin_descriptors,
+                            self->num_plugins,
+                            descriptor);
+                          add_category (
+                            self, descriptor->category_str);
+                          g_message (
+                            "Caching DSSI %s",
+                            descriptor->name);
+
+                          PluginDescriptor * clone =
+                            plugin_descriptor_clone (
+                              descriptor);
+                          cached_plugin_descriptors_add (
+                            self->cached_plugin_descriptors,
+                            clone, 0);
+                        }
+                      else
+                        {
+                          g_message (
+                            "Blacklisting DSSI %s",
+                            plugin_path);
+                          cached_plugin_descriptors_blacklist (
+                            self->cached_plugin_descriptors,
+                            plugin_path, 0);
+                        }
+                    }
+                }
+              count++;
+
+              if (progress)
+                {
+                  *progress =
+                    start_progress +
+                    ((double) count / size) *
+                      (max_progress - start_progress);
+                  char prog_str[800];
+                  if (descriptor)
+                    {
+                      sprintf (
+                        prog_str, "%s: %s",
+                        _("Scanned DSSI plugin"),
+                        descriptor->name);
+                    }
+                  else
+                    {
+                      sprintf (
+                        prog_str,
+                        _("Skipped DSSI plugin at %s"),
+                        plugin_path);
+                    }
+                  zrythm_app_set_progress_status (
+                    zrythm_app, prog_str, *progress);
+                }
+            }
+          if (plugin_idx > 0 && !ZRYTHM_TESTING)
+            {
+              cached_plugin_descriptors_serialize_to_file (
+                self->cached_plugin_descriptors);
+            }
+          g_strfreev (dssi_plugins);
+        }
+      g_strfreev (paths);
+    }
+#endif /* not apple/woe32 */
+
   /* scan vst */
   g_message ("Scanning VST plugins...");
   char ** paths = get_vst_paths (self);
@@ -896,8 +1310,8 @@ plugin_manager_scan_plugins (
                NULL)
         {
           PluginDescriptor * descriptor =
-            cached_vst_descriptors_get (
-              self->cached_vst_descriptors,
+            cached_plugin_descriptors_get (
+              self->cached_plugin_descriptors,
               plugin_path);
 
           if (descriptor)
@@ -917,8 +1331,8 @@ plugin_manager_scan_plugins (
           else
             {
               if (
-                cached_vst_descriptors_is_blacklisted (
-                  self->cached_vst_descriptors,
+                cached_plugin_descriptors_is_blacklisted (
+                  self->cached_plugin_descriptors,
                   plugin_path))
                 {
                   g_message (
@@ -954,8 +1368,8 @@ plugin_manager_scan_plugins (
                       PluginDescriptor * clone =
                         plugin_descriptor_clone (
                           descriptor);
-                      cached_vst_descriptors_add (
-                        self->cached_vst_descriptors,
+                      cached_plugin_descriptors_add (
+                        self->cached_plugin_descriptors,
                         clone, 0);
                     }
                   else
@@ -963,8 +1377,8 @@ plugin_manager_scan_plugins (
                       g_message (
                         "Blacklisting VST %s",
                         plugin_path);
-                      cached_vst_descriptors_blacklist (
-                        self->cached_vst_descriptors,
+                      cached_plugin_descriptors_blacklist (
+                        self->cached_plugin_descriptors,
                         plugin_path, 0);
                     }
                 }
@@ -999,8 +1413,8 @@ plugin_manager_scan_plugins (
       if (plugin_idx > 0 &&
           !ZRYTHM_TESTING)
         {
-          cached_vst_descriptors_serialize_to_file (
-            self->cached_vst_descriptors);
+          cached_plugin_descriptors_serialize_to_file (
+            self->cached_plugin_descriptors);
         }
       g_strfreev (vst_plugins);
     }
@@ -1030,8 +1444,8 @@ plugin_manager_scan_plugins (
                NULL)
         {
           PluginDescriptor * descriptor =
-            cached_vst_descriptors_get (
-              self->cached_vst_descriptors,
+            cached_plugin_descriptors_get (
+              self->cached_plugin_descriptors,
               plugin_path);
 
           if (descriptor)
@@ -1051,8 +1465,8 @@ plugin_manager_scan_plugins (
           else
             {
               if (
-                cached_vst_descriptors_is_blacklisted (
-                  self->cached_vst_descriptors,
+                cached_plugin_descriptors_is_blacklisted (
+                  self->cached_plugin_descriptors,
                   plugin_path))
                 {
                   g_message (
@@ -1085,8 +1499,8 @@ plugin_manager_scan_plugins (
                       PluginDescriptor * clone =
                         plugin_descriptor_clone (
                           descriptor);
-                      cached_vst_descriptors_add (
-                        self->cached_vst_descriptors,
+                      cached_plugin_descriptors_add (
+                        self->cached_plugin_descriptors,
                         clone, 0);
                     }
                   else
@@ -1094,8 +1508,8 @@ plugin_manager_scan_plugins (
                       g_message (
                         "Blacklisting VST3 %s",
                         plugin_path);
-                      cached_vst_descriptors_blacklist (
-                        self->cached_vst_descriptors,
+                      cached_plugin_descriptors_blacklist (
+                        self->cached_plugin_descriptors,
                         plugin_path, 0);
                     }
                 }
@@ -1130,8 +1544,8 @@ plugin_manager_scan_plugins (
       if (plugin_idx > 0 &&
           !ZRYTHM_TESTING)
         {
-          cached_vst_descriptors_serialize_to_file (
-            self->cached_vst_descriptors);
+          cached_plugin_descriptors_serialize_to_file (
+            self->cached_plugin_descriptors);
         }
       g_strfreev (vst_plugins);
     }
@@ -1349,8 +1763,8 @@ plugin_manager_free (
   plugin_manager_clear_plugins (self);
 
   object_free_w_func_and_null (
-    cached_vst_descriptors_free,
-    self->cached_vst_descriptors);
+    cached_plugin_descriptors_free,
+    self->cached_plugin_descriptors);
 
   object_zero_and_free (self);
 

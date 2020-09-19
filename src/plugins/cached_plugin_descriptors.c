@@ -17,16 +17,16 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "plugins/cached_vst_descriptors.h"
+#include "plugins/cached_plugin_descriptors.h"
 #include "utils/file.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
 
-#define CACHED_VST_DESCRIPTORS_VERSION 8
+#define CACHED_PLUGIN_DESCRIPTORS_VERSION 8
 
 static char *
-get_cached_vst_descriptors_file_path (void)
+get_cached_plugin_descriptors_file_path (void)
 {
   char * zrythm_dir =
     zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
@@ -35,32 +35,32 @@ get_cached_vst_descriptors_file_path (void)
   return
     g_build_filename (
       zrythm_dir,
-      "cached_vst_descriptors.yaml", NULL);
+      "cached_plugin_descriptors.yaml", NULL);
 }
 
 void
-cached_vst_descriptors_serialize_to_file (
-  CachedVstDescriptors * self)
+cached_plugin_descriptors_serialize_to_file (
+  CachedPluginDescriptors * self)
 {
-  self->version = CACHED_VST_DESCRIPTORS_VERSION;
+  self->version = CACHED_PLUGIN_DESCRIPTORS_VERSION;
   g_message (
-    "Serializing cached VST descriptors...");
+    "Serializing cached PLUGIN descriptors...");
   char * yaml =
-    cached_vst_descriptors_serialize (self);
+    cached_plugin_descriptors_serialize (self);
   g_return_if_fail (yaml);
   GError *err = NULL;
   char * path =
-    get_cached_vst_descriptors_file_path ();
+    get_cached_plugin_descriptors_file_path ();
   g_return_if_fail (path && strlen (path) > 2);
   g_message (
-    "Writing cached VST descriptors to %s...",
+    "Writing cached PLUGIN descriptors to %s...",
     path);
   g_file_set_contents (
     path, yaml, -1, &err);
   if (err != NULL)
     {
       g_warning (
-        "Unable to write cached VST descriptors "
+        "Unable to write cached PLUGIN descriptors "
         "file: %s",
         err->message);
       g_error_free (err);
@@ -75,27 +75,27 @@ cached_vst_descriptors_serialize_to_file (
 /**
  * Reads the file and fills up the object.
  */
-CachedVstDescriptors *
-cached_vst_descriptors_new (void)
+CachedPluginDescriptors *
+cached_plugin_descriptors_new (void)
 {
   GError *err = NULL;
   char * path =
-    get_cached_vst_descriptors_file_path ();
+    get_cached_plugin_descriptors_file_path ();
   if (!file_exists (path))
     {
       g_message (
-        "Cached VST descriptors file at %s does "
+        "Cached PLUGIN descriptors file at %s does "
         "not exist", path);
 return_new_instance:
       return
-        calloc (1, sizeof (CachedVstDescriptors));
+        calloc (1, sizeof (CachedPluginDescriptors));
     }
   char * yaml = NULL;
   g_file_get_contents (path, &yaml, NULL, &err);
   if (err != NULL)
     {
       g_critical (
-        "Failed to create CachedVstDescriptors "
+        "Failed to create CachedPluginDescriptors "
         "from %s", path);
       g_free (err);
       g_free (yaml);
@@ -108,11 +108,11 @@ return_new_instance:
   char version_str[120];
   sprintf (
     version_str, "version: %d",
-    CACHED_VST_DESCRIPTORS_VERSION);
+    CACHED_PLUGIN_DESCRIPTORS_VERSION);
   if (!g_str_has_prefix (yaml, version_str))
     {
       g_message (
-        "Found old vst descriptor file version. "
+        "Found old plugin descriptor file version. "
         "Purging file and creating a new one.");
       GFile * file =
         g_file_new_for_path (path);
@@ -121,13 +121,13 @@ return_new_instance:
       goto return_new_instance;
     }
 
-  CachedVstDescriptors * self =
-    cached_vst_descriptors_deserialize (yaml);
+  CachedPluginDescriptors * self =
+    cached_plugin_descriptors_deserialize (yaml);
   if (!self)
     {
       g_critical (
         "Failed to deserialize "
-        "CachedVstDescriptors from %s", path);
+        "CachedPluginDescriptors from %s", path);
       g_free (err);
       g_free (yaml);
       g_free (path);
@@ -150,13 +150,13 @@ static void
 delete_file (void)
 {
   char * path =
-    get_cached_vst_descriptors_file_path ();
+    get_cached_plugin_descriptors_file_path ();
   GFile * file =
     g_file_new_for_path (path);
   if (!g_file_delete (file, NULL, NULL))
     {
       g_warning (
-        "Failed to delete cached VST descriptors "
+        "Failed to delete cached PLUGIN descriptors "
         "file");
     }
   g_free (path);
@@ -168,8 +168,8 @@ delete_file (void)
  * blacklisted or not.
  */
 int
-cached_vst_descriptors_is_blacklisted (
-  CachedVstDescriptors * self,
+cached_plugin_descriptors_is_blacklisted (
+  CachedPluginDescriptors * self,
   const char *           abs_path)
 {
   for (int i = 0; i < self->num_blacklisted; i++)
@@ -195,8 +195,8 @@ cached_vst_descriptors_is_blacklisted (
  * the MD5 hash matches.
  */
 PluginDescriptor *
-cached_vst_descriptors_get (
-  CachedVstDescriptors * self,
+cached_plugin_descriptors_get (
+  CachedPluginDescriptors * self,
   const char *           abs_path)
 {
   for (int i = 0; i < self->num_descriptors; i++)
@@ -223,8 +223,8 @@ cached_vst_descriptors_get (
  *   now.
  */
 void
-cached_vst_descriptors_blacklist (
-  CachedVstDescriptors * self,
+cached_plugin_descriptors_blacklist (
+  CachedPluginDescriptors * self,
   const char *           abs_path,
   int                    _serialize)
 {
@@ -240,7 +240,7 @@ cached_vst_descriptors_blacklist (
     new_descr;
   if (_serialize)
     {
-      cached_vst_descriptors_serialize_to_file (self);
+      cached_plugin_descriptors_serialize_to_file (self);
     }
 }
 
@@ -251,8 +251,8 @@ cached_vst_descriptors_blacklist (
  *   now.
  */
 void
-cached_vst_descriptors_add (
-  CachedVstDescriptors * self,
+cached_plugin_descriptors_add (
+  CachedPluginDescriptors * self,
   PluginDescriptor *     descr,
   int                    _serialize)
 {
@@ -266,7 +266,7 @@ cached_vst_descriptors_add (
 
   if (_serialize)
     {
-      cached_vst_descriptors_serialize_to_file (self);
+      cached_plugin_descriptors_serialize_to_file (self);
     }
 }
 
@@ -274,8 +274,8 @@ cached_vst_descriptors_add (
  * Clears the descriptors and removes the cache file.
  */
 void
-cached_vst_descriptors_clear (
-  CachedVstDescriptors * self)
+cached_plugin_descriptors_clear (
+  CachedPluginDescriptors * self)
 {
   for (int i = 0; i < self->num_descriptors; i++)
     {
@@ -287,8 +287,8 @@ cached_vst_descriptors_clear (
 }
 
 void
-cached_vst_descriptors_free (
-  CachedVstDescriptors * self)
+cached_plugin_descriptors_free (
+  CachedPluginDescriptors * self)
 {
   for (int i = 0; i < self->num_descriptors; i++)
     {
@@ -305,6 +305,6 @@ cached_vst_descriptors_free (
 }
 
 SERIALIZE_SRC (
-  CachedVstDescriptors, cached_vst_descriptors);
+  CachedPluginDescriptors, cached_plugin_descriptors);
 DESERIALIZE_SRC (
-  CachedVstDescriptors, cached_vst_descriptors);
+  CachedPluginDescriptors, cached_plugin_descriptors);

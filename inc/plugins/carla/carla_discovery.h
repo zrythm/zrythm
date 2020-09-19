@@ -72,6 +72,28 @@ z_carla_discovery_create_vst_descriptor (
   PluginArchitecture arch,
   PluginProtocol     protocol);
 
+/**
+ * Create a descriptor using carla discovery.
+ *
+ * @path Path to the plugin bundle.
+ * @arch Architecture.
+ */
+PluginDescriptor *
+z_carla_discovery_create_dssi_descriptor (
+  const char *       path,
+  PluginArchitecture arch);
+
+/**
+ * Create a descriptor using carla discovery.
+ *
+ * @path Path to the plugin bundle.
+ * @arch Architecture.
+ */
+PluginDescriptor *
+z_carla_discovery_create_ladspa_descriptor (
+  const char *       path,
+  PluginArchitecture arch);
+
 #ifdef __APPLE__
 /**
  * Create a descriptor for the given AU plugin.

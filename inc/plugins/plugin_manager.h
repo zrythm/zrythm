@@ -27,14 +27,15 @@
 #define __PLUGINS_PLUGIN_MANAGER_H__
 
 #include "plugins/lv2/lv2_urid.h"
+#include "plugins/plugin_descriptor.h"
 #include "utils/symap.h"
 
 #include "zix/sem.h"
 
 #include <lilv/lilv.h>
 
-typedef struct CachedVstDescriptors
-  CachedVstDescriptors;
+typedef struct CachedPluginDescriptors
+  CachedPluginDescriptors;
 
 /**
  * @addtogroup plugins
@@ -171,7 +172,7 @@ typedef struct PluginManager
   Lv2Nodes               lv2_nodes;
 
   /** Cached VST descriptors */
-  CachedVstDescriptors * cached_vst_descriptors;
+  CachedPluginDescriptors * cached_plugin_descriptors;
 
   /** URI map for URID feature. */
   Symap*                 symap;
@@ -207,6 +208,15 @@ const PluginDescriptor *
 plugin_manager_find_plugin_from_uri (
   PluginManager * self,
   const char *    uri);
+
+/**
+ * Returns if the plugin manager supports the given
+ * plugin protocol.
+ */
+bool
+plugin_manager_supports_protocol (
+  PluginManager * self,
+  PluginProtocol  protocol);
 
 void
 plugin_manager_clear_plugins (
