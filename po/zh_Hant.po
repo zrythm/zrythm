@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-12 01:56+0100\n"
-"PO-Revision-Date: 2020-09-17 11:36+0000\n"
+"PO-Revision-Date: 2020-09-19 22:53+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
@@ -136,7 +136,7 @@ msgstr "音訊"
 #: inc/audio/track.h:164 src/project.c:659
 #: src/gui/widgets/route_target_selector_popover.c:163
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #: inc/audio/track.h:165 src/gui/widgets/event_viewer.c:118
 #: src/gui/widgets/event_viewer.c:589 src/audio/region.c:402
@@ -1838,7 +1838,6 @@ msgid "Port info"
 msgstr ""
 
 #: src/gui/widgets/dialogs/about_dialog.c:91
-#, fuzzy
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr "一個直觀且能高度自動化控制參數的數位音樂工作站"
 
