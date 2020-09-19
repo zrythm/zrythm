@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the zrythm package.
 # alex <alex@zrythm.org>, 2019.
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
+# ilya <mrzarp@protonmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-12 01:56+0100\n"
-"PO-Revision-Date: 2020-03-30 12:27+0000\n"
-"Last-Translator: Viktor S <awsswa59@gmail.com>\n"
+"PO-Revision-Date: 2020-09-19 22:53+0000\n"
+"Last-Translator: ilya <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:189
@@ -2504,7 +2505,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:98 resources/ui/header.ui:92
 msgid "Project"
-msgstr ""
+msgstr "Проект"
 
 #: resources/gtk/help-overlay.ui:110
 msgid "Open a project"
@@ -3510,7 +3511,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:520
 #: build/data/org.zrythm.Zrythm.gschema.xml:555
 msgid "Plugins"
-msgstr ""
+msgstr "Плагины"
 
 #: resources/ui/preferences.ui:390
 msgid "Always open plugin UIs"
