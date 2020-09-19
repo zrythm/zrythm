@@ -141,15 +141,29 @@ z_carla_discovery_get_discovery_path (
 }
 
 /**
- * Parses plugin info into a new PluginDescriptor.
+ * Parses plugin info into a new NULL-terminated
+ * PluginDescriptor array.
  *
- * @param plugin_path Identifier to use for debugging.
+ * @param plugin_path Identifier to use for
+ *   debugging.
+ *
+ * @return A newly allocated array of newly allocated
+ *   descriptors, or NULL if no descriptors found.
  */
-PluginDescriptor *
+PluginDescriptor **
 z_carla_discovery_parse_plugin_info (
   const char * plugin_path,
-  char * results)
+  char *       results)
 {
+  PluginDescriptor ** descriptors =
+    calloc (1, sizeof (PluginDescriptor *));
+  int num_descriptors = 0;
+
+  const char * discovery_init_txt =
+    "carla-discovery::init::-----------";
+  const char * discovery_end_txt =
+    "carla-discovery::end::------------";
+
 #ifdef _WOE32
 #define LINE_SEP "\\r\\n"
 #else
@@ -159,113 +173,155 @@ z_carla_discovery_parse_plugin_info (
     string_get_regex_group (
       results,
       "carla-discovery::error::(.*)" LINE_SEP, 1);
+  char * offset_str;
   if (error)
     {
       g_free (error);
       g_message (
         "error found for %s: %s",
         plugin_path, results);
-      g_free (results);
-      return NULL;
+      goto free_descriptors_and_return_null;
     }
   else if (string_is_equal ("", results))
     {
       g_message (
         "No results returned for %s",
         plugin_path);
-      g_free (results);
-      return NULL;
+      goto free_descriptors_and_return_null;
     }
 
-  PluginDescriptor * descr =
-    calloc (1, sizeof (PluginDescriptor));
-  descr->name =
-    string_get_regex_group (
-      results,
-      "carla-discovery::name::(.*)" LINE_SEP, 1);
-  if (!descr->name)
+  offset_str =
+    strstr (results, discovery_init_txt);
+  while (offset_str)
     {
-      g_warning (
-        "Failed to get plugin name for %s. "
-        "skipping...", plugin_path);
-      return NULL;
-    }
-  descr->author =
-    string_get_regex_group (
-      results,
-      "carla-discovery::maker::(.*)" LINE_SEP, 1);
-  descr->unique_id =
-    string_get_regex_group_as_int (
-      results,
-      "carla-discovery::uniqueId::(.*)" LINE_SEP, 1, 0);
-  descr->num_audio_ins =
-    string_get_regex_group_as_int (
-      results,
-      "carla-discovery::audio.ins::(.*)" LINE_SEP, 1, 0);
-  descr->num_audio_outs =
-    string_get_regex_group_as_int (
-      results,
-      "carla-discovery::audio.outs::(.*)" LINE_SEP, 1, 0);
-  descr->num_ctrl_ins =
-    string_get_regex_group_as_int (
-      results,
-      "carla-discovery::parameters.ins::(.*)" LINE_SEP,
-      1, 0);
-  descr->num_midi_ins =
-    string_get_regex_group_as_int (
-      results,
-      "carla-discovery::midi.ins::(.*)" LINE_SEP,
-      1, 0);
-  descr->num_midi_outs =
-    string_get_regex_group_as_int (
-      results,
-      "carla-discovery::midi.ins::(.*)" LINE_SEP,
-      1, 0);
+      /* get info for this plugin */
+      char * plugin_info =
+        string_get_substr_before_suffix (
+          offset_str, discovery_end_txt);
 
-  /* get label for AU */
-  descr->uri =
-    string_get_regex_group (
-      results,
-      "carla-discovery::label::(.*)" LINE_SEP, 1);
-
-  /* get category */
-  char * carla_category =
-    string_get_regex_group (
-      results,
-      "carla-discovery::category::(.*)" LINE_SEP, 1);
-  if (carla_category)
-    {
-      descr->category =
-        get_category_from_carla_category (
-          carla_category);;
-      descr->category_str =
-        plugin_descriptor_category_to_string (
-          descr->category);
-    }
-  else
-    {
-      int hints =
-        string_get_regex_group_as_int (
-          results,
-          "carla-discovery::hints::(.*)" LINE_SEP,
-          1, 0);
-      if ((unsigned int) hints & PLUGIN_IS_SYNTH)
+      PluginDescriptor * descr =
+        calloc (1, sizeof (PluginDescriptor));
+      descr->name =
+        string_get_regex_group (
+          plugin_info,
+          "carla-discovery::name::(.*)" LINE_SEP, 1);
+      if (!descr->name)
         {
-          descr->category = PC_INSTRUMENT;
+          g_warning (
+            "Failed to get plugin name for %s. "
+            "skipping...", plugin_path);
+          goto free_descriptors_and_return_null;
+        }
+      descr->author =
+        string_get_regex_group (
+          plugin_info,
+          "carla-discovery::maker::(.*)" LINE_SEP, 1);
+      descr->unique_id =
+        string_get_regex_group_as_int (
+          plugin_info,
+          "carla-discovery::uniqueId::(.*)" LINE_SEP, 1, 0);
+      descr->num_audio_ins =
+        string_get_regex_group_as_int (
+          plugin_info,
+          "carla-discovery::audio.ins::(.*)" LINE_SEP, 1, 0);
+      descr->num_audio_outs =
+        string_get_regex_group_as_int (
+          plugin_info,
+          "carla-discovery::audio.outs::(.*)" LINE_SEP, 1, 0);
+      descr->num_ctrl_ins =
+        string_get_regex_group_as_int (
+          plugin_info,
+          "carla-discovery::parameters.ins::(.*)" LINE_SEP,
+          1, 0);
+      descr->num_midi_ins =
+        string_get_regex_group_as_int (
+          plugin_info,
+          "carla-discovery::midi.ins::(.*)" LINE_SEP,
+          1, 0);
+      descr->num_midi_outs =
+        string_get_regex_group_as_int (
+          plugin_info,
+          "carla-discovery::midi.ins::(.*)" LINE_SEP,
+          1, 0);
+
+      /* get label for AU */
+      descr->uri =
+        string_get_regex_group (
+          plugin_info,
+          "carla-discovery::label::(.*)" LINE_SEP, 1);
+
+      /* get category */
+      char * carla_category =
+        string_get_regex_group (
+          plugin_info,
+          "carla-discovery::category::(.*)" LINE_SEP, 1);
+      if (carla_category)
+        {
+          descr->category =
+            get_category_from_carla_category (
+              carla_category);;
           descr->category_str =
             plugin_descriptor_category_to_string (
               descr->category);
         }
       else
         {
-          descr->category = ZPLUGIN_CATEGORY_NONE;
-          descr->category_str =
-            plugin_descriptor_category_to_string (
-              descr->category);
+          int hints =
+            string_get_regex_group_as_int (
+              plugin_info,
+              "carla-discovery::hints::(.*)" LINE_SEP,
+              1, 0);
+          if ((unsigned int) hints & PLUGIN_IS_SYNTH)
+            {
+              descr->category = PC_INSTRUMENT;
+              descr->category_str =
+                plugin_descriptor_category_to_string (
+                  descr->category);
+            }
+          else
+            {
+              descr->category = ZPLUGIN_CATEGORY_NONE;
+              descr->category_str =
+                plugin_descriptor_category_to_string (
+                  descr->category);
+            }
         }
+
+      num_descriptors++;
+      descriptors =
+        realloc (
+          descriptors,
+          (size_t) (num_descriptors + 1) *
+            sizeof (PluginDescriptor *));
+      descriptors[num_descriptors - 1] = descr;
+
+      g_free (plugin_info);
+
+      offset_str =
+        strstr (
+          &offset_str[1], discovery_init_txt);
     }
 
-  return descr;
+  g_message (
+    "%d descriptors found for %s",
+    num_descriptors, plugin_path);
+  if (num_descriptors == 0)
+    {
+      goto free_descriptors_and_return_null;
+    }
+
+  /* NULL-terminate */
+  descriptors[num_descriptors] = NULL;
+
+  return descriptors;
+
+free_descriptors_and_return_null:
+  for (int i = 0; i < num_descriptors; i++)
+    {
+      plugin_descriptor_free (descriptors[i]);
+    }
+  free (descriptors);
+  return NULL;
 }
 
 /**
@@ -274,19 +330,38 @@ z_carla_discovery_parse_plugin_info (
  * @path Path to the plugin bundle.
  * @arch Architecture.
  * @protocol Protocol.
+ *
+ * @return A newly allocated array of newly
+ *   allocated PluginDescriptor's.
  */
-PluginDescriptor *
-z_carla_discovery_create_vst_descriptor (
+PluginDescriptor **
+z_carla_discovery_create_descriptors_from_file (
   const char *       path,
   PluginArchitecture arch,
   PluginProtocol     protocol)
 {
-  char type[40];
-  strcpy (
-    type, protocol == PROT_VST3 ? "vst3" : "vst");
+  const char * type = NULL;
+  switch (protocol)
+    {
+    case PROT_VST3:
+      type = "vst3";
+      break;
+    case PROT_VST:
+      type = "vst";
+      break;
+    case PROT_DSSI:
+      type = "dssi";
+      break;
+    case PROT_LADSPA:
+      type = "ladspa";
+      break;
+    default:
+      break;
+    }
+  g_return_val_if_fail (type, NULL);
+
   char * results =
-    z_carla_discovery_run (
-      arch, type, path);
+    z_carla_discovery_run (arch, type, path);
   if (!results)
     {
       g_warning (
@@ -296,102 +371,30 @@ z_carla_discovery_create_vst_descriptor (
   g_message (
     "results: [[[\n%s\n]]]", results);
 
-  PluginDescriptor * descr =
+  PluginDescriptor ** descriptors =
     z_carla_discovery_parse_plugin_info (
       path, results);
-  if (!descr)
-    return NULL;
-
-  descr->protocol = protocol;
-  descr->arch = arch;
-  descr->path = g_strdup (path);
-
-  /* open all VSTs with carla */
-  descr->open_with_carla = true;
-
   g_free (results);
-
-  return descr;
-}
-
-/**
- * Create a descriptor using carla discovery.
- *
- * @path Path to the plugin bundle.
- * @arch Architecture.
- */
-PluginDescriptor *
-z_carla_discovery_create_dssi_descriptor (
-  const char *       path,
-  PluginArchitecture arch)
-{
-  char * results =
-    z_carla_discovery_run (arch, "dssi", path);
-  if (!results)
+  if (!descriptors)
     {
-      g_warning (
-        "Failed to get results for %s", path);
+      g_debug (
+        "No plugin info was parsed from %s", path);
       return NULL;
     }
-  g_message (
-    "results: [[[\n%s\n]]]", results);
 
-  PluginDescriptor * descr =
-    z_carla_discovery_parse_plugin_info (
-      path, results);
-  if (!descr)
-    return NULL;
-
-  descr->protocol = PROT_DSSI;
-  descr->arch = arch;
-  descr->path = g_strdup (path);
-
-  /* open all DSSI plugins with carla */
-  descr->open_with_carla = true;
-
-  g_free (results);
-
-  return descr;
-}
-
-/**
- * Create a descriptor using carla discovery.
- *
- * @path Path to the plugin bundle.
- * @arch Architecture.
- */
-PluginDescriptor *
-z_carla_discovery_create_ladspa_descriptor (
-  const char *       path,
-  PluginArchitecture arch)
-{
-  char * results =
-    z_carla_discovery_run (arch, "ladspa", path);
-  if (!results)
+  PluginDescriptor * descr = NULL;
+  int i = 0;
+  while ((descr = descriptors[i++]))
     {
-      g_warning (
-        "Failed to get results for %s", path);
-      return NULL;
+      descr->protocol = protocol;
+      descr->arch = arch;
+      descr->path = g_strdup (path);
+
+      /* open all VSTs with carla */
+      descr->open_with_carla = true;
     }
-  g_message (
-    "results: [[[\n%s\n]]]", results);
 
-  PluginDescriptor * descr =
-    z_carla_discovery_parse_plugin_info (
-      path, results);
-  if (!descr)
-    return NULL;
-
-  descr->protocol = PROT_LADSPA;
-  descr->arch = arch;
-  descr->path = g_strdup (path);
-
-  /* open all LADSPA plugins with carla */
-  descr->open_with_carla = true;
-
-  g_free (results);
-
-  return descr;
+  return descriptors;
 }
 
 /**

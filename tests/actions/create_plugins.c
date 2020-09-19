@@ -60,9 +60,13 @@ _test_create_plugins (
       break;
     case PROT_VST:
 #ifdef HAVE_CARLA
-      descr =
-        z_carla_discovery_create_vst_descriptor (
-          pl_bundle, ARCH_64, PROT_VST);
+        {
+          PluginDescriptor ** descriptors =
+            z_carla_discovery_create_descriptors_from_file (
+              pl_bundle, ARCH_64, PROT_VST);
+          descr = descriptors[0];
+          free (descriptors);
+        }
 #endif
       break;
     default:

@@ -44,7 +44,7 @@ cached_plugin_descriptors_serialize_to_file (
 {
   self->version = CACHED_PLUGIN_DESCRIPTORS_VERSION;
   g_message (
-    "Serializing cached PLUGIN descriptors...");
+    "Serializing cached plugin descriptors...");
   char * yaml =
     cached_plugin_descriptors_serialize (self);
   g_return_if_fail (yaml);
@@ -53,14 +53,14 @@ cached_plugin_descriptors_serialize_to_file (
     get_cached_plugin_descriptors_file_path ();
   g_return_if_fail (path && strlen (path) > 2);
   g_message (
-    "Writing cached PLUGIN descriptors to %s...",
+    "Writing cached plugin descriptors to %s...",
     path);
   g_file_set_contents (
     path, yaml, -1, &err);
   if (err != NULL)
     {
       g_warning (
-        "Unable to write cached PLUGIN descriptors "
+        "Unable to write cached plugin descriptors "
         "file: %s",
         err->message);
       g_error_free (err);
@@ -84,7 +84,7 @@ cached_plugin_descriptors_new (void)
   if (!file_exists (path))
     {
       g_message (
-        "Cached PLUGIN descriptors file at %s does "
+        "Cached plugin descriptors file at %s does "
         "not exist", path);
 return_new_instance:
       return
@@ -156,7 +156,7 @@ delete_file (void)
   if (!g_file_delete (file, NULL, NULL))
     {
       g_warning (
-        "Failed to delete cached PLUGIN descriptors "
+        "Failed to delete cached plugin descriptors "
         "file");
     }
   g_free (path);
@@ -190,15 +190,24 @@ cached_plugin_descriptors_is_blacklisted (
 }
 
 /**
- * Returns the PluginDescriptor corresponding to the
- * .so/.dll file at the given path, if it exists and
- * the MD5 hash matches.
+ * Returns the PluginDescriptor's corresponding to
+ * the .so/.dll file at the given path, if it
+ * exists and the MD5 hash matches.
+ *
+ * @note The returned array must be free'd but not
+ *   the descriptors.
+ *
+ * @return NULL-terminated array.
  */
-PluginDescriptor *
+PluginDescriptor **
 cached_plugin_descriptors_get (
   CachedPluginDescriptors * self,
-  const char *           abs_path)
+  const char *              abs_path)
 {
+  PluginDescriptor ** descriptors =
+    calloc (1, sizeof (PluginDescriptor *));
+  int num_descriptors = 0;
+
   for (int i = 0; i < self->num_descriptors; i++)
     {
       PluginDescriptor * descr =
@@ -208,12 +217,24 @@ cached_plugin_descriptors_get (
       if (string_is_equal (descr->path, abs_path) &&
           descr->ghash == g_file_hash (file))
         {
-          g_object_unref (file);
-          return descr;
+          num_descriptors++;
+          descriptors =
+            realloc (
+              descriptors,
+              (size_t) (num_descriptors + 1) *
+                sizeof (PluginDescriptor *));
+          descriptors[num_descriptors - 1] = descr;
         }
       g_object_unref (file);
     }
-  return NULL;
+
+  if (num_descriptors == 0)
+    {
+      free (descriptors);
+      return NULL;
+    }
+
+  return descriptors;
 }
 
 /**
@@ -240,7 +261,8 @@ cached_plugin_descriptors_blacklist (
     new_descr;
   if (_serialize)
     {
-      cached_plugin_descriptors_serialize_to_file (self);
+      cached_plugin_descriptors_serialize_to_file (
+        self);
     }
 }
 
@@ -266,7 +288,8 @@ cached_plugin_descriptors_add (
 
   if (_serialize)
     {
-      cached_plugin_descriptors_serialize_to_file (self);
+      cached_plugin_descriptors_serialize_to_file (
+        self);
     }
 }
 

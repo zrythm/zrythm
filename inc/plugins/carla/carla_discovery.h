@@ -65,34 +65,15 @@ z_carla_discovery_run (
  * @path Path to the plugin bundle.
  * @arch Architecture.
  * @protocol Protocol.
+ *
+ * @return A newly allocated array of newly
+ *   allocated PluginDescriptor's.
  */
-PluginDescriptor *
-z_carla_discovery_create_vst_descriptor (
+PluginDescriptor **
+z_carla_discovery_create_descriptors_from_file (
   const char *       path,
   PluginArchitecture arch,
   PluginProtocol     protocol);
-
-/**
- * Create a descriptor using carla discovery.
- *
- * @path Path to the plugin bundle.
- * @arch Architecture.
- */
-PluginDescriptor *
-z_carla_discovery_create_dssi_descriptor (
-  const char *       path,
-  PluginArchitecture arch);
-
-/**
- * Create a descriptor using carla discovery.
- *
- * @path Path to the plugin bundle.
- * @arch Architecture.
- */
-PluginDescriptor *
-z_carla_discovery_create_ladspa_descriptor (
-  const char *       path,
-  PluginArchitecture arch);
 
 #ifdef __APPLE__
 /**
@@ -112,14 +93,19 @@ z_carla_discovery_create_au_descriptor_from_string (
 #endif
 
 /**
- * Parses plugin info into a new PluginDescriptor.
+ * Parses plugin info into a new NULL-terminated
+ * PluginDescriptor array.
  *
- * @param plugin_path Identifier to use for debugging.
+ * @param plugin_path Identifier to use for
+ *   debugging.
+ *
+ * @return A newly allocated array of newly allocated
+ *   descriptors, or NULL if no descriptors found.
  */
-PluginDescriptor *
+PluginDescriptor **
 z_carla_discovery_parse_plugin_info (
   const char * plugin_path,
-  char * results);
+  char *       results);
 
 CarlaBridgeMode
 z_carla_discovery_get_bridge_mode (

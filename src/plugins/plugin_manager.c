@@ -782,7 +782,7 @@ get_dssi_paths (
         {
           dssi_path =
             g_strdup (
-              "/usr/" LIBDIR_NAME "/dssi"
+              "/usr/" LIBDIR_NAME "/dssi:"
               "/usr/local/" LIBDIR_NAME "/dssi");
         }
       else
@@ -827,7 +827,7 @@ get_ladspa_paths (
         {
           ladspa_path =
             g_strdup (
-              "/usr/" LIBDIR_NAME "/ladspa"
+              "/usr/" LIBDIR_NAME "/ladspa:"
               "/usr/local/" LIBDIR_NAME "/ladspa");
         }
       else
@@ -874,17 +874,20 @@ plugin_manager_supports_protocol (
     case PROT_DUMMY:
     case PROT_LV2:
       return true;
-    case PROT_DSSI:
     case PROT_LADSPA:
     case PROT_VST:
+    case PROT_SFZ:
+#ifdef HAVE_CARLA
+      return true;
+#else
+      return false;
+#endif
+    case PROT_DSSI:
     case PROT_VST3:
     case PROT_AU:
-    case PROT_SFZ:
     case PROT_SF2:
       {
 #ifdef HAVE_CARLA
-        /* FIXME undefined reference */
-#if 0
         const char* const * carla_features =
           carla_get_supported_features ();
         const char * feature;
@@ -902,24 +905,234 @@ plugin_manager_supports_protocol (
             CHECK_FEATURE ("au", AU);
 #undef CHECK_FEATURE
           }
-        if (protocol == PROT_VST ||
-            protocol == PROT_SFZ ||
-            protocol == PROT_LADSPA
-            )
-          {
-            return true;
-          }
-        if (protocol == PROT_LADSPA)
-          {
-            return true;
-          }
-#endif
-        return true;
 #endif /* HAVE_CARLA */
         return false;
       }
     }
   return false;
+}
+
+static void
+scan_carla_descriptors_from_paths (
+  PluginManager * self,
+  PluginProtocol  protocol,
+  unsigned int *  count,
+  const double    size,
+  double *        progress,
+  const double    start_progress,
+  const double    max_progress)
+{
+
+  const char * protocol_str =
+    plugin_protocol_to_str (protocol);
+  if (!plugin_manager_supports_protocol (
+        self, protocol))
+    {
+      g_message (
+        "Plugin protocol %s not supported in this "
+        "build",
+        protocol_str);
+      return;
+    }
+  g_message (
+    "Scanning %s plugins...", protocol_str);
+
+  /* get paths and suffix */
+  char ** paths = NULL;
+  const char * suffix = NULL;
+  switch (protocol)
+    {
+    case PROT_VST:
+      paths = get_vst_paths (self);
+#ifdef __APPLE__
+      suffix = ".vst";
+#else
+      suffix = LIB_SUFFIX;
+#endif
+      break;
+    case PROT_VST3:
+      paths = get_vst3_paths (self);
+      suffix = ".vst3";
+      break;
+    case PROT_DSSI:
+      paths = get_dssi_paths (self);
+      suffix = LIB_SUFFIX;
+      break;
+    case PROT_LADSPA:
+      paths = get_ladspa_paths (self);
+      suffix = LIB_SUFFIX;
+      break;
+    default:
+      break;
+    }
+  g_return_if_fail (paths && suffix);
+
+  int path_idx = 0;
+  char * path;
+  while ((path = paths[path_idx++]) != NULL)
+    {
+      if (!g_file_test (path, G_FILE_TEST_EXISTS))
+        continue;
+
+      g_message (
+        "scanning for %s plugins in %s",
+        protocol_str, path);
+
+      char ** plugins =
+        io_get_files_in_dir_ending_in (
+          path, 1, suffix);
+      if (!plugins)
+        continue;
+
+      char * plugin_path;
+      int plugin_idx = 0;
+      while ((plugin_path = plugins[plugin_idx++]) !=
+               NULL)
+        {
+          PluginDescriptor ** descriptors =
+            cached_plugin_descriptors_get (
+              self->cached_plugin_descriptors,
+              plugin_path);
+
+          /* if any cached descriptors are found */
+          if (descriptors)
+            {
+              PluginDescriptor * descriptor = NULL;
+              int i = 0;
+              while ((descriptor = descriptors[i++]))
+                {
+                  g_message (
+                    "Found cached %s %s",
+                    protocol_str,
+                    descriptor->name);
+                  PluginDescriptor * clone =
+                    plugin_descriptor_clone (
+                      descriptor);
+                  array_append (
+                    self->plugin_descriptors,
+                    self->num_plugins, clone);
+                  add_category (
+                    self, clone->category_str);
+                }
+            }
+          /* if no cached descriptors found */
+          else
+            {
+              if (
+                cached_plugin_descriptors_is_blacklisted (
+                  self->cached_plugin_descriptors,
+                  plugin_path))
+                {
+                  g_message (
+                    "Ignoring blacklisted VST "
+                    "plugin: %s", plugin_path);
+                }
+              else
+                {
+                  descriptors =
+                    z_carla_discovery_create_descriptors_from_file (
+                      plugin_path, ARCH_64,
+                      protocol);
+
+                  /* try 32-bit if above failed */
+                  if (!descriptors)
+                    {
+                      g_debug (
+                        "no descriptors for %s, "
+                        "trying 32bit...",
+                        plugin_path);
+                      descriptors =
+                        z_carla_discovery_create_descriptors_from_file (
+                          plugin_path, ARCH_32,
+                          protocol);
+                    }
+
+                  g_debug (
+                    "descriptors for %s: %p",
+                    plugin_path, descriptors);
+
+                  if (descriptors)
+                    {
+                      PluginDescriptor * descriptor = NULL;
+                      int i = 0;
+                      while ((descriptor = descriptors[i++]))
+                        {
+                          array_append (
+                            self->plugin_descriptors,
+                            self->num_plugins,
+                            descriptor);
+                          add_category (
+                            self, descriptor->category_str);
+                          g_message (
+                            "Caching %s %s",
+                            protocol_str,
+                            descriptor->name);
+
+                          PluginDescriptor * clone =
+                            plugin_descriptor_clone (
+                              descriptor);
+                          cached_plugin_descriptors_add (
+                            self->cached_plugin_descriptors,
+                            clone, 0);
+                        }
+                      g_debug (
+                        "%d descriptors cached for "
+                        "%s",
+                        i - 1, plugin_path);
+                    }
+                  else
+                    {
+                      g_message (
+                        "Blacklisting %s %s",
+                        protocol_str,
+                        plugin_path);
+                      cached_plugin_descriptors_blacklist (
+                        self->cached_plugin_descriptors,
+                        plugin_path, 0);
+                    }
+                }
+            }
+          (*count)++;
+
+          if (progress)
+            {
+              *progress =
+                start_progress +
+                ((double) *count / size) *
+                  (max_progress - start_progress);
+              char prog_str[800];
+              if (descriptors)
+                {
+                  sprintf (
+                    prog_str,
+                    _("Scanned %s plugin: %s"),
+                    protocol_str,
+                    descriptors[0]->name);
+
+                  free (descriptors);
+                  descriptors = NULL;
+                }
+              else
+                {
+                  sprintf (
+                    prog_str,
+                    _("Skipped %s plugin at %s"),
+                    protocol_str,
+                    plugin_path);
+                }
+              zrythm_app_set_progress_status (
+                zrythm_app, prog_str, *progress);
+            }
+        }
+      if (plugin_idx > 0 &&
+          !ZRYTHM_TESTING)
+        {
+          cached_plugin_descriptors_serialize_to_file (
+            self->cached_plugin_descriptors);
+        }
+      g_strfreev (plugins);
+    }
+  g_strfreev (paths);
 }
 
 /**
@@ -1022,534 +1235,25 @@ plugin_manager_scan_plugins (
 
 #if !defined (_WOE32) && !defined (__APPLE__)
   /* scan ladspa */
-  if (plugin_manager_supports_protocol (
-        self, PROT_LADSPA))
-    {
-      g_message ("Scanning LADSPA plugins...");
-      char ** paths = get_ladspa_paths (self);
-      int path_idx = 0;
-      char * path;
-      while ((path = paths[path_idx++]) != NULL)
-        {
-          if (!g_file_test (path, G_FILE_TEST_EXISTS))
-            continue;
-
-          g_message ("scanning for LADSPA in %s", path);
-
-          char ** ladspa_plugins =
-            io_get_files_in_dir_ending_in (
-              path, 1, LIB_SUFFIX);
-          if (!ladspa_plugins)
-            continue;
-
-          char * plugin_path;
-          int plugin_idx = 0;
-          while ((plugin_path = ladspa_plugins[plugin_idx++]) !=
-                   NULL)
-            {
-              PluginDescriptor * descriptor =
-                cached_plugin_descriptors_get (
-                  self->cached_plugin_descriptors,
-                  plugin_path);
-
-              if (descriptor)
-                {
-                  g_message (
-                    "Found cached DSSI %s",
-                    descriptor->name);
-                  PluginDescriptor * clone =
-                    plugin_descriptor_clone (
-                      descriptor);
-                  array_append (
-                    self->plugin_descriptors,
-                    self->num_plugins, clone);
-                  add_category (
-                    self, clone->category_str);
-                }
-              else
-                {
-                  if (
-                    cached_plugin_descriptors_is_blacklisted (
-                      self->cached_plugin_descriptors,
-                      plugin_path))
-                    {
-                      g_message (
-                        "Ignoring blacklisted LADSPA "
-                        "plugin: %s", plugin_path);
-                    }
-                  else
-                    {
-                      descriptor =
-                        z_carla_discovery_create_ladspa_descriptor (
-                          plugin_path, ARCH_64);
-
-                      if (descriptor)
-                        {
-                          array_append (
-                            self->plugin_descriptors,
-                            self->num_plugins,
-                            descriptor);
-                          add_category (
-                            self, descriptor->category_str);
-                          g_message (
-                            "Caching LADSPA %s",
-                            descriptor->name);
-
-                          PluginDescriptor * clone =
-                            plugin_descriptor_clone (
-                              descriptor);
-                          cached_plugin_descriptors_add (
-                            self->cached_plugin_descriptors,
-                            clone, 0);
-                        }
-                      else
-                        {
-                          g_message (
-                            "Blacklisting LADSPA %s",
-                            plugin_path);
-                          cached_plugin_descriptors_blacklist (
-                            self->cached_plugin_descriptors,
-                            plugin_path, 0);
-                        }
-                    }
-                }
-              count++;
-
-              if (progress)
-                {
-                  *progress =
-                    start_progress +
-                    ((double) count / size) *
-                      (max_progress - start_progress);
-                  char prog_str[800];
-                  if (descriptor)
-                    {
-                      sprintf (
-                        prog_str, "%s: %s",
-                        _("Scanned LADSPA plugin"),
-                        descriptor->name);
-                    }
-                  else
-                    {
-                      sprintf (
-                        prog_str,
-                        _("Skipped LADSPA plugin at %s"),
-                        plugin_path);
-                    }
-                  zrythm_app_set_progress_status (
-                    zrythm_app, prog_str, *progress);
-                }
-            }
-          if (plugin_idx > 0 && !ZRYTHM_TESTING)
-            {
-              cached_plugin_descriptors_serialize_to_file (
-                self->cached_plugin_descriptors);
-            }
-          g_strfreev (ladspa_plugins);
-        }
-      g_strfreev (paths);
-    }
+  scan_carla_descriptors_from_paths (
+    self, PROT_LADSPA, &count, size, progress,
+    start_progress, max_progress);
 
   /* scan dssi */
-  if (plugin_manager_supports_protocol (
-        self, PROT_DSSI))
-    {
-      g_message ("Scanning DSSI plugins...");
-      char ** paths = get_dssi_paths (self);
-      int path_idx = 0;
-      char * path;
-      while ((path = paths[path_idx++]) != NULL)
-        {
-          if (!g_file_test (path, G_FILE_TEST_EXISTS))
-            continue;
-
-          g_message ("scanning for DSSI in %s", path);
-
-          char ** dssi_plugins =
-            io_get_files_in_dir_ending_in (
-              path, 1, LIB_SUFFIX);
-          if (!dssi_plugins)
-            continue;
-
-          char * plugin_path;
-          int plugin_idx = 0;
-          while ((plugin_path = dssi_plugins[plugin_idx++]) !=
-                   NULL)
-            {
-              PluginDescriptor * descriptor =
-                cached_plugin_descriptors_get (
-                  self->cached_plugin_descriptors,
-                  plugin_path);
-
-              if (descriptor)
-                {
-                  g_message (
-                    "Found cached DSSI %s",
-                    descriptor->name);
-                  PluginDescriptor * clone =
-                    plugin_descriptor_clone (
-                      descriptor);
-                  array_append (
-                    self->plugin_descriptors,
-                    self->num_plugins, clone);
-                  add_category (
-                    self, clone->category_str);
-                }
-              else
-                {
-                  if (
-                    cached_plugin_descriptors_is_blacklisted (
-                      self->cached_plugin_descriptors,
-                      plugin_path))
-                    {
-                      g_message (
-                        "Ignoring blacklisted DSSI "
-                        "plugin: %s", plugin_path);
-                    }
-                  else
-                    {
-                      descriptor =
-                        z_carla_discovery_create_dssi_descriptor (
-                          plugin_path, ARCH_64);
-
-                      if (descriptor)
-                        {
-                          array_append (
-                            self->plugin_descriptors,
-                            self->num_plugins,
-                            descriptor);
-                          add_category (
-                            self, descriptor->category_str);
-                          g_message (
-                            "Caching DSSI %s",
-                            descriptor->name);
-
-                          PluginDescriptor * clone =
-                            plugin_descriptor_clone (
-                              descriptor);
-                          cached_plugin_descriptors_add (
-                            self->cached_plugin_descriptors,
-                            clone, 0);
-                        }
-                      else
-                        {
-                          g_message (
-                            "Blacklisting DSSI %s",
-                            plugin_path);
-                          cached_plugin_descriptors_blacklist (
-                            self->cached_plugin_descriptors,
-                            plugin_path, 0);
-                        }
-                    }
-                }
-              count++;
-
-              if (progress)
-                {
-                  *progress =
-                    start_progress +
-                    ((double) count / size) *
-                      (max_progress - start_progress);
-                  char prog_str[800];
-                  if (descriptor)
-                    {
-                      sprintf (
-                        prog_str, "%s: %s",
-                        _("Scanned DSSI plugin"),
-                        descriptor->name);
-                    }
-                  else
-                    {
-                      sprintf (
-                        prog_str,
-                        _("Skipped DSSI plugin at %s"),
-                        plugin_path);
-                    }
-                  zrythm_app_set_progress_status (
-                    zrythm_app, prog_str, *progress);
-                }
-            }
-          if (plugin_idx > 0 && !ZRYTHM_TESTING)
-            {
-              cached_plugin_descriptors_serialize_to_file (
-                self->cached_plugin_descriptors);
-            }
-          g_strfreev (dssi_plugins);
-        }
-      g_strfreev (paths);
-    }
+  scan_carla_descriptors_from_paths (
+    self, PROT_DSSI, &count, size, progress,
+    start_progress, max_progress);
 #endif /* not apple/woe32 */
 
   /* scan vst */
-  g_message ("Scanning VST plugins...");
-  char ** paths = get_vst_paths (self);
-  int path_idx = 0;
-  char * path;
-  while ((path = paths[path_idx++]) != NULL)
-    {
-      if (!g_file_test (path, G_FILE_TEST_EXISTS))
-        continue;
-
-      g_message ("scanning for VSTs in %s", path);
-
-      char ** vst_plugins =
-        io_get_files_in_dir_ending_in (
-          path, 1,
-#ifdef __APPLE__
-          ".vst"
-#else
-          LIB_SUFFIX
-#endif
-          );
-      if (!vst_plugins)
-        continue;
-
-      char * plugin_path;
-      int plugin_idx = 0;
-      while ((plugin_path = vst_plugins[plugin_idx++]) !=
-               NULL)
-        {
-          PluginDescriptor * descriptor =
-            cached_plugin_descriptors_get (
-              self->cached_plugin_descriptors,
-              plugin_path);
-
-          if (descriptor)
-            {
-              g_message (
-                "Found cached VST %s",
-                descriptor->name);
-              PluginDescriptor * clone =
-                plugin_descriptor_clone (
-                  descriptor);
-              array_append (
-                self->plugin_descriptors,
-                self->num_plugins, clone);
-              add_category (
-                self, clone->category_str);
-            }
-          else
-            {
-              if (
-                cached_plugin_descriptors_is_blacklisted (
-                  self->cached_plugin_descriptors,
-                  plugin_path))
-                {
-                  g_message (
-                    "Ignoring blacklisted VST "
-                    "plugin: %s", plugin_path);
-                }
-              else
-                {
-                  descriptor =
-                    z_carla_discovery_create_vst_descriptor (
-                      plugin_path, ARCH_64,
-                      PROT_VST);
-
-                  /* try 32-bit if above failed */
-                  if (!descriptor)
-                    descriptor =
-                      z_carla_discovery_create_vst_descriptor (
-                        plugin_path, ARCH_32,
-                        PROT_VST);
-
-                  if (descriptor)
-                    {
-                      array_append (
-                        self->plugin_descriptors,
-                        self->num_plugins,
-                        descriptor);
-                      add_category (
-                        self, descriptor->category_str);
-                      g_message (
-                        "Caching VST %s",
-                        descriptor->name);
-
-                      PluginDescriptor * clone =
-                        plugin_descriptor_clone (
-                          descriptor);
-                      cached_plugin_descriptors_add (
-                        self->cached_plugin_descriptors,
-                        clone, 0);
-                    }
-                  else
-                    {
-                      g_message (
-                        "Blacklisting VST %s",
-                        plugin_path);
-                      cached_plugin_descriptors_blacklist (
-                        self->cached_plugin_descriptors,
-                        plugin_path, 0);
-                    }
-                }
-            }
-          count++;
-
-          if (progress)
-            {
-              *progress =
-                start_progress +
-                ((double) count / size) *
-                  (max_progress - start_progress);
-              char prog_str[800];
-              if (descriptor)
-                {
-                  sprintf (
-                    prog_str, "%s: %s",
-                    _("Scanned VST plugin"),
-                    descriptor->name);
-                }
-              else
-                {
-                  sprintf (
-                    prog_str,
-                    _("Skipped VST plugin at %s"),
-                    plugin_path);
-                }
-              zrythm_app_set_progress_status (
-                zrythm_app, prog_str, *progress);
-            }
-        }
-      if (plugin_idx > 0 &&
-          !ZRYTHM_TESTING)
-        {
-          cached_plugin_descriptors_serialize_to_file (
-            self->cached_plugin_descriptors);
-        }
-      g_strfreev (vst_plugins);
-    }
-  g_strfreev (paths);
+  scan_carla_descriptors_from_paths (
+    self, PROT_VST, &count, size, progress,
+    start_progress, max_progress);
 
   /* scan vst3 */
-  g_message ("Scanning VST3 plugins...");
-  paths = get_vst3_paths (self);
-  path_idx = 0;
-  while ((path = paths[path_idx++]) != NULL)
-    {
-      g_message ("path %s", path);
-      if (!g_file_test (path, G_FILE_TEST_EXISTS))
-        continue;
-
-      g_message ("scanning for VST3s in %s", path);
-
-      char ** vst_plugins =
-        io_get_files_in_dir_ending_in (
-          path, 1, ".vst3");
-      if (!vst_plugins)
-        continue;
-
-      char * plugin_path;
-      int plugin_idx = 0;
-      while ((plugin_path = vst_plugins[plugin_idx++]) !=
-               NULL)
-        {
-          PluginDescriptor * descriptor =
-            cached_plugin_descriptors_get (
-              self->cached_plugin_descriptors,
-              plugin_path);
-
-          if (descriptor)
-            {
-              g_message (
-                "Found cached VST %s",
-                descriptor->name);
-              PluginDescriptor * clone =
-                plugin_descriptor_clone (
-                  descriptor);
-              array_append (
-                self->plugin_descriptors,
-                self->num_plugins, clone);
-              add_category (
-                self, clone->category_str);
-            }
-          else
-            {
-              if (
-                cached_plugin_descriptors_is_blacklisted (
-                  self->cached_plugin_descriptors,
-                  plugin_path))
-                {
-                  g_message (
-                    "Ignoring blacklisted VST "
-                    "plugin: %s", plugin_path);
-                }
-              else
-                {
-                  if (!descriptor)
-                    descriptor =
-                      z_carla_discovery_create_vst_descriptor (
-                      plugin_path,
-                      string_contains_substr (
-                        plugin_path,
-                        "C:\\Program Files (x86)",
-                        false) ? ARCH_32 : ARCH_64,
-                      PROT_VST3);
-
-                  if (descriptor)
-                    {
-                      array_append (
-                        self->plugin_descriptors,
-                        self->num_plugins,
-                        descriptor);
-                      add_category (
-                        self, descriptor->category_str);
-                      g_message (
-                        "Caching VST %s",
-                        descriptor->name);
-                      PluginDescriptor * clone =
-                        plugin_descriptor_clone (
-                          descriptor);
-                      cached_plugin_descriptors_add (
-                        self->cached_plugin_descriptors,
-                        clone, 0);
-                    }
-                  else
-                    {
-                      g_message (
-                        "Blacklisting VST3 %s",
-                        plugin_path);
-                      cached_plugin_descriptors_blacklist (
-                        self->cached_plugin_descriptors,
-                        plugin_path, 0);
-                    }
-                }
-            }
-          count++;
-
-          if (progress)
-            {
-              *progress =
-                start_progress +
-                ((double) count / size) *
-                  (max_progress - start_progress);
-              char prog_str[800];
-              if (descriptor)
-                {
-                  sprintf (
-                    prog_str, "%s: %s",
-                    _("Scanned VST plugin"),
-                    descriptor->name);
-                }
-              else
-                {
-                  sprintf (
-                    prog_str,
-                    _("Skipped VST plugin at %s"),
-                    plugin_path);
-                }
-              zrythm_app_set_progress_status (
-                zrythm_app, prog_str, *progress);
-            }
-        }
-      if (plugin_idx > 0 &&
-          !ZRYTHM_TESTING)
-        {
-          cached_plugin_descriptors_serialize_to_file (
-            self->cached_plugin_descriptors);
-        }
-      g_strfreev (vst_plugins);
-    }
-  g_strfreev (paths);
+  scan_carla_descriptors_from_paths (
+    self, PROT_VST3, &count, size, progress,
+    start_progress, max_progress);
 
 #ifdef __APPLE__
   /* scan AU plugins */
@@ -1613,9 +1317,10 @@ plugin_manager_scan_plugins (
       /* scan sfz */
       g_message (
         "Scanning %s instruments...", type);
-      paths = get_sf_paths (self, i);
+      char ** paths = get_sf_paths (self, i);
       g_return_if_fail (paths);
-      path_idx = 0;
+      char * path = NULL;
+      int path_idx = 0;
       while ((path = paths[path_idx++]) != NULL)
         {
           if (!g_file_test (path, G_FILE_TEST_EXISTS))

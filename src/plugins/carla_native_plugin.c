@@ -412,7 +412,7 @@ create_plugin (
           descr->arch == ARCH_64 ?
             BINARY_NATIVE : BINARY_WIN32,
           type, descr->path, descr->name,
-          descr->name, 0, NULL, 0);
+          descr->name, descr->unique_id, NULL, 0);
       break;
     case PROT_DSSI:
     case PROT_LADSPA:
@@ -420,7 +420,7 @@ create_plugin (
         carla_add_plugin (
           self->host_handle, BINARY_NATIVE,
           type, descr->path, descr->name,
-          NULL, 0, NULL, 0);
+          descr->uri, 0, NULL, 0);
       break;
     case PROT_SFZ:
     case PROT_SF2:

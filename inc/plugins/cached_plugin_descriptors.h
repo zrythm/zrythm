@@ -95,14 +95,19 @@ cached_plugin_descriptors_is_blacklisted (
   const char *           abs_path);
 
 /**
- * Returns the PluginDescriptor corresponding to the
- * .so/.dll file at the given path, if it exists and
- * the MD5 hash matches.
+ * Returns the PluginDescriptor's corresponding to
+ * the .so/.dll file at the given path, if it
+ * exists and the MD5 hash matches.
+ *
+ * @note The returned array must be free'd but not
+ *   the descriptors.
+ *
+ * @return NULL-terminated array.
  */
-PluginDescriptor *
+PluginDescriptor **
 cached_plugin_descriptors_get (
   CachedPluginDescriptors * self,
-  const char *           abs_path);
+  const char *              abs_path);
 
 /**
  * Appends a descriptor to the cache.
