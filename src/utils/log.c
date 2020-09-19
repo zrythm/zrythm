@@ -833,8 +833,7 @@ log_writer (
       ev->log_level = log_level;
       ev->message = str;
 
-      if (log_level == G_LOG_LEVEL_WARNING ||
-          log_level == G_LOG_LEVEL_CRITICAL)
+      if (log_level == G_LOG_LEVEL_CRITICAL)
         {
           ev->backtrace =
             backtrace_get_with_lines ("", 100);

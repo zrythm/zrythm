@@ -153,12 +153,16 @@ carla_native_plugin_populate_banks (
  *
  * @param loading Whether loading an existing plugin
  *   or not.
- * @ret 0 if no errors, non-zero if errors.
+ * @param use_state_file Whether to use the plugin's
+ *   state file to instantiate the plugin.
+ *
+ * @return 0 if no errors, non-zero if errors.
  */
 int
 carla_native_plugin_instantiate (
   CarlaNativePlugin * self,
-  bool                loading);
+  bool                loading,
+  bool                use_state_file);
 
 char *
 carla_native_plugin_get_abs_state_file_path (

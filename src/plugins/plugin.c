@@ -71,6 +71,7 @@ plugin_init_loaded (
   bool     project)
 {
   self->magic = PLUGIN_MAGIC;
+  self->is_project = project;
 
   /* set enabled/gain ports */
   for (int i = 0; i < self->num_in_ports; i++)
@@ -851,7 +852,15 @@ plugin_activate (
   Plugin * pl,
   bool     activate)
 {
-  g_return_val_if_fail (pl, ERR_OBJECT_IS_NULL);
+  g_return_val_if_fail (
+    IS_PLUGIN (pl), ERR_OBJECT_IS_NULL);
+
+  if ((pl->activated && activate) ||
+      (!pl->activated && !activate))
+    {
+      /* nothing to do */
+      return 0;
+    }
 
   if (pl->descr->open_with_carla)
     {
@@ -1270,7 +1279,8 @@ plugin_instantiate (
     {
 #ifdef HAVE_CARLA
       carla_native_plugin_instantiate (
-        pl->carla, !PROJECT->loaded);
+        pl->carla, !PROJECT->loaded,
+        pl->state_dir ? true : false);
       /* save the state */
       carla_native_plugin_save_state (
         pl->carla, false);

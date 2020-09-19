@@ -197,6 +197,10 @@ typedef struct Plugin
 
   bool              is_project;
 
+  /** Used on plugins not in the project to
+   * indicate that the */
+  //bool              needs_state_loading;
+
   /** Modulator widget, if modulator. */
   ModulatorWidget * modulator_widget;
 } Plugin;

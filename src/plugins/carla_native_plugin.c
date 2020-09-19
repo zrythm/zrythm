@@ -56,13 +56,6 @@ void
 carla_native_plugin_init_loaded (
   CarlaNativePlugin * self)
 {
-  carla_native_plugin_new_from_descriptor (
-    self->plugin);
-
-  carla_native_plugin_load_state (
-    self->plugin->carla, NULL);
-
-  carla_native_plugin_free (self);
 }
 
 /**
@@ -1004,13 +997,36 @@ create_ports (
  *
  * @param loading Whether loading an existing plugin
  *   or not.
- * @ret 0 if no errors, non-zero if errors.
+ * @param use_state_file Whether to use the plugin's
+ *   state file to instantiate the plugin.
+ *
+ * @return 0 if no errors, non-zero if errors.
  */
 int
 carla_native_plugin_instantiate (
   CarlaNativePlugin * self,
-  bool                loading)
+  bool                loading,
+  bool                use_state_file)
 {
+  g_return_val_if_fail (self, -1);
+
+  if (use_state_file)
+    {
+      /* recreate the plugin to create the native
+       * plugin descriptor */
+      carla_native_plugin_new_from_descriptor (
+        self->plugin);
+
+      /* load the state */
+      carla_native_plugin_load_state (
+        self->plugin->carla, NULL);
+
+      /* free the previous instance */
+      carla_native_plugin_free (self);
+
+      self = self->plugin->carla;
+    }
+
   g_return_val_if_fail (
     self->native_plugin_handle &&
     self->native_plugin_descriptor->activate &&
