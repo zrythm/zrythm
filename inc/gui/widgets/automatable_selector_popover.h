@@ -40,6 +40,11 @@ typedef struct _AutomatableSelectorButtonWidget
  * @{
  */
 
+/**
+ * Automatable type.
+ *
+ * These are shown on the left side of the popover.
+ */
 typedef enum AutomatableSelectorType
 {
   /** Midi automatable (modwheel etc.). */
@@ -59,6 +64,9 @@ typedef enum AutomatableSelectorType
 
   /** Modulator plugin. */
   AS_TYPE_MODULATOR,
+
+  /** Tempo track ports. */
+  AS_TYPE_TEMPO,
 } AutomatableSelectorType;
 
 /**

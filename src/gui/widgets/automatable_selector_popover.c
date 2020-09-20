@@ -83,6 +83,7 @@ select_automatable (
   int valid =
     gtk_tree_model_get_iter_first (
       self->type_model, &iter);
+  g_return_if_fail (valid);
   while (valid)
     {
       int type;
@@ -175,8 +176,7 @@ create_model_for_ports (
         {
         case AS_TYPE_MIDI:
           /* skip non-channel automation tracks */
-          port =
-            automation_track_get_port (at);
+          port = automation_track_get_port (at);
           if (!(port->id.flags &
                   PORT_FLAG_MIDI_AUTOMATABLE))
             continue;
@@ -184,14 +184,11 @@ create_model_for_ports (
             "port %s is a midi automatable",
             port->id.label);
 
-          strcpy (
-            icon_name,
-            "audio-midi");
+          strcpy (icon_name,"audio-midi");
           break;
         case AS_TYPE_CHANNEL:
           /* skip non-channel automation tracks */
-          port =
-            automation_track_get_port (at);
+          port = automation_track_get_port (at);
           if (!(port->id.flags &
                   PORT_FLAG_CHANNEL_MUTE ||
                 port->id.flags &
@@ -220,6 +217,14 @@ create_model_for_ports (
         case AS_TYPE_MODULATOR:
           plugin =
             track->modulators[self->selected_slot];
+          break;
+        case AS_TYPE_TEMPO:
+          port = automation_track_get_port (at);
+
+          /* skip non-tempo automation tracks */
+          if (!(port->id.flags & PORT_FLAG_BPM ||
+                port->id.flags & PORT_FLAG_TIME_SIG))
+            continue;
           break;
         }
 
@@ -281,6 +286,18 @@ create_model_for_types (
 
   Track * track =
     automation_track_get_track (self->owner);
+
+  if (track->type == TRACK_TYPE_TEMPO)
+    {
+      gtk_list_store_append (list_store, &iter);
+      gtk_list_store_set (
+        list_store, &iter,
+        0, "filename-bpm-amarok",
+        1, "Tempo",
+        2, AS_TYPE_TEMPO,
+        3, 0,
+        -1);
+    }
 
   if (track_has_piano_roll (track))
     {
@@ -569,7 +586,12 @@ automatable_selector_popover_widget_new (
   Port * port =
     automation_track_get_port (self->owner);
   PortIdentifier * id = &port->id;
-  if (id->flags & PORT_FLAG_CHANNEL_MUTE ||
+  if (id->flags & PORT_FLAG_BPM ||
+      id->flags & PORT_FLAG_TIME_SIG)
+    {
+      self->selected_type = AS_TYPE_TEMPO;
+    }
+  else if (id->flags & PORT_FLAG_CHANNEL_MUTE ||
       id->flags & PORT_FLAG_CHANNEL_FADER ||
       id->flags & PORT_FLAG_STEREO_BALANCE)
     {
@@ -617,9 +639,7 @@ automatable_selector_popover_widget_new (
   /* create model/treeview for ports */
   self->port_model = create_model_for_ports (self);
   self->port_treeview =
-    tree_view_create (
-      self,
-      self->port_model);
+    tree_view_create (self, self->port_model);
   gtk_container_add (
     GTK_CONTAINER (self->port_treeview_box),
     GTK_WIDGET (self->port_treeview));
