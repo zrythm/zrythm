@@ -234,6 +234,9 @@ cached_plugin_descriptors_get (
       return NULL;
     }
 
+  /* NULL-terminate */
+  descriptors[num_descriptors] = NULL;
+
   return descriptors;
 }
 
