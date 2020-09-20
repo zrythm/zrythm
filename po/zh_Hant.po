@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-12 01:56+0100\n"
-"PO-Revision-Date: 2020-09-19 22:53+0000\n"
+"PO-Revision-Date: 2020-09-20 19:55+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
@@ -855,7 +855,7 @@ msgstr "外掛面板"
 #: src/gui/widgets/left_dock_edge.c:224
 #: resources/ui/chord_selector_window.ui:683
 msgid "Visibility"
-msgstr ""
+msgstr "顯示"
 
 #: src/gui/widgets/left_dock_edge.c:250
 msgid "CC Bindings"
@@ -992,7 +992,7 @@ msgstr "Slot #%d"
 #: src/gui/widgets/channel_slot.c:337
 #, c-format
 msgid "Plugin %s cannot be added to this slot"
-msgstr "無法新增外掛"
+msgstr "無法新增 %s 外掛"
 
 #: src/gui/widgets/channel_slot.c:685
 msgid "Bypass"
@@ -1111,7 +1111,7 @@ msgstr "這項功能目前無法使用"
 
 #: src/gui/widgets/bot_bar.c:514
 msgid "Status"
-msgstr "目前狀態"
+msgstr "狀態"
 
 #. TRANSLATORS: buffer size, please keep the
 #. * translation short
@@ -1377,7 +1377,7 @@ msgstr "類型"
 
 #: src/gui/widgets/plugin_properties_expander.c:166
 msgid "Banks"
-msgstr ""
+msgstr "音色庫"
 
 #: src/gui/widgets/plugin_properties_expander.c:182
 msgid "Presets"
@@ -1442,7 +1442,7 @@ msgstr "選擇一個檔案"
 #: src/gui/widgets/preferences.c:774
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
-msgstr "有些設定必須重新啟動後 %s 才會生效"
+msgstr "有些設定必須重新啟動 %s 才會生效"
 
 #: src/gui/widgets/scripting_window.c:192
 msgid "Script execution successful"
@@ -1493,7 +1493,7 @@ msgstr "MIDI 音符"
 
 #: src/gui/widgets/event_viewer.c:121
 msgid "Automation point"
-msgstr ""
+msgstr "控制點"
 
 #: src/gui/widgets/event_viewer.c:463 src/gui/widgets/event_viewer.c:559
 msgid "Start"
@@ -1670,7 +1670,7 @@ msgstr "顯示/隱藏右邊面板"
 #: src/gui/widgets/editor_toolbar.c:63
 #, c-format
 msgid "Apply %s"
-msgstr ""
+msgstr "套用 %s"
 
 #: src/gui/widgets/editor_toolbar.c:67
 #, c-format
@@ -1838,8 +1838,9 @@ msgid "Port info"
 msgstr ""
 
 #: src/gui/widgets/dialogs/about_dialog.c:91
+#, fuzzy
 msgid "a highly automated and intuitive digital audio workstation"
-msgstr "一個直觀且能高度自動化控制參數的數位音樂工作站"
+msgstr "直觀且能高度自動化控制參數的數位音樂工作站"
 
 #: src/gui/widgets/dialogs/about_dialog.c:95
 msgid "Website"
@@ -2503,15 +2504,15 @@ msgstr "面板"
 
 #: resources/gtk/help-overlay.ui:74
 msgid "Toggle left panel"
-msgstr ""
+msgstr "顯示/隱藏左邊面板"
 
 #: resources/gtk/help-overlay.ui:81
 msgid "Toggle right panel"
-msgstr ""
+msgstr "顯示/隱藏右邊面板"
 
 #: resources/gtk/help-overlay.ui:88
 msgid "Toggle bottom panel"
-msgstr ""
+msgstr "顯示/隱藏底部面板"
 
 #: resources/gtk/help-overlay.ui:98 resources/ui/header.ui:92
 msgid "Project"
@@ -2547,11 +2548,11 @@ msgstr "復原和重做"
 
 #: resources/gtk/help-overlay.ui:159
 msgid "Undo previous command"
-msgstr ""
+msgstr "復原上一個指令"
 
 #: resources/gtk/help-overlay.ui:166
 msgid "Redo previous command"
-msgstr ""
+msgstr "重做上一个指令"
 
 #: resources/gtk/help-overlay.ui:175
 msgid "Selections"
@@ -2575,7 +2576,7 @@ msgstr "工具"
 
 #: resources/gtk/help-overlay.ui:207
 msgid "Select/Stretch tool"
-msgstr ""
+msgstr "選取/拉伸工具"
 
 #: resources/gtk/help-overlay.ui:214
 msgid "Pencil tool"
@@ -2586,8 +2587,9 @@ msgid "Eraser tool"
 msgstr "橡皮擦工具"
 
 #: resources/gtk/help-overlay.ui:228
+#, fuzzy
 msgid "Ramp tool"
-msgstr ""
+msgstr "直線工具"
 
 #: resources/gtk/help-overlay.ui:235
 msgid "Audition tool"
@@ -2615,23 +2617,23 @@ msgstr "原始大小"
 
 #: resources/gtk/help-overlay.ui:280
 msgid "Quantizing"
-msgstr ""
+msgstr "量化"
 
 #: resources/gtk/help-overlay.ui:285 resources/ui/quantize_box.ui:39
 msgid "Quick Quantize"
-msgstr ""
+msgstr "快速量化"
 
 #: resources/gtk/help-overlay.ui:292
 msgid "Quantize"
-msgstr ""
+msgstr "量化"
 
 #: resources/gtk/help-overlay.ui:301
 msgid "Looping"
-msgstr ""
+msgstr "循環"
 
 #: resources/gtk/help-overlay.ui:306
 msgid "Loop selection"
-msgstr ""
+msgstr "循環選擇"
 
 #: resources/ui/first_run_assistant.ui:27
 msgid "Setup Zrythm"
@@ -2645,6 +2647,10 @@ msgid ""
 "This will guide you through the basic setup of Zrythm. First, choose your "
 "language."
 msgstr ""
+"<b><i>注意: Zrythm 還在 alpha 階段</i></b>\n"
+"\n"
+"歡迎使用 Zrythm。\n"
+"這個精靈會協助你完成 Zrythm 的基本設定。首先，請選擇你的語言。"
 
 #: resources/ui/first_run_assistant.ui:93 resources/ui/preferences.ui:512
 msgid "Language"
@@ -2654,7 +2660,7 @@ msgstr "語言"
 msgid ""
 "Next, choose the location to use for saving temporary files and projects (or "
 "accept the default)"
-msgstr ""
+msgstr "下一步，選擇暫存檔和專案的存放目錄(或使用預設值)"
 
 #: resources/ui/first_run_assistant.ui:138
 msgid "Resets the path to the default"
@@ -2662,27 +2668,27 @@ msgstr "將路徑設成預設值"
 
 #: resources/ui/first_run_assistant.ui:165
 msgid "Select the audio and MIDI engine backends to use"
-msgstr ""
+msgstr "選擇欲使用的音訊和 MIDI 後端"
 
 #: resources/ui/first_run_assistant.ui:183 resources/ui/preferences.ui:169
 msgid "MIDI Backend"
-msgstr ""
+msgstr "MIDI 後端"
 
 #: resources/ui/first_run_assistant.ui:196 resources/ui/preferences.ui:123
 msgid "Audio Backend"
-msgstr ""
+msgstr "音訊後端"
 
 #: resources/ui/first_run_assistant.ui:233
 msgid "Test"
-msgstr ""
+msgstr "測試"
 
 #: resources/ui/first_run_assistant.ui:237
 msgid "Tests the backends"
-msgstr ""
+msgstr "測試後端"
 
 #: resources/ui/first_run_assistant.ui:248
 msgid "Backends"
-msgstr ""
+msgstr "後端"
 
 #: resources/ui/bind_cc_dialog.ui:45 resources/ui/create_project_dialog.ui:38
 #: resources/ui/bounce_dialog.ui:51 resources/ui/export_dialog.ui:46
@@ -2714,73 +2720,73 @@ msgstr "根音"
 #: resources/ui/chord_selector_window.ui:79
 #: resources/ui/chord_selector_window.ui:523
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: resources/ui/scale_selector_window.ui:93
 #: resources/ui/chord_selector_window.ui:92
 #: resources/ui/chord_selector_window.ui:536
 msgid "D♭"
-msgstr ""
+msgstr "D♭"
 
 #: resources/ui/scale_selector_window.ui:106
 #: resources/ui/chord_selector_window.ui:105
 #: resources/ui/chord_selector_window.ui:549
 msgid "D"
-msgstr ""
+msgstr "D"
 
 #: resources/ui/scale_selector_window.ui:119
 #: resources/ui/chord_selector_window.ui:118
 #: resources/ui/chord_selector_window.ui:562
 msgid "E♭"
-msgstr ""
+msgstr "E♭"
 
 #: resources/ui/scale_selector_window.ui:132
 #: resources/ui/chord_selector_window.ui:131
 #: resources/ui/chord_selector_window.ui:575
 msgid "E"
-msgstr ""
+msgstr "E"
 
 #: resources/ui/scale_selector_window.ui:145
 #: resources/ui/chord_selector_window.ui:144
 #: resources/ui/chord_selector_window.ui:588
 msgid "F"
-msgstr ""
+msgstr "F"
 
 #: resources/ui/scale_selector_window.ui:158
 #: resources/ui/chord_selector_window.ui:157
 #: resources/ui/chord_selector_window.ui:601
 msgid "F♯"
-msgstr ""
+msgstr "F♯"
 
 #: resources/ui/scale_selector_window.ui:171
 #: resources/ui/chord_selector_window.ui:170
 #: resources/ui/chord_selector_window.ui:614
 msgid "G"
-msgstr ""
+msgstr "G"
 
 #: resources/ui/scale_selector_window.ui:184
 #: resources/ui/chord_selector_window.ui:183
 #: resources/ui/chord_selector_window.ui:627
 msgid "A♭"
-msgstr ""
+msgstr "A♭"
 
 #: resources/ui/scale_selector_window.ui:197
 #: resources/ui/chord_selector_window.ui:196
 #: resources/ui/chord_selector_window.ui:640
 msgid "A"
-msgstr ""
+msgstr "A"
 
 #: resources/ui/scale_selector_window.ui:210
 #: resources/ui/chord_selector_window.ui:209
 #: resources/ui/chord_selector_window.ui:653
 msgid "B♭"
-msgstr ""
+msgstr "B♭"
 
 #: resources/ui/scale_selector_window.ui:223
 #: resources/ui/chord_selector_window.ui:222
 #: resources/ui/chord_selector_window.ui:666
 msgid "B"
-msgstr ""
+msgstr "B"
 
 #: resources/ui/scale_selector_window.ui:267
 msgid "Chromatic"
@@ -2811,19 +2817,19 @@ msgstr ""
 #: resources/ui/scale_selector_window.ui:368
 #: resources/ui/chord_selector_window.ui:887 resources/ui/export_dialog.ui:251
 msgid "Custom"
-msgstr ""
+msgstr "自訂"
 
 #: resources/ui/bot_dock_edge.ui:66
 msgid "Editor view"
-msgstr "編輯"
+msgstr "編輯面板"
 
 #: resources/ui/bot_dock_edge.ui:82
 msgid "Editor"
-msgstr ""
+msgstr "編輯器"
 
 #: resources/ui/bot_dock_edge.ui:105
 msgid "Mixer view"
-msgstr "混音"
+msgstr "混音面板"
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Mixer"
@@ -2844,7 +2850,7 @@ msgstr ""
 #: resources/ui/timeline_toolbar.ui:68
 #: build/data/org.zrythm.Zrythm.gschema.xml:244
 msgid "Musical mode"
-msgstr ""
+msgstr "音樂模式"
 
 #: resources/ui/timeline_toolbar.ui:98
 msgid "Merge selections"
@@ -2876,27 +2882,27 @@ msgstr "根音"
 
 #: resources/ui/chord_selector_window.ui:265
 msgid "maj"
-msgstr ""
+msgstr "maj"
 
 #: resources/ui/chord_selector_window.ui:278
 msgid "min"
-msgstr ""
+msgstr "min"
 
 #: resources/ui/chord_selector_window.ui:291
 msgid "dim"
-msgstr ""
+msgstr "dim"
 
 #: resources/ui/chord_selector_window.ui:304
 msgid "sus4"
-msgstr ""
+msgstr "sus4"
 
 #: resources/ui/chord_selector_window.ui:317
 msgid "sus2"
-msgstr ""
+msgstr "sus2"
 
 #: resources/ui/chord_selector_window.ui:330
 msgid "aug"
-msgstr ""
+msgstr "aug"
 
 #: resources/ui/chord_selector_window.ui:347
 msgid "Accent"
@@ -2940,7 +2946,7 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:496
 msgid "Bass Note"
-msgstr ""
+msgstr "低音"
 
 #: resources/ui/chord_selector_window.ui:717
 msgid "In scale"
@@ -2948,31 +2954,31 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:768
 msgid "I"
-msgstr ""
+msgstr "I"
 
 #: resources/ui/chord_selector_window.ui:782
 msgid "II"
-msgstr ""
+msgstr "II"
 
 #: resources/ui/chord_selector_window.ui:796
 msgid "III"
-msgstr ""
+msgstr "III"
 
 #: resources/ui/chord_selector_window.ui:810
 msgid "IV"
-msgstr ""
+msgstr "IV"
 
 #: resources/ui/chord_selector_window.ui:824
 msgid "V"
-msgstr ""
+msgstr "V"
 
 #: resources/ui/chord_selector_window.ui:838
 msgid "VI"
-msgstr ""
+msgstr "VI"
 
 #: resources/ui/chord_selector_window.ui:852
 msgid "VII"
-msgstr ""
+msgstr "VII"
 
 #: resources/ui/chord_selector_window.ui:866
 msgid "Diatonic"
@@ -3000,11 +3006,11 @@ msgstr ""
 
 #: resources/ui/midi_controller_popover.ui:79
 msgid "Rescan"
-msgstr ""
+msgstr "重新掃描"
 
 #: resources/ui/midi_controller_popover.ui:83
 msgid "Scan again for MIDI controllers"
-msgstr ""
+msgstr "再次掃描 MIDI 控制器"
 
 #: resources/ui/midi_editor_space.ui:135 resources/ui/chord_editor_space.ui:154
 #: resources/ui/automation_editor_space.ui:116
@@ -3053,7 +3059,7 @@ msgstr "執行"
 
 #: resources/ui/scripting_window.ui:90
 msgid "The result will be printed here"
-msgstr ""
+msgstr "結果會顯示在這裡"
 
 #: resources/ui/chord_key.ui:12
 msgid "Amin 7"
@@ -3082,7 +3088,7 @@ msgstr "長度"
 #: resources/ui/inspector_master.ui:113 resources/ui/inspector_ap.ui:113
 #: resources/ui/inspector_midi.ui:113
 msgid "Muted"
-msgstr ""
+msgstr "静音"
 
 #: resources/ui/port_info_dialog.ui:100
 msgid "Full designation"
@@ -3122,7 +3128,7 @@ msgstr "輸出"
 
 #: resources/ui/export_midi_file_dialog.ui:104
 msgid "Region content"
-msgstr ""
+msgstr "片段內容"
 
 #: resources/ui/export_midi_file_dialog.ui:116
 msgid ""
@@ -3142,15 +3148,15 @@ msgstr ""
 #: resources/ui/export_midi_file_dialog.ui:145
 #: resources/ui/export_midi_file_dialog.ui:157
 msgid "MIDI format"
-msgstr ""
+msgstr "MIDI 格式"
 
 #: resources/ui/export_midi_file_dialog.ui:161
 msgid "Format 0"
-msgstr ""
+msgstr "格式 0"
 
 #: resources/ui/export_midi_file_dialog.ui:162
 msgid "Format 1"
-msgstr ""
+msgstr "格式 1"
 
 #: resources/ui/modulator_view.ui:53 resources/ui/clip_editor_inner.ui:53
 msgid "Track name"
@@ -3242,7 +3248,7 @@ msgstr "開啟目錄"
 
 #: resources/ui/export_progress_dialog.ui:28
 msgid "Opens the containing directory"
-msgstr ""
+msgstr "在資料夾中顯示"
 
 #: resources/ui/export_progress_dialog.ui:69
 msgid "Exporting..."
@@ -3254,7 +3260,7 @@ msgstr ""
 
 #: resources/ui/automation_track.ui:31
 msgid "Control this automation track is for"
-msgstr ""
+msgstr "控制此自動控制軌的用途"
 
 #: resources/ui/automation_track.ui:43
 msgid "Mute automation track"
@@ -3286,11 +3292,11 @@ msgstr "新增自動控制軌"
 
 #: resources/ui/bounce_dialog.ui:32
 msgid "Bounce Options"
-msgstr ""
+msgstr "轉換選項"
 
 #: resources/ui/bounce_dialog.ui:65
 msgid "Bounce"
-msgstr ""
+msgstr "轉換"
 
 #: resources/ui/bounce_dialog.ui:91
 msgid "Bounce with effect chain"
@@ -3298,31 +3304,31 @@ msgstr ""
 
 #: resources/ui/bounce_dialog.ui:107
 msgid "Tail"
-msgstr ""
+msgstr "尾音"
 
 #: resources/ui/bounce_dialog.ui:133
 msgid "ms"
-msgstr ""
+msgstr "毫秒"
 
 #: resources/ui/quantize_dialog.ui:7
 msgid "Quantize Options"
-msgstr ""
+msgstr "量化選項"
 
 #: resources/ui/quantize_dialog.ui:23
 msgid "_Quantize"
-msgstr ""
+msgstr "量化"
 
 #: resources/ui/quantize_dialog.ui:77
 msgid "Quantize to"
-msgstr ""
+msgstr "量化成"
 
 #: resources/ui/quantize_dialog.ui:132
 msgid "Adjust"
-msgstr ""
+msgstr "調整"
 
 #: resources/ui/quantize_dialog.ui:183
 msgid "Amount"
-msgstr ""
+msgstr "程度"
 
 #: resources/ui/quantize_dialog.ui:223
 msgid "Swing"
@@ -3330,7 +3336,7 @@ msgstr ""
 
 #: resources/ui/quantize_dialog.ui:251
 msgid "Randomization"
-msgstr ""
+msgstr "隨機性"
 
 #: resources/ui/export_dialog.ui:27
 msgid "Export As..."
@@ -3381,11 +3387,11 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:195
 msgid "Output Files"
-msgstr ""
+msgstr "輸出的檔案"
 
 #: resources/ui/export_dialog.ui:207
 msgid "Filename Pattern"
-msgstr ""
+msgstr "檔名格式"
 
 #: resources/ui/export_dialog.ui:227
 msgid "Song"
@@ -3393,11 +3399,11 @@ msgstr "歌曲"
 
 #: resources/ui/export_dialog.ui:265
 msgid "Time Range"
-msgstr ""
+msgstr "時間範圍"
 
 #: resources/ui/export_dialog.ui:277
 msgid "Tracks"
-msgstr ""
+msgstr "音軌"
 
 #: resources/ui/export_dialog.ui:298
 #: build/data/org.zrythm.Zrythm.gschema.xml:364
@@ -3423,15 +3429,15 @@ msgstr "音符長度"
 
 #: resources/ui/snap_grid_popover.ui:142 resources/ui/snap_grid_popover.ui:264
 msgid "t"
-msgstr ""
+msgstr "t"
 
 #: resources/ui/snap_grid_popover.ui:146 resources/ui/snap_grid_popover.ui:268
 msgid "Triplet"
-msgstr ""
+msgstr "三連音"
 
 #: resources/ui/snap_grid_popover.ui:162 resources/ui/snap_grid_popover.ui:284
 msgid "Dotted"
-msgstr ""
+msgstr "附點"
 
 #: resources/ui/snap_grid_popover.ui:188 resources/ui/snap_grid_popover.ui:310
 msgid "Adaptive"
@@ -3448,23 +3454,23 @@ msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:325
 msgid "Link"
-msgstr ""
+msgstr "同上"
 
 #: resources/ui/range_action_buttons.ui:58
 msgid "Remove range"
-msgstr ""
+msgstr "移除片段"
 
 #: resources/ui/editor_toolbar.ui:138
 msgid "Flip"
-msgstr ""
+msgstr "翻轉"
 
 #: resources/ui/editor_toolbar.ui:140
 msgid "Horizontal"
-msgstr ""
+msgstr "水平"
 
 #: resources/ui/editor_toolbar.ui:146
 msgid "Vertical"
-msgstr ""
+msgstr "垂直"
 
 #: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:463
 msgid "Engine"
@@ -3476,7 +3482,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:147
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "MIDI 控制器"
 
 #: resources/ui/preferences.ui:180
 msgid "The MIDI backend to connect to"
@@ -3500,7 +3506,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:511
 msgid "Zrythm path"
-msgstr ""
+msgstr "Zrythm 路徑"
 
 #: resources/ui/preferences.ui:245
 msgid "The global Zrythm working path for non-project related files"
@@ -3542,7 +3548,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:423
 msgid "VST2 Paths"
-msgstr ""
+msgstr "VST2 路徑"
 
 #: resources/ui/preferences.ui:465
 msgid "Main Window"
@@ -3560,7 +3566,7 @@ msgstr "介面"
 
 #: resources/ui/preferences.ui:523
 msgid "The language of the Zrythm interface"
-msgstr ""
+msgstr "Zrythm 的介面語言"
 
 #: resources/ui/preferences.ui:555
 msgid "GUI"
@@ -3592,11 +3598,11 @@ msgstr ""
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:16
 msgid "zrythm"
-msgstr ""
+msgstr "zrythm"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:185
 msgid "Recent project list"
-msgstr ""
+msgstr "最近的專案列表"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:186
 msgid "A list of recent projects to be referenced on startup."
