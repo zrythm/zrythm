@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,7 +19,11 @@
 
 #include "zrythm-config.h"
 
+#include "audio/engine.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/splash.h"
+#include "project.h"
 #include "utils/resources.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -54,6 +58,8 @@ splash_window_widget_close (
   gtk_widget_remove_tick_callback (
     GTK_WIDGET (self), self->tick_cb_id);
   gtk_window_close (GTK_WINDOW (self));
+
+  EVENTS_PUSH (ET_SPLASH_CLOSED, NULL);
 }
 
 static void

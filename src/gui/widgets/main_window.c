@@ -213,6 +213,26 @@ on_key_action (
   return FALSE;
 }
 
+static bool
+show_startup_errors (
+  MainWindowWidget * self)
+{
+  /* show any startup errors */
+  for (int k = 0;
+       k < zrythm_app->num_startup_errors;
+       k++)
+    {
+      char * msg =
+        zrythm_app->startup_errors[k];
+      ui_show_error_message (
+        self, msg);
+      g_free (msg);
+    }
+  zrythm_app->num_startup_errors = 0;
+
+  return G_SOURCE_REMOVE;
+}
+
 void
 main_window_widget_setup (
   MainWindowWidget * self)
@@ -275,6 +295,9 @@ main_window_widget_setup (
 
   EVENTS_PUSH (
     ET_MAIN_WINDOW_LOADED, NULL);
+
+  g_idle_add (
+    (GSourceFunc) show_startup_errors, self);
 
   self->setup = true;
 

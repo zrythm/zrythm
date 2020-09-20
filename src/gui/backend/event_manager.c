@@ -1584,18 +1584,8 @@ process_events (void * data)
               clip_editor_widget_on_region_changed (
                 MW_CLIP_EDITOR);
             }
-          /* show any startup errors */
-          for (int i = 0;
-               i < zrythm_app->num_startup_errors;
-               i++)
-            {
-              char * msg =
-                zrythm_app->startup_errors[i];
-              ui_show_error_message (
-                MAIN_WINDOW, msg);
-              g_free (msg);
-            }
-          zrythm_app->num_startup_errors = 0;
+          break;
+        case ET_SPLASH_CLOSED:
           break;
         case ET_PROJECT_SAVED:
           header_widget_set_subtitle (
