@@ -551,6 +551,7 @@ plugin_manager_new (void)
   return self;
 }
 
+#ifdef HAVE_CARLA
 static char **
 get_vst_paths (
   PluginManager * self)
@@ -857,6 +858,7 @@ get_ladspa_paths (
 
   return paths;
 }
+#endif
 
 /**
  * Returns if the plugin manager supports the given
@@ -910,6 +912,7 @@ plugin_manager_supports_protocol (
   return false;
 }
 
+#ifdef HAVE_CARLA
 static void
 scan_carla_descriptors_from_paths (
   PluginManager * self,
@@ -1025,8 +1028,9 @@ scan_carla_descriptors_from_paths (
                   plugin_path))
                 {
                   g_message (
-                    "Ignoring blacklisted VST "
-                    "plugin: %s", plugin_path);
+                    "Ignoring blacklisted %s "
+                    "plugin: %s",
+                    protocol_str, plugin_path);
                 }
               else
                 {
@@ -1135,6 +1139,7 @@ scan_carla_descriptors_from_paths (
     }
   g_strfreev (paths);
 }
+#endif
 
 /**
  * Scans for plugins, optionally updating the

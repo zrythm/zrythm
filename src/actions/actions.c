@@ -96,6 +96,7 @@
 #include "utils/resources.h"
 #include "utils/stack.h"
 #include "utils/string.h"
+#include "utils/system.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
@@ -298,6 +299,26 @@ activate_log (
   GVariant      *variant,
   gpointer       user_data)
 {
+  if (!LOG || !LOG->log_filepath)
+    {
+      g_message ("No log file found");
+      return;
+    }
+
+  const char * cmd[3] = {
+    OPEN_DIR_CMD, LOG->log_filepath, NULL };
+
+  int ret =
+    system_run_cmd_w_args (
+      cmd, 4000, false, NULL, false);
+  if (ret)
+    {
+      g_warning (
+        "an error occured running %s %s",
+        OPEN_DIR_CMD, LOG->log_filepath);
+    }
+
+#if 0
   if (GTK_IS_WINDOW (LOG->viewer))
     {
       gtk_window_present (
@@ -312,6 +333,7 @@ activate_log (
       gtk_widget_set_visible (
         GTK_WIDGET (LOG->viewer), 1);
     }
+#endif
 }
 
 /**

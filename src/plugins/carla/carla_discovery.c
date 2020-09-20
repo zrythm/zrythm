@@ -428,7 +428,7 @@ z_carla_discovery_run (
   char * res;
   int ret =
     system_run_cmd_w_args (
-      argv, 4000, true, &res, true);
+      argv, 4000, &res, NULL, true);
   if (ret == 0)
     {
       return res;

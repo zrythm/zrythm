@@ -37,13 +37,11 @@
  * Runs the given command in the background, waits
  * for it to finish and returns its exit code.
  *
- * @note Only works for stdout for now.
- *
  * @param args NULL-terminated array of args.
- * @param get_stdout Whether to get the standard out
- *   (true) or stderr (false).
- * @param[out] output A pointer to save the newly
- *   allocated stdout or stderr output.
+ * @param[out] out_stdout A pointer to save the newly
+ *   allocated stdout output (if non-NULL).
+ * @param[out] out_stderr A pointer to save the newly
+ *   allocated stderr output (if non-NULL).
  * @param ms_timer A timer in ms to
  *   kill the process, or negative to not
  *   wait.
@@ -52,13 +50,11 @@ int
 system_run_cmd_w_args (
   const char ** args,
   int           ms_to_wait,
-  bool          get_stdout,
-  char **       output,
+  char **       out_stdout,
+  char **       out_stderr,
   bool          warn_if_fail)
 {
   g_message ("ms to wait: %d", ms_to_wait);
-
-  *output = NULL;
 
   reproc_options opts;
   memset (&opts, 0, sizeof (reproc_options));
@@ -70,14 +66,30 @@ system_run_cmd_w_args (
   opts.stop.third.timeout = REPROC_INFINITE;
   opts.deadline = ms_to_wait;
 
-  reproc_sink sink = reproc_sink_string (output);
+  reproc_sink stdout_sink = REPROC_SINK_NULL,
+              stderr_sink = REPROC_SINK_NULL;
+  if (out_stdout)
+    {
+      *out_stdout = NULL;
+      stdout_sink = reproc_sink_string (out_stdout);
+    }
+  if (out_stderr)
+    {
+      *out_stderr = NULL;
+      stderr_sink = reproc_sink_string (out_stderr);
+    }
   int r =
     reproc_run_ex (
-      args, opts,
-      get_stdout ? sink : REPROC_SINK_NULL,
-      get_stdout ? REPROC_SINK_NULL : sink);
+      args, opts, stdout_sink, stderr_sink);
 
-  g_message ("output: %s", *output);
+  if (out_stdout)
+    {
+      g_message ("stdout: %s", *out_stdout);
+    }
+  if (out_stderr)
+    {
+      g_message ("stderr: %s", *out_stderr);
+    }
 
   if (r < 0)
     {
