@@ -1449,38 +1449,51 @@ plugin_process (
  * shows plugin ui and sets window close callback
  */
 void
-plugin_open_ui (Plugin *plugin)
+plugin_open_ui (
+  Plugin * self)
 {
-  if (plugin->instantiation_failed)
+  if (self->instantiation_failed)
     {
+      g_message (
+        "plugin %s instantiation failed, no UI to "
+        "open",
+        self->descr->name);
       return;
     }
 
-  if (plugin->descr->open_with_carla)
+  if (self->descr->open_with_carla)
     {
 #ifdef HAVE_CARLA
+      if (!plugin_has_custom_ui (self))
+        {
+          /* TODO create generic UI */
+          g_message (
+            "plugin %s has no custom UI",
+            self->descr->name);
+        }
+
       carla_native_plugin_open_ui (
-        plugin->carla, 1);
+        self->carla, 1);
 #endif
     }
   else
     {
-      if (GTK_IS_WINDOW (plugin->window))
+      if (GTK_IS_WINDOW (self->window))
         {
           gtk_window_present (
-            GTK_WINDOW (plugin->window));
+            GTK_WINDOW (self->window));
           gtk_window_set_transient_for (
-            GTK_WINDOW (plugin->window),
+            GTK_WINDOW (self->window),
             (GtkWindow *) MAIN_WINDOW);
         }
       else
         {
-          switch (plugin->descr->protocol)
+          switch (self->descr->protocol)
             {
             case PROT_LV2:
               {
                 Lv2Plugin * lv2_plugin =
-                  plugin->lv2;
+                  self->lv2;
                 if (lv2_plugin->has_external_ui &&
                     lv2_plugin->external_ui_widget)
                   {
@@ -1506,7 +1519,7 @@ plugin_open_ui (Plugin *plugin)
 /**
  * Returns if Plugin exists in MixerSelections.
  */
-int
+bool
 plugin_is_selected (
   Plugin * pl)
 {
@@ -1553,6 +1566,43 @@ plugin_select (
         MIXER_SELECTIONS, pl->id.slot,
         pl->id.slot_type, F_PUBLISH_EVENTS);
     }
+}
+
+/**
+ * Returns whether the plugin has a custom UI.
+ */
+bool
+plugin_has_custom_ui (
+  Plugin * pl)
+{
+  g_return_val_if_fail (IS_PLUGIN (pl), false);
+
+#ifdef HAVE_CARLA
+  if (pl->descr->open_with_carla)
+    {
+      g_return_val_if_fail (pl->carla, false);
+      const CarlaPluginInfo * info =
+        carla_get_plugin_info (
+          pl->carla->host_handle, 0);
+      return info->hints & PLUGIN_HAS_CUSTOM_UI;
+    }
+  else
+    {
+#endif
+      switch (pl->descr->protocol)
+        {
+        case PROT_LV2:
+          g_return_val_if_fail (
+            IS_LV2_PLUGIN (pl->lv2), false);
+          return pl->lv2->ui != NULL;
+        default:
+          g_warn_if_reached ();
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
+
+  return false;
 }
 
 /**

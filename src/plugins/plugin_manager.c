@@ -1001,7 +1001,7 @@ scan_carla_descriptors_from_paths (
               int i = 0;
               while ((descriptor = descriptors[i++]))
                 {
-                  g_message (
+                  g_debug (
                     "Found cached %s %s",
                     protocol_str,
                     descriptor->name);

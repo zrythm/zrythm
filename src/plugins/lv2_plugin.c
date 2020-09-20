@@ -891,7 +891,7 @@ run (
     (uint32_t)
     ((float) AUDIO_ENGINE->sample_rate /
      plugin->plugin->ui_update_hz);
-  if (lv2_plugin_has_custom_ui (plugin) &&
+  if (plugin_has_custom_ui (plugin->plugin) &&
       plugin->plugin->visible &&
       (plugin->event_delta_t > update_frames))
     {

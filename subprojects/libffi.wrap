@@ -1,5 +1,4 @@
 [wrap-git]
 directory=libffi
-url=https://github.com/centricular/libffi.git
-push-url=git@github.com:centricular/libffi.git
+url=https://gitlab.freedesktop.org/gstreamer/meson-ports/libffi
 revision=meson

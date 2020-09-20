@@ -41,7 +41,7 @@ util_srcs = [
   'object_pool.c',
   'objects.c',
   'resources.c',
-  'smf.c',
+  #'smf.c',
   'stack.c',
   'string.c',
   'symap.c',

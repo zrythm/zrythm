@@ -182,9 +182,6 @@ typedef struct Lv2Plugin
   uint32_t           midi_event_id;  ///< MIDI event class ID in event context
   bool               exit;           ///< True iff execution is finished
 
-  /** Whether the plugin has its own UI. */
-  bool               has_custom_ui;
-
   /** Whether a plugin update is needed. */
   bool               request_update;
 
@@ -289,13 +286,6 @@ Lv2Plugin *
 lv2_plugin_new_from_uri (
   Plugin    *  plugin,
   const char * uri);
-
-static inline int
-lv2_plugin_has_custom_ui (
-  Lv2Plugin * self)
-{
-  return self->ui != NULL;
-}
 
 /**
  * Instantiate the plugin.

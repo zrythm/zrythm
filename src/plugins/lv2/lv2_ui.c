@@ -149,7 +149,7 @@ lv2_ui_read_and_apply_events (
       /* float control change - this is only for
        * plugins with custom UIs */
       if (ev.protocol == 0 &&
-          lv2_plugin_has_custom_ui (plugin))
+          plugin_has_custom_ui (plugin->plugin))
         {
           assert (ev.size == sizeof (float));
           g_return_if_fail (port->port);
@@ -165,7 +165,7 @@ lv2_ui_read_and_apply_events (
             plugin->plugin->descr->name,
             port->port->id.label,
             (double) * (float *) body,
-            lv2_plugin_has_custom_ui (plugin));
+            plugin_has_custom_ui (plugin->plugin));
         }
       else if (ev.protocol ==
                  PM_URIDS.atom_eventTransfer)
@@ -186,7 +186,7 @@ lv2_ui_read_and_apply_events (
             "event for %s - has custom UI %d",
             __func__, plugin->plugin->descr->name,
             port->port->id.label,
-            lv2_plugin_has_custom_ui (plugin));
+            plugin_has_custom_ui (plugin->plugin));
         }
       else
         {

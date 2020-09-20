@@ -197,10 +197,6 @@ typedef struct Plugin
 
   bool              is_project;
 
-  /** Used on plugins not in the project to
-   * indicate that the */
-  //bool              needs_state_loading;
-
   /** Modulator widget, if modulator. */
   ModulatorWidget * modulator_widget;
 } Plugin;
@@ -561,8 +557,15 @@ plugin_open_ui (
 /**
  * Returns if Plugin exists in MixerSelections.
  */
-int
+bool
 plugin_is_selected (
+  Plugin * pl);
+
+/**
+ * Returns whether the plugin has a custom UI.
+ */
+bool
+plugin_has_custom_ui (
   Plugin * pl);
 
 /**
