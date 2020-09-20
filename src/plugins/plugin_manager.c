@@ -551,7 +551,6 @@ plugin_manager_new (void)
   return self;
 }
 
-#ifdef HAVE_CARLA
 static char **
 get_vst_paths (
   PluginManager * self)
@@ -858,7 +857,6 @@ get_ladspa_paths (
 
   return paths;
 }
-#endif // HAVE_CARLA
 
 /**
  * Returns if the plugin manager supports the given
@@ -989,6 +987,9 @@ scan_carla_descriptors_from_paths (
       while ((plugin_path = plugins[plugin_idx++]) !=
                NULL)
         {
+          g_debug (
+            "getting descriptors for %s...",
+            plugin_path);
           PluginDescriptor ** descriptors =
             cached_plugin_descriptors_get (
               self->cached_plugin_descriptors,
