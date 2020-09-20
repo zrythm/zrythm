@@ -202,6 +202,8 @@ localization_locale_exists (
  *
  * @param use_locale Use the user's local instead of
  *   the Zrythm settings.
+ * @param print_debug_messages Set to false to
+ *   silence messages.
  *
  * Returns if a locale for the selected language
  * exists on the system or not.
@@ -295,11 +297,14 @@ localization_init (
       ZRYTHM_DIR_SYSTEM_LOCALEDIR);
   bindtextdomain (
     GETTEXT_PACKAGE, localedir);
+  g_debug ("setting textdomain: %s, %s",
+    GETTEXT_PACKAGE, localedir);
   g_free (localedir);
 #endif
 
   /* set domain codeset */
-  bind_textdomain_codeset (GETTEXT_PACKAGE, CODESET);
+  bind_textdomain_codeset (
+    GETTEXT_PACKAGE, CODESET);
 
   /* set domain */
   textdomain (GETTEXT_PACKAGE);
