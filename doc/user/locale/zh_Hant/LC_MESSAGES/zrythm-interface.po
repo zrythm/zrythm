@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:44+0100\n"
-"PO-Revision-Date: 2020-09-17 11:36+0000\n"
+"PO-Revision-Date: 2020-09-20 19:55+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/manualzrythm-interface/zh_Hant/>\n"
@@ -97,7 +97,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:18
 msgid "Editor"
-msgstr ""
+msgstr "編輯器"
 
 #: ../../zrythm-interface/bottom-panel.rst:19
 msgid ""

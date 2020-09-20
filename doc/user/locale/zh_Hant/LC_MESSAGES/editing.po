@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:44+0100\n"
-"PO-Revision-Date: 2020-09-15 05:36+0000\n"
+"PO-Revision-Date: 2020-09-20 19:55+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/manualediting/zh_Hant/>\n"
@@ -966,7 +966,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:17
 msgid "Quantize"
-msgstr ""
+msgstr "量化"
 
 #: ../../editing/quantization.rst:18
 msgid ""
@@ -976,7 +976,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:25
 msgid "Quantize to"
-msgstr ""
+msgstr "量化成"
 
 #: ../../editing/quantization.rst:26
 msgid "Select the note length and type to quantize to."
@@ -984,7 +984,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:28
 msgid "Adjust"
-msgstr ""
+msgstr "調整"
 
 #: ../../editing/quantization.rst:28
 msgid ""
@@ -994,7 +994,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:32
 msgid "Amount"
-msgstr ""
+msgstr "程度"
 
 #: ../../editing/quantization.rst:31
 msgid ""
@@ -1012,7 +1012,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:39
 msgid "Randomization"
-msgstr ""
+msgstr "隨機性"
 
 #: ../../editing/quantization.rst:37
 msgid ""
