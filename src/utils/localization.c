@@ -28,11 +28,14 @@
 
 #include <locale.h>
 
+#include "gui/widgets/main_window.h"
 #include "settings/settings.h"
 #include "utils/localization.h"
 #include "utils/io.h"
 #include "utils/string.h"
+#include "utils/ui.h"
 #include "zrythm.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -131,55 +134,60 @@ localization_locale_exists (
   pclose (fp);
 
 #define IS_MATCH(caps,code) \
-  case LL_##caps: \
-    match = \
-      get_match ( \
-        installed_locales, num_installed_locales, \
-        code, CODESET); \
-    if (!match) \
-      { \
-        match = \
-          get_match ( \
-            installed_locales, \
-            num_installed_locales, \
-            code, ALT_CODESET); \
-      } \
-    break
+  if (lang == LL_##caps) \
+    { \
+      match = \
+        get_match ( \
+          installed_locales, num_installed_locales, \
+          code, CODESET); \
+      if (!match) \
+        { \
+          match = \
+            get_match ( \
+              installed_locales, \
+              num_installed_locales, \
+              code, ALT_CODESET); \
+        } \
+      if (match) \
+        { \
+          goto after_match_check; \
+        } \
+    }
 
   char * match = NULL;
-  switch (lang)
+  IS_MATCH (AR, "ar_");
+  IS_MATCH (CS, "cs_");
+  IS_MATCH (DA, "da_");
+  IS_MATCH (DE, "de_");
+  /* break order here */
+  IS_MATCH (EN_GB, "en_GB");
+  IS_MATCH (EN, "en_");
+  IS_MATCH (EL, "el_");
+  IS_MATCH (ES, "es_");
+  IS_MATCH (ET, "et_");
+  IS_MATCH (FI, "fi_");
+  IS_MATCH (FR, "fr_");
+  IS_MATCH (GD, "gd_");
+  IS_MATCH (GL, "gl_");
+  IS_MATCH (HI, "hi_");
+  IS_MATCH (IT, "it_");
+  IS_MATCH (JA, "ja_");
+  IS_MATCH (KO, "ko_");
+  IS_MATCH (NB_NO, "nb_NO");
+  IS_MATCH (NL, "nl_");
+  IS_MATCH (PL, "pl_");
+  /* break order here */
+  IS_MATCH (PT_BR, "pt_BR");
+  IS_MATCH (PT, "pt_");
+  IS_MATCH (RU, "ru_");
+  IS_MATCH (SV, "sv_");
+  IS_MATCH (ZH_HANS, "zh_Hans");
+  IS_MATCH (ZH_HANT, "zh_Hant");
+  IS_MATCH (ZH_HANT, "zh_TW");
+after_match_check:
+  if (!match)
     {
-    IS_MATCH (AR, "ar_");
-    IS_MATCH (CS, "cs_");
-    IS_MATCH (DA, "da_");
-    IS_MATCH (DE, "de_");
-    /* break order here */
-    IS_MATCH (EN_GB, "en_GB");
-    IS_MATCH (EN, "en_");
-    IS_MATCH (EL, "el_");
-    IS_MATCH (ES, "es_");
-    IS_MATCH (ET, "et_");
-    IS_MATCH (FI, "fi_");
-    IS_MATCH (FR, "fr_");
-    IS_MATCH (GD, "gd_");
-    IS_MATCH (GL, "gl_");
-    IS_MATCH (HI, "hi_");
-    IS_MATCH (IT, "it_");
-    IS_MATCH (JA, "ja_");
-    IS_MATCH (KO, "ko_");
-    IS_MATCH (NB_NO, "nb_NO");
-    IS_MATCH (NL, "nl_");
-    IS_MATCH (PL, "pl_");
-    /* break order here */
-    IS_MATCH (PT_BR, "pt_BR");
-    IS_MATCH (PT, "pt_");
-    IS_MATCH (RU, "ru_");
-    IS_MATCH (SV, "sv_");
-    IS_MATCH (ZH_HANS, "zh_Hans");
-    IS_MATCH (ZH_HANT, "zh_Hant");
-    default:
       g_warn_if_reached ();
-      break;
     }
 
 #undef IS_MATCH
@@ -246,6 +254,7 @@ localization_init (
         }
 
       code = localization_locale_exists (lang);
+      g_debug ("code is %s", code);
     }
 
   char * match = NULL;
@@ -269,10 +278,15 @@ localization_init (
     {
       if (!use_locale)
         {
-          g_warning (
-            "No locale for \"%s\" is "
-            "installed, using default",
-            language_strings[lang]);
+          char * msg =
+            g_strdup_printf (
+              "No locale for \"%s\" is "
+              "installed, using default",
+              language_strings[lang]);
+          zrythm_app->startup_errors[
+            zrythm_app->num_startup_errors++] =
+              msg;
+          g_warning ("%s", msg);
         }
       setlocale (LC_ALL, "C");
     }

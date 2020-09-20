@@ -114,6 +114,11 @@ struct _ZrythmApp
 
   /** Buffer size passed with --buf-size=, if any. */
   char *             buf_size;
+
+  /** Messages to show when the main window is
+   * shown. */
+  char *             startup_errors[24];
+  int                num_startup_errors;
 };
 
 /**
