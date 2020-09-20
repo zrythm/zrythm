@@ -969,15 +969,19 @@ on_plugin_window_visibility_changed (
 static void
 on_plugin_visibility_changed (Plugin * pl)
 {
-  g_message (
+  g_debug (
     "start - visible: %d", pl->visible);
   if (pl->visible)
-    plugin_open_ui (pl);
+    {
+      plugin_open_ui (pl);
+    }
   else if (!pl->visible)
-    plugin_close_ui (pl);
+    {
+      plugin_close_ui (pl);
+    }
 
   on_plugin_window_visibility_changed (pl);
-  g_message ("done");
+  g_debug ("done");
 }
 
 /*static int*/

@@ -1079,6 +1079,10 @@ carla_native_plugin_open_ui (
   CarlaNativePlugin * self,
   bool                show)
 {
+  g_return_if_fail (
+    self && IS_PLUGIN (self->plugin) &&
+    self->plugin->descr);
+
   switch (self->plugin->descr->protocol)
     {
     case PROT_VST:
@@ -1120,6 +1124,9 @@ carla_native_plugin_open_ui (
         if (show)
           {
             g_warn_if_fail (MAIN_WINDOW);
+            g_debug (
+              "setting tick callback for %s",
+              self->plugin->descr->name);
             gtk_widget_add_tick_callback (
               GTK_WIDGET (MAIN_WINDOW),
               (GtkTickCallback)

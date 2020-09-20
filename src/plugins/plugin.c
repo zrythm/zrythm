@@ -1452,6 +1452,11 @@ void
 plugin_open_ui (
   Plugin * self)
 {
+  g_debug ("opening plugin UI");
+
+  g_return_if_fail (
+    IS_PLUGIN (self) && self->descr);
+
   if (self->instantiation_failed)
     {
       g_message (
@@ -1472,6 +1477,10 @@ plugin_open_ui (
             self->descr->name);
           return;
         }
+
+      g_message (
+        "plugin %s has custom UI",
+        self->descr->name);
 
       carla_native_plugin_open_ui (
         self->carla, 1);
@@ -1576,15 +1585,18 @@ bool
 plugin_has_custom_ui (
   Plugin * pl)
 {
-  g_return_val_if_fail (IS_PLUGIN (pl), false);
+  g_return_val_if_fail (
+    IS_PLUGIN (pl) && pl->descr, false);
 
 #ifdef HAVE_CARLA
   if (pl->descr->open_with_carla)
     {
-      g_return_val_if_fail (pl->carla, false);
+      g_return_val_if_fail (
+        pl->carla && pl->carla->host_handle, false);
       const CarlaPluginInfo * info =
         carla_get_plugin_info (
           pl->carla->host_handle, 0);
+      g_return_val_if_fail (info, false);
       return info->hints & PLUGIN_HAS_CUSTOM_UI;
     }
   else
