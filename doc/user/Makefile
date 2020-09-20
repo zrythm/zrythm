@@ -18,7 +18,7 @@ RENDERDIR     = _rendered
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-LANGUAGES = en en_GB de fr gl it es ja pt pt_BR ru nb_NO zh_Hans zh_Hant
+LANGUAGES = en en_GB de fr gl it es ja pt pt_BR ru nb_NO zh_CN zh_TW
 
 GUILE_DOCS_SRCDIR=/tmp
 GUILE_DOCS_DESTDIR=/tmp

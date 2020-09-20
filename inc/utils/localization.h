@@ -93,8 +93,8 @@ static const char * language_strings[] = {
   "pt_BR",
   "ru",
   "sv",
-  "zh_Hans",
-  "zh_Hant",
+  "zh_CN",
+  "zh_TW",
 };
 
 static const char * language_strings_full[] = {
@@ -122,8 +122,8 @@ static const char * language_strings_full[] = {
   "Português BR [pt_BR]",
   "русский [ru]",
   "Svenska [sv]",
-  "简体中文 [zh_Hans]",
-  "繁體中文 [zh_Hant]",
+  "简体中文 [zh_CN]",
+  "繁體中文 [zh_TW]",
 };
 
 static inline const char *
