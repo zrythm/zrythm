@@ -1470,6 +1470,7 @@ plugin_open_ui (
           g_message (
             "plugin %s has no custom UI",
             self->descr->name);
+          return;
         }
 
       carla_native_plugin_open_ui (
