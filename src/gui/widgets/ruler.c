@@ -24,6 +24,7 @@
 #include "audio/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "gui/backend/timeline.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -69,6 +70,23 @@ G_DEFINE_TYPE (
 
 #define ACTION_IS(x) \
   (self->action == UI_OVERLAY_ACTION_##x)
+
+double
+ruler_widget_get_zoom_level (
+  RulerWidget * self)
+{
+  if (self->type == RULER_WIDGET_TYPE_TIMELINE)
+    {
+      return PRJ_TIMELINE->hzoom_level;
+    }
+  else if (self->type ==
+             RULER_WIDGET_TYPE_EDITOR)
+    {
+      return CLIP_EDITOR->hzoom_level;
+    }
+
+  g_return_val_if_reached (1.f);
+}
 
 /**
  * Returns the beat interval for drawing vertical
@@ -1876,7 +1894,8 @@ ruler_widget_refresh (RulerWidget * self)
 {
   /*adjust for zoom level*/
   self->px_per_tick =
-    DEFAULT_PX_PER_TICK * self->zoom_level;
+    DEFAULT_PX_PER_TICK *
+    ruler_widget_get_zoom_level (self);
   self->px_per_sixteenth =
     self->px_per_tick * TICKS_PER_SIXTEENTH_NOTE;
   self->px_per_beat =
@@ -1956,7 +1975,15 @@ ruler_widget_set_zoom_level (
 
   if (update)
     {
-      self->zoom_level = zoom_level;
+      if (self->type == RULER_WIDGET_TYPE_TIMELINE)
+        {
+          PRJ_TIMELINE->hzoom_level = zoom_level;
+        }
+      else if (self->type ==
+                 RULER_WIDGET_TYPE_EDITOR)
+        {
+          CLIP_EDITOR->hzoom_level = zoom_level;
+        }
       ruler_widget_refresh (self);
       return 1;
     }
@@ -1969,8 +1996,6 @@ ruler_widget_set_zoom_level (
 static void
 ruler_widget_init (RulerWidget * self)
 {
-  self->zoom_level = RW_DEFAULT_ZOOM_LEVEL;
-
   /* make the widget able to notify */
   gtk_widget_add_events (
     GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);

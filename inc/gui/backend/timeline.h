@@ -55,6 +55,9 @@ typedef struct Timeline
 
   /** Vertical scroll start position. */
   int            pinned_scroll_start_y;
+
+  /** Horizontal zoom level. */
+  double         hzoom_level;
 } Timeline;
 
 static const cyaml_schema_field_t
@@ -68,6 +71,8 @@ timeline_fields_schema[] =
     Timeline, pinned_scroll_start_x),
   YAML_FIELD_INT (
     Timeline, pinned_scroll_start_y),
+  YAML_FIELD_FLOAT (
+    Timeline, hzoom_level),
 
   CYAML_FIELD_END
 };

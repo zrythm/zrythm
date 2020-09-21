@@ -52,11 +52,11 @@ void
 clip_editor_init_loaded (
   ClipEditor * self)
 {
-  g_message ("%s: initing...", __func__);
+  g_message ("Intializing clip editor backend...");
 
   piano_roll_init_loaded (&self->piano_roll);
 
-  g_message ("%s: done", __func__);
+  g_message ("Done intializing clip editor backend");
 }
 
 /**
@@ -222,6 +222,8 @@ ClipEditor *
 clip_editor_new (void)
 {
   ClipEditor * self = object_new (ClipEditor);
+
+  self->hzoom_level = 1.f;
 
   return self;
 }

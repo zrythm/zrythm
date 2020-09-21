@@ -345,7 +345,7 @@ drag_begin (GtkGestureDrag * gesture,
             GTK_WIDGET (self->selection));
 
       self->start_zoom_level =
-        MW_RULER->zoom_level;
+        ruler_widget_get_zoom_level (MW_RULER);
 
       /* motion handler was causing drag update
        * to not get called */

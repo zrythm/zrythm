@@ -1598,6 +1598,12 @@ process_events (void * data)
             ((Project *) ev->arg)->title);
           home_toolbar_widget_refresh_undo_redo_buttons (
             MW_HOME_TOOLBAR);
+          ruler_widget_set_zoom_level (
+            MW_RULER,
+            (double) PRJ_TIMELINE->hzoom_level);
+          ruler_widget_set_zoom_level (
+            EDITOR_RULER,
+            (double) CLIP_EDITOR->hzoom_level);
           break;
         case ET_AUTOMATION_TRACKLIST_AT_REMOVED:
           /* TODO */

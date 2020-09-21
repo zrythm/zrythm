@@ -457,7 +457,8 @@ activate_zoom_in (GSimpleAction *action,
                   gpointer       user_data)
 {
   ruler_widget_set_zoom_level (
-    MW_RULER, MW_RULER->zoom_level * 1.3);
+    MW_RULER,
+    ruler_widget_get_zoom_level (MW_RULER) * 1.3);
 
   EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
                NULL);
@@ -468,7 +469,8 @@ activate_zoom_out (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  double zoom_level = MW_RULER->zoom_level / 1.3;
+  double zoom_level =
+    ruler_widget_get_zoom_level (MW_RULER) / 1.3;
   ruler_widget_set_zoom_level (
     MW_RULER, zoom_level);
 
@@ -484,8 +486,8 @@ activate_best_fit (GSimpleAction *action,
   /* TODO */
   g_message ("ZOOMING IN");
 
-  EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
-               NULL);
+  EVENTS_PUSH (
+    ET_TIMELINE_VIEWPORT_CHANGED, NULL);
 }
 
 void
@@ -493,11 +495,10 @@ activate_original_size (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  MW_RULER->zoom_level =
-    (double) RW_DEFAULT_ZOOM_LEVEL;
+  ruler_widget_set_zoom_level (MW_RULER, 1.0);
 
-  EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
-               NULL);
+  EVENTS_PUSH (
+    ET_TIMELINE_VIEWPORT_CHANGED, NULL);
 }
 
 void

@@ -218,8 +218,7 @@ snap_grid_update_snap_points (SnapGrid * self)
   POSITION_INIT_ON_STACK (tmp);
   Position end_pos;
   position_set_to_bar (
-    &end_pos,
-    TRANSPORT->total_bars + 1);
+    &end_pos, TRANSPORT->total_bars + 1);
   self->num_snap_points = 0;
   add_snap_point (self, &tmp);
   long ticks = snap_grid_get_snap_ticks (self);

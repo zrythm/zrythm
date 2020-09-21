@@ -30,8 +30,6 @@
 
 #include <gtk/gtk.h>
 
-#define RW_DEFAULT_ZOOM_LEVEL 1.0f
-
 #define RW_RULER_MARKER_SIZE 8
 #define RW_CUE_MARKER_HEIGHT 12
 #define RW_CUE_MARKER_WIDTH 7
@@ -148,9 +146,6 @@ typedef struct _RulerWidget
    */
   int               shift_held;
 
-  /** FIXME move somewhere else */
-  double            zoom_level;
-
   /** Px the playhead was last drawn at, so we can
    * redraw this and the new px only when the
    * playhead changes position. */
@@ -256,6 +251,14 @@ ruler_widget_is_range_hit (
   RulerWidgetRangeType type,
   double               x,
   double               y);
+
+/**
+ * Gets the zoom level associated with this
+ * RulerWidget from the backend.
+ */
+double
+ruler_widget_get_zoom_level (
+  RulerWidget * self);
 
 void
 ruler_widget_refresh (

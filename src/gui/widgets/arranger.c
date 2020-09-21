@@ -5627,13 +5627,13 @@ on_scroll (
     {
       ruler_widget_set_zoom_level (
         ruler,
-        ruler->zoom_level / 1.3);
+        ruler_widget_get_zoom_level (ruler) / 1.3);
     }
   else /* scroll up, zoom in */
     {
       ruler_widget_set_zoom_level (
         ruler,
-        ruler->zoom_level * 1.3);
+        ruler_widget_get_zoom_level (ruler) * 1.3);
     }
 
   new_x = arranger_widget_pos_to_px (
