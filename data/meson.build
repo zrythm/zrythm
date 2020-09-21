@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-gschema_top = 'org.zrythm.Zrythm'
+gschema_top = 'org.' + prog_name_lowercase + '.' + prog_name
 gschema = configure_file (
   input: gen_gschema_wrap,
   output: gschema_top + '.gschema.xml',
@@ -47,9 +47,11 @@ if os_gnu or os_freebsd
     'SCHEMAS_DIR', schemasdir)
   zrythm_launcher_config.set (
     'BIN_DIR', bindir)
+  zrythm_launcher_config.set (
+    'PROGRAM_NAME_LOWERCASE', prog_name_lowercase)
   zrythm_launcher = configure_file (
     input: 'zrythm_launch.in',
-    output: 'zrythm_launch',
+    output: prog_name_lowercase + '_launch',
     configuration: zrythm_launcher_config,
     install: true,
     install_dir: bindir,
@@ -61,7 +63,7 @@ if os_gnu or os_freebsd
     configuration: zrythm_launcher_config)
   localized_desktop_file = i18n.merge_file (
     input: desktop_file,
-    output: 'zrythm.desktop',
+    output: prog_name_lowercase + '.desktop',
     type: 'desktop',
     po_dir: '../po',
     install: true,
@@ -91,7 +93,7 @@ if not os_windows
     install_dir: join_paths (
       sysconfdir, 'bash_completion.d'),
     install_mode: 'r--r--r--',
-    rename: 'zrythm')
+    rename: prog_name_lowercase)
 endif
 
 # GtkSourceView styles
@@ -104,6 +106,6 @@ install_data (
 install_data (
   'theme.css',
   install_dir: themesdir,
-  rename: 'zrythm-theme.css')
+  rename: prog_name_lowercase + '-theme.css')
 
 subdir('windows')

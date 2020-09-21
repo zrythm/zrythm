@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 export GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@
-@BIN_DIR@/zrythm
+@BIN_DIR@/@PROGRAM_NAME_LOWERCASE@ "$@"

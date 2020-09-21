@@ -27,6 +27,9 @@ project (
     ],
   )
 
+prog_name = get_option ('program_name')
+prog_name_lowercase = prog_name.to_lower()
+
 gnome = import ('gnome')
 fs = import ('fs')
 cmake = import ('cmake')
@@ -42,12 +45,12 @@ datadir = join_paths (prefix, get_option('datadir'))
 sysconfdir = join_paths (prefix, get_option('sysconfdir'))
 mandir = join_paths (datadir, 'man', 'man1')
 schemasdir = join_paths (datadir, 'glib-2.0/schemas')
-fontsdir = join_paths (datadir, 'fonts', 'zrythm')
-zrythmdatadir = join_paths (datadir, 'zrythm')
-themesdir = join_paths (zrythmdatadir, 'themes')
-samplesdir = join_paths (zrythmdatadir, 'samples')
-docdir = join_paths (datadir, 'doc', 'zrythm')
-sourceviewstylesdir = join_paths (zrythmdatadir, 'sourceview-styles')
+fontsdir = datadir / 'fonts' / prog_name_lowercase
+zrythmdatadir = datadir / prog_name_lowercase
+themesdir = zrythmdatadir / 'themes'
+samplesdir = zrythmdatadir / 'samples'
+docdir = datadir / 'doc' / prog_name_lowercase
+sourceviewstylesdir = zrythmdatadir / 'sourceview-styles'
 
 # Used for building manpages, manual, etc., using
 # foreach
@@ -73,8 +76,6 @@ elif host_machine.system() == 'windows'
   lib_suffix = '.dll'
 endif
 
-prog_name = get_option ('program_name')
-prog_name_lowercase = prog_name.to_lower()
 have_custom_name = prog_name != 'Zrythm'
 have_custom_logo_and_splash = get_option ('custom_logo_and_splash')
 
@@ -363,7 +364,7 @@ test_cflags = [
   '-D__(x)=x',
   # use structured log
   '-DG_LOG_USE_STRUCTURED=1',
-  '-DG_LOG_DOMAIN="zrythm"',
+  '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
   ]
 
 if cc.get_id() == 'clang'
