@@ -81,9 +81,6 @@ typedef struct ClipEditor
   AutomationEditor automation_editor;
   ChordEditor      chord_editor;
 
-  /** Horizontal zoom level. */
-  double           hzoom_level;
-
   /** Flag used by rulers when region first
    * changes. */
   int              region_changed;
@@ -109,8 +106,6 @@ clip_editor_fields_schema[] =
   YAML_FIELD_MAPPING_EMBEDDED (
     ClipEditor, audio_clip_editor,
     audio_clip_editor_fields_schema),
-  YAML_FIELD_FLOAT (
-    ClipEditor, hzoom_level),
 
   CYAML_FIELD_END
 };

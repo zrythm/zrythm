@@ -194,9 +194,9 @@ typedef struct _RulerWidget
  * Sets zoom level and disables/enables buttons
  * accordingly.
  *
- * Returns if the zoom level was set or not.
+ * @return Whether the zoom level was set.
  */
-int
+bool
 ruler_widget_set_zoom_level (
   RulerWidget * self,
   double        zoom_level);

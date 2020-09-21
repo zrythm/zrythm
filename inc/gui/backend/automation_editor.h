@@ -26,6 +26,7 @@
 #ifndef __GUI_BACKEND_AUTOMATION_EDITOR_H__
 #define __GUI_BACKEND_AUTOMATION_EDITOR_H__
 
+#include "gui/backend/editor_settings.h"
 #include "utils/yaml.h"
 
 /**
@@ -44,20 +45,15 @@ typedef struct ZRegion ZRegion;
  */
 typedef struct AutomationEditor
 {
-  /** Horizontal scroll start position. */
-  int             scroll_start_x;
-
-  /** Vertical scroll start position. */
-  int             scroll_start_y;
+  EditorSettings  editor_settings;
 } AutomationEditor;
 
 static const cyaml_schema_field_t
 automation_editor_fields_schema[] =
 {
-  YAML_FIELD_INT (
-    AutomationEditor, scroll_start_x),
-  YAML_FIELD_INT (
-    AutomationEditor, scroll_start_y),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    AutomationEditor, editor_settings,
+    editor_settings_fields_schema),
 
   CYAML_FIELD_END
 };

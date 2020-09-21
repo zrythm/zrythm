@@ -22,10 +22,13 @@
 #include "audio/track.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
+#include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
@@ -80,6 +83,40 @@ clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
             __func__,
             gtk_widget_get_name (widget));
         }
+    }
+}
+
+ArrangerWidget *
+clip_editor_inner_widget_get_visible_arranger (
+  ClipEditorInnerWidget * self)
+{
+  GtkWidget * visible_w =
+    gtk_stack_get_visible_child (
+      self->editor_stack);
+  if (visible_w ==
+        GTK_WIDGET (self->midi_editor_space))
+    {
+      return MW_MIDI_ARRANGER;
+    }
+  else if (visible_w ==
+             GTK_WIDGET (self->audio_editor_space))
+    {
+      return MW_AUDIO_ARRANGER;
+    }
+  else if (visible_w ==
+             GTK_WIDGET (self->chord_editor_space))
+    {
+      return MW_CHORD_ARRANGER;
+    }
+  else if (visible_w ==
+             GTK_WIDGET (
+               self->automation_editor_space))
+    {
+      return MW_AUTOMATION_ARRANGER;
+    }
+  else
+    {
+      g_return_val_if_reached (NULL);
     }
 }
 

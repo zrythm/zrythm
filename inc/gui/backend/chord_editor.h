@@ -27,6 +27,7 @@
 #define __GUI_BACKEND_CHORD_EDITOR_H__
 
 #include "audio/chord_descriptor.h"
+#include "gui/backend/editor_settings.h"
 
 #include <cyaml/cyaml.h>
 
@@ -55,24 +56,19 @@ typedef struct ChordEditor
   ChordDescriptor * chords[128];
   int               num_chords;
 
-  /** Horizontal scroll start position. */
-  int             scroll_start_x;
-
-  /** Vertical scroll start position. */
-  int             scroll_start_y;
+  EditorSettings  editor_settings;
 } ChordEditor;
 
 static const cyaml_schema_field_t
 chord_editor_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_COUNT (
-  "chords", CYAML_FLAG_DEFAULT,
-  ChordEditor, chords, num_chords,
-  &chord_descriptor_schema, 0, CYAML_UNLIMITED),
-  YAML_FIELD_INT (
-    ChordEditor, scroll_start_x),
-  YAML_FIELD_INT (
-    ChordEditor, scroll_start_y),
+    "chords", CYAML_FLAG_DEFAULT,
+    ChordEditor, chords, num_chords,
+    &chord_descriptor_schema, 0, CYAML_UNLIMITED),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ChordEditor, editor_settings,
+    editor_settings_fields_schema),
 
   CYAML_FIELD_END
 };

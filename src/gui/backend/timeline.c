@@ -36,6 +36,7 @@ void
 timeline_init (
   Timeline * self)
 {
+  editor_settings_init (&self->editor_settings);
 }
 
 /**
@@ -45,8 +46,6 @@ Timeline *
 timeline_new (void)
 {
   Timeline * self = object_new (Timeline);
-
-  self->hzoom_level = 1.f;
 
   return self;
 }

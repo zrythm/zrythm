@@ -1605,29 +1605,15 @@ project_save (
           GtkAdjustment * adj =
             gtk_scrolled_window_get_hadjustment (
               scroll);
-          PRJ_TIMELINE->scroll_start_x =
-            (int) gtk_adjustment_get_value (adj);
+          PRJ_TIMELINE->editor_settings.
+            scroll_start_x =
+              (int) gtk_adjustment_get_value (adj);
           adj =
             gtk_scrolled_window_get_vadjustment (
               scroll);
-          PRJ_TIMELINE->scroll_start_y =
-            (int) gtk_adjustment_get_value (adj);
-        }
-      if (MW_PINNED_TIMELINE)
-        {
-          GtkScrolledWindow * scroll =
-            arranger_widget_get_scrolled_window (
-              MW_PINNED_TIMELINE);
-          GtkAdjustment * adj =
-            gtk_scrolled_window_get_hadjustment (
-              scroll);
-          PRJ_TIMELINE->pinned_scroll_start_x =
-            (int) gtk_adjustment_get_value (adj);
-          adj =
-            gtk_scrolled_window_get_vadjustment (
-              scroll);
-          PRJ_TIMELINE->pinned_scroll_start_y =
-            (int) gtk_adjustment_get_value (adj);
+          PRJ_TIMELINE->editor_settings.
+            scroll_start_y =
+              (int) gtk_adjustment_get_value (adj);
         }
       if (MW_MIDI_ARRANGER)
         {
@@ -1637,13 +1623,15 @@ project_save (
           GtkAdjustment * adj =
             gtk_scrolled_window_get_hadjustment (
               scroll);
-          PIANO_ROLL->scroll_start_x =
-            (int) gtk_adjustment_get_value (adj);
+          PIANO_ROLL->editor_settings.
+            scroll_start_x =
+              (int) gtk_adjustment_get_value (adj);
           adj =
             gtk_scrolled_window_get_vadjustment (
               scroll);
-          PIANO_ROLL->scroll_start_y =
-            (int) gtk_adjustment_get_value (adj);
+          PIANO_ROLL->editor_settings.
+            scroll_start_y =
+              (int) gtk_adjustment_get_value (adj);
         }
       if (MW_AUTOMATION_ARRANGER)
         {
@@ -1653,13 +1641,15 @@ project_save (
           GtkAdjustment * adj =
             gtk_scrolled_window_get_hadjustment (
               scroll);
-          AUTOMATION_EDITOR->scroll_start_x =
-            (int) gtk_adjustment_get_value (adj);
+          AUTOMATION_EDITOR->editor_settings.
+            scroll_start_x =
+              (int) gtk_adjustment_get_value (adj);
           adj =
             gtk_scrolled_window_get_vadjustment (
               scroll);
-          AUTOMATION_EDITOR->scroll_start_y =
-            (int) gtk_adjustment_get_value (adj);
+          AUTOMATION_EDITOR->editor_settings.
+            scroll_start_y =
+              (int) gtk_adjustment_get_value (adj);
         }
       if (MW_AUDIO_ARRANGER)
         {
@@ -1669,13 +1659,15 @@ project_save (
           GtkAdjustment * adj =
             gtk_scrolled_window_get_hadjustment (
               scroll);
-          AUDIO_CLIP_EDITOR->scroll_start_x =
-            (int) gtk_adjustment_get_value (adj);
+          AUDIO_CLIP_EDITOR->editor_settings.
+            scroll_start_x =
+              (int) gtk_adjustment_get_value (adj);
           adj =
             gtk_scrolled_window_get_vadjustment (
               scroll);
-          AUDIO_CLIP_EDITOR->scroll_start_y =
-            (int) gtk_adjustment_get_value (adj);
+          AUDIO_CLIP_EDITOR->editor_settings.
+            scroll_start_y =
+              (int) gtk_adjustment_get_value (adj);
         }
       if (MW_CHORD_ARRANGER)
         {
@@ -1685,13 +1677,15 @@ project_save (
           GtkAdjustment * adj =
             gtk_scrolled_window_get_hadjustment (
               scroll);
-          CHORD_EDITOR->scroll_start_x =
-            (int) gtk_adjustment_get_value (adj);
+          CHORD_EDITOR->editor_settings.
+            scroll_start_x =
+              (int) gtk_adjustment_get_value (adj);
           adj =
             gtk_scrolled_window_get_vadjustment (
               scroll);
-          CHORD_EDITOR->scroll_start_y =
-            (int) gtk_adjustment_get_value (adj);
+          CHORD_EDITOR->editor_settings.
+            scroll_start_y =
+              (int) gtk_adjustment_get_value (adj);
         }
     }
 

@@ -1600,10 +1600,12 @@ process_events (void * data)
             MW_HOME_TOOLBAR);
           ruler_widget_set_zoom_level (
             MW_RULER,
-            (double) PRJ_TIMELINE->hzoom_level);
+            ruler_widget_get_zoom_level (
+              MW_RULER));
           ruler_widget_set_zoom_level (
             EDITOR_RULER,
-            (double) CLIP_EDITOR->hzoom_level);
+            ruler_widget_get_zoom_level (
+              EDITOR_RULER));
           break;
         case ET_AUTOMATION_TRACKLIST_AT_REMOVED:
           /* TODO */

@@ -24,6 +24,7 @@ backend_srcs = [
   'chord_editor.c',
   'chord_selections.c',
   'clip_editor.c',
+  'editor_settings.c',
   'event.c',
   'event_manager.c',
   'file_manager.c',

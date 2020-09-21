@@ -52,6 +52,7 @@ typedef struct _GtkEventControllerMotion
   GtkEventControllerMotion;
 typedef struct ArrangerObject ArrangerObject;
 typedef struct ArrangerSelections ArrangerSelections;
+typedef struct EditorSettings EditorSettings;
 typedef enum ArrangerObjectType ArrangerObjectType;
 
 /**
@@ -606,6 +607,14 @@ void
 arranger_widget_set_highlight_rect (
   ArrangerWidget * self,
   GdkRectangle *   rect);
+
+/**
+ * Returns the EditorSettings corresponding to
+ * the given arranger.
+ */
+EditorSettings *
+arranger_widget_get_editor_settings (
+  ArrangerWidget * self);
 
 /**
  * @}

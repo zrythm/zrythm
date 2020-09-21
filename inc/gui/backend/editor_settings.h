@@ -18,15 +18,14 @@
  */
 
 /**
- * \file
+ * @file
  *
- * Timeline backend.
+ * Common editor settings.
  */
 
-#ifndef __GUI_BACKEND_TIMELINE_H__
-#define __GUI_BACKEND_TIMELINE_H__
+#ifndef __GUI_BACKEND_EDITOR_SETTINGS_H__
+#define __GUI_BACKEND_EDITOR_SETTINGS_H__
 
-#include "gui/backend/editor_settings.h"
 #include "utils/yaml.h"
 
 /**
@@ -35,61 +34,46 @@
  * @{
  */
 
-#define PRJ_TIMELINE (PROJECT->timeline)
-
 /**
- * Clip editor serializable backend.
- *
- * The actual widgets should reflect the
- * information here.
+ * Common editor settings.
  */
-typedef struct Timeline
+typedef struct EditorSettings
 {
-  /** Settings for the timeline. */
-  EditorSettings editor_settings;
-} Timeline;
+  /** Horizontal scroll start position. */
+  int             scroll_start_x;
+
+  /** Vertical scroll start position. */
+  int             scroll_start_y;
+
+  /** Horizontal zoom level. */
+  double           hzoom_level;
+} EditorSettings;
 
 static const cyaml_schema_field_t
-timeline_fields_schema[] =
+editor_settings_fields_schema[] =
 {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Timeline, editor_settings,
-    editor_settings_fields_schema),
+  YAML_FIELD_INT (
+    EditorSettings, scroll_start_x),
+  YAML_FIELD_INT (
+    EditorSettings, scroll_start_y),
+  YAML_FIELD_FLOAT (
+    EditorSettings, hzoom_level),
 
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
-timeline_schema =
+editor_settings_schema =
 {
   CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-    Timeline, timeline_fields_schema),
+    EditorSettings,
+    editor_settings_fields_schema),
 };
 
-/**
- * Inits the Timeline after a Project is loaded.
- */
 void
-timeline_init_loaded (
-  Timeline * self);
-
-/**
- * Inits the Timeline instance.
- */
-void
-timeline_init (
-  Timeline * self);
-
-/**
- * Creates a new Timeline instance.
- */
-Timeline *
-timeline_new (void);
-
-void
-timeline_free (
-  Timeline * self);
+editor_settings_init (
+  EditorSettings * self);
 
 /**
  * @}

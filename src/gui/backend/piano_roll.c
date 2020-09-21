@@ -336,6 +336,8 @@ piano_roll_init (PianoRoll * self)
 
   self->midi_modifier = MIDI_MODIFIER_VELOCITY;
 
+  editor_settings_init (&self->editor_settings);
+
   if (!ZRYTHM_TESTING)
     {
       self->highlighting =

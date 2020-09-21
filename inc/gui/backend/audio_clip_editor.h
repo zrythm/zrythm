@@ -26,6 +26,7 @@
 #ifndef __AUDIO_AUDIO_CLIP_EDITOR_H__
 #define __AUDIO_AUDIO_CLIP_EDITOR_H__
 
+#include "gui/backend/editor_settings.h"
 #include "utils/yaml.h"
 
 /**
@@ -45,20 +46,15 @@
  */
 typedef struct AudioClipEditor
 {
-  /** Horizontal scroll start position. */
-  int             scroll_start_x;
-
-  /** Vertical scroll start position. */
-  int             scroll_start_y;
+  EditorSettings  editor_settings;
 } AudioClipEditor;
 
 static const cyaml_schema_field_t
 audio_clip_editor_fields_schema[] =
 {
-  YAML_FIELD_INT (
-    AudioClipEditor, scroll_start_x),
-  YAML_FIELD_INT (
-    AudioClipEditor, scroll_start_y),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    AudioClipEditor, editor_settings,
+    editor_settings_fields_schema),
 
   CYAML_FIELD_END
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -15,15 +15,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-/**
- * \file
- *
- * Chord clip editor backend.
- *
- * This is meant to be serialized along with each
- * project.
  */
 
 #include <stdlib.h>
@@ -45,4 +36,6 @@ chord_editor_init (
           CHORD_ACC_NONE, 0);
       self->num_chords++;
     }
+
+  editor_settings_init (&self->editor_settings);
 }

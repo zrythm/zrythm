@@ -28,6 +28,8 @@
 
 #include <stdbool.h>
 
+#include "gui/backend/editor_settings.h"
+
 #include <cyaml/cyaml.h>
 
 typedef struct Track Track;
@@ -204,11 +206,7 @@ typedef struct PianoRoll
    */
   MidiNoteDescriptor drum_descriptors[128];
 
-  /** Horizontal scroll start position. */
-  int             scroll_start_x;
-
-  /** Vertical scroll start position. */
-  int             scroll_start_y;
+  EditorSettings  editor_settings;
 } PianoRoll;
 
 static const cyaml_strval_t
@@ -231,10 +229,9 @@ piano_roll_fields_schema[] =
     CYAML_ARRAY_LEN (midi_modifier_strings)),
   YAML_FIELD_INT (
     PianoRoll, drum_mode),
-  YAML_FIELD_INT (
-    PianoRoll, scroll_start_x),
-  YAML_FIELD_INT (
-    PianoRoll, scroll_start_y),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    PianoRoll, editor_settings,
+    editor_settings_fields_schema),
 
   CYAML_FIELD_END
 };

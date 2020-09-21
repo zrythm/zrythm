@@ -915,42 +915,19 @@ arranger_draw_cb (
         gtk_scrolled_window_get_vadjustment (
           scroll);
 
-      int new_x = 0;
-      int new_y = 0;
-      if (self->type == TYPE (TIMELINE))
+      EditorSettings * settings =
+        arranger_widget_get_editor_settings (self);
+
+      int new_x = settings->scroll_start_x;
+      int new_y = settings->scroll_start_y;
+      if (self->type == TYPE (TIMELINE) &&
+          self->is_pinned)
         {
-          new_x =
-            self->is_pinned ?
-              PRJ_TIMELINE->pinned_scroll_start_x :
-              PRJ_TIMELINE->scroll_start_x;
-          new_y =
-            self->is_pinned ?
-              PRJ_TIMELINE->pinned_scroll_start_y :
-              PRJ_TIMELINE->scroll_start_y;
+          new_y = 0;
         }
-      if (self->type == TYPE (MIDI) ||
-          self->type == TYPE (MIDI_MODIFIER))
+      else if (self->type == TYPE (MIDI_MODIFIER))
         {
-          new_x = PIANO_ROLL->scroll_start_x;
-          if (self->type == TYPE (MIDI))
-            {
-              new_y = PIANO_ROLL->scroll_start_y;
-            }
-        }
-      if (self->type == TYPE (CHORD))
-        {
-          new_x = CHORD_EDITOR->scroll_start_x;
-          new_y = CHORD_EDITOR->scroll_start_y;
-        }
-      if (self->type == TYPE (AUTOMATION))
-        {
-          new_x = AUTOMATION_EDITOR->scroll_start_x;
-          new_y = AUTOMATION_EDITOR->scroll_start_y;
-        }
-      if (self->type == TYPE (AUDIO))
-        {
-          new_x = AUDIO_CLIP_EDITOR->scroll_start_x;
-          new_y = AUDIO_CLIP_EDITOR->scroll_start_y;
+          new_y = 0;
         }
 
       g_debug (
@@ -2236,6 +2213,38 @@ arranger_widget_select_all (
     }
 
 #undef SELECT_ALL
+}
+
+/**
+ * Returns the EditorSettings corresponding to
+ * the given arranger.
+ */
+EditorSettings *
+arranger_widget_get_editor_settings (
+  ArrangerWidget * self)
+{
+  switch (self->type)
+    {
+    case ARRANGER_WIDGET_TYPE_TIMELINE:
+      return &PRJ_TIMELINE->editor_settings;
+      break;
+    case ARRANGER_WIDGET_TYPE_AUTOMATION:
+      return &AUTOMATION_EDITOR->editor_settings;
+      break;
+    case ARRANGER_WIDGET_TYPE_AUDIO:
+      return &AUDIO_CLIP_EDITOR->editor_settings;
+      break;
+    case ARRANGER_WIDGET_TYPE_MIDI:
+    case ARRANGER_WIDGET_TYPE_MIDI_MODIFIER:
+      return &PIANO_ROLL->editor_settings;
+      break;
+    case ARRANGER_WIDGET_TYPE_CHORD:
+      return &CHORD_EDITOR->editor_settings;
+      break;
+    default: break;
+    }
+
+  g_return_val_if_reached (NULL);
 }
 
 static void

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,14 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Audio clip editor backend.
- *
- * This is meant to be serialized along with each project.
- */
-
 #include <stdlib.h>
 
 #include "audio/channel.h"
@@ -35,5 +27,5 @@
 void
 audio_clip_editor_init (AudioClipEditor * self)
 {
-  /* TODO */
+  editor_settings_init (&self->editor_settings);
 }

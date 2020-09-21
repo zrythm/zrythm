@@ -223,8 +223,6 @@ clip_editor_new (void)
 {
   ClipEditor * self = object_new (ClipEditor);
 
-  self->hzoom_level = 1.f;
-
   return self;
 }
 

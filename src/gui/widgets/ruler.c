@@ -77,12 +77,20 @@ ruler_widget_get_zoom_level (
 {
   if (self->type == RULER_WIDGET_TYPE_TIMELINE)
     {
-      return PRJ_TIMELINE->hzoom_level;
+      return
+        PRJ_TIMELINE->editor_settings.hzoom_level;
     }
   else if (self->type ==
              RULER_WIDGET_TYPE_EDITOR)
     {
-      return CLIP_EDITOR->hzoom_level;
+      ArrangerWidget * arr =
+        clip_editor_inner_widget_get_visible_arranger (
+          MW_CLIP_EDITOR_INNER);
+      EditorSettings * settings =
+        arranger_widget_get_editor_settings (arr);
+      g_return_val_if_fail (settings, 1.f);
+
+      return settings->hzoom_level;
     }
 
   g_return_val_if_reached (1.f);
@@ -1942,13 +1950,12 @@ ruler_widget_refresh (RulerWidget * self)
 }
 
 /**
- * FIXME move to somewhere else, maybe project.
  * Sets zoom level and disables/enables buttons
  * accordingly.
  *
- * Returns if the zoom level was set or not.
+ * @return Whether the zoom level was set.
  */
-int
+bool
 ruler_widget_set_zoom_level (
   RulerWidget * self,
   double        zoom_level)
@@ -1977,19 +1984,28 @@ ruler_widget_set_zoom_level (
     {
       if (self->type == RULER_WIDGET_TYPE_TIMELINE)
         {
-          PRJ_TIMELINE->hzoom_level = zoom_level;
+          PRJ_TIMELINE->editor_settings.
+            hzoom_level =
+              zoom_level;
         }
       else if (self->type ==
                  RULER_WIDGET_TYPE_EDITOR)
         {
-          CLIP_EDITOR->hzoom_level = zoom_level;
+          ArrangerWidget * arr =
+            clip_editor_inner_widget_get_visible_arranger (
+              MW_CLIP_EDITOR_INNER);
+          EditorSettings * settings =
+            arranger_widget_get_editor_settings (
+              arr);
+          g_return_val_if_fail (settings, false);
+          settings->hzoom_level = zoom_level;
         }
       ruler_widget_refresh (self);
-      return 1;
+      return true;
     }
   else
     {
-      return 0;
+      return false;
     }
 }
 

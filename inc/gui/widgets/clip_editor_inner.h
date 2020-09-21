@@ -127,6 +127,10 @@ void
 clip_editor_inner_widget_refresh (
   ClipEditorInnerWidget * self);
 
+ArrangerWidget *
+clip_editor_inner_widget_get_visible_arranger (
+  ClipEditorInnerWidget * self);
+
 /**
  * @}
  */
