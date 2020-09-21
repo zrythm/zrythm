@@ -558,6 +558,12 @@ track_set_recording (
   bool      recording,
   bool      fire_events)
 {
+  g_return_if_fail (IS_TRACK (track));
+
+  g_debug (
+    "%s: setting recording %d (fire events: %d)",
+    track->name, recording, fire_events);
+
   Channel * channel =
     track_get_channel (track);
 
@@ -605,14 +611,15 @@ track_set_recording (
     }
   else
     {
+      /*g_warn_if_reached ();*/
       g_message (
         "disabled recording on %s", track->name);
     }
 
   if (fire_events)
     {
-      EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
-                   track);
+      EVENTS_PUSH (
+        ET_TRACK_STATE_CHANGED, track);
     }
 }
 

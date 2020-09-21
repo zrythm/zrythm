@@ -1976,6 +1976,8 @@ multipress_pressed (
   gdouble               y,
   TrackWidget *         self)
 {
+  self->was_armed = self->track->recording;
+
   /* FIXME should do this via focus on click
    * property */
   /*if (!gtk_widget_has_focus (GTK_WIDGET (self)))*/
@@ -2531,14 +2533,15 @@ track_widget_on_record_toggled (
   g_return_if_fail (chan);
 
   /* toggle record flag */
-  track_set_recording (track, !track->recording, 1);
-  chan->record_set_automatically = 0;
-  g_message ("recording %d, %s",
-             track->recording,
-             track->name);
+  track_set_recording (
+    track, !self->was_armed, F_PUBLISH_EVENTS);
+  chan->record_set_automatically = false;
+  g_debug (
+    "%s recording: %d",
+    track->name,  track->recording);
 
-  EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
-               track);
+  EVENTS_PUSH (
+    ET_TRACK_STATE_CHANGED, track);
 }
 
 static void

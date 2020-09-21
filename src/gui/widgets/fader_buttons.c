@@ -129,6 +129,10 @@ void
 fader_buttons_widget_block_signal_handlers (
   FaderButtonsWidget * self)
 {
+  g_debug (
+    "blocking signal handlers for %s...",
+    self->track->name);
+
   g_signal_handler_block (
     self->mono_compat,
     self->mono_compat_toggled_handler_id);
@@ -138,12 +142,19 @@ fader_buttons_widget_block_signal_handlers (
   g_signal_handler_block (
     self->mute,
     self->mute_toggled_handler_id);
+  g_signal_handler_block (
+    self->record,
+    self->record_toggled_handler_id);
 }
 
 void
 fader_buttons_widget_unblock_signal_handlers (
   FaderButtonsWidget * self)
 {
+  g_debug (
+    "unblocking signal handlers for %s...",
+    self->track->name);
+
   g_signal_handler_unblock (
     self->mono_compat,
     self->mono_compat_toggled_handler_id);
@@ -153,6 +164,9 @@ fader_buttons_widget_unblock_signal_handlers (
   g_signal_handler_unblock (
     self->mute,
     self->mute_toggled_handler_id);
+  g_signal_handler_unblock (
+    self->record,
+    self->record_toggled_handler_id);
 }
 
 void

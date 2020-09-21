@@ -205,6 +205,10 @@ typedef struct _TrackWidget
   /** Set to 1 to redraw. */
   int               redraw;
 
+  /** Whether the track was armed for recording
+   * at the start of the current action. */
+  bool              was_armed;
+
   /** Cairo caches. */
   cairo_t *         cached_cr;
   cairo_surface_t * cached_surface;
