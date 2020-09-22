@@ -7,9 +7,9 @@ inc/plugins/dir.h
 inc/plugins/plugin_preset.h
 inc/plugins/plugin_gtk.h
 inc/plugins/lv2_plugin.h
-inc/plugins/cached_vst_descriptors.h
 inc/plugins/plugin.h
 inc/plugins/carla_native_plugin.h
+inc/plugins/cached_plugin_descriptors.h
 inc/plugins/plugin_identifier.h
 inc/plugins/plugin_descriptor.h
 inc/plugins/plugin_manager.h
@@ -63,6 +63,7 @@ inc/gui/widgets/fader_controls_expander.h
 inc/gui/widgets/route_target_selector.h
 inc/gui/widgets/marker.h
 inc/gui/widgets/snap_grid_popover.h
+inc/gui/widgets/modulator_inner.h
 inc/gui/widgets/midi_note.h
 inc/gui/widgets/file_browser_window.h
 inc/gui/widgets/port_connection_row.h
@@ -216,10 +217,12 @@ inc/gui/backend/automation_selections.h
 inc/gui/backend/arranger_selections.h
 inc/gui/backend/midi_arranger_selections.h
 inc/gui/backend/event_manager.h
+inc/gui/backend/editor_settings.h
 inc/gui/backend/chord_selections.h
 inc/gui/backend/chord_editor.h
 inc/gui/backend/clip_editor.h
 inc/gui/backend/file_manager.h
+inc/gui/backend/timeline.h
 inc/gui/backend/mixer_selections.h
 inc/utils/lilv.h
 inc/utils/system.h
@@ -388,8 +391,8 @@ src/main.c
 src/zrythm_app.c
 src/plugins/plugin_descriptor.c
 src/plugins/carla_native_plugin.c
-src/plugins/cached_vst_descriptors.c
 src/plugins/plugin_manager.c
+src/plugins/cached_plugin_descriptors.c
 src/plugins/plugin.c
 src/plugins/plugin_gtk.c
 src/plugins/lv2_plugin.c
@@ -449,6 +452,7 @@ src/gui/widgets/top_bar.c
 src/gui/widgets/master_track.c
 src/gui/widgets/midi_arranger.c
 src/gui/widgets/arranger_object.c
+src/gui/widgets/modulator_inner.c
 src/gui/widgets/timeline_bg.c
 src/gui/widgets/clip_editor.c
 src/gui/widgets/snap_grid_popover.c
@@ -592,6 +596,8 @@ src/gui/backend/tracklist_selections.c
 src/gui/backend/midi_arranger_selections.c
 src/gui/backend/audio_clip_editor.c
 src/gui/backend/mixer_selections.c
+src/gui/backend/editor_settings.c
+src/gui/backend/timeline.c
 src/gui/backend/automation_editor.c
 src/gui/backend/event.c
 src/utils/lilv.c
@@ -782,6 +788,7 @@ resources/ui/channel.ui
 resources/ui/midi_editor_space.ui
 resources/ui/automatable_selector.ui
 resources/ui/help_toolbar.ui
+resources/ui/modulator_inner.ui
 resources/ui/string_entry_dialog.ui
 resources/ui/inspector_chord.ui
 resources/ui/arranger_object_info_dialog.ui
