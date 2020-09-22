@@ -6,13 +6,14 @@
 # Anonymous <noreply@weblate.org>, 2020.
 # Gabriel García <gabriel.o.garcia@gmail.com>, 2020.
 # Israel Barrera <izraelbarrera@gmail.com>, 2020.
+# Eliseo Do Brito <eliseodb@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-12 01:56+0100\n"
-"PO-Revision-Date: 2020-09-03 10:36+0000\n"
-"Last-Translator: Israel Barrera <izraelbarrera@gmail.com>\n"
+"PO-Revision-Date: 2020-09-21 22:07+0000\n"
+"Last-Translator: Eliseo Do Brito <eliseodb@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -2533,9 +2534,8 @@ msgid "Rename track"
 msgstr "Congelar la pista"
 
 #: src/actions/edit_tracks_action.c:485
-#, fuzzy
 msgid "Change color"
-msgstr "Canal %s"
+msgstr "Cambiar color"
 
 #: src/actions/edit_tracks_action.c:488
 #, fuzzy
