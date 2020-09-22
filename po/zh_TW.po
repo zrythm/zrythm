@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-12 01:56+0100\n"
-"PO-Revision-Date: 2020-09-22 15:12+0000\n"
-"Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
+"PO-Revision-Date: 2020-09-22 18:08+0000\n"
+"Last-Translator: xunil-cloud <freed602om@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -1400,7 +1400,7 @@ msgstr "立體聲輸出"
 
 #: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:459
 msgid "Fader"
-msgstr ""
+msgstr "推桿"
 
 #: src/gui/widgets/automatable_selector_popover.c:65
 msgid "No control selected"

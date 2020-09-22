@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:44+0100\n"
-"PO-Revision-Date: 2020-09-22 15:12+0000\n"
-"Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
+"PO-Revision-Date: 2020-09-22 18:08+0000\n"
+"Last-Translator: xunil-cloud <freed602om@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/manualtracks/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -542,7 +542,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:87
 msgid "Fader"
-msgstr ""
+msgstr "推桿"
 
 #: ../../tracks/inspector-page.rst:88
 msgid "Fader section to control the volume and stereo balance."
