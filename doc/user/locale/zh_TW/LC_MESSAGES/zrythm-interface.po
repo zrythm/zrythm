@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:44+0100\n"
-"PO-Revision-Date: 2020-09-20 19:55+0000\n"
+"PO-Revision-Date: 2020-09-22 15:12+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
-"zrythm/manualzrythm-interface/zh_TW/>\n"
+"zrythm/manualzrythm-interface/zh_Hant/>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -560,7 +560,7 @@ msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:25
 msgid "Control Room"
-msgstr ""
+msgstr "控制室"
 
 #: ../../zrythm-interface/right-panel.rst:26
 msgid "The control room is covered in :ref:`control-room`."

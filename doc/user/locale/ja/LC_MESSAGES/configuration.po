@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-09-13 22:28+0000\n"
+"PO-Revision-Date: 2020-09-22 18:08+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/ja/>\n"
@@ -287,7 +287,6 @@ msgid "Audio engine settings."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:35
-#, fuzzy
 msgid "Audio backend"
 msgstr "オーディオバックエンド"
 
@@ -298,9 +297,8 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:41
-#, fuzzy
 msgid "MIDI backend"
-msgstr "オーディオバックエンド"
+msgstr "MIDIバックエンド"
 
 #: ../../configuration/preferences/intro.rst:38
 msgid ""
@@ -310,17 +308,15 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:44
-#, fuzzy
 msgid "MIDI controllers"
 msgstr "MIDIコントローラー"
 
 #: ../../configuration/preferences/intro.rst:44
 msgid "A list of controllers to auto-connect to."
-msgstr ""
+msgstr "自動接続するコントローラのリスト。"
 
 #: ../../configuration/preferences/intro.rst:47
 #: ../../configuration/preferences/intro.rst:91
-#, fuzzy
 msgid "Paths"
 msgstr "パス"
 
@@ -347,9 +343,8 @@ msgid "Plugin settings."
 msgstr "gsettingsの場合"
 
 #: ../../configuration/preferences/intro.rst:63
-#, fuzzy
 msgid "UIs"
-msgstr "プラグイン"
+msgstr "UI"
 
 #: ../../configuration/preferences/intro.rst:65
 #, fuzzy
@@ -366,20 +361,19 @@ msgstr "カスタムのものではなく、Zrythmによって生成された汎
 
 #: ../../configuration/preferences/intro.rst:72
 msgid "Open UI on instantiation"
-msgstr ""
+msgstr "インスタンス化時に UI を開く"
 
 #: ../../configuration/preferences/intro.rst:72
 msgid "Open plugin NUIs when they are instantiated."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:75
-#, fuzzy
 msgid "Keep window on top"
-msgstr "プラグインUIを常に一番上に表示します"
+msgstr "ウィンドウを上に保持"
 
 #: ../../configuration/preferences/intro.rst:75
 msgid "Always show plugin UIs on top of the main window."
-msgstr ""
+msgstr "常にメインウィンドウの上にプラグインのUIを表示します。"
 
 #: ../../configuration/preferences/intro.rst:79
 msgid "Bridge unsupported UIs"
@@ -397,16 +391,15 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:86
 msgid "Refresh rate"
-msgstr ""
+msgstr "再描画間隔"
 
 #: ../../configuration/preferences/intro.rst:85
 msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr "リフレッシュレート（Hz）。0に設定すると、画面のリフレッシュレートが使用されます。"
 
 #: ../../configuration/preferences/intro.rst:94
-#, fuzzy
 msgid "VST plugins"
-msgstr "プラグイン"
+msgstr "VSTプラグイン"
 
 #: ../../configuration/preferences/intro.rst:94
 msgid "The search paths to scan for VST plugins in."
@@ -420,7 +413,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:101
 msgid "SFZ instruments"
-msgstr ""
+msgstr "SFZ音源"
 
 #: ../../configuration/preferences/intro.rst:101
 msgid "The search paths to scan for SFZ instruments in."
@@ -428,7 +421,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:104
 msgid "SF2 instruments"
-msgstr ""
+msgstr "SF2音源"
 
 #: ../../configuration/preferences/intro.rst:104
 msgid "The search paths to scan for SF2 instruments in."
@@ -444,7 +437,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:115
 msgid "Pan"
-msgstr ""
+msgstr "パン"
 
 #: ../../configuration/preferences/intro.rst:117
 #, fuzzy
@@ -452,7 +445,6 @@ msgid "Panning options for mono signals (not used at the moment)."
 msgstr "これは現時点では使用されていません。"
 
 #: ../../configuration/preferences/intro.rst:134
-#, fuzzy
 msgid "Pan algorithm"
 msgstr "パンの計算法"
 
@@ -505,7 +497,7 @@ msgstr "パンの計算法"
 
 #: ../../configuration/preferences/intro.rst:153
 msgid "Default fade algorithm to use for fade in/outs."
-msgstr ""
+msgstr "フェードイン/アウトに使用するデフォルトのフェードアルゴリズム。"
 
 #: ../../configuration/preferences/intro.rst:156
 msgid "Automation"
@@ -577,7 +569,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:195
 msgid "UI"
-msgstr ""
+msgstr "Ui"
 
 #: ../../configuration/preferences/intro.rst:197
 msgid "User interface options."
@@ -589,12 +581,11 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:208
 msgid "User interface language"
-msgstr ""
+msgstr "ユーザー インターフェイス言語"
 
 #: ../../configuration/preferences/intro.rst:208
-#, fuzzy
 msgid "The language to use for the user interface."
-msgstr "Zrythm インターフェイスが使用する言語。"
+msgstr "ユーザーインターフェースに使用する言語。"
 
 #: ../../configuration/preferences/intro.rst:210
 msgid ""
