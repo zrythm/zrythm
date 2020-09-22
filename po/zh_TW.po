@@ -10,10 +10,10 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-12 01:56+0100\n"
-"PO-Revision-Date: 2020-09-20 19:55+0000\n"
+"PO-Revision-Date: 2020-09-22 15:12+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
-"zrythm/zrythm/zh_TW/>\n"
+"zrythm/zrythm/zh_Hant/>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -66,7 +66,7 @@ msgstr "標記"
 
 #: inc/gui/backend/arranger_object.h:102
 msgid "Automation Point"
-msgstr "自動控制參數點"
+msgstr "控制節點"
 
 #: inc/gui/backend/arranger_object.h:104 src/gui/widgets/event_viewer.c:548
 #: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
@@ -661,7 +661,7 @@ msgstr "峰值"
 
 #: src/gui/widgets/port_connections_popover.c:72
 msgid "INPUTS"
-msgstr "輸入"
+msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:98
 msgid "OUTPUTS"
@@ -724,7 +724,7 @@ msgstr "音軌名稱"
 
 #: src/gui/widgets/track_properties_expander.c:122
 msgid "Direct Out"
-msgstr ""
+msgstr "直通輸出"
 
 #: src/gui/widgets/track_properties_expander.c:147
 msgid "Track Properties"
@@ -792,7 +792,7 @@ msgstr "單聲道"
 
 #: src/gui/widgets/track_input_expander.c:732
 msgid "Inputs"
-msgstr "輸入"
+msgstr ""
 
 #: src/gui/widgets/midi_controller_mb.c:47
 #: src/gui/widgets/midi_controller_mb.c:123
@@ -862,9 +862,8 @@ msgid "CC Bindings"
 msgstr "CC 綁定"
 
 #: src/gui/widgets/left_dock_edge.c:277
-#, fuzzy
 msgid "Port connections"
-msgstr "刪除連接"
+msgstr ""
 
 #: src/gui/widgets/plugin_strip_expander.c:152
 msgid "Inserts"
@@ -1344,7 +1343,7 @@ msgstr "全選"
 
 #: src/gui/widgets/home_toolbar.c:141
 msgid "Loop Selection"
-msgstr ""
+msgstr "循環選擇"
 
 #: src/gui/widgets/right_dock_edge.c:105
 msgid "Plugin Browser"
@@ -1357,7 +1356,7 @@ msgstr "檔案瀏覽器"
 
 #: src/gui/widgets/right_dock_edge.c:152
 msgid "Control Room"
-msgstr ""
+msgstr "控制室"
 
 #: src/gui/widgets/right_dock_edge.c:179
 msgid "Show file browser"
@@ -1377,7 +1376,7 @@ msgstr "類型"
 
 #: src/gui/widgets/plugin_properties_expander.c:166
 msgid "Banks"
-msgstr "音色庫"
+msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:182
 msgid "Presets"
@@ -1493,7 +1492,7 @@ msgstr "MIDI 音符"
 
 #: src/gui/widgets/event_viewer.c:121
 msgid "Automation point"
-msgstr "控制點"
+msgstr "控制節點"
 
 #: src/gui/widgets/event_viewer.c:463 src/gui/widgets/event_viewer.c:559
 msgid "Start"
@@ -1536,9 +1535,8 @@ msgid "Curviness"
 msgstr ""
 
 #: src/gui/widgets/cc_bindings_tree.c:266
-#, fuzzy
 msgid "Device"
-msgstr "裝置名稱"
+msgstr "裝置"
 
 #: src/gui/widgets/cc_bindings_tree.c:277
 #, fuzzy
@@ -1547,7 +1545,7 @@ msgstr "控制"
 
 #: src/gui/widgets/ports_expander.c:172 src/gui/widgets/ports_expander.c:374
 msgid "Controls"
-msgstr "控制"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:175
 msgid "Control Outs"
@@ -1703,7 +1701,7 @@ msgstr "註解"
 
 #: src/gui/widgets/track_visibility_tree.c:143
 msgid "Visible"
-msgstr ""
+msgstr "顯示"
 
 #: src/gui/widgets/track.c:599 src/audio/track_lane.c:71
 #, c-format
@@ -1822,7 +1820,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/string_entry_dialog.c:83
 msgid "Please enter a value"
-msgstr "請輸入一個值"
+msgstr "請輸入名稱"
 
 #: src/gui/widgets/dialogs/port_info.c:59
 #, c-format
@@ -1860,13 +1858,13 @@ msgid "%sPlease help us fix this by %ssubmitting a bug report%s."
 msgstr ""
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:112
-#, fuzzy, c-format
+#, c-format
 msgid "%s color"
-msgstr "顏色"
+msgstr "%s 顏色"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:138
 msgid "Region color"
-msgstr ""
+msgstr "片段的顏色"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:154
 #, c-format
@@ -1874,9 +1872,8 @@ msgid "%s icon"
 msgstr ""
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:165
-#, fuzzy
 msgid "_Select"
-msgstr "選擇..."
+msgstr "選擇"
 
 #: src/gui/backend/event_manager.c:1585
 #, c-format
@@ -2040,12 +2037,12 @@ msgstr ""
 
 #: src/audio/marker_track.c:60
 msgid "Markers"
-msgstr ""
+msgstr "標記"
 
 #: src/audio/modulator_track.c:80 resources/ui/bot_dock_edge.ui:144
 #: resources/ui/bot_dock_edge.ui:160
 msgid "Modulators"
-msgstr ""
+msgstr "調變器"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
 #: src/audio/engine_pa.c:273
@@ -2055,7 +2052,7 @@ msgstr ""
 
 #: src/audio/region.c:399 build/data/org.zrythm.Zrythm.gschema.xml:598
 msgid "Automation"
-msgstr "自動控制"
+msgstr "自動化控制"
 
 #: src/audio/tempo_track.c:54
 msgid "BPM"
@@ -2363,14 +2360,12 @@ msgid "Enable port connection"
 msgstr "啟用/停用連接"
 
 #: src/actions/port_connection_action.c:149
-#, fuzzy
 msgid "Disable port connection"
-msgstr "刪除連接"
+msgstr ""
 
 #: src/actions/port_connection_action.c:152
-#, fuzzy
 msgid "Change port connection"
-msgstr "刪除連接"
+msgstr ""
 
 #: src/actions/transport_action.c:131
 msgid "Change BPM"
@@ -2424,21 +2419,19 @@ msgstr ""
 
 #: src/actions/edit_tracks_action.c:479
 msgid "Change direct out"
-msgstr ""
+msgstr "變更直通輸出"
 
 #: src/actions/edit_tracks_action.c:482
 msgid "Rename track"
 msgstr "重新命名"
 
 #: src/actions/edit_tracks_action.c:485
-#, fuzzy
 msgid "Change color"
-msgstr "更改 BPM"
+msgstr "更改顏色"
 
 #: src/actions/edit_tracks_action.c:488
-#, fuzzy
 msgid "Change icon"
-msgstr "更改 BPM"
+msgstr "更改圖示"
 
 #: src/actions/move_tracks_action.c:144
 msgid "Move Track"
@@ -2488,7 +2481,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:627
 #: build/data/org.zrythm.Zrythm.gschema.xml:642
 msgid "General"
-msgstr ""
+msgstr "一般"
 
 #: resources/gtk/help-overlay.ui:53
 msgid "Toggle Fullscreen"
@@ -2837,11 +2830,11 @@ msgstr "混音器"
 
 #: resources/ui/bot_dock_edge.ui:183
 msgid "Chord pad"
-msgstr ""
+msgstr "和弦墊"
 
 #: resources/ui/bot_dock_edge.ui:199
 msgid "Chord Pad"
-msgstr ""
+msgstr "和弦墊"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
@@ -3073,7 +3066,7 @@ msgstr ""
 #: resources/ui/inspector_master.ui:44 resources/ui/inspector_ap.ui:44
 #: resources/ui/inspector_midi.ui:44
 msgid "Enter region name..."
-msgstr ""
+msgstr "輸入片段名稱..."
 
 #: resources/ui/inspector_master.ui:67 resources/ui/inspector_ap.ui:67
 #: resources/ui/inspector_midi.ui:67
@@ -3272,11 +3265,11 @@ msgstr ""
 
 #: resources/ui/automation_track.ui:87
 msgid "Write automation"
-msgstr ""
+msgstr "寫入控制參數"
 
 #: resources/ui/automation_track.ui:104
 msgid "Read automation"
-msgstr ""
+msgstr "讀取控制參數"
 
 #: resources/ui/automation_track.ui:125
 msgid "0.0"
@@ -3423,7 +3416,6 @@ msgid "Full Quantize..."
 msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:122 resources/ui/snap_grid_popover.ui:244
-#, fuzzy
 msgid "Note length"
 msgstr "音符長度"
 
@@ -3444,9 +3436,8 @@ msgid "Adaptive"
 msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:192 resources/ui/snap_grid_popover.ui:314
-#, fuzzy
 msgid "Adaptive length"
-msgstr "音符長度"
+msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:209
 msgid "Snap"
@@ -3474,7 +3465,7 @@ msgstr "垂直"
 
 #: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:463
 msgid "Engine"
-msgstr ""
+msgstr "音效系統"
 
 #: resources/ui/preferences.ui:134
 msgid "The audio backend to connect to"
@@ -3992,11 +3983,11 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:467
 msgid "Audio backend"
-msgstr ""
+msgstr "音訊後端"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:468
 msgid "The audio backend to use."
-msgstr ""
+msgstr "欲使用的音訊後端"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:472
 msgid "RtAudio device"
@@ -4020,7 +4011,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:487
 msgid "Buffer size"
-msgstr ""
+msgstr "緩衝區大小"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:488
 msgid "Buffer size to pass to the backend."
@@ -4028,15 +4019,15 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:492
 msgid "MIDI backend"
-msgstr ""
+msgstr "MIDI 後端"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:493
 msgid "The MIDI backend to use."
-msgstr ""
+msgstr "欲使用的 MIDI 後端。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:497
 msgid "MIDI controllers"
-msgstr ""
+msgstr "MIDI 控制器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:498
 msgid "A list of controllers to auto-connect to."
@@ -4045,7 +4036,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:507
 #: build/data/org.zrythm.Zrythm.gschema.xml:556
 msgid "Paths"
-msgstr ""
+msgstr "路徑"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:512
 msgid "The directory used to save user data in."
@@ -4091,12 +4082,12 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:546
 msgid "Refresh rate"
-msgstr ""
+msgstr "刷新頻率"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:547
 msgid ""
 "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
-msgstr ""
+msgstr "以 Hz 單位。若頻率為零，則使用電腦螢幕的刷新頻率。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:564
 msgid "VST plugins"
@@ -4130,7 +4121,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:588
 msgid "Fade algorithm"
-msgstr ""
+msgstr "淡入/淡出演算法"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:589
 msgid "Default fade algorithm to use for fade in/outs."
@@ -4160,7 +4151,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:646
 msgid "Draw detail"
-msgstr ""
+msgstr "繪製品質"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:647
 msgid "Level of detail to use when drawing graphics."
@@ -4168,7 +4159,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:651
 msgid "User interface language"
-msgstr ""
+msgstr "使用者界面語言"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:652
 msgid "The language to use for the user interface."
@@ -4176,7 +4167,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:660
 msgid "DSP"
-msgstr ""
+msgstr "訊號處理"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:661
 msgid "Pan"
