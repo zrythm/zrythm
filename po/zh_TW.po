@@ -11,7 +11,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-12 01:56+0100\n"
 "PO-Revision-Date: 2020-09-22 18:08+0000\n"
-"Last-Translator: xunil-cloud <freed602om@gmail.com>\n"
+"Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -275,13 +275,13 @@ msgstr "使用全域的設定"
 #: inc/audio/region.h:85 src/gui/widgets/bot_bar.c:517
 #: src/audio/automation_track.c:101
 msgid "Off"
-msgstr "關"
+msgstr "Off"
 
 #: inc/audio/region.h:87 src/gui/widgets/bot_bar.c:517
 #: src/gui/widgets/port_connections_tree.c:264
 #: src/gui/widgets/cc_bindings_tree.c:252 src/audio/automation_track.c:95
 msgid "On"
-msgstr "開"
+msgstr "On"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
