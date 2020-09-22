@@ -4,13 +4,14 @@
 # alex <alex@zrythm.org>, 2019.
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
 # ilya <mrzarp@protonmail.com>, 2020.
+# ilya7 <mrzarp@protonmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-12 01:56+0100\n"
-"PO-Revision-Date: 2020-09-19 22:53+0000\n"
-"Last-Translator: ilya <mrzarp@protonmail.com>\n"
+"PO-Revision-Date: 2020-09-22 18:08+0000\n"
+"Last-Translator: ilya7 <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -1243,7 +1244,7 @@ msgstr ""
 #: src/gui/widgets/automation_arranger.c:261
 #: build/data/org.zrythm.Zrythm.gschema.xml:602
 msgid "Curve algorithm"
-msgstr ""
+msgstr "Алгоритм кривой(Curve)"
 
 #: src/gui/widgets/header.c:99
 #, fuzzy, c-format
@@ -1310,7 +1311,7 @@ msgstr ""
 #: src/gui/widgets/home_toolbar.c:60 src/gui/widgets/home_toolbar.c:123
 #: resources/ui/home_toolbar.ui:35 build/data/org.zrythm.Zrythm.gschema.xml:612
 msgid "Undo"
-msgstr ""
+msgstr "Отменить"
 
 #: src/gui/widgets/home_toolbar.c:61 src/gui/widgets/home_toolbar.c:125
 #: resources/ui/home_toolbar.ui:48
@@ -1360,7 +1361,7 @@ msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:121
 msgid "Plugin Properties"
-msgstr ""
+msgstr "Свойства плагина"
 
 #: src/gui/widgets/plugin_properties_expander.c:150
 #: src/gui/widgets/event_viewer.c:452 resources/ui/chord_selector_window.ui:239
@@ -1831,10 +1832,9 @@ msgid "Port info"
 msgstr ""
 
 #: src/gui/widgets/dialogs/about_dialog.c:91
-#, fuzzy
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
-"Высокоавтоматизированная и интуитивно понятная цифровая звуковая рабочая "
+"высокоавтоматизированная и простая в использовании цифровая звуковая рабочая "
 "станция"
 
 #: src/gui/widgets/dialogs/about_dialog.c:95
@@ -2049,7 +2049,7 @@ msgstr ""
 
 #: src/audio/region.c:399 build/data/org.zrythm.Zrythm.gschema.xml:598
 msgid "Automation"
-msgstr ""
+msgstr "Автоматизация"
 
 #: src/audio/tempo_track.c:54
 msgid "BPM"
@@ -2638,7 +2638,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:93 resources/ui/preferences.ui:512
 msgid "Language"
-msgstr ""
+msgstr "Язык"
 
 #: resources/ui/first_run_assistant.ui:111
 msgid ""
@@ -2809,7 +2809,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:82
 msgid "Editor"
-msgstr ""
+msgstr "Редактор"
 
 #: resources/ui/bot_dock_edge.ui:105
 msgid "Mixer view"
@@ -3456,7 +3456,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:463
 msgid "Engine"
-msgstr ""
+msgstr "Движок"
 
 #: resources/ui/preferences.ui:134
 msgid "The audio backend to connect to"
@@ -3487,9 +3487,8 @@ msgid "The pan law to use"
 msgstr ""
 
 #: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:511
-#, fuzzy
 msgid "Zrythm path"
-msgstr "Zrythm"
+msgstr "Путь к Zrythm"
 
 #: resources/ui/preferences.ui:245
 msgid "The global Zrythm working path for non-project related files"
@@ -3541,11 +3540,11 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:597
 #: build/data/org.zrythm.Zrythm.gschema.xml:611
 msgid "Editing"
-msgstr ""
+msgstr "Редактирование"
 
 #: resources/ui/preferences.ui:498
 msgid "Interface"
-msgstr ""
+msgstr "Интерфейс"
 
 #: resources/ui/preferences.ui:523
 msgid "The language of the Zrythm interface"
@@ -3562,7 +3561,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:632
 msgid "Autosave interval"
-msgstr ""
+msgstr "Интервал автосохранения"
 
 #: resources/ui/preferences.ui:595
 msgid ""
@@ -3572,7 +3571,7 @@ msgstr ""
 
 #: data/zrythm.desktop.in:11
 msgid "Digital Audio Workstation"
-msgstr ""
+msgstr "Цифровая звуковая рабочая станция"
 
 #: data/zrythm.desktop.in:13
 msgid "highly automated and intuitive digital audio workstation"
@@ -3976,7 +3975,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:467
 msgid "Audio backend"
-msgstr ""
+msgstr "Аудио бэкэнд"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:468
 msgid "The audio backend to use."
@@ -4012,7 +4011,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:492
 msgid "MIDI backend"
-msgstr ""
+msgstr "Миди(MIDI) бэкэнд"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:493
 msgid "The MIDI backend to use."
@@ -4020,16 +4019,16 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:497
 msgid "MIDI controllers"
-msgstr ""
+msgstr "Миди(MIDI) контроллеры"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:498
 msgid "A list of controllers to auto-connect to."
-msgstr ""
+msgstr "Список контроллеров для автоматического подключения."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:507
 #: build/data/org.zrythm.Zrythm.gschema.xml:556
 msgid "Paths"
-msgstr ""
+msgstr "Пути"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:512
 msgid "The directory used to save user data in."
@@ -4037,11 +4036,11 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:521
 msgid "UIs"
-msgstr ""
+msgstr "Пользовательский интерфейс"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:525
 msgid "Open UI on instantiation"
-msgstr ""
+msgstr "Открыть пользовательский интерфейс при добавлении плагина"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:526
 msgid "Open plugin UIs when they are instantiated."
@@ -4049,23 +4048,25 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:530
 msgid "Keep window on top"
-msgstr ""
+msgstr "Держать окно поверх окна Zrythm"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:531
 msgid "Always show plugin UIs on top of the main window."
-msgstr ""
+msgstr "Всегда держать интерфейсы плагинов поверх окна Zrythm."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:535
 msgid "Generic UIs"
-msgstr ""
+msgstr "Общие интерфейсы"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:536
 msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
 msgstr ""
+"Показывать общие пользовательские интерфейсы плагинов, созданные Zrythm, "
+"вместо пользовательских."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:540
 msgid "Bridge unsupported UIs"
-msgstr ""
+msgstr "Перенаправлять неподдерживаемые интерфейсы"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:541
 msgid ""
@@ -4075,16 +4076,18 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:546
 msgid "Refresh rate"
-msgstr ""
+msgstr "Частота обновления"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:547
 msgid ""
 "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr ""
+"Частота обновления в Гц. Если установлено значение 0, будет использоваться "
+"частота обновления вашего экрана."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:564
 msgid "VST plugins"
-msgstr ""
+msgstr "VST плагины"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:565
 msgid ""
@@ -4094,7 +4097,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:569
 msgid "SFZ instruments"
-msgstr ""
+msgstr "Инструменты SFZ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:570
 msgid ""
@@ -4104,7 +4107,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:574
 msgid "SF2 instruments"
-msgstr ""
+msgstr "Инструменты SF2"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:575
 msgid ""
@@ -4114,11 +4117,13 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:588
 msgid "Fade algorithm"
-msgstr ""
+msgstr "Алгоритм затухания(Fade)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:589
 msgid "Default fade algorithm to use for fade in/outs."
 msgstr ""
+"Алгоритм затухания(Fade) по умолчанию, используемый для постепенного "
+"появления / исчезновения."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:603
 msgid "Default algorithm to use for automation curves."
@@ -4126,21 +4131,25 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:617
 msgid "Undo stack length"
-msgstr ""
+msgstr "Длина истории отмен"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:618
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
 msgstr ""
+"Максимальная длина истории отмен. Установите -1 для неограниченного "
+"количества."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:633
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled if "
 "this is set to 0."
 msgstr ""
+"Интервал автоматического сохранения проектов в минутах. Автосохранение будет "
+"отключено, если установлено значение 0."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:641
 msgid "UI"
-msgstr ""
+msgstr "Пользовательский интерфейс"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:646
 msgid "Draw detail"
@@ -4152,23 +4161,23 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:651
 msgid "User interface language"
-msgstr ""
+msgstr "Язык пользовательского интерфейса"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:652
 msgid "The language to use for the user interface."
-msgstr ""
+msgstr "Язык, используемый для пользовательского интерфейса."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:660
 msgid "DSP"
-msgstr ""
+msgstr "DSP"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:661
 msgid "Pan"
-msgstr ""
+msgstr "Панорамирование(Pan)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:665
 msgid "Pan algorithm"
-msgstr ""
+msgstr "Алгоритм панорамирования(Pan)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:666
 msgid ""
@@ -4178,7 +4187,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:670
 msgid "Pan law"
-msgstr ""
+msgstr "Правило панорамирования(Pan law)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:671
 msgid ""
