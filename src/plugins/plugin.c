@@ -1630,14 +1630,20 @@ plugin_has_custom_ui (
   g_return_val_if_fail (
     IS_PLUGIN (pl) && pl->descr, false);
 
+  g_debug (
+    "checking if plugin %s has custom UI...",
+    pl->descr->name);
+
 #ifdef HAVE_CARLA
   if (pl->descr->open_with_carla)
     {
       g_return_val_if_fail (
         pl->carla && pl->carla->host_handle, false);
+      g_debug ("getting carla plugin info...");
       const CarlaPluginInfo * info =
         carla_get_plugin_info (
           pl->carla->host_handle, 0);
+      g_debug ("got carla plugin info");
       g_return_val_if_fail (info, false);
       return info->hints & PLUGIN_HAS_CUSTOM_UI;
     }

@@ -29,9 +29,8 @@ msgstr "Zrythmマニュアルへようこそ"
 
 #: ../../index.rst:14
 #: ../../index.rst:52
-#, fuzzy
 msgid "Copyright © 2019-2020 The Zrythm contributors"
-msgstr "Copyright © 2019-2020 Alexandros Theodotou"
+msgstr "Copyright © 2019-2020 The Zrythm contributors"
 
 #: ../../index.rst:16
 #: ../../index.rst:54
