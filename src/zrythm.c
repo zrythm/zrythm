@@ -281,15 +281,17 @@ zrythm_get_user_dir (
 {
   if (ZRYTHM_TESTING)
     {
-      if (ZRYTHM->testing_dir)
-        return ZRYTHM->testing_dir;
-      else
+      if (!ZRYTHM->testing_dir)
         {
           ZRYTHM->testing_dir =
             g_dir_make_tmp (
               "zrythm_test_dir_XXXXXX", NULL);
           return ZRYTHM->testing_dir;
         }
+      g_debug (
+        "returning user dir: %s",
+        ZRYTHM->testing_dir);
+      return g_strdup (ZRYTHM->testing_dir);
     }
 
   GSettings * settings =
