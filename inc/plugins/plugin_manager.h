@@ -204,10 +204,29 @@ plugin_manager_scan_plugins (
   const double    max_progress,
   double *        progress);
 
-const PluginDescriptor *
+/**
+ * Returns the PluginDescriptor instance for the
+ * given URI.
+ *
+ * This instance is held by the plugin manager and
+ * must not be free'd.
+ */
+PluginDescriptor *
 plugin_manager_find_plugin_from_uri (
   PluginManager * self,
   const char *    uri);
+
+/**
+ * Finds and returns the PluginDescriptor instance
+ * matching the given descriptor.
+ *
+ * This instance is held by the plugin manager and
+ * must not be free'd.
+ */
+PluginDescriptor *
+plugin_manager_find_from_descriptor (
+  PluginManager *          self,
+  const PluginDescriptor * src_descr);
 
 /**
  * Returns if the plugin manager supports the given

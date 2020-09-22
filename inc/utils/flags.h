@@ -190,4 +190,13 @@
 #define F_DRY_RUN 1
 #define F_NOT_DRY_RUN 0
 
+#define F_SERIALIZE 1
+#define F_NO_SERIALIZE 0
+
+#define F_CHECK_VALID 1
+#define F_NO_CHECK_VALID 0
+
+#define F_CHECK_BLACKLISTED 1
+#define F_NO_CHECK_BLACKLISTED 0
+
 #endif

@@ -49,6 +49,7 @@
 #include "plugins/lv2_plugin.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -990,9 +991,6 @@ scan_carla_descriptors_from_paths (
       while ((plugin_path = plugins[plugin_idx++]) !=
                NULL)
         {
-          g_debug (
-            "getting descriptors for %s...",
-            plugin_path);
           PluginDescriptor ** descriptors =
             cached_plugin_descriptors_get (
               self->cached_plugin_descriptors,
@@ -1197,10 +1195,42 @@ plugin_manager_scan_plugins (
 
       if (descriptor)
         {
-          self->plugin_descriptors[
-            self->num_plugins++] = descriptor;
-          add_category (
-            self, descriptor->category_str);
+
+          const PluginDescriptor * found_descr =
+            cached_plugin_descriptors_find (
+              self->cached_plugin_descriptors,
+              descriptor, F_CHECK_VALID,
+              F_CHECK_BLACKLISTED);
+
+          /* if cached descriptor found, use it */
+          if (found_descr)
+            {
+              self->plugin_descriptors[
+                self->num_plugins++] =
+                  plugin_descriptor_clone (
+                    found_descr);;
+              add_category (
+                self, found_descr->category_str);
+
+              plugin_descriptor_free (
+                descriptor);
+              descriptor =
+                self->plugin_descriptors[
+                  self->num_plugins - 1];
+            }
+          else
+            {
+              /* add descriptor to list */
+              self->plugin_descriptors[
+                self->num_plugins++] = descriptor;
+              add_category (
+                self, descriptor->category_str);
+
+              /* add descriptor to cached */
+              cached_plugin_descriptors_add (
+                self->cached_plugin_descriptors,
+                descriptor, F_NO_SERIALIZE);
+            }
         }
 
       count++;
@@ -1236,6 +1266,9 @@ plugin_manager_scan_plugins (
     }
   g_message (
     "%s: Scanned %d LV2 plugins", __func__, count);
+
+  cached_plugin_descriptors_serialize_to_file (
+    self->cached_plugin_descriptors);
 
 #ifdef HAVE_CARLA
 
@@ -1423,7 +1456,14 @@ plugin_manager_scan_plugins (
   /*print_plugins ();*/
 }
 
-const PluginDescriptor *
+/**
+ * Returns the PluginDescriptor instance for the
+ * given URI.
+ *
+ * This instance is held by the plugin manager and
+ * must not be free'd.
+ */
+PluginDescriptor *
 plugin_manager_find_plugin_from_uri (
   PluginManager * self,
   const char *    uri)
@@ -1438,6 +1478,36 @@ plugin_manager_find_plugin_from_uri (
         }
     }
 
+  return NULL;
+}
+
+/**
+ * Finds and returns the PluginDescriptor instance
+ * matching the given descriptor.
+ *
+ * This instance is held by the plugin manager and
+ * must not be free'd.
+ */
+PluginDescriptor *
+plugin_manager_find_from_descriptor (
+  PluginManager *          self,
+  const PluginDescriptor * src_descr)
+{
+  g_return_val_if_fail (self && src_descr, NULL);
+
+  for (int i = 0; i < self->num_plugins; i++)
+    {
+      PluginDescriptor * descr =
+        self->plugin_descriptors[i];
+      if (plugin_descriptor_is_same_plugin (
+            src_descr, descr))
+        {
+          return descr;
+        }
+    }
+
+  g_message (
+    "descriptor for %s not found", src_descr->name);
   return NULL;
 }
 

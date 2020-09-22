@@ -23,6 +23,7 @@
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/plugin.h"
+#include "utils/string.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -349,6 +350,23 @@ plugin_descriptor_is_valid_for_slot_type (
     }
 
   g_return_val_if_reached (false);
+}
+
+/**
+ * Returns whether the two descriptors describe
+ * the same plugin, ignoring irrelevant fields.
+ */
+bool
+plugin_descriptor_is_same_plugin (
+  const PluginDescriptor * a,
+  const PluginDescriptor * b)
+{
+  return a->arch == b->arch &&
+    a->protocol == b->protocol &&
+    string_is_equal (a->path, b->path) &&
+    string_is_equal (a->uri, b->uri) &&
+    a->unique_id == b->unique_id &&
+    a->ghash == b->ghash;
 }
 
 /**

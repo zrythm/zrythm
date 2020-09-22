@@ -37,12 +37,13 @@ typedef struct CachedPluginDescriptors
   /** Version of the file. */
   unsigned int        version;
 
-  PluginDescriptor *  descriptors[10000];
+  /** Valid descriptors. */
+  PluginDescriptor *  descriptors[90000];
   int                 num_descriptors;
 
   /** Blacklisted paths and hashes, to skip
    * when scanning */
-  PluginDescriptor *  blacklisted[1000];
+  PluginDescriptor *  blacklisted[90000];
   int                 num_blacklisted;
 } CachedPluginDescriptors;
 
@@ -95,6 +96,24 @@ cached_plugin_descriptors_is_blacklisted (
   const char *           abs_path);
 
 /**
+ * Finds a descriptor matching the given one's
+ * unique identifiers.
+ *
+ * @param check_valid Whether to check valid
+ *   descriptors.
+ * @param check_blacklisted Whether to check
+ *   blacklisted descriptors.
+ *
+ * @return The found descriptor or NULL.
+ */
+const PluginDescriptor *
+cached_plugin_descriptors_find (
+  CachedPluginDescriptors * self,
+  const PluginDescriptor *  descr,
+  bool                      check_valid,
+  bool                      check_blacklisted);
+
+/**
  * Returns the PluginDescriptor's corresponding to
  * the .so/.dll file at the given path, if it
  * exists and the MD5 hash matches.
@@ -122,16 +141,31 @@ cached_plugin_descriptors_blacklist (
   int                    _serialize);
 
 /**
+ * Replaces a descriptor in the cache.
+ *
+ * @param serialize Whether to serialize the updated
+ *   cache now.
+ * @param new_descr A new descriptor to replace
+ *   with. Note that this will be cloned, not used
+ *   directly.
+ */
+void
+cached_plugin_descriptors_replace (
+  CachedPluginDescriptors * self,
+  const PluginDescriptor *  _new_descr,
+  bool                      _serialize);
+
+/**
  * Appends a descriptor to the cache.
  *
- * @param serialize 1 to serialize the updated cache
- *   now.
+ * @param serialize Whether to serialize the updated
+ *   cache now.
  */
 void
 cached_plugin_descriptors_add (
   CachedPluginDescriptors * self,
-  PluginDescriptor *     descr,
-  int                    _serialize);
+  const PluginDescriptor *  descr,
+  int                       _serialize);
 
 /**
  * Clears the descriptors and removes the cache file.

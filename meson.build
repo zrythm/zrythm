@@ -504,6 +504,7 @@ test_strict_cflags = [
   '-Werror=format',
   '-Werror=endif-labels',
   '-Werror=logical-not-parentheses',
+  '-Werror=parentheses',
   '-Werror=comment',
   ]
 

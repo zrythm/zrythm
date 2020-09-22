@@ -219,7 +219,7 @@ set_port_value (
           plugin->unmap.handle, type));
       return;
     }
-  g_message (
+  g_debug (
     "(lv2 state): setting %s=%f...",
     port_symbol, (double) fvalue);
 

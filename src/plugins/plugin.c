@@ -42,6 +42,7 @@
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
+#include "plugins/cached_plugin_descriptors.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
@@ -483,6 +484,47 @@ new_carla_plugin:
               plugin, descr->uri);
             g_return_val_if_fail (
               plugin->lv2, NULL);
+
+            /* cache the new bridge mode if it
+             * changed */
+            const PluginDescriptor * known_descr =
+              cached_plugin_descriptors_find (
+                PLUGIN_MANAGER->
+                  cached_plugin_descriptors,
+                descr, F_CHECK_VALID,
+                F_NO_CHECK_BLACKLISTED);
+            g_return_val_if_fail (known_descr, NULL);
+            if (known_descr->open_with_carla)
+              {
+                g_message (
+                  "Known bridge mode for plugin %s "
+                  "changed (carla => non-carla), "
+                  "caching...",
+                  descr->name);
+                PluginDescriptor * new_descr =
+                  plugin_descriptor_clone (
+                    descr);
+                new_descr->open_with_carla = false;
+                cached_plugin_descriptors_replace (
+                  PLUGIN_MANAGER->cached_plugin_descriptors,
+                  new_descr, F_SERIALIZE);
+                plugin_descriptor_free (new_descr);
+
+                /* also change the current
+                 * descriptors in the plugin
+                 * manager for this session */
+                PluginDescriptor * pm_descr =
+                  plugin_manager_find_from_descriptor (
+                    PLUGIN_MANAGER, descr);
+                pm_descr->open_with_carla = false;
+              }
+            else
+              {
+                g_message (
+                  "Known bridge mode for plugin %s "
+                  "not changed (non-carla)",
+                  descr->name);
+              }
           }
           break;
         default:

@@ -23,7 +23,7 @@
 #include "utils/string.h"
 #include "zrythm.h"
 
-#define CACHED_PLUGIN_DESCRIPTORS_VERSION 8
+#define CACHED_PLUGIN_DESCRIPTORS_VERSION 9
 
 static char *
 get_cached_plugin_descriptors_file_path (void)
@@ -190,6 +190,54 @@ cached_plugin_descriptors_is_blacklisted (
 }
 
 /**
+ * Finds a descriptor matching the given one's
+ * unique identifiers.
+ *
+ * @param check_valid Whether to check valid
+ *   descriptors.
+ * @param check_blacklisted Whether to check
+ *   blacklisted descriptors.
+ *
+ * @return The found descriptor or NULL.
+ */
+const PluginDescriptor *
+cached_plugin_descriptors_find (
+  CachedPluginDescriptors * self,
+  const PluginDescriptor *  descr,
+  bool                      check_valid,
+  bool                      check_blacklisted)
+{
+  if (check_valid)
+    {
+      for (int i = 0; i < self->num_descriptors; i++)
+        {
+          PluginDescriptor * cur_descr =
+            self->descriptors[i];
+          if (plugin_descriptor_is_same_plugin (
+                cur_descr, descr))
+            {
+              return cur_descr;
+            }
+        }
+    }
+  if (check_blacklisted)
+    {
+      for (int i = 0; i < self->num_blacklisted; i++)
+        {
+          PluginDescriptor * cur_descr =
+            self->blacklisted[i];
+          if (plugin_descriptor_is_same_plugin (
+                cur_descr, descr))
+            {
+              return cur_descr;
+            }
+        }
+    }
+
+  return NULL;
+}
+
+/**
  * Returns the PluginDescriptor's corresponding to
  * the .so/.dll file at the given path, if it
  * exists and the MD5 hash matches.
@@ -208,10 +256,18 @@ cached_plugin_descriptors_get (
     calloc (1, sizeof (PluginDescriptor *));
   int num_descriptors = 0;
 
+  g_debug ("Getting cached descriptors for %s",
+    abs_path);
+
   for (int i = 0; i < self->num_descriptors; i++)
     {
       PluginDescriptor * descr =
         self->descriptors[i];
+
+      /* skip LV2 since they don't have paths */
+      if (descr->protocol == PROT_LV2)
+        continue;
+
       GFile * file =
         g_file_new_for_path (descr->path);
       if (string_is_equal (descr->path, abs_path) &&
@@ -270,22 +326,82 @@ cached_plugin_descriptors_blacklist (
 }
 
 /**
+ * Replaces a descriptor in the cache.
+ *
+ * @param serialize Whether to serialize the updated
+ *   cache now.
+ * @param new_descr A new descriptor to replace
+ *   with. Note that this will be cloned, not used
+ *   directly.
+ */
+void
+cached_plugin_descriptors_replace (
+  CachedPluginDescriptors * self,
+  const PluginDescriptor *  _new_descr,
+  bool                      _serialize)
+{
+  PluginDescriptor * new_descr =
+    plugin_descriptor_clone (_new_descr);
+
+  for (int i = 0; i < self->num_descriptors; i++)
+    {
+      PluginDescriptor * cur_descr =
+        self->descriptors[i];
+      if (plugin_descriptor_is_same_plugin (
+            cur_descr, new_descr))
+        {
+          self->descriptors[i] = new_descr;
+          plugin_descriptor_free (cur_descr);
+          goto check_serialize;
+        }
+    }
+  for (int i = 0; i < self->num_blacklisted; i++)
+    {
+      PluginDescriptor * cur_descr =
+        self->blacklisted[i];
+      if (plugin_descriptor_is_same_plugin (
+            cur_descr, new_descr))
+        {
+          self->descriptors[i] = new_descr;
+          plugin_descriptor_free (cur_descr);
+          goto check_serialize;
+        }
+    }
+  /* plugin not found, add instead */
+  cached_plugin_descriptors_add (
+    self, _new_descr, _serialize);
+  plugin_descriptor_free (new_descr);
+  return;
+
+check_serialize:
+  if (_serialize)
+    {
+      cached_plugin_descriptors_serialize_to_file (
+        self);
+    }
+}
+
+/**
  * Appends a descriptor to the cache.
  *
- * @param serialize 1 to serialize the updated cache
- *   now.
+ * @param serialize Whether to serialize the updated
+ *   cache now.
  */
 void
 cached_plugin_descriptors_add (
   CachedPluginDescriptors * self,
-  PluginDescriptor *     descr,
-  int                    _serialize)
+  const PluginDescriptor *  descr,
+  int                       _serialize)
 {
   PluginDescriptor * new_descr =
     plugin_descriptor_clone (descr);
-  GFile * file = g_file_new_for_path (descr->path);
-  new_descr->ghash = g_file_hash (file);
-  g_object_unref (file);
+  if (descr->path)
+    {
+      GFile * file =
+        g_file_new_for_path (descr->path);
+      new_descr->ghash = g_file_hash (file);
+      g_object_unref (file);
+    }
   self->descriptors[self->num_descriptors++] =
     new_descr;
 

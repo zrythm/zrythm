@@ -311,11 +311,9 @@ plugin_descriptor_fields_schema[] =
   YAML_FIELD_ENUM (
     PluginDescriptor, protocol,
     plugin_protocol_strings),
-#if 0
   YAML_FIELD_ENUM (
     PluginDescriptor, bridge_mode,
     carla_bridge_mode_strings),
-#endif
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PluginDescriptor, path),
   YAML_FIELD_STRING_PTR_OPTIONAL (
@@ -404,6 +402,15 @@ plugin_descriptor_is_valid_for_slot_type (
   PluginDescriptor * self,
   int                slot_type,
   int                track_type);
+
+/**
+ * Returns whether the two descriptors describe
+ * the same plugin, ignoring irrelevant fields.
+ */
+bool
+plugin_descriptor_is_same_plugin (
+  const PluginDescriptor * a,
+  const PluginDescriptor * b);
 
 /**
  * Returns if the Plugin has a supported custom

@@ -26,6 +26,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/right_dock_edge.h"
+#include "plugins/carla/carla_discovery.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -232,32 +233,38 @@ show_context_menu (
     GTK_MENU_SHELL (menu), \
     GTK_WIDGET (menuitem));
 
-  if (!descr->open_with_carla)
-    {
-      CREATE_WITH_LBL (_("Add to project"));
-      CONNECT_SIGNAL;
-    }
-#ifdef HAVE_CARLA
-  CREATE_WITH_LBL (
-    _("Add to project (carla)"));
-  new_descr->open_with_carla = true;
+  CREATE_WITH_LBL (_("Add to project"));
+  new_descr->open_with_carla = false;
   CONNECT_SIGNAL;
 
-  if (plugin_descriptor_has_custom_ui (descr) &&
-      descr->bridge_mode == CARLA_BRIDGE_NONE)
+#ifdef HAVE_CARLA
+  /* carla doesn't work with cv ports */
+  if (descr->num_cv_ins == 0 &&
+      descr->num_cv_outs == 0)
     {
       CREATE_WITH_LBL (
-        _("Add to project (bridged UI)"));
+        _("Add to project (carla)"));
       new_descr->open_with_carla = true;
-      new_descr->bridge_mode = CARLA_BRIDGE_UI;
+      new_descr->bridge_mode = CARLA_BRIDGE_NONE;
+      CONNECT_SIGNAL;
+
+      if (plugin_descriptor_has_custom_ui (descr) &&
+          z_carla_discovery_get_bridge_mode (descr) ==
+            CARLA_BRIDGE_NONE)
+        {
+          CREATE_WITH_LBL (
+            _("Add to project (bridged UI)"));
+          new_descr->open_with_carla = true;
+          new_descr->bridge_mode = CARLA_BRIDGE_UI;
+          CONNECT_SIGNAL;
+        }
+
+      CREATE_WITH_LBL (
+        _("Add to project (bridged full)"));
+      new_descr->open_with_carla = true;
+      new_descr->bridge_mode = CARLA_BRIDGE_FULL;
       CONNECT_SIGNAL;
     }
-
-  CREATE_WITH_LBL (
-    _("Add to project (bridged full)"));
-  new_descr->open_with_carla = true;
-  new_descr->bridge_mode = CARLA_BRIDGE_FULL;
-  CONNECT_SIGNAL;
 #endif
 
 #undef APPEND

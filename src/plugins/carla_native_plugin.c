@@ -30,6 +30,7 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
+#include "plugins/cached_plugin_descriptors.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/carla/carla_discovery.h"
@@ -320,6 +321,9 @@ _create ()
   return self;
 }
 
+/**
+ * Creates a plugin.
+ */
 static CarlaNativePlugin *
 create_plugin (
   const PluginDescriptor * descr,
@@ -461,6 +465,49 @@ create_plugin (
   /* add engine callback */
   carla_set_engine_callback (
     self->host_handle, engine_callback, self);
+
+  /* cache the new bridge mode if it changed */
+  const PluginDescriptor * known_descr =
+    cached_plugin_descriptors_find (
+      PLUGIN_MANAGER->cached_plugin_descriptors,
+      descr, F_CHECK_VALID,
+      F_NO_CHECK_BLACKLISTED);
+  g_return_val_if_fail (known_descr, NULL);
+  if (bridge_mode == known_descr->bridge_mode &&
+      known_descr->open_with_carla)
+    {
+      g_debug ("No change in bridge mode: %s",
+        carla_bridge_mode_strings[bridge_mode].str);
+    }
+  else
+    {
+      g_message (
+        "Known bridge mode for plugin %s changed "
+        "(%s %s => %s %s), caching...",
+        descr->name,
+        carla_bridge_mode_strings[
+          known_descr->bridge_mode].str,
+        known_descr->open_with_carla ?
+          "carla" : "non-carla",
+        carla_bridge_mode_strings[bridge_mode].str,
+        "carla");
+      PluginDescriptor * new_descr =
+        plugin_descriptor_clone (descr);
+      new_descr->bridge_mode = bridge_mode;
+      new_descr->open_with_carla = true;
+      cached_plugin_descriptors_replace (
+        PLUGIN_MANAGER->cached_plugin_descriptors,
+        new_descr, F_SERIALIZE);
+      plugin_descriptor_free (new_descr);
+
+      /* also change the current descriptors in
+       * the plugin manager for this session */
+      PluginDescriptor * pm_descr =
+        plugin_manager_find_from_descriptor (
+          PLUGIN_MANAGER, descr);
+      pm_descr->bridge_mode = bridge_mode;
+      pm_descr->open_with_carla = true;
+    }
 
   return self;
 }
