@@ -15,4 +15,3 @@ Interface
    bottom-panel
    transport-bar
    right-panel
-   basic-concepts-and-terminology

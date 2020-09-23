@@ -16,7 +16,7 @@ It consists of the toolbar discussed in :ref:`editor-toolbar`
 at the very top, a smaller space containing extra controls, the
 ruler discussed in :ref:`editor-ruler`, the piano roll keys
 on the left, the piano roll (MIDI) arranger on the right
-and the MIDI note velocity editor at the bottom.
+and the velocity editor at the bottom.
 
 Additional Controls
 -------------------
@@ -26,17 +26,15 @@ The piano roll contains the following additional controls.
    :align: center
 
 Drum view
-  Enabling this will change the display of the arranger into
-  a drum editor view, where each MIDI note is drawn as a
-  diamond and the piano roll keys display the name of each
-  drum.
-
-.. note:: The drum view is not operational at the moment.
+  Enabling this will change the display of the
+  arranger into a drum editor view, where each
+  :term:`MIDI Note` is drawn as a diamond and the
+  piano roll keys display the name of each drum.
 
 Listen to notes
-  Enabling this will play back each note as you drag it inside
-  the piano roll. This is useful if you want to `hear` what
-  you are doing.
+  Enabling this will play back each note as you drag
+  it inside the piano roll. This is useful if you
+  want to `hear` what you are doing.
 
 .. _piano-roll-keys:
 

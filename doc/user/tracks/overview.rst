@@ -7,20 +7,23 @@ Overview
 
 Tracks are the main building blocks of projects.
 Tracks appear in the tracklist and contain various
-events such as regions.
+events such as regions (see :term:`Region`).
 
 .. image:: /_static/img/track.png
    :align: center
 
-Most types of tracks have a corresponding channel that
-appears in the mixer.
+Most types of tracks have a corresponding channel
+that appears in the :ref:`mixer`. See
+:ref:`channels` for more info.
 
 .. image:: /_static/img/channel.png
    :align: center
 
 There are various kinds of Tracks suited for
 different purposes, explained in the following
-sections.
+sections. Some tracks are special, like the
+:ref:`chord-track` and the :ref:`marker-track`,
+which contain chords and markers respectively.
 
 .. important:: In Zrythm, group tracks are used for
    grouping signals (direct routing), FX/bus tracks are

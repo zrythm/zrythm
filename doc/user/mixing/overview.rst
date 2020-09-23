@@ -2,21 +2,26 @@
    Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
+.. sectionauthor:: Alexandros Theodotou <alex@zrythm.org>
+
 .. _mixing-overview:
 
 Mixing Overview
 ===============
-Mixing refers to any actions made inside the mixer, such
-as routing signals around, controlling the fader level of
-various channels and setting their stereo balance.
+Mixing refers to any actions made inside the mixer,
+such as routing signals around, controlling the
+fader level of various channels and setting their
+stereo balance.
 
 .. image:: /_static/img/mixer.png
    :align: center
 
+.. _mixer:
+
 Mixer
 -----
-The mixer contains all of the channels in the project
-corresponding to visible tracks.
+The mixer contains all of the channels in the
+project corresponding to visible tracks.
 
 The master channel,
 a special channel used to route audio to the output audio
@@ -32,6 +37,8 @@ plugins or files.
 Most of the activities that can be performed in the mixer
 are also available in the track inspector described in
 :ref:`track-inspector`.
+
+.. _channels:
 
 Channels
 --------

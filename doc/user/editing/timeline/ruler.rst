@@ -7,14 +7,15 @@
 Ruler
 =====
 
-The ruler is mainly used to control looping and playback.
+The ruler is mainly used to control looping and
+playback.
 
 .. image:: /_static/img/ruler.png
    :align: center
 
-The ruler will display more or less information depending on
-the current zoom level. It will also display the
-following markers/indicators discussed in
+The ruler will display more or less information
+depending on the current zoom level. It will also
+display the following markers/indicators discussed in
 :ref:`loop-points-and-markers`.
 
 Cue point
@@ -26,9 +27,10 @@ Loop points
   shown in bright green if loop is enabled, or grey if
   disabled. Can be dragged to reposition.
 
-Clicking and dragging on empty space in the ruler (other
-than the top part, which is used for selecting ranges) will
-allow you to reposition the playhead.
+Clicking and dragging on empty space in the ruler
+(other than the top part, which is used for
+selecting ranges - see :term:`Range`) will allow
+you to reposition the playhead.
 
 .. tip:: Hold :zbutton:`Shift` to temporarily disable snapping
 

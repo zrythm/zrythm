@@ -2,6 +2,8 @@
    Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
    See below for copying conditions.
 
+.. sectionauthor:: Alexandros Theodotou <alex@zrythm.org>
+
 Zrythm
 ======
 
@@ -43,6 +45,7 @@ Welcome to the Zrythm manual.
    contributing/intro
    user-media/intro
    credits/intro
+   glossary/intro
    appendix/intro
 
 .. For HTML and epub we want this to appear right
