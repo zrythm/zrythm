@@ -6,13 +6,14 @@
 # ilya <mrzarp@protonmail.com>, 2020.
 # ilya7 <mrzarp@protonmail.com>, 2020.
 # Melairz1237 <mr.artem.snegov@mail.ru>, 2020.
+# iLyd <mrzarp@protonmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-22 20:58+0100\n"
 "PO-Revision-Date: 2020-09-23 17:14+0000\n"
-"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
+"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -2845,7 +2846,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:82
 msgid "Editor"
-msgstr "Редактор"
+msgstr "Редактор(Editor)"
 
 #: resources/ui/bot_dock_edge.ui:105
 msgid "Mixer view"
