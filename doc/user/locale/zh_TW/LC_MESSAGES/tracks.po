@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:44+0100\n"
-"PO-Revision-Date: 2020-09-22 18:08+0000\n"
+"PO-Revision-Date: 2020-09-23 17:14+0000\n"
 "Last-Translator: xunil-cloud <freed602om@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/manualtracks/zh_Hant/>\n"
@@ -212,7 +212,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:47
 #: ../../tracks/midi-track.rst:72
 msgid "Sends"
-msgstr ""
+msgstr "輔助傳送"
 
 #: ../../tracks/audio-track.rst:55
 #: ../../tracks/midi-track.rst:129
