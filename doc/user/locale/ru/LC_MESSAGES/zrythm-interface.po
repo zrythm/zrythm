@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 18:06+0100\n"
-"PO-Revision-Date: 2020-09-23 17:05+0000\n"
-"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"PO-Revision-Date: 2020-09-23 17:06+0000\n"
+"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/ru/>\n"
 "Language: ru\n"
@@ -474,7 +474,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Manual"
-msgstr ""
+msgstr "Мануал"
 
 #: ../../zrythm-interface/main-toolbar.rst:98
 msgid "View the user manual."

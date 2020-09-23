@@ -3,47 +3,51 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-06 21:19+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-09-23 17:14+0000\n"
+"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
+"manualappendix/ru/>\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../appendix/intro.rst:6
 msgid "Appendix"
-msgstr ""
+msgstr "добавление"
 
 #: ../../appendix/menu-actions.rst:6
 msgid "Menu Actions"
-msgstr ""
+msgstr "Меню действий"
 
 #: ../../appendix/shortcut-keys.rst:6
 msgid "Shortcut Keys"
-msgstr ""
+msgstr "Комбинации клавиш"
 
 #: ../../appendix/shortcut-keys.rst:9
 msgid "Global Shortcuts"
-msgstr ""
+msgstr "Глобальные Комбинации Клавиш"
 
 #: ../../appendix/shortcut-keys.rst:15
 msgid "Editor Shortcuts"
-msgstr ""
+msgstr "Ярлыки Редактора"
 
 #: ../../appendix/troubleshooting.rst:6
 msgid "Troubleshooting"
-msgstr ""
+msgstr "Диагностика"
 
 #: ../../appendix/troubleshooting.rst:8
 msgid "TODO"
-msgstr ""
+msgstr "ТОДО"
 
 #~ msgid ""
 #~ "The app icon is missing Run `sudo"
@@ -76,4 +80,3 @@ msgstr ""
 #~ "Run `sudo touch /usr/share/icons/hicolor` and"
 #~ " `sudo gtk-update-icon-cache`"
 #~ msgstr ""
-
