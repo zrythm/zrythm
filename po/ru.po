@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-22 20:58+0100\n"
-"PO-Revision-Date: 2020-09-23 17:14+0000\n"
-"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"PO-Revision-Date: 2020-09-23 19:03+0000\n"
+"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -79,19 +79,19 @@ msgstr "быстрота(скорость)"
 
 #: inc/utils/ui.h:75
 msgid "High"
-msgstr ""
+msgstr "Высокий"
 
 #: inc/utils/ui.h:76
 msgid "Normal"
-msgstr ""
+msgstr "нормальный"
 
 #: inc/utils/ui.h:77
 msgid "Low"
-msgstr ""
+msgstr "низкий"
 
 #: inc/utils/gtk.h:50
 msgid "Cu_t"
-msgstr ""
+msgstr "вырезать"
 
 #: inc/utils/gtk.h:56
 msgid "_Copy"
@@ -107,20 +107,20 @@ msgstr "удалить"
 
 #: inc/utils/gtk.h:74
 msgid "Cle_ar Selection"
-msgstr ""
+msgstr "очистить выделение"
 
 #: inc/utils/gtk.h:80
 msgid "Select A_ll"
-msgstr ""
+msgstr "выделить все"
 
 #: inc/utils/gtk.h:86 src/gui/widgets/home_toolbar.c:133
 msgid "Duplicate"
-msgstr ""
+msgstr "дублировать"
 
 #: inc/utils/gtk.h:92 src/gui/widgets/track.c:1190
 #: resources/ui/fader_buttons.ui:99
 msgid "Mute"
-msgstr ""
+msgstr "заглушить"
 
 #: inc/utils/gtk.h:98 src/gui/widgets/track.c:1186
 msgid "Unmute"

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-09-22 18:08+0000\n"
-"Last-Translator: ilya7 <mrzarp@protonmail.com>\n"
+"PO-Revision-Date: 2020-09-23 19:03+0000\n"
+"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/ru/>\n"
 "Language: ru\n"
@@ -611,7 +611,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:56
 msgid "Duplicate"
-msgstr ""
+msgstr "дублировать"
 
 #: ../../editing/common-operations.rst:57
 msgid ""
