@@ -286,7 +286,6 @@ zrythm_get_user_dir (
           ZRYTHM->testing_dir =
             g_dir_make_tmp (
               "zrythm_test_dir_XXXXXX", NULL);
-          return ZRYTHM->testing_dir;
         }
       g_debug (
         "returning user dir: %s",
