@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-24 00:55+0100\n"
-"PO-Revision-Date: 2020-09-22 18:08+0000\n"
+"PO-Revision-Date: 2020-09-24 21:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -177,7 +177,7 @@ msgid "Exponent"
 msgstr "指数"
 
 #: inc/audio/curve.h:92 src/audio/curve.c:42
-#, c-format
+#, c-format, fuzzy
 msgid "Superellipse"
 msgstr "超楕円"
 
@@ -185,7 +185,7 @@ msgstr "超楕円"
 #: src/audio/curve.c:45
 #, c-format
 msgid "Vital"
-msgstr "バイタル"
+msgstr "Vital"
 
 #: inc/audio/curve.h:96 src/audio/curve.c:48
 #, c-format
@@ -1363,7 +1363,7 @@ msgstr "ショートカットキー"
 
 #: src/gui/widgets/help_toolbar.c:42
 msgid "Donate"
-msgstr "支援する"
+msgstr "寄付する"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Report a Bug"
@@ -2096,6 +2096,7 @@ msgid "Can only drop audio files on audio tracks"
 msgstr "オーディオトラックにオーディオファイルのみをドロップできます"
 
 #: src/audio/chord_track.c:57 resources/ui/inspector_chord.ui:31
+#, fuzzy
 msgid "Chords"
 msgstr "和音"
 
@@ -2126,7 +2127,7 @@ msgstr "%s入力"
 
 #: src/audio/marker_track.c:59
 msgid "Markers"
-msgstr "目印"
+msgstr "マーカー"
 
 #: src/audio/modulator_track.c:80 resources/ui/bot_dock_edge.ui:144
 #: resources/ui/bot_dock_edge.ui:160
@@ -2728,7 +2729,7 @@ msgstr "クイック量子化"
 
 #: resources/gtk/help-overlay.ui:292
 msgid "Quantize"
-msgstr "量子化"
+msgstr "クオンタイズ"
 
 #: resources/gtk/help-overlay.ui:301
 msgid "Looping"
@@ -2930,7 +2931,7 @@ msgstr "編集画面"
 
 #: resources/ui/bot_dock_edge.ui:82
 msgid "Editor"
-msgstr "編集画面"
+msgstr "エディター"
 
 #: resources/ui/bot_dock_edge.ui:105
 msgid "Mixer view"
@@ -3336,12 +3337,14 @@ msgid "Stop"
 msgstr "停止"
 
 #: resources/ui/transport_controls.ui:85
+#, fuzzy
 msgid "Backward"
-msgstr "後戻り"
+msgstr "前へ"
 
 #: resources/ui/transport_controls.ui:100
+#, fuzzy
 msgid "Forward"
-msgstr "前へ"
+msgstr "進む"
 
 #: resources/ui/transport_controls.ui:114 resources/ui/export_dialog.ui:239
 msgid "Loop"
@@ -3369,7 +3372,7 @@ msgstr "エクスポート中…"
 
 #: resources/ui/event_viewer.ui:13
 msgid "Event Viewer"
-msgstr "イベント ビューア"
+msgstr "イベントビューア"
 
 #: resources/ui/automation_track.ui:31
 msgid "Control this automation track is for"
@@ -3437,7 +3440,7 @@ msgstr "…にクオンタイズ"
 
 #: resources/ui/quantize_dialog.ui:132
 msgid "Adjust"
-msgstr "調整"
+msgstr "調整する"
 
 #: resources/ui/quantize_dialog.ui:183
 msgid "Amount"
@@ -4274,7 +4277,7 @@ msgstr "SF2 音源をスキャンするための検索パス。重複するパ�
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:601
 msgid "Fade algorithm"
-msgstr "フェードのアルゴリズム"
+msgstr "フェードアルゴリズム"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:602
 msgid "Default fade algorithm to use for fade in/outs."
@@ -4290,7 +4293,7 @@ msgstr "元に戻すスタックの長さ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:631
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
-msgstr "取り消し履歴の最大スタック長。無制限にするには-1に設定します。"
+msgstr "元に戻す履歴のスタックの最大長。無制限の場合は -1 に設定します。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:646
 msgid ""

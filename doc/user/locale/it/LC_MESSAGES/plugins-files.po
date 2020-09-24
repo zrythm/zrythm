@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:41+0100\n"
-"PO-Revision-Date: 2020-09-04 18:36+0000\n"
-"Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
+"PO-Revision-Date: 2020-09-24 02:45+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/it/>\n"
 "Language: it\n"
@@ -266,7 +266,7 @@ msgstr "I plugin sono classificati nelle seguenti categorie."
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "Instrument"
-msgstr ""
+msgstr "Strumento"
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "These plugins will create an instrument track when added to the project."

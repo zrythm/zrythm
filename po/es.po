@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-24 00:55+0100\n"
-"PO-Revision-Date: 2020-09-21 22:07+0000\n"
-"Last-Translator: Eliseo Do Brito <eliseodb@gmail.com>\n"
+"PO-Revision-Date: 2020-09-24 02:45+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -56,7 +56,7 @@ msgstr "Nota"
 
 #: inc/gui/backend/arranger_object.h:96
 msgid "Chord Object"
-msgstr ""
+msgstr "Objeto de acorde"
 
 #: inc/gui/backend/arranger_object.h:98
 #, fuzzy
@@ -2619,7 +2619,7 @@ msgstr "Eliminar %d complementos"
 
 #: resources/gtk/help-overlay.ui:30
 msgid "Global Shortcuts"
-msgstr ""
+msgstr "Atajos de teclado globales"
 
 #: resources/gtk/help-overlay.ui:35 resources/ui/preferences.ui:365
 #: build/data/org.zrythm.Zrythm.gschema.xml:475
@@ -2707,7 +2707,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:199
 msgid "Editor Shortcuts"
-msgstr ""
+msgstr "Atajos de teclado del editor"
 
 #: resources/gtk/help-overlay.ui:203
 msgid "Tool"
@@ -3131,7 +3131,7 @@ msgstr "Diatónica"
 
 #: resources/ui/chord_selector_window.ui:898
 msgid "TODO"
-msgstr ""
+msgstr "Pendiente"
 
 #: resources/ui/chord_selector_window.ui:908
 msgid "Circle of Fifths"
@@ -3688,7 +3688,7 @@ msgstr "Tasa de muestreo"
 #: build/data/org.zrythm.Zrythm.gschema.xml:533
 #: build/data/org.zrythm.Zrythm.gschema.xml:568
 msgid "Plugins"
-msgstr "Complementos"
+msgstr "Plugins"
 
 #: resources/ui/preferences.ui:390
 msgid "Always open plugin UIs"

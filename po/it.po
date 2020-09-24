@@ -4,13 +4,14 @@
 # Alexandros Theodotou <alex at zrythm dot org>, 2019.
 #
 # Roberto Albano De Rosa <robertoaldm@gmail.com>, 2020.
+# Alexandros Theodotou <alextee@posteo.net>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-24 00:55+0100\n"
-"PO-Revision-Date: 2020-09-06 14:36+0000\n"
-"Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
+"PO-Revision-Date: 2020-09-24 02:45+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
 "Language: it\n"
@@ -126,7 +127,7 @@ msgstr "Riattivare"
 #: inc/audio/track.h:162 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:186
 msgid "Instrument"
-msgstr ""
+msgstr "Strumento"
 
 #: inc/audio/track.h:163 src/gui/widgets/bot_bar.c:502 src/audio/region.c:396
 #: build/data/org.zrythm.Zrythm.gschema.xml:597
@@ -1300,7 +1301,7 @@ msgstr "A proposito di Zrythm"
 #: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
 #: resources/ui/preferences.ui:27
 msgid "Preferences"
-msgstr ""
+msgstr "Preferenze"
 
 #: src/gui/widgets/header.c:106
 msgid "Log viewer"
@@ -1320,11 +1321,11 @@ msgstr "Manuale"
 
 #: src/gui/widgets/help_toolbar.c:41 resources/gtk/help-overlay.ui:46
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Tasti rapidi"
 
 #: src/gui/widgets/help_toolbar.c:42
 msgid "Donate"
-msgstr ""
+msgstr "Dona"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Report a Bug"
@@ -1352,7 +1353,7 @@ msgstr ""
 #: src/gui/widgets/home_toolbar.c:60 src/gui/widgets/home_toolbar.c:123
 #: resources/ui/home_toolbar.ui:35 build/data/org.zrythm.Zrythm.gschema.xml:625
 msgid "Undo"
-msgstr ""
+msgstr "Annulla"
 
 #: src/gui/widgets/home_toolbar.c:61 src/gui/widgets/home_toolbar.c:125
 #: resources/ui/home_toolbar.ui:48
@@ -2570,7 +2571,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:98 resources/ui/header.ui:92
 msgid "Project"
-msgstr ""
+msgstr "Progetto"
 
 #: resources/gtk/help-overlay.ui:110
 msgid "Open a project"
@@ -2610,7 +2611,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:175
 msgid "Selections"
-msgstr ""
+msgstr "Selezioni"
 
 #: resources/gtk/help-overlay.ui:180
 msgid "Select all"
@@ -3137,7 +3138,7 @@ msgstr ""
 #: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
 #: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:344
 msgid "Length"
-msgstr ""
+msgstr "Lunghezza"
 
 #: resources/ui/inspector_master.ui:113 resources/ui/inspector_ap.ui:113
 #: resources/ui/inspector_midi.ui:113
@@ -3529,7 +3530,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:476
 msgid "Engine"
-msgstr ""
+msgstr "Motore"
 
 #: resources/ui/preferences.ui:134
 msgid "The audio backend to connect to"
@@ -3617,7 +3618,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:498
 msgid "Interface"
-msgstr ""
+msgstr "Interfaccia"
 
 #: resources/ui/preferences.ui:523
 msgid "The language of the Zrythm interface"

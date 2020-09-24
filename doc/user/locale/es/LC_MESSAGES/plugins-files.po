@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-23 13:41+0100\n"
-"PO-Revision-Date: 2020-07-24 14:02+0000\n"
+"PO-Revision-Date: 2020-09-24 02:45+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm"
-"/manualplugins-files/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
@@ -40,7 +41,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
 #: ../../plugins-files/audio-midi-files/file-browser.rst:24
 msgid "TODO"
-msgstr ""
+msgstr "Pendiente"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:22
 msgid "Collections"
@@ -121,7 +122,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
-msgstr "Complementos"
+msgstr "Plugins"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:8
 msgid "Plugin Browser"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-07-24 14:02+0000\n"
+"PO-Revision-Date: 2020-09-24 02:45+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/es/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
@@ -33,6 +33,8 @@ msgid ""
 "The BPM can be set to between 40 and 360 by clicking and dragging the BPM"
 " widget."
 msgstr ""
+"El BPM puede ser definido entre 40 y 360 haciendo click y manteniendo en el "
+"widget de BPM."
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:17
 msgid ""
@@ -40,6 +42,9 @@ msgid ""
 "(e.g., from 140.24 to 141.24) and clicking and dragging on the decimal "
 "counterpart will change the decimal value (e.g., frrom 140.24 to 140.25)."
 msgstr ""
+"Haciendo click y arrastrando en la zona el número entero cambiará el número "
+"entero (Ejemplo: Desde 140.24 a 141.24) y haciendo click y arrastrando en la "
+"zona del decimal cambiará el decimal (Ejemplo: Desde 140.24 a 140.25)"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:25
 msgid "Time Signature"
@@ -258,7 +263,7 @@ msgstr "Grabación de audio"
 #: ../../playback-and-recording/recording-automation.rst:8
 #: ../../playback-and-recording/recording-midi.rst:8
 msgid "TODO"
-msgstr ""
+msgstr "Pendiente"
 
 #: ../../playback-and-recording/recording-midi.rst:6
 msgid "Recording MIDI"

@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 00:47+0100\n"
-"PO-Revision-Date: 2020-07-22 14:41+0000\n"
-"Last-Translator: Gabriel García <gabriel.o.garcia@gmail.com>\n"
+"PO-Revision-Date: 2020-09-24 02:45+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../zrythm-interface/bottom-panel.rst:8
@@ -77,9 +78,8 @@ msgid "The automation editor is covered in detail in :ref:`automation-editor`."
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:57
-#, fuzzy
 msgid "Audio Editor"
-msgstr "Editor de automatización"
+msgstr "Editor De Audio"
 
 #: ../../zrythm-interface/bottom-panel.rst:58
 msgid ""
@@ -1234,4 +1234,3 @@ msgstr ""
 #~ "Las notas MIDI se emplean para "
 #~ "desencadenar instrumentos virtuales (o "
 #~ "físicos)."
-
