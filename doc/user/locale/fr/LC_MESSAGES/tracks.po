@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 17:47+0100\n"
+"POT-Creation-Date: 2020-09-24 00:47+0100\n"
 "PO-Revision-Date: 2020-05-14 16:41+0000\n"
 "Last-Translator: JEHANNIN <sahaa.thyva@laposte.net>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
-"manualtracks/fr/>\n"
 "Language: fr\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/zrythm/manualtracks/fr/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -36,7 +35,7 @@ msgstr ""
 #: ../../tracks/audio-track.rst:15
 #: ../../tracks/bus-track-audio.rst:17
 #: ../../tracks/bus-track-midi.rst:17
-#: ../../tracks/chord-track.rst:19
+#: ../../tracks/chord-track.rst:21
 #: ../../tracks/group-track-audio.rst:21
 #: ../../tracks/instrument-track.rst:18
 #: ../../tracks/master-track.rst:18
@@ -45,7 +44,7 @@ msgid "Top Buttons"
 msgstr "Boutons du haut"
 
 #: ../../tracks/audio-track.rst:17
-#: ../../tracks/chord-track.rst:22
+#: ../../tracks/chord-track.rst:24
 #: ../../tracks/inspector-page.rst:110
 #: ../../tracks/instrument-track.rst:20
 #: ../../tracks/midi-track.rst:23
@@ -61,7 +60,7 @@ msgstr "Armer la piste pour enregistrement."
 #: ../../tracks/audio-track.rst:19
 #: ../../tracks/bus-track-audio.rst:19
 #: ../../tracks/bus-track-midi.rst:19
-#: ../../tracks/chord-track.rst:24
+#: ../../tracks/chord-track.rst:26
 #: ../../tracks/group-track-audio.rst:23
 #: ../../tracks/inspector-page.rst:121
 #: ../../tracks/instrument-track.rst:22
@@ -83,7 +82,7 @@ msgstr "Met la piste en solo."
 #: ../../tracks/audio-track.rst:22
 #: ../../tracks/bus-track-audio.rst:22
 #: ../../tracks/bus-track-midi.rst:22
-#: ../../tracks/chord-track.rst:28
+#: ../../tracks/chord-track.rst:30
 #: ../../tracks/group-track-audio.rst:26
 #: ../../tracks/inspector-page.rst:114
 #: ../../tracks/instrument-track.rst:24
@@ -159,10 +158,10 @@ msgstr "Basculer la visibilité des pistes d'automatisation."
 #: ../../tracks/audio-track.rst:35
 #: ../../tracks/bus-track-audio.rst:31
 #: ../../tracks/bus-track-midi.rst:31
-#: ../../tracks/chord-track.rst:31
+#: ../../tracks/chord-track.rst:33
 #: ../../tracks/group-track-audio.rst:35
 #: ../../tracks/instrument-track.rst:42
-#: ../../tracks/marker-track.rst:20
+#: ../../tracks/marker-track.rst:22
 #: ../../tracks/master-track.rst:32
 #: ../../tracks/midi-track.rst:41
 msgid "Inspector"
@@ -171,10 +170,10 @@ msgstr "Inspecteur"
 #: ../../tracks/audio-track.rst:41
 #: ../../tracks/bus-track-audio.rst:37
 #: ../../tracks/bus-track-midi.rst:37
-#: ../../tracks/chord-track.rst:37
+#: ../../tracks/chord-track.rst:39
 #: ../../tracks/group-track-audio.rst:41
 #: ../../tracks/instrument-track.rst:48
-#: ../../tracks/marker-track.rst:26
+#: ../../tracks/marker-track.rst:28
 #: ../../tracks/master-track.rst:38
 #: ../../tracks/midi-track.rst:47
 msgid "Properties"
@@ -305,10 +304,10 @@ msgstr ""
 
 #: ../../tracks/bus-track-audio.rst:39
 #: ../../tracks/bus-track-midi.rst:39
-#: ../../tracks/chord-track.rst:39
+#: ../../tracks/chord-track.rst:41
 #: ../../tracks/group-track-audio.rst:43
 #: ../../tracks/inspector-page.rst:26
-#: ../../tracks/marker-track.rst:28
+#: ../../tracks/marker-track.rst:30
 #: ../../tracks/master-track.rst:40
 #: ../../tracks/midi-track.rst:50
 msgid "Track Name"
@@ -352,12 +351,12 @@ msgstr "La piste vers laquelle diriger la sortie de la piste du bus MIDI."
 msgid "These are similar to :ref:`midi-track-sends`."
 msgstr "Celles-ci sont similaires aux :ref:`midi-track-sends`."
 
-#: ../../tracks/chord-track.rst:6
+#: ../../tracks/chord-track.rst:8
 #: ../../tracks/track-types.rst:79
 msgid "Chord Track"
 msgstr "Piste d'accord"
 
-#: ../../tracks/chord-track.rst:8
+#: ../../tracks/chord-track.rst:10
 msgid ""
 "The Chord Track contains chord and scale objects that are used to specify"
 " when the song is using a particular chord or scale."
@@ -366,21 +365,21 @@ msgstr ""
 "utilisés pour spécifier quand le morceau utilise un accord ou une gamme "
 "particulière."
 
-#: ../../tracks/chord-track.rst:15
+#: ../../tracks/chord-track.rst:17
 msgid "For more information, see the section :doc:`../chords-and-scales/intro`."
 msgstr ""
 "Pour plus d'informations, voir la section :doc:`.../chords-and-"
 "scales/intro`."
 
-#: ../../tracks/chord-track.rst:22
+#: ../../tracks/chord-track.rst:24
 msgid "Arms the track for recording. Not used at the moment."
 msgstr "Arme la piste pour enregistrement. Inutilisé pour le moment."
 
-#: ../../tracks/chord-track.rst:25
+#: ../../tracks/chord-track.rst:27
 msgid "Soloes the track. Not used at the moment."
 msgstr "Met la piste en solo. Inutilisé pour le moment."
 
-#: ../../tracks/chord-track.rst:27
+#: ../../tracks/chord-track.rst:29
 msgid ""
 "Mutes the track. This causes the project to ignore any scale or chord "
 "events."
@@ -388,7 +387,7 @@ msgstr ""
 "Silence la piste. Cela fait que le projet ignore tout événement de gamme "
 "ou d'accord."
 
-#: ../../tracks/chord-track.rst:40
+#: ../../tracks/chord-track.rst:42
 msgid "The name of the chord track."
 msgstr "Le nom de la piste d'accord."
 
@@ -498,7 +497,7 @@ msgstr ""
 "sur les signaux MIDI au lieu des signaux audio."
 
 #: ../../tracks/inspector-page.rst:8
-#: ../../tracks/overview.rst:51
+#: ../../tracks/overview.rst:54
 msgid "Track Inspector"
 msgstr "Inspecteur de piste"
 
@@ -776,12 +775,12 @@ msgstr ""
 msgid "Tracks"
 msgstr "Pistes"
 
-#: ../../tracks/marker-track.rst:8
+#: ../../tracks/marker-track.rst:10
 #: ../../tracks/track-types.rst:88
 msgid "Marker Track"
 msgstr "Piste de marqueur"
 
-#: ../../tracks/marker-track.rst:10
+#: ../../tracks/marker-track.rst:12
 msgid ""
 "The marker track holds song markers that make it easier to jump to or to "
 "export specific sections of the song. Each project can only have one "
@@ -792,7 +791,7 @@ msgstr ""
 "ne peut avoir qu'une seule piste de marqueur et elle ne peut pas être "
 "supprimée (mais peut être masquée)."
 
-#: ../../tracks/marker-track.rst:29
+#: ../../tracks/marker-track.rst:31
 msgid "The name of the marker track."
 msgstr "Le nom de la piste de marqueur."
 
@@ -959,7 +958,7 @@ msgstr ""
 " dans le chapitre :ref:`automation`."
 
 #: ../../tracks/midi-track.rst:127
-#: ../../tracks/overview.rst:57
+#: ../../tracks/overview.rst:60
 msgid "Context Menu"
 msgstr "Menu contextuel"
 
@@ -976,31 +975,34 @@ msgid "Overview"
 msgstr "Vue générale"
 
 #: ../../tracks/overview.rst:8
+#, fuzzy
 msgid ""
 "Tracks are the main building blocks of projects. Tracks appear in the "
-"tracklist and contain various events such as regions."
+"tracklist and contain various events such as regions (see "
+":term:`Region`)."
 msgstr ""
 "Les pistes sont les principaux éléments constitutifs des projets. Les "
 "pistes apparaissent dans les listes de pistes et contiennent diverses "
 "informations telles que les régions."
 
 #: ../../tracks/overview.rst:15
+#, fuzzy
 msgid ""
 "Most types of tracks have a corresponding channel that appears in the "
-"mixer."
+":ref:`mixer`. See :ref:`channels` for more info."
 msgstr ""
 "La plupart des types de pistes ont un canal correspondant qui apparaît "
 "dans le mixeur."
 
-#: ../../tracks/overview.rst:21
+#: ../../tracks/overview.rst:22
 msgid ""
 "There are various kinds of Tracks suited for different purposes, "
-"explained in the following sections."
+"explained in the following sections. Some tracks are special, like the "
+":ref:`chord-track` and the :ref:`marker-track`, which contain chords and "
+"markers respectively."
 msgstr ""
-"Il existe différents types de pistes adaptées à différents usages, "
-"expliqués dans les sections suivantes."
 
-#: ../../tracks/overview.rst:25
+#: ../../tracks/overview.rst:28
 msgid ""
 "In Zrythm, group tracks are used for grouping signals (direct routing), "
 "FX/bus tracks are used for effects/sends, and folder tracks are used for "
@@ -1014,17 +1016,17 @@ msgstr ""
 "différent de ce que font de nombreux autres STAN, alors gardez bien cela "
 "à l'esprit."
 
-#: ../../tracks/overview.rst:32
+#: ../../tracks/overview.rst:35
 msgid "If you have used Cubase before, you might find this easy to get used to."
 msgstr ""
 "Si vous avez déjà utilisé Cubase, il vous sera probablement facile de "
 "vous y habituer."
 
-#: ../../tracks/overview.rst:36
+#: ../../tracks/overview.rst:39
 msgid "Track Interface"
 msgstr "Interface de piste"
 
-#: ../../tracks/overview.rst:41
+#: ../../tracks/overview.rst:44
 msgid ""
 "Each track has a color, an icon (corresponding to its type) a name and "
 "various buttons. Tracks that can have lanes, like instrument tracks, will"
@@ -1038,7 +1040,7 @@ msgstr ""
 "automatisations auront une option pour afficher les pistes "
 "d'automatisation comme ci-dessus."
 
-#: ../../tracks/overview.rst:47
+#: ../../tracks/overview.rst:50
 msgid ""
 "If the track produces output, it will have a meter on its right-hand side"
 " showing the current level."
@@ -1046,7 +1048,7 @@ msgstr ""
 "Si la piste produit une sortie, elle aura un indicateur sur sa droite "
 "indiquant le niveau actuel."
 
-#: ../../tracks/overview.rst:53
+#: ../../tracks/overview.rst:56
 #, fuzzy
 msgid ""
 "Each track will display its page in the inspector when selected. See :ref"
@@ -1056,7 +1058,7 @@ msgstr ""
 "sélectionnée. Selon la piste, les propriétés affichées seront "
 "différentes."
 
-#: ../../tracks/overview.rst:59
+#: ../../tracks/overview.rst:62
 #, fuzzy
 msgid ""
 "Each tracks has a context menu with additional options depending on its "
@@ -1065,7 +1067,7 @@ msgstr ""
 "Chaque piste dispose d'un menu contextuel, avec des options "
 "supplémentaires selon son type."
 
-#: ../../tracks/overview.rst:65
+#: ../../tracks/overview.rst:68
 msgid ""
 "The section :ref:`track-operations` explains the various track operations"
 " available."
@@ -1383,3 +1385,13 @@ msgstr ""
 #~ "avant le traitement du fader, et "
 #~ "un port post-fader retient le "
 #~ "signal après l'application du fader."
+
+#~ msgid ""
+#~ "There are various kinds of Tracks "
+#~ "suited for different purposes, explained "
+#~ "in the following sections."
+#~ msgstr ""
+#~ "Il existe différents types de pistes "
+#~ "adaptées à différents usages, expliqués "
+#~ "dans les sections suivantes."
+

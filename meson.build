@@ -54,7 +54,8 @@ sourceviewstylesdir = zrythmdatadir / 'sourceview-styles'
 
 # Used for building manpages, manual, etc., using
 # foreach
-locales = run_command ('cat', 'po/LINGUAS').stdout ().strip ().split (' ') + [ 'en' ]
+locales_str = run_command ('cat', 'po/LINGUAS').stdout ().strip () + ' en'
+locales = locales_str.split (' ')
 
 os_darwin = false
 os_gnu = false
@@ -74,6 +75,8 @@ elif host_machine.system() == 'windows'
   os_windows = true
   bin_suffix = '.exe'
   lib_suffix = '.dll'
+else
+  error ('unknown host system ' + host_machine.system ())
 endif
 
 have_custom_name = prog_name != 'Zrythm'
@@ -262,6 +265,9 @@ cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
 
 sphinx_build = find_program (
   ['sphinx-build', 'sphinx-build-3'],
+  required: get_option ('user_manual'))
+sphinx_intl = find_program (
+  'sphinx-intl',
   required: get_option ('user_manual'))
 help2man = find_program (
   ['help2man'],

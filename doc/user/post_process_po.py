@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!@PYTHON3@
 #
 # This is part of the Zrythm Manual.
 # Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
@@ -10,7 +10,7 @@
 import os
 import re
 
-srcpath = './locale'
+srcpath = '@MANUAL_SRC_DIR@/locale'
 for subdir, dirs, files in os.walk(srcpath):
     for file in files:
         fullpath = os.path.join(subdir,file)

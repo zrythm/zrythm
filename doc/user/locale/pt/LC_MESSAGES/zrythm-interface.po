@@ -7,98 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 18:06+0100\n"
+"POT-Creation-Date: 2020-09-24 00:47+0100\n"
 "PO-Revision-Date: 2020-09-13 22:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualzrythm-interface/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
+"/manualzrythm-interface/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
-msgid "Basic Concepts and Terminology"
-msgstr "Conceitos Básicos e Terminologia"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:8
-msgid ""
-"Here are a few terms you should be aware of when using Zrythm. They are "
-"explained further in their corresponding chapters."
-msgstr ""
-"Aqui estão alguns termos que deve estar ciente ao usar o Zrythm. Eles são"
-" explicados mais adiante nos seus capítulos correspondentes."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
-msgid "Region"
-msgstr "Região"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:12
-msgid ""
-"A Region (Clip) is a container for MIDI Notes, audio or other events. "
-"Regions can be repeated, like below."
-msgstr ""
-"Uma Região (Clipe) é um contentor para notas MIDI, áudio ou outros "
-"eventos. As regiões podem ser repetidas, como abaixo."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:19
-msgid ""
-"The content of the Regions can be edited in an Editor, such as the Piano "
-"Roll, found in the Editor tab in the bottom panel."
-msgstr ""
-"O conteúdo das Regiões pode ser editado num Editor, como os cílindros de "
-"piano, encontrando-se no separador Editor no painel inferior."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
-msgid "Track"
-msgstr "Faixa"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:28
-msgid ""
-"A Track is a single slot in the Timeline containing various Regions and "
-"Automation. It may contain various lanes, such as Automation Lanes. There"
-" are some special tracks like the Chord Track and the Marker Track that "
-"contain chords and markers respectively."
-msgstr ""
-"Uma faixa é um único slot na cronologia que contém várias regiões e "
-"automação. Pode conter várias pistas, tais como pistas de automação. "
-"Existem algumas faixas especiais como a faixa de acordes e a faixa de "
-"marcação que contêm acordes e marcadores respetivamente."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:39
-msgid "Channel"
-msgstr "Canal"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
-msgid ""
-"A Channel is a single slot in the Mixer. Most types of Tracks have a "
-"corresponding Channel, which is used for adjusting the Track's volume, "
-"pan and other settings."
-msgstr ""
-"Um Canal é um único slot no Misturador. A maioria das categorias de "
-"Faixas têm um Canal correspondente, que é usado para ajustar o volume, a "
-"pan e outras definições da Faixa."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:49
-msgid "Range"
-msgstr "Intervalo"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:50
-msgid "A Range is a selection of time between two positions."
-msgstr "Um Intervalo é uma seleção de tempo entre duas posições."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:56
-msgid "MIDI Note"
-msgstr "Nota MIDI"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:57
-msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
-msgstr ""
-"As Notas MIDI são usadas para acionar instrumentos virtuais (ou de "
-"hardware)."
 
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
@@ -166,8 +85,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:53
 msgid "The automation editor is covered in detail in :ref:`automation-editor`."
-msgstr ""
-"O editor de automação é abordado em detalhes em :ref:`automation-editor'."
+msgstr "O editor de automação é abordado em detalhes em :ref:`automation-editor'."
 
 #: ../../zrythm-interface/bottom-panel.rst:57
 msgid "Audio Editor"
@@ -178,9 +96,9 @@ msgid ""
 "The audio editor is used to view the contents of audio regions. The audio"
 " editor will appear in the Editor tab when an audio region is selected."
 msgstr ""
-"O editor de áudio é usado para visualizar o conteúdo das regiões de áudio. O "
-"editor de áudio aparecerá na guia Editor quando uma região de áudio for "
-"selecionada."
+"O editor de áudio é usado para visualizar o conteúdo das regiões de "
+"áudio. O editor de áudio aparecerá na guia Editor quando uma região de "
+"áudio for selecionada."
 
 #: ../../zrythm-interface/bottom-panel.rst:66
 msgid "The audio editor is covered in detail in :ref:`audio-editor`."
@@ -195,8 +113,9 @@ msgid ""
 "The chord editor is used for editing chord regions. It will appear in the"
 " Editor tab when a chord region is selected in the chord track."
 msgstr ""
-"O editor de acordes é usado para editar regiões de acordes. Ele aparecerá na "
-"guia Editor quando uma região de acordes for selecionada na faixa de acordes."
+"O editor de acordes é usado para editar regiões de acordes. Ele aparecerá"
+" na guia Editor quando uma região de acordes for selecionada na faixa de "
+"acordes."
 
 #: ../../zrythm-interface/bottom-panel.rst:78
 msgid "The chord editor is covered in detail in :ref:`chord-editor`."
@@ -211,8 +130,8 @@ msgid ""
 "The Mixer tab contains each channel and various controls for changing the"
 " signal as it passes through the channel."
 msgstr ""
-"A guia Misturador contém todos os canais e vários controlos para alterar o "
-"sinal à medida que este passa pelo canal."
+"A guia Misturador contém todos os canais e vários controlos para alterar "
+"o sinal à medida que este passa pelo canal."
 
 #: ../../zrythm-interface/bottom-panel.rst:89
 msgid "Mixing is covered in :ref:`mixing`."
@@ -229,7 +148,8 @@ msgstr "Painel esquerdo"
 #: ../../zrythm-interface/left-panel.rst:10
 msgid "The left panel contains the inspectors and track visibility options."
 msgstr ""
-"O painel esquerdo contém os inspetores e as opções de visibilidade da pista."
+"O painel esquerdo contém os inspetores e as opções de visibilidade da "
+"pista."
 
 #: ../../zrythm-interface/left-panel.rst:17
 msgid "Track Inspector"
@@ -254,7 +174,8 @@ msgstr "Inspetor de suplementos"
 #: ../../zrythm-interface/left-panel.rst:26
 msgid "The plugin inspector shows various options for the selected plugin."
 msgstr ""
-"O inspetor de suplementos mostra várias opções para o suplemento selecionado."
+"O inspetor de suplementos mostra várias opções para o suplemento "
+"selecionado."
 
 #: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
@@ -282,10 +203,10 @@ msgid ""
 " be automated using automation tracks. Ports can be routed to other ports"
 " anywhere within Zrythm by double clicking on them."
 msgstr ""
-"As portas de entrada de controle podem ser alteradas a clicar e arrastando e "
-"também podem ser automatizadas a usar faixas de automação. As portas podem "
-"ser roteadas para outras portas em qualquer lugar dentro da Zrythm, clicando "
-"duas vezes nelas."
+"As portas de entrada de controle podem ser alteradas a clicar e "
+"arrastando e também podem ser automatizadas a usar faixas de automação. "
+"As portas podem ser roteadas para outras portas em qualquer lugar dentro "
+"da Zrythm, clicando duas vezes nelas."
 
 #: ../../zrythm-interface/left-panel.rst:52
 msgid "Ports are explained in more detail in :ref:`ports`."
@@ -296,8 +217,8 @@ msgid ""
 "Depending on the type of plugin, there may be different categories of "
 "ports being shown."
 msgstr ""
-"A depender do tipo de suplemento, pode haver categorias de portas diferentes "
-"mostradas."
+"A depender do tipo de suplemento, pode haver categorias de portas "
+"diferentes mostradas."
 
 #: ../../zrythm-interface/left-panel.rst:58
 msgid "Track Visibility"
@@ -316,8 +237,8 @@ msgid ""
 "The main toolbar contains global actions, such as saving and loading a "
 "project or opening the preferences window."
 msgstr ""
-"A barra de ferramentas principal contém ações globais, tais como gravar e "
-"carregar um projeto ou abrir a janela de preferências."
+"A barra de ferramentas principal contém ações globais, tais como gravar e"
+" carregar um projeto ou abrir a janela de preferências."
 
 #: ../../zrythm-interface/main-toolbar.rst:17
 msgid "About Dialog"
@@ -328,8 +249,8 @@ msgid ""
 "Clicking the Zrythm icon will show the About dialog, which contains "
 "information about authors and copyright."
 msgstr ""
-"A clicar no ícone Zrythm o diálogo Sobre aparecerá, que contém informações "
-"sobre os autores e direitos autorais."
+"A clicar no ícone Zrythm o diálogo Sobre aparecerá, que contém "
+"informações sobre os autores e direitos autorais."
 
 #: ../../zrythm-interface/main-toolbar.rst:26
 msgid "Global Menus"
@@ -348,8 +269,8 @@ msgid ""
 "The Edit menu various buttons and controls that are used often during "
 "editing and arranging."
 msgstr ""
-"O menu Editar contém vários botões e controles que são usados frequentemente "
-"durante a edição e organização."
+"O menu Editar contém vários botões e controles que são usados "
+"frequentemente durante a edição e organização."
 
 #: ../../zrythm-interface/main-toolbar.rst:35
 msgid "The :ref:`editing` chapter explains these controls in detail."
@@ -420,8 +341,8 @@ msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-"
 "routing-graph` for more details."
 msgstr ""
-"Exportar o gráfico de roteamento como uma imagem ou gráfico .dot. Veja :ref"
-":`export-routing-graph` para mais detalhes."
+"Exportar o gráfico de roteamento como uma imagem ou gráfico .dot. Veja "
+":ref:`export-routing-graph` para mais detalhes."
 
 #: ../../zrythm-interface/main-toolbar.rst:63
 msgid "For more information about projects, see the :ref:`projects` chapter."
@@ -500,8 +421,8 @@ msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
 msgstr ""
-"O menu Ajuda contém ligações para reportar bugs, doar, conversar e outras "
-"ligações úteis."
+"O menu Ajuda contém ligações para reportar bugs, doar, conversar e outras"
+" ligações úteis."
 
 #: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Chat"
@@ -570,7 +491,8 @@ msgstr "Interface de script"
 #: ../../zrythm-interface/main-toolbar.rst:119
 msgid "Shows the scripting interface. See :ref:`scripting` for more information."
 msgstr ""
-"Mostra a interface de scripts. Veja :ref:`scripting` para mais informações."
+"Mostra a interface de scripts. Veja :ref:`scripting` para mais "
+"informações."
 
 #: ../../zrythm-interface/main-toolbar.rst:121
 msgid "Log Viewer"
@@ -597,8 +519,8 @@ msgid ""
 "output."
 msgstr ""
 "O widget Entrada MIDI mostra a atividade MIDI dos aparelhos MIDI "
-"autoconetados e o expositor de forma de onda ao vivo mostra a forma de onda "
-"de áudio da saída principal."
+"autoconetados e o expositor de forma de onda ao vivo mostra a forma de "
+"onda de áudio da saída principal."
 
 #: ../../zrythm-interface/right-panel.rst:8
 msgid "Right Panel"
@@ -609,8 +531,8 @@ msgid ""
 "The right panel contains plugin and sample browsers in addition to the "
 "control room."
 msgstr ""
-"O painel direito contém suplementos e navegadores de amostra, além da sala "
-"de controle."
+"O painel direito contém suplementos e navegadores de amostra, além da "
+"sala de controle."
 
 #: ../../zrythm-interface/right-panel.rst:16
 msgid "Plugin Browser"
@@ -650,9 +572,9 @@ msgid ""
 "on the left side. It has a special toolbar at the top for timeline-"
 "specific actions."
 msgstr ""
-"A cronologia consiste do arranjador da cronologia e nas faixas do projeto do "
-"lado esquerdo. Possui uma barra de ferramentas especial no topo para ações "
-"específicas de cronologia."
+"A cronologia consiste do arranjador da cronologia e nas faixas do projeto"
+" do lado esquerdo. Possui uma barra de ferramentas especial no topo para "
+"ações específicas de cronologia."
 
 #: ../../zrythm-interface/timeline.rst:17
 msgid ""
@@ -671,8 +593,8 @@ msgid ""
 "The transport bar contains information about the audio engine and "
 "transport controls."
 msgstr ""
-"A barra de transporte contém informações sobre o motor de áudio e controles "
-"de transporte."
+"A barra de transporte contém informações sobre o motor de áudio e "
+"controles de transporte."
 
 #: ../../zrythm-interface/transport-bar.rst:17
 msgid "Transport Controls"
@@ -1303,3 +1225,96 @@ msgstr ":ref:`right-panel` (6)"
 
 #~ msgid "TODO"
 #~ msgstr ""
+
+#~ msgid "Basic Concepts and Terminology"
+#~ msgstr "Conceitos Básicos e Terminologia"
+
+#~ msgid ""
+#~ "Here are a few terms you should"
+#~ " be aware of when using Zrythm. "
+#~ "They are explained further in their "
+#~ "corresponding chapters."
+#~ msgstr ""
+#~ "Aqui estão alguns termos que deve "
+#~ "estar ciente ao usar o Zrythm. "
+#~ "Eles são explicados mais adiante nos "
+#~ "seus capítulos correspondentes."
+
+#~ msgid "Region"
+#~ msgstr "Região"
+
+#~ msgid ""
+#~ "A Region (Clip) is a container for"
+#~ " MIDI Notes, audio or other events."
+#~ " Regions can be repeated, like below."
+#~ msgstr ""
+#~ "Uma Região (Clipe) é um contentor "
+#~ "para notas MIDI, áudio ou outros "
+#~ "eventos. As regiões podem ser repetidas,"
+#~ " como abaixo."
+
+#~ msgid ""
+#~ "The content of the Regions can be"
+#~ " edited in an Editor, such as "
+#~ "the Piano Roll, found in the "
+#~ "Editor tab in the bottom panel."
+#~ msgstr ""
+#~ "O conteúdo das Regiões pode ser "
+#~ "editado num Editor, como os cílindros"
+#~ " de piano, encontrando-se no "
+#~ "separador Editor no painel inferior."
+
+#~ msgid "Track"
+#~ msgstr "Faixa"
+
+#~ msgid ""
+#~ "A Track is a single slot in "
+#~ "the Timeline containing various Regions "
+#~ "and Automation. It may contain various"
+#~ " lanes, such as Automation Lanes. "
+#~ "There are some special tracks like "
+#~ "the Chord Track and the Marker "
+#~ "Track that contain chords and markers"
+#~ " respectively."
+#~ msgstr ""
+#~ "Uma faixa é um único slot na "
+#~ "cronologia que contém várias regiões e"
+#~ " automação. Pode conter várias pistas, "
+#~ "tais como pistas de automação. Existem"
+#~ " algumas faixas especiais como a "
+#~ "faixa de acordes e a faixa de "
+#~ "marcação que contêm acordes e marcadores"
+#~ " respetivamente."
+
+#~ msgid "Channel"
+#~ msgstr "Canal"
+
+#~ msgid ""
+#~ "A Channel is a single slot in "
+#~ "the Mixer. Most types of Tracks "
+#~ "have a corresponding Channel, which is"
+#~ " used for adjusting the Track's "
+#~ "volume, pan and other settings."
+#~ msgstr ""
+#~ "Um Canal é um único slot no "
+#~ "Misturador. A maioria das categorias de"
+#~ " Faixas têm um Canal correspondente, "
+#~ "que é usado para ajustar o volume,"
+#~ " a pan e outras definições da "
+#~ "Faixa."
+
+#~ msgid "Range"
+#~ msgstr "Intervalo"
+
+#~ msgid "A Range is a selection of time between two positions."
+#~ msgstr "Um Intervalo é uma seleção de tempo entre duas posições."
+
+#~ msgid "MIDI Note"
+#~ msgstr "Nota MIDI"
+
+#~ msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
+#~ msgstr ""
+#~ "As Notas MIDI são usadas para "
+#~ "acionar instrumentos virtuais (ou de "
+#~ "hardware)."
+

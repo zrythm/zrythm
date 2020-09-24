@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 18:06+0100\n"
+"POT-Creation-Date: 2020-09-24 00:47+0100\n"
 "PO-Revision-Date: 2019-08-07 14:26+0000\n"
 "Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
 "Language: zh\n"
@@ -19,71 +19,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
-msgid "Basic Concepts and Terminology"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:8
-msgid ""
-"Here are a few terms you should be aware of when using Zrythm. They are "
-"explained further in their corresponding chapters."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
-msgid "Region"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:12
-msgid ""
-"A Region (Clip) is a container for MIDI Notes, audio or other events. "
-"Regions can be repeated, like below."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:19
-msgid ""
-"The content of the Regions can be edited in an Editor, such as the Piano "
-"Roll, found in the Editor tab in the bottom panel."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
-msgid "Track"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:28
-msgid ""
-"A Track is a single slot in the Timeline containing various Regions and "
-"Automation. It may contain various lanes, such as Automation Lanes. There"
-" are some special tracks like the Chord Track and the Marker Track that "
-"contain chords and markers respectively."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:39
-msgid "Channel"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
-msgid ""
-"A Channel is a single slot in the Mixer. Most types of Tracks have a "
-"corresponding Channel, which is used for adjusting the Track's volume, "
-"pan and other settings."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:49
-msgid "Range"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:50
-msgid "A Range is a selection of time between two positions."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:56
-msgid "MIDI Note"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:57
-msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
-msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
@@ -1232,5 +1167,68 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "TODO"
+#~ msgstr ""
+
+#~ msgid "Basic Concepts and Terminology"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Here are a few terms you should"
+#~ " be aware of when using Zrythm. "
+#~ "They are explained further in their "
+#~ "corresponding chapters."
+#~ msgstr ""
+
+#~ msgid "Region"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Region (Clip) is a container for"
+#~ " MIDI Notes, audio or other events."
+#~ " Regions can be repeated, like below."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The content of the Regions can be"
+#~ " edited in an Editor, such as "
+#~ "the Piano Roll, found in the "
+#~ "Editor tab in the bottom panel."
+#~ msgstr ""
+
+#~ msgid "Track"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Track is a single slot in "
+#~ "the Timeline containing various Regions "
+#~ "and Automation. It may contain various"
+#~ " lanes, such as Automation Lanes. "
+#~ "There are some special tracks like "
+#~ "the Chord Track and the Marker "
+#~ "Track that contain chords and markers"
+#~ " respectively."
+#~ msgstr ""
+
+#~ msgid "Channel"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Channel is a single slot in "
+#~ "the Mixer. Most types of Tracks "
+#~ "have a corresponding Channel, which is"
+#~ " used for adjusting the Track's "
+#~ "volume, pan and other settings."
+#~ msgstr ""
+
+#~ msgid "Range"
+#~ msgstr ""
+
+#~ msgid "A Range is a selection of time between two positions."
+#~ msgstr ""
+
+#~ msgid "MIDI Note"
+#~ msgstr ""
+
+#~ msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
 #~ msgstr ""
 

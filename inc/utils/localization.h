@@ -39,6 +39,7 @@
 
 typedef enum LocalizationLanguage
 {
+  LL_AF_ZA,
   LL_AR,
   LL_CS,
   LL_DA,
@@ -69,6 +70,7 @@ typedef enum LocalizationLanguage
 } LocalizationLanguage;
 
 static const char * language_strings[] = {
+  "af_ZA",
   "ar",
   "cs",
   "da",
@@ -98,6 +100,7 @@ static const char * language_strings[] = {
 };
 
 static const char * language_strings_full[] = {
+  "Afrikaans [af_ZA]",
   "اَلْعَرَبِيَّةُ‎ [ar]",
   "Czech [cs]",
   "Dansk [da]",

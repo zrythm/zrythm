@@ -44,8 +44,8 @@ Welcome to the Zrythm manual.
    theming/intro
    contributing/intro
    user-media/intro
-   credits/intro
    glossary/intro
+   credits/intro
    appendix/intro
 
 .. For HTML and epub we want this to appear right

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 18:06+0100\n"
+"POT-Creation-Date: 2020-09-24 00:47+0100\n"
 "PO-Revision-Date: 2020-04-29 22:39+0000\n"
 "Last-Translator: Waui <wau-wau@tutanota.de>\n"
 "Language: de\n"
@@ -18,86 +18,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
-msgid "Basic Concepts and Terminology"
-msgstr "Grundbegriffe und Terminologie"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:8
-msgid ""
-"Here are a few terms you should be aware of when using Zrythm. They are "
-"explained further in their corresponding chapters."
-msgstr ""
-"Hier sind ein paar Begriffe, mit denen du vertraut sein solltest, wenn du"
-" Zrythm benutzt. Sie werden in ihren entsprechenden Kapiteln weiter "
-"ausgeführt."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
-msgid "Region"
-msgstr "Region"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:12
-msgid ""
-"A Region (Clip) is a container for MIDI Notes, audio or other events. "
-"Regions can be repeated, like below."
-msgstr ""
-"Eine Region (Clip) ist ein Behälter für MIDI-Noten oder Audio. So sieht "
-"eine Region im Arrangeur aus."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:19
-msgid ""
-"The content of the Regions can be edited in an Editor, such as the Piano "
-"Roll, found in the Editor tab in the bottom panel."
-msgstr ""
-"Die Zeitachse ist, wo das Lied arrangiert wird, auch bekannt als "
-"Arrangeur."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
-msgid "Track"
-msgstr "Spur"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:28
-msgid ""
-"A Track is a single slot in the Timeline containing various Regions and "
-"Automation. It may contain various lanes, such as Automation Lanes. There"
-" are some special tracks like the Chord Track and the Marker Track that "
-"contain chords and markers respectively."
-msgstr ""
-"Eine Spur ist ein einzelner Slot in der Zeitachse, der verschiedene "
-"Regionen und Automationen beinhaltet. Sie kann verschiedene Unterspuren "
-"wie Automationsspuren enthalten. Es gibt besondere Spuren wie die Akkord-"
-"Spur und die Markerspur, die jeweils Akkorde und Marker beinhalten."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:39
-msgid "Channel"
-msgstr "Kanal"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
-msgid ""
-"A Channel is a single slot in the Mixer. Most types of Tracks have a "
-"corresponding Channel, which is used for adjusting the Track's volume, "
-"pan and other settings."
-msgstr ""
-"Der Mixer enthält alle Kanäle im Projekt und dient zum Mischen der "
-"Audiosignale von jedem Kanal."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:49
-msgid "Range"
-msgstr "Bereich"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:50
-msgid "A Range is a selection of time between two positions."
-msgstr "Ein Bereich ist eine Auswahl der Zeit zwischen zwei Positionen."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:56
-msgid "MIDI Note"
-msgstr "MIDI-Note"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:57
-msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
-msgstr ""
-"MIDI-Noten werden zum Auslösen von virtuellen (oder "
-"Hardware-)Instrumenten verwendet."
 
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
@@ -1269,4 +1189,91 @@ msgstr ""
 
 #~ msgid "TODO"
 #~ msgstr ""
+
+#~ msgid "Basic Concepts and Terminology"
+#~ msgstr "Grundbegriffe und Terminologie"
+
+#~ msgid ""
+#~ "Here are a few terms you should"
+#~ " be aware of when using Zrythm. "
+#~ "They are explained further in their "
+#~ "corresponding chapters."
+#~ msgstr ""
+#~ "Hier sind ein paar Begriffe, mit "
+#~ "denen du vertraut sein solltest, wenn"
+#~ " du Zrythm benutzt. Sie werden in "
+#~ "ihren entsprechenden Kapiteln weiter "
+#~ "ausgeführt."
+
+#~ msgid "Region"
+#~ msgstr "Region"
+
+#~ msgid ""
+#~ "A Region (Clip) is a container for"
+#~ " MIDI Notes, audio or other events."
+#~ " Regions can be repeated, like below."
+#~ msgstr ""
+#~ "Eine Region (Clip) ist ein Behälter "
+#~ "für MIDI-Noten oder Audio. So "
+#~ "sieht eine Region im Arrangeur aus."
+
+#~ msgid ""
+#~ "The content of the Regions can be"
+#~ " edited in an Editor, such as "
+#~ "the Piano Roll, found in the "
+#~ "Editor tab in the bottom panel."
+#~ msgstr ""
+#~ "Die Zeitachse ist, wo das Lied "
+#~ "arrangiert wird, auch bekannt als "
+#~ "Arrangeur."
+
+#~ msgid "Track"
+#~ msgstr "Spur"
+
+#~ msgid ""
+#~ "A Track is a single slot in "
+#~ "the Timeline containing various Regions "
+#~ "and Automation. It may contain various"
+#~ " lanes, such as Automation Lanes. "
+#~ "There are some special tracks like "
+#~ "the Chord Track and the Marker "
+#~ "Track that contain chords and markers"
+#~ " respectively."
+#~ msgstr ""
+#~ "Eine Spur ist ein einzelner Slot "
+#~ "in der Zeitachse, der verschiedene "
+#~ "Regionen und Automationen beinhaltet. Sie "
+#~ "kann verschiedene Unterspuren wie "
+#~ "Automationsspuren enthalten. Es gibt besondere"
+#~ " Spuren wie die Akkord-Spur und "
+#~ "die Markerspur, die jeweils Akkorde und"
+#~ " Marker beinhalten."
+
+#~ msgid "Channel"
+#~ msgstr "Kanal"
+
+#~ msgid ""
+#~ "A Channel is a single slot in "
+#~ "the Mixer. Most types of Tracks "
+#~ "have a corresponding Channel, which is"
+#~ " used for adjusting the Track's "
+#~ "volume, pan and other settings."
+#~ msgstr ""
+#~ "Der Mixer enthält alle Kanäle im "
+#~ "Projekt und dient zum Mischen der "
+#~ "Audiosignale von jedem Kanal."
+
+#~ msgid "Range"
+#~ msgstr "Bereich"
+
+#~ msgid "A Range is a selection of time between two positions."
+#~ msgstr "Ein Bereich ist eine Auswahl der Zeit zwischen zwei Positionen."
+
+#~ msgid "MIDI Note"
+#~ msgstr "MIDI-Note"
+
+#~ msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
+#~ msgstr ""
+#~ "MIDI-Noten werden zum Auslösen von "
+#~ "virtuellen (oder Hardware-)Instrumenten verwendet."
 

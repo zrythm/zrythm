@@ -1,0 +1,202 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019-2020 The Zrythm contributors
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-24 00:47+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../routing/control-room.rst:8
+msgid "Control Room"
+msgstr ""
+
+#: ../../routing/control-room.rst:9
+msgid ""
+"The control room is used to edit global settings related to mixing and "
+"routing signals."
+msgstr ""
+
+#: ../../routing/control-room.rst:13
+msgid "Monitor Out"
+msgstr ""
+
+#: ../../routing/control-room.rst:14
+msgid ""
+"In Zrythm, what you actually hear through your speakers is not the output"
+" of the master track, but the monitor output."
+msgstr ""
+
+#: ../../routing/control-room.rst:18
+msgid ""
+"The master track routes its output to a special processor called `Monitor"
+" Out` that changes the volume before sending the output to the speakers."
+msgstr ""
+
+#: ../../routing/control-room.rst:25
+msgid "The `Monitor Out` knob controls this volume."
+msgstr ""
+
+#: ../../routing/control-room.rst:28
+msgid "Dim"
+msgstr ""
+
+#: ../../routing/control-room.rst:29
+msgid "This is not operational at the moment."
+msgstr ""
+
+#: ../../routing/intro.rst:6
+msgid "Routing"
+msgstr ""
+
+#: ../../routing/making-connections.rst:8
+msgid "Making Connections"
+msgstr ""
+
+#: ../../routing/making-connections.rst:10
+msgid ""
+"Zrythm allows the user to connect almost any port to any other port, as "
+"long as they are compatible. For example, you can route an LFO's CV "
+"output to a filter plugin's cutoff parameter."
+msgstr ""
+
+#: ../../routing/making-connections.rst:15
+msgid ""
+"Connections can be made by double clicking on ports in the :ref:`track-"
+"inspector` or the :ref:`plugin-inspector`."
+msgstr ""
+
+#: ../../routing/making-connections.rst:22
+msgid ""
+"By double clicking the port, you can select a port to connect it to, or "
+"edit existing connections. You can also drag the slider to adjust the "
+"level of the amount to send."
+msgstr ""
+
+#: ../../routing/making-connections.rst:28
+msgid "Routing Graph"
+msgstr ""
+
+#: ../../routing/making-connections.rst:29
+msgid ""
+"It is very helpful to be able to view the routing graph when making "
+"connections. We plan to add this functionality into Zrythm in the future,"
+" but for now Zrythm allows you to export the whole routing graph as a PNG"
+" image, so you can view it externally."
+msgstr ""
+
+#: ../../routing/making-connections.rst:35
+msgid "See :ref:`export-routing-graph` for details."
+msgstr ""
+
+#: ../../routing/ports.rst:8
+msgid "Ports"
+msgstr ""
+
+#: ../../routing/ports.rst:10
+msgid ""
+"Before getting into connections, it is necessary to understand some basic"
+" information about ports."
+msgstr ""
+
+#: ../../routing/ports.rst:13
+msgid ""
+"Ports are the main building blocks used to route signals throughout "
+"Zrythm. A port does not process anything on its own, and is usually part "
+"of a `processor`, like a plugin or track."
+msgstr ""
+
+#: ../../routing/ports.rst:19
+msgid ""
+"For example, an instrument track has a `MIDI input` port it uses to read "
+"MIDI data and 2 `Audio output` ports where it copies the stereo signal "
+"after being processed."
+msgstr ""
+
+#: ../../routing/ports.rst:25
+msgid "Port Directions"
+msgstr ""
+
+#: ../../routing/ports.rst:26
+msgid "Input"
+msgstr ""
+
+#: ../../routing/ports.rst:27
+msgid "The port receives signals."
+msgstr ""
+
+#: ../../routing/ports.rst:29
+msgid "Output"
+msgstr ""
+
+#: ../../routing/ports.rst:29
+msgid "The port sends signals."
+msgstr ""
+
+#: ../../routing/ports.rst:32
+msgid "Port Types"
+msgstr ""
+
+#: ../../routing/ports.rst:34
+msgid "Audio"
+msgstr ""
+
+#: ../../routing/ports.rst:34
+msgid "Ports of this type receive or send raw audio signals."
+msgstr ""
+
+#: ../../routing/ports.rst:37
+msgid "Event"
+msgstr ""
+
+#: ../../routing/ports.rst:37
+msgid "Event ports are mainly used for routing MIDI signals."
+msgstr ""
+
+#: ../../routing/ports.rst:40
+msgid "Control"
+msgstr ""
+
+#: ../../routing/ports.rst:40
+msgid ""
+"Control ports are user-editable parameters that can also be automated in "
+"automation lanes."
+msgstr ""
+
+#: ../../routing/ports.rst:44
+msgid "CV"
+msgstr ""
+
+#: ../../routing/ports.rst:43
+msgid ""
+"CV ports handle continuous signals and can be used to modulate control "
+"ports."
+msgstr ""
+
+#: ../../routing/ports.rst:47
+msgid "Port Connections"
+msgstr ""
+
+#: ../../routing/ports.rst:48
+msgid ""
+"Ports can be connected with each other, as long as they are of the same "
+"type and opposite direction, with the exception of CV ports which may be "
+"routed to both CV ports and control ports."
+msgstr ""
+
+#: ../../routing/ports.rst:54
+msgid ""
+"When ports are connected, the signal from the source port is added to the"
+" destination port during processing."
+msgstr ""
+

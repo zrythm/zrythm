@@ -7,84 +7,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 18:06+0100\n"
+"POT-Creation-Date: 2020-09-24 00:47+0100\n"
 "PO-Revision-Date: 2020-09-22 18:08+0000\n"
 "Last-Translator: ilya7 <mrzarp@protonmail.com>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
-"manualzrythm-interface/ru/>\n"
 "Language: ru\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm"
+"/manualzrythm-interface/ru/>\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
-msgid "Basic Concepts and Terminology"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:8
-msgid ""
-"Here are a few terms you should be aware of when using Zrythm. They are "
-"explained further in their corresponding chapters."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
-msgid "Region"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:12
-msgid ""
-"A Region (Clip) is a container for MIDI Notes, audio or other events. "
-"Regions can be repeated, like below."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:19
-msgid ""
-"The content of the Regions can be edited in an Editor, such as the Piano "
-"Roll, found in the Editor tab in the bottom panel."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
-msgid "Track"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:28
-msgid ""
-"A Track is a single slot in the Timeline containing various Regions and "
-"Automation. It may contain various lanes, such as Automation Lanes. There"
-" are some special tracks like the Chord Track and the Marker Track that "
-"contain chords and markers respectively."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:39
-msgid "Channel"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
-msgid ""
-"A Channel is a single slot in the Mixer. Most types of Tracks have a "
-"corresponding Channel, which is used for adjusting the Track's volume, "
-"pan and other settings."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:49
-msgid "Range"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:50
-msgid "A Range is a selection of time between two positions."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:56
-msgid "MIDI Note"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:57
-msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
-msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
@@ -108,8 +42,8 @@ msgid ""
 "various controls that vary depending on the type of region selected."
 msgstr ""
 "Вкладка «Редактор» содержит аранжировщик для редактирования регионов, а "
-"также различные элементы управления, которые различаются в зависимости от "
-"типа выбранного региона."
+"также различные элементы управления, которые различаются в зависимости от"
+" типа выбранного региона."
 
 #: ../../zrythm-interface/bottom-panel.rst:26
 msgid "Editing inside the Editor tab is covered in :ref:`editors`."
@@ -191,8 +125,8 @@ msgid ""
 "The Mixer tab contains each channel and various controls for changing the"
 " signal as it passes through the channel."
 msgstr ""
-"Вкладка \"Микшер\" содержит каждый канал и различные элементы управления для "
-"изменения сигнала по мере его прохождения через канал."
+"Вкладка \"Микшер\" содержит каждый канал и различные элементы управления "
+"для изменения сигнала по мере его прохождения через канал."
 
 #: ../../zrythm-interface/bottom-panel.rst:89
 msgid "Mixing is covered in :ref:`mixing`."
@@ -232,8 +166,7 @@ msgstr "Инспектор плагинов"
 
 #: ../../zrythm-interface/left-panel.rst:26
 msgid "The plugin inspector shows various options for the selected plugin."
-msgstr ""
-"Инспектор плагинов показывает различные параметры для выбранного плагина."
+msgstr "Инспектор плагинов показывает различные параметры для выбранного плагина."
 
 #: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
@@ -244,8 +177,8 @@ msgid ""
 "The plugin properties show the name and type of the plugin, as well as "
 "preset and bank selectors."
 msgstr ""
-"В свойствах плагина отображается имя и тип плагина, а также можно выбрать "
-"банк и пресет."
+"В свойствах плагина отображается имя и тип плагина, а также можно выбрать"
+" банк и пресет."
 
 #: ../../zrythm-interface/left-panel.rst:41
 msgid "Plugin Ports"
@@ -1253,3 +1186,67 @@ msgstr ""
 
 #~ msgid "TODO"
 #~ msgstr ""
+
+#~ msgid "Basic Concepts and Terminology"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Here are a few terms you should"
+#~ " be aware of when using Zrythm. "
+#~ "They are explained further in their "
+#~ "corresponding chapters."
+#~ msgstr ""
+
+#~ msgid "Region"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Region (Clip) is a container for"
+#~ " MIDI Notes, audio or other events."
+#~ " Regions can be repeated, like below."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The content of the Regions can be"
+#~ " edited in an Editor, such as "
+#~ "the Piano Roll, found in the "
+#~ "Editor tab in the bottom panel."
+#~ msgstr ""
+
+#~ msgid "Track"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Track is a single slot in "
+#~ "the Timeline containing various Regions "
+#~ "and Automation. It may contain various"
+#~ " lanes, such as Automation Lanes. "
+#~ "There are some special tracks like "
+#~ "the Chord Track and the Marker "
+#~ "Track that contain chords and markers"
+#~ " respectively."
+#~ msgstr ""
+
+#~ msgid "Channel"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Channel is a single slot in "
+#~ "the Mixer. Most types of Tracks "
+#~ "have a corresponding Channel, which is"
+#~ " used for adjusting the Track's "
+#~ "volume, pan and other settings."
+#~ msgstr ""
+
+#~ msgid "Range"
+#~ msgstr ""
+
+#~ msgid "A Range is a selection of time between two positions."
+#~ msgstr ""
+
+#~ msgid "MIDI Note"
+#~ msgstr ""
+
+#~ msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
+#~ msgstr ""
+

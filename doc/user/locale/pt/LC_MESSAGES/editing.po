@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-09 18:46+0100\n"
+"POT-Creation-Date: 2020-09-24 00:47+0100\n"
 "PO-Revision-Date: 2020-09-13 22:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualediting/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese "
+"<https://hosted.weblate.org/projects/zrythm/manualediting/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -127,7 +126,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:55
 #: ../../editing/clip-editors/chord-editor.rst:65
-#: ../../editing/clip-editors/piano-roll.rst:111
+#: ../../editing/clip-editors/piano-roll.rst:109
 #: ../../editing/timeline/event-viewer.rst:8
 msgid "Event Viewer"
 msgstr "Visualizador de eventos"
@@ -269,8 +268,7 @@ msgid ""
 "It consists of the toolbar discussed in :ref:`editor-toolbar` at the very"
 " top, a smaller space containing extra controls, the ruler discussed in "
 ":ref:`editor-ruler`, the piano roll keys on the left, the piano roll "
-"(MIDI) arranger on the right and the MIDI note velocity editor at the "
-"bottom."
+"(MIDI) arranger on the right and the velocity editor at the bottom."
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:22
@@ -288,60 +286,56 @@ msgstr "Vista de tambor"
 #: ../../editing/clip-editors/piano-roll.rst:29
 msgid ""
 "Enabling this will change the display of the arranger into a drum editor "
-"view, where each MIDI note is drawn as a diamond and the piano roll keys "
-"display the name of each drum."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:34
-msgid "The drum view is not operational at the moment."
-msgstr ""
-
-#: ../../editing/clip-editors/piano-roll.rst:39
-msgid "Listen to notes"
+"view, where each :term:`MIDI Note` is drawn as a diamond and the piano "
+"roll keys display the name of each drum."
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:37
+msgid "Listen to notes"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:35
 msgid ""
 "Enabling this will play back each note as you drag it inside the piano "
 "roll. This is useful if you want to `hear` what you are doing."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:44
+#: ../../editing/clip-editors/piano-roll.rst:42
 msgid "Piano Roll Keys"
 msgstr "Teclas de cilindros de piano"
 
-#: ../../editing/clip-editors/piano-roll.rst:45
+#: ../../editing/clip-editors/piano-roll.rst:43
 msgid "These are the keys corresponding to each key found on a piano."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:50
+#: ../../editing/clip-editors/piano-roll.rst:48
 msgid ""
 "Clicking on each key allows you to listen to it, much like pressing a key"
 " on a real piano."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:53
+#: ../../editing/clip-editors/piano-roll.rst:51
 msgid ""
 "A label for each key is shown on the left side of the black/white keys, "
 "in addition to any highlighting (if selected). See :ref:`chord-"
 "highlighting` for more information."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:58
+#: ../../editing/clip-editors/piano-roll.rst:56
 msgid ""
 "The zoom level can be changed by holding down :zbutton:`Ctrl` and "
 ":zbutton:`Shift` and scrolling."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:62
+#: ../../editing/clip-editors/piano-roll.rst:60
 msgid "MIDI Arranger"
 msgstr "Arranjador de MIDI"
 
-#: ../../editing/clip-editors/piano-roll.rst:63
+#: ../../editing/clip-editors/piano-roll.rst:61
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:69
+#: ../../editing/clip-editors/piano-roll.rst:67
 msgid ""
 "The MIDI arranger contains MIDI notes drawn as rectangles from their "
 "start position to their end position. Zrythm will send a MIDI note on "
@@ -349,23 +343,23 @@ msgid ""
 "signal when the end position of a note is reached."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:75
+#: ../../editing/clip-editors/piano-roll.rst:73
 msgid ""
 "Editing inside the MIDI arranger is covered in :ref:`edit-modes` and :ref"
 ":`common-operations`."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:79
+#: ../../editing/clip-editors/piano-roll.rst:77
 msgid "Velocity Editor"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:80
+#: ../../editing/clip-editors/piano-roll.rst:78
 msgid ""
 "There is another arranger at the bottom of the MIDI arranger for editing "
 "the velocity of each note."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:86
+#: ../../editing/clip-editors/piano-roll.rst:84
 msgid ""
 "Velocity refers to the force with which a note is played. Each instrument"
 " handles various velocities for the same note differently, but generally "
@@ -373,30 +367,30 @@ msgid ""
 "are useful for adding expression to melodies."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:92
+#: ../../editing/clip-editors/piano-roll.rst:90
 msgid ""
 "The velocity of each note is drawn as a bar, where higher means a larger "
 "value. Clicking and dragging the tip of each velocity bar allows you to "
 "change it."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:96
+#: ../../editing/clip-editors/piano-roll.rst:94
 msgid ""
 "You can also edit multiple velocities at once by selecting multiple MIDI "
 "notes before editing a velocity bar."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:100
+#: ../../editing/clip-editors/piano-roll.rst:98
 msgid ""
 "The :ref:`ramp-mode` can also be used in the velocity editor to `ramp` "
 "velocities."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:107
+#: ../../editing/clip-editors/piano-roll.rst:105
 msgid "Context Menu"
 msgstr "Menu de contexto"
 
-#: ../../editing/clip-editors/piano-roll.rst:108
+#: ../../editing/clip-editors/piano-roll.rst:106
 #: ../../editing/piano-roll-editing/arranger.rst:9
 #: ../../editing/piano-roll-editing/drum-view.rst:11
 #: ../../editing/piano-roll-editing/highlighting.rst:11
@@ -406,13 +400,13 @@ msgstr "Menu de contexto"
 msgid "TODO"
 msgstr "A FAZER"
 
-#: ../../editing/clip-editors/piano-roll.rst:112
+#: ../../editing/clip-editors/piano-roll.rst:110
 msgid ""
 "The event viewer in the piano roll is similar to the timeline event "
 "viewer discussed in :ref:`timeline-event-viewer`."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:119
+#: ../../editing/clip-editors/piano-roll.rst:117
 msgid "It displays information about each MIDI note in the MIDI arranger."
 msgstr ""
 
@@ -445,7 +439,7 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:23
-#: ../../editing/timeline/ruler.rst:22
+#: ../../editing/timeline/ruler.rst:23
 msgid "Playhead position"
 msgstr ""
 
@@ -456,7 +450,7 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:28
-#: ../../editing/timeline/ruler.rst:27
+#: ../../editing/timeline/ruler.rst:28
 msgid "Loop points"
 msgstr ""
 
@@ -483,7 +477,7 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:38
-#: ../../editing/timeline/ruler.rst:33
+#: ../../editing/timeline/ruler.rst:35
 msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
 msgstr ""
 
@@ -915,8 +909,8 @@ msgstr "Selecionar Faixas"
 #: ../../editing/overview.rst:8
 msgid "Editing refers to any work done in the timeline arranger and the editors."
 msgstr ""
-"A edição refere-se a qualquer trabalho feito no organizador da cronologia e "
-"nos editores."
+"A edição refere-se a qualquer trabalho feito no organizador da cronologia"
+" e nos editores."
 
 #: ../../editing/overview.rst:11
 msgid ""
@@ -1305,44 +1299,44 @@ msgstr ""
 msgid "The ruler is mainly used to control looping and playback."
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:15
+#: ../../editing/timeline/ruler.rst:16
 msgid ""
 "The ruler will display more or less information depending on the current "
 "zoom level. It will also display the following markers/indicators "
 "discussed in :ref:`loop-points-and-markers`."
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:20
+#: ../../editing/timeline/ruler.rst:21
 msgid "Cue point"
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:21
+#: ../../editing/timeline/ruler.rst:22
 msgid "Displayed as a blue, right-pointing arrow."
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:23
+#: ../../editing/timeline/ruler.rst:24
 msgid "Shown as a grey, down-facing arrow."
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:25
+#: ../../editing/timeline/ruler.rst:26
 msgid ""
 "Shown as 2 green arrows, and the area between them is shown in bright "
 "green if loop is enabled, or grey if disabled. Can be dragged to "
 "reposition."
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:29
+#: ../../editing/timeline/ruler.rst:30
 msgid ""
 "Clicking and dragging on empty space in the ruler (other than the top "
-"part, which is used for selecting ranges) will allow you to reposition "
-"the playhead."
+"part, which is used for selecting ranges - see :term:`Range`) will allow "
+"you to reposition the playhead."
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:36
+#: ../../editing/timeline/ruler.rst:38
 msgid "Setting the Cue Point"
 msgstr ""
 
-#: ../../editing/timeline/ruler.rst:37
+#: ../../editing/timeline/ruler.rst:39
 msgid ""
 "Double click inside the ruler to set the cue point. This will be used to "
 "return to when playback is stopped."
@@ -1661,3 +1655,36 @@ msgstr ""
 #~ "has common features shared by each "
 #~ "editor."
 #~ msgstr ""
+
+#~ msgid ""
+#~ "It consists of the toolbar discussed "
+#~ "in :ref:`editor-toolbar` at the very "
+#~ "top, a smaller space containing extra"
+#~ " controls, the ruler discussed in "
+#~ ":ref:`editor-ruler`, the piano roll keys"
+#~ " on the left, the piano roll "
+#~ "(MIDI) arranger on the right and "
+#~ "the MIDI note velocity editor at "
+#~ "the bottom."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Enabling this will change the display"
+#~ " of the arranger into a drum "
+#~ "editor view, where each MIDI note "
+#~ "is drawn as a diamond and the "
+#~ "piano roll keys display the name "
+#~ "of each drum."
+#~ msgstr ""
+
+#~ msgid "The drum view is not operational at the moment."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Clicking and dragging on empty space "
+#~ "in the ruler (other than the top"
+#~ " part, which is used for selecting"
+#~ " ranges) will allow you to reposition"
+#~ " the playhead."
+#~ msgstr ""
+

@@ -7,99 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 18:06+0100\n"
+"POT-Creation-Date: 2020-09-24 00:47+0100\n"
 "PO-Revision-Date: 2020-06-05 11:41+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
-"manualzrythm-interface/fr/>\n"
 "Language: fr\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm"
+"/manualzrythm-interface/fr/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
-msgid "Basic Concepts and Terminology"
-msgstr "Concepts de base et terminologie"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:8
-msgid ""
-"Here are a few terms you should be aware of when using Zrythm. They are "
-"explained further in their corresponding chapters."
-msgstr ""
-"Voici quelques termes que vous devriez connaître lorsque vous utilisez "
-"Zrythm. Ils sont expliqués plus en détail dans les chapitres "
-"correspondants."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
-msgid "Region"
-msgstr "Région"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:12
-msgid ""
-"A Region (Clip) is a container for MIDI Notes, audio or other events. "
-"Regions can be repeated, like below."
-msgstr ""
-"Une région (clip) est un conteneur pour les notes MIDI ou l'audio. Voici "
-"à quoi ressemble une région dans l'arrangeur."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:19
-msgid ""
-"The content of the Regions can be edited in an Editor, such as the Piano "
-"Roll, found in the Editor tab in the bottom panel."
-msgstr ""
-"La ligne temporelle est l'endroit où le morceau est arrangé, également "
-"connue sous le nom d'arrangeur."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
-msgid "Track"
-msgstr "Piste"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:28
-msgid ""
-"A Track is a single slot in the Timeline containing various Regions and "
-"Automation. It may contain various lanes, such as Automation Lanes. There"
-" are some special tracks like the Chord Track and the Marker Track that "
-"contain chords and markers respectively."
-msgstr ""
-"Une piste est un emplacement unique dans la ligne temporelle contenant "
-"diverses régions et automatisation. Il peut contenir plusieurs lignes, "
-"telles que des lignes d'automatisation. Il y a quelques pistes spéciales "
-"comme la piste d'accords et la piste de marqueurs qui contiennent "
-"respectivement des accords et des marqueurs."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:39
-msgid "Channel"
-msgstr "Canal"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
-msgid ""
-"A Channel is a single slot in the Mixer. Most types of Tracks have a "
-"corresponding Channel, which is used for adjusting the Track's volume, "
-"pan and other settings."
-msgstr ""
-"Le mixeur contient tous les canaux du projet et est utilisé pour mixer "
-"les signaux audio de chaque canal."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:49
-msgid "Range"
-msgstr "Plage"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:50
-msgid "A Range is a selection of time between two positions."
-msgstr "Une plage est une sélection de temps entre deux positions."
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:56
-msgid "MIDI Note"
-msgstr "Note MIDI"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:57
-msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
-msgstr ""
-"Les notes MIDI sont utilisées pour déclencher des instruments virtuels "
-"(ou matériels)."
 
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
@@ -1275,3 +1193,94 @@ msgstr ""
 
 #~ msgid "TODO"
 #~ msgstr ""
+
+#~ msgid "Basic Concepts and Terminology"
+#~ msgstr "Concepts de base et terminologie"
+
+#~ msgid ""
+#~ "Here are a few terms you should"
+#~ " be aware of when using Zrythm. "
+#~ "They are explained further in their "
+#~ "corresponding chapters."
+#~ msgstr ""
+#~ "Voici quelques termes que vous devriez"
+#~ " connaître lorsque vous utilisez Zrythm."
+#~ " Ils sont expliqués plus en détail"
+#~ " dans les chapitres correspondants."
+
+#~ msgid "Region"
+#~ msgstr "Région"
+
+#~ msgid ""
+#~ "A Region (Clip) is a container for"
+#~ " MIDI Notes, audio or other events."
+#~ " Regions can be repeated, like below."
+#~ msgstr ""
+#~ "Une région (clip) est un conteneur "
+#~ "pour les notes MIDI ou l'audio. "
+#~ "Voici à quoi ressemble une région "
+#~ "dans l'arrangeur."
+
+#~ msgid ""
+#~ "The content of the Regions can be"
+#~ " edited in an Editor, such as "
+#~ "the Piano Roll, found in the "
+#~ "Editor tab in the bottom panel."
+#~ msgstr ""
+#~ "La ligne temporelle est l'endroit où "
+#~ "le morceau est arrangé, également connue"
+#~ " sous le nom d'arrangeur."
+
+#~ msgid "Track"
+#~ msgstr "Piste"
+
+#~ msgid ""
+#~ "A Track is a single slot in "
+#~ "the Timeline containing various Regions "
+#~ "and Automation. It may contain various"
+#~ " lanes, such as Automation Lanes. "
+#~ "There are some special tracks like "
+#~ "the Chord Track and the Marker "
+#~ "Track that contain chords and markers"
+#~ " respectively."
+#~ msgstr ""
+#~ "Une piste est un emplacement unique "
+#~ "dans la ligne temporelle contenant "
+#~ "diverses régions et automatisation. Il "
+#~ "peut contenir plusieurs lignes, telles "
+#~ "que des lignes d'automatisation. Il y"
+#~ " a quelques pistes spéciales comme la"
+#~ " piste d'accords et la piste de "
+#~ "marqueurs qui contiennent respectivement des"
+#~ " accords et des marqueurs."
+
+#~ msgid "Channel"
+#~ msgstr "Canal"
+
+#~ msgid ""
+#~ "A Channel is a single slot in "
+#~ "the Mixer. Most types of Tracks "
+#~ "have a corresponding Channel, which is"
+#~ " used for adjusting the Track's "
+#~ "volume, pan and other settings."
+#~ msgstr ""
+#~ "Le mixeur contient tous les canaux "
+#~ "du projet et est utilisé pour "
+#~ "mixer les signaux audio de chaque "
+#~ "canal."
+
+#~ msgid "Range"
+#~ msgstr "Plage"
+
+#~ msgid "A Range is a selection of time between two positions."
+#~ msgstr "Une plage est une sélection de temps entre deux positions."
+
+#~ msgid "MIDI Note"
+#~ msgstr "Note MIDI"
+
+#~ msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
+#~ msgstr ""
+#~ "Les notes MIDI sont utilisées pour "
+#~ "déclencher des instruments virtuels (ou "
+#~ "matériels)."
+
