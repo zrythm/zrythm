@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-09 18:46+0100\n"
+"POT-Creation-Date: 2020-09-24 22:19+0100\n"
 "PO-Revision-Date: 2020-07-29 15:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualprojects/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese "
+"<https://hosted.weblate.org/projects/zrythm/manualprojects/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../projects/intro.rst:8
@@ -152,8 +151,8 @@ msgid ""
 "When you select a project and click :guilabel:`Apply`, Zrythm will load "
 "that project."
 msgstr ""
-"Quando seleciona um projeto e clica em :zbutton:`Apply`, o Zrythm carregará "
-"esse projeto."
+"Quando seleciona um projeto e clica em :zbutton:`Apply`, o Zrythm "
+"carregará esse projeto."
 
 #: ../../projects/saving-loading.rst:22
 msgid "Creating Projects"
@@ -164,59 +163,63 @@ msgid ""
 "In the menu above, if you select :guilabel:`Create new project`, Zrythm "
 "will ask you for a template to use for creating the new Project."
 msgstr ""
-"No menu acima, se selecionar :guilabel:`Criar novo projeto`, o Zrythm irá "
-"pedir-lha um modelo para criar o novo projeto."
+"No menu acima, se selecionar :guilabel:`Criar novo projeto`, o Zrythm irá"
+" pedir-lha um modelo para criar o novo projeto."
 
 #: ../../projects/saving-loading.rst:31
+#, fuzzy
 msgid ""
 "A blank template is available, and you can create your own templates by "
-"copying a project directory to :file:`{ZRYTHM_USER_DIR}/templates`."
+"copying a project directory under :file:`templates` in the :term:`Zrythm "
+"user path`."
 msgstr ""
 "Um modelo em branco está disponível e você pode criar os seus próprios "
 "modelos copiando um diretório de projeto para "
 ":file:`{ZRYTHM_USER_DIR}/templates`."
 
-#: ../../projects/saving-loading.rst:35
+#: ../../projects/saving-loading.rst:36
+#, fuzzy
 msgid ""
 "Once a template (or blank) is selected and you click :guilabel:`Apply`, "
-"Zrythm will ask you for a parent directory to save the Project in and a "
-"title for the Project."
+"Zrythm will ask you for a parent directory to save the project in and a "
+"title for the project."
 msgstr ""
 "Assim que um modelo (ou em branco) for selecionado e clicar em "
-":guilabel:`Apply`, o Zrythm irá pedir um diretório pai para gravar o projeto "
-"e dar um título ao projeto."
+":guilabel:`Apply`, o Zrythm irá pedir um diretório pai para gravar o "
+"projeto e dar um título ao projeto."
 
-#: ../../projects/saving-loading.rst:42
+#: ../../projects/saving-loading.rst:44
+#, fuzzy
 msgid ""
-"Once you accept, the new Project will be set up and you will be ready to "
+"Once you accept, the new project will be set up and you will be ready to "
 "go."
 msgstr ""
 "Uma vez que aceite, o novo projeto será configurado e estará pronto para "
 "começar."
 
-#: ../../projects/saving-loading.rst:46
+#: ../../projects/saving-loading.rst:48
 msgid "Saving Projects"
 msgstr "Gravar Projetos"
 
-#: ../../projects/saving-loading.rst:48
+#: ../../projects/saving-loading.rst:50
 msgid ""
 "Saving works as you would expect: :guilabel:`Save As...` will save the "
 "Project in a new location and :guilabel:`Save` will save the Project in "
 "the previous location."
 msgstr ""
 "Salvar funciona como esperaria: :guilabel:`Gravar Como...` irá gravar o "
-"projeto num local novo e :guilabel:`Gravar` irá gravar o projeto no local "
-"anterior."
+"projeto num local novo e :guilabel:`Gravar` irá gravar o projeto no local"
+" anterior."
 
-#: ../../projects/saving-loading.rst:52
+#: ../../projects/saving-loading.rst:54
 msgid "When saving projects, Zrythm expects you to give it a directory"
 msgstr "Ao salvar projetos, o Zrythm espera que você lhe dê um diretório"
 
-#: ../../projects/saving-loading.rst:56
+#: ../../projects/saving-loading.rst:58
 msgid "Automatic Backups"
 msgstr "Backups automáticos"
 
-#: ../../projects/saving-loading.rst:58
+#: ../../projects/saving-loading.rst:60
 msgid ""
 "Zrythm has an option to auto-save the current project as a back-up. When "
 "launching Zrythm and selecting to load your project, Zrythm will let you "
@@ -228,7 +231,7 @@ msgstr ""
 " Zrythm irá informá-lo se há novos back-ups desse projeto e perguntar se "
 "quer carregá-los."
 
-#: ../../projects/saving-loading.rst:66
+#: ../../projects/saving-loading.rst:68
 msgid ""
 "The auto-save interval can be changed (or disabled) in the preferences "
 "window."
@@ -236,7 +239,7 @@ msgstr ""
 "O intervalo de gravação automático pode ser alterado (ou desativado) na "
 "janela de preferências."
 
-#: ../../projects/saving-loading.rst:69
+#: ../../projects/saving-loading.rst:71
 msgid "The backups are saved in the project's directory, under :file:`backups`."
 msgstr "Os backups são gravados no diretório do projeto, em :file`backups`."
 
@@ -356,3 +359,4 @@ msgstr "Os backups são gravados no diretório do projeto, em :file`backups`."
 #~ "carregue um projeto ou crie um "
 #~ "novo. Por padrão, o Zrythm usará "
 #~ "~/username/Zrythm para criar novos Projetos."
+

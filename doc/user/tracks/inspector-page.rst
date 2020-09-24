@@ -92,8 +92,8 @@ Fader section to control the volume and stereo balance.
 
 To change the fader or stereo balance amount, click and
 drag their respective widgets. You can reset them to their
-default positions by right clicking and selecting
-:zbutton:`Reset`.
+default positions with
+:menuselection:`Right click --> Reset`.
 
 The meter displays the amplitude of the signal in dBFS as
 it is processed live. The following values are displayed
@@ -114,7 +114,7 @@ Mute
   direct out.
 
 .. note:: The track will still be processed, so if you
-  are looking to decrease DSP usage, try disabling
+  are looking to decrease :term:`DSP` usage, try disabling
   plugins instead.
 
 Solo

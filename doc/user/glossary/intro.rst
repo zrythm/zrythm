@@ -13,9 +13,23 @@ Glossary
     a2jmidid is an application that bridges between
     the system MIDI ports and :term:`JACK`.
 
+  AU
+    A proprietary plugin standard, mainly used on
+    MacOS. We recommend using :term:`LV2` instead.
+
   Balance
     Balance (or :term:`stereo` balance) is the
     left-right balance of a stereo audio signal.
+
+  CLI
+    :abbr:`CLI (Command Line Interface)` is the
+    interface users interact with when typing
+    commands in a terminal.
+
+  CV
+    In a software environment,
+    :abbr:`CV (Control Voltage)` represents
+    audio-rate control data.
 
   DAW
     A :abbr:`DAW (Digital Audio Workstation)` is
@@ -63,17 +77,19 @@ Glossary
     A single-channel audio signal (see also
     :term:`stereo`).
 
+  Pan Law
+    TODO
+
   Panning
     Panning is the distribution of a :term:`mono`
     signal
     into a new stereo or multi-channel sound field.
 
   Plugin
-    An audio plugin is a piece software that
-    performs audio
-    processing (for example an audio effect or an
-    instrument) that can be used inside plugin
-    hosts, such as a :term:`DAW`.
+    A plugin is an external module that provides
+    audio processing capabilities to Zrythm, such
+    as an :term:`SFZ` instrument or an :term:`LV2`
+    reverb plugin.
 
   Range
     A Range is a selection of time between two
@@ -92,6 +108,13 @@ Glossary
 
     The content of regions can be edited in an
     editor (see :ref:`editors`).
+
+  SFZ
+    SFZ is a file format for sample-based
+    virtual instruments.
+
+  SF2
+    SF2 is the successor of :term:`SFZ`.
 
   Stereo
     A two-channel audio signal (left and right) (see

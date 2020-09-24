@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 15:10+0100\n"
+"POT-Creation-Date: 2020-09-24 22:19+0100\n"
 "PO-Revision-Date: 2020-09-13 22:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -57,47 +57,20 @@ msgid "Viewing the Current Settings"
 msgstr "Ver as definições atuais"
 
 #: ../../configuration/additional-settings.rst:27
-msgid ""
-"The :program:`zrythm` binary comes with a ``--print-settings`` option "
-"(see :ref:`command-line-options` for more details) that prints the whole "
-"configuration to the command line. In combination with the ``--pretty`` "
-"option (ie, ``zrythm --print-settings --pretty`` or ``zrythm -p "
-"--pretty`` for short), you can get output like the following."
+msgid "See :option:`zrythm --print-settings`."
 msgstr ""
-"O binário :program:`zrythm` vem com uma opção ``-print-settings`` (veja "
-":ref:`command-line-options` para mais detalhes) que imprime toda a "
-"configuração para a linha de comando. Em combinação com a opção "
-"``--pretty'' (ou seja, ``zrythm --print-settings --pretty'' ou ``zrythm "
-"-p --pretty'' para encurtar) pode obter uma saída como a seguinte."
 
-#: ../../configuration/additional-settings.rst:38
-msgid ""
-"This feature is mostly added for debugging purposes and to help us "
-"identify problems with user configurations, but feel free to use it if "
-"you are curious."
-msgstr ""
-"Este recurso é adicionado principalmente para fins de depuração e para "
-"nos ajudar a identificar problemas com as configurações do utilizador, "
-"mas sinta-se à vontade a usá-lo se estiver curioso."
-
-#: ../../configuration/additional-settings.rst:43
+#: ../../configuration/additional-settings.rst:30
 msgid "Reset to Factory Settings"
 msgstr "Redefinir para configurações de fábrica"
 
-#: ../../configuration/additional-settings.rst:45
-msgid ""
-"The :program:`zrythm` binary also comes with a ``--reset-to-factory`` "
-"option for resetting Zrythm to its default state."
+#: ../../configuration/additional-settings.rst:32
+msgid "See :option:`zrythm --reset-to-factory`."
 msgstr ""
-"O binário :program:`zrythm` também vem com a opção ``--reset-to-factory``"
-" para redefinir o Zrythm ao seu estado padrão."
 
-#: ../../configuration/additional-settings.rst:49
-msgid "This will clear ALL your settings."
-msgstr "Isto irá limpar TODAS as suas configurações."
-
-#: ../../configuration/additional-settings.rst:51
-msgid "This will be added on the UI soon."
+#: ../../configuration/additional-settings.rst:34
+#, fuzzy
+msgid "This will be added to the UI soon."
 msgstr "Isto será adicionado na IU em breve."
 
 #: ../../configuration/device-setup/intro.rst:6
@@ -307,8 +280,8 @@ msgstr ""
 "explicadas a seguir."
 
 #: ../../configuration/preferences/intro.rst:18
-#: ../../configuration/preferences/intro.rst:184
-#: ../../configuration/preferences/intro.rst:204
+#: ../../configuration/preferences/intro.rst:189
+#: ../../configuration/preferences/intro.rst:209
 msgid "General"
 msgstr "Geral"
 
@@ -463,45 +436,47 @@ msgstr ""
 "Esta opção só está disponível no Windows. Em GNU/Linux e MacOS os "
 "caminhos são fixos. Veja :ref:`plugin-paths' para detalhes."
 
-#: ../../configuration/preferences/intro.rst:102
+#: ../../configuration/preferences/intro.rst:103
 msgid "SFZ instruments"
 msgstr "Instrumentos SFZ"
 
 #: ../../configuration/preferences/intro.rst:102
-msgid "The search paths to scan for SFZ instruments in."
+#, fuzzy
+msgid "The search paths to scan for :term:`SFZ` instruments in."
 msgstr "Os caminhos de pesquisa para a busca de instrumentos SFZ."
 
-#: ../../configuration/preferences/intro.rst:105
+#: ../../configuration/preferences/intro.rst:107
 msgid "SF2 instruments"
 msgstr "Instrumentos SFZ"
 
-#: ../../configuration/preferences/intro.rst:105
-msgid "The search paths to scan for SF2 instruments in."
+#: ../../configuration/preferences/intro.rst:106
+#, fuzzy
+msgid "The search paths to scan for :term:`SF2` instruments in."
 msgstr "Os caminhos de pesquisa para procurar por instrumentos SF2."
 
-#: ../../configuration/preferences/intro.rst:108
+#: ../../configuration/preferences/intro.rst:110
 msgid "DSP"
 msgstr "DSP"
 
-#: ../../configuration/preferences/intro.rst:110
+#: ../../configuration/preferences/intro.rst:112
 #, fuzzy
 msgid ":term:`DSP` settings."
 msgstr "Configurações gerais."
 
-#: ../../configuration/preferences/intro.rst:116
+#: ../../configuration/preferences/intro.rst:118
 msgid "Pan"
 msgstr "Pan"
 
-#: ../../configuration/preferences/intro.rst:118
+#: ../../configuration/preferences/intro.rst:120
 #, fuzzy
 msgid ":term:`Panning` options for :term:`mono` signals (not used at the moment)."
 msgstr "Opções de pan para sinais mono (não usado no momento)."
 
-#: ../../configuration/preferences/intro.rst:135
+#: ../../configuration/preferences/intro.rst:137
 msgid "Pan algorithm"
 msgstr "Algoritmo de pan"
 
-#: ../../configuration/preferences/intro.rst:121
+#: ../../configuration/preferences/intro.rst:123
 msgid ""
 "The panning algorithm to use when applying pan on mono signals. See the "
 "graph below for the different curves as you move the pan from left to "
@@ -515,99 +490,100 @@ msgstr ""
 "online/readings/panlaws/index.html para mais informações. Isto não é "
 "usado no momento."
 
-#: ../../configuration/preferences/intro.rst:134
+#: ../../configuration/preferences/intro.rst:136
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 msgstr ""
 "Algoritmos de pan (:azul:`seno`, :vermelho:`raiz quadrada`, "
 ":verde:`linear`)."
 
-#: ../../configuration/preferences/intro.rst:138
+#: ../../configuration/preferences/intro.rst:141
 msgid "Pan law"
 msgstr "Lei pan"
 
-#: ../../configuration/preferences/intro.rst:138
-msgid "The pan law to use when applying pan on mono signals."
+#: ../../configuration/preferences/intro.rst:140
+#, fuzzy
+msgid "The :term:`pan law` to use when applying pan on mono signals."
 msgstr "A lei de pan a ser usada ao aplicar pan em sinais mono."
 
-#: ../../configuration/preferences/intro.rst:141
+#: ../../configuration/preferences/intro.rst:144
 msgid "Editing"
 msgstr "Edição"
 
-#: ../../configuration/preferences/intro.rst:143
+#: ../../configuration/preferences/intro.rst:146
 msgid "Editing options."
 msgstr "Opções de edição."
 
-#: ../../configuration/preferences/intro.rst:149
+#: ../../configuration/preferences/intro.rst:152
 msgid "Audio"
 msgstr "Áudio"
 
-#: ../../configuration/preferences/intro.rst:151
+#: ../../configuration/preferences/intro.rst:154
 msgid "Audio editing."
 msgstr "Edição de áudio."
 
-#: ../../configuration/preferences/intro.rst:154
+#: ../../configuration/preferences/intro.rst:157
 msgid "Fade algorithm"
 msgstr "Algoritmo de fade"
 
-#: ../../configuration/preferences/intro.rst:154
+#: ../../configuration/preferences/intro.rst:157
 msgid "Default fade algorithm to use for fade in/outs."
 msgstr "Algoritmo predefinido de fade para usar para fade in/out."
 
-#: ../../configuration/preferences/intro.rst:157
+#: ../../configuration/preferences/intro.rst:160
 msgid "Automation"
 msgstr "Automação"
 
-#: ../../configuration/preferences/intro.rst:159
+#: ../../configuration/preferences/intro.rst:162
 msgid "Automation editing."
 msgstr "Edição de automação."
 
-#: ../../configuration/preferences/intro.rst:162
+#: ../../configuration/preferences/intro.rst:166
 msgid "Curve algorithm"
 msgstr "Algoritmo de curvas"
 
-#: ../../configuration/preferences/intro.rst:162
+#: ../../configuration/preferences/intro.rst:165
 msgid "Default curve algorithm to use for automation curves."
 msgstr "Algoritmo de curva predefinido a ser usado para curvas de automação."
 
-#: ../../configuration/preferences/intro.rst:165
+#: ../../configuration/preferences/intro.rst:169
 msgid "Undo"
 msgstr "Desfazer"
 
-#: ../../configuration/preferences/intro.rst:167
+#: ../../configuration/preferences/intro.rst:171
 msgid "Undo options."
 msgstr "Opções de desfazer."
 
-#: ../../configuration/preferences/intro.rst:170
+#: ../../configuration/preferences/intro.rst:175
 msgid "Undo stack length"
 msgstr "Comprimento da pilha de desfazer"
 
-#: ../../configuration/preferences/intro.rst:170
+#: ../../configuration/preferences/intro.rst:174
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
 msgstr ""
 "Comprimento máximo da pilha do histórico de desfazer. Definido como -1 "
 "para ilimitado."
 
-#: ../../configuration/preferences/intro.rst:172
+#: ../../configuration/preferences/intro.rst:177
 msgid "We recommend leaving it at 128."
 msgstr "Recomendamos deixá-lo em 128."
 
-#: ../../configuration/preferences/intro.rst:176
+#: ../../configuration/preferences/intro.rst:181
 msgid "Projects"
 msgstr "Projetos"
 
-#: ../../configuration/preferences/intro.rst:178
+#: ../../configuration/preferences/intro.rst:183
 msgid "Project settings."
 msgstr "Configurações do projeto."
 
-#: ../../configuration/preferences/intro.rst:186
+#: ../../configuration/preferences/intro.rst:191
 msgid "General project settings."
 msgstr "Configurações gerais do projeto."
 
-#: ../../configuration/preferences/intro.rst:190
+#: ../../configuration/preferences/intro.rst:195
 msgid "Autosave interval"
 msgstr "Intervalo de gravação automática"
 
-#: ../../configuration/preferences/intro.rst:189
+#: ../../configuration/preferences/intro.rst:194
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
 "if this is set to 0."
@@ -615,7 +591,7 @@ msgstr ""
 "Intervalo para projetos de autogravação, em minutos. A autogravação será "
 "desativada se estiver configurada como 0."
 
-#: ../../configuration/preferences/intro.rst:192
+#: ../../configuration/preferences/intro.rst:197
 msgid ""
 "This refers to automatic back-ups. The main project will not be "
 "overwritten unless you explicitly save it."
@@ -623,27 +599,27 @@ msgstr ""
 "Isto refere-se a backups automáticos. O projeto principal não será "
 "sobregravado, a menos que o salve explicitamente."
 
-#: ../../configuration/preferences/intro.rst:196
+#: ../../configuration/preferences/intro.rst:201
 msgid "UI"
 msgstr "IU"
 
-#: ../../configuration/preferences/intro.rst:198
+#: ../../configuration/preferences/intro.rst:203
 msgid "User interface options."
 msgstr "Opções de interface do utilizador."
 
-#: ../../configuration/preferences/intro.rst:206
+#: ../../configuration/preferences/intro.rst:211
 msgid "General user interface options."
 msgstr "Opções gerais de interface do utilizador."
 
-#: ../../configuration/preferences/intro.rst:209
+#: ../../configuration/preferences/intro.rst:214
 msgid "User interface language"
 msgstr "Idioma da interface do utilizador"
 
-#: ../../configuration/preferences/intro.rst:209
+#: ../../configuration/preferences/intro.rst:214
 msgid "The language to use for the user interface."
 msgstr "O idioma a utilizar para a interface do utilizador."
 
-#: ../../configuration/preferences/intro.rst:211
+#: ../../configuration/preferences/intro.rst:216
 msgid ""
 "For a list of supported languages and their translation status see "
 "`Weblate <https://hosted.weblate.org/projects/zrythm/>`_."
@@ -651,7 +627,7 @@ msgstr ""
 "Para uma lista de idiomas suportados e o estado de tradução delos, veja "
 "`Weblate <https://hosted.weblate.org/projects/zrythm/>`_."
 
-#: ../../configuration/preferences/intro.rst:215
+#: ../../configuration/preferences/intro.rst:220
 msgid "Some of these settings require a restart of Zrythm to take effect."
 msgstr ""
 "Algumas destas configurações requerem um reinício do Zrythm para terem "
@@ -1155,4 +1131,63 @@ msgstr ""
 
 #~ msgid "Digital signal processing."
 #~ msgstr "Processamento de sinais digitais."
+
+#~ msgid ""
+#~ "The :program:`zrythm` binary comes with "
+#~ "a ``--print-settings`` option (see :ref"
+#~ ":`command-line-options` for more details)"
+#~ " that prints the whole configuration "
+#~ "to the command line. In combination "
+#~ "with the ``--pretty`` option (ie, "
+#~ "``zrythm --print-settings --pretty`` or "
+#~ "``zrythm -p --pretty`` for short), you"
+#~ " can get output like the following."
+#~ msgstr ""
+#~ "O binário :program:`zrythm` vem com uma"
+#~ " opção ``-print-settings`` (veja :ref"
+#~ ":`command-line-options` para mais detalhes)"
+#~ " que imprime toda a configuração para"
+#~ " a linha de comando. Em combinação"
+#~ " com a opção ``--pretty'' (ou seja,"
+#~ " ``zrythm --print-settings --pretty'' ou"
+#~ " ``zrythm -p --pretty'' para encurtar) "
+#~ "pode obter uma saída como a "
+#~ "seguinte."
+
+#~ msgid ""
+#~ "This feature is mostly added for "
+#~ "debugging purposes and to help us "
+#~ "identify problems with user configurations,"
+#~ " but feel free to use it if "
+#~ "you are curious."
+#~ msgstr ""
+#~ "Este recurso é adicionado principalmente "
+#~ "para fins de depuração e para nos"
+#~ " ajudar a identificar problemas com "
+#~ "as configurações do utilizador, mas "
+#~ "sinta-se à vontade a usá-lo se "
+#~ "estiver curioso."
+
+#~ msgid "This will clear ALL your settings."
+#~ msgstr "Isto irá limpar TODAS as suas configurações."
+
+#~ msgid ""
+#~ "The :program:`zrythm` binary comes with "
+#~ "an option :option:`--print-settings` that "
+#~ "prints the whole configuration to the"
+#~ " command line. See :ref:`command-line` "
+#~ "for details."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The :program:`zrythm` binary also comes "
+#~ "with a :option:`--reset-to-factory` "
+#~ "option for resetting Zrythm to its "
+#~ "default state. See :ref:`command-line` "
+#~ "for details."
+#~ msgstr ""
+#~ "O binário :program:`zrythm` também vem "
+#~ "com a opção ``--reset-to-factory`` "
+#~ "para redefinir o Zrythm ao seu "
+#~ "estado padrão."
 

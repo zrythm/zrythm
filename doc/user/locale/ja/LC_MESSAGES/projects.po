@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-09 18:46+0100\n"
+"POT-Creation-Date: 2020-09-24 22:19+0100\n"
 "PO-Revision-Date: 2020-01-24 23:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language: ja\n"
@@ -153,32 +153,34 @@ msgstr "上記のメニューで、:zbutton:`新しいプロジェクトを作�
 #, fuzzy
 msgid ""
 "A blank template is available, and you can create your own templates by "
-"copying a project directory to :file:`{ZRYTHM_USER_DIR}/templates`."
+"copying a project directory under :file:`templates` in the :term:`Zrythm "
+"user path`."
 msgstr ""
 "空白のテンプレートを使用できますが、Zrythm インストール パスの ``テンプレート``ディレクトリにプロジェクト "
 "フォルダをコピーして、独自のテンプレートを作成できます。"
 
-#: ../../projects/saving-loading.rst:35
+#: ../../projects/saving-loading.rst:36
 #, fuzzy
 msgid ""
 "Once a template (or blank) is selected and you click :guilabel:`Apply`, "
-"Zrythm will ask you for a parent directory to save the Project in and a "
-"title for the Project."
+"Zrythm will ask you for a parent directory to save the project in and a "
+"title for the project."
 msgstr ""
 "テンプレート (または空白) が選択され、:zbutton:``適用``をクリックすると、Zrythm "
 "はプロジェクトを保存する親ディレクトリとプロジェクトのタイトルを求めるメッセージを表示します。"
 
-#: ../../projects/saving-loading.rst:42
+#: ../../projects/saving-loading.rst:44
+#, fuzzy
 msgid ""
-"Once you accept, the new Project will be set up and you will be ready to "
+"Once you accept, the new project will be set up and you will be ready to "
 "go."
 msgstr "承認すると、新しいプロジェクトが初期化され、準備が整います。"
 
-#: ../../projects/saving-loading.rst:46
+#: ../../projects/saving-loading.rst:48
 msgid "Saving Projects"
 msgstr "プロジェクトの保存"
 
-#: ../../projects/saving-loading.rst:48
+#: ../../projects/saving-loading.rst:50
 #, fuzzy
 msgid ""
 "Saving works as you would expect: :guilabel:`Save As...` will save the "
@@ -188,15 +190,15 @@ msgstr ""
 "保存は期待どおりに機能します。:zbutton:``Save As "
 "...``はプロジェクトを新しい場所に保存し、:zbutton:`Save`はプロジェクトを以前の場所に保存します。"
 
-#: ../../projects/saving-loading.rst:52
+#: ../../projects/saving-loading.rst:54
 msgid "When saving projects, Zrythm expects you to give it a directory"
 msgstr "プロジェクトを保存する際、Zrythm はディレクトリを求めます。"
 
-#: ../../projects/saving-loading.rst:56
+#: ../../projects/saving-loading.rst:58
 msgid "Automatic Backups"
 msgstr "自動バックアップ"
 
-#: ../../projects/saving-loading.rst:58
+#: ../../projects/saving-loading.rst:60
 msgid ""
 "Zrythm has an option to auto-save the current project as a back-up. When "
 "launching Zrythm and selecting to load your project, Zrythm will let you "
@@ -207,13 +209,13 @@ msgstr ""
 "を起動し、プロジェクトの読み込みを選択すると、Zrythm "
 "は、そのプロジェクトの新しいバックアップがあるかどうかを知らせ、代わりに読み込むかどうかの選択を求めます。"
 
-#: ../../projects/saving-loading.rst:66
+#: ../../projects/saving-loading.rst:68
 msgid ""
 "The auto-save interval can be changed (or disabled) in the preferences "
 "window."
 msgstr "自動保存間隔は、設定ウィンドウで変更 (または無効にすることが) できます。"
 
-#: ../../projects/saving-loading.rst:69
+#: ../../projects/saving-loading.rst:71
 #, fuzzy
 msgid "The backups are saved in the project's directory, under :file:`backups`."
 msgstr "バックアップは、プロジェクト・ディレクトリの``backups``の下に保存されます"

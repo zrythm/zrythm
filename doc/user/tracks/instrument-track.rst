@@ -2,6 +2,8 @@
    Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
+.. _instrument-track:
+
 Instrument Track
 ================
 
@@ -13,6 +15,9 @@ and `before` the Inserts section.
 
 .. image:: /_static/img/instrument-track.png
    :align: center
+
+Instrument tracks are similar to MIDI tracks, except
+that they produce audio instead of :term:`MIDI`.
 
 Top Buttons
 -----------

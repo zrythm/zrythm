@@ -68,9 +68,9 @@ The audio editor is covered in detail in
 
 Chord Editor
 ~~~~~~~~~~~~
-The chord editor is used for editing chord regions. It
-will appear in the Editor tab when a chord region is selected
-in the chord track.
+The chord editor is used for editing chord regions.
+It will appear in the Editor tab when a chord region
+is selected in the chord track.
 
 .. image:: /_static/img/chord-editor.png
    :align: center

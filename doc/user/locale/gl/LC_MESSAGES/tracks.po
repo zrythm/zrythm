@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 00:47+0100\n"
+"POT-Creation-Date: 2020-09-24 22:19+0100\n"
 "PO-Revision-Date: 2020-06-29 20:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -20,7 +20,6 @@ msgstr ""
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
-#: ../../tracks/track-types.rst:31
 msgid "Audio Track"
 msgstr "Pista de Audio"
 
@@ -35,37 +34,37 @@ msgstr ""
 #: ../../tracks/audio-track.rst:15
 #: ../../tracks/bus-track-audio.rst:17
 #: ../../tracks/bus-track-midi.rst:17
-#: ../../tracks/chord-track.rst:21
+#: ../../tracks/chord-track.rst:22
 #: ../../tracks/group-track-audio.rst:21
-#: ../../tracks/instrument-track.rst:18
+#: ../../tracks/instrument-track.rst:23
 #: ../../tracks/master-track.rst:18
-#: ../../tracks/midi-track.rst:21
+#: ../../tracks/midi-track.rst:24
 msgid "Top Buttons"
 msgstr "Botóns Superiores"
 
 #: ../../tracks/audio-track.rst:17
-#: ../../tracks/chord-track.rst:24
+#: ../../tracks/chord-track.rst:25
 #: ../../tracks/inspector-page.rst:110
-#: ../../tracks/instrument-track.rst:20
-#: ../../tracks/midi-track.rst:23
+#: ../../tracks/instrument-track.rst:25
+#: ../../tracks/midi-track.rst:26
 msgid "Record"
 msgstr "Gravar"
 
 #: ../../tracks/audio-track.rst:18
-#: ../../tracks/instrument-track.rst:21
-#: ../../tracks/midi-track.rst:24
+#: ../../tracks/instrument-track.rst:26
+#: ../../tracks/midi-track.rst:27
 msgid "Arms the track for recording."
 msgstr "Monta a pista para gravar."
 
 #: ../../tracks/audio-track.rst:19
 #: ../../tracks/bus-track-audio.rst:19
 #: ../../tracks/bus-track-midi.rst:19
-#: ../../tracks/chord-track.rst:26
+#: ../../tracks/chord-track.rst:27
 #: ../../tracks/group-track-audio.rst:23
 #: ../../tracks/inspector-page.rst:121
-#: ../../tracks/instrument-track.rst:22
+#: ../../tracks/instrument-track.rst:27
 #: ../../tracks/master-track.rst:20
-#: ../../tracks/midi-track.rst:25
+#: ../../tracks/midi-track.rst:28
 msgid "Solo"
 msgstr "Solo"
 
@@ -73,21 +72,21 @@ msgstr "Solo"
 #: ../../tracks/bus-track-audio.rst:20
 #: ../../tracks/bus-track-midi.rst:20
 #: ../../tracks/group-track-audio.rst:24
-#: ../../tracks/instrument-track.rst:23
+#: ../../tracks/instrument-track.rst:28
 #: ../../tracks/master-track.rst:21
-#: ../../tracks/midi-track.rst:26
+#: ../../tracks/midi-track.rst:29
 msgid "Soloes the track."
 msgstr "Pon a pista en Solo."
 
 #: ../../tracks/audio-track.rst:22
 #: ../../tracks/bus-track-audio.rst:22
 #: ../../tracks/bus-track-midi.rst:22
-#: ../../tracks/chord-track.rst:30
+#: ../../tracks/chord-track.rst:31
 #: ../../tracks/group-track-audio.rst:26
 #: ../../tracks/inspector-page.rst:114
-#: ../../tracks/instrument-track.rst:24
+#: ../../tracks/instrument-track.rst:29
 #: ../../tracks/master-track.rst:23
-#: ../../tracks/midi-track.rst:28
+#: ../../tracks/midi-track.rst:31
 msgid "Mute"
 msgstr "Silenciar"
 
@@ -95,9 +94,9 @@ msgstr "Silenciar"
 #: ../../tracks/bus-track-audio.rst:22
 #: ../../tracks/bus-track-midi.rst:22
 #: ../../tracks/group-track-audio.rst:26
-#: ../../tracks/instrument-track.rst:25
+#: ../../tracks/instrument-track.rst:30
 #: ../../tracks/master-track.rst:23
-#: ../../tracks/midi-track.rst:28
+#: ../../tracks/midi-track.rst:31
 msgid "Mutes the track."
 msgstr "Silencia a pista."
 
@@ -105,33 +104,33 @@ msgstr "Silencia a pista."
 #: ../../tracks/bus-track-audio.rst:25
 #: ../../tracks/bus-track-midi.rst:25
 #: ../../tracks/group-track-audio.rst:29
-#: ../../tracks/instrument-track.rst:30
+#: ../../tracks/instrument-track.rst:35
 #: ../../tracks/master-track.rst:26
-#: ../../tracks/midi-track.rst:31
+#: ../../tracks/midi-track.rst:34
 msgid "Bottom Buttons"
 msgstr "Botóns Inferiores"
 
 #: ../../tracks/audio-track.rst:27
-#: ../../tracks/instrument-track.rst:32
-#: ../../tracks/midi-track.rst:33
+#: ../../tracks/instrument-track.rst:37
+#: ../../tracks/midi-track.rst:36
 msgid "Lock"
 msgstr "Bloquear"
 
 #: ../../tracks/audio-track.rst:28
-#: ../../tracks/instrument-track.rst:33
-#: ../../tracks/midi-track.rst:34
+#: ../../tracks/instrument-track.rst:38
+#: ../../tracks/midi-track.rst:37
 msgid "Not used at the moment."
 msgstr "Sen uso polo de agora."
 
 #: ../../tracks/audio-track.rst:29
-#: ../../tracks/instrument-track.rst:36
-#: ../../tracks/midi-track.rst:35
+#: ../../tracks/instrument-track.rst:41
+#: ../../tracks/midi-track.rst:38
 msgid "Show Lanes"
 msgstr "Amosar Estaxes"
 
 #: ../../tracks/audio-track.rst:30
-#: ../../tracks/instrument-track.rst:37
-#: ../../tracks/midi-track.rst:36
+#: ../../tracks/instrument-track.rst:42
+#: ../../tracks/midi-track.rst:39
 msgid "Toggles the visibility of lanes."
 msgstr "Alterna a visibilidade das estaxes."
 
@@ -139,9 +138,9 @@ msgstr "Alterna a visibilidade das estaxes."
 #: ../../tracks/bus-track-audio.rst:28
 #: ../../tracks/bus-track-midi.rst:28
 #: ../../tracks/group-track-audio.rst:32
-#: ../../tracks/instrument-track.rst:39
+#: ../../tracks/instrument-track.rst:44
 #: ../../tracks/master-track.rst:29
-#: ../../tracks/midi-track.rst:38
+#: ../../tracks/midi-track.rst:41
 msgid "Show Automation"
 msgstr "Amosar Automatización"
 
@@ -149,33 +148,33 @@ msgstr "Amosar Automatización"
 #: ../../tracks/bus-track-audio.rst:28
 #: ../../tracks/bus-track-midi.rst:28
 #: ../../tracks/group-track-audio.rst:32
-#: ../../tracks/instrument-track.rst:39
+#: ../../tracks/instrument-track.rst:44
 #: ../../tracks/master-track.rst:29
-#: ../../tracks/midi-track.rst:38
+#: ../../tracks/midi-track.rst:41
 msgid "Toggles the visibility of automation tracks."
 msgstr "Alterna a visibilidade das pistas de automatización."
 
 #: ../../tracks/audio-track.rst:35
 #: ../../tracks/bus-track-audio.rst:31
 #: ../../tracks/bus-track-midi.rst:31
-#: ../../tracks/chord-track.rst:33
+#: ../../tracks/chord-track.rst:34
 #: ../../tracks/group-track-audio.rst:35
-#: ../../tracks/instrument-track.rst:42
-#: ../../tracks/marker-track.rst:22
+#: ../../tracks/instrument-track.rst:47
+#: ../../tracks/marker-track.rst:23
 #: ../../tracks/master-track.rst:32
-#: ../../tracks/midi-track.rst:41
+#: ../../tracks/midi-track.rst:44
 msgid "Inspector"
 msgstr "Inspeccionar"
 
 #: ../../tracks/audio-track.rst:41
 #: ../../tracks/bus-track-audio.rst:37
 #: ../../tracks/bus-track-midi.rst:37
-#: ../../tracks/chord-track.rst:39
+#: ../../tracks/chord-track.rst:40
 #: ../../tracks/group-track-audio.rst:41
-#: ../../tracks/instrument-track.rst:48
-#: ../../tracks/marker-track.rst:28
+#: ../../tracks/instrument-track.rst:53
+#: ../../tracks/marker-track.rst:29
 #: ../../tracks/master-track.rst:38
-#: ../../tracks/midi-track.rst:47
+#: ../../tracks/midi-track.rst:50
 msgid "Properties"
 msgstr "Propiedades"
 
@@ -184,9 +183,9 @@ msgstr "Propiedades"
 #: ../../tracks/bus-track-midi.rst:42
 #: ../../tracks/group-track-audio.rst:46
 #: ../../tracks/inspector-page.rst:28
-#: ../../tracks/instrument-track.rst:51
+#: ../../tracks/instrument-track.rst:56
 #: ../../tracks/master-track.rst:44
-#: ../../tracks/midi-track.rst:53
+#: ../../tracks/midi-track.rst:56
 msgid "Direct Out"
 msgstr "Saída Directa"
 
@@ -196,8 +195,8 @@ msgstr "A pista á que dirixir a saída de audio da pista."
 
 #: ../../tracks/audio-track.rst:47
 #: ../../tracks/inspector-page.rst:37
-#: ../../tracks/instrument-track.rst:54
-#: ../../tracks/midi-track.rst:58
+#: ../../tracks/instrument-track.rst:59
+#: ../../tracks/midi-track.rst:61
 msgid "Inputs"
 msgstr "Entradas"
 
@@ -211,26 +210,26 @@ msgstr ""
 #: ../../tracks/bus-track-audio.rst:45
 #: ../../tracks/bus-track-midi.rst:45
 #: ../../tracks/group-track-audio.rst:49
-#: ../../tracks/instrument-track.rst:61
+#: ../../tracks/instrument-track.rst:66
 #: ../../tracks/master-track.rst:47
-#: ../../tracks/midi-track.rst:72
+#: ../../tracks/midi-track.rst:75
 msgid "Sends"
 msgstr "Envíos"
 
 #: ../../tracks/audio-track.rst:55
-#: ../../tracks/midi-track.rst:129
-#: ../../tracks/midi-track.rst:137
+#: ../../tracks/midi-track.rst:132
+#: ../../tracks/midi-track.rst:140
 msgid "TODO"
 msgstr "TODO"
 
 #: ../../tracks/audio-track.rst:58
-#: ../../tracks/instrument-track.rst:72
-#: ../../tracks/midi-track.rst:88
+#: ../../tracks/instrument-track.rst:77
+#: ../../tracks/midi-track.rst:91
 msgid "Lanes"
 msgstr "Estaxes"
 
 #: ../../tracks/audio-track.rst:60
-#: ../../tracks/instrument-track.rst:74
+#: ../../tracks/instrument-track.rst:79
 msgid "These are similar to :ref:`midi-track-lanes`."
 msgstr "Estas son similares ás :ref:`midi-track-lanes`."
 
@@ -238,9 +237,9 @@ msgstr "Estas son similares ás :ref:`midi-track-lanes`."
 #: ../../tracks/bus-track-audio.rst:50
 #: ../../tracks/bus-track-midi.rst:50
 #: ../../tracks/group-track-audio.rst:54
-#: ../../tracks/instrument-track.rst:77
+#: ../../tracks/instrument-track.rst:82
 #: ../../tracks/master-track.rst:52
-#: ../../tracks/midi-track.rst:112
+#: ../../tracks/midi-track.rst:115
 msgid "Automation Tracks"
 msgstr "Pistas de Automatización"
 
@@ -248,7 +247,7 @@ msgstr "Pistas de Automatización"
 #: ../../tracks/bus-track-audio.rst:52
 #: ../../tracks/bus-track-midi.rst:52
 #: ../../tracks/group-track-audio.rst:56
-#: ../../tracks/instrument-track.rst:79
+#: ../../tracks/instrument-track.rst:84
 #: ../../tracks/master-track.rst:54
 msgid "These are similar to :ref:`midi-track-automation-tracks`."
 msgstr "Estas son similares ás :ref:`midi-track-automation-tracks`."
@@ -289,7 +288,6 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/bus-track-audio.rst:8
-#: ../../tracks/track-types.rst:38
 #, fuzzy
 msgid "Audio FX Track"
 msgstr "Pista de Audio"
@@ -305,12 +303,12 @@ msgstr ""
 
 #: ../../tracks/bus-track-audio.rst:39
 #: ../../tracks/bus-track-midi.rst:39
-#: ../../tracks/chord-track.rst:41
+#: ../../tracks/chord-track.rst:42
 #: ../../tracks/group-track-audio.rst:43
 #: ../../tracks/inspector-page.rst:26
-#: ../../tracks/marker-track.rst:30
+#: ../../tracks/marker-track.rst:31
 #: ../../tracks/master-track.rst:40
-#: ../../tracks/midi-track.rst:50
+#: ../../tracks/midi-track.rst:53
 msgid "Track Name"
 msgstr "Nome da Pista"
 
@@ -331,7 +329,6 @@ msgid "These are similar to :ref:`instrument-track-sends`."
 msgstr "Estes son similares aos :ref:`instrument-track-sends`."
 
 #: ../../tracks/bus-track-midi.rst:8
-#: ../../tracks/track-types.rst:45
 msgid "MIDI FX Track"
 msgstr ""
 
@@ -353,33 +350,34 @@ msgid "These are similar to :ref:`midi-track-sends`."
 msgstr "Estes son similares aos :ref:`midi-grack-sends`."
 
 #: ../../tracks/chord-track.rst:8
-#: ../../tracks/track-types.rst:79
 msgid "Chord Track"
 msgstr "Pista de Acordes"
 
 #: ../../tracks/chord-track.rst:10
+#, fuzzy
 msgid ""
 "The Chord Track contains chord and scale objects that are used to specify"
-" when the song is using a particular chord or scale."
+" when the song is using a particular chord or scale. Its main purpose is "
+"to assist with chord progressions."
 msgstr ""
 "A Pista de Acordes contén obxectos de acorde e escala utilizados para "
 "especificar cando a canción emprega un acorde ou escala particular."
 
-#: ../../tracks/chord-track.rst:17
+#: ../../tracks/chord-track.rst:18
 msgid "For more information, see the section :doc:`../chords-and-scales/intro`."
 msgstr ""
 "Para máis información, bota unha ollada á sección :doc:`../chords-and-"
 "scales/intro`."
 
-#: ../../tracks/chord-track.rst:24
+#: ../../tracks/chord-track.rst:25
 msgid "Arms the track for recording. Not used at the moment."
 msgstr "Monta a pista para a gravación. Non utilizado polo de agora."
 
-#: ../../tracks/chord-track.rst:27
+#: ../../tracks/chord-track.rst:28
 msgid "Soloes the track. Not used at the moment."
 msgstr "Pon a pista en Solo. Non utilizada polo de agora."
 
-#: ../../tracks/chord-track.rst:29
+#: ../../tracks/chord-track.rst:30
 msgid ""
 "Mutes the track. This causes the project to ignore any scale or chord "
 "events."
@@ -387,7 +385,7 @@ msgstr ""
 "Silencia a pista. Isto fará que o proxecto ignore calquera evento de "
 "escala ou acordes."
 
-#: ../../tracks/chord-track.rst:42
+#: ../../tracks/chord-track.rst:43
 msgid "The name of the chord track."
 msgstr "O nome da pista de acordes."
 
@@ -457,7 +455,6 @@ msgstr ""
 "sobre a Pista e seleccionando :zbutton:`Duplicar`."
 
 #: ../../tracks/group-track-audio.rst:8
-#: ../../tracks/track-types.rst:56
 #, fuzzy
 msgid "Audio Group Track"
 msgstr "Pista de Audio"
@@ -479,7 +476,6 @@ msgid "The track to route the output of the audio group track to."
 msgstr "A pista á que dirixir a saída da pista de audio agrupado."
 
 #: ../../tracks/group-track-midi.rst:8
-#: ../../tracks/track-types.rst:63
 msgid "MIDI Group Track"
 msgstr ""
 
@@ -492,7 +488,7 @@ msgstr ""
 " sinais MIDI no canto de sinais de audio."
 
 #: ../../tracks/inspector-page.rst:8
-#: ../../tracks/overview.rst:54
+#: ../../tracks/overview.rst:60
 msgid "Track Inspector"
 msgstr "Inspector de Pistas"
 
@@ -526,6 +522,7 @@ msgid "The track that this track routes its output to."
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:32
+#: ../../tracks/track-types.rst:18
 #, fuzzy
 msgid "Instrument"
 msgstr "Pista de Instrumento"
@@ -598,8 +595,8 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:93
 msgid ""
 "To change the fader or stereo balance amount, click and drag their "
-"respective widgets. You can reset them to their default positions by "
-"right clicking and selecting :zbutton:`Reset`."
+"respective widgets. You can reset them to their default positions with "
+":menuselection:`Right click --> Reset`."
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:98
@@ -640,8 +637,8 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:116
 msgid ""
-"The track will still be processed, so if you are looking to decrease DSP "
-"usage, try disabling plugins instead."
+"The track will still be processed, so if you are looking to decrease "
+":term:`DSP` usage, try disabling plugins instead."
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:121
@@ -682,67 +679,72 @@ msgstr ""
 msgid "This is a TODO feature."
 msgstr ""
 
-#: ../../tracks/instrument-track.rst:6
-#: ../../tracks/track-types.rst:25
+#: ../../tracks/instrument-track.rst:8
 msgid "Instrument Track"
 msgstr "Pista de Instrumento"
 
-#: ../../tracks/instrument-track.rst:8
+#: ../../tracks/instrument-track.rst:10
 msgid ""
 "The instrument track is used for synths and other instruments. Instrument"
 " tracks contain a special `instrument slot` in the mixer that will get "
 "processed `after` the MIDI FX section and `before` the Inserts section."
 msgstr ""
 
-#: ../../tracks/instrument-track.rst:27
+#: ../../tracks/instrument-track.rst:19
+msgid ""
+"Instrument tracks are similar to MIDI tracks, except that they produce "
+"audio instead of :term:`MIDI`."
+msgstr ""
+
+#: ../../tracks/instrument-track.rst:32
 msgid "Show UI"
 msgstr "Amosar UI"
 
-#: ../../tracks/instrument-track.rst:27
+#: ../../tracks/instrument-track.rst:32
 msgid "Displays the UI of the main plugin."
 msgstr "Amosa a Interface Gráfica do plugin principal."
 
-#: ../../tracks/instrument-track.rst:34
+#: ../../tracks/instrument-track.rst:39
 msgid "Freeze"
 msgstr "Conxelar"
 
-#: ../../tracks/instrument-track.rst:35
+#: ../../tracks/instrument-track.rst:40
 msgid "Freezes the track (not operational at the moment)."
 msgstr "Conxela a pista (non funciona polo de agora)."
 
-#: ../../tracks/instrument-track.rst:51
+#: ../../tracks/instrument-track.rst:56
 msgid "The track to route the audio output of the instrument track to."
 msgstr "A pista á que dirixir a saída de audio dende a pista de instrumento."
 
-#: ../../tracks/instrument-track.rst:56
+#: ../../tracks/instrument-track.rst:61
 msgid "These are similar to :ref:`midi-track-inputs`."
 msgstr "Estas son similares ás :ref:`midi-track-inputs`."
 
-#: ../../tracks/instrument-track.rst:64
+#: ../../tracks/instrument-track.rst:69
 msgid "Pre-Fader Out L/R"
 msgstr "Saída L/R Pre-Fader"
 
-#: ../../tracks/instrument-track.rst:64
+#: ../../tracks/instrument-track.rst:69
 msgid "The stereo audio signal before the fader is applied."
 msgstr "O sinal de audio estéreo antes de pasar polo fader."
 
-#: ../../tracks/instrument-track.rst:67
+#: ../../tracks/instrument-track.rst:72
 msgid "Fader Out L/R"
 msgstr "Saída L/R do Fader"
 
-#: ../../tracks/instrument-track.rst:67
+#: ../../tracks/instrument-track.rst:72
 msgid "The stereo audio signal after the fader is applied."
 msgstr "O sinal estéreo do audio tras pasar polo fader."
 
-#: ../../tracks/instrument-track.rst:69
+#: ../../tracks/instrument-track.rst:74
 msgid "You can use these for side-chaining."
 msgstr "Podes empregar estas para facer side-chain."
 
-#: ../../tracks/instrument-track.rst:82
+#: ../../tracks/instrument-track.rst:87
 msgid "Freezing"
 msgstr "Conxelar"
 
-#: ../../tracks/instrument-track.rst:84
+#: ../../tracks/instrument-track.rst:89
 msgid ""
 "If DSP usage is high and you have performance issues, or if you just want"
 " to save CPU power, instrument tracks can be frozen (temporarily "
@@ -753,7 +755,7 @@ msgstr ""
 "conxeladas (convertidas temporalmente a audio), o que diminúe de xeito "
 "notorio o uso da CPU."
 
-#: ../../tracks/instrument-track.rst:89
+#: ../../tracks/instrument-track.rst:94
 msgid ""
 "Instruments can be frozen by clicking the Freeze button in the track "
 "interface."
@@ -766,27 +768,27 @@ msgid "Tracks"
 msgstr "Pistas"
 
 #: ../../tracks/marker-track.rst:10
-#: ../../tracks/track-types.rst:88
 msgid "Marker Track"
 msgstr "Pista de Marcadores"
 
 #: ../../tracks/marker-track.rst:12
+#, fuzzy
 msgid ""
-"The marker track holds song markers that make it easier to jump to or to "
-"export specific sections of the song. Each project can only have one "
-"marker track and it cannot be deleted (but can be hidden)."
+"The marker track holds song markers - either custom or pre-defined ones -"
+" that make it easier to jump to or to export specific sections of the "
+"song. Each project can only have one marker track and it cannot be "
+"deleted (but can be hidden)."
 msgstr ""
 "A pista de marcadores contén marcadores da canción que facilitan saltar "
 "dunha a outra ou exportar seccións específicas da canción. Cada proxecto "
 "ten unha única pista de marcadores que non se pode eliminar (aínda que se"
 " pode agochar)."
 
-#: ../../tracks/marker-track.rst:31
+#: ../../tracks/marker-track.rst:32
 msgid "The name of the marker track."
 msgstr "O nome da pista de marcadores."
 
 #: ../../tracks/master-track.rst:6
-#: ../../tracks/track-types.rst:71
 msgid "Master Track"
 msgstr "Pista Mestra"
 
@@ -809,16 +811,15 @@ msgid "This is automatically routed to the audio engine and cannot be changed."
 msgstr "Isto está dirixido automaticamente ao motor de audio e non se pode mudar."
 
 #: ../../tracks/midi-track.rst:6
-#: ../../tracks/track-types.rst:17
 msgid "MIDI Track"
 msgstr "Pista MIDI"
 
 #: ../../tracks/midi-track.rst:8
 #, fuzzy
 msgid ""
-"A MIDI track contains MIDI regions and its purpose is for playing back "
-"MIDI events and routing those MIDI signals to other instruments "
-"(including external instruments and hardware)."
+"A MIDI track contains MIDI regions and its purpose is playing back MIDI "
+"events and routing those MIDI signals to other instruments (including "
+"external instruments and hardware)."
 msgstr ""
 "Unha pista MIDI contén rexións MIDI e o seu fin é dirixir sinais MIDI a "
 "outros instrumentos (incluíndo instrumentos externos e hardware)."
@@ -833,29 +834,33 @@ msgstr ""
 "MIDI, polo que as series das súas canles só poden ter efectos MIDI "
 "(plugins que modifican os sinais MIDI)."
 
-#: ../../tracks/midi-track.rst:50
+#: ../../tracks/midi-track.rst:17
+msgid "MIDI tracks also have automation lanes for automating various parameters."
+msgstr ""
+
+#: ../../tracks/midi-track.rst:53
 msgid "The name of the track. You can double click to change it."
 msgstr "O nome da pista. Podes facer dobre clic para o cambiar."
 
-#: ../../tracks/midi-track.rst:53
+#: ../../tracks/midi-track.rst:56
 msgid "The track to route the output of the MIDI track to."
 msgstr "A pista á que dirixir a saída da pista MIDI."
 
-#: ../../tracks/midi-track.rst:62
+#: ../../tracks/midi-track.rst:65
 msgid "Input Device"
 msgstr "Dispositivo de Entrada"
 
-#: ../../tracks/midi-track.rst:61
+#: ../../tracks/midi-track.rst:64
 msgid "The input device(s) to receive MIDI signals from during recording."
 msgstr ""
 "O(s) dispositivo(s) de entrada dos que recibir sinais MIDI durante a "
 "gravación."
 
-#: ../../tracks/midi-track.rst:67
+#: ../../tracks/midi-track.rst:70
 msgid "Input Channel"
 msgstr "Canle de Entrada"
 
-#: ../../tracks/midi-track.rst:65
+#: ../../tracks/midi-track.rst:68
 msgid ""
 "The MIDI channel(s) to listen to for recording MIDI events. This acts as "
 "a filter so MIDI events on channels not selected will be ignored."
@@ -864,27 +869,27 @@ msgstr ""
 "como un filtro, de xeito que os eventos MIDI nas canles non seleccionados"
 " serán ignorados."
 
-#: ../../tracks/midi-track.rst:75
+#: ../../tracks/midi-track.rst:78
 msgid "Pre-Fader Out"
 msgstr "Saída Pre-Fader"
 
-#: ../../tracks/midi-track.rst:75
+#: ../../tracks/midi-track.rst:78
 msgid "The MIDI signal before the MIDI fader is applied."
 msgstr "O sinal MIDI antes de pasar polo fader MIDI."
 
-#: ../../tracks/midi-track.rst:78
+#: ../../tracks/midi-track.rst:81
 msgid "Fader Out"
 msgstr "Saída do Fader"
 
-#: ../../tracks/midi-track.rst:78
+#: ../../tracks/midi-track.rst:81
 msgid "The MIDI signal after the MIDI fader is applied."
 msgstr "O sinal MIDI tras pasar polo fader MIDI."
 
-#: ../../tracks/midi-track.rst:80
+#: ../../tracks/midi-track.rst:83
 msgid "The MIDI fader uses MIDI volume CC."
 msgstr "O fader MIDI emprega volume MIDI CC."
 
-#: ../../tracks/midi-track.rst:82
+#: ../../tracks/midi-track.rst:85
 msgid ""
 "The MIDI fader is a TODO feature and currently does nothing (it lets the "
 "signal pass through)."
@@ -892,7 +897,7 @@ msgstr ""
 "O fader MIDI é unha característica TODO e polo de agora non fai nada "
 "(deixa pasar o sinal)."
 
-#: ../../tracks/midi-track.rst:90
+#: ../../tracks/midi-track.rst:93
 msgid ""
 "The MIDI track can have multiple lanes for saving regions. By default, "
 "all regions you create will be created in lane 1. Additional lanes will "
@@ -903,7 +908,7 @@ msgstr ""
 "creadas automaticamente e eliminadas segundo vaias engadindo rexións a "
 "cada estaxe."
 
-#: ../../tracks/midi-track.rst:98
+#: ../../tracks/midi-track.rst:101
 msgid ""
 "Lanes are useful when recording, as each time the playback loops it will "
 "start recording in a new lane and mute the region in the previous lane. "
@@ -916,11 +921,11 @@ msgstr ""
 "a organización xeral das túas rexións. Por exemplo, podes manter as notas"
 " agudas na estaxe 1 e as graves na estaxe 2."
 
-#: ../../tracks/midi-track.rst:106
+#: ../../tracks/midi-track.rst:109
 msgid "Lanes can be made visible by clicking the \"hamburger\" icon."
 msgstr "As estaxes amósanse facendo clic na icona coa \"hamburguesa\"."
 
-#: ../../tracks/midi-track.rst:114
+#: ../../tracks/midi-track.rst:117
 msgid ""
 "Automation tracks are used to create automation events for various "
 "parameters of the MIDI track, and any plugins in the MIDI track's "
@@ -932,7 +937,7 @@ msgstr ""
 "amosar as pistas de automatización, fai clic na icona envolventes da "
 "pista MIDI."
 
-#: ../../tracks/midi-track.rst:123
+#: ../../tracks/midi-track.rst:126
 msgid ""
 "More information about automation tracks can be found in the "
 ":ref:`automation` chapter."
@@ -940,16 +945,16 @@ msgstr ""
 "Para máis información sobre as pistas de automatización bota unha ollada "
 "ao capítulo :ref:`automation`."
 
-#: ../../tracks/midi-track.rst:127
-#: ../../tracks/overview.rst:60
+#: ../../tracks/midi-track.rst:130
+#: ../../tracks/overview.rst:66
 msgid "Context Menu"
 msgstr "Menú Contextual"
 
-#: ../../tracks/midi-track.rst:132
+#: ../../tracks/midi-track.rst:135
 msgid "MIDI Transformations"
 msgstr "Transformacións MIDI"
 
-#: ../../tracks/midi-track.rst:135
+#: ../../tracks/midi-track.rst:138
 msgid "Transpose"
 msgstr "Transpor"
 
@@ -985,11 +990,12 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/overview.rst:28
+#, fuzzy
 msgid ""
 "In Zrythm, group tracks are used for grouping signals (direct routing), "
-"FX/bus tracks are used for effects/sends, and folder tracks are used for "
-"putting tracks under the same folder and doing common operations. This is"
-" different from what many other DAWs do, so please keep this in mind."
+"FX/bus tracks are used for effects/sends, and folder tracks (coming soon)"
+" are  used for putting tracks under the same folder and performing common"
+" operations."
 msgstr ""
 "En Zrythm, as pistas agrupadas empréganse para agrupar sinais (enrutado "
 "directo), as pistas bus/FX utilízanse para efectos/envíos, e as pistas "
@@ -998,14 +1004,23 @@ msgstr ""
 " así que por favor, teno en conta."
 
 #: ../../tracks/overview.rst:35
-msgid "If you have used Cubase before, you might find this easy to get used to."
-msgstr "Se utilizaches Cubase con anterioridade, serache doado afacerte."
+msgid ""
+"Moreover, Zrythm uses Instrument tracks for instrument plugins, such as "
+"synthesizers, and MIDI tracks for MIDI plugins, such as a MIDI "
+"arpegiator."
+msgstr ""
 
-#: ../../tracks/overview.rst:39
+#: ../../tracks/overview.rst:40
+msgid ""
+"This is different from what many other DAWs (see :term:`DAW`) do, so "
+"please keep this in mind."
+msgstr ""
+
+#: ../../tracks/overview.rst:45
 msgid "Track Interface"
 msgstr "Interface da Pista"
 
-#: ../../tracks/overview.rst:44
+#: ../../tracks/overview.rst:50
 msgid ""
 "Each track has a color, an icon (corresponding to its type) a name and "
 "various buttons. Tracks that can have lanes, like instrument tracks, will"
@@ -1018,7 +1033,7 @@ msgstr ""
 " que se poden automatizar, terán unha opción para amosar as pistas de "
 "automatización como arriba."
 
-#: ../../tracks/overview.rst:50
+#: ../../tracks/overview.rst:56
 msgid ""
 "If the track produces output, it will have a meter on its right-hand side"
 " showing the current level."
@@ -1026,7 +1041,7 @@ msgstr ""
 "Se a pista produce unha saída, terá un medidor á súa dereita amosando o "
 "nivel actual."
 
-#: ../../tracks/overview.rst:56
+#: ../../tracks/overview.rst:62
 #, fuzzy
 msgid ""
 "Each track will display its page in the inspector when selected. See :ref"
@@ -1035,7 +1050,7 @@ msgstr ""
 "Cada pista amosará a súa páxina no inspector cando as selecciones. "
 "Dependendo da pista, as propiedades mostradas diferirán."
 
-#: ../../tracks/overview.rst:62
+#: ../../tracks/overview.rst:68
 #, fuzzy
 msgid ""
 "Each tracks has a context menu with additional options depending on its "
@@ -1044,7 +1059,7 @@ msgstr ""
 "Cada pista ten un menú contextual, con opcións adicionais dependendo do "
 "tipo de pista."
 
-#: ../../tracks/overview.rst:68
+#: ../../tracks/overview.rst:74
 msgid ""
 "The section :ref:`track-operations` explains the various track operations"
 " available."
@@ -1099,123 +1114,131 @@ msgstr ""
 " propias seccións."
 
 #: ../../tracks/track-types.rst:12
-msgid ""
-"A Track that contains regions containing MIDI notes. It also has "
-"automation lanes for automating its components."
+#, fuzzy
+msgid "Track type"
+msgstr "Tipos de Pistas"
+
+#: ../../tracks/track-types.rst:12
+#, fuzzy
+msgid "Input"
+msgstr "Entradas"
+
+#: ../../tracks/track-types.rst:12
+msgid "Output"
 msgstr ""
-"Unha pista que contén rexións con notas MIDI. Tamén ten estaxes de "
-"automatización para automatizar os seus compoñentes."
+
+#: ../../tracks/track-types.rst:12
+#, fuzzy
+msgid "Can record"
+msgstr "Gravar"
+
+#: ../../tracks/track-types.rst:12
+msgid "Objects"
+msgstr ""
+
+#: ../../tracks/track-types.rst:14
+#: ../../tracks/track-types.rst:15
+#: ../../tracks/track-types.rst:16
+#: ../../tracks/track-types.rst:18
+#: ../../tracks/track-types.rst:20
+msgid "Audio"
+msgstr ""
+
+#: ../../tracks/track-types.rst:14
+#: ../../tracks/track-types.rst:17
+#: ../../tracks/track-types.rst:18
+#: ../../tracks/track-types.rst:22
+msgid "Yes"
+msgstr ""
+
+#: ../../tracks/track-types.rst:14
+msgid "Audio regions"
+msgstr ""
+
+#: ../../tracks/track-types.rst:15
+#, fuzzy
+msgid "Audio Group"
+msgstr "Pista de Audio"
+
+#: ../../tracks/track-types.rst:15
+#: ../../tracks/track-types.rst:16
+#: ../../tracks/track-types.rst:19
+#: ../../tracks/track-types.rst:20
+#: ../../tracks/track-types.rst:21
+#: ../../tracks/track-types.rst:23
+#: ../../tracks/track-types.rst:24
+#: ../../tracks/track-types.rst:25
+msgid "No"
+msgstr ""
+
+#: ../../tracks/track-types.rst:15
+#: ../../tracks/track-types.rst:16
+#: ../../tracks/track-types.rst:19
+#: ../../tracks/track-types.rst:20
+#: ../../tracks/track-types.rst:21
+#: ../../tracks/track-types.rst:23
+#: ../../tracks/track-types.rst:24
+#: ../../tracks/track-types.rst:25
+msgid "None"
+msgstr ""
 
 #: ../../tracks/track-types.rst:16
-#: ../../tracks/track-types.rst:44
-#: ../../tracks/track-types.rst:62
-#: ../../tracks/track-types.rst:78
-msgid "*Input:* **MIDI**, *Output:* **MIDI**"
-msgstr "*Entrada:* **MIDI**, *Saída:* **MIDI**"
+msgid "Audio FX"
+msgstr ""
+
+#: ../../tracks/track-types.rst:17
+#, fuzzy
+msgid "Chord"
+msgstr "Gravar"
+
+#: ../../tracks/track-types.rst:17
+#: ../../tracks/track-types.rst:18
+#: ../../tracks/track-types.rst:22
+#: ../../tracks/track-types.rst:23
+#: ../../tracks/track-types.rst:24
+msgid "MIDI"
+msgstr ""
+
+#: ../../tracks/track-types.rst:17
+msgid "Chord regions & scales"
+msgstr ""
 
 #: ../../tracks/track-types.rst:18
-#: ../../tracks/track-types.rst:26
-#: ../../tracks/track-types.rst:32
-msgid "*Can record:* **Yes**"
-msgstr "*Pódese gravar:* **Si**"
+#: ../../tracks/track-types.rst:22
+msgid "MIDI regions"
+msgstr ""
+
+#: ../../tracks/track-types.rst:19
+msgid "Marker"
+msgstr ""
+
+#: ../../tracks/track-types.rst:19
+msgid "Markers"
+msgstr ""
 
 #: ../../tracks/track-types.rst:20
-msgid ""
-"Similar to a MIDI track, except that an Instrument Track is bound to an "
-"instrument plugin that produces audio."
+msgid "Master"
 msgstr ""
-"Parecida a unha pista MIDI, salvo porque unha pista de Instrumento está "
-"ligada a un plugin de instrumento que xera audio."
+
+#: ../../tracks/track-types.rst:21
+msgid "Modulators"
+msgstr ""
+
+#: ../../tracks/track-types.rst:23
+msgid "MIDI Group"
+msgstr ""
 
 #: ../../tracks/track-types.rst:24
-msgid "*Input:* **MIDI**, *Output:* **Audio**"
-msgstr "*Entrada:* **MIDI**, *Saída:* **Audio**"
+msgid "MIDI FX"
+msgstr ""
+
+#: ../../tracks/track-types.rst:25
+msgid "Tempo"
+msgstr ""
 
 #: ../../tracks/track-types.rst:28
-msgid "A Track containing audio regions, cross-fades, fades and automation."
+msgid "All tracks except the :doc:`chord-track` have automation lanes available."
 msgstr ""
-"Unha pista que contén rexións de audio, fundidos cruzados, fundidos e "
-"automatizacións."
-
-#: ../../tracks/track-types.rst:30
-#: ../../tracks/track-types.rst:37
-#: ../../tracks/track-types.rst:70
-msgid "*Input:* **Audio**, *Output:* **Audio**"
-msgstr "*Entrada:* **Audio**, *Saída:* **Audio**"
-
-#: ../../tracks/track-types.rst:34
-msgid "A Track corresponding to a mixer bus. Bus tracks only contain automation"
-msgstr ""
-"Unha pista correspondente a un bus do mesturador. As pistas bus só "
-"conteñen automatización"
-
-#: ../../tracks/track-types.rst:39
-#: ../../tracks/track-types.rst:46
-#: ../../tracks/track-types.rst:57
-#: ../../tracks/track-types.rst:64
-#: ../../tracks/track-types.rst:72
-#: ../../tracks/track-types.rst:80
-#: ../../tracks/track-types.rst:89
-msgid "*Can record:* **No**"
-msgstr "*Pódese gravar:* **Non**"
-
-#: ../../tracks/track-types.rst:41
-msgid ""
-"Similar to an audio bus track, except that it handles MIDI instead of "
-"audio."
-msgstr ""
-"Semellante a unha pista de bus de audio, salvo porque traballa con MIDI "
-"no canto de audio."
-
-#: ../../tracks/track-types.rst:48
-msgid ""
-"A group track is used to route signals from multiple tracks into one "
-"track (or \"group\" them). It behaves like a bus Track with the exception"
-" that other tracks can route their output signal directly into group "
-"track. *Input:* **Audio**, *Output:* **Audio**"
-msgstr ""
-"Unha pista agrupada serve para dirixir sinais de múltiples pistas nunha "
-"única (ou \"agrupalas\"). Compórtase como unha Pista bus, mais coa "
-"excepción de que outras pistas poden dirixir a súa sinal de saída "
-"directamente á pista agrupada. *Entrada:* **Audio**, *Saída:* **Audio**"
-
-#: ../../tracks/track-types.rst:59
-msgid ""
-"Similar to an audio Group Track, except that it handles MIDI instead of "
-"audio."
-msgstr ""
-"Semellante a unha Pista Agrupada de audio, salvo porque traballa con MIDI"
-" no canto de audio."
-
-#: ../../tracks/track-types.rst:66
-msgid ""
-"The Master track is a special type of Bus Track that controls the master "
-"fader and contains additional automation options."
-msgstr ""
-"A pista Mestra é un tipo especial de Pista Bus que controla o fader "
-"mestre e contén opcións de automatización adicionais."
-
-#: ../../tracks/track-types.rst:74
-msgid ""
-"A Chord Track is a special kind of Track that contains chords and scales "
-"and is a great tool for assisting with chord progressions."
-msgstr ""
-"Unha Pista de Acordes é un tipo especial de Pista que contén acordes e "
-"escalas e en xeral é unha ferramenta axeitada como asistente nas "
-"progresións de acordes."
-
-#: ../../tracks/track-types.rst:82
-msgid ""
-"A Marker Track is a special kind of track that contains song markers - "
-"either custom or pre-defined ones like the song start and end markers."
-msgstr ""
-"Unha Pista de Marcadores é un tipo especial de pista que contén "
-"marcadores da canción -tanto personalizados como pre-definidos, como os "
-"marcadores de comezo e fin da canción."
-
-#: ../../tracks/track-types.rst:87
-msgid "*Input:* **None**, *Output:* **None**"
-msgstr "*Entrada:* **Ningunha**, *Saída:* **Ningunha**"
 
 #: ../../tracks/track-visibility.rst:8
 msgid "Track Visibility"
@@ -1229,7 +1252,9 @@ msgstr ""
 
 #: ../../tracks/track-visibility.rst:16
 #, fuzzy
-msgid "Tracks can also be quickly hidden by right-clicking and selecting `Hide`."
+msgid ""
+"Tracks can also be quickly hidden with :menuselection:`Right click --> "
+"Hide`."
 msgstr ""
 "As pistas pódense borrar facendo clic dereito nelas e escollendo "
 ":zbutton:`Eliminar`."
@@ -1307,4 +1332,152 @@ msgstr ""
 #~ "Hai varios tipos de Pistas axeitados "
 #~ "a diferentes propósitos, explicados nas "
 #~ "seccións seguintes."
+
+#~ msgid ""
+#~ "To change the fader or stereo "
+#~ "balance amount, click and drag their "
+#~ "respective widgets. You can reset them"
+#~ " to their default positions by right"
+#~ " clicking and selecting :zbutton:`Reset`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The track will still be processed, "
+#~ "so if you are looking to decrease"
+#~ " DSP usage, try disabling plugins "
+#~ "instead."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If you have used Cubase before, "
+#~ "you might find this easy to get"
+#~ " used to."
+#~ msgstr "Se utilizaches Cubase con anterioridade, serache doado afacerte."
+
+#~ msgid ""
+#~ "A Track that contains regions containing"
+#~ " MIDI notes. It also has automation"
+#~ " lanes for automating its components."
+#~ msgstr ""
+#~ "Unha pista que contén rexións con "
+#~ "notas MIDI. Tamén ten estaxes de "
+#~ "automatización para automatizar os seus "
+#~ "compoñentes."
+
+#~ msgid "*Input:* **MIDI**, *Output:* **MIDI**"
+#~ msgstr "*Entrada:* **MIDI**, *Saída:* **MIDI**"
+
+#~ msgid "*Can record:* **Yes**"
+#~ msgstr "*Pódese gravar:* **Si**"
+
+#~ msgid ""
+#~ "Similar to a MIDI track, except "
+#~ "that an Instrument Track is bound "
+#~ "to an instrument plugin that produces"
+#~ " audio."
+#~ msgstr ""
+#~ "Parecida a unha pista MIDI, salvo "
+#~ "porque unha pista de Instrumento está"
+#~ " ligada a un plugin de instrumento"
+#~ " que xera audio."
+
+#~ msgid "*Input:* **MIDI**, *Output:* **Audio**"
+#~ msgstr "*Entrada:* **MIDI**, *Saída:* **Audio**"
+
+#~ msgid "A Track containing audio regions, cross-fades, fades and automation."
+#~ msgstr ""
+#~ "Unha pista que contén rexións de "
+#~ "audio, fundidos cruzados, fundidos e "
+#~ "automatizacións."
+
+#~ msgid "*Input:* **Audio**, *Output:* **Audio**"
+#~ msgstr "*Entrada:* **Audio**, *Saída:* **Audio**"
+
+#~ msgid ""
+#~ "A Track corresponding to a mixer "
+#~ "bus. Bus tracks only contain automation"
+#~ msgstr ""
+#~ "Unha pista correspondente a un bus "
+#~ "do mesturador. As pistas bus só "
+#~ "conteñen automatización"
+
+#~ msgid "*Can record:* **No**"
+#~ msgstr "*Pódese gravar:* **Non**"
+
+#~ msgid ""
+#~ "Similar to an audio bus track, "
+#~ "except that it handles MIDI instead "
+#~ "of audio."
+#~ msgstr ""
+#~ "Semellante a unha pista de bus de"
+#~ " audio, salvo porque traballa con "
+#~ "MIDI no canto de audio."
+
+#~ msgid ""
+#~ "A group track is used to route "
+#~ "signals from multiple tracks into one"
+#~ " track (or \"group\" them). It "
+#~ "behaves like a bus Track with the"
+#~ " exception that other tracks can "
+#~ "route their output signal directly into"
+#~ " group track. *Input:* **Audio**, *Output:*"
+#~ " **Audio**"
+#~ msgstr ""
+#~ "Unha pista agrupada serve para dirixir"
+#~ " sinais de múltiples pistas nunha "
+#~ "única (ou \"agrupalas\"). Compórtase como "
+#~ "unha Pista bus, mais coa excepción "
+#~ "de que outras pistas poden dirixir "
+#~ "a súa sinal de saída directamente "
+#~ "á pista agrupada. *Entrada:* **Audio**, "
+#~ "*Saída:* **Audio**"
+
+#~ msgid ""
+#~ "Similar to an audio Group Track, "
+#~ "except that it handles MIDI instead "
+#~ "of audio."
+#~ msgstr ""
+#~ "Semellante a unha Pista Agrupada de "
+#~ "audio, salvo porque traballa con MIDI"
+#~ " no canto de audio."
+
+#~ msgid ""
+#~ "The Master track is a special type"
+#~ " of Bus Track that controls the "
+#~ "master fader and contains additional "
+#~ "automation options."
+#~ msgstr ""
+#~ "A pista Mestra é un tipo especial"
+#~ " de Pista Bus que controla o "
+#~ "fader mestre e contén opcións de "
+#~ "automatización adicionais."
+
+#~ msgid ""
+#~ "A Chord Track is a special kind"
+#~ " of Track that contains chords and"
+#~ " scales and is a great tool for"
+#~ " assisting with chord progressions."
+#~ msgstr ""
+#~ "Unha Pista de Acordes é un tipo"
+#~ " especial de Pista que contén acordes"
+#~ " e escalas e en xeral é unha"
+#~ " ferramenta axeitada como asistente nas "
+#~ "progresións de acordes."
+
+#~ msgid ""
+#~ "A Marker Track is a special kind"
+#~ " of track that contains song markers"
+#~ " - either custom or pre-defined "
+#~ "ones like the song start and end"
+#~ " markers."
+#~ msgstr ""
+#~ "Unha Pista de Marcadores é un tipo"
+#~ " especial de pista que contén "
+#~ "marcadores da canción -tanto personalizados"
+#~ " como pre-definidos, como os "
+#~ "marcadores de comezo e fin da "
+#~ "canción."
+
+#~ msgid "*Input:* **None**, *Output:* **None**"
+#~ msgstr "*Entrada:* **Ningunha**, *Saída:* **Ningunha**"
 

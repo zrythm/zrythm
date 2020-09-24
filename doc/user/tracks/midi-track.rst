@@ -6,13 +6,16 @@ MIDI Track
 ==========
 
 A MIDI track contains MIDI regions and its purpose
-is for playing back MIDI events and routing
+is playing back MIDI events and routing
 those MIDI signals to other instruments
 (including external instruments and hardware).
 
 MIDI tracks, unlike instrument tracks, produce MIDI
 output and so their channel strips will only have
 MIDI effects (plugins that change MIDI signals).
+
+MIDI tracks also have automation lanes for automating
+various parameters.
 
 .. image:: /_static/img/midi-track.png
    :align: center

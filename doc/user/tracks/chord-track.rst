@@ -9,7 +9,8 @@ Chord Track
 
 The Chord Track contains chord and scale
 objects that are used to specify when the song
-is using a particular chord or scale.
+is using a particular chord or scale. Its main
+purpose is to assist with chord progressions.
 
 .. image:: /_static/img/chord-track.png
    :align: center

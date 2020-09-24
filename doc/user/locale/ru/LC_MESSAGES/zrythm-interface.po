@@ -7,12 +7,12 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 00:47+0100\n"
+"POT-Creation-Date: 2020-09-24 22:19+0100\n"
 "PO-Revision-Date: 2020-09-23 17:06+0000\n"
 "Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
-"manualzrythm-interface/ru/>\n"
 "Language: ru\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm"
+"/manualzrythm-interface/ru/>\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
@@ -30,8 +30,8 @@ msgid ""
 "automation editor) as well as the mixer and chord pads."
 msgstr ""
 "Нижняя панель содержит различные редакторы (такие как Редактор Нот(Piano "
-"Roll) и Редактор Автоматизации(Automation Editor)), а также микшер и список "
-"аккордов."
+"Roll) и Редактор Автоматизации(Automation Editor)), а также микшер и "
+"список аккордов."
 
 #: ../../zrythm-interface/bottom-panel.rst:18
 msgid "Editor"
@@ -43,13 +43,12 @@ msgid ""
 "various controls that vary depending on the type of region selected."
 msgstr ""
 "Вкладка Редактор(Editor) содержит аранжировщик для редактирования "
-"регионов(Region), а также различные элементы управления, которые различаются "
-"в зависимости от типа выбранного региона."
+"регионов(Region), а также различные элементы управления, которые "
+"различаются в зависимости от типа выбранного региона."
 
 #: ../../zrythm-interface/bottom-panel.rst:26
 msgid "Editing inside the Editor tab is covered in :ref:`editors`."
-msgstr ""
-"Редактирование внутри вкладки Редактор(Editor) описано в :ref:`editors`."
+msgstr "Редактирование внутри вкладки Редактор(Editor) описано в :ref:`editors`."
 
 #: ../../zrythm-interface/bottom-panel.rst:29
 msgid "Piano Roll"
@@ -196,9 +195,9 @@ msgid ""
 " be automated using automation tracks. Ports can be routed to other ports"
 " anywhere within Zrythm by double clicking on them."
 msgstr ""
-"Управляющие входные порты можно изменить, щелкнув и перетащив, а также можно "
-"автоматизировать с помощью треков автоматизации. Порты можно подключить к "
-"другим портам в любом месте, дважды щелкнув по ним."
+"Управляющие входные порты можно изменить, щелкнув и перетащив, а также "
+"можно автоматизировать с помощью треков автоматизации. Порты можно "
+"подключить к другим портам в любом месте, дважды щелкнув по ним."
 
 #: ../../zrythm-interface/left-panel.rst:52
 msgid "Ports are explained in more detail in :ref:`ports`."
@@ -208,8 +207,7 @@ msgstr "Более подробно порты описаны в :ref:`ports`."
 msgid ""
 "Depending on the type of plugin, there may be different categories of "
 "ports being shown."
-msgstr ""
-"В зависимости от типа плагина могут отображаться разные категории портов."
+msgstr "В зависимости от типа плагина могут отображаться разные категории портов."
 
 #: ../../zrythm-interface/left-panel.rst:58
 msgid "Track Visibility"
@@ -483,9 +481,9 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:127
 msgid ""
-"The MIDI In widget shows the MIDI activity of auto-connected MIDI devices"
-" and the live waveform display shows the audio waveform from the master "
-"output."
+"The MIDI In widget shows the :term:`MIDI` activity of auto-connected MIDI"
+" devices and the live waveform display shows the audio waveform from the "
+"master output."
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:8
@@ -566,50 +564,66 @@ msgid "Metronome toggle"
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:25
-msgid "Toggles the metronome on/off"
+msgid "Toggles the metronome on/off."
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:26
-msgid "BPM"
+msgid "Metronome options"
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:27
-msgid "Song tempo (beats per minute)"
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:28
-msgid "Playhead"
+msgid "Sets the volume of the metronome."
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:29
-msgid "Current playhead position, in bars.beats.sixteenths.ticks"
+msgid "Return to cue point on stop"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:29
+msgid "Toggles whether to return to the cue point when playback stops."
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:31
-msgid "Transport buttons"
+msgid "BPM"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:31
-msgid "Controls for stopping, playback, recording, etc."
+#: ../../zrythm-interface/transport-bar.rst:32
+msgid "Song tempo (beats per minute)."
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:33
+msgid "Playhead"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:34
+msgid "Current playhead position, in bars.beats.sixteenths.ticks."
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:36
+msgid "Transport buttons"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:36
+msgid "Controls for stopping, playback, recording, etc."
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:38
 msgid ""
 "Widgets like the BPM meter can be changed by clicking and dragging, or by"
 " hovering over them with the cursor and scrolling"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:37
+#: ../../zrythm-interface/transport-bar.rst:42
 msgid ""
 "More information about working with the transport bar is covered in :ref"
 ":`transport-controls`."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:41
+#: ../../zrythm-interface/transport-bar.rst:46
 msgid "Backend Information"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:42
+#: ../../zrythm-interface/transport-bar.rst:47
 msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
@@ -1254,5 +1268,22 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The MIDI In widget shows the MIDI"
+#~ " activity of auto-connected MIDI "
+#~ "devices and the live waveform display"
+#~ " shows the audio waveform from the"
+#~ " master output."
+#~ msgstr ""
+
+#~ msgid "Toggles the metronome on/off"
+#~ msgstr ""
+
+#~ msgid "Song tempo (beats per minute)"
+#~ msgstr ""
+
+#~ msgid "Current playhead position, in bars.beats.sixteenths.ticks"
 #~ msgstr ""
 

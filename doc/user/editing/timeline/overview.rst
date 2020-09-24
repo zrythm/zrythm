@@ -11,6 +11,8 @@ left and the ruler/arranger on the right side.
 .. image:: /_static/img/timeline.png
    :align: center
 
+.. _tracklist:
+
 Tracklist
 ---------
 

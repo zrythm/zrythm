@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-09 18:46+0100\n"
+"POT-Creation-Date: 2020-09-24 22:19+0100\n"
 "PO-Revision-Date: 2020-02-26 11:33+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language: es\n"
@@ -147,42 +147,43 @@ msgstr ""
 #: ../../projects/saving-loading.rst:31
 msgid ""
 "A blank template is available, and you can create your own templates by "
-"copying a project directory to :file:`{ZRYTHM_USER_DIR}/templates`."
+"copying a project directory under :file:`templates` in the :term:`Zrythm "
+"user path`."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:35
+#: ../../projects/saving-loading.rst:36
 msgid ""
 "Once a template (or blank) is selected and you click :guilabel:`Apply`, "
-"Zrythm will ask you for a parent directory to save the Project in and a "
-"title for the Project."
+"Zrythm will ask you for a parent directory to save the project in and a "
+"title for the project."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:42
+#: ../../projects/saving-loading.rst:44
 msgid ""
-"Once you accept, the new Project will be set up and you will be ready to "
+"Once you accept, the new project will be set up and you will be ready to "
 "go."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:46
+#: ../../projects/saving-loading.rst:48
 msgid "Saving Projects"
 msgstr ""
 
-#: ../../projects/saving-loading.rst:48
+#: ../../projects/saving-loading.rst:50
 msgid ""
 "Saving works as you would expect: :guilabel:`Save As...` will save the "
 "Project in a new location and :guilabel:`Save` will save the Project in "
 "the previous location."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:52
+#: ../../projects/saving-loading.rst:54
 msgid "When saving projects, Zrythm expects you to give it a directory"
 msgstr ""
 
-#: ../../projects/saving-loading.rst:56
+#: ../../projects/saving-loading.rst:58
 msgid "Automatic Backups"
 msgstr "Copias de respaldo automáticas"
 
-#: ../../projects/saving-loading.rst:58
+#: ../../projects/saving-loading.rst:60
 msgid ""
 "Zrythm has an option to auto-save the current project as a back-up. When "
 "launching Zrythm and selecting to load your project, Zrythm will let you "
@@ -190,13 +191,13 @@ msgid ""
 "to load them instead."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:66
+#: ../../projects/saving-loading.rst:68
 msgid ""
 "The auto-save interval can be changed (or disabled) in the preferences "
 "window."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:69
+#: ../../projects/saving-loading.rst:71
 msgid "The backups are saved in the project's directory, under :file:`backups`."
 msgstr ""
 
@@ -365,5 +366,26 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "The backups are saved in the project's directory, under ``backups``"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A blank template is available, and "
+#~ "you can create your own templates "
+#~ "by copying a project directory to "
+#~ ":file:`{ZRYTHM_USER_DIR}/templates`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Once a template (or blank) is "
+#~ "selected and you click :guilabel:`Apply`, "
+#~ "Zrythm will ask you for a parent"
+#~ " directory to save the Project in "
+#~ "and a title for the Project."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Once you accept, the new Project "
+#~ "will be set up and you will "
+#~ "be ready to go."
 #~ msgstr ""
 

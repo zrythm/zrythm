@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 00:47+0100\n"
+"POT-Creation-Date: 2020-09-24 22:19+0100\n"
 "PO-Revision-Date: 2019-08-07 14:26+0000\n"
 "Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
 "Language: zh\n"
@@ -459,9 +459,9 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:127
 msgid ""
-"The MIDI In widget shows the MIDI activity of auto-connected MIDI devices"
-" and the live waveform display shows the audio waveform from the master "
-"output."
+"The MIDI In widget shows the :term:`MIDI` activity of auto-connected MIDI"
+" devices and the live waveform display shows the audio waveform from the "
+"master output."
 msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:8
@@ -542,50 +542,66 @@ msgid "Metronome toggle"
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:25
-msgid "Toggles the metronome on/off"
+msgid "Toggles the metronome on/off."
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:26
-msgid "BPM"
+msgid "Metronome options"
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:27
-msgid "Song tempo (beats per minute)"
-msgstr ""
-
-#: ../../zrythm-interface/transport-bar.rst:28
-msgid "Playhead"
+msgid "Sets the volume of the metronome."
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:29
-msgid "Current playhead position, in bars.beats.sixteenths.ticks"
+msgid "Return to cue point on stop"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:29
+msgid "Toggles whether to return to the cue point when playback stops."
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:31
-msgid "Transport buttons"
+msgid "BPM"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:31
-msgid "Controls for stopping, playback, recording, etc."
+#: ../../zrythm-interface/transport-bar.rst:32
+msgid "Song tempo (beats per minute)."
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:33
+msgid "Playhead"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:34
+msgid "Current playhead position, in bars.beats.sixteenths.ticks."
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:36
+msgid "Transport buttons"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:36
+msgid "Controls for stopping, playback, recording, etc."
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:38
 msgid ""
 "Widgets like the BPM meter can be changed by clicking and dragging, or by"
 " hovering over them with the cursor and scrolling"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:37
+#: ../../zrythm-interface/transport-bar.rst:42
 msgid ""
 "More information about working with the transport bar is covered in :ref"
 ":`transport-controls`."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:41
+#: ../../zrythm-interface/transport-bar.rst:46
 msgid "Backend Information"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:42
+#: ../../zrythm-interface/transport-bar.rst:47
 msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
@@ -1230,5 +1246,22 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The MIDI In widget shows the MIDI"
+#~ " activity of auto-connected MIDI "
+#~ "devices and the live waveform display"
+#~ " shows the audio waveform from the"
+#~ " master output."
+#~ msgstr ""
+
+#~ msgid "Toggles the metronome on/off"
+#~ msgstr ""
+
+#~ msgid "Song tempo (beats per minute)"
+#~ msgstr ""
+
+#~ msgid "Current playhead position, in bars.beats.sixteenths.ticks"
 #~ msgstr ""
 

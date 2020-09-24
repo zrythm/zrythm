@@ -26,14 +26,20 @@ sections. Some tracks are special, like the
 which contain chords and markers respectively.
 
 .. important:: In Zrythm, group tracks are used for
-   grouping signals (direct routing), FX/bus tracks are
-   used for effects/sends, and folder tracks are used for
-   putting tracks under the same folder and doing
-   common operations. This is different from what many
-   other DAWs do, so please keep this in mind.
+  grouping signals (direct routing), FX/bus tracks
+  are used for effects/sends, and folder tracks
+  (coming soon) are  used for
+  putting tracks under the same folder and
+  performing common operations.
 
-   If you have used Cubase before, you might find this easy
-   to get used to.
+  Moreover, Zrythm uses Instrument tracks for
+  instrument plugins, such as synthesizers, and
+  MIDI tracks for MIDI plugins, such as a
+  MIDI arpegiator.
+
+  This is different from what many
+  other DAWs (see :term:`DAW`) do, so please keep
+  this in mind.
 
 Track Interface
 ---------------

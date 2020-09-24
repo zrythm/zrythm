@@ -36,7 +36,7 @@ Print track names
             (loop (+ i 1)))))))
 
 Create Geonkick track and route its mono output to an Audio FX track
----------------------
+--------------------------------------------------------------------
 
 .. code-block:: scheme
 

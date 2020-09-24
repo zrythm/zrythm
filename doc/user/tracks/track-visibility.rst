@@ -13,5 +13,4 @@ toggling the visibility of tracks.
 .. image:: /_static/img/track-visibility.png
    :align: center
 
-Tracks can also be quickly hidden by right-clicking and
-selecting `Hide`.
+Tracks can also be quickly hidden with :menuselection:`Right click --> Hide`.

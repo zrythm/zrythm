@@ -24,28 +24,11 @@ causes Zrythm to crash.
 Viewing the Current Settings
 ----------------------------
 
-The :program:`zrythm` binary comes with a ``--print-settings`` option
-(see :ref:`command-line-options` for more details) that
-prints the whole configuration to the command line. In
-combination with the ``--pretty`` option (ie,
-``zrythm --print-settings --pretty`` or
-``zrythm -p --pretty`` for short), you can get output
-like the following.
-
-.. image:: /_static/img/print-settings.png
-   :align: center
-
-This feature is mostly added for debugging purposes and
-to help us identify problems with user configurations, but
-feel free to use it if you are curious.
+See :option:`zrythm --print-settings`.
 
 Reset to Factory Settings
 -------------------------
 
-The :program:`zrythm` binary also comes with a
-``--reset-to-factory`` option for
-resetting Zrythm to its default state.
+See :option:`zrythm --reset-to-factory`.
 
-.. warning:: This will clear ALL your settings.
-
-.. note:: This will be added on the UI soon.
+.. note:: This will be added to the UI soon.

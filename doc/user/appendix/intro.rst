@@ -10,6 +10,7 @@ Appendix
 
    shortcut-keys
    menu-actions
+   environment
    files-and-directories
    troubleshooting
    gnu-free-documentation-license

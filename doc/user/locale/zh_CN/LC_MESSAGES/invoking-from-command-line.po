@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 15:10+0100\n"
+"POT-Creation-Date: 2020-09-24 20:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,52 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../invoking-from-command-line/intro.rst:8
+#: ../../invoking-from-command-line/intro.rst:10
 msgid "Command Line"
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:10
-msgid "TODO"
+#: ../../invoking-from-command-line/intro.rst:12
+msgid ""
+"Zrythm comes with a few utilities below that can be used from the "
+":term:`CLI`."
 msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:16
+msgid "zrythm"
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:22
+msgid "Prints a list of available options."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:26
+msgid "Pretty-prints the output (where applicable)."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:30
+msgid ""
+"Prints all the user settings. Can be combined with :option:`--pretty` to "
+"get pretty-printed output, like below."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:39
+msgid "Resets user settings to their default values."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:41
+msgid ""
+"Only affects the settings printed with :option:`-p`. This will *not* "
+"affect any files in the :term:`Zrythm user path`."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:46
+msgid "This will clear ALL your user settings."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:51
+msgid "Prints the Zrythm version."
+msgstr ""
+
+#~ msgid "TODO"
+#~ msgstr ""
 

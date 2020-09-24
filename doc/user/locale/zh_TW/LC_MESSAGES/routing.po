@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-23 13:44+0100\n"
+"POT-Creation-Date: 2020-09-24 22:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,7 +73,7 @@ msgstr ""
 #: ../../routing/making-connections.rst:15
 msgid ""
 "Connections can be made by double clicking on ports in the :ref:`track-"
-"inspector` or the :ref:`plugin-inspector`."
+"inspector` or the :ref:`plugin-inspector-page`."
 msgstr ""
 
 #: ../../routing/making-connections.rst:22
@@ -199,4 +199,10 @@ msgid ""
 "When ports are connected, the signal from the source port is added to the"
 " destination port during processing."
 msgstr ""
+
+#~ msgid ""
+#~ "Connections can be made by double "
+#~ "clicking on ports in the :ref:`track-"
+#~ "inspector` or the :ref:`plugin-inspector`."
+#~ msgstr ""
 

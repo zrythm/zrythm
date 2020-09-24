@@ -19,50 +19,6 @@ if sphinx_build.found () and sphinx_intl.found ()
 
 sphinx_builddir = meson.current_build_dir () / '_build'
 
-src_rst_files = files ([
-  'index.rst',
-  ])
-
-# create run targets for each lang/format combination
-# and custom targets for each language for html
-html_manuals = []
-singlehtml_manuals = []
-foreach lang : locales
-  foreach format : [
-    'html', 'singlehtml', 'latex', 'epub' ]
-
-    name = format + '-manual-' + lang
-    output_dir =  sphinx_builddir / lang / format
-    #output_dir =  meson.current_build_dir () / lang / format
-    command = [
-      sphinx_build, '-D', 'language=' + lang,
-      '-b', format, meson.current_source_dir (),
-      output_dir, '&&', 'touch', '@OUTPUT@',
-      ]
-
-    run_target (name, command: command)
-
-    if format == 'html' or format == 'singlehtml'
-      html_manual = custom_target (
-        name,
-        depend_files: [
-          'conf.py', src_rst_files,
-          ],
-        output: name,
-        command: command,
-        install: get_option ('user_manual'),
-        install_dir: docdir,
-        build_by_default: get_option ('user_manual'),
-        )
-      if format == 'html'
-        html_manuals += html_manual
-      elif format == 'singlehtml'
-        singlehtml_manuals += html_manual
-      endif
-    endif
-  endforeach
-endforeach
-
 # Create custom targets (each API .rst file) and save
 # them in guile_docs
 guile_docs = []
@@ -136,6 +92,54 @@ copy_guile_docs_target = custom_target (
   depends: [
     guile_docs,
     ])
+
+src_rst_files = files ([
+  'index.rst',
+  ])
+
+# create run targets for each lang/format combination
+# and custom targets for each language for html
+html_manuals = []
+singlehtml_manuals = []
+foreach lang : locales
+  foreach format : [
+    'html', 'singlehtml', 'latex', 'epub' ]
+
+    name = format + '-manual-' + lang
+    output_dir =  sphinx_builddir / lang / format
+    #output_dir =  meson.current_build_dir () / lang / format
+    command = [
+      sphinx_build, '-D', 'language=' + lang,
+      '-b', format, meson.current_source_dir (),
+      output_dir, '&&', 'touch', '@OUTPUT@',
+      ]
+
+    run_target (
+      name,
+      command: command,
+      depends: copy_guile_docs_target)
+
+    if format == 'html' or format == 'singlehtml'
+      html_manual = custom_target (
+        name,
+        depend_files: [
+          'conf.py', src_rst_files,
+          ],
+        output: name,
+        command: command,
+        install: get_option ('user_manual'),
+        install_dir: docdir,
+        build_by_default: get_option ('user_manual'),
+        depends: copy_guile_docs_target,
+        )
+      if format == 'html'
+        html_manuals += html_manual
+      elif format == 'singlehtml'
+        singlehtml_manuals += html_manual
+      endif
+    endif
+  endforeach
+endforeach
 
 # Generate POT files in the build dir
 #

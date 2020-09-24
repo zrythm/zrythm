@@ -30,17 +30,19 @@ Project.
 
 .. tip:: A blank template is available, and you can
   create your own templates by copying a project
-  directory to :file:`{ZRYTHM_USER_DIR}/templates`.
+  directory under :file:`templates` in the
+  :term:`Zrythm user path`.
 
-Once a template (or blank) is selected and you click :guilabel:`Apply`,
-Zrythm will ask you for a parent directory to save the Project
-in and a title for the Project.
+Once a template (or blank) is selected and you click
+:guilabel:`Apply`, Zrythm will ask you for a parent
+directory to save the project in and a title for
+the project.
 
 .. image:: /_static/img/create_new_project.png
    :align: center
 
-Once you accept, the new Project will be set up and you will be
-ready to go.
+Once you accept, the new project will be set up and
+you will be ready to go.
 
 Saving Projects
 ---------------
@@ -66,4 +68,5 @@ if you want to load them instead.
 The auto-save interval can be changed (or disabled) in the preferences
 window.
 
-.. tip:: The backups are saved in the project's directory, under :file:`backups`.
+.. tip:: The backups are saved in the project's
+  directory, under :file:`backups`.

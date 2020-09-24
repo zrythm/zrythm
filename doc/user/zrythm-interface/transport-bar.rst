@@ -15,18 +15,23 @@ and transport controls.
 
 Transport Controls
 ------------------
-Transport controls change the behavior of playback. They
-include the following items.
+Transport controls change the behavior of playback.
+They include the following items.
 
-.. image:: /_static/img/transport_bar.png
+.. image:: /_static/img/transport-controls.png
    :align: center
 
 Metronome toggle
-  Toggles the metronome on/off
+  Toggles the metronome on/off.
+Metronome options
+  Sets the volume of the metronome.
+Return to cue point on stop
+  Toggles whether to return to the cue point when
+  playback stops.
 BPM
-  Song tempo (beats per minute)
+  Song tempo (beats per minute).
 Playhead
-  Current playhead position, in bars.beats.sixteenths.ticks
+  Current playhead position, in bars.beats.sixteenths.ticks.
 Transport buttons
   Controls for stopping, playback, recording, etc.
 

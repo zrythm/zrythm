@@ -9,7 +9,8 @@
 Marker Track
 ============
 
-The marker track holds song markers that
+The marker track holds song markers - either custom
+or pre-defined ones - that
 make it easier to jump to or to export specific
 sections of the song. Each project can only
 have one marker track and it cannot be deleted

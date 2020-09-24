@@ -14,7 +14,7 @@ a filter plugin's cutoff parameter.
 
 Connections can be made by double clicking on ports
 in the :ref:`track-inspector` or the
-:ref:`plugin-inspector`.
+:ref:`plugin-inspector-page`.
 
 .. image:: /_static/img/port_connections.png
    :align: center

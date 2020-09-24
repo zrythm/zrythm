@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-09 18:46+0100\n"
+"POT-Creation-Date: 2020-09-24 22:19+0100\n"
 "PO-Revision-Date: 2019-12-19 16:46+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: de\n"
@@ -174,36 +174,38 @@ msgstr ""
 #, fuzzy
 msgid ""
 "A blank template is available, and you can create your own templates by "
-"copying a project directory to :file:`{ZRYTHM_USER_DIR}/templates`."
+"copying a project directory under :file:`templates` in the :term:`Zrythm "
+"user path`."
 msgstr ""
 "Eine leere Vorlage ist verfügbar, aber du kannst deine eigenen Vorlagen "
 "erstellen, indem du einen Projektordner in das Verzeichnis ``Templates`` "
 "im Zrythm-Installationspfad kopierst."
 
-#: ../../projects/saving-loading.rst:35
+#: ../../projects/saving-loading.rst:36
 #, fuzzy
 msgid ""
 "Once a template (or blank) is selected and you click :guilabel:`Apply`, "
-"Zrythm will ask you for a parent directory to save the Project in and a "
-"title for the Project."
+"Zrythm will ask you for a parent directory to save the project in and a "
+"title for the project."
 msgstr ""
 "Sobald eine Vorlage (oder Leer) ausgewählt wurde und du auf "
 ":zbutton:`Anwenden` klickst, fragt Zrythm nach einem übergeordneten "
 "Verzeichnis zum Speichern des Projekts und einem Titel für das Projekt."
 
-#: ../../projects/saving-loading.rst:42
+#: ../../projects/saving-loading.rst:44
+#, fuzzy
 msgid ""
-"Once you accept, the new Project will be set up and you will be ready to "
+"Once you accept, the new project will be set up and you will be ready to "
 "go."
 msgstr ""
 "Sobald du zugestimmt hast, wird das neue Projekt eingerichtet und du bist"
 " bereit loszulegen."
 
-#: ../../projects/saving-loading.rst:46
+#: ../../projects/saving-loading.rst:48
 msgid "Saving Projects"
 msgstr "Speichern von Projekten"
 
-#: ../../projects/saving-loading.rst:48
+#: ../../projects/saving-loading.rst:50
 #, fuzzy
 msgid ""
 "Saving works as you would expect: :guilabel:`Save As...` will save the "
@@ -214,17 +216,17 @@ msgstr ""
 "unter…` speichert das Projekt an einem neuen Ort und :zbutton:`Speichern`"
 " speichert das Projekt am vorherigen Ort."
 
-#: ../../projects/saving-loading.rst:52
+#: ../../projects/saving-loading.rst:54
 msgid "When saving projects, Zrythm expects you to give it a directory"
 msgstr ""
 "Beim Speichern von Projekten erwartet Zrythm, dass du ihm ein Verzeichnis"
 " angibst"
 
-#: ../../projects/saving-loading.rst:56
+#: ../../projects/saving-loading.rst:58
 msgid "Automatic Backups"
 msgstr "Automatische Sicherungen"
 
-#: ../../projects/saving-loading.rst:58
+#: ../../projects/saving-loading.rst:60
 msgid ""
 "Zrythm has an option to auto-save the current project as a back-up. When "
 "launching Zrythm and selecting to load your project, Zrythm will let you "
@@ -236,7 +238,7 @@ msgstr ""
 "möchtest, wird Zrythm darüber informieren, ob es neuere Sicherungen "
 "dieses Projekts gibt, und fragen, ob du sie stattdessen laden möchtest."
 
-#: ../../projects/saving-loading.rst:66
+#: ../../projects/saving-loading.rst:68
 msgid ""
 "The auto-save interval can be changed (or disabled) in the preferences "
 "window."
@@ -244,7 +246,7 @@ msgstr ""
 "Das Intervall für die automatische Speicherung kann im "
 "Einstellungsfenster geändert (oder deaktiviert) werden."
 
-#: ../../projects/saving-loading.rst:69
+#: ../../projects/saving-loading.rst:71
 #, fuzzy
 msgid "The backups are saved in the project's directory, under :file:`backups`."
 msgstr ""

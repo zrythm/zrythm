@@ -1,6 +1,6 @@
-=================
+==================================
 audio track
-=================
+==================================
 
 Scheme Procedure: **midi-track-new** *idx name*
    Returns a new track with name name to be placed at position idx in

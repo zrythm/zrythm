@@ -1,6 +1,6 @@
-=================
+==================================
 actions create_tracks_action
-=================
+==================================
 
 Scheme Procedure: **create-tracks-action-new-with-plugin** *type pl_descr track_pos num_tracks*
    Returns a new Create Tracks action for a plugin.

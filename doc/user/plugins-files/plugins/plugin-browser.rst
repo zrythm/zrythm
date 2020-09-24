@@ -20,16 +20,17 @@ the Plugins. There are 3 tabs:
 
 Collection
   This tab contains your collections. You can create
-  collections such as "MySynths" and filter by the selected
-  collections.
+  collections such as "MySynths" and filter by the
+  selected collections.
 Category
-  Filter Plugins by category based on the plugin metadata,
-  such as "Delay", "Distortion", etc.
+  Filter plugins by category based on the plugin
+  metadata, such as "Delay", "Distortion", etc.
 Protocol
-  Allows you to filter plugins based their protocol (LV2 or
-  VST).
+  Allows you to filter plugins based their protocol
+  (eg., LV2 or SFZ).
 
-.. note:: Collections and Protocols are not operational at the moment.
+.. note:: Filtering by collections and protocols is
+  not operational at the moment.
 
 Filter Buttons
 --------------
@@ -63,11 +64,10 @@ to add it there or replace the previous plugin.
    :align: center
 
 If the plugin is a
-modulator, you can drop it into the Modulators Tab.
+modulator, you can drop it into the Modulators tab.
 
-.. note::
-  The Modulators tab is a work-in-progress. For the time being,
-  you can use them as regular effects.
+.. image:: /_static/img/drag-to-modulators-tab.png
+   :align: center
 
 Double Click/Enter
 ~~~~~~~~~~~~~~~~~~

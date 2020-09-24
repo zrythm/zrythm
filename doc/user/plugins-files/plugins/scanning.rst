@@ -7,26 +7,27 @@
 Scanning for Plugins
 ====================
 
-Zrythm will scan for plugins on startup and will remember
+Zrythm will scan for plugins on startup and will
+remember
 those plugins until it is closed. Zrythm supports
-LV2, VST2, VST3 and AU plugins. LV2 is the recommended
+:term:`LV2`, :term:`VST2`, :term:`VST3` and
+:term:`AU` plugins. LV2 is the recommended
 standard.
 
-SFZ and SF2 instruments are also supported, and they are
+:term:`SFZ` and :term:`SF2` instruments are also
+supported, and they are
 scanned as instrument plugins.
 
 .. tip:: Plugin scanning can be disabled by passing
-   ``NO_SCAN_PLUGINS=1`` when running Zrythm.
+   :envvar:`NO_SCAN_PLUGINS` when running Zrythm.
 
 LV2 Scan
 --------
 
-Zrythm will scan for LV2 plugins in the `standard paths
-specified
-here <https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. You can bypass this behavior by passing the
-:envvar:`LV2_PATH` environment variable to specify custom
-paths. For example,
-``LV2_PATH=$HOME/custom-lv2-dir zrythm``.
+Zrythm will scan for LV2 plugins in the
+`standard paths specified here <https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_.
+You can bypass this behavior by passing
+:envvar:`LV2_PATH`.
 
 VST2/VST3 Scan
 --------------
@@ -47,11 +48,8 @@ and VST3 plugins in the following paths.
 - :file:`/usr/local/lib/vst3`
 - :file:`/usr/lib/vst3`
 
-You can bypass this behavior by passing the
-:envvar:`VST_PATH` or :envvar:`VST3_PATH`
-environment variables to specify custom paths. For
-example,
-``VST_PATH=$HOME/custom-vst-dir zrythm``.
+You can bypass this behavior by passing
+:envvar:`VST_PATH` and :envvar:`VST3_PATH`.
 
 .. note:: If your system uses a libdir other than
    ``lib`` (for example ``lib64``), Zrythm will scan
@@ -70,20 +68,24 @@ specified in `VST plug-in locations on Mac OS X and macOS <https://helpcenter.st
 * :file:`/Library/Audio/Plug-Ins/VST` for VST2
 * :file:`/Library/Audio/Plug-Ins/VST3` for VST3
 
-.. note:: Since scanning VST plugins takes a long time, Zrythm
+.. note:: Zrythm
   will remember scanned VST plugins and save this
   information in
-  ``$ZRYTHM_PATH/cached_vst_descriptors.yaml``.
+  :file:`cached_plugin_descriptors.yaml` in the
+  :term:`Zrythm user path`.
 
   New plugins will be scanned on each start-up, and
-  you can delete or edit this file to force a re-scan of
-  previously scanned plugins.
+  you can delete or edit this file to force a
+  re-scan of previously scanned plugins.
 
 AU Scan
 -------
-On MacOS, AUs will be scanned at their default location ``/Library/Audio/Plug-Ins/Components``.
+On MacOS, :term:`AU` plugins will be scanned at
+their standard location at
+:file:`/Library/Audio/Plug-Ins/Components`.
 
 SFZ/SF2 Scan
 ------------
-SFZ and SF2 instruments will be scanned in all directories
+:term:`SFZ` and :term:`SF2` instruments will be
+scanned in all  directories
 and subdirectories specified in :ref:`vst-paths`.

@@ -29,13 +29,19 @@ for it.
 .. image:: /_static/img/haas_plugin_window.png
    :align: center
 
+.. note:: This only applies to :term:`LV2` plugins.
+   For other types of plugins, you can edit their
+   parameters in the plugin inspector page (see
+   :ref:`plugin-inspector-page`).
+
 Bridging
 --------
 Most plugins are instantiated in the same process
-as Zrythm. This has the advantage that DSP processing
+as Zrythm. This has the advantage that :term:`DSP`
 is very fast, however, some plugin UIs are not
 compatible with Zrythm
-and need to be bridged (run as separate processes).
+and need to be bridged (ie, run as separate
+processes).
 
 .. note:: When it is possible to bridge only the UI,
   Zrythm will do so, and this will not have any
@@ -44,5 +50,14 @@ and need to be bridged (run as separate processes).
   implications, since it is required to communicate
   with the plugin in another process.
 
-This process is transparent to the user and only mentioned
-here for reference.
+This process is transparent to the user and only
+mentioned for reference.
+
+Opening Plugins in Bridged Mode
+-------------------------------
+Sometimes, you may need to manually tell Zrythm
+to open plugins in a specific way. You can find the
+options available for each plugin by right clicking
+on the plugin in the :ref:`plugin-browser`.
+
+.. image:: /_static/img/open-plugin-bridged.png

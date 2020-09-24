@@ -99,10 +99,12 @@ VST plugins
   :ref:`scanning-plugins` for details.
 
 SFZ instruments
-  The search paths to scan for SFZ instruments in.
+  The search paths to scan for :term:`SFZ`
+  instruments in.
 
 SF2 instruments
-  The search paths to scan for SF2 instruments in.
+  The search paths to scan for :term:`SF2`
+  instruments in.
 
 DSP
 ---
@@ -135,7 +137,8 @@ Pan algorithm
      :red:`square root`, :green:`linear`).
 
 Pan law
-  The pan law to use when applying pan on mono signals.
+  The :term:`pan law` to use when applying pan on
+  mono signals.
 
 Editing
 -------
@@ -159,7 +162,8 @@ Automation
 Automation editing.
 
 Curve algorithm
-  Default curve algorithm to use for automation curves.
+  Default curve algorithm to use for automation
+  curves.
 
 Undo
 ~~~~
@@ -167,7 +171,8 @@ Undo
 Undo options.
 
 Undo stack length
-  Maximum undo history stack length. Set to -1 for unlimited.
+  Maximum undo history stack length. Set to -1 for
+  unlimited.
 
 .. note:: We recommend leaving it at 128.
 
@@ -186,8 +191,8 @@ General
 General project settings.
 
 Autosave interval
-  Interval to auto-save projects, in minutes. Auto-saving
-  will be disabled if this is set to 0.
+  Interval to auto-save projects, in minutes.
+  Auto-saving will be disabled if this is set to 0.
 
 .. note:: This refers to automatic back-ups. The main project
   will not be overwritten unless you explicitly save it.

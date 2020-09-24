@@ -124,6 +124,7 @@ Preferences
   Shows the preferences dialog. See :ref:`preferences` for more
   information.
 
-The MIDI In widget shows the MIDI activity of auto-connected
-MIDI devices and the live waveform display shows the audio
-waveform from the master output.
+The MIDI In widget shows the :term:`MIDI` activity
+of auto-connected MIDI devices and the live waveform
+display shows the audio waveform from the master
+output.

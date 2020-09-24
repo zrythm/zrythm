@@ -15,7 +15,8 @@ The chord pad contains 12 pads (1 for each key on a
 piano keyboard) that can be used to trigger chords.
 The chord pad can be found in the bottom panel.
 
-.. note:: This is a TODO feature.
+.. image:: /_static/img/chord-pad.png
+   :align: center
 
 Chord Track
 -----------
