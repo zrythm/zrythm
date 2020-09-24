@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-09-22 18:08+0000\n"
-"Last-Translator: ilya7 <mrzarp@protonmail.com>\n"
+"PO-Revision-Date: 2020-09-24 21:18+0000\n"
+"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/ru/>\n"
 "Language: ru\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:6
 msgid "Additional Settings"
-msgstr ""
+msgstr "Дополнительные настройки"
 
 #: ../../configuration/additional-settings.rst:8
 msgid ""
@@ -107,11 +107,11 @@ msgstr "Скоро это будет добавлено в пользовате�
 
 #: ../../configuration/device-setup/intro.rst:6
 msgid "Device Setup"
-msgstr ""
+msgstr "Настройка устройства"
 
 #: ../../configuration/device-setup/intro.rst:9
 msgid "Connecting MIDI and Audio Devices"
-msgstr ""
+msgstr "Подключение MIDI и аудио (Audio) устройств"
 
 #: ../../configuration/device-setup/intro.rst:11
 msgid ""
@@ -130,7 +130,7 @@ msgstr ""
 
 #: ../../configuration/device-setup/intro.rst:22
 msgid "Auto-Connecting Devices"
-msgstr ""
+msgstr "Автоматическое подключение устройств"
 
 #: ../../configuration/device-setup/intro.rst:24
 msgid ""
@@ -139,6 +139,10 @@ msgid ""
 "transport, Zrythm has an option to select these devices to auto-connect "
 "to on launch."
 msgstr ""
+"Для других типов устройств, которые не связаны с определенными дорожками "
+"(Track), таких как устройства, которые отправляют глобальные MIDI-сообщения "
+"и устройства, управляющие транспортом, Zrythm имеет возможность выбрать эти "
+"устройства для автоматического подключения при запуске."
 
 #: ../../configuration/device-setup/intro.rst:30
 msgid ""
@@ -150,7 +154,7 @@ msgstr ""
 
 #: ../../configuration/device-setup/intro.rst:34
 msgid "JACK"
-msgstr "ДЖЕК"
+msgstr "JACK"
 
 #: ../../configuration/device-setup/intro.rst:36
 msgid ""
@@ -177,7 +181,7 @@ msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:6
 msgid "First Run Wizard"
-msgstr ""
+msgstr "Окно первого запуска (First Run Wizard)"
 
 #: ../../configuration/first-run-wizard.rst:8
 msgid ""
@@ -186,10 +190,14 @@ msgid ""
 "devices, the default Zrythm path, interface language and audio/MIDI "
 "backends."
 msgstr ""
+"При первом запуске Zrythm отобразится окно, позволяющее настроить основные "
+"настройки, которые будет использовать Zrythm. К ним относятся устройства "
+"MIDI, путь Zrythm по умолчанию, язык интерфейса и аудио/MIDI бэкэнды "
+"(Backends)."
 
 #: ../../configuration/first-run-wizard.rst:14
 msgid "Language Selection"
-msgstr ""
+msgstr "Выбор языка (Language)"
 
 #: ../../configuration/first-run-wizard.rst:19
 msgid ""
@@ -197,6 +205,8 @@ msgid ""
 "already translated in multiple languages, so choose the language you are "
 "most comfortable in."
 msgstr ""
+"Zrythm позволяет вам выбрать язык интерфейса. Интерфейс уже переведен на "
+"несколько языков, поэтому выберите наиболее удобный для вас язык."
 
 #: ../../configuration/first-run-wizard.rst:23
 msgid "You must have a locale enabled for the language you want to use."
@@ -206,7 +216,7 @@ msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:27
 msgid "Path"
-msgstr ""
+msgstr "Путь (Path)"
 
 #: ../../configuration/first-run-wizard.rst:32
 msgid ""
