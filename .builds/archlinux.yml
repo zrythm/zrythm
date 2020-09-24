@@ -24,6 +24,7 @@ packages:
   - python-sphinx
   - ladspa
   - lv2
+  - python-pip
   - rubberband
   - sed
   - xdg-utils
@@ -39,6 +40,7 @@ secrets:
   - ffff20bf-6fd3-40d6-b26a-92f6c8dc1fcf
 tasks:
   - setup: |
+      sudo pip3 install sphinx-intl
       cd zrythm
       ../meson/meson.py build -Dtests=true -Dmanpage=true -Dffmpeg=enabled -Db_coverage=true
   - build: |
