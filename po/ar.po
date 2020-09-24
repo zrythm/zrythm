@@ -496,9 +496,9 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s%-s حقوق النشر (C) 2018-2020 المساهمون في Zrythm\n"
+"%s-%s حقوق النشر (C) 2018-2020 المساهمون في Zrythm\n"
 "\n"
-"يأتي٪s بدون أي ضمانات على الإطلاق!\n"
+"يأتي%s بدون أي ضمانات على الإطلاق!\n"
 "\n"
 "هذا برنامج مجاني ، وأنت مدعو لإعادة توزيعه\n"
 "تحت ظروف معينة. راجع ملف \"النسخ\" للحصول على التفاصيل.\n"
@@ -518,7 +518,7 @@ msgstr "تحميل المشروع"
 #: src/zrythm_app.c:276
 #, c-format
 msgid "No project has been selected. %s will now close."
-msgstr "لم يتم اختيار مشروع. s٪ سيتم إغلاق الآن."
+msgstr "لم يتم اختيار مشروع. %s سيتم إغلاق الآن."
 
 #: src/zrythm_app.c:299
 msgid "Initializing settings"

@@ -38,3 +38,12 @@ collect_translatables = run_target (
     meson.source_root () / 'scripts' / 'collect_translatables.sh',
     ],
   )
+
+# test PO files for errors
+foreach lang : locales
+  if msgfmt.found () and lang != 'en'
+    test (
+      lang + '-po', msgfmt,
+      args: [ '-v', '-c', files (lang + '.po') ])
+  endif
+endforeach

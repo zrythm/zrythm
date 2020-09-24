@@ -185,6 +185,7 @@ cc = meson.get_compiler ('c')
 find_program ('sed')
 find_program ('gettext')
 bash = find_program ('bash')
+msgfmt = find_program ('msgfmt', required: false)
 dot_bin = find_program ('dot', required: false)
 
 # find plugins for testing
