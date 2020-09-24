@@ -897,7 +897,7 @@ msgstr "これらの設定の一部の変更を適用するには、Zrythm を�
 #~ msgstr ""
 
 #~ msgid "The directory to save user data in."
-#~ msgstr ""
+#~ msgstr "ユーザー データを保存するディレクトリ。"
 
 #~ msgid "Open plugin NUIs when they are instantiated."
 #~ msgstr ""
@@ -940,45 +940,6 @@ msgstr "これらの設定の一部の変更を適用するには、Zrythm を�
 #~ "with a ``--reset-to-factory`` option "
 #~ "for resetting Zrythm to its default "
 #~ "state."
-#~ msgstr ""
-
-#~ msgid "This will clear ALL your settings."
-#~ msgstr ""
-
-#~ msgid "This will be added on the UI soon."
-#~ msgstr ""
-
-#~ msgid "The search paths to scan for SFZ instruments in."
-#~ msgstr ""
-
-#~ msgid "The search paths to scan for SF2 instruments in."
-#~ msgstr ""
-
-#~ msgid "The pan law to use when applying pan on mono signals."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The :program:`zrythm` binary comes with "
-#~ "an option :option:`--print-settings` that "
-#~ "prints the whole configuration to the"
-#~ " command line. See :ref:`command-line` "
-#~ "for details."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The :program:`zrythm` binary also comes "
-#~ "with a :option:`--reset-to-factory` "
-#~ "option for resetting Zrythm to its "
-#~ "default state. See :ref:`command-line` "
-#~ "for details."
-#~ msgstr ""
-
-#~ msgid "The directory to save user data in."
-#~ msgstr "ユーザー データを保存するディレクトリ。"
-
-#~ msgid ""
-#~ "The :program:`zrythm` binary also comes with a ``--reset-to-factory`` "
-#~ "option for resetting Zrythm to its default state."
 #~ msgstr ""
 
 #~ msgid "This will clear ALL your settings."

@@ -712,8 +712,3 @@ msgstr ""
 #~ "scanned in all directories and "
 #~ "subdirectories specified in :ref:`vst-paths`."
 #~ msgstr ""
-
-#~ msgid ""
-#~ "SFZ and SF2 instruments will be scanned in all directories and "
-#~ "subdirectories specified in :ref:`vst-paths`."
-#~ msgstr ""
