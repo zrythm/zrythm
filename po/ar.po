@@ -4,22 +4,23 @@
 # Weblate <noreply@weblate.org>, 2019.
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
 # YoGo <officialyogomusic@gmail.com>, 2020.
+# Alexandros Theodotou <alextee@posteo.net>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-24 00:55+0100\n"
-"PO-Revision-Date: 2020-07-29 15:41+0000\n"
-"Last-Translator: YoGo <officialyogomusic@gmail.com>\n"
-"Language-Team: Arabic <https://hosted.weblate.org/projects/zrythm/zrythm/ar/"
-">\n"
+"PO-Revision-Date: 2020-09-24 02:45+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Arabic <https://hosted.weblate.org/projects/zrythm/zrythm/ar/>"
+"\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:212
@@ -2563,7 +2564,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:98 resources/ui/header.ui:92
 msgid "Project"
-msgstr ""
+msgstr "المشروع"
 
 #: resources/gtk/help-overlay.ui:110
 msgid "Open a project"
@@ -3578,7 +3579,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:533
 #: build/data/org.zrythm.Zrythm.gschema.xml:568
 msgid "Plugins"
-msgstr ""
+msgstr "الإضافات"
 
 #: resources/ui/preferences.ui:390
 msgid "Always open plugin UIs"

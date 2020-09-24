@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-08 21:36+0000\n"
+"PO-Revision-Date: 2020-09-24 21:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../zrythm-interface/bottom-panel.rst:8
@@ -30,7 +31,6 @@ msgid ""
 msgstr "下部パネルには、様々なエディタ(ピアノロールやオートメーションエディタなど)、ミキサーやコードパッドが含まれています。"
 
 #: ../../zrythm-interface/bottom-panel.rst:18
-#, fuzzy
 msgid "Editor"
 msgstr "エディター"
 
@@ -82,9 +82,8 @@ msgid "The automation editor is covered in detail in :ref:`automation-editor`."
 msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:57
-#, fuzzy
 msgid "Audio Editor"
-msgstr "オートメーションエディター"
+msgstr "オーディオエディター"
 
 #: ../../zrythm-interface/bottom-panel.rst:58
 msgid ""
@@ -138,7 +137,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:17
 msgid "Track Inspector"
-msgstr ""
+msgstr "トラックインスペクター"
 
 #: ../../zrythm-interface/left-panel.rst:19
 msgid ""
@@ -194,8 +193,9 @@ msgid ""
 msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:58
+#, fuzzy
 msgid "Track Visibility"
-msgstr ""
+msgstr "トラックの可視性"
 
 #: ../../zrythm-interface/left-panel.rst:60
 msgid "See :ref:`track-visibility`."
@@ -267,7 +267,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save the current project at its current location."
@@ -283,7 +283,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load"
-msgstr ""
+msgstr "読み込む"
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load a project."
@@ -387,7 +387,7 @@ msgstr "バグ報告、寄付、チャットなどのリンク。"
 
 #: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Chat"
-msgstr ""
+msgstr "チャット"
 
 #: ../../zrythm-interface/main-toolbar.rst:96
 msgid "Join the Zrythm chatroom on Matrix."
@@ -395,7 +395,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Manual"
-msgstr ""
+msgstr "マニュアル"
 
 #: ../../zrythm-interface/main-toolbar.rst:98
 msgid "View the user manual."
@@ -403,7 +403,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:99
 msgid "News"
-msgstr ""
+msgstr "ニュース"
 
 #: ../../zrythm-interface/main-toolbar.rst:100
 msgid "Show the latest changelog."
@@ -419,7 +419,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:103
 msgid "Donate"
-msgstr ""
+msgstr "寄付する"
 
 #: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Donate to Zrythm through LiberaPay."
@@ -463,7 +463,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:125
 msgid "Preferences"
-msgstr ""
+msgstr "設定"
 
 #: ../../zrythm-interface/main-toolbar.rst:124
 msgid "Shows the preferences dialog. See :ref:`preferences` for more information."
@@ -541,9 +541,8 @@ msgid ""
 msgstr "ステータス バーには、現在アクティブなオーディオ バックエンドに関する情報が表示されます。"
 
 #: ../../zrythm-interface/transport-bar.rst:17
-#, fuzzy
 msgid "Transport Controls"
-msgstr "トランスポートのボタン"
+msgstr "トランスポート コントロール"
 
 #: ../../zrythm-interface/transport-bar.rst:18
 #, fuzzy

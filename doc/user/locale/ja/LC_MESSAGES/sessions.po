@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: 2020-01-24 23:02+0000\n"
+"PO-Revision-Date: 2020-09-24 21:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualsessions/ja/>\n"
@@ -17,16 +17,16 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.6.0\n"
 
 #: ../../sessions/importing-exporting/importing-exporting-audio.rst:2
 msgid "Importing/Exporting Audio"
-msgstr ""
+msgstr "オーディオのインポート/エクスポート"
 
 #: ../../sessions/importing-exporting/importing-exporting-midi.rst:2
 msgid "Importing/Exporting MIDI"
-msgstr ""
+msgstr "MIDI のインポート/エクスポート"
 
 #: ../../sessions/importing-exporting/intro.rst:2
 msgid "Importing and Exporting"
@@ -34,11 +34,11 @@ msgstr ""
 
 #: ../../sessions/intro.rst:2
 msgid "Sessions"
-msgstr ""
+msgstr "セッション"
 
 #: ../../sessions/session-info.rst:2
 msgid "Session Info"
-msgstr ""
+msgstr "セッション情報"
 
 #: ../../sessions/session-management-and-compatibility.rst:2
 msgid "Session Management and Compatibility"
@@ -46,7 +46,7 @@ msgstr ""
 
 #: ../../sessions/tracks/adding-tracks.rst:2
 msgid "Adding Tracks"
-msgstr ""
+msgstr "トラックの追加"
 
 #: ../../sessions/tracks/adding-tracks.rst:4
 msgid ""
@@ -71,7 +71,7 @@ msgstr "トラック"
 
 #: ../../sessions/tracks/reordering-tracks.rst:2
 msgid "Reordering Tracks"
-msgstr ""
+msgstr "トラックの並び替え"
 
 #: ../../sessions/tracks/track-context-menu.rst:2
 msgid "Track Context Menu"
@@ -79,7 +79,7 @@ msgstr ""
 
 #: ../../sessions/tracks/track-overview.rst:2
 msgid "Track Overview"
-msgstr ""
+msgstr "トラックの概要"
 
 #: ../../sessions/tracks/track-overview.rst:4
 msgid "Tracks contain regions and automation that is used to make up the song."
@@ -87,7 +87,7 @@ msgstr ""
 
 #: ../../sessions/tracks/track-types.rst:2
 msgid "Track Types"
-msgstr ""
+msgstr "トラックの種類"
 
 #: ../../sessions/tracks/track-types.rst:4
 msgid "The following track types exist:"
@@ -111,7 +111,7 @@ msgstr ""
 
 #: ../../sessions/tracks/track-types.rst:10
 msgid "Bus Track"
-msgstr ""
+msgstr "FXトラック"
 
 #: ../../sessions/tracks/track-types.rst:11
 msgid "a track corresponding to a mixer bus. bus tracks only contain automation"
@@ -119,7 +119,7 @@ msgstr ""
 
 #: ../../sessions/tracks/track-types.rst:12
 msgid "Master Track"
-msgstr ""
+msgstr "マスタートラック"
 
 #: ../../sessions/tracks/track-types.rst:13
 msgid ""

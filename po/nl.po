@@ -2,20 +2,22 @@
 # Copyright (C) 2019 THE zrythm'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # alex <alex@zrythm.org>, 2019.
-#
+# Alexandros Theodotou <alextee@posteo.net>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-24 00:55+0100\n"
-"PO-Revision-Date: 2019-05-04 17:39+0100\n"
-"Last-Translator: alex <alex@zrythm.org>\n"
-"Language-Team: Dutch\n"
+"PO-Revision-Date: 2020-09-24 02:45+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/zrythm/zrythm/nl/>"
+"\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:212
@@ -3539,7 +3541,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:533
 #: build/data/org.zrythm.Zrythm.gschema.xml:568
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: resources/ui/preferences.ui:390
 msgid "Always open plugin UIs"

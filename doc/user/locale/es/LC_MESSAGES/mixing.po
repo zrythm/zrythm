@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-02-26 11:33+0000\n"
-"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"PO-Revision-Date: 2020-09-24 02:45+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualmixing/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish "
-"<https://hosted.weblate.org/projects/zrythm/manualmixing/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../mixing/channels.rst:6
@@ -28,7 +29,7 @@ msgstr "Canales"
 #: ../../mixing/channels.rst:7
 #: ../../mixing/overview.rst:38
 msgid "A channel is part of a track, if the track type has a channel."
-msgstr ""
+msgstr "Un canal es parte de una pista, si el tipo de pista tiene un canal."
 
 #: ../../mixing/channels.rst:13
 #: ../../mixing/overview.rst:44
@@ -41,7 +42,7 @@ msgstr ""
 #: ../../mixing/channels.rst:19
 #: ../../mixing/overview.rst:50
 msgid "Changing the Track Name"
-msgstr ""
+msgstr "Cambiando el nombre de la pista"
 
 #: ../../mixing/channels.rst:20
 #: ../../mixing/overview.rst:51
@@ -49,6 +50,8 @@ msgid ""
 "The name of the track the channel corresponds to can be changed by double"
 " clicking the name at the top of the channel."
 msgstr ""
+"El nombre del canal al que la pista corresponde puede ser cambiado haciendo "
+"doble click en el nombre arriba del canal."
 
 #: ../../mixing/channels/channel-overview.rst:6
 msgid "Channel Overview"
@@ -234,4 +237,3 @@ msgstr ""
 
 #~ msgid "TODO"
 #~ msgstr ""
-

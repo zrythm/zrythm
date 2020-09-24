@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-24 00:55+0100\n"
-"PO-Revision-Date: 2020-09-23 17:14+0000\n"
+"PO-Revision-Date: 2020-09-24 21:18+0000\n"
 "Last-Translator: xunil-cloud <freed602om@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
@@ -894,7 +894,7 @@ msgstr ""
 
 #: src/gui/widgets/plugin_strip_expander.c:152
 msgid "Inserts"
-msgstr ""
+msgstr "插件"
 
 #: src/gui/widgets/export_midi_file_dialog.c:83
 #, c-format
@@ -1447,7 +1447,7 @@ msgstr ""
 #: src/gui/widgets/automatable_selector_popover.c:368
 #, c-format
 msgid "[Insert %d] %s"
-msgstr ""
+msgstr "[插件 %d] %s"
 
 #: src/gui/widgets/automatable_selector_popover.c:389
 #, c-format
@@ -2044,11 +2044,11 @@ msgstr ""
 
 #: src/audio/automation_track.c:119
 msgid "Touch"
-msgstr ""
+msgstr "觸碰"
 
 #: src/audio/automation_track.c:122
 msgid "Latch"
-msgstr ""
+msgstr "鎖定"
 
 #: src/audio/channel_send.c:377
 msgid "Pre-fader send"
@@ -3419,6 +3419,13 @@ msgid ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
+"將建立以下檔案：\n"
+"\n"
+"Master.wav\n"
+"\n"
+"輸出路徑：\n"
+"\n"
+"/home/alex/Zrythm/Projects/project1/exports/20181023"
 
 #: resources/ui/export_dialog.ui:195
 msgid "Output Files"

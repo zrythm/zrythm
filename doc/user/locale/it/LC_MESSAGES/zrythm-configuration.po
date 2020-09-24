@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: 2019-09-02 00:20+0000\n"
-"Last-Translator: Swann Martinet <swann.ranskassa@laposte.net>\n"
+"PO-Revision-Date: 2020-09-24 02:45+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-configuration/it/>\n"
 "Language: it\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.6.0\n"
 
 #: ../../zrythm-configuration/device-setup/intro.rst:2
@@ -105,7 +105,7 @@ msgstr ""
 
 #: ../../zrythm-configuration/preferences/intro.rst:2
 msgid "Preferences"
-msgstr ""
+msgstr "Preferenze"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:2
 msgid "System Requirements"

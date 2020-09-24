@@ -8,11 +8,11 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 15:10+0100\n"
-"PO-Revision-Date: 2020-09-22 15:12+0000\n"
+"PO-Revision-Date: 2020-09-24 21:18+0000\n"
 "Last-Translator: ilya7 <mrzarp@protonmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
+"manualgetting-started/ru/>\n"
 "Language: ru\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm"
-"/manualgetting-started/ru/>\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
@@ -52,7 +52,7 @@ msgid ""
 "<https://github.com/webprofusion/OpenAudio>`_."
 msgstr ""
 "Для других систем вы можете найти `список свободных плагинов с открытым "
-"исходным кодом здесь <https://github.com/webprofusion/OpenAudio>` _."
+"исходным кодом здесь <https://github.com/webprofusion/OpenAudio>`_."
 
 #: ../../getting-started/getting-plugins.rst:24
 msgid "See :ref:`scanning-plugins` for paths where plugins will be scanned in."
@@ -66,10 +66,10 @@ msgid ""
 "recommend using the `KXstudio repositories <https://kx.studio/>`_, as "
 "there are many plugins that can easily be installed via apt."
 msgstr ""
-"Для пользователей дистрибутивов на основе Debian, таких как Ubuntu и "
-"Linux Mint, мы рекомендуем использовать `репозитории KXstudio "
-"<https://kx.studio/>`_,поскольку существует множество плагинов, которые "
-"можно легко установить через инструмент apt."
+"Для пользователей дистрибутивов на основе Debian, таких как Ubuntu и Linux "
+"Mint, мы рекомендуем использовать `репозитории KXstudio <https://kx.studio/>`"
+"_, поскольку существует множество плагинов, которые можно легко установить "
+"через инструмент apt."
 
 #: ../../getting-started/getting-plugins.rst:32
 msgid ""
@@ -100,9 +100,9 @@ msgid ""
 "Reverb, Compression, EQ and Saturation."
 msgstr ""
 "`ZAM Plugins <http://www.zamaudio.com/?p=976>`_ - это комплект эффектов, "
-"который содержит высококачественные плагины всех основных эффектов, таких"
-" как Эхо(Delay), Реверберация(Reverb), Компрессия(Compression), "
-"Эквалайзер(EQ) и Насыщение(Saturation)."
+"который содержит высококачественные плагины всех основных эффектов, таких "
+"как Эхо (Delay), Реверберация (Reverb), Компрессия (Compression), Эквалайзер "
+"(EQ) и Насыщение (Saturation)."
 
 #: ../../getting-started/getting-plugins.rst:48
 msgid ""
@@ -142,6 +142,9 @@ msgid ""
 "powerful additive/subtractive synth that can synthesize a wide variety of"
 " sounds."
 msgstr ""
+"`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>` - это "
+"мощный аддитивный/субтрактивный синтезатор, способный синтезировать широкий "
+"спектр звуков."
 
 #: ../../getting-started/getting-plugins.rst:68
 msgid "Percussion Generators"
@@ -152,6 +155,8 @@ msgid ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a kick drum "
 "synthesizer that can also synthesize other types of percussion."
 msgstr ""
+"`GeonKick <https://gitlab.com/iurie/geonkick>` - это синтезатор барабанов, "
+"который также может синтезировать другие типы ударных инструментов."
 
 #: ../../getting-started/getting-plugins.rst:75
 msgid "SFZ/SF2 Instruments"
@@ -162,12 +167,12 @@ msgid ""
 "You can find a list of SFZ instruments under free licenses at `sfz "
 "instruments <https://sfzinstruments.github.io/>`_."
 msgstr ""
-"Вы можете найти список свободно лицензированных инструментов SFZ на "
-"странице`sfz инструменты <https://sfzinstruments.github.io/>`_."
+"Вы можете найти список свободно лицензированных инструментов SFZ на странице "
+"`sfz инструменты <https://sfzinstruments.github.io/>`_."
 
 #: ../../getting-started/getting-plugins.rst:81
 msgid "Samples"
-msgstr "Сэмплы"
+msgstr "Сэмплы (Sampes)"
 
 #: ../../getting-started/getting-plugins.rst:83
 msgid ""
@@ -191,16 +196,17 @@ msgid ""
 " system using an installer from the `Download "
 "<https://www.zrythm.org/en/download.html>`_ page on our website."
 msgstr ""
-"Вы можете установить последнюю версию Zrythm для вашего дистрибутива "
-"GNU/Linux или операционной системы с помощью программы установки со "
-"страницы `Скачать <https://www.zrythm.org/en/download.html>` _ на нашем "
-"веб-сайте."
+"Вы можете установить последнюю версию Zrythm для вашего дистрибутива GNU/"
+"Linux или операционной системы с помощью программы установки со страницы `"
+"Скачать <https://www.zrythm.org/en/download.html>`_ на нашем веб-сайте."
 
 #: ../../getting-started/installation.rst:18
 msgid ""
 "This is the easiest and recommended way to install the latest version for"
 " most users, and we provide support for it."
 msgstr ""
+"Это самый простой и рекомендуемый способ установки последней версии для "
+"большинства пользователей, и мы обеспечиваем ее поддержку."
 
 #: ../../getting-started/installation.rst:22
 msgid "The installers also include bundled plugins."
@@ -217,10 +223,9 @@ msgid ""
 "<https://www.zrythm.org/releases/>`_ or `git "
 "<https://git.zrythm.org/cgit/zrythm/>`_."
 msgstr ""
-"Если вы опытный пользователь, вы также можете собрать Zrythm из исходного"
-" кода, используя архив с исходным кодом "
-"<https://www.zrythm.org/releases/> `_ или`git репозиторий "
-"<https://git.zrythm.org/cgit/zrythm/>`_."
+"Если вы опытный пользователь, вы также можете собрать Zrythm из исходного "
+"кода, используя `архив с исходным кодом <https://www.zrythm.org/releases/>`_ "
+"или `git <https://git.zrythm.org/cgit/zrythm/>`_."
 
 #: ../../getting-started/installation.rst:31
 msgid ""
@@ -236,7 +241,7 @@ msgstr "GNU/Linux"
 
 #: ../../getting-started/installation.rst:38
 msgid "Installer"
-msgstr ""
+msgstr "Программа установки (Installer)"
 
 #: ../../getting-started/installation.rst:39
 msgid "The installer supports the following distributions (and derivatives):"
@@ -294,7 +299,7 @@ msgstr ""
 
 #: ../../getting-started/intro.rst:6
 msgid "Getting Started"
-msgstr ""
+msgstr "Начало работы"
 
 #: ../../getting-started/system-requirements.rst:6
 msgid "System Requirements"
@@ -322,7 +327,7 @@ msgstr "Рекомендации"
 
 #: ../../getting-started/system-requirements.rst:21
 msgid "CPU"
-msgstr "Процессор"
+msgstr "Процессор (CPU)"
 
 #: ../../getting-started/system-requirements.rst:20
 #, fuzzy
@@ -335,7 +340,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:24
 msgid "Monitor"
-msgstr "Монитор"
+msgstr "Монитор (Monitor)"
 
 #: ../../getting-started/system-requirements.rst:24
 msgid ""
@@ -346,9 +351,8 @@ msgstr ""
 "менее 16 дюймов."
 
 #: ../../getting-started/system-requirements.rst:28
-#, fuzzy
 msgid "Audio interface"
-msgstr "Аудио интерфейс"
+msgstr "Аудио интерфейс (Audio interface)"
 
 #: ../../getting-started/system-requirements.rst:27
 msgid ""
@@ -359,17 +363,16 @@ msgstr ""
 " встроенных звуковых карт (особенно при записи звука)."
 
 #: ../../getting-started/system-requirements.rst:31
-#, fuzzy
 msgid "MIDI keyboard"
-msgstr "MIDI клавиатура"
+msgstr "MIDI клавиатура (MIDI keyboard)"
 
 #: ../../getting-started/system-requirements.rst:31
 msgid "For quickly trying out melodies or recording."
-msgstr "Для быстрого прослушивания мелодий или записи."
+msgstr "Для быстрого прослушивания или записи мелодий."
 
 #: ../../getting-started/system-requirements.rst:34
 msgid "JACK"
-msgstr "ДЖЕК"
+msgstr "JACK"
 
 #: ../../getting-started/system-requirements.rst:35
 #, python-format
