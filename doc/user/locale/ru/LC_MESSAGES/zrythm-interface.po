@@ -8,11 +8,11 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 00:47+0100\n"
-"PO-Revision-Date: 2020-09-22 18:08+0000\n"
-"Last-Translator: ilya7 <mrzarp@protonmail.com>\n"
+"PO-Revision-Date: 2020-09-23 17:06+0000\n"
+"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/ru/>\n"
 "Language: ru\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/ru/>\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
@@ -22,32 +22,34 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
-msgstr "Нижняя панель"
+msgstr "Нижняя Панель(Bottom Panel)"
 
 #: ../../zrythm-interface/bottom-panel.rst:10
 msgid ""
 "The bottom panel contains various editors (such as the piano roll and "
 "automation editor) as well as the mixer and chord pads."
 msgstr ""
-"Нижняя панель содержит различные редакторы (такие как редактор нот и "
-"редактор автоматизации), а также микшер и список аккордов."
+"Нижняя панель содержит различные редакторы (такие как Редактор Нот(Piano "
+"Roll) и Редактор Автоматизации(Automation Editor)), а также микшер и список "
+"аккордов."
 
 #: ../../zrythm-interface/bottom-panel.rst:18
 msgid "Editor"
-msgstr "Редактор"
+msgstr "Редактор(Editor)"
 
 #: ../../zrythm-interface/bottom-panel.rst:19
 msgid ""
 "The Editor tab contains an arranger for editing regions, as well as "
 "various controls that vary depending on the type of region selected."
 msgstr ""
-"Вкладка «Редактор» содержит аранжировщик для редактирования регионов, а "
-"также различные элементы управления, которые различаются в зависимости от"
-" типа выбранного региона."
+"Вкладка Редактор(Editor) содержит аранжировщик для редактирования "
+"регионов(Region), а также различные элементы управления, которые различаются "
+"в зависимости от типа выбранного региона."
 
 #: ../../zrythm-interface/bottom-panel.rst:26
 msgid "Editing inside the Editor tab is covered in :ref:`editors`."
-msgstr "Редактирование внутри вкладки \"Редактор\" описано в :ref:`editors`."
+msgstr ""
+"Редактирование внутри вкладки Редактор(Editor) описано в :ref:`editors`."
 
 #: ../../zrythm-interface/bottom-panel.rst:29
 msgid "Piano Roll"
@@ -182,11 +184,11 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:41
 msgid "Plugin Ports"
-msgstr ""
+msgstr "портированые плагины"
 
 #: ../../zrythm-interface/left-panel.rst:42
 msgid "These are the ports that the plugin has."
-msgstr ""
+msgstr "Это порты, которые есть у плагина."
 
 #: ../../zrythm-interface/left-panel.rst:47
 msgid ""
@@ -194,16 +196,20 @@ msgid ""
 " be automated using automation tracks. Ports can be routed to other ports"
 " anywhere within Zrythm by double clicking on them."
 msgstr ""
+"Управляющие входные порты можно изменить, щелкнув и перетащив, а также можно "
+"автоматизировать с помощью треков автоматизации. Порты можно подключить к "
+"другим портам в любом месте, дважды щелкнув по ним."
 
 #: ../../zrythm-interface/left-panel.rst:52
 msgid "Ports are explained in more detail in :ref:`ports`."
-msgstr ""
+msgstr "Более подробно порты описаны в :ref:`ports`."
 
 #: ../../zrythm-interface/left-panel.rst:54
 msgid ""
 "Depending on the type of plugin, there may be different categories of "
 "ports being shown."
 msgstr ""
+"В зависимости от типа плагина могут отображаться разные категории портов."
 
 #: ../../zrythm-interface/left-panel.rst:58
 msgid "Track Visibility"
@@ -243,7 +249,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:31
 msgid "Edit Menu"
-msgstr ""
+msgstr "меню редактирования"
 
 #: ../../zrythm-interface/main-toolbar.rst:32
 msgid ""
@@ -257,7 +263,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:39
 msgid "Project Menu"
-msgstr ""
+msgstr "меню проекта"
 
 #: ../../zrythm-interface/main-toolbar.rst:40
 msgid ""
@@ -267,15 +273,15 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:44
 msgid "New Project"
-msgstr ""
+msgstr "новый проект"
 
 #: ../../zrythm-interface/main-toolbar.rst:44
 msgid "Create a new project."
-msgstr ""
+msgstr "создать новый прект."
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save"
-msgstr ""
+msgstr "Сохранить"
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save the current project at its current location."
@@ -401,7 +407,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Manual"
-msgstr ""
+msgstr "Мануал"
 
 #: ../../zrythm-interface/main-toolbar.rst:98
 msgid "View the user manual."

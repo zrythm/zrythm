@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-24 00:55+0100\n"
-"PO-Revision-Date: 2020-09-22 18:08+0000\n"
-"Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
+"PO-Revision-Date: 2020-09-23 17:14+0000\n"
+"Last-Translator: xunil-cloud <freed602om@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -397,12 +397,12 @@ msgstr "專案已儲存。"
 
 #: src/main.c:78
 msgid "Error - Backtrace:\n"
-msgstr ""
+msgstr "錯誤 - 堆疊追蹤：\n"
 
 #: src/main.c:82
 #, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr ""
+msgstr "錯誤：%s - 堆疊追蹤：\n"
 
 #: src/main.c:96
 #, c-format
@@ -510,7 +510,7 @@ msgstr "沒有選擇任何專案。%s 即將關閉。"
 
 #: src/zrythm_app.c:299
 msgid "Initializing settings"
-msgstr ""
+msgstr "初始化設定"
 
 #: src/zrythm_app.c:307
 #, c-format
@@ -1507,7 +1507,7 @@ msgstr "選擇一個片段..."
 #: src/gui/widgets/channel_sends_expander.c:63
 #: src/gui/widgets/ports_expander.c:381
 msgid "Sends"
-msgstr ""
+msgstr "輔助傳送"
 
 #: src/gui/widgets/event_viewer.c:112 resources/ui/scale_selector_window.ui:240
 #: resources/ui/inspector_chord.ui:43
@@ -2052,11 +2052,11 @@ msgstr ""
 
 #: src/audio/channel_send.c:377
 msgid "Pre-fader send"
-msgstr ""
+msgstr "前置傳送"
 
 #: src/audio/channel_send.c:379
 msgid "Post-fader send"
-msgstr ""
+msgstr "後置傳送"
 
 #: src/audio/channel_send.c:402
 #, c-format
@@ -3523,7 +3523,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:191
 msgid "Pan Algorithm"
-msgstr ""
+msgstr "聲音定位演算法"
 
 #: resources/ui/preferences.ui:201
 msgid "Pan Law"
@@ -4170,8 +4170,9 @@ msgid "Default fade algorithm to use for fade in/outs."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:616
+#, fuzzy
 msgid "Default algorithm to use for automation curves."
-msgstr ""
+msgstr "自動控制曲線預設的演算法"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:630
 msgid "Undo stack length"

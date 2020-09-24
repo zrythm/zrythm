@@ -5,13 +5,15 @@
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
 # ilya <mrzarp@protonmail.com>, 2020.
 # ilya7 <mrzarp@protonmail.com>, 2020.
+# Melairz1237 <mr.artem.snegov@mail.ru>, 2020.
+# iLyd <mrzarp@protonmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-24 00:55+0100\n"
-"PO-Revision-Date: 2020-09-22 18:08+0000\n"
-"Last-Translator: ilya7 <mrzarp@protonmail.com>\n"
+"PO-Revision-Date: 2020-09-23 19:03+0000\n"
+"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -35,12 +37,12 @@ msgstr ""
 #: src/gui/widgets/route_target_selector.c:55
 #: src/gui/widgets/route_target_selector_popover.c:152
 msgid "None"
-msgstr ""
+msgstr "нет"
 
 #: inc/gui/backend/arranger_object.h:90
 #: resources/ui/chord_selector_window.ui:701
 msgid "All"
-msgstr ""
+msgstr "все"
 
 #: inc/gui/backend/arranger_object.h:92 src/gui/widgets/event_viewer.c:106
 #: resources/ui/inspector_master.ui:31 resources/ui/inspector_ap.ui:31
@@ -73,52 +75,52 @@ msgstr ""
 #: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:115
 msgid "Velocity"
-msgstr ""
+msgstr "быстрота(скорость)"
 
 #: inc/utils/ui.h:75
 msgid "High"
-msgstr ""
+msgstr "Высокий"
 
 #: inc/utils/ui.h:76
 msgid "Normal"
-msgstr ""
+msgstr "нормальный"
 
 #: inc/utils/ui.h:77
 msgid "Low"
-msgstr ""
+msgstr "низкий"
 
 #: inc/utils/gtk.h:50
 msgid "Cu_t"
-msgstr ""
+msgstr "вырезать"
 
 #: inc/utils/gtk.h:56
 msgid "_Copy"
-msgstr ""
+msgstr "копировать"
 
 #: inc/utils/gtk.h:62
 msgid "_Paste"
-msgstr ""
+msgstr "вставить"
 
 #: inc/utils/gtk.h:68
 msgid "_Delete"
-msgstr ""
+msgstr "удалить"
 
 #: inc/utils/gtk.h:74
 msgid "Cle_ar Selection"
-msgstr ""
+msgstr "очистить выделение"
 
 #: inc/utils/gtk.h:80
 msgid "Select A_ll"
-msgstr ""
+msgstr "выделить все"
 
 #: inc/utils/gtk.h:86 src/gui/widgets/home_toolbar.c:133
 msgid "Duplicate"
-msgstr ""
+msgstr "дублировать"
 
 #: inc/utils/gtk.h:92 src/gui/widgets/track.c:1190
 #: resources/ui/fader_buttons.ui:99
 msgid "Mute"
-msgstr ""
+msgstr "заглушить"
 
 #: inc/utils/gtk.h:98 src/gui/widgets/track.c:1186
 msgid "Unmute"
@@ -1300,7 +1302,7 @@ msgstr ""
 
 #: src/gui/widgets/help_toolbar.c:40
 msgid "Manual"
-msgstr "Руководство"
+msgstr "Мануал"
 
 #: src/gui/widgets/help_toolbar.c:41 resources/gtk/help-overlay.ui:46
 msgid "Keyboard Shortcuts"
@@ -1624,11 +1626,11 @@ msgstr ""
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
-msgstr ""
+msgstr "новый проект"
 
 #: src/gui/widgets/project_toolbar.c:40
 msgid "Save"
-msgstr ""
+msgstr "Сохранить"
 
 #: src/gui/widgets/project_toolbar.c:41
 msgid "Save As"
@@ -2504,7 +2506,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:30
 msgid "Global Shortcuts"
-msgstr ""
+msgstr "Глобальные Комбинации Клавиш"
 
 #: resources/gtk/help-overlay.ui:35 resources/ui/preferences.ui:365
 #: build/data/org.zrythm.Zrythm.gschema.xml:475
@@ -2592,7 +2594,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:199
 msgid "Editor Shortcuts"
-msgstr ""
+msgstr "Ярлыки Редактора"
 
 #: resources/gtk/help-overlay.ui:203
 msgid "Tool"
@@ -2844,7 +2846,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:82
 msgid "Editor"
-msgstr "Редактор"
+msgstr "Редактор(Editor)"
 
 #: resources/ui/bot_dock_edge.ui:105
 msgid "Mixer view"
@@ -3005,7 +3007,7 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:898
 msgid "TODO"
-msgstr ""
+msgstr "ТОДО"
 
 #: resources/ui/chord_selector_window.ui:908
 msgid "Circle of Fifths"

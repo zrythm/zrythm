@@ -8,11 +8,11 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 00:47+0100\n"
-"PO-Revision-Date: 2020-09-22 18:08+0000\n"
-"Last-Translator: ilya7 <mrzarp@protonmail.com>\n"
+"PO-Revision-Date: 2020-09-23 19:03+0000\n"
+"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
+"manualediting/ru/>\n"
 "Language: ru\n"
-"Language-Team: Russian "
-"<https://hosted.weblate.org/projects/zrythm/manualediting/ru/>\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
@@ -605,7 +605,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:56
 msgid "Duplicate"
-msgstr ""
+msgstr "дублировать"
 
 #: ../../editing/common-operations.rst:57
 msgid ""
@@ -1529,12 +1529,6 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Piano Roll (MIDI Editor)"
-#~ msgstr ""
-
-#~ msgid "Automation Editor"
-#~ msgstr ""
-
-#~ msgid "Chord Editor"
 #~ msgstr ""
 
 #~ msgid "The rest of the tracklist is briefly touched upon at :ref:`tracklist`."
