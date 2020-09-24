@@ -23,7 +23,9 @@ for lang in $languages ; do
   mkdir -p $renderdir/$lang
   cp -R $builddir/$lang/html/* $renderdir/$lang/
   cp $builddir/$lang/epub/Zrythm.epub $renderdir/$lang/ || true
-  zip -r $renderdir/$lang/Zrythm-html.zip $builddir/$lang/html/* ; \
+  pushd $builddir/$lang/html
+  zip -r $renderdir/$lang/Zrythm-html.zip ./* ; \
+  popd
 done
 
 # create result zip
