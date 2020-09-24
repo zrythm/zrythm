@@ -738,9 +738,6 @@ msgstr "これらの設定の一部の変更を適用するには、Zrythm を�
 #~ msgid "Overview"
 #~ msgstr "概要"
 
-#~ msgid "Audio"
-#~ msgstr "オーディオ"
-
 #~ msgid ""
 #~ "Zrythm supports multiple audio and MIDI"
 #~ " backend engines. JACK is the "

@@ -162,7 +162,7 @@ msgstr "Amosa información de cada punto de automatización e a súa curva."
 #: ../../editing/clip-editors/chord-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:36
 msgid "Chord Editor"
-msgstr ""
+msgstr "Editor de Acordes"
 
 #: ../../editing/clip-editors/chord-editor.rst:9
 msgid "The chord editor is displayed when a chord region is selected."
@@ -1628,9 +1628,6 @@ msgstr ""
 #~ msgid "Piano Roll (MIDI Editor)"
 #~ msgstr "Piano Roll (Editor MIDI)"
 
-#~ msgid "Chord Editor"
-#~ msgstr "Editor de Acordes"
-
 #~ msgid "Ruler/Arranger"
 #~ msgstr "Regra/Arranxador"
 
@@ -1688,15 +1685,6 @@ msgstr ""
 #~ "frechas verdes na esquerda e a "
 #~ "dereita. Preme :zbutton:`Shift`para evitar o"
 #~ " axuste."
-
-#~ msgid ""
-#~ "The ruler will display more or "
-#~ "less information depending on the "
-#~ "current zoom level. It will also "
-#~ "display the followin markers/indicators "
-#~ "discussed in :ref:`loop-points-and-"
-#~ "markers`."
-#~ msgstr ""
 
 #~ msgid "The drum view is not operational at the moment."
 #~ msgstr "A vista de percusión non funciona polo de agora."

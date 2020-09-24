@@ -926,9 +926,6 @@ msgstr ""
 #~ "explained in the next chapters:"
 #~ msgstr ""
 
-#~ msgid "Audio"
-#~ msgstr ""
-
 #~ msgid "Backend"
 #~ msgstr ""
 

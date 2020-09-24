@@ -39,7 +39,7 @@ collect_translatables = run_target (
     ],
   )
 
-# test PO files for errors
+# Test PO files for errors.
 foreach lang : locales
   if msgfmt.found () and lang != 'en'
     test (

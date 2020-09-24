@@ -148,7 +148,7 @@ msgstr ""
 #: ../../editing/clip-editors/chord-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:36
 msgid "Chord Editor"
-msgstr ""
+msgstr "Éditeur d'accords"
 
 #: ../../editing/clip-editors/chord-editor.rst:9
 msgid "The chord editor is displayed when a chord region is selected."
@@ -1722,9 +1722,6 @@ msgstr ""
 
 #~ msgid "Piano Roll (MIDI Editor)"
 #~ msgstr "Piano roll (éditeur MIDI)"
-
-#~ msgid "Chord Editor"
-#~ msgstr "Éditeur d'accords"
 
 #~ msgid "Ruler/Arranger"
 #~ msgstr "Règle/arrangeur"

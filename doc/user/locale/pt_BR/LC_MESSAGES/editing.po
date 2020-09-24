@@ -1527,12 +1527,6 @@ msgstr ""
 #~ msgid "Piano Roll (MIDI Editor)"
 #~ msgstr ""
 
-#~ msgid "Automation Editor"
-#~ msgstr ""
-
-#~ msgid "Chord Editor"
-#~ msgstr ""
-
 #~ msgid "The rest of the tracklist is briefly touched upon at :ref:`tracklist`."
 #~ msgstr ""
 

@@ -324,9 +324,6 @@ msgstr ""
 #~ msgid "PayPal recurring or non-recurring donation."
 #~ msgstr "Don PayPal récurrent ou non-récurrent."
 
-#~ msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
-#~ msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
-
 #~ msgid ""
 #~ "LiberaPay is a recurring donations "
 #~ "platform for funding developers and "

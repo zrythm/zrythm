@@ -585,9 +585,6 @@ msgstr ""
 #~ "their browsers."
 #~ msgstr ""
 
-#~ msgid "Plugin Types"
-#~ msgstr ""
-
 #~ msgid "There are three types of Plugins in Zrythm."
 #~ msgstr ""
 
@@ -803,38 +800,6 @@ msgstr ""
 #~ "で指定された標準パス内のLV2プラグインをスキャンします。この動作を回避するには、``LV2_PATH`` "
 #~ "の環境変数を渡してカスタム パスを指定します。たとえば、``LV2_PATH=~/custom-lv2-dir"
 #~ " zrythm`` を指定します。"
-
-#~ msgid "On MacOS, AUs will be scanned in their default locations."
-#~ msgstr ""
-
-#~ msgid "``/Library/Audio/Plug-Ins/Components``"
-#~ msgstr ""
-
-#~ msgid "Plugins are classified in the following categories."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Zrythm will scan for LV2 plugins "
-#~ "in the `standard paths specified here"
-#~ " <https://lv2plug.in/pages/filesystem-hierarchy-"
-#~ "standard.html>`_. You can bypass this "
-#~ "behavior by passing the ``LV2_PATH`` "
-#~ "environment variable to specify custom "
-#~ "paths. For example, ``LV2_PATH=$HOME/custom-"
-#~ "lv2-dir zrythm``."
-#~ msgstr ""
-
-#~ msgid "``$HOME/.vst``"
-#~ msgstr "``~/.vst``"
-
-#~ msgid "``$HOME/vst``"
-#~ msgstr "``~/vst``"
-
-#~ msgid "``/Library/Audio/Plug-Ins/VST`` for VST2"
-#~ msgstr ""
-
-#~ msgid "``/Library/Audio/Plug-Ins/VST3`` for VST3"
-#~ msgstr ""
 
 #~ msgid "``lib`` will be replaced with ``lib64`` depending on your system."
 #~ msgstr "``lib`` は、ディストロに応じて ``lib64`` に置き換えられます。"

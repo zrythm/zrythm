@@ -761,9 +761,6 @@ msgstr ""
 #~ "pacote encontra-se em `FreshPorts "
 #~ "<https://www.freshports.org/audio/zrythm/>`_."
 
-#~ msgid "GNU/Linux"
-#~ msgstr "GNU/Linux"
-
 #~ msgid "Official Builds"
 #~ msgstr "Compilações Oficiais"
 

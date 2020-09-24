@@ -499,7 +499,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:148
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: ../../configuration/preferences/intro.rst:150
 msgid "Audio editing."
@@ -865,9 +865,6 @@ msgstr ""
 
 #~ msgid "Overview"
 #~ msgstr "Übersicht"
-
-#~ msgid "Audio"
-#~ msgstr "Audio"
 
 #~ msgid ""
 #~ "The panning algorithm to use. We "

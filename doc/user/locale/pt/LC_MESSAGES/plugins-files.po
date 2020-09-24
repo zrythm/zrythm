@@ -289,7 +289,7 @@ msgstr "Em Zrythm SFZ/SF2 também são usados como suplementos."
 
 #: ../../plugins-files/plugins/plugin-info.rst:18
 msgid "Plugin Types"
-msgstr "Tipos de Suplementos"
+msgstr "Tipos de Plugins"
 
 #: ../../plugins-files/plugins/plugin-info.rst:20
 msgid "Plugins are classified into the following categories."
@@ -660,9 +660,6 @@ msgstr ""
 #~ " seção explicará os vários plugins e"
 #~ " tipos de ficheiros suportados e seus"
 #~ " navegadores."
-
-#~ msgid "Plugin Types"
-#~ msgstr "Tipos de Plugins"
 
 #~ msgid "There are three types of Plugins in Zrythm."
 #~ msgstr "Existem três tipos de Plugins em Zrythm."

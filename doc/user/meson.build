@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-if (sphinx_build.found())
+if sphinx_build.found () and sphinx_intl.found ()
 
 sphinx_builddir = meson.current_build_dir () / '_build'
 
@@ -252,3 +252,5 @@ run_target (
   )
 
 endif
+
+subdir ('locale')

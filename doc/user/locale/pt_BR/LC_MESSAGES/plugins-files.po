@@ -548,9 +548,6 @@ msgstr ""
 #~ "their browsers."
 #~ msgstr ""
 
-#~ msgid "Plugin Types"
-#~ msgstr ""
-
 #~ msgid "There are three types of Plugins in Zrythm."
 #~ msgstr ""
 

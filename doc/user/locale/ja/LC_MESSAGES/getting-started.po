@@ -578,9 +578,6 @@ msgstr ""
 #~ "<https://www.freshports.org/audio/zrythm/>`_."
 #~ msgstr ""
 
-#~ msgid "GNU/Linux"
-#~ msgstr "GNU / Linux"
-
 #~ msgid "Official Builds"
 #~ msgstr "公式ビルド"
 

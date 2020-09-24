@@ -746,9 +746,6 @@ msgstr ""
 #~ "auf `FreshPorts "
 #~ "<https://www.freshports.org/audio/zrythm/>`_."
 
-#~ msgid "GNU/Linux"
-#~ msgstr "GNU/Linux"
-
 #~ msgid "Official Builds"
 #~ msgstr "Offizielle Builds"
 

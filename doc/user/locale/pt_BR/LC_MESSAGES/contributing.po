@@ -283,9 +283,6 @@ msgstr ""
 #~ msgid "PayPal recurring or non-recurring donation."
 #~ msgstr ""
 
-#~ msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
-#~ msgstr ""
-
 #~ msgid ""
 #~ "LiberaPay is a recurring donations "
 #~ "platform for funding developers and "

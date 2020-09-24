@@ -155,7 +155,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:80
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
-msgstr ""
+msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
 #: ../../contributing/intro.rst:81
 msgid "`PayPal <https://paypal.me/zrythm>`_"
@@ -300,9 +300,6 @@ msgstr ""
 
 #~ msgid "PayPal recurring or non-recurring donation."
 #~ msgstr "PayPal- regelmäßige oder nicht regelmäßige Spenden."
-
-#~ msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
-#~ msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
 #~ msgid ""
 #~ "LiberaPay is a recurring donations "
