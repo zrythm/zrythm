@@ -41,6 +41,7 @@ Welcome to the Zrythm manual.
    modulators/intro
    exporting/intro
    scripting/intro
+   invoking-from-command-line/intro
    theming/intro
    contributing/intro
    user-media/intro

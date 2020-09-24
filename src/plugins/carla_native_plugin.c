@@ -193,7 +193,7 @@ host_dispatcher (
   float opt)
 {
   /* TODO */
-  g_message ("host dispatcher");
+  g_message ("host dispatcher (opcode %d)", opcode);
   switch (opcode)
     {
     case NATIVE_HOST_OPCODE_HOST_IDLE:
@@ -221,6 +221,26 @@ host_dispatcher (
       return 1;
       break;
 #endif
+    case NATIVE_HOST_OPCODE_GET_FILE_PATH:
+      g_warning ("get file path");
+      g_return_val_if_fail (ptr, 0);
+      if (string_is_equal ((char *) ptr, "carla"))
+        {
+          g_debug ("ptr is carla");
+          return (intptr_t) PROJECT->dir;
+        }
+      break;
+    case NATIVE_HOST_OPCODE_UI_RESIZE:
+      g_debug ("ui resize");
+      /* TODO handle UI resize */
+      break;
+    case NATIVE_HOST_OPCODE_UI_TOUCH_PARAMETER:
+      g_debug ("ui touch");
+      break;
+    case NATIVE_HOST_OPCODE_UI_UNAVAILABLE:
+      /* TODO handle UI close */
+      g_debug ("UI unavailable");
+      break;
     default:
       break;
     }

@@ -9,7 +9,7 @@ Preferences
 
 Zrythm has a Preferences dialog containing all
 of the global settings that can be accessed by
-clicking the gear icon or with :kbd:`Ctrl+Shift+P`.
+clicking the gear icon or with :kbd:`Control-Shift-p`
 
 Each section in the preferences dialog is explained
 in the following sections.
@@ -31,7 +31,7 @@ Audio engine settings.
 
 Audio backend
   The audio backend to use. The available backends are
-  JACK, RtAudio and SDL2. We recommend using JACK when
+  JACK, RtAudio and SDL2. We recommend using :term:`JACK` when
   possible, otherwise RtAudio.
 
 MIDI backend
@@ -49,12 +49,12 @@ Paths
 Global paths.
 
 Zrythm path
-  The directory to save user data in.
+  The :term:`Zrythm user path`.
 
 Plugins
 -------
 
-Plugin settings.
+:term:`Plugin` settings.
 
 .. image:: /_static/img/preferences-plugins.png
    :align: center
@@ -69,7 +69,7 @@ Generic UIs
   custom ones.
 
 Open UI on instantiation
-  Open plugin NUIs when they are instantiated.
+  Open plugin UIs when they are instantiated.
 
 Keep window on top
   Always show plugin UIs on top of the main window.
@@ -91,11 +91,12 @@ Paths
 ~~~~~
 
 VST plugins
-  The search paths to scan for VST plugins in.
+  The search paths to scan for :term:`VST2` plugins
+  in.
 
 .. note:: This option is only available on Windows. On
   GNU/Linux and MacOS the paths are fixed. See
-  :ref:`plugin-paths` for details.
+  :ref:`scanning-plugins` for details.
 
 SFZ instruments
   The search paths to scan for SFZ instruments in.
@@ -106,7 +107,7 @@ SF2 instruments
 DSP
 ---
 
-Digital signal processing.
+:term:`DSP` settings.
 
 .. image:: /_static/img/preferences-dsp.png
    :align: center
@@ -114,7 +115,7 @@ Digital signal processing.
 Pan
 ~~~
 
-Panning options for mono signals (not used at the moment).
+:term:`Panning` options for :term:`mono` signals (not used at the moment).
 
 Pan algorithm
   The panning algorithm to use when applying pan on mono

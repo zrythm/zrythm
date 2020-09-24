@@ -45,4 +45,4 @@ be attached there using a tool like
   within Zrythm.
 
 .. note:: Depending on your setup, MIDI devices might need
-  to be bridged to JACK using ``a2jmidid``.
+  to be bridged to JACK using :term:`a2jmidid`.

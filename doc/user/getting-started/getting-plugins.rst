@@ -8,13 +8,14 @@ Getting Plugins, Instruments and Samples
 Plugins
 -------
 
-Zrythm ships with a few bundled plugins to help users get
-started, but users are expected to download and install
-their own plugins that suit their preferences.
+Zrythm ships with a few bundled plugins to help users
+get started, but users are expected to download and
+install their own plugins that suit their
+preferences.
 
 There are many plugins to choose from. This guide
-will show you a few ways you can install plugins on GNU/Linux
-systems.
+will show you a few ways you can install plugins on
+GNU/Linux systems.
 
 .. note:: For other systems, you can find a `list of free
   software plugins here
@@ -28,8 +29,8 @@ Linux Mint we recommend using
 the `KXstudio repositories <https://kx.studio/>`_, as
 there are many plugins that can easily be installed via apt.
 
-For users of Arch Linux-based distributions such as Manjaro
-we recommend installing the
+For users of Arch Linux-based distributions such as
+Manjaro we recommend installing the
 `lv2-plugins <https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_
 group.
 

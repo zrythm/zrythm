@@ -17,21 +17,25 @@ Recommendations
 ---------------
 
 CPU
-  For smooth operation, it is recommended to use a CPU with at
-  least 2GHz clock speed and at least 4 cores in total.
+  For smooth operation, we recommend using a CPU
+  with at least 2GHz clock speed and at least 4
+  cores in total.
 Monitor
-  It is recommended to have at least 16 inches of monitor space
-  to work efficiently with Zrythm.
+  It is recommended to have at least 16 inches of
+  monitor space to work efficiently with Zrythm.
 Audio interface
-  An audio interface offers low latency and better quality than
-  integrated sound cards (especially if recording audio).
+  An audio interface offers low latency and better
+  quality than integrated sound cards (especially if
+  recording audio).
 MIDI keyboard
   For quickly trying out melodies or recording.
 
 JACK
 ----
-When using the JACK backend, JACK needs to be set up and configured
-before running Zrythm. You will find lots of information
-online about how to configure JACK, such as
+When using the :term:`JACK` backend, JACK needs to
+be set up
+and configured before running Zrythm. You will find
+lots of information online about how to configure
+JACK, such as
 `Demystifying JACK - A Beginners Guide to Getting Started with JACK <https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack.html>`_,
 so we will skip this part.

@@ -5,10 +5,11 @@
 First Run Wizard
 ================
 
-When you first run Zrythm, it will display a wizard that lets
-you configure the basic settings that Zrythm will use. These
-include MIDI devices, the default Zrythm path, interface
-language and audio/MIDI backends.
+When you first run Zrythm, it will display a wizard
+that lets you configure the basic settings that
+Zrythm will use. These include MIDI devices, the
+default Zrythm path, interface language and
+audio/MIDI backends.
 
 Language Selection
 ------------------
@@ -29,11 +30,7 @@ Path
 .. image:: /_static/img/first-run-path.png
    :align: center
 
-This is the path where Zrythm will save projects,
-temporary files, exported audio, etc. The default is
-"zrythm" under
-`XDG_DATA_HOME <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>`_ on freedesktop-compliant
-systems.
+This is the :term:`Zrythm user path`.
 
 Audio/MIDI Backends
 -------------------
@@ -42,7 +39,7 @@ Audio/MIDI Backends
    :align: center
 
 Zrythm supports multiple audio and MIDI backend engines.
-JACK is the recommended one for both, but it takes some time
+:term:`JACK` is the recommended one for both, but it takes some time
 to set up if this is your first time using it. If you choose
 to use JACK, JACK MIDI and the JACK audio backend must be
 chosen together.

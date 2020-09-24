@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-09 18:46+0100\n"
+"POT-Creation-Date: 2020-09-24 15:10+0100\n"
 "PO-Revision-Date: 2020-09-22 18:08+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"manualconfiguration/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -32,8 +31,9 @@ msgid ""
 "line, or the optional GUI tool `dconf-editor "
 "<https://wiki.gnome.org/Apps/DconfEditor>`_."
 msgstr ""
-"Zrythmは　`gsettings <https://developer.gnome.org/gio/stable/gsettings-tool."
-"html>`_ のコマンドや　`dconf-editor <https://wiki.gnome.org/Apps/DconfEditor>`_　"
+"Zrythmは　`gsettings <https://developer.gnome.org/gio/stable/gsettings-"
+"tool.html>`_ のコマンドや　`dconf-editor "
+"<https://wiki.gnome.org/Apps/DconfEditor>`_　"
 "のGUIツールがあるGSettingsを使用し、設定を保存しています。"
 
 #: ../../configuration/additional-settings.rst:14
@@ -146,7 +146,7 @@ msgstr ""
 #: ../../configuration/device-setup/intro.rst:47
 msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
-"using ``a2jmidid``."
+"using :term:`a2jmidid`."
 msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:6
@@ -163,70 +163,66 @@ msgstr ""
 "Zrythm を初めて実行すると、Zrythm が使用する基本的な設定をできるウィザードが表示されます。MIDI デバイス、デフォルトの "
 "Zrythm パス、インターフェイス言語、オーディオ/MIDI バックエンドの設定が含まれます。"
 
-#: ../../configuration/first-run-wizard.rst:14
+#: ../../configuration/first-run-wizard.rst:15
 msgid "Language Selection"
 msgstr "言語選択"
 
-#: ../../configuration/first-run-wizard.rst:19
+#: ../../configuration/first-run-wizard.rst:20
 msgid ""
 "Zrythm lets you choose the language of the interface. The interface is "
 "already translated in multiple languages, so choose the language you are "
 "most comfortable in."
 msgstr "Zrythmのインターフェイスの言語を選択できます。インターフェイスは既に複数の言語で翻訳されているので、最も使い心地の良い言語を選択してください。"
 
-#: ../../configuration/first-run-wizard.rst:23
+#: ../../configuration/first-run-wizard.rst:24
 #, fuzzy
 msgid "You must have a locale enabled for the language you want to use."
 msgstr "使用する言語のロケールを有効にする必要があります。"
 
-#: ../../configuration/first-run-wizard.rst:27
+#: ../../configuration/first-run-wizard.rst:28
 msgid "Path"
 msgstr "パス"
 
-#: ../../configuration/first-run-wizard.rst:32
-msgid ""
-"This is the path where Zrythm will save projects, temporary files, "
-"exported audio, etc. The default is \"zrythm\" under `XDG_DATA_HOME "
-"<https://specifications.freedesktop.org/basedir-spec/basedir-spec-"
-"latest.html>`_ on freedesktop-compliant systems."
+#: ../../configuration/first-run-wizard.rst:33
+msgid "This is the :term:`Zrythm user path`."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:39
+#: ../../configuration/first-run-wizard.rst:36
 msgid "Audio/MIDI Backends"
 msgstr "オーディオ/MIDI バックエンド"
 
-#: ../../configuration/first-run-wizard.rst:44
+#: ../../configuration/first-run-wizard.rst:41
 #, fuzzy
 msgid ""
-"Zrythm supports multiple audio and MIDI backend engines. JACK is the "
-"recommended one for both, but it takes some time to set up if this is "
-"your first time using it. If you choose to use JACK, JACK MIDI and the "
+"Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is "
+"the recommended one for both, but it takes some time to set up if this is"
+" your first time using it. If you choose to use JACK, JACK MIDI and the "
 "JACK audio backend must be chosen together."
 msgstr ""
 "Zrythmは、複数のオーディオおよびMIDIバックエンドエンジンをサポートしています。JACKは両方に推奨されるものですが、初めて使用する場合は設定に時間がかかります。何らかの理由で"
 " JACK を使用しない場合は、ALSA や SDL2 などの他のバックエンドを選択できます。"
 
-#: ../../configuration/first-run-wizard.rst:50
+#: ../../configuration/first-run-wizard.rst:47
 msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:53
+#: ../../configuration/first-run-wizard.rst:50
 msgid ""
 "Click :zbutton:`Test` to try connecting to the backend to see if it is "
 "functional."
 msgstr ":zbutton:`テスト` をクリックしますと、バックエンドが機能しているかどうかを確認できます。"
 
-#: ../../configuration/first-run-wizard.rst:56
+#: ../../configuration/first-run-wizard.rst:53
 msgid ""
 "If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
 "chosen together."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:62
+#: ../../configuration/first-run-wizard.rst:59
 msgid "MIDI Devices"
 msgstr "MIDIデバイス"
 
-#: ../../configuration/first-run-wizard.rst:67
+#: ../../configuration/first-run-wizard.rst:64
 msgid ""
 "These are the discovered devices that will be auto-connected and ready to"
 " use every time you run Zrythm. Click \"Rescan\" to scan for devices "
@@ -235,7 +231,7 @@ msgstr ""
 "これらは、Zrythmを実行するたびに自動接続され、使用する準備ができている検出されたデバイスです。「再スキャン」 "
 "をクリックしますと、デバイスを再度スキャンします。"
 
-#: ../../configuration/first-run-wizard.rst:71
+#: ../../configuration/first-run-wizard.rst:68
 #, fuzzy
 msgid ""
 "All of the settings mentioned here are also available in the "
@@ -254,8 +250,8 @@ msgstr "設定"
 #, fuzzy
 msgid ""
 "Zrythm has a Preferences dialog containing all of the global settings "
-"that can be accessed by clicking the gear icon or with "
-":kbd:`Ctrl+Shift+P`."
+"that can be accessed by clicking the gear icon or with :kbd:`Control-"
+"Shift-p`"
 msgstr ""
 "Zrythm には、歯車アイコンをクリックするか、``Ctrl+Shift+P`` "
 "をクリックしてアクセスできるすべてのグローバル設定を含む環境設定ダイアログがあります。"
@@ -268,8 +264,8 @@ msgid ""
 msgstr "[環境設定]ダイアログは、以下のセクションに分かれています。"
 
 #: ../../configuration/preferences/intro.rst:18
-#: ../../configuration/preferences/intro.rst:183
-#: ../../configuration/preferences/intro.rst:203
+#: ../../configuration/preferences/intro.rst:184
+#: ../../configuration/preferences/intro.rst:204
 msgid "General"
 msgstr "全般"
 
@@ -293,7 +289,7 @@ msgstr "オーディオバックエンド"
 #: ../../configuration/preferences/intro.rst:33
 msgid ""
 "The audio backend to use. The available backends are JACK, RtAudio and "
-"SDL2. We recommend using JACK when possible, otherwise RtAudio."
+"SDL2. We recommend using :term:`JACK` when possible, otherwise RtAudio."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:41
@@ -330,7 +326,7 @@ msgid "Zrythm path"
 msgstr "Zrythmパス"
 
 #: ../../configuration/preferences/intro.rst:52
-msgid "The directory to save user data in."
+msgid "The :term:`Zrythm user path`."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:55
@@ -339,7 +335,7 @@ msgstr "プラグイン"
 
 #: ../../configuration/preferences/intro.rst:57
 #, fuzzy
-msgid "Plugin settings."
+msgid ":term:`Plugin` settings."
 msgstr "gsettingsの場合"
 
 #: ../../configuration/preferences/intro.rst:63
@@ -364,7 +360,7 @@ msgid "Open UI on instantiation"
 msgstr "インスタンス化時に UI を開く"
 
 #: ../../configuration/preferences/intro.rst:72
-msgid "Open plugin NUIs when they are instantiated."
+msgid "Open plugin UIs when they are instantiated."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:75
@@ -397,58 +393,59 @@ msgstr "再描画間隔"
 msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr "リフレッシュレート（Hz）。0に設定すると、画面のリフレッシュレートが使用されます。"
 
-#: ../../configuration/preferences/intro.rst:94
+#: ../../configuration/preferences/intro.rst:95
 msgid "VST plugins"
 msgstr "VSTプラグイン"
 
 #: ../../configuration/preferences/intro.rst:94
-msgid "The search paths to scan for VST plugins in."
+msgid "The search paths to scan for :term:`VST2` plugins in."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:96
+#: ../../configuration/preferences/intro.rst:97
 msgid ""
 "This option is only available on Windows. On GNU/Linux and MacOS the "
-"paths are fixed. See :ref:`plugin-paths` for details."
+"paths are fixed. See :ref:`scanning-plugins` for details."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:101
+#: ../../configuration/preferences/intro.rst:102
 msgid "SFZ instruments"
 msgstr "SFZ音源"
 
-#: ../../configuration/preferences/intro.rst:101
+#: ../../configuration/preferences/intro.rst:102
 msgid "The search paths to scan for SFZ instruments in."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:104
+#: ../../configuration/preferences/intro.rst:105
 msgid "SF2 instruments"
 msgstr "SF2音源"
 
-#: ../../configuration/preferences/intro.rst:104
+#: ../../configuration/preferences/intro.rst:105
 msgid "The search paths to scan for SF2 instruments in."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:107
+#: ../../configuration/preferences/intro.rst:108
 msgid "DSP"
 msgstr "DSP"
 
-#: ../../configuration/preferences/intro.rst:109
-msgid "Digital signal processing."
-msgstr ""
+#: ../../configuration/preferences/intro.rst:110
+#, fuzzy
+msgid ":term:`DSP` settings."
+msgstr "gsettingsの場合"
 
-#: ../../configuration/preferences/intro.rst:115
+#: ../../configuration/preferences/intro.rst:116
 msgid "Pan"
 msgstr "パン"
 
-#: ../../configuration/preferences/intro.rst:117
+#: ../../configuration/preferences/intro.rst:118
 #, fuzzy
-msgid "Panning options for mono signals (not used at the moment)."
+msgid ":term:`Panning` options for :term:`mono` signals (not used at the moment)."
 msgstr "これは現時点では使用されていません。"
 
-#: ../../configuration/preferences/intro.rst:134
+#: ../../configuration/preferences/intro.rst:135
 msgid "Pan algorithm"
 msgstr "パンの計算法"
 
-#: ../../configuration/preferences/intro.rst:120
+#: ../../configuration/preferences/intro.rst:121
 #, fuzzy
 msgid ""
 "The panning algorithm to use when applying pan on mono signals. See the "
@@ -461,139 +458,139 @@ msgstr ""
 "のままにすることをお勧めします。詳細については、https://www.cs.cmu.edu/~music/icm-"
 "online/readings/panlaws/index.htmlを参照してください。これは現時点では使用されていません。"
 
-#: ../../configuration/preferences/intro.rst:133
+#: ../../configuration/preferences/intro.rst:134
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 msgstr "パンアルゴリズム (:blue:`正弦`, :red:`平方根`, :green:`線形`)."
 
-#: ../../configuration/preferences/intro.rst:137
+#: ../../configuration/preferences/intro.rst:138
 #, fuzzy
 msgid "Pan law"
 msgstr "パン法"
 
-#: ../../configuration/preferences/intro.rst:137
+#: ../../configuration/preferences/intro.rst:138
 msgid "The pan law to use when applying pan on mono signals."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:140
+#: ../../configuration/preferences/intro.rst:141
 msgid "Editing"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:142
+#: ../../configuration/preferences/intro.rst:143
 msgid "Editing options."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:148
+#: ../../configuration/preferences/intro.rst:149
 msgid "Audio"
 msgstr "オーディオ"
 
-#: ../../configuration/preferences/intro.rst:150
+#: ../../configuration/preferences/intro.rst:151
 msgid "Audio editing."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:153
+#: ../../configuration/preferences/intro.rst:154
 #, fuzzy
 msgid "Fade algorithm"
 msgstr "パンの計算法"
 
-#: ../../configuration/preferences/intro.rst:153
+#: ../../configuration/preferences/intro.rst:154
 msgid "Default fade algorithm to use for fade in/outs."
 msgstr "フェードイン/アウトに使用するデフォルトのフェードアルゴリズム。"
 
-#: ../../configuration/preferences/intro.rst:156
+#: ../../configuration/preferences/intro.rst:157
 msgid "Automation"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:158
+#: ../../configuration/preferences/intro.rst:159
 msgid "Automation editing."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:161
+#: ../../configuration/preferences/intro.rst:162
 #, fuzzy
 msgid "Curve algorithm"
 msgstr "パンの計算法"
 
-#: ../../configuration/preferences/intro.rst:161
+#: ../../configuration/preferences/intro.rst:162
 msgid "Default curve algorithm to use for automation curves."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:164
+#: ../../configuration/preferences/intro.rst:165
 #, fuzzy
 msgid "Undo"
 msgstr "オーディオ"
 
-#: ../../configuration/preferences/intro.rst:166
+#: ../../configuration/preferences/intro.rst:167
 msgid "Undo options."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:169
+#: ../../configuration/preferences/intro.rst:170
 #, fuzzy
 msgid "Undo stack length"
 msgstr "オーディオバックエンド"
 
-#: ../../configuration/preferences/intro.rst:169
+#: ../../configuration/preferences/intro.rst:170
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:171
+#: ../../configuration/preferences/intro.rst:172
 msgid "We recommend leaving it at 128."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:175
+#: ../../configuration/preferences/intro.rst:176
 msgid "Projects"
 msgstr "プロジェクト"
 
-#: ../../configuration/preferences/intro.rst:177
+#: ../../configuration/preferences/intro.rst:178
 msgid "Project settings."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:185
+#: ../../configuration/preferences/intro.rst:186
 msgid "General project settings."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:189
+#: ../../configuration/preferences/intro.rst:190
 #, fuzzy
 msgid "Autosave interval"
 msgstr "自動保存間隔"
 
-#: ../../configuration/preferences/intro.rst:188
+#: ../../configuration/preferences/intro.rst:189
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
 "if this is set to 0."
 msgstr "プロジェクトのバックアップを自動保存する間隔を分単位で設定します。これを 0 に設定すると、自動保存が無効になります。"
 
-#: ../../configuration/preferences/intro.rst:191
+#: ../../configuration/preferences/intro.rst:192
 msgid ""
 "This refers to automatic back-ups. The main project will not be "
 "overwritten unless you explicitly save it."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:195
+#: ../../configuration/preferences/intro.rst:196
 msgid "UI"
 msgstr "Ui"
 
-#: ../../configuration/preferences/intro.rst:197
+#: ../../configuration/preferences/intro.rst:198
 msgid "User interface options."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:205
+#: ../../configuration/preferences/intro.rst:206
 msgid "General user interface options."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:208
+#: ../../configuration/preferences/intro.rst:209
 msgid "User interface language"
 msgstr "ユーザー インターフェイス言語"
 
-#: ../../configuration/preferences/intro.rst:208
+#: ../../configuration/preferences/intro.rst:209
 msgid "The language to use for the user interface."
 msgstr "ユーザーインターフェースに使用する言語。"
 
-#: ../../configuration/preferences/intro.rst:210
+#: ../../configuration/preferences/intro.rst:211
 msgid ""
 "For a list of supported languages and their translation status see "
 "`Weblate <https://hosted.weblate.org/projects/zrythm/>`_."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:214
+#: ../../configuration/preferences/intro.rst:215
 #, fuzzy
 msgid "Some of these settings require a restart of Zrythm to take effect."
 msgstr "これらの設定の一部の変更を適用するには、Zrythm を再起動する必要があります。"
@@ -903,3 +900,46 @@ msgstr "これらの設定の一部の変更を適用するには、Zrythm を�
 #~ " resetting Zrythm to its default "
 #~ "state."
 #~ msgstr ""
+
+#~ msgid ""
+#~ "Depending on your setup, MIDI devices"
+#~ " might need to be bridged to "
+#~ "JACK using ``a2jmidid``."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This is the path where Zrythm will"
+#~ " save projects, temporary files, exported"
+#~ " audio, etc. The default is "
+#~ "\"zrythm\" under `XDG_DATA_HOME "
+#~ "<https://specifications.freedesktop.org/basedir-spec/basedir-"
+#~ "spec-latest.html>`_ on freedesktop-compliant"
+#~ " systems."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The audio backend to use. The "
+#~ "available backends are JACK, RtAudio and"
+#~ " SDL2. We recommend using JACK when"
+#~ " possible, otherwise RtAudio."
+#~ msgstr ""
+
+#~ msgid "The directory to save user data in."
+#~ msgstr ""
+
+#~ msgid "Open plugin NUIs when they are instantiated."
+#~ msgstr ""
+
+#~ msgid "The search paths to scan for VST plugins in."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This option is only available on "
+#~ "Windows. On GNU/Linux and MacOS the "
+#~ "paths are fixed. See :ref:`plugin-paths`"
+#~ " for details."
+#~ msgstr ""
+
+#~ msgid "Digital signal processing."
+#~ msgstr ""
+

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-23 13:41+0100\n"
+"POT-Creation-Date: 2020-09-24 15:10+0100\n"
 "PO-Revision-Date: 2020-08-15 14:14+0000\n"
 "Last-Translator: Waui <wau-wau@tutanota.de>\n"
 "Language: de\n"
@@ -34,7 +34,7 @@ msgid ""
 "their preferences."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:15
+#: ../../getting-started/getting-plugins.rst:16
 #, fuzzy
 msgid ""
 "There are many plugins to choose from. This guide will show you a few "
@@ -44,17 +44,17 @@ msgstr ""
 "Anleitung zeigt dir ein paar Wege, wie du Erweiterungen installieren "
 "kannst."
 
-#: ../../getting-started/getting-plugins.rst:19
+#: ../../getting-started/getting-plugins.rst:20
 msgid ""
 "For other systems, you can find a `list of free software plugins here "
 "<https://github.com/webprofusion/OpenAudio>`_."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:23
+#: ../../getting-started/getting-plugins.rst:24
 msgid "See :ref:`scanning-plugins` for paths where plugins will be scanned in."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:26
+#: ../../getting-started/getting-plugins.rst:27
 #, fuzzy
 msgid ""
 "For users of Debian-based distributions such as Ubuntu and Linux Mint we "
@@ -65,7 +65,7 @@ msgstr ""
 "`KXStudio-Repositories <https://kx.studio/>`_ auszuchecken, weil es dort "
 "viele Plugins gibt, die leicht via apt zu installieren sind."
 
-#: ../../getting-started/getting-plugins.rst:31
+#: ../../getting-started/getting-plugins.rst:32
 #, fuzzy
 msgid ""
 "For users of Arch Linux-based distributions such as Manjaro we recommend "
@@ -79,11 +79,11 @@ msgstr ""
 "oder du kannst einfach von Hand die Erweiterungen von dort auswählen, die"
 " du haben willst."
 
-#: ../../getting-started/getting-plugins.rst:37
+#: ../../getting-started/getting-plugins.rst:38
 msgid "Recommended Plugin Bundles"
 msgstr "Empfohlene Erweiterungspakete"
 
-#: ../../getting-started/getting-plugins.rst:39
+#: ../../getting-started/getting-plugins.rst:40
 #, fuzzy
 msgid ""
 "`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ provides a "
@@ -93,7 +93,7 @@ msgstr ""
 "gute Auswahl an Synths und ein paar Effekte mit denen du mit dem "
 "Musikmachen gleich loslegen kannst."
 
-#: ../../getting-started/getting-plugins.rst:42
+#: ../../getting-started/getting-plugins.rst:43
 #, fuzzy
 msgid ""
 "`ZAM Plugins <http://www.zamaudio.com/?p=976>`_ is an effects pack that "
@@ -104,14 +104,14 @@ msgstr ""
 "Erweiterungspaket, das alle grundlegenden Effekte wie Delay, Reverb, "
 "Compression, EQ, Saturation, etc. bietet."
 
-#: ../../getting-started/getting-plugins.rst:47
+#: ../../getting-started/getting-plugins.rst:48
 #, fuzzy
 msgid ""
 "The `LSP Project <https://lsp-plug.in/>`_ has a wide variety of effect "
 "plugins."
 msgstr "`LSP <https://lsp-plug.in/>`_ hat viele nützliche Effekte."
 
-#: ../../getting-started/getting-plugins.rst:50
+#: ../../getting-started/getting-plugins.rst:51
 #, fuzzy
 msgid ""
 "`X42 Plugins <http://x42-plugins.com/x42/>`_ is a collection of various "
@@ -121,18 +121,18 @@ msgstr ""
 "<http://x42-plugins.com/x42/>`_ ansehen, das **SEHR VIELE** MIDI-Effekte "
 "und Meter-Erweiterungen hat."
 
-#: ../../getting-started/getting-plugins.rst:54
+#: ../../getting-started/getting-plugins.rst:55
 msgid "Synths"
 msgstr "Sintetizadores"
 
-#: ../../getting-started/getting-plugins.rst:56
+#: ../../getting-started/getting-plugins.rst:57
 #, fuzzy
 msgid "`Helm <https://tytel.org/helm/>`_ is a powerful subtractive synthesizer."
 msgstr ""
 "`Helm <https://tytel.org/helm/>`_ ist eine exzellenter subtraktiver "
 "Synth, der in keinem Werkzeugkasten fehlen sollte."
 
-#: ../../getting-started/getting-plugins.rst:59
+#: ../../getting-started/getting-plugins.rst:60
 #, fuzzy
 msgid ""
 "`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synthesizer "
@@ -141,18 +141,18 @@ msgstr ""
 "`Dexed <http://asb2m10.github.io/dexed/>``_ Dexed ist ein FM-Synth, der "
 "eng an die Yamaha DX7 angelehnt ist."
 
-#: ../../getting-started/getting-plugins.rst:62
+#: ../../getting-started/getting-plugins.rst:63
 msgid ""
 "`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_ is a "
 "powerful additive/subtractive synth that can synthesize a wide variety of"
 " sounds."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:67
+#: ../../getting-started/getting-plugins.rst:68
 msgid "Percussion Generators"
 msgstr "Perkussionsgeneratoren"
 
-#: ../../getting-started/getting-plugins.rst:69
+#: ../../getting-started/getting-plugins.rst:70
 #, fuzzy
 msgid ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a kick drum "
@@ -161,21 +161,21 @@ msgstr ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ ist ein toller Kick-Drum-"
 "Synthesizer, der auch andere Arten von Perkussion synthesizen kann."
 
-#: ../../getting-started/getting-plugins.rst:74
+#: ../../getting-started/getting-plugins.rst:75
 msgid "SFZ/SF2 Instruments"
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:76
+#: ../../getting-started/getting-plugins.rst:77
 msgid ""
 "You can find a list of SFZ instruments under free licenses at `sfz "
 "instruments <https://sfzinstruments.github.io/>`_."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:80
+#: ../../getting-started/getting-plugins.rst:81
 msgid "Samples"
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:82
+#: ../../getting-started/getting-plugins.rst:83
 msgid ""
 "We recommend using `Freesound <https://freesound.org/>`_ for collecting "
 "CC-licensed samples."
@@ -209,11 +209,15 @@ msgstr ""
 "Das ist die für die meisten Nutzer empfohlene Art, die neuste Version zu "
 "installieren."
 
-#: ../../getting-started/installation.rst:23
+#: ../../getting-started/installation.rst:22
+msgid "The installers also include bundled plugins."
+msgstr ""
+
+#: ../../getting-started/installation.rst:25
 msgid "Manual Installation"
 msgstr "Manuelle Installation"
 
-#: ../../getting-started/installation.rst:24
+#: ../../getting-started/installation.rst:26
 msgid ""
 "If you are an advanced user, you can also build Zrythm from source, "
 "either using a `source distribution tarball "
@@ -221,31 +225,22 @@ msgid ""
 "<https://git.zrythm.org/cgit/zrythm/>`_."
 msgstr ""
 
-#: ../../getting-started/installation.rst:29
+#: ../../getting-started/installation.rst:31
 msgid ""
 "See the ``INSTALL.md`` file in the source distribution for installation "
 "instructions."
 msgstr ""
 
-#: ../../getting-started/installation.rst:33
+#: ../../getting-started/installation.rst:35
 msgid "GNU/Linux"
 msgstr "GNU/Linux"
 
-#: ../../getting-started/installation.rst:36
-#: ../../getting-started/installation.rst:58
+#: ../../getting-started/installation.rst:38
 msgid "Installer"
 msgstr ""
 
-#: ../../getting-started/installation.rst:37
+#: ../../getting-started/installation.rst:39
 msgid "The installer supports the following distributions (and derivatives):"
-msgstr ""
-
-#: ../../getting-started/installation.rst:40
-msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
-msgstr ""
-
-#: ../../getting-started/installation.rst:41
-msgid "**Debian 10 && 11** - amd64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:42
@@ -253,45 +248,45 @@ msgid "**Arch Linux** - x86_64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:43
+msgid "**Debian 10 && 11** - amd64"
+msgstr ""
+
+#: ../../getting-started/installation.rst:44
 msgid "**Fedora 31 && 32** - x86_64"
 msgstr ""
 
-#: ../../getting-started/installation.rst:46
+#: ../../getting-started/installation.rst:45
+msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
+msgstr ""
+
+#: ../../getting-started/installation.rst:48
 msgid "Distribution Package"
 msgstr ""
 
-#: ../../getting-started/installation.rst:47
+#: ../../getting-started/installation.rst:49
 msgid ""
 "If your distribution provides a Zrythm package you can also install it "
 "from there."
 msgstr ""
 
-#: ../../getting-started/installation.rst:51
+#: ../../getting-started/installation.rst:53
 msgid "Windows & MacOS"
 msgstr ""
 
-#: ../../getting-started/installation.rst:52
+#: ../../getting-started/installation.rst:54
 msgid "The installers above fully support Windows 64bit and MacOS."
 msgstr ""
 
-#: ../../getting-started/installation.rst:55
+#: ../../getting-started/installation.rst:57
 msgid "FreeBSD"
 msgstr "FreeBSD"
 
-#: ../../getting-started/installation.rst:59
-msgid ""
-"We plan to add FreeBSD support to the installer mentioned above in the "
-"future."
-msgstr ""
-
-#: ../../getting-started/installation.rst:63
+#: ../../getting-started/installation.rst:60
 msgid "Port"
 msgstr ""
 
-#: ../../getting-started/installation.rst:64
-msgid ""
-"You can also install Zrythm from `freshports "
-"<https://www.freshports.org/audio/zrythm/>`_."
+#: ../../getting-started/installation.rst:61
+msgid "You can install the Zrythm port from the official repositories."
 msgstr ""
 
 #: ../../getting-started/intro.rst:6
@@ -323,32 +318,32 @@ msgstr ""
 msgid "Recommendations"
 msgstr "Empfohlen"
 
-#: ../../getting-started/system-requirements.rst:20
+#: ../../getting-started/system-requirements.rst:21
 msgid "CPU"
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:20
 msgid ""
-"For smooth operation, it is recommended to use a CPU with at least 2GHz "
-"clock speed and at least 4 cores in total."
+"For smooth operation, we recommend using a CPU with at least 2GHz clock "
+"speed and at least 4 cores in total."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:23
+#: ../../getting-started/system-requirements.rst:24
 msgid "Monitor"
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:23
+#: ../../getting-started/system-requirements.rst:24
 msgid ""
 "It is recommended to have at least 16 inches of monitor space to work "
 "efficiently with Zrythm."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:26
+#: ../../getting-started/system-requirements.rst:28
 #, fuzzy
 msgid "Audio interface"
 msgstr "Audio-Schnittstelle"
 
-#: ../../getting-started/system-requirements.rst:26
+#: ../../getting-started/system-requirements.rst:27
 #, fuzzy
 msgid ""
 "An audio interface offers low latency and better quality than integrated "
@@ -357,28 +352,28 @@ msgstr ""
 "Es wird ein Audiointerface empfohlen, da es eine niedrige Latenz und eine"
 " bessere Qualität bietet (besonders bei der Aufnahme von Audio)."
 
-#: ../../getting-started/system-requirements.rst:29
+#: ../../getting-started/system-requirements.rst:31
 #, fuzzy
 msgid "MIDI keyboard"
 msgstr "MIDI-Keyboard"
 
-#: ../../getting-started/system-requirements.rst:29
+#: ../../getting-started/system-requirements.rst:31
 msgid "For quickly trying out melodies or recording."
 msgstr ""
 
-#: ../../getting-started/system-requirements.rst:32
+#: ../../getting-started/system-requirements.rst:34
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../getting-started/system-requirements.rst:33
+#: ../../getting-started/system-requirements.rst:35
 #, python-format
 msgid ""
-"When using the JACK backend, JACK needs to be set up and configured "
-"before running Zrythm. You will find lots of information online about how"
-" to configure JACK, such as `Demystifying JACK - A Beginners Guide to "
-"Getting Started with JACK <https://libremusicproduction.com/articles"
-"/demystifying-jack-%E2%80%93-beginners-guide-getting-started-"
-"jack.html>`_, so we will skip this part."
+"When using the :term:`JACK` backend, JACK needs to be set up and "
+"configured before running Zrythm. You will find lots of information "
+"online about how to configure JACK, such as `Demystifying JACK - A "
+"Beginners Guide to Getting Started with JACK "
+"<https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93"
+"-beginners-guide-getting-started-jack.html>`_, so we will skip this part."
 msgstr ""
 
 #~ msgid "Here are a few terms you should be aware of when using Zrythm."
@@ -1271,5 +1266,37 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "**OpenSUSE Tumbleweed** - x86_64"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "We plan to add FreeBSD support to"
+#~ " the installer mentioned above in the"
+#~ " future."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "You can also install Zrythm from "
+#~ "`freshports <https://www.freshports.org/audio/zrythm/>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For smooth operation, it is recommended"
+#~ " to use a CPU with at least "
+#~ "2GHz clock speed and at least 4"
+#~ " cores in total."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "When using the JACK backend, JACK "
+#~ "needs to be set up and configured"
+#~ " before running Zrythm. You will find"
+#~ " lots of information online about how"
+#~ " to configure JACK, such as "
+#~ "`Demystifying JACK - A Beginners Guide"
+#~ " to Getting Started with JACK "
+#~ "<https://libremusicproduction.com/articles/demystifying-"
+#~ "jack-%E2%80%93-beginners-guide-getting-started-"
+#~ "jack.html>`_, so we will skip this "
+#~ "part."
 #~ msgstr ""
 
