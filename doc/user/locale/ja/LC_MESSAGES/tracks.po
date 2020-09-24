@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 00:47+0100\n"
-"PO-Revision-Date: 2020-09-13 22:28+0000\n"
+"PO-Revision-Date: 2020-09-24 21:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/manualtracks/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -250,9 +251,8 @@ msgid "These are similar to :ref:`midi-track-automation-tracks`."
 msgstr "これらは :ref:`midi-track-automation-tracks` と同様です。"
 
 #: ../../tracks/automation.rst:8
-#, fuzzy
 msgid "Automation"
-msgstr "オートメーションを表示"
+msgstr "オートメーション"
 
 #: ../../tracks/automation.rst:11
 #, fuzzy
@@ -273,9 +273,8 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/automation.rst:24
-#, fuzzy
 msgid "Editing Automation"
-msgstr "オートメーションを表示"
+msgstr "オートメーションの編集"
 
 #: ../../tracks/automation.rst:25
 msgid ""
@@ -463,7 +462,7 @@ msgstr "これらは :ref:`audio-group-track` とほぼ同様ですが、オー�
 #: ../../tracks/inspector-page.rst:8
 #: ../../tracks/overview.rst:54
 msgid "Track Inspector"
-msgstr ""
+msgstr "トラックインスペクター"
 
 #: ../../tracks/inspector-page.rst:10
 msgid ""
@@ -490,9 +489,8 @@ msgid "The track that this track routes its output to."
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:32
-#, fuzzy
 msgid "Instrument"
-msgstr "音源トラック"
+msgstr "音源"
 
 #: ../../tracks/inspector-page.rst:31
 msgid ""
@@ -553,7 +551,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:87
 msgid "Fader"
-msgstr ""
+msgstr "フェーダー"
 
 #: ../../tracks/inspector-page.rst:88
 msgid "Fader section to control the volume and stereo balance."
@@ -575,15 +573,16 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:102
 msgid "Peak"
-msgstr ""
+msgstr "ピーク"
 
 #: ../../tracks/inspector-page.rst:103
 msgid "Peak signal value."
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:105
+#, fuzzy
 msgid "RMS"
-msgstr ""
+msgstr "RMS"
 
 #: ../../tracks/inspector-page.rst:105
 msgid "Root Mean Square of the signal value."
@@ -636,7 +635,7 @@ msgstr "現時点では使用されていません。"
 
 #: ../../tracks/inspector-page.rst:132
 msgid "Comments"
-msgstr ""
+msgstr "コメント"
 
 #: ../../tracks/inspector-page.rst:133
 msgid "User comments."
@@ -660,7 +659,7 @@ msgstr ""
 
 #: ../../tracks/instrument-track.rst:27
 msgid "Show UI"
-msgstr ""
+msgstr "UI を表示"
 
 #: ../../tracks/instrument-track.rst:27
 msgid "Displays the UI of the main plugin."
@@ -668,7 +667,7 @@ msgstr ""
 
 #: ../../tracks/instrument-track.rst:34
 msgid "Freeze"
-msgstr ""
+msgstr "フリーズ"
 
 #: ../../tracks/instrument-track.rst:35
 msgid "Freezes the track (not operational at the moment)."
@@ -704,7 +703,7 @@ msgstr ""
 
 #: ../../tracks/instrument-track.rst:82
 msgid "Freezing"
-msgstr ""
+msgstr "フリーズ中"
 
 #: ../../tracks/instrument-track.rst:84
 msgid ""
@@ -721,12 +720,12 @@ msgstr ""
 
 #: ../../tracks/intro.rst:8
 msgid "Tracks"
-msgstr ""
+msgstr "トラック"
 
 #: ../../tracks/marker-track.rst:10
 #: ../../tracks/track-types.rst:88
 msgid "Marker Track"
-msgstr ""
+msgstr "マーカートラック"
 
 #: ../../tracks/marker-track.rst:12
 msgid ""
@@ -742,7 +741,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:6
 #: ../../tracks/track-types.rst:71
 msgid "Master Track"
-msgstr ""
+msgstr "マスタートラック"
 
 #: ../../tracks/master-track.rst:8
 msgid ""
@@ -762,7 +761,7 @@ msgstr ""
 #: ../../tracks/midi-track.rst:6
 #: ../../tracks/track-types.rst:17
 msgid "MIDI Track"
-msgstr ""
+msgstr "MIDIトラック"
 
 #: ../../tracks/midi-track.rst:8
 msgid ""
@@ -788,7 +787,7 @@ msgstr ""
 
 #: ../../tracks/midi-track.rst:62
 msgid "Input Device"
-msgstr ""
+msgstr "入力デバイス"
 
 #: ../../tracks/midi-track.rst:61
 msgid "The input device(s) to receive MIDI signals from during recording."
@@ -796,7 +795,7 @@ msgstr ""
 
 #: ../../tracks/midi-track.rst:67
 msgid "Input Channel"
-msgstr ""
+msgstr "入力チャンネル"
 
 #: ../../tracks/midi-track.rst:65
 msgid ""
@@ -805,16 +804,18 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/midi-track.rst:75
+#, fuzzy
 msgid "Pre-Fader Out"
-msgstr ""
+msgstr "プリフェーダーアウト"
 
 #: ../../tracks/midi-track.rst:75
 msgid "The MIDI signal before the MIDI fader is applied."
 msgstr ""
 
 #: ../../tracks/midi-track.rst:78
+#, fuzzy
 msgid "Fader Out"
-msgstr ""
+msgstr "フェーダーアウト"
 
 #: ../../tracks/midi-track.rst:78
 msgid "The MIDI signal after the MIDI fader is applied."
@@ -865,16 +866,17 @@ msgstr ""
 
 #: ../../tracks/midi-track.rst:127
 #: ../../tracks/overview.rst:60
+#, fuzzy
 msgid "Context Menu"
-msgstr ""
+msgstr "コンテキストメニュー"
 
 #: ../../tracks/midi-track.rst:132
 msgid "MIDI Transformations"
-msgstr ""
+msgstr "MIDI変換"
 
 #: ../../tracks/midi-track.rst:135
 msgid "Transpose"
-msgstr ""
+msgstr "トランスポーズ"
 
 #: ../../tracks/overview.rst:6
 msgid "Overview"
@@ -915,7 +917,7 @@ msgstr ""
 
 #: ../../tracks/overview.rst:39
 msgid "Track Interface"
-msgstr ""
+msgstr "トラックインタフェース"
 
 #: ../../tracks/overview.rst:44
 msgid ""
@@ -951,11 +953,11 @@ msgstr ""
 
 #: ../../tracks/track-operations.rst:8
 msgid "Track Operations"
-msgstr ""
+msgstr "トラックの操作"
 
 #: ../../tracks/track-operations.rst:11
 msgid "Moving Tracks"
-msgstr ""
+msgstr "トラックの移動"
 
 #: ../../tracks/track-operations.rst:12
 msgid ""
@@ -966,7 +968,7 @@ msgstr ""
 
 #: ../../tracks/track-operations.rst:18
 msgid "Deleting Tracks"
-msgstr ""
+msgstr "トラックの削除"
 
 #: ../../tracks/track-operations.rst:20
 msgid ""
@@ -980,7 +982,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:6
 msgid "Track Types"
-msgstr ""
+msgstr "トラックの種類"
 
 #: ../../tracks/track-types.rst:8
 msgid ""
@@ -1084,8 +1086,9 @@ msgid "*Input:* **None**, *Output:* **None**"
 msgstr ""
 
 #: ../../tracks/track-visibility.rst:8
+#, fuzzy
 msgid "Track Visibility"
-msgstr ""
+msgstr "トラックの可視性"
 
 #: ../../tracks/track-visibility.rst:10
 msgid ""
@@ -1341,4 +1344,3 @@ msgstr "トラック内を右クリックして :zbutton:`Duplicate` を選択�
 #~ "suited for different purposes, explained "
 #~ "in the following sections."
 #~ msgstr ""
-

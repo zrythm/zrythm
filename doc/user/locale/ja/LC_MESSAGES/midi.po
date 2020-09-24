@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-04 08:01+0100\n"
-"PO-Revision-Date: 2019-08-26 13:09+0000\n"
+"PO-Revision-Date: 2020-09-24 21:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualmidi/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.6.0\n"
 
 #: ../../midi/freezing-instruments.rst:2
@@ -39,7 +39,7 @@ msgstr ""
 
 #: ../../midi/instrument-tracks.rst:2
 msgid "Instrument Tracks"
-msgstr ""
+msgstr "音源トラック"
 
 #: ../../midi/instrument-tracks.rst:4
 msgid ""
@@ -53,7 +53,7 @@ msgstr "MIDI"
 
 #: ../../midi/midi-regions.rst:2
 msgid "MIDI Clips"
-msgstr ""
+msgstr "MIDI クリップ"
 
 #: ../../midi/midi-regions.rst:4
 msgid "MIDI Clips are Clips that contain MIDI notes."
@@ -61,8 +61,8 @@ msgstr ""
 
 #: ../../midi/midi-transformations/intro.rst:2
 msgid "MIDI Transformations"
-msgstr ""
+msgstr "MIDI変換"
 
 #: ../../midi/midi-transformations/transpose.rst:2
 msgid "Transpose"
-msgstr ""
+msgstr "トランスポーズ"

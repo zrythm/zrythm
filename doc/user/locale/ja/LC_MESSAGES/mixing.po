@@ -8,22 +8,23 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-01-24 23:02+0000\n"
+"PO-Revision-Date: 2020-09-24 21:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualmixing/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/manualmixing/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../mixing/channels.rst:6
 #: ../../mixing/channels/intro.rst:6
 #: ../../mixing/overview.rst:37
 msgid "Channels"
-msgstr ""
+msgstr "チャンネル"
 
 #: ../../mixing/channels.rst:7
 #: ../../mixing/overview.rst:38
@@ -52,7 +53,7 @@ msgstr ""
 
 #: ../../mixing/channels/channel-overview.rst:6
 msgid "Channel Overview"
-msgstr ""
+msgstr "チャンネルの概要"
 
 #: ../../mixing/channels/controls.rst:6
 msgid "Controls"
@@ -60,20 +61,20 @@ msgstr "コントロール"
 
 #: ../../mixing/channels/fader.rst:6
 msgid "Fader"
-msgstr ""
+msgstr "フェーダー"
 
 #: ../../mixing/channels/meters.rst:6
 #: ../../mixing/meters.rst:6
 msgid "Meters"
-msgstr ""
+msgstr "メーター"
 
 #: ../../mixing/channels/plugin-strip.rst:6
 msgid "Plugin Strip"
-msgstr ""
+msgstr "プラグインのストリップ"
 
 #: ../../mixing/intro.rst:8
 msgid "Mixing"
-msgstr ""
+msgstr "ミキシング"
 
 #: ../../mixing/meters.rst:8
 msgid ""
@@ -83,7 +84,7 @@ msgstr ""
 
 #: ../../mixing/mixdown.rst:6
 msgid "Mixdown"
-msgstr ""
+msgstr "ミックスダウン"
 
 #: ../../mixing/mixdown.rst:8
 msgid ""
@@ -105,7 +106,7 @@ msgstr ""
 
 #: ../../mixing/overview.rst:17
 msgid "Mixer"
-msgstr ""
+msgstr "ミキサー"
 
 #: ../../mixing/overview.rst:18
 msgid ""
@@ -133,7 +134,7 @@ msgstr ""
 
 #: ../../mixing/panning.rst:6
 msgid "Panning"
-msgstr ""
+msgstr "パンニング"
 
 #: ../../mixing/panning.rst:8
 msgid ""
@@ -152,11 +153,11 @@ msgstr ""
 #: ../../mixing/routing.rst:6
 #: ../../mixing/routing/intro.rst:6
 msgid "Routing"
-msgstr ""
+msgstr "ルーティング"
 
 #: ../../mixing/routing.rst:9
 msgid "Groups"
-msgstr ""
+msgstr "グループ"
 
 #: ../../mixing/routing.rst:10
 msgid ""
@@ -203,7 +204,7 @@ msgstr ""
 #: ../../mixing/routing.rst:41
 #: ../../mixing/sidechaining.rst:6
 msgid "Sidechaining"
-msgstr ""
+msgstr "サイドチェーン"
 
 #: ../../mixing/routing.rst:42
 msgid ""
@@ -214,11 +215,11 @@ msgstr ""
 
 #: ../../mixing/routing/buses.rst:6
 msgid "Buses"
-msgstr ""
+msgstr "バス"
 
 #: ../../mixing/routing/insert-effects.rst:6
 msgid "Insert Effects"
-msgstr ""
+msgstr "インサートエフェクト"
 
 #: ../../mixing/routing/ports.rst:6
 msgid "Ports"
@@ -226,12 +227,11 @@ msgstr "ポート"
 
 #: ../../mixing/routing/routing-overview.rst:6
 msgid "Routing Overview"
-msgstr ""
+msgstr "ルーティングの概要"
 
 #: ../../mixing/routing/send-effects.rst:6
 msgid "Send Effects"
-msgstr ""
+msgstr "センドエフェクト"
 
 #~ msgid "TODO"
 #~ msgstr "TODO"
-
