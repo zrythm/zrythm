@@ -9,8 +9,6 @@ registration.
 
 # Objective of this Policy
 The objective of this trademark policy is:
-- to encourage widespread use and adoption of the
-Zrythm trademarks
 - to clarify proper usage of Zrythm trademarks by
 third parties
 - to prevent misuse of Zrythm trademarks that can

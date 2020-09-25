@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 20:06+0100\n"
+"POT-Creation-Date: 2020-09-25 14:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,36 +31,51 @@ msgstr ""
 msgid "zrythm"
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:22
+#: ../../invoking-from-command-line/intro.rst:17
+msgid "Zrythm executable."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:23
 msgid "Prints a list of available options."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:26
+#: ../../invoking-from-command-line/intro.rst:27
 msgid "Pretty-prints the output (where applicable)."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:30
+#: ../../invoking-from-command-line/intro.rst:31
 msgid ""
 "Prints all the user settings. Can be combined with :option:`--pretty` to "
 "get pretty-printed output, like below."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:39
+#: ../../invoking-from-command-line/intro.rst:40
 msgid "Resets user settings to their default values."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:41
+#: ../../invoking-from-command-line/intro.rst:42
 msgid ""
 "Only affects the settings printed with :option:`-p`. This will *not* "
 "affect any files in the :term:`Zrythm user path`."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:46
+#: ../../invoking-from-command-line/intro.rst:47
 msgid "This will clear ALL your user settings."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:51
+#: ../../invoking-from-command-line/intro.rst:52
 msgid "Prints the Zrythm version."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:55
+msgid "zrythm_launch"
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:56
+msgid ""
+"Wrapper over :program:`zrythm` that sets the correct paths before "
+"launching Zrythm. All of the options for :program:`zrythm` can also be "
+"passed to :program:`zrythm_launch`."
 msgstr ""
 
 #~ msgid "TODO"

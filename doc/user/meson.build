@@ -19,10 +19,14 @@ if sphinx_build.found () and sphinx_intl.found ()
 
 sphinx_builddir = meson.current_build_dir () / '_build'
 
+# used to only create guile docs when possible,
+# otherwise reuse what is already there
+can_make_guile_docs = guile_dep.found () and get_option ('guile_snarf_docs_path') != ''
+
 # Create custom targets (each API .rst file) and save
 # them in guile_docs
 guile_docs = []
-if guile_dep.found () and get_option ('guile_snarf_docs_path') != ''
+if can_make_guile_docs
   foreach snarfable_src : guile_snarfable_srcs
     split_by_dot = snarfable_src.split('.')
     without_ext = ''
@@ -114,10 +118,15 @@ foreach lang : locales
       output_dir, '&&', 'touch', '@OUTPUT@',
       ]
 
+    deps = []
+    if can_make_guile_docs
+      deps = copy_guile_docs_target
+    endif
+
     run_target (
       name,
       command: command,
-      depends: copy_guile_docs_target)
+      depends: deps)
 
     if format == 'html' or format == 'singlehtml'
       html_manual = custom_target (
@@ -130,7 +139,7 @@ foreach lang : locales
         install: get_option ('user_manual'),
         install_dir: docdir,
         build_by_default: get_option ('user_manual'),
-        depends: copy_guile_docs_target,
+        depends: deps,
         )
       if format == 'html'
         html_manuals += html_manual
@@ -154,7 +163,7 @@ manual_gettext_gen_pot = custom_target (
     meson.current_source_dir (),
     sphinx_builddir,
     ],
-  depends: copy_guile_docs_target,
+  depends: can_make_guile_docs ? copy_guile_docs_target : [],
   )
 
 sphinx_intl_update_targets = []
