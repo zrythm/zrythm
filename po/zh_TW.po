@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-24 00:55+0100\n"
-"PO-Revision-Date: 2020-09-24 21:18+0000\n"
+"PO-Revision-Date: 2020-09-25 13:15+0000\n"
 "Last-Translator: xunil-cloud <freed602om@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
@@ -1298,7 +1298,7 @@ msgstr "事件檢視器"
 
 #: src/gui/widgets/header.c:108
 msgid "Scripting interface"
-msgstr ""
+msgstr "腳本界面"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
