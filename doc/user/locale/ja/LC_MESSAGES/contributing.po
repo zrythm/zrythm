@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-09-24 21:18+0000\n"
+"PO-Revision-Date: 2020-09-25 13:15+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualcontributing/ja/>\n"
@@ -159,11 +159,11 @@ msgstr "`リベラペイ <https://liberapay.com/Zrythm>`_"
 
 #: ../../contributing/intro.rst:81
 msgid "`PayPal <https://paypal.me/zrythm>`_"
-msgstr ""
+msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
 #: ../../contributing/intro.rst:82
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
-msgstr ""
+msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
 #: ../../contributing/intro.rst:84
 msgid ""

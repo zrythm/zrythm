@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-24 21:18+0000\n"
+"PO-Revision-Date: 2020-09-25 13:15+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -54,7 +55,7 @@ msgstr "現設定を表示"
 
 #: ../../configuration/additional-settings.rst:27
 msgid "See :option:`zrythm --print-settings`."
-msgstr ""
+msgstr ":option:`zrythm --print-settings`を参照してください。"
 
 #: ../../configuration/additional-settings.rst:30
 msgid "Reset to Factory Settings"
@@ -62,7 +63,7 @@ msgstr "初期設定にリセット"
 
 #: ../../configuration/additional-settings.rst:32
 msgid "See :option:`zrythm --reset-to-factory`."
-msgstr ""
+msgstr ":option:`zrythm --reset-to-factory`を参照してください。"
 
 #: ../../configuration/additional-settings.rst:34
 msgid "This will be added to the UI soon."
@@ -167,7 +168,7 @@ msgstr "パス"
 
 #: ../../configuration/first-run-wizard.rst:33
 msgid "This is the :term:`Zrythm user path`."
-msgstr ""
+msgstr "これは :term:`Zrythm user path` です。"
 
 #: ../../configuration/first-run-wizard.rst:36
 msgid "Audio/MIDI Backends"
@@ -307,7 +308,7 @@ msgstr "Zrythmのパス"
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "The :term:`Zrythm user path`."
-msgstr ""
+msgstr ":term:`Zrythm user path`。"
 
 #: ../../configuration/preferences/intro.rst:55
 msgid "Plugins"

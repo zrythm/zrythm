@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-09-24 21:18+0000\n"
+"PO-Revision-Date: 2020-09-25 13:15+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/ja/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
 msgid "BPM and Time Signatures"
-msgstr ""
+msgstr "BPM と拍子"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
 msgid "BPM"
@@ -50,8 +50,9 @@ msgid "The Time Signature is split into the following"
 msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:34
+#, fuzzy
 msgid "Beats per Bar"
-msgstr ""
+msgstr "バーあたりのビート数"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:33
 msgid ""
@@ -71,11 +72,11 @@ msgstr ""
 
 #: ../../playback-and-recording/intro.rst:6
 msgid "Playback and Recording"
-msgstr ""
+msgstr "再生と録音"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:6
 msgid "Loop Points and Markers"
-msgstr ""
+msgstr "ループポイントとマーカー"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:11
 msgid "Loop Points"
@@ -104,7 +105,7 @@ msgstr ""
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:36
 msgid "Song Start & End Markers"
-msgstr ""
+msgstr "曲の開始と終了マーカー"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:41
 msgid ""
@@ -165,7 +166,7 @@ msgstr "位置"
 
 #: ../../playback-and-recording/overview.rst:20
 msgid "Zrythm uses the following format for positions:"
-msgstr ""
+msgstr "Zrythm は、ポジションに次の形式を使用しています。"
 
 #: ../../playback-and-recording/overview.rst:26
 msgid "Each sixteenth note is fixed to have 240 ticks."
@@ -177,7 +178,7 @@ msgstr "録音中"
 
 #: ../../playback-and-recording/recording.rst:9
 msgid "Arming Tracks"
-msgstr ""
+msgstr "トラックのアーム"
 
 #: ../../playback-and-recording/recording.rst:10
 msgid ""
@@ -197,7 +198,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:22
 msgid "Recording Audio & MIDI"
-msgstr ""
+msgstr "オーディオとMIDIの録音"
 
 #: ../../playback-and-recording/recording.rst:23
 msgid ""
@@ -276,7 +277,7 @@ msgstr "録音"
 
 #: ../../playback-and-recording/transport-controls.rst:17
 msgid "Arms the project for recording."
-msgstr ""
+msgstr "録音のためにプロジェクトをアームする。"
 
 #: ../../playback-and-recording/transport-controls.rst:20
 msgid "Play"

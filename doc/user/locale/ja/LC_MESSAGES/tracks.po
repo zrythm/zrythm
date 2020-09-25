@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-24 21:18+0000\n"
+"PO-Revision-Date: 2020-09-25 13:15+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/ja/>\n"
@@ -323,7 +323,7 @@ msgstr "これらは :ref:`instrument-track-sends` と同様です。"
 
 #: ../../tracks/bus-track-midi.rst:8
 msgid "MIDI FX Track"
-msgstr ""
+msgstr "MIDI FXトラック"
 
 #: ../../tracks/bus-track-midi.rst:10
 #, fuzzy
@@ -447,7 +447,7 @@ msgstr "オーディオグループトラックの出力をルーティングす
 
 #: ../../tracks/group-track-midi.rst:8
 msgid "MIDI Group Track"
-msgstr ""
+msgstr "MIDI グループトラック"
 
 #: ../../tracks/group-track-midi.rst:10
 msgid ""
@@ -501,7 +501,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:46
 msgid "MIDI FX/Inserts"
-msgstr ""
+msgstr "MIDI FX/インサート"
 
 #: ../../tracks/inspector-page.rst:48
 msgid ""
@@ -529,7 +529,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:68
 msgid "Aux Sends"
-msgstr ""
+msgstr "AUXセンド"
 
 #: ../../tracks/inspector-page.rst:70
 msgid ""
@@ -574,7 +574,7 @@ msgstr "ピーク"
 
 #: ../../tracks/inspector-page.rst:103
 msgid "Peak signal value."
-msgstr ""
+msgstr "信号のピーク値。"
 
 #: ../../tracks/inspector-page.rst:105
 #, fuzzy
@@ -623,7 +623,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:129
 msgid "Channel Settings"
-msgstr ""
+msgstr "チャンネル設定"
 
 #: ../../tracks/inspector-page.rst:129
 #, fuzzy
@@ -636,11 +636,11 @@ msgstr "コメント"
 
 #: ../../tracks/inspector-page.rst:133
 msgid "User comments."
-msgstr ""
+msgstr "ユーザーコメント。"
 
 #: ../../tracks/inspector-page.rst:138
 msgid "This is a TODO feature."
-msgstr ""
+msgstr "これは TODOです。"
 
 #: ../../tracks/instrument-track.rst:8
 msgid "Instrument Track"
@@ -665,7 +665,7 @@ msgstr "UI を表示"
 
 #: ../../tracks/instrument-track.rst:32
 msgid "Displays the UI of the main plugin."
-msgstr ""
+msgstr "メイン プラグインの UI を表示します。"
 
 #: ../../tracks/instrument-track.rst:39
 msgid "Freeze"
@@ -681,11 +681,11 @@ msgstr ""
 
 #: ../../tracks/instrument-track.rst:61
 msgid "These are similar to :ref:`midi-track-inputs`."
-msgstr ""
+msgstr "これらは :ref:`midi-track-lanes` と同様です。"
 
 #: ../../tracks/instrument-track.rst:69
 msgid "Pre-Fader Out L/R"
-msgstr ""
+msgstr "プリフェーダーアウトL / R"
 
 #: ../../tracks/instrument-track.rst:69
 msgid "The stereo audio signal before the fader is applied."
@@ -693,7 +693,7 @@ msgstr ""
 
 #: ../../tracks/instrument-track.rst:72
 msgid "Fader Out L/R"
-msgstr ""
+msgstr "フェーダーアウトL / R"
 
 #: ../../tracks/instrument-track.rst:72
 msgid "The stereo audio signal after the fader is applied."
@@ -701,7 +701,7 @@ msgstr ""
 
 #: ../../tracks/instrument-track.rst:74
 msgid "You can use these for side-chaining."
-msgstr ""
+msgstr "これらはサイドチェーンに使用できます。"
 
 #: ../../tracks/instrument-track.rst:87
 msgid "Freezing"
@@ -738,7 +738,7 @@ msgstr ""
 
 #: ../../tracks/marker-track.rst:32
 msgid "The name of the marker track."
-msgstr ""
+msgstr "マーカー トラックの名前。"
 
 #: ../../tracks/master-track.rst:6
 msgid "Master Track"
@@ -825,7 +825,7 @@ msgstr ""
 
 #: ../../tracks/midi-track.rst:83
 msgid "The MIDI fader uses MIDI volume CC."
-msgstr ""
+msgstr "MIDI フェーダーは MIDI ボリューム CC を使用します。"
 
 #: ../../tracks/midi-track.rst:85
 msgid ""
@@ -988,7 +988,7 @@ msgstr ""
 
 #: ../../tracks/track-operations.rst:24
 msgid "All Track operations are undoable."
-msgstr ""
+msgstr "トラックの操作はすべて元に戻すことができます。"
 
 #: ../../tracks/track-types.rst:6
 msgid "Track Types"
@@ -1012,7 +1012,7 @@ msgstr "入力"
 
 #: ../../tracks/track-types.rst:12
 msgid "Output"
-msgstr ""
+msgstr "出力"
 
 #: ../../tracks/track-types.rst:12
 #, fuzzy
@@ -1021,7 +1021,7 @@ msgstr "録音"
 
 #: ../../tracks/track-types.rst:12
 msgid "Objects"
-msgstr ""
+msgstr "オブジェクト"
 
 #: ../../tracks/track-types.rst:14
 #: ../../tracks/track-types.rst:15
@@ -1029,18 +1029,18 @@ msgstr ""
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:20
 msgid "Audio"
-msgstr ""
+msgstr "オーディオ"
 
 #: ../../tracks/track-types.rst:14
 #: ../../tracks/track-types.rst:17
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:22
 msgid "Yes"
-msgstr ""
+msgstr "はい"
 
 #: ../../tracks/track-types.rst:14
 msgid "Audio regions"
-msgstr ""
+msgstr "オーディオリージョン"
 
 #: ../../tracks/track-types.rst:15
 #, fuzzy
@@ -1056,7 +1056,7 @@ msgstr "オーディオトラック"
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "No"
-msgstr ""
+msgstr "いいえ"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -1067,11 +1067,11 @@ msgstr ""
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "None"
-msgstr ""
+msgstr "なし"
 
 #: ../../tracks/track-types.rst:16
 msgid "Audio FX"
-msgstr ""
+msgstr "オーディオFX"
 
 #: ../../tracks/track-types.rst:17
 #, fuzzy
@@ -1084,44 +1084,44 @@ msgstr "録音"
 #: ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:24
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord regions & scales"
-msgstr ""
+msgstr "コードリージョンとスケール"
 
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:22
 msgid "MIDI regions"
-msgstr ""
+msgstr "MIDI リージョン"
 
 #: ../../tracks/track-types.rst:19
 msgid "Marker"
-msgstr ""
+msgstr "マーカー"
 
 #: ../../tracks/track-types.rst:19
 msgid "Markers"
-msgstr ""
+msgstr "マーカー"
 
 #: ../../tracks/track-types.rst:20
 msgid "Master"
-msgstr ""
+msgstr "マスター"
 
 #: ../../tracks/track-types.rst:21
 msgid "Modulators"
-msgstr ""
+msgstr "モジュレーター"
 
 #: ../../tracks/track-types.rst:23
 msgid "MIDI Group"
-msgstr ""
+msgstr "MIDI グループ"
 
 #: ../../tracks/track-types.rst:24
 msgid "MIDI FX"
-msgstr ""
+msgstr "MIDI FX"
 
 #: ../../tracks/track-types.rst:25
 msgid "Tempo"
-msgstr ""
+msgstr "テンポ"
 
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."
@@ -1523,4 +1523,3 @@ msgstr "トラック内を右クリックして :zbutton:`Duplicate` を選択�
 
 #~ msgid "*Input:* **None**, *Output:* **None**"
 #~ msgstr ""
-

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: 2020-09-24 21:18+0000\n"
+"PO-Revision-Date: 2020-09-25 13:15+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualsessions/ja/>\n"
@@ -30,7 +30,7 @@ msgstr "MIDI のインポート/エクスポート"
 
 #: ../../sessions/importing-exporting/intro.rst:2
 msgid "Importing and Exporting"
-msgstr ""
+msgstr "インポートとエクスポート"
 
 #: ../../sessions/intro.rst:2
 msgid "Sessions"
@@ -42,7 +42,7 @@ msgstr "セッション情報"
 
 #: ../../sessions/session-management-and-compatibility.rst:2
 msgid "Session Management and Compatibility"
-msgstr ""
+msgstr "セッション管理と互換性"
 
 #: ../../sessions/tracks/adding-tracks.rst:2
 msgid "Adding Tracks"
@@ -75,7 +75,7 @@ msgstr "トラックの並び替え"
 
 #: ../../sessions/tracks/track-context-menu.rst:2
 msgid "Track Context Menu"
-msgstr ""
+msgstr "トラックのコンテキストメニュー"
 
 #: ../../sessions/tracks/track-overview.rst:2
 msgid "Track Overview"
@@ -91,7 +91,7 @@ msgstr "トラックの種類"
 
 #: ../../sessions/tracks/track-types.rst:4
 msgid "The following track types exist:"
-msgstr ""
+msgstr "以下のトラックの種類が存在します。"
 
 #: ../../sessions/tracks/track-types.rst:6
 msgid "Instrument Track"
@@ -99,7 +99,7 @@ msgstr "音源トラック"
 
 #: ../../sessions/tracks/track-types.rst:7
 msgid "track containing MIDI regions and automation"
-msgstr ""
+msgstr "MIDIリージョンとオートメーションを含むトラック"
 
 #: ../../sessions/tracks/track-types.rst:8
 msgid "Audio Track"
