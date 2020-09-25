@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 00:47+0100\n"
-"PO-Revision-Date: 2020-09-23 19:03+0000\n"
-"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
+"PO-Revision-Date: 2020-09-25 18:02+0000\n"
+"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/ru/>\n"
 "Language: ru\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -884,7 +885,7 @@ msgstr ""
 
 #: ../../editing/intro.rst:8
 msgid "Editing"
-msgstr ""
+msgstr "Редактирование (Editing)"
 
 #: ../../editing/making-selections/intro.rst:6
 msgid "Making Selections"
@@ -1649,4 +1650,3 @@ msgstr ""
 #~ " ranges) will allow you to reposition"
 #~ " the playhead."
 #~ msgstr ""
-
