@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 15:10+0100\n"
+"POT-Creation-Date: 2020-09-25 19:56+0100\n"
 "PO-Revision-Date: 2020-05-10 07:35+0000\n"
 "Last-Translator: Nicolas FAURE <sub26nico@laposte.net>\n"
 "Language: fr\n"
@@ -226,8 +226,8 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:31
 msgid ""
-"See the ``INSTALL.md`` file in the source distribution for installation "
-"instructions."
+"See the :file:`INSTALL.md` file in the source distribution for "
+"installation instructions."
 msgstr ""
 
 #: ../../getting-started/installation.rst:35
@@ -1247,5 +1247,11 @@ msgstr ""
 #~ "jack-%E2%80%93-beginners-guide-getting-started-"
 #~ "jack.html>`_, so we will skip this "
 #~ "part."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "See the ``INSTALL.md`` file in the "
+#~ "source distribution for installation "
+#~ "instructions."
 #~ msgstr ""
 
