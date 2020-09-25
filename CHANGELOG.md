@@ -1,6 +1,33 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.2.0.1] - 2020-09-25
+### Added
+- Add DSSI and LADSPA plugin support
+- Support VST and LADSPA shells (libraries that contain multiple plugins)
+- Add better error handling when opening plugin UIs
+- Remember arranger zoom levels with projects
+- Allow passing arguments to `zrythm_launch`
+- Remember user choice when right-clicking on a plugin to instantiate it
+- User manual: Add Glossary, Command Line and Environment pages
+- Add `af_ZA` locale
+- Add tests for PO files
+- Add translation context to UI labels in Preferences dialog
+
+### Changed
+- User manual: Update various sections
+- Updated Russian, Chinese (Traditional), Japanese, Spanish, Swedish translations
+- Change `zh_Hans` to `zh_CN` and `zh_Hant` to `zh_TW`
+- Port sphinx Makefile to meson
+- Use latest Carla API
+
+### Fixed
+- Fix unnecessarily loading Carla plugin states for non-project plugins on project load
+- Add missing nl locale in LINGUAS
+- Fix attempting to open custom UIs on plugins that don't have any
+- Fix crash when clicking on port selector in Tempo track automation lanes
+- Fix track auto-arm
+
 ## [1.0.0-alpha.0.1.1] - 2020-09-18
 ### Added
 - Increase open file limit on app startup

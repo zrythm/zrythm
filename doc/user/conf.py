@@ -30,7 +30,7 @@ author = 'Alexandros Theodotou'
 from subprocess import check_output
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0-alpha.0.1.1'
+release = '1.0.0-alpha.2.0.1'
 # The short X.Y version
 version = release[:-4]
 
