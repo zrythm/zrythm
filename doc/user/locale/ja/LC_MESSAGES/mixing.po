@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-09-24 21:18+0000\n"
+"PO-Revision-Date: 2020-09-25 13:15+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualmixing/ja/>\n"
@@ -42,7 +42,7 @@ msgstr ""
 #: ../../mixing/channels.rst:19
 #: ../../mixing/overview.rst:50
 msgid "Changing the Track Name"
-msgstr ""
+msgstr "トラック名の変更"
 
 #: ../../mixing/channels.rst:20
 #: ../../mixing/overview.rst:51
@@ -95,7 +95,7 @@ msgstr ""
 
 #: ../../mixing/overview.rst:8
 msgid "Mixing Overview"
-msgstr ""
+msgstr "ミキシングの概要"
 
 #: ../../mixing/overview.rst:9
 msgid ""
@@ -173,7 +173,7 @@ msgstr ""
 
 #: ../../mixing/routing.rst:22
 msgid "Buses/FX Tracks"
-msgstr ""
+msgstr "バス/FXトラック"
 
 #: ../../mixing/routing.rst:23
 msgid ""

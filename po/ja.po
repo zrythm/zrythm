@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-24 00:55+0100\n"
-"PO-Revision-Date: 2020-09-24 21:18+0000\n"
+"PO-Revision-Date: 2020-09-25 13:15+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -34,7 +34,7 @@ msgstr "ダミー"
 #: src/gui/widgets/route_target_selector.c:55
 #: src/gui/widgets/route_target_selector_popover.c:152
 msgid "None"
-msgstr "無し"
+msgstr "なし"
 
 #: inc/gui/backend/arranger_object.h:90
 #: resources/ui/chord_selector_window.ui:701
@@ -136,7 +136,7 @@ msgstr "オーディオ"
 #: inc/audio/track.h:164 src/project.c:675
 #: src/gui/widgets/route_target_selector_popover.c:163
 msgid "Master"
-msgstr "マスタ"
+msgstr "マスター"
 
 #: inc/audio/track.h:165 src/gui/widgets/event_viewer.c:118
 #: src/gui/widgets/event_viewer.c:589 src/audio/region.c:402
@@ -169,7 +169,7 @@ msgstr "MIDI FX"
 
 #: inc/audio/track.h:173
 msgid "MIDI Group"
-msgstr "MIDIグループ"
+msgstr "MIDI グループ"
 
 #: inc/audio/curve.h:90 src/audio/curve.c:39
 #, c-format
@@ -234,7 +234,7 @@ msgstr "192,000"
 
 #: inc/audio/engine.h:213
 msgid "Dummy (libsoundio)"
-msgstr ""
+msgstr "ダミー (libsoundio)"
 
 #: inc/audio/engine.h:279
 #, fuzzy
@@ -787,7 +787,7 @@ msgstr "JACKへのポートの公開"
 
 #: src/gui/widgets/log_viewer.c:127
 msgid "Log Viewer"
-msgstr "ログビューア"
+msgstr "ログ ビューア"
 
 #: src/gui/widgets/track_properties_expander.c:110
 #: src/gui/widgets/track_visibility_tree.c:163
@@ -1367,7 +1367,7 @@ msgstr "寄付する"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Report a Bug"
-msgstr "バグを報告"
+msgstr "バグを報告する"
 
 #: src/gui/widgets/port_connections_tree.c:183
 #: src/gui/widgets/home_toolbar.c:135 src/gui/widgets/cc_bindings_tree.c:175
@@ -1429,11 +1429,11 @@ msgstr "プラグインブラウザ"
 #: src/gui/widgets/right_dock_edge.c:133
 #: src/gui/widgets/file_browser_window.c:38
 msgid "File Browser"
-msgstr "ファイルブラウザ"
+msgstr "ファイル ブラウザ"
 
 #: src/gui/widgets/right_dock_edge.c:152
 msgid "Control Room"
-msgstr "管理室"
+msgstr "コントロールルーム"
 
 #: src/gui/widgets/right_dock_edge.c:179
 msgid "Show file browser"
@@ -1529,6 +1529,7 @@ msgid "Script execution failed"
 msgstr "スクリプトの実行に失敗しました"
 
 #: src/gui/widgets/scripting_window.c:228
+#, fuzzy
 msgid "Scripting Interface"
 msgstr "スクリプトインタフェース"
 
@@ -1695,9 +1696,10 @@ msgstr "プロジェクトを開く"
 
 #: src/gui/widgets/project_toolbar.c:43
 msgid "Export As"
-msgstr "名前を付けて出力"
+msgstr "名前を付けてエクスポート"
 
 #: src/gui/widgets/project_toolbar.c:44
+#, fuzzy
 msgid "Export Graph"
 msgstr "ルーティング図をエクスポート"
 
@@ -1711,15 +1713,15 @@ msgstr "ズーム イン"
 
 #: src/gui/widgets/view_toolbar.c:41
 msgid "Zoom Out"
-msgstr "ズーム アウト"
+msgstr "ズームアウト"
 
 #: src/gui/widgets/view_toolbar.c:42
 msgid "Original Size"
-msgstr "通常サイズ"
+msgstr "オリジナル サイズ"
 
 #: src/gui/widgets/view_toolbar.c:43
 msgid "Best Fit"
-msgstr "最適表示"
+msgstr "ベストフィット"
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Fullscreen"
@@ -2271,7 +2273,7 @@ msgstr "XRUNが発生しました - JACKの設定を確認してください"
 
 #: src/audio/engine_jack.c:340
 msgid "JACK has shut down"
-msgstr ""
+msgstr "JACKがシャットダウンしました"
 
 #. TRANSLATORS: JACK failure messages
 #: src/audio/engine_jack.c:528

@@ -1,14 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# Alexandros Theodotou <alextee@posteo.net>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-06-17 12:51+0000\n"
+"PO-Revision-Date: 2020-09-25 13:15+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/>"
 "\n"
@@ -17,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.7-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #: src/zrythm.c:242
 msgid "Initializing settings"
@@ -101,8 +100,9 @@ msgid "Error loading LV2 bundle dir: "
 msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:59
+#, fuzzy
 msgid "INPUTS"
-msgstr ""
+msgstr "Εισροές"
 
 #: src/gui/widgets/port_connections_popover.c:78
 msgid "OUTPUTS"
@@ -241,8 +241,9 @@ msgid "Snap/Grid options"
 msgstr ""
 
 #: src/gui/widgets/ruler_marker.c:315
+#, fuzzy
 msgid "Playhead"
-msgstr ""
+msgstr "Κεφαλή αναπαραγωγής"
 
 #: src/gui/widgets/ports_expander.c:140
 msgid "Control Ins"
