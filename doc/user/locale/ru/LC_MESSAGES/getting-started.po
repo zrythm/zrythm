@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 15:10+0100\n"
-"PO-Revision-Date: 2020-09-24 21:18+0000\n"
-"Last-Translator: ilya7 <mrzarp@protonmail.com>\n"
+"PO-Revision-Date: 2020-09-25 18:02+0000\n"
+"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualgetting-started/ru/>\n"
 "Language: ru\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../getting-started/getting-plugins.rst:6
@@ -210,7 +211,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:22
 msgid "The installers also include bundled plugins."
-msgstr ""
+msgstr "Программы установки также включают устанавливают встроенные плагины."
 
 #: ../../getting-started/installation.rst:25
 msgid "Manual Installation"
@@ -295,7 +296,7 @@ msgstr "Порт"
 
 #: ../../getting-started/installation.rst:61
 msgid "You can install the Zrythm port from the official repositories."
-msgstr ""
+msgstr "Вы можете установить портированный Zrythm из официальных репозиториев."
 
 #: ../../getting-started/intro.rst:6
 msgid "Getting Started"
@@ -307,7 +308,7 @@ msgstr "Системные Требования"
 
 #: ../../getting-started/system-requirements.rst:9
 msgid "Hardware"
-msgstr "Аппаратные средства"
+msgstr "Оборудование"
 
 #: ../../getting-started/system-requirements.rst:10
 msgid "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) or aarch64 (ARMv8)"
@@ -330,7 +331,6 @@ msgid "CPU"
 msgstr "Процессор (CPU)"
 
 #: ../../getting-started/system-requirements.rst:20
-#, fuzzy
 msgid ""
 "For smooth operation, we recommend using a CPU with at least 2GHz clock "
 "speed and at least 4 cores in total."
@@ -384,6 +384,12 @@ msgid ""
 "<https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93"
 "-beginners-guide-getting-started-jack.html>`_, so we will skip this part."
 msgstr ""
+"Если вы хотите использовать бэкэнд :term:`JACK`, его необходимо установить и "
+"настроить перед запуском Zrythm. В Интернете вы найдете много информации о "
+"том, как настроить JACK, например, `Demystifying JACK - A Beginners Guide to "
+"Getting Started with JACK <https://libremusicproduction.com/articles/"
+"demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack.html>`_, "
+"поэтому мы пропустим эту часть."
 
 #~ msgid "Here are a few terms you should be aware of when using Zrythm."
 #~ msgstr ""
@@ -1309,4 +1315,3 @@ msgstr ""
 #~ "русском языке: `JACK в Linux: настройка"
 #~ " <http://nerohelp.info/3569-ljack-stn.html>`_ . "
 #~ "Поэтому мы пропустим эту часть."
-

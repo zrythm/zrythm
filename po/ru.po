@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-25 19:01+0100\n"
-"PO-Revision-Date: 2020-09-24 21:18+0000\n"
-"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"PO-Revision-Date: 2020-09-25 18:02+0000\n"
+"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -134,7 +134,7 @@ msgstr ""
 #: inc/audio/track.h:163 src/gui/widgets/bot_bar.c:502 src/audio/region.c:396
 #: build/data/org.zrythm.Zrythm.gschema.xml:597
 msgid "Audio"
-msgstr ""
+msgstr "Аудио"
 
 #: inc/audio/track.h:164 src/project.c:675
 #: src/gui/widgets/route_target_selector_popover.c:163
@@ -164,7 +164,7 @@ msgstr ""
 
 #: inc/audio/track.h:171 src/audio/region.c:393
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: inc/audio/track.h:172
 msgid "MIDI FX"
@@ -1285,7 +1285,7 @@ msgstr "Zrythm"
 #: src/gui/widgets/header.c:105 resources/gtk/menus.ui:40
 #: resources/gtk/help-overlay.ui:39 resources/ui/preferences.ui:27
 msgid "Preferences"
-msgstr ""
+msgstr "Настройки (Preferences)"
 
 #: src/gui/widgets/header.c:106
 msgid "Log viewer"
@@ -2587,7 +2587,7 @@ msgstr "Глобальные Комбинации Клавиш"
 #: build/data/org.zrythm.Zrythm.gschema.xml:640
 #: build/data/org.zrythm.Zrythm.gschema.xml:655
 msgid "General"
-msgstr ""
+msgstr "Общие (General)"
 
 #: resources/gtk/help-overlay.ui:53
 msgid "Toggle Fullscreen"
@@ -3080,7 +3080,7 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:898
 msgid "TODO"
-msgstr "ТОДО"
+msgstr "Делать"
 
 #: resources/ui/chord_selector_window.ui:908
 msgid "Circle of Fifths"
@@ -3570,7 +3570,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:109 build/data/org.zrythm.Zrythm.gschema.xml:476
 msgid "Engine"
-msgstr "Движок"
+msgstr "Движок (Engine)"
 
 #: resources/ui/preferences.ui:134
 msgid "The audio backend to connect to"
@@ -3602,7 +3602,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:524
 msgid "Zrythm path"
-msgstr "Путь к Zrythm"
+msgstr "Путь к Zrythm (Zrythm path)"
 
 #: resources/ui/preferences.ui:245
 msgid "The global Zrythm working path for non-project related files"
@@ -3654,7 +3654,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:610
 #: build/data/org.zrythm.Zrythm.gschema.xml:624
 msgid "Editing"
-msgstr "Редактирование"
+msgstr "Редактирование (Editing)"
 
 #: resources/ui/preferences.ui:498
 msgid "Interface"
@@ -4089,7 +4089,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:480
 msgid "Audio backend"
-msgstr "Аудио бэкэнд"
+msgstr "Аудио бэкэнд (Audio backend)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:481
 msgid "The audio backend to use."
@@ -4125,7 +4125,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:505
 msgid "MIDI backend"
-msgstr "Миди(MIDI) бэкэнд"
+msgstr "MIDI бэкэнд (MIDI backend)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:506
 msgid "The MIDI backend to use."
@@ -4133,7 +4133,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:510
 msgid "MIDI controllers"
-msgstr "Миди(MIDI) контроллеры"
+msgstr "MIDI контроллеры (MIDI controllers)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:511
 msgid "A list of controllers to auto-connect to."
@@ -4142,7 +4142,7 @@ msgstr "Список контроллеров для автоматическо�
 #: build/data/org.zrythm.Zrythm.gschema.xml:520
 #: build/data/org.zrythm.Zrythm.gschema.xml:569
 msgid "Paths"
-msgstr "Пути"
+msgstr "Пути (Paths)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:525
 msgid "The directory used to save user data in."
@@ -4150,19 +4150,21 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:534
 msgid "UIs"
-msgstr "Пользовательский интерфейс"
+msgstr "Пользовательский интерфейс (UI)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:538
 msgid "Open UI on instantiation"
-msgstr "Открыть пользовательский интерфейс при добавлении плагина"
+msgstr ""
+"Открыть пользовательский интерфейс при добавлении плагина (Open UI on "
+"instantiation)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:539
 msgid "Open plugin UIs when they are instantiated."
-msgstr ""
+msgstr "Открывать интерфейсы плагинов после их добавления в проект."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:543
 msgid "Keep window on top"
-msgstr "Держать окно поверх окна Zrythm"
+msgstr "Держать окно поверх окна Zrythm (Keep window on top)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:544
 msgid "Always show plugin UIs on top of the main window."
@@ -4170,7 +4172,7 @@ msgstr "Всегда держать интерфейсы плагинов пов
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:548
 msgid "Generic UIs"
-msgstr "Общие интерфейсы"
+msgstr "Общие интерфейсы (Generic UIs)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:549
 msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
@@ -4180,7 +4182,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:553
 msgid "Bridge unsupported UIs"
-msgstr "Перенаправлять неподдерживаемые интерфейсы"
+msgstr "Перенаправлять неподдерживаемые интерфейсы (Bridge unsupported UIs)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:554
 msgid ""
@@ -4190,7 +4192,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:559
 msgid "Refresh rate"
-msgstr "Частота обновления"
+msgstr "Частота обновления (Refresh rate)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:560
 msgid ""
@@ -4201,7 +4203,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:577
 msgid "VST plugins"
-msgstr "VST плагины"
+msgstr "VST плагины (VST Plugins)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:578
 msgid ""
@@ -4211,7 +4213,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:582
 msgid "SFZ instruments"
-msgstr "Инструменты SFZ"
+msgstr "Инструменты SFZ (SFZ instruments)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:583
 msgid ""
@@ -4221,7 +4223,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:587
 msgid "SF2 instruments"
-msgstr "Инструменты SF2"
+msgstr "Инструменты SF2 (SF2 instruments)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:588
 msgid ""
@@ -4283,15 +4285,15 @@ msgstr "Язык, используемый для пользовательско
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:673
 msgid "DSP"
-msgstr "DSP"
+msgstr "Цифровая обработка сигналов (DSP)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:674
 msgid "Pan"
-msgstr "Панорамирование(Pan)"
+msgstr "Панорамирование (Pan)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:678
 msgid "Pan algorithm"
-msgstr "Алгоритм панорамирования(Pan)"
+msgstr "Алгоритм панорамирования (Pan algorithm)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:679
 msgid ""
@@ -4301,7 +4303,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:683
 msgid "Pan law"
-msgstr "Правило панорамирования(Pan law)"
+msgstr "Правило панорамирования (Pan law)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:684
 msgid ""

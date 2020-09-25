@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-09-24 21:18+0000\n"
+"PO-Revision-Date: 2020-09-25 18:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualmodulators/ja/>\n"
@@ -26,7 +26,7 @@ msgstr "モジュレーターの追加"
 
 #: ../../modulators/adding-modulators.rst:8
 msgid "Modulators are Plugins that have at least one CV output port."
-msgstr ""
+msgstr "モジュレータは、少なくとも1つのCV出力ポートを持つプラグインです。"
 
 #: ../../modulators/adding-modulators.rst:11
 #: ../../modulators/routing-modulators.rst:8
@@ -39,7 +39,7 @@ msgstr "モジュレーター"
 
 #: ../../modulators/intro.rst:8
 msgid "This feature is not available at the moment."
-msgstr ""
+msgstr "この機能は現時点では使用できません。"
 
 #: ../../modulators/modulators-tab.rst:6
 msgid "Modulators Tab"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-25 13:15+0000\n"
+"PO-Revision-Date: 2020-09-25 18:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/ja/>\n"
@@ -398,7 +398,9 @@ msgid ""
 "into empty space in the Tracklist or Mixer to instantiate them. If the "
 "plugin is an instrument plugin, an instrument Track will be created. If "
 "the plugin is an effect, a bus Track will be created."
-msgstr "プラグインはプラグインブラウザからクリックしてドラッグし、トラックリストまたはミキサーの空き領域にドロップしてインスタンスを作成できます。プラグインが音源プラグインの場合は、音源トラックが作成されます。プラグインがエフェクトの場合は、バストラックが作成されます。"
+msgstr ""
+"プラグインはプラグインブラウザからクリックしてドラッグし、トラックリストまたはミキサーの空き領域にドロップしてインスタンスを作成できます。プラグインがイン"
+"ストゥルメントプラグインの場合は、インストゥルメントトラックが作成されます。プラグインがエフェクトの場合は、バストラックが作成されます。"
 
 #: ../../tracks/creating-tracks.rst:26
 msgid "See :ref:`instantiating-plugins` for how to instantiate plugins."
@@ -473,7 +475,7 @@ msgstr "属性"
 
 #: ../../tracks/inspector-page.rst:20
 msgid "Track properties are basic properties that the track has."
-msgstr ""
+msgstr "トラックのプロパティは、トラックが持つ基本的なプロパティです。"
 
 #: ../../tracks/inspector-page.rst:27
 #, fuzzy
@@ -482,7 +484,7 @@ msgstr "コード トラックの名前。"
 
 #: ../../tracks/inspector-page.rst:29
 msgid "The track that this track routes its output to."
-msgstr ""
+msgstr "このトラックのダイレクトアウト先。"
 
 #: ../../tracks/inspector-page.rst:32
 #: ../../tracks/track-types.rst:18
@@ -493,11 +495,11 @@ msgstr "音源"
 msgid ""
 "If the track is an :ref:`instrument-track`, the instrument plugin for "
 "this track."
-msgstr ""
+msgstr "トラックが :ref:`instrument-track` の場合、このトラックのインストゥルメントプラグイン。"
 
 #: ../../tracks/inspector-page.rst:39
 msgid "If the track takes input, there will be an input selection section."
-msgstr ""
+msgstr "トラックが入力を受け取る場合は、入力選択セクションが存在します。"
 
 #: ../../tracks/inspector-page.rst:46
 msgid "MIDI FX/Inserts"
@@ -518,7 +520,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:58
 msgid "Only MIDI and Instrument tracks support MIDI FX."
-msgstr ""
+msgstr "MIDIとインストゥルメントトラックのみがMIDI FXをサポートしています。"
 
 #: ../../tracks/inspector-page.rst:60
 msgid ""
@@ -552,7 +554,7 @@ msgstr "フェーダー"
 
 #: ../../tracks/inspector-page.rst:88
 msgid "Fader section to control the volume and stereo balance."
-msgstr ""
+msgstr "ボリュームとステレオバランスをコントロールするフェーダー部。"
 
 #: ../../tracks/inspector-page.rst:93
 msgid ""
@@ -582,12 +584,13 @@ msgid "RMS"
 msgstr "RMS"
 
 #: ../../tracks/inspector-page.rst:105
+#, fuzzy
 msgid "Root Mean Square of the signal value."
-msgstr ""
+msgstr "信号値の二乗平均平方根。"
 
 #: ../../tracks/inspector-page.rst:107
 msgid "The following controls are available for controlling the signal flow."
-msgstr ""
+msgstr "シグナルフローを制御するために、以下のコントロールが使用できます。"
 
 #: ../../tracks/inspector-page.rst:111
 #, fuzzy
@@ -644,7 +647,7 @@ msgstr "これは TODOです。"
 
 #: ../../tracks/instrument-track.rst:8
 msgid "Instrument Track"
-msgstr "音源トラック"
+msgstr "インストゥルメントトラック"
 
 #: ../../tracks/instrument-track.rst:10
 msgid ""
@@ -673,11 +676,11 @@ msgstr "フリーズ"
 
 #: ../../tracks/instrument-track.rst:40
 msgid "Freezes the track (not operational at the moment)."
-msgstr ""
+msgstr "トラックをフリーズする(現時点では動作しません)。"
 
 #: ../../tracks/instrument-track.rst:56
 msgid "The track to route the audio output of the instrument track to."
-msgstr ""
+msgstr "インストゥルメントトラックのオーディオ出力をルーティングするトラック。"
 
 #: ../../tracks/instrument-track.rst:61
 msgid "These are similar to :ref:`midi-track-inputs`."
@@ -689,7 +692,7 @@ msgstr "プリフェーダーアウトL / R"
 
 #: ../../tracks/instrument-track.rst:69
 msgid "The stereo audio signal before the fader is applied."
-msgstr ""
+msgstr "フェーダーをかける前のステレオオーディオ信号。"
 
 #: ../../tracks/instrument-track.rst:72
 msgid "Fader Out L/R"
@@ -697,7 +700,7 @@ msgstr "フェーダーアウトL / R"
 
 #: ../../tracks/instrument-track.rst:72
 msgid "The stereo audio signal after the fader is applied."
-msgstr ""
+msgstr "フェーダーをかけた後のステレオオーディオ信号。"
 
 #: ../../tracks/instrument-track.rst:74
 msgid "You can use these for side-chaining."
@@ -753,11 +756,11 @@ msgstr ""
 
 #: ../../tracks/master-track.rst:41
 msgid "The name of the track. This cannot be changed."
-msgstr ""
+msgstr "トラックの名前。これは変更できません。"
 
 #: ../../tracks/master-track.rst:43
 msgid "This is automatically routed to the audio engine and cannot be changed."
-msgstr ""
+msgstr "これは自動的にオーディオエンジンにルーティングされ、変更することはできません。"
 
 #: ../../tracks/midi-track.rst:6
 msgid "MIDI Track"
@@ -779,15 +782,15 @@ msgstr ""
 
 #: ../../tracks/midi-track.rst:17
 msgid "MIDI tracks also have automation lanes for automating various parameters."
-msgstr ""
+msgstr "MIDI トラックには、様々なパラメータを自動化するためのオートメーションレーンもあります。"
 
 #: ../../tracks/midi-track.rst:53
 msgid "The name of the track. You can double click to change it."
-msgstr ""
+msgstr "トラックの名前です。ダブルクリックで変更できます。"
 
 #: ../../tracks/midi-track.rst:56
 msgid "The track to route the output of the MIDI track to."
-msgstr ""
+msgstr "MIDIトラックの出力をルーティングするトラック。"
 
 #: ../../tracks/midi-track.rst:65
 msgid "Input Device"
@@ -795,7 +798,7 @@ msgstr "入力デバイス"
 
 #: ../../tracks/midi-track.rst:64
 msgid "The input device(s) to receive MIDI signals from during recording."
-msgstr ""
+msgstr "録音中にMIDI信号を受信する入力デバイスです。"
 
 #: ../../tracks/midi-track.rst:70
 msgid "Input Channel"
@@ -813,7 +816,7 @@ msgstr "プリフェーダーアウト"
 
 #: ../../tracks/midi-track.rst:78
 msgid "The MIDI signal before the MIDI fader is applied."
-msgstr ""
+msgstr "MIDI フェーダーをかける前の MIDI 信号です。"
 
 #: ../../tracks/midi-track.rst:81
 msgid "Fader Out"
@@ -821,7 +824,7 @@ msgstr "フェーダーアウト"
 
 #: ../../tracks/midi-track.rst:81
 msgid "The MIDI signal after the MIDI fader is applied."
-msgstr ""
+msgstr "MIDI フェーダーをかけた後の MIDI 信号。"
 
 #: ../../tracks/midi-track.rst:83
 msgid "The MIDI fader uses MIDI volume CC."
@@ -850,7 +853,7 @@ msgstr ""
 
 #: ../../tracks/midi-track.rst:109
 msgid "Lanes can be made visible by clicking the \"hamburger\" icon."
-msgstr ""
+msgstr "レーンは「ハンバーガー」アイコンをクリックすることで表示させることができます。"
 
 #: ../../tracks/midi-track.rst:117
 msgid ""
@@ -864,7 +867,7 @@ msgstr ""
 msgid ""
 "More information about automation tracks can be found in the "
 ":ref:`automation` chapter."
-msgstr ""
+msgstr "オートメーショントラックについての詳細は :ref:`automation` の章を参照してください。"
 
 #: ../../tracks/midi-track.rst:130
 #: ../../tracks/overview.rst:66
@@ -959,7 +962,7 @@ msgstr ""
 msgid ""
 "The section :ref:`track-operations` explains the various track operations"
 " available."
-msgstr ""
+msgstr "セクション :ref:`track-operations` では、利用可能な様々なトラック操作について説明しています。"
 
 #: ../../tracks/track-operations.rst:8
 msgid "Track Operations"
@@ -984,7 +987,7 @@ msgstr "トラックの削除"
 msgid ""
 "Tracks can be deleted by right-clicking them and selecting "
 ":zbutton:`Delete`."
-msgstr ""
+msgstr "トラックを右クリックして :zbutton:`Delete` を選択すると、トラックを削除することができます。"
 
 #: ../../tracks/track-operations.rst:24
 msgid "All Track operations are undoable."
@@ -1125,7 +1128,7 @@ msgstr "テンポ"
 
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."
-msgstr ""
+msgstr "doc:`chord-track` 以外のすべてのトラックには、オートメーションレーンが用意されています。"
 
 #: ../../tracks/track-visibility.rst:8
 #, fuzzy

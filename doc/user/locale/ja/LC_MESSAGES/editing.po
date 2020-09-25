@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 00:47+0100\n"
-"PO-Revision-Date: 2020-09-25 13:15+0000\n"
+"PO-Revision-Date: 2020-09-25 18:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/ja/>\n"
@@ -51,7 +51,7 @@ msgstr "オートメーションエディター"
 
 #: ../../editing/clip-editors/automation-editor.rst:9
 msgid "The automation editor is displayed when an automation region is selected."
-msgstr ""
+msgstr "オートメーションエディターは、オートメーションリージョンを選択すると表示されます。"
 
 #: ../../editing/clip-editors/automation-editor.rst:15
 msgid ""
@@ -117,7 +117,7 @@ msgstr "Vital"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "The curve that Vital synth uses, similar to exponential curve."
-msgstr ""
+msgstr "Vitalシンセが使用している曲線で、指数関数的な曲線に似ています。"
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse"
@@ -142,7 +142,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:63
 msgid "It displays information about each automation point and its curve."
-msgstr ""
+msgstr "各オートメーションポイントとその曲線に関する情報が表示されます。"
 
 #: ../../editing/clip-editors/chord-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:36
@@ -151,13 +151,13 @@ msgstr "コードエディター"
 
 #: ../../editing/clip-editors/chord-editor.rst:9
 msgid "The chord editor is displayed when a chord region is selected."
-msgstr ""
+msgstr "コードエディターは、コードリージョンを選択すると表示されます。"
 
 #: ../../editing/clip-editors/chord-editor.rst:15
 msgid ""
 "Its ruler behaves similarly to the editor ruler explained in :ref"
 ":`editor-ruler`."
-msgstr ""
+msgstr "そのルーラーは :ref:`editor-ruler` で説明したエディタルーラーと同様の動作をします。"
 
 #: ../../editing/clip-editors/chord-editor.rst:18
 msgid ""
@@ -226,7 +226,7 @@ msgstr ""
 msgid ""
 "Editing in the chord arranger follows :ref:`edit-modes` and :ref:`common-"
 "operations`."
-msgstr ""
+msgstr "コードアレンジャーでの編集は :ref:`edit-modes` と :ref:`common-operations` に従います。"
 
 #: ../../editing/clip-editors/chord-editor.rst:66
 msgid ""
@@ -236,7 +236,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:73
 msgid "It displays information about each chord object."
-msgstr ""
+msgstr "各コードオブジェクトに関する情報が表示されます。"
 
 #: ../../editing/clip-editors/intro.rst:8
 msgid "Editors"
@@ -265,7 +265,7 @@ msgstr "ピアノロール"
 
 #: ../../editing/clip-editors/piano-roll.rst:10
 msgid "The piano roll is the main editor for editing MIDI regions."
-msgstr ""
+msgstr "ピアノロールはMIDIリージョンを編集するためのメインエディターです。"
 
 #: ../../editing/clip-editors/piano-roll.rst:15
 msgid ""
@@ -281,7 +281,7 @@ msgstr "その他のコントロール"
 
 #: ../../editing/clip-editors/piano-roll.rst:23
 msgid "The piano roll contains the following additional controls."
-msgstr ""
+msgstr "ピアノロールには、以下の追加コントロールが含まれています。"
 
 #: ../../editing/clip-editors/piano-roll.rst:32
 msgid "Drum view"
@@ -352,6 +352,7 @@ msgid ""
 "Editing inside the MIDI arranger is covered in :ref:`edit-modes` and :ref"
 ":`common-operations`."
 msgstr ""
+"MIDIアレンジャー内での編集については :ref:`edit-mode` と :ref:`common-operations` を参照してください。"
 
 #: ../../editing/clip-editors/piano-roll.rst:77
 msgid "Velocity Editor"
@@ -413,7 +414,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:117
 msgid "It displays information about each MIDI note in the MIDI arranger."
-msgstr ""
+msgstr "MIDI アレンジャーの各 MIDI ノートに関する情報を表示します。"
 
 #: ../../editing/clip-editors/ruler.rst:8
 #: ../../editing/piano-roll-editing/ruler.rst:6
@@ -499,7 +500,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:17
 msgid "The piano roll toolbar consists of the following controls."
-msgstr ""
+msgstr "ピアノロールのツールバーは、次のコントロールで構成されています。"
 
 #: ../../editing/clip-editors/toolbar.rst:20
 msgid "Grid/snap settings"
@@ -507,7 +508,7 @@ msgstr "グリッド/スナップ設定"
 
 #: ../../editing/clip-editors/toolbar.rst:20
 msgid "Snapping and grid options are explained in :ref:`snapping-grid-options`."
-msgstr ""
+msgstr "スナップとグリッドのオプションについては、 :ref:`snap-grid-options` で説明されています。"
 
 #: ../../editing/clip-editors/toolbar.rst:22
 msgid "Highlight"
@@ -835,7 +836,7 @@ msgstr "MIDI ノートの作成"
 
 #: ../../editing/editing-basics/creating-midi-notes.rst:8
 msgid "MIDI notes are created by double-clicking and dragging."
-msgstr ""
+msgstr "MIDIノートは、ダブルクリックしてドラッグすることで作成されます。"
 
 #: ../../editing/editing-basics/creating-regions.rst:6
 msgid "Creating Regions"
@@ -843,7 +844,7 @@ msgstr "リージョンの作成"
 
 #: ../../editing/editing-basics/creating-regions.rst:8
 msgid "Regions are created by double clicking and dragging."
-msgstr ""
+msgstr "リージョンはダブルクリックとドラッグで作成されます。"
 
 #: ../../editing/editing-basics/intro.rst:6
 msgid "Editing Basics"
@@ -872,7 +873,7 @@ msgstr "リージョンの移動"
 
 #: ../../editing/editing-basics/moving-regions.rst:8
 msgid "Selected regions can be moved by clicking and dragging."
-msgstr ""
+msgstr "選択したリージョンは、クリックしてドラッグすることで移動することができます。"
 
 #: ../../editing/editing-basics/region-context-menu.rst:6
 msgid "Region Context Menu"
@@ -1001,7 +1002,7 @@ msgstr "…にクオンタイズ"
 
 #: ../../editing/quantization.rst:26
 msgid "Select the note length and type to quantize to."
-msgstr ""
+msgstr "クオンタイズするノートの長さと種類を選択します。"
 
 #: ../../editing/quantization.rst:28
 msgid "Adjust"
@@ -1053,7 +1054,7 @@ msgstr "クイック・クアンタイズ"
 
 #: ../../editing/quantization.rst:46
 msgid "This will perform quantization based on the last known settings."
-msgstr ""
+msgstr "これは、最後の既知の設定に基づいてクオンタイズを実行します。"
 
 #: ../../editing/snapping-grid-options.rst:8
 msgid "Snapping and Grid Options"
@@ -1106,8 +1107,9 @@ msgid "Note Type"
 msgstr "音符の種類"
 
 #: ../../editing/snapping-grid-options.rst:34
+#, fuzzy
 msgid "Note type for the note length (normal/dotted/triplet)"
-msgstr ""
+msgstr "音符の長さの種類（ノーマル/ドット/トリプレット）"
 
 #: ../../editing/timeline/arranger.rst:8
 msgid "Timeline Arranger"
@@ -1134,7 +1136,7 @@ msgstr "アレンジャー オブジェクト"
 
 #: ../../editing/timeline/arranger.rst:25
 msgid "The following arranger objects can exist inside the timeline."
-msgstr ""
+msgstr "タイムライン内に次のアレンジャー オブジェクトを配置できます。"
 
 #: ../../editing/timeline/arranger.rst:28
 msgid "Regions"
@@ -1142,7 +1144,7 @@ msgstr "リージョン"
 
 #: ../../editing/timeline/arranger.rst:29
 msgid "Regions are containers for events or data (such as audio clips)."
-msgstr ""
+msgstr "リージョンは、イベントやデータ(オーディオクリップなど)のコンテナです。"
 
 #: ../../editing/timeline/arranger.rst:35
 msgid "The following types of regions exist."
@@ -1225,7 +1227,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:72
 msgid "For creating objects in other modes, see :ref:`edit-modes`."
-msgstr ""
+msgstr "他のモードでオブジェクトを作成するには :ref:`edit-mode` を参照してください。"
 
 #: ../../editing/timeline/arranger.rst:75
 #, fuzzy
@@ -1255,11 +1257,11 @@ msgstr "リージョンのリンクx移動"
 
 #: ../../editing/timeline/arranger.rst:87
 msgid "Linked regions can be created by holding down :zbutton:`Alt` while moving."
-msgstr ""
+msgstr "リンクされたリージョンは、移動中に :zbutton:`Alt` を押し続けることで作成することができます。"
 
 #: ../../editing/timeline/arranger.rst:90
 msgid "Other editing capabilities were explained previously in :ref:`edit-modes`."
-msgstr ""
+msgstr "その他の編集機能については、前に :ref:`edit-modes` で説明しました。"
 
 #: ../../editing/timeline/event-viewer.rst:10
 msgid "The event viewer displays all events in the timeline as a list."
@@ -1301,11 +1303,11 @@ msgstr ""
 
 #: ../../editing/timeline/overview.rst:33
 msgid "The rest of the tracklist is briefly touched upon in :ref:`tracklist`."
-msgstr ""
+msgstr "トラックリストの残りの部分については :ref:`tracklist` で簡単に触れています。"
 
 #: ../../editing/timeline/overview.rst:36
 msgid "For more details about track operations, see the :ref:`tracks` section."
-msgstr ""
+msgstr "トラック操作の詳細については、 :ref:`tracks` のセクションを参照してください。"
 
 #: ../../editing/timeline/overview.rst:40
 msgid "Minimap"
@@ -1324,7 +1326,7 @@ msgstr ""
 
 #: ../../editing/timeline/ruler.rst:10
 msgid "The ruler is mainly used to control looping and playback."
-msgstr ""
+msgstr "ルーラーは主にループと再生を制御するために使用されます。"
 
 #: ../../editing/timeline/ruler.rst:16
 msgid ""
@@ -1371,7 +1373,7 @@ msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:8
 msgid "The timeline has its own toolbar for timeline-specific operations."
-msgstr ""
+msgstr "タイムラインには、タイムラインに特化した操作のためのツールバーがあります。"
 
 #: ../../editing/timeline/toolbar.rst:14
 msgid ""

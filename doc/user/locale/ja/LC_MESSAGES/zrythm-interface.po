@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-25 13:15+0000\n"
+"PO-Revision-Date: 2020-09-25 18:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/ja/>\n"
@@ -42,7 +42,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:26
 msgid "Editing inside the Editor tab is covered in :ref:`editors`."
-msgstr ""
+msgstr "エディタータブ内での編集は、 :ref:`editor` で説明されています。"
 
 #: ../../zrythm-interface/bottom-panel.rst:29
 msgid "Piano Roll"
@@ -60,7 +60,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:40
 msgid "The piano roll is covered in detail in :ref:`piano-roll`."
-msgstr ""
+msgstr "ピアノロールについては、 :ref:`piano-roll` で詳しく説明しています。"
 
 #: ../../zrythm-interface/bottom-panel.rst:43
 msgid "Automation Editor"
@@ -79,7 +79,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:53
 msgid "The automation editor is covered in detail in :ref:`automation-editor`."
-msgstr ""
+msgstr "オートメーションエディタについては :ref:`automation-editor` で詳しく説明しています。"
 
 #: ../../zrythm-interface/bottom-panel.rst:57
 msgid "Audio Editor"
@@ -93,7 +93,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:66
 msgid "The audio editor is covered in detail in :ref:`audio-editor`."
-msgstr ""
+msgstr "オーディオエディタについては :ref:`audio-editor` で詳しく説明しています。"
 
 #: ../../zrythm-interface/bottom-panel.rst:70
 msgid "Chord Editor"
@@ -107,7 +107,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:78
 msgid "The chord editor is covered in detail in :ref:`chord-editor`."
-msgstr ""
+msgstr "コードエディタについては :ref:`chord-editor` で詳しく説明しています。"
 
 #: ../../zrythm-interface/bottom-panel.rst:82
 msgid "Mixer"
@@ -133,7 +133,7 @@ msgstr "左パネル"
 
 #: ../../zrythm-interface/left-panel.rst:10
 msgid "The left panel contains the inspectors and track visibility options."
-msgstr ""
+msgstr "左側のパネルには、インスペクターとトラックの表示設定が含まれています。"
 
 #: ../../zrythm-interface/left-panel.rst:17
 msgid "Track Inspector"
@@ -155,7 +155,7 @@ msgstr "プラグインインスペクター"
 
 #: ../../zrythm-interface/left-panel.rst:26
 msgid "The plugin inspector shows various options for the selected plugin."
-msgstr ""
+msgstr "プラグインインスペクタには、選択したプラグインの様々なオプションが表示されます。"
 
 #: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
@@ -173,7 +173,7 @@ msgstr "プラグインポート"
 
 #: ../../zrythm-interface/left-panel.rst:42
 msgid "These are the ports that the plugin has."
-msgstr ""
+msgstr "これらはプラグインが持っているポートです。"
 
 #: ../../zrythm-interface/left-panel.rst:47
 msgid ""
@@ -184,7 +184,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:52
 msgid "Ports are explained in more detail in :ref:`ports`."
-msgstr ""
+msgstr "ポートについては :ref:`ports` で詳しく説明しています。"
 
 #: ../../zrythm-interface/left-panel.rst:54
 msgid ""
@@ -242,7 +242,7 @@ msgstr "編集やアレンジ時によく使用されるさまざまなボタン
 
 #: ../../zrythm-interface/main-toolbar.rst:35
 msgid "The :ref:`editing` chapter explains these controls in detail."
-msgstr ""
+msgstr "ref:`editing` の章では、これらのコントロールについて詳しく説明しています。"
 
 #: ../../zrythm-interface/main-toolbar.rst:39
 #, fuzzy
@@ -271,7 +271,7 @@ msgstr "保存"
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save the current project at its current location."
-msgstr ""
+msgstr "現在のプロジェクトを現在の場所に保存します。"
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save As"
@@ -279,7 +279,7 @@ msgstr "名前を付けて保存"
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save the current project at a new location."
-msgstr ""
+msgstr "現在のプロジェクトを新しい場所に保存します。"
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load"
@@ -312,7 +312,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:63
 msgid "For more information about projects, see the :ref:`projects` chapter."
-msgstr ""
+msgstr "プロジェクトの詳細については、 :ref:`projects` の章を参照してください。"
 
 #: ../../zrythm-interface/main-toolbar.rst:67
 msgid "View Menu"
@@ -347,7 +347,7 @@ msgstr "オリジナル サイズ"
 
 #: ../../zrythm-interface/main-toolbar.rst:78
 msgid "Zooms back to the default zoom level."
-msgstr ""
+msgstr "デフォルトのズームレベルに戻ります。"
 
 #: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Best Fit"
@@ -433,7 +433,7 @@ msgstr "バグを報告する"
 
 #: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Opens the page to report a new bug."
-msgstr ""
+msgstr "バグを報告するページを開きます。"
 
 #: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Additional Controls"
@@ -441,7 +441,7 @@ msgstr "その他のコントロール"
 
 #: ../../zrythm-interface/main-toolbar.rst:110
 msgid "The main toolbar also contains the following widgets."
-msgstr ""
+msgstr "メイン ツールバーには、次のウィジェットも含まれています。"
 
 #: ../../zrythm-interface/main-toolbar.rst:115
 msgid "There are the following buttons next to the name of the current project."
@@ -454,7 +454,7 @@ msgstr "スクリプトインタフェース"
 
 #: ../../zrythm-interface/main-toolbar.rst:119
 msgid "Shows the scripting interface. See :ref:`scripting` for more information."
-msgstr ""
+msgstr "スクリプト インターフェイスを表示します。詳細については、 :ref:`scripting` を参照してください。"
 
 #: ../../zrythm-interface/main-toolbar.rst:121
 msgid "Log Viewer"
@@ -462,7 +462,7 @@ msgstr "ログ ビューア"
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Displays the log, which gets updated real-time."
-msgstr ""
+msgstr "リアルタイムで更新されるログを表示します。"
 
 #: ../../zrythm-interface/main-toolbar.rst:125
 msgid "Preferences"
@@ -470,7 +470,7 @@ msgstr "設定"
 
 #: ../../zrythm-interface/main-toolbar.rst:124
 msgid "Shows the preferences dialog. See :ref:`preferences` for more information."
-msgstr ""
+msgstr "環境設定ダイアログを表示します。詳細については、 :ref:`preferences` を参照してください。"
 
 #: ../../zrythm-interface/main-toolbar.rst:127
 msgid ""
@@ -505,7 +505,7 @@ msgstr "ファイル ブラウザ"
 
 #: ../../zrythm-interface/right-panel.rst:22
 msgid "The file browser is covered in :ref:`file-browser`."
-msgstr ""
+msgstr "ファイルブラウザについては :ref:`file-browser` で解説されています。"
 
 #: ../../zrythm-interface/right-panel.rst:25
 msgid "Control Room"
@@ -513,7 +513,7 @@ msgstr "コントロールルーム"
 
 #: ../../zrythm-interface/right-panel.rst:26
 msgid "The control room is covered in :ref:`control-room`."
-msgstr ""
+msgstr "コントロールルームは、:ref:`control-room` で説明されています。"
 
 #: ../../zrythm-interface/timeline.rst:8
 msgid "Timeline"
@@ -578,7 +578,7 @@ msgstr "停止時にキューポイントに戻る"
 
 #: ../../zrythm-interface/transport-bar.rst:29
 msgid "Toggles whether to return to the cue point when playback stops."
-msgstr ""
+msgstr "再生が停止したときにキューポイントに戻るかどうかを切り替えます。"
 
 #: ../../zrythm-interface/transport-bar.rst:31
 msgid "BPM"
@@ -639,7 +639,7 @@ msgstr "Zrythmのインタフェースは、さまざまなサブモジュール
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:12
 msgid "Each sub-module is explained in its own section."
-msgstr ""
+msgstr "各サブモジュールについては、それぞれのセクションで説明しています。"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:14
 msgid ":ref:`timeline` (1)"
