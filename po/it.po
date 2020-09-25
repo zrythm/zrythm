@@ -8,8 +8,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-09-24 00:55+0100\n"
+"Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
+"POT-Creation-Date: 2020-09-25 19:01+0100\n"
 "PO-Revision-Date: 2020-09-24 02:45+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
@@ -554,27 +554,27 @@ msgstr "Informazioni sulla licenza"
 msgid "Waiting for project"
 msgstr "Aspettando il progetto"
 
-#: src/plugins/carla_native_plugin.c:525 src/plugins/lv2_plugin.c:2513
+#: src/plugins/carla_native_plugin.c:545 src/plugins/lv2_plugin.c:2513
 msgid "Default bank"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:532 src/plugins/lv2_plugin.c:2520
+#: src/plugins/carla_native_plugin.c:552 src/plugins/lv2_plugin.c:2520
 msgid "Init"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:973
+#: src/plugins/carla_native_plugin.c:993
 msgid "Audio in"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:983
+#: src/plugins/carla_native_plugin.c:1003
 msgid "Audio out"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:993
+#: src/plugins/carla_native_plugin.c:1013
 msgid "MIDI in"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:1003
+#: src/plugins/carla_native_plugin.c:1023
 msgid "MIDI out"
 msgstr ""
 
@@ -1297,9 +1297,8 @@ msgstr "A proposito di Zrythm"
 msgid "About Zrythm"
 msgstr "A proposito di Zrythm"
 
-#: src/gui/widgets/header.c:105 src/gui/widgets/preferences.c:795
-#: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
-#: resources/ui/preferences.ui:27
+#: src/gui/widgets/header.c:105 resources/gtk/menus.ui:40
+#: resources/gtk/help-overlay.ui:39 resources/ui/preferences.ui:27
 msgid "Preferences"
 msgstr "Preferenze"
 
@@ -1469,18 +1468,87 @@ msgstr ""
 msgid "Snap/Grid options"
 msgstr ""
 
-#: src/gui/widgets/preferences.c:400 resources/ui/first_run_assistant.ui:124
+#: src/gui/widgets/preferences.c:406 resources/ui/first_run_assistant.ui:124
 msgid "Select a folder"
 msgstr ""
 
-#: src/gui/widgets/preferences.c:401
+#: src/gui/widgets/preferences.c:407
 msgid "Select a file"
 msgstr "Seleziona un file"
 
-#: src/gui/widgets/preferences.c:774
+#: src/gui/widgets/preferences.c:796
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
 msgstr "Alcune modifiche avranno effetto solo dopo il riavvio %s"
+
+#. hack to get localization working because we
+#. * can't extract summaries into the .po file from
+#. * the schema itself
+#: src/gui/widgets/preferences.c:858
+msgctxt "guilabel"
+msgid "Plugins"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:859
+msgctxt "guilabel"
+msgid "General"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:860
+msgctxt "guilabel"
+msgid "Editing"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:861
+#, fuzzy
+msgctxt "guilabel"
+msgid "Audio"
+msgstr "Gruppo Audio"
+
+#: src/gui/widgets/preferences.c:862
+#, fuzzy
+msgctxt "guilabel"
+msgid "Automation"
+msgstr "Automazione"
+
+#: src/gui/widgets/preferences.c:863
+#, fuzzy
+msgctxt "guilabel"
+msgid "Undo"
+msgstr "Annulla"
+
+#: src/gui/widgets/preferences.c:864
+#, fuzzy
+msgctxt "guilabel"
+msgid "Projects"
+msgstr "Progetti"
+
+#: src/gui/widgets/preferences.c:865
+msgctxt "guilabel"
+msgid "UI"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:866
+msgctxt "guilabel"
+msgid "DSP"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:867
+msgctxt "guilabel"
+msgid "Pan"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:868
+#, fuzzy
+msgctxt "guilabel"
+msgid "Engine"
+msgstr "Motore"
+
+#: src/gui/widgets/preferences.c:869
+#, fuzzy
+msgctxt "guilabel"
+msgid "Paths"
+msgstr "Percorso"
 
 #: src/gui/widgets/scripting_window.c:192
 msgid "Script execution successful"
@@ -4268,6 +4336,21 @@ msgid ""
 "The pan law to use when applying pan on mono signals (not used at the "
 "moment)."
 msgstr ""
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"normal\""
+#~ msgstr "normale"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"Zrythm\""
+#~ msgstr "Zrythm"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"superellipse\""
+#~ msgstr "Superellisse"
 
 #, fuzzy
 #~ msgid "Initializing main window"

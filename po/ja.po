@@ -8,8 +8,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-09-24 00:55+0100\n"
+"Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
+"POT-Creation-Date: 2020-09-25 19:01+0100\n"
 "PO-Revision-Date: 2020-09-25 13:15+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -177,7 +177,7 @@ msgid "Exponent"
 msgstr "指数"
 
 #: inc/audio/curve.h:92 src/audio/curve.c:42
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Superellipse"
 msgstr "超楕円"
 
@@ -591,27 +591,27 @@ msgstr "ライセンス情報"
 msgid "Waiting for project"
 msgstr "プロジェクトを待機中"
 
-#: src/plugins/carla_native_plugin.c:525 src/plugins/lv2_plugin.c:2513
+#: src/plugins/carla_native_plugin.c:545 src/plugins/lv2_plugin.c:2513
 msgid "Default bank"
 msgstr "デフォルトバンク"
 
-#: src/plugins/carla_native_plugin.c:532 src/plugins/lv2_plugin.c:2520
+#: src/plugins/carla_native_plugin.c:552 src/plugins/lv2_plugin.c:2520
 msgid "Init"
 msgstr "Init"
 
-#: src/plugins/carla_native_plugin.c:973
+#: src/plugins/carla_native_plugin.c:993
 msgid "Audio in"
 msgstr "オーディオ入力"
 
-#: src/plugins/carla_native_plugin.c:983
+#: src/plugins/carla_native_plugin.c:1003
 msgid "Audio out"
 msgstr "オーディオ出力"
 
-#: src/plugins/carla_native_plugin.c:993
+#: src/plugins/carla_native_plugin.c:1013
 msgid "MIDI in"
 msgstr "MIDI入力"
 
-#: src/plugins/carla_native_plugin.c:1003
+#: src/plugins/carla_native_plugin.c:1023
 msgid "MIDI out"
 msgstr "MIDI出力"
 
@@ -1335,9 +1335,8 @@ msgstr "%sについて"
 msgid "About Zrythm"
 msgstr "Zrythmについて"
 
-#: src/gui/widgets/header.c:105 src/gui/widgets/preferences.c:795
-#: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
-#: resources/ui/preferences.ui:27
+#: src/gui/widgets/header.c:105 resources/gtk/menus.ui:40
+#: resources/gtk/help-overlay.ui:39 resources/ui/preferences.ui:27
 msgid "Preferences"
 msgstr "設定"
 
@@ -1507,18 +1506,93 @@ msgstr "[モジュレータ%d]%s"
 msgid "Snap/Grid options"
 msgstr "スナップ/グリッド設定"
 
-#: src/gui/widgets/preferences.c:400 resources/ui/first_run_assistant.ui:124
+#: src/gui/widgets/preferences.c:406 resources/ui/first_run_assistant.ui:124
 msgid "Select a folder"
 msgstr "フォルダ選択"
 
-#: src/gui/widgets/preferences.c:401
+#: src/gui/widgets/preferences.c:407
 msgid "Select a file"
 msgstr "ファイルを選択"
 
-#: src/gui/widgets/preferences.c:774
+#: src/gui/widgets/preferences.c:796
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
 msgstr "一部の変更は%sの再起動後にのみ有効になります"
+
+#. hack to get localization working because we
+#. * can't extract summaries into the .po file from
+#. * the schema itself
+#: src/gui/widgets/preferences.c:858
+#, fuzzy
+msgctxt "guilabel"
+msgid "Plugins"
+msgstr "プラグイン"
+
+#: src/gui/widgets/preferences.c:859
+#, fuzzy
+msgctxt "guilabel"
+msgid "General"
+msgstr "全般"
+
+#: src/gui/widgets/preferences.c:860
+#, fuzzy
+msgctxt "guilabel"
+msgid "Editing"
+msgstr "編集"
+
+#: src/gui/widgets/preferences.c:861
+#, fuzzy
+msgctxt "guilabel"
+msgid "Audio"
+msgstr "オーディオ"
+
+#: src/gui/widgets/preferences.c:862
+#, fuzzy
+msgctxt "guilabel"
+msgid "Automation"
+msgstr "オートメーション"
+
+#: src/gui/widgets/preferences.c:863
+#, fuzzy
+msgctxt "guilabel"
+msgid "Undo"
+msgstr "元に戻す"
+
+#: src/gui/widgets/preferences.c:864
+#, fuzzy
+msgctxt "guilabel"
+msgid "Projects"
+msgstr "プロジェクト"
+
+#: src/gui/widgets/preferences.c:865
+#, fuzzy
+msgctxt "guilabel"
+msgid "UI"
+msgstr "Ui"
+
+#: src/gui/widgets/preferences.c:866
+#, fuzzy
+msgctxt "guilabel"
+msgid "DSP"
+msgstr "DSP"
+
+#: src/gui/widgets/preferences.c:867
+#, fuzzy
+msgctxt "guilabel"
+msgid "Pan"
+msgstr "パン"
+
+#: src/gui/widgets/preferences.c:868
+#, fuzzy
+msgctxt "guilabel"
+msgid "Engine"
+msgstr "エンジン"
+
+#: src/gui/widgets/preferences.c:869
+#, fuzzy
+msgctxt "guilabel"
+msgid "Paths"
+msgstr "パス"
 
 #: src/gui/widgets/scripting_window.c:192
 msgid "Script execution successful"
@@ -4357,6 +4431,36 @@ msgid ""
 msgstr ""
 "モノラル信号にパンを適用するときに使用するパン則(現時点では使用されていませ"
 "ん)。"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"normal\""
+#~ msgstr "普通音符"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"velocity\""
+#~ msgstr "ベロシティ"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"category\""
+#~ msgstr "カテゴリー"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"Electronic\""
+#~ msgstr "ジャンル"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"Zrythm\""
+#~ msgstr "Zrythm"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"superellipse\""
+#~ msgstr "超楕円"
 
 #~ msgid "Scanned VST plugin"
 #~ msgstr "VSTプラグインをスキャンしました"

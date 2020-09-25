@@ -28,7 +28,7 @@ Zrythm from source, either using
 a `source distribution tarball <https://www.zrythm.org/releases/>`_
 or `git <https://git.zrythm.org/cgit/zrythm/>`_.
 
-See the ``INSTALL.md`` file in the source
+See the :file:`INSTALL.md` file in the source
 distribution for installation instructions.
 
 GNU/Linux

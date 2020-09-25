@@ -26,6 +26,9 @@ Glossary
     interface users interact with when typing
     commands in a terminal.
 
+  Clip
+    Used interchangeably with :term:`region`.
+
   CV
     In a software environment,
     :abbr:`CV (Control Voltage)` represents
@@ -99,9 +102,9 @@ Glossary
        :align: center
 
   Region
-    A Region (Clip) is a container for MIDI Notes,
-    audio or other events. Regions can be repeated,
-    like below.
+    A region (or :term:`clip`) is a container for
+    MIDI Notes, audio or other events. Regions can
+    be repeated, like below.
 
     .. image:: /_static/img/region.png
        :align: center

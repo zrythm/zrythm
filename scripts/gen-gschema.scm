@@ -106,26 +106,33 @@
       <summary>~a</summary>
       <description>~a</description>
     </key>\n"
+        ; key name
         (schema-key-name key)
+        ; either "enum" or "type"
         (if (string? (schema-key-enum key))
           "enum"
           "type")
+        ; key type name or enum name
         (if (string? (schema-key-enum key))
           (string-append
             top-id "." (schema-key-enum key) "-enum")
           (schema-key-type key))
+        ; optional text
         (if (string? (schema-key-range-min key))
           (format #f "\n      <range min=~s max=~s />"
                   (schema-key-range-min key)
                   (schema-key-range-max key))
           "")
+        ; <default> element
         (if (or
               (string? (schema-key-enum key))
               (string=? (schema-key-type key) "s"))
           (format #f "~s"
                   (schema-key-default key))
           (schema-key-default key))
+        ; summary
         (schema-key-summary key)
+        ; description
         (schema-key-description key)))
     '()
     (schema-keys schema))

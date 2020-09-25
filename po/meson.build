@@ -26,9 +26,10 @@ i18n.gettext (
   meson.project_name(),
   args: [
     '--directory=' + meson.source_root(),
-    '--msgid-bugs-address=https://git.zrythm.org/zrythm/zrythm/issues',
+    '--msgid-bugs-address=https://redmine.zrythm.org/projects/zrythm/issues/new',
     '--add-comments',
     '--keyword=__',
+    '--keyword=C_:1c,2',
     ],
   )
 

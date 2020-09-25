@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-09-24 00:55+0100\n"
+"Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
+"POT-Creation-Date: 2020-09-25 19:01+0100\n"
 "PO-Revision-Date: 2020-07-24 14:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
@@ -594,28 +594,28 @@ msgstr "Informations de licence"
 msgid "Waiting for project"
 msgstr "En attente du projet"
 
-#: src/plugins/carla_native_plugin.c:525 src/plugins/lv2_plugin.c:2513
+#: src/plugins/carla_native_plugin.c:545 src/plugins/lv2_plugin.c:2513
 #, fuzzy
 msgid "Default bank"
 msgstr "Valeur par défaut"
 
-#: src/plugins/carla_native_plugin.c:532 src/plugins/lv2_plugin.c:2520
+#: src/plugins/carla_native_plugin.c:552 src/plugins/lv2_plugin.c:2520
 msgid "Init"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:973
+#: src/plugins/carla_native_plugin.c:993
 msgid "Audio in"
 msgstr "Entrée Audio"
 
-#: src/plugins/carla_native_plugin.c:983
+#: src/plugins/carla_native_plugin.c:1003
 msgid "Audio out"
 msgstr "Sortie Audio"
 
-#: src/plugins/carla_native_plugin.c:993
+#: src/plugins/carla_native_plugin.c:1013
 msgid "MIDI in"
 msgstr "Entrée MIDI"
 
-#: src/plugins/carla_native_plugin.c:1003
+#: src/plugins/carla_native_plugin.c:1023
 msgid "MIDI out"
 msgstr "Sortie MIDI"
 
@@ -1357,9 +1357,8 @@ msgstr "À propos"
 msgid "About Zrythm"
 msgstr "À propos de Zrythm"
 
-#: src/gui/widgets/header.c:105 src/gui/widgets/preferences.c:795
-#: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
-#: resources/ui/preferences.ui:27
+#: src/gui/widgets/header.c:105 resources/gtk/menus.ui:40
+#: resources/gtk/help-overlay.ui:39 resources/ui/preferences.ui:27
 msgid "Preferences"
 msgstr "Préférences"
 
@@ -1532,19 +1531,94 @@ msgstr "Modulateurs"
 msgid "Snap/Grid options"
 msgstr "Accrocher/options de la grille"
 
-#: src/gui/widgets/preferences.c:400 resources/ui/first_run_assistant.ui:124
+#: src/gui/widgets/preferences.c:406 resources/ui/first_run_assistant.ui:124
 msgid "Select a folder"
 msgstr "Sélectionner un dossier"
 
-#: src/gui/widgets/preferences.c:401
+#: src/gui/widgets/preferences.c:407
 msgid "Select a file"
 msgstr "Sélectionner un fichier"
 
-#: src/gui/widgets/preferences.c:774
+#: src/gui/widgets/preferences.c:796
 #, fuzzy, c-format
 msgid "Some changes will only take effect after you restart %s"
 msgstr ""
 "Certains changements ne prendront effet qu'après un redémarrage de Zrythm"
+
+#. hack to get localization working because we
+#. * can't extract summaries into the .po file from
+#. * the schema itself
+#: src/gui/widgets/preferences.c:858
+#, fuzzy
+msgctxt "guilabel"
+msgid "Plugins"
+msgstr "Greffons"
+
+#: src/gui/widgets/preferences.c:859
+#, fuzzy
+msgctxt "guilabel"
+msgid "General"
+msgstr "Général"
+
+#: src/gui/widgets/preferences.c:860
+#, fuzzy
+msgctxt "guilabel"
+msgid "Editing"
+msgstr "Modifier"
+
+#: src/gui/widgets/preferences.c:861
+#, fuzzy
+msgctxt "guilabel"
+msgid "Audio"
+msgstr "Audio"
+
+#: src/gui/widgets/preferences.c:862
+#, fuzzy
+msgctxt "guilabel"
+msgid "Automation"
+msgstr "Automatisation"
+
+#: src/gui/widgets/preferences.c:863
+#, fuzzy
+msgctxt "guilabel"
+msgid "Undo"
+msgstr "Annuler"
+
+#: src/gui/widgets/preferences.c:864
+#, fuzzy
+msgctxt "guilabel"
+msgid "Projects"
+msgstr "Projets"
+
+#: src/gui/widgets/preferences.c:865
+#, fuzzy
+msgctxt "guilabel"
+msgid "UI"
+msgstr "Interface utilisateur"
+
+#: src/gui/widgets/preferences.c:866
+#, fuzzy
+msgctxt "guilabel"
+msgid "DSP"
+msgstr "DSP"
+
+#: src/gui/widgets/preferences.c:867
+#, fuzzy
+msgctxt "guilabel"
+msgid "Pan"
+msgstr "Panoramique"
+
+#: src/gui/widgets/preferences.c:868
+#, fuzzy
+msgctxt "guilabel"
+msgid "Engine"
+msgstr "Moteur"
+
+#: src/gui/widgets/preferences.c:869
+#, fuzzy
+msgctxt "guilabel"
+msgid "Paths"
+msgstr "Chemins"
 
 #: src/gui/widgets/scripting_window.c:192
 msgid "Script execution successful"
@@ -4492,6 +4566,36 @@ msgid ""
 "The pan law to use when applying pan on mono signals (not used at the "
 "moment)."
 msgstr ""
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"normal\""
+#~ msgstr "normal"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"velocity\""
+#~ msgstr "Vélocité"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"category\""
+#~ msgstr "Catégorie"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"Electronic\""
+#~ msgstr "Électronique"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"Zrythm\""
+#~ msgstr "Zrythm"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"superellipse\""
+#~ msgstr "Superellipse"
 
 #~ msgid "Scanned VST plugin"
 #~ msgstr "Greffon VST scanné"

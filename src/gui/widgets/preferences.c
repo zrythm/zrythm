@@ -54,8 +54,14 @@ typedef struct CallbackData
 } CallbackData;
 
 #define KEY_IS(a,b,c) \
-  (string_is_equal (group, _(a)) && \
-  string_is_equal (subgroup, _(b)) && \
+  (string_is_equal ( \
+    group, \
+    g_dpgettext2 ( \
+      GETTEXT_PACKAGE, GUILABEL_CTX, a)) && \
+  string_is_equal ( \
+    subgroup,  \
+    g_dpgettext2 ( \
+      GETTEXT_PACKAGE, GUILABEL_CTX, b)) && \
   string_is_equal (key, c))
 
 static void
@@ -220,8 +226,8 @@ make_control (
 {
   SubgroupInfo * info =
     &self->subgroup_infos[group_idx][subgroup_idx];
-  char * group = info->group_name;
-  char * subgroup = info->name;
+  const char * group = info->group_name;
+  const char * subgroup = info->name;
   GSettingsSchemaKey * schema_key =
     g_settings_schema_get_key (
       info->schema, key);
@@ -489,13 +495,20 @@ make_control (
                       gtk_combo_box_text_append (
                         GTK_COMBO_BOX_TEXT (widget),
                         cyaml_strv[i].str,
-                        _(cyaml_strv[i].str));
+                        g_dpgettext2 (
+                          GETTEXT_PACKAGE,
+                          GUILABEL_CTX,
+                          cyaml_strv[i].str));
                     }
                   else if (strv)
                     {
                       gtk_combo_box_text_append (
                         GTK_COMBO_BOX_TEXT (widget),
-                        strv[i], _(strv[i]));
+                        strv[i],
+                        g_dpgettext2 (
+                          GETTEXT_PACKAGE,
+                          GUILABEL_CTX,
+                          strv[i]));
                     }
                 }
               gtk_combo_box_set_active (
@@ -593,12 +606,15 @@ add_subgroup (
       GSettingsSchemaKey * schema_key =
         g_settings_schema_get_key (
           info->schema, key);
-      char * summary =
-        _(g_settings_schema_key_get_summary (
-          schema_key));
-      char * description =
+      const char * summary =
+        g_dpgettext2 (
+          GETTEXT_PACKAGE,
+          GUILABEL_CTX,
+          g_settings_schema_key_get_summary (
+            schema_key));
+      const char * description =
         _(g_settings_schema_key_get_description (
-          schema_key));
+            schema_key));
 
       if (string_is_equal (key, "info") ||
           should_be_hidden (
@@ -674,8 +690,8 @@ add_group (
   /* loop once to get the max subgroup index and
    * group name */
   char * schema_str;
-  char * group_name = NULL;
-  char * subgroup_name = NULL;
+  const char * group_name = NULL;
+  const char * subgroup_name = NULL;
   int i = 0;
   int max_subgroup_idx = 0;
   while ((schema_str = non_relocatable[i++]))
@@ -710,11 +726,17 @@ add_group (
         g_settings_schema_get_key (
           schema, "info");
       group_name =
-        _(g_settings_schema_key_get_summary (
-          info_key));
+        g_dpgettext2 (
+          GETTEXT_PACKAGE,
+          GUILABEL_CTX,
+          g_settings_schema_key_get_summary (
+            info_key));
       subgroup_name =
-        _(g_settings_schema_key_get_description (
-          info_key));
+        g_dpgettext2 (
+          GETTEXT_PACKAGE,
+          GUILABEL_CTX,
+          g_settings_schema_key_get_description (
+            info_key));
 
       /* get max subgroup index */
       int subgroup_idx =
@@ -792,7 +814,10 @@ preferences_widget_new ()
   PreferencesWidget * self =
     g_object_new (
       PREFERENCES_WIDGET_TYPE,
-      "title", _("Preferences"),
+      "title",
+      g_dpgettext2 (
+        GETTEXT_PACKAGE, GUILABEL_CTX,
+        "Preferences"),
       NULL);
 
   for (int i = 0; i < 6; i++)
@@ -826,4 +851,20 @@ preferences_widget_init (
       gtk_dialog_get_content_area (
         GTK_DIALOG (self))),
     GTK_WIDGET (self->group_notebook));
+
+  /* hack to get localization working because we
+   * can't extract summaries into the .po file from
+   * the schema itself */
+  C_("guilabel", "Plugins");
+  C_("guilabel", "General");
+  C_("guilabel", "Editing");
+  C_("guilabel", "Audio");
+  C_("guilabel", "Automation");
+  C_("guilabel", "Undo");
+  C_("guilabel", "Projects");
+  C_("guilabel", "UI");
+  C_("guilabel", "DSP");
+  C_("guilabel", "Pan");
+  C_("guilabel", "Engine");
+  C_("guilabel", "Paths");
 }

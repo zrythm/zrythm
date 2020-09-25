@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-09-24 00:55+0100\n"
+"Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
+"POT-Creation-Date: 2020-09-25 19:01+0100\n"
 "PO-Revision-Date: 2020-09-24 02:45+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
@@ -581,31 +581,31 @@ msgstr "Información sobre la licencia"
 msgid "Waiting for project"
 msgstr "Esperando un proyecto"
 
-#: src/plugins/carla_native_plugin.c:525 src/plugins/lv2_plugin.c:2513
+#: src/plugins/carla_native_plugin.c:545 src/plugins/lv2_plugin.c:2513
 #, fuzzy
 msgid "Default bank"
 msgstr "Valor predeterminado"
 
-#: src/plugins/carla_native_plugin.c:532 src/plugins/lv2_plugin.c:2520
+#: src/plugins/carla_native_plugin.c:552 src/plugins/lv2_plugin.c:2520
 msgid "Init"
 msgstr ""
 
-#: src/plugins/carla_native_plugin.c:973
+#: src/plugins/carla_native_plugin.c:993
 #, fuzzy
 msgid "Audio in"
 msgstr "Entradas de audio"
 
-#: src/plugins/carla_native_plugin.c:983
+#: src/plugins/carla_native_plugin.c:1003
 #, fuzzy
 msgid "Audio out"
 msgstr "Salidas de audio"
 
-#: src/plugins/carla_native_plugin.c:993
+#: src/plugins/carla_native_plugin.c:1013
 #, fuzzy
 msgid "MIDI in"
 msgstr "Entradas de MIDI"
 
-#: src/plugins/carla_native_plugin.c:1003
+#: src/plugins/carla_native_plugin.c:1023
 #, fuzzy
 msgid "MIDI out"
 msgstr "Nota de MIDI"
@@ -1342,9 +1342,8 @@ msgstr "Acerca de Zrythm"
 msgid "About Zrythm"
 msgstr "Acerca de Zrythm"
 
-#: src/gui/widgets/header.c:105 src/gui/widgets/preferences.c:795
-#: resources/gtk/menus.ui:40 resources/gtk/help-overlay.ui:39
-#: resources/ui/preferences.ui:27
+#: src/gui/widgets/header.c:105 resources/gtk/menus.ui:40
+#: resources/gtk/help-overlay.ui:39 resources/ui/preferences.ui:27
 msgid "Preferences"
 msgstr "Preferencias"
 
@@ -1517,19 +1516,93 @@ msgstr "Moduladores"
 msgid "Snap/Grid options"
 msgstr ""
 
-#: src/gui/widgets/preferences.c:400 resources/ui/first_run_assistant.ui:124
+#: src/gui/widgets/preferences.c:406 resources/ui/first_run_assistant.ui:124
 msgid "Select a folder"
 msgstr "Seleccionar carpeta"
 
-#: src/gui/widgets/preferences.c:401
+#: src/gui/widgets/preferences.c:407
 #, fuzzy
 msgid "Select a file"
 msgstr "Seleccionar carpeta"
 
-#: src/gui/widgets/preferences.c:774
+#: src/gui/widgets/preferences.c:796
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
 msgstr ""
+
+#. hack to get localization working because we
+#. * can't extract summaries into the .po file from
+#. * the schema itself
+#: src/gui/widgets/preferences.c:858
+#, fuzzy
+msgctxt "guilabel"
+msgid "Plugins"
+msgstr "Plugins"
+
+#: src/gui/widgets/preferences.c:859
+msgctxt "guilabel"
+msgid "General"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:860
+#, fuzzy
+msgctxt "guilabel"
+msgid "Editing"
+msgstr "Edición"
+
+#: src/gui/widgets/preferences.c:861
+#, fuzzy
+msgctxt "guilabel"
+msgid "Audio"
+msgstr "Audio"
+
+#: src/gui/widgets/preferences.c:862
+#, fuzzy
+msgctxt "guilabel"
+msgid "Automation"
+msgstr "Automatización"
+
+#: src/gui/widgets/preferences.c:863
+#, fuzzy
+msgctxt "guilabel"
+msgid "Undo"
+msgstr "Deshacer"
+
+#: src/gui/widgets/preferences.c:864
+#, fuzzy
+msgctxt "guilabel"
+msgid "Projects"
+msgstr "Proyectos"
+
+#: src/gui/widgets/preferences.c:865
+#, fuzzy
+msgctxt "guilabel"
+msgid "UI"
+msgstr "IGU"
+
+#: src/gui/widgets/preferences.c:866
+#, fuzzy
+msgctxt "guilabel"
+msgid "DSP"
+msgstr "DSP"
+
+#: src/gui/widgets/preferences.c:867
+#, fuzzy
+msgctxt "guilabel"
+msgid "Pan"
+msgstr "Balance"
+
+#: src/gui/widgets/preferences.c:868
+#, fuzzy
+msgctxt "guilabel"
+msgid "Engine"
+msgstr "Motor"
+
+#: src/gui/widgets/preferences.c:869
+#, fuzzy
+msgctxt "guilabel"
+msgid "Paths"
+msgstr "Caminos"
 
 #: src/gui/widgets/scripting_window.c:192
 msgid "Script execution successful"
@@ -4446,6 +4519,26 @@ msgid ""
 msgstr ""
 "La ley de pan que se debe utilizar cuando se aplica el pan en señales mono "
 "(no se utiliza por el momento)."
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"normal\""
+#~ msgstr "normal"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"velocity\""
+#~ msgstr "Velocidad"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"Zrythm\""
+#~ msgstr "Zrythm"
+
+#, fuzzy
+#~ msgctxt "guilabel"
+#~ msgid "\"superellipse\""
+#~ msgstr "Superellipse"
 
 #, fuzzy
 #~ msgid "Scanned VST plugin"

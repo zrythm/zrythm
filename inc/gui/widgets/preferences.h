@@ -49,9 +49,9 @@ typedef struct _MidiControllerMbWidget
 typedef struct SubgroupInfo
 {
   /** Localized name. */
-  char *            name;
+  const char *      name;
 
-  char *            group_name;
+  const char *      group_name;
 
   int               group_idx;
   int               subgroup_idx;

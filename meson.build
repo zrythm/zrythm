@@ -372,6 +372,7 @@ test_cflags = [
   # use structured log
   '-DG_LOG_USE_STRUCTURED=1',
   '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
+  '-DGUILABEL_CTX="guilabel"',
   ]
 
 if cc.get_id() == 'clang'
@@ -731,7 +732,7 @@ if have_guile
 endif
 
 carla_host_plugin_dep = dependency (
-  'carla-host-plugin', version: '>=2.1.0',
+  'carla-host-plugin', version: '>=2.2.91',
   required: get_option ('carla'),
   static: all_static)
 have_carla = carla_host_plugin_dep.found ()
