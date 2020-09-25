@@ -14,6 +14,7 @@ used from the :term:`CLI`.
 
 zrythm
 ------
+Zrythm executable.
 
 .. program:: zrythm
 
@@ -49,3 +50,12 @@ zrythm
 .. option:: -v, --version
 
   Prints the Zrythm version.
+
+zrythm_launch
+-------------
+Wrapper over :program:`zrythm` that sets the
+correct paths before launching Zrythm. All of the
+options for :program:`zrythm` can also be passed to
+:program:`zrythm_launch`.
+
+.. program:: zrythm_launch

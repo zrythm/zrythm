@@ -702,7 +702,7 @@ char *
 position_stringize_allocate (
   const Position * pos)
 {
-  char buf[40];
+  char buf[80];
   position_stringize (pos, buf);
   return g_strdup (buf);
 }
@@ -716,7 +716,7 @@ position_stringize (
   const Position * pos,
   char *           buf)
 {
-  char str[40];
+  char str[60];
   sprintf (str, "%f", pos->sub_tick);
   sprintf (
     buf, "%d.%d.%d.%d.%s",
@@ -731,7 +731,7 @@ void
 position_print (
   const Position * pos)
 {
-  char buf[60];
+  char buf[140];
   position_stringize (pos, buf);
   g_message ("%s", buf);
 }
