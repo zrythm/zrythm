@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: 2020-09-24 21:18+0000\n"
+"PO-Revision-Date: 2020-09-25 18:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-configuration/ja/>\n"
@@ -91,8 +91,9 @@ msgid "Manual Installation"
 msgstr "手動インストール"
 
 #: ../../zrythm-configuration/installation/intro.rst:24
+#, fuzzy
 msgid "The usual GNU toolchain procedure applies::"
-msgstr ""
+msgstr "通常のGNUツールチェーンの手順が適用されます。"
 
 #: ../../zrythm-configuration/installation/intro.rst:31
 msgid ""

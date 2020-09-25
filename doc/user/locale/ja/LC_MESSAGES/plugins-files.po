@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-25 13:15+0000\n"
+"PO-Revision-Date: 2020-09-25 18:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/ja/>\n"
@@ -247,7 +247,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:12
 msgid "In Zrythm, :term:`SFZ`/:term:`SF2` are also used as plugins."
-msgstr ""
+msgstr "Zrythmでは、:term:`SFZ` / :term:`SF2` もプラグインとして使用されています。"
 
 #: ../../plugins-files/plugins/plugin-info.rst:18
 #, fuzzy
@@ -256,7 +256,7 @@ msgstr "プラグイン"
 
 #: ../../plugins-files/plugins/plugin-info.rst:20
 msgid "Plugins are classified into the following categories."
-msgstr ""
+msgstr "プラグインは、次のカテゴリに分類されます。"
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "Instrument"
@@ -264,7 +264,7 @@ msgstr "音源"
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "These plugins will create an instrument track when added to the project."
-msgstr "これらのプラグインは、プロジェクトに追加されたときに音源トラックを作成します。"
+msgstr "これらのプラグインは、プロジェクトに追加されたときにインストゥルメントトラックを作成します。"
 
 #: ../../plugins-files/plugins/plugin-info.rst:27
 msgid "Effects"
@@ -293,11 +293,10 @@ msgid "MIDI Effects"
 msgstr "MIDIエフェクト"
 
 #: ../../plugins-files/plugins/plugin-info.rst:33
-#, fuzzy
 msgid ""
 "These plugins modify incoming :term:`MIDI` signals and can be used in the"
 " MIDI signal chain of an Instrument or MIDI track."
-msgstr "これらのプラグインは、着信MIDI信号を変更し、音源またはMIDIトラックのMIDI信号チェーンで使用することができます。"
+msgstr "これらのプラグインは、着信MIDI信号を変更し、インストゥルメントまたはMIDIトラックのMIDI信号チェーンで使用することができます。"
 
 #: ../../plugins-files/plugins/plugin-info.rst:39
 #, fuzzy
@@ -328,7 +327,7 @@ msgstr "有効"
 
 #: ../../plugins-files/plugins/plugin-info.rst:55
 msgid "Controls whether the plugin is active or bypassed."
-msgstr ""
+msgstr "プラグインがアクティブかバイパス状態かを制御します。"
 
 #: ../../plugins-files/plugins/plugin-info.rst:58
 msgid "Gain"
@@ -336,7 +335,7 @@ msgstr "ゲイン"
 
 #: ../../plugins-files/plugins/plugin-info.rst:57
 msgid "Increases the output volume of the plugin (if applicable)."
-msgstr ""
+msgstr "プラグインの出力ボリュームを上げます (該当する場合)。"
 
 #: ../../plugins-files/plugins/plugin-info.rst:60
 msgid ""
@@ -513,7 +512,7 @@ msgstr ":file:`/usr/lib/vst3`"
 msgid ""
 "You can bypass this behavior by passing :envvar:`VST_PATH` and "
 ":envvar:`VST3_PATH`."
-msgstr ""
+msgstr "envvar:`VST_PATH` と :envvar:`VST3_PATH` を渡すことで、この動作をオーバーライドすることができます。"
 
 #: ../../plugins-files/plugins/scanning.rst:54
 msgid ""

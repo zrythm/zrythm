@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-09-25 13:15+0000\n"
+"PO-Revision-Date: 2020-09-25 18:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/ja/>\n"
@@ -47,7 +47,7 @@ msgstr "拍子記号"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:30
 msgid "The Time Signature is split into the following"
-msgstr ""
+msgstr "拍子記号は下記ように分割されています"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:34
 #, fuzzy
@@ -91,7 +91,7 @@ msgstr ""
 #: ../../playback-and-recording/loop-points-and-markers.rst:19
 #: ../../playback-and-recording/loop-points-and-markers.rst:32
 msgid "This only applies to the timeline ruler, covered in :ref:`timeline-ruler`."
-msgstr ""
+msgstr "これは、タイムラインルーラーにのみ適用され、 :ref:`timeline-ruler` で説明されています。"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:23
 msgid "Cue Point"
@@ -123,7 +123,7 @@ msgstr ""
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:51
 msgid "These markers are part of the :ref:`marker-track`."
-msgstr ""
+msgstr "これらのマーカーは :ref:`marker-track` の一部です。"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:54
 msgid "Custom Markers"
@@ -131,7 +131,7 @@ msgstr "カスタム マーカー"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:55
 msgid "Custom Markers can also be created inside the :ref:`marker-track`."
-msgstr ""
+msgstr "カスタム マーカーは、 :ref:`marker-track` 内に作成することもできます。"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:61
 msgid ""
@@ -169,8 +169,9 @@ msgid "Zrythm uses the following format for positions:"
 msgstr "Zrythm は、ポジションに次の形式を使用しています。"
 
 #: ../../playback-and-recording/overview.rst:26
+#, fuzzy
 msgid "Each sixteenth note is fixed to have 240 ticks."
-msgstr ""
+msgstr "各16分音符は240刻みで固定されています。"
 
 #: ../../playback-and-recording/recording.rst:6
 msgid "Recording"
@@ -269,7 +270,7 @@ msgstr "トランスポート コントロール"
 
 #: ../../playback-and-recording/transport-controls.rst:10
 msgid "Playback is controlled by the following transport controls."
-msgstr ""
+msgstr "再生は以下のトランスポートコントロールで制御されます。"
 
 #: ../../playback-and-recording/transport-controls.rst:16
 msgid "Record"
@@ -295,7 +296,7 @@ msgstr "停止"
 
 #: ../../playback-and-recording/transport-controls.rst:23
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
-msgstr ""
+msgstr "再生を一時停止します。2回クリックするとキューポイントに戻ります。"
 
 #: ../../playback-and-recording/transport-controls.rst:26
 #, fuzzy
@@ -303,8 +304,9 @@ msgid "Backward"
 msgstr "前へ"
 
 #: ../../playback-and-recording/transport-controls.rst:26
+#, fuzzy
 msgid "Moves the Playhead backward by the size of 1 snap point."
-msgstr ""
+msgstr "再生ヘッドを1スナップポイントのサイズだけ後方に移動します。"
 
 #: ../../playback-and-recording/transport-controls.rst:29
 #, fuzzy
@@ -312,8 +314,9 @@ msgid "Forward"
 msgstr "進む"
 
 #: ../../playback-and-recording/transport-controls.rst:29
+#, fuzzy
 msgid "Moves the Playhead forward by the size of 1 snap point."
-msgstr ""
+msgstr "再生ヘッドを1スナップポイントのサイズだけ前方に移動します。"
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Loop"
@@ -331,7 +334,7 @@ msgstr "メトロノーム"
 
 #: ../../playback-and-recording/transport-controls.rst:38
 msgid "Clicking the metronome button will set metronome on/off."
-msgstr ""
+msgstr "メトロノームボタンをクリックするとメトロノームのオン/オフが設定されます。"
 
 #: ../../playback-and-recording/transport-controls.rst:44
 msgid ""
