@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
 "PO-Revision-Date: 2020-09-25 18:02+0000\n"
-"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/ru/>\n"
 "Language: ru\n"
@@ -42,7 +42,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
 #: ../../plugins-files/audio-midi-files/file-browser.rst:24
 msgid "TODO"
-msgstr ""
+msgstr "Делать"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:22
 msgid "Collections"

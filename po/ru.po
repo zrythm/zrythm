@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-09-24 00:55+0100\n"
 "PO-Revision-Date: 2020-09-25 18:02+0000\n"
-"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -164,7 +164,7 @@ msgstr ""
 
 #: inc/audio/track.h:171 src/audio/region.c:393
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: inc/audio/track.h:172
 msgid "MIDI FX"
@@ -3007,7 +3007,7 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:898
 msgid "TODO"
-msgstr "ТОДО"
+msgstr "Делать"
 
 #: resources/ui/chord_selector_window.ui:908
 msgid "Circle of Fifths"

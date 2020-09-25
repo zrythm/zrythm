@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
 "PO-Revision-Date: 2020-09-25 18:02+0000\n"
-"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/ru/>\n"
 "Language: ru\n"
@@ -218,7 +218,7 @@ msgstr ""
 #: ../../tracks/midi-track.rst:132
 #: ../../tracks/midi-track.rst:140
 msgid "TODO"
-msgstr ""
+msgstr "Делать"
 
 #: ../../tracks/audio-track.rst:58
 #: ../../tracks/instrument-track.rst:77
@@ -701,6 +701,10 @@ msgid ""
 " to save CPU power, instrument tracks can be frozen (temporarily "
 "converted to audio), which dramatically lowers their CPU usage."
 msgstr ""
+"Есть у вас проблемы с производительностью, или если вы просто хотите "
+"сэкономить мощность процессора, используйте DSP , треки инструментов могут "
+"быть заморожены (временно преобразованы в аудио), что снижает нагрузку на "
+"процессор."
 
 #: ../../tracks/instrument-track.rst:94
 msgid ""
@@ -1067,7 +1071,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:24
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord regions & scales"
