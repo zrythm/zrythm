@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2019, Alexandros Theodotou
+# Copyright (C) 2019-2020 The Zrythm contributors
 # This file is distributed under the same license as the Zrythm package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Zrythm 0.4\n"
+"Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 19:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -1358,147 +1358,4 @@ msgid ""
 "the BPM will cause audio regions to be repeated accordingly to match the "
 "new BPM without being time-stretched."
 msgstr ""
-
-#~ msgid ""
-#~ "Editing refers to any work done in"
-#~ " the arrangers: the Timeline and the"
-#~ " Piano Roll."
-#~ msgstr ""
-
-#~ msgid "Piano Roll Editing"
-#~ msgstr ""
-
-#~ msgid "Timeline Editing"
-#~ msgstr ""
-
-#~ msgid "Operations on the Current Selection"
-#~ msgstr ""
-
-#~ msgid "Looping"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Clicking the :zbutton:`Loop Selection` button"
-#~ " or pressing :zbutton:`Ctrl + L` will"
-#~ " place the loop points around the "
-#~ "currently selected objects."
-#~ msgstr ""
-
-#~ msgid "Other Operations"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Zrythm also has the usual "
-#~ "undo/redo/copy/paste functionalities which are "
-#~ "found in the Home view of the "
-#~ "main toolbar at the top of Zrythm."
-#~ " They can be triggered using "
-#~ "shortcuts as well as through context "
-#~ "menus and behave as you would "
-#~ "expect."
-#~ msgstr ""
-
-#~ msgid "Tools"
-#~ msgstr ""
-
-#~ msgid "Toolbox"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The Toolbox contains the following Tools"
-#~ " that are used to trigger modes "
-#~ "for specific operations."
-#~ msgstr ""
-
-#~ msgid "Selection Tool"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The Selection Tool is the smartest "
-#~ "Tool and while its main functionality"
-#~ " is to select and move objects, "
-#~ "it can also create or edit objects"
-#~ " in various ways."
-#~ msgstr ""
-
-#~ msgid "Edit Tool"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Also known as the Pencil Tool, "
-#~ "this Tool is used to create "
-#~ "objects by single-clicking and dragging."
-#~ " In the drum view of the Piano"
-#~ " Roll, it can be used to "
-#~ "quickly generate multiple hits."
-#~ msgstr ""
-
-#~ msgid "Erase Tool"
-#~ msgstr ""
-
-#~ msgid "The Erase Tool is used to delete all objects that are selected by it."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Each tool can be selected by "
-#~ "simply pressing its corresponding button "
-#~ "from 1 to 5 on the keyboard. "
-#~ "Each Mode triggered by each tool "
-#~ "is further described below."
-#~ msgstr ""
-
-#~ msgid "Select Mode"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "To select objects in Select Mode, "
-#~ "click and drag to create a "
-#~ "selection rectangle."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "To create objects in Select Mode, "
-#~ "double click and drag within a "
-#~ "track or lane."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "To move selected objects, click on "
-#~ "one of them and hold while moving"
-#~ " your cursor. If the object is "
-#~ "not selected, it will become selected."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "To copy-move (duplicate and move) "
-#~ "objects, click and drag like when "
-#~ "moving, while holding the :zbutton:`Ctrl` "
-#~ "button on the keyboard."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "To split/cut objects in parts, hold "
-#~ ":zbutton:`Ctrl` while clicking somewhere "
-#~ "inside the object to cut at that"
-#~ " position."
-#~ msgstr ""
-
-#~ msgid "Editing refers to any work done in the arrangers:"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "In addition to their own unique "
-#~ "features, each arranger shares the "
-#~ "following global tools."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The Timeline is the arranger shown "
-#~ "in the top part of the screen "
-#~ "by default, and the Piano Roll is"
-#~ " brought up by clicking on the "
-#~ "Editor tab on the bottom of the"
-#~ " screen or by double-clicking a "
-#~ "region."
-#~ msgstr ""
 

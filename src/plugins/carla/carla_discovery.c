@@ -389,6 +389,10 @@ z_carla_discovery_create_descriptors_from_file (
       descr->protocol = protocol;
       descr->arch = arch;
       descr->path = g_strdup (path);
+      GFile * file =
+        g_file_new_for_path (descr->path);
+      descr->ghash = g_file_hash (file);
+      g_object_unref (file);
 
       /* open all VSTs with carla */
       descr->open_with_carla = true;

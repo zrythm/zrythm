@@ -164,11 +164,20 @@ typedef struct PluginDescriptor PluginDescriptor;
  */
 typedef struct PluginManager
 {
+  /**
+   * Scanned plugin descriptors.
+   *
+   * TODO allocate.
+   */
   PluginDescriptor *     plugin_descriptors[40000];
-  char *                 plugin_categories[50];
-  char *                 collections[50]; ///< TODO
-  int                    num_plugin_categories;
   int                    num_plugins;
+
+  /** Plugin categories. */
+  char *                 plugin_categories[500];
+  int                    num_plugin_categories;
+
+  /** TODO collections. */
+  char *                 collections[500];
   Lv2Nodes               lv2_nodes;
 
   /** Cached VST descriptors */

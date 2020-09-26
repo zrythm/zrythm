@@ -41,6 +41,8 @@ manual_po_files = [
   'zrythm-interface.po',
   ]
 
+# note: if this fails, run the manual_gettext
+# target to generate missing .po files
 foreach lang : locales
   if msgfmt.found () and lang != 'en'
     foreach po_file : manual_po_files
