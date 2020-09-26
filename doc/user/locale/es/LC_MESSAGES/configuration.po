@@ -8,20 +8,21 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-24 02:45+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"Last-Translator: Marc <marc.izquierdo.hu@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/es/>\n"
 "Language: es\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
 msgid "Additional Settings"
-msgstr ""
+msgstr "Ajustes adicionales"
 
 #: ../../configuration/additional-settings.rst:8
 msgid ""
@@ -31,11 +32,11 @@ msgid ""
 "line, or the optional GUI tool `dconf-editor "
 "<https://wiki.gnome.org/Apps/DconfEditor>`_."
 msgstr ""
-"Zrythm guarda toda su configuración usando el mecanismo GSettings, el "
-"cual viene con el comando `gsettings "
-"<https://developer.gnome.org/gio/stable/gsettings-tool.html>`_  para "
-"cambiar las opciones desde la línea de comando o la herramienta gráfica "
-"opcional `dconf-editor <https://wiki.gnome.org/Apps/DconfEditor>`_."
+"Zrythm guarda toda su configuración usando el mecanismo GSettings, el cual "
+"viene con el comando `gsettings <https://developer.gnome.org/gio/stable/"
+"gsettings-tool.html>`_ para cambiar las opciones desde la línea de comando o "
+"la herramienta gráfica opcional `dconf-editor <https://wiki.gnome.org/Apps/"
+"DconfEditor>`_."
 
 #: ../../configuration/additional-settings.rst:14
 msgid ""
@@ -60,7 +61,7 @@ msgstr "Viendo las Opciones Actuales"
 
 #: ../../configuration/additional-settings.rst:27
 msgid "See :option:`zrythm --print-settings`."
-msgstr ""
+msgstr "Vea :option:`zrythm --print-settings`."
 
 #: ../../configuration/additional-settings.rst:30
 msgid "Reset to Factory Settings"
@@ -68,7 +69,7 @@ msgstr "Volver a la Configuracion de Fábrica"
 
 #: ../../configuration/additional-settings.rst:32
 msgid "See :option:`zrythm --reset-to-factory`."
-msgstr ""
+msgstr "Vea :option:`zrythm --reset-to-factory`."
 
 #: ../../configuration/additional-settings.rst:34
 #, fuzzy
@@ -144,12 +145,13 @@ msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
 "using :term:`a2jmidid`."
 msgstr ""
-"Dependiendo de tu instalación, los dispositivos MIDI podrían necesitar "
-"ser puenteados al JACK usando ``a2jmidid``."
+"Dependiendo de tu instalación, los dispositivos MIDI podrían necesitar ser "
+"puenteados a JACK usando ``a2jmidid``."
 
 #: ../../configuration/first-run-wizard.rst:6
+#, fuzzy
 msgid "First Run Wizard"
-msgstr ""
+msgstr "Asistente para primera ejecución"
 
 #: ../../configuration/first-run-wizard.rst:8
 msgid ""
@@ -161,7 +163,7 @@ msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:15
 msgid "Language Selection"
-msgstr ""
+msgstr "Selección de idioma"
 
 #: ../../configuration/first-run-wizard.rst:20
 msgid ""
@@ -176,7 +178,7 @@ msgstr "Debería tener habilitado la localización para el lenguaje que quiera u
 
 #: ../../configuration/first-run-wizard.rst:28
 msgid "Path"
-msgstr ""
+msgstr "Directorio"
 
 #: ../../configuration/first-run-wizard.rst:33
 msgid "This is the :term:`Zrythm user path`."
@@ -184,20 +186,19 @@ msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:36
 msgid "Audio/MIDI Backends"
-msgstr ""
+msgstr "Backends de audio/MIDI"
 
 #: ../../configuration/first-run-wizard.rst:41
-#, fuzzy
 msgid ""
 "Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is "
 "the recommended one for both, but it takes some time to set up if this is"
 " your first time using it. If you choose to use JACK, JACK MIDI and the "
 "JACK audio backend must be chosen together."
 msgstr ""
-"Zrythm soporta múltiples motores backend de audio y MIDI. JACK es el "
-"recomendado para ambos, pero lleva un poco de tiempo instalarlo if esta "
-"es la primera vez que lo esté usando. Si elige usar JACK, debe usar JACK "
-"MIDI y el backend JACK audio."
+"Zrythm soporta múltiples motores backend de audio y MIDI. `JACK` es el "
+"recomendado para ambos, pero lleva un poco de tiempo instalarlo if esta es "
+"la primera vez que lo esté usando. Si elige usar JACK, debe usar JACK MIDI y "
+"el backend JACK audio."
 
 #: ../../configuration/first-run-wizard.rst:47
 msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
@@ -219,7 +220,7 @@ msgstr "Si elige usar JACK, debe usar JACK MIDI y el backend JACK audio."
 
 #: ../../configuration/first-run-wizard.rst:59
 msgid "MIDI Devices"
-msgstr ""
+msgstr "Dispositivos MIDI"
 
 #: ../../configuration/first-run-wizard.rst:64
 msgid ""
@@ -239,14 +240,13 @@ msgstr ""
 
 #: ../../configuration/intro.rst:6
 msgid "Configuration"
-msgstr ""
+msgstr "Configuración"
 
 #: ../../configuration/preferences/intro.rst:8
 msgid "Preferences"
 msgstr "Preferencias"
 
 #: ../../configuration/preferences/intro.rst:10
-#, fuzzy
 msgid ""
 "Zrythm has a Preferences dialog containing all of the global settings "
 "that can be accessed by clicking the gear icon or with :kbd:`Control-"
@@ -254,7 +254,7 @@ msgid ""
 msgstr ""
 "Zrythm tiene un cuadro de diálogo de Preferencias que contiene todas las "
 "configuraciones globales a las que se puede acceder haciendo clic en el "
-"ícono de ajustes o con: kbd: `Ctrl + Shift + P`."
+"icono de ajustes o con :kbd: `Ctrl+Shift+P`"
 
 #: ../../configuration/preferences/intro.rst:14
 msgid ""
@@ -268,7 +268,7 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:189
 #: ../../configuration/preferences/intro.rst:209
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: ../../configuration/preferences/intro.rst:20
 msgid "General settings."
@@ -276,15 +276,15 @@ msgstr "Configuración general."
 
 #: ../../configuration/preferences/intro.rst:28
 msgid "Engine"
-msgstr ""
+msgstr "Motor"
 
 #: ../../configuration/preferences/intro.rst:30
 msgid "Audio engine settings."
-msgstr ""
+msgstr "Ajustes del motor de audio."
 
 #: ../../configuration/preferences/intro.rst:35
 msgid "Audio backend"
-msgstr ""
+msgstr "Backend de audio"
 
 #: ../../configuration/preferences/intro.rst:33
 msgid ""
@@ -294,7 +294,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:41
 msgid "MIDI backend"
-msgstr ""
+msgstr "Backend MIDI"
 
 #: ../../configuration/preferences/intro.rst:38
 msgid ""
@@ -342,8 +342,9 @@ msgid "UIs"
 msgstr "Interfaz Gráfica"
 
 #: ../../configuration/preferences/intro.rst:65
+#, fuzzy
 msgid "Plugin UIs."
-msgstr "Complementos de Interfaz Gráfica"
+msgstr "Complementos de Interfaz Gráfica."
 
 #: ../../configuration/preferences/intro.rst:69
 msgid "Generic UIs"
@@ -361,7 +362,7 @@ msgstr "Abrir UI en la instanciación"
 
 #: ../../configuration/preferences/intro.rst:72
 msgid "Open plugin UIs when they are instantiated."
-msgstr ""
+msgstr "Abrir las UI de los plugins cuando se instancien."
 
 #: ../../configuration/preferences/intro.rst:75
 msgid "Keep window on top"
@@ -453,9 +454,8 @@ msgid ":term:`Panning` options for :term:`mono` signals (not used at the moment)
 msgstr "Opciones de balance para señales mono (no utilizadas por el momento)."
 
 #: ../../configuration/preferences/intro.rst:137
-#, fuzzy
 msgid "Pan algorithm"
-msgstr "Algoritmo de balance."
+msgstr "Algoritmo de balance"
 
 #: ../../configuration/preferences/intro.rst:123
 msgid ""
@@ -479,8 +479,9 @@ msgid "The :term:`pan law` to use when applying pan on mono signals."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:144
+#, fuzzy
 msgid "Editing"
-msgstr ""
+msgstr "Edición"
 
 #: ../../configuration/preferences/intro.rst:146
 msgid "Editing options."
@@ -561,7 +562,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:195
 msgid "Autosave interval"
-msgstr ""
+msgstr "Lapso de guardado automático"
 
 #: ../../configuration/preferences/intro.rst:194
 msgid ""
@@ -1304,4 +1305,3 @@ msgstr ""
 #~ " la opción ``--reset-to-factory`` "
 #~ "para llevar a Zrythm a su estado"
 #~ " por defecto."
-

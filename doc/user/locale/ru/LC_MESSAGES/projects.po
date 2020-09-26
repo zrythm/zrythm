@@ -8,25 +8,26 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-23 17:14+0000\n"
-"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
+"manualprojects/ru/>\n"
 "Language: ru\n"
-"Language-Team: Russian "
-"<https://hosted.weblate.org/projects/zrythm/manualprojects/ru/>\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../projects/intro.rst:8
 msgid "Projects"
-msgstr ""
+msgstr "Проекты (Projects)"
 
 #: ../../projects/project-info.rst:6
 msgid "Project Info"
-msgstr ""
+msgstr "Информация о проекте"
 
 #: ../../projects/project-info.rst:8
 msgid ""
@@ -34,64 +35,69 @@ msgid ""
 "folder with a YAML file describing the Project and additional files used "
 "such as MIDI and audio files."
 msgstr ""
+"В Zrythm ваша работа сохраняется внутри проекта. Проекты состоят из папки с "
+"файлом YAML, описывающим проект, и дополнительными используемыми файлами, "
+"такими как файлы MIDI и аудио."
 
 #: ../../projects/project-info.rst:14
 msgid "Project Structure"
-msgstr ""
+msgstr "Структура проекта"
 
 #: ../../projects/project-info.rst:38
 msgid "backups"
-msgstr ""
+msgstr "backups"
 
 #: ../../projects/project-info.rst:39
 msgid "Regular backups taken automatically by Zrythm"
-msgstr ""
+msgstr "Регулярное резервное копирование, автоматически выполняемое Zrythm"
 
 #: ../../projects/project-info.rst:40
 msgid "myproject.bak"
-msgstr ""
+msgstr "myproject.bak"
 
 #: ../../projects/project-info.rst:41
 msgid "An example backup project"
-msgstr ""
+msgstr "Пример проекта резервного копирования"
 
 #: ../../projects/project-info.rst:43
 msgid "states"
-msgstr ""
+msgstr "states"
 
 #: ../../projects/project-info.rst:43
 msgid "Contains plugin states at the time of save (for LV2)"
-msgstr ""
+msgstr "Содержит состояния плагина на момент сохранения (для LV2)"
 
 #: ../../projects/project-info.rst:46
 msgid "exports"
-msgstr ""
+msgstr "exports"
 
 #: ../../projects/project-info.rst:46
 msgid "Default directory for exporting files related to the project"
-msgstr ""
+msgstr "Каталог по умолчанию для экспорта файлов, связанных с проектом"
 
 #: ../../projects/project-info.rst:49
 msgid "pool"
-msgstr ""
+msgstr "pool"
 
 #: ../../projects/project-info.rst:49
 msgid ""
 "Used by Zrythm to store and load files used by the Project, such as audio"
 " files"
 msgstr ""
+"Используется Zrythm для хранения и загрузки файлов, используемых в проекте, "
+"например аудиофайлов"
 
 #: ../../projects/project-info.rst:51
 msgid "project.yml"
-msgstr ""
+msgstr "project.yml"
 
 #: ../../projects/project-info.rst:52
 msgid "The Project file"
-msgstr ""
+msgstr "Файл проекта"
 
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
-msgstr ""
+msgstr "Управление проектами и их совместимость"
 
 #: ../../projects/project-management-and-compatibility.rst:8
 msgid ""
@@ -100,6 +106,10 @@ msgid ""
 "compatibility will be maintained between version changes in order to give"
 " more time to feature development and fixes."
 msgstr ""
+"По крайней мере, в настоящее время Zrythm следует модели скользящего "
+"выпуска, и структура файлов проекта может изменяться при каждом новом "
+"выпуске. Между изменениями версий не будет поддерживаться совместимость, "
+"чтобы было больше времени на разработку функций и исправления."
 
 #: ../../projects/project-management-and-compatibility.rst:19
 msgid ""
@@ -108,44 +118,54 @@ msgid ""
 "if you would like to open a project made using a previous version please "
 "install that version of Zrythm."
 msgstr ""
+"Возможно, вы сможете открыть проект из предыдущих версий, если не было "
+"изменений в файловой структуре проекта, но это не гарантируется, поэтому, "
+"если вы хотите открыть проект, созданный с использованием предыдущей версии, "
+"установите эту версию Zrythm."
 
 #: ../../projects/project-management-and-compatibility.rst:28
 msgid ""
 "Each project file will mention the version of Zrythm it was made with and"
 " the date it was saved"
 msgstr ""
+"В каждом файле проекта будет указана версия Zrythm, с которой он был создан, "
+"и дата его сохранения"
 
 #: ../../projects/saving-loading.rst:6
 msgid "Saving & Loading"
-msgstr ""
+msgstr "Сохранение и загрузка"
 
 #: ../../projects/saving-loading.rst:9
 msgid "Loading Projects"
-msgstr ""
+msgstr "Загрузка проектов"
 
 #: ../../projects/saving-loading.rst:11
 msgid ""
 "When Zrythm launches, it will ask you to select a project to load from a "
 "list of recent projects, or to create a new one."
 msgstr ""
+"Когда Zrythm запускается, он попросит вас выбрать проект для загрузки из "
+"списка последних проектов или создать новый."
 
 #: ../../projects/saving-loading.rst:18
 msgid ""
 "When you select a project and click :guilabel:`Apply`, Zrythm will load "
 "that project."
 msgstr ""
+"Когда вы выбираете проект и щелкаете :guilabel:`Применить (Apply)`, Zrythm "
+"загрузит этот проект."
 
 #: ../../projects/saving-loading.rst:22
 msgid "Creating Projects"
-msgstr ""
+msgstr "Создание проектов"
 
 #: ../../projects/saving-loading.rst:24
 msgid ""
 "In the menu above, if you select :guilabel:`Create new project`, Zrythm "
 "will ask you for a template to use for creating the new Project."
 msgstr ""
-"В меню выше, если вы выберете :guilabel:`Создать новый проект`, Zrythm "
-"запросит у вас шаблон для создания нового проекта."
+"В меню выше, если вы выберете :guilabel:`Создать новый проект (Create new "
+"project)`, Zrythm запросит у вас шаблон для создания нового проекта."
 
 #: ../../projects/saving-loading.rst:31
 msgid ""
@@ -153,6 +173,8 @@ msgid ""
 "copying a project directory under :file:`templates` in the :term:`Zrythm "
 "user path`."
 msgstr ""
+"Доступен пустой шаблон, и вы можете создавать свои собственные шаблоны, "
+"копируя каталог проекта в :file:`templates` внутри :term:`Zrythm user path`."
 
 #: ../../projects/saving-loading.rst:36
 msgid ""
@@ -160,16 +182,21 @@ msgid ""
 "Zrythm will ask you for a parent directory to save the project in and a "
 "title for the project."
 msgstr ""
+"После того, как шаблон (или пустой) выбран и вы нажмете "
+":guilabel:`Применить/Apply`, Zrythm запросит у вас родительский каталог, в "
+"котором будет сохранен проект и также запросит название проекта."
 
 #: ../../projects/saving-loading.rst:44
 msgid ""
 "Once you accept, the new project will be set up and you will be ready to "
 "go."
 msgstr ""
+"Как только вы примете согласие, новый проект будет создан, и вы будете "
+"готовы к работе."
 
 #: ../../projects/saving-loading.rst:48
 msgid "Saving Projects"
-msgstr ""
+msgstr "Сохранение проектов"
 
 #: ../../projects/saving-loading.rst:50
 msgid ""
@@ -177,14 +204,17 @@ msgid ""
 "Project in a new location and :guilabel:`Save` will save the Project in "
 "the previous location."
 msgstr ""
+"Сохранение работает, как и следовало ожидать: :guilabel:`Сохранить как (Save "
+"As...)` сохранит проект в новом месте, а :guilabel:`Сохранить (Save)` "
+"сохранит проект в предыдущем месте."
 
 #: ../../projects/saving-loading.rst:54
 msgid "When saving projects, Zrythm expects you to give it a directory"
-msgstr ""
+msgstr "При сохранении проектов Zrythm ожидает, что вы предоставите ему каталог"
 
 #: ../../projects/saving-loading.rst:58
 msgid "Automatic Backups"
-msgstr ""
+msgstr "Автоматическое резервное копирование"
 
 #: ../../projects/saving-loading.rst:60
 msgid ""
@@ -193,16 +223,22 @@ msgid ""
 "know if there are newer back-ups of that project and ask you if you want "
 "to load them instead."
 msgstr ""
+"Zrythm имеет возможность автоматически сохранять текущий проект в качестве "
+"резервной копии. При запуске Zrythm и выборе загрузки вашего проекта Zrythm "
+"сообщит вам, есть ли новые резервные копии этого проекта, и спросит вас, "
+"хотите ли вы вместо этого загрузить их."
 
 #: ../../projects/saving-loading.rst:68
 msgid ""
 "The auto-save interval can be changed (or disabled) in the preferences "
 "window."
 msgstr ""
+"Интервал автосохранения можно изменить (или отключить) в окне Настройки "
+"(Preferences)."
 
 #: ../../projects/saving-loading.rst:71
 msgid "The backups are saved in the project's directory, under :file:`backups`."
-msgstr ""
+msgstr "Резервные копии сохраняются в каталоге проекта внутри :file:`backups`."
 
 #~ msgid "Importing/Exporting Audio"
 #~ msgstr ""
@@ -391,4 +427,3 @@ msgstr ""
 #~ "will be set up and you will "
 #~ "be ready to go."
 #~ msgstr ""
-

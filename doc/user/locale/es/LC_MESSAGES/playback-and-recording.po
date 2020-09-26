@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-09-24 02:45+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"Last-Translator: Marc <marc.izquierdo.hu@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/es/>\n"
 "Language: es\n"
@@ -48,7 +48,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:25
 msgid "Time Signature"
-msgstr ""
+msgstr "Compás"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:30
 msgid "The Time Signature is split into the following"
@@ -177,9 +177,8 @@ msgid "Each sixteenth note is fixed to have 240 ticks."
 msgstr ""
 
 #: ../../playback-and-recording/recording.rst:6
-#, fuzzy
 msgid "Recording"
-msgstr "Grabación de MIDI"
+msgstr "Grabación"
 
 #: ../../playback-and-recording/recording.rst:9
 msgid "Arming Tracks"

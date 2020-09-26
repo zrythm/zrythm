@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-25 18:02+0000\n"
-"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/ru/>\n"
 "Language: ru\n"
@@ -23,44 +23,48 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 msgid "File Browser"
-msgstr ""
+msgstr "Браузер файлов (File Browser)"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:10
 msgid ""
 "The File Browser makes it easy to navigate through files on your computer"
 " or through your custom collections."
 msgstr ""
+"Браузер файлов позволяет легко перемещаться по файлам на вашем компьютере "
+"или по вашим пользовательским коллекциям."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:14
 msgid "This is a work in progress."
-msgstr ""
+msgstr "Эта фукция еще находится в разработке."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:17
 msgid "Filtering"
-msgstr ""
+msgstr "Фильтрации"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
 #: ../../plugins-files/audio-midi-files/file-browser.rst:24
 msgid "TODO"
-msgstr "Делать"
+msgstr "В разработке"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:22
 msgid "Collections"
-msgstr ""
+msgstr "Коллекции"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:27
 msgid "Importing Files"
-msgstr ""
+msgstr "Импортирование файлов"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:29
 msgid ""
 "Files are imported by either double clicking them in the browser or "
 "dragging and dropping them into a track."
 msgstr ""
+"Файлы импортируются либо двойным щелчком по ним в браузере, либо "
+"перетаскиванием их на трек."
 
 #: ../../plugins-files/audio-midi-files/intro.rst:6
 msgid "Audio & MIDI Files"
-msgstr ""
+msgstr "Аудио и MIDI файлы"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:6
 msgid "Overview"
@@ -72,114 +76,135 @@ msgid ""
 " imported by dragging and dropping from your computer or from the :ref"
 ":`file-browser` into a track."
 msgstr ""
+"Zrythm может импортировать в проект файлы MIDI и Аудио. Файлы можно "
+"импортировать, перетаскивая их с вашего компьютера или из :ref:`file-browser`"
+" на трек."
 
 #: ../../plugins-files/audio-midi-files/overview.rst:14
 msgid "Supported Audio Formats"
-msgstr ""
+msgstr "Поддерживаемые аудиоформаты"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:15
 msgid "Zrythm supports OGG, FLAC, WAV and MP3."
-msgstr ""
+msgstr "Zrythm поддерживает OGG, FLAC, WAV и MP3."
 
 #: ../../plugins-files/intro.rst:6
 msgid "Plugins & Files"
-msgstr ""
+msgstr "Плагины и файлы"
 
 #: ../../plugins-files/plugins/inspector-page.rst:8
 msgid "Inspector Page"
-msgstr ""
+msgstr "Страница инспектора (Inspector Page)"
 
 #: ../../plugins-files/plugins/inspector-page.rst:10
 msgid ""
 "When a Plugin is selected in the Mixer, its page will appear in the "
 "Inspector as follows."
 msgstr ""
+"Когда плагин выбран в Микшере (Mixer), его страница появится в инспекторе "
+"следующим образом."
 
 #: ../../plugins-files/plugins/inspector-page.rst:16
 msgid ""
 "This page will display information about the Plugin and its ports and "
 "allow you to make changes."
 msgstr ""
+"На этой странице отображается информация о плагине и его портах, а также вы "
+"можете вносить изменения."
 
 #: ../../plugins-files/plugins/inspector-page.rst:21
 msgid "Changing Values"
-msgstr ""
+msgstr "Изменение значений"
 
 #: ../../plugins-files/plugins/inspector-page.rst:23
 msgid ""
 "The values of control ports can be changed by clicking and dragging "
 "inside the bar."
 msgstr ""
+"Значения портов управления можно изменить, щелкнув и перетащив курсор внутри "
+"ползунка нужного вам порта."
 
 #: ../../plugins-files/plugins/inspector-page.rst:27
 msgid "Connections"
-msgstr ""
+msgstr "Подключения"
 
 #: ../../plugins-files/plugins/inspector-page.rst:29
 msgid ""
 "Compatible ports can be connected to one another. See :ref:`making-"
 "connections` for more details."
 msgstr ""
+"Совместимые порты можно соединять друг с другом. Смотрите :ref:`making-"
+"connections` для более подробной информации."
 
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
-msgstr "Плагины"
+msgstr "Плагины (Plugins)"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:8
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Браузер плагинов (Plugin Browser)"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:10
 msgid ""
 "The Plugin Browser makes it easy to browse and filter Plugins installed "
 "on your computer."
 msgstr ""
+"Браузер плагинов позволяет легко просматривать и фильтровать плагины, "
+"установленные на вашем компьютере."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:17
 msgid "Filters Tab"
-msgstr ""
+msgstr "Вкладка Фильтры (Filters)"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:18
 msgid ""
 "The filters tab at the top allows you to select how to filter the "
 "Plugins. There are 3 tabs:"
 msgstr ""
+"Вкладка \"Фильтры\", расположенная наверху, позволяет выбрать способ "
+"фильтрации плагинов. Есть 3 вкладки:"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:23
 msgid "Collection"
-msgstr ""
+msgstr "Коллекция"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:22
 msgid ""
 "This tab contains your collections. You can create collections such as "
 "\"MySynths\" and filter by the selected collections."
 msgstr ""
+"Эта вкладка содержит ваши коллекции. Вы можете создавать коллекции, такие "
+"как \"Мои Синтезаторы\", и фильтровать плагины по выбранным коллекциям."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
+#, fuzzy
 msgid "Category"
-msgstr ""
+msgstr "Категория"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid ""
 "Filter plugins by category based on the plugin metadata, such as "
 "\"Delay\", \"Distortion\", etc."
 msgstr ""
+"Фильтрирование плагинов по категориям на основе метаданных плагина, таких "
+"как \"Задержка (Delay)\", \"Искажение (Distortion)\" и т.д."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Protocol"
-msgstr ""
+msgstr "Протокол"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:29
 msgid "Allows you to filter plugins based their protocol (eg., LV2 or SFZ)."
 msgstr ""
+"Позволяет фильтровать плагины на основе их протокола (например, LV2 или SFZ)."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:32
 msgid "Filtering by collections and protocols is not operational at the moment."
-msgstr ""
+msgstr "Фильтрация по коллекциям и протоколам в данный момент не работает."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:36
 msgid "Filter Buttons"
-msgstr ""
+msgstr "Кнопки фильтров"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:37
 msgid ""
@@ -187,18 +212,21 @@ msgid ""
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
 msgstr ""
+"В дополнение к вышесказанному вы можете фильтровать плагины по их типу. "
+"Читайте :ref:`plugin-types`для получения дополнительной информации о "
+"различных типах плагинов."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:44
 msgid "Instantiating Plugins"
-msgstr ""
+msgstr "Инстансирование плагинов (Instantiating Plugins)"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:45
 msgid "There are a couple of ways to instantiate plugins:"
-msgstr ""
+msgstr "Есть несколько способов создать инстансы плагинов:"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:48
 msgid "Drag-n-Drop"
-msgstr ""
+msgstr "Перетаскивание"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:50
 msgid ""
@@ -206,6 +234,9 @@ msgid ""
 "Tracklist or into empty space in the Mixer to create a new track using "
 "that plugin."
 msgstr ""
+"Вы можете перетащить выбранный плагин в пустое место в Список треков "
+"(Tracklist) или в пустое место в Микшере (Mixer), чтобы создать новый трек, "
+"используя этот плагин."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:60
 msgid ""
@@ -298,7 +329,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:46
 msgid "Plugin Ports"
-msgstr "портированые плагины"
+msgstr "Порты Плагинов (Plugin Ports)"
 
 #: ../../plugins-files/plugins/plugin-info.rst:47
 msgid ""

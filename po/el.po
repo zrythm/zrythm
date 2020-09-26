@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-26 01:47+0100\n"
-"PO-Revision-Date: 2020-09-26 00:18+0000\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
-"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/"
-">\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/>"
+"\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,7 +23,7 @@ msgstr ""
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:212
 #: inc/audio/engine.h:278
 msgid "Dummy"
-msgstr ""
+msgstr "Εικονικό"
 
 #: inc/gui/backend/arranger_object.h:88
 #: src/gui/widgets/channel_send_selector.c:185
@@ -32,36 +32,35 @@ msgstr ""
 #: src/gui/widgets/route_target_selector.c:55
 #: src/gui/widgets/route_target_selector_popover.c:152
 msgid "None"
-msgstr ""
+msgstr "Κανένα"
 
 #: inc/gui/backend/arranger_object.h:90
 #: resources/ui/chord_selector_window.ui:701
 msgid "All"
-msgstr ""
+msgstr "Όλα"
 
 #: inc/gui/backend/arranger_object.h:92 src/gui/widgets/event_viewer.c:106
 #: resources/ui/inspector_master.ui:31 resources/ui/inspector_ap.ui:31
 #: resources/ui/inspector_midi.ui:31
 msgid "Region"
-msgstr ""
+msgstr "Περιοχή"
 
 #: inc/gui/backend/arranger_object.h:94
 msgid "Midi Note"
-msgstr ""
+msgstr "Νότα MIDI"
 
 #: inc/gui/backend/arranger_object.h:96
 msgid "Chord Object"
-msgstr ""
+msgstr "Αντικείμενο συγχορδίας"
 
 #: inc/gui/backend/arranger_object.h:98
 msgid "Scale Object"
-msgstr ""
+msgstr "Αντικείμενο κλίμακας"
 
 #: inc/gui/backend/arranger_object.h:100 inc/audio/track.h:166
 #: src/gui/widgets/event_viewer.c:109
-#, fuzzy
 msgid "Marker"
-msgstr "Δείκτες"
+msgstr "Δείκτης"
 
 #: inc/gui/backend/arranger_object.h:102
 #, fuzzy
@@ -71,50 +70,49 @@ msgstr "Προβολή Λωρίδων Αυτοματισμού"
 #: inc/gui/backend/arranger_object.h:104 src/gui/widgets/event_viewer.c:548
 #: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:115
+#, fuzzy
 msgid "Velocity"
-msgstr ""
+msgstr "Ταχύτητα"
 
 #: inc/utils/ui.h:75
 msgid "High"
-msgstr ""
+msgstr "Ψηλά"
 
 #: inc/utils/ui.h:76
 msgid "Normal"
-msgstr ""
+msgstr "Κανονικά"
 
 #: inc/utils/ui.h:77
 msgid "Low"
-msgstr ""
+msgstr "Χαμηλά"
 
 #: inc/utils/gtk.h:50
 msgid "Cu_t"
-msgstr ""
+msgstr "Αποκοπή"
 
 #: inc/utils/gtk.h:56
 msgid "_Copy"
-msgstr ""
+msgstr "Αντιγραφή"
 
 #: inc/utils/gtk.h:62
-#, fuzzy
 msgid "_Paste"
-msgstr "Master"
+msgstr "Επικόλληση"
 
 #: inc/utils/gtk.h:68
 msgid "_Delete"
-msgstr ""
+msgstr "Διαγραφή"
 
 #: inc/utils/gtk.h:74
 msgid "Cle_ar Selection"
-msgstr ""
+msgstr "Αποεπιλογή"
 
 #: inc/utils/gtk.h:80
-#, fuzzy
 msgid "Select A_ll"
-msgstr "Επιλέξτε..."
+msgstr "Επιλογή όλων"
 
 #: inc/utils/gtk.h:86 src/gui/widgets/home_toolbar.c:133
 msgid "Duplicate"
-msgstr ""
+msgstr "Δημιουργία διπλότυπου"
 
 #: inc/utils/gtk.h:92 src/gui/widgets/track.c:1190
 #: resources/ui/fader_buttons.ui:99
@@ -123,7 +121,7 @@ msgstr "Σίγαση"
 
 #: inc/utils/gtk.h:98 src/gui/widgets/track.c:1186
 msgid "Unmute"
-msgstr ""
+msgstr "Ξεσίγαση"
 
 #: inc/audio/track.h:162 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:186
@@ -137,121 +135,118 @@ msgstr "Ήχος"
 
 #: inc/audio/track.h:164 src/project.c:675
 #: src/gui/widgets/route_target_selector_popover.c:163
-#, fuzzy
 msgid "Master"
 msgstr "Master"
 
 #: inc/audio/track.h:165 src/gui/widgets/event_viewer.c:118
 #: src/gui/widgets/event_viewer.c:589 src/audio/region.c:402
 msgid "Chord"
-msgstr "Χορδή"
+msgstr "Συγχορδία"
 
 #: inc/audio/track.h:167 src/audio/tempo_track.c:91
 msgid "Tempo"
-msgstr ""
+msgstr "Τέμπο"
 
 #: inc/audio/track.h:168
 msgid "Modulator"
-msgstr ""
+msgstr "Διαμορφωτής"
 
 #: inc/audio/track.h:169
-#, fuzzy
 msgid "Audio FX"
-msgstr "Ήχος"
+msgstr "Εφέ ήχου"
 
 #: inc/audio/track.h:170
-#, fuzzy
 msgid "Audio Group"
-msgstr "Ήχος"
+msgstr "Ομάδα ήχου"
 
 #: inc/audio/track.h:171 src/audio/region.c:393
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: inc/audio/track.h:172
 msgid "MIDI FX"
-msgstr ""
+msgstr "Εφέ MIDI"
 
 #: inc/audio/track.h:173
 msgid "MIDI Group"
-msgstr ""
+msgstr "Ομάδα MIDI"
 
 #: inc/audio/curve.h:90 src/audio/curve.c:39
-#, c-format
+#, c-format, fuzzy
 msgid "Exponent"
-msgstr ""
+msgstr "Εκθέτης"
 
 #: inc/audio/curve.h:92 src/audio/curve.c:42
-#, c-format
+#, c-format, fuzzy
 msgid "Superellipse"
-msgstr ""
+msgstr "Superellipse"
 
 #: inc/audio/curve.h:94 src/gui/widgets/timeline_arranger.c:1292
 #: src/audio/curve.c:45
-#, c-format
+#, c-format, fuzzy
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: inc/audio/curve.h:96 src/audio/curve.c:48
-#, c-format
+#, c-format, fuzzy
 msgid "Pulse"
-msgstr ""
+msgstr "Pulse"
 
 #: inc/audio/engine.h:123
 msgid "1,024"
-msgstr ""
+msgstr "1.024"
 
 #: inc/audio/engine.h:124
 msgid "2,048"
-msgstr ""
+msgstr "2.048"
 
 #: inc/audio/engine.h:125
 msgid "4,096"
-msgstr ""
+msgstr "4.096"
 
 #: inc/audio/engine.h:152
 msgid "22,050"
-msgstr ""
+msgstr "22.050"
 
 #: inc/audio/engine.h:153
 msgid "32,000"
-msgstr ""
+msgstr "32.000"
 
 #: inc/audio/engine.h:154
 msgid "44,100"
-msgstr ""
+msgstr "44.100"
 
 #: inc/audio/engine.h:155
 msgid "48,000"
-msgstr ""
+msgstr "48.000"
 
 #: inc/audio/engine.h:156
 msgid "88,200"
-msgstr ""
+msgstr "88.200"
 
 #: inc/audio/engine.h:157
 msgid "96,000"
-msgstr ""
+msgstr "96.000"
 
 #: inc/audio/engine.h:158
 msgid "192,000"
-msgstr ""
+msgstr "192.000"
 
 #: inc/audio/engine.h:213
 msgid "Dummy (libsoundio)"
-msgstr ""
+msgstr "Εικονικό (libsoundio)"
 
 #: inc/audio/engine.h:279
 msgid "ALSA Sequencer (not working)"
-msgstr ""
+msgstr "Αναπαραγωγέας ακολουθιών ALSA (δεν δουλεύει)"
 
 #: inc/audio/engine.h:280
 msgid "ALSA Sequencer (rtmidi)"
-msgstr ""
+msgstr "Αναπαραγωγέας ακολουθιών ALSA (rtmidi)"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:126
 msgid "Crescendo"
-msgstr ""
+msgstr "Κρεσέντο"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:132
 msgid "Flam"
@@ -259,24 +254,23 @@ msgstr ""
 
 #: inc/audio/midi_function.h:58
 msgid "Flip H"
-msgstr ""
+msgstr "Περιστροφή H"
 
 #: inc/audio/midi_function.h:59
 msgid "Flip V"
-msgstr ""
+msgstr "Περιστροφή V"
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:153
 msgid "Legato"
-msgstr ""
+msgstr "Λεγκάτο"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:159
-#, fuzzy
 msgid "Portato"
-msgstr "Port"
+msgstr "Πορτάτο"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:165
 msgid "Staccato"
-msgstr ""
+msgstr "Στακάτο"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:171
 msgid "Strum"

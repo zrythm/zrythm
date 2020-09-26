@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-09-25 18:02+0000\n"
-"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualmodulators/ru/>\n"
 "Language: ru\n"
@@ -32,7 +32,7 @@ msgstr ""
 #: ../../modulators/adding-modulators.rst:11
 #: ../../modulators/routing-modulators.rst:8
 msgid "TODO"
-msgstr "Делать"
+msgstr "В разработке"
 
 #: ../../modulators/intro.rst:6
 msgid "Modulators"

@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 00:47+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"Last-Translator: Tertius Lourens <mrteexd@outlook.com>\n"
+"Language-Team: Afrikaans <https://hosted.weblate.org/projects/zrythm/"
+"manualediting/af/>\n"
+"Language: af_ZA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -92,7 +95,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:44
 msgid "Exponent"
-msgstr ""
+msgstr "Eksponent"
 
 #: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponential curve."
@@ -100,7 +103,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Superellipse"
-msgstr ""
+msgstr "Superellips"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."
@@ -108,7 +111,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "Vital"
-msgstr ""
+msgstr "Belangrik"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "The curve that Vital synth uses, similar to exponential curve."
@@ -116,7 +119,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse"
-msgstr ""
+msgstr "Pols"
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse wave."
@@ -601,7 +604,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:56
 msgid "Duplicate"
-msgstr ""
+msgstr "Dupliseer"
 
 #: ../../editing/common-operations.rst:57
 msgid ""
@@ -1358,4 +1361,3 @@ msgid ""
 "the BPM will cause audio regions to be repeated accordingly to match the "
 "new BPM without being time-stretched."
 msgstr ""
-

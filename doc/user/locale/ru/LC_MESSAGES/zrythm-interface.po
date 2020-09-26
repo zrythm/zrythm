@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-25 18:02+0000\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/ru/>\n"
@@ -23,37 +23,37 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
-msgstr "Нижняя Панель(Bottom Panel)"
+msgstr "Нижняя Панель"
 
 #: ../../zrythm-interface/bottom-panel.rst:10
 msgid ""
 "The bottom panel contains various editors (such as the piano roll and "
 "automation editor) as well as the mixer and chord pads."
 msgstr ""
-"Нижняя панель содержит различные редакторы (такие как Редактор Нот(Piano "
-"Roll) и Редактор Автоматизации(Automation Editor)), а также микшер и "
-"список аккордов."
+"Нижняя панель содержит различные редакторы, такие как Редактор Нот (Piano "
+"Roll) и Редактор Автоматизации (Automation Editor), а также Микшер (Mixer) и "
+"Список Аккордов (Chord Pad)."
 
 #: ../../zrythm-interface/bottom-panel.rst:18
 msgid "Editor"
-msgstr "Редактор(Editor)"
+msgstr "Редактор (Editor)"
 
 #: ../../zrythm-interface/bottom-panel.rst:19
 msgid ""
 "The Editor tab contains an arranger for editing regions, as well as "
 "various controls that vary depending on the type of region selected."
 msgstr ""
-"Вкладка Редактор(Editor) содержит аранжировщик для редактирования "
-"регионов(Region), а также различные элементы управления, которые "
-"различаются в зависимости от типа выбранного региона."
+"Вкладка \"Редактор\" содержит аранжировщик для редактирования регионов, а "
+"также различные элементы управления, которые различаются в зависимости от "
+"типа выбранного региона."
 
 #: ../../zrythm-interface/bottom-panel.rst:26
 msgid "Editing inside the Editor tab is covered in :ref:`editors`."
-msgstr "Редактирование внутри вкладки Редактор(Editor) описано в :ref:`editors`."
+msgstr "Редактирование внутри вкладки \"Редактор\" описано в :ref:`editors`."
 
 #: ../../zrythm-interface/bottom-panel.rst:29
 msgid "Piano Roll"
-msgstr ""
+msgstr "Редактор Нот (Piano Roll)"
 
 #: ../../zrythm-interface/bottom-panel.rst:31
 msgid ""
@@ -62,14 +62,18 @@ msgid ""
 "Region is selected, the Editor tab will display the Piano Roll, allowing "
 "you to edit that region."
 msgstr ""
+"Редактор Нот или MIDI-аранжировщик - наиболее часто используемый редактор. "
+"Его можно использовать для редактирования MIDI-регионов, содержащих MIDI-"
+"ноты. Когда выбран MIDI-регион, на вкладке \"Редактор\" отображается "
+"Редактор Нот, что позволяет редактировать этот регион."
 
 #: ../../zrythm-interface/bottom-panel.rst:40
 msgid "The piano roll is covered in detail in :ref:`piano-roll`."
-msgstr "Подробнее о редакторе нот можно прочитать в :ref:`piano-roll`."
+msgstr "Подробнее о Редакторе Нот можно прочитать в :ref:`piano-roll`."
 
 #: ../../zrythm-interface/bottom-panel.rst:43
 msgid "Automation Editor"
-msgstr ""
+msgstr "Редактор автоматизации (Automation Editor)"
 
 #: ../../zrythm-interface/bottom-panel.rst:45
 msgid ""
@@ -78,16 +82,20 @@ msgid ""
 "The Automation Editor will appear in the Editor tab when an Automation "
 "Region is selected."
 msgstr ""
+"В Zrythm автоматизация также заключена в регионы (называемые регионами "
+"автоматизации). Это позволяет повторять автоматизацию, как в случае с MIDI-"
+"регионами. Редактор автоматизации появится на вкладке «Редактор» при выборе "
+"области автоматизации."
 
 #: ../../zrythm-interface/bottom-panel.rst:53
 msgid "The automation editor is covered in detail in :ref:`automation-editor`."
 msgstr ""
-"Подробнее о редакторе автоматизации можно прочитать в :ref:`automation-"
+"Подробнее о Редакторе Автоматизации можно прочитать в :ref:`automation-"
 "editor`."
 
 #: ../../zrythm-interface/bottom-panel.rst:57
 msgid "Audio Editor"
-msgstr "Редактор Аудио"
+msgstr "Редактор Аудио (Audio Editor)"
 
 #: ../../zrythm-interface/bottom-panel.rst:58
 msgid ""
@@ -103,24 +111,24 @@ msgstr "Подробнее о редакторе аудио можно проч�
 
 #: ../../zrythm-interface/bottom-panel.rst:70
 msgid "Chord Editor"
-msgstr ""
+msgstr "Редактор Аккордов (Chord Editor)"
 
 #: ../../zrythm-interface/bottom-panel.rst:71
 msgid ""
 "The chord editor is used for editing chord regions. It will appear in the"
 " Editor tab when a chord region is selected in the chord track."
 msgstr ""
-"Редактор аккордов используется для редактирования регионов аккордов. Он "
+"Редактор Аккордов используется для редактирования регионов аккордов. Он "
 "появится на вкладке «Редактор», когда в дорожке аккордов выбран регион "
 "аккордов."
 
 #: ../../zrythm-interface/bottom-panel.rst:78
 msgid "The chord editor is covered in detail in :ref:`chord-editor`."
-msgstr "Подробнее о редакторе аккордов можно прочитать в :ref:`chord-editor`."
+msgstr "Подробнее о Редакторе Аккордов можно прочитать в :ref:`chord-editor`."
 
 #: ../../zrythm-interface/bottom-panel.rst:82
 msgid "Mixer"
-msgstr ""
+msgstr "Микшер (Mixer)"
 
 #: ../../zrythm-interface/bottom-panel.rst:83
 msgid ""
@@ -140,31 +148,31 @@ msgstr "Интерфейс"
 
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
-msgstr "Левая панель"
+msgstr "Левая Панель"
 
 #: ../../zrythm-interface/left-panel.rst:10
 msgid "The left panel contains the inspectors and track visibility options."
-msgstr "Левая панель содержит инспекторы и параметры видимости дорожек."
+msgstr "Левая Панель содержит инспекторы и параметры видимости треков."
 
 #: ../../zrythm-interface/left-panel.rst:17
 msgid "Track Inspector"
-msgstr "Инспектор Дорожек"
+msgstr "Инспектор Треков (Track Inspector)"
 
 #: ../../zrythm-interface/left-panel.rst:19
 msgid ""
 "The first tab is the track inspector, which shows various options about "
 "the selected track."
 msgstr ""
-"Первая вкладка - это инспектор дорожек, который показывает различные "
-"параметры выбранной дорожки."
+"Первая вкладка - это Инспектор Треков, который показывает различные "
+"параметры выбранного трека."
 
 #: ../../zrythm-interface/left-panel.rst:22
 msgid "See :ref:`track-inspector` for more details."
-msgstr "Смотрите  :ref:`track-inspector`для более подробной информации."
+msgstr "Смотрите :ref:`track-inspector` для более подробной информации."
 
 #: ../../zrythm-interface/left-panel.rst:25
 msgid "Plugin Inspector"
-msgstr "Инспектор плагинов"
+msgstr "Инспектор плагинов (Plugin Inspector)"
 
 #: ../../zrythm-interface/left-panel.rst:26
 msgid "The plugin inspector shows various options for the selected plugin."
@@ -172,7 +180,7 @@ msgstr "Инспектор плагинов показывает различн�
 
 #: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
-msgstr "Свойства плагина"
+msgstr "Свойства плагина (Plugin Properties)"
 
 #: ../../zrythm-interface/left-panel.rst:34
 msgid ""
@@ -184,7 +192,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:41
 msgid "Plugin Ports"
-msgstr "портированые плагины"
+msgstr "Порты Плагинов (Plugin Ports)"
 
 #: ../../zrythm-interface/left-panel.rst:42
 msgid "These are the ports that the plugin has."
@@ -212,265 +220,287 @@ msgstr "В зависимости от типа плагина могут ото
 
 #: ../../zrythm-interface/left-panel.rst:58
 msgid "Track Visibility"
-msgstr ""
+msgstr "Видимость трека (Track Visibility)"
 
 #: ../../zrythm-interface/left-panel.rst:60
 msgid "See :ref:`track-visibility`."
-msgstr ""
+msgstr "Читайте :ref:`track-visibility`."
 
 #: ../../zrythm-interface/main-toolbar.rst:8
 msgid "Main Toolbar"
-msgstr ""
+msgstr "Основная Панель Инструментов (Main Toolbar)"
 
 #: ../../zrythm-interface/main-toolbar.rst:10
 msgid ""
 "The main toolbar contains global actions, such as saving and loading a "
 "project or opening the preferences window."
 msgstr ""
+"Основная Панель Инструментов содержит основные действия, такие как "
+"сохранение и загрузка проекта или открытие окна Настройки (Preferences)."
 
 #: ../../zrythm-interface/main-toolbar.rst:17
 msgid "About Dialog"
-msgstr ""
+msgstr "О программе (About Dialog)"
 
 #: ../../zrythm-interface/main-toolbar.rst:19
 msgid ""
 "Clicking the Zrythm icon will show the About dialog, which contains "
 "information about authors and copyright."
 msgstr ""
+"При нажатии на значок Zrythm откроется окно «О программе», в котором "
+"содержится информация об авторах и авторских правах."
 
 #: ../../zrythm-interface/main-toolbar.rst:26
 msgid "Global Menus"
-msgstr ""
+msgstr "Глобальные меню"
 
 #: ../../zrythm-interface/main-toolbar.rst:27
 msgid "Zrythm has the following global menus at the top of its interface."
-msgstr ""
+msgstr "У Zrythm есть следующие глобальные меню в верхней части интерфейса."
 
 #: ../../zrythm-interface/main-toolbar.rst:31
 msgid "Edit Menu"
-msgstr "меню редактирования"
+msgstr "Меню Правка (Edit)"
 
 #: ../../zrythm-interface/main-toolbar.rst:32
 msgid ""
 "The Edit menu various buttons and controls that are used often during "
 "editing and arranging."
 msgstr ""
+"В меню «Правка» различные кнопки и элементы управления, которые часто "
+"используются во время редактирования и аранжировки."
 
 #: ../../zrythm-interface/main-toolbar.rst:35
 msgid "The :ref:`editing` chapter explains these controls in detail."
-msgstr ""
+msgstr "В главе :ref:`editing` подробно описаны эти элементы управления."
 
 #: ../../zrythm-interface/main-toolbar.rst:39
 msgid "Project Menu"
-msgstr "меню проекта"
+msgstr "Меню Проект (Project Menu)"
 
 #: ../../zrythm-interface/main-toolbar.rst:40
 msgid ""
 "The Project menu contains various project-related actions such as saving,"
 " loading and exporting MIDI or audio."
 msgstr ""
+"Меню \"Проект\" содержит различные действия, связанные с проектом, такие как "
+"сохранение, загрузка и экспорт MIDI или аудио."
 
 #: ../../zrythm-interface/main-toolbar.rst:44
 msgid "New Project"
-msgstr "новый проект"
+msgstr "Создать (New Project)"
 
 #: ../../zrythm-interface/main-toolbar.rst:44
 msgid "Create a new project."
-msgstr "создать новый прект."
+msgstr "Создать новый проект."
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save"
-msgstr "Сохранить"
+msgstr "Сохранить (Save)"
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save the current project at its current location."
-msgstr ""
+msgstr "Сохраните текущий проект в его текущем месте."
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save As"
-msgstr ""
+msgstr "Сохранить как (Save As)"
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save the current project at a new location."
-msgstr ""
+msgstr "Сохраните текущий проект в новом месте."
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load"
-msgstr ""
+msgstr "Загрузить (Load)"
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Load a project."
-msgstr ""
+msgstr "Загрузите проект."
 
 #: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Export As"
-msgstr ""
+msgstr "Экспорт (Export As)"
 
 #: ../../zrythm-interface/main-toolbar.rst:56
 msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for"
 " more details."
 msgstr ""
+"Экспортируйте проект как аудио или MIDI. Смотрите :ref:`export-audio-and-"
+"midi` для более подробной информации."
 
 #: ../../zrythm-interface/main-toolbar.rst:61
 msgid "Export Graph"
-msgstr ""
+msgstr "Экспорт графика (Export Graph)"
 
 #: ../../zrythm-interface/main-toolbar.rst:60
 msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-"
 "routing-graph` for more details."
 msgstr ""
+"Экспортируйте график маршрутизации как изображение или график в формате ."
+"dot. Смотрите :ref:`export-routing-graph` для более подробной информации."
 
 #: ../../zrythm-interface/main-toolbar.rst:63
 msgid "For more information about projects, see the :ref:`projects` chapter."
 msgstr ""
+"Для получения дополнительной информации о проектах читайте Главу "
+":ref:`projects`."
 
 #: ../../zrythm-interface/main-toolbar.rst:67
 msgid "View Menu"
-msgstr ""
+msgstr "Меню Вид (View)"
 
 #: ../../zrythm-interface/main-toolbar.rst:68
 msgid ""
 "The View menu contains controls to change the appearance of Zrythm and "
 "its various areas, such as zooming."
 msgstr ""
+"Меню «Вид» содержит элементы управления для изменения внешнего вида Zrythm и "
+"его различных областей, например масштабирования."
 
 #: ../../zrythm-interface/main-toolbar.rst:72
 msgid "Zoom In"
-msgstr ""
+msgstr "Увеличить масштаб (Zoom In)"
 
 #: ../../zrythm-interface/main-toolbar.rst:72
 msgid "Zooms in."
-msgstr ""
+msgstr "Увеличить масштаб, приблизить таймлайн."
 
 #: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zoom Out"
-msgstr ""
+msgstr "Уменьшить масштаб (Zoom Out)"
 
 #: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zooms out."
-msgstr ""
+msgstr "Уменьшить масштаб, отдалить таймлайн."
 
 #: ../../zrythm-interface/main-toolbar.rst:78
 msgid "Original Size"
-msgstr ""
+msgstr "Оригинальный масштаб (Original Size)"
 
 #: ../../zrythm-interface/main-toolbar.rst:78
 msgid "Zooms back to the default zoom level."
-msgstr ""
+msgstr "Возврат к уровню масштабирования по умолчанию."
 
 #: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Best Fit"
-msgstr ""
+msgstr "Наиболее подходящий масштаб (Best Fit)"
 
 #: ../../zrythm-interface/main-toolbar.rst:81
 msgid ""
 "Zooms in or out as much as required to show all of the events in the "
 "timeline."
 msgstr ""
+"Увеличивает или уменьшает масштаб настолько, насколько необходимо, чтобы "
+"показать все события на таймлайне."
 
 #: ../../zrythm-interface/main-toolbar.rst:85
 msgid "Toggle Left/Right/Bottom Panels"
-msgstr ""
+msgstr "Вкл/Выкл левую/правую/нижнюю панели (Toggle Left/Right/Bottom Panels)"
 
 #: ../../zrythm-interface/main-toolbar.rst:85
 msgid "Toggles the panel's visibility."
-msgstr ""
+msgstr "Включает/Выключает видимость панели."
 
 #: ../../zrythm-interface/main-toolbar.rst:88
 msgid "Toggle Timeline Visibility"
-msgstr ""
+msgstr "Вкл/Выкл видимость таймлайна (Toggle Timeline Visibility)"
 
 #: ../../zrythm-interface/main-toolbar.rst:88
 msgid "Toggles the timeline's visibility."
-msgstr ""
+msgstr "Включает/Выключает видимость таймлайна."
 
 #: ../../zrythm-interface/main-toolbar.rst:91
 msgid "Help Menu"
-msgstr ""
+msgstr "Меню Справка (Help)"
 
 #: ../../zrythm-interface/main-toolbar.rst:92
 msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
 msgstr ""
+"Меню «Справка» содержит ссылки для сообщений об ошибках, пожертвований, "
+"общения в чате и другие полезные ссылки."
 
 #: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Chat"
-msgstr "Чат"
+msgstr "Чат (Chat)"
 
 #: ../../zrythm-interface/main-toolbar.rst:96
 msgid "Join the Zrythm chatroom on Matrix."
-msgstr ""
+msgstr "Присоединяйтесь к чату Zrythm на Matrix."
 
 #: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Manual"
-msgstr "Мануал"
+msgstr "Руководство (Manual)"
 
 #: ../../zrythm-interface/main-toolbar.rst:98
 msgid "View the user manual."
-msgstr ""
+msgstr "Открыть Руководство пользователя Zrythm."
 
 #: ../../zrythm-interface/main-toolbar.rst:99
 msgid "News"
-msgstr ""
+msgstr "Новости (News)"
 
 #: ../../zrythm-interface/main-toolbar.rst:100
 msgid "Show the latest changelog."
-msgstr ""
+msgstr "Показать последний список изменений."
 
 #: ../../zrythm-interface/main-toolbar.rst:101
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Горячие клавиши (Keyboard Shortcuts)"
 
 #: ../../zrythm-interface/main-toolbar.rst:102
 msgid "Show all the available keyboard shortcuts."
-msgstr ""
+msgstr "Показать все доступные горячие клавишы."
 
 #: ../../zrythm-interface/main-toolbar.rst:103
 msgid "Donate"
-msgstr ""
+msgstr "Пожертвовать (Donate)"
 
 #: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Donate to Zrythm through LiberaPay."
-msgstr ""
+msgstr "Сделайте пожертвование для Zrythm через LiberaPay."
 
 #: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Report a Bug"
-msgstr ""
+msgstr "Сообщить об ошибке (Report a Bug)"
 
 #: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Opens the page to report a new bug."
-msgstr ""
+msgstr "Открывает страницу, чтобы сообщить о новой ошибке."
 
 #: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Additional Controls"
-msgstr ""
+msgstr "Дополнительные элементы управления"
 
 #: ../../zrythm-interface/main-toolbar.rst:110
 msgid "The main toolbar also contains the following widgets."
-msgstr ""
+msgstr "Основная панель инструментов также содержит следующие виджеты."
 
 #: ../../zrythm-interface/main-toolbar.rst:115
 msgid "There are the following buttons next to the name of the current project."
-msgstr ""
+msgstr "Рядом с названием текущего проекта есть следующие кнопки."
 
 #: ../../zrythm-interface/main-toolbar.rst:119
 msgid "Scripting Interface"
-msgstr ""
+msgstr "Интерфейс скриптов (Scripting Interface)"
 
 #: ../../zrythm-interface/main-toolbar.rst:119
 msgid "Shows the scripting interface. See :ref:`scripting` for more information."
 msgstr ""
+"Показывает интерфейс скриптов. Смотрите :ref:`scripting` для получения "
+"дополнительной информации."
 
 #: ../../zrythm-interface/main-toolbar.rst:121
 msgid "Log Viewer"
-msgstr ""
+msgstr "Просмотр логов (Log Viewer)"
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Displays the log, which gets updated real-time."
-msgstr ""
+msgstr "Отображает лог, который обновляется в режиме реального времени."
 
 #: ../../zrythm-interface/main-toolbar.rst:125
 msgid "Preferences"
@@ -479,6 +509,8 @@ msgstr "Настройки (Preferences)"
 #: ../../zrythm-interface/main-toolbar.rst:124
 msgid "Shows the preferences dialog. See :ref:`preferences` for more information."
 msgstr ""
+"Показывает окно Настройки. Смотрите :ref:`preferences` для получения "
+"дополнительной информации."
 
 #: ../../zrythm-interface/main-toolbar.rst:127
 msgid ""
@@ -486,46 +518,53 @@ msgid ""
 " devices and the live waveform display shows the audio waveform from the "
 "master output."
 msgstr ""
+"Виджет «Вход MIDI» показывает :term:`MIDI` активность автоматически "
+"подключенных MIDI-устройств, а на дисплее формы волны в реальном времени "
+"отображается форма аудиосигнала с главного выхода."
 
 #: ../../zrythm-interface/right-panel.rst:8
 msgid "Right Panel"
-msgstr ""
+msgstr "Правая Панель"
 
 #: ../../zrythm-interface/right-panel.rst:9
 msgid ""
 "The right panel contains plugin and sample browsers in addition to the "
 "control room."
 msgstr ""
+"Правая панель содержит браузеры плагинов и сэмплов в дополнение к комнате "
+"управления."
 
 #: ../../zrythm-interface/right-panel.rst:16
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Браузер плагинов (Plugin Browser)"
 
 #: ../../zrythm-interface/right-panel.rst:17
 msgid ""
 "The first tab is the plugin browser, which is explained in :ref:`plugin-"
 "browser`."
 msgstr ""
+"Первая вкладка - это браузер плагинов, который описан в :ref:`plugin-"
+"browser`."
 
 #: ../../zrythm-interface/right-panel.rst:21
 msgid "File Browser"
-msgstr ""
+msgstr "Браузер файлов (File Browser)"
 
 #: ../../zrythm-interface/right-panel.rst:22
 msgid "The file browser is covered in :ref:`file-browser`."
-msgstr ""
+msgstr "Браузер файлов описан в :ref:`file-browser`."
 
 #: ../../zrythm-interface/right-panel.rst:25
 msgid "Control Room"
-msgstr ""
+msgstr "Комната управления (Control Room)"
 
 #: ../../zrythm-interface/right-panel.rst:26
 msgid "The control room is covered in :ref:`control-room`."
-msgstr ""
+msgstr "Комната управления описана в :ref:`control-room`."
 
 #: ../../zrythm-interface/timeline.rst:8
 msgid "Timeline"
-msgstr ""
+msgstr "Таймлайн (Timeline)"
 
 #: ../../zrythm-interface/timeline.rst:10
 msgid ""
@@ -533,118 +572,136 @@ msgid ""
 "on the left side. It has a special toolbar at the top for timeline-"
 "specific actions."
 msgstr ""
+"Таймлайн состоит из аранжировщика таймлайна и треков проекта слева. Вверху "
+"есть специальная панель инструментов для действий, связанных с таймлайном."
 
 #: ../../zrythm-interface/timeline.rst:17
 msgid ""
 "The :ref:`editing-timeline` section goes in depth about editing inside "
 "the timeline panel."
 msgstr ""
+"В :ref:`editing-timeline` подробно рассказывается о редактировании внутри "
+"таймлайна."
 
 #: ../../zrythm-interface/transport-bar.rst:8
 msgid "Transport Bar"
-msgstr ""
+msgstr "Панель транспорта (Transport Bar)"
 
 #: ../../zrythm-interface/transport-bar.rst:10
 msgid ""
 "The transport bar contains information about the audio engine and "
 "transport controls."
 msgstr ""
+"Панель транспорта содержит информацию об аудиосистеме и элементах управления "
+"транспортом."
 
 #: ../../zrythm-interface/transport-bar.rst:17
 msgid "Transport Controls"
-msgstr ""
+msgstr "Элементы управления транспортом"
 
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid ""
 "Transport controls change the behavior of playback. They include the "
 "following items."
 msgstr ""
+"Элементы управления транспортом изменяют поведение воспроизведения. Они "
+"включают в себя следующие элементы."
 
 #: ../../zrythm-interface/transport-bar.rst:24
 msgid "Metronome toggle"
-msgstr ""
+msgstr "Вкл/Выкл Метроном (Metronome toggle)"
 
 #: ../../zrythm-interface/transport-bar.rst:25
 msgid "Toggles the metronome on/off."
-msgstr ""
+msgstr "Включает/выключает метроном."
 
 #: ../../zrythm-interface/transport-bar.rst:26
 msgid "Metronome options"
-msgstr ""
+msgstr "Параметры метронома (Metronome options)"
 
 #: ../../zrythm-interface/transport-bar.rst:27
 msgid "Sets the volume of the metronome."
-msgstr ""
+msgstr "Установить громкость метронома."
 
 #: ../../zrythm-interface/transport-bar.rst:29
 msgid "Return to cue point on stop"
-msgstr ""
+msgstr "Возврат к точке отсчета на остановке (Return to cue point on stop)"
 
 #: ../../zrythm-interface/transport-bar.rst:29
 msgid "Toggles whether to return to the cue point when playback stops."
 msgstr ""
+"Включает/Выключает функцию, которая возвращает курсор к точке метки при "
+"остановке воспроизведения."
 
 #: ../../zrythm-interface/transport-bar.rst:31
 msgid "BPM"
-msgstr ""
+msgstr "Уд/Мин (BPM)"
 
 #: ../../zrythm-interface/transport-bar.rst:32
 msgid "Song tempo (beats per minute)."
-msgstr ""
+msgstr "Темп песни (удары в минуту)."
 
 #: ../../zrythm-interface/transport-bar.rst:33
 msgid "Playhead"
-msgstr ""
+msgstr "Курсор (Playhead)"
 
 #: ../../zrythm-interface/transport-bar.rst:34
 msgid "Current playhead position, in bars.beats.sixteenths.ticks."
 msgstr ""
+"Текущее положение курсора в тактах, ударах, шестнадцатых тактах "
+"(bars,beats,sixteenths,ticks)."
 
 #: ../../zrythm-interface/transport-bar.rst:36
 msgid "Transport buttons"
-msgstr ""
+msgstr "Кнопки Транспорта (Transport buttons)"
 
 #: ../../zrythm-interface/transport-bar.rst:36
 msgid "Controls for stopping, playback, recording, etc."
-msgstr ""
+msgstr "Элементы управления для остановки, воспроизведения, записи и т. д."
 
 #: ../../zrythm-interface/transport-bar.rst:38
 msgid ""
 "Widgets like the BPM meter can be changed by clicking and dragging, or by"
 " hovering over them with the cursor and scrolling"
 msgstr ""
+"Виджеты, такие как измеритель Уд/Мин (BPM), можно изменить, щелкнув и "
+"перетащив или наведя на них курсор и прокручивая"
 
 #: ../../zrythm-interface/transport-bar.rst:42
 msgid ""
 "More information about working with the transport bar is covered in :ref"
 ":`transport-controls`."
 msgstr ""
+"Более подробная информация о работе с транспортной панелью находится в :ref"
+":`transport-controls`."
 
 #: ../../zrythm-interface/transport-bar.rst:46
 msgid "Backend Information"
-msgstr ""
+msgstr "Информация о бэкэнде"
 
 #: ../../zrythm-interface/transport-bar.rst:47
 msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
 msgstr ""
+"Информация о текущем выбранном сервере и параметрах отображается в нижнем "
+"левом углу."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:6
 msgid "Interface Overview"
-msgstr ""
+msgstr "Обзор интерфейса"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:8
 msgid "The Zrythm interface is split into various sub-modules."
-msgstr ""
+msgstr "Интерфейс Zrythm разделен на различные модули."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:12
 msgid "Each sub-module is explained in its own section."
-msgstr ""
+msgstr "Каждый модуль описан в отдельном разделе."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:14
 msgid ":ref:`timeline` (1)"
-msgstr ""
+msgstr ":ref:`timeline` (1)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:15
 msgid ":ref:`main-toolbar` (2)"
@@ -656,7 +713,7 @@ msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:17
 msgid ":ref:`bottom-panel` (4)"
-msgstr ""
+msgstr ":ref:`bottom-panel` (4)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:18
 msgid ":ref:`transport-bar` (5)"

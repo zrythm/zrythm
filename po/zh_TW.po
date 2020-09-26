@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-26 01:47+0100\n"
-"PO-Revision-Date: 2020-09-25 13:15+0000\n"
-"Last-Translator: xunil-cloud <freed602om@gmail.com>\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -539,7 +539,7 @@ msgstr "授權條款"
 
 #: src/zrythm_app.c:527
 msgid "Waiting for project"
-msgstr ""
+msgstr "等待專案"
 
 #: src/plugins/carla_native_plugin.c:545 src/plugins/lv2_plugin.c:2513
 msgid "Default bank"
@@ -1209,7 +1209,7 @@ msgstr ""
 
 #: src/gui/widgets/transport_controls.c:199
 msgid "Start on MIDI input"
-msgstr ""
+msgstr "和 MIDI 輸入同步開始"
 
 #: src/gui/widgets/transport_controls.c:202
 msgid "Options"
@@ -1242,7 +1242,7 @@ msgstr "錄音選項"
 
 #: src/gui/widgets/timeline_arranger.c:507
 msgid "Custom Marker"
-msgstr ""
+msgstr "自訂標記"
 
 #: src/gui/widgets/timeline_arranger.c:1263
 msgid "Fade preset"
@@ -1327,12 +1327,12 @@ msgstr "刪除"
 
 #: src/gui/widgets/port_connections_tree.c:277
 msgid "Source"
-msgstr ""
+msgstr "來源"
 
 #: src/gui/widgets/port_connections_tree.c:295
 #: src/gui/widgets/cc_bindings_tree.c:293
 msgid "Destination"
-msgstr ""
+msgstr "目標"
 
 #: src/gui/widgets/port_connections_tree.c:313
 msgid "Multiplier"
@@ -1441,7 +1441,7 @@ msgstr "[樂器] %s"
 #: src/gui/widgets/automatable_selector_popover.c:351
 #, c-format
 msgid "[MIDI FX %d] %s"
-msgstr ""
+msgstr "[MIDI 效果 %d] %s"
 
 #: src/gui/widgets/automatable_selector_popover.c:368
 #, c-format
@@ -1451,7 +1451,7 @@ msgstr "[插件 %d] %s"
 #: src/gui/widgets/automatable_selector_popover.c:389
 #, c-format
 msgid "[Modulator %d] %s"
-msgstr ""
+msgstr "[調變器 %d] %s"
 
 #: src/gui/widgets/snap_grid.c:113
 msgid "Snap/Grid options"
@@ -1909,7 +1909,7 @@ msgstr ""
 #: src/gui/widgets/track.c:1812 src/gui/widgets/track.c:1872
 #, c-format
 msgid "MIDI Channel %d"
-msgstr ""
+msgstr "MIDI 通道 %d"
 
 #: src/gui/widgets/track.c:1852
 #, c-format
@@ -1927,7 +1927,7 @@ msgstr "請輸入名稱"
 #: src/gui/widgets/dialogs/port_info.c:59
 #, c-format
 msgid "%.1f to %.1f"
-msgstr ""
+msgstr "%.1f 到 %.1f"
 
 #: src/gui/widgets/dialogs/port_info.c:73
 msgid "N/A"
@@ -1971,7 +1971,7 @@ msgstr "片段的顏色"
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:154
 #, c-format
 msgid "%s icon"
-msgstr ""
+msgstr "%s 圖示"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:165
 msgid "_Select"
@@ -3015,19 +3015,19 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:375
 msgid "7"
-msgstr ""
+msgstr "7"
 
 #: resources/ui/chord_selector_window.ui:388
 msgid "j7"
-msgstr ""
+msgstr "j7"
 
 #: resources/ui/chord_selector_window.ui:401
 msgid "♭9"
-msgstr ""
+msgstr "♭9"
 
 #: resources/ui/chord_selector_window.ui:414
 msgid "9"
-msgstr ""
+msgstr "9"
 
 #: resources/ui/chord_selector_window.ui:427
 msgid "♯9"
@@ -3035,7 +3035,7 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:440
 msgid "11"
-msgstr ""
+msgstr "11"
 
 #: resources/ui/chord_selector_window.ui:453
 msgid "♭5/♯11"
@@ -3047,7 +3047,7 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:479
 msgid "6/13"
-msgstr ""
+msgstr "6/13"
 
 #: resources/ui/chord_selector_window.ui:496
 msgid "Bass Note"
@@ -3389,7 +3389,7 @@ msgstr "讀取控制參數"
 
 #: resources/ui/automation_track.ui:125
 msgid "0.0"
-msgstr ""
+msgstr "0.0"
 
 #: resources/ui/automation_track.ui:143
 msgid "Remove automation track"
