@@ -13,16 +13,18 @@ Tracks
    overview
    track-types
    inspector-page
-   midi-track
-   instrument-track
    audio-track
    bus-track-audio
    bus-track-midi
+   chord-track
    group-track-audio
    group-track-midi
-   master-track
-   chord-track
+   instrument-track
    marker-track
+   master-track
+   midi-track
+   modulator-track
+   tempo-track
    creating-tracks
    track-operations
    track-visibility

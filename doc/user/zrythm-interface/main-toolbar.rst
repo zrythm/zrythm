@@ -37,28 +37,35 @@ in detail.
 
 Project Menu
 ~~~~~~~~~~~~
-The Project menu contains various project-related actions such
-as saving, loading and exporting MIDI or audio.
+The Project menu contains various project-related
+actions such as saving, loading and exporting MIDI
+or audio.
 
 New Project
-  Create a new project.
++++++++++++
+Create a new project.
 
 Save
-  Save the current project at its current location.
+++++
+Save the current project at its current location.
 
 Save As
-  Save the current project at a new location.
++++++++
+Save the current project at a new location.
 
 Load
-  Load a project.
+++++
+Load a project.
 
 Export As
-  Export the project as audio or MIDI. See
-  :ref:`export-audio-and-midi` for more details.
++++++++++
+Export the project as audio or MIDI. See
+:ref:`export-audio-and-midi` for more details.
 
 Export Graph
-  Export the routing graph as an image or .dot graph.
-  See :ref:`export-routing-graph` for more details.
+++++++++++++
+Export the routing graph as an image or .dot graph.
+See :ref:`export-routing-graph` for more details.
 
 For more information about projects, see the
 :ref:`projects` chapter.

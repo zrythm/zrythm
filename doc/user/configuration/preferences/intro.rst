@@ -43,8 +43,8 @@ MIDI backend
 MIDI controllers
   A list of controllers to auto-connect to.
 
-Paths
-~~~~~
+Paths (Global)
+~~~~~~~~~~~~~~
 
 Global paths.
 
@@ -185,8 +185,8 @@ Project settings.
 .. image:: /_static/img/preferences-projects.png
    :align: center
 
-General
-~~~~~~~
+General (Project)
+~~~~~~~~~~~~~~~~~
 
 General project settings.
 
@@ -205,8 +205,8 @@ User interface options.
 .. image:: /_static/img/preferences-ui.png
    :align: center
 
-General
-~~~~~~~
+General (UI)
+~~~~~~~~~~~~
 
 General user interface options.
 

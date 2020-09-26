@@ -18,6 +18,16 @@
 if sphinx_build.found () and sphinx_intl.found ()
 
 sphinx_builddir = meson.current_build_dir () / '_build'
+sphinx_build_opts = [
+  # Force-rebuild every time.
+  '-E',
+  # Fail on warnings.
+  '-W',
+  # Keep going when getting warnings.
+  '--keep-going',
+  # Show full traceback on exception.
+  '-T',
+  ]
 
 # used to only create guile docs when possible,
 # otherwise reuse what is already there
@@ -107,13 +117,18 @@ html_manuals = []
 singlehtml_manuals = []
 foreach lang : locales
   foreach format : [
-    'html', 'singlehtml', 'latex', 'epub' ]
+    # note: devhelp requires the devhelp package
+    # from sphinxcontrib
+    'devhelp', 'html', 'singlehtml', 'latex',
+    'epub',
+    ]
 
     name = format + '-manual-' + lang
     output_dir =  sphinx_builddir / lang / format
     #output_dir =  meson.current_build_dir () / lang / format
     command = [
-      sphinx_build, '-D', 'language=' + lang,
+      sphinx_build, sphinx_build_opts,
+      '-D', 'language=' + lang,
       '-b', format, meson.current_source_dir (),
       output_dir, '&&', 'touch', '@OUTPUT@',
       ]
@@ -159,7 +174,8 @@ manual_gettext_gen_pot = custom_target (
   'manual_gettext_gen_pot',
   output: 'manual_gettext_gen_pot',
   command: [
-    sphinx_build, '-M', 'gettext',
+    sphinx_build, sphinx_build_opts,
+    '-M', 'gettext',
     meson.current_source_dir (),
     sphinx_builddir,
     ],

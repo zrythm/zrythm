@@ -27,3 +27,5 @@ Tempo       None     None     No         None
 
 All tracks except the :doc:`chord-track` have
 automation lanes available.
+
+.. todo:: Add page for Modulators and Tempo track.

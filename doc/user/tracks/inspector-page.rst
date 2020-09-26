@@ -24,12 +24,17 @@ has.
    :align: center
 
 Track Name
-  Name of the track
+~~~~~~~~~~
+Name of the track
+
 Direct Out
-  The track that this track routes its output to.
+~~~~~~~~~~
+The track that this track routes its output to.
+
 Instrument
-  If the track is an :ref:`instrument-track`, the instrument
-  plugin for this track.
+~~~~~~~~~~
+If the track is an :ref:`instrument-track`, the
+instrument plugin for this track.
 
 .. _track-inputs:
 
@@ -61,6 +66,8 @@ Inserts are processed in order. For instrument tracks,
 the inserts will be added onto the signal coming from
 the instrument, and for other tracks they will be added
 on the incoming signal.
+
+.. todo:: Separate MIDI FX/inserts and expand more.
 
 .. _track-sends:
 
@@ -100,33 +107,47 @@ it is processed live. The following values are displayed
 next to the meter for additional reference.
 
 Peak
-  Peak signal value.
-RMS
-  Root Mean Square of the signal value.
+~~~~
+Peak signal value.
 
-The following controls are available for controlling the
-signal flow.
+RMS
+~~~
+Root Mean Square of the signal value.
+
+The following controls are available for
+controlling the signal flow.
 
 Record
-  Arm the track for recording.
-Mute
-  Mutes the track, meaning no sound will be sent to its
-  direct out.
+~~~~~~
+Arm the track for recording.
 
-.. note:: The track will still be processed, so if you
-  are looking to decrease :term:`DSP` usage, try disabling
-  plugins instead.
+Mute
+~~~~
+Mutes the track, meaning no sound will be sent to
+its direct out.
+
+.. note:: The track will still be processed, so if
+   you are looking to decrease :term:`DSP` usage,
+   try disabling plugins instead.
 
 Solo
-  Soloes the track. If any track is soloed, only the soloed
-  tracks will produce sounds.
+~~~~
+Soloes the track. If any track is soloed, only the
+soloed tracks will produce sounds.
+
 Listen
-  Similar to solo, except it dims the volume of other tracks
-  instead of muting them. The dim amount can be controlled
-  in the control room described in :ref:`control-room`.
-  Not operational at the moment.
+~~~~~~
+Similar to solo, except it dims the volume of other
+tracks instead of muting them. The dim amount can
+be controlled in the control room described in
+:ref:`control-room`.
+
+.. note:: Not operational at the moment.
+
 Channel Settings
-  Not operational at the moment.
+~~~~~~~~~~~~~~~~
+
+.. note:: Not operational at the moment.
 
 Comments
 --------
@@ -135,4 +156,4 @@ User comments.
 .. image:: /_static/img/track-comments.png
    :align: center
 
-.. note:: This is a TODO feature.
+.. note:: This is not implemented yet.

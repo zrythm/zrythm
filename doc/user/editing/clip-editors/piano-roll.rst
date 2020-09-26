@@ -25,22 +25,25 @@ The piano roll contains the following additional controls.
 .. image:: /_static/img/piano-roll-controls.png
    :align: center
 
-Drum view
-  Enabling this will change the display of the
-  arranger into a drum editor view, where each
-  :term:`MIDI Note` is drawn as a diamond and the
-  piano roll keys display the name of each drum.
+Drum View
+~~~~~~~~~
+Enabling this will change the display of the
+arranger into a drum editor view, where each
+:term:`MIDI Note` is drawn as a diamond and the
+piano roll keys display the name of each drum.
 
 Listen to notes
-  Enabling this will play back each note as you drag
-  it inside the piano roll. This is useful if you
-  want to `hear` what you are doing.
+~~~~~~~~~~~~~~~
+Enabling this will play back each note as you drag
+it inside the piano roll. This is useful if you
+want to `hear` what you are doing.
 
 .. _piano-roll-keys:
 
 Piano Roll Keys
 ---------------
-These are the keys corresponding to each key found on a piano.
+These are the keys corresponding to each key found
+on a piano.
 
 .. image:: /_static/img/piano-roll-keys.png
    :align: center
@@ -53,8 +56,8 @@ black/white keys, in addition to any highlighting
 (if selected).
 See :ref:`chord-highlighting` for more information.
 
-.. tip:: The zoom level can be changed by holding down
-  :zbutton:`Ctrl` and :zbutton:`Shift` and scrolling.
+.. tip:: The zoom level can be changed by holding
+   down :kbd:`Ctrl` and :kbd:`Shift` and scrolling.
 
 MIDI Arranger
 -------------
@@ -72,6 +75,12 @@ position of a note is reached.
 
 Editing inside the MIDI arranger is covered in
 :ref:`edit-modes` and :ref:`common-operations`.
+
+Drum Mode
+---------
+
+.. todo:: Explain/show how the 2 sections above look
+   in drum mode.
 
 Velocity Editor
 ---------------
@@ -103,7 +112,7 @@ The :ref:`ramp-mode` can also be used in the velocity editor to
 
 Context Menu
 ------------
-TODO
+.. todo:: Write this section.
 
 Event Viewer
 ------------

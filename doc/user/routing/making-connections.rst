@@ -24,6 +24,12 @@ port to connect it to, or edit existing connections.
 You can also drag the slider to adjust the level
 of the amount to send.
 
+Sidechaining
+------------
+
+.. todo:: Give an example of how to sidechain
+   (classic bass + kick example).
+
 Routing Graph
 -------------
 It is very helpful to be able to view the routing

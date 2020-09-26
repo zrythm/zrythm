@@ -5,18 +5,21 @@
 Toolbar
 =======
 
-The timeline has its own toolbar for timeline-specific
-operations.
+The timeline has its own toolbar for
+timeline-specific operations.
+
+.. todo:: Update this section/pic.
 
 .. image:: /_static/img/timeline-toolbar.png
    :align: center
 
-It contains a snap section, a quantize section, and an
-audio region section. For details about snapping and
-quantization, see the previous pages.
+It contains a snap section, a quantize section, and
+an audio region section. For details about snapping
+and quantization, see the previous pages.
 
 Audio Region Section
 --------------------
+
 Musical Mode
 ~~~~~~~~~~~~
 When this is on, audio regions will be automatically

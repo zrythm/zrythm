@@ -9,6 +9,8 @@ Audio & MIDI
 
 The Export dialog below is used to export the project
 or part of the project into audio or MIDI files.
+It can be accessed by clicking
+:ref:`zrythm-interface/main-toolbar:Export As`.
 
 .. image:: /_static/img/export_dialog.png
    :align: center

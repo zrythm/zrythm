@@ -61,6 +61,10 @@ start of a chord. Chord objects do not have a length.
 Editing in the chord arranger follows :ref:`edit-modes` and
 :ref:`common-operations`.
 
+Context Menu
+------------
+.. todo:: Write this section.
+
 Event Viewer
 ------------
 The event viewer in the chord editor is similar to the

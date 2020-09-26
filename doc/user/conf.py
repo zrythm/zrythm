@@ -21,11 +21,11 @@ import os
 # sys.path.insert(0, os.path.abspath('.'))
 
 
-# -- Project information -----------------------------------------------------
+# --- Project information ---
 
 project = 'Zrythm'
 copyright = '2019-2020 The Zrythm contributors'
-author = 'Alexandros Theodotou'
+author = 'The Zrythm contributors'
 
 from subprocess import check_output
 
@@ -34,23 +34,34 @@ release = '1.0.0-alpha.2.0.1'
 # The short X.Y version
 version = release[:-4]
 
-# -- General configuration ---------------------------------------------------
+# --- General configuration ---
 
-# If your documentation needs a minimal Sphinx version, state it here.
+# If your documentation needs a minimal Sphinx
+# version, state it here.
 #
 # needs_sphinx = '1.0'
 
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
+# Add any Sphinx extension module names here, as
+# strings. They can be extensions coming with Sphinx
+# (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     'sphinx.ext.imgmath',
-    #'recommonmark',
+    'sphinx.ext.autosectionlabel',
+    'sphinx.ext.todo',
+    # 'sphinxcontrib.devhelp',
+    # 'recommonmark',
 ]
 
-# Add any paths that contain templates here, relative to this directory.
+# Add any paths that contain templates here,
+# relative to this directory.
 templates_path = ['_templates']
 
+# Make sure the section target is unique
+autosectionlabel_prefix_document = True
+
+# If this is True, todo and todolist produce output,
+# else they produce nothing. The default is False.
+todo_include_todos = True
 
 # The master toctree document.
 master_doc = 'index'
@@ -97,10 +108,10 @@ rst_prolog = """
 .. role:: blue
 """
 
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
+# Theme options are theme-specific and customize the
+# look and feel of a theme further.  For a list of
+# options available for each theme, see the
 # documentation.
-#
 html_theme_options = {
     'canonical_url': 'https://manual.zrythm.org/',
     'logo_only': True,
@@ -202,7 +213,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Zrythm.tex', 'Zrythm Documentation',
+    (master_doc, 'Zrythm.tex', 'Zrythm User Manual',
      'Alexandros Theodotou', 'manual'),
 ]
 
@@ -212,7 +223,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'zrythm', 'Zrythm Documentation',
+    (master_doc, 'zrythm', 'Zrythm User Manual',
      [author], 1)
 ]
 
@@ -223,7 +234,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Zrythm', 'Zrythm Documentation',
+    (master_doc, 'Zrythm', 'Zrythm User Manual',
      author, 'Zrythm', 'One line description of project.',
      'Miscellaneous'),
 ]

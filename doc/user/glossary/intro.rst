@@ -27,7 +27,15 @@ Glossary
     commands in a terminal.
 
   Clip
-    Used interchangeably with :term:`region`.
+    Used interchangeably with
+    :ref:`region <regions>`.
+
+  Control
+    A control is a :doc:`port <../routing/ports>`
+    with a user-changeable control value that
+    affects a processor, such as a plugin. For
+    example, a gain control. Used interchangeably
+    with :term:`parameter`.
 
   CV
     In a software environment,
@@ -88,11 +96,20 @@ Glossary
     signal
     into a new stereo or multi-channel sound field.
 
+  Parameter
+    Used interchangeably with :term:`control`.
+
   Plugin
     A plugin is an external module that provides
     audio processing capabilities to Zrythm, such
     as an :term:`SFZ` instrument or an :term:`LV2`
     reverb plugin.
+
+  Project
+    A project refers to a work session. It is saved
+    as a directory containing a project file along
+    with other auxiliary files. See :ref:`Projects`
+    for more details.
 
   Range
     A Range is a selection of time between two
@@ -103,14 +120,8 @@ Glossary
 
   Region
     A region (or :term:`clip`) is a container for
-    MIDI Notes, audio or other events. Regions can
-    be repeated, like below.
-
-    .. image:: /_static/img/region.png
-       :align: center
-
-    The content of regions can be edited in an
-    editor (see :ref:`editors`).
+    MIDI Notes, audio or other events. See
+    :ref:`regions`.
 
   SFZ
     SFZ is a file format for sample-based

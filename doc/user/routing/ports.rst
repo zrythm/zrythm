@@ -24,24 +24,35 @@ stereo signal after being processed.
 Port Directions
 ---------------
 Input
-  The port receives signals.
+~~~~~
+The port receives signals.
+
 Output
-  The port sends signals.
+~~~~~~
+The port sends signals.
 
 Port Types
 ----------
+
 Audio
-  Ports of this type receive or send raw
-  audio signals.
+~~~~~
+Ports of this type receive or send raw
+audio signals.
+
 Event
-  Event ports are mainly used for routing MIDI
-  signals.
+~~~~~
+Event ports are mainly used for routing MIDI
+signals.
+
 Control
-  Control ports are user-editable parameters that
-  can also be automated in automation lanes.
+~~~~~~~
+Control ports are user-editable parameters that
+can also be automated in automation lanes.
+
 CV
-  CV ports handle continuous signals and can be
-  used to modulate control ports.
+~~
+:term:`CV` ports handle continuous signals and can be
+used to modulate control ports.
 
 Port Connections
 ----------------

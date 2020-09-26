@@ -34,9 +34,16 @@ Protocol
 
 Filter Buttons
 --------------
-Additionally to the above, you can filter plugins based on
-their type. See :ref:`plugin-types` for more information
-about the various types of plugins there are.
+Additionally to the above, plugins can be filtered
+based on their type.
+
+.. figure:: /_static/img/plugin-filter-buttons.png
+   :align: center
+
+   Filtering by modulator plugins
+
+See :ref:`plugin-types` for more information about
+the various types of plugins there are.
 
 .. _instantiating-plugins:
 

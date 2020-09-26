@@ -7,7 +7,7 @@ Overview
 
 Tracks are the main building blocks of projects.
 Tracks appear in the tracklist and contain various
-events such as regions (see :term:`Region`).
+events such as :ref:`regions`.
 
 .. image:: /_static/img/track.png
    :align: center

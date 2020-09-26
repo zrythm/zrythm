@@ -19,10 +19,12 @@ Select/Stretch Mode
 ~~~~~~~~~~~~~~~~~~~
 This can be toggled to switch between Select and Stretch.
 
-In Select mode, you can make object selections and move,
-clone and resize objects. This is the most common mode
-and the most common operations can be accomplished by just
-using this.
+In Select mode, you can make object selections and
+move, clone and resize objects. This is the most
+common mode and the most common operations can be
+accomplished by just using this.
+
+.. todo:: Add pic showing object selection.
 
 Stretch mode is similar to the Select mode, with the
 exception that when you resize objects, their contents
@@ -32,7 +34,7 @@ Selecting Objects
 +++++++++++++++++
 To select objects, you can either click on them, click
 in empty space and keep dragging to make a selection, or
-:zbutton:`Control`-click to add/remove objects to/from the
+:kbd:`Control`-click to add/remove objects to/from the
 selection.
 
 Selected objects will have brighter color than non-selected
@@ -42,7 +44,7 @@ Moving and Cloning Objects
 ++++++++++++++++++++++++++
 To move objects around, click on a selected object and keep
 dragging with your cursor to where you want to move them.
-Holding down :zbutton:`Control` while doing this will create
+Holding down :kbd:`Control` while doing this will create
 duplicates (clones) of the selected objects. This is an
 efficient way to quickly clone multiple objects.
 
@@ -65,8 +67,8 @@ resizing it.
 
 Cutting Objects
 ~~~~~~~~~~~~~~~
-You can :zbutton:`Alt`-click inside objects to break them up.
-Holding down :zbutton:`Shift` while doing this will bypass
+You can :kbd:`Alt`-click inside objects to break them up.
+Holding down :kbd:`Shift` while doing this will bypass
 snapping.
 
 Edit Mode
@@ -77,7 +79,7 @@ double clicking and dragging, in Edit mode this is
 accomplished by single clicking and dragging, which is
 more efficient when creating a large number of objects.
 
-Holding down :zbutton:`Control` while clicking will allow
+Holding down :kbd:`Control` while clicking will allow
 you to create multiple objects in a row (where applicable)
 with a length specified by the snap settings corresponding
 to each editor.
@@ -86,7 +88,7 @@ Cut Mode
 ~~~~~~~~
 Cut mode behaves similarly to what is mentioned in
 :ref:`cutting-objects`, with the exception that you
-can just click instead of :zbutton:`Alt`-clicking.
+can just click instead of :kbd:`Alt`-clicking.
 
 Erase Mode
 ~~~~~~~~~~
@@ -106,4 +108,4 @@ to create velocity ramps.
 
 Audition Mode
 ~~~~~~~~~~~~~
-This is a TODO feature.
+This feature is not implemented yet.

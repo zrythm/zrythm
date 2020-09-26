@@ -27,3 +27,5 @@ The `Monitor Out` knob controls this volume.
 Dim
 ---
 This is not operational at the moment.
+
+.. todo:: Move to another chapter.

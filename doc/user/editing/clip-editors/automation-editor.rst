@@ -51,6 +51,10 @@ Vital
 Pulse
   Pulse wave.
 
+Context Menu
+------------
+.. todo:: Write this section.
+
 Event Viewer
 ------------
 The event viewer in the automation editor is similar to the

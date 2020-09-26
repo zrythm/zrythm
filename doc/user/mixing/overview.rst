@@ -58,3 +58,5 @@ Changing the Track Name
 The name of the track the channel corresponds to can
 be changed by double clicking the name at the top of
 the channel.
+
+.. todo:: Add pic.
