@@ -294,7 +294,7 @@ msgid ""
 "Editing in the chord arranger follows :ref:`edit-modes` and :ref:`common-"
 "operations`."
 msgstr ""
-"Editar na xanela de acordes faise seguindo  :ref: `edit-modes` e :ref"
+"Editar na xanela de acordes faise seguindo  :ref:`edit-modes` e :ref"
 ":`common-operations`."
 
 #: ../../editing/clip-editors/chord-editor.rst:70
@@ -449,7 +449,7 @@ msgid ""
 "Editing inside the MIDI arranger is covered in :ref:`edit-modes` and :ref"
 ":`common-operations`."
 msgstr ""
-"Editando dentro da xanela de MIDI é tratado en :`edit-modes` e en :ref"
+"Editando dentro da xanela de MIDI é tratado en :ref:`edit-modes` e en :ref"
 ":`common-operations`."
 
 #: ../../editing/clip-editors/piano-roll.rst:80

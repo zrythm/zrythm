@@ -249,7 +249,7 @@ msgid ""
 ":ref:`preferences`, so don't worry if you selected the wrong settings."
 msgstr ""
 "Todas as configurações mencionadas aqui também estão disponíveis em "
-":ref:`preferences', portanto não se preocupe se selecionou as "
+":ref:`preferences`, portanto não se preocupe se selecionou as "
 "configurações erradas."
 
 #: ../../configuration/intro.rst:6
@@ -494,8 +494,8 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:136
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 msgstr ""
-"Algoritmos de pan (:azul:`seno`, :vermelho:`raiz quadrada`, "
-":verde:`linear`)."
+"Algoritmos de pan (:blue:`sine`, :red:`square root`, "
+":green:`linear`)."
 
 #: ../../configuration/preferences/intro.rst:141
 msgid "Pan law"

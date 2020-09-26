@@ -54,7 +54,7 @@ msgstr "現設定を表示"
 
 #: ../../configuration/additional-settings.rst:27
 msgid "See :option:`zrythm --print-settings`."
-msgstr ":option:`zrythm --print-settings`を参照してください。"
+msgstr ":option:`zrythm --print-settings` を参照してください。"
 
 #: ../../configuration/additional-settings.rst:30
 msgid "Reset to Factory Settings"
@@ -62,7 +62,7 @@ msgstr "初期設定にリセット"
 
 #: ../../configuration/additional-settings.rst:32
 msgid "See :option:`zrythm --reset-to-factory`."
-msgstr ":option:`zrythm --reset-to-factory`を参照してください。"
+msgstr ":option:`zrythm --reset-to-factory` を参照してください。"
 
 #: ../../configuration/additional-settings.rst:34
 msgid "This will be added to the UI soon."
@@ -312,7 +312,7 @@ msgstr "プラグイン"
 
 #: ../../configuration/preferences/intro.rst:57
 msgid ":term:`Plugin` settings."
-msgstr ":term:`Plugin`の設定。"
+msgstr ":term:`Plugin` の設定。"
 
 #: ../../configuration/preferences/intro.rst:63
 msgid "UIs"
@@ -378,7 +378,7 @@ msgstr "VSTプラグイン"
 
 #: ../../configuration/preferences/intro.rst:94
 msgid "The search paths to scan for :term:`VST2` plugins in."
-msgstr ":term:`VST2`プラグインをスキャンする検索パス。"
+msgstr ":term:`VST2` プラグインをスキャンする検索パス。"
 
 #: ../../configuration/preferences/intro.rst:97
 msgid ""
@@ -392,7 +392,7 @@ msgstr "SFZ音源"
 
 #: ../../configuration/preferences/intro.rst:102
 msgid "The search paths to scan for :term:`SFZ` instruments in."
-msgstr ":term:`SFZ`インストゥルメントをスキャンする検索パス。"
+msgstr ":term:`SFZ` インストゥルメントをスキャンする検索パス。"
 
 #: ../../configuration/preferences/intro.rst:107
 msgid "SF2 instruments"
@@ -408,7 +408,7 @@ msgstr "DSP"
 
 #: ../../configuration/preferences/intro.rst:112
 msgid ":term:`DSP` settings."
-msgstr ":term:`DSP`設定"
+msgstr ":term:`DSP` 設定"
 
 #: ../../configuration/preferences/intro.rst:118
 msgid "Pan"
@@ -447,7 +447,7 @@ msgstr "パン法"
 
 #: ../../configuration/preferences/intro.rst:140
 msgid "The :term:`pan law` to use when applying pan on mono signals."
-msgstr "モノラル信号にパンを適用するときに使用する:term:`pan law`。"
+msgstr "モノラル信号にパンを適用するときに使用する :term:`pan law` 。"
 
 #: ../../configuration/preferences/intro.rst:144
 msgid "Editing"

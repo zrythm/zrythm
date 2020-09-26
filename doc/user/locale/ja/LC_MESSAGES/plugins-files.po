@@ -302,7 +302,7 @@ msgstr "MIDIエフェクト"
 msgid ""
 "These plugins modify incoming :term:`MIDI` signals and can be used in the"
 " MIDI signal chain of an Instrument or MIDI track."
-msgstr "これらのプラグインは、着信MIDI信号を変更し、インストゥルメントまたはMIDIトラックのMIDI信号チェーンで使用することができます。"
+msgstr "これらのプラグインは、着信 :term:`MIDI` 信号を変更し、インストゥルメントまたはMIDIトラックのMIDI信号チェーンで使用することができます。"
 
 #: ../../plugins-files/plugins/plugin-info.rst:39
 #, fuzzy
@@ -518,7 +518,7 @@ msgstr ":file:`/usr/lib/vst3`"
 msgid ""
 "You can bypass this behavior by passing :envvar:`VST_PATH` and "
 ":envvar:`VST3_PATH`."
-msgstr "envvar:`VST_PATH` と :envvar:`VST3_PATH` を渡すことで、この動作をオーバーライドすることができます。"
+msgstr ":envvar:`VST_PATH` と :envvar:`VST3_PATH` を渡すことで、この動作をオーバーライドすることができます。"
 
 #: ../../plugins-files/plugins/scanning.rst:54
 msgid ""

@@ -149,7 +149,7 @@ msgid ""
 "using :term:`a2jmidid`."
 msgstr ""
 "В зависимости от ваших настроек, устройства MIDI, возможно, потребуется "
-"подключить к JACK с помощью инструмента ``a2jmidid``."
+"подключить к JACK с помощью инструмента :term:`a2jmidid`."
 
 #: ../../configuration/first-run-wizard.rst:6
 msgid "First Run Wizard"
@@ -205,7 +205,7 @@ msgid ""
 " your first time using it. If you choose to use JACK, JACK MIDI and the "
 "JACK audio backend must be chosen together."
 msgstr ""
-"Zrythm поддерживает несколько Аудио и MIDI бэкэндов. JACK рекомендуется и"
+"Zrythm поддерживает несколько Аудио и MIDI бэкэндов. :term:`JACK` рекомендуется и"
 " в качестве Аудио бэкэнда, и в качестве MIDI бэкэнда, но для его "
 "настройки потребуется некоторое время, если вы используете его впервые. "
 "Если вы решили использовать JACK, то вам необходимо выбрать его в "
@@ -465,8 +465,9 @@ msgid "Pan"
 msgstr "Панорамирование (Pan)"
 
 #: ../../configuration/preferences/intro.rst:120
+#, fuzzy
 msgid ":term:`Panning` options for :term:`mono` signals (not used at the moment)."
-msgstr "Опции панорамирования для моносигналов (на данный момент не используются)."
+msgstr "Опции :term:`Panning` для :term:`mono` (на данный момент не используются)."
 
 #: ../../configuration/preferences/intro.rst:137
 msgid "Pan algorithm"
@@ -498,9 +499,10 @@ msgid "Pan law"
 msgstr "Правило панорамирования (Pan law)"
 
 #: ../../configuration/preferences/intro.rst:140
+#, fuzzy
 msgid "The :term:`pan law` to use when applying pan on mono signals."
 msgstr ""
-"Правило панорамирования для использования при применении панорамирования "
+"Правило :term:`pan law` для использования при применении панорамирования "
 "к моно сигналам."
 
 #: ../../configuration/preferences/intro.rst:144

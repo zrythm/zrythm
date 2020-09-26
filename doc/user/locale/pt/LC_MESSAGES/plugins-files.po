@@ -76,7 +76,7 @@ msgid ""
 msgstr ""
 "O Zrythm pode importar ficheiros de MIDI e de áudio para o projeto. Os "
 "ficheiros podem ser importados arrastando e soltando do seu computador ou"
-" do :ref:'file-browser' numa faixa."
+" do :ref:`file-browser` numa faixa."
 
 #: ../../plugins-files/audio-midi-files/overview.rst:14
 msgid "Supported Audio Formats"
@@ -612,7 +612,7 @@ msgid ""
 "paths`."
 msgstr ""
 "Zrythm irá procurar por suplementos VST nos caminhos especificados em "
-":ref:`vst-paths'."
+":ref:`vst-paths`."
 
 #: ../../plugins-files/plugins/scanning.rst:64
 msgid "MacOS"

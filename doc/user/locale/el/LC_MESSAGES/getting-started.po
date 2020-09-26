@@ -34,9 +34,6 @@ msgid ""
 "users are expected to download and install their own plugins that suit "
 "their preferences."
 msgstr ""
-"Ο ιχνηλάτης προβλημάτων μπορεί να βρεθεί στο `Redmine instance "
-"<https://redmine.zrythm.org/projects/zrythm/issues>`_. Μπορείτε να τον "
-"χρησιμοποιήσετε για να αναφέρετε bugs ή για να δώσετε feedback."
 
 #: ../../getting-started/getting-plugins.rst:16
 msgid ""
@@ -49,16 +46,10 @@ msgid ""
 "For other systems, you can find a `list of free software plugins here "
 "<https://github.com/webprofusion/OpenAudio>`_."
 msgstr ""
-"Το Zrythm περιλαμβάνει ως πακέτο μερικά πρόσθετα (plugins) για να βοηθηθείτε "
-"στην αρχή (προς το παρόν μόνο το ZLFO), αλλά συνίσταται να εγκαταστήσετε "
-"κάποια πρόσθετα (plugins) όπως συνθεσάιζερς και εφέ πριν μπορέσετε να "
-"φτιάξετε μουσική."
 
 #: ../../getting-started/getting-plugins.rst:24
 msgid "See :ref:`scanning-plugins` for paths where plugins will be scanned in."
 msgstr ""
-"Ευτυχώς, υπάρχουν αρκετά πρόσθετα (plugins) να επιλέξει κανείς. Αυτός ο "
-"οδηγός θα σας δείξει μερικούς τρόπους να εγκαταστήσετε πρόσθετα (plugins)."
 
 #: ../../getting-started/getting-plugins.rst:27
 msgid ""
@@ -76,7 +67,7 @@ msgid ""
 "installing the `lv2-plugins "
 "<https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ group."
 msgstr ""
-"Αν είστε σε Arch GNU/Linux, προτείνουμε την εγκατάσταση του ομαδικού πακέτου "
+"Αν είστε σε Arch Linux, προτείνουμε την εγκατάσταση του ομαδικού πακέτου "
 "`lv2-plugins <https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ , ή "
 "μπορείτε να επιλέξετε συγκεκριμένα ποια πρόσθετα (plugins) θέλετε από εκεί."
 
@@ -85,6 +76,7 @@ msgid "Recommended Plugin Bundles"
 msgstr "Προτεινόμενα πακέτα προσθέτων (plugins)"
 
 #: ../../getting-started/getting-plugins.rst:40
+#, fuzzy
 msgid ""
 "`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ provides a "
 "good variety of synths and effects."
@@ -108,8 +100,6 @@ msgid ""
 "The `LSP Project <https://lsp-plug.in/>`_ has a wide variety of effect "
 "plugins."
 msgstr ""
-"Το `OpenAV <http://openavproductions.com>`_ έχει εφέ και όργανα που αξίζει "
-"κανείς να δοκιμάσει."
 
 #: ../../getting-started/getting-plugins.rst:51
 msgid ""
@@ -171,17 +161,12 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:81
 msgid "Samples"
 msgstr ""
-"Σκοπεύουμε να προσθέσουμε υποστήριξη για FreeBSD στον εγκαταστατή που "
-"αναφέρεται στο :ref:`gnu-with-linux-installer`."
 
 #: ../../getting-started/getting-plugins.rst:83
 msgid ""
 "We recommend using `Freesound <https://freesound.org/>`_ for collecting "
 "CC-licensed samples."
 msgstr ""
-"Αυτός είναι ο ευκολότερος και πιο προτεινόμενος τρόπος εγκατάστασης της "
-"τελευταίας έκδοσης για τους περισσότερους χρήστες, και προσφέρουμε "
-"υποστήριξη για αυτόν."
 
 #: ../../getting-started/installation.rst:6
 msgid "Installation"
@@ -206,6 +191,9 @@ msgid ""
 "This is the easiest and recommended way to install the latest version for"
 " most users, and we provide support for it."
 msgstr ""
+"Αυτός είναι ο ευκολότερος και πιο προτεινόμενος τρόπος εγκατάστασης της "
+"τελευταίας έκδοσης για τους περισσότερους χρήστες, και προσφέρουμε "
+"υποστήριξη για αυτόν."
 
 #: ../../getting-started/installation.rst:22
 msgid "The installers also include bundled plugins."
@@ -232,7 +220,7 @@ msgstr "Βλέπε το αρχείο ``INSTALL.md`` για περισσότερ�
 
 #: ../../getting-started/installation.rst:35
 msgid "GNU/Linux"
-msgstr ""
+msgstr "GNU/Linux"
 
 #: ../../getting-started/installation.rst:38
 msgid "Installer"
@@ -261,9 +249,6 @@ msgstr "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
 #: ../../getting-started/installation.rst:48
 msgid "Distribution Package"
 msgstr ""
-"Αν είστε προχωρημένος χρήστης και προτιμάτε να χτίσετε (build) το Zrythm "
-"μόνος σας, το Zrythm χρησιμοποιεί το Meson build σύστημα, συνεπώς η "
-"διαδικασία χτισίματος (build) έχει ως εξής:"
 
 #: ../../getting-started/installation.rst:49
 msgid ""
@@ -283,9 +268,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:57
 msgid "FreeBSD"
-msgstr ""
-"Εγκαταστήστε χειροκίνητα από την πηγή όπως αναφέρεται στο :ref:`gnu-with-"
-"linux-manual-installation`. Δεν παρέχεται υποστήριξη προς το παρόν."
+msgstr "FreeBSD"
 
 #: ../../getting-started/installation.rst:60
 #, fuzzy
@@ -687,6 +670,8 @@ msgstr ""
 #~ "`OpenAV <http://openavproductions.com>`_ has some"
 #~ " nice plugins worth checking out."
 #~ msgstr ""
+#~ "Το `OpenAV <http://openavproductions.com>`_ έχει εφέ και όργανα που αξίζει "
+#~ "κανείς να δοκιμάσει."
 
 #~ msgid ""
 #~ "You might also want to check out"
@@ -830,6 +815,8 @@ msgstr ""
 #~ "mentioned in `GNU with Linux`_. No "
 #~ "support is offered at the moment."
 #~ msgstr ""
+#~ "Εγκαταστήστε χειροκίνητα από την πηγή όπως αναφέρεται στο :ref:`gnu-with-"
+#~ "linux-manual-installation`. Δεν παρέχεται υποστήριξη προς το παρόν."
 
 #~ msgid ""
 #~ "The installer supports the following "
@@ -876,6 +863,9 @@ msgstr ""
 #~ "can use this to report bugs or "
 #~ "give feedback."
 #~ msgstr ""
+#~ "Ο ιχνηλάτης προβλημάτων μπορεί να βρεθεί στο `Redmine instance "
+#~ "<https://redmine.zrythm.org/projects/zrythm/issues>`_. Μπορείτε να τον "
+#~ "χρησιμοποιήσετε για να αναφέρετε bugs ή για να δώσετε feedback."
 
 #~ msgid "Source Code"
 #~ msgstr "Πηγαίος κώδικας"
@@ -910,6 +900,10 @@ msgstr ""
 #~ "and effects before you can make "
 #~ "music."
 #~ msgstr ""
+#~ "Το Zrythm περιλαμβάνει ως πακέτο μερικά πρόσθετα (plugins) για να βοηθηθείτε "
+#~ "στην αρχή (προς το παρόν μόνο το ZLFO), αλλά συνίσταται να εγκαταστήσετε "
+#~ "κάποια πρόσθετα (plugins) όπως συνθεσάιζερς και εφέ πριν μπορέσετε να "
+#~ "φτιάξετε μουσική."
 
 #~ msgid ""
 #~ "Fortunately, there are many plugins to"
@@ -917,6 +911,8 @@ msgstr ""
 #~ " you a few ways you can install"
 #~ " plugins."
 #~ msgstr ""
+#~ "Ευτυχώς, υπάρχουν αρκετά πρόσθετα (plugins) να επιλέξει κανείς. Αυτός ο "
+#~ "οδηγός θα σας δείξει μερικούς τρόπους να εγκαταστήσετε πρόσθετα (plugins)."
 
 #~ msgid ""
 #~ "If you are on Debian/Ubuntu, we "
@@ -979,6 +975,8 @@ msgstr ""
 #~ " the installer mentioned in :ref:`gnu-"
 #~ "with-linux-installer`."
 #~ msgstr ""
+#~ "Σκοπεύουμε να προσθέσουμε υποστήριξη για FreeBSD στον εγκαταστατή που "
+#~ "αναφέρεται στο :ref:`gnu-with-linux-installer`."
 
 #~ msgid ""
 #~ "You can install the `zrythm port "
@@ -1033,6 +1031,9 @@ msgstr ""
 #~ "so the procedure to build and "
 #~ "install is as follows:"
 #~ msgstr ""
+#~ "Αν είστε προχωρημένος χρήστης και προτιμάτε να χτίσετε (build) το Zrythm "
+#~ "μόνος σας, το Zrythm χρησιμοποιεί το Meson build σύστημα, συνεπώς η "
+#~ "διαδικασία χτισίματος (build) έχει ως εξής:"
 
 #~ msgid "See the ``INSTALL.md`` file for more information."
 #~ msgstr ""

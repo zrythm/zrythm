@@ -384,7 +384,7 @@ msgstr ""
 #: ../../tracks/tempo-track.rst:18
 msgid "For more information, see the section :doc:`../chords-and-scales/intro`."
 msgstr ""
-"Pour plus d'informations, voir la section :doc:`.../chords-and-"
+"Pour plus d'informations, voir la section :doc:`../chords-and-"
 "scales/intro`."
 
 #: ../../tracks/chord-track.rst:25

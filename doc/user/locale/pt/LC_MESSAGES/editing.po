@@ -1176,7 +1176,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:130
 msgid "Looping"
-msgstr ""
+msgstr "Looping"
 
 #: ../../editing/timeline/arranger.rst:131
 msgid ""
@@ -1399,9 +1399,6 @@ msgstr ""
 
 #~ msgid "Operations on the Current Selection"
 #~ msgstr "Operações na Seleção Atual"
-
-#~ msgid "Looping"
-#~ msgstr "Looping"
 
 #~ msgid ""
 #~ "Clicking the :zbutton:`Loop Selection` button"
@@ -1878,27 +1875,8 @@ msgstr ""
 #~ msgid "Selection Info Bar"
 #~ msgstr "Barra de Informações de Seleção"
 
-#~ msgid "Regions are containers for events or data (such as audio clips)."
-#~ msgstr ""
-
-#~ msgid "Audio region"
-#~ msgstr ""
-
 #~ msgid "MIDI region"
 #~ msgstr "Região MIDI"
 
 #~ msgid "Moving Objects"
 #~ msgstr "Mover objetos"
-
-#~ msgid ""
-#~ "Holding down :zbutton:`Ctrl` while moving "
-#~ "objects will allow you to copy-"
-#~ "and-move the objects to the new "
-#~ "location."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Linked regions can be created by "
-#~ "holding down :zbutton:`Alt` while moving."
-#~ msgstr ""
-

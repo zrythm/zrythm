@@ -42,7 +42,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:26
 msgid "Editing inside the Editor tab is covered in :ref:`editors`."
-msgstr "エディタータブ内での編集は、 :ref:`editor` で説明されています。"
+msgstr "エディタータブ内での編集は、 :ref:`editors` で説明されています。"
 
 #: ../../zrythm-interface/bottom-panel.rst:29
 msgid "Piano Roll"
@@ -147,7 +147,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:22
 msgid "See :ref:`track-inspector` for more details."
-msgstr "詳細については、:ref:`track-inspector`を参照してください。"
+msgstr "詳細については、:ref:`track-inspector` を参照してください。"
 
 #: ../../zrythm-interface/left-panel.rst:25
 msgid "Plugin Inspector"
@@ -199,7 +199,7 @@ msgstr "トラックの可視性"
 
 #: ../../zrythm-interface/left-panel.rst:60
 msgid "See :ref:`track-visibility`."
-msgstr ":ref:`track-visibility`を参照してください。"
+msgstr ":ref:`track-visibility` を参照してください。"
 
 #: ../../zrythm-interface/main-toolbar.rst:8
 msgid "Main Toolbar"
@@ -242,7 +242,7 @@ msgstr "編集やアレンジ時によく使用されるさまざまなボタン
 
 #: ../../zrythm-interface/main-toolbar.rst:35
 msgid "The :ref:`editing` chapter explains these controls in detail."
-msgstr "ref:`editing` の章では、これらのコントロールについて詳しく説明しています。"
+msgstr ":ref:`editing` の章では、これらのコントロールについて詳しく説明しています。"
 
 #: ../../zrythm-interface/main-toolbar.rst:39
 #, fuzzy

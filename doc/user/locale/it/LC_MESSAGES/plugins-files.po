@@ -71,7 +71,7 @@ msgid ""
 ":`file-browser` into a track."
 msgstr ""
 "Zrythm può importare file MIDI e audio nel progetto. I file possono "
-"essere importati trascinandoli e rilasciandoli dal computer o da: ref: "
+"essere importati trascinandoli e rilasciandoli dal computer o da :ref:"
 "`file-browser` in una traccia."
 
 #: ../../plugins-files/audio-midi-files/overview.rst:14
@@ -121,7 +121,7 @@ msgid ""
 "Compatible ports can be connected to one another. See :ref:`making-"
 "connections` for more details."
 msgstr ""
-"Le porte compatibili possono essere collegate tra loro. Vedi: ref: "
+"Le porte compatibili possono essere collegate tra loro. Vedi :ref:"
 "`making-connections` per maggiori dettagli."
 
 #: ../../plugins-files/plugins/intro.rst:6
@@ -529,7 +529,7 @@ msgstr ""
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in :ref:`vst-"
 "paths`."
-msgstr "Zrythm cercherà i plugin VST nei percorsi specificati in: ref: `vst-path`."
+msgstr "Zrythm cercherà i plugin VST nei percorsi specificati in :ref:`vst-paths`."
 
 #: ../../plugins-files/plugins/scanning.rst:64
 msgid "MacOS"

@@ -91,7 +91,7 @@ msgid ""
 msgstr ""
 "Os canais contêm um fader, controles como o mudo e solo, um medidor, um "
 "seletor de saída direta e uma tira de plugins de inserção. Estes são "
-"cobertos em :ref:`track-inspector'."
+"cobertos em :ref:`track-inspector`."
 
 #: ../../mixing/overview.rst:57
 msgid "Changing the Track Name"
@@ -149,7 +149,7 @@ msgid ""
 "signals to them, in addition to the channel's main direct output."
 msgstr ""
 "Faixas áudio e MIDI FX (coberto em :ref:`audio-bus-track` e :ref:`midi-"
-"bus-track\", respetivamente) podem ser criados para o envio de um sinal "
+"bus-track`, respetivamente) podem ser criados para o envio de um sinal "
 "para eles, além do canal principal de saída direta."
 
 #: ../../mixing/routing.rst:28
@@ -166,7 +166,7 @@ msgid ""
 "track inspector explained in :ref:`track-sends`."
 msgstr ""
 "Pode enviar para essas faixas/canais utilizando a seção Envios no "
-"inspetor de faixas explicada em :ref:`enviar-faixas`."
+"inspetor de faixas explicada em :ref:`track-sends`."
 
 #: ../../mixing/routing.rst:35
 msgid ""
@@ -189,8 +189,8 @@ msgid ""
 " details."
 msgstr ""
 "Similar ao envio de sinais para pistas FX, também pode enviar sinais para"
-" as portas de plugin sidechain, se o plugin tiver algum. Veja :ref:`reck-"
-"sends' para detalhes."
+" as portas de plugin sidechain, se o plugin tiver algum. Veja :ref:`track-"
+"sends` para detalhes."
 
 #~ msgid "TODO"
 #~ msgstr "A FAZER"

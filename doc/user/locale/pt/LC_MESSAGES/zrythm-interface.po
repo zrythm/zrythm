@@ -85,7 +85,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:53
 msgid "The automation editor is covered in detail in :ref:`automation-editor`."
-msgstr "O editor de automação é abordado em detalhes em :ref:`automation-editor'."
+msgstr "O editor de automação é abordado em detalhes em :ref:`automation-editor`."
 
 #: ../../zrythm-interface/bottom-panel.rst:57
 msgid "Audio Editor"
@@ -102,7 +102,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:66
 msgid "The audio editor is covered in detail in :ref:`audio-editor`."
-msgstr "O editor de áudio é abordado em detalhe em :ref:`audio-editor'."
+msgstr "O editor de áudio é abordado em detalhe em :ref:`audio-editor`."
 
 #: ../../zrythm-interface/bottom-panel.rst:70
 msgid "Chord Editor"
@@ -119,7 +119,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:78
 msgid "The chord editor is covered in detail in :ref:`chord-editor`."
-msgstr "O editor de acordes é abordado em detalhe em :ref:`chord-editor'."
+msgstr "O editor de acordes é abordado em detalhe em :ref:`chord-editor`."
 
 #: ../../zrythm-interface/bottom-panel.rst:82
 msgid "Mixer"
@@ -165,7 +165,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:22
 msgid "See :ref:`track-inspector` for more details."
-msgstr "Veja :ref: `track-inspector` para mais detalhes."
+msgstr "Veja :ref:`track-inspector` para mais detalhes."
 
 #: ../../zrythm-interface/left-panel.rst:25
 msgid "Plugin Inspector"
@@ -274,7 +274,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:35
 msgid "The :ref:`editing` chapter explains these controls in detail."
-msgstr "O capítulo :ref: `editing` explica estes controles em detalhes."
+msgstr "O capítulo :ref:`editing` explica estes controles em detalhes."
 
 #: ../../zrythm-interface/main-toolbar.rst:39
 msgid "Project Menu"
@@ -329,7 +329,7 @@ msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for"
 " more details."
 msgstr ""
-"Exportar o projeto como áudio ou MIDI. Veja :ref:`exportar-áudio-e-midi` "
+"Exportar o projeto como áudio ou MIDI. Veja :ref:`export-audio-and-midi` "
 "para mais detalhes."
 
 #: ../../zrythm-interface/main-toolbar.rst:61
@@ -346,7 +346,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:63
 msgid "For more information about projects, see the :ref:`projects` chapter."
-msgstr "Para mais informações sobre projetos, veja o capítulo :ref:`projetos'."
+msgstr "Para mais informações sobre projetos, veja o capítulo :ref:`projects`."
 
 #: ../../zrythm-interface/main-toolbar.rst:67
 msgid "View Menu"
@@ -582,7 +582,7 @@ msgid ""
 "The :ref:`editing-timeline` section goes in depth about editing inside "
 "the timeline panel."
 msgstr ""
-"A secção :ref:`editing-timeline' aprofunda a edição dentro do painel da "
+"A secção :ref:`editing-timeline` aprofunda a edição dentro do painel da "
 "cronologia."
 
 #: ../../zrythm-interface/transport-bar.rst:8
@@ -677,7 +677,7 @@ msgid ""
 ":`transport-controls`."
 msgstr ""
 "Mais informações sobre como trabalhar com a barra de transporte são "
-"abordadas em :ref:`transport-controles'."
+"abordadas em :ref:`transport-controls`."
 
 #: ../../zrythm-interface/transport-bar.rst:46
 msgid "Backend Information"

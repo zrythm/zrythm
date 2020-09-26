@@ -1178,7 +1178,7 @@ msgstr "テンポ"
 
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."
-msgstr "doc:`chord-track` 以外のすべてのトラックには、オートメーションレーンが用意されています。"
+msgstr ":doc:`chord-track` 以外のすべてのトラックには、オートメーションレーンが用意されています。"
 
 #: ../../tracks/track-types.rst:31
 msgid "Add page for Modulators and Tempo track."

@@ -63,9 +63,10 @@ please see the
 
 Editing this Manual
 -------------------
-Click on the ``View Source`` button at the top of
-the page to find which file the page exists in,
-find the file in the source distribution and edit it.
+Click on the :guilabel:`View Source` button at the
+top of the page to find which file the page exists
+in, find the file in the source distribution and
+edit it.
 
 You will need to have
 `Sphinx <https://www.sphinx-doc.org/en/master/>`_

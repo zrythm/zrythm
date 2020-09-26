@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 17:47+0100\n"
+"POT-Creation-Date: 2020-09-26 19:19+0100\n"
 "PO-Revision-Date: 2020-09-04 18:36+0000\n"
 "Last-Translator: Samuel Aubert <baohm26@gmail.com>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
-"manualcontributing/fr/>\n"
 "Language: fr\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/zrythm/manualcontributing/fr/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../contributing/intro.rst:6
@@ -29,9 +28,9 @@ msgid ""
 "We appreciate contributions of any type and size. Tell us how you would "
 "like to help, and we will do our best to guide you."
 msgstr ""
-"Nous apprécions toute contribution quels que soient le type ou la taille. "
-"Dites nous comment vous souhaitez aider et nous ferons de notre mieux pour "
-"vous accompagner."
+"Nous apprécions toute contribution quels que soient le type ou la taille."
+" Dites nous comment vous souhaitez aider et nous ferons de notre mieux "
+"pour vous accompagner."
 
 #: ../../contributing/intro.rst:11
 #, fuzzy
@@ -42,10 +41,10 @@ msgid ""
 "://contributor-covenant.org/. You can find the full pledge in our `Code "
 "of Conduct <https://forum.zrythm.org/t/code-of-conduct>`_."
 msgstr ""
-"Nous voulons offrir un environnement accueillant et sain  afin que chacun "
-"puisse contribuer au mieux de ses capacités. Pour cela, notre projet possède "
-"une charte de bonne conduite inspirée de https://www.contributor-covenant."
-"org/fr/version/1/4/code-of-conduct/.\n"
+"Nous voulons offrir un environnement accueillant et sain  afin que chacun"
+" puisse contribuer au mieux de ses capacités. Pour cela, notre projet "
+"possède une charte de bonne conduite inspirée de https://www.contributor-"
+"covenant.org/fr/version/1/4/code-of-conduct/.\n"
 "Vous trouverez l'intégralité de nos engagements dans la section Code de "
 "bonne conduite <https://forum.zrythm.org/t/code-of-conduct>"
 
@@ -59,8 +58,9 @@ msgid ""
 "<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ in the "
 "source distribution."
 msgstr ""
-"Veuillez vous référer au fichier `HACKING <https://git.sr.ht/~alextee/zrythm/"
-"tree/master/HACKING.md>`_ dans la distribution des sources."
+"Veuillez vous référer au fichier `HACKING "
+"<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ dans la "
+"distribution des sources."
 
 #: ../../contributing/intro.rst:23
 msgid "Web Design"
@@ -72,8 +72,8 @@ msgid ""
 "website. Please join our chatrooms and talk to us."
 msgstr ""
 "Nous vous invitons à participer à l'amélioration de l'apparence et de "
-"l'ergonomie du site internet de Zrythm. Prenez contact avec nous via notre "
-"salle de chat."
+"l'ergonomie du site internet de Zrythm. Prenez contact avec nous via "
+"notre salle de chat."
 
 #: ../../contributing/intro.rst:29
 msgid "Artwork and Themes"
@@ -88,8 +88,8 @@ msgid ""
 msgstr ""
 "Le thème d'apparence de Zrythm est modifiable avec des CSS et utilise de "
 "nombreuses icônes. Certaines sont personnalisées, d'autres empruntées à "
-"divers thèmes. Si vous souhaitez contribuer aux visuels tels que les thèmes "
-"ou les icônes, vous pouvez créer les vôtres en suivant ces lignes "
+"divers thèmes. Si vous souhaitez contribuer aux visuels tels que les "
+"thèmes ou les icônes, vous pouvez créer les vôtres en suivant ces lignes "
 "directrices : :ref:`icon-themes` and :ref:`css`."
 
 #: ../../contributing/intro.rst:38
@@ -114,7 +114,7 @@ msgid ""
 "`git repository <https://git.zrythm.org/cgit/zrythm>`_."
 msgstr ""
 "La dernière branche de développement pour les nouvelles fonctionnalités "
-"est ``development`` dans notre ``dépôt git "
+"est ``development`` dans notre `dépôt git "
 "<https://git.zrythm.org/cgit/zrythm>`_."
 
 #: ../../contributing/intro.rst:49
@@ -160,14 +160,14 @@ msgstr "Éditer ce manuel"
 #: ../../contributing/intro.rst:66
 #, fuzzy
 msgid ""
-"Click on the ``View Source`` button at the top of the page to find which "
-"file the page exists in, find the file in the source distribution and "
-"edit it."
+"Click on the :guilabel:`View Source` button at the top of the page to "
+"find which file the page exists in, find the file in the source "
+"distribution and edit it."
 msgstr ""
-"Cliquez sur le bouton ``View Source`` en haut de la page pour trouver "
+"Cliquez sur le bouton :guilabel:`View Source` en haut de la page pour trouver "
 "dans quel fichier la page existe."
 
-#: ../../contributing/intro.rst:70
+#: ../../contributing/intro.rst:71
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
@@ -175,32 +175,32 @@ msgstr ""
 "Vous aurez besoin d'avoir `Sphinx <https://www.sphinx-"
 "doc.org/en/master/>`_ installé pour compiler ce manuel."
 
-#: ../../contributing/intro.rst:75
+#: ../../contributing/intro.rst:76
 msgid "Donations"
 msgstr "Dons"
 
-#: ../../contributing/intro.rst:76
+#: ../../contributing/intro.rst:77
 msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
 msgstr ""
 "Nous utilisons les services suivants afin de recevoir des dons. Toutes "
-"contribution financière est appréciée, de la plus petite à la plus grande, "
-"et aide à soutenir un développement continu :"
+"contribution financière est appréciée, de la plus petite à la plus "
+"grande, et aide à soutenir un développement continu :"
 
-#: ../../contributing/intro.rst:80
+#: ../../contributing/intro.rst:81
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
-#: ../../contributing/intro.rst:81
+#: ../../contributing/intro.rst:82
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
-#: ../../contributing/intro.rst:82
+#: ../../contributing/intro.rst:83
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
-#: ../../contributing/intro.rst:84
+#: ../../contributing/intro.rst:85
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer "
 "<https://www.zrythm.org/en/download.html>`_."
@@ -503,3 +503,4 @@ msgstr ""
 #~ "récurrents. Alternativement, vous pouvez "
 #~ "acheter des binaires Zrythm sur "
 #~ "https://www.zrythm.org/en/download.html"
+

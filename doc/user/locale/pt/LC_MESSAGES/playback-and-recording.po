@@ -99,7 +99,7 @@ msgstr ""
 #: ../../playback-and-recording/loop-points-and-markers.rst:19
 #: ../../playback-and-recording/loop-points-and-markers.rst:32
 msgid "This only applies to the timeline ruler, covered in :ref:`timeline-ruler`."
-msgstr "Isto só se aplica à régua da cronologia, coberta em :ref:'timeline-ruler'."
+msgstr "Isto só se aplica à régua da cronologia, coberta em :ref:`timeline-ruler`."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:23
 msgid "Cue Point"
@@ -250,7 +250,7 @@ msgid ""
 "in :ref:`transport-controls` and press play."
 msgstr ""
 "Depois de armar as faixas em que quer gravar os eventos, ative a gravação"
-" em :ref:`transport-controlos' e prima play."
+" em :ref:`transport-controls` e prima play."
 
 #: ../../playback-and-recording/recording.rst:32
 msgid "Expand, add illustrations, etc."
@@ -310,7 +310,7 @@ msgid ""
 "`Record` to be enabled in the :ref:`transport-controls`."
 msgstr ""
 "Ao contrário da gravação MIDI/áudio, a gravação automática não requer "
-"\"Gravação\" para ser ativada no :ref:`transport-controles'."
+"`Gravação` para ser ativada no :ref:`transport-controls`."
 
 #: ../../playback-and-recording/transport-controls.rst:8
 msgid "Transport Controls"

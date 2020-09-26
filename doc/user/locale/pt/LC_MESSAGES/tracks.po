@@ -260,7 +260,7 @@ msgstr "Faixas de Automação"
 #: ../../tracks/instrument-track.rst:84
 #: ../../tracks/master-track.rst:54
 msgid "These are similar to :ref:`midi-track-automation-tracks`."
-msgstr "Estes são semelhantes a :ref:`midi-track-automation-tracks'."
+msgstr "Estes são semelhantes a :ref:`midi-track-automation-tracks`."
 
 #: ../../tracks/automation.rst:8
 msgid "Automation"
@@ -341,7 +341,7 @@ msgstr "A faixa para a qual a saída da faixa de áudio será roteada."
 #: ../../tracks/group-track-audio.rst:51
 #: ../../tracks/master-track.rst:49
 msgid "These are similar to :ref:`instrument-track-sends`."
-msgstr "Estes são semelhantes a :ref:`instrument-track-sends'."
+msgstr "Estes são semelhantes a :ref:`instrument-track-sends`."
 
 #: ../../tracks/bus-track-midi.rst:8
 msgid "MIDI FX Track"
@@ -353,7 +353,7 @@ msgid ""
 "them using :ref:`track-sends`."
 msgstr ""
 "As faixas MIDI FX podem ser utilizadas para efeitos MIDI enviando-lhes "
-"sinais MIDI utilizando :ref:`track-sends'."
+"sinais MIDI utilizando :ref:`track-sends`."
 
 #: ../../tracks/bus-track-midi.rst:42
 msgid "The track to route the output of the MIDI bus track to."
@@ -361,7 +361,7 @@ msgstr "A faixa para qual rotear a saída da faixa do bus MIDI."
 
 #: ../../tracks/bus-track-midi.rst:47
 msgid "These are similar to :ref:`midi-track-sends`."
-msgstr "Estes são semelhantes a :ref:`midi-track-sends'."
+msgstr "Estes são semelhantes a :ref:`midi-track-sends`."
 
 #: ../../tracks/chord-track.rst:8
 msgid "Chord Track"
@@ -450,7 +450,7 @@ msgstr ""
 
 #: ../../tracks/creating-tracks.rst:26
 msgid "See :ref:`instantiating-plugins` for how to instantiate plugins."
-msgstr "Veja :ref:'instantiating-plugins' para como instanciar plugins."
+msgstr "Veja :ref:`instantiating-plugins` para como instanciar plugins."
 
 #: ../../tracks/creating-tracks.rst:30
 msgid "Creating Audio Tracks From Audio Files"
@@ -511,7 +511,7 @@ msgid ""
 "These are similar to :ref:`audio-group-track`, except that they act on "
 "MIDI signals instead of audio signals."
 msgstr ""
-"Estes são similares a :ref:`audio-group-track', exceto que eles lidam com"
+"Estes são similares a :ref:`audio-group-track`, exceto que eles lidam com"
 " sinais de MIDI ao invés de sinais de áudio."
 
 #: ../../tracks/inspector-page.rst:8
@@ -790,7 +790,7 @@ msgstr "A faixa para a qual a saída de áudio da faixa do instrumento será rot
 
 #: ../../tracks/instrument-track.rst:61
 msgid "These are similar to :ref:`midi-track-inputs`."
-msgstr "Estes são semelhantes a :ref:`midi-track-inputs'."
+msgstr "Estes são semelhantes a :ref:`midi-track-inputs`."
 
 #: ../../tracks/instrument-track.rst:69
 msgid "Pre-Fader Out L/R"
@@ -1014,7 +1014,7 @@ msgid ""
 ":ref:`automation` chapter."
 msgstr ""
 "Mais informações sobre as faixas de automação encontram-se no capítulo "
-":ref:`automação'."
+":ref:`automation`."
 
 #: ../../tracks/midi-track.rst:130
 #: ../../tracks/overview.rst:66
@@ -1126,7 +1126,7 @@ msgid ""
 ":`track-inspector` for more details."
 msgstr ""
 "Cada faixa exibirá a página dela no inspetor quando dor selecionada. Veja"
-" :ref:``track-inspector` para mais detalhes."
+" :ref:`track-inspector` para mais detalhes."
 
 #: ../../tracks/overview.rst:68
 msgid ""
@@ -1335,7 +1335,7 @@ msgid ""
 "The track visibility tab in the :ref:`left-panel` allows toggling the "
 "visibility of tracks."
 msgstr ""
-"A guia de visibilidade da faixa no painel :ref:`deesquerda' permite "
+"A guia de visibilidade da faixa no painel :ref:`left-panel` permite "
 "alternar a visibilidade das faixas."
 
 #: ../../tracks/track-visibility.rst:16

@@ -361,7 +361,7 @@ msgstr "A pista á que dirixir a saída da pista bus de MIDI."
 
 #: ../../tracks/bus-track-midi.rst:47
 msgid "These are similar to :ref:`midi-track-sends`."
-msgstr "Estes son similares aos :ref:`midi-grack-sends`."
+msgstr "Estes son similares aos :ref:`midi-track-sends`."
 
 #: ../../tracks/chord-track.rst:8
 msgid "Chord Track"
@@ -449,7 +449,7 @@ msgstr ""
 
 #: ../../tracks/creating-tracks.rst:26
 msgid "See :ref:`instantiating-plugins` for how to instantiate plugins."
-msgstr "Vexa :ref:`instantiating-plugins`para inserir plugins."
+msgstr "Vexa :ref:`instantiating-plugins` para inserir plugins."
 
 #: ../../tracks/creating-tracks.rst:30
 msgid "Creating Audio Tracks From Audio Files"
@@ -1110,7 +1110,7 @@ msgid ""
 "The section :ref:`track-operations` explains the various track operations"
 " available."
 msgstr ""
-"A sección :ref:`trac-operations` explica as diversas operacións "
+"A sección :ref:`track-operations` explica as diversas operacións "
 "dispoñibles coas pistas."
 
 #: ../../tracks/tempo-track.rst:6
