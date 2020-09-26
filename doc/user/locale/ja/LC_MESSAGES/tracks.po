@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-25 18:02+0000\n"
+"PO-Revision-Date: 2020-09-25 22:42+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/ja/>\n"
@@ -711,11 +711,14 @@ msgid "Freezing"
 msgstr "フリーズ中"
 
 #: ../../tracks/instrument-track.rst:89
+#, fuzzy
 msgid ""
 "If DSP usage is high and you have performance issues, or if you just want"
 " to save CPU power, instrument tracks can be frozen (temporarily "
 "converted to audio), which dramatically lowers their CPU usage."
 msgstr ""
+"DSPの使用率が高く、パフォーマンスの問題がある場合、または単にCPUの電力を節約したい場合は、インストゥルメントトラックをフリーズ（一時的にオーディオに"
+"変換）して、CPUの使用率を大幅に下げることができます。"
 
 #: ../../tracks/instrument-track.rst:94
 msgid ""

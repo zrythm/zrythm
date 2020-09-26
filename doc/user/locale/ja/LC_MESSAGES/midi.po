@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-04 08:01+0100\n"
-"PO-Revision-Date: 2020-09-25 18:02+0000\n"
+"PO-Revision-Date: 2020-09-25 22:42+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualmidi/ja/>\n"
@@ -25,11 +25,14 @@ msgid "Freezing Instruments"
 msgstr "インストゥルメントのフリーズ"
 
 #: ../../midi/freezing-instruments.rst:4
+#, fuzzy
 msgid ""
 "If DSP usage is high and you have performance issues, or if you just want"
 " to save CPU power, instrument tracks can be frozen (temporarily "
 "converted to audio), which dramatically lowers their CPU usage."
 msgstr ""
+"DSPの使用率が高く、パフォーマンスの問題がある場合、または単にCPUの電力を節約したい場合は、インストゥルメントトラックをフリーズ（一時的にオーディオに"
+"変換）して、CPUの使用率を大幅に下げることができます。"
 
 #: ../../midi/freezing-instruments.rst:6
 msgid ""

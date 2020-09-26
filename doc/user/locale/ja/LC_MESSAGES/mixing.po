@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-09-25 13:15+0000\n"
+"PO-Revision-Date: 2020-09-25 22:42+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualmixing/ja/>\n"
@@ -29,7 +29,7 @@ msgstr "チャンネル"
 #: ../../mixing/channels.rst:7
 #: ../../mixing/overview.rst:38
 msgid "A channel is part of a track, if the track type has a channel."
-msgstr ""
+msgstr "トラックの種類にチャンネルがある場合、チャンネルはトラックの一部です。"
 
 #: ../../mixing/channels.rst:13
 #: ../../mixing/overview.rst:44
@@ -38,6 +38,8 @@ msgid ""
 "direct out selector and a strip of insert plugins. These are covered in "
 ":ref:`track-inspector`."
 msgstr ""
+"チャンネルには、フェーダー、ミュートやソロなどのコントロール、メーター、ダイレクトアウトセレクター、インサートプラグインのストリップがあります。"
+"これらについては :ref:`track-inspector` で説明しています。"
 
 #: ../../mixing/channels.rst:19
 #: ../../mixing/overview.rst:50
