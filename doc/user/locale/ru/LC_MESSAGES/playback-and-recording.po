@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-09-25 18:02+0000\n"
-"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/ru/>\n"
 "Language: ru\n"
@@ -27,7 +27,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
 msgid "BPM"
-msgstr ""
+msgstr "Уд/Мин (BPM)"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:11
 msgid ""
@@ -152,7 +152,7 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:12
 msgid "Playhead"
-msgstr ""
+msgstr "Курсор (Playhead)"
 
 #: ../../playback-and-recording/overview.rst:13
 msgid ""
@@ -257,7 +257,7 @@ msgstr ""
 #: ../../playback-and-recording/recording-automation.rst:8
 #: ../../playback-and-recording/recording-midi.rst:8
 msgid "TODO"
-msgstr "Делать"
+msgstr "В разработке"
 
 #: ../../playback-and-recording/recording-midi.rst:6
 msgid "Recording MIDI"
@@ -265,7 +265,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:8
 msgid "Transport Controls"
-msgstr ""
+msgstr "Элементы управления транспортом"
 
 #: ../../playback-and-recording/transport-controls.rst:10
 msgid "Playback is controlled by the following transport controls."

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-25 18:02+0000\n"
-"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/ru/>\n"
 "Language: ru\n"
@@ -218,7 +218,7 @@ msgstr ""
 #: ../../tracks/midi-track.rst:132
 #: ../../tracks/midi-track.rst:140
 msgid "TODO"
-msgstr "Делать"
+msgstr "В разработке"
 
 #: ../../tracks/audio-track.rst:58
 #: ../../tracks/instrument-track.rst:77
@@ -252,7 +252,7 @@ msgstr ""
 
 #: ../../tracks/automation.rst:8
 msgid "Automation"
-msgstr "Автоматизация"
+msgstr "Автоматизация (Automation)"
 
 #: ../../tracks/automation.rst:11
 msgid "Automation Lanes"
@@ -451,7 +451,7 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:8
 #: ../../tracks/overview.rst:60
 msgid "Track Inspector"
-msgstr ""
+msgstr "Инспектор Треков (Track Inspector)"
 
 #: ../../tracks/inspector-page.rst:10
 msgid ""
@@ -1018,7 +1018,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:20
 msgid "Audio"
-msgstr "Аудио"
+msgstr "Аудио (Audio)"
 
 #: ../../tracks/track-types.rst:14
 #: ../../tracks/track-types.rst:17
@@ -1116,7 +1116,7 @@ msgstr ""
 
 #: ../../tracks/track-visibility.rst:8
 msgid "Track Visibility"
-msgstr ""
+msgstr "Видимость трека (Track Visibility)"
 
 #: ../../tracks/track-visibility.rst:10
 msgid ""

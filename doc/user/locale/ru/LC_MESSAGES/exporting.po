@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-09-25 18:02+0000\n"
-"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualexporting/ru/>\n"
 "Language: ru\n"
@@ -79,7 +79,7 @@ msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:41
 msgid "TODO"
-msgstr "Делать"
+msgstr "В разработке"
 
 #: ../../exporting/audio-and-midi.rst:44
 msgid "Bit Depth"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-25 18:02+0000\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/ru/>\n"
@@ -83,7 +83,7 @@ msgstr "Настройка устройства"
 
 #: ../../configuration/device-setup/intro.rst:9
 msgid "Connecting MIDI and Audio Devices"
-msgstr "Подключение MIDI и аудио (Audio) устройств"
+msgstr "Подключение MIDI и Аудио устройств"
 
 #: ../../configuration/device-setup/intro.rst:11
 msgid ""
@@ -93,7 +93,7 @@ msgid ""
 "below, and in most cases you don't need to use any external tools or "
 "auto-connect mechanism."
 msgstr ""
-"В зависимости от выбранного бэкенда (описанного в :ref:`preferences-engine`) "
+"В зависимости от выбранного бэкенда ,описанного в :ref:`preferences-engine` "
 "конфигурация различается. Zrythm выполнит автоматическое сканирование и "
 "позволит вам подключаться к устройствам ввода для записи через Инспектор "
 "Треков (Track Inspector), как показано ниже, и в большинстве случаев вам не "
@@ -350,15 +350,15 @@ msgstr ":term:`Zrythm user path`."
 
 #: ../../configuration/preferences/intro.rst:55
 msgid "Plugins"
-msgstr "Плагины"
+msgstr "Плагины (Plugins)"
 
 #: ../../configuration/preferences/intro.rst:57
 msgid ":term:`Plugin` settings."
-msgstr "Настройки плагинов (Plugins)."
+msgstr "Настройки :term:`Plugin`."
 
 #: ../../configuration/preferences/intro.rst:63
 msgid "UIs"
-msgstr "Пользовательский интерфейс (UI)"
+msgstr "Интерфейсы плагинов (UIs)"
 
 #: ../../configuration/preferences/intro.rst:65
 msgid "Plugin UIs."
@@ -512,7 +512,7 @@ msgstr "Настройки редактирования."
 
 #: ../../configuration/preferences/intro.rst:152
 msgid "Audio"
-msgstr "Аудио"
+msgstr "Аудио (Audio)"
 
 #: ../../configuration/preferences/intro.rst:154
 msgid "Audio editing."
@@ -520,17 +520,17 @@ msgstr "Редактирование аудио."
 
 #: ../../configuration/preferences/intro.rst:157
 msgid "Fade algorithm"
-msgstr "Алгоритм затухания(Fade)"
+msgstr "Алгоритм затухания (Fade algorithm)"
 
 #: ../../configuration/preferences/intro.rst:157
 msgid "Default fade algorithm to use for fade in/outs."
 msgstr ""
-"Алгоритм затухания(Fade) по умолчанию, используемый для постепенного "
-"появления / исчезновения."
+"Алгоритм затухания по умолчанию, используемый для постепенного "
+"появления/исчезновения."
 
 #: ../../configuration/preferences/intro.rst:160
 msgid "Automation"
-msgstr "Автоматизация"
+msgstr "Автоматизация (Automation)"
 
 #: ../../configuration/preferences/intro.rst:162
 msgid "Automation editing."
@@ -538,17 +538,15 @@ msgstr "Редактирование автоматизации."
 
 #: ../../configuration/preferences/intro.rst:166
 msgid "Curve algorithm"
-msgstr "Алгоритм кривой(Curve)"
+msgstr "Алгоритм кривой (Curve algorithm)"
 
 #: ../../configuration/preferences/intro.rst:165
 msgid "Default curve algorithm to use for automation curves."
-msgstr ""
-"Алгоритм кривой(Curve) по умолчанию для использования в кривых "
-"автоматизации."
+msgstr "Алгоритм кривой по умолчанию для использования в кривых автоматизации."
 
 #: ../../configuration/preferences/intro.rst:169
 msgid "Undo"
-msgstr "Отменить"
+msgstr "Отменить (Undo)"
 
 #: ../../configuration/preferences/intro.rst:171
 msgid "Undo options."
@@ -556,7 +554,7 @@ msgstr "Настройки отмены."
 
 #: ../../configuration/preferences/intro.rst:175
 msgid "Undo stack length"
-msgstr "Длина истории отмен"
+msgstr "Длина истории отмен (Undo stack length)"
 
 #: ../../configuration/preferences/intro.rst:174
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
@@ -570,7 +568,7 @@ msgstr "Мы рекомендуем оставить значение 128."
 
 #: ../../configuration/preferences/intro.rst:181
 msgid "Projects"
-msgstr ""
+msgstr "Проекты (Projects)"
 
 #: ../../configuration/preferences/intro.rst:183
 msgid "Project settings."
@@ -582,7 +580,7 @@ msgstr "Общие настройки проекта."
 
 #: ../../configuration/preferences/intro.rst:195
 msgid "Autosave interval"
-msgstr "Интервал автосохранения"
+msgstr "Интервал автосохранения (Autosave interval)"
 
 #: ../../configuration/preferences/intro.rst:194
 msgid ""
@@ -602,7 +600,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:201
 msgid "UI"
-msgstr "Пользовательский интерфейс"
+msgstr "Пользовательский интерфейс (UI)"
 
 #: ../../configuration/preferences/intro.rst:203
 msgid "User interface options."
@@ -614,7 +612,7 @@ msgstr "Общие настройки пользовательского инт�
 
 #: ../../configuration/preferences/intro.rst:214
 msgid "User interface language"
-msgstr "Язык пользовательского интерфейса"
+msgstr "Язык пользовательского интерфейса (User interface language)"
 
 #: ../../configuration/preferences/intro.rst:214
 msgid "The language to use for the user interface."

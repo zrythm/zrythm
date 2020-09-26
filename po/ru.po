@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-26 01:47+0100\n"
-"PO-Revision-Date: 2020-09-25 22:42+0000\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
@@ -134,7 +134,7 @@ msgstr ""
 #: inc/audio/track.h:163 src/gui/widgets/bot_bar.c:502 src/audio/region.c:396
 #: build/data/org.zrythm.Zrythm.gschema.xml:597
 msgid "Audio"
-msgstr "Аудио"
+msgstr "Аудио (Audio)"
 
 #: inc/audio/track.h:164 src/project.c:675
 #: src/gui/widgets/route_target_selector_popover.c:163
@@ -734,7 +734,7 @@ msgstr ""
 
 #: src/gui/widgets/log_viewer.c:127
 msgid "Log Viewer"
-msgstr ""
+msgstr "Просмотр логов (Log Viewer)"
 
 #: src/gui/widgets/track_properties_expander.c:110
 #: src/gui/widgets/track_visibility_tree.c:163
@@ -1072,19 +1072,20 @@ msgstr ""
 #: src/gui/widgets/plugin_browser.c:1120 resources/ui/panel_file_browser.ui:63
 #: resources/ui/file_browser.ui:63
 msgid "Collection"
-msgstr ""
+msgstr "Коллекция"
 
 #: src/gui/widgets/plugin_browser.c:1130
+#, fuzzy
 msgid "Category"
-msgstr ""
+msgstr "Категория"
 
 #: src/gui/widgets/plugin_browser.c:1140
 msgid "Protocol"
-msgstr ""
+msgstr "Протокол"
 
 #: src/gui/widgets/bot_bar.c:54 src/gui/widgets/ruler_marker.c:169
 msgid "Playhead"
-msgstr ""
+msgstr "Курсор (Playhead)"
 
 #: src/gui/widgets/bot_bar.c:56
 msgid "Playhead [Jack Timebase Master]"
@@ -1270,7 +1271,7 @@ msgstr ""
 #: src/gui/widgets/automation_arranger.c:261
 #: build/data/org.zrythm.Zrythm.gschema.xml:615
 msgid "Curve algorithm"
-msgstr "Алгоритм кривой(Curve)"
+msgstr "Алгоритм кривой (Curve algorithm)"
 
 #: src/gui/widgets/header.c:99
 #, fuzzy, c-format
@@ -1301,19 +1302,19 @@ msgstr ""
 
 #: src/gui/widgets/help_toolbar.c:40
 msgid "Manual"
-msgstr "Мануал"
+msgstr "Руководство (Manual)"
 
 #: src/gui/widgets/help_toolbar.c:41 resources/gtk/help-overlay.ui:46
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Горячие клавиши (Keyboard Shortcuts)"
 
 #: src/gui/widgets/help_toolbar.c:42
 msgid "Donate"
-msgstr ""
+msgstr "Пожертвовать (Donate)"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Report a Bug"
-msgstr ""
+msgstr "Сообщить об ошибке (Report a Bug)"
 
 #: src/gui/widgets/port_connections_tree.c:183
 #: src/gui/widgets/home_toolbar.c:135 src/gui/widgets/cc_bindings_tree.c:175
@@ -1337,7 +1338,7 @@ msgstr ""
 #: src/gui/widgets/home_toolbar.c:60 src/gui/widgets/home_toolbar.c:123
 #: resources/ui/home_toolbar.ui:35 build/data/org.zrythm.Zrythm.gschema.xml:625
 msgid "Undo"
-msgstr "Отменить"
+msgstr "Отменить (Undo)"
 
 #: src/gui/widgets/home_toolbar.c:61 src/gui/widgets/home_toolbar.c:125
 #: resources/ui/home_toolbar.ui:48
@@ -1370,16 +1371,16 @@ msgstr ""
 
 #: src/gui/widgets/right_dock_edge.c:105
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Браузер плагинов (Plugin Browser)"
 
 #: src/gui/widgets/right_dock_edge.c:133
 #: src/gui/widgets/file_browser_window.c:38
 msgid "File Browser"
-msgstr ""
+msgstr "Браузер файлов (File Browser)"
 
 #: src/gui/widgets/right_dock_edge.c:152
 msgid "Control Room"
-msgstr ""
+msgstr "Комната управления (Control Room)"
 
 #: src/gui/widgets/right_dock_edge.c:179
 msgid "Show file browser"
@@ -1387,7 +1388,7 @@ msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:121
 msgid "Plugin Properties"
-msgstr "Свойства плагина"
+msgstr "Свойства плагина (Plugin Properties)"
 
 #: src/gui/widgets/plugin_properties_expander.c:150
 #: src/gui/widgets/event_viewer.c:452 resources/ui/chord_selector_window.ui:239
@@ -1550,7 +1551,7 @@ msgstr ""
 
 #: src/gui/widgets/scripting_window.c:228
 msgid "Scripting Interface"
-msgstr ""
+msgstr "Интерфейс скриптов (Scripting Interface)"
 
 #: src/gui/widgets/port_connection_row.c:107
 msgid "Enable/disable connection"
@@ -1699,15 +1700,15 @@ msgstr ""
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
-msgstr "новый проект"
+msgstr "Создать (New Project)"
 
 #: src/gui/widgets/project_toolbar.c:40
 msgid "Save"
-msgstr "Сохранить"
+msgstr "Сохранить (Save)"
 
 #: src/gui/widgets/project_toolbar.c:41
 msgid "Save As"
-msgstr ""
+msgstr "Сохранить как (Save As)"
 
 #: src/gui/widgets/project_toolbar.c:42 src/utils/dialogs.c:39
 msgid "Open Project"
@@ -1715,11 +1716,11 @@ msgstr ""
 
 #: src/gui/widgets/project_toolbar.c:43
 msgid "Export As"
-msgstr ""
+msgstr "Экспорт (Export As)"
 
 #: src/gui/widgets/project_toolbar.c:44
 msgid "Export Graph"
-msgstr ""
+msgstr "Экспорт графика (Export Graph)"
 
 #: src/gui/widgets/view_toolbar.c:39
 msgid "Toggle Status Bar"
@@ -1727,19 +1728,19 @@ msgstr ""
 
 #: src/gui/widgets/view_toolbar.c:40
 msgid "Zoom In"
-msgstr ""
+msgstr "Увеличить масштаб (Zoom In)"
 
 #: src/gui/widgets/view_toolbar.c:41
 msgid "Zoom Out"
-msgstr ""
+msgstr "Уменьшить масштаб (Zoom Out)"
 
 #: src/gui/widgets/view_toolbar.c:42
 msgid "Original Size"
-msgstr ""
+msgstr "Оригинальный масштаб (Original Size)"
 
 #: src/gui/widgets/view_toolbar.c:43
 msgid "Best Fit"
-msgstr ""
+msgstr "Наиболее подходящий масштаб (Best Fit)"
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Fullscreen"
@@ -2149,11 +2150,11 @@ msgstr ""
 
 #: src/audio/region.c:399 build/data/org.zrythm.Zrythm.gschema.xml:611
 msgid "Automation"
-msgstr "Автоматизация"
+msgstr "Автоматизация (Automation)"
 
 #: src/audio/tempo_track.c:54
 msgid "BPM"
-msgstr ""
+msgstr "Уд/Мин (BPM)"
 
 #: src/audio/tempo_track.c:69
 msgid "Time Signature"
@@ -2919,7 +2920,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:82
 msgid "Editor"
-msgstr "Редактор(Editor)"
+msgstr "Редактор (Editor)"
 
 #: resources/ui/bot_dock_edge.ui:105
 msgid "Mixer view"
@@ -2927,7 +2928,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Mixer"
-msgstr ""
+msgstr "Микшер (Mixer)"
 
 #: resources/ui/bot_dock_edge.ui:183
 msgid "Chord pad"
@@ -3080,7 +3081,7 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:898
 msgid "TODO"
-msgstr "Делать"
+msgstr "В разработке"
 
 #: resources/ui/chord_selector_window.ui:908
 msgid "Circle of Fifths"
@@ -3133,7 +3134,7 @@ msgstr ""
 
 #: resources/ui/help_toolbar.ui:58
 msgid "News"
-msgstr ""
+msgstr "Новости (News)"
 
 #: resources/ui/modulator_inner.ui:20
 msgid "Show/hide UI"
@@ -3310,7 +3311,7 @@ msgstr ""
 
 #: resources/ui/transport_controls.ui:33
 msgid "Return to cue point on stop"
-msgstr ""
+msgstr "Возврат к точке отсчета на остановке (Return to cue point on stop)"
 
 #: resources/ui/transport_controls.ui:55
 msgid "Play"
@@ -3624,7 +3625,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:533
 #: build/data/org.zrythm.Zrythm.gschema.xml:568
 msgid "Plugins"
-msgstr "Плагины"
+msgstr "Плагины (Plugins)"
 
 #: resources/ui/preferences.ui:390
 msgid "Always open plugin UIs"
@@ -3671,11 +3672,11 @@ msgstr ""
 #: resources/ui/preferences.ui:572 resources/ui/preferences.ui:618
 #: build/data/org.zrythm.Zrythm.gschema.xml:639
 msgid "Projects"
-msgstr ""
+msgstr "Проекты (Projects)"
 
 #: resources/ui/preferences.ui:584 build/data/org.zrythm.Zrythm.gschema.xml:645
 msgid "Autosave interval"
-msgstr "Интервал автосохранения"
+msgstr "Интервал автосохранения (Autosave interval)"
 
 #: resources/ui/preferences.ui:595
 msgid ""
@@ -4150,7 +4151,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:534
 msgid "UIs"
-msgstr "Пользовательский интерфейс (UI)"
+msgstr "Интерфейсы плагинов (UIs)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:538
 msgid "Open UI on instantiation"
@@ -4233,13 +4234,13 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:601
 msgid "Fade algorithm"
-msgstr "Алгоритм затухания(Fade)"
+msgstr "Алгоритм затухания (Fade algorithm)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:602
 msgid "Default fade algorithm to use for fade in/outs."
 msgstr ""
-"Алгоритм затухания(Fade) по умолчанию, используемый для постепенного "
-"появления / исчезновения."
+"Алгоритм затухания по умолчанию, используемый для постепенного "
+"появления/исчезновения."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:616
 msgid "Default algorithm to use for automation curves."
@@ -4247,7 +4248,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:630
 msgid "Undo stack length"
-msgstr "Длина истории отмен"
+msgstr "Длина истории отмен (Undo stack length)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:631
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
@@ -4265,7 +4266,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:654
 msgid "UI"
-msgstr "Пользовательский интерфейс"
+msgstr "Пользовательский интерфейс (UI)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:659
 msgid "Draw detail"
@@ -4277,7 +4278,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:664
 msgid "User interface language"
-msgstr "Язык пользовательского интерфейса"
+msgstr "Язык пользовательского интерфейса (User interface language)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:665
 msgid "The language to use for the user interface."
