@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-26 01:47+0100\n"
-"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"PO-Revision-Date: 2020-09-26 18:02+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/>"
 "\n"
@@ -273,36 +273,37 @@ msgid "Staccato"
 msgstr "Στακάτο"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:171
+#, fuzzy
 msgid "Strum"
-msgstr ""
+msgstr "Strum"
 
 #: inc/audio/region.h:83 src/gui/widgets/track.c:1868
 msgid "Inherit"
-msgstr ""
+msgstr "Ενσωμάτωση"
 
 #: inc/audio/region.h:85 src/gui/widgets/bot_bar.c:517
 #: src/audio/automation_track.c:101
 msgid "Off"
-msgstr ""
+msgstr "Ανενεργό"
 
 #: inc/audio/region.h:87 src/gui/widgets/bot_bar.c:517
 #: src/gui/widgets/port_connections_tree.c:264
 #: src/gui/widgets/cc_bindings_tree.c:252 src/audio/automation_track.c:95
 msgid "On"
-msgstr ""
+msgstr "Ενεργό"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
 msgid "0dB"
-msgstr ""
+msgstr "0dB"
 
 #: inc/audio/pan.h:53
 msgid "-3dB"
-msgstr ""
+msgstr "-3dB"
 
 #: inc/audio/pan.h:54
 msgid "-6dB"
-msgstr ""
+msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1289
@@ -312,42 +313,45 @@ msgstr "Γραμμικό"
 
 #: inc/audio/pan.h:77 src/utils/ui.c:859
 msgid "Square Root"
-msgstr "Τετραγωνική Ρίζα"
+msgstr "Τετραγωνική ρίζα"
 
 #: inc/audio/pan.h:78
 msgid "Sine"
-msgstr ""
+msgstr "Ημιτονοειδές"
 
 #. TRANSLATORS: please keep the space at the
 #. * end
 #: src/zrythm.c:232
 msgid "(trial) "
-msgstr ""
+msgstr "(δοκιμή) "
 
 #: src/project.c:142
 #, c-format
 msgid "Failed to open file: %s"
-msgstr ""
+msgstr "Αποτυχία ανοίγματος αρχείου: %s"
 
 #: src/project.c:186
 msgid "Project not compressed by zstd!"
-msgstr ""
+msgstr "Το έργο δεν συμπιέστηκε από zstd!"
 
 #: src/project.c:199
 #, c-format
 msgid "Failed to decompress project file: %s"
-msgstr ""
+msgstr "Αποτυχία συμπίεσης του αρχείου έργου: %s"
 
 #: src/project.c:208
+#, fuzzy
 msgid ""
 "uncompressed_size != frame_content_size impossible because zstd will check "
 "this condition!"
 msgstr ""
+"uncompressed_size != frame_content_size αδύνατο επειδή το zstd θα ελέγξει "
+"αυτή την προϋπόθεση!"
 
 #: src/project.c:240
 #, c-format
 msgid "Failed to write file: %s"
-msgstr ""
+msgstr "Αποτυχία αποθήκευσης αρχείου: %s"
 
 #: src/project.c:809
 #, c-format
@@ -356,15 +360,18 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"Βρέθηκε πιο πρόσφατο αντίγραφο αρχείου:\n"
+"  %s.\n"
+"Χρήση του νεότερου αντίγραφου αρχείου;"
 
 #: src/project.c:814
 msgid "Backup found"
-msgstr ""
+msgstr "Βρέθηκε αντίγραφο αρχείου"
 
 #: src/project.c:872
 #, c-format
 msgid "Unable to read file: %s"
-msgstr ""
+msgstr "Αδυναμία ανάγνωσης αρχείου: %s"
 
 #: src/project.c:924
 #, c-format
@@ -372,36 +379,41 @@ msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr ""
+"Αυτό το έργο δημιουργήθηκε με διαφορετική έκδοση %s (%s). Ενδέχεται να μην "
+"δουλεύει σωστά."
 
 #: src/project.c:939
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
+"Αποτυχία φόρτωσης έργου. Ελέγξτε τα αρχεία καταγραφής (logs) για "
+"περισσότερες πληροφορίες."
 
 #: src/project.c:1122
 msgid "Failed to load project. Will create a new one instead."
-msgstr ""
+msgstr "Αποτυχία φόρτωσης έργου. Θα δημιουργηθεί καινούριο αντί αυτού."
 
 #: src/project.c:1462
 msgid "Backup saved."
-msgstr ""
+msgstr "Το αντίγραφο αρχείου αποθηκεύτηκε."
 
 #: src/project.c:1472
 msgid "Project saved."
 msgstr "Το έργο αποθηκεύτηκε."
 
 #: src/main.c:78
+#, fuzzy
 msgid "Error - Backtrace:\n"
-msgstr ""
+msgstr "Σφάλμα - Backtrace:\n"
 
 #: src/main.c:82
 #, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr ""
+msgstr "Σφάλμα: %s - Backtrace:\n"
 
 #: src/main.c:96
 #, c-format
 msgid "%s has crashed. "
-msgstr ""
+msgstr "Το %s έχει κρασάρει. "
 
 #: src/main.c:129
 #, c-format
@@ -440,39 +452,39 @@ msgstr ""
 #: src/main.c:172
 #, c-format
 msgid "File %s not found."
-msgstr ""
+msgstr "Το αρχείο %s δεν βρέθηκε."
 
 #: src/main.c:193
 msgid ""
 "An output file was not specified. Please pass one with `--output [FILE]`."
-msgstr ""
+msgstr "Δεν ορίστηκε εξαγόμενο αρχείο. Ορίστε ένα με `--output [FILE]`."
 
 #. getopt_long already printed an error
 #. * message
 #: src/main.c:335
 #, c-format
 msgid "Unknown option\n"
-msgstr ""
+msgstr "Άγνωστη επιλογή\n"
 
 #: src/main.c:392
 #, c-format
 msgid "Project failed to compress: %s\n"
-msgstr ""
+msgstr "Αποτυχία συμπίεσης του έργου: %s\n"
 
 #: src/main.c:401
 #, c-format
 msgid "Project successfully compressed.\n"
-msgstr ""
+msgstr "Επιτυχής συμπίεση του έργου.\n"
 
 #: src/main.c:419
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr ""
+msgstr "Αποτυχία αποσυμπίεσης του έργου: %s\n"
 
 #: src/main.c:428
 #, c-format
 msgid "Project successfully decompressed.\n"
-msgstr ""
+msgstr "Επιτυχής αποσυμπίεση του έργου.\n"
 
 #: src/main.c:437
 #, c-format
@@ -488,11 +500,20 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
+"%s-%s Copyright (C) 2018-2020 Οι συνεργάτες του Zrythm\n"
+"\n"
+"Το %s παρέχεται ΧΩΡΙΣ ΚΑΜΙΑ ΑΠΟΛΥΤΩΣ ΕΓΓΥΗΣΗ!\n"
+"\n"
+"Αυτό είναι ελεύθερο λογισμικό, και είστε ευπρόσδεκτοι να το αναδιανείμετε.\n"
+"Βλέπε το αρχείο `ΑΝΤΙΓΡΑΦΗ' για λεπτομέρειες.\n"
+"\n"
+"Γράψτε σχόλια και bugs στο %s\n"
+"Υποστηρίξτε αυτό το έργο στο https://liberapay.com/Zrythm\n"
+"\n"
 
 #: src/zrythm_app.c:218
-#, fuzzy
 msgid "Setting up main window"
-msgstr "Ρύθμιση backend"
+msgstr "Ρύθμιση του κύριου παράθυρου"
 
 #: src/zrythm_app.c:263
 msgid "Loading project"
@@ -501,120 +522,118 @@ msgstr "Φόρτωση έργου"
 #: src/zrythm_app.c:276
 #, c-format
 msgid "No project has been selected. %s will now close."
-msgstr ""
+msgstr "Κανένα έργο δεν έχει επιλεχθεί. Το %s πρόκειται να κλείσει."
 
 #: src/zrythm_app.c:299
 msgid "Initializing settings"
 msgstr "Αρχικοποίηση ρυθμίσεων"
 
 #: src/zrythm_app.c:307
-#, fuzzy, c-format
+#, c-format
 msgid "Initializing %s directories"
-msgstr "Αρχικοποίηση ρυθμίσεων"
+msgstr "Αρχικοποίηση %s καταλόγων"
 
 #: src/zrythm_app.c:317
-#, fuzzy
 msgid "Initializing logging system"
-msgstr "Αρχικοποίηση ρυθμίσεων"
+msgstr "Αρχικοποίηση συστήματος καταγραφής"
 
 #: src/zrythm_app.c:327
-#, fuzzy
 msgid "Initializing caches"
-msgstr "Αρχικοποίηση ρυθμίσεων"
+msgstr "Αρχικοποίηση κρυφής μνήμης (cache)"
 
 #: src/zrythm_app.c:331
-#, fuzzy
 msgid "Initializing file manager"
-msgstr "Αρχικοποίηση διαχείρισης προσθηκών"
+msgstr "Αρχικοποίηση διαχειριστή αρχείων"
 
 #: src/zrythm_app.c:338
 msgid "Scanning plugins"
-msgstr ""
+msgstr "Σκανάρισμα προσθέτων (plugins)"
 
 #: src/zrythm_app.c:499
 msgid "License Information"
-msgstr ""
+msgstr "Πληροφορίες άδειας"
 
 #: src/zrythm_app.c:527
-#, fuzzy
 msgid "Waiting for project"
 msgstr "Φόρτωση έργου"
 
 #: src/plugins/carla_native_plugin.c:545 src/plugins/lv2_plugin.c:2513
+#, fuzzy
 msgid "Default bank"
-msgstr ""
+msgstr "Προεπιλεγμένη τράπεζα δεδομένων"
 
 #: src/plugins/carla_native_plugin.c:552 src/plugins/lv2_plugin.c:2520
+#, fuzzy
 msgid "Init"
-msgstr ""
+msgstr "Αρχική κατάσταση"
 
 #: src/plugins/carla_native_plugin.c:993
-#, fuzzy
 msgid "Audio in"
-msgstr "Ήχος"
+msgstr "Εισαγόμενος ήχος"
 
 #: src/plugins/carla_native_plugin.c:1003
-#, fuzzy
 msgid "Audio out"
-msgstr "Ήχος"
+msgstr "Εξαγόμενος ήχος"
 
 #: src/plugins/carla_native_plugin.c:1013
 msgid "MIDI in"
-msgstr ""
+msgstr "Εισαγόμενο MIDI"
 
 #: src/plugins/carla_native_plugin.c:1023
 msgid "MIDI out"
-msgstr ""
+msgstr "Εξαγόμενο MIDI"
 
 #: src/plugins/plugin_manager.c:520
 msgid "Error loading LV2 bundle dir: "
-msgstr ""
+msgstr "Σφάλμα φόρτωσης πακέτου LV2: "
 
 #: src/plugins/plugin_manager.c:1111
-#, c-format
+#, c-format, fuzzy
 msgid "Scanned %s plugin: %s"
-msgstr ""
+msgstr "Σκαναρίστηκε %s πρόσθετο (plugin): %s"
 
 #: src/plugins/plugin_manager.c:1122
 #, c-format
 msgid "Skipped %s plugin at %s"
-msgstr ""
+msgstr "Παραλείφθηκε %s πρόσθετο (plugin) στο %s"
 
 #: src/plugins/plugin_manager.c:1249
 msgid "Scanned LV2 plugin"
-msgstr ""
+msgstr "Σκαναρίστηκε LV2 πρόσθετο (plugin)"
 
 #: src/plugins/plugin_manager.c:1260
 #, c-format
 msgid "Skipped LV2 plugin at %s"
-msgstr ""
+msgstr "Παραλείφθηκε LV2 πρόσθετο (plugin) στο %s"
 
 #: src/plugins/plugin_manager.c:1335
 msgid "Scanned AU plugin"
-msgstr ""
+msgstr "Σκαναρίστηκε AU πρόσθετο (plugin)"
 
 #: src/plugins/plugin_manager.c:1342
 #, c-format
 msgid "Skipped AU plugin at %u"
-msgstr ""
+msgstr "Παραλείφθηκε AU πρόσθετο (plugin) στο %u"
 
 #: src/plugins/plugin.c:138
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr ""
+"Αποτυχία δημιουργίας υπόστασης για το πρόσθετο (plugin) '%s'. "
+"Απενεργοποίηση..."
 
 #: src/plugins/plugin.c:184
+#, fuzzy
 msgid "[Zrythm] Enabled"
-msgstr ""
+msgstr "[Zrythm] Ενεργοποιήθηκε"
 
 #: src/plugins/plugin.c:207
-#, fuzzy
 msgid "[Zrythm] Gain"
-msgstr "Zrythm"
+msgstr "[Zrythm] Απολαβή (gain)"
 
 #: src/plugins/plugin_gtk.c:81 src/plugins/lv2/lv2_gtk.c:105
 msgid "Save State"
-msgstr "Αποθήκευση Κατάστασης"
+msgstr "Αποθήκευση κατάστασης"
 
 #: src/plugins/plugin_gtk.c:84 src/plugins/lv2/lv2_gtk.c:108
 #: src/plugins/lv2/lv2_gtk.c:357
@@ -634,11 +653,11 @@ msgstr "_Αποθήκευση"
 #: src/plugins/lv2_plugin.c:1746
 #, c-format
 msgid "Failed to find plugin with URI: %s"
-msgstr ""
+msgstr "Αποτυχία εύρεσης προσθέτου (plugin) με URI: %s"
 
 #: src/plugins/lv2_plugin.c:2552
 msgid "Unnamed bank"
-msgstr ""
+msgstr "Ανώνυμη τράπεζα δεδομένων"
 
 #: src/plugins/lv2/lv2_gtk.c:256
 msgid "URI (Optional):"
@@ -646,11 +665,11 @@ msgstr "URI (Προαιρετικό):"
 
 #: src/plugins/lv2/lv2_gtk.c:260
 msgid "_Prefix plugin name"
-msgstr ""
+msgstr "_Πρόθημα ονόματος προσθέτου (plugin)"
 
 #: src/plugins/lv2/lv2_gtk.c:352
 msgid "Delete Preset?"
-msgstr "Διαγραφή Preset;"
+msgstr "Διαγραφή preset;"
 
 #: src/plugins/lv2/lv2_gtk.c:358 src/utils/dialogs.c:70
 #: resources/ui/string_entry_dialog.ui:61
@@ -671,13 +690,12 @@ msgid "Close"
 msgstr "Κλείσιμο"
 
 #: src/gui/widgets/create_project_dialog.c:111
-#, fuzzy
 msgid "Create New Project"
-msgstr "Άνοιγμα Έργου"
+msgstr "Άνοιγμα έργου"
 
 #: src/gui/widgets/create_project_dialog.c:125
 msgid "Untitled Project"
-msgstr "Άτιτλο Έργο"
+msgstr "Άτιτλο έργο"
 
 #: src/gui/widgets/fader_controls_grid.c:92
 msgid "Peak"
