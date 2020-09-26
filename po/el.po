@@ -2,13 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
+# Panos Alevropoulos <panosalevropoulos@protonmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2020-09-25 13:15+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-26 00:18+0000\n"
+"Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/>"
 "\n"
 "Language: el\n"
@@ -869,7 +870,7 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:11
 msgid "Global Shortcuts"
-msgstr ""
+msgstr "Γενικές συντομεύσεις"
 
 #: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:235
 msgid "General"
@@ -961,7 +962,7 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:180
 msgid "Editor Shortcuts"
-msgstr ""
+msgstr "Συντομεύσεις επεξεργαστή"
 
 #: resources/ui/shortcuts.ui:184
 msgid "Tool"
@@ -1119,8 +1120,9 @@ msgid "Plugin"
 msgstr ""
 
 #: resources/ui/port_selector_popover.ui:147
+#, fuzzy
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: resources/ui/donate_dialog.ui:7
 msgid "Donate"
@@ -1212,7 +1214,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:120
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:131
 msgid "Electronic"

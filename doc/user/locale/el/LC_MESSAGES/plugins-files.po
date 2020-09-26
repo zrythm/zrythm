@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 07:46+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-09-25 22:42+0000\n"
+"Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/el/>\n"
+"Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:6
@@ -38,7 +41,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:17
 #: ../../plugins-files/audio-midi-files/file-browser.rst:22
 msgid "TODO"
-msgstr ""
+msgstr "ΝΑ ΓΙΝΟΥΝ"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:20
 msgid "Collections"
@@ -461,4 +464,3 @@ msgstr ""
 #~ "for example for the Fader, Pan, "
 #~ "and Enabled (On/Off)."
 #~ msgstr ""
-

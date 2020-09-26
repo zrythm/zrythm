@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2020-09-25 13:15+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-25 22:42+0000\n"
+"Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/el/>\n"
 "Language: el\n"
@@ -31,7 +31,7 @@ msgstr ""
 #: ../../playback-and-recording/recording-midi.rst:21
 #: ../../playback-and-recording/transport-controls.rst:47
 msgid "TODO"
-msgstr ""
+msgstr "ΝΑ ΓΙΝΟΥΝ"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:19
 msgid "BPM and Time Signatures"

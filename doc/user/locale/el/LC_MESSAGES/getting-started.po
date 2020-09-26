@@ -8,34 +8,37 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 08:08+0000\n"
-"PO-Revision-Date: 2019-05-08 23:57+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
-"Language: es\n"
-"Language-Team: Spanish <https://translate.zrythm.org/projects/zrythm"
-"/manual-getting-started/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
+"PO-Revision-Date: 2020-09-26 00:18+0000\n"
+"Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
+"manualgetting-started/el/>\n"
+"Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../getting-started/additional-resources.rst:6
 msgid "Additional Resources"
-msgstr ""
+msgstr "Πρόσθετοι πόροι"
 
 #: ../../getting-started/additional-resources.rst:9
 msgid "IRC/Matrix"
-msgstr ""
+msgstr "IRC/Matrix"
 
 #: ../../getting-started/additional-resources.rst:10
 msgid ""
 "We offer support on IRC at ``#zrythm`` on Freenode. Matrix users can use "
 "``#zrythmdaw:matrix.org``."
 msgstr ""
+"Προσφέρουμε υποστήριξη στο IRC στο ``#zrythm`` στο Freenode. Οι χρήστες "
+"Matrix μπορούν να χρησιμοποιήσουν το ``#zrythmdaw:matrix.org``."
 
 #: ../../getting-started/additional-resources.rst:14
 msgid "Issue Tracker"
-msgstr ""
+msgstr "Ιχνηλάτης προβλημάτων"
 
 #: ../../getting-started/additional-resources.rst:15
 msgid ""
@@ -43,30 +46,37 @@ msgid ""
 "<https://redmine.zrythm.org/projects/zrythm/issues>`_. You can use this "
 "to report bugs or give feedback."
 msgstr ""
+"Ο ιχνηλάτης προβλημάτων μπορεί να βρεθεί στο `Redmine instance "
+"<https://redmine.zrythm.org/projects/zrythm/issues>`_. Μπορείτε να τον "
+"χρησιμοποιήσετε για να αναφέρετε bugs ή για να δώσετε feedback."
 
 #: ../../getting-started/additional-resources.rst:20
 msgid "Source Code"
-msgstr "Código Fuente"
+msgstr "Πηγαίος κώδικας"
 
 #: ../../getting-started/additional-resources.rst:21
 msgid ""
 "Zrythm's source code can be found on our `CGit instance "
 "<https://git.zrythm.org/cgit/zrythm/>`_."
 msgstr ""
+"Ο πηγαίος κώδικας του Zrythm μπορεί να βρεθεί στο `CGit instance μας "
+"<https://git.zrythm.org/cgit/zrythm/>`_."
 
 #: ../../getting-started/additional-resources.rst:25
 msgid "Older Versions"
-msgstr ""
+msgstr "Παλαιότερες εκδόσεις"
 
 #: ../../getting-started/additional-resources.rst:26
 msgid ""
 "Older releases of Zrythm can be found on the `Releases page "
 "<https://www.zrythm.org/releases>`_"
 msgstr ""
+"Παλαιότερες κυκλοφορίες του Zrythm μπορούν να βρεθούν στη `σελίδα "
+"κυκλοφοριών <https://www.zrythm.org/releases>`_"
 
 #: ../../getting-started/getting-plugins.rst:6
 msgid "Getting Plugins"
-msgstr ""
+msgstr "Απόκτηση προσθέτων (plugins)"
 
 #: ../../getting-started/getting-plugins.rst:8
 msgid ""
@@ -74,12 +84,18 @@ msgid ""
 "(currently only ZLFO), but you should install some plugins like "
 "synthesizers and effects before you can make music."
 msgstr ""
+"Το Zrythm περιλαμβάνει ως πακέτο μερικά πρόσθετα (plugins) για να βοηθηθείτε "
+"στην αρχή (προς το παρόν μόνο το ZLFO), αλλά συνίσταται να εγκαταστήσετε "
+"κάποια πρόσθετα (plugins) όπως συνθεσάιζερς και εφέ πριν μπορέσετε να "
+"φτιάξετε μουσική."
 
 #: ../../getting-started/getting-plugins.rst:13
 msgid ""
 "Fortunately, there are many plugins to choose from. This guide will show "
 "you a few ways you can install plugins."
 msgstr ""
+"Ευτυχώς, υπάρχουν αρκετά πρόσθετα (plugins) να επιλέξει κανείς. Αυτός ο "
+"οδηγός θα σας δείξει μερικούς τρόπους να εγκαταστήσετε πρόσθετα (plugins)."
 
 #: ../../getting-started/getting-plugins.rst:16
 msgid ""
@@ -87,6 +103,9 @@ msgid ""
 "repositories <https://kx.studio/>`_, since there are many plugins that "
 "can easily be installed via apt."
 msgstr ""
+"Αν είστε σε Debian/Ubuntu, προτείνουμε ανεπιφύλακτα τη χρήση των `αποθηκών "
+"KXstudio <https://kx.studio/>`_, καθώς υπάρχουν αρκετά πρόσθετα (plugins) "
+"που μπορούν να εγκατασταθούν εύκολα μέσω apt."
 
 #: ../../getting-started/getting-plugins.rst:20
 msgid ""
@@ -94,14 +113,17 @@ msgid ""
 "<https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ group, or you "
 "can hand-pick the plugins you want from there."
 msgstr ""
+"Αν είστε σε Arch GNU/Linux, προτείνουμε την εγκατάσταση του ομαδικού πακέτου "
+"`lv2-plugins <https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ , ή "
+"μπορείτε να επιλέξετε συγκεκριμένα ποια πρόσθετα (plugins) θέλετε από εκεί."
 
 #: ../../getting-started/getting-plugins.rst:25
 msgid "If you are not sure where to start, please read on."
-msgstr ""
+msgstr "Αν δεν είστε σίγουροι από πού να ξεκινήσετε, συνεχίστε να διαβάζετε."
 
 #: ../../getting-started/getting-plugins.rst:28
 msgid "Recommended Plugin Bundles"
-msgstr ""
+msgstr "Προτεινόμενα πακέτα προσθέτων (plugins)"
 
 #: ../../getting-started/getting-plugins.rst:30
 msgid ""
@@ -109,6 +131,9 @@ msgid ""
 "good variety of synths and effects that can help you get you started "
 "making music right away."
 msgstr ""
+"Το `DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ παρέχει μια "
+"καλή ποικιλία συνθεσάιζερς και εφέ που μπορούν από την αρχή να σας βοηθήσουν "
+"να φτιάξετε μουσική κατευθείαν."
 
 #: ../../getting-started/getting-plugins.rst:34
 msgid ""
@@ -116,36 +141,46 @@ msgid ""
 "contains all the basic effects like Delay, Reverb, Compression, EQ, "
 "Saturation, etc."
 msgstr ""
+"Το `ZAM Plugins <http://www.zamaudio.com/?p=976>`_ είναι ένα πακέτο εφέ που "
+"περιέχει όλα τα βασικά εφέ όπως καθυστέρηση (delay), αντήχηση (reverb), "
+"συμπίεση (compression), ισοστάθμιση (EQ), κορεσμό (saturation), κλπ."
 
 #: ../../getting-started/getting-plugins.rst:38
 msgid "`LSP <https://lsp-plug.in/>`_ has a lot of useful effects."
-msgstr ""
+msgstr "Το `LSP <https://lsp-plug.in/>`_ έχει πολλά χρήσιμα εφέ."
 
 #: ../../getting-started/getting-plugins.rst:40
 msgid ""
 "`OpenAV <http://openavproductions.com>`_ has effects and instruments "
 "worth checking out."
 msgstr ""
+"Το `OpenAV <http://openavproductions.com>`_ έχει εφέ και όργανα που αξίζει "
+"κανείς να δοκιμάσει."
 
 #: ../../getting-started/getting-plugins.rst:43
 msgid ""
 "`X42 Plugins <http://x42-plugins.com/x42/>`_ has many MIDI effect and "
 "meter plugins."
 msgstr ""
+"Το `X42 Plugins <http://x42-plugins.com/x42/>`_ έχει πολλά πρόσθετα (plugins)"
+" MIDI εφέ και μετρητών."
 
 #: ../../getting-started/getting-plugins.rst:47
 msgid "Synths"
-msgstr ""
+msgstr "Συνθεσάιζερς"
 
 #: ../../getting-started/getting-plugins.rst:49
 msgid "`Helm <https://tytel.org/helm/>`_ is an excellent subtractive synth."
 msgstr ""
+"Το `Helm <https://tytel.org/helm/>`_ είναι εξαιρετικό αφαιρετικό συνθεσάιζερ."
 
 #: ../../getting-started/getting-plugins.rst:51
 msgid ""
 "`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synth that is "
 "closely modeled on the Yamaha DX7."
 msgstr ""
+"Το `Dexed <http://asb2m10.github.io/dexed/>`_ έιναι ένα συνθεσάιζερ "
+"διαμόρφωσης συχνότητας (FM) βασισμένο στο Yamaha DX7."
 
 #: ../../getting-started/getting-plugins.rst:54
 msgid ""
@@ -153,31 +188,38 @@ msgid ""
 "powerful additive/subtractive synth that can synthesize a wide variety of"
 " sounds."
 msgstr ""
+"Το `ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_ είναι "
+"ένα ισχυρό προσθετικό/αφαιρετικό συνθεσάιζερ που μπορεί να συνθέσει μια "
+"ευρεία ποικιλία ήχων."
 
 #: ../../getting-started/getting-plugins.rst:59
 msgid "Percussion Generators"
-msgstr ""
+msgstr "Δημιουργοί κρουστών"
 
 #: ../../getting-started/getting-plugins.rst:61
 msgid ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a kick drum "
 "synthesizer that can also synthesize other types of percussion."
 msgstr ""
+"Το `GeonKick <https://gitlab.com/iurie/geonkick>`_ είναι συνθεσάιζερ μπάσου "
+"τύμπανου (kick) που μπορεί επίσης να συνθέσει άλλους τύπους κρουστών."
 
 #: ../../getting-started/installation/freebsd.rst:6
 msgid "FreeBSD"
-msgstr ""
+msgstr "FreeBSD"
 
 #: ../../getting-started/installation/freebsd.rst:9
 #: ../../getting-started/installation/gnu-linux.rst:11
 msgid "Installer"
-msgstr ""
+msgstr "Εγκαταστάτης"
 
 #: ../../getting-started/installation/freebsd.rst:10
 msgid ""
 "We plan to add FreeBSD support to the installer mentioned in :ref:`gnu-"
 "with-linux-installer`."
 msgstr ""
+"Σκοπεύουμε να προσθέσουμε υποστήριξη για FreeBSD στον εγκαταστατή που "
+"αναφέρεται στο :ref:`gnu-with-linux-installer`."
 
 #: ../../getting-started/installation/freebsd.rst:13
 #: ../../getting-started/installation/gnu-linux.rst:26
@@ -185,10 +227,14 @@ msgid ""
 "This is the easiest and recommended way to install the latest version for"
 " most users, and we provide support for it."
 msgstr ""
+"Αυτός είναι ο ευκολότερος και πιο προτεινόμενος τρόπος εγκατάστασης της "
+"τελευταίας έκδοσης για τους περισσότερους χρήστες, και προσφέρουμε "
+"υποστήριξη για αυτόν."
 
 #: ../../getting-started/installation/freebsd.rst:18
+#, fuzzy
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: ../../getting-started/installation/freebsd.rst:19
 msgid ""
@@ -196,19 +242,22 @@ msgid ""
 "<https://www.freshports.org/audio/zrythm/>`_ but it may be old and "
 "missing features and optimizations."
 msgstr ""
+"Μπορείτε να εγκαταστήσετε το `zrythm port <https://www.freshports.org/audio/"
+"zrythm/>`_ αλλά μπορεί να είναι παλιό και να υπολείπεται σε χαρακτηριστικά "
+"και βελτιστοποιήσεις."
 
 #: ../../getting-started/installation/freebsd.rst:23
 #: ../../getting-started/installation/gnu-linux.rst:41
 msgid "Manual Installation"
-msgstr ""
+msgstr "Χειροκίνητη εγκατάσταση"
 
 #: ../../getting-started/installation/freebsd.rst:24
 msgid "See :ref:`gnu-with-linux-manual-installation`."
-msgstr ""
+msgstr "Βλέπε :ref:`gnu-with-linux-manual-installation`."
 
 #: ../../getting-started/installation/gnu-linux.rst:6
 msgid "GNU with Linux"
-msgstr ""
+msgstr "GNU με Linux"
 
 #: ../../getting-started/installation/gnu-linux.rst:12
 msgid ""
@@ -216,30 +265,33 @@ msgid ""
 "installer from the `Download <https://www.zrythm.org/en/download.html>`_ "
 "page on our website."
 msgstr ""
+"Μπορείτε να εγκαταστήσετε την τελευταία έκδοση του Zrythm για τη διανομή σας "
+"χρησιμοποιώντας έναν εγκαταστατή από τη σελίδα `λήψης <https://www.zrythm."
+"org/en/download.html>`_ στην ιστοσελίδα μας."
 
 #: ../../getting-started/installation/gnu-linux.rst:18
 msgid "The installer supports the following distros (and derivatives):"
-msgstr ""
+msgstr "Ο εγκαταστατής υποστηρίζει τις ακόλουθες διανομές (και παράγωγά τους):"
 
 #: ../../getting-started/installation/gnu-linux.rst:21
 msgid "**Ubuntu 18.10, 19.04, 19.10** - amd64"
-msgstr ""
+msgstr "**Ubuntu 18.10, 19.04, 19.10** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:22
 msgid "**Debian 10** - amd64"
-msgstr ""
+msgstr "**Debian 10** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:23
 msgid "**Arch Linux** - x86_64"
-msgstr ""
+msgstr "**Arch Linux** - x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:24
 msgid "**Fedora 31** - x86_64"
-msgstr ""
+msgstr "**Fedora 31** - x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:31
 msgid "Distro Package"
-msgstr ""
+msgstr "Πακέτο διανομής"
 
 #: ../../getting-started/installation/gnu-linux.rst:32
 msgid ""
@@ -248,6 +300,10 @@ msgid ""
 " it may be missing optimizations or features that we include with the "
 "installer."
 msgstr ""
+"Αν η διανομή σας παρέχει πακέτο Zrythm τότε μπορείτε να το εγκαταστήσετε από "
+"εκεί, ωστόσο είναι πιθανό να είναι παλαίοτερη έκδοση από αυτό που παρέχουμε "
+"και ενδέχεται να υπολείπεται σε βελτιστοποιήσεις ή χαρακτηριστικά που "
+"περιλαμβάνουμε με τον εγκαταστατή."
 
 #: ../../getting-started/installation/gnu-linux.rst:42
 msgid ""
@@ -255,57 +311,62 @@ msgid ""
 "uses the Meson build system, so the procedure to build and install is as "
 "follows:"
 msgstr ""
+"Αν είστε προχωρημένος χρήστης και προτιμάτε να χτίσετε (build) το Zrythm "
+"μόνος σας, το Zrythm χρησιμοποιεί το Meson build σύστημα, συνεπώς η "
+"διαδικασία χτισίματος (build) έχει ως εξής:"
 
 #: ../../getting-started/installation/gnu-linux.rst:52
 msgid "See the ``INSTALL.md`` file for more information."
-msgstr ""
+msgstr "Βλέπε το αρχείο ``INSTALL.md`` για περισσότερες πληροφορίες."
 
 #: ../../getting-started/installation/intro.rst:6
 msgid "Installation"
-msgstr ""
+msgstr "Εγκατάσταση"
 
 #: ../../getting-started/installation/macos.rst:6
 msgid "MacOS"
-msgstr ""
+msgstr "MacOS"
 
 #: ../../getting-started/installation/macos.rst:8
 msgid ""
 "Install from source manually as mentioned in :ref:`gnu-with-linux-manual-"
 "installation`. No support is offered at the moment."
 msgstr ""
+"Εγκαταστήστε χειροκίνητα από την πηγή όπως αναφέρεται στο :ref:`gnu-with-"
+"linux-manual-installation`. Δεν παρέχεται υποστήριξη προς το παρόν."
 
 #: ../../getting-started/installation/windows.rst:6
 msgid "Windows"
-msgstr ""
+msgstr "Windows"
 
 #: ../../getting-started/installation/windows.rst:8
 msgid "Windows is not supported at the moment."
-msgstr ""
+msgstr "Τα Windows δεν υποστηρίζονται προς το παρόν."
 
 #: ../../getting-started/intro.rst:6
 msgid "Getting Started"
-msgstr ""
+msgstr "Ξεκινώντας"
 
 #: ../../getting-started/system-requirements/intro.rst:6
 msgid "System Requirements"
-msgstr ""
+msgstr "Προϋποθέσεις συστήματος"
 
 #: ../../getting-started/system-requirements/intro.rst:9
 msgid "Minimum Requirements"
-msgstr ""
+msgstr "Ελάχιστες προϋποθέσεις"
 
 #: ../../getting-started/system-requirements/intro.rst:12
 #: ../../getting-started/system-requirements/intro.rst:31
 msgid "Hardware"
-msgstr ""
+msgstr "Υλικό"
 
 #: ../../getting-started/system-requirements/intro.rst:13
 msgid "x86_64, i686 or ARM processor"
-msgstr ""
+msgstr "Επεξεργαστής x86_64, i686 ή ARM"
 
 #: ../../getting-started/system-requirements/intro.rst:16
 msgid "Operating System"
-msgstr ""
+msgstr "Λειτουργικό σύστημα"
 
 #: ../../getting-started/system-requirements/intro.rst:17
 msgid "Unix-compatible OS"
@@ -938,4 +999,3 @@ msgstr ""
 
 #~ msgid "Fedora 31 - x86_64"
 #~ msgstr ""
-
