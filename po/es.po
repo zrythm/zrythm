@@ -7,13 +7,14 @@
 # Gabriel García <gabriel.o.garcia@gmail.com>, 2020.
 # Israel Barrera <izraelbarrera@gmail.com>, 2020.
 # Eliseo Do Brito <eliseodb@gmail.com>, 2020.
+# Marc <marc.izquierdo.hu@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-26 01:47+0100\n"
-"PO-Revision-Date: 2020-09-24 02:45+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"Last-Translator: Marc <marc.izquierdo.hu@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -903,7 +904,7 @@ msgstr ""
 #: src/gui/widgets/project_assistant.c:276
 #: resources/ui/first_run_assistant.ui:148
 msgid "Path"
-msgstr ""
+msgstr "Directorio"
 
 #: src/gui/widgets/project_assistant.c:286
 msgid "Last Modified"
@@ -2245,7 +2246,7 @@ msgstr ""
 
 #: src/audio/tempo_track.c:69
 msgid "Time Signature"
-msgstr ""
+msgstr "Compás"
 
 #: src/audio/engine.c:200
 #, c-format
@@ -2700,7 +2701,7 @@ msgstr "Atajos de teclado globales"
 #: build/data/org.zrythm.Zrythm.gschema.xml:640
 #: build/data/org.zrythm.Zrythm.gschema.xml:655
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: resources/gtk/help-overlay.ui:53
 msgid "Toggle Fullscreen"
@@ -3792,6 +3793,7 @@ msgstr "Ventana principal"
 #: resources/ui/preferences.ui:482 build/data/org.zrythm.Zrythm.gschema.xml:596
 #: build/data/org.zrythm.Zrythm.gschema.xml:610
 #: build/data/org.zrythm.Zrythm.gschema.xml:624
+#, fuzzy
 msgid "Editing"
 msgstr "Edición"
 
@@ -4272,9 +4274,8 @@ msgid "Recording mode."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:480
-#, fuzzy
 msgid "Audio backend"
-msgstr "Entradas de audio"
+msgstr "Backend de audio"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:481
 #, fuzzy
@@ -4313,9 +4314,8 @@ msgid "Buffer size to pass to the backend."
 msgstr "Tamaño de la memoria intermedia para pasar a la parte de atrás."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:505
-#, fuzzy
 msgid "MIDI backend"
-msgstr "Entradas de MIDI"
+msgstr "Backend MIDI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:506
 #, fuzzy
@@ -4496,9 +4496,8 @@ msgid "Pan"
 msgstr "Balance"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:678
-#, fuzzy
 msgid "Pan algorithm"
-msgstr "Algoritmo de balance."
+msgstr "Algoritmo de balance"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:679
 msgid ""

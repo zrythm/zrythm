@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-24 02:45+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"Last-Translator: Marc <marc.izquierdo.hu@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/es/>\n"
 "Language: es\n"
@@ -1024,7 +1024,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:20
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: ../../tracks/track-types.rst:14
 #: ../../tracks/track-types.rst:17
@@ -1095,7 +1095,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:19
 msgid "Markers"
-msgstr ""
+msgstr "Marcadores"
 
 #: ../../tracks/track-types.rst:20
 msgid "Master"
@@ -1115,7 +1115,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:25
 msgid "Tempo"
-msgstr ""
+msgstr "Tempo"
 
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."
@@ -1533,4 +1533,3 @@ msgstr ""
 #~ "Tracks can also be quickly hidden "
 #~ "by right-clicking and selecting `Hide`."
 #~ msgstr ""
-
