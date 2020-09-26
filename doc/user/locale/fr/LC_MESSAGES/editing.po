@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 00:47+0100\n"
+"POT-Creation-Date: 2020-09-26 19:09+0100\n"
 "PO-Revision-Date: 2020-07-24 14:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language: fr\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
-#: ../../editing/clip-editors/toolbar.rst:32
+#: ../../editing/clip-editors/toolbar.rst:39
 msgid "Audio Editor"
 msgstr ""
 
@@ -45,7 +45,7 @@ msgid "The audio arranger refers to the arranger section of the audio editor."
 msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:8
-#: ../../editing/clip-editors/toolbar.rst:28
+#: ../../editing/clip-editors/toolbar.rst:35
 #, fuzzy
 msgid "Automation Editor"
 msgstr "Éditeur d'automatisation"
@@ -130,23 +130,59 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:55
 #: ../../editing/clip-editors/chord-editor.rst:65
-#: ../../editing/clip-editors/piano-roll.rst:109
+#: ../../editing/clip-editors/piano-roll.rst:114
+#, fuzzy
+msgid "Context Menu"
+msgstr "Menu contextuel de la Région"
+
+#: ../../editing/clip-editors/automation-editor.rst:56
+#: ../../editing/clip-editors/chord-editor.rst:66
+#: ../../editing/clip-editors/piano-roll.rst:82
+#: ../../editing/clip-editors/piano-roll.rst:115
+#: ../../editing/clip-editors/ruler.rst:29
+#: ../../editing/clip-editors/ruler.rst:36
+#: ../../editing/clip-editors/ruler.rst:44
+#: ../../editing/clip-editors/toolbar.rst:12
+#: ../../editing/edit-modes.rst:27
+#: ../../editing/timeline/arranger.rst:24
+#: ../../editing/timeline/arranger.rst:50
+#: ../../editing/timeline/arranger.rst:54
+#: ../../editing/timeline/arranger.rst:56
+#: ../../editing/timeline/arranger.rst:63
+#: ../../editing/timeline/arranger.rst:69
+#: ../../editing/timeline/arranger.rst:75
+#: ../../editing/timeline/arranger.rst:156
+#: ../../editing/timeline/arranger.rst:161
+#: ../../editing/timeline/arranger.rst:167
+#: ../../editing/timeline/toolbar.rst:11
+msgid "Todo"
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:56
+#: ../../editing/clip-editors/chord-editor.rst:66
+#: ../../editing/clip-editors/piano-roll.rst:115
+msgid "Write this section."
+msgstr ""
+
+#: ../../editing/clip-editors/automation-editor.rst:59
+#: ../../editing/clip-editors/chord-editor.rst:69
+#: ../../editing/clip-editors/piano-roll.rst:118
 #: ../../editing/timeline/event-viewer.rst:8
 msgid "Event Viewer"
 msgstr "Afficheur d'événement"
 
-#: ../../editing/clip-editors/automation-editor.rst:56
+#: ../../editing/clip-editors/automation-editor.rst:60
 msgid ""
 "The event viewer in the automation editor is similar to the timeline "
 "event viewer discussed in :ref:`timeline-event-viewer`."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:63
+#: ../../editing/clip-editors/automation-editor.rst:67
 msgid "It displays information about each automation point and its curve."
 msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:8
-#: ../../editing/clip-editors/toolbar.rst:36
+#: ../../editing/clip-editors/toolbar.rst:43
 msgid "Chord Editor"
 msgstr "Éditeur d'accords"
 
@@ -229,13 +265,13 @@ msgid ""
 "operations`."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:66
+#: ../../editing/clip-editors/chord-editor.rst:70
 msgid ""
 "The event viewer in the chord editor is similar to the timeline event "
 "viewer discussed in :ref:`timeline-event-viewer`."
 msgstr ""
 
-#: ../../editing/clip-editors/chord-editor.rst:73
+#: ../../editing/clip-editors/chord-editor.rst:77
 msgid "It displays information about each chord object."
 msgstr ""
 
@@ -246,7 +282,6 @@ msgstr "Éditeurs de clip"
 
 #: ../../editing/clip-editors/overview.rst:6
 #: ../../editing/overview.rst:6
-#: ../../editing/piano-roll-editing/overview.rst:6
 #: ../../editing/timeline/overview.rst:6
 msgid "Overview"
 msgstr "Vue générale"
@@ -260,8 +295,7 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:8
-#: ../../editing/clip-editors/toolbar.rst:16
-#: ../../editing/piano-roll-editing/intro.rst:6
+#: ../../editing/clip-editors/toolbar.rst:18
 msgid "Piano Roll"
 msgstr "Piano Roll"
 
@@ -285,66 +319,65 @@ msgstr ""
 msgid "The piano roll contains the following additional controls."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:32
-#, fuzzy
-msgid "Drum view"
+#: ../../editing/clip-editors/piano-roll.rst:29
+msgid "Drum View"
 msgstr "Affichage percussion"
 
-#: ../../editing/clip-editors/piano-roll.rst:29
+#: ../../editing/clip-editors/piano-roll.rst:30
 msgid ""
 "Enabling this will change the display of the arranger into a drum editor "
 "view, where each :term:`MIDI Note` is drawn as a diamond and the piano "
 "roll keys display the name of each drum."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:37
+#: ../../editing/clip-editors/piano-roll.rst:36
 msgid "Listen to notes"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:35
+#: ../../editing/clip-editors/piano-roll.rst:37
 msgid ""
 "Enabling this will play back each note as you drag it inside the piano "
 "roll. This is useful if you want to `hear` what you are doing."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:42
+#: ../../editing/clip-editors/piano-roll.rst:44
 #, fuzzy
 msgid "Piano Roll Keys"
 msgstr "Piano Roll"
 
-#: ../../editing/clip-editors/piano-roll.rst:43
+#: ../../editing/clip-editors/piano-roll.rst:45
 msgid "These are the keys corresponding to each key found on a piano."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:48
+#: ../../editing/clip-editors/piano-roll.rst:51
 msgid ""
 "Clicking on each key allows you to listen to it, much like pressing a key"
 " on a real piano."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:51
+#: ../../editing/clip-editors/piano-roll.rst:54
 msgid ""
 "A label for each key is shown on the left side of the black/white keys, "
 "in addition to any highlighting (if selected). See :ref:`chord-"
 "highlighting` for more information."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:56
+#: ../../editing/clip-editors/piano-roll.rst:59
 msgid ""
-"The zoom level can be changed by holding down :zbutton:`Ctrl` and "
-":zbutton:`Shift` and scrolling."
+"The zoom level can be changed by holding down :kbd:`Ctrl` and "
+":kbd:`Shift` and scrolling."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:60
+#: ../../editing/clip-editors/piano-roll.rst:63
 #, fuzzy
 msgid "MIDI Arranger"
 msgstr "Arrangeur"
 
-#: ../../editing/clip-editors/piano-roll.rst:61
+#: ../../editing/clip-editors/piano-roll.rst:64
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:67
+#: ../../editing/clip-editors/piano-roll.rst:70
 msgid ""
 "The MIDI arranger contains MIDI notes drawn as rectangles from their "
 "start position to their end position. Zrythm will send a MIDI note on "
@@ -352,23 +385,31 @@ msgid ""
 "signal when the end position of a note is reached."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:73
+#: ../../editing/clip-editors/piano-roll.rst:76
 msgid ""
 "Editing inside the MIDI arranger is covered in :ref:`edit-modes` and :ref"
 ":`common-operations`."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:77
+#: ../../editing/clip-editors/piano-roll.rst:80
+msgid "Drum Mode"
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:82
+msgid "Explain/show how the 2 sections above look in drum mode."
+msgstr ""
+
+#: ../../editing/clip-editors/piano-roll.rst:86
 msgid "Velocity Editor"
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:78
+#: ../../editing/clip-editors/piano-roll.rst:87
 msgid ""
 "There is another arranger at the bottom of the MIDI arranger for editing "
 "the velocity of each note."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:84
+#: ../../editing/clip-editors/piano-roll.rst:93
 msgid ""
 "Velocity refers to the force with which a note is played. Each instrument"
 " handles various velocities for the same note differently, but generally "
@@ -376,52 +417,36 @@ msgid ""
 "are useful for adding expression to melodies."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:90
+#: ../../editing/clip-editors/piano-roll.rst:99
 msgid ""
 "The velocity of each note is drawn as a bar, where higher means a larger "
 "value. Clicking and dragging the tip of each velocity bar allows you to "
 "change it."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:94
+#: ../../editing/clip-editors/piano-roll.rst:103
 msgid ""
 "You can also edit multiple velocities at once by selecting multiple MIDI "
 "notes before editing a velocity bar."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:98
+#: ../../editing/clip-editors/piano-roll.rst:107
 msgid ""
 "The :ref:`ramp-mode` can also be used in the velocity editor to `ramp` "
 "velocities."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:105
-#, fuzzy
-msgid "Context Menu"
-msgstr "Menu contextuel de la Région"
-
-#: ../../editing/clip-editors/piano-roll.rst:106
-#: ../../editing/piano-roll-editing/arranger.rst:9
-#: ../../editing/piano-roll-editing/drum-view.rst:11
-#: ../../editing/piano-roll-editing/highlighting.rst:11
-#: ../../editing/piano-roll-editing/overview.rst:8
-#: ../../editing/piano-roll-editing/ruler.rst:8
-#: ../../editing/piano-roll-editing/toolbar.rst:8
-msgid "TODO"
-msgstr "ÀFAIRE"
-
-#: ../../editing/clip-editors/piano-roll.rst:110
+#: ../../editing/clip-editors/piano-roll.rst:119
 msgid ""
 "The event viewer in the piano roll is similar to the timeline event "
 "viewer discussed in :ref:`timeline-event-viewer`."
 msgstr ""
 
-#: ../../editing/clip-editors/piano-roll.rst:117
+#: ../../editing/clip-editors/piano-roll.rst:126
 msgid "It displays information about each MIDI note in the MIDI arranger."
 msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:8
-#: ../../editing/piano-roll-editing/ruler.rst:6
 #: ../../editing/timeline/ruler.rst:8
 msgid "Ruler"
 msgstr "Règle"
@@ -432,66 +457,73 @@ msgid ""
 ":`timeline-ruler`, with some differences."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:15
+#: ../../editing/clip-editors/ruler.rst:16
 msgid ""
 "The ruler will display more or less information depending on the current "
 "zoom level. It will also display the following markers and indicators."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:20
+#: ../../editing/clip-editors/ruler.rst:21
+#: ../../editing/timeline/arranger.rst:78
+msgid "Markers"
+msgstr "Marqueurs"
+
+#: ../../editing/clip-editors/ruler.rst:24
 #, fuzzy
-msgid "Clip start position"
+msgid "Clip Start"
 msgstr "Changer la position de la tête de lecture"
 
-#: ../../editing/clip-editors/ruler.rst:20
+#: ../../editing/clip-editors/ruler.rst:25
 msgid ""
 "Displayed as a blue, right-pointing arrow. This controls the position "
 "where the clip will start playback from."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:23
-#: ../../editing/timeline/ruler.rst:23
-#, fuzzy
-msgid "Playhead position"
-msgstr "Changer la position de la tête de lecture"
+#: ../../editing/clip-editors/ruler.rst:29
+#: ../../editing/clip-editors/ruler.rst:36
+#: ../../editing/clip-editors/ruler.rst:44
+msgid "Add pic."
+msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:23
+#: ../../editing/clip-editors/ruler.rst:32
+msgid "Playhead"
+msgstr ""
+
+#: ../../editing/clip-editors/ruler.rst:33
 msgid ""
 "Shown as a grey, down-facing arrow. This is the current position of the "
 "playhead."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:28
-#: ../../editing/timeline/ruler.rst:28
-msgid "Loop points"
+#: ../../editing/clip-editors/ruler.rst:39
+msgid "Loop Points"
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:26
+#: ../../editing/clip-editors/ruler.rst:40
 msgid ""
 "Shown as 2 green arrows. These control where the clip will start looping "
 "at and where it will return to after looping."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:30
-msgid ""
-"Clicking and dragging on empty space in the ruler will allow you to "
-"reposition the playhead."
-msgstr ""
-
-#: ../../editing/clip-editors/ruler.rst:34
+#: ../../editing/clip-editors/ruler.rst:47
 #, fuzzy
 msgid "Setting Each Point"
 msgstr "Définir le point de repère"
 
-#: ../../editing/clip-editors/ruler.rst:35
+#: ../../editing/clip-editors/ruler.rst:48
 msgid ""
 "To set the position of each point, click on it and drag it to the desired"
 " position."
 msgstr ""
 
-#: ../../editing/clip-editors/ruler.rst:38
-#: ../../editing/timeline/ruler.rst:35
-msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
+#: ../../editing/clip-editors/ruler.rst:51
+msgid ""
+"Clicking and dragging on empty space will allow you to reposition the "
+"playhead."
+msgstr ""
+
+#: ../../editing/clip-editors/ruler.rst:54
+msgid "Hold :kbd:`Shift` to temporarily disable snapping."
 msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:8
@@ -504,39 +536,44 @@ msgid ""
 "the current editor."
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:17
+#: ../../editing/clip-editors/toolbar.rst:12
+#: ../../editing/timeline/toolbar.rst:11
+msgid "Update this section/pic."
+msgstr ""
+
+#: ../../editing/clip-editors/toolbar.rst:19
 msgid "The piano roll toolbar consists of the following controls."
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:20
+#: ../../editing/clip-editors/toolbar.rst:22
 msgid "Grid/snap settings"
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:20
-msgid "Snapping and grid options are explained in :ref:`snapping-grid-options`."
+#: ../../editing/clip-editors/toolbar.rst:23
+msgid "Snapping and grid options are covered in :ref:`snapping-grid-options`."
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:22
+#: ../../editing/clip-editors/toolbar.rst:27
 #, fuzzy
 msgid "Highlight"
 msgstr "Surbrillance"
 
-#: ../../editing/clip-editors/toolbar.rst:23
-msgid "Chord highlighting is explained in :ref:`chords-scales`."
+#: ../../editing/clip-editors/toolbar.rst:28
+msgid "Chord highlighting is covered in :ref:`chords-scales`."
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:25
+#: ../../editing/clip-editors/toolbar.rst:31
 #, fuzzy
 msgid "Quantize options"
 msgstr "Quantifier à"
 
-#: ../../editing/clip-editors/toolbar.rst:25
-msgid "Quantize options are explained in :ref:`quantization`."
+#: ../../editing/clip-editors/toolbar.rst:32
+msgid "Quantize options are covered in :ref:`quantization`."
 msgstr ""
 
-#: ../../editing/clip-editors/toolbar.rst:29
-#: ../../editing/clip-editors/toolbar.rst:33
-#: ../../editing/clip-editors/toolbar.rst:37
+#: ../../editing/clip-editors/toolbar.rst:36
+#: ../../editing/clip-editors/toolbar.rst:40
+#: ../../editing/clip-editors/toolbar.rst:44
 #, fuzzy
 msgid "No controls at the moment."
 msgstr "Inutilisé pour le moment."
@@ -736,6 +773,10 @@ msgstr ""
 "uniquement ce mode."
 
 #: ../../editing/edit-modes.rst:27
+msgid "Add pic showing object selection."
+msgstr ""
+
+#: ../../editing/edit-modes.rst:29
 msgid ""
 "Stretch mode is similar to the Select mode, with the exception that when "
 "you resize objects, their contents will be stretched to fit the new size."
@@ -744,38 +785,39 @@ msgstr ""
 "vous redimensionnez des objets, leur contenu sera étiré pour s'adapter à "
 "la nouvelle taille."
 
-#: ../../editing/edit-modes.rst:32
+#: ../../editing/edit-modes.rst:34
 msgid "Selecting Objects"
 msgstr "Sélectionner des objets"
 
-#: ../../editing/edit-modes.rst:33
+#: ../../editing/edit-modes.rst:35
+#, fuzzy
 msgid ""
 "To select objects, you can either click on them, click in empty space and"
-" keep dragging to make a selection, or :zbutton:`Control`-click to "
-"add/remove objects to/from the selection."
+" keep dragging to make a selection, or :kbd:`Control`-click to add/remove"
+" objects to/from the selection."
 msgstr ""
 "Pour sélectionner des objets, vous pouvez soit cliquer sur eux, soit "
 "cliquer dans un espace vide et continuer à faire glisser pour effectuer "
 "une sélection, soit :zbutton:`Control`-clic pour ajouter/supprimer des "
 "objets à/depuis la sélection."
 
-#: ../../editing/edit-modes.rst:38
+#: ../../editing/edit-modes.rst:40
 msgid "Selected objects will have brighter color than non-selected objects."
 msgstr ""
 "Les objets sélectionnés auront une couleur plus vive que les objets non "
 "sélectionnés."
 
-#: ../../editing/edit-modes.rst:42
+#: ../../editing/edit-modes.rst:44
 msgid "Moving and Cloning Objects"
 msgstr "Déplacement et clonage d'objets"
 
-#: ../../editing/edit-modes.rst:43
+#: ../../editing/edit-modes.rst:45
+#, fuzzy
 msgid ""
 "To move objects around, click on a selected object and keep dragging with"
-" your cursor to where you want to move them. Holding down "
-":zbutton:`Control` while doing this will create duplicates (clones) of "
-"the selected objects. This is an efficient way to quickly clone multiple "
-"objects."
+" your cursor to where you want to move them. Holding down :kbd:`Control` "
+"while doing this will create duplicates (clones) of the selected objects."
+" This is an efficient way to quickly clone multiple objects."
 msgstr ""
 "Pour déplacer des objets, cliquez sur un objet sélectionné et continuez à"
 " faire glisser votre curseur jusqu'à l'endroit où vous voulez le "
@@ -783,11 +825,11 @@ msgstr ""
 "cela, vous créerez des doublons (clones) des objets sélectionnés. C'est "
 "un moyen efficace de cloner rapidement plusieurs objets."
 
-#: ../../editing/edit-modes.rst:50
+#: ../../editing/edit-modes.rst:52
 msgid "Resizing Objects"
 msgstr "Redimensionnement d'objets"
 
-#: ../../editing/edit-modes.rst:51
+#: ../../editing/edit-modes.rst:53
 msgid ""
 "Objects that have length, such as regions and MIDI notes, can be resized "
 "by clicking and dragging their edges."
@@ -796,7 +838,7 @@ msgstr ""
 "peuvent être redimensionnés en cliquant et en faisant glisser leurs "
 "bords."
 
-#: ../../editing/edit-modes.rst:54
+#: ../../editing/edit-modes.rst:56
 msgid ""
 "On objects that can be repeated, such as regions, moving the cursor on "
 "the bottom half of the object will allow you to resize the object by "
@@ -807,7 +849,7 @@ msgstr ""
 " de redimensionner l'objet en le répétant, au lieu de simplement le "
 "redimensionner."
 
-#: ../../editing/edit-modes.rst:59
+#: ../../editing/edit-modes.rst:61
 msgid ""
 "When resizing, already repeated objects can only be repeated. To resize "
 "them instead of repeat them, their length must be changed or their clip "
@@ -818,24 +860,25 @@ msgstr ""
 " leur longueur ou déplacer leurs marqueurs de clip afin qu'ils ne soient "
 "plus répétés."
 
-#: ../../editing/edit-modes.rst:67
+#: ../../editing/edit-modes.rst:69
 msgid "Cutting Objects"
 msgstr "Découpage d'objets"
 
-#: ../../editing/edit-modes.rst:68
+#: ../../editing/edit-modes.rst:70
+#, fuzzy
 msgid ""
-"You can :zbutton:`Alt`-click inside objects to break them up. Holding "
-"down :zbutton:`Shift` while doing this will bypass snapping."
+"You can :kbd:`Alt`-click inside objects to break them up. Holding down "
+":kbd:`Shift` while doing this will bypass snapping."
 msgstr ""
 "Vous pouvez :zbutton:`Alt`-clic à l'intérieur des objets pour les "
 "décomposer. Si vous maintenez :zbutton:`Shift` enfoncé pendant que vous "
 "faites cela, ceci évitera l'accrochage magnétique."
 
-#: ../../editing/edit-modes.rst:73
+#: ../../editing/edit-modes.rst:75
 msgid "Edit Mode"
 msgstr "Mode d'édition"
 
-#: ../../editing/edit-modes.rst:74
+#: ../../editing/edit-modes.rst:76
 msgid ""
 "This mode is used to quickly create or delete objects. While you can "
 "still create objects in Select mode by double clicking and dragging, in "
@@ -848,9 +891,10 @@ msgstr ""
 " glissement, ce qui est plus efficace lorsque vous créez un grand nombre "
 "d'objets."
 
-#: ../../editing/edit-modes.rst:80
+#: ../../editing/edit-modes.rst:82
+#, fuzzy
 msgid ""
-"Holding down :zbutton:`Control` while clicking will allow you to create "
+"Holding down :kbd:`Control` while clicking will allow you to create "
 "multiple objects in a row (where applicable) with a length specified by "
 "the snap settings corresponding to each editor."
 msgstr ""
@@ -858,25 +902,26 @@ msgstr ""
 "créer plusieurs objets à la suite (le cas échéant) avec une longueur "
 "spécifiée par les paramètres d'accrochage correspondant à chaque éditeur."
 
-#: ../../editing/edit-modes.rst:86
+#: ../../editing/edit-modes.rst:88
 msgid "Cut Mode"
 msgstr "Mode de découpe"
 
-#: ../../editing/edit-modes.rst:87
+#: ../../editing/edit-modes.rst:89
+#, fuzzy
 msgid ""
 "Cut mode behaves similarly to what is mentioned in :ref:`cutting-"
 "objects`, with the exception that you can just click instead of "
-":zbutton:`Alt`-clicking."
+":kbd:`Alt`-clicking."
 msgstr ""
 "Le mode de découpe se comporte de la même manière que ce qui est "
 "mentionné dans :ref:`cutting-objects`, à l'exception du fait que vous "
 "pouvez simplement cliquer au lieu de :zbutton:`Alt`-clic."
 
-#: ../../editing/edit-modes.rst:92
+#: ../../editing/edit-modes.rst:94
 msgid "Erase Mode"
 msgstr "Mode d'effacement"
 
-#: ../../editing/edit-modes.rst:93
+#: ../../editing/edit-modes.rst:95
 msgid ""
 "You can just click on objects to delete them, or click and drag to make a"
 " selection, deleting all objects inside it."
@@ -885,11 +930,11 @@ msgstr ""
 "cliquer et glisser pour faire une sélection, en supprimant tous les "
 "objets à l'intérieur."
 
-#: ../../editing/edit-modes.rst:99
+#: ../../editing/edit-modes.rst:101
 msgid "Ramp Mode"
 msgstr "Mode rampe"
 
-#: ../../editing/edit-modes.rst:100
+#: ../../editing/edit-modes.rst:102
 msgid ""
 "This mode is currently only used for editing velocities for MIDI notes. "
 "You can click and drag in the velocity editor to create velocity ramps."
@@ -898,115 +943,17 @@ msgstr ""
 "notes MIDI. Vous pouvez cliquer et faire glisser dans l'éditeur de "
 "vélocité pour créer des rampes de vélocité."
 
-#: ../../editing/edit-modes.rst:108
+#: ../../editing/edit-modes.rst:110
 msgid "Audition Mode"
 msgstr "Mode d'audition"
 
-#: ../../editing/edit-modes.rst:109
-msgid "This is a TODO feature."
-msgstr "C'est une fonctionnalité ÀFAIRE."
-
-#: ../../editing/editing-basics/creating-midi-notes.rst:6
-msgid "Creating MIDI Notes"
-msgstr "Création de notes MIDI"
-
-#: ../../editing/editing-basics/creating-midi-notes.rst:8
-msgid "MIDI notes are created by double-clicking and dragging."
-msgstr "Les notes MIDI sont créées par un double-clic et un glissement."
-
-#: ../../editing/editing-basics/creating-regions.rst:6
-msgid "Creating Regions"
-msgstr "Créer des régions"
-
-#: ../../editing/editing-basics/creating-regions.rst:8
-msgid "Regions are created by double clicking and dragging."
-msgstr "Les régions sont créées par un double clic et un glissement."
-
-#: ../../editing/editing-basics/intro.rst:6
-msgid "Editing Basics"
-msgstr "Les bases de l'Édition"
-
-#: ../../editing/editing-basics/midi-modifiers.rst:6
-msgid "MIDI Modifiers"
-msgstr "Modificateurs MIDI"
-
-#: ../../editing/editing-basics/midi-note-context-menu.rst:6
-msgid "MIDI Note Context Menu"
-msgstr "Menu contextuel des notes MIDI"
-
-#: ../../editing/editing-basics/midi-note-editing-operations.rst:6
-msgid "MIDI Note Editing Operations"
-msgstr "Opérations d'édition de notes MIDI"
-
-#: ../../editing/editing-basics/moving-midi-notes.rst:6
-msgid "Moving MIDI Notes"
-msgstr "Déplacement de notes MIDI"
-
-#: ../../editing/editing-basics/moving-regions.rst:6
-msgid "Moving Regions"
-msgstr "Déplacement des Régions"
-
-#: ../../editing/editing-basics/moving-regions.rst:8
-msgid "Selected regions can be moved by clicking and dragging."
+#: ../../editing/edit-modes.rst:111
+msgid "This feature is not implemented yet."
 msgstr ""
-"Les régions sélectionnées peuvent être déplacées en cliquant et en les "
-"faisant glisser."
-
-#: ../../editing/editing-basics/region-context-menu.rst:6
-msgid "Region Context Menu"
-msgstr "Menu contextuel de la Région"
-
-#: ../../editing/editing-basics/region-editing-operations.rst:6
-msgid "Region Editing Operations"
-msgstr "Opérations d'Édition de Région"
-
-#: ../../editing/editing-selections/editing-automation.rst:6
-msgid "Editing Automation"
-msgstr "Édition de l'automatisation"
-
-#: ../../editing/editing-selections/editing-midi-notes.rst:6
-msgid "Editing MIDI Notes"
-msgstr "Éditer les notes MIDI"
-
-#: ../../editing/editing-selections/editing-regions.rst:6
-msgid "Editing Regions"
-msgstr "Éditer des Régions"
-
-#: ../../editing/editing-selections/editing-tracks.rst:6
-msgid "Editing Tracks"
-msgstr "Éditer des pistes"
-
-#: ../../editing/editing-selections/intro.rst:6
-msgid "Editing Selections"
-msgstr "Modifier les Sélections"
-
-#: ../../editing/fades-and-crossfades.rst:6
-msgid "Fades and Cross-Fades"
-msgstr "Fondu et fondu enchaîné"
 
 #: ../../editing/intro.rst:8
 msgid "Editing"
 msgstr "Modifier"
-
-#: ../../editing/making-selections/intro.rst:6
-msgid "Making Selections"
-msgstr "Faire des sélections"
-
-#: ../../editing/making-selections/selecting-automation.rst:6
-msgid "Selecting Automation"
-msgstr "Sélection de l'automatisation"
-
-#: ../../editing/making-selections/selecting-midi-notes.rst:6
-msgid "Selecting MIDI Notes"
-msgstr "Sélectionner des notes MIDI"
-
-#: ../../editing/making-selections/selecting-regions.rst:6
-msgid "Selecting Regions"
-msgstr "Sélectionner des Régions"
-
-#: ../../editing/making-selections/selecting-tracks.rst:6
-msgid "Selecting Tracks"
-msgstr "Sélectionner des Pistes"
 
 #: ../../editing/overview.rst:8
 #, fuzzy
@@ -1026,43 +973,6 @@ msgstr ""
 "faciliter les différentes opérations, il y a une section d'édition "
 "globale dans la barre d'outils du haut qui présente des caractéristiques "
 "communes à chaque éditeur."
-
-#: ../../editing/piano-roll-editing/arranger.rst:6
-msgid "Arranger"
-msgstr "Arrangeur"
-
-#: ../../editing/piano-roll-editing/drum-view.rst:6
-msgid "Drum View"
-msgstr "Affichage percussion"
-
-#: ../../editing/piano-roll-editing/drum-view.rst:8
-msgid ""
-"The Piano Roll can be switched to Drum View which is suitable for editing"
-" drums."
-msgstr ""
-"Le piano-roll peut être basculé sur l'affichage percussions qui convient "
-"à l'édition des percussions."
-
-#: ../../editing/piano-roll-editing/highlighting.rst:6
-msgid "Highlighting"
-msgstr "Surbrillance"
-
-#: ../../editing/piano-roll-editing/highlighting.rst:8
-msgid ""
-"Zrythm can highlight notes in the Piano Roll based on the current Chord "
-"or Scale."
-msgstr ""
-"Zrythm peut mettre en surbrillance les notes du piano-roll en fonction de"
-" l'accord ou de la gamme en cours."
-
-#: ../../editing/piano-roll-editing/selection-info-bar.rst:6
-msgid "Selection Info Bar"
-msgstr "Barre d'informations de sélection"
-
-#: ../../editing/piano-roll-editing/toolbar.rst:6
-#: ../../editing/timeline/toolbar.rst:6
-msgid "Toolbar"
-msgstr "Barre d'outils"
 
 #: ../../editing/quantization.rst:8
 msgid "Quantization"
@@ -1231,7 +1141,7 @@ msgid ""
 "clicked."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:18
+#: ../../editing/timeline/arranger.rst:19
 msgid ""
 "The timeline arranger is split into a top arranger that remains fixed on "
 "top and a bottom arranger below it. This way you can pin tracks you want "
@@ -1239,135 +1149,227 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:24
+msgid "split the following to sub-pages"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:27
 msgid "Arranger Objects"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:25
+#: ../../editing/timeline/arranger.rst:28
 msgid "The following arranger objects can exist inside the timeline."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:28
+#: ../../editing/timeline/arranger.rst:34
 #, fuzzy
 msgid "Regions"
 msgstr "Créer des régions"
 
-#: ../../editing/timeline/arranger.rst:29
-msgid "Regions are containers for events or data (such as audio clips)."
+#: ../../editing/timeline/arranger.rst:35
+msgid ""
+"Regions (or :term:`clips <clip>`) are containers for events or data (such"
+" as MIDI notes and audio clips - see below) that can be edited in an "
+":ref:`editor <editors>`. Regions can be repeated, like below."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:35
+#: ../../editing/timeline/arranger.rst:44
 msgid "The following types of regions exist."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:37
+#: ../../editing/timeline/arranger.rst:47
 #, fuzzy
-msgid "Audio region"
+msgid "Audio Region"
 msgstr "Section de région audio"
 
-#: ../../editing/timeline/arranger.rst:38
+#: ../../editing/timeline/arranger.rst:48
 msgid "Contains audio clips."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:39
-#, fuzzy
-msgid "MIDI region"
-msgstr "Éditer des Régions"
+#: ../../editing/timeline/arranger.rst:50
+#: ../../editing/timeline/arranger.rst:63
+#: ../../editing/timeline/arranger.rst:69
+#: ../../editing/timeline/arranger.rst:75
+msgid "Expand + add pic."
+msgstr ""
 
-#: ../../editing/timeline/arranger.rst:40
+#: ../../editing/timeline/arranger.rst:53
+msgid "Fades"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:54
+msgid "Explain how fades work."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:56
+msgid "Decide what to do about cross-fades (just use fades?)."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:60
+#, fuzzy
+msgid "MIDI Region"
+msgstr "Section de région audio"
+
+#: ../../editing/timeline/arranger.rst:61
 msgid "Contains MIDI notes."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:41
+#: ../../editing/timeline/arranger.rst:66
 #, fuzzy
-msgid "Automation region"
+msgid "Automation Region"
 msgstr "Éditeur d'automatisation"
 
-#: ../../editing/timeline/arranger.rst:42
+#: ../../editing/timeline/arranger.rst:67
 msgid "Contains automation events."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:44
+#: ../../editing/timeline/arranger.rst:72
 msgid "Chord region"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:44
+#: ../../editing/timeline/arranger.rst:73
 msgid "Contains sequences of chords."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:47
-msgid "Markers"
-msgstr "Marqueurs"
-
-#: ../../editing/timeline/arranger.rst:48
+#: ../../editing/timeline/arranger.rst:79
 msgid ""
 "Markers are used to mark the start of a logical section inside the song, "
 "such as `Chorus` or `Intro`."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:54
+#: ../../editing/timeline/arranger.rst:86
 msgid ""
 "There are two special markers that signify the start and end of the song "
 "that are used for exporting the song and cannot be deleted."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:59
+#: ../../editing/timeline/arranger.rst:91
 msgid "Scales"
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:60
+#: ../../editing/timeline/arranger.rst:92
 msgid ""
 "Scales are used in the Chord track to indicate the start of a section "
 "using a specific musical scale."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:67
+#: ../../editing/timeline/arranger.rst:99
 #, fuzzy
-msgid "Creating Objects"
-msgstr "Sélectionner des objets"
+msgid "Editing Objects"
+msgstr "Redimensionnement d'objets"
 
-#: ../../editing/timeline/arranger.rst:68
+#: ../../editing/timeline/arranger.rst:100
+msgid "The following operations apply to all editable objects."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:104
+msgid "Creating"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:105
 msgid ""
 "In select (default) mode, all objects are created by double clicking "
 "inside the arranger and dragging, then releasing when you are satisfied "
 "with the position/size."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:72
+#: ../../editing/timeline/arranger.rst:110
 msgid "For creating objects in other modes, see :ref:`edit-modes`."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:75
-#, fuzzy
-msgid "Moving Objects"
-msgstr "Découpage d'objets"
+#: ../../editing/timeline/arranger.rst:114
+msgid "Moving"
+msgstr ""
 
-#: ../../editing/timeline/arranger.rst:76
+#: ../../editing/timeline/arranger.rst:115
 msgid ""
 "Objects are moved by clicking and dragging them around. You can move "
 "regions to other tracks if the track types are compatible."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:81
+#: ../../editing/timeline/arranger.rst:120
 #, fuzzy
-msgid "Copy-Moving Objects"
+msgid "Copy-Moving"
 msgstr "Sélectionner des objets"
 
-#: ../../editing/timeline/arranger.rst:82
+#: ../../editing/timeline/arranger.rst:121
 msgid ""
-"Holding down :zbutton:`Ctrl` while moving objects will allow you to copy-"
-"and-move the objects to the new location."
+"Holding down :kbd:`Ctrl` while moving objects will allow you to copy-and-"
+"move the objects to the new location."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:86
+#: ../../editing/timeline/arranger.rst:126
+msgid "Editing Regions"
+msgstr "Éditer des Régions"
+
+#: ../../editing/timeline/arranger.rst:127
+msgid "The following operations apply to regions."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:130
+msgid "Looping"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:131
+msgid ""
+"Regions can be repeated, and hence they have :ref:`editable loop points "
+"and a clip start position <editing/clip-editors/ruler:Loop Points>` in "
+"the :doc:`Editor Ruler <../../editing/clip-editors/ruler>` to modify the "
+"looping (repeating) behavior."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:137
+msgid ""
+"Regions can also be looped inside the timeline, by moving the cursor to "
+"the bottom-left or bottom-right edge of the region, then clicking and "
+"dragging."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:145
+msgid "Looping (loop-resizing) a region"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:147
+msgid ""
+"If the region is already repeated, it cannot be resized anymore until its"
+" loop points match exactly the region's start and end points."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:152
 #, fuzzy
-msgid "Link-Moving Regions"
+msgid "Link-Moving"
 msgstr "Déplacement des Régions"
 
-#: ../../editing/timeline/arranger.rst:87
-msgid "Linked regions can be created by holding down :zbutton:`Alt` while moving."
+#: ../../editing/timeline/arranger.rst:153
+msgid "Linked regions can be created by holding down :kbd:`Alt` while moving."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:90
+#: ../../editing/timeline/arranger.rst:156
+#: ../../editing/timeline/arranger.rst:161
+msgid "Add pic to show this."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:158
+msgid ""
+"You can verify that a link exists on a region by the link icon that shows"
+" in the top right."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:164
+msgid "Renaming"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:165
+#, fuzzy
+msgid "Regions can be renamed by clicking on their name."
+msgstr ""
+"Les régions sélectionnées peuvent être déplacées en cliquant et en les "
+"faisant glisser."
+
+#: ../../editing/timeline/arranger.rst:167
+msgid "Illustrate."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:169
 msgid "Other editing capabilities were explained previously in :ref:`edit-modes`."
 msgstr ""
 
@@ -1390,17 +1392,17 @@ msgstr ""
 "compose de la liste des pistes à gauche et de la règle/arrangeur à "
 "droite."
 
-#: ../../editing/timeline/overview.rst:15
+#: ../../editing/timeline/overview.rst:17
 msgid "Tracklist"
 msgstr "Liste des pistes"
 
-#: ../../editing/timeline/overview.rst:17
+#: ../../editing/timeline/overview.rst:19
 msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into"
 " the top (pinned) Tracklist and the bottom (main) Tracklist."
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:24
+#: ../../editing/timeline/overview.rst:26
 msgid ""
 "At the top of the tracklist, the number of visible tracks over the number"
 " of total tracks is shown, as well as a search box for searching tracks "
@@ -1411,7 +1413,7 @@ msgstr ""
 "pour la recherche de pistes par leur nom (non opérationnelle pour le "
 "moment)."
 
-#: ../../editing/timeline/overview.rst:29
+#: ../../editing/timeline/overview.rst:31
 #, fuzzy
 msgid ""
 "You can pin tracks to make them stick to the top, and this is useful for "
@@ -1422,29 +1424,29 @@ msgstr ""
 "coller en haut, ce qui est utile pour les progressions d'accords et les "
 "marqueurs, de sorte que vous pouvez toujours les voir."
 
-#: ../../editing/timeline/overview.rst:33
+#: ../../editing/timeline/overview.rst:35
 #, fuzzy
 msgid "The rest of the tracklist is briefly touched upon in :ref:`tracklist`."
 msgstr "Le reste de la liste de pistes est brièvement évoqué à :ref:`tracklist`."
 
-#: ../../editing/timeline/overview.rst:36
+#: ../../editing/timeline/overview.rst:38
 msgid "For more details about track operations, see the :ref:`tracks` section."
 msgstr ""
 "Pour plus de détails sur les opérations de piste, voir la section "
 ":ref:`tracks`."
 
-#: ../../editing/timeline/overview.rst:40
+#: ../../editing/timeline/overview.rst:42
 msgid "Minimap"
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:41
+#: ../../editing/timeline/overview.rst:43
 msgid ""
 "The timeline minimap is a little box that represents the current visible "
 "area of the timeline. It can be moved around and resized to change the "
 "visible area."
 msgstr ""
 
-#: ../../editing/timeline/overview.rst:48
+#: ../../editing/timeline/overview.rst:50
 msgid "The rest of the timeline elements are explained in the following sections."
 msgstr ""
 
@@ -1467,8 +1469,17 @@ msgstr ""
 msgid "Displayed as a blue, right-pointing arrow."
 msgstr ""
 
+#: ../../editing/timeline/ruler.rst:23
+#, fuzzy
+msgid "Playhead position"
+msgstr "Changer la position de la tête de lecture"
+
 #: ../../editing/timeline/ruler.rst:24
 msgid "Shown as a grey, down-facing arrow."
+msgstr ""
+
+#: ../../editing/timeline/ruler.rst:28
+msgid "Loop points"
 msgstr ""
 
 #: ../../editing/timeline/ruler.rst:26
@@ -1485,6 +1496,10 @@ msgid ""
 "you to reposition the playhead."
 msgstr ""
 
+#: ../../editing/timeline/ruler.rst:35
+msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
+msgstr ""
+
 #: ../../editing/timeline/ruler.rst:38
 msgid "Setting the Cue Point"
 msgstr "Définir le point de repère"
@@ -1499,13 +1514,17 @@ msgstr ""
 "Celui-ci sera utilisé pour revenir au moment où la lecture est arrêtée. "
 "Maintenez :zbutton:`Shift` pour court-circuiter l'accrochage magnétique."
 
+#: ../../editing/timeline/toolbar.rst:6
+msgid "Toolbar"
+msgstr "Barre d'outils"
+
 #: ../../editing/timeline/toolbar.rst:8
 msgid "The timeline has its own toolbar for timeline-specific operations."
 msgstr ""
 "La ligne de temps a sa propre barre d'outils pour les opérations "
 "spécifiques à elle."
 
-#: ../../editing/timeline/toolbar.rst:14
+#: ../../editing/timeline/toolbar.rst:16
 msgid ""
 "It contains a snap section, a quantize section, and an audio region "
 "section. For details about snapping and quantization, see the previous "
@@ -1515,15 +1534,15 @@ msgstr ""
 "quantification et une section de région audio. Pour plus de détails sur "
 "l'accrochage magnétique et la quantification, voir les pages précédentes."
 
-#: ../../editing/timeline/toolbar.rst:19
+#: ../../editing/timeline/toolbar.rst:21
 msgid "Audio Region Section"
 msgstr "Section de région audio"
 
-#: ../../editing/timeline/toolbar.rst:21
+#: ../../editing/timeline/toolbar.rst:24
 msgid "Musical Mode"
 msgstr "Mode musical"
 
-#: ../../editing/timeline/toolbar.rst:22
+#: ../../editing/timeline/toolbar.rst:25
 msgid ""
 "When this is on, audio regions will be automatically time-stretched to "
 "match the new BPM, each time the BPM changes. If this is off, changing "
@@ -1824,5 +1843,155 @@ msgstr ""
 #~ " part, which is used for selecting"
 #~ " ranges) will allow you to reposition"
 #~ " the playhead."
+#~ msgstr ""
+
+#~ msgid "Drum view"
+#~ msgstr "Affichage percussion"
+
+#~ msgid ""
+#~ "The zoom level can be changed by"
+#~ " holding down :zbutton:`Ctrl` and "
+#~ ":zbutton:`Shift` and scrolling."
+#~ msgstr ""
+
+#~ msgid "TODO"
+#~ msgstr "ÀFAIRE"
+
+#~ msgid ""
+#~ "Clicking and dragging on empty space "
+#~ "in the ruler will allow you to "
+#~ "reposition the playhead."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Snapping and grid options are explained"
+#~ " in :ref:`snapping-grid-options`."
+#~ msgstr ""
+
+#~ msgid "Chord highlighting is explained in :ref:`chords-scales`."
+#~ msgstr ""
+
+#~ msgid "Quantize options are explained in :ref:`quantization`."
+#~ msgstr ""
+
+#~ msgid "This is a TODO feature."
+#~ msgstr "C'est une fonctionnalité ÀFAIRE."
+
+#~ msgid "Creating MIDI Notes"
+#~ msgstr "Création de notes MIDI"
+
+#~ msgid "MIDI notes are created by double-clicking and dragging."
+#~ msgstr "Les notes MIDI sont créées par un double-clic et un glissement."
+
+#~ msgid "Creating Regions"
+#~ msgstr "Créer des régions"
+
+#~ msgid "Regions are created by double clicking and dragging."
+#~ msgstr "Les régions sont créées par un double clic et un glissement."
+
+#~ msgid "Editing Basics"
+#~ msgstr "Les bases de l'Édition"
+
+#~ msgid "MIDI Modifiers"
+#~ msgstr "Modificateurs MIDI"
+
+#~ msgid "MIDI Note Context Menu"
+#~ msgstr "Menu contextuel des notes MIDI"
+
+#~ msgid "MIDI Note Editing Operations"
+#~ msgstr "Opérations d'édition de notes MIDI"
+
+#~ msgid "Moving MIDI Notes"
+#~ msgstr "Déplacement de notes MIDI"
+
+#~ msgid "Moving Regions"
+#~ msgstr "Déplacement des Régions"
+
+#~ msgid "Region Context Menu"
+#~ msgstr "Menu contextuel de la Région"
+
+#~ msgid "Region Editing Operations"
+#~ msgstr "Opérations d'Édition de Région"
+
+#~ msgid "Editing Automation"
+#~ msgstr "Édition de l'automatisation"
+
+#~ msgid "Editing MIDI Notes"
+#~ msgstr "Éditer les notes MIDI"
+
+#~ msgid "Editing Tracks"
+#~ msgstr "Éditer des pistes"
+
+#~ msgid "Editing Selections"
+#~ msgstr "Modifier les Sélections"
+
+#~ msgid "Fades and Cross-Fades"
+#~ msgstr "Fondu et fondu enchaîné"
+
+#~ msgid "Making Selections"
+#~ msgstr "Faire des sélections"
+
+#~ msgid "Selecting Automation"
+#~ msgstr "Sélection de l'automatisation"
+
+#~ msgid "Selecting MIDI Notes"
+#~ msgstr "Sélectionner des notes MIDI"
+
+#~ msgid "Selecting Regions"
+#~ msgstr "Sélectionner des Régions"
+
+#~ msgid "Selecting Tracks"
+#~ msgstr "Sélectionner des Pistes"
+
+#~ msgid "Arranger"
+#~ msgstr "Arrangeur"
+
+#~ msgid ""
+#~ "The Piano Roll can be switched to"
+#~ " Drum View which is suitable for "
+#~ "editing drums."
+#~ msgstr ""
+#~ "Le piano-roll peut être basculé "
+#~ "sur l'affichage percussions qui convient "
+#~ "à l'édition des percussions."
+
+#~ msgid "Highlighting"
+#~ msgstr "Surbrillance"
+
+#~ msgid ""
+#~ "Zrythm can highlight notes in the "
+#~ "Piano Roll based on the current "
+#~ "Chord or Scale."
+#~ msgstr ""
+#~ "Zrythm peut mettre en surbrillance les"
+#~ " notes du piano-roll en fonction "
+#~ "de l'accord ou de la gamme en "
+#~ "cours."
+
+#~ msgid "Selection Info Bar"
+#~ msgstr "Barre d'informations de sélection"
+
+#~ msgid "Regions are containers for events or data (such as audio clips)."
+#~ msgstr ""
+
+#~ msgid "MIDI region"
+#~ msgstr "Éditer des Régions"
+
+#~ msgid "Creating Objects"
+#~ msgstr "Sélectionner des objets"
+
+#~ msgid "Moving Objects"
+#~ msgstr "Découpage d'objets"
+
+#~ msgid ""
+#~ "Holding down :zbutton:`Ctrl` while moving "
+#~ "objects will allow you to copy-"
+#~ "and-move the objects to the new "
+#~ "location."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Linked regions can be created by "
+#~ "holding down :zbutton:`Alt` while moving."
 #~ msgstr ""
 

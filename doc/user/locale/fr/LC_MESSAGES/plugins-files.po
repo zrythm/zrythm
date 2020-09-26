@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 22:19+0100\n"
+"POT-Creation-Date: 2020-09-26 19:09+0100\n"
 "PO-Revision-Date: 2020-06-22 21:41+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language: fr\n"
@@ -209,28 +209,35 @@ msgid "Filter Buttons"
 msgstr "Boutons de filtre"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:37
+msgid "Additionally to the above, plugins can be filtered based on their type."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:43
+msgid "Filtering by modulator plugins"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:45
 #, fuzzy
 msgid ""
-"Additionally to the above, you can filter plugins based on their type. "
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
 msgstr ""
 "En plus de ce qui précède, vous pouvez filtrer les greffons en fonction "
 "de leur type. Les types suivants existent :"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:44
+#: ../../plugins-files/plugins/plugin-browser.rst:51
 msgid "Instantiating Plugins"
 msgstr "Instancier des greffons"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:45
+#: ../../plugins-files/plugins/plugin-browser.rst:52
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr "Il y a plusieurs façons d'instancier les greffons :"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:48
+#: ../../plugins-files/plugins/plugin-browser.rst:55
 msgid "Drag-n-Drop"
 msgstr "Glisser-déposer"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:50
+#: ../../plugins-files/plugins/plugin-browser.rst:57
 msgid ""
 "You can drag and drop the selected plugin into empty space in the "
 "Tracklist or into empty space in the Mixer to create a new track using "
@@ -240,7 +247,7 @@ msgstr ""
 " la liste des pistes ou dans un espace vide du mixeur pour créer une "
 "nouvelle piste utilisant ce greffon."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:60
+#: ../../plugins-files/plugins/plugin-browser.rst:67
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or"
 " replace the previous plugin."
@@ -248,18 +255,18 @@ msgstr ""
 "Alternativement, vous pouvez faire glisser le greffon sur un emplacement "
 "de mixeur pour l'y ajouter ou remplacer le greffon précédent."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:66
+#: ../../plugins-files/plugins/plugin-browser.rst:73
 #, fuzzy
 msgid "If the plugin is a modulator, you can drop it into the Modulators tab."
 msgstr ""
 "Si le greffon est un modulateur, vous pouvez le déposer dans l'onglet "
 "Modulateurs."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:73
+#: ../../plugins-files/plugins/plugin-browser.rst:80
 msgid "Double Click/Enter"
 msgstr "Double-clic/entrée"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:75
+#: ../../plugins-files/plugins/plugin-browser.rst:82
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."

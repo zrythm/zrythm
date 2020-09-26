@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2020-09-26 01:47+0100\n"
+"POT-Creation-Date: 2020-09-26 19:10+0100\n"
 "PO-Revision-Date: 2020-09-26 18:02+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
@@ -1989,7 +1989,7 @@ msgstr ""
 msgid "Unknown error"
 msgstr ""
 
-#: src/utils/log.c:685
+#: src/utils/log.c:690
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "
@@ -4238,8 +4238,8 @@ msgstr "Алгоритм затухания (Fade algorithm)"
 #: build/data/org.zrythm.Zrythm.gschema.xml:602
 msgid "Default fade algorithm to use for fade in/outs."
 msgstr ""
-"Алгоритм затухания по умолчанию, используемый для постепенного "
-"появления/исчезновения."
+"Алгоритм затухания по умолчанию, используемый для постепенного появления/"
+"исчезновения."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:616
 msgid "Default algorithm to use for automation curves."

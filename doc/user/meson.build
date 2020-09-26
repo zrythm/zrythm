@@ -174,7 +174,7 @@ manual_gettext_gen_pot = custom_target (
   'manual_gettext_gen_pot',
   output: 'manual_gettext_gen_pot',
   command: [
-    sphinx_build, sphinx_build_opts,
+    sphinx_build,
     '-M', 'gettext',
     meson.current_source_dir (),
     sphinx_builddir,

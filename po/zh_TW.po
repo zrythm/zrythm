@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2020-09-26 01:47+0100\n"
+"POT-Creation-Date: 2020-09-26 19:10+0100\n"
 "PO-Revision-Date: 2020-09-26 11:50+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -1994,7 +1994,7 @@ msgstr ""
 msgid "Unknown error"
 msgstr "不明的錯誤"
 
-#: src/utils/log.c:685
+#: src/utils/log.c:690
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "

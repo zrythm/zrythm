@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 22:19+0100\n"
+"POT-Creation-Date: 2020-09-26 19:09+0100\n"
 "PO-Revision-Date: 2020-09-26 18:02+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
-"manualplugins-files/ru/>\n"
 "Language: ru\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm"
+"/manualplugins-files/ru/>\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
@@ -30,8 +29,8 @@ msgid ""
 "The File Browser makes it easy to navigate through files on your computer"
 " or through your custom collections."
 msgstr ""
-"Браузер файлов позволяет легко перемещаться по файлам на вашем компьютере "
-"или по вашим пользовательским коллекциям."
+"Браузер файлов позволяет легко перемещаться по файлам на вашем компьютере"
+" или по вашим пользовательским коллекциям."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:14
 msgid "This is a work in progress."
@@ -77,8 +76,8 @@ msgid ""
 ":`file-browser` into a track."
 msgstr ""
 "Zrythm может импортировать в проект файлы MIDI и Аудио. Файлы можно "
-"импортировать, перетаскивая их с вашего компьютера или из :ref:`file-browser`"
-" на трек."
+"импортировать, перетаскивая их с вашего компьютера или из :ref:`file-"
+"browser` на трек."
 
 #: ../../plugins-files/audio-midi-files/overview.rst:14
 msgid "Supported Audio Formats"
@@ -101,16 +100,16 @@ msgid ""
 "When a Plugin is selected in the Mixer, its page will appear in the "
 "Inspector as follows."
 msgstr ""
-"Когда плагин выбран в Микшере (Mixer), его страница появится в инспекторе "
-"следующим образом."
+"Когда плагин выбран в Микшере (Mixer), его страница появится в инспекторе"
+" следующим образом."
 
 #: ../../plugins-files/plugins/inspector-page.rst:16
 msgid ""
 "This page will display information about the Plugin and its ports and "
 "allow you to make changes."
 msgstr ""
-"На этой странице отображается информация о плагине и его портах, а также вы "
-"можете вносить изменения."
+"На этой странице отображается информация о плагине и его портах, а также "
+"вы можете вносить изменения."
 
 #: ../../plugins-files/plugins/inspector-page.rst:21
 msgid "Changing Values"
@@ -121,8 +120,8 @@ msgid ""
 "The values of control ports can be changed by clicking and dragging "
 "inside the bar."
 msgstr ""
-"Значения портов управления можно изменить, щелкнув и перетащив курсор внутри "
-"ползунка нужного вам порта."
+"Значения портов управления можно изменить, щелкнув и перетащив курсор "
+"внутри ползунка нужного вам порта."
 
 #: ../../plugins-files/plugins/inspector-page.rst:27
 msgid "Connections"
@@ -173,8 +172,8 @@ msgid ""
 "This tab contains your collections. You can create collections such as "
 "\"MySynths\" and filter by the selected collections."
 msgstr ""
-"Эта вкладка содержит ваши коллекции. Вы можете создавать коллекции, такие "
-"как \"Мои Синтезаторы\", и фильтровать плагины по выбранным коллекциям."
+"Эта вкладка содержит ваши коллекции. Вы можете создавать коллекции, такие"
+" как \"Мои Синтезаторы\", и фильтровать плагины по выбранным коллекциям."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid "Category"
@@ -185,8 +184,8 @@ msgid ""
 "Filter plugins by category based on the plugin metadata, such as "
 "\"Delay\", \"Distortion\", etc."
 msgstr ""
-"Фильтрирование плагинов по категориям на основе метаданных плагина, таких "
-"как \"Задержка (Delay)\", \"Искажение (Distortion)\" и т.д."
+"Фильтрирование плагинов по категориям на основе метаданных плагина, таких"
+" как \"Задержка (Delay)\", \"Искажение (Distortion)\" и т.д."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Protocol"
@@ -195,7 +194,8 @@ msgstr "Протокол"
 #: ../../plugins-files/plugins/plugin-browser.rst:29
 msgid "Allows you to filter plugins based their protocol (eg., LV2 or SFZ)."
 msgstr ""
-"Позволяет фильтровать плагины на основе их протокола (например, LV2 или SFZ)."
+"Позволяет фильтровать плагины на основе их протокола (например, LV2 или "
+"SFZ)."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:32
 msgid "Filtering by collections and protocols is not operational at the moment."
@@ -206,8 +206,16 @@ msgid "Filter Buttons"
 msgstr "Кнопки фильтров"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:37
+msgid "Additionally to the above, plugins can be filtered based on their type."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:43
+msgid "Filtering by modulator plugins"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:45
+#, fuzzy
 msgid ""
-"Additionally to the above, you can filter plugins based on their type. "
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
 msgstr ""
@@ -215,29 +223,29 @@ msgstr ""
 "Читайте :ref:`plugin-types`для получения дополнительной информации о "
 "различных типах плагинов."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:44
+#: ../../plugins-files/plugins/plugin-browser.rst:51
 msgid "Instantiating Plugins"
 msgstr "Добавление плагинов (Instantiating Plugins)"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:45
+#: ../../plugins-files/plugins/plugin-browser.rst:52
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr "Есть несколько способов добавления плагинов:"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:48
+#: ../../plugins-files/plugins/plugin-browser.rst:55
 msgid "Drag-n-Drop"
 msgstr "Перетаскивание"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:50
+#: ../../plugins-files/plugins/plugin-browser.rst:57
 msgid ""
 "You can drag and drop the selected plugin into empty space in the "
 "Tracklist or into empty space in the Mixer to create a new track using "
 "that plugin."
 msgstr ""
 "Вы можете перетащить выбранный плагин в пустое место в Списке треков "
-"(Tracklist) или в пустое место в Микшере (Mixer), чтобы создать новый трек, "
-"используя этот плагин."
+"(Tracklist) или в пустое место в Микшере (Mixer), чтобы создать новый "
+"трек, используя этот плагин."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:60
+#: ../../plugins-files/plugins/plugin-browser.rst:67
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or"
 " replace the previous plugin."
@@ -245,17 +253,17 @@ msgstr ""
 "Кроме того, вы можете перетащить плагин в слот Микшера (Mixer), чтобы "
 "добавить его туда или заменить предыдущий плагин."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:66
+#: ../../plugins-files/plugins/plugin-browser.rst:73
 msgid "If the plugin is a modulator, you can drop it into the Modulators tab."
 msgstr ""
 "Если плагин является модулятором, вы можете перетащить его на вкладку "
 "Модуляторы (Modulators)."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:73
+#: ../../plugins-files/plugins/plugin-browser.rst:80
 msgid "Double Click/Enter"
 msgstr "Двойной щелчок/Enter"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:75
+#: ../../plugins-files/plugins/plugin-browser.rst:82
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
@@ -294,8 +302,8 @@ msgstr "Инструмент (Instrument)"
 #: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "These plugins will create an instrument track when added to the project."
 msgstr ""
-"Эти плагины создадут инструментальный трек (Instrument Track) при добавлении "
-"в проект."
+"Эти плагины создадут инструментальный трек (Instrument Track) при "
+"добавлении в проект."
 
 #: ../../plugins-files/plugins/plugin-info.rst:27
 msgid "Effects"
@@ -318,8 +326,8 @@ msgid ""
 "These plugins output :term:`CV` signals and can be used to modulate other"
 " plugin or track parameters."
 msgstr ""
-"Эти плагины выводят :term:`CV` сигналы и могут использоваться для модуляции "
-"других плагинов или параметров трека."
+"Эти плагины выводят :term:`CV` сигналы и могут использоваться для "
+"модуляции других плагинов или параметров трека."
 
 #: ../../plugins-files/plugins/plugin-info.rst:36
 msgid "MIDI Effects"
@@ -330,8 +338,8 @@ msgid ""
 "These plugins modify incoming :term:`MIDI` signals and can be used in the"
 " MIDI signal chain of an Instrument or MIDI track."
 msgstr ""
-"Эти плагины изменяют входящие сигналы :term:`MIDI` и могут использоваться в "
-"цепочке сигналов MIDI инструмента или MIDI трека (MIDI track)."
+"Эти плагины изменяют входящие сигналы :term:`MIDI` и могут использоваться"
+" в цепочке сигналов MIDI инструмента или MIDI трека (MIDI track)."
 
 #: ../../plugins-files/plugins/plugin-info.rst:39
 msgid ""
@@ -341,8 +349,8 @@ msgid ""
 "has."
 msgstr ""
 "Zrythm просматривает метаданные плагина, чтобы определить его тип. Если "
-"этого недостаточно, Zrythm принимает решение на основе количества входных и "
-"выходных портов аудио, MIDI, управления и CV, которые есть у плагина."
+"этого недостаточно, Zrythm принимает решение на основе количества входных"
+" и выходных портов аудио, MIDI, управления и CV, которые есть у плагина."
 
 #: ../../plugins-files/plugins/plugin-info.rst:46
 msgid "Plugin Ports"
@@ -354,7 +362,8 @@ msgid ""
 ":term:`MIDI` and :term:`CV` ports. Ports are explained in :ref:`ports`."
 msgstr ""
 "Плагины состоят из элементов управления (параметров) и множества аудио, "
-":term:`MIDI` и :term:`CV` портов. Описание портов приведено в :ref:`ports`."
+":term:`MIDI` и :term:`CV` портов. Описание портов приведено в "
+":ref:`ports`."
 
 #: ../../plugins-files/plugins/plugin-info.rst:51
 msgid "Zrythm first creates all plugins with the following special control ports:"
@@ -391,8 +400,8 @@ msgid ""
 "All of the plugin's ports can be found in the plugin inspector page "
 "explained in :ref:`plugin-inspector-page`"
 msgstr ""
-"Все порты плагина можно найти на странице инспектора плагинов, описанной в "
-":ref:`plugin-inspector-page`"
+"Все порты плагина можно найти на странице инспектора плагинов, описанной "
+"в :ref:`plugin-inspector-page`"
 
 #: ../../plugins-files/plugins/plugin-window.rst:6
 msgid "Plugin Window"
@@ -408,18 +417,18 @@ msgid ""
 "displayed, if the plugin ships with its own UI. This window will contain "
 "additions by Zrythm (such as the `File` and `Presets` menus)."
 msgstr ""
-"При открытии пользовательского интерфейса плагина будет отображаться окно, "
-"похожее на это, если плагин поставляется с собственным пользовательским "
-"интерфейсом. Это окно будет содержать дополнения Zrythm (например, меню `"
-"Файл (File)` и`Пресеты (Presets)`)."
+"При открытии пользовательского интерфейса плагина будет отображаться "
+"окно, похожее на это, если плагин поставляется с собственным "
+"пользовательским интерфейсом. Это окно будет содержать дополнения Zrythm "
+"(например, меню `Файл (File)` и`Пресеты (Presets)`)."
 
 #: ../../plugins-files/plugins/plugin-window.rst:19
 msgid ""
 "Some plugin UIs cannot be wrapped and will be opened in separate windows "
 "without additions like `File` or `Presets`."
 msgstr ""
-"Некоторые интерфейсы плагинов не могут быть настроены и будут открываться в "
-"отдельных окнах без дополнений, таких как `Файл` или`Пресеты`."
+"Некоторые интерфейсы плагинов не могут быть настроены и будут открываться"
+" в отдельных окнах без дополнений, таких как `Файл` или`Пресеты`."
 
 #: ../../plugins-files/plugins/plugin-window.rst:24
 msgid "Generic UIs"
@@ -439,9 +448,9 @@ msgid ""
 " can edit their parameters in the plugin inspector page (see :ref"
 ":`plugin-inspector-page`)."
 msgstr ""
-"Это применимо только к плагинам :term:`LV2`. Для других типов плагинов вы "
-"можете редактировать их параметры на странице инспектора плагинов (читайте "
-":ref:`plugin-inspector-page`)."
+"Это применимо только к плагинам :term:`LV2`. Для других типов плагинов вы"
+" можете редактировать их параметры на странице инспектора плагинов "
+"(читайте :ref:`plugin-inspector-page`)."
 
 #: ../../plugins-files/plugins/plugin-window.rst:38
 msgid "Bridging"
@@ -454,10 +463,10 @@ msgid ""
 "not compatible with Zrythm and need to be bridged (ie, run as separate "
 "processes)."
 msgstr ""
-"Большинство плагинов добаляются в той же процесс, в котором и Zrythm. Это "
-"имеет то преимущество, что :term:`DSP` работает очень быстро, однако "
-"некоторые интерфейсы плагинов несовместимы с Zrythm и должны быть соединены "
-"мостом (т.е. запускаться как отдельные процессы)."
+"Большинство плагинов добаляются в той же процесс, в котором и Zrythm. Это"
+" имеет то преимущество, что :term:`DSP` работает очень быстро, однако "
+"некоторые интерфейсы плагинов несовместимы с Zrythm и должны быть "
+"соединены мостом (т.е. запускаться как отдельные процессы)."
 
 #: ../../plugins-files/plugins/plugin-window.rst:46
 msgid ""
@@ -466,15 +475,15 @@ msgid ""
 "plugin is required, this will have some performance implications, since "
 "it is required to communicate with the plugin in another process."
 msgstr ""
-"Если возможно проложить мост только для интерфейса, Zrythm сделает это, и "
-"это не повлияет на производительность :term:`DSP`. Если требуется проложить "
-"мост ко всему плагину, это будет иметь некоторые последствия для "
-"производительности, поскольку требуется связь с плагином в другом процессе."
+"Если возможно проложить мост только для интерфейса, Zrythm сделает это, и"
+" это не повлияет на производительность :term:`DSP`. Если требуется "
+"проложить мост ко всему плагину, это будет иметь некоторые последствия "
+"для производительности, поскольку требуется связь с плагином в другом "
+"процессе."
 
 #: ../../plugins-files/plugins/plugin-window.rst:53
 msgid "This process is transparent to the user and only mentioned for reference."
-msgstr ""
-"Этот процесс прозрачен для пользователя и упоминается только для справки."
+msgstr "Этот процесс прозрачен для пользователя и упоминается только для справки."
 
 #: ../../plugins-files/plugins/plugin-window.rst:57
 msgid "Opening Plugins in Bridged Mode"
@@ -488,7 +497,8 @@ msgid ""
 msgstr ""
 "Иногда вам может потребоваться указать Zrythm, чтобы он открывал плагины "
 "определенным образом. Вы можете найти параметры, доступные для каждого "
-"плагина, щелкнув правой кнопкой мыши на плагин внутри :ref:`plugin-browser`."
+"плагина, щелкнув правой кнопкой мыши на плагин внутри :ref:`plugin-"
+"browser`."
 
 #: ../../plugins-files/plugins/scanning.rst:8
 msgid "Scanning for Plugins"
@@ -500,8 +510,8 @@ msgid ""
 "until it is closed. Zrythm supports :term:`LV2`, :term:`VST2`, "
 ":term:`VST3` and :term:`AU` plugins. LV2 is the recommended standard."
 msgstr ""
-"Zrythm будет искать плагины при запуске и будет помнить эти плагины, пока не "
-"будет закрыт. Zrythm поддерживает плагины :term:`LV2`, :term:`VST2`, "
+"Zrythm будет искать плагины при запуске и будет помнить эти плагины, пока"
+" не будет закрыт. Zrythm поддерживает плагины :term:`LV2`, :term:`VST2`, "
 ":term:`VST3` и :term:`AU`. LV2 - рекомендуемый стандарт."
 
 #: ../../plugins-files/plugins/scanning.rst:17
@@ -517,8 +527,8 @@ msgid ""
 "Plugin scanning can be disabled by passing :envvar:`NO_SCAN_PLUGINS` when"
 " running Zrythm."
 msgstr ""
-"Сканирование плагинов можно отключить, используя :envvar:`NO_SCAN_PLUGINS` "
-"при запуске Zrythm."
+"Сканирование плагинов можно отключить, используя "
+":envvar:`NO_SCAN_PLUGINS` при запуске Zrythm."
 
 #: ../../plugins-files/plugins/scanning.rst:25
 msgid "LV2 Scan"
@@ -531,8 +541,8 @@ msgid ""
 "bypass this behavior by passing :envvar:`LV2_PATH`."
 msgstr ""
 "Zrythm будет искать плагины LV2 по `указанным здесь стандартным путям "
-"<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. Вы можете "
-"обойти это, используя :envvar:`LV2_PATH`."
+"<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. Вы "
+"можете обойти это, используя :envvar:`LV2_PATH`."
 
 #: ../../plugins-files/plugins/scanning.rst:33
 msgid "VST2/VST3 Scan"
@@ -582,8 +592,7 @@ msgstr ""
 msgid ""
 "You can bypass this behavior by passing :envvar:`VST_PATH` and "
 ":envvar:`VST3_PATH`."
-msgstr ""
-"Вы можете обойти это, используя :envvar:`VST_PATH` и :envvar:`VST3_PATH`."
+msgstr "Вы можете обойти это, используя :envvar:`VST_PATH` и :envvar:`VST3_PATH`."
 
 #: ../../plugins-files/plugins/scanning.rst:54
 msgid ""
@@ -613,9 +622,9 @@ msgid ""
 "locations on Mac OS X and macOS <https://helpcenter.steinberg.de/hc/en-"
 "us/articles/115000171310>`_."
 msgstr ""
-"Zrythm будет сканировать VST плагины по путям, указанным в `Расположение VST-"
-"плагинов в Mac OS X и macOS <https://helpcenter.steinberg.de/hc/en-us/"
-"articles/115000171310>`_."
+"Zrythm будет сканировать VST плагины по путям, указанным в `Расположение "
+"VST-плагинов в Mac OS X и macOS <https://helpcenter.steinberg.de/hc/en-"
+"us/articles/115000171310>`_."
 
 #: ../../plugins-files/plugins/scanning.rst:68
 msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
@@ -817,3 +826,4 @@ msgstr ""
 #~ "scanned in all directories and "
 #~ "subdirectories specified in :ref:`vst-paths`."
 #~ msgstr ""
+

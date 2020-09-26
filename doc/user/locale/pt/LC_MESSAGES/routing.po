@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 22:19+0100\n"
+"POT-Creation-Date: 2020-09-26 19:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,6 +55,25 @@ msgstr ""
 msgid "This is not operational at the moment."
 msgstr ""
 
+#: ../../routing/control-room.rst:31
+#: ../../routing/making-connections.rst:30
+msgid "Todo"
+msgstr ""
+
+#: ../../routing/control-room.rst:31
+msgid "Move to another chapter."
+msgstr ""
+
+#: ../../routing/inserts-sends.rst:8
+msgid "Inserts & Sends"
+msgstr ""
+
+#: ../../routing/inserts-sends.rst:9
+msgid ""
+"Inserts and sends are covered in :ref:`tracks/inspector-page:MIDI "
+"FX/Inserts` and :ref:`tracks/inspector-page:Aux Sends` respectively."
+msgstr ""
+
 #: ../../routing/intro.rst:6
 msgid "Routing"
 msgstr ""
@@ -84,10 +103,18 @@ msgid ""
 msgstr ""
 
 #: ../../routing/making-connections.rst:28
+msgid "Sidechaining"
+msgstr ""
+
+#: ../../routing/making-connections.rst:30
+msgid "Give an example of how to sidechain (classic bass + kick example)."
+msgstr ""
+
+#: ../../routing/making-connections.rst:34
 msgid "Routing Graph"
 msgstr ""
 
-#: ../../routing/making-connections.rst:29
+#: ../../routing/making-connections.rst:35
 msgid ""
 "It is very helpful to be able to view the routing graph when making "
 "connections. We plan to add this functionality into Zrythm in the future,"
@@ -95,7 +122,7 @@ msgid ""
 " image, so you can view it externally."
 msgstr ""
 
-#: ../../routing/making-connections.rst:35
+#: ../../routing/making-connections.rst:41
 msgid "See :ref:`export-routing-graph` for details."
 msgstr ""
 
@@ -127,74 +154,74 @@ msgstr ""
 msgid "Port Directions"
 msgstr ""
 
-#: ../../routing/ports.rst:26
+#: ../../routing/ports.rst:27
 msgid "Input"
 msgstr ""
 
-#: ../../routing/ports.rst:27
+#: ../../routing/ports.rst:28
 msgid "The port receives signals."
 msgstr ""
 
-#: ../../routing/ports.rst:29
+#: ../../routing/ports.rst:31
 msgid "Output"
 msgstr ""
 
-#: ../../routing/ports.rst:29
+#: ../../routing/ports.rst:32
 msgid "The port sends signals."
 msgstr ""
 
-#: ../../routing/ports.rst:32
+#: ../../routing/ports.rst:35
 msgid "Port Types"
 msgstr ""
 
-#: ../../routing/ports.rst:34
+#: ../../routing/ports.rst:38
 msgid "Audio"
 msgstr ""
 
-#: ../../routing/ports.rst:34
+#: ../../routing/ports.rst:39
 msgid "Ports of this type receive or send raw audio signals."
 msgstr ""
 
-#: ../../routing/ports.rst:37
+#: ../../routing/ports.rst:43
 msgid "Event"
 msgstr ""
 
-#: ../../routing/ports.rst:37
+#: ../../routing/ports.rst:44
 msgid "Event ports are mainly used for routing MIDI signals."
 msgstr ""
 
-#: ../../routing/ports.rst:40
+#: ../../routing/ports.rst:48
 msgid "Control"
 msgstr ""
 
-#: ../../routing/ports.rst:40
+#: ../../routing/ports.rst:49
 msgid ""
 "Control ports are user-editable parameters that can also be automated in "
 "automation lanes."
 msgstr ""
 
-#: ../../routing/ports.rst:44
+#: ../../routing/ports.rst:53
 msgid "CV"
 msgstr ""
 
-#: ../../routing/ports.rst:43
+#: ../../routing/ports.rst:54
 msgid ""
-"CV ports handle continuous signals and can be used to modulate control "
-"ports."
+":term:`CV` ports handle continuous signals and can be used to modulate "
+"control ports."
 msgstr ""
 
-#: ../../routing/ports.rst:47
+#: ../../routing/ports.rst:58
 msgid "Port Connections"
 msgstr ""
 
-#: ../../routing/ports.rst:48
+#: ../../routing/ports.rst:59
 msgid ""
 "Ports can be connected with each other, as long as they are of the same "
 "type and opposite direction, with the exception of CV ports which may be "
 "routed to both CV ports and control ports."
 msgstr ""
 
-#: ../../routing/ports.rst:54
+#: ../../routing/ports.rst:65
 msgid ""
 "When ports are connected, the signal from the source port is added to the"
 " destination port during processing."
@@ -207,5 +234,11 @@ msgstr ""
 #~ "Connections can be made by double "
 #~ "clicking on ports in the :ref:`track-"
 #~ "inspector` or the :ref:`plugin-inspector`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "CV ports handle continuous signals and"
+#~ " can be used to modulate control "
+#~ "ports."
 #~ msgstr ""
 

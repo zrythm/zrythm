@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 00:47+0100\n"
+"POT-Creation-Date: 2020-09-26 19:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -179,59 +179,71 @@ msgstr ""
 #: ../../playback-and-recording/recording.rst:10
 msgid ""
 "Tracks can be armed for recording by clicking the record button, either "
-"inside the track or inside its fader section in the channel or track "
-"inspector (:ref:`track-inspector`). When tracks are armed for recording, "
-"they start listening for signals in their :ref:`track-inputs` and these "
-"signals will be passed along in the processing chain."
+"inside the track or inside its fader section in the channel or "
+":ref:`track inspector <track-inspector>`. When tracks are armed for "
+"recording, they start listening for signals in their :ref:`track-inputs` "
+"and these signals will be passed along in the processing chain."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:17
+#: ../../playback-and-recording/recording.rst:19
+#: ../../playback-and-recording/recording.rst:32
+msgid "Todo"
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:19
+msgid "Add illustration."
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:21
 msgid ""
 "For example, if an instrument track is armed for recording and it has a "
 "MIDI keyboard connected in its inputs, you will hear sound when you press"
 " a key on your MIDI keyboard."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:22
+#: ../../playback-and-recording/recording.rst:27
 msgid "Recording Audio & MIDI"
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:23
+#: ../../playback-and-recording/recording.rst:28
 msgid ""
 "After arming the tracks you want to record events into, enable recording "
 "in :ref:`transport-controls` and press play."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:27
+#: ../../playback-and-recording/recording.rst:32
+msgid "Expand, add illustrations, etc."
+msgstr ""
+
+#: ../../playback-and-recording/recording.rst:34
 msgid "Any signals received will be recorded inside new regions in the timeline."
 msgstr ""
 
-#: ../../playback-and-recording/recording-automation.rst:6
-#: ../../playback-and-recording/recording.rst:31
+#: ../../playback-and-recording/recording.rst:38
 msgid "Recording Automation"
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:32
+#: ../../playback-and-recording/recording.rst:39
 msgid ""
 "Automation can be recorded in `latch` mode or `touch` mode. The mode can "
 "be selected and toggled by clicking on it inside automation tracks."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:37
+#: ../../playback-and-recording/recording.rst:44
 msgid "Latch"
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:42
+#: ../../playback-and-recording/recording.rst:49
 msgid ""
 "In latch mode, automation will be written constantly and overwrite "
 "previous automation."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:46
+#: ../../playback-and-recording/recording.rst:53
 msgid "Touch"
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:51
+#: ../../playback-and-recording/recording.rst:58
 msgid ""
 "In touch mode, automation will be written only when there are changes. "
 "When changes stop being received (after a short amount of time) "
@@ -239,24 +251,10 @@ msgid ""
 " is useful for making minor changes to existing automation."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:58
+#: ../../playback-and-recording/recording.rst:65
 msgid ""
 "Unlike MIDI/audio recording, automation recording does not require "
 "`Record` to be enabled in the :ref:`transport-controls`."
-msgstr ""
-
-#: ../../playback-and-recording/recording-audio.rst:6
-msgid "Recording Audio"
-msgstr ""
-
-#: ../../playback-and-recording/recording-audio.rst:8
-#: ../../playback-and-recording/recording-automation.rst:8
-#: ../../playback-and-recording/recording-midi.rst:8
-msgid "TODO"
-msgstr ""
-
-#: ../../playback-and-recording/recording-midi.rst:6
-msgid "Recording MIDI"
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:8
@@ -339,4 +337,26 @@ msgid ""
 "The metronome samples can be overridden by placing your own samples in "
 "your Zrythm directory. This is a TODO feature."
 msgstr ""
+
+#~ msgid ""
+#~ "Tracks can be armed for recording "
+#~ "by clicking the record button, either"
+#~ " inside the track or inside its "
+#~ "fader section in the channel or "
+#~ "track inspector (:ref:`track-inspector`). When"
+#~ " tracks are armed for recording, they"
+#~ " start listening for signals in their"
+#~ " :ref:`track-inputs` and these signals "
+#~ "will be passed along in the "
+#~ "processing chain."
+#~ msgstr ""
+
+#~ msgid "Recording Audio"
+#~ msgstr ""
+
+#~ msgid "TODO"
+#~ msgstr ""
+
+#~ msgid "Recording MIDI"
+#~ msgstr ""
 

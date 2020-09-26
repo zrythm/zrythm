@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 22:19+0100\n"
+"POT-Creation-Date: 2020-09-26 19:09+0100\n"
 "PO-Revision-Date: 2020-09-25 18:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"manualconfiguration/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -247,8 +246,6 @@ msgid ""
 msgstr "環境設定ダイアログの各セクションについては、以下のセクションで説明します。"
 
 #: ../../configuration/preferences/intro.rst:18
-#: ../../configuration/preferences/intro.rst:189
-#: ../../configuration/preferences/intro.rst:209
 msgid "General"
 msgstr "全般"
 
@@ -294,9 +291,8 @@ msgid "A list of controllers to auto-connect to."
 msgstr "自動接続するコントローラのリスト。"
 
 #: ../../configuration/preferences/intro.rst:47
-#: ../../configuration/preferences/intro.rst:91
-msgid "Paths"
-msgstr "パス"
+msgid "Paths (Global)"
+msgstr ""
 
 #: ../../configuration/preferences/intro.rst:49
 msgid "Global paths."
@@ -371,6 +367,10 @@ msgstr "再描画間隔"
 #: ../../configuration/preferences/intro.rst:85
 msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr "リフレッシュレート（Hz）。0に設定すると、画面のリフレッシュレートが使用されます。"
+
+#: ../../configuration/preferences/intro.rst:91
+msgid "Paths"
+msgstr "パス"
 
 #: ../../configuration/preferences/intro.rst:95
 msgid "VST plugins"
@@ -517,6 +517,11 @@ msgstr "プロジェクト"
 msgid "Project settings."
 msgstr "プロジェクト設定。"
 
+#: ../../configuration/preferences/intro.rst:189
+#, fuzzy
+msgid "General (Project)"
+msgstr "一般的なプロジェクト設定。"
+
 #: ../../configuration/preferences/intro.rst:191
 msgid "General project settings."
 msgstr "一般的なプロジェクト設定。"
@@ -544,6 +549,11 @@ msgstr "Ui"
 #: ../../configuration/preferences/intro.rst:203
 msgid "User interface options."
 msgstr "ユーザーインターフェースのオプション。"
+
+#: ../../configuration/preferences/intro.rst:209
+#, fuzzy
+msgid "General (UI)"
+msgstr "全般"
 
 #: ../../configuration/preferences/intro.rst:211
 msgid "General user interface options."
@@ -951,3 +961,4 @@ msgstr "これらの設定の一部の変更を適用するには、Zrythm を�
 
 #~ msgid "Panning options for mono signals (not used at the moment)."
 #~ msgstr "モノラル信号のパンオプション(現時点では使用されていません)。"
+

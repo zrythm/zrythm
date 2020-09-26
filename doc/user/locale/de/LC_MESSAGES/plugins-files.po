@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 22:19+0100\n"
+"POT-Creation-Date: 2020-09-26 19:09+0100\n"
 "PO-Revision-Date: 2019-09-24 07:14+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: de\n"
@@ -206,28 +206,35 @@ msgid "Filter Buttons"
 msgstr "Filtertasten"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:37
+msgid "Additionally to the above, plugins can be filtered based on their type."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:43
+msgid "Filtering by modulator plugins"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:45
 #, fuzzy
 msgid ""
-"Additionally to the above, you can filter plugins based on their type. "
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
 msgstr ""
 "Zusätzlich zu den oberen kannst du Erweiterungen auch basierend auf ihrem"
 " Typ filtern. Die folgenden Typen gibt es:"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:44
+#: ../../plugins-files/plugins/plugin-browser.rst:51
 msgid "Instantiating Plugins"
 msgstr "Instanziierende Erweiterungen"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:45
+#: ../../plugins-files/plugins/plugin-browser.rst:52
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr "Es gibt eine Reihe von Möglichkeiten, Erweiterungen zu instanziieren:"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:48
+#: ../../plugins-files/plugins/plugin-browser.rst:55
 msgid "Drag-n-Drop"
 msgstr "Ziehen und Ablegen"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:50
+#: ../../plugins-files/plugins/plugin-browser.rst:57
 #, fuzzy
 msgid ""
 "You can drag and drop the selected plugin into empty space in the "
@@ -239,21 +246,21 @@ msgstr ""
 " einen neuen Track zu erstellen. Wenn das Plugin ein Modulator ist, "
 "können Sie es in die Registerkarte Modulatoren legen."
 
-#: ../../plugins-files/plugins/plugin-browser.rst:60
+#: ../../plugins-files/plugins/plugin-browser.rst:67
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or"
 " replace the previous plugin."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:66
+#: ../../plugins-files/plugins/plugin-browser.rst:73
 msgid "If the plugin is a modulator, you can drop it into the Modulators tab."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:73
+#: ../../plugins-files/plugins/plugin-browser.rst:80
 msgid "Double Click/Enter"
 msgstr "Doppelklick/Eingabe"
 
-#: ../../plugins-files/plugins/plugin-browser.rst:75
+#: ../../plugins-files/plugins/plugin-browser.rst:82
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."

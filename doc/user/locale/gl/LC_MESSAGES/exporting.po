@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 17:47+0100\n"
+"POT-Creation-Date: 2020-09-26 19:09+0100\n"
 "PO-Revision-Date: 2020-03-07 09:52+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -24,22 +24,24 @@ msgid "Audio & MIDI"
 msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:10
+#, fuzzy
 msgid ""
 "The Export dialog below is used to export the project or part of the "
-"project into audio or MIDI files."
+"project into audio or MIDI files. It can be accessed by clicking :ref"
+":`zrythm-interface/main-toolbar:Export As`."
 msgstr ""
 "O diálogo de Exportar de abaixo emprégase para exportar o proxecto ou "
 "parte do mesmo en ficheiros de audio ou MIDI."
 
-#: ../../exporting/audio-and-midi.rst:17
+#: ../../exporting/audio-and-midi.rst:19
 msgid "Fields"
 msgstr "Campos"
 
-#: ../../exporting/audio-and-midi.rst:20
+#: ../../exporting/audio-and-midi.rst:22
 msgid "Artist and Genre"
 msgstr "Artista e Xénero"
 
-#: ../../exporting/audio-and-midi.rst:22
+#: ../../exporting/audio-and-midi.rst:24
 msgid ""
 "These will be included as metadata to the exported file if the format "
 "supports it. The title used will be the project title."
@@ -47,49 +49,49 @@ msgstr ""
 "Estes serán incluídos como metadatos no ficheiro exportado se o formato o"
 " permite. O título utilizado será o do proxecto."
 
-#: ../../exporting/audio-and-midi.rst:27
+#: ../../exporting/audio-and-midi.rst:29
 msgid "Format"
 msgstr "Formato"
 
-#: ../../exporting/audio-and-midi.rst:29
+#: ../../exporting/audio-and-midi.rst:31
 msgid "The format to export to. Currently, the following formats are supported"
 msgstr ""
 "O formato ao que exportar. Ata o de agora, están dispoñibles os seguintes"
 " formatos"
 
-#: ../../exporting/audio-and-midi.rst:32
+#: ../../exporting/audio-and-midi.rst:34
 msgid "FLAC - .FLAC"
 msgstr "FLAC - .FLAC"
 
-#: ../../exporting/audio-and-midi.rst:33
+#: ../../exporting/audio-and-midi.rst:35
 msgid "OGG (Vorbis) - .ogg"
 msgstr "OGG (Vorbis) - .ogg"
 
-#: ../../exporting/audio-and-midi.rst:34
+#: ../../exporting/audio-and-midi.rst:36
 msgid "WAV - .wav"
 msgstr "WAV - .wav"
 
-#: ../../exporting/audio-and-midi.rst:35
+#: ../../exporting/audio-and-midi.rst:37
 msgid "MP3 - .mp3"
 msgstr "MP3 - .mp3"
 
-#: ../../exporting/audio-and-midi.rst:36
+#: ../../exporting/audio-and-midi.rst:38
 msgid "MIDI - .mid"
 msgstr "MIDI - .mid"
 
-#: ../../exporting/audio-and-midi.rst:39
+#: ../../exporting/audio-and-midi.rst:41
 msgid "Dither"
 msgstr "Dither"
 
-#: ../../exporting/audio-and-midi.rst:41
+#: ../../exporting/audio-and-midi.rst:43
 msgid "TODO"
 msgstr "TODO"
 
-#: ../../exporting/audio-and-midi.rst:44
+#: ../../exporting/audio-and-midi.rst:46
 msgid "Bit Depth"
 msgstr "Profundidade de Bits"
 
-#: ../../exporting/audio-and-midi.rst:46
+#: ../../exporting/audio-and-midi.rst:48
 msgid ""
 "This is the bit depth that will be used when exporting audio. The higher "
 "the bit depth the larger the file will be, but it will have better "
@@ -98,11 +100,11 @@ msgstr ""
 "Esta é a profundidade de bits que se empregará ao exportar o audio. Canto"
 " máis alta sexa, máis pesado será o arquivo e mellor calidade terá."
 
-#: ../../exporting/audio-and-midi.rst:51
+#: ../../exporting/audio-and-midi.rst:53
 msgid "Time Range"
 msgstr "Intervalo de Tempo"
 
-#: ../../exporting/audio-and-midi.rst:53
+#: ../../exporting/audio-and-midi.rst:55
 msgid ""
 "The time range to export. You can choose to export the whole song "
 "(defined by the start/end markers), the current loop range or a custom "
@@ -112,19 +114,19 @@ msgstr ""
 "completo (definida polos marcadores inicio/fin), o bucle actual ou un "
 "intervalo de tempo personalizado."
 
-#: ../../exporting/audio-and-midi.rst:58
+#: ../../exporting/audio-and-midi.rst:60
 msgid "Filename Pattern"
 msgstr "Patrón do Nome dos Arquivos"
 
-#: ../../exporting/audio-and-midi.rst:60
+#: ../../exporting/audio-and-midi.rst:62
 msgid "The pattern to use as the name of the file."
 msgstr "O patrón a usar como nome do arquivo."
 
-#: ../../exporting/audio-and-midi.rst:63
+#: ../../exporting/audio-and-midi.rst:65
 msgid "Open Exported Directory"
 msgstr "Abrir Directorio de Exportación"
 
-#: ../../exporting/audio-and-midi.rst:64
+#: ../../exporting/audio-and-midi.rst:66
 msgid ""
 "Once export is completed, a dialog will appear with an option to open the"
 " directory the file was saved in using your default file browser program."
@@ -137,24 +139,24 @@ msgstr ""
 msgid "Exporting"
 msgstr "Exportación"
 
-#: ../../exporting/routing-graph.rst:6
+#: ../../exporting/routing-graph.rst:8
 msgid "Routing Graph"
 msgstr ""
 
-#: ../../exporting/routing-graph.rst:7
+#: ../../exporting/routing-graph.rst:9
 msgid ""
 "Zrythm allows you to export its routing graph. This is useful for "
 "debugging and also helps visualizing the internals of Zrythm."
 msgstr ""
 
-#: ../../exporting/routing-graph.rst:11
+#: ../../exporting/routing-graph.rst:13
 msgid ""
 "Clicking the :zbutton:`Export Graph` button will show the following "
 "selection. The routing graph can be exported as either a PNG image or a "
 ".dot graph."
 msgstr ""
 
-#: ../../exporting/routing-graph.rst:19
+#: ../../exporting/routing-graph.rst:21
 msgid ""
 "For large projects, it may take a while to generate the PNG graph and the"
 " resulting image will be extremely large."

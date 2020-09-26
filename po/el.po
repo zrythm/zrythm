@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2020-09-26 01:47+0100\n"
+"POT-Creation-Date: 2020-09-26 19:10+0100\n"
 "PO-Revision-Date: 2020-09-26 18:02+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
-"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/>"
-"\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/"
+">\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -172,23 +172,23 @@ msgid "MIDI Group"
 msgstr "Ομάδα MIDI"
 
 #: inc/audio/curve.h:90 src/audio/curve.c:39
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Exponent"
 msgstr "Εκθέτης"
 
 #: inc/audio/curve.h:92 src/audio/curve.c:42
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Superellipse"
 msgstr "Superellipse"
 
 #: inc/audio/curve.h:94 src/gui/widgets/timeline_arranger.c:1292
 #: src/audio/curve.c:45
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Vital"
 msgstr "Vital"
 
 #: inc/audio/curve.h:96 src/audio/curve.c:48
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Pulse"
 msgstr "Pulse"
 
@@ -588,7 +588,7 @@ msgid "Error loading LV2 bundle dir: "
 msgstr "Σφάλμα φόρτωσης πακέτου LV2: "
 
 #: src/plugins/plugin_manager.c:1111
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Scanned %s plugin: %s"
 msgstr "Σκαναρίστηκε %s πρόσθετο (plugin): %s"
 
@@ -2047,7 +2047,7 @@ msgstr ""
 msgid "Unknown error"
 msgstr ""
 
-#: src/utils/log.c:685
+#: src/utils/log.c:690
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "

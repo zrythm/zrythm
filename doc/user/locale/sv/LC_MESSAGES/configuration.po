@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 19:56+0100\n"
+"POT-Creation-Date: 2020-09-26 19:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -218,8 +218,6 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:18
-#: ../../configuration/preferences/intro.rst:189
-#: ../../configuration/preferences/intro.rst:209
 msgid "General"
 msgstr ""
 
@@ -265,8 +263,7 @@ msgid "A list of controllers to auto-connect to."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:47
-#: ../../configuration/preferences/intro.rst:91
-msgid "Paths"
+msgid "Paths (Global)"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:49
@@ -341,6 +338,10 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:85
 msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:91
+msgid "Paths"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:95
@@ -482,6 +483,10 @@ msgstr ""
 msgid "Project settings."
 msgstr ""
 
+#: ../../configuration/preferences/intro.rst:189
+msgid "General (Project)"
+msgstr ""
+
 #: ../../configuration/preferences/intro.rst:191
 msgid "General project settings."
 msgstr ""
@@ -508,6 +513,10 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:203
 msgid "User interface options."
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:209
+msgid "General (UI)"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:211

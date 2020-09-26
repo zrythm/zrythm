@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2020-09-26 01:47+0100\n"
+"POT-Creation-Date: 2020-09-26 19:10+0100\n"
 "PO-Revision-Date: 2020-08-11 11:32+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
@@ -2137,7 +2137,7 @@ msgstr ""
 msgid "Unknown error"
 msgstr "Bakende-feil"
 
-#: src/utils/log.c:685
+#: src/utils/log.c:690
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "

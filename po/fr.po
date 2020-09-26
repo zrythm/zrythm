@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2020-09-26 01:47+0100\n"
+"POT-Creation-Date: 2020-09-26 19:10+0100\n"
 "PO-Revision-Date: 2020-07-24 14:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
@@ -2093,7 +2093,7 @@ msgstr ""
 msgid "Unknown error"
 msgstr "Option inconnue\n"
 
-#: src/utils/log.c:685
+#: src/utils/log.c:690
 #, c-format
 msgid ""
 "%s has encountered a non-fatal error. It may continue to run but behavior "

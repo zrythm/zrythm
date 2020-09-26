@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 22:19+0100\n"
+"POT-Creation-Date: 2020-09-26 19:09+0100\n"
 "PO-Revision-Date: 2020-09-13 22:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -280,8 +280,6 @@ msgstr ""
 "explicadas a seguir."
 
 #: ../../configuration/preferences/intro.rst:18
-#: ../../configuration/preferences/intro.rst:189
-#: ../../configuration/preferences/intro.rst:209
 msgid "General"
 msgstr "Geral"
 
@@ -334,9 +332,8 @@ msgid "A list of controllers to auto-connect to."
 msgstr "Uma lista de controladores para conectar-los automaticamente."
 
 #: ../../configuration/preferences/intro.rst:47
-#: ../../configuration/preferences/intro.rst:91
-msgid "Paths"
-msgstr "Caminhos"
+msgid "Paths (Global)"
+msgstr ""
 
 #: ../../configuration/preferences/intro.rst:49
 msgid "Global paths."
@@ -417,6 +414,10 @@ msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr ""
 "Taxa de atualização em Hz. Se for definido como 0, a taxa de atualização "
 "do ecrã será usada."
+
+#: ../../configuration/preferences/intro.rst:91
+msgid "Paths"
+msgstr "Caminhos"
 
 #: ../../configuration/preferences/intro.rst:95
 msgid "VST plugins"
@@ -575,6 +576,11 @@ msgstr "Projetos"
 msgid "Project settings."
 msgstr "Configurações do projeto."
 
+#: ../../configuration/preferences/intro.rst:189
+#, fuzzy
+msgid "General (Project)"
+msgstr "Configurações gerais do projeto."
+
 #: ../../configuration/preferences/intro.rst:191
 msgid "General project settings."
 msgstr "Configurações gerais do projeto."
@@ -606,6 +612,11 @@ msgstr "IU"
 #: ../../configuration/preferences/intro.rst:203
 msgid "User interface options."
 msgstr "Opções de interface do utilizador."
+
+#: ../../configuration/preferences/intro.rst:209
+#, fuzzy
+msgid "General (UI)"
+msgstr "Geral"
 
 #: ../../configuration/preferences/intro.rst:211
 msgid "General user interface options."

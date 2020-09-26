@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 22:19+0100\n"
+"POT-Creation-Date: 2020-09-26 19:09+0100\n"
 "PO-Revision-Date: 2020-09-22 15:12+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language: zh_TW\n"
@@ -221,8 +221,6 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:18
-#: ../../configuration/preferences/intro.rst:189
-#: ../../configuration/preferences/intro.rst:209
 msgid "General"
 msgstr "一般"
 
@@ -268,9 +266,8 @@ msgid "A list of controllers to auto-connect to."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:47
-#: ../../configuration/preferences/intro.rst:91
-msgid "Paths"
-msgstr "路徑"
+msgid "Paths (Global)"
+msgstr ""
 
 #: ../../configuration/preferences/intro.rst:49
 msgid "Global paths."
@@ -345,6 +342,10 @@ msgstr "刷新頻率"
 #: ../../configuration/preferences/intro.rst:85
 msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr "以 Hz 單位。若頻率為零，則使用電腦螢幕的刷新頻率。"
+
+#: ../../configuration/preferences/intro.rst:91
+msgid "Paths"
+msgstr "路徑"
 
 #: ../../configuration/preferences/intro.rst:95
 msgid "VST plugins"
@@ -485,6 +486,10 @@ msgstr ""
 msgid "Project settings."
 msgstr ""
 
+#: ../../configuration/preferences/intro.rst:189
+msgid "General (Project)"
+msgstr ""
+
 #: ../../configuration/preferences/intro.rst:191
 msgid "General project settings."
 msgstr ""
@@ -512,6 +517,11 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:203
 msgid "User interface options."
 msgstr ""
+
+#: ../../configuration/preferences/intro.rst:209
+#, fuzzy
+msgid "General (UI)"
+msgstr "一般"
 
 #: ../../configuration/preferences/intro.rst:211
 msgid "General user interface options."

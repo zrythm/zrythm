@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-09 17:47+0100\n"
+"POT-Creation-Date: 2020-09-26 19:09+0100\n"
 "PO-Revision-Date: 2019-08-12 00:18+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -19,42 +19,70 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../modulators/adding-modulators.rst:6
-msgid "Adding Modulators"
-msgstr "Ajout de modulateurs"
-
-#: ../../modulators/adding-modulators.rst:8
-msgid "Modulators are Plugins that have at least one CV output port."
-msgstr "Les modulateurs sont des greffons qui ont au moins un port CV de sortie."
-
-#: ../../modulators/adding-modulators.rst:11
-#: ../../modulators/routing-modulators.rst:8
-msgid "TODO"
-msgstr "ÀFAIRE"
-
-#: ../../modulators/intro.rst:6
+#: ../../modulators/intro.rst:8
 msgid "Modulators"
 msgstr "Modulateurs"
 
-#: ../../modulators/intro.rst:8
-msgid "This feature is not available at the moment."
+#: ../../modulators/intro.rst:9
+msgid ""
+"Modulators are any plugins that have at least one :term:`CV` output port."
+" These CV ports can be routed to any automatable parameter inside Zrythm."
+" For example, you can route an LFO to a filter cutoff parameter to "
+"modulate its value."
 msgstr ""
 
-#: ../../modulators/modulators-tab.rst:6
+#: ../../modulators/intro.rst:16
 msgid "Modulators Tab"
 msgstr "Onglet de modulateurs"
 
-#: ../../modulators/modulators-tab.rst:8
+#: ../../modulators/intro.rst:17
+#, fuzzy
 msgid ""
-"Zrythm has a Modulators tab in the bottom panel that can hold any number "
-"of Modulators. Modulators are associated with Tracks, so each Track will "
-"have its own list of Modulators."
+"Zrythm has a modulators tab in the bottom panel that can hold any number "
+"of modulators."
 msgstr ""
 "Zrythm a un onglet de modulateurs dans le panneau inférieur qui peut "
 "contenir un nombre illimité de modulateurs. Les modulateurs sont associés"
 " aux pistes, ainsi chaque piste aura sa propre liste de modulateurs."
 
-#: ../../modulators/routing-modulators.rst:6
+#: ../../modulators/intro.rst:23
+msgid ""
+"Modulators are associated with the :doc:`../tracks/modulator-track`, "
+"which contains all modulators in the :term:`project`."
+msgstr ""
+
+#: ../../modulators/intro.rst:28
+msgid "Adding Modulators"
+msgstr "Ajout de modulateurs"
+
+#: ../../modulators/intro.rst:29
+msgid ""
+"Modulator plugins can be drag-n-dropped from the :doc:`../plugins-"
+"files/plugins/plugin-browser` into the Modulators tab. Modulator plugins "
+"can be :ref:`filtered inside the plugin browser <plugins-files/plugins"
+"/plugin-browser:Filter Buttons>`."
+msgstr ""
+
+#: ../../modulators/intro.rst:35
 msgid "Routing Modulators"
 msgstr "Routage des modulateurs"
+
+#: ../../modulators/intro.rst:36
+msgid ""
+"Modulator outputs can be routed to automatable :term:`controls <control>`"
+" by clicking on the arrow and following the prompt to select the "
+"destination."
+msgstr ""
+
+#~ msgid "Modulators are Plugins that have at least one CV output port."
+#~ msgstr ""
+#~ "Les modulateurs sont des greffons qui"
+#~ " ont au moins un port CV de "
+#~ "sortie."
+
+#~ msgid "TODO"
+#~ msgstr "ÀFAIRE"
+
+#~ msgid "This feature is not available at the moment."
+#~ msgstr ""
 
