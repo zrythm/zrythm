@@ -21,7 +21,6 @@ manual_po_files = [
   'chords-and-scales.po',
   'configuration.po',
   'contributing.po',
-  'control-surfaces.po',
   'credits.po',
   'editing.po',
   'exporting.po',
