@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
 "PO-Revision-Date: 2020-09-26 18:02+0000\n"
-"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"Last-Translator: Melairz1237 <mr.artem.snegov@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualsessions/ru/>\n"
 "Language: ru\n"
@@ -23,23 +23,23 @@ msgstr ""
 
 #: ../../sessions/importing-exporting/importing-exporting-audio.rst:2
 msgid "Importing/Exporting Audio"
-msgstr ""
+msgstr "Импорт/Экспорт Аудио"
 
 #: ../../sessions/importing-exporting/importing-exporting-midi.rst:2
 msgid "Importing/Exporting MIDI"
-msgstr ""
+msgstr "Импорт/Экспорт MIDI"
 
 #: ../../sessions/importing-exporting/intro.rst:2
 msgid "Importing and Exporting"
-msgstr ""
+msgstr "Импорт и Экспорт"
 
 #: ../../sessions/intro.rst:2
 msgid "Sessions"
-msgstr ""
+msgstr "Сессии"
 
 #: ../../sessions/session-info.rst:2
 msgid "Session Info"
-msgstr ""
+msgstr "Информация о сессии"
 
 #: ../../sessions/session-management-and-compatibility.rst:2
 msgid "Session Management and Compatibility"
