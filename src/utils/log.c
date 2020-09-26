@@ -54,6 +54,7 @@
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -677,7 +678,11 @@ log_idle_cb (
 
           if (ev->log_level ==
                 G_LOG_LEVEL_CRITICAL &&
-              ZRYTHM_HAVE_UI)
+              ZRYTHM_HAVE_UI &&
+              !string_contains_substr (
+                ev->message,
+                "assertion 'size >= 0' failed in "
+                "GtkScrollbar", true))
             {
               char msg[500];
               sprintf (

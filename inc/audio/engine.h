@@ -599,6 +599,9 @@ typedef struct AudioEngine
   /** The metronome. */
   Metronome *       metronome;
 
+  /** Whether the cycle is currently running. */
+  volatile gint     cycle_running;
+
   /** Whether the engine is already set up. */
   bool              setup;
 

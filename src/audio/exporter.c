@@ -315,8 +315,16 @@ export_audio (
     }
 #endif
 
-  zix_sem_wait (
-    &AUDIO_ENGINE->port_operation_lock);
+  /* stop engine and give it some time to stop
+   * running */
+  int run_before =
+    g_atomic_int_get (&AUDIO_ENGINE->run);
+  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+  while (g_atomic_int_get (
+           &AUDIO_ENGINE->cycle_running))
+    {
+      g_usleep (100);
+    }
 
   nframes_t nframes;
   g_return_val_if_fail (
@@ -422,9 +430,6 @@ export_audio (
     }
 #endif
 
-  zix_sem_post (
-    &AUDIO_ENGINE->port_operation_lock);
-
   TRANSPORT->play_state = prev_play_state;
   AUDIO_ENGINE->bounce_mode = BOUNCE_OFF;
   transport_move_playhead (
@@ -432,6 +437,10 @@ export_audio (
     F_NO_SET_CUE_POINT);
 
   sf_close (sndfile);
+
+  /* restart engine */
+  g_atomic_int_set (
+    &AUDIO_ENGINE->run, (guint) run_before);
 
   g_message (
     "successfully exported to %s", info->file_uri);
@@ -679,8 +688,11 @@ exporter_export (ExportSettings * info)
   /* stop engine and give it some time to stop
    * running */
   g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
-  zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
+  while (g_atomic_int_get (
+           &AUDIO_ENGINE->cycle_running))
+    {
+      g_usleep (100);
+    }
   AUDIO_ENGINE->exporting = true;
   info->prev_loop = TRANSPORT->loop;
   TRANSPORT->loop = false;

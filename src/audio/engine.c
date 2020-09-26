@@ -869,10 +869,10 @@ engine_process_prepare (
       break;
     }
 
-  int ret =
+  bool lock_acquired =
     zix_sem_try_wait (&self->port_operation_lock);
 
-  if (!ret && !self->exporting)
+  if (!lock_acquired && !self->exporting)
     {
       g_message (
         "port operation lock is busy, skipping "
@@ -968,6 +968,7 @@ engine_process (
   nframes_t     total_frames_to_process)
 {
   /*g_message ("processing...");*/
+  g_atomic_int_set (&self->cycle_running, 1);
 
   /* calculate timestamps (used for synchronizing
    * external events like Windows MME MIDI) */
@@ -987,6 +988,7 @@ engine_process (
     {
       /*g_message ("ENGINE NOT RUNNING");*/
       /*g_message ("skipping processing...");*/
+      g_atomic_int_set (&self->cycle_running, 0);
       return 0;
     }
 
@@ -1000,6 +1002,7 @@ engine_process (
   if (AUDIO_ENGINE->skip_cycle)
     {
       AUDIO_ENGINE->skip_cycle = 0;
+      g_atomic_int_set (&self->cycle_running, 0);
       return 0;
     }
 
@@ -1149,6 +1152,8 @@ engine_process (
 #endif
 
   /*self->cycle++;*/
+
+  g_atomic_int_set (&self->cycle_running, 0);
 
   /*
    * processing finished, return 0 (OK)

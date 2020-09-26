@@ -144,7 +144,22 @@ undoable_action_init_loaded (
 int
 undoable_action_do (UndoableAction * self)
 {
+#if 0
+  g_debug ("waiting for port operation lock...");
   zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
+  g_debug ("lock acquired");
+#endif
+
+  /* stop engine and give it some time to stop
+   * running */
+  int run_before =
+    g_atomic_int_get (&AUDIO_ENGINE->run);
+  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+  while (g_atomic_int_get (
+           &AUDIO_ENGINE->cycle_running))
+    {
+      g_usleep (100);
+    }
 
   int ret = 0;
 
@@ -248,7 +263,15 @@ undoable_action_do (UndoableAction * self)
 
 #undef DO_ACTION
 
+#if 0
+  g_debug ("releasing lock...");
   zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
+  g_debug ("lock released");
+#endif
+
+  /* restart engine */
+  g_atomic_int_set (
+    &AUDIO_ENGINE->run, (guint) run_before);
 
   return ret;
 }
@@ -261,7 +284,18 @@ undoable_action_do (UndoableAction * self)
 int
 undoable_action_undo (UndoableAction * self)
 {
-  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
+  /*zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);*/
+
+  /* stop engine and give it some time to stop
+   * running */
+  int run_before =
+    g_atomic_int_get (&AUDIO_ENGINE->run);
+  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+  while (g_atomic_int_get (
+           &AUDIO_ENGINE->cycle_running))
+    {
+      g_usleep (100);
+    }
 
   int ret = 0;
 
@@ -366,7 +400,11 @@ undoable_action_undo (UndoableAction * self)
 
 #undef UNDO_ACTION
 
-  zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
+  /*zix_sem_post (&AUDIO_ENGINE->port_operation_lock);*/
+
+  /* restart engine */
+  g_atomic_int_set (
+    &AUDIO_ENGINE->run, (guint) run_before);
 
   return ret;
 }
