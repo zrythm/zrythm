@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"PO-Revision-Date: 2020-09-26 18:02+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualmodulators/ru/>\n"
@@ -36,7 +36,7 @@ msgstr "В разработке"
 
 #: ../../modulators/intro.rst:6
 msgid "Modulators"
-msgstr ""
+msgstr "Модуляторы (Modulators)"
 
 #: ../../modulators/intro.rst:8
 msgid "This feature is not available at the moment."
