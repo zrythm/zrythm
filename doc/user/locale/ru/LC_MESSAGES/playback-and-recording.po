@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"PO-Revision-Date: 2020-09-26 18:02+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/ru/>\n"
@@ -273,7 +273,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:16
 msgid "Record"
-msgstr ""
+msgstr "Запись (Record)"
 
 #: ../../playback-and-recording/transport-controls.rst:17
 msgid "Arms the project for recording."

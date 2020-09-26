@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-09-26 11:50+0000\n"
+"PO-Revision-Date: 2020-09-26 18:02+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/ru/>\n"
@@ -23,13 +23,15 @@ msgstr ""
 
 #: ../../tracks/audio-track.rst:6
 msgid "Audio Track"
-msgstr ""
+msgstr "Аудио трек (Audio Track)"
 
 #: ../../tracks/audio-track.rst:8
 msgid ""
 "An Audio Track contains audio regions and can be used for recording and "
 "playing back audio clips."
 msgstr ""
+"Аудио трек содержит аудиорегионы и может использоваться для записи и "
+"воспроизведения аудиоклипов."
 
 #: ../../tracks/audio-track.rst:15
 #: ../../tracks/bus-track-audio.rst:17
@@ -40,7 +42,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:18
 #: ../../tracks/midi-track.rst:24
 msgid "Top Buttons"
-msgstr ""
+msgstr "Верхние кнопки"
 
 #: ../../tracks/audio-track.rst:17
 #: ../../tracks/chord-track.rst:25
@@ -48,13 +50,13 @@ msgstr ""
 #: ../../tracks/instrument-track.rst:25
 #: ../../tracks/midi-track.rst:26
 msgid "Record"
-msgstr ""
+msgstr "Запись (Record)"
 
 #: ../../tracks/audio-track.rst:18
 #: ../../tracks/instrument-track.rst:26
 #: ../../tracks/midi-track.rst:27
 msgid "Arms the track for recording."
-msgstr ""
+msgstr "Активирует трек для записи."
 
 #: ../../tracks/audio-track.rst:19
 #: ../../tracks/bus-track-audio.rst:19
@@ -66,7 +68,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:20
 #: ../../tracks/midi-track.rst:28
 msgid "Solo"
-msgstr ""
+msgstr "Соло (Solo)"
 
 #: ../../tracks/audio-track.rst:20
 #: ../../tracks/bus-track-audio.rst:20
@@ -76,7 +78,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:21
 #: ../../tracks/midi-track.rst:29
 msgid "Soloes the track."
-msgstr ""
+msgstr "Заглушает все треки, оставляя только выбранный."
 
 #: ../../tracks/audio-track.rst:22
 #: ../../tracks/bus-track-audio.rst:22
@@ -88,7 +90,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:23
 #: ../../tracks/midi-track.rst:31
 msgid "Mute"
-msgstr ""
+msgstr "Заглушить (Mute)"
 
 #: ../../tracks/audio-track.rst:22
 #: ../../tracks/bus-track-audio.rst:22
@@ -98,7 +100,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:23
 #: ../../tracks/midi-track.rst:31
 msgid "Mutes the track."
-msgstr ""
+msgstr "Заглушает трек."
 
 #: ../../tracks/audio-track.rst:25
 #: ../../tracks/bus-track-audio.rst:25
@@ -108,19 +110,19 @@ msgstr ""
 #: ../../tracks/master-track.rst:26
 #: ../../tracks/midi-track.rst:34
 msgid "Bottom Buttons"
-msgstr ""
+msgstr "Нижние кнопки"
 
 #: ../../tracks/audio-track.rst:27
 #: ../../tracks/instrument-track.rst:37
 #: ../../tracks/midi-track.rst:36
 msgid "Lock"
-msgstr ""
+msgstr "Заблокировать (Lock)"
 
 #: ../../tracks/audio-track.rst:28
 #: ../../tracks/instrument-track.rst:38
 #: ../../tracks/midi-track.rst:37
 msgid "Not used at the moment."
-msgstr ""
+msgstr "На данный момент не используется."
 
 #: ../../tracks/audio-track.rst:29
 #: ../../tracks/instrument-track.rst:41
@@ -478,7 +480,7 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:32
 #: ../../tracks/track-types.rst:18
 msgid "Instrument"
-msgstr ""
+msgstr "Инструмент (Instrument)"
 
 #: ../../tracks/inspector-page.rst:31
 msgid ""
@@ -1096,7 +1098,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:21
 msgid "Modulators"
-msgstr ""
+msgstr "Модуляторы (Modulators)"
 
 #: ../../tracks/track-types.rst:23
 msgid "MIDI Group"
