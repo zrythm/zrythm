@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 19:56+0100\n"
-"PO-Revision-Date: 2020-09-25 22:42+0000\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/el/>\n"
@@ -250,7 +250,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "Instrument"
-msgstr ""
+msgstr "Όργανο"
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "These plugins will create an instrument track when added to the project."
@@ -808,4 +808,3 @@ msgstr ""
 #~ "ports, for example for the fader, "
 #~ "pan, and enabled status (on/off)."
 #~ msgstr ""
-

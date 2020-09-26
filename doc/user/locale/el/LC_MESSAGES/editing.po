@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 19:56+0100\n"
-"PO-Revision-Date: 2020-09-25 22:42+0000\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/el/>\n"
@@ -94,32 +94,36 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:44
+#, fuzzy
 msgid "Exponent"
-msgstr ""
+msgstr "Εκθέτης"
 
 #: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponential curve."
 msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:46
+#, fuzzy
 msgid "Superellipse"
-msgstr ""
+msgstr "Superellipse"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."
 msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:49
+#, fuzzy
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "The curve that Vital synth uses, similar to exponential curve."
 msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:52
+#, fuzzy
 msgid "Pulse"
-msgstr ""
+msgstr "Pulse"
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse wave."
@@ -604,7 +608,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:56
 msgid "Duplicate"
-msgstr ""
+msgstr "Δημιουργία διπλότυπου"
 
 #: ../../editing/common-operations.rst:57
 msgid ""
@@ -1504,4 +1508,3 @@ msgstr ""
 #~ " screen or by double-clicking a "
 #~ "region."
 #~ msgstr ""
-

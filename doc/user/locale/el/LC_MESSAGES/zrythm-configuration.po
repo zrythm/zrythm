@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: 2020-09-26 00:18+0000\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-configuration/el/>\n"
@@ -101,7 +101,7 @@ msgstr ""
 
 #: ../../zrythm-configuration/preferences/audio.rst:2
 msgid "Audio"
-msgstr ""
+msgstr "Ήχος"
 
 #: ../../zrythm-configuration/preferences/intro.rst:2
 msgid "Preferences"

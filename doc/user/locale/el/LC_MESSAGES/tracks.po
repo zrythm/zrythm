@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 19:56+0100\n"
-"PO-Revision-Date: 2020-09-25 22:42+0000\n"
+"PO-Revision-Date: 2020-09-26 11:50+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/el/>\n"
@@ -87,7 +87,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:23
 #: ../../tracks/midi-track.rst:31
 msgid "Mute"
-msgstr ""
+msgstr "Σίγαση"
 
 #: ../../tracks/audio-track.rst:22
 #: ../../tracks/bus-track-audio.rst:22
@@ -477,7 +477,7 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:32
 #: ../../tracks/track-types.rst:18
 msgid "Instrument"
-msgstr ""
+msgstr "Όργανο"
 
 #: ../../tracks/inspector-page.rst:31
 msgid ""
@@ -1013,7 +1013,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:20
 msgid "Audio"
-msgstr ""
+msgstr "Ήχος"
 
 #: ../../tracks/track-types.rst:14
 #: ../../tracks/track-types.rst:17
@@ -1028,7 +1028,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:15
 msgid "Audio Group"
-msgstr ""
+msgstr "Ομάδα ήχου"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -1050,15 +1050,15 @@ msgstr ""
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "None"
-msgstr ""
+msgstr "Κανένα"
 
 #: ../../tracks/track-types.rst:16
 msgid "Audio FX"
-msgstr ""
+msgstr "Εφέ ήχου"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord"
-msgstr ""
+msgstr "Συγχορδία"
 
 #: ../../tracks/track-types.rst:17
 #: ../../tracks/track-types.rst:18
@@ -1066,7 +1066,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:24
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord regions & scales"
@@ -1079,7 +1079,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:19
 msgid "Marker"
-msgstr ""
+msgstr "Δείκτης"
 
 #: ../../tracks/track-types.rst:19
 msgid "Markers"
@@ -1087,7 +1087,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:20
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #: ../../tracks/track-types.rst:21
 msgid "Modulators"
@@ -1095,15 +1095,15 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:23
 msgid "MIDI Group"
-msgstr ""
+msgstr "Ομάδα MIDI"
 
 #: ../../tracks/track-types.rst:24
 msgid "MIDI FX"
-msgstr ""
+msgstr "Εφέ MIDI"
 
 #: ../../tracks/track-types.rst:25
 msgid "Tempo"
-msgstr ""
+msgstr "Τέμπο"
 
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."
@@ -1475,4 +1475,3 @@ msgstr ""
 
 #~ msgid "*Input:* **None**, *Output:* **None**"
 #~ msgstr ""
-
