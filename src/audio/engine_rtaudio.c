@@ -216,7 +216,7 @@ engine_rtaudio_setup (
     rtaudio_device_count (self->rtaudio);
   if (dev_count == 0)
     {
-      g_critical ("No devices found");
+      g_warning ("No devices found");
       return -1;
     }
 
@@ -291,7 +291,7 @@ engine_rtaudio_setup (
       &stream_opts, (rtaudio_error_cb_t) error_cb);
   if (ret)
     {
-      g_critical (
+      g_warning (
         "An error occurred opening the RtAudio "
         "stream: %s", rtaudio_error (self->rtaudio));
       return -1;

@@ -29,8 +29,8 @@ interface.
 
 Edit Menu
 ~~~~~~~~~
-The Edit menu various buttons and controls that are used
-often during editing and arranging.
+The Edit menu has various buttons and controls that
+are used often during editing and arranging.
 
 The :ref:`editing` chapter explains these controls
 in detail.

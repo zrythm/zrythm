@@ -1092,7 +1092,7 @@ recreate_pango_layouts (
 }
 
 static void
-on_size_allocate (
+digital_meter_widget_on_size_allocate (
   GtkWidget *          widget,
   GdkRectangle *       allocation,
   DigitalMeterWidget * self)
@@ -1317,7 +1317,9 @@ digital_meter_widget_init (
     G_CALLBACK (on_screen_changed),  self);
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
-    G_CALLBACK (on_size_allocate),  self);
+    G_CALLBACK (
+      digital_meter_widget_on_size_allocate),
+    self);
 
   gtk_widget_set_visible (
     GTK_WIDGET (self), 1);

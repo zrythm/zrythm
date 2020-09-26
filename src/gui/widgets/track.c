@@ -2577,7 +2577,7 @@ recreate_pango_layouts (
 }
 
 static void
-on_size_allocate (
+track_widget_on_size_allocate (
   GtkWidget *    widget,
   GdkRectangle * allocation,
   TrackWidget * self)
@@ -2972,7 +2972,8 @@ track_widget_init (TrackWidget * self)
     G_CALLBACK (on_screen_changed),  self);
   g_signal_connect (
     G_OBJECT (self->drawing_area), "size-allocate",
-    G_CALLBACK (on_size_allocate),  self);
+    G_CALLBACK (track_widget_on_size_allocate),
+    self);
   g_signal_connect (
     G_OBJECT (self), "query-tooltip",
     G_CALLBACK (on_query_tooltip),  self);

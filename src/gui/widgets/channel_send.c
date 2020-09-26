@@ -318,7 +318,7 @@ recreate_pango_layouts (
 }
 
 static void
-on_size_allocate (
+channel_send_widget_on_size_allocate (
   GtkWidget *          widget,
   GdkRectangle *       allocation,
   ChannelSendWidget * self)
@@ -437,7 +437,9 @@ channel_send_widget_init (
     G_CALLBACK (on_screen_changed),  self);
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
-    G_CALLBACK (on_size_allocate),  self);
+    G_CALLBACK (
+      channel_send_widget_on_size_allocate),
+    self);
 }
 
 static void

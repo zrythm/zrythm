@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 19:56+0100\n"
+"POT-Creation-Date: 2020-09-26 22:46+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -226,8 +226,8 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:32
 msgid ""
-"The Edit menu various buttons and controls that are used often during "
-"editing and arranging."
+"The Edit menu has various buttons and controls that are used often during"
+" editing and arranging."
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:35
@@ -244,217 +244,217 @@ msgid ""
 " loading and exporting MIDI or audio."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:44
+#: ../../zrythm-interface/main-toolbar.rst:45
 msgid "New Project"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:44
+#: ../../zrythm-interface/main-toolbar.rst:46
 msgid "Create a new project."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:47
+#: ../../zrythm-interface/main-toolbar.rst:49
 msgid "Save"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:47
+#: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save the current project at its current location."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:50
+#: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Save As"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:50
+#: ../../zrythm-interface/main-toolbar.rst:54
 msgid "Save the current project at a new location."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:53
+#: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Load"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:53
+#: ../../zrythm-interface/main-toolbar.rst:58
 msgid "Load a project."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:57
+#: ../../zrythm-interface/main-toolbar.rst:61
 msgid "Export As"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:56
+#: ../../zrythm-interface/main-toolbar.rst:62
 msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for"
 " more details."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:61
+#: ../../zrythm-interface/main-toolbar.rst:66
 msgid "Export Graph"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:60
+#: ../../zrythm-interface/main-toolbar.rst:67
 msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-"
 "routing-graph` for more details."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:63
+#: ../../zrythm-interface/main-toolbar.rst:70
 msgid "For more information about projects, see the :ref:`projects` chapter."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:67
+#: ../../zrythm-interface/main-toolbar.rst:74
 msgid "View Menu"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:68
+#: ../../zrythm-interface/main-toolbar.rst:75
 msgid ""
 "The View menu contains controls to change the appearance of Zrythm and "
 "its various areas, such as zooming."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:72
+#: ../../zrythm-interface/main-toolbar.rst:79
 msgid "Zoom In"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:72
+#: ../../zrythm-interface/main-toolbar.rst:79
 msgid "Zooms in."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:75
+#: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Zoom Out"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:75
+#: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Zooms out."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:78
+#: ../../zrythm-interface/main-toolbar.rst:85
 msgid "Original Size"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:78
+#: ../../zrythm-interface/main-toolbar.rst:85
 msgid "Zooms back to the default zoom level."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:82
+#: ../../zrythm-interface/main-toolbar.rst:89
 msgid "Best Fit"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:81
+#: ../../zrythm-interface/main-toolbar.rst:88
 msgid ""
 "Zooms in or out as much as required to show all of the events in the "
 "timeline."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:85
+#: ../../zrythm-interface/main-toolbar.rst:92
 msgid "Toggle Left/Right/Bottom Panels"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:85
+#: ../../zrythm-interface/main-toolbar.rst:92
 msgid "Toggles the panel's visibility."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:88
+#: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Toggle Timeline Visibility"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:88
+#: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Toggles the timeline's visibility."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:91
+#: ../../zrythm-interface/main-toolbar.rst:98
 msgid "Help Menu"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:92
+#: ../../zrythm-interface/main-toolbar.rst:99
 msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:95
+#: ../../zrythm-interface/main-toolbar.rst:102
 msgid "Chat"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:96
+#: ../../zrythm-interface/main-toolbar.rst:103
 msgid "Join the Zrythm chatroom on Matrix."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:97
+#: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Manual"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:98
+#: ../../zrythm-interface/main-toolbar.rst:105
 msgid "View the user manual."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:99
+#: ../../zrythm-interface/main-toolbar.rst:106
 msgid "News"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:100
+#: ../../zrythm-interface/main-toolbar.rst:107
 msgid "Show the latest changelog."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:101
+#: ../../zrythm-interface/main-toolbar.rst:108
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:102
+#: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Show all the available keyboard shortcuts."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:103
+#: ../../zrythm-interface/main-toolbar.rst:110
 msgid "Donate"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:104
+#: ../../zrythm-interface/main-toolbar.rst:111
 msgid "Donate to Zrythm through LiberaPay."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:106
+#: ../../zrythm-interface/main-toolbar.rst:113
 msgid "Report a Bug"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:106
+#: ../../zrythm-interface/main-toolbar.rst:113
 msgid "Opens the page to report a new bug."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:109
+#: ../../zrythm-interface/main-toolbar.rst:116
 msgid "Additional Controls"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:110
+#: ../../zrythm-interface/main-toolbar.rst:117
 msgid "The main toolbar also contains the following widgets."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:115
+#: ../../zrythm-interface/main-toolbar.rst:122
 msgid "There are the following buttons next to the name of the current project."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:119
+#: ../../zrythm-interface/main-toolbar.rst:126
 msgid "Scripting Interface"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:119
+#: ../../zrythm-interface/main-toolbar.rst:126
 msgid "Shows the scripting interface. See :ref:`scripting` for more information."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:121
+#: ../../zrythm-interface/main-toolbar.rst:128
 msgid "Log Viewer"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:122
+#: ../../zrythm-interface/main-toolbar.rst:129
 msgid "Displays the log, which gets updated real-time."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:125
+#: ../../zrythm-interface/main-toolbar.rst:132
 msgid "Preferences"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:124
+#: ../../zrythm-interface/main-toolbar.rst:131
 msgid "Shows the preferences dialog. See :ref:`preferences` for more information."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:127
+#: ../../zrythm-interface/main-toolbar.rst:134
 msgid ""
 "The MIDI In widget shows the :term:`MIDI` activity of auto-connected MIDI"
 " devices and the live waveform display shows the audio waveform from the "
@@ -639,4 +639,10 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
+
+#~ msgid ""
+#~ "The Edit menu various buttons and "
+#~ "controls that are used often during "
+#~ "editing and arranging."
+#~ msgstr ""
 

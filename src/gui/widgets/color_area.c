@@ -147,7 +147,7 @@ multipress_pressed (
 }
 
 static void
-on_size_allocate (
+color_area_widget_on_size_allocate (
   GtkWidget    *widget,
   GdkRectangle *allocation,
   ColorAreaWidget * self)
@@ -243,7 +243,8 @@ color_area_widget_init (ColorAreaWidget * self)
     G_CALLBACK (multipress_pressed), self);
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
-    G_CALLBACK (on_size_allocate), self);
+    G_CALLBACK (color_area_widget_on_size_allocate),
+    self);
   g_signal_connect (
     G_OBJECT (self), "draw",
     G_CALLBACK (color_area_draw_cb), self);

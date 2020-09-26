@@ -333,7 +333,7 @@ recreate_pango_layouts (
       PANGO_ELLIPSIZE_NONE, -1); }
 
 static void
-on_size_allocate (
+bar_slider_widget_on_size_allocate (
   GtkWidget *          widget,
   GdkRectangle *       allocation,
   BarSliderWidget * self)
@@ -474,7 +474,9 @@ bar_slider_widget_init (
     G_CALLBACK (on_screen_changed),  self);
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
-    G_CALLBACK (on_size_allocate),  self);
+    G_CALLBACK (
+      bar_slider_widget_on_size_allocate),
+    self);
 }
 
 static void

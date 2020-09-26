@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-24 22:19+0100\n"
+"POT-Creation-Date: 2020-09-26 22:46+0100\n"
 "PO-Revision-Date: 2020-09-13 22:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -265,9 +265,10 @@ msgid "Edit Menu"
 msgstr "Menu Editar"
 
 #: ../../zrythm-interface/main-toolbar.rst:32
+#, fuzzy
 msgid ""
-"The Edit menu various buttons and controls that are used often during "
-"editing and arranging."
+"The Edit menu has various buttons and controls that are used often during"
+" editing and arranging."
 msgstr ""
 "O menu Editar contém vários botões e controles que são usados "
 "frequentemente durante a edição e organização."
@@ -288,43 +289,43 @@ msgstr ""
 "O menu Projeto contém várias ações relacionadas ao projeto, como gravar, "
 "carregar e exportar MIDI ou áudio."
 
-#: ../../zrythm-interface/main-toolbar.rst:44
+#: ../../zrythm-interface/main-toolbar.rst:45
 msgid "New Project"
 msgstr "Novo projeto"
 
-#: ../../zrythm-interface/main-toolbar.rst:44
+#: ../../zrythm-interface/main-toolbar.rst:46
 msgid "Create a new project."
 msgstr "Criar um projeto."
 
-#: ../../zrythm-interface/main-toolbar.rst:47
+#: ../../zrythm-interface/main-toolbar.rst:49
 msgid "Save"
 msgstr "Gravar"
 
-#: ../../zrythm-interface/main-toolbar.rst:47
+#: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save the current project at its current location."
 msgstr "Grave o projeto atual na localização atual dele."
 
-#: ../../zrythm-interface/main-toolbar.rst:50
+#: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Save As"
 msgstr "Gravar como"
 
-#: ../../zrythm-interface/main-toolbar.rst:50
+#: ../../zrythm-interface/main-toolbar.rst:54
 msgid "Save the current project at a new location."
 msgstr "Grave o projeto atual numa localização nova."
 
-#: ../../zrythm-interface/main-toolbar.rst:53
+#: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Load"
 msgstr "Carregar"
 
-#: ../../zrythm-interface/main-toolbar.rst:53
+#: ../../zrythm-interface/main-toolbar.rst:58
 msgid "Load a project."
 msgstr "Carregar um projeto."
 
-#: ../../zrythm-interface/main-toolbar.rst:57
+#: ../../zrythm-interface/main-toolbar.rst:61
 msgid "Export As"
 msgstr "Exportar como"
 
-#: ../../zrythm-interface/main-toolbar.rst:56
+#: ../../zrythm-interface/main-toolbar.rst:62
 msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for"
 " more details."
@@ -332,11 +333,11 @@ msgstr ""
 "Exportar o projeto como áudio ou MIDI. Veja :ref:`export-audio-and-midi` "
 "para mais detalhes."
 
-#: ../../zrythm-interface/main-toolbar.rst:61
+#: ../../zrythm-interface/main-toolbar.rst:66
 msgid "Export Graph"
 msgstr "Exportar gráfico"
 
-#: ../../zrythm-interface/main-toolbar.rst:60
+#: ../../zrythm-interface/main-toolbar.rst:67
 msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-"
 "routing-graph` for more details."
@@ -344,15 +345,15 @@ msgstr ""
 "Exportar o gráfico de roteamento como uma imagem ou gráfico .dot. Veja "
 ":ref:`export-routing-graph` para mais detalhes."
 
-#: ../../zrythm-interface/main-toolbar.rst:63
+#: ../../zrythm-interface/main-toolbar.rst:70
 msgid "For more information about projects, see the :ref:`projects` chapter."
 msgstr "Para mais informações sobre projetos, veja o capítulo :ref:`projects`."
 
-#: ../../zrythm-interface/main-toolbar.rst:67
+#: ../../zrythm-interface/main-toolbar.rst:74
 msgid "View Menu"
 msgstr "Menu vista"
 
-#: ../../zrythm-interface/main-toolbar.rst:68
+#: ../../zrythm-interface/main-toolbar.rst:75
 msgid ""
 "The View menu contains controls to change the appearance of Zrythm and "
 "its various areas, such as zooming."
@@ -360,35 +361,35 @@ msgstr ""
 "O menu Vista contém controles para alterar a aparência do Zrythm e as "
 "diversas áreas dele, como a ampliação."
 
-#: ../../zrythm-interface/main-toolbar.rst:72
+#: ../../zrythm-interface/main-toolbar.rst:79
 msgid "Zoom In"
 msgstr "Aumentar"
 
-#: ../../zrythm-interface/main-toolbar.rst:72
+#: ../../zrythm-interface/main-toolbar.rst:79
 msgid "Zooms in."
 msgstr "Amplia."
 
-#: ../../zrythm-interface/main-toolbar.rst:75
+#: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Zoom Out"
 msgstr "Reduzir"
 
-#: ../../zrythm-interface/main-toolbar.rst:75
+#: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Zooms out."
 msgstr "Diminui."
 
-#: ../../zrythm-interface/main-toolbar.rst:78
+#: ../../zrythm-interface/main-toolbar.rst:85
 msgid "Original Size"
 msgstr "Tamanho original"
 
-#: ../../zrythm-interface/main-toolbar.rst:78
+#: ../../zrythm-interface/main-toolbar.rst:85
 msgid "Zooms back to the default zoom level."
 msgstr "Amplia para o nível de ampliação predefinido."
 
-#: ../../zrythm-interface/main-toolbar.rst:82
+#: ../../zrythm-interface/main-toolbar.rst:89
 msgid "Best Fit"
 msgstr "Melhor ajuste"
 
-#: ../../zrythm-interface/main-toolbar.rst:81
+#: ../../zrythm-interface/main-toolbar.rst:88
 msgid ""
 "Zooms in or out as much as required to show all of the events in the "
 "timeline."
@@ -396,27 +397,27 @@ msgstr ""
 "Aumente ou diminua conforme necessário para mostrar todos os eventos na "
 "cronologia."
 
-#: ../../zrythm-interface/main-toolbar.rst:85
+#: ../../zrythm-interface/main-toolbar.rst:92
 msgid "Toggle Left/Right/Bottom Panels"
 msgstr "Alternar painéis esquerdo/direito/inferior"
 
-#: ../../zrythm-interface/main-toolbar.rst:85
+#: ../../zrythm-interface/main-toolbar.rst:92
 msgid "Toggles the panel's visibility."
 msgstr "Alterna a visibilidade do painel."
 
-#: ../../zrythm-interface/main-toolbar.rst:88
+#: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Toggle Timeline Visibility"
 msgstr "Alternar a visibilidade da cronologia"
 
-#: ../../zrythm-interface/main-toolbar.rst:88
+#: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Toggles the timeline's visibility."
 msgstr "Alterna a visibilidade da cronologia."
 
-#: ../../zrythm-interface/main-toolbar.rst:91
+#: ../../zrythm-interface/main-toolbar.rst:98
 msgid "Help Menu"
 msgstr "Menu Ajuda"
 
-#: ../../zrythm-interface/main-toolbar.rst:92
+#: ../../zrythm-interface/main-toolbar.rst:99
 msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
@@ -424,95 +425,95 @@ msgstr ""
 "O menu Ajuda contém ligações para reportar bugs, doar, conversar e outras"
 " ligações úteis."
 
-#: ../../zrythm-interface/main-toolbar.rst:95
+#: ../../zrythm-interface/main-toolbar.rst:102
 msgid "Chat"
 msgstr "Conversação"
 
-#: ../../zrythm-interface/main-toolbar.rst:96
+#: ../../zrythm-interface/main-toolbar.rst:103
 msgid "Join the Zrythm chatroom on Matrix."
 msgstr "Junte-se à sala de chat Zrythm na Matrix."
 
-#: ../../zrythm-interface/main-toolbar.rst:97
+#: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Manual"
 msgstr "Manual"
 
-#: ../../zrythm-interface/main-toolbar.rst:98
+#: ../../zrythm-interface/main-toolbar.rst:105
 msgid "View the user manual."
 msgstr "Veja o manual do utilizador."
 
-#: ../../zrythm-interface/main-toolbar.rst:99
+#: ../../zrythm-interface/main-toolbar.rst:106
 msgid "News"
 msgstr "Novidades"
 
-#: ../../zrythm-interface/main-toolbar.rst:100
+#: ../../zrythm-interface/main-toolbar.rst:107
 msgid "Show the latest changelog."
 msgstr "Mostrar o último changelog."
 
-#: ../../zrythm-interface/main-toolbar.rst:101
+#: ../../zrythm-interface/main-toolbar.rst:108
 msgid "Keyboard Shortcuts"
 msgstr "Atalhos de teclado"
 
-#: ../../zrythm-interface/main-toolbar.rst:102
+#: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Show all the available keyboard shortcuts."
 msgstr "Mostrar todos os atalhos de teclado disponíveis."
 
-#: ../../zrythm-interface/main-toolbar.rst:103
+#: ../../zrythm-interface/main-toolbar.rst:110
 msgid "Donate"
 msgstr "Doar"
 
-#: ../../zrythm-interface/main-toolbar.rst:104
+#: ../../zrythm-interface/main-toolbar.rst:111
 msgid "Donate to Zrythm through LiberaPay."
 msgstr "Faça uma doação para Zrythm por meio do LiberaPay."
 
-#: ../../zrythm-interface/main-toolbar.rst:106
+#: ../../zrythm-interface/main-toolbar.rst:113
 msgid "Report a Bug"
 msgstr "Reportar um erro"
 
-#: ../../zrythm-interface/main-toolbar.rst:106
+#: ../../zrythm-interface/main-toolbar.rst:113
 msgid "Opens the page to report a new bug."
 msgstr "Abre a página para reportar um novo bug."
 
-#: ../../zrythm-interface/main-toolbar.rst:109
+#: ../../zrythm-interface/main-toolbar.rst:116
 msgid "Additional Controls"
 msgstr "Controles adicionais"
 
-#: ../../zrythm-interface/main-toolbar.rst:110
+#: ../../zrythm-interface/main-toolbar.rst:117
 msgid "The main toolbar also contains the following widgets."
 msgstr "A barra de ferramentas principal também contém os widgets seguintes."
 
-#: ../../zrythm-interface/main-toolbar.rst:115
+#: ../../zrythm-interface/main-toolbar.rst:122
 msgid "There are the following buttons next to the name of the current project."
 msgstr "Existem os seguintes botões ao lado do nome do projeto atual."
 
-#: ../../zrythm-interface/main-toolbar.rst:119
+#: ../../zrythm-interface/main-toolbar.rst:126
 msgid "Scripting Interface"
 msgstr "Interface de script"
 
-#: ../../zrythm-interface/main-toolbar.rst:119
+#: ../../zrythm-interface/main-toolbar.rst:126
 msgid "Shows the scripting interface. See :ref:`scripting` for more information."
 msgstr ""
 "Mostra a interface de scripts. Veja :ref:`scripting` para mais "
 "informações."
 
-#: ../../zrythm-interface/main-toolbar.rst:121
+#: ../../zrythm-interface/main-toolbar.rst:128
 msgid "Log Viewer"
 msgstr "Visualizador de registos"
 
-#: ../../zrythm-interface/main-toolbar.rst:122
+#: ../../zrythm-interface/main-toolbar.rst:129
 msgid "Displays the log, which gets updated real-time."
 msgstr "Exibe o log, que é atualizado em tempo real."
 
-#: ../../zrythm-interface/main-toolbar.rst:125
+#: ../../zrythm-interface/main-toolbar.rst:132
 msgid "Preferences"
 msgstr "Preferências"
 
-#: ../../zrythm-interface/main-toolbar.rst:124
+#: ../../zrythm-interface/main-toolbar.rst:131
 msgid "Shows the preferences dialog. See :ref:`preferences` for more information."
 msgstr ""
 "Mostra o diálogo de preferências. Veja :ref:`preferences` para mais "
 "informações."
 
-#: ../../zrythm-interface/main-toolbar.rst:127
+#: ../../zrythm-interface/main-toolbar.rst:134
 #, fuzzy
 msgid ""
 "The MIDI In widget shows the :term:`MIDI` activity of auto-connected MIDI"

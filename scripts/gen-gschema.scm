@@ -261,7 +261,8 @@ Args:
              "coremidi-rtmidi"))
          (print-enum
            "language"
-           '("ar" "cs" "da" "de" "en" "en_GB" "el"
+           '("af_ZA" "ar" "cs" "da" "de" "en"
+             "en_GB" "el"
              "es" "et" "fi" "fr" "gd" "gl" "hi" "it"
              "ja" "ko" "nb_NO" "nl" "pl" "pt" "pt_BR"
              "ru" "sv" "zh_CN" "zh_TW"))

@@ -146,7 +146,7 @@ pinned_tracklist_widget_hard_refresh (
 }
 
 static void
-on_size_allocate (
+pinned_tracklist_widget_on_size_allocate (
   GtkWidget    *widget,
   GdkRectangle *allocation,
   PinnedTracklistWidget * self)
@@ -181,7 +181,9 @@ pinned_tracklist_widget_setup (
 
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
-    G_CALLBACK (on_size_allocate), self);
+    G_CALLBACK (
+      pinned_tracklist_widget_on_size_allocate),
+    self);
 }
 
 static void

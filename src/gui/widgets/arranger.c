@@ -4965,10 +4965,14 @@ on_drag_end_timeline (
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
     case UI_OVERLAY_ACTION_ERASING:
       {
-        UndoableAction * ua =
-          arranger_selections_action_new_delete (
-            self->sel_to_delete);
-        undo_manager_perform (UNDO_MANAGER, ua);
+        if (arranger_selections_has_any (
+              self->sel_to_delete))
+          {
+            UndoableAction * ua =
+              arranger_selections_action_new_delete (
+                self->sel_to_delete);
+            undo_manager_perform (UNDO_MANAGER, ua);
+          }
         object_free_w_func_and_null (
           arranger_selections_free,
           self->sel_to_delete);

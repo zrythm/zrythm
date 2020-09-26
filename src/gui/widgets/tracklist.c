@@ -286,7 +286,7 @@ on_key_action (
 }
 
 static void
-on_size_allocate (
+tracklist_widget_on_size_allocate (
   GtkWidget *       widget,
   GdkRectangle *    allocation,
   TracklistWidget * self)
@@ -578,7 +578,8 @@ tracklist_widget_init (TracklistWidget * self)
     G_CALLBACK (on_key_action), self);
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
-    G_CALLBACK (on_size_allocate), self);
+    G_CALLBACK (
+      tracklist_widget_on_size_allocate), self);
 }
 
 static void

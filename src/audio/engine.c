@@ -192,7 +192,7 @@ engine_setup (
     }
   if (ret)
     {
-      if (!ZRYTHM_TESTING)
+      if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
         {
           char str[600];
           sprintf (
