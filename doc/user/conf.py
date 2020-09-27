@@ -259,7 +259,7 @@ epub_exclude_files = ['search.html']
 
 # -- Localization ----------------------------------------
 locale_dirs = ['locale/']
-gettext_compact = True
+gettext_compact = 'zrythm-manual'
 
 
 # -- Extension configuration -------------------------------------------------
