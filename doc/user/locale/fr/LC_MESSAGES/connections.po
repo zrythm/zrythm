@@ -2,28 +2,31 @@
 # Copyright (C) 2019-2020 Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-#
-#, fuzzy
+# Sahaathyva <sahaa.thyva@laposte.net>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"connections/fr/>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../connections/intro.rst:6
 msgid "Connections"
-msgstr ""
+msgstr "Connexions"
 
 #: ../../connections/making-connections.rst:8
 msgid "Making Connections"
-msgstr ""
+msgstr "Connecter"
 
 #: ../../connections/making-connections.rst:10
 msgid ""
@@ -31,12 +34,18 @@ msgid ""
 "long as they are compatible. For example, you can route an LFO's CV "
 "output to a filter plugin's cutoff parameter."
 msgstr ""
+"Zrythmpermet à l'utilisateur de connecter quasiment n'importe quel port à un "
+"n'importe quel autre porte, pour peu qu'ils soient compatibles.Par exemple, "
+"vous pouvez router la sortie CV d'un LFO vers le paramètre de cutoff du "
+"filtre d'un greffon."
 
 #: ../../connections/making-connections.rst:15
 msgid ""
 "Connections can be made by double clicking on ports in the :ref:`track-"
 "inspector` or the :ref:`plugin-inspector`."
 msgstr ""
+"Les connexions peuvent être faites en double cliquant sur les ports dans l' "
+":ref: `inspecteur de piste` ou l' :ref: `inspecteur de greffon`."
 
 #: ../../connections/making-connections.rst:22
 msgid ""
@@ -44,10 +53,13 @@ msgid ""
 "edit existing connections. You can also drag the slider to adjust the "
 "level of the amount to send."
 msgstr ""
+"En double cliquant sur le port, vous pouvez sélectionner un port auquel le "
+"raccorder ou modifier les connexions existantes. Vous pouvez également faire "
+"glisser le slider pour ajuster le niveau à envoyer."
 
 #: ../../connections/making-connections.rst:28
 msgid "Routing Graph"
-msgstr ""
+msgstr "Graphe de routage"
 
 #: ../../connections/making-connections.rst:29
 msgid ""
@@ -56,20 +68,28 @@ msgid ""
 " but for now Zrythm allows you to export the whole routing graph as a PNG"
 " image, so you can view it externally."
 msgstr ""
+"Il est très utile de pouvoir voir le graphe de routage quand on crée des "
+"connexions. Nous prévoyons d'ajouter cette fonction dans Zrythm à l'avenir, "
+"mais pour le moment Zrythm peut vous autoriser à exporter tout le graphe de "
+"routage en tant qu'image PNG, de cette manière vous pouvez le consulter "
+"extérieurement."
 
 #: ../../connections/making-connections.rst:35
+#, fuzzy
 msgid "See :ref:`exporting-routing-graph` for details."
-msgstr ""
+msgstr "Cf :ref: `exporting-routing-graph` pour plus de détails."
 
 #: ../../connections/ports.rst:8
 msgid "Ports"
-msgstr ""
+msgstr "Ports"
 
 #: ../../connections/ports.rst:10
 msgid ""
 "Before getting into connections, it is necessary to understand some basic"
 " information about ports."
 msgstr ""
+"Il est nécessaire avant d'aller dans les connexions, de comprendre quelques "
+"informations de base à propos des ports."
 
 #: ../../connections/ports.rst:13
 msgid ""
@@ -87,67 +107,73 @@ msgstr ""
 
 #: ../../connections/ports.rst:25
 msgid "Port Directions"
-msgstr ""
+msgstr "Directions de port"
 
 #: ../../connections/ports.rst:26
 msgid "Input"
-msgstr ""
+msgstr "Entrée"
 
 #: ../../connections/ports.rst:27
 msgid "The port receives signals."
-msgstr ""
+msgstr "Le port reçoit les signaux."
 
 #: ../../connections/ports.rst:29
 msgid "Output"
-msgstr ""
+msgstr "Sortie"
 
 #: ../../connections/ports.rst:29
 msgid "The port sends signals."
-msgstr ""
+msgstr "Le port envoie les signaux."
 
 #: ../../connections/ports.rst:32
 msgid "Port Types"
-msgstr ""
+msgstr "Types de ports"
 
 #: ../../connections/ports.rst:34
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: ../../connections/ports.rst:34
 msgid "Ports of this type receive or send raw audio signals."
-msgstr ""
+msgstr "Les ports de ce type reçoivent ou transmettent des signaux audio bruts."
 
 #: ../../connections/ports.rst:37
 msgid "Event"
-msgstr ""
+msgstr "Événement"
 
 #: ../../connections/ports.rst:37
 msgid "Event ports are mainly used for routing MIDI signals."
 msgstr ""
+"Les ports d'événements sont principalement utilisés pour router des signaux "
+"midi."
 
 #: ../../connections/ports.rst:40
 msgid "Control"
-msgstr ""
+msgstr "Contrôle"
 
 #: ../../connections/ports.rst:40
 msgid ""
 "Control ports are user-editable parameters that can also be automated in "
 "automation lanes."
 msgstr ""
+"Les ports de contrôle sont des paramètres modifiables par l'utilisateur qui "
+"peuvent également être dans des lignes d'automation."
 
 #: ../../connections/ports.rst:44
 msgid "CV"
-msgstr ""
+msgstr "CV"
 
 #: ../../connections/ports.rst:43
 msgid ""
 "CV ports handle continuous signals and can be used to modulate control "
 "ports."
 msgstr ""
+"Les ports CV embarquent des signaux continus et peuvent être utilisés pour "
+"moduler des ports de contrôle."
 
 #: ../../connections/ports.rst:47
 msgid "Port Connections"
-msgstr ""
+msgstr "Connexions de port"
 
 #: ../../connections/ports.rst:48
 msgid ""
@@ -155,10 +181,14 @@ msgid ""
 "type and opposite direction, with the exception of CV ports which may be "
 "routed to both CV ports and control ports."
 msgstr ""
+"Les ports peuvent être connectés entre eux , pour peu qu'ils soient du même "
+"type et de sens opposé, à l'exception des ports CV qui peuvent être routés à "
+"la fois vers des oirts CV et des ports de contrôle."
 
 #: ../../connections/ports.rst:54
 msgid ""
 "When ports are connected, the signal from the source port is added to the"
 " destination port during processing."
 msgstr ""
-
+"Quand des ports sont connectés, le signal du port source est ajoutés au port "
+"de destination pendant le traitement."

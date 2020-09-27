@@ -10,13 +10,14 @@
 # Marc <marc.izquierdo.hu@gmail.com>, 2020.
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
 # Gorro_Rojo <gorro.rojo@gmail.com>, 2020.
+# Theo Iturri <theoiturri@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-26 19:10+0100\n"
-"PO-Revision-Date: 2020-09-27 02:23+0000\n"
-"Last-Translator: Gorro_Rojo <gorro.rojo@gmail.com>\n"
+"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"Last-Translator: Theo Iturri <theoiturri@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -30,7 +31,7 @@ msgstr ""
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:212
 #: inc/audio/engine.h:278
 msgid "Dummy"
-msgstr ""
+msgstr "Dummy"
 
 #: inc/gui/backend/arranger_object.h:88
 #: src/gui/widgets/channel_send_selector.c:185
@@ -143,7 +144,7 @@ msgstr "Audio"
 #: inc/audio/track.h:164 src/project.c:675
 #: src/gui/widgets/route_target_selector_popover.c:163
 msgid "Master"
-msgstr ""
+msgstr "Maestro"
 
 #: inc/audio/track.h:165 src/gui/widgets/event_viewer.c:118
 #: src/gui/widgets/event_viewer.c:589 src/audio/region.c:402
@@ -698,8 +699,9 @@ msgid "_Prefix plugin name"
 msgstr "_Prefijar nombre de complemento"
 
 #: src/plugins/lv2/lv2_gtk.c:352
+#, fuzzy
 msgid "Delete Preset?"
-msgstr ""
+msgstr "Borrar Preset?"
 
 #: src/plugins/lv2/lv2_gtk.c:358 src/utils/dialogs.c:70
 #: resources/ui/string_entry_dialog.ui:61

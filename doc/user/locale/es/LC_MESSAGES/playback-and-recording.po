@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 02:23+0000\n"
-"Last-Translator: Gorro_Rojo <gorro.rojo@gmail.com>\n"
+"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"Last-Translator: Theo Iturri <theoiturri@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/es/>\n"
 "Language: es\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
 msgid "BPM and Time Signatures"
-msgstr ""
+msgstr "BPM y Compás"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
 msgid "BPM"
