@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:19+0100\n"
-"PO-Revision-Date: 2020-09-25 22:42+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualcontributing/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/manualcontributing/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../contributing/intro.rst:6
@@ -59,22 +60,26 @@ msgid "Web Design"
 msgstr "Webデザイン"
 
 #: ../../contributing/intro.rst:24
+#, fuzzy
 msgid ""
 "You are welcome to help us improve the looks and usability of the Zrythm "
 "website. Please join our chatrooms and talk to us."
-msgstr ""
+msgstr "Zrythmウェブサイトのルックスと使いやすさを向上させるお手伝いをいたします。チャットルームに参加して、お話しください。"
 
 #: ../../contributing/intro.rst:29
 msgid "Artwork and Themes"
 msgstr "アートワークとテーマ"
 
 #: ../../contributing/intro.rst:30
+#, fuzzy
 msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized "
 "and some borrowed from other themes. If you would like to contribute "
 "artwork such as icons you can start by creating your own themes and icons"
 " as discussed in :ref:`icon-themes` and :ref:`css`."
 msgstr ""
+"Zrythm は CSS でテーマを設定でき、多くのアイコンを使用しています。アイコンのようなアートワークを投稿したい場合は、 :ref:`icon-"
+"themes` や :ref:`css` で説明されているように、独自のテーマやアイコンを作成することから始めることができます。"
 
 #: ../../contributing/intro.rst:38
 msgid "Testing"
@@ -133,11 +138,14 @@ msgid "Editing this Manual"
 msgstr "このマニュアルのセクション"
 
 #: ../../contributing/intro.rst:66
+#, fuzzy
 msgid ""
 "Click on the :guilabel:`View Source` button at the top of the page to "
 "find which file the page exists in, find the file in the source "
 "distribution and edit it."
 msgstr ""
+"ページの上部にある :guilabel:`View Source` "
+"ボタンをクリックして、ページが存在するファイルを見つけ、ソースディストリビューションでファイルを見つけて編集します。"
 
 #: ../../contributing/intro.rst:71
 msgid ""
@@ -155,7 +163,7 @@ msgstr "寄付"
 msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
-msgstr ""
+msgstr "寄付金の受付には、以下のサービスを利用しています。金額の大小に関わらず、ご寄付をいただくことで、継続的な開発を維持することが可能になります。"
 
 #: ../../contributing/intro.rst:81
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
@@ -465,4 +473,3 @@ msgstr ""
 #~ "in, find the file in the source"
 #~ " distribution and edit it."
 #~ msgstr ""
-

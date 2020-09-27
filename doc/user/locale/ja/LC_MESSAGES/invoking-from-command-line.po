@@ -2,74 +2,78 @@
 # Copyright (C) 2019-2020 The Zrythm contributors
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-#
-#, fuzzy
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 14:36+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"invoking-from-command-line/ja/>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../invoking-from-command-line/intro.rst:10
 msgid "Command Line"
-msgstr ""
+msgstr "コマンドライン"
 
 #: ../../invoking-from-command-line/intro.rst:12
 msgid ""
 "Zrythm comes with a few utilities below that can be used from the "
 ":term:`CLI`."
-msgstr ""
+msgstr "Zrythm には、以下に示すいくつかのユーティリティが付属しており、このユーティリティは :term:`CLI` から使用できます。"
 
 #: ../../invoking-from-command-line/intro.rst:16
 msgid "zrythm"
-msgstr ""
+msgstr "zrythm"
 
 #: ../../invoking-from-command-line/intro.rst:17
 msgid "Zrythm executable."
-msgstr ""
+msgstr "Zrythmの実行ファイル。"
 
 #: ../../invoking-from-command-line/intro.rst:23
 msgid "Prints a list of available options."
-msgstr ""
+msgstr "使用可能なオプションの一覧をプリントします。"
 
 #: ../../invoking-from-command-line/intro.rst:27
 msgid "Pretty-prints the output (where applicable)."
-msgstr ""
+msgstr "出力をプリティープリントします（該当する場合）。"
 
 #: ../../invoking-from-command-line/intro.rst:31
 msgid ""
 "Prints all the user settings. Can be combined with :option:`--pretty` to "
 "get pretty-printed output, like below."
-msgstr ""
+msgstr "すべてのユーザ設定を出力します。 :option:`--pretty` と組み合わせることで、以下のようなきれいな出力を得ることができます。"
 
 #: ../../invoking-from-command-line/intro.rst:40
 msgid "Resets user settings to their default values."
-msgstr ""
+msgstr "ユーザー設定をデフォルト値にリセットします。"
 
 #: ../../invoking-from-command-line/intro.rst:42
 msgid ""
 "Only affects the settings printed with :option:`-p`. This will *not* "
 "affect any files in the :term:`Zrythm user path`."
 msgstr ""
+":option:`-p` で出力される設定にのみ影響します。これは、 :term:`Zrythm user path` 内のファイルには*影響しません*。"
 
 #: ../../invoking-from-command-line/intro.rst:47
 msgid "This will clear ALL your user settings."
-msgstr ""
+msgstr "これにより、すべてのユーザー設定がクリアされます。"
 
 #: ../../invoking-from-command-line/intro.rst:52
 msgid "Prints the Zrythm version."
-msgstr ""
+msgstr "Zrythmのバージョンを出力します。"
 
 #: ../../invoking-from-command-line/intro.rst:55
 msgid "zrythm_launch"
-msgstr ""
+msgstr "zrythm_launch"
 
 #: ../../invoking-from-command-line/intro.rst:56
 msgid ""
@@ -80,4 +84,3 @@ msgstr ""
 
 #~ msgid "TODO"
 #~ msgstr ""
-

@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
 "PO-Revision-Date: 2020-09-27 02:23+0000\n"
-"Last-Translator: Gorro_Rojo <gorro.rojo@gmail.com>\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/es/>\n"
 "Language: es\n"
@@ -503,7 +503,7 @@ msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:25
 msgid "Control Room"
-msgstr ""
+msgstr "Cuarto de Controles"
 
 #: ../../zrythm-interface/right-panel.rst:26
 msgid "The control room is covered in :ref:`control-room`."
