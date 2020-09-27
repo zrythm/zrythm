@@ -8,20 +8,21 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-08-23 12:48+0000\n"
-"Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
+"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
+"manualplayback-and-recording/it/>\n"
 "Language: it\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm"
-"/manualplayback-and-recording/it/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
 msgid "BPM and Time Signatures"
-msgstr ""
+msgstr "BPM e Indicazione di Tempo"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
 msgid "BPM"
@@ -426,4 +427,3 @@ msgstr ""
 
 #~ msgid "Recording MIDI"
 #~ msgstr ""
-
