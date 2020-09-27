@@ -2,13 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # Felix Paulsson <fpaulsson@protonmail.com>, 2020.
+# Mattias Münster <mattiasmun@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-26 19:10+0100\n"
-"PO-Revision-Date: 2020-09-27 02:23+0000\n"
-"Last-Translator: Felix Paulsson <fpaulsson@protonmail.com>\n"
+"PO-Revision-Date: 2020-09-27 07:42+0000\n"
+"Last-Translator: Mattias Münster <mattiasmun@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/zrythm/sv/"
 ">\n"
 "Language: sv\n"
@@ -244,11 +245,11 @@ msgstr ""
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:126
 msgid "Crescendo"
-msgstr ""
+msgstr "Crescendo"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:132
 msgid "Flam"
-msgstr ""
+msgstr "Flam"
 
 #: inc/audio/midi_function.h:58
 msgid "Flip H"
@@ -512,9 +513,9 @@ msgid "Initializing settings"
 msgstr "Initierar inställningar"
 
 #: src/zrythm_app.c:307
-#, fuzzy, c-format
+#, c-format
 msgid "Initializing %s directories"
-msgstr "Initierar kataloger"
+msgstr "Initierar %s kataloger"
 
 #: src/zrythm_app.c:317
 msgid "Initializing logging system"
@@ -1968,8 +1969,8 @@ msgstr "Tidsgränsen för provversionen har uppnåtts. %s kommer nu att bli tyst
 #: src/utils/err_codes.c:32
 msgid "Plugin instantiation failed. See the logs for details"
 msgstr ""
-"Instansning av plugin misslyckades. Var god se loggen för ytterligare "
-"information."
+"Instansiering av plugin misslyckades. Var god se loggen för ytterligare "
+"information"
 
 #: src/utils/err_codes.c:36
 msgid "Object is null. See the logs for details"
@@ -2755,7 +2756,6 @@ msgid "Setup Zrythm"
 msgstr "Ställ in Zrythm"
 
 #: resources/ui/first_run_assistant.ui:52
-#, fuzzy
 msgid ""
 "<b><i>Note: Zrythm is currently in alpha</i></b>\n"
 "\n"
@@ -2763,9 +2763,11 @@ msgid ""
 "This will guide you through the basic setup of Zrythm. First, choose your "
 "language."
 msgstr ""
+"<b><i>Obs: Zrythm är för närvarande i alfa</i></b>\n"
+"\n"
 "Välkommen till Zrythm.\n"
-"Detta är en guide som kommer hjälpa dig igenom en kort konfigurering av "
-"Zrythm. Först, välj ditt språk."
+"Detta leder dig igenom grundläggande installation av Zrythm. Välj först ditt "
+"språk."
 
 #: resources/ui/first_run_assistant.ui:93 resources/ui/preferences.ui:512
 msgid "Language"
@@ -3571,9 +3573,8 @@ msgid "No clip selected"
 msgstr "Inget objekt är valt"
 
 #: resources/ui/quantize_box.ui:61
-#, fuzzy
 msgid "Full Quantize..."
-msgstr "Snabbkvantisera"
+msgstr "Fullständigt kvantisera…"
 
 #: resources/ui/snap_grid_popover.ui:122 resources/ui/snap_grid_popover.ui:244
 #, fuzzy
@@ -3993,9 +3994,8 @@ msgid "Selected editing tool"
 msgstr "Markera-/Töj-verktyget"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:339
-#, fuzzy
 msgid "Selected editing tool."
-msgstr "Markera-/Töj-verktyget"
+msgstr "Valt redigeringsverktyg."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:343
 msgid "Last used MIDI function"
@@ -4167,9 +4167,8 @@ msgid "Audio backend"
 msgstr "Ljud-backend"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:481
-#, fuzzy
 msgid "The audio backend to use."
-msgstr "Välj vilka ljud- och MIDI-backends som ska användas"
+msgstr "Välj vilken ljud-backend som ska användas."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:485
 msgid "RtAudio device"
@@ -4197,9 +4196,8 @@ msgid "Buffer size"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:501
-#, fuzzy
 msgid "Buffer size to pass to the backend."
-msgstr "Testar vald backend"
+msgstr "Buffertstorlek för att passera till backend."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:505
 #, fuzzy
@@ -4207,9 +4205,8 @@ msgid "MIDI backend"
 msgstr "MIDI-backend"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:506
-#, fuzzy
 msgid "The MIDI backend to use."
-msgstr "Välj vilka ljud- och MIDI-backends som ska användas"
+msgstr "Välj vilken MIDI-backend som ska användas."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:510
 #, fuzzy
