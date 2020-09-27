@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-26 18:02+0000\n"
+"PO-Revision-Date: 2020-09-27 15:22+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/ru/>\n"
 "Language: ru\n"
-"Language-Team: Russian "
-"<https://hosted.weblate.org/projects/zrythm/manualtracks/ru/>\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -135,13 +136,13 @@ msgstr "На данный момент не используется."
 #: ../../tracks/instrument-track.rst:41
 #: ../../tracks/midi-track.rst:38
 msgid "Show Lanes"
-msgstr ""
+msgstr "Показать шкалы (Show Lanes)"
 
 #: ../../tracks/audio-track.rst:30
 #: ../../tracks/instrument-track.rst:42
 #: ../../tracks/midi-track.rst:39
 msgid "Toggles the visibility of lanes."
-msgstr ""
+msgstr "Включает/Выключает отображение шкал."
 
 #: ../../tracks/audio-track.rst:32
 #: ../../tracks/bus-track-audio.rst:28
@@ -151,7 +152,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:29
 #: ../../tracks/midi-track.rst:41
 msgid "Show Automation"
-msgstr ""
+msgstr "Показать Автоматизацию (Show Automation)"
 
 #: ../../tracks/audio-track.rst:32
 #: ../../tracks/bus-track-audio.rst:28
@@ -161,7 +162,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:29
 #: ../../tracks/midi-track.rst:41
 msgid "Toggles the visibility of automation tracks."
-msgstr ""
+msgstr "Включает/Выключает отображение треков автоматизации."
 
 #: ../../tracks/audio-track.rst:35
 #: ../../tracks/bus-track-audio.rst:31
@@ -175,7 +176,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:34
 #: ../../tracks/tempo-track.rst:34
 msgid "Inspector"
-msgstr ""
+msgstr "Инспектор (Inspector)"
 
 #: ../../tracks/audio-track.rst:41
 #: ../../tracks/bus-track-audio.rst:37
@@ -189,7 +190,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:40
 #: ../../tracks/tempo-track.rst:40
 msgid "Properties"
-msgstr ""
+msgstr "Свойства (Properties)"
 
 #: ../../tracks/audio-track.rst:44
 #: ../../tracks/bus-track-audio.rst:42
@@ -200,22 +201,22 @@ msgstr ""
 #: ../../tracks/master-track.rst:44
 #: ../../tracks/midi-track.rst:56
 msgid "Direct Out"
-msgstr ""
+msgstr "Выход (Direct Out)"
 
 #: ../../tracks/audio-track.rst:44
 msgid "The track to route the output of the audio track to."
-msgstr ""
+msgstr "Трек, на который будет направлен выходной сигнал этого трека."
 
 #: ../../tracks/audio-track.rst:47
 #: ../../tracks/inspector-page.rst:42
 #: ../../tracks/instrument-track.rst:59
 #: ../../tracks/midi-track.rst:61
 msgid "Inputs"
-msgstr ""
+msgstr "Входы (Inputs)"
 
 #: ../../tracks/audio-track.rst:49
 msgid "Left and right audio input sources used when recording."
-msgstr ""
+msgstr "Левый и правый источники аудиовхода, используемые при записи."
 
 #: ../../tracks/audio-track.rst:53
 #: ../../tracks/bus-track-audio.rst:45
@@ -225,7 +226,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:47
 #: ../../tracks/midi-track.rst:75
 msgid "Sends"
-msgstr ""
+msgstr "Посылы (Sends)"
 
 #: ../../tracks/audio-track.rst:55
 #: ../../tracks/midi-track.rst:132
@@ -237,12 +238,12 @@ msgstr "В разработке"
 #: ../../tracks/instrument-track.rst:77
 #: ../../tracks/midi-track.rst:91
 msgid "Lanes"
-msgstr ""
+msgstr "Шкалы (Lanes)"
 
 #: ../../tracks/audio-track.rst:60
 #: ../../tracks/instrument-track.rst:79
 msgid "These are similar to :ref:`midi-track-lanes`."
-msgstr ""
+msgstr "Они такие же, как и :ref:`midi-track-lanes`."
 
 #: ../../tracks/audio-track.rst:63
 #: ../../tracks/bus-track-audio.rst:50
@@ -252,7 +253,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:52
 #: ../../tracks/midi-track.rst:115
 msgid "Automation Tracks"
-msgstr ""
+msgstr "Треки автоматизации (Automation Tracks)"
 
 #: ../../tracks/audio-track.rst:65
 #: ../../tracks/bus-track-audio.rst:52
@@ -261,7 +262,7 @@ msgstr ""
 #: ../../tracks/instrument-track.rst:84
 #: ../../tracks/master-track.rst:54
 msgid "These are similar to :ref:`midi-track-automation-tracks`."
-msgstr ""
+msgstr "Они такие же, как и :ref:`midi-track-automation-tracks`."
 
 #: ../../tracks/automation.rst:8
 msgid "Automation"
@@ -269,7 +270,7 @@ msgstr "Автоматизация (Automation)"
 
 #: ../../tracks/automation.rst:11
 msgid "Automation Lanes"
-msgstr ""
+msgstr "Шкалы автоматизации (Automation Lanes)"
 
 #: ../../tracks/automation.rst:12
 msgid ""
@@ -277,16 +278,21 @@ msgid ""
 " of Plugins they contain will have an option to show their Automation "
 "Lanes."
 msgstr ""
+"Треки, которые имеют автоматизируемые элементы управления, такие как Фейдер "
+"(Fader), Панорамирование (Pan) и параметры своих плагинов, имеют возможность "
+"отображать свои шкалы автоматизации."
 
 #: ../../tracks/automation.rst:17
 msgid ""
 "You can choose which parameter you want to automate in each Automation "
 "Lane."
 msgstr ""
+"Вы можете выбрать, какой параметр вы хотите автоматизировать на каждой шкале "
+"автоматизации."
 
 #: ../../tracks/automation.rst:24
 msgid "Editing Automation"
-msgstr ""
+msgstr "Редактирование автоматизации"
 
 #: ../../tracks/automation.rst:25
 msgid ""
@@ -294,16 +300,21 @@ msgid ""
 "creating automation events inside the automation editor. See the "
 ":ref:`editing` chapter for details."
 msgstr ""
+"Редактирование автоматизации состоит из создания регионов автоматизации на "
+"таймлайне, а затем создания событий автоматизации внутри редактора "
+"автоматизации. Читайте подробнее в :ref:`editing`."
 
 #: ../../tracks/bus-track-audio.rst:8
 msgid "Audio FX Track"
-msgstr ""
+msgstr "Аудио FX трек (Audio FX Track)"
 
 #: ../../tracks/bus-track-audio.rst:10
 msgid ""
 "Audio FX tracks can be used for effects by sending audio signals to them "
 "with :ref:`track-sends`."
 msgstr ""
+"Аудио FX треки можно использовать для наложения эффектов, посылая на них "
+"аудиосигналы с помощью :ref:`track-sends`."
 
 #: ../../tracks/bus-track-audio.rst:39
 #: ../../tracks/bus-track-midi.rst:39
@@ -316,45 +327,47 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:42
 #: ../../tracks/tempo-track.rst:42
 msgid "Track Name"
-msgstr ""
+msgstr "Название трека (Track Name)"
 
 #: ../../tracks/bus-track-audio.rst:40
 #: ../../tracks/bus-track-midi.rst:40
 #: ../../tracks/group-track-audio.rst:44
 msgid "The unique name of the track."
-msgstr ""
+msgstr "Уникальное название трека."
 
 #: ../../tracks/bus-track-audio.rst:42
 msgid "The track to route the output of the audio bus track to."
-msgstr ""
+msgstr "Трек, на который будет направлен выходной аудиосигнал этого трека."
 
 #: ../../tracks/bus-track-audio.rst:47
 #: ../../tracks/group-track-audio.rst:51
 #: ../../tracks/master-track.rst:49
 msgid "These are similar to :ref:`instrument-track-sends`."
-msgstr ""
+msgstr "Они такие же, как :ref:`instrument-track-sends`."
 
 #: ../../tracks/bus-track-midi.rst:8
 msgid "MIDI FX Track"
-msgstr ""
+msgstr "MIDI FX трек (MIDI FX Track)"
 
 #: ../../tracks/bus-track-midi.rst:10
 msgid ""
 "MIDI FX tracks can be used for MIDI effects by sending MIDI signals to "
 "them using :ref:`track-sends`."
 msgstr ""
+"MIDI FX треки можно использовать для наложения MIDI-эффектов, посылая им "
+"MIDI-сигналы с помощью :ref:`track-sends`."
 
 #: ../../tracks/bus-track-midi.rst:42
 msgid "The track to route the output of the MIDI bus track to."
-msgstr ""
+msgstr "Трек, на который будет направлен выходной MIDI-сигнал этого трека."
 
 #: ../../tracks/bus-track-midi.rst:47
 msgid "These are similar to :ref:`midi-track-sends`."
-msgstr ""
+msgstr "Они такие же, как :ref:`midi-track-sends`."
 
 #: ../../tracks/chord-track.rst:8
 msgid "Chord Track"
-msgstr ""
+msgstr "Трек аккордов"
 
 #: ../../tracks/chord-track.rst:10
 #: ../../tracks/modulator-track.rst:10
@@ -364,24 +377,29 @@ msgid ""
 " when the song is using a particular chord or scale. Its main purpose is "
 "to assist with chord progressions."
 msgstr ""
+"Трек аккордов содержит аккорды и гаммы, которые используются для указания, "
+"когда в песне используется определенный аккорд или гамма. Его основная цель -"
+" помочь с последовательностью аккордов."
 
 #: ../../tracks/chord-track.rst:18
 #: ../../tracks/modulator-track.rst:18
 #: ../../tracks/tempo-track.rst:18
 msgid "For more information, see the section :doc:`../chords-and-scales/intro`."
 msgstr ""
+"Для получения дополнительной информации читайте :doc:`../chords-and-scales/"
+"intro`."
 
 #: ../../tracks/chord-track.rst:25
 #: ../../tracks/modulator-track.rst:25
 #: ../../tracks/tempo-track.rst:25
 msgid "Arms the track for recording. Not used at the moment."
-msgstr ""
+msgstr "Активирует трек для записи. На данный момент не используется."
 
 #: ../../tracks/chord-track.rst:28
 #: ../../tracks/modulator-track.rst:28
 #: ../../tracks/tempo-track.rst:28
 msgid "Soloes the track. Not used at the moment."
-msgstr ""
+msgstr "Заглушает все треки кроме этого. Не используется на данный момент."
 
 #: ../../tracks/chord-track.rst:30
 #: ../../tracks/modulator-track.rst:30
@@ -390,30 +408,35 @@ msgid ""
 "Mutes the track. This causes the project to ignore any scale or chord "
 "events."
 msgstr ""
+"Заглушает трек. Это заставляет проект игнорировать любые события гаммы или "
+"аккорда."
 
 #: ../../tracks/chord-track.rst:43
 #: ../../tracks/modulator-track.rst:43
 #: ../../tracks/tempo-track.rst:43
 msgid "The name of the chord track."
-msgstr ""
+msgstr "Название трека аккордов."
 
 #: ../../tracks/creating-tracks.rst:6
 msgid "Creating Tracks"
-msgstr ""
+msgstr "Создание треков"
 
 #: ../../tracks/creating-tracks.rst:9
 msgid "Blank Tracks"
-msgstr ""
+msgstr "Пустые треки"
 
 #: ../../tracks/creating-tracks.rst:11
 msgid ""
 "To add an empty track, right click on empty space in the Tracklist and "
 "select the type of track you want to add."
 msgstr ""
+"Чтобы добавить пустой трек, щелкните правой кнопкой мыши на любое пустое "
+"место в списке треков (Tracklist) и выберите тип трека, который вы хотите "
+"добавить."
 
 #: ../../tracks/creating-tracks.rst:18
 msgid "Creating Tracks From Plugins"
-msgstr ""
+msgstr "Создание треков с помощью плагинов"
 
 #: ../../tracks/creating-tracks.rst:20
 msgid ""
@@ -422,14 +445,18 @@ msgid ""
 "plugin is an instrument plugin, an instrument Track will be created. If "
 "the plugin is an effect, a bus Track will be created."
 msgstr ""
+"Плагины можно взять и перетащить из браузера плагинов в пустое место в "
+"Списке треков (Tracklist) или Микшере (Mixer) для их добавления. Если плагин "
+"является плагином инструмента, будет создан инструментальный трек. Если "
+"плагин является эффектом, будет создан Трек шины (Bus Track)."
 
 #: ../../tracks/creating-tracks.rst:26
 msgid "See :ref:`instantiating-plugins` for how to instantiate plugins."
-msgstr ""
+msgstr "Читайте :ref:`instantiating-plugins` для добавления плагинов."
 
 #: ../../tracks/creating-tracks.rst:30
 msgid "Creating Audio Tracks From Audio Files"
-msgstr ""
+msgstr "Создание Аудио треков из аудиофайлов"
 
 #: ../../tracks/creating-tracks.rst:32
 msgid ""
@@ -438,20 +465,27 @@ msgid ""
 "Tracklist or Mixer. This will create an Audio Track containing a single "
 "Audio Clip at the current Playhead position."
 msgstr ""
+"Аналогичным образом, чтобы создать Аудио трек (Audio Track) из аудиофайла ("
+"WAV, FLAC и т. д.), Вы можете перетащить аудиофайл из файлового браузера ("
+"File Browser) в пустое место в списке треков (Tracklist) или микшере (Mixer)"
+". Это создаст Аудио трек, содержащий один аудиоклип в текущей позиции "
+"курсора."
 
 #: ../../tracks/creating-tracks.rst:39
 msgid "Creating Tracks by Duplicating"
-msgstr ""
+msgstr "Создание треков путем дублирования"
 
 #: ../../tracks/creating-tracks.rst:41
 msgid ""
 "Most Tracks can be duplicated by right clicking inside the Track and "
 "selecting :zbutton:`Duplicate`."
 msgstr ""
+"Большинство треков можно скопировать, щелкнув правой кнопкой мыши внутри "
+"трека и нажав :zbutton:`Дублировать (Dublicate)`."
 
 #: ../../tracks/group-track-audio.rst:8
 msgid "Audio Group Track"
-msgstr ""
+msgstr "Аудио-групповой трек (Audio Group Track)"
 
 #: ../../tracks/group-track-audio.rst:10
 msgid ""
@@ -460,20 +494,26 @@ msgid ""
 "\"Drums\" audio group track so you can add effects and control their "
 "volume collectively instead of separately."
 msgstr ""
+"Аудио-групповые треки можно использовать для группировки аудиосигналов "
+"посредством прямой маршрутизации. Например, бочки, малые барабаны и хай-хэты "
+"можно направить на трек звуковой группы «Ударные», чтобы вы могли добавлять "
+"эффекты и управлять их громкостью вместе, а не по отдельности."
 
 #: ../../tracks/group-track-audio.rst:46
 msgid "The track to route the output of the audio group track to."
-msgstr ""
+msgstr "Трек, на который будет направлен выходной аудиосигнал этого трека."
 
 #: ../../tracks/group-track-midi.rst:8
 msgid "MIDI Group Track"
-msgstr ""
+msgstr "MIDI-групповой трек"
 
 #: ../../tracks/group-track-midi.rst:10
 msgid ""
 "These are similar to :ref:`audio-group-track`, except that they act on "
 "MIDI signals instead of audio signals."
 msgstr ""
+"Они такие же, как :ref:`audio-group-track`, за исключением того, что "
+"работают с MIDI-сигналами вместо аудиосигналов."
 
 #: ../../tracks/inspector-page.rst:8
 #: ../../tracks/overview.rst:60
@@ -485,22 +525,24 @@ msgid ""
 "Each track will display its page in the inspector when selected. "
 "Depending on the track, the properties shown will be different."
 msgstr ""
+"При выборе каждого трека в инспекторе будет отображаться его страница. В "
+"зависимости от трека отображаемые свойства будут разными."
 
 #: ../../tracks/inspector-page.rst:18
 msgid "Track Properties"
-msgstr ""
+msgstr "Свойства трека (Track Properties)"
 
 #: ../../tracks/inspector-page.rst:20
 msgid "Track properties are basic properties that the track has."
-msgstr ""
+msgstr "Свойства трека - это основные свойства трека."
 
 #: ../../tracks/inspector-page.rst:28
 msgid "Name of the track"
-msgstr ""
+msgstr "Название этого трека"
 
 #: ../../tracks/inspector-page.rst:32
 msgid "The track that this track routes its output to."
-msgstr ""
+msgstr "Трек, на который этот трек направляет свой выходной сигнал."
 
 #: ../../tracks/inspector-page.rst:35
 #: ../../tracks/track-types.rst:18
@@ -512,20 +554,24 @@ msgid ""
 "If the track is an :ref:`instrument-track`, the instrument plugin for "
 "this track."
 msgstr ""
+"Если этот трек является :ref:`instrument-track`, тут находится плагин "
+"инструмента для этого трека."
 
 #: ../../tracks/inspector-page.rst:44
 msgid "If the track takes input, there will be an input selection section."
-msgstr ""
+msgstr "Если трек принимает входной сигнал, тут будет раздел выбора входа."
 
 #: ../../tracks/inspector-page.rst:51
 msgid "MIDI FX/Inserts"
-msgstr ""
+msgstr "MIDI FX/ Инсерты (MIDI FX/Inserts)"
 
 #: ../../tracks/inspector-page.rst:53
 msgid ""
 "These are slots for dropping audio or MIDI effects that will be applied "
 "to the signal as it passes through the track."
 msgstr ""
+"Это слоты для наложения аудио или MIDI-эффектов, которые будут применяться к "
+"входному сигналу, когда он проходит через этот трек."
 
 #: ../../tracks/inspector-page.rst:59
 msgid ""
@@ -533,10 +579,12 @@ msgid ""
 "the instruments in instrument tracks, or before the inserts in MIDI "
 "tracks."
 msgstr ""
+"MIDI FX обрабатываются после входного сигнала и MIDI событий, но перед "
+"инструментами в инструментальных треках или перед инсертами в MIDI треках."
 
 #: ../../tracks/inspector-page.rst:63
 msgid "Only MIDI and Instrument tracks support MIDI FX."
-msgstr ""
+msgstr "Только MIDI и инструментальные треки поддерживают MIDI FX."
 
 #: ../../tracks/inspector-page.rst:65
 msgid ""
@@ -544,21 +592,24 @@ msgid ""
 "be added onto the signal coming from the instrument, and for other tracks"
 " they will be added on the incoming signal."
 msgstr ""
+"Инсерты обрабатываются в особом порядке. Для инструментальных треков инсерты "
+"будут добавлены к сигналу, выходящему из инструмента, а для других треков "
+"они будут добавлены к входящему сигналу."
 
 #: ../../tracks/inspector-page.rst:70
 #: ../../tracks/modulator-track.rst:8
 #: ../../tracks/tempo-track.rst:8
 #: ../../tracks/track-types.rst:31
 msgid "Todo"
-msgstr ""
+msgstr "В разработке"
 
 #: ../../tracks/inspector-page.rst:70
 msgid "Separate MIDI FX/inserts and expand more."
-msgstr ""
+msgstr "Делите между собой MIDI FX/Инсерты и расширяйте свои возможности."
 
 #: ../../tracks/inspector-page.rst:75
 msgid "Aux Sends"
-msgstr ""
+msgstr "Aux посылы (Sends)"
 
 #: ../../tracks/inspector-page.rst:77
 msgid ""
@@ -566,6 +617,9 @@ msgid ""
 "tracks or plugin side-chain inputs. These are generally useful for side-"
 "chaining or applying additional effects to channels, such as reverb."
 msgstr ""
+"Это `aux посылы <https://en.wikipedia.org/wiki/Aux-send>`_ другим трекам или "
+"входам плагина. Обычно они полезны для сайдчейна (side-chain) или применения "
+"дополнительных эффектов к каналам, таких как реверберация (Reverb)."
 
 #: ../../tracks/inspector-page.rst:87
 msgid ""
@@ -574,14 +628,20 @@ msgid ""
 "fader is processed, and the post-fader slots will send the signal after "
 "the fader is applied."
 msgstr ""
+"Первые 6 слотов предназначены для пре-фейдерных посылов (Pre-fader send), а "
+"последние 3 слота - для пост-фейдерных посылов (Post-fader send). Слоты пре-"
+"фейдерных посылов будут отправлять сигнал до обработки фейдером (Fader), а "
+"слоты пост-фейдерных посылов будут отправлять сигнал после обработки "
+"фейдером."
 
 #: ../../tracks/inspector-page.rst:94
 msgid "Fader"
-msgstr ""
+msgstr "Фейдер (Fader)"
 
 #: ../../tracks/inspector-page.rst:95
 msgid "Fader section to control the volume and stereo balance."
 msgstr ""
+"Раздел Фейдера, предназначенный для управления громкостью и стереобалансом."
 
 #: ../../tracks/inspector-page.rst:100
 msgid ""
@@ -589,6 +649,10 @@ msgid ""
 "respective widgets. You can reset them to their default positions with "
 ":menuselection:`Right click --> Reset`."
 msgstr ""
+"Чтобы изменить величину стерео баланса (Stereo Balance) или Фейдера (Fader), "
+"зажмите левую кнопку мыши на виджете и перетащите соответствующий виджет. Вы "
+"можете вернуть их в исходное положение с помощью :menuselection:`Правая "
+"кнопка мыши --> Cброс (Reset)`."
 
 #: ../../tracks/inspector-page.rst:105
 msgid ""
@@ -596,50 +660,57 @@ msgid ""
 " live. The following values are displayed next to the meter for "
 "additional reference."
 msgstr ""
+"Измеритель (Meter) отображает амплитуду сигнала в децибелах (dBFS) во время "
+"его обработки в реальном времени. Следующие значения отображаются рядом с "
+"измерителем для дополнительной информации."
 
 #: ../../tracks/inspector-page.rst:110
 msgid "Peak"
-msgstr ""
+msgstr "Пик сигнала (Peak)"
 
 #: ../../tracks/inspector-page.rst:111
 msgid "Peak signal value."
-msgstr ""
+msgstr "Пиковое, высшее значение сигнала."
 
 #: ../../tracks/inspector-page.rst:114
 msgid "RMS"
-msgstr ""
+msgstr "Среднее квадратическое (RMS)"
 
 #: ../../tracks/inspector-page.rst:115
 msgid "Root Mean Square of the signal value."
-msgstr ""
+msgstr "Среднее квадратическое значения сигнала."
 
 #: ../../tracks/inspector-page.rst:117
 msgid "The following controls are available for controlling the signal flow."
-msgstr ""
+msgstr "Следующие элементы управления доступны для управления потоком сигнала."
 
 #: ../../tracks/inspector-page.rst:122
 msgid "Arm the track for recording."
-msgstr ""
+msgstr "Активировать трек для записи."
 
 #: ../../tracks/inspector-page.rst:126
 msgid "Mutes the track, meaning no sound will be sent to its direct out."
-msgstr ""
+msgstr "Заглушить трек, звук не будет передаваться на его выходной сигнал."
 
 #: ../../tracks/inspector-page.rst:129
 msgid ""
 "The track will still be processed, so if you are looking to decrease "
 ":term:`DSP` usage, try disabling plugins instead."
 msgstr ""
+"Трек все равно будет обрабатываться, поэтому, если вы хотите уменьшить "
+"использование :term:`DSP`, попробуйте вместо этого отключить плагины."
 
 #: ../../tracks/inspector-page.rst:135
 msgid ""
 "Soloes the track. If any track is soloed, only the soloed tracks will "
 "produce sounds."
 msgstr ""
+"Заглушить все треки кроме этого. Если какой-либо трек является сольным, "
+"только он будет воспроизводить звуки."
 
 #: ../../tracks/inspector-page.rst:139
 msgid "Listen"
-msgstr ""
+msgstr "Слушать (Listen)"
 
 #: ../../tracks/inspector-page.rst:140
 msgid ""
@@ -647,31 +718,35 @@ msgid ""
 "muting them. The dim amount can be controlled in the control room "
 "described in :ref:`control-room`."
 msgstr ""
+"Похож на соло (Solo), за исключением того, что он уменьшает громкость других "
+"треков, а не глушит их полностью. Уровень уменьшения громкости можно "
+"контролировать в комнате управления (Control Room), описанной в: :ref"
+":`control-room`."
 
 #: ../../tracks/inspector-page.rst:145
 #: ../../tracks/inspector-page.rst:150
 msgid "Not operational at the moment."
-msgstr ""
+msgstr "В данный момент не работает."
 
 #: ../../tracks/inspector-page.rst:148
 msgid "Channel Settings"
-msgstr ""
+msgstr "Настройки канала (Channel Settings)"
 
 #: ../../tracks/inspector-page.rst:153
 msgid "Comments"
-msgstr ""
+msgstr "Комментарии (Comments)"
 
 #: ../../tracks/inspector-page.rst:154
 msgid "User comments."
-msgstr ""
+msgstr "Комментарии к треку. Можно изменить."
 
 #: ../../tracks/inspector-page.rst:159
 msgid "This is not implemented yet."
-msgstr ""
+msgstr "Это еще не реализовано."
 
 #: ../../tracks/instrument-track.rst:8
 msgid "Instrument Track"
-msgstr ""
+msgstr "Инструментальный трек (Instrument Track)"
 
 #: ../../tracks/instrument-track.rst:10
 msgid ""
@@ -679,60 +754,67 @@ msgid ""
 " tracks contain a special `instrument slot` in the mixer that will get "
 "processed `after` the MIDI FX section and `before` the Inserts section."
 msgstr ""
+"Инструментальный трек используется для синтезаторов и других инструментов. "
+"Инструментальные треки содержат в Микшере (Mixer) специальный `"
+"инструментальный слот` (Instrument Slot), который будет обрабатываться "
+"`после` MIDI FX и `перед` инсертами (Inserts)."
 
 #: ../../tracks/instrument-track.rst:19
 msgid ""
 "Instrument tracks are similar to MIDI tracks, except that they produce "
 "audio instead of :term:`MIDI`."
 msgstr ""
+"Инструментальные треки похожи на MIDI-треки (MIDI Track), за исключением "
+"того, что они производят Аудио вместо :term:`MIDI`."
 
 #: ../../tracks/instrument-track.rst:32
 msgid "Show UI"
-msgstr ""
+msgstr "Открыть интерфейс (Show UI)"
 
 #: ../../tracks/instrument-track.rst:32
 msgid "Displays the UI of the main plugin."
-msgstr ""
+msgstr "Открывает пользовательский интерфейс основного плагина."
 
 #: ../../tracks/instrument-track.rst:39
 msgid "Freeze"
-msgstr ""
+msgstr "Заморозить (Freeze)"
 
 #: ../../tracks/instrument-track.rst:40
 msgid "Freezes the track (not operational at the moment)."
-msgstr ""
+msgstr "Замораживает трек (в данный момент не работает)."
 
 #: ../../tracks/instrument-track.rst:56
 msgid "The track to route the audio output of the instrument track to."
 msgstr ""
+"Трек, на который направляется выходной аудиосигнал инструментального трека."
 
 #: ../../tracks/instrument-track.rst:61
 msgid "These are similar to :ref:`midi-track-inputs`."
-msgstr ""
+msgstr "Они такие же, как :ref:`midi-track-inputs`."
 
 #: ../../tracks/instrument-track.rst:69
 msgid "Pre-Fader Out L/R"
-msgstr ""
+msgstr "Выход Пре-Фейдера Левый/Правый (Pre-Fader Out L/R)"
 
 #: ../../tracks/instrument-track.rst:69
 msgid "The stereo audio signal before the fader is applied."
-msgstr ""
+msgstr "Стерео аудиосигнал без применения фейдера."
 
 #: ../../tracks/instrument-track.rst:72
 msgid "Fader Out L/R"
-msgstr ""
+msgstr "Выход Фейдера Левый/Правый (Fader Out L/R)"
 
 #: ../../tracks/instrument-track.rst:72
 msgid "The stereo audio signal after the fader is applied."
-msgstr ""
+msgstr "Стерео аудиосигнал c применением фейдера."
 
 #: ../../tracks/instrument-track.rst:74
 msgid "You can use these for side-chaining."
-msgstr ""
+msgstr "Вы можете использовать их для сайдчейна."
 
 #: ../../tracks/instrument-track.rst:87
 msgid "Freezing"
-msgstr ""
+msgstr "Заморозка трека"
 
 #: ../../tracks/instrument-track.rst:89
 msgid ""
@@ -750,14 +832,16 @@ msgid ""
 "Instruments can be frozen by clicking the Freeze button in the track "
 "interface."
 msgstr ""
+"Инструменты можно заморозить, нажав кнопку `Заморозить` (Freeze) в "
+"интерфейсе трека."
 
 #: ../../tracks/intro.rst:8
 msgid "Tracks"
-msgstr ""
+msgstr "Треки"
 
 #: ../../tracks/marker-track.rst:10
 msgid "Marker Track"
-msgstr ""
+msgstr "Маркерный трек (Marker Track)"
 
 #: ../../tracks/marker-track.rst:12
 msgid ""
@@ -766,14 +850,18 @@ msgid ""
 "song. Each project can only have one marker track and it cannot be "
 "deleted (but can be hidden)."
 msgstr ""
+"Маркерный трек содержит маркеры - пользовательские или предварительно "
+"определенные - которые упрощают переход к определенным разделам проекта и их "
+"экспорт. В каждом проекте может быть только один маркерный трек, и ее нельзя "
+"удалить, но можно скрыть."
 
 #: ../../tracks/marker-track.rst:32
 msgid "The name of the marker track."
-msgstr ""
+msgstr "Название маркерного трека."
 
 #: ../../tracks/master-track.rst:6
 msgid "Master Track"
-msgstr ""
+msgstr "Мастер Трек (Master Track)"
 
 #: ../../tracks/master-track.rst:8
 msgid ""
@@ -781,18 +869,23 @@ msgid ""
 "Zrythm uses to route the resulting audio signal after all the processing "
 "is done to the audio backend."
 msgstr ""
+"Мастер трек - это особый тип :ref:`audio-group-track`, который Zrythm "
+"использует для направления аудиосигнала в аудио бэкэнд (Audio Backend) после "
+"того, как вся обработка выполнена."
 
 #: ../../tracks/master-track.rst:41
 msgid "The name of the track. This cannot be changed."
-msgstr ""
+msgstr "Название трека. Это не может быть изменено."
 
 #: ../../tracks/master-track.rst:43
 msgid "This is automatically routed to the audio engine and cannot be changed."
 msgstr ""
+"Он автоматически направлен в аудио бэкэнд (Audio Backend) и не может быть "
+"направлен в другое место."
 
 #: ../../tracks/midi-track.rst:6
 msgid "MIDI Track"
-msgstr ""
+msgstr "MIDI трек (MIDI Track)"
 
 #: ../../tracks/midi-track.rst:8
 msgid ""
@@ -800,6 +893,9 @@ msgid ""
 "events and routing those MIDI signals to other instruments (including "
 "external instruments and hardware)."
 msgstr ""
+"MIDI трек содержит MIDI регионы, и его цель - воспроизведение событий MIDI и "
+"направление этих MIDI сигналов на другие инструменты (включая аналоговые "
+"инструменты и оборудование)."
 
 #: ../../tracks/midi-track.rst:13
 msgid ""
@@ -807,62 +903,72 @@ msgid ""
 "channel strips will only have MIDI effects (plugins that change MIDI "
 "signals)."
 msgstr ""
+"MIDI треки, в отличие от инструментальных треков, производят MIDI в качестве "
+"выходного сигнала, поэтому в ячейках канала (Channel Strip) MIDI трека будут "
+"только MIDI эффекты (плагины, которые изменяют сигналы MIDI)."
 
 #: ../../tracks/midi-track.rst:17
 msgid "MIDI tracks also have automation lanes for automating various parameters."
 msgstr ""
+"MIDI треки также имеют шкалы автоматизации (Automation Lanes) для "
+"автоматизации различных параметров."
 
 #: ../../tracks/midi-track.rst:53
 msgid "The name of the track. You can double click to change it."
-msgstr ""
+msgstr "Название трека. Вы можете дважды щелкнуть, чтобы изменить его."
 
 #: ../../tracks/midi-track.rst:56
 msgid "The track to route the output of the MIDI track to."
-msgstr ""
+msgstr "Трек, на который будет направлен выходной MIDI сигнал трека."
 
 #: ../../tracks/midi-track.rst:65
 msgid "Input Device"
-msgstr ""
+msgstr "Устройство ввода (Input Device)"
 
 #: ../../tracks/midi-track.rst:64
 msgid "The input device(s) to receive MIDI signals from during recording."
-msgstr ""
+msgstr "Устройство(а) ввода для приема сигналов MIDI во время записи."
 
 #: ../../tracks/midi-track.rst:70
 msgid "Input Channel"
-msgstr ""
+msgstr "Входной канал (Input Channel)"
 
 #: ../../tracks/midi-track.rst:68
 msgid ""
 "The MIDI channel(s) to listen to for recording MIDI events. This acts as "
 "a filter so MIDI events on channels not selected will be ignored."
 msgstr ""
+"Каналы MIDI для прослушивания с целью записи событий MIDI. Это действует как "
+"фильтр, поэтому события MIDI на каналах, которые не выбраны, будут "
+"игнорироваться."
 
 #: ../../tracks/midi-track.rst:78
 msgid "Pre-Fader Out"
-msgstr ""
+msgstr "Выход Пре-фейдера (Pre-Fader Out)"
 
 #: ../../tracks/midi-track.rst:78
 msgid "The MIDI signal before the MIDI fader is applied."
-msgstr ""
+msgstr "Сигнал MIDI без применения MIDI фейдера."
 
 #: ../../tracks/midi-track.rst:81
 msgid "Fader Out"
-msgstr ""
+msgstr "Выход Фейдера (Fader Out)"
 
 #: ../../tracks/midi-track.rst:81
 msgid "The MIDI signal after the MIDI fader is applied."
-msgstr ""
+msgstr "Сигнал MIDI после применения MIDI фейдера."
 
 #: ../../tracks/midi-track.rst:83
 msgid "The MIDI fader uses MIDI volume CC."
-msgstr ""
+msgstr "MIDI фейдер использует `MIDI volume CC`."
 
 #: ../../tracks/midi-track.rst:85
 msgid ""
 "The MIDI fader is a TODO feature and currently does nothing (it lets the "
 "signal pass through)."
 msgstr ""
+"MIDI фейдер находится в разработке и в настоящее время ничего не делает ("
+"пропускает сигнал)."
 
 #: ../../tracks/midi-track.rst:93
 msgid ""
@@ -870,6 +976,9 @@ msgid ""
 "all regions you create will be created in lane 1. Additional lanes will "
 "be auto-created and deleted as you add regions to each lane."
 msgstr ""
+"MIDI трек может иметь несколько шкал для регионов. По умолчанию все "
+"создаваемые вами регионы будут созданы в шкале 1. Дополнительные шкалы будут "
+"автоматически созданы и удалены по мере добавления регионов к каждой шкале."
 
 #: ../../tracks/midi-track.rst:101
 msgid ""
@@ -878,10 +987,14 @@ msgid ""
 "Lanes are also useful for generally organizing your regions. For example "
 "you can keep high notes in lane 1 and bass notes in lane 2."
 msgstr ""
+"Шкалы полезны при записи (Record), так как каждый раз, когда воспроизведение "
+"зацикливается, запись начинается с новой шкалы и заглушается регион на "
+"предыдущей шкале. Шкалы также полезны для организации ваших регионов. "
+"Например, вы можете хранить высокие ноты на шкале 1 и низкие ноты на шкале 2."
 
 #: ../../tracks/midi-track.rst:109
 msgid "Lanes can be made visible by clicking the \"hamburger\" icon."
-msgstr ""
+msgstr "Шкалы можно сделать видимыми, щелкнув значок, похожий на «гамбургер»."
 
 #: ../../tracks/midi-track.rst:117
 msgid ""
@@ -890,35 +1003,40 @@ msgid ""
 "channel. To show the automation tracks, click on the cusp icon in the "
 "MIDI track."
 msgstr ""
+"Треки автоматизации используются для создания автоматизации для различных "
+"параметров MIDI трека и любых плагинов в канале (Channel) MIDI трека. Чтобы "
+"показать треки автоматизации, щелкните на значок, похожий на `кривую линию` "
+"на MIDI треке."
 
 #: ../../tracks/midi-track.rst:126
 msgid ""
 "More information about automation tracks can be found in the "
 ":ref:`automation` chapter."
 msgstr ""
+"Более подробную информацию о треках автоматизации можно найти в главе "
+":ref:`automation`."
 
 #: ../../tracks/midi-track.rst:130
 #: ../../tracks/overview.rst:66
 msgid "Context Menu"
-msgstr ""
+msgstr "Контекстное меню (Context Menu)"
 
 #: ../../tracks/midi-track.rst:135
 msgid "MIDI Transformations"
-msgstr ""
+msgstr "Преобразования над MIDI"
 
 #: ../../tracks/midi-track.rst:138
 msgid "Transpose"
-msgstr ""
+msgstr "Транспонировать (Transpose)"
 
 #: ../../tracks/modulator-track.rst:6
-#, fuzzy
 msgid "Modulator Track"
-msgstr "Модуляторы (Modulators)"
+msgstr "Трек модуляторов (Modulator Track)"
 
 #: ../../tracks/modulator-track.rst:8
 #: ../../tracks/tempo-track.rst:8
 msgid "Write this page."
-msgstr ""
+msgstr "Эта страничка еще не готова."
 
 #: ../../tracks/overview.rst:6
 msgid "Overview"
@@ -929,12 +1047,17 @@ msgid ""
 "Tracks are the main building blocks of projects. Tracks appear in the "
 "tracklist and contain various events such as :ref:`regions`."
 msgstr ""
+"Треки - это основные строительные блоки проектов. Треки появляются в списке "
+"треков (Tracklist) и содержат различные события, например :ref:`regions`."
 
 #: ../../tracks/overview.rst:15
 msgid ""
 "Most types of tracks have a corresponding channel that appears in the "
 ":ref:`mixer`. See :ref:`channels` for more info."
 msgstr ""
+"Для большинства типов треков существует соответствующий канал, который "
+"отображается в :ref:`mixer`. Читайте :ref:`channels` для получения "
+"дополнительной информации."
 
 #: ../../tracks/overview.rst:22
 msgid ""
@@ -943,6 +1066,10 @@ msgid ""
 ":ref:`chord-track` and the :ref:`marker-track`, which contain chords and "
 "markers respectively."
 msgstr ""
+"Существуют различные типы треков, подходящие для разных целей, которые "
+"описаны в следующих разделах. Некоторые треки являются особенными, например "
+":ref:`chord-track` и :ref:`marker-track`, которые содержат аккорды и маркеры "
+"соответственно."
 
 #: ../../tracks/overview.rst:28
 msgid ""
@@ -951,6 +1078,11 @@ msgid ""
 " are  used for putting tracks under the same folder and performing common"
 " operations."
 msgstr ""
+"В Zrythm групповые треки (Group Tracks) используются для группирования "
+"сигналов (прямое направление), FX треки (FX Track) и треки шин (Bus Track) "
+"используются для эффектов (Effects) или посылов (Send), а треки папок ("
+"Folder Track) используются для помещения треков в одну и ту же папку и "
+"выполнения общих операций (в разработке)."
 
 #: ../../tracks/overview.rst:35
 msgid ""
@@ -958,16 +1090,21 @@ msgid ""
 "synthesizers, and MIDI tracks for MIDI plugins, such as a MIDI "
 "arpegiator."
 msgstr ""
+"Кроме того, Zrythm использует треки инструментов для плагинов инструментов, "
+"таких как синтезаторы, и треки MIDI для плагинов MIDI, таких как арпеджиатор "
+"MIDI (MIDI arpegiator)."
 
 #: ../../tracks/overview.rst:40
 msgid ""
 "This is different from what many other DAWs (see :term:`DAW`) do, so "
 "please keep this in mind."
 msgstr ""
+"Это отличается от того, что делают многие другие DAW (читайте :term:`DAW`), "
+"поэтому имейте это в виду."
 
 #: ../../tracks/overview.rst:45
 msgid "Track Interface"
-msgstr ""
+msgstr "Интерфейс трека"
 
 #: ../../tracks/overview.rst:50
 msgid ""
@@ -976,42 +1113,56 @@ msgid ""
 " also have an option to display each lane as above. Tracks that can have "
 "automation will have an option to display automation tracks as above."
 msgstr ""
+"У каждого трека есть цвет, значок, соответствующий его типу, название и "
+"различные кнопки. Треки, которые могут иметь шкалы (Lane), например треки "
+"инструментов (Instrument Track), также будут иметь возможность отображать "
+"каждую шкалу, как указано выше. Треки, которые могут иметь автоматизацию "
+"(Automation), будут иметь возможность отображать треки автоматизации ("
+"Automation Track), как указано выше."
 
 #: ../../tracks/overview.rst:56
 msgid ""
 "If the track produces output, it will have a meter on its right-hand side"
 " showing the current level."
 msgstr ""
+"Если трек создает выходной сигнал, справа будет индикатор (Meter), "
+"показывающий текущий уровень сигнала."
 
 #: ../../tracks/overview.rst:62
 msgid ""
 "Each track will display its page in the inspector when selected. See :ref"
 ":`track-inspector` for more details."
 msgstr ""
+"При выборе каждого трека в инспекторе будет отображаться его страница. "
+"Читайте :ref:`track-inspector` для более подробной информации."
 
 #: ../../tracks/overview.rst:68
 msgid ""
 "Each tracks has a context menu with additional options depending on its "
 "type."
 msgstr ""
+"У каждого трека есть контекстное меню с дополнительными опциями в "
+"зависимости от его типа."
 
 #: ../../tracks/overview.rst:74
 msgid ""
 "The section :ref:`track-operations` explains the various track operations"
 " available."
 msgstr ""
+"Раздел :ref:`track-operations` объясняет различные доступные операции с "
+"треками."
 
 #: ../../tracks/tempo-track.rst:6
 msgid "Tempo Track"
-msgstr ""
+msgstr "Трек темпа"
 
 #: ../../tracks/track-operations.rst:8
 msgid "Track Operations"
-msgstr ""
+msgstr "Операции над треками"
 
 #: ../../tracks/track-operations.rst:11
 msgid "Moving Tracks"
-msgstr ""
+msgstr "Перемещение треков"
 
 #: ../../tracks/track-operations.rst:12
 msgid ""
@@ -1019,50 +1170,57 @@ msgid ""
 "Track, and dropping it at another location. The drop locations will be "
 "highlighted as you move the Track."
 msgstr ""
+"Треки можно перемещать. Нужно зажать правую кнопку мыши на треке и "
+"переместить ее в любое место. При перемещении трека места, доступные для "
+"перемещения, будут подсвечиваться."
 
 #: ../../tracks/track-operations.rst:18
 msgid "Deleting Tracks"
-msgstr ""
+msgstr "Удаление треков"
 
 #: ../../tracks/track-operations.rst:20
 msgid ""
 "Tracks can be deleted by right-clicking them and selecting "
 ":zbutton:`Delete`."
 msgstr ""
+"Трек можно удалить, щелкнув по нему правой кнопкой мыши и нажав :zbutton:`"
+"Удалить (Delete)`."
 
 #: ../../tracks/track-operations.rst:24
 msgid "All Track operations are undoable."
-msgstr ""
+msgstr "Все операции с треком можно отменить."
 
 #: ../../tracks/track-types.rst:6
 msgid "Track Types"
-msgstr ""
+msgstr "Типы треков"
 
 #: ../../tracks/track-types.rst:8
 msgid ""
 "Zrythm has the following types of Tracks, and they are explained further "
 "in their own sections."
 msgstr ""
+"У Zrythm есть следующие типы треков, и они подробно описаны в отдельных "
+"разделах."
 
 #: ../../tracks/track-types.rst:12
 msgid "Track type"
-msgstr ""
+msgstr "Тип трека"
 
 #: ../../tracks/track-types.rst:12
 msgid "Input"
-msgstr ""
+msgstr "Вход"
 
 #: ../../tracks/track-types.rst:12
 msgid "Output"
-msgstr ""
+msgstr "Выход"
 
 #: ../../tracks/track-types.rst:12
 msgid "Can record"
-msgstr ""
+msgstr "Возможна запись"
 
 #: ../../tracks/track-types.rst:12
 msgid "Objects"
-msgstr ""
+msgstr "События на таймлайне"
 
 #: ../../tracks/track-types.rst:14
 #: ../../tracks/track-types.rst:15
@@ -1077,15 +1235,15 @@ msgstr "Аудио (Audio)"
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:22
 msgid "Yes"
-msgstr ""
+msgstr "Да"
 
 #: ../../tracks/track-types.rst:14
 msgid "Audio regions"
-msgstr ""
+msgstr "Регионы аудио"
 
 #: ../../tracks/track-types.rst:15
 msgid "Audio Group"
-msgstr ""
+msgstr "Аудио-групповой (Audio Group)"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -1096,7 +1254,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "No"
-msgstr ""
+msgstr "Нет"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -1107,15 +1265,15 @@ msgstr ""
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "None"
-msgstr ""
+msgstr "Нет"
 
 #: ../../tracks/track-types.rst:16
 msgid "Audio FX"
-msgstr ""
+msgstr "Аудио FX (Audio FX)"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord"
-msgstr ""
+msgstr "Трек аккордов (Chord)"
 
 #: ../../tracks/track-types.rst:17
 #: ../../tracks/track-types.rst:18
@@ -1127,24 +1285,24 @@ msgstr "MIDI"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord regions & scales"
-msgstr ""
+msgstr "Регионы аккордов и гаммы (Chord regions & scales)"
 
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:22
 msgid "MIDI regions"
-msgstr ""
+msgstr "Регионы MIDI (MIDI regions)"
 
 #: ../../tracks/track-types.rst:19
 msgid "Marker"
-msgstr ""
+msgstr "Маркерный (Marker)"
 
 #: ../../tracks/track-types.rst:19
 msgid "Markers"
-msgstr ""
+msgstr "Маркеры (Markers)"
 
 #: ../../tracks/track-types.rst:20
 msgid "Master"
-msgstr ""
+msgstr "Мастер (Master)"
 
 #: ../../tracks/track-types.rst:21
 msgid "Modulators"
@@ -1152,23 +1310,24 @@ msgstr "Модуляторы (Modulators)"
 
 #: ../../tracks/track-types.rst:23
 msgid "MIDI Group"
-msgstr ""
+msgstr "MIDI-групповой (MIDI Group)"
 
 #: ../../tracks/track-types.rst:24
 msgid "MIDI FX"
-msgstr ""
+msgstr "MIDI FX"
 
 #: ../../tracks/track-types.rst:25
 msgid "Tempo"
-msgstr ""
+msgstr "Трек темпа (Tempo)"
 
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."
 msgstr ""
+"Для всех треков, кроме :doc:`chord-track`, доступны шкалы автоматизации."
 
 #: ../../tracks/track-types.rst:31
 msgid "Add page for Modulators and Tempo track."
-msgstr ""
+msgstr "Добавить страницу для модуляторов и трека темпа."
 
 #: ../../tracks/track-visibility.rst:8
 msgid "Track Visibility"
@@ -1179,12 +1338,16 @@ msgid ""
 "The track visibility tab in the :ref:`left-panel` allows toggling the "
 "visibility of tracks."
 msgstr ""
+"Вкладка видимости треков в :ref:`left-panel` позволяет включать/выключать "
+"видимость треков."
 
 #: ../../tracks/track-visibility.rst:16
 msgid ""
 "Tracks can also be quickly hidden with :menuselection:`Right click --> "
 "Hide`."
 msgstr ""
+"Треки также можно быстро скрыть с помощью :menuselection:`Правая кнопка мыши "
+"--> Скрыть`."
 
 #~ msgid "Duplicating Tracks"
 #~ msgstr ""
@@ -1601,4 +1764,3 @@ msgstr ""
 #~ "tracklist and contain various events "
 #~ "such as regions (see :term:`Region`)."
 #~ msgstr ""
-
