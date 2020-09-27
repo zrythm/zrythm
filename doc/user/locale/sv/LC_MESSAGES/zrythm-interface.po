@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 19:56+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"Last-Translator: Felix Paulsson <fpaulsson@protonmail.com>\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/sv/>\n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../zrythm-interface/bottom-panel.rst:8
@@ -29,7 +32,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:18
 msgid "Editor"
-msgstr ""
+msgstr "Redigerare"
 
 #: ../../zrythm-interface/bottom-panel.rst:19
 msgid ""
@@ -103,7 +106,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:82
 msgid "Mixer"
-msgstr ""
+msgstr "Mixer"
 
 #: ../../zrythm-interface/bottom-panel.rst:83
 msgid ""
@@ -117,7 +120,7 @@ msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Interface"
-msgstr ""
+msgstr "Gränssnitt"
 
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
@@ -151,7 +154,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
-msgstr ""
+msgstr "Plugin:ets egenskaper"
 
 #: ../../zrythm-interface/left-panel.rst:34
 msgid ""
@@ -246,7 +249,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:44
 msgid "New Project"
-msgstr ""
+msgstr "Nytt projekt"
 
 #: ../../zrythm-interface/main-toolbar.rst:44
 msgid "Create a new project."
@@ -254,7 +257,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save"
-msgstr ""
+msgstr "Spara"
 
 #: ../../zrythm-interface/main-toolbar.rst:47
 msgid "Save the current project at its current location."
@@ -262,7 +265,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save As"
-msgstr ""
+msgstr "Spara som"
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save the current project at a new location."
@@ -278,7 +281,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Export As"
-msgstr ""
+msgstr "Exportera som"
 
 #: ../../zrythm-interface/main-toolbar.rst:56
 msgid ""
@@ -288,7 +291,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:61
 msgid "Export Graph"
-msgstr ""
+msgstr "Exportera graf"
 
 #: ../../zrythm-interface/main-toolbar.rst:60
 msgid ""
@@ -312,7 +315,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:72
 msgid "Zoom In"
-msgstr ""
+msgstr "Zooma in"
 
 #: ../../zrythm-interface/main-toolbar.rst:72
 msgid "Zooms in."
@@ -320,7 +323,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zoom Out"
-msgstr ""
+msgstr "Zooma ut"
 
 #: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Zooms out."
@@ -328,7 +331,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:78
 msgid "Original Size"
-msgstr ""
+msgstr "Originalstorlek"
 
 #: ../../zrythm-interface/main-toolbar.rst:78
 msgid "Zooms back to the default zoom level."
@@ -336,7 +339,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:82
 msgid "Best Fit"
-msgstr ""
+msgstr "Anpassad storlek"
 
 #: ../../zrythm-interface/main-toolbar.rst:81
 msgid ""
@@ -396,7 +399,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:101
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Kortkommandon"
 
 #: ../../zrythm-interface/main-toolbar.rst:102
 msgid "Show all the available keyboard shortcuts."
@@ -404,7 +407,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:103
 msgid "Donate"
-msgstr ""
+msgstr "Donera"
 
 #: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Donate to Zrythm through LiberaPay."
@@ -412,7 +415,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Report a Bug"
-msgstr ""
+msgstr "Rapportera en bugg"
 
 #: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Opens the page to report a new bug."
@@ -432,7 +435,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:119
 msgid "Scripting Interface"
-msgstr ""
+msgstr "Skriptgränssnitt"
 
 #: ../../zrythm-interface/main-toolbar.rst:119
 msgid "Shows the scripting interface. See :ref:`scripting` for more information."
@@ -440,7 +443,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:121
 msgid "Log Viewer"
-msgstr ""
+msgstr "Loggvisaren"
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Displays the log, which gets updated real-time."
@@ -448,7 +451,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:125
 msgid "Preferences"
-msgstr ""
+msgstr "Preferenser"
 
 #: ../../zrythm-interface/main-toolbar.rst:124
 msgid "Shows the preferences dialog. See :ref:`preferences` for more information."
@@ -473,7 +476,7 @@ msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:16
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Pluginutforskare"
 
 #: ../../zrythm-interface/right-panel.rst:17
 msgid ""
@@ -483,7 +486,7 @@ msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:21
 msgid "File Browser"
-msgstr ""
+msgstr "Filutforskare"
 
 #: ../../zrythm-interface/right-panel.rst:22
 msgid "The file browser is covered in :ref:`file-browser`."
@@ -491,7 +494,7 @@ msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:25
 msgid "Control Room"
-msgstr ""
+msgstr "Kontrollrum"
 
 #: ../../zrythm-interface/right-panel.rst:26
 msgid "The control room is covered in :ref:`control-room`."
@@ -568,7 +571,7 @@ msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:33
 msgid "Playhead"
-msgstr ""
+msgstr "Spelhuvud"
 
 #: ../../zrythm-interface/transport-bar.rst:34
 msgid "Current playhead position, in bars.beats.sixteenths.ticks."
@@ -639,4 +642,3 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
-
