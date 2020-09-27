@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-25 22:42+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualplayback-and-recording/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm"
-"/manualplayback-and-recording/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
@@ -34,11 +35,14 @@ msgid ""
 msgstr "BPMウィジェットをクリックしてドラッグすることで、BPMを40～360の間に設定することができます。"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:17
+#, fuzzy
 msgid ""
 "Clicking and dragging on the integer counterpart will change the integer "
 "(e.g., from 140.24 to 141.24) and clicking and dragging on the decimal "
 "counterpart will change the decimal value (e.g., frrom 140.24 to 140.25)."
 msgstr ""
+"整数の相手をクリックしてドラッグすると整数が変更され（例：140.24から141."
+"24へ）、10進数の相手をクリックしてドラッグすると10進数が変更されます（例：140.24から140.25へ）。"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:25
 msgid "Time Signature"
@@ -54,20 +58,22 @@ msgid "Beats per Bar"
 msgstr "バーあたりのビート数"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:33
+#, fuzzy
 msgid ""
 "This is the top number that indicates the number of Beats that should be "
 "in a Bar. It can be set from 1 to 16."
-msgstr ""
+msgstr "これは、バーにあるべきビートの数を示すトップ番号です。1から16まで設定できます。"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:38
 msgid "Beat Unit"
 msgstr "ビートユニット"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:37
+#, fuzzy
 msgid ""
 "This is the bottom number that indicates the beat unit to be used. It can"
 " be set to 2, 4, 8 or 16."
-msgstr ""
+msgstr "使用するビート単位を示す一番下の数字です。2、4、8、16のいずれかに設定できます。"
 
 #: ../../playback-and-recording/intro.rst:6
 msgid "Playback and Recording"
@@ -82,10 +88,11 @@ msgid "Loop Points"
 msgstr "ループポイント"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:16
+#, fuzzy
 msgid ""
 "The loop points indicate the area that will be looped during playback, if"
 " looping is enabled."
-msgstr ""
+msgstr "ループポイントは、ループが有効になっている場合、再生中にループする領域を示しています。"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:19
 #: ../../playback-and-recording/loop-points-and-markers.rst:32
@@ -97,28 +104,33 @@ msgid "Cue Point"
 msgstr "キューポイント"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:28
+#, fuzzy
 msgid ""
 "The cue point is where the playhead will move to when Play is clicked "
 "while playing or when Stop is clicked while paused."
-msgstr ""
+msgstr "キューポイントは、再生中に再生がクリックされたとき、または一時停止中に「停止」をクリックしたときに再生ヘッドが移動する場所です。"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:36
 msgid "Song Start & End Markers"
 msgstr "曲の開始と終了マーカー"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:41
+#, fuzzy
 msgid ""
 "The song start marker signifies the position in the timeline where the "
 "Song will start. This is mainly used for exporting the mixdown into "
 "audio."
 msgstr ""
+"ソングの開始マーカーは、ソングが開始されるタイムライン内の位置を示します。これは主に、オーディオにミックスダウンをエクスポートするために使用されます。"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:46
+#, fuzzy
 msgid ""
 "The song end marker signifies the position in the timeline where the Song"
 " will end. Likewise, it is mainly used for exporting the mixdown into "
 "audio."
 msgstr ""
+"ソングエンドマーカーは、タイムライン上でソングが終了する位置を示します。同様に、主にミックスダウンをオーディオにエクスポートする際に使用します。"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:51
 msgid "These markers are part of the :ref:`marker-track`."
@@ -133,11 +145,13 @@ msgid "Custom Markers can also be created inside the :ref:`marker-track`."
 msgstr "カスタム マーカーは、 :ref:`marker-track` 内に作成することもできます。"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:61
+#, fuzzy
 msgid ""
 "These can be used to jump to when moving forwards or backwards, and are "
 "also generally useful visually to see where each part of the song begins "
 "and ends."
 msgstr ""
+"これらは、前後に移動するときにジャンプするために使用することができ、また、曲の各部分が開始し、終了する場所を視覚的に見るために一般的に有用です。"
 
 #: ../../playback-and-recording/overview.rst:6
 msgid "Overview"
@@ -147,7 +161,7 @@ msgstr "概要"
 msgid ""
 "Here is a list of terms and definitions that will be useful in the "
 "following sections."
-msgstr ""
+msgstr "ここでは、以下の項目で役立つ用語や定義をまとめてみました。"
 
 #: ../../playback-and-recording/overview.rst:12
 msgid "Playhead"
@@ -191,37 +205,42 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:19
 #: ../../playback-and-recording/recording.rst:32
+#, fuzzy
 msgid "Todo"
-msgstr ""
+msgstr "行うべきこと"
 
 #: ../../playback-and-recording/recording.rst:19
 msgid "Add illustration."
-msgstr ""
+msgstr "イラストを追加すること。"
 
 #: ../../playback-and-recording/recording.rst:21
+#, fuzzy
 msgid ""
 "For example, if an instrument track is armed for recording and it has a "
 "MIDI keyboard connected in its inputs, you will hear sound when you press"
 " a key on your MIDI keyboard."
 msgstr ""
+"例えば、インストゥルメントトラックが録音のために武装していて、そのインプットにMIDIキーボードが接続されている場合、MIDIキーボードのキーを押すと音が"
+"聞こえます。"
 
 #: ../../playback-and-recording/recording.rst:27
 msgid "Recording Audio & MIDI"
 msgstr "オーディオとMIDIの録音"
 
 #: ../../playback-and-recording/recording.rst:28
+#, fuzzy
 msgid ""
 "After arming the tracks you want to record events into, enable recording "
 "in :ref:`transport-controls` and press play."
-msgstr ""
+msgstr "イベントを記録したいトラックをアームした後、 :ref:transport-controls` で録音を有効にして、再生を押します。"
 
 #: ../../playback-and-recording/recording.rst:32
 msgid "Expand, add illustrations, etc."
-msgstr ""
+msgstr "詳細、イラスト追加など。"
 
 #: ../../playback-and-recording/recording.rst:34
 msgid "Any signals received will be recorded inside new regions in the timeline."
-msgstr ""
+msgstr "受信したシグナルは、タイムラインの新しいリージョン内に記録されます。"
 
 #: ../../playback-and-recording/recording.rst:38
 msgid "Recording Automation"
@@ -238,22 +257,26 @@ msgid "Latch"
 msgstr "ラッチ"
 
 #: ../../playback-and-recording/recording.rst:49
+#, fuzzy
 msgid ""
 "In latch mode, automation will be written constantly and overwrite "
 "previous automation."
-msgstr ""
+msgstr "ラッチモードでは、自動化が常に書き込まれ、以前の自動化を上書きします。"
 
 #: ../../playback-and-recording/recording.rst:53
 msgid "Touch"
 msgstr "タッチ"
 
 #: ../../playback-and-recording/recording.rst:58
+#, fuzzy
 msgid ""
 "In touch mode, automation will be written only when there are changes. "
 "When changes stop being received (after a short amount of time) "
 "automation will stop being written until a change is received again. This"
 " is useful for making minor changes to existing automation."
 msgstr ""
+"タッチモードでは、オートメーションは変更があった場合にのみ書き込まれます。変更が受信されなくなると "
+"(短時間で)、変更が再び受け取られるまで、自動化は書き込みが停止します。これは、既存の自動化に小さな変更を加える場合に便利です。"
 
 #: ../../playback-and-recording/recording.rst:65
 msgid ""
@@ -282,10 +305,11 @@ msgid "Play"
 msgstr "再生"
 
 #: ../../playback-and-recording/transport-controls.rst:19
+#, fuzzy
 msgid ""
 "If stopped, the song will start playing. If already playing, the Playhead"
 " will move to the Cue point."
-msgstr ""
+msgstr "停止している場合は、曲の再生を開始します。すでに再生中の場合、プレイヘッドはキューポイントに移動します。"
 
 #: ../../playback-and-recording/transport-controls.rst:23
 msgid "Stop"
@@ -320,10 +344,11 @@ msgid "Loop"
 msgstr "ループ"
 
 #: ../../playback-and-recording/transport-controls.rst:32
+#, fuzzy
 msgid ""
 "If enabled, the Playhead will move back to the Loop Start point when it "
 "reaches the Loop End point."
-msgstr ""
+msgstr "有効にすると、プレイヘッドはループ終了ポイントに到達するとループ開始ポイントに戻ります。"
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid "Metronome"
@@ -334,17 +359,21 @@ msgid "Clicking the metronome button will set metronome on/off."
 msgstr "メトロノームボタンをクリックするとメトロノームのオン/オフが設定されます。"
 
 #: ../../playback-and-recording/transport-controls.rst:44
+#, fuzzy
 msgid ""
 "When metronome is enabled, you will hear metronome ticks during playback "
 "at each bar and each tick. The tick at each bar will be more emphasized. "
 "This is useful for making sure your song stays on beat."
 msgstr ""
+"メトロノームが有効になっていると、各バーと各ティックで再生中にメトロノームティックが聞こえます。各バーのティックがより強調されます。これは、曲がビートのま"
+"まであることを確認するのに便利です。"
 
 #: ../../playback-and-recording/transport-controls.rst:50
+#, fuzzy
 msgid ""
 "The metronome samples can be overridden by placing your own samples in "
 "your Zrythm directory. This is a TODO feature."
-msgstr ""
+msgstr "メトロノームサンプルは、Zrythmディレクトリに独自のサンプルを配置することでオーバーライドできます。これは TODO 機能です。"
 
 #~ msgid "Zrythm uses the following format for positions::"
 #~ msgstr ""
@@ -432,4 +461,3 @@ msgstr ""
 
 #~ msgid "Recording MIDI"
 #~ msgstr "MIDIを録音中"
-

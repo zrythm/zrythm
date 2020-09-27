@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-25 22:42+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualmixing/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/manualmixing/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../mixing/intro.rst:8
@@ -28,39 +29,48 @@ msgid "Mixing Overview"
 msgstr "ミキシングの概要"
 
 #: ../../mixing/overview.rst:11
+#, fuzzy
 msgid ""
 "Mixing refers to any actions made inside the mixer, such as routing "
 "signals around, controlling the fader level of various channels and "
 "setting their stereo balance."
 msgstr ""
+"ミキシングとは、周りの信号をルーティングし、様々なチャンネルのフェーダーレベルを制御し、ステレオバランスを設定するなど、ミキサー内で行われたすべてのアクシ"
+"ョンを指します。"
 
 #: ../../mixing/overview.rst:22
 msgid "Mixer"
 msgstr "ミキサー"
 
 #: ../../mixing/overview.rst:23
+#, fuzzy
 msgid ""
 "The mixer contains all of the channels in the project corresponding to "
 "visible tracks."
-msgstr ""
+msgstr "ミキサーには、表示可能なトラックに対応するプロジェクト内のすべてのチャンネルが含まれます。"
 
 #: ../../mixing/overview.rst:26
+#, fuzzy
 msgid ""
 "The master channel, a special channel used to route audio to the output "
 "audio device, is pinned on the right side of the mixer."
 msgstr ""
+"出力オーディオデバイスにオーディオをルーティングするために使用される特殊なチャンネルであるマスターチャンネルは、ミキサーの右側にピン留めされます。"
 
 #: ../../mixing/overview.rst:33
+#, fuzzy
 msgid ""
 "The rest of the mixer shows the rest of the channels, along with some "
 "extra space used for drag-and-dropping plugins or files."
-msgstr ""
+msgstr "ミキサーの残りの部分は、ドラッグアンドドロッププラグインやファイルに使用される余分なスペースと一緒に、チャンネルの残りの部分を示しています。"
 
 #: ../../mixing/overview.rst:37
+#, fuzzy
 msgid ""
 "Most of the activities that can be performed in the mixer are also "
 "available in the track inspector described in :ref:`track-inspector`."
 msgstr ""
+"ミキサーで実行できるアクティビティのほとんどは、 :ref:`track-inspector` で説明されているトラックインスペクタでも利用できます。"
 
 #: ../../mixing/overview.rst:44
 msgid "Channels"
@@ -84,18 +94,20 @@ msgid "Changing the Track Name"
 msgstr "トラック名の変更"
 
 #: ../../mixing/overview.rst:58
+#, fuzzy
 msgid ""
 "The name of the track the channel corresponds to can be changed by double"
 " clicking the name at the top of the channel."
-msgstr ""
+msgstr "チャンネルの上部にある名前をダブルクリックすると、チャンネルが対応するトラックの名前を変更できます。"
 
 #: ../../mixing/overview.rst:62
+#, fuzzy
 msgid "Todo"
-msgstr ""
+msgstr "行うべきこと"
 
 #: ../../mixing/overview.rst:62
 msgid "Add pic."
-msgstr ""
+msgstr "スクショを追加。"
 
 #: ../../mixing/routing.rst:6
 msgid "Routing"
@@ -112,10 +124,11 @@ msgid ""
 msgstr ""
 
 #: ../../mixing/routing.rst:15
+#, fuzzy
 msgid ""
 "To route channels to these tracks, you can click the direct out selector "
 "and choose them."
-msgstr ""
+msgstr "チャンネルをこれらのトラックにルーティングするには、ダイレクトアウトセレクターをクリックして選択します。"
 
 #: ../../mixing/routing.rst:22
 msgid "Buses/FX Tracks"
@@ -132,13 +145,14 @@ msgstr ""
 msgid ""
 "This is useful for example for applying reverb and controlling the reverb"
 " signal separately."
-msgstr ""
+msgstr "これは、例えばリバーブを適用し、リバーブ信号を個別に取り扱うのに便利です。"
 
 #: ../../mixing/routing.rst:31
 msgid ""
 "You can send to these tracks/channels using the Sends section in the "
 "track inspector explained in :ref:`track-sends`."
 msgstr ""
+"これらのトラック/チャンネルにセンドするには、トラックインスペクタのセンドセクションで説明されている :ref:`track-sends` を使用します。"
 
 #: ../../mixing/routing.rst:35
 msgid ""
@@ -146,6 +160,8 @@ msgid ""
 "`group`. Please keep this in mind if you are coming from other DAWs as "
 "they are different things in Zrythm."
 msgstr ""
+"他のいくつかのDAWは、Zrythmが `グループ` と呼ぶものを指すために `バス` という用語を使用します。Zrythm では他の DAW "
+"から来ている場合は、この点に注意してください。"
 
 #: ../../mixing/routing.rst:41
 msgid "Sidechaining"
@@ -227,4 +243,3 @@ msgstr ""
 
 #~ msgid "Send Effects"
 #~ msgstr "センドエフェクト"
-
