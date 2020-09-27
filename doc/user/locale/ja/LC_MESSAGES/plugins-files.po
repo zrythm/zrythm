@@ -552,7 +552,7 @@ msgstr "Windows"
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in :ref:`vst-"
 "paths`."
-msgstr "Zrythm は 、 :ref:`vst-path` で指定されたパス内の VST プラグインをスキャンします。"
+msgstr "Zrythm は 、 :ref:`vst-paths` で指定されたパス内の VST プラグインをスキャンします。"
 
 #: ../../plugins-files/plugins/scanning.rst:64
 msgid "MacOS"
@@ -618,7 +618,7 @@ msgid ""
 ":term:`SFZ` and :term:`SF2` instruments will be scanned in all  "
 "directories and subdirectories specified in :ref:`vst-paths`."
 msgstr ""
-":term:`SFZ` と :term:`SF2` のインストゥルメントは、 :ref:`vst-path` "
+":term:`SFZ` と :term:`SF2` のインストゥルメントは、 :ref:`vst-paths` "
 "で指定されたすべてのディレクトリとサブディレクトリでスキャンされます。"
 
 #~ msgid ""

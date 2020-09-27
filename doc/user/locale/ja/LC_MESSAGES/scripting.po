@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 22:46+0100\n"
+"POT-Creation-Date: 2020-09-27 03:32+0100\n"
 "PO-Revision-Date: 2020-09-27 02:24+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"scripting/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/zrythm/scripting/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../scripting/api/actions
@@ -58,6 +57,11 @@ msgstr "ステレオペアの左または右のポートを返します。"
 #: ../../scripting/api/audio port.rst:10
 msgid "Returns the identifier of port."
 msgstr "ポートの識別子を返します。"
+
+#: ../../scripting/api/audio position.rst:8
+#, fuzzy
+msgid "Scheme Procedure: **position-new** *bars beats sixteenths ticks sub_tick*"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
 
 #: ../../scripting/api/audio position.rst:6
 msgid "Return a newly-created position as bars.beats.sixteenths.ticks.sub_tick."
@@ -147,7 +151,8 @@ msgid ""
 "<https://creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to "
 "copy and modify them."
 msgstr ""
-"以下の例はパブリックドメイン( `CC 0 <https://creativecommons.org/publicdomain/zero/1.0/>`_ "
+"以下の例はパブリックドメイン( `CC 0 "
+"<https://creativecommons.org/publicdomain/zero/1.0/>`_ "
 ")にあります。自由にコピーしたり、変更したりしてください。"
 
 #: ../../scripting/examples.rst:13
@@ -193,3 +198,4 @@ msgstr ""
 #: ../../scripting/overview.rst:21
 msgid "The Guile API is experimental."
 msgstr "Guile API は実験的です。"
+

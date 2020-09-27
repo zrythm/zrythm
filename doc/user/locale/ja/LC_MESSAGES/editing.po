@@ -887,7 +887,7 @@ msgid ""
 "objects`, with the exception that you can just click instead of "
 ":kbd:`Alt`-clicking."
 msgstr ""
-"カットモードは、 :ref:`cut-objects` で述べられるものと同様に動作しますが、 :kbd:`Alt` + "
+"カットモードは、 :ref:`cutting-objects` で述べられるものと同様に動作しますが、 :kbd:`Alt` + "
 "クリックの代わりにクリックするだけで済みます。"
 
 #: ../../editing/edit-modes.rst:94
@@ -1446,7 +1446,7 @@ msgid ""
 "part, which is used for selecting ranges - see :term:`Range`) will allow "
 "you to reposition the playhead."
 msgstr ""
-"ルーラーの空白部分をクリックしてドラッグすると(範囲の選択に使用される上部以外の部分 - : term:`Range` "
+"ルーラーの空白部分をクリックしてドラッグすると(範囲の選択に使用される上部以外の部分 - :term:`Range` "
 "を参照してください)、再生ヘッドの位置を変更できます。"
 
 #: ../../editing/timeline/ruler.rst:35
