@@ -54,15 +54,83 @@ typedef struct CallbackData
 } CallbackData;
 
 #define KEY_IS(a,b,c) \
-  (string_is_equal ( \
-    group, \
-    g_dpgettext2 ( \
-      GETTEXT_PACKAGE, GUILABEL_CTX, a)) && \
-  string_is_equal ( \
-    subgroup,  \
-    g_dpgettext2 ( \
-      GETTEXT_PACKAGE, GUILABEL_CTX, b)) && \
+  (string_is_equal (group, _(a)) && \
+  string_is_equal (subgroup, _(b)) && \
   string_is_equal (key, c))
+
+/**
+ * Because the gschema API returns localized strings
+ * without context, we have to check if the _()
+ * string matches, and then get the localized
+ * string with context.
+ *
+ * @param str The already localized string without
+ *   context.
+ *
+ * @return the localized string with context.
+ */
+static const char *
+get_gschema_str_with_ctx (
+  const char * str)
+{
+  /* note that the repetition is necessary -
+   * the strings must be clearly visible to get
+   * extracted. */
+  if (string_is_equal (_("General"), str))
+    {
+      return C_("guilabel", "General");
+    }
+  if (string_is_equal (_("Plugins"), str))
+    {
+      return C_("guilabel", "Plugins");
+    }
+  if (string_is_equal (_("Editing"), str))
+    {
+      return C_("guilabel", "Editing");
+    }
+  if (string_is_equal (_("Audio"), str))
+    {
+      return C_("guilabel", "Audio");
+    }
+  if (string_is_equal (_("Automation"), str))
+    {
+      return C_("guilabel", "Automation");
+    }
+  if (string_is_equal (_("Undo"), str))
+    {
+      return C_("guilabel", "Undo");
+    }
+  if (string_is_equal (_("Projects"), str))
+    {
+      return C_("guilabel", "Projects");
+    }
+  if (string_is_equal (_("UI"), str))
+    {
+      return C_("guilabel", "UI");
+    }
+  if (string_is_equal (_("UIs"), str))
+    {
+      return C_("guilabel", "UIs");
+    }
+  if (string_is_equal (_("DSP"), str))
+    {
+      return C_("guilabel", "DSP");
+    }
+  if (string_is_equal (_("Pan"), str))
+    {
+      return C_("guilabel", "Pan");
+    }
+  if (string_is_equal (_("Engine"), str))
+    {
+      return C_("guilabel", "Engine");
+    }
+  if (string_is_equal (_("Paths"), str))
+    {
+      return C_("guilabel", "Paths");
+    }
+
+  g_return_val_if_reached (NULL);
+}
 
 static void
 on_path_entry_changed (
@@ -496,8 +564,7 @@ make_control (
                         GTK_COMBO_BOX_TEXT (widget),
                         cyaml_strv[i].str,
                         g_dpgettext2 (
-                          GETTEXT_PACKAGE,
-                          GUILABEL_CTX,
+                          NULL, "guilabel",
                           cyaml_strv[i].str));
                     }
                   else if (strv)
@@ -506,8 +573,7 @@ make_control (
                         GTK_COMBO_BOX_TEXT (widget),
                         strv[i],
                         g_dpgettext2 (
-                          GETTEXT_PACKAGE,
-                          GUILABEL_CTX,
+                          NULL, "guilabel",
                           strv[i]));
                     }
                 }
@@ -571,6 +637,8 @@ make_control (
 
 #undef TYPE_EQUALS
 
+  g_warn_if_fail (widget);
+
   return widget;
 }
 
@@ -583,7 +651,12 @@ add_subgroup (
 {
   SubgroupInfo * info =
     &self->subgroup_infos[group_idx][subgroup_idx];
-  g_message ("adding subgroup %s", info->name);
+
+  const char * localized_subgroup_name =
+    get_gschema_str_with_ctx (info->name);
+  g_message (
+    "adding subgroup %s (%s)",
+    info->name, localized_subgroup_name);
 
   /* create a section for the subgroup */
   GtkWidget * page_box =
@@ -591,7 +664,8 @@ add_subgroup (
       self->group_notebook, info->group_idx);
   GtkWidget * label =
     plugin_gtk_new_label (
-      info->name, true, false, 0.f, 0.5f);
+      localized_subgroup_name, true, false,
+      0.f, 0.5f);
   gtk_widget_set_visible (label, true);
   gtk_container_add (
     GTK_CONTAINER (page_box), label);
@@ -606,15 +680,14 @@ add_subgroup (
       GSettingsSchemaKey * schema_key =
         g_settings_schema_get_key (
           info->schema, key);
+      /* note: this is already translated */
       const char * summary =
-        g_dpgettext2 (
-          GETTEXT_PACKAGE,
-          GUILABEL_CTX,
-          g_settings_schema_key_get_summary (
-            schema_key));
+        g_settings_schema_key_get_summary (
+          schema_key);
+      /* note: this is already translated */
       const char * description =
-        _(g_settings_schema_key_get_description (
-            schema_key));
+        g_settings_schema_key_get_description (
+          schema_key);
 
       if (string_is_equal (key, "info") ||
           should_be_hidden (
@@ -664,7 +737,7 @@ add_subgroup (
         }
       else
         {
-          g_message ("no widget");
+          g_warning ("no widget for %s", key);
         }
     }
 
@@ -725,18 +798,13 @@ add_group (
       GSettingsSchemaKey * info_key =
         g_settings_schema_get_key (
           schema, "info");
+      /* note: this is already translated */
       group_name =
-        g_dpgettext2 (
-          GETTEXT_PACKAGE,
-          GUILABEL_CTX,
-          g_settings_schema_key_get_summary (
-            info_key));
+        g_settings_schema_key_get_summary (info_key);
+      /* note: this is already translated */
       subgroup_name =
-        g_dpgettext2 (
-          GETTEXT_PACKAGE,
-          GUILABEL_CTX,
-          g_settings_schema_key_get_description (
-            info_key));
+        g_settings_schema_key_get_description (
+          info_key);
 
       /* get max subgroup index */
       int subgroup_idx =
@@ -757,7 +825,11 @@ add_group (
         max_subgroup_idx = subgroup_idx;
     }
 
-  g_message ("adding group %s", group_name);
+  const char * localized_group_name =
+    get_gschema_str_with_ctx (group_name);
+  g_message (
+    "adding group %s (%s)",
+    group_name, localized_group_name);
 
   /* create a page for the group */
   GtkWidget * box =
@@ -767,7 +839,7 @@ add_group (
   gtk_notebook_append_page (
     self->group_notebook, box,
     plugin_gtk_new_label (
-      group_name, true, false, 0.f, 0.5f));
+      localized_group_name, true, false, 0.f, 0.5f));
 
   /* create a sizegroup for the labels */
   GtkSizeGroup * size_group =
@@ -814,10 +886,7 @@ preferences_widget_new ()
   PreferencesWidget * self =
     g_object_new (
       PREFERENCES_WIDGET_TYPE,
-      "title",
-      g_dpgettext2 (
-        GETTEXT_PACKAGE, GUILABEL_CTX,
-        "Preferences"),
+      "title", C_("guilabel", "Preferences"),
       NULL);
 
   for (int i = 0; i < 6; i++)
@@ -851,20 +920,4 @@ preferences_widget_init (
       gtk_dialog_get_content_area (
         GTK_DIALOG (self))),
     GTK_WIDGET (self->group_notebook));
-
-  /* hack to get localization working because we
-   * can't extract summaries into the .po file from
-   * the schema itself */
-  C_("guilabel", "Plugins");
-  C_("guilabel", "General");
-  C_("guilabel", "Editing");
-  C_("guilabel", "Audio");
-  C_("guilabel", "Automation");
-  C_("guilabel", "Undo");
-  C_("guilabel", "Projects");
-  C_("guilabel", "UI");
-  C_("guilabel", "DSP");
-  C_("guilabel", "Pan");
-  C_("guilabel", "Engine");
-  C_("guilabel", "Paths");
 }

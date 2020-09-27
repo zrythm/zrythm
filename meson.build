@@ -384,7 +384,6 @@ test_cflags = [
   # use structured log
   '-DG_LOG_USE_STRUCTURED=1',
   '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
-  '-DGUILABEL_CTX="guilabel"',
   ]
 
 if cc.get_id() == 'clang'

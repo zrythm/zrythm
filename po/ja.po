@@ -1566,10 +1566,9 @@ msgid "Projects"
 msgstr "プロジェクト"
 
 #: src/gui/widgets/preferences.c:865
-#, fuzzy
 msgctxt "guilabel"
 msgid "UI"
-msgstr "Ui"
+msgstr "UI"
 
 #: src/gui/widgets/preferences.c:866
 #, fuzzy
@@ -4384,7 +4383,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:654
 msgid "UI"
-msgstr "Ui"
+msgstr "UI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:659
 msgid "Draw detail"
