@@ -2,74 +2,83 @@
 # Copyright (C) 2019-2020 The Zrythm contributors
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-#
-#, fuzzy
+# Sahaathyva <sahaa.thyva@laposte.net>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 14:36+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"invoking-from-command-line/fr/>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../invoking-from-command-line/intro.rst:10
 msgid "Command Line"
-msgstr ""
+msgstr "Ligne de commande"
 
 #: ../../invoking-from-command-line/intro.rst:12
 msgid ""
 "Zrythm comes with a few utilities below that can be used from the "
 ":term:`CLI`."
 msgstr ""
+"Zrythm vient avec quelques utilitaires qui peuvent être utilisés à partir de "
+"la :term : `CLI` ."
 
 #: ../../invoking-from-command-line/intro.rst:16
 msgid "zrythm"
-msgstr ""
+msgstr "zrythm"
 
 #: ../../invoking-from-command-line/intro.rst:17
 msgid "Zrythm executable."
-msgstr ""
+msgstr "L'exécutable Zrythm."
 
 #: ../../invoking-from-command-line/intro.rst:23
 msgid "Prints a list of available options."
-msgstr ""
+msgstr "Affiche une liste des options disponibles."
 
 #: ../../invoking-from-command-line/intro.rst:27
 msgid "Pretty-prints the output (where applicable)."
-msgstr ""
+msgstr "Affichage mis en forme(quand applicable)."
 
 #: ../../invoking-from-command-line/intro.rst:31
 msgid ""
 "Prints all the user settings. Can be combined with :option:`--pretty` to "
 "get pretty-printed output, like below."
 msgstr ""
+"Affiche tous les paramètres utilisateur.Peut être combiné avec :option : "
+"`--pretty` pour obtenir un affichage mis en forme, comme ci dessous."
 
 #: ../../invoking-from-command-line/intro.rst:40
 msgid "Resets user settings to their default values."
-msgstr ""
+msgstr "Réinitialise les paramètres utilisateur à leur valeur par défaut."
 
 #: ../../invoking-from-command-line/intro.rst:42
 msgid ""
 "Only affects the settings printed with :option:`-p`. This will *not* "
 "affect any files in the :term:`Zrythm user path`."
 msgstr ""
+"Affecte seulement les paramètres affichés avec :option:`-p`. Celà *n "
+"affectera aucun fichier dans :term:`Zrythm user path`."
 
 #: ../../invoking-from-command-line/intro.rst:47
 msgid "This will clear ALL your user settings."
-msgstr ""
+msgstr "Cela effacera TOUS vos paramètres utilisateur."
 
 #: ../../invoking-from-command-line/intro.rst:52
 msgid "Prints the Zrythm version."
-msgstr ""
+msgstr "Affiche la version de Zrythm."
 
 #: ../../invoking-from-command-line/intro.rst:55
 msgid "zrythm_launch"
-msgstr ""
+msgstr "zrythm_launch"
 
 #: ../../invoking-from-command-line/intro.rst:56
 msgid ""
@@ -77,7 +86,9 @@ msgid ""
 "launching Zrythm. All of the options for :program:`zrythm` can also be "
 "passed to :program:`zrythm_launch`."
 msgstr ""
+"Un habillage autour du :program:`zrythm\\ qui définit les chemins corrects "
+"avant de lancer Zrythm.Toutes les options pour :program:`Zrythm`peuvent "
+"également être passées à :program:`zrythm_launch`."
 
 #~ msgid "TODO"
 #~ msgstr ""
-
