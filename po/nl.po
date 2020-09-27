@@ -3,15 +3,16 @@
 # This file is distributed under the same license as the zrythm package.
 # alex <alex@zrythm.org>, 2019.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
+# Ma Ho <mhojo74@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-26 19:10+0100\n"
-"PO-Revision-Date: 2020-09-24 02:45+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
-"Language-Team: Dutch <https://hosted.weblate.org/projects/zrythm/zrythm/nl/"
-">\n"
+"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"Last-Translator: Ma Ho <mhojo74@gmail.com>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/zrythm/zrythm/nl/>"
+"\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1367,7 +1368,7 @@ msgstr ""
 #: src/gui/widgets/right_dock_edge.c:133
 #: src/gui/widgets/file_browser_window.c:38
 msgid "File Browser"
-msgstr ""
+msgstr "Bestandsverkenner"
 
 #: src/gui/widgets/right_dock_edge.c:152
 msgid "Control Room"
@@ -2119,7 +2120,7 @@ msgstr ""
 #: src/audio/modulator_track.c:80 resources/ui/bot_dock_edge.ui:144
 #: resources/ui/bot_dock_edge.ui:160
 msgid "Modulators"
-msgstr ""
+msgstr "Modulatoren"
 
 #: src/audio/engine_pa.c:242 src/audio/engine_pa.c:262
 #: src/audio/engine_pa.c:273
@@ -2907,7 +2908,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Mixer"
-msgstr ""
+msgstr "Mengpaneel"
 
 #: resources/ui/bot_dock_edge.ui:183
 msgid "Chord pad"
@@ -3436,7 +3437,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:109 data/zrythm.desktop.in:10
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:120
 msgid "Electronic"
