@@ -63,7 +63,13 @@
 #include <glib/gprintf.h>
 #include <glib/gstdio.h>
 
+/** This is declared extern in log.h. */
+Log * zlog = NULL;
+
 #define MESSAGES_MAX 160000
+
+/** Temporary log filename under /tmp. */
+#define TMP_LOG_FILE "zrythm.log"
 
 /* string size big enough to hold level prefix */
 #define	STRING_BUFFER_SIZE	\
@@ -853,12 +859,22 @@ log_writer (
       /* log file not ready yet, log to console */
       fprintf (stderr, "%s\n", str);
 #endif
+
+      /* also log to /tmp */
+      const char * tmpdir = g_get_tmp_dir ();
+      char * logfile =
+        g_build_filename (
+          tmpdir, TMP_LOG_FILE, NULL);
+      FILE * file = fopen (logfile, "a");
+      fprintf (file, "%s\n", str);
+      fclose (file);
+      g_free (logfile);
     }
 
   /*(void) log_writer_standard_streams;*/
 
   /* call the default log writer */
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM && ZRYTHM_TESTING)
     {
       if (self->use_structured_for_console)
         {
@@ -1122,6 +1138,14 @@ log_new (void)
 
   g_log_set_writer_func (
     (GLogWriterFunc) log_writer, self, NULL);
+
+  /* remove temporary log file if it exists */
+  const char * tmpdir = g_get_tmp_dir ();
+  char * logfile =
+    g_build_filename (
+      tmpdir, TMP_LOG_FILE, NULL);
+  io_remove (logfile);
+  g_free (logfile);
 
   return self;
 }

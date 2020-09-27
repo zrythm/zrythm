@@ -216,7 +216,7 @@ typedef struct Zrythm
   bool                testing;
 
   /** Log settings. */
-  Log *               log;
+  //Log *               log;
 
   /**
    * Progress done (0.0 ~ 1.0).

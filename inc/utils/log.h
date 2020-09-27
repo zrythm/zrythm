@@ -34,7 +34,7 @@ typedef struct ObjectPool ObjectPool;
  * @{
  */
 
-#define LOG (ZRYTHM->log)
+#define LOG (zlog)
 
 typedef struct Log
 {
@@ -83,6 +83,9 @@ typedef struct Log
   /** ID of the source function. */
   guint           writer_source_id;
 } Log;
+
+/** Global variable, available to all files. */
+extern Log * zlog;
 
 /**
  * Initializes logging to a file.

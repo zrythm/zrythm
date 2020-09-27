@@ -204,6 +204,8 @@ int
 main (int    argc,
       char **argv)
 {
+  LOG = log_new ();
+
 #define OPT_VERSION 'v'
 #define OPT_HELP 'h'
 #define OPT_PRINT_SETTINGS 'p'
@@ -557,6 +559,8 @@ main (int    argc,
           G_APPLICATION (zrythm_app), 0, NULL);
     }
   g_object_unref (zrythm_app);
+
+  log_free (LOG);
 
   return ret;
 }

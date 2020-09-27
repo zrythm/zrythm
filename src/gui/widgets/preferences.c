@@ -73,6 +73,9 @@ static const char *
 get_gschema_str_with_ctx (
   const char * str)
 {
+  return str;
+
+#if 0
   /* note that the repetition is necessary -
    * the strings must be clearly visible to get
    * extracted. */
@@ -130,6 +133,7 @@ get_gschema_str_with_ctx (
     }
 
   g_return_val_if_reached (NULL);
+#endif
 }
 
 static void
@@ -563,18 +567,13 @@ make_control (
                       gtk_combo_box_text_append (
                         GTK_COMBO_BOX_TEXT (widget),
                         cyaml_strv[i].str,
-                        g_dpgettext2 (
-                          NULL, "guilabel",
-                          cyaml_strv[i].str));
+                        _(cyaml_strv[i].str));
                     }
                   else if (strv)
                     {
                       gtk_combo_box_text_append (
                         GTK_COMBO_BOX_TEXT (widget),
-                        strv[i],
-                        g_dpgettext2 (
-                          NULL, "guilabel",
-                          strv[i]));
+                        strv[i], _(strv[i]));
                     }
                 }
               gtk_combo_box_set_active (
@@ -886,7 +885,7 @@ preferences_widget_new ()
   PreferencesWidget * self =
     g_object_new (
       PREFERENCES_WIDGET_TYPE,
-      "title", C_("guilabel", "Preferences"),
+      "title", _("Preferences"),
       NULL);
 
   for (int i = 0; i < 6; i++)

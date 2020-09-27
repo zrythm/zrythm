@@ -473,9 +473,6 @@ zrythm_free (
   object_free_w_func_and_null (
     object_utils_free, self->object_utils);
 
-  object_free_w_func_and_null (
-    log_free, self->log);
-
   object_zero_and_free (self);
 
   g_message ("%s: done", __func__);
@@ -514,7 +511,6 @@ zrythm_new (
   self->plugin_manager = plugin_manager_new ();
   self->symap = symap_new ();
   self->file_manager = file_manager_new ();
-  self->log = log_new ();
   self->cairo_caches = z_cairo_caches_new ();
 
   if (have_ui)

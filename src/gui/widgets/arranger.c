@@ -4965,7 +4965,8 @@ on_drag_end_timeline (
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
     case UI_OVERLAY_ACTION_ERASING:
       {
-        if (arranger_selections_has_any (
+        if (self->sel_to_delete &&
+            arranger_selections_has_any (
               self->sel_to_delete))
           {
             UndoableAction * ua =
