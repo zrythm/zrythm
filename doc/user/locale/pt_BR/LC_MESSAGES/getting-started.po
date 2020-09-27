@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 19:56+0100\n"
-"PO-Revision-Date: 2019-05-08 23:57+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
-"Language: es\n"
-"Language-Team: Spanish <https://translate.zrythm.org/projects/zrythm"
-"/manual-getting-started/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
+"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"Last-Translator: Arthur O. Reis <aor@cesar.school>\n"
+"Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
+"zrythm/manualgetting-started/pt_BR/>\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../getting-started/getting-plugins.rst:6
@@ -39,6 +40,8 @@ msgid ""
 "There are many plugins to choose from. This guide will show you a few "
 "ways you can install plugins on GNU/Linux systems."
 msgstr ""
+"Existem muitos plugins para escolher. Esse guia lhe mostrará algumas formas "
+"de instalar plugins em sistemas GNU/Linux."
 
 #: ../../getting-started/getting-plugins.rst:20
 msgid ""
@@ -56,6 +59,9 @@ msgid ""
 "recommend using the `KXstudio repositories <https://kx.studio/>`_, as "
 "there are many plugins that can easily be installed via apt."
 msgstr ""
+"Para usuários de distribuições como Ubuntu e Linux Mint nós recomendamos "
+"usar o  `repositório KXstudio <https://kx.studio/>`_, nele se encontra "
+"vários plugins que podem ser facilmente instalados via apt."
 
 #: ../../getting-started/getting-plugins.rst:32
 msgid ""
@@ -63,6 +69,9 @@ msgid ""
 "installing the `lv2-plugins "
 "<https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ group."
 msgstr ""
+"Para usuários de distribuições basadas em Arch Linux, como Manjaro, nós "
+"recomendamos a instalação do grupo `lv2-plugins <https://www.archlinux.org/"
+"groups/x86_64/lv2-plugins/>`_ ."
 
 #: ../../getting-started/getting-plugins.rst:38
 msgid "Recommended Plugin Bundles"
@@ -73,6 +82,8 @@ msgid ""
 "`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ provides a "
 "good variety of synths and effects."
 msgstr ""
+"`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ provê uma "
+"variedade de sintetizadores e efeitos."
 
 #: ../../getting-started/getting-plugins.rst:43
 msgid ""
@@ -80,12 +91,17 @@ msgid ""
 "contains high quality plugins for all the basic effects such as Delay, "
 "Reverb, Compression, EQ and Saturation."
 msgstr ""
+"`ZAM Plugins <http://www.zamaudio.com/?p=976>`_ é um pacote de efeitos que "
+"contém plugins de alta qualidade para todos os tipos de efeitos básicos como "
+"Delay, Reverb, Compressão, Equalização e Saturação."
 
 #: ../../getting-started/getting-plugins.rst:48
 msgid ""
 "The `LSP Project <https://lsp-plug.in/>`_ has a wide variety of effect "
 "plugins."
 msgstr ""
+"O `Projeto LSP <https://lsp-plug.in/>`_ contém uma grande variedade de "
+"plugins de efeito."
 
 #: ../../getting-started/getting-plugins.rst:51
 msgid ""
@@ -95,17 +111,20 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:55
 msgid "Synths"
-msgstr ""
+msgstr "Sintetizadores"
 
 #: ../../getting-started/getting-plugins.rst:57
 msgid "`Helm <https://tytel.org/helm/>`_ is a powerful subtractive synthesizer."
 msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:60
+#, fuzzy
 msgid ""
 "`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synthesizer "
 "that is closely modeled on the Yamaha DX7."
 msgstr ""
+"`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed é um sintetizador FM que é "
+"modelado de forma muito próxima ao Yamaha DX7."
 
 #: ../../getting-started/getting-plugins.rst:63
 msgid ""
@@ -146,11 +165,11 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:6
 msgid "Installation"
-msgstr ""
+msgstr "Instalação"
 
 #: ../../getting-started/installation.rst:11
 msgid "Installers"
-msgstr ""
+msgstr "Instaladores"
 
 #: ../../getting-started/installation.rst:12
 msgid ""
@@ -193,7 +212,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:38
 msgid "Installer"
-msgstr ""
+msgstr "Instalador"
 
 #: ../../getting-started/installation.rst:39
 msgid "The installer supports the following distributions (and derivatives):"
@@ -369,4 +388,3 @@ msgstr ""
 #~ "source distribution for installation "
 #~ "instructions."
 #~ msgstr ""
-
