@@ -125,7 +125,7 @@ msgid ""
 "using :term:`a2jmidid`."
 msgstr ""
 "Afhankelijk van uw setup kan het nodig zijn MIDI apparaten te koppelen aan "
-"JACK door middel van \" a2jmidid\"."
+"JACK door middel van :term:`a2jmidid`."
 
 #: ../../configuration/first-run-wizard.rst:6
 msgid "First Run Wizard"

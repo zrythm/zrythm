@@ -30,7 +30,7 @@ msgid ""
 ":term:`CLI`."
 msgstr ""
 "Zrythm vient avec quelques utilitaires qui peuvent être utilisés à partir de "
-"la :term : `CLI` ."
+"la :term:`CLI`."
 
 #: ../../invoking-from-command-line/intro.rst:16
 msgid "zrythm"
@@ -53,7 +53,7 @@ msgid ""
 "Prints all the user settings. Can be combined with :option:`--pretty` to "
 "get pretty-printed output, like below."
 msgstr ""
-"Affiche tous les paramètres utilisateur.Peut être combiné avec :option : "
+"Affiche tous les paramètres utilisateur.Peut être combiné avec :option:"
 "`--pretty` pour obtenir un affichage mis en forme, comme ci dessous."
 
 #: ../../invoking-from-command-line/intro.rst:40
@@ -66,7 +66,7 @@ msgid ""
 "affect any files in the :term:`Zrythm user path`."
 msgstr ""
 "Affecte seulement les paramètres affichés avec :option:`-p`. Celà *n "
-"affectera aucun fichier dans :term:`Zrythm user path`."
+"affectera* aucun fichier dans :term:`Zrythm user path`."
 
 #: ../../invoking-from-command-line/intro.rst:47
 msgid "This will clear ALL your user settings."

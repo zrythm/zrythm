@@ -30,13 +30,14 @@ msgid "The audio editor is displayed when an audio region is selected."
 msgstr "O editor de áudio é mostrado quando uma região é selecionada."
 
 #: ../../editing/clip-editors/audio-editor.rst:15
+#, fuzzy
 msgid ""
 "Currently, it is only used to view audio and has no other functionality, "
 "besides changing the points in the ruler, as discussed in :ref:`editor-"
 "ruler`."
 msgstr ""
 "Atualmente só é possível visualizar áudio e não contém nenhuma outra "
-"funcionalidade,"
+"funcionalidade, :ref:`editor-ruler`"
 
 #: ../../editing/clip-editors/audio-editor.rst:20
 msgid "Audio Arranger"

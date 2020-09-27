@@ -162,11 +162,12 @@ html_context = {
                  ('es', 'Español'),
                  ('fr', 'Français'),
                  ('gl', 'Galego'),
-                 ('ja', '日本語'),
                  ('it', 'Italiano'),
+                 ('ja', '日本語'),
+                 ('nb_NO', 'Bokmål'),
+                 ('nl', 'Nederlands'),
                  ('pt', "Português"),
                  ('pt_BR', 'Português do Brasil'),
-                 ('nb_NO', 'Bokmål'),
                  ('ru', 'русский'),
                  ('sv', 'Svenska'),
                  ('zh_CN', '简体中文'),
@@ -259,7 +260,9 @@ epub_exclude_files = ['search.html']
 
 # -- Localization ----------------------------------------
 locale_dirs = ['locale/']
-gettext_compact = 'zrythm-manual'
+# TODO after 3.3, set this to 'zrythm-manual' to
+# compact all PO files into one
+gettext_compact = True
 
 
 # -- Extension configuration -------------------------------------------------
