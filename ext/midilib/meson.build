@@ -24,8 +24,8 @@ endif
 
 midilib = static_library (
   'midilib',
-  join_paths ('src', 'midifile.c'),
-  join_paths ('src', 'midiutil.c'),
+  'src/midifile.c',
+  'src/midiutil.c',
   c_args: [
     endianess_flag,
     ],

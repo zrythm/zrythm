@@ -28,7 +28,7 @@ gschema = configure_file (
 # install fonts if needed
 if get_option('dseg_font')
   install_subdir (
-    join_paths ('fonts', 'DSEG14-Classic-MINI'),
+    'fonts/DSEG14-Classic-MINI',
     install_dir: fontsdir)
 endif
 
@@ -67,10 +67,8 @@ if os_gnu or os_freebsd
     type: 'desktop',
     po_dir: '../po',
     install: true,
-    install_dir: join_paths (
-      datadir,
-      'applications'),
-  )
+    install_dir: datadir / 'applications',
+    )
   desktop_utils = find_program (
     'desktop-file-validate', required: false)
   if desktop_utils.found()
@@ -90,8 +88,7 @@ install_data (
 if not os_windows
   install_data (
     'zrythm-completion.bash',
-    install_dir: join_paths (
-      sysconfdir, 'bash_completion.d'),
+    install_dir: sysconfdir / 'bash_completion.d',
     install_mode: 'r--r--r--',
     rename: prog_name_lowercase)
 endif

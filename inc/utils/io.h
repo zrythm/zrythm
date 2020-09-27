@@ -165,7 +165,7 @@ io_get_registry_string_val (
   const char * path);
 #endif
 
-#ifdef MAC_RELEASE
+#if defined (__APPLE__) && defined (INSTALLER_VER)
 /**
  * Gets the bundle path on MacOS.
  *

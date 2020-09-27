@@ -202,7 +202,7 @@ zrythm_get_version_with_capabilities (
   sprintf (
     str,
     "%s %s%s (%s)\n"
-    "  built with %s %s for %s\n"
+    "  built with %s %s for %s%s\n"
 #ifdef HAVE_CARLA
     "    +carla\n"
 #endif
@@ -227,14 +227,18 @@ zrythm_get_version_with_capabilities (
     "",
     PROGRAM_NAME,
 #ifdef TRIAL_VER
-    /* TRANSLATORS: please keep the space at the
-     * end */
-    _("(trial) "),
+    "(trial) ",
 #else
     "",
 #endif
     ver, BUILD_TYPE,
-    COMPILER, COMPILER_VERSION, HOST_MACHINE_SYSTEM);
+    COMPILER, COMPILER_VERSION, HOST_MACHINE_SYSTEM,
+#ifdef INSTALLER_VER
+    " (installer)"
+#else
+    ""
+#endif
+    );
 
   g_free (ver);
 }
@@ -252,10 +256,10 @@ zrythm_get_version_with_capabilities (
 char *
 zrythm_get_prefix (void)
 {
-#ifdef WINDOWS_RELEASE
+#if defined (_WOE32) && defined (INSTALLER_VER)
   return
     io_get_registry_string_val ("InstallPath");
-#elif defined(MAC_RELEASE)
+#elif defined (__APPLE__) && defined (INSTALLER_VER)
   char bundle_path[PATH_MAX];
   int ret = io_get_bundle_path (bundle_path);
   g_return_val_if_fail (ret == 0, NULL);

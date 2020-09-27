@@ -60,7 +60,7 @@
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
 
-#ifdef MAC_RELEASE
+#if defined (__APPLE__) && defined (INSTALLER_VER)
 #include "CoreFoundation/CoreFoundation.h"
 #include <unistd.h>
 #include <libgen.h>
@@ -608,7 +608,7 @@ io_get_registry_string_val (
 }
 #endif
 
-#ifdef MAC_RELEASE
+#if defined (__APPLE__) && defined (INSTALLER_VER)
 /**
  * Gets the bundle path on MacOS.
  *

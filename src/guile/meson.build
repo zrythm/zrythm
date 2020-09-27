@@ -16,8 +16,7 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 guile_snarfable_srcs = [
-  join_paths (
-    meson.current_source_dir(), 'zrythm.c'),
+  meson.current_source_dir() / 'zrythm.c',
   ]
 
 subdir ('actions')

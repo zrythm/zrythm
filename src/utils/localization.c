@@ -289,7 +289,7 @@ localization_init (
     }
 
   /* bind text domain */
-#if defined(WINDOWS_RELEASE)
+#if defined (_WOE32) && defined (INSTALLER_VER)
   bindtextdomain (GETTEXT_PACKAGE, "share/locale");
 #else
   char * localedir =

@@ -37,14 +37,14 @@ cmake_opts = cmake.subproject_options ()
 cmake_opts.add_cmake_defines ({'CMAKE_POSITION_INDEPENDENT_CODE': 'ON'})
 
 prefix = get_option ('prefix')
-bindir = join_paths (prefix, get_option('bindir'))
-libdir = join_paths (prefix, get_option ('libdir'))
-libexecdir = join_paths (prefix, get_option ('libexecdir'))
-includedir = join_paths (prefix, get_option('includedir'))
-datadir = join_paths (prefix, get_option('datadir'))
-sysconfdir = join_paths (prefix, get_option('sysconfdir'))
-mandir = join_paths (datadir, 'man', 'man1')
-schemasdir = join_paths (datadir, 'glib-2.0/schemas')
+bindir = prefix / get_option ('bindir')
+libdir = prefix / get_option ('libdir')
+libexecdir = prefix / get_option ('libexecdir')
+includedir = prefix / get_option ('includedir')
+datadir = prefix / get_option ('datadir')
+sysconfdir = prefix / get_option ('sysconfdir')
+mandir = datadir / 'man' / 'man1'
+schemasdir = datadir / 'glib-2.0/schemas'
 fontsdir = datadir / 'fonts' / prog_name_lowercase
 zrythmdatadir = datadir / prog_name_lowercase
 themesdir = zrythmdatadir / 'themes'
@@ -107,7 +107,8 @@ cdata.set_quoted ('CONFIGURE_DATADIR', datadir)
 cdata.set_quoted (
   'CONFIGURE_SOURCEVIEW_STYLES_DIR',
   sourceviewstylesdir)
-cdata.set_quoted ('CONFIGURE_THEMES_DIR', themesdir)
+cdata.set_quoted (
+  'CONFIGURE_THEMES_DIR', themesdir)
 cdata.set_quoted (
   'LIBDIR_NAME', get_option ('libdir'))
 cdata.set_quoted ('CONFIGURE_LIBDIR', libdir)
@@ -117,15 +118,15 @@ cdata.set_quoted ('BIN_SUFFIX', bin_suffix)
 cdata.set_quoted ('GSCHEMAS_DIR', schemasdir)
 cdata.set_quoted (
   'BUILD_TYPE', get_option ('buildtype'))
+cdata.set_quoted (
+  'INSTALLER_VERSION_STR',
+  get_option ('buildtype'))
 if get_option ('trial_ver')
   cdata.set ('TRIAL_VER', 1)
   cdata.set ('TRIAL_LIMIT_MINS', 30)
 endif
-if get_option ('windows_release')
-  cdata.set ('WINDOWS_RELEASE', 1)
-endif
-if get_option ('mac_release')
-  cdata.set ('MAC_RELEASE', 1)
+if get_option ('installer_ver')
+  cdata.set ('INSTALLER_VER', 1)
 endif
 cdata.set (
   'MESON_SOURCE_ROOT',
@@ -152,16 +153,11 @@ endif
 root_inc = include_directories ('.')
 inc_inc = include_directories ('inc')
 ext_inc = include_directories ('ext')
-midilib_inc = include_directories (
-  join_paths ('ext', 'midilib'))
-whereami_inc = include_directories (
-  join_paths ('ext', 'whereami'))
-zix_inc = include_directories (
-  join_paths ('ext', 'zix'))
-weakjack_inc = include_directories (
-  join_paths ('ext', 'weakjack'))
-suil_inc = include_directories (
-  join_paths ('inc', 'plugins', 'lv2'))
+midilib_inc = include_directories ('ext/midilib')
+whereami_inc = include_directories ('ext/whereami')
+zix_inc = include_directories ('ext/zix')
+weakjack_inc = include_directories ('ext/weakjack')
+suil_inc = include_directories ('inc/plugins/lv2')
 all_inc = [
   root_inc,
   inc_inc,
@@ -173,10 +169,8 @@ all_inc = [
   suil_inc,
   ]
 
-resources_dir = join_paths (
-  meson.source_root (), 'resources')
-data_dir = join_paths (
-  meson.source_root (), 'data')
+resources_dir = meson.source_root () / 'resources'
+data_dir = meson.source_root () / 'data'
 
 cc = meson.get_compiler ('c')
 
@@ -190,15 +184,32 @@ dot_bin = find_program ('dot', required: false)
 
 # find plugins for testing
 ext_lv2_plugins = {
-  'ams_lfo': ['AMS LFO', 'http://github.com/blablack/ams-lv2/lfo'],
-  'helm': ['Helm', 'http://tytel.org/helm'],
-  'sherlock_atom_inspector': ['Sherlock Atom Inspector', 'http://open-music-kontrollers.ch/lv2/sherlock#atom_inspector'],
-  'lsp_compressor': ['LSP Compressor', 'http://lsp-plug.in/plugins/lv2/compressor_stereo'],
-  'lsp_multisampler_24_do': ['LSP MultiSampler x24 Direct Out', 'http://lsp-plug.in/plugins/lv2/multisampler_x24_do'],
-  'carla_rack': ['Carla Rack', 'http://kxstudio.sf.net/carla/plugins/carlarack'],
-  'no_delay_line': ['No Delay Line', 'http://gareus.org/oss/lv2/nodelay'],
-  'mda_ambience': ['mda Ambience', 'http://drobilla.net/plugins/mda/Ambience'],
-  'midi_cc_map': ['MIDI CC Map', 'http://gareus.org/oss/lv2/midifilter#mapcc'],
+  'ams_lfo': [
+    'AMS LFO',
+    'http://github.com/blablack/ams-lv2/lfo'],
+  'helm': [
+    'Helm', 'http://tytel.org/helm'],
+  'sherlock_atom_inspector': [
+    'Sherlock Atom Inspector',
+    'http://open-music-kontrollers.ch/lv2/sherlock#atom_inspector'],
+  'lsp_compressor': [
+    'LSP Compressor',
+    'http://lsp-plug.in/plugins/lv2/compressor_stereo'],
+  'lsp_multisampler_24_do': [
+    'LSP MultiSampler x24 Direct Out',
+    'http://lsp-plug.in/plugins/lv2/multisampler_x24_do'],
+  'carla_rack': [
+    'Carla Rack',
+    'http://kxstudio.sf.net/carla/plugins/carlarack'],
+  'no_delay_line': [
+    'No Delay Line',
+    'http://gareus.org/oss/lv2/nodelay'],
+  'mda_ambience': [
+    'mda Ambience',
+    'http://drobilla.net/plugins/mda/Ambience'],
+  'midi_cc_map': [
+    'MIDI CC Map',
+    'http://gareus.org/oss/lv2/midifilter#mapcc'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}
@@ -215,6 +226,7 @@ if get_option ('tests')
     'tools/get_lv2_bundle_uri.sh')
   get_vst_path_bin = find_program (
     'tools/get_vst_path.sh')
+  # get lv2 bundle paths
   if lv2ls_bin.found () and lv2info_bin.found ()
     lv2ls_res = run_command (
       lv2ls_bin, check: true).stdout ()
@@ -233,6 +245,7 @@ if get_option ('tests')
       endif
     endforeach
   endif
+  # get vst plugin paths
   if get_vst_path_bin.found ()
     foreach name, filename : ext_vst_plugins
       have_ext_vst = run_command (
@@ -254,8 +267,7 @@ endif
 
 # find command to open a directory
 if os_gnu or os_freebsd
-  open_dir_cmd = 'xdg-open'
-  find_program (open_dir_cmd)
+  open_dir_cmd = find_program ('xdg-open').full_path ()
 elif os_darwin
   open_dir_cmd = 'open'
   find_program (open_dir_cmd)
@@ -1012,6 +1024,7 @@ summary ({
   'Install DSEG font': get_option ('dseg_font'),
   'Custom logo and splash': get_option ('custom_logo_and_splash'),
   'Trial version': get_option ('trial_ver'),
+  'Installer version': get_option ('installer_ver'),
   }, section: 'General')
 
 summary ({
@@ -1019,7 +1032,7 @@ summary ({
   'Carla': have_carla,
   'GraphViz': have_graphviz,
   'Guile': have_guile,
-  'Jack': have_jack,
+  'JACK': have_jack,
   'SoundIO': have_libsoundio,
   'LSP DSP': have_lsp_dsp,
   'PortAudio': portaudio_dep.found (),
