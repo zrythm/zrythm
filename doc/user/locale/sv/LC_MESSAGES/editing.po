@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"Last-Translator: Felix Paulsson <fpaulsson@protonmail.com>\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
+"manualediting/sv/>\n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -92,7 +95,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:44
 msgid "Exponent"
-msgstr ""
+msgstr "Exponentiell"
 
 #: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponential curve."
@@ -100,7 +103,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Superellipse"
-msgstr ""
+msgstr "Superellips"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."
@@ -108,7 +111,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "The curve that Vital synth uses, similar to exponential curve."
@@ -116,7 +119,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse"
-msgstr ""
+msgstr "Puls"
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse wave."
@@ -198,7 +201,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:23
 msgid "Chords"
-msgstr ""
+msgstr "Ackord"
 
 #: ../../editing/clip-editors/chord-editor.rst:24
 msgid ""
@@ -455,7 +458,7 @@ msgstr ""
 #: ../../editing/clip-editors/ruler.rst:21
 #: ../../editing/timeline/arranger.rst:78
 msgid "Markers"
-msgstr ""
+msgstr "Markörer"
 
 #: ../../editing/clip-editors/ruler.rst:24
 msgid "Clip Start"
@@ -475,7 +478,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:32
 msgid "Playhead"
-msgstr ""
+msgstr "Spelhuvud"
 
 #: ../../editing/clip-editors/ruler.rst:33
 msgid ""
@@ -609,7 +612,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:35
 msgid "Cut"
-msgstr ""
+msgstr "Klipp ut"
 
 #: ../../editing/common-operations.rst:36
 msgid ""
@@ -620,7 +623,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:42
 msgid "Copy"
-msgstr ""
+msgstr "Kopiera"
 
 #: ../../editing/common-operations.rst:43
 msgid ""
@@ -630,7 +633,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:49
 msgid "Paste"
-msgstr ""
+msgstr "Klistra in"
 
 #: ../../editing/common-operations.rst:50
 msgid ""
@@ -640,7 +643,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:56
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplicera"
 
 #: ../../editing/common-operations.rst:57
 msgid ""
@@ -650,7 +653,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:62
 msgid "Delete"
-msgstr ""
+msgstr "Ta bort"
 
 #: ../../editing/common-operations.rst:63
 msgid ""
@@ -660,11 +663,11 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:68
 msgid "Selections"
-msgstr ""
+msgstr "Markeringar"
 
 #: ../../editing/common-operations.rst:70
 msgid "Clear Selection"
-msgstr ""
+msgstr "Rensa markeringar"
 
 #: ../../editing/common-operations.rst:71
 msgid "Clear current selection (unselect all objects)."
@@ -672,7 +675,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:74
 msgid "Select All"
-msgstr ""
+msgstr "Markera allt"
 
 #: ../../editing/common-operations.rst:75
 msgid "Select all objects in the current editor."
@@ -680,7 +683,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:78
 msgid "Loop Selection"
-msgstr ""
+msgstr "Loopmarkering"
 
 #: ../../editing/common-operations.rst:79
 msgid ""
@@ -846,7 +849,7 @@ msgstr ""
 
 #: ../../editing/intro.rst:8
 msgid "Editing"
-msgstr ""
+msgstr "Redigering"
 
 #: ../../editing/overview.rst:8
 msgid "Editing refers to any work done in the timeline arranger and the editors."
@@ -871,7 +874,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:17
 msgid "Quantize"
-msgstr ""
+msgstr "Kvantisera"
 
 #: ../../editing/quantization.rst:18
 msgid ""
@@ -979,7 +982,7 @@ msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:31
 msgid "Length"
-msgstr ""
+msgstr "Längd"
 
 #: ../../editing/snapping-grid-options.rst:32
 msgid "Note length to snap to."
@@ -1165,7 +1168,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:130
 msgid "Looping"
-msgstr ""
+msgstr "Loopar"
 
 #: ../../editing/timeline/arranger.rst:131
 msgid ""
@@ -1368,7 +1371,7 @@ msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:24
 msgid "Musical Mode"
-msgstr ""
+msgstr "Musikal-läge"
 
 #: ../../editing/timeline/toolbar.rst:25
 msgid ""
@@ -1581,4 +1584,3 @@ msgstr ""
 #~ "Linked regions can be created by "
 #~ "holding down :zbutton:`Alt` while moving."
 #~ msgstr ""
-

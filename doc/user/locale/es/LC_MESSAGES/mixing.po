@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-24 02:45+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"Last-Translator: Gorro_Rojo <gorro.rojo@gmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualmixing/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish "
-"<https://hosted.weblate.org/projects/zrythm/manualmixing/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../mixing/intro.rst:8
@@ -25,7 +26,7 @@ msgstr "Mezcla"
 
 #: ../../mixing/overview.rst:10
 msgid "Mixing Overview"
-msgstr ""
+msgstr "Overview de Mezclado"
 
 #: ../../mixing/overview.rst:11
 msgid ""
@@ -227,4 +228,3 @@ msgstr ""
 
 #~ msgid "Send Effects"
 #~ msgstr ""
-

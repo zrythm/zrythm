@@ -2,81 +2,100 @@
 # Copyright (C) 2019-2020 Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-#
-#, fuzzy
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"connections/ja/>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../connections/intro.rst:6
 msgid "Connections"
-msgstr ""
+msgstr "コネクション"
 
 #: ../../connections/making-connections.rst:8
 msgid "Making Connections"
-msgstr ""
+msgstr "コネクトする"
 
 #: ../../connections/making-connections.rst:10
+#, fuzzy
 msgid ""
 "Zrythm allows the user to connect almost any port to any other port, as "
 "long as they are compatible. For example, you can route an LFO's CV "
 "output to a filter plugin's cutoff parameter."
 msgstr ""
+"Zrythm は、互換性がある限り、ほぼすべてのポートを他のポートに接続できます。たとえば、LFO の CV 出力をフィルタ プラグインのカットオフ "
+"パラメータにルーティングできます。"
 
 #: ../../connections/making-connections.rst:15
+#, fuzzy
 msgid ""
 "Connections can be made by double clicking on ports in the :ref:`track-"
 "inspector` or the :ref:`plugin-inspector`."
 msgstr ""
+"接続は、 :ref:`track-inspector` または :ref:`plugin-inspector` "
+"のポートをダブルクリックすることで行うことができます。"
 
 #: ../../connections/making-connections.rst:22
+#, fuzzy
 msgid ""
 "By double clicking the port, you can select a port to connect it to, or "
 "edit existing connections. You can also drag the slider to adjust the "
 "level of the amount to send."
 msgstr ""
+"ポートをダブルクリックすることで、接続するポートを選択したり、既存の接続を編集することができます。また、スライダーをドラッグして送信する量のレベルを調整す"
+"ることもできます。"
 
 #: ../../connections/making-connections.rst:28
 msgid "Routing Graph"
-msgstr ""
+msgstr "ルーティング図"
 
 #: ../../connections/making-connections.rst:29
+#, fuzzy
 msgid ""
 "It is very helpful to be able to view the routing graph when making "
 "connections. We plan to add this functionality into Zrythm in the future,"
 " but for now Zrythm allows you to export the whole routing graph as a PNG"
 " image, so you can view it externally."
 msgstr ""
+"接続を行う際にルーティンググラフを表示できることは非常に便利です。この機能は今後 Zrythm に追加する予定ですが、現時点では Zrythm "
+"ではルーティンググラフ全体を PNG 画像としてエクスポートできるため、外部から見ることができます。"
 
 #: ../../connections/making-connections.rst:35
 msgid "See :ref:`exporting-routing-graph` for details."
-msgstr ""
+msgstr "詳細については、 :ref:`exporting-routing-graph` を参照してください。"
 
 #: ../../connections/ports.rst:8
 msgid "Ports"
-msgstr ""
+msgstr "ポート"
 
 #: ../../connections/ports.rst:10
+#, fuzzy
 msgid ""
 "Before getting into connections, it is necessary to understand some basic"
 " information about ports."
-msgstr ""
+msgstr "接続に入る前に、ポートに関するいくつかの基本的な情報を理解しておく必要があります。"
 
 #: ../../connections/ports.rst:13
+#, fuzzy
 msgid ""
 "Ports are the main building blocks used to route signals throughout "
 "Zrythm. A port does not process anything on its own, and is usually part "
 "of a `processor`, like a plugin or track."
 msgstr ""
+"ポートは、Zrythm全体のシグナルをルーティングするために使用される主要な構成要素です。ポートはそれ自身では何も処理しませんし、"
+"通常はプラグインやトラックのような `プロセッサ`の一部です。"
 
 #: ../../connections/ports.rst:19
 msgid ""
@@ -87,78 +106,81 @@ msgstr ""
 
 #: ../../connections/ports.rst:25
 msgid "Port Directions"
-msgstr ""
+msgstr "ポートの方向"
 
 #: ../../connections/ports.rst:26
 msgid "Input"
-msgstr ""
+msgstr "入力"
 
 #: ../../connections/ports.rst:27
 msgid "The port receives signals."
-msgstr ""
+msgstr "ポートは信号を受信します。"
 
 #: ../../connections/ports.rst:29
 msgid "Output"
-msgstr ""
+msgstr "出力"
 
 #: ../../connections/ports.rst:29
 msgid "The port sends signals."
-msgstr ""
+msgstr "ポートは信号を送信します。"
 
 #: ../../connections/ports.rst:32
 msgid "Port Types"
-msgstr ""
+msgstr "ポートの種類"
 
 #: ../../connections/ports.rst:34
 msgid "Audio"
-msgstr ""
+msgstr "オーディオ"
 
 #: ../../connections/ports.rst:34
 msgid "Ports of this type receive or send raw audio signals."
-msgstr ""
+msgstr "この種類のポートは、未加工のオーディオ信号を受信または送信します。"
 
 #: ../../connections/ports.rst:37
 msgid "Event"
-msgstr ""
+msgstr "イベント"
 
 #: ../../connections/ports.rst:37
 msgid "Event ports are mainly used for routing MIDI signals."
-msgstr ""
+msgstr "イベントポートは主にMIDI信号のルーティングに使用されます。"
 
 #: ../../connections/ports.rst:40
 msgid "Control"
-msgstr ""
+msgstr "コントロール"
 
 #: ../../connections/ports.rst:40
 msgid ""
 "Control ports are user-editable parameters that can also be automated in "
 "automation lanes."
-msgstr ""
+msgstr "コントロールポートは、ユーザーが編集可能なパラメータであり、オートメーションレーンでも自動化が可能です。"
 
 #: ../../connections/ports.rst:44
 msgid "CV"
-msgstr ""
+msgstr "CV"
 
 #: ../../connections/ports.rst:43
 msgid ""
 "CV ports handle continuous signals and can be used to modulate control "
 "ports."
-msgstr ""
+msgstr "CVポートは連続信号を処理し、コントロールポートのモジュレーションに使用できます。"
 
 #: ../../connections/ports.rst:47
 msgid "Port Connections"
-msgstr ""
+msgstr "ポート接続"
 
 #: ../../connections/ports.rst:48
+#, fuzzy
 msgid ""
 "Ports can be connected with each other, as long as they are of the same "
 "type and opposite direction, with the exception of CV ports which may be "
 "routed to both CV ports and control ports."
 msgstr ""
+"ポートは、CVポートとコントロールポートの両方にルーティングされている可能性があるCVポートを除いて、同じタイプで反対方向である限り、互いに接続することが"
+"できます。"
 
 #: ../../connections/ports.rst:54
+#, fuzzy
 msgid ""
 "When ports are connected, the signal from the source port is added to the"
 " destination port during processing."
-msgstr ""
-
+msgstr "ポートが接続されると、送信元ポートからの信号が処理中に宛先ポートに追加されます。"

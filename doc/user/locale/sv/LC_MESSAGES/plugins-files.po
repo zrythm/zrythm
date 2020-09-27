@@ -3,23 +3,26 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"Last-Translator: Felix Paulsson <fpaulsson@protonmail.com>\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/sv/>\n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 msgid "File Browser"
-msgstr ""
+msgstr "Filutforskare"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:10
 msgid ""
@@ -119,11 +122,11 @@ msgstr ""
 
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
-msgstr ""
+msgstr "Plugin"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:8
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Pluginutforskare"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:10
 msgid ""
@@ -143,7 +146,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:23
 msgid "Collection"
-msgstr ""
+msgstr "Kollektion"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:22
 msgid ""
@@ -153,7 +156,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid "Category"
-msgstr ""
+msgstr "Kategori"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid ""
@@ -163,7 +166,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Protocol"
-msgstr ""
+msgstr "Protokoll"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:29
 msgid "Allows you to filter plugins based their protocol (eg., LV2 or SFZ)."
@@ -254,7 +257,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "Instrument"
-msgstr ""
+msgstr "Instrument"
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "These plugins will create an instrument track when added to the project."
@@ -272,7 +275,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:30
 msgid "Modulators"
-msgstr ""
+msgstr "Modulatorer"
 
 #: ../../plugins-files/plugins/plugin-info.rst:30
 msgid ""
@@ -322,7 +325,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:58
 msgid "Gain"
-msgstr ""
+msgstr "Förstärkning"
 
 #: ../../plugins-files/plugins/plugin-info.rst:57
 msgid "Increases the output volume of the plugin (if applicable)."
@@ -571,4 +574,3 @@ msgstr ""
 #~ "information about the various types of"
 #~ " plugins there are."
 #~ msgstr ""
-

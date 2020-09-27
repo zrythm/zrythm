@@ -5,13 +5,14 @@
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
 # Alexandros Theodotou <alextee@posteo.net>, 2019, 2020.
 # Acid Chicken (硫酸鶏) <root@acid-chicken.com>, 2020.
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-26 19:10+0100\n"
-"PO-Revision-Date: 2020-09-25 18:02+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -1640,7 +1641,7 @@ msgstr "スケール"
 
 #: src/gui/widgets/event_viewer.c:115
 msgid "MIDI note"
-msgstr "MIDI音符"
+msgstr "MIDIノート"
 
 #: src/gui/widgets/event_viewer.c:121
 msgid "Automation point"
@@ -2251,6 +2252,8 @@ msgid ""
 "Your selected combination of backends may not work properly. If you want to "
 "use JACK, please select JACK as both your audio and MIDI backend."
 msgstr ""
+"選択されたバックエンドの組み合わせが正しく動作しない可能性があります。もし JACK を使いたいのであれば、オーディオと MIDI バックエンドの両方に "
+"JACK を選択してください。"
 
 #: src/audio/engine.c:475
 #, c-format
@@ -2809,7 +2812,7 @@ msgstr "クオンタイズ"
 
 #: resources/gtk/help-overlay.ui:301
 msgid "Looping"
-msgstr "ループ中"
+msgstr "ループ"
 
 #: resources/gtk/help-overlay.ui:306
 msgid "Loop selection"
@@ -3283,7 +3286,7 @@ msgstr "完全指定名"
 
 #: resources/ui/port_info_dialog.ui:114
 msgid "Range"
-msgstr "範囲"
+msgstr "レンジ"
 
 #: resources/ui/port_info_dialog.ui:128
 msgid "Flags"
@@ -3686,7 +3689,7 @@ msgstr "パンの計算法"
 
 #: resources/ui/preferences.ui:201
 msgid "Pan Law"
-msgstr "パン法"
+msgstr "Pan Law"
 
 #: resources/ui/preferences.ui:211
 msgid "The pan algorithm to use"

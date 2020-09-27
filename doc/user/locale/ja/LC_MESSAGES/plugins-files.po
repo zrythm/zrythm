@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-25 18:02+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm"
-"/manualplugins-files/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
@@ -114,7 +115,7 @@ msgstr "コントロールポートの値は、バー内をクリックしてド
 
 #: ../../plugins-files/plugins/inspector-page.rst:27
 msgid "Connections"
-msgstr "接続"
+msgstr "コネクション"
 
 #: ../../plugins-files/plugins/inspector-page.rst:29
 msgid ""
@@ -187,11 +188,11 @@ msgstr "フィルター ボタン"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:37
 msgid "Additionally to the above, plugins can be filtered based on their type."
-msgstr ""
+msgstr "さらに、プラグインは種類に基づいてフィルタリングすることができます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:43
 msgid "Filtering by modulator plugins"
-msgstr ""
+msgstr "モジュレータープラグインによるフィルタリング"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:45
 #, fuzzy
@@ -250,6 +251,8 @@ msgid ""
 "There are various types of plugins (see :term:`plugin`) supported by "
 "Zrythm, mentioned in :ref:`scanning-plugins`."
 msgstr ""
+"Zrythm でサポートされているプラグイン( :term:`plugin` を参照)にはさまざまな種類があり、 :ref:`scanning-"
+"plugins` で説明されています。"
 
 #: ../../plugins-files/plugins/plugin-info.rst:12
 msgid "In Zrythm, :term:`SFZ`/:term:`SF2` are also used as plugins."
@@ -347,7 +350,7 @@ msgstr "プラグインの出力ボリュームを上げます (該当する場�
 msgid ""
 "After the above ports are created, Zrythm appends the rest of the "
 "plugin's ports."
-msgstr ""
+msgstr "上記のポートが作成された後、Zrythmはプラグインの残りのポートを追加します。"
 
 #: ../../plugins-files/plugins/plugin-info.rst:63
 msgid ""
@@ -394,6 +397,8 @@ msgid ""
 " can edit their parameters in the plugin inspector page (see :ref"
 ":`plugin-inspector-page`)."
 msgstr ""
+"これは :term:`LV2` プラグインにのみ適用されます。その他の種類のプラグインについては、"
+"プラグインインスペクターページでパラメータを編集できます ( :ref:`plugin-inspector-page` を参照)。"
 
 #: ../../plugins-files/plugins/plugin-window.rst:38
 msgid "Bridging"
@@ -406,29 +411,37 @@ msgid ""
 "not compatible with Zrythm and need to be bridged (ie, run as separate "
 "processes)."
 msgstr ""
+"ほとんどのプラグインは Zrythm と同じプロセスでインスタンス化されます。これは、 :term:`DSP` が非常に高速であるという利点を持っています"
+"が、いくつかのプラグインのUIはZrythmと互換性がなく、ブリッジする必要があります(すなわち、別々のプロセスとして実行されます)。"
 
 #: ../../plugins-files/plugins/plugin-window.rst:46
+#, fuzzy
 msgid ""
 "When it is possible to bridge only the UI, Zrythm will do so, and this "
 "will not have any performance implications on DSP. If bridging the whole "
 "plugin is required, this will have some performance implications, since "
 "it is required to communicate with the plugin in another process."
 msgstr ""
+"UI のみをブリッジすることが可能な場合、Zrythm はそうすると、DSP にパフォーマンスに影響を与えないだろう。プラグイン全体をブリッジングする必要"
+"がある場合、別のプロセスでプラグインと通信する必要があるため、これはパフォーマンスに影響を与えます。"
 
 #: ../../plugins-files/plugins/plugin-window.rst:53
 msgid "This process is transparent to the user and only mentioned for reference."
-msgstr ""
+msgstr "このプロセスはユーザーにとって透明であり、参考までにしか言及されていません。"
 
 #: ../../plugins-files/plugins/plugin-window.rst:57
 msgid "Opening Plugins in Bridged Mode"
 msgstr "ブリッジモードでプラグインを開く"
 
 #: ../../plugins-files/plugins/plugin-window.rst:58
+#, fuzzy
 msgid ""
 "Sometimes, you may need to manually tell Zrythm to open plugins in a "
 "specific way. You can find the options available for each plugin by right"
 " clicking on the plugin in the :ref:`plugin-browser`."
 msgstr ""
+"場合によっては、特定の方法でプラグインを開くように Zrythm に手動で指示する必要があります。各プラグインで利用可能なオプションは、 :ref"
+":`plugin-browser` でプラグインを右クリックして見つけることができます。"
 
 #: ../../plugins-files/plugins/scanning.rst:8
 msgid "Scanning for Plugins"
@@ -449,6 +462,7 @@ msgid ""
 ":term:`SFZ` and :term:`SF2` instruments are also supported, and they are "
 "scanned as instrument plugins."
 msgstr ""
+":term:`SFZ` と :term:`SF2` のインストゥルメントもサポートされており、インストゥルメントプラグインとしてスキャンされます。"
 
 #: ../../plugins-files/plugins/scanning.rst:21
 #, fuzzy
@@ -467,6 +481,8 @@ msgid ""
 "<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. You can "
 "bypass this behavior by passing :envvar:`LV2_PATH`."
 msgstr ""
+"Zrythmは、 `ここで指定された標準パス <https://lv2plug.in/pages/filesystem-hierarchy-"
+"standard.html>`_ でLV2プラグインをスキャンします。 :envvar:`LV2_PATH` を渡すことで、この動作を回避できます。"
 
 #: ../../plugins-files/plugins/scanning.rst:33
 msgid "VST2/VST3 Scan"
@@ -525,6 +541,8 @@ msgid ""
 "If your system uses a libdir other than ``lib`` (for example ``lib64``), "
 "Zrythm will scan for plugins in both locations."
 msgstr ""
+"システムが ``lib`` 以外の libdir (例えば ``lib64`` ) を使用している場合、Zrythm "
+"は両方の場所でプラグインをスキャンします。"
 
 #: ../../plugins-files/plugins/scanning.rst:59
 msgid "Windows"
@@ -534,7 +552,7 @@ msgstr "Windows"
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in :ref:`vst-"
 "paths`."
-msgstr ""
+msgstr "Zrythm は 、 :ref:`vst-path` で指定されたパス内の VST プラグインをスキャンします。"
 
 #: ../../plugins-files/plugins/scanning.rst:64
 msgid "MacOS"
@@ -588,6 +606,8 @@ msgid ""
 "On MacOS, :term:`AU` plugins will be scanned at their standard location "
 "at :file:`/Library/Audio/Plug-Ins/Components`."
 msgstr ""
+"MacOSでは、 :term:`AU` プラグインは :file:`/Library/Audio/Plug-Ins/Components` "
+"にある標準の場所でスキャンされます。"
 
 #: ../../plugins-files/plugins/scanning.rst:88
 msgid "SFZ/SF2 Scan"
@@ -598,6 +618,8 @@ msgid ""
 ":term:`SFZ` and :term:`SF2` instruments will be scanned in all  "
 "directories and subdirectories specified in :ref:`vst-paths`."
 msgstr ""
+":term:`SFZ` と :term:`SF2` のインストゥルメントは、 :ref:`vst-path` "
+"で指定されたすべてのディレクトリとサブディレクトリでスキャンされます。"
 
 #~ msgid ""
 #~ "When a Plugin is selected in the"
@@ -926,4 +948,3 @@ msgstr ""
 #~ "scanned in all directories and "
 #~ "subdirectories specified in :ref:`vst-paths`."
 #~ msgstr ""
-

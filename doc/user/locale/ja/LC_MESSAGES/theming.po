@@ -2,26 +2,30 @@
 # Copyright (C) 2019-2020 Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-#
-#, fuzzy
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/theming/"
+"ja/>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../theming/css.rst:8
 msgid "CSS"
-msgstr ""
+msgstr "CSS"
 
 #: ../../theming/css.rst:9
+#, fuzzy
 msgid ""
 "You can override the GTK theme that Zrythm uses along with much of the "
 "color scheme in a special CSS file. It is a good idea to start by copying"
@@ -30,6 +34,10 @@ msgid ""
 "``share/zrythm/themes/zrythm-theme.css`` in the installation path on "
 "Windows or the Application contents on MacOS."
 msgstr ""
+"Zrythm が使用する GTK テーマは、特殊な CSS ファイルのカラー スキームの多くをオーバーライドできます。Zrythm "
+"インストールディレクトリ (通常は'/usr/share/zrythm/テーマ/zrythm-theme.css'' からテーマをコピーし、"
+"Windows のインストールパスまたは MacOS のアプリケーションコンテンツに ''share/zrythm/テーマ/zrythm-"
+"theme.css' をコピーすることをお勧めします。"
 
 #: ../../theming/css.rst:18
 msgid ""
@@ -40,64 +48,78 @@ msgid ""
 msgstr ""
 
 #: ../../theming/css.rst:23
+#, fuzzy
 msgid ""
 "The Zrythm theme inherits from the `Matcha GTK theme "
 "<https://github.com/vinceliuice/Matcha-gtk-theme>`_, so additional CSS "
 "rules may need to be overridden."
 msgstr ""
+"Zrythm テーマは `Matcha GTK テーマ <https://github.com/vinceliuice/Matcha-gtk-"
+"theme>`_ から継承するため、追加の CSS ルールをオーバーライドする必要があります。"
 
 #: ../../theming/css.rst:28
 msgid "Color Scheme"
-msgstr ""
+msgstr "カラースキーム"
 
 #: ../../theming/css.rst:29
+#, fuzzy
 msgid ""
 "Inside the theme file, you will find lots of colors defined using "
 "``@define-color``. You can override these with your own colors and Zrythm"
 " will use them where possible."
 msgstr ""
+"テーマファイルの中には ``@define-color`` "
+"で定義された色がたくさんあります。これらの色を自分の色で上書きすることができ、Zrythmは可能な限りその色を使用します。"
 
 #: ../../theming/css.rst:34
 msgid "Other GTK-Specific Rules"
-msgstr ""
+msgstr "その他のGTK固有のルール"
 
 #: ../../theming/css.rst:35
+#, fuzzy
 msgid ""
 "You will find lots of information about changing CSS rules for general "
 "GTK widgets online."
-msgstr ""
+msgstr "一般的な GTK ウィジェットの CSS ルールの変更に関する多くの情報をオンラインで見つけることができます。"
 
 #: ../../theming/css.rst:38
+#, fuzzy
 msgid "Here are some links by official GNOME sources:"
-msgstr ""
+msgstr "ここでは、GNOME の公式ソースによるリンクをいくつか紹介します。"
 
 #: ../../theming/css.rst:40
 msgid ""
 "`GTK+ CSS Overview <https://developer.gnome.org/gtk3/stable/chap-css-"
 "overview.html>`_"
 msgstr ""
+"`GTK + CSSの概要 <https://developer.gnome.org/gtk3/stable/chap-css-overview."
+"html>`_"
 
 #: ../../theming/css.rst:41
 msgid ""
 "`GTK+ CSS Properties <https://developer.gnome.org/gtk3/stable/chap-css-"
 "properties.html>`_"
 msgstr ""
+"`GTK+のCSSプロパティ <https://developer.gnome.org/gtk3/stable/chap-css-properties."
+"html>`_"
 
 #: ../../theming/css.rst:42
 msgid ""
 "`Styling GTK with CSS <https://thegnomejournal.wordpress.com/2011/03/15"
 "/styling-gtk-with-css/>`_"
 msgstr ""
+"`GTK を CSS でスタイリングする <https://thegnomejournal.wordpress.com/2011/03/15/"
+"styling-gtk-with-css/>`_"
 
 #: ../../theming/icon-themes.rst:8
 msgid "Icon Themes"
-msgstr ""
+msgstr "アイコンテーマ"
 
 #: ../../theming/icon-themes.rst:9
 msgid ""
 "The icon theme that Zrythm uses is freedesktop-compliant, so it can be "
 "easily overridden."
-msgstr ""
+msgstr "Zrythmが使用しているアイコンテーマはfreedesktopに対応しているので、簡単に上書きすることができます。"
 
 #: ../../theming/icon-themes.rst:12
 msgid ""
@@ -114,10 +136,11 @@ msgid ""
 msgstr ""
 
 #: ../../theming/icon-themes.rst:23
+#, fuzzy
 msgid ""
 "An easy way to do it is by copying the directory that Zrythm comes with "
 "and replacing the icons with your own."
-msgstr ""
+msgstr "簡単な方法は、Zrythmが付属しているディレクトリをコピーして、アイコンを自分のものに置き換えることです。"
 
 #: ../../theming/icon-themes.rst:26
 msgid ""
@@ -129,7 +152,7 @@ msgstr ""
 #: ../../theming/intro.rst:6
 #: ../../theming/overview.rst:6
 msgid "Theming"
-msgstr ""
+msgstr "テーマ"
 
 #: ../../theming/overview.rst:7
 msgid ""
@@ -146,4 +169,3 @@ msgid ""
 " on Windows and ``Resources`` under the the Application contents on "
 "MacOS."
 msgstr ""
-

@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-26 19:10+0100\n"
-"PO-Revision-Date: 2020-09-26 11:50+0000\n"
-"Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
+"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"Last-Translator: xunil-cloud <freed602om@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -473,7 +473,7 @@ msgstr "專案壓縮完成。\n"
 #: src/main.c:419
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr "專案無法解壓縮: %s\n"
+msgstr "無法解壓縮專案: %s\n"
 
 #: src/main.c:428
 #, c-format
@@ -481,7 +481,7 @@ msgid "Project successfully decompressed.\n"
 msgstr "專案解壓縮完成。\n"
 
 #: src/main.c:437
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "%s-%s Copyright (C) 2018-2020 The Zrythm contributors\n"
 "\n"
@@ -494,10 +494,19 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
+"%s-%s Copyright (C) 2018-2020 The Zrythm 貢獻者\n"
+"\n"
+"%s comes with ABSOLUTELY NO WARRANTY!\n"
+"\n"
+"This is free software, and you are welcome to redistribute it\n"
+"under certain conditions. See the file `COPYING' for details.\n"
+"到這個網站 %s 提出意見或回報臭蟲\n"
+"到這裡 https://liberapay.com/Zrythm 支持本專案\n"
+"\n"
 
 #: src/zrythm_app.c:218
 msgid "Setting up main window"
-msgstr ""
+msgstr "建立主視窗"
 
 #: src/zrythm_app.c:263
 msgid "Loading project"
@@ -3658,7 +3667,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:410
 msgid "Keep plugin UI windows on top of the main window"
-msgstr ""
+msgstr "保持外掛程式的視窗在主視窗的上層"
 
 #: resources/ui/preferences.ui:423
 msgid "VST2 Paths"
@@ -4183,7 +4192,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:544
 msgid "Always show plugin UIs on top of the main window."
-msgstr ""
+msgstr "總是將外掛程式的視窗顯示在主視窗的上層。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:548
 msgid "Generic UIs"

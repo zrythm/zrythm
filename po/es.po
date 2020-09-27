@@ -8,13 +8,15 @@
 # Israel Barrera <izraelbarrera@gmail.com>, 2020.
 # Eliseo Do Brito <eliseodb@gmail.com>, 2020.
 # Marc <marc.izquierdo.hu@gmail.com>, 2020.
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
+# Gorro_Rojo <gorro.rojo@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-26 19:10+0100\n"
-"PO-Revision-Date: 2020-09-26 11:50+0000\n"
-"Last-Translator: Marc <marc.izquierdo.hu@gmail.com>\n"
+"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"Last-Translator: Gorro_Rojo <gorro.rojo@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -51,9 +53,8 @@ msgid "Region"
 msgstr "Región"
 
 #: inc/gui/backend/arranger_object.h:94
-#, fuzzy
 msgid "Midi Note"
-msgstr "Nota"
+msgstr "Nota MIDI"
 
 #: inc/gui/backend/arranger_object.h:96
 msgid "Chord Object"
@@ -1441,7 +1442,7 @@ msgstr "Gestor de archivos"
 
 #: src/gui/widgets/right_dock_edge.c:152
 msgid "Control Room"
-msgstr "Cabina de mando"
+msgstr "Cuarto de Controles"
 
 #: src/gui/widgets/right_dock_edge.c:179
 msgid "Show file browser"
@@ -2242,7 +2243,7 @@ msgstr "Automatización"
 
 #: src/audio/tempo_track.c:54
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: src/audio/tempo_track.c:69
 msgid "Time Signature"

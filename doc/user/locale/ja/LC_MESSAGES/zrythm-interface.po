@@ -8,8 +8,10 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 22:46+0100\n"
-"PO-Revision-Date: 2020-09-25 18:02+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/ja/>\n"
 "Language: ja\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm"
 "/manualzrythm-interface/ja/>\n"
@@ -34,10 +36,11 @@ msgid "Editor"
 msgstr "エディター"
 
 #: ../../zrythm-interface/bottom-panel.rst:19
+#, fuzzy
 msgid ""
 "The Editor tab contains an arranger for editing regions, as well as "
 "various controls that vary depending on the type of region selected."
-msgstr ""
+msgstr "[エディター] タブには、領域を編集するためのアレンジャーと、選択した領域の種類によって異なるさまざまなコントロールが含まれています。"
 
 #: ../../zrythm-interface/bottom-panel.rst:26
 msgid "Editing inside the Editor tab is covered in :ref:`editors`."
@@ -85,10 +88,13 @@ msgid "Audio Editor"
 msgstr "オーディオエディター"
 
 #: ../../zrythm-interface/bottom-panel.rst:58
+#, fuzzy
 msgid ""
 "The audio editor is used to view the contents of audio regions. The audio"
 " editor will appear in the Editor tab when an audio region is selected."
 msgstr ""
+"オーディオエディターは、オーディオリージョンの内容を表示するために使用されます。オーディオリージョンが選択されると、オーディオエディタがエディタタブに表示"
+"されます。"
 
 #: ../../zrythm-interface/bottom-panel.rst:66
 msgid "The audio editor is covered in detail in :ref:`audio-editor`."
@@ -113,10 +119,11 @@ msgid "Mixer"
 msgstr "ミキサー"
 
 #: ../../zrythm-interface/bottom-panel.rst:83
+#, fuzzy
 msgid ""
 "The Mixer tab contains each channel and various controls for changing the"
 " signal as it passes through the channel."
-msgstr ""
+msgstr "[ミキサー]タブには、各チャンネルと、チャンネルを通過する信号を変更するためのさまざまなコントロールが含まれています。"
 
 #: ../../zrythm-interface/bottom-panel.rst:89
 msgid "Mixing is covered in :ref:`mixing`."
@@ -142,7 +149,7 @@ msgstr "トラックインスペクター"
 msgid ""
 "The first tab is the track inspector, which shows various options about "
 "the selected track."
-msgstr ""
+msgstr "最初のタブはトラックインスペクタで、選択されたトラックに関する様々なオプションを表示します。"
 
 #: ../../zrythm-interface/left-panel.rst:22
 msgid "See :ref:`track-inspector` for more details."
@@ -164,7 +171,7 @@ msgstr "プラグインの属性"
 msgid ""
 "The plugin properties show the name and type of the plugin, as well as "
 "preset and bank selectors."
-msgstr ""
+msgstr "プラグインのプロパティには、プラグインの名前と種類、プリセットとバンクセレクタが表示されます。"
 
 #: ../../zrythm-interface/left-panel.rst:41
 msgid "Plugin Ports"
@@ -175,11 +182,14 @@ msgid "These are the ports that the plugin has."
 msgstr "これらはプラグインが持っているポートです。"
 
 #: ../../zrythm-interface/left-panel.rst:47
+#, fuzzy
 msgid ""
 "Control input ports can be changed by clicking and dragging, and can also"
 " be automated using automation tracks. Ports can be routed to other ports"
 " anywhere within Zrythm by double clicking on them."
 msgstr ""
+"コントロール入力ポートは、クリックアンドドラッグで変更でき、オートメーショントラックを使用して自動化することもできます。ポートは、Zrythm "
+"内の任意の場所にある他のポートに、ダブルクリックすることでルーティングできます。"
 
 #: ../../zrythm-interface/left-panel.rst:52
 msgid "Ports are explained in more detail in :ref:`ports`."
@@ -189,7 +199,7 @@ msgstr "ポートについては :ref:`ports` で詳しく説明しています�
 msgid ""
 "Depending on the type of plugin, there may be different categories of "
 "ports being shown."
-msgstr ""
+msgstr "プラグインの種類によって、表示されるポートのカテゴリが異なる場合があります。"
 
 #: ../../zrythm-interface/left-panel.rst:58
 #, fuzzy
@@ -205,20 +215,22 @@ msgid "Main Toolbar"
 msgstr "メインツールバー"
 
 #: ../../zrythm-interface/main-toolbar.rst:10
+#, fuzzy
 msgid ""
 "The main toolbar contains global actions, such as saving and loading a "
 "project or opening the preferences window."
-msgstr ""
+msgstr "メインツールバーには、プロジェクトの保存とロード、環境設定ウィンドウの開くなどのグローバルアクションが含まれます。"
 
 #: ../../zrythm-interface/main-toolbar.rst:17
 msgid "About Dialog"
 msgstr "「Zrythmについて」ダイアログ"
 
 #: ../../zrythm-interface/main-toolbar.rst:19
+#, fuzzy
 msgid ""
 "Clicking the Zrythm icon will show the About dialog, which contains "
 "information about authors and copyright."
-msgstr ""
+msgstr "Zrythm アイコンをクリックすると、作成者と著作権に関する情報を含む [About] ダイアログボックスが表示されます。"
 
 #: ../../zrythm-interface/main-toolbar.rst:26
 msgid "Global Menus"
@@ -356,7 +368,7 @@ msgstr "ベストフィット"
 msgid ""
 "Zooms in or out as much as required to show all of the events in the "
 "timeline."
-msgstr ""
+msgstr "タイムライン内のすべてのイベントを表示するために必要なだけズームインまたはズームアウトします。"
 
 #: ../../zrythm-interface/main-toolbar.rst:92
 msgid "Toggle Left/Right/Bottom Panels"
@@ -444,7 +456,7 @@ msgstr "メイン ツールバーには、次のウィジェットも含まれ�
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "There are the following buttons next to the name of the current project."
-msgstr ""
+msgstr "現在のプロジェクト名の横には以下のボタンがあります。"
 
 #: ../../zrythm-interface/main-toolbar.rst:126
 #, fuzzy
@@ -486,7 +498,7 @@ msgstr "右パネル"
 msgid ""
 "The right panel contains plugin and sample browsers in addition to the "
 "control room."
-msgstr ""
+msgstr "右側のパネルには、コントロールルームに加えてプラグインとサンプルブラウザが配置されています。"
 
 #: ../../zrythm-interface/right-panel.rst:16
 msgid "Plugin Browser"
@@ -496,7 +508,7 @@ msgstr "プラグインブラウザ"
 msgid ""
 "The first tab is the plugin browser, which is explained in :ref:`plugin-"
 "browser`."
-msgstr ""
+msgstr "最初のタブはプラグインブラウザで、 :ref:`plugin-browser` で説明されています。"
 
 #: ../../zrythm-interface/right-panel.rst:21
 msgid "File Browser"
@@ -524,12 +536,14 @@ msgid ""
 "on the left side. It has a special toolbar at the top for timeline-"
 "specific actions."
 msgstr ""
+"タイムラインは、タイムラインアレンジャーと左側のプロジェクトのトラックで構成されています。上部には、タイムラインに特化したアクションのための特別なツールバ"
+"ーがあります。"
 
 #: ../../zrythm-interface/timeline.rst:17
 msgid ""
 "The :ref:`editing-timeline` section goes in depth about editing inside "
 "the timeline panel."
-msgstr ""
+msgstr ":ref:`editing-timeline` セクションでは、タイムラインパネル内での編集について詳しく説明しています。"
 
 #: ../../zrythm-interface/transport-bar.rst:8
 msgid "Transport Bar"
@@ -615,7 +629,7 @@ msgstr "BPMメーターなどのウィジェットは、クリックしてドラ
 msgid ""
 "More information about working with the transport bar is covered in :ref"
 ":`transport-controls`."
-msgstr ""
+msgstr "トランスポート バーの操作の詳細については、 :ref:`transport-controls` で説明しています。"
 
 #: ../../zrythm-interface/transport-bar.rst:46
 msgid "Backend Information"
@@ -625,7 +639,7 @@ msgstr "バックエンド情報"
 msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
-msgstr ""
+msgstr "現在選択されているバックエンドとオプションに関する情報は、左下に表示されます。"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:6
 msgid "Interface Overview"
