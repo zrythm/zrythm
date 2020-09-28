@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.3.0.1] - 2020-09-28
+### Added
+- Add hardware processor for controlling input hardware ports (can now record with RtAudio/RtMidi)
+- Write to zrythm.log under the system's temporary dir until the actual log file is initialized
+
+### Changed
+- Update Japanese, Portuguese (BR), French, German, Chinese (Traditional), Swedish, Russian, Dutch, Spanish, Afrikaans, Greek translations
+- Show whether this is the release version in `--version`
+- Use atomic flag instead of port operation lock for bypassing the engine (fixes crash when deleting a MIDI track after bouncing it)
+
+### Fixed
+- Fix some widgets not showing in preferences dialog
+- Fix runtime error when selecting nothing with eraser tool
+- Fix various syntax errors in translations
+- Fix missing `af_AZ` locale in GSettings schema
+- Fix plugins not being instantiable the first time they are scanned
+
 ## [1.0.0-alpha.2.0.1] - 2020-09-25
 ### Added
 - Add DSSI and LADSPA plugin support
