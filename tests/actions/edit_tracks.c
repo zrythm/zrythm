@@ -217,7 +217,7 @@ _test_edit_tracks (
           1, 62, 74, 2, true);
 
         /* let engine run */
-        g_usleep (2000000);
+        g_usleep (4000000);
 
         zix_sem_wait (&ROUTER->graph_access);
         bool has_signal = false;

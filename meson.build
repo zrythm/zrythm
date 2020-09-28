@@ -179,6 +179,7 @@ cc = meson.get_compiler ('c')
 find_program ('sed')
 find_program ('gettext')
 bash = find_program ('bash')
+grep = find_program ('grep')
 msgfmt = find_program ('msgfmt', required: false)
 dot_bin = find_program ('dot', required: false)
 
@@ -275,6 +276,14 @@ elif os_windows
   open_dir_cmd = 'explorer.exe'
 endif
 cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
+
+illegal_chars = [
+  ' ', # U+202F
+  ]
+illegal_char_test_args = [
+  '-c', '! "$1" -rn "$2" "$3"', '_ignored',
+  grep.full_path (),
+  ]
 
 sphinx_build = find_program (
   ['sphinx-build', 'sphinx-build-3'],

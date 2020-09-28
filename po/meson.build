@@ -46,5 +46,14 @@ foreach lang : locales
     test (
       lang + '-po', msgfmt,
       args: [ '-v', '-c', files (lang + '.po') ])
+    foreach illegal_char : illegal_chars
+      test (
+        lang + '-po-illegal-char-' + illegal_char,
+        bash,
+        args: [
+          illegal_char_test_args, illegal_char,
+          files (lang + '.po') ,
+          ])
+    endforeach
   endif
 endforeach
