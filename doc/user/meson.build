@@ -18,16 +18,19 @@
 if sphinx_build.found () and sphinx_intl.found ()
 
 sphinx_builddir = meson.current_build_dir () / '_build'
-sphinx_build_opts = [
-  # Force-rebuild every time.
-  '-E',
-  # Fail on warnings.
-  '-W',
-  # Keep going when getting warnings.
-  '--keep-going',
-  # Show full traceback on exception.
-  '-T',
-  ]
+sphinx_build_opts = []
+if get_option ('strict_sphinx_opts')
+  sphinx_build_opts = [
+    # Force-rebuild every time.
+    '-E',
+    # Fail on warnings.
+    '-W',
+    # Keep going when getting warnings.
+    '--keep-going',
+    # Show full traceback on exception.
+    '-T',
+    ]
+endif
 
 # used to only create guile docs when possible,
 # otherwise reuse what is already there
@@ -127,8 +130,7 @@ foreach lang : locales
     output_dir =  sphinx_builddir / lang / format
     #output_dir =  meson.current_build_dir () / lang / format
     command = [
-      sphinx_build,
-      format ==  'latex' ? [] : sphinx_build_opts,
+      sphinx_build, sphinx_build_opts,
       '-D', 'language=' + lang,
       '-b', format, meson.current_source_dir (),
       output_dir, '&&', 'touch', '@OUTPUT@',

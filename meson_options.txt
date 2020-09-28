@@ -187,3 +187,9 @@ option (
   type: 'string',
   value: '',
   description: 'Location to collect carla discovery and bridge binaries.')
+
+option (
+  'strict_sphinx_opts',
+  type: 'boolean',
+  value: true,
+  description: 'Fail on warnings during sphinx-build.')
