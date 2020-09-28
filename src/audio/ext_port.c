@@ -110,6 +110,7 @@ ext_port_activate (
 
   /*char str[600];*/
   int ret;
+  (void) ret; /* avoid unused warnings */
   if (activate)
     {
       if (self->is_midi)

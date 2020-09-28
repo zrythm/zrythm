@@ -53,15 +53,17 @@ foreach lang : locales
           '-v', '-c',
           files (lang / 'LC_MESSAGES' / po_file) ,
           ])
-      foreach illegal_char : illegal_chars
-        test (
-          'user-manual-' + lang + '-' + po_file + '-illegal-char-' + illegal_char,
-          bash,
-          args: [
-            illegal_char_test_args, illegal_char,
-            files (lang / 'LC_MESSAGES' / po_file) ,
-            ])
+      if os_gnu
+        foreach illegal_char : illegal_chars
+          test (
+            'user-manual-' + lang + '-' + po_file + '-illegal-char-' + illegal_char,
+            bash,
+            args: [
+              illegal_char_test_args, illegal_char,
+              files (lang / 'LC_MESSAGES' / po_file) ,
+              ])
         endforeach
+      endif
     endforeach
   endif
 endforeach
