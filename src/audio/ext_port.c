@@ -108,7 +108,7 @@ ext_port_activate (
 {
   g_message ("ext port activate: %d", activate);
 
-  char str[600];
+  /*char str[600];*/
   int ret;
   if (activate)
     {
@@ -121,12 +121,14 @@ ext_port_activate (
             case MIDI_BACKEND_JACK_RTMIDI:
             case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
             case MIDI_BACKEND_COREMIDI_RTMIDI:
+#if 0
               sprintf (
                 str, "%s:tmp", self->full_name);
               self->port =
                 port_new_with_type (
                   TYPE_EVENT, FLOW_INPUT, str);
               /*self->port->is_project = true;*/
+#endif
               self->port = port;
               self->rtmidi_dev =
                 rtmidi_device_new (
@@ -146,12 +148,36 @@ ext_port_activate (
         }
       else
         {
-#if 0
-          RtAudioDevice * dev =
-            rtaudio_device_new (
-              true, self->rtaudio_id,
-              self->rtaudio_channel_idx, NULL);
+          switch (AUDIO_ENGINE->audio_backend)
+            {
+#ifdef HAVE_RTAUDIO
+            case AUDIO_BACKEND_ALSA_RTAUDIO:
+            case AUDIO_BACKEND_JACK_RTAUDIO:
+            case AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
+            case AUDIO_BACKEND_COREAUDIO_RTAUDIO:
+            case AUDIO_BACKEND_WASAPI_RTAUDIO:
+            case AUDIO_BACKEND_ASIO_RTAUDIO:
+              self->port = port;
+              self->rtaudio_dev =
+                rtaudio_device_new (
+                  true, self->rtaudio_id,
+                  self->rtaudio_channel_idx,
+                  self->port);
+              ret =
+                rtaudio_device_open (
+                  self->rtaudio_dev, true);
+              if (ret)
+                {
+                  return;
+                }
+              self->port->rtaudio_ins[0] =
+                self->rtaudio_dev;
+              self->port->num_rtaudio_ins = 1;
+              break;
 #endif
+            default:
+              break;
+            }
         }
     }
 

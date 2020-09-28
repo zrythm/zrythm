@@ -1105,15 +1105,11 @@ port_get_all (
     {
       _ADD (HW_IN_PROCESSOR->audio_ports[i]);
     }
-  g_warn_if_fail (
-    HW_IN_PROCESSOR->num_audio_ports > 0);
   for (int i = 0;
        i < HW_IN_PROCESSOR->num_midi_ports; i++)
     {
       _ADD (HW_IN_PROCESSOR->midi_ports[i]);
     }
-  g_warn_if_fail (
-    HW_IN_PROCESSOR->num_midi_ports > 0);
 
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
@@ -2116,6 +2112,74 @@ expose_to_rtaudio (
       g_message ("unexposing %s", lbl);
     }
   self->exposed_to_backend = expose;
+}
+
+/**
+ * Dequeue the audio data from the ring buffer
+ * into @ref RtAudioDevice.buf.
+ */
+void
+port_prepare_rtaudio_data (
+  Port * self)
+{
+  g_return_if_fail (
+    /*self->id.flow == FLOW_INPUT &&*/
+    audio_backend_is_rtaudio (
+      AUDIO_ENGINE->audio_backend));
+
+  for (int i = 0; i < self->num_rtaudio_ins; i++)
+    {
+      RtAudioDevice * dev = self->rtaudio_ins[i];
+
+      /* clear the data */
+      dsp_fill (
+        dev->buf, 0, AUDIO_ENGINE->nframes);
+
+      zix_sem_wait (&dev->audio_ring_sem);
+
+      uint32_t read_space =
+        zix_ring_read_space (dev->audio_ring);
+
+      /* only process if data exists */
+      if (read_space >=
+            AUDIO_ENGINE->nframes *
+            sizeof (float))
+        {
+          /* read the buffer */
+          zix_ring_read (
+            dev->audio_ring,
+            &dev->buf[0],
+            AUDIO_ENGINE->nframes *
+              sizeof (float));
+        }
+
+      zix_sem_post (&dev->audio_ring_sem);
+    }
+}
+
+/**
+ * Sums the inputs coming in from RtAudio
+ * before the port is processed.
+ */
+void
+port_sum_data_from_rtaudio (
+  Port * self,
+  const nframes_t start_frame,
+  const nframes_t nframes)
+{
+  g_return_if_fail (
+    /*self->id.flow == FLOW_INPUT &&*/
+    audio_backend_is_rtaudio (
+      AUDIO_ENGINE->audio_backend));
+
+  for (int i = 0; i < self->num_rtaudio_ins; i++)
+    {
+      RtAudioDevice * dev = self->rtaudio_ins[i];
+
+      dsp_add2 (
+        &self->buf[start_frame],
+        &dev->buf[start_frame], nframes);
+    }
 }
 #endif // HAVE_RTAUDIO
 

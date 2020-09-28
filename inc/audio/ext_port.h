@@ -124,6 +124,8 @@ typedef struct ExtPort
   /** Whether the channel is input. */
   bool             rtaudio_is_input;
   bool             rtaudio_is_duplex;
+
+  RtAudioDevice *  rtaudio_dev;
 #endif
 
 #ifdef HAVE_RTMIDI

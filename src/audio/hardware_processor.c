@@ -319,6 +319,10 @@ hardware_processor_setup (
   return 0;
 }
 
+/*void*/
+/*hardware_processor_find_or_create_rtaudio_dev (*/
+  /*HardwareProcessor * self,*/
+
 /**
  * Starts or stops the ports.
  *
@@ -345,9 +349,38 @@ hardware_processor_activate (
       Port * port =
         hardware_processor_find_port (
           self, selected_port);
-      ext_port_activate (
-        ext_port, port, activate);
-      /*port_connect (ext_port->port, port, true);*/
+      if (port && ext_port)
+        {
+          ext_port_activate (
+            ext_port, port, activate);
+        }
+      else
+        {
+          g_message (
+            "could not find port %s", selected_port);
+        }
+    }
+  for (int i = 0; i < self->num_selected_audio_ports;
+       i++)
+    {
+      char * selected_port =
+        self->selected_audio_ports[i];
+      ExtPort * ext_port =
+        hardware_processor_find_ext_port (
+          self, selected_port);
+      Port * port =
+        hardware_processor_find_port (
+          self, selected_port);
+      if (port && ext_port)
+        {
+          ext_port_activate (
+            ext_port, port, activate);
+        }
+      else
+        {
+          g_message (
+            "could not find port %s", selected_port);
+        }
     }
 
   self->activated = activate;
@@ -362,6 +395,41 @@ hardware_processor_process (
   nframes_t           nframes)
 {
   /* go through each selected port and fetch data */
+  for (int i = 0; i < self->num_audio_ports; i++)
+    {
+      ExtPort * ext_port = self->ext_audio_ports[i];
+      if (!ext_port->active)
+        continue;
+
+      Port * port = self->audio_ports[i];
+
+      /* clear the buffer */
+      port_clear_buffer (port);
+
+      switch (AUDIO_ENGINE->audio_backend)
+        {
+#ifdef HAVE_RTMIDI
+        case AUDIO_BACKEND_ALSA_RTAUDIO:
+        case AUDIO_BACKEND_JACK_RTAUDIO:
+        case AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
+        case AUDIO_BACKEND_COREAUDIO_RTAUDIO:
+        case AUDIO_BACKEND_WASAPI_RTAUDIO:
+        case AUDIO_BACKEND_ASIO_RTAUDIO:
+          /* extract audio data from the RtAudio
+           * device ring buffer into RtAudio
+           * device temp buffer */
+          port_prepare_rtaudio_data (port);
+
+          /* copy data from RtAudio temp buffer
+           * to normal buffer */
+          port_sum_data_from_rtaudio (
+            port, 0, nframes);
+          break;
+#endif
+        default:
+          break;
+        }
+    }
   for (int i = 0; i < self->num_midi_ports; i++)
     {
       ExtPort * ext_port = self->ext_midi_ports[i];

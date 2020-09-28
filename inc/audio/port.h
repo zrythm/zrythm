@@ -867,6 +867,16 @@ port_sum_data_from_rtmidi (
 void
 port_prepare_rtaudio_data (
   Port * self);
+
+/**
+ * Sums the inputs coming in from RtAudio
+ * before the port is processed.
+ */
+void
+port_sum_data_from_rtaudio (
+  Port * self,
+  const nframes_t start_frame,
+  const nframes_t nframes);
 #endif
 
 /**

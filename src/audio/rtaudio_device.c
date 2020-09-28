@@ -46,64 +46,36 @@ myaudio_cb (
   rtaudio_stream_status_t status,
   RtAudioDevice *         self)
 {
-  g_message ("calling callback");
-  zix_sem_wait (&self->audio_ring_sem);
+  /*g_debug ("calling callback");*/
 
+  /* if input device, receive data */
+  if (in_buf)
+    {
+      zix_sem_wait (&self->audio_ring_sem);
+
+      if (status != 0)
+        {
+          /* xrun */
+          g_message ("XRUN in RtAudio");
+        }
+
+      zix_ring_write (
+        self->audio_ring, in_buf,
+        nframes * sizeof (float));
 
 #if 0
-  /* generate timestamp */
-  gint64 cur_time = g_get_monotonic_time ();
-  gint64 ts =
-    cur_time - self->port->last_midi_dequeue;
-  g_return_if_fail (ts >= 0);
-  char portname[900];
-  port_get_full_designation (self->port, portname);
-  g_message (
-    "[%s] message received of size %lu at %ld",
-    portname, message_size, ts);
-
-  if (status != 0)
-    {
-      /* xrun */
-      g_warning ("XRUN in RtAudio");
-    }
-
-  if (!self->run)
-    return 0;
-
-  nframes_t num_frames = (nframes_t) nframes;
-
-  memset (
-    out_buf, 0,
-    (size_t) (nframes * 2) * sizeof (float));
-  for (nframes_t i = 0; i < num_frames; i++)
-    {
-#ifdef TRIAL_VER
-      if (self->limit_reached)
+      for (unsigned int i = 0; i < nframes; i++)
         {
-          out_buf[i * 2] = 0;
-          out_buf[i * 2 + 1] = 0;
-          continue;
+          if (in_buf[i] > 0.08f)
+            {
+              g_message (
+                "have input %f", (double) in_buf[i]);
+            }
         }
 #endif
-      out_buf[i * 2] =
-        self->monitor_out->l->buf[i];
-      out_buf[i * 2 + 1] =
-        self->monitor_out->r->buf[i];
+
+      zix_sem_post (&self->audio_ring_sem);
     }
-
-  /* add to ring buffer */
-  MidiEventHeader h = {
-    .time = (uint64_t) ts, .size = message_size,
-  };
-  zix_ring_write (
-    self->midi_ring,
-    (uint8_t *) &h, sizeof (MidiEventHeader));
-  zix_ring_write (
-    self->midi_ring, message, message_size);
-
-#endif
-  zix_sem_post (&self->audio_ring_sem);
 
   return 0;
 }
@@ -179,15 +151,16 @@ rtaudio_device_open (
     AUDIO_ENGINE->sample_rate;
   unsigned int buffer_size =
     AUDIO_ENGINE->block_length;
+  /* input stream */
   int ret =
     rtaudio_open_stream (
-      self->handle, &stream_params, NULL,
+      self->handle, NULL, &stream_params,
       RTAUDIO_FORMAT_FLOAT32, samplerate,
       &buffer_size, (rtaudio_cb_t) myaudio_cb, self,
       &stream_opts, (rtaudio_error_cb_t) error_cb);
   if (ret)
     {
-      g_critical (
+      g_warning (
         "An error occurred opening the RtAudio "
         "stream: %s", rtaudio_error (self->handle));
       return -1;
