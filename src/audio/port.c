@@ -649,9 +649,9 @@ stereo_ports_free (
 #ifdef HAVE_JACK
 void
 port_receive_midi_events_from_jack (
-  Port *      self,
-  const nframes_t         start_frame,
-  const nframes_t   nframes)
+  Port *          self,
+  const nframes_t start_frame,
+  const nframes_t nframes)
 {
   if (self->internal_type !=
         INTERNAL_JACK_PORT ||
@@ -696,7 +696,7 @@ port_receive_midi_events_from_jack (
               midi_events_add_event_from_buf (
                 self->midi_events,
                 jack_ev.time, jack_ev.buffer,
-                (int) jack_ev.size, 0);
+                (int) jack_ev.size, F_NOT_QUEUED);
             }
         }
     }
@@ -719,24 +719,24 @@ port_receive_midi_events_from_jack (
 
 void
 port_receive_audio_data_from_jack (
-  Port *      port,
-  const nframes_t         start_frames,
-  const nframes_t   nframes)
+  Port *          self,
+  const nframes_t start_frames,
+  const nframes_t nframes)
 {
-  if (port->internal_type !=
+  if (self->internal_type !=
         INTERNAL_JACK_PORT ||
-      port->id.type != TYPE_AUDIO)
+      self->id.type != TYPE_AUDIO)
     return;
 
   float * in;
   in =
     (float *)
     jack_port_get_buffer (
-      JACK_PORT_T (port->data),
+      JACK_PORT_T (self->data),
       AUDIO_ENGINE->nframes);
 
   dsp_add2 (
-    &port->buf[start_frames],
+    &self->buf[start_frames],
     &in[start_frames], nframes);
 }
 
@@ -874,16 +874,25 @@ send_data_to_jack (
  */
 static void
 expose_to_jack (
-  Port * self,
-  int    expose)
+  Port *   self,
+  bool     expose)
 {
   enum JackPortFlags flags;
-  if (self->id.flow == FLOW_INPUT)
-    flags = JackPortIsInput;
-  else if (self->id.flow == FLOW_OUTPUT)
-    flags = JackPortIsOutput;
+  if (self->id.owner_type == PORT_OWNER_TYPE_HW)
+    {
+      /* these are reversed */
+      if (self->id.flow == FLOW_INPUT)
+        flags = JackPortIsOutput;
+      else if (self->id.flow == FLOW_OUTPUT)
+        flags = JackPortIsInput;
+    }
   else
-    g_return_if_reached ();
+    {
+      if (self->id.flow == FLOW_INPUT)
+        flags = JackPortIsInput;
+      else if (self->id.flow == FLOW_OUTPUT)
+        flags = JackPortIsOutput;
+    }
 
   const char * type =
     engine_jack_get_jack_type (

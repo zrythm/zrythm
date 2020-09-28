@@ -675,7 +675,7 @@ stereo_ports_free (
  */
 void
 port_receive_midi_events_from_jack (
-  Port *          port,
+  Port *          self,
   const nframes_t start_frames,
   const nframes_t nframes);
 
@@ -685,7 +685,7 @@ port_receive_midi_events_from_jack (
  */
 void
 port_receive_audio_data_from_jack (
-  Port *          port,
+  Port *          self,
   const nframes_t start_frames,
   const nframes_t nframes);
 #endif

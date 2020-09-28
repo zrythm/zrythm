@@ -116,19 +116,43 @@ ext_port_activate (
         {
           switch (AUDIO_ENGINE->midi_backend)
             {
+#ifdef HAVE_JACK
+            case MIDI_BACKEND_JACK:
+              self->port = port;
+
+              /* expose the port and connect to
+               * JACK port */
+              port_set_expose_to_backend (
+                self->port, true);
+
+              ret =
+                jack_connect (
+                  AUDIO_ENGINE->client,
+                  jack_port_name (self->jport),
+                  jack_port_name (
+                    JACK_PORT_T (self->port->data)));
+              if (ret)
+                {
+                  char msg[600];
+                  engine_jack_get_error_message (
+                    ret, msg);
+                  g_warning (
+                    "Failed connecting %s to %s:\n"
+                    "%s",
+                      jack_port_name (self->jport),
+                      jack_port_name (
+                        JACK_PORT_T (
+                          self->port->data)),
+                    msg);
+                  return;
+                }
+              break;
+#endif
 #ifdef HAVE_RTMIDI
             case MIDI_BACKEND_ALSA_RTMIDI:
             case MIDI_BACKEND_JACK_RTMIDI:
             case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
             case MIDI_BACKEND_COREMIDI_RTMIDI:
-#if 0
-              sprintf (
-                str, "%s:tmp", self->full_name);
-              self->port =
-                port_new_with_type (
-                  TYPE_EVENT, FLOW_INPUT, str);
-              /*self->port->is_project = true;*/
-#endif
               self->port = port;
               self->rtmidi_dev =
                 rtmidi_device_new (
@@ -150,6 +174,22 @@ ext_port_activate (
         {
           switch (AUDIO_ENGINE->audio_backend)
             {
+#ifdef HAVE_JACK
+            case AUDIO_BACKEND_JACK:
+              self->port = port;
+
+              /* expose the port and connect to
+               * JACK port */
+              port_set_expose_to_backend (
+                self->port, true);
+
+              jack_connect (
+                AUDIO_ENGINE->client,
+                jack_port_name (self->jport),
+                jack_port_name (
+                  JACK_PORT_T (self->port->data)));
+              break;
+#endif
 #ifdef HAVE_RTAUDIO
             case AUDIO_BACKEND_ALSA_RTAUDIO:
             case AUDIO_BACKEND_JACK_RTAUDIO:

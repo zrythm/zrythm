@@ -277,6 +277,9 @@ int
 hardware_processor_setup (
   HardwareProcessor * self)
 {
+  if (ZRYTHM_TESTING)
+    return 0;
+
   g_return_val_if_fail (
     ZRYTHM_APP_IS_GTK_THREAD && S_P_GENERAL_ENGINE,
     -1);
@@ -408,7 +411,13 @@ hardware_processor_process (
 
       switch (AUDIO_ENGINE->audio_backend)
         {
-#ifdef HAVE_RTMIDI
+#ifdef HAVE_JACK
+        case AUDIO_BACKEND_JACK:
+          port_receive_audio_data_from_jack (
+            port, 0, nframes);
+          break;
+#endif
+#ifdef HAVE_RTAUDIO
         case AUDIO_BACKEND_ALSA_RTAUDIO:
         case AUDIO_BACKEND_JACK_RTAUDIO:
         case AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
@@ -444,6 +453,12 @@ hardware_processor_process (
 
       switch (AUDIO_ENGINE->midi_backend)
         {
+#ifdef HAVE_JACK
+        case MIDI_BACKEND_JACK:
+          port_receive_midi_events_from_jack (
+            port, 0, nframes);
+          break;
+#endif
 #ifdef HAVE_RTMIDI
         case MIDI_BACKEND_ALSA_RTMIDI:
         case MIDI_BACKEND_JACK_RTMIDI:
@@ -455,7 +470,8 @@ hardware_processor_process (
 
           /* copy data from RtMidi device events
            * to normal events */
-          port_sum_data_from_rtmidi (port, 0, nframes);
+          port_sum_data_from_rtmidi (
+            port, 0, nframes);
           break;
 #endif
         default:

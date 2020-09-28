@@ -78,6 +78,7 @@ engine_jack_rescan_ports (
   /* TODO clear unconnected remembered ports */
 }
 
+#if 0
 static void
 autoconnect_midi_controllers (
   AudioEngine * self)
@@ -143,6 +144,7 @@ autoconnect_midi_controllers (
     jack_free(ports);
     g_strfreev(devices);
 }
+#endif
 
 /** Jack sample rate callback. */
 static int
@@ -711,8 +713,8 @@ engine_jack_activate (
         }
 
       /* autoconnect MIDI controllers */
-      autoconnect_midi_controllers (
-        AUDIO_ENGINE);
+      /*autoconnect_midi_controllers (*/
+        /*AUDIO_ENGINE);*/
 
       jack_free (ports);
     }
