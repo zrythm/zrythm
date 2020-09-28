@@ -7,13 +7,14 @@
 # ilya7 <mrzarp@protonmail.com>, 2020.
 # Melairz1237 <mr.artem.snegov@mail.ru>, 2020.
 # iLyd <mrzarp@protonmail.com>, 2020.
+# Artem <KovalevArtem.ru@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-27 16:26+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
-"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"PO-Revision-Date: 2020-09-28 19:59+0000\n"
+"Last-Translator: Artem <KovalevArtem.ru@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -1268,9 +1269,9 @@ msgid "Curve algorithm"
 msgstr "Алгоритм кривой (Curve algorithm)"
 
 #: src/gui/widgets/header.c:99
-#, fuzzy, c-format
+#, c-format
 msgid "About %s"
-msgstr "Zrythm"
+msgstr "О программе %s"
 
 #: src/gui/widgets/header.c:104
 #, fuzzy
