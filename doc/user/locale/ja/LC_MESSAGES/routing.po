@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"PO-Revision-Date: 2020-09-28 19:59+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/routing/"
 "ja/>\n"
@@ -25,7 +25,6 @@ msgid "Control Room"
 msgstr "コントロールルーム"
 
 #: ../../routing/control-room.rst:9
-#, fuzzy
 msgid ""
 "The control room is used to edit global settings related to mixing and "
 "routing signals."
@@ -82,6 +81,8 @@ msgid ""
 "Inserts and sends are covered in :ref:`tracks/inspector-page:MIDI "
 "FX/Inserts` and :ref:`tracks/inspector-page:Aux Sends` respectively."
 msgstr ""
+"インサートとセンドについては、それぞれ :ref:`tracks/inspector-page:MIDI FX/Inserts` と :ref:`"
+"tracks/inspector-page:Aux Sends` で解説しています。"
 
 #: ../../routing/intro.rst:6
 msgid "Routing"
@@ -92,7 +93,6 @@ msgid "Making Connections"
 msgstr "コネクトする"
 
 #: ../../routing/making-connections.rst:10
-#, fuzzy
 msgid ""
 "Zrythm allows the user to connect almost any port to any other port, as "
 "long as they are compatible. For example, you can route an LFO's CV "
@@ -171,6 +171,8 @@ msgid ""
 "MIDI data and 2 `Audio output` ports where it copies the stereo signal "
 "after being processed."
 msgstr ""
+"例えば、インストゥルメントトラックには MIDI データを読み込むための `MIDI input` ポートと、処理後のステレオ信号をコピーするための 2 "
+"つの `Audio outputポートがあります。"
 
 #: ../../routing/ports.rst:25
 msgid "Port Directions"

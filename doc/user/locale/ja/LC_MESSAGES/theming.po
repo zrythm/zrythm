@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"PO-Revision-Date: 2020-09-28 19:59+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/theming/"
 "ja/>\n"
@@ -25,7 +25,6 @@ msgid "CSS"
 msgstr "CSS"
 
 #: ../../theming/css.rst:9
-#, fuzzy
 msgid ""
 "You can override the GTK theme that Zrythm uses along with much of the "
 "color scheme in a special CSS file. It is a good idea to start by copying"
@@ -35,9 +34,10 @@ msgid ""
 "Windows or the Application contents on MacOS."
 msgstr ""
 "Zrythm が使用する GTK テーマは、特殊な CSS ファイルのカラー スキームの多くをオーバーライドできます。Zrythm "
-"インストールディレクトリ (通常は'/usr/share/zrythm/テーマ/zrythm-theme.css'' からテーマをコピーし、"
-"Windows のインストールパスまたは MacOS のアプリケーションコンテンツに ''share/zrythm/テーマ/zrythm-"
-"theme.css' をコピーすることをお勧めします。"
+"インストールディレクトリ (通常はGNU/Linuxは ``/usr/share/zrythm/themes/zrythm-theme.css`` 、"
+"Windowsはのインストールパス下の ``share/zrythm/themes/zrythm-theme.css`` "
+"MacOSはアプリケーションコンテンツ下の ``share/zrythm/themes/zrythm-theme.css`` "
+"をコピーすることをお勧めします。"
 
 #: ../../theming/css.rst:18
 msgid ""
@@ -46,6 +46,9 @@ msgid ""
 " is ``/home/me/zrythm``, you should create a file at "
 "``/home/me/zrythm/themes/theme.css``."
 msgstr ""
+"Zrythm ディレクトリの ``themes`` ディレクトリの下に ``theme.css`` というファイルを作成する必要があります。例えば、"
+"あなたのZrythmディレクトリが ``/home/me/zrythm`` であれば、 ``/home/me/zrythm/themes/theme."
+"css`` にファイルを作成する必要があります。"
 
 #: ../../theming/css.rst:23
 #, fuzzy
@@ -127,6 +130,8 @@ msgid ""
 "create a directory similar to ``share/zrythm/themes/icons/zrythm-dark`` "
 "under your Zrythm installation directory."
 msgstr ""
+"Zrythm のアイコンテーマを自分のアイコンテーマで上書きするには、Zrythm のインストールディレクトリの下に ``share/zrythm/"
+"themes/icons/zrythm-dark`` のようなディレクトリを作る必要があります。"
 
 #: ../../theming/icon-themes.rst:17
 msgid ""

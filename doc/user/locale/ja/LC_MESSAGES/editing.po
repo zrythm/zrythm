@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"PO-Revision-Date: 2020-09-28 19:59+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/ja/>\n"
@@ -88,11 +88,14 @@ msgstr ""
 "は、再生中に、カーブに基づいて自動化されるコントロールの値を補間します。"
 
 #: ../../editing/clip-editors/automation-editor.rst:32
+#, fuzzy
 msgid ""
 "Editing inside the automation arranger generally follows :ref:`edit-"
 "modes` and :ref:`common-operations`, with the added feature that curves "
 "can be dragged up or down to change their `curviness`."
 msgstr ""
+"オートメーションアレンジャーの内部での編集は、一般的に :ref:`edit-mode` と :ref:`common-operations` "
+"に従います。曲線を上下にドラッグして「曲線度」を変更できる機能が追加されています。"
 
 #: ../../editing/clip-editors/automation-editor.rst:40
 msgid "Curves"

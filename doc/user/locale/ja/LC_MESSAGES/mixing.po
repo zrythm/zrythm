@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"PO-Revision-Date: 2020-09-28 19:59+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualmixing/ja/>\n"
@@ -29,14 +29,13 @@ msgid "Mixing Overview"
 msgstr "ミキシングの概要"
 
 #: ../../mixing/overview.rst:11
-#, fuzzy
 msgid ""
 "Mixing refers to any actions made inside the mixer, such as routing "
 "signals around, controlling the fader level of various channels and "
 "setting their stereo balance."
 msgstr ""
-"ミキシングとは、周りの信号をルーティングし、様々なチャンネルのフェーダーレベルを制御し、ステレオバランスを設定するなど、ミキサー内で行われたすべてのアクシ"
-"ョンを指します。"
+"ミキシングとは、シグナルをルーティングし、様々なチャンネルのフェーダーレベルを制御し、ステレオバランスを設定するなど、ミキサー内で行われたすべてのアクショ"
+"ンを指します。"
 
 #: ../../mixing/overview.rst:22
 msgid "Mixer"
