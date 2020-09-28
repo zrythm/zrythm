@@ -172,7 +172,7 @@ msgid ""
 "after being processed."
 msgstr ""
 "例えば、インストゥルメントトラックには MIDI データを読み込むための `MIDI input` ポートと、処理後のステレオ信号をコピーするための 2 "
-"つの `Audio outputポートがあります。"
+"つの `Audio output` ポートがあります。"
 
 #: ../../routing/ports.rst:25
 msgid "Port Directions"

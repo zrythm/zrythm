@@ -430,7 +430,7 @@ msgstr "Greffons VST"
 #: ../../configuration/preferences/intro.rst:94
 msgid "The search paths to scan for :term:`VST2` plugins in."
 msgstr ""
-"Le chemin de recherche pour scanner les greffons :term:`VST2`qu'il contient."
+"Le chemin de recherche pour scanner les greffons :term:`VST2` qu'il contient."
 
 #: ../../configuration/preferences/intro.rst:97
 msgid ""

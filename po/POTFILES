@@ -68,7 +68,6 @@ inc/gui/widgets/midi_note.h
 inc/gui/widgets/file_browser_window.h
 inc/gui/widgets/port_connection_row.h
 inc/gui/widgets/snap_box.h
-inc/gui/widgets/midi_controller_popover.h
 inc/gui/widgets/audio_track.h
 inc/gui/widgets/plugin_strip_expander.h
 inc/gui/widgets/right_dock_edge.h
@@ -97,7 +96,6 @@ inc/gui/widgets/bot_bar.h
 inc/gui/widgets/transport_controls.h
 inc/gui/widgets/route_target_selector_popover.h
 inc/gui/widgets/export_midi_file_dialog.h
-inc/gui/widgets/midi_controller_mb.h
 inc/gui/widgets/track_properties_expander.h
 inc/gui/widgets/modulator_view.h
 inc/gui/widgets/fader.h
@@ -122,6 +120,7 @@ inc/gui/widgets/mixer.h
 inc/gui/widgets/left_dock_edge.h
 inc/gui/widgets/ruler.h
 inc/gui/widgets/selection_info.h
+inc/gui/widgets/active_hardware_popover.h
 inc/gui/widgets/live_waveform.h
 inc/gui/widgets/expander_box.h
 inc/gui/widgets/visibility.h
@@ -129,6 +128,7 @@ inc/gui/widgets/inspector_chord.h
 inc/gui/widgets/fader_controls_grid.h
 inc/gui/widgets/track_lane.h
 inc/gui/widgets/chord_region.h
+inc/gui/widgets/active_hardware_mb.h
 inc/gui/widgets/bar_slider.h
 inc/gui/widgets/arranger_playhead.h
 inc/gui/widgets/audio_arranger_bg.h
@@ -294,6 +294,7 @@ inc/audio/region_link_group_manager.h
 inc/audio/marker_track.h
 inc/audio/automation_track.h
 inc/audio/master_track.h
+inc/audio/hardware_processor.h
 inc/audio/midi_file.h
 inc/audio/midi_group_track.h
 inc/audio/graph.h
@@ -438,7 +439,6 @@ src/gui/widgets/range_action_buttons.c
 src/gui/widgets/track_properties_expander.c
 src/gui/widgets/channel.c
 src/gui/widgets/track_input_expander.c
-src/gui/widgets/midi_controller_mb.c
 src/gui/widgets/editable_label.c
 src/gui/widgets/expander_box.c
 src/gui/widgets/ruler_range.c
@@ -484,7 +484,6 @@ src/gui/widgets/plugin_browser.c
 src/gui/widgets/toolbox.c
 src/gui/widgets/knob_with_name.c
 src/gui/widgets/bot_bar.c
-src/gui/widgets/midi_controller_popover.c
 src/gui/widgets/timeline_selection_info.c
 src/gui/widgets/splash.c
 src/gui/widgets/transport_controls.c
@@ -522,6 +521,7 @@ src/gui/widgets/automation_point.c
 src/gui/widgets/preferences.c
 src/gui/widgets/track_top_grid.c
 src/gui/widgets/scripting_window.c
+src/gui/widgets/active_hardware_mb.c
 src/gui/widgets/port_connection_row.c
 src/gui/widgets/port_connections.c
 src/gui/widgets/ruler_marker.c
@@ -567,6 +567,7 @@ src/gui/widgets/midi_track.c
 src/gui/widgets/color_area.c
 src/gui/widgets/chord.c
 src/gui/widgets/timeline_bot_box.c
+src/gui/widgets/active_hardware_popover.c
 src/gui/widgets/inspector_midi.c
 src/gui/widgets/chord_editor_space.c
 src/gui/widgets/fader.c
@@ -712,6 +713,7 @@ src/audio/chord_object.c
 src/audio/metronome.c
 src/audio/region_link_group_manager.c
 src/audio/channel_track.c
+src/audio/hardware_processor.c
 src/audio/graph_export.c
 src/audio/sample_processor.c
 src/audio/recording_manager.c
@@ -782,8 +784,8 @@ resources/ui/project_assistant.ui
 resources/ui/left_dock_edge.ui
 resources/ui/chord_selector_window.ui
 resources/ui/create_project_dialog.ui
+resources/ui/active_hardware_popover.ui
 resources/ui/chord_pad.ui
-resources/ui/midi_controller_popover.ui
 resources/ui/channel.ui
 resources/ui/midi_editor_space.ui
 resources/ui/automatable_selector.ui

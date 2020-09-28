@@ -26,7 +26,7 @@ if get_option ('strict_sphinx_opts')
     # Fail on warnings.
     '-W',
     # Keep going when getting warnings.
-    '--keep-going',
+    #'--keep-going',
     # Show full traceback on exception.
     '-T',
     ]
