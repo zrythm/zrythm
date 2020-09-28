@@ -95,6 +95,70 @@ ext_port_clear_buffer (
 }
 
 /**
+ * Activates the port (starts receiving data) or
+ * deactivates it.
+ *
+ * @param port Port to send the output to.
+ */
+void
+ext_port_activate (
+  ExtPort * self,
+  Port *    port,
+  bool      activate)
+{
+  g_message ("ext port activate: %d", activate);
+
+  char str[600];
+  int ret;
+  if (activate)
+    {
+      if (self->is_midi)
+        {
+          switch (AUDIO_ENGINE->midi_backend)
+            {
+#ifdef HAVE_RTMIDI
+            case MIDI_BACKEND_ALSA_RTMIDI:
+            case MIDI_BACKEND_JACK_RTMIDI:
+            case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
+            case MIDI_BACKEND_COREMIDI_RTMIDI:
+              sprintf (
+                str, "%s:tmp", self->full_name);
+              self->port =
+                port_new_with_type (
+                  TYPE_EVENT, FLOW_INPUT, str);
+              /*self->port->is_project = true;*/
+              self->port = port;
+              self->rtmidi_dev =
+                rtmidi_device_new (
+                  true, self->rtmidi_id, self->port);
+              ret =
+                rtmidi_device_open (
+                  self->rtmidi_dev, true);
+              self->port->rtmidi_ins[0] =
+                self->rtmidi_dev;
+              self->port->num_rtmidi_ins = 1;
+              g_warn_if_fail (ret == 0);
+              break;
+#endif
+            default:
+              break;
+            }
+        }
+      else
+        {
+#if 0
+          RtAudioDevice * dev =
+            rtaudio_device_new (
+              true, self->rtaudio_id,
+              self->rtaudio_channel_idx, NULL);
+#endif
+        }
+    }
+
+  self->active = activate;
+}
+
+/**
  * Exposes the given Port if not exposed and makes
  * the connection from the Port to the ExtPort (eg in
  * JACK) or backwards.
@@ -208,8 +272,11 @@ get_ext_ports_from_jack (
           AUDIO_ENGINE->client,
           ports[i]);
 
-      arr[*size + i] =
-        ext_port_from_jack_port (jport);
+      if (arr)
+        {
+          arr[*size + i] =
+            ext_port_from_jack_port (jport);
+        }
 
       i++;
     }
@@ -251,10 +318,14 @@ get_ext_ports_from_windows_mme (
       for (i = 0;
            i < AUDIO_ENGINE->num_mme_in_devs; i++)
         {
-          dev = AUDIO_ENGINE->mme_in_devs[i];
-          g_return_if_fail (dev);
-          arr[*size + i] =
-            ext_port_from_windows_mme_device (dev);
+          if (arr)
+            {
+              dev = AUDIO_ENGINE->mme_in_devs[i];
+              g_return_if_fail (dev);
+              arr[*size + i] =
+                ext_port_from_windows_mme_device (
+                  dev);
+            }
         }
       (*size) += i;
     }
@@ -263,10 +334,14 @@ get_ext_ports_from_windows_mme (
       for (i = 0;
            i < AUDIO_ENGINE->num_mme_out_devs; i++)
         {
-          dev = AUDIO_ENGINE->mme_out_devs[i];
-          g_return_if_fail (dev);
-          arr[*size + i] =
-            ext_port_from_windows_mme_device (dev);
+          if (arr)
+            {
+              dev = AUDIO_ENGINE->mme_out_devs[i];
+              g_return_if_fail (dev);
+              arr[*size + i] =
+                ext_port_from_windows_mme_device (
+                  dev);
+            }
         }
       (*size) += i;
     }
@@ -302,6 +377,7 @@ get_ext_ports_from_rtmidi (
   ExtPort ** arr,
   int *      size)
 {
+  *size = 0;
   if (flow == FLOW_OUTPUT)
     {
       unsigned int num_ports =
@@ -310,14 +386,17 @@ get_ext_ports_from_rtmidi (
       unsigned int i;
       for (i = 0; i < num_ports; i++)
         {
-          arr[*size + (int) i] =
-            ext_port_from_rtmidi (i);
+          if (arr)
+            {
+              arr[*size + (int) i] =
+                ext_port_from_rtmidi (i);
+            }
         }
       (*size) += (int) i;
     }
   else if (flow == FLOW_INPUT)
     {
-      *size = 0;
+      /* MIDI out devices not handled yet */
     }
 }
 #endif
@@ -330,8 +409,8 @@ static ExtPort *
 ext_port_from_rtaudio (
   unsigned int id,
   unsigned int channel_idx,
-  int          is_input,
-  int          is_duplex)
+  bool         is_input,
+  bool         is_duplex)
 {
   ExtPort * self =
     calloc (1, sizeof (ExtPort));
@@ -357,14 +436,19 @@ get_ext_ports_from_rtaudio (
   ExtPort ** arr,
   int *      size)
 {
+  *size = 0;
   /* note: this is an output port from the graph
    * side that will be used as an input port on
    * the zrythm side */
   if (flow == FLOW_OUTPUT)
     {
       rtaudio_t rtaudio =
-        engine_rtaudio_create_rtaudio (
-          AUDIO_ENGINE);
+        engine_rtaudio_create_rtaudio (AUDIO_ENGINE);
+      if (!rtaudio)
+        {
+          g_warn_if_reached ();
+          return;
+        }
       int num_devs = rtaudio_device_count (rtaudio);
       for (unsigned int i = 0;
            i < (unsigned int) num_devs; i++)
@@ -377,11 +461,13 @@ get_ext_ports_from_rtaudio (
               for (unsigned int j = 0;
                    j < dev_nfo.input_channels; j++)
                 {
-                  arr[*size] =
-                    ext_port_from_rtaudio (
-                      i, j, true, false);
+                  if (arr)
+                    {
+                      arr[*size] =
+                        ext_port_from_rtaudio (
+                          i, j, true, false);
+                    }
                   (*size)++;
-                  g_message ("\n\n found input device");
                 }
 #if 0
               for (unsigned int j = 0;
@@ -400,10 +486,54 @@ get_ext_ports_from_rtaudio (
               continue;
             }
         }
+      rtaudio_destroy (rtaudio);
     }
   else if (flow == FLOW_INPUT)
     {
-      *size = 0;
+      rtaudio_t rtaudio =
+        engine_rtaudio_create_rtaudio (AUDIO_ENGINE);
+      if (!rtaudio)
+        {
+          g_warn_if_reached ();
+          return;
+        }
+      int num_devs = rtaudio_device_count (rtaudio);
+      for (unsigned int i = 0;
+           i < (unsigned int) num_devs; i++)
+        {
+          rtaudio_device_info_t dev_nfo =
+            rtaudio_get_device_info (
+              rtaudio, (int) i);
+          if (dev_nfo.output_channels > 0)
+            {
+              for (unsigned int j = 0;
+                   j < dev_nfo.output_channels; j++)
+                {
+                  if (arr)
+                    {
+                      arr[*size] =
+                        ext_port_from_rtaudio (
+                          i, j, false, false);
+                    }
+                  (*size)++;
+                }
+#if 0
+              for (unsigned int j = 0;
+                   j < dev_nfo.duplex_channels; j++)
+                {
+                  arr[*size] =
+                    ext_port_from_rtaudio (
+                      i, j, false, true);
+                  (*size)++;
+                  g_message ("\n\n found duplex device");
+                }
+#endif
+            }
+          else
+            {
+              continue;
+            }
+        }
     }
 }
 #endif
@@ -424,7 +554,7 @@ void
 ext_ports_get (
   PortType   type,
   PortFlow   flow,
-  int        hw,
+  bool       hw,
   ExtPort ** arr,
   int *      size)
 {
@@ -490,6 +620,13 @@ ext_ports_get (
         default:
           break;
         }
+      if (arr)
+        {
+          for (int i = 0; i < *size; i++)
+            {
+              arr[i]->is_midi = true;
+            }
+        }
     }
 }
 
@@ -549,6 +686,22 @@ ext_port_clone (
   newport->type = ext_port->type;
 
   return newport;
+}
+
+/**
+ * Checks in the GSettings whether this port is
+ * marked as enabled by the user.
+ *
+ * @note Not realtime safe.
+ *
+ * @return Whether the port is enabled.
+ */
+bool
+ext_port_get_enabled (
+  ExtPort * self)
+{
+  /* TODO */
+  return true;
 }
 
 /**

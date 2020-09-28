@@ -95,7 +95,7 @@ midi_in_cb (
   g_return_if_fail (ts >= 0);
   char portname[900];
   port_get_full_designation (self->port, portname);
-  g_message (
+  g_debug (
     "[%s] message received of size %zu at %ld",
     portname, message_size, ts);
 
@@ -112,11 +112,13 @@ midi_in_cb (
   zix_sem_post (&self->midi_ring_sem);
 }
 
+static bool rtmidi_device_first_run = false;
+
 RtMidiDevice *
 rtmidi_device_new (
-  int    is_input,
-  unsigned int    device_id,
-  Port * port)
+  bool         is_input,
+  unsigned int device_id,
+  Port *       port)
 {
   RtMidiDevice * self =
     calloc (1, sizeof (RtMidiDevice));
@@ -130,11 +132,15 @@ rtmidi_device_new (
         "RtMidi: an error occurred fetching "
         "compiled APIs");
     }
-  for (int i = 0; i < num_apis; i++)
+  if (rtmidi_device_first_run)
     {
-      g_message (
-        "RtMidi API found: %s",
-        rtmidi_api_name (apis[i]));
+      for (int i = 0; i < num_apis; i++)
+        {
+          g_message (
+            "RtMidi API found: %s",
+            rtmidi_api_name (apis[i]));
+        }
+      rtmidi_device_first_run = false;
     }
 
   enum RtMidiApi api =

@@ -59,6 +59,7 @@
 #include "audio/engine_windows_mme.h"
 #include "audio/graph.h"
 #include "audio/graph_node.h"
+#include "audio/hardware_processor.h"
 #include "audio/metronome.h"
 #include "audio/midi_event.h"
 #include "audio/midi_mapping.h"
@@ -278,6 +279,13 @@ engine_setup (
       engine_dummy_midi_setup (self);
     }
 
+  hardware_processor_setup (
+    self->hw_in_processor);
+#if 0
+  hardware_processor_setup (
+    self->hw_out_processor);
+#endif
+
   if ((self->audio_backend == AUDIO_BACKEND_JACK &&
        self->midi_backend != MIDI_BACKEND_JACK) ||
       (self->audio_backend != AUDIO_BACKEND_JACK &&
@@ -328,6 +336,12 @@ init_common (
 {
   self->metronome = metronome_new ();
   self->router = router_new ();
+  self->hw_in_processor =
+    hardware_processor_new (true);
+#if 0
+  self->hw_out_processor =
+    hardware_processor_new (false);
+#endif
 
   /* get audio backend */
   AudioBackend ab_code = AUDIO_BACKEND_DUMMY;
@@ -638,6 +652,12 @@ engine_activate (
       self->activated = false;
     }
 
+  if (!activate)
+    {
+      hardware_processor_activate (
+        HW_IN_PROCESSOR, false);
+    }
+
 #ifdef HAVE_JACK
   if (self->audio_backend == AUDIO_BACKEND_JACK &&
       self->midi_backend == MIDI_BACKEND_JACK)
@@ -671,6 +691,12 @@ engine_activate (
       engine_rtaudio_activate (self, activate);
     }
 #endif
+
+  if (activate)
+    {
+      hardware_processor_activate (
+        HW_IN_PROCESSOR, true);
+    }
 
   self->activated = activate;
 
@@ -1010,6 +1036,11 @@ engine_process (
   receive_midi_events (
     self, total_frames_to_process, 1);
 
+  /* process HW processor to get audio/MIDI data
+   * from hardware */
+  hardware_processor_process (
+    HW_IN_PROCESSOR, total_frames_to_process);
+
   nframes_t total_frames_remaining =
     total_frames_to_process;
   while (self->remaining_latency_preroll > 0)
@@ -1341,6 +1372,14 @@ engine_audio_backend_from_string (
       return AUDIO_BACKEND_DUMMY;
     }
 
+  g_message (
+    "Audio backend '%s' not found. The available "
+    "choices are:", str);
+  for (int i = 0; i < NUM_AUDIO_BACKENDS; i++)
+    {
+      g_message ("%s", audio_backend_str[i]);
+    }
+
   g_return_val_if_reached (AUDIO_BACKEND_DUMMY);
 }
 
@@ -1364,6 +1403,14 @@ engine_midi_backend_from_string (
   else if (string_is_equal (str, "jack"))
     {
       return MIDI_BACKEND_JACK;
+    }
+
+  g_message (
+    "MIDI backend '%s' not found. The available "
+    "choices are:", str);
+  for (int i = 0; i < NUM_MIDI_BACKENDS; i++)
+    {
+      g_message ("%s", midi_backend_str[i]);
     }
 
   g_return_val_if_reached (MIDI_BACKEND_DUMMY);

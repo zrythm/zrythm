@@ -59,7 +59,7 @@ resource_files += files ([
   'left_dock_edge.ui',
   'log_viewer.ui',
   'main_window.ui',
-  'midi_controller_popover.ui',
+  'active_hardware_popover.ui',
   'midi_editor_space.ui',
   'mixer.ui',
   'modulator_view.ui',

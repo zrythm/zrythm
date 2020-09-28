@@ -33,6 +33,10 @@ G_DECLARE_FINAL_TYPE (
   ZrythmApp, zrythm_app, ZRYTHM, APP,
   GtkApplication)
 
+#define ZRYTHM_APP_IS_GTK_THREAD \
+  (zrythm_app && \
+   zrythm_app->gtk_thread == g_thread_self ())
+
 typedef struct _MainWindowWidget MainWindowWidget;
 typedef struct _SplashWindowWidget
   SplashWindowWidget;

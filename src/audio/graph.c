@@ -42,6 +42,7 @@
 #include "audio/graph.h"
 #include "audio/graph_node.h"
 #include "audio/graph_thread.h"
+#include "audio/hardware_processor.h"
 #include "audio/port.h"
 #include "audio/router.h"
 #include "audio/sample_processor.h"
@@ -351,7 +352,8 @@ add_port (
     owner != PORT_OWNER_TYPE_TRACK_PROCESSOR &&
     owner != PORT_OWNER_TYPE_TRACK &&
     owner != PORT_OWNER_TYPE_BACKEND &&
-    owner != PORT_OWNER_TYPE_SAMPLE_PROCESSOR)
+    owner != PORT_OWNER_TYPE_SAMPLE_PROCESSOR &&
+    owner != PORT_OWNER_TYPE_HW)
     {
       return NULL;
     }
@@ -489,7 +491,6 @@ graph_setup (
   const int drop_unnecessary_ports,
   const int rechain)
 {
-  int i, j;
   GraphNode * node, * node2;
 
   /* ========================
@@ -511,10 +512,15 @@ graph_setup (
     self, ROUTE_NODE_TYPE_INITIAL_PROCESSOR,
     NULL);
 
+  /* add the hardware input processor */
+  graph_create_node (
+    self, ROUTE_NODE_TYPE_HW_PROCESSOR,
+    HW_IN_PROCESSOR);
+
   /* add plugins */
   Track * tr;
   Plugin * pl;
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       tr = TRACKLIST->tracks[i];
       g_warn_if_fail (tr);
@@ -523,7 +529,7 @@ graph_setup (
       graph_create_node (
         self, ROUTE_NODE_TYPE_TRACK, tr);
 
-      for (j = 0; j < tr->num_modulators; j++)
+      for (int j = 0; j < tr->num_modulators; j++)
         {
           pl = tr->modulators[j];
 
@@ -548,7 +554,7 @@ graph_setup (
         tr->channel->prefader);
 
       /* add plugins */
-      for (j = 0; j < STRIP_SIZE * 2 + 1; j++)
+      for (int j = 0; j < STRIP_SIZE * 2 + 1; j++)
         {
           if (j < STRIP_SIZE)
             pl = tr->channel->midi_fx[j];
@@ -575,7 +581,7 @@ graph_setup (
   Port * port;
   port_get_all (
     &ports, &max_size, true, &num_ports);
-  for (i = 0; i < num_ports; i++)
+  for (int i = 0; i < num_ports; i++)
     {
       port = ports[i];
       g_warn_if_fail (port);
@@ -642,14 +648,34 @@ graph_setup (
   GraphNode * initial_processor_node =
     graph_find_initial_processor_node (self);
 
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
+  /* connect the HW input processor */
+  GraphNode * hw_processor_node =
+    graph_find_hw_processor_node (self);
+  for (int i = 0;
+       i < HW_IN_PROCESSOR->num_audio_ports; i++)
+    {
+      port = HW_IN_PROCESSOR->audio_ports[i];
+      node2 =
+        graph_find_node_from_port (self, port);
+      g_warn_if_fail (node2);
+      graph_node_connect (hw_processor_node, node2);
+    }
+  for (int i = 0;
+       i < HW_IN_PROCESSOR->num_midi_ports; i++)
+    {
+      port = HW_IN_PROCESSOR->midi_ports[i];
+      node2 =
+        graph_find_node_from_port (self, port);
+      graph_node_connect (hw_processor_node, node2);
+    }
+
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       tr = TRACKLIST->tracks[i];
 
       /* connect the track */
       node =
         graph_find_node_from_track (self, tr, true);
-      g_warn_if_fail (node);
       if (tr->in_signal_type == TYPE_AUDIO)
         {
           if (tr->type == TRACK_TYPE_AUDIO)
@@ -715,7 +741,7 @@ graph_setup (
         }
       if (track_has_piano_roll (tr))
         {
-          for (j = 0;
+          for (int j = 0;
                j < NUM_MIDI_AUTOMATABLES * 16; j++)
             {
               port =
@@ -744,7 +770,7 @@ graph_setup (
           graph_node_connect (
             initial_processor_node, node);
 
-          for (j = 0; j < tr->num_modulators; j++)
+          for (int j = 0; j < tr->num_modulators; j++)
             {
               pl = tr->modulators[j];
 
@@ -848,7 +874,7 @@ graph_setup (
           graph_node_connect (node, node2);
         }
 
-      for (j = 0; j < STRIP_SIZE * 2 + 1; j++)
+      for (int j = 0; j < STRIP_SIZE * 2 + 1; j++)
         {
           if (j < STRIP_SIZE)
             pl = tr->channel->midi_fx[j];
@@ -864,7 +890,7 @@ graph_setup (
         }
     }
 
-  for (i = 0; i < num_ports; i++)
+  for (int i = 0; i < num_ports; i++)
     {
       port = ports[i];
       if (port->deleting)
@@ -1266,6 +1292,22 @@ graph_find_initial_processor_node (
       node = graph->setup_graph_nodes[i];
       if (node->type ==
             ROUTE_NODE_TYPE_INITIAL_PROCESSOR)
+        return node;
+    }
+  return NULL;
+}
+
+GraphNode *
+graph_find_hw_processor_node (
+  Graph * graph)
+{
+  GraphNode * node;
+  for (size_t i = 0;
+       i < graph->num_setup_graph_nodes; i++)
+    {
+      node = graph->setup_graph_nodes[i];
+      if (node->type ==
+            ROUTE_NODE_TYPE_HW_PROCESSOR)
         return node;
     }
   return NULL;

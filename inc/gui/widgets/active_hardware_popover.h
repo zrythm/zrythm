@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,38 +17,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_MIDI_CONTROLLER_POPOVER_H__
-#define __GUI_WIDGETS_MIDI_CONTROLLER_POPOVER_H__
+#ifndef __GUI_WIDGETS_ACTIVE_HARDWARE_POPOVER_H__
+#define __GUI_WIDGETS_ACTIVE_HARDWARE_POPOVER_H__
 
 
 #include <gtk/gtk.h>
 
-#define MIDI_CONTROLLER_POPOVER_WIDGET_TYPE \
-  (midi_controller_popover_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MidiControllerPopoverWidget,
-                      midi_controller_popover_widget,
-                      Z,
-                      MIDI_CONTROLLER_POPOVER_WIDGET,
-                      GtkPopover)
+#define ACTIVE_HARDWARE_POPOVER_WIDGET_TYPE \
+  (active_hardware_popover_widget_get_type ())
+G_DECLARE_FINAL_TYPE (
+  ActiveHardwarePopoverWidget,
+  active_hardware_popover_widget,
+  Z, ACTIVE_HARDWARE_POPOVER_WIDGET,
+  GtkPopover)
 
-typedef struct _MidiControllerMbWidget
-  MidiControllerMbWidget;
+typedef struct _ActiveHardwareMbWidget
+  ActiveHardwareMbWidget;
 
-typedef struct _MidiControllerPopoverWidget
+typedef struct _ActiveHardwarePopoverWidget
 {
   GtkPopover              parent_instance;
-  MidiControllerMbWidget * owner; ///< the owner
+  ActiveHardwareMbWidget * owner; ///< the owner
   GtkBox *                controllers_box;
   GtkButton *             rescan;
   //GtkCheckButton *        controllers[50];
   //int                     num_controllers;
-} MidiControllerPopoverWidget;
+} ActiveHardwarePopoverWidget;
 
 /**
  * Creates the popover.
  */
-MidiControllerPopoverWidget *
-midi_controller_popover_widget_new (
-  MidiControllerMbWidget * owner);
+ActiveHardwarePopoverWidget *
+active_hardware_popover_widget_new (
+  ActiveHardwareMbWidget * owner);
 
 #endif

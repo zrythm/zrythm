@@ -90,9 +90,9 @@ typedef struct RtMidiDevice
 
 RtMidiDevice *
 rtmidi_device_new (
-  int    is_input,
-  unsigned int    device_id,
-  Port * port);
+  bool         is_input,
+  unsigned int device_id,
+  Port *       port);
 
 /**
  * Opens a device allocated with

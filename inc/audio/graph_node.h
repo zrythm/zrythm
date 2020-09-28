@@ -59,6 +59,7 @@ typedef struct Fader Fader;
 typedef struct Track Track;
 typedef struct SampleProcessor SampleProcessor;
 typedef struct Plugin Plugin;
+typedef struct HardwareProcessor HardwareProcessor;
 
 /**
  * @addtogroup audio
@@ -95,6 +96,9 @@ typedef enum GraphNodeType
    * in the chain processed before anything else.
    */
   ROUTE_NODE_TYPE_INITIAL_PROCESSOR,
+
+  /** Hardware processor. */
+  ROUTE_NODE_TYPE_HW_PROCESSOR,
 } GraphNodeType;
 
 /**
@@ -140,6 +144,9 @@ typedef struct GraphNode
 
   /** Sample processor, if sample processor. */
   SampleProcessor * sample_processor;
+
+  /** Hardware processor, if hardware processor. */
+  HardwareProcessor * hw_processor;
 
   /** For debugging. */
   bool          terminal;

@@ -646,9 +646,13 @@ Args:
                      "none" "MIDI backend"
                      "The MIDI backend to use.")
                    (make-schema-key
+                     "audio-inputs" "as"
+                     "[]" "Audio inputs"
+                     "A list of audio inputs to enable.")
+                   (make-schema-key
                      "midi-controllers" "as"
                      "[]" "MIDI controllers"
-                     "A list of controllers to auto-connect to.")
+                     "A list of controllers to enable.")
                  )) ;; general/engine
                (make-schema
                  "paths"

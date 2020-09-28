@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/midi_controller_mb.h"
-#include "gui/widgets/midi_controller_popover.h"
+#include "gui/widgets/active_hardware_mb.h"
+#include "gui/widgets/active_hardware_popover.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -29,19 +29,21 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (MidiControllerMbWidget,
-               midi_controller_mb_widget,
-               GTK_TYPE_MENU_BUTTON)
+G_DEFINE_TYPE (
+  ActiveHardwareMbWidget,
+  active_hardware_mb_widget,
+  GTK_TYPE_MENU_BUTTON)
 
 static void
-on_clicked (GtkButton * button,
-            MidiControllerMbWidget * self)
+on_clicked (
+  GtkButton * button,
+  ActiveHardwareMbWidget * self)
 {
   gtk_widget_show_all (GTK_WIDGET (self->popover));
 }
 
 static void
-set_label (MidiControllerMbWidget * self)
+set_label (ActiveHardwareMbWidget * self)
 {
   gtk_label_set_text (
     self->label, _("Select..."));
@@ -51,16 +53,16 @@ set_label (MidiControllerMbWidget * self)
  * This is called when the popover closes.
  */
 void
-midi_controller_mb_widget_refresh (
-  MidiControllerMbWidget * self)
+active_hardware_mb_widget_refresh (
+  ActiveHardwareMbWidget * self)
 {
   set_label (self);
-  midi_controller_mb_widget_save_settings (self);
+  active_hardware_mb_widget_save_settings (self);
 }
 
 void
-midi_controller_mb_widget_save_settings (
-  MidiControllerMbWidget * self)
+active_hardware_mb_widget_save_settings (
+  ActiveHardwareMbWidget * self)
 {
   GList *children, *iter;
   GtkToggleButton * chkbtn;
@@ -86,56 +88,68 @@ midi_controller_mb_widget_save_settings (
     }
   controllers[num_controllers] = NULL;
 
-  int res =
-    g_settings_set_strv (
-      S_P_GENERAL_ENGINE,
-      "midi-controllers",
-      (const char * const*) controllers);
+  int res = 1;
+  if (self->is_midi)
+    {
+      res =
+        g_settings_set_strv (
+          S_P_GENERAL_ENGINE,
+          "midi-controllers",
+          (const char * const*) controllers);
+    }
+  else
+    {
+      res =
+        g_settings_set_strv (
+          S_P_GENERAL_ENGINE,
+          "audio-inputs",
+          (const char * const*) controllers);
+    }
   g_warn_if_fail (res == 1);
 
   g_list_free (children);
 }
 
 void
-midi_controller_mb_widget_setup (
-  MidiControllerMbWidget * self)
+active_hardware_mb_widget_setup (
+  ActiveHardwareMbWidget * self,
+  bool                     is_midi)
 {
+  self->is_midi = is_midi;
   self->popover =
-    midi_controller_popover_widget_new (self);
+    active_hardware_popover_widget_new (self);
   gtk_menu_button_set_popover (
     GTK_MENU_BUTTON (self),
     GTK_WIDGET (self->popover));
 }
 
 static void
-midi_controller_mb_widget_class_init (MidiControllerMbWidgetClass * klass)
+active_hardware_mb_widget_class_init (
+  ActiveHardwareMbWidgetClass * klass)
 {
 }
 
 static void
-midi_controller_mb_widget_init (
-  MidiControllerMbWidget * self)
+active_hardware_mb_widget_init (
+  ActiveHardwareMbWidget * self)
 {
   self->box =
-    GTK_BOX (gtk_box_new (
-               GTK_ORIENTATION_HORIZONTAL, 0));
+    GTK_BOX (
+      gtk_box_new (
+        GTK_ORIENTATION_HORIZONTAL, 0));
   self->label =
     GTK_LABEL (gtk_label_new (_("Select...")));
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->box),
-    _("Click to enable MIDI controllers to be "
-      "connected automatically"));
-  gtk_box_pack_start (self->box,
-                    GTK_WIDGET (self->label),
-                    Z_GTK_EXPAND,
-                    Z_GTK_NO_FILL,
-                    1);
-  gtk_container_add (GTK_CONTAINER (self),
-                     GTK_WIDGET (self->box));
-  g_signal_connect (G_OBJECT (self),
-                    "clicked",
-                    G_CALLBACK (on_clicked),
-                    self);
+    _("Click to enable inputs"));
+  gtk_box_pack_start (
+    self->box, GTK_WIDGET (self->label),
+    Z_GTK_EXPAND, Z_GTK_NO_FILL, 1);
+  gtk_container_add (
+    GTK_CONTAINER (self), GTK_WIDGET (self->box));
+  g_signal_connect (
+    G_OBJECT (self), "clicked",
+    G_CALLBACK (on_clicked), self);
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }

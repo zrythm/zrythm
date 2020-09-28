@@ -23,7 +23,7 @@
 
 #include "audio/engine.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_controller_mb.h"
+#include "gui/widgets/active_hardware_mb.h"
 #include "gui/widgets/preferences.h"
 #include "plugins/plugin_gtk.h"
 #include "project.h"
@@ -389,13 +389,23 @@ make_control (
     }
   else if (KEY_IS (
         "General", "Engine",
+        "audio-inputs"))
+    {
+      widget =
+        g_object_new (
+          ACTIVE_HARDWARE_MB_WIDGET_TYPE, NULL);
+      active_hardware_mb_widget_setup (
+        Z_ACTIVE_HARDWARE_MB_WIDGET (widget), false);
+    }
+  else if (KEY_IS (
+        "General", "Engine",
         "midi-controllers"))
     {
       widget =
         g_object_new (
-          MIDI_CONTROLLER_MB_WIDGET_TYPE, NULL);
-      midi_controller_mb_widget_setup (
-        Z_MIDI_CONTROLLER_MB_WIDGET (widget));
+          ACTIVE_HARDWARE_MB_WIDGET_TYPE, NULL);
+      active_hardware_mb_widget_setup (
+        Z_ACTIVE_HARDWARE_MB_WIDGET (widget), true);
     }
   else if (TYPE_EQUALS (BOOLEAN))
     {

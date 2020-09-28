@@ -20,6 +20,7 @@
 #include "audio/control_port.h"
 #include "audio/engine.h"
 #include "audio/ext_port.h"
+#include "audio/hardware_processor.h"
 #include "audio/track.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/knob.h"
@@ -31,9 +32,10 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (TrackInputExpanderWidget,
-               track_input_expander_widget,
-               TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
+G_DEFINE_TYPE (
+  TrackInputExpanderWidget,
+  track_input_expander_widget,
+  TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 
 static void
 on_midi_channels_changed (
@@ -176,18 +178,18 @@ on_ext_input_changed (
           ch->all_stereo_r_ins = 0;
         }
 
-      ExtPort * ports[EXT_PORTS_MAX];
-      int       num_ports;
-      ext_ports_get (
-        midi ? TYPE_EVENT : TYPE_AUDIO,
-        FLOW_OUTPUT, 1, ports,
-        &num_ports);
-      ExtPort * port;
-      for (int i = 0; i < num_ports; i++)
+      /* get all inputs */
+      for (int i = 0;
+           i <
+            (midi?
+              HW_IN_PROCESSOR->num_ext_midi_ports :
+              HW_IN_PROCESSOR->num_ext_audio_ports);
+           i++)
         {
-          port = ports[i];
-          /*g_message ("checking %s",*/
-                     /*port->full_name);*/
+          ExtPort * port =
+            midi?
+              HW_IN_PROCESSOR->ext_midi_ports[i] :
+              HW_IN_PROCESSOR->ext_audio_ports[i];
 
           if (string_is_equal (port->full_name, id))
             {
@@ -212,7 +214,6 @@ on_ext_input_changed (
               break;
             }
         }
-      ext_ports_free (ports, num_ports);
     }
 
   channel_reconnect_ext_input_ports (ch);
@@ -299,17 +300,23 @@ setup_ext_ins_cb (
     "separator", "separator");
 
   /* get all inputs */
-  ExtPort * ports[EXT_PORTS_MAX];
-  int       num_ports;
-  ext_ports_get (
-    midi ? TYPE_EVENT : TYPE_AUDIO,
-    FLOW_OUTPUT, 1, ports, &num_ports);
-
-  ExtPort * port;
-  char * label;
-  for (int i = 0; i < num_ports; i++)
+  for (int i = 0;
+       i <
+         (midi?
+           HW_IN_PROCESSOR->num_ext_midi_ports :
+           HW_IN_PROCESSOR->num_ext_audio_ports);
+       i++)
     {
-      port = ports[i];
+      char * label;
+      ExtPort * port =
+        midi?
+          HW_IN_PROCESSOR->ext_midi_ports[i] :
+          HW_IN_PROCESSOR->ext_audio_ports[i];
+
+      /* only use active ports. only enabled
+       * ports will be active */
+      if (!port->active)
+        continue;
 
       if (port->num_aliases == 2)
         label = port->alias2;
@@ -324,7 +331,6 @@ setup_ext_ins_cb (
         GTK_COMBO_BOX_TEXT (cb),
         port->full_name, label);
     }
-  ext_ports_free (ports, num_ports);
 
   gtk_combo_box_text_append (
     GTK_COMBO_BOX_TEXT (cb),

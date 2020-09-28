@@ -500,12 +500,15 @@ engine_jack_setup (
 
   /*engine_jack_rescan_ports (self);*/
 
+  /* obsolete: now using hw processors */
+#if 0
   /* get all input physical ports */
   ext_ports_get (
     TYPE_AUDIO,
     FLOW_INPUT,
     1, self->hw_stereo_outs,
     &self->num_hw_stereo_outs);
+#endif
 
   g_message ("JACK set up");
   return 0;

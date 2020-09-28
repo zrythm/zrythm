@@ -27,7 +27,7 @@
 #include "audio/engine_jack.h"
 #include "audio/engine_pa.h"
 #include "gui/widgets/export_midi_file_dialog.h"
-#include "gui/widgets/midi_controller_mb.h"
+#include "gui/widgets/active_hardware_mb.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"

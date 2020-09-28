@@ -218,6 +218,26 @@ midi_events_append (
   bool          queued);
 
 /**
+ * Appends the events from src to dest
+ *
+ * @param queued Append queued events instead of
+ *   main events.
+ * @param channels Allowed channels (array of 16
+ *   booleans).
+ * @param start_frame The start frame offset from 0
+ *   in this cycle.
+ * @param nframes Number of frames to process.
+ */
+void
+midi_events_append_w_filter (
+  MidiEvents *    src,
+  MidiEvents *    dest,
+  int *           channels,
+  const nframes_t start_frame,
+  const nframes_t nframes,
+  bool            queued);
+
+/**
  * Adds a note on event to the given MidiEvents.
  *
  * @param channel MIDI channel starting from 1.

@@ -31,6 +31,7 @@
 #include "audio/engine_rtmidi.h"
 #include "audio/ext_port.h"
 #include "audio/group_target_track.h"
+#include "audio/hardware_processor.h"
 #include "audio/instrument_track.h"
 #include "audio/master_track.h"
 #include "audio/midi_event.h"
@@ -532,6 +533,9 @@ channel_expose_ports_to_backend (
     }
 }
 
+/* not needed anymore */
+#if 0
+
 #ifdef _WOE32
 /**
  * Reconnects the given Channel's midi in.
@@ -772,50 +776,76 @@ reconnect_rtmidi_ext_in (
 }
 #endif
 
+#endif /* if 0 */
+
 /**
  * Called when the input has changed for Midi,
  * Instrument or Audio tracks.
  */
 void
 channel_reconnect_ext_input_ports (
-  Channel * ch)
+  Channel * self)
 {
-  Track * track =
-    channel_get_track (ch);
+  Track * track = channel_get_track (self);
+
   if (track->type == TRACK_TYPE_INSTRUMENT ||
       track->type == TRACK_TYPE_MIDI)
     {
-      Port * midi_in =
-        track->processor->midi_in;
+      Port * midi_in = track->processor->midi_in;
 
       /* if the project was loaded with another
        * backend, the port might not be exposed
        * yet, so expose it */
       port_set_expose_to_backend (midi_in, 1);
 
-      switch (AUDIO_ENGINE->midi_backend)
+      /* disconnect all connections to hardware */
+      port_disconnect_hw_inputs (midi_in);
+
+      if (self->all_midi_ins)
         {
-#ifdef HAVE_JACK
-        case MIDI_BACKEND_JACK:
-          reconnect_jack_ext_in (ch, midi_in);
-          break;
-#endif
-#ifdef _WOE32
-        case MIDI_BACKEND_WINDOWS_MME:
-          reconnect_windows_mme_ext_in (
-            ch, midi_in);
-          break;
-#endif
-#ifdef HAVE_RTMIDI
-        case MIDI_BACKEND_ALSA_RTMIDI:
-        case MIDI_BACKEND_JACK_RTMIDI:
-        case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
-        case MIDI_BACKEND_COREMIDI_RTMIDI:
-          reconnect_rtmidi_ext_in (ch, midi_in);
-          break;
-#endif
-        default:
-          break;
+          for (int i = 0;
+               i <
+                 HW_IN_PROCESSOR->
+                   num_selected_midi_ports;
+               i++)
+            {
+              char * full_name =
+                HW_IN_PROCESSOR->
+                  selected_midi_ports[i];
+              Port * source =
+                hardware_processor_find_port (
+                  HW_IN_PROCESSOR, full_name);
+              if (!source)
+                {
+                  g_warning (
+                    "port for %s not found",
+                    full_name);
+                  continue;
+                }
+              port_connect (
+                source, midi_in, true);
+            }
+        }
+      else
+        {
+          for (int i = 0;
+               i < self->num_ext_midi_ins; i++)
+            {
+              char * full_name =
+                self->ext_midi_ins[i]->full_name;
+              Port * source =
+                hardware_processor_find_port (
+                  HW_IN_PROCESSOR, full_name);
+              if (!source)
+                {
+                  g_warning (
+                    "port for %s not found",
+                    full_name);
+                  continue;
+                }
+              port_connect (
+                source, midi_in, true);
+            }
         }
     }
   else if (track->type == TRACK_TYPE_AUDIO)
@@ -823,22 +853,52 @@ channel_reconnect_ext_input_ports (
       /* if the project was loaded with another
        * backend, the port might not be exposed
        * yet, so expose it */
-      port_set_expose_to_backend (
-        track->processor->stereo_in->l, 1);
-      port_set_expose_to_backend (
-        track->processor->stereo_in->r, 1);
+      Port * l =
+        track->processor->stereo_in->l;
+      Port * r =
+        track->processor->stereo_in->r;
+      port_set_expose_to_backend (l, true);
+      port_set_expose_to_backend (r, true);
 
-      if (AUDIO_ENGINE->audio_backend ==
-            AUDIO_BACKEND_JACK &&
-          AUDIO_ENGINE->midi_backend ==
-            MIDI_BACKEND_JACK)
+      /* disconnect all connections to hardware */
+      port_disconnect_hw_inputs (l);
+      port_disconnect_hw_inputs (r);
+
+      for (int i = 0;
+           i < self->num_ext_stereo_l_ins; i++)
         {
-#ifdef HAVE_JACK
-          reconnect_jack_ext_in (
-            ch, track->processor->stereo_in->l);
-          reconnect_jack_ext_in (
-            ch, track->processor->stereo_in->r);
-#endif
+          char * full_name =
+            self->ext_stereo_l_ins[i]->full_name;
+          Port * source =
+            hardware_processor_find_port (
+              HW_IN_PROCESSOR, full_name);
+          if (!source)
+            {
+              g_warning (
+                "port for %s not found",
+                full_name);
+              continue;
+            }
+          port_connect (
+            source, l, true);
+        }
+      for (int i = 0;
+           i < self->num_ext_stereo_r_ins; i++)
+        {
+          char * full_name =
+            self->ext_stereo_r_ins[i]->full_name;
+          Port * source =
+            hardware_processor_find_port (
+              HW_IN_PROCESSOR, full_name);
+          if (!source)
+            {
+              g_warning (
+                "port for %s not found",
+                full_name);
+              continue;
+            }
+          port_connect (
+            source, r, true);
         }
     }
 }

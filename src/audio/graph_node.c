@@ -110,6 +110,9 @@ graph_node_get_name (
     case ROUTE_NODE_TYPE_INITIAL_PROCESSOR:
       return
         g_strdup ("Initial Processor");
+    case ROUTE_NODE_TYPE_HW_PROCESSOR:
+      return
+        g_strdup ("HW Processor");
     }
   g_return_val_if_reached (NULL);
 }
@@ -141,7 +144,8 @@ graph_node_get_pointer (
       break;
     case ROUTE_NODE_TYPE_INITIAL_PROCESSOR:
       return NULL;
-      break;
+    case ROUTE_NODE_TYPE_HW_PROCESSOR:
+      return node->hw_processor;
     }
   g_return_val_if_reached (NULL);
 }
@@ -566,6 +570,10 @@ graph_node_new (
       node->track = (Track *) data;
       break;
     case ROUTE_NODE_TYPE_INITIAL_PROCESSOR:
+      break;
+    case ROUTE_NODE_TYPE_HW_PROCESSOR:
+      node->hw_processor =
+        (HardwareProcessor *) data;
       break;
     }
 

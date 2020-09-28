@@ -27,7 +27,7 @@
 #include "audio/engine_jack.h"
 #include "audio/engine_pa.h"
 #include "gui/widgets/first_run_assistant.h"
-#include "gui/widgets/midi_controller_mb.h"
+#include "gui/widgets/active_hardware_mb.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
@@ -360,7 +360,7 @@ static void
 first_run_assistant_widget_init (
   FirstRunAssistantWidget * self)
 {
-  g_type_ensure (MIDI_CONTROLLER_MB_WIDGET_TYPE);
+  g_type_ensure (ACTIVE_HARDWARE_MB_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

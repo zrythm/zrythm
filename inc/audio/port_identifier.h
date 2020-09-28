@@ -116,6 +116,9 @@ typedef enum PortOwnerType
   PORT_OWNER_TYPE_TRACK_PROCESSOR,
 
   PORT_OWNER_TYPE_SAMPLE_PROCESSOR,
+
+  /** Port is part of a HardwareProcessor. */
+  PORT_OWNER_TYPE_HW,
 } PortOwnerType;
 
 static const cyaml_strval_t
@@ -132,6 +135,7 @@ port_owner_type_strings[] =
     PORT_OWNER_TYPE_MONITOR_FADER },
   { "sample processor",
     PORT_OWNER_TYPE_SAMPLE_PROCESSOR },
+  { "hw",        PORT_OWNER_TYPE_HW },
 };
 
 /**
@@ -247,6 +251,9 @@ typedef enum PortFlags
 
   /** Track processor input gain. */
   PORT_FLAG_TP_INPUT_GAIN = 1 << 27,
+
+  /** Port is a hardware port. */
+  PORT_FLAG_HW = 1 << 28,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -280,6 +287,7 @@ port_flags_bitvals[] =
   { .name = "plugin_gain", .offset = 25, .bits = 1 },
   { .name = "tp_mono", .offset = 26, .bits = 1 },
   { .name = "tp_input_gain", .offset = 27, .bits = 1 },
+  { .name = "hw", .offset = 28, .bits = 1 },
 };
 
 /**
@@ -310,6 +318,9 @@ typedef struct PortIdentifier
 
   /** Identifier of plugin. */
   PluginIdentifier    plugin_id;
+
+  /** ExtPort ID (full name), if hw port. */
+  char *              ext_port_id;
 
   /** Index of Track in the Tracklist. */
   int                 track_pos;
@@ -355,10 +366,13 @@ port_identifier_fields_schema[] =
     CYAML_ARRAY_LEN (port_flags_bitvals)),
   YAML_FIELD_INT (
     PortIdentifier, track_pos),
-  CYAML_FIELD_MAPPING (
-    "plugin_id", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     PortIdentifier, plugin_id,
     plugin_identifier_fields_schema),
+#if 0
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PortIdentifier, ext_port_id),
+#endif
   YAML_FIELD_INT (
     PortIdentifier, port_index),
 

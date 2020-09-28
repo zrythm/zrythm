@@ -200,6 +200,10 @@ GraphNode *
 graph_find_initial_processor_node (
   Graph * graph);
 
+GraphNode *
+graph_find_hw_processor_node (
+  Graph * graph);
+
 /**
  * Creates a new node, adds it to the graph and
  * returns it.

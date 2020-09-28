@@ -36,8 +36,19 @@
 
 #define GSETTINGS_ZRYTHM_PREFIX "org.zrythm.Zrythm"
 #define SETTINGS (ZRYTHM->settings)
+
+/* ---- Standard settings ---- */
 #define S_UI SETTINGS->ui
 #define S_EXPORT SETTINGS->export
+#define S_GENERAL SETTINGS->general
+#define S_UI_INSPECTOR_SETTINGS \
+  SETTINGS->ui_inspector
+#define S_TRANSPORT \
+  SETTINGS->transport
+
+/* ---- end standard settings ---- */
+
+/* ---- Preferences ---- */
 #define S_P_DSP_PAN SETTINGS->preferences_dsp_pan
 #define S_P_EDITING_AUDIO \
   SETTINGS->preferences_editing_audio
@@ -57,11 +68,9 @@
   SETTINGS->preferences_projects_general
 #define S_P_UI_GENERAL \
   SETTINGS->preferences_ui_general
-#define S_GENERAL SETTINGS->general
-#define S_UI_INSPECTOR_SETTINGS \
-  SETTINGS->ui_inspector
-#define S_TRANSPORT \
-  SETTINGS->transport
+
+/* ---- end preferences ---- */
+
 #define S_IS_DEBUG (g_settings_get_int ( \
   S_GENERAL, "debug"))
 

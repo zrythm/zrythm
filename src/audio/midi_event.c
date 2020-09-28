@@ -60,11 +60,35 @@
  */
 void
 midi_events_append (
-  MidiEvents * src,
-  MidiEvents * dest,
-  const nframes_t    start_frame,
-  const nframes_t    nframes,
-  bool          queued)
+  MidiEvents *    src,
+  MidiEvents *    dest,
+  const nframes_t start_frame,
+  const nframes_t nframes,
+  bool            queued)
+{
+  midi_events_append_w_filter (
+    src, dest, NULL, start_frame, nframes, queued);
+}
+
+/**
+ * Appends the events from src to dest
+ *
+ * @param queued Append queued events instead of
+ *   main events.
+ * @param channels Allowed channels (array of 16
+ *   booleans).
+ * @param start_frame The start frame offset from 0
+ *   in this cycle.
+ * @param nframes Number of frames to process.
+ */
+void
+midi_events_append_w_filter (
+  MidiEvents *    src,
+  MidiEvents *    dest,
+  int *           channels,
+  const nframes_t start_frame,
+  const nframes_t nframes,
+  bool            queued)
 {
   /* queued not implemented yet */
   g_return_if_fail (!queued);
@@ -76,6 +100,17 @@ midi_events_append (
       src_ev = &src->events[i];
       if (src_ev->time < nframes)
         {
+          /* if filtering, skip disabled channels */
+          if (channels)
+            {
+              midi_byte_t channel =
+                src_ev->raw_buffer[0] & 0xf;
+              if (!channels[channel])
+                {
+                  continue;
+                }
+            }
+
           dest_ev = &dest->events[i + dest_index];
           midi_event_copy  (src_ev, dest_ev);
           dest->num_events++;
@@ -141,6 +176,7 @@ midi_events_set_channel (
 /**
  * Clears midi events.
  */
+REALTIME
 void
 midi_events_clear (
   MidiEvents * self,
@@ -322,6 +358,7 @@ midi_events_has_note_on (
 /**
  * Copies the queue contents to the original struct
  */
+REALTIME
 void
 midi_events_dequeue (
   MidiEvents * self)
@@ -732,6 +769,7 @@ print_unknown_event_message (
  * 'running status' mode, the caller is responsible
  * for prepending the status byte.
  */
+REALTIME
 void
 midi_events_add_event_from_buf (
   MidiEvents *  self,

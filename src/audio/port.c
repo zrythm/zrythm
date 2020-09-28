@@ -31,10 +31,11 @@
 #include "audio/engine_jack.h"
 #endif
 #include "audio/graph.h"
+#include "audio/hardware_processor.h"
 #include "audio/midi_event.h"
-#include "audio/router.h"
 #include "audio/pan.h"
 #include "audio/port.h"
+#include "audio/router.h"
 #include "audio/rtaudio_device.h"
 #include "audio/rtmidi_device.h"
 #include "audio/windows_mme_device.h"
@@ -462,6 +463,7 @@ port_find_from_identifier (
         return SAMPLE_PROCESSOR->stereo_out->r;
       else
         g_return_val_if_reached (NULL);
+      break;
     case PORT_OWNER_TYPE_MONITOR_FADER:
       if (id->flow == FLOW_OUTPUT)
         {
@@ -487,6 +489,10 @@ port_find_from_identifier (
               MONITOR_FADER->
                 stereo_in->r;
         }
+      break;
+    case PORT_OWNER_TYPE_HW:
+      g_return_val_if_reached (NULL);
+      break;
     }
 
   g_return_val_if_reached (NULL);
@@ -1094,6 +1100,21 @@ port_get_all (
   _ADD (SAMPLE_PROCESSOR->stereo_out->l);
   _ADD (SAMPLE_PROCESSOR->stereo_out->r);
 
+  for (int i = 0;
+       i < HW_IN_PROCESSOR->num_audio_ports; i++)
+    {
+      _ADD (HW_IN_PROCESSOR->audio_ports[i]);
+    }
+  g_warn_if_fail (
+    HW_IN_PROCESSOR->num_audio_ports > 0);
+  for (int i = 0;
+       i < HW_IN_PROCESSOR->num_midi_ports; i++)
+    {
+      _ADD (HW_IN_PROCESSOR->midi_ports[i]);
+    }
+  g_warn_if_fail (
+    HW_IN_PROCESSOR->num_midi_ports > 0);
+
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * tr = TRACKLIST->tracks[i];
@@ -1347,7 +1368,7 @@ port_connect (
   Port * dest,
   const int locked)
 {
-  g_warn_if_fail (src && dest);
+  g_warn_if_fail (src && dest && src != dest);
   port_disconnect (src, dest);
   if ((src->id.type !=
        dest->id.type) &&
@@ -1852,14 +1873,14 @@ expose_to_rtmidi (
  * Sums the inputs coming in from RtMidi
  * before the port is processed.
  */
-static void
-sum_data_from_rtmidi (
+void
+port_sum_data_from_rtmidi (
   Port * self,
   const nframes_t start_frame,
   const nframes_t nframes)
 {
   g_return_if_fail (
-    self->id.flow == FLOW_INPUT &&
+    /*self->id.flow == FLOW_INPUT &&*/
     midi_backend_is_rtmidi (
       AUDIO_ENGINE->midi_backend));
 
@@ -1897,7 +1918,7 @@ sum_data_from_rtmidi (
                   midi_events_add_event_from_buf (
                     self->midi_events,
                     ev->time, ev->raw_buffer,
-                    3, 0);
+                    3, F_NOT_QUEUED);
                 }
             }
         }
@@ -1928,7 +1949,7 @@ port_prepare_rtmidi_events (
   Port * self)
 {
   g_return_if_fail (
-    self->id.flow == FLOW_INPUT &&
+    /*self->id.flow == FLOW_INPUT &&*/
     midi_backend_is_rtmidi (
       AUDIO_ENGINE->midi_backend));
 
@@ -1993,7 +2014,8 @@ port_prepare_rtmidi_events (
 
           midi_events_add_event_from_buf (
             dev->events,
-            ev_time, raw, (int) h.size, 0);
+            ev_time, raw, (int) h.size,
+            F_NOT_QUEUED);
         } while (
             read_space > sizeof (MidiEventHeader));
       zix_sem_post (&dev->midi_ring_sem);
@@ -2553,7 +2575,7 @@ port_sum_signal_from_inputs (
             case MIDI_BACKEND_JACK_RTMIDI:
             case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
             case MIDI_BACKEND_COREMIDI_RTMIDI:
-              sum_data_from_rtmidi (
+              port_sum_data_from_rtmidi (
                 port, start_frame, nframes);
               break;
 #endif
@@ -2570,13 +2592,53 @@ port_sum_signal_from_inputs (
               src_port, port);
           if (src_port->dest_enabled[dest_idx])
             {
-              g_warn_if_fail (
-                src_port->id.type ==
-                  TYPE_EVENT);
+              g_return_if_fail (
+                src_port->id.type == TYPE_EVENT);
+
+              /* if hardware device connected to
+               * track processor input, only allow
+               * signal to pass if armed and
+               * MIDI channel is valid */
+              if (src_port->id.owner_type ==
+                    PORT_OWNER_TYPE_HW &&
+                  port->id.owner_type ==
+                    PORT_OWNER_TYPE_TRACK_PROCESSOR)
+                {
+                  Track * track =
+                    port_get_track (port, true);
+
+                  /* skip if not armed */
+                  if (!track->recording)
+                    {
+                      continue;
+                    }
+
+                  /* if not set to "all channels",
+                   * filter-append */
+                  if ((track->type ==
+                         TRACK_TYPE_MIDI ||
+                       track->type ==
+                         TRACK_TYPE_INSTRUMENT) &&
+                       !track->channel->
+                         all_midi_channels)
+                    {
+                      midi_events_append_w_filter (
+                        src_port->midi_events,
+                        port->midi_events,
+                        track->channel->
+                          midi_channels,
+                        start_frame,
+                        nframes, F_NOT_QUEUED);
+                      continue;
+                    }
+
+                  /* otherwise append normally */
+                }
+
               midi_events_append (
                 src_port->midi_events,
                 port->midi_events, start_frame,
-                nframes, 0);
+                nframes, F_NOT_QUEUED);
             }
         }
 
@@ -2942,6 +3004,23 @@ port_sum_signal_from_inputs (
 }
 
 /**
+ * Disconnects all hardware inputs from the port.
+ */
+void
+port_disconnect_hw_inputs (
+  Port * self)
+{
+  for (int i = 0; i < self->num_srcs; i++)
+    {
+      Port * src = self->srcs[i];
+      if (src->id.owner_type == PORT_OWNER_TYPE_HW)
+        {
+          port_disconnect (src, self);
+        }
+    }
+}
+
+/**
  * Sets whether to expose the port to the backend
  * and exposes it or removes it.
  *
@@ -3103,6 +3182,9 @@ port_get_full_designation (
       return;
     case PORT_OWNER_TYPE_MONITOR_FADER:
       sprintf (buf, "Engine/%s", id->label);
+      return;
+    case PORT_OWNER_TYPE_HW:
+      sprintf (buf, "HW/%s", id->label);
       return;
     default:
       g_return_if_reached ();

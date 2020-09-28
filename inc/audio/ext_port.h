@@ -91,7 +91,7 @@ typedef struct ExtPort
   jack_port_t *    jport;
 #endif
 
-  /** Full port name. */
+  /** Full port name, used also as ID. */
   char *           full_name;
 
   /** Short port name. */
@@ -122,16 +122,34 @@ typedef struct ExtPort
   unsigned int     rtaudio_channel_idx;
 
   /** Whether the channel is input. */
-  int              rtaudio_is_input;
-  int              rtaudio_is_duplex;
+  bool             rtaudio_is_input;
+  bool             rtaudio_is_duplex;
 #endif
 
 #ifdef HAVE_RTMIDI
   /** RtMidi port index. */
   unsigned int     rtmidi_id;
+
+  RtMidiDevice *   rtmidi_dev;
 #endif
 
   ExtPortType      type;
+
+  /** True if MIDI, false if audio. */
+  bool             is_midi;
+
+  /** Index in the HW processor (cache for real-time
+   * use) */
+  int              hw_processor_index;
+
+  /** Whether the port is active and receiving
+   * events (for use by hw processor). */
+  bool             active;
+
+  /**
+   * Temporary port to receive data.
+   */
+  Port *           port;
 } ExtPort;
 
 static const cyaml_schema_field_t
@@ -147,6 +165,8 @@ ext_port_fields_schema[] =
     ExtPort, alias2),
   YAML_FIELD_INT (
     ExtPort, num_aliases),
+  YAML_FIELD_INT (
+    ExtPort, is_midi),
   YAML_FIELD_ENUM (
     ExtPort, type, ext_port_type_strings),
 
@@ -217,6 +237,30 @@ ext_port_disconnect (
   int       src);
 
 /**
+ * Activates the port (starts receiving data) or
+ * deactivates it.
+ *
+ * @param port Port to send the output to.
+ */
+void
+ext_port_activate (
+  ExtPort * self,
+  Port *    port,
+  bool      activate);
+
+/**
+ * Checks in the GSettings whether this port is
+ * marked as enabled by the user.
+ *
+ * @note Not realtime safe.
+ *
+ * @return Whether the port is enabled.
+ */
+bool
+ext_port_get_enabled (
+  ExtPort * self);
+
+/**
  * Collects external ports of the given type.
  *
  * @param flow The signal flow. Note that this is
@@ -232,7 +276,7 @@ void
 ext_ports_get (
   PortType   type,
   PortFlow   flow,
-  int        hw,
+  bool       hw,
   ExtPort ** ports,
   int *      size);
 

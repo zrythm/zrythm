@@ -55,6 +55,7 @@ audio_srcs = [
   'graph_thread.c',
   'graph_export.c',
   'group_target_track.c',
+  'hardware_processor.c',
   'instrument_track.c',
   'kmeter_dsp.c',
   'marker.c',

@@ -127,7 +127,8 @@ foreach lang : locales
     output_dir =  sphinx_builddir / lang / format
     #output_dir =  meson.current_build_dir () / lang / format
     command = [
-      sphinx_build, sphinx_build_opts,
+      sphinx_build,
+      format ==  'latex' ? [] : sphinx_build_opts,
       '-D', 'language=' + lang,
       '-b', format, meson.current_source_dir (),
       output_dir, '&&', 'touch', '@OUTPUT@',

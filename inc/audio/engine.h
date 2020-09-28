@@ -68,6 +68,7 @@ typedef struct WindowsMmeDevice WindowsMmeDevice;
 typedef struct Router Router;
 typedef struct Metronome Metronome;
 typedef struct Project Project;
+typedef struct HardwareProcessor HardwareProcessor;
 
 /**
  * @addtogroup audio Audio
@@ -350,6 +351,16 @@ typedef struct AudioEngine
   /** The processing graph router. */
   Router *          router;
 
+  /** Input device processor. */
+  HardwareProcessor * hw_in_processor;
+
+  /* don't need to handle outputs */
+#if 0
+  /** Output device processor. */
+  HardwareProcessor * hw_out_processor;
+#endif
+
+#if 0
   /**
    * Audio intefrace outputs (only 2 are used).
    *
@@ -378,6 +389,7 @@ typedef struct AudioEngine
    */
   ExtPort *         hw_stereo_ins[EXT_PORTS_MAX];
   int               num_hw_stereo_ins;
+#endif
 
   /** MIDI Clock in TODO. */
   Port *            midi_clock_in;

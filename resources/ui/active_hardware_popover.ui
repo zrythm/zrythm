@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <!--
 
-  Copyright (C) 2018-2019 Alexandros Theodotou
+  Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -22,7 +22,7 @@
 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="MidiControllerPopoverWidget" parent="GtkPopover">
+  <template class="ActiveHardwarePopoverWidget" parent="GtkPopover">
     <property name="can_focus">False</property>
     <signal name="closed" handler="on_closed" swapped="no"/>
     <child>
@@ -34,7 +34,7 @@
           <object class="GtkLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Controllers found</property>
+            <property name="label" translatable="yes">Ports found</property>
           </object>
           <packing>
             <property name="expand">False</property>

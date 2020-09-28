@@ -65,6 +65,7 @@ typedef struct RtMidiDevice RtMidiDevice;
 typedef struct RtAudioDevice RtAudioDevice;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct TruePeakDsp TruePeakDsp;
+typedef struct ExtPort ExtPort;
 typedef enum PanAlgorithm PanAlgorithm;
 typedef enum PanLaw PanLaw;
 
@@ -451,11 +452,16 @@ typedef struct Port
    */
   AutomationTrack *   at;
 
-  /** Magic number to identify that this is a Port. */
-  int                 magic;
+  /** Pointer to ExtPort, if hw, for quick
+   * access (cache). */
+  ExtPort *           ext_port;
 
   /** Whether this is a project port. */
   bool                is_project;
+
+  /** Magic number to identify that this is a
+   * Port. */
+  int                 magic;
 } Port;
 
 static const cyaml_strval_t
@@ -841,6 +847,16 @@ port_get_enabled (
 void
 port_prepare_rtmidi_events (
   Port * self);
+
+/**
+ * Sums the inputs coming in from RtMidi
+ * before the port is processed.
+ */
+void
+port_sum_data_from_rtmidi (
+  Port * self,
+  const nframes_t start_frame,
+  const nframes_t nframes);
 #endif
 
 #ifdef HAVE_RTAUDIO
@@ -852,6 +868,13 @@ void
 port_prepare_rtaudio_data (
   Port * self);
 #endif
+
+/**
+ * Disconnects all hardware inputs from the port.
+ */
+void
+port_disconnect_hw_inputs (
+  Port * self);
 
 /**
  * Deletes port, doing required cleanup and updating counters.
