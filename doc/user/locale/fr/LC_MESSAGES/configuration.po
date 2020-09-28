@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"PO-Revision-Date: 2020-09-28 19:59+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/fr/>\n"
@@ -380,9 +380,8 @@ msgid "Open UI on instantiation"
 msgstr "Ouvrir l'interface utilisateur à l'instanciation"
 
 #: ../../configuration/preferences/intro.rst:72
-#, fuzzy
 msgid "Open plugin UIs when they are instantiated."
-msgstr "Ouvrir les interfaces utilisateur des greffons lorsqu'ils sont instanciés."
+msgstr "Ouvrir l' interface utilisateur des greffons à l'instanciation."
 
 #: ../../configuration/preferences/intro.rst:75
 msgid "Keep window on top"
@@ -429,56 +428,51 @@ msgid "VST plugins"
 msgstr "Greffons VST"
 
 #: ../../configuration/preferences/intro.rst:94
-#, fuzzy
 msgid "The search paths to scan for :term:`VST2` plugins in."
-msgstr "LE chemin de recherche pour scanner les greffons VST."
+msgstr ""
+"Le chemin de recherche pour scanner les greffons :term:`VST2`qu'il contient."
 
 #: ../../configuration/preferences/intro.rst:97
-#, fuzzy
 msgid ""
 "This option is only available on Windows. On GNU/Linux and MacOS the "
 "paths are fixed. See :ref:`scanning-plugins` for details."
 msgstr ""
-"Cette option n'est disponible que sur Windows. Pour GNU/Linux et MacOS "
-"les chemins sont fixes.Cf :ref:`plugin-paths` pour plus de détails."
+"Cette option n'est disponible que sur Windows. Pour GNU/Linux et MacOS les "
+"chemins sont fixes.Cf :ref:`scanning-plugins` pour plus de détails."
 
 #: ../../configuration/preferences/intro.rst:103
 msgid "SFZ instruments"
 msgstr "instruments SFZ"
 
 #: ../../configuration/preferences/intro.rst:102
-#, fuzzy
 msgid "The search paths to scan for :term:`SFZ` instruments in."
-msgstr "Le chemin de recherche pour scanner les instruments SFZ."
+msgstr "Le chemin de recherche pour scanner les instruments :term:`SFZ`."
 
 #: ../../configuration/preferences/intro.rst:107
 msgid "SF2 instruments"
 msgstr "instruments SF2"
 
 #: ../../configuration/preferences/intro.rst:106
-#, fuzzy
 msgid "The search paths to scan for :term:`SF2` instruments in."
-msgstr "Le chemin de recherche pour scanner les instruments SF2."
+msgstr "Le chemin de recherche pour scanner les instruments :term:`SF2`."
 
 #: ../../configuration/preferences/intro.rst:110
 msgid "DSP"
 msgstr "DSP"
 
 #: ../../configuration/preferences/intro.rst:112
-#, fuzzy
 msgid ":term:`DSP` settings."
-msgstr "Utilisation de gsettings."
+msgstr "Paramètrage de :term:`DSP`."
 
 #: ../../configuration/preferences/intro.rst:118
 msgid "Pan"
 msgstr "Panoramique"
 
 #: ../../configuration/preferences/intro.rst:120
-#, fuzzy
 msgid ":term:`Panning` options for :term:`mono` signals (not used at the moment)."
 msgstr ""
-"Options de panoramique pour les signaux mono (Ceci n'est pas utilisé pour"
-" le moment)."
+"Options de :term:`Panning` pour les signaux :term:`mono` (Ceci n'est pas "
+"utilisé pour le moment)."
 
 #: ../../configuration/preferences/intro.rst:137
 msgid "Pan algorithm"
@@ -510,10 +504,9 @@ msgid "Pan law"
 msgstr "Loi de panoramique"
 
 #: ../../configuration/preferences/intro.rst:140
-#, fuzzy
 msgid "The :term:`pan law` to use when applying pan on mono signals."
 msgstr ""
-"La loi de panoramique a utiliser quand on applique une panoramique à des "
+"La :term:`pan law` à utiliser quand on applique une panoramique à des "
 "signaux mono."
 
 #: ../../configuration/preferences/intro.rst:144
@@ -591,9 +584,8 @@ msgid "Project settings."
 msgstr "Paramètres du projet."
 
 #: ../../configuration/preferences/intro.rst:189
-#, fuzzy
 msgid "General (Project)"
-msgstr "Paramètres généraux de projet."
+msgstr "Général(Projet)"
 
 #: ../../configuration/preferences/intro.rst:191
 msgid "General project settings."
@@ -628,9 +620,8 @@ msgid "User interface options."
 msgstr "Options d'interface utilisateur."
 
 #: ../../configuration/preferences/intro.rst:209
-#, fuzzy
 msgid "General (UI)"
-msgstr "Général"
+msgstr "Général (Interface utilisateur)"
 
 #: ../../configuration/preferences/intro.rst:211
 msgid "General user interface options."

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"PO-Revision-Date: 2020-09-28 19:59+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/glossary/"
 "fr/>\n"
@@ -105,7 +105,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:49
 msgid "DSP"
-msgstr ""
+msgstr "DSP"
 
 #: ../../glossary/intro.rst:51
 msgid ""
@@ -125,7 +125,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:59
 msgid "JACK"
-msgstr ""
+msgstr "JACK"
 
 #: ../../glossary/intro.rst:61
 msgid ""

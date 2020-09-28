@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"PO-Revision-Date: 2020-09-28 19:59+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualmodulators/ja/>\n"
@@ -25,15 +25,14 @@ msgid "Modulators"
 msgstr "モジュレーター"
 
 #: ../../modulators/intro.rst:9
-#, fuzzy
 msgid ""
 "Modulators are any plugins that have at least one :term:`CV` output port."
 " These CV ports can be routed to any automatable parameter inside Zrythm."
 " For example, you can route an LFO to a filter cutoff parameter to "
 "modulate its value."
 msgstr ""
-"モジュレータとは、少なくとも一つの :term:`CV` 出力ポートを持つプラグインのことです。これらのCVポートは、Zrythm内の任意のオートマティッ"
-"クパラメータにルーティングすることができます。例えば、LFOをフィルターカットオフパラメータにルーティングして、その値をモジュレートすることができます。"
+"モジュレータとは、少なくとも一つの :term:`CV` 出力ポートを持つプラグインのことです。これらのCVポートは、Zrythm内の任意の自動可能パラメ"
+"ータにルーティングすることができます。例えば、LFOをフィルターカットオフパラメータにルーティングして、その値をモジュレートすることができます。"
 
 #: ../../modulators/intro.rst:16
 msgid "Modulators Tab"
@@ -66,6 +65,9 @@ msgid ""
 "can be :ref:`filtered inside the plugin browser <plugins-files/plugins"
 "/plugin-browser:Filter Buttons>`."
 msgstr ""
+"モジュレータ プラグインは :doc:`../plugins-files/plugins/plugin-browser` から モジュレータ "
+"タブにドラッグ＆ドロップすることができます。プラグインブラウザ の中で :ref:`フィルタリングすることができます <plugins-files/"
+"plugins/plugin-browser:Filter Buttons>` 。"
 
 #: ../../modulators/intro.rst:35
 msgid "Routing Modulators"

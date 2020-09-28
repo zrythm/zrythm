@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"PO-Revision-Date: 2020-09-28 19:59+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "connections/ja/>\n"
@@ -29,7 +29,6 @@ msgid "Making Connections"
 msgstr "コネクトする"
 
 #: ../../connections/making-connections.rst:10
-#, fuzzy
 msgid ""
 "Zrythm allows the user to connect almost any port to any other port, as "
 "long as they are compatible. For example, you can route an LFO's CV "
@@ -103,6 +102,8 @@ msgid ""
 "MIDI data and 2 `Audio output` ports where it copies the stereo signal "
 "after being processed."
 msgstr ""
+"例えば、インストゥルメントトラックには MIDI データを読み込むための `MIDI input` ポートと、処理後のステレオ信号をコピーするための 2 "
+"つの `Audio outputポートがあります。"
 
 #: ../../connections/ports.rst:25
 msgid "Port Directions"

@@ -12,10 +12,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-27 16:26+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"PO-Revision-Date: 2020-09-28 19:59+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -4434,10 +4434,8 @@ msgid "Open UI on instantiation"
 msgstr "Ouvrir l'interface utilisateur à l'instanciation"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:540
-#, fuzzy
 msgid "Open plugin UIs when they are instantiated."
-msgstr ""
-"Ouvrir les interfaces utilisateur des greffons lorsqu'ils sont instanciés."
+msgstr "Ouvrir l' interface utilisateur des greffons à l'instanciation."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:544
 msgid "Keep window on top"
