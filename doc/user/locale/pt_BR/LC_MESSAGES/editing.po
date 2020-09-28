@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"PO-Revision-Date: 2020-09-28 19:59+0000\n"
 "Last-Translator: Arthur O. Reis <aor@cesar.school>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/manualediting/pt_BR/>\n"
@@ -65,7 +65,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:20
 msgid "Automation Arranger"
-msgstr ""
+msgstr "Arranjador de Automação"
 
 #: ../../editing/clip-editors/automation-editor.rst:21
 msgid ""
