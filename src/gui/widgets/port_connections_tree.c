@@ -57,19 +57,19 @@ on_enabled_toggled (
   GtkTreeIter  iter;
   GtkTreePath *path =
     gtk_tree_path_new_from_string (path_str);
-  gboolean enabled;
 
   /* get toggled iter */
   gtk_tree_model_get_iter (model, &iter, path);
-  gtk_tree_model_get (
-    model, &iter, COL_ENABLED, &enabled, -1);
 
-  /* get ports */
+  /* get ports and toggled */
+  gboolean enabled;
   Port * src_port = NULL, * dest_port = NULL;
   gtk_tree_model_get (
-    model, &iter, COL_SRC_PORT, &src_port, -1);
-  gtk_tree_model_get (
-    model, &iter, COL_DEST_PORT, &dest_port, -1);
+    model, &iter,
+    COL_ENABLED, &enabled,
+    COL_SRC_PORT, &src_port,
+    COL_DEST_PORT, &dest_port,
+    -1);
 
   /* get new value */
   enabled ^= 1;

@@ -31,7 +31,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/dialogs/bounce_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
-#include "gui/widgets/export_midi_file_dialog.h"
+#include "gui/widgets/dialogs/export_midi_file_dialog.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_panel.h"

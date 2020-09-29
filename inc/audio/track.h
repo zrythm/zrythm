@@ -802,6 +802,9 @@ track_type_has_mono_compat_switch (
     tt == TRACK_TYPE_MASTER;
 }
 
+#define track_type_is_audio_group \
+  track_type_has_mono_compat_switch
+
 static inline bool
 track_type_is_fx (
   const TrackType type)

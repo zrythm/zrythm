@@ -37,6 +37,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/color.h"
 #include "utils/gtk.h"
 #include "utils/localization.h"
 #include "utils/objects.h"
@@ -1190,7 +1191,7 @@ ui_get_contrast_color (
 {
   /* if color is too bright use dark text,
    * otherwise use bright text */
-  if (ui_is_color_bright (src))
+  if (color_is_bright (src))
     *dest = UI_COLORS->dark_text;
   else
     *dest = UI_COLORS->bright_text;
@@ -1221,26 +1222,6 @@ ui_get_mid_color (
   dest->alpha =
     c1->alpha * transition +
     c2->alpha * (1.0 - transition);
-}
-
-/**
- * Returns if the color is bright or not.
- */
-int
-ui_is_color_bright (
-  GdkRGBA * src)
-{
-  return src->red + src->green + src->blue >= 1.5;
-}
-
-/**
- * Returns if the color is very bright or not.
- */
-bool
-ui_is_color_very_bright (
-  GdkRGBA * src)
-{
-  return src->red + src->green + src->blue >= 2.0;
 }
 
 /**
@@ -1317,7 +1298,7 @@ ui_get_arranger_object_color (
     }
   else if (is_hovered)
     {
-      if (ui_is_color_very_bright (color))
+      if (color_is_very_bright (color))
         {
           color->red -= 0.1;
           color->green -= 0.1;

@@ -78,3 +78,23 @@ color_is_same (
     math_doubles_equal (src->blue, dest->blue) &&
     math_doubles_equal (src->alpha, dest->alpha);
 }
+
+/**
+ * Returns if the color is bright or not.
+ */
+bool
+color_is_bright (
+  GdkRGBA * src)
+{
+  return src->red + src->green + src->blue >= 1.5;
+}
+
+/**
+ * Returns if the color is very bright or not.
+ */
+bool
+color_is_very_bright (
+  GdkRGBA * src)
+{
+  return src->red + src->green + src->blue >= 2.0;
+}

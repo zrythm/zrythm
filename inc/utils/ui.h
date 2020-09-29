@@ -721,20 +721,6 @@ ui_get_mid_color (
   const double    transition);
 
 /**
- * Returns if the color is bright or not.
- */
-int
-ui_is_color_bright (
-  GdkRGBA * src);
-
-/**
- * Returns if the color is very bright or not.
- */
-bool
-ui_is_color_very_bright (
-  GdkRGBA * src);
-
-/**
  * Returns if the 2 rectangles overlay.
  */
 bool

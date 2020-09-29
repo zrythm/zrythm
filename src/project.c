@@ -57,7 +57,7 @@
 #include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
-#include "gui/widgets/create_project_dialog.h"
+#include "gui/widgets/dialogs/create_project_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"

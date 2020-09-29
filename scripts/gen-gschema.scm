@@ -507,6 +507,10 @@ Args:
                  "dither" "b" "false"
                  "Dither"
                  "Add dither while exporting, if applicable.")
+               (make-schema-key
+                 "export-stems" "b" "false"
+                 "Export stems"
+                 "Whether to export stems instead of the mixdown.")
                (make-schema-key-with-enum
                  "bit-depth"
                  "export-bit-depth" "24"

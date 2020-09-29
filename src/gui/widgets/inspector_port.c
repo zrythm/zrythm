@@ -26,7 +26,7 @@
 #include "audio/midi_mapping.h"
 #include "audio/port.h"
 #include "gui/widgets/bar_slider.h"
-#include "gui/widgets/bind_cc_dialog.h"
+#include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/dialogs/port_info.h"
 #include "gui/widgets/inspector_port.h"
 #include "gui/widgets/port_connections_popover.h"

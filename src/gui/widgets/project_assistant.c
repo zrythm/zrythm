@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/create_project_dialog.h"
+#include "gui/widgets/dialogs/create_project_dialog.h"
 #include "gui/widgets/project_assistant.h"
 #include "project.h"
 #include "utils/arrays.h"

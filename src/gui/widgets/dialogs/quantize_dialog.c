@@ -21,7 +21,7 @@
 #include "audio/quantize_options.h"
 #include "gui/widgets/bar_slider.h"
 #include "gui/widgets/digital_meter.h"
-#include "gui/widgets/quantize_dialog.h"
+#include "gui/widgets/dialogs/quantize_dialog.h"
 #include "project.h"
 #include "utils/io.h"
 #include "utils/resources.h"

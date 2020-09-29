@@ -76,6 +76,20 @@ color_is_same (
   GdkRGBA * dest);
 
 /**
+ * Returns if the color is bright or not.
+ */
+bool
+color_is_bright (
+  GdkRGBA * src);
+
+/**
+ * Returns if the color is very bright or not.
+ */
+bool
+color_is_very_bright (
+  GdkRGBA * src);
+
+/**
  * @}
  */
 

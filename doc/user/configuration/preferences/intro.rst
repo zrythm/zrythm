@@ -135,7 +135,7 @@ DSP
 Pan
 ~~~
 
-:term:`Panning` options for :term:`mono` signals (not used at the moment).
+:term:`Panning` options for :term:`Mono` signals (not used at the moment).
 
 Pan algorithm
 +++++++++++++

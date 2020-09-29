@@ -19,9 +19,11 @@
 
 #include "audio/engine.h"
 #include "audio/exporter.h"
-#include "gui/widgets/export_dialog.h"
+#include "audio/master_track.h"
+#include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "project.h"
+#include "utils/color.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/resources.h"
@@ -42,12 +44,26 @@ enum
   COLUMN_AUDIO_FORMAT,
   NUM_AUDIO_FORMAT_COLUMNS
 };
+
 enum
 {
   FILENAME_PATTERN_MIXDOWN_FORMAT,
   FILENAME_PATTERN_DATE_MIXDOWN_FORMAT,
   NUM_FILENAME_PATTERNS,
 };
+
+enum
+{
+  TRACK_COLUMN_CHECKBOX,
+  TRACK_COLUMN_ICON,
+  TRACK_COLUMN_BG_RGBA,
+  TRACK_COLUMN_DUMMY_TEXT,
+  TRACK_COLUMN_NAME,
+  TRACK_COLUMN_TRACK,
+  NUM_TRACK_COLUMNS,
+};
+
+static const char * dummy_text = "";
 
 static char *
 get_export_filename (ExportDialogWidget * self)
@@ -162,6 +178,26 @@ on_custom_toggled (GtkToggleButton * toggle,
       gtk_toggle_button_set_active (
         self->time_range_loop, 0);
     }
+}
+
+static void
+on_mixdown_toggled (
+  GtkToggleButton * toggle,
+  ExportDialogWidget * self)
+{
+  gtk_toggle_button_set_active (
+    self->stems_toggle,
+    !gtk_toggle_button_get_active (toggle));
+}
+
+static void
+on_stems_toggled (
+  GtkToggleButton * toggle,
+  ExportDialogWidget * self)
+{
+  gtk_toggle_button_set_active (
+    self->mixdown_toggle,
+    !gtk_toggle_button_get_active (toggle));
 }
 
 /**
@@ -506,6 +542,326 @@ on_export_clicked (
 }
 
 /**
+ * Visible function for tracks tree model.
+ *
+ * Used for filtering based on selected options.
+ */
+static gboolean
+tracks_tree_model_visible_func (
+  GtkTreeModel *       model,
+  GtkTreeIter  *       iter,
+  ExportDialogWidget * self)
+{
+  bool visible = true;
+
+  return visible;
+}
+
+static void
+add_group_track_children (
+  ExportDialogWidget * self,
+  GtkTreeStore *       tree_store,
+  GtkTreeIter *        iter,
+  Track *              track)
+{
+  /* add the group */
+  GtkTreeIter group_iter;
+  gtk_tree_store_append (
+    tree_store, &group_iter, iter);
+  gtk_tree_store_set (
+    tree_store, &group_iter,
+    TRACK_COLUMN_CHECKBOX, true,
+    TRACK_COLUMN_ICON, track->icon_name,
+    TRACK_COLUMN_BG_RGBA, &track->color,
+    TRACK_COLUMN_DUMMY_TEXT, dummy_text,
+    TRACK_COLUMN_NAME, track->name,
+    TRACK_COLUMN_TRACK, track,
+    -1);
+
+  /* add the children */
+  for (int i = 0; i < track->num_children; i++)
+    {
+      Track * child =
+        TRACKLIST->tracks[track->children[i]];
+      g_return_if_fail (IS_TRACK (child));
+
+      if (track_type_is_audio_group (child->type))
+        {
+          add_group_track_children (
+            self, tree_store, &group_iter, child);
+        }
+      else
+        {
+          GtkTreeIter child_iter;
+          gtk_tree_store_append (
+            tree_store, &child_iter, &group_iter);
+          gtk_tree_store_set (
+            tree_store, &child_iter,
+            TRACK_COLUMN_CHECKBOX, true,
+            TRACK_COLUMN_ICON, child->icon_name,
+            TRACK_COLUMN_BG_RGBA, &child->color,
+            TRACK_COLUMN_DUMMY_TEXT, dummy_text,
+            TRACK_COLUMN_NAME, child->name,
+            TRACK_COLUMN_TRACK, child,
+            -1);
+        }
+    }
+}
+
+static GtkTreeModel *
+create_model_for_tracks (
+  ExportDialogWidget * self)
+{
+  /* checkbox, icon, foreground rgba,
+   * background rgba, name, track */
+  GtkTreeStore * tree_store =
+    gtk_tree_store_new (
+      NUM_TRACK_COLUMNS,
+      G_TYPE_BOOLEAN,
+      G_TYPE_STRING,
+      GDK_TYPE_RGBA,
+      G_TYPE_STRING,
+      G_TYPE_STRING,
+      G_TYPE_POINTER);
+
+  /*GtkTreeIter iter;*/
+  /*gtk_tree_store_append (tree_store, &iter, NULL);*/
+  add_group_track_children (
+    self, tree_store, NULL, P_MASTER_TRACK);
+
+  self->tracks_store = tree_store;
+
+  GtkTreeModel * model =
+    gtk_tree_model_filter_new (
+      GTK_TREE_MODEL (tree_store), NULL);
+  gtk_tree_model_filter_set_visible_func (
+    GTK_TREE_MODEL_FILTER (model),
+    (GtkTreeModelFilterVisibleFunc)
+    tracks_tree_model_visible_func,
+    self, NULL);
+
+  return model;
+}
+
+/**
+ * This toggles on all parents recursively if
+ * something is toggled.
+ */
+static void
+set_track_toggle_on_parent_recursively (
+  ExportDialogWidget * self,
+  GtkTreeIter *        iter,
+  bool                 toggled)
+{
+  if (!toggled)
+    {
+      return;
+    }
+
+  GtkTreeModel * model =
+    GTK_TREE_MODEL (self->tracks_store);
+
+  /* enable the parent if toggled */
+  GtkTreeIter parent_iter;
+  bool has_parent =
+    gtk_tree_model_iter_parent (
+      model, &parent_iter, iter);
+  if (has_parent)
+    {
+      /* set new value on widget */
+      gtk_tree_store_set (
+        GTK_TREE_STORE (model), &parent_iter,
+        TRACK_COLUMN_CHECKBOX, toggled, -1);
+
+      set_track_toggle_on_parent_recursively (
+        self, &parent_iter, toggled);
+    }
+}
+
+static void
+set_track_toggle_recursively (
+  ExportDialogWidget * self,
+  GtkTreeIter *        iter,
+  bool                 toggled)
+{
+  GtkTreeModel * model =
+    GTK_TREE_MODEL (self->tracks_store);
+
+  /* if group track, also enable/disable children
+   * recursively */
+  bool has_children =
+    gtk_tree_model_iter_has_child (model, iter);
+  if (has_children)
+    {
+      int num_children =
+        gtk_tree_model_iter_n_children (
+          model, iter);
+
+      for (int i = 0; i < num_children; i++)
+        {
+          GtkTreeIter child_iter;
+          gtk_tree_model_iter_nth_child (
+            model, &child_iter, iter, i);
+
+          /* set new value on widget */
+          gtk_tree_store_set (
+            GTK_TREE_STORE (model), &child_iter,
+            TRACK_COLUMN_CHECKBOX, toggled, -1);
+
+          /* recurse */
+          set_track_toggle_recursively (
+            self, &child_iter, toggled);
+        }
+    }
+}
+
+static void
+on_track_toggled (
+  GtkCellRendererToggle * cell,
+  gchar *                 path_str,
+  ExportDialogWidget *    self)
+{
+  GtkTreeModel * model =
+    GTK_TREE_MODEL (self->tracks_store);
+  g_debug ("path str: %s", path_str);
+
+  /* get tree path and iter */
+  GtkTreePath * path =
+    gtk_tree_path_new_from_string (path_str);
+  GtkTreeIter  iter;
+  bool ret =
+    gtk_tree_model_get_iter (model, &iter, path);
+  g_return_if_fail (ret);
+  g_return_if_fail (
+    gtk_tree_store_iter_is_valid (
+      GTK_TREE_STORE (model), &iter));
+
+  /* get toggled */
+  gboolean toggled;
+  gtk_tree_model_get (
+    model, &iter,
+    TRACK_COLUMN_CHECKBOX, &toggled, -1);
+  g_return_if_fail (
+    gtk_tree_store_iter_is_valid (
+      GTK_TREE_STORE (model), &iter));
+
+  /* get new value */
+  toggled ^= 1;
+
+  /* set new value on widget */
+  gtk_tree_store_set (
+    GTK_TREE_STORE (model), &iter,
+    TRACK_COLUMN_CHECKBOX, toggled, -1);
+
+  /* if exporting mixdown (single file) */
+  if (!g_settings_get_boolean (
+        S_EXPORT, "export-stems"))
+    {
+      /* toggle parents if toggled */
+      set_track_toggle_on_parent_recursively (
+        self, &iter, toggled);
+
+      /* propagate value to children recursively */
+      set_track_toggle_recursively (
+        self, &iter, toggled);
+    }
+
+  /* clean up */
+  gtk_tree_path_free (path);
+}
+
+static void
+setup_treeview (
+  ExportDialogWidget * self)
+{
+  self->tracks_model = create_model_for_tracks (self);
+  gtk_tree_view_set_model (
+    self->tracks_treeview, self->tracks_model);
+
+  GtkTreeView * tree_view = self->tracks_treeview;
+
+  /* init tree view */
+  GtkCellRenderer * renderer;
+  GtkTreeViewColumn * column;
+
+  /* column for checkbox */
+  renderer = gtk_cell_renderer_toggle_new ();
+  column =
+    gtk_tree_view_column_new_with_attributes (
+      "icon", renderer,
+      "active", TRACK_COLUMN_CHECKBOX,
+      NULL);
+  gtk_tree_view_append_column (tree_view, column);
+  g_signal_connect (
+    renderer, "toggled",
+    G_CALLBACK (on_track_toggled), self);
+
+  /* column for color */
+  renderer = gtk_cell_renderer_text_new ();
+  column =
+    gtk_tree_view_column_new_with_attributes (
+      "name", renderer,
+      "text", TRACK_COLUMN_DUMMY_TEXT,
+      "background-rgba", TRACK_COLUMN_BG_RGBA,
+      NULL);
+  gtk_tree_view_append_column (tree_view, column);
+
+  /* column for icon */
+  renderer = gtk_cell_renderer_pixbuf_new ();
+  column =
+    gtk_tree_view_column_new_with_attributes (
+      "icon", renderer,
+      "icon-name", TRACK_COLUMN_ICON,
+      NULL);
+  gtk_tree_view_append_column (tree_view, column);
+
+  /* column for name */
+  renderer = gtk_cell_renderer_text_new ();
+  column =
+    gtk_tree_view_column_new_with_attributes (
+      "name", renderer,
+      "text", TRACK_COLUMN_NAME,
+      NULL);
+  gtk_tree_view_append_column (tree_view, column);
+
+  /* set search column */
+  gtk_tree_view_set_search_column (
+    tree_view, TRACK_COLUMN_NAME);
+
+  /* hide headers */
+  gtk_tree_view_set_headers_visible (
+    GTK_TREE_VIEW (tree_view), false);
+
+#if 0
+  /* set search func */
+  gtk_tree_view_set_search_equal_func (
+    GTK_TREE_VIEW (tree_view),
+    (GtkTreeViewSearchEqualFunc)
+      plugin_search_equal_func,
+    self, NULL);
+
+  /* connect right click handler */
+  GtkGestureMultiPress * mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (tree_view)));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (mp),
+    GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    G_OBJECT (mp), "pressed",
+    G_CALLBACK (on_plugin_right_click), self);
+
+  GtkTreeSelection * sel =
+    gtk_tree_view_get_selection (
+      GTK_TREE_VIEW (tree_view));
+  g_signal_connect (
+    G_OBJECT (sel), "changed",
+    G_CALLBACK (on_selection_changed), self);
+#endif
+}
+
+/**
  * Creates a new export dialog.
  */
 ExportDialogWidget *
@@ -515,6 +871,8 @@ export_dialog_widget_new ()
     g_object_new (EXPORT_DIALOG_WIDGET_TYPE, NULL);
 
   update_text (self);
+
+  setup_treeview (self);
 
   g_signal_connect (
     G_OBJECT (self->export_button), "clicked",
@@ -531,6 +889,12 @@ export_dialog_widget_new ()
   g_signal_connect (
     G_OBJECT (self->time_range_custom), "toggled",
     G_CALLBACK (on_custom_toggled), self);
+  g_signal_connect (
+    G_OBJECT (self->mixdown_toggle), "toggled",
+    G_CALLBACK (on_mixdown_toggled), self);
+  g_signal_connect (
+    G_OBJECT (self->stems_toggle), "toggled",
+    G_CALLBACK (on_stems_toggled), self);
 
   return self;
 }
@@ -553,13 +917,17 @@ export_dialog_widget_class_init (
   BIND_CHILD (export_genre);
   BIND_CHILD (filename_pattern);
   BIND_CHILD (bit_depth);
-  BIND_CHILD (tracks);
   BIND_CHILD (time_range_song);
   BIND_CHILD (time_range_loop);
   BIND_CHILD (time_range_custom);
   BIND_CHILD (format);
   BIND_CHILD (dither);
   BIND_CHILD (output_label);
+  BIND_CHILD (tracks_treeview);
+  BIND_CHILD (mixdown_toggle);
+  BIND_CHILD (stems_toggle);
+
+#undef BIND_CHILD
 
   gtk_widget_class_bind_template_callback (
     klass, on_cancel_clicked);
@@ -573,44 +941,39 @@ export_dialog_widget_init (
 
   gtk_entry_set_text (
     GTK_ENTRY (self->export_artist),
-    g_settings_get_string (
-      S_EXPORT,
-      "artist"));
+    g_settings_get_string (S_EXPORT, "artist"));
   gtk_entry_set_text (
     GTK_ENTRY (self->export_genre),
-    g_settings_get_string (
-      S_EXPORT,
-      "genre"));
+    g_settings_get_string (S_EXPORT, "genre"));
 
   gtk_toggle_button_set_active (
-    self->time_range_song,
-    0);
+    self->time_range_song, false);
   gtk_toggle_button_set_active (
-    self->time_range_loop,
-    0);
+    self->time_range_loop, false);
   gtk_toggle_button_set_active (
-    self->time_range_custom,
-    0);
-  switch (g_settings_get_enum (
-            S_EXPORT,
-            "time-range"))
+    self->time_range_custom, false);
+  switch (g_settings_get_enum (S_EXPORT, "time-range"))
     {
     case 0: // song
       gtk_toggle_button_set_active (
-        self->time_range_song,
-        1);
+        self->time_range_song, true);
       break;
     case 1: // loop
       gtk_toggle_button_set_active (
-        self->time_range_loop,
-        1);
+        self->time_range_loop, true);
       break;
     case 2: // custom
       gtk_toggle_button_set_active (
-        self->time_range_custom,
-        1);
+        self->time_range_custom, true);
       break;
     }
+  bool export_stems =
+    g_settings_get_boolean (
+      S_EXPORT, "export-stems");
+  gtk_toggle_button_set_active (
+    self->mixdown_toggle, !export_stems);
+  gtk_toggle_button_set_active (
+    self->stems_toggle, export_stems);
 
   gtk_toggle_button_set_active (
     GTK_TOGGLE_BUTTON (self->dither),

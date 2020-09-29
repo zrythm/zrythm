@@ -53,7 +53,6 @@ typedef struct _ExportDialogWidget
   GtkEntry *           export_artist;
   GtkEntry *           export_genre;
   GtkComboBox *        filename_pattern;
-  GtkListBox *         tracks;
   GtkToggleButton *    time_range_song;
   GtkToggleButton *    time_range_loop;
   GtkToggleButton *    time_range_custom;
@@ -61,6 +60,16 @@ typedef struct _ExportDialogWidget
   GtkComboBox *        bit_depth;
   GtkCheckButton *     dither;
   GtkLabel *           output_label;
+
+  GtkTreeView *        tracks_treeview;
+  GtkTreeModel *       tracks_model;
+
+  /** Underlying model of @ref
+   * ExportDialogWidget.tracks_model. */
+  GtkTreeStore *       tracks_store;
+
+  GtkToggleButton *    mixdown_toggle;
+  GtkToggleButton *    stems_toggle;
 } ExportDialogWidget;
 
 /**

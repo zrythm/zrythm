@@ -25,7 +25,7 @@
 #include "audio/midi_mapping.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/event.h"
-#include "gui/widgets/bind_cc_dialog.h"
+#include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/fader.h"
 #include "project.h"

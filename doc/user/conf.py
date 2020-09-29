@@ -98,7 +98,7 @@ html_theme = 'sphinx_zrythm_theme'
 html_last_updated_fmt = ''
 
 def setup(app):
-   app.add_stylesheet("css/custom.css")
+   app.add_css_file ("css/custom.css")
    # app.add_source_suffix('.rst','restructuredtext')
 
 # define some custom roles

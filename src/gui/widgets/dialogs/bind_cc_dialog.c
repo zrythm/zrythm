@@ -25,7 +25,7 @@
 
 #include "audio/engine.h"
 #include "audio/midi.h"
-#include "gui/widgets/bind_cc_dialog.h"
+#include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "project.h"
 #include "utils/io.h"
 #include "utils/resources.h"

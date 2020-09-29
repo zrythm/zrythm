@@ -24,7 +24,7 @@
 #include "actions/undo_manager.h"
 #include "audio/midi_mapping.h"
 #include "gui/widgets/balance_control.h"
-#include "gui/widgets/bind_cc_dialog.h"
+#include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"

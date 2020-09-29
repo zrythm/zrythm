@@ -18,11 +18,16 @@
 widget_srcs += files([
   'about_dialog.c',
   'arranger_object_info.c',
+  'bind_cc_dialog.c',
   'bounce_dialog.c',
   'bug_report_dialog.c',
+  'create_project_dialog.c',
+  'export_dialog.c',
+  'export_midi_file_dialog.c',
   'export_progress_dialog.c',
   'object_color_chooser_dialog.c',
   'port_info.c',
+  'quantize_dialog.c',
   'string_entry_dialog.c',
   'track_icon_chooser_dialog.c',
   ])
