@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-28 19:59+0000\n"
+"PO-Revision-Date: 2020-09-29 22:22+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/glossary/"
 "ja/>\n"
@@ -29,7 +29,6 @@ msgid "a2jmidid"
 msgstr "a2jmidid"
 
 #: ../../glossary/intro.rst:13
-#, fuzzy
 msgid ""
 "a2jmidid is an application that bridges between the system MIDI ports and"
 " :term:`JACK`."

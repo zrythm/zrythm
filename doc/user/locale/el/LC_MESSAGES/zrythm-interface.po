@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 22:46+0100\n"
-"PO-Revision-Date: 2020-09-25 13:15+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/el/>\n"
 "Language: el\n"
-"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/el/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../zrythm-interface/bottom-panel.rst:8
@@ -485,7 +486,7 @@ msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:21
 msgid "File Browser"
-msgstr ""
+msgstr "Περιηγητής Αρχείων"
 
 #: ../../zrythm-interface/right-panel.rst:22
 msgid "The file browser is covered in :ref:`file-browser`."
@@ -1068,4 +1069,3 @@ msgstr ""
 #~ "controls that are used often during "
 #~ "editing and arranging."
 #~ msgstr ""
-

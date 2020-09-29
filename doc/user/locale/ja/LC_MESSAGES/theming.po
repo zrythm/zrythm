@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-09 17:47+0100\n"
-"PO-Revision-Date: 2020-09-28 19:59+0000\n"
+"PO-Revision-Date: 2020-09-29 22:22+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/theming/"
 "ja/>\n"
@@ -51,14 +51,13 @@ msgstr ""
 "css`` にファイルを作成する必要があります。"
 
 #: ../../theming/css.rst:23
-#, fuzzy
 msgid ""
 "The Zrythm theme inherits from the `Matcha GTK theme "
 "<https://github.com/vinceliuice/Matcha-gtk-theme>`_, so additional CSS "
 "rules may need to be overridden."
 msgstr ""
 "Zrythm テーマは `Matcha GTK テーマ <https://github.com/vinceliuice/Matcha-gtk-"
-"theme>`_ から継承するため、追加の CSS ルールをオーバーライドする必要があります。"
+"theme>`_ から継承するため、追加の CSS ルールをオーバーライドする必要がある場合があります。"
 
 #: ../../theming/css.rst:28
 msgid "Color Scheme"

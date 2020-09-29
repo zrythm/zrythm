@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"PO-Revision-Date: 2020-09-29 22:22+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/ja/>\n"
@@ -35,14 +35,13 @@ msgid ""
 msgstr "BPMウィジェットをクリックしてドラッグすることで、BPMを40～360の間に設定することができます。"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:17
-#, fuzzy
 msgid ""
 "Clicking and dragging on the integer counterpart will change the integer "
 "(e.g., from 140.24 to 141.24) and clicking and dragging on the decimal "
 "counterpart will change the decimal value (e.g., frrom 140.24 to 140.25)."
 msgstr ""
-"整数の相手をクリックしてドラッグすると整数が変更され（例：140.24から141."
-"24へ）、10進数の相手をクリックしてドラッグすると10進数が変更されます（例：140.24から140.25へ）。"
+"整数の部分をクリックしてドラッグすると整数が変更され（例：140.24から141."
+"24へ）、10進数の部分をクリックしてドラッグすると10進数が変更されます（例：140.24から140.25へ）。"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:25
 msgid "Time Signature"
