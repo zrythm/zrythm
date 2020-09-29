@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -15,56 +15,39 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-doxyfile = configure_file (
-  output: 'Doxyfile.cfg',
-  input: 'Doxyfile.cfg.in',
-  configuration: cdata,
-  )
-
-doxyfile_mcss = configure_file (
-  output: 'Doxyfile-mcss',
-  input: 'Doxyfile-mcss.in',
-  configuration: cdata,
-  )
-
-extra_dev_docs = files([
-  meson.source_root() / 'CONTRIBUTING.md',
-  'mainpage.h',
-  'cyaml_schemas.h',
-  'gtk_tips.md',
-  'processing_cycle.h',
-  'release_checklist.h',
-  'weblate.h',
-  ])
-
-if dot_bin.found()
-  mcss_docs_target = custom_target (
-    'mcss-dev-docs',
+if sphinx_build.found ()
+  # note: needs exhale to be inside the ext dir
+  sphinx_dev_target = custom_target (
+    'sphinx-dev-docs',
     depend_files: [
       doxyfile,
-      doxyfile_mcss,
       zrythm_srcs,
       extra_dev_docs,
       ],
-    output: 'mcss-dev-docs-generated',
+    input: [
+      'source/conf.py',
+      'source/index.rst',
+      ],
+    output: 'sphinx-dev-docs-built',
     command: [
-      meson.current_source_dir () / 'm.css' /
-      'documentation' / 'doxygen.py',
-      doxyfile_mcss, '&&',
+      sphinx_build, '-b', 'html',
+      '-D', 'breathe_projects.Zrythm=' + meson.current_build_dir () / '..' / 'xml/',
+      '-j', '4',
+      meson.current_source_dir () / 'source',
+      meson.current_build_dir () / 'build', '&&',
       'touch', '@OUTPUT@',
       ],
     install: false,
     build_by_default: false,
+    depends: mcss_docs_target,
     )
 
-  subdir ('sphinx')
-
   run_target (
-    'gen-mcss-dev-docs',
+    'gen-sphinx-dev-docs',
     command: [
       'echo',
-      'Developer Docs generated (m.css)',
+      'Developer Docs generated (sphinx)',
       ],
-    depends: mcss_docs_target,
+    depends: sphinx_dev_target,
     )
 endif
