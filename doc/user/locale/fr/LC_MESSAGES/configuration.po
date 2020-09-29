@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 18:03+0100\n"
+"POT-Creation-Date: 2020-09-29 23:37+0100\n"
 "PO-Revision-Date: 2020-09-28 19:59+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language: fr\n"
@@ -345,7 +345,8 @@ msgid "Pan"
 msgstr "Panoramique"
 
 #: ../../configuration/preferences/intro.rst:138
-msgid ":term:`Panning` options for :term:`mono` signals (not used at the moment)."
+#, fuzzy
+msgid ":term:`Panning` options for :term:`Mono` signals (not used at the moment)."
 msgstr ""
 "Options de :term:`Panning` pour les signaux :term:`mono` (Ceci n'est pas "
 "utilisé pour le moment)."

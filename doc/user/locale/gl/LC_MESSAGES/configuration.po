@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 18:03+0100\n"
+"POT-Creation-Date: 2020-09-29 23:37+0100\n"
 "PO-Revision-Date: 2020-06-29 20:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -332,7 +332,7 @@ msgstr "Panorama"
 
 #: ../../configuration/preferences/intro.rst:138
 #, fuzzy
-msgid ":term:`Panning` options for :term:`mono` signals (not used at the moment)."
+msgid ":term:`Panning` options for :term:`Mono` signals (not used at the moment)."
 msgstr "Isto non funciona polo de agora."
 
 #: ../../configuration/preferences/intro.rst:141

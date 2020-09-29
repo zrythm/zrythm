@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 18:03+0100\n"
+"POT-Creation-Date: 2020-09-29 23:37+0100\n"
 "PO-Revision-Date: 2019-08-07 14:26+0000\n"
 "Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
 "Language: zh\n"
@@ -303,7 +303,7 @@ msgid "Pan"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:138
-msgid ":term:`Panning` options for :term:`mono` signals (not used at the moment)."
+msgid ":term:`Panning` options for :term:`Mono` signals (not used at the moment)."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:141
@@ -736,5 +736,10 @@ msgstr ""
 #~ "For a list of supported languages "
 #~ "and their translation status see "
 #~ "`Weblate <https://hosted.weblate.org/projects/zrythm/>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ ":term:`Panning` options for :term:`mono` "
+#~ "signals (not used at the moment)."
 #~ msgstr ""
 

@@ -1,19 +1,17 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2019-2020 Alexandros Theodotou
-# This file is distributed under the same license as the Zrythm package.
+# Translations template for PROJECT.
+# Copyright (C) 2020 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Zrythm 0.8\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-03-07 09:52+0000\n"
-"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
-"Language: gl\n"
-"Language-Team: Galician "
-"<https://hosted.weblate.org/projects/zrythm/manualappendix/gl/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2020-09-30 00:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,32 +19,29 @@ msgstr ""
 
 #: ../../appendix/intro.rst:6
 msgid "Appendix"
-msgstr "Apéndice"
+msgstr ""
 
 #: ../../appendix/menu-actions.rst:6
 msgid "Menu Actions"
-msgstr "Accións do Menú"
+msgstr ""
 
 #: ../../appendix/shortcut-keys.rst:6
 msgid "Shortcut Keys"
-msgstr "Atallos de Teclado"
+msgstr ""
 
 #: ../../appendix/shortcut-keys.rst:9
 msgid "Global Shortcuts"
-msgstr "Atallos de Teclado Globais"
+msgstr ""
 
 #: ../../appendix/shortcut-keys.rst:15
 msgid "Editor Shortcuts"
-msgstr "Atallos de Teclado do Editor"
+msgstr ""
 
 #: ../../appendix/troubleshooting.rst:8
 msgid "Troubleshooting"
-msgstr "Solución de problemas"
+msgstr ""
 
 #: ../../appendix/troubleshooting.rst:10
 msgid "Write this page."
 msgstr ""
-
-#~ msgid "TODO"
-#~ msgstr "TODO"
 
