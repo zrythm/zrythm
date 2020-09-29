@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"PO-Revision-Date: 2020-09-29 22:22+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "connections/fr/>\n"
@@ -44,8 +44,8 @@ msgid ""
 "Connections can be made by double clicking on ports in the :ref:`track-"
 "inspector` or the :ref:`plugin-inspector`."
 msgstr ""
-"Les connexions peuvent être faites en double cliquant sur les ports dans l' "
-":ref: `inspecteur de piste` ou l' :ref: `inspecteur de greffon`."
+"Les connexions peuvent être faites en double cliquant sur les ports dans le "
+":ref:`track-inspector` ou l' :ref:`plugin-inspector`."
 
 #: ../../connections/making-connections.rst:22
 msgid ""
@@ -75,9 +75,8 @@ msgstr ""
 "extérieurement."
 
 #: ../../connections/making-connections.rst:35
-#, fuzzy
 msgid "See :ref:`exporting-routing-graph` for details."
-msgstr "Cf :ref: `exporting-routing-graph` pour plus de détails."
+msgstr "Cf :ref:`exporting-routing-graph` pour plus de détails."
 
 #: ../../connections/ports.rst:8
 msgid "Ports"
@@ -97,6 +96,10 @@ msgid ""
 "Zrythm. A port does not process anything on its own, and is usually part "
 "of a `processor`, like a plugin or track."
 msgstr ""
+"Les ports sont les principaux blocs de construction utilisés pour router les "
+"signaux à travers Zrythm.Un port ne traite pas quoi que ce soit par lui "
+"même, et est généralement une partie d'un `processor`,comme un greffon ou "
+"une piste."
 
 #: ../../connections/ports.rst:19
 msgid ""
@@ -104,6 +107,9 @@ msgid ""
 "MIDI data and 2 `Audio output` ports where it copies the stereo signal "
 "after being processed."
 msgstr ""
+"Par exemple,nue piste instrument a un port `MIDI input` qu'il utilise pour "
+"lire les signaux MIDI et 2 ports `Audio output` ou il copie le signal stereo "
+"après qu'il soit traité."
 
 #: ../../connections/ports.rst:25
 msgid "Port Directions"

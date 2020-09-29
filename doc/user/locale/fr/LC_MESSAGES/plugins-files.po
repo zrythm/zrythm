@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"PO-Revision-Date: 2020-09-29 22:22+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/fr/>\n"
@@ -388,7 +388,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:58
 msgid "Gain"
-msgstr ""
+msgstr "Gain"
 
 #: ../../plugins-files/plugins/plugin-info.rst:57
 msgid "Increases the output volume of the plugin (if applicable)."

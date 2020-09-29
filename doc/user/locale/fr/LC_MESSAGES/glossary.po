@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-28 19:59+0000\n"
+"PO-Revision-Date: 2020-09-29 22:22+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/glossary/"
 "fr/>\n"
@@ -165,7 +165,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:86
 msgid "Mono"
-msgstr ""
+msgstr "Mono"
 
 #: ../../glossary/intro.rst:88
 msgid "A single-channel audio signal (see also :term:`stereo`)."
@@ -210,7 +210,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:107
 msgid "Project"
-msgstr ""
+msgstr "Projet"
 
 #: ../../glossary/intro.rst:109
 msgid ""

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"PO-Revision-Date: 2020-09-29 22:22+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/routing/fr/"
 ">\n"
@@ -79,7 +79,7 @@ msgstr ""
 
 #: ../../routing/intro.rst:6
 msgid "Routing"
-msgstr ""
+msgstr "Routage"
 
 #: ../../routing/making-connections.rst:8
 msgid "Making Connections"
@@ -159,6 +159,10 @@ msgid ""
 "Zrythm. A port does not process anything on its own, and is usually part "
 "of a `processor`, like a plugin or track."
 msgstr ""
+"Les ports sont les principaux blocs de construction utilisés pour router les "
+"signaux à travers Zrythm.Un port ne traite pas quoi que ce soit par lui "
+"même, et est généralement une partie d'un `processor`,comme un greffon ou "
+"une piste."
 
 #: ../../routing/ports.rst:19
 msgid ""
@@ -166,6 +170,9 @@ msgid ""
 "MIDI data and 2 `Audio output` ports where it copies the stereo signal "
 "after being processed."
 msgstr ""
+"Par exemple,nue piste instrument a un port `MIDI input` qu'il utilise pour "
+"lire les signaux MIDI et 2 ports `Audio output` ou il copie le signal stereo "
+"après qu'il soit traité."
 
 #: ../../routing/ports.rst:25
 msgid "Port Directions"
