@@ -7,9 +7,9 @@ First Run Wizard
 
 When you first run Zrythm, it will display a wizard
 that lets you configure the basic settings that
-Zrythm will use. These include MIDI devices, the
-default Zrythm path, interface language and
-audio/MIDI backends.
+Zrythm will use. These include :term:`MIDI` devices,
+the :term:`Zrythm user path`, the language of the
+user interface and audio/MIDI backends.
 
 Language Selection
 ------------------
@@ -17,12 +17,13 @@ Language Selection
 .. image:: /_static/img/first-run-language.png
    :align: center
 
-Zrythm lets you choose the language of the interface. The
-interface is already translated in multiple languages, so
-choose the language you are most comfortable in.
+Zrythm lets you choose the language of the
+interface. The interface is already translated in
+`multiple languages <https://hosted.weblate.org/projects/zrythm/#languages>`_,
+so choose the language you are most comfortable in.
 
-.. note:: You must have a locale enabled for the language
-  you want to use.
+.. note:: You must have a locale enabled for the
+  language you want to use.
 
 Path
 ----
@@ -38,20 +39,19 @@ Audio/MIDI Backends
 .. image:: /_static/img/first-run-backends.png
    :align: center
 
-Zrythm supports multiple audio and MIDI backend engines.
-:term:`JACK` is the recommended one for both, but it takes some time
-to set up if this is your first time using it. If you choose
-to use JACK, JACK MIDI and the JACK audio backend must be
-chosen together.
+Zrythm supports multiple audio and MIDI backend
+engines. :term:`JACK` is the recommended one for
+both, but it takes some time to set up if this is
+your first time using it.
 
 If JACK is not available on your system,
 we recommend RtAudio and RtMidi.
 
-Click :zbutton:`Test` to try connecting to the backend to
-see if it is functional.
+Click :guilabel:`Test` to try connecting to the
+backend to see if it is functional.
 
-.. note:: If you choose to use JACK, JACK MIDI and the JACK
-   audio backend must be chosen together.
+.. note:: If you choose to use JACK, JACK MIDI and
+   the JACK audio backend must be chosen together.
 
 .. _midi_devices:
 
@@ -61,10 +61,10 @@ MIDI Devices
 .. image:: /_static/img/first-run-midi-devices.png
    :align: center
 
-These are the discovered devices that will be auto-connected
-and ready to use every time you run Zrythm. Click "Rescan"
-to scan for devices again.
+These are the discovered devices that will be
+auto-connected and ready to use every time you run
+Zrythm. Click "Rescan" to scan for devices again.
 
 .. tip:: All of the settings mentioned here are also
-   available in the :ref:`preferences`, so don't worry
-   if you selected the wrong settings.
+   available in the :ref:`preferences`, so don't
+   worry if you selected the wrong settings.

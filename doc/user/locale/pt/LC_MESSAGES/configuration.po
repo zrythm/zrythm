@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-09-29 15:50+0100\n"
 "PO-Revision-Date: 2020-09-13 22:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -153,11 +153,12 @@ msgid "First Run Wizard"
 msgstr "Assistente de primeira execução"
 
 #: ../../configuration/first-run-wizard.rst:8
+#, fuzzy
 msgid ""
 "When you first run Zrythm, it will display a wizard that lets you "
-"configure the basic settings that Zrythm will use. These include MIDI "
-"devices, the default Zrythm path, interface language and audio/MIDI "
-"backends."
+"configure the basic settings that Zrythm will use. These include "
+":term:`MIDI` devices, the :term:`Zrythm user path`, the language of the "
+"user interface and audio/MIDI backends."
 msgstr ""
 "Quando você executa o Zrythm pela primeira vez, ele exibe um assistente "
 "que permite-lhe configurar as configurações básicas que o Zrythm usará. "
@@ -171,36 +172,33 @@ msgstr "Seleção de idioma"
 #: ../../configuration/first-run-wizard.rst:20
 msgid ""
 "Zrythm lets you choose the language of the interface. The interface is "
-"already translated in multiple languages, so choose the language you are "
-"most comfortable in."
+"already translated in `multiple languages "
+"<https://hosted.weblate.org/projects/zrythm/#languages>`_, so choose the "
+"language you are most comfortable in."
 msgstr ""
-"O Zrythm permite-lhe escolher o idioma da interface. A interface já está "
-"traduzida a vários idiomas, por isso escolha o idioma em que se sente "
-"mais confortável."
 
-#: ../../configuration/first-run-wizard.rst:24
+#: ../../configuration/first-run-wizard.rst:25
 msgid "You must have a locale enabled for the language you want to use."
 msgstr "Deve ter ativado uma localidade para o idioma que deseja usar."
 
-#: ../../configuration/first-run-wizard.rst:28
+#: ../../configuration/first-run-wizard.rst:29
 msgid "Path"
 msgstr "Caminho"
 
-#: ../../configuration/first-run-wizard.rst:33
+#: ../../configuration/first-run-wizard.rst:34
 msgid "This is the :term:`Zrythm user path`."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:36
+#: ../../configuration/first-run-wizard.rst:37
 msgid "Audio/MIDI Backends"
 msgstr "Backends de Áudio/MIDI"
 
-#: ../../configuration/first-run-wizard.rst:41
+#: ../../configuration/first-run-wizard.rst:42
 #, fuzzy
 msgid ""
 "Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is "
 "the recommended one for both, but it takes some time to set up if this is"
-" your first time using it. If you choose to use JACK, JACK MIDI and the "
-"JACK audio backend must be chosen together."
+" your first time using it."
 msgstr ""
 "O Zrythm suporta múltiplos motores de backend de áudio e MIDI. JACK é "
 "recomendado para ambos, mas leva algum tempo para ser configurado se usa "
@@ -214,8 +212,9 @@ msgstr ""
 " o RtMidi."
 
 #: ../../configuration/first-run-wizard.rst:50
+#, fuzzy
 msgid ""
-"Click :zbutton:`Test` to try connecting to the backend to see if it is "
+"Click :guilabel:`Test` to try connecting to the backend to see if it is "
 "functional."
 msgstr ""
 "Clique em :zbutton:`Teste` para tentar conectar ao backend para ver se "
@@ -493,9 +492,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:136
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
-msgstr ""
-"Algoritmos de pan (:blue:`sine`, :red:`square root`, "
-":green:`linear`)."
+msgstr "Algoritmos de pan (:blue:`sine`, :red:`square root`, :green:`linear`)."
 
 #: ../../configuration/preferences/intro.rst:141
 msgid "Pan law"
@@ -1201,4 +1198,17 @@ msgstr ""
 #~ "com a opção ``--reset-to-factory`` "
 #~ "para redefinir o Zrythm ao seu "
 #~ "estado padrão."
+
+#~ msgid ""
+#~ "Zrythm lets you choose the language "
+#~ "of the interface. The interface is "
+#~ "already translated in multiple languages, "
+#~ "so choose the language you are "
+#~ "most comfortable in."
+#~ msgstr ""
+#~ "O Zrythm permite-lhe escolher o "
+#~ "idioma da interface. A interface já "
+#~ "está traduzida a vários idiomas, por "
+#~ "isso escolha o idioma em que se"
+#~ " sente mais confortável."
 

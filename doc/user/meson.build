@@ -118,7 +118,7 @@ src_rst_files = files ([
 # and custom targets for each language for html
 html_manuals = []
 singlehtml_manuals = []
-foreach lang : locales
+foreach lang, lang_str : locales
   foreach format : [
     # note: devhelp requires the devhelp package
     # from sphinxcontrib
@@ -186,7 +186,7 @@ manual_gettext_gen_pot = custom_target (
   )
 
 sphinx_intl_update_targets = []
-foreach lang : locales
+foreach lang, lang_str : locales
   if lang != 'en'
     # note: this updates source files
     sphinx_intl_update_target = custom_target (

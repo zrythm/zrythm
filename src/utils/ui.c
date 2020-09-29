@@ -639,38 +639,13 @@ static GtkTreeModel *
 ui_create_language_model ()
 {
   int values[NUM_LL_LANGUAGES];
+  const char * labels[NUM_LL_LANGUAGES];
   for (int i = 0; i < NUM_LL_LANGUAGES; i++)
     {
       values[i] = i;
+      labels[i] =
+        localization_get_string_w_code (i);
     }
-  const char * labels[NUM_LL_LANGUAGES] = {
-    "اَلْعَرَبِيَّةُ‎",
-    "Czech",
-    "Dansk",
-    "Deutsch",
-    "English",
-    "English UK",
-    "Ελληνικά",
-    "Español",
-    "Eeti",
-    "Suomi",
-    "Français",
-    "Gaelic",
-    "Galego",
-    "हिन्दी",
-    "Italiano",
-    "日本語",
-    "한국어",
-    "Bokmål",
-    "Nederlands",
-    "Polski",
-    "Português",
-    "Português BR",
-    "русский",
-    "Svenska",
-    "简体中文",
-    "繁體中文",
-  };
 
   CREATE_SIMPLE_MODEL_BOILERPLATE;
 }

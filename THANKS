@@ -23,6 +23,7 @@ Thanks:
    * Meter algorithms
  David Robillard
    * A lot of useful code we borrowed
+   * LV2 and host libraries
  The GTK team
    * Assistance with GTK-related code
  LAD
@@ -59,6 +60,10 @@ Thanks:
    * Help and advice regarding GPL issues
  sr.ht
    * CI infrastructure for builds and testing
+ sphinx-doc
+   * Sphinx tools used to build the manual
+ Dimitri van Heesch
+   * Doxygen used to document the code
 
 ----
 

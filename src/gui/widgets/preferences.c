@@ -524,6 +524,14 @@ make_control (
       size = G_N_ELEMENTS (arr_name); \
     }
 
+#define SET_STRV_IF_MATCH_W_COUNT(a,b,c,arr_name, \
+  count) \
+  if (KEY_IS (a,b,c)) \
+    { \
+      strv = arr_name; \
+      size = count; \
+    }
+
 #define SET_STRV_FROM_CYAML_IF_MATCH( \
   a,b,c,arr_name) \
   if (KEY_IS (a,b,c)) \
@@ -551,9 +559,10 @@ make_control (
             "Editing", "Automation",
             "curve-algorithm",
             curve_algorithm_strings);
-          SET_STRV_IF_MATCH (
+          SET_STRV_IF_MATCH_W_COUNT (
             "UI", "General", "language",
-            language_strings_full);
+            localization_get_language_strings_w_codes (),
+            NUM_LL_LANGUAGES);
           SET_STRV_IF_MATCH (
             "UI", "General", "graphic-detail",
             ui_detail_str);

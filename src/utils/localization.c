@@ -25,6 +25,7 @@
  */
 
 #include "zrythm-config.h"
+#include "po/zrythm-locales.h"
 
 #include <locale.h>
 
@@ -46,6 +47,69 @@
 #define CODESET "UTF-8"
 #define ALT_CODESET "UTF8"
 #endif
+
+/**
+ * Returns the localized language name (e.g.
+ * "Ελληνικά").
+ */
+const char *
+localization_get_localized_name (
+  LocalizationLanguage lang)
+{
+  g_return_val_if_fail (
+    lang >= 0 && lang < NUM_LL_LANGUAGES,
+    NULL);
+
+  return language_strings[lang];
+}
+
+/**
+ * Returns the character string code for the
+ * language (e.g. "fr").
+ */
+const char *
+localization_get_string_code (
+  LocalizationLanguage lang)
+{
+  g_return_val_if_fail (
+    lang >= 0 && lang < NUM_LL_LANGUAGES,
+    NULL);
+
+  return language_codes[lang];
+}
+
+/**
+ * Returns the localized language name with the
+ * code (e.g. "Ελληνικά [el]").
+ */
+const char *
+localization_get_string_w_code (
+  LocalizationLanguage lang)
+{
+  g_return_val_if_fail (
+    lang >= 0 && lang < NUM_LL_LANGUAGES,
+    NULL);
+
+  return language_strings_w_codes[lang];
+}
+
+const char **
+localization_get_language_codes (void)
+{
+  return language_codes;
+}
+
+const char **
+localization_get_language_strings (void)
+{
+  return language_strings;
+}
+
+const char **
+localization_get_language_strings_w_codes (void)
+{
+  return language_strings_w_codes;
+}
 
 static char *
 get_match (
@@ -153,18 +217,18 @@ localization_locale_exists (
   switch (lang)
     {
     IS_MATCH (AR, "ar_");
-    IS_MATCH (CS, "cs_");
-    IS_MATCH (DA, "da_");
+    /*IS_MATCH (CS, "cs_");*/
+    /*IS_MATCH (DA, "da_");*/
     IS_MATCH (DE, "de_");
     /* break order here */
     IS_MATCH (EN_GB, "en_GB");
     IS_MATCH (EN, "en_");
     IS_MATCH (EL, "el_");
     IS_MATCH (ES, "es_");
-    IS_MATCH (ET, "et_");
-    IS_MATCH (FI, "fi_");
+    /*IS_MATCH (ET, "et_");*/
+    /*IS_MATCH (FI, "fi_");*/
     IS_MATCH (FR, "fr_");
-    IS_MATCH (GD, "gd_");
+    /*IS_MATCH (GD, "gd_");*/
     IS_MATCH (GL, "gl_");
     IS_MATCH (HI, "hi_");
     IS_MATCH (IT, "it_");
@@ -178,8 +242,8 @@ localization_locale_exists (
     IS_MATCH (PT, "pt_");
     IS_MATCH (RU, "ru_");
     IS_MATCH (SV, "sv_");
-    IS_MATCH (ZH_HANS, "zh_CN");
-    IS_MATCH (ZH_HANT, "zh_TW");
+    IS_MATCH (ZH_CN, "zh_CN");
+    IS_MATCH (ZH_TW, "zh_TW");
     default:
       g_warn_if_reached ();
       break;

@@ -39,121 +39,42 @@
 
 typedef enum LocalizationLanguage
 {
-  LL_AF_ZA,
-  LL_AR,
-  LL_CS,
-  LL_DA,
-  LL_DE,
-  LL_EN,
-  LL_EN_GB,
-  LL_EL,
-  LL_ES,
-  LL_ET,
-  LL_FI,
-  LL_FR,
-  LL_GD,
-  LL_GL,
-  LL_HI,
-  LL_IT,
-  LL_JA,
-  LL_KO,
-  LL_NB_NO,
-  LL_NL,
-  LL_PL,
-  LL_PT,
-  LL_PT_BR,
-  LL_RU,
-  LL_SV,
-  LL_ZH_HANS,
-  LL_ZH_HANT,
+@LL_LANGS@
   NUM_LL_LANGUAGES,
 } LocalizationLanguage;
 
-static const char * language_strings[] = {
-  "af_ZA",
-  "ar",
-  "cs",
-  "da",
-  "de",
-  "en",
-  "en_GB",
-  "el",
-  "es",
-  "et",
-  "fi",
-  "fr",
-  "gd",
-  "gl",
-  "hi",
-  "it",
-  "ja",
-  "ko",
-  "nb_NO",
-  "nl",
-  "pl",
-  "pt",
-  "pt_BR",
-  "ru",
-  "sv",
-  "zh_CN",
-  "zh_TW",
-};
-
-static const char * language_strings_full[] = {
-  "Afrikaans [af_ZA]",
-  "اَلْعَرَبِيَّةُ‎ [ar]",
-  "Czech [cs]",
-  "Dansk [da]",
-  "Deutsch [de]",
-  "English [en]",
-  "English UK [en_GB]",
-  "Ελληνικά [el]",
-  "Español [es]",
-  "Eeti [et]",
-  "Suomi [fi]",
-  "Français [fr]",
-  "Gaelic [gd]",
-  "Galego [gl]",
-  "हिन्दी [hi]",
-  "Italiano [it]",
-  "日本語 [ja]",
-  "한국어 [ko]",
-  "Bokmål [nb_NO]",
-  "Nederlands [nl]",
-  "Polski [pl]",
-  "Português [pt]",
-  "Português BR [pt_BR]",
-  "русский [ru]",
-  "Svenska [sv]",
-  "简体中文 [zh_CN]",
-  "繁體中文 [zh_TW]",
-};
-
-static inline const char *
-localization_get_full_string (
-  LocalizationLanguage lang)
-{
-  g_return_val_if_fail (
-    lang >= 0 && lang < NUM_LL_LANGUAGES,
-    NULL);
-
-  return language_strings_full[lang];
-}
+/**
+ * Returns the localized language name (e.g.
+ * "Ελληνικά").
+ */
+const char *
+localization_get_localized_name (
+  LocalizationLanguage lang);
 
 /**
  * Returns the character string code for the
  * language (e.g. "fr").
  */
-static inline const char *
+const char *
 localization_get_string_code (
-  LocalizationLanguage lang)
-{
-  g_return_val_if_fail (
-    lang >= 0 && lang < NUM_LL_LANGUAGES,
-    NULL);
+  LocalizationLanguage lang);
 
-  return language_strings[lang];
-}
+/**
+ * Returns the localized language name with the
+ * code (e.g. "Ελληνικά [el]").
+ */
+const char *
+localization_get_string_w_code (
+  LocalizationLanguage lang);
+
+const char **
+localization_get_language_codes (void);
+
+const char **
+localization_get_language_strings (void);
+
+const char **
+localization_get_language_strings_w_codes (void);
 
 /**
  * Returns the first locale found matching the given

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-09-29 15:50+0100\n"
 "PO-Revision-Date: 2019-09-05 17:38+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language: nb_NO\n"
@@ -125,9 +125,9 @@ msgstr ""
 #: ../../configuration/first-run-wizard.rst:8
 msgid ""
 "When you first run Zrythm, it will display a wizard that lets you "
-"configure the basic settings that Zrythm will use. These include MIDI "
-"devices, the default Zrythm path, interface language and audio/MIDI "
-"backends."
+"configure the basic settings that Zrythm will use. These include "
+":term:`MIDI` devices, the :term:`Zrythm user path`, the language of the "
+"user interface and audio/MIDI backends."
 msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:15
@@ -137,32 +137,32 @@ msgstr ""
 #: ../../configuration/first-run-wizard.rst:20
 msgid ""
 "Zrythm lets you choose the language of the interface. The interface is "
-"already translated in multiple languages, so choose the language you are "
-"most comfortable in."
+"already translated in `multiple languages "
+"<https://hosted.weblate.org/projects/zrythm/#languages>`_, so choose the "
+"language you are most comfortable in."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:24
+#: ../../configuration/first-run-wizard.rst:25
 msgid "You must have a locale enabled for the language you want to use."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:28
+#: ../../configuration/first-run-wizard.rst:29
 msgid "Path"
 msgstr "Sti"
 
-#: ../../configuration/first-run-wizard.rst:33
+#: ../../configuration/first-run-wizard.rst:34
 msgid "This is the :term:`Zrythm user path`."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:36
+#: ../../configuration/first-run-wizard.rst:37
 msgid "Audio/MIDI Backends"
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:41
+#: ../../configuration/first-run-wizard.rst:42
 msgid ""
 "Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is "
 "the recommended one for both, but it takes some time to set up if this is"
-" your first time using it. If you choose to use JACK, JACK MIDI and the "
-"JACK audio backend must be chosen together."
+" your first time using it."
 msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:47
@@ -171,7 +171,7 @@ msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:50
 msgid ""
-"Click :zbutton:`Test` to try connecting to the backend to see if it is "
+"Click :guilabel:`Test` to try connecting to the backend to see if it is "
 "functional."
 msgstr ""
 
@@ -673,5 +673,39 @@ msgstr ""
 #~ "option for resetting Zrythm to its "
 #~ "default state. See :ref:`command-line` "
 #~ "for details."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "When you first run Zrythm, it will"
+#~ " display a wizard that lets you "
+#~ "configure the basic settings that Zrythm"
+#~ " will use. These include MIDI "
+#~ "devices, the default Zrythm path, "
+#~ "interface language and audio/MIDI backends."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm lets you choose the language "
+#~ "of the interface. The interface is "
+#~ "already translated in multiple languages, "
+#~ "so choose the language you are "
+#~ "most comfortable in."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm supports multiple audio and MIDI"
+#~ " backend engines. :term:`JACK` is the "
+#~ "recommended one for both, but it "
+#~ "takes some time to set up if "
+#~ "this is your first time using it."
+#~ " If you choose to use JACK, "
+#~ "JACK MIDI and the JACK audio "
+#~ "backend must be chosen together."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Click :zbutton:`Test` to try connecting "
+#~ "to the backend to see if it "
+#~ "is functional."
 #~ msgstr ""
 

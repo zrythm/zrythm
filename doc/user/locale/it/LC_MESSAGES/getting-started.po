@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 19:56+0100\n"
+"POT-Creation-Date: 2020-09-29 15:50+0100\n"
 "PO-Revision-Date: 2020-08-23 12:48+0000\n"
 "Last-Translator: Roberto Albano De Rosa <robertoaldm@gmail.com>\n"
 "Language: it\n"
@@ -199,8 +199,8 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:31
 msgid ""
-"See the :file:`INSTALL.md` file in the source distribution for "
-"installation instructions."
+"See :download:`INSTALL.md <../../../INSTALL.md>` for installation "
+"instructions."
 msgstr ""
 
 #: ../../getting-started/installation.rst:35
@@ -674,6 +674,12 @@ msgstr ""
 #~ msgid ""
 #~ "See the ``INSTALL.md`` file in the "
 #~ "source distribution for installation "
+#~ "instructions."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "See the :file:`INSTALL.md` file in the"
+#~ " source distribution for installation "
 #~ "instructions."
 #~ msgstr ""
 

@@ -183,7 +183,7 @@ _project_compress (
         {
           return
             g_strdup (
-              _("Project not compressed by zstd!"));
+              _("Project not compressed by zstd"));
         }
       dest =
         malloc ((size_t) frame_content_size);
@@ -203,12 +203,12 @@ _project_compress (
       if (dest_size != frame_content_size)
         {
           free (dest);
+          /* impossible because zstd will check
+           * this condition */
           return
-            g_strdup_printf (
-              _("uncompressed_size != "
-              "frame_content_size impossible "
-              "because zstd will check this "
-              "condition!"));
+            g_strdup (
+              "uncompressed_size != "
+              "frame_content_size");
         }
     }
 

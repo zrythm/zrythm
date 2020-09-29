@@ -43,26 +43,30 @@ manual_po_files = [
 
 # note: if this fails, run the manual_gettext
 # target to generate missing .po files
-foreach lang : locales
+foreach lang, lang_str : locales
   if msgfmt.found () and lang != 'en'
     foreach po_file : manual_po_files
-      test (
-        'user-manual-' + lang + '-' + po_file,
-        msgfmt,
-        args: [
-          '-v', '-c',
-          files (lang / 'LC_MESSAGES' / po_file) ,
-          ])
-      if os_gnu
-        foreach illegal_char : illegal_chars
-          test (
-            'user-manual-' + lang + '-' + po_file + '-illegal-char-' + illegal_char,
-            bash,
-            args: [
-              illegal_char_test_args, illegal_char,
-              files (lang / 'LC_MESSAGES' / po_file) ,
-              ])
-        endforeach
+      po_file_path = lang / 'LC_MESSAGES' / po_file
+      if fs.exists (po_file_path)
+        test (
+          'user-manual-' + lang + '-' + po_file,
+          msgfmt,
+          args: [
+            '-v', '-c', files (po_file_path) ,
+            ])
+        if os_gnu
+          foreach illegal_char : illegal_chars
+            test (
+              'user-manual-' + lang + '-' + po_file + '-illegal-char-' + illegal_char,
+              bash,
+              args: [
+                illegal_char_test_args, illegal_char,
+                files (po_file_path) ,
+                ])
+          endforeach
+        endif
+      else
+        warning ('file ' + po_file_path + ' does not exist')
       endif
     endforeach
   endif

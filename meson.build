@@ -54,8 +54,43 @@ sourceviewstylesdir = zrythmdatadir / 'sourceview-styles'
 
 # Used for building manpages, manual, etc., using
 # foreach
-locales_str = run_command ('cat', 'po/LINGUAS').stdout ().strip () + ' en'
-locales = locales_str.split (' ')
+language_mappings = {
+  'af_ZA': 'Afrikaans',
+  'ar': 'اَلْعَرَبِيَّةُ‎',
+  'cs': 'Czech',
+  'da': 'Dansk',
+  'de': 'Deutsch',
+  'en': 'English',
+  'en_GB': 'English UK',
+  'el': 'Ελληνικά',
+  'es': 'Español',
+  'et': 'Eeti',
+  'fi': 'Suomi',
+  'fr': 'Français',
+  'gd': 'Gaelic',
+  'gl': 'Galego',
+  'hi': 'हिन्दी',
+  'it': 'Italiano',
+  'ja': '日本語',
+  'ko': '한국어',
+  'nb_NO': 'Bokmål',
+  'nl': 'Nederlands',
+  'pl': 'Polski',
+  'pt': 'Português',
+  'pt_BR': 'Português BR',
+  'ru': 'русский',
+  'sv': 'Svenska',
+  'zh_CN': '简体中文',
+  'zh_TW': '繁體中文',
+  }
+locales_str = run_command ('cat', 'po/LINGUAS').stdout ().strip ()
+locales = {}
+foreach locale : locales_str.split (' ')
+  locales += { locale: language_mappings[locale] }
+  if locale == 'de'
+    locales += { 'en': language_mappings['en'], }
+  endif
+endforeach
 
 os_darwin = false
 os_gnu = false
@@ -534,6 +569,7 @@ test_strict_cflags = [
   '-Werror=logical-not-parentheses',
   '-Werror=parentheses',
   '-Werror=comment',
+  '-Werror=sizeof-pointer-div',
   ]
 
 if cc.get_id() == 'gcc'
@@ -1010,6 +1046,7 @@ subdir ('po')
 subdir ('ext')
 subdir ('resources')
 subdir ('data')
+subdir ('inc')
 subdir ('src')
 subdir ('tests')
 subdir ('doc')

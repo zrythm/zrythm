@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -40,8 +40,28 @@ collect_translatables = run_target (
     ],
   )
 
+# create locales.h
+ll_langs = ''
+lang_codes = ''
+lang_strings = ''
+lang_strings_w_codes = ''
+foreach lang, lang_str : locales
+  ll_langs += '  LL_' + lang.to_upper () + ',\n'
+  lang_codes += '  "' + lang + '",\n'
+  lang_strings += '  "' + lang_str + '",\n'
+  lang_strings_w_codes += '  "' + lang_str + ' [' + lang + ']",\n'
+endforeach
+locales_h = configure_file (
+  input: 'locales.h.in',
+  output: 'zrythm-locales.h',
+  configuration: {
+    'LANG_CODES': lang_codes,
+    'LANG_STRINGS': lang_strings,
+    'LANG_STRINGS_W_CODES': lang_strings_w_codes,
+    })
+
 # Test PO files for errors.
-foreach lang : locales
+foreach lang, lang_str : locales
   if msgfmt.found () and lang != 'en'
     test (
       lang + '-po', msgfmt,

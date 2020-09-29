@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-09-29 15:50+0100\n"
 "PO-Revision-Date: 2020-09-26 18:02+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language: ru\n"
@@ -156,11 +156,12 @@ msgid "First Run Wizard"
 msgstr "Окно первого запуска (First Run Wizard)"
 
 #: ../../configuration/first-run-wizard.rst:8
+#, fuzzy
 msgid ""
 "When you first run Zrythm, it will display a wizard that lets you "
-"configure the basic settings that Zrythm will use. These include MIDI "
-"devices, the default Zrythm path, interface language and audio/MIDI "
-"backends."
+"configure the basic settings that Zrythm will use. These include "
+":term:`MIDI` devices, the :term:`Zrythm user path`, the language of the "
+"user interface and audio/MIDI backends."
 msgstr ""
 "При первом запуске Zrythm отобразится окно, позволяющее настроить "
 "основные настройки, которые будет использовать Zrythm. К ним относятся "
@@ -174,50 +175,50 @@ msgstr "Выбор языка (Language)"
 #: ../../configuration/first-run-wizard.rst:20
 msgid ""
 "Zrythm lets you choose the language of the interface. The interface is "
-"already translated in multiple languages, so choose the language you are "
-"most comfortable in."
+"already translated in `multiple languages "
+"<https://hosted.weblate.org/projects/zrythm/#languages>`_, so choose the "
+"language you are most comfortable in."
 msgstr ""
-"Zrythm позволяет вам выбрать язык интерфейса. Интерфейс уже переведен на "
-"несколько языков, поэтому выберите наиболее удобный для вас язык."
 
-#: ../../configuration/first-run-wizard.rst:24
+#: ../../configuration/first-run-wizard.rst:25
 msgid "You must have a locale enabled for the language you want to use."
 msgstr ""
 "У вас должена быть включена локализация (locale) для языка, который вы "
 "хотите использовать."
 
-#: ../../configuration/first-run-wizard.rst:28
+#: ../../configuration/first-run-wizard.rst:29
 msgid "Path"
 msgstr "Путь (Path)"
 
-#: ../../configuration/first-run-wizard.rst:33
+#: ../../configuration/first-run-wizard.rst:34
 msgid "This is the :term:`Zrythm user path`."
 msgstr "Это :term:`Zrythm user path`."
 
-#: ../../configuration/first-run-wizard.rst:36
+#: ../../configuration/first-run-wizard.rst:37
 msgid "Audio/MIDI Backends"
 msgstr "Аудио/MIDI Бэкэнды (Backends)"
 
-#: ../../configuration/first-run-wizard.rst:41
+#: ../../configuration/first-run-wizard.rst:42
+#, fuzzy
 msgid ""
 "Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is "
 "the recommended one for both, but it takes some time to set up if this is"
-" your first time using it. If you choose to use JACK, JACK MIDI and the "
-"JACK audio backend must be chosen together."
+" your first time using it."
 msgstr ""
-"Zrythm поддерживает несколько Аудио и MIDI бэкэндов. :term:`JACK` рекомендуется и"
-" в качестве Аудио бэкэнда, и в качестве MIDI бэкэнда, но для его "
-"настройки потребуется некоторое время, если вы используете его впервые. "
-"Если вы решили использовать JACK, то вам необходимо выбрать его в "
-"качестве Аудио и MIDI бэкэнда одновременно."
+"Zrythm поддерживает несколько Аудио и MIDI бэкэндов. :term:`JACK` "
+"рекомендуется и в качестве Аудио бэкэнда, и в качестве MIDI бэкэнда, но "
+"для его настройки потребуется некоторое время, если вы используете его "
+"впервые. Если вы решили использовать JACK, то вам необходимо выбрать его "
+"в качестве Аудио и MIDI бэкэнда одновременно."
 
 #: ../../configuration/first-run-wizard.rst:47
 msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
 msgstr "Если JACK недоступен в вашей системе, мы рекомендуем RtAudio и RtMidi."
 
 #: ../../configuration/first-run-wizard.rst:50
+#, fuzzy
 msgid ""
-"Click :zbutton:`Test` to try connecting to the backend to see if it is "
+"Click :guilabel:`Test` to try connecting to the backend to see if it is "
 "functional."
 msgstr ""
 "Нажмите на кнопку :zbutton:`Проверка (Test)` чтобы попытаться "
@@ -1329,4 +1330,16 @@ msgstr ""
 #~ "с параметром командной строки ``--reset-"
 #~ "to-factory`` для сброса Zrythm до "
 #~ "заводских настроек ."
+
+#~ msgid ""
+#~ "Zrythm lets you choose the language "
+#~ "of the interface. The interface is "
+#~ "already translated in multiple languages, "
+#~ "so choose the language you are "
+#~ "most comfortable in."
+#~ msgstr ""
+#~ "Zrythm позволяет вам выбрать язык "
+#~ "интерфейса. Интерфейс уже переведен на "
+#~ "несколько языков, поэтому выберите наиболее"
+#~ " удобный для вас язык."
 
