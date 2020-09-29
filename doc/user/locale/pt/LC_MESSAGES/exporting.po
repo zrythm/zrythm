@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-05-18 07:41+0000\n"
+"PO-Revision-Date: 2020-09-29 22:22+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualexporting/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese "
-"<https://hosted.weblate.org/projects/zrythm/manualexporting/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../exporting/audio-and-midi.rst:8
@@ -24,14 +25,14 @@ msgid "Audio & MIDI"
 msgstr "Áudio & MIDI"
 
 #: ../../exporting/audio-and-midi.rst:10
-#, fuzzy
 msgid ""
 "The Export dialog below is used to export the project or part of the "
 "project into audio or MIDI files. It can be accessed by clicking :ref"
 ":`zrythm-interface/main-toolbar:Export As`."
 msgstr ""
-"A caixa de diálogo abaixo Exportar é usada para exportar o projeto ou "
-"parte do projeto para ficheiros de áudio ou MIDI."
+"O diálogo Exportar abaixo é usado para exportar o projeto, ou parte do "
+"projeto em ficheiros de áudio, ou MIDI. Pode ser acessado a clicar em :ref"
+":`zrythm-interface/main-toolbar:Export As`."
 
 #: ../../exporting/audio-and-midi.rst:19
 msgid "Fields"
@@ -178,4 +179,3 @@ msgstr ""
 
 #~ msgid "Overview"
 #~ msgstr "Sinopse"
-
