@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-05-18 07:41+0000\n"
+"PO-Revision-Date: 2020-09-29 22:22+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualmodulators/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese "
-"<https://hosted.weblate.org/projects/zrythm/manualmodulators/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../modulators/intro.rst:8
@@ -30,26 +31,30 @@ msgid ""
 " For example, you can route an LFO to a filter cutoff parameter to "
 "modulate its value."
 msgstr ""
+"Moduladores são todos suplementos que tenham pelo menos uma :term:`CV` porta "
+"de saída. Estas portas CV podem ser roteadas para todos os parâmetros "
+"automatizáveis dentro do Zrythm. Por exemplo, pode rotear um LFO para um "
+"parâmetro de corte de filtro para modular o valor dele."
 
 #: ../../modulators/intro.rst:16
 msgid "Modulators Tab"
 msgstr "Separador Moduladores"
 
 #: ../../modulators/intro.rst:17
-#, fuzzy
 msgid ""
 "Zrythm has a modulators tab in the bottom panel that can hold any number "
 "of modulators."
 msgstr ""
-"O Zrythm tem um separador Moduladores no painel inferior que pode conter "
-"qualquer quantidade de Moduladores. Os Moduladores estão associados a "
-"Faixas, pelo que cada Faixa terá a sua própria lista de Moduladores."
+"O Zrythm tem um separador moduladores no painel inferior que pode conter "
+"qualquer quantidade de moduladores."
 
 #: ../../modulators/intro.rst:23
 msgid ""
 "Modulators are associated with the :doc:`../tracks/modulator-track`, "
 "which contains all modulators in the :term:`project`."
 msgstr ""
+"Os moduladores estão associados ao :doc:`.../tracks/modulator-track', que "
+"contém todos os moduladores no :term:`project'."
 
 #: ../../modulators/intro.rst:28
 msgid "Adding Modulators"
@@ -62,6 +67,10 @@ msgid ""
 "can be :ref:`filtered inside the plugin browser <plugins-files/plugins"
 "/plugin-browser:Filter Buttons>`."
 msgstr ""
+"Os suplementos moduladores podem ser arrastados do separador :doc"
+":`.../plugins-files/plugins/plugin-browser' para o separador moduladores. Os "
+"suplementos moduladores podem ser :ref:`filtrados dentro do navegador de "
+"suplementos <plugins-files/plugins/plugin-browser:Filter Buttons>`."
 
 #: ../../modulators/intro.rst:35
 msgid "Routing Modulators"
@@ -73,6 +82,9 @@ msgid ""
 " by clicking on the arrow and following the prompt to select the "
 "destination."
 msgstr ""
+"As saídas do modulador podem ser encaminhadas para :term:`controles "
+"<controle>`automatizáveis, a clicar na seta e a seguir o prompt para "
+"selecionar o destino."
 
 #~ msgid "Modulators are Plugins that have at least one CV output port."
 #~ msgstr "Moduladores são Plugins que possuem pelo menos uma porta de saída CV."
@@ -82,4 +94,3 @@ msgstr ""
 
 #~ msgid "This feature is not available at the moment."
 #~ msgstr "Este recurso não está disponível no momento."
-
