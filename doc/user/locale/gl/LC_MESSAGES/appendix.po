@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 15:50+0100\n"
+"POT-Creation-Date: 2020-09-29 18:03+0100\n"
 "PO-Revision-Date: 2020-03-07 09:52+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -39,11 +39,14 @@ msgstr "Atallos de Teclado Globais"
 msgid "Editor Shortcuts"
 msgstr "Atallos de Teclado do Editor"
 
-#: ../../appendix/troubleshooting.rst:6
+#: ../../appendix/troubleshooting.rst:8
 msgid "Troubleshooting"
 msgstr "Solución de problemas"
 
-#: ../../appendix/troubleshooting.rst:8
-msgid "TODO"
-msgstr "TODO"
+#: ../../appendix/troubleshooting.rst:10
+msgid "Write this page."
+msgstr ""
+
+#~ msgid "TODO"
+#~ msgstr "TODO"
 

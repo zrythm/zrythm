@@ -2,7 +2,9 @@
    Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
+.. sectionauthor:: Alexandros Theodotou <alex@zrythm.org>
+
 Troubleshooting
 ===============
 
-TODO
+.. todo:: Write this page.

@@ -101,8 +101,11 @@ When Zrythm is installed, it installs the following files by default:
 
 Project Files
 -------------
-When Zrythm is launched for the first time, it will also ask
-you to select a folder for saving your projects and other
+When Zrythm is launched for the first time, it will
+also ask you to select a directory for saving your
+user data, including projects and other
 project-related files.
 
-By default, this will be ``~/zrythm``
+See :term:`Zrythm user path` for details.
+
+.. todo:: Rewrite this page.

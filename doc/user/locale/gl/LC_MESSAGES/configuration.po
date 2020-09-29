@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 15:50+0100\n"
+"POT-Creation-Date: 2020-09-29 18:03+0100\n"
 "PO-Revision-Date: 2020-06-29 20:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -65,6 +65,10 @@ msgid "See :option:`zrythm --reset-to-factory`."
 msgstr ""
 
 #: ../../configuration/additional-settings.rst:34
+msgid "Todo"
+msgstr ""
+
+#: ../../configuration/additional-settings.rst:34
 msgid "This will be added to the UI soon."
 msgstr ""
 
@@ -77,46 +81,19 @@ msgid "Connecting MIDI and Audio Devices"
 msgstr "Conectar Dispositivos MIDI e de son"
 
 #: ../../configuration/device-setup/intro.rst:11
-#, fuzzy
 msgid ""
-"Depending on the selected backend (covered in :ref:`preferences-engine`),"
-" the configuration differs. Zrythm will auto-scan and allow you to "
-"connect to input devices for recording through the Track Inspector, as "
-"below, and in most cases you don't need to use any external tools or "
-"auto-connect mechanism."
-msgstr ""
-"Zrythm escaneará automaticamente e permitirache conectar dispositivos de "
-"entrada para gravar a través do Inspector de Pistas, como se amosa "
-"abaixo, e as máis das veces non precisaras de ferramentas externas ou "
-"mecanismos de conexión automática."
-
-#: ../../configuration/device-setup/intro.rst:22
-msgid "Auto-Connecting Devices"
-msgstr "Conexión Automática de Dispositivos"
-
-#: ../../configuration/device-setup/intro.rst:24
-msgid ""
-"For other types of devices that are not linked to specific tracks, such "
-"as devices that send global MIDI messages and devices that control the "
-"transport, Zrythm has an option to select these devices to auto-connect "
-"to on launch."
-msgstr ""
-"Para outros tipos de dispositivos que non están ligados a pistas "
-"específicas, como os dispositivos que envían mensaxes de MIDI globais e "
-"dispositivos que controlan o desprazamento, Zrythm ten unha opción para "
-"seleccionar eses dispositivos de conexión automática na execución."
-
-#: ../../configuration/device-setup/intro.rst:30
-msgid ""
-"You can select these in :ref:`midi_devices` in the welcome dialog as well"
-" as in :ref:`preferences`."
+"Zrythm will auto-connect to the devices specified in "
+":ref:`configuration/preferences/intro:Audio inputs` and "
+":ref:`configuration/preferences/intro:MIDI controllers` and make these "
+"devices available in the :ref:`track inputs <tracks/inspector-"
+"page:Inputs>` (as below) and other places."
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:34
+#: ../../configuration/device-setup/intro.rst:23
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../configuration/device-setup/intro.rst:36
+#: ../../configuration/device-setup/intro.rst:25
 #, fuzzy
 msgid ""
 "When using the JACK audio and MIDI backend Zrythm exposes ports to JACK, "
@@ -128,128 +105,25 @@ msgstr ""
 "empregando algunha ferramenta como Catia. Recorda que para MIDI, os "
 "dispositivos poden precisar unha ponte a JACK empregando ``a2jmidid``."
 
-#: ../../configuration/device-setup/intro.rst:44
-msgid "For most users, everything can be accomplished from within Zrythm."
-msgstr ""
-
-#: ../../configuration/device-setup/intro.rst:47
+#: ../../configuration/device-setup/intro.rst:33
 msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
 "using :term:`a2jmidid`."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:6
-msgid "First Run Wizard"
-msgstr "Asistente da Primeira Execución"
-
-#: ../../configuration/first-run-wizard.rst:8
-#, fuzzy
-msgid ""
-"When you first run Zrythm, it will display a wizard that lets you "
-"configure the basic settings that Zrythm will use. These include "
-":term:`MIDI` devices, the :term:`Zrythm user path`, the language of the "
-"user interface and audio/MIDI backends."
-msgstr ""
-"A primeira vez que executes Zrythm, aparecerá un asistente que che "
-"permite configurar as opcións básicas que usa o programa. Inclúe "
-"dispositivos MIDI, o directorio por defecto de Zrythm, o idioma da "
-"interface e os backends de audio e MIDI."
-
-#: ../../configuration/first-run-wizard.rst:15
-msgid "Language Selection"
-msgstr "Selección do Idioma"
-
-#: ../../configuration/first-run-wizard.rst:20
-msgid ""
-"Zrythm lets you choose the language of the interface. The interface is "
-"already translated in `multiple languages "
-"<https://hosted.weblate.org/projects/zrythm/#languages>`_, so choose the "
-"language you are most comfortable in."
+#: ../../configuration/device-setup/intro.rst:36
+msgid "Zrythm will not remember connections made externally."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:25
-#, fuzzy
-msgid "You must have a locale enabled for the language you want to use."
-msgstr ""
-"Precisas ter activada a configuración rexional do idioma que queres "
-"empregar."
-
-#: ../../configuration/first-run-wizard.rst:29
-msgid "Path"
-msgstr "Ruta"
-
-#: ../../configuration/first-run-wizard.rst:34
-msgid "This is the :term:`Zrythm user path`."
-msgstr ""
-
-#: ../../configuration/first-run-wizard.rst:37
-msgid "Audio/MIDI Backends"
-msgstr "Backends de Audio/MIDI"
-
-#: ../../configuration/first-run-wizard.rst:42
-#, fuzzy
-msgid ""
-"Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is "
-"the recommended one for both, but it takes some time to set up if this is"
-" your first time using it."
-msgstr ""
-"Zrythm soporta múltiples motores de backend de audio e MIDI. JACK é o "
-"recomendado, pero leva algo de tempo configuralo a primeira vez. Se non "
-"queres utilizar JACK por algún motivo podes seleccionar outros backends "
-"como ALSA ou SDL2."
-
-#: ../../configuration/first-run-wizard.rst:47
-msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
-msgstr ""
-
-#: ../../configuration/first-run-wizard.rst:50
-#, fuzzy
-msgid ""
-"Click :guilabel:`Test` to try connecting to the backend to see if it is "
-"functional."
-msgstr ""
-"Fai clic en :zbutton:`Probar` para tentar conectarse ao backend e ver se "
-"funciona."
-
-#: ../../configuration/first-run-wizard.rst:53
-msgid ""
-"If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
-"chosen together."
-msgstr ""
-
-#: ../../configuration/first-run-wizard.rst:59
-msgid "MIDI Devices"
-msgstr "Dispositivos MIDI"
-
-#: ../../configuration/first-run-wizard.rst:64
-msgid ""
-"These are the discovered devices that will be auto-connected and ready to"
-" use every time you run Zrythm. Click \"Rescan\" to scan for devices "
-"again."
-msgstr ""
-"Estes son os dispositivos detectados que se conectarán automaticamente "
-"listos para usar cada vez que executes Zrythm. Fai clic en \"Escanear de "
-"novo\" para escanear outra vez os dispositivos."
-
-#: ../../configuration/first-run-wizard.rst:68
-#, fuzzy
-msgid ""
-"All of the settings mentioned here are also available in the "
-":ref:`preferences`, so don't worry if you selected the wrong settings."
-msgstr ""
-"Tódalas configuracións mencionadas aquí están tamén dispoñibles nas "
-"preferencias (Ctrl+Shift+P ou en Ficheiro-> Preferencias), así que non te"
-" preocupes se escolliches unha configuración errada."
-
-#: ../../configuration/intro.rst:6
+#: ../../configuration/intro.rst:8
 msgid "Configuration"
 msgstr "Configuración"
 
-#: ../../configuration/preferences/intro.rst:8
+#: ../../configuration/preferences/intro.rst:10
 msgid "Preferences"
 msgstr "Preferencias"
 
-#: ../../configuration/preferences/intro.rst:10
+#: ../../configuration/preferences/intro.rst:12
 #, fuzzy
 msgid ""
 "Zrythm has a Preferences dialog containing all of the global settings "
@@ -260,7 +134,7 @@ msgstr ""
 "que podes acceder facendo clic na icona do engrenaxe ou premendo "
 "``Ctrl+Shift+P``."
 
-#: ../../configuration/preferences/intro.rst:14
+#: ../../configuration/preferences/intro.rst:16
 #, fuzzy
 msgid ""
 "Each section in the preferences dialog is explained in the following "
@@ -269,20 +143,20 @@ msgstr ""
 "O diálogo de Preferencias divídese nas seguintes seccións, explicadas "
 "máis abaixo:"
 
-#: ../../configuration/preferences/intro.rst:18
+#: ../../configuration/preferences/intro.rst:20
 msgid "General"
 msgstr "Xeral"
 
-#: ../../configuration/preferences/intro.rst:20
+#: ../../configuration/preferences/intro.rst:22
 #, fuzzy
 msgid "General settings."
 msgstr "Utilizando gsettings"
 
-#: ../../configuration/preferences/intro.rst:28
+#: ../../configuration/preferences/intro.rst:30
 msgid "Engine"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:30
+#: ../../configuration/preferences/intro.rst:32
 msgid "Audio engine settings."
 msgstr ""
 
@@ -291,7 +165,7 @@ msgstr ""
 msgid "Audio backend"
 msgstr "Backend de Audio"
 
-#: ../../configuration/preferences/intro.rst:33
+#: ../../configuration/preferences/intro.rst:36
 msgid ""
 "The audio backend to use. The available backends are JACK, RtAudio and "
 "SDL2. We recommend using :term:`JACK` when possible, otherwise RtAudio."
@@ -302,161 +176,170 @@ msgstr ""
 msgid "MIDI backend"
 msgstr "Backend de Audio"
 
-#: ../../configuration/preferences/intro.rst:38
+#: ../../configuration/preferences/intro.rst:42
 msgid ""
 "The MIDI backend to use. The available backends are JACK MIDI, RtMidi and"
 " WindowsMME (Windows only). We recommend using JACK MIDI when possible, "
 "otherwise RtMidi."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:44
+#: ../../configuration/preferences/intro.rst:48
 msgid "MIDI controllers"
 msgstr "Controladores MIDI"
 
-#: ../../configuration/preferences/intro.rst:44
+#: ../../configuration/preferences/intro.rst:49
 msgid "A list of controllers to auto-connect to."
 msgstr "Unha lista de controladores aos que se conectar automaticamente."
 
-#: ../../configuration/preferences/intro.rst:47
+#: ../../configuration/preferences/intro.rst:52
+msgid "Audio inputs"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:53
+#, fuzzy
+msgid "A list of audio inputs to auto-connect to."
+msgstr "Unha lista de controladores aos que se conectar automaticamente."
+
+#: ../../configuration/preferences/intro.rst:56
 msgid "Paths (Global)"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:49
+#: ../../configuration/preferences/intro.rst:58
 msgid "Global paths."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:52
+#: ../../configuration/preferences/intro.rst:61
 #, fuzzy
 msgid "Zrythm path"
 msgstr "Directorio de Zrythm"
 
-#: ../../configuration/preferences/intro.rst:52
+#: ../../configuration/preferences/intro.rst:62
 msgid "The :term:`Zrythm user path`."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:55
+#: ../../configuration/preferences/intro.rst:65
 msgid "Plugins"
 msgstr "Plugins"
 
-#: ../../configuration/preferences/intro.rst:57
+#: ../../configuration/preferences/intro.rst:67
 #, fuzzy
 msgid ":term:`Plugin` settings."
 msgstr "Utilizando gsettings"
 
-#: ../../configuration/preferences/intro.rst:63
+#: ../../configuration/preferences/intro.rst:73
 msgid "UIs"
 msgstr "UIs"
 
-#: ../../configuration/preferences/intro.rst:65
+#: ../../configuration/preferences/intro.rst:75
 #, fuzzy
 msgid "Plugin UIs."
 msgstr "Plugins"
 
-#: ../../configuration/preferences/intro.rst:69
+#: ../../configuration/preferences/intro.rst:78
 msgid "Generic UIs"
 msgstr "UIs xenéricas"
 
-#: ../../configuration/preferences/intro.rst:68
+#: ../../configuration/preferences/intro.rst:79
 msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
 msgstr ""
 "Amosar UIs xenéricas dos plugins xeradas por Zrythm no canto de as "
 "personalizadas."
 
-#: ../../configuration/preferences/intro.rst:72
+#: ../../configuration/preferences/intro.rst:83
 msgid "Open UI on instantiation"
 msgstr "Abrir UI ao iniciar"
 
-#: ../../configuration/preferences/intro.rst:72
+#: ../../configuration/preferences/intro.rst:84
 msgid "Open plugin UIs when they are instantiated."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:75
+#: ../../configuration/preferences/intro.rst:87
 msgid "Keep window on top"
 msgstr "Manter ventá enriba"
 
-#: ../../configuration/preferences/intro.rst:75
+#: ../../configuration/preferences/intro.rst:88
 msgid "Always show plugin UIs on top of the main window."
 msgstr "Manter sempre as IU dos plugins enriba da ventá principal."
 
-#: ../../configuration/preferences/intro.rst:79
+#: ../../configuration/preferences/intro.rst:91
 msgid "Bridge unsupported UIs"
 msgstr "Facer unha ponte ás UIs non soportadas"
 
-#: ../../configuration/preferences/intro.rst:78
+#: ../../configuration/preferences/intro.rst:92
 msgid ""
 "Bridge unsupported UIs in another process instead of creating generic "
 "ones."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:81
+#: ../../configuration/preferences/intro.rst:95
 msgid "This may lead to performance loss for some plugins."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:86
+#: ../../configuration/preferences/intro.rst:99
 msgid "Refresh rate"
 msgstr "Razón de recarga"
 
-#: ../../configuration/preferences/intro.rst:85
+#: ../../configuration/preferences/intro.rst:100
 msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr "A razón de recarga en Hz. En 0 usarase a razón da pantalla."
 
-#: ../../configuration/preferences/intro.rst:91
+#: ../../configuration/preferences/intro.rst:106
 msgid "Paths"
 msgstr "Rutas"
 
-#: ../../configuration/preferences/intro.rst:95
+#: ../../configuration/preferences/intro.rst:109
 msgid "VST plugins"
 msgstr "Plugins VST"
 
-#: ../../configuration/preferences/intro.rst:94
+#: ../../configuration/preferences/intro.rst:110
 msgid "The search paths to scan for :term:`VST2` plugins in."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:97
+#: ../../configuration/preferences/intro.rst:113
 msgid ""
 "This option is only available on Windows. On GNU/Linux and MacOS the "
 "paths are fixed. See :ref:`scanning-plugins` for details."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:103
+#: ../../configuration/preferences/intro.rst:118
 msgid "SFZ instruments"
 msgstr "Instrumentos SFZ"
 
-#: ../../configuration/preferences/intro.rst:102
+#: ../../configuration/preferences/intro.rst:119
 msgid "The search paths to scan for :term:`SFZ` instruments in."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:107
+#: ../../configuration/preferences/intro.rst:123
 msgid "SF2 instruments"
 msgstr "Instrumentos SF2"
 
-#: ../../configuration/preferences/intro.rst:106
+#: ../../configuration/preferences/intro.rst:124
 msgid "The search paths to scan for :term:`SF2` instruments in."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:110
+#: ../../configuration/preferences/intro.rst:128
 msgid "DSP"
 msgstr "DSP"
 
-#: ../../configuration/preferences/intro.rst:112
+#: ../../configuration/preferences/intro.rst:130
 #, fuzzy
 msgid ":term:`DSP` settings."
 msgstr "Utilizando gsettings"
 
-#: ../../configuration/preferences/intro.rst:118
+#: ../../configuration/preferences/intro.rst:136
 msgid "Pan"
 msgstr "Panorama"
 
-#: ../../configuration/preferences/intro.rst:120
+#: ../../configuration/preferences/intro.rst:138
 #, fuzzy
 msgid ":term:`Panning` options for :term:`mono` signals (not used at the moment)."
 msgstr "Isto non funciona polo de agora."
 
-#: ../../configuration/preferences/intro.rst:137
+#: ../../configuration/preferences/intro.rst:141
 msgid "Pan algorithm"
 msgstr "Algoritmo do Panorama"
 
-#: ../../configuration/preferences/intro.rst:123
+#: ../../configuration/preferences/intro.rst:142
 #, fuzzy
 msgid ""
 "The panning algorithm to use when applying pan on mono signals. See the "
@@ -471,107 +354,107 @@ msgstr ""
 "https://www.cs.cmu.edu/~music/icm-online/readings/panlaws/index.html para"
 " máis información. Isto non funciona polo de agora."
 
-#: ../../configuration/preferences/intro.rst:136
+#: ../../configuration/preferences/intro.rst:155
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 msgstr ""
 "Algoritmos de panorama (:blue:`seno`, :red:`raíz cadrada`, "
 ":green:`lineal`)."
 
-#: ../../configuration/preferences/intro.rst:141
+#: ../../configuration/preferences/intro.rst:159
 msgid "Pan law"
 msgstr "Regra do Panorama"
 
-#: ../../configuration/preferences/intro.rst:140
+#: ../../configuration/preferences/intro.rst:160
 msgid "The :term:`pan law` to use when applying pan on mono signals."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:144
+#: ../../configuration/preferences/intro.rst:164
 msgid "Editing"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:146
+#: ../../configuration/preferences/intro.rst:166
 msgid "Editing options."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:152
+#: ../../configuration/preferences/intro.rst:172
 msgid "Audio"
 msgstr "Audio"
 
-#: ../../configuration/preferences/intro.rst:154
+#: ../../configuration/preferences/intro.rst:174
 msgid "Audio editing."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:157
+#: ../../configuration/preferences/intro.rst:177
 #, fuzzy
 msgid "Fade algorithm"
 msgstr "Algoritmo de Panorama"
 
-#: ../../configuration/preferences/intro.rst:157
+#: ../../configuration/preferences/intro.rst:178
 msgid "Default fade algorithm to use for fade in/outs."
 msgstr ""
 "Algoritmo de fundido por defecto a utilizar nos fundidos de entrada e de "
 "saída."
 
-#: ../../configuration/preferences/intro.rst:160
+#: ../../configuration/preferences/intro.rst:181
 msgid "Automation"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:162
+#: ../../configuration/preferences/intro.rst:183
 msgid "Automation editing."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:166
+#: ../../configuration/preferences/intro.rst:186
 msgid "Curve algorithm"
 msgstr "Algoritmo de curva"
 
-#: ../../configuration/preferences/intro.rst:165
+#: ../../configuration/preferences/intro.rst:187
 msgid "Default curve algorithm to use for automation curves."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:169
+#: ../../configuration/preferences/intro.rst:191
 #, fuzzy
 msgid "Undo"
 msgstr "Audio"
 
-#: ../../configuration/preferences/intro.rst:171
+#: ../../configuration/preferences/intro.rst:193
 msgid "Undo options."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:175
+#: ../../configuration/preferences/intro.rst:196
 #, fuzzy
 msgid "Undo stack length"
 msgstr "Backend de Audio"
 
-#: ../../configuration/preferences/intro.rst:174
+#: ../../configuration/preferences/intro.rst:197
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:177
+#: ../../configuration/preferences/intro.rst:200
 msgid "We recommend leaving it at 128."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:181
+#: ../../configuration/preferences/intro.rst:204
 msgid "Projects"
 msgstr "Proxectos"
 
-#: ../../configuration/preferences/intro.rst:183
+#: ../../configuration/preferences/intro.rst:206
 msgid "Project settings."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:189
+#: ../../configuration/preferences/intro.rst:212
 msgid "General (Project)"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:191
+#: ../../configuration/preferences/intro.rst:214
 msgid "General project settings."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:195
+#: ../../configuration/preferences/intro.rst:217
 #, fuzzy
 msgid "Autosave interval"
 msgstr "Intervalo de Gardado Automático"
 
-#: ../../configuration/preferences/intro.rst:194
+#: ../../configuration/preferences/intro.rst:218
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
 "if this is set to 0."
@@ -579,44 +462,45 @@ msgstr ""
 "Intervalo de gardado automático do proxecto, en minutos. Se o valor é 0, "
 "estará desactivado."
 
-#: ../../configuration/preferences/intro.rst:197
+#: ../../configuration/preferences/intro.rst:221
 msgid ""
 "This refers to automatic back-ups. The main project will not be "
 "overwritten unless you explicitly save it."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:201
+#: ../../configuration/preferences/intro.rst:225
 msgid "UI"
 msgstr "UI"
 
-#: ../../configuration/preferences/intro.rst:203
+#: ../../configuration/preferences/intro.rst:227
 msgid "User interface options."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:209
+#: ../../configuration/preferences/intro.rst:233
 #, fuzzy
 msgid "General (UI)"
 msgstr "Xeral"
 
-#: ../../configuration/preferences/intro.rst:211
+#: ../../configuration/preferences/intro.rst:235
 msgid "General user interface options."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:214
+#: ../../configuration/preferences/intro.rst:238
 msgid "User interface language"
 msgstr "Idioma da interface de usuario"
 
-#: ../../configuration/preferences/intro.rst:214
+#: ../../configuration/preferences/intro.rst:239
 msgid "The language to use for the user interface."
 msgstr "O idioma da interface de Zrythm"
 
-#: ../../configuration/preferences/intro.rst:216
+#: ../../configuration/preferences/intro.rst:241
 msgid ""
-"For a list of supported languages and their translation status see "
-"`Weblate <https://hosted.weblate.org/projects/zrythm/>`_."
+"For a list of supported languages and their translation status, or to "
+"translate Zrythm into your language, see `Weblate "
+"<https://hosted.weblate.org/projects/zrythm/>`_."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:220
+#: ../../configuration/preferences/intro.rst:246
 #, fuzzy
 msgid "Some of these settings require a restart of Zrythm to take effect."
 msgstr "Modificar estes parámetros require reiniciar Zrythm."
@@ -929,4 +813,169 @@ msgstr "Modificar estes parámetros require reiniciar Zrythm."
 #~ " interface. A interface está traducida "
 #~ "a varios idiomas, así que escolle "
 #~ "no que te sintas máis a gusto."
+
+#~ msgid ""
+#~ "Depending on the selected backend "
+#~ "(covered in :ref:`preferences-engine`), the"
+#~ " configuration differs. Zrythm will "
+#~ "auto-scan and allow you to connect"
+#~ " to input devices for recording "
+#~ "through the Track Inspector, as below,"
+#~ " and in most cases you don't "
+#~ "need to use any external tools or"
+#~ " auto-connect mechanism."
+#~ msgstr ""
+#~ "Zrythm escaneará automaticamente e "
+#~ "permitirache conectar dispositivos de entrada"
+#~ " para gravar a través do Inspector"
+#~ " de Pistas, como se amosa abaixo, "
+#~ "e as máis das veces non precisaras"
+#~ " de ferramentas externas ou mecanismos "
+#~ "de conexión automática."
+
+#~ msgid "Auto-Connecting Devices"
+#~ msgstr "Conexión Automática de Dispositivos"
+
+#~ msgid ""
+#~ "For other types of devices that "
+#~ "are not linked to specific tracks, "
+#~ "such as devices that send global "
+#~ "MIDI messages and devices that control"
+#~ " the transport, Zrythm has an option"
+#~ " to select these devices to auto-"
+#~ "connect to on launch."
+#~ msgstr ""
+#~ "Para outros tipos de dispositivos que"
+#~ " non están ligados a pistas "
+#~ "específicas, como os dispositivos que "
+#~ "envían mensaxes de MIDI globais e "
+#~ "dispositivos que controlan o desprazamento,"
+#~ " Zrythm ten unha opción para "
+#~ "seleccionar eses dispositivos de conexión "
+#~ "automática na execución."
+
+#~ msgid ""
+#~ "You can select these in "
+#~ ":ref:`midi_devices` in the welcome dialog "
+#~ "as well as in :ref:`preferences`."
+#~ msgstr ""
+
+#~ msgid "For most users, everything can be accomplished from within Zrythm."
+#~ msgstr ""
+
+#~ msgid "First Run Wizard"
+#~ msgstr "Asistente da Primeira Execución"
+
+#~ msgid ""
+#~ "When you first run Zrythm, it will"
+#~ " display a wizard that lets you "
+#~ "configure the basic settings that Zrythm"
+#~ " will use. These include :term:`MIDI` "
+#~ "devices, the :term:`Zrythm user path`, "
+#~ "the language of the user interface "
+#~ "and audio/MIDI backends."
+#~ msgstr ""
+#~ "A primeira vez que executes Zrythm, "
+#~ "aparecerá un asistente que che permite"
+#~ " configurar as opcións básicas que "
+#~ "usa o programa. Inclúe dispositivos "
+#~ "MIDI, o directorio por defecto de "
+#~ "Zrythm, o idioma da interface e os"
+#~ " backends de audio e MIDI."
+
+#~ msgid "Language Selection"
+#~ msgstr "Selección do Idioma"
+
+#~ msgid ""
+#~ "Zrythm lets you choose the language "
+#~ "of the interface. The interface is "
+#~ "already translated in `multiple languages "
+#~ "<https://hosted.weblate.org/projects/zrythm/#languages>`_, so"
+#~ " choose the language you are most "
+#~ "comfortable in."
+#~ msgstr ""
+
+#~ msgid "You must have a locale enabled for the language you want to use."
+#~ msgstr ""
+#~ "Precisas ter activada a configuración "
+#~ "rexional do idioma que queres empregar."
+
+#~ msgid "Path"
+#~ msgstr "Ruta"
+
+#~ msgid "This is the :term:`Zrythm user path`."
+#~ msgstr ""
+
+#~ msgid "Audio/MIDI Backends"
+#~ msgstr "Backends de Audio/MIDI"
+
+#~ msgid ""
+#~ "Zrythm supports multiple audio and MIDI"
+#~ " backend engines. :term:`JACK` is the "
+#~ "recommended one for both, but it "
+#~ "takes some time to set up if "
+#~ "this is your first time using it."
+#~ msgstr ""
+#~ "Zrythm soporta múltiples motores de "
+#~ "backend de audio e MIDI. JACK é"
+#~ " o recomendado, pero leva algo de "
+#~ "tempo configuralo a primeira vez. Se "
+#~ "non queres utilizar JACK por algún "
+#~ "motivo podes seleccionar outros backends "
+#~ "como ALSA ou SDL2."
+
+#~ msgid ""
+#~ "If JACK is not available on your"
+#~ " system, we recommend RtAudio and "
+#~ "RtMidi."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Click :guilabel:`Test` to try connecting "
+#~ "to the backend to see if it "
+#~ "is functional."
+#~ msgstr ""
+#~ "Fai clic en :zbutton:`Probar` para "
+#~ "tentar conectarse ao backend e ver "
+#~ "se funciona."
+
+#~ msgid ""
+#~ "If you choose to use JACK, JACK"
+#~ " MIDI and the JACK audio backend "
+#~ "must be chosen together."
+#~ msgstr ""
+
+#~ msgid "MIDI Devices"
+#~ msgstr "Dispositivos MIDI"
+
+#~ msgid ""
+#~ "These are the discovered devices that"
+#~ " will be auto-connected and ready "
+#~ "to use every time you run Zrythm."
+#~ " Click \"Rescan\" to scan for devices"
+#~ " again."
+#~ msgstr ""
+#~ "Estes son os dispositivos detectados que"
+#~ " se conectarán automaticamente listos para"
+#~ " usar cada vez que executes Zrythm."
+#~ " Fai clic en \"Escanear de novo\" "
+#~ "para escanear outra vez os dispositivos."
+
+#~ msgid ""
+#~ "All of the settings mentioned here "
+#~ "are also available in the "
+#~ ":ref:`preferences`, so don't worry if "
+#~ "you selected the wrong settings."
+#~ msgstr ""
+#~ "Tódalas configuracións mencionadas aquí están"
+#~ " tamén dispoñibles nas preferencias "
+#~ "(Ctrl+Shift+P ou en Ficheiro-> Preferencias),"
+#~ " así que non te preocupes se "
+#~ "escolliches unha configuración errada."
+
+#~ msgid ""
+#~ "For a list of supported languages "
+#~ "and their translation status see "
+#~ "`Weblate <https://hosted.weblate.org/projects/zrythm/>`_."
+#~ msgstr ""
 

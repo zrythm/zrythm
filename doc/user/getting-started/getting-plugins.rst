@@ -2,6 +2,8 @@
    Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
+.. sectionauthor:: Alexandros Theodotou <alex@zrythm.org>
+
 Getting Plugins, Instruments and Samples
 ========================================
 
@@ -17,12 +19,9 @@ There are many plugins to choose from. This guide
 will show you a few ways you can install plugins on
 GNU/Linux systems.
 
-.. note:: For other systems, you can find a `list of free
+.. hint:: For other systems, you can find a `list of free
   software plugins here
   <https://github.com/webprofusion/OpenAudio>`_.
-
-.. tip:: See :ref:`scanning-plugins` for paths where plugins
-  will be scanned in.
 
 For users of Debian-based distributions such as Ubuntu and
 Linux Mint we recommend using
@@ -70,6 +69,9 @@ Percussion Generators
 `GeonKick <https://gitlab.com/iurie/geonkick>`_ is a
 kick drum synthesizer that can also synthesize other types of
 percussion.
+
+.. tip:: See :ref:`scanning-plugins` for paths where plugins
+  will be scanned in.
 
 SFZ/SF2 Instruments
 -------------------

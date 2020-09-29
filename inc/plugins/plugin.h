@@ -197,6 +197,12 @@ typedef struct Plugin
 
   bool              is_project;
 
+  /** Cache: whether the plugin has a custom UI. */
+  bool              has_custom_ui;
+
+  /** Whether the cache has been set. */
+  bool              has_custom_ui_set;
+
   /** Modulator widget, if modulator. */
   ModulatorWidget * modulator_widget;
 } Plugin;

@@ -16,8 +16,9 @@ Covenant` which was adapted from https://contributor-covenant.org/. You can find
 
 Coding
 ------
-Please see the `HACKING file <https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ in the source
-distribution.
+Please see the
+:download:`HACKING <../../../HACKING.md>` file
+in the source distribution.
 
 Web Design
 ----------

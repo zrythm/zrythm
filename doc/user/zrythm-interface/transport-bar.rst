@@ -22,18 +22,29 @@ They include the following items.
    :align: center
 
 Metronome toggle
-  Toggles the metronome on/off.
+++++++++++++++++
+Toggles the metronome on/off.
+
 Metronome options
-  Sets the volume of the metronome.
++++++++++++++++++
+Sets the volume of the metronome.
+
 Return to cue point on stop
-  Toggles whether to return to the cue point when
-  playback stops.
++++++++++++++++++++++++++++
+Toggles whether to return to the cue point when
+playback stops.
+
 BPM
-  Song tempo (beats per minute).
++++
+Song tempo (beats per minute).
+
 Playhead
-  Current playhead position, in bars.beats.sixteenths.ticks.
+++++++++
+Current playhead position, in bars.beats.sixteenths.ticks.
+
 Transport buttons
-  Controls for stopping, playback, recording, etc.
++++++++++++++++++
+Controls for stopping, playback, recording, etc.
 
 .. tip:: Widgets like the BPM meter can be changed
   by clicking and dragging, or by hovering over them with the cursor

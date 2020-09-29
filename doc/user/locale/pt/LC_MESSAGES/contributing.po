@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:19+0100\n"
+"POT-Creation-Date: 2020-09-29 18:03+0100\n"
 "PO-Revision-Date: 2020-05-18 07:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -52,19 +52,15 @@ msgstr "Codificação"
 
 #: ../../contributing/intro.rst:19
 msgid ""
-"Please see the `HACKING file "
-"<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ in the "
+"Please see the :download:`HACKING <../../../HACKING.md>` file in the "
 "source distribution."
 msgstr ""
-"Por favor veja o ficheiro `HACKING "
-"<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ na "
-"distribuição da fonte."
 
-#: ../../contributing/intro.rst:23
+#: ../../contributing/intro.rst:24
 msgid "Web Design"
 msgstr "Desenho de Web"
 
-#: ../../contributing/intro.rst:24
+#: ../../contributing/intro.rst:25
 msgid ""
 "You are welcome to help us improve the looks and usability of the Zrythm "
 "website. Please join our chatrooms and talk to us."
@@ -72,11 +68,11 @@ msgstr ""
 "Pode ajudar-nos a melhorar a aparência e a usabilidade do site da Zrythm."
 " Por favor, junte-se às nossas salas de chat e fale connosco."
 
-#: ../../contributing/intro.rst:29
+#: ../../contributing/intro.rst:30
 msgid "Artwork and Themes"
 msgstr "Obras de Arte e Temas"
 
-#: ../../contributing/intro.rst:30
+#: ../../contributing/intro.rst:31
 msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized "
 "and some borrowed from other themes. If you would like to contribute "
@@ -88,11 +84,11 @@ msgstr ""
 " com ilustrações, como ícones, pode começar a criar os seus próprios "
 "temas e ícones, conforme discutido em :ref:`icon-themes` e :ref:`css`."
 
-#: ../../contributing/intro.rst:38
+#: ../../contributing/intro.rst:39
 msgid "Testing"
 msgstr "Testar"
 
-#: ../../contributing/intro.rst:39
+#: ../../contributing/intro.rst:40
 msgid ""
 "You are welcome to join us in testing the latest features in Zrythm and "
 "reporting bugs and feedback on `Redmine "
@@ -102,7 +98,7 @@ msgstr ""
 "no Zrythm e relatar bugs e comentários sobre `Redmine "
 "<https://redmine.zrythm.org/projects/zrythm/issues>`_."
 
-#: ../../contributing/intro.rst:44
+#: ../../contributing/intro.rst:45
 msgid ""
 "The latest development branch for new features is ``development`` in our "
 "`git repository <https://git.zrythm.org/cgit/zrythm>`_."
@@ -111,11 +107,11 @@ msgstr ""
 "``desenvolvimento`` no nosso repositório \"git\" "
 "<https://git.zrythm.org/cgit/zrythm>`_."
 
-#: ../../contributing/intro.rst:49
+#: ../../contributing/intro.rst:50
 msgid "Translation"
 msgstr "Tradução"
 
-#: ../../contributing/intro.rst:50
+#: ../../contributing/intro.rst:51
 msgid ""
 "Zrythm is available for translation at `Weblate "
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
@@ -125,7 +121,7 @@ msgstr ""
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ para "
 "começar."
 
-#: ../../contributing/intro.rst:53
+#: ../../contributing/intro.rst:54
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
 "program, the website as well as sections of this manual."
@@ -133,7 +129,7 @@ msgstr ""
 "O projeto de tradução Zrythm contém as traduções para o programa Zrythm, "
 "o website, assim como secções deste manual."
 
-#: ../../contributing/intro.rst:57
+#: ../../contributing/intro.rst:58
 msgid ""
 "Click on the project you wish to work on, and then select a language in "
 "the screen that follows. For more information on using Weblate, please "
@@ -145,11 +141,11 @@ msgstr ""
 "`documentação oficial "
 "<https://docs.weblate.org/en/latest/user/translating.html>`_."
 
-#: ../../contributing/intro.rst:65
+#: ../../contributing/intro.rst:66
 msgid "Editing this Manual"
 msgstr "Edição deste Manual"
 
-#: ../../contributing/intro.rst:66
+#: ../../contributing/intro.rst:67
 #, fuzzy
 msgid ""
 "Click on the :guilabel:`View Source` button at the top of the page to "
@@ -160,7 +156,7 @@ msgstr ""
 "ficheiro a página existe, encontrar o ficheiro na distribuição da fonte e"
 " editá-lo."
 
-#: ../../contributing/intro.rst:71
+#: ../../contributing/intro.rst:72
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
@@ -168,11 +164,11 @@ msgstr ""
 "Precisará ter `Sphinx <https://www.sphinx-doc.org/en/master/>`_ instalado"
 " para compilar este manual."
 
-#: ../../contributing/intro.rst:76
+#: ../../contributing/intro.rst:77
 msgid "Donations"
 msgstr "Doações"
 
-#: ../../contributing/intro.rst:77
+#: ../../contributing/intro.rst:78
 msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
@@ -181,19 +177,19 @@ msgstr ""
 "pequena ou grande, é apreciada e ajuda a sustentar o desenvolvimento "
 "contínuo:"
 
-#: ../../contributing/intro.rst:81
+#: ../../contributing/intro.rst:82
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
-#: ../../contributing/intro.rst:82
+#: ../../contributing/intro.rst:83
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
-#: ../../contributing/intro.rst:83
+#: ../../contributing/intro.rst:84
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
-#: ../../contributing/intro.rst:85
+#: ../../contributing/intro.rst:86
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer "
 "<https://www.zrythm.org/en/download.html>`_."
@@ -507,4 +503,13 @@ msgstr ""
 #~ "recorrentes. Alternativamente, pode comprar "
 #~ "binários do Zrythm em "
 #~ "https://www.zrythm.org/en/download.html"
+
+#~ msgid ""
+#~ "Please see the `HACKING file "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ in"
+#~ " the source distribution."
+#~ msgstr ""
+#~ "Por favor veja o ficheiro `HACKING "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ na"
+#~ " distribuição da fonte."
 

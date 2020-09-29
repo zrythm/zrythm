@@ -101,11 +101,18 @@ def setup(app):
    app.add_stylesheet("css/custom.css")
    # app.add_source_suffix('.rst','restructuredtext')
 
+# define some custom roles
 rst_prolog = """
 .. role:: zbutton
 .. role:: red
 .. role:: green
 .. role:: blue
+.. role:: bash(code)
+   :language: bash
+   :class: highlight
+.. role:: scheme(code)
+   :language: scheme
+   :class: highlight
 """
 
 # Theme options are theme-specific and customize the

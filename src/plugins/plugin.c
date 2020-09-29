@@ -1630,10 +1630,16 @@ plugin_has_custom_ui (
   g_return_val_if_fail (
     IS_PLUGIN (pl) && pl->descr, false);
 
+  if (pl->has_custom_ui_set)
+    {
+      return pl->has_custom_ui;
+    }
+
   /*g_debug (*/
     /*"checking if plugin %s has custom UI...",*/
     /*pl->descr->name);*/
 
+  bool has_custom_ui = false;
 #ifdef HAVE_CARLA
   if (pl->descr->open_with_carla)
     {
@@ -1645,7 +1651,8 @@ plugin_has_custom_ui (
           pl->carla->host_handle, 0);
       /*g_debug ("got carla plugin info");*/
       g_return_val_if_fail (info, false);
-      return info->hints & PLUGIN_HAS_CUSTOM_UI;
+      has_custom_ui =
+        info->hints & PLUGIN_HAS_CUSTOM_UI;
     }
   else
     {
@@ -1655,15 +1662,20 @@ plugin_has_custom_ui (
         case PROT_LV2:
           g_return_val_if_fail (
             IS_LV2_PLUGIN (pl->lv2), false);
-          return pl->lv2->ui != NULL;
+          has_custom_ui =  pl->lv2->ui != NULL;
+          break;
         default:
           g_warn_if_reached ();
+          break;
         }
 #ifdef HAVE_CARLA
     }
 #endif
 
-  return false;
+  pl->has_custom_ui = has_custom_ui;
+  pl->has_custom_ui_set = true;
+
+  return has_custom_ui;
 }
 
 /**

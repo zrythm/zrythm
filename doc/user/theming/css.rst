@@ -10,15 +10,15 @@ You can override the GTK theme that Zrythm uses along with
 much of the color scheme in a special CSS file. It is
 a good idea to start by copying the theme from your Zrythm
 installation directory
-(normally ``/usr/share/zrythm/themes/zrythm-theme.css`` on
-GNU/Linux and ``share/zrythm/themes/zrythm-theme.css`` in
+(normally :file:`/usr/share/zrythm/themes/zrythm-theme.css` on
+GNU/Linux and :file:`share/zrythm/themes/zrythm-theme.css` in
 the installation path on Windows or the Application contents
 on MacOS.
 
-You should create a file called ``theme.css`` under the
-``themes`` directory in your Zrythm directory. For example,
-if your Zrythm directory is ``/home/me/zrythm``, you should
-create a file at ``/home/me/zrythm/themes/theme.css``.
+You should create a file called :file:`theme.css` under the
+:file:`themes` directory in your Zrythm directory. For example,
+if your Zrythm directory is :file:`/home/me/zrythm`, you should
+create a file at :file:`/home/me/zrythm/themes/theme.css`.
 
 .. note:: The Zrythm theme inherits from the
   `Matcha GTK theme <https://github.com/vinceliuice/Matcha-gtk-theme>`_, so additional CSS rules may need to be

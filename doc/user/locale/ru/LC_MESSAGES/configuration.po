@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 15:50+0100\n"
+"POT-Creation-Date: 2020-09-29 18:03+0100\n"
 "PO-Revision-Date: 2020-09-26 18:02+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language: ru\n"
@@ -73,6 +73,10 @@ msgid "See :option:`zrythm --reset-to-factory`."
 msgstr "Читать подробнее: :option:`zrythm --reset-to-factory`."
 
 #: ../../configuration/additional-settings.rst:34
+msgid "Todo"
+msgstr ""
+
+#: ../../configuration/additional-settings.rst:34
 msgid "This will be added to the UI soon."
 msgstr "Скоро это будет добавлено в пользовательский интерфейс Zrythm."
 
@@ -86,49 +90,18 @@ msgstr "Подключение MIDI и Аудио устройств"
 
 #: ../../configuration/device-setup/intro.rst:11
 msgid ""
-"Depending on the selected backend (covered in :ref:`preferences-engine`),"
-" the configuration differs. Zrythm will auto-scan and allow you to "
-"connect to input devices for recording through the Track Inspector, as "
-"below, and in most cases you don't need to use any external tools or "
-"auto-connect mechanism."
+"Zrythm will auto-connect to the devices specified in "
+":ref:`configuration/preferences/intro:Audio inputs` and "
+":ref:`configuration/preferences/intro:MIDI controllers` and make these "
+"devices available in the :ref:`track inputs <tracks/inspector-"
+"page:Inputs>` (as below) and other places."
 msgstr ""
-"В зависимости от выбранного бэкенда ,описанного в :ref:`preferences-"
-"engine` конфигурация различается. Zrythm выполнит автоматическое "
-"сканирование и позволит вам подключаться к устройствам ввода для записи "
-"через Инспектор Треков (Track Inspector), как показано ниже, и в "
-"большинстве случаев вам не нужно использовать какие-либо внешние "
-"инструменты или механизм автоматического подключения."
 
-#: ../../configuration/device-setup/intro.rst:22
-msgid "Auto-Connecting Devices"
-msgstr "Автоматическое подключение устройств"
-
-#: ../../configuration/device-setup/intro.rst:24
-msgid ""
-"For other types of devices that are not linked to specific tracks, such "
-"as devices that send global MIDI messages and devices that control the "
-"transport, Zrythm has an option to select these devices to auto-connect "
-"to on launch."
-msgstr ""
-"Для других типов устройств, которые не связаны с определенными Треками "
-"(Track), таких как устройства, которые отправляют глобальные "
-"MIDI-сообщения и устройства, управляющие транспортом, Zrythm имеет "
-"возможность выбрать эти устройства для автоматического подключения при "
-"запуске."
-
-#: ../../configuration/device-setup/intro.rst:30
-msgid ""
-"You can select these in :ref:`midi_devices` in the welcome dialog as well"
-" as in :ref:`preferences`."
-msgstr ""
-"Вы можете выбрать их в :ref:`midi_devices` в Окне Приветствия (First Run "
-"Wizard), а также в :ref:`preferences`."
-
-#: ../../configuration/device-setup/intro.rst:34
+#: ../../configuration/device-setup/intro.rst:23
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../configuration/device-setup/intro.rst:36
+#: ../../configuration/device-setup/intro.rst:25
 msgid ""
 "When using the JACK audio and MIDI backend Zrythm exposes ports to JACK, "
 "so devices can be attached there using a tool like `Qjackctl "
@@ -139,11 +112,7 @@ msgstr ""
 "с помощью такого инструмента, как `Qjackctl "
 "<https://qjackctl.sourceforge.io/>`_."
 
-#: ../../configuration/device-setup/intro.rst:44
-msgid "For most users, everything can be accomplished from within Zrythm."
-msgstr "Для большинства пользователей все может быть выполнено внутри Zrythm."
-
-#: ../../configuration/device-setup/intro.rst:47
+#: ../../configuration/device-setup/intro.rst:33
 msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
 "using :term:`a2jmidid`."
@@ -151,118 +120,19 @@ msgstr ""
 "В зависимости от ваших настроек, устройства MIDI, возможно, потребуется "
 "подключить к JACK с помощью инструмента :term:`a2jmidid`."
 
-#: ../../configuration/first-run-wizard.rst:6
-msgid "First Run Wizard"
-msgstr "Окно первого запуска (First Run Wizard)"
-
-#: ../../configuration/first-run-wizard.rst:8
-#, fuzzy
-msgid ""
-"When you first run Zrythm, it will display a wizard that lets you "
-"configure the basic settings that Zrythm will use. These include "
-":term:`MIDI` devices, the :term:`Zrythm user path`, the language of the "
-"user interface and audio/MIDI backends."
-msgstr ""
-"При первом запуске Zrythm отобразится окно, позволяющее настроить "
-"основные настройки, которые будет использовать Zrythm. К ним относятся "
-"устройства MIDI, путь Zrythm по умолчанию, язык интерфейса и Аудио/MIDI "
-"бэкэнды (Backends)."
-
-#: ../../configuration/first-run-wizard.rst:15
-msgid "Language Selection"
-msgstr "Выбор языка (Language)"
-
-#: ../../configuration/first-run-wizard.rst:20
-msgid ""
-"Zrythm lets you choose the language of the interface. The interface is "
-"already translated in `multiple languages "
-"<https://hosted.weblate.org/projects/zrythm/#languages>`_, so choose the "
-"language you are most comfortable in."
+#: ../../configuration/device-setup/intro.rst:36
+msgid "Zrythm will not remember connections made externally."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:25
-msgid "You must have a locale enabled for the language you want to use."
-msgstr ""
-"У вас должена быть включена локализация (locale) для языка, который вы "
-"хотите использовать."
-
-#: ../../configuration/first-run-wizard.rst:29
-msgid "Path"
-msgstr "Путь (Path)"
-
-#: ../../configuration/first-run-wizard.rst:34
-msgid "This is the :term:`Zrythm user path`."
-msgstr "Это :term:`Zrythm user path`."
-
-#: ../../configuration/first-run-wizard.rst:37
-msgid "Audio/MIDI Backends"
-msgstr "Аудио/MIDI Бэкэнды (Backends)"
-
-#: ../../configuration/first-run-wizard.rst:42
-#, fuzzy
-msgid ""
-"Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is "
-"the recommended one for both, but it takes some time to set up if this is"
-" your first time using it."
-msgstr ""
-"Zrythm поддерживает несколько Аудио и MIDI бэкэндов. :term:`JACK` "
-"рекомендуется и в качестве Аудио бэкэнда, и в качестве MIDI бэкэнда, но "
-"для его настройки потребуется некоторое время, если вы используете его "
-"впервые. Если вы решили использовать JACK, то вам необходимо выбрать его "
-"в качестве Аудио и MIDI бэкэнда одновременно."
-
-#: ../../configuration/first-run-wizard.rst:47
-msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
-msgstr "Если JACK недоступен в вашей системе, мы рекомендуем RtAudio и RtMidi."
-
-#: ../../configuration/first-run-wizard.rst:50
-#, fuzzy
-msgid ""
-"Click :guilabel:`Test` to try connecting to the backend to see if it is "
-"functional."
-msgstr ""
-"Нажмите на кнопку :zbutton:`Проверка (Test)` чтобы попытаться "
-"подключиться к бэкэнду и проверить ее работоспособность."
-
-#: ../../configuration/first-run-wizard.rst:53
-msgid ""
-"If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
-"chosen together."
-msgstr ""
-"Если вы решили использовать JACK, то вам необходимо выбрать его в "
-"качестве аудио и MIDI бэкэнда одновременно."
-
-#: ../../configuration/first-run-wizard.rst:59
-msgid "MIDI Devices"
-msgstr "Устройства MIDI (MIDI Devices)"
-
-#: ../../configuration/first-run-wizard.rst:64
-msgid ""
-"These are the discovered devices that will be auto-connected and ready to"
-" use every time you run Zrythm. Click \"Rescan\" to scan for devices "
-"again."
-msgstr ""
-"Это обнаруженные устройства, которые будут автоматически подключаться и "
-"готовы к использованию при каждом запуске Zrythm. Нажмите на кнопку "
-":zbutton:`Сканирование (Rescan)`, чтобы снова найти устройства."
-
-#: ../../configuration/first-run-wizard.rst:68
-msgid ""
-"All of the settings mentioned here are also available in the "
-":ref:`preferences`, so don't worry if you selected the wrong settings."
-msgstr ""
-"Все упомянутые здесь настройки также доступны в :ref:`preferences`, "
-"поэтому не беспокойтесь, если вы выбрали неправильные настройки."
-
-#: ../../configuration/intro.rst:6
+#: ../../configuration/intro.rst:8
 msgid "Configuration"
 msgstr "Конфигурация"
 
-#: ../../configuration/preferences/intro.rst:8
+#: ../../configuration/preferences/intro.rst:10
 msgid "Preferences"
 msgstr "Настройки (Preferences)"
 
-#: ../../configuration/preferences/intro.rst:10
+#: ../../configuration/preferences/intro.rst:12
 msgid ""
 "Zrythm has a Preferences dialog containing all of the global settings "
 "that can be accessed by clicking the gear icon or with :kbd:`Control-"
@@ -272,7 +142,7 @@ msgstr ""
 "которому можно получить доступ, щелкнув на значок шестеренки или нажав "
 ":kbd:`Ctrl+Shift+P`"
 
-#: ../../configuration/preferences/intro.rst:14
+#: ../../configuration/preferences/intro.rst:16
 msgid ""
 "Each section in the preferences dialog is explained in the following "
 "sections."
@@ -280,19 +150,19 @@ msgstr ""
 "Каждый раздел окна \"Настройки\" объясняется в следующих разделах "
 "руководства."
 
-#: ../../configuration/preferences/intro.rst:18
+#: ../../configuration/preferences/intro.rst:20
 msgid "General"
 msgstr "Общие (General)"
 
-#: ../../configuration/preferences/intro.rst:20
+#: ../../configuration/preferences/intro.rst:22
 msgid "General settings."
 msgstr "Общие настройки."
 
-#: ../../configuration/preferences/intro.rst:28
+#: ../../configuration/preferences/intro.rst:30
 msgid "Engine"
 msgstr "Движок (Engine)"
 
-#: ../../configuration/preferences/intro.rst:30
+#: ../../configuration/preferences/intro.rst:32
 msgid "Audio engine settings."
 msgstr "Настройки звукового движка."
 
@@ -300,7 +170,7 @@ msgstr "Настройки звукового движка."
 msgid "Audio backend"
 msgstr "Аудио бэкэнд (Audio backend)"
 
-#: ../../configuration/preferences/intro.rst:33
+#: ../../configuration/preferences/intro.rst:36
 msgid ""
 "The audio backend to use. The available backends are JACK, RtAudio and "
 "SDL2. We recommend using :term:`JACK` when possible, otherwise RtAudio."
@@ -313,7 +183,7 @@ msgstr ""
 msgid "MIDI backend"
 msgstr "MIDI бэкэнд (MIDI backend)"
 
-#: ../../configuration/preferences/intro.rst:38
+#: ../../configuration/preferences/intro.rst:42
 msgid ""
 "The MIDI backend to use. The available backends are JACK MIDI, RtMidi and"
 " WindowsMME (Windows only). We recommend using JACK MIDI when possible, "
@@ -323,79 +193,88 @@ msgstr ""
 "WindowsMME (только для Windows). Мы рекомендуем по возможности "
 "использовать JACK MIDI, в противном случае - RtMidi."
 
-#: ../../configuration/preferences/intro.rst:44
+#: ../../configuration/preferences/intro.rst:48
 msgid "MIDI controllers"
 msgstr "MIDI контроллеры (MIDI controllers)"
 
-#: ../../configuration/preferences/intro.rst:44
+#: ../../configuration/preferences/intro.rst:49
 msgid "A list of controllers to auto-connect to."
 msgstr "Список контроллеров для автоматического подключения."
 
-#: ../../configuration/preferences/intro.rst:47
+#: ../../configuration/preferences/intro.rst:52
+msgid "Audio inputs"
+msgstr ""
+
+#: ../../configuration/preferences/intro.rst:53
+#, fuzzy
+msgid "A list of audio inputs to auto-connect to."
+msgstr "Список контроллеров для автоматического подключения."
+
+#: ../../configuration/preferences/intro.rst:56
 msgid "Paths (Global)"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:49
+#: ../../configuration/preferences/intro.rst:58
 msgid "Global paths."
 msgstr "Глобальные пути."
 
-#: ../../configuration/preferences/intro.rst:52
+#: ../../configuration/preferences/intro.rst:61
 msgid "Zrythm path"
 msgstr "Путь к Zrythm (Zrythm path)"
 
-#: ../../configuration/preferences/intro.rst:52
+#: ../../configuration/preferences/intro.rst:62
 msgid "The :term:`Zrythm user path`."
 msgstr ":term:`Zrythm user path`."
 
-#: ../../configuration/preferences/intro.rst:55
+#: ../../configuration/preferences/intro.rst:65
 msgid "Plugins"
 msgstr "Плагины (Plugins)"
 
-#: ../../configuration/preferences/intro.rst:57
+#: ../../configuration/preferences/intro.rst:67
 msgid ":term:`Plugin` settings."
 msgstr "Настройки :term:`Plugin`."
 
-#: ../../configuration/preferences/intro.rst:63
+#: ../../configuration/preferences/intro.rst:73
 msgid "UIs"
 msgstr "Интерфейсы плагинов (UIs)"
 
-#: ../../configuration/preferences/intro.rst:65
+#: ../../configuration/preferences/intro.rst:75
 msgid "Plugin UIs."
 msgstr "Интерфейсы плагинов."
 
-#: ../../configuration/preferences/intro.rst:69
+#: ../../configuration/preferences/intro.rst:78
 msgid "Generic UIs"
 msgstr "Стандартные интерфейсы (Generic UIs)"
 
-#: ../../configuration/preferences/intro.rst:68
+#: ../../configuration/preferences/intro.rst:79
 msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
 msgstr ""
 "Показывать общие пользовательские интерфейсы плагинов, созданные Zrythm, "
 "вместо пользовательских."
 
-#: ../../configuration/preferences/intro.rst:72
+#: ../../configuration/preferences/intro.rst:83
 msgid "Open UI on instantiation"
 msgstr ""
 "Открыть пользовательский интерфейс при добавлении плагина (Open UI on "
 "instantiation)"
 
-#: ../../configuration/preferences/intro.rst:72
+#: ../../configuration/preferences/intro.rst:84
 msgid "Open plugin UIs when they are instantiated."
 msgstr "Открывать интерфейсы плагинов после их добавления в проект."
 
-#: ../../configuration/preferences/intro.rst:75
+#: ../../configuration/preferences/intro.rst:87
 msgid "Keep window on top"
 msgstr "Держать окно поверх окна Zrythm (Keep window on top)"
 
-#: ../../configuration/preferences/intro.rst:75
+#: ../../configuration/preferences/intro.rst:88
 msgid "Always show plugin UIs on top of the main window."
 msgstr "Всегда держать интерфейсы плагинов поверх окна Zrythm."
 
-#: ../../configuration/preferences/intro.rst:79
+#: ../../configuration/preferences/intro.rst:91
 msgid "Bridge unsupported UIs"
 msgstr "Перенаправлять неподдерживаемые интерфейсы (Bridge unsupported UIs)"
 
-#: ../../configuration/preferences/intro.rst:78
+#: ../../configuration/preferences/intro.rst:92
 msgid ""
 "Bridge unsupported UIs in another process instead of creating generic "
 "ones."
@@ -403,33 +282,33 @@ msgstr ""
 "Перенаправлять неподдерживаемые интерфейсы плагинов в другой процесс "
 "вместо создания новых процессов."
 
-#: ../../configuration/preferences/intro.rst:81
+#: ../../configuration/preferences/intro.rst:95
 msgid "This may lead to performance loss for some plugins."
 msgstr "Это может привести к снижению производительности для некоторых плагинов."
 
-#: ../../configuration/preferences/intro.rst:86
+#: ../../configuration/preferences/intro.rst:99
 msgid "Refresh rate"
 msgstr "Частота обновления (Refresh rate)"
 
-#: ../../configuration/preferences/intro.rst:85
+#: ../../configuration/preferences/intro.rst:100
 msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr ""
 "Частота обновления в Гц. Если установлено значение 0, будет "
 "использоваться частота обновления вашего экрана."
 
-#: ../../configuration/preferences/intro.rst:91
+#: ../../configuration/preferences/intro.rst:106
 msgid "Paths"
 msgstr "Пути (Paths)"
 
-#: ../../configuration/preferences/intro.rst:95
+#: ../../configuration/preferences/intro.rst:109
 msgid "VST plugins"
 msgstr "VST плагины (VST Plugins)"
 
-#: ../../configuration/preferences/intro.rst:94
+#: ../../configuration/preferences/intro.rst:110
 msgid "The search paths to scan for :term:`VST2` plugins in."
 msgstr "Пути для поиска :term:`VST2` плагинов."
 
-#: ../../configuration/preferences/intro.rst:97
+#: ../../configuration/preferences/intro.rst:113
 msgid ""
 "This option is only available on Windows. On GNU/Linux and MacOS the "
 "paths are fixed. See :ref:`scanning-plugins` for details."
@@ -437,44 +316,44 @@ msgstr ""
 "Эта опция доступна только в Windows. В GNU/Linux и MacOS пути "
 "фиксированы. Смотрите :ref:`scanning-plugins` для подробностей."
 
-#: ../../configuration/preferences/intro.rst:103
+#: ../../configuration/preferences/intro.rst:118
 msgid "SFZ instruments"
 msgstr "Инструменты SFZ (SFZ instruments)"
 
-#: ../../configuration/preferences/intro.rst:102
+#: ../../configuration/preferences/intro.rst:119
 msgid "The search paths to scan for :term:`SFZ` instruments in."
 msgstr "Пути поиска инструментов :term:`SFZ`."
 
-#: ../../configuration/preferences/intro.rst:107
+#: ../../configuration/preferences/intro.rst:123
 msgid "SF2 instruments"
 msgstr "Инструменты SF2 (SF2 instruments)"
 
-#: ../../configuration/preferences/intro.rst:106
+#: ../../configuration/preferences/intro.rst:124
 msgid "The search paths to scan for :term:`SF2` instruments in."
 msgstr "Пути поиска инструментов :term:`SF2`."
 
-#: ../../configuration/preferences/intro.rst:110
+#: ../../configuration/preferences/intro.rst:128
 msgid "DSP"
 msgstr "Цифровая обработка сигналов (DSP)"
 
-#: ../../configuration/preferences/intro.rst:112
+#: ../../configuration/preferences/intro.rst:130
 msgid ":term:`DSP` settings."
 msgstr "Настройки :term:`DSP`."
 
-#: ../../configuration/preferences/intro.rst:118
+#: ../../configuration/preferences/intro.rst:136
 msgid "Pan"
 msgstr "Панорамирование (Pan)"
 
-#: ../../configuration/preferences/intro.rst:120
+#: ../../configuration/preferences/intro.rst:138
 #, fuzzy
 msgid ":term:`Panning` options for :term:`mono` signals (not used at the moment)."
 msgstr "Опции :term:`Panning` для :term:`mono` (на данный момент не используются)."
 
-#: ../../configuration/preferences/intro.rst:137
+#: ../../configuration/preferences/intro.rst:141
 msgid "Pan algorithm"
 msgstr "Алгоритм панорамирования (Pan algorithm)"
 
-#: ../../configuration/preferences/intro.rst:123
+#: ../../configuration/preferences/intro.rst:142
 msgid ""
 "The panning algorithm to use when applying pan on mono signals. See the "
 "graph below for the different curves as you move the pan from left to "
@@ -489,109 +368,109 @@ msgstr ""
 "https://www.cs.cmu.edu/~music/icm-online/readings/panlaws/index.html для "
 "получения дополнительной информации."
 
-#: ../../configuration/preferences/intro.rst:136
+#: ../../configuration/preferences/intro.rst:155
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 msgstr ""
 "Алгоритмы панорамирования (:blue:`Синус (Sine)`, :red:`Квадратный корень "
 "(Square Root)`, :green:`Линейный (Linear)`)."
 
-#: ../../configuration/preferences/intro.rst:141
+#: ../../configuration/preferences/intro.rst:159
 msgid "Pan law"
 msgstr "Правило панорамирования (Pan law)"
 
-#: ../../configuration/preferences/intro.rst:140
+#: ../../configuration/preferences/intro.rst:160
 #, fuzzy
 msgid "The :term:`pan law` to use when applying pan on mono signals."
 msgstr ""
 "Правило :term:`pan law` для использования при применении панорамирования "
 "к моно сигналам."
 
-#: ../../configuration/preferences/intro.rst:144
+#: ../../configuration/preferences/intro.rst:164
 msgid "Editing"
 msgstr "Редактирование (Editing)"
 
-#: ../../configuration/preferences/intro.rst:146
+#: ../../configuration/preferences/intro.rst:166
 msgid "Editing options."
 msgstr "Настройки редактирования."
 
-#: ../../configuration/preferences/intro.rst:152
+#: ../../configuration/preferences/intro.rst:172
 msgid "Audio"
 msgstr "Аудио (Audio)"
 
-#: ../../configuration/preferences/intro.rst:154
+#: ../../configuration/preferences/intro.rst:174
 msgid "Audio editing."
 msgstr "Редактирование аудио."
 
-#: ../../configuration/preferences/intro.rst:157
+#: ../../configuration/preferences/intro.rst:177
 msgid "Fade algorithm"
 msgstr "Алгоритм затухания (Fade algorithm)"
 
-#: ../../configuration/preferences/intro.rst:157
+#: ../../configuration/preferences/intro.rst:178
 msgid "Default fade algorithm to use for fade in/outs."
 msgstr ""
 "Алгоритм затухания по умолчанию, используемый для постепенного "
 "появления/исчезновения."
 
-#: ../../configuration/preferences/intro.rst:160
+#: ../../configuration/preferences/intro.rst:181
 msgid "Automation"
 msgstr "Автоматизация (Automation)"
 
-#: ../../configuration/preferences/intro.rst:162
+#: ../../configuration/preferences/intro.rst:183
 msgid "Automation editing."
 msgstr "Редактирование автоматизации."
 
-#: ../../configuration/preferences/intro.rst:166
+#: ../../configuration/preferences/intro.rst:186
 msgid "Curve algorithm"
 msgstr "Алгоритм кривой (Curve algorithm)"
 
-#: ../../configuration/preferences/intro.rst:165
+#: ../../configuration/preferences/intro.rst:187
 msgid "Default curve algorithm to use for automation curves."
 msgstr "Алгоритм кривой по умолчанию для использования в кривых автоматизации."
 
-#: ../../configuration/preferences/intro.rst:169
+#: ../../configuration/preferences/intro.rst:191
 msgid "Undo"
 msgstr "Отменить (Undo)"
 
-#: ../../configuration/preferences/intro.rst:171
+#: ../../configuration/preferences/intro.rst:193
 msgid "Undo options."
 msgstr "Настройки отмены."
 
-#: ../../configuration/preferences/intro.rst:175
+#: ../../configuration/preferences/intro.rst:196
 msgid "Undo stack length"
 msgstr "Длина истории отмен (Undo stack length)"
 
-#: ../../configuration/preferences/intro.rst:174
+#: ../../configuration/preferences/intro.rst:197
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
 msgstr ""
 "Максимальная длина истории отмен. Установите -1 для неограниченного "
 "количества."
 
-#: ../../configuration/preferences/intro.rst:177
+#: ../../configuration/preferences/intro.rst:200
 msgid "We recommend leaving it at 128."
 msgstr "Мы рекомендуем оставить значение 128."
 
-#: ../../configuration/preferences/intro.rst:181
+#: ../../configuration/preferences/intro.rst:204
 msgid "Projects"
 msgstr "Проекты (Projects)"
 
-#: ../../configuration/preferences/intro.rst:183
+#: ../../configuration/preferences/intro.rst:206
 msgid "Project settings."
 msgstr "Настройки проекта."
 
-#: ../../configuration/preferences/intro.rst:189
+#: ../../configuration/preferences/intro.rst:212
 #, fuzzy
 msgid "General (Project)"
 msgstr "Общие настройки проекта."
 
-#: ../../configuration/preferences/intro.rst:191
+#: ../../configuration/preferences/intro.rst:214
 msgid "General project settings."
 msgstr "Общие настройки проекта."
 
-#: ../../configuration/preferences/intro.rst:195
+#: ../../configuration/preferences/intro.rst:217
 msgid "Autosave interval"
 msgstr "Интервал автосохранения (Autosave interval)"
 
-#: ../../configuration/preferences/intro.rst:194
+#: ../../configuration/preferences/intro.rst:218
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
 "if this is set to 0."
@@ -599,7 +478,7 @@ msgstr ""
 "Интервал автоматического сохранения проектов в минутах. Автосохранение "
 "будет отключено, если установлено значение 0."
 
-#: ../../configuration/preferences/intro.rst:197
+#: ../../configuration/preferences/intro.rst:221
 msgid ""
 "This refers to automatic back-ups. The main project will not be "
 "overwritten unless you explicitly save it."
@@ -607,40 +486,42 @@ msgstr ""
 "Это относится к автоматическому резервному копированию. Основной проект "
 "не будет перезаписан, в случае если вы явно не сохраните его."
 
-#: ../../configuration/preferences/intro.rst:201
+#: ../../configuration/preferences/intro.rst:225
 msgid "UI"
 msgstr "Пользовательский интерфейс (UI)"
 
-#: ../../configuration/preferences/intro.rst:203
+#: ../../configuration/preferences/intro.rst:227
 msgid "User interface options."
 msgstr "Настройки пользовательского интерфейса."
 
-#: ../../configuration/preferences/intro.rst:209
+#: ../../configuration/preferences/intro.rst:233
 #, fuzzy
 msgid "General (UI)"
 msgstr "Общие (General)"
 
-#: ../../configuration/preferences/intro.rst:211
+#: ../../configuration/preferences/intro.rst:235
 msgid "General user interface options."
 msgstr "Общие настройки пользовательского интерфейса."
 
-#: ../../configuration/preferences/intro.rst:214
+#: ../../configuration/preferences/intro.rst:238
 msgid "User interface language"
 msgstr "Язык пользовательского интерфейса (User interface language)"
 
-#: ../../configuration/preferences/intro.rst:214
+#: ../../configuration/preferences/intro.rst:239
 msgid "The language to use for the user interface."
 msgstr "Язык, используемый для пользовательского интерфейса."
 
-#: ../../configuration/preferences/intro.rst:216
+#: ../../configuration/preferences/intro.rst:241
+#, fuzzy
 msgid ""
-"For a list of supported languages and their translation status see "
-"`Weblate <https://hosted.weblate.org/projects/zrythm/>`_."
+"For a list of supported languages and their translation status, or to "
+"translate Zrythm into your language, see `Weblate "
+"<https://hosted.weblate.org/projects/zrythm/>`_."
 msgstr ""
 "Список поддерживаемых языков и статус их перевода смотреть на `Weblate "
 "<https://hosted.weblate.org/projects/zrythm/>`_."
 
-#: ../../configuration/preferences/intro.rst:220
+#: ../../configuration/preferences/intro.rst:246
 msgid "Some of these settings require a restart of Zrythm to take effect."
 msgstr ""
 "Для вступления в силу некоторых из этих настроек требуется перезапуск "
@@ -1342,4 +1223,173 @@ msgstr ""
 #~ "интерфейса. Интерфейс уже переведен на "
 #~ "несколько языков, поэтому выберите наиболее"
 #~ " удобный для вас язык."
+
+#~ msgid ""
+#~ "Depending on the selected backend "
+#~ "(covered in :ref:`preferences-engine`), the"
+#~ " configuration differs. Zrythm will "
+#~ "auto-scan and allow you to connect"
+#~ " to input devices for recording "
+#~ "through the Track Inspector, as below,"
+#~ " and in most cases you don't "
+#~ "need to use any external tools or"
+#~ " auto-connect mechanism."
+#~ msgstr ""
+#~ "В зависимости от выбранного бэкенда "
+#~ ",описанного в :ref:`preferences-engine` "
+#~ "конфигурация различается. Zrythm выполнит "
+#~ "автоматическое сканирование и позволит вам "
+#~ "подключаться к устройствам ввода для "
+#~ "записи через Инспектор Треков (Track "
+#~ "Inspector), как показано ниже, и в "
+#~ "большинстве случаев вам не нужно "
+#~ "использовать какие-либо внешние инструменты "
+#~ "или механизм автоматического подключения."
+
+#~ msgid "Auto-Connecting Devices"
+#~ msgstr "Автоматическое подключение устройств"
+
+#~ msgid ""
+#~ "For other types of devices that "
+#~ "are not linked to specific tracks, "
+#~ "such as devices that send global "
+#~ "MIDI messages and devices that control"
+#~ " the transport, Zrythm has an option"
+#~ " to select these devices to auto-"
+#~ "connect to on launch."
+#~ msgstr ""
+#~ "Для других типов устройств, которые не"
+#~ " связаны с определенными Треками (Track),"
+#~ " таких как устройства, которые отправляют"
+#~ " глобальные MIDI-сообщения и устройства, "
+#~ "управляющие транспортом, Zrythm имеет "
+#~ "возможность выбрать эти устройства для "
+#~ "автоматического подключения при запуске."
+
+#~ msgid ""
+#~ "You can select these in "
+#~ ":ref:`midi_devices` in the welcome dialog "
+#~ "as well as in :ref:`preferences`."
+#~ msgstr ""
+#~ "Вы можете выбрать их в "
+#~ ":ref:`midi_devices` в Окне Приветствия (First"
+#~ " Run Wizard), а также в "
+#~ ":ref:`preferences`."
+
+#~ msgid "For most users, everything can be accomplished from within Zrythm."
+#~ msgstr "Для большинства пользователей все может быть выполнено внутри Zrythm."
+
+#~ msgid "First Run Wizard"
+#~ msgstr "Окно первого запуска (First Run Wizard)"
+
+#~ msgid ""
+#~ "When you first run Zrythm, it will"
+#~ " display a wizard that lets you "
+#~ "configure the basic settings that Zrythm"
+#~ " will use. These include :term:`MIDI` "
+#~ "devices, the :term:`Zrythm user path`, "
+#~ "the language of the user interface "
+#~ "and audio/MIDI backends."
+#~ msgstr ""
+#~ "При первом запуске Zrythm отобразится "
+#~ "окно, позволяющее настроить основные "
+#~ "настройки, которые будет использовать Zrythm."
+#~ " К ним относятся устройства MIDI, "
+#~ "путь Zrythm по умолчанию, язык "
+#~ "интерфейса и Аудио/MIDI бэкэнды (Backends)."
+
+#~ msgid "Language Selection"
+#~ msgstr "Выбор языка (Language)"
+
+#~ msgid ""
+#~ "Zrythm lets you choose the language "
+#~ "of the interface. The interface is "
+#~ "already translated in `multiple languages "
+#~ "<https://hosted.weblate.org/projects/zrythm/#languages>`_, so"
+#~ " choose the language you are most "
+#~ "comfortable in."
+#~ msgstr ""
+
+#~ msgid "You must have a locale enabled for the language you want to use."
+#~ msgstr ""
+#~ "У вас должена быть включена локализация"
+#~ " (locale) для языка, который вы "
+#~ "хотите использовать."
+
+#~ msgid "Path"
+#~ msgstr "Путь (Path)"
+
+#~ msgid "This is the :term:`Zrythm user path`."
+#~ msgstr "Это :term:`Zrythm user path`."
+
+#~ msgid "Audio/MIDI Backends"
+#~ msgstr "Аудио/MIDI Бэкэнды (Backends)"
+
+#~ msgid ""
+#~ "Zrythm supports multiple audio and MIDI"
+#~ " backend engines. :term:`JACK` is the "
+#~ "recommended one for both, but it "
+#~ "takes some time to set up if "
+#~ "this is your first time using it."
+#~ msgstr ""
+#~ "Zrythm поддерживает несколько Аудио и "
+#~ "MIDI бэкэндов. :term:`JACK` рекомендуется и"
+#~ " в качестве Аудио бэкэнда, и в "
+#~ "качестве MIDI бэкэнда, но для его "
+#~ "настройки потребуется некоторое время, если"
+#~ " вы используете его впервые. Если вы"
+#~ " решили использовать JACK, то вам "
+#~ "необходимо выбрать его в качестве Аудио"
+#~ " и MIDI бэкэнда одновременно."
+
+#~ msgid ""
+#~ "If JACK is not available on your"
+#~ " system, we recommend RtAudio and "
+#~ "RtMidi."
+#~ msgstr "Если JACK недоступен в вашей системе, мы рекомендуем RtAudio и RtMidi."
+
+#~ msgid ""
+#~ "Click :guilabel:`Test` to try connecting "
+#~ "to the backend to see if it "
+#~ "is functional."
+#~ msgstr ""
+#~ "Нажмите на кнопку :zbutton:`Проверка (Test)`"
+#~ " чтобы попытаться подключиться к бэкэнду"
+#~ " и проверить ее работоспособность."
+
+#~ msgid ""
+#~ "If you choose to use JACK, JACK"
+#~ " MIDI and the JACK audio backend "
+#~ "must be chosen together."
+#~ msgstr ""
+#~ "Если вы решили использовать JACK, то "
+#~ "вам необходимо выбрать его в качестве"
+#~ " аудио и MIDI бэкэнда одновременно."
+
+#~ msgid "MIDI Devices"
+#~ msgstr "Устройства MIDI (MIDI Devices)"
+
+#~ msgid ""
+#~ "These are the discovered devices that"
+#~ " will be auto-connected and ready "
+#~ "to use every time you run Zrythm."
+#~ " Click \"Rescan\" to scan for devices"
+#~ " again."
+#~ msgstr ""
+#~ "Это обнаруженные устройства, которые будут "
+#~ "автоматически подключаться и готовы к "
+#~ "использованию при каждом запуске Zrythm. "
+#~ "Нажмите на кнопку :zbutton:`Сканирование "
+#~ "(Rescan)`, чтобы снова найти устройства."
+
+#~ msgid ""
+#~ "All of the settings mentioned here "
+#~ "are also available in the "
+#~ ":ref:`preferences`, so don't worry if "
+#~ "you selected the wrong settings."
+#~ msgstr ""
+#~ "Все упомянутые здесь настройки также "
+#~ "доступны в :ref:`preferences`, поэтому не "
+#~ "беспокойтесь, если вы выбрали неправильные "
+#~ "настройки."
 

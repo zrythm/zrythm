@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-09-29 15:50+0100\n"
+"POT-Creation-Date: 2020-09-29 18:03+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,11 +37,14 @@ msgstr "Globale Tastenkürzel"
 msgid "Editor Shortcuts"
 msgstr "Editor-Tastenkürzel"
 
-#: ../../appendix/troubleshooting.rst:6
+#: ../../appendix/troubleshooting.rst:8
 msgid "Troubleshooting"
 msgstr "Fehlerbehebung"
 
-#: ../../appendix/troubleshooting.rst:8
-msgid "TODO"
-msgstr "ZU ERLEDIGEN"
+#: ../../appendix/troubleshooting.rst:10
+msgid "Write this page."
+msgstr ""
+
+#~ msgid "TODO"
+#~ msgstr "ZU ERLEDIGEN"
 

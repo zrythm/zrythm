@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
    See below for copying conditions.
 
 .. sectionauthor:: Alexandros Theodotou <alex@zrythm.org>
@@ -28,8 +28,8 @@ Welcome to the Zrythm manual.
    :maxdepth: 1
 
    getting-started/intro
-   configuration/intro
    zrythm-interface/intro
+   configuration/intro
    projects/intro
    plugins-files/intro
    tracks/intro

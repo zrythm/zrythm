@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:19+0100\n"
+"POT-Creation-Date: 2020-09-29 18:03+0100\n"
 "PO-Revision-Date: 2020-09-28 19:59+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"manualcontributing/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/zrythm/manualcontributing/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../contributing/intro.rst:6
@@ -48,29 +47,26 @@ msgstr "コーディング"
 
 #: ../../contributing/intro.rst:19
 msgid ""
-"Please see the `HACKING file "
-"<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ in the "
+"Please see the :download:`HACKING <../../../HACKING.md>` file in the "
 "source distribution."
 msgstr ""
-"ソース配布においては、こちらをご覧下さい。\n"
-"`HACKING file <https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`"
 
-#: ../../contributing/intro.rst:23
+#: ../../contributing/intro.rst:24
 msgid "Web Design"
 msgstr "Webデザイン"
 
-#: ../../contributing/intro.rst:24
+#: ../../contributing/intro.rst:25
 #, fuzzy
 msgid ""
 "You are welcome to help us improve the looks and usability of the Zrythm "
 "website. Please join our chatrooms and talk to us."
 msgstr "Zrythmウェブサイトのルックスと使いやすさを向上させるお手伝いをいたします。チャットルームに参加して、お話しください。"
 
-#: ../../contributing/intro.rst:29
+#: ../../contributing/intro.rst:30
 msgid "Artwork and Themes"
 msgstr "アートワークとテーマ"
 
-#: ../../contributing/intro.rst:30
+#: ../../contributing/intro.rst:31
 #, fuzzy
 msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized "
@@ -78,14 +74,14 @@ msgid ""
 "artwork such as icons you can start by creating your own themes and icons"
 " as discussed in :ref:`icon-themes` and :ref:`css`."
 msgstr ""
-"Zrythm は CSS でテーマを設定でき、多くのアイコンを使用しています。アイコンのようなアートワークを投稿したい場合は、 :ref:`icon-"
-"themes` や :ref:`css` で説明されているように、独自のテーマやアイコンを作成することから始めることができます。"
+"Zrythm は CSS でテーマを設定でき、多くのアイコンを使用しています。アイコンのようなアートワークを投稿したい場合は、 :ref"
+":`icon-themes` や :ref:`css` で説明されているように、独自のテーマやアイコンを作成することから始めることができます。"
 
-#: ../../contributing/intro.rst:38
+#: ../../contributing/intro.rst:39
 msgid "Testing"
 msgstr "テスト"
 
-#: ../../contributing/intro.rst:39
+#: ../../contributing/intro.rst:40
 #, fuzzy
 msgid ""
 "You are welcome to join us in testing the latest features in Zrythm and "
@@ -96,7 +92,7 @@ msgstr ""
 "<https://redmine.zrythm.org/projects/zrythm/issues>` "
 "でのバグとフィードバックの報告に参加することを大歓迎です。"
 
-#: ../../contributing/intro.rst:44
+#: ../../contributing/intro.rst:45
 msgid ""
 "The latest development branch for new features is ``development`` in our "
 "`git repository <https://git.zrythm.org/cgit/zrythm>`_."
@@ -104,11 +100,11 @@ msgstr ""
 "新機能の最新の開発ブランチは、 `gitリポジトリ <https://git.zrythm.org/cgit/zrythm>`_ の "
 "``develop`` です。"
 
-#: ../../contributing/intro.rst:49
+#: ../../contributing/intro.rst:50
 msgid "Translation"
 msgstr "翻訳"
 
-#: ../../contributing/intro.rst:50
+#: ../../contributing/intro.rst:51
 #, fuzzy
 msgid ""
 "Zrythm is available for translation at `Weblate "
@@ -118,28 +114,28 @@ msgstr ""
 "`Zrythmプロジェクトページ<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_"
 " にアクセスしてみてください。"
 
-#: ../../contributing/intro.rst:53
+#: ../../contributing/intro.rst:54
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
 "program, the website as well as sections of this manual."
 msgstr "Zrythm翻訳プロジェクトには、Zrythmプログラム、ウェブサイト、およびこのマニュアルのセクションの翻訳があります。"
 
-#: ../../contributing/intro.rst:57
+#: ../../contributing/intro.rst:58
 msgid ""
 "Click on the project you wish to work on, and then select a language in "
 "the screen that follows. For more information on using Weblate, please "
 "see the `official documentation "
 "<https://docs.weblate.org/en/latest/user/translating.html>`_."
 msgstr ""
-"作業したいプロジェクトをクリックし、次の画面で言語を選択します。Weblateの使い方については、 `公式ドキュメント <https://docs."
-"weblate.org/ja/latest/user/translating.html>`_ を参照してください。"
+"作業したいプロジェクトをクリックし、次の画面で言語を選択します。Weblateの使い方については、 `公式ドキュメント "
+"<https://docs.weblate.org/ja/latest/user/translating.html>`_ を参照してください。"
 
-#: ../../contributing/intro.rst:65
+#: ../../contributing/intro.rst:66
 #, fuzzy
 msgid "Editing this Manual"
 msgstr "このマニュアルのセクション"
 
-#: ../../contributing/intro.rst:66
+#: ../../contributing/intro.rst:67
 #, fuzzy
 msgid ""
 "Click on the :guilabel:`View Source` button at the top of the page to "
@@ -149,7 +145,7 @@ msgstr ""
 "ページの上部にある :guilabel:`View Source` "
 "ボタンをクリックして、ページが存在するファイルを見つけ、ソースディストリビューションでファイルを見つけて編集します。"
 
-#: ../../contributing/intro.rst:71
+#: ../../contributing/intro.rst:72
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
@@ -157,29 +153,29 @@ msgstr ""
 "このマニュアルをコンパイルするには、`Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "がインストールされている必要があります。"
 
-#: ../../contributing/intro.rst:76
+#: ../../contributing/intro.rst:77
 msgid "Donations"
 msgstr "寄付"
 
-#: ../../contributing/intro.rst:77
+#: ../../contributing/intro.rst:78
 msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
 msgstr "寄付金の受付には、以下のサービスを利用しています。金額の大小に関わらず、ご寄付をいただくことで、継続的な開発を維持することが可能になります。"
 
-#: ../../contributing/intro.rst:81
+#: ../../contributing/intro.rst:82
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr "`リベラペイ <https://liberapay.com/Zrythm>`_"
 
-#: ../../contributing/intro.rst:82
+#: ../../contributing/intro.rst:83
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
-#: ../../contributing/intro.rst:83
+#: ../../contributing/intro.rst:84
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
-#: ../../contributing/intro.rst:85
+#: ../../contributing/intro.rst:86
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer "
 "<https://www.zrythm.org/en/download.html>`_."
@@ -475,3 +471,13 @@ msgstr ""
 #~ "in, find the file in the source"
 #~ " distribution and edit it."
 #~ msgstr ""
+
+#~ msgid ""
+#~ "Please see the `HACKING file "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ in"
+#~ " the source distribution."
+#~ msgstr ""
+#~ "ソース配布においては、こちらをご覧下さい。\n"
+#~ "`HACKING file "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`"
+

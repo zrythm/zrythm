@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 15:50+0100\n"
+"POT-Creation-Date: 2020-09-29 18:03+0100\n"
 "PO-Revision-Date: 2020-09-27 15:22+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: it\n"
@@ -39,12 +39,12 @@ msgstr ""
 msgid "Editor Shortcuts"
 msgstr ""
 
-#: ../../appendix/troubleshooting.rst:6
+#: ../../appendix/troubleshooting.rst:8
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../appendix/troubleshooting.rst:8
-msgid "TODO"
+#: ../../appendix/troubleshooting.rst:10
+msgid "Write this page."
 msgstr ""
 
 #~ msgid ""
@@ -77,5 +77,8 @@ msgstr ""
 #~ msgid ""
 #~ "Run `sudo touch /usr/share/icons/hicolor` and"
 #~ " `sudo gtk-update-icon-cache`"
+#~ msgstr ""
+
+#~ msgid "TODO"
 #~ msgstr ""
 

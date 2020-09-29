@@ -31,4 +31,4 @@ Reset to Factory Settings
 
 See :option:`zrythm --reset-to-factory`.
 
-.. note:: This will be added to the UI soon.
+.. todo:: This will be added to the UI soon.

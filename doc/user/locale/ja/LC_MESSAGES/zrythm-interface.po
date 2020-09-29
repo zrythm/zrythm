@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 22:46+0100\n"
+"POT-Creation-Date: 2020-09-29 18:03+0100\n"
 "PO-Revision-Date: 2020-09-28 19:59+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"manualzrythm-interface/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm"
+"/manualzrythm-interface/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../zrythm-interface/bottom-panel.rst:8
@@ -91,9 +90,7 @@ msgstr "オーディオエディター"
 msgid ""
 "The audio editor is used to view the contents of audio regions. The audio"
 " editor will appear in the Editor tab when an audio region is selected."
-msgstr ""
-"オーディオエディターは、オーディオリージョンの内容を表示するために使用されます。オーディオリージョンが選択されると、オーディオエディタがエディタタブに表示"
-"されます。"
+msgstr "オーディオエディターは、オーディオリージョンの内容を表示するために使用されます。オーディオリージョンが選択されると、オーディオエディタがエディタタブに表示されます。"
 
 #: ../../zrythm-interface/bottom-panel.rst:66
 msgid "The audio editor is covered in detail in :ref:`audio-editor`."
@@ -107,8 +104,7 @@ msgstr "コードエディター"
 msgid ""
 "The chord editor is used for editing chord regions. It will appear in the"
 " Editor tab when a chord region is selected in the chord track."
-msgstr ""
-"コードエディタは、コードリージョンの編集に使用されます。コードトラックでコードリージョンが選択されている場合は、[エディタ]タブに表示されます。"
+msgstr "コードエディタは、コードリージョンの編集に使用されます。コードトラックでコードリージョンが選択されている場合は、[エディタ]タブに表示されます。"
 
 #: ../../zrythm-interface/bottom-panel.rst:78
 msgid "The chord editor is covered in detail in :ref:`chord-editor`."
@@ -340,150 +336,145 @@ msgstr "Zrythm の外観とズームなどのさまざまな領域を変更す�
 msgid "Zoom In"
 msgstr "ズーム イン"
 
-#: ../../zrythm-interface/main-toolbar.rst:79
+#: ../../zrythm-interface/main-toolbar.rst:80
 msgid "Zooms in."
 msgstr "拡大する。"
 
-#: ../../zrythm-interface/main-toolbar.rst:82
+#: ../../zrythm-interface/main-toolbar.rst:83
 msgid "Zoom Out"
 msgstr "ズームアウト"
 
-#: ../../zrythm-interface/main-toolbar.rst:82
+#: ../../zrythm-interface/main-toolbar.rst:84
 msgid "Zooms out."
 msgstr "縮小する。"
 
-#: ../../zrythm-interface/main-toolbar.rst:85
+#: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Original Size"
 msgstr "オリジナル サイズ"
 
-#: ../../zrythm-interface/main-toolbar.rst:85
+#: ../../zrythm-interface/main-toolbar.rst:88
 msgid "Zooms back to the default zoom level."
 msgstr "デフォルトのズームレベルに戻ります。"
 
-#: ../../zrythm-interface/main-toolbar.rst:89
+#: ../../zrythm-interface/main-toolbar.rst:91
 msgid "Best Fit"
 msgstr "ベストフィット"
 
-#: ../../zrythm-interface/main-toolbar.rst:88
+#: ../../zrythm-interface/main-toolbar.rst:92
 msgid ""
 "Zooms in or out as much as required to show all of the events in the "
 "timeline."
 msgstr "タイムライン内のすべてのイベントを表示するために必要なだけズームインまたはズームアウトします。"
 
-#: ../../zrythm-interface/main-toolbar.rst:92
+#: ../../zrythm-interface/main-toolbar.rst:96
 msgid "Toggle Left/Right/Bottom Panels"
 msgstr "左/右/下のパネルを切り替え"
 
-#: ../../zrythm-interface/main-toolbar.rst:92
+#: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Toggles the panel's visibility."
 msgstr "パネルの表示/非表示の切り替え。"
 
-#: ../../zrythm-interface/main-toolbar.rst:95
+#: ../../zrythm-interface/main-toolbar.rst:100
 msgid "Toggle Timeline Visibility"
 msgstr "タイムラインの表示/非表示を切り替え"
 
-#: ../../zrythm-interface/main-toolbar.rst:95
+#: ../../zrythm-interface/main-toolbar.rst:101
 msgid "Toggles the timeline's visibility."
 msgstr "タイムラインの表示/非表示の切り替え。"
 
-#: ../../zrythm-interface/main-toolbar.rst:98
+#: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Help Menu"
 msgstr "ヘルプメニュー"
 
-#: ../../zrythm-interface/main-toolbar.rst:99
+#: ../../zrythm-interface/main-toolbar.rst:105
 #, fuzzy
 msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
 msgstr "バグ報告、寄付、チャットなどのリンク。"
 
-#: ../../zrythm-interface/main-toolbar.rst:102
+#: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Chat"
 msgstr "チャット"
 
-#: ../../zrythm-interface/main-toolbar.rst:103
+#: ../../zrythm-interface/main-toolbar.rst:110
 msgid "Join the Zrythm chatroom on Matrix."
 msgstr "MatrixのZrythmチャットルームに参加する。"
 
-#: ../../zrythm-interface/main-toolbar.rst:104
+#: ../../zrythm-interface/main-toolbar.rst:113
 msgid "Manual"
 msgstr "マニュアル"
 
-#: ../../zrythm-interface/main-toolbar.rst:105
+#: ../../zrythm-interface/main-toolbar.rst:114
 #, fuzzy
 msgid "View the user manual."
 msgstr "ユーザーマニュアルを見る。"
 
-#: ../../zrythm-interface/main-toolbar.rst:106
+#: ../../zrythm-interface/main-toolbar.rst:117
 msgid "News"
 msgstr "ニュース"
 
-#: ../../zrythm-interface/main-toolbar.rst:107
+#: ../../zrythm-interface/main-toolbar.rst:118
 msgid "Show the latest changelog."
 msgstr "最新の変更履歴を表示する。"
 
-#: ../../zrythm-interface/main-toolbar.rst:108
+#: ../../zrythm-interface/main-toolbar.rst:121
 msgid "Keyboard Shortcuts"
 msgstr "ショートカットキー"
 
-#: ../../zrythm-interface/main-toolbar.rst:109
+#: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Show all the available keyboard shortcuts."
 msgstr "使用可能なすべてのキーボード ショートカットを表示します。"
 
-#: ../../zrythm-interface/main-toolbar.rst:110
+#: ../../zrythm-interface/main-toolbar.rst:125
 msgid "Donate"
 msgstr "寄付する"
 
-#: ../../zrythm-interface/main-toolbar.rst:111
+#: ../../zrythm-interface/main-toolbar.rst:126
 msgid "Donate to Zrythm through LiberaPay."
 msgstr "LiberaPayでZrythmに寄付をする。"
 
-#: ../../zrythm-interface/main-toolbar.rst:113
+#: ../../zrythm-interface/main-toolbar.rst:129
 msgid "Report a Bug"
 msgstr "バグを報告する"
 
-#: ../../zrythm-interface/main-toolbar.rst:113
+#: ../../zrythm-interface/main-toolbar.rst:130
 msgid "Opens the page to report a new bug."
 msgstr "バグを報告するページを開きます。"
 
-#: ../../zrythm-interface/main-toolbar.rst:116
+#: ../../zrythm-interface/main-toolbar.rst:133
 msgid "Additional Controls"
 msgstr "その他のコントロール"
 
-#: ../../zrythm-interface/main-toolbar.rst:117
+#: ../../zrythm-interface/main-toolbar.rst:134
 msgid "The main toolbar also contains the following widgets."
 msgstr "メイン ツールバーには、次のウィジェットも含まれています。"
 
-#: ../../zrythm-interface/main-toolbar.rst:122
+#: ../../zrythm-interface/main-toolbar.rst:139
 msgid "There are the following buttons next to the name of the current project."
 msgstr "現在のプロジェクト名の横には以下のボタンがあります。"
 
-#: ../../zrythm-interface/main-toolbar.rst:126
+#: ../../zrythm-interface/main-toolbar.rst:143
 #, fuzzy
 msgid "Scripting Interface"
 msgstr "スクリプトインタフェース"
 
-#: ../../zrythm-interface/main-toolbar.rst:126
+#: ../../zrythm-interface/main-toolbar.rst:144
 msgid "Shows the scripting interface. See :ref:`scripting` for more information."
 msgstr "スクリプト インターフェイスを表示します。詳細については、 :ref:`scripting` を参照してください。"
 
-#: ../../zrythm-interface/main-toolbar.rst:128
+#: ../../zrythm-interface/main-toolbar.rst:148
 msgid "Log Viewer"
 msgstr "ログ ビューア"
 
-#: ../../zrythm-interface/main-toolbar.rst:129
-msgid "Displays the log, which gets updated real-time."
-msgstr "リアルタイムで更新されるログを表示します。"
-
-#: ../../zrythm-interface/main-toolbar.rst:132
-msgid "Preferences"
-msgstr "設定"
-
-#: ../../zrythm-interface/main-toolbar.rst:131
-msgid "Shows the preferences dialog. See :ref:`preferences` for more information."
+#: ../../zrythm-interface/main-toolbar.rst:149
+#, fuzzy
+msgid ""
+"Displays the log, which gets updated real-time. Preferences Shows the "
+"preferences dialog. See :ref:`preferences` for more information."
 msgstr "環境設定ダイアログを表示します。詳細については、 :ref:`preferences` を参照してください。"
 
-#: ../../zrythm-interface/main-toolbar.rst:134
+#: ../../zrythm-interface/main-toolbar.rst:154
 msgid ""
 "The MIDI In widget shows the :term:`MIDI` activity of auto-connected MIDI"
 " devices and the live waveform display shows the audio waveform from the "
@@ -535,9 +526,7 @@ msgid ""
 "The timeline consists of the timeline arranger and the project's tracks "
 "on the left side. It has a special toolbar at the top for timeline-"
 "specific actions."
-msgstr ""
-"タイムラインは、タイムラインアレンジャーと左側のプロジェクトのトラックで構成されています。上部には、タイムラインに特化したアクションのための特別なツールバ"
-"ーがあります。"
+msgstr "タイムラインは、タイムラインアレンジャーと左側のプロジェクトのトラックで構成されています。上部には、タイムラインに特化したアクションのための特別なツールバーがあります。"
 
 #: ../../zrythm-interface/timeline.rst:17
 msgid ""
@@ -567,75 +556,75 @@ msgid ""
 "following items."
 msgstr "トランスポート バーには、再生の動作を変更するためのコントロールが含まれています。以下の項目が含まれます。"
 
-#: ../../zrythm-interface/transport-bar.rst:24
+#: ../../zrythm-interface/transport-bar.rst:25
 msgid "Metronome toggle"
 msgstr "メトロノームのON/OFFの切り替え"
 
-#: ../../zrythm-interface/transport-bar.rst:25
+#: ../../zrythm-interface/transport-bar.rst:26
 #, fuzzy
 msgid "Toggles the metronome on/off."
 msgstr "メトロノームのオン/オフを切り替えます"
 
-#: ../../zrythm-interface/transport-bar.rst:26
+#: ../../zrythm-interface/transport-bar.rst:29
 #, fuzzy
 msgid "Metronome options"
 msgstr "メトロノームのON/OFFの切り替え"
 
-#: ../../zrythm-interface/transport-bar.rst:27
+#: ../../zrythm-interface/transport-bar.rst:30
 msgid "Sets the volume of the metronome."
 msgstr "メトロノームのボリュームを設定します。"
 
-#: ../../zrythm-interface/transport-bar.rst:29
+#: ../../zrythm-interface/transport-bar.rst:33
 msgid "Return to cue point on stop"
 msgstr "停止時にキューポイントに戻る"
 
-#: ../../zrythm-interface/transport-bar.rst:29
+#: ../../zrythm-interface/transport-bar.rst:34
 msgid "Toggles whether to return to the cue point when playback stops."
 msgstr "再生が停止したときにキューポイントに戻るかどうかを切り替えます。"
 
-#: ../../zrythm-interface/transport-bar.rst:31
+#: ../../zrythm-interface/transport-bar.rst:38
 msgid "BPM"
 msgstr "BPM"
 
-#: ../../zrythm-interface/transport-bar.rst:32
+#: ../../zrythm-interface/transport-bar.rst:39
 #, fuzzy
 msgid "Song tempo (beats per minute)."
 msgstr "曲のテンポ（1分あたりのビート）"
 
-#: ../../zrythm-interface/transport-bar.rst:33
+#: ../../zrythm-interface/transport-bar.rst:42
 msgid "Playhead"
 msgstr "再生ヘッド"
 
-#: ../../zrythm-interface/transport-bar.rst:34
+#: ../../zrythm-interface/transport-bar.rst:43
 #, fuzzy
 msgid "Current playhead position, in bars.beats.sixteenths.ticks."
 msgstr "現在の再生ヘッドの位置（bars.beats.sixteenths.ticks単位）"
 
-#: ../../zrythm-interface/transport-bar.rst:36
+#: ../../zrythm-interface/transport-bar.rst:46
 msgid "Transport buttons"
 msgstr "トランスポートのボタン"
 
-#: ../../zrythm-interface/transport-bar.rst:36
+#: ../../zrythm-interface/transport-bar.rst:47
 msgid "Controls for stopping, playback, recording, etc."
 msgstr "停止、再生、録音などのコントロール"
 
-#: ../../zrythm-interface/transport-bar.rst:38
+#: ../../zrythm-interface/transport-bar.rst:49
 msgid ""
 "Widgets like the BPM meter can be changed by clicking and dragging, or by"
 " hovering over them with the cursor and scrolling"
 msgstr "BPMメーターなどのウィジェットは、クリックしてドラッグするか、カーソルをその上に置いてスクロールすることで変更できます"
 
-#: ../../zrythm-interface/transport-bar.rst:42
+#: ../../zrythm-interface/transport-bar.rst:53
 msgid ""
 "More information about working with the transport bar is covered in :ref"
 ":`transport-controls`."
 msgstr "トランスポート バーの操作の詳細については、 :ref:`transport-controls` で説明しています。"
 
-#: ../../zrythm-interface/transport-bar.rst:46
+#: ../../zrythm-interface/transport-bar.rst:57
 msgid "Backend Information"
 msgstr "バックエンド情報"
 
-#: ../../zrythm-interface/transport-bar.rst:47
+#: ../../zrythm-interface/transport-bar.rst:58
 msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
@@ -1219,3 +1208,10 @@ msgstr ":ref:`right-panel` (6)"
 #~ " shows the audio waveform from the"
 #~ " master output."
 #~ msgstr ""
+
+#~ msgid "Displays the log, which gets updated real-time."
+#~ msgstr "リアルタイムで更新されるログを表示します。"
+
+#~ msgid "Preferences"
+#~ msgstr "設定"
+

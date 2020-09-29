@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 15:50+0100\n"
+"POT-Creation-Date: 2020-09-29 18:03+0100\n"
 "PO-Revision-Date: 2020-09-26 11:50+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language: ru\n"
@@ -40,13 +40,13 @@ msgstr "Глобальные Комбинации Клавиш"
 msgid "Editor Shortcuts"
 msgstr "Ярлыки Редактора"
 
-#: ../../appendix/troubleshooting.rst:6
+#: ../../appendix/troubleshooting.rst:8
 msgid "Troubleshooting"
 msgstr "Диагностика"
 
-#: ../../appendix/troubleshooting.rst:8
-msgid "TODO"
-msgstr "В разработке"
+#: ../../appendix/troubleshooting.rst:10
+msgid "Write this page."
+msgstr ""
 
 #~ msgid ""
 #~ "The app icon is missing Run `sudo"
@@ -79,4 +79,7 @@ msgstr "В разработке"
 #~ "Run `sudo touch /usr/share/icons/hicolor` and"
 #~ " `sudo gtk-update-icon-cache`"
 #~ msgstr ""
+
+#~ msgid "TODO"
+#~ msgstr "В разработке"
 

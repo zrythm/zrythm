@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 15:50+0100\n"
+"POT-Creation-Date: 2020-09-29 18:03+0100\n"
 "PO-Revision-Date: 2020-04-29 22:39+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language: zh\n"
@@ -40,13 +40,13 @@ msgstr ""
 msgid "Editor Shortcuts"
 msgstr ""
 
-#: ../../appendix/troubleshooting.rst:6
+#: ../../appendix/troubleshooting.rst:8
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../appendix/troubleshooting.rst:8
-msgid "TODO"
-msgstr "确定"
+#: ../../appendix/troubleshooting.rst:10
+msgid "Write this page."
+msgstr ""
 
 #~ msgid ""
 #~ "The app icon is missing Run `sudo"
@@ -79,4 +79,7 @@ msgstr "确定"
 #~ "Run `sudo touch /usr/share/icons/hicolor` and"
 #~ " `sudo gtk-update-icon-cache`"
 #~ msgstr ""
+
+#~ msgid "TODO"
+#~ msgstr "确定"
 

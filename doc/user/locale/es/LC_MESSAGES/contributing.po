@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:19+0100\n"
+"POT-Creation-Date: 2020-09-29 18:03+0100\n"
 "PO-Revision-Date: 2020-09-26 11:50+0000\n"
 "Last-Translator: Marc <marc.izquierdo.hu@gmail.com>\n"
 "Language: es\n"
@@ -52,19 +52,15 @@ msgstr "Programación"
 
 #: ../../contributing/intro.rst:19
 msgid ""
-"Please see the `HACKING file "
-"<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ in the "
+"Please see the :download:`HACKING <../../../HACKING.md>` file in the "
 "source distribution."
 msgstr ""
-"Por favor vea el `archivo HACKING "
-"<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ en la "
-"distribución fuente."
 
-#: ../../contributing/intro.rst:23
+#: ../../contributing/intro.rst:24
 msgid "Web Design"
 msgstr "Diseño Web"
 
-#: ../../contributing/intro.rst:24
+#: ../../contributing/intro.rst:25
 msgid ""
 "You are welcome to help us improve the looks and usability of the Zrythm "
 "website. Please join our chatrooms and talk to us."
@@ -72,11 +68,11 @@ msgstr ""
 "Agradecemos su ayuda para mejorar el aspecto y usabilidad del sitio web "
 "Zrythm. Por favor, únase a nuestras salas de charla y háblenos."
 
-#: ../../contributing/intro.rst:29
+#: ../../contributing/intro.rst:30
 msgid "Artwork and Themes"
 msgstr "Arte visual y temas"
 
-#: ../../contributing/intro.rst:30
+#: ../../contributing/intro.rst:31
 msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized "
 "and some borrowed from other themes. If you would like to contribute "
@@ -89,11 +85,11 @@ msgstr ""
 "creando sus propios temas e íconos como se muestra en :ref:`icon-themes` "
 "and :ref:`css`."
 
-#: ../../contributing/intro.rst:38
+#: ../../contributing/intro.rst:39
 msgid "Testing"
 msgstr "Puesta a prueba"
 
-#: ../../contributing/intro.rst:39
+#: ../../contributing/intro.rst:40
 msgid ""
 "You are welcome to join us in testing the latest features in Zrythm and "
 "reporting bugs and feedback on `Redmine "
@@ -103,7 +99,7 @@ msgstr ""
 " reportar errores y dejarnos comentarios en `Redmine "
 "<https://redmine.zrythm.org/projects/zrythm/issues>`_."
 
-#: ../../contributing/intro.rst:44
+#: ../../contributing/intro.rst:45
 msgid ""
 "The latest development branch for new features is ``development`` in our "
 "`git repository <https://git.zrythm.org/cgit/zrythm>`_."
@@ -112,11 +108,11 @@ msgstr ""
 "``development`` in our `git repository "
 "<https://git.zrythm.org/cgit/zrythm>`_."
 
-#: ../../contributing/intro.rst:49
+#: ../../contributing/intro.rst:50
 msgid "Translation"
 msgstr "Traducción"
 
-#: ../../contributing/intro.rst:50
+#: ../../contributing/intro.rst:51
 msgid ""
 "Zrythm is available for translation at `Weblate "
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
@@ -124,7 +120,7 @@ msgstr ""
 "Zrythm está disponible para traducción en `Weblate "
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
 
-#: ../../contributing/intro.rst:53
+#: ../../contributing/intro.rst:54
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
 "program, the website as well as sections of this manual."
@@ -132,7 +128,7 @@ msgstr ""
 "El proyecto de traducción de Zrythm contiene las traducciones para el "
 "programa Zrythm, el sitio web como también las secciones de este manual."
 
-#: ../../contributing/intro.rst:57
+#: ../../contributing/intro.rst:58
 msgid ""
 "Click on the project you wish to work on, and then select a language in "
 "the screen that follows. For more information on using Weblate, please "
@@ -144,22 +140,22 @@ msgstr ""
 " sobre como usar Weblate, por favor vea la `documentación oficial "
 "<https://docs.weblate.org/en/latest/user/translating.html>`_."
 
-#: ../../contributing/intro.rst:65
+#: ../../contributing/intro.rst:66
 msgid "Editing this Manual"
 msgstr "Editar este manual"
 
-#: ../../contributing/intro.rst:66
+#: ../../contributing/intro.rst:67
 #, fuzzy
 msgid ""
 "Click on the :guilabel:`View Source` button at the top of the page to "
 "find which file the page exists in, find the file in the source "
 "distribution and edit it."
 msgstr ""
-"Haga click en el botón :guilabel:`Ver Fuente` al tope de la página para encontrar "
-"en que archivo existe la página, encontrar el archivo en la distribución "
-"fuente y editarla."
+"Haga click en el botón :guilabel:`Ver Fuente` al tope de la página para "
+"encontrar en que archivo existe la página, encontrar el archivo en la "
+"distribución fuente y editarla."
 
-#: ../../contributing/intro.rst:71
+#: ../../contributing/intro.rst:72
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
@@ -167,11 +163,11 @@ msgstr ""
 "Necesitarás tener `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "instalado para compilar este manual."
 
-#: ../../contributing/intro.rst:76
+#: ../../contributing/intro.rst:77
 msgid "Donations"
 msgstr "Donaciones"
 
-#: ../../contributing/intro.rst:77
+#: ../../contributing/intro.rst:78
 msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
@@ -179,19 +175,19 @@ msgstr ""
 "Usamos los siguientes servicios para recibir donaciones. Cualquier monto,"
 " grande o pequeño se agradece y ayuda a sostener el desarrollo continuo:"
 
-#: ../../contributing/intro.rst:81
+#: ../../contributing/intro.rst:82
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
-#: ../../contributing/intro.rst:82
+#: ../../contributing/intro.rst:83
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
-#: ../../contributing/intro.rst:83
+#: ../../contributing/intro.rst:84
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
-#: ../../contributing/intro.rst:85
+#: ../../contributing/intro.rst:86
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer "
 "<https://www.zrythm.org/en/download.html>`_."
@@ -207,4 +203,13 @@ msgstr ""
 
 #~ msgid "Sections of this manual"
 #~ msgstr "Secciones de este manual"
+
+#~ msgid ""
+#~ "Please see the `HACKING file "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ in"
+#~ " the source distribution."
+#~ msgstr ""
+#~ "Por favor vea el `archivo HACKING "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ en"
+#~ " la distribución fuente."
 

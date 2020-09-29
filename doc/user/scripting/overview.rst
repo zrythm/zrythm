@@ -12,10 +12,10 @@ The next section is a comprehensive list of all
 available procedures in the API. Each section
 in the API corresponds to a specific Guile module,
 so for example, to use the procedures in
-the ``audio position`` section, one would do
-``(use-modules (audio track))`` at the top of the
-script.
+the :scheme:`audio position` section, one would do
+:scheme:`(use-modules (audio track))` at the top
+of the script.
 
-.. note::
+.. warning:: The Guile API is experimental.
 
-  The Guile API is experimental.
+.. note:: The Guile API is not available on Windows.
