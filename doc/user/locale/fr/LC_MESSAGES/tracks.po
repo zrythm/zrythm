@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
-"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
+"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/fr/>\n"
 "Language: fr\n"
@@ -1257,7 +1257,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:16
 msgid "Audio FX"
-msgstr ""
+msgstr "Effet audio"
 
 #: ../../tracks/track-types.rst:17
 #, fuzzy
@@ -1303,11 +1303,11 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:24
 msgid "MIDI FX"
-msgstr ""
+msgstr "Effet MIDI"
 
 #: ../../tracks/track-types.rst:25
 msgid "Tempo"
-msgstr ""
+msgstr "Tempo"
 
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."

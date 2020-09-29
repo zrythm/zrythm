@@ -7,13 +7,14 @@
 # JEHANNIN <sahaa.thyva@laposte.net>, 2020.
 # Sahaathyva <sahaa.thyva@laposte.net>, 2020.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
+# Olivier Humbert <trebmuh@tuxfamily.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-28 21:18+0100\n"
 "PO-Revision-Date: 2020-09-29 22:22+0000\n"
-"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -52,19 +53,16 @@ msgid "Region"
 msgstr "Région"
 
 #: inc/gui/backend/arranger_object.h:94
-#, fuzzy
 msgid "Midi Note"
-msgstr "Note"
+msgstr "Note MIDI"
 
 #: inc/gui/backend/arranger_object.h:96
-#, fuzzy
 msgid "Chord Object"
-msgstr "Créer un ou plusieurs objet(s)"
+msgstr "Objet d'accord"
 
 #: inc/gui/backend/arranger_object.h:98
-#, fuzzy
 msgid "Scale Object"
-msgstr "Sauvegarder le projet"
+msgstr "Échelle de l'objet"
 
 #: inc/gui/backend/arranger_object.h:100 inc/audio/track.h:166
 #: src/gui/widgets/event_viewer.c:109
@@ -72,7 +70,6 @@ msgid "Marker"
 msgstr "Marqueur"
 
 #: inc/gui/backend/arranger_object.h:102
-#, fuzzy
 msgid "Automation Point"
 msgstr "Point d'automatisation"
 
@@ -83,18 +80,16 @@ msgid "Velocity"
 msgstr "Vélocité"
 
 #: inc/utils/ui.h:75
-#, fuzzy
 msgid "High"
-msgstr "Surbrillance"
+msgstr "Haut"
 
 #: inc/utils/ui.h:76
-#, fuzzy
 msgid "Normal"
-msgstr "normal"
+msgstr "Normal"
 
 #: inc/utils/ui.h:77
 msgid "Low"
-msgstr ""
+msgstr "Bas"
 
 #: inc/utils/gtk.h:50
 msgid "Cu_t"
@@ -130,9 +125,8 @@ msgid "Mute"
 msgstr "Muet"
 
 #: inc/utils/gtk.h:98 src/gui/widgets/track.c:1186
-#, fuzzy
 msgid "Unmute"
-msgstr "Activer la piste muette"
+msgstr "Désilencer"
 
 #: inc/audio/track.h:162 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:186
@@ -156,19 +150,16 @@ msgid "Chord"
 msgstr "Accord"
 
 #: inc/audio/track.h:167 src/audio/tempo_track.c:91
-#, fuzzy
 msgid "Tempo"
-msgstr "Tempo/BPM"
+msgstr "Tempo"
 
 #: inc/audio/track.h:168
-#, fuzzy
 msgid "Modulator"
-msgstr "Modulateurs"
+msgstr "Modulateur"
 
 #: inc/audio/track.h:169
-#, fuzzy
 msgid "Audio FX"
-msgstr "Audio"
+msgstr "Effet audio"
 
 #: inc/audio/track.h:170
 msgid "Audio Group"
@@ -179,9 +170,8 @@ msgid "MIDI"
 msgstr "MIDI"
 
 #: inc/audio/track.h:172
-#, fuzzy
 msgid "MIDI FX"
-msgstr "MIDI"
+msgstr "Effet MIDI"
 
 #: inc/audio/track.h:173
 msgid "MIDI Group"
@@ -193,7 +183,7 @@ msgid "Exponent"
 msgstr "Exponentiel"
 
 #: inc/audio/curve.h:92 src/audio/curve.c:42
-#, fuzzy, c-format
+#, c-format
 msgid "Superellipse"
 msgstr "Superellipse"
 
@@ -250,21 +240,19 @@ msgstr "192 000"
 
 #: inc/audio/engine.h:214
 msgid "Dummy (libsoundio)"
-msgstr ""
+msgstr "Factice (libsoundio)"
 
 #: inc/audio/engine.h:280
-#, fuzzy
 msgid "ALSA Sequencer (not working)"
-msgstr "Séquenceur ALSA"
+msgstr "Séquenceur ALSA (ne fonctionne pas)"
 
 #: inc/audio/engine.h:281
-#, fuzzy
 msgid "ALSA Sequencer (rtmidi)"
-msgstr "Séquenceur ALSA"
+msgstr "Séquenceur ALSA (rtmidi)"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:126
 msgid "Crescendo"
-msgstr ""
+msgstr "Crescendo"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:132
 msgid "Flam"
@@ -280,16 +268,15 @@ msgstr "Basculement V"
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:153
 msgid "Legato"
-msgstr ""
+msgstr "Legato"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:159
-#, fuzzy
 msgid "Portato"
-msgstr "Port"
+msgstr "Portato"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:165
 msgid "Staccato"
-msgstr ""
+msgstr "Staccato"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:171
 msgid "Strum"
@@ -338,18 +325,18 @@ msgid "Sine"
 msgstr "Sinusoidal"
 
 #: src/project.c:142
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open file: %s"
-msgstr "Impossible de voir le schéma %s"
+msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/project.c:186
 msgid "Project not compressed by zstd!"
-msgstr ""
+msgstr "Projet non-compressé par zstd !"
 
 #: src/project.c:199
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to decompress project file: %s"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la décompression du fichier-projet : %s"
 
 #: src/project.c:208
 msgid ""
@@ -360,9 +347,9 @@ msgstr ""
 "condition!"
 
 #: src/project.c:240
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write file: %s"
-msgstr "Impossible de voir le schéma %s"
+msgstr "Échec de l'écriture du fichier : %s"
 
 #: src/project.c:809
 #, c-format
@@ -380,17 +367,17 @@ msgid "Backup found"
 msgstr "Sauvegarde trouvée"
 
 #: src/project.c:872
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read file: %s"
-msgstr "Impossible de charger le client interne"
+msgstr "Échec de l'écriture du fichier : %s"
 
 #: src/project.c:924
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr ""
-"Ce projet a été créé avec une version différente de Zrythm (%s). Il se peut "
+"Ce projet a été créé avec une version différente de %s (%s). Il se peut "
 "qu'il ne fonctionne pas correctement."
 
 #: src/project.c:939
@@ -400,11 +387,8 @@ msgstr ""
 "d'informations."
 
 #: src/project.c:1122
-#, fuzzy
 msgid "Failed to load project. Will create a new one instead."
-msgstr ""
-"Impossible de charger le projet. Veuillez consulter les journaux pour plus "
-"d'informations."
+msgstr "Impossible de charger le projet. Création d'un nouveau à la place."
 
 #: src/project.c:1462
 msgid "Backup saved."
@@ -426,7 +410,7 @@ msgstr "Erreur : %s - Backtrace :\n"
 #: src/main.c:96
 #, c-format
 msgid "%s has crashed. "
-msgstr ""
+msgstr "%s a planté. "
 
 #: src/main.c:129
 #, c-format
