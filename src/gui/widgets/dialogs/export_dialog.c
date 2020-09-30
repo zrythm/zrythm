@@ -938,15 +938,18 @@ on_export_clicked (
           /* create a progress dialog and block */
           ExportProgressDialogWidget * progress_dialog =
             export_progress_dialog_widget_new (
-              &info, 0, 1);
+              &info, true, true);
           gtk_window_set_transient_for (
             GTK_WINDOW (progress_dialog),
             GTK_WINDOW (self));
           g_signal_connect (
             G_OBJECT (progress_dialog), "response",
-            G_CALLBACK (on_progress_dialog_closed), self);
-          gtk_dialog_run (GTK_DIALOG (progress_dialog));
-          gtk_widget_destroy (GTK_WIDGET (progress_dialog));
+            G_CALLBACK (on_progress_dialog_closed),
+            self);
+          gtk_dialog_run (
+            GTK_DIALOG (progress_dialog));
+          gtk_widget_destroy (
+            GTK_WIDGET (progress_dialog));
 
           g_thread_join (thread);
 
@@ -989,7 +992,7 @@ on_export_clicked (
       /* create a progress dialog and block */
       ExportProgressDialogWidget * progress_dialog =
         export_progress_dialog_widget_new (
-          &info, 0, 1);
+          &info, false, true);
       gtk_window_set_transient_for (
         GTK_WINDOW (progress_dialog),
         GTK_WINDOW (self));
