@@ -390,18 +390,15 @@ on_selection_changed (
              GTK_TREE_MODEL (
                self->plugin_tree_model))
     {
-      GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
+      GtkTreePath * tp =
+        (GtkTreePath *)
+        g_list_first (selected_rows)->data;
       GtkTreeIter iter;
       gtk_tree_model_get_iter (
         model, &iter, tp);
-      GValue value = G_VALUE_INIT;
-
-      gtk_tree_model_get_value (model,
-                                &iter,
-                                PL_COLUMN_DESCR,
-                                &value);
-      PluginDescriptor * descr =
-        g_value_get_pointer (&value);
+      PluginDescriptor * descr;
+      gtk_tree_model_get (
+        model, &iter, PL_COLUMN_DESCR, &descr, -1);
       char * label = g_strdup_printf (
         "%s\n%s, %s%s\nAudio: %d, %d\nMidi: %d, "
         "%d\nControls: %d, %d\nCV: %d, %d",

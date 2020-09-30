@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,6 +31,7 @@
 #include "settings/settings.h"
 #include "zrythm_app.h"
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
@@ -185,9 +186,12 @@ on_mixdown_toggled (
   GtkToggleButton * toggle,
   ExportDialogWidget * self)
 {
+  bool export_stems =
+    !gtk_toggle_button_get_active (toggle);
+  g_settings_set_boolean (
+    S_EXPORT, "export-stems", export_stems);
   gtk_toggle_button_set_active (
-    self->stems_toggle,
-    !gtk_toggle_button_get_active (toggle));
+    self->stems_toggle, export_stems);
 }
 
 static void
@@ -195,9 +199,12 @@ on_stems_toggled (
   GtkToggleButton * toggle,
   ExportDialogWidget * self)
 {
+  bool export_stems =
+    gtk_toggle_button_get_active (toggle);
+  g_settings_set_boolean (
+    S_EXPORT, "export-stems", export_stems);
   gtk_toggle_button_set_active (
-    self->mixdown_toggle,
-    !gtk_toggle_button_get_active (toggle));
+    self->mixdown_toggle, !export_stems);
 }
 
 /**
@@ -771,10 +778,117 @@ on_track_toggled (
 }
 
 static void
+enable_or_disable_tracks (
+  ExportDialogWidget * self,
+  bool                 enable)
+{
+  GtkTreeSelection * selection =
+    gtk_tree_view_get_selection (
+      (self->tracks_treeview));
+
+  GList * selected_rows =
+    gtk_tree_selection_get_selected_rows (
+      selection, NULL);
+  GList * list_iter =
+    g_list_first (selected_rows);
+  while (list_iter)
+    {
+      GtkTreePath * tp = list_iter->data;
+      gtk_tree_selection_select_path (
+        selection, tp);
+      GtkTreeIter iter;
+      gtk_tree_model_get_iter (
+        GTK_TREE_MODEL (self->tracks_store),
+        &iter, tp);
+      Track * track;
+      gtk_tree_model_get (
+        GTK_TREE_MODEL (self->tracks_store),
+        &iter, TRACK_COLUMN_TRACK, &track, -1);
+      g_debug ("track %s selected", track->name);
+
+      /* TODO enable/disable */
+
+      list_iter = g_list_next (list_iter);
+    }
+
+  g_list_free_full (
+    selected_rows,
+    (GDestroyNotify) gtk_tree_path_free);
+}
+
+static void
+on_tracks_disable (
+  GtkMenuItem *        menuitem,
+  ExportDialogWidget * self)
+{
+  g_message ("tracks disable");
+  enable_or_disable_tracks (self, false);
+}
+
+static void
+on_tracks_enable (
+  GtkMenuItem *        menuitem,
+  ExportDialogWidget * self)
+{
+  g_message ("tracks enable");
+  enable_or_disable_tracks (self, true);
+}
+
+static void
+show_tracks_context_menu (
+  ExportDialogWidget * self)
+{
+  GtkWidget *menuitem;
+  GtkWidget * menu = gtk_menu_new();
+
+  /* FIXME this is allocating memory every time */
+
+  menuitem =
+    gtk_menu_item_new_with_label (_("Enable"));
+  gtk_widget_set_visible (menuitem, true);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu),
+    GTK_WIDGET (menuitem));
+  g_signal_connect (
+    G_OBJECT (menuitem), "activate",
+    G_CALLBACK (on_tracks_enable), self);
+
+  menuitem =
+    gtk_menu_item_new_with_label (_("Disable"));
+  gtk_widget_set_visible (menuitem, true);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu),
+    GTK_WIDGET (menuitem));
+  g_signal_connect (
+    G_OBJECT (menuitem), "activate",
+    G_CALLBACK (on_tracks_disable), self);
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu),
+    GTK_WIDGET (self), NULL);
+  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+}
+
+static void
+on_track_right_click (
+  GtkGestureMultiPress * gesture,
+  gint                   n_press,
+  gdouble                x_dbl,
+  gdouble                y_dbl,
+  ExportDialogWidget *   self)
+{
+  if (n_press != 1)
+    return;
+
+  show_tracks_context_menu (self);
+}
+
+static void
 setup_treeview (
   ExportDialogWidget * self)
 {
-  self->tracks_model = create_model_for_tracks (self);
+  self->tracks_model =
+    create_model_for_tracks (self);
   gtk_tree_view_set_model (
     self->tracks_treeview, self->tracks_model);
 
@@ -832,13 +946,9 @@ setup_treeview (
   gtk_tree_view_set_headers_visible (
     GTK_TREE_VIEW (tree_view), false);
 
-#if 0
-  /* set search func */
-  gtk_tree_view_set_search_equal_func (
-    GTK_TREE_VIEW (tree_view),
-    (GtkTreeViewSearchEqualFunc)
-      plugin_search_equal_func,
-    self, NULL);
+  gtk_tree_selection_set_mode (
+    gtk_tree_view_get_selection (tree_view),
+    GTK_SELECTION_MULTIPLE);
 
   /* connect right click handler */
   GtkGestureMultiPress * mp =
@@ -850,7 +960,15 @@ setup_treeview (
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (mp), "pressed",
-    G_CALLBACK (on_plugin_right_click), self);
+    G_CALLBACK (on_track_right_click), self);
+
+#if 0
+  /* set search func */
+  gtk_tree_view_set_search_equal_func (
+    GTK_TREE_VIEW (tree_view),
+    (GtkTreeViewSearchEqualFunc)
+      plugin_search_equal_func,
+    self, NULL);
 
   GtkTreeSelection * sel =
     gtk_tree_view_get_selection (
