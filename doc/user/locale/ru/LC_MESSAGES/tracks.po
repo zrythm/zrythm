@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"PO-Revision-Date: 2020-09-30 22:58+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/ru/>\n"
@@ -238,12 +238,12 @@ msgstr "В разработке"
 #: ../../tracks/instrument-track.rst:77
 #: ../../tracks/midi-track.rst:91
 msgid "Lanes"
-msgstr "Шкалы (Lanes)"
+msgstr "Шкалы (Lane)"
 
 #: ../../tracks/audio-track.rst:60
 #: ../../tracks/instrument-track.rst:79
 msgid "These are similar to :ref:`midi-track-lanes`."
-msgstr "Они такие же, как и :ref:`midi-track-lanes`."
+msgstr "Читайте :ref:`midi-track-lanes`."
 
 #: ../../tracks/audio-track.rst:63
 #: ../../tracks/bus-track-audio.rst:50
@@ -262,7 +262,7 @@ msgstr "Треки автоматизации (Automation Tracks)"
 #: ../../tracks/instrument-track.rst:84
 #: ../../tracks/master-track.rst:54
 msgid "These are similar to :ref:`midi-track-automation-tracks`."
-msgstr "Они такие же, как и :ref:`midi-track-automation-tracks`."
+msgstr "Читайте :ref:`midi-track-automation-tracks`."
 
 #: ../../tracks/automation.rst:8
 msgid "Automation"
@@ -343,7 +343,7 @@ msgstr "Трек, на который будет направлен выходн
 #: ../../tracks/group-track-audio.rst:51
 #: ../../tracks/master-track.rst:49
 msgid "These are similar to :ref:`instrument-track-sends`."
-msgstr "Они такие же, как :ref:`instrument-track-sends`."
+msgstr "Читайте :ref:`instrument-track-sends`."
 
 #: ../../tracks/bus-track-midi.rst:8
 msgid "MIDI FX Track"
@@ -354,20 +354,20 @@ msgid ""
 "MIDI FX tracks can be used for MIDI effects by sending MIDI signals to "
 "them using :ref:`track-sends`."
 msgstr ""
-"MIDI FX треки можно использовать для наложения MIDI-эффектов, посылая им "
-"MIDI-сигналы с помощью :ref:`track-sends`."
+"MIDI FX треки можно использовать для наложения MIDI эффектов, посылая им "
+"MIDI сигналы с помощью :ref:`track-sends`."
 
 #: ../../tracks/bus-track-midi.rst:42
 msgid "The track to route the output of the MIDI bus track to."
-msgstr "Трек, на который будет направлен выходной MIDI-сигнал этого трека."
+msgstr "Трек, на который будет направлен выходной MIDI сигнал этого трека."
 
 #: ../../tracks/bus-track-midi.rst:47
 msgid "These are similar to :ref:`midi-track-sends`."
-msgstr "Они такие же, как :ref:`midi-track-sends`."
+msgstr "Читайте :ref:`midi-track-sends`."
 
 #: ../../tracks/chord-track.rst:8
 msgid "Chord Track"
-msgstr "Трек аккордов"
+msgstr "Трек аккордов (Chord Track)"
 
 #: ../../tracks/chord-track.rst:10
 #: ../../tracks/modulator-track.rst:10
@@ -378,8 +378,8 @@ msgid ""
 "to assist with chord progressions."
 msgstr ""
 "Трек аккордов содержит аккорды и гаммы, которые используются для указания, "
-"когда в песне используется определенный аккорд или гамма. Его основная цель -"
-" помочь с последовательностью аккордов."
+"когда в проекте используется определенный аккорд или гамма. Его основная "
+"цель - помочь с последовательностью аккордов."
 
 #: ../../tracks/chord-track.rst:18
 #: ../../tracks/modulator-track.rst:18
@@ -448,7 +448,7 @@ msgstr ""
 "Плагины можно взять и перетащить из браузера плагинов в пустое место в "
 "Списке треков (Tracklist) или Микшере (Mixer) для их добавления. Если плагин "
 "является плагином инструмента, будет создан инструментальный трек. Если "
-"плагин является эффектом, будет создан Трек шины (Bus Track)."
+"плагин является эффектом, будет создан трек шины (Bus Track)."
 
 #: ../../tracks/creating-tracks.rst:26
 msgid "See :ref:`instantiating-plugins` for how to instantiate plugins."
@@ -466,7 +466,7 @@ msgid ""
 "Audio Clip at the current Playhead position."
 msgstr ""
 "Аналогичным образом, чтобы создать Аудио трек (Audio Track) из аудиофайла ("
-"WAV, FLAC и т. д.), Вы можете перетащить аудиофайл из файлового браузера ("
+"WAV, FLAC и т. д.), вы можете перетащить аудиофайл из файлового браузера ("
 "File Browser) в пустое место в списке треков (Tracklist) или микшере (Mixer)"
 ". Это создаст Аудио трек, содержащий один аудиоклип в текущей позиции "
 "курсора."
@@ -480,7 +480,7 @@ msgid ""
 "Most Tracks can be duplicated by right clicking inside the Track and "
 "selecting :zbutton:`Duplicate`."
 msgstr ""
-"Большинство треков можно скопировать, щелкнув правой кнопкой мыши внутри "
+"Большинство треков можно сдублировать, щелкнув правой кнопкой мыши внутри "
 "трека и нажав :zbutton:`Дублировать (Dublicate)`."
 
 #: ../../tracks/group-track-audio.rst:8
@@ -495,7 +495,7 @@ msgid ""
 "volume collectively instead of separately."
 msgstr ""
 "Аудио-групповые треки можно использовать для группировки аудиосигналов "
-"посредством прямой маршрутизации. Например, бочки, малые барабаны и хай-хэты "
+"посредством прямого направления. Например, бочки, малые барабаны и хай-хэты "
 "можно направить на трек звуковой группы «Ударные», чтобы вы могли добавлять "
 "эффекты и управлять их громкостью вместе, а не по отдельности."
 
@@ -512,8 +512,8 @@ msgid ""
 "These are similar to :ref:`audio-group-track`, except that they act on "
 "MIDI signals instead of audio signals."
 msgstr ""
-"Они такие же, как :ref:`audio-group-track`, за исключением того, что "
-"работают с MIDI-сигналами вместо аудиосигналов."
+"Работает как :ref:`audio-group-track`, за исключением того, что группирует "
+"MIDI сигналы вместо аудиосигналов."
 
 #: ../../tracks/inspector-page.rst:8
 #: ../../tracks/overview.rst:60
@@ -554,8 +554,8 @@ msgid ""
 "If the track is an :ref:`instrument-track`, the instrument plugin for "
 "this track."
 msgstr ""
-"Если этот трек является :ref:`instrument-track`, тут находится плагин "
-"инструмента для этого трека."
+"Если этот трек - :ref:`instrument-track`, тут находится плагин инструмента "
+"для этого трека."
 
 #: ../../tracks/inspector-page.rst:44
 msgid "If the track takes input, there will be an input selection section."
@@ -570,8 +570,8 @@ msgid ""
 "These are slots for dropping audio or MIDI effects that will be applied "
 "to the signal as it passes through the track."
 msgstr ""
-"Это слоты для наложения аудио или MIDI-эффектов, которые будут применяться к "
-"входному сигналу, когда он проходит через этот трек."
+"Это инсерты для наложения аудио или MIDI эффектов, которые будут применяться "
+"к входному сигналу, когда он проходит через этот трек."
 
 #: ../../tracks/inspector-page.rst:59
 msgid ""
@@ -720,7 +720,7 @@ msgid ""
 msgstr ""
 "Похож на соло (Solo), за исключением того, что он уменьшает громкость других "
 "треков, а не глушит их полностью. Уровень уменьшения громкости можно "
-"контролировать в комнате управления (Control Room), описанной в: :ref"
+"контролировать в комнате управления (Control Room), описанной в :ref"
 ":`control-room`."
 
 #: ../../tracks/inspector-page.rst:145
@@ -764,7 +764,7 @@ msgid ""
 "Instrument tracks are similar to MIDI tracks, except that they produce "
 "audio instead of :term:`MIDI`."
 msgstr ""
-"Инструментальные треки похожи на MIDI-треки (MIDI Track), за исключением "
+"Инструментальные треки похожи на MIDI треки (MIDI Track), за исключением "
 "того, что они производят Аудио вместо :term:`MIDI`."
 
 #: ../../tracks/instrument-track.rst:32
@@ -773,7 +773,7 @@ msgstr "Открыть интерфейс (Show UI)"
 
 #: ../../tracks/instrument-track.rst:32
 msgid "Displays the UI of the main plugin."
-msgstr "Открывает пользовательский интерфейс основного плагина."
+msgstr "Открывает пользовательский интерфейс используемого плагина."
 
 #: ../../tracks/instrument-track.rst:39
 msgid "Freeze"
@@ -790,7 +790,7 @@ msgstr ""
 
 #: ../../tracks/instrument-track.rst:61
 msgid "These are similar to :ref:`midi-track-inputs`."
-msgstr "Они такие же, как :ref:`midi-track-inputs`."
+msgstr "Читайте :ref:`midi-track-inputs`."
 
 #: ../../tracks/instrument-track.rst:69
 msgid "Pre-Fader Out L/R"
@@ -822,10 +822,10 @@ msgid ""
 " to save CPU power, instrument tracks can be frozen (temporarily "
 "converted to audio), which dramatically lowers their CPU usage."
 msgstr ""
-"Есть у вас проблемы с производительностью, или если вы просто хотите "
-"сэкономить мощность процессора, используйте DSP , треки инструментов "
-"могут быть заморожены (временно преобразованы в аудио), что снижает "
-"нагрузку на процессор."
+"Если у вас проблемы с производительностью из-за :term:`DSP`, или если вы "
+"просто хотите сэкономить мощность процессора, треки инструментов могут быть "
+"заморожены (временно преобразованы в аудио), что снижает нагрузку на "
+"процессор."
 
 #: ../../tracks/instrument-track.rst:94
 msgid ""
@@ -852,8 +852,8 @@ msgid ""
 msgstr ""
 "Маркерный трек содержит маркеры - пользовательские или предварительно "
 "определенные - которые упрощают переход к определенным разделам проекта и их "
-"экспорт. В каждом проекте может быть только один маркерный трек, и ее нельзя "
-"удалить, но можно скрыть."
+"экспорт. В каждом проекте может быть только один маркерный трек, и его "
+"нельзя удалить, но можно скрыть."
 
 #: ../../tracks/marker-track.rst:32
 msgid "The name of the marker track."
@@ -869,9 +869,9 @@ msgid ""
 "Zrythm uses to route the resulting audio signal after all the processing "
 "is done to the audio backend."
 msgstr ""
-"Мастер трек - это особый тип :ref:`audio-group-track`, который Zrythm "
-"использует для направления аудиосигнала в аудио бэкэнд (Audio Backend) после "
-"того, как вся обработка выполнена."
+"Мастер трек - это особый тип трека, похожий на :ref:`audio-group-track`, "
+"который Zrythm использует для направления аудиосигнала в аудио бэкэнд (Audio "
+"Backend) после того, как вся обработка выполнена."
 
 #: ../../tracks/master-track.rst:41
 msgid "The name of the track. This cannot be changed."
@@ -987,10 +987,11 @@ msgid ""
 "Lanes are also useful for generally organizing your regions. For example "
 "you can keep high notes in lane 1 and bass notes in lane 2."
 msgstr ""
-"Шкалы полезны при записи (Record), так как каждый раз, когда воспроизведение "
-"зацикливается, запись начинается с новой шкалы и заглушается регион на "
-"предыдущей шкале. Шкалы также полезны для организации ваших регионов. "
-"Например, вы можете хранить высокие ноты на шкале 1 и низкие ноты на шкале 2."
+"Шкалы полезны при записи (Record), потому что каждый раз, когда "
+"воспроизведение зацикливается, запись начинается с новой шкалы и заглушается "
+"регион на предыдущей шкале. Шкалы также полезны для организации ваших "
+"регионов. Например, вы можете хранить высокие ноты на шкале 1 и низкие ноты "
+"на шкале 2."
 
 #: ../../tracks/midi-track.rst:109
 msgid "Lanes can be made visible by clicking the \"hamburger\" icon."
@@ -1078,10 +1079,10 @@ msgid ""
 " are  used for putting tracks under the same folder and performing common"
 " operations."
 msgstr ""
-"В Zrythm групповые треки (Group Tracks) используются для группирования "
-"сигналов (прямое направление), FX треки (FX Track) и треки шин (Bus Track) "
-"используются для эффектов (Effects) или посылов (Send), а треки папок ("
-"Folder Track) используются для помещения треков в одну и ту же папку и "
+"В Zrythm групповые треки (Group Track) используются для объединения аудио "
+"или MIDI сигналов, FX треки (FX Track) и треки шин (Bus Track) используются "
+"для эффектов (Effect) или посылов (Send), а треки папок (Folder Track) "
+"используются для помещения нескольких треков разных типов в один трек и "
 "выполнения общих операций (в разработке)."
 
 #: ../../tracks/overview.rst:35
@@ -1154,7 +1155,7 @@ msgstr ""
 
 #: ../../tracks/tempo-track.rst:6
 msgid "Tempo Track"
-msgstr "Трек темпа"
+msgstr "Трек темпа (Tempo Track)"
 
 #: ../../tracks/track-operations.rst:8
 msgid "Track Operations"
@@ -1170,8 +1171,8 @@ msgid ""
 "Track, and dropping it at another location. The drop locations will be "
 "highlighted as you move the Track."
 msgstr ""
-"Треки можно перемещать. Нужно зажать правую кнопку мыши на треке и "
-"переместить ее в любое место. При перемещении трека места, доступные для "
+"Треки можно перемещать. Нужно зажать левую кнопку мыши на треке и "
+"переместить мышь в любое место. При перемещении трека места, доступные для "
 "перемещения, будут подсвечиваться."
 
 #: ../../tracks/track-operations.rst:18
