@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-10-01 00:27+0100\n"
 "PO-Revision-Date: 2020-09-29 22:22+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/glossary/"
-"ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/zrythm/glossary/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../glossary/intro.rst:8
@@ -55,30 +54,39 @@ msgid ""
 msgstr "バランス（または :term:`stereo` バランス）とは、ステレオオーディオ信号の左右のバランスのことです。"
 
 #: ../../glossary/intro.rst:23
+msgid "Bounce"
+msgstr ""
+
+#: ../../glossary/intro.rst:25
+msgid "Bouncing means exporting to audio."
+msgstr ""
+
+#: ../../glossary/intro.rst:26
 msgid "CLI"
 msgstr "CLI"
 
-#: ../../glossary/intro.rst:25
+#: ../../glossary/intro.rst:28
 #, fuzzy
 msgid ""
 ":abbr:`CLI (Command Line Interface)` is the interface users interact with"
 " when typing commands in a terminal."
 msgstr ""
-":abbr:`CLI (Command Line Interface)` は、ユーザがターミナルでコマンドを入力する際に対話するインターフェースです。"
+":abbr:`CLI (Command Line Interface)` "
+"は、ユーザがターミナルでコマンドを入力する際に対話するインターフェースです。"
 
-#: ../../glossary/intro.rst:28
+#: ../../glossary/intro.rst:31
 msgid "Clip"
 msgstr "クリップ"
 
-#: ../../glossary/intro.rst:30
+#: ../../glossary/intro.rst:33
 msgid "Used interchangeably with :ref:`region <regions>`."
 msgstr ":ref:`リージョン <regions>` と互換的に使用されます。"
 
-#: ../../glossary/intro.rst:32
+#: ../../glossary/intro.rst:35
 msgid "Control"
 msgstr "コントロール"
 
-#: ../../glossary/intro.rst:34
+#: ../../glossary/intro.rst:37
 msgid ""
 "A control is a :doc:`port <../routing/ports>` with a user-changeable "
 "control value that affects a processor, such as a plugin. For example, a "
@@ -88,55 +96,54 @@ msgstr ""
 "で、プラグインなどのプロセッサに影響を与えるユーザーが変更可能なコントロール値を持ちます。例えば、ゲインコントロールなどです。 "
 ":term:`parameter` と互換的に使用される。"
 
-#: ../../glossary/intro.rst:39
+#: ../../glossary/intro.rst:42
 msgid "CV"
 msgstr "CV"
 
-#: ../../glossary/intro.rst:41
+#: ../../glossary/intro.rst:44
 msgid ""
 "In a software environment, :abbr:`CV (Control Voltage)` represents audio-"
 "rate control data."
 msgstr "ソフトウェア環境では、 :abbr:`CV (Control Voltage)` はオーディオレート制御データを表します。"
 
-#: ../../glossary/intro.rst:44
+#: ../../glossary/intro.rst:47
 msgid "DAW"
 msgstr "DAW"
 
-#: ../../glossary/intro.rst:46
+#: ../../glossary/intro.rst:49
 #, fuzzy
 msgid ""
 "A :abbr:`DAW (Digital Audio Workstation)` is software used to compose, "
 "record, edit, arrange, mix and master music."
 msgstr ""
-":abbr:`DAW (デジタルオーディオワークステーション)` は、音楽を構成、録音、編集、アレンジ、ミックス、マスターに使用されるソフトウェアです。"
+":abbr:`DAW (デジタルオーディオワークステーション)` "
+"は、音楽を構成、録音、編集、アレンジ、ミックス、マスターに使用されるソフトウェアです。"
 
-#: ../../glossary/intro.rst:49
+#: ../../glossary/intro.rst:52
 msgid "DSP"
 msgstr "DSP"
 
-#: ../../glossary/intro.rst:51
+#: ../../glossary/intro.rst:54
 msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "means audio signal processing."
 msgstr ""
 
-#: ../../glossary/intro.rst:54
+#: ../../glossary/intro.rst:57
 msgid "Free software"
 msgstr "自由なソフトウェア"
 
-#: ../../glossary/intro.rst:56
+#: ../../glossary/intro.rst:59
 msgid ""
 "Free/libre software means users control the program, as opposed to "
 "proprietary software, where the program controls the users."
-msgstr ""
-"フリー/自由ソフトウェアとは、プログラムがユーザーをコントロールするプロプライエタリなソフトウェアとは対照的に、ユーザーがプログラムをコントロールすること"
-"を意味します。"
+msgstr "フリー/自由ソフトウェアとは、プログラムがユーザーをコントロールするプロプライエタリなソフトウェアとは対照的に、ユーザーがプログラムをコントロールすることを意味します。"
 
-#: ../../glossary/intro.rst:59
+#: ../../glossary/intro.rst:62
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../glossary/intro.rst:61
+#: ../../glossary/intro.rst:64
 msgid ""
 ":abbr:`JACK (JACK Audio Connection Kit)` is a sound server that offers "
 "low latency for users and provides a simple API for developers. It is the"
@@ -145,110 +152,112 @@ msgstr ""
 ":abbr:`JACK (JACK Audio Connection Kit)` は、ユーザに低レイテンシを提供し、開発者にシンプルな API "
 "を提供するサウンドサーバです。これは GNU/Linux 上のプロ用オーディオのための事実上の標準的なサウンドサーバです。"
 
-#: ../../glossary/intro.rst:67
+#: ../../glossary/intro.rst:70
 msgid "LV2"
 msgstr "LV2"
 
-#: ../../glossary/intro.rst:69
+#: ../../glossary/intro.rst:72
 msgid ""
 ":abbr:`LV2 (LADSPA Version 2)` is an extensible, cross-platform open "
 "standard for audio plugins. LV2 has a simple core interface, which is "
 "accompanied by extensions that add more advanced functionality."
 msgstr ""
-":abbr:`LV2 (LADSPA バージョン 2)` は、オーディオプラグイン用の拡張可能なクロスプラットフォームオープンスタンダードです。LV2には"
-"シンプルなコアインターフェースがあり、より高度な機能を追加する拡張機能が付属しています。"
+":abbr:`LV2 (LADSPA バージョン 2)` "
+"は、オーディオプラグイン用の拡張可能なクロスプラットフォームオープンスタンダードです。LV2にはシンプルなコアインターフェースがあり、より高度な機能を追加する拡張機能が付属しています。"
 
-#: ../../glossary/intro.rst:74
+#: ../../glossary/intro.rst:77
 msgid "MIDI"
 msgstr "MIDI"
 
-#: ../../glossary/intro.rst:76
+#: ../../glossary/intro.rst:79
 msgid ""
 ":abbr:`MIDI (Musical Instrument Digital Interface)` is a technical "
 "standard for communication between musical instruments and computers."
 msgstr ""
-"abbr:`MIDI (Musical Instrument Digital Interface)` は、楽器とコンピュータ間の通信のための技術規格です。"
+"abbr:`MIDI (Musical Instrument Digital Interface)` "
+"は、楽器とコンピュータ間の通信のための技術規格です。"
 
-#: ../../glossary/intro.rst:79
+#: ../../glossary/intro.rst:82
 msgid "MIDI note"
 msgstr "MIDIノート"
 
-#: ../../glossary/intro.rst:81
+#: ../../glossary/intro.rst:84
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
 msgstr ":term:`MIDI` ノートは仮想（またはハードウェア）楽器をトリガーするために使用されます。"
 
-#: ../../glossary/intro.rst:86
+#: ../../glossary/intro.rst:89
 msgid "Mono"
 msgstr "モノ"
 
-#: ../../glossary/intro.rst:88
+#: ../../glossary/intro.rst:91
 msgid "A single-channel audio signal (see also :term:`stereo`)."
 msgstr "シングルチャンネルのオーディオ信号 ( :term:`stereo` も参照)。"
 
-#: ../../glossary/intro.rst:90
-msgid "Pan Law"
+#: ../../glossary/intro.rst:93
+#, fuzzy
+msgid "Pan law"
 msgstr "Pan Law"
 
-#: ../../glossary/intro.rst:92
+#: ../../glossary/intro.rst:95
 msgid "TODO"
 msgstr "TODO"
 
-#: ../../glossary/intro.rst:93
+#: ../../glossary/intro.rst:96
 msgid "Panning"
 msgstr "パンニング"
 
-#: ../../glossary/intro.rst:95
+#: ../../glossary/intro.rst:98
 msgid ""
 "Panning is the distribution of a :term:`mono` signal into a new stereo or"
 " multi-channel sound field."
 msgstr "パンニングとは、 :term:`mono` 信号を新しいステレオやマルチチャンネルの音場に分配することです。"
 
-#: ../../glossary/intro.rst:98
+#: ../../glossary/intro.rst:101
 msgid "Parameter"
 msgstr "パラメータ"
 
-#: ../../glossary/intro.rst:100
+#: ../../glossary/intro.rst:103
 msgid "Used interchangeably with :term:`control`."
 msgstr ":term:`control` と互換的に使用されます。"
 
-#: ../../glossary/intro.rst:101
+#: ../../glossary/intro.rst:104
 msgid "Plugin"
 msgstr "プラグイン"
 
-#: ../../glossary/intro.rst:103
+#: ../../glossary/intro.rst:106
 msgid ""
 "A plugin is an external module that provides audio processing "
 "capabilities to Zrythm, such as an :term:`SFZ` instrument or an "
 ":term:`LV2` reverb plugin."
 msgstr ""
 
-#: ../../glossary/intro.rst:107
+#: ../../glossary/intro.rst:110
 msgid "Project"
 msgstr "プロジェクト"
 
-#: ../../glossary/intro.rst:109
+#: ../../glossary/intro.rst:112
 #, fuzzy
 msgid ""
 "A project refers to a work session. It is saved as a directory containing"
 " a project file along with other auxiliary files. See :ref:`Projects` for"
 " more details."
 msgstr ""
-"プロジェクトは、作業セッションを参照します。プロジェクト ファイルを含むディレクトリとして、他の補助ファイルと共に保存されます。詳細については、:ref:"
-"'Projects' を参照してください。"
+"プロジェクトは、作業セッションを参照します。プロジェクト "
+"ファイルを含むディレクトリとして、他の補助ファイルと共に保存されます。詳細については、:ref:'Projects' を参照してください。"
 
-#: ../../glossary/intro.rst:113
+#: ../../glossary/intro.rst:116
 msgid "Range"
 msgstr "レンジ"
 
-#: ../../glossary/intro.rst:115
+#: ../../glossary/intro.rst:118
 msgid "A Range is a selection of time between two positions."
 msgstr "レンジ（範囲）は、2 つの位置間の時間の選択です。"
 
-#: ../../glossary/intro.rst:120
+#: ../../glossary/intro.rst:123
 msgid "Region"
 msgstr "リージョン"
 
-#: ../../glossary/intro.rst:122
+#: ../../glossary/intro.rst:125
 msgid ""
 "A region (or :term:`clip`) is a container for MIDI Notes, audio or other "
 "events. See :ref:`regions`."
@@ -256,56 +265,56 @@ msgstr ""
 "リージョン(または :term:`clip` )は、MIDI ノート、オーディオ、その他のイベントのコンテナです。 :ref:`regions` "
 "を参照してください。"
 
-#: ../../glossary/intro.rst:125
+#: ../../glossary/intro.rst:128
 msgid "SFZ"
 msgstr "SFZ"
 
-#: ../../glossary/intro.rst:127
+#: ../../glossary/intro.rst:130
 msgid "SFZ is a file format for sample-based virtual instruments."
 msgstr "SFZ は、サンプルベースの仮想楽器用のファイルフォーマットです。"
 
-#: ../../glossary/intro.rst:129
+#: ../../glossary/intro.rst:132
 msgid "SF2"
 msgstr "SF2"
 
-#: ../../glossary/intro.rst:131
+#: ../../glossary/intro.rst:134
 msgid "SF2 is the successor of :term:`SFZ`."
 msgstr "SF2は :term:`SFZ` の後継である。"
 
-#: ../../glossary/intro.rst:132
+#: ../../glossary/intro.rst:135
 msgid "Stereo"
 msgstr "ステレオ"
 
-#: ../../glossary/intro.rst:134
+#: ../../glossary/intro.rst:137
 msgid "A two-channel audio signal (left and right) (see also :term:`mono`)."
 msgstr "2 チャンネルのオーディオ信号(左と右)( :term:`mono` も参照)。"
 
-#: ../../glossary/intro.rst:136
+#: ../../glossary/intro.rst:139
 msgid "VST2"
 msgstr "VST2"
 
-#: ../../glossary/intro.rst:138
+#: ../../glossary/intro.rst:141
 msgid ""
 "A proprietary plugin standard and the predecessor of VST3. We do not "
 "recommend using this standard."
 msgstr "プロプライエタリのプラグイン標準と VST3 の前身。この標準を使用することはお勧めしません。"
 
-#: ../../glossary/intro.rst:140
+#: ../../glossary/intro.rst:143
 msgid "VST3"
 msgstr "VST3"
 
-#: ../../glossary/intro.rst:142
+#: ../../glossary/intro.rst:145
 msgid ""
 "VST3 is a plugin standard that supersedes :term:`VST2`. It is better to "
 "use VST3 than VST2, because it is released as :term:`free software`. "
 "However, we recommend using the :term:`LV2` standard instead."
 msgstr ""
 
-#: ../../glossary/intro.rst:147
+#: ../../glossary/intro.rst:150
 msgid "Zrythm user path"
 msgstr "Zrythm ユーザー パス"
 
-#: ../../glossary/intro.rst:149
+#: ../../glossary/intro.rst:152
 msgid ""
 "The path where Zrythm will save user data, such as projects, temporary "
 "files, presets and exported audio. The default is :file:`zrythm` under"
@@ -313,7 +322,7 @@ msgstr ""
 "プロジェクト、一時ファイル、プリセット、エクスポートされたオーディオなど、Zrythmがユーザーデータを保存するパス。デフォルトは下記の下の "
 ":file:`zrythm` です。"
 
-#: ../../glossary/intro.rst:154
+#: ../../glossary/intro.rst:157
 msgid ""
 ":envvar:`XDG_DATA_HOME` (see the `XDG Base Directory Specification "
 "<https://specifications.freedesktop.org/basedir-spec/basedir-spec-"
@@ -321,7 +330,7 @@ msgid ""
 ":envvar:`XDG_DATA_HOME` is defined), or"
 msgstr ""
 
-#: ../../glossary/intro.rst:159
+#: ../../glossary/intro.rst:162
 msgid "the directory for local application data on Windows"
 msgstr "Windowsでは、ローカル アプリケーション データのディレクトリ"
 
@@ -357,3 +366,4 @@ msgstr "Windowsでは、ローカル アプリケーション データのディ
 
 #~ msgid "The content of regions can be edited in an editor (see :ref:`editors`)."
 #~ msgstr ""
+

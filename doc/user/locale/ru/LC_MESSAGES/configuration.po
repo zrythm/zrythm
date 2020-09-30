@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 23:37+0100\n"
+"POT-Creation-Date: 2020-10-01 00:27+0100\n"
 "PO-Revision-Date: 2020-09-26 18:02+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language: ru\n"
@@ -380,7 +380,7 @@ msgstr "Правило панорамирования (Pan law)"
 
 #: ../../configuration/preferences/intro.rst:160
 #, fuzzy
-msgid "The :term:`pan law` to use when applying pan on mono signals."
+msgid "The :term:`Pan law` to use when applying pan on mono signals."
 msgstr ""
 "Правило :term:`pan law` для использования при применении панорамирования "
 "к моно сигналам."

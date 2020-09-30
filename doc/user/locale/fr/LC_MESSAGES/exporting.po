@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-10-01 00:27+0100\n"
 "PO-Revision-Date: 2020-09-27 15:22+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
-"manualexporting/fr/>\n"
 "Language: fr\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/zrythm/manualexporting/fr/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../exporting/audio-and-midi.rst:8
@@ -34,15 +33,20 @@ msgstr ""
 "La boîte de dialogue de l'Export ci-dessous permet d'exporter le projet "
 "ou une partie du projet dans des fichiers audio ou MIDI."
 
-#: ../../exporting/audio-and-midi.rst:19
+#: ../../exporting/audio-and-midi.rst:18
+#, fuzzy
+msgid "Export dialog"
+msgstr "Exportation"
+
+#: ../../exporting/audio-and-midi.rst:21
 msgid "Fields"
 msgstr "Champs"
 
-#: ../../exporting/audio-and-midi.rst:22
+#: ../../exporting/audio-and-midi.rst:24
 msgid "Artist and Genre"
 msgstr "Artiste et genre"
 
-#: ../../exporting/audio-and-midi.rst:24
+#: ../../exporting/audio-and-midi.rst:25
 msgid ""
 "These will be included as metadata to the exported file if the format "
 "supports it. The title used will be the project title."
@@ -50,7 +54,7 @@ msgstr ""
 "Ceux-ci seront inclus en tant que métadonnées dans le fichier exporté si "
 "le format le supporte. Le titre utilisé sera le titre du projet."
 
-#: ../../exporting/audio-and-midi.rst:29
+#: ../../exporting/audio-and-midi.rst:30
 msgid "Format"
 msgstr "Format"
 
@@ -73,22 +77,27 @@ msgid "WAV - .wav"
 msgstr "WAV - .wav"
 
 #: ../../exporting/audio-and-midi.rst:37
-msgid "MP3 - .mp3"
-msgstr "MP3 - .mp3"
-
-#: ../../exporting/audio-and-midi.rst:38
 msgid "MIDI - .mid"
 msgstr "MIDI - .mid"
 
-#: ../../exporting/audio-and-midi.rst:41
+#: ../../exporting/audio-and-midi.rst:39
+#: ../../exporting/audio-and-midi.rst:44
+msgid "Todo"
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:39
+msgid "MP3 support."
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:42
 msgid "Dither"
 msgstr "Bruit de dispersion"
 
-#: ../../exporting/audio-and-midi.rst:43
-msgid "TODO"
-msgstr "ÀFAIRE"
+#: ../../exporting/audio-and-midi.rst:44
+msgid "Implement."
+msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:46
+#: ../../exporting/audio-and-midi.rst:47
 msgid "Bit Depth"
 msgstr "Profondeur binaire"
 
@@ -102,7 +111,7 @@ msgstr ""
 "audio. Plus la profondeur binaire est élevée, plus le fichier sera grand,"
 " mais il sera de meilleure qualité."
 
-#: ../../exporting/audio-and-midi.rst:53
+#: ../../exporting/audio-and-midi.rst:54
 msgid "Time Range"
 msgstr "Plage temporelle"
 
@@ -120,22 +129,49 @@ msgstr ""
 msgid "Filename Pattern"
 msgstr "Motif de nom de fichier"
 
-#: ../../exporting/audio-and-midi.rst:62
+#: ../../exporting/audio-and-midi.rst:61
 msgid "The pattern to use as the name of the file."
 msgstr "Le motif à utiliser comme nom du fichier."
 
+#: ../../exporting/audio-and-midi.rst:64
+msgid "Mixdown"
+msgstr ""
+
 #: ../../exporting/audio-and-midi.rst:65
-msgid "Open Exported Directory"
+msgid ""
+"When exporting the mixdown, sound from all selected tracks will be "
+"included in the resulting file. This is the option to use when exporting "
+"your song."
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:72
+msgid "Export options for mixdown"
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:77
+#, fuzzy
+msgid "Exported file"
 msgstr "Ouvrir le répertoire exporté"
 
-#: ../../exporting/audio-and-midi.rst:66
-msgid ""
-"Once export is completed, a dialog will appear with an option to open the"
-" directory the file was saved in using your default file browser program."
+#: ../../exporting/audio-and-midi.rst:80
+msgid "Stems"
 msgstr ""
-"Une fois l'exportation terminée, une boîte de dialogue apparaîtra avec "
-"une option permettant d'ouvrir le répertoire dans lequel le fichier a été"
-" enregistré à l'aide de votre navigateur de fichiers par défaut."
+
+#: ../../exporting/audio-and-midi.rst:81
+msgid ""
+"Exporting stems means that each selected track will be exported in its "
+"own file. This is useful when you want to share the components of your "
+"song separately. For example, you can :term:`bounce <Bounce>` the drums "
+"and the bass as separate audio files."
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:91
+msgid "Export options for stems"
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:96
+msgid "Exported files"
+msgstr ""
 
 #: ../../exporting/intro.rst:6
 msgid "Exporting"
@@ -153,12 +189,12 @@ msgstr ""
 
 #: ../../exporting/routing-graph.rst:13
 msgid ""
-"Clicking the :zbutton:`Export Graph` button will show the following "
-"selection. The routing graph can be exported as either a PNG image or a "
-".dot graph."
+"Clicking the :guilabel:`Export Graph` button in the :doc:`../zrythm-"
+"interface/main-toolbar` will show the following selection. The routing "
+"graph can be exported as either a PNG image or a .dot graph."
 msgstr ""
 
-#: ../../exporting/routing-graph.rst:21
+#: ../../exporting/routing-graph.rst:22
 msgid ""
 "For large projects, it may take a while to generate the PNG graph and the"
 " resulting image will be extremely large."
@@ -172,3 +208,32 @@ msgstr ""
 
 #~ msgid "Overview"
 #~ msgstr "Vue générale"
+
+#~ msgid "MP3 - .mp3"
+#~ msgstr "MP3 - .mp3"
+
+#~ msgid "TODO"
+#~ msgstr "ÀFAIRE"
+
+#~ msgid ""
+#~ "Once export is completed, a dialog "
+#~ "will appear with an option to open"
+#~ " the directory the file was saved "
+#~ "in using your default file browser "
+#~ "program."
+#~ msgstr ""
+#~ "Une fois l'exportation terminée, une "
+#~ "boîte de dialogue apparaîtra avec une"
+#~ " option permettant d'ouvrir le répertoire"
+#~ " dans lequel le fichier a été "
+#~ "enregistré à l'aide de votre navigateur"
+#~ " de fichiers par défaut."
+
+#~ msgid ""
+#~ "Clicking the :zbutton:`Export Graph` button"
+#~ " will show the following selection. "
+#~ "The routing graph can be exported "
+#~ "as either a PNG image or a "
+#~ ".dot graph."
+#~ msgstr ""
+

@@ -86,10 +86,11 @@ These are similar to :ref:`midi-track-automation-tracks`.
 Freezing
 --------
 
-If DSP usage is high and you have performance issues, or
-if you just want to save CPU power, instrument tracks can
-be frozen (temporarily converted to audio), which
-dramatically lowers their CPU usage.
+If :term:`DSP` usage is high and you have
+performance issues, or if you just want to save CPU
+power, instrument tracks can be frozen (temporarily
+converted to audio), which dramatically lowers
+their CPU usage.
 
 Instruments can be frozen by clicking the
 Freeze button in the track interface.

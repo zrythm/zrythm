@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-10-01 00:27+0100\n"
 "PO-Revision-Date: 2020-05-26 22:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -276,8 +276,8 @@ msgstr "Navegador de Plugins"
 
 #: ../../plugins-files/plugins/plugin-info.rst:8
 msgid ""
-"There are various types of plugins (see :term:`plugin`) supported by "
-"Zrythm, mentioned in :ref:`scanning-plugins`."
+"There are various types of :term:`plugins <Plugin>` supported by Zrythm, "
+"mentioned in :ref:`scanning-plugins`."
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:12
@@ -978,5 +978,11 @@ msgstr ""
 #~ "SFZ and SF2 instruments will be "
 #~ "scanned in all directories and "
 #~ "subdirectories specified in :ref:`vst-paths`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "There are various types of plugins "
+#~ "(see :term:`plugin`) supported by Zrythm, "
+#~ "mentioned in :ref:`scanning-plugins`."
 #~ msgstr ""
 

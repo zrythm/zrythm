@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-10-01 00:27+0100\n"
 "PO-Revision-Date: 2020-03-07 09:52+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -33,15 +33,20 @@ msgstr ""
 "O diálogo de Exportar de abaixo emprégase para exportar o proxecto ou "
 "parte do mesmo en ficheiros de audio ou MIDI."
 
-#: ../../exporting/audio-and-midi.rst:19
+#: ../../exporting/audio-and-midi.rst:18
+#, fuzzy
+msgid "Export dialog"
+msgstr "Exportación"
+
+#: ../../exporting/audio-and-midi.rst:21
 msgid "Fields"
 msgstr "Campos"
 
-#: ../../exporting/audio-and-midi.rst:22
+#: ../../exporting/audio-and-midi.rst:24
 msgid "Artist and Genre"
 msgstr "Artista e Xénero"
 
-#: ../../exporting/audio-and-midi.rst:24
+#: ../../exporting/audio-and-midi.rst:25
 msgid ""
 "These will be included as metadata to the exported file if the format "
 "supports it. The title used will be the project title."
@@ -49,7 +54,7 @@ msgstr ""
 "Estes serán incluídos como metadatos no ficheiro exportado se o formato o"
 " permite. O título utilizado será o do proxecto."
 
-#: ../../exporting/audio-and-midi.rst:29
+#: ../../exporting/audio-and-midi.rst:30
 msgid "Format"
 msgstr "Formato"
 
@@ -72,22 +77,27 @@ msgid "WAV - .wav"
 msgstr "WAV - .wav"
 
 #: ../../exporting/audio-and-midi.rst:37
-msgid "MP3 - .mp3"
-msgstr "MP3 - .mp3"
-
-#: ../../exporting/audio-and-midi.rst:38
 msgid "MIDI - .mid"
 msgstr "MIDI - .mid"
 
-#: ../../exporting/audio-and-midi.rst:41
+#: ../../exporting/audio-and-midi.rst:39
+#: ../../exporting/audio-and-midi.rst:44
+msgid "Todo"
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:39
+msgid "MP3 support."
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:42
 msgid "Dither"
 msgstr "Dither"
 
-#: ../../exporting/audio-and-midi.rst:43
-msgid "TODO"
-msgstr "TODO"
+#: ../../exporting/audio-and-midi.rst:44
+msgid "Implement."
+msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:46
+#: ../../exporting/audio-and-midi.rst:47
 msgid "Bit Depth"
 msgstr "Profundidade de Bits"
 
@@ -100,7 +110,7 @@ msgstr ""
 "Esta é a profundidade de bits que se empregará ao exportar o audio. Canto"
 " máis alta sexa, máis pesado será o arquivo e mellor calidade terá."
 
-#: ../../exporting/audio-and-midi.rst:53
+#: ../../exporting/audio-and-midi.rst:54
 msgid "Time Range"
 msgstr "Intervalo de Tempo"
 
@@ -118,22 +128,49 @@ msgstr ""
 msgid "Filename Pattern"
 msgstr "Patrón do Nome dos Arquivos"
 
-#: ../../exporting/audio-and-midi.rst:62
+#: ../../exporting/audio-and-midi.rst:61
 msgid "The pattern to use as the name of the file."
 msgstr "O patrón a usar como nome do arquivo."
 
+#: ../../exporting/audio-and-midi.rst:64
+msgid "Mixdown"
+msgstr ""
+
 #: ../../exporting/audio-and-midi.rst:65
-msgid "Open Exported Directory"
+msgid ""
+"When exporting the mixdown, sound from all selected tracks will be "
+"included in the resulting file. This is the option to use when exporting "
+"your song."
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:72
+msgid "Export options for mixdown"
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:77
+#, fuzzy
+msgid "Exported file"
 msgstr "Abrir Directorio de Exportación"
 
-#: ../../exporting/audio-and-midi.rst:66
-msgid ""
-"Once export is completed, a dialog will appear with an option to open the"
-" directory the file was saved in using your default file browser program."
+#: ../../exporting/audio-and-midi.rst:80
+msgid "Stems"
 msgstr ""
-"Unha vez se rematou a exportación, aparecerá un diálogo cunha opción para"
-" abrir o directorio no que foi gardado o ficheiro empregando o teu "
-"explorador por defecto."
+
+#: ../../exporting/audio-and-midi.rst:81
+msgid ""
+"Exporting stems means that each selected track will be exported in its "
+"own file. This is useful when you want to share the components of your "
+"song separately. For example, you can :term:`bounce <Bounce>` the drums "
+"and the bass as separate audio files."
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:91
+msgid "Export options for stems"
+msgstr ""
+
+#: ../../exporting/audio-and-midi.rst:96
+msgid "Exported files"
+msgstr ""
 
 #: ../../exporting/intro.rst:6
 msgid "Exporting"
@@ -151,12 +188,12 @@ msgstr ""
 
 #: ../../exporting/routing-graph.rst:13
 msgid ""
-"Clicking the :zbutton:`Export Graph` button will show the following "
-"selection. The routing graph can be exported as either a PNG image or a "
-".dot graph."
+"Clicking the :guilabel:`Export Graph` button in the :doc:`../zrythm-"
+"interface/main-toolbar` will show the following selection. The routing "
+"graph can be exported as either a PNG image or a .dot graph."
 msgstr ""
 
-#: ../../exporting/routing-graph.rst:21
+#: ../../exporting/routing-graph.rst:22
 msgid ""
 "For large projects, it may take a while to generate the PNG graph and the"
 " resulting image will be extremely large."
@@ -164,4 +201,31 @@ msgstr ""
 
 #~ msgid "Overview"
 #~ msgstr "Información xeral"
+
+#~ msgid "MP3 - .mp3"
+#~ msgstr "MP3 - .mp3"
+
+#~ msgid "TODO"
+#~ msgstr "TODO"
+
+#~ msgid ""
+#~ "Once export is completed, a dialog "
+#~ "will appear with an option to open"
+#~ " the directory the file was saved "
+#~ "in using your default file browser "
+#~ "program."
+#~ msgstr ""
+#~ "Unha vez se rematou a exportación, "
+#~ "aparecerá un diálogo cunha opción para"
+#~ " abrir o directorio no que foi "
+#~ "gardado o ficheiro empregando o teu "
+#~ "explorador por defecto."
+
+#~ msgid ""
+#~ "Clicking the :zbutton:`Export Graph` button"
+#~ " will show the following selection. "
+#~ "The routing graph can be exported "
+#~ "as either a PNG image or a "
+#~ ".dot graph."
+#~ msgstr ""
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-10-01 00:27+0100\n"
 "PO-Revision-Date: 2020-09-22 15:12+0000\n"
 "Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language: zh_TW\n"
@@ -239,8 +239,8 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:8
 msgid ""
-"There are various types of plugins (see :term:`plugin`) supported by "
-"Zrythm, mentioned in :ref:`scanning-plugins`."
+"There are various types of :term:`plugins <Plugin>` supported by Zrythm, "
+"mentioned in :ref:`scanning-plugins`."
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:12
@@ -725,5 +725,11 @@ msgstr ""
 #~ "See :ref:`plugin-types` for more "
 #~ "information about the various types of"
 #~ " plugins there are."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "There are various types of plugins "
+#~ "(see :term:`plugin`) supported by Zrythm, "
+#~ "mentioned in :ref:`scanning-plugins`."
 #~ msgstr ""
 

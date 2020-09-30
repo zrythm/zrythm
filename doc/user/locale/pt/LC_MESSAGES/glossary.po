@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-10-01 00:27+0100\n"
 "PO-Revision-Date: 2020-09-29 22:22+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"glossary/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese "
+"<https://hosted.weblate.org/projects/zrythm/glossary/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../glossary/intro.rst:8
@@ -55,244 +54,252 @@ msgid ""
 msgstr ""
 
 #: ../../glossary/intro.rst:23
-msgid "CLI"
+msgid "Bounce"
 msgstr ""
 
 #: ../../glossary/intro.rst:25
+msgid "Bouncing means exporting to audio."
+msgstr ""
+
+#: ../../glossary/intro.rst:26
+msgid "CLI"
+msgstr ""
+
+#: ../../glossary/intro.rst:28
 msgid ""
 ":abbr:`CLI (Command Line Interface)` is the interface users interact with"
 " when typing commands in a terminal."
 msgstr ""
 
-#: ../../glossary/intro.rst:28
+#: ../../glossary/intro.rst:31
 msgid "Clip"
 msgstr ""
 
-#: ../../glossary/intro.rst:30
+#: ../../glossary/intro.rst:33
 msgid "Used interchangeably with :ref:`region <regions>`."
 msgstr ""
 
-#: ../../glossary/intro.rst:32
+#: ../../glossary/intro.rst:35
 msgid "Control"
 msgstr ""
 
-#: ../../glossary/intro.rst:34
+#: ../../glossary/intro.rst:37
 msgid ""
 "A control is a :doc:`port <../routing/ports>` with a user-changeable "
 "control value that affects a processor, such as a plugin. For example, a "
 "gain control. Used interchangeably with :term:`parameter`."
 msgstr ""
 
-#: ../../glossary/intro.rst:39
+#: ../../glossary/intro.rst:42
 msgid "CV"
 msgstr ""
 
-#: ../../glossary/intro.rst:41
+#: ../../glossary/intro.rst:44
 msgid ""
 "In a software environment, :abbr:`CV (Control Voltage)` represents audio-"
 "rate control data."
 msgstr ""
 
-#: ../../glossary/intro.rst:44
+#: ../../glossary/intro.rst:47
 msgid "DAW"
 msgstr ""
 
-#: ../../glossary/intro.rst:46
+#: ../../glossary/intro.rst:49
 msgid ""
 "A :abbr:`DAW (Digital Audio Workstation)` is software used to compose, "
 "record, edit, arrange, mix and master music."
 msgstr ""
 
-#: ../../glossary/intro.rst:49
+#: ../../glossary/intro.rst:52
 msgid "DSP"
 msgstr ""
 
-#: ../../glossary/intro.rst:51
+#: ../../glossary/intro.rst:54
 msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "means audio signal processing."
 msgstr ""
 
-#: ../../glossary/intro.rst:54
+#: ../../glossary/intro.rst:57
 msgid "Free software"
 msgstr ""
 
-#: ../../glossary/intro.rst:56
+#: ../../glossary/intro.rst:59
 msgid ""
 "Free/libre software means users control the program, as opposed to "
 "proprietary software, where the program controls the users."
 msgstr ""
 
-#: ../../glossary/intro.rst:59
+#: ../../glossary/intro.rst:62
 msgid "JACK"
 msgstr ""
 
-#: ../../glossary/intro.rst:61
+#: ../../glossary/intro.rst:64
 msgid ""
 ":abbr:`JACK (JACK Audio Connection Kit)` is a sound server that offers "
 "low latency for users and provides a simple API for developers. It is the"
 " de facto standard sound server for professional audio on GNU/Linux."
 msgstr ""
 
-#: ../../glossary/intro.rst:67
+#: ../../glossary/intro.rst:70
 msgid "LV2"
 msgstr ""
 
-#: ../../glossary/intro.rst:69
+#: ../../glossary/intro.rst:72
 msgid ""
 ":abbr:`LV2 (LADSPA Version 2)` is an extensible, cross-platform open "
 "standard for audio plugins. LV2 has a simple core interface, which is "
 "accompanied by extensions that add more advanced functionality."
 msgstr ""
 
-#: ../../glossary/intro.rst:74
+#: ../../glossary/intro.rst:77
 msgid "MIDI"
 msgstr ""
 
-#: ../../glossary/intro.rst:76
+#: ../../glossary/intro.rst:79
 msgid ""
 ":abbr:`MIDI (Musical Instrument Digital Interface)` is a technical "
 "standard for communication between musical instruments and computers."
 msgstr ""
 
-#: ../../glossary/intro.rst:79
+#: ../../glossary/intro.rst:82
 msgid "MIDI note"
 msgstr ""
 
-#: ../../glossary/intro.rst:81
+#: ../../glossary/intro.rst:84
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
 
-#: ../../glossary/intro.rst:86
+#: ../../glossary/intro.rst:89
 msgid "Mono"
 msgstr ""
 
-#: ../../glossary/intro.rst:88
+#: ../../glossary/intro.rst:91
 msgid "A single-channel audio signal (see also :term:`stereo`)."
 msgstr ""
 
-#: ../../glossary/intro.rst:90
-msgid "Pan Law"
-msgstr ""
-
-#: ../../glossary/intro.rst:92
-msgid "TODO"
-msgstr "A FAZER"
-
 #: ../../glossary/intro.rst:93
-msgid "Panning"
+msgid "Pan law"
 msgstr ""
 
 #: ../../glossary/intro.rst:95
+msgid "TODO"
+msgstr "A FAZER"
+
+#: ../../glossary/intro.rst:96
+msgid "Panning"
+msgstr ""
+
+#: ../../glossary/intro.rst:98
 msgid ""
 "Panning is the distribution of a :term:`mono` signal into a new stereo or"
 " multi-channel sound field."
 msgstr ""
 
-#: ../../glossary/intro.rst:98
+#: ../../glossary/intro.rst:101
 msgid "Parameter"
 msgstr ""
 
-#: ../../glossary/intro.rst:100
+#: ../../glossary/intro.rst:103
 msgid "Used interchangeably with :term:`control`."
 msgstr ""
 
-#: ../../glossary/intro.rst:101
+#: ../../glossary/intro.rst:104
 msgid "Plugin"
 msgstr ""
 
-#: ../../glossary/intro.rst:103
+#: ../../glossary/intro.rst:106
 msgid ""
 "A plugin is an external module that provides audio processing "
 "capabilities to Zrythm, such as an :term:`SFZ` instrument or an "
 ":term:`LV2` reverb plugin."
 msgstr ""
 
-#: ../../glossary/intro.rst:107
+#: ../../glossary/intro.rst:110
 msgid "Project"
 msgstr "Projeto"
 
-#: ../../glossary/intro.rst:109
+#: ../../glossary/intro.rst:112
 msgid ""
 "A project refers to a work session. It is saved as a directory containing"
 " a project file along with other auxiliary files. See :ref:`Projects` for"
 " more details."
 msgstr ""
 
-#: ../../glossary/intro.rst:113
+#: ../../glossary/intro.rst:116
 msgid "Range"
 msgstr ""
 
-#: ../../glossary/intro.rst:115
+#: ../../glossary/intro.rst:118
 msgid "A Range is a selection of time between two positions."
 msgstr ""
 
-#: ../../glossary/intro.rst:120
+#: ../../glossary/intro.rst:123
 msgid "Region"
 msgstr ""
 
-#: ../../glossary/intro.rst:122
+#: ../../glossary/intro.rst:125
 msgid ""
 "A region (or :term:`clip`) is a container for MIDI Notes, audio or other "
 "events. See :ref:`regions`."
 msgstr ""
 
-#: ../../glossary/intro.rst:125
+#: ../../glossary/intro.rst:128
 msgid "SFZ"
 msgstr ""
 
-#: ../../glossary/intro.rst:127
+#: ../../glossary/intro.rst:130
 msgid "SFZ is a file format for sample-based virtual instruments."
 msgstr ""
 
-#: ../../glossary/intro.rst:129
+#: ../../glossary/intro.rst:132
 msgid "SF2"
 msgstr ""
 
-#: ../../glossary/intro.rst:131
+#: ../../glossary/intro.rst:134
 msgid "SF2 is the successor of :term:`SFZ`."
 msgstr ""
 
-#: ../../glossary/intro.rst:132
+#: ../../glossary/intro.rst:135
 msgid "Stereo"
 msgstr ""
 
-#: ../../glossary/intro.rst:134
+#: ../../glossary/intro.rst:137
 msgid "A two-channel audio signal (left and right) (see also :term:`mono`)."
 msgstr ""
 
-#: ../../glossary/intro.rst:136
+#: ../../glossary/intro.rst:139
 msgid "VST2"
 msgstr ""
 
-#: ../../glossary/intro.rst:138
+#: ../../glossary/intro.rst:141
 msgid ""
 "A proprietary plugin standard and the predecessor of VST3. We do not "
 "recommend using this standard."
 msgstr ""
 
-#: ../../glossary/intro.rst:140
+#: ../../glossary/intro.rst:143
 msgid "VST3"
 msgstr ""
 
-#: ../../glossary/intro.rst:142
+#: ../../glossary/intro.rst:145
 msgid ""
 "VST3 is a plugin standard that supersedes :term:`VST2`. It is better to "
 "use VST3 than VST2, because it is released as :term:`free software`. "
 "However, we recommend using the :term:`LV2` standard instead."
 msgstr ""
 
-#: ../../glossary/intro.rst:147
+#: ../../glossary/intro.rst:150
 msgid "Zrythm user path"
 msgstr ""
 
-#: ../../glossary/intro.rst:149
+#: ../../glossary/intro.rst:152
 msgid ""
 "The path where Zrythm will save user data, such as projects, temporary "
 "files, presets and exported audio. The default is :file:`zrythm` under"
 msgstr ""
 
-#: ../../glossary/intro.rst:154
+#: ../../glossary/intro.rst:157
 msgid ""
 ":envvar:`XDG_DATA_HOME` (see the `XDG Base Directory Specification "
 "<https://specifications.freedesktop.org/basedir-spec/basedir-spec-"
@@ -300,7 +307,7 @@ msgid ""
 ":envvar:`XDG_DATA_HOME` is defined), or"
 msgstr ""
 
-#: ../../glossary/intro.rst:159
+#: ../../glossary/intro.rst:162
 msgid "the directory for local application data on Windows"
 msgstr ""
 
@@ -336,3 +343,7 @@ msgstr ""
 
 #~ msgid "The content of regions can be edited in an editor (see :ref:`editors`)."
 #~ msgstr ""
+
+#~ msgid "Pan Law"
+#~ msgstr ""
+

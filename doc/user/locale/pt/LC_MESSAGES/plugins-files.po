@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-10-01 00:27+0100\n"
 "PO-Revision-Date: 2020-09-08 21:36+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -276,8 +276,8 @@ msgstr "Visão Geral de Suplementos"
 
 #: ../../plugins-files/plugins/plugin-info.rst:8
 msgid ""
-"There are various types of plugins (see :term:`plugin`) supported by "
-"Zrythm, mentioned in :ref:`scanning-plugins`."
+"There are various types of :term:`plugins <Plugin>` supported by Zrythm, "
+"mentioned in :ref:`scanning-plugins`."
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:12
@@ -1053,4 +1053,10 @@ msgstr ""
 #~ "especificar caminhos personalizados. Por "
 #~ "exemplo, ``VST_PATH=$HOME/custom-vst-dir "
 #~ "zrythm``."
+
+#~ msgid ""
+#~ "There are various types of plugins "
+#~ "(see :term:`plugin`) supported by Zrythm, "
+#~ "mentioned in :ref:`scanning-plugins`."
+#~ msgstr ""
 

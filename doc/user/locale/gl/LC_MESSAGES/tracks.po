@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-10-01 00:30+0100\n"
 "PO-Revision-Date: 2020-06-29 20:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -783,17 +783,18 @@ msgid "Freezing"
 msgstr "Conxelar"
 
 #: ../../tracks/instrument-track.rst:89
+#, fuzzy
 msgid ""
-"If DSP usage is high and you have performance issues, or if you just want"
-" to save CPU power, instrument tracks can be frozen (temporarily "
-"converted to audio), which dramatically lowers their CPU usage."
+"If :term:`DSP` usage is high and you have performance issues, or if you "
+"just want to save CPU power, instrument tracks can be frozen (temporarily"
+" converted to audio), which dramatically lowers their CPU usage."
 msgstr ""
 "Se o uso do DSP é alto e tes problemas de execución, ou simplemente "
 "queres aforrar recursos da CPU, as pistas de instrumento poden ser "
 "conxeladas (convertidas temporalmente a audio), o que diminúe de xeito "
 "notorio o uso da CPU."
 
-#: ../../tracks/instrument-track.rst:94
+#: ../../tracks/instrument-track.rst:95
 msgid ""
 "Instruments can be frozen by clicking the Freeze button in the track "
 "interface."

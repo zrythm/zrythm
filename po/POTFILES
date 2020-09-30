@@ -95,7 +95,6 @@ inc/gui/widgets/tracklist_header.h
 inc/gui/widgets/bot_bar.h
 inc/gui/widgets/transport_controls.h
 inc/gui/widgets/route_target_selector_popover.h
-inc/gui/widgets/export_midi_file_dialog.h
 inc/gui/widgets/track_properties_expander.h
 inc/gui/widgets/modulator_view.h
 inc/gui/widgets/fader.h
@@ -138,17 +137,14 @@ inc/gui/widgets/file_browser.h
 inc/gui/widgets/port_connections_popover.h
 inc/gui/widgets/arranger_bg.h
 inc/gui/widgets/timeline_bot_box.h
-inc/gui/widgets/bind_cc_dialog.h
 inc/gui/widgets/inspector_track.h
 inc/gui/widgets/inspector_editor.h
-inc/gui/widgets/create_project_dialog.h
 inc/gui/widgets/ruler_range.h
 inc/gui/widgets/instrument_track.h
 inc/gui/widgets/balance_control.h
 inc/gui/widgets/chord_object.h
 inc/gui/widgets/text_expander.h
 inc/gui/widgets/project_toolbar.h
-inc/gui/widgets/export_dialog.h
 inc/gui/widgets/header.h
 inc/gui/widgets/midi_region.h
 inc/gui/widgets/channel_send.h
@@ -192,7 +188,6 @@ inc/gui/widgets/chord_key.h
 inc/gui/widgets/velocity.h
 inc/gui/widgets/pinned_tracklist.h
 inc/gui/widgets/plugin_properties_expander.h
-inc/gui/widgets/quantize_dialog.h
 inc/gui/widgets/knob_with_name.h
 inc/gui/widgets/midi_activity_bar.h
 inc/gui/widgets/dialogs/export_progress_dialog.h
@@ -200,10 +195,15 @@ inc/gui/widgets/dialogs/string_entry_dialog.h
 inc/gui/widgets/dialogs/about_dialog.h
 inc/gui/widgets/dialogs/bug_report_dialog.h
 inc/gui/widgets/dialogs/port_info.h
+inc/gui/widgets/dialogs/export_midi_file_dialog.h
 inc/gui/widgets/dialogs/object_color_chooser_dialog.h
+inc/gui/widgets/dialogs/bind_cc_dialog.h
+inc/gui/widgets/dialogs/create_project_dialog.h
 inc/gui/widgets/dialogs/arranger_object_info.h
+inc/gui/widgets/dialogs/export_dialog.h
 inc/gui/widgets/dialogs/track_icon_chooser_dialog.h
 inc/gui/widgets/dialogs/bounce_dialog.h
+inc/gui/widgets/dialogs/quantize_dialog.h
 inc/gui/backend/audio_clip_editor.h
 inc/gui/backend/event.h
 inc/gui/backend/arranger_object.h
@@ -245,7 +245,6 @@ inc/utils/color.h
 inc/utils/cpu_windows.h
 inc/utils/stack.h
 inc/utils/dsp.h
-inc/utils/localization.h
 inc/utils/gdb.h
 inc/utils/stoat.h
 inc/utils/objects.h
@@ -419,7 +418,6 @@ src/gui/widgets/audio_group_track.c
 src/gui/widgets/midi_group_track.c
 src/gui/widgets/tracklist.c
 src/gui/widgets/piano_keyboard.c
-src/gui/widgets/create_project_dialog.c
 src/gui/widgets/fader_controls_grid.c
 src/gui/widgets/midi_note.c
 src/gui/widgets/selection_info.c
@@ -427,7 +425,6 @@ src/gui/widgets/port_connections_popover.c
 src/gui/widgets/chord_track.c
 src/gui/widgets/custom_button.c
 src/gui/widgets/inspector_plugin.c
-src/gui/widgets/quantize_dialog.c
 src/gui/widgets/two_col_expander_box.c
 src/gui/widgets/inspector_port.c
 src/gui/widgets/midi_modifier_arranger.c
@@ -443,7 +440,6 @@ src/gui/widgets/editable_label.c
 src/gui/widgets/expander_box.c
 src/gui/widgets/ruler_range.c
 src/gui/widgets/first_run_assistant.c
-src/gui/widgets/bind_cc_dialog.c
 src/gui/widgets/project_assistant.c
 src/gui/widgets/left_dock_edge.c
 src/gui/widgets/plugin_strip_expander.c
@@ -457,7 +453,6 @@ src/gui/widgets/timeline_bg.c
 src/gui/widgets/clip_editor.c
 src/gui/widgets/snap_grid_popover.c
 src/gui/widgets/visibility.c
-src/gui/widgets/export_midi_file_dialog.c
 src/gui/widgets/scale_object.c
 src/gui/widgets/center_dock.c
 src/gui/widgets/port_selector_popover.c
@@ -544,7 +539,6 @@ src/gui/widgets/ports_expander.c
 src/gui/widgets/arranger_playhead.c
 src/gui/widgets/foldable_notebook.c
 src/gui/widgets/cc_bindings.c
-src/gui/widgets/export_dialog.c
 src/gui/widgets/chord_object.c
 src/gui/widgets/timeline_minimap_selection.c
 src/gui/widgets/route_target_selector_popover.c
@@ -575,6 +569,10 @@ src/gui/widgets/chord_selector_window.c
 src/gui/widgets/chord_key.c
 src/gui/widgets/arranger_bg.c
 src/gui/widgets/dialogs/arranger_object_info.c
+src/gui/widgets/dialogs/create_project_dialog.c
+src/gui/widgets/dialogs/quantize_dialog.c
+src/gui/widgets/dialogs/bind_cc_dialog.c
+src/gui/widgets/dialogs/export_midi_file_dialog.c
 src/gui/widgets/dialogs/bounce_dialog.c
 src/gui/widgets/dialogs/string_entry_dialog.c
 src/gui/widgets/dialogs/port_info.c
@@ -582,6 +580,7 @@ src/gui/widgets/dialogs/about_dialog.c
 src/gui/widgets/dialogs/export_progress_dialog.c
 src/gui/widgets/dialogs/bug_report_dialog.c
 src/gui/widgets/dialogs/object_color_chooser_dialog.c
+src/gui/widgets/dialogs/export_dialog.c
 src/gui/widgets/dialogs/track_icon_chooser_dialog.c
 src/gui/backend/file_manager.c
 src/gui/backend/arranger_selections.c

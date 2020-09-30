@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-10-01 00:30+0100\n"
 "PO-Revision-Date: 2020-09-30 22:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"manualtracks/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/zrythm/manualtracks/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -276,9 +275,7 @@ msgid ""
 "Tracks which have automatable controls, such as Fader, Pan and parameters"
 " of Plugins they contain will have an option to show their Automation "
 "Lanes."
-msgstr ""
-"フェーダー、パン、およびそれらが含まれているプラグインのパラメータなどの自動マタブルコントロールを持つトラックは、オートメーションレーンを表示するオプショ"
-"ンがあります。"
+msgstr "フェーダー、パン、およびそれらが含まれているプラグインのパラメータなどの自動マタブルコントロールを持つトラックは、オートメーションレーンを表示するオプションがあります。"
 
 #: ../../tracks/automation.rst:17
 msgid ""
@@ -561,9 +558,7 @@ msgid ""
 "Inserts are processed in order. For instrument tracks, the inserts will "
 "be added onto the signal coming from the instrument, and for other tracks"
 " they will be added on the incoming signal."
-msgstr ""
-"インサートは順番に処理されます。インストゥルメントトラックの場合、インサートはインストゥルメントからの信号に追加され、他のトラックの場合は入力信号に追加さ"
-"れます。"
+msgstr "インサートは順番に処理されます。インストゥルメントトラックの場合、インサートはインストゥルメントからの信号に追加され、他のトラックの場合は入力信号に追加されます。"
 
 #: ../../tracks/inspector-page.rst:70
 #: ../../tracks/modulator-track.rst:8
@@ -594,9 +589,7 @@ msgid ""
 "post-fader sends. The pre-fader slots will send the signal before the "
 "fader is processed, and the post-fader slots will send the signal after "
 "the fader is applied."
-msgstr ""
-"最初の6スロットはプレフェーダー送信用で、最後の3スロットはポストフェーダー送信用です。プリフェーダースロットはフェーダーが処理される前に信号を送信し、フ"
-"ェーダーが適用された後、ポストフェーダースロットが信号を送信します。"
+msgstr "最初の6スロットはプレフェーダー送信用で、最後の3スロットはポストフェーダー送信用です。プリフェーダースロットはフェーダーが処理される前に信号を送信し、フェーダーが適用された後、ポストフェーダースロットが信号を送信します。"
 
 #: ../../tracks/inspector-page.rst:94
 msgid "Fader"
@@ -767,12 +760,12 @@ msgstr "フリーズ中"
 #: ../../tracks/instrument-track.rst:89
 #, fuzzy
 msgid ""
-"If DSP usage is high and you have performance issues, or if you just want"
-" to save CPU power, instrument tracks can be frozen (temporarily "
-"converted to audio), which dramatically lowers their CPU usage."
+"If :term:`DSP` usage is high and you have performance issues, or if you "
+"just want to save CPU power, instrument tracks can be frozen (temporarily"
+" converted to audio), which dramatically lowers their CPU usage."
 msgstr "DSPの使用率が高く、パフォーマンスの問題がある場合、または単にCPUの電力を節約したい場合は、インストゥルメントトラックをフリーズ（一時的にオーディオに変換）して、CPUの使用率を大幅に下げることができます。"
 
-#: ../../tracks/instrument-track.rst:94
+#: ../../tracks/instrument-track.rst:95
 msgid ""
 "Instruments can be frozen by clicking the Freeze button in the track "
 "interface."
@@ -793,9 +786,7 @@ msgid ""
 " that make it easier to jump to or to export specific sections of the "
 "song. Each project can only have one marker track and it cannot be "
 "deleted (but can be hidden)."
-msgstr ""
-"マーカートラックには、曲の特定のセクションにジャンプしたり、曲の特定のセクションをエクスポートしたりすることが容易になる、カスタムまたは事前定義されたマー"
-"カーの曲マーカーが保持されます。各プロジェクトにはマーカートラックを1つしか持てず、削除することはできません(ただし非表示にすることはできます)。"
+msgstr "マーカートラックには、曲の特定のセクションにジャンプしたり、曲の特定のセクションをエクスポートしたりすることが容易になる、カスタムまたは事前定義されたマーカーの曲マーカーが保持されます。各プロジェクトにはマーカートラックを1つしか持てず、削除することはできません(ただし非表示にすることはできます)。"
 
 #: ../../tracks/marker-track.rst:32
 msgid "The name of the marker track."
@@ -812,8 +803,8 @@ msgid ""
 "Zrythm uses to route the resulting audio signal after all the processing "
 "is done to the audio backend."
 msgstr ""
-"マスタートラックは、Zrythmがオーディオバックエンドにすべての処理が行われた後、"
-"生成されたオーディオ信号をルーティングするために使用する特殊なタイプの :ref:`audio-group-track` です。"
+"マスタートラックは、Zrythmがオーディオバックエンドにすべての処理が行われた後、生成されたオーディオ信号をルーティングするために使用する特殊なタイプの"
+" :ref:`audio-group-track` です。"
 
 #: ../../tracks/master-track.rst:41
 msgid "The name of the track. This cannot be changed."
@@ -833,9 +824,7 @@ msgid ""
 "A MIDI track contains MIDI regions and its purpose is playing back MIDI "
 "events and routing those MIDI signals to other instruments (including "
 "external instruments and hardware)."
-msgstr ""
-"MIDIトラックにはMIDIリージョンが含まれており、その目的はMIDIイベントを再生したり、そのMIDI信号を他の楽器（外付けの楽器やハードウェアを含む"
-"）にルーティングしたりすることです。"
+msgstr "MIDIトラックにはMIDIリージョンが含まれており、その目的はMIDIイベントを再生したり、そのMIDI信号を他の楽器（外付けの楽器やハードウェアを含む）にルーティングしたりすることです。"
 
 #: ../../tracks/midi-track.rst:13
 #, fuzzy
@@ -843,9 +832,7 @@ msgid ""
 "MIDI tracks, unlike instrument tracks, produce MIDI output and so their "
 "channel strips will only have MIDI effects (plugins that change MIDI "
 "signals)."
-msgstr ""
-"MIDIトラックは、インストゥルメントトラックとは異なり、MIDI出力を生成するため、そのチャンネルストリップにはMIDIエフェクト（MIDI信号を変更す"
-"るプラグイン）しかありません。"
+msgstr "MIDIトラックは、インストゥルメントトラックとは異なり、MIDI出力を生成するため、そのチャンネルストリップにはMIDIエフェクト（MIDI信号を変更するプラグイン）しかありません。"
 
 #: ../../tracks/midi-track.rst:17
 msgid "MIDI tracks also have automation lanes for automating various parameters."
@@ -924,8 +911,8 @@ msgid ""
 "Lanes are also useful for generally organizing your regions. For example "
 "you can keep high notes in lane 1 and bass notes in lane 2."
 msgstr ""
-"レーンは、再生ループが行われるたびに新しいレーンで録音を開始し、前のレーンの領域をミュートするので、記録するときに便利です。レーンは、一般的に地域を整理す"
-"るのにも役立ちます。たとえば、レーン 1 では高音符、レーン 2 では低音の音符を保持できます。"
+"レーンは、再生ループが行われるたびに新しいレーンで録音を開始し、前のレーンの領域をミュートするので、記録するときに便利です。レーンは、一般的に地域を整理するのにも役立ちます。たとえば、レーン"
+" 1 では高音符、レーン 2 では低音の音符を保持できます。"
 
 #: ../../tracks/midi-track.rst:109
 msgid "Lanes can be made visible by clicking the \"hamburger\" icon."
@@ -938,9 +925,7 @@ msgid ""
 "parameters of the MIDI track, and any plugins in the MIDI track's "
 "channel. To show the automation tracks, click on the cusp icon in the "
 "MIDI track."
-msgstr ""
-"オートメーショントラックは、MIDIトラックのさまざまなパラメータ、およびMIDIトラックのチャンネル内のプラグインのオートメーションイベントを作成するた"
-"めに使用されます。オートメーショントラックを表示するには、MIDIトラックのカスプアイコンをクリックします。"
+msgstr "オートメーショントラックは、MIDIトラックのさまざまなパラメータ、およびMIDIトラックのチャンネル内のプラグインのオートメーションイベントを作成するために使用されます。オートメーショントラックを表示するには、MIDIトラックのカスプアイコンをクリックします。"
 
 #: ../../tracks/midi-track.rst:126
 msgid ""
@@ -981,7 +966,8 @@ msgid ""
 "Tracks are the main building blocks of projects. Tracks appear in the "
 "tracklist and contain various events such as :ref:`regions`."
 msgstr ""
-"トラックはプロジェクトの主要な構成要素です。トラックはトラックリストに表示され、 :ref:`regions` などのさまざまなイベントが含まれています。"
+"トラックはプロジェクトの主要な構成要素です。トラックはトラックリストに表示され、 :ref:`regions` "
+"などのさまざまなイベントが含まれています。"
 
 #: ../../tracks/overview.rst:15
 #, fuzzy
@@ -1006,9 +992,7 @@ msgid ""
 "FX/bus tracks are used for effects/sends, and folder tracks (coming soon)"
 " are  used for putting tracks under the same folder and performing common"
 " operations."
-msgstr ""
-"Zrythmでは、グループトラックは信号のグループ化(ダイレクトルーティング)、FX/"
-"バストラックはエフェクト/センドに使用され、フォルダトラック(近日)はトラックを同じフォルダに置き、共通の操作を実行するために使用されます。"
+msgstr "Zrythmでは、グループトラックは信号のグループ化(ダイレクトルーティング)、FX/バストラックはエフェクト/センドに使用され、フォルダトラック(近日)はトラックを同じフォルダに置き、共通の操作を実行するために使用されます。"
 
 #: ../../tracks/overview.rst:35
 #, fuzzy
@@ -1016,9 +1000,7 @@ msgid ""
 "Moreover, Zrythm uses Instrument tracks for instrument plugins, such as "
 "synthesizers, and MIDI tracks for MIDI plugins, such as a MIDI "
 "arpegiator."
-msgstr ""
-"さらに、Zrythmはシンセサイザーなどのインストゥルメントプラグイン用のインストゥルメントトラックと、MIDIアルペジエーターなどのMIDIプラグイン用"
-"のMIDIトラックを使用します。"
+msgstr "さらに、Zrythmはシンセサイザーなどのインストゥルメントプラグイン用のインストゥルメントトラックと、MIDIアルペジエーターなどのMIDIプラグイン用のMIDIトラックを使用します。"
 
 #: ../../tracks/overview.rst:40
 msgid ""
@@ -1037,10 +1019,7 @@ msgid ""
 "various buttons. Tracks that can have lanes, like instrument tracks, will"
 " also have an option to display each lane as above. Tracks that can have "
 "automation will have an option to display automation tracks as above."
-msgstr ""
-"各トラックには、色、アイコン（種類に応じて）、名前、各種ボタンがあります。インストゥルメントトラックのようにレーンを持つことができるトラックには、上記のよ"
-"うに各レーンを表示するオプションがあります。オートメーションを持つことができるトラックは、上記のようにオートメーショントラックを表示するオプションがありま"
-"す。"
+msgstr "各トラックには、色、アイコン（種類に応じて）、名前、各種ボタンがあります。インストゥルメントトラックのようにレーンを持つことができるトラックには、上記のように各レーンを表示するオプションがあります。オートメーションを持つことができるトラックは、上記のようにオートメーショントラックを表示するオプションがあります。"
 
 #: ../../tracks/overview.rst:56
 msgid ""
@@ -1084,9 +1063,7 @@ msgid ""
 "Tracks can be moved by clicking and dragging inside empty space in the "
 "Track, and dropping it at another location. The drop locations will be "
 "highlighted as you move the Track."
-msgstr ""
-"トラックは、トラック内の空きスペース内をクリックしてドラッグし、別の場所にドロップすることで移動できます。トラックを移動すると、ドロップ位置がハイライト表"
-"示されます。"
+msgstr "トラックは、トラック内の空きスペース内をクリックしてドラッグし、別の場所にドロップすることで移動できます。トラックを移動すると、ドロップ位置がハイライト表示されます。"
 
 #: ../../tracks/track-operations.rst:18
 msgid "Deleting Tracks"
@@ -1657,3 +1634,4 @@ msgstr "トラック内を右クリックして :zbutton:`Duplicate` を選択�
 #~ "tracklist and contain various events "
 #~ "such as regions (see :term:`Region`)."
 #~ msgstr ""
+

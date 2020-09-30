@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 23:37+0100\n"
+"POT-Creation-Date: 2020-10-01 00:27+0100\n"
 "PO-Revision-Date: 2020-09-13 22:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -379,7 +379,7 @@ msgstr "Lei pan"
 
 #: ../../configuration/preferences/intro.rst:160
 #, fuzzy
-msgid "The :term:`pan law` to use when applying pan on mono signals."
+msgid "The :term:`Pan law` to use when applying pan on mono signals."
 msgstr "A lei de pan a ser usada ao aplicar pan em sinais mono."
 
 #: ../../configuration/preferences/intro.rst:164
