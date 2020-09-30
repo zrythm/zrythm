@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-28 19:59+0000\n"
+"PO-Revision-Date: 2020-09-30 22:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/ja/>\n"
@@ -43,9 +43,8 @@ msgid "Audio Arranger"
 msgstr "オーディオアレンジャー"
 
 #: ../../editing/clip-editors/audio-editor.rst:21
-#, fuzzy
 msgid "The audio arranger refers to the arranger section of the audio editor."
-msgstr "オーディオアレンジャーとは、オーディオエディターのアレンジャーセクションのことを指します。"
+msgstr "オーディオアレンジャーとは、オーディオエディターのアレンジャー部のことを指します。"
 
 #: ../../editing/clip-editors/automation-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:35
@@ -168,7 +167,6 @@ msgstr "コンテキストメニュー"
 #: ../../editing/timeline/arranger.rst:161
 #: ../../editing/timeline/arranger.rst:167
 #: ../../editing/timeline/toolbar.rst:11
-#, fuzzy
 msgid "Todo"
 msgstr "行うべきこと"
 

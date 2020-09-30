@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"PO-Revision-Date: 2020-09-30 22:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualgetting-started/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm"
-"/manualgetting-started/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../getting-started/getting-plugins.rst:8
@@ -210,6 +211,7 @@ msgid ""
 "See :download:`INSTALL.md <../../../INSTALL.md>` in the source "
 "distribution for installation instructions."
 msgstr ""
+"インストール方法については、ソース配布物の :download:`INSTALL.md <../../../INSTALL.md>` を参照してください。"
 
 #: ../../getting-started/installation.rst:36
 msgid "GNU/Linux"
@@ -228,19 +230,16 @@ msgid "**Arch Linux** - x86_64"
 msgstr "**Arch Linux** - x86_64"
 
 #: ../../getting-started/installation.rst:44
-#, fuzzy
 msgid "**Debian 10 && 11** - amd64"
-msgstr "**Debian 9 & 10** - amd64"
+msgstr "**Debian 10 & 11** - amd64"
 
 #: ../../getting-started/installation.rst:45
-#, fuzzy
 msgid "**Fedora 31 && 32** - x86_64"
-msgstr "**Fedora 32** - x86_64"
+msgstr "**Fedora 31 && 32** - x86_64"
 
 #: ../../getting-started/installation.rst:46
-#, fuzzy
 msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
-msgstr "**Ubuntu 18.04, 19.10 & 20.04** - amd64"
+msgstr "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
 
 #: ../../getting-started/installation.rst:49
 msgid "Distribution Package"
@@ -278,11 +277,11 @@ msgstr "はじめに"
 
 #: ../../getting-started/running-zrythm.rst:8
 msgid "Running Zrythm"
-msgstr ""
+msgstr "Zrythmの実行"
 
 #: ../../getting-started/running-zrythm.rst:11
 msgid "First Run Wizard"
-msgstr ""
+msgstr "初回実行ウィザード"
 
 #: ../../getting-started/running-zrythm.rst:13
 msgid ""
@@ -291,10 +290,12 @@ msgid ""
 ":term:`Zrythm user path`, the language of the user interface and "
 "audio/MIDI backends."
 msgstr ""
+"最初に Zrythm を起動すると、Zrythm が使用する基本的な設定を行うウィザードが表示されます。これには :term:`Zrythm user "
+"path` 、ユーザーインターフェースの言語、オーディオ/MIDI バックエンドが含まれます。"
 
 #: ../../getting-started/running-zrythm.rst:20
 msgid "Language Selection"
-msgstr ""
+msgstr "言語の選択"
 
 #: ../../getting-started/running-zrythm.rst:25
 msgid ""
@@ -303,22 +304,24 @@ msgid ""
 "<https://hosted.weblate.org/projects/zrythm/#languages>`_, so choose the "
 "language you are most comfortable in."
 msgstr ""
+"Zrythm ではインターフェースの言語を選択することができます。インターフェースはすでに `複数の言語 <https://hosted.weblate."
+"org/projects/zrythm/#languages>`_ で翻訳されているので、最も快適な言語を選択してください。"
 
 #: ../../getting-started/running-zrythm.rst:30
 msgid "You must have a locale enabled for the language you want to use."
-msgstr ""
+msgstr "使用したい言語のロケールを有効にしておく必要があります。"
 
 #: ../../getting-started/running-zrythm.rst:34
 msgid "Path"
-msgstr ""
+msgstr "パス"
 
 #: ../../getting-started/running-zrythm.rst:39
 msgid "This is the :term:`Zrythm user path`."
-msgstr ""
+msgstr "これは :term:`Zrythm user path` です。"
 
 #: ../../getting-started/running-zrythm.rst:42
 msgid "Audio/MIDI Backends"
-msgstr ""
+msgstr "オーディオ/ MIDIバックエンド"
 
 #: ../../getting-started/running-zrythm.rst:47
 msgid ""
@@ -326,43 +329,46 @@ msgid ""
 "the recommended one for both, but it takes some time to set up if this is"
 " your first time using it."
 msgstr ""
+"Zrythm は、複数のオーディオおよび MIDI バックエンドエンジンをサポートしています。 :term:`JACK` "
+"は両方に推奨されますが、初めて使用する場合はセットアップに時間がかかります。"
 
 #: ../../getting-started/running-zrythm.rst:52
 msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
-msgstr ""
+msgstr "JACKがシステム上で利用できない場合は、RtAudioとRtMidiをお勧めします。"
 
 #: ../../getting-started/running-zrythm.rst:55
 msgid ""
 "Click :guilabel:`Test` to try connecting to the backend to see if it is "
 "functional."
-msgstr ""
+msgstr ":guilabel:`テスト` をクリックすると、バックエンドに接続して機能しているかどうかを確認することができます。"
 
 #: ../../getting-started/running-zrythm.rst:58
 msgid ""
 "If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
 "chosen together."
-msgstr ""
+msgstr "もし JACK を使用する場合は、JACK MIDI と JACK オーディオバックエンドを一緒に選択しなければなりません。"
 
 #: ../../getting-started/running-zrythm.rst:63
 msgid ""
 "All of the settings mentioned here are also available in the "
 ":ref:`preferences`, so don't worry if you selected the wrong settings."
-msgstr ""
+msgstr "ここで挙げた設定はすべて :ref:`preferences` でも設定可能なので、間違った設定を選択しても心配ありません。"
 
 #: ../../getting-started/running-zrythm.rst:68
-#, fuzzy
 msgid "Plugin Scan"
-msgstr "プラグイン"
+msgstr "プラグインのスキャン"
 
 #: ../../getting-started/running-zrythm.rst:69
 msgid ""
 "When the first run wizard is completed, Zrythm will start :doc:`scanning "
 "for plugins <../plugins-files/plugins/scanning>`."
 msgstr ""
+"最初の実行ウィザードが完了すると、Zrythm は :doc:`プラグインのスキャン <../plugins-files/plugins/"
+"scanning>` を開始します。"
 
 #: ../../getting-started/running-zrythm.rst:77
 msgid "Project Selection"
-msgstr ""
+msgstr "プロジェクトの選択"
 
 #: ../../getting-started/running-zrythm.rst:78
 msgid ""
@@ -370,15 +376,17 @@ msgid ""
 "<../projects/saving-loading>` and then the :doc:`main interface "
 "<../zrythm-interface/zrythm-interface-overview>` will show up."
 msgstr ""
+"最後に、Zrythm は :doc:`プロジェクトをロードするか作成するか <../projects/saving-loading>` を尋ねてきます。"
+"そうすると :doc:`メインインターフェイス <../zrythm-interface/zrythm-interface-overview>` "
+"が表示されます。"
 
 #: ../../getting-started/running-zrythm.rst:87
 msgid "Project selection"
-msgstr ""
+msgstr "プロジェクトの選択"
 
 #: ../../getting-started/running-zrythm.rst:92
-#, fuzzy
 msgid "Main interface"
-msgstr "オーディオインターフェイス"
+msgstr "メインインタフェース"
 
 #: ../../getting-started/system-requirements.rst:6
 msgid "System Requirements"
@@ -409,7 +417,6 @@ msgid "CPU"
 msgstr "CPU"
 
 #: ../../getting-started/system-requirements.rst:20
-#, fuzzy
 msgid ""
 "For smooth operation, we recommend using a CPU with at least 2GHz clock "
 "speed and at least 4 cores in total."
@@ -457,6 +464,11 @@ msgid ""
 "<https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93"
 "-beginners-guide-getting-started-jack.html>`_, so we will skip this part."
 msgstr ""
+":term:`JACK` バックエンドを使う場合、JACK は Zrythm を動かす前に設定しておく必要があります。どのように JACK "
+"を設定するかについては、 `Demystifying JACK - A Beginners Guide to Getting Started with "
+"JACK <https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93"
+"-beginners-guide-getting-started-jack.html>`_ "
+"のようなオンラインの情報がたくさんありますので、ここでは割愛します。"
 
 #~ msgid "Clips"
 #~ msgstr "クリップ"
@@ -1024,4 +1036,3 @@ msgstr ""
 #~ "See :download:`INSTALL.md <../../../INSTALL.md>` for"
 #~ " installation instructions."
 #~ msgstr ""
-

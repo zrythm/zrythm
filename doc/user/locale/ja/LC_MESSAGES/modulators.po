@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"PO-Revision-Date: 2020-09-30 22:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualmodulators/ja/>\n"
@@ -45,13 +45,11 @@ msgid ""
 msgstr "Zrythmの下部パネルには、任意の数のモジュレータを保持できるモジュレータタブがあります。"
 
 #: ../../modulators/intro.rst:23
-#, fuzzy
 msgid ""
 "Modulators are associated with the :doc:`../tracks/modulator-track`, "
 "which contains all modulators in the :term:`project`."
 msgstr ""
-"モジュレータは :doc:`../tracks/modulator-track` に関連付けられており、 :term:`project` "
-"に含まれるすべてのモジュレータが含まれています。"
+":term:`project` 内のすべてのモジュレータは :doc:`../tracks/modulator-track` に付属しています。"
 
 #: ../../modulators/intro.rst:28
 msgid "Adding Modulators"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: 2020-09-28 19:59+0000\n"
+"PO-Revision-Date: 2020-09-30 22:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "connections/ja/>\n"
@@ -38,13 +38,12 @@ msgstr ""
 "パラメータにルーティングできます。"
 
 #: ../../connections/making-connections.rst:15
-#, fuzzy
 msgid ""
 "Connections can be made by double clicking on ports in the :ref:`track-"
 "inspector` or the :ref:`plugin-inspector`."
 msgstr ""
 "接続は、 :ref:`track-inspector` または :ref:`plugin-inspector` "
-"のポートをダブルクリックすることで行うことができます。"
+"のポートをダブルクリックすることで行います。"
 
 #: ../../connections/making-connections.rst:22
 #, fuzzy

@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-09-28 21:18+0100\n"
-"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"PO-Revision-Date: 2020-09-30 22:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -1669,8 +1669,9 @@ msgid "Select..."
 msgstr "選択…"
 
 #: src/gui/widgets/active_hardware_mb.c:144
+#, fuzzy
 msgid "Click to enable inputs"
-msgstr ""
+msgstr "クリックして入力を有効にする"
 
 #: src/gui/widgets/port_connection_row.c:107
 msgid "Enable/disable connection"
@@ -4287,13 +4288,12 @@ msgid "The MIDI backend to use."
 msgstr "使用するMIDIバックエンド。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:511
-#, fuzzy
 msgid "Audio inputs"
-msgstr "出力音響"
+msgstr "オーディオ入力"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:512
 msgid "A list of audio inputs to enable."
-msgstr ""
+msgstr "有効にするオーディオ入力のリスト。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:516
 msgid "MIDI controllers"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-28 19:59+0000\n"
+"PO-Revision-Date: 2020-09-30 22:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualmixing/ja/>\n"
@@ -42,11 +42,10 @@ msgid "Mixer"
 msgstr "ミキサー"
 
 #: ../../mixing/overview.rst:23
-#, fuzzy
 msgid ""
 "The mixer contains all of the channels in the project corresponding to "
 "visible tracks."
-msgstr "ミキサーには、表示可能なトラックに対応するプロジェクト内のすべてのチャンネルが含まれます。"
+msgstr "ミキサーには、プロジェクト内のすべての表示状態になっているトラックに対応するチャンネルが含まれます。"
 
 #: ../../mixing/overview.rst:26
 #, fuzzy
@@ -100,7 +99,6 @@ msgid ""
 msgstr "チャンネルの上部にある名前をダブルクリックすると、チャンネルが対応するトラックの名前を変更できます。"
 
 #: ../../mixing/overview.rst:62
-#, fuzzy
 msgid "Todo"
 msgstr "行うべきこと"
 
@@ -121,6 +119,8 @@ msgid ""
 "Audio and MIDI group tracks (covered in :ref:`audio-group-track` and :ref"
 ":`midi-group-track` respectively) can be created for grouping signals."
 msgstr ""
+"オーディオグループトラックとMIDIグループトラック(それぞれ :ref:`audio-group-track` と :ref:`midi-group-"
+"track` で説明)を作成して信号をグループ化することができます。"
 
 #: ../../mixing/routing.rst:15
 #, fuzzy
