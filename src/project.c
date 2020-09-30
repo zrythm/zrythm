@@ -1244,6 +1244,11 @@ project_get_path (
       return
         g_build_filename (
           dir, PROJECT_EXPORTS_DIR, NULL);
+    case PROJECT_PATH_EXPORTS_STEMS:
+      return
+        g_build_filename (
+          dir, PROJECT_EXPORTS_DIR,
+          PROJECT_STEMS_DIR, NULL);
     case PROJECT_PATH_PLUGINS:
       return
         g_build_filename (
@@ -1536,6 +1541,7 @@ project_save (
   g_free_and_null (tmp)
 
   MK_PROJECT_DIR (EXPORTS);
+  MK_PROJECT_DIR (EXPORTS_STEMS);
   MK_PROJECT_DIR (POOL);
   MK_PROJECT_DIR (PLUGIN_STATES);
   MK_PROJECT_DIR (PLUGIN_EXT_COPIES);

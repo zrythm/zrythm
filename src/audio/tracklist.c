@@ -1061,6 +1061,22 @@ free_file_and_return:
   return;
 }
 
+/**
+ * Marks or unmarks all tracks for bounce.
+ */
+void
+tracklist_mark_all_tracks_for_bounce (
+  Tracklist * self,
+  bool        bounce)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+      track_mark_for_bounce (
+        track, bounce, true, false);
+    }
+}
+
 Tracklist *
 tracklist_new (Project * project)
 {

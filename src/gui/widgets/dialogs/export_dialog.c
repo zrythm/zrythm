@@ -22,6 +22,7 @@
 #include "audio/master_track.h"
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
+#include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/color.h"
@@ -236,7 +237,7 @@ get_mixdown_export_filename (
     exporter_stringize_audio_format (
       gtk_combo_box_get_active (self->format));
   char * datetime_str =
-    datetime_get_current_as_string ();
+    datetime_get_for_filename ();
   char * base = NULL;
   switch (g_settings_get_enum (
             S_EXPORT, "filename-pattern"))
@@ -284,11 +285,14 @@ get_mixdown_export_filename (
  *
  * @param max_files Max files to show, then append
  *   "..." at the end.
+ * @param track If non-NULL, assumed to be the
+ *   stem for this track.
  */
 static char *
 get_stem_export_filenames (
   ExportDialogWidget * self,
-  int                  max_files)
+  int                  max_files,
+  Track *              in_track)
 {
   int num_tracks;
   Track ** tracks =
@@ -299,12 +303,11 @@ get_stem_export_filenames (
       return g_strdup (_("none"));
     }
 
-  const char * stem_str = "stem";
   char * format =
     exporter_stringize_audio_format (
       gtk_combo_box_get_active (self->format));
   char * datetime_str =
-    datetime_get_current_as_string ();
+    datetime_get_for_filename ();
 
   GString * gstr = g_string_new (NULL);
 
@@ -314,6 +317,11 @@ get_stem_export_filenames (
     {
       Track * track = tracks[i];
 
+      if (in_track)
+        {
+          track = in_track;
+        }
+
       char * base = NULL;
       switch (g_settings_get_enum (
                 S_EXPORT, "filename-pattern"))
@@ -321,14 +329,13 @@ get_stem_export_filenames (
         case EFP_APPEND_FORMAT:
           base =
             g_strdup_printf (
-              "%s_%s.%s", stem_str,
-              track->name, format);
+              "%s.%s", track->name, format);
           break;
         case EFP_PREPEND_DATE_APPEND_FORMAT:
           base =
             g_strdup_printf (
-              "%s_%s_%s.%s", datetime_str,
-              stem_str, track->name, format);
+              "%s_%s.%s", datetime_str,
+              track->name, format);
           break;
         default:
           g_return_val_if_reached (NULL);
@@ -354,6 +361,12 @@ get_stem_export_filenames (
 
       g_string_append (gstr, base);
 
+      if (in_track)
+        {
+          g_free (base);
+          goto return_result;
+        }
+
       if (i < (new_max_files - 1))
         {
           g_string_append (gstr, "\n");
@@ -361,10 +374,21 @@ get_stem_export_filenames (
       else if (i == (new_max_files - 1) &&
                new_max_files < num_tracks)
         {
-          g_string_append (gstr, "\n...");
+          if (num_tracks - new_max_files == 1)
+            {
+              g_string_append (
+                gstr, _("\n1 more file..."));
+            }
+          else
+            {
+              g_string_append_printf (
+                gstr, _("\n%d more files..."),
+                num_tracks - new_max_files);
+            }
         }
       g_free (base);
     }
+return_result:
   g_free (datetime_str);
   g_free (format);
 
@@ -372,24 +396,83 @@ get_stem_export_filenames (
 }
 
 static char *
-get_export_filename (
-  ExportDialogWidget * self)
+get_exports_dir (void)
 {
-  if (g_settings_get_boolean (
-        S_EXPORT, "export-stems"))
+  bool export_stems =
+    g_settings_get_boolean (
+      S_EXPORT, "export-stems");
+  return
+    project_get_path (
+      PROJECT,
+      export_stems ?
+        PROJECT_PATH_EXPORTS_STEMS :
+        PROJECT_PATH_EXPORTS,
+      false);
+}
+
+/**
+ * Gets the export filename only, or absolute path
+ * if @ref absolute is true.
+ *
+ * @param track If non-NULL, assumed to be the
+ *   stem for this track.
+ */
+static char *
+get_export_filename (
+  ExportDialogWidget * self,
+  bool                 absolute,
+  Track *              track)
+{
+  bool export_stems =
+    g_settings_get_boolean (
+      S_EXPORT, "export-stems");
+  char * filename = NULL;
+  if (export_stems)
     {
-      return get_stem_export_filenames (self, 4);
+      filename =
+        get_stem_export_filenames (self, 4, track);
+      if (absolute)
+        {
+          char * exports_dir = get_exports_dir ();
+          char * abs_path =
+            g_build_filename (
+              exports_dir, filename, NULL);
+          g_free (exports_dir);
+          g_free (filename);
+          return abs_path;
+        }
+      else
+        {
+          return filename;
+        }
     }
   else
     {
-      return get_mixdown_export_filename (self);
+      filename =
+        get_mixdown_export_filename (self);
+
+      if (absolute)
+        {
+          char * exports_dir = get_exports_dir ();
+          char * abs_path =
+            g_build_filename (
+              exports_dir, filename, NULL);
+          g_free (exports_dir);
+          g_free (filename);
+          return abs_path;
+        }
+      else
+        {
+          return filename;
+        }
     }
 }
 
 static void
 update_text (ExportDialogWidget * self)
 {
-  char * filename = get_export_filename (self);
+  char * filename =
+    get_export_filename (self, false, NULL);
   g_return_if_fail (filename);
 
   char matcha[10];
@@ -399,9 +482,7 @@ update_text (ExportDialogWidget * self)
   "<span " \
   "foreground=\"" matcha "\">" x "</span>"
 
-  char * exports_dir =
-    project_get_path (
-      PROJECT, PROJECT_PATH_EXPORTS, false);
+  char * exports_dir = get_exports_dir ();
   char * str =
     g_strdup_printf (
       "%s\n"
@@ -743,49 +824,44 @@ on_progress_dialog_closed (
   update_text (self);
 }
 
+/**
+ * @param track If non-NULL, assumed to be a stem
+ *   for this track.
+ */
 static void
-on_export_clicked (
-  GtkButton * btn,
-  ExportDialogWidget * self)
+init_export_info (
+  ExportDialogWidget * self,
+  ExportSettings *     info,
+  Track *              track)
 {
-  ExportSettings info;
-  info.format =
+  info->format =
     gtk_combo_box_get_active (self->format);
   g_settings_set_enum (
-    S_EXPORT,
-    "format",
-    info.format);
-  info.depth =
+    S_EXPORT, "format", info->format);
+  info->depth =
     gtk_combo_box_get_active (self->bit_depth);
   g_settings_set_enum (
-    S_EXPORT,
-    "bit-depth",
-    info.depth);
-  info.dither =
+    S_EXPORT, "bit-depth", info->depth);
+  info->dither =
     gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (self->dither));
   g_settings_set_boolean (
-    S_EXPORT, "dither", info.dither);
-  info.artist =
+    S_EXPORT, "dither", info->dither);
+  info->artist =
     g_strdup (
       gtk_entry_get_text (self->export_artist));
-  info.genre =
+  info->genre =
     g_strdup (
       gtk_entry_get_text (self->export_genre));
   g_settings_set_string (
-    S_EXPORT,
-    "artist",
-    info.artist);
+    S_EXPORT, "artist", info->artist);
   g_settings_set_string (
-    S_EXPORT,
-    "genre",
-    info.genre);
+    S_EXPORT, "genre", info->genre);
 
 #define SET_TIME_RANGE(x) \
-  g_settings_set_enum ( \
-    S_EXPORT, \
-    "time-range", TIME_RANGE_##x); \
-  info.time_range = TIME_RANGE_##x
+g_settings_set_enum ( \
+S_EXPORT, "time-range", TIME_RANGE_##x); \
+info->time_range = TIME_RANGE_##x
 
   if (gtk_toggle_button_get_active (
         self->time_range_song))
@@ -803,50 +879,135 @@ on_export_clicked (
       SET_TIME_RANGE (CUSTOM);
     }
 
-  char * exports_dir =
-    project_get_path (
-      PROJECT, PROJECT_PATH_EXPORTS, false);
-  char * filename =
-    get_export_filename (self);
-  info.file_uri =
-    g_build_filename (exports_dir,
-                      filename,
-                      NULL);
-  g_free (filename);
+  info->file_uri =
+    get_export_filename (self, true, track);
+
+  info->mode = EXPORT_MODE_TRACKS;
+}
+
+static void
+on_export_clicked (
+  GtkButton * btn,
+  ExportDialogWidget * self)
+{
+  bool export_stems =
+    g_settings_get_boolean (
+      S_EXPORT, "export-stems");
+
+  int num_tracks;
+  Track ** tracks =
+    get_enabled_tracks (self, &num_tracks);
+  if (!tracks)
+    {
+      ui_show_error_message (
+        MAIN_WINDOW, _("No tracks to export"));
+      return;
+    }
 
   /* make exports dir if not there yet */
+  char * exports_dir = get_exports_dir ();
   io_mkdir (exports_dir);
   g_free (exports_dir);
-  g_message ("exporting %s",
-             info.file_uri);
 
-  /* start exporting in a new thread */
-  GThread * thread =
-    g_thread_new (
-      "export_thread",
-      (GThreadFunc) exporter_generic_export_thread,
-      &info);
+  if (export_stems)
+    {
+      /* export each track individually */
+      for (int i = 0; i < num_tracks; i++)
+        {
+          /* unmark all tracks for bounce */
+          tracklist_mark_all_tracks_for_bounce (
+            TRACKLIST, false);
 
-  /* create a progress dialog and block */
-  ExportProgressDialogWidget * progress_dialog =
-    export_progress_dialog_widget_new (
-      &info, 0, 1);
-  gtk_window_set_transient_for (
-    GTK_WINDOW (progress_dialog),
-    GTK_WINDOW (self));
-  g_signal_connect (
-    G_OBJECT (progress_dialog), "response",
-    G_CALLBACK (on_progress_dialog_closed), self);
-  gtk_dialog_run (GTK_DIALOG (progress_dialog));
-  gtk_widget_destroy (GTK_WIDGET (progress_dialog));
+          Track * track = tracks[i];
+          track_mark_for_bounce (
+            track, true, true, true);
 
-  g_thread_join (thread);
+          ExportSettings info;
+          init_export_info (self, &info, track);
 
-  /* restart engine */
-  AUDIO_ENGINE->exporting = 0;
-  TRANSPORT->loop = info.prev_loop;
-  g_atomic_int_set (&AUDIO_ENGINE->run, 1);
-  g_free (info.file_uri);
+          g_message ("exporting %s", info.file_uri);
+
+          /* start exporting in a new thread */
+          GThread * thread =
+            g_thread_new (
+              "export_thread",
+              (GThreadFunc)
+              exporter_generic_export_thread,
+              &info);
+
+          /* create a progress dialog and block */
+          ExportProgressDialogWidget * progress_dialog =
+            export_progress_dialog_widget_new (
+              &info, 0, 1);
+          gtk_window_set_transient_for (
+            GTK_WINDOW (progress_dialog),
+            GTK_WINDOW (self));
+          g_signal_connect (
+            G_OBJECT (progress_dialog), "response",
+            G_CALLBACK (on_progress_dialog_closed), self);
+          gtk_dialog_run (GTK_DIALOG (progress_dialog));
+          gtk_widget_destroy (GTK_WIDGET (progress_dialog));
+
+          g_thread_join (thread);
+
+          g_free (info.file_uri);
+
+          /* restart engine */
+          AUDIO_ENGINE->exporting = 0;
+          TRANSPORT->loop = info.prev_loop;
+          g_atomic_int_set (&AUDIO_ENGINE->run, 1);
+
+          track->bounce = false;
+        }
+    }
+  else
+    {
+      ExportSettings info;
+      init_export_info (self, &info, NULL);
+
+      /* unmark all tracks for bounce */
+      tracklist_mark_all_tracks_for_bounce (
+        TRACKLIST, false);
+
+      /* mark all checked tracks for bounce */
+      for (int i = 0; i < num_tracks; i++)
+        {
+          Track * track = tracks[i];
+          track_mark_for_bounce (
+            track, true, true, false);
+        }
+
+      g_message ("exporting %s", info.file_uri);
+
+      /* start exporting in a new thread */
+      GThread * thread =
+        g_thread_new (
+          "export_thread",
+          (GThreadFunc) exporter_generic_export_thread,
+          &info);
+
+      /* create a progress dialog and block */
+      ExportProgressDialogWidget * progress_dialog =
+        export_progress_dialog_widget_new (
+          &info, 0, 1);
+      gtk_window_set_transient_for (
+        GTK_WINDOW (progress_dialog),
+        GTK_WINDOW (self));
+      g_signal_connect (
+        G_OBJECT (progress_dialog), "response",
+        G_CALLBACK (on_progress_dialog_closed), self);
+      gtk_dialog_run (GTK_DIALOG (progress_dialog));
+      gtk_widget_destroy (GTK_WIDGET (progress_dialog));
+
+      g_thread_join (thread);
+
+      g_free (info.file_uri);
+
+      /* restart engine */
+      AUDIO_ENGINE->exporting = 0;
+      TRANSPORT->loop = info.prev_loop;
+      g_atomic_int_set (&AUDIO_ENGINE->run, 1);
+    }
 }
 
 /**

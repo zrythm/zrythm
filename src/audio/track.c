@@ -2253,6 +2253,72 @@ track_set_is_project (
 }
 
 /**
+ * Marks the track for bouncing.
+ *
+ * @param mark_children Whether to mark all
+ *   children tracks as well. Used when exporting
+ *   stems on the specific track stem only.
+ */
+void
+track_mark_for_bounce (
+  Track * self,
+  bool    bounce,
+  bool    mark_regions,
+  bool    mark_children)
+{
+  if (self->out_signal_type != TYPE_AUDIO)
+    return;
+
+  g_debug (
+    "marking %s for bounce %d, regions %d",
+    self->name, bounce, mark_regions);
+
+  self->bounce = bounce;
+
+  if (mark_regions)
+    {
+      for (int j = 0; j < self->num_lanes; j++)
+        {
+          TrackLane * lane = self->lanes[j];
+
+          for (int k = 0; k < lane->num_regions;
+               k++)
+            {
+              ZRegion * r = lane->regions[k];
+              if (r->id.type != REGION_TYPE_MIDI &&
+                  r->id.type != REGION_TYPE_AUDIO)
+                continue;
+
+              r->bounce = bounce;
+            }
+        }
+    }
+
+  /* also mark all parents */
+  g_return_if_fail (
+    track_type_has_channel (self->type));
+  Track * direct_out =
+    channel_get_output_track (self->channel);
+  if (direct_out)
+    {
+      track_mark_for_bounce (
+        direct_out, bounce, mark_regions, false);
+    }
+
+  if (mark_children)
+    {
+      for (int i = 0; i < self->num_children; i++)
+        {
+          Track * child =
+            TRACKLIST->tracks[self->children[i]];
+
+          track_mark_for_bounce (
+            child, bounce, mark_regions, true);
+        }
+    }
+}
+
+/**
  * Appends all channel ports and optionally
  * plugin ports to the array.
  *

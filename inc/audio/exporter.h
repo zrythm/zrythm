@@ -69,8 +69,8 @@ typedef enum ExportTimeRange
  * Export mode.
  *
  * If this is anything other than
- * \ref EXPORT_MODE_FULL, the \ref Track.bounce_mode
- * or \ref ZRegion.bounce_mode should be set.
+ * @ref EXPORT_MODE_FULL, the @ref Track.bounce
+ * or @ref ZRegion.bounce_mode should be set.
  */
 typedef enum ExportMode
 {
@@ -112,20 +112,27 @@ typedef struct ExportSettings
    *
    * This is set internally.
    */
-  int               prev_loop;
+  bool              prev_loop;
 
   /**
    * Dither or not.
    */
-  int               dither;
+  bool              dither;
 
   /**
    * Absolute path for export file.
    */
   char *            file_uri;
 
+  /** whether we are exporting stems. */
+  //bool              stems;
+
   /** Progress done (0.0 to 1.0). */
   double            progress;
+
+  /** Number of files being simultaneously exported,
+   * for progress calculation. */
+  int               num_files;
 } ExportSettings;
 
 /**

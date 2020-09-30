@@ -157,7 +157,7 @@ for more information.
 
 Pan law
 +++++++
-The :term:`pan law` to use when applying pan on
+The :term:`Pan law` to use when applying pan on
 mono signals.
 
 Editing

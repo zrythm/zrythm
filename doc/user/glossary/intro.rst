@@ -88,7 +88,7 @@ Glossary
     A single-channel audio signal (see also
     :term:`stereo`).
 
-  Pan Law
+  Pan law
     TODO
 
   Panning

@@ -72,6 +72,7 @@ typedef struct TracklistSelections
 #define PROJECT_PLUGIN_EXT_COPIES_DIR "ext_file_copies"
 #define PROJECT_PLUGIN_EXT_LINKS_DIR "ext_file_links"
 #define PROJECT_EXPORTS_DIR     "exports"
+#define PROJECT_STEMS_DIR       "stems"
 #define PROJECT_POOL_DIR        "pool"
 
 typedef enum ProjectPath
@@ -94,6 +95,9 @@ typedef enum ProjectPath
   PROJECT_PATH_PLUGIN_EXT_LINKS,
 
   PROJECT_PATH_EXPORTS,
+
+  /* PROJECT_PATH_EXPORTS / "stems". */
+  PROJECT_PATH_EXPORTS_STEMS,
 
   PROJECT_PATH_POOL,
 } ProjectPath;

@@ -193,8 +193,7 @@ export_audio (
   if (!sf_format_check (&sfinfo))
     {
       ui_show_error_message (
-        MAIN_WINDOW,
-        "SF INFO invalid");
+        MAIN_WINDOW, "SF INFO invalid");
       return - 1;
     }
 

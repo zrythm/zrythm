@@ -417,6 +417,14 @@ tracklist_expose_ports_to_backend (
 Tracklist *
 tracklist_new (Project * project);
 
+/**
+ * Marks or unmarks all tracks for bounce.
+ */
+void
+tracklist_mark_all_tracks_for_bounce (
+  Tracklist * self,
+  bool        bounce);
+
 void
 tracklist_free (
   Tracklist * self);

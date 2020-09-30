@@ -404,7 +404,7 @@ zrythm_get_dir (
         case ZRYTHM_DIR_USER_PROJECTS:
           res =
             g_build_filename (
-              user_dir, "projects", NULL);
+              user_dir, ZRYTHM_PROJECTS_DIR, NULL);
           break;
         case ZRYTHM_DIR_USER_TEMPLATES:
           res =

@@ -1069,6 +1069,20 @@ track_set_is_project (
   bool    is_project);
 
 /**
+ * Marks the track for bouncing.
+ *
+ * @param mark_children Whether to mark all
+ *   children tracks as well. Used when exporting
+ *   stems on the specific track stem only.
+ */
+void
+track_mark_for_bounce (
+  Track * self,
+  bool    bounce,
+  bool    mark_regions,
+  bool    mark_children);
+
+/**
  * Appends all channel ports and optionally
  * plugin ports to the array.
  *
