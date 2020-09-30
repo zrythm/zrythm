@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"PO-Revision-Date: 2020-09-30 22:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/theming/"
+"ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/theming/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../theming/css.rst:8
@@ -32,6 +33,11 @@ msgid ""
 ":file:`share/zrythm/themes/zrythm-theme.css` in the installation path on "
 "Windows or the Application contents on MacOS."
 msgstr ""
+"Zrythmが使用しているGTKテーマおよび配色の多くを、特別なCSSファイルでオーバーライドすることができます。テーマをZrythmのインストールディレ"
+"クトリ（通常、GNU/Linuxでは :file:`/usr/share/zrythm/themes/zrythm-theme.css` 、"
+"Windowsではインストールパスにある :file:`share/zrythm/themes/zrythm-theme.css` 、"
+"MacOSではアプリケーション内にある :file:`share/zrythm/themes/zrythm-theme.css` "
+"）からコピーすることから始めるのが良いでしょう。"
 
 #: ../../theming/css.rst:18
 msgid ""
@@ -40,6 +46,9 @@ msgid ""
 "Zrythm directory is :file:`/home/me/zrythm`, you should create a file at "
 ":file:`/home/me/zrythm/themes/theme.css`."
 msgstr ""
+"Zrythm ディレクトリの下の :file:`themes` に :file:`theme.css` "
+"という名前のファイルを作成する必要があります。たとえば、Zrythm ディレクトリが :file:`/home/me/zrythm` "
+"の場合は、:file:`/home/me/zrythm/themes/theme.css` を作成する必要があります 。"
 
 #: ../../theming/css.rst:23
 msgid ""
@@ -131,6 +140,9 @@ msgid ""
 "dark` with an :file:`index.theme` file and the icons you wish to "
 "override."
 msgstr ""
+"例えば、Zrythmディレクトリが :file:`/home/me/zrythm` の場合、 :file:`/home/me/zrythm/themes/"
+"icons/zrythm-dark` に :file:`index.theme` "
+"ファイルと上書きしたいアイコンを含むディレクトリを作成する必要があります。"
 
 #: ../../theming/icon-themes.rst:23
 #, fuzzy
@@ -140,11 +152,14 @@ msgid ""
 msgstr "簡単な方法は、Zrythmが付属しているディレクトリをコピーして、アイコンを自分のものに置き換えることです。"
 
 #: ../../theming/icon-themes.rst:26
+#, fuzzy
 msgid ""
 "A more elegant way to do it is by following the `Freedesktop Icon Theme "
 "Specification <https://specifications.freedesktop.org/icon-theme-"
 "spec/latest/>`_."
 msgstr ""
+"よりエレガントな方法は、 `Freedesktop Icon Theme Specification <https://specifications."
+"freedesktop.org/icon-theme-spec/latest/>`_ に従うことです。"
 
 #: ../../theming/intro.rst:6
 #: ../../theming/overview.rst:6
@@ -217,4 +232,3 @@ msgstr ""
 #~ "and ``Resources`` under the the "
 #~ "Application contents on MacOS."
 #~ msgstr ""
-

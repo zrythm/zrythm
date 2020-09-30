@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"PO-Revision-Date: 2020-09-30 22:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/ja/>\n"
@@ -569,7 +569,6 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:8
 #: ../../tracks/tempo-track.rst:8
 #: ../../tracks/track-types.rst:31
-#, fuzzy
 msgid "Todo"
 msgstr "行うべきこと"
 
