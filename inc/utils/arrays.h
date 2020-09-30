@@ -80,9 +80,9 @@
       (size) = \
         (size_t) (count) == 0 ? \
           1 : (size_t) (count) * 2; \
-      array = \
+      (array) = \
         realloc ( \
-          array, \
+          (array), \
           sizeof (type) * (size_t) (size)); \
     }
 

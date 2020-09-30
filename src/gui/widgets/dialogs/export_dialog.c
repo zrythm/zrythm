@@ -23,7 +23,9 @@
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "project.h"
+#include "utils/arrays.h"
 #include "utils/color.h"
+#include "utils/datetime.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/resources.h"
@@ -66,46 +68,329 @@ enum
 
 static const char * dummy_text = "";
 
-static char *
-get_export_filename (ExportDialogWidget * self)
+static void
+add_enabled_recursively (
+  ExportDialogWidget * self,
+  GtkTreeIter *        iter,
+  Track ***            tracks,
+  size_t *             size,
+  int *                count)
 {
+  GtkTreeModel * model =
+    GTK_TREE_MODEL (self->tracks_store);
+
+  Track * track;
+  gboolean checked;
+  gtk_tree_model_get (
+    model, iter,
+    TRACK_COLUMN_CHECKBOX, &checked,
+    TRACK_COLUMN_TRACK, &track,
+    -1);
+  if (checked)
+    {
+      array_double_size_if_full (
+        *tracks, *count, *size, Track *);
+      array_append (*tracks, *count, track);
+      g_debug ("added %s", track->name);
+    }
+
+  /* if group track, also check children
+   * recursively */
+  bool has_children =
+    gtk_tree_model_iter_has_child (model, iter);
+  if (has_children)
+    {
+      int num_children =
+        gtk_tree_model_iter_n_children (
+          model, iter);
+
+      for (int i = 0; i < num_children; i++)
+        {
+          GtkTreeIter child_iter;
+          gtk_tree_model_iter_nth_child (
+            model, &child_iter, iter, i);
+
+          /* recurse */
+          add_enabled_recursively (
+            self, &child_iter, tracks, size, count);
+        }
+    }
+}
+
+/**
+ * Returns the currently checked tracks.
+ *
+ * Must be free'd with free().
+ *
+ * @param[out] num_tracks Number of tracks returned.
+ *
+ * @return Newly allocated track array, or NULL if
+ *   no tracks selected.
+ */
+static Track **
+get_enabled_tracks (
+  ExportDialogWidget * self,
+  int *                num_tracks)
+{
+  size_t size = 1;
+  int count = 0;
+  Track ** tracks =
+    calloc (size, sizeof (Track *));
+
+  GtkTreeModel * model =
+    GTK_TREE_MODEL (self->tracks_store);
+  GtkTreeIter iter;
+  gtk_tree_model_get_iter_first (
+    model, &iter);
+
+  add_enabled_recursively (
+    self, &iter, &tracks, &size, &count);
+
+  if (count == 0)
+    {
+      *num_tracks = 0;
+      free (tracks);
+      return NULL;
+    }
+  else
+    {
+      *num_tracks = count;
+      return tracks;
+    }
+}
+
+/**
+ * Returns the currently selected tracks.
+ *
+ * Must be free'd with free().
+ *
+ * @param[out] num_tracks Number of tracks returned.
+ *
+ * @return Newly allocated track array, or NULL if
+ *   no tracks selected.
+ */
+static Track **
+get_selected_tracks (
+  ExportDialogWidget * self,
+  int *                num_tracks)
+{
+  GtkTreeSelection * selection =
+    gtk_tree_view_get_selection (
+      (self->tracks_treeview));
+
+  size_t size = 1;
+  int count = 0;
+  Track ** tracks =
+    calloc (size, sizeof (Track *));
+
+  GList * selected_rows =
+    gtk_tree_selection_get_selected_rows (
+      selection, NULL);
+  GList * list_iter =
+    g_list_first (selected_rows);
+  while (list_iter)
+    {
+      GtkTreePath * tp = list_iter->data;
+      gtk_tree_selection_select_path (
+        selection, tp);
+      GtkTreeIter iter;
+      gtk_tree_model_get_iter (
+        GTK_TREE_MODEL (self->tracks_store),
+        &iter, tp);
+      Track * track;
+      gtk_tree_model_get (
+        GTK_TREE_MODEL (self->tracks_store),
+        &iter, TRACK_COLUMN_TRACK, &track, -1);
+
+      array_double_size_if_full (
+        tracks, count, size, Track *);
+      array_append (tracks, size, track);
+      g_debug ("track %s selected", track->name);
+
+      list_iter = g_list_next (list_iter);
+    }
+
+  g_list_free_full (
+    selected_rows,
+    (GDestroyNotify) gtk_tree_path_free);
+
+  if (count == 0)
+    {
+      *num_tracks = 0;
+      free (tracks);
+      return NULL;
+    }
+  else
+    {
+      *num_tracks = count;
+      return tracks;
+    }
+}
+
+static char *
+get_mixdown_export_filename (
+  ExportDialogWidget * self)
+{
+  const char * mixdown_str = "mixdown";
   char * format =
     exporter_stringize_audio_format (
-      gtk_combo_box_get_active (
-        self->format));
-  char * base =
-    g_strdup_printf ("%s.%s",
-                     "mixdown", // TODO replace
-                     format);
+      gtk_combo_box_get_active (self->format));
+  char * datetime_str =
+    datetime_get_current_as_string ();
+  char * base = NULL;
+  switch (g_settings_get_enum (
+            S_EXPORT, "filename-pattern"))
+    {
+    case EFP_APPEND_FORMAT:
+      base =
+        g_strdup_printf (
+          "%s.%s", mixdown_str, format);
+      break;
+    case EFP_PREPEND_DATE_APPEND_FORMAT:
+      base =
+        g_strdup_printf (
+          "%s_%s.%s", datetime_str,
+          mixdown_str, format);
+      break;
+    default:
+      g_return_val_if_reached (NULL);
+    }
+  g_return_val_if_fail (base, NULL);
+
   char * exports_dir =
     project_get_path (
       PROJECT, PROJECT_PATH_EXPORTS, false);
   char * tmp =
     g_build_filename (
-      exports_dir,
-      base,
-      NULL);
+      exports_dir, base, NULL);
   char * full_path =
     io_get_next_available_filepath (tmp);
   g_free (base);
   g_free (tmp);
   g_free (format);
   g_free (exports_dir);
+  g_free (datetime_str);
 
   /* we now have the full path, get only the
    * basename */
-  base =
-    g_path_get_basename (full_path);
+  base = g_path_get_basename (full_path);
   g_free (full_path);
 
   return base;
 }
 
+/**
+ * Gets the filename string for stems.
+ *
+ * @param max_files Max files to show, then append
+ *   "..." at the end.
+ */
+static char *
+get_stem_export_filenames (
+  ExportDialogWidget * self,
+  int                  max_files)
+{
+  int num_tracks;
+  Track ** tracks =
+    get_enabled_tracks (self, &num_tracks);
+
+  if (!tracks)
+    {
+      return g_strdup (_("none"));
+    }
+
+  const char * stem_str = "stem";
+  char * format =
+    exporter_stringize_audio_format (
+      gtk_combo_box_get_active (self->format));
+  char * datetime_str =
+    datetime_get_current_as_string ();
+
+  GString * gstr = g_string_new (NULL);
+
+  int new_max_files = MIN (num_tracks, max_files);
+
+  for (int i = 0; i < new_max_files; i++)
+    {
+      Track * track = tracks[i];
+
+      char * base = NULL;
+      switch (g_settings_get_enum (
+                S_EXPORT, "filename-pattern"))
+        {
+        case EFP_APPEND_FORMAT:
+          base =
+            g_strdup_printf (
+              "%s_%s.%s", stem_str,
+              track->name, format);
+          break;
+        case EFP_PREPEND_DATE_APPEND_FORMAT:
+          base =
+            g_strdup_printf (
+              "%s_%s_%s.%s", datetime_str,
+              stem_str, track->name, format);
+          break;
+        default:
+          g_return_val_if_reached (NULL);
+        }
+      g_return_val_if_fail (base, NULL);
+
+      char * exports_dir =
+        project_get_path (
+          PROJECT, PROJECT_PATH_EXPORTS, false);
+      char * tmp =
+        g_build_filename (
+          exports_dir, base, NULL);
+      char * full_path =
+        io_get_next_available_filepath (tmp);
+      g_free (base);
+      g_free (tmp);
+      g_free (exports_dir);
+
+      /* we now have the full path, get only the
+       * basename */
+      base = g_path_get_basename (full_path);
+      g_free (full_path);
+
+      g_string_append (gstr, base);
+
+      if (i < (new_max_files - 1))
+        {
+          g_string_append (gstr, "\n");
+        }
+      else if (i == (new_max_files - 1) &&
+               new_max_files < num_tracks)
+        {
+          g_string_append (gstr, "\n...");
+        }
+      g_free (base);
+    }
+  g_free (datetime_str);
+  g_free (format);
+
+  return g_string_free (gstr, false);
+}
+
+static char *
+get_export_filename (
+  ExportDialogWidget * self)
+{
+  if (g_settings_get_boolean (
+        S_EXPORT, "export-stems"))
+    {
+      return get_stem_export_filenames (self, 4);
+    }
+  else
+    {
+      return get_mixdown_export_filename (self);
+    }
+}
+
 static void
 update_text (ExportDialogWidget * self)
 {
-  char * filename =
-    get_export_filename (self);
+  char * filename = get_export_filename (self);
+  g_return_if_fail (filename);
 
   char matcha[10];
   ui_gdk_rgba_to_hex (&UI_COLORS->matcha, matcha);
@@ -119,18 +404,19 @@ update_text (ExportDialogWidget * self)
       PROJECT, PROJECT_PATH_EXPORTS, false);
   char * str =
     g_strdup_printf (
-      "The following files will be created:\n"
+      "%s\n"
       "<span foreground=\"%s\">%s</span>"
       "\n\n"
-      "in the directory:\n"
+      "%s\n"
       "<a href=\"%s\">%s</a>",
+      _("The following files will be created:"),
       matcha,
       filename,
+      _("in the directory:"),
       exports_dir,
       exports_dir);
   gtk_label_set_markup (
-    self->output_label,
-    str);
+    self->output_label, str);
   g_free (filename);
   g_free (str);
   g_free (exports_dir);
@@ -192,6 +478,7 @@ on_mixdown_toggled (
     S_EXPORT, "export-stems", export_stems);
   gtk_toggle_button_set_active (
     self->stems_toggle, export_stems);
+  update_text (self);
 }
 
 static void
@@ -205,6 +492,7 @@ on_stems_toggled (
     S_EXPORT, "export-stems", export_stems);
   gtk_toggle_button_set_active (
     self->mixdown_toggle, !export_stems);
+  update_text (self);
 }
 
 /**
@@ -276,22 +564,32 @@ create_filename_pattern_store ()
   GtkTreeIter iter;
   GtkTreeStore *store;
 
-  store =
-    gtk_tree_store_new (1,
-                        G_TYPE_STRING);
+  store = gtk_tree_store_new (1, G_TYPE_STRING);
 
   gtk_tree_store_append (store, &iter, NULL);
   gtk_tree_store_set (
     store, &iter,
-    0, "mixdown.<format>",
+    0, _("<name>.<format>"),
     -1);
   gtk_tree_store_append (store, &iter, NULL);
   gtk_tree_store_set (
     store, &iter,
-    0, "<date>_mixdown.<format>",
+    0, _("<date>_<name>.<format>"),
     -1);
 
   return GTK_TREE_MODEL (store);
+}
+
+static void
+on_filename_pattern_changed (
+  GtkComboBox *        widget,
+  ExportDialogWidget * self)
+{
+  g_settings_set_enum (
+    S_EXPORT, "filename-pattern",
+    gtk_combo_box_get_active (widget));
+
+  update_text (self);
 }
 
 static void
@@ -301,25 +599,26 @@ setup_filename_pattern_combo_box (
   GtkTreeModel * model =
     create_filename_pattern_store ();
   gtk_combo_box_set_model (
-    self->filename_pattern,
-    model);
+    self->filename_pattern, model);
   gtk_cell_layout_clear (
     GTK_CELL_LAYOUT (self->filename_pattern));
   GtkCellRenderer* renderer =
     gtk_cell_renderer_text_new ();
   gtk_cell_layout_pack_start (
     GTK_CELL_LAYOUT (self->filename_pattern),
-    renderer,
-    TRUE);
+    renderer, TRUE);
   gtk_cell_layout_set_attributes (
     GTK_CELL_LAYOUT (self->filename_pattern),
-    renderer,
-    "text", 0,
-    NULL);
+    renderer, "text", 0, NULL);
 
   gtk_combo_box_set_active (
     self->filename_pattern,
-    0);
+    g_settings_get_enum (
+      S_EXPORT, "filename-pattern"));
+
+  g_signal_connect (
+    G_OBJECT (self->filename_pattern), "changed",
+    G_CALLBACK (on_filename_pattern_changed), self);
 }
 
 /**
@@ -354,12 +653,16 @@ create_formats_store ()
 }
 
 static void
-on_format_changed (GtkComboBox *widget,
-               ExportDialogWidget * self)
+on_format_changed (
+  GtkComboBox *        widget,
+  ExportDialogWidget * self)
 {
   update_text (self);
   AudioFormat format =
     gtk_combo_box_get_active (widget);
+
+  g_settings_set_enum (
+    S_EXPORT, "format", format);
 
 #define SET_SENSITIVE(x) \
   gtk_widget_set_sensitive ( \
@@ -420,9 +723,7 @@ setup_formats_combo_box (
 
   gtk_combo_box_set_active (
     self->format,
-    g_settings_get_enum (
-      S_EXPORT,
-      "format"));
+    g_settings_get_enum (S_EXPORT, "format"));
 }
 
 static void
@@ -773,6 +1074,8 @@ on_track_toggled (
         self, &iter, toggled);
     }
 
+  update_text (self);
+
   /* clean up */
   gtk_tree_path_free (path);
 }
@@ -782,38 +1085,14 @@ enable_or_disable_tracks (
   ExportDialogWidget * self,
   bool                 enable)
 {
-  GtkTreeSelection * selection =
-    gtk_tree_view_get_selection (
-      (self->tracks_treeview));
+  int num_tracks;
+  Track ** tracks =
+    get_selected_tracks (self, &num_tracks);
 
-  GList * selected_rows =
-    gtk_tree_selection_get_selected_rows (
-      selection, NULL);
-  GList * list_iter =
-    g_list_first (selected_rows);
-  while (list_iter)
+  if (tracks)
     {
-      GtkTreePath * tp = list_iter->data;
-      gtk_tree_selection_select_path (
-        selection, tp);
-      GtkTreeIter iter;
-      gtk_tree_model_get_iter (
-        GTK_TREE_MODEL (self->tracks_store),
-        &iter, tp);
-      Track * track;
-      gtk_tree_model_get (
-        GTK_TREE_MODEL (self->tracks_store),
-        &iter, TRACK_COLUMN_TRACK, &track, -1);
-      g_debug ("track %s selected", track->name);
-
       /* TODO enable/disable */
-
-      list_iter = g_list_next (list_iter);
     }
-
-  g_list_free_full (
-    selected_rows,
-    (GDestroyNotify) gtk_tree_path_free);
 }
 
 static void
@@ -990,8 +1269,6 @@ export_dialog_widget_new ()
 
   update_text (self);
 
-  setup_treeview (self);
-
   g_signal_connect (
     G_OBJECT (self->export_button), "clicked",
     G_CALLBACK (on_export_clicked), self);
@@ -1102,15 +1379,7 @@ export_dialog_widget_init (
   setup_formats_combo_box (self);
   setup_filename_pattern_combo_box (self);
 
-  if (gtk_combo_box_get_active (self->format) ==
-        AUDIO_FORMAT_OGG)
-    {
-      gtk_widget_set_sensitive (
-        GTK_WIDGET (self->bit_depth), 0);
-    }
-  else
-    {
-      gtk_widget_set_sensitive (
-        GTK_WIDGET (self->bit_depth), 1);
-    }
+  setup_treeview (self);
+
+  on_format_changed (self->format, self);
 }

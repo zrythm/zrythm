@@ -42,6 +42,12 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
+typedef enum ExportFilenamePattern
+{
+  EFP_APPEND_FORMAT,
+  EFP_PREPEND_DATE_APPEND_FORMAT,
+} ExportFilenamePattern;
+
 /**
  * The export dialog.
  */

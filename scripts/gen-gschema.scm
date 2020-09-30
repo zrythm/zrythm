@@ -271,10 +271,14 @@ Args:
            '("loop" "song" "custom"))
          (print-enum
            "export-format"
-           '("flac" "ogg" "wav" "mp3" "mid"))
+           '("flac" "ogg" "wav" "mp3" "mid" "raw"))
          (print-enum
            "export-bit-depth"
-           '("16" "24"))
+           '("16" "24" "32"))
+         (print-enum
+           "export-filename-pattern"
+           '("append-format"
+             "prepend-date-append-format"))
          ;; TODO
          (print-enum
            "note-length"
@@ -503,6 +507,12 @@ Args:
                  "format" "export-format" "flac"
                  "Format"
                  "Format to export to.")
+               (make-schema-key-with-enum
+                 "filename-pattern"
+                 "export-filename-pattern"
+                 "append-format"
+                 "Filename pattern"
+                 "Filename pattern for exported files.")
                (make-schema-key
                  "dither" "b" "false"
                  "Dither"

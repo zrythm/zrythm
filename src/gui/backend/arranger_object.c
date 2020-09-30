@@ -2368,16 +2368,13 @@ arranger_object_split (
       break;
     }
 
-  /* select them */
+  /* select the first one */
   ArrangerSelections * sel =
     arranger_object_get_selections_for_type (
       self->type);
-  arranger_selections_remove_object (
-    sel, self);
-  arranger_selections_add_object (
-    sel, *r1);
-  arranger_selections_add_object (
-    sel, *r2);
+  arranger_selections_remove_object (sel, self);
+  arranger_selections_add_object (sel, *r1);
+  /*arranger_selections_add_object (sel, *r2);*/
 
   /* remove and free the original object */
   switch (self->type)
