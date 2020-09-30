@@ -21,6 +21,9 @@ Glossary
     Balance (or :term:`stereo` balance) is the
     left-right balance of a stereo audio signal.
 
+  Bounce
+    Bouncing means exporting to audio.
+
   CLI
     :abbr:`CLI (Command Line Interface)` is the
     interface users interact with when typing

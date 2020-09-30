@@ -5,9 +5,9 @@
 Plugin Overview
 ===============
 
-There are various types of plugins (see
-:term:`plugin`) supported by
-Zrythm, mentioned in :ref:`scanning-plugins`.
+There are various types of :term:`plugins <Plugin>`
+supported by Zrythm, mentioned in
+:ref:`scanning-plugins`.
 
 .. tip:: In Zrythm, :term:`SFZ`/:term:`SF2` are also
    used as plugins.

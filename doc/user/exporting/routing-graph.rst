@@ -11,7 +11,8 @@ is useful for debugging and also helps visualizing
 the internals of Zrythm.
 
 Clicking the
-:zbutton:`Export Graph` button will
+:guilabel:`Export Graph` button in the
+:doc:`../zrythm-interface/main-toolbar` will
 show the following selection. The routing graph
 can be exported as either a PNG image or a .dot graph.
 
