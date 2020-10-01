@@ -91,6 +91,7 @@ foreach locale : locales_str.split (' ')
     locales += { 'en': language_mappings['en'], }
   endif
 endforeach
+locales_str = ' '.join (locales.keys())
 
 os_darwin = false
 os_gnu = false
