@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -62,3 +62,23 @@
 /*.bp {*/
     /*color: #004bd7;*/
 /*}*/
+
+.zbutton {
+  text-decoration: none;
+  background-color: #444444;
+  color: white;
+  padding: 2px 6px 2px 6px;
+  border-radius: 3px;
+}
+
+.red {
+  color: red;
+}
+
+.green {
+  color: green;
+}
+
+.blue {
+  color: blue;
+}

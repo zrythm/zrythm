@@ -11,26 +11,6 @@
   text-align: center;
 }
 
-.zbutton {
- text-decoration: none;
-  background-color: #444444;
-  color: white;
-  padding: 2px 6px 2px 6px;
-	border-radius: 3px;
-}
-
-.red {
-  color: red;
-}
-
-.green {
-  color: green;
-}
-
-.blue {
-  color: blue;
-}
-
 article, aside, details, figcaption, figure, footer, header, hgroup, nav, section {
   display: block;
 }
