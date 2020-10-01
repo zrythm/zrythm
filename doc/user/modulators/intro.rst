@@ -22,7 +22,7 @@ panel that can hold any number of modulators.
 
 Modulators are associated with the
 :doc:`../tracks/modulator-track`, which contains all
-modulators in the :term:`project`.
+modulators in the :term:`Project`.
 
 Adding Modulators
 -----------------
@@ -34,7 +34,7 @@ the Modulators tab. Modulator plugins can be
 Routing Modulators
 ------------------
 Modulator outputs can be routed to automatable
-:term:`controls <control>` by clicking on the
+:term:`controls <Control>` by clicking on the
 arrow and following the prompt to select the
 destination.
 

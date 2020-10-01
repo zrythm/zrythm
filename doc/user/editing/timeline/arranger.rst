@@ -32,7 +32,7 @@ the timeline.
 
 Regions
 ~~~~~~~
-Regions (or :term:`clips <clip>`) are containers
+Regions (or :term:`clips <Clip>`) are containers
 for events or data (such as MIDI notes and audio
 clips - see below) that can be edited in an
 :ref:`editor <editors>`. Regions can be repeated,

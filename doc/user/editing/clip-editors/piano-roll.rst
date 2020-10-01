@@ -29,7 +29,7 @@ Drum View
 ~~~~~~~~~
 Enabling this will change the display of the
 arranger into a drum editor view, where each
-:term:`MIDI Note` is drawn as a diamond and the
+:term:`MIDI note` is drawn as a diamond and the
 piano roll keys display the name of each drum.
 
 Listen to notes

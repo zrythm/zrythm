@@ -18,7 +18,7 @@ Glossary
     MacOS. We recommend using :term:`LV2` instead.
 
   Balance
-    Balance (or :term:`stereo` balance) is the
+    Balance (or :term:`Stereo` balance) is the
     left-right balance of a stereo audio signal.
 
   Bounce
@@ -38,7 +38,7 @@ Glossary
     with a user-changeable control value that
     affects a processor, such as a plugin. For
     example, a gain control. Used interchangeably
-    with :term:`parameter`.
+    with :term:`Parameter`.
 
   CV
     In a software environment,
@@ -89,18 +89,18 @@ Glossary
 
   Mono
     A single-channel audio signal (see also
-    :term:`stereo`).
+    :term:`Stereo`).
 
   Pan law
     TODO
 
   Panning
-    Panning is the distribution of a :term:`mono`
+    Panning is the distribution of a :term:`Mono`
     signal
     into a new stereo or multi-channel sound field.
 
   Parameter
-    Used interchangeably with :term:`control`.
+    Used interchangeably with :term:`Control`.
 
   Plugin
     A plugin is an external module that provides
@@ -122,7 +122,7 @@ Glossary
        :align: center
 
   Region
-    A region (or :term:`clip`) is a container for
+    A region (or :term:`Clip`) is a container for
     MIDI Notes, audio or other events. See
     :ref:`regions`.
 
@@ -135,7 +135,7 @@ Glossary
 
   Stereo
     A two-channel audio signal (left and right) (see
-    also :term:`mono`).
+    also :term:`Mono`).
 
   VST2
     A proprietary plugin standard and the predecessor
@@ -144,7 +144,7 @@ Glossary
   VST3
     VST3 is a plugin standard that supersedes
     :term:`VST2`. It is better to use VST3 than VST2,
-    because it is released as :term:`free software`.
+    because it is released as :term:`Free software`.
     However, we recommend using the :term:`LV2`
     standard instead.
 
