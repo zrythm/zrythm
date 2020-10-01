@@ -809,17 +809,17 @@ channel_reconnect_ext_input_ports (
                    num_selected_midi_ports;
                i++)
             {
-              char * full_name =
+              char * port_id =
                 HW_IN_PROCESSOR->
                   selected_midi_ports[i];
               Port * source =
                 hardware_processor_find_port (
-                  HW_IN_PROCESSOR, full_name);
+                  HW_IN_PROCESSOR, port_id);
               if (!source)
                 {
                   g_warning (
                     "port for %s not found",
-                    full_name);
+                    port_id);
                   continue;
                 }
               port_connect (
@@ -831,18 +831,21 @@ channel_reconnect_ext_input_ports (
           for (int i = 0;
                i < self->num_ext_midi_ins; i++)
             {
-              char * full_name =
-                self->ext_midi_ins[i]->full_name;
+              char * port_id =
+                ext_port_get_id (
+                  self->ext_midi_ins[i]);
               Port * source =
                 hardware_processor_find_port (
-                  HW_IN_PROCESSOR, full_name);
+                  HW_IN_PROCESSOR, port_id);
               if (!source)
                 {
                   g_warning (
                     "port for %s not found",
-                    full_name);
+                    port_id);
+                  g_free (port_id);
                   continue;
                 }
+              g_free (port_id);
               port_connect (
                 source, midi_in, true);
             }
@@ -867,38 +870,42 @@ channel_reconnect_ext_input_ports (
       for (int i = 0;
            i < self->num_ext_stereo_l_ins; i++)
         {
-          char * full_name =
-            self->ext_stereo_l_ins[i]->full_name;
+          char * port_id =
+            ext_port_get_id (
+              self->ext_stereo_l_ins[i]);
           Port * source =
             hardware_processor_find_port (
-              HW_IN_PROCESSOR, full_name);
+              HW_IN_PROCESSOR, port_id);
           if (!source)
             {
               g_warning (
                 "port for %s not found",
-                full_name);
+                port_id);
+              g_free (port_id);
               continue;
             }
-          port_connect (
-            source, l, true);
+          g_free (port_id);
+          port_connect (source, l, true);
         }
       for (int i = 0;
            i < self->num_ext_stereo_r_ins; i++)
         {
-          char * full_name =
-            self->ext_stereo_r_ins[i]->full_name;
+          char * port_id =
+            ext_port_get_id (
+              self->ext_stereo_r_ins[i]);
           Port * source =
             hardware_processor_find_port (
-              HW_IN_PROCESSOR, full_name);
+              HW_IN_PROCESSOR, port_id);
           if (!source)
             {
               g_warning (
                 "port for %s not found",
-                full_name);
+                port_id);
+              g_free (port_id);
               continue;
             }
-          port_connect (
-            source, r, true);
+          g_free (port_id);
+          port_connect (source, r, true);
         }
     }
 }

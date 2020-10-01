@@ -93,6 +93,40 @@ typedef struct HardwareProcessor
 
 } HardwareProcessor;
 
+static const cyaml_schema_field_t
+hardware_processor_fields_schema[] =
+{
+  YAML_FIELD_INT (
+    HardwareProcessor, is_input),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+    HardwareProcessor, ext_audio_ports,
+    ext_port_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+    HardwareProcessor, ext_midi_ports,
+    ext_port_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+    HardwareProcessor, audio_ports,
+    port_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+    HardwareProcessor, midi_ports,
+    port_schema),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+hardware_processor_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    HardwareProcessor,
+    hardware_processor_fields_schema),
+};
+
+void
+hardware_processor_init_loaded (
+  HardwareProcessor * self);
+
 /**
  * Returns a new empty instance.
  */
@@ -109,7 +143,9 @@ hardware_processor_rescan_ext_ports (
   HardwareProcessor * self);
 
 /**
- * Finds an ext port from its ID (full name).
+ * Finds an ext port from its ID (type + full name).
+ *
+ * @see ext_port_get_id()
  */
 ExtPort *
 hardware_processor_find_ext_port (
@@ -117,7 +153,9 @@ hardware_processor_find_ext_port (
   const char *        id);
 
 /**
- * Finds a port from its ID (full name).
+ * Finds a port from its ID (type + full name).
+ *
+ * @see ext_port_get_id()
  */
 Port *
 hardware_processor_find_port (

@@ -33,4 +33,14 @@
  * The "destroy" signal is for
  * other code, using your widget, to release
  * references they might have.
+ *
+ * \section popovers
+ *
+ * Thanks to ebassi from GTK:
+ * always make sure that the popover opens inside
+ * the window; make the window request a minimum
+ * size that allows the popover to be fully
+ * contained; or make the contents of the popover
+ * be small enough to fit into a small top level
+ * parent window
  */

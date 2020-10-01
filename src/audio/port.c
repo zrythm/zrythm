@@ -491,8 +491,16 @@ port_find_from_identifier (
         }
       break;
     case PORT_OWNER_TYPE_HW:
-      g_return_val_if_reached (NULL);
+      {
+        Port * port =
+          hardware_processor_find_port (
+            HW_IN_PROCESSOR, id->ext_port_id);
+        g_warn_if_fail (port);
+        return port;
+      }
       break;
+    default:
+      g_return_val_if_reached (NULL);
     }
 
   g_return_val_if_reached (NULL);
@@ -895,8 +903,7 @@ expose_to_jack (
     }
 
   const char * type =
-    engine_jack_get_jack_type (
-      self->id.type);;
+    engine_jack_get_jack_type (self->id.type);
   if (!type)
     g_return_if_reached ();
 
@@ -2067,6 +2074,7 @@ expose_to_rtaudio (
                       self->rtaudio_ins[idx] =
                         rtaudio_device_new (
                           ext_port->rtaudio_is_input,
+                          NULL,
                           ext_port->rtaudio_id,
                           ext_port->rtaudio_channel_idx,
                           self);
@@ -2094,6 +2102,7 @@ expose_to_rtaudio (
                       self->rtaudio_ins[idx] =
                         rtaudio_device_new (
                           ext_port->rtaudio_is_input,
+                          NULL,
                           ext_port->rtaudio_id,
                           ext_port->rtaudio_channel_idx,
                           self);

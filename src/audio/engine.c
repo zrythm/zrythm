@@ -336,12 +336,6 @@ init_common (
 {
   self->metronome = metronome_new ();
   self->router = router_new ();
-  self->hw_in_processor =
-    hardware_processor_new (true);
-#if 0
-  self->hw_out_processor =
-    hardware_processor_new (false);
-#endif
 
   /* get audio backend */
   AudioBackend ab_code = AUDIO_BACKEND_DUMMY;
@@ -535,6 +529,8 @@ engine_init_loaded (
   control_room_init_loaded (self->control_room);
   sample_processor_init_loaded (
     self->sample_processor);
+  hardware_processor_init_loaded (
+    self->hw_in_processor);
 
   init_common (self);
 
@@ -600,6 +596,13 @@ engine_new (
   self->monitor_out =
     stereo_ports_new_from_existing (
       monitor_out_l, monitor_out_r);
+
+  self->hw_in_processor =
+    hardware_processor_new (true);
+#if 0
+  self->hw_out_processor =
+    hardware_processor_new (false);
+#endif
 
   init_common (self);
 

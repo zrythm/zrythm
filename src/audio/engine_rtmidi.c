@@ -67,7 +67,7 @@ engine_rtmidi_get_num_in_ports (
   AudioEngine * self)
 {
   RtMidiDevice * dev =
-    rtmidi_device_new (1, 0, NULL);
+    rtmidi_device_new (1, NULL, 0, NULL);
   if (!dev)
     return 0;
   unsigned int num_ports =

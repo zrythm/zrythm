@@ -82,7 +82,7 @@ get_controllers (
           processor->ext_midi_ports[i] :
           processor->ext_audio_ports[i];
       controllers[(*num_controllers)++] =
-        g_strdup (port->full_name);
+        ext_port_get_id (port);
     }
 }
 

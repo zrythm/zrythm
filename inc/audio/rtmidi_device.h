@@ -88,9 +88,14 @@ typedef struct RtMidiDevice
 
 } RtMidiDevice;
 
+/**
+ * @param name If non-NUL, search by name instead of
+ *   by @ref device_id.
+ */
 RtMidiDevice *
 rtmidi_device_new (
   bool         is_input,
+  const char * name,
   unsigned int device_id,
   Port *       port);
 

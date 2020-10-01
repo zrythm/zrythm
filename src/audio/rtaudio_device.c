@@ -26,6 +26,7 @@
 #include "audio/port.h"
 #include "audio/rtaudio_device.h"
 #include "project.h"
+#include "utils/string.h"
 
 #include <gtk/gtk.h>
 
@@ -83,6 +84,7 @@ myaudio_cb (
 RtAudioDevice *
 rtaudio_device_new (
   int          is_input,
+  const char * device_name,
   unsigned int device_id,
   unsigned int channel_idx,
   Port *       port)
@@ -98,9 +100,30 @@ rtaudio_device_new (
     engine_rtaudio_create_rtaudio (AUDIO_ENGINE);
   g_return_val_if_fail (self->handle, NULL);
 
-  rtaudio_device_info_t dev_nfo =
-    rtaudio_get_device_info (
-      self->handle, (int) device_id);
+  rtaudio_device_info_t dev_nfo;
+  if (device_name)
+    {
+      int dev_count =
+        rtaudio_device_count (self->handle);
+      for (int i = 0; i < dev_count; i++)
+        {
+          rtaudio_device_info_t cur_dev_nfo =
+            rtaudio_get_device_info (
+              self->handle, i);
+          if (string_is_equal (
+                cur_dev_nfo.name, device_name))
+            {
+              dev_nfo = cur_dev_nfo;
+              break;
+            }
+        }
+    }
+  else
+    {
+      dev_nfo =
+        rtaudio_get_device_info (
+          self->handle, (int) device_id);
+    }
   self->name = g_strdup (dev_nfo.name);
 
   self->audio_ring =

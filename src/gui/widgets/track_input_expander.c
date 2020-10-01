@@ -191,7 +191,8 @@ on_ext_input_changed (
               HW_IN_PROCESSOR->ext_midi_ports[i] :
               HW_IN_PROCESSOR->ext_audio_ports[i];
 
-          if (string_is_equal (port->full_name, id))
+          char * port_id = ext_port_get_id (port);
+          if (string_is_equal (port_id, id))
             {
               if (midi)
                 {
@@ -327,9 +328,11 @@ setup_ext_ins_cb (
       else
         label = port->full_name;
 
+      char * port_id = ext_port_get_id (port);
       gtk_combo_box_text_append (
         GTK_COMBO_BOX_TEXT (cb),
-        port->full_name, label);
+        port_id, label);
+      g_free (port_id);
     }
 
   gtk_combo_box_text_append (
@@ -379,8 +382,10 @@ setup_ext_ins_cb (
         g_value_set_string (&a, "none");
       else
         {
-          g_value_set_string (
-            &a, ch->ext_midi_ins[0]->full_name);
+          char * port_id =
+            ext_port_get_id (ch->ext_midi_ins[0]);
+          g_value_set_string (&a, port_id);
+          g_free (port_id);
         }
     }
   else if (left)
@@ -391,8 +396,11 @@ setup_ext_ins_cb (
         g_value_set_string (&a, "none");
       else
         {
-          g_value_set_string (
-            &a, ch->ext_stereo_l_ins[0]->full_name);
+          char * port_id =
+            ext_port_get_id (
+              ch->ext_stereo_l_ins[0]);
+          g_value_set_string (&a, port_id);
+          g_free (port_id);
         }
     }
   else
@@ -403,8 +411,11 @@ setup_ext_ins_cb (
         g_value_set_string (&a, "none");
       else
         {
-          g_value_set_string (
-            &a, ch->ext_stereo_r_ins[0]->full_name);
+          char * port_id =
+            ext_port_get_id (
+              ch->ext_stereo_r_ins[0]);
+          g_value_set_string (&a, port_id);
+          g_free (port_id);
         }
     }
   g_object_set_property (

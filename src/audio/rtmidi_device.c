@@ -26,6 +26,7 @@
 #include "audio/port.h"
 #include "audio/rtmidi_device.h"
 #include "project.h"
+#include "utils/string.h"
 
 #include <gtk/gtk.h>
 
@@ -114,9 +115,44 @@ midi_in_cb (
 
 static bool rtmidi_device_first_run = false;
 
+static int
+rtmidi_device_get_id_from_name (
+  bool         is_input,
+  const char * name)
+{
+  if (is_input)
+    {
+      RtMidiDevice * dev =
+        rtmidi_device_new (1, NULL, 0, NULL);
+      if (!dev)
+        return 0;
+
+      unsigned int num_ports =
+        rtmidi_get_port_count (dev->in_handle);
+      for (unsigned int i = 0; i < num_ports; i++)
+        {
+          const char * dev_name =
+            rtmidi_get_port_name (dev->in_handle, i);
+          if (string_is_equal (dev_name, name))
+            {
+              rtmidi_device_free (dev);
+              return (int) i;
+            }
+        }
+      rtmidi_device_free (dev);
+    }
+
+  g_return_val_if_reached (-1);
+}
+
+/**
+ * @param name If non-NUL, search by name instead of
+ *   by @ref device_id.
+ */
 RtMidiDevice *
 rtmidi_device_new (
   bool         is_input,
+  const char * name,
   unsigned int device_id,
   Port *       port)
 {
@@ -155,8 +191,20 @@ rtmidi_device_new (
       return NULL;
     }
 
+  if (name)
+    {
+      int id_from_name =
+        rtmidi_device_get_id_from_name (
+          is_input, name);
+      g_return_val_if_fail (
+        id_from_name >= 0, NULL);
+      self->id = (unsigned int) id_from_name;
+    }
+  else
+    {
+      self->id = device_id;
+    }
   self->is_input = is_input;
-  self->id = device_id;
   self->port = port;
   if (is_input)
     {

@@ -77,6 +77,21 @@ g_return_val_if_reached (NULL);
 }
 
 /**
+ * Returns a unique identifier (full name prefixed
+ * with backend type).
+ */
+char *
+ext_port_get_id (
+  ExtPort * self)
+{
+  return
+    g_strdup_printf (
+      "%s/%s",
+      ext_port_type_strings[self->type].str,
+      self->full_name);
+}
+
+/**
  * Clears the buffer of the external port.
  */
 void
@@ -119,12 +134,35 @@ ext_port_activate (
             {
 #ifdef HAVE_JACK
             case MIDI_BACKEND_JACK:
+              if (self->type != EXT_PORT_TYPE_JACK)
+                {
+                  g_message (
+                    "skipping %s (not JACK)",
+                    self->full_name);
+                  return;
+                }
+
               self->port = port;
 
               /* expose the port and connect to
                * JACK port */
               port_set_expose_to_backend (
                 self->port, true);
+              if (!self->jport)
+                {
+                  self->jport =
+                    jack_port_by_name (
+                      AUDIO_ENGINE->client,
+                      self->full_name);
+                }
+              g_return_if_fail (self->jport);
+
+              g_message (
+                "connecting jack port %s to "
+                "jack port %s",
+                jack_port_name (self->jport),
+                jack_port_name (
+                  JACK_PORT_T (self->port->data)));
 
               ret =
                 jack_connect (
@@ -154,10 +192,18 @@ ext_port_activate (
             case MIDI_BACKEND_JACK_RTMIDI:
             case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
             case MIDI_BACKEND_COREMIDI_RTMIDI:
+              if (self->type != EXT_PORT_TYPE_RTMIDI)
+                {
+                  g_message (
+                    "skipping %s (not RtMidi)",
+                    self->full_name);
+                  return;
+                }
               self->port = port;
               self->rtmidi_dev =
                 rtmidi_device_new (
-                  true, self->rtmidi_id, self->port);
+                  true, self->full_name,
+                  0, self->port);
               ret =
                 rtmidi_device_open (
                   self->rtmidi_dev, true);
@@ -177,12 +223,34 @@ ext_port_activate (
             {
 #ifdef HAVE_JACK
             case AUDIO_BACKEND_JACK:
+              if (self->type != EXT_PORT_TYPE_JACK)
+                {
+                  g_message (
+                    "skipping %s (not JACK)",
+                    self->full_name);
+                  return;
+                }
               self->port = port;
 
               /* expose the port and connect to
                * JACK port */
               port_set_expose_to_backend (
                 self->port, true);
+              if (!self->jport)
+                {
+                  self->jport =
+                    jack_port_by_name (
+                      AUDIO_ENGINE->client,
+                      self->full_name);
+                }
+              g_return_if_fail (self->jport);
+
+              g_message (
+                "connecting jack port %s to "
+                "jack port %s",
+                jack_port_name (self->jport),
+                jack_port_name (
+                  JACK_PORT_T (self->port->data)));
 
               jack_connect (
                 AUDIO_ENGINE->client,
@@ -198,11 +266,18 @@ ext_port_activate (
             case AUDIO_BACKEND_COREAUDIO_RTAUDIO:
             case AUDIO_BACKEND_WASAPI_RTAUDIO:
             case AUDIO_BACKEND_ASIO_RTAUDIO:
+              if (self->type != EXT_PORT_TYPE_RTAUDIO)
+                {
+                  g_message (
+                    "skipping %s (not RtAudio)",
+                    self->full_name);
+                  return;
+                }
               self->port = port;
               self->rtaudio_dev =
                 rtaudio_device_new (
-                  true, self->rtaudio_id,
-                  self->rtaudio_channel_idx,
+                  true, self->rtaudio_dev_name,
+                  0, self->rtaudio_channel_idx,
                   self->port);
               ret =
                 rtaudio_device_open (
@@ -255,6 +330,82 @@ ext_port_disconnect (
   int       src)
 {
   /* TODO */
+}
+
+/**
+ * Returns if the ext port matches the current
+ * backend.
+ */
+bool
+ext_port_matches_backend (
+  ExtPort * self)
+{
+  if (!self->is_midi)
+    {
+      switch (AUDIO_ENGINE->audio_backend)
+        {
+#ifdef HAVE_JACK
+        case AUDIO_BACKEND_JACK:
+          if (self->type == EXT_PORT_TYPE_JACK)
+            return true;
+          else
+            return false;
+#endif
+#ifdef HAVE_RTAUDIO
+        case AUDIO_BACKEND_ALSA_RTAUDIO:
+        case AUDIO_BACKEND_JACK_RTAUDIO:
+        case AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
+        case AUDIO_BACKEND_COREAUDIO_RTAUDIO:
+        case AUDIO_BACKEND_WASAPI_RTAUDIO:
+        case AUDIO_BACKEND_ASIO_RTAUDIO:
+          if (self->type == EXT_PORT_TYPE_RTAUDIO)
+            return true;
+          else
+            return false;
+#endif
+#ifdef HAVE_ALSA
+        case AUDIO_BACKEND_ALSA:
+          break;
+#endif
+        default:
+          break;
+        }
+    }
+  else
+    {
+      switch (AUDIO_ENGINE->midi_backend)
+        {
+#ifdef HAVE_JACK
+        case MIDI_BACKEND_JACK:
+          if (self->type == EXT_PORT_TYPE_JACK)
+            return true;
+          else
+            return false;
+#endif
+#ifdef HAVE_ALSA
+        case MIDI_BACKEND_ALSA:
+          break;
+#endif
+#ifdef _WOE32
+        case MIDI_BACKEND_WINDOWS_MME:
+          g_warning ("TODO");
+          break;
+#endif
+#ifdef HAVE_RTMIDI
+        case MIDI_BACKEND_ALSA_RTMIDI:
+        case MIDI_BACKEND_JACK_RTMIDI:
+        case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
+        case MIDI_BACKEND_COREMIDI_RTMIDI:
+          if (self->type == EXT_PORT_TYPE_RTMIDI)
+            return true;
+          else
+            return false;
+#endif
+        default:
+          break;
+        }
+    }
+  return false;
 }
 
 #ifdef HAVE_JACK
@@ -427,7 +578,7 @@ ext_port_from_rtmidi (
     calloc (1, sizeof (ExtPort));
 
   RtMidiDevice * dev =
-    rtmidi_device_new (1, id, NULL);
+    rtmidi_device_new (1, NULL, id, NULL);
   self->rtmidi_id = id;
   self->full_name =
     g_strdup (
@@ -483,11 +634,13 @@ ext_port_from_rtaudio (
     calloc (1, sizeof (ExtPort));
 
   RtAudioDevice * dev =
-    rtaudio_device_new (1, id, channel_idx, NULL);
+    rtaudio_device_new (
+      1, NULL, id, channel_idx, NULL);
   self->rtaudio_id = id;
   self->rtaudio_channel_idx = channel_idx;
   self->rtaudio_is_input = is_input;
   self->rtaudio_is_duplex = is_duplex;
+  self->rtaudio_dev_name = g_strdup (dev->name);
   self->full_name =
     g_strdup_printf (
       "%s (in %d)", dev->name, channel_idx);
@@ -731,11 +884,16 @@ ext_port_clone (
 #ifdef HAVE_RTMIDI
   newport->rtmidi_id = ext_port->rtmidi_id;
 #endif
+  newport->rtaudio_channel_idx =
+    ext_port->rtaudio_channel_idx;
+  newport->rtaudio_dev_name =
+    ext_port->rtaudio_dev_name;
 #ifdef HAVE_RTAUDIO
   newport->rtaudio_id = ext_port->rtaudio_id;
-  newport->rtaudio_channel_idx = ext_port->rtaudio_channel_idx;
-  newport->rtaudio_is_input = ext_port->rtaudio_is_input;
-  newport->rtaudio_is_duplex = ext_port->rtaudio_is_duplex;
+  newport->rtaudio_is_input =
+    ext_port->rtaudio_is_input;
+  newport->rtaudio_is_duplex =
+    ext_port->rtaudio_is_duplex;
 #endif
   if (ext_port->full_name)
     newport->full_name =

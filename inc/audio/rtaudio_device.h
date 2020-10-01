@@ -94,6 +94,7 @@ typedef struct RtAudioDevice
 RtAudioDevice *
 rtaudio_device_new (
   int          is_input,
+  const char * device_name,
   unsigned int device_id,
   unsigned int channel_idx,
   Port *       port);

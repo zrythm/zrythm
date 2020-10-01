@@ -30,6 +30,7 @@
 
 #include "audio/control_room.h"
 #include "audio/ext_port.h"
+#include "audio/hardware_processor.h"
 #include "audio/pan.h"
 #include "audio/pool.h"
 #include "audio/sample_processor.h"
@@ -657,6 +658,9 @@ engine_fields_schema[] =
   YAML_FIELD_MAPPING_PTR (
     AudioEngine, sample_processor,
     sample_processor_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    AudioEngine, hw_in_processor,
+    hardware_processor_fields_schema),
 
   CYAML_FIELD_END
 };

@@ -115,11 +115,15 @@ typedef struct ExtPort
   WindowsMmeDevice * mme_dev;
 #endif
 
+  /** RtAudio channel index. */
+  unsigned int     rtaudio_channel_idx;
+
+  /** RtAudio device name. */
+  char *           rtaudio_dev_name;
+
 #ifdef HAVE_RTAUDIO
   /** RtAudio device index. */
   unsigned int     rtaudio_id;
-  /** RtAudio channel index. */
-  unsigned int     rtaudio_channel_idx;
 
   /** Whether the channel is input. */
   bool             rtaudio_is_input;
@@ -165,12 +169,16 @@ ext_port_fields_schema[] =
     ExtPort, alias1),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     ExtPort, alias2),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    ExtPort, rtaudio_dev_name),
   YAML_FIELD_INT (
     ExtPort, num_aliases),
   YAML_FIELD_INT (
     ExtPort, is_midi),
   YAML_FIELD_ENUM (
     ExtPort, type, ext_port_type_strings),
+  YAML_FIELD_UINT (
+    ExtPort, rtaudio_channel_idx),
 
   CYAML_FIELD_END
 };
@@ -195,6 +203,22 @@ ext_port_init_loaded (
 void
 ext_port_print (
   ExtPort * self);
+
+/**
+ * Returns if the ext port matches the current
+ * backend.
+ */
+bool
+ext_port_matches_backend (
+  ExtPort * self);
+
+/**
+ * Returns a unique identifier (full name prefixed
+ * with backend type).
+ */
+char *
+ext_port_get_id (
+  ExtPort * ext_port);
 
 /**
  * Returns the buffer of the external port.

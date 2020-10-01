@@ -319,7 +319,7 @@ typedef struct PortIdentifier
   /** Identifier of plugin. */
   PluginIdentifier    plugin_id;
 
-  /** ExtPort ID (full name), if hw port. */
+  /** ExtPort ID (type + full name), if hw port. */
   char *              ext_port_id;
 
   /** Index of Track in the Tracklist. */
@@ -369,10 +369,8 @@ port_identifier_fields_schema[] =
   YAML_FIELD_MAPPING_EMBEDDED (
     PortIdentifier, plugin_id,
     plugin_identifier_fields_schema),
-#if 0
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PortIdentifier, ext_port_id),
-#endif
   YAML_FIELD_INT (
     PortIdentifier, port_index),
 

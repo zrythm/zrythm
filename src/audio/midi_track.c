@@ -673,9 +673,16 @@ midi_track_fill_midi_events (
                   send_notes_off_at (
                     r, midi_events, time,
                     TYPE_REGION_END);
-                  g_warn_if_fail (
-                    time <
-                    local_start_frame + nframes);
+                  if (time >= local_start_frame +
+                        nframes)
+                    {
+                      g_warning (
+                        "Expected time (%d) to be < "
+                        "local start frame (%d) + "
+                        "nframes (%d)",
+                        time, local_start_frame,
+                        nframes);
+                    }
                 }
 
               if (r_local_end_pos < r_local_pos)
@@ -693,9 +700,16 @@ midi_track_fill_midi_events (
                   send_notes_off_at (
                     r, midi_events, time,
                     TYPE_REGION_LOOP_END);
-                  g_warn_if_fail (
-                    time <
-                    local_start_frame + nframes);
+                  if (time >= local_start_frame +
+                        nframes)
+                    {
+                      g_warning (
+                        "Expected time (%d) to be < "
+                        "local start frame (%d) + "
+                        "nframes (%d)",
+                        time, local_start_frame,
+                        nframes);
+                    }
                   region_loop_met = 1;
                 }
 
@@ -776,9 +790,16 @@ midi_track_fill_midi_events (
                             VELOCITY_DEFAULT, time,
                             F_QUEUED);
                         }
-                      g_warn_if_fail (
-                        time <
-                        local_start_frame + nframes);
+                      if (time >= local_start_frame +
+                            nframes)
+                        {
+                          g_warning (
+                            "Expected time (%d) to "
+                            "be < local start frame "
+                            "(%d) + nframes (%d)",
+                            time, local_start_frame,
+                            nframes);
+                        }
                     }
 
                   long mn_obj_end_frames =
