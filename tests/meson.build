@@ -144,7 +144,6 @@ if get_option ('tests')
     ['utils/general', true],
     ['utils/io', true],
     ['utils/string', true],
-    ['utils/system', false],
     ]
 
   if os_gnu or os_darwin
@@ -165,6 +164,7 @@ if get_option ('tests')
       ['integration/run_graph_with_latencies', false],
       ['integration/undo_redo_helm_track_creation',
         true],
+      ['utils/system', false],
       ]
     if get_option ('plugin_tests')
       tests += [
