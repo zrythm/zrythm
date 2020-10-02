@@ -98,16 +98,16 @@ hardware_processor_fields_schema[] =
 {
   YAML_FIELD_INT (
     HardwareProcessor, is_input),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     HardwareProcessor, ext_audio_ports,
     ext_port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     HardwareProcessor, ext_midi_ports,
     ext_port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     HardwareProcessor, audio_ports,
     port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     HardwareProcessor, midi_ports,
     port_schema),
 
