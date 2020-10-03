@@ -3888,6 +3888,8 @@ drag_update (
   else
     self->ctrl_held = 0;
 
+  arranger_widget_print_action (self);
+
   /* get current pos */
   arranger_widget_px_to_pos (
     self, self->start_x + offset_x,
@@ -4594,13 +4596,21 @@ on_drag_end_midi (
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
     case UI_OVERLAY_ACTION_ERASING:
       {
-        UndoableAction * ua =
-          arranger_selections_action_new_delete (
-            self->sel_to_delete);
-        undo_manager_perform (UNDO_MANAGER, ua);
-        object_free_w_func_and_null (
-          arranger_selections_free,
-          self->sel_to_delete);
+        if (self->sel_to_delete)
+          {
+            if (arranger_selections_has_any (
+                  self->sel_to_delete))
+              {
+                UndoableAction * ua =
+                  arranger_selections_action_new_delete (
+                    self->sel_to_delete);
+                undo_manager_perform (
+                  UNDO_MANAGER, ua);
+              }
+            object_free_w_func_and_null (
+              arranger_selections_free,
+              self->sel_to_delete);
+          }
       }
       break;
     /* if didn't click on something */

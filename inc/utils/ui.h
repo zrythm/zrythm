@@ -306,7 +306,57 @@ typedef enum UiOverlayAction
   UI_OVERLAY_ACTION_CUTTING,
 
   UI_OVERLAY_ACTION_RENAMING,
+  NUM_UI_OVERLAY_ACTIONS,
 } UiOverlayAction;
+
+/**
+ * Various overlay actions to be shared.
+ */
+static const char * ui_overlay_strings[] =
+  {
+    "NONE",
+    "RESIZING_R",
+    "MOVING",
+    "RESIZING_L",
+    "RESIZING_L_LOOP",
+    "RESIZING_L_FADE",
+    "RESIZING_R",
+    "RESIZING_R_LOOP",
+    "RESIZING_R_FADE",
+    "RESIZING_UP",
+    "RESIZING_UP_FADE_IN",
+    "RESIZING_UP_FADE_OUT",
+    "STRETCHING_L",
+    "STRETCHING_R",
+    "AUDITIONING",
+    "AUTOFILLING",
+    "ERASING",
+    "STARTING_ERASING",
+    "STARTING_MOVING",
+    "STARTING_MOVING_COPY",
+    "STARTING_MOVING_LINK",
+    "MOVING",
+    "MOVING_COPY",
+    "MOVING_LINK",
+    "STARTING_CHANGING_CURVE",
+    "CHANGING_CURVE",
+    "STARTING_SELECTION",
+    "SELECTING",
+    "STARTING_DELETE_SELECTION",
+    "DELETE_SELECTING",
+    "STARTING_RAMP",
+    "RAMPING",
+    "CUTTING",
+    "RENAMING",
+    "INVALID",
+  };
+
+static inline const char *
+ui_get_overlay_action_string (
+  UiOverlayAction action)
+{
+  return ui_overlay_strings[action];
+}
 
 /**
  * Dragging modes for widgets that have click&drag.

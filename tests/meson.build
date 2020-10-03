@@ -144,6 +144,7 @@ if get_option ('tests')
     ['utils/general', true],
     ['utils/io', true],
     ['utils/string', true],
+    ['utils/ui', true],
     ]
 
   if os_gnu or os_darwin

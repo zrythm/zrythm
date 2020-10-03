@@ -616,6 +616,10 @@ EditorSettings *
 arranger_widget_get_editor_settings (
   ArrangerWidget * self);
 
+#define arranger_widget_print_action(self) \
+  g_debug ( \
+    "action: %s", ui_overlay_strings[self->action])
+
 /**
  * @}
  */
