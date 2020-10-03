@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-30 22:58+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/ja/>\n"
@@ -65,9 +65,8 @@ msgstr ""
 "います。"
 
 #: ../../editing/clip-editors/automation-editor.rst:20
-#, fuzzy
 msgid "Automation Arranger"
-msgstr "オートメーションエディター"
+msgstr "オートメーションアレンジャー"
 
 #: ../../editing/clip-editors/automation-editor.rst:21
 #, fuzzy
@@ -116,7 +115,6 @@ msgid "Exponential curve."
 msgstr "指数曲線。"
 
 #: ../../editing/clip-editors/automation-editor.rst:46
-#, fuzzy
 msgid "Superellipse"
 msgstr "超楕円"
 
@@ -143,7 +141,6 @@ msgstr "パルス波。"
 #: ../../editing/clip-editors/automation-editor.rst:55
 #: ../../editing/clip-editors/chord-editor.rst:65
 #: ../../editing/clip-editors/piano-roll.rst:114
-#, fuzzy
 msgid "Context Menu"
 msgstr "コンテキストメニュー"
 
@@ -217,7 +214,6 @@ msgid ""
 msgstr "コードエディタには、変更可能なコードの左側のリストと、コード進行を作成するための右側のアレンジャーが含まれます。"
 
 #: ../../editing/clip-editors/chord-editor.rst:23
-#, fuzzy
 msgid "Chords"
 msgstr "和音"
 
@@ -418,9 +414,8 @@ msgid "Drum Mode"
 msgstr "ドラムモード"
 
 #: ../../editing/clip-editors/piano-roll.rst:82
-#, fuzzy
 msgid "Explain/show how the 2 sections above look in drum mode."
-msgstr "上の2つのセクションがドラムモードでどのように見えるか説明。"
+msgstr "上記の2つのセクションがドラムモードでどのように表示されるかを説明/示す。"
 
 #: ../../editing/clip-editors/piano-roll.rst:86
 msgid "Velocity Editor"
@@ -496,9 +491,8 @@ msgid "Markers"
 msgstr "マーカー"
 
 #: ../../editing/clip-editors/ruler.rst:24
-#, fuzzy
 msgid "Clip Start"
-msgstr "クリップ開始位置"
+msgstr "クリップの開始点"
 
 #: ../../editing/clip-editors/ruler.rst:25
 msgid ""
@@ -523,7 +517,6 @@ msgid ""
 msgstr "灰色の下向き矢印として表示されています。これはプレイヘッドの現在の位置です。"
 
 #: ../../editing/clip-editors/ruler.rst:39
-#, fuzzy
 msgid "Loop Points"
 msgstr "ループポイント"
 
@@ -534,7 +527,6 @@ msgid ""
 msgstr "2 つの緑の矢印で示されています。これらの矢印は、クリップがループを開始する位置とループ後に戻る位置を制御します。"
 
 #: ../../editing/clip-editors/ruler.rst:47
-#, fuzzy
 msgid "Setting Each Point"
 msgstr "各ポイントの設定"
 
@@ -551,9 +543,8 @@ msgid ""
 msgstr "空のスペースをクリックしてドラッグすると、再生ヘッドの位置を変更できます。"
 
 #: ../../editing/clip-editors/ruler.rst:54
-#, fuzzy
 msgid "Hold :kbd:`Shift` to temporarily disable snapping."
-msgstr "一時的にスナップを無効にするには、:zbutton:`Shift` を押します"
+msgstr "一時的にスナップを無効にするには、 :kbd:`Shift` を押します"
 
 #: ../../editing/clip-editors/toolbar.rst:8
 msgid "Editor Toolbar"
@@ -579,9 +570,8 @@ msgid "Grid/snap settings"
 msgstr "グリッド/スナップ設定"
 
 #: ../../editing/clip-editors/toolbar.rst:23
-#, fuzzy
 msgid "Snapping and grid options are covered in :ref:`snapping-grid-options`."
-msgstr "スナップとグリッドのオプションについては、 :ref:`snap-grid-options` で説明されています。"
+msgstr "スナップとグリッドの設定については、 :ref:`snap-grid-options` で説明されています。"
 
 #: ../../editing/clip-editors/toolbar.rst:27
 msgid "Highlight"
@@ -604,9 +594,8 @@ msgstr "クオンタイズオプションについては :ref:`quantization` で
 #: ../../editing/clip-editors/toolbar.rst:36
 #: ../../editing/clip-editors/toolbar.rst:40
 #: ../../editing/clip-editors/toolbar.rst:44
-#, fuzzy
 msgid "No controls at the moment."
-msgstr "現時点では使用されていません。"
+msgstr "現時点ではコントロールはありません。"
 
 #: ../../editing/common-operations.rst:8
 msgid "Common Operations"
@@ -641,13 +630,12 @@ msgstr ""
 "ノートが再び作成され、元に戻す操作とやり直しの間に何度でも戻ることができます。"
 
 #: ../../editing/common-operations.rst:26
-#, fuzzy
 msgid ""
 "The shortcuts for undo and redo are :kbd:`Control-z` and :kbd:`Control-"
 "Shift-z`."
 msgstr ""
-"元に戻すショートカットは :zbutton:`Control` + :zbutton:`Z` で、やり直しのショートカットは "
-":zbutton:`Ctrl` + :zbutton:`Shift` + :zbutton:`Z` です。"
+"元に戻しのショートカットは :kbd:`Control` + :kbd:`Z` で、やり直しのショートカットは :kbd:`Ctrl` + "
+":kbd:`Shift` + :kbd:`Z` です。"
 
 #: ../../editing/common-operations.rst:29
 msgid ""
@@ -1072,9 +1060,8 @@ msgid "Note Type"
 msgstr "音符の種類"
 
 #: ../../editing/snapping-grid-options.rst:34
-#, fuzzy
 msgid "Note type for the note length (normal/dotted/triplet)"
-msgstr "音符の長さの種類（ノーマル/ドット/トリプレット）"
+msgstr "音符の種類（通常/ドット/トリプレット）"
 
 #: ../../editing/timeline/arranger.rst:8
 msgid "Timeline Arranger"
@@ -1129,12 +1116,10 @@ msgid "The following types of regions exist."
 msgstr "次の種類のリージョンがあります。"
 
 #: ../../editing/timeline/arranger.rst:47
-#, fuzzy
 msgid "Audio Region"
 msgstr "オーディオリージョン"
 
 #: ../../editing/timeline/arranger.rst:48
-#, fuzzy
 msgid "Contains audio clips."
 msgstr "オーディオクリップを収録。"
 
@@ -1143,7 +1128,7 @@ msgstr "オーディオクリップを収録。"
 #: ../../editing/timeline/arranger.rst:69
 #: ../../editing/timeline/arranger.rst:75
 msgid "Expand + add pic."
-msgstr ""
+msgstr "Expand + add pic."
 
 #: ../../editing/timeline/arranger.rst:53
 msgid "Fades"
@@ -1158,33 +1143,28 @@ msgid "Decide what to do about cross-fades (just use fades?)."
 msgstr "クロスフェードをどうするか決める（フェードを使うだけ？）。"
 
 #: ../../editing/timeline/arranger.rst:60
-#, fuzzy
 msgid "MIDI Region"
-msgstr "オーディオリージョン"
+msgstr "MIDIリージョン"
 
 #: ../../editing/timeline/arranger.rst:61
-#, fuzzy
 msgid "Contains MIDI notes."
-msgstr "MIDIノートを収録しています。"
+msgstr "MIDI音符を収録。"
 
 #: ../../editing/timeline/arranger.rst:66
-#, fuzzy
 msgid "Automation Region"
-msgstr "オートメーションエディター"
+msgstr "オートメーションリージョン"
 
 #: ../../editing/timeline/arranger.rst:67
-#, fuzzy
 msgid "Contains automation events."
-msgstr "オートメーションイベントが含まれています。"
+msgstr "オートメーションイベントを収録。"
 
 #: ../../editing/timeline/arranger.rst:72
 msgid "Chord region"
 msgstr "コードリージョン"
 
 #: ../../editing/timeline/arranger.rst:73
-#, fuzzy
 msgid "Contains sequences of chords."
-msgstr "和音のシーケンスを含む。"
+msgstr "コードのシーケンスを収録。"
 
 #: ../../editing/timeline/arranger.rst:79
 msgid ""
@@ -1209,9 +1189,8 @@ msgid ""
 msgstr "スケールは、特定の音階を使用してセクションの開始を示すためにコードトラックで使用されます。"
 
 #: ../../editing/timeline/arranger.rst:99
-#, fuzzy
 msgid "Editing Objects"
-msgstr "オブジェクトのサイズ変更"
+msgstr "オブジェクトの編集"
 
 #: ../../editing/timeline/arranger.rst:100
 msgid "The following operations apply to all editable objects."
@@ -1244,9 +1223,8 @@ msgid ""
 msgstr "オブジェクトは、クリックしてドラッグすることで移動します。トラック種類に互換性がある場合は、リージョンを他のトラックに移動できます。"
 
 #: ../../editing/timeline/arranger.rst:120
-#, fuzzy
 msgid "Copy-Moving"
-msgstr "オブジェクトの選択"
+msgstr "コピー・移動"
 
 #: ../../editing/timeline/arranger.rst:121
 msgid ""
@@ -1259,9 +1237,8 @@ msgid "Editing Regions"
 msgstr "リージョンの編集"
 
 #: ../../editing/timeline/arranger.rst:127
-#, fuzzy
 msgid "The following operations apply to regions."
-msgstr "次の種類のリージョンがあります。"
+msgstr "次の操作はリージョンに適用されます。"
 
 #: ../../editing/timeline/arranger.rst:130
 msgid "Looping"
@@ -1295,9 +1272,8 @@ msgstr ""
 "。"
 
 #: ../../editing/timeline/arranger.rst:152
-#, fuzzy
 msgid "Link-Moving"
-msgstr "リージョンのリンクx移動"
+msgstr "リンク・移動"
 
 #: ../../editing/timeline/arranger.rst:153
 #, fuzzy
@@ -1320,9 +1296,8 @@ msgid "Renaming"
 msgstr "名前の変更"
 
 #: ../../editing/timeline/arranger.rst:165
-#, fuzzy
 msgid "Regions can be renamed by clicking on their name."
-msgstr "選択したリージョンは、クリックしてドラッグすることで移動することができます。"
+msgstr "リージョン名を変更するには、その名前をクリックします。"
 
 #: ../../editing/timeline/arranger.rst:167
 msgid "Illustrate."

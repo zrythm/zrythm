@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:30+0100\n"
-"PO-Revision-Date: 2020-09-30 22:58+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/manualtracks/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -265,9 +266,8 @@ msgid "Automation"
 msgstr "オートメーション"
 
 #: ../../tracks/automation.rst:11
-#, fuzzy
 msgid "Automation Lanes"
-msgstr "オートメーショントラック"
+msgstr "オートメーションレーン"
 
 #: ../../tracks/automation.rst:12
 #, fuzzy
@@ -297,9 +297,8 @@ msgstr ""
 "イベントを作成することで行われます。詳細については、 :ref:`editing` の章を参照してください。"
 
 #: ../../tracks/bus-track-audio.rst:8
-#, fuzzy
 msgid "Audio FX Track"
-msgstr "オーディオトラック"
+msgstr "オーディオFXトラック"
 
 #: ../../tracks/bus-track-audio.rst:10
 #, fuzzy
@@ -457,9 +456,8 @@ msgid ""
 msgstr "トラック内を右クリックして :zbutton:`Duplicate` を選択すると、ほとんどのトラックを複製できます。"
 
 #: ../../tracks/group-track-audio.rst:8
-#, fuzzy
 msgid "Audio Group Track"
-msgstr "オーディオトラック"
+msgstr "オーディオグループトラック"
 
 #: ../../tracks/group-track-audio.rst:10
 msgid ""
@@ -496,18 +494,16 @@ msgid ""
 msgstr "各トラックが選択されると、インスペクタにそのページが表示されます。トラックによって、表示されるプロパティは異なります。"
 
 #: ../../tracks/inspector-page.rst:18
-#, fuzzy
 msgid "Track Properties"
-msgstr "属性"
+msgstr "トラックの属性"
 
 #: ../../tracks/inspector-page.rst:20
 msgid "Track properties are basic properties that the track has."
 msgstr "トラックのプロパティは、トラックが持つ基本的なプロパティです。"
 
 #: ../../tracks/inspector-page.rst:28
-#, fuzzy
 msgid "Name of the track"
-msgstr "コード トラックの名前。"
+msgstr "トラック名"
 
 #: ../../tracks/inspector-page.rst:32
 msgid "The track that this track routes its output to."
@@ -623,23 +619,20 @@ msgid "Peak signal value."
 msgstr "信号のピーク値。"
 
 #: ../../tracks/inspector-page.rst:114
-#, fuzzy
 msgid "RMS"
 msgstr "RMS"
 
 #: ../../tracks/inspector-page.rst:115
-#, fuzzy
 msgid "Root Mean Square of the signal value."
-msgstr "信号値の二乗平均平方根。"
+msgstr "シグナル値の二乗平均平方根。"
 
 #: ../../tracks/inspector-page.rst:117
 msgid "The following controls are available for controlling the signal flow."
 msgstr "シグナルフローを制御するために、以下のコントロールが使用できます。"
 
 #: ../../tracks/inspector-page.rst:122
-#, fuzzy
 msgid "Arm the track for recording."
-msgstr "録音のためにトラックをアームします。"
+msgstr "トラックを録音用に準備します。"
 
 #: ../../tracks/inspector-page.rst:126
 msgid "Mutes the track, meaning no sound will be sent to its direct out."
@@ -672,9 +665,8 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:145
 #: ../../tracks/inspector-page.rst:150
-#, fuzzy
 msgid "Not operational at the moment."
-msgstr "現時点では使用されていません。"
+msgstr "現時点では動作していません。"
 
 #: ../../tracks/inspector-page.rst:148
 msgid "Channel Settings"
@@ -947,9 +939,8 @@ msgid "Transpose"
 msgstr "トランスポーズ"
 
 #: ../../tracks/modulator-track.rst:6
-#, fuzzy
 msgid "Modulator Track"
-msgstr "モジュレーター"
+msgstr "モジュレータートラック"
 
 #: ../../tracks/modulator-track.rst:8
 #: ../../tracks/tempo-track.rst:8
@@ -1046,9 +1037,8 @@ msgid ""
 msgstr "セクション :ref:`track-operations` では、利用可能な様々なトラック操作について説明しています。"
 
 #: ../../tracks/tempo-track.rst:6
-#, fuzzy
 msgid "Tempo Track"
-msgstr "マスタートラック"
+msgstr "テンポトラック"
 
 #: ../../tracks/track-operations.rst:8
 msgid "Track Operations"
@@ -1090,9 +1080,8 @@ msgid ""
 msgstr "Zrythmには以下の種類のトラックがあり、さらに独自のセクションで説明されています。"
 
 #: ../../tracks/track-types.rst:12
-#, fuzzy
 msgid "Track type"
-msgstr "トラック名"
+msgstr "トラックの種類"
 
 #: ../../tracks/track-types.rst:12
 msgid "Input"
@@ -1103,9 +1092,8 @@ msgid "Output"
 msgstr "出力"
 
 #: ../../tracks/track-types.rst:12
-#, fuzzy
 msgid "Can record"
-msgstr "録音"
+msgstr "録音が可能"
 
 #: ../../tracks/track-types.rst:12
 msgid "Objects"
@@ -1131,9 +1119,8 @@ msgid "Audio regions"
 msgstr "オーディオリージョン"
 
 #: ../../tracks/track-types.rst:15
-#, fuzzy
 msgid "Audio Group"
-msgstr "オーディオトラック"
+msgstr "オーディオグループ"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -1162,9 +1149,8 @@ msgid "Audio FX"
 msgstr "オーディオFX"
 
 #: ../../tracks/track-types.rst:17
-#, fuzzy
 msgid "Chord"
-msgstr "録音"
+msgstr "コード（和音）"
 
 #: ../../tracks/track-types.rst:17
 #: ../../tracks/track-types.rst:18
@@ -1220,9 +1206,8 @@ msgid "Add page for Modulators and Tempo track."
 msgstr "モジュレーターとテンポトラックのページを追加。"
 
 #: ../../tracks/track-visibility.rst:8
-#, fuzzy
 msgid "Track Visibility"
-msgstr "トラックの可視性"
+msgstr "トラックの表示設定"
 
 #: ../../tracks/track-visibility.rst:10
 msgid ""
@@ -1634,4 +1619,3 @@ msgstr "トラック内を右クリックして :zbutton:`Duplicate` を選択�
 #~ "tracklist and contain various events "
 #~ "such as regions (see :term:`Region`)."
 #~ msgstr ""
-

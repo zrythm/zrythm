@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-01 00:33+0100\n"
-"PO-Revision-Date: 2020-09-30 22:58+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -143,7 +143,7 @@ msgstr "マスター"
 #: inc/audio/track.h:165 src/gui/widgets/event_viewer.c:118
 #: src/gui/widgets/event_viewer.c:589 src/audio/region.c:402
 msgid "Chord"
-msgstr "和音"
+msgstr "コード（和音）"
 
 #: inc/audio/track.h:167 src/audio/tempo_track.c:91
 msgid "Tempo"
@@ -159,7 +159,7 @@ msgstr "オーディオFX"
 
 #: inc/audio/track.h:170
 msgid "Audio Group"
-msgstr "オーディオ グループ"
+msgstr "オーディオグループ"
 
 #: inc/audio/track.h:171 src/audio/region.c:393
 msgid "MIDI"
@@ -179,7 +179,7 @@ msgid "Exponent"
 msgstr "指数"
 
 #: inc/audio/curve.h:92 src/audio/curve.c:42
-#, fuzzy, c-format
+#, c-format
 msgid "Superellipse"
 msgstr "超楕円"
 
@@ -239,14 +239,12 @@ msgid "Dummy (libsoundio)"
 msgstr "ダミー (libsoundio)"
 
 #: inc/audio/engine.h:280
-#, fuzzy
 msgid "ALSA Sequencer (not working)"
-msgstr "ALSAシーケンサー"
+msgstr "ALSA シーケンサー (動作しません)"
 
 #: inc/audio/engine.h:281
-#, fuzzy
 msgid "ALSA Sequencer (rtmidi)"
-msgstr "ALSAシーケンサー"
+msgstr "ALSAシーケンサー (rtmidi)"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:126
 msgid "Crescendo"
@@ -328,9 +326,8 @@ msgid "Failed to open file: %s"
 msgstr "ファイルを開けませんでした：%s"
 
 #: src/project.c:186
-#, fuzzy
 msgid "Project not compressed by zstd"
-msgstr "プロジェクトは zstd で圧縮されていません!"
+msgstr "プロジェクトは zstd で圧縮されていません"
 
 #: src/project.c:199
 #, c-format
@@ -609,9 +606,9 @@ msgid "Error loading LV2 bundle dir: "
 msgstr "LV2バンドルディレクトリの読み込みエラー： "
 
 #: src/plugins/plugin_manager.c:1111
-#, fuzzy, c-format
+#, c-format
 msgid "Scanned %s plugin: %s"
-msgstr "AUプラグインをスキャンしました"
+msgstr "%sプラグインをスキャン: %s"
 
 #: src/plugins/plugin_manager.c:1122
 #, fuzzy, c-format
@@ -642,14 +639,12 @@ msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "プラグイン '%s'のインスタンス化に失敗しました。無効にしています..."
 
 #: src/plugins/plugin.c:184
-#, fuzzy
 msgid "[Zrythm] Enabled"
-msgstr "有効"
+msgstr "[Zrythm]有効"
 
 #: src/plugins/plugin.c:207
-#, fuzzy
 msgid "[Zrythm] Gain"
-msgstr "Zrythmのパス"
+msgstr "[Zrythm]ゲイン"
 
 #: src/plugins/plugin_gtk.c:81 src/plugins/lv2/lv2_gtk.c:105
 msgid "Save State"
@@ -671,9 +666,9 @@ msgid "_Save"
 msgstr "保存(_S)"
 
 #: src/plugins/lv2_plugin.c:1746
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find plugin with URI: %s"
-msgstr "ファイルを開けませんでした：%s"
+msgstr "URI %s を持つプラグインの検索に失敗しました。"
 
 #: src/plugins/lv2_plugin.c:2552
 msgid "Unnamed bank"
@@ -1475,7 +1470,6 @@ msgid "General"
 msgstr "全般"
 
 #: src/gui/widgets/preferences.c:84
-#, fuzzy
 msgctxt "guilabel"
 msgid "General"
 msgstr "全般"
@@ -1487,7 +1481,6 @@ msgid "Plugins"
 msgstr "プラグイン"
 
 #: src/gui/widgets/preferences.c:88
-#, fuzzy
 msgctxt "guilabel"
 msgid "Plugins"
 msgstr "プラグイン"
@@ -1500,13 +1493,11 @@ msgid "Editing"
 msgstr "編集"
 
 #: src/gui/widgets/preferences.c:92
-#, fuzzy
 msgctxt "guilabel"
 msgid "Editing"
 msgstr "編集"
 
 #: src/gui/widgets/preferences.c:96
-#, fuzzy
 msgctxt "guilabel"
 msgid "Audio"
 msgstr "オーディオ"
@@ -1517,16 +1508,14 @@ msgid "Automation"
 msgstr "オートメーション"
 
 #: src/gui/widgets/preferences.c:100
-#, fuzzy
 msgctxt "guilabel"
 msgid "Automation"
 msgstr "オートメーション"
 
 #: src/gui/widgets/preferences.c:104
-#, fuzzy
 msgctxt "guilabel"
 msgid "Undo"
-msgstr "元に戻す"
+msgstr "元に戻し"
 
 #: src/gui/widgets/preferences.c:106 resources/ui/preferences.ui:572
 #: resources/ui/preferences.ui:618 build/data/org.zrythm.Zrythm.gschema.xml:661
@@ -1534,7 +1523,6 @@ msgid "Projects"
 msgstr "プロジェクト"
 
 #: src/gui/widgets/preferences.c:108
-#, fuzzy
 msgctxt "guilabel"
 msgid "Projects"
 msgstr "プロジェクト"
@@ -1555,7 +1543,6 @@ msgid "UIs"
 msgstr "UI"
 
 #: src/gui/widgets/preferences.c:116
-#, fuzzy
 msgctxt "guilabel"
 msgid "UIs"
 msgstr "UI"
@@ -1566,7 +1553,6 @@ msgid "DSP"
 msgstr "DSP"
 
 #: src/gui/widgets/preferences.c:120
-#, fuzzy
 msgctxt "guilabel"
 msgid "DSP"
 msgstr "DSP"
@@ -1577,7 +1563,6 @@ msgid "Pan"
 msgstr "パン"
 
 #: src/gui/widgets/preferences.c:124
-#, fuzzy
 msgctxt "guilabel"
 msgid "Pan"
 msgstr "パン"
@@ -1588,7 +1573,6 @@ msgid "Engine"
 msgstr "エンジン"
 
 #: src/gui/widgets/preferences.c:128
-#, fuzzy
 msgctxt "guilabel"
 msgid "Engine"
 msgstr "エンジン"
@@ -1600,7 +1584,6 @@ msgid "Paths"
 msgstr "パス"
 
 #: src/gui/widgets/preferences.c:132
-#, fuzzy
 msgctxt "guilabel"
 msgid "Paths"
 msgstr "パス"
@@ -1627,9 +1610,8 @@ msgid "Script execution failed"
 msgstr "スクリプトの実行に失敗しました"
 
 #: src/gui/widgets/scripting_window.c:228
-#, fuzzy
 msgid "Scripting Interface"
-msgstr "スクリプトインタフェース"
+msgstr "スクリプティングインタフェース"
 
 #: src/gui/widgets/active_hardware_mb.c:49
 #: src/gui/widgets/active_hardware_mb.c:141
@@ -1637,7 +1619,6 @@ msgid "Select..."
 msgstr "選択…"
 
 #: src/gui/widgets/active_hardware_mb.c:144
-#, fuzzy
 msgid "Click to enable inputs"
 msgstr "クリックして入力を有効にする"
 
@@ -1788,7 +1769,7 @@ msgstr "%sへルーティング中"
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
-msgstr "新しいプロジェクト"
+msgstr "新規プロジェクト"
 
 #: src/gui/widgets/project_toolbar.c:40
 msgid "Save"
@@ -1807,9 +1788,8 @@ msgid "Export As"
 msgstr "名前を付けてエクスポート"
 
 #: src/gui/widgets/project_toolbar.c:44
-#, fuzzy
 msgid "Export Graph"
-msgstr "ルーティング図をエクスポート"
+msgstr "ルーティング図の書き出し"
 
 #: src/gui/widgets/view_toolbar.c:39
 msgid "Toggle Status Bar"
@@ -2078,13 +2058,15 @@ msgstr "リージョンの色"
 
 #: src/gui/widgets/dialogs/export_dialog.c:303
 msgid "none"
-msgstr ""
+msgstr "なし"
 
 #: src/gui/widgets/dialogs/export_dialog.c:380
 msgid ""
 "\n"
 "1 more file..."
 msgstr ""
+"\n"
+"もう1つのファイル..."
 
 #: src/gui/widgets/dialogs/export_dialog.c:385
 #, c-format
@@ -2092,28 +2074,28 @@ msgid ""
 "\n"
 "%d more files..."
 msgstr ""
+"\n"
+"%dその他のファイル..."
 
 #: src/gui/widgets/dialogs/export_dialog.c:493
 msgid "The following files will be created:"
-msgstr ""
+msgstr "以下のファイルが作成されます。"
 
 #: src/gui/widgets/dialogs/export_dialog.c:496
-#, fuzzy
 msgid "in the directory:"
-msgstr "親ディレクトリ"
+msgstr "下記ディレクトリ内："
 
 #: src/gui/widgets/dialogs/export_dialog.c:653
 msgid "<name>.<format>"
-msgstr ""
+msgstr "<名前>.<フォーマット>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:658
 msgid "<date>_<name>.<format>"
-msgstr ""
+msgstr "<日付> _ <名前>.<フォーマット>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:903
-#, fuzzy
 msgid "No tracks to export"
-msgstr "エクスポートするフォーマット。"
+msgstr "書き出すトラックがありません"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:154
 #, c-format
@@ -2270,7 +2252,6 @@ msgid "Can only drop audio files on audio tracks"
 msgstr "オーディオトラックにオーディオファイルのみをドロップできます"
 
 #: src/audio/chord_track.c:57 resources/ui/inspector_chord.ui:31
-#, fuzzy
 msgid "Chords"
 msgstr "和音"
 
@@ -3272,9 +3253,8 @@ msgid "Select parent directory to save the project in"
 msgstr "プロジェクトを保存する親ディレクトリを選択してください"
 
 #: resources/ui/active_hardware_popover.ui:37
-#, fuzzy
 msgid "Ports found"
-msgstr "ポート詳細"
+msgstr "スキャンしたポート"
 
 #: resources/ui/active_hardware_popover.ui:79
 msgid "Rescan"
@@ -3314,9 +3294,8 @@ msgid "News"
 msgstr "ニュース"
 
 #: resources/ui/modulator_inner.ui:20
-#, fuzzy
 msgid "Show/hide UI"
-msgstr "UI を表示"
+msgstr "UIを表示/非表示にする"
 
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
@@ -3503,14 +3482,12 @@ msgid "Stop"
 msgstr "停止"
 
 #: resources/ui/transport_controls.ui:85
-#, fuzzy
 msgid "Backward"
-msgstr "前へ"
+msgstr "後戻り"
 
 #: resources/ui/transport_controls.ui:100
-#, fuzzy
 msgid "Forward"
-msgstr "進む"
+msgstr "前方"
 
 #: resources/ui/transport_controls.ui:114 resources/ui/export_dialog.ui:237
 msgid "Loop"
@@ -3629,7 +3606,6 @@ msgid "Export"
 msgstr "エクスポート"
 
 #: resources/ui/export_dialog.ui:80
-#, fuzzy
 msgid "Details"
 msgstr "詳細レベル"
 
@@ -3660,11 +3636,11 @@ msgstr "トラック"
 
 #: resources/ui/export_dialog.ui:184
 msgid "Mixdown"
-msgstr ""
+msgstr "ミックスダウン"
 
 #: resources/ui/export_dialog.ui:197
 msgid "Stems"
-msgstr ""
+msgstr "ステム"
 
 #: resources/ui/export_dialog.ui:224
 msgid "Song"
@@ -3709,7 +3685,7 @@ msgstr "ファイル名のパターン"
 
 #: resources/ui/export_dialog.ui:464
 msgid "~"
-msgstr ""
+msgstr "〜"
 
 #: resources/ui/main_window.ui:120
 msgid "This is an app-notification. Click the button to dismiss"
@@ -4161,26 +4137,24 @@ msgid "Format to export to."
 msgstr "エクスポートするフォーマット。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:379
-#, fuzzy
 msgid "Filename pattern"
-msgstr "ファイル名のパターン"
+msgstr "ファイル名パターン"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:380
 msgid "Filename pattern for exported files."
-msgstr ""
+msgstr "書き出すファイルのファイル名パターン。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:385
 msgid "Add dither while exporting, if applicable."
 msgstr "エクスポート中にディザを追加します。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:389
-#, fuzzy
 msgid "Export stems"
-msgstr "名前を付けてエクスポート"
+msgstr "ステムの書き出し"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:390
 msgid "Whether to export stems instead of the mixdown."
-msgstr ""
+msgstr "ミックスダウンの代わりにステムを書き出すかどうか。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:395
 msgid "Bit depth to use when exporting"
@@ -4367,9 +4341,8 @@ msgid "MIDI controllers"
 msgstr "MIDIコントローラー"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:533
-#, fuzzy
 msgid "A list of controllers to enable."
-msgstr "自動接続するコントローラのリスト。"
+msgstr "有効にするコントローラーのリスト。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:547
 msgid "The directory used to save user data in."
@@ -4512,9 +4485,8 @@ msgstr ""
 "使用されていません）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:705
-#, fuzzy
 msgid "Pan law"
-msgstr "パン法"
+msgstr "パン・ロー"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:706
 msgid ""

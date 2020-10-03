@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-09-27 02:23+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm"
-"/manualplugins-files/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
@@ -31,7 +32,7 @@ msgstr "ファイル ブラウザを使用すると、パソコン上のファ�
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:14
 msgid "This is a work in progress."
-msgstr "これはTODOです"
+msgstr "これはTODOです。"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:17
 msgid "Filtering"
@@ -177,9 +178,8 @@ msgid "Allows you to filter plugins based their protocol (eg., LV2 or SFZ)."
 msgstr "プロトコル (LV2 または VST) 別にプラグインをフィルタリングできます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:32
-#, fuzzy
 msgid "Filtering by collections and protocols is not operational at the moment."
-msgstr "コレクションとプロトコルは、現時点では動作しません。"
+msgstr "コレクションとプロトコルによるフィルタリングは、現時点では動作しません。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:36
 msgid "Filter Buttons"
@@ -241,9 +241,8 @@ msgid ""
 msgstr "プラグインをダブルクリックするか、それを選択し、そのプラグインを使用して新しいトラックを作成するためにキーボードのリターンキーを押します。"
 
 #: ../../plugins-files/plugins/plugin-info.rst:6
-#, fuzzy
 msgid "Plugin Overview"
-msgstr "プラグインブラウザ"
+msgstr "プラグインの概要"
 
 #: ../../plugins-files/plugins/plugin-info.rst:8
 #, fuzzy
@@ -259,9 +258,8 @@ msgid "In Zrythm, :term:`SFZ`/:term:`SF2` are also used as plugins."
 msgstr "Zrythmでは、:term:`SFZ` / :term:`SF2` もプラグインとして使用されています。"
 
 #: ../../plugins-files/plugins/plugin-info.rst:18
-#, fuzzy
 msgid "Plugin Types"
-msgstr "プラグイン"
+msgstr "プラグインの種類"
 
 #: ../../plugins-files/plugins/plugin-info.rst:20
 msgid "Plugins are classified into the following categories."
@@ -496,9 +494,8 @@ msgid "GNU/Linux and FreeBSD"
 msgstr "GNU/LinuxとFreeBSD"
 
 #: ../../plugins-files/plugins/scanning.rst:37
-#, fuzzy
 msgid "Zrythm will scan for VST2 plugins in the following paths,"
-msgstr "UNIX では、Zrythm は次のパスで VST プラグインをスキャンします。"
+msgstr "Zrythmは、次のパスで VST2 プラグインをスキャンします。"
 
 #: ../../plugins-files/plugins/scanning.rst:40
 msgid ":file:`{$HOME}/.vst`"
@@ -517,9 +514,8 @@ msgid ":file:`/usr/lib/vst`"
 msgstr ":file:`/usr/lib/vst`"
 
 #: ../../plugins-files/plugins/scanning.rst:45
-#, fuzzy
 msgid "and VST3 plugins in the following paths."
-msgstr "UNIX では、Zrythm は次のパスで VST プラグインをスキャンします。"
+msgstr "と以下のパスのVST3プラグイン。"
 
 #: ../../plugins-files/plugins/scanning.rst:47
 msgid ":file:`{$HOME}/.vst3`"
@@ -951,4 +947,3 @@ msgstr ""
 #~ "scanned in all directories and "
 #~ "subdirectories specified in :ref:`vst-paths`."
 #~ msgstr ""
-

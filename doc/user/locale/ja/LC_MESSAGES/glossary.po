@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/glossary/"
+"ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/glossary/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../glossary/intro.rst:8
@@ -55,11 +56,11 @@ msgstr "バランス（または :term:`stereo` バランス）とは、ステ�
 
 #: ../../glossary/intro.rst:23
 msgid "Bounce"
-msgstr ""
+msgstr "バウンス"
 
 #: ../../glossary/intro.rst:25
 msgid "Bouncing means exporting to audio."
-msgstr ""
+msgstr "バウンスとは、オーディオに書き出すことを意味します。"
 
 #: ../../glossary/intro.rst:26
 msgid "CLI"
@@ -194,9 +195,8 @@ msgid "A single-channel audio signal (see also :term:`stereo`)."
 msgstr "シングルチャンネルのオーディオ信号 ( :term:`stereo` も参照)。"
 
 #: ../../glossary/intro.rst:93
-#, fuzzy
 msgid "Pan law"
-msgstr "Pan Law"
+msgstr "パン・ロー"
 
 #: ../../glossary/intro.rst:95
 msgid "TODO"
@@ -366,4 +366,3 @@ msgstr "Windowsでは、ローカル アプリケーション データのディ
 
 #~ msgid "The content of regions can be edited in an editor (see :ref:`editors`)."
 #~ msgstr ""
-

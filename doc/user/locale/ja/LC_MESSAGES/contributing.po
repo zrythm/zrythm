@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-09-30 22:58+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualcontributing/ja/>\n"
@@ -106,14 +106,12 @@ msgid "Translation"
 msgstr "翻訳"
 
 #: ../../contributing/intro.rst:51
-#, fuzzy
 msgid ""
 "Zrythm is available for translation at `Weblate "
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
 msgstr ""
-"Zrythmは、Hosted Weblateで翻訳できます。 "
-"`Zrythmプロジェクトページ<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_"
-" にアクセスしてみてください。"
+"Zrythmは、 `Weblate <https://hosted.weblate.org/engage/zrythm/"
+"?utm_source=widget>`_ で翻訳できます。"
 
 #: ../../contributing/intro.rst:54
 msgid ""
@@ -132,9 +130,8 @@ msgstr ""
 "<https://docs.weblate.org/ja/latest/user/translating.html>`_ を参照してください。"
 
 #: ../../contributing/intro.rst:66
-#, fuzzy
 msgid "Editing this Manual"
-msgstr "このマニュアルのセクション"
+msgstr "このマニュアルの編集"
 
 #: ../../contributing/intro.rst:67
 #, fuzzy
