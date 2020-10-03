@@ -64,6 +64,10 @@ Thanks:
    * Sphinx tools used to build the manual
  Dimitri van Heesch
    * Doxygen used to document the code
+ Weblate
+   * Free hosting for Zrythm translations
+ LSP
+   * Optimized DSP functions (lsp-dsp-lib)
 
 ----
 
