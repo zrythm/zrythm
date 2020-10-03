@@ -474,12 +474,10 @@ port_internal_type_strings[] =
 static const cyaml_schema_field_t
 port_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "id", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     Port, id,
     port_identifier_fields_schema),
-  CYAML_FIELD_INT (
-    "exposed_to_backend", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Port, exposed_to_backend),
   CYAML_FIELD_SEQUENCE_COUNT (
     "src_ids", CYAML_FLAG_DEFAULT,
@@ -519,20 +517,15 @@ port_fields_schema[] =
     "internal_type", CYAML_FLAG_DEFAULT,
     Port, internal_type, port_internal_type_strings,
     CYAML_ARRAY_LEN (port_internal_type_strings)),
-  CYAML_FIELD_FLOAT (
-    "control", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     Port, control),
-  CYAML_FIELD_FLOAT (
-    "minf", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     Port, minf),
-  CYAML_FIELD_FLOAT (
-    "maxf", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     Port, maxf),
-  CYAML_FIELD_FLOAT (
-    "zerof", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     Port, zerof),
-  CYAML_FIELD_FLOAT (
-    "deff", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     Port, deff),
   YAML_FIELD_INT (
     Port, vst_param_id),
