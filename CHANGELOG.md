@@ -1,6 +1,24 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.4.0.1] - 2020-10-03
+### Added
+- Export stems
+
+### Changed
+- Update Greek, French, Swedish, Russian, Portuguese, Japanese, Spanish translations
+- Warn instead of critical when port in LV2 preset is not found
+- User manual: update export and getting started chapters
+- Revamped export dialog
+- Auto-generate localization header (so languages in code are in sync with LINGUAS)
+
+### Fixed
+- Fix non-fatal error when trying to edit scale in chord track
+- Fix non-fatal error when right-clicking in piano roll using eraser
+- Fix issues when opening a project using a different backend
+- Fix track bouncing
+- Fix build issues when `user_manual` meson option is enabled
+
 ## [1.0.0-alpha.3.0.1] - 2020-09-28
 ### Added
 - Add hardware processor for controlling input hardware ports (can now record with RtAudio/RtMidi)
