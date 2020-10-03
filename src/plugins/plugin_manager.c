@@ -1119,7 +1119,11 @@ scan_carla_descriptors_from_paths (
                 {
                   sprintf (
                     prog_str,
-                    _("Skipped %s plugin at %s"),
+                    /* TRANSLATORS: first argument
+                     * is plugin protocol, 2nd
+                     * argument is path */
+                    _("Skipped %1$s plugin at "
+                    "%2$s"),
                     protocol_str,
                     plugin_path);
                 }

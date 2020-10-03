@@ -31,4 +31,4 @@ Adaptive Grid
 Length
   Note length to snap to.
 Note Type
-  Note type for the note length (normal/dotted/triplet)
+  Note type (normal/dotted/triplet)

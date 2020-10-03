@@ -48,6 +48,7 @@ extensions = [
     'sphinx.ext.imgmath',
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.todo',
+    # 'sphinxcontrib.programoutput',
     # 'sphinxcontrib.devhelp',
     # 'recommonmark',
 ]

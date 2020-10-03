@@ -7,15 +7,21 @@ Credits
 
 Authors
 -------
-See the `AUTHORS file <https://git.sr.ht/~alextee/zrythm/tree/master/AUTHORS>`_ in the source distribution.
+See the
+:download:`AUTHORS <../../../AUTHORS>`
+file in the source distribution.
 These include developers, graphic artists and other authors of copyrightable work.
 
 Translators
 -----------
-See the `TRANSLATORS file <https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in the source distribution.
+See the
+:download:`TRANSLATORS <../../../TRANSLATORS>`
+in the source distribution.
 These include translators of the software, the user manual
 and the website.
 
 Other Contributors
 ------------------
-See the `THANKS file <https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in the source distribution.
+See the
+:download:`THANKS <../../../THANKS>`
+in the source distribution.
