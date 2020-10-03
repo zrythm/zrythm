@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "connections/ru/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 
 #: ../../connections/making-connections.rst:8
 msgid "Making Connections"
-msgstr ""
+msgstr "Создание подключений"
 
 #: ../../connections/making-connections.rst:10
 msgid ""
@@ -35,6 +35,9 @@ msgid ""
 "long as they are compatible. For example, you can route an LFO's CV "
 "output to a filter plugin's cutoff parameter."
 msgstr ""
+"Zrythm позволяет пользователю подключать практически любой порт (Port) к "
+"любому другому порту, если они совместимы. Например, вы можете направить "
+"выход CV LFO на параметр реверберации (Reverb) плагина фильтра."
 
 #: ../../connections/making-connections.rst:15
 msgid ""
@@ -48,10 +51,13 @@ msgid ""
 "edit existing connections. You can also drag the slider to adjust the "
 "level of the amount to send."
 msgstr ""
+"Дважды нажав на порт, вы можете выбрать порт для подключения или "
+"отредактировать существующие подключения. Вы также можете перетащить "
+"ползунок, чтобы настроить уровень отправляемогоц сигнала."
 
 #: ../../connections/making-connections.rst:28
 msgid "Routing Graph"
-msgstr ""
+msgstr "График направлений"
 
 #: ../../connections/making-connections.rst:29
 msgid ""
@@ -60,6 +66,11 @@ msgid ""
 " but for now Zrythm allows you to export the whole routing graph as a PNG"
 " image, so you can view it externally."
 msgstr ""
+"Очень полезно иметь возможность просматривать график направлений при "
+"создании соединений. Мы планируем добавить эту функциональность в Zrythm в "
+"будущем, но на данный момент Zrythm позволяет экспортировать весь график "
+"направлений как изображение PNG, чтобы вы могли просматривать его в своих "
+"приложениях."
 
 #: ../../connections/making-connections.rst:35
 msgid "See :ref:`exporting-routing-graph` for details."
@@ -67,13 +78,15 @@ msgstr ""
 
 #: ../../connections/ports.rst:8
 msgid "Ports"
-msgstr ""
+msgstr "Порты (Ports)"
 
 #: ../../connections/ports.rst:10
 msgid ""
 "Before getting into connections, it is necessary to understand some basic"
 " information about ports."
 msgstr ""
+"Прежде чем приступить к подключению, необходимо понять некоторую базовую "
+"информацию о портах."
 
 #: ../../connections/ports.rst:13
 msgid ""
@@ -81,6 +94,9 @@ msgid ""
 "Zrythm. A port does not process anything on its own, and is usually part "
 "of a `processor`, like a plugin or track."
 msgstr ""
+"Порты - это основные строительные блоки, используемые для направления "
+"сигналов по всему Zrythm. Порт ничего не обрабатывает сам по себе и обычно "
+"является частью «процессора», например плагином (Plugin) или треком (Track)."
 
 #: ../../connections/ports.rst:19
 msgid ""
@@ -88,30 +104,33 @@ msgid ""
 "MIDI data and 2 `Audio output` ports where it copies the stereo signal "
 "after being processed."
 msgstr ""
+"Например, инструментальный трек имеет порт «MIDI вход» (MIDI Input), который "
+"он использует для чтения данных MIDI, и 2 порта «Audio выход» (Audio Output)"
+", куда он копирует стереосигнал (Stereo Signal) после обработки."
 
 #: ../../connections/ports.rst:25
 msgid "Port Directions"
-msgstr ""
+msgstr "Направления порта"
 
 #: ../../connections/ports.rst:26
 msgid "Input"
-msgstr "Вход"
+msgstr "Вход (Input)"
 
 #: ../../connections/ports.rst:27
 msgid "The port receives signals."
-msgstr ""
+msgstr "Порт, который принимает сигналы."
 
 #: ../../connections/ports.rst:29
 msgid "Output"
-msgstr "Выход"
+msgstr "Выход (Output)"
 
 #: ../../connections/ports.rst:29
 msgid "The port sends signals."
-msgstr ""
+msgstr "Порт, который отправляет сигналы."
 
 #: ../../connections/ports.rst:32
 msgid "Port Types"
-msgstr ""
+msgstr "Типы портов"
 
 #: ../../connections/ports.rst:34
 msgid "Audio"
@@ -119,29 +138,31 @@ msgstr "Аудио (Audio)"
 
 #: ../../connections/ports.rst:34
 msgid "Ports of this type receive or send raw audio signals."
-msgstr ""
+msgstr "Порты этого типа принимают или отправляют необработанные аудиосигналы."
 
 #: ../../connections/ports.rst:37
 msgid "Event"
-msgstr ""
+msgstr "Событие (Event)"
 
 #: ../../connections/ports.rst:37
 msgid "Event ports are mainly used for routing MIDI signals."
-msgstr ""
+msgstr "Порты событий в основном используются для направления сигналов MIDI."
 
 #: ../../connections/ports.rst:40
 msgid "Control"
-msgstr ""
+msgstr "Порт управления (Control)"
 
 #: ../../connections/ports.rst:40
 msgid ""
 "Control ports are user-editable parameters that can also be automated in "
 "automation lanes."
 msgstr ""
+"Порты управления - это параметры, редактируемые пользователем, которые также "
+"можно автоматизировать на шкалах автоматизации."
 
 #: ../../connections/ports.rst:44
 msgid "CV"
-msgstr ""
+msgstr "CV"
 
 #: ../../connections/ports.rst:43
 msgid ""
@@ -151,7 +172,7 @@ msgstr ""
 
 #: ../../connections/ports.rst:47
 msgid "Port Connections"
-msgstr ""
+msgstr "Подключения портов"
 
 #: ../../connections/ports.rst:48
 msgid ""
@@ -159,9 +180,15 @@ msgid ""
 "type and opposite direction, with the exception of CV ports which may be "
 "routed to both CV ports and control ports."
 msgstr ""
+"Порты могут быть соединены друг с другом, если они одного типа и имеют "
+"противоположное направление (Input/Output), за исключением портов CV, "
+"которые могут направляться как на порты CV, так и на порты управления ("
+"Control Port)."
 
 #: ../../connections/ports.rst:54
 msgid ""
 "When ports are connected, the signal from the source port is added to the"
 " destination port during processing."
 msgstr ""
+"Когда порты подключены, сигнал от исходного порта добавляется к порту "
+"назначения во время обработки."

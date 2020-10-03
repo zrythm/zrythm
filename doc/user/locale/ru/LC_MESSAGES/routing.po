@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/routing/"
 "ru/>\n"
@@ -23,41 +23,48 @@ msgstr ""
 
 #: ../../routing/control-room.rst:8
 msgid "Control Room"
-msgstr ""
+msgstr "Комната управления (Control Room)"
 
 #: ../../routing/control-room.rst:9
 msgid ""
 "The control room is used to edit global settings related to mixing and "
 "routing signals."
 msgstr ""
+"Комната управления используется для редактирования глобальных настроек, "
+"связанных с микшированием (Mixing) и направлением (Routing) сигналов."
 
 #: ../../routing/control-room.rst:13
 msgid "Monitor Out"
-msgstr ""
+msgstr "Выход монитора (Monitor Out)"
 
 #: ../../routing/control-room.rst:14
 msgid ""
 "In Zrythm, what you actually hear through your speakers is not the output"
 " of the master track, but the monitor output."
 msgstr ""
+"В Zrythm то, что вы действительно слышите через выходные аудиоустройства, - "
+"это не выход мастер трека (Master), а выход монитора (Monitor)."
 
 #: ../../routing/control-room.rst:18
 msgid ""
 "The master track routes its output to a special processor called `Monitor"
 " Out` that changes the volume before sending the output to the speakers."
 msgstr ""
+"Мастер трек направляет свой выход на специальный процессор, называемый `"
+"Выход монитора` (Monitor Out), который изменяет громкость перед отправкой "
+"выхода на выходное аудиоустройство."
 
 #: ../../routing/control-room.rst:25
 msgid "The `Monitor Out` knob controls this volume."
-msgstr ""
+msgstr "Ползунок `Выход монитора` (Monitor Out) управляет этой громкостью."
 
 #: ../../routing/control-room.rst:28
 msgid "Dim"
-msgstr ""
+msgstr "Диммер (Dim)"
 
 #: ../../routing/control-room.rst:29
 msgid "This is not operational at the moment."
-msgstr ""
+msgstr "На данный момент это не работает."
 
 #: ../../routing/control-room.rst:31
 #: ../../routing/making-connections.rst:30
@@ -66,25 +73,27 @@ msgstr "В разработке"
 
 #: ../../routing/control-room.rst:31
 msgid "Move to another chapter."
-msgstr ""
+msgstr "Переместить в другую главу."
 
 #: ../../routing/inserts-sends.rst:8
 msgid "Inserts & Sends"
-msgstr ""
+msgstr "Инсерты (Insert) и посылы (Send)"
 
 #: ../../routing/inserts-sends.rst:9
 msgid ""
 "Inserts and sends are covered in :ref:`tracks/inspector-page:MIDI "
 "FX/Inserts` and :ref:`tracks/inspector-page:Aux Sends` respectively."
 msgstr ""
+"Инсерты и посылы описаны в :ref:`tracks/inspector-page:MIDI FX/Inserts` и "
+":ref:`tracks/inspector-page:Aux Sends` соответственно."
 
 #: ../../routing/intro.rst:6
 msgid "Routing"
-msgstr ""
+msgstr "Направление (Routing)"
 
 #: ../../routing/making-connections.rst:8
 msgid "Making Connections"
-msgstr ""
+msgstr "Создание подключений"
 
 #: ../../routing/making-connections.rst:10
 msgid ""
@@ -92,12 +101,17 @@ msgid ""
 "long as they are compatible. For example, you can route an LFO's CV "
 "output to a filter plugin's cutoff parameter."
 msgstr ""
+"Zrythm позволяет пользователю подключать практически любой порт (Port) к "
+"любому другому порту, если они совместимы. Например, вы можете направить "
+"выход CV LFO на параметр реверберации (Reverb) плагина фильтра."
 
 #: ../../routing/making-connections.rst:15
 msgid ""
 "Connections can be made by double clicking on ports in the :ref:`track-"
 "inspector` or the :ref:`plugin-inspector-page`."
 msgstr ""
+"Подключения могут быть созданы двойным нажатием по портам на странице :ref"
+":`track-inspector` или :ref:`plugin-inspector-page`."
 
 #: ../../routing/making-connections.rst:22
 msgid ""
@@ -105,18 +119,21 @@ msgid ""
 "edit existing connections. You can also drag the slider to adjust the "
 "level of the amount to send."
 msgstr ""
+"Дважды нажав на порт, вы можете выбрать порт для подключения или "
+"отредактировать существующие подключения. Вы также можете перетащить "
+"ползунок, чтобы настроить уровень отправляемогоц сигнала."
 
 #: ../../routing/making-connections.rst:28
 msgid "Sidechaining"
-msgstr ""
+msgstr "Сайдчейн (Sidechaining)"
 
 #: ../../routing/making-connections.rst:30
 msgid "Give an example of how to sidechain (classic bass + kick example)."
-msgstr ""
+msgstr "Приведите пример сайдчейна (классический пример баса и бочки)."
 
 #: ../../routing/making-connections.rst:34
 msgid "Routing Graph"
-msgstr ""
+msgstr "График направлений"
 
 #: ../../routing/making-connections.rst:35
 msgid ""
@@ -125,20 +142,27 @@ msgid ""
 " but for now Zrythm allows you to export the whole routing graph as a PNG"
 " image, so you can view it externally."
 msgstr ""
+"Очень полезно иметь возможность просматривать график направлений при "
+"создании соединений. Мы планируем добавить эту функциональность в Zrythm в "
+"будущем, но на данный момент Zrythm позволяет экспортировать весь график "
+"направлений как изображение PNG, чтобы вы могли просматривать его в своих "
+"приложениях."
 
 #: ../../routing/making-connections.rst:41
 msgid "See :ref:`export-routing-graph` for details."
-msgstr ""
+msgstr "Читайте :ref:`export-routing-graph` для подробностей."
 
 #: ../../routing/ports.rst:8
 msgid "Ports"
-msgstr ""
+msgstr "Порты (Ports)"
 
 #: ../../routing/ports.rst:10
 msgid ""
 "Before getting into connections, it is necessary to understand some basic"
 " information about ports."
 msgstr ""
+"Прежде чем приступить к подключению, необходимо понять некоторую базовую "
+"информацию о портах."
 
 #: ../../routing/ports.rst:13
 msgid ""
@@ -146,6 +170,9 @@ msgid ""
 "Zrythm. A port does not process anything on its own, and is usually part "
 "of a `processor`, like a plugin or track."
 msgstr ""
+"Порты - это основные строительные блоки, используемые для направления "
+"сигналов по всему Zrythm. Порт ничего не обрабатывает сам по себе и обычно "
+"является частью «процессора», например плагином (Plugin) или треком (Track)."
 
 #: ../../routing/ports.rst:19
 msgid ""
@@ -153,30 +180,33 @@ msgid ""
 "MIDI data and 2 `Audio output` ports where it copies the stereo signal "
 "after being processed."
 msgstr ""
+"Например, инструментальный трек имеет порт «MIDI вход» (MIDI Input), который "
+"он использует для чтения данных MIDI, и 2 порта «Audio выход» (Audio Output)"
+", куда он копирует стереосигнал (Stereo Signal) после обработки."
 
 #: ../../routing/ports.rst:25
 msgid "Port Directions"
-msgstr ""
+msgstr "Направления порта"
 
 #: ../../routing/ports.rst:27
 msgid "Input"
-msgstr "Вход"
+msgstr "Вход (Input)"
 
 #: ../../routing/ports.rst:28
 msgid "The port receives signals."
-msgstr ""
+msgstr "Порт, который принимает сигналы."
 
 #: ../../routing/ports.rst:31
 msgid "Output"
-msgstr "Выход"
+msgstr "Выход (Output)"
 
 #: ../../routing/ports.rst:32
 msgid "The port sends signals."
-msgstr ""
+msgstr "Порт, который отправляет сигналы."
 
 #: ../../routing/ports.rst:35
 msgid "Port Types"
-msgstr ""
+msgstr "Типы портов"
 
 #: ../../routing/ports.rst:38
 msgid "Audio"
@@ -184,39 +214,43 @@ msgstr "Аудио (Audio)"
 
 #: ../../routing/ports.rst:39
 msgid "Ports of this type receive or send raw audio signals."
-msgstr ""
+msgstr "Порты этого типа принимают или отправляют необработанные аудиосигналы."
 
 #: ../../routing/ports.rst:43
 msgid "Event"
-msgstr ""
+msgstr "Событие (Event)"
 
 #: ../../routing/ports.rst:44
 msgid "Event ports are mainly used for routing MIDI signals."
-msgstr ""
+msgstr "Порты событий в основном используются для направления сигналов MIDI."
 
 #: ../../routing/ports.rst:48
 msgid "Control"
-msgstr ""
+msgstr "Порт управления (Control)"
 
 #: ../../routing/ports.rst:49
 msgid ""
 "Control ports are user-editable parameters that can also be automated in "
 "automation lanes."
 msgstr ""
+"Порты управления - это параметры, редактируемые пользователем, которые также "
+"можно автоматизировать на шкалах автоматизации."
 
 #: ../../routing/ports.rst:53
 msgid "CV"
-msgstr ""
+msgstr "CV"
 
 #: ../../routing/ports.rst:54
 msgid ""
 ":term:`CV` ports handle continuous signals and can be used to modulate "
 "control ports."
 msgstr ""
+":term:`CV` порты обрабатывают непрерывные сигналы и могут использоваться для "
+"модуляции портов управления."
 
 #: ../../routing/ports.rst:58
 msgid "Port Connections"
-msgstr ""
+msgstr "Подключения портов"
 
 #: ../../routing/ports.rst:59
 msgid ""
@@ -224,12 +258,18 @@ msgid ""
 "type and opposite direction, with the exception of CV ports which may be "
 "routed to both CV ports and control ports."
 msgstr ""
+"Порты могут быть соединены друг с другом, если они одного типа и имеют "
+"противоположное направление (Input/Output), за исключением портов CV, "
+"которые могут направляться как на порты CV, так и на порты управления ("
+"Control Port)."
 
 #: ../../routing/ports.rst:65
 msgid ""
 "When ports are connected, the signal from the source port is added to the"
 " destination port during processing."
 msgstr ""
+"Когда порты подключены, сигнал от исходного порта добавляется к порту "
+"назначения во время обработки."
 
 #~ msgid "See :ref:`exporting-routing-graph` for details."
 #~ msgstr ""

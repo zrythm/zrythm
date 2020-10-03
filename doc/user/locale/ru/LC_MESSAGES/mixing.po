@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 07:42+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualmixing/ru/>\n"
@@ -23,11 +23,11 @@ msgstr ""
 
 #: ../../mixing/intro.rst:8
 msgid "Mixing"
-msgstr ""
+msgstr "Микширование (Mixing)"
 
 #: ../../mixing/overview.rst:10
 msgid "Mixing Overview"
-msgstr ""
+msgstr "Обзор Микширования (Mixing)"
 
 #: ../../mixing/overview.rst:11
 msgid ""
@@ -35,6 +35,9 @@ msgid ""
 "signals around, controlling the fader level of various channels and "
 "setting their stereo balance."
 msgstr ""
+"Под микшированием понимаются любые действия, выполняемые внутри микшера, "
+"такие как направление сигналов (Routing), управление уровнем фейдеров (Fader)"
+" различных каналов (Channel) и установка их стереобаланса (Stereo Balance)."
 
 #: ../../mixing/overview.rst:22
 msgid "Mixer"
@@ -45,32 +48,41 @@ msgid ""
 "The mixer contains all of the channels in the project corresponding to "
 "visible tracks."
 msgstr ""
+"Микшер содержит все каналы (Channel) проекта, соответствующие видимым трекам "
+"(Track)."
 
 #: ../../mixing/overview.rst:26
 msgid ""
 "The master channel, a special channel used to route audio to the output "
 "audio device, is pinned on the right side of the mixer."
 msgstr ""
+"Канал \"Мастер\" (Master) - это специальный канал, используемый для "
+"направления звука в аудио бэкэнд и на выходное аудиоустройство, закреплен на "
+"правой стороне микшера."
 
 #: ../../mixing/overview.rst:33
 msgid ""
 "The rest of the mixer shows the rest of the channels, along with some "
 "extra space used for drag-and-dropping plugins or files."
 msgstr ""
+"Остальная часть микшера имеет другие каналы, а также дополнительное "
+"пространство, используемое для перетаскивания плагинов или файлов."
 
 #: ../../mixing/overview.rst:37
 msgid ""
 "Most of the activities that can be performed in the mixer are also "
 "available in the track inspector described in :ref:`track-inspector`."
 msgstr ""
+"Большинство действий, которые можно выполнять в микшере, также доступны в "
+"инспекторе треков (Track Inspector), описанном в :ref:`track-inspector`."
 
 #: ../../mixing/overview.rst:44
 msgid "Channels"
-msgstr ""
+msgstr "Каналы (Channel)"
 
 #: ../../mixing/overview.rst:45
 msgid "A channel is part of a track, if the track type has a channel."
-msgstr ""
+msgstr "Канал является частью трека, если у типа трека есть поддержка каналов."
 
 #: ../../mixing/overview.rst:51
 msgid ""
@@ -78,16 +90,21 @@ msgid ""
 "direct out selector and a strip of insert plugins. These are covered in "
 ":ref:`track-inspector`."
 msgstr ""
+"Каналы содержат фейдер (Fader), элементы управления, такие как `Заглушить` "
+"(Mute) и `Соло` (Solo), индикатор (Meter), селектор прямого выхода (Direct "
+"Out) и инсерты (Insert). Они описаны в :ref:`track-inspector`."
 
 #: ../../mixing/overview.rst:57
 msgid "Changing the Track Name"
-msgstr ""
+msgstr "Изменение названия трека"
 
 #: ../../mixing/overview.rst:58
 msgid ""
 "The name of the track the channel corresponds to can be changed by double"
 " clicking the name at the top of the channel."
 msgstr ""
+"Имя трека, которому соответствует канал, можно изменить, дважды щелкнув на "
+"имя в верхней части канала."
 
 #: ../../mixing/overview.rst:62
 msgid "Todo"
@@ -95,31 +112,36 @@ msgstr "В разработке"
 
 #: ../../mixing/overview.rst:62
 msgid "Add pic."
-msgstr ""
+msgstr "Добавить картинку."
 
 #: ../../mixing/routing.rst:6
 msgid "Routing"
-msgstr ""
+msgstr "Направление (Routing)"
 
 #: ../../mixing/routing.rst:9
 msgid "Groups"
-msgstr "Groups"
+msgstr "Группы (Group)"
 
 #: ../../mixing/routing.rst:10
 msgid ""
 "Audio and MIDI group tracks (covered in :ref:`audio-group-track` and :ref"
 ":`midi-group-track` respectively) can be created for grouping signals."
 msgstr ""
+"Аудио-групповые (Audio Group Track) и MIDI-групповые (MIDI Group Track) "
+"треки, описанные в :ref:`audio-group-track` и :ref:`midi-group-track` "
+"соответственно, могут быть созданы для группирования сигналов."
 
 #: ../../mixing/routing.rst:15
 msgid ""
 "To route channels to these tracks, you can click the direct out selector "
 "and choose them."
 msgstr ""
+"Чтобы направить каналы (Channel) к этим трекам, вы можете щелкнуть "
+"переключатель прямого выхода (Direct Out) и выбрать их."
 
 #: ../../mixing/routing.rst:22
 msgid "Buses/FX Tracks"
-msgstr ""
+msgstr "Треки шин/FX треки (Buses/FX Tracks)"
 
 #: ../../mixing/routing.rst:23
 msgid ""
@@ -127,18 +149,27 @@ msgid ""
 ":`midi-bus-track` respectively) can be created for sending additional "
 "signals to them, in addition to the channel's main direct output."
 msgstr ""
+"Аудио FX треки (Audio FX Track) и MIDI FX треки (MIDI FX Track), описанные в "
+":ref:`audio-bus-track` и :ref:`midi-bus-track` соответственно, могут быть "
+"созданы для отправки им дополнительных сигналов в дополнение к основному "
+"прямому выходу канала."
 
 #: ../../mixing/routing.rst:28
 msgid ""
 "This is useful for example for applying reverb and controlling the reverb"
 " signal separately."
 msgstr ""
+"Это полезно, например, для применения реверберации (Reverb) и отдельного "
+"управления сигналом реверберации."
 
 #: ../../mixing/routing.rst:31
 msgid ""
 "You can send to these tracks/channels using the Sends section in the "
 "track inspector explained in :ref:`track-sends`."
 msgstr ""
+"Вы можете отправлять сигналы на эти треки/каналы с помощью раздела «Посылы» "
+"(Sends) в инспекторе треков (Track Inspector), описанном в :ref:`track-"
+"sends`."
 
 #: ../../mixing/routing.rst:35
 msgid ""
@@ -146,10 +177,13 @@ msgid ""
 "`group`. Please keep this in mind if you are coming from other DAWs as "
 "they are different things in Zrythm."
 msgstr ""
+"Некоторые другие DAW используют термин «шина» (Bus) для обозначения того, "
+"что Zrythm называет «группой» (Group). Имейте это в виду, если вы переходите "
+"из других DAW, поскольку в Zrythm они разные."
 
 #: ../../mixing/routing.rst:41
 msgid "Sidechaining"
-msgstr ""
+msgstr "Сайдчейн (Sidechaining)"
 
 #: ../../mixing/routing.rst:42
 msgid ""
@@ -157,6 +191,9 @@ msgid ""
 "plugin sidechain ports, if the plugin has any. See :ref:`track-sends` for"
 " details."
 msgstr ""
+"Подобно отправке сигналов на треки FX, вы также можете отправлять сигналы на "
+"порты сайдчейна плагина (Plugin), если в плагине они есть. Читайте :ref"
+":`track-sends` для подробностей."
 
 #~ msgid "TODO"
 #~ msgstr ""
