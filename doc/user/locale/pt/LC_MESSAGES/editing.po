@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/pt/>\n"
@@ -478,7 +478,7 @@ msgstr "Adicionar foto"
 
 #: ../../editing/clip-editors/ruler.rst:32
 msgid "Playhead"
-msgstr ""
+msgstr "Cabeça de reprodução"
 
 #: ../../editing/clip-editors/ruler.rst:33
 msgid ""
@@ -488,7 +488,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:39
 msgid "Loop Points"
-msgstr ""
+msgstr "Pontos de Loop"
 
 #: ../../editing/clip-editors/ruler.rst:40
 msgid ""

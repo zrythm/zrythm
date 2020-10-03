@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:30+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"PO-Revision-Date: 2020-10-02 10:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese "
-"<https://hosted.weblate.org/projects/zrythm/manualtracks/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -52,7 +53,7 @@ msgstr "Botões De Topo"
 #: ../../tracks/modulator-track.rst:25
 #: ../../tracks/tempo-track.rst:25
 msgid "Record"
-msgstr "Registro"
+msgstr "Registo"
 
 #: ../../tracks/audio-track.rst:18
 #: ../../tracks/instrument-track.rst:26
@@ -384,7 +385,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:18
 #: ../../tracks/tempo-track.rst:18
 msgid "For more information, see the section :doc:`../chords-and-scales/intro`."
-msgstr "Para mais informações, veja a seção :doc:`../chords-and-scales/intro`."
+msgstr "Para mais informações, veja a secção :doc:`../chords-and-scales/intro`."
 
 #: ../../tracks/chord-track.rst:25
 #: ../../tracks/modulator-track.rst:25
@@ -1037,7 +1038,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:8
 #: ../../tracks/tempo-track.rst:8
 msgid "Write this page."
-msgstr ""
+msgstr "Escreva esta página."
 
 #: ../../tracks/overview.rst:6
 msgid "Overview"
@@ -1142,7 +1143,7 @@ msgid ""
 "The section :ref:`track-operations` explains the various track operations"
 " available."
 msgstr ""
-"A seção :ref:`track-operations` explica as várias operações de faixa "
+"A secção :ref:`track-operations` explica as várias operações de faixa "
 "disponíveis."
 
 #: ../../tracks/tempo-track.rst:6
@@ -1613,4 +1614,3 @@ msgstr ""
 
 #~ msgid "This is a TODO feature."
 #~ msgstr "Esta é uma função TODO."
-
