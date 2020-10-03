@@ -5120,14 +5120,18 @@ drag_end (
     gtk_gesture_get_last_event (
       GTK_GESTURE (gesture), sequence);
   guint btn;
-  g_warn_if_fail (gdk_event_get_button (ev, &btn));
-  if (btn == GDK_BUTTON_SECONDARY &&
-      self->action !=
-        UI_OVERLAY_ACTION_ERASING)
+  if (ev)
     {
-      show_context_menu (
-        self, self->start_x + offset_x,
-        self->start_y + offset_y);
+      g_warn_if_fail (
+        gdk_event_get_button (ev, &btn));
+      if (btn == GDK_BUTTON_SECONDARY &&
+          self->action !=
+            UI_OVERLAY_ACTION_ERASING)
+        {
+          show_context_menu (
+            self, self->start_x + offset_x,
+            self->start_y + offset_y);
+        }
     }
 
   /* reset start coordinates and offsets */
