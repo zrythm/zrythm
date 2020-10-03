@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2020-10-01 00:33+0100\n"
+"POT-Creation-Date: 2020-10-03 14:28+0100\n"
 "PO-Revision-Date: 2020-08-11 11:32+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
@@ -20,8 +20,8 @@ msgstr ""
 "X-Generator: Weblate 4.2-dev\n"
 
 #. TRANSLATORS: Dummy backend
-#: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:213
-#: inc/audio/engine.h:279
+#: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
+#: inc/audio/engine.h:280
 msgid "Dummy"
 msgstr ""
 
@@ -211,55 +211,55 @@ msgstr ""
 msgid "Pulse"
 msgstr ""
 
-#: inc/audio/engine.h:124
+#: inc/audio/engine.h:125
 msgid "1,024"
 msgstr ""
 
-#: inc/audio/engine.h:125
+#: inc/audio/engine.h:126
 msgid "2,048"
 msgstr ""
 
-#: inc/audio/engine.h:126
+#: inc/audio/engine.h:127
 msgid "4,096"
 msgstr ""
 
-#: inc/audio/engine.h:153
+#: inc/audio/engine.h:154
 msgid "22,050"
 msgstr ""
 
-#: inc/audio/engine.h:154
+#: inc/audio/engine.h:155
 msgid "32,000"
 msgstr ""
 
-#: inc/audio/engine.h:155
+#: inc/audio/engine.h:156
 msgid "44,100"
 msgstr ""
 
-#: inc/audio/engine.h:156
+#: inc/audio/engine.h:157
 msgid "48,000"
 msgstr ""
 
-#: inc/audio/engine.h:157
+#: inc/audio/engine.h:158
 msgid "88,200"
 msgstr ""
 
-#: inc/audio/engine.h:158
+#: inc/audio/engine.h:159
 msgid "96,000"
 msgstr ""
 
-#: inc/audio/engine.h:159
+#: inc/audio/engine.h:160
 msgid "192,000"
 msgstr ""
 
-#: inc/audio/engine.h:214
+#: inc/audio/engine.h:215
 msgid "Dummy (libsoundio)"
 msgstr ""
 
-#: inc/audio/engine.h:280
+#: inc/audio/engine.h:281
 msgid "ALSA Sequencer (not working)"
 msgstr ""
 
-#: inc/audio/engine.h:281
+#: inc/audio/engine.h:282
 msgid "ALSA Sequencer (rtmidi)"
 msgstr ""
 
@@ -587,25 +587,28 @@ msgstr ""
 msgid "Scanned %s plugin: %s"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1122
+#. TRANSLATORS: first argument
+#. * is plugin protocol, 2nd
+#. * argument is path
+#: src/plugins/plugin_manager.c:1125
 #, c-format
-msgid "Skipped %s plugin at %s"
+msgid "Skipped %1$s plugin at %2$s"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1249
+#: src/plugins/plugin_manager.c:1253
 msgid "Scanned LV2 plugin"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1260
+#: src/plugins/plugin_manager.c:1264
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1335
+#: src/plugins/plugin_manager.c:1339
 msgid "Scanned AU plugin"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1342
+#: src/plugins/plugin_manager.c:1346
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr ""
@@ -754,77 +757,77 @@ msgstr "Stereo ut"
 msgid "Track Properties"
 msgstr "Sporegenskaper"
 
-#: src/gui/widgets/track_input_expander.c:293
+#: src/gui/widgets/track_input_expander.c:294
 #, fuzzy
 msgid "All MIDI Inputs"
 msgstr "MIDI-bakende"
 
-#: src/gui/widgets/track_input_expander.c:297
+#: src/gui/widgets/track_input_expander.c:298
 #, fuzzy
 msgid "All Audio Inputs"
 msgstr "Lydinnganger"
 
-#: src/gui/widgets/track_input_expander.c:342
+#: src/gui/widgets/track_input_expander.c:345
 #, fuzzy
 msgid "No inputs"
 msgstr "Ingen innganger"
 
-#: src/gui/widgets/track_input_expander.c:345
+#: src/gui/widgets/track_input_expander.c:348
 msgid "MIDI inputs for recording"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:353
+#: src/gui/widgets/track_input_expander.c:356
 #, fuzzy
 msgid "No left input"
 msgstr "Ingen innganger"
 
-#: src/gui/widgets/track_input_expander.c:354
+#: src/gui/widgets/track_input_expander.c:357
 #, fuzzy
 msgid "No right input"
 msgstr "Ingen innganger"
 
-#: src/gui/widgets/track_input_expander.c:357
+#: src/gui/widgets/track_input_expander.c:360
 #, c-format
 msgid "Audio input (%s) for recording"
 msgstr ""
 
 #. TRANSLATORS: Left and Right
-#: src/gui/widgets/track_input_expander.c:359
+#: src/gui/widgets/track_input_expander.c:362
 msgid "L"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:359
+#: src/gui/widgets/track_input_expander.c:362
 #: resources/ui/automation_track.ui:100
 msgid "R"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:429
+#: src/gui/widgets/track_input_expander.c:440
 msgid "All Channels"
 msgstr "Alle kanaler"
 
-#: src/gui/widgets/track_input_expander.c:438
+#: src/gui/widgets/track_input_expander.c:449
 #, c-format
 msgid "Channel %s"
 msgstr "Kanal %s"
 
-#: src/gui/widgets/track_input_expander.c:453
+#: src/gui/widgets/track_input_expander.c:464
 msgid "No channel"
 msgstr "Ingen kanal"
 
-#: src/gui/widgets/track_input_expander.c:493
+#: src/gui/widgets/track_input_expander.c:504
 #, fuzzy
 msgid "MIDI channel to filter to"
 msgstr "Kanal %s"
 
-#: src/gui/widgets/track_input_expander.c:693
+#: src/gui/widgets/track_input_expander.c:704
 msgid "Mono"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:725
+#: src/gui/widgets/track_input_expander.c:736
 msgid "Gain"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:738
+#: src/gui/widgets/track_input_expander.c:749
 #, fuzzy
 msgid "Inputs"
 msgstr "Innganger"
@@ -1047,7 +1050,7 @@ msgstr ""
 msgid "Marker name"
 msgstr "Markører"
 
-#: src/gui/widgets/arranger.c:5009
+#: src/gui/widgets/arranger.c:5019
 #, c-format
 msgid "%s name"
 msgstr ""
@@ -2435,7 +2438,7 @@ msgid ""
 "use JACK, please select JACK as both your audio and MIDI backend."
 msgstr ""
 
-#: src/audio/engine.c:489
+#: src/audio/engine.c:483
 #, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
@@ -3397,11 +3400,11 @@ msgstr ""
 msgid "Ports found"
 msgstr "Port"
 
-#: resources/ui/active_hardware_popover.ui:79
+#: resources/ui/active_hardware_popover.ui:96
 msgid "Rescan"
 msgstr "Skann på ny"
 
-#: resources/ui/active_hardware_popover.ui:83
+#: resources/ui/active_hardware_popover.ui:100
 msgid "Scan again for MIDI controllers"
 msgstr "Se etter MIDI-kontrollere igjen"
 

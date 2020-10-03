@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-10-03 14:28+0100\n"
 "PO-Revision-Date: 2020-09-29 22:22+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
-"manualediting/fr/>\n"
 "Language: fr\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/zrythm/manualediting/fr/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -143,6 +142,11 @@ msgstr "Menu contextuel de la Région"
 #: ../../editing/clip-editors/ruler.rst:36
 #: ../../editing/clip-editors/ruler.rst:44
 #: ../../editing/clip-editors/toolbar.rst:12
+#: ../../editing/common-operations.rst:33
+#: ../../editing/common-operations.rst:70
+#: ../../editing/common-operations.rst:84
+#: ../../editing/common-operations.rst:91
+#: ../../editing/common-operations.rst:98
 #: ../../editing/edit-modes.rst:27
 #: ../../editing/timeline/arranger.rst:24
 #: ../../editing/timeline/arranger.rst:50
@@ -326,7 +330,7 @@ msgstr "Affichage percussion"
 #: ../../editing/clip-editors/piano-roll.rst:30
 msgid ""
 "Enabling this will change the display of the arranger into a drum editor "
-"view, where each :term:`MIDI Note` is drawn as a diamond and the piano "
+"view, where each :term:`MIDI note` is drawn as a diamond and the piano "
 "roll keys display the name of each drum."
 msgstr ""
 
@@ -606,12 +610,14 @@ msgstr ""
 " soit faite, ou vous pouvez revenir dans un état dont vous vous êtes "
 "défait."
 
-#: ../../editing/common-operations.rst:20
+#: ../../editing/common-operations.rst:21
+#, fuzzy
 msgid ""
 "For example, if you create a MIDI note and press undo, the MIDI note will"
 " be deleted (Zrythm goes back into the state where the MIDI note did not "
-"exist). Pressing the Redo button will create the note again, and you can "
-"go back between Undo and Redo as many times as you want."
+"exist). Pressing the :guilabel:`Redo` button will create the note again, "
+"and you can go back between :guilabel:`Undo` and :guilabel:`Redo` as many"
+" times as you want."
 msgstr ""
 "Par exemple, si vous créez une note MIDI et que vous appuyez sur Défaire,"
 " la note MIDI sera supprimée (Zrythm revient à l'état où la note MIDI "
@@ -619,7 +625,17 @@ msgstr ""
 "nouveau créée, et vous pourrez revenir entre Défaire et Refaire autant de"
 " fois que vous le souhaitez."
 
-#: ../../editing/common-operations.rst:26
+#: ../../editing/common-operations.rst:29
+msgid ""
+"It is also possible to go back/forth more than one action, by clicking "
+"the arrow next to the :guilabel:`Undo` and :guilabel:`Redo` buttons."
+msgstr ""
+
+#: ../../editing/common-operations.rst:33
+msgid "Show screenshot."
+msgstr ""
+
+#: ../../editing/common-operations.rst:35
 #, fuzzy
 msgid ""
 "The shortcuts for undo and redo are :kbd:`Control-z` and :kbd:`Control-"
@@ -629,7 +645,7 @@ msgstr ""
 ":zbutton:`Z` pour Défaire et :zbutton:`Control` + :zbutton:`Shift` + "
 ":zbutton:`Z` pour Refaire."
 
-#: ../../editing/common-operations.rst:29
+#: ../../editing/common-operations.rst:38
 msgid ""
 "If you Undo and then perform a new action, the Redo history will be "
 "deleted."
@@ -637,101 +653,112 @@ msgstr ""
 "Si vous annuler puis effectuez une nouvelle action, l'historique de "
 "Refaire sera supprimé."
 
-#: ../../editing/common-operations.rst:33
+#: ../../editing/common-operations.rst:42
 msgid "Object Operations"
 msgstr "Opérations sur les objets"
 
-#: ../../editing/common-operations.rst:35
+#: ../../editing/common-operations.rst:44
 msgid "Cut"
 msgstr "Couper"
 
-#: ../../editing/common-operations.rst:36
+#: ../../editing/common-operations.rst:45
+#, fuzzy
 msgid ""
 "Delete and copy the selected objects and save them in the clipboard so "
 "that they can be pasted elsewhere. The shortcut for cutting is "
-":zbutton:`Control` + :zbutton:`X`."
+":kbd:`Control-x`."
 msgstr ""
 "Supprime et copie les objets sélectionnés et les enregistre dans le "
 "presse-papiers afin qu'ils puissent être collés plus tard. Le raccourci "
 "pour couper est :zbutton:`Control` + :zbutton:`X`."
 
-#: ../../editing/common-operations.rst:42
+#: ../../editing/common-operations.rst:51
 msgid "Copy"
 msgstr "Copier"
 
-#: ../../editing/common-operations.rst:43
+#: ../../editing/common-operations.rst:52
+#, fuzzy
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
-"elsewhere. The shortcut for copying is :zbutton:`Control` + :zbutton:`C`."
+"elsewhere. The shortcut for copying is :kbd:`Control-c`."
 msgstr ""
 "Copie les objets sélectionnés vers le presse-papiers afin qu'ils puissent"
 " être collés ailleurs. Le raccourci pour copier est :zbutton:`Control` + "
 ":zbutton:`C`."
 
-#: ../../editing/common-operations.rst:49
+#: ../../editing/common-operations.rst:58
 msgid "Paste"
 msgstr "Coller"
 
-#: ../../editing/common-operations.rst:50
+#: ../../editing/common-operations.rst:59
+#, fuzzy
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
-"position. The shortcut for pasting is :zbutton:`Control` + :zbutton:`V`."
+"position. The shortcut for pasting is :kbd:`Control-v`."
 msgstr ""
 "Colle les objets du presse-papiers à l'emplacement de la tête de lecture."
 " Le raccourci pour coller est :zbutton:`Control` + :zbutton:`V`."
 
-#: ../../editing/common-operations.rst:56
+#: ../../editing/common-operations.rst:65
 msgid "Duplicate"
 msgstr "Dupliquer"
 
-#: ../../editing/common-operations.rst:57
+#: ../../editing/common-operations.rst:66
+#, fuzzy
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
-"duplicating is :zbutton:`Control` + :zbutton:`D`."
+"duplicating is :kbd:`Control-d`."
 msgstr ""
 "Crée une copie adjacente aux objets sélectionnés. Le raccourci pour "
 "dupliquer est :zbutton:`Control` + :zbutton:`D`."
 
-#: ../../editing/common-operations.rst:62
+#: ../../editing/common-operations.rst:70
+#: ../../editing/common-operations.rst:84
+#: ../../editing/common-operations.rst:91
+#: ../../editing/common-operations.rst:98
+#: ../../editing/timeline/arranger.rst:167
+msgid "Illustrate."
+msgstr ""
+
+#: ../../editing/common-operations.rst:73
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ../../editing/common-operations.rst:63
-msgid ""
-"Delete the selected objects. You can also press :zbutton:`Delete` on your"
-" keyboard to do this."
+#: ../../editing/common-operations.rst:74
+#, fuzzy
+msgid "Delete the selected objects. You can also press :kbd:`Delete`."
 msgstr ""
 "Supprime les objets sélectionnés. Vous pouvez aussi utiliser la touche "
 ":zbutton:`Supprimer` de votre clavier."
 
-#: ../../editing/common-operations.rst:68
+#: ../../editing/common-operations.rst:79
 msgid "Selections"
 msgstr "Sélections"
 
-#: ../../editing/common-operations.rst:70
+#: ../../editing/common-operations.rst:81
 msgid "Clear Selection"
 msgstr "Déselectionner"
 
-#: ../../editing/common-operations.rst:71
+#: ../../editing/common-operations.rst:82
 msgid "Clear current selection (unselect all objects)."
 msgstr "Désélectionne la sélection actuelle. (Désélectionne tous les objets)."
 
-#: ../../editing/common-operations.rst:74
+#: ../../editing/common-operations.rst:87
 msgid "Select All"
 msgstr "Tout sélectionner"
 
-#: ../../editing/common-operations.rst:75
-msgid "Select all objects in the current editor."
+#: ../../editing/common-operations.rst:88
+#, fuzzy
+msgid "Select all objects in the current editor (:kbd:`Control-a`)."
 msgstr "Sélectionnez tous les objets dans l'éditeur actuel."
 
-#: ../../editing/common-operations.rst:78
+#: ../../editing/common-operations.rst:94
 msgid "Loop Selection"
 msgstr "Sélection de la boucle"
 
-#: ../../editing/common-operations.rst:79
-msgid ""
-"Place the loop markers around the selection. The shortcut for this is "
-":zbutton:`Control` + :zbutton:`L`."
+#: ../../editing/common-operations.rst:95
+#, fuzzy
+msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr ""
 "Place les repères de boucle aux extrémités de la sélection. Le raccourci "
 "pour cela est :zbutton:`Control` + :zbutton:`L`."
@@ -1126,7 +1153,8 @@ msgid "Note Type"
 msgstr "Type de note"
 
 #: ../../editing/snapping-grid-options.rst:34
-msgid "Note type for the note length (normal/dotted/triplet)"
+#, fuzzy
+msgid "Note type (normal/dotted/triplet)"
 msgstr "Type de note pour la longueur de note (normale/pointée/triolet)"
 
 #: ../../editing/timeline/arranger.rst:8
@@ -1167,7 +1195,7 @@ msgstr "Créer des régions"
 
 #: ../../editing/timeline/arranger.rst:35
 msgid ""
-"Regions (or :term:`clips <clip>`) are containers for events or data (such"
+"Regions (or :term:`clips <Clip>`) are containers for events or data (such"
 " as MIDI notes and audio clips - see below) that can be edited in an "
 ":ref:`editor <editors>`. Regions can be repeated, like below."
 msgstr ""
@@ -1364,10 +1392,6 @@ msgid "Regions can be renamed by clicking on their name."
 msgstr ""
 "Les régions sélectionnées peuvent être déplacées en cliquant et en les "
 "faisant glisser."
-
-#: ../../editing/timeline/arranger.rst:167
-msgid "Illustrate."
-msgstr ""
 
 #: ../../editing/timeline/arranger.rst:169
 msgid "Other editing capabilities were explained previously in :ref:`edit-modes`."
@@ -1976,3 +2000,22 @@ msgstr ""
 
 #~ msgid "Moving Objects"
 #~ msgstr "Découpage d'objets"
+
+#~ msgid ""
+#~ "Enabling this will change the display"
+#~ " of the arranger into a drum "
+#~ "editor view, where each :term:`MIDI "
+#~ "Note` is drawn as a diamond and"
+#~ " the piano roll keys display the "
+#~ "name of each drum."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Regions (or :term:`clips <clip>`) are "
+#~ "containers for events or data (such "
+#~ "as MIDI notes and audio clips -"
+#~ " see below) that can be edited "
+#~ "in an :ref:`editor <editors>`. Regions "
+#~ "can be repeated, like below."
+#~ msgstr ""
+

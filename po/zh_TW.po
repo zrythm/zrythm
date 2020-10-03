@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2020-10-01 00:33+0100\n"
+"POT-Creation-Date: 2020-10-03 14:28+0100\n"
 "PO-Revision-Date: 2020-09-27 07:42+0000\n"
 "Last-Translator: xunil-cloud <freed602om@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -22,8 +22,8 @@ msgstr ""
 "X-Generator: Weblate 4.3-dev\n"
 
 #. TRANSLATORS: Dummy backend
-#: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:213
-#: inc/audio/engine.h:279
+#: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
+#: inc/audio/engine.h:280
 msgid "Dummy"
 msgstr ""
 
@@ -193,56 +193,56 @@ msgstr "Vital"
 msgid "Pulse"
 msgstr "Pulse"
 
-#: inc/audio/engine.h:124
+#: inc/audio/engine.h:125
 msgid "1,024"
 msgstr "1024"
 
-#: inc/audio/engine.h:125
+#: inc/audio/engine.h:126
 msgid "2,048"
 msgstr "2,048"
 
-#: inc/audio/engine.h:126
+#: inc/audio/engine.h:127
 msgid "4,096"
 msgstr "4,096"
 
-#: inc/audio/engine.h:153
+#: inc/audio/engine.h:154
 msgid "22,050"
 msgstr "22,050"
 
-#: inc/audio/engine.h:154
+#: inc/audio/engine.h:155
 msgid "32,000"
 msgstr "32,000"
 
-#: inc/audio/engine.h:155
+#: inc/audio/engine.h:156
 msgid "44,100"
 msgstr "44,100"
 
-#: inc/audio/engine.h:156
+#: inc/audio/engine.h:157
 msgid "48,000"
 msgstr "48000"
 
-#: inc/audio/engine.h:157
+#: inc/audio/engine.h:158
 msgid "88,200"
 msgstr "88200"
 
-#: inc/audio/engine.h:158
+#: inc/audio/engine.h:159
 msgid "96,000"
 msgstr "96000"
 
-#: inc/audio/engine.h:159
+#: inc/audio/engine.h:160
 msgid "192,000"
 msgstr "192,000"
 
-#: inc/audio/engine.h:214
+#: inc/audio/engine.h:215
 msgid "Dummy (libsoundio)"
 msgstr ""
 
-#: inc/audio/engine.h:280
+#: inc/audio/engine.h:281
 #, fuzzy
 msgid "ALSA Sequencer (not working)"
 msgstr "ALSA Sequencer"
 
-#: inc/audio/engine.h:281
+#: inc/audio/engine.h:282
 #, fuzzy
 msgid "ALSA Sequencer (rtmidi)"
 msgstr "ALSA Sequencer"
@@ -574,25 +574,28 @@ msgstr ""
 msgid "Scanned %s plugin: %s"
 msgstr "尋找外掛"
 
-#: src/plugins/plugin_manager.c:1122
-#, c-format
-msgid "Skipped %s plugin at %s"
-msgstr ""
+#. TRANSLATORS: first argument
+#. * is plugin protocol, 2nd
+#. * argument is path
+#: src/plugins/plugin_manager.c:1125
+#, fuzzy, c-format
+msgid "Skipped %1$s plugin at %2$s"
+msgstr "尋找外掛"
 
-#: src/plugins/plugin_manager.c:1249
+#: src/plugins/plugin_manager.c:1253
 msgid "Scanned LV2 plugin"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1260
+#: src/plugins/plugin_manager.c:1264
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1335
+#: src/plugins/plugin_manager.c:1339
 msgid "Scanned AU plugin"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:1342
+#: src/plugins/plugin_manager.c:1346
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr ""
@@ -737,71 +740,71 @@ msgstr "直通輸出"
 msgid "Track Properties"
 msgstr "音軌屬性"
 
-#: src/gui/widgets/track_input_expander.c:293
+#: src/gui/widgets/track_input_expander.c:294
 msgid "All MIDI Inputs"
 msgstr "所有 MIDI 輸入"
 
-#: src/gui/widgets/track_input_expander.c:297
+#: src/gui/widgets/track_input_expander.c:298
 msgid "All Audio Inputs"
 msgstr "所有音訊輸入"
 
-#: src/gui/widgets/track_input_expander.c:342
+#: src/gui/widgets/track_input_expander.c:345
 msgid "No inputs"
 msgstr "無"
 
-#: src/gui/widgets/track_input_expander.c:345
+#: src/gui/widgets/track_input_expander.c:348
 msgid "MIDI inputs for recording"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:353
+#: src/gui/widgets/track_input_expander.c:356
 msgid "No left input"
 msgstr "關閉左聲道"
 
-#: src/gui/widgets/track_input_expander.c:354
+#: src/gui/widgets/track_input_expander.c:357
 msgid "No right input"
 msgstr "關閉右聲道"
 
-#: src/gui/widgets/track_input_expander.c:357
+#: src/gui/widgets/track_input_expander.c:360
 #, c-format
 msgid "Audio input (%s) for recording"
 msgstr ""
 
 #. TRANSLATORS: Left and Right
-#: src/gui/widgets/track_input_expander.c:359
+#: src/gui/widgets/track_input_expander.c:362
 msgid "L"
 msgstr "L"
 
-#: src/gui/widgets/track_input_expander.c:359
+#: src/gui/widgets/track_input_expander.c:362
 #: resources/ui/automation_track.ui:100
 msgid "R"
 msgstr "R"
 
-#: src/gui/widgets/track_input_expander.c:429
+#: src/gui/widgets/track_input_expander.c:440
 msgid "All Channels"
 msgstr "所有通道"
 
-#: src/gui/widgets/track_input_expander.c:438
+#: src/gui/widgets/track_input_expander.c:449
 #, c-format
 msgid "Channel %s"
 msgstr "通道 %s"
 
-#: src/gui/widgets/track_input_expander.c:453
+#: src/gui/widgets/track_input_expander.c:464
 msgid "No channel"
 msgstr "關閉通道"
 
-#: src/gui/widgets/track_input_expander.c:493
+#: src/gui/widgets/track_input_expander.c:504
 msgid "MIDI channel to filter to"
 msgstr "選擇欲使用的 MIDI 通道"
 
-#: src/gui/widgets/track_input_expander.c:693
+#: src/gui/widgets/track_input_expander.c:704
 msgid "Mono"
 msgstr "單聲道"
 
-#: src/gui/widgets/track_input_expander.c:725
+#: src/gui/widgets/track_input_expander.c:736
 msgid "Gain"
 msgstr "增益"
 
-#: src/gui/widgets/track_input_expander.c:738
+#: src/gui/widgets/track_input_expander.c:749
 msgid "Inputs"
 msgstr ""
 
@@ -1007,7 +1010,7 @@ msgstr ""
 msgid "Marker name"
 msgstr "標記的名稱"
 
-#: src/gui/widgets/arranger.c:5009
+#: src/gui/widgets/arranger.c:5019
 #, c-format
 msgid "%s name"
 msgstr "%s 名稱"
@@ -2289,7 +2292,7 @@ msgid ""
 "use JACK, please select JACK as both your audio and MIDI backend."
 msgstr ""
 
-#: src/audio/engine.c:489
+#: src/audio/engine.c:483
 #, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
@@ -3206,11 +3209,11 @@ msgstr "選擇一個目錄來存放專案"
 msgid "Ports found"
 msgstr ""
 
-#: resources/ui/active_hardware_popover.ui:79
+#: resources/ui/active_hardware_popover.ui:96
 msgid "Rescan"
 msgstr "重新掃描"
 
-#: resources/ui/active_hardware_popover.ui:83
+#: resources/ui/active_hardware_popover.ui:100
 msgid "Scan again for MIDI controllers"
 msgstr "再次掃描 MIDI 控制器"
 

@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-09 18:46+0100\n"
+"POT-Creation-Date: 2020-10-03 14:28+0100\n"
 "PO-Revision-Date: 2020-09-27 02:24+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/credits/"
-"ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/zrythm/credits/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../credits/intro.rst:6
@@ -29,41 +28,38 @@ msgid "Authors"
 msgstr "作者"
 
 #: ../../credits/intro.rst:10
+#, fuzzy
 msgid ""
-"See the `AUTHORS file "
-"<https://git.sr.ht/~alextee/zrythm/tree/master/AUTHORS>`_ in the source "
+"See the :download:`AUTHORS <../../../AUTHORS>` file in the source "
 "distribution. These include developers, graphic artists and other authors"
 " of copyrightable work."
 msgstr ""
-"ソース配布の `AUTHORSファイル <https://git.sr.ht/~alextee/zrythm/tree/master/AUTHORS>`"
-"_ を参照してください。これらのファイルには、開発者、グラフィックアーティスト、その他の著作権のある作品の作者が含まれています。"
+"ソース配布の `AUTHORSファイル "
+"<https://git.sr.ht/~alextee/zrythm/tree/master/AUTHORS>`_ "
+"を参照してください。これらのファイルには、開発者、グラフィックアーティスト、その他の著作権のある作品の作者が含まれています。"
 
-#: ../../credits/intro.rst:14
+#: ../../credits/intro.rst:16
 msgid "Translators"
 msgstr "翻訳者"
 
-#: ../../credits/intro.rst:15
+#: ../../credits/intro.rst:17
+#, fuzzy
 msgid ""
-"See the `TRANSLATORS file "
-"<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in the "
-"source distribution. These include translators of the software, the user "
-"manual and the website."
+"See the :download:`TRANSLATORS <../../../TRANSLATORS>` in the source "
+"distribution. These include translators of the software, the user manual "
+"and the website."
 msgstr ""
-"ソース配布物の中の `TRANSLATORS ファイル <https://git.sr.ht/~alextee/zrythm/tree/master/"
-"TRANSLATORS>`_ を参照してください。これらには、ソフトウェア、ユーザーマニュアル、ウェブサイトの翻訳者が含まれています。"
+"ソース配布物の中の `TRANSLATORS ファイル "
+"<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ "
+"を参照してください。これらには、ソフトウェア、ユーザーマニュアル、ウェブサイトの翻訳者が含まれています。"
 
-#: ../../credits/intro.rst:20
+#: ../../credits/intro.rst:24
 msgid "Other Contributors"
 msgstr "その他の貢献者"
 
-#: ../../credits/intro.rst:21
-msgid ""
-"See the `THANKS file "
-"<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in the "
-"source distribution."
+#: ../../credits/intro.rst:25
+msgid "See the :download:`THANKS <../../../THANKS>` in the source distribution."
 msgstr ""
-"ソース配布の `THANKSファイル <https://git.sr.ht/~alextee/zrythm/tree/master/"
-"TRANSLATORS>`_ を参照してください。"
 
 #~ msgid "Portuguese:"
 #~ msgstr ""
@@ -165,3 +161,13 @@ msgstr ""
 
 #~ msgid "Carlos Han (C.K. Design)"
 #~ msgstr ""
+
+#~ msgid ""
+#~ "See the `THANKS file "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in"
+#~ " the source distribution."
+#~ msgstr ""
+#~ "ソース配布の `THANKSファイル "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ "
+#~ "を参照してください。"
+

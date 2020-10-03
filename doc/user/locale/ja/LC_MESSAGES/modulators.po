@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-10-03 14:28+0100\n"
 "PO-Revision-Date: 2020-09-30 22:58+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"manualmodulators/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/zrythm/manualmodulators/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../modulators/intro.rst:8
@@ -31,8 +30,8 @@ msgid ""
 " For example, you can route an LFO to a filter cutoff parameter to "
 "modulate its value."
 msgstr ""
-"モジュレータとは、少なくとも一つの :term:`CV` 出力ポートを持つプラグインのことです。これらのCVポートは、Zrythm内の任意の自動可能パラメ"
-"ータにルーティングすることができます。例えば、LFOをフィルターカットオフパラメータにルーティングして、その値をモジュレートすることができます。"
+"モジュレータとは、少なくとも一つの :term:`CV` "
+"出力ポートを持つプラグインのことです。これらのCVポートは、Zrythm内の任意の自動可能パラメータにルーティングすることができます。例えば、LFOをフィルターカットオフパラメータにルーティングして、その値をモジュレートすることができます。"
 
 #: ../../modulators/intro.rst:16
 msgid "Modulators Tab"
@@ -45,11 +44,11 @@ msgid ""
 msgstr "Zrythmの下部パネルには、任意の数のモジュレータを保持できるモジュレータタブがあります。"
 
 #: ../../modulators/intro.rst:23
+#, fuzzy
 msgid ""
 "Modulators are associated with the :doc:`../tracks/modulator-track`, "
-"which contains all modulators in the :term:`project`."
-msgstr ""
-":term:`project` 内のすべてのモジュレータは :doc:`../tracks/modulator-track` に付属しています。"
+"which contains all modulators in the :term:`Project`."
+msgstr ":term:`project` 内のすべてのモジュレータは :doc:`../tracks/modulator-track` に付属しています。"
 
 #: ../../modulators/intro.rst:28
 msgid "Adding Modulators"
@@ -63,8 +62,8 @@ msgid ""
 "/plugin-browser:Filter Buttons>`."
 msgstr ""
 "モジュレータ プラグインは :doc:`../plugins-files/plugins/plugin-browser` から モジュレータ "
-"タブにドラッグ＆ドロップすることができます。プラグインブラウザ の中で :ref:`フィルタリングすることができます <plugins-files/"
-"plugins/plugin-browser:Filter Buttons>` 。"
+"タブにドラッグ＆ドロップすることができます。プラグインブラウザ の中で :ref:`フィルタリングすることができます <plugins-"
+"files/plugins/plugin-browser:Filter Buttons>` 。"
 
 #: ../../modulators/intro.rst:35
 msgid "Routing Modulators"
@@ -73,7 +72,7 @@ msgstr "モジュレーターのルーティング"
 #: ../../modulators/intro.rst:36
 #, fuzzy
 msgid ""
-"Modulator outputs can be routed to automatable :term:`controls <control>`"
+"Modulator outputs can be routed to automatable :term:`controls <Control>`"
 " by clicking on the arrow and following the prompt to select the "
 "destination."
 msgstr ""
@@ -97,3 +96,4 @@ msgstr ""
 #~ " will have its own list of "
 #~ "Modulators."
 #~ msgstr ""
+

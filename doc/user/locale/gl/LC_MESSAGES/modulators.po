@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-10-03 14:28+0100\n"
 "PO-Revision-Date: 2020-03-07 09:52+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -48,7 +48,7 @@ msgstr ""
 #: ../../modulators/intro.rst:23
 msgid ""
 "Modulators are associated with the :doc:`../tracks/modulator-track`, "
-"which contains all modulators in the :term:`project`."
+"which contains all modulators in the :term:`Project`."
 msgstr ""
 
 #: ../../modulators/intro.rst:28
@@ -69,7 +69,7 @@ msgstr "Rutas dos Moduladores"
 
 #: ../../modulators/intro.rst:36
 msgid ""
-"Modulator outputs can be routed to automatable :term:`controls <control>`"
+"Modulator outputs can be routed to automatable :term:`controls <Control>`"
 " by clicking on the arrow and following the prompt to select the "
 "destination."
 msgstr ""
@@ -81,5 +81,18 @@ msgstr ""
 #~ msgstr "TODO"
 
 #~ msgid "This feature is not available at the moment."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Modulators are associated with the "
+#~ ":doc:`../tracks/modulator-track`, which contains "
+#~ "all modulators in the :term:`project`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Modulator outputs can be routed to "
+#~ "automatable :term:`controls <control>` by "
+#~ "clicking on the arrow and following "
+#~ "the prompt to select the destination."
 #~ msgstr ""
 

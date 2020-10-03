@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 00:27+0100\n"
+"POT-Creation-Date: 2020-10-03 14:28+0100\n"
 "PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/glossary/"
-"fr/>\n"
 "Language: fr\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/zrythm/glossary/fr/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../glossary/intro.rst:8
@@ -50,7 +49,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:21
 msgid ""
-"Balance (or :term:`stereo` balance) is the left-right balance of a stereo"
+"Balance (or :term:`Stereo` balance) is the left-right balance of a stereo"
 " audio signal."
 msgstr ""
 
@@ -88,7 +87,7 @@ msgstr "Contrôle"
 msgid ""
 "A control is a :doc:`port <../routing/ports>` with a user-changeable "
 "control value that affects a processor, such as a plugin. For example, a "
-"gain control. Used interchangeably with :term:`parameter`."
+"gain control. Used interchangeably with :term:`Parameter`."
 msgstr ""
 
 #: ../../glossary/intro.rst:42
@@ -176,7 +175,7 @@ msgid "Mono"
 msgstr "Mono"
 
 #: ../../glossary/intro.rst:91
-msgid "A single-channel audio signal (see also :term:`stereo`)."
+msgid "A single-channel audio signal (see also :term:`Stereo`)."
 msgstr ""
 
 #: ../../glossary/intro.rst:93
@@ -193,7 +192,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:98
 msgid ""
-"Panning is the distribution of a :term:`mono` signal into a new stereo or"
+"Panning is the distribution of a :term:`Mono` signal into a new stereo or"
 " multi-channel sound field."
 msgstr ""
 
@@ -202,7 +201,7 @@ msgid "Parameter"
 msgstr ""
 
 #: ../../glossary/intro.rst:103
-msgid "Used interchangeably with :term:`control`."
+msgid "Used interchangeably with :term:`Control`."
 msgstr ""
 
 #: ../../glossary/intro.rst:104
@@ -241,7 +240,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:125
 msgid ""
-"A region (or :term:`clip`) is a container for MIDI Notes, audio or other "
+"A region (or :term:`Clip`) is a container for MIDI Notes, audio or other "
 "events. See :ref:`regions`."
 msgstr ""
 
@@ -266,7 +265,7 @@ msgid "Stereo"
 msgstr ""
 
 #: ../../glossary/intro.rst:137
-msgid "A two-channel audio signal (left and right) (see also :term:`mono`)."
+msgid "A two-channel audio signal (left and right) (see also :term:`Mono`)."
 msgstr ""
 
 #: ../../glossary/intro.rst:139
@@ -286,7 +285,7 @@ msgstr ""
 #: ../../glossary/intro.rst:145
 msgid ""
 "VST3 is a plugin standard that supersedes :term:`VST2`. It is better to "
-"use VST3 than VST2, because it is released as :term:`free software`. "
+"use VST3 than VST2, because it is released as :term:`Free software`. "
 "However, we recommend using the :term:`LV2` standard instead."
 msgstr ""
 
@@ -347,3 +346,49 @@ msgstr ""
 
 #~ msgid "Pan Law"
 #~ msgstr ""
+
+#~ msgid ""
+#~ "Balance (or :term:`stereo` balance) is "
+#~ "the left-right balance of a stereo"
+#~ " audio signal."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A control is a :doc:`port "
+#~ "<../routing/ports>` with a user-changeable "
+#~ "control value that affects a processor,"
+#~ " such as a plugin. For example, "
+#~ "a gain control. Used interchangeably "
+#~ "with :term:`parameter`."
+#~ msgstr ""
+
+#~ msgid "A single-channel audio signal (see also :term:`stereo`)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Panning is the distribution of a "
+#~ ":term:`mono` signal into a new stereo"
+#~ " or multi-channel sound field."
+#~ msgstr ""
+
+#~ msgid "Used interchangeably with :term:`control`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A region (or :term:`clip`) is a "
+#~ "container for MIDI Notes, audio or "
+#~ "other events. See :ref:`regions`."
+#~ msgstr ""
+
+#~ msgid "A two-channel audio signal (left and right) (see also :term:`mono`)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "VST3 is a plugin standard that "
+#~ "supersedes :term:`VST2`. It is better to"
+#~ " use VST3 than VST2, because it "
+#~ "is released as :term:`free software`. "
+#~ "However, we recommend using the "
+#~ ":term:`LV2` standard instead."
+#~ msgstr ""
+

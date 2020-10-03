@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-10-03 14:28+0100\n"
 "PO-Revision-Date: 2020-09-27 15:22+0000\n"
 "Last-Translator: Christian B. <buerdman@googlemail.com>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
-"manualediting/de/>\n"
 "Language: de\n"
+"Language-Team: German "
+"<https://hosted.weblate.org/projects/zrythm/manualediting/de/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -144,6 +143,11 @@ msgstr "Regionskontextmenü"
 #: ../../editing/clip-editors/ruler.rst:36
 #: ../../editing/clip-editors/ruler.rst:44
 #: ../../editing/clip-editors/toolbar.rst:12
+#: ../../editing/common-operations.rst:33
+#: ../../editing/common-operations.rst:70
+#: ../../editing/common-operations.rst:84
+#: ../../editing/common-operations.rst:91
+#: ../../editing/common-operations.rst:98
 #: ../../editing/edit-modes.rst:27
 #: ../../editing/timeline/arranger.rst:24
 #: ../../editing/timeline/arranger.rst:50
@@ -327,7 +331,7 @@ msgstr "Schlagzeugansicht"
 #: ../../editing/clip-editors/piano-roll.rst:30
 msgid ""
 "Enabling this will change the display of the arranger into a drum editor "
-"view, where each :term:`MIDI Note` is drawn as a diamond and the piano "
+"view, where each :term:`MIDI note` is drawn as a diamond and the piano "
 "roll keys display the name of each drum."
 msgstr ""
 
@@ -597,112 +601,127 @@ msgid ""
 "that you undo'ed from."
 msgstr ""
 
-#: ../../editing/common-operations.rst:20
+#: ../../editing/common-operations.rst:21
 msgid ""
 "For example, if you create a MIDI note and press undo, the MIDI note will"
 " be deleted (Zrythm goes back into the state where the MIDI note did not "
-"exist). Pressing the Redo button will create the note again, and you can "
-"go back between Undo and Redo as many times as you want."
+"exist). Pressing the :guilabel:`Redo` button will create the note again, "
+"and you can go back between :guilabel:`Undo` and :guilabel:`Redo` as many"
+" times as you want."
 msgstr ""
 
-#: ../../editing/common-operations.rst:26
+#: ../../editing/common-operations.rst:29
+msgid ""
+"It is also possible to go back/forth more than one action, by clicking "
+"the arrow next to the :guilabel:`Undo` and :guilabel:`Redo` buttons."
+msgstr ""
+
+#: ../../editing/common-operations.rst:33
+msgid "Show screenshot."
+msgstr ""
+
+#: ../../editing/common-operations.rst:35
 msgid ""
 "The shortcuts for undo and redo are :kbd:`Control-z` and :kbd:`Control-"
 "Shift-z`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:29
+#: ../../editing/common-operations.rst:38
 msgid ""
 "If you Undo and then perform a new action, the Redo history will be "
 "deleted."
 msgstr ""
 
-#: ../../editing/common-operations.rst:33
+#: ../../editing/common-operations.rst:42
 #, fuzzy
 msgid "Object Operations"
 msgstr "Andere Operationen"
 
-#: ../../editing/common-operations.rst:35
+#: ../../editing/common-operations.rst:44
 msgid "Cut"
 msgstr ""
 
-#: ../../editing/common-operations.rst:36
+#: ../../editing/common-operations.rst:45
 msgid ""
 "Delete and copy the selected objects and save them in the clipboard so "
 "that they can be pasted elsewhere. The shortcut for cutting is "
-":zbutton:`Control` + :zbutton:`X`."
+":kbd:`Control-x`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:42
+#: ../../editing/common-operations.rst:51
 msgid "Copy"
 msgstr ""
 
-#: ../../editing/common-operations.rst:43
+#: ../../editing/common-operations.rst:52
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
-"elsewhere. The shortcut for copying is :zbutton:`Control` + :zbutton:`C`."
+"elsewhere. The shortcut for copying is :kbd:`Control-c`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:49
+#: ../../editing/common-operations.rst:58
 msgid "Paste"
 msgstr ""
 
-#: ../../editing/common-operations.rst:50
+#: ../../editing/common-operations.rst:59
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
-"position. The shortcut for pasting is :zbutton:`Control` + :zbutton:`V`."
+"position. The shortcut for pasting is :kbd:`Control-v`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:56
+#: ../../editing/common-operations.rst:65
 msgid "Duplicate"
 msgstr ""
 
-#: ../../editing/common-operations.rst:57
+#: ../../editing/common-operations.rst:66
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
-"duplicating is :zbutton:`Control` + :zbutton:`D`."
+"duplicating is :kbd:`Control-d`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:62
+#: ../../editing/common-operations.rst:70
+#: ../../editing/common-operations.rst:84
+#: ../../editing/common-operations.rst:91
+#: ../../editing/common-operations.rst:98
+#: ../../editing/timeline/arranger.rst:167
+msgid "Illustrate."
+msgstr ""
+
+#: ../../editing/common-operations.rst:73
 msgid "Delete"
 msgstr ""
 
-#: ../../editing/common-operations.rst:63
-msgid ""
-"Delete the selected objects. You can also press :zbutton:`Delete` on your"
-" keyboard to do this."
+#: ../../editing/common-operations.rst:74
+msgid "Delete the selected objects. You can also press :kbd:`Delete`."
 msgstr ""
 
-#: ../../editing/common-operations.rst:68
+#: ../../editing/common-operations.rst:79
 #, fuzzy
 msgid "Selections"
 msgstr "Auswahlwerkzeug"
 
-#: ../../editing/common-operations.rst:70
+#: ../../editing/common-operations.rst:81
 #, fuzzy
 msgid "Clear Selection"
 msgstr "Auswahlen machen"
 
-#: ../../editing/common-operations.rst:71
+#: ../../editing/common-operations.rst:82
 msgid "Clear current selection (unselect all objects)."
 msgstr ""
 
-#: ../../editing/common-operations.rst:74
+#: ../../editing/common-operations.rst:87
 msgid "Select All"
 msgstr ""
 
-#: ../../editing/common-operations.rst:75
-msgid "Select all objects in the current editor."
+#: ../../editing/common-operations.rst:88
+msgid "Select all objects in the current editor (:kbd:`Control-a`)."
 msgstr ""
 
-#: ../../editing/common-operations.rst:78
+#: ../../editing/common-operations.rst:94
 msgid "Loop Selection"
 msgstr ""
 
-#: ../../editing/common-operations.rst:79
-msgid ""
-"Place the loop markers around the selection. The shortcut for this is "
-":zbutton:`Control` + :zbutton:`L`."
+#: ../../editing/common-operations.rst:95
+msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr ""
 
 #: ../../editing/edit-modes.rst:8
@@ -1022,7 +1041,7 @@ msgid "Note Type"
 msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:34
-msgid "Note type for the note length (normal/dotted/triplet)"
+msgid "Note type (normal/dotted/triplet)"
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:8
@@ -1063,7 +1082,7 @@ msgstr "Regionen erstellen"
 
 #: ../../editing/timeline/arranger.rst:35
 msgid ""
-"Regions (or :term:`clips <clip>`) are containers for events or data (such"
+"Regions (or :term:`clips <Clip>`) are containers for events or data (such"
 " as MIDI notes and audio clips - see below) that can be edited in an "
 ":ref:`editor <editors>`. Regions can be repeated, like below."
 msgstr ""
@@ -1258,10 +1277,6 @@ msgstr ""
 #, fuzzy
 msgid "Regions can be renamed by clicking on their name."
 msgstr "Ausgewählte Regionen können durch Klicken und Ziehen verschoben werden."
-
-#: ../../editing/timeline/arranger.rst:167
-msgid "Illustrate."
-msgstr ""
 
 #: ../../editing/timeline/arranger.rst:169
 msgid "Other editing capabilities were explained previously in :ref:`edit-modes`."
@@ -1912,3 +1927,81 @@ msgstr ""
 
 #~ msgid "Moving Objects"
 #~ msgstr "Spuren auswählen"
+
+#~ msgid ""
+#~ "Enabling this will change the display"
+#~ " of the arranger into a drum "
+#~ "editor view, where each :term:`MIDI "
+#~ "Note` is drawn as a diamond and"
+#~ " the piano roll keys display the "
+#~ "name of each drum."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For example, if you create a MIDI"
+#~ " note and press undo, the MIDI "
+#~ "note will be deleted (Zrythm goes "
+#~ "back into the state where the MIDI"
+#~ " note did not exist). Pressing the"
+#~ " Redo button will create the note "
+#~ "again, and you can go back between"
+#~ " Undo and Redo as many times as"
+#~ " you want."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Delete and copy the selected objects "
+#~ "and save them in the clipboard so"
+#~ " that they can be pasted elsewhere."
+#~ " The shortcut for cutting is "
+#~ ":zbutton:`Control` + :zbutton:`X`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Copy the selected objects to the "
+#~ "clipboard so that they can be "
+#~ "pasted elsewhere. The shortcut for "
+#~ "copying is :zbutton:`Control` + :zbutton:`C`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Paste the objects currently in the "
+#~ "clipboard to the current playhead "
+#~ "position. The shortcut for pasting is"
+#~ " :zbutton:`Control` + :zbutton:`V`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Create a copy of the selected "
+#~ "objects adjacent to them. The shortcut"
+#~ " for duplicating is :zbutton:`Control` +"
+#~ " :zbutton:`D`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Delete the selected objects. You can "
+#~ "also press :zbutton:`Delete` on your "
+#~ "keyboard to do this."
+#~ msgstr ""
+
+#~ msgid "Select all objects in the current editor."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Place the loop markers around the "
+#~ "selection. The shortcut for this is "
+#~ ":zbutton:`Control` + :zbutton:`L`."
+#~ msgstr ""
+
+#~ msgid "Note type for the note length (normal/dotted/triplet)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Regions (or :term:`clips <clip>`) are "
+#~ "containers for events or data (such "
+#~ "as MIDI notes and audio clips -"
+#~ " see below) that can be edited "
+#~ "in an :ref:`editor <editors>`. Regions "
+#~ "can be repeated, like below."
+#~ msgstr ""
+

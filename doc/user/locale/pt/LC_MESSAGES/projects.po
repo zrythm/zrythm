@@ -173,8 +173,6 @@ msgid ""
 "copying a project directory under :file:`templates` in the :term:`Zrythm "
 "user path`."
 msgstr ""
-"Um modelo em branco está disponível e pode criar os seus próprios modelos a "
-"copiar um diretório de projeto em :file:`{ZRYTHM_USER_DIR}/templates`."
 
 #: ../../projects/saving-loading.rst:36
 msgid ""

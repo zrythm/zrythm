@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
-"POT-Creation-Date: 2020-10-01 00:33+0100\n"
+"POT-Creation-Date: 2020-10-03 14:28+0100\n"
 "PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -23,8 +23,8 @@ msgstr ""
 "X-Generator: Weblate 4.3-dev\n"
 
 #. TRANSLATORS: Dummy backend
-#: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:213
-#: inc/audio/engine.h:279
+#: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
+#: inc/audio/engine.h:280
 msgid "Dummy"
 msgstr "ダミー"
 
@@ -194,55 +194,55 @@ msgstr "Vital"
 msgid "Pulse"
 msgstr "パルス"
 
-#: inc/audio/engine.h:124
+#: inc/audio/engine.h:125
 msgid "1,024"
 msgstr "1,024"
 
-#: inc/audio/engine.h:125
+#: inc/audio/engine.h:126
 msgid "2,048"
 msgstr "2,048"
 
-#: inc/audio/engine.h:126
+#: inc/audio/engine.h:127
 msgid "4,096"
 msgstr "4,096"
 
-#: inc/audio/engine.h:153
+#: inc/audio/engine.h:154
 msgid "22,050"
 msgstr "22,050"
 
-#: inc/audio/engine.h:154
+#: inc/audio/engine.h:155
 msgid "32,000"
 msgstr "32,000"
 
-#: inc/audio/engine.h:155
+#: inc/audio/engine.h:156
 msgid "44,100"
 msgstr "44,100"
 
-#: inc/audio/engine.h:156
+#: inc/audio/engine.h:157
 msgid "48,000"
 msgstr "48,000"
 
-#: inc/audio/engine.h:157
+#: inc/audio/engine.h:158
 msgid "88,200"
 msgstr "88,200"
 
-#: inc/audio/engine.h:158
+#: inc/audio/engine.h:159
 msgid "96,000"
 msgstr "96,000"
 
-#: inc/audio/engine.h:159
+#: inc/audio/engine.h:160
 msgid "192,000"
 msgstr "192,000"
 
-#: inc/audio/engine.h:214
+#: inc/audio/engine.h:215
 msgid "Dummy (libsoundio)"
 msgstr "ダミー (libsoundio)"
 
-#: inc/audio/engine.h:280
+#: inc/audio/engine.h:281
 msgid "ALSA Sequencer (not working)"
 msgstr "ALSA シーケンサー (動作しません)"
 
-#: inc/audio/engine.h:281
+#: inc/audio/engine.h:282
 msgid "ALSA Sequencer (rtmidi)"
 msgstr "ALSAシーケンサー (rtmidi)"
 
@@ -610,25 +610,28 @@ msgstr "LV2バンドルディレクトリの読み込みエラー： "
 msgid "Scanned %s plugin: %s"
 msgstr "%sプラグインをスキャン: %s"
 
-#: src/plugins/plugin_manager.c:1122
+#. TRANSLATORS: first argument
+#. * is plugin protocol, 2nd
+#. * argument is path
+#: src/plugins/plugin_manager.c:1125
 #, fuzzy, c-format
-msgid "Skipped %s plugin at %s"
+msgid "Skipped %1$s plugin at %2$s"
 msgstr "%sのLV2プラグインをスキップしました"
 
-#: src/plugins/plugin_manager.c:1249
+#: src/plugins/plugin_manager.c:1253
 msgid "Scanned LV2 plugin"
 msgstr "LV2プラグインをスキャンしました"
 
-#: src/plugins/plugin_manager.c:1260
+#: src/plugins/plugin_manager.c:1264
 #, c-format
 msgid "Skipped LV2 plugin at %s"
 msgstr "%sのLV2プラグインをスキップしました"
 
-#: src/plugins/plugin_manager.c:1335
+#: src/plugins/plugin_manager.c:1339
 msgid "Scanned AU plugin"
 msgstr "AUプラグインをスキャンしました"
 
-#: src/plugins/plugin_manager.c:1342
+#: src/plugins/plugin_manager.c:1346
 #, c-format
 msgid "Skipped AU plugin at %u"
 msgstr "%uのAUプラグインをスキップしました"
@@ -770,71 +773,71 @@ msgstr "ダイレクトアウト"
 msgid "Track Properties"
 msgstr "トラックの属性"
 
-#: src/gui/widgets/track_input_expander.c:293
+#: src/gui/widgets/track_input_expander.c:294
 msgid "All MIDI Inputs"
 msgstr "すべてのMIDI入力"
 
-#: src/gui/widgets/track_input_expander.c:297
+#: src/gui/widgets/track_input_expander.c:298
 msgid "All Audio Inputs"
 msgstr "すべてのオーディオ入力"
 
-#: src/gui/widgets/track_input_expander.c:342
+#: src/gui/widgets/track_input_expander.c:345
 msgid "No inputs"
 msgstr "入力なし"
 
-#: src/gui/widgets/track_input_expander.c:345
+#: src/gui/widgets/track_input_expander.c:348
 msgid "MIDI inputs for recording"
 msgstr "録音用のMIDI入力"
 
-#: src/gui/widgets/track_input_expander.c:353
+#: src/gui/widgets/track_input_expander.c:356
 msgid "No left input"
 msgstr "左入力なし"
 
-#: src/gui/widgets/track_input_expander.c:354
+#: src/gui/widgets/track_input_expander.c:357
 msgid "No right input"
 msgstr "右入力なし"
 
-#: src/gui/widgets/track_input_expander.c:357
+#: src/gui/widgets/track_input_expander.c:360
 #, c-format
 msgid "Audio input (%s) for recording"
 msgstr "録音用のオーディオ入力(%s)"
 
 #. TRANSLATORS: Left and Right
-#: src/gui/widgets/track_input_expander.c:359
+#: src/gui/widgets/track_input_expander.c:362
 msgid "L"
 msgstr "左"
 
-#: src/gui/widgets/track_input_expander.c:359
+#: src/gui/widgets/track_input_expander.c:362
 #: resources/ui/automation_track.ui:100
 msgid "R"
 msgstr "R"
 
-#: src/gui/widgets/track_input_expander.c:429
+#: src/gui/widgets/track_input_expander.c:440
 msgid "All Channels"
 msgstr "すべてのチャンネル"
 
-#: src/gui/widgets/track_input_expander.c:438
+#: src/gui/widgets/track_input_expander.c:449
 #, c-format
 msgid "Channel %s"
 msgstr "チャンネル%s"
 
-#: src/gui/widgets/track_input_expander.c:453
+#: src/gui/widgets/track_input_expander.c:464
 msgid "No channel"
 msgstr "チャンネルなし"
 
-#: src/gui/widgets/track_input_expander.c:493
+#: src/gui/widgets/track_input_expander.c:504
 msgid "MIDI channel to filter to"
 msgstr "フィルターするMIDIチャンネル"
 
-#: src/gui/widgets/track_input_expander.c:693
+#: src/gui/widgets/track_input_expander.c:704
 msgid "Mono"
 msgstr "モノ"
 
-#: src/gui/widgets/track_input_expander.c:725
+#: src/gui/widgets/track_input_expander.c:736
 msgid "Gain"
 msgstr "ゲイン"
 
-#: src/gui/widgets/track_input_expander.c:738
+#: src/gui/widgets/track_input_expander.c:749
 msgid "Inputs"
 msgstr "入力"
 
@@ -1040,7 +1043,7 @@ msgstr "無効なオブジェクト名%s"
 msgid "Marker name"
 msgstr "目印の名称"
 
-#: src/gui/widgets/arranger.c:5009
+#: src/gui/widgets/arranger.c:5019
 #, c-format
 msgid "%s name"
 msgstr "%s名前"
@@ -2330,7 +2333,7 @@ msgstr ""
 "JACK を使いたいのであれば、オーディオと MIDI バックエンドの両方に JACK を選択"
 "してください。"
 
-#: src/audio/engine.c:489
+#: src/audio/engine.c:483
 #, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
@@ -3256,11 +3259,11 @@ msgstr "プロジェクトを保存する親ディレクトリを選択してく
 msgid "Ports found"
 msgstr "スキャンしたポート"
 
-#: resources/ui/active_hardware_popover.ui:79
+#: resources/ui/active_hardware_popover.ui:96
 msgid "Rescan"
 msgstr "再スキャン"
 
-#: resources/ui/active_hardware_popover.ui:83
+#: resources/ui/active_hardware_popover.ui:100
 msgid "Scan again for MIDI controllers"
 msgstr "MIDIコントローラをもう一度スキャンする"
 

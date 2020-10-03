@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 19:56+0100\n"
+"POT-Creation-Date: 2020-10-03 14:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,32 +27,49 @@ msgstr ""
 
 #: ../../credits/intro.rst:10
 msgid ""
-"See the `AUTHORS file "
-"<https://git.sr.ht/~alextee/zrythm/tree/master/AUTHORS>`_ in the source "
+"See the :download:`AUTHORS <../../../AUTHORS>` file in the source "
 "distribution. These include developers, graphic artists and other authors"
 " of copyrightable work."
 msgstr ""
 
-#: ../../credits/intro.rst:14
+#: ../../credits/intro.rst:16
 msgid "Translators"
 msgstr ""
 
-#: ../../credits/intro.rst:15
+#: ../../credits/intro.rst:17
 msgid ""
-"See the `TRANSLATORS file "
-"<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in the "
-"source distribution. These include translators of the software, the user "
-"manual and the website."
+"See the :download:`TRANSLATORS <../../../TRANSLATORS>` in the source "
+"distribution. These include translators of the software, the user manual "
+"and the website."
 msgstr ""
 
-#: ../../credits/intro.rst:20
+#: ../../credits/intro.rst:24
 msgid "Other Contributors"
 msgstr ""
 
-#: ../../credits/intro.rst:21
-msgid ""
-"See the `THANKS file "
-"<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in the "
-"source distribution."
+#: ../../credits/intro.rst:25
+msgid "See the :download:`THANKS <../../../THANKS>` in the source distribution."
 msgstr ""
+
+#~ msgid ""
+#~ "See the `AUTHORS file "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/AUTHORS>`_ in "
+#~ "the source distribution. These include "
+#~ "developers, graphic artists and other "
+#~ "authors of copyrightable work."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "See the `TRANSLATORS file "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in"
+#~ " the source distribution. These include "
+#~ "translators of the software, the user"
+#~ " manual and the website."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "See the `THANKS file "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in"
+#~ " the source distribution."
+#~ msgstr ""
 

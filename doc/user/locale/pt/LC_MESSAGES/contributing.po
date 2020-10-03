@@ -56,7 +56,7 @@ msgid ""
 "Please see the :download:`HACKING <../../../HACKING.md>` file in the "
 "source distribution."
 msgstr ""
-"Por favor veja o ficheiro :download:`HACKING <.../.../.../HACKING.md>` na "
+"Por favor veja o ficheiro :download:`HACKING <../../../HACKING.md>` na "
 "distribuição da fonte."
 
 #: ../../contributing/intro.rst:24
