@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/glossary/"
+"ru/>\n"
 "Language: ru\n"
-"Language-Team: Russian "
-"<https://hosted.weblate.org/projects/zrythm/glossary/ru/>\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../glossary/intro.rst:8
@@ -82,7 +83,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:35
 msgid "Control"
-msgstr ""
+msgstr "Порт управления (Control)"
 
 #: ../../glossary/intro.rst:37
 msgid ""
@@ -93,7 +94,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:42
 msgid "CV"
-msgstr ""
+msgstr "CV"
 
 #: ../../glossary/intro.rst:44
 msgid ""
@@ -347,4 +348,3 @@ msgstr ""
 
 #~ msgid "Pan Law"
 #~ msgstr ""
-

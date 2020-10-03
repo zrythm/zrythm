@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-01 00:33+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
@@ -116,7 +116,7 @@ msgstr "выделить все"
 
 #: inc/utils/gtk.h:86 src/gui/widgets/home_toolbar.c:133
 msgid "Duplicate"
-msgstr "дублировать"
+msgstr "Дублировать (Duplicate)"
 
 #: inc/utils/gtk.h:92 src/gui/widgets/track.c:1190
 #: resources/ui/fader_buttons.ui:99
@@ -179,23 +179,23 @@ msgstr "MIDI-групповой (MIDI Group)"
 #: inc/audio/curve.h:90 src/audio/curve.c:39
 #, c-format
 msgid "Exponent"
-msgstr ""
+msgstr "Экспонента (Exponent)"
 
 #: inc/audio/curve.h:92 src/audio/curve.c:42
 #, c-format
 msgid "Superellipse"
-msgstr ""
+msgstr "Суперэллипс (Superellipse)"
 
 #: inc/audio/curve.h:94 src/gui/widgets/timeline_arranger.c:1292
 #: src/audio/curve.c:45
 #, c-format
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: inc/audio/curve.h:96 src/audio/curve.c:48
 #, c-format
 msgid "Pulse"
-msgstr ""
+msgstr "Пульс (Pulse)"
 
 #: inc/audio/engine.h:124
 msgid "1,024"
@@ -900,7 +900,7 @@ msgstr ""
 #: src/gui/widgets/event_viewer.c:630 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
-msgstr ""
+msgstr "Позиция (Position)"
 
 #: src/gui/widgets/digital_meter.c:1174
 msgid "Time Signature - Beats per bar / Beat unit"
@@ -1111,7 +1111,7 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:565
 msgid "Metronome"
-msgstr ""
+msgstr "Метроном (Metronome)"
 
 #: src/gui/widgets/bot_bar.c:565
 msgid "Volume"
@@ -1209,7 +1209,7 @@ msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:1356
 msgid "Musical Mode"
-msgstr ""
+msgstr "Музыкальный режим (Musical Mode)"
 
 #: src/gui/widgets/timeline_arranger.c:1488
 msgid "Export as MIDI file"
@@ -1276,7 +1276,7 @@ msgstr "Сообщить об ошибке (Report a Bug)"
 #: src/gui/widgets/home_toolbar.c:135 src/gui/widgets/cc_bindings_tree.c:175
 #: resources/ui/modulator_inner.ui:45
 msgid "Delete"
-msgstr ""
+msgstr "Удалить (Delete)"
 
 #: src/gui/widgets/port_connections_tree.c:277
 msgid "Source"
@@ -1304,27 +1304,27 @@ msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:127
 msgid "Cut"
-msgstr ""
+msgstr "Вырезать (Cut)"
 
 #: src/gui/widgets/home_toolbar.c:129
 msgid "Copy"
-msgstr ""
+msgstr "Копировать (Copy)"
 
 #: src/gui/widgets/home_toolbar.c:131
 msgid "Paste"
-msgstr ""
+msgstr "Вставить (Paste)"
 
 #: src/gui/widgets/home_toolbar.c:137
 msgid "Clear Selection"
-msgstr ""
+msgstr "Очистить выделение (Clear Selection)"
 
 #: src/gui/widgets/home_toolbar.c:139
 msgid "Select All"
-msgstr ""
+msgstr "Выделить всё (Select All)"
 
 #: src/gui/widgets/home_toolbar.c:141
 msgid "Loop Selection"
-msgstr ""
+msgstr "Цикл выделения"
 
 #: src/gui/widgets/right_dock_edge.c:105
 msgid "Plugin Browser"
@@ -2202,7 +2202,7 @@ msgstr ""
 
 #: src/audio/chord_track.c:57 resources/ui/inspector_chord.ui:31
 msgid "Chords"
-msgstr ""
+msgstr "Аккорды (Chords)"
 
 #: src/audio/automation_track.c:98
 msgid "Rec"
@@ -2210,11 +2210,11 @@ msgstr ""
 
 #: src/audio/automation_track.c:119
 msgid "Touch"
-msgstr ""
+msgstr "Касание (Touch)"
 
 #: src/audio/automation_track.c:122
 msgid "Latch"
-msgstr ""
+msgstr "Фиксация (Latch)"
 
 #: src/audio/channel_send.c:377
 msgid "Pre-fader send"
@@ -2250,7 +2250,7 @@ msgstr "Уд/Мин (BPM)"
 
 #: src/audio/tempo_track.c:69
 msgid "Time Signature"
-msgstr ""
+msgstr "Тактовый размер (Time Signature)"
 
 #: src/audio/engine.c:201
 #, c-format
@@ -2740,7 +2740,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:175
 msgid "Selections"
-msgstr ""
+msgstr "Выделение (Selection)"
 
 #: resources/gtk/help-overlay.ui:180
 msgid "Select all"
@@ -2808,11 +2808,11 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:292
 msgid "Quantize"
-msgstr ""
+msgstr "Квантование (Quantize)"
 
 #: resources/gtk/help-overlay.ui:301
 msgid "Looping"
-msgstr ""
+msgstr "Зацикливание"
 
 #: resources/gtk/help-overlay.ui:306
 msgid "Loop selection"
@@ -3266,7 +3266,7 @@ msgstr ""
 #: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
 #: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:344
 msgid "Length"
-msgstr ""
+msgstr "Длина (Length)"
 
 #: resources/ui/inspector_master.ui:113 resources/ui/inspector_ap.ui:113
 #: resources/ui/inspector_midi.ui:113
@@ -3399,23 +3399,23 @@ msgstr "Возврат к точке отсчета на остановке (Ret
 
 #: resources/ui/transport_controls.ui:55
 msgid "Play"
-msgstr ""
+msgstr "Воспроизвести (Play)"
 
 #: resources/ui/transport_controls.ui:70
 msgid "Stop"
-msgstr ""
+msgstr "Остановить (Stop)"
 
 #: resources/ui/transport_controls.ui:85
 msgid "Backward"
-msgstr ""
+msgstr "Переместиться назад (Backward)"
 
 #: resources/ui/transport_controls.ui:100
 msgid "Forward"
-msgstr ""
+msgstr "Переместиться вперед (Forward)"
 
 #: resources/ui/transport_controls.ui:114 resources/ui/export_dialog.ui:237
 msgid "Loop"
-msgstr ""
+msgstr "Цикл (Loop)"
 
 #: resources/ui/splash.ui:38
 msgid "Splash"
@@ -3439,7 +3439,7 @@ msgstr ""
 
 #: resources/ui/event_viewer.ui:13
 msgid "Event Viewer"
-msgstr ""
+msgstr "Список событий (Event Viewer)"
 
 #: resources/ui/automation_track.ui:31
 msgid "Control this automation track is for"
@@ -3503,23 +3503,23 @@ msgstr ""
 
 #: resources/ui/quantize_dialog.ui:77
 msgid "Quantize to"
-msgstr ""
+msgstr "Квантовать в (Quantize to)"
 
 #: resources/ui/quantize_dialog.ui:132
 msgid "Adjust"
-msgstr ""
+msgstr "Отрегулировать (Adjust)"
 
 #: resources/ui/quantize_dialog.ui:183
 msgid "Amount"
-msgstr ""
+msgstr "Величина (Amount)"
 
 #: resources/ui/quantize_dialog.ui:223
 msgid "Swing"
-msgstr ""
+msgstr "Свинг (Swing)"
 
 #: resources/ui/quantize_dialog.ui:251
 msgid "Randomization"
-msgstr ""
+msgstr "Случайность (Randomization)"
 
 #: resources/ui/export_dialog.ui:27
 msgid "Export As..."

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-30 22:58+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/ja/>\n"
@@ -52,7 +52,6 @@ msgid "The Time Signature is split into the following"
 msgstr "拍子記号は下記ように分割されています"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:34
-#, fuzzy
 msgid "Beats per Bar"
 msgstr "バーあたりのビート数"
 
@@ -181,9 +180,8 @@ msgid "Zrythm uses the following format for positions:"
 msgstr "Zrythm は、ポジションに次の形式を使用しています。"
 
 #: ../../playback-and-recording/overview.rst:26
-#, fuzzy
 msgid "Each sixteenth note is fixed to have 240 ticks."
-msgstr "各16分音符は240刻みで固定されています。"
+msgstr "各16分音符は240 ticksで固定されています。"
 
 #: ../../playback-and-recording/recording.rst:6
 msgid "Recording"
@@ -318,24 +316,20 @@ msgid "Pauses playback. If clicked twice, goes back to the Cue point."
 msgstr "再生を一時停止します。2回クリックするとキューポイントに戻ります。"
 
 #: ../../playback-and-recording/transport-controls.rst:26
-#, fuzzy
 msgid "Backward"
-msgstr "前へ"
+msgstr "後戻り"
 
 #: ../../playback-and-recording/transport-controls.rst:26
-#, fuzzy
 msgid "Moves the Playhead backward by the size of 1 snap point."
-msgstr "再生ヘッドを1スナップポイントのサイズだけ後方に移動します。"
+msgstr "プレイヘッドを 1 スナップポイントの大きさで後方に移動します。"
 
 #: ../../playback-and-recording/transport-controls.rst:29
-#, fuzzy
 msgid "Forward"
-msgstr "進む"
+msgstr "前方"
 
 #: ../../playback-and-recording/transport-controls.rst:29
-#, fuzzy
 msgid "Moves the Playhead forward by the size of 1 snap point."
-msgstr "再生ヘッドを1スナップポイントのサイズだけ前方に移動します。"
+msgstr "プレイヘッドを 1 スナップポイントの大きさで前方に移動します。"
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Loop"

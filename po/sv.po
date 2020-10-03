@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-01 00:33+0100\n"
-"PO-Revision-Date: 2020-09-27 07:42+0000\n"
-"Last-Translator: Mattias Münster <mattiasmun@gmail.com>\n"
+"PO-Revision-Date: 2020-10-02 10:41+0000\n"
+"Last-Translator: Felix Paulsson <fpaulsson@protonmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/zrythm/sv/"
 ">\n"
 "Language: sv\n"
@@ -105,7 +105,6 @@ msgid "Cle_ar Selection"
 msgstr "Rensa markeringar"
 
 #: inc/utils/gtk.h:80
-#, fuzzy
 msgid "Select A_ll"
 msgstr "Markera allt"
 
@@ -242,7 +241,7 @@ msgstr "ALSA Sequencer (fungerar ej)"
 
 #: inc/audio/engine.h:281
 msgid "ALSA Sequencer (rtmidi)"
-msgstr ""
+msgstr "ALSA-Sequencer (rtmidi)"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:126
 msgid "Crescendo"
@@ -262,20 +261,19 @@ msgstr "Vänd V"
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:153
 msgid "Legato"
-msgstr ""
+msgstr "Legato"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:159
-#, fuzzy
 msgid "Portato"
-msgstr "Port"
+msgstr "Portato"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:165
 msgid "Staccato"
-msgstr ""
+msgstr "Staccato"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:171
 msgid "Strum"
-msgstr ""
+msgstr "Strumma"
 
 #: inc/audio/region.h:83 src/gui/widgets/track.c:1868
 msgid "Inherit"
@@ -295,15 +293,15 @@ msgstr "På"
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
 msgid "0dB"
-msgstr ""
+msgstr "0dB"
 
 #: inc/audio/pan.h:53
 msgid "-3dB"
-msgstr ""
+msgstr "-3dB"
 
 #: inc/audio/pan.h:54
 msgid "-6dB"
-msgstr ""
+msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1289
@@ -325,9 +323,8 @@ msgid "Failed to open file: %s"
 msgstr "Kunde inte öppna filen: %s"
 
 #: src/project.c:186
-#, fuzzy
 msgid "Project not compressed by zstd"
-msgstr "Projektet är inte komprimerat av zstd!"
+msgstr "Projektet är inte komprimerat av zstd"
 
 #: src/project.c:199
 #, c-format
@@ -386,12 +383,12 @@ msgstr "Projekt sparat."
 
 #: src/main.c:78
 msgid "Error - Backtrace:\n"
-msgstr ""
+msgstr "Fel - Bakåtspår:\n"
 
 #: src/main.c:82
 #, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr ""
+msgstr "Fel: %s - Bakåtspår:\n"
 
 #: src/main.c:96
 #, c-format
@@ -431,6 +428,39 @@ msgid ""
 "\n"
 "Report bugs to %s\n"
 msgstr ""
+"Användning: %s [ ALTERNATIV ] [ PROJEKTETS-SÖKVÄG ]\n"
+"\n"
+"Alternativ:\n"
+"  -h, --help      visa detta hjälpmeddelande och avsluta\n"
+"  --convert-yaml-to-zpj  konvertera ett .yaml-projekt till .zpj-format\n"
+"  --convert-zpj-to-yaml  konvertera ett .zpj-projekt till .yaml-format\n"
+"  -o, --output    specificera en fil för utdata\n"
+"  -p, --print-settings  skriv ut nuvarande inställningar\n"
+"  --pretty        skriv ut på ett användarvänligt sätt\n"
+"  --reset-to-factory  återställ alla inställningar\n"
+"  --gdb           kör %s genom GDB (avbuggare)\n"
+"  --callgrind     kör %s genom callgrind (profilerare)\n"
+"  --audio-backend  använd annan ljud-backend än den angiven i "
+"inställningarna\n"
+"  --midi-backend  använd annan MIDI-backend än den angiven i "
+"inställningarna\n"
+"  --dummy         använd platshållare istället för de ljud- och MIDI-backend "
+"som är angivna i inställningarna\n"
+"  --buf-size      använd annan buffertstorlek för vald ljud-backend än den "
+"angiven i inställningarna, om tillämpligt\n"
+"  --interactive   interaktivt läge, där tillämpligt\n"
+"  -v, --version   skriv ut versionsinformation och avsluta\n"
+"\n"
+"Exempel:\n"
+"  %s -v       skriv ut versionen\n"
+"  %s --callgrind --dummy --buf-size=8192  profilera %s med platshållar-"
+"backend och en buffertstorlek på 8192\n"
+"  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  konvertera "
+"ett komprimerat .zpj-projekt till .yaml-format\n"
+"  %s -p --pretty  skriv ut nuvarande inställningar på ett användarvänligt "
+"sätt\n"
+"\n"
+"Rapportera buggar till %s\n"
 
 #: src/main.c:172
 #, c-format
@@ -484,6 +514,16 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
+"%s-%s Copyright (C) 2018-2020 Zrythms medarbetare\n"
+"\n"
+"%s kommer HELT UTAN GARANTI!\n"
+"\n"
+"Detta är fri mjukvara, och du är välkommen att distribuera den på nytt\n"
+"under vissa villkor. Se filen `COPYING' för ytterligare information.\n"
+"\n"
+"Skriv kommentarer och buggar till %s\n"
+"Stöd projektet på https://liberapay.com/Zrythm\n"
+"\n"
 
 #: src/zrythm_app.c:218
 msgid "Setting up main window"
@@ -537,7 +577,7 @@ msgstr "Standardbank"
 
 #: src/plugins/carla_native_plugin.c:552 src/plugins/lv2_plugin.c:2520
 msgid "Init"
-msgstr ""
+msgstr "Initiering"
 
 #: src/plugins/carla_native_plugin.c:993
 msgid "Audio in"
@@ -677,7 +717,7 @@ msgstr "Lägg till"
 #: src/gui/widgets/inspector_port.c:185 src/gui/widgets/balance_control.c:366
 #: src/gui/widgets/fader.c:374 resources/ui/bind_cc_dialog.ui:27
 msgid "Bind MIDI CC"
-msgstr ""
+msgstr "Koppla MIDI CC"
 
 #: src/gui/widgets/inspector_port.c:195 src/gui/widgets/midi_arranger.c:519
 msgid "View info"
@@ -697,11 +737,11 @@ msgstr "Nuvarande värde"
 
 #: src/gui/widgets/inspector_port.c:395 src/gui/widgets/cc_bindings_tree.c:306
 msgid "Min"
-msgstr ""
+msgstr "Min"
 
 #: src/gui/widgets/inspector_port.c:396 src/gui/widgets/cc_bindings_tree.c:316
 msgid "Max"
-msgstr ""
+msgstr "Max"
 
 #: src/gui/widgets/inspector_port.c:523
 msgid "Expose port to JACK"
@@ -713,7 +753,6 @@ msgstr "Loggvisaren"
 
 #: src/gui/widgets/track_properties_expander.c:110
 #: src/gui/widgets/track_visibility_tree.c:163
-#, fuzzy
 msgid "Track Name"
 msgstr "Spårets namn"
 
@@ -757,12 +796,12 @@ msgstr "Ljudingång (%s) för inspelning"
 #. TRANSLATORS: Left and Right
 #: src/gui/widgets/track_input_expander.c:359
 msgid "L"
-msgstr ""
+msgstr "V"
 
 #: src/gui/widgets/track_input_expander.c:359
 #: resources/ui/automation_track.ui:100
 msgid "R"
-msgstr ""
+msgstr "H"
 
 #: src/gui/widgets/track_input_expander.c:429
 msgid "All Channels"
@@ -783,7 +822,7 @@ msgstr "MIDI-kanal att filtrera till"
 
 #: src/gui/widgets/track_input_expander.c:693
 msgid "Mono"
-msgstr ""
+msgstr "Mono"
 
 #: src/gui/widgets/track_input_expander.c:725
 msgid "Gain"
@@ -845,7 +884,7 @@ msgstr "Synlighet"
 
 #: src/gui/widgets/left_dock_edge.c:252
 msgid "CC Bindings"
-msgstr ""
+msgstr "CC-kopplingar"
 
 #: src/gui/widgets/left_dock_edge.c:279
 msgid "Port connections"
@@ -896,7 +935,7 @@ msgstr "triplett"
 
 #: src/gui/widgets/digital_meter.c:1130
 msgid "Tempo/BPM"
-msgstr ""
+msgstr "Tempo/BPM"
 
 #: src/gui/widgets/digital_meter.c:1144 src/gui/widgets/event_viewer.c:600
 #: src/gui/widgets/event_viewer.c:630 resources/ui/inspector_master.ui:79
@@ -1082,7 +1121,7 @@ msgstr "JACK Transport klient"
 
 #: src/gui/widgets/bot_bar.c:362
 msgid "JACK Timebase master"
-msgstr ""
+msgstr "JACK Tidsbas master"
 
 #: src/gui/widgets/bot_bar.c:419
 msgid "This feature is not available at the moment"
@@ -1090,13 +1129,13 @@ msgstr "Denna funktion är för tillfället inte tillgänglig"
 
 #: src/gui/widgets/bot_bar.c:514
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #. TRANSLATORS: buffer size, please keep the
 #. * translation short
 #: src/gui/widgets/bot_bar.c:521
 msgid "Buf sz"
-msgstr ""
+msgstr "Buf. st."
 
 #. TRANSLATORS: sample rate
 #: src/gui/widgets/bot_bar.c:527
@@ -1121,7 +1160,7 @@ msgstr "Volym"
 
 #: src/gui/widgets/bot_bar.c:649
 msgid "bpm"
-msgstr ""
+msgstr "bpm"
 
 #: src/gui/widgets/bot_bar.c:653
 msgid "time sig."
@@ -1130,7 +1169,7 @@ msgstr "taktart"
 #: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:65
 #: resources/ui/quantize_dialog.ui:143
 msgid "start"
-msgstr ""
+msgstr "start"
 
 #: src/gui/widgets/timeline_selection_info.c:275 src/audio/marker_track.c:72
 #: resources/ui/quantize_dialog.ui:156
@@ -1154,11 +1193,11 @@ msgstr "loopslut (rel.)"
 #: src/gui/widgets/timeline_selection_info.c:380
 #: src/gui/widgets/timeline_selection_info.c:405
 msgid "position"
-msgstr ""
+msgstr "position"
 
 #: src/gui/widgets/transport_controls.c:196
 msgid "Punch in/out"
-msgstr ""
+msgstr "Tryck in/ut"
 
 #: src/gui/widgets/transport_controls.c:199
 msgid "Start on MIDI input"
@@ -1255,11 +1294,11 @@ msgstr "Skriptgränssnitt"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
-msgstr ""
+msgstr "Chat (Matrix)"
 
 #: src/gui/widgets/help_toolbar.c:40
 msgid "Manual"
-msgstr ""
+msgstr "Manual"
 
 #: src/gui/widgets/help_toolbar.c:41 resources/gtk/help-overlay.ui:46
 msgid "Keyboard Shortcuts"
@@ -1286,7 +1325,7 @@ msgstr "Källa"
 #: src/gui/widgets/port_connections_tree.c:295
 #: src/gui/widgets/cc_bindings_tree.c:293
 msgid "Destination"
-msgstr ""
+msgstr "Destination"
 
 #: src/gui/widgets/port_connections_tree.c:313
 msgid "Multiplier"
@@ -1382,7 +1421,7 @@ msgstr "Stereo ut"
 
 #: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:459
 msgid "Fader"
-msgstr ""
+msgstr "Fader"
 
 #: src/gui/widgets/automatable_selector_popover.c:65
 msgid "No control selected"
@@ -1391,7 +1430,7 @@ msgstr "Ingen kontroll är vald"
 #: src/gui/widgets/automatable_selector_popover.c:331
 #, c-format
 msgid "[Instrument] %s"
-msgstr ""
+msgstr "[Instrument] %s"
 
 #: src/gui/widgets/automatable_selector_popover.c:351
 #, c-format
@@ -1406,7 +1445,7 @@ msgstr "[Infoga %d] %s"
 #: src/gui/widgets/automatable_selector_popover.c:389
 #, c-format
 msgid "[Modulator %d] %s"
-msgstr ""
+msgstr "[Modulator %d] %s"
 
 #: src/gui/widgets/snap_grid.c:113
 msgid "Snap/Grid options"
@@ -1459,12 +1498,12 @@ msgstr "Ljud"
 #: src/gui/widgets/preferences.c:98 src/audio/region.c:399
 #: build/data/org.zrythm.Zrythm.gschema.xml:633
 msgid "Automation"
-msgstr ""
+msgstr "Automation"
 
 #: src/gui/widgets/preferences.c:100
 msgctxt "guilabel"
 msgid "Automation"
-msgstr ""
+msgstr "Automation"
 
 #: src/gui/widgets/preferences.c:104
 msgctxt "guilabel"
@@ -1473,7 +1512,6 @@ msgstr "Ångra"
 
 #: src/gui/widgets/preferences.c:106 resources/ui/preferences.ui:572
 #: resources/ui/preferences.ui:618 build/data/org.zrythm.Zrythm.gschema.xml:661
-#, fuzzy
 msgid "Projects"
 msgstr "Projekt"
 
@@ -1484,42 +1522,38 @@ msgstr "Projekt"
 
 #: src/gui/widgets/preferences.c:110
 #: build/data/org.zrythm.Zrythm.gschema.xml:676
-#, fuzzy
 msgid "UI"
-msgstr "GUI"
+msgstr "UI"
 
 #: src/gui/widgets/preferences.c:112
 msgctxt "guilabel"
 msgid "UI"
-msgstr ""
+msgstr "UI"
 
 #: src/gui/widgets/preferences.c:114
 #: build/data/org.zrythm.Zrythm.gschema.xml:556
-#, fuzzy
 msgid "UIs"
-msgstr "GUI"
+msgstr "UI:n"
 
 #: src/gui/widgets/preferences.c:116
-#, fuzzy
 msgctxt "guilabel"
 msgid "UIs"
-msgstr "GUI"
+msgstr "UI:n"
 
 #: src/gui/widgets/preferences.c:118
 #: build/data/org.zrythm.Zrythm.gschema.xml:695
 msgid "DSP"
-msgstr ""
+msgstr "DSP"
 
 #: src/gui/widgets/preferences.c:120
 msgctxt "guilabel"
 msgid "DSP"
-msgstr ""
+msgstr "DSP"
 
 #: src/gui/widgets/preferences.c:122
 #: build/data/org.zrythm.Zrythm.gschema.xml:696
-#, fuzzy
 msgid "Pan"
-msgstr "Paneler"
+msgstr "Panorera"
 
 #: src/gui/widgets/preferences.c:124
 msgctxt "guilabel"
@@ -1539,9 +1573,8 @@ msgstr "Motor"
 #: src/gui/widgets/preferences.c:130
 #: build/data/org.zrythm.Zrythm.gschema.xml:542
 #: build/data/org.zrythm.Zrythm.gschema.xml:591
-#, fuzzy
 msgid "Paths"
-msgstr "Sökväg"
+msgstr "Sökvägar"
 
 #: src/gui/widgets/preferences.c:132
 msgctxt "guilabel"
@@ -1580,7 +1613,7 @@ msgstr "Välj..."
 
 #: src/gui/widgets/active_hardware_mb.c:144
 msgid "Click to enable inputs"
-msgstr ""
+msgstr "Klicka för att aktivera ingångar"
 
 #: src/gui/widgets/port_connection_row.c:107
 msgid "Enable/disable connection"
@@ -1623,7 +1656,7 @@ msgstr "Automationspunkt"
 
 #: src/gui/widgets/event_viewer.c:463 src/gui/widgets/event_viewer.c:559
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: src/gui/widgets/event_viewer.c:474
 msgid "Clip start"
@@ -1651,7 +1684,7 @@ msgstr "Tonhöjd"
 
 #: src/gui/widgets/event_viewer.c:619
 msgid "Index"
-msgstr ""
+msgstr "Index"
 
 #: src/gui/widgets/event_viewer.c:641
 msgid "Value"
@@ -1836,7 +1869,7 @@ msgstr "Bana %d"
 
 #: src/gui/widgets/track.c:1168 resources/ui/fader_buttons.ui:78
 msgid "Solo"
-msgstr ""
+msgstr "Solo"
 
 #: src/gui/widgets/track.c:1175
 msgid "Hide instrument UI"
@@ -1945,7 +1978,6 @@ msgid "Arranger object info"
 msgstr "Arrangörsobjekt-info"
 
 #: src/gui/widgets/dialogs/create_project_dialog.c:111
-#, fuzzy
 msgid "Create New Project"
 msgstr "Skapa nytt projekt"
 
@@ -1963,7 +1995,7 @@ msgstr "nottyp"
 
 #: src/gui/widgets/dialogs/bind_cc_dialog.c:95
 msgid "Not a control change event"
-msgstr ""
+msgstr "Inte ett kontrolländrings-event"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:83
 #, c-format
@@ -1981,7 +2013,7 @@ msgstr "%.1f till %.1f"
 
 #: src/gui/widgets/dialogs/port_info.c:73
 msgid "N/A"
-msgstr ""
+msgstr "Inte tillämpbar"
 
 #: src/gui/widgets/dialogs/port_info.c:134
 msgid "Port info"
@@ -2019,13 +2051,15 @@ msgstr "Regionens färg"
 
 #: src/gui/widgets/dialogs/export_dialog.c:303
 msgid "none"
-msgstr ""
+msgstr "ingen"
 
 #: src/gui/widgets/dialogs/export_dialog.c:380
 msgid ""
 "\n"
 "1 more file..."
 msgstr ""
+"\n"
+"1 till fil..."
 
 #: src/gui/widgets/dialogs/export_dialog.c:385
 #, c-format
@@ -2033,27 +2067,28 @@ msgid ""
 "\n"
 "%d more files..."
 msgstr ""
+"\n"
+"%d fler filer..."
 
 #: src/gui/widgets/dialogs/export_dialog.c:493
 msgid "The following files will be created:"
-msgstr ""
+msgstr "Följande filer kommer att skapas:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:496
-#, fuzzy
 msgid "in the directory:"
-msgstr "Öppna projekt"
+msgstr "i katalogen:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:653
 msgid "<name>.<format>"
-msgstr ""
+msgstr "<namn>.<format>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:658
 msgid "<date>_<name>.<format>"
-msgstr ""
+msgstr "<datum>_<namn>.<format>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:903
 msgid "No tracks to export"
-msgstr ""
+msgstr "Inga spår att exportera"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:154
 #, c-format
@@ -2120,6 +2155,8 @@ msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
 "install one first and restart %s"
 msgstr ""
+"Ingen lokal är tillgänglig för det valda språket (%s). Var god installera en "
+"och starta om %s"
 
 #: src/utils/ui.c:1011
 #, c-format
@@ -2131,11 +2168,17 @@ msgid ""
 "2. Run <b>locale-gen</b> as root\n"
 "3. Restart %s"
 msgstr ""
+"Ingen lokal är tillgänglig för språket du valt. Var god aktivera en först "
+"genom att följa instruktionerna nedan och försök igen.\n"
+"1. Avkommentera alla lokaler som börjar med språkkoden <b>%s</b> i <b>/etc/"
+"locale.gen</b> (kräver root-behörigheter)\n"
+"2. Kör <b>locale-gen</b> som root\n"
+"3. Starta om %s"
 
 #: src/settings/settings.c:115
 #, c-format
 msgid "Schema %s%s%s"
-msgstr ""
+msgstr "Schema %s%s%s"
 
 #: src/settings/settings.c:126
 #, c-format
@@ -2213,11 +2256,11 @@ msgstr "Spela in"
 
 #: src/audio/automation_track.c:119
 msgid "Touch"
-msgstr ""
+msgstr "Touch"
 
 #: src/audio/automation_track.c:122
 msgid "Latch"
-msgstr ""
+msgstr "Följ"
 
 #: src/audio/channel_send.c:377
 msgid "Pre-fader send"
@@ -2249,7 +2292,7 @@ msgstr "PortAudio fel: %s"
 
 #: src/audio/tempo_track.c:54
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: src/audio/tempo_track.c:69
 msgid "Time Signature"
@@ -2372,7 +2415,7 @@ msgstr "Kanal för MIDI fader ut"
 
 #: src/audio/engine_jack.c:282
 msgid "XRUN occurred - check your JACK configuration"
-msgstr ""
+msgstr "XRUN inträffade - kontrollera din konfiguration av JACK"
 
 #: src/audio/engine_jack.c:342
 msgid "JACK has shut down"
@@ -2381,60 +2424,59 @@ msgstr "JACK har stängt ner"
 #. TRANSLATORS: JACK failure messages
 #: src/audio/engine_jack.c:533
 msgid "Overall operation failed"
-msgstr ""
+msgstr "Kunde ej upprätthålla generell operation"
 
 #: src/audio/engine_jack.c:539
 msgid "The operation contained an invalid or unsupported option"
-msgstr ""
+msgstr "Operationen innehöll ett ogiltigt alternativ"
 
 #: src/audio/engine_jack.c:546
 msgid "The desired client name was not unique"
-msgstr ""
+msgstr "Det önskade klientnamnet var inte unikt"
 
 #: src/audio/engine_jack.c:552
 msgid "Unable to connect to the JACK server"
-msgstr ""
+msgstr "Kunde ej ansluta till JACK-servern"
 
 #: src/audio/engine_jack.c:558
 msgid "Communication error with the JACK server"
-msgstr ""
+msgstr "Kommunikationsfel med JACK-servern"
 
 #: src/audio/engine_jack.c:564
 msgid "Requested client does not exist"
-msgstr ""
+msgstr "Den förfrågade klienten existerar ej"
 
 #: src/audio/engine_jack.c:570
 msgid "Unable to load internal client"
-msgstr ""
+msgstr "Kunde ej ladda den interna klienten"
 
 #: src/audio/engine_jack.c:576
 msgid "Unable to initialize client"
-msgstr ""
+msgstr "Kunde inte initiera klienten"
 
 #: src/audio/engine_jack.c:582
 msgid "Unable to access shared memory"
-msgstr ""
+msgstr "Ingen tillgång till delat minne"
 
 #: src/audio/engine_jack.c:588
 msgid "Client's protocol version does not match"
-msgstr ""
+msgstr "Klientens protokollversion matchar inte"
 
 #: src/audio/engine_jack.c:592
 msgid "Backend error"
-msgstr ""
+msgstr "Backend-fel"
 
 #: src/audio/engine_jack.c:596
 msgid "Client zombie"
-msgstr ""
+msgstr "Klientzombie"
 
 #: src/actions/port_action.c:123
 msgid "Set control value"
-msgstr ""
+msgstr "Sätt kontrollvärdet"
 
 #: src/actions/arranger_selections.c:2246
-#, fuzzy
 msgid "Edit arranger object(s)"
-msgstr "Skapa objekt"
+msgstr "Redigera kompositör-objekt"
 
 #: src/actions/create_plugins_action.c:178
 #, c-format
@@ -2457,19 +2499,19 @@ msgstr "Ta bort %d spår"
 
 #: src/actions/midi_mapping_action.c:211
 msgid "MIDI mapping enable"
-msgstr ""
+msgstr "Aktivera MIDI-kartering"
 
 #: src/actions/midi_mapping_action.c:214
 msgid "MIDI mapping disable"
-msgstr ""
+msgstr "Inaktivera MIDI-kartering"
 
 #: src/actions/midi_mapping_action.c:217
 msgid "MIDI mapping bind"
-msgstr ""
+msgstr "MIDI-kartering koppla"
 
 #: src/actions/midi_mapping_action.c:220
 msgid "MIDI mapping unbind"
-msgstr ""
+msgstr "MIDI-kartering koppla ur"
 
 #: src/actions/actions.c:363
 #, c-format
@@ -2477,12 +2519,16 @@ msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
 "your %s installation."
 msgstr ""
+"Skript-utbyggbarhet med <a href=\"%s\">GNU Guile</a> är inte aktiverat i din "
+"%s installation."
 
 #: src/actions/actions.c:633
 #, c-format
 msgid ""
 "Creating new projects is disabled. Please restart %s to start a new project"
 msgstr ""
+"Skapandet av nya projekt är inaktiverat. Var god starta om %s för att "
+"påbörja ett nytt projekt"
 
 #: src/actions/actions.c:647 resources/gtk/help-overlay.ui:103
 #: resources/ui/project_assistant.ui:86
@@ -2491,23 +2537,25 @@ msgstr "Skapa nytt projekt"
 
 #: src/actions/actions.c:650
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: src/actions/actions.c:652
 msgid "No"
-msgstr ""
+msgstr "Nej"
 
 #: src/actions/actions.c:657
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
+"Förändringar i projektet som inte redan sparats kommer att gå förlorade. "
+"Vill du fortsätta?"
 
 #: src/actions/actions.c:709
 msgid "Loading is disabled in the trial version"
-msgstr ""
+msgstr "Det går inte att ladda i testversionen"
 
 #: src/actions/actions.c:737 src/actions/actions.c:763
 msgid "Saving is disabled in the trial version"
-msgstr ""
+msgstr "Det går inte att spara i testversionen"
 
 #: src/actions/actions.c:775
 msgid "Save Project"
@@ -2515,15 +2563,15 @@ msgstr "Spara projekt"
 
 #: src/actions/actions.c:860
 msgid "Export routing graph"
-msgstr ""
+msgstr "Exportera kopplingsgraf"
 
 #: src/actions/actions.c:862
 msgid "Image (PNG)"
-msgstr ""
+msgstr "Bild (PNG)"
 
 #: src/actions/actions.c:863
 msgid "Dot graph"
-msgstr ""
+msgstr "Punktgraf"
 
 #: src/actions/actions.c:871
 #, c-format
@@ -2531,25 +2579,25 @@ msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
 "Please select a format to export as"
 msgstr ""
+"Grafen kommer att exporteras till <a href=\"%s\">%s</a>\n"
+"Var god välj ett format att exportera med"
 
 #: src/actions/actions.c:921
 msgid "Graph exported"
-msgstr ""
+msgstr "Graf exporterad"
 
 #: src/actions/actions.c:1108 src/actions/actions.c:1148
 #: src/actions/actions.c:1187 src/actions/actions.c:1227
-#, fuzzy
 msgid "Can't paste selections"
-msgstr "Loopmarkering"
+msgstr "Kan inte klistra in markeringar"
 
 #: src/actions/actions.c:1899
-#, fuzzy
 msgid "No regions selected"
-msgstr "Inget objekt är valt"
+msgstr "Inga regioner är valda"
 
 #: src/actions/actions.c:1907
 msgid "Selections must be on the same lane"
-msgstr ""
+msgstr "Markeringar måste vara på samma bana"
 
 #: src/actions/copy_plugins_action.c:288
 #, c-format
@@ -2563,32 +2611,31 @@ msgstr "Kopiera %d plugin"
 
 #: src/actions/port_connection_action.c:140
 msgid "Connect ports"
-msgstr ""
+msgstr "Koppla portar"
 
 #: src/actions/port_connection_action.c:143
 msgid "Disconnect ports"
-msgstr ""
+msgstr "Koppla ur portar"
 
 #: src/actions/port_connection_action.c:146
 msgid "Enable port connection"
-msgstr ""
+msgstr "Aktivera portkoppling"
 
 #: src/actions/port_connection_action.c:149
 msgid "Disable port connection"
-msgstr ""
+msgstr "Inaktivera portkoppling"
 
 #: src/actions/port_connection_action.c:152
 msgid "Change port connection"
-msgstr ""
+msgstr "Ändra portkoppling"
 
 #: src/actions/transport_action.c:131
-#, fuzzy
 msgid "Change BPM"
-msgstr "Ändra panorering"
+msgstr "Ändra BPM"
 
 #: src/actions/channel_send_action.c:194
 msgid "Channel send connection"
-msgstr ""
+msgstr "Koppling av kanalens sändning"
 
 #: src/actions/move_plugins_action.c:258
 #, c-format
@@ -2601,14 +2648,12 @@ msgid "Move %d Plugins"
 msgstr "Flytta %d plugin"
 
 #: src/actions/range_action.c:611 resources/ui/range_action_buttons.ui:36
-#, fuzzy
 msgid "Insert silence"
-msgstr "Inlägg"
+msgstr "Infoga tystnad"
 
 #: src/actions/range_action.c:614
-#, fuzzy
 msgid "Delete range"
-msgstr "Ta bort spår"
+msgstr "Ta bort intervall"
 
 #: src/actions/edit_tracks_action.c:460
 msgid "Solo Track"
@@ -2635,24 +2680,20 @@ msgid "Change Pan"
 msgstr "Ändra panorering"
 
 #: src/actions/edit_tracks_action.c:479
-#, fuzzy
 msgid "Change direct out"
-msgstr "Ändra fadern"
+msgstr "Ändra direkt ut"
 
 #: src/actions/edit_tracks_action.c:482
-#, fuzzy
 msgid "Rename track"
-msgstr "Avtysta spåret"
+msgstr "Byt spårets namn"
 
 #: src/actions/edit_tracks_action.c:485
-#, fuzzy
 msgid "Change color"
-msgstr "Ändra fadern"
+msgstr "Ändra färg"
 
 #: src/actions/edit_tracks_action.c:488
-#, fuzzy
 msgid "Change icon"
-msgstr "Ändra panorering"
+msgstr "Ändra ikon"
 
 #: src/actions/move_tracks_action.c:144
 msgid "Move Track"
@@ -2865,13 +2906,12 @@ msgid "Language"
 msgstr "Språk"
 
 #: resources/ui/first_run_assistant.ui:111
-#, fuzzy
 msgid ""
 "Next, choose the location to use for saving temporary files and projects (or "
 "accept the default)"
 msgstr ""
-"Välj den sökväg som ska användas för att spara temporära filer och projekt "
-"(eller acceptera standardinställningen)"
+"Välj den sökväg som ska användas för att spara temporära filer och projekt ("
+"eller acceptera standardinställningen)"
 
 #: resources/ui/first_run_assistant.ui:138
 msgid "Resets the path to the default"
@@ -2899,7 +2939,7 @@ msgstr "Testar vald backend"
 
 #: resources/ui/first_run_assistant.ui:248
 msgid "Backends"
-msgstr ""
+msgstr "Backend"
 
 #: resources/ui/bind_cc_dialog.ui:45 resources/ui/create_project_dialog.ui:38
 #: resources/ui/bounce_dialog.ui:51 resources/ui/export_dialog.ui:43
@@ -2909,117 +2949,116 @@ msgstr "Avbryt"
 
 #: resources/ui/bind_cc_dialog.ui:81
 msgid "Press a key or move a knob on your MIDI device"
-msgstr ""
+msgstr "Tryck ned en tangent eller rör en kontroll på din MIDI-enhet"
 
 #: resources/ui/bind_cc_dialog.ui:94
 msgid "Waiting for input..."
-msgstr ""
+msgstr "Väntar på indata..."
 
 #: resources/ui/log_viewer.ui:25
 msgid "Log Level"
-msgstr ""
+msgstr "Loggnivå"
 
 #: resources/ui/log_viewer.ui:75
 msgid "Save As..."
-msgstr ""
+msgstr "Spara som..."
 
 #: resources/ui/scale_selector_window.ui:51
 msgid "Root Key"
-msgstr ""
+msgstr "Grundton"
 
 #: resources/ui/scale_selector_window.ui:80
 #: resources/ui/chord_selector_window.ui:79
 #: resources/ui/chord_selector_window.ui:523
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: resources/ui/scale_selector_window.ui:93
 #: resources/ui/chord_selector_window.ui:92
 #: resources/ui/chord_selector_window.ui:536
 msgid "D♭"
-msgstr ""
+msgstr "D♭"
 
 #: resources/ui/scale_selector_window.ui:106
 #: resources/ui/chord_selector_window.ui:105
 #: resources/ui/chord_selector_window.ui:549
 msgid "D"
-msgstr ""
+msgstr "D"
 
 #: resources/ui/scale_selector_window.ui:119
 #: resources/ui/chord_selector_window.ui:118
 #: resources/ui/chord_selector_window.ui:562
 msgid "E♭"
-msgstr ""
+msgstr "E♭"
 
 #: resources/ui/scale_selector_window.ui:132
 #: resources/ui/chord_selector_window.ui:131
 #: resources/ui/chord_selector_window.ui:575
 msgid "E"
-msgstr ""
+msgstr "E"
 
 #: resources/ui/scale_selector_window.ui:145
 #: resources/ui/chord_selector_window.ui:144
 #: resources/ui/chord_selector_window.ui:588
 msgid "F"
-msgstr ""
+msgstr "F"
 
 #: resources/ui/scale_selector_window.ui:158
 #: resources/ui/chord_selector_window.ui:157
 #: resources/ui/chord_selector_window.ui:601
 msgid "F♯"
-msgstr ""
+msgstr "F♯"
 
 #: resources/ui/scale_selector_window.ui:171
 #: resources/ui/chord_selector_window.ui:170
 #: resources/ui/chord_selector_window.ui:614
 msgid "G"
-msgstr ""
+msgstr "G"
 
 #: resources/ui/scale_selector_window.ui:184
 #: resources/ui/chord_selector_window.ui:183
 #: resources/ui/chord_selector_window.ui:627
 msgid "A♭"
-msgstr ""
+msgstr "A♭"
 
 #: resources/ui/scale_selector_window.ui:197
 #: resources/ui/chord_selector_window.ui:196
 #: resources/ui/chord_selector_window.ui:640
 msgid "A"
-msgstr ""
+msgstr "A"
 
 #: resources/ui/scale_selector_window.ui:210
 #: resources/ui/chord_selector_window.ui:209
 #: resources/ui/chord_selector_window.ui:653
 msgid "B♭"
-msgstr ""
+msgstr "B♭"
 
 #: resources/ui/scale_selector_window.ui:223
 #: resources/ui/chord_selector_window.ui:222
 #: resources/ui/chord_selector_window.ui:666
 msgid "B"
-msgstr ""
+msgstr "B"
 
 #: resources/ui/scale_selector_window.ui:267
 msgid "Chromatic"
-msgstr ""
+msgstr "Kromatisk"
 
 #: resources/ui/scale_selector_window.ui:280
 msgid "Ionian (Major)"
-msgstr ""
+msgstr "Jonisk (dur)"
 
 #: resources/ui/scale_selector_window.ui:293
 msgid "Aeolian (Natural Minor)"
-msgstr ""
+msgstr "Eolisk (moll)"
 
 #: resources/ui/scale_selector_window.ui:306
 msgid "Harmonic Minor"
-msgstr ""
+msgstr "Harmonisk moll"
 
 #: resources/ui/scale_selector_window.ui:342
 #: resources/ui/chord_selector_window.ui:747
-#, fuzzy
 msgid "Creator"
-msgstr "Skapa %s"
+msgstr "Skapare"
 
 #: resources/ui/scale_selector_window.ui:358
 #: resources/ui/chord_selector_window.ui:877
@@ -3032,27 +3071,24 @@ msgid "Custom"
 msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:66
-#, fuzzy
 msgid "Editor view"
-msgstr "Editor"
+msgstr "Redigeringsvy"
 
 #: resources/ui/bot_dock_edge.ui:82
 msgid "Editor"
 msgstr "Redigerare"
 
 #: resources/ui/bot_dock_edge.ui:105
-#, fuzzy
 msgid "Mixer view"
-msgstr "Mixerpanelen"
+msgstr "Mixervy"
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Mixer"
 msgstr "Mixer"
 
 #: resources/ui/bot_dock_edge.ui:183
-#, fuzzy
 msgid "Chord pad"
-msgstr "Ackorddynan"
+msgstr "Ackordplatta"
 
 #: resources/ui/bot_dock_edge.ui:199
 msgid "Chord Pad"
@@ -3060,53 +3096,48 @@ msgstr "Ackorddyna"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
-msgstr ""
+msgstr "Fiskskål"
 
 #: resources/ui/timeline_toolbar.ui:68
 #: build/data/org.zrythm.Zrythm.gschema.xml:264
 msgid "Musical mode"
-msgstr ""
+msgstr "Modus"
 
 #: resources/ui/timeline_toolbar.ui:98
-#, fuzzy
 msgid "Merge selections"
-msgstr "Markeringar"
+msgstr "Slå ihop markeringar"
 
 #: resources/ui/timeline_toolbar.ui:121 resources/ui/editor_toolbar.ui:119
-#, fuzzy
 msgid "Toggle event viewer"
-msgstr "Aktivera/Inaktivera vänster panel"
+msgstr "Aktivera/Inaktivera eventvisaren"
 
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
 msgstr "Välj projekt"
 
 #: resources/ui/project_assistant.ui:43
-#, fuzzy
 msgid "Select a project"
-msgstr "Välj projekt"
+msgstr "Välj ett projekt"
 
 #: resources/ui/project_assistant.ui:106
 msgid "Removes selected project from the list"
 msgstr "Tar bort det valda projektet från listan"
 
 #: resources/ui/project_assistant.ui:130
-#, fuzzy
 msgid "Select a template"
-msgstr "Välj en mapp"
+msgstr "Välj en mall"
 
 #: resources/ui/chord_selector_window.ui:52
 msgid "Root Note"
-msgstr ""
+msgstr "Grundton"
 
 #: resources/ui/chord_selector_window.ui:265
 msgid "maj"
 msgstr ""
 
 #: resources/ui/chord_selector_window.ui:278
-#, fuzzy
 msgid "min"
-msgstr "Zooma"
+msgstr "min"
 
 #: resources/ui/chord_selector_window.ui:291
 msgid "dim"
@@ -3126,7 +3157,7 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:347
 msgid "Accent"
-msgstr ""
+msgstr "Accent"
 
 #: resources/ui/chord_selector_window.ui:375
 msgid "7"
@@ -3169,9 +3200,8 @@ msgid "Bass Note"
 msgstr ""
 
 #: resources/ui/chord_selector_window.ui:717
-#, fuzzy
 msgid "In scale"
-msgstr "Tvinga skala"
+msgstr "I skala"
 
 #: resources/ui/chord_selector_window.ui:768
 msgid "I"
@@ -3203,7 +3233,7 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:866
 msgid "Diatonic"
-msgstr ""
+msgstr "Diatonisk"
 
 #: resources/ui/chord_selector_window.ui:898
 msgid "TODO"
@@ -3211,20 +3241,19 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:908
 msgid "Circle of Fifths"
-msgstr ""
+msgstr "Kvintcirkeln"
 
 #: resources/ui/create_project_dialog.ui:70
 msgid "Parent directory"
-msgstr ""
+msgstr "Förälderkatalog"
 
 #: resources/ui/create_project_dialog.ui:83
 msgid "Select parent directory to save the project in"
-msgstr ""
+msgstr "Välj en förälderkatalog att spara projektet i"
 
 #: resources/ui/active_hardware_popover.ui:37
-#, fuzzy
 msgid "Ports found"
-msgstr "Portinfo"
+msgstr "Upptäckta portar"
 
 #: resources/ui/active_hardware_popover.ui:79
 msgid "Rescan"
@@ -3237,17 +3266,17 @@ msgstr "Skanna ytterligare efter MIDI-kontroller"
 #: resources/ui/midi_editor_space.ui:135 resources/ui/chord_editor_space.ui:154
 #: resources/ui/automation_editor_space.ui:116
 msgid "Pitch Wheel"
-msgstr ""
+msgstr "Tonhjul"
 
 #: resources/ui/midi_editor_space.ui:136 resources/ui/chord_editor_space.ui:155
 #: resources/ui/automation_editor_space.ui:117
 msgid "Mod Wheel"
-msgstr ""
+msgstr "Modhjul"
 
 #: resources/ui/midi_editor_space.ui:137 resources/ui/chord_editor_space.ui:156
 #: resources/ui/automation_editor_space.ui:118
 msgid "Aftertouch"
-msgstr ""
+msgstr "Eftertouch"
 
 #: resources/ui/automatable_selector.ui:104
 #: resources/ui/arranger_object_info_dialog.ui:89
@@ -3261,12 +3290,11 @@ msgstr "Etikett"
 
 #: resources/ui/help_toolbar.ui:58
 msgid "News"
-msgstr ""
+msgstr "Nyheter"
 
 #: resources/ui/modulator_inner.ui:20
-#, fuzzy
 msgid "Show/hide UI"
-msgstr "Visa UI"
+msgstr "Visa/dölj UI"
 
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
@@ -3274,19 +3302,19 @@ msgstr "Tvinga skala"
 
 #: resources/ui/arranger_object_info_dialog.ui:100
 msgid "Owner"
-msgstr ""
+msgstr "Ägare"
 
 #: resources/ui/arranger_object_info_dialog.ui:178
 msgid "Arranger Object Info"
-msgstr ""
+msgstr "Kompositörsobjekt-info"
 
 #: resources/ui/scripting_window.ui:50
 msgid "Execute"
-msgstr ""
+msgstr "Utför"
 
 #: resources/ui/scripting_window.ui:90
 msgid "The result will be printed here"
-msgstr ""
+msgstr "Resultatet kommer att skrivas ut här"
 
 #: resources/ui/chord_key.ui:12
 msgid "Amin 7"
@@ -3319,48 +3347,43 @@ msgstr "Tystad"
 
 #: resources/ui/port_info_dialog.ui:100
 msgid "Full designation"
-msgstr ""
+msgstr "Hel benämning"
 
 #: resources/ui/port_info_dialog.ui:114
-#, fuzzy
 msgid "Range"
-msgstr "Tidsintervall"
+msgstr "Intervall"
 
 #: resources/ui/port_info_dialog.ui:128
 msgid "Flags"
-msgstr ""
+msgstr "Flaggor"
 
 #: resources/ui/port_info_dialog.ui:197
 msgid "Default value"
-msgstr ""
+msgstr "Standardvärde"
 
 #: resources/ui/port_info_dialog.ui:222
 msgid "Current value"
-msgstr ""
+msgstr "Nuvarande värde"
 
 #: resources/ui/port_info_dialog.ui:268
-#, fuzzy
 msgid "Port Info"
-msgstr "Spår-info"
+msgstr "Port-info"
 
 #: resources/ui/track_lane.ui:34
 msgid "Lane 1"
 msgstr "Bana 1"
 
 #: resources/ui/export_midi_file_dialog.ui:36
-#, fuzzy
 msgid "Select MIDI file"
-msgstr "Välj en mapp"
+msgstr "Välj en MIDI-fil"
 
 #: resources/ui/export_midi_file_dialog.ui:69
-#, fuzzy
 msgid "_Export"
 msgstr "Exportera"
 
 #: resources/ui/export_midi_file_dialog.ui:104
-#, fuzzy
 msgid "Region content"
-msgstr "Region"
+msgstr "Regionens innehåll"
 
 #: resources/ui/export_midi_file_dialog.ui:116
 msgid ""
@@ -3368,30 +3391,30 @@ msgid ""
 "points), or \"Full region\" to save the whole region as Zrythm would play it "
 "(traversing loops)."
 msgstr ""
+"Välj \"Basregionen\" för att spara originalregionen (utan loopar/"
+"klippstartpunkter), eller \"Hela regionen\" för att spara hela regionen så "
+"som Zrythm skulle spela den (korsande loopar)."
 
 #: resources/ui/export_midi_file_dialog.ui:120
 msgid "Base region"
-msgstr ""
+msgstr "Basregionen"
 
 #: resources/ui/export_midi_file_dialog.ui:121
 msgid "Full region"
-msgstr ""
+msgstr "Hela regionen"
 
 #: resources/ui/export_midi_file_dialog.ui:145
 #: resources/ui/export_midi_file_dialog.ui:157
-#, fuzzy
 msgid "MIDI format"
-msgstr "MIDI-utgångar"
+msgstr "MIDI-format"
 
 #: resources/ui/export_midi_file_dialog.ui:161
-#, fuzzy
 msgid "Format 0"
-msgstr "Format"
+msgstr "Format 0"
 
 #: resources/ui/export_midi_file_dialog.ui:162
-#, fuzzy
 msgid "Format 1"
-msgstr "Format"
+msgstr "Format 1"
 
 #: resources/ui/modulator_view.ui:53 resources/ui/clip_editor_inner.ui:53
 msgid "Track name"
@@ -3418,9 +3441,8 @@ msgid "Port"
 msgstr "Port"
 
 #: resources/ui/header.ui:74
-#, fuzzy
 msgid "Edit"
-msgstr "Editor"
+msgstr "Redigera"
 
 #: resources/ui/header.ui:111
 msgid "View"
@@ -3436,19 +3458,19 @@ msgstr "Projektets namn"
 
 #: resources/ui/header.ui:225
 msgid "MIDI in activity"
-msgstr ""
+msgstr "Aktivitet i MIDI-in"
 
 #: resources/ui/fader_buttons.ui:120
 msgid "Listen"
-msgstr ""
+msgstr "Lyssna"
 
 #: resources/ui/fader_buttons.ui:141
 msgid "Channel settings"
-msgstr ""
+msgstr "Kanalinställningar"
 
 #: resources/ui/transport_controls.ui:33
 msgid "Return to cue point on stop"
-msgstr ""
+msgstr "Återvänd till spelhuvudets startpunkt vid stopp"
 
 #: resources/ui/transport_controls.ui:55
 msgid "Play"
@@ -3479,35 +3501,32 @@ msgid "Initializing..."
 msgstr "Initierar..."
 
 #: resources/ui/export_progress_dialog.ui:25
-#, fuzzy
 msgid "Open Directory"
-msgstr "Öppna projekt"
+msgstr "Öppna katalog"
 
 #: resources/ui/export_progress_dialog.ui:28
 msgid "Opens the containing directory"
-msgstr ""
+msgstr "Öppnar katalogen inuti"
 
 #: resources/ui/export_progress_dialog.ui:69
-#, fuzzy
 msgid "Exporting..."
-msgstr "Exportera som..."
+msgstr "Export..."
 
 #: resources/ui/event_viewer.ui:13
 msgid "Event Viewer"
-msgstr ""
+msgstr "Eventvisaren"
 
 #: resources/ui/automation_track.ui:31
 msgid "Control this automation track is for"
-msgstr ""
+msgstr "Kontroll detta automationsspår är ämnat åt"
 
 #: resources/ui/automation_track.ui:43
-#, fuzzy
 msgid "Mute automation track"
-msgstr "Skriv automation"
+msgstr "Tysta automationsspår"
 
 #: resources/ui/automation_track.ui:83
 msgid "RW"
-msgstr ""
+msgstr "SL"
 
 #: resources/ui/automation_track.ui:87
 msgid "Write automation"
@@ -3522,66 +3541,60 @@ msgid "0.0"
 msgstr ""
 
 #: resources/ui/automation_track.ui:143
-#, fuzzy
 msgid "Remove automation track"
-msgstr "Läs automation"
+msgstr "Ta bort automationsspår"
 
 #: resources/ui/automation_track.ui:164
-#, fuzzy
 msgid "Add automation track"
-msgstr "Läs automation"
+msgstr "Lägg till automationsspår"
 
 #: resources/ui/bounce_dialog.ui:32
 msgid "Bounce Options"
-msgstr ""
+msgstr "Studsinställningar"
 
 #: resources/ui/bounce_dialog.ui:65
 msgid "Bounce"
-msgstr ""
+msgstr "Studsa"
 
 #: resources/ui/bounce_dialog.ui:91
 msgid "Bounce with effect chain"
-msgstr ""
+msgstr "Studsa med effektkedja"
 
 #: resources/ui/bounce_dialog.ui:107
 msgid "Tail"
-msgstr ""
+msgstr "Svans"
 
 #: resources/ui/bounce_dialog.ui:133
 msgid "ms"
-msgstr ""
+msgstr "ms"
 
 #: resources/ui/quantize_dialog.ui:7
-#, fuzzy
 msgid "Quantize Options"
-msgstr "Kvantisering"
+msgstr "Inställningar för kvantisering"
 
 #: resources/ui/quantize_dialog.ui:23
-#, fuzzy
 msgid "_Quantize"
 msgstr "Kvantisera"
 
 #: resources/ui/quantize_dialog.ui:77
-#, fuzzy
 msgid "Quantize to"
-msgstr "Kvantisera"
+msgstr "Kvantisera till"
 
 #: resources/ui/quantize_dialog.ui:132
 msgid "Adjust"
-msgstr ""
+msgstr "Justera"
 
 #: resources/ui/quantize_dialog.ui:183
 msgid "Amount"
-msgstr ""
+msgstr "Mängd"
 
 #: resources/ui/quantize_dialog.ui:223
 msgid "Swing"
-msgstr ""
+msgstr "Swing"
 
 #: resources/ui/quantize_dialog.ui:251
-#, fuzzy
 msgid "Randomization"
-msgstr "Läs automation"
+msgstr "Randomisering"
 
 #: resources/ui/export_dialog.ui:27
 msgid "Export As..."
@@ -3593,7 +3606,7 @@ msgstr "Exportera"
 
 #: resources/ui/export_dialog.ui:80
 msgid "Details"
-msgstr ""
+msgstr "Detaljer"
 
 #: resources/ui/export_dialog.ui:103
 msgid ""
@@ -3624,7 +3637,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:197
 msgid "Stems"
-msgstr ""
+msgstr "Stammar"
 
 #: resources/ui/export_dialog.ui:224
 msgid "Song"
@@ -3651,7 +3664,7 @@ msgstr "Genre"
 
 #: resources/ui/export_dialog.ui:336
 msgid "Electronic"
-msgstr ""
+msgstr "Elektronisk"
 
 #: resources/ui/export_dialog.ui:345
 #: build/data/org.zrythm.Zrythm.gschema.xml:384
@@ -3669,25 +3682,23 @@ msgstr "Filnamnsmönster"
 
 #: resources/ui/export_dialog.ui:464
 msgid "~"
-msgstr ""
+msgstr "~"
 
 #: resources/ui/main_window.ui:120
 msgid "This is an app-notification. Click the button to dismiss"
 msgstr "Detta är en app-notis. Klicka för att avfärda."
 
 #: resources/ui/clip_editor.ui:30
-#, fuzzy
 msgid "No clip selected"
-msgstr "Inget objekt är valt"
+msgstr "Inget klipp är valt"
 
 #: resources/ui/quantize_box.ui:61
 msgid "Full Quantize..."
 msgstr "Fullständigt kvantisera…"
 
 #: resources/ui/snap_grid_popover.ui:122 resources/ui/snap_grid_popover.ui:244
-#, fuzzy
 msgid "Note length"
-msgstr "Notlängd att snäppa till"
+msgstr "Notlängd"
 
 #: resources/ui/snap_grid_popover.ui:142 resources/ui/snap_grid_popover.ui:264
 msgid "t"
@@ -3695,21 +3706,19 @@ msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:146 resources/ui/snap_grid_popover.ui:268
 msgid "Triplet"
-msgstr ""
+msgstr "Triplett"
 
 #: resources/ui/snap_grid_popover.ui:162 resources/ui/snap_grid_popover.ui:284
 msgid "Dotted"
-msgstr ""
+msgstr "Prickad"
 
 #: resources/ui/snap_grid_popover.ui:188 resources/ui/snap_grid_popover.ui:310
-#, fuzzy
 msgid "Adaptive"
-msgstr "Adaptivt rutnät"
+msgstr "Adaptiv"
 
 #: resources/ui/snap_grid_popover.ui:192 resources/ui/snap_grid_popover.ui:314
-#, fuzzy
 msgid "Adaptive length"
-msgstr "Adaptivt rutnät"
+msgstr "Adaptiv längd"
 
 #: resources/ui/snap_grid_popover.ui:209
 msgid "Snap"
@@ -3717,28 +3726,27 @@ msgstr "Snäpp"
 
 #: resources/ui/snap_grid_popover.ui:325
 msgid "Link"
-msgstr ""
+msgstr "Länka"
 
 #: resources/ui/range_action_buttons.ui:58
-#, fuzzy
 msgid "Remove range"
-msgstr "Ta bort"
+msgstr "Ta bort intervall"
 
 #: resources/ui/editor_toolbar.ui:138
 msgid "Flip"
-msgstr ""
+msgstr "Vänd"
 
 #: resources/ui/editor_toolbar.ui:140
 msgid "Horizontal"
-msgstr ""
+msgstr "Horisontellt"
 
 #: resources/ui/editor_toolbar.ui:146
 msgid "Vertical"
-msgstr ""
+msgstr "Vertikalt"
 
 #: resources/ui/preferences.ui:134
 msgid "The audio backend to connect to"
-msgstr ""
+msgstr "Ljud-backend att ansluta till"
 
 #: resources/ui/preferences.ui:147
 msgid "MIDI Controllers"
@@ -3746,7 +3754,7 @@ msgstr "MIDI-kontroller"
 
 #: resources/ui/preferences.ui:180
 msgid "The MIDI backend to connect to"
-msgstr ""
+msgstr "MIDI-backend att ansluta till"
 
 #: resources/ui/preferences.ui:191
 msgid "Pan Algorithm"
@@ -3758,32 +3766,32 @@ msgstr ""
 
 #: resources/ui/preferences.ui:211
 msgid "The pan algorithm to use"
-msgstr ""
+msgstr "Panoreringsalgoritmen som ska användas"
 
 #: resources/ui/preferences.ui:222
 msgid "The pan law to use"
 msgstr ""
 
 #: resources/ui/preferences.ui:234 build/data/org.zrythm.Zrythm.gschema.xml:546
-#, fuzzy
 msgid "Zrythm path"
-msgstr "Zrythm"
+msgstr "Zrythms sökväg"
 
 #: resources/ui/preferences.ui:245
 msgid "The global Zrythm working path for non-project related files"
 msgstr ""
+"Den globala sökvägen för Zrythms arbetsyta för icke-projektrelaterade filer"
 
 #: resources/ui/preferences.ui:266
 msgid "Device Name"
-msgstr ""
+msgstr "Enhetens namn"
 
 #: resources/ui/preferences.ui:301
 msgid "Buffer Size"
-msgstr ""
+msgstr "Buffertstorlek"
 
 #: resources/ui/preferences.ui:325 build/data/org.zrythm.Zrythm.gschema.xml:512
 msgid "Samplerate"
-msgstr ""
+msgstr "Samplingsfrekvens"
 
 #: resources/ui/preferences.ui:390
 msgid "Always open plugin UIs"
@@ -3791,7 +3799,7 @@ msgstr "Öppna alltid UI:n för plugin"
 
 #: resources/ui/preferences.ui:394
 msgid "Always show the plugin UI when instantiating a plugin"
-msgstr ""
+msgstr "Visa alltid plugin-UI:t vid instansning av plugin"
 
 #: resources/ui/preferences.ui:406
 msgid "Keep plugin UIs on top"
@@ -3841,14 +3849,12 @@ msgstr ""
 
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:16
-#, fuzzy
 msgid "zrythm"
-msgstr "Zrythm"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:205
-#, fuzzy
 msgid "Recent project list"
-msgstr "Öppna ett projekt"
+msgstr "Nyligen öppnade projekt"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:206
 msgid "A list of recent projects to be referenced on startup."
@@ -3918,19 +3924,16 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:249
-#, fuzzy
 msgid "Editor object length"
-msgstr "Inget objekt är valt"
+msgstr "Redigeringsobjektets längd"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:254
-#, fuzzy
 msgid "Editor object length type"
-msgstr "Inget objekt är valt"
+msgstr "Redigeringsobjektets längdtyp"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:259
-#, fuzzy
 msgid "Note notation"
-msgstr "Skriv automation"
+msgstr "Notation för noter"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:260
 msgid ""
@@ -3954,18 +3957,16 @@ msgid "Whether to listen to MIDI notes while dragging them in the piano roll."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:274
-#, fuzzy
 msgid "Piano roll highlight"
-msgstr "Pianorullepanelen"
+msgstr "Pianorulle högmarkering"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:275
 msgid "Whether to highlight chords, scales, both or none in the piano roll."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:279
-#, fuzzy
 msgid "Piano roll MIDI modifier"
-msgstr "Pianorullepanelen"
+msgstr "Pianorullens MIDI-modifierare"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:280
 msgid ""
@@ -4006,18 +4007,16 @@ msgid "Position of the resize handle of the bot panel."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:304
-#, fuzzy
 msgid "Plugin browser tab"
-msgstr "Pluginutforskare"
+msgstr "Pluginutforskarfliken"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:305
 msgid "Selected plugin browser tab."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:309
-#, fuzzy
 msgid "Plugin browser filter"
-msgstr "Pluginutforskare"
+msgstr "Pluginutforskarfilter"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:310
 msgid "Selected plugin browser filter"
@@ -4048,9 +4047,8 @@ msgid "The monitor out volume in amplitude (0 to 2)."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:330
-#, fuzzy
 msgid "Plugin favorites"
-msgstr "Plugin"
+msgstr "Favoritplugin"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:331
 msgid ""
@@ -4075,9 +4073,8 @@ msgid "Selected ruler display type (BBT/time)."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:345
-#, fuzzy
 msgid "Selected editing tool"
-msgstr "Markera-/Töj-verktyget"
+msgstr "Valt redigeringsverktyg"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:346
 msgid "Selected editing tool."
@@ -4102,7 +4099,6 @@ msgid "Artist to use when exporting, if the file type supports it."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:369
-#, fuzzy
 msgid "Time range"
 msgstr "Tidsintervall"
 
@@ -4115,7 +4111,6 @@ msgid "Format to export to."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:379
-#, fuzzy
 msgid "Filename pattern"
 msgstr "Filnamnsmönster"
 
@@ -4128,9 +4123,8 @@ msgid "Add dither while exporting, if applicable."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:389
-#, fuzzy
 msgid "Export stems"
-msgstr "Exportera som"
+msgstr "Exportera stammar"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:390
 msgid "Whether to export stems instead of the mixdown."
@@ -4157,9 +4151,8 @@ msgid "Whether track outputs is expanded."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:413
-#, fuzzy
 msgid "Track sends expanded"
-msgstr "Spårets namn"
+msgstr "Spårsändningar expanderad"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:414
 msgid "Whether track sends is expanded."
@@ -4266,7 +4259,6 @@ msgid "Recording mode."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:497
-#, fuzzy
 msgid "Audio backend"
 msgstr "Ljud-backend"
 
@@ -4283,9 +4275,8 @@ msgid "The name of the RtAudio device to use."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:507
-#, fuzzy
 msgid "SDL device"
-msgstr "MIDI-enheter"
+msgstr "SDL-enhet"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:508
 msgid "The name of the SDL device to use."
@@ -4304,7 +4295,6 @@ msgid "Buffer size to pass to the backend."
 msgstr "Buffertstorlek för att passera till backend."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:522
-#, fuzzy
 msgid "MIDI backend"
 msgstr "MIDI-backend"
 
@@ -4313,16 +4303,14 @@ msgid "The MIDI backend to use."
 msgstr "Välj vilken MIDI-backend som ska användas."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:527
-#, fuzzy
 msgid "Audio inputs"
-msgstr "Ljudutgångar"
+msgstr "Ljudingångar"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:528
 msgid "A list of audio inputs to enable."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:532
-#, fuzzy
 msgid "MIDI controllers"
 msgstr "MIDI-kontroller"
 
@@ -4378,9 +4366,8 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:599
-#, fuzzy
 msgid "VST plugins"
-msgstr "Plugin"
+msgstr "VST-plugin"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:600
 msgid ""
@@ -4389,9 +4376,8 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:604
-#, fuzzy
 msgid "SFZ instruments"
-msgstr "Instrument"
+msgstr "SFZ-instrument"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:605
 msgid ""
@@ -4400,9 +4386,8 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:609
-#, fuzzy
 msgid "SF2 instruments"
-msgstr "Instrument"
+msgstr "SF2-instrument"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:610
 msgid ""
@@ -4411,9 +4396,8 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:623
-#, fuzzy
 msgid "Fade algorithm"
-msgstr "Panoreringsalgoritm"
+msgstr "Fade-algoritm"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:624
 msgid "Default fade algorithm to use for fade in/outs."
@@ -4454,7 +4438,6 @@ msgid "The language to use for the user interface."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:700
-#, fuzzy
 msgid "Pan algorithm"
 msgstr "Panoreringsalgoritm"
 

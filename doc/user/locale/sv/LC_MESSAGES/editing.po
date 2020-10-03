@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"PO-Revision-Date: 2020-10-02 10:41+0000\n"
 "Last-Translator: Felix Paulsson <fpaulsson@protonmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/sv/>\n"
@@ -165,7 +165,7 @@ msgstr ""
 #: ../../editing/clip-editors/piano-roll.rst:118
 #: ../../editing/timeline/event-viewer.rst:8
 msgid "Event Viewer"
-msgstr ""
+msgstr "Eventvisaren"
 
 #: ../../editing/clip-editors/automation-editor.rst:60
 msgid ""
@@ -884,7 +884,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:25
 msgid "Quantize to"
-msgstr ""
+msgstr "Kvantisera till"
 
 #: ../../editing/quantization.rst:26
 msgid "Select the note length and type to quantize to."
@@ -892,7 +892,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:28
 msgid "Adjust"
-msgstr ""
+msgstr "Justera"
 
 #: ../../editing/quantization.rst:28
 msgid ""
@@ -902,7 +902,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:32
 msgid "Amount"
-msgstr ""
+msgstr "Mängd"
 
 #: ../../editing/quantization.rst:31
 msgid ""
@@ -912,7 +912,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:34
 msgid "Swing"
-msgstr ""
+msgstr "Swing"
 
 #: ../../editing/quantization.rst:35
 msgid "Select a swing amount."
@@ -920,7 +920,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:39
 msgid "Randomization"
-msgstr ""
+msgstr "Randomisering"
 
 #: ../../editing/quantization.rst:37
 msgid ""

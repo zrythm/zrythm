@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"PO-Revision-Date: 2020-10-02 10:41+0000\n"
 "Last-Translator: Felix Paulsson <fpaulsson@protonmail.com>\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/sv/>\n"
 "Language: sv\n"
-"Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/sv/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../zrythm-interface/bottom-panel.rst:8
@@ -382,7 +383,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:113
 msgid "Manual"
-msgstr ""
+msgstr "Manual"
 
 #: ../../zrythm-interface/main-toolbar.rst:114
 msgid "View the user manual."
@@ -390,7 +391,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:117
 msgid "News"
-msgstr ""
+msgstr "Nyheter"
 
 #: ../../zrythm-interface/main-toolbar.rst:118
 msgid "Show the latest changelog."
@@ -548,7 +549,7 @@ msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:33
 msgid "Return to cue point on stop"
-msgstr ""
+msgstr "Återvänd till spelhuvudets startpunkt vid stopp"
 
 #: ../../zrythm-interface/transport-bar.rst:34
 msgid "Toggles whether to return to the cue point when playback stops."
@@ -556,7 +557,7 @@ msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:38
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: ../../zrythm-interface/transport-bar.rst:39
 msgid "Song tempo (beats per minute)."
@@ -646,4 +647,3 @@ msgstr ""
 #~ "Shows the preferences dialog. See "
 #~ ":ref:`preferences` for more information."
 #~ msgstr ""
-

@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"PO-Revision-Date: 2020-10-02 10:41+0000\n"
 "Last-Translator: Felix Paulsson <fpaulsson@protonmail.com>\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/sv/>\n"
 "Language: sv\n"
-"Language-Team: Swedish "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/sv/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -143,7 +144,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:35
 msgid "Audio backend"
-msgstr ""
+msgstr "Ljud-backend"
 
 #: ../../configuration/preferences/intro.rst:36
 msgid ""
@@ -153,7 +154,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:41
 msgid "MIDI backend"
-msgstr ""
+msgstr "MIDI-backend"
 
 #: ../../configuration/preferences/intro.rst:42
 msgid ""
@@ -164,7 +165,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:48
 msgid "MIDI controllers"
-msgstr ""
+msgstr "MIDI-kontroller"
 
 #: ../../configuration/preferences/intro.rst:49
 msgid "A list of controllers to auto-connect to."
@@ -172,7 +173,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "Audio inputs"
-msgstr ""
+msgstr "Ljudingångar"
 
 #: ../../configuration/preferences/intro.rst:53
 msgid "A list of audio inputs to auto-connect to."
@@ -188,7 +189,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:61
 msgid "Zrythm path"
-msgstr ""
+msgstr "Zrythms sökväg"
 
 #: ../../configuration/preferences/intro.rst:62
 msgid "The :term:`Zrythm user path`."
@@ -204,7 +205,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:73
 msgid "UIs"
-msgstr ""
+msgstr "UI:n"
 
 #: ../../configuration/preferences/intro.rst:75
 msgid "Plugin UIs."
@@ -258,11 +259,11 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:106
 msgid "Paths"
-msgstr ""
+msgstr "Sökvägar"
 
 #: ../../configuration/preferences/intro.rst:109
 msgid "VST plugins"
-msgstr ""
+msgstr "VST-plugin"
 
 #: ../../configuration/preferences/intro.rst:110
 msgid "The search paths to scan for :term:`VST2` plugins in."
@@ -276,7 +277,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:118
 msgid "SFZ instruments"
-msgstr ""
+msgstr "SFZ-instrument"
 
 #: ../../configuration/preferences/intro.rst:119
 msgid "The search paths to scan for :term:`SFZ` instruments in."
@@ -284,7 +285,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:123
 msgid "SF2 instruments"
-msgstr ""
+msgstr "SF2-instrument"
 
 #: ../../configuration/preferences/intro.rst:124
 msgid "The search paths to scan for :term:`SF2` instruments in."
@@ -292,7 +293,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:128
 msgid "DSP"
-msgstr ""
+msgstr "DSP"
 
 #: ../../configuration/preferences/intro.rst:130
 msgid ":term:`DSP` settings."
@@ -300,7 +301,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:136
 msgid "Pan"
-msgstr ""
+msgstr "Panorera"
 
 #: ../../configuration/preferences/intro.rst:138
 msgid ":term:`Panning` options for :term:`Mono` signals (not used at the moment)."
@@ -308,7 +309,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:141
 msgid "Pan algorithm"
-msgstr ""
+msgstr "Panoreringsalgoritm"
 
 #: ../../configuration/preferences/intro.rst:142
 msgid ""
@@ -349,7 +350,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:177
 msgid "Fade algorithm"
-msgstr ""
+msgstr "Fade-algoritm"
 
 #: ../../configuration/preferences/intro.rst:178
 msgid "Default fade algorithm to use for fade in/outs."
@@ -357,7 +358,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:181
 msgid "Automation"
-msgstr ""
+msgstr "Automation"
 
 #: ../../configuration/preferences/intro.rst:183
 msgid "Automation editing."
@@ -393,7 +394,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:204
 msgid "Projects"
-msgstr ""
+msgstr "Projekt"
 
 #: ../../configuration/preferences/intro.rst:206
 msgid "Project settings."
@@ -425,7 +426,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:225
 msgid "UI"
-msgstr ""
+msgstr "UI"
 
 #: ../../configuration/preferences/intro.rst:227
 msgid "User interface options."
@@ -620,4 +621,3 @@ msgstr ""
 
 #~ msgid "The :term:`pan law` to use when applying pan on mono signals."
 #~ msgstr ""
-

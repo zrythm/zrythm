@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-09-30 22:58+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/theming/"
 "ja/>\n"
@@ -85,9 +85,8 @@ msgid ""
 msgstr "一般的な GTK ウィジェットの CSS ルールの変更に関する多くの情報をオンラインで見つけることができます。"
 
 #: ../../theming/css.rst:38
-#, fuzzy
 msgid "Here are some links by official GNOME sources:"
-msgstr "ここでは、GNOME の公式ソースによるリンクをいくつか紹介します。"
+msgstr "以下は公式GNOMEソースによるリンクです。"
 
 #: ../../theming/css.rst:40
 msgid ""

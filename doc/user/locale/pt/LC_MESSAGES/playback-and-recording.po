@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/pt/>\n"
@@ -208,7 +208,6 @@ msgid "Arming Tracks"
 msgstr "Faixas de Armamento"
 
 #: ../../playback-and-recording/recording.rst:10
-#, fuzzy
 msgid ""
 "Tracks can be armed for recording by clicking the record button, either "
 "inside the track or inside its fader section in the channel or "
@@ -216,11 +215,11 @@ msgid ""
 "recording, they start listening for signals in their :ref:`track-inputs` "
 "and these signals will be passed along in the processing chain."
 msgstr ""
-"As faixas podem ser armadas para gravação clicando no botão de gravação, "
-"seja dentro da faixa ou dentro da sua secção de fader no canal, ou "
-"inspetor de faixa (:ref:`track-inspector`). Quando as faixas são armadas "
-"para gravação, elas começam a ouvir sinais nas suas :ref:`track-inputs` e"
-" esses sinais serão passados adiante na cadeia de processamento."
+"As faixas podem ser armadas para gravação por clicar no botão de gravação, "
+"seja dentro da faixa ou dentro da secção de fader dele no canal, ou inspetor "
+"de faixa (:ref:`track-inspector`). Quando as faixas são armadas para "
+"gravação, começam a ouvir sinais nas :ref:`track-inputs` dela e esses sinais "
+"serão passados adiante na cadeia de processamento."
 
 #: ../../playback-and-recording/recording.rst:19
 #: ../../playback-and-recording/recording.rst:32
@@ -229,7 +228,7 @@ msgstr "Afazer"
 
 #: ../../playback-and-recording/recording.rst:19
 msgid "Add illustration."
-msgstr ""
+msgstr "Adicionar ilustração."
 
 #: ../../playback-and-recording/recording.rst:21
 msgid ""
@@ -255,7 +254,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:32
 msgid "Expand, add illustrations, etc."
-msgstr ""
+msgstr "Expandir, adicionar ilustrações, etc."
 
 #: ../../playback-and-recording/recording.rst:34
 msgid "Any signals received will be recorded inside new regions in the timeline."
@@ -315,7 +314,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:8
 msgid "Transport Controls"
-msgstr "Controles de Transporte"
+msgstr "Controles de transporte"
 
 #: ../../playback-and-recording/transport-controls.rst:10
 msgid "Playback is controlled by the following transport controls."
@@ -323,7 +322,7 @@ msgstr "A reprodução é controlada pelos seguintes controles de transporte."
 
 #: ../../playback-and-recording/transport-controls.rst:16
 msgid "Record"
-msgstr "Registro"
+msgstr "Registo"
 
 #: ../../playback-and-recording/transport-controls.rst:17
 msgid "Arms the project for recording."

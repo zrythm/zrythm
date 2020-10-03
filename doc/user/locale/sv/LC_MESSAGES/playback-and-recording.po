@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"PO-Revision-Date: 2020-10-02 10:41+0000\n"
 "Last-Translator: Felix Paulsson <fpaulsson@protonmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/sv/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:11
 msgid ""
@@ -234,7 +234,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:44
 msgid "Latch"
-msgstr ""
+msgstr "Följ"
 
 #: ../../playback-and-recording/recording.rst:49
 msgid ""
@@ -244,7 +244,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:53
 msgid "Touch"
-msgstr ""
+msgstr "Touch"
 
 #: ../../playback-and-recording/recording.rst:58
 msgid ""

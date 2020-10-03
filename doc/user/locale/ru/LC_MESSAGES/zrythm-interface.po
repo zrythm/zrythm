@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/ru/>\n"
@@ -475,7 +475,7 @@ msgstr "Открывает страницу, чтобы сообщить о но
 
 #: ../../zrythm-interface/main-toolbar.rst:133
 msgid "Additional Controls"
-msgstr "Дополнительные элементы управления"
+msgstr "Дополнительные элементы управления (Additional Controls)"
 
 #: ../../zrythm-interface/main-toolbar.rst:134
 msgid "The main toolbar also contains the following widgets."
@@ -500,12 +500,12 @@ msgid "Log Viewer"
 msgstr "Просмотр логов (Log Viewer)"
 
 #: ../../zrythm-interface/main-toolbar.rst:149
-#, fuzzy
 msgid ""
 "Displays the log, which gets updated real-time. Preferences Shows the "
 "preferences dialog. See :ref:`preferences` for more information."
 msgstr ""
-"Показывает окно \"Настройки\". Смотрите :ref:`preferences` для получения "
+"Показывает лог, который обновляется в реальном времени. Кнопка \"Настройки\" "
+"открывает окно \"Настройки\". Смотрите :ref:`preferences` для получения "
 "дополнительной информации."
 
 #: ../../zrythm-interface/main-toolbar.rst:154
@@ -594,7 +594,7 @@ msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:17
 msgid "Transport Controls"
-msgstr "Элементы управления транспортом"
+msgstr "Элементы управления транспортом (Transport Controls)"
 
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid ""
@@ -1347,4 +1347,3 @@ msgstr ""
 
 #~ msgid "Preferences"
 #~ msgstr "Настройки (Preferences)"
-

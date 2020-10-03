@@ -13,10 +13,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-01 00:33+0100\n"
-"PO-Revision-Date: 2020-09-30 22:58+0000\n"
+"PO-Revision-Date: 2020-10-03 13:24+0000\n"
 "Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -330,9 +330,8 @@ msgid "Failed to open file: %s"
 msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/project.c:186
-#, fuzzy
 msgid "Project not compressed by zstd"
-msgstr "Projet non-compressé par zstd !"
+msgstr "Projet non-compressé par zstd"
 
 #: src/project.c:199
 #, c-format
@@ -521,7 +520,7 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s Copyright (C) 2018-2020 Contributeursà Zrythm\n"
+"%s-%s Copyright (C) 2018-2020 Contributeurs à Zrythm\n"
 "\n"
 "%s est fourni SANS AUCUNE GARANTIE !\n"
 "\n"
@@ -2085,9 +2084,8 @@ msgid "The following files will be created:"
 msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:496
-#, fuzzy
 msgid "in the directory:"
-msgstr "Répertoire parent"
+msgstr "Dans le répertoire:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:653
 msgid "<name>.<format>"
@@ -2370,9 +2368,8 @@ msgid "Prefader Volume"
 msgstr "Volume pré-fader"
 
 #: src/audio/fader.c:123
-#, fuzzy
 msgid "Fader Volume"
-msgstr "Volume"
+msgstr "Fader de Volume"
 
 #: src/audio/fader.c:150
 #, fuzzy
@@ -2380,7 +2377,6 @@ msgid "Prefader Balance"
 msgstr "Envois pré-fader"
 
 #: src/audio/fader.c:150
-#, fuzzy
 msgid "Fader Balance"
 msgstr "Contrôle de la balance"
 
@@ -2397,7 +2393,6 @@ msgid "Ch Pre-Fader in"
 msgstr "Entrée pré-fader"
 
 #: src/audio/fader.c:197
-#, fuzzy
 msgid "Ch Fader in"
 msgstr "Entrée fader"
 
@@ -2491,9 +2486,8 @@ msgid "Client zombie"
 msgstr "Client zombie"
 
 #: src/actions/port_action.c:123
-#, fuzzy
 msgid "Set control value"
-msgstr "Aucun contrôle sélectionné"
+msgstr "Fixe la valeur du contrôle"
 
 #: src/actions/arranger_selections.c:2246
 msgid "Edit arranger object(s)"
@@ -2670,14 +2664,12 @@ msgid "Move %d Plugins"
 msgstr "Déplacer %d Greffons"
 
 #: src/actions/range_action.c:611 resources/ui/range_action_buttons.ui:36
-#, fuzzy
 msgid "Insert silence"
-msgstr "Inserts"
+msgstr "Inserer un silence"
 
 #: src/actions/range_action.c:614
-#, fuzzy
 msgid "Delete range"
-msgstr "Supprimer la piste"
+msgstr "Supprimer l'intervalle"
 
 #: src/actions/edit_tracks_action.c:460
 msgid "Solo Track"
@@ -2709,19 +2701,16 @@ msgid "Change direct out"
 msgstr "Modifier la vélocité"
 
 #: src/actions/edit_tracks_action.c:482
-#, fuzzy
 msgid "Rename track"
-msgstr "Geler la piste"
+msgstr "Renommer la piste"
 
 #: src/actions/edit_tracks_action.c:485
-#, fuzzy
 msgid "Change color"
-msgstr "Modifier l'accord"
+msgstr "Modifier la couleur"
 
 #: src/actions/edit_tracks_action.c:488
-#, fuzzy
 msgid "Change icon"
-msgstr "Changer la panoramique"
+msgstr "Modifier l'icône"
 
 #: src/actions/move_tracks_action.c:144
 msgid "Move Track"
@@ -2916,7 +2905,6 @@ msgid "Setup Zrythm"
 msgstr "Configurer Zrythm"
 
 #: resources/ui/first_run_assistant.ui:52
-#, fuzzy
 msgid ""
 "<b><i>Note: Zrythm is currently in alpha</i></b>\n"
 "\n"
@@ -2924,6 +2912,8 @@ msgid ""
 "This will guide you through the basic setup of Zrythm. First, choose your "
 "language."
 msgstr ""
+"<b><i>Note:Zrythm est actuellement en alpha</i></b>\n"
+"\n"
 "Bienvenue sur Zrythm.\n"
 " Ceci vous guidera pour la configuration de base de Zrythm. Tout d'abord, "
 "choisissez votre langue."
@@ -3099,7 +3089,6 @@ msgid "Custom"
 msgstr "Personnalisé"
 
 #: resources/ui/bot_dock_edge.ui:66
-#, fuzzy
 msgid "Editor view"
 msgstr "Éditeur"
 
@@ -3108,9 +3097,8 @@ msgid "Editor"
 msgstr "Éditeur"
 
 #: resources/ui/bot_dock_edge.ui:105
-#, fuzzy
 msgid "Mixer view"
-msgstr "Panneau du mixeur"
+msgstr "Mixeur"
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Mixer"
@@ -3135,9 +3123,8 @@ msgid "Musical mode"
 msgstr "Mode musical"
 
 #: resources/ui/timeline_toolbar.ui:98
-#, fuzzy
 msgid "Merge selections"
-msgstr "Déselectionner"
+msgstr "Fusionner les sélections"
 
 #: resources/ui/timeline_toolbar.ui:121 resources/ui/editor_toolbar.ui:119
 msgid "Toggle event viewer"
@@ -3284,9 +3271,8 @@ msgid "Select parent directory to save the project in"
 msgstr "Sélectionnez le répertoire parent dans lequel sauvegarder le projet"
 
 #: resources/ui/active_hardware_popover.ui:37
-#, fuzzy
 msgid "Ports found"
-msgstr "Info du port"
+msgstr "Ports détectés"
 
 #: resources/ui/active_hardware_popover.ui:79
 msgid "Rescan"
@@ -3326,9 +3312,8 @@ msgid "News"
 msgstr "Nouveautés"
 
 #: resources/ui/modulator_inner.ui:20
-#, fuzzy
 msgid "Show/hide UI"
-msgstr "Afficher l'interface utilisateur"
+msgstr "Afficher/Masquer l'interface utilisateur"
 
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
@@ -3499,9 +3484,8 @@ msgid "Listen"
 msgstr ""
 
 #: resources/ui/fader_buttons.ui:141
-#, fuzzy
 msgid "Channel settings"
-msgstr "Canal %s"
+msgstr "Paramètres du canal"
 
 #: resources/ui/transport_controls.ui:33
 msgid "Return to cue point on stop"
@@ -3589,7 +3573,6 @@ msgid "Bounce Options"
 msgstr "Options de quantification"
 
 #: resources/ui/bounce_dialog.ui:65
-#, fuzzy
 msgid "Bounce"
 msgstr "Gel audio"
 
@@ -3742,7 +3725,6 @@ msgid "Full Quantize..."
 msgstr "Quantification complète..."
 
 #: resources/ui/snap_grid_popover.ui:122 resources/ui/snap_grid_popover.ui:244
-#, fuzzy
 msgid "Note length"
 msgstr "Longueur de note"
 
@@ -3751,24 +3733,20 @@ msgid "t"
 msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:146 resources/ui/snap_grid_popover.ui:268
-#, fuzzy
 msgid "Triplet"
 msgstr "triolet"
 
 #: resources/ui/snap_grid_popover.ui:162 resources/ui/snap_grid_popover.ui:284
-#, fuzzy
 msgid "Dotted"
 msgstr "pointé"
 
 #: resources/ui/snap_grid_popover.ui:188 resources/ui/snap_grid_popover.ui:310
-#, fuzzy
 msgid "Adaptive"
 msgstr "Grille adaptative"
 
 #: resources/ui/snap_grid_popover.ui:192 resources/ui/snap_grid_popover.ui:314
-#, fuzzy
 msgid "Adaptive length"
-msgstr "Longueur de note"
+msgstr "Longueur adaptative"
 
 #: resources/ui/snap_grid_popover.ui:209
 msgid "Snap"
@@ -3779,9 +3757,8 @@ msgid "Link"
 msgstr ""
 
 #: resources/ui/range_action_buttons.ui:58
-#, fuzzy
 msgid "Remove range"
-msgstr "Plage temporelle"
+msgstr "effacer l'intervalle"
 
 #: resources/ui/editor_toolbar.ui:138
 msgid "Flip"
@@ -3981,7 +3958,6 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:245
 #: build/data/org.zrythm.Zrythm.gschema.xml:255
-#, fuzzy
 msgid ""
 "Default length type to use when creating timelinle objects, eg in edit mode."
 msgstr ""
@@ -3998,7 +3974,6 @@ msgid "Editor object length type"
 msgstr "Aucun objet sélectionné"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:259
-#, fuzzy
 msgid "Note notation"
 msgstr "Basculer sur la notation de note"
 

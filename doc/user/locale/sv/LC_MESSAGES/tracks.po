@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:30+0100\n"
-"PO-Revision-Date: 2020-09-27 02:24+0000\n"
+"PO-Revision-Date: 2020-10-02 10:41+0000\n"
 "Last-Translator: Felix Paulsson <fpaulsson@protonmail.com>\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/sv/>\n"
 "Language: sv\n"
-"Language-Team: Swedish "
-"<https://hosted.weblate.org/projects/zrythm/manualtracks/sv/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -70,7 +71,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:27
 #: ../../tracks/tempo-track.rst:27
 msgid "Solo"
-msgstr ""
+msgstr "Solo"
 
 #: ../../tracks/audio-track.rst:20
 #: ../../tracks/bus-track-audio.rst:20
@@ -262,7 +263,7 @@ msgstr ""
 
 #: ../../tracks/automation.rst:8
 msgid "Automation"
-msgstr ""
+msgstr "Automation"
 
 #: ../../tracks/automation.rst:11
 msgid "Automation Lanes"
@@ -312,7 +313,6 @@ msgstr ""
 #: ../../tracks/midi-track.rst:53
 #: ../../tracks/modulator-track.rst:42
 #: ../../tracks/tempo-track.rst:42
-#, fuzzy
 msgid "Track Name"
 msgstr "Spårets namn"
 
@@ -575,7 +575,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:94
 msgid "Fader"
-msgstr ""
+msgstr "Fader"
 
 #: ../../tracks/inspector-page.rst:95
 msgid "Fader section to control the volume and stereo balance."
@@ -637,7 +637,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:139
 msgid "Listen"
-msgstr ""
+msgstr "Lyssna"
 
 #: ../../tracks/inspector-page.rst:140
 msgid ""
@@ -1070,7 +1070,7 @@ msgstr "Ljud"
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:22
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: ../../tracks/track-types.rst:14
 msgid "Audio regions"
@@ -1089,7 +1089,7 @@ msgstr "Ljudgrupp"
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "No"
-msgstr ""
+msgstr "Nej"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -1206,4 +1206,3 @@ msgstr ""
 #~ "(temporarily converted to audio), which "
 #~ "dramatically lowers their CPU usage."
 #~ msgstr ""
-

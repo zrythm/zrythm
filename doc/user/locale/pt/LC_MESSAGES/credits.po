@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-09 18:46+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "credits/pt/>\n"
@@ -35,10 +35,13 @@ msgid ""
 "distribution. These include developers, graphic artists and other authors"
 " of copyrightable work."
 msgstr ""
+"Veja o ficheiro `AUTORS <https://git.sr.ht/~alextee/zrythm/tree/master/"
+"AUTHORS>`_ na distribuição da fonte. Estes incluem programadores, artistas "
+"gráficos e outros autores de trabalhos sujeitos a direitos autorais."
 
 #: ../../credits/intro.rst:14
 msgid "Translators"
-msgstr ""
+msgstr "Tradutores"
 
 #: ../../credits/intro.rst:15
 msgid ""
@@ -47,10 +50,13 @@ msgid ""
 "source distribution. These include translators of the software, the user "
 "manual and the website."
 msgstr ""
+"Veja o ficheiro `TRANSLATORS <https://git.sr.ht/~alextee/zrythm/tree/master/"
+"TRANSLATORS>`_ na distribuição da fonte. Estes incluem tradutores do "
+"software, do manual do utilizador e do website."
 
 #: ../../credits/intro.rst:20
 msgid "Other Contributors"
-msgstr ""
+msgstr "Outros contribuidores"
 
 #: ../../credits/intro.rst:21
 msgid ""
@@ -58,6 +64,8 @@ msgid ""
 "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in the "
 "source distribution."
 msgstr ""
+"Veja o ficheiro `THANKS <https://git.sr.ht/~alextee/zrythm/tree/master/"
+"TRANSLATORS>`_ na distribuição da fonte."
 
 #~ msgid "Portuguese:"
 #~ msgstr ""
