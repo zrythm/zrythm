@@ -196,7 +196,7 @@ set_port_value (
     lv2_port_get_by_symbol (plugin, port_symbol);
   if (!port)
     {
-      g_critical (
+      g_warning (
         "Preset port %s is missing", port_symbol);
       return;
   }
