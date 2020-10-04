@@ -1477,11 +1477,9 @@ process_events (void * data)
                   chord_key_widget_refresh (
                     MW_CHORD_EDITOR_SPACE->
                       chord_keys[j]);
-                  break;
                 }
-              chord_pad_widget_refresh (
-                MW_CHORD_PAD);
             }
+          chord_pad_widget_refresh (MW_CHORD_PAD);
           break;
         case ET_JACK_TRANSPORT_TYPE_CHANGED:
           g_message ("doing");

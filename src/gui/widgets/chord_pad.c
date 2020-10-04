@@ -41,6 +41,8 @@ void
 chord_pad_widget_refresh (
   ChordPadWidget * self)
 {
+  g_debug ("refreshing chord pad...");
+
   chord_pad_widget_setup (self);
 }
 
