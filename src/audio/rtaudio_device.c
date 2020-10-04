@@ -98,7 +98,11 @@ rtaudio_device_new (
   self->channel_idx = channel_idx;
   self->handle =
     engine_rtaudio_create_rtaudio (AUDIO_ENGINE);
-  g_return_val_if_fail (self->handle, NULL);
+  if (!self->handle)
+    {
+      g_warning ("Failed to create RtAudio handle");
+      return NULL;
+    }
 
   rtaudio_device_info_t dev_nfo;
   if (device_name)

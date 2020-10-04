@@ -164,9 +164,10 @@ rtmidi_device_new (
     (int) rtmidi_get_compiled_api (apis, 20);
   if (num_apis < 0)
     {
-      g_critical (
+      g_warning (
         "RtMidi: an error occurred fetching "
         "compiled APIs");
+      return NULL;
     }
   if (rtmidi_device_first_run)
     {
@@ -184,7 +185,7 @@ rtmidi_device_new (
       AUDIO_ENGINE->midi_backend);
   if (api == RTMIDI_API_RTMIDI_DUMMY)
     {
-      g_critical (
+      g_warning (
         "RtMidi API for %s not enabled",
         midi_backend_str[
           AUDIO_ENGINE->midi_backend]);
@@ -196,8 +197,13 @@ rtmidi_device_new (
       int id_from_name =
         rtmidi_device_get_id_from_name (
           is_input, name);
-      g_return_val_if_fail (
-        id_from_name >= 0, NULL);
+      if (id_from_name < 0)
+        {
+          g_warning (
+            "Could not find RtMidi Device '%s'",
+            name);
+          return NULL;
+        }
       self->id = (unsigned int) id_from_name;
     }
   else

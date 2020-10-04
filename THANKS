@@ -68,6 +68,10 @@ Thanks:
    * Free hosting for Zrythm translations
  LSP
    * Optimized DSP functions (lsp-dsp-lib)
+ MrTeeXD
+   * Testing and reporting bugs
+ MSYS2
+   * Making it easy to build on Windows
 
 ----
 
