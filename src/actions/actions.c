@@ -1342,7 +1342,18 @@ activate_clear_selection (
   GVariant      *variant,
   gpointer       user_data)
 {
-  g_message ("ZOOMING IN");
+  if (Z_IS_ARRANGER_WIDGET (
+        MAIN_WINDOW->last_focused))
+    {
+      arranger_widget_select_all (
+        Z_ARRANGER_WIDGET (
+          MAIN_WINDOW->last_focused), F_NO_SELECT);
+    }
+  else
+    {
+      g_debug (
+        "No arranger focused, doing nothing");
+    }
 }
 
 void
@@ -1351,14 +1362,18 @@ activate_select_all (
   GVariant *variant,
   gpointer user_data)
 {
-  if (MAIN_WINDOW->last_focused
-    == GTK_WIDGET (MW_MIDI_ARRANGER))
-  {
-    arranger_widget_select_all (
-      Z_ARRANGER_WIDGET (
-        MAIN_WINDOW->last_focused),
-      1);
-  }
+  if (Z_IS_ARRANGER_WIDGET (
+        MAIN_WINDOW->last_focused))
+    {
+      arranger_widget_select_all (
+        Z_ARRANGER_WIDGET (
+          MAIN_WINDOW->last_focused), F_SELECT);
+    }
+  else
+    {
+      g_debug (
+        "No arranger focused, doing nothing");
+    }
 }
 
 void

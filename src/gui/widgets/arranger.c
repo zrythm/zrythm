@@ -2020,199 +2020,37 @@ move_items_y (
     }
 }
 
-static void
-select_all_timeline (
-  ArrangerWidget * self,
-  int              select)
-{
-  int i,j,k;
-
-  /* select everything else */
-  ZRegion * r;
-  Track * track;
-  AutomationTrack * at;
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
-    {
-      track = TRACKLIST->tracks[i];
-
-      if (!track->visible)
-        continue;
-
-      AutomationTracklist * atl =
-        track_get_automation_tracklist (
-          track);
-
-      if (track->lanes_visible)
-        {
-          TrackLane * lane;
-          for (j = 0; j < track->num_lanes; j++)
-            {
-              lane = track->lanes[j];
-
-              for (k = 0;
-                   k < lane->num_regions; k++)
-                {
-                  r = lane->regions[k];
-                  arranger_object_select (
-                    (ArrangerObject *) r,
-                    select, F_APPEND);
-                }
-            }
-        }
-
-      if (!track->automation_visible)
-        continue;
-
-      for (j = 0; j < atl->num_ats; j++)
-        {
-          at = atl->ats[j];
-
-          if (!at->created ||
-              !at->visible)
-            continue;
-
-          for (k = 0; k < at->num_regions; k++)
-            {
-              r = at->regions[k];
-              arranger_object_select (
-                (ArrangerObject *) r,
-                select, F_APPEND);
-            }
-        }
-    }
-
-  /* select scales */
-  ScaleObject * scale;
-  for (i = 0;
-       i < P_CHORD_TRACK->num_scales; i++)
-    {
-      scale = P_CHORD_TRACK->scales[i];
-      arranger_object_select (
-        (ArrangerObject *) scale,
-        select, F_APPEND);
-    }
-
-  /**
-   * Deselect range if deselecting all.
-   */
-  if (!select)
-    {
-      transport_set_has_range (TRANSPORT, false);
-    }
-}
-
-static void
-select_all_midi (
-  ArrangerWidget *  self,
-  int               select)
-{
-  ZRegion * region =
-    clip_editor_get_region (CLIP_EDITOR);
-  if (!region)
-    return;
-
-  /* select midi notes */
-  for (int i = 0; i < region->num_midi_notes; i++)
-    {
-      MidiNote * midi_note = region->midi_notes[i];
-      arranger_object_select (
-        (ArrangerObject *) midi_note,
-        select, F_APPEND);
-    }
-  /*arranger_widget_refresh(&self->parent_instance);*/
-}
-
-static void
-select_all_chord (
-  ArrangerWidget *  self,
-  int                    select)
-{
-  /* select everything else */
-  ZRegion * r =
-    clip_editor_get_region (CLIP_EDITOR);
-  ChordObject * chord;
-  for (int i = 0; i < r->num_chord_objects; i++)
-    {
-      chord = r->chord_objects[i];
-      arranger_object_select (
-        (ArrangerObject *) chord, select,
-        F_APPEND);
-    }
-}
-
-static void
-select_all_midi_modifier (
-  ArrangerWidget *  self,
-  int                           select)
-{
-  /* TODO */
-}
-
-static void
-select_all_audio (
-  ArrangerWidget *  self,
-  int                    select)
-{
-  /* TODO */
-}
-
-static void
-select_all_automation (
-  ArrangerWidget *  self,
-  int                         select)
-{
-  int i;
-
-  ZRegion * region =
-    clip_editor_get_region (CLIP_EDITOR);
-
-  /* select everything else */
-  AutomationPoint * ap;
-  for (i = 0; i < region->num_aps; i++)
-    {
-      ap = region->aps[i];
-      arranger_object_select (
-        (ArrangerObject *) ap, select,
-        F_APPEND);
-    }
-
-  /**
-   * Deselect range if deselecting all.
-   */
-  if (!select)
-    {
-      transport_set_has_range (TRANSPORT, false);
-    }
-}
-
 void
 arranger_widget_select_all (
   ArrangerWidget *  self,
-  int               select)
+  bool              select)
 {
-#define SELECT_ALL(cc,sc) \
-  case TYPE (cc): \
-    { \
-      ArrangerSelections * sel = \
-        arranger_widget_get_selections ( \
-          (ArrangerWidget *) self); \
-      arranger_selections_clear (sel, F_NO_FREE); \
-      select_all_##sc ( \
-        self, select); \
-    } \
-    break
+  ArrangerSelections * sel =
+    arranger_widget_get_selections (
+      (ArrangerWidget *) self);
 
-  switch (self->type)
+  if (select)
     {
-      SELECT_ALL (TIMELINE, timeline);
-      SELECT_ALL (MIDI, midi);
-      SELECT_ALL (MIDI_MODIFIER, midi_modifier);
-      SELECT_ALL (AUTOMATION, automation);
-      SELECT_ALL (AUDIO, audio);
-      SELECT_ALL (CHORD, chord);
-    }
+      ArrangerObject * objs[10000];
+      int num_objs = 0;
+      arranger_widget_get_all_objects (
+        self, objs, &num_objs);
+      for (int i = 0; i < num_objs; i++)
+        {
+          arranger_object_select (
+            objs[i], F_SELECT, F_APPEND);
+        }
 
-#undef SELECT_ALL
+      EVENTS_PUSH (
+        ET_ARRANGER_SELECTIONS_CREATED, sel);
+    }
+  else
+    {
+      arranger_selections_clear (sel, F_NO_FREE);
+
+      EVENTS_PUSH (
+        ET_ARRANGER_SELECTIONS_REMOVED, sel);
+    }
 }
 
 /**

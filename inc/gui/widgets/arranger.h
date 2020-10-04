@@ -497,7 +497,7 @@ arranger_widget_get_hit_arranger_object (
 void
 arranger_widget_select_all (
   ArrangerWidget *  self,
-  int               select);
+  bool              select);
 
 /**
  * Returns if the arranger is in a moving-related
