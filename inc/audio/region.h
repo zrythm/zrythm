@@ -497,9 +497,9 @@ region_is_hit (
 int
 region_is_hit_by_range (
   const ZRegion * region,
-  const long     gframes_start,
-  const long     gframes_end,
-  const int      end_inclusive);
+  const long      gframes_start,
+  const long      gframes_end,
+  const bool      end_inclusive);
 
 /**
  * Returns the region at the given position in the

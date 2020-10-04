@@ -184,8 +184,8 @@ graph_node_print (
  */
 void
 graph_node_process (
-  GraphNode *     node,
-  const nframes_t nframes);
+  GraphNode * node,
+  nframes_t   nframes);
 
 /**
  * Returns the latency of only the given port,

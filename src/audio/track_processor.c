@@ -724,8 +724,7 @@ track_processor_process (
     {
       audio_track_fill_stereo_ports_from_clip (
         tr, self->stereo_out,
-        g_start_frames, local_offset,
-        nframes);
+        g_start_frames, nframes);
     }
 
   /* set the piano roll contents to midi out */

@@ -53,12 +53,18 @@ fixture_set_up (
 static void
 test_region_is_hit_by_range ()
 {
-  /*RegionFixture _fixture;*/
-  /*RegionFixture * fixture =*/
-    /*&_fixture;*/
-  /*fixture_set_up (fixture);*/
-
-  /*Region * r = fixture->midi_region;*/
+  Position pos, end_pos;
+  position_set_to_bar (&pos, 4);
+  position_set_to_bar (&end_pos, 5);
+  Position other_start_pos;
+  position_set_to_bar (&other_start_pos, 3);
+  ZRegion * region =
+    midi_region_new (
+      &pos, &end_pos, -1, -1, -1);
+  g_assert_true (
+    region_is_hit_by_range (
+    region, other_start_pos.frames, pos.frames,
+    false));
 }
 
 static void

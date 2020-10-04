@@ -221,80 +221,13 @@ on_node_finish (
     }
 }
 
-/**
- * Processes the GraphNode.
- */
-void
-graph_node_process (
+static void
+process_node (
   GraphNode *     node,
+  long            g_start_frames,
+  const nframes_t local_offset,
   const nframes_t nframes)
 {
-  g_return_if_fail (
-    node && node->graph && node->graph->router);
-
-  /*g_message (*/
-    /*"processing %s", graph_node_get_name (node));*/
-  bool noroll = false;
-
-  nframes_t local_offset =
-    node->graph->router->local_offset;
-
-  /* figure out if we are doing a no-roll */
-  if (node->route_playback_latency <
-        AUDIO_ENGINE->remaining_latency_preroll)
-    {
-      /* no roll */
-      if (node->type == ROUTE_NODE_TYPE_PLUGIN)
-        {
-      /*g_message (*/
-        /*"-- not processing: %s "*/
-        /*"route latency %ld",*/
-        /*node->type == ROUTE_NODE_TYPE_PLUGIN ?*/
-          /*node->pl->descr->name :*/
-          /*node->port->identifier.label,*/
-        /*node->route_playback_latency);*/
-        }
-      noroll = true;
-
-      /* if no-roll, only process terminal nodes
-       * to set their buffers to 0 */
-      /*if (!node->terminal)*/
-        /*{*/
-          goto node_process_finish;
-        /*}*/
-    }
-
-  /* global positions in frames (samples) */
-  long g_start_frames;
-
-  /* only compensate latency when rolling */
-  if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
-    {
-      /* if the playhead is before the loop-end
-       * point and the latency-compensated position
-       * is after the loop-end point it means that
-       * the loop was crossed, so compensate for
-       * that.
-       *
-       * if the position is before loop-end and
-       * position + frames is after loop end (there
-       * is a loop inside the range), that should be
-       * handled by the ports/processors instead */
-      Position playhead_copy = *PLAYHEAD;
-      g_warn_if_fail (
-        node->route_playback_latency >=
-          AUDIO_ENGINE->remaining_latency_preroll);
-      transport_position_add_frames (
-        TRANSPORT, &playhead_copy,
-        node->route_playback_latency -
-          AUDIO_ENGINE->remaining_latency_preroll);
-      g_start_frames = playhead_copy.frames;
-    }
-  else
-    {
-      g_start_frames = PLAYHEAD->frames;
-    }
-
   if (node->type == ROUTE_NODE_TYPE_PLUGIN)
     {
       plugin_process (
@@ -331,7 +264,7 @@ graph_node_process (
       if (!IS_TRACK (track))
         {
           g_warn_if_reached ();
-          goto node_process_finish;
+          return;
         }
       if (track->type != TRACK_TYPE_TEMPO &&
           track->type != TRACK_TYPE_MARKER)
@@ -371,8 +304,116 @@ graph_node_process (
         {
           port_sum_signal_from_inputs (
             port, g_start_frames, local_offset,
-            nframes, noroll);
+            nframes, false);
         }
+    }
+}
+
+/**
+ * Processes the GraphNode.
+ */
+void
+graph_node_process (
+  GraphNode * node,
+  nframes_t   nframes)
+{
+  g_return_if_fail (
+    node && node->graph && node->graph->router);
+
+  /*g_message (*/
+    /*"processing %s", graph_node_get_name (node));*/
+
+  nframes_t num_processable_frames = 0;
+  nframes_t local_offset =
+    node->graph->router->local_offset;
+
+  /* figure out if we are doing a no-roll */
+  if (node->route_playback_latency <
+        AUDIO_ENGINE->remaining_latency_preroll)
+    {
+      /* no roll */
+      if (node->type == ROUTE_NODE_TYPE_PLUGIN)
+        {
+      /*g_message (*/
+        /*"-- not processing: %s "*/
+        /*"route latency %ld",*/
+        /*node->type == ROUTE_NODE_TYPE_PLUGIN ?*/
+          /*node->pl->descr->name :*/
+          /*node->port->identifier.label,*/
+        /*node->route_playback_latency);*/
+        }
+
+      /* if no-roll, only process terminal nodes
+       * to set their buffers to 0 */
+      goto node_process_finish;
+      /*if (!node->terminal)*/
+        /*{*/
+        /*}*/
+    }
+
+  /* global positions in frames (samples) */
+  long g_start_frames;
+
+  /* only compensate latency when rolling */
+  if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
+    {
+      /* if the playhead is before the loop-end
+       * point and the latency-compensated position
+       * is after the loop-end point it means that
+       * the loop was crossed, so compensate for
+       * that.
+       *
+       * if the position is before loop-end and
+       * position + frames is after loop end (there
+       * is a loop inside the range), that should be
+       * handled by the ports/processors instead */
+      Position playhead_copy = *PLAYHEAD;
+      g_warn_if_fail (
+        node->route_playback_latency >=
+          AUDIO_ENGINE->remaining_latency_preroll);
+      transport_position_add_frames (
+        TRANSPORT, &playhead_copy,
+        node->route_playback_latency -
+          AUDIO_ENGINE->remaining_latency_preroll);
+      g_start_frames = playhead_copy.frames;
+    }
+  else
+    {
+      g_start_frames = PLAYHEAD->frames;
+    }
+
+  /* split at loop points */
+  while (
+    (num_processable_frames =
+      MIN (
+        transport_is_loop_point_met (
+          TRANSPORT, g_start_frames, nframes),
+        nframes)))
+    {
+      g_debug (
+        "splitting (num processable frames %"
+        PRIu32 ")", num_processable_frames);
+
+      process_node (
+        node, g_start_frames, local_offset,
+        num_processable_frames);
+
+      g_start_frames += num_processable_frames;
+
+      /* loop back to loop start */
+      g_start_frames =
+        (g_start_frames +
+          TRANSPORT->loop_start_pos.frames) -
+        TRANSPORT->loop_end_pos.frames;
+
+      local_offset += num_processable_frames;
+      nframes -= num_processable_frames;
+    }
+
+  if (nframes > 0)
+    {
+      process_node (
+        node, g_start_frames, local_offset, nframes);
     }
 
 node_process_finish:

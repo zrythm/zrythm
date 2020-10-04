@@ -584,7 +584,7 @@ midi_track_fill_midi_events (
                 !region_hit (
                   r, transport_loop_met, k == 0,
                   g_start_frames, g_end_frames,
-                  1))
+                  true))
                 {
                   continue;
                 }
@@ -595,7 +595,7 @@ midi_track_fill_midi_events (
                 region_hit (
                   r, transport_loop_met, k == 0,
                   g_start_frames, g_end_frames,
-                  0);
+                  false);
 
               /* get local positions */
               /* first half (before loop end) */

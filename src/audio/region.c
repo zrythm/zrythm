@@ -1016,8 +1016,7 @@ region_is_hit (
   const ArrangerObject * r_obj =
     (const ArrangerObject *) region;
   return
-    r_obj->pos.frames <=
-      gframes &&
+    r_obj->pos.frames <= gframes &&
     ((inclusive &&
       r_obj->end_pos.frames >=
         gframes) ||
@@ -1094,9 +1093,9 @@ region_get_musical_mode (
 int
 region_is_hit_by_range (
   const ZRegion * region,
-  const long     gframes_start,
-  const long     gframes_end,
-  const int      end_inclusive)
+  const long      gframes_start,
+  const long      gframes_end,
+  const bool      end_inclusive)
 {
   const ArrangerObject * obj =
     (const ArrangerObject *) region;

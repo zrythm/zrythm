@@ -106,7 +106,6 @@ audio_track_fill_stereo_ports_from_clip (
   Track *         self,
   StereoPorts *   stereo_ports,
   const long      g_start_frames,
-  const nframes_t local_start_frame,
   nframes_t       nframes)
 {
   g_return_if_fail (IS_TRACK (self) && stereo_ports);
@@ -159,10 +158,11 @@ audio_track_fill_stereo_ports_from_clip (
           if (r->stretching)
             continue;
 
+          /* if region hit */
           if (region_is_hit_by_range (
                 r,
                 cycle_start_frames,
-                cycle_end_frames, 1))
+                cycle_end_frames - 1, true))
             {
               region_end_frames =
                 r_obj->end_pos.frames;
@@ -276,13 +276,13 @@ audio_track_fill_stereo_ports_from_clip (
               size_t buff_index_start =
                 r->num_frames + 16;
               size_t buff_size = 0;
-              for (j = frames_to_skip;
+              for (j = 0;
                    (long) j < frames_to_process;
                    j++)
                 {
                   current_local_frames =
                     frames_start_from_cycle_start_adj +
-                    (long) j;
+                    (long) j + frames_to_skip;
 
                   /* if loop point hit in the
                    * cycle, go back to loop start */
@@ -305,7 +305,7 @@ audio_track_fill_stereo_ports_from_clip (
     timestretch_ratio, \
     lbuf_after_ts, rbuf_after_ts, \
     prev_j_offset, \
-    (j - prev_j_offset) + 1)
+    ((j + frames_to_skip) - prev_j_offset) + 1)
 
                   /* if we are starting at a new
                    * point in the audio clip */
@@ -336,9 +336,9 @@ audio_track_fill_stereo_ports_from_clip (
                               g_message (
                                 "buff size (%zd) > 0",
                                 buff_size);
-                              g_message ("j %u", j);
+                              g_message ("j %u", j + frames_to_skip);
                               STRETCH;
-                              prev_j_offset = j;
+                              prev_j_offset = j + frames_to_skip;
                             }
                           buff_size = 0;
                         }
@@ -346,9 +346,9 @@ audio_track_fill_stereo_ports_from_clip (
                                  frames_to_process - 1)
                         {
                           g_message ("last sample");
-                          g_message ("j %u", j);
+                          g_message ("j %u", j + frames_to_skip);
                           STRETCH;
-                          prev_j_offset = j;
+                          prev_j_offset = j + frames_to_skip;
                         }
                       else
                         {
@@ -380,12 +380,12 @@ audio_track_fill_stereo_ports_from_clip (
                 }
 
               /* apply fades */
-              for (j = frames_to_skip;
+              for (j = 0;
                    (long) j < frames_to_process;
                    j++)
                 {
                   long local_frames =
-                    frames_start_from_cycle_start + j;
+                    frames_start_from_cycle_start + j + frames_to_skip;
                   float fade_in = 1.f;
                   float fade_out = 1.f;
                   if (local_frames >= 0 &&
@@ -419,12 +419,14 @@ audio_track_fill_stereo_ports_from_clip (
                           &r_obj->fade_out_opts, 0);
                     }
 
-                  stereo_ports->l->buf[j] =
-                    lbuf_after_ts[j] *
-                    fade_in * fade_out;
-                  stereo_ports->r->buf[j] =
-                    rbuf_after_ts[j] *
-                    fade_in * fade_out;
+                  stereo_ports->l->buf[
+                    j + frames_to_skip] =
+                      lbuf_after_ts[j] *
+                      fade_in * fade_out;
+                  stereo_ports->r->buf[
+                    j + frames_to_skip] =
+                      rbuf_after_ts[j] *
+                      fade_in * fade_out;
                 }
             }
         }

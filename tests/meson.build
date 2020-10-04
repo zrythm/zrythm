@@ -124,6 +124,7 @@ if get_option ('tests')
     ['actions/arranger_selections', false],
     ['actions/create_tracks', true],
     ['actions/range', true],
+    ['audio/audio_track', true],
     ['audio/automation_track', true],
     ['audio/curve', true],
     ['audio/fader', true],

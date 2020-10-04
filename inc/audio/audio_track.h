@@ -48,7 +48,6 @@ audio_track_fill_stereo_ports_from_clip (
   Track *         self,
   StereoPorts *   stereo_ports,
   const long      g_start_frames,
-  const nframes_t local_start_frame,
   nframes_t       nframes);
 
 #endif // __AUDIO_TRACK_H__
