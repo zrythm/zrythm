@@ -35,6 +35,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <inttypes.h>
 #include <stdlib.h>
 
 #include "audio/engine.h"
@@ -390,9 +391,11 @@ graph_node_process (
           TRANSPORT, g_start_frames, nframes),
         nframes)))
     {
+#if 0
       g_debug (
         "splitting (num processable frames %"
         PRIu32 ")", num_processable_frames);
+#endif
 
       process_node (
         node, g_start_frames, local_offset,
