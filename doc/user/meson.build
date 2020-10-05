@@ -54,7 +54,7 @@ if can_make_guile_docs
       meson.source_root ())[1].split('/'))
     base_file = base_file.split('src guile ')[1]
     rst_file = base_file + '.rst'
-    texi_file = base_file + '.texi'
+    texi_file = '-'.join (base_file.split ('_')) + '.texi'
     texi_doc = custom_target (
       texi_file,
       output: texi_file,

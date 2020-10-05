@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-03 14:36+0100\n"
+"POT-Creation-Date: 2020-10-05 01:36+0100\n"
 "PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -59,12 +59,19 @@ msgstr "ポートの識別子を返します。"
 
 #: ../../scripting/api/audio position.rst:8
 #, fuzzy
-msgid "Scheme Procedure: **position-new** *bars beats sixteenths ticks sub_tick*"
+msgid ""
+"Scheme Procedure: **position-new** | *bars beats sixteenths ticks "
+"sub_tick*"
 msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
 
 #: ../../scripting/api/audio position.rst:6
 msgid "Return a newly-created position as bars.beats.sixteenths.ticks.sub_tick."
 msgstr "新しく作成した位置をbars.beats.sixteenths.ticks.sub_tickとして返します。"
+
+#: ../../scripting/api/audio position.rst:12
+#, fuzzy
+msgid "Scheme Procedure: **position-print** | *pos*"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
 
 #: ../../scripting/api/audio position.rst:11
 msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."

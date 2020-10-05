@@ -100,6 +100,14 @@
        output-file
        (("=================")
          "=================================="))
+     ;(substitute*
+       ;output-file
+       ;(("[*]\n")
+         ;"*\n\n"))
+     (substitute*
+       output-file
+       (("[**] [*]")
+         "* | *"))
      (substitute*
        output-file
        (("^.+>`__.+$")

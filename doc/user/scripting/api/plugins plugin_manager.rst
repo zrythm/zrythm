@@ -1,8 +1,8 @@
 ==================================
-plugins plugin_manager
+plugins plugin-manager
 ==================================
 
-Scheme Procedure: **plugin-manager-find-plugin-from-uri** *uri*
+Scheme Procedure: **plugin-manager-find-plugin-from-uri** | *uri*
    Returns the PluginDescriptor matching the given URI.
 
 

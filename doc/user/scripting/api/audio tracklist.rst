@@ -2,11 +2,11 @@
 audio tracklist
 ==================================
 
-Scheme Procedure: **tracklist-insert-track** *track idx*
+Scheme Procedure: **tracklist-insert-track** | *track idx*
    Inserts track track at index idx in the tracklist.
 
 
-Scheme Procedure: **tracklist-get-track-at-pos** *pos*
+Scheme Procedure: **tracklist-get-track-at-pos** | *pos*
    Returns the track at pos in the tracklist.
 
 
