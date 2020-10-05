@@ -1167,9 +1167,14 @@ process_events (void * data)
                 SELECTION_TYPE_TRACK ||
               PROJECT->last_selection ==
                 SELECTION_TYPE_PLUGIN)
-            left_dock_edge_widget_refresh (
-              MW_LEFT_DOCK_EDGE);
+            {
+              left_dock_edge_widget_refresh (
+                MW_LEFT_DOCK_EDGE);
+            }
           mixer_widget_soft_refresh (MW_MIXER);
+          /* TODO implement soft refresh */
+          tracklist_widget_hard_refresh (
+            MW_TRACKLIST);
           break;
         case ET_RULER_SIZE_CHANGED:
           gtk_widget_queue_allocate (
