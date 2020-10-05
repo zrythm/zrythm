@@ -159,7 +159,7 @@ cdata.set_quoted (
   get_option ('buildtype'))
 if get_option ('trial_ver')
   cdata.set ('TRIAL_VER', 1)
-  cdata.set ('TRIAL_LIMIT_MINS', 30)
+  cdata.set ('TRIAL_LIMIT_MINS', 40)
 endif
 if get_option ('installer_ver')
   cdata.set ('INSTALLER_VER', 1)
