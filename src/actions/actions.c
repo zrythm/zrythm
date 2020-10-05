@@ -182,25 +182,26 @@ activate_manual (
   GVariant      *variant,
   gpointer       user_data)
 {
-#ifdef MANUAL_PATH
   LocalizationLanguage lang =
     (LocalizationLanguage)
     g_settings_get_enum (
       S_P_UI_GENERAL, "language");
   const char * lang_code =
     localization_get_string_code (lang);
+#ifdef MANUAL_PATH
   char * path =
     g_strdup_printf (
       "file://%s/%s/index.html",
       MANUAL_PATH, lang_code);
+#else
+  char * path =
+    g_strdup_printf (
+      "https://manual.zrythm.org/%s/index.html",
+      lang_code);
+#endif
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW), path, 0, NULL);
   g_free (path);
-#else
-  gtk_show_uri_on_window (
-    GTK_WINDOW (MAIN_WINDOW),
-    "https://manual.zrythm.org", 0, NULL);
-#endif
 }
 
 void

@@ -1070,7 +1070,7 @@ msgstr "プロジェクトに追加（carla）"
 
 #: src/gui/widgets/plugin_browser.c:256
 msgid "Add to project (bridged UI)"
-msgstr "プロジェクトに追加（ブリッジUI）"
+msgstr "プロジェクトに追加（UIをブリッジ）"
 
 #: src/gui/widgets/plugin_browser.c:263
 msgid "Add to project (bridged full)"
@@ -1231,7 +1231,7 @@ msgstr "テイクを作成する"
 
 #: src/gui/widgets/transport_controls.c:216
 msgid "Create takes (mute previous)"
-msgstr "テイクを作成する (前テイクにミュート)"
+msgstr "テイクを作成する (前のテイクをミュート)"
 
 #: src/gui/widgets/transport_controls.c:219
 #: build/data/org.zrythm.Zrythm.gschema.xml:483
@@ -2256,7 +2256,7 @@ msgstr "オーディオトラックにオーディオファイルのみをドロ
 
 #: src/audio/chord_track.c:57 resources/ui/inspector_chord.ui:31
 msgid "Chords"
-msgstr "和音"
+msgstr "コード"
 
 #: src/audio/automation_track.c:98
 msgid "Rec"
@@ -2870,11 +2870,11 @@ msgstr "元の大きさ"
 
 #: resources/gtk/help-overlay.ui:280
 msgid "Quantizing"
-msgstr "量子化"
+msgstr "クオンタイズ"
 
 #: resources/gtk/help-overlay.ui:285 resources/ui/quantize_box.ui:39
 msgid "Quick Quantize"
-msgstr "クイック量子化"
+msgstr "クイッククオンタイズ"
 
 #: resources/gtk/help-overlay.ui:292
 msgid "Quantize"
@@ -3700,7 +3700,7 @@ msgstr "クリップが選択されていません"
 
 #: resources/ui/quantize_box.ui:61
 msgid "Full Quantize..."
-msgstr "詳細量子化…"
+msgstr "クオンタイズ…"
 
 #: resources/ui/snap_grid_popover.ui:122 resources/ui/snap_grid_popover.ui:244
 msgid "Note length"
@@ -4938,9 +4938,6 @@ msgstr ""
 #~ msgid "Use grid"
 #~ msgstr "グリッドを使用"
 
-#~ msgid "Note length to quantize to"
-#~ msgstr "量子化するノートの長さ"
-
 #~ msgid "Chord Track"
 #~ msgstr "コードトラック"
 
@@ -4992,24 +4989,5 @@ msgstr ""
 #~ msgid "Tracks (%d)"
 #~ msgstr "トラック(%d)"
 
-#~ msgid "Synth1 long name name"
-#~ msgstr "Synth1のロングネーム"
-
 #~ msgid "-2"
 #~ msgstr "-2"
-
-#, fuzzy
-#~ msgid "Create Plugin"
-#~ msgstr "プラグイン"
-
-#, fuzzy
-#~ msgid "Edit Track"
-#~ msgstr "オーディオトラック"
-
-#, fuzzy
-#~ msgid "create piano roll object(s)"
-#~ msgstr "新プロジェクト"
-
-#, fuzzy
-#~ msgid "Zrythm - Language"
-#~ msgstr "言語"

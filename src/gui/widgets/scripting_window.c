@@ -45,32 +45,6 @@ G_DEFINE_TYPE (
 static SCM out_port;
 static SCM error_out_port;
 
-static const char * example_script =
-";;; This is an example GNU Guile script using modules provided by Zrythm\n\
-;;; See https://www.gnu.org/software/guile/ for more info about GNU Guile\n\
-;;; See https://manual.zrythm.org/en/scripting/intro.html for a list of\n\
-;;; modules provided by Zrythm\n"
-#if 0
-"(use-modules (zrythm)\n\
-             (audio position))\n\
-(define zrythm-script\n\
-  (lambda ()\n\
-    (display (zrythm-get-ver))\n\
-    (let ((mypos (position-new 2 1 1 34 0)))\n\
-      (position-print mypos))))";
-#endif
-"(use-modules (audio track)\n\
-             (audio tracklist))\n\
-(define zrythm-script\n\
-  (lambda ()\n\
-    ;; loop through all tracks and print them\n\
-    (let ((num-tracks (tracklist-get-num-tracks)))\n\
-      (let loop ((i 0))\n\
-        (when (< i num-tracks)\n\
-          (let ((track (tracklist-get-track-at-pos i)))\n\
-            (display (track-get-name track))\n\
-            (newline))\n\
-          (loop (+ i 1)))))))";
 
 static SCM
 call_proc (void * data)
@@ -259,6 +233,26 @@ scripting_window_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  char * example_script =
+    g_strdup_printf (
+      "%s%s%s%s",
+      _(";;; This is an example GNU Guile script using modules provided by Zrythm\n\
+;;; See https://www.gnu.org/software/guile/ for more info about GNU Guile\n\
+;;; See https://manual.zrythm.org/en/scripting/intro.html for a list of\n\
+;;; modules provided by Zrythm\n"),
+"(use-modules (audio track)\n\
+             (audio tracklist))\n\
+(define zrythm-script\n\
+  (lambda ()\n",
+_("    ;; loop through all tracks and print them\n"),
+"    (let ((num-tracks (tracklist-get-num-tracks)))\n\
+      (let loop ((i 0))\n\
+        (when (< i num-tracks)\n\
+          (let ((track (tracklist-get-track-at-pos i)))\n\
+            (display (track-get-name track))\n\
+            (newline))\n\
+          (loop (+ i 1)))))))");
+
   GtkSourceLanguageManager * manager =
     gtk_source_language_manager_get_default ();
   GtkSourceLanguage * lang =
@@ -292,6 +286,8 @@ scripting_window_widget_init (
     self->editor, true);
   gtk_source_view_set_smart_backspace (
     self->editor, true);
+
+  g_free (example_script);
 
   /* set style */
   GtkSourceStyleSchemeManager * style_mgr =
