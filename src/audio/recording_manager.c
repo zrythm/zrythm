@@ -158,7 +158,7 @@ handle_stop_recording (
             audio_region_get_clip (r);
           audio_region_init_frame_caches (
             r, clip);
-          audio_clip_write_to_pool (clip);
+          audio_clip_write_to_pool (clip, true);
         }
     }
 
@@ -921,6 +921,14 @@ handle_audio_event (
     }
 
   audio_region_update_channel_caches (region, clip);
+
+  /* write to pool if 2 seconds passed since last
+   * write */
+  gint64 cur_time = g_get_monotonic_time ();
+  if ((cur_time - clip->last_write) > 2000000)
+    {
+      audio_clip_write_to_pool (clip, true);
+    }
 }
 
 static void

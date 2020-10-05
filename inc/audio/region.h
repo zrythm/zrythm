@@ -138,7 +138,7 @@ typedef struct ZRegion
   /* ==== AUDIO REGION ==== */
 
   /** Audio pool ID of the associated audio file,
-   * mostly use during serialization. */
+   * mostly used during serialization. */
   int               pool_id;
 
   /**

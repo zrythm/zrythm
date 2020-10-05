@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,8 @@
 
 #ifndef __AUDIO_CLIP_H__
 #define __AUDIO_CLIP_H__
+
+#include <stdbool.h>
 
 #include "utils/types.h"
 #include "utils/yaml.h"
@@ -63,6 +65,23 @@ typedef struct AudioClip
 
   /** ID (index) in the audio pool. */
   int           pool_id;
+
+  /**
+   * Frames already written to the file.
+   *
+   * Used when writing in chunks/parts.
+   */
+  long          frames_written;
+
+  /**
+   * Time the last write took place.
+   *
+   * This is used so that we can write every x
+   * ms instead of all the time.
+   *
+   * @see AudioClip.frames_written.
+   */
+  gint64        last_write;
 } AudioClip;
 
 static const cyaml_schema_field_t
@@ -136,18 +155,28 @@ audio_clip_new_recording (
 
 /**
  * Writes the given audio clip data to a file.
+ *
+ * @param parts If true, only write new data. @see
+ *   AudioClip.frames_written.
+ *
+ * @return Non-zero if fail.
  */
-void
+int
 audio_clip_write_to_file (
-  const AudioClip * self,
-  const char *      filepath);
+  AudioClip *  self,
+  const char * filepath,
+  bool         parts);
 
 /**
  * Writes the clip to the pool as a wav file.
+ *
+ * @param parts If true, only write new data. @see
+ *   AudioClip.frames_written.
  */
 void
 audio_clip_write_to_pool (
-  const AudioClip * self);
+  AudioClip * self,
+  bool        parts);
 
 /**
  * Frees the audio clip.

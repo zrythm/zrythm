@@ -34,14 +34,20 @@
 static int num_cores = 0;
 
 /**
- * Writes the buffer as a WAV file to the given
+ * Writes the buffer as a raw file to the given
  * path.
  *
  * @param size The number of frames per channel.
+ * @param frames_already_written Frames already
+ *   written. If this is non-zero and the file
+ *   exists, it will append to the existing file.
+ *
+ * @return Non-zero if fail.
  */
-void
+int
 audio_write_raw_file (
   float *      buff,
+  long         frames_already_written,
   long         nframes,
   uint32_t     samplerate,
   unsigned int channels,
@@ -57,15 +63,28 @@ audio_write_raw_file (
   info.seekable = 1;
   info.sections = 1;
 
+  bool write_chunk =
+    frames_already_written > 0 &&
+    g_file_test (filename, G_FILE_TEST_IS_REGULAR);
+
   SNDFILE * sndfile =
     sf_open (filename, SFM_WRITE, &info);
 
-  /*sf_count_t frames_written =*/
-    sf_writef_float (sndfile, buff, nframes);
+  if (write_chunk)
+    {
+      sf_seek (
+        sndfile, frames_already_written, SEEK_SET);
+    }
+
+  sf_writef_float (sndfile, buff, nframes);
 
   sf_close (sndfile);
 
   g_message ("wrote %s", filename);
+
+  /* TODO error handling */
+
+  return 0;
 }
 
 /**

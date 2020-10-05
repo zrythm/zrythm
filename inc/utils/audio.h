@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -26,6 +26,8 @@
 #ifndef __UTILS_AUDIO_H__
 #define __UTILS_AUDIO_H__
 
+#include <stdbool.h>
+
 #include "utils/types.h"
 
 #include <samplerate.h>
@@ -41,16 +43,21 @@
  */
 #define STRIP_SIZE 9
 
-
 /**
  * Writes the buffer as a raw file to the given
  * path.
  *
  * @param size The number of frames per channel.
+ * @param frames_already_written Frames already
+ *   written. If this is non-zero and the file
+ *   exists, it will append to the existing file.
+ *
+ * @return Non-zero if fail.
  */
-void
+int
 audio_write_raw_file (
   float *      buff,
+  long         frames_already_written,
   long         nframes,
   uint32_t     samplerate,
   unsigned int channels,

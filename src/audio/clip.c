@@ -178,10 +178,14 @@ audio_clip_new_recording (
 
 /**
  * Writes the clip to the pool as a wav file.
+ *
+ * @param parts If true, only write new data. @see
+ *   AudioClip.frames_written.
  */
 void
 audio_clip_write_to_pool (
-  const AudioClip * self)
+  AudioClip * self,
+  bool        parts)
 {
   /* generate a copy of the given filename in the
    * project dir */
@@ -217,7 +221,7 @@ audio_clip_write_to_pool (
       /*g_free (tmp);*/
     /*}*/
   audio_clip_write_to_file (
-    self, new_path);
+    self, new_path, parts);
   g_free (without_ext);
   g_free (basename);
   g_free (prj_pool_dir);
@@ -225,16 +229,34 @@ audio_clip_write_to_pool (
 
 /**
  * Writes the given audio clip data to a file.
+ *
+ * @param parts If true, only write new data. @see
+ *   AudioClip.frames_written.
+ *
+ * @return Non-zero if fail.
  */
-void
+int
 audio_clip_write_to_file (
-  const AudioClip * self,
-  const char *      filepath)
+  AudioClip *  self,
+  const char * filepath,
+  bool         parts)
 {
-  audio_write_raw_file (
-    self->frames, self->num_frames,
-    AUDIO_ENGINE->sample_rate,
-    self->channels, filepath);
+  int ret =
+    audio_write_raw_file (
+      self->frames, parts ? self->frames_written : 0,
+      self->num_frames,
+      AUDIO_ENGINE->sample_rate,
+      self->channels, filepath);
+
+  if (parts && ret == 0)
+    {
+      self->frames_written = self->num_frames;
+      self->last_write = g_get_monotonic_time ();
+    }
+
+  /* TODO error handling */
+
+  return ret;
 }
 
 /**
