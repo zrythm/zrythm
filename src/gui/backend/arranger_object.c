@@ -1670,11 +1670,16 @@ arranger_object_should_lane_be_visible (
  * This refers to the object at its original
  * position (called "transient").
  */
-int
+bool
 arranger_object_should_orig_be_visible (
   ArrangerObject * self)
 {
   g_return_val_if_fail (self, 0);
+
+  if (!ZRYTHM_HAVE_UI)
+    {
+      return false;
+    }
 
   ArrangerWidget * arranger =
     arranger_object_get_arranger (self);
@@ -1685,7 +1690,7 @@ arranger_object_should_orig_be_visible (
       ARRANGER_WIDGET_GET_ACTION (
         arranger, CREATING_MOVING))
     {
-      return 0;
+      return false;
     }
   else if (
     ARRANGER_WIDGET_GET_ACTION (
@@ -1693,11 +1698,11 @@ arranger_object_should_orig_be_visible (
     ARRANGER_WIDGET_GET_ACTION (
       arranger, MOVING_LINK))
     {
-      return 1;
+      return true;
     }
   else
     {
-      return 0;
+      return false;
     }
 }
 

@@ -817,7 +817,7 @@ channel_reconnect_ext_input_ports (
                   HW_IN_PROCESSOR, port_id);
               if (!source)
                 {
-                  g_warning (
+                  g_message (
                     "port for %s not found",
                     port_id);
                   continue;
@@ -839,7 +839,7 @@ channel_reconnect_ext_input_ports (
                   HW_IN_PROCESSOR, port_id);
               if (!source)
                 {
-                  g_warning (
+                  g_message (
                     "port for %s not found",
                     port_id);
                   g_free (port_id);

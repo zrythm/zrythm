@@ -613,8 +613,11 @@ region_find (
     }
   else if (id->type == REGION_TYPE_AUTOMATION)
     {
-      if (id->track_pos >= TRACKLIST->num_tracks)
-        g_return_val_if_reached (NULL);
+      if (!TRACKLIST->swapping_tracks &&
+          id->track_pos >= TRACKLIST->num_tracks)
+        {
+          g_return_val_if_reached (NULL);
+        }
       track = TRACKLIST->tracks[id->track_pos];
       g_return_val_if_fail (track, NULL);
 

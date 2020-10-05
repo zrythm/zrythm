@@ -464,7 +464,7 @@ arranger_object_should_lane_be_visible (
  * This refers to the object at its original
  * position (called "transient").
  */
-int
+bool
 arranger_object_should_orig_be_visible (
   ArrangerObject * self);
 

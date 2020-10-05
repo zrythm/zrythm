@@ -476,11 +476,15 @@ Track *
 automation_track_get_track (
   AutomationTrack * self)
 {
-  g_return_val_if_fail (
-    self &&
-      self->port_id.track_pos <
-        TRACKLIST->num_tracks,
-    NULL);
+  g_return_val_if_fail (self, NULL);
+  if (!TRACKLIST->swapping_tracks)
+    {
+      g_return_val_if_fail (
+        self->port_id.track_pos <
+          TRACKLIST->num_tracks,
+        NULL);
+    }
+
   Track * track =
     TRACKLIST->tracks[self->port_id.track_pos];
   g_return_val_if_fail (track, NULL);
