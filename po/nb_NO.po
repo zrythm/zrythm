@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-08-11 11:32+0000\n"
+"PO-Revision-Date: 2020-10-08 01:26+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/nb_NO/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
@@ -1490,7 +1490,7 @@ msgstr ""
 #: src/gui/widgets/automatable_selector_popover.c:389
 #, fuzzy, c-format
 msgid "[Modulator %d] %s"
-msgstr "Modulatorer"
+msgstr "[Modulator %d] %s"
 
 #: src/gui/widgets/snap_grid.c:113
 msgid "Snap/Grid options"
@@ -2167,9 +2167,9 @@ msgid "%sPlease help us fix this by %ssubmitting a bug report%s."
 msgstr ""
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:112
-#, fuzzy, c-format
+#, c-format
 msgid "%s color"
-msgstr "Farge"
+msgstr "%s farge"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:138
 #, fuzzy
