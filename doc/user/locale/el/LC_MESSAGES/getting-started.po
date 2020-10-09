@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-09-26 00:18+0000\n"
+"PO-Revision-Date: 2020-10-08 23:04+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
+"manualgetting-started/el/>\n"
 "Language: el\n"
-"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm"
-"/manualgetting-started/el/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../getting-started/getting-plugins.rst:8
@@ -25,7 +26,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:11
 msgid "Plugins"
-msgstr ""
+msgstr "Πρόσθετα"
 
 #: ../../getting-started/getting-plugins.rst:13
 msgid ""
@@ -273,9 +274,8 @@ msgid "FreeBSD"
 msgstr "FreeBSD"
 
 #: ../../getting-started/installation.rst:61
-#, fuzzy
 msgid "Port"
-msgstr "Port"
+msgstr "Θύρα"
 
 #: ../../getting-started/installation.rst:62
 #, fuzzy
@@ -320,7 +320,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:34
 msgid "Path"
-msgstr ""
+msgstr "Μονοπάτι"
 
 #: ../../getting-started/running-zrythm.rst:39
 msgid "This is the :term:`Zrythm user path`."
@@ -452,7 +452,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:34
 msgid "JACK"
-msgstr ""
+msgstr "JACK"
 
 #: ../../getting-started/system-requirements.rst:35
 #, python-format
@@ -1282,4 +1282,3 @@ msgstr ""
 #~ "See :download:`INSTALL.md <../../../INSTALL.md>` for"
 #~ " installation instructions."
 #~ msgstr ""
-

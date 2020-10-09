@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:30+0100\n"
-"PO-Revision-Date: 2020-10-03 13:25+0000\n"
+"PO-Revision-Date: 2020-10-08 23:04+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/el/>\n"
@@ -51,7 +51,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:25
 #: ../../tracks/tempo-track.rst:25
 msgid "Record"
-msgstr ""
+msgstr "Ηχογράφηση"
 
 #: ../../tracks/audio-track.rst:18
 #: ../../tracks/instrument-track.rst:26
@@ -71,7 +71,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:27
 #: ../../tracks/tempo-track.rst:27
 msgid "Solo"
-msgstr ""
+msgstr "Σόλο"
 
 #: ../../tracks/audio-track.rst:20
 #: ../../tracks/bus-track-audio.rst:20
@@ -198,7 +198,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:44
 #: ../../tracks/midi-track.rst:56
 msgid "Direct Out"
-msgstr ""
+msgstr "Απευθείας έξω"
 
 #: ../../tracks/audio-track.rst:44
 msgid "The track to route the output of the audio track to."
@@ -209,7 +209,7 @@ msgstr ""
 #: ../../tracks/instrument-track.rst:59
 #: ../../tracks/midi-track.rst:61
 msgid "Inputs"
-msgstr ""
+msgstr "Εισαγόμενα"
 
 #: ../../tracks/audio-track.rst:49
 msgid "Left and right audio input sources used when recording."
@@ -223,13 +223,13 @@ msgstr ""
 #: ../../tracks/master-track.rst:47
 #: ../../tracks/midi-track.rst:75
 msgid "Sends"
-msgstr ""
+msgstr "Αποστολές"
 
 #: ../../tracks/audio-track.rst:55
 #: ../../tracks/midi-track.rst:132
 #: ../../tracks/midi-track.rst:140
 msgid "TODO"
-msgstr "ΝΑ ΓΙΝΟΥΝ"
+msgstr "ΝΑΓΙΝΕΙ"
 
 #: ../../tracks/audio-track.rst:58
 #: ../../tracks/instrument-track.rst:77
@@ -263,7 +263,7 @@ msgstr ""
 
 #: ../../tracks/automation.rst:8
 msgid "Automation"
-msgstr ""
+msgstr "Αυτοματισμός"
 
 #: ../../tracks/automation.rst:11
 msgid "Automation Lanes"
@@ -314,7 +314,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:42
 #: ../../tracks/tempo-track.rst:42
 msgid "Track Name"
-msgstr ""
+msgstr "Όνομα κομματιού"
 
 #: ../../tracks/bus-track-audio.rst:40
 #: ../../tracks/bus-track-midi.rst:40
@@ -486,7 +486,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:18
 msgid "Track Properties"
-msgstr ""
+msgstr "Ιδιότητες κομματιού"
 
 #: ../../tracks/inspector-page.rst:20
 msgid "Track properties are basic properties that the track has."
@@ -574,8 +574,9 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:94
+#, fuzzy
 msgid "Fader"
-msgstr ""
+msgstr "Fader"
 
 #: ../../tracks/inspector-page.rst:95
 msgid "Fader section to control the volume and stereo balance."
@@ -637,7 +638,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:139
 msgid "Listen"
-msgstr ""
+msgstr "Ακρόαση"
 
 #: ../../tracks/inspector-page.rst:140
 msgid ""
@@ -747,7 +748,7 @@ msgstr ""
 
 #: ../../tracks/intro.rst:8
 msgid "Tracks"
-msgstr ""
+msgstr "Κομμάτια"
 
 #: ../../tracks/marker-track.rst:10
 msgid "Marker Track"
@@ -915,7 +916,7 @@ msgstr ""
 
 #: ../../tracks/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Επισκόπηση"
 
 #: ../../tracks/overview.rst:8
 msgid ""
@@ -1070,7 +1071,7 @@ msgstr "Ήχος"
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:22
 msgid "Yes"
-msgstr ""
+msgstr "Ναι"
 
 #: ../../tracks/track-types.rst:14
 msgid "Audio regions"
@@ -1089,7 +1090,7 @@ msgstr "Ομάδα ήχου"
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "No"
-msgstr ""
+msgstr "Όχι"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
