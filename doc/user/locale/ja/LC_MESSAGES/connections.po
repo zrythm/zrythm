@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: 2020-09-30 22:58+0000\n"
+"PO-Revision-Date: 2020-10-06 02:26+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "connections/ja/>\n"
@@ -46,14 +46,13 @@ msgstr ""
 "のポートをダブルクリックすることで行います。"
 
 #: ../../connections/making-connections.rst:22
-#, fuzzy
 msgid ""
 "By double clicking the port, you can select a port to connect it to, or "
 "edit existing connections. You can also drag the slider to adjust the "
 "level of the amount to send."
 msgstr ""
-"ポートをダブルクリックすることで、接続するポートを選択したり、既存の接続を編集することができます。また、スライダーをドラッグして送信する量のレベルを調整す"
-"ることもできます。"
+"ポートをダブルクリックすることで、接続するポートを選択したり、既存の接続を編集することができます。また、スライダーをドラッグしてセンドする量を調整すること"
+"もできます。"
 
 #: ../../connections/making-connections.rst:28
 msgid "Routing Graph"
