@@ -57,7 +57,7 @@ msgid ""
 "Balance (or :term:`Stereo` balance) is the left-right balance of a stereo"
 " audio signal."
 msgstr ""
-"Ισορροπία (ή ισορροπία `Stereo`) είναι η αριστερή-δεξιά ισορροπία ενός "
+"Ισορροπία (ή ισορροπία :term:`Stereo`) είναι η αριστερή-δεξιά ισορροπία ενός "
 "στέρεο ηχητικού σήματος."
 
 #: ../../glossary/intro.rst:23
@@ -124,7 +124,7 @@ msgid ""
 "A :abbr:`DAW (Digital Audio Workstation)` is software used to compose, "
 "record, edit, arrange, mix and master music."
 msgstr ""
-"Το :abbr:`DAW (Digital Audio Workstation)`είναι πρόγραμμα που "
+"Το :abbr:`DAW (Digital Audio Workstation)` είναι πρόγραμμα που "
 "χρησιμοποιείται για τη σύνθεση, ηχογράφηση, επεξεργασία, διάταξη, μίξη και "
 "μάστερινγκ μουσικής."
 
@@ -137,7 +137,7 @@ msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "means audio signal processing."
 msgstr ""
-"Στο πλαίσιο του :term:`DAW`, :abbr:`DSP (Digital Signal Processing)`σημαίνει "
+"Στο πλαίσιο του :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` σημαίνει "
 "επεξεργασία του ηχητικού σήματος."
 
 #: ../../glossary/intro.rst:57
@@ -229,7 +229,7 @@ msgid ""
 "Panning is the distribution of a :term:`Mono` signal into a new stereo or"
 " multi-channel sound field."
 msgstr ""
-"Το πανάρισμα είναι η διανομή ενός σήματος `Mono` σε στέρεο ή σε πολυκαναλικό "
+"Το πανάρισμα είναι η διανομή ενός σήματος :term:`Mono` σε στέρεο ή σε πολυκαναλικό "
 "ηχητικό πεδίο."
 
 #: ../../glossary/intro.rst:101

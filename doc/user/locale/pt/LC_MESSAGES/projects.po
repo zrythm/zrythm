@@ -175,7 +175,7 @@ msgid ""
 msgstr ""
 "Um modelo em branco está disponível e você pode criar os seus próprios "
 "modelos a copiar um diretório de projeto :file:`templates` em "
-":file:`{ZRYTHM_USER_DIR}/templates`."
+":term:`Zrythm user path`."
 
 #: ../../projects/saving-loading.rst:36
 msgid ""
