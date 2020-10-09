@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-08-14 22:35+0000\n"
-"Last-Translator: Waui <wau-wau@tutanota.de>\n"
+"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"Last-Translator: André Menrath <andre.menrath@posteo.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/de/>\n"
 "Language: de\n"
-"Language-Team: German "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -216,7 +217,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:65
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: ../../configuration/preferences/intro.rst:67
 #, fuzzy
@@ -1345,4 +1346,3 @@ msgstr ""
 
 #~ msgid "The :term:`pan law` to use when applying pan on mono signals."
 #~ msgstr ""
-
