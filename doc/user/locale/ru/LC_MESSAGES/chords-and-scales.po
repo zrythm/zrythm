@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 15:23+0000\n"
-"PO-Revision-Date: 2020-09-30 22:58+0000\n"
+"PO-Revision-Date: 2020-10-03 16:41+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualchords-and-scales/ru/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: ../../chords-and-scales/intro.rst:6
 msgid "Chords and Scales"
-msgstr ""
+msgstr "Аккорды (Chord) и гаммы (Scale)"
 
 #: ../../chords-and-scales/overview.rst:6
 msgid "Overview"
@@ -34,10 +34,12 @@ msgid ""
 "Chords and scales can be used to easily try out various chords and to "
 "make it easier to follow chord progressions."
 msgstr ""
+"Аккорды (Chord) и гаммы (Scale) можно использовать, чтобы легко опробовать "
+"различные аккорды и упростить создание последовательностей аккордов."
 
 #: ../../chords-and-scales/overview.rst:12
 msgid "Chord Pad"
-msgstr ""
+msgstr "Список Аккордов (Chord Pad)"
 
 #: ../../chords-and-scales/overview.rst:14
 msgid ""
@@ -45,11 +47,14 @@ msgid ""
 "can be used to trigger chords. The chord pad can be found in the bottom "
 "panel."
 msgstr ""
+"Список аккордов содержит 12 кнопок (по 1 для каждой клавиши на клавиатуре "
+"фортепиано), которые можно использовать для создания аккордов. Список "
+"аккордов находится на нижней панели."
 
 #: ../../chords-and-scales/overview.rst:18
 #: ../../chords-and-scales/overview.rst:74
 msgid "This is a TODO feature."
-msgstr ""
+msgstr "В разработке."
 
 #: ../../chords-and-scales/overview.rst:21
 msgid "Chord Track"
@@ -61,18 +66,24 @@ msgid ""
 "and these can then be used to dictate what chord and scale is active "
 "when. For example, you can specify a chord progression as follows."
 msgstr ""
+"Внутри трека аккордов можно создавать регионы аккордов (Chord Region) и "
+"гаммы (Scale), которые затем можно использовать для определения того, какой "
+"аккорд и какая гамма должны быть активны в некоторый момент времени. "
+"Например, вы можете указать последовательность аккордов следующим образом."
 
 #: ../../chords-and-scales/overview.rst:33
 msgid "Chord region and scale inside the chord track in the timeline."
 msgstr ""
+"Регион аккордов (Chord Region) и гамма (Scale) внутри трека аккордов на "
+"таймлайне (Timeline)."
 
 #: ../../chords-and-scales/overview.rst:40
 msgid "Chord objects inside the chord region above."
-msgstr ""
+msgstr "Аккорды внутри региона аккордов показаны выше."
 
 #: ../../chords-and-scales/overview.rst:43
 msgid "Highlighting"
-msgstr ""
+msgstr "Подсветка (Highlight)"
 
 #: ../../chords-and-scales/overview.rst:45
 msgid ""
@@ -80,28 +91,34 @@ msgid ""
 "corresponding to the scale, chord, or both at the position of the "
 "playhead."
 msgstr ""
+"Затем вы можете использовать подсветку внутри регионов MIDI, чтобы "
+"подсветить ноты, соответствующие гамме или аккорду на позиции курсора в "
+"данный момент времени."
 
 #: ../../chords-and-scales/overview.rst:53
 msgid "Chord highlighting."
-msgstr ""
+msgstr "Подсветка нот с помощью аккордов (Chord)."
 
 #: ../../chords-and-scales/overview.rst:59
 msgid "Scale highlighting."
-msgstr ""
+msgstr "Подсветка нот с помощью гамм (Scale)."
 
 #: ../../chords-and-scales/overview.rst:65
 msgid "Scale and chord highlighting."
-msgstr ""
+msgstr "Подсветка гаммы и аккорда одновременно (Both)."
 
 #: ../../chords-and-scales/overview.rst:68
 msgid "Live Audition"
-msgstr ""
+msgstr "Живое прослушивание"
 
 #: ../../chords-and-scales/overview.rst:70
 msgid ""
 "You can route the output of the chord track to a MIDI or Instrument track"
 " for live auditioning of the chord track's events."
 msgstr ""
+"Вы можете направить выход (Direct Out) трека аккордов на трек MIDI (MIDI "
+"Track) или инструментальный трек (Instrument Track) для прослушивания "
+"событий трека аккордов в реальном времени."
 
 #~ msgid "TODO"
 #~ msgstr ""

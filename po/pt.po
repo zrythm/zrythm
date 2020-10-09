@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-10-02 10:41+0000\n"
+"PO-Revision-Date: 2020-10-04 19:40+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -326,9 +326,8 @@ msgid "Failed to open file: %s"
 msgstr "Falha ao abrir o ficheiro: %s"
 
 #: src/project.c:186
-#, fuzzy
 msgid "Project not compressed by zstd"
-msgstr "Projeto não comprimido pela zstd!"
+msgstr "Projeto não comprimido pela zstd"
 
 #: src/project.c:199
 #, c-format
@@ -586,9 +585,9 @@ msgid "Error loading LV2 bundle dir: "
 msgstr "Erro ao carregar o diretório de molhos LV2: "
 
 #: src/plugins/plugin_manager.c:1111
-#, fuzzy, c-format
+#, c-format
 msgid "Scanned %s plugin: %s"
-msgstr "Suplementos de AU verificados"
+msgstr "%s suplemento verificado: %s"
 
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
@@ -596,7 +595,7 @@ msgstr "Suplementos de AU verificados"
 #: src/plugins/plugin_manager.c:1125
 #, fuzzy, c-format
 msgid "Skipped %1$s plugin at %2$s"
-msgstr "O suplemento LV2 em %s foi pulado"
+msgstr "%1$s suplemento em %s foi pulado"
 
 #: src/plugins/plugin_manager.c:1253
 msgid "Scanned LV2 plugin"
@@ -1467,7 +1466,7 @@ msgstr "Geral"
 #: resources/ui/preferences.ui:449 build/data/org.zrythm.Zrythm.gschema.xml:555
 #: build/data/org.zrythm.Zrythm.gschema.xml:590
 msgid "Plugins"
-msgstr "Plugins"
+msgstr "Suplementos"
 
 #: src/gui/widgets/preferences.c:88
 #, fuzzy
@@ -1561,7 +1560,6 @@ msgid "Pan"
 msgstr "Pan"
 
 #: src/gui/widgets/preferences.c:124
-#, fuzzy
 msgctxt "guilabel"
 msgid "Pan"
 msgstr "Pan"
@@ -1972,9 +1970,9 @@ msgid "Passthrough input"
 msgstr "Entrada de passagem"
 
 #: src/gui/widgets/track.c:1812 src/gui/widgets/track.c:1872
-#, fuzzy, c-format
+#, c-format
 msgid "MIDI Channel %d"
-msgstr "Canal MIDI %s"
+msgstr "Canal MIDI %d"
 
 #: src/gui/widgets/track.c:1852
 #, c-format
@@ -2081,9 +2079,8 @@ msgid "The following files will be created:"
 msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:496
-#, fuzzy
 msgid "in the directory:"
-msgstr "Diretoria fonte"
+msgstr "no diretório:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:653
 msgid "<name>.<format>"
@@ -2255,7 +2252,7 @@ msgstr "Só pode deixar cair ficheiros de áudio em faixas de áudio"
 
 #: src/audio/chord_track.c:57 resources/ui/inspector_chord.ui:31
 msgid "Chords"
-msgstr ""
+msgstr "Acordes"
 
 #: src/audio/automation_track.c:98
 #, fuzzy
@@ -2280,9 +2277,9 @@ msgid "Post-fader send"
 msgstr "Envio pós-fader"
 
 #: src/audio/channel_send.c:402
-#, fuzzy, c-format
+#, c-format
 msgid "%s input"
-msgstr "Sem entradas"
+msgstr "entrada %s"
 
 #: src/audio/marker_track.c:59
 msgid "Markers"
@@ -2925,7 +2922,6 @@ msgid "Setup Zrythm"
 msgstr "Configuração do Zrythm"
 
 #: resources/ui/first_run_assistant.ui:52
-#, fuzzy
 msgid ""
 "<b><i>Note: Zrythm is currently in alpha</i></b>\n"
 "\n"
@@ -2933,9 +2929,11 @@ msgid ""
 "This will guide you through the basic setup of Zrythm. First, choose your "
 "language."
 msgstr ""
-"Bem-vindo a Zrythm.\n"
-" Isto irá guiá-lo através da configuração básica do Zrythm. Primeiro, "
-"escolha a sua língua."
+"<b><i>Nota: Zrythm está atualmente em alfa</i></b>\n"
+"\n"
+"Bem-vindo à Zrythm.\n"
+"Isto irá guiá-lo através da configuração básica da Zrythm. Primeiro escolha "
+"o seu idioma."
 
 #: resources/ui/first_run_assistant.ui:93 resources/ui/preferences.ui:512
 msgid "Language"
@@ -2997,9 +2995,8 @@ msgid "Log Level"
 msgstr ""
 
 #: resources/ui/log_viewer.ui:75
-#, fuzzy
 msgid "Save As..."
-msgstr "Gravar Como"
+msgstr "Gravar Como..."
 
 #: resources/ui/scale_selector_window.ui:51
 msgid "Root Key"
@@ -3568,7 +3565,7 @@ msgstr "Visualizador de eventos"
 
 #: resources/ui/automation_track.ui:31
 msgid "Control this automation track is for"
-msgstr "Controle, para qual esta faixa de automação é"
+msgstr "O controle para qual esta é a faixa de automação"
 
 #: resources/ui/automation_track.ui:43
 msgid "Mute automation track"
@@ -3691,11 +3688,11 @@ msgstr "Faixas"
 
 #: resources/ui/export_dialog.ui:184
 msgid "Mixdown"
-msgstr ""
+msgstr "Mixdown"
 
 #: resources/ui/export_dialog.ui:197
 msgid "Stems"
-msgstr ""
+msgstr "Hastes"
 
 #: resources/ui/export_dialog.ui:224
 msgid "Song"
@@ -4093,9 +4090,8 @@ msgid "Plugin browser tab"
 msgstr "Navegador de Plugins"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:305
-#, fuzzy
 msgid "Selected plugin browser tab."
-msgstr "Navegador de Plugins"
+msgstr "Guia do navegador de suplemento selecionado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:309
 #, fuzzy
@@ -4134,9 +4130,8 @@ msgid "The monitor out volume in amplitude (0 to 2)."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:330
-#, fuzzy
 msgid "Plugin favorites"
-msgstr "Propriedades do suplemento"
+msgstr "Favoritos do suplemento"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:331
 msgid ""
@@ -4168,9 +4163,8 @@ msgid "Selected editing tool"
 msgstr "Ferramenta de Selecionar / Alongar"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:346
-#, fuzzy
 msgid "Selected editing tool."
-msgstr "Ferramenta de Selecionar / Alongar"
+msgstr "Ferramenta de edição selecionada."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:350
 msgid "Last used MIDI function"
@@ -4310,9 +4304,8 @@ msgid "Transport loop"
 msgstr "Cliente de transporte de JACK"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:453
-#, fuzzy
 msgid "Whether looping is enabled."
-msgstr "Metrónomo"
+msgstr "Se o looping está ativado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:457
 msgid "Return to cue"
@@ -4329,9 +4322,8 @@ msgid "Metronome enabled"
 msgstr "Metrónomo"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:463
-#, fuzzy
 msgid "Whether the metronome is enabled."
-msgstr "Metrónomo"
+msgstr "Se o metrónomo está ativado."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:468
 #, fuzzy
@@ -4348,9 +4340,8 @@ msgid "Punch mode enabled"
 msgstr "Metrónomo"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:474
-#, fuzzy
 msgid "Whether punch in/out is enabled for recording."
-msgstr "Metrónomo"
+msgstr "Se o punch in/out está ativado para gravação."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:478
 msgid "Start playback on MIDI input"
@@ -4369,9 +4360,8 @@ msgid "Audio backend"
 msgstr "Backend áudio"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:498
-#, fuzzy
 msgid "The audio backend to use."
-msgstr "O backend de áudio para se conectar"
+msgstr "O backend de áudio a usar."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:502
 #, fuzzy
@@ -4379,9 +4369,8 @@ msgid "RtAudio device"
 msgstr "Entradas Áudio"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:503
-#, fuzzy
 msgid "The name of the RtAudio device to use."
-msgstr "O backend de áudio para se conectar"
+msgstr "O nome do aparelho RtAudio a usar."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:507
 #, fuzzy
@@ -4389,9 +4378,8 @@ msgid "SDL device"
 msgstr "Aparelhos MIDI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:508
-#, fuzzy
 msgid "The name of the SDL device to use."
-msgstr "O backend de áudio para se conectar"
+msgstr "O nome do aparelho SDL a usar."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:513
 msgid "Samplerate to pass to the backend."
@@ -4402,18 +4390,16 @@ msgid "Buffer size"
 msgstr "Tamanho do buffer"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:518
-#, fuzzy
 msgid "Buffer size to pass to the backend."
-msgstr "Testa os backends"
+msgstr "Tamanho do buffer para passar ao backend."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:522
 msgid "MIDI backend"
 msgstr "Backend MIDI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:523
-#, fuzzy
 msgid "The MIDI backend to use."
-msgstr "O backend MIDI para se conectar"
+msgstr "O backend MIDI a usar."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:527
 #, fuzzy
@@ -4434,9 +4420,8 @@ msgid "A list of controllers to enable."
 msgstr "Uma lista de controladores para conectar-los automaticamente."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:547
-#, fuzzy
 msgid "The directory used to save user data in."
-msgstr "Selecione o diretório acima para lá gravar o projeto"
+msgstr "O diretório usado para gravar os dados do utilizador."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:560
 msgid "Open UI on instantiation"
@@ -4490,39 +4475,36 @@ msgid "VST plugins"
 msgstr "Suplementos VST"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:600
-#, fuzzy
 msgid ""
 "The search paths to scan for VST plugins in. Duplicate paths will be "
 "deduplicated."
 msgstr ""
-"Em seguida, escolha o local para gravar ficheiros temporários e projetos (ou "
-"aceite o padrão)"
+"Os caminhos de pesquisa para procurar por suplementos VST. Os caminhos "
+"duplicados serão deduplicados."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:604
 msgid "SFZ instruments"
 msgstr "Instrumentos SFZ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:605
-#, fuzzy
 msgid ""
 "The search paths to scan for SFZ instruments in. Duplicate paths will be "
 "deduplicated."
 msgstr ""
-"Em seguida, escolha o local para gravar ficheiros temporários e projetos (ou "
-"aceite o padrão)"
+"Os caminhos de pesquisa para onde procurar por instrumentos SFZ. Os caminhos "
+"duplicados serão deduplicados."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:609
 msgid "SF2 instruments"
 msgstr "Instrumentos SFZ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:610
-#, fuzzy
 msgid ""
 "The search paths to scan for SF2 instruments in. Duplicate paths will be "
 "deduplicated."
 msgstr ""
-"Em seguida, escolha o local para gravar ficheiros temporários e projetos (ou "
-"aceite o padrão)"
+"Os caminhos de pesquisa para procurar por instrumentos SF2. Os caminhos "
+"duplicados serão deduplicados."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:623
 msgid "Fade algorithm"

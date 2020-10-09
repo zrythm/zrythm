@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-10-03 13:25+0000\n"
+"PO-Revision-Date: 2020-10-04 19:41+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
@@ -49,7 +49,7 @@ msgstr "все"
 #: resources/ui/inspector_master.ui:31 resources/ui/inspector_ap.ui:31
 #: resources/ui/inspector_midi.ui:31
 msgid "Region"
-msgstr ""
+msgstr "Регион (Region)"
 
 #: inc/gui/backend/arranger_object.h:94
 msgid "Midi Note"
@@ -784,7 +784,7 @@ msgstr ""
 
 #: src/gui/widgets/track_input_expander.c:704
 msgid "Mono"
-msgstr ""
+msgstr "Моно (Mono)"
 
 #: src/gui/widgets/track_input_expander.c:736
 msgid "Gain"
@@ -1623,7 +1623,7 @@ msgstr ""
 
 #: src/gui/widgets/event_viewer.c:115
 msgid "MIDI note"
-msgstr ""
+msgstr "MIDI нота (MIDI note)"
 
 #: src/gui/widgets/event_viewer.c:121
 msgid "Automation point"
@@ -2675,7 +2675,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:30
 msgid "Global Shortcuts"
-msgstr "Глобальные Комбинации Клавиш"
+msgstr "Основные горячие клавиши (Global Shortcuts)"
 
 #: resources/gtk/help-overlay.ui:53
 msgid "Toggle Fullscreen"
@@ -2703,7 +2703,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:98 resources/ui/header.ui:92
 msgid "Project"
-msgstr "Проект"
+msgstr "Проект (Project)"
 
 #: resources/gtk/help-overlay.ui:110
 msgid "Open a project"
@@ -2755,7 +2755,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:199
 msgid "Editor Shortcuts"
-msgstr "Ярлыки Редактора"
+msgstr "Горячие клавиши редактора (Editor Shortcuts)"
 
 #: resources/gtk/help-overlay.ui:203
 msgid "Tool"
@@ -3023,7 +3023,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:199
 msgid "Chord Pad"
-msgstr ""
+msgstr "Список Аккордов (Chord Pad)"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
@@ -3282,7 +3282,7 @@ msgstr ""
 
 #: resources/ui/port_info_dialog.ui:114
 msgid "Range"
-msgstr ""
+msgstr "Диапазон (Range)"
 
 #: resources/ui/port_info_dialog.ui:128
 msgid "Flags"
@@ -3362,7 +3362,7 @@ msgstr ""
 
 #: resources/ui/port_selector_popover.ui:123
 msgid "Plugin"
-msgstr ""
+msgstr "Плагин (Plugin)"
 
 #: resources/ui/port_selector_popover.ui:185
 msgid "Port"
@@ -3482,7 +3482,7 @@ msgstr ""
 
 #: resources/ui/bounce_dialog.ui:65
 msgid "Bounce"
-msgstr ""
+msgstr "Запекание (Bounce)"
 
 #: resources/ui/bounce_dialog.ui:91
 msgid "Bounce with effect chain"
@@ -3553,7 +3553,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:137
 msgid "Time Range"
-msgstr ""
+msgstr "Временной диапазон (Time Range)"
 
 #: resources/ui/export_dialog.ui:152
 msgid "Tracks"
@@ -3561,11 +3561,11 @@ msgstr "Треки"
 
 #: resources/ui/export_dialog.ui:184
 msgid "Mixdown"
-msgstr ""
+msgstr "Микс (Mixdown)"
 
 #: resources/ui/export_dialog.ui:197
 msgid "Stems"
-msgstr ""
+msgstr "Стемы (Stems)"
 
 #: resources/ui/export_dialog.ui:224
 msgid "Song"
@@ -3583,7 +3583,7 @@ msgstr "Zrythm"
 #: resources/ui/export_dialog.ui:303
 #: build/data/org.zrythm.Zrythm.gschema.xml:374
 msgid "Format"
-msgstr ""
+msgstr "Формат (Format)"
 
 #: resources/ui/export_dialog.ui:325
 #: build/data/org.zrythm.Zrythm.gschema.xml:359
@@ -3597,7 +3597,7 @@ msgstr ""
 #: resources/ui/export_dialog.ui:345
 #: build/data/org.zrythm.Zrythm.gschema.xml:384
 msgid "Dither"
-msgstr ""
+msgstr "Дизеринг (Dither)"
 
 #: resources/ui/export_dialog.ui:363
 #: build/data/org.zrythm.Zrythm.gschema.xml:394
@@ -3606,7 +3606,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:386
 msgid "Filename Pattern"
-msgstr ""
+msgstr "Шаблон названия файла (Filename Pattern)"
 
 #: resources/ui/export_dialog.ui:464
 msgid "~"
@@ -3776,9 +3776,8 @@ msgstr ""
 
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:16
-#, fuzzy
 msgid "zrythm"
-msgstr "Zrythm"
+msgstr "zrythm"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:205
 msgid "Recent project list"

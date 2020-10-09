@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-09-26 18:02+0000\n"
+"PO-Revision-Date: 2020-10-03 16:41+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
+"manualmodulators/ru/>\n"
 "Language: ru\n"
-"Language-Team: Russian "
-"<https://hosted.weblate.org/projects/zrythm/manualmodulators/ru/>\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../modulators/intro.rst:8
@@ -31,26 +32,34 @@ msgid ""
 " For example, you can route an LFO to a filter cutoff parameter to "
 "modulate its value."
 msgstr ""
+"Модуляторы - это любые плагины, у которых есть хотя бы один выходной порт "
+":term:`CV`. Эти порты CV можно направить к любому автоматизируемому "
+"параметру внутри Zrythm. Например, вы можете направить LFO на параметр "
+"реверберации (Reverb), чтобы модулировать его значение."
 
 #: ../../modulators/intro.rst:16
 msgid "Modulators Tab"
-msgstr ""
+msgstr "Вкладка \"Модуляторы\" (Modulators)"
 
 #: ../../modulators/intro.rst:17
 msgid ""
 "Zrythm has a modulators tab in the bottom panel that can hold any number "
 "of modulators."
 msgstr ""
+"Zrythm имеет вкладку \"Модуляторы\" на нижней панели, которая может "
+"содержать любое количество модуляторов."
 
 #: ../../modulators/intro.rst:23
 msgid ""
 "Modulators are associated with the :doc:`../tracks/modulator-track`, "
 "which contains all modulators in the :term:`Project`."
 msgstr ""
+"Модуляторы связаны с :doc:`../tracks/modulator-track`, который содержит все "
+"модуляторы в :term:`Project`."
 
 #: ../../modulators/intro.rst:28
 msgid "Adding Modulators"
-msgstr ""
+msgstr "Добавление модуляторов"
 
 #: ../../modulators/intro.rst:29
 msgid ""
@@ -59,10 +68,14 @@ msgid ""
 "can be :ref:`filtered inside the plugin browser <plugins-files/plugins"
 "/plugin-browser:Filter Buttons>`."
 msgstr ""
+"Модуляторные плагины могут быть добавлены перетаскиванием с :doc:'. /plugins-"
+"files/plugins/plugin-browser' во вкладку \"Модуляторы\" (Modulators). "
+"Модуляторные плагины могут быть :ref:'отфильтрованы в браузере плагинов "
+"<plugins-files/plugins/plugin-browser:Filter Buttons>."
 
 #: ../../modulators/intro.rst:35
 msgid "Routing Modulators"
-msgstr ""
+msgstr "Направление модуляторов"
 
 #: ../../modulators/intro.rst:36
 msgid ""
@@ -70,6 +83,9 @@ msgid ""
 " by clicking on the arrow and following the prompt to select the "
 "destination."
 msgstr ""
+"Выходы модулятора можно направить на автоматизируемые :term:`порты "
+"управления <Control>`, нажав на стрелку и следуя подсказке, чтобы выбрать "
+"цель для модуляции."
 
 #~ msgid "Modulators are Plugins that have at least one CV output port."
 #~ msgstr ""
@@ -101,4 +117,3 @@ msgstr ""
 #~ "clicking on the arrow and following "
 #~ "the prompt to select the destination."
 #~ msgstr ""
-

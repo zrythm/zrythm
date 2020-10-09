@@ -2,28 +2,32 @@
 # Copyright (C) 2019, Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
-#
-#, fuzzy
+# iLyd <mrzarp@protonmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-04 19:41+0000\n"
+"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/credits/"
+"ru/>\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../credits/intro.rst:6
 msgid "Credits"
-msgstr ""
+msgstr "Авторы (Credits)"
 
 #: ../../credits/intro.rst:9
 msgid "Authors"
-msgstr ""
+msgstr "Авторы"
 
 #: ../../credits/intro.rst:10
 msgid ""
@@ -31,10 +35,13 @@ msgid ""
 "distribution. These include developers, graphic artists and other authors"
 " of copyrightable work."
 msgstr ""
+"Смотрите файл :download:`AUTHORS <../../../AUTHORS>` в исходном коде. К ним "
+"относятся разработчики, художники и другие авторы работ, охраняемых "
+"авторским правом."
 
 #: ../../credits/intro.rst:16
 msgid "Translators"
-msgstr ""
+msgstr "Переводчики (Translators)"
 
 #: ../../credits/intro.rst:17
 msgid ""
@@ -42,14 +49,17 @@ msgid ""
 "distribution. These include translators of the software, the user manual "
 "and the website."
 msgstr ""
+"Смотрите файл :download:`TRANSLATORS <../../../TRANSLATORS>` в исходном "
+"коде. К ним относятся переводчики программного обеспечения, "
+"пользовательского руководства и веб-сайта."
 
 #: ../../credits/intro.rst:24
 msgid "Other Contributors"
-msgstr ""
+msgstr "Другие участники"
 
 #: ../../credits/intro.rst:25
 msgid "See the :download:`THANKS <../../../THANKS>` in the source distribution."
-msgstr ""
+msgstr "Смотрите :download:`THANKS <../../../THANKS>` в исходном коде."
 
 #~ msgid "Portuguese:"
 #~ msgstr ""
@@ -173,4 +183,3 @@ msgstr ""
 #~ "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in"
 #~ " the source distribution."
 #~ msgstr ""
-

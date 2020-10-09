@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-10-03 13:25+0000\n"
+"PO-Revision-Date: 2020-10-04 19:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualexporting/pt/>\n"
@@ -35,9 +35,8 @@ msgstr ""
 ":ref:`zrythm-interface/main-toolbar:Export As`."
 
 #: ../../exporting/audio-and-midi.rst:18
-#, fuzzy
 msgid "Export dialog"
-msgstr "Exportação"
+msgstr "Diálogo de exportação"
 
 #: ../../exporting/audio-and-midi.rst:21
 msgid "Fields"
@@ -88,7 +87,7 @@ msgstr "Afazer"
 
 #: ../../exporting/audio-and-midi.rst:39
 msgid "MP3 support."
-msgstr ""
+msgstr "Suporte para MP3."
 
 #: ../../exporting/audio-and-midi.rst:42
 msgid "Dither"
@@ -96,7 +95,7 @@ msgstr "Dither"
 
 #: ../../exporting/audio-and-midi.rst:44
 msgid "Implement."
-msgstr ""
+msgstr "Implementar."
 
 #: ../../exporting/audio-and-midi.rst:47
 msgid "Bit Depth"
@@ -136,7 +135,7 @@ msgstr "O padrão a utilizar como nome do ficheiro."
 
 #: ../../exporting/audio-and-midi.rst:64
 msgid "Mixdown"
-msgstr ""
+msgstr "Mixdown"
 
 #: ../../exporting/audio-and-midi.rst:65
 msgid ""
@@ -144,19 +143,20 @@ msgid ""
 "included in the resulting file. This is the option to use when exporting "
 "your song."
 msgstr ""
+"Ao exportar a mixdown, o som de todas as faixas selecionadas será incluído "
+"no ficheiro resultante. Esta é a opção a ser usada ao exportar a sua música."
 
 #: ../../exporting/audio-and-midi.rst:72
 msgid "Export options for mixdown"
-msgstr ""
+msgstr "Opções de exportação para mixdown"
 
 #: ../../exporting/audio-and-midi.rst:77
-#, fuzzy
 msgid "Exported file"
-msgstr "Abrir Diretório Exportado"
+msgstr "Ficheiro exportado"
 
 #: ../../exporting/audio-and-midi.rst:80
 msgid "Stems"
-msgstr ""
+msgstr "Hastes"
 
 #: ../../exporting/audio-and-midi.rst:81
 msgid ""
@@ -165,14 +165,18 @@ msgid ""
 "song separately. For example, you can :term:`bounce <Bounce>` the drums "
 "and the bass as separate audio files."
 msgstr ""
+"Exportar hastes significa que cada faixa selecionada será exportada no seu "
+"próprio ficheiro. Isto é útil quando quer compartilhar os componentes da sua "
+"música separadamente. Por exemplo, pode :term:`bounce <Bounce>` a bateria e "
+"o baixo como ficheiros de áudio separados."
 
 #: ../../exporting/audio-and-midi.rst:91
 msgid "Export options for stems"
-msgstr ""
+msgstr "Opções de exportação para hastes"
 
 #: ../../exporting/audio-and-midi.rst:96
 msgid "Exported files"
-msgstr ""
+msgstr "Ficheiros exportados"
 
 #: ../../exporting/intro.rst:6
 msgid "Exporting"
@@ -191,15 +195,14 @@ msgstr ""
 "depuração e também ajuda a visualizar os internos da Zrythm."
 
 #: ../../exporting/routing-graph.rst:13
-#, fuzzy
 msgid ""
 "Clicking the :guilabel:`Export Graph` button in the :doc:`../zrythm-"
 "interface/main-toolbar` will show the following selection. The routing "
 "graph can be exported as either a PNG image or a .dot graph."
 msgstr ""
-"Clicando no botão :zbutton:`Exportar Gráfico`, aparecerá a seguinte "
-"seleção. O gráfico de roteamento pode ser exportado como uma imagem PNG "
-"ou como um gráfico .dot."
+"Ao clicar no botão :zbutton:`Exportar Gráfico`, mostrará a seguinte seleção. "
+"O gráfico de roteamento pode ser exportado como uma imagem PNG ou como um "
+"gráfico .dot."
 
 #: ../../exporting/routing-graph.rst:22
 msgid ""

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:30+0100\n"
-"PO-Revision-Date: 2020-10-03 13:25+0000\n"
+"PO-Revision-Date: 2020-10-04 19:41+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/ru/>\n"
@@ -1044,7 +1044,7 @@ msgstr "Трек модуляторов (Modulator Track)"
 #: ../../tracks/modulator-track.rst:8
 #: ../../tracks/tempo-track.rst:8
 msgid "Write this page."
-msgstr "Эта страничка еще не готова."
+msgstr "Напишите эту страницу."
 
 #: ../../tracks/overview.rst:6
 msgid "Overview"

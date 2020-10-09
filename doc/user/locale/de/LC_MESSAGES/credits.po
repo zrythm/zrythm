@@ -2,28 +2,32 @@
 # Copyright (C) 2019, Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
-#
-#, fuzzy
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
+# André Menrath <andre.menrath@posteo.de>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"Last-Translator: André Menrath <andre.menrath@posteo.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/credits/de/"
+">\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../credits/intro.rst:6
 msgid "Credits"
-msgstr ""
+msgstr "Mitwirkende"
 
 #: ../../credits/intro.rst:9
 msgid "Authors"
-msgstr ""
+msgstr "Autoren"
 
 #: ../../credits/intro.rst:10
 msgid ""
@@ -31,10 +35,13 @@ msgid ""
 "distribution. These include developers, graphic artists and other authors"
 " of copyrightable work."
 msgstr ""
+"In der Datei :download:`AUTHORS <../../../AUTHORS>`des Quellcodes finden "
+"sich die EntwicklerInnen, GrafikerInnen und andere AutorInnen von "
+"urheberrechtlich geschützten Werken."
 
 #: ../../credits/intro.rst:16
 msgid "Translators"
-msgstr ""
+msgstr "Übersetzer"
 
 #: ../../credits/intro.rst:17
 msgid ""
@@ -42,14 +49,17 @@ msgid ""
 "distribution. These include translators of the software, the user manual "
 "and the website."
 msgstr ""
+"In der Datei :download:`TRANSLATORS <../../../TRANSLATORS>`des Quellcodes "
+"finden sich die ÜbersetzerInnen der Software, des Benutzerhandbuchs und der "
+"Website."
 
 #: ../../credits/intro.rst:24
 msgid "Other Contributors"
-msgstr ""
+msgstr "Weitere Beitragende"
 
 #: ../../credits/intro.rst:25
 msgid "See the :download:`THANKS <../../../THANKS>` in the source distribution."
-msgstr ""
+msgstr "Siehe :download:`THANKS <../../../THANKS>` im Quellcode."
 
 #~ msgid "Portuguese:"
 #~ msgstr ""
@@ -173,4 +183,3 @@ msgstr ""
 #~ "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in"
 #~ " the source distribution."
 #~ msgstr ""
-

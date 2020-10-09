@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"PO-Revision-Date: 2020-10-04 19:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "connections/pt/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../connections/intro.rst:6
 msgid "Connections"
-msgstr ""
+msgstr "Ligações"
 
 #: ../../connections/making-connections.rst:8
 msgid "Making Connections"
@@ -114,7 +114,7 @@ msgstr ""
 
 #: ../../connections/ports.rst:34
 msgid "Audio"
-msgstr ""
+msgstr "Áudio"
 
 #: ../../connections/ports.rst:34
 msgid "Ports of this type receive or send raw audio signals."

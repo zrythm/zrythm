@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-25 22:42+0000\n"
+"PO-Revision-Date: 2020-10-08 23:04+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
+"manualplayback-and-recording/el/>\n"
 "Language: el\n"
-"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm"
-"/manualplayback-and-recording/el/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
@@ -25,7 +26,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:11
 msgid ""
@@ -42,7 +43,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:25
 msgid "Time Signature"
-msgstr ""
+msgstr "Μέτρο"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:30
 msgid "The Time Signature is split into the following"
@@ -140,7 +141,7 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Επισκόπηση"
 
 #: ../../playback-and-recording/overview.rst:8
 msgid ""
@@ -149,7 +150,6 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/overview.rst:12
-#, fuzzy
 msgid "Playhead"
 msgstr "Κεφαλή αναπαραγωγής"
 
@@ -161,7 +161,7 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:18
 msgid "Position"
-msgstr ""
+msgstr "Θέση"
 
 #: ../../playback-and-recording/overview.rst:20
 msgid "Zrythm uses the following format for positions:"
@@ -233,8 +233,9 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/recording.rst:44
+#, fuzzy
 msgid "Latch"
-msgstr ""
+msgstr "Latch"
 
 #: ../../playback-and-recording/recording.rst:49
 msgid ""
@@ -244,7 +245,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:53
 msgid "Touch"
-msgstr ""
+msgstr "Άγγιγμα"
 
 #: ../../playback-and-recording/recording.rst:58
 msgid ""
@@ -270,7 +271,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:16
 msgid "Record"
-msgstr ""
+msgstr "Ηχογράφηση"
 
 #: ../../playback-and-recording/transport-controls.rst:17
 msgid "Arms the project for recording."
@@ -278,7 +279,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:20
 msgid "Play"
-msgstr ""
+msgstr "Έναρξη"
 
 #: ../../playback-and-recording/transport-controls.rst:19
 msgid ""
@@ -288,7 +289,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:23
 msgid "Stop"
-msgstr ""
+msgstr "Παύση"
 
 #: ../../playback-and-recording/transport-controls.rst:23
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
@@ -296,7 +297,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:26
 msgid "Backward"
-msgstr ""
+msgstr "Πίσω"
 
 #: ../../playback-and-recording/transport-controls.rst:26
 msgid "Moves the Playhead backward by the size of 1 snap point."
@@ -304,7 +305,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:29
 msgid "Forward"
-msgstr ""
+msgstr "Μπροστά"
 
 #: ../../playback-and-recording/transport-controls.rst:29
 msgid "Moves the Playhead forward by the size of 1 snap point."
@@ -312,7 +313,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Loop"
-msgstr ""
+msgstr "Λούπα"
 
 #: ../../playback-and-recording/transport-controls.rst:32
 msgid ""
@@ -322,7 +323,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid "Metronome"
-msgstr ""
+msgstr "Μετρονόμος"
 
 #: ../../playback-and-recording/transport-controls.rst:38
 msgid "Clicking the metronome button will set metronome on/off."
@@ -421,4 +422,3 @@ msgstr ""
 
 #~ msgid "Recording MIDI"
 #~ msgstr ""
-

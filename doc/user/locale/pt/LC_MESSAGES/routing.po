@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"PO-Revision-Date: 2020-10-04 19:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "routing/pt/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../routing/control-room.rst:8
 msgid "Control Room"
-msgstr ""
+msgstr "Sala de controlo"
 
 #: ../../routing/control-room.rst:9
 msgid ""
@@ -179,7 +179,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:38
 msgid "Audio"
-msgstr ""
+msgstr "Áudio"
 
 #: ../../routing/ports.rst:39
 msgid "Ports of this type receive or send raw audio signals."

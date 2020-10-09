@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
+"manualmixing/el/>\n"
+"Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../mixing/intro.rst:8
@@ -34,7 +37,7 @@ msgstr ""
 
 #: ../../mixing/overview.rst:22
 msgid "Mixer"
-msgstr ""
+msgstr "Μίκτης"
 
 #: ../../mixing/overview.rst:23
 msgid ""
@@ -95,7 +98,7 @@ msgstr ""
 
 #: ../../mixing/routing.rst:6
 msgid "Routing"
-msgstr ""
+msgstr "Δρομολόγηση"
 
 #: ../../mixing/routing.rst:9
 msgid "Groups"
@@ -223,4 +226,3 @@ msgstr ""
 
 #~ msgid "Send Effects"
 #~ msgstr ""
-

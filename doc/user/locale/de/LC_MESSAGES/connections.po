@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 # Christian B. <buerdman@googlemail.com>, 2020.
+# André Menrath <andre.menrath@posteo.de>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
-"Last-Translator: Christian B. <buerdman@googlemail.com>\n"
+"PO-Revision-Date: 2020-10-06 02:26+0000\n"
+"Last-Translator: André Menrath <andre.menrath@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "connections/de/>\n"
 "Language: de\n"
@@ -26,7 +27,7 @@ msgstr "Verbindungen"
 
 #: ../../connections/making-connections.rst:8
 msgid "Making Connections"
-msgstr ""
+msgstr "Erstelle Verbindungen"
 
 #: ../../connections/making-connections.rst:10
 msgid ""
@@ -34,12 +35,17 @@ msgid ""
 "long as they are compatible. For example, you can route an LFO's CV "
 "output to a filter plugin's cutoff parameter."
 msgstr ""
+"Zrythm ermöglicht es dir jeden Anschluss mit jeden anderen zu verbinden, "
+"solange diese kompatibel zueinander sind. Beispielweise kannst du den CV-"
+"Ausgang eines LFO an den Parameter eines Filterplugins senden."
 
 #: ../../connections/making-connections.rst:15
 msgid ""
 "Connections can be made by double clicking on ports in the :ref:`track-"
 "inspector` or the :ref:`plugin-inspector`."
 msgstr ""
+"Verbindungen können durch einen Doppelklick auf  :ref:`track-inspector`oder "
+":ref:`plugin-inspector`hergestellt werden."
 
 #: ../../connections/making-connections.rst:22
 msgid ""
@@ -50,7 +56,7 @@ msgstr ""
 
 #: ../../connections/making-connections.rst:28
 msgid "Routing Graph"
-msgstr ""
+msgstr "Verbindungsdiagramm"
 
 #: ../../connections/making-connections.rst:29
 msgid ""

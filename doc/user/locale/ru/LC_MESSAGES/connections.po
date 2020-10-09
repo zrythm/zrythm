@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: 2020-10-03 13:25+0000\n"
+"PO-Revision-Date: 2020-10-03 16:41+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "connections/ru/>\n"
@@ -57,7 +57,7 @@ msgstr ""
 
 #: ../../connections/making-connections.rst:28
 msgid "Routing Graph"
-msgstr "График направлений"
+msgstr "График направлений (Routing Graph)"
 
 #: ../../connections/making-connections.rst:29
 msgid ""

@@ -2,84 +2,95 @@
 # Copyright (C) 2019-2020 The Zrythm contributors
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-#
-#, fuzzy
+# Panos Alevropoulos <panosalevropoulos@protonmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/glossary/el/"
+">\n"
+"Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../glossary/intro.rst:8
 msgid "Glossary"
-msgstr ""
+msgstr "Γλωσσάριο"
 
 #: ../../glossary/intro.rst:11
 msgid "a2jmidid"
-msgstr ""
+msgstr "a2jmidid"
 
 #: ../../glossary/intro.rst:13
 msgid ""
 "a2jmidid is an application that bridges between the system MIDI ports and"
 " :term:`JACK`."
 msgstr ""
+"Το a2jmidid είναι μια εφαρμογή που γεφυρώνει τις θύρες MIDI του συστήματος "
+"και το :term:`JACK`."
 
 #: ../../glossary/intro.rst:15
 msgid "AU"
-msgstr ""
+msgstr "AU"
 
 #: ../../glossary/intro.rst:17
 msgid ""
 "A proprietary plugin standard, mainly used on MacOS. We recommend using "
 ":term:`LV2` instead."
 msgstr ""
+"Ένα ιδιωτικό πρότυπο προσθέτων που χρησιμοποιείται κυρίως στα MacOS. Αντί "
+"αυτών, προτείνουμε τη χρήση :term:`LV2`."
 
 #: ../../glossary/intro.rst:19
 msgid "Balance"
-msgstr ""
+msgstr "Ισορροπία"
 
 #: ../../glossary/intro.rst:21
 msgid ""
 "Balance (or :term:`Stereo` balance) is the left-right balance of a stereo"
 " audio signal."
 msgstr ""
+"Ισορροπία (ή ισορροπία `Stereo`) είναι η αριστερή-δεξιά ισορροπία ενός "
+"στέρεο ηχητικού σήματος."
 
 #: ../../glossary/intro.rst:23
 msgid "Bounce"
-msgstr ""
+msgstr "Bounce"
 
 #: ../../glossary/intro.rst:25
 msgid "Bouncing means exporting to audio."
-msgstr ""
+msgstr "Ο όρος bouncing σημαίνει την εξαγωγή σε ήχο."
 
 #: ../../glossary/intro.rst:26
 msgid "CLI"
-msgstr ""
+msgstr "CLI"
 
 #: ../../glossary/intro.rst:28
 msgid ""
 ":abbr:`CLI (Command Line Interface)` is the interface users interact with"
 " when typing commands in a terminal."
 msgstr ""
+":abbr:`CLI (Διεπαφή Γραμμής Εντολών)` είναι η διεπαφή με την οποία "
+"αλληλεπιδρούν οι χρήστες όταν πληκτρολογούν εντολές σε ένα τερματικό."
 
 #: ../../glossary/intro.rst:31
 msgid "Clip"
-msgstr ""
+msgstr "Κλιπ"
 
 #: ../../glossary/intro.rst:33
 msgid "Used interchangeably with :ref:`region <regions>`."
-msgstr ""
+msgstr "Είναι ισοδύναμος όρος με την :ref:`region <regions>`."
 
 #: ../../glossary/intro.rst:35
 msgid "Control"
-msgstr ""
+msgstr "Χειριστής"
 
 #: ../../glossary/intro.rst:37
 msgid ""
@@ -87,50 +98,63 @@ msgid ""
 "control value that affects a processor, such as a plugin. For example, a "
 "gain control. Used interchangeably with :term:`Parameter`."
 msgstr ""
+"Ο χειριστής είναι μία :doc:`port <../routing/ports>` με επεξεργάσιμη από τον "
+"χρήστη χειριστική τιμή που επηρεάζει έναν επεξεργαστή, όπως ένα πρόσθετο. "
+"Για παράδειγμα, ο χειριστής απολαβής. Είναι ισοδύναμος όρος με την "
+":term:`Parameter`."
 
 #: ../../glossary/intro.rst:42
 msgid "CV"
-msgstr ""
+msgstr "CV"
 
 #: ../../glossary/intro.rst:44
 msgid ""
 "In a software environment, :abbr:`CV (Control Voltage)` represents audio-"
 "rate control data."
 msgstr ""
+"Σε περιβάλλον λογισμικού, το :abbr:`CV (Control Voltage)` αντιπροσωπεύει "
+"δεδομένα ελέγχου του ρυθμού ήχου."
 
 #: ../../glossary/intro.rst:47
 msgid "DAW"
-msgstr ""
+msgstr "DAW"
 
 #: ../../glossary/intro.rst:49
 msgid ""
 "A :abbr:`DAW (Digital Audio Workstation)` is software used to compose, "
 "record, edit, arrange, mix and master music."
 msgstr ""
+"Το :abbr:`DAW (Digital Audio Workstation)`είναι πρόγραμμα που "
+"χρησιμοποιείται για τη σύνθεση, ηχογράφηση, επεξεργασία, διάταξη, μίξη και "
+"μάστερινγκ μουσικής."
 
 #: ../../glossary/intro.rst:52
 msgid "DSP"
-msgstr ""
+msgstr "DSP"
 
 #: ../../glossary/intro.rst:54
 msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "means audio signal processing."
 msgstr ""
+"Στο πλαίσιο του :term:`DAW`, :abbr:`DSP (Digital Signal Processing)`σημαίνει "
+"επεξεργασία του ηχητικού σήματος."
 
 #: ../../glossary/intro.rst:57
 msgid "Free software"
-msgstr ""
+msgstr "Ελεύθερο λογισμικό"
 
 #: ../../glossary/intro.rst:59
 msgid ""
 "Free/libre software means users control the program, as opposed to "
 "proprietary software, where the program controls the users."
 msgstr ""
+"Ελεύθερο λογισμικό σημαίνει ότι οι χρήστες ελέγχουν το πρόγραμμα, σε "
+"αντίθεση με το ιδιωτικό λογισμικό, όπου το πρόγραμμα ελέγχει τους χρήστες."
 
 #: ../../glossary/intro.rst:62
 msgid "JACK"
-msgstr ""
+msgstr "JACK"
 
 #: ../../glossary/intro.rst:64
 msgid ""
@@ -138,10 +162,14 @@ msgid ""
 "low latency for users and provides a simple API for developers. It is the"
 " de facto standard sound server for professional audio on GNU/Linux."
 msgstr ""
+"Το :abbr:`JACK (JACK Audio Connection Kit)` είναι ένας διακομιστής ήχου που "
+"προσφέρει χαμηλή καθυστέρηση μεταφοράς για τους χρήστες και παρέχει μια απλή "
+"διεπαφή προγραμματισμού εφαρμογών για τους προγραμματιστές. Είναι ο de facto "
+"πρότυπος διακομιστής ήχου για επαγγελματικό ήχο σε GNU/Linux."
 
 #: ../../glossary/intro.rst:70
 msgid "LV2"
-msgstr ""
+msgstr "LV2"
 
 #: ../../glossary/intro.rst:72
 msgid ""
@@ -149,62 +177,72 @@ msgid ""
 "standard for audio plugins. LV2 has a simple core interface, which is "
 "accompanied by extensions that add more advanced functionality."
 msgstr ""
+"Το :abbr:`LV2 (LADSPA Version 2)` είναι ένα επεκτάσιμο, διαπλατφορμικό "
+"ανοιχτό πρότυπο για πρόσθετα ήχου. Το LV2 έχει απλή διεπαφή στον πυρήνα του, "
+"η οποία συνοδεύεται από πρόσθετα που προσθέτουν πιο προχωρημένη "
+"λειτουργικότητα."
 
 #: ../../glossary/intro.rst:77
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:79
 msgid ""
 ":abbr:`MIDI (Musical Instrument Digital Interface)` is a technical "
 "standard for communication between musical instruments and computers."
 msgstr ""
+"Το :abbr:`MIDI (Musical Instrument Digital Interface)` είναι το τεχνολογικό "
+"πρότυπο για τη διασύνδεση μουσικών οργάνων και υπολογιστών."
 
 #: ../../glossary/intro.rst:82
 msgid "MIDI note"
-msgstr ""
+msgstr "Νότα MIDI"
 
 #: ../../glossary/intro.rst:84
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
+"Οι νότες :term:`MIDI` χρησιμοποιούνται για να πυροδοτήσουν ψηφιακά (ή υλικά) "
+"όργανα."
 
 #: ../../glossary/intro.rst:89
 msgid "Mono"
-msgstr ""
+msgstr "Μόνο"
 
 #: ../../glossary/intro.rst:91
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
-msgstr ""
+msgstr "Το ηχητικό σήμα μονού καναλιού (βλέπε επίσης :term:`Stereo`)."
 
 #: ../../glossary/intro.rst:93
 msgid "Pan law"
-msgstr ""
+msgstr "Νόμος παναρίσματος"
 
 #: ../../glossary/intro.rst:95
 msgid "TODO"
-msgstr ""
+msgstr "ΝΑΓΙΝΕΙ"
 
 #: ../../glossary/intro.rst:96
 msgid "Panning"
-msgstr ""
+msgstr "Πανάρισμα"
 
 #: ../../glossary/intro.rst:98
 msgid ""
 "Panning is the distribution of a :term:`Mono` signal into a new stereo or"
 " multi-channel sound field."
 msgstr ""
+"Το πανάρισμα είναι η διανομή ενός σήματος `Mono` σε στέρεο ή σε πολυκαναλικό "
+"ηχητικό πεδίο."
 
 #: ../../glossary/intro.rst:101
 msgid "Parameter"
-msgstr ""
+msgstr "Παράμετρος"
 
 #: ../../glossary/intro.rst:103
 msgid "Used interchangeably with :term:`Control`."
-msgstr ""
+msgstr "Είναι ισοδύναμος όρος με το :term:`Control`."
 
 #: ../../glossary/intro.rst:104
 msgid "Plugin"
-msgstr ""
+msgstr "Πρόσθετο"
 
 #: ../../glossary/intro.rst:106
 msgid ""
@@ -212,10 +250,13 @@ msgid ""
 "capabilities to Zrythm, such as an :term:`SFZ` instrument or an "
 ":term:`LV2` reverb plugin."
 msgstr ""
+"Το πρόσθετο είναι μια εξωτερική μονάδα που παρέχει δυνατότητες επεξεργασίας "
+"ήχου στο Zrythm, όπως ένα :term:`SFZ` όργανο ή ένα :term:`LV2` πρόσθετο "
+"αντήχησης."
 
 #: ../../glossary/intro.rst:110
 msgid "Project"
-msgstr ""
+msgstr "Έργο"
 
 #: ../../glossary/intro.rst:112
 msgid ""
@@ -223,62 +264,73 @@ msgid ""
 " a project file along with other auxiliary files. See :ref:`Projects` for"
 " more details."
 msgstr ""
+"Με τον όρο έργο εννοείται η συνεδρία δουλειάς. Αποθηκεύεται ως κατάλογος που "
+"περιέχει το αρχείο έργου μαζί με άλλα επικουρικά αρχεία. Βλέπε "
+":ref:`Projects` για περισσότερες λεπτομέρειες."
 
 #: ../../glossary/intro.rst:116
 msgid "Range"
-msgstr ""
+msgstr "Εύρος"
 
 #: ../../glossary/intro.rst:118
 msgid "A Range is a selection of time between two positions."
-msgstr ""
+msgstr "Το εύρος είναι η επιλογή χρόνου μεταξύ δύο θέσεων."
 
 #: ../../glossary/intro.rst:123
 msgid "Region"
-msgstr ""
+msgstr "Περιοχή"
 
 #: ../../glossary/intro.rst:125
 msgid ""
 "A region (or :term:`Clip`) is a container for MIDI Notes, audio or other "
 "events. See :ref:`regions`."
 msgstr ""
+"Η περιοχή (ή :term:`Clip`) είναι ένα κοντείνερ για νότες MIDI, ήχο ή άλλα "
+"γεγονότα. Βλέπε :ref:`regions`."
 
 #: ../../glossary/intro.rst:128
 msgid "SFZ"
-msgstr ""
+msgstr "SFZ"
 
 #: ../../glossary/intro.rst:130
 msgid "SFZ is a file format for sample-based virtual instruments."
 msgstr ""
+"Το SFZ είναι ένα φορμάτ αρχείου για ψηφιακά όργανα που βασίζονται στη χρήση "
+"δειγμάτων."
 
 #: ../../glossary/intro.rst:132
 msgid "SF2"
-msgstr ""
+msgstr "SF2"
 
 #: ../../glossary/intro.rst:134
 msgid "SF2 is the successor of :term:`SFZ`."
-msgstr ""
+msgstr "Το SF2 είναι ο απόγονος του :term:`SFZ`."
 
 #: ../../glossary/intro.rst:135
 msgid "Stereo"
-msgstr ""
+msgstr "Στέρεο"
 
 #: ../../glossary/intro.rst:137
 msgid "A two-channel audio signal (left and right) (see also :term:`Mono`)."
 msgstr ""
+"Είναι το δικαναλικό ηχητικό σήμα (αριστερά και δεξιά) (βλέπε επίσης "
+":term:`Mono`)."
 
 #: ../../glossary/intro.rst:139
 msgid "VST2"
-msgstr ""
+msgstr "VST2"
 
 #: ../../glossary/intro.rst:141
 msgid ""
 "A proprietary plugin standard and the predecessor of VST3. We do not "
 "recommend using this standard."
 msgstr ""
+"Το ιδιωτικό πρότυπο προσθέτων και ο πρόγονος του VST3. Δεν συνιστούμε τη "
+"χρήση αυτού του προτύπου."
 
 #: ../../glossary/intro.rst:143
 msgid "VST3"
-msgstr ""
+msgstr "VST3"
 
 #: ../../glossary/intro.rst:145
 msgid ""
@@ -286,16 +338,23 @@ msgid ""
 "use VST3 than VST2, because it is released as :term:`Free software`. "
 "However, we recommend using the :term:`LV2` standard instead."
 msgstr ""
+"Το VST3 είναι το πρότυπο προσθέτων που διαδέχεται το :term:`VST2`. Είναι "
+"καλύτερο να χρησιμοποιείται το VST3 από το VST2, διότι κυκλοφορεί ως :term:`"
+"Free software`. Ωστόσο, αντί αυτού συνιστούμε τη χρήση του προτύπου "
+":term:`LV2`."
 
 #: ../../glossary/intro.rst:150
 msgid "Zrythm user path"
-msgstr ""
+msgstr "Μονοπάτι χρήστη Zrythm"
 
 #: ../../glossary/intro.rst:152
 msgid ""
 "The path where Zrythm will save user data, such as projects, temporary "
 "files, presets and exported audio. The default is :file:`zrythm` under"
 msgstr ""
+"Το μονοπάτι όπου το Zrythm θα αποθηκεύει τα δεδομένα του χρήστη, όπως έργα, "
+"προσωρινά αρχεία, προρυθμίσεις και εξαγόμενους ήχους. Η προεπιλογή είναι "
+":file:`zrythm` στο"
 
 #: ../../glossary/intro.rst:157
 msgid ""
@@ -304,10 +363,14 @@ msgid ""
 "latest.html>`_) on freedesktop-compliant systems (or if "
 ":envvar:`XDG_DATA_HOME` is defined), or"
 msgstr ""
+":envvar:`XDG_DATA_HOME` (βλέπε το `XDG Base Directory Specification "
+"<https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest."
+"html>`_) σε συστήματα συμβατά με το freedesktop (ή αν έχει οριστεί το "
+":envvar:`XDG_DATA_HOME`), ή"
 
 #: ../../glossary/intro.rst:162
 msgid "the directory for local application data on Windows"
-msgstr ""
+msgstr "ο κατάλογος για τα τοπικά δεδομένα της εφαρμογής στα Windows"
 
 #~ msgid "Used interchangeably with :term:`region`."
 #~ msgstr ""
@@ -369,4 +432,3 @@ msgstr ""
 #~ "However, we recommend using the "
 #~ ":term:`LV2` standard instead."
 #~ msgstr ""
-
