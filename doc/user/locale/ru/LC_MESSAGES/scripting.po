@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:36+0100\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"PO-Revision-Date: 2020-10-04 19:41+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/scripting/"
+"ru/>\n"
 "Language: ru\n"
-"Language-Team: Russian "
-"<https://hosted.weblate.org/projects/zrythm/scripting/ru/>\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../scripting/api/actions
@@ -133,7 +134,7 @@ msgstr ""
 
 #: ../../scripting/examples.rst:6
 msgid "Examples"
-msgstr ""
+msgstr "Примеры"
 
 #: ../../scripting/examples.rst:8
 msgid ""
@@ -141,26 +142,31 @@ msgid ""
 "<https://creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to "
 "copy and modify them."
 msgstr ""
+"Следующие примеры находятся в открытом доступе (`CC 0 "
+"<https://creativecommons.org/publicdomain/zero/1.0/>`_). Не стесняйтесь "
+"копировать и изменять их."
 
 #: ../../scripting/examples.rst:13
 msgid "Hello World"
-msgstr ""
+msgstr "Hello World"
 
 #: ../../scripting/examples.rst:22
 msgid "Print track names"
-msgstr ""
+msgstr "Напечатать названия треков (Track Name)"
 
 #: ../../scripting/examples.rst:39
 msgid "Create Geonkick track and route its mono output to an Audio FX track"
 msgstr ""
+"Создать трек (Track) Geonkick и направить его моно выход на трек Audio FX ("
+"Audio FX Track)"
 
 #: ../../scripting/examples.rst:98
 msgid "Create MIDI track with notes"
-msgstr ""
+msgstr "Создать MIDI трек (MIDI Track) с нотами"
 
 #: ../../scripting/intro.rst:8
 msgid "Scripting"
-msgstr ""
+msgstr "Написание скриптов (Scripting)"
 
 #: ../../scripting/overview.rst:6
 msgid "Overview"
@@ -171,6 +177,8 @@ msgid ""
 "Zrythm offers a scripting interface using the `Guile language "
 "<https://www.gnu.org/software/guile/>`_, an implementation of Scheme."
 msgstr ""
+"Zrythm предлагает интерфейс скриптов, использующий `Guile language "
+"<https://www.gnu.org/software/guile/>`_, реализацию Scheme."
 
 #: ../../scripting/overview.rst:11
 msgid ""
@@ -180,14 +188,18 @@ msgid ""
 "section, one would do :scheme:`(use-modules (audio track))` at the top of"
 " the script."
 msgstr ""
+"В следующем разделе представлен полный список всех доступных процедур в API. "
+"Каждый раздел в API соответствует определенному модулю Guile, поэтому, "
+"например, чтобы использовать процедуры в разделе :scheme:`audio position`, "
+"нужно добавить :scheme:`(use-modules (audio track))` в начале скрипта."
 
 #: ../../scripting/overview.rst:19
 msgid "The Guile API is experimental."
-msgstr ""
+msgstr "Guile API является экспериментальным."
 
 #: ../../scripting/overview.rst:21
 msgid "The Guile API is not available on Windows."
-msgstr ""
+msgstr "Guile API недоступен в Windows."
 
 #~ msgid ""
 #~ "The next section is a comprehensive "
@@ -200,4 +212,3 @@ msgstr ""
 #~ "(audio track))`` at the top of the"
 #~ " script."
 #~ msgstr ""
-

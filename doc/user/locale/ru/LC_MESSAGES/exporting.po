@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-10-03 13:25+0000\n"
+"PO-Revision-Date: 2020-10-04 19:41+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "manualexporting/ru/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:8
 msgid "Audio & MIDI"
-msgstr "аудио и Midi"
+msgstr "Аудио (Audio) и MIDI"
 
 #: ../../exporting/audio-and-midi.rst:10
 msgid ""
@@ -31,48 +31,53 @@ msgid ""
 "project into audio or MIDI files. It can be accessed by clicking :ref"
 ":`zrythm-interface/main-toolbar:Export As`."
 msgstr ""
+"Окно «Экспорт» (Export) ниже используется для экспорта проекта или его части "
+"в аудио или MIDI файлы. Доступ к нему можно получить, нажав на :ref:`zrythm-"
+"interface/main-toolbar:Export As`."
 
 #: ../../exporting/audio-and-midi.rst:18
 msgid "Export dialog"
-msgstr ""
+msgstr "Окно \"Экспорт\" (Export)"
 
 #: ../../exporting/audio-and-midi.rst:21
 msgid "Fields"
-msgstr ""
+msgstr "Поля"
 
 #: ../../exporting/audio-and-midi.rst:24
 msgid "Artist and Genre"
-msgstr ""
+msgstr "Артист (Artist) и жанр (Genre)"
 
 #: ../../exporting/audio-and-midi.rst:25
 msgid ""
 "These will be included as metadata to the exported file if the format "
 "supports it. The title used will be the project title."
 msgstr ""
+"Они будут включены как метаданные в экспортируемый файл, если формат "
+"поддерживает его. Используемое название будет названием проекта."
 
 #: ../../exporting/audio-and-midi.rst:30
 msgid "Format"
-msgstr ""
+msgstr "Формат (Format)"
 
 #: ../../exporting/audio-and-midi.rst:31
 msgid "The format to export to. Currently, the following formats are supported"
-msgstr ""
+msgstr "Формат для экспорта. В настоящее время поддерживаются следующие форматы"
 
 #: ../../exporting/audio-and-midi.rst:34
 msgid "FLAC - .FLAC"
-msgstr ""
+msgstr "FLAC - .FLAC"
 
 #: ../../exporting/audio-and-midi.rst:35
 msgid "OGG (Vorbis) - .ogg"
-msgstr ""
+msgstr "OGG (Vorbis) - .ogg"
 
 #: ../../exporting/audio-and-midi.rst:36
 msgid "WAV - .wav"
-msgstr ""
+msgstr "WAV - .wav"
 
 #: ../../exporting/audio-and-midi.rst:37
 msgid "MIDI - .mid"
-msgstr ""
+msgstr "MIDI - .mid"
 
 #: ../../exporting/audio-and-midi.rst:39
 #: ../../exporting/audio-and-midi.rst:44
@@ -81,19 +86,19 @@ msgstr "В разработке"
 
 #: ../../exporting/audio-and-midi.rst:39
 msgid "MP3 support."
-msgstr ""
+msgstr "MP3 поддержка."
 
 #: ../../exporting/audio-and-midi.rst:42
 msgid "Dither"
-msgstr ""
+msgstr "Дизеринг (Dither)"
 
 #: ../../exporting/audio-and-midi.rst:44
 msgid "Implement."
-msgstr ""
+msgstr "Реализовать."
 
 #: ../../exporting/audio-and-midi.rst:47
 msgid "Bit Depth"
-msgstr ""
+msgstr "Битовая глубина (Bit Depth)"
 
 #: ../../exporting/audio-and-midi.rst:48
 msgid ""
@@ -101,10 +106,12 @@ msgid ""
 "the bit depth the larger the file will be, but it will have better "
 "quality."
 msgstr ""
+"Это битовая глубина, которая будет использоваться при экспорте аудио. Чем "
+"выше битовая глубина, тем больше будет файл, и тем лучше будет его качество."
 
 #: ../../exporting/audio-and-midi.rst:54
 msgid "Time Range"
-msgstr ""
+msgstr "Временной диапазон (Time Range)"
 
 #: ../../exporting/audio-and-midi.rst:55
 msgid ""
@@ -112,18 +119,21 @@ msgid ""
 "(defined by the start/end markers), the current loop range or a custom "
 "time range."
 msgstr ""
+"Диапазон времени для экспорта. Вы можете экспортировать всю песню ("
+"определенную маркерами начала/конца (Start/End Marker)), текущий диапазон "
+"цикла (Loop Range) или произвольный диапазон времени."
 
 #: ../../exporting/audio-and-midi.rst:60
 msgid "Filename Pattern"
-msgstr ""
+msgstr "Шаблон названия файла (Filename Pattern)"
 
 #: ../../exporting/audio-and-midi.rst:61
 msgid "The pattern to use as the name of the file."
-msgstr ""
+msgstr "Шаблон для использования в качестве имени файла."
 
 #: ../../exporting/audio-and-midi.rst:64
 msgid "Mixdown"
-msgstr ""
+msgstr "Микс (Mixdown)"
 
 #: ../../exporting/audio-and-midi.rst:65
 msgid ""
@@ -131,18 +141,20 @@ msgid ""
 "included in the resulting file. This is the option to use when exporting "
 "your song."
 msgstr ""
+"При экспорте микса в итоговый файл будет включен звук со всех треков (Track)"
+". Это вариант, который можно использовать при экспорте песни."
 
 #: ../../exporting/audio-and-midi.rst:72
 msgid "Export options for mixdown"
-msgstr ""
+msgstr "Параметры экспорта для микса"
 
 #: ../../exporting/audio-and-midi.rst:77
 msgid "Exported file"
-msgstr ""
+msgstr "Экспортированный файл"
 
 #: ../../exporting/audio-and-midi.rst:80
 msgid "Stems"
-msgstr ""
+msgstr "Стемы (Stems)"
 
 #: ../../exporting/audio-and-midi.rst:81
 msgid ""
@@ -151,30 +163,34 @@ msgid ""
 "song separately. For example, you can :term:`bounce <Bounce>` the drums "
 "and the bass as separate audio files."
 msgstr ""
+"Экспорт стемов означает, что каждый трек будет экспортирован в отдельный "
+"файл. Это полезно, когда вы хотите экспортировать компоненты своей песни по "
+"отдельности. Например, вы можете произвести :term:`bounce <Bounce>` над "
+"барабанами и басом и получить два отдельных файла."
 
 #: ../../exporting/audio-and-midi.rst:91
 msgid "Export options for stems"
-msgstr ""
+msgstr "Параметры экспорта стемов"
 
 #: ../../exporting/audio-and-midi.rst:96
 msgid "Exported files"
-msgstr ""
+msgstr "Экспортированные файлы"
 
 #: ../../exporting/intro.rst:6
 msgid "Exporting"
-msgstr ""
+msgstr "Экспорт (Exporting)"
 
 #: ../../exporting/routing-graph.rst:8
 msgid "Routing Graph"
-msgstr "График направлений"
+msgstr "График направлений (Routing Graph)"
 
 #: ../../exporting/routing-graph.rst:9
 msgid ""
 "Zrythm allows you to export its routing graph. This is useful for "
 "debugging and also helps visualizing the internals of Zrythm."
 msgstr ""
-"Zrythm позволяет экспортировать свой график маршрутизации. Это полезно "
-"для отладки, а также помогает визуализировать внутренние части Zrythm."
+"Zrythm позволяет экспортировать свой график направлений. Это полезно для "
+"отладки, а также помогает визуализировать внутренние механизмы Zrythm."
 
 #: ../../exporting/routing-graph.rst:13
 msgid ""
@@ -182,12 +198,17 @@ msgid ""
 "interface/main-toolbar` will show the following selection. The routing "
 "graph can be exported as either a PNG image or a .dot graph."
 msgstr ""
+"Нажатие кнопки :guilabel:`Экспорт графика (Export Graph)` в :doc:`../zrythm-"
+"interface/main-toolbar` покажет следующий выбор. График направлений можно "
+"экспортировать как изображение PNG или как график в формате \".dot\"."
 
 #: ../../exporting/routing-graph.rst:22
 msgid ""
 "For large projects, it may take a while to generate the PNG graph and the"
 " resulting image will be extremely large."
 msgstr ""
+"Для больших проектов создание графика в PNG может занять некоторое время, в "
+"результате чего изображение будет очень большим."
 
 #~ msgid "Exporting MIDI Files"
 #~ msgstr ""

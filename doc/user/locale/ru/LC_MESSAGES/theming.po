@@ -2,24 +2,28 @@
 # Copyright (C) 2019-2020 Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-#
-#, fuzzy
+# iLyd <mrzarp@protonmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-03 16:41+0000\n"
+"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/theming/"
+"ru/>\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../theming/css.rst:8
 msgid "CSS"
-msgstr ""
+msgstr "CSS"
 
 #: ../../theming/css.rst:9
 msgid ""
@@ -30,6 +34,11 @@ msgid ""
 ":file:`share/zrythm/themes/zrythm-theme.css` in the installation path on "
 "Windows or the Application contents on MacOS."
 msgstr ""
+"Вы можете изменить тему GTK и цветовую схему, в специальном файле CSS. "
+"Рекомендуется начать с копирования темы из каталога установки Zrythm (обычно "
+":file:`/usr/share/zrythm/themes/zrythm-theme.css` в GNU/Linux и :file:`share/"
+"zrythm/themes/zrythm-theme.css` внутри пути установки в Windows или в "
+"содержимом приложения в MacOS."
 
 #: ../../theming/css.rst:18
 msgid ""
@@ -38,6 +47,10 @@ msgid ""
 "Zrythm directory is :file:`/home/me/zrythm`, you should create a file at "
 ":file:`/home/me/zrythm/themes/theme.css`."
 msgstr ""
+"Вы должны создать файл с именем :file:`theme.css` в каталоге :file:`themes` "
+"в вашем каталоге Zrythm. Например, если ваш каталог Zrythm - это :file:`/"
+"home/iLyd/zrythm`, вы должны создать файл :file:`/home/iLyd/zrythm/themes/"
+"theme.css`."
 
 #: ../../theming/css.rst:23
 msgid ""
@@ -45,10 +58,13 @@ msgid ""
 "<https://github.com/vinceliuice/Matcha-gtk-theme>`_, so additional CSS "
 "rules may need to be overridden."
 msgstr ""
+"Тема Zrythm наследуется от темы `Matcha GTK theme <https://github.com/"
+"vinceliuice/Matcha-gtk-theme>`_, поэтому может потребоваться переопределение "
+"дополнительных правил CSS."
 
 #: ../../theming/css.rst:28
 msgid "Color Scheme"
-msgstr ""
+msgstr "Цветовая схема (Color Scheme)"
 
 #: ../../theming/css.rst:29
 msgid ""
@@ -56,48 +72,61 @@ msgid ""
 "``@define-color``. You can override these with your own colors and Zrythm"
 " will use them where possible."
 msgstr ""
+"Внутри файла темы вы найдете множество цветов, определенных с помощью "
+"``@define-color``. Вы можете заменить их своими собственными цветами, и "
+"Zrythm будет использовать их там, где это возможно."
 
 #: ../../theming/css.rst:34
 msgid "Other GTK-Specific Rules"
-msgstr ""
+msgstr "Другие специфические правила GTK"
 
 #: ../../theming/css.rst:35
 msgid ""
 "You will find lots of information about changing CSS rules for general "
 "GTK widgets online."
 msgstr ""
+"Вы можете найти много информации об изменении правил CSS для общих виджетов "
+"GTK в Интернете."
 
 #: ../../theming/css.rst:38
 msgid "Here are some links by official GNOME sources:"
-msgstr ""
+msgstr "Вот несколько ссылок из официальных источников GNOME:"
 
 #: ../../theming/css.rst:40
 msgid ""
 "`GTK+ CSS Overview <https://developer.gnome.org/gtk3/stable/chap-css-"
 "overview.html>`_"
 msgstr ""
+"`GTK+ CSS Overview <https://developer.gnome.org/gtk3/stable/chap-css-overview"
+".html>`_"
 
 #: ../../theming/css.rst:41
 msgid ""
 "`GTK+ CSS Properties <https://developer.gnome.org/gtk3/stable/chap-css-"
 "properties.html>`_"
 msgstr ""
+"`GTK+ CSS Properties <https://developer.gnome.org/gtk3/stable/chap-css-"
+"properties.html>`_"
 
 #: ../../theming/css.rst:42
 msgid ""
 "`Styling GTK with CSS <https://thegnomejournal.wordpress.com/2011/03/15"
 "/styling-gtk-with-css/>`_"
 msgstr ""
+"`Styling GTK with CSS <https://thegnomejournal.wordpress.com/2011/03/15/"
+"styling-gtk-with-css/>`_"
 
 #: ../../theming/icon-themes.rst:8
 msgid "Icon Themes"
-msgstr ""
+msgstr "Темы значков (Icon Themes)"
 
 #: ../../theming/icon-themes.rst:9
 msgid ""
 "The icon theme that Zrythm uses is freedesktop-compliant, so it can be "
 "easily overridden."
 msgstr ""
+"Тема значков, которую использует Zrythm, совместима с freedesktop, поэтому "
+"ее можно легко изменить."
 
 #: ../../theming/icon-themes.rst:12
 msgid ""
@@ -105,6 +134,9 @@ msgid ""
 "create a directory similar to :file:`share/zrythm/themes/icons/zrythm-"
 "dark` under your Zrythm installation directory."
 msgstr ""
+"Чтобы заменить тему значков Zrythm своей собственной темой значков, вам "
+"необходимо создать каталог, аналогичный :file:`share/zrythm/themes/icons/"
+"zrythm-dark` в каталоге установки Zrythm."
 
 #: ../../theming/icon-themes.rst:17
 msgid ""
@@ -113,12 +145,18 @@ msgid ""
 "dark` with an :file:`index.theme` file and the icons you wish to "
 "override."
 msgstr ""
+"Например, если ваш каталог Zrythm - это :file:`/home/me/zrythm`, вам следует "
+"создать каталог :file:`/home/me/zrythm/themes/icons/zrythm-dark` и файл "
+":file:`index.theme` внутри созданного каталога. Далее помещайте ваши значки "
+"в созданный каталог."
 
 #: ../../theming/icon-themes.rst:23
 msgid ""
 "An easy way to do it is by copying the directory that Zrythm comes with "
 "and replacing the icons with your own."
 msgstr ""
+"Легкий способ сделать это - скопировать каталог, который поставляется с "
+"Zrythm, и заменить значки своими собственными."
 
 #: ../../theming/icon-themes.rst:26
 msgid ""
@@ -126,11 +164,14 @@ msgid ""
 "Specification <https://specifications.freedesktop.org/icon-theme-"
 "spec/latest/>`_."
 msgstr ""
+"Более элегантный способ сделать это - следовать `Спецификации темы значков "
+"freedesktop <https://specifications.freedesktop.org/icon-theme-spec/latest/"
+">`_."
 
 #: ../../theming/intro.rst:6
 #: ../../theming/overview.rst:6
 msgid "Theming"
-msgstr ""
+msgstr "Создание тем интерфейса"
 
 #: ../../theming/overview.rst:7
 msgid ""
@@ -139,6 +180,10 @@ msgid ""
 "directory. This directory can be found in the :ref:`preferences` and will"
 " be referred to as `the Zrythm directory` in this chapter."
 msgstr ""
+"Zrythm стремится обеспечить обширную поддержку тематики. Вы можете изменить "
+"многие значения по умолчанию, которые использует Zrythm, поместив их в свой "
+"пользовательский каталог Zrythm. Этот каталог можно найти в "
+":ref:`preferences` и в этой главе он будет называться `Каталог Zrythm`."
 
 #: ../../theming/overview.rst:13
 msgid ""
@@ -147,6 +192,10 @@ msgid ""
 "Files\\\\Zrythm` on Windows and :file:`Resources` under the the "
 "Application contents on MacOS."
 msgstr ""
+"Каталог установки Zrythm относится к тому месту, где был установлен Zrythm. "
+"Обычно это :file:`/usr` в GNU/Linux, :file:`C:\\\\Program Files\\\\Zrythm` в "
+"Windows и :file:`Resources` в содержимом приложения (Application contents) в "
+"MacOS."
 
 #~ msgid ""
 #~ "You can override the GTK theme "
@@ -196,4 +245,3 @@ msgstr ""
 #~ "and ``Resources`` under the the "
 #~ "Application contents on MacOS."
 #~ msgstr ""
-

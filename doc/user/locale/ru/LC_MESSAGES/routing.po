@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-10-03 13:25+0000\n"
+"PO-Revision-Date: 2020-10-03 16:41+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/routing/"
 "ru/>\n"
@@ -133,7 +133,7 @@ msgstr "Приведите пример сайдчейна (классическ
 
 #: ../../routing/making-connections.rst:34
 msgid "Routing Graph"
-msgstr "График направлений"
+msgstr "График направлений (Routing Graph)"
 
 #: ../../routing/making-connections.rst:35
 msgid ""
