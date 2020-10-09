@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-08-28 17:34+0000\n"
+"PO-Revision-Date: 2020-10-04 19:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualgetting-started/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
-"/manualgetting-started/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../getting-started/getting-plugins.rst:8
@@ -331,7 +332,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:34
 msgid "Path"
-msgstr ""
+msgstr "Caminho"
 
 #: ../../getting-started/running-zrythm.rst:39
 msgid "This is the :term:`Zrythm user path`."
@@ -371,9 +372,8 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:68
-#, fuzzy
 msgid "Plugin Scan"
-msgstr "Suplementos"
+msgstr "Varredura de suplementos"
 
 #: ../../getting-started/running-zrythm.rst:69
 msgid ""
@@ -397,9 +397,8 @@ msgid "Project selection"
 msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:92
-#, fuzzy
 msgid "Main interface"
-msgstr "Interface de áudio"
+msgstr "Interface principal"
 
 #: ../../getting-started/system-requirements.rst:6
 msgid "System Requirements"
@@ -430,13 +429,12 @@ msgid "CPU"
 msgstr "CPU"
 
 #: ../../getting-started/system-requirements.rst:20
-#, fuzzy
 msgid ""
 "For smooth operation, we recommend using a CPU with at least 2GHz clock "
 "speed and at least 4 cores in total."
 msgstr ""
-"Para uma operação suave, é recomendado utilizar uma CPU com pelo menos "
-"2GHz e pelo menos 4 núcleos no total."
+"Para uma operação suave, recomendados utilizar uma CPU com pelo menos 2GHz e "
+"pelo menos 4 núcleos no total."
 
 #: ../../getting-started/system-requirements.rst:24
 msgid "Monitor"
@@ -451,7 +449,6 @@ msgstr ""
 "monitor para trabalhar eficientemente com a Zrythm."
 
 #: ../../getting-started/system-requirements.rst:28
-#, fuzzy
 msgid "Audio interface"
 msgstr "Interface de áudio"
 
@@ -464,7 +461,6 @@ msgstr ""
 "melhor qualidade (especialmente se estiver a gravar áudio)."
 
 #: ../../getting-started/system-requirements.rst:31
-#, fuzzy
 msgid "MIDI keyboard"
 msgstr "Teclado MIDI"
 
@@ -1388,4 +1384,3 @@ msgstr ""
 #~ "See :download:`INSTALL.md <../../../INSTALL.md>` for"
 #~ " installation instructions."
 #~ msgstr ""
-

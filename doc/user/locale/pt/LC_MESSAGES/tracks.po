@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:30+0100\n"
-"PO-Revision-Date: 2020-10-02 10:41+0000\n"
+"PO-Revision-Date: 2020-10-04 19:41+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/pt/>\n"
@@ -554,8 +554,8 @@ msgid ""
 "If the track is an :ref:`instrument-track`, the instrument plugin for "
 "this track."
 msgstr ""
-"Se a faixa é uma :ref:`instrument-track`, o suplemento do instrumento "
-"para esta faixa."
+"Se a faixa é uma :ref:`instrument-track`, é o suplemento do instrumento para "
+"esta faixa."
 
 #: ../../tracks/inspector-page.rst:44
 msgid "If the track takes input, there will be an input selection section."
@@ -1226,23 +1226,22 @@ msgstr ""
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:20
 msgid "Audio"
-msgstr ""
+msgstr "Áudio"
 
 #: ../../tracks/track-types.rst:14
 #: ../../tracks/track-types.rst:17
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:22
 msgid "Yes"
-msgstr ""
+msgstr "Sim"
 
 #: ../../tracks/track-types.rst:14
 msgid "Audio regions"
 msgstr ""
 
 #: ../../tracks/track-types.rst:15
-#, fuzzy
 msgid "Audio Group"
-msgstr "Faixa de Grupo de Áudio"
+msgstr "Grupo de Áudio"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -1253,7 +1252,7 @@ msgstr "Faixa de Grupo de Áudio"
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "No"
-msgstr ""
+msgstr "Não"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -1264,16 +1263,15 @@ msgstr ""
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "None"
-msgstr ""
+msgstr "Nenhum"
 
 #: ../../tracks/track-types.rst:16
 msgid "Audio FX"
-msgstr ""
+msgstr "FX de áudio"
 
 #: ../../tracks/track-types.rst:17
-#, fuzzy
 msgid "Chord"
-msgstr "Registro"
+msgstr "Acorde"
 
 #: ../../tracks/track-types.rst:17
 #: ../../tracks/track-types.rst:18
@@ -1281,7 +1279,7 @@ msgstr "Registro"
 #: ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:24
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord regions & scales"
@@ -1294,15 +1292,15 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:19
 msgid "Marker"
-msgstr ""
+msgstr "Marcador"
 
 #: ../../tracks/track-types.rst:19
 msgid "Markers"
-msgstr ""
+msgstr "Marcadores"
 
 #: ../../tracks/track-types.rst:20
 msgid "Master"
-msgstr ""
+msgstr "Mestre"
 
 #: ../../tracks/track-types.rst:21
 msgid "Modulators"
@@ -1310,15 +1308,15 @@ msgstr "Moduladores"
 
 #: ../../tracks/track-types.rst:23
 msgid "MIDI Group"
-msgstr ""
+msgstr "Grupo de MIDI"
 
 #: ../../tracks/track-types.rst:24
 msgid "MIDI FX"
-msgstr ""
+msgstr "FX de MIDI"
 
 #: ../../tracks/track-types.rst:25
 msgid "Tempo"
-msgstr ""
+msgstr "Tempo"
 
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."
