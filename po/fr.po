@@ -13,10 +13,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-10-03 13:24+0000\n"
-"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -520,16 +520,16 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s Copyright (C) 2018-2020 Contributeurs à Zrythm\n"
+"%s-%s Copyright (C) 2018-2020 Les contributeurs à Zrythm\n"
 "\n"
 "%s est fourni SANS AUCUNE GARANTIE !\n"
 "\n"
 "Ceci est un logiciel libre, et vous pouvez le redistribuer sous\n"
-"certaines conditions. Consultez le fichier `COPYING' dans\n"
-"cette distribution pour plus de détails.\n"
+"certaines conditions. Consultez le fichier `COPYING' pour\n"
+"plus de détails.\n"
 "\n"
-"Écrire des commentaires et reporter des bogues à %s%\n"
-"Supporter ce projet avec https://liberapay.com/Zrythm\n"
+"Écrivez des commentaires et reportez des bogues à %s%\n"
+"Supporter ce projet à https://liberapay.com/Zrythm\n"
 "\n"
 
 #: src/zrythm_app.c:218
@@ -615,9 +615,9 @@ msgstr "Greffon %s scanné:%s"
 #. * is plugin protocol, 2nd
 #. * argument is path
 #: src/plugins/plugin_manager.c:1125
-#, fuzzy, c-format
+#, c-format
 msgid "Skipped %1$s plugin at %2$s"
-msgstr "Greffon %s ignoré à %s"
+msgstr "Greffon %1$s ignoré à %2$s"
 
 #: src/plugins/plugin_manager.c:1253
 msgid "Scanned LV2 plugin"
@@ -1147,7 +1147,7 @@ msgstr "Status"
 #. * translation short
 #: src/gui/widgets/bot_bar.c:521
 msgid "Buf sz"
-msgstr ""
+msgstr "Tai Tam"
 
 #. TRANSLATORS: sample rate
 #: src/gui/widgets/bot_bar.c:527
@@ -1904,14 +1904,12 @@ msgid "Arm for recording"
 msgstr "Armer pour enregistrement"
 
 #: src/gui/widgets/track.c:1212
-#, fuzzy
 msgid "Hide lanes"
-msgstr "Cacher les pistes"
+msgstr "Cacher les lignes"
 
 #: src/gui/widgets/track.c:1216
-#, fuzzy
 msgid "Show lanes"
-msgstr "Afficher les voix de piste"
+msgstr "Afficher les lignes"
 
 #: src/gui/widgets/track.c:1223
 msgid "Hide automation"
@@ -2067,13 +2065,15 @@ msgstr "Couleur de la région"
 
 #: src/gui/widgets/dialogs/export_dialog.c:303
 msgid "none"
-msgstr ""
+msgstr "aucun"
 
 #: src/gui/widgets/dialogs/export_dialog.c:380
 msgid ""
 "\n"
 "1 more file..."
 msgstr ""
+"\n"
+"1 fichier supplémentaire..."
 
 #: src/gui/widgets/dialogs/export_dialog.c:385
 #, c-format
@@ -2081,10 +2081,12 @@ msgid ""
 "\n"
 "%d more files..."
 msgstr ""
+"\n"
+"%d fichiers supplémentaires..."
 
 #: src/gui/widgets/dialogs/export_dialog.c:493
 msgid "The following files will be created:"
-msgstr ""
+msgstr "Les fichiers suivants seront créés :"
 
 #: src/gui/widgets/dialogs/export_dialog.c:496
 msgid "in the directory:"
@@ -2100,7 +2102,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:903
 msgid "No tracks to export"
-msgstr ""
+msgstr "Pas de piste à exporter"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:154
 #, c-format
@@ -2375,9 +2377,8 @@ msgid "Fader Volume"
 msgstr "Fader de Volume"
 
 #: src/audio/fader.c:150
-#, fuzzy
 msgid "Prefader Balance"
-msgstr "Envois pré-fader"
+msgstr "Balance pré-fader"
 
 #: src/audio/fader.c:150
 msgid "Fader Balance"
@@ -2615,7 +2616,7 @@ msgstr "Aucune région sélectionnée"
 
 #: src/actions/actions.c:1907
 msgid "Selections must be on the same lane"
-msgstr ""
+msgstr "Les sélections doivent être sur la même ligne"
 
 #: src/actions/copy_plugins_action.c:288
 #, c-format
@@ -2652,9 +2653,8 @@ msgid "Change BPM"
 msgstr "Changer le tempo"
 
 #: src/actions/channel_send_action.c:194
-#, fuzzy
 msgid "Channel send connection"
-msgstr "Effacer la connexion"
+msgstr "Connexion d'envoi du canal"
 
 #: src/actions/move_plugins_action.c:258
 #, c-format
@@ -3108,9 +3108,8 @@ msgid "Mixer"
 msgstr "Mixeur"
 
 #: resources/ui/bot_dock_edge.ui:183
-#, fuzzy
 msgid "Chord pad"
-msgstr "Tablette d'accord"
+msgstr "Table d'accord"
 
 #: resources/ui/bot_dock_edge.ui:199
 msgid "Chord Pad"
@@ -3484,7 +3483,7 @@ msgstr "MIDI en activité"
 
 #: resources/ui/fader_buttons.ui:120
 msgid "Listen"
-msgstr ""
+msgstr "Écouter"
 
 #: resources/ui/fader_buttons.ui:141
 msgid "Channel settings"
@@ -3571,9 +3570,8 @@ msgid "Add automation track"
 msgstr "Ajouter une piste d'automatisation"
 
 #: resources/ui/bounce_dialog.ui:32
-#, fuzzy
 msgid "Bounce Options"
-msgstr "Options de quantification"
+msgstr "Options de bounce"
 
 #: resources/ui/bounce_dialog.ui:65
 msgid "Bounce"
@@ -3581,7 +3579,7 @@ msgstr "Gel audio"
 
 #: resources/ui/bounce_dialog.ui:91
 msgid "Bounce with effect chain"
-msgstr ""
+msgstr "Bounce avec chaîne d'effet"
 
 #: resources/ui/bounce_dialog.ui:107
 msgid "Tail"
@@ -3629,7 +3627,7 @@ msgstr "Exporter"
 
 #: resources/ui/export_dialog.ui:80
 msgid "Details"
-msgstr ""
+msgstr "Détails"
 
 #: resources/ui/export_dialog.ui:103
 msgid ""
@@ -3663,7 +3661,7 @@ msgstr "Pistes"
 
 #: resources/ui/export_dialog.ui:184
 msgid "Mixdown"
-msgstr ""
+msgstr "Mise à plat"
 
 #: resources/ui/export_dialog.ui:197
 msgid "Stems"
@@ -3712,7 +3710,7 @@ msgstr "Motif de nom de fichier"
 
 #: resources/ui/export_dialog.ui:464
 msgid "~"
-msgstr ""
+msgstr "~"
 
 #: resources/ui/main_window.ui:120
 msgid "This is an app-notification. Click the button to dismiss"
@@ -3733,7 +3731,7 @@ msgstr "Longueur de note"
 
 #: resources/ui/snap_grid_popover.ui:142 resources/ui/snap_grid_popover.ui:264
 msgid "t"
-msgstr ""
+msgstr "t"
 
 #: resources/ui/snap_grid_popover.ui:146 resources/ui/snap_grid_popover.ui:268
 msgid "Triplet"
@@ -3757,7 +3755,7 @@ msgstr "Accrocher"
 
 #: resources/ui/snap_grid_popover.ui:325
 msgid "Link"
-msgstr ""
+msgstr "Lien"
 
 #: resources/ui/range_action_buttons.ui:58
 msgid "Remove range"
@@ -3769,11 +3767,11 @@ msgstr ""
 
 #: resources/ui/editor_toolbar.ui:140
 msgid "Horizontal"
-msgstr ""
+msgstr "Horizontal"
 
 #: resources/ui/editor_toolbar.ui:146
 msgid "Vertical"
-msgstr ""
+msgstr "Vertical"
 
 #: resources/ui/preferences.ui:134
 msgid "The audio backend to connect to"
@@ -3927,7 +3925,7 @@ msgstr "Dernier répertoire dans lequel un projet a été créé."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:229
 msgid "Bounce with effects"
-msgstr ""
+msgstr "Bounce avec effets"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:230
 msgid ""
