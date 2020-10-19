@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-24 22:19+0100\n"
-"PO-Revision-Date: 2020-10-04 19:41+0000\n"
+"PO-Revision-Date: 2020-10-18 07:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualprojects/pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../projects/intro.rst:8
@@ -64,7 +64,7 @@ msgstr "estados"
 
 #: ../../projects/project-info.rst:43
 msgid "Contains plugin states at the time of save (for LV2)"
-msgstr "Contém estados de plugin no momento da gravação (para LV2)"
+msgstr "Contém estados de suplementos no momento da gravação (para LV2)"
 
 #: ../../projects/project-info.rst:46
 msgid "exports"
@@ -205,13 +205,13 @@ msgid ""
 "Project in a new location and :guilabel:`Save` will save the Project in "
 "the previous location."
 msgstr ""
-"Salvar funciona como esperaria: :guilabel:`Gravar Como...` irá gravar o "
-"projeto num local novo e :guilabel:`Gravar` irá gravar o projeto no local"
-" anterior."
+"Gravar funciona como esperaria: :guilabel:`Gravar Como...` irá gravar o "
+"projeto num local novo e :guilabel:`Gravar` irá gravar o projeto no local "
+"anterior."
 
 #: ../../projects/saving-loading.rst:54
 msgid "When saving projects, Zrythm expects you to give it a directory"
-msgstr "Ao salvar projetos, o Zrythm espera que você lhe dê um diretório"
+msgstr "Ao gravar projetos, o Zrythm espera que você lhe dê um diretório"
 
 #: ../../projects/saving-loading.rst:58
 msgid "Automatic Backups"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-10-04 19:41+0000\n"
+"PO-Revision-Date: 2020-10-18 07:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -59,7 +59,7 @@ msgstr "Ver as definições atuais"
 
 #: ../../configuration/additional-settings.rst:27
 msgid "See :option:`zrythm --print-settings`."
-msgstr ""
+msgstr "Veja :option:`zrythm --print-settings`."
 
 #: ../../configuration/additional-settings.rst:30
 msgid "Reset to Factory Settings"
@@ -67,16 +67,15 @@ msgstr "Redefinir para configurações de fábrica"
 
 #: ../../configuration/additional-settings.rst:32
 msgid "See :option:`zrythm --reset-to-factory`."
-msgstr ""
+msgstr "Veja :option:`zrythm --reset-to-factory`."
 
 #: ../../configuration/additional-settings.rst:34
 msgid "Todo"
 msgstr "Afazer"
 
 #: ../../configuration/additional-settings.rst:34
-#, fuzzy
 msgid "This will be added to the UI soon."
-msgstr "Isto será adicionado na IU em breve."
+msgstr "Isto será brevemente adicionado na IU."
 
 #: ../../configuration/device-setup/intro.rst:6
 msgid "Device Setup"
@@ -94,6 +93,11 @@ msgid ""
 "devices available in the :ref:`track inputs <tracks/inspector-"
 "page:Inputs>` (as below) and other places."
 msgstr ""
+"O Zrythm conectará automaticamente com aparelhos especificados em :ref:`"
+"configuration/preferences/intro:Audio inputs` e :ref:`configuration/"
+"preferences/intro:MIDI controllers` e disponibilizará esses aparelhos em "
+":ref:`track inputs <tracks/inspector-page:Inputs>` (como abaixo) e outros "
+"lugares."
 
 #: ../../configuration/device-setup/intro.rst:23
 msgid "JACK"
@@ -110,17 +114,16 @@ msgstr ""
 "`Qjackctl <https://qjackctl.sourceforge.io/>`_."
 
 #: ../../configuration/device-setup/intro.rst:33
-#, fuzzy
 msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
 "using :term:`a2jmidid`."
 msgstr ""
-"Dependendo da sua configuração, os aparelhos MIDI podem precisar ser "
-"ligados ao JACK usando ``a2jmidid``."
+"A depender da sua configuração, os aparelhos MIDI podem precisar ser ligados "
+"ao JACK a usar :term:`a2jmidid`."
 
 #: ../../configuration/device-setup/intro.rst:36
 msgid "Zrythm will not remember connections made externally."
-msgstr ""
+msgstr "A Zrythm não se vai lembrar das ligações feitas externamente."
 
 #: ../../configuration/intro.rst:8
 msgid "Configuration"
@@ -131,15 +134,14 @@ msgid "Preferences"
 msgstr "Preferências"
 
 #: ../../configuration/preferences/intro.rst:12
-#, fuzzy
 msgid ""
 "Zrythm has a Preferences dialog containing all of the global settings "
 "that can be accessed by clicking the gear icon or with :kbd:`Control-"
 "Shift-p`"
 msgstr ""
-"O Zrythm tem uma caixa de diálogo de Preferências com todas as "
-"configurações globais que podem ser acessadas a clicar no ícone de "
-"engrenagem ou por ``Ctrl+Shift+P``."
+"O Zrythm tem uma caixa de diálogo de Preferências com todas as configurações "
+"globais que podem ser acessadas a clicar no ícone de engrenagem ou por "
+"``Ctrl+Shift+p``"
 
 #: ../../configuration/preferences/intro.rst:16
 msgid ""
@@ -170,13 +172,12 @@ msgid "Audio backend"
 msgstr "Backend áudio"
 
 #: ../../configuration/preferences/intro.rst:36
-#, fuzzy
 msgid ""
 "The audio backend to use. The available backends are JACK, RtAudio and "
 "SDL2. We recommend using :term:`JACK` when possible, otherwise RtAudio."
 msgstr ""
-"O backend de áudio a usar. Os backends disponíveis são JACK, RtAudio e "
-"SDL2. Recomendamos o uso do JACK quando possível, caso contrário use o "
+"O backend de áudio a usar. Os backends disponíveis são JACK, RtAudio e SDL2. "
+"Recomendamos o uso de :term:`JACK` quando possível, caso contrário use o "
 "RtAudio."
 
 #: ../../configuration/preferences/intro.rst:41
@@ -203,16 +204,15 @@ msgstr "Uma lista de controladores para conectar-los automaticamente."
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "Audio inputs"
-msgstr ""
+msgstr "Entradas de áudio"
 
 #: ../../configuration/preferences/intro.rst:53
-#, fuzzy
 msgid "A list of audio inputs to auto-connect to."
-msgstr "Uma lista de controladores para conectar-los automaticamente."
+msgstr "Uma lista de entradas de áudio às quais se ligar automaticamente."
 
 #: ../../configuration/preferences/intro.rst:56
 msgid "Paths (Global)"
-msgstr ""
+msgstr "Caminhos (Global)"
 
 #: ../../configuration/preferences/intro.rst:58
 msgid "Global paths."
@@ -224,16 +224,15 @@ msgstr "Caminho do Zrythm"
 
 #: ../../configuration/preferences/intro.rst:62
 msgid "The :term:`Zrythm user path`."
-msgstr ""
+msgstr "O :term :`caminho do utilizador Zrythm`."
 
 #: ../../configuration/preferences/intro.rst:65
 msgid "Plugins"
 msgstr "Suplementos"
 
 #: ../../configuration/preferences/intro.rst:67
-#, fuzzy
 msgid ":term:`Plugin` settings."
-msgstr "Configurações de suplemento."
+msgstr "Configurações de :term:`Plugin`."
 
 #: ../../configuration/preferences/intro.rst:73
 msgid "UIs"
@@ -258,9 +257,8 @@ msgid "Open UI on instantiation"
 msgstr "Abrir a IU na instanciação"
 
 #: ../../configuration/preferences/intro.rst:84
-#, fuzzy
 msgid "Open plugin UIs when they are instantiated."
-msgstr "Abrir NUIs de suplementos quando eles são instanciados."
+msgstr "Abrir IUs de suplementos quando são instanciados."
 
 #: ../../configuration/preferences/intro.rst:87
 msgid "Keep window on top"
@@ -303,54 +301,49 @@ msgid "VST plugins"
 msgstr "Suplementos VST"
 
 #: ../../configuration/preferences/intro.rst:110
-#, fuzzy
 msgid "The search paths to scan for :term:`VST2` plugins in."
-msgstr "Os caminhos de pesquisa para procurar por suplementos VST."
+msgstr "Os caminhos de pesquisa para procurar por suplementos de :term:`VST2`."
 
 #: ../../configuration/preferences/intro.rst:113
-#, fuzzy
 msgid ""
 "This option is only available on Windows. On GNU/Linux and MacOS the "
 "paths are fixed. See :ref:`scanning-plugins` for details."
 msgstr ""
-"Esta opção só está disponível no Windows. Em GNU/Linux e MacOS os "
-"caminhos são fixos. Veja :ref:`plugin-paths' para detalhes."
+"Esta opção só está disponível no Windows. Em GNU/Linux e MacOS os caminhos "
+"são fixos. Veja :ref:`scanning-plugins` para detalhes."
 
 #: ../../configuration/preferences/intro.rst:118
 msgid "SFZ instruments"
 msgstr "Instrumentos SFZ"
 
 #: ../../configuration/preferences/intro.rst:119
-#, fuzzy
 msgid "The search paths to scan for :term:`SFZ` instruments in."
-msgstr "Os caminhos de pesquisa para a busca de instrumentos SFZ."
+msgstr "Os caminhos de pesquisa para a procura de instrumentos :term:`SFZ`."
 
 #: ../../configuration/preferences/intro.rst:123
 msgid "SF2 instruments"
 msgstr "Instrumentos SFZ"
 
 #: ../../configuration/preferences/intro.rst:124
-#, fuzzy
 msgid "The search paths to scan for :term:`SF2` instruments in."
-msgstr "Os caminhos de pesquisa para procurar por instrumentos SF2."
+msgstr "Os caminhos de pesquisa para procurar por instrumentos :term:`SF2`."
 
 #: ../../configuration/preferences/intro.rst:128
 msgid "DSP"
 msgstr "DSP"
 
 #: ../../configuration/preferences/intro.rst:130
-#, fuzzy
 msgid ":term:`DSP` settings."
-msgstr "Configurações gerais."
+msgstr "Configurações de :term:`DSP`."
 
 #: ../../configuration/preferences/intro.rst:136
 msgid "Pan"
 msgstr "Pan"
 
 #: ../../configuration/preferences/intro.rst:138
-#, fuzzy
 msgid ":term:`Panning` options for :term:`Mono` signals (not used at the moment)."
-msgstr "Opções de pan para sinais mono (não usado no momento)."
+msgstr ""
+"Opções de: term: `Panning` para sinais: term:` Mono` (não usados no momento)."
 
 #: ../../configuration/preferences/intro.rst:141
 msgid "Pan algorithm"
@@ -379,9 +372,8 @@ msgid "Pan law"
 msgstr "Lei pan"
 
 #: ../../configuration/preferences/intro.rst:160
-#, fuzzy
 msgid "The :term:`Pan law` to use when applying pan on mono signals."
-msgstr "A lei de pan a ser usada ao aplicar pan em sinais mono."
+msgstr "A :term:`Lei de pan` a ser usada ao aplicar pan em sinais mono."
 
 #: ../../configuration/preferences/intro.rst:164
 msgid "Editing"
@@ -454,9 +446,8 @@ msgid "Project settings."
 msgstr "Configurações do projeto."
 
 #: ../../configuration/preferences/intro.rst:212
-#, fuzzy
 msgid "General (Project)"
-msgstr "Configurações gerais do projeto."
+msgstr "Geral (projeto)"
 
 #: ../../configuration/preferences/intro.rst:214
 msgid "General project settings."
@@ -480,7 +471,7 @@ msgid ""
 "overwritten unless you explicitly save it."
 msgstr ""
 "Isto refere-se a backups automáticos. O projeto principal não será "
-"sobregravado, a menos que o salve explicitamente."
+"sobregravado, a menos que o grave explicitamente."
 
 #: ../../configuration/preferences/intro.rst:225
 msgid "UI"
@@ -491,9 +482,8 @@ msgid "User interface options."
 msgstr "Opções de interface do utilizador."
 
 #: ../../configuration/preferences/intro.rst:233
-#, fuzzy
 msgid "General (UI)"
-msgstr "Geral"
+msgstr "Geral (IU)"
 
 #: ../../configuration/preferences/intro.rst:235
 msgid "General user interface options."
@@ -508,14 +498,14 @@ msgid "The language to use for the user interface."
 msgstr "O idioma a utilizar para a interface do utilizador."
 
 #: ../../configuration/preferences/intro.rst:241
-#, fuzzy
 msgid ""
 "For a list of supported languages and their translation status, or to "
 "translate Zrythm into your language, see `Weblate "
 "<https://hosted.weblate.org/projects/zrythm/>`_."
 msgstr ""
-"Para uma lista de idiomas suportados e o estado de tradução delos, veja "
-"`Weblate <https://hosted.weblate.org/projects/zrythm/>`_."
+"Para uma lista de idiomas suportados e o estado de tradução delas, ou para "
+"traduzir o Zrythm ao seu idioma, veja `Weblate <https://hosted.weblate.org/"
+"projects/zrythm/>`_."
 
 #: ../../configuration/preferences/intro.rst:246
 msgid "Some of these settings require a restart of Zrythm to take effect."

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: 2020-10-04 19:41+0000\n"
+"PO-Revision-Date: 2020-10-14 15:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "connections/pt/>\n"
@@ -26,7 +26,7 @@ msgstr "Ligações"
 
 #: ../../connections/making-connections.rst:8
 msgid "Making Connections"
-msgstr ""
+msgstr "Fazer conexões"
 
 #: ../../connections/making-connections.rst:10
 msgid ""
@@ -34,12 +34,17 @@ msgid ""
 "long as they are compatible. For example, you can route an LFO's CV "
 "output to a filter plugin's cutoff parameter."
 msgstr ""
+"Zrythm permite ao utilizador conectar quase todas as portas a outra porta, "
+"desde que sejam compatíveis. Por exemplo, pode rotear uma saída CV do LFO "
+"para o parâmetro de corte de um suplemento de filtro."
 
 #: ../../connections/making-connections.rst:15
 msgid ""
 "Connections can be made by double clicking on ports in the :ref:`track-"
 "inspector` or the :ref:`plugin-inspector`."
 msgstr ""
+"As conexões podem ser feitas a clicar duas vezes nas portas no :ref:`track-"
+"inspector` ou no :ref:`plugin-inspector`."
 
 #: ../../connections/making-connections.rst:22
 msgid ""
@@ -47,6 +52,9 @@ msgid ""
 "edit existing connections. You can also drag the slider to adjust the "
 "level of the amount to send."
 msgstr ""
+"Ao clicar duas vezes na porta, pode selecionar uma porta para conectá-la ou "
+"editar as conexões existentes. Também pode arrastar o controle deslizante "
+"para ajustar o nível da quantidade a ser enviada."
 
 #: ../../connections/making-connections.rst:28
 msgid "Routing Graph"
@@ -59,20 +67,26 @@ msgid ""
 " but for now Zrythm allows you to export the whole routing graph as a PNG"
 " image, so you can view it externally."
 msgstr ""
+"É muito útil poder visualizar o gráfico de roteamento ao fazer conexões. "
+"Planeamos adicionar essa funcionalidade ao Zrythm no futuro, mas por "
+"enquanto o Zrythm permite que exporte todo o gráfico de roteamento como uma "
+"imagem PNG, para que possa visualizá-lo externamente."
 
 #: ../../connections/making-connections.rst:35
 msgid "See :ref:`exporting-routing-graph` for details."
-msgstr ""
+msgstr "Veja :ref:`exportar-roteiro-graph` para detalhes."
 
 #: ../../connections/ports.rst:8
 msgid "Ports"
-msgstr ""
+msgstr "Portas"
 
 #: ../../connections/ports.rst:10
 msgid ""
 "Before getting into connections, it is necessary to understand some basic"
 " information about ports."
 msgstr ""
+"Antes de entrar em conexões, é necessário entender algumas informações "
+"básicas sobre portas."
 
 #: ../../connections/ports.rst:13
 msgid ""
@@ -80,6 +94,9 @@ msgid ""
 "Zrythm. A port does not process anything on its own, and is usually part "
 "of a `processor`, like a plugin or track."
 msgstr ""
+"Portas são elementos principais, utilizados para rotear os sinais através da "
+"Zrythm. Uma porta não processa nada por si só e normalmente faz parte de um "
+"`processador`, como um suplemento ou uma faixa."
 
 #: ../../connections/ports.rst:19
 msgid ""
@@ -87,30 +104,33 @@ msgid ""
 "MIDI data and 2 `Audio output` ports where it copies the stereo signal "
 "after being processed."
 msgstr ""
+"Por exemplo, uma faixa de instrumento tem uma porta \"entrada MIDI\" que "
+"utiliza para ler dados MIDI e 2 portas \"saída de áudio\" onde copia o sinal "
+"estéreo após ser processado."
 
 #: ../../connections/ports.rst:25
 msgid "Port Directions"
-msgstr ""
+msgstr "Direções de portas"
 
 #: ../../connections/ports.rst:26
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: ../../connections/ports.rst:27
 msgid "The port receives signals."
-msgstr ""
+msgstr "A porta recebe sinais."
 
 #: ../../connections/ports.rst:29
 msgid "Output"
-msgstr ""
+msgstr "Saída"
 
 #: ../../connections/ports.rst:29
 msgid "The port sends signals."
-msgstr ""
+msgstr "A porta envia sinais."
 
 #: ../../connections/ports.rst:32
 msgid "Port Types"
-msgstr ""
+msgstr "Tipos de portas"
 
 #: ../../connections/ports.rst:34
 msgid "Audio"
@@ -118,39 +138,45 @@ msgstr "Áudio"
 
 #: ../../connections/ports.rst:34
 msgid "Ports of this type receive or send raw audio signals."
-msgstr ""
+msgstr "Portas deste tipo recebem ou enviam sinais de áudio brutos."
 
 #: ../../connections/ports.rst:37
 msgid "Event"
-msgstr ""
+msgstr "Evento"
 
 #: ../../connections/ports.rst:37
 msgid "Event ports are mainly used for routing MIDI signals."
 msgstr ""
+"As portas de eventos são utilizadas principalmente para o roteamento de "
+"sinais MIDI."
 
 #: ../../connections/ports.rst:40
 msgid "Control"
-msgstr ""
+msgstr "Controle"
 
 #: ../../connections/ports.rst:40
 msgid ""
 "Control ports are user-editable parameters that can also be automated in "
 "automation lanes."
 msgstr ""
+"Portas de controle são parâmetros editáveis pelo utilizador que também podem "
+"ser automatizadas em pistas de automação."
 
 #: ../../connections/ports.rst:44
 msgid "CV"
-msgstr ""
+msgstr "CV"
 
 #: ../../connections/ports.rst:43
 msgid ""
 "CV ports handle continuous signals and can be used to modulate control "
 "ports."
 msgstr ""
+"Portas CV lidam com sinais contínuos e podem ser usadas para modular portas "
+"de controle."
 
 #: ../../connections/ports.rst:47
 msgid "Port Connections"
-msgstr ""
+msgstr "Conexões de portas"
 
 #: ../../connections/ports.rst:48
 msgid ""
@@ -158,9 +184,14 @@ msgid ""
 "type and opposite direction, with the exception of CV ports which may be "
 "routed to both CV ports and control ports."
 msgstr ""
+"Portas podem ser conectadas entre si, desde que sejam do mesmo tipo e "
+"direção oposta, com exceção dos portos CV que podem ser roteados tanto a "
+"portas CV como a portas de controle."
 
 #: ../../connections/ports.rst:54
 msgid ""
 "When ports are connected, the signal from the source port is added to the"
 " destination port during processing."
 msgstr ""
+"Quando portas estão conectadas, o sinal da porta de origem é adicionado à "
+"porta de destino durante o processamento."

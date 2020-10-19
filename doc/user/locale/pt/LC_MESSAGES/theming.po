@@ -2,24 +2,27 @@
 # Copyright (C) 2019-2020 Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-#
-#, fuzzy
+# ssantos <ssantos@web.de>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-18 07:26+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"theming/pt/>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../theming/css.rst:8
 msgid "CSS"
-msgstr ""
+msgstr "CSS"
 
 #: ../../theming/css.rst:9
 msgid ""
@@ -30,6 +33,12 @@ msgid ""
 ":file:`share/zrythm/themes/zrythm-theme.css` in the installation path on "
 "Windows or the Application contents on MacOS."
 msgstr ""
+"Pode substituir o tema GTK que Zrythm usa com uma grande parte do esquema de "
+"cores num ficheiro CSS especial. É uma boa ideia começar a copiar o tema do "
+"seu diretório de instalação do Zrythm (normalmente :file:`/usr/share/zrythm/"
+"themes/zrythm-theme.css` no GNU/Linux e :file:`share/zrythm/themes/zrythm-"
+"theme.css` no caminho de instalação no Windows ou o conteúdo de aplicações "
+"no MacOS."
 
 #: ../../theming/css.rst:18
 msgid ""
@@ -38,6 +47,10 @@ msgid ""
 "Zrythm directory is :file:`/home/me/zrythm`, you should create a file at "
 ":file:`/home/me/zrythm/themes/theme.css`."
 msgstr ""
+"Deve criar um ficheiro chamado :file:`theme.css` sob o diretório "
+":file:`themes` no seu diretório Zrythm. Por exemplo, se o seu diretório "
+"Zrythm é :file:`/home/me/zrythm`, deve criar um ficheiro em :file:`/home/me/"
+"zrythm/themes/theme.css`."
 
 #: ../../theming/css.rst:23
 msgid ""
@@ -45,10 +58,13 @@ msgid ""
 "<https://github.com/vinceliuice/Matcha-gtk-theme>`_, so additional CSS "
 "rules may need to be overridden."
 msgstr ""
+"O tema Zrythm herda do tema `Matcha GTK <https://github.com/vinceliuice/"
+"Matcha-gtk-theme>`_, portanto regras adicionais de CSS podem precisar ser "
+"substituídas."
 
 #: ../../theming/css.rst:28
 msgid "Color Scheme"
-msgstr ""
+msgstr "Esquema de cores"
 
 #: ../../theming/css.rst:29
 msgid ""
@@ -56,48 +72,61 @@ msgid ""
 "``@define-color``. You can override these with your own colors and Zrythm"
 " will use them where possible."
 msgstr ""
+"Dentro do ficheiro de temas, encontrará muitas cores definidas a utilizar "
+"``@define-color``. Pode substituí-las com as suas próprias cores e Zrythm "
+"irá usá-las sempre que possível."
 
 #: ../../theming/css.rst:34
 msgid "Other GTK-Specific Rules"
-msgstr ""
+msgstr "Outras regras específicas do GTK"
 
 #: ../../theming/css.rst:35
 msgid ""
 "You will find lots of information about changing CSS rules for general "
 "GTK widgets online."
 msgstr ""
+"Encontrará muitas informações sobre a mudança das regras CSS para widgets de "
+"GTK gerais online."
 
 #: ../../theming/css.rst:38
 msgid "Here are some links by official GNOME sources:"
-msgstr ""
+msgstr "Aqui estão algumas ligações de fontes oficiais do GNOME:"
 
 #: ../../theming/css.rst:40
 msgid ""
 "`GTK+ CSS Overview <https://developer.gnome.org/gtk3/stable/chap-css-"
 "overview.html>`_"
 msgstr ""
+"`Visão geral do CSS do GTK+ <https://developer.gnome.org/gtk3/stable/chap-"
+"css-overview.html>`_"
 
 #: ../../theming/css.rst:41
 msgid ""
 "`GTK+ CSS Properties <https://developer.gnome.org/gtk3/stable/chap-css-"
 "properties.html>`_"
 msgstr ""
+"Propriedades do CSS do GTK+ <https://developer.gnome.org/gtk3/stable/chap-"
+"css-properties.html>`_"
 
 #: ../../theming/css.rst:42
 msgid ""
 "`Styling GTK with CSS <https://thegnomejournal.wordpress.com/2011/03/15"
 "/styling-gtk-with-css/>`_"
 msgstr ""
+"`Estilizar GTK com CSS <https://thegnomejournal.wordpress.com/2011/03/15/"
+"styling-gtk-with-css/>`_"
 
 #: ../../theming/icon-themes.rst:8
 msgid "Icon Themes"
-msgstr ""
+msgstr "Temas de ícones"
 
 #: ../../theming/icon-themes.rst:9
 msgid ""
 "The icon theme that Zrythm uses is freedesktop-compliant, so it can be "
 "easily overridden."
 msgstr ""
+"O tema de ícones que a Zrythm usa é compatível com o freedesktop, por isso "
+"pode ser facilmente substituído."
 
 #: ../../theming/icon-themes.rst:12
 msgid ""
@@ -105,6 +134,9 @@ msgid ""
 "create a directory similar to :file:`share/zrythm/themes/icons/zrythm-"
 "dark` under your Zrythm installation directory."
 msgstr ""
+"Para substituir o tema de ícones Zrythm pelo seu próprio tema de ícone, "
+"precisa criar um diretório similar a :file:`share/zrythm/themes/icons/zrythm-"
+"dark` sob o seu diretório de instalação Zrythm."
 
 #: ../../theming/icon-themes.rst:17
 msgid ""
@@ -113,12 +145,17 @@ msgid ""
 "dark` with an :file:`index.theme` file and the icons you wish to "
 "override."
 msgstr ""
+"Por exemplo, se seu diretório Zrythm é :file:`/home/me/zrythm', deve criar "
+"um diretório em :file:`/home/me/zrythm/themes/icons/zrythm-dark' com um "
+"ficheiro :file:`index.theme' e os ícones que deseja substituir."
 
 #: ../../theming/icon-themes.rst:23
 msgid ""
 "An easy way to do it is by copying the directory that Zrythm comes with "
 "and replacing the icons with your own."
 msgstr ""
+"Uma maneira fácil de fazê-lo é copiar o diretório que vem com o Zrythm e "
+"substituir os ícones pelos seus próprios."
 
 #: ../../theming/icon-themes.rst:26
 msgid ""
@@ -126,11 +163,14 @@ msgid ""
 "Specification <https://specifications.freedesktop.org/icon-theme-"
 "spec/latest/>`_."
 msgstr ""
+"Uma forma mais elegante de o fazer é a seguir a Especificação Temática do "
+"Ícone \"Freedesktop\" <https://specifications.freedesktop.org/"
+"icon-theme-spec/latest/>`_."
 
 #: ../../theming/intro.rst:6
 #: ../../theming/overview.rst:6
 msgid "Theming"
-msgstr ""
+msgstr "Temas"
 
 #: ../../theming/overview.rst:7
 msgid ""
@@ -139,6 +179,10 @@ msgid ""
 "directory. This directory can be found in the :ref:`preferences` and will"
 " be referred to as `the Zrythm directory` in this chapter."
 msgstr ""
+"A Zrythm pretende permitir um amplo apoio a temas. Pode substituir muitas "
+"predefinições que a Zrythm usa por coisas no seu diretório de utilizadores "
+"Zrythm. Este diretório pode ser encontrado em :ref:`preferences` e será "
+"referido como `o diretório Zrythm` neste capítulo."
 
 #: ../../theming/overview.rst:13
 msgid ""
@@ -147,6 +191,10 @@ msgid ""
 "Files\\\\Zrythm` on Windows and :file:`Resources` under the the "
 "Application contents on MacOS."
 msgstr ""
+"O \"diretório de instalação do Zrythm\" refere-se ao local em que o Zrythm "
+"foi instalado. Isto normalmente é :file:`/usr` no GNU/Linux, :file:`C:\\\\\\"
+"\\Program Files\\\\\\\\Zrythm` no Windows e :file:`Resources` sob o conteúdo "
+"da aplicação no MacOS."
 
 #~ msgid ""
 #~ "You can override the GTK theme "
@@ -196,4 +244,3 @@ msgstr ""
 #~ "and ``Resources`` under the the "
 #~ "Application contents on MacOS."
 #~ msgstr ""
-
