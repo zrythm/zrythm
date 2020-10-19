@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:30+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-11 10:45+0000\n"
+"Last-Translator: Tércio Martins <tecnotercio@yahoo.com.br>\n"
+"Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
+"zrythm/manualtracks/pt_BR/>\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -92,7 +95,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:31
 #: ../../tracks/tempo-track.rst:31
 msgid "Mute"
-msgstr ""
+msgstr "Silenciar"
 
 #: ../../tracks/audio-track.rst:22
 #: ../../tracks/bus-track-audio.rst:22
@@ -206,7 +209,7 @@ msgstr ""
 #: ../../tracks/instrument-track.rst:59
 #: ../../tracks/midi-track.rst:61
 msgid "Inputs"
-msgstr ""
+msgstr "Entradas"
 
 #: ../../tracks/audio-track.rst:49
 msgid "Left and right audio input sources used when recording."
@@ -220,7 +223,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:47
 #: ../../tracks/midi-track.rst:75
 msgid "Sends"
-msgstr ""
+msgstr "Envios"
 
 #: ../../tracks/audio-track.rst:55
 #: ../../tracks/midi-track.rst:132
@@ -260,7 +263,7 @@ msgstr ""
 
 #: ../../tracks/automation.rst:8
 msgid "Automation"
-msgstr ""
+msgstr "Automação"
 
 #: ../../tracks/automation.rst:11
 msgid "Automation Lanes"
@@ -311,7 +314,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:42
 #: ../../tracks/tempo-track.rst:42
 msgid "Track Name"
-msgstr ""
+msgstr "Nome da Faixa"
 
 #: ../../tracks/bus-track-audio.rst:40
 #: ../../tracks/bus-track-midi.rst:40
@@ -483,7 +486,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:18
 msgid "Track Properties"
-msgstr ""
+msgstr "Propriedades da Faixa"
 
 #: ../../tracks/inspector-page.rst:20
 msgid "Track properties are basic properties that the track has."
@@ -500,7 +503,7 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:35
 #: ../../tracks/track-types.rst:18
 msgid "Instrument"
-msgstr ""
+msgstr "Instrumento"
 
 #: ../../tracks/inspector-page.rst:36
 msgid ""
@@ -744,7 +747,7 @@ msgstr ""
 
 #: ../../tracks/intro.rst:8
 msgid "Tracks"
-msgstr ""
+msgstr "Faixas"
 
 #: ../../tracks/marker-track.rst:10
 msgid "Marker Track"
@@ -1060,14 +1063,14 @@ msgstr ""
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:20
 msgid "Audio"
-msgstr ""
+msgstr "Áudio"
 
 #: ../../tracks/track-types.rst:14
 #: ../../tracks/track-types.rst:17
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:22
 msgid "Yes"
-msgstr ""
+msgstr "Sim"
 
 #: ../../tracks/track-types.rst:14
 msgid "Audio regions"
@@ -1075,7 +1078,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:15
 msgid "Audio Group"
-msgstr ""
+msgstr "Grupo de Áudio"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -1086,7 +1089,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "No"
-msgstr ""
+msgstr "Não"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -1097,15 +1100,15 @@ msgstr ""
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "None"
-msgstr ""
+msgstr "Nenhum"
 
 #: ../../tracks/track-types.rst:16
 msgid "Audio FX"
-msgstr ""
+msgstr "Efeito de Áudio"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord"
-msgstr ""
+msgstr "Acorde"
 
 #: ../../tracks/track-types.rst:17
 #: ../../tracks/track-types.rst:18
@@ -1113,7 +1116,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:24
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord regions & scales"
@@ -1126,7 +1129,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:19
 msgid "Marker"
-msgstr ""
+msgstr "Marcador"
 
 #: ../../tracks/track-types.rst:19
 msgid "Markers"
@@ -1134,7 +1137,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:20
 msgid "Master"
-msgstr ""
+msgstr "Mestre"
 
 #: ../../tracks/track-types.rst:21
 msgid "Modulators"
@@ -1142,15 +1145,15 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:23
 msgid "MIDI Group"
-msgstr ""
+msgstr "Grupo MIDI"
 
 #: ../../tracks/track-types.rst:24
 msgid "MIDI FX"
-msgstr ""
+msgstr "Efeito MIDI"
 
 #: ../../tracks/track-types.rst:25
 msgid "Tempo"
-msgstr ""
+msgstr "Tempo"
 
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."
@@ -1600,4 +1603,3 @@ msgstr ""
 #~ "(temporarily converted to audio), which "
 #~ "dramatically lowers their CPU usage."
 #~ msgstr ""
-

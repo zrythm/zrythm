@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-11 10:45+0000\n"
+"Last-Translator: Tércio Martins <tecnotercio@yahoo.com.br>\n"
+"Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
+"zrythm/manualconfiguration/pt_BR/>\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -108,7 +111,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:10
 msgid "Preferences"
-msgstr ""
+msgstr "Preferências"
 
 #: ../../configuration/preferences/intro.rst:12
 msgid ""
@@ -125,7 +128,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:20
 msgid "General"
-msgstr ""
+msgstr "Geral"
 
 #: ../../configuration/preferences/intro.rst:22
 msgid "General settings."
@@ -194,7 +197,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:65
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: ../../configuration/preferences/intro.rst:67
 msgid ":term:`Plugin` settings."
@@ -256,11 +259,11 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:106
 msgid "Paths"
-msgstr ""
+msgstr "Caminhos"
 
 #: ../../configuration/preferences/intro.rst:109
 msgid "VST plugins"
-msgstr ""
+msgstr "Plugins VST"
 
 #: ../../configuration/preferences/intro.rst:110
 msgid "The search paths to scan for :term:`VST2` plugins in."
@@ -274,7 +277,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:118
 msgid "SFZ instruments"
-msgstr ""
+msgstr "Instrumentos SFZ"
 
 #: ../../configuration/preferences/intro.rst:119
 msgid "The search paths to scan for :term:`SFZ` instruments in."
@@ -282,7 +285,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:123
 msgid "SF2 instruments"
-msgstr ""
+msgstr "Instrumentos SF2"
 
 #: ../../configuration/preferences/intro.rst:124
 msgid "The search paths to scan for :term:`SF2` instruments in."
@@ -298,7 +301,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:136
 msgid "Pan"
-msgstr ""
+msgstr "Balanço"
 
 #: ../../configuration/preferences/intro.rst:138
 msgid ":term:`Panning` options for :term:`Mono` signals (not used at the moment)."
@@ -339,7 +342,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:172
 msgid "Audio"
-msgstr ""
+msgstr "Áudio"
 
 #: ../../configuration/preferences/intro.rst:174
 msgid "Audio editing."
@@ -355,7 +358,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:181
 msgid "Automation"
-msgstr ""
+msgstr "Automação"
 
 #: ../../configuration/preferences/intro.rst:183
 msgid "Automation editing."
@@ -371,7 +374,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:191
 msgid "Undo"
-msgstr ""
+msgstr "Desfazer"
 
 #: ../../configuration/preferences/intro.rst:193
 msgid "Undo options."
@@ -391,7 +394,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:204
 msgid "Projects"
-msgstr ""
+msgstr "Projetos"
 
 #: ../../configuration/preferences/intro.rst:206
 msgid "Project settings."
@@ -1347,4 +1350,3 @@ msgstr ""
 
 #~ msgid "The :term:`pan law` to use when applying pan on mono signals."
 #~ msgstr ""
-

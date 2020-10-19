@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-11 10:45+0000\n"
+"Last-Translator: Tércio Martins <tecnotercio@yahoo.com.br>\n"
+"Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
+"zrythm/manualplayback-and-recording/pt_BR/>\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
@@ -23,7 +26,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:11
 msgid ""
@@ -275,7 +278,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:20
 msgid "Play"
-msgstr ""
+msgstr "Reproduzir"
 
 #: ../../playback-and-recording/transport-controls.rst:19
 msgid ""
@@ -285,7 +288,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:23
 msgid "Stop"
-msgstr ""
+msgstr "Parar"
 
 #: ../../playback-and-recording/transport-controls.rst:23
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
@@ -293,7 +296,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:26
 msgid "Backward"
-msgstr ""
+msgstr "Voltar"
 
 #: ../../playback-and-recording/transport-controls.rst:26
 msgid "Moves the Playhead backward by the size of 1 snap point."
@@ -301,7 +304,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:29
 msgid "Forward"
-msgstr ""
+msgstr "Avançar"
 
 #: ../../playback-and-recording/transport-controls.rst:29
 msgid "Moves the Playhead forward by the size of 1 snap point."
@@ -319,7 +322,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid "Metronome"
-msgstr ""
+msgstr "Metrônomo"
 
 #: ../../playback-and-recording/transport-controls.rst:38
 msgid "Clicking the metronome button will set metronome on/off."
@@ -424,4 +427,3 @@ msgstr ""
 
 #~ msgid "Recording MIDI"
 #~ msgstr ""
-
