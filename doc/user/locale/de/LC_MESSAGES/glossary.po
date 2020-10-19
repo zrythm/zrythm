@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"PO-Revision-Date: 2020-10-16 07:26+0000\n"
 "Last-Translator: André Menrath <andre.menrath@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/glossary/"
 "de/>\n"
@@ -22,49 +22,55 @@ msgstr ""
 
 #: ../../glossary/intro.rst:8
 msgid "Glossary"
-msgstr ""
+msgstr "Glossar"
 
 #: ../../glossary/intro.rst:11
 msgid "a2jmidid"
-msgstr ""
+msgstr "a2jmidid"
 
 #: ../../glossary/intro.rst:13
 msgid ""
 "a2jmidid is an application that bridges between the system MIDI ports and"
 " :term:`JACK`."
 msgstr ""
+"a2jmidid ist eine Anwendung, welche die Verbindungen zwischen :term:`JACK` "
+"und den Midi-Ports des Systems ermöglicht."
 
 #: ../../glossary/intro.rst:15
 msgid "AU"
-msgstr ""
+msgstr "AU"
 
 #: ../../glossary/intro.rst:17
 msgid ""
 "A proprietary plugin standard, mainly used on MacOS. We recommend using "
 ":term:`LV2` instead."
 msgstr ""
+"Ein proprietärer Plugin-Standard, welcher hauptsächlich unter MacOS "
+"eingesetzt wird. Wir empfehlen stattdessen die Verwendung von :term:`LV2`."
 
 #: ../../glossary/intro.rst:19
 msgid "Balance"
-msgstr ""
+msgstr "Balance"
 
 #: ../../glossary/intro.rst:21
 msgid ""
 "Balance (or :term:`Stereo` balance) is the left-right balance of a stereo"
 " audio signal."
 msgstr ""
+"Balance (or :term:`Stereo` balance) ist die Aufteilung der Lautstärke "
+"zwischen linken und rechten Kanal eines Stereo-Audio-Signals."
 
 #: ../../glossary/intro.rst:23
 msgid "Bounce"
-msgstr ""
+msgstr "Bounce"
 
 #: ../../glossary/intro.rst:25
 msgid "Bouncing means exporting to audio."
-msgstr ""
+msgstr "Bouncing bedeutet das Audio zu exportieren."
 
 #: ../../glossary/intro.rst:26
 msgid "CLI"
-msgstr ""
+msgstr "CLI"
 
 #: ../../glossary/intro.rst:28
 msgid ""

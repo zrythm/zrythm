@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-10-04 19:41+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2020-10-16 07:26+0000\n"
+"Last-Translator: André Menrath <andre.menrath@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/de/>\n"
 "Language: de\n"
@@ -162,7 +162,7 @@ msgstr "Regionskontextmenü"
 #: ../../editing/timeline/arranger.rst:167
 #: ../../editing/timeline/toolbar.rst:11
 msgid "Todo"
-msgstr ""
+msgstr "Todo"
 
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/chord-editor.rst:66
