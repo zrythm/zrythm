@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-09-27 07:42+0000\n"
-"Last-Translator: xunil-cloud <freed602om@gmail.com>\n"
+"PO-Revision-Date: 2020-10-11 10:45+0000\n"
+"Last-Translator: sonata-chen <sonatachen39@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -531,7 +531,7 @@ msgstr "初始化檔案管理器"
 
 #: src/zrythm_app.c:338
 msgid "Scanning plugins"
-msgstr "尋找外掛"
+msgstr "正在掃描外掛"
 
 #: src/zrythm_app.c:499
 msgid "License Information"
@@ -570,35 +570,35 @@ msgid "Error loading LV2 bundle dir: "
 msgstr ""
 
 #: src/plugins/plugin_manager.c:1111
-#, fuzzy, c-format
+#, c-format
 msgid "Scanned %s plugin: %s"
-msgstr "尋找外掛"
+msgstr "已掃描 %s 外掛：%s"
 
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
 #. * argument is path
 #: src/plugins/plugin_manager.c:1125
-#, fuzzy, c-format
+#, c-format
 msgid "Skipped %1$s plugin at %2$s"
-msgstr "尋找外掛"
+msgstr "略過 %2$s 下的 %1$s 外掛"
 
 #: src/plugins/plugin_manager.c:1253
 msgid "Scanned LV2 plugin"
-msgstr ""
+msgstr "已掃描 LV2 外掛"
 
 #: src/plugins/plugin_manager.c:1264
 #, c-format
 msgid "Skipped LV2 plugin at %s"
-msgstr ""
+msgstr "略過 %s 下的 LV2 外掛"
 
 #: src/plugins/plugin_manager.c:1339
 msgid "Scanned AU plugin"
-msgstr ""
+msgstr "已掃描 AU 外掛"
 
 #: src/plugins/plugin_manager.c:1346
 #, c-format
 msgid "Skipped AU plugin at %u"
-msgstr ""
+msgstr "略過第 %u 個 AU 外掛"
 
 #: src/plugins/plugin.c:138
 #, c-format

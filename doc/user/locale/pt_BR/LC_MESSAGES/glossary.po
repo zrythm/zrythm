@@ -2,19 +2,22 @@
 # Copyright (C) 2019-2020 The Zrythm contributors
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-#
-#, fuzzy
+# Tércio Martins <tecnotercio@yahoo.com.br>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-11 10:45+0000\n"
+"Last-Translator: Tércio Martins <tecnotercio@yahoo.com.br>\n"
+"Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
+"zrythm/glossary/pt_BR/>\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../glossary/intro.rst:8
@@ -152,7 +155,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:77
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:79
 msgid ""
@@ -162,7 +165,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:82
 msgid "MIDI note"
-msgstr ""
+msgstr "Nota MIDI"
 
 #: ../../glossary/intro.rst:84
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
@@ -170,7 +173,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:89
 msgid "Mono"
-msgstr ""
+msgstr "Mono"
 
 #: ../../glossary/intro.rst:91
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
@@ -204,7 +207,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:104
 msgid "Plugin"
-msgstr ""
+msgstr "Plugin"
 
 #: ../../glossary/intro.rst:106
 msgid ""
@@ -215,7 +218,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:110
 msgid "Project"
-msgstr ""
+msgstr "Projeto"
 
 #: ../../glossary/intro.rst:112
 msgid ""
@@ -234,7 +237,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:123
 msgid "Region"
-msgstr ""
+msgstr "Região"
 
 #: ../../glossary/intro.rst:125
 msgid ""
@@ -389,4 +392,3 @@ msgstr ""
 #~ "However, we recommend using the "
 #~ ":term:`LV2` standard instead."
 #~ msgstr ""
-

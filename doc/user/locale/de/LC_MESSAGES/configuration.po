@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"PO-Revision-Date: 2020-10-16 07:26+0000\n"
 "Last-Translator: André Menrath <andre.menrath@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/de/>\n"
@@ -32,9 +32,14 @@ msgid ""
 "line, or the optional GUI tool `dconf-editor "
 "<https://wiki.gnome.org/Apps/DconfEditor>`_."
 msgstr ""
+"Zrythm speichert alle Einstellungen nach dem GSettings-Standard. Dieser "
+"beinhaltet den Befehl `gsettings <https://developer.gnome.org/gio/stable/"
+"gsettings-tool.html>`mit welchen man die Einstellungen über die "
+"Kommandozeile ändern kann. Optional kann man auch`dconf-editor <https://wiki."
+"gnome.org/Apps/DconfEditor>` verwenden, ein Tool mit graphischer "
+"Benutzeroberfläche."
 
 #: ../../configuration/additional-settings.rst:14
-#, fuzzy
 msgid ""
 "Normally, you shouldn't need to access any of these settings as most of "
 "them are found inside Zrythm's UI, and it is not recommended to edit them"
@@ -43,35 +48,35 @@ msgid ""
 "manually for some reason - for example if your selected backend causes "
 "Zrythm to crash."
 msgstr ""
-"Normalerweise solltest du auf keine dieser Einstellungen zugreifen "
-"müssen, da die meisten von ihnen in Zrythms UI zu finden sind, und es "
-"nicht empfohlen wird, sie zu bearbeiten, da Zrythm manche dieser "
+"Normalerweise solltest du auf keine dieser Einstellungen zugreifen müssen, "
+"da die meisten von ihnen in Zrythms Benutzeroberfläche zu finden sind, und "
+"es nicht empfohlen wird, sie zu bearbeiten, da Zrythm manche dieser "
 "Einstellungen auswertet bevor es sie speichert. Aber in manchen Fällen "
 "möchtest du sie vielleicht aus irgendeinem Grund manuell ändern."
 
 #: ../../configuration/additional-settings.rst:25
 msgid "Viewing the Current Settings"
-msgstr ""
+msgstr "Aktuelle Einstellungen"
 
 #: ../../configuration/additional-settings.rst:27
 msgid "See :option:`zrythm --print-settings`."
-msgstr ""
+msgstr "Siehe die :option:`zrythm --print-settings`."
 
 #: ../../configuration/additional-settings.rst:30
 msgid "Reset to Factory Settings"
-msgstr ""
+msgstr "Zurücksetzen auf Werkseinstellungen"
 
 #: ../../configuration/additional-settings.rst:32
 msgid "See :option:`zrythm --reset-to-factory`."
-msgstr ""
+msgstr "Siehe :option:`zrythm --reset-to-factory`."
 
 #: ../../configuration/additional-settings.rst:34
 msgid "Todo"
-msgstr ""
+msgstr "Todo"
 
 #: ../../configuration/additional-settings.rst:34
 msgid "This will be added to the UI soon."
-msgstr ""
+msgstr "Dies wird demnächst in die Benutzeroberfläche hinzugefügt werden."
 
 #: ../../configuration/device-setup/intro.rst:6
 msgid "Device Setup"
@@ -89,6 +94,11 @@ msgid ""
 "devices available in the :ref:`track inputs <tracks/inspector-"
 "page:Inputs>` (as below) and other places."
 msgstr ""
+"Zrythm wird die Devices, welche in :ref:`configuration/preferences/intro:"
+"Audio inputs`und :ref:`configuration/preferences/intro:MIDI controllers`"
+"spezifiziert sind automatisch verbinden und diese in  :ref:`track inputs <"
+"tracks/inspector-page:Inputs>`(siehe unten) und anderen Orten verfügbar "
+"machen."
 
 #: ../../configuration/device-setup/intro.rst:23
 msgid "JACK"
@@ -107,14 +117,18 @@ msgstr ""
 "möglicherweise mit ``a2jmididid`` nach JACK überbrückt werden müssen."
 
 #: ../../configuration/device-setup/intro.rst:33
+#, fuzzy
 msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
 "using :term:`a2jmidid`."
 msgstr ""
+"Abhängig von Deinem Setup, wird es notwendig sein Midi-Geräte nach JACK "
+"mittels :term:`a2jmidid`zu bridgen."
 
 #: ../../configuration/device-setup/intro.rst:36
 msgid "Zrythm will not remember connections made externally."
 msgstr ""
+"Zrythm kann keine Verbindungen speichern, welche extern erstellt wurden."
 
 #: ../../configuration/intro.rst:8
 msgid "Configuration"
@@ -125,37 +139,34 @@ msgid "Preferences"
 msgstr "Einstellungen"
 
 #: ../../configuration/preferences/intro.rst:12
-#, fuzzy
 msgid ""
 "Zrythm has a Preferences dialog containing all of the global settings "
 "that can be accessed by clicking the gear icon or with :kbd:`Control-"
 "Shift-p`"
 msgstr ""
-"Zrythm hat einen Präferenzendialog, der alle globalen Einstelllungen "
-"enthält, und auf den durch Klicken auf das Zahnradzeichen oder durch "
-"``Strg+Umstell+P`` zugegriffen werden kann."
+"Zrythm hat einen Menü, das alle globalen Einstelllungen enthält, auf den "
+"durch Klicken auf das Zahnradsymbol oder über :kbd:`Strg-Umschalt-p` "
+"zugegriffen werden kann."
 
 #: ../../configuration/preferences/intro.rst:16
-#, fuzzy
 msgid ""
 "Each section in the preferences dialog is explained in the following "
 "sections."
 msgstr ""
-"Der Präferenzendialog ist aufgeteilt in die folgenden Abschnitte, die im "
-"nächsten Kapitel erklärt werden:"
+"Alle Bereiche des Einstellungsmenüs werden in den nachfolgenden Kapiteln "
+"erklärt."
 
 #: ../../configuration/preferences/intro.rst:20
 msgid "General"
-msgstr ""
+msgstr "Allgemein"
 
 #: ../../configuration/preferences/intro.rst:22
-#, fuzzy
 msgid "General settings."
-msgstr "Verwendung von gsettings"
+msgstr "Allgemeine Einstellungen."
 
 #: ../../configuration/preferences/intro.rst:30
 msgid "Engine"
-msgstr ""
+msgstr "Engine"
 
 #: ../../configuration/preferences/intro.rst:32
 msgid "Audio engine settings."

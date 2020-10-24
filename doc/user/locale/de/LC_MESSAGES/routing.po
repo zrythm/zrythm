@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"PO-Revision-Date: 2020-10-16 07:26+0000\n"
 "Last-Translator: André Menrath <andre.menrath@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/routing/de/"
 ">\n"
@@ -61,7 +61,7 @@ msgstr ""
 #: ../../routing/control-room.rst:31
 #: ../../routing/making-connections.rst:30
 msgid "Todo"
-msgstr ""
+msgstr "Todo"
 
 #: ../../routing/control-room.rst:31
 msgid "Move to another chapter."

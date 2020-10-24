@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-10-04 19:41+0000\n"
+"PO-Revision-Date: 2020-10-18 07:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualgetting-started/pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../getting-started/getting-plugins.rst:8
@@ -77,7 +77,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:37
 msgid "Recommended Plugin Bundles"
-msgstr "Pacotes de plugins recomendados"
+msgstr "Pacotes de suplementos recomendados"
 
 #: ../../getting-started/getting-plugins.rst:39
 msgid ""
@@ -93,9 +93,9 @@ msgid ""
 "contains high quality plugins for all the basic effects such as Delay, "
 "Reverb, Compression, EQ and Saturation."
 msgstr ""
-"`ZAM Plugins <http://www.zamaudio.com/?p>`_ é um pacote de efeitos que "
-"contém todos os efeitos básicos como delay, reverb, compressão, "
-"equalizador, saturação."
+"`Suplementos ZAM <http://www.zamaudio.com/?p>`_ é um pacote de efeitos que "
+"contém todos os efeitos básicos como delay, reverb, compressão, equalizador, "
+"saturação."
 
 #: ../../getting-started/getting-plugins.rst:47
 msgid ""
@@ -108,7 +108,7 @@ msgid ""
 "`X42 Plugins <http://x42-plugins.com/x42/>`_ is a collection of various "
 "MIDI effect and meter plugins."
 msgstr ""
-"`X42 plugins <http://x42-plugins.com/x42/>`_, tem muitos plugins de "
+"`Suplementos X42 <http://x42-plugins.com/x42/>`_, tem muitos suplementos de "
 "efeitos e medidores de MIDI."
 
 #: ../../getting-started/getting-plugins.rst:54
@@ -210,7 +210,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:22
 msgid "The installers also include bundled plugins."
-msgstr ""
+msgstr "Os instaladores também incluem suplementos empacotados."
 
 #: ../../getting-started/installation.rst:25
 msgid "Manual Installation"
@@ -233,6 +233,8 @@ msgid ""
 "See :download:`INSTALL.md <../../../INSTALL.md>` in the source "
 "distribution for installation instructions."
 msgstr ""
+"Veja :download:`INSTALL.md <.../.../.../INSTALL.md>` na distribuição da "
+"fonte para instruções de instalação."
 
 #: ../../getting-started/installation.rst:36
 msgid "GNU/Linux"
@@ -292,7 +294,7 @@ msgstr "Porta"
 
 #: ../../getting-started/installation.rst:62
 msgid "You can install the Zrythm port from the official repositories."
-msgstr ""
+msgstr "Pode instalar a porta de Zrythm dos repositórios oficiais."
 
 #: ../../getting-started/intro.rst:8
 msgid "Getting Started"
@@ -300,11 +302,11 @@ msgstr "Primeiros Passos"
 
 #: ../../getting-started/running-zrythm.rst:8
 msgid "Running Zrythm"
-msgstr ""
+msgstr "Executar o Zrythm"
 
 #: ../../getting-started/running-zrythm.rst:11
 msgid "First Run Wizard"
-msgstr ""
+msgstr "Assistente de primeira execução"
 
 #: ../../getting-started/running-zrythm.rst:13
 msgid ""
@@ -313,10 +315,14 @@ msgid ""
 ":term:`Zrythm user path`, the language of the user interface and "
 "audio/MIDI backends."
 msgstr ""
+"Quando executa o Zrythm pela primeira vez, exibirá um assistente que permite "
+"definir as configurações básicas que o Zrythm irá usar. Estas incluem o "
+":term:`Zrythm user path`, o idioma da interface do utilizador e backends de á"
+"udio/MIDI."
 
 #: ../../getting-started/running-zrythm.rst:20
 msgid "Language Selection"
-msgstr ""
+msgstr "Seleção de idioma"
 
 #: ../../getting-started/running-zrythm.rst:25
 msgid ""
@@ -325,10 +331,13 @@ msgid ""
 "<https://hosted.weblate.org/projects/zrythm/#languages>`_, so choose the "
 "language you are most comfortable in."
 msgstr ""
+"Zrythm permite que escolha o idioma da interface. A interface já está "
+"traduzida em `múltiplos idiomas <https://hosted.weblate.org/projects/zrythm/"
+"#languages>`_, por isso escolha o idioma em que se sente mais confortável."
 
 #: ../../getting-started/running-zrythm.rst:30
 msgid "You must have a locale enabled for the language you want to use."
-msgstr ""
+msgstr "Deve ter uma localidade ativada para o idioma que deseja usar."
 
 #: ../../getting-started/running-zrythm.rst:34
 msgid "Path"
@@ -336,11 +345,11 @@ msgstr "Caminho"
 
 #: ../../getting-started/running-zrythm.rst:39
 msgid "This is the :term:`Zrythm user path`."
-msgstr ""
+msgstr "Este é o :term :`caminho do utilizador Zrythm`."
 
 #: ../../getting-started/running-zrythm.rst:42
 msgid "Audio/MIDI Backends"
-msgstr ""
+msgstr "Backends de áudio/MIDI"
 
 #: ../../getting-started/running-zrythm.rst:47
 msgid ""
@@ -348,28 +357,40 @@ msgid ""
 "the recommended one for both, but it takes some time to set up if this is"
 " your first time using it."
 msgstr ""
+"O Zrythm suporta múltiplos motores backend de áudio e MIDI. :term:`JACK` é o "
+"recomendado para ambos, mas leva algum tempo para configurar se esta é a sua "
+"primeira vez a utilizá-lo."
 
 #: ../../getting-started/running-zrythm.rst:52
 msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
 msgstr ""
+"Se o JACK não estiver disponível no seu sistema, recomendamos o RtAudio e o "
+"RtMidi."
 
 #: ../../getting-started/running-zrythm.rst:55
 msgid ""
 "Click :guilabel:`Test` to try connecting to the backend to see if it is "
 "functional."
 msgstr ""
+"Clique :guilabel:`Test` para tentar conectar-se ao backend para ver se está "
+"funcional."
 
 #: ../../getting-started/running-zrythm.rst:58
 msgid ""
 "If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
 "chosen together."
 msgstr ""
+"Se optar por usar JACK, o JACK MIDI e o backend de áudio JACK devem ser "
+"escolhidos em conjunto."
 
 #: ../../getting-started/running-zrythm.rst:63
 msgid ""
 "All of the settings mentioned here are also available in the "
 ":ref:`preferences`, so don't worry if you selected the wrong settings."
 msgstr ""
+"Todas as configurações mencionadas aqui também estão disponíveis em :ref:`"
+"preferences', portanto não se preocupe se selecionou as configurações "
+"erradas."
 
 #: ../../getting-started/running-zrythm.rst:68
 msgid "Plugin Scan"
@@ -380,10 +401,12 @@ msgid ""
 "When the first run wizard is completed, Zrythm will start :doc:`scanning "
 "for plugins <../plugins-files/plugins/scanning>`."
 msgstr ""
+"Quando o primeiro assistente de execução estiver concluído, Zrythm iniciará "
+":doc:`procurar for suplementos <.../plugins-files/plugins/scanning>`."
 
 #: ../../getting-started/running-zrythm.rst:77
 msgid "Project Selection"
-msgstr ""
+msgstr "Seleção de projeto"
 
 #: ../../getting-started/running-zrythm.rst:78
 msgid ""
@@ -391,10 +414,13 @@ msgid ""
 "<../projects/saving-loading>` and then the :doc:`main interface "
 "<../zrythm-interface/zrythm-interface-overview>` will show up."
 msgstr ""
+"Finalmente, o Zrythm irá pedí-lo a :doc:`carregar ou criar um projeto <../"
+"projects/saving-loading>` e depois a :doc:`interface prinipal <../zrythm-"
+"interface/zrythm-interface-overview>` irá aparecer."
 
 #: ../../getting-started/running-zrythm.rst:87
 msgid "Project selection"
-msgstr ""
+msgstr "Seleção de projeto"
 
 #: ../../getting-started/running-zrythm.rst:92
 msgid "Main interface"
@@ -482,6 +508,12 @@ msgid ""
 "<https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93"
 "-beginners-guide-getting-started-jack.html>`_, so we will skip this part."
 msgstr ""
+"Ao utilizar o backend :term:`JACK`, JACK precisa ser configurado antes de "
+"executar o Zrythm. Encontrará muitas informações online sobre como "
+"configurar o JACK, tais como `Desmistificar o JACK - Um Guia para Iniciantes "
+"para Começar com JACK <https://libremusicproduction.com/articles/"
+"demystifying-jack-%E2%80%93-beginners-guide-getting-getting-started-jack."
+"html>`_, então vamos pular esta parte."
 
 #~ msgid "Here are a few terms you should be aware of when using Zrythm."
 #~ msgstr ""

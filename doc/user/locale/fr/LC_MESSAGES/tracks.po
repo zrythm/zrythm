@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:30+0100\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"PO-Revision-Date: 2020-10-11 10:45+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/fr/>\n"
@@ -1022,7 +1022,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:8
 #: ../../tracks/tempo-track.rst:8
 msgid "Write this page."
-msgstr ""
+msgstr "Écrire cette page."
 
 #: ../../tracks/overview.rst:6
 msgid "Overview"

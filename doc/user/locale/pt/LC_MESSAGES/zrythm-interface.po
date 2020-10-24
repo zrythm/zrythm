@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-10-04 19:41+0000\n"
+"PO-Revision-Date: 2020-10-11 10:45+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/pt/>\n"
@@ -508,15 +508,14 @@ msgstr ""
 "de preferências. Veja :ref:`preferences` para mais informações."
 
 #: ../../zrythm-interface/main-toolbar.rst:154
-#, fuzzy
 msgid ""
 "The MIDI In widget shows the :term:`MIDI` activity of auto-connected MIDI"
 " devices and the live waveform display shows the audio waveform from the "
 "master output."
 msgstr ""
-"O widget Entrada MIDI mostra a atividade MIDI dos aparelhos MIDI "
-"autoconetados e o expositor de forma de onda ao vivo mostra a forma de "
-"onda de áudio da saída principal."
+"O widget Entrada MIDI mostra a atividade :term:`MIDI` de aparelhos MIDI auto "
+"conectados e a vista de forma de onda ao vivo mostra a forma de onda de "
+"áudio da saída principal."
 
 #: ../../zrythm-interface/right-panel.rst:8
 msgid "Right Panel"
@@ -622,11 +621,13 @@ msgstr "Define o volume do metrónomo."
 
 #: ../../zrythm-interface/transport-bar.rst:33
 msgid "Return to cue point on stop"
-msgstr ""
+msgstr "Retornar ao ponto de sinalização na parada"
 
 #: ../../zrythm-interface/transport-bar.rst:34
 msgid "Toggles whether to return to the cue point when playback stops."
 msgstr ""
+"Alterna se deve ou não voltar ao ponto de sinalização quando a reprodução "
+"parar."
 
 #: ../../zrythm-interface/transport-bar.rst:38
 msgid "BPM"

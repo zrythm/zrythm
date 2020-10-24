@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-10-04 19:41+0000\n"
+"PO-Revision-Date: 2020-10-18 07:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "glossary/pt/>\n"
@@ -17,32 +17,36 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../glossary/intro.rst:8
 msgid "Glossary"
-msgstr ""
+msgstr "Glossário"
 
 #: ../../glossary/intro.rst:11
 msgid "a2jmidid"
-msgstr ""
+msgstr "a2jmidid"
 
 #: ../../glossary/intro.rst:13
 msgid ""
 "a2jmidid is an application that bridges between the system MIDI ports and"
 " :term:`JACK`."
 msgstr ""
+"a2jmid é uma aplicação que faz a ponte entre as portas MIDI do sistema e o "
+":term:`JACK`."
 
 #: ../../glossary/intro.rst:15
 msgid "AU"
-msgstr ""
+msgstr "AU"
 
 #: ../../glossary/intro.rst:17
 msgid ""
 "A proprietary plugin standard, mainly used on MacOS. We recommend using "
 ":term:`LV2` instead."
 msgstr ""
+"Uma norma de suplementos proprietário, utilizado principalmente no MacOS. "
+"Recomendamos a utilização do :term:`LV2` no seu lugar."
 
 #: ../../glossary/intro.rst:19
 msgid "Balance"
@@ -64,13 +68,15 @@ msgstr ""
 
 #: ../../glossary/intro.rst:26
 msgid "CLI"
-msgstr ""
+msgstr "ILC"
 
 #: ../../glossary/intro.rst:28
 msgid ""
 ":abbr:`CLI (Command Line Interface)` is the interface users interact with"
 " when typing commands in a terminal."
 msgstr ""
+":abbr:`CLI (Interface de linha de comandos)` é a interface com a qual os "
+"utilizadores interagem a digitar comandos num terminal."
 
 #: ../../glossary/intro.rst:31
 msgid "Clip"
@@ -82,7 +88,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:35
 msgid "Control"
-msgstr ""
+msgstr "Controle"
 
 #: ../../glossary/intro.rst:37
 msgid ""
@@ -90,26 +96,34 @@ msgid ""
 "control value that affects a processor, such as a plugin. For example, a "
 "gain control. Used interchangeably with :term:`Parameter`."
 msgstr ""
+"Um controle é um :doc:`port <../routing/ports>` com um valor de controle "
+"modificável pelo utilizador que afeta um processador, tal como um "
+"suplemento. Por exemplo, um controle de ganho. Utilizado alternadamente com "
+":term:`Parameter`."
 
 #: ../../glossary/intro.rst:42
 msgid "CV"
-msgstr ""
+msgstr "CV"
 
 #: ../../glossary/intro.rst:44
 msgid ""
 "In a software environment, :abbr:`CV (Control Voltage)` represents audio-"
 "rate control data."
 msgstr ""
+"Num ambiente de software, :abbr:`CV (Control Voltage)` representa dados de "
+"controle de taxa de áudio."
 
 #: ../../glossary/intro.rst:47
 msgid "DAW"
-msgstr ""
+msgstr "DAW"
 
 #: ../../glossary/intro.rst:49
 msgid ""
 "A :abbr:`DAW (Digital Audio Workstation)` is software used to compose, "
 "record, edit, arrange, mix and master music."
 msgstr ""
+"A :abbr:`DAW (Digital Audio Workstation)` é um software utilizado para "
+"compor, gravar, editar, arranjar, misturar e dominar música."
 
 #: ../../glossary/intro.rst:52
 msgid "DSP"
@@ -120,16 +134,20 @@ msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "means audio signal processing."
 msgstr ""
+"No contexto de um :termo:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
+"significa processamento de sinal de áudio."
 
 #: ../../glossary/intro.rst:57
 msgid "Free software"
-msgstr ""
+msgstr "Software livre"
 
 #: ../../glossary/intro.rst:59
 msgid ""
 "Free/libre software means users control the program, as opposed to "
 "proprietary software, where the program controls the users."
 msgstr ""
+"Software livre/libre significa que os utilizadores controlam o programa, ao "
+"contrário do software proprietário, onde o programa controla os utilizadores."
 
 #: ../../glossary/intro.rst:62
 msgid "JACK"
@@ -141,10 +159,14 @@ msgid ""
 "low latency for users and provides a simple API for developers. It is the"
 " de facto standard sound server for professional audio on GNU/Linux."
 msgstr ""
+"abbr:`JACK (JACK Audio Connection Kit)` é um servidor de som que oferece "
+"baixa latência para os utilizadores e fornece uma API simples para "
+"programadores. É a norma de servidor de som de facto para áudio profissional "
+"no GNU/Linux."
 
 #: ../../glossary/intro.rst:70
 msgid "LV2"
-msgstr ""
+msgstr "LV2"
 
 #: ../../glossary/intro.rst:72
 msgid ""
@@ -173,7 +195,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:89
 msgid "Mono"
-msgstr ""
+msgstr "Mono"
 
 #: ../../glossary/intro.rst:91
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
@@ -207,7 +229,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:104
 msgid "Plugin"
-msgstr "Plugin"
+msgstr "Suplemento"
 
 #: ../../glossary/intro.rst:106
 msgid ""

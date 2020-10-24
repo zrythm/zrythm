@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-10-04 19:41+0000\n"
+"PO-Revision-Date: 2020-10-11 10:45+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualexporting/pt/>\n"
@@ -195,15 +195,14 @@ msgstr ""
 "depuração e também ajuda a visualizar os internos da Zrythm."
 
 #: ../../exporting/routing-graph.rst:13
-#, fuzzy
 msgid ""
 "Clicking the :guilabel:`Export Graph` button in the :doc:`../zrythm-"
 "interface/main-toolbar` will show the following selection. The routing "
 "graph can be exported as either a PNG image or a .dot graph."
 msgstr ""
-"Ao clicar no botão :guilabel:`Exportar Gráfico`, mostrará a seguinte seleção. "
-"O gráfico de roteamento pode ser exportado como uma imagem PNG ou como um "
-"gráfico .dot."
+"Clicar no botão :guilabel:`Exportar Gráfico` no :doc:`.../zrythm-interface/"
+"main-toolbar`mostrará a seguinte seleção. O gráfico de roteamento pode ser "
+"exportado como uma imagem PNG ou como um gráfico .dot."
 
 #: ../../exporting/routing-graph.rst:22
 msgid ""
