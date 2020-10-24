@@ -94,14 +94,23 @@ setup_color (
     }
 }
 
+/**
+ * Shows the inspector page for the given tracklist
+ * selection.
+ *
+ * @param set_notebook_page Whether to set the
+ *   current left panel tab to the track page.
+ */
 void
 inspector_track_widget_show_tracks (
   InspectorTrackWidget * self,
-  TracklistSelections *  tls)
+  TracklistSelections *  tls,
+  bool                   set_notebook_page)
 {
   g_debug ("showing %d tracks", tls->num_tracks);
 
-  if (gtk_notebook_get_current_page (
+  if (set_notebook_page &&
+      gtk_notebook_get_current_page (
         GTK_NOTEBOOK (
           MW_LEFT_DOCK_EDGE->inspector_notebook)) !=
       0)

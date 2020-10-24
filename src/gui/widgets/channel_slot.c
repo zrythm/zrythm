@@ -629,9 +629,8 @@ on_plugin_inspect_activate (
   GtkMenuItem * menuitem,
   Plugin *      pl)
 {
-  PROJECT->last_selection = SELECTION_TYPE_PLUGIN;
-  left_dock_edge_widget_refresh (
-    MW_LEFT_DOCK_EDGE);
+  left_dock_edge_widget_refresh_with_page (
+    MW_LEFT_DOCK_EDGE, LEFT_DOCK_EDGE_TAB_PLUGIN);
 }
 
 static bool

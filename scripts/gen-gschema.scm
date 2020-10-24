@@ -426,15 +426,27 @@ Args:
                  "Left panel divider position"
                  "Position of the resize handle of the left panel.")
                (make-schema-key
+                 "left-panel-tab" "i" "0"
+                 "Left panel tab index"
+                 "Index of the currently opened left panel tab.")
+               (make-schema-key
                  "right-panel-divider-position" "i"
                  "180"
                  "Right panel divider position"
                  "Position of the resize handle of the right panel.")
                (make-schema-key
+                 "right-panel-tab" "i" "0"
+                 "Right panel tab index"
+                 "Index of the currently opened right panel tab.")
+               (make-schema-key
                  "bot-panel-divider-position" "i"
                  "180"
                  "Bot panel divider position"
                  "Position of the resize handle of the bot panel.")
+               (make-schema-key
+                 "bot-panel-tab" "i" "0"
+                 "Bot panel tab index"
+                 "Index of the currently opened bottom panel tab.")
                (make-schema-key-with-enum
                  "plugin-browser-tab"
                  "plugin-browser-tab" "category"

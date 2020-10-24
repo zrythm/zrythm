@@ -58,6 +58,18 @@ G_DECLARE_FINAL_TYPE (
   MW_CENTER_DOCK->left_dock_edge
 
 /**
+ * Left panel tabs.
+ */
+typedef enum LeftDockEdgeTab
+{
+  LEFT_DOCK_EDGE_TAB_TRACK,
+  LEFT_DOCK_EDGE_TAB_PLUGIN,
+  LEFT_DOCK_EDGE_TAB_VISIBILITY,
+  LEFT_DOCK_EDGE_TAB_CC_BINDINGS,
+  LEFT_DOCK_EDGE_TAB_PORT_CONNECTIONS,
+} LeftDockEdgeTab;
+
+/**
  * Left dock widget.
  */
 typedef struct _LeftDockEdgeWidget
@@ -81,6 +93,15 @@ typedef struct _LeftDockEdgeWidget
 void
 left_dock_edge_widget_refresh (
   LeftDockEdgeWidget * self);
+
+/**
+ * Refreshes the widget and switches to the given
+ * page.
+ */
+void
+left_dock_edge_widget_refresh_with_page (
+  LeftDockEdgeWidget * self,
+  LeftDockEdgeTab      page);
 
 void
 left_dock_edge_widget_setup (

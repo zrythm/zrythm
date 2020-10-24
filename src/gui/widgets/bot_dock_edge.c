@@ -32,9 +32,23 @@
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-G_DEFINE_TYPE (BotDockEdgeWidget,
-               bot_dock_edge_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  BotDockEdgeWidget, bot_dock_edge_widget,
+  GTK_TYPE_BOX)
+
+static void
+on_notebook_switch_page (
+  GtkNotebook *       notebook,
+  GtkWidget *         page,
+  guint               page_num,
+  BotDockEdgeWidget * self)
+{
+  g_debug (
+    "setting bot dock page to %u", page_num);
+
+  g_settings_set_int (
+    S_UI, "bot-panel-tab", (int) page_num);
+}
 
 void
 bot_dock_edge_widget_setup (
@@ -52,7 +66,7 @@ bot_dock_edge_widget_setup (
   chord_pad_widget_setup (self->chord_pad);
 
   /* set event viewer visibility */
-  int visibility = 0;
+  bool visibility = false;
   ZRegion * region =
     clip_editor_get_region (CLIP_EDITOR);
   if (
@@ -60,11 +74,21 @@ bot_dock_edge_widget_setup (
       S_UI, "editor-event-viewer-visible") &&
     region)
     {
-      visibility = 1;
+      visibility = true;
     }
   gtk_widget_set_visible (
-    GTK_WIDGET (self->event_viewer),
-    visibility);
+    GTK_WIDGET (self->event_viewer), visibility);
+
+  int page_num =
+    g_settings_get_int (S_UI, "bot-panel-tab");
+  gtk_notebook_set_current_page (
+    GTK_NOTEBOOK (self->bot_notebook),
+    page_num);
+
+  g_signal_connect (
+    G_OBJECT (self->bot_notebook),
+    "switch-page",
+    G_CALLBACK (on_notebook_switch_page), self);
 }
 
 static void

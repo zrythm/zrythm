@@ -26,37 +26,29 @@
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (RightDockEdgeWidget,
-               right_dock_edge_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  RightDockEdgeWidget, right_dock_edge_widget,
+  GTK_TYPE_BOX)
 
-/*static DzlDockRevealer **/
-/*get_revealer (*/
-  /*RightDockEdgeWidget * self)*/
-/*{*/
-  /*[>return<]*/
-    /*[>DZL_DOCK_REVEALER (<]*/
-      /*[>gtk_widget_get_parent (<]*/
-        /*[>gtk_widget_get_parent (<]*/
-          /*[>GTK_WIDGET (self))));<]*/
-  /*return NULL;*/
-/*}*/
+static void
+on_notebook_switch_page (
+  GtkNotebook *         notebook,
+  GtkWidget *           page,
+  guint                 page_num,
+  RightDockEdgeWidget * self)
+{
+  g_debug (
+    "setting right dock page to %u", page_num);
 
-/*static void*/
-/*on_divider_pos_changed (*/
-  /*GObject    *gobject,*/
-  /*GParamSpec *pspec,*/
-  /*DzlDockRevealer * revealer)*/
-/*{*/
-  /*g_settings_set_int (*/
-    /*S_UI, "right-panel-divider-position",*/
-    /*dzl_dock_revealer_get_position (revealer));*/
-/*}*/
+  g_settings_set_int (
+    S_UI, "right-panel-tab", (int) page_num);
+}
 
 void
 right_dock_edge_widget_setup (
@@ -67,18 +59,19 @@ right_dock_edge_widget_setup (
     MW_CENTER_DOCK->center_right_paned,
     GTK_POS_RIGHT);
 
-  /* remember divider pos */
-  /*DzlDockRevealer * revealer =*/
-    /*get_revealer (self);*/
-  /*dzl_dock_revealer_set_position (*/
-    /*revealer,*/
-    /*g_settings_get_int (*/
-      /*S_UI, "right-panel-divider-position"));*/
-  /*g_signal_connect (*/
-    /*G_OBJECT (revealer), "notify::position",*/
-    /*G_CALLBACK (on_divider_pos_changed), revealer);*/
   control_room_widget_setup (
     self->control_room, CONTROL_ROOM);
+
+  int page_num =
+    g_settings_get_int (S_UI, "right-panel-tab");
+  gtk_notebook_set_current_page (
+    GTK_NOTEBOOK (self->right_notebook),
+    page_num);
+
+  g_signal_connect (
+    G_OBJECT (self->right_notebook),
+    "switch-page",
+    G_CALLBACK (on_notebook_switch_page), self);
 }
 
 static void

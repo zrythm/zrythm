@@ -37,9 +37,9 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (LeftDockEdgeWidget,
-               left_dock_edge_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  LeftDockEdgeWidget, left_dock_edge_widget,
+  GTK_TYPE_BOX)
 
 static void
 on_notebook_switch_page (
@@ -48,17 +48,24 @@ on_notebook_switch_page (
   guint         page_num,
   LeftDockEdgeWidget * self)
 {
-  if (page_num == 0)
-    {
-      g_message ("SWITCHED TRACK");
-      PROJECT->last_selection = SELECTION_TYPE_TRACK;
-    }
-  else if (page_num == 1)
-    {
-      g_message ("SWITCHED PLUGIN");
-      PROJECT->last_selection =
-        SELECTION_TYPE_PLUGIN;
-    }
+  g_debug ("setting left dock page to %u", page_num);
+
+  g_settings_set_int (
+    S_UI, "left-panel-tab", (int) page_num);
+}
+
+/**
+ * Refreshes the widget and switches to the given
+ * page.
+ */
+void
+left_dock_edge_widget_refresh_with_page (
+  LeftDockEdgeWidget * self,
+  LeftDockEdgeTab      page)
+{
+  g_settings_set_int (
+    S_UI, "left-panel-tab", (int) page);
+  left_dock_edge_widget_refresh (self);
 }
 
 void
@@ -67,23 +74,22 @@ left_dock_edge_widget_refresh (
 {
   g_debug ("refreshing left dock edge...");
 
-  if (PROJECT->last_selection ==
-        SELECTION_TYPE_TRACK)
-    {
-      inspector_track_widget_show_tracks (
-        self->track_inspector,
-        TRACKLIST_SELECTIONS);
-    }
-  else if (PROJECT->last_selection ==
-           SELECTION_TYPE_PLUGIN)
-    {
-      inspector_plugin_widget_show (
-        self->plugin_inspector, MIXER_SELECTIONS);
-    }
+  inspector_track_widget_show_tracks (
+    self->track_inspector,
+    TRACKLIST_SELECTIONS, false);
+  inspector_plugin_widget_show (
+    self->plugin_inspector, MIXER_SELECTIONS,
+    false);
 
   cc_bindings_widget_refresh (self->cc_bindings);
   port_connections_widget_refresh (
     self->port_connections);
+
+  int page_num =
+    g_settings_get_int (S_UI, "left-panel-tab");
+  gtk_notebook_set_current_page (
+    GTK_NOTEBOOK (self->inspector_notebook),
+    page_num);
 }
 
 void
@@ -94,17 +100,17 @@ left_dock_edge_widget_setup (
     self->inspector_notebook,
     MW_CENTER_DOCK->left_rest_paned,
     GTK_POS_LEFT);
-  g_signal_connect (
-    G_OBJECT (self->inspector_notebook),
-    "switch-page",
-    G_CALLBACK (on_notebook_switch_page),
-    self);
 
   inspector_track_widget_setup (
     self->track_inspector, TRACKLIST_SELECTIONS);
 
   visibility_widget_refresh (
     self->visibility);
+
+  g_signal_connect (
+    G_OBJECT (self->inspector_notebook),
+    "switch-page",
+    G_CALLBACK (on_notebook_switch_page), self);
 }
 
 static GtkScrolledWindow *

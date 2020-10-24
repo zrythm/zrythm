@@ -349,7 +349,8 @@ on_track_state_changed (Track * track)
   if (TRACKLIST_SELECTIONS->tracks[0] == track)
     {
       inspector_track_widget_show_tracks (
-        MW_TRACK_INSPECTOR, TRACKLIST_SELECTIONS);
+        MW_TRACK_INSPECTOR, TRACKLIST_SELECTIONS,
+        true);
     }
 }
 
@@ -1589,9 +1590,8 @@ process_events (void * data)
             }
 
           /* refresh inspector */
-          inspector_track_widget_show_tracks (
-            MW_TRACK_INSPECTOR,
-            TRACKLIST_SELECTIONS);
+          left_dock_edge_widget_refresh (
+            MW_LEFT_DOCK_EDGE);
           break;
         case ET_SPLASH_CLOSED:
           break;

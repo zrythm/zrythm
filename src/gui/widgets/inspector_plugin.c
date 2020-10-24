@@ -57,14 +57,26 @@ setup_color (
     }
 }
 
+/**
+ * Shows the inspector page for the given mixer
+ * selection (plugin).
+ *
+ * @param set_notebook_page Whether to set the
+ *   current left panel tab to the plugin page.
+ */
 void
 inspector_plugin_widget_show (
   InspectorPluginWidget * self,
-  MixerSelections *       ms)
+  MixerSelections *       ms,
+  bool                    set_notebook_page)
 {
-  gtk_notebook_set_current_page (
-    GTK_NOTEBOOK (
-      MW_LEFT_DOCK_EDGE->inspector_notebook), 1);
+  if (set_notebook_page)
+    {
+      gtk_notebook_set_current_page (
+        GTK_NOTEBOOK (
+          MW_LEFT_DOCK_EDGE->inspector_notebook),
+        1);
+    }
 
   /* show info for first plugin */
   Plugin * pl = NULL;

@@ -70,13 +70,17 @@ typedef struct _InspectorPluginWidget
 } InspectorPluginWidget;
 
 /**
- * Shows the appropriate information based on if
- * the Audio or MIDI plugin are visible.
+ * Shows the inspector page for the given mixer
+ * selection (plugin).
+ *
+ * @param set_notebook_page Whether to set the
+ *   current left panel tab to the plugin page.
  */
 void
 inspector_plugin_widget_show (
   InspectorPluginWidget * self,
-  MixerSelections *       ms);
+  MixerSelections *       ms,
+  bool                    set_notebook_page);
 
 InspectorPluginWidget *
 inspector_plugin_widget_new (void);

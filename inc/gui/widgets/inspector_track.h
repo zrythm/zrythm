@@ -91,15 +91,17 @@ typedef struct _InspectorTrackWidget
 } InspectorTrackWidget;
 
 /**
- * Refreshes the inspector section based on the
- * given \ref tls.
+ * Shows the inspector page for the given tracklist
+ * selection.
  *
- * @param tls Track selections.
+ * @param set_notebook_page Whether to set the
+ *   current left panel tab to the track page.
  */
 void
 inspector_track_widget_show_tracks (
   InspectorTrackWidget * self,
-  TracklistSelections *  tls);
+  TracklistSelections *  tls,
+  bool                   set_notebook_page);
 
 /**
  * Sets up the inspector track widget for the first
