@@ -28,6 +28,7 @@
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiinfo.h"
 #include "project.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -282,7 +283,7 @@ track_lane_remove_region (
   array_delete (
     self->regions, self->num_regions, region);
 
-  if (ZRYTHM_HAVE_UI)
+  if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
     {
       ArrangerObject * obj =
         (ArrangerObject *) region;

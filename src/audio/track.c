@@ -1915,6 +1915,51 @@ track_set_name_with_action (
   tracklist_selections_free (sel_after);
 }
 
+static void
+add_region_if_in_range (
+  Track *    track,
+  Position * p1,
+  Position * p2,
+  ZRegion ** regions,
+  int *      count,
+  ZRegion *  region)
+{
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
+
+  if (!p1 && !p2)
+    {
+      regions[(*count)++] = region;
+      return;
+    }
+
+  /* start inside */
+  if ((position_is_before_or_equal (
+         p1, &r_obj->pos) &&
+       position_is_after (
+         p2, &r_obj->pos)) ||
+      /* end inside */
+      (position_is_before_or_equal (
+         p1, &r_obj->end_pos) &&
+       position_is_after (
+         p2, &r_obj->end_pos)) ||
+      /* start before and end after */
+      (position_is_before_or_equal (
+         &r_obj->pos, p1) &&
+       position_is_after (
+         &r_obj->end_pos, p2)))
+    {
+      regions[(*count)++] = region;
+    }
+}
+
+/**
+ * Returns all the regions inside the given range,
+ * or all the regions if both @ref p1 and @ref p2
+ * are NULL.
+ *
+ * @return The number of regions returned.
+ */
 int
 track_get_regions_in_range (
   Track *    track,
@@ -1922,70 +1967,50 @@ track_get_regions_in_range (
   Position * p2,
   ZRegion ** regions)
 {
-  int i, j;
   int count = 0;
 
   if (track->type == TRACK_TYPE_INSTRUMENT ||
       track->type == TRACK_TYPE_AUDIO ||
       track->type == TRACK_TYPE_MIDI)
     {
-      TrackLane * lane;
-      ZRegion * r;
-      ArrangerObject * r_obj;
-      for (i = 0; i < track->num_lanes; i++)
+      for (int i = 0; i < track->num_lanes; i++)
         {
-          lane = track->lanes[i];
+          TrackLane * lane = track->lanes[i];
 
-          for (j = 0; j < lane->num_regions; j++)
+          for (int j = 0; j < lane->num_regions;
+               j++)
             {
-              r = lane->regions[j];
-              r_obj = (ArrangerObject *) r;
-              /* start inside */
-              if ((position_is_before_or_equal (
-                     p1, &r_obj->pos) &&
-                   position_is_after (
-                     p2, &r_obj->pos)) ||
-                  /* end inside */
-                  (position_is_before_or_equal (
-                     p1, &r_obj->end_pos) &&
-                   position_is_after (
-                     p2, &r_obj->end_pos)) ||
-                  /* start before and end after */
-                  (position_is_before_or_equal (
-                     &r_obj->pos, p1) &&
-                   position_is_after (
-                     &r_obj->end_pos, p2)))
-                {
-                  regions[count++] = r;
-                }
+              ZRegion * r = lane->regions[j];
+              add_region_if_in_range (
+                track, p1, p2, regions, &count,
+                r);
             }
         }
     }
   else if (track->type == TRACK_TYPE_CHORD)
     {
-      ZRegion * r;
-      ArrangerObject * r_obj;
-      for (j = 0; j < track->num_chord_regions; j++)
+      for (int j = 0; j < track->num_chord_regions;
+           j++)
         {
-          r = track->chord_regions[j];
-          r_obj = (ArrangerObject *) r;
-          /* start inside */
-          if ((position_is_before_or_equal (
-                 p1, &r_obj->pos) &&
-               position_is_after (
-                 p2, &r_obj->pos)) ||
-              /* end inside */
-              (position_is_before_or_equal (
-                 p1, &r_obj->end_pos) &&
-               position_is_after (
-                 p2, &r_obj->end_pos)) ||
-              /* start before and end after */
-              (position_is_before_or_equal (
-                 &r_obj->pos, p1) &&
-               position_is_after (
-                 &r_obj->end_pos, p2)))
+          ZRegion * r = track->chord_regions[j];
+          add_region_if_in_range (
+            track, p1, p2, regions, &count, r);
+        }
+    }
+
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  if (atl)
+    {
+      for (int i = 0; i < atl->num_ats; i++)
+        {
+          AutomationTrack * at = atl->ats[i];
+
+          for (int j = 0; j < at->num_regions; j++)
             {
-              regions[count++] = r;
+              ZRegion * r = at->regions[j];
+              add_region_if_in_range (
+                track, p1, p2, regions, &count, r);
             }
         }
     }

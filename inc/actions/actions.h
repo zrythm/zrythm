@@ -489,6 +489,9 @@ DECLARE_SIMPLE (activate_midi_function);
 DECLARE_SIMPLE (
   activate_midi_editor_highlighting);
 
+DECLARE_SIMPLE (
+  activate_rename_track_or_region);
+
 /**
  * @}
  */

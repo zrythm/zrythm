@@ -62,6 +62,8 @@
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
+#include <glib/gi18n.h>
+
 #define TYPE(x) \
   ARRANGER_OBJECT_TYPE_##x
 
@@ -2578,6 +2580,57 @@ arranger_object_set_name (
       EVENTS_PUSH (
         ET_ARRANGER_OBJECT_CHANGED, self);
     }
+}
+
+/**
+ * Changes the name and adds an action to the
+ * undo stack.
+ *
+ * Calls arranger_object_set_name() internally.
+ */
+void
+arranger_object_set_name_with_action (
+  ArrangerObject * self,
+  const char *     name)
+{
+  /* validate */
+  if (!arranger_object_validate_name (self, name))
+    {
+      char * msg =
+        g_strdup_printf (
+          _("Invalid object name %s"), name);
+      ui_show_error_message (MAIN_WINDOW, msg);
+      return;
+    }
+
+  ArrangerObject * clone_obj =
+    arranger_object_clone (
+      self, ARRANGER_OBJECT_CLONE_COPY_MAIN);
+
+  /* prepare the before/after selections to
+   * create the undoable action */
+  ArrangerSelections * before =
+    arranger_selections_clone (
+      (ArrangerSelections *) TL_SELECTIONS);
+  arranger_selections_clear (before, F_FREE);
+  arranger_selections_add_object (
+    before, clone_obj);
+  ArrangerSelections * after =
+    arranger_selections_clone (
+      (ArrangerSelections *) before);
+  ArrangerObject * after_obj =
+    arranger_selections_get_first_object (after);
+  arranger_object_set_name (
+    after_obj, name, F_NO_PUBLISH_EVENTS);
+
+  UndoableAction * ua =
+    arranger_selections_action_new_edit (
+      before, after,
+      ARRANGER_SELECTIONS_ACTION_EDIT_NAME,
+      F_NOT_ALREADY_EDITED);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  arranger_selections_free_full (before);
+  arranger_selections_free_full (after);
 }
 
 /**

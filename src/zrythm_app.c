@@ -955,10 +955,13 @@ zrythm_app_startup (
   accel_install_primary_action_accelerator ( \
     keybind, action)
 
+  INSTALL_ACCEL ("F1", "app.manual");
   INSTALL_ACCEL ("<Alt>F4", "app.quit");
   INSTALL_ACCEL ("F11", "app.fullscreen");
   INSTALL_ACCEL (
     "<Control><Shift>p", "app.preferences");
+  INSTALL_ACCEL (
+    "F2", "win.rename-track-or-region");
   INSTALL_ACCEL ("<Control>n", "win.new");
   INSTALL_ACCEL ("<Control>o", "win.open");
   INSTALL_ACCEL ("<Control>s", "win.save");

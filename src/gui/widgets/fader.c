@@ -209,6 +209,8 @@ drag_begin (
   double           start_y,
   FaderWidget *    self)
 {
+  g_return_if_fail (IS_FADER (self->fader));
+
   GdkEventSequence *sequence =
     gtk_gesture_single_get_current_sequence (
       GTK_GESTURE_SINGLE (gesture));
@@ -241,6 +243,8 @@ drag_update (
 {
   FaderWidget * self = (FaderWidget *) user_data;
   offset_y = - offset_y;
+
+  g_return_if_fail (IS_FADER (self->fader));
 
   /*int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);*/
   int use_y = 1;
@@ -295,6 +299,8 @@ drag_end (
   self->last_x = 0;
   self->last_y = 0;
   gtk_widget_hide (GTK_WIDGET (self->tooltip_win));
+
+  g_return_if_fail (IS_FADER (self->fader));
 
   Track * track = fader_get_track (self->fader);
   float cur_amp = fader_get_amp (self->fader);
@@ -441,6 +447,8 @@ fader_widget_setup (
   int           width,
   int           height)
 {
+  g_return_if_fail (IS_FADER (fader));
+
   self->fader = fader;
 
   /* set size */

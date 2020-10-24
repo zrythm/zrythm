@@ -57,6 +57,7 @@
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/dialogs/create_project_dialog.h"
 #include "gui/widgets/dialogs/about_dialog.h"
+#include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/file_browser_window.h"
@@ -2150,4 +2151,42 @@ DEFINE_SIMPLE (
   SET_HIGHLIGHT ("both", BOTH);
 
 #undef SET_HIGHLIGHT
+}
+
+DEFINE_SIMPLE (
+  activate_rename_track_or_region)
+{
+  if (PROJECT->last_selection ==
+        SELECTION_TYPE_TIMELINE)
+    {
+      g_message ("timeline");
+      ArrangerSelections * sel =
+        arranger_widget_get_selections (
+          MW_TIMELINE);
+      if (arranger_selections_get_num_objects (
+            sel) == 1)
+        {
+          ArrangerObject * obj =
+            arranger_selections_get_first_object (
+              sel);
+          if (obj->type ==
+                ARRANGER_OBJECT_TYPE_REGION)
+            {
+              StringEntryDialogWidget * dialog =
+                string_entry_dialog_widget_new (
+                  _("Region name"), obj,
+                  (GenericStringGetter)
+                  arranger_object_get_name,
+                  (GenericStringSetter)
+                  arranger_object_set_name_with_action);
+              gtk_widget_show_all (
+                GTK_WIDGET (dialog));
+            }
+        }
+    }
+  else if (PROJECT->last_selection ==
+             SELECTION_TYPE_TRACK)
+    {
+      g_message ("TODO - track");
+    }
 }

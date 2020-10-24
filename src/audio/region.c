@@ -128,7 +128,8 @@ region_gen_name (
   else
     orig_name = g_strdup (track->name);
 
-  region_set_name (self, orig_name, 0);
+  region_set_name (
+    self, orig_name, F_NO_PUBLISH_EVENTS);
   g_free (orig_name);
 }
 
@@ -938,7 +939,7 @@ void
 region_set_name (
   ZRegion *    self,
   const char * name,
-  int          fire_events)
+  bool         fire_events)
 {
   arranger_object_set_name (
     (ArrangerObject *) self, name, fire_events);

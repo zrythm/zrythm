@@ -2985,54 +2985,6 @@ set_earliest_obj (
 }
 
 /**
- * Setter for string entry dialogs.
- */
-static void
-set_arranger_object_name (
-  ArrangerObject * obj,
-  const char *     name)
-{
-  /* validate */
-  if (!arranger_object_validate_name (obj, name))
-    {
-      char * msg =
-        g_strdup_printf (
-          _("Invalid object name %s"), name);
-      ui_show_error_message (MAIN_WINDOW, msg);
-      return;
-    }
-
-  ArrangerObject * clone_obj =
-    arranger_object_clone (
-      obj, ARRANGER_OBJECT_CLONE_COPY_MAIN);
-
-  /* prepare the before/after selections to
-   * create the undoable action */
-  ArrangerSelections * before =
-    arranger_selections_clone (
-      (ArrangerSelections *) TL_SELECTIONS);
-  arranger_selections_clear (before, F_FREE);
-  arranger_selections_add_object (
-    before, clone_obj);
-  ArrangerSelections * after =
-    arranger_selections_clone (
-      (ArrangerSelections *) before);
-  ArrangerObject * after_obj =
-    arranger_selections_get_first_object (after);
-  arranger_object_set_name (
-    after_obj, name, F_NO_PUBLISH_EVENTS);
-
-  UndoableAction * ua =
-    arranger_selections_action_new_edit (
-      before, after,
-      ARRANGER_SELECTIONS_ACTION_EDIT_NAME,
-      F_NOT_ALREADY_EDITED);
-  undo_manager_perform (UNDO_MANAGER, ua);
-  arranger_selections_free_full (before);
-  arranger_selections_free_full (after);
-}
-
-/**
  * Checks for the first object hit, sets the
  * appropriate action and selects it.
  *
@@ -3156,7 +3108,7 @@ on_drag_begin_handle_hit_object (
               (GenericStringGetter)
               arranger_object_get_name,
               (GenericStringSetter)
-              set_arranger_object_name);
+              arranger_object_set_name_with_action);
           gtk_widget_show_all (GTK_WIDGET (dialog));
           self->action = UI_OVERLAY_ACTION_NONE;
           return true;
@@ -3330,6 +3282,18 @@ drag_begin (
   arranger_widget_px_to_pos (
     self, start_x, &self->start_pos, 1);
   self->start_y = start_y;
+
+  /* set last project selection type */
+  if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
+    {
+      PROJECT->last_selection =
+        SELECTION_TYPE_TIMELINE;
+    }
+  else
+    {
+      PROJECT->last_selection =
+        SELECTION_TYPE_EDITOR;
+    }
 
   GdkEventSequence *sequence =
     gtk_gesture_single_get_current_sequence (
@@ -4861,7 +4825,7 @@ on_drag_end_timeline (
             (GenericStringGetter)
             arranger_object_get_name,
             (GenericStringSetter)
-            set_arranger_object_name);
+            arranger_object_set_name_with_action);
         gtk_widget_show_all (GTK_WIDGET (dialog));
         self->action = UI_OVERLAY_ACTION_NONE;
         g_free (str);

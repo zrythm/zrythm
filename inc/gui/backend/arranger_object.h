@@ -935,6 +935,17 @@ arranger_object_set_name (
   int              fire_events);
 
 /**
+ * Changes the name and adds an action to the
+ * undo stack.
+ *
+ * Calls arranger_object_set_name() internally.
+ */
+void
+arranger_object_set_name_with_action (
+  ArrangerObject * self,
+  const char *     name);
+
+/**
  * Sets the end position of the ArrangerObject and
  * also sets the loop end and fade out to that
  * position.

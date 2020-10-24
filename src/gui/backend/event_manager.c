@@ -1587,6 +1587,11 @@ process_events (void * data)
               clip_editor_widget_on_region_changed (
                 MW_CLIP_EDITOR);
             }
+
+          /* refresh inspector */
+          inspector_track_widget_show_tracks (
+            MW_TRACK_INSPECTOR,
+            TRACKLIST_SELECTIONS);
           break;
         case ET_SPLASH_CLOSED:
           break;

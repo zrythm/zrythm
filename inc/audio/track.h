@@ -1012,6 +1012,13 @@ void
 track_remove_empty_last_lanes (
   Track * track);
 
+/**
+ * Returns all the regions inside the given range,
+ * or all the regions if both @ref p1 and @ref p2
+ * are NULL.
+ *
+ * @return The number of regions returned.
+ */
 int
 track_get_regions_in_range (
   Track *    self,

@@ -44,6 +44,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -269,6 +270,38 @@ ruler_widget_get_sec_interval (
 }
 
 /**
+ * Draws a region other than the editor one.
+ */
+static void
+draw_other_region (
+  RulerWidget *  self,
+  cairo_t *      cr,
+  ZRegion *      region)
+{
+  g_message ("drawing other region %s", region->name);
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
+  Track * track = arranger_object_get_track (r_obj);
+  cairo_set_source_rgba (
+    cr, track->color.red, track->color.green,
+    track->color.blue, 0.5);
+
+  int px_start, px_end;
+  px_start =
+    ui_pos_to_px_editor (&r_obj->pos, true);
+  px_end =
+    ui_pos_to_px_editor (&r_obj->end_pos, true);
+  cairo_rectangle (
+    cr, px_start, 0,
+    px_end - px_start, height / 4.0);
+  cairo_fill (cr);
+}
+
+/**
  * Draws the regions in the editor ruler.
  */
 static void
@@ -334,38 +367,28 @@ draw_regions (
     }
 
   /* draw the other regions */
-  cairo_set_source_rgba (
-    cr,
-    track->color.red,
-    track->color.green,
-    track->color.blue,
-    0.5);
-  ZRegion * other_region;
-  TrackLane * lane;
-  for (int j = 0; j < track->num_lanes; j++)
+  ZRegion * other_regions[1000];
+  int num_other_regions =
+    track_get_regions_in_range (
+      track, NULL, NULL, other_regions);
+  for (int i = 0; i < num_other_regions; i++)
     {
-      lane = track->lanes[j];
-
-      for (int i = 0; i < lane->num_regions; i++)
+      ZRegion * other_region = other_regions[i];
+      if (region_identifier_is_equal (
+            &region->id, &other_region->id) ||
+          region->id.type != other_region->id.type)
         {
-          other_region = lane->regions[i];
-          ArrangerObject * other_region_obj =
-            (ArrangerObject *) other_region;
-          if (!g_strcmp0 (region->name,
-                         other_region->name))
-            continue;
-
-          px_start =
-            ui_pos_to_px_editor (
-              &other_region_obj->pos, 1);
-          px_end =
-            ui_pos_to_px_editor (
-              &other_region_obj->end_pos, 1);
-          cairo_rectangle (
-            cr, px_start - rect->x, - rect->y,
-            px_end - px_start, height / 4.0);
-          cairo_fill (cr);
+          continue;
         }
+
+      cairo_save (cr);
+      cairo_translate (
+        cr, - rect->x, - rect->y);
+
+      draw_other_region (
+        self, cr, other_region);
+
+      cairo_restore (cr);
     }
 }
 

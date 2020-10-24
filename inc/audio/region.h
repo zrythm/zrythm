@@ -532,7 +532,7 @@ void
 region_set_name (
   ZRegion *    region,
   const char * name,
-  int          fire_events);
+  bool         fire_events);
 
 void
 region_get_type_as_string (

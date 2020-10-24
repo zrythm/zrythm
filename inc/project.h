@@ -110,8 +110,18 @@ typedef enum SelectionType
 {
   SELECTION_TYPE_TRACK,
   SELECTION_TYPE_PLUGIN,
+  SELECTION_TYPE_TIMELINE,
   SELECTION_TYPE_EDITOR,
 } SelectionType;
+
+static const cyaml_strval_t
+selection_type_strings[] =
+{
+  { "Track", SELECTION_TYPE_TRACK },
+  { "Plugin", SELECTION_TYPE_PLUGIN },
+  { "Timeline", SELECTION_TYPE_TIMELINE },
+  { "Editor", SELECTION_TYPE_EDITOR },
+};
 
 /**
  * Flag to pass to project_compress() and
@@ -253,7 +263,7 @@ typedef struct Project
    */
   SelectionType     last_selection;
 
-  /** Zrythm version, for zerialization */
+  /** Zrythm version, for serialization */
   char *            version;
 
   gint64            last_autosave_time;
@@ -317,6 +327,9 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_PTR (
     Project, undo_manager,
     undo_manager_fields_schema),
+  YAML_FIELD_ENUM (
+    Project, last_selection,
+    selection_type_strings),
 
   CYAML_FIELD_END
 };

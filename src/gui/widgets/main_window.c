@@ -537,6 +537,10 @@ main_window_widget_init (MainWindowWidget * self)
 
     /* MIDI functions */
     { "midi-function", activate_midi_function, "s" },
+
+    /* rename track/region */
+    { "rename-track-or-region",
+      activate_rename_track_or_region },
   };
 
   g_action_map_add_action_entries (
