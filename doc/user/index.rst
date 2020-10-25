@@ -24,6 +24,10 @@ Welcome to the Zrythm manual.
    entitled "GNU Free Documentation License" in the section
    entitled "Appendix".*
 
+   *Zrythm and the Zrythm logo are registered
+   trademarks of Alexandros Theodotou in the United
+   Kingdom.*
+
 .. toctree::
    :maxdepth: 1
 
@@ -63,3 +67,7 @@ Welcome to the Zrythm manual.
    Texts.  A copy of the license is included in the subsection
    entitled "GNU Free Documentation License" in the section
    entitled "Appendix".*
+
+   *Zrythm and the Zrythm logo are registered
+   trademarks of Alexandros Theodotou in the United
+   Kingdom.*
