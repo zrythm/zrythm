@@ -80,7 +80,7 @@ typedef struct _ClipEditorInnerWidget
   GtkBox *             left_of_ruler_box;
   GtkScrolledWindow *  ruler_scroll;
   GtkViewport *        ruler_viewport;
-  RulerWidget *  ruler;
+  RulerWidget *        ruler;
   GtkStack *           editor_stack;
   GtkSizeGroup *       left_of_ruler_size_group;
 

@@ -35,9 +35,9 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (EditorToolbarWidget,
-               editor_toolbar_widget,
-               GTK_TYPE_TOOLBAR)
+G_DEFINE_TYPE (
+  EditorToolbarWidget, editor_toolbar_widget,
+  GTK_TYPE_TOOLBAR)
 
 static void
 on_highlighting_changed (
@@ -56,23 +56,85 @@ void
 editor_toolbar_widget_refresh (
   EditorToolbarWidget * self)
 {
-  MidiFunctionType type =
-    g_settings_get_int (S_UI, "midi-function");
-  char * str =
-    g_strdup_printf (
-      _("Apply %s"),
-    _(midi_function_type_to_string (type)));
-  char * tooltip_str =
-    g_strdup_printf (
-      _("Apply %s with previous settings"),
-    _(midi_function_type_to_string (type)));
-  gtk_button_set_label (
-    self->apply_function_btn, str);
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self->apply_function_btn),
-    tooltip_str);
-  g_free (str);
-  g_free (tooltip_str);
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (!region)
+    {
+      return;
+    }
+
+  switch (region->id.type)
+    {
+    case REGION_TYPE_MIDI:
+      {
+        MidiFunctionType type =
+          g_settings_get_int (S_UI, "midi-function");
+        char * str =
+          g_strdup_printf (
+            _("Apply %s"),
+          _(midi_function_type_to_string (type)));
+        char * tooltip_str =
+          g_strdup_printf (
+            _("Apply %s with previous settings"),
+          _(midi_function_type_to_string (type)));
+        gtk_button_set_label (
+          self->apply_function_btn, str);
+        gtk_widget_set_tooltip_text (
+          GTK_WIDGET (self->apply_function_btn),
+          tooltip_str);
+        g_free (str);
+        g_free (tooltip_str);
+
+        button_with_menu_widget_set_menu_model (
+          self->functions_btn,
+          self->midi_functions_menu);
+
+        /* set visibility of each tool item */
+        gtk_widget_set_visible (
+          GTK_WIDGET (self->chord_highlight_tool_item),
+          true);
+        gtk_widget_set_visible (
+          GTK_WIDGET (self->sep_after_chord_highlight),
+          true);
+      }
+      break;
+    case REGION_TYPE_AUTOMATION:
+      {
+        AutomationFunctionType type =
+          g_settings_get_int (
+            S_UI, "automation-function");
+        char * str =
+          g_strdup_printf (
+            _("Apply %s"),
+          _(automation_function_type_to_string (type)));
+        char * tooltip_str =
+          g_strdup_printf (
+            _("Apply %s with previous settings"),
+          _(automation_function_type_to_string (type)));
+        gtk_button_set_label (
+          self->apply_function_btn, str);
+        gtk_widget_set_tooltip_text (
+          GTK_WIDGET (self->apply_function_btn),
+          tooltip_str);
+        g_free (str);
+        g_free (tooltip_str);
+
+        button_with_menu_widget_set_menu_model (
+          self->functions_btn,
+          self->automation_functions_menu);
+
+        /* set visibility of each tool item */
+        gtk_widget_set_visible (
+          GTK_WIDGET (self->chord_highlight_tool_item),
+          false);
+        gtk_widget_set_visible (
+          GTK_WIDGET (self->sep_after_chord_highlight),
+          false);
+      }
+      break;
+    default:
+      break;
+    }
 }
 
 typedef enum HighlightColumns
@@ -182,7 +244,7 @@ editor_toolbar_widget_init (
         GTK_ICON_SIZE_SMALL_TOOLBAR));
   gtk_actionable_set_detailed_action_name (
     GTK_ACTIONABLE (self->apply_function_btn),
-    "win.midi-function::current");
+    "win.editor-function::current");
   gtk_button_set_label (
     self->apply_function_btn, str);
   gtk_button_set_always_show_image (
@@ -192,8 +254,8 @@ editor_toolbar_widget_init (
   button_with_menu_widget_setup (
     self->functions_btn,
     self->apply_function_btn,
-    NULL, self->midi_functions_menu,
-    true, -1, str, _("Select function"));
+    NULL, NULL, true, -1, str,
+    _("Select function"));
 
   GtkMenuButton * menu_btn =
     button_with_menu_widget_get_menu_button (
@@ -216,9 +278,12 @@ editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
     klass, EditorToolbarWidget, x)
 
   BIND_CHILD (chord_highlighting);
+  BIND_CHILD (chord_highlight_tool_item);
+  BIND_CHILD (sep_after_chord_highlight);
   BIND_CHILD (snap_grid_midi);
   BIND_CHILD (quantize_box);
   BIND_CHILD (event_viewer_toggle);
+  BIND_CHILD (automation_functions_menu);
   BIND_CHILD (midi_functions_menu);
   BIND_CHILD (functions_btn);
 }

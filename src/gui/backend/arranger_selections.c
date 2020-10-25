@@ -1352,7 +1352,7 @@ arranger_selections_free_full (
 {
   g_return_if_fail (IS_ARRANGER_SELECTIONS (self));
 
-  g_message (
+  g_debug (
     "freeing arranger selections %p...", self);
 
   int i;

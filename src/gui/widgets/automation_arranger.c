@@ -373,7 +373,8 @@ automation_arranger_move_hit_aps (
             control_port_normalized_val_to_real (
               port, normalized_val);
           automation_point_set_fvalue (
-            ap, value, F_NOT_NORMALIZED);
+            ap, value, F_NOT_NORMALIZED,
+            F_PUBLISH_EVENTS);
 
           return true;
         }

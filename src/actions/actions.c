@@ -32,6 +32,7 @@
 #include "actions/create_tracks_action.h"
 #include "actions/delete_tracks_action.h"
 #include "actions/range_action.h"
+#include "audio/automation_function.h"
 #include "audio/graph.h"
 #include "audio/graph_export.h"
 #include "audio/instrument_track.h"
@@ -2083,51 +2084,115 @@ do_midi_func (
   undo_manager_perform (UNDO_MANAGER, ua);
 }
 
-DEFINE_SIMPLE (activate_midi_function)
+/**
+ * Common routine for applying undoable automation
+ * functions.
+ */
+static void
+do_automation_func (
+  AutomationFunctionType type)
+{
+  ArrangerSelections * sel =
+    (ArrangerSelections *) AUTOMATION_SELECTIONS;
+  if (!arranger_selections_has_any (sel))
+    {
+      g_message ("no selections, doing nothing");
+      return;
+    }
+
+  UndoableAction * ua =
+    arranger_selections_action_new_edit_automation_function (
+      sel, type);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+DEFINE_SIMPLE (activate_editor_function)
 {
   size_t size;
   const char * str =
     g_variant_get_string (variant, &size);
-  if (string_is_equal (str, "crescendo"))
+
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (!region)
+    return;
+
+  switch (region->id.type)
     {
-      do_midi_func (MIDI_FUNCTION_CRESCENDO);
-    }
-  else if (string_is_equal (str, "current"))
-    {
-      do_midi_func (
-        g_settings_get_int (S_UI, "midi-function"));
-    }
-  else if (string_is_equal (str, "flam"))
-    {
-      do_midi_func (MIDI_FUNCTION_FLAM);
-    }
-  else if (string_is_equal (str, "flip-horizontal"))
-    {
-      do_midi_func (MIDI_FUNCTION_FLIP_HORIZONTAL);
-    }
-  else if (string_is_equal (str, "flip-vertical"))
-    {
-      do_midi_func (MIDI_FUNCTION_FLIP_VERTICAL);
-    }
-  else if (string_is_equal (str, "legato"))
-    {
-      do_midi_func (MIDI_FUNCTION_LEGATO);
-    }
-  else if (string_is_equal (str, "portato"))
-    {
-      do_midi_func (MIDI_FUNCTION_PORTATO);
-    }
-  else if (string_is_equal (str, "staccato"))
-    {
-      do_midi_func (MIDI_FUNCTION_STACCATO);
-    }
-  else if (string_is_equal (str, "strum"))
-    {
-      do_midi_func (MIDI_FUNCTION_STRUM);
-    }
-  else
-    {
-      g_return_if_reached ();
+    case REGION_TYPE_MIDI:
+      {
+        if (string_is_equal (str, "crescendo"))
+          {
+            do_midi_func (MIDI_FUNCTION_CRESCENDO);
+          }
+        else if (string_is_equal (str, "current"))
+          {
+            do_midi_func (
+              g_settings_get_int (
+                S_UI, "midi-function"));
+          }
+        else if (string_is_equal (str, "flam"))
+          {
+            do_midi_func (MIDI_FUNCTION_FLAM);
+          }
+        else if (string_is_equal (str, "flip-horizontal"))
+          {
+            do_midi_func (MIDI_FUNCTION_FLIP_HORIZONTAL);
+          }
+        else if (string_is_equal (str, "flip-vertical"))
+          {
+            do_midi_func (MIDI_FUNCTION_FLIP_VERTICAL);
+          }
+        else if (string_is_equal (str, "legato"))
+          {
+            do_midi_func (MIDI_FUNCTION_LEGATO);
+          }
+        else if (string_is_equal (str, "portato"))
+          {
+            do_midi_func (MIDI_FUNCTION_PORTATO);
+          }
+        else if (string_is_equal (str, "staccato"))
+          {
+            do_midi_func (MIDI_FUNCTION_STACCATO);
+          }
+        else if (string_is_equal (str, "strum"))
+          {
+            do_midi_func (MIDI_FUNCTION_STRUM);
+          }
+        else
+          {
+            g_return_if_reached ();
+          }
+      }
+      break;
+    case REGION_TYPE_AUTOMATION:
+      {
+        if (string_is_equal (str, "current"))
+          {
+            do_automation_func (
+              g_settings_get_int (
+                S_UI, "automation-function"));
+          }
+        else if (string_is_equal (
+                   str, "flip-horizontal"))
+          {
+            do_automation_func (
+              AUTOMATION_FUNCTION_FLIP_HORIZONTAL);
+          }
+        else if (string_is_equal (
+                   str, "flip-vertical"))
+          {
+            do_automation_func (
+              AUTOMATION_FUNCTION_FLIP_VERTICAL);
+          }
+        else
+          {
+            g_return_if_reached ();
+          }
+      }
+      break;
+    default:
+      break;
     }
 }
 

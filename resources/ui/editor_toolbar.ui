@@ -45,7 +45,8 @@
       </object>
     </child>
     <child>
-      <object class="GtkToolItem">
+      <object class="GtkToolItem"
+              id="chord_highlight_tool_item">
         <property name="visible">True</property>
         <child>
           <object class="GtkBox">
@@ -65,7 +66,7 @@
       </packing>
     </child>
     <child>
-      <object class="GtkSeparatorToolItem">
+      <object class="GtkSeparatorToolItem" id="sep_after_chord_highlight">
         <property name="visible">True</property>
       </object>
     </child>
@@ -124,13 +125,13 @@
     <section>
       <item>
         <attribute name="label" translatable="yes">Crescendo</attribute>
-        <attribute name="action">win.midi-function</attribute>
+        <attribute name="action">win.editor-function</attribute>
         <attribute name="target">crescendo</attribute>
         <attribute name="icon">dynamics-crescendo</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">Flam</attribute>
-        <attribute name="action">win.midi-function</attribute>
+        <attribute name="action">win.editor-function</attribute>
         <attribute name="target">flam</attribute>
         <attribute name="icon">drum-flam</attribute>
       </item>
@@ -139,40 +140,59 @@
         <item>
           <attribute name="label" translatable="yes">Horizontal</attribute>
           <attribute name="icon">object-flip-horizontal</attribute>
-          <attribute name="action">win.midi-function</attribute>
+          <attribute name="action">win.editor-function</attribute>
           <attribute name="target">flip-horizontal</attribute>
         </item>
         <item>
           <attribute name="label" translatable="yes">Vertical</attribute>
           <attribute name="icon">object-flip-vertical</attribute>
-          <attribute name="action">win.midi-function</attribute>
+          <attribute name="action">win.editor-function</attribute>
           <attribute name="target">flip-vertical</attribute>
         </item>
       </submenu>
       <item>
         <attribute name="label" translatable="yes">Legato</attribute>
-        <attribute name="action">win.midi-function</attribute>
+        <attribute name="action">win.editor-function</attribute>
         <attribute name="target">legato</attribute>
         <attribute name="icon">articulation-legato</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">Portato</attribute>
-        <attribute name="action">win.midi-function</attribute>
+        <attribute name="action">win.editor-function</attribute>
         <attribute name="target">portato</attribute>
         <attribute name="icon">articulation-portato</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">Staccato</attribute>
-        <attribute name="action">win.midi-function</attribute>
+        <attribute name="action">win.editor-function</attribute>
         <attribute name="target">staccato</attribute>
         <attribute name="icon">articulation-staccato2</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">Strum</attribute>
-        <attribute name="action">win.midi-function</attribute>
+        <attribute name="action">win.editor-function</attribute>
         <attribute name="target">strum</attribute>
         <attribute name="icon">strum</attribute>
       </item>
+    </section>
+  </menu>
+  <menu id="automation_functions_menu">
+    <section>
+      <submenu>
+        <attribute name="label" translatable="yes">Flip</attribute>
+        <item>
+          <attribute name="label" translatable="yes">Horizontal</attribute>
+          <attribute name="icon">object-flip-horizontal</attribute>
+          <attribute name="action">win.editor-function</attribute>
+          <attribute name="target">flip-horizontal</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">Vertical</attribute>
+          <attribute name="icon">object-flip-vertical</attribute>
+          <attribute name="action">win.editor-function</attribute>
+          <attribute name="target">flip-vertical</attribute>
+        </item>
+      </submenu>
     </section>
   </menu>
 </interface>

@@ -1677,7 +1677,7 @@ process_events (void * data)
           left_dock_edge_widget_refresh (
             MW_LEFT_DOCK_EDGE);
           break;
-        case ET_MIDI_FUNCTION_APPLIED:
+        case ET_EDITOR_FUNCTION_APPLIED:
           editor_toolbar_widget_refresh (
             MW_EDITOR_TOOLBAR);
           break;

@@ -18,6 +18,7 @@
 audio_srcs = [
   'audio_region.c',
   'audio_track.c',
+  'automation_function.c',
   'automation_point.c',
   'automation_region.c',
   'automation_track.c',

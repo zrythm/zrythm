@@ -174,7 +174,8 @@ void
 automation_point_set_fvalue (
   AutomationPoint * self,
   float             real_val,
-  bool              is_normalized)
+  bool              is_normalized,
+  bool              pub_events)
 {
   Port * port =
     automation_point_get_port (self);
@@ -208,8 +209,11 @@ automation_point_set_fvalue (
   control_port_set_val_from_normalized (
     port, self->normalized_val, 1);
 
-  EVENTS_PUSH (
-    ET_ARRANGER_OBJECT_CHANGED, self);
+  if (pub_events)
+    {
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_CHANGED, self);
+    }
 }
 
 /**

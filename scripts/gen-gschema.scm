@@ -496,6 +496,10 @@ Args:
                  "midi-function" "i" "0"
                  "Last used MIDI function"
                  "Last used MIDI function (index corresponding to enum in midi function action).")
+               (make-schema-key
+                 "automation-function" "i" "0"
+                 "Last used automation function"
+                 "Last used automation function (index corresponding to enum in automation function action).")
              ))) ;; ui
 
          (schema-print

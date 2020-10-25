@@ -473,8 +473,34 @@ arranger_selections_action_new_edit_midi_function (
   UndoableAction * ua =
     arranger_selections_action_new_edit (
       sel_before, sel_after,
-      ARRANGER_SELECTIONS_ACTION_EDIT_MIDI_FUNCTION,
-      F_ALREADY_EDITED);
+      ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,
+      F_NOT_ALREADY_EDITED);
+
+  arranger_selections_free_full (sel_after);
+
+  return ua;
+}
+
+/**
+ * Wrapper over
+ * arranger_selections_action_new_edit() for
+ * automation functions.
+ */
+UndoableAction *
+arranger_selections_action_new_edit_automation_function (
+  ArrangerSelections * sel_before,
+  AutomationFunctionType automation_func_type)
+{
+  ArrangerSelections * sel_after =
+    arranger_selections_clone (sel_before);
+  automation_function_apply (
+    sel_after, automation_func_type);
+
+  UndoableAction * ua =
+    arranger_selections_action_new_edit (
+      sel_before, sel_after,
+      ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,
+      F_NOT_ALREADY_EDITED);
 
   arranger_selections_free_full (sel_after);
 
@@ -792,7 +818,9 @@ do_or_undo_move (
                     ap,
                     ap->normalized_val +
                       (float)
-                      delta_normalized_amt, true);
+                      delta_normalized_amt,
+                      F_NORMALIZED,
+                      F_NO_PUBLISH_EVENTS);
 
                   /* also shift the copy so they
                    * can match */
@@ -802,7 +830,9 @@ do_or_undo_move (
                     copy_ap,
                     copy_ap->normalized_val +
                      (float)
-                     delta_normalized_amt, true);
+                     delta_normalized_amt,
+                     F_NORMALIZED,
+                     F_NO_PUBLISH_EVENTS);
                 }
             }
         }
@@ -1040,12 +1070,14 @@ do_or_undo_duplicate_or_link (
                     ap,
                     ap->normalized_val -
                       delta_normalized_amount,
-                    true);
+                    F_NORMALIZED,
+                    F_NO_PUBLISH_EVENTS);
                   automation_point_set_fvalue (
                     cached_ap,
                     cached_ap->normalized_val -
                       delta_normalized_amount,
-                    true);
+                    F_NORMALIZED,
+                    F_NO_PUBLISH_EVENTS);
                 }
             }
 
@@ -1205,7 +1237,8 @@ do_or_undo_duplicate_or_link (
             ap,
             ap->normalized_val +
               delta_normalized_amount,
-            true);
+            F_NORMALIZED,
+            F_NO_PUBLISH_EVENTS);
 
           /* also shift the copy */
           AutomationPoint * cached_ap =
@@ -1214,7 +1247,8 @@ do_or_undo_duplicate_or_link (
             cached_ap,
             cached_ap->normalized_val +
               delta_normalized_amount,
-            true);
+            F_NORMALIZED,
+            F_NO_PUBLISH_EVENTS);
         }
 
       /* add the mapping to the hashtable */
@@ -1652,6 +1686,37 @@ do_or_undo_edit (
                       ZRegion, musical_mode);
                   }
                   break;
+                case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+                  {
+                    SET_PRIMITIVE (MidiNote, muted);
+
+                    /* set velocity and cache vel */
+                    MidiNote * mn =
+                      (MidiNote *) obj;
+                    MidiNote * dest_mn =
+                      (MidiNote *) dest_objs[i];
+                    velocity_set_val (
+                      mn->vel, dest_mn->vel->vel);
+                  }
+                  break;
+                case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+                  {
+                    SET_PRIMITIVE (
+                      AutomationPoint, curve_opts);
+                    SET_PRIMITIVE (
+                      AutomationPoint, fvalue);
+                    SET_PRIMITIVE (
+                      AutomationPoint,
+                      normalized_val);
+                  }
+                  break;
+                default:
+                  break;
+                }
+              break;
+            case ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION:
+              switch (obj->type)
+                {
                 case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
                   {
                     SET_PRIMITIVE (MidiNote, muted);

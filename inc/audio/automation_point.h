@@ -117,7 +117,8 @@ void
 automation_point_set_fvalue (
   AutomationPoint * self,
   float             real_val,
-  bool              is_normalized);
+  bool              is_normalized,
+  bool              pub_events);
 
 /**
  * Sets the ZRegion and the index in the

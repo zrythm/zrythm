@@ -31,6 +31,15 @@ G_DEFINE_TYPE (
   button_with_menu_widget,
   GTK_TYPE_BUTTON_BOX)
 
+void
+button_with_menu_widget_set_menu_model (
+  ButtonWithMenuWidget * self,
+  GMenuModel *           gmenu_model)
+{
+  gtk_menu_button_set_menu_model (
+    self->menu_btn, gmenu_model);
+}
+
 /**
  * This must only be called once to set up the
  * widget.
@@ -103,8 +112,8 @@ button_with_menu_widget_setup (
 
   if (gmenu_model)
     {
-      gtk_menu_button_set_menu_model (
-        self->menu_btn, gmenu_model);
+      button_with_menu_widget_set_menu_model (
+        self, gmenu_model);
     }
 }
 

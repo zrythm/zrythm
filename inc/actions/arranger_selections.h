@@ -30,6 +30,7 @@
 #include <stdint.h>
 
 #include "actions/undoable_action.h"
+#include "audio/automation_function.h"
 #include "audio/midi_function.h"
 #include "audio/position.h"
 #include "audio/quantize_options.h"
@@ -128,7 +129,7 @@ typedef enum ArrangerSelectionsActionEditType
   //ARRANGER_SELECTIONS_ACTION_EDIT_RAMP,
 
   /** MIDI function. */
-  ARRANGER_SELECTIONS_ACTION_EDIT_MIDI_FUNCTION,
+  ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,
 } ArrangerSelectionsActionEditType;
 
 static const cyaml_strval_t
@@ -146,8 +147,8 @@ arranger_selections_action_edit_type_strings[] =
     ARRANGER_SELECTIONS_ACTION_EDIT_FADES },
   { "Mute",
     ARRANGER_SELECTIONS_ACTION_EDIT_MUTE },
-  { "MIDI function",
-    ARRANGER_SELECTIONS_ACTION_EDIT_MIDI_FUNCTION },
+  { "Editor function",
+    ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION },
 };
 
 /**
@@ -547,6 +548,16 @@ UndoableAction *
 arranger_selections_action_new_edit_midi_function (
   ArrangerSelections * sel_before,
   MidiFunctionType     midi_func_type);
+
+/**
+ * Wrapper over
+ * arranger_selections_action_new_edit() for
+ * automation functions.
+ */
+UndoableAction *
+arranger_selections_action_new_edit_automation_function (
+  ArrangerSelections * sel_before,
+  AutomationFunctionType automation_func_type);
 
 /**
  * Creates a new action for automation autofill.

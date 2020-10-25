@@ -1886,7 +1886,7 @@ move_items_y (
                 ap,
                 start_ap->normalized_val +
                   (float) offset_y_normalized,
-                true);
+                F_NORMALIZED, F_PUBLISH_EVENTS);
             }
           ArrangerObject * start_ap_obj =
             self->start_object;

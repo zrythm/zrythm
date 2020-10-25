@@ -63,9 +63,10 @@ typedef struct _ButtonWithMenuWidget
   //GtkMenu *        menu;
 } ButtonWithMenuWidget;
 
-/**
- * @}
- */
+void
+button_with_menu_widget_set_menu_model (
+  ButtonWithMenuWidget * self,
+  GMenuModel *           gmenu_model);
 
 /**
  * This must only be called once to set up the
@@ -94,5 +95,9 @@ button_with_menu_widget_get_menu_button (
 {
   return self->menu_btn;
 }
+
+/**
+ * @}
+ */
 
 #endif

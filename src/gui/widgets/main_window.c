@@ -535,8 +535,9 @@ main_window_widget_init (MainWindowWidget * self)
     { "toggle-editor-event-viewer",
       activate_toggle_editor_event_viewer },
 
-    /* MIDI functions */
-    { "midi-function", activate_midi_function, "s" },
+    /* editor functions */
+    { "editor-function", activate_editor_function,
+      "s" },
 
     /* rename track/region */
     { "rename-track-or-region",

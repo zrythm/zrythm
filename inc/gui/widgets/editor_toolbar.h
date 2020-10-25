@@ -56,7 +56,12 @@ typedef struct _EditorToolbarWidget
   GtkToolButton *     event_viewer_toggle;
   ButtonWithMenuWidget * functions_btn;
   GtkButton *         apply_function_btn;
+
+  GtkSeparator *      sep_after_chord_highlight;
+  GtkToolItem *       chord_highlight_tool_item;
+
   GMenuModel *        midi_functions_menu;
+  GMenuModel *        automation_functions_menu;
 } EditorToolbarWidget;
 
 /**

@@ -17,14 +17,46 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/engine.h"
-#include "audio/midi_function.h"
-#include "gui/backend/arranger_selections.h"
-#include "gui/backend/event.h"
-#include "gui/backend/event_manager.h"
-#include "project.h"
-#include "settings/settings.h"
-#include "zrythm_app.h"
+/**
+ * @file
+ *
+ * Automation functions.
+ *
+ * TODO move to a more appropriate directory.
+ */
+
+#ifndef __AUDIO_AUTOMATION_FUNCTION_H__
+#define __AUDIO_AUTOMATION_FUNCTION_H__
+
+#include "utils/yaml.h"
+
+typedef struct ArrangerSelections ArrangerSelections;
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
+typedef enum AutomationFunctionType
+{
+  AUTOMATION_FUNCTION_FLIP_HORIZONTAL,
+  AUTOMATION_FUNCTION_FLIP_VERTICAL,
+} AutomationFunctionType;
+
+static const cyaml_strval_t
+  automation_function_type_strings[] =
+{
+  { __("Flip H"), AUTOMATION_FUNCTION_FLIP_HORIZONTAL },
+  { __("Flip V"), AUTOMATION_FUNCTION_FLIP_VERTICAL },
+};
+
+static inline const char *
+automation_function_type_to_string (
+  AutomationFunctionType type)
+{
+  return automation_function_type_strings[type].str;
+}
 
 /**
  * Applies the given action to the given selections.
@@ -33,18 +65,12 @@
  * @param type Function type.
  */
 void
-midi_function_apply (
+automation_function_apply (
   ArrangerSelections * sel,
-  MidiFunctionType     type)
-{
-  /* TODO */
-  g_message (
-    "applying %s...",
-    midi_function_type_to_string (type));
+  AutomationFunctionType     type);
 
-  /* set last action */
-  g_settings_set_int (
-    S_UI, "midi-function", type);
+/**
+ * @}
+ */
 
-  EVENTS_PUSH (ET_EDITOR_FUNCTION_APPLIED, NULL);
-}
+#endif

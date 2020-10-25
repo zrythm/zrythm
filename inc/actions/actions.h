@@ -483,8 +483,8 @@ DECLARE_SIMPLE (
 DECLARE_SIMPLE (activate_insert_silence);
 DECLARE_SIMPLE (activate_remove_range);
 
-/* MIDI functions. */
-DECLARE_SIMPLE (activate_midi_function);
+/* Editor functions. */
+DECLARE_SIMPLE (activate_editor_function);
 
 DECLARE_SIMPLE (
   activate_midi_editor_highlighting);
