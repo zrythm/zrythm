@@ -339,6 +339,7 @@ inc/audio/midi_function.h
 inc/audio/engine_alsa.h
 inc/audio/engine_rtmidi.h
 inc/audio/midi_event.h
+inc/audio/automation_function.h
 inc/audio/scale.h
 inc/audio/instrument_track.h
 inc/audio/balance_control.h
@@ -677,6 +678,7 @@ src/audio/transport.c
 src/audio/exporter.c
 src/audio/supported_file.c
 src/audio/midi_bus_track.c
+src/audio/automation_function.c
 src/audio/engine_pa.c
 src/audio/region.c
 src/audio/tempo_track.c

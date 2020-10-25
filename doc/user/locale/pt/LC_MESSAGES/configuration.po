@@ -224,7 +224,7 @@ msgstr "Caminho do Zrythm"
 
 #: ../../configuration/preferences/intro.rst:62
 msgid "The :term:`Zrythm user path`."
-msgstr "O :term :`caminho do utilizador Zrythm`."
+msgstr "O :term:`Zrythm user path`."
 
 #: ../../configuration/preferences/intro.rst:65
 msgid "Plugins"
@@ -343,7 +343,7 @@ msgstr "Pan"
 #: ../../configuration/preferences/intro.rst:138
 msgid ":term:`Panning` options for :term:`Mono` signals (not used at the moment)."
 msgstr ""
-"Opções de: term: `Panning` para sinais: term:` Mono` (não usados no momento)."
+"Opções de :term:`Panning` para sinais :term:`Mono` (não usados no momento)."
 
 #: ../../configuration/preferences/intro.rst:141
 msgid "Pan algorithm"
@@ -373,7 +373,7 @@ msgstr "Lei pan"
 
 #: ../../configuration/preferences/intro.rst:160
 msgid "The :term:`Pan law` to use when applying pan on mono signals."
-msgstr "A :term:`Lei de pan` a ser usada ao aplicar pan em sinais mono."
+msgstr "A :term:`Pan law` a ser usada ao aplicar pan em sinais mono."
 
 #: ../../configuration/preferences/intro.rst:164
 msgid "Editing"

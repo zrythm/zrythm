@@ -95,9 +95,9 @@ msgid ""
 "page:Inputs>` (as below) and other places."
 msgstr ""
 "Zrythm wird die Devices, welche in :ref:`configuration/preferences/intro:"
-"Audio inputs`und :ref:`configuration/preferences/intro:MIDI controllers`"
+"Audio inputs` und :ref:`configuration/preferences/intro:MIDI controllers` "
 "spezifiziert sind automatisch verbinden und diese in  :ref:`track inputs <"
-"tracks/inspector-page:Inputs>`(siehe unten) und anderen Orten verfügbar "
+"tracks/inspector-page:Inputs>` (siehe unten) und anderen Orten verfügbar "
 "machen."
 
 #: ../../configuration/device-setup/intro.rst:23

@@ -200,8 +200,8 @@ msgid ""
 "interface/main-toolbar` will show the following selection. The routing "
 "graph can be exported as either a PNG image or a .dot graph."
 msgstr ""
-"Clicar no botão :guilabel:`Exportar Gráfico` no :doc:`.../zrythm-interface/"
-"main-toolbar`mostrará a seguinte seleção. O gráfico de roteamento pode ser "
+"Clicar no botão :guilabel:`Exportar Gráfico` no :doc:`../zrythm-interface/"
+"main-toolbar` mostrará a seguinte seleção. O gráfico de roteamento pode ser "
 "exportado como uma imagem PNG ou como um gráfico .dot."
 
 #: ../../exporting/routing-graph.rst:22

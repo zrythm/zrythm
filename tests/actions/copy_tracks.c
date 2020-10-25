@@ -152,7 +152,8 @@ _test_port_and_plugin_track_pos_after_duplication (
     (ArrangerObject *) ap, true, false);
   float prev_norm_val = ap->normalized_val;
   automation_point_set_fvalue (
-    ap, prev_norm_val - 0.1f, true);
+    ap, prev_norm_val - 0.1f, F_NORMALIZED,
+    F_NO_PUBLISH_EVENTS);
   ua =
     arranger_selections_action_new_move_automation (
       (ArrangerSelections *) AUTOMATION_SELECTIONS,

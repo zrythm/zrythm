@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-09 18:46+0100\n"
+"POT-Creation-Date: 2020-10-25 16:17+0000\n"
 "PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -73,6 +73,7 @@ msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します�
 msgid "Returns a new midi note."
 msgstr "新しい MIDI ノートを返します。"
 
+#: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
@@ -240,6 +241,11 @@ msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します�
 #: ../../scripting/api/zrythm.rst:10
 msgid "Return the PluginManager instance."
 msgstr "PluginManager のインスタンスを返します。"
+
+#: ../../scripting/api/zrythm.rst:15
+#, fuzzy
+msgid "Scheme Procedure: **zrythm-null**"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
 
 #: ../../scripting/api/zrythm.rst:14
 msgid "Returns a NULL pointer."

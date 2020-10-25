@@ -5,107 +5,81 @@
 Files and Directories
 =====================
 
-Installed Files
----------------
-When Zrythm is installed, it installs the following files by default:
-
-.. code-block:: text
-
-  /
-  └── usr
-      ├── bin
-      │   └── zrythm
-      └── share
-          ├── applications
-          │   └── zrythm.desktop
-          ├── fonts
-          │   └── zrythm
-          │       └── DSEG14-Classic-MINI
-          │           ├── DSEG14ClassicMini-BoldItalic.ttf
-          │           ├── DSEG14ClassicMini-BoldItalic.woff
-          │           ├── DSEG14ClassicMini-BoldItalic.woff2
-          │           ├── DSEG14ClassicMini-Bold.ttf
-          │           ├── DSEG14ClassicMini-Bold.woff
-          │           ├── DSEG14ClassicMini-Bold.woff2
-          │           ├── DSEG14ClassicMini-Italic.ttf
-          │           ├── DSEG14ClassicMini-Italic.woff
-          │           ├── DSEG14ClassicMini-Italic.woff2
-          │           ├── DSEG14ClassicMini-LightItalic.ttf
-          │           ├── DSEG14ClassicMini-LightItalic.woff
-          │           ├── DSEG14ClassicMini-LightItalic.woff2
-          │           ├── DSEG14ClassicMini-Light.ttf
-          │           ├── DSEG14ClassicMini-Light.woff
-          │           ├── DSEG14ClassicMini-Light.woff2
-          │           ├── DSEG14ClassicMini-Regular.ttf
-          │           ├── DSEG14ClassicMini-Regular.woff
-          │           ├── DSEG14ClassicMini-Regular.woff2
-          │           ├── DSEG-LICENSE.txt
-          │           └── README.md
-          ├── glib-2.0
-          │   └── schemas
-          │       └── org.zrythm.Zrythm.gschema.xml
-          ├── icons
-          │   └── hicolor
-          │       └── scalable
-          │           └── apps
-          │               └── zrythm.svg
-          ├── licenses
-          │   └── zrythm
-          │       └── COPYING
-          ├── locale
-          │   ├── ar
-          │   │   └── LC_MESSAGES
-          │   │       └── zrythm.mo
-          │   ├── de
-          │   │   └── LC_MESSAGES
-          │   │       └── zrythm.mo
-          │   ├── es
-          │   │   └── LC_MESSAGES
-          │   │       └── zrythm.mo
-          │   ├── fr
-          │   │   └── LC_MESSAGES
-          │   │       └── zrythm.mo
-          │   ├── hi
-          │   │   └── LC_MESSAGES
-          │   │       └── zrythm.mo
-          │   ├── it
-          │   │   └── LC_MESSAGES
-          │   │       └── zrythm.mo
-          │   ├── ja
-          │   │   └── LC_MESSAGES
-          │   │       └── zrythm.mo
-          │   ├── ko
-          │   │   └── LC_MESSAGES
-          │   │       └── zrythm.mo
-          │   ├── nb_NO
-          │   │   └── LC_MESSAGES
-          │   │       └── zrythm.mo
-          │   ├── pt
-          │   │   └── LC_MESSAGES
-          │   │       └── zrythm.mo
-          │   ├── pt_BR
-          │   │   └── LC_MESSAGES
-          │   │       └── zrythm.mo
-          │   ├── ru
-          │   │   └── LC_MESSAGES
-          │   │       └── zrythm.mo
-          │   └── zh
-          │       └── LC_MESSAGES
-          │           └── zrythm.mo
-          └── zrythm
-              └── samples
-                  ├── square_emphasis.wav
-                  └── square_normal.wav
-
-  44 directories, 40 files
-
-Project Files
--------------
+User path
+---------
 When Zrythm is launched for the first time, it will
 also ask you to select a directory for saving your
-user data, including projects and other
-project-related files.
+user data. See :term:`Zrythm user path` for details.
 
-See :term:`Zrythm user path` for details.
+Installed Files
+---------------
+When Zrythm is installed, it installs the following
+files by default.
 
-.. todo:: Rewrite this page.
+Desktop Entry
+~~~~~~~~~~~~~
+A `freedesktop-complicant configuration file <https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_
+that describes how a particular program should be
+launched, how it appears in menus, etc. This is
+normally installed at
+:file:`/usr/share/applications/zrythm.desktop`.
+
+GLib Schema
+~~~~~~~~~~~
+This file contains the schema for user
+configurations. It is normally installed at
+:file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema.xml`.
+
+Desktop Icon
+~~~~~~~~~~~~
+This is used by the desktop environment. Normally
+installed at
+:file:`/usr/share/icons/hicolor/scalable/apps/zrythm.svg`.
+
+Localization Files
+~~~~~~~~~~~~~~~~~~
+Localization files are installed under
+:file:`/usr/share/locale`. For example,
+:file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo`
+for Korean.
+
+Samples
+~~~~~~~
+Default audio samples used by Zrythm (such as the
+metronome). Normally installed under
+:file:`/usr/share/zrythm/samples`.
+
+Fonts
+~~~~~
+Unless your distribution provides packages for the
+required fonts, fonts required by Zrythm will
+normally be installed under
+:file:`/usr/share/fonts/zrythm`.
+
+GtkSourceView Stylesheets
+~~~~~~~~~~~~~~~~~~~~~~~~~
+Zrythm will install CSS stylesheets to be used by
+some text input widgets under
+:file:`/usr/share/zrythm/sourceview-styles`.
+
+Themes
+~~~~~~
+Default themes (including icon themes) will
+normally be installed under
+:file:`/usr/share/zrythm/themes`.
+
+.. hint:: Zrythm provides ways to override some of
+   these files with user-specified files in the
+   :term:`Zrythm user path`. See
+   :doc:`../theming/intro` for details.
+
+Log File
+--------
+Zrythm will write to a log file on each run inside
+the :file:`log` subdirectory under the
+:term:`Zrythm user path`. The filename will contain
+the current date and time, for example
+:file:`log_2020-06-26_15-34-19.log`.
+
+This log file is useful for debugging crashes and
+other problems.

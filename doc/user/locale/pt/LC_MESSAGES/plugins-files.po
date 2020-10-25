@@ -276,7 +276,7 @@ msgid ""
 "There are various types of :term:`plugins <Plugin>` supported by Zrythm, "
 "mentioned in :ref:`scanning-plugins`."
 msgstr ""
-"Existem vários tipos de :term:`suplementos <Suplemento>` suportados pela "
+"Existem vários tipos de :term:`plugins <Plugin>` suportados pela "
 "Zrythm, mencionados em :ref:`scanning-plugins`."
 
 #: ../../plugins-files/plugins/plugin-info.rst:12
@@ -334,7 +334,7 @@ msgid ""
 "These plugins modify incoming :term:`MIDI` signals and can be used in the"
 " MIDI signal chain of an Instrument or MIDI track."
 msgstr ""
-"Estes suplementos modificam os sinais MIDI de entrada e servem na cadeia de "
+"Estes suplementos modificam os sinais :term:`MIDI` de entrada e servem na cadeia de "
 "sinais MIDI de um Instrumento ou faixa MIDI (em breve)."
 
 #: ../../plugins-files/plugins/plugin-info.rst:39
@@ -359,7 +359,7 @@ msgid ""
 msgstr ""
 "Os suplementos consistem em controles (parâmetros) e uma variedade de portas "
 "de áudio, :term:`MIDI` e :term:`CV`. As portas são explicadas em "
-":ref:'ports'."
+":ref:`ports`."
 
 #: ../../plugins-files/plugins/plugin-info.rst:51
 msgid "Zrythm first creates all plugins with the following special control ports:"
@@ -397,7 +397,7 @@ msgid ""
 "explained in :ref:`plugin-inspector-page`"
 msgstr ""
 "Todas as portas do suplemento podem ser encontradas na página do inspetor de "
-"suplementos descrita em :ref:'plugin-inspector-page'"
+"suplementos descrita em :ref:`plugin-inspector-page`"
 
 #: ../../plugins-files/plugins/plugin-window.rst:6
 msgid "Plugin Window"
@@ -422,7 +422,7 @@ msgid ""
 "without additions like `File` or `Presets`."
 msgstr ""
 "Algumas IUs de suplemento não podem ser embrulhadas e serão abertas em "
-"janelas separadas sem adições como 'Ficheiros' ou 'Predefinições'."
+"janelas separadas sem adições como `Ficheiros` ou `Predefinições`."
 
 #: ../../plugins-files/plugins/plugin-window.rst:24
 msgid "Generic UIs"
@@ -500,6 +500,7 @@ msgid "Scanning for Plugins"
 msgstr "Procurando suplementos"
 
 #: ../../plugins-files/plugins/scanning.rst:10
+#, fuzzy
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
 "until it is closed. Zrythm supports :term:`LV2`, :term:`VST2`, "
@@ -641,8 +642,7 @@ msgid ""
 ":file:`cached_plugin_descriptors.yaml` in the :term:`Zrythm user path`."
 msgstr ""
 "Zrythm lembrará-se dos suplementos VST analizados e gravará esta informação "
-"em :file:`cached_plugin_descriptors.yaml` no :term:`caminho do utilizador do "
-"Zrythm`."
+"em :file:`cached_plugin_descriptors.yaml` no :term:`Zrythm user path`."
 
 #: ../../plugins-files/plugins/scanning.rst:77
 msgid ""
@@ -663,7 +663,7 @@ msgid ""
 "at :file:`/Library/Audio/Plug-Ins/Components`."
 msgstr ""
 "Em MacOS, suplementos de :term:`AU` serão analisados na localização padrão "
-"deles em :file:`/Library/Audio/Plug-Ins/Components'."
+"deles em :file:`/Library/Audio/Plug-Ins/Components`."
 
 #: ../../plugins-files/plugins/scanning.rst:88
 msgid "SFZ/SF2 Scan"
@@ -675,7 +675,7 @@ msgid ""
 "directories and subdirectories specified in :ref:`vst-paths`."
 msgstr ""
 "Instrumentos :term:`SFZ` e :term:`SF2` serão procurados em todos os "
-"diretórios e subdiretórios especificados em :ref:`vst-paths'."
+"diretórios e subdiretórios especificados em :ref:`vst-paths`."
 
 #~ msgid ""
 #~ "When a Plugin is selected in the"

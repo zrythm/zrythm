@@ -50,7 +50,7 @@ msgid ""
 " Out` that changes the volume before sending the output to the speakers."
 msgstr ""
 "A faixa master rotea a saída dela a um processador especial chamado `Saída "
-"de monitor' que muda o volume antes de enviar a saída para os alto-falantes."
+"de monitor` que muda o volume antes de enviar a saída para os alto-falantes."
 
 #: ../../routing/control-room.rst:25
 msgid "The `Monitor Out` knob controls this volume."
@@ -109,7 +109,7 @@ msgid ""
 "inspector` or the :ref:`plugin-inspector-page`."
 msgstr ""
 "As conexões podem ser feitas a clicar duas vezes nas portas do :ref:`track-"
-"inspector` ou no :ref:`plugin-inspector-página`."
+"inspector` ou no :ref:`plugin-inspector-page`."
 
 #: ../../routing/making-connections.rst:22
 msgid ""
@@ -245,7 +245,7 @@ msgid ""
 ":term:`CV` ports handle continuous signals and can be used to modulate "
 "control ports."
 msgstr ""
-"Portas de term:`CV` lidam com sinais contínuos e podem ser utilizadas para "
+"Portas de :term:`CV` lidam com sinais contínuos e podem ser utilizadas para "
 "modular as portas de controle."
 
 #: ../../routing/ports.rst:58

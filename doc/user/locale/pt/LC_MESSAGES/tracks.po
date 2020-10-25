@@ -478,7 +478,7 @@ msgid ""
 "selecting :zbutton:`Duplicate`."
 msgstr ""
 "A maioria das faixas podem ser duplicadas clicando com o botão direito do"
-" rato dentro da faixa e selecionando :zbutton: ' Duplicar '."
+" rato dentro da faixa e selecionando :zbutton:`Duplicar`."
 
 #: ../../tracks/group-track-audio.rst:8
 msgid "Audio Group Track"
@@ -696,7 +696,7 @@ msgid ""
 "The track will still be processed, so if you are looking to decrease "
 ":term:`DSP` usage, try disabling plugins instead."
 msgstr ""
-"A faixa ainda será processada, portanto, se quiser diminuir o uso de DSP, "
+"A faixa ainda será processada, portanto, se quiser diminuir o uso de :term:`DSP`, "
 "tente desativar os suplementos no seu lugar."
 
 #: ../../tracks/inspector-page.rst:135
@@ -1094,7 +1094,7 @@ msgid ""
 "This is different from what many other DAWs (see :term:`DAW`) do, so "
 "please keep this in mind."
 msgstr ""
-"Isto difere de muitos outros DAWs (veja :termo:`DAW`), então por favor tenha "
+"Isto difere de muitos outros DAWs (veja :term:`DAW`), então por favor tenha "
 "isto em mente."
 
 #: ../../tracks/overview.rst:45

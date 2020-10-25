@@ -54,7 +54,7 @@ msgid ""
 "get pretty-printed output, like below."
 msgstr ""
 "Imprime todas as configurações do utilizador. Pode ser combinado com "
-":option:`--pretty' para obter uma saída bem impressa, como a seguir."
+":option:`--pretty` para obter uma saída bem impressa, como a seguir."
 
 #: ../../invoking-from-command-line/intro.rst:40
 msgid "Resets user settings to their default values."
@@ -67,7 +67,7 @@ msgid ""
 "affect any files in the :term:`Zrythm user path`."
 msgstr ""
 "Só afeta as definições impressas com :option:`-p`. Isso *não* afetará "
-"nenhuns ficheiros no :term:`Caminho do utilizador do Zrythm`."
+"nenhuns ficheiros no :term:`Zrythm user path`."
 
 #: ../../invoking-from-command-line/intro.rst:47
 msgid "This will clear ALL your user settings."

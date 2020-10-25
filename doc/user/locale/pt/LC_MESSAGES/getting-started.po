@@ -148,7 +148,7 @@ msgid ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a kick drum "
 "synthesizer that can also synthesize other types of percussion."
 msgstr ""
-"`GeonKick < https://gitlab.com/iurie/geonkick >` _ é um sintetizador de "
+"`GeonKick <https://gitlab.com/iurie/geonkick>`_ é um sintetizador de "
 "tambor de pontapé que também pode sintetizar outros tipos de percussão."
 
 #: ../../getting-started/getting-plugins.rst:73
@@ -233,7 +233,7 @@ msgid ""
 "See :download:`INSTALL.md <../../../INSTALL.md>` in the source "
 "distribution for installation instructions."
 msgstr ""
-"Veja :download:`INSTALL.md <.../.../.../INSTALL.md>` na distribuição da "
+"Veja :download:`INSTALL.md <../../../INSTALL.md>` na distribuição da "
 "fonte para instruções de instalação."
 
 #: ../../getting-started/installation.rst:36
@@ -345,7 +345,7 @@ msgstr "Caminho"
 
 #: ../../getting-started/running-zrythm.rst:39
 msgid "This is the :term:`Zrythm user path`."
-msgstr "Este é o :term :`caminho do utilizador Zrythm`."
+msgstr "Este é o :term:`Zrythm user path`."
 
 #: ../../getting-started/running-zrythm.rst:42
 msgid "Audio/MIDI Backends"
@@ -389,7 +389,7 @@ msgid ""
 ":ref:`preferences`, so don't worry if you selected the wrong settings."
 msgstr ""
 "Todas as configurações mencionadas aqui também estão disponíveis em :ref:`"
-"preferences', portanto não se preocupe se selecionou as configurações "
+"preferences`, portanto não se preocupe se selecionou as configurações "
 "erradas."
 
 #: ../../getting-started/running-zrythm.rst:68
@@ -402,7 +402,7 @@ msgid ""
 "for plugins <../plugins-files/plugins/scanning>`."
 msgstr ""
 "Quando o primeiro assistente de execução estiver concluído, Zrythm iniciará "
-":doc:`procurar for suplementos <.../plugins-files/plugins/scanning>`."
+":doc:`procurar for suplementos <../plugins-files/plugins/scanning>`."
 
 #: ../../getting-started/running-zrythm.rst:77
 msgid "Project Selection"

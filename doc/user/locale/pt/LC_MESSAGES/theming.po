@@ -145,9 +145,9 @@ msgid ""
 "dark` with an :file:`index.theme` file and the icons you wish to "
 "override."
 msgstr ""
-"Por exemplo, se seu diretório Zrythm é :file:`/home/me/zrythm', deve criar "
-"um diretório em :file:`/home/me/zrythm/themes/icons/zrythm-dark' com um "
-"ficheiro :file:`index.theme' e os ícones que deseja substituir."
+"Por exemplo, se seu diretório Zrythm é :file:`/home/me/zrythm`, deve criar "
+"um diretório em :file:`/home/me/zrythm/themes/icons/zrythm-dark` com um "
+"ficheiro :file:`index.theme` e os ícones que deseja substituir."
 
 #: ../../theming/icon-themes.rst:23
 msgid ""

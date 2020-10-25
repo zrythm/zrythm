@@ -134,7 +134,7 @@ msgid ""
 "In the context of a :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "means audio signal processing."
 msgstr ""
-"No contexto de um :termo:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
+"No contexto de um :term:`DAW`, :abbr:`DSP (Digital Signal Processing)` "
 "significa processamento de sinal de áudio."
 
 #: ../../glossary/intro.rst:57
