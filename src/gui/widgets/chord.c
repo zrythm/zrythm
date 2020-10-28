@@ -45,6 +45,24 @@ get_chord_descriptor (
   return descr;
 }
 
+static void
+send_note_offs (
+  ChordWidget * self)
+{
+  Track * track = TRACKLIST_SELECTIONS->tracks[0];
+
+  if (track && track->in_signal_type == TYPE_EVENT)
+    {
+      ChordDescriptor * descr =
+        get_chord_descriptor (self);
+
+      /* send note offs at time 1 */
+      Port * port = track->processor->midi_in;
+      midi_events_add_note_offs_from_chord_descr (
+        port->midi_events, descr, 1, 1, F_QUEUED);
+    }
+}
+
 static bool
 on_chord_pressed (
   GtkWidget *   widget,
@@ -74,18 +92,7 @@ on_chord_released (
   GdkEvent *    event,
   ChordWidget * self)
 {
-  Track * track = TRACKLIST_SELECTIONS->tracks[0];
-
-  if (track && track->in_signal_type == TYPE_EVENT)
-    {
-      ChordDescriptor * descr =
-        get_chord_descriptor (self);
-
-      /* send note offs at time 1 */
-      Port * port = track->processor->midi_in;
-      midi_events_add_note_offs_from_chord_descr (
-        port->midi_events, descr, 1, 1, F_QUEUED);
-    }
+  send_note_offs (self);
 
   return FALSE;
 }
@@ -117,6 +124,9 @@ on_drag_update (
     {
       self->drag_started = true;
 
+      /* send note offs */
+      send_note_offs (self);
+
       /* make chord draggable */
       GtkTargetEntry entries[] = {
         {
@@ -130,6 +140,7 @@ on_drag_update (
         gtk_target_list_new (
           entries, G_N_ELEMENTS (entries));
 
+      /* begin drag */
       gtk_drag_begin_with_coordinates (
         (GtkWidget *) self->btn, target_list,
         GDK_ACTION_MOVE | GDK_ACTION_COPY,
@@ -138,13 +149,6 @@ on_drag_update (
         NULL,
         (int) (offset_x),
         (int) (offset_y));
-
-#if 0
-      gtk_drag_source_set (
-        GTK_WIDGET (self), GDK_BUTTON1_MASK,
-        entries, G_N_ELEMENTS (entries),
-        GDK_ACTION_MOVE | GDK_ACTION_COPY);
-#endif
     }
 }
 
