@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,9 +19,11 @@
 
 #include "zrythm-test-config.h"
 
+#include "actions/arranger_selections.h"
 #include "audio/channel.h"
 #include "audio/automation_region.h"
 #include "audio/automation_track.h"
+#include "audio/master_track.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "zrythm.h"
@@ -31,123 +33,56 @@
 #include <glib.h>
 #include <locale.h>
 
-typedef struct
-{
-  Channel *         ch;
-  Automatable *     a;
-  AutomationTrack * at;
-} AutomationTrackFixture;
-
 static void
-at_fixture_set_up (
-  AutomationTrackFixture * fixture)
+test_set_at_index ()
 {
-  /*AutomationPoint * ap;*/
-  /*AutomationCurve * ac;*/
+  test_helper_zrythm_init ();
 
-  /* needed to set TRANSPORT */
-  /*transport_init (TRANSPORT, 0);*/
-  engine_update_frames_per_tick (
-    AUDIO_ENGINE, 4, 140, 44000);
+  Track * master = P_MASTER_TRACK;
+  track_set_automation_visible (master, true);
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (master);
+  AutomationTrack ** visible_ats =
+    calloc (100000, sizeof (AutomationTrack *));
+  int num_visible = 0;
+  automation_tracklist_get_visible_tracks (
+    atl, visible_ats, &num_visible);
+  AutomationTrack * first_vis_at = visible_ats[0];
 
-  fixture->at =
-    calloc (1, sizeof (AutomationTrack));
-  /*ap =*/
-    /*calloc (1, sizeof (AutomationPoint));*/
-  /*position_set_to_bar (&ap->pos, 2);*/
-  /*array_append (fixture->at->aps,*/
-                /*fixture->at->num_aps,*/
-                /*ap);*/
-  /*ac =*/
-    /*calloc (1, sizeof (AutomationCurve));*/
-  /*position_set_to_bar (&ap->pos, 3);*/
-  /*array_append (fixture->at->acs,*/
-                /*fixture->at->num_acs,*/
-                /*ac);*/
-  /*ap =*/
-    /*calloc (1, sizeof (AutomationPoint));*/
-  /*position_set_to_bar (&ap->pos, 4);*/
-  /*array_append (fixture->at->aps,*/
-                /*fixture->at->num_aps,*/
-                /*ap);*/
-  /*ac =*/
-    /*calloc (1, sizeof (AutomationCurve));*/
-  /*position_set_to_bar (&ap->pos, 5);*/
-  /*array_append (fixture->at->acs,*/
-                /*fixture->at->num_acs,*/
-                /*ac);*/
-  /*ap =*/
-    /*calloc (1, sizeof (AutomationPoint));*/
-  /*position_set_to_bar (&ap->pos, 6);*/
-  /*array_append (fixture->at->aps,*/
-                /*fixture->at->num_aps,*/
-                /*ap);*/
-  /*ac =*/
-    /*calloc (1, sizeof (AutomationCurve));*/
-  /*position_set_to_bar (&ap->pos, 7);*/
-  /*array_append (fixture->at->acs,*/
-                /*fixture->at->num_acs,*/
-                /*ac);*/
-  /*ap =*/
-    /*calloc (1, sizeof (AutomationPoint));*/
-  /*position_set_to_bar (&ap->pos, 8);*/
-  /*array_append (fixture->at->aps,*/
-                /*fixture->at->num_acs,*/
-                /*ap);*/
-}
+  /* create a region and set it as clip editor
+   * region */
+  Position start, end;
+  position_set_to_bar (&start, 2);
+  position_set_to_bar (&end, 4);
+  ZRegion * region =
+    automation_region_new (
+      &start, &end, master->pos,
+      first_vis_at->index, 0);
+  automation_track_add_region (
+    first_vis_at, region);
+  arranger_object_select (
+    (ArrangerObject *) region, F_SELECT,
+    F_NO_APPEND);
+  UndoableAction * ua =
+    arranger_selections_action_new_create (
+      (ArrangerSelections *) TL_SELECTIONS);
+  undo_manager_perform (
+    UNDO_MANAGER, ua);
 
-static void
-get_x_relevant_to_pos ()
-{
-  AutomationTrackFixture _fixture;
-  AutomationTrackFixture * fixture =
-    &_fixture;
-  at_fixture_set_up (fixture);
+  clip_editor_set_region (
+    CLIP_EDITOR, region, F_NO_PUBLISH_EVENTS);
 
-  /*Position pos;*/
-  /*AutomationPoint * ap;*/
+  AutomationTrack * first_invisible_at =
+    automation_tracklist_get_first_invisible_at (
+      atl);
+  automation_tracklist_set_at_index (
+    atl, first_invisible_at, first_vis_at->index,
+    F_NO_PUSH_DOWN);
 
-  /*[> test when pos is before first ap <]*/
-  /*position_set_to_bar (&pos, 1);*/
-  /*ap =*/
-    /*automation_track_get_ap_before_pos (*/
-      /*fixture->at, &pos);*/
-  /*g_assert_null (ap);*/
+  /* check that clip editor region can be found */
+  clip_editor_get_region (CLIP_EDITOR);
 
-  /*[> test when pos is before 3rd ap <]*/
-  /*position_set_to_pos (*/
-    /*&pos, &fixture->at->aps[1]->pos);*/
-  /*position_add_ticks (*/
-    /*&pos, 1);*/
-  /*ap =*/
-    /*automation_track_get_ap_before_pos (*/
-      /*fixture->at, &pos);*/
-  /*g_assert_true (*/
-    /*ap == fixture->at->aps[1]);*/
-
-  /*[> test when pos is after all aps <]*/
-  /*position_set_to_pos (*/
-    /*&pos, &fixture->at->aps[*/
-            /*fixture->at->num_aps - 1]->*/
-              /*pos);*/
-  /*position_add_ticks (*/
-    /*&pos, 1);*/
-  /*ap =*/
-    /*automation_track_get_ap_before_pos (*/
-      /*fixture->at, &pos);*/
-  /*g_assert_true (*/
-    /*ap == fixture->at->aps[*/
-            /*fixture->at->num_aps - 1]);*/
-
-  /*[> test when there are no APs <]*/
-  /*[>int tmp = fixture->at->num_aps;<]*/
-  /*fixture->at->num_aps = 0;*/
-  /*ap =*/
-    /*automation_track_get_ap_before_pos (*/
-      /*fixture->at, &pos);*/
-  /*g_assert_null (ap);*/
-
-
+  test_helper_zrythm_cleanup ();
 }
 
 int
@@ -155,13 +90,11 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  test_helper_zrythm_init ();
-
 #define TEST_PREFIX "/audio/automation_track/"
 
   g_test_add_func (
-    TEST_PREFIX "get x relevant to pos",
-    (GTestFunc) get_x_relevant_to_pos);
+    TEST_PREFIX "test set at index",
+    (GTestFunc) test_set_at_index);
 
   return g_test_run ();
 }

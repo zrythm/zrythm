@@ -150,8 +150,8 @@ automation_tracklist_init (
  * it with the AutomationTrack at that index or
  * pushes the other AutomationTrack's down.
  *
- * @param push_down 0 to swap positions with the
- *   current AutomationTrack, or 1 to push down
+ * @param push_down False to swap positions with the
+ *   current AutomationTrack, or true to push down
  *   all the tracks below.
  */
 void
@@ -159,7 +159,7 @@ automation_tracklist_set_at_index (
   AutomationTracklist * self,
   AutomationTrack *     at,
   int                   index,
-  int                   push_down)
+  bool                  push_down)
 {
   g_return_if_fail (
     index < self->num_ats && self->ats[index]);
@@ -170,6 +170,13 @@ automation_tracklist_set_at_index (
 
   if (at->index == index)
     return;
+
+  ZRegion * clip_editor_region =
+    clip_editor_get_region (CLIP_EDITOR);
+  RegionIdentifier * clip_editor_region_id =
+    &clip_editor_region->id;
+  const int clip_editor_region_idx =
+    clip_editor_region_id->at_idx;
 
   if (push_down)
     {
@@ -182,30 +189,64 @@ automation_tracklist_set_at_index (
           for (int i = at->index - 1;
                i >= index; i--)
             {
-              self->ats[i + 1] = self->ats[i];
+              int prev_idx = i;
+              int new_idx = i + 1;
+              self->ats[new_idx] = self->ats[i];
               automation_track_set_index (
-                self->ats[i], i + 1);
-              /*g_message ("new pos %s (%d)",*/
-                /*self->ats[i]->automatable->label,*/
-                /*self->ats[i]->index);*/
+                self->ats[i], new_idx);
+
+              /* update clip editor region if it was
+               * affected */
+              if (clip_editor_region_idx == prev_idx)
+                {
+                  CLIP_EDITOR->region_id.at_idx =
+                    new_idx;
+                }
             }
+
+          int prev_idx = at->index;
           self->ats[index] = at;
           automation_track_set_index (at, index);
+
+          /* update clip editor region if it was
+           * affected */
+          if (clip_editor_region_idx == prev_idx)
+            {
+              CLIP_EDITOR->region_id.at_idx =
+                index;
+            }
         }
       else
         {
           for (int i = at->index + 1;
                i <= index; i++)
             {
-              self->ats[i - 1] = self->ats[i];
+              int prev_idx = i;
+              int new_idx = i - 1;
+              self->ats[new_idx] = self->ats[i];
               automation_track_set_index (
-                self->ats[i], i - 1);
-              /*g_message ("new pos %s (%d)",*/
-                /*self->ats[i]->automatable->label,*/
-                /*self->ats[i]->index);*/
+                self->ats[i], new_idx);
+
+              /* update clip editor region if it was
+               * affected */
+              if (clip_editor_region_idx == prev_idx)
+                {
+                  CLIP_EDITOR->region_id.at_idx =
+                    new_idx;
+                }
             }
+
+          int prev_idx = at->index;
           self->ats[index] = at;
           automation_track_set_index (at, index);
+
+          /* update clip editor region if it was
+           * affected */
+          if (clip_editor_region_idx == prev_idx)
+            {
+              CLIP_EDITOR->region_id.at_idx =
+                index;
+            }
         }
     }
   else
@@ -214,11 +255,23 @@ automation_tracklist_set_at_index (
       AutomationTrack * new_at = self->ats[index];
       self->ats[index] = at;
       automation_track_set_index (at, index);
+
       self->ats[prev_index] = new_at;
       automation_track_set_index (
         new_at, prev_index);
 
-      g_message ("new pos %s (%d)",
+      /* update clip editor region if it was
+       * affected */
+      if (clip_editor_region_idx == index)
+        {
+          CLIP_EDITOR->region_id.at_idx = prev_index;
+        }
+      else if (clip_editor_region_idx == prev_index)
+        {
+          CLIP_EDITOR->region_id.at_idx = index;
+        }
+
+      g_debug ("new pos %s (%d)",
         new_at->port_id.label, new_at->index);
     }
 }

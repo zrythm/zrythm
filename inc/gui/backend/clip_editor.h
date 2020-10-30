@@ -139,7 +139,8 @@ ClipEditor *
 clip_editor_new (void);
 
 /**
- * Sets the track and refreshes the piano roll widgets.
+ * Sets the track and refreshes the piano roll
+ * widgets.
  *
  * To be called only from GTK threads.
  */

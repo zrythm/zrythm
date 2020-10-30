@@ -227,8 +227,8 @@ automation_tracklist_clear (
  * it with the AutomationTrack at that index or
  * pushes the other AutomationTrack's down.
  *
- * @param push_down 0 to swap positions with the
- *   current AutomationTrack, or 1 to push down
+ * @param push_down False to swap positions with the
+ *   current AutomationTrack, or true to push down
  *   all the tracks below.
  */
 void
@@ -236,7 +236,7 @@ automation_tracklist_set_at_index (
   AutomationTracklist * self,
   AutomationTrack *     at,
   int                   index,
-  int                   push_down);
+  bool                  push_down);
 
 /**
  * Gets the automation track with the given label.

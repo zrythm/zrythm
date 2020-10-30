@@ -630,7 +630,12 @@ region_find (
       g_return_val_if_fail (at, NULL);
 
       if (id->idx >= at->num_regions)
-        g_return_val_if_reached (NULL);
+        {
+          g_critical (
+            "Automation track for %s has no "
+            "regions", at->port_id.label);
+          return NULL;
+        }
       ZRegion * region = at->regions[id->idx];
       g_return_val_if_fail (
         IS_REGION (region), NULL);

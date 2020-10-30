@@ -41,7 +41,8 @@ G_DEFINE_TYPE (PortSelectorPopoverWidget,
 
 /** Used as the first row in the Plugin treeview to
  * indicate if "Track ports is selected or not. */
-static const Plugin * dummy_plugin = (const Plugin *) 123;
+static const Plugin * dummy_plugin =
+  (const Plugin *) 123;
 
 static void
 on_ok_clicked (

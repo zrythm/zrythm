@@ -199,4 +199,7 @@
 #define F_CHECK_BLACKLISTED 1
 #define F_NO_CHECK_BLACKLISTED 0
 
+#define F_PUSH_DOWN 1
+#define F_NO_PUSH_DOWN 0
+
 #endif

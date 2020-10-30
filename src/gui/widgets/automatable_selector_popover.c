@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,7 @@
 #include "gui/widgets/automatable_selector_popover.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
@@ -36,6 +37,48 @@ G_DEFINE_TYPE (
   AutomatableSelectorPopoverWidget,
   automatable_selector_popover_widget,
   GTK_TYPE_POPOVER)
+
+static void
+on_closed (
+  AutomatableSelectorPopoverWidget *self,
+  gpointer                          user_data)
+{
+  /* if the selected automatable changed */
+  Port * at_port =
+    automation_track_get_port (self->owner);
+  if (self->selected_port &&
+      at_port != self->selected_port)
+    {
+      /* set the previous automation track
+       * invisible */
+      self->owner->visible = 0;
+
+      g_message ("selected port: %s",
+        self->selected_port->id.label);
+
+      /* swap indices */
+      AutomationTracklist * atl =
+        automation_track_get_automation_tracklist (
+          self->owner);
+      AutomationTrack * selected_at =
+        automation_tracklist_get_at_from_port (
+          atl, self->selected_port);
+      g_return_if_fail (selected_at);
+      automation_tracklist_set_at_index (
+        atl, self->owner, selected_at->index,
+        F_NO_PUSH_DOWN);
+
+      selected_at->created = true;
+      selected_at->visible = true;
+      EVENTS_PUSH (
+        ET_AUTOMATION_TRACK_ADDED, selected_at);
+    }
+  else
+    {
+      g_message (
+        "same automatable selected, doing nothing");
+    }
+}
 
 /**
  * Updates the info label based on the currently
@@ -525,47 +568,6 @@ tree_view_create (
     G_CALLBACK (on_selection_changed), self);
 
   return GTK_TREE_VIEW (tree_view);
-}
-
-static void
-on_closed (
-  AutomatableSelectorPopoverWidget *self,
-  gpointer                          user_data)
-{
-  /* if the selected automatable changed */
-  Port * at_port =
-    automation_track_get_port (self->owner);
-  if (self->selected_port &&
-      at_port != self->selected_port)
-    {
-      /* set the previous automation track
-       * invisible */
-      self->owner->visible = 0;
-
-      g_message ("selected port: %s",
-        self->selected_port->id.label);
-
-      /* swap indices */
-      AutomationTracklist * atl =
-        automation_track_get_automation_tracklist (
-          self->owner);
-      AutomationTrack * selected_at =
-        automation_tracklist_get_at_from_port (
-          atl, self->selected_port);
-      g_return_if_fail (selected_at);
-      automation_tracklist_set_at_index (
-        atl, self->owner, selected_at->index, 0);
-
-      selected_at->created = 1;
-      selected_at->visible = 1;
-      EVENTS_PUSH (
-        ET_AUTOMATION_TRACK_ADDED, selected_at);
-    }
-  else
-    {
-      g_message (
-        "same automatable selected, doing nothing");
-    }
 }
 
 /**
