@@ -100,15 +100,17 @@ on_selection_changed (
   ChannelSendTarget * target =
     g_value_get_pointer (&value);
 
+  ChannelSend * send = self->send_widget->send;
+
   Track * src_track =
-    channel_send_get_track (self->send_widget->send);
+    channel_send_get_track (send);
   Track * dest_track =
     get_track_from_target (target);
   UndoableAction * ua = NULL;
   switch (target->type)
     {
     case TARGET_TYPE_NONE:
-      if (!self->send_widget->send->is_empty)
+      if (!send->is_empty)
         {
           ua =
             channel_send_action_new_disconnect (
@@ -120,7 +122,8 @@ on_selection_changed (
       switch (src_track->out_signal_type)
         {
         case TYPE_EVENT:
-          if (!port_identifier_is_equal (
+          if (send->is_empty ||
+              !port_identifier_is_equal (
                 &self->send_widget->send->
                   dest_midi_id,
                 &dest_track->processor->midi_in->id))
@@ -134,7 +137,8 @@ on_selection_changed (
             }
           break;
         case TYPE_AUDIO:
-          if (!port_identifier_is_equal (
+          if (send->is_empty ||
+              !port_identifier_is_equal (
                 &self->send_widget->send->
                   dest_l_id,
                 &dest_track->processor->stereo_in->

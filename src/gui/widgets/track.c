@@ -1708,8 +1708,7 @@ show_context_menu (
           menuitem =
             z_gtk_create_menu_item (
               _("Add Region"), "list-add",
-              0, NULL, 0,
-              "win.duplicate-selected-tracks");
+              0, NULL, 0, "win.add-region");
           APPEND (menuitem);
         }
 

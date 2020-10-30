@@ -2114,3 +2114,13 @@ DEFINE_SIMPLE (
       g_message ("TODO - track");
     }
 }
+
+DEFINE_SIMPLE (activate_add_region)
+{
+  if (TRACKLIST_SELECTIONS->num_tracks == 0)
+    return;
+
+  /*Track * track = TRACKLIST_SELECTIONS->tracks[0];*/
+
+  /* TODO add region with default size */
+}

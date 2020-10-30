@@ -466,6 +466,7 @@ main_window_widget_init (MainWindowWidget * self)
       activate_create_midi_group_track },
     { "delete-selected-tracks",
       activate_delete_selected_tracks },
+    { "add-region", activate_add_region },
 
     /* modes */
     { "select-mode", activate_select_mode },
