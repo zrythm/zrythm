@@ -7,24 +7,25 @@
 Inspector Page
 ==============
 
-When a Plugin is selected in the Mixer, its
+When a plugin is selected in the Mixer, its
 page will appear in the Inspector as follows.
 
 .. image:: /_static/img/plugin_inspector.png
    :align: center
 
 This page will display information about the
-Plugin and its ports and allow you to make
+plugin and its ports and allow you to make
 changes.
+
+Display
+-------
+The number in the top right of each port name will
+display the current number of connections to/from
+this port. See
+:doc:`../../routing/making-connections` for details.
 
 Changing Values
 ---------------
 
 The values of control ports can be changed by
-clicking and dragging inside the bar.
-
-Connections
------------
-
-Compatible ports can be connected to one another.
-See :ref:`making-connections` for more details.
+clicking and dragging inside each bar.

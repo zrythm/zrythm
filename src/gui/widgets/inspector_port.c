@@ -168,6 +168,16 @@ on_bind_midi_cc (
 }
 
 static void
+on_reset_control (
+  GtkMenuItem *         menuitem,
+  InspectorPortWidget * self)
+{
+  UndoableAction * ua =
+    port_action_new_reset_control (&self->port->id);
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+static void
 show_context_menu (
   InspectorPortWidget * self,
   gdouble               x,
@@ -182,12 +192,21 @@ show_context_menu (
     {
       menuitem =
         gtk_menu_item_new_with_label (
+          _("Reset"));
+      g_signal_connect (
+        menuitem, "activate",
+        G_CALLBACK (on_reset_control), self);
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (menu), menuitem);
+
+      menuitem =
+        gtk_menu_item_new_with_label (
           _("Bind MIDI CC"));
       g_signal_connect (
         menuitem, "activate",
         G_CALLBACK (on_bind_midi_cc), self);
       gtk_menu_shell_append (
-        GTK_MENU_SHELL(menu), menuitem);
+        GTK_MENU_SHELL (menu), menuitem);
     }
 
   menuitem =

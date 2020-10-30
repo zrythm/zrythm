@@ -38,7 +38,8 @@ typedef enum PortActionType
 static const cyaml_strval_t
 port_action_type_strings[] =
 {
-  { "Set control val", PORT_ACTION_SET_CONTROL_VAL },
+  { "Set control val",
+    PORT_ACTION_SET_CONTROL_VAL },
 };
 
 typedef struct PortAction
@@ -87,6 +88,13 @@ static const cyaml_schema_value_t
 void
 port_action_init_loaded (
   PortAction * self);
+
+/**
+ * Create a new action.
+ */
+UndoableAction *
+port_action_new_reset_control (
+  PortIdentifier * port_id);
 
 /**
  * Create a new action.

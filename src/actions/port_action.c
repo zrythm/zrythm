@@ -70,6 +70,22 @@ port_action_new (
   return ua;
 }
 
+/**
+ * Create a new action.
+ */
+UndoableAction *
+port_action_new_reset_control (
+  PortIdentifier * port_id)
+{
+  Port * port =
+    port_find_from_identifier (port_id);
+
+  return
+    port_action_new (
+      PORT_ACTION_SET_CONTROL_VAL, port_id,
+      port->deff, F_NOT_NORMALIZED);
+}
+
 static int
 port_action_do_or_undo (
   PortAction * self,
