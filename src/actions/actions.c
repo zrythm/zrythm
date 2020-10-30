@@ -1759,7 +1759,7 @@ activate_mute_selection (
         arranger_selections_action_new_edit (
           sel, NULL,
           ARRANGER_SELECTIONS_ACTION_EDIT_MUTE,
-          false);
+          F_NOT_ALREADY_EDITED);
       undo_manager_perform (UNDO_MANAGER, ua);
     }
 

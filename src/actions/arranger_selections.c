@@ -446,8 +446,26 @@ arranger_selections_action_new_edit (
 
   set_selections (
     self, sel_before, F_CLONE, F_NOT_IS_AFTER);
-  set_selections (
-    self, sel_after, F_CLONE, F_IS_AFTER);
+
+  if (sel_after)
+    {
+      set_selections (
+        self, sel_after, F_CLONE, F_IS_AFTER);
+    }
+  else
+    {
+      if (already_edited)
+        {
+          g_critical (
+            "sel_after must be passed or already "
+            "edited must be false");
+          return NULL;
+        }
+
+      set_selections (
+        self, sel_before, F_CLONE, F_IS_AFTER);
+    }
+
   if (!already_edited)
     {
       self->first_run = 0;
@@ -1782,7 +1800,7 @@ do_or_undo_edit (
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
   EVENTS_PUSH (
-    ET_ARRANGER_SELECTIONS_CHANGED, sel);
+    ET_ARRANGER_SELECTIONS_CHANGED_REDRAW_EVERYTHING, sel);
 
   self->first_run = false;
 

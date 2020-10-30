@@ -173,14 +173,18 @@ automation_tracklist_set_at_index (
 
   ZRegion * clip_editor_region =
     clip_editor_get_region (CLIP_EDITOR);
-  RegionIdentifier * clip_editor_region_id =
-    &clip_editor_region->id;
-  int clip_editor_region_idx =
-    clip_editor_region_id->at_idx;
-  if (clip_editor_region_id->track_pos !=
-        at->port_id.track_pos)
+  int clip_editor_region_idx = -2;
+  if (clip_editor_region)
     {
-      clip_editor_region_idx = -2;
+      RegionIdentifier * clip_editor_region_id =
+        &clip_editor_region->id;
+
+      if (clip_editor_region_id->track_pos ==
+            at->port_id.track_pos)
+        {
+          clip_editor_region_idx =
+            clip_editor_region_id->at_idx;
+        }
     }
 
   if (push_down)

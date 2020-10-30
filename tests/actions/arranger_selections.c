@@ -1091,6 +1091,47 @@ test_edit_marker ()
   /* redo and check that the name is changed */
   undo_manager_redo (UNDO_MANAGER);
   undo_manager_redo (UNDO_MANAGER);
+
+  /* return to original state */
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+}
+
+static void
+test_mute ()
+{
+  /* clear undo/redo stacks */
+  undo_manager_clear_stacks (UNDO_MANAGER, true);
+
+  rebootstrap_timeline ();
+
+  Track * midi_track = TRACKLIST->tracks[5];
+  g_assert_true (
+    midi_track->type == TRACK_TYPE_MIDI);
+
+  ZRegion * r = midi_track->lanes[0]->regions[0];
+  ArrangerObject * obj = (ArrangerObject *) r;
+
+  UndoableAction * ua =
+    arranger_selections_action_new_edit (
+      (ArrangerSelections *) TL_SELECTIONS, NULL,
+      ARRANGER_SELECTIONS_ACTION_EDIT_MUTE,
+      F_NOT_ALREADY_EDITED);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* assert muted */
+  g_assert_true (obj->muted);
+
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_false (obj->muted);
+
+  /* redo and recheck */
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_true (obj->muted);
+
+  /* return to original state */
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_false (obj->muted);
 }
 
 int
@@ -1121,7 +1162,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test edit marker",
     (GTestFunc) test_edit_marker);
+  g_test_add_func (
+    TEST_PREFIX "test mute",
+    (GTestFunc) test_mute);
 
   return g_test_run ();
 }
-

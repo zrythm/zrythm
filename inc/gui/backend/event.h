@@ -45,6 +45,9 @@ typedef enum EventType
   ET_ARRANGER_SELECTIONS_MOVED,
   ET_ARRANGER_SELECTIONS_QUANTIZED,
 
+  /** Redraws all arrangers. */
+  ET_ARRANGER_SELECTIONS_CHANGED_REDRAW_EVERYTHING,
+
   /** To be used after an action is finished to
    * redraw everything. */
   ET_ARRANGER_SELECTIONS_ACTION_FINISHED,

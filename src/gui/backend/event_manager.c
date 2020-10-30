@@ -1681,6 +1681,10 @@ process_events (void * data)
           editor_toolbar_widget_refresh (
             MW_EDITOR_TOOLBAR);
           break;
+        case ET_ARRANGER_SELECTIONS_CHANGED_REDRAW_EVERYTHING:
+          arranger_selections_change_redraw_everything (
+            ARRANGER_SELECTIONS (ev->arg));
+          break;
         default:
           g_warning (
             "event %d not implemented yet",
