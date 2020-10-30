@@ -20,20 +20,27 @@ Plugin Types
 Plugins are classified into the following categories.
 
 Instrument
-  These plugins will create an instrument track when added
-  to the project.
+~~~~~~~~~~
+These plugins will create an instrument track when added
+to the project.
+
 Effects
-  These plugins can be dragged into the insert slots of
-  existing channels in the mixer or can be instantiated to
-  create new FX tracks.
+~~~~~~~
+These plugins can be dragged into the insert slots of
+existing channels in the mixer or can be instantiated to
+create new FX tracks.
+
 Modulators
-  These plugins output :term:`CV` signals and can be used to modulate
-  other plugin or track parameters.
+~~~~~~~~~~
+These plugins output :term:`CV` signals and can be used to modulate
+other plugin or track parameters.
+
 MIDI Effects
-  These plugins modify incoming :term:`MIDI` signals and
-  can be used
-  in the MIDI signal chain of an Instrument or MIDI
-  track.
+~~~~~~~~~~~~
+These plugins modify incoming :term:`MIDI` signals and
+can be used
+in the MIDI signal chain of an Instrument or MIDI
+track.
 
 .. note::
   Zrythm looks inside the plugin's metadata to
@@ -49,17 +56,19 @@ a variety of audio, :term:`MIDI` and :term:`CV`
 ports. Ports are explained in :ref:`ports`.
 
 Zrythm first creates all plugins with the following
-special control ports:
-
-Enabled
-  Controls whether the plugin is active or bypassed.
-Gain
-  Increases the output volume of the plugin (if
-  applicable).
-
-After the above ports are created, Zrythm appends
+special control ports.
+After these ports are created, Zrythm appends
 the rest of the plugin's ports.
 
-All of the plugin's ports can be found in the plugin
-inspector page explained in
-:ref:`plugin-inspector-page`
+Enabled
+~~~~~~~
+Controls whether the plugin is active or bypassed.
+
+Gain
+~~~~
+Increases the output volume of the plugin (if
+applicable).
+
+.. seealso::
+   All of the plugin's ports will be shown in the
+   :ref:`Inspector Page <plugins-files/plugins/inspector-page:Inspector Page>`

@@ -7,7 +7,8 @@
 Inspector Page
 ==============
 
-When a plugin is selected in the Mixer, its
+When a plugin is selected in the Mixer, or when using
+right click -> Inspect on an instrument, its
 page will appear in the Inspector as follows.
 
 .. image:: /_static/img/plugin_inspector.png
@@ -26,6 +27,7 @@ this port. See
 
 Changing Values
 ---------------
-
 The values of control ports can be changed by
 clicking and dragging inside each bar.
+
+.. seealso:: :ref:`plugins-files/plugins/plugin-info:Plugin Ports`
