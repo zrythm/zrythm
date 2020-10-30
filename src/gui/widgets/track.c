@@ -2132,7 +2132,7 @@ multipress_released (
                    * automation track */
                   automation_tracklist_set_at_index (
                     atl, new_at,
-                    at->index + 1, 1);
+                    at->index + 1, true);
 
                   EVENTS_PUSH (
                     ET_AUTOMATION_TRACK_ADDED,

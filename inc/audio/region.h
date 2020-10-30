@@ -558,6 +558,15 @@ region_get_musical_mode (
   ZRegion * self);
 
 /**
+ * Wrapper for adding an arranger object.
+ */
+void
+region_add_arranger_object (
+  ZRegion *        self,
+  ArrangerObject * obj,
+  bool             fire_events);
+
+/**
  * Removes the MIDI note and its components
  * completely.
  */

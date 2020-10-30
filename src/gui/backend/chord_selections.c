@@ -58,69 +58,6 @@ chord_selections_can_be_pasted (
   return 1;
 }
 
-void
-chord_selections_paste_to_pos (
-  ChordSelections * ts,
-  Position *        playhead)
-{
-  ZRegion * region =
-    clip_editor_get_region (CLIP_EDITOR);
-  g_return_if_fail (
-    region && region->id.type == REGION_TYPE_CHORD);
-
-  /* get region-local pos */
-  Position pos;
-  pos.frames =
-    region_timeline_frames_to_local (
-      region, playhead->frames, 0);
-  position_from_frames (&pos, pos.frames);
-  double pos_ticks = position_to_ticks (&pos);
-
-  /* get pos of earliest object */
-  Position start_pos;
-  arranger_selections_get_start_pos (
-    (ArrangerSelections *) ts, &start_pos, 0);
-  double start_pos_ticks =
-    position_to_ticks (&start_pos);
-
-  /* subtract the start pos from every object and
-   * add the given pos */
-#define DIFF (curr_ticks - start_pos_ticks)
-#define ADJUST_POSITION(x) \
-  curr_ticks = position_to_ticks (x); \
-  position_from_ticks (x, pos_ticks + DIFF)
-
-  double curr_ticks;
-  int i;
-  ChordObject * chord;
-  for (i = 0; i < ts->num_chord_objects; i++)
-    {
-      chord = ts->chord_objects[i];
-      ArrangerObject * chord_obj =
-        (ArrangerObject *) chord;
-      region_identifier_copy (
-        &chord_obj->region_id,
-        &CLIP_EDITOR->region_id);
-
-      curr_ticks =
-        position_to_ticks (&chord_obj->pos);
-      position_from_ticks (
-        &chord_obj->pos, pos_ticks + DIFF);
-
-      /* clone and add to track */
-      ChordObject * cp =
-        (ChordObject *)
-        arranger_object_clone (
-          chord_obj,
-          ARRANGER_OBJECT_CLONE_COPY_MAIN);
-      region =
-        chord_object_get_region (cp);
-      chord_region_add_chord_object (
-        region, cp, F_PUBLISH_EVENTS);
-    }
-#undef DIFF
-}
-
 SERIALIZE_SRC (
   ChordSelections, chord_selections)
 DESERIALIZE_SRC (

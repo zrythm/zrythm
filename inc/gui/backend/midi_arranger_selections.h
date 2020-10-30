@@ -110,11 +110,6 @@ midi_arranger_selections_can_be_pasted (
   Position *               pos,
   ZRegion *                 region);
 
-void
-midi_arranger_selections_paste_to_pos (
-  MidiArrangerSelections * ts,
-  Position *               playhead);
-
 SERIALIZE_INC (MidiArrangerSelections,
                midi_arranger_selections)
 DESERIALIZE_INC (MidiArrangerSelections,

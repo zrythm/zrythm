@@ -1432,6 +1432,12 @@ get_hit_objects (
   *array_size = 0;
   ArrangerObject * obj = NULL;
 
+  /* skip if haven't drawn yet */
+  if (self->first_draw)
+    {
+      return;
+    }
+
   switch (self->type)
     {
     case TYPE (TIMELINE):
@@ -6567,6 +6573,8 @@ arranger_widget_setup (
   ArrangerWidgetType type,
   SnapGrid *         snap_grid)
 {
+  g_debug ("setting up arranger widget...");
+
   g_return_if_fail (
     self &&
     type >= ARRANGER_WIDGET_TYPE_TIMELINE &&
@@ -6642,6 +6650,8 @@ arranger_widget_setup (
 
   gtk_widget_set_focus_on_click (
     GTK_WIDGET (self), 1);
+
+  g_debug ("done");
 }
 
 static void

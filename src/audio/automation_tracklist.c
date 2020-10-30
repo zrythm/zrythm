@@ -175,15 +175,20 @@ automation_tracklist_set_at_index (
     clip_editor_get_region (CLIP_EDITOR);
   RegionIdentifier * clip_editor_region_id =
     &clip_editor_region->id;
-  const int clip_editor_region_idx =
+  int clip_editor_region_idx =
     clip_editor_region_id->at_idx;
+  if (clip_editor_region_id->track_pos !=
+        at->port_id.track_pos)
+    {
+      clip_editor_region_idx = -2;
+    }
 
   if (push_down)
     {
       /* whether the new index is before the current
        * index (the index of automation tracks in
        * between needs to increase) */
-      int increase = at->index > index;
+      bool increase = at->index > index;
       if (increase)
         {
           for (int i = at->index - 1;

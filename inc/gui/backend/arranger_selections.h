@@ -227,12 +227,14 @@ arranger_selections_get_last_object (
   ArrangerSelections * self);
 
 /**
- * Pastes the given selections to the given Position.
+ * Pastes the given selections to the given
+ * Position.
  */
-//void
-//arranger_selections_paste_to_pos (
-  //ArrangerSelections * self,
-  //Position *           pos);
+void
+arranger_selections_paste_to_pos (
+  ArrangerSelections * self,
+  Position *           pos,
+  bool                 undoable);
 
 /**
  * Returns all objects in the selections in a
@@ -251,6 +253,15 @@ arranger_selections_get_all_objects (
 void
 arranger_selections_redraw (
   ArrangerSelections * self);
+
+/**
+ * Adds each object in the selection to the given
+ * region (if applicable).
+ */
+void
+arranger_selections_add_to_region (
+  ArrangerSelections * self,
+  ZRegion *            region);
 
 /**
  * Moves the selections by the given
@@ -330,6 +341,13 @@ arranger_selections_remove_object (
  */
 void
 arranger_selections_merge (
+  ArrangerSelections * self);
+
+/**
+ * Returns if the selections can be pasted.
+ */
+bool
+arranger_selections_can_be_pasted (
   ArrangerSelections * self);
 
 double

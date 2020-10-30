@@ -1324,12 +1324,26 @@ post_deserialize_children (
   if (self->type == TYPE (REGION))
     {
       ZRegion * r = (ZRegion *) self;
-      MidiNote * mn;
       for (int i = 0; i < r->num_midi_notes; i++)
         {
-          mn = r->midi_notes[i];
+          MidiNote * mn = r->midi_notes[i];
           arranger_object_post_deserialize (
             (ArrangerObject *) mn);
+        }
+
+      for (int i = 0; i < r->num_aps; i++)
+        {
+          AutomationPoint * ap = r->aps[i];
+          arranger_object_post_deserialize (
+            (ArrangerObject *) ap);
+        }
+
+      for (int i = 0; i < r->num_chord_objects;
+           i++)
+        {
+          ChordObject * co = r->chord_objects[i];
+          arranger_object_post_deserialize (
+            (ArrangerObject *) co);
         }
     }
 }
@@ -1339,6 +1353,54 @@ arranger_object_post_deserialize (
   ArrangerObject * self)
 {
   g_return_if_fail (self);
+
+  self->magic = ARRANGER_OBJECT_MAGIC;
+
+  switch (self->type)
+    {
+    case TYPE (REGION):
+      {
+        ZRegion * r = (ZRegion *) self;
+        r->magic = REGION_MAGIC;
+      }
+      break;
+    case TYPE (SCALE_OBJECT):
+      {
+        ScaleObject * so = (ScaleObject *) self;
+        so->magic = SCALE_OBJECT_MAGIC;
+      }
+      break;
+    case TYPE (MARKER):
+      {
+        /*Marker * marker = (Marker *) self;*/
+      }
+      break;
+    case TYPE (AUTOMATION_POINT):
+      {
+        /*AutomationPoint * ap =*/
+          /*(AutomationPoint *) self;*/
+      }
+      break;
+    case TYPE (CHORD_OBJECT):
+      {
+        ChordObject * co = (ChordObject *) self;
+        co->magic = CHORD_OBJECT_MAGIC;
+      }
+      break;
+    case TYPE (MIDI_NOTE):
+      {
+        MidiNote * mn = (MidiNote *) self;
+        mn->magic = MIDI_NOTE_MAGIC;
+        ((ArrangerObject *) mn->vel)->magic =
+          ARRANGER_OBJECT_MAGIC;
+      }
+      break;
+    case TYPE (VELOCITY):
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
 
   post_deserialize_children (self);
 }

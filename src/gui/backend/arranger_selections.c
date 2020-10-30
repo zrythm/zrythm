@@ -24,8 +24,10 @@
 #include "audio/automation_region.h"
 #include "audio/chord_object.h"
 #include "audio/chord_region.h"
+#include "audio/chord_track.h"
 #include "audio/engine.h"
 #include "audio/marker.h"
+#include "audio/marker_track.h"
 #include "audio/scale_object.h"
 #include "audio/transport.h"
 #include "gui/backend/arranger_selections.h"
@@ -913,6 +915,66 @@ arranger_selections_get_end_pos (
 }
 
 /**
+ * Adds each object in the selection to the given
+ * region (if applicable).
+ */
+void
+arranger_selections_add_to_region (
+  ArrangerSelections * self,
+  ZRegion *            region)
+{
+  switch (self->type)
+    {
+    case TYPE (MIDI):
+      {
+        MidiArrangerSelections * mas =
+          (MidiArrangerSelections *) self;
+        for (int i = 0; i < mas->num_midi_notes;
+             i++)
+          {
+            ArrangerObject * obj =
+              (ArrangerObject *) mas->midi_notes[i];
+            region_add_arranger_object (
+              region, obj, F_NO_PUBLISH_EVENTS);
+          }
+      }
+      break;
+    case TYPE (AUTOMATION):
+      {
+        AutomationSelections * as =
+          (AutomationSelections *) self;
+        for (int i = 0;
+             i < as->num_automation_points; i++)
+          {
+            ArrangerObject * obj =
+              (ArrangerObject *)
+              as->automation_points[i];
+            region_add_arranger_object (
+              region, obj, F_NO_PUBLISH_EVENTS);
+          }
+      }
+      break;
+    case TYPE (CHORD):
+      {
+        ChordSelections * cs =
+          (ChordSelections *) self;
+        for (int i = 0;
+             i < cs->num_chord_objects; i++)
+          {
+            ArrangerObject * obj =
+              (ArrangerObject *)
+              cs->chord_objects[i];
+            region_add_arranger_object (
+              region, obj, F_NO_PUBLISH_EVENTS);
+          }
+      }
+      break;
+    default:
+      g_return_if_reached ();
+    }
+}
+
+/**
  * Gets first object.
  */
 ArrangerObject *
@@ -1256,6 +1318,8 @@ arranger_selections_post_deserialize (
   ChordSelections * cs;
   MidiArrangerSelections * mas;
   AutomationSelections * as;
+
+  self->magic = ARRANGER_SELECTIONS_MAGIC;
 
 /* use caches because ts->* will be operated on. */
 #define POST_DESERIALIZE(sel,sc) \
@@ -1872,6 +1936,145 @@ arranger_selections_merge (
     self, (ArrangerObject *) new_r);
 
   free (objs);
+}
+
+/**
+ * Returns if the selections can be pasted.
+ */
+bool
+arranger_selections_can_be_pasted (
+  ArrangerSelections * self)
+{
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
+  Position * pos = PLAYHEAD;
+
+  switch (self->type)
+    {
+    case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+      return
+        timeline_selections_can_be_pasted (
+          (TimelineSelections *) self, pos,
+          TRACKLIST_SELECTIONS->tracks[0]->pos);
+    case ARRANGER_SELECTIONS_TYPE_CHORD:
+      return
+        chord_selections_can_be_pasted (
+          (ChordSelections *) self, pos, r);
+    case ARRANGER_SELECTIONS_TYPE_MIDI:
+      return
+        midi_arranger_selections_can_be_pasted (
+          (MidiArrangerSelections *) self, pos, r);
+    case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+      return
+        automation_selections_can_be_pasted (
+          (AutomationSelections *) self, pos, r);
+    default:
+      g_return_val_if_reached (false);
+      break;
+    }
+
+  return true;
+}
+
+/**
+ * Pastes the given selections to the given
+ * Position.
+ */
+void
+arranger_selections_paste_to_pos (
+  ArrangerSelections * self,
+  Position *           pos,
+  bool                 undoable)
+{
+  g_return_if_fail (self && pos);
+
+  ArrangerSelections * clone_sel =
+    arranger_selections_clone (self);
+
+  /* clear current project selections */
+  ArrangerSelections * project_sel =
+    arranger_selections_get_for_type (self->type);
+  arranger_selections_clear (
+    project_sel, F_NO_FREE);
+
+  Position first_obj_pos;
+  arranger_selections_get_start_pos (
+    clone_sel, &first_obj_pos, false);
+
+  /* if timeline selecctions */
+  if (self->type ==
+        ARRANGER_SELECTIONS_TYPE_TIMELINE)
+    {
+      TimelineSelections * ts =
+        (TimelineSelections *) clone_sel;
+      Track * track =
+        TRACKLIST_SELECTIONS->tracks[0];
+
+      arranger_selections_add_ticks (
+        clone_sel,
+        pos->total_ticks -
+          first_obj_pos.total_ticks);
+
+      /* add selections to track */
+      for (int i = 0; i < ts->num_regions; i++)
+        {
+          ZRegion * r = ts->regions[i];
+          Track * region_track =
+            tracklist_get_visible_track_after_delta (
+              TRACKLIST, track, r->id.track_pos);
+          g_return_if_fail (region_track);
+          AutomationTrack * at = NULL;
+          if (r->id.type == REGION_TYPE_AUTOMATION)
+            {
+                at =
+                  region_track->
+                    automation_tracklist.
+                      ats[r->id.at_idx];
+            }
+          /* FIXME need to save visible automation
+           * track offsets */
+          track_add_region (
+            track, r, at, at ? -1 : r->id.lane_pos,
+            F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
+        }
+
+      for (int i = 0; i < ts->num_scale_objects;
+           i++)
+        {
+          ScaleObject * scale =
+            ts->scale_objects[i];
+          chord_track_add_scale (
+            P_CHORD_TRACK, scale);
+        }
+      for (int i = 0; i < ts->num_markers; i++)
+        {
+          Marker * m = ts->markers[i];
+          marker_track_add_marker (
+            P_MARKER_TRACK, m);
+        }
+    }
+  /* else if selections inside region */
+  else
+    {
+      ZRegion * region =
+        clip_editor_get_region (CLIP_EDITOR);
+
+      /* add selections to region */
+      arranger_selections_add_to_region (
+        clone_sel, region);
+      arranger_selections_add_ticks (
+        clone_sel,
+        pos->total_ticks -
+          first_obj_pos.total_ticks);
+    }
+
+  if (undoable)
+    {
+      UndoableAction * ua =
+        arranger_selections_action_new_create (
+          clone_sel);
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
 }
 
 /**

@@ -416,6 +416,7 @@ timeline_selections_can_be_pasted (
   return 1;
 }
 
+#if 0
 void
 timeline_selections_paste_to_pos (
   TimelineSelections * ts,
@@ -555,6 +556,7 @@ timeline_selections_paste_to_pos (
     }
 #undef DIFF
 }
+#endif
 
 void
 timeline_selections_mark_for_bounce (

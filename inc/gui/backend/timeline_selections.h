@@ -167,11 +167,6 @@ timeline_selections_can_be_pasted (
   const int            idx);
 
 void
-timeline_selections_paste_to_pos (
-  TimelineSelections * ts,
-  Position *           pos);
-
-void
 timeline_selections_mark_for_bounce (
   TimelineSelections * ts);
 

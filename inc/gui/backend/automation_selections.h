@@ -90,11 +90,6 @@ automation_selections_can_be_pasted (
   Position *             pos,
   ZRegion *              r);
 
-void
-automation_selections_paste_to_pos (
-  AutomationSelections * ts,
-  Position *           pos);
-
 SERIALIZE_INC (AutomationSelections,
                automation_selections)
 DESERIALIZE_INC (AutomationSelections,

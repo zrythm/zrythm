@@ -1076,164 +1076,6 @@ activate_copy (
 }
 
 static void
-on_timeline_clipboard_received (
-  GtkClipboard *     clipboard,
-  const char *       text,
-  gpointer           data)
-{
-  TimelineSelections * ts =
-    timeline_selections_deserialize (text);
-  arranger_selections_post_deserialize (
-    (ArrangerSelections *) ts);
-
-  if (timeline_selections_can_be_pasted (
-        ts, PLAYHEAD,
-        TRACKLIST_SELECTIONS->tracks[0]->pos))
-    {
-      g_message ("pasting timeline selections");
-      timeline_selections_paste_to_pos (
-        ts, PLAYHEAD);
-
-      /* create action to make it undoable */
-      /* (by now the TL_SELECTIONS should have
-       * only the pasted items selected) */
-      UndoableAction * ua =
-        (UndoableAction *)
-        arranger_selections_action_new_create (
-          (ArrangerSelections *)
-          TL_SELECTIONS);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
-  else
-    {
-      ui_show_notification (
-        _("Can't paste selections"));
-    }
-  arranger_selections_free (
-    (ArrangerSelections *) ts);
-}
-
-static void
-on_midi_clipboard_received (
-  GtkClipboard *     clipboard,
-  const char *       text,
-  gpointer           data)
-{
-  MidiArrangerSelections * mas =
-    midi_arranger_selections_deserialize (text);
-  arranger_selections_post_deserialize (
-    (ArrangerSelections *) mas);
-
-  ZRegion * region =
-    clip_editor_get_region (CLIP_EDITOR);
-  if (midi_arranger_selections_can_be_pasted (
-        mas, PLAYHEAD, region))
-    {
-      g_message ("pasting midi selections");
-      midi_arranger_selections_paste_to_pos (
-        mas, PLAYHEAD);
-
-      /* create action to make it undoable */
-      /* (by now the TL_SELECTIONS should have
-       * only the pasted items selected) */
-      UndoableAction * ua =
-        (UndoableAction *)
-        arranger_selections_action_new_create (
-          (ArrangerSelections *)
-          MA_SELECTIONS);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
-  else
-    {
-      ui_show_notification (
-        _("Can't paste selections"));
-    }
-  arranger_selections_free (
-    (ArrangerSelections *) mas);
-}
-static void
-on_chord_clipboard_received (
-  GtkClipboard *     clipboard,
-  const char *       text,
-  gpointer           data)
-{
-  ChordSelections * mas =
-    chord_selections_deserialize (text);
-  arranger_selections_post_deserialize (
-    (ArrangerSelections *) mas);
-
-  ZRegion * region =
-    clip_editor_get_region (CLIP_EDITOR);
-  if (chord_selections_can_be_pasted (
-        mas, PLAYHEAD, region))
-    {
-      g_message ("pasting midi selections");
-      chord_selections_paste_to_pos (
-        mas, PLAYHEAD);
-
-      /* create action to make it undoable */
-      /* (by now the TL_SELECTIONS should have
-       * only the pasted items selected) */
-      UndoableAction * ua =
-        (UndoableAction *)
-        arranger_selections_action_new_create (
-          (ArrangerSelections *)
-          CHORD_SELECTIONS);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
-  else
-    {
-      ui_show_notification (
-        _("Can't paste selections"));
-    }
-  arranger_selections_free (
-    (ArrangerSelections *) mas);
-}
-
-static void
-on_automation_clipboard_received (
-  GtkClipboard *     clipboard,
-  const char *       text,
-  gpointer           data)
-{
-  AutomationSelections * as =
-    automation_selections_deserialize (text);
-  arranger_selections_post_deserialize (
-    (ArrangerSelections *) as);
-
-  ZRegion * region =
-    clip_editor_get_region (CLIP_EDITOR);
-  if (automation_selections_can_be_pasted (
-        as, PLAYHEAD, region))
-    {
-      g_message ("pasting automation selections");
-      automation_selections_paste_to_pos (
-        as, PLAYHEAD);
-
-      /* create action to make it undoable */
-      /* (by now the TL_SELECTIONS should have
-       * only the pasted items selected) */
-      UndoableAction * ua =
-        (UndoableAction *)
-        arranger_selections_action_new_create (
-          (ArrangerSelections *)
-          AUTOMATION_SELECTIONS);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
-  else
-    {
-      ui_show_notification (
-        _("Can't paste selections"));
-    }
-  arranger_selections_free (
-    (ArrangerSelections *) as);
-}
-
-static void
 on_clipboard_received (
   GtkClipboard *     clipboard,
   const char *       text,
@@ -1242,45 +1084,62 @@ on_clipboard_received (
   if (!text)
     return;
 
-#define TYPE_PREFIX "\n  type: "
+  ArrangerSelections * sel = NULL;
 
   if ((MAIN_WINDOW_LAST_FOCUSED_IS (
          MW_TIMELINE) ||
        MAIN_WINDOW_LAST_FOCUSED_IS (
-         MW_PINNED_TIMELINE)) &&
-      string_contains_substr (
-        text, TYPE_PREFIX "Timeline", false))
+         MW_PINNED_TIMELINE)))
     {
-      on_timeline_clipboard_received (
-        clipboard, text, data);
+      sel =
+        (ArrangerSelections *)
+        timeline_selections_deserialize (text);
     }
   else if ((MAIN_WINDOW_LAST_FOCUSED_IS (
               MW_MIDI_ARRANGER) ||
             MAIN_WINDOW_LAST_FOCUSED_IS (
-              MW_MIDI_MODIFIER_ARRANGER)) &&
-            string_contains_substr (
-              text, TYPE_PREFIX "MIDI", false))
+              MW_MIDI_MODIFIER_ARRANGER)))
     {
-      on_midi_clipboard_received (
-        clipboard, text, data);
+      sel =
+        (ArrangerSelections *)
+        midi_arranger_selections_deserialize (text);
     }
   else if (MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_CHORD_ARRANGER) &&
-            string_contains_substr (
-              text, TYPE_PREFIX "Chord", false))
+             MW_CHORD_ARRANGER))
     {
-      on_chord_clipboard_received (
-        clipboard, text, data);
+      sel =
+        (ArrangerSelections *)
+        chord_selections_deserialize (text);
     }
   else if (MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_AUTOMATION_ARRANGER) &&
-            string_contains_substr (
-              text, TYPE_PREFIX "Automation", false))
+             MW_AUTOMATION_ARRANGER))
     {
-      on_automation_clipboard_received (
-        clipboard, text, data);
+      sel =
+        (ArrangerSelections *)
+        automation_selections_deserialize (text);
     }
-#undef TYPE_PREFIX
+
+  bool incompatible = false;
+  if (sel)
+    {
+      arranger_selections_post_deserialize (sel);
+      if (arranger_selections_can_be_pasted (sel))
+        {
+          arranger_selections_paste_to_pos (
+            sel, PLAYHEAD, F_UNDOABLE);
+        }
+      else
+        {
+          incompatible = true;
+        }
+      arranger_selections_free_full (sel);
+    }
+
+  if (incompatible)
+    {
+      ui_show_notification (
+        _("Can't paste incompatible data"));
+    }
 }
 
 void

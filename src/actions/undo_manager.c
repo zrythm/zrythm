@@ -161,6 +161,8 @@ undo_manager_perform (
   UndoManager *    self,
   UndoableAction * action)
 {
+  g_return_val_if_fail (self && action, -1);
+
   /* if error return */
   int err = undoable_action_do (action);
   if (err)

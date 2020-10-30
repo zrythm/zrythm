@@ -95,11 +95,6 @@ chord_selections_can_be_pasted (
   Position *        pos,
   ZRegion *          region);
 
-void
-chord_selections_paste_to_pos (
-  ChordSelections * ts,
-  Position *        playhead);
-
 SERIALIZE_INC (ChordSelections,
                chord_selections)
 DESERIALIZE_INC (ChordSelections,

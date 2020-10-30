@@ -1171,6 +1171,36 @@ region_copy (
 }
 
 /**
+ * Wrapper for adding an arranger object.
+ */
+void
+region_add_arranger_object (
+  ZRegion *        self,
+  ArrangerObject * obj,
+  bool             fire_events)
+{
+  switch (obj->type)
+    {
+    case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
+      chord_region_add_chord_object (
+        self, (ChordObject *) obj, fire_events);
+      break;
+    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+      midi_region_add_midi_note (
+        self, (MidiNote *) obj, fire_events);
+      break;
+    case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+      automation_region_add_ap (
+        self, (AutomationPoint *) obj,
+        fire_events);
+      break;
+    default:
+      g_return_if_reached ();
+      break;
+    }
+}
+
+/**
  * Converts frames on the timeline (global)
  * to local frames (in the clip).
  *
