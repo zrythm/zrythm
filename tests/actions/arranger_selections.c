@@ -1109,8 +1109,10 @@ test_mute ()
   g_assert_true (
     midi_track->type == TRACK_TYPE_MIDI);
 
-  ZRegion * r = midi_track->lanes[0]->regions[0];
+  ZRegion * r =
+    midi_track->lanes[MIDI_REGION_LANE]->regions[0];
   ArrangerObject * obj = (ArrangerObject *) r;
+  g_assert_true (IS_ARRANGER_OBJECT (obj));
 
   UndoableAction * ua =
     arranger_selections_action_new_edit (
@@ -1120,17 +1122,21 @@ test_mute ()
   undo_manager_perform (UNDO_MANAGER, ua);
 
   /* assert muted */
+  g_assert_true (IS_ARRANGER_OBJECT (obj));
   g_assert_true (obj->muted);
 
   undo_manager_undo (UNDO_MANAGER);
+  g_assert_true (IS_ARRANGER_OBJECT (obj));
   g_assert_false (obj->muted);
 
   /* redo and recheck */
   undo_manager_redo (UNDO_MANAGER);
+  g_assert_true (IS_ARRANGER_OBJECT (obj));
   g_assert_true (obj->muted);
 
   /* return to original state */
   undo_manager_undo (UNDO_MANAGER);
+  g_assert_true (IS_ARRANGER_OBJECT (obj));
   g_assert_false (obj->muted);
 }
 
