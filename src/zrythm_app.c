@@ -982,7 +982,7 @@ zrythm_app_startup (
   INSTALL_ACCEL (
     "Delete", "win.delete");
   INSTALL_ACCEL (
-    "<Control>backslash", "win.clear-selection");
+    "<Control><Shift>a", "win.clear-selection");
   INSTALL_ACCEL (
     "<Control>a", "win.select-all");
   INSTALL_ACCEL (
