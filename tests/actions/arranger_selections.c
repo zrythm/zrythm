@@ -1140,6 +1140,52 @@ test_mute ()
   g_assert_false (obj->muted);
 }
 
+static void
+test_split ()
+{
+  /* clear undo/redo stacks */
+  undo_manager_clear_stacks (UNDO_MANAGER, true);
+
+  rebootstrap_timeline ();
+
+  g_assert_cmpint (
+    P_CHORD_TRACK->num_chord_regions, ==, 1);
+
+  Position pos, end_pos;
+  position_set_to_bar (&pos, 2);
+  position_set_to_bar (&end_pos, 4);
+  ZRegion * r =
+    chord_region_new (&pos, &end_pos, 0);
+  ArrangerObject * r_obj = (ArrangerObject *) r;
+  track_add_region (
+    P_CHORD_TRACK, r, NULL, -1, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    r_obj, F_SELECT, F_NO_APPEND);
+
+  UndoableAction * ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_cmpint (
+    P_CHORD_TRACK->num_chord_regions, ==, 2);
+
+  position_set_to_bar (&pos, 3);
+  ua =
+    arranger_selections_action_new_split (
+      (ArrangerSelections *) TL_SELECTIONS, &pos);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_cmpint (
+    P_CHORD_TRACK->num_chord_regions, ==, 3);
+
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1171,6 +1217,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test mute",
     (GTestFunc) test_mute);
+  g_test_add_func (
+    TEST_PREFIX "test split",
+    (GTestFunc) test_split);
 
   return g_test_run ();
 }

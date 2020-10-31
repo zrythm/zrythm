@@ -456,6 +456,28 @@ automation_track_unselect_all (
 }
 
 /**
+ * Removes a region from the automation track.
+ */
+void
+automation_track_remove_region (
+  AutomationTrack * self,
+  ZRegion *         region)
+{
+  g_return_if_fail (IS_REGION (region));
+
+  array_delete (
+    self->regions, self->num_regions, region);
+
+  for (int i = region->id.idx;
+       i < self->num_regions; i++)
+    {
+      ZRegion * r = self->regions[i];
+      r->id.idx = i;
+      region_update_identifier (r);
+    }
+}
+
+/**
  * Removes all arranger objects recursively.
  */
 void

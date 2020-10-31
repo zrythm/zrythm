@@ -4949,6 +4949,7 @@ drag_end (
   self->last_offset_y = 0;
   self->last_adj_ticks_diff = 0;
   self->start_object = NULL;
+  self->hovered_object = NULL;
 
   self->shift_held = 0;
   self->ctrl_held = 0;
@@ -5521,9 +5522,10 @@ on_motion (
       self->hover_x, self->hover_y);
   if (self->hovered_object != obj)
     {
-      g_warn_if_fail (
+      g_return_val_if_fail (
         !self->hovered_object ||
-        IS_ARRANGER_OBJECT (self->hovered_object));
+        IS_ARRANGER_OBJECT (self->hovered_object),
+        false);
       ArrangerObject * prev_obj =
         self->hovered_object;
       self->hovered_object = obj;
@@ -6227,6 +6229,9 @@ get_timeline_cursor (
       break;
     case UI_OVERLAY_ACTION_RENAMING:
       ac = ARRANGER_CURSOR_RENAME;
+      break;
+    case UI_OVERLAY_ACTION_CUTTING:
+      ac = ARRANGER_CURSOR_CUT;
       break;
     default:
       g_warn_if_reached ();

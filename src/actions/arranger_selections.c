@@ -158,13 +158,17 @@ set_selections (
 #undef SET_SEL
 }
 
+/**
+ * Optionally clones the given objects and saves
+ * them to self->r1 and self->r2.
+ */
 static void
 set_split_objects (
   ArrangerSelectionsAction * self,
   int                        i,
   ArrangerObject *           _r1,
   ArrangerObject *           _r2,
-  int                        clone)
+  bool                       clone)
 {
   ArrangerObject * r1 = _r1,
                  * r2 = _r2;
@@ -1920,7 +1924,8 @@ do_or_undo_split (
           /* r1 and r2 are now inside the project,
            * clone them to keep copies */
           set_split_objects (
-            self, i, self->r1[i], self->r2[i], 1);
+            self, i, self->r1[i], self->r2[i],
+            true);
         }
       else
         {

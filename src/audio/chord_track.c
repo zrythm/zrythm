@@ -221,3 +221,27 @@ chord_track_remove_scale (
     ET_ARRANGER_OBJECT_REMOVED,
     ARRANGER_OBJECT_TYPE_SCALE_OBJECT);
 }
+
+/**
+ * Removes a region from the chord track.
+ */
+void
+chord_track_remove_region (
+  ChordTrack * self,
+  ZRegion *    region)
+{
+  g_return_if_fail (
+    IS_TRACK (self) && IS_REGION (region));
+
+  array_delete (
+    self->chord_regions, self->num_chord_regions,
+    region);
+
+  for (int i = region->id.idx;
+       i < self->num_chord_regions; i++)
+    {
+      ZRegion * r = self->chord_regions[i];
+      r->id.idx = i;
+      region_update_identifier (r);
+    }
+}

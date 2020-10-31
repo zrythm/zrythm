@@ -88,6 +88,14 @@ chord_track_remove_scale (
   bool          free);
 
 /**
+ * Removes a region from the chord track.
+ */
+void
+chord_track_remove_region (
+  ChordTrack * self,
+  ZRegion *    region);
+
+/**
  * Returns the current chord.
  */
 #define chord_track_get_chord_at_playhead(ct) \

@@ -283,18 +283,6 @@ track_lane_remove_region (
   array_delete (
     self->regions, self->num_regions, region);
 
-  if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
-    {
-      ArrangerObject * obj =
-        (ArrangerObject *) region;
-      ArrangerWidget * arranger =
-        arranger_object_get_arranger (obj);
-      if (arranger->hovered_object == obj)
-        {
-          arranger->hovered_object = NULL;
-        }
-    }
-
   for (int i = region->id.idx; i < self->num_regions;
        i++)
     {

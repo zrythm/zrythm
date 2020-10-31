@@ -1610,10 +1610,7 @@ track_remove_region (
     }
   else if (region->id.type == REGION_TYPE_CHORD)
     {
-      array_delete (
-        self->chord_regions,
-        self->num_chord_regions,
-        region);
+      chord_track_remove_region (self, region);
     }
   else if (region->id.type ==
              REGION_TYPE_AUTOMATION)
@@ -1625,10 +1622,21 @@ track_remove_region (
           AutomationTrack * at = atl->ats[i];
           if (at->index == region->id.at_idx)
             {
-              array_delete (
-                at->regions, at->num_regions,
-                region);
+              automation_track_remove_region (
+                at, region);
             }
+        }
+    }
+
+  if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
+    {
+      ArrangerObject * obj =
+        (ArrangerObject *) region;
+      ArrangerWidget * arranger =
+        arranger_object_get_arranger (obj);
+      if (arranger->hovered_object == obj)
+        {
+          arranger->hovered_object = NULL;
         }
     }
 

@@ -394,6 +394,14 @@ automation_track_unselect_all (
   AutomationTrack * self);
 
 /**
+ * Removes a region from the automation track.
+ */
+void
+automation_track_remove_region (
+  AutomationTrack * self,
+  ZRegion *         region);
+
+/**
  * Removes all objects recursively.
  */
 void

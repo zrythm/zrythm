@@ -2454,6 +2454,17 @@ arranger_object_split (
           arranger_object_get_track (self),
           (ZRegion *) self, F_PUBLISH_EVENTS,
           F_FREE);
+        ZRegion * region1 = (ZRegion *) *r1;
+        ZRegion * region2 = (ZRegion *) *r2;
+        if (region1->id.type == REGION_TYPE_CHORD)
+          {
+            g_return_if_fail (
+              region1->id.idx <
+                P_CHORD_TRACK->num_chord_regions);
+            g_return_if_fail (
+              region2->id.idx <
+                P_CHORD_TRACK->num_chord_regions);
+          }
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
