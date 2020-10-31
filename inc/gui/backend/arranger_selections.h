@@ -189,7 +189,7 @@ void
 arranger_selections_get_start_pos (
   ArrangerSelections * self,
   Position *           pos,
-  int                  global);
+  bool                 global);
 
 /**
  * Returns the end position of the rightmost object.

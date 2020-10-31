@@ -734,10 +734,12 @@ arranger_selections_has_any (
   g_return_val_if_reached (-1);
 }
 
+/**
+ * Add owner region's ticks to the given position.
+ */
 static void
-add_ticks_if_global (
+add_region_ticks (
   ArrangerSelections * self,
-  const int            global,
   Position *           pos)
 {
   ArrangerObject * obj =
@@ -762,7 +764,7 @@ void
 arranger_selections_get_start_pos (
   ArrangerSelections * self,
   Position *           pos,
-  int                  global)
+  bool                 global)
 {
   int i;
   TimelineSelections * ts;
@@ -802,22 +804,28 @@ arranger_selections_get_start_pos (
       mas = (MidiArrangerSelections *) self;
       GET_START_POS (
         mas, MidiNote, midi_note);
-      add_ticks_if_global (
-        self, global, pos);
+      if (global)
+        {
+          add_region_ticks (self, pos);
+        }
       break;
     case TYPE (AUTOMATION):
       as = (AutomationSelections *) self;
       GET_START_POS (
         as, AutomationPoint, automation_point);
-      add_ticks_if_global (
-        self, global, pos);
+      if (global)
+        {
+          add_region_ticks (self, pos);
+        }
       break;
     case TYPE (CHORD):
       cs = (ChordSelections *) self;
       GET_START_POS (
         cs, ChordObject, chord_object);
-      add_ticks_if_global (
-        self, global, pos);
+      if (global)
+        {
+          add_region_ticks (self, pos);
+        }
       break;
     default:
       g_return_if_reached ();
@@ -890,22 +898,28 @@ arranger_selections_get_end_pos (
       mas = (MidiArrangerSelections *) self;
       GET_END_POS (
         mas, MidiNote, midi_note);
-      add_ticks_if_global (
-        self, global, pos);
+      if (global)
+        {
+          add_region_ticks (self, pos);
+        }
       break;
     case TYPE (AUTOMATION):
       as = (AutomationSelections *) self;
       GET_END_POS (
         as, AutomationPoint, automation_point);
-      add_ticks_if_global (
-        self, global, pos);
+      if (global)
+        {
+          add_region_ticks (self, pos);
+        }
       break;
     case TYPE (CHORD):
       cs = (ChordSelections *) self;
       GET_END_POS (
         cs, ChordObject, chord_object);
-      add_ticks_if_global (
-        self, global, pos);
+      if (global)
+        {
+          add_region_ticks (self, pos);
+        }
       break;
     default:
       g_return_if_reached ();
@@ -1999,7 +2013,7 @@ arranger_selections_paste_to_pos (
 
   Position first_obj_pos;
   arranger_selections_get_start_pos (
-    clone_sel, &first_obj_pos, false);
+    clone_sel, &first_obj_pos, F_NOT_GLOBAL);
 
   /* if timeline selecctions */
   if (self->type ==
@@ -2058,13 +2072,16 @@ arranger_selections_paste_to_pos (
     {
       ZRegion * region =
         clip_editor_get_region (CLIP_EDITOR);
+      ArrangerObject * r_obj =
+        (ArrangerObject *) region;
 
       /* add selections to region */
       arranger_selections_add_to_region (
         clone_sel, region);
       arranger_selections_add_ticks (
         clone_sel,
-        pos->total_ticks -
+        (pos->total_ticks -
+          r_obj->pos.total_ticks) -
           first_obj_pos.total_ticks);
     }
 
