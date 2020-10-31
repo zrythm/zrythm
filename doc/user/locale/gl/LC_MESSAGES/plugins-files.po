@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 00:27+0100\n"
+"POT-Creation-Date: 2020-10-31 18:23+0000\n"
 "PO-Revision-Date: 2020-05-26 22:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -96,41 +96,50 @@ msgid "Inspector Page"
 msgstr "Páxina de Inspección"
 
 #: ../../plugins-files/plugins/inspector-page.rst:10
+#, fuzzy
 msgid ""
-"When a Plugin is selected in the Mixer, its page will appear in the "
-"Inspector as follows."
+"When a plugin is selected in the Mixer, or when using right click -> "
+"Inspect on an instrument, its page will appear in the Inspector as "
+"follows."
 msgstr ""
 "Cando un Plugin está seleccionado no Mesturador, a súa páxina aparecerá "
 "no Inspector como a continuación."
 
-#: ../../plugins-files/plugins/inspector-page.rst:16
+#: ../../plugins-files/plugins/inspector-page.rst:17
+#, fuzzy
 msgid ""
-"This page will display information about the Plugin and its ports and "
+"This page will display information about the plugin and its ports and "
 "allow you to make changes."
 msgstr ""
 "Esta páxina amosará información sobre o Plugin e os seus portos e "
 "permitirache facer cambios."
 
-#: ../../plugins-files/plugins/inspector-page.rst:21
-msgid "Changing Values"
-msgstr "Modificando Valores"
+#: ../../plugins-files/plugins/inspector-page.rst:22
+msgid "Display"
+msgstr ""
 
 #: ../../plugins-files/plugins/inspector-page.rst:23
 msgid ""
+"The number in the top right of each port name will display the current "
+"number of connections to/from this port. See :doc:`../../routing/making-"
+"connections` for details."
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:29
+msgid "Changing Values"
+msgstr "Modificando Valores"
+
+#: ../../plugins-files/plugins/inspector-page.rst:30
+#, fuzzy
+msgid ""
 "The values of control ports can be changed by clicking and dragging "
-"inside the bar."
+"inside each bar."
 msgstr ""
 "Os valores dos portos de control pódense modificar facendo clic e "
 "arrastrando dentro da barra."
 
-#: ../../plugins-files/plugins/inspector-page.rst:27
-msgid "Connections"
-msgstr "Conectores"
-
-#: ../../plugins-files/plugins/inspector-page.rst:29
-msgid ""
-"Compatible ports can be connected to one another. See :ref:`making-"
-"connections` for more details."
+#: ../../plugins-files/plugins/inspector-page.rst:33
+msgid ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 msgstr ""
 
 #: ../../plugins-files/plugins/intro.rst:6
@@ -297,17 +306,17 @@ msgstr ""
 msgid "Instrument"
 msgstr "Instrumento"
 
-#: ../../plugins-files/plugins/plugin-info.rst:23
+#: ../../plugins-files/plugins/plugin-info.rst:24
 msgid "These plugins will create an instrument track when added to the project."
 msgstr ""
 "Estes plugins crearán unha pista de instrumento cando os engadas ao "
 "proxecto."
 
-#: ../../plugins-files/plugins/plugin-info.rst:27
+#: ../../plugins-files/plugins/plugin-info.rst:28
 msgid "Effects"
 msgstr "Efectos"
 
-#: ../../plugins-files/plugins/plugin-info.rst:26
+#: ../../plugins-files/plugins/plugin-info.rst:29
 #, fuzzy
 msgid ""
 "These plugins can be dragged into the insert slots of existing channels "
@@ -316,11 +325,11 @@ msgstr ""
 "Estes plugins pódense arrastrar aos ocos das canles presentes no "
 "mesturador ou poden ser iniciados para crear novas pistas bus."
 
-#: ../../plugins-files/plugins/plugin-info.rst:30
+#: ../../plugins-files/plugins/plugin-info.rst:34
 msgid "Modulators"
 msgstr "Moduladores"
 
-#: ../../plugins-files/plugins/plugin-info.rst:30
+#: ../../plugins-files/plugins/plugin-info.rst:35
 #, fuzzy
 msgid ""
 "These plugins output :term:`CV` signals and can be used to modulate other"
@@ -329,11 +338,11 @@ msgstr ""
 "Estes plugins sacan sinais CV que poden ser empregadas para modular "
 "outros plugins ou parámetros das pistas."
 
-#: ../../plugins-files/plugins/plugin-info.rst:36
+#: ../../plugins-files/plugins/plugin-info.rst:39
 msgid "MIDI Effects"
 msgstr "Efectos MIDI"
 
-#: ../../plugins-files/plugins/plugin-info.rst:33
+#: ../../plugins-files/plugins/plugin-info.rst:40
 #, fuzzy
 msgid ""
 "These plugins modify incoming :term:`MIDI` signals and can be used in the"
@@ -343,7 +352,7 @@ msgstr ""
 "empregados na cadea de sinal MIDI dun Instrumento ou dunha pista MIDI "
 "(pronto dispoñible)."
 
-#: ../../plugins-files/plugins/plugin-info.rst:39
+#: ../../plugins-files/plugins/plugin-info.rst:46
 #, fuzzy
 msgid ""
 "Zrythm looks inside the plugin's metadata to determine what type the "
@@ -355,47 +364,44 @@ msgstr ""
 "é. Se iso non é dabondo, Zrythm toma a decisión baseándose no número de "
 "portos de entrada e saída de audio, MIDI, control e CV que ten."
 
-#: ../../plugins-files/plugins/plugin-info.rst:46
+#: ../../plugins-files/plugins/plugin-info.rst:53
 #, fuzzy
 msgid "Plugin Ports"
 msgstr "Plugins"
 
-#: ../../plugins-files/plugins/plugin-info.rst:47
+#: ../../plugins-files/plugins/plugin-info.rst:54
 msgid ""
 "Plugins consist of controls (parameters) and a variety of audio, "
 ":term:`MIDI` and :term:`CV` ports. Ports are explained in :ref:`ports`."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-info.rst:51
-msgid "Zrythm first creates all plugins with the following special control ports:"
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-info.rst:54
-msgid "Enabled"
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-info.rst:55
-msgid "Controls whether the plugin is active or bypassed."
-msgstr ""
-
 #: ../../plugins-files/plugins/plugin-info.rst:58
-msgid "Gain"
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-info.rst:57
-msgid "Increases the output volume of the plugin (if applicable)."
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-info.rst:60
 msgid ""
-"After the above ports are created, Zrythm appends the rest of the "
+"Zrythm first creates all plugins with the following special control "
+"ports. After these ports are created, Zrythm appends the rest of the "
 "plugin's ports."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-info.rst:63
+#: ../../plugins-files/plugins/plugin-info.rst:64
+msgid "Enabled"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-info.rst:65
+msgid "Controls whether the plugin is active or bypassed."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-info.rst:68
+msgid "Gain"
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-info.rst:69
+msgid "Increases the output volume of the plugin (if applicable)."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-info.rst:73
 msgid ""
-"All of the plugin's ports can be found in the plugin inspector page "
-"explained in :ref:`plugin-inspector-page`"
+"All of the plugin's ports will be shown in the :ref:`Inspector Page "
+"<plugins-files/plugins/inspector-page:Inspector Page>`"
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-window.rst:6
@@ -984,5 +990,31 @@ msgstr ""
 #~ "There are various types of plugins "
 #~ "(see :term:`plugin`) supported by Zrythm, "
 #~ "mentioned in :ref:`scanning-plugins`."
+#~ msgstr ""
+
+#~ msgid "Connections"
+#~ msgstr "Conectores"
+
+#~ msgid ""
+#~ "Compatible ports can be connected to "
+#~ "one another. See :ref:`making-connections` "
+#~ "for more details."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm first creates all plugins with"
+#~ " the following special control ports:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "After the above ports are created, "
+#~ "Zrythm appends the rest of the "
+#~ "plugin's ports."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "All of the plugin's ports can be"
+#~ " found in the plugin inspector page"
+#~ " explained in :ref:`plugin-inspector-page`"
 #~ msgstr ""
 
