@@ -563,3 +563,13 @@ right-dock-edge notebook tab
 popover.snap-grid-popover button.note-type {
   padding: 0px 4px 0px 4px;
 }
+
+/* to be used on currently selected part of the UI
+ * (e.g., timeline, tracklist, etc.) */
+.selected-element {
+  color: #ccc;
+  border: solid;
+  border-width: 2px;
+  padding: 1px;
+  border-radius: 3px;
+}

@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 00:30+0100\n"
+"POT-Creation-Date: 2020-10-31 22:55+0000\n"
 "PO-Revision-Date: 2020-10-18 07:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualtracks/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese "
+"<https://hosted.weblate.org/projects/zrythm/manualtracks/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -278,15 +277,16 @@ msgid ""
 "Lanes."
 msgstr ""
 "As faixas que possuem controles automatizáveis, tais como Fader, Pan e "
-"parâmetros de suplementos que contêm, terão a opção de mostrar as pistas de "
-"automação deles."
+"parâmetros de suplementos que contêm, terão a opção de mostrar as pistas "
+"de automação deles."
 
 #: ../../tracks/automation.rst:17
 msgid ""
 "You can choose which parameter you want to automate in each Automation "
 "Lane."
 msgstr ""
-"Pode escolher qual parâmetro deseja automatizar em cada pista de automação."
+"Pode escolher qual parâmetro deseja automatizar em cada pista de "
+"automação."
 
 #: ../../tracks/automation.rst:24
 msgid "Editing Automation"
@@ -376,8 +376,8 @@ msgid ""
 "to assist with chord progressions."
 msgstr ""
 "A faixa de acordes contém objetos de acorde e escala que são usados para "
-"especificar quando a música está a usar um determinado acorde ou escala. O "
-"seu principal objetivo é auxiliar na progressão dos acordes."
+"especificar quando a música está a usar um determinado acorde ou escala. "
+"O seu principal objetivo é auxiliar na progressão dos acordes."
 
 #: ../../tracks/chord-track.rst:18
 #: ../../tracks/modulator-track.rst:18
@@ -441,11 +441,11 @@ msgid ""
 "plugin is an instrument plugin, an instrument Track will be created. If "
 "the plugin is an effect, a bus Track will be created."
 msgstr ""
-"Os suplementos podem ser clicados e arrastados do Navegador de suplementos e "
-"soltos em espaços vazios na Lista de Faixas ou Misturador para instanciá-"
-"los. Se o suplemento for um suplemento de instrumento, uma Faixa de "
-"instrumento será criada. Se o suplemento for um efeito, uma Faixa de bus "
-"será criada."
+"Os suplementos podem ser clicados e arrastados do Navegador de "
+"suplementos e soltos em espaços vazios na Lista de Faixas ou Misturador "
+"para instanciá-los. Se o suplemento for um suplemento de instrumento, uma"
+" Faixa de instrumento será criada. Se o suplemento for um efeito, uma "
+"Faixa de bus será criada."
 
 #: ../../tracks/creating-tracks.rst:26
 msgid "See :ref:`instantiating-plugins` for how to instantiate plugins."
@@ -514,7 +514,7 @@ msgstr ""
 " sinais de MIDI ao invés de sinais de áudio."
 
 #: ../../tracks/inspector-page.rst:8
-#: ../../tracks/overview.rst:60
+#: ../../tracks/overview.rst:68
 msgid "Track Inspector"
 msgstr "Inspetor de Faixa"
 
@@ -552,8 +552,8 @@ msgid ""
 "If the track is an :ref:`instrument-track`, the instrument plugin for "
 "this track."
 msgstr ""
-"Se a faixa é uma :ref:`instrument-track`, é o suplemento do instrumento para "
-"esta faixa."
+"Se a faixa é uma :ref:`instrument-track`, é o suplemento do instrumento "
+"para esta faixa."
 
 #: ../../tracks/inspector-page.rst:44
 msgid "If the track takes input, there will be an input selection section."
@@ -597,6 +597,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:70
 #: ../../tracks/modulator-track.rst:8
+#: ../../tracks/overview.rst:64
 #: ../../tracks/tempo-track.rst:8
 #: ../../tracks/track-types.rst:31
 msgid "Todo"
@@ -616,10 +617,10 @@ msgid ""
 "tracks or plugin side-chain inputs. These are generally useful for side-"
 "chaining or applying additional effects to channels, such as reverb."
 msgstr ""
-"Estes são `aux envia <https://en.wikipedia.org/wiki/Aux-send>`_ para outras "
-"faixas ou entradas de suplementos de cadeia lateral. Estas são geralmente "
-"úteis para cadeias laterais ou para aplicar efeitos adicionais aos canais, "
-"tais como reverberação."
+"Estes são `aux envia <https://en.wikipedia.org/wiki/Aux-send>`_ para "
+"outras faixas ou entradas de suplementos de cadeia lateral. Estas são "
+"geralmente úteis para cadeias laterais ou para aplicar efeitos adicionais"
+" aos canais, tais como reverberação."
 
 #: ../../tracks/inspector-page.rst:87
 msgid ""
@@ -648,8 +649,8 @@ msgid ""
 ":menuselection:`Right click --> Reset`."
 msgstr ""
 "Para alterar o valor do fader ou do balanço estéreo, clique e arraste os "
-"respetivos widgets deles. Pode redefini-los às posições predefinidas deles "
-"pelo :menuselection:`Right click --> Reset`."
+"respetivos widgets deles. Pode redefini-los às posições predefinidas "
+"deles pelo :menuselection:`Right click --> Reset`."
 
 #: ../../tracks/inspector-page.rst:105
 msgid ""
@@ -696,8 +697,8 @@ msgid ""
 "The track will still be processed, so if you are looking to decrease "
 ":term:`DSP` usage, try disabling plugins instead."
 msgstr ""
-"A faixa ainda será processada, portanto, se quiser diminuir o uso de :term:`DSP`, "
-"tente desativar os suplementos no seu lugar."
+"A faixa ainda será processada, portanto, se quiser diminuir o uso de "
+":term:`DSP`, tente desativar os suplementos no seu lugar."
 
 #: ../../tracks/inspector-page.rst:135
 msgid ""
@@ -819,10 +820,10 @@ msgid ""
 "just want to save CPU power, instrument tracks can be frozen (temporarily"
 " converted to audio), which dramatically lowers their CPU usage."
 msgstr ""
-"Se a utilização de :term:`DSP` é alta e tem problemas de desempenho, ou se "
-"só quer economizar energia na CPU, as faixas de instrumentos podem ser "
-"congeladas (temporariamente convertidas para áudio), o que drasticamente "
-"reduz a utilização da CPU."
+"Se a utilização de :term:`DSP` é alta e tem problemas de desempenho, ou "
+"se só quer economizar energia na CPU, as faixas de instrumentos podem ser"
+" congeladas (temporariamente convertidas para áudio), o que drasticamente"
+" reduz a utilização da CPU."
 
 #: ../../tracks/instrument-track.rst:95
 msgid ""
@@ -847,10 +848,10 @@ msgid ""
 "song. Each project can only have one marker track and it cannot be "
 "deleted (but can be hidden)."
 msgstr ""
-"A faixa de marcação contém marcadores de canções - personalizados ou pré-"
-"definidos - que facilitam saltar para ou a exportar secções específicas da "
-"canção. Cada projeto só pode ter uma faixa de marcador e não pode ser "
-"apagada (mas pode ser escondida)."
+"A faixa de marcação contém marcadores de canções - personalizados ou "
+"pré-definidos - que facilitam saltar para ou a exportar secções "
+"específicas da canção. Cada projeto só pode ter uma faixa de marcador e "
+"não pode ser apagada (mas pode ser escondida)."
 
 #: ../../tracks/marker-track.rst:32
 msgid "The name of the marker track."
@@ -890,9 +891,9 @@ msgid ""
 "events and routing those MIDI signals to other instruments (including "
 "external instruments and hardware)."
 msgstr ""
-"Uma faixa MIDI contém regiões de MIDI e a a finalidade dela é de reproduzir "
-"eventos MIDI e rotear esses sinais MIDI para outros instrumentos (incluindo "
-"instrumentos e hardware externos)."
+"Uma faixa MIDI contém regiões de MIDI e a a finalidade dela é de "
+"reproduzir eventos MIDI e rotear esses sinais MIDI para outros "
+"instrumentos (incluindo instrumentos e hardware externos)."
 
 #: ../../tracks/midi-track.rst:13
 msgid ""
@@ -900,15 +901,15 @@ msgid ""
 "channel strips will only have MIDI effects (plugins that change MIDI "
 "signals)."
 msgstr ""
-"As faixas MIDI, ao contrário das pistas de instrumentos, produzem saída de "
-"MIDI e assim as suas faixas de canal só terão efeitos MIDI (suplementos que "
-"mudam os sinais MIDI)."
+"As faixas MIDI, ao contrário das pistas de instrumentos, produzem saída "
+"de MIDI e assim as suas faixas de canal só terão efeitos MIDI "
+"(suplementos que mudam os sinais MIDI)."
 
 #: ../../tracks/midi-track.rst:17
 msgid "MIDI tracks also have automation lanes for automating various parameters."
 msgstr ""
-"As faixas MIDI também possuem pistas de automação para automatizar vários "
-"parâmetros."
+"As faixas MIDI também possuem pistas de automação para automatizar vários"
+" parâmetros."
 
 #: ../../tracks/midi-track.rst:53
 msgid "The name of the track. You can double click to change it."
@@ -973,9 +974,10 @@ msgid ""
 "all regions you create will be created in lane 1. Additional lanes will "
 "be auto-created and deleted as you add regions to each lane."
 msgstr ""
-"A faixa MIDI pode ter várias pistas para gravar regiões. Por predefinição, "
-"todas as regiões que cria serão criadas na pista 1. Pistas adicionais serão "
-"auto criadas e apagadas à medida que adiciona regiões a cada pista."
+"A faixa MIDI pode ter várias pistas para gravar regiões. Por "
+"predefinição, todas as regiões que cria serão criadas na pista 1. Pistas "
+"adicionais serão auto criadas e apagadas à medida que adiciona regiões a "
+"cada pista."
 
 #: ../../tracks/midi-track.rst:101
 msgid ""
@@ -1002,9 +1004,9 @@ msgid ""
 "MIDI track."
 msgstr ""
 "As pistas de automação são usadas para criar eventos de automação para "
-"vários parâmetros da faixa MIDI, e quaisquer suplementos no canal da faixa "
-"MIDI. Para mostrar as pistas de automação, clique no ícone da cúspide na "
-"faixa MIDI."
+"vários parâmetros da faixa MIDI, e quaisquer suplementos no canal da "
+"faixa MIDI. Para mostrar as pistas de automação, clique no ícone da "
+"cúspide na faixa MIDI."
 
 #: ../../tracks/midi-track.rst:126
 msgid ""
@@ -1015,7 +1017,7 @@ msgstr ""
 ":ref:`automation`."
 
 #: ../../tracks/midi-track.rst:130
-#: ../../tracks/overview.rst:66
+#: ../../tracks/overview.rst:74
 msgid "Context Menu"
 msgstr "Menu de Contexto"
 
@@ -1045,8 +1047,8 @@ msgid ""
 "Tracks are the main building blocks of projects. Tracks appear in the "
 "tracklist and contain various events such as :ref:`regions`."
 msgstr ""
-"Faixas são os blocos de construção principais dos projetos. Faixas aparecem "
-"na tracklist e contêm vários eventos tais como :ref:`regions`."
+"Faixas são os blocos de construção principais dos projetos. Faixas "
+"aparecem na tracklist e contêm vários eventos tais como :ref:`regions`."
 
 #: ../../tracks/overview.rst:15
 msgid ""
@@ -1063,8 +1065,8 @@ msgid ""
 ":ref:`chord-track` and the :ref:`marker-track`, which contain chords and "
 "markers respectively."
 msgstr ""
-"Existem vários tipos de faixas adequadas para diferentes fins, explicados "
-"nas secções seguintes. Algumas faixas são especiais, como a :ref:`chord-"
+"Existem vários tipos de faixas adequadas para diferentes fins, explicados"
+" nas secções seguintes. Algumas faixas são especiais, como a :ref:`chord-"
 "track` e a :ref:`marker-track`, que contêm acordes e marcadores, "
 "respetivamente."
 
@@ -1075,9 +1077,10 @@ msgid ""
 " are  used for putting tracks under the same folder and performing common"
 " operations."
 msgstr ""
-"Na Zrythm, faixas de grupo são usadas para agrupar sinais (roteamento direto)"
-", faixas FX/bus são usadas para efeitos/envios, e faixas de pastas (em breve)"
-" são usadas para pôr faixas sob a mesma pasta e realizar operações comuns."
+"Na Zrythm, faixas de grupo são usadas para agrupar sinais (roteamento "
+"direto), faixas FX/bus são usadas para efeitos/envios, e faixas de pastas"
+" (em breve) são usadas para pôr faixas sob a mesma pasta e realizar "
+"operações comuns."
 
 #: ../../tracks/overview.rst:35
 msgid ""
@@ -1086,16 +1089,17 @@ msgid ""
 "arpegiator."
 msgstr ""
 "Além disso, a Zrythm utiliza faixas de instrumentos para suplementos de "
-"instrumentos, como sintetizadores, e faixas MIDI para suplementos MIDI, como "
-"um arpejador MIDI."
+"instrumentos, como sintetizadores, e faixas MIDI para suplementos MIDI, "
+"como um arpejador MIDI."
 
 #: ../../tracks/overview.rst:40
+#, fuzzy
 msgid ""
-"This is different from what many other DAWs (see :term:`DAW`) do, so "
-"please keep this in mind."
+"This is different from what many other :term:`DAWs <DAW>` do, so please "
+"keep this in mind."
 msgstr ""
-"Isto difere de muitos outros DAWs (veja :term:`DAW`), então por favor tenha "
-"isto em mente."
+"Isto difere de muitos outros DAWs (veja :term:`DAW`), então por favor "
+"tenha isto em mente."
 
 #: ../../tracks/overview.rst:45
 msgid "Track Interface"
@@ -1111,7 +1115,8 @@ msgstr ""
 "Cada faixa tem uma cor, um ícone (correspondente ao seu tipo), um nome e "
 "vários botões. Faixas que podem ter pistas, como faixas de instrumentos, "
 "também terão uma opção para mostrar cada pista como acima. As faixas que "
-"podem ter automação terão a opção de exibir pistas de automação como acima."
+"podem ter automação terão a opção de exibir pistas de automação como "
+"acima."
 
 #: ../../tracks/overview.rst:56
 msgid ""
@@ -1121,7 +1126,23 @@ msgstr ""
 "Se a faixa produzir saída, ela terá um metro no seu lado direito "
 "mostrando o nível atual."
 
-#: ../../tracks/overview.rst:62
+#: ../../tracks/overview.rst:60
+#, fuzzy
+msgid "Track Icon"
+msgstr "Operações de Faixa"
+
+#: ../../tracks/overview.rst:61
+#, fuzzy
+msgid "The icon can be changed by clicking on the icon in the tracklist."
+msgstr ""
+"Os instrumentos podem ser congelados ao clicar no botão Congelar na "
+"interface da pista."
+
+#: ../../tracks/overview.rst:64
+msgid "Add pic and explain how to add custom icons."
+msgstr ""
+
+#: ../../tracks/overview.rst:70
 msgid ""
 "Each track will display its page in the inspector when selected. See :ref"
 ":`track-inspector` for more details."
@@ -1129,7 +1150,7 @@ msgstr ""
 "Cada faixa exibirá a página dela no inspetor quando dor selecionada. Veja"
 " :ref:`track-inspector` para mais detalhes."
 
-#: ../../tracks/overview.rst:68
+#: ../../tracks/overview.rst:76
 msgid ""
 "Each tracks has a context menu with additional options depending on its "
 "type."
@@ -1137,7 +1158,7 @@ msgstr ""
 "Cada faixa tem um menu de contexto com opções adicionais dependendo do "
 "seu tipo."
 
-#: ../../tracks/overview.rst:74
+#: ../../tracks/overview.rst:82
 msgid ""
 "The section :ref:`track-operations` explains the various track operations"
 " available."
@@ -1608,3 +1629,4 @@ msgstr ""
 
 #~ msgid "This is a TODO feature."
 #~ msgstr "Esta é uma função TODO."
+

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 00:30+0100\n"
+"POT-Creation-Date: 2020-10-31 22:55+0000\n"
 "PO-Revision-Date: 2020-09-27 02:24+0000\n"
 "Last-Translator: Tertius Lourens <mrteexd@outlook.com>\n"
 "Language: af_ZA\n"
@@ -473,7 +473,7 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/inspector-page.rst:8
-#: ../../tracks/overview.rst:60
+#: ../../tracks/overview.rst:68
 msgid "Track Inspector"
 msgstr ""
 
@@ -544,6 +544,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:70
 #: ../../tracks/modulator-track.rst:8
+#: ../../tracks/overview.rst:64
 #: ../../tracks/tempo-track.rst:8
 #: ../../tracks/track-types.rst:31
 msgid "Todo"
@@ -891,7 +892,7 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/midi-track.rst:130
-#: ../../tracks/overview.rst:66
+#: ../../tracks/overview.rst:74
 msgid "Context Menu"
 msgstr ""
 
@@ -953,8 +954,8 @@ msgstr ""
 
 #: ../../tracks/overview.rst:40
 msgid ""
-"This is different from what many other DAWs (see :term:`DAW`) do, so "
-"please keep this in mind."
+"This is different from what many other :term:`DAWs <DAW>` do, so please "
+"keep this in mind."
 msgstr ""
 
 #: ../../tracks/overview.rst:45
@@ -975,19 +976,31 @@ msgid ""
 " showing the current level."
 msgstr ""
 
-#: ../../tracks/overview.rst:62
+#: ../../tracks/overview.rst:60
+msgid "Track Icon"
+msgstr ""
+
+#: ../../tracks/overview.rst:61
+msgid "The icon can be changed by clicking on the icon in the tracklist."
+msgstr ""
+
+#: ../../tracks/overview.rst:64
+msgid "Add pic and explain how to add custom icons."
+msgstr ""
+
+#: ../../tracks/overview.rst:70
 msgid ""
 "Each track will display its page in the inspector when selected. See :ref"
 ":`track-inspector` for more details."
 msgstr ""
 
-#: ../../tracks/overview.rst:68
+#: ../../tracks/overview.rst:76
 msgid ""
 "Each tracks has a context menu with additional options depending on its "
 "type."
 msgstr ""
 
-#: ../../tracks/overview.rst:74
+#: ../../tracks/overview.rst:82
 msgid ""
 "The section :ref:`track-operations` explains the various track operations"
 " available."
@@ -1351,5 +1364,11 @@ msgstr ""
 #~ "instrument tracks can be frozen "
 #~ "(temporarily converted to audio), which "
 #~ "dramatically lowers their CPU usage."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This is different from what many "
+#~ "other DAWs (see :term:`DAW`) do, so "
+#~ "please keep this in mind."
 #~ msgstr ""
 

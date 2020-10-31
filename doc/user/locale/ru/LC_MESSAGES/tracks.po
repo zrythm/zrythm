@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 00:30+0100\n"
+"POT-Creation-Date: 2020-10-31 22:55+0000\n"
 "PO-Revision-Date: 2020-10-04 19:41+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
-"manualtracks/ru/>\n"
 "Language: ru\n"
+"Language-Team: Russian "
+"<https://hosted.weblate.org/projects/zrythm/manualtracks/ru/>\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -517,7 +516,7 @@ msgstr ""
 "группирует MIDI сигналы вместо аудиосигналов."
 
 #: ../../tracks/inspector-page.rst:8
-#: ../../tracks/overview.rst:60
+#: ../../tracks/overview.rst:68
 msgid "Track Inspector"
 msgstr "Инспектор Треков (Track Inspector)"
 
@@ -600,6 +599,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:70
 #: ../../tracks/modulator-track.rst:8
+#: ../../tracks/overview.rst:64
 #: ../../tracks/tempo-track.rst:8
 #: ../../tracks/track-types.rst:31
 msgid "Todo"
@@ -828,9 +828,9 @@ msgid ""
 " converted to audio), which dramatically lowers their CPU usage."
 msgstr ""
 "Если у вас проблемы с производительностью из-за :term:`DSP`, или если вы "
-"просто хотите сэкономить мощность процессора, треки инструментов могут быть "
-"заморожены (временно преобразованы в аудио), что снижает нагрузку на "
-"процессор."
+"просто хотите сэкономить мощность процессора, треки инструментов могут "
+"быть заморожены (временно преобразованы в аудио), что снижает нагрузку на"
+" процессор."
 
 #: ../../tracks/instrument-track.rst:95
 msgid ""
@@ -1025,7 +1025,7 @@ msgstr ""
 ":ref:`automation`."
 
 #: ../../tracks/midi-track.rst:130
-#: ../../tracks/overview.rst:66
+#: ../../tracks/overview.rst:74
 msgid "Context Menu"
 msgstr "Контекстное меню (Context Menu)"
 
@@ -1104,9 +1104,10 @@ msgstr ""
 "таких как арпеджиатор MIDI (MIDI arpegiator)."
 
 #: ../../tracks/overview.rst:40
+#, fuzzy
 msgid ""
-"This is different from what many other DAWs (see :term:`DAW`) do, so "
-"please keep this in mind."
+"This is different from what many other :term:`DAWs <DAW>` do, so please "
+"keep this in mind."
 msgstr ""
 "Это отличается от того, что делают многие другие DAW (читайте "
 ":term:`DAW`), поэтому имейте это в виду."
@@ -1137,7 +1138,23 @@ msgstr ""
 "Если трек создает выходной сигнал, справа будет индикатор (Meter), "
 "показывающий текущий уровень сигнала."
 
-#: ../../tracks/overview.rst:62
+#: ../../tracks/overview.rst:60
+#, fuzzy
+msgid "Track Icon"
+msgstr "Операции над треками"
+
+#: ../../tracks/overview.rst:61
+#, fuzzy
+msgid "The icon can be changed by clicking on the icon in the tracklist."
+msgstr ""
+"Инструменты можно заморозить, нажав кнопку `Заморозить` (Freeze) в "
+"интерфейсе трека."
+
+#: ../../tracks/overview.rst:64
+msgid "Add pic and explain how to add custom icons."
+msgstr ""
+
+#: ../../tracks/overview.rst:70
 msgid ""
 "Each track will display its page in the inspector when selected. See :ref"
 ":`track-inspector` for more details."
@@ -1145,7 +1162,7 @@ msgstr ""
 "При выборе каждого трека в инспекторе будет отображаться его страница. "
 "Читайте :ref:`track-inspector` для более подробной информации."
 
-#: ../../tracks/overview.rst:68
+#: ../../tracks/overview.rst:76
 msgid ""
 "Each tracks has a context menu with additional options depending on its "
 "type."
@@ -1153,7 +1170,7 @@ msgstr ""
 "У каждого трека есть контекстное меню с дополнительными опциями в "
 "зависимости от его типа."
 
-#: ../../tracks/overview.rst:74
+#: ../../tracks/overview.rst:82
 msgid ""
 "The section :ref:`track-operations` explains the various track operations"
 " available."
@@ -1772,3 +1789,4 @@ msgstr ""
 #~ "tracklist and contain various events "
 #~ "such as regions (see :term:`Region`)."
 #~ msgstr ""
+

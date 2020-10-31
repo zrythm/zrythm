@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 00:30+0100\n"
+"POT-Creation-Date: 2020-10-31 22:55+0000\n"
 "PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"manualtracks/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/zrythm/manualtracks/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -482,7 +481,7 @@ msgid ""
 msgstr "これらは :ref:`audio-group-track` とほぼ同様ですが、オーディオ信号の代わりにMIDI信号に作用する点が異なります。"
 
 #: ../../tracks/inspector-page.rst:8
-#: ../../tracks/overview.rst:60
+#: ../../tracks/overview.rst:68
 msgid "Track Inspector"
 msgstr "トラックインスペクター"
 
@@ -558,6 +557,7 @@ msgstr "インサートは順番に処理されます。インストゥルメン
 
 #: ../../tracks/inspector-page.rst:70
 #: ../../tracks/modulator-track.rst:8
+#: ../../tracks/overview.rst:64
 #: ../../tracks/tempo-track.rst:8
 #: ../../tracks/track-types.rst:31
 msgid "Todo"
@@ -926,7 +926,7 @@ msgid ""
 msgstr "オートメーショントラックについての詳細は :ref:`automation` の章を参照してください。"
 
 #: ../../tracks/midi-track.rst:130
-#: ../../tracks/overview.rst:66
+#: ../../tracks/overview.rst:74
 msgid "Context Menu"
 msgstr "コンテキストメニュー"
 
@@ -994,9 +994,10 @@ msgid ""
 msgstr "さらに、Zrythmはシンセサイザーなどのインストゥルメントプラグイン用のインストゥルメントトラックと、MIDIアルペジエーターなどのMIDIプラグイン用のMIDIトラックを使用します。"
 
 #: ../../tracks/overview.rst:40
+#, fuzzy
 msgid ""
-"This is different from what many other DAWs (see :term:`DAW`) do, so "
-"please keep this in mind."
+"This is different from what many other :term:`DAWs <DAW>` do, so please "
+"keep this in mind."
 msgstr "これは他の多くのDAW( :term:`DAW` 参照)とは異なりますので、このことを覚えておいてください。"
 
 #: ../../tracks/overview.rst:45
@@ -1018,19 +1019,33 @@ msgid ""
 " showing the current level."
 msgstr "トラックがアウトプットを出す場合、トラックの右側には現在のレベルを示すメーターが表示されます。"
 
-#: ../../tracks/overview.rst:62
+#: ../../tracks/overview.rst:60
+#, fuzzy
+msgid "Track Icon"
+msgstr "トラックの操作"
+
+#: ../../tracks/overview.rst:61
+#, fuzzy
+msgid "The icon can be changed by clicking on the icon in the tracklist."
+msgstr "トラックインターフェースの Freeze ボタンをクリックすることで、インストゥルメントをフリーズさせることができます。"
+
+#: ../../tracks/overview.rst:64
+msgid "Add pic and explain how to add custom icons."
+msgstr ""
+
+#: ../../tracks/overview.rst:70
 msgid ""
 "Each track will display its page in the inspector when selected. See :ref"
 ":`track-inspector` for more details."
 msgstr "各トラックが選択されると、インスペクタにそのページが表示されます。詳細は :ref:`track-inspector` を参照してください。"
 
-#: ../../tracks/overview.rst:68
+#: ../../tracks/overview.rst:76
 msgid ""
 "Each tracks has a context menu with additional options depending on its "
 "type."
 msgstr "各トラックには、その種類に応じて追加のオプションを持つコンテキストメニューがあります。"
 
-#: ../../tracks/overview.rst:74
+#: ../../tracks/overview.rst:82
 msgid ""
 "The section :ref:`track-operations` explains the various track operations"
 " available."
@@ -1619,3 +1634,4 @@ msgstr "トラック内を右クリックして :zbutton:`Duplicate` を選択�
 #~ "tracklist and contain various events "
 #~ "such as regions (see :term:`Region`)."
 #~ msgstr ""
+

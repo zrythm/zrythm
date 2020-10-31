@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 00:30+0100\n"
+"POT-Creation-Date: 2020-10-31 22:55+0000\n"
 "PO-Revision-Date: 2020-06-29 20:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -514,7 +514,7 @@ msgstr ""
 " sinais MIDI no canto de sinais de audio."
 
 #: ../../tracks/inspector-page.rst:8
-#: ../../tracks/overview.rst:60
+#: ../../tracks/overview.rst:68
 msgid "Track Inspector"
 msgstr "Inspector de Pistas"
 
@@ -593,6 +593,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:70
 #: ../../tracks/modulator-track.rst:8
+#: ../../tracks/overview.rst:64
 #: ../../tracks/tempo-track.rst:8
 #: ../../tracks/track-types.rst:31
 msgid "Todo"
@@ -985,7 +986,7 @@ msgstr ""
 "ao capítulo :ref:`automation`."
 
 #: ../../tracks/midi-track.rst:130
-#: ../../tracks/overview.rst:66
+#: ../../tracks/overview.rst:74
 msgid "Context Menu"
 msgstr "Menú Contextual"
 
@@ -1059,8 +1060,8 @@ msgstr ""
 
 #: ../../tracks/overview.rst:40
 msgid ""
-"This is different from what many other DAWs (see :term:`DAW`) do, so "
-"please keep this in mind."
+"This is different from what many other :term:`DAWs <DAW>` do, so please "
+"keep this in mind."
 msgstr ""
 
 #: ../../tracks/overview.rst:45
@@ -1088,7 +1089,23 @@ msgstr ""
 "Se a pista produce unha saída, terá un medidor á súa dereita amosando o "
 "nivel actual."
 
-#: ../../tracks/overview.rst:62
+#: ../../tracks/overview.rst:60
+#, fuzzy
+msgid "Track Icon"
+msgstr "Operacións coas Pistas"
+
+#: ../../tracks/overview.rst:61
+#, fuzzy
+msgid "The icon can be changed by clicking on the icon in the tracklist."
+msgstr ""
+"Os instrumentos pódense conxelar premendo o botón Conxelar na interface "
+"da pista."
+
+#: ../../tracks/overview.rst:64
+msgid "Add pic and explain how to add custom icons."
+msgstr ""
+
+#: ../../tracks/overview.rst:70
 #, fuzzy
 msgid ""
 "Each track will display its page in the inspector when selected. See :ref"
@@ -1097,7 +1114,7 @@ msgstr ""
 "Cada pista amosará a súa páxina no inspector cando as selecciones. "
 "Dependendo da pista, as propiedades mostradas diferirán."
 
-#: ../../tracks/overview.rst:68
+#: ../../tracks/overview.rst:76
 #, fuzzy
 msgid ""
 "Each tracks has a context menu with additional options depending on its "
@@ -1106,7 +1123,7 @@ msgstr ""
 "Cada pista ten un menú contextual, con opcións adicionais dependendo do "
 "tipo de pista."
 
-#: ../../tracks/overview.rst:74
+#: ../../tracks/overview.rst:82
 msgid ""
 "The section :ref:`track-operations` explains the various track operations"
 " available."
@@ -1547,5 +1564,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "This is a TODO feature."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This is different from what many "
+#~ "other DAWs (see :term:`DAW`) do, so "
+#~ "please keep this in mind."
 #~ msgstr ""
 

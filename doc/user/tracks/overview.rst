@@ -38,7 +38,7 @@ which contain chords and markers respectively.
   MIDI arpegiator.
 
   This is different from what many
-  other DAWs (see :term:`DAW`) do, so please keep
+  other :term:`DAWs <DAW>` do, so please keep
   this in mind.
 
 Track Interface
@@ -55,6 +55,14 @@ will have an option to display automation tracks as above.
 
 If the track produces output, it will have a meter on its
 right-hand side showing the current level.
+
+Track Icon
+~~~~~~~~~~
+The icon can be changed by clicking on the icon in
+the tracklist.
+
+.. todo:: Add pic and explain how to add custom
+   icons.
 
 Track Inspector
 ----------------
