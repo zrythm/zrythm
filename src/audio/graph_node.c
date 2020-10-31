@@ -392,9 +392,11 @@ graph_node_process (
         nframes)))
     {
 #if 0
-      g_debug (
-        "splitting (num processable frames %"
-        PRIu32 ")", num_processable_frames);
+      g_message (
+        "splitting from %ld "
+        "(num processable frames %"
+        PRIu32 ")",
+        g_start_frames, num_processable_frames);
 #endif
 
       process_node (

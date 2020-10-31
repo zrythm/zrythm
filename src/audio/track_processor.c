@@ -463,11 +463,16 @@ handle_recording (
   const nframes_t  local_offset,
   const nframes_t  nframes)
 {
+#if 0
+  g_message ("handle recording %ld %" PRIu32,
+    g_start_frames, nframes);
+#endif
+
   long split_points[6];
   long each_nframes[6];
   int num_split_points = 1;
 
-  long start_frames = g_start_frames + local_offset;
+  long start_frames = g_start_frames;
   long end_frames = start_frames + nframes;
 
   /* split the cycle at loop and punch points and
@@ -480,9 +485,8 @@ handle_recording (
   each_nframes[0] = nframes;
   if (TRANSPORT->loop)
     {
-      if (position_between_frames_excl2 (
-            &TRANSPORT->loop_end_pos,
-            start_frames, end_frames))
+      if (TRANSPORT->loop_end_pos.frames ==
+            end_frames)
         {
           loop_hit = true;
           num_split_points = 3;

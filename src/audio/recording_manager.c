@@ -208,6 +208,13 @@ recording_manager_handle_recording (
   const nframes_t    local_offset,
   const nframes_t    nframes)
 {
+#if 0
+  g_message (
+    "handling recording from %ld (%" PRIu32
+    " frames)",
+    g_start_frames + local_offset, nframes);
+#endif
+
   Track * tr =
     track_processor_get_track (track_processor);
   AutomationTracklist * atl =
@@ -378,6 +385,7 @@ recording_manager_handle_recording (
           re->g_start_frames = g_start_frames;
           re->local_offset = local_offset;
           re->nframes = nframes;
+          re->port_id = at->port_id;
           strcpy (re->track_name, tr->name);
           recording_event_queue_push_back_event (
             self->event_queue, re);
@@ -695,8 +703,10 @@ handle_pause_event (
  * if needed.
  *
  * Adds new regions if necessary, etc.
+ *
+ * @return Whether pause was handled.
  */
-static void
+static bool
 handle_resume_event (
   RecordingManager * self,
   RecordingEvent * ev)
@@ -722,7 +732,7 @@ handle_resume_event (
       /* not paused, nothing to do */
       if (!tr->recording_paused)
         {
-          return;
+          return false;
         }
 
       tr->recording_paused = false;
@@ -756,7 +766,7 @@ handle_resume_event (
               tr->pos, new_lane_pos,
               idx_inside_lane);
         }
-      g_return_if_fail (new_region);
+      g_return_val_if_fail (new_region, false);
       track_add_region (
         tr, new_region, NULL, new_lane_pos,
         F_GEN_NAME, F_PUBLISH_EVENTS);
@@ -775,7 +785,7 @@ handle_resume_event (
 
       /* not paused, nothing to do */
       if (!at->recording_paused)
-        return;
+        return false;
 
       Port * port =
         automation_track_get_port (at);
@@ -797,7 +807,7 @@ handle_resume_event (
             automation_region_new (
               &resume_pos, &end_pos, tr->pos,
               at->index, at->num_regions);
-          g_return_if_fail (new_region);
+          g_return_val_if_fail (new_region, false);
           track_add_region (
             tr, new_region, at, -1,
             F_GEN_NAME, F_PUBLISH_EVENTS);
@@ -825,6 +835,8 @@ handle_resume_event (
             &resume_pos);
         }
     }
+
+  return true;
 }
 
 static void
@@ -832,7 +844,9 @@ handle_audio_event (
   RecordingManager * self,
   RecordingEvent * ev)
 {
-  handle_resume_event (self, ev);
+  bool handled_resume =
+    handle_resume_event (self, ev);
+  g_debug ("handled resume %d", handled_resume);
 
   long g_start_frames = ev->g_start_frames;
   nframes_t nframes = ev->nframes;
@@ -869,6 +883,7 @@ handle_audio_event (
 
   clip->num_frames =
     r_obj->end_pos.frames - r_obj->pos.frames;
+  g_return_if_fail (clip->num_frames >= 0);
   clip->frames =
     (sample_t *)
     realloc (
@@ -901,7 +916,7 @@ handle_audio_event (
        i < end_frames - r_obj->pos.frames;
        i++)
     {
-      g_warn_if_fail (
+      g_return_if_fail (
         i >= 0 && i < clip->num_frames);
       g_warn_if_fail (
         cur_local_offset >= local_offset &&
@@ -929,6 +944,12 @@ handle_audio_event (
     {
       audio_clip_write_to_pool (clip, true);
     }
+
+#if 0
+  g_message (
+    "%s wrote from %ld to %ld", __func__,
+    start_frames, end_frames);
+#endif
 }
 
 static void
@@ -1188,6 +1209,12 @@ handle_start_recording (
   long end_frames =
     start_frames + (long) ev->nframes;
 
+  g_message (
+    "start %ld, end %ld", start_frames, end_frames);
+
+  /* this is not needed because the cycle is
+   * already split */
+#if 0
   /* adjust for transport loop end */
   if (transport_is_loop_point_met (
         TRANSPORT, start_frames, ev->nframes))
@@ -1199,6 +1226,8 @@ handle_start_recording (
            TRANSPORT->loop_end_pos.frames) +
         start_frames;
     }
+#endif
+  g_return_if_fail (start_frames < end_frames);
 
   Position start_pos, end_pos;
   position_from_frames (
@@ -1278,6 +1307,13 @@ handle_start_recording (
           tr->recording_region = region;
           add_recorded_id (
             self, region);
+
+#if 0
+          g_message (
+            "region start %ld, end %ld",
+            region->base.pos.frames,
+            region->base.end_pos.frames);
+#endif
         }
     }
 
