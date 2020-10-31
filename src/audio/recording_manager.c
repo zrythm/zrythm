@@ -782,7 +782,7 @@ handle_resume_event (
       AutomationTrack * at =
         automation_track_find_from_port_id (
           &ev->port_id, false);
-      g_return_if_fail (at);
+      g_return_val_if_fail (at, false);
 
       /* not paused, nothing to do */
       if (!at->recording_paused)
