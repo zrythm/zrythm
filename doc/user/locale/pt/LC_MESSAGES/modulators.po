@@ -54,7 +54,7 @@ msgid ""
 "which contains all modulators in the :term:`Project`."
 msgstr ""
 "Os moduladores estão associados ao :doc:`../tracks/modulator-track`, que "
-"contém todos os moduladores no :term:`project`."
+"contém todos os moduladores no :term:`Project`."
 
 #: ../../modulators/intro.rst:28
 msgid "Adding Modulators"
