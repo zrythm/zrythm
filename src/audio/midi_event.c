@@ -54,7 +54,7 @@
  *
  * @param queued Append queued events instead of
  *   main events.
- * @param start_frame The start frame offset from 0
+ * @param local_offset The start frame offset from 0
  *   in this cycle.
  * @param nframes Number of frames to process.
  */
@@ -62,12 +62,12 @@ void
 midi_events_append (
   MidiEvents *    src,
   MidiEvents *    dest,
-  const nframes_t start_frame,
+  const nframes_t local_offset,
   const nframes_t nframes,
   bool            queued)
 {
   midi_events_append_w_filter (
-    src, dest, NULL, start_frame, nframes, queued);
+    src, dest, NULL, local_offset, nframes, queued);
 }
 
 /**
@@ -77,7 +77,7 @@ midi_events_append (
  *   main events.
  * @param channels Allowed channels (array of 16
  *   booleans).
- * @param start_frame The start frame offset from 0
+ * @param local_offset The start frame offset from 0
  *   in this cycle.
  * @param nframes Number of frames to process.
  */
@@ -86,7 +86,7 @@ midi_events_append_w_filter (
   MidiEvents *    src,
   MidiEvents *    dest,
   int *           channels,
-  const nframes_t start_frame,
+  const nframes_t local_offset,
   const nframes_t nframes,
   bool            queued)
 {
@@ -98,7 +98,7 @@ midi_events_append_w_filter (
   for (int i = 0; i < src->num_events; i++)
     {
       src_ev = &src->events[i];
-      if (src_ev->time < nframes)
+      if (src_ev->time < (local_offset + nframes))
         {
           /* if filtering, skip disabled channels */
           if (channels)
@@ -117,6 +117,11 @@ midi_events_append_w_filter (
         }
       else
         {
+          g_warning (
+            "invalid event time %" PRIu8
+            " (local offset %" PRIu32
+            " nframes %" PRIu32 ")",
+            src_ev->time, local_offset, nframes);
           g_warn_if_reached ();
         }
     }

@@ -2599,7 +2599,7 @@ stereo_ports_new_generic (
  * First sets port buf to 0, then sums the given
  * port signal from its inputs.
  *
- * @param start_frame The start frame offset from
+ * @param local_offset The start frame offset from
  *   0 in this cycle.
  * @param nframes The number of frames to process.
  * @param noroll Clear the port buffer in this
@@ -2609,7 +2609,7 @@ void
 port_sum_signal_from_inputs (
   Port *          port,
   const long      g_start_frames,
-  const nframes_t start_frame,
+  const nframes_t local_offset,
   const nframes_t nframes,
   const bool      noroll)
 {
@@ -2617,7 +2617,7 @@ port_sum_signal_from_inputs (
   int k;
 
   g_warn_if_fail (
-    start_frame + nframes <=
+    local_offset + nframes <=
       AUDIO_ENGINE->nframes);
   g_return_if_fail (IS_PORT (port));
 
@@ -2643,13 +2643,13 @@ port_sum_signal_from_inputs (
 #ifdef HAVE_JACK
             case MIDI_BACKEND_JACK:
               sum_data_from_jack (
-                port, start_frame, nframes);
+                port, local_offset, nframes);
               break;
 #endif
 #ifdef _WOE32
             case MIDI_BACKEND_WINDOWS_MME:
               sum_data_from_windows_mme (
-                port, start_frame, nframes);
+                port, local_offset, nframes);
               break;
 #endif
 #ifdef HAVE_RTMIDI
@@ -2658,7 +2658,7 @@ port_sum_signal_from_inputs (
             case MIDI_BACKEND_WINDOWS_MME_RTMIDI:
             case MIDI_BACKEND_COREMIDI_RTMIDI:
               port_sum_data_from_rtmidi (
-                port, start_frame, nframes);
+                port, local_offset, nframes);
               break;
 #endif
             default:
@@ -2709,7 +2709,7 @@ port_sum_signal_from_inputs (
                         port->midi_events,
                         track->channel->
                           midi_channels,
-                        start_frame,
+                        local_offset,
                         nframes, F_NOT_QUEUED);
                       continue;
                     }
@@ -2719,7 +2719,7 @@ port_sum_signal_from_inputs (
 
               midi_events_append (
                 src_port->midi_events,
-                port->midi_events, start_frame,
+                port->midi_events, local_offset,
                 nframes, F_NOT_QUEUED);
             }
         }
@@ -2731,13 +2731,13 @@ port_sum_signal_from_inputs (
 #ifdef HAVE_JACK
             case MIDI_BACKEND_JACK:
               send_data_to_jack (
-                port, start_frame, nframes);
+                port, local_offset, nframes);
               break;
 #endif
 #ifdef _WOE32
             case MIDI_BACKEND_WINDOWS_MME:
               send_data_to_windows_mme (
-                port, start_frame, nframes);
+                port, local_offset, nframes);
               break;
 #endif
             default:
@@ -2763,7 +2763,7 @@ port_sum_signal_from_inputs (
             }
         }
 
-      if (start_frame + nframes ==
+      if (local_offset + nframes ==
             AUDIO_ENGINE->block_length)
         {
           if (port->write_ring_buffers)
@@ -2807,7 +2807,7 @@ port_sum_signal_from_inputs (
       if (noroll)
         {
           dsp_fill (
-            &port->buf[start_frame],
+            &port->buf[local_offset],
             DENORMAL_PREVENTION_VAL, nframes);
           break;
         }
@@ -2828,12 +2828,12 @@ port_sum_signal_from_inputs (
 #ifdef HAVE_JACK
             case AUDIO_BACKEND_JACK:
               sum_data_from_jack (
-                port, start_frame, nframes);
+                port, local_offset, nframes);
               break;
 #endif
             case AUDIO_BACKEND_DUMMY:
               sum_data_from_dummy (
-                port, start_frame, nframes);
+                port, local_offset, nframes);
               break;
             default:
               break;
@@ -2882,11 +2882,11 @@ port_sum_signal_from_inputs (
                 port_get_dest_index (
                   src_port, port)];
           dsp_mix2 (
-            &port->buf[start_frame],
-            &src_port->buf[start_frame],
+            &port->buf[local_offset],
+            &src_port->buf[local_offset],
             1.f, multiplier, nframes);
           dsp_limit1 (
-            &port->buf[start_frame],
+            &port->buf[local_offset],
             minf, maxf, nframes);
         }
 
@@ -2897,7 +2897,7 @@ port_sum_signal_from_inputs (
 #ifdef HAVE_JACK
             case AUDIO_BACKEND_JACK:
               send_data_to_jack (
-                port, start_frame, nframes);
+                port, local_offset, nframes);
               break;
 #endif
             default:
@@ -2905,7 +2905,7 @@ port_sum_signal_from_inputs (
             }
         }
 
-      if (start_frame + nframes ==
+      if (local_offset + nframes ==
             AUDIO_ENGINE->block_length)
         {
           size_t size =
@@ -2953,7 +2953,7 @@ port_sum_signal_from_inputs (
 
               bool changed =
                 dsp_abs_max (
-                  &port->buf[start_frame],
+                  &port->buf[local_offset],
                   &port->peak,
                   nframes);
               if (changed)
