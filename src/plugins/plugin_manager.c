@@ -769,6 +769,42 @@ get_sf_paths (
   return paths;
 }
 
+static int
+get_sf_count (
+  PluginManager * self,
+  PluginProtocol  prot)
+{
+  char ** paths =
+    get_sf_paths (self, prot == PROT_SF2);
+  int path_idx = 0;
+  char * path;
+  int count = 0;
+  while ((path = paths[path_idx++]) != NULL)
+    {
+      if (!g_file_test (path, G_FILE_TEST_EXISTS))
+        continue;
+
+      char ** sf_instruments =
+        io_get_files_in_dir_ending_in (
+          path, 1,
+          (prot == PROT_SFZ) ? ".sfz" : ".sf2");
+      if (!sf_instruments)
+        continue;
+
+      char * plugin_path;
+      int plugin_idx = 0;
+      while ((plugin_path = sf_instruments[plugin_idx++]) !=
+               NULL)
+        {
+          count++;
+        }
+      g_strfreev (sf_instruments);
+    }
+  g_strfreev (paths);
+
+  return count;
+}
+
 static char **
 get_dssi_paths (
   PluginManager * self)
@@ -964,6 +1000,14 @@ scan_carla_descriptors_from_paths (
       paths = get_ladspa_paths (self);
       suffix = LIB_SUFFIX;
       break;
+    case PROT_SFZ:
+      paths = get_sf_paths (self, 0);
+      suffix = ".sfz";
+      break;
+    case PROT_SF2:
+      paths = get_sf_paths (self, 0);
+      suffix = ".sf2";
+      break;
     default:
       break;
     }
@@ -999,6 +1043,8 @@ scan_carla_descriptors_from_paths (
           /* if any cached descriptors are found */
           if (descriptors)
             {
+              /* clone and add them to the list
+               * of descriptors */
               PluginDescriptor * descriptor = NULL;
               int i = 0;
               while ((descriptor = descriptors[i++]))
@@ -1032,22 +1078,71 @@ scan_carla_descriptors_from_paths (
                 }
               else
                 {
-                  descriptors =
-                    z_carla_discovery_create_descriptors_from_file (
-                      plugin_path, ARCH_64,
-                      protocol);
-
-                  /* try 32-bit if above failed */
-                  if (!descriptors)
+                  if (protocol == PROT_SFZ ||
+                      protocol == PROT_SF2)
                     {
-                      g_debug (
-                        "no descriptors for %s, "
-                        "trying 32bit...",
-                        plugin_path);
+                      descriptors =
+                        calloc (
+                          2, sizeof (PluginDescriptor *));
+                      descriptors[0] =
+                        calloc (
+                          1, sizeof (PluginDescriptor));
+                      PluginDescriptor * descr =
+                        descriptors[0];
+                      descr->path = g_strdup (plugin_path);
+                      GFile * file =
+                        g_file_new_for_path (descr->path);
+                      descr->ghash = g_file_hash (file);
+                      g_object_unref (file);
+                      descr->category = PC_INSTRUMENT;
+                      descr->category_str =
+                        plugin_descriptor_category_to_string (
+                          descr->category);
+                      descr->name =
+                        io_path_get_basename_without_ext (
+                          plugin_path);
+                      char * parent_path =
+                        io_path_get_parent_dir (plugin_path);
+                      if (!parent_path)
+                        {
+                          g_warning (
+                            "Failed to get parent dir of "
+                            "%s", plugin_path);
+                          plugin_descriptor_free (descr);
+                          descriptors[0] = NULL;
+                          continue;
+                        }
+                      descr->author =
+                        g_path_get_basename (parent_path);
+                      g_free (parent_path);
+                      descr->num_audio_outs = 2;
+                      descr->num_midi_ins = 1;
+                      descr->arch = ARCH_64;
+                      descr->protocol = protocol;
+                      descr->open_with_carla = true;
+                      descr->bridge_mode =
+                        z_carla_discovery_get_bridge_mode (
+                          descr);
+                    }
+                  else
+                    {
                       descriptors =
                         z_carla_discovery_create_descriptors_from_file (
-                          plugin_path, ARCH_32,
+                          plugin_path, ARCH_64,
                           protocol);
+
+                      /* try 32-bit if above failed */
+                      if (!descriptors)
+                        {
+                          g_debug (
+                            "no descriptors for %s, "
+                            "trying 32bit...",
+                            plugin_path);
+                          descriptors =
+                            z_carla_discovery_create_descriptors_from_file (
+                              plugin_path, ARCH_32,
+                              protocol);
+                        }
                     }
 
                   g_debug (
@@ -1179,6 +1274,8 @@ plugin_manager_scan_plugins (
 #ifdef HAVE_CARLA
   size += (double) get_vst_count (self);
   size += (double) get_vst3_count (self);
+  size += (double) get_sf_count (self, PROT_SFZ);
+  size += (double) get_sf_count (self, PROT_SF2);
 #  ifdef __APPLE__
   size +=
     carla_get_cached_plugin_count (PLUGIN_AU, NULL);
@@ -1298,6 +1395,16 @@ plugin_manager_scan_plugins (
     self, PROT_VST3, &count, size, progress,
     start_progress, max_progress);
 
+  /* scan sfz */
+  scan_carla_descriptors_from_paths (
+    self, PROT_SFZ, &count, size, progress,
+    start_progress, max_progress);
+
+  /* scan sf2 */
+  scan_carla_descriptors_from_paths (
+    self, PROT_SF2, &count, size, progress,
+    start_progress, max_progress);
+
 #ifdef __APPLE__
   /* scan AU plugins */
   g_message ("Scanning AU plugins...");
@@ -1351,95 +1458,6 @@ plugin_manager_scan_plugins (
         }
     }
 #endif // __APPLE__
-  for (int i = 0; i < 2; i++)
-    {
-      char type[12];
-      strcpy (type, (i == 0) ? "SFZ" : "SF2");
-      char suffix[12];
-      strcpy (suffix, (i == 0) ? ".sfz" : ".sf2");
-      /* scan sfz */
-      g_message (
-        "Scanning %s instruments...", type);
-      char ** paths = get_sf_paths (self, i);
-      g_return_if_fail (paths);
-      char * path = NULL;
-      int path_idx = 0;
-      while ((path = paths[path_idx++]) != NULL)
-        {
-          if (!g_file_test (path, G_FILE_TEST_EXISTS))
-            continue;
-
-          g_message (
-            "scanning for %ss in %s", type, path);
-
-          char ** sf_instruments =
-            io_get_files_in_dir_ending_in (
-              path, 1, suffix);
-          if (!sf_instruments)
-            continue;
-
-          char * ins_path;
-          int ins_idx = 0;
-          while ((ins_path =
-                    sf_instruments[ins_idx++]) != NULL)
-            {
-              PluginDescriptor * descr =
-                calloc (1, sizeof (PluginDescriptor));
-
-              descr->path = g_strdup (ins_path);
-              descr->category = PC_INSTRUMENT;
-              descr->category_str =
-                plugin_descriptor_category_to_string (
-                  descr->category);
-              descr->name =
-                io_path_get_basename_without_ext (
-                  ins_path);
-              char * parent_path =
-                io_path_get_parent_dir (ins_path);
-              if (!parent_path)
-                {
-                  g_warning (
-                    "Failed to get parent dir of "
-                    "%s", ins_path);
-                  plugin_descriptor_free (descr);
-                  continue;
-                }
-              descr->author =
-                g_path_get_basename (parent_path);
-              g_free (parent_path);
-              descr->num_audio_outs = 2;
-              descr->num_midi_ins = 1;
-              descr->arch = ARCH_64;
-              descr->protocol =
-                i == 0 ? PROT_SFZ : PROT_SF2;
-              descr->open_with_carla = true;
-              descr->bridge_mode =
-                z_carla_discovery_get_bridge_mode (
-                  descr);
-
-              array_append (
-                self->plugin_descriptors,
-                self->num_plugins, descr);
-              add_category (
-                self, descr->category_str);
-
-              if (progress)
-                {
-                  char prog_str[800];
-                  sprintf (
-                    prog_str,
-                    "Scanned %s instrument: %s",
-                    type,
-                    descr->name);
-                  zrythm_app_set_progress_status (
-                    zrythm_app, prog_str,
-                    *progress);
-                }
-            }
-          g_strfreev (sf_instruments);
-        }
-      g_strfreev (paths);
-    }
 #endif // HAVE_CARLA
 
   /* sort alphabetically */
