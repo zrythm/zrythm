@@ -3148,7 +3148,7 @@ on_drag_begin_handle_hit_object (
       switch (P_TOOL)
         {
         case TOOL_ERASER:
-          SET_ACTION (ERASING);
+          SET_ACTION (STARTING_ERASING);
           break;
         case TOOL_AUDITION:
           SET_ACTION (AUDITIONING);
@@ -3205,7 +3205,7 @@ on_drag_begin_handle_hit_object (
       switch (P_TOOL)
         {
         case TOOL_ERASER:
-          SET_ACTION (ERASING);
+          SET_ACTION (STARTING_ERASING);
           break;
         case TOOL_AUDITION:
           SET_ACTION (AUDITIONING);
@@ -3230,24 +3230,29 @@ on_drag_begin_handle_hit_object (
         }
       break;
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+      /* TODO switch tool */
       if (is_resize_up)
         SET_ACTION (RESIZING_UP);
       else
         SET_ACTION (STARTING_MOVING);
       break;
     case ARRANGER_OBJECT_TYPE_VELOCITY:
+      /* TODO switch tool */
       if (is_resize_up)
         SET_ACTION (RESIZING_UP);
       else
         SET_ACTION (NONE);
       break;
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
+      /* TODO switch tool */
       SET_ACTION (STARTING_MOVING);
       break;
     case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
+      /* TODO switch tool */
       SET_ACTION (STARTING_MOVING);
       break;
     case ARRANGER_OBJECT_TYPE_MARKER:
+      /* TODO switch tool */
       SET_ACTION (STARTING_MOVING);
       break;
     default:
@@ -5692,6 +5697,7 @@ get_audio_arranger_cursor (
       break;
     case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_STARTING_ERASING:
     case UI_OVERLAY_ACTION_ERASING:
       ac = ARRANGER_CURSOR_ERASER;
       break;
@@ -5772,6 +5778,7 @@ get_midi_modifier_arranger_cursor (
       break;
     case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_STARTING_ERASING:
     case UI_OVERLAY_ACTION_ERASING:
       ac = ARRANGER_CURSOR_ERASER;
       break;
@@ -5873,6 +5880,7 @@ get_chord_arranger_cursor (
       break;
     case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_STARTING_ERASING:
     case UI_OVERLAY_ACTION_ERASING:
       ac = ARRANGER_CURSOR_ERASER;
       break;
@@ -5956,6 +5964,7 @@ get_automation_arranger_cursor (
       break;
     case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_STARTING_ERASING:
     case UI_OVERLAY_ACTION_ERASING:
       ac = ARRANGER_CURSOR_ERASER;
       break;
@@ -6167,6 +6176,7 @@ get_timeline_cursor (
       break;
     case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_STARTING_ERASING:
     case UI_OVERLAY_ACTION_ERASING:
       ac = ARRANGER_CURSOR_ERASER;
       break;
@@ -6316,6 +6326,7 @@ get_midi_arranger_cursor (
       break;
     case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_STARTING_ERASING:
     case UI_OVERLAY_ACTION_ERASING:
       ac = ARRANGER_CURSOR_ERASER;
       break;
