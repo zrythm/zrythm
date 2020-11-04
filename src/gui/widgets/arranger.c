@@ -2052,7 +2052,8 @@ arranger_widget_select_all (
     }
   else
     {
-      arranger_selections_clear (sel, F_NO_FREE);
+      arranger_selections_clear (
+        sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
       EVENTS_PUSH (
         ET_ARRANGER_SELECTIONS_REMOVED, sel);
@@ -2893,14 +2894,16 @@ autofill (
 
       /* clear the actual selections to append
        * created objects */
-      arranger_selections_clear (sel, F_NO_FREE);
+      arranger_selections_clear (
+        sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
       /* also clear the selections at start so we
        * can append the affected objects */
       if (self->sel_at_start)
         {
           arranger_selections_clear (
-            self->sel_at_start, F_FREE);
+            self->sel_at_start, F_FREE,
+            F_NO_PUBLISH_EVENTS);
         }
       if (!self->sel_at_start)
         {
@@ -3485,7 +3488,8 @@ select_in_range (
           objs[i]->deleted_temporarily = false;
         }
       arranger_selections_clear (
-        self->sel_to_delete, F_NO_FREE);
+        self->sel_to_delete, F_NO_FREE,
+        F_NO_PUBLISH_EVENTS);
       free (objs);
     }
   else if (!delete)
@@ -3777,7 +3781,7 @@ drag_update (
         ArrangerSelections * sel =
           arranger_widget_get_selections (self);
         arranger_selections_clear (
-          sel, F_NO_FREE);
+          sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
         self->sel_to_delete =
           arranger_selections_clone (
             arranger_widget_get_selections (self));
@@ -3789,7 +3793,7 @@ drag_update (
         ArrangerSelections * sel =
           arranger_widget_get_selections (self);
         arranger_selections_clear (
-          sel, F_NO_FREE);
+          sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
         self->sel_to_delete =
           arranger_selections_clone (
             arranger_widget_get_selections (self));
@@ -4143,7 +4147,8 @@ on_drag_end_automation (
       {
         arranger_selections_clear (
           (ArrangerSelections *)
-          AUTOMATION_SELECTIONS, F_NO_FREE);
+          AUTOMATION_SELECTIONS, F_NO_FREE,
+          F_NO_PUBLISH_EVENTS);
       }
       break;
     /* if something was created */
@@ -4392,7 +4397,7 @@ on_drag_end_midi (
       {
         arranger_selections_clear (
           (ArrangerSelections *) MA_SELECTIONS,
-          F_NO_FREE);
+          F_NO_FREE, F_NO_PUBLISH_EVENTS);
       }
       break;
     /* something was created */
@@ -4505,7 +4510,8 @@ on_drag_end_chord (
       {
         arranger_selections_clear (
           (ArrangerSelections *)
-          CHORD_SELECTIONS, F_NO_FREE);
+          CHORD_SELECTIONS, F_NO_FREE,
+          F_NO_PUBLISH_EVENTS);
       }
       break;
     case UI_OVERLAY_ACTION_CREATING_MOVING:
@@ -4770,7 +4776,8 @@ on_drag_end_timeline (
       break;
     case UI_OVERLAY_ACTION_NONE:
     case UI_OVERLAY_ACTION_STARTING_SELECTION:
-      arranger_selections_clear (sel, F_NO_FREE);
+      arranger_selections_clear (
+        sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
       break;
     /* if something was created */
     case UI_OVERLAY_ACTION_CREATING_MOVING:
@@ -4869,6 +4876,28 @@ drag_end (
     }
 
 #undef ON_DRAG_END
+
+  /* handle click without drag for
+   * delete-selecting */
+  if ((self->action ==
+        UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION ||
+      self->action ==
+        UI_OVERLAY_ACTION_STARTING_ERASING) &&
+      self->drag_start_btn == GDK_BUTTON_PRIMARY)
+    {
+      self->action =
+        UI_OVERLAY_ACTION_DELETE_SELECTING;
+      ArrangerSelections * sel =
+        arranger_widget_get_selections (self);
+      arranger_selections_clear (
+        sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+      self->sel_to_delete =
+        arranger_selections_clone (sel);
+      select_in_range (
+        self, offset_x, offset_y, F_IN_RANGE,
+        F_DELETE);
+    }
+
   switch (self->type)
     {
     case TYPE (TIMELINE):

@@ -151,7 +151,8 @@ arranger_object_select (
       if (!append)
         {
           arranger_selections_clear (
-            selections, F_NO_FREE);
+            selections, F_NO_FREE,
+            F_NO_PUBLISH_EVENTS);
         }
       arranger_selections_add_object (
         selections, self);
@@ -2685,7 +2686,8 @@ arranger_object_set_name_with_action (
   ArrangerSelections * before =
     arranger_selections_clone (
       (ArrangerSelections *) TL_SELECTIONS);
-  arranger_selections_clear (before, F_FREE);
+  arranger_selections_clear (
+    before, F_FREE, F_NO_PUBLISH_EVENTS);
   arranger_selections_add_object (
     before, clone_obj);
   ArrangerSelections * after =

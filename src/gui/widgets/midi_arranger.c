@@ -528,7 +528,7 @@ midi_arranger_show_context_menu (
         (ArrangerWidget *) self, F_NO_SELECT);
       arranger_selections_clear (
         (ArrangerSelections *) MA_SELECTIONS,
-        F_NO_FREE);
+        F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
       menu_item =
         CREATE_PASTE_MENU_ITEM ("win.paste");

@@ -288,7 +288,8 @@ arranger_selections_all_on_same_lane (
 void
 arranger_selections_clear (
   ArrangerSelections * self,
-  bool                 free);
+  bool                 free,
+  bool                 fire_events);
 
 /**
  * Code to run after deserializing.

@@ -44,7 +44,7 @@ on_delete_event (
 {
   arranger_selections_clear (
     (ArrangerSelections *) TL_SELECTIONS,
-    F_NO_FREE);
+    F_NO_FREE, F_NO_PUBLISH_EVENTS);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) self->scale);

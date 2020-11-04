@@ -1200,7 +1200,8 @@ arranger_selections_add_ticks (
 void
 arranger_selections_clear (
   ArrangerSelections * self,
-  bool                 _free)
+  bool                 _free,
+  bool                 fire_events)
 {
   int i;
   TimelineSelections * ts;
@@ -1227,9 +1228,6 @@ arranger_selections_clear (
           { \
             arranger_object_free (sc); \
           } \
-        EVENTS_PUSH ( \
-          ET_ARRANGER_SELECTIONS_CHANGED, \
-          self); \
       } \
   }
 
@@ -1261,6 +1259,12 @@ arranger_selections_clear (
       break;
     default:
       g_return_if_reached ();
+    }
+
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_ARRANGER_SELECTIONS_CHANGED, self);
     }
 
 #undef REMOVE_OBJS
@@ -1945,7 +1949,8 @@ arranger_selections_merge (
 
   /* clear/free previous selections and add the
    * new region */
-  arranger_selections_clear (self, F_FREE);
+  arranger_selections_clear (
+    self, F_FREE, F_NO_PUBLISH_EVENTS);
   arranger_selections_add_object (
     self, (ArrangerObject *) new_r);
 
@@ -2009,7 +2014,7 @@ arranger_selections_paste_to_pos (
   ArrangerSelections * project_sel =
     arranger_selections_get_for_type (self->type);
   arranger_selections_clear (
-    project_sel, F_NO_FREE);
+    project_sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
   Position first_obj_pos;
   arranger_selections_get_start_pos (

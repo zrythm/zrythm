@@ -1015,7 +1015,8 @@ do_or_undo_duplicate_or_link (
       (float) - self->delta_normalized_amount;
 
   /* clear current selections in the project */
-  arranger_selections_clear (sel, F_NO_FREE);
+  arranger_selections_clear (
+    sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
   /* this is used for automation points to
    * keep track of which automation point in the
@@ -1375,7 +1376,8 @@ do_or_undo_create_or_delete (
   if (!self->first_run || !create)
     {
       /* clear current selections in the project */
-      arranger_selections_clear (sel, F_NO_FREE);
+      arranger_selections_clear (
+        sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
       for (int i = 0; i < size; i++)
         {
@@ -1492,7 +1494,8 @@ do_or_undo_record (
   if (!self->first_run)
     {
       /* clear current selections in the project */
-      arranger_selections_clear (sel, F_NO_FREE);
+      arranger_selections_clear (
+        sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
       /* if do/redoing */
       if (_do)
@@ -1828,7 +1831,7 @@ do_or_undo_automation_fill (
       /* clear current selections in the project */
       arranger_selections_clear (
         (ArrangerSelections *) TL_SELECTIONS,
-        F_NO_FREE);
+        F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
       /* get the actual object from the
        * project */
