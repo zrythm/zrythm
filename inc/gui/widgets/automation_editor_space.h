@@ -37,6 +37,8 @@ G_DECLARE_FINAL_TYPE (
   GtkBox)
 
 typedef struct _ArrangerWidget ArrangerWidget;
+typedef struct _AutomationEditorLegendWidget
+  AutomationEditorLegendWidget;
 
 /**
  * @addtogroup widgets
@@ -67,6 +69,9 @@ typedef struct _AutomationEditorSpaceWidget
   ArrangerWidget *    arranger;
   GtkScrolledWindow * arranger_scroll;
   GtkViewport *       arranger_viewport;
+
+  /* The legend on the left side. */
+  AutomationEditorLegendWidget * legend;
 } AutomationEditorSpaceWidget;
 
 void

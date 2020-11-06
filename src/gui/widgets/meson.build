@@ -21,6 +21,7 @@ widget_srcs = files([
   'audio_editor_space.c',
   'automatable_selector_popover.c',
   'automation_arranger.c',
+  'automation_editor_legend.c',
   'automation_editor_space.c',
   'automation_mode.c',
   'automation_point.c',

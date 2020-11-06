@@ -88,6 +88,8 @@ typedef struct _ClipEditorInnerWidget
 
   /** Toggle between drum mode and normal mode. */
   GtkToggleButton *    toggle_notation;
+  GtkToggleButton *    toggle_listen_notes;
+  GtkToggleButton *    show_automation_values;
 
   MidiEditorSpaceWidget * midi_editor_space;
 

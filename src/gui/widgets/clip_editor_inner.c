@@ -175,6 +175,16 @@ clip_editor_inner_widget_refresh (
           g_warn_if_reached ();
         }
 
+      /* hide all left-of-ruler buttons */
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->toggle_notation), false);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->toggle_listen_notes),
+        false);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->show_automation_values),
+        false);
+
       /* add one to the size group */
       switch (r->id.type)
         {
@@ -186,6 +196,12 @@ clip_editor_inner_widget_refresh (
             self->midi_editor_space, 1);
           midi_editor_space_widget_refresh (
             self->midi_editor_space);
+          gtk_widget_set_visible (
+            GTK_WIDGET (self->toggle_notation),
+            true);
+          gtk_widget_set_visible (
+            GTK_WIDGET (self->toggle_listen_notes),
+            true);
           break;
         case REGION_TYPE_AUDIO:
           gtk_stack_set_visible_child (
@@ -214,6 +230,10 @@ clip_editor_inner_widget_refresh (
             self->automation_editor_space, 1);
           automation_editor_space_widget_refresh (
             self->automation_editor_space);
+          gtk_widget_set_visible (
+            GTK_WIDGET (
+              self->show_automation_values),
+            true);
           break;
         }
     }
@@ -332,6 +352,8 @@ clip_editor_inner_widget_class_init (
   BIND_CHILD (ruler_viewport);
   BIND_CHILD (ruler);
   BIND_CHILD (toggle_notation);
+  BIND_CHILD (toggle_listen_notes);
+  BIND_CHILD (show_automation_values);
   BIND_CHILD (editor_stack);
   BIND_CHILD (midi_editor_space);
   BIND_CHILD (audio_editor_space);
