@@ -6627,10 +6627,20 @@ arranger_widget_setup (
   self->type = type;
   self->snap_grid = snap_grid;
 
-  /* if timeline, make drag dest */
-  if (type == TYPE (TIMELINE))
+  switch (type)
     {
+    case TYPE (TIMELINE):
+      /* make drag dest */
       timeline_arranger_setup_drag_dest (self);
+      break;
+    case TYPE (AUTOMATION):
+      self->ap_layout =
+        z_cairo_create_pango_layout_from_string (
+          GTK_WIDGET (self), "8",
+          PANGO_ELLIPSIZE_NONE, 0);
+      break;
+    default:
+      break;
     }
 
   /* connect signals */

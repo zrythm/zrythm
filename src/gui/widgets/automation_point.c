@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +29,7 @@
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/cairo.h"
 #include "utils/math.h"
 #include "utils/ui.h"
@@ -40,12 +41,14 @@
  *
  * @param cr The cairo context of the arranger.
  * @param rect Arranger rectangle.
+ * @param layout Pango layout to draw text with.
  */
 void
 automation_point_draw (
   AutomationPoint * ap,
   cairo_t *         cr,
-  GdkRectangle *    rect)
+  GdkRectangle *    rect,
+  PangoLayout *     layout)
 {
   ArrangerObject * obj =
     (ArrangerObject *) ap;
@@ -189,6 +192,28 @@ automation_point_draw (
         (obj->full_rect.y + AP_WIDGET_POINT_SIZE / 2) -
           rect->y);
       cairo_show_text (cr, text);
+    }
+  else if (g_settings_get_boolean (
+             S_UI, "show-automation-values") &&
+           !(arranger->action !=
+               UI_OVERLAY_ACTION_NONE
+             && !obj->transient))
+    {
+      char text[500];
+      sprintf (
+        text, "%f", (double) ap->fvalue);
+      cairo_set_source_rgba (cr, 1, 1, 1, 1);
+      z_cairo_draw_text_full (
+        cr, GTK_WIDGET (arranger), layout, text,
+        (obj->full_rect.x +
+           AP_WIDGET_POINT_SIZE / 2) - rect->x,
+        upslope ?
+          ((obj->full_rect.y +
+              obj->full_rect.height) -
+                AP_WIDGET_POINT_SIZE / 2) -
+                  rect->y :
+          (obj->full_rect.y +
+             AP_WIDGET_POINT_SIZE / 2) - rect->y);
     }
 }
 

@@ -417,6 +417,10 @@ Args:
                  "Piano roll MIDI modifier"
                  "The MIDI modifier to display in the MIDI editor (only velocity is valid at the moment).")
                (make-schema-key
+                 "show-automation-values" "b" "false"
+                 "Show automation values"
+                 "Whether to show automation values in the automation editor.")
+               (make-schema-key
                  "browser-divider-position" "i" "220"
                  "Browser divider position"
                  "Height of the top part of the plugin/file browser.")

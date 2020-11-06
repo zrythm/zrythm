@@ -522,6 +522,13 @@ main_window_widget_init (MainWindowWidget * self)
     { "midi-editor.highlighting",
       activate_midi_editor_highlighting, "s" },
 
+    /* automation */
+    { "show-automation-values", NULL, NULL,
+      g_settings_get_boolean (
+        S_UI, "show-automation-values") ?
+        "true" : "false",
+      change_state_show_automation_values },
+
     /* control room */
     { "toggle-dim-output", NULL, NULL,
       "true", change_state_dim_output },

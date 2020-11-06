@@ -350,6 +350,14 @@ typedef struct _ArrangerWidget
    */
   bool           first_draw;
 
+  /**
+   * Layout for drawing automation point text.
+   *
+   * TODO move to AutomationPoint if parallel
+   * processing is needed - no need now.
+   */
+  PangoLayout *  ap_layout;
+
 } ArrangerWidget;
 
 /**

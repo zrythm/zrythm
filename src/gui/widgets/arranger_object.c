@@ -1047,7 +1047,8 @@ arranger_object_draw (
     {
     case TYPE (AUTOMATION_POINT):
       automation_point_draw (
-        (AutomationPoint *) self, cr, rect);
+        (AutomationPoint *) self, cr, rect,
+        arranger->ap_layout);
       break;
     case TYPE (REGION):
       region_draw (

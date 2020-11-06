@@ -121,12 +121,12 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="action_name">win.toggle-listen-notes</property>
+                            <property name="action_name">win.show-automation-values</property>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="icon_name">audio-headphones</property>
+                                <property name="icon_name">text-bubble</property>
                               </object>
                             </child>
                           </object>

@@ -1685,6 +1685,10 @@ process_events (void * data)
           arranger_selections_change_redraw_everything (
             ARRANGER_SELECTIONS (ev->arg));
           break;
+        case ET_AUTOMATION_VALUE_VISIBILITY_CHANGED:
+          arranger_widget_redraw_whole (
+            MW_AUTOMATION_ARRANGER);
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

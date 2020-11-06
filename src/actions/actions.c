@@ -2124,3 +2124,20 @@ DEFINE_SIMPLE (activate_add_region)
 
   /* TODO add region with default size */
 }
+
+void
+change_state_show_automation_values (
+  GSimpleAction * action,
+  GVariant *      value,
+  gpointer        user_data)
+{
+  int enabled = g_variant_get_boolean (value);
+
+  g_simple_action_set_state (action, value);
+
+  g_settings_set_boolean (
+    S_UI, "show-automation-values", enabled);
+
+  EVENTS_PUSH (
+    ET_AUTOMATION_VALUE_VISIBILITY_CHANGED, NULL);
+}

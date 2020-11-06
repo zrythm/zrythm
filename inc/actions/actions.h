@@ -269,6 +269,12 @@ change_state_piano_roll_drum_mode (
   gpointer        user_data);
 
 void
+change_state_show_automation_values (
+  GSimpleAction * action,
+  GVariant *      value,
+  gpointer        user_data);
+
+void
 activate_toggle_status_bar (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);
