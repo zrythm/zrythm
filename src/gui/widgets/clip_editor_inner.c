@@ -140,8 +140,7 @@ clip_editor_inner_widget_refresh (
         self->color_bar,
         &track->color);
       gtk_label_set_text (
-        self->track_name_label,
-        track_get_name (track));
+        self->track_name_label, r->name);
 
       /* remove all from the size group */
       GtkWidget * visible_w =

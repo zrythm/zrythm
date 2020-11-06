@@ -118,20 +118,14 @@ automation_editor_space_widget_class_init (
     klass,
     "automation_editor_space.ui");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    AutomationEditorSpaceWidget,
-    arranger_scroll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    AutomationEditorSpaceWidget,
-    arranger_viewport);
-  gtk_widget_class_bind_template_child (
-    klass,
-    AutomationEditorSpaceWidget,
-    arranger);
-  gtk_widget_class_bind_template_child (
-    klass,
-    AutomationEditorSpaceWidget,
-    left_box);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, AutomationEditorSpaceWidget, x)
+
+  BIND_CHILD (arranger_scroll);
+  BIND_CHILD (arranger_viewport);
+  BIND_CHILD (arranger);
+  BIND_CHILD (left_box);
+
+#undef BIND_CHILD
 }
