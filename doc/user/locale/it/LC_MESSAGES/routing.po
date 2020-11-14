@@ -2,19 +2,22 @@
 # Copyright (C) 2019-2020 Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-#
-#, fuzzy
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-10-26 17:26+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/routing/"
+"it/>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../routing/control-room.rst:8
@@ -128,7 +131,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:8
 msgid "Ports"
-msgstr ""
+msgstr "Porte"
 
 #: ../../routing/ports.rst:10
 msgid ""
@@ -156,7 +159,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:27
 msgid "Input"
-msgstr ""
+msgstr "Ingresso"
 
 #: ../../routing/ports.rst:28
 msgid "The port receives signals."
@@ -164,7 +167,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:31
 msgid "Output"
-msgstr ""
+msgstr "Uscita"
 
 #: ../../routing/ports.rst:32
 msgid "The port sends signals."
@@ -241,4 +244,3 @@ msgstr ""
 #~ " can be used to modulate control "
 #~ "ports."
 #~ msgstr ""
-
