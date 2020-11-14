@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-10-11 10:45+0000\n"
+"PO-Revision-Date: 2020-11-02 01:26+0000\n"
 "Last-Translator: Tércio Martins <tecnotercio@yahoo.com.br>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/manualplayback-and-recording/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
@@ -151,7 +151,7 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:12
 msgid "Playhead"
-msgstr ""
+msgstr "Cursor de reprodução"
 
 #: ../../playback-and-recording/overview.rst:13
 msgid ""
@@ -161,7 +161,7 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:18
 msgid "Position"
-msgstr ""
+msgstr "Posição"
 
 #: ../../playback-and-recording/overview.rst:20
 msgid "Zrythm uses the following format for positions:"
@@ -270,7 +270,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:16
 msgid "Record"
-msgstr ""
+msgstr "Gravar"
 
 #: ../../playback-and-recording/transport-controls.rst:17
 msgid "Arms the project for recording."
