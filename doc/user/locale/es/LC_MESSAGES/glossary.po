@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-11-14 04:22+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2020-11-14 04:23+0000\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/glossary/"
 "es/>\n"
 "Language: es\n"
@@ -222,13 +222,15 @@ msgstr ""
 
 #: ../../glossary/intro.rst:96
 msgid "Panning"
-msgstr ""
+msgstr "Panomarización"
 
 #: ../../glossary/intro.rst:98
 msgid ""
 "Panning is the distribution of a :term:`Mono` signal into a new stereo or"
 " multi-channel sound field."
 msgstr ""
+"La panomarización es una distribución de una señal :term:`Mono`a un nuevo "
+"campo sonoro estéreo o canal de sonido."
 
 #: ../../glossary/intro.rst:101
 msgid "Parameter"
