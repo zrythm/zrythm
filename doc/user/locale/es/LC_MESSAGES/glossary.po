@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-11-14 04:30+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2020-11-14 04:32+0000\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/glossary/"
 "es/>\n"
 "Language: es\n"
@@ -345,13 +345,16 @@ msgstr ""
 
 #: ../../glossary/intro.rst:150
 msgid "Zrythm user path"
-msgstr ""
+msgstr "La ruta de usuario de Zrythm"
 
 #: ../../glossary/intro.rst:152
 msgid ""
 "The path where Zrythm will save user data, such as projects, temporary "
 "files, presets and exported audio. The default is :file:`zrythm` under"
 msgstr ""
+"La ruta donde Zrythm guardará los datos del usuario, como proyectos, "
+"archivos temporales, presets y audio exportado. La ruta por defecto es "
+":file:`zrythm`."
 
 #: ../../glossary/intro.rst:157
 msgid ""
