@@ -103,23 +103,35 @@ typedef enum ProjectPath
 } ProjectPath;
 
 /**
- * Selection type, used for displaying info in the
- * inspector.
+ * Selection type, used for controlling which part
+ * of the interface is selected, for copy-paste,
+ * displaying info in the inspector, etc.
  */
 typedef enum SelectionType
 {
-  SELECTION_TYPE_TRACK,
-  SELECTION_TYPE_PLUGIN,
+  /** Track selection in tracklist or mixer. */
+  SELECTION_TYPE_TRACKLIST,
+
+  /** Timeline or pinned timeline. */
   SELECTION_TYPE_TIMELINE,
+
+  /** Insert selections in the mixer. */
+  SELECTION_TYPE_INSERT,
+
+  /** MIDI FX selections in the mixer. */
+  SELECTION_TYPE_MIDI_FX,
+
+  /** Editor arranger. */
   SELECTION_TYPE_EDITOR,
 } SelectionType;
 
 static const cyaml_strval_t
 selection_type_strings[] =
 {
-  { "Track", SELECTION_TYPE_TRACK },
-  { "Plugin", SELECTION_TYPE_PLUGIN },
+  { "Tracklist", SELECTION_TYPE_TRACKLIST },
   { "Timeline", SELECTION_TYPE_TIMELINE },
+  { "Insert", SELECTION_TYPE_INSERT },
+  { "MIDI FX", SELECTION_TYPE_MIDI_FX },
   { "Editor", SELECTION_TYPE_EDITOR },
 };
 

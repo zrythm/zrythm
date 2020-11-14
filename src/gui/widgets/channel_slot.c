@@ -599,8 +599,18 @@ multipress_pressed (
   if (self->open_plugin_inspector_on_click &&
       self->type != PLUGIN_SLOT_INSTRUMENT)
     {
-      PROJECT->last_selection =
-        SELECTION_TYPE_PLUGIN;
+      if (self->type == PLUGIN_SLOT_INSERT)
+        {
+          PROJECT->last_selection =
+            SELECTION_TYPE_INSERT;
+        }
+      else if (self->type == PLUGIN_SLOT_MIDI_FX)
+        {
+          PROJECT->last_selection =
+            SELECTION_TYPE_MIDI_FX;
+        }
+      EVENTS_PUSH (
+        ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
     }
 }
 

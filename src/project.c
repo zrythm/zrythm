@@ -680,7 +680,7 @@ create_default (Project * self)
   g_warn_if_fail (track->processor->stereo_in->l->is_project);
   tracklist_selections_add_track (
     self->tracklist_selections, track, 0);
-  self->last_selection = SELECTION_TYPE_TRACK;
+  self->last_selection = SELECTION_TYPE_TRACKLIST;
 
   engine_setup (self->audio_engine);
 

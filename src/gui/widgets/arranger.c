@@ -2694,6 +2694,13 @@ multipress_pressed (
     self->shift_held = 1;
   if (state_mask & GDK_CONTROL_MASK)
     self->ctrl_held = 1;
+
+  PROJECT->last_selection =
+    self->type == ARRANGER_WIDGET_TYPE_TIMELINE ?
+      SELECTION_TYPE_TIMELINE :
+      SELECTION_TYPE_EDITOR;
+  EVENTS_PUSH (
+    ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
 }
 
 /**

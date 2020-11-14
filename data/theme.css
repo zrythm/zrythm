@@ -567,9 +567,11 @@ popover.snap-grid-popover button.note-type {
 /* to be used on currently selected part of the UI
  * (e.g., timeline, tracklist, etc.) */
 .selected-element {
-  color: #ccc;
-  border: solid;
-  border-width: 2px;
+  border: 2px solid alpha (#ccc, 0.4);
   padding: 1px;
   border-radius: 3px;
+}
+
+.selectable-element {
+  padding: 3px;
 }

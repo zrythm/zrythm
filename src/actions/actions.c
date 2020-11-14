@@ -2109,7 +2109,7 @@ DEFINE_SIMPLE (
         }
     }
   else if (PROJECT->last_selection ==
-             SELECTION_TYPE_TRACK)
+             SELECTION_TYPE_TRACKLIST)
     {
       g_message ("TODO - track");
     }

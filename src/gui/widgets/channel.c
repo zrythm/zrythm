@@ -447,7 +447,7 @@ on_btn_release (
             1000)
         {
           PROJECT->last_selection =
-            SELECTION_TYPE_TRACK;
+            SELECTION_TYPE_TRACKLIST;
         }
 
       bool ctrl = event->state & GDK_CONTROL_MASK;

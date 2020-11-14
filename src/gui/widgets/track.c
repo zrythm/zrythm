@@ -2000,7 +2000,9 @@ multipress_pressed (
       Track * track = self->track;
 
       PROJECT->last_selection =
-        SELECTION_TYPE_TRACK;
+        SELECTION_TYPE_TRACKLIST;
+      EVENTS_PUSH (
+        ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
 
       bool ctrl = state_mask & GDK_CONTROL_MASK;
       bool shift = state_mask & GDK_SHIFT_MASK;

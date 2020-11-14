@@ -30,6 +30,8 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -509,6 +511,11 @@ multipress_pressed (
     F_PUBLISH_EVENTS);
   tracklist_selections_select_last_visible (
     TRACKLIST_SELECTIONS);
+
+  PROJECT->last_selection =
+    SELECTION_TYPE_TRACKLIST;
+  EVENTS_PUSH (
+    ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
 }
 
 /**

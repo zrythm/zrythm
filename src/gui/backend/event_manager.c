@@ -101,6 +101,79 @@
 #include <glib/gi18n.h>
 
 static void
+on_project_selection_type_changed (void)
+{
+  const char * class = "selected-element";
+  const char * selectable_class =
+    "selectable-element";
+
+  z_gtk_widget_remove_style_class (
+    GTK_WIDGET (MW_TRACKLIST), class);
+  z_gtk_widget_remove_style_class (
+    GTK_WIDGET (
+      MW_TIMELINE_PANEL->timelines_plus_ruler),
+    class);
+  z_gtk_widget_add_style_class (
+    GTK_WIDGET (
+      MW_TIMELINE_PANEL->timelines_plus_ruler),
+    selectable_class);
+  z_gtk_widget_remove_style_class (
+    GTK_WIDGET (MW_TIMELINE_PANEL->tracklist_top),
+    class);
+  z_gtk_widget_add_style_class (
+    GTK_WIDGET (MW_TIMELINE_PANEL->tracklist_top),
+    selectable_class);
+  z_gtk_widget_remove_style_class (
+    GTK_WIDGET (MW_CLIP_EDITOR_INNER), class);
+  z_gtk_widget_add_style_class (
+    GTK_WIDGET (MW_CLIP_EDITOR_INNER),
+    selectable_class);
+  z_gtk_widget_remove_style_class (
+    GTK_WIDGET (MW_MIXER), class);
+  z_gtk_widget_add_style_class (
+    GTK_WIDGET (MW_MIXER), selectable_class);
+
+  switch (PROJECT->last_selection)
+    {
+    case SELECTION_TYPE_TRACKLIST:
+      z_gtk_widget_add_style_class (
+        GTK_WIDGET (
+          MW_TIMELINE_PANEL->tracklist_top),
+        class);
+      z_gtk_widget_remove_style_class (
+        GTK_WIDGET (
+          MW_TIMELINE_PANEL->tracklist_top),
+        selectable_class);
+      z_gtk_widget_add_style_class (
+        GTK_WIDGET (MW_MIXER), class);
+      z_gtk_widget_remove_style_class (
+        GTK_WIDGET (MW_MIXER),
+        selectable_class);
+      break;
+    case SELECTION_TYPE_TIMELINE:
+      z_gtk_widget_add_style_class (
+        GTK_WIDGET (
+          MW_TIMELINE_PANEL->timelines_plus_ruler),
+        class);
+      z_gtk_widget_remove_style_class (
+        GTK_WIDGET (
+          MW_TIMELINE_PANEL->timelines_plus_ruler),
+        selectable_class);
+      break;
+    case SELECTION_TYPE_INSERT:
+    case SELECTION_TYPE_MIDI_FX:
+      break;
+    case SELECTION_TYPE_EDITOR:
+      z_gtk_widget_add_style_class (
+        GTK_WIDGET (MW_CLIP_EDITOR_INNER), class);
+      z_gtk_widget_remove_style_class (
+        GTK_WIDGET (MW_CLIP_EDITOR_INNER),
+        selectable_class);
+      break;
+    }
+}
+
+static void
 redraw_arranger_for_selections (
   ArrangerSelections * sel)
 {
@@ -1165,9 +1238,11 @@ process_events (void * data)
            * tracklist selection changed by
            * clicking on a track */
           if (PROJECT->last_selection ==
-                SELECTION_TYPE_TRACK ||
+                SELECTION_TYPE_TRACKLIST ||
               PROJECT->last_selection ==
-                SELECTION_TYPE_PLUGIN)
+                SELECTION_TYPE_INSERT ||
+              PROJECT->last_selection ==
+                SELECTION_TYPE_MIDI_FX)
             {
               left_dock_edge_widget_refresh (
                 MW_LEFT_DOCK_EDGE);
@@ -1592,6 +1667,7 @@ process_events (void * data)
           /* refresh inspector */
           left_dock_edge_widget_refresh (
             MW_LEFT_DOCK_EDGE);
+          on_project_selection_type_changed ();
           break;
         case ET_SPLASH_CLOSED:
           break;
@@ -1688,6 +1764,9 @@ process_events (void * data)
         case ET_AUTOMATION_VALUE_VISIBILITY_CHANGED:
           arranger_widget_redraw_whole (
             MW_AUTOMATION_ARRANGER);
+          break;
+        case ET_PROJECT_SELECTION_TYPE_CHANGED:
+          on_project_selection_type_changed ();
           break;
         default:
           g_warning (

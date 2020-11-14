@@ -290,10 +290,18 @@ z_gtk_tool_button_set_icon_size (
   GtkIconSize     icon_size);
 
 /**
- * Adds the given style class to the GtkWidget
+ * Adds the given style class to the widget.
  */
 void
 z_gtk_widget_add_style_class (
+  GtkWidget   *widget,
+  const gchar *class_name);
+
+/**
+ * Removes the given style class from the widget.
+ */
+void
+z_gtk_widget_remove_style_class (
   GtkWidget   *widget,
   const gchar *class_name);
 
