@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-11-14 04:17+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2020-11-14 04:18+0000\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/glossary/"
 "es/>\n"
 "Language: es\n"
@@ -88,7 +88,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:33
 msgid "Used interchangeably with :ref:`region <regions>`."
-msgstr ""
+msgstr "Usado indistintamente con :ref:`region <regions>`."
 
 #: ../../glossary/intro.rst:35
 msgid "Control"
@@ -124,6 +124,8 @@ msgid ""
 "A :abbr:`DAW (Digital Audio Workstation)` is software used to compose, "
 "record, edit, arrange, mix and master music."
 msgstr ""
+"Una :abbr:`DAW (Digital Audio Workstation)`es un software usado para "
+"componer, grabar, editar, arreglar, mezclar y dominar música."
 
 #: ../../glossary/intro.rst:52
 #, fuzzy
