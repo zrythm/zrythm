@@ -13,16 +13,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-10-18 07:26+0000\n"
+"PO-Revision-Date: 2020-10-26 17:26+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3.1-dev\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -499,7 +499,7 @@ msgstr "Compression du projet réussie.\n"
 #: src/main.c:421
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr "Echec de la décompression du projet: %s\n"
+msgstr "Échec de la décompression du projet : %s\n"
 
 #: src/main.c:430
 #, c-format
@@ -759,7 +759,7 @@ msgstr "Exposer le port à JACK"
 
 #: src/gui/widgets/log_viewer.c:127
 msgid "Log Viewer"
-msgstr "Afficheur d'événement"
+msgstr "Afficheur du journal"
 
 #: src/gui/widgets/track_properties_expander.c:110
 #: src/gui/widgets/track_visibility_tree.c:163
@@ -1003,8 +1003,8 @@ msgstr "Écoute à faible niveau"
 #: src/gui/widgets/control_room.c:53
 msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
-"Le niveau pour paramétrer les autres canaux  lorsque Listen est activé sur "
-"un canal"
+"Le niveau auquel paramétrer les autres canaux lorsque l'écoute est activée "
+"sur un canal"
 
 #: src/gui/widgets/control_room.c:71
 msgid "Monitor out"
@@ -1342,7 +1342,7 @@ msgstr "Mulitplier"
 #: src/gui/widgets/preferences.c:102 resources/ui/home_toolbar.ui:35
 #: build/data/org.zrythm.Zrythm.gschema.xml:667
 msgid "Undo"
-msgstr "Annuler"
+msgstr "Défaire"
 
 #: src/gui/widgets/home_toolbar.c:61 src/gui/widgets/home_toolbar.c:125
 #: resources/ui/home_toolbar.ui:48
@@ -1490,7 +1490,7 @@ msgstr "Greffons"
 #: build/data/org.zrythm.Zrythm.gschema.xml:652
 #: build/data/org.zrythm.Zrythm.gschema.xml:666
 msgid "Editing"
-msgstr "Modifier"
+msgstr "Édition"
 
 #: src/gui/widgets/preferences.c:92
 msgctxt "guilabel"
@@ -2135,7 +2135,7 @@ msgstr ""
 msgid "Plugin instantiation failed. See the logs for details"
 msgstr ""
 "Erreur lors de l'instanciation du greffon. Veuillez consulter le journal "
-"pour plus de détails."
+"pour plus de détails"
 
 #: src/utils/err_codes.c:36
 msgid "Object is null. See the logs for details"
@@ -2316,7 +2316,7 @@ msgstr "Modulateurs"
 #: src/audio/engine_pa.c:273
 #, c-format
 msgid "PortAudio Error: %s"
-msgstr "Erreur de PortAudio: %s"
+msgstr "Erreur de PortAudio : %s"
 
 #: src/audio/tempo_track.c:54
 msgid "BPM"
@@ -2631,9 +2631,8 @@ msgid "Selections must be on the same lane"
 msgstr "Les sélections doivent être sur la même ligne"
 
 #: src/actions/actions.c:2242
-#, fuzzy
 msgid "Region name"
-msgstr "nom_de_région"
+msgstr "Nom de région"
 
 #: src/actions/copy_plugins_action.c:288
 #, c-format
@@ -3967,7 +3966,6 @@ msgstr "Longueur d'objet de ligne temporelle"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:240
 #: build/data/org.zrythm.Zrythm.gschema.xml:250
-#, fuzzy
 msgid "Default length to use when creating timeline objects, eg in edit mode."
 msgstr ""
 "Longueur par défaut à utiliser lors de la création d'objets de ligne "
@@ -3979,12 +3977,11 @@ msgstr "Type de longueur d'objet de ligne temporelle"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:245
 #: build/data/org.zrythm.Zrythm.gschema.xml:255
-#, fuzzy
 msgid ""
 "Default length type to use when creating timeline objects, eg in edit mode."
 msgstr ""
-"Longueur par défaut à utiliser pour créer des objets dans la ligne de temps, "
-"par ex en mode édition."
+"Type de longueur par défaut à utiliser lors de la création des objets de la "
+"ligne temporelle, par exemple en mode édition."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:249
 msgid "Editor object length"
@@ -4063,14 +4060,12 @@ msgid "Position of the resize handle of the left panel."
 msgstr "Position de la poignée de redimensionnement sur le panneau gauche."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:294
-#, fuzzy
 msgid "Left panel tab index"
-msgstr "Panneau de gauche"
+msgstr "Index des onglets du panneau de gauche"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:295
-#, fuzzy
 msgid "Index of the currently opened left panel tab."
-msgstr "Position de la poignée de redimensionnement sur le panneau gauche."
+msgstr "Index de l'onglet du panneau de gauche actuellement ouvert."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:299
 msgid "Right panel divider position"
@@ -4081,14 +4076,12 @@ msgid "Position of the resize handle of the right panel."
 msgstr "Position de la poignée de redimensionnement sur le panneau droit."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:304
-#, fuzzy
 msgid "Right panel tab index"
-msgstr "Panneau droit"
+msgstr "Index des onglets du panneau de droite"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:305
-#, fuzzy
 msgid "Index of the currently opened right panel tab."
-msgstr "Position de la poignée de redimensionnement sur le panneau droit."
+msgstr "Index de l'onglet du panneau de droite actuellement ouvert."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:309
 #, fuzzy
@@ -4105,7 +4098,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:315
 msgid "Index of the currently opened bottom panel tab."
-msgstr ""
+msgstr "Index de l'onglet du panneau inférieur actuellement ouvert."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:319
 msgid "Plugin browser tab"
@@ -4196,18 +4189,16 @@ msgstr ""
 "l'action de la fonction midi)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:370
-#, fuzzy
 msgid "Last used automation function"
-msgstr "Dernière fonction MIDI utilisée"
+msgstr "Dernière fonction d'automatisation utilisée"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:371
-#, fuzzy
 msgid ""
 "Last used automation function (index corresponding to enum in automation "
 "function action)."
 msgstr ""
-"Dernière fonction MIDI utilisée (index correspondant à l'énumération dans "
-"l'action de la fonction midi)."
+"Dernière fonction d'automatisation utilisée (index correspondant à "
+"l'énumération de l'action de la fonction d'automatisation)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:380
 msgid "Genre to use when exporting, if the file type supports it."
@@ -4361,22 +4352,20 @@ msgid "The metronome volume in amplitude (0 to 2)."
 msgstr "Le volume du métronome en amplitude (0 à 2)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:493
-#, fuzzy
 msgid "Punch mode enabled"
-msgstr "Métronome"
+msgstr "Mode punch activé"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:494
-#, fuzzy
 msgid "Whether punch in/out is enabled for recording."
-msgstr "Si le métronome est activé."
+msgstr "Si le punch in/out est activé pour l'enregistrement."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:498
 msgid "Start playback on MIDI input"
-msgstr ""
+msgstr "Démarrer la lecture sur l'entrée MIDI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:499
 msgid "Whether to start playback on MIDI input."
-msgstr ""
+msgstr "Si l'on démarre la lecture sur l'entrée MIDI."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:504
 msgid "Recording mode."
@@ -4408,7 +4397,7 @@ msgstr "Le nom de l'appareil SDL à utiliser."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:533
 msgid "Samplerate to pass to the backend."
-msgstr ""
+msgstr "Taux d'échantillonnage à passer au moteur."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:537
 msgid "Buffer size"
@@ -4427,27 +4416,24 @@ msgid "The MIDI backend to use."
 msgstr "Le serveur MIDI auquel se connecter."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:547
-#, fuzzy
 msgid "Audio inputs"
-msgstr "Sorties Audio"
+msgstr "Entrées audio"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:548
 msgid "A list of audio inputs to enable."
-msgstr ""
+msgstr "Une liste des entrées audio à activer."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:552
 msgid "MIDI controllers"
 msgstr "Contrôleurs MIDI"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:553
-#, fuzzy
 msgid "A list of controllers to enable."
-msgstr "Une liste des contrôleurs auxquels s'auto-connecter."
+msgstr "Une liste des contrôleurs à activer."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:567
-#, fuzzy
 msgid "The directory used to save user data in."
-msgstr "Sélectionnez le répertoire parent dans lequel sauvegarder le projet"
+msgstr "Le répertoire utiliser dans lequel sauvegarder les données-utilisateur."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:580
 msgid "Open UI on instantiation"
@@ -4486,6 +4472,9 @@ msgid ""
 "Bridge unsupported UIs in another process instead of creating generic ones. "
 "This will lead to some performance loss."
 msgstr ""
+"Ponter les interfaces utilisateur non prises en charge dans un autre "
+"processus au lieu de créer des interfaces génériques. Cela entraînera une "
+"certaine perte de performance."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:601
 msgid "Refresh rate"
@@ -4515,26 +4504,24 @@ msgid "SFZ instruments"
 msgstr "instruments SFZ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:625
-#, fuzzy
 msgid ""
 "The search paths to scan for SFZ instruments in. Duplicate paths will be "
 "deduplicated."
 msgstr ""
-"Les chemins de recherche pour rechercher les instruments SFZ . Les chemins "
-"dupliqués seront dédupliqués."
+"Les chemins de recherche dans lesquels rechercher les instruments SFZ . Les "
+"chemins dupliqués seront dé-dupliqués."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:629
 msgid "SF2 instruments"
 msgstr "instruments SF2"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:630
-#, fuzzy
 msgid ""
 "The search paths to scan for SF2 instruments in. Duplicate paths will be "
 "deduplicated."
 msgstr ""
-"Les chemins de recherche pour rechercher des instruments SF2. Les chemins "
-"dupliqués seront dédupliqués."
+"Les chemins de recherche dans lesquels rechercher les instruments SF2 . Les "
+"chemins dupliqués seront dé-dupliqués."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:643
 msgid "Fade algorithm"
@@ -4547,7 +4534,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:658
 msgid "Default algorithm to use for automation curves."
-msgstr ""
+msgstr "Algorithme par défaut à utiliser pour les courbes d'automatisation."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:672
 msgid "Undo stack length"
@@ -4569,11 +4556,11 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:701
 msgid "Draw detail"
-msgstr ""
+msgstr "Détail du dessin"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:702
 msgid "Level of detail to use when drawing graphics."
-msgstr ""
+msgstr "Niveau de détail à utiliser lors du dessin des graphiques."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:706
 msgid "User interface language"
@@ -4592,6 +4579,8 @@ msgid ""
 "The panning algorithm to use when applying pan on mono signals (not used at "
 "the moment)."
 msgstr ""
+"L'algorithme de panoramique à utiliser lors de l'application de panoramique "
+"sur des signaux mono (non utilisé pour le moment)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:725
 msgid "Pan law"
@@ -4602,6 +4591,8 @@ msgid ""
 "The pan law to use when applying pan on mono signals (not used at the "
 "moment)."
 msgstr ""
+"La loi de panoramique à utiliser lors de l'application de panoramique sur "
+"des signaux mono (non utilisée pour le moment)."
 
 #~ msgid ""
 #~ "uncompressed_size != frame_content_size impossible because zstd will "

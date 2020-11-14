@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-10-11 10:45+0000\n"
+"PO-Revision-Date: 2020-11-02 01:26+0000\n"
 "Last-Translator: Tércio Martins <tecnotercio@yahoo.com.br>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/manualediting/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -488,7 +488,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:32
 msgid "Playhead"
-msgstr ""
+msgstr "Cursor de reprodução"
 
 #: ../../editing/clip-editors/ruler.rst:33
 msgid ""
@@ -710,7 +710,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:94
 msgid "Loop Selection"
-msgstr ""
+msgstr "Seleção de loop"
 
 #: ../../editing/common-operations.rst:95
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
@@ -1392,7 +1392,7 @@ msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:24
 msgid "Musical Mode"
-msgstr ""
+msgstr "Modo Musical"
 
 #: ../../editing/timeline/toolbar.rst:25
 msgid ""

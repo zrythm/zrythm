@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-10-11 10:45+0000\n"
+"PO-Revision-Date: 2020-11-02 01:26+0000\n"
 "Last-Translator: Tércio Martins <tecnotercio@yahoo.com.br>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/manualconfiguration/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -366,7 +366,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:186
 msgid "Curve algorithm"
-msgstr ""
+msgstr "Algoritmo de curvas"
 
 #: ../../configuration/preferences/intro.rst:187
 msgid "Default curve algorithm to use for automation curves."

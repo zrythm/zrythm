@@ -2,19 +2,22 @@
 # Copyright (C) 2019-2020 The Zrythm contributors
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-#
-#, fuzzy
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-11-14 04:34+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"zrythm/glossary/zh_Hans/>\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../glossary/intro.rst:8
@@ -53,7 +56,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:23
 msgid "Bounce"
-msgstr ""
+msgstr "导出"
 
 #: ../../glossary/intro.rst:25
 msgid "Bouncing means exporting to audio."
@@ -110,7 +113,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:52
 msgid "DSP"
-msgstr ""
+msgstr "DSP"
 
 #: ../../glossary/intro.rst:54
 msgid ""
@@ -152,7 +155,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:77
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:79
 msgid ""
@@ -162,7 +165,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:82
 msgid "MIDI note"
-msgstr ""
+msgstr "MIDI note"
 
 #: ../../glossary/intro.rst:84
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
@@ -178,11 +181,11 @@ msgstr ""
 
 #: ../../glossary/intro.rst:93
 msgid "Pan law"
-msgstr ""
+msgstr "Pan定律"
 
 #: ../../glossary/intro.rst:95
 msgid "TODO"
-msgstr ""
+msgstr "确定"
 
 #: ../../glossary/intro.rst:96
 msgid "Panning"
@@ -204,7 +207,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:104
 msgid "Plugin"
-msgstr ""
+msgstr "插件"
 
 #: ../../glossary/intro.rst:106
 msgid ""
@@ -215,7 +218,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:110
 msgid "Project"
-msgstr ""
+msgstr "项目"
 
 #: ../../glossary/intro.rst:112
 msgid ""
@@ -226,7 +229,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:116
 msgid "Range"
-msgstr ""
+msgstr "范围"
 
 #: ../../glossary/intro.rst:118
 msgid "A Range is a selection of time between two positions."
@@ -234,7 +237,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:123
 msgid "Region"
-msgstr ""
+msgstr "区域"
 
 #: ../../glossary/intro.rst:125
 msgid ""
@@ -389,4 +392,3 @@ msgstr ""
 #~ "However, we recommend using the "
 #~ ":term:`LV2` standard instead."
 #~ msgstr ""
-

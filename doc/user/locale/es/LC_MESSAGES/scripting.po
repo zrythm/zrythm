@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 # Theo Iturri <theoiturri@gmail.com>, 2020.
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-25 16:17+0000\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
-"Last-Translator: Theo Iturri <theoiturri@gmail.com>\n"
+"POT-Creation-Date: 2020-11-14 04:53+0000\n"
+"PO-Revision-Date: 2020-11-14 04:34+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: es\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/zrythm/scripting/es/>\n"
@@ -163,7 +164,7 @@ msgstr ""
 
 #: ../../scripting/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Generalidades"
 
 #: ../../scripting/overview.rst:8
 msgid ""

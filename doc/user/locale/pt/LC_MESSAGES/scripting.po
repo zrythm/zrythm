@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-25 16:17+0000\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"POT-Creation-Date: 2020-11-14 04:53+0000\n"
+"PO-Revision-Date: 2020-11-09 17:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
 "Language-Team: Portuguese "
@@ -32,38 +32,47 @@ msgstr ""
 #: ../../scripting/api/actions
 #: ../../scripting/api/audio channel.rst:6
 msgid "Returns the plugin at the given insert slot"
-msgstr ""
+msgstr "Retorna o suplemento no compartimento de inserção fornecido"
 
 #: ../../scripting/api/audio channel.rst:10
 msgid "Returns the instrument at the given channel"
-msgstr ""
+msgstr "Retorna o instrumento no canal fornecido"
 
 #: ../../scripting/api/audio channel.rst:14
 msgid "Returns the send instance at the given slot"
-msgstr ""
+msgstr "Retorna a instância de envio no compartimento fornecido"
 
 #: ../../scripting/api/audio midi_note.rst:6
 msgid "Returns a new midi note."
-msgstr ""
+msgstr "Retorna uma nova nota midi."
 
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio port.rst:6
 msgid "Returns the left or right port of the stereo pair."
-msgstr ""
+msgstr "Retorna a porta esquerda ou direita do par estéreo."
 
 #: ../../scripting/api/audio port.rst:10
 msgid "Returns the identifier of port."
-msgstr ""
+msgstr "Retorna o identificador da porta."
+
+#: ../../scripting/api/audio position.rst:8
+#, fuzzy
+msgid ""
+"Scheme Procedure: **position-new** | *bars beats sixteenths ticks "
+"sub_tick*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 
 #: ../../scripting/api/audio position.rst:6
 msgid "Return a newly-created position as bars.beats.sixteenths.ticks.sub_tick."
 msgstr ""
+"Retorna a posição recém-criada como barras.batidas.decimos-"
+"sextos.ticks.sub_tick."
 
 #: ../../scripting/api/audio position.rst:11
 msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
-msgstr ""
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
@@ -72,67 +81,73 @@ msgid ""
 "Returns a new track with name name to be placed at position idx in the "
 "tracklist."
 msgstr ""
+"Retorna uma nova faixa com nome a ser localizada na posição idx na lista "
+"de faixas."
 
 #: ../../scripting/api/audio track.rst:11
 msgid "Returns the name of track."
-msgstr ""
+msgstr "Retorna o nome da faixa."
 
 #: ../../scripting/api/audio track.rst:15
 msgid "Returns the processor of track."
-msgstr ""
+msgstr "Retorna o processador da faixa."
 
 #: ../../scripting/api/audio track.rst:19
 msgid "Returns the channel of track."
-msgstr ""
+msgstr "Retorna o canal da faixa."
 
 #: ../../scripting/api/audio track.rst:23
 msgid ""
 "Sets whether track is muted or not. This creates an undoable action and "
 "performs it."
 msgstr ""
+"Define se a faixa está silenciosa ou não. Cria uma ação que pode ser "
+"desfeita e executa-a."
 
 #: ../../scripting/api/audio track.rst:28
 msgid "Adds region to track track. To be used for regions with lanes (midi/audio)"
 msgstr ""
+"Adiciona região para rastrear faixa. Para ser usado para regiões com "
+"pistas (midi/áudio)"
 
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio tracklist.rst:6
 msgid "Inserts track track at index idx in the tracklist."
-msgstr ""
+msgstr "Insere faixa no índice idx na lista de faixas."
 
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/intro.rst:6
 msgid "API"
-msgstr ""
+msgstr "API"
 
 #: ../../scripting/api/plugins plugin.rst:6
 msgid "Returns the input port of the plugin at the given index."
-msgstr ""
+msgstr "Retorna a porta de entrada do suplemento no índice dado."
 
 #: ../../scripting/api/plugins plugin.rst:10
 msgid "Returns the output port of the plugin at the given index."
-msgstr ""
+msgstr "Retorna a porta de saída do suplemento no índice dado."
 
 #: ../../scripting/api/plugins
 #: ../../scripting/api/plugins
 #: ../../scripting/api/zrythm.rst:6
 msgid "Return the Zrythm version as a string."
-msgstr ""
+msgstr "Retornar a versão do Zrythm como uma cadeia."
 
 #: ../../scripting/api/zrythm.rst:10
 msgid "Return the PluginManager instance."
-msgstr ""
+msgstr "Retornar a instância do PluginManager."
 
 #: ../../scripting/api/zrythm.rst:14
 msgid "Returns a NULL pointer."
-msgstr ""
+msgstr "Retorna um ponteiro NULL."
 
 #: ../../scripting/examples.rst:6
 msgid "Examples"
-msgstr ""
+msgstr "Exemplos"
 
 #: ../../scripting/examples.rst:8
 msgid ""
@@ -140,26 +155,31 @@ msgid ""
 "<https://creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to "
 "copy and modify them."
 msgstr ""
+"Os exemplos seguintes são de domínio público (`CC 0 "
+"<https://creativecommons.org/publicdomain/zero/1.0/>`_). Sinta-se à "
+"vontade a copiá-los e modificá-los."
 
 #: ../../scripting/examples.rst:13
 msgid "Hello World"
-msgstr ""
+msgstr "Olá mundo"
 
 #: ../../scripting/examples.rst:22
 msgid "Print track names"
-msgstr ""
+msgstr "Imprimir nomes de faixas"
 
 #: ../../scripting/examples.rst:39
 msgid "Create Geonkick track and route its mono output to an Audio FX track"
 msgstr ""
+"Crie uma faixa de Geonkick e roteie a saída mono dele a uma faixa de "
+"Audio FX"
 
 #: ../../scripting/examples.rst:98
 msgid "Create MIDI track with notes"
-msgstr ""
+msgstr "Criar faixa de MIDI com notas"
 
 #: ../../scripting/intro.rst:8
 msgid "Scripting"
-msgstr ""
+msgstr "Scripting"
 
 #: ../../scripting/overview.rst:6
 msgid "Overview"
@@ -170,6 +190,8 @@ msgid ""
 "Zrythm offers a scripting interface using the `Guile language "
 "<https://www.gnu.org/software/guile/>`_, an implementation of Scheme."
 msgstr ""
+"Zrythm oferece uma interface de script a utilizar a `Lingua Guile "
+"<https://www.gnu.org/software/guile/>`_, uma implementação do Scheme."
 
 #: ../../scripting/overview.rst:11
 msgid ""
@@ -179,14 +201,19 @@ msgid ""
 "section, one would do :scheme:`(use-modules (audio track))` at the top of"
 " the script."
 msgstr ""
+"A próxima secção é uma lista abrangente de todos os procedimentos "
+"disponíveis na API. Cada secção na API corresponde a um módulo Guile "
+"específico, assim, por exemplo, para utilizar os procedimentos na "
+"secção:scheme:`audio position`, seria feito :scheme:`(use-modules (audio "
+"track))` no topo do script."
 
 #: ../../scripting/overview.rst:19
 msgid "The Guile API is experimental."
-msgstr ""
+msgstr "A API de Guile é experimental."
 
 #: ../../scripting/overview.rst:21
 msgid "The Guile API is not available on Windows."
-msgstr ""
+msgstr "A API de Guile não está disponível no Windows."
 
 #~ msgid ""
 #~ "The next section is a comprehensive "

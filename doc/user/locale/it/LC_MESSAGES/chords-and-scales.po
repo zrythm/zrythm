@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 15:23+0000\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
+"PO-Revision-Date: 2020-10-26 17:26+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "manualchords-and-scales/it/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../chords-and-scales/intro.rst:6
@@ -26,7 +26,7 @@ msgstr "Accordi e Scale"
 
 #: ../../chords-and-scales/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Visione d’insieme"
 
 #: ../../chords-and-scales/overview.rst:8
 msgid ""

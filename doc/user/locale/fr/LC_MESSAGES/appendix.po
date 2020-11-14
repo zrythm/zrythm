@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-10-25 16:17+0000\n"
-"PO-Revision-Date: 2020-10-11 10:45+0000\n"
+"POT-Creation-Date: 2020-11-14 04:53+0000\n"
+"PO-Revision-Date: 2020-10-26 17:26+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
 "Language-Team: French "
@@ -45,7 +45,7 @@ msgstr "Résolution de problèmes"
 
 #: ../../appendix/troubleshooting.rst:10
 msgid "Todo"
-msgstr ""
+msgstr "Àfaire"
 
 #: ../../appendix/troubleshooting.rst:10
 msgid "Write this page."

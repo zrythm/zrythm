@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-31 22:55+0000\n"
-"PO-Revision-Date: 2020-10-11 10:45+0000\n"
+"POT-Creation-Date: 2020-10-01 00:30+0100\n"
+"PO-Revision-Date: 2020-11-02 01:26+0000\n"
 "Last-Translator: Tércio Martins <tecnotercio@yahoo.com.br>\n"
 "Language: pt_BR\n"
 "Language-Team: Portuguese (Brazil) "
@@ -17,6 +17,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -50,7 +52,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:25
 #: ../../tracks/tempo-track.rst:25
 msgid "Record"
-msgstr ""
+msgstr "Gravar"
 
 #: ../../tracks/audio-track.rst:18
 #: ../../tracks/instrument-track.rst:26
@@ -197,7 +199,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:44
 #: ../../tracks/midi-track.rst:56
 msgid "Direct Out"
-msgstr ""
+msgstr "Saída Direta"
 
 #: ../../tracks/audio-track.rst:44
 msgid "The track to route the output of the audio track to."
@@ -575,7 +577,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:94
 msgid "Fader"
-msgstr ""
+msgstr "Atenuador"
 
 #: ../../tracks/inspector-page.rst:95
 msgid "Fader section to control the volume and stereo balance."
@@ -597,7 +599,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:110
 msgid "Peak"
-msgstr ""
+msgstr "Pico"
 
 #: ../../tracks/inspector-page.rst:111
 msgid "Peak signal value."
@@ -637,7 +639,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:139
 msgid "Listen"
-msgstr ""
+msgstr "Escutar"
 
 #: ../../tracks/inspector-page.rst:140
 msgid ""

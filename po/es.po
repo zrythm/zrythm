@@ -11,13 +11,14 @@
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
 # Gorro_Rojo <gorro.rojo@gmail.com>, 2020.
 # Theo Iturri <theoiturri@gmail.com>, 2020.
+# Bianca Roșu <bianca.rosu32@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-09-27 15:22+0000\n"
-"Last-Translator: Theo Iturri <theoiturri@gmail.com>\n"
+"PO-Revision-Date: 2020-11-14 04:34+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -25,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
@@ -837,7 +838,7 @@ msgstr "Canal MIDI para filtrar a"
 
 #: src/gui/widgets/track_input_expander.c:704
 msgid "Mono"
-msgstr ""
+msgstr "Mono"
 
 #: src/gui/widgets/track_input_expander.c:736
 msgid "Gain"
@@ -3637,7 +3638,7 @@ msgstr "Opciones de rebote"
 
 #: resources/ui/bounce_dialog.ui:65
 msgid "Bounce"
-msgstr "Rebote"
+msgstr "Bounce"
 
 #: resources/ui/bounce_dialog.ui:91
 msgid "Bounce with effect chain"
@@ -4659,8 +4660,9 @@ msgstr ""
 "panoramización en señales mono (no se utiliza por el momento)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:725
+#, fuzzy
 msgid "Pan law"
-msgstr ""
+msgstr "Pan law"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:726
 msgid ""

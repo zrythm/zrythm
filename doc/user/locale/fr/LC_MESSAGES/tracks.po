@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-31 22:55+0000\n"
-"PO-Revision-Date: 2020-10-11 10:45+0000\n"
+"POT-Creation-Date: 2020-10-01 00:30+0100\n"
+"PO-Revision-Date: 2020-10-26 17:26+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
 "Language-Team: French "
@@ -17,6 +17,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -534,9 +536,8 @@ msgstr ""
 "différentes."
 
 #: ../../tracks/inspector-page.rst:18
-#, fuzzy
 msgid "Track Properties"
-msgstr "Propriétés"
+msgstr "Propriétés de la piste"
 
 #: ../../tracks/inspector-page.rst:20
 #, fuzzy
@@ -556,9 +557,8 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:35
 #: ../../tracks/track-types.rst:18
-#, fuzzy
 msgid "Instrument"
-msgstr "Piste d'instrument"
+msgstr "Instrument"
 
 #: ../../tracks/inspector-page.rst:36
 msgid ""
@@ -604,7 +604,7 @@ msgstr ""
 #: ../../tracks/tempo-track.rst:8
 #: ../../tracks/track-types.rst:31
 msgid "Todo"
-msgstr ""
+msgstr "Àfaire"
 
 #: ../../tracks/inspector-page.rst:70
 msgid "Separate MIDI FX/inserts and expand more."
@@ -1239,16 +1239,15 @@ msgstr "Audio"
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:22
 msgid "Yes"
-msgstr ""
+msgstr "Oui"
 
 #: ../../tracks/track-types.rst:14
 msgid "Audio regions"
 msgstr ""
 
 #: ../../tracks/track-types.rst:15
-#, fuzzy
 msgid "Audio Group"
-msgstr "Piste audio"
+msgstr "Groupe audio"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -1259,7 +1258,7 @@ msgstr "Piste audio"
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -1270,16 +1269,15 @@ msgstr ""
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "None"
-msgstr ""
+msgstr "Aucun"
 
 #: ../../tracks/track-types.rst:16
 msgid "Audio FX"
 msgstr "Effet audio"
 
 #: ../../tracks/track-types.rst:17
-#, fuzzy
 msgid "Chord"
-msgstr "Enregistrer"
+msgstr "Accord"
 
 #: ../../tracks/track-types.rst:17
 #: ../../tracks/track-types.rst:18
@@ -1287,7 +1285,7 @@ msgstr "Enregistrer"
 #: ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:24
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord regions & scales"
@@ -1300,23 +1298,23 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:19
 msgid "Marker"
-msgstr ""
+msgstr "Marqueur"
 
 #: ../../tracks/track-types.rst:19
 msgid "Markers"
-msgstr ""
+msgstr "Marqueurs"
 
 #: ../../tracks/track-types.rst:20
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #: ../../tracks/track-types.rst:21
 msgid "Modulators"
-msgstr ""
+msgstr "Modulateurs"
 
 #: ../../tracks/track-types.rst:23
 msgid "MIDI Group"
-msgstr ""
+msgstr "Groupe MIDI"
 
 #: ../../tracks/track-types.rst:24
 msgid "MIDI FX"

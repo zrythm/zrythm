@@ -7,16 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-31 22:55+0000\n"
-"PO-Revision-Date: 2020-06-29 20:41+0000\n"
-"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
+"POT-Creation-Date: 2020-10-01 00:30+0100\n"
+"PO-Revision-Date: 2020-11-14 04:34+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/gl/>\n"
 "Language: gl\n"
-"Language-Team: Galician "
-"<https://hosted.weblate.org/projects/zrythm/manualtracks/gl/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -1266,7 +1267,7 @@ msgstr "Gravar"
 #: ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:24
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord regions & scales"
@@ -1553,22 +1554,3 @@ msgstr ""
 
 #~ msgid "*Input:* **None**, *Output:* **None**"
 #~ msgstr "*Entrada:* **Ningunha**, *Saída:* **Ningunha**"
-
-#~ msgid ""
-#~ "Similar to solo, except it dims "
-#~ "the volume of other tracks instead "
-#~ "of muting them. The dim amount can"
-#~ " be controlled in the control room"
-#~ " described in :ref:`control-room`. Not "
-#~ "operational at the moment."
-#~ msgstr ""
-
-#~ msgid "This is a TODO feature."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "This is different from what many "
-#~ "other DAWs (see :term:`DAW`) do, so "
-#~ "please keep this in mind."
-#~ msgstr ""
-

@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 # Sahaathyva <sahaa.thyva@laposte.net>, 2020.
+# Olivier Humbert <trebmuh@tuxfamily.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
-"Last-Translator: Sahaathyva <sahaa.thyva@laposte.net>\n"
+"PO-Revision-Date: 2020-10-26 17:26+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/routing/fr/"
 ">\n"
 "Language: fr\n"
@@ -17,12 +18,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../routing/control-room.rst:8
 msgid "Control Room"
-msgstr ""
+msgstr "Salle de contrôle"
 
 #: ../../routing/control-room.rst:9
 msgid ""
@@ -61,7 +62,7 @@ msgstr ""
 #: ../../routing/control-room.rst:31
 #: ../../routing/making-connections.rst:30
 msgid "Todo"
-msgstr ""
+msgstr "Àfaire"
 
 #: ../../routing/control-room.rst:31
 msgid "Move to another chapter."
