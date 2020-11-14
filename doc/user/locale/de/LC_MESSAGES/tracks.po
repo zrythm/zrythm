@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:30+0100\n"
-"PO-Revision-Date: 2020-10-16 07:26+0000\n"
-"Last-Translator: André Menrath <andre.menrath@posteo.de>\n"
+"PO-Revision-Date: 2020-11-14 04:34+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -1172,7 +1172,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:24
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord regions & scales"

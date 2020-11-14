@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-10-11 10:45+0000\n"
-"Last-Translator: Tércio Martins <tecnotercio@yahoo.com.br>\n"
+"PO-Revision-Date: 2020-11-14 04:34+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/credits/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../credits/intro.rst:6
@@ -30,15 +30,14 @@ msgid "Authors"
 msgstr "Autores"
 
 #: ../../credits/intro.rst:10
-#, fuzzy
 msgid ""
 "See the :download:`AUTHORS <../../../AUTHORS>` file in the source "
 "distribution. These include developers, graphic artists and other authors"
 " of copyrightable work."
 msgstr ""
-"Veja o arquivo `AUTHORS file <https://git.sr.ht/~alextee/zrythm/tree/master/"
-"AUTHORS>`_ no código fonte. Inclui-se desenvolvedores, artistas gráficos e "
-"outros autores de posse de trabalhos com copyright."
+"Veja o arquivo `AUTHORS file <../../../AUTHORS>`_ no código fonte. Inclui-se "
+"desenvolvedores, artistas gráficos e outros autores de posse de trabalhos "
+"com copyright."
 
 #: ../../credits/intro.rst:16
 msgid "Translators"

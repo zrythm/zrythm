@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-01-22 19:47+0000\n"
-"Last-Translator: yu zhang <zhangyu201510@gmail.com>\n"
-"Language: zh\n"
-"Language-Team: Chinese (Simplified) "
-"<https://hosted.weblate.org/projects/zrythm/manualplugins-files/zh_CN/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"PO-Revision-Date: 2020-11-14 04:34+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"zrythm/manualplugins-files/zh_Hans/>\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
@@ -62,7 +63,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "概述"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:8
 msgid ""
@@ -734,4 +735,3 @@ msgstr ""
 #~ "(see :term:`plugin`) supported by Zrythm, "
 #~ "mentioned in :ref:`scanning-plugins`."
 #~ msgstr ""
-

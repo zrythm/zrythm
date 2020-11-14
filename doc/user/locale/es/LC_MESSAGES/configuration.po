@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-11-14 00:05+0000\n"
-"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
+"PO-Revision-Date: 2020-11-14 04:34+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/es/>\n"
 "Language: es\n"
@@ -330,7 +330,6 @@ msgid "The search paths to scan for :term:`SF2` instruments in."
 msgstr "Los directorios para buscar instrumentos SF2."
 
 #: ../../configuration/preferences/intro.rst:128
-#, fuzzy
 msgid "DSP"
 msgstr "DSP"
 

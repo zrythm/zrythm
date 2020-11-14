@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 # André Menrath <andre.menrath@posteo.de>, 2020.
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-10-16 07:26+0000\n"
-"Last-Translator: André Menrath <andre.menrath@posteo.de>\n"
+"PO-Revision-Date: 2020-11-14 04:34+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/glossary/"
 "de/>\n"
 "Language: de\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../glossary/intro.rst:8
@@ -119,7 +120,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:52
 msgid "DSP"
-msgstr ""
+msgstr "DSP"
 
 #: ../../glossary/intro.rst:54
 msgid ""
@@ -139,7 +140,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:62
 msgid "JACK"
-msgstr ""
+msgstr "JACK"
 
 #: ../../glossary/intro.rst:64
 msgid ""
@@ -161,7 +162,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:77
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:79
 msgid ""
@@ -171,7 +172,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:82
 msgid "MIDI note"
-msgstr ""
+msgstr "MIDI-Note"
 
 #: ../../glossary/intro.rst:84
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
@@ -179,7 +180,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:89
 msgid "Mono"
-msgstr ""
+msgstr "Mono"
 
 #: ../../glossary/intro.rst:91
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
@@ -191,7 +192,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:95
 msgid "TODO"
-msgstr ""
+msgstr "ZU ERLEDIGEN"
 
 #: ../../glossary/intro.rst:96
 msgid "Panning"
@@ -213,7 +214,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:104
 msgid "Plugin"
-msgstr ""
+msgstr "Erweiterung"
 
 #: ../../glossary/intro.rst:106
 msgid ""
@@ -235,7 +236,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:116
 msgid "Range"
-msgstr ""
+msgstr "Bereich"
 
 #: ../../glossary/intro.rst:118
 msgid "A Range is a selection of time between two positions."
@@ -243,7 +244,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:123
 msgid "Region"
-msgstr ""
+msgstr "Region"
 
 #: ../../glossary/intro.rst:125
 msgid ""

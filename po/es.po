@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-11-14 00:05+0000\n"
-"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
+"PO-Revision-Date: 2020-11-14 04:34+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -1577,7 +1577,6 @@ msgstr "Interfaz Gráfica"
 
 #: src/gui/widgets/preferences.c:118
 #: build/data/org.zrythm.Zrythm.gschema.xml:715
-#, fuzzy
 msgid "DSP"
 msgstr "DSP"
 
@@ -3639,7 +3638,7 @@ msgstr "Opciones de rebote"
 
 #: resources/ui/bounce_dialog.ui:65
 msgid "Bounce"
-msgstr "Rebote"
+msgstr "Bounce"
 
 #: resources/ui/bounce_dialog.ui:91
 msgid "Bounce with effect chain"
