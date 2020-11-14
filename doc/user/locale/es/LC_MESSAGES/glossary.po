@@ -4,13 +4,14 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 # Gorro_Rojo <gorro.rojo@gmail.com>, 2020.
 # Bianca Roșu <bianca.rosu32@gmail.com>, 2020.
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
 "PO-Revision-Date: 2020-11-14 04:12+0000\n"
-"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/glossary/"
 "es/>\n"
 "Language: es\n"
@@ -35,7 +36,7 @@ msgid ""
 " :term:`JACK`."
 msgstr ""
 "a2jmidid es una aplicación que hace de puente entre los puertos del sistema "
-"MIDI y :term: `JACK`."
+"MIDI y :term:`JACK`."
 
 #: ../../glossary/intro.rst:15
 msgid "AU"
