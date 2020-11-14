@@ -4,13 +4,14 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
 # Gorro_Rojo <gorro.rojo@gmail.com>, 2020.
+# Bianca Roșu <bianca.rosu32@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-09-27 02:24+0000\n"
-"Last-Translator: Gorro_Rojo <gorro.rojo@gmail.com>\n"
+"PO-Revision-Date: 2020-11-14 00:06+0000\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/routing/"
 "es/>\n"
 "Language: es\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../routing/control-room.rst:8
@@ -205,8 +206,9 @@ msgid ""
 msgstr ""
 
 #: ../../routing/ports.rst:53
+#, fuzzy
 msgid "CV"
-msgstr ""
+msgstr "CV"
 
 #: ../../routing/ports.rst:54
 msgid ""

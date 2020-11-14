@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-09-27 02:23+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2020-11-14 00:05+0000\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -329,6 +330,7 @@ msgid "The search paths to scan for :term:`SF2` instruments in."
 msgstr "Los directorios para buscar instrumentos SF2."
 
 #: ../../configuration/preferences/intro.rst:128
+#, fuzzy
 msgid "DSP"
 msgstr "DSP"
 
@@ -365,8 +367,9 @@ msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:159
+#, fuzzy
 msgid "Pan law"
-msgstr ""
+msgstr "Pan law"
 
 #: ../../configuration/preferences/intro.rst:160
 msgid "The :term:`Pan law` to use when applying pan on mono signals."
@@ -1389,4 +1392,3 @@ msgstr ""
 
 #~ msgid "The :term:`pan law` to use when applying pan on mono signals."
 #~ msgstr ""
-
