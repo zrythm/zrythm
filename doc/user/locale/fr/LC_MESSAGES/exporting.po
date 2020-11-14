@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"PO-Revision-Date: 2020-10-26 17:26+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualexporting/fr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../exporting/audio-and-midi.rst:8
@@ -84,7 +84,7 @@ msgstr "MIDI - .mid"
 #: ../../exporting/audio-and-midi.rst:39
 #: ../../exporting/audio-and-midi.rst:44
 msgid "Todo"
-msgstr ""
+msgstr "Àfaire"
 
 #: ../../exporting/audio-and-midi.rst:39
 msgid "MP3 support."

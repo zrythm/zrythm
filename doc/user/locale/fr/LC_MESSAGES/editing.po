@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"PO-Revision-Date: 2020-10-26 17:26+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualediting/fr/>\n"
 "Language: fr\n"
-"Language-Team: French "
-"<https://hosted.weblate.org/projects/zrythm/manualediting/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -160,7 +161,7 @@ msgstr "Menu contextuel de la Région"
 #: ../../editing/timeline/arranger.rst:167
 #: ../../editing/timeline/toolbar.rst:11
 msgid "Todo"
-msgstr ""
+msgstr "Àfaire"
 
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/chord-editor.rst:66
@@ -209,7 +210,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:23
 msgid "Chords"
-msgstr ""
+msgstr "Accords"
 
 #: ../../editing/clip-editors/chord-editor.rst:24
 msgid ""
@@ -491,7 +492,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:32
 msgid "Playhead"
-msgstr ""
+msgstr "Tête de lecture"
 
 #: ../../editing/clip-editors/ruler.rst:33
 msgid ""
@@ -980,7 +981,7 @@ msgstr ""
 
 #: ../../editing/intro.rst:8
 msgid "Editing"
-msgstr "Modifier"
+msgstr "Édition"
 
 #: ../../editing/overview.rst:8
 #, fuzzy
@@ -2018,4 +2019,3 @@ msgstr ""
 #~ "in an :ref:`editor <editors>`. Regions "
 #~ "can be repeated, like below."
 #~ msgstr ""
-
