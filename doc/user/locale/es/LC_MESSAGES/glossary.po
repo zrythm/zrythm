@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-11-14 04:15+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2020-11-14 04:17+0000\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/glossary/"
 "es/>\n"
 "Language: es\n"
@@ -64,11 +64,11 @@ msgstr ""
 
 #: ../../glossary/intro.rst:23
 msgid "Bounce"
-msgstr ""
+msgstr "Bounce"
 
 #: ../../glossary/intro.rst:25
 msgid "Bouncing means exporting to audio."
-msgstr ""
+msgstr "Realizar un bounce significa exportar el audio."
 
 #: ../../glossary/intro.rst:26
 msgid "CLI"
@@ -79,6 +79,8 @@ msgid ""
 ":abbr:`CLI (Command Line Interface)` is the interface users interact with"
 " when typing commands in a terminal."
 msgstr ""
+":abbr:`CLI (Command Line Interface)`es la interfaz con la cual los usuarios "
+"interactúan cuando teclean comandos en una terminal."
 
 #: ../../glossary/intro.rst:31
 msgid "Clip"
