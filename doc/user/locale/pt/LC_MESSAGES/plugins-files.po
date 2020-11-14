@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-10-18 07:26+0000\n"
+"PO-Revision-Date: 2020-10-28 22:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3.1-dev\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
@@ -500,15 +500,14 @@ msgid "Scanning for Plugins"
 msgstr "Procurando suplementos"
 
 #: ../../plugins-files/plugins/scanning.rst:10
-#, fuzzy
 msgid ""
 "Zrythm will scan for plugins on startup and will remember those plugins "
 "until it is closed. Zrythm supports :term:`LV2`, :term:`VST2`, "
 ":term:`VST3` and :term:`AU` plugins. LV2 is the recommended standard."
 msgstr ""
-"A Zrythm procurará suplementos na inicialização e se lembrará deles até que "
-"seja fechado. A Zrythm suporta suplementos LV2 e VST, embora LV2 seja o "
-"padrão recomendado."
+"A Zrythm procurará suplementos na inicialização e lembrará-se desses "
+"suplementos até que seja fechado. O Zrythm suporta :term:`LV2`, :term:`VST2`"
+", :term:`VST3` e :term:`AU` plugins. LV2 é o padrão recomendado."
 
 #: ../../plugins-files/plugins/scanning.rst:17
 msgid ""
