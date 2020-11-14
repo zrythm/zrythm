@@ -53,7 +53,7 @@ select_audio_and_midi_regions_only ()
 {
   arranger_selections_clear (
     (ArrangerSelections *) TL_SELECTIONS,
-    F_NO_FREE);
+    F_NO_FREE, F_NO_PUBLISH_EVENTS);
   g_assert_cmpint (
     TL_SELECTIONS->num_regions, ==, 0);
 
