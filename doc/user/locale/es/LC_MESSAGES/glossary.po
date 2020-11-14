@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-11-14 04:26+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2020-11-14 04:27+0000\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/glossary/"
 "es/>\n"
 "Language: es\n"
@@ -274,7 +274,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:118
 msgid "A Range is a selection of time between two positions."
-msgstr ""
+msgstr "Un Rango es una selección de tiempo entre dos posiciones."
 
 #: ../../glossary/intro.rst:123
 msgid "Region"
@@ -285,6 +285,8 @@ msgid ""
 "A region (or :term:`Clip`) is a container for MIDI Notes, audio or other "
 "events. See :ref:`regions`."
 msgstr ""
+"Una región (o :term:`Clip`) es un contenedor de notas MIDI, audio u otros "
+"eventos. Véase :ref:`regiones`."
 
 #: ../../glossary/intro.rst:128
 msgid "SFZ"
