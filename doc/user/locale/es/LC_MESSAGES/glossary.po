@@ -11,7 +11,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
 "PO-Revision-Date: 2020-11-14 04:30+0000\n"
-"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/glossary/"
 "es/>\n"
 "Language: es\n"
@@ -312,8 +312,8 @@ msgstr "Estéreo"
 #: ../../glossary/intro.rst:137
 msgid "A two-channel audio signal (left and right) (see also :term:`Mono`)."
 msgstr ""
-"Una señal de audio de dos canales (izquierda y derecha) (véase también :term:"
-" `Mono`)."
+"Una señal de audio de dos canales (izquierda y derecha) (véase también "
+":term:`Mono`)."
 
 #: ../../glossary/intro.rst:139
 #, fuzzy
