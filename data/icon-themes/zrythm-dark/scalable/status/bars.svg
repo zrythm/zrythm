@@ -1,3 +1,58 @@
-<svg width="22" height="18" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M16 0V2H22V0H16ZM0 4V6H6V4H0ZM0 10V8H6V10H0ZM0 12V14H6V12H0ZM0 16V18H6V16H0ZM8 18V16H14V18H8ZM8 12V14H14V12H8ZM8 10V8H14V10H8ZM16 16V18H22V16H16ZM16 14V12H22V14H16ZM16 8V10H22V8H16ZM16 6V4H22V6H16Z" fill="#A9ABB0"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="22"
+   height="18"
+   viewBox="0 0 22 18"
+   fill="none"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="bars.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="765"
+     inkscape:window-height="480"
+     id="namedview6"
+     showgrid="false"
+     inkscape:zoom="5.8263889"
+     inkscape:cx="10.181868"
+     inkscape:cy="13.28451"
+     inkscape:window-x="615"
+     inkscape:window-y="230"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg4" />
+  <path
+     fill-rule="evenodd"
+     clip-rule="evenodd"
+     d="M16 0V2H22V0H16ZM0 4V6H6V4H0ZM0 10V8H6V10H0ZM0 12V14H6V12H0ZM0 16V18H6V16H0ZM8 18V16H14V18H8ZM8 12V14H14V12H8ZM8 10V8H14V10H8ZM16 16V18H22V16H16ZM16 14V12H22V14H16ZM16 8V10H22V8H16ZM16 6V4H22V6H16Z"
+     fill="#A9ABB0"
+     id="path2"
+     style="fill:#e6e6e6" />
 </svg>

@@ -583,7 +583,7 @@ track_input_expander_widget_refresh (
 
       expander_box_widget_set_icon_name (
         Z_EXPANDER_BOX_WIDGET (self),
-        "signal-midi");
+        "midi-insert");
     }
   else if (track->type == TRACK_TYPE_AUDIO)
     {
@@ -621,7 +621,7 @@ track_input_expander_widget_refresh (
 
       expander_box_widget_set_icon_name (
         Z_EXPANDER_BOX_WIDGET (self),
-        "view-media-visualization");
+        "audio-insert");
     }
 }
 

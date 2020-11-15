@@ -94,7 +94,7 @@
             <child>
               <object class="GtkToggleToolButton" id="toggle_instruments">
                 <property name="visible">1</property>
-                <property name="icon-name">audio-midi-plain</property>
+                <property name="icon-name">instrument</property>
                 <property name="tooltip-text" translatable="true">Instruments</property>
                 <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
               </object>
@@ -105,7 +105,7 @@
             <child>
               <object class="GtkToggleToolButton" id="toggle_effects">
                 <property name="visible">1</property>
-                <property name="icon-name">view-media-visualization</property>
+                <property name="icon-name">bars</property>
                 <property name="tooltip-text" translatable="true">Effects</property>
                 <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
               </object>

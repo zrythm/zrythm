@@ -537,34 +537,9 @@ setup_channel_icon (ChannelWidget * self)
 {
   Track * track =
     channel_get_track (self->channel);
-  switch (track->type)
-    {
-    case TRACK_TYPE_CHORD:
-      gtk_image_set_from_icon_name (
-        self->icon, "minuet-chords",
-        GTK_ICON_SIZE_BUTTON);
-      break;
-    case TRACK_TYPE_INSTRUMENT:
-    case TRACK_TYPE_MIDI:
-      gtk_image_set_from_icon_name (
-        self->icon, "audio-midi-plain",
-        GTK_ICON_SIZE_BUTTON);
-      break;
-    case TRACK_TYPE_AUDIO:
-      gtk_image_set_from_icon_name (
-        self->icon, "signal-audio",
-        GTK_ICON_SIZE_BUTTON);
-      break;
-    case TRACK_TYPE_AUDIO_BUS:
-    case TRACK_TYPE_AUDIO_GROUP:
-    case TRACK_TYPE_MASTER:
-      gtk_image_set_from_icon_name (
-        self->icon, "effect",
-        GTK_ICON_SIZE_BUTTON);
-      break;
-    default:
-      break;
-    }
+  gtk_image_set_from_icon_name (
+    self->icon, track->icon_name,
+    GTK_ICON_SIZE_BUTTON);
 }
 
 static void

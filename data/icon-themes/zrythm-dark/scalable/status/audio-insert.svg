@@ -13,7 +13,7 @@
    fill="none"
    version="1.1"
    id="svg4"
-   sodipodi:docname="instrument.svg"
+   sodipodi:docname="audio-insert.svg"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
   <metadata
      id="metadata10">
@@ -41,9 +41,9 @@
      inkscape:window-height="1025"
      id="namedview6"
      showgrid="false"
-     inkscape:zoom="34.958333"
-     inkscape:cx="12"
-     inkscape:cy="12"
+     inkscape:zoom="17.479167"
+     inkscape:cx="20.095688"
+     inkscape:cy="18.068127"
      inkscape:window-x="0"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
@@ -51,7 +51,7 @@
   <path
      fill-rule="evenodd"
      clip-rule="evenodd"
-     d="M22 20L22 4C22 2.89543 21.1046 2 20 2L16.0714 2L16 2L13.9286 2L10.0714 2L8 2L7.92857 2L4 2C2.89543 2 2 2.89543 2 4L2 20C2 21.1046 2.89543 22 4 22L8 22L16 22L20 22C21.1046 22 22 21.1046 22 20ZM7 4L4 4L4 20L8 20L8 14L7.92857 14C7 14 7 13.305 7 12.5L7 4ZM10 14L10 20L14 20L14 14L13.9286 14C13 14 13 13.305 13 12.5L13 4L11 4L11 12.5C11 13.305 11 14 10.0714 14L10 14ZM16.0714 14L16 14L16 20L20 20L20 4L17 4L17 12.5C17 13.305 17 14 16.0714 14Z"
+     d="M10.8889 20H13.1111V4H10.8889V20ZM17.5556 16.5714H15.3334V7.42858H17.5556V16.5714ZM22.0001 14.2857H19.7778V9.71427H22.0001V14.2857ZM8.66668 16.5714H6.44446V7.42858H8.66668V16.5714ZM2 14.2857H4.22222V9.71427H2V14.2857Z"
      fill="black"
      id="path2"
      style="fill:#e6e6e6" />

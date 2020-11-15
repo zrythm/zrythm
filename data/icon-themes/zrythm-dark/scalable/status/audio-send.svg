@@ -13,7 +13,7 @@
    fill="none"
    version="1.1"
    id="svg4"
-   sodipodi:docname="instrument.svg"
+   sodipodi:docname="audio-send.svg"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
   <metadata
      id="metadata10">
@@ -37,21 +37,21 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1025"
+     inkscape:window-width="918"
+     inkscape:window-height="480"
      id="namedview6"
      showgrid="false"
-     inkscape:zoom="34.958333"
-     inkscape:cx="12"
-     inkscape:cy="12"
+     inkscape:zoom="6.1798186"
+     inkscape:cx="3.9936352"
+     inkscape:cy="11.671644"
      inkscape:window-x="0"
      inkscape:window-y="27"
-     inkscape:window-maximized="1"
+     inkscape:window-maximized="0"
      inkscape:current-layer="svg4" />
   <path
      fill-rule="evenodd"
      clip-rule="evenodd"
-     d="M22 20L22 4C22 2.89543 21.1046 2 20 2L16.0714 2L16 2L13.9286 2L10.0714 2L8 2L7.92857 2L4 2C2.89543 2 2 2.89543 2 4L2 20C2 21.1046 2.89543 22 4 22L8 22L16 22L20 22C21.1046 22 22 21.1046 22 20ZM7 4L4 4L4 20L8 20L8 14L7.92857 14C7 14 7 13.305 7 12.5L7 4ZM10 14L10 20L14 20L14 14L13.9286 14C13 14 13 13.305 13 12.5L13 4L11 4L11 12.5C11 13.305 11 14 10.0714 14L10 14ZM16.0714 14L16 14L16 20L20 20L20 4L17 4L17 12.5C17 13.305 17 14 16.0714 14Z"
+     d="M3 3H21C22.0042 3 23 3.75736 23 5V14H21V5H3V19H12V21H3C1.99585 21 1 20.2426 1 19V5C1 3.75736 1.99585 3 3 3ZM19.5858 20.7071H15V18.7071H19.5858L18.2929 17.4142L19.7071 16L23.4142 19.7071L19.7071 23.4142L18.2929 22L19.5858 20.7071ZM13 17H11V7H13V17ZM14 15H16V9H14V15ZM17 13H19V11H17V13ZM8 15H10V9H8V15ZM7 13H5V11H7V13Z"
      fill="black"
      id="path2"
      style="fill:#e6e6e6" />

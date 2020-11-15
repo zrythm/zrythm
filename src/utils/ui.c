@@ -130,7 +130,7 @@ ui_set_pointer_cursor (
   GtkWidget * widget)
 {
   ui_set_cursor_from_icon_name (
-    GTK_WIDGET (widget), "edit-select", 2, 2);
+    GTK_WIDGET (widget), "edit-select", 3, 1);
 }
 
 /**

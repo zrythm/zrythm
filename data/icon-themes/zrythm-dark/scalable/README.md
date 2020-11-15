@@ -60,8 +60,11 @@ You should have received a copy of CC-BY-SA 4.0 along
 with Zrythm. If not, see
 <https://creativecommons.org/licenses/by-sa/4.0/>.
 
+- audio-insert.svg
 - audio-send.svg
+- audio-send2.svg
 - audition.svg
+- audition2.svg
 - category.svg
 - chord-pad.svg
 - cut-tool.svg
@@ -78,6 +81,7 @@ with Zrythm. If not, see
 - edit-purge.svg
 - edit-redo.svg
 - edit-select
+- edit-select2
 - edit-select-all.svg
 - edit-tool.svg
 - edit-undo.svg
@@ -95,7 +99,9 @@ with Zrythm. If not, see
 - media-seek-backward.svg
 - media-seek-forward.svg
 - metronome.svg
+- midi-insert.svg
 - midi-send.svg
+- midi-send2.svg
 - mixer.svg
 - modulator.svg
 - musical-mode.svg

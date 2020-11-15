@@ -35,7 +35,7 @@ midi_bus_track_init (
 {
   self->type = TRACK_TYPE_MIDI_BUS;
   gdk_rgba_parse (&self->color, "#F9CA1B");
-  self->icon_name = g_strdup ("audio-midi");
+  self->icon_name = g_strdup ("signal-midi");
 }
 
 void

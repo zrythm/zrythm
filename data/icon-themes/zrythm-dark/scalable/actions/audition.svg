@@ -7,14 +7,14 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="18"
-   height="20"
-   viewBox="0 0 18 20"
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
    fill="none"
    version="1.1"
    id="svg4"
    sodipodi:docname="audition.svg"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
   <metadata
      id="metadata10">
     <rdf:RDF>
@@ -29,7 +29,6 @@
   <defs
      id="defs8" />
   <sodipodi:namedview
-     inkscape:document-rotation="0"
      pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1"
@@ -38,13 +37,13 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1603"
-     inkscape:window-height="918"
+     inkscape:window-width="765"
+     inkscape:window-height="480"
      id="namedview6"
      showgrid="false"
-     inkscape:zoom="29.663129"
-     inkscape:cx="13.142629"
-     inkscape:cy="11.851372"
+     inkscape:zoom="8.7395833"
+     inkscape:cx="-1.164169"
+     inkscape:cy="8.1860717"
      inkscape:window-x="0"
      inkscape:window-y="27"
      inkscape:window-maximized="0"
@@ -52,8 +51,8 @@
   <path
      fill-rule="evenodd"
      clip-rule="evenodd"
-     d="m 1.7965238,0.99565517 c -0.4972965,0 -0.90043457,0.40313803 -0.90043457,0.90043453 V 18.103911 c 0,0.49731 0.40313807,0.900435 0.90043457,0.900435 0.4972919,0 0.9004345,-0.403125 0.9004345,-0.900435 V 1.8960897 c 0,-0.4972965 -0.4031426,-0.90043453 -0.9004345,-0.90043453 z M 11.250366,11.550008 V 2.9964837 c 0,-1.1004552 0.878014,-2.00082853 1.951152,-2.00082853 h 1.951241 c 1.073138,0 1.951152,0.90037333 1.951152,2.00082853 0,1.1004571 -0.878014,2.0008286 -1.951152,2.0008286 h -1.951241 v 9.8540497 c 0,1.99086 -1.356055,3.791639 -3.2682176,4.101749 -2.6633593,0.430138 -4.9267365,-1.910812 -4.47796,-4.651915 0.23414,-1.400626 1.2389979,-2.59109 2.5462938,-3.071292 1.1999821,-0.430228 2.3316388,-0.220066 3.2487318,0.320104 z"
+     d="M8 8.23607L12 6.23607V17L8 15V8.23607ZM6.76393 6.61803L14 3V20.2361L6.76393 16.618H3C1.89543 16.618 1 15.7226 1 14.618V8.61803C1 7.51346 1.89543 6.61803 3 6.61803H6.76393ZM6 8.61803H3V14.618H6V8.61803ZM19.6791 3.07475C21.7136 5.09878 23 8.18614 23 11.618C23 15.0499 21.7136 18.1373 19.6791 20.1613L18.1031 18.9006C19.8488 17.2717 21 14.6302 21 11.618C21 8.60586 19.8488 5.96439 18.1031 4.33551L19.6791 3.07475ZM19 11.618C19 9.20737 18.0649 7.03042 16.5748 5.55823L14.9973 6.82022C16.2072 7.90974 17 9.6437 17 11.618C17 13.5924 16.2072 15.3263 14.9973 16.4159L16.5748 17.6778C18.0649 16.2057 19 14.0287 19 11.618Z"
      fill="black"
      id="path2"
-     style="fill:#e6e6e6;stroke-width:0.900435" />
+     style="fill:#e6e6e6" />
 </svg>

@@ -7,14 +7,14 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   sodipodi:docname="edit-select.svg"
-   id="svg4"
-   version="1.1"
+   width="26"
+   height="27"
+   viewBox="0 0 26 27"
    fill="none"
-   viewBox="0 0 20 20"
-   height="20"
-   width="20">
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="edit-select.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
   <metadata
      id="metadata10">
     <rdf:RDF>
@@ -29,30 +29,33 @@
   <defs
      id="defs8" />
   <sodipodi:namedview
-     inkscape:current-layer="svg4"
-     inkscape:window-maximized="1"
-     inkscape:window-y="27"
-     inkscape:window-x="0"
-     inkscape:cy="10.33006"
-     inkscape:cx="8.3219744"
-     inkscape:zoom="29.663129"
-     showgrid="false"
-     id="namedview6"
-     inkscape:window-height="1025"
-     inkscape:window-width="1920"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0"
-     guidetolerance="10"
-     gridtolerance="10"
-     objecttolerance="10"
-     borderopacity="1"
+     pagecolor="#ffffff"
      bordercolor="#666666"
-     pagecolor="#ffffff" />
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1025"
+     id="namedview6"
+     showgrid="false"
+     inkscape:zoom="10.986344"
+     inkscape:cx="5.5243227"
+     inkscape:cy="20.215093"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4"
+     inkscape:document-rotation="0" />
   <path
-     style="fill:#e6e6e6;stroke-width:0.923012"
+     d="m 5.5215833,1.949884 -0.080672,23.100259 6.5081997,-7.336186 9.78246,0.694 z"
+     fill="#000000"
+     stroke="#000000"
+     stroke-width="2.51312"
+     stroke-linecap="round"
+     stroke-linejoin="round"
      id="path2"
-     fill="white"
-     d="M 0.76987541,0.76987541 19.230125,8.6814121 11.62884,11.62884 8.6814121,19.230125 Z M 8.5959319,14.344343 10.20214,10.20214 14.344343,8.5959319 4.2846053,4.2846053 Z"
-     clip-rule="evenodd"
-     fill-rule="evenodd" />
+     style="fill:#e6e6e6;stroke:#e6e6e6" />
 </svg>

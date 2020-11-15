@@ -50,9 +50,9 @@ instrument_track_init (
   Track * self)
 {
   self->type = TRACK_TYPE_INSTRUMENT;
-  gdk_rgba_parse (&self->color, "#F79616");
+  gdk_rgba_parse (&self->color, "#FF9616");
 
-  self->icon_name = g_strdup ("audio-midi");
+  self->icon_name = g_strdup ("instrument");
 }
 
 void

@@ -13,7 +13,7 @@
    fill="none"
    version="1.1"
    id="svg4"
-   sodipodi:docname="instrument.svg"
+   sodipodi:docname="midi-send.svg"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
   <metadata
      id="metadata10">
@@ -37,21 +37,21 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1025"
+     inkscape:window-width="765"
+     inkscape:window-height="480"
      id="namedview6"
      showgrid="false"
-     inkscape:zoom="34.958333"
-     inkscape:cx="12"
-     inkscape:cy="12"
+     inkscape:zoom="8.7395833"
+     inkscape:cx="4.2314897"
+     inkscape:cy="11.872547"
      inkscape:window-x="0"
      inkscape:window-y="27"
-     inkscape:window-maximized="1"
+     inkscape:window-maximized="0"
      inkscape:current-layer="svg4" />
   <path
      fill-rule="evenodd"
      clip-rule="evenodd"
-     d="M22 20L22 4C22 2.89543 21.1046 2 20 2L16.0714 2L16 2L13.9286 2L10.0714 2L8 2L7.92857 2L4 2C2.89543 2 2 2.89543 2 4L2 20C2 21.1046 2.89543 22 4 22L8 22L16 22L20 22C21.1046 22 22 21.1046 22 20ZM7 4L4 4L4 20L8 20L8 14L7.92857 14C7 14 7 13.305 7 12.5L7 4ZM10 14L10 20L14 20L14 14L13.9286 14C13 14 13 13.305 13 12.5L13 4L11 4L11 12.5C11 13.305 11 14 10.0714 14L10 14ZM16.0714 14L16 14L16 20L20 20L20 4L17 4L17 12.5C17 13.305 17 14 16.0714 14Z"
+     d="M3 3H21C22.0042 3 23 3.75736 23 5V14H21V5H3V19H12V21H3C1.99585 21 1 20.2426 1 19V5C1 3.75736 1.99585 3 3 3ZM19.5858 20.7071H15V18.7071H19.5858L18.2929 17.4142L19.7071 16L23.4142 19.7071L19.7071 23.4142L18.2929 22L19.5858 20.7071ZM10.3221 14V10H8.62726L7.67667 12.4011L6.70106 10H5V14H6.38837V12.0056L7.07004 14H8.25828L8.93996 12.0056V14H10.3221ZM12.3369 14V10H10.9485V14H12.3369ZM14.8089 10C15.2716 10 15.6761 10.0847 16.0221 10.2542C16.3723 10.4237 16.6413 10.6591 16.8289 10.9605C17.0165 11.2618 17.1103 11.6045 17.1103 11.9887C17.1103 12.3691 17.0165 12.7119 16.8289 13.0169C16.6413 13.322 16.3723 13.5631 16.0221 13.7401C15.6761 13.9134 15.2716 14 14.8089 14H12.964V10H14.8089ZM14.6838 12.8814C14.9965 12.8814 15.2445 12.8041 15.428 12.6497C15.6114 12.4953 15.7032 12.275 15.7032 11.9887C15.7032 11.7024 15.6114 11.4821 15.428 11.3277C15.2445 11.1733 14.9965 11.096 14.6838 11.096H14.3523V12.8814H14.6838ZM19 14V10H17.6116V14H19Z"
      fill="black"
      id="path2"
      style="fill:#e6e6e6" />

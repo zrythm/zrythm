@@ -35,7 +35,7 @@ midi_group_track_init (
 {
   self->type = TRACK_TYPE_MIDI_GROUP;
   gdk_rgba_parse (&self->color, "#D9DADD");
-  self->icon_name = g_strdup ("audio-midi");
+  self->icon_name = g_strdup ("signal-midi");
 }
 
 void

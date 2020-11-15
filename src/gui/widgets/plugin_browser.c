@@ -525,7 +525,7 @@ create_model_for_plugins (
       const char * icon_name = NULL;
       if (plugin_descriptor_is_instrument (descr))
         {
-          icon_name = "audio-midi-plain";
+          icon_name = "instrument";
         }
       else if (plugin_descriptor_is_modulator (
                  descr))
@@ -540,7 +540,7 @@ create_model_for_plugins (
       else if (plugin_descriptor_is_effect (
                  descr))
         {
-          icon_name = "view-media-visualization";
+          icon_name = "bars";
         }
       else
         {

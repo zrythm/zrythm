@@ -89,7 +89,7 @@ G_DEFINE_TYPE (
 #define ICON_NAME_CHORDS "minuet-chords"
 #define ICON_NAME_SHOW_MARKERS \
   "kdenlive-show-markers"
-#define ICON_NAME_MIDI "audio-midi"
+#define ICON_NAME_MIDI "instrument"
 #define ICON_NAME_TEMPO "filename-bpm-amarok"
 #define ICON_NAME_MODULATOR "modulator"
 
