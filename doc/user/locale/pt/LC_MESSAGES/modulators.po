@@ -83,7 +83,7 @@ msgid ""
 "destination."
 msgstr ""
 "As saídas de moduladores podem ser encaminhadas para :term:`controles "
-"<control>` automatizáveis, a clicar na seta e a seguir o prompt para "
+"<Control>` automatizáveis, a clicar na seta e a seguir o prompt para "
 "selecionar o destino."
 
 #~ msgid "Modulators are Plugins that have at least one CV output port."

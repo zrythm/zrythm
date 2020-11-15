@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 04:53+0000\n"
+"POT-Creation-Date: 2020-11-15 22:48+0000\n"
 "PO-Revision-Date: 2020-11-09 17:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -69,6 +69,11 @@ msgid "Return a newly-created position as bars.beats.sixteenths.ticks.sub_tick."
 msgstr ""
 "Retorna a posição recém-criada como barras.batidas.decimos-"
 "sextos.ticks.sub_tick."
+
+#: ../../scripting/api/audio position.rst:12
+#, fuzzy
+msgid "Scheme Procedure: **position-print** | *pos*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 
 #: ../../scripting/api/audio position.rst:11
 msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
