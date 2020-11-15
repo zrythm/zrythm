@@ -41,6 +41,7 @@
 #include "audio/router.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/backend/clipboard.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/midi_arranger_selections.h"
@@ -993,130 +994,87 @@ activate_copy (
   GVariant      *variant,
   gpointer       user_data)
 {
+  ArrangerSelections * sel = NULL;
+
   if (MAIN_WINDOW_LAST_FOCUSED_IS (
         MW_TIMELINE) ||
       MAIN_WINDOW_LAST_FOCUSED_IS (
         MW_PINNED_TIMELINE))
     {
-      TimelineSelections * ts =
-        (TimelineSelections *)
-        arranger_selections_clone (
-          (ArrangerSelections *) TL_SELECTIONS);
-      timeline_selections_set_vis_track_indices (
-        ts);
-      char * serialized =
-        timeline_selections_serialize (ts);
-      g_return_if_fail (serialized);
+      sel = (ArrangerSelections *) TL_SELECTIONS;
       g_message ("copying timeline selections");
-      gtk_clipboard_set_text (
-        DEFAULT_CLIPBOARD,
-        serialized, -1);
-      arranger_selections_free (
-        (ArrangerSelections *) ts);
-      g_free (serialized);
     }
   else if (MAIN_WINDOW_LAST_FOCUSED_IS (
              MW_MIDI_ARRANGER) ||
            MAIN_WINDOW_LAST_FOCUSED_IS (
              MW_MIDI_MODIFIER_ARRANGER))
     {
-      MidiArrangerSelections * mas =
-        (MidiArrangerSelections *)
-        arranger_selections_clone (
-          (ArrangerSelections *) MA_SELECTIONS);
-      char * serialized =
-        midi_arranger_selections_serialize (mas);
-      g_return_if_fail (serialized);
+      sel = (ArrangerSelections *) MA_SELECTIONS;
       g_message ("copying midi selections");
-      gtk_clipboard_set_text (
-        DEFAULT_CLIPBOARD,
-        serialized, -1);
-      arranger_selections_free (
-        (ArrangerSelections *) mas);
-      g_free (serialized);
     }
   else if (MAIN_WINDOW_LAST_FOCUSED_IS (
              MW_CHORD_ARRANGER))
     {
-      ChordSelections * cs =
-        (ChordSelections *)
-        arranger_selections_clone (
-          (ArrangerSelections *)
-          CHORD_SELECTIONS);
-      char * serialized =
-        chord_selections_serialize (cs);
-      g_return_if_fail (serialized);
+      sel =
+        (ArrangerSelections *) CHORD_SELECTIONS;
       g_message ("copying chord selections");
-      gtk_clipboard_set_text (
-        DEFAULT_CLIPBOARD,
-        serialized, -1);
-      arranger_selections_free (
-        (ArrangerSelections *) cs);
-      g_free (serialized);
     }
   else if (MAIN_WINDOW_LAST_FOCUSED_IS (
              MW_AUTOMATION_ARRANGER))
     {
-      AutomationSelections * cs =
-        (AutomationSelections *)
-        arranger_selections_clone (
-          (ArrangerSelections *)
-          AUTOMATION_SELECTIONS);
-      char * serialized =
-        automation_selections_serialize (cs);
-      g_return_if_fail (serialized);
+      sel =
+        (ArrangerSelections *)
+        AUTOMATION_SELECTIONS;
       g_message ("copying automation selections");
+    }
+
+  if (sel)
+    {
+      Clipboard * clipboard =
+        clipboard_new_for_arranger_selections (
+          sel, true);
+      if (clipboard->timeline_sel)
+        {
+          timeline_selections_set_vis_track_indices (
+            clipboard->timeline_sel);
+        }
+      char * serialized =
+        clipboard_serialize (clipboard);
+      g_return_if_fail (serialized);
       gtk_clipboard_set_text (
         DEFAULT_CLIPBOARD,
         serialized, -1);
-      arranger_selections_free (
-        (ArrangerSelections *) cs);
+      clipboard_free (clipboard);
       g_free (serialized);
+    }
+  else
+    {
+      g_warning ("no selections to copy");
     }
 }
 
 static void
 on_clipboard_received (
-  GtkClipboard *     clipboard,
+  GtkClipboard *     gtk_clipboard,
   const char *       text,
   gpointer           data)
 {
   if (!text)
     return;
 
+  Clipboard * clipboard =
+    clipboard_deserialize (text);
   ArrangerSelections * sel = NULL;
-
-  if ((MAIN_WINDOW_LAST_FOCUSED_IS (
-         MW_TIMELINE) ||
-       MAIN_WINDOW_LAST_FOCUSED_IS (
-         MW_PINNED_TIMELINE)))
+  switch (clipboard->type)
     {
-      sel =
-        (ArrangerSelections *)
-        timeline_selections_deserialize (text);
-    }
-  else if ((MAIN_WINDOW_LAST_FOCUSED_IS (
-              MW_MIDI_ARRANGER) ||
-            MAIN_WINDOW_LAST_FOCUSED_IS (
-              MW_MIDI_MODIFIER_ARRANGER)))
-    {
-      sel =
-        (ArrangerSelections *)
-        midi_arranger_selections_deserialize (text);
-    }
-  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_CHORD_ARRANGER))
-    {
-      sel =
-        (ArrangerSelections *)
-        chord_selections_deserialize (text);
-    }
-  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
-             MW_AUTOMATION_ARRANGER))
-    {
-      sel =
-        (ArrangerSelections *)
-        automation_selections_deserialize (text);
+    case CLIPBOARD_TYPE_TIMELINE_SELECTIONS:
+    case CLIPBOARD_TYPE_MIDI_SELECTIONS:
+    case CLIPBOARD_TYPE_AUTOMATION_SELECTIONS:
+    case CLIPBOARD_TYPE_CHORD_SELECTIONS:
+      sel = clipboard_get_selections (clipboard);
+      break;
+    default:
+      g_warn_if_reached ();
     }
 
   bool incompatible = false;
@@ -1130,9 +1088,9 @@ on_clipboard_received (
         }
       else
         {
+          g_warn_if_reached ();
           incompatible = true;
         }
-      arranger_selections_free_full (sel);
     }
 
   if (incompatible)
@@ -1140,6 +1098,8 @@ on_clipboard_received (
       ui_show_notification (
         _("Can't paste incompatible data"));
     }
+
+  clipboard_free (clipboard);
 }
 
 void

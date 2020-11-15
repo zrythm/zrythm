@@ -64,7 +64,7 @@ See [HACKING.md](HACKING.md) and the
 See [PACKAGING.md](PACKAGING.md).
 
 ## Mailing lists
-[user@zrythm.org](https://lists.zrythm.org/lists/listinfo/user), [dev@zrythm.org](https://lists.zrythm.org/lists/listinfo/dev)
+See [mailing lists on sr.ht](https://sr.ht/~alextee/zrythm/lists).
 
 ## Bug Tracker
 <https://redmine.zrythm.org/projects/zrythm/issues>

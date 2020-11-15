@@ -379,7 +379,7 @@ timeline_selections_can_be_pasted (
             "no track at current pos (%d) + "
             "ts pos (%d)",
             cur_track->pos, ts_pos);
-          return 0;
+          return false;
         }
 
       /*[> check if content matches <]*/
@@ -398,22 +398,22 @@ timeline_selections_can_be_pasted (
               g_message (
                 "track %s cant host region type %d",
                 tr->name, r->id.type);
-              return 0;
+              return false;
             }
         }
 
-      /*[> check for chord track/marker track too <]*/
+      /* check for chord track/marker track too */
       if (ts->num_scale_objects > 0 &&
           ts_pos == ts->chord_track_vis_index &&
           tr->type != TRACK_TYPE_CHORD)
-        return 0;
+        return false;
       if (ts->num_markers > 0 &&
           ts_pos == ts->marker_track_vis_index &&
           tr->type != TRACK_TYPE_MARKER)
-        return 0;
+        return false;
     }
 
-  return 1;
+  return true;
 }
 
 #if 0
