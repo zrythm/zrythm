@@ -1,6 +1,47 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.5.0.1] - 2020-11-15
+### Added
+- Write audio files during recording (every 2 sec)
+- F1 shortcut to open manual
+- F2 shortcut to rename regions
+- Add vertical flip action for automation
+- Add menu option to reset plugin parameter values
+- Add option to show automation values in automation editor
+- Show border around selected UI section
+
+### Changed
+- Split graph cycle at loop points
+- Update Russian, Portuguese, Japanese, German, Norwegian, Greek, French, Chinese, Italian, Spanish, Galician, Polish translations
+- Remember tab selection in bot/left/right panels
+- Update editor toolbar based on region type
+- User manual: various updates
+- Change deselect all shortcut from ctrl-backslash to ctrl-shift-a
+- Show region name instead of track name in editor margin
+- Update some icons (select, audition, sends, inserts, etc.)
+
+### Fixed
+- Fix chord pad not updating when a chord changes
+- Fix select/deselect all actions not working
+- Fix track not shown as selected in the tracklist when clicking on it in the mixer
+- Fix critical error when moving track with automation
+- Fix other regions not drawn in editor ruler when automation region selected
+- Fix broken MIDI track inspector page on project load
+- Fix chord pad remaining pressed during drag n drop
+- Fix clip editor region's automation track index not being updated when switching automation lanes
+- Fix/refactor copy-paste of arranger selections
+- Fix crash when muting MIDI region
+- Fix not being able to re-select a track's send target after selecting None
+- Fix crash during recording when loop traverses back
+- Fix crash when splitting chord region
+- Fix SFZ/SF2 support
+- Fix MIDI note getting skipped when traversing transport loop end
+- Fix crash when deleting a region with erase mode
+
+### Removed
+- Remove bottom arranger from automation editor
+
 ## [1.0.0-alpha.4.0.1] - 2020-10-03
 ### Added
 - Export stems
