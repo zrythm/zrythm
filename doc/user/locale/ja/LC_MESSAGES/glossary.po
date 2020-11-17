@@ -220,9 +220,8 @@ msgid "Parameter"
 msgstr "パラメータ"
 
 #: ../../glossary/intro.rst:103
-#, fuzzy
 msgid "Used interchangeably with :term:`Control`."
-msgstr ":term:`control` と互換的に使用されます。"
+msgstr ":term:`Control` と互換的に使用されます。"
 
 #: ../../glossary/intro.rst:104
 msgid "Plugin"
