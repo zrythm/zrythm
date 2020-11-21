@@ -8,17 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-10-28 22:26+0000\n"
+"PO-Revision-Date: 2020-11-16 19:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
-"/manualplugins-files/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3.2-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
@@ -97,17 +96,16 @@ msgid "Inspector Page"
 msgstr "Página do Inspetor"
 
 #: ../../plugins-files/plugins/inspector-page.rst:10
-#, fuzzy
 msgid ""
 "When a plugin is selected in the Mixer, or when using right click -> "
 "Inspect on an instrument, its page will appear in the Inspector as "
 "follows."
 msgstr ""
-"Quando um suplemento é selecionado no Misturador, a página dele aparecerá"
-" no Inspetor da forma seguinte."
+"Quando um suplemento é selecionado no Misturador ou quando se usa o botão "
+"direito do rato -> Inspecionar num instrumento, a página dele aparecerá no "
+"Inspetor da seguinte forma."
 
 #: ../../plugins-files/plugins/inspector-page.rst:17
-#, fuzzy
 msgid ""
 "This page will display information about the plugin and its ports and "
 "allow you to make changes."
@@ -116,8 +114,9 @@ msgstr ""
 "permitir que faça alterações."
 
 #: ../../plugins-files/plugins/inspector-page.rst:22
+#, fuzzy
 msgid "Display"
-msgstr ""
+msgstr "Mostrar"
 
 #: ../../plugins-files/plugins/inspector-page.rst:23
 msgid ""
@@ -125,23 +124,25 @@ msgid ""
 "number of connections to/from this port. See :doc:`../../routing/making-"
 "connections` for details."
 msgstr ""
+"O número na parte superior direita de cada nome de porta mostrará a "
+"quantidade atual de conexões a/de esta porta. Veja :doc:`.../.../routing/"
+"making-connections' para detalhes."
 
 #: ../../plugins-files/plugins/inspector-page.rst:29
 msgid "Changing Values"
 msgstr "Alterar Valores"
 
 #: ../../plugins-files/plugins/inspector-page.rst:30
-#, fuzzy
 msgid ""
 "The values of control ports can be changed by clicking and dragging "
 "inside each bar."
 msgstr ""
-"Os valores das portas de controle podem ser alterados clicando e "
-"arrastando dentro da barra."
+"Os valores das portas de controle podem ser alterados a clicar e arrastar "
+"dentro da barra."
 
 #: ../../plugins-files/plugins/inspector-page.rst:33
 msgid ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
-msgstr ""
+msgstr ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
@@ -371,14 +372,14 @@ msgstr ""
 ":ref:`ports`."
 
 #: ../../plugins-files/plugins/plugin-info.rst:58
-#, fuzzy
 msgid ""
 "Zrythm first creates all plugins with the following special control "
 "ports. After these ports are created, Zrythm appends the rest of the "
 "plugin's ports."
 msgstr ""
-"Zrythm primeiro cria todos os suplementos com as seguintes portas de "
-"controle especiais:"
+"Primeiro Zrythm cria todos os suplementos com as portas de controle "
+"especiais seguintes. Após estas portas serem criadas, a Zrythm acrescenta o "
+"resto das portas do suplemento."
 
 #: ../../plugins-files/plugins/plugin-info.rst:64
 msgid "Enabled"
@@ -397,13 +398,12 @@ msgid "Increases the output volume of the plugin (if applicable)."
 msgstr "Aumenta o volume de saída do suplemento (se aplicável)."
 
 #: ../../plugins-files/plugins/plugin-info.rst:73
-#, fuzzy
 msgid ""
 "All of the plugin's ports will be shown in the :ref:`Inspector Page "
 "<plugins-files/plugins/inspector-page:Inspector Page>`"
 msgstr ""
-"Todas as portas do suplemento podem ser encontradas na página do inspetor"
-" de suplementos descrita em :ref:`plugin-inspector-page`"
+"Todas as portas dos suplementos serão mostradas na :ref:`Página do inspetor "
+"<plugins-files/plugins/inspector-page:Inspector Page>`"
 
 #: ../../plugins-files/plugins/plugin-window.rst:6
 msgid "Plugin Window"
@@ -1082,4 +1082,3 @@ msgstr ""
 #~ "Após as portas acima serem criadas, "
 #~ "a Zrythm acrescenta o resto das "
 #~ "portas do suplemento."
-

@@ -3,21 +3,22 @@
 # This file is distributed under the same license as the zrythm package.
 # alex <alex@zrythm.org>, 2019.
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
+# Gary Wang <wzc782970009@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-04-29 23:30+0000\n"
-"Last-Translator: Arif Sarker\n"
+"PO-Revision-Date: 2020-11-21 12:50+0000\n"
+"Last-Translator: Gary Wang <wzc782970009@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"zrythm/zrythm/zh_TW/>\n"
+"zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.0.2\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
@@ -600,17 +601,17 @@ msgid "Error loading LV2 bundle dir: "
 msgstr "加载LV2包目录时出错:"
 
 #: src/plugins/plugin_manager.c:1111
-#, fuzzy, c-format
+#, c-format
 msgid "Scanned %s plugin: %s"
-msgstr "已扫描AU插件"
+msgstr "已扫描 %s 插件: %s"
 
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
 #. * argument is path
 #: src/plugins/plugin_manager.c:1125
-#, fuzzy, c-format
+#, c-format
 msgid "Skipped %1$s plugin at %2$s"
-msgstr "跳过%s处的LV2插件"
+msgstr "跳过了位于 %2$s 的 %1$s 插件"
 
 #: src/plugins/plugin_manager.c:1253
 msgid "Scanned LV2 plugin"
@@ -633,7 +634,7 @@ msgstr "跳过%u处的AU插件"
 #: src/plugins/plugin.c:138
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
-msgstr ""
+msgstr "插件 '%s' 实例化失败。禁用中..."
 
 #: src/plugins/plugin.c:184
 #, fuzzy
@@ -641,9 +642,8 @@ msgid "[Zrythm] Enabled"
 msgstr "已启用"
 
 #: src/plugins/plugin.c:207
-#, fuzzy
 msgid "[Zrythm] Gain"
-msgstr "Zrythm路径"
+msgstr "[Zrythm] 增益"
 
 #: src/plugins/plugin_gtk.c:81 src/plugins/lv2/lv2_gtk.c:105
 msgid "Save State"
@@ -665,9 +665,9 @@ msgid "_Save"
 msgstr "保存（_S）"
 
 #: src/plugins/lv2_plugin.c:1746
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find plugin with URI: %s"
-msgstr "无法打开文件:%s"
+msgstr "无法从指定的 URI 找到插件: %s"
 
 #: src/plugins/lv2_plugin.c:2552
 msgid "Unnamed bank"
@@ -831,7 +831,7 @@ msgstr ""
 
 #: src/gui/widgets/track_input_expander.c:736
 msgid "Gain"
-msgstr ""
+msgstr "增益"
 
 #: src/gui/widgets/track_input_expander.c:749
 msgid "Inputs"
@@ -892,9 +892,8 @@ msgid "CC Bindings"
 msgstr ""
 
 #: src/gui/widgets/left_dock_edge.c:285
-#, fuzzy
 msgid "Port connections"
-msgstr "删除连接"
+msgstr "端口连接"
 
 #: src/gui/widgets/plugin_strip_expander.c:152
 msgid "Inserts"
@@ -1126,11 +1125,11 @@ msgstr "JACK时基Master"
 
 #: src/gui/widgets/bot_bar.c:419
 msgid "This feature is not available at the moment"
-msgstr ""
+msgstr "此特性当前不可用"
 
 #: src/gui/widgets/bot_bar.c:514
 msgid "Status"
-msgstr ""
+msgstr "状态"
 
 #. TRANSLATORS: buffer size, please keep the
 #. * translation short
@@ -1141,11 +1140,11 @@ msgstr ""
 #. TRANSLATORS: sample rate
 #: src/gui/widgets/bot_bar.c:527
 msgid "Rate"
-msgstr ""
+msgstr "采样率"
 
 #: src/gui/widgets/bot_bar.c:534 src/gui/widgets/dialogs/export_dialog.c:1300
 msgid "Disable"
-msgstr ""
+msgstr "禁用"
 
 #: src/gui/widgets/bot_bar.c:534 src/gui/widgets/dialogs/export_dialog.c:1290
 #, fuzzy
@@ -1207,14 +1206,12 @@ msgid "Start on MIDI input"
 msgstr ""
 
 #: src/gui/widgets/transport_controls.c:202
-#, fuzzy
 msgid "Options"
-msgstr "导出选项"
+msgstr "选项"
 
 #: src/gui/widgets/transport_controls.c:207
-#, fuzzy
 msgid "Overwrite events"
-msgstr "覆盖插件"
+msgstr "覆盖事件"
 
 #: src/gui/widgets/transport_controls.c:210
 msgid "Merge events"
@@ -1231,14 +1228,12 @@ msgstr ""
 
 #: src/gui/widgets/transport_controls.c:219
 #: build/data/org.zrythm.Zrythm.gschema.xml:503
-#, fuzzy
 msgid "Recording mode"
-msgstr "录制"
+msgstr "录制模式"
 
 #: src/gui/widgets/transport_controls.c:252
-#, fuzzy
 msgid "Record options"
-msgstr "对齐/网格选项"
+msgstr "录制选项"
 
 #: src/gui/widgets/timeline_arranger.c:507
 msgid "Custom Marker"
@@ -1503,10 +1498,9 @@ msgid "Editing"
 msgstr "编辑"
 
 #: src/gui/widgets/preferences.c:96
-#, fuzzy
 msgctxt "guilabel"
 msgid "Audio"
-msgstr "音讯"
+msgstr "音频"
 
 #: src/gui/widgets/preferences.c:98 src/audio/region.c:400
 #: build/data/org.zrythm.Zrythm.gschema.xml:653
@@ -1646,8 +1640,9 @@ msgid "Select..."
 msgstr "选择..."
 
 #: src/gui/widgets/active_hardware_mb.c:144
+#, fuzzy
 msgid "Click to enable inputs"
-msgstr ""
+msgstr "点击以启用输入"
 
 #: src/gui/widgets/port_connection_row.c:107
 msgid "Enable/disable connection"
@@ -1729,9 +1724,8 @@ msgid "Curviness"
 msgstr "弯曲度"
 
 #: src/gui/widgets/cc_bindings_tree.c:266
-#, fuzzy
 msgid "Device"
-msgstr "SDL设备"
+msgstr "设备"
 
 #: src/gui/widgets/cc_bindings_tree.c:277
 #, fuzzy
@@ -1861,9 +1855,9 @@ msgid "Toggle Right Panel"
 msgstr "切换右面板"
 
 #: src/gui/widgets/editor_toolbar.c:74 src/gui/widgets/editor_toolbar.c:108
-#, fuzzy, c-format
+#, c-format
 msgid "Apply %s"
-msgstr "复制%s"
+msgstr "应用 %s"
 
 #: src/gui/widgets/editor_toolbar.c:78 src/gui/widgets/editor_toolbar.c:112
 #, c-format
@@ -1876,19 +1870,17 @@ msgid "No Highlight"
 msgstr "突出显示"
 
 #: src/gui/widgets/editor_toolbar.c:176
-#, fuzzy
 msgid "Highlight Chord"
-msgstr "突出显示"
+msgstr "高亮和弦"
 
 #: src/gui/widgets/editor_toolbar.c:183
-#, fuzzy
 msgid "Highlight Scale"
-msgstr "突出显示"
+msgstr "高亮音阶"
 
 #: src/gui/widgets/editor_toolbar.c:190
 #, fuzzy
 msgid "Highlight Both"
-msgstr "突出显示"
+msgstr "同时高亮两者"
 
 #: src/gui/widgets/editor_toolbar.c:258
 #, fuzzy
@@ -1911,17 +1903,17 @@ msgstr "通道%d"
 
 #: src/gui/widgets/track.c:1168 resources/ui/fader_buttons.ui:78
 msgid "Solo"
-msgstr ""
+msgstr "独奏"
 
 #: src/gui/widgets/track.c:1175
 #, fuzzy
 msgid "Hide instrument UI"
-msgstr "无乐器"
+msgstr "隐藏乐器界面"
 
 #: src/gui/widgets/track.c:1179
 #, fuzzy
 msgid "Show instrument UI"
-msgstr "无乐器"
+msgstr "显示乐器界面"
 
 #: src/gui/widgets/track.c:1195 resources/ui/fader_buttons.ui:36
 msgid "Mono compatibility"
@@ -1949,7 +1941,7 @@ msgstr "显示音轨车道"
 #: src/gui/widgets/track.c:1223
 #, fuzzy
 msgid "Hide automation"
-msgstr "写入自动化"
+msgstr "隐藏自动控制"
 
 #: src/gui/widgets/track.c:1227
 #, fuzzy
@@ -1966,7 +1958,7 @@ msgstr ""
 
 #: src/gui/widgets/track.c:1244
 msgid "Lock/unlock"
-msgstr ""
+msgstr "锁定/解锁"
 
 #: src/gui/widgets/track.c:1675
 msgid "_Delete Track"
@@ -2053,7 +2045,7 @@ msgstr "正在导出MIDI区域\"%s\""
 
 #: src/gui/widgets/dialogs/string_entry_dialog.c:83
 msgid "Please enter a value"
-msgstr ""
+msgstr "请输入值"
 
 #: src/gui/widgets/dialogs/port_info.c:59
 #, c-format
@@ -2090,18 +2082,18 @@ msgid "%sPlease help us fix this by %ssubmitting a bug report%s."
 msgstr "%s请通过%s提交错误报告%s来帮助我们解决此问题。"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:112
-#, fuzzy, c-format
+#, c-format
 msgid "%s color"
-msgstr "颜色"
+msgstr "%s 颜色"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:138
 #, fuzzy
 msgid "Region color"
-msgstr "区域内容"
+msgstr "区域颜色"
 
 #: src/gui/widgets/dialogs/export_dialog.c:303
 msgid "none"
-msgstr ""
+msgstr "无"
 
 #: src/gui/widgets/dialogs/export_dialog.c:380
 msgid ""
@@ -2118,16 +2110,17 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:493
 msgid "The following files will be created:"
-msgstr ""
+msgstr "以下文件将被创建:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:496
 #, fuzzy
 msgid "in the directory:"
-msgstr "上级目录"
+msgstr "在此目录中:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:653
+#, fuzzy
 msgid "<name>.<format>"
-msgstr ""
+msgstr "<名称>.<格式>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:658
 msgid "<date>_<name>.<format>"
@@ -2136,22 +2129,21 @@ msgstr ""
 #: src/gui/widgets/dialogs/export_dialog.c:903
 #, fuzzy
 msgid "No tracks to export"
-msgstr "要导出的格式。"
+msgstr "没有轨道可供导出"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:154
 #, fuzzy, c-format
 msgid "%s icon"
-msgstr "%s输入"
+msgstr "%s 图标"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:165
-#, fuzzy
 msgid "_Select"
-msgstr "选择..."
+msgstr "选择(_S)..."
 
 #: src/gui/backend/arranger_object.c:2601
 #, c-format
 msgid "Invalid object name %s"
-msgstr ""
+msgstr "无效的对象名称 %s"
 
 #: src/gui/backend/event_manager.c:1626
 #, c-format
@@ -2273,9 +2265,8 @@ msgid "Reset to factory settings successful\n"
 msgstr "重置到出厂设置成功\n"
 
 #: src/audio/tracklist.c:957
-#, fuzzy
 msgid "No file was found"
-msgstr "找不到文件"
+msgstr "未找到文件"
 
 #: src/audio/tracklist.c:982
 #, c-format
@@ -2284,11 +2275,11 @@ msgstr "不支持的文件类型%s"
 
 #: src/audio/tracklist.c:1001
 msgid "Cannot drop MIDI files into existing tracks"
-msgstr ""
+msgstr "无法拖放 MIDI 文件到已存在的轨道中"
 
 #: src/audio/tracklist.c:1011
 msgid "Can only drop audio files on audio tracks"
-msgstr ""
+msgstr "只能将音频文件拖放到音频轨道上"
 
 #: src/audio/chord_track.c:57 resources/ui/inspector_chord.ui:31
 msgid "Chords"
@@ -2360,7 +2351,7 @@ msgstr "无法初始化%s MIDI后端。将使用虚拟后端代替。请检查�
 msgid ""
 "Your selected combination of backends may not work properly. If you want to "
 "use JACK, please select JACK as both your audio and MIDI backend."
-msgstr ""
+msgstr "您选择的后端组合可能无法正常工作。若您希望使用 JACK，请同时将 JACK 作为您的音频和 MIDI 后端。"
 
 #: src/audio/engine.c:483
 #, c-format
@@ -2664,17 +2655,17 @@ msgstr ""
 #: src/actions/port_connection_action.c:146
 #, fuzzy
 msgid "Enable port connection"
-msgstr "删除连接"
+msgstr "启用端口连接"
 
 #: src/actions/port_connection_action.c:149
 #, fuzzy
 msgid "Disable port connection"
-msgstr "删除连接"
+msgstr "禁用端口连接"
 
 #: src/actions/port_connection_action.c:152
 #, fuzzy
 msgid "Change port connection"
-msgstr "删除连接"
+msgstr "改变端口连接"
 
 #: src/actions/transport_action.c:131
 msgid "Change BPM"
@@ -2683,7 +2674,7 @@ msgstr "更改BPM"
 #: src/actions/channel_send_action.c:194
 #, fuzzy
 msgid "Channel send connection"
-msgstr "删除连接"
+msgstr "通道发送连接"
 
 #: src/actions/move_plugins_action.c:258
 #, c-format
@@ -2703,7 +2694,7 @@ msgstr "插入"
 #: src/actions/range_action.c:614
 #, fuzzy
 msgid "Delete range"
-msgstr "删除音轨"
+msgstr "删除区间"
 
 #: src/actions/edit_tracks_action.c:460
 msgid "Solo Track"
@@ -2732,22 +2723,20 @@ msgstr "更改Pan"
 #: src/actions/edit_tracks_action.c:479
 #, fuzzy
 msgid "Change direct out"
-msgstr "更改推子"
+msgstr "更改直接输出"
 
 #: src/actions/edit_tracks_action.c:482
 #, fuzzy
 msgid "Rename track"
-msgstr "冻结音轨"
+msgstr "重命名轨道"
 
 #: src/actions/edit_tracks_action.c:485
-#, fuzzy
 msgid "Change color"
-msgstr "更改推子"
+msgstr "修改颜色"
 
 #: src/actions/edit_tracks_action.c:488
-#, fuzzy
 msgid "Change icon"
-msgstr "更改Pan"
+msgstr "修改图标"
 
 #: src/actions/move_tracks_action.c:144
 msgid "Move Track"
@@ -2940,7 +2929,6 @@ msgid "Setup Zrythm"
 msgstr "Setup Zrythm"
 
 #: resources/ui/first_run_assistant.ui:52
-#, fuzzy
 msgid ""
 "<b><i>Note: Zrythm is currently in alpha</i></b>\n"
 "\n"
@@ -2948,8 +2936,10 @@ msgid ""
 "This will guide you through the basic setup of Zrythm. First, choose your "
 "language."
 msgstr ""
-"欢迎使用Zrythm.\n"
-"这将指导您完成zrythm的基本设置。首先，选择您的语言。"
+"<b><i>注意：Zrythm 尚在 Alpha 阶段</i></b>\n"
+"\n"
+"欢迎使用 Zrythm。\n"
+"此向导将协助您完成 Zrythm 的基本设置。首先，选择您的语言。"
 
 #: resources/ui/first_run_assistant.ui:93 resources/ui/preferences.ui:512
 msgid "Language"
@@ -3520,7 +3510,7 @@ msgstr ""
 #: resources/ui/fader_buttons.ui:141
 #, fuzzy
 msgid "Channel settings"
-msgstr "通道%s"
+msgstr "通道设定"
 
 #: resources/ui/transport_controls.ui:33
 msgid "Return to cue point on stop"
@@ -3759,23 +3749,20 @@ msgid "Full Quantize..."
 msgstr "全量化..."
 
 #: resources/ui/snap_grid_popover.ui:122 resources/ui/snap_grid_popover.ui:244
-#, fuzzy
 msgid "Note length"
-msgstr "note长度"
+msgstr "音符长度"
 
 #: resources/ui/snap_grid_popover.ui:142 resources/ui/snap_grid_popover.ui:264
 msgid "t"
 msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:146 resources/ui/snap_grid_popover.ui:268
-#, fuzzy
 msgid "Triplet"
-msgstr "三元组"
+msgstr "三连音"
 
 #: resources/ui/snap_grid_popover.ui:162 resources/ui/snap_grid_popover.ui:284
-#, fuzzy
 msgid "Dotted"
-msgstr "带点"
+msgstr "附点"
 
 #: resources/ui/snap_grid_popover.ui:188 resources/ui/snap_grid_popover.ui:310
 #, fuzzy
@@ -3789,7 +3776,7 @@ msgstr "note长度"
 
 #: resources/ui/snap_grid_popover.ui:209
 msgid "Snap"
-msgstr "卡住"
+msgstr "吸附"
 
 #: resources/ui/snap_grid_popover.ui:325
 msgid "Link"

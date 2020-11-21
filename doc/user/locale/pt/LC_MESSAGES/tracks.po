@@ -8,17 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:30+0100\n"
-"PO-Revision-Date: 2020-11-02 01:26+0000\n"
+"PO-Revision-Date: 2020-11-16 19:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese "
-"<https://hosted.weblate.org/projects/zrythm/manualtracks/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3.2-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -1094,13 +1093,12 @@ msgstr ""
 "como um arpejador MIDI."
 
 #: ../../tracks/overview.rst:40
-#, fuzzy
 msgid ""
 "This is different from what many other :term:`DAWs <DAW>` do, so please "
 "keep this in mind."
 msgstr ""
-"Isto difere de muitos outros DAWs (veja :term:`DAW`), então por favor "
-"tenha isto em mente."
+"Isto é diferente do que muitos outros :term:`DAWs <DAW>` fazem, então por "
+"favor tenha isto em mente."
 
 #: ../../tracks/overview.rst:45
 msgid "Track Interface"
@@ -1128,20 +1126,16 @@ msgstr ""
 "mostrando o nível atual."
 
 #: ../../tracks/overview.rst:60
-#, fuzzy
 msgid "Track Icon"
-msgstr "Operações de Faixa"
+msgstr "Ícone de faixa"
 
 #: ../../tracks/overview.rst:61
-#, fuzzy
 msgid "The icon can be changed by clicking on the icon in the tracklist."
-msgstr ""
-"Os instrumentos podem ser congelados ao clicar no botão Congelar na "
-"interface da pista."
+msgstr "O ícone pode ser alterado a clicar no ícone da lista de faixas."
 
 #: ../../tracks/overview.rst:64
 msgid "Add pic and explain how to add custom icons."
-msgstr ""
+msgstr "Adicionar imagem e explicar como adicionar ícones personalizados."
 
 #: ../../tracks/overview.rst:70
 msgid ""
@@ -1630,4 +1624,3 @@ msgstr ""
 
 #~ msgid "This is a TODO feature."
 #~ msgstr "Esta é uma função TODO."
-

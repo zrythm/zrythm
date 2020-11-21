@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-11-14 00:06+0000\n"
+"PO-Revision-Date: 2020-11-15 13:28+0000\n"
 "Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/routing/"
 "es/>\n"
@@ -80,8 +80,9 @@ msgid ""
 msgstr ""
 
 #: ../../routing/intro.rst:6
+#, fuzzy
 msgid "Routing"
-msgstr ""
+msgstr "Routing"
 
 #: ../../routing/making-connections.rst:8
 msgid "Making Connections"
@@ -197,7 +198,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:48
 msgid "Control"
-msgstr ""
+msgstr "Control"
 
 #: ../../routing/ports.rst:49
 msgid ""
