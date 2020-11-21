@@ -46,6 +46,17 @@ The latest development branch for new features is
 ``development`` in our
 `git repository <https://git.zrythm.org/cgit/zrythm>`_.
 
+Editing this Manual
+-------------------
+Click on the :guilabel:`View Source` button at the
+top of the page to find which file the page exists
+in, find the file in the source distribution and
+edit it.
+
+You will need to have
+`Sphinx <https://www.sphinx-doc.org/en/master/>`_
+installed to compile this manual.
+
 Translation
 -----------
 Zrythm is available for translation at `Weblate
@@ -62,16 +73,83 @@ For more information on using Weblate,
 please see the
 `official documentation <https://docs.weblate.org/en/latest/user/translating.html>`_.
 
-Editing this Manual
--------------------
-Click on the :guilabel:`View Source` button at the
-top of the page to find which file the page exists
-in, find the file in the source distribution and
-edit it.
+User Manual
+~~~~~~~~~~~
+When translating the user manual, please make sure
+you follow the following Sphinx/RST syntax, to avoid
+errors when applying your translations.
 
-You will need to have
-`Sphinx <https://www.sphinx-doc.org/en/master/>`_
-installed to compile this manual.
+General Syntax
+++++++++++++++
+When you see something inside ``:``, such as
+``:term:``, it should be left untranslated. The
+part following should be left untranslated as well.
+For example:
+
+.. code-block:: text
+
+  A plugin has parameters (see :term:`Parameter`).
+
+should be translated in Japanese as
+
+.. code-block:: text
+
+  :term:`Parameter`
+  プラグインにはパラメータがあります（ :term:`Parameter` を参照）。
+
+This is because this value will replaced
+automatically by Sphinx with the translation for
+``Parameter``. The only exception to this rule is
+when you see the ``<>`` characters. For example:
+
+.. code-block:: text
+
+  A plugin has :term:`parameters <Parameter>`.
+
+should be translated in Japanese as
+
+.. code-block:: text
+
+  プラグインには :term:`パラメータ <Parameter>` があります。
+
+.. important::
+  Please make sure you do not insert or remove
+  spaces. The following examples will cause errors.
+
+  .. code-block:: text
+
+    :term: `Parameter`
+          ^ space
+    : term:`Parameter`
+     ^ space
+    :term :`Parameter`
+         ^ space
+    :term: `Parameter`
+          ^ space
+
+  Also, there should be space, comma or period
+  after such syntax, like below.
+
+  .. code-block:: text
+
+    :term:`Parameter` other information
+    :term:`Parameter`, other information
+    :term:`Parameter`. Other information
+
+  The following examples will cause errors.
+
+  .. code-block:: text
+
+    :term:`Parameter`other information
+                     ^ missing space/punctuation
+
+.. note:: The following syntax usually refers to a
+  path, so please keep it unchanged,
+  otherwise the file it refers to will not be found.
+
+  .. code-block:: text
+
+    :doc:`../../example`
 
 Donations
 ---------

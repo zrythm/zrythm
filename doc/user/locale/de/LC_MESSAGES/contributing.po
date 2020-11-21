@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 18:03+0100\n"
+"POT-Creation-Date: 2020-11-21 13:40+0000\n"
 "PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: de\n"
@@ -90,10 +90,28 @@ msgstr ""
 
 #: ../../contributing/intro.rst:50
 #, fuzzy
+msgid "Editing this Manual"
+msgstr "Abschnitte des Handbuchs"
+
+#: ../../contributing/intro.rst:51
+msgid ""
+"Click on the :guilabel:`View Source` button at the top of the page to "
+"find which file the page exists in, find the file in the source "
+"distribution and edit it."
+msgstr ""
+
+#: ../../contributing/intro.rst:56
+msgid ""
+"You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
+"installed to compile this manual."
+msgstr ""
+
+#: ../../contributing/intro.rst:61
+#, fuzzy
 msgid "Translation"
 msgstr "Übersetzen"
 
-#: ../../contributing/intro.rst:51
+#: ../../contributing/intro.rst:62
 #, fuzzy
 msgid ""
 "Zrythm is available for translation at `Weblate "
@@ -104,13 +122,13 @@ msgstr ""
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ um mit "
 "dem Übersetzen zu starten."
 
-#: ../../contributing/intro.rst:54
+#: ../../contributing/intro.rst:65
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
 "program, the website as well as sections of this manual."
 msgstr ""
 
-#: ../../contributing/intro.rst:58
+#: ../../contributing/intro.rst:69
 #, fuzzy
 msgid ""
 "Click on the project you wish to work on, and then select a language in "
@@ -123,48 +141,86 @@ msgstr ""
 "wie du Weblate benutzt, siehe bitte in die `offizielle Dokumentation "
 "<https://docs.weblate.org/en/latest/user/translating.html>`_ von Weblate."
 
-#: ../../contributing/intro.rst:66
-#, fuzzy
-msgid "Editing this Manual"
-msgstr "Abschnitte des Handbuchs"
-
-#: ../../contributing/intro.rst:67
-msgid ""
-"Click on the :guilabel:`View Source` button at the top of the page to "
-"find which file the page exists in, find the file in the source "
-"distribution and edit it."
-msgstr ""
-
-#: ../../contributing/intro.rst:72
-msgid ""
-"You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
-"installed to compile this manual."
-msgstr ""
-
 #: ../../contributing/intro.rst:77
+msgid "User Manual"
+msgstr ""
+
+#: ../../contributing/intro.rst:78
+msgid ""
+"When translating the user manual, please make sure you follow the "
+"following Sphinx/RST syntax, to avoid errors when applying your "
+"translations."
+msgstr ""
+
+#: ../../contributing/intro.rst:83
+msgid "General Syntax"
+msgstr ""
+
+#: ../../contributing/intro.rst:84
+msgid ""
+"When you see something inside ``:``, such as ``:term:``, it should be "
+"left untranslated. The part following should be left untranslated as "
+"well. For example:"
+msgstr ""
+
+#: ../../contributing/intro.rst:93
+#: ../../contributing/intro.rst:109
+msgid "should be translated in Japanese as"
+msgstr ""
+
+#: ../../contributing/intro.rst:100
+msgid ""
+"This is because this value will replaced automatically by Sphinx with the"
+" translation for ``Parameter``. The only exception to this rule is when "
+"you see the ``<>`` characters. For example:"
+msgstr ""
+
+#: ../../contributing/intro.rst:116
+msgid ""
+"Please make sure you do not insert or remove spaces. The following "
+"examples will cause errors."
+msgstr ""
+
+#: ../../contributing/intro.rst:130
+msgid ""
+"Also, there should be space, comma or period after such syntax, like "
+"below."
+msgstr ""
+
+#: ../../contributing/intro.rst:139
+msgid "The following examples will cause errors."
+msgstr ""
+
+#: ../../contributing/intro.rst:146
+msgid ""
+"The following syntax usually refers to a path, so please keep it "
+"unchanged, otherwise the file it refers to will not be found."
+msgstr ""
+
+#: ../../contributing/intro.rst:155
 #, fuzzy
 msgid "Donations"
 msgstr "Spenden"
 
-#: ../../contributing/intro.rst:78
+#: ../../contributing/intro.rst:156
 msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
 msgstr ""
 
-#: ../../contributing/intro.rst:82
+#: ../../contributing/intro.rst:160
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
-#: ../../contributing/intro.rst:83
+#: ../../contributing/intro.rst:161
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:84
+#: ../../contributing/intro.rst:162
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:86
+#: ../../contributing/intro.rst:164
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer "
 "<https://www.zrythm.org/en/download.html>`_."
@@ -477,5 +533,25 @@ msgstr ""
 #~ "Please see the `HACKING file "
 #~ "<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ in"
 #~ " the source distribution."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Also, There should be space, comma "
+#~ "or period after such syntax. The "
+#~ "following examples will cause errors."
+#~ msgstr ""
+
+#~ msgid "So please make sure there is correct punctuation, as shown below."
+#~ msgstr ""
+
+#~ msgid "Paths"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Also, when you see the following, "
+#~ "this usually refers to a path, so"
+#~ " please keep it unchanged, otherwise "
+#~ "the file it refers to will not "
+#~ "be found."
 #~ msgstr ""
 

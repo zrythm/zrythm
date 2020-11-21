@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-15 22:48+0000\n"
+"POT-Creation-Date: 2020-11-21 13:40+0000\n"
 "PO-Revision-Date: 2020-11-16 19:29+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"scripting/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese "
+"<https://hosted.weblate.org/projects/zrythm/scripting/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../scripting/api/actions
@@ -31,17 +30,44 @@ msgstr ""
 #: ../../scripting/api/actions
 #: ../../scripting/api/actions
 #: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/actions
+#: ../../scripting/api/audio channel.rst:7
+#, fuzzy
+msgid "Scheme Procedure: **channel-get-insert** | *channel insert_slot*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
+
 #: ../../scripting/api/audio channel.rst:6
 msgid "Returns the plugin at the given insert slot"
 msgstr "Retorna o suplemento no compartimento de inserção fornecido"
+
+#: ../../scripting/api/audio channel.rst:11
+#, fuzzy
+msgid "Scheme Procedure: **channel-get-instrument** | *channel*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 
 #: ../../scripting/api/audio channel.rst:10
 msgid "Returns the instrument at the given channel"
 msgstr "Retorna o instrumento no canal fornecido"
 
+#: ../../scripting/api/audio channel.rst:15
+#, fuzzy
+msgid "Scheme Procedure: **channel-get-send** | *channel send_slot*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
+
 #: ../../scripting/api/audio channel.rst:14
 msgid "Returns the send instance at the given slot"
 msgstr "Retorna a instância de envio no compartimento fornecido"
+
+#: ../../scripting/api/audio midi_note.rst:7
+#, fuzzy
+msgid ""
+"Scheme Procedure: **midi-note-new** | *region start_pos end_pos pitch "
+"velocity*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 
 #: ../../scripting/api/audio midi_note.rst:6
 msgid "Returns a new midi note."
@@ -50,9 +76,20 @@ msgstr "Retorna uma nova nota midi."
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
+#: ../../scripting/api/audio
+#: ../../scripting/api/audio port.rst:7
+#, fuzzy
+msgid "Scheme Procedure: **stereo-ports-get-port** | *stereo_ports left*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
+
 #: ../../scripting/api/audio port.rst:6
 msgid "Returns the left or right port of the stereo pair."
 msgstr "Retorna a porta esquerda ou direita do par estéreo."
+
+#: ../../scripting/api/audio port.rst:11
+#, fuzzy
+msgid "Scheme Procedure: **port-get-identifier** | *port*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 
 #: ../../scripting/api/audio port.rst:10
 msgid "Returns the identifier of port."
@@ -63,8 +100,8 @@ msgid ""
 "Scheme Procedure: **position-new** | *bars beats sixteenths ticks "
 "sub_tick*"
 msgstr ""
-"Procedimento do Esquema: **position-new** | *barras.batidas.decimos-sextos."
-"ticks*"
+"Procedimento do Esquema: **position-new** | *barras.batidas.decimos-"
+"sextos.ticks*"
 
 #: ../../scripting/api/audio position.rst:6
 msgid "Return a newly-created position as bars.beats.sixteenths.ticks.sub_tick."
@@ -83,6 +120,12 @@ msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
+#: ../../scripting/api/audio
+#: ../../scripting/api/audio track.rst:8
+#, fuzzy
+msgid "Scheme Procedure: **midi-track-new** | *idx name*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
+
 #: ../../scripting/api/audio track.rst:6
 msgid ""
 "Returns a new track with name name to be placed at position idx in the "
@@ -91,17 +134,37 @@ msgstr ""
 "Retorna uma nova faixa com nome a ser localizada na posição idx na lista "
 "de faixas."
 
+#: ../../scripting/api/audio track.rst:12
+#, fuzzy
+msgid "Scheme Procedure: **track-get-name** | *track*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
+
 #: ../../scripting/api/audio track.rst:11
 msgid "Returns the name of track."
 msgstr "Retorna o nome da faixa."
+
+#: ../../scripting/api/audio track.rst:16
+#, fuzzy
+msgid "Scheme Procedure: **track-get-processor** | *track*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 
 #: ../../scripting/api/audio track.rst:15
 msgid "Returns the processor of track."
 msgstr "Retorna o processador da faixa."
 
+#: ../../scripting/api/audio track.rst:20
+#, fuzzy
+msgid "Scheme Procedure: **track-get-channel** | *track*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
+
 #: ../../scripting/api/audio track.rst:19
 msgid "Returns the channel of track."
 msgstr "Retorna o canal da faixa."
+
+#: ../../scripting/api/audio track.rst:25
+#, fuzzy
+msgid "Scheme Procedure: **track-set-muted** | *track muted*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 
 #: ../../scripting/api/audio track.rst:23
 msgid ""
@@ -111,6 +174,11 @@ msgstr ""
 "Define se a faixa está silenciosa ou não. Cria uma ação que pode ser "
 "desfeita e executa-a."
 
+#: ../../scripting/api/audio track.rst:30
+#, fuzzy
+msgid "Scheme Procedure: **track-add-lane-region** | *track region lane_pos*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
+
 #: ../../scripting/api/audio track.rst:28
 msgid "Adds region to track track. To be used for regions with lanes (midi/audio)"
 msgstr ""
@@ -119,6 +187,12 @@ msgstr ""
 
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
+#: ../../scripting/api/audio
+#: ../../scripting/api/audio tracklist.rst:7
+#, fuzzy
+msgid "Scheme Procedure: **tracklist-insert-track** | *track idx*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
+
 #: ../../scripting/api/audio tracklist.rst:6
 msgid "Inserts track track at index idx in the tracklist."
 msgstr "Insere faixa no índice idx na lista de faixas."
@@ -126,13 +200,26 @@ msgstr "Insere faixa no índice idx na lista de faixas."
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
+#: ../../scripting/api/audio
+#: ../../scripting/api/audio
+#: ../../scripting/api/audio
 #: ../../scripting/api/intro.rst:6
 msgid "API"
 msgstr "API"
 
+#: ../../scripting/api/plugins plugin.rst:7
+#, fuzzy
+msgid "Scheme Procedure: **plugin-get-in-port** | *plugin port_idx*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
+
 #: ../../scripting/api/plugins plugin.rst:6
 msgid "Returns the input port of the plugin at the given index."
 msgstr "Retorna a porta de entrada do suplemento no índice dado."
+
+#: ../../scripting/api/plugins plugin.rst:11
+#, fuzzy
+msgid "Scheme Procedure: **plugin-get-out-port** | *plugin port_idx*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 
 #: ../../scripting/api/plugins plugin.rst:10
 msgid "Returns the output port of the plugin at the given index."
@@ -140,9 +227,20 @@ msgstr "Retorna a porta de saída do suplemento no índice dado."
 
 #: ../../scripting/api/plugins
 #: ../../scripting/api/plugins
+#: ../../scripting/api/plugins
+#: ../../scripting/api/zrythm.rst:7
+#, fuzzy
+msgid "Scheme Procedure: **zrythm-get-ver**"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
+
 #: ../../scripting/api/zrythm.rst:6
 msgid "Return the Zrythm version as a string."
 msgstr "Retornar a versão do Zrythm como uma cadeia."
+
+#: ../../scripting/api/zrythm.rst:11
+#, fuzzy
+msgid "Scheme Procedure: **zrythm-get-plugin-manager**"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 
 #: ../../scripting/api/zrythm.rst:10
 msgid "Return the PluginManager instance."
@@ -233,3 +331,4 @@ msgstr "A API de Guile não está disponível no Windows."
 #~ "(audio track))`` at the top of the"
 #~ " script."
 #~ msgstr ""
+

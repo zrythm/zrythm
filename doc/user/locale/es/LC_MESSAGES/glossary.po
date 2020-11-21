@@ -100,10 +100,10 @@ msgid ""
 "control value that affects a processor, such as a plugin. For example, a "
 "gain control. Used interchangeably with :term:`Parameter`."
 msgstr ""
-"Un control es un: doc: `port <../ routing / ports>` con un valor de control "
+"Un control es un :doc:`port <../routing/ports>` con un valor de control "
 "que puede cambiar el usuario y que afecta a un procesador, como un "
-"complemento. Por ejemplo, un control de ganancia. Se usa indistintamente con:"
-" term: `Parámetro`."
+"complemento. Por ejemplo, un control de ganancia. Se usa indistintamente con "
+":term:`Parameter`."
 
 #: ../../glossary/intro.rst:42
 #, fuzzy
@@ -365,9 +365,9 @@ msgid ""
 "latest.html>`_) on freedesktop-compliant systems (or if "
 ":envvar:`XDG_DATA_HOME` is defined), or"
 msgstr ""
-": envvar: `XDG_DATA_HOME` (consulte la` Especificación de directorio base "
+":envvar:`XDG_DATA_HOME` (consulte la `Especificación de directorio base "
 "XDG <https://specifications.freedesktop.org/basedir-spec/basedir-spec-"
-"latest.html> `_) en sistemas compatibles con freedesktop (o si: envvar : "
+"latest.html>`_) en sistemas compatibles con freedesktop (o si :envvar:"
 "`XDG_DATA_HOME` está definido), o"
 
 #: ../../glossary/intro.rst:162

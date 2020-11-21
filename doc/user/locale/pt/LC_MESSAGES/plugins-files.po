@@ -125,8 +125,8 @@ msgid ""
 "connections` for details."
 msgstr ""
 "O número na parte superior direita de cada nome de porta mostrará a "
-"quantidade atual de conexões a/de esta porta. Veja :doc:`.../.../routing/"
-"making-connections' para detalhes."
+"quantidade atual de conexões a/de esta porta. Veja :doc:`../../routing/"
+"making-connections` para detalhes."
 
 #: ../../plugins-files/plugins/inspector-page.rst:29
 msgid "Changing Values"

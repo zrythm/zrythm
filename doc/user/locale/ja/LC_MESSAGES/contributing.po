@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-29 18:03+0100\n"
+"POT-Creation-Date: 2020-11-21 13:40+0000\n"
 "PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"manualcontributing/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/zrythm/manualcontributing/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../contributing/intro.rst:6
@@ -102,38 +101,10 @@ msgstr ""
 "``develop`` です。"
 
 #: ../../contributing/intro.rst:50
-msgid "Translation"
-msgstr "翻訳"
-
-#: ../../contributing/intro.rst:51
-msgid ""
-"Zrythm is available for translation at `Weblate "
-"<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
-msgstr ""
-"Zrythmは、 `Weblate <https://hosted.weblate.org/engage/zrythm/"
-"?utm_source=widget>`_ で翻訳できます。"
-
-#: ../../contributing/intro.rst:54
-msgid ""
-"The Zrythm translation project contains the translations for the Zrythm "
-"program, the website as well as sections of this manual."
-msgstr "Zrythm翻訳プロジェクトには、Zrythmプログラム、ウェブサイト、およびこのマニュアルのセクションの翻訳があります。"
-
-#: ../../contributing/intro.rst:58
-msgid ""
-"Click on the project you wish to work on, and then select a language in "
-"the screen that follows. For more information on using Weblate, please "
-"see the `official documentation "
-"<https://docs.weblate.org/en/latest/user/translating.html>`_."
-msgstr ""
-"作業したいプロジェクトをクリックし、次の画面で言語を選択します。Weblateの使い方については、 `公式ドキュメント "
-"<https://docs.weblate.org/ja/latest/user/translating.html>`_ を参照してください。"
-
-#: ../../contributing/intro.rst:66
 msgid "Editing this Manual"
 msgstr "このマニュアルの編集"
 
-#: ../../contributing/intro.rst:67
+#: ../../contributing/intro.rst:51
 #, fuzzy
 msgid ""
 "Click on the :guilabel:`View Source` button at the top of the page to "
@@ -143,7 +114,7 @@ msgstr ""
 "ページの上部にある :guilabel:`View Source` "
 "ボタンをクリックして、ページが存在するファイルを見つけ、ソースディストリビューションでファイルを見つけて編集します。"
 
-#: ../../contributing/intro.rst:72
+#: ../../contributing/intro.rst:56
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
@@ -151,29 +122,113 @@ msgstr ""
 "このマニュアルをコンパイルするには、`Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "がインストールされている必要があります。"
 
+#: ../../contributing/intro.rst:61
+msgid "Translation"
+msgstr "翻訳"
+
+#: ../../contributing/intro.rst:62
+msgid ""
+"Zrythm is available for translation at `Weblate "
+"<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
+msgstr ""
+"Zrythmは、 `Weblate "
+"<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ で翻訳できます。"
+
+#: ../../contributing/intro.rst:65
+msgid ""
+"The Zrythm translation project contains the translations for the Zrythm "
+"program, the website as well as sections of this manual."
+msgstr "Zrythm翻訳プロジェクトには、Zrythmプログラム、ウェブサイト、およびこのマニュアルのセクションの翻訳があります。"
+
+#: ../../contributing/intro.rst:69
+msgid ""
+"Click on the project you wish to work on, and then select a language in "
+"the screen that follows. For more information on using Weblate, please "
+"see the `official documentation "
+"<https://docs.weblate.org/en/latest/user/translating.html>`_."
+msgstr ""
+"作業したいプロジェクトをクリックし、次の画面で言語を選択します。Weblateの使い方については、 `公式ドキュメント "
+"<https://docs.weblate.org/ja/latest/user/translating.html>`_ を参照してください。"
+
 #: ../../contributing/intro.rst:77
+msgid "User Manual"
+msgstr ""
+
+#: ../../contributing/intro.rst:78
+msgid ""
+"When translating the user manual, please make sure you follow the "
+"following Sphinx/RST syntax, to avoid errors when applying your "
+"translations."
+msgstr ""
+
+#: ../../contributing/intro.rst:83
+msgid "General Syntax"
+msgstr ""
+
+#: ../../contributing/intro.rst:84
+msgid ""
+"When you see something inside ``:``, such as ``:term:``, it should be "
+"left untranslated. The part following should be left untranslated as "
+"well. For example:"
+msgstr ""
+
+#: ../../contributing/intro.rst:93
+#: ../../contributing/intro.rst:109
+msgid "should be translated in Japanese as"
+msgstr ""
+
+#: ../../contributing/intro.rst:100
+msgid ""
+"This is because this value will replaced automatically by Sphinx with the"
+" translation for ``Parameter``. The only exception to this rule is when "
+"you see the ``<>`` characters. For example:"
+msgstr ""
+
+#: ../../contributing/intro.rst:116
+msgid ""
+"Please make sure you do not insert or remove spaces. The following "
+"examples will cause errors."
+msgstr ""
+
+#: ../../contributing/intro.rst:130
+msgid ""
+"Also, there should be space, comma or period after such syntax, like "
+"below."
+msgstr ""
+
+#: ../../contributing/intro.rst:139
+msgid "The following examples will cause errors."
+msgstr ""
+
+#: ../../contributing/intro.rst:146
+msgid ""
+"The following syntax usually refers to a path, so please keep it "
+"unchanged, otherwise the file it refers to will not be found."
+msgstr ""
+
+#: ../../contributing/intro.rst:155
 msgid "Donations"
 msgstr "寄付"
 
-#: ../../contributing/intro.rst:78
+#: ../../contributing/intro.rst:156
 msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
 msgstr "寄付金の受付には、以下のサービスを利用しています。金額の大小に関わらず、ご寄付をいただくことで、継続的な開発を維持することが可能になります。"
 
-#: ../../contributing/intro.rst:82
+#: ../../contributing/intro.rst:160
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr "`リベラペイ <https://liberapay.com/Zrythm>`_"
 
-#: ../../contributing/intro.rst:83
+#: ../../contributing/intro.rst:161
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
-#: ../../contributing/intro.rst:84
+#: ../../contributing/intro.rst:162
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
-#: ../../contributing/intro.rst:86
+#: ../../contributing/intro.rst:164
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer "
 "<https://www.zrythm.org/en/download.html>`_."
@@ -478,3 +533,24 @@ msgstr ""
 #~ "ソース配布においては、こちらをご覧下さい。\n"
 #~ "`HACKING file "
 #~ "<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`"
+
+#~ msgid ""
+#~ "Also, There should be space, comma "
+#~ "or period after such syntax. The "
+#~ "following examples will cause errors."
+#~ msgstr ""
+
+#~ msgid "So please make sure there is correct punctuation, as shown below."
+#~ msgstr ""
+
+#~ msgid "Paths"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Also, when you see the following, "
+#~ "this usually refers to a path, so"
+#~ " please keep it unchanged, otherwise "
+#~ "the file it refers to will not "
+#~ "be found."
+#~ msgstr ""
+
