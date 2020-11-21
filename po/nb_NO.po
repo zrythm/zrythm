@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-10-08 01:26+0000\n"
+"PO-Revision-Date: 2020-11-15 13:28+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/nb_NO/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
@@ -3518,7 +3518,7 @@ msgstr "Veksle fullskjermsvisning"
 #: resources/ui/port_info_dialog.ui:114
 #, fuzzy
 msgid "Range"
-msgstr "Tidsområde"
+msgstr "Tidsrom"
 
 #: resources/ui/port_info_dialog.ui:128
 msgid "Flags"
@@ -3812,7 +3812,7 @@ msgstr "Utdatafiler"
 
 #: resources/ui/export_dialog.ui:137
 msgid "Time Range"
-msgstr "Tidsområde"
+msgstr "Tidsrom"
 
 #: resources/ui/export_dialog.ui:152
 msgid "Tracks"
@@ -3921,7 +3921,7 @@ msgstr ""
 #: resources/ui/range_action_buttons.ui:58
 #, fuzzy
 msgid "Remove range"
-msgstr "Tidsområde"
+msgstr "Fjern tidsområde"
 
 #: resources/ui/editor_toolbar.ui:139 resources/ui/editor_toolbar.ui:182
 msgid "Flip"
@@ -4344,9 +4344,8 @@ msgid "Artist to use when exporting, if the file type supports it."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:389
-#, fuzzy
 msgid "Time range"
-msgstr "Tidsområde"
+msgstr "Tidsrom"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:390
 msgid "Time range to export."
