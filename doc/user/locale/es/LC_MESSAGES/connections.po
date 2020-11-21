@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: 2020-11-14 00:06+0000\n"
+"PO-Revision-Date: 2020-11-15 13:28+0000\n"
 "Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "connections/es/>\n"
@@ -132,7 +132,7 @@ msgstr ""
 
 #: ../../connections/ports.rst:40
 msgid "Control"
-msgstr ""
+msgstr "Control"
 
 #: ../../connections/ports.rst:40
 msgid ""
