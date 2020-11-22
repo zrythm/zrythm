@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-21 13:40+0000\n"
+"POT-Creation-Date: 2020-11-22 12:22+0000\n"
 "PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -173,62 +173,62 @@ msgid ""
 msgstr ""
 
 #: ../../contributing/intro.rst:93
-#: ../../contributing/intro.rst:109
-msgid "should be translated in Japanese as"
+#: ../../contributing/intro.rst:108
+msgid "should be translated in French as"
 msgstr ""
 
-#: ../../contributing/intro.rst:100
+#: ../../contributing/intro.rst:99
 msgid ""
 "This is because this value will replaced automatically by Sphinx with the"
 " translation for ``Parameter``. The only exception to this rule is when "
 "you see the ``<>`` characters. For example:"
 msgstr ""
 
-#: ../../contributing/intro.rst:116
+#: ../../contributing/intro.rst:115
 msgid ""
 "Please make sure you do not insert or remove spaces. The following "
 "examples will cause errors."
 msgstr ""
 
-#: ../../contributing/intro.rst:130
+#: ../../contributing/intro.rst:127
 msgid ""
 "Also, there should be space, comma or period after such syntax, like "
 "below."
 msgstr ""
 
-#: ../../contributing/intro.rst:139
+#: ../../contributing/intro.rst:136
 msgid "The following examples will cause errors."
 msgstr ""
 
-#: ../../contributing/intro.rst:146
+#: ../../contributing/intro.rst:143
 msgid ""
 "The following syntax usually refers to a path, so please keep it "
 "unchanged, otherwise the file it refers to will not be found."
 msgstr ""
 
-#: ../../contributing/intro.rst:155
+#: ../../contributing/intro.rst:152
 msgid "Donations"
 msgstr "寄付"
 
-#: ../../contributing/intro.rst:156
+#: ../../contributing/intro.rst:153
 msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
 msgstr "寄付金の受付には、以下のサービスを利用しています。金額の大小に関わらず、ご寄付をいただくことで、継続的な開発を維持することが可能になります。"
 
-#: ../../contributing/intro.rst:160
+#: ../../contributing/intro.rst:157
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr "`リベラペイ <https://liberapay.com/Zrythm>`_"
 
-#: ../../contributing/intro.rst:161
+#: ../../contributing/intro.rst:158
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
-#: ../../contributing/intro.rst:162
+#: ../../contributing/intro.rst:159
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
-#: ../../contributing/intro.rst:164
+#: ../../contributing/intro.rst:161
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer "
 "<https://www.zrythm.org/en/download.html>`_."
@@ -552,5 +552,8 @@ msgstr ""
 #~ " please keep it unchanged, otherwise "
 #~ "the file it refers to will not "
 #~ "be found."
+#~ msgstr ""
+
+#~ msgid "should be translated in Japanese as"
 #~ msgstr ""
 

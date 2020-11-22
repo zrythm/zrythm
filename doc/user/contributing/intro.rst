@@ -90,12 +90,11 @@ For example:
 
   A plugin has parameters (see :term:`Parameter`).
 
-should be translated in Japanese as
+should be translated in French as
 
 .. code-block:: text
 
-  :term:`Parameter`
-  プラグインにはパラメータがあります（ :term:`Parameter` を参照）。
+  Un plugin a des paramètres (:term:`Parameter`).
 
 This is because this value will replaced
 automatically by Sphinx with the translation for
@@ -106,11 +105,11 @@ when you see the ``<>`` characters. For example:
 
   A plugin has :term:`parameters <Parameter>`.
 
-should be translated in Japanese as
+should be translated in French as
 
 .. code-block:: text
 
-  プラグインには :term:`パラメータ <Parameter>` があります。
+  Un plugin a des :term:`paramètres <Parameter>`.
 
 .. important::
   Please make sure you do not insert or remove
@@ -124,8 +123,6 @@ should be translated in Japanese as
      ^ space
     :term :`Parameter`
          ^ space
-    :term: `Parameter`
-          ^ space
 
   Also, there should be space, comma or period
   after such syntax, like below.
