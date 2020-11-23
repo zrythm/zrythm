@@ -504,6 +504,10 @@ Args:
                  "automation-function" "i" "0"
                  "Last used automation function"
                  "Last used automation function (index corresponding to enum in automation function action).")
+               (make-schema-key
+                 "audio-function" "i" "0"
+                 "Last used audio function"
+                 "Last used audio function (index corresponding to enum in audio function action).")
              ))) ;; ui
 
          (schema-print

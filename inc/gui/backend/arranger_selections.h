@@ -53,6 +53,7 @@ typedef enum ArrangerSelectionsType
   ARRANGER_SELECTIONS_TYPE_TIMELINE,
   ARRANGER_SELECTIONS_TYPE_MIDI,
   ARRANGER_SELECTIONS_TYPE_AUTOMATION,
+  ARRANGER_SELECTIONS_TYPE_AUDIO,
 } ArrangerSelectionsType;
 
 typedef struct ArrangerSelections
@@ -74,6 +75,8 @@ arranger_selections_type_strings[] =
     ARRANGER_SELECTIONS_TYPE_MIDI },
   { "Automation",
     ARRANGER_SELECTIONS_TYPE_AUTOMATION   },
+  { "Audio",
+    ARRANGER_SELECTIONS_TYPE_AUDIO   },
 };
 
 static const cyaml_schema_field_t

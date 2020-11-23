@@ -1768,6 +1768,10 @@ process_events (void * data)
         case ET_PROJECT_SELECTION_TYPE_CHANGED:
           on_project_selection_type_changed ();
           break;
+        case ET_AUDIO_SELECTIONS_RANGE_CHANGED:
+          arranger_widget_redraw_whole (
+            MW_AUDIO_ARRANGER);
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

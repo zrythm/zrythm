@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -84,7 +84,7 @@ automation_selections_schema = {
  * @param pos Position to paste to.
  * @param region ZRegion to paste to.
  */
-int
+bool
 automation_selections_can_be_pasted (
   AutomationSelections * ts,
   Position *             pos,

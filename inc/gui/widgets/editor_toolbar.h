@@ -62,6 +62,7 @@ typedef struct _EditorToolbarWidget
 
   GMenuModel *        midi_functions_menu;
   GMenuModel *        automation_functions_menu;
+  GMenuModel *        audio_functions_menu;
 } EditorToolbarWidget;
 
 /**

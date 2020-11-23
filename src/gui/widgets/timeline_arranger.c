@@ -546,14 +546,14 @@ timeline_arranger_widget_set_select_type (
             y))
         {
           /* select objects */
-          self->resizing_range = 0;
+          self->resizing_range = false;
         }
       else
         {
 
           /* set resizing range flags */
-          self->resizing_range = 1;
-          self->resizing_range_start = 1;
+          self->resizing_range = true;
+          self->resizing_range_start = true;
           self->action =
             UI_OVERLAY_ACTION_RESIZING_R;
         }
@@ -562,7 +562,7 @@ timeline_arranger_widget_set_select_type (
     {
       /* TODO something similar as above based on
        * visible space */
-      self->resizing_range = 0;
+      self->resizing_range = false;
     }
 
   /*arranger_widget_refresh_all_backgrounds ();*/

@@ -30,10 +30,12 @@
 #include <stdint.h>
 
 #include "actions/undoable_action.h"
+#include "audio/audio_function.h"
 #include "audio/automation_function.h"
 #include "audio/midi_function.h"
 #include "audio/position.h"
 #include "audio/quantize_options.h"
+#include "gui/backend/audio_selections.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/chord_selections.h"
 #include "gui/backend/midi_arranger_selections.h"
@@ -241,6 +243,8 @@ typedef struct ArrangerSelectionsAction
   MidiArrangerSelections * ma_sel_after;
   AutomationSelections * automation_sel;
   AutomationSelections * automation_sel_after;
+  AudioSelections *      audio_sel;
+  AudioSelections *      audio_sel_after;
 
   /* arranger objects that can be split */
   ZRegion *            region_r1[800];
@@ -315,6 +319,9 @@ static const cyaml_schema_field_t
     ArrangerSelectionsAction, automation_sel,
     automation_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    ArrangerSelectionsAction, audio_sel,
+    audio_selections_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ArrangerSelectionsAction, chord_sel_after,
     chord_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
@@ -326,6 +333,9 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ArrangerSelectionsAction, automation_sel_after,
     automation_selections_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    ArrangerSelectionsAction, audio_sel_after,
+    audio_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ArrangerSelectionsAction, region_before,
     region_fields_schema),
@@ -558,6 +568,16 @@ UndoableAction *
 arranger_selections_action_new_edit_automation_function (
   ArrangerSelections * sel_before,
   AutomationFunctionType automation_func_type);
+
+/**
+ * Wrapper over
+ * arranger_selections_action_new_edit() for
+ * automation functions.
+ */
+UndoableAction *
+arranger_selections_action_new_edit_audio_function (
+  ArrangerSelections * sel_before,
+  AudioFunctionType    audio_func_type);
 
 /**
  * Creates a new action for automation autofill.

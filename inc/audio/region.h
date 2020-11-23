@@ -175,12 +175,20 @@ typedef struct ZRegion
   /** Musical mode setting. */
   RegionMusicalMode musical_mode;
 
+  /** Array of split points. */
+  Position *        split_points;
+  int               num_split_points;
+  size_t            split_points_size;
+
   /* ==== AUDIO REGION END ==== */
 
   /* ==== AUTOMATION REGION ==== */
 
   /**
-   * The automation points.
+   * The automation points this region contains.
+   *
+   * Also used in audio regions for volume
+   * automation.
    *
    * Must always stay sorted by position.
    */

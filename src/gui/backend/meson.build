@@ -19,6 +19,7 @@ backend_srcs = [
   'arranger_object.c',
   'arranger_selections.c',
   'audio_clip_editor.c',
+  'audio_selections.c',
   'automation_editor.c',
   'automation_selections.c',
   'chord_editor.c',

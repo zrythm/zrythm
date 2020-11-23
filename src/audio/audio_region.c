@@ -116,6 +116,19 @@ audio_region_new (
 
   audio_region_init_frame_caches (self, clip);
 
+  /* init split points */
+  self->split_points_size = 1;
+  self->split_points =
+    calloc (
+      self->split_points_size, sizeof (Position));
+  self->num_split_points = 0;
+
+  /* init APs */
+  self->aps_size = 2;
+  self->aps =
+    malloc (
+      self->aps_size * sizeof (AutomationPoint *));
+
   /* init */
   region_init (
     self, start_pos, &obj->end_pos, track_pos,

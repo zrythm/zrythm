@@ -39,6 +39,7 @@
 #include "audio/region_link_group_manager.h"
 #include "audio/tracklist.h"
 #include "gui/backend/clip_editor.h"
+#include "gui/backend/audio_selections.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/chord_selections.h"
 #include "gui/backend/midi_arranger_selections.h"
@@ -203,6 +204,11 @@ typedef struct Project
   AutomationSelections automation_selections;
 
   /**
+   * Selected objects in the audio editor.
+   */
+  AudioSelections   audio_selections;
+
+  /**
    * Selected objects in the
    * ChordObjectArrangerWidget.
    */
@@ -327,6 +333,9 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_EMBEDDED (
     Project, automation_selections,
     automation_selections_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Project, audio_selections,
+    audio_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     Project, tracklist_selections,
     tracklist_selections_fields_schema),

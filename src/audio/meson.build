@@ -16,6 +16,7 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 audio_srcs = [
+  'audio_function.c',
   'audio_region.c',
   'audio_track.c',
   'automation_function.c',

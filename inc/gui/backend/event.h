@@ -182,6 +182,9 @@ typedef enum EventType
 
   ET_AUTOMATION_VALUE_VISIBILITY_CHANGED,
   ET_PROJECT_SELECTION_TYPE_CHANGED,
+
+  /** Range selection changed in audio editor. */
+  ET_AUDIO_SELECTIONS_RANGE_CHANGED,
 } EventType;
 
 /**

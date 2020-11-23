@@ -126,6 +126,8 @@ arranger_selections_init_loaded (
       cs = (ChordSelections *) self;
       SET_OBJ (cs, ChordObject, chord_object);
       break;
+    case TYPE (AUDIO):
+      break;
     default:
       g_return_if_reached ();
     }
@@ -174,6 +176,8 @@ arranger_selections_init (
     case TYPE (CHORD):
       cs = (ChordSelections *) self;
       SET_OBJ (cs, ChordObject, chord_object);
+      break;
+    case TYPE (AUDIO):
       break;
     default:
       g_return_if_reached ();

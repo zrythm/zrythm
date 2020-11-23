@@ -576,6 +576,10 @@ project_init_selections (Project * self)
     ARRANGER_SELECTIONS_TYPE_AUTOMATION);
   arranger_selections_init (
     (ArrangerSelections *)
+    &self->audio_selections,
+    ARRANGER_SELECTIONS_TYPE_AUDIO);
+  arranger_selections_init (
+    (ArrangerSelections *)
     &self->chord_selections,
     ARRANGER_SELECTIONS_TYPE_CHORD);
   arranger_selections_init (
@@ -1032,6 +1036,9 @@ load (
   arranger_selections_init_loaded (
     (ArrangerSelections *)
     &self->automation_selections, true);
+  arranger_selections_init_loaded (
+    (ArrangerSelections *)
+    &self->audio_selections, true);
 
   tracklist_selections_init_loaded (
     self->tracklist_selections);

@@ -19,6 +19,7 @@
 
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
+#include "audio/audio_function.h"
 #include "audio/quantize_options.h"
 #include "gui/accel.h"
 #include "gui/backend/event_manager.h"
@@ -63,6 +64,14 @@ editor_toolbar_widget_refresh (
       return;
     }
 
+  /* set visibility of each tool item */
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->chord_highlight_tool_item),
+    false);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->sep_after_chord_highlight),
+    false);
+
   switch (region->id.type)
     {
     case REGION_TYPE_MIDI:
@@ -91,10 +100,12 @@ editor_toolbar_widget_refresh (
 
         /* set visibility of each tool item */
         gtk_widget_set_visible (
-          GTK_WIDGET (self->chord_highlight_tool_item),
+          GTK_WIDGET (
+            self->chord_highlight_tool_item),
           true);
         gtk_widget_set_visible (
-          GTK_WIDGET (self->sep_after_chord_highlight),
+          GTK_WIDGET (
+            self->sep_after_chord_highlight),
           true);
       }
       break;
@@ -122,14 +133,32 @@ editor_toolbar_widget_refresh (
         button_with_menu_widget_set_menu_model (
           self->functions_btn,
           self->automation_functions_menu);
+      }
+      break;
+    case REGION_TYPE_AUDIO:
+      {
+        AudioFunctionType type =
+          g_settings_get_int (
+            S_UI, "audio-function");
+        char * str =
+          g_strdup_printf (
+            _("Apply %s"),
+          _(audio_function_type_to_string (type)));
+        char * tooltip_str =
+          g_strdup_printf (
+            _("Apply %s with previous settings"),
+          _(audio_function_type_to_string (type)));
+        gtk_button_set_label (
+          self->apply_function_btn, str);
+        gtk_widget_set_tooltip_text (
+          GTK_WIDGET (self->apply_function_btn),
+          tooltip_str);
+        g_free (str);
+        g_free (tooltip_str);
 
-        /* set visibility of each tool item */
-        gtk_widget_set_visible (
-          GTK_WIDGET (self->chord_highlight_tool_item),
-          false);
-        gtk_widget_set_visible (
-          GTK_WIDGET (self->sep_after_chord_highlight),
-          false);
+        button_with_menu_widget_set_menu_model (
+          self->functions_btn,
+          self->audio_functions_menu);
       }
       break;
     default:

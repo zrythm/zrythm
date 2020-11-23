@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,13 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_AUDIO_ARRANGER_H__
-#define __GUI_WIDGETS_AUDIO_ARRANGER_H__
+/**
+ * \file
+ *
+ * Draw functions for ArrangerWidget - split to make
+ * file smaller.
+ *
+ * TODO
+ */
 
-#include "gui/backend/tool.h"
+#ifndef __GUI_WIDGETS_ARRANGER_DRAW_H__
+#define __GUI_WIDGETS_ARRANGER_DRAW_H__
+
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/main_window.h"
-#include "audio/position.h"
 
 #include <gtk/gtk.h>
 
@@ -33,16 +39,15 @@
  * @{
  */
 
-#define MW_AUDIO_ARRANGER \
-  MW_AUDIO_EDITOR_SPACE->arranger
-
-void
-audio_arranger_widget_snap_range_r (
-  ArrangerWidget * self,
-  Position *       pos);
+gboolean
+arranger_draw_cb (
+  GtkWidget *      widget,
+  cairo_t *        cr,
+  ArrangerWidget * self);
 
 /**
  * @}
  */
 
 #endif
+

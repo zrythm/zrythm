@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,14 +17,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/automation_region.h"
+#include "audio/audio_region.h"
 #include "audio/chord_track.h"
 #include "audio/engine.h"
 #include "audio/position.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/backend/automation_selections.h"
+#include "gui/backend/audio_selections.h"
 #include "gui/widgets/midi_region.h"
 #include "project.h"
 #include "utils/arrays.h"
@@ -32,8 +33,24 @@
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
+#include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+
+/**
+ * Sets whether a range selection exists and sends
+ * events to update the UI.
+ */
+void
+audio_selections_set_has_range (
+  AudioSelections * self,
+  bool              has_range)
+{
+  self->has_selection = true;
+
+  EVENTS_PUSH (
+    ET_AUDIO_SELECTIONS_RANGE_CHANGED, NULL);
+}
 
 /**
  * Returns if the selections can be pasted.
@@ -42,12 +59,12 @@
  * @param region ZRegion to paste to.
  */
 bool
-automation_selections_can_be_pasted (
-  AutomationSelections * ts,
+audio_selections_can_be_pasted (
+  AudioSelections * ts,
   Position *             pos,
   ZRegion *              r)
 {
-  if (!r || r->id.type != REGION_TYPE_AUTOMATION)
+  if (!r || r->id.type != REGION_TYPE_AUDIO)
     return false;
 
   ArrangerObject * r_obj =
@@ -55,12 +72,13 @@ automation_selections_can_be_pasted (
   if (r_obj->pos.frames + pos->frames < 0)
     return false;
 
-  return true;
+  /* TODO */
+  return false;
 }
 
 SERIALIZE_SRC (
-  AutomationSelections, automation_selections)
+  AudioSelections, audio_selections)
 DESERIALIZE_SRC (
-  AutomationSelections, automation_selections)
+  AudioSelections, audio_selections)
 PRINT_YAML_SRC (
-  AutomationSelections, automation_selections)
+  AudioSelections, audio_selections)
