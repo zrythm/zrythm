@@ -215,6 +215,30 @@ audio_region_get_clip (
 }
 
 /**
+ * Replaces the region's frames from \ref
+ * start_frames with \ref frames.
+ *
+ * @param frames Frames, interleaved.
+ */
+void
+audio_region_replace_frames (
+  ZRegion * self,
+  float *   frames,
+  size_t    start_frame,
+  size_t    num_frames)
+{
+  AudioClip * clip = audio_region_get_clip (self);
+
+  dsp_copy (
+    &clip->frames[start_frame * clip->channels],
+    frames, num_frames * clip->channels);
+
+  audio_clip_write_to_pool (clip, false);
+
+  audio_region_init_frame_caches (self, clip);
+}
+
+/**
  * Frees members only but not the audio region itself.
  *
  * Regions should be free'd using region_free.

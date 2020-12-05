@@ -26,6 +26,7 @@
 #ifndef __GUI_BACKEND_AUDIO_SELECTIONS_H__
 #define __GUI_BACKEND_AUDIO_SELECTIONS_H__
 
+#include "audio/region_identifier.h"
 #include "gui/backend/arranger_selections.h"
 #include "utils/yaml.h"
 
@@ -54,9 +55,31 @@ typedef struct AudioSelections
    *
    * The start position must always be before the
    * end position.
+   *
+   * Start position is included in the range, end
+   * position is excluded.
+   *
+   * @note These are editor positions and must
+   * be adjusted for the region's start position.
    */
   Position           sel_start;
   Position           sel_end;
+
+  /**
+   * Audio pool ID of the associated audio file,
+   * used during serialization.
+   *
+   * Set to -1 if unused.
+   */
+  int                pool_id;
+
+  /**
+   * Identifier of the current region.
+   *
+   * Other types of selections don't need this
+   * since their objects refer to it.
+   */
+  RegionIdentifier   region_id;
 
 } AudioSelections;
 
@@ -74,6 +97,11 @@ static const cyaml_schema_field_t
   YAML_FIELD_MAPPING_EMBEDDED (
     AudioSelections, sel_end,
     position_fields_schema),
+  YAML_FIELD_INT (
+    AudioSelections, pool_id),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    AudioSelections, region_id,
+    region_identifier_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -85,6 +113,19 @@ audio_selections_schema = {
     AudioSelections,
     audio_selections_fields_schema),
 };
+
+/**
+ * Inits the audio selections.
+ */
+void
+audio_selections_init (
+  AudioSelections * self);
+
+/**
+ * Creates a new AudioSelections instance.
+ */
+AudioSelections *
+audio_selections_new (void);
 
 /**
  * Sets whether a range selection exists and sends

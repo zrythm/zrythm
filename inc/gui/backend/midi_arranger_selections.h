@@ -58,8 +58,7 @@ typedef struct MidiArrangerSelections
 static const cyaml_schema_field_t
   midi_arranger_selections_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "base", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     MidiArrangerSelections, base,
     arranger_selections_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (

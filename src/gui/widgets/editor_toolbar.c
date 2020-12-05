@@ -313,6 +313,7 @@ editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
   BIND_CHILD (quantize_box);
   BIND_CHILD (event_viewer_toggle);
   BIND_CHILD (automation_functions_menu);
+  BIND_CHILD (audio_functions_menu);
   BIND_CHILD (midi_functions_menu);
   BIND_CHILD (functions_btn);
 }

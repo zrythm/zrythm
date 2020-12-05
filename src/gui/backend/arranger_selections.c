@@ -178,6 +178,11 @@ arranger_selections_init (
       SET_OBJ (cs, ChordObject, chord_object);
       break;
     case TYPE (AUDIO):
+      {
+        AudioSelections * sel =
+          (AudioSelections *) self;
+        audio_selections_init (sel);
+      }
       break;
     default:
       g_return_if_reached ();
@@ -388,6 +393,7 @@ arranger_selections_clone (
   ChordSelections * src_cs, * new_cs;
   MidiArrangerSelections * src_mas, * new_mas;
   AutomationSelections * src_as, * new_as;
+  AudioSelections * src_aus, * new_aus;
 
 #define CLONE_OBJS(src_sel,new_sel,cc,sc) \
   cc * sc, * new_##sc; \
@@ -459,6 +465,21 @@ arranger_selections_clone (
       CLONE_OBJS (
         src_cs, new_cs, ChordObject, chord_object);
       return ((ArrangerSelections *) new_cs);
+    case TYPE (AUDIO):
+      src_aus = (AudioSelections *) self;
+      new_aus =
+        calloc (1, sizeof (AudioSelections));
+      arranger_selections_init (
+        (ArrangerSelections *) new_aus,
+        ARRANGER_SELECTIONS_TYPE_CHORD);
+      new_aus->base = src_aus->base;
+      new_aus->sel_start = src_aus->sel_start;
+      new_aus->sel_end = src_aus->sel_end;
+      new_aus->has_selection =
+        src_aus->has_selection;
+      new_aus->pool_id = src_aus->pool_id;
+      new_aus->region_id = src_aus->region_id;
+      return ((ArrangerSelections *) new_aus);
     default:
       g_return_val_if_reached (NULL);
     }
@@ -731,6 +752,12 @@ arranger_selections_has_any (
       cs = (ChordSelections *) self;
       return
         cs->num_chord_objects > 0;
+    case TYPE (AUDIO):
+      {
+        AudioSelections * sel =
+          (AudioSelections *) self;
+        return sel->has_selection;
+      }
     default:
       g_return_val_if_reached (-1);
     }
@@ -1484,6 +1511,9 @@ arranger_selections_free_full (
       FREE_OBJS (
         cs, chord_object);
       break;
+    case TYPE (AUDIO):
+      /* nothing to free */
+      break;
     default:
       g_return_if_reached ();
     }
@@ -2165,6 +2195,8 @@ arranger_selections_get_all_objects (
       ADD_OBJ (
         cs, chord_object);
       break;
+    case TYPE (AUDIO):
+      return NULL;
     default:
       g_return_val_if_reached (NULL);
     }

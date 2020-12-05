@@ -947,6 +947,7 @@ arranger_draw_cb (
 
       /* draw range */
       int range_first_px, range_second_px;
+      bool have_range = false;
       if (self->type == TYPE (AUDIO) &&
           AUDIO_SELECTIONS->has_selection)
         {
@@ -975,6 +976,7 @@ arranger_draw_cb (
           range_second_px =
             ui_pos_to_px_editor (
               range_second_pos, 1);
+          have_range = true;
         }
       else if (self->type == TYPE (TIMELINE) &&
           TRANSPORT->has_range)
@@ -1003,10 +1005,15 @@ arranger_draw_cb (
           range_second_px =
             ui_pos_to_px_timeline (
               range_second_pos, 1);
+          have_range = true;
         }
-      draw_range (
-        self, range_first_px, range_second_px,
-        &rect, self->cached_cr);
+
+      if (have_range)
+        {
+          draw_range (
+            self, range_first_px, range_second_px,
+            &rect, self->cached_cr);
+        }
 
       if (self->type == TYPE (TIMELINE))
         {

@@ -151,6 +151,8 @@ set_selections (
       SET_SEL (MidiArranger, ma);
     case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
       SET_SEL (Automation, automation);
+    case ARRANGER_SELECTIONS_TYPE_AUDIO:
+      SET_SEL (Audio, audio);
     default:
       g_return_if_reached ();
     }
@@ -266,20 +268,20 @@ get_actual_arranger_selections (
     {
     case ARRANGER_SELECTIONS_TYPE_TIMELINE:
       return
-        (ArrangerSelections *)
-        TL_SELECTIONS;
+        (ArrangerSelections *) TL_SELECTIONS;
     case ARRANGER_SELECTIONS_TYPE_MIDI:
       return
-        (ArrangerSelections *)
-        MA_SELECTIONS;
+        (ArrangerSelections *) MA_SELECTIONS;
     case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
       return
         (ArrangerSelections *)
         AUTOMATION_SELECTIONS;
     case ARRANGER_SELECTIONS_TYPE_CHORD:
       return
-        (ArrangerSelections *)
-        CHORD_SELECTIONS;
+        (ArrangerSelections *) CHORD_SELECTIONS;
+    case ARRANGER_SELECTIONS_TYPE_AUDIO:
+      return
+        (ArrangerSelections *) AUDIO_SELECTIONS;
     default:
       g_return_val_if_reached (NULL);
       break;
@@ -541,8 +543,14 @@ arranger_selections_action_new_edit_audio_function (
 {
   ArrangerSelections * sel_after =
     arranger_selections_clone (sel_before);
-  audio_function_apply (
-    sel_after, audio_func_type);
+  int res =
+    audio_function_apply (
+      sel_after, audio_func_type);
+  if (res != 0)
+    {
+      arranger_selections_free_full (sel_after);
+      return NULL;
+    }
 
   UndoableAction * ua =
     arranger_selections_action_new_edit (

@@ -32,6 +32,7 @@
 #include "actions/create_tracks_action.h"
 #include "actions/delete_tracks_action.h"
 #include "actions/range_action.h"
+#include "audio/audio_function.h"
 #include "audio/automation_function.h"
 #include "audio/graph.h"
 #include "audio/graph_export.h"
@@ -1925,6 +1926,35 @@ do_automation_func (
   undo_manager_perform (UNDO_MANAGER, ua);
 }
 
+/**
+ * Common routine for applying undoable audio
+ * functions.
+ */
+static void
+do_audio_func (
+  AudioFunctionType type)
+{
+  g_return_if_fail (
+    region_find (&CLIP_EDITOR->region_id));
+  AUDIO_SELECTIONS->region_id =
+    CLIP_EDITOR->region_id;
+  ArrangerSelections * sel =
+    (ArrangerSelections *) AUDIO_SELECTIONS;
+  if (!arranger_selections_has_any (sel))
+    {
+      g_message ("no selections, doing nothing");
+      return;
+    }
+
+  UndoableAction * ua =
+    arranger_selections_action_new_edit_audio_function (
+      sel, type);
+  if (ua)
+    {
+      undo_manager_perform (UNDO_MANAGER, ua);
+    }
+}
+
 DEFINE_SIMPLE (activate_editor_function)
 {
   size_t size;
@@ -2003,6 +2033,35 @@ DEFINE_SIMPLE (activate_editor_function)
           {
             do_automation_func (
               AUTOMATION_FUNCTION_FLIP_VERTICAL);
+          }
+        else
+          {
+            g_return_if_reached ();
+          }
+      }
+      break;
+    case REGION_TYPE_AUDIO:
+      {
+        if (string_is_equal (str, "current"))
+          {
+            do_audio_func (
+              g_settings_get_int (
+                S_UI, "audio-function"));
+          }
+        else if (string_is_equal (str, "invert"))
+          {
+            do_audio_func (
+              AUDIO_FUNCTION_INVERT);
+          }
+        else if (string_is_equal (str, "normalize"))
+          {
+            do_audio_func (
+              AUDIO_FUNCTION_NORMALIZE);
+          }
+        else if (string_is_equal (str, "reverse"))
+          {
+            do_audio_func (
+              AUDIO_FUNCTION_REVERSE);
           }
         else
           {

@@ -38,6 +38,28 @@
 #include <gtk/gtk.h>
 
 /**
+ * Inits the audio selections.
+ */
+void
+audio_selections_init (
+  AudioSelections * self)
+{
+  self->pool_id = -1;
+}
+
+/**
+ * Creates a new AudioSelections instance.
+ */
+AudioSelections *
+audio_selections_new (void)
+{
+  AudioSelections * self =
+    object_new (AudioSelections);
+
+  return self;
+}
+
+/**
  * Sets whether a range selection exists and sends
  * events to update the UI.
  */

@@ -706,6 +706,13 @@ arranger_selections_change_redraw_everything (
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
       break;
+    case ARRANGER_SELECTIONS_TYPE_AUDIO:
+      clip_editor_redraw_region (CLIP_EDITOR);
+      arranger_widget_redraw_whole (
+        MW_AUDIO_ARRANGER);
+      event_viewer_widget_refresh (
+        MW_EDITOR_EVENT_VIEWER);
+      break;
     default:
       g_return_if_reached ();
     }

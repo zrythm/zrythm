@@ -2456,6 +2456,18 @@ drag_begin (
                   /* set whether selecting
                    * objects or selecting range */
                   set_select_type (self, start_y);
+
+                  /* hide range selection */
+                  transport_set_has_range (
+                    TRANSPORT, false);
+
+                  /* hide range selection if audio
+                   * arranger */
+                  if (self->type == TYPE (AUDIO))
+                    {
+                      AUDIO_SELECTIONS->
+                        has_selection = false;
+                    }
                   break;
                 case TOOL_EDIT:
                   if (self->type == TYPE (TIMELINE) ||
@@ -3019,8 +3031,10 @@ drag_update (
       if (self->type == TYPE (TIMELINE))
         {
           if (self->resizing_range)
-            timeline_arranger_widget_snap_range_r (
-              self, &self->curr_pos);
+            {
+              timeline_arranger_widget_snap_range_r (
+                self, &self->curr_pos);
+            }
           else
             {
               int ret =
@@ -3627,6 +3641,33 @@ on_drag_end_chord (
 }
 
 static void
+on_drag_end_audio (
+  ArrangerWidget * self)
+{
+  switch (self->action)
+    {
+    case UI_OVERLAY_ACTION_RESIZING_R:
+      {
+        /* if start range selection is after
+         * end, fix it */
+        if (AUDIO_SELECTIONS->has_selection &&
+            position_is_after (
+              &AUDIO_SELECTIONS->sel_start,
+              &AUDIO_SELECTIONS->sel_end))
+          {
+            Position tmp =
+              AUDIO_SELECTIONS->sel_start;
+            AUDIO_SELECTIONS->sel_start =
+              AUDIO_SELECTIONS->sel_end;
+            AUDIO_SELECTIONS->sel_end = tmp;
+          }
+      }
+    default:
+      break;
+    }
+}
+
+static void
 on_drag_end_timeline (
   ArrangerWidget * self)
 {
@@ -3987,6 +4028,7 @@ drag_end (
       on_drag_end_timeline (self);
       break;
     case TYPE (AUDIO):
+      on_drag_end_audio (self);
       break;
     case TYPE (MIDI):
       on_drag_end_midi (self);
@@ -4002,19 +4044,6 @@ drag_end (
       break;
     default:
       break;
-    }
-
-  /* if clicked on nothing */
-  if (ACTION_IS (STARTING_SELECTION))
-    {
-      /* deselect all */
-      g_message (
-        "clicked on empty space, deselecting all");
-      arranger_widget_select_all (self, 0);
-      /*arranger_widget_update_visibility (self);*/
-
-      /* hide range selection */
-      transport_set_has_range (TRANSPORT, false);
     }
 
   /* if object clicked and object is unselected,

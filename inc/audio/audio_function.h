@@ -66,7 +66,7 @@ audio_function_type_to_string (
  * @param sel Selections to edit.
  * @param type Function type.
  */
-void
+int
 audio_function_apply (
   ArrangerSelections * sel,
   AudioFunctionType    type);

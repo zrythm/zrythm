@@ -54,7 +54,7 @@ audio_arranger_widget_snap_range_r (
       !self->shift_held)
     {
       position_snap_simple (
-        pos, SNAP_GRID_TIMELINE);
+        pos, SNAP_GRID_MIDI);
     }
   position_set_to_pos (
     &AUDIO_SELECTIONS->sel_end, pos);

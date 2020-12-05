@@ -99,6 +99,19 @@ audio_region_get_clip (
   const ZRegion * self);
 
 /**
+ * Replaces the region's frames from \ref
+ * start_frames with \ref frames.
+ *
+ * @param frames Frames, interleaved.
+ */
+void
+audio_region_replace_frames (
+  ZRegion * self,
+  float *   frames,
+  size_t    start_frame,
+  size_t    num_frames);
+
+/**
  * Frees members only but not the audio region itself.
  *
  * Regions should be free'd using region_free.

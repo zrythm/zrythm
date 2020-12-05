@@ -195,4 +195,26 @@
       </submenu>
     </section>
   </menu>
+  <menu id="audio_functions_menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Invert</attribute>
+        <attribute name="icon">edit-select-invert</attribute>
+        <attribute name="action">win.editor-function</attribute>
+        <attribute name="target">invert</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Normalize</attribute>
+        <attribute name="icon">path-reverse</attribute>
+        <attribute name="action">win.editor-function</attribute>
+        <attribute name="target">normalize</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Reverse</attribute>
+        <attribute name="icon">path-reverse</attribute>
+        <attribute name="action">win.editor-function</attribute>
+        <attribute name="target">reverse</attribute>
+      </item>
+    </section>
+  </menu>
 </interface>

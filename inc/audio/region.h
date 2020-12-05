@@ -237,13 +237,10 @@ typedef struct ZRegion
 static const cyaml_schema_field_t
   region_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "base", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ZRegion, base, arranger_object_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "id", CYAML_FLAG_DEFAULT,
-    ZRegion, id,
-    region_identifier_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ZRegion, id, region_identifier_fields_schema),
   YAML_FIELD_STRING_PTR (
     ZRegion, name),
   YAML_FIELD_INT (
