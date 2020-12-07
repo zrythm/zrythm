@@ -166,12 +166,22 @@ typedef struct ArrangerObject
    * Position (or start Position if the object
    * has length).
    *
+   * For audio/MIDI, the material starts at this
+   * frame.
+   *
    * Midway Position between previous and next
    * AutomationPoint's, if AutomationCurve.
    */
   Position           pos;
 
-  /** End Position, if the object has one. */
+  /**
+   * End Position, if the object has one.
+   *
+   * This is exclusive of the material, i.e., the
+   * data at this position is not counted (for
+   * audio regions at least, TODO check for
+   * others).
+   */
   Position           end_pos;
 
   /**

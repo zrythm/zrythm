@@ -18,6 +18,7 @@
  */
 
 #include "actions/arranger_selections.h"
+#include "audio/audio_region.h"
 #include "audio/automation_region.h"
 #include "audio/automation_track.h"
 #include "audio/chord_region.h"
@@ -63,6 +64,7 @@ arranger_selections_action_init_loaded (
   DO_SELECTIONS (tl);
   DO_SELECTIONS (ma);
   DO_SELECTIONS (automation);
+  DO_SELECTIONS (audio);
 
   for (int j = 0; j < self->num_split_objs; j++)
     {
@@ -541,9 +543,22 @@ arranger_selections_action_new_edit_audio_function (
   ArrangerSelections * sel_before,
   AudioFunctionType    audio_func_type)
 {
-  ArrangerSelections * sel_after =
+  /* prepare selections before */
+  ArrangerSelections * sel_before_clone =
     arranger_selections_clone (sel_before);
   int res =
+    audio_function_apply (
+      sel_before_clone, AUDIO_FUNCTION_INVALID);
+  if (res != 0)
+    {
+      arranger_selections_free_full (
+        sel_before_clone);
+      return NULL;
+    }
+
+  ArrangerSelections * sel_after =
+    arranger_selections_clone (sel_before);
+  res =
     audio_function_apply (
       sel_after, audio_func_type);
   if (res != 0)
@@ -554,11 +569,12 @@ arranger_selections_action_new_edit_audio_function (
 
   UndoableAction * ua =
     arranger_selections_action_new_edit (
-      sel_before, sel_after,
+      sel_before_clone, sel_after,
       ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,
       F_NOT_ALREADY_EDITED);
 
   arranger_selections_free_full (sel_after);
+  arranger_selections_free_full (sel_before_clone);
 
   return ua;
 }
@@ -1664,174 +1680,210 @@ do_or_undo_edit (
 
   if (!self->first_run)
     {
-      for (int i = 0; i < size; i++)
+      if (self->edit_type ==
+            ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION &&
+          self->sel->type ==
+            ARRANGER_SELECTIONS_TYPE_AUDIO)
         {
-          src_objs[i]->flags |=
-            ARRANGER_OBJECT_FLAG_NON_PROJECT;
-          dest_objs[i]->flags |=
-            ARRANGER_OBJECT_FLAG_NON_PROJECT;
+          AudioSelections * src_audio_sel =
+            (AudioSelections *)
+            (_do ? self->sel_after : self->sel);
+          ZRegion * r =
+            region_find (&src_audio_sel->region_id);
+          AudioClip * src_clip =
+            audio_pool_get_clip (
+              AUDIO_POOL, src_audio_sel->pool_id);
 
-          /* find the actual object */
-          ArrangerObject * obj =
-            arranger_object_find (src_objs[i]);
-          g_return_val_if_fail (obj, -1);
+          /* adjust the positions */
+          Position start, end;
+          position_set_to_pos (
+            &start, &src_audio_sel->sel_start);
+          position_set_to_pos (
+            &end, &src_audio_sel->sel_end);
+          position_add_frames (
+            &start, - r->base.pos.frames);
+          position_add_frames (
+            &end, - r->base.pos.frames);
+          size_t num_frames =
+            (size_t) (end.frames - start.frames);
 
-          /* change the parameter */
-          switch (self->edit_type)
-            {
-            case ARRANGER_SELECTIONS_ACTION_EDIT_NAME:
-              {
-                switch (obj->type)
-                  {
-                  case ARRANGER_OBJECT_TYPE_REGION:
-                    {
-                      ZRegion * r =
-                        (ZRegion *) obj;
-                      region_set_name (
-                        r,
-                        ((ZRegion *) dest_objs[i])->
-                          name, 0);
-                    }
-                    break;
-                  case ARRANGER_OBJECT_TYPE_MARKER:
-                    {
-                      Marker * m =
-                        (Marker *) obj;
-                      marker_set_name (
-                        m,
-                        ((Marker *) dest_objs[i])->
-                          name);
-                    }
-                    break;
-                  default:
-                    break;
-                  }
-              }
-              break;
-            case ARRANGER_SELECTIONS_ACTION_EDIT_POS:
-              obj->pos =
-                dest_objs[i]->pos;
-              obj->end_pos =
-                dest_objs[i]->end_pos;
-              obj->clip_start_pos =
-                dest_objs[i]->clip_start_pos;
-              obj->loop_start_pos =
-                dest_objs[i]->loop_start_pos;
-              obj->loop_end_pos =
-                dest_objs[i]->loop_end_pos;
-              break;
-            case ARRANGER_SELECTIONS_ACTION_EDIT_FADES:
-              obj->fade_in_pos =
-                dest_objs[i]->fade_in_pos;
-              obj->fade_out_pos =
-                dest_objs[i]->fade_out_pos;
-              obj->fade_in_opts =
-                dest_objs[i]->fade_in_opts;
-              obj->fade_out_opts =
-                dest_objs[i]->fade_out_opts;
-              break;
-            case ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE:
-#define SET_PRIMITIVE(cc,member) \
-    ((cc *) obj)->member = ((cc *) dest_objs[i])->member
-
-              switch (obj->type)
-                {
-                case ARRANGER_OBJECT_TYPE_REGION:
-                  {
-                    SET_PRIMITIVE (
-                      ArrangerObject, muted);
-                    SET_PRIMITIVE (ZRegion, color);
-                    SET_PRIMITIVE (
-                      ZRegion, musical_mode);
-                  }
-                  break;
-                case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
-                  {
-                    SET_PRIMITIVE (MidiNote, muted);
-
-                    /* set velocity and cache vel */
-                    MidiNote * mn =
-                      (MidiNote *) obj;
-                    MidiNote * dest_mn =
-                      (MidiNote *) dest_objs[i];
-                    velocity_set_val (
-                      mn->vel, dest_mn->vel->vel);
-                  }
-                  break;
-                case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
-                  {
-                    SET_PRIMITIVE (
-                      AutomationPoint, curve_opts);
-                    SET_PRIMITIVE (
-                      AutomationPoint, fvalue);
-                    SET_PRIMITIVE (
-                      AutomationPoint,
-                      normalized_val);
-                  }
-                  break;
-                default:
-                  break;
-                }
-              break;
-            case ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION:
-              switch (obj->type)
-                {
-                case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
-                  {
-                    SET_PRIMITIVE (MidiNote, muted);
-
-                    /* set velocity and cache vel */
-                    MidiNote * mn =
-                      (MidiNote *) obj;
-                    MidiNote * dest_mn =
-                      (MidiNote *) dest_objs[i];
-                    velocity_set_val (
-                      mn->vel, dest_mn->vel->vel);
-                  }
-                  break;
-                case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
-                  {
-                    SET_PRIMITIVE (
-                      AutomationPoint, curve_opts);
-                    SET_PRIMITIVE (
-                      AutomationPoint, fvalue);
-                    SET_PRIMITIVE (
-                      AutomationPoint,
-                      normalized_val);
-                  }
-                  break;
-                default:
-                  break;
-                }
-#undef SET_PRIMITIVE
-              break;
-            case ARRANGER_SELECTIONS_ACTION_EDIT_SCALE:
-              {
-                ScaleObject * scale =
-                  (ScaleObject *) obj;
-                ScaleObject * dest_scale =
-                  (ScaleObject *) dest_objs[i];
-
-                /* set the new scale */
-                MusicalScale * old = scale->scale;
-                scale->scale =
-                  musical_scale_clone (
-                    dest_scale->scale);
-                free_later (old, musical_scale_free);
-              }
-              break;
-            case ARRANGER_SELECTIONS_ACTION_EDIT_MUTE:
-              {
-                /* set the new status */
-                arranger_object_set_muted (
-                  obj, !obj->muted, false);
-              }
-              break;
-            default:
-              break;
-            }
+          /* replace the frames in the region */
+          audio_region_replace_frames (
+            r, src_clip->frames,
+            (size_t) start.frames,
+            num_frames);
         }
-    }
+      else /* not audio function */
+        {
+          for (int i = 0; i < size; i++)
+            {
+              src_objs[i]->flags |=
+                ARRANGER_OBJECT_FLAG_NON_PROJECT;
+              dest_objs[i]->flags |=
+                ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
+              /* find the actual object */
+              ArrangerObject * obj =
+                arranger_object_find (src_objs[i]);
+              g_return_val_if_fail (obj, -1);
+
+              /* change the parameter */
+              switch (self->edit_type)
+                {
+                case ARRANGER_SELECTIONS_ACTION_EDIT_NAME:
+                  {
+                    switch (obj->type)
+                      {
+                      case ARRANGER_OBJECT_TYPE_REGION:
+                        {
+                          ZRegion * r =
+                            (ZRegion *) obj;
+                          region_set_name (
+                            r,
+                            ((ZRegion *) dest_objs[i])->
+                              name, 0);
+                        }
+                        break;
+                      case ARRANGER_OBJECT_TYPE_MARKER:
+                        {
+                          Marker * m =
+                            (Marker *) obj;
+                          marker_set_name (
+                            m,
+                            ((Marker *) dest_objs[i])->
+                              name);
+                        }
+                        break;
+                      default:
+                        break;
+                      }
+                  }
+                  break;
+                case ARRANGER_SELECTIONS_ACTION_EDIT_POS:
+                  obj->pos =
+                    dest_objs[i]->pos;
+                  obj->end_pos =
+                    dest_objs[i]->end_pos;
+                  obj->clip_start_pos =
+                    dest_objs[i]->clip_start_pos;
+                  obj->loop_start_pos =
+                    dest_objs[i]->loop_start_pos;
+                  obj->loop_end_pos =
+                    dest_objs[i]->loop_end_pos;
+                  break;
+                case ARRANGER_SELECTIONS_ACTION_EDIT_FADES:
+                  obj->fade_in_pos =
+                    dest_objs[i]->fade_in_pos;
+                  obj->fade_out_pos =
+                    dest_objs[i]->fade_out_pos;
+                  obj->fade_in_opts =
+                    dest_objs[i]->fade_in_opts;
+                  obj->fade_out_opts =
+                    dest_objs[i]->fade_out_opts;
+                  break;
+                case ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE:
+#define SET_PRIMITIVE(cc,member) \
+        ((cc *) obj)->member = ((cc *) dest_objs[i])->member
+
+                  switch (obj->type)
+                    {
+                    case ARRANGER_OBJECT_TYPE_REGION:
+                      {
+                        SET_PRIMITIVE (
+                          ArrangerObject, muted);
+                        SET_PRIMITIVE (ZRegion, color);
+                        SET_PRIMITIVE (
+                          ZRegion, musical_mode);
+                      }
+                      break;
+                    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+                      {
+                        SET_PRIMITIVE (MidiNote, muted);
+
+                        /* set velocity and cache vel */
+                        MidiNote * mn =
+                          (MidiNote *) obj;
+                        MidiNote * dest_mn =
+                          (MidiNote *) dest_objs[i];
+                        velocity_set_val (
+                          mn->vel, dest_mn->vel->vel);
+                      }
+                      break;
+                    case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+                      {
+                        SET_PRIMITIVE (
+                          AutomationPoint, curve_opts);
+                        SET_PRIMITIVE (
+                          AutomationPoint, fvalue);
+                        SET_PRIMITIVE (
+                          AutomationPoint,
+                          normalized_val);
+                      }
+                      break;
+                    default:
+                      break;
+                    }
+                  break;
+                case ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION:
+                  switch (obj->type)
+                    {
+                    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+                      {
+                        SET_PRIMITIVE (MidiNote, muted);
+
+                        /* set velocity and cache vel */
+                        MidiNote * mn =
+                          (MidiNote *) obj;
+                        MidiNote * dest_mn =
+                          (MidiNote *) dest_objs[i];
+                        velocity_set_val (
+                          mn->vel, dest_mn->vel->vel);
+                      }
+                      break;
+                    case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+                      {
+                        SET_PRIMITIVE (
+                          AutomationPoint, curve_opts);
+                        SET_PRIMITIVE (
+                          AutomationPoint, fvalue);
+                        SET_PRIMITIVE (
+                          AutomationPoint,
+                          normalized_val);
+                      }
+                      break;
+                    default:
+                      break;
+                    }
+#undef SET_PRIMITIVE
+                  break;
+                case ARRANGER_SELECTIONS_ACTION_EDIT_SCALE:
+                  {
+                    ScaleObject * scale =
+                      (ScaleObject *) obj;
+                    ScaleObject * dest_scale =
+                      (ScaleObject *) dest_objs[i];
+
+                    /* set the new scale */
+                    MusicalScale * old = scale->scale;
+                    scale->scale =
+                      musical_scale_clone (
+                        dest_scale->scale);
+                    free_later (old, musical_scale_free);
+                  }
+                  break;
+                case ARRANGER_SELECTIONS_ACTION_EDIT_MUTE:
+                  {
+                    /* set the new status */
+                    arranger_object_set_muted (
+                      obj, !obj->muted, false);
+                  }
+                  break;
+                default:
+                  break;
+                }
+            }
+        } /* endif audio function */
+    } /* endif not first run */
 
   update_region_link_groups (dest_objs, size);
 

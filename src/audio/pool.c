@@ -136,6 +136,21 @@ audio_pool_add_clip (
 }
 
 /**
+ * Returns the clip for the given ID.
+ */
+AudioClip *
+audio_pool_get_clip (
+  AudioPool * self,
+  int         clip_id)
+{
+  g_return_val_if_fail (
+    self && clip_id >= 0 &&
+    clip_id < self->num_clips, NULL);
+
+  return self->clips[clip_id];
+}
+
+/**
  * Generates a name for a recording clip.
  */
 char *

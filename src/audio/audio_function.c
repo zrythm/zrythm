@@ -36,7 +36,11 @@
  * pool ID in the selections.
  *
  * @param sel Selections to edit.
- * @param type Function type.
+ * @param type Function type. If invalid is passed,
+ *   this will simply add the audio file in the pool
+ *   for the unchanged audio material (used in
+ *   audio selection actions for the selections
+ *   before the change).
  */
 int
 audio_function_apply (
@@ -86,22 +90,28 @@ audio_function_apply (
   /* create a copy of the frames to be replaced */
   size_t num_frames =
     (size_t) (end.frames - start.frames);
+  g_debug ("num frames %zu", num_frames);
 
   /* interleaved frames */
-  float frames[num_frames * orig_clip->channels];
+  size_t channels = orig_clip->channels;
+  float frames[num_frames * channels];
   dsp_copy (
     &frames[0],
-    &r->frames[start.frames * orig_clip->channels],
-    num_frames * orig_clip->channels);
+    &r->frames[start.frames * (long) channels],
+    num_frames * channels);
 
   switch (type)
     {
     case AUDIO_FUNCTION_INVERT:
-      dsp_mul_k2 (&frames[0], -1.f, num_frames);
+      dsp_mul_k2 (
+        &frames[0], -1.f, num_frames * channels);
       break;
     case AUDIO_FUNCTION_NORMALIZE:
       break;
     case AUDIO_FUNCTION_REVERSE:
+      break;
+    case AUDIO_FUNCTION_INVALID:
+      /* do nothing */
       break;
     default:
       g_warning ("not implemented");
@@ -121,25 +131,30 @@ audio_function_apply (
   AudioClip * clip =
     audio_clip_new_from_float_array (
       &frames[0], (long) num_frames,
-      orig_clip->channels, name);
+      channels, name);
   g_free (name);
-  audio_pool_ensure_unique_clip_name (
-    AUDIO_POOL, clip);
+  audio_pool_add_clip (AUDIO_POOL, clip);
   g_message (
     "writing %s to pool (id %d)",
     clip->name, clip->pool_id);
   audio_clip_write_to_pool (clip, false);
-  audio_clip_free (clip);
 
   audio_sel->pool_id = clip->pool_id;
 
-  /* replace the frames in the region */
-  audio_region_replace_frames (
-    r, frames, (size_t) start.frames, num_frames);
+  if (type != AUDIO_FUNCTION_INVALID)
+    {
+      /* replace the frames in the region */
+      audio_region_replace_frames (
+        r, frames, (size_t) start.frames,
+        num_frames);
+    }
 
-  /* set last action */
-  g_settings_set_int (
-    S_UI, "audio-function", type);
+  if (!ZRYTHM_TESTING)
+    {
+      /* set last action */
+      g_settings_set_int (
+        S_UI, "audio-function", type);
+    }
 
   EVENTS_PUSH (ET_EDITOR_FUNCTION_APPLIED, NULL);
 

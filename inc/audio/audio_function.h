@@ -43,6 +43,9 @@ typedef enum AudioFunctionType
   AUDIO_FUNCTION_INVERT,
   AUDIO_FUNCTION_NORMALIZE,
   AUDIO_FUNCTION_REVERSE,
+
+  /* reserved */
+  AUDIO_FUNCTION_INVALID,
 } AudioFunctionType;
 
 static const cyaml_strval_t
@@ -51,6 +54,7 @@ static const cyaml_strval_t
   { __("Invert"), AUDIO_FUNCTION_INVERT },
   { __("Normalize"), AUDIO_FUNCTION_NORMALIZE },
   { __("Reverse"), AUDIO_FUNCTION_REVERSE },
+  { __("Invalid"), AUDIO_FUNCTION_INVALID },
 };
 
 static inline const char *

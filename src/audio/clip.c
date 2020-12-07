@@ -187,6 +187,11 @@ audio_clip_write_to_pool (
   AudioClip * self,
   bool        parts)
 {
+  g_warn_if_fail (
+    self ==
+      audio_pool_get_clip (
+        AUDIO_POOL, self->pool_id));
+
   /* generate a copy of the given filename in the
    * project dir */
   char * prj_pool_dir =

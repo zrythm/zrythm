@@ -108,6 +108,14 @@ audio_pool_add_clip (
   AudioClip * clip);
 
 /**
+ * Returns the clip for the given ID.
+ */
+AudioClip *
+audio_pool_get_clip (
+  AudioPool * self,
+  int         clip_id);
+
+/**
  * Ensures that the name of the clip is unique.
  *
  * The clip must not be part of the pool yet.

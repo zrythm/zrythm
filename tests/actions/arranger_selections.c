@@ -28,6 +28,7 @@
 #include "audio/midi_note.h"
 #include "audio/region.h"
 #include "project.h"
+#include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/string.h"
 #include "zrythm.h"
@@ -1186,6 +1187,98 @@ test_split ()
   undo_manager_undo (UNDO_MANAGER);
 }
 
+static void
+test_audio_functions ()
+{
+  /* clear undo/redo stacks */
+  undo_manager_clear_stacks (UNDO_MANAGER, true);
+
+  rebootstrap_timeline ();
+
+  Track * track =
+    tracklist_find_track_by_name (
+      TRACKLIST, AUDIO_TRACK_NAME);
+  TrackLane * lane = track->lanes[3];
+  g_assert_cmpint (
+    lane->num_regions, ==, 1);
+
+  ZRegion * region = lane->regions[0];
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
+  arranger_object_select (
+    r_obj, F_SELECT, F_NO_APPEND);
+  AUDIO_SELECTIONS->region_id = region->id;
+  AUDIO_SELECTIONS->has_selection = true;
+  AUDIO_SELECTIONS->sel_start = r_obj->pos;
+  AUDIO_SELECTIONS->sel_end = r_obj->end_pos;
+
+  AudioClip * orig_clip =
+    audio_region_get_clip (region);
+  size_t channels = orig_clip->channels;
+  float frames[
+    (size_t) orig_clip->num_frames * channels];
+  dsp_copy (
+    frames, orig_clip->frames,
+    (size_t) orig_clip->num_frames * channels);
+
+  /* invert */
+  UndoableAction * ua =
+    arranger_selections_action_new_edit_audio_function (
+      (ArrangerSelections *) AUDIO_SELECTIONS,
+      AUDIO_FUNCTION_INVERT);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  AudioClip * clip = audio_region_get_clip (region);
+  for (size_t i = 0; i < region->num_frames; i++)
+    {
+      for (size_t j = 0; j < channels; j++)
+        {
+          g_assert_cmpfloat_with_epsilon (
+            - frames[channels * i + j],
+            clip->frames[channels * i + j],
+            0.0001f);
+        }
+    }
+
+  test_project_save_and_reload ();
+
+  undo_manager_undo (UNDO_MANAGER);
+
+  /* verify that frames are returned to normal */
+  track =
+    tracklist_find_track_by_name (
+      TRACKLIST, AUDIO_TRACK_NAME);
+  lane = track->lanes[3];
+  region = lane->regions[0];
+  clip = audio_region_get_clip (region);
+  for (size_t i = 0; i < region->num_frames; i++)
+    {
+      for (size_t j = 0; j < channels; j++)
+        {
+          g_assert_cmpfloat_with_epsilon (
+            frames[channels * i + j],
+            clip->frames[channels * i + j],
+            0.0001f);
+        }
+    }
+
+  undo_manager_redo (UNDO_MANAGER);
+
+  /* verify that frames are edited again */
+  for (size_t i = 0; i < region->num_frames; i++)
+    {
+      for (size_t j = 0; j < channels; j++)
+        {
+          g_assert_cmpfloat_with_epsilon (
+            - frames[channels * i + j],
+            clip->frames[channels * i + j],
+            0.0001f);
+        }
+    }
+
+  undo_manager_undo (UNDO_MANAGER);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1220,6 +1313,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test split",
     (GTestFunc) test_split);
+  g_test_add_func (
+    TEST_PREFIX "test audio functions",
+    (GTestFunc) test_audio_functions);
 
   return g_test_run ();
 }
