@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-31 18:23+0000\n"
-"PO-Revision-Date: 2020-12-05 18:36+0000\n"
-"Last-Translator: miri24661 <miriam_g.r@hotmail.com>\n"
+"PO-Revision-Date: 2020-12-05 20:09+0000\n"
+"Last-Translator: Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/es/>\n"
 "Language: es\n"
@@ -80,7 +80,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/overview.rst:14
 msgid "Supported Audio Formats"
-msgstr "Formatos de audio compatibles:"
+msgstr "Formatos de audio compatibles"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:15
 msgid "Zrythm supports OGG, FLAC, WAV and MP3."
@@ -148,7 +148,7 @@ msgstr "Plugins"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:8
 msgid "Plugin Browser"
-msgstr "Navegador de plugins"
+msgstr "Explorador de plugins"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:10
 msgid ""

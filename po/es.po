@@ -13,13 +13,14 @@
 # Theo Iturri <theoiturri@gmail.com>, 2020.
 # Bianca Roșu <bianca.rosu32@gmail.com>, 2020.
 # miri24661 <miriam_g.r@hotmail.com>, 2020.
+# Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
 "PO-Revision-Date: 2020-12-05 20:09+0000\n"
-"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
+"Last-Translator: Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -762,7 +763,7 @@ msgstr "Exponer puerto a JACK"
 
 #: src/gui/widgets/log_viewer.c:127
 msgid "Log Viewer"
-msgstr "Visor de registros"
+msgstr "Visor de registro"
 
 #: src/gui/widgets/track_properties_expander.c:110
 #: src/gui/widgets/track_visibility_tree.c:163
@@ -1312,7 +1313,7 @@ msgstr "Manual"
 
 #: src/gui/widgets/help_toolbar.c:41 resources/gtk/help-overlay.ui:46
 msgid "Keyboard Shortcuts"
-msgstr "Atajos de teclado"
+msgstr "Métodos abreviados de teclado"
 
 #: src/gui/widgets/help_toolbar.c:42
 msgid "Donate"
@@ -1320,7 +1321,7 @@ msgstr "Donar"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Report a Bug"
-msgstr "Informar de bugs"
+msgstr "Informar de un error"
 
 #: src/gui/widgets/port_connections_tree.c:183
 #: src/gui/widgets/home_toolbar.c:135 src/gui/widgets/cc_bindings_tree.c:175
@@ -1378,7 +1379,7 @@ msgstr "Bucle con selección"
 
 #: src/gui/widgets/right_dock_edge.c:98
 msgid "Plugin Browser"
-msgstr "Navegador de plugins"
+msgstr "Explorador de plugins"
 
 #: src/gui/widgets/right_dock_edge.c:126
 #: src/gui/widgets/file_browser_window.c:38
@@ -1819,7 +1820,7 @@ msgstr "Conmutar barra de estado"
 
 #: src/gui/widgets/view_toolbar.c:40
 msgid "Zoom In"
-msgstr "Ampliar"
+msgstr "Aumentar"
 
 #: src/gui/widgets/view_toolbar.c:41
 msgid "Zoom Out"

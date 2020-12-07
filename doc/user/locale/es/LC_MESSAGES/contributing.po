@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-21 13:40+0000\n"
-"PO-Revision-Date: 2020-09-30 22:58+0000\n"
-"Last-Translator: Marc <marc.izquierdo.hu@gmail.com>\n"
+"PO-Revision-Date: 2020-12-05 20:09+0000\n"
+"Last-Translator: Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualcontributing/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish "
-"<https://hosted.weblate.org/projects/zrythm/manualcontributing/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../contributing/intro.rst:6
@@ -166,7 +167,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:77
 msgid "User Manual"
-msgstr ""
+msgstr "Manual del usuario"
 
 #: ../../contributing/intro.rst:78
 msgid ""
@@ -289,4 +290,3 @@ msgstr ""
 #~ "the file it refers to will not "
 #~ "be found."
 #~ msgstr ""
-

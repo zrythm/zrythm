@@ -5,13 +5,14 @@
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
 # Gorro_Rojo <gorro.rojo@gmail.com>, 2020.
 # Bianca Roșu <bianca.rosu32@gmail.com>, 2020.
+# Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-11-15 13:28+0000\n"
-"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
+"PO-Revision-Date: 2020-12-05 20:09+0000\n"
+"Last-Translator: Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/routing/"
 "es/>\n"
 "Language: es\n"
@@ -63,7 +64,7 @@ msgstr ""
 #: ../../routing/control-room.rst:31
 #: ../../routing/making-connections.rst:30
 msgid "Todo"
-msgstr ""
+msgstr "Pendiente de hacer"
 
 #: ../../routing/control-room.rst:31
 msgid "Move to another chapter."
@@ -80,9 +81,8 @@ msgid ""
 msgstr ""
 
 #: ../../routing/intro.rst:6
-#, fuzzy
 msgid "Routing"
-msgstr "Routing"
+msgstr "Enrutamiento"
 
 #: ../../routing/making-connections.rst:8
 msgid "Making Connections"
