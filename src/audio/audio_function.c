@@ -107,8 +107,29 @@ audio_function_apply (
         &frames[0], -1.f, num_frames * channels);
       break;
     case AUDIO_FUNCTION_NORMALIZE:
+      /* peak-normalize */
+      {
+        float abs_peak = 0.f;
+        dsp_abs_max (
+          &frames[0], &abs_peak,
+          num_frames * channels);
+        dsp_mul_k2 (
+          &frames[0], 1.f / abs_peak,
+          num_frames * channels);
+      }
       break;
     case AUDIO_FUNCTION_REVERSE:
+      for (size_t i = 0; i < num_frames; i++)
+        {
+          for (size_t j = 0; j < channels; j++)
+            {
+              frames[i * channels + j] =
+                r->frames[
+                  ((size_t) start.frames +
+                   ((num_frames - i) - 1)) *
+                    channels + j];
+            }
+        }
       break;
     case AUDIO_FUNCTION_INVALID:
       /* do nothing */

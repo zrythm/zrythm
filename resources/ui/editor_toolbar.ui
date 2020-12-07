@@ -205,7 +205,7 @@
       </item>
       <item>
         <attribute name="label" translatable="yes">Normalize</attribute>
-        <attribute name="icon">path-reverse</attribute>
+        <attribute name="icon">kt-set-max-upload-speed</attribute>
         <attribute name="action">win.editor-function</attribute>
         <attribute name="target">normalize</attribute>
       </item>
