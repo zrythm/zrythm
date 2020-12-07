@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-12-05 18:59+0000\n"
+"PO-Revision-Date: 2020-12-06 19:23+0000\n"
 "Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/es/>\n"
@@ -47,7 +47,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:26
 msgid "Editing inside the Editor tab is covered in :ref:`editors`."
-msgstr "La edición dentro de la pestaña Editor se trata en :ref:`editores`."
+msgstr "La edición dentro de la pestaña Editor se trata en :ref:`editors`."
 
 #: ../../zrythm-interface/bottom-panel.rst:29
 msgid "Piano Roll"
@@ -88,8 +88,7 @@ msgstr ""
 #: ../../zrythm-interface/bottom-panel.rst:53
 msgid "The automation editor is covered in detail in :ref:`automation-editor`."
 msgstr ""
-"El editor de automatización se trata en detalle en :ref:`editor-de-"
-"automatización`."
+"El editor de automatización se trata en detalle en :ref:`automation-editor`."
 
 #: ../../zrythm-interface/bottom-panel.rst:57
 msgid "Audio Editor"
@@ -106,7 +105,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:66
 msgid "The audio editor is covered in detail in :ref:`audio-editor`."
-msgstr "El editor de audio se trata en detalle en :ref:`editor-de-audio`."
+msgstr "El editor de audio se trata en detalle en :ref:`audio-editor`."
 
 #: ../../zrythm-interface/bottom-panel.rst:70
 msgid "Chord Editor"
@@ -123,7 +122,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:78
 msgid "The chord editor is covered in detail in :ref:`chord-editor`."
-msgstr "El editor de acordes se trata en detalle en :ref:`editor-de-acordes`."
+msgstr "El editor de acordes se trata en detalle en :ref:`chord-editor`."
 
 #: ../../zrythm-interface/bottom-panel.rst:82
 msgid "Mixer"
@@ -139,7 +138,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:89
 msgid "Mixing is covered in :ref:`mixing`."
-msgstr "El proceso de mezcla se trata en :ref:`mezcla`."
+msgstr "El proceso de mezcla se trata en :ref:`mixing`."
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Interface"
@@ -169,7 +168,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:22
 msgid "See :ref:`track-inspector` for more details."
-msgstr "Véase :ref:`inspector-de-pistas` para más detalles."
+msgstr "Véase :ref:`track-inspector` para más detalles."
 
 #: ../../zrythm-interface/left-panel.rst:25
 msgid "Plugin Inspector"
@@ -213,7 +212,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:52
 msgid "Ports are explained in more detail in :ref:`ports`."
-msgstr "Los puertos se explican con más detalle en :ref:`puertos`."
+msgstr "Los puertos se explican con más detalle en :ref:`ports`."
 
 #: ../../zrythm-interface/left-panel.rst:54
 msgid ""
@@ -229,7 +228,7 @@ msgstr "Visibilidad de la pista"
 
 #: ../../zrythm-interface/left-panel.rst:60
 msgid "See :ref:`track-visibility`."
-msgstr "Véase :ref:`visibilidad-de-la-pista`."
+msgstr "Véase :ref:`track-visibility`."
 
 #: ../../zrythm-interface/main-toolbar.rst:8
 msgid "Main Toolbar"
@@ -279,7 +278,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:35
 msgid "The :ref:`editing` chapter explains these controls in detail."
-msgstr "El capítulo :ref:`edición` explica estos controles en detalle."
+msgstr "El capítulo :ref:`editing` explica estos controles en detalle."
 
 #: ../../zrythm-interface/main-toolbar.rst:39
 msgid "Project Menu"
@@ -334,8 +333,8 @@ msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for"
 " more details."
 msgstr ""
-"Exporta el proyecto como audio o MIDI. Consulta :ref:`exportación-"
-"audio-y-midi` para más detalles."
+"Exporta el proyecto como audio o MIDI. Consulta :ref:`export-audio-and-midi` "
+"para más detalles."
 
 #: ../../zrythm-interface/main-toolbar.rst:66
 msgid "Export Graph"
@@ -347,13 +346,13 @@ msgid ""
 "routing-graph` for more details."
 msgstr ""
 "Exporta el gráfico de enrutamiento como una imagen o un gráfico .dot. Véase "
-":ref:`exportación-de-gráfico-de-enrutamiento` para más detalles."
+":ref:`export-routing-graph` para más detalles."
 
 #: ../../zrythm-interface/main-toolbar.rst:70
 msgid "For more information about projects, see the :ref:`projects` chapter."
 msgstr ""
 "Para obtener más información sobre proyectos, consulta el capítulo "
-":ref:`proyectos`."
+":ref:`projects`."
 
 #: ../../zrythm-interface/main-toolbar.rst:74
 msgid "View Menu"
@@ -499,8 +498,8 @@ msgstr "Interfaz de línea de comandos"
 #: ../../zrythm-interface/main-toolbar.rst:144
 msgid "Shows the scripting interface. See :ref:`scripting` for more information."
 msgstr ""
-"Muestra la interfaz de línea de comandos. Consulta :ref:`línea de comandos` "
-"para obtener más información."
+"Muestra la interfaz de línea de comandos. Consulta :ref:`scripting` para "
+"obtener más información."
 
 #: ../../zrythm-interface/main-toolbar.rst:148
 msgid "Log Viewer"
@@ -512,7 +511,7 @@ msgid ""
 "preferences dialog. See :ref:`preferences` for more information."
 msgstr ""
 "Muestra el registro, que se actualiza en tiempo real. Preferencias muestra "
-"el cuadro de diálogo de preferencias. Consulta :ref:`preferencias` para "
+"el cuadro de diálogo de preferencias. Consulta :ref:`preferences` para "
 "obtener más información."
 
 #: ../../zrythm-interface/main-toolbar.rst:154
@@ -547,7 +546,7 @@ msgid ""
 "browser`."
 msgstr ""
 "La primera pestaña es el explorador de plugins, que se explica en :ref"
-":`explorador-de-plugins`."
+":`plugin-browser`."
 
 #: ../../zrythm-interface/right-panel.rst:21
 msgid "File Browser"
@@ -555,7 +554,7 @@ msgstr "Explorador de archivos"
 
 #: ../../zrythm-interface/right-panel.rst:22
 msgid "The file browser is covered in :ref:`file-browser`."
-msgstr "El explorador de archivos se trata en :ref:`explorador-de-archivos`."
+msgstr "El explorador de archivos se trata en :ref:`file-browser`."
 
 #: ../../zrythm-interface/right-panel.rst:25
 msgid "Control Room"
@@ -563,7 +562,7 @@ msgstr "Cuarto de Controles"
 
 #: ../../zrythm-interface/right-panel.rst:26
 msgid "The control room is covered in :ref:`control-room`."
-msgstr "La sala de control se trata en :ref:`sala-de-control`."
+msgstr "La sala de control se trata en :ref:`control-room`."
 
 #: ../../zrythm-interface/timeline.rst:8
 msgid "Timeline"
@@ -584,8 +583,8 @@ msgid ""
 "The :ref:`editing-timeline` section goes in depth about editing inside "
 "the timeline panel."
 msgstr ""
-"La sección :ref:`edición-de-línea-de-tiempo` profundiza en la edición dentro "
-"del panel de la línea de tiempo."
+"La sección :ref:`editing-timeline` profundiza en la edición dentro del panel "
+"de la línea de tiempo."
 
 #: ../../zrythm-interface/transport-bar.rst:8
 msgid "Transport Bar"
@@ -676,7 +675,7 @@ msgid ""
 ":`transport-controls`."
 msgstr ""
 "Más información sobre el trabajo con la barra de transporte en :ref"
-":`controles-de-transporte`."
+":`transport-controls`."
 
 #: ../../zrythm-interface/transport-bar.rst:57
 msgid "Backend Information"
@@ -704,7 +703,7 @@ msgstr "Cada submódulo se explica en su propia sección."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:14
 msgid ":ref:`timeline` (1)"
-msgstr ":ref:`línea-de-tiempo` (1)"
+msgstr ":ref:`timeline` (1)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:15
 msgid ":ref:`main-toolbar` (2)"
@@ -716,7 +715,7 @@ msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:17
 msgid ":ref:`bottom-panel` (4)"
-msgstr ":ref:`panel-inferior` (4)"
+msgstr ":ref:`bottom-panel` (4)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:18
 msgid ":ref:`transport-bar` (5)"

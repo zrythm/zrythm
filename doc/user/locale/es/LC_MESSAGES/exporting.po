@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-12-05 20:09+0000\n"
-"Last-Translator: Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>\n"
+"PO-Revision-Date: 2020-12-06 19:23+0000\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualexporting/es/>\n"
 "Language: es\n"
@@ -129,7 +129,7 @@ msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:64
 msgid "Mixdown"
-msgstr ""
+msgstr "Mezcla de audio"
 
 #: ../../exporting/audio-and-midi.rst:65
 msgid ""

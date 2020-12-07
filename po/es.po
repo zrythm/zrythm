@@ -19,8 +19,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-12-05 20:09+0000\n"
-"Last-Translator: Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>\n"
+"PO-Revision-Date: 2020-12-06 19:23+0000\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -444,23 +444,24 @@ msgstr ""
 "Uso: %s [OPCIONES] [RUTA-DEL-ARCHIVO-DEL-PROYECTO] \n"
 "\n"
 "Opciones:\n"
-" -h, --ayuda a mostrar este mensaje de ayuda y salir\n"
-" --convertir-yaml-a-zpj convertir un proyecto yaml a formato .zpj \n"
+" -h, --ayuda    muestra este mensaje de ayuda y salir\n"
+" --convertir-yaml-a-zpj   convierte un proyecto yaml a formato .zpj \n"
 " --convertir-zpj-a-yaml convierte un proyecto zpj al formato YAML\n"
 " -o, --salida    especifica un archivo de salida\n"
-" -p, --imprimir-ajustes imprime la configuración actual\n"
-" --pretty    imprimir la salida de manera fácil de usar\n"
-" --formatear formatea\n"
-" --gdb arrancar%s desde GDB (depurador)\n"
+" -p, --ajustes-impresión   imprime la configuración actual\n"
+" --pretty    imprime la salida de manera fácil de usar\n"
+" --formatear   formatea\n"
+" --gdb    arrancar%s desde GDB (depurador)\n"
 " --callgrind     arrancar%s desde callgrind (profiler)\n"
-" --backend-audio- anula el backend de audio para usar\n"
+" --backend-audio  anula el backend de audio para usar\n"
 " --backend-midi anula el backend MIDI para usar\n"
 " --dummy    anula tanto el backend de audio como el MIDI a dummy\n"
 " --tamaño-buf anula el tamaño del búfer que se utilizará para el backend de "
 "audio, si corresponde\n"
-" --modo interactivo, si corresponde\n"
-" -v, --versión muestra la información de la versión y sale\n"
-"\\ nEjemplos:\n"
+" --modo interactivo   modo interactivo si corresponde\n"
+" -v, --versión   muestra la información de la versión y sale\n"
+"\n"
+"Ejemplos:\n"
 " %s -v versión para imprimir\n"
 " %s --callgrind --dummy --tamaño-buf = 8192 perfil %s usando el backend "
 "dummy y un tamaño de búfer de 8192\n"
@@ -731,7 +732,7 @@ msgstr "Añadir"
 #: src/gui/widgets/inspector_port.c:185 src/gui/widgets/balance_control.c:366
 #: src/gui/widgets/fader.c:380 resources/ui/bind_cc_dialog.ui:27
 msgid "Bind MIDI CC"
-msgstr "Bind MIDI CC"
+msgstr "Unir MIDI CC"
 
 #: src/gui/widgets/inspector_port.c:195 src/gui/widgets/midi_arranger.c:519
 msgid "View info"
@@ -1096,7 +1097,7 @@ msgstr "Cabezal de reproducción"
 
 #: src/gui/widgets/bot_bar.c:56
 msgid "Playhead [Jack Timebase Master]"
-msgstr "Playhead [Jack Timebase Master]"
+msgstr "Cabezal de reproducción [Jack Timebase Master]"
 
 #: src/gui/widgets/bot_bar.c:58
 msgid "Playhead [Jack Client]"
@@ -1216,7 +1217,7 @@ msgstr "Iniciar en entrada MIDI"
 
 #: src/gui/widgets/transport_controls.c:202
 msgid "Options"
-msgstr "Opciones de rebote"
+msgstr "Opciones"
 
 #: src/gui/widgets/transport_controls.c:207
 msgid "Overwrite events"
@@ -1710,7 +1711,7 @@ msgstr "Nota"
 
 #: src/gui/widgets/event_viewer.c:537
 msgid "Pitch"
-msgstr "Pitch"
+msgstr "Tono"
 
 #: src/gui/widgets/event_viewer.c:619
 msgid "Index"
@@ -2001,7 +2002,7 @@ msgstr "Canal MIDI %d"
 #: src/gui/widgets/track.c:1852
 #, c-format
 msgid "Lane %d MIDI Ch"
-msgstr "Lane %d MIDI Ch"
+msgstr "Carril %d MIDI Ch"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:109
 msgid "Arranger object info"
@@ -2623,8 +2624,8 @@ msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
 "Please select a format to export as"
 msgstr ""
-"El gráfico se exportará a <a href=\"%s\">%s</a>\\ nSelecciona un formato "
-"para exportar"
+"El gráfico se exportará a <a href=\"%s\">%s</a>\n"
+"Selecciona un formato para exportar"
 
 #: src/actions/actions.c:924
 msgid "Graph exported"
@@ -2733,7 +2734,7 @@ msgstr "Cambiar direct out"
 
 #: src/actions/edit_tracks_action.c:482
 msgid "Rename track"
-msgstr "Congelar la pista"
+msgstr "Renombrar la pista"
 
 #: src/actions/edit_tracks_action.c:485
 msgid "Change color"
@@ -3534,7 +3535,7 @@ msgstr "Retroceder"
 
 #: resources/ui/transport_controls.ui:100
 msgid "Forward"
-msgstr "Adelante"
+msgstr "Adelantar"
 
 #: resources/ui/transport_controls.ui:114 resources/ui/export_dialog.ui:237
 msgid "Loop"
@@ -4037,7 +4038,7 @@ msgstr "Si escuchar las notas MIDI mientras se arrastran en el rollo de piano."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:274
 msgid "Piano roll highlight"
-msgstr "El rollo de piano se destaca..."
+msgstr "Piano roll destacado"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:275
 msgid "Whether to highlight chords, scales, both or none in the piano roll."
@@ -4118,7 +4119,7 @@ msgstr "Pestaña del explorador de plugins"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:320
 msgid "Selected plugin browser tab."
-msgstr "Pestaña del explorador de plugins"
+msgstr "Pestaña seleccionada del explorador de plugins."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:324
 msgid "Plugin browser filter"

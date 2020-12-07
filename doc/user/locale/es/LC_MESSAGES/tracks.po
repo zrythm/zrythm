@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:30+0100\n"
-"PO-Revision-Date: 2020-12-05 20:09+0000\n"
-"Last-Translator: Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>\n"
+"PO-Revision-Date: 2020-12-06 19:23+0000\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/es/>\n"
 "Language: es\n"
@@ -200,7 +200,7 @@ msgstr "Propiedades"
 #: ../../tracks/master-track.rst:44
 #: ../../tracks/midi-track.rst:56
 msgid "Direct Out"
-msgstr ""
+msgstr "Direct Out"
 
 #: ../../tracks/audio-track.rst:44
 msgid "The track to route the output of the audio track to."
@@ -231,7 +231,7 @@ msgstr ""
 #: ../../tracks/midi-track.rst:132
 #: ../../tracks/midi-track.rst:140
 msgid "TODO"
-msgstr "Por hacer"
+msgstr "PENDIENTE DE HACER"
 
 #: ../../tracks/audio-track.rst:58
 #: ../../tracks/instrument-track.rst:77

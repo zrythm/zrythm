@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-12-05 20:09+0000\n"
+"PO-Revision-Date: 2020-12-06 19:23+0000\n"
 "Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualgetting-started/es/>\n"
@@ -155,7 +155,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:73
 msgid "See :ref:`scanning-plugins` for paths where plugins will be scanned in."
 msgstr ""
-"Consulta :ref:`escaneo-de-plugins` para conocer las rutas en las que se "
+"Consulta :ref:`scanning-plugins` para conocer las rutas en las que se "
 "escanean los plugins."
 
 #: ../../getting-started/getting-plugins.rst:77
@@ -318,8 +318,8 @@ msgid ""
 msgstr ""
 "Cuando ejecutas Zrythm por primera vez, se muestra un asistente que te "
 "permite configurar los ajustes básicos que utiliza Zrythm. Estos incluyen la "
-":term:`Ruta de usuario de Zrythm`, el idioma de la interfaz de usuario y los "
-"backends de audio/MIDI."
+":term:`Zrythm user path`, el idioma de la interfaz de usuario y los backends "
+"de audio/MIDI."
 
 #: ../../getting-started/running-zrythm.rst:20
 msgid "Language Selection"
@@ -348,7 +348,7 @@ msgstr "Ruta"
 
 #: ../../getting-started/running-zrythm.rst:39
 msgid "This is the :term:`Zrythm user path`."
-msgstr "Este es la :term:`Ruta de usuario de Zrythm`."
+msgstr "Este es la :term:`Zrythm user path`."
 
 #: ../../getting-started/running-zrythm.rst:42
 msgid "Audio/MIDI Backends"
@@ -391,7 +391,7 @@ msgid ""
 ":ref:`preferences`, so don't worry if you selected the wrong settings."
 msgstr ""
 "Todas las configuraciones mencionadas aquí también están disponibles en "
-":ref:`preferencias`, así que no te preocupes si seleccionaste la "
+":ref:`preferences`, así que no te preocupes si seleccionaste la "
 "configuración incorrecta."
 
 #: ../../getting-started/running-zrythm.rst:68

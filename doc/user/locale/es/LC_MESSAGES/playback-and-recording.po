@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-12-05 20:09+0000\n"
-"Last-Translator: Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>\n"
+"PO-Revision-Date: 2020-12-06 19:23+0000\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/es/>\n"
 "Language: es\n"
@@ -303,7 +303,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:26
 msgid "Backward"
-msgstr ""
+msgstr "Retroceder"
 
 #: ../../playback-and-recording/transport-controls.rst:26
 msgid "Moves the Playhead backward by the size of 1 snap point."
@@ -311,7 +311,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:29
 msgid "Forward"
-msgstr ""
+msgstr "Adelantar"
 
 #: ../../playback-and-recording/transport-controls.rst:29
 msgid "Moves the Playhead forward by the size of 1 snap point."

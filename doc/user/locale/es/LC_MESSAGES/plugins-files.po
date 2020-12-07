@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-31 18:23+0000\n"
 "PO-Revision-Date: 2020-12-05 20:09+0000\n"
-"Last-Translator: Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/es/>\n"
 "Language: es\n"
@@ -43,7 +43,7 @@ msgstr "Filtrado"
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
 #: ../../plugins-files/audio-midi-files/file-browser.rst:24
 msgid "TODO"
-msgstr "Por hacer"
+msgstr "PENDIENTE DE HACER"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:22
 msgid "Collections"
