@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 19:56+0100\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"PO-Revision-Date: 2020-12-07 22:03+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
 "invoking-from-command-line/el/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../invoking-from-command-line/intro.rst:10
@@ -29,6 +29,8 @@ msgid ""
 "Zrythm comes with a few utilities below that can be used from the "
 ":term:`CLI`."
 msgstr ""
+"Το Zrythm παρέχει κάποιες λειτουργίες που μπορούν να χρησιμοποιηθούν με το "
+":term:`CLI`."
 
 #: ../../invoking-from-command-line/intro.rst:16
 msgid "zrythm"
@@ -36,11 +38,11 @@ msgstr "zrythm"
 
 #: ../../invoking-from-command-line/intro.rst:17
 msgid "Zrythm executable."
-msgstr ""
+msgstr "Εκτελέσιμο αρχείο Zrythm."
 
 #: ../../invoking-from-command-line/intro.rst:23
 msgid "Prints a list of available options."
-msgstr ""
+msgstr "Εκτυπώνει μια λίστα διαθέσιμων επιλογών."
 
 #: ../../invoking-from-command-line/intro.rst:27
 msgid "Pretty-prints the output (where applicable)."

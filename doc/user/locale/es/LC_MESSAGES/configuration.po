@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-11-15 13:28+0000\n"
+"PO-Revision-Date: 2020-12-06 19:23+0000\n"
 "Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/es/>\n"
@@ -73,7 +73,7 @@ msgstr "Vea :option:`zrythm --reset-to-factory`."
 
 #: ../../configuration/additional-settings.rst:34
 msgid "Todo"
-msgstr ""
+msgstr "Pendiente de hacer"
 
 #: ../../configuration/additional-settings.rst:34
 msgid "This will be added to the UI soon."
@@ -265,7 +265,7 @@ msgstr "Siempre muestra el plugin UI en la parte superior de la ventana principa
 
 #: ../../configuration/preferences/intro.rst:91
 msgid "Bridge unsupported UIs"
-msgstr ""
+msgstr "Puentea interfaces de usuario no compatibles"
 
 #: ../../configuration/preferences/intro.rst:92
 msgid ""

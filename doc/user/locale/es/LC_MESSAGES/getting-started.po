@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-11-19 16:39+0000\n"
-"Last-Translator: Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>\n"
+"PO-Revision-Date: 2020-12-06 19:23+0000\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualgetting-started/es/>\n"
 "Language: es\n"
@@ -55,7 +55,6 @@ msgstr ""
 "<https://github.com/webprofusion/OpenAudio>`."
 
 #: ../../getting-started/getting-plugins.rst:26
-#, fuzzy
 msgid ""
 "For users of Debian-based distributions such as Ubuntu and Linux Mint we "
 "recommend using the `KXstudio repositories <https://kx.studio/>`_, as "
@@ -63,11 +62,10 @@ msgid ""
 msgstr ""
 "Para los usuarios de distribuciones basadas en Debian, como Ubuntu y Linux "
 "Mint, recomendamos utilizar los `repositorios de KXstudio <https://kx.studio/"
-">` _, ya que hay muchos complementos que se pueden instalar fácilmente a "
-"través de apt."
+">` _, ya que hay muchos plugins que se pueden instalar fácilmente a través "
+"de apt."
 
 #: ../../getting-started/getting-plugins.rst:31
-#, fuzzy
 msgid ""
 "For users of Arch Linux-based distributions such as Manjaro we recommend "
 "installing the `lv2-plugins "
@@ -82,7 +80,6 @@ msgid "Recommended Plugin Bundles"
 msgstr "Paquetes de complementos recomendados"
 
 #: ../../getting-started/getting-plugins.rst:39
-#, fuzzy
 msgid ""
 "`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ provides a "
 "good variety of synths and effects."
@@ -91,47 +88,41 @@ msgstr ""
 "buena variedad de sintetizadores y efectos."
 
 #: ../../getting-started/getting-plugins.rst:42
-#, fuzzy
 msgid ""
 "`ZAM Plugins <http://www.zamaudio.com/?p=976>`_ is an effects pack that "
 "contains high quality plugins for all the basic effects such as Delay, "
 "Reverb, Compression, EQ and Saturation."
 msgstr ""
 "`ZAM Plugins <http://www.zamaudio.com/?p=976>` _ es un paquete de efectos "
-"que contiene complementos de alta calidad para todos los efectos básicos "
-"como Retardo, Reverberación, Compresión, Ecualizador y Saturación."
+"que contiene plugins de alta calidad para todos los efectos básicos como "
+"retardo, reverberación, compresión, ecualizador y saturación."
 
 #: ../../getting-started/getting-plugins.rst:47
-#, fuzzy
 msgid ""
 "The `LSP Project <https://lsp-plug.in/>`_ has a wide variety of effect "
 "plugins."
 msgstr ""
 "El `LSP Project <https://lsp-plug.in/>` _ tiene una amplia variedad de "
-"complementos de efectos."
+"plugins de efectos."
 
 #: ../../getting-started/getting-plugins.rst:50
-#, fuzzy
 msgid ""
 "`X42 Plugins <http://x42-plugins.com/x42/>`_ is a collection of various "
 "MIDI effect and meter plugins."
 msgstr ""
 "`X42 Plugins <http://x42-plugins.com/x42/>` _ es una colección de varios "
-"complementos de efectos y medidores MIDI."
+"plugins de efectos y medidores MIDI."
 
 #: ../../getting-started/getting-plugins.rst:54
-#, fuzzy
 msgid "Synths"
 msgstr "Sintetizadores"
 
 #: ../../getting-started/getting-plugins.rst:56
-#, fuzzy
 msgid "`Helm <https://tytel.org/helm/>`_ is a powerful subtractive synthesizer."
 msgstr ""
 "`Helm <https://tytel.org/helm/>` _ es un potente sintetizador sustractivo."
 
 #: ../../getting-started/getting-plugins.rst:59
-#, fuzzy
 msgid ""
 "`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synthesizer "
 "that is closely modeled on the Yamaha DX7."
@@ -140,7 +131,6 @@ msgstr ""
 "que sigue el modelo del Yamaha DX7."
 
 #: ../../getting-started/getting-plugins.rst:62
-#, fuzzy
 msgid ""
 "`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_ is a "
 "powerful additive/subtractive synth that can synthesize a wide variety of"
@@ -155,7 +145,6 @@ msgid "Percussion Generators"
 msgstr "Generadores de percusiones"
 
 #: ../../getting-started/getting-plugins.rst:69
-#, fuzzy
 msgid ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a kick drum "
 "synthesizer that can also synthesize other types of percussion."
@@ -164,24 +153,21 @@ msgstr ""
 "que también puede sintetizar otros tipos de percusión."
 
 #: ../../getting-started/getting-plugins.rst:73
-#, fuzzy
 msgid "See :ref:`scanning-plugins` for paths where plugins will be scanned in."
 msgstr ""
-"Consulte: ref: `scan-plugins` para conocer las rutas en las que se "
-"escanearán los complementos."
+"Consulta :ref:`scanning-plugins` para conocer las rutas en las que se "
+"escanean los plugins."
 
 #: ../../getting-started/getting-plugins.rst:77
-#, fuzzy
 msgid "SFZ/SF2 Instruments"
-msgstr "Instrumentos SFZ / SF2"
+msgstr "Instrumentos SFZ/SF2"
 
 #: ../../getting-started/getting-plugins.rst:79
-#, fuzzy
 msgid ""
 "You can find a list of SFZ instruments under free licenses at `sfz "
 "instruments <https://sfzinstruments.github.io/>`_."
 msgstr ""
-"Puede encontrar una lista de instrumentos SFZ con licencias gratuitas en `"
+"Puedes encontrar una lista de instrumentos SFZ con licencias gratuitas en `"
 "sfz instruments <https://sfzinstruments.github.io/>` _."
 
 #: ../../getting-started/getting-plugins.rst:83
@@ -189,33 +175,30 @@ msgid "Samples"
 msgstr "Samples"
 
 #: ../../getting-started/getting-plugins.rst:85
-#, fuzzy
 msgid ""
 "We recommend using `Freesound <https://freesound.org/>`_ for collecting "
 "CC-licensed samples."
 msgstr ""
 "Recomendamos utilizar `Freesound <https://freesound.org/>` _ para recopilar "
-"muestras con licencia CC."
+"samples con licencia CC."
 
 #: ../../getting-started/installation.rst:6
 msgid "Installation"
 msgstr "Instalación"
 
 #: ../../getting-started/installation.rst:11
-#, fuzzy
 msgid "Installers"
 msgstr "Instaladores"
 
 #: ../../getting-started/installation.rst:12
-#, fuzzy
 msgid ""
 "You can install the latest version of Zrythm for your distro or operating"
 " system using an installer from the `Download "
 "<https://www.zrythm.org/en/download.html>`_ page on our website."
 msgstr ""
-"Puede instalar la última versión de Zrythm para su distribución o sistema "
+"Puedes instalar la última versión de Zrythm para tu distribución o sistema "
 "operativo utilizando un instalador de la página `Descargar <https://www."
-"zrythm.org/en/download.html>` _ en nuestro sitio web."
+"zrythm.org/es/descargar.html>` _ en nuestra página web."
 
 #: ../../getting-started/installation.rst:18
 msgid ""
@@ -226,37 +209,33 @@ msgstr ""
 "reciente, y es la que recomendamos para la mayoría de los usuarios."
 
 #: ../../getting-started/installation.rst:22
-#, fuzzy
 msgid "The installers also include bundled plugins."
-msgstr "Los instaladores también incluyen paquetes de complementos."
+msgstr "Los instaladores también incluyen paquetes de plugins."
 
 #: ../../getting-started/installation.rst:25
 msgid "Manual Installation"
 msgstr "Instalación manual"
 
 #: ../../getting-started/installation.rst:26
-#, fuzzy
 msgid ""
 "If you are an advanced user, you can also build Zrythm from source, "
 "either using a `source distribution tarball "
 "<https://www.zrythm.org/releases/>`_ or `git "
 "<https://git.zrythm.org/cgit/zrythm/>`_."
 msgstr ""
-"Si es un usuario avanzado, también puede compilar Zrythm desde la fuente, ya "
-"sea usando un `tarball de distribución de fuente <https://www.zrythm.org/"
-"releases/>` _ o `git <https: //git.zrythm. org / cgit / zrythm /> `_."
+"Si eres un usuario avanzado, también puedes compilar Zrythm desde la fuente, "
+"ya sea usando un `tarball de distribución de fuente <https://www.zrythm.org/"
+"releases/>`_ o `git <https://git.zrythm.org/cgit/zrythm/>`_."
 
 #: ../../getting-started/installation.rst:31
-#, fuzzy
 msgid ""
 "See :download:`INSTALL.md <../../../INSTALL.md>` in the source "
 "distribution for installation instructions."
 msgstr ""
-"Consulte  download: `INSTALL.md <../../../ INSTALL.md> `en la distribución "
+"Consulta :download:`INSTALAR.md <../../../INSTALL.md>` en la distribución "
 "de origen para obtener instrucciones de instalación."
 
 #: ../../getting-started/installation.rst:36
-#, fuzzy
 msgid "GNU/Linux"
 msgstr "GNU/Linux"
 
@@ -265,7 +244,6 @@ msgid "Installer"
 msgstr "Instalador"
 
 #: ../../getting-started/installation.rst:40
-#, fuzzy
 msgid "The installer supports the following distributions (and derivatives):"
 msgstr "El instalador admite las distribuciones siguientes (y sus derivadas):"
 
@@ -274,41 +252,34 @@ msgid "**Arch Linux** - x86_64"
 msgstr "**Arch Linux**, x86_64"
 
 #: ../../getting-started/installation.rst:44
-#, fuzzy
 msgid "**Debian 10 && 11** - amd64"
 msgstr "**Debian 10 && 11** - amd64"
 
 #: ../../getting-started/installation.rst:45
-#, fuzzy
 msgid "**Fedora 31 && 32** - x86_64"
 msgstr "**Fedora 31 && 32** - x86_64"
 
 #: ../../getting-started/installation.rst:46
-#, fuzzy
 msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
 msgstr "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
 
 #: ../../getting-started/installation.rst:49
-#, fuzzy
 msgid "Distribution Package"
 msgstr "Paquete de distribución"
 
 #: ../../getting-started/installation.rst:50
-#, fuzzy
 msgid ""
 "If your distribution provides a Zrythm package you can also install it "
 "from there."
 msgstr ""
-"Si su distribución proporciona un paquete Zrythm, también puede instalarlo "
-"desde allí."
+"Si la distribución proporciona un paquete de Zrythm, también puedes "
+"instalarlo desde allí."
 
 #: ../../getting-started/installation.rst:54
-#, fuzzy
 msgid "Windows & MacOS"
 msgstr "Windows y MacOS"
 
 #: ../../getting-started/installation.rst:55
-#, fuzzy
 msgid "The installers above fully support Windows 64bit and MacOS."
 msgstr ""
 "Los instaladores anteriores son totalmente compatibles con Windows de 64 "
@@ -323,44 +294,38 @@ msgid "Port"
 msgstr "Puerto"
 
 #: ../../getting-started/installation.rst:62
-#, fuzzy
 msgid "You can install the Zrythm port from the official repositories."
-msgstr "Puede instalar el puerto de Zrythm desde los repositorios oficiales."
+msgstr "Puedes instalar el puerto de Zrythm desde los repositorios oficiales."
 
 #: ../../getting-started/intro.rst:8
 msgid "Getting Started"
 msgstr "Primeros pasos"
 
 #: ../../getting-started/running-zrythm.rst:8
-#, fuzzy
 msgid "Running Zrythm"
 msgstr "Ejecutando Zrythm"
 
 #: ../../getting-started/running-zrythm.rst:11
-#, fuzzy
 msgid "First Run Wizard"
 msgstr "Asistente para la ejecución inicial"
 
 #: ../../getting-started/running-zrythm.rst:13
-#, fuzzy
 msgid ""
 "When you first run Zrythm, it will display a wizard that lets you "
 "configure the basic settings that Zrythm will use. These include the "
 ":term:`Zrythm user path`, the language of the user interface and "
 "audio/MIDI backends."
 msgstr ""
-"Cuando ejecute Zrythm por primera vez, se mostrará un asistente que le "
-"permitirá configurar los ajustes básicos que utilizará Zrythm. Estos "
-"incluyen el: term: `Zrythm user path`, el idioma de la interfaz de usuario y "
-"los backends de audio/MIDI."
+"Cuando ejecutas Zrythm por primera vez, se muestra un asistente que te "
+"permite configurar los ajustes básicos que utiliza Zrythm. Estos incluyen la "
+":term:`Zrythm user path`, el idioma de la interfaz de usuario y los backends "
+"de audio/MIDI."
 
 #: ../../getting-started/running-zrythm.rst:20
-#, fuzzy
 msgid "Language Selection"
 msgstr "Selección de idioma"
 
 #: ../../getting-started/running-zrythm.rst:25
-#, fuzzy
 msgid ""
 "Zrythm lets you choose the language of the interface. The interface is "
 "already translated in `multiple languages "
@@ -369,112 +334,98 @@ msgid ""
 msgstr ""
 "Zrythm te permite elegir el idioma de la interfaz. La interfaz ya está "
 "traducida en `múltiples idiomas <https://hosted.weblate.org/projects/zrythm/"
-"#languages>` _, así que elija el idioma con el que se sienta más cómodo."
+"#languages>` _, así que elige el idioma con el que te sientas más cómodo."
 
 #: ../../getting-started/running-zrythm.rst:30
-#, fuzzy
 msgid "You must have a locale enabled for the language you want to use."
 msgstr ""
-"Debe tener una configuración regional habilitada para el idioma que desea "
+"Debes tener una configuración regional habilitada para el idioma que deseas "
 "utilizar."
 
 #: ../../getting-started/running-zrythm.rst:34
-#, fuzzy
 msgid "Path"
 msgstr "Ruta"
 
 #: ../../getting-started/running-zrythm.rst:39
-#, fuzzy
 msgid "This is the :term:`Zrythm user path`."
-msgstr "Este es el: term: `Ruta de usuario de Zrythm`."
+msgstr "Este es la :term:`Zrythm user path`."
 
 #: ../../getting-started/running-zrythm.rst:42
-#, fuzzy
 msgid "Audio/MIDI Backends"
-msgstr "Backends de audio / MIDI"
+msgstr "Backends de audio/MIDI"
 
 #: ../../getting-started/running-zrythm.rst:47
-#, fuzzy
 msgid ""
 "Zrythm supports multiple audio and MIDI backend engines. :term:`JACK` is "
 "the recommended one for both, but it takes some time to set up if this is"
 " your first time using it."
 msgstr ""
-"Zrythm admite varios motores de backend de audio y MIDI. : term: `JACK` es "
-"el recomendado para ambos, pero lleva un tiempo configurarlo si es la "
-"primera vez que lo utiliza."
+"Zrythm admite varios motores de backend de audio y MIDI. :term:`JACK` es el "
+"recomendado para ambos, pero lleva un tiempo configurarlo si es la primera "
+"vez que se utiliza."
 
 #: ../../getting-started/running-zrythm.rst:52
-#, fuzzy
 msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
 msgstr ""
-"Si JACK no está disponible en su sistema, recomendamos RtAudio y RtMidi."
+"Si JACK no está disponible en el sistema, recomendamos RtAudio y RtMidi."
 
 #: ../../getting-started/running-zrythm.rst:55
-#, fuzzy
 msgid ""
 "Click :guilabel:`Test` to try connecting to the backend to see if it is "
 "functional."
 msgstr ""
-"Haga clic en: guilabel: `Test` para intentar conectarse al backend y "
-"comprobar si funciona."
+"Haz clic en :guilabel:`Test` para intentar conectarte al backend y comprobar "
+"si funciona."
 
 #: ../../getting-started/running-zrythm.rst:58
-#, fuzzy
 msgid ""
 "If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
 "chosen together."
 msgstr ""
-"Si elige usar JACK, JACK MIDI y el backend de audio JACK deben elegirse "
+"Si decides usar JACK, el JACK MIDI y el backend de audio JACK deben elegirse "
 "juntos."
 
 #: ../../getting-started/running-zrythm.rst:63
-#, fuzzy
 msgid ""
 "All of the settings mentioned here are also available in the "
 ":ref:`preferences`, so don't worry if you selected the wrong settings."
 msgstr ""
-"Todas las configuraciones mencionadas aquí también están disponibles en: ref:"
-" `preferencias`, así que no se preocupe si seleccionó la configuración "
-"incorrecta."
+"Todas las configuraciones mencionadas aquí también están disponibles en "
+":ref:`preferences`, así que no te preocupes si seleccionaste la "
+"configuración incorrecta."
 
 #: ../../getting-started/running-zrythm.rst:68
-#, fuzzy
 msgid "Plugin Scan"
-msgstr "Escáner de complementos"
+msgstr "Escáner de plugins"
 
 #: ../../getting-started/running-zrythm.rst:69
-#, fuzzy
 msgid ""
 "When the first run wizard is completed, Zrythm will start :doc:`scanning "
 "for plugins <../plugins-files/plugins/scanning>`."
 msgstr ""
-"Cuando se complete el primer asistente de ejecución, Zrythm se iniciará: doc:"
-" `buscando complementos <../ archivos-complementos /complementos /scan>`."
+"Cuando se complete el primer asistente de ejecución, Zrythm se iniciará "
+":doc:`escaneando en busca de plugins <../plugins-files/plugins/"
+"scanning>`."
 
 #: ../../getting-started/running-zrythm.rst:77
-#, fuzzy
 msgid "Project Selection"
 msgstr "Selección de proyectos"
 
 #: ../../getting-started/running-zrythm.rst:78
-#, fuzzy
 msgid ""
 "Finally, Zrythm will ask you to :doc:`load or create a project "
 "<../projects/saving-loading>` and then the :doc:`main interface "
 "<../zrythm-interface/zrythm-interface-overview>` will show up."
 msgstr ""
-"Finalmente, Zrythm le pedirá: doc: `cargar o crear un proyecto <../ projects "
-"/ save-loading>` y luego: doc: `main interface <../ zrythm-interface / "
-"zrythm-interface-overview> `aparecerá."
+"Por último, Zrythm te pedirá :doc:`cargar o crear un proyecto <../"
+"projects/saving-loading>` y luego :doc:`interfaz principal <../"
+"zrythm-interface/zrythm-interface-overview>` aparecerá."
 
 #: ../../getting-started/running-zrythm.rst:87
-#, fuzzy
 msgid "Project selection"
 msgstr "Selección de proyectos"
 
 #: ../../getting-started/running-zrythm.rst:92
-#, fuzzy
 msgid "Main interface"
 msgstr "Interfaz principal"
 
@@ -487,7 +438,6 @@ msgid "Hardware"
 msgstr "Soporte físico"
 
 #: ../../getting-started/system-requirements.rst:10
-#, fuzzy
 msgid "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) or aarch64 (ARMv8)"
 msgstr "x86_64 (64 bits), i686 (32 bits), armhf (ARMv7) o aarch64 (ARMv8)"
 
@@ -496,22 +446,18 @@ msgid "Operating System"
 msgstr "Sistema operativo"
 
 #: ../../getting-started/system-requirements.rst:14
-#, fuzzy
 msgid "GNU/Linux, FreeBSD, Windows or MacOS"
-msgstr "GNU / Linux, FreeBSD, Windows o MacOS"
+msgstr "GNU/Linux, FreeBSD, Windows o MacOS"
 
 #: ../../getting-started/system-requirements.rst:17
-#, fuzzy
 msgid "Recommendations"
 msgstr "Recomendaciones"
 
 #: ../../getting-started/system-requirements.rst:21
-#, fuzzy
 msgid "CPU"
 msgstr "CPU"
 
 #: ../../getting-started/system-requirements.rst:20
-#, fuzzy
 msgid ""
 "For smooth operation, we recommend using a CPU with at least 2GHz clock "
 "speed and at least 4 cores in total."
@@ -520,12 +466,10 @@ msgstr ""
 "2 GHz de velocidad de reloj y al menos 4 núcleos en total."
 
 #: ../../getting-started/system-requirements.rst:24
-#, fuzzy
 msgid "Monitor"
 msgstr "Monitor"
 
 #: ../../getting-started/system-requirements.rst:24
-#, fuzzy
 msgid ""
 "It is recommended to have at least 16 inches of monitor space to work "
 "efficiently with Zrythm."
@@ -534,12 +478,10 @@ msgstr ""
 "eficiente con Zrythm."
 
 #: ../../getting-started/system-requirements.rst:28
-#, fuzzy
 msgid "Audio interface"
 msgstr "Interfaz de audio"
 
 #: ../../getting-started/system-requirements.rst:27
-#, fuzzy
 msgid ""
 "An audio interface offers low latency and better quality than integrated "
 "sound cards (especially if recording audio)."
@@ -548,21 +490,19 @@ msgstr ""
 "de sonido integradas (especialmente cuando se graba audio)."
 
 #: ../../getting-started/system-requirements.rst:31
-#, fuzzy
 msgid "MIDI keyboard"
 msgstr "Teclado MIDI"
 
 #: ../../getting-started/system-requirements.rst:31
-#, fuzzy
 msgid "For quickly trying out melodies or recording."
-msgstr "Para probar canciones o grabar rápidamente."
+msgstr "Para probar melodías o grabar rápidamente."
 
 #: ../../getting-started/system-requirements.rst:34
 msgid "JACK"
 msgstr "JACK"
 
 #: ../../getting-started/system-requirements.rst:35
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "When using the :term:`JACK` backend, JACK needs to be set up and "
 "configured before running Zrythm. You will find lots of information "
@@ -571,12 +511,12 @@ msgid ""
 "<https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93"
 "-beginners-guide-getting-started-jack.html>`_, so we will skip this part."
 msgstr ""
-"Cuando se utiliza el backend: term: `JACK`, JACK debe configurarse antes de "
-"ejecutar Zrythm. Encontrará mucha información en línea sobre cómo configurar "
-"JACK, como `Demystifying JACK - A Beginners Guide to Getting Started with "
-"JACK <https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-"
-"beginners -guide-Getting-started-jack.html> `_, por lo que omitiremos esta "
-"parte."
+"Cuando se utiliza el backend :term:`JACK`, JACK debe configurarse antes de "
+"ejecutar Zrythm. Encontrarás mucha información en línea sobre cómo "
+"configurar JACK, como `Demystifying JACK - A Beginners Guide to Getting "
+"Started with JACK <https://libremusicproduction.com/articles/demystifying-"
+"jack-%E2%80%93-beginners-guide-getting-started-jack.html>`_, por lo que "
+"omitiremos esta parte."
 
 #~ msgid "Here are a few terms you should be aware of when using Zrythm."
 #~ msgstr ""

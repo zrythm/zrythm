@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-22 12:22+0000\n"
-"PO-Revision-Date: 2020-09-30 22:58+0000\n"
-"Last-Translator: Marc <marc.izquierdo.hu@gmail.com>\n"
+"POT-Creation-Date: 2020-12-07 22:10+0000\n"
+"PO-Revision-Date: 2020-12-05 20:09+0000\n"
+"Last-Translator: Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>\n"
 "Language: es\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/zrythm/manualappendix/es/>\n"
@@ -45,43 +45,11 @@ msgstr "Solución de problemas"
 
 #: ../../appendix/troubleshooting.rst:10
 msgid "Todo"
-msgstr ""
+msgstr "Pendiente de hacer"
 
 #: ../../appendix/troubleshooting.rst:10
 msgid "Write this page."
 msgstr "Escriba esta página."
-
-#~ msgid ""
-#~ "The app icon is missing Run `sudo"
-#~ " touch /usr/share/icons/hicolor` and `sudo "
-#~ "gtk-update-icon-cache`"
-#~ msgstr ""
-
-#~ msgid "/bin/zrythm"
-#~ msgstr ""
-
-#~ msgid "Zrythm executable"
-#~ msgstr ""
-
-#~ msgid "/usr/share/fonts/Segment7Standard"
-#~ msgstr ""
-
-#~ msgid "Segment 7 font used in meters"
-#~ msgstr ""
-
-#~ msgid "/usr/share/glib-2.0/schemas/org.zrythm.gschema.xml"
-#~ msgstr ""
-
-#~ msgid "Settings schema"
-#~ msgstr ""
-
-#~ msgid "The app icon is missing"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Run `sudo touch /usr/share/icons/hicolor` and"
-#~ " `sudo gtk-update-icon-cache`"
-#~ msgstr ""
 
 #~ msgid "TODO"
 #~ msgstr "Pendiente"

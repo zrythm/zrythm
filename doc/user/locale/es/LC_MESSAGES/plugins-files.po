@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-31 18:23+0000\n"
-"PO-Revision-Date: 2020-11-16 19:28+0000\n"
+"PO-Revision-Date: 2020-12-05 20:09+0000\n"
 "Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/es/>\n"
@@ -34,35 +34,36 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:14
 msgid "This is a work in progress."
-msgstr ""
+msgstr "Producto semiterminado."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:17
 msgid "Filtering"
-msgstr ""
+msgstr "Filtrado"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
 #: ../../plugins-files/audio-midi-files/file-browser.rst:24
-#, fuzzy
 msgid "TODO"
-msgstr "TODO"
+msgstr "PENDIENTE DE HACER"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:22
 msgid "Collections"
-msgstr ""
+msgstr "Colecciones"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:27
 msgid "Importing Files"
-msgstr ""
+msgstr "Importar archivos"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:29
 msgid ""
 "Files are imported by either double clicking them in the browser or "
 "dragging and dropping them into a track."
 msgstr ""
+"Los archivos se importan al hacer doble clic en ellos en el explorador o "
+"arrastrándolos y soltándolos en una pista."
 
 #: ../../plugins-files/audio-midi-files/intro.rst:6
 msgid "Audio & MIDI Files"
-msgstr ""
+msgstr "Archivos de audio y MIDI"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:6
 msgid "Overview"
@@ -74,22 +75,24 @@ msgid ""
 " imported by dragging and dropping from your computer or from the :ref"
 ":`file-browser` into a track."
 msgstr ""
+"Zrythm puede importar archivos MIDI y de audio al proyecto arrastrándolos y "
+"soltándolos en una pista desde tu ordenador o desde :ref:`file-browser`."
 
 #: ../../plugins-files/audio-midi-files/overview.rst:14
 msgid "Supported Audio Formats"
-msgstr ""
+msgstr "Formatos de audio compatibles"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:15
 msgid "Zrythm supports OGG, FLAC, WAV and MP3."
-msgstr ""
+msgstr "Zrythm es compatible con OGG, FLAC, WAV y MP3."
 
 #: ../../plugins-files/intro.rst:6
 msgid "Plugins & Files"
-msgstr ""
+msgstr "Plugins y archivos"
 
 #: ../../plugins-files/plugins/inspector-page.rst:8
 msgid "Inspector Page"
-msgstr ""
+msgstr "Página del inspector"
 
 #: ../../plugins-files/plugins/inspector-page.rst:10
 msgid ""
@@ -97,16 +100,21 @@ msgid ""
 "Inspect on an instrument, its page will appear in the Inspector as "
 "follows."
 msgstr ""
+"Cuando se selecciona un plugin en el Mezclador o se hace clic derecho -> "
+"Inspeccionar en un instrumento, la página aparecerá en el Inspector del modo "
+"siguiente."
 
 #: ../../plugins-files/plugins/inspector-page.rst:17
 msgid ""
 "This page will display information about the plugin and its ports and "
 "allow you to make changes."
 msgstr ""
+"Esta página muestra información sobre el plugin y sus puertos y permite "
+"realizar cambios."
 
 #: ../../plugins-files/plugins/inspector-page.rst:22
 msgid "Display"
-msgstr ""
+msgstr "Visualización"
 
 #: ../../plugins-files/plugins/inspector-page.rst:23
 msgid ""
@@ -114,20 +122,25 @@ msgid ""
 "number of connections to/from this port. See :doc:`../../routing/making-"
 "connections` for details."
 msgstr ""
+"El número en la parte superior derecha de cada nombre de puerto muestra el "
+"número actual de conexiones a/desde este puerto. Consulta :doc:`../../"
+"routing/making-connections` para más detalles."
 
 #: ../../plugins-files/plugins/inspector-page.rst:29
 msgid "Changing Values"
-msgstr ""
+msgstr "Cambio de valores"
 
 #: ../../plugins-files/plugins/inspector-page.rst:30
 msgid ""
 "The values of control ports can be changed by clicking and dragging "
 "inside each bar."
 msgstr ""
+"Los valores de los puertos de control se pueden cambiar haciendo clic en "
+"ellos y arrastrándolos dentro de cada barra."
 
 #: ../../plugins-files/plugins/inspector-page.rst:33
 msgid ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
-msgstr ""
+msgstr ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
 
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
@@ -135,43 +148,51 @@ msgstr "Plugins"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:8
 msgid "Plugin Browser"
-msgstr "Navegador de plugins"
+msgstr "Explorador de plugins"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:10
 msgid ""
 "The Plugin Browser makes it easy to browse and filter Plugins installed "
 "on your computer."
 msgstr ""
+"El explorador de plugins facilita la búsqueda y el filtrado de plugins "
+"instalados en tu ordenador."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:17
 msgid "Filters Tab"
-msgstr ""
+msgstr "Pestaña de filtros"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:18
 msgid ""
 "The filters tab at the top allows you to select how to filter the "
 "Plugins. There are 3 tabs:"
 msgstr ""
+"La pestaña de filtros en la parte superior permite seleccionar cómo filtrar "
+"los plugins. Hay 3 pestañas:"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:23
 msgid "Collection"
-msgstr ""
+msgstr "Recopilación"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:22
 msgid ""
 "This tab contains your collections. You can create collections such as "
 "\"MySynths\" and filter by the selected collections."
 msgstr ""
+"En esta pestaña se encuentran tus colecciones. Puedes crear colecciones como "
+"\"MisSintetizadores\" y filtrar por las colecciones seleccionadas."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid "Category"
-msgstr ""
+msgstr "Categoría"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid ""
 "Filter plugins by category based on the plugin metadata, such as "
 "\"Delay\", \"Distortion\", etc."
 msgstr ""
+"Filtra los plugins por categoría según sus metadatos, como \"Retardo\", "
+"\"Distorsión\", etc."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Protocol"
@@ -180,40 +201,44 @@ msgstr "Protocolo"
 #: ../../plugins-files/plugins/plugin-browser.rst:29
 msgid "Allows you to filter plugins based their protocol (eg., LV2 or SFZ)."
 msgstr ""
+"Permite filtrar plugins en función de su protocolo (por ejemplo, LV2 o SFZ)."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:32
 msgid "Filtering by collections and protocols is not operational at the moment."
 msgstr ""
+"El filtrado por colecciones y protocolos no está operativo en este momento."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:36
 msgid "Filter Buttons"
-msgstr ""
+msgstr "Botones de filtro"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:37
 msgid "Additionally to the above, plugins can be filtered based on their type."
-msgstr ""
+msgstr "Además, los plugins se pueden filtrar según su tipo."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:43
 msgid "Filtering by modulator plugins"
-msgstr ""
+msgstr "Filtrado por plugins de modulador"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:45
 msgid ""
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
 msgstr ""
+"Consulta :ref:`plugin-types` para obtener más información sobre los "
+"distintos tipos de plugins que existen."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:51
 msgid "Instantiating Plugins"
-msgstr ""
+msgstr "Instancia de plugins"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:52
 msgid "There are a couple of ways to instantiate plugins:"
-msgstr ""
+msgstr "Existen dos formas de crear una instancia de plugins:"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:55
 msgid "Drag-n-Drop"
-msgstr ""
+msgstr "Arrastrar y soltar"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:57
 msgid ""
@@ -221,50 +246,57 @@ msgid ""
 "Tracklist or into empty space in the Mixer to create a new track using "
 "that plugin."
 msgstr ""
+"Puede arrastrar y soltar el plugin seleccionado en un espacio vacío en la "
+"lista de pistas o en el Mezclador para crear una nueva usando ese plugin."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:67
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or"
 " replace the previous plugin."
 msgstr ""
+"Como alternativa, puedes arrastrar el plugin y agregarlo a una ranura del "
+"mezclador o reemplazar el plugin anterior."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:73
 msgid "If the plugin is a modulator, you can drop it into the Modulators tab."
 msgstr ""
+"Si el plugin es un modulador, se puede colocar en la pestaña Moduladores."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:80
 msgid "Double Click/Enter"
-msgstr ""
+msgstr "Doble clic/Enter"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:82
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
 msgstr ""
+"Haz doble clic en el plugin o selecciónalo y presiona Enter en el teclado "
+"para crear una nueva pista usando el plugin."
 
 #: ../../plugins-files/plugins/plugin-info.rst:6
-#, fuzzy
 msgid "Plugin Overview"
-msgstr "Explorador de complementos"
+msgstr "Visión general de los plugins"
 
 #: ../../plugins-files/plugins/plugin-info.rst:8
 msgid ""
 "There are various types of :term:`plugins <Plugin>` supported by Zrythm, "
 "mentioned in :ref:`scanning-plugins`."
 msgstr ""
+"Hay varios tipos de :term:`plugins<Plugin>` compatibles con Zrythm que se "
+"mencionan en :ref:`scanning-plugins`."
 
 #: ../../plugins-files/plugins/plugin-info.rst:12
 msgid "In Zrythm, :term:`SFZ`/:term:`SF2` are also used as plugins."
-msgstr ""
+msgstr "En Zrythm, :term:`SFZ`/:term:`SF2` también se utilizan como plugins."
 
 #: ../../plugins-files/plugins/plugin-info.rst:18
-#, fuzzy
 msgid "Plugin Types"
-msgstr "Complementos"
+msgstr "Tipos de plugins"
 
 #: ../../plugins-files/plugins/plugin-info.rst:20
 msgid "Plugins are classified into the following categories."
-msgstr ""
+msgstr "Los plugins se clasifican en las siguientes categorías."
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "Instrument"
@@ -273,16 +305,20 @@ msgstr "Instrumento"
 #: ../../plugins-files/plugins/plugin-info.rst:24
 msgid "These plugins will create an instrument track when added to the project."
 msgstr ""
+"Estos plugins crean una pista de instrumento cuando se agregan al proyecto."
 
 #: ../../plugins-files/plugins/plugin-info.rst:28
 msgid "Effects"
-msgstr ""
+msgstr "Efectos"
 
 #: ../../plugins-files/plugins/plugin-info.rst:29
 msgid ""
 "These plugins can be dragged into the insert slots of existing channels "
 "in the mixer or can be instantiated to create new FX tracks."
 msgstr ""
+"Estos plugins se pueden arrastrar a las ranuras de inserción de los canales "
+"existentes en el mezclador o se pueden usar con instancias para crear nuevas "
+"pistas FX."
 
 #: ../../plugins-files/plugins/plugin-info.rst:34
 msgid "Modulators"
@@ -293,16 +329,20 @@ msgid ""
 "These plugins output :term:`CV` signals and can be used to modulate other"
 " plugin or track parameters."
 msgstr ""
+"Estos plugins generan señales de :term:`CV` y se pueden utilizar para "
+"modular otros parámetros de plugins o pistas."
 
 #: ../../plugins-files/plugins/plugin-info.rst:39
 msgid "MIDI Effects"
-msgstr ""
+msgstr "Efectos MIDI"
 
 #: ../../plugins-files/plugins/plugin-info.rst:40
 msgid ""
 "These plugins modify incoming :term:`MIDI` signals and can be used in the"
 " MIDI signal chain of an Instrument or MIDI track."
 msgstr ""
+"Estos plugins modifican las señales entrantes :term:`MIDI` y se pueden "
+"utilizar en la cadena de la señal MIDI de un instrumento o pista MIDI."
 
 #: ../../plugins-files/plugins/plugin-info.rst:46
 msgid ""
@@ -311,6 +351,10 @@ msgid ""
 "number of audio, MIDI, control and CV input and output ports a plugin "
 "has."
 msgstr ""
+"Zrythm busca dentro de los metadatos del plugin para determinar de qué tipo "
+"es. Si esto no es suficiente, Zrythm toma una decisión basada en la cantidad "
+"de puertos de entrada y salida de audio, MIDI, control y señal CV que tiene "
+"el plugin."
 
 #: ../../plugins-files/plugins/plugin-info.rst:53
 msgid "Plugin Ports"
@@ -321,6 +365,9 @@ msgid ""
 "Plugins consist of controls (parameters) and a variety of audio, "
 ":term:`MIDI` and :term:`CV` ports. Ports are explained in :ref:`ports`."
 msgstr ""
+"Los plugins están formados por controles (parámetros) y una variedad de "
+"puertos de audio, :term:`MIDI` y :term:`CV`. Más información sobre los "
+"puertos en :ref:`ports`."
 
 #: ../../plugins-files/plugins/plugin-info.rst:58
 msgid ""
@@ -328,36 +375,41 @@ msgid ""
 "ports. After these ports are created, Zrythm appends the rest of the "
 "plugin's ports."
 msgstr ""
+"Zrythm primero crea todos los plugins con los siguientes puertos de control "
+"especiales. Una vez creados estos puertos, Zrythm agrega el resto de los "
+"puertos del plugin."
 
 #: ../../plugins-files/plugins/plugin-info.rst:64
 msgid "Enabled"
-msgstr ""
+msgstr "Activado"
 
 #: ../../plugins-files/plugins/plugin-info.rst:65
 msgid "Controls whether the plugin is active or bypassed."
-msgstr ""
+msgstr "Controla si el plugin está activo o no."
 
 #: ../../plugins-files/plugins/plugin-info.rst:68
 msgid "Gain"
-msgstr ""
+msgstr "Ganancia"
 
 #: ../../plugins-files/plugins/plugin-info.rst:69
 msgid "Increases the output volume of the plugin (if applicable)."
-msgstr ""
+msgstr "Aumenta el volumen de salida del plugin (si corresponde)."
 
 #: ../../plugins-files/plugins/plugin-info.rst:73
 msgid ""
 "All of the plugin's ports will be shown in the :ref:`Inspector Page "
 "<plugins-files/plugins/inspector-page:Inspector Page>`"
 msgstr ""
+"Todos los puertos del plugin se mostrarán en :ref:`Inspector Page <plugins-"
+"files/plugins/inspector-page:Inspector Page>`"
 
 #: ../../plugins-files/plugins/plugin-window.rst:6
 msgid "Plugin Window"
-msgstr ""
+msgstr "Ventana de plugin"
 
 #: ../../plugins-files/plugins/plugin-window.rst:9
 msgid "Custom UIs"
-msgstr ""
+msgstr "Interfaces de usuario personalizadas"
 
 #: ../../plugins-files/plugins/plugin-window.rst:10
 msgid ""
@@ -365,12 +417,17 @@ msgid ""
 "displayed, if the plugin ships with its own UI. This window will contain "
 "additions by Zrythm (such as the `File` and `Presets` menus)."
 msgstr ""
+"Cuando se abren las IU del plugin, se muestra una ventana como la siguiente "
+"si el plugin incluye su propia IU. Esta ventana contiene adiciones de Zrythm "
+"(como los menús `Archivo` y `Presets`)."
 
 #: ../../plugins-files/plugins/plugin-window.rst:19
 msgid ""
 "Some plugin UIs cannot be wrapped and will be opened in separate windows "
 "without additions like `File` or `Presets`."
 msgstr ""
+"Algunas IU de plugins no se pueden empaquetar y se abren en ventanas "
+"separadas sin adiciones como `Archivo` o `Presets`."
 
 #: ../../plugins-files/plugins/plugin-window.rst:24
 msgid "Generic UIs"
@@ -381,6 +438,8 @@ msgid ""
 "If the plugin does not ship with its own UI, the following generic UI "
 "will be generated for it."
 msgstr ""
+"Si el plugin no se incluye con su propia interfaz de usuario, se generará la "
+"siguiente interfaz de usuario genérica."
 
 #: ../../plugins-files/plugins/plugin-window.rst:32
 msgid ""
@@ -388,10 +447,13 @@ msgid ""
 " can edit their parameters in the plugin inspector page (see :ref"
 ":`plugin-inspector-page`)."
 msgstr ""
+"Esto solo se aplica a los plugins :term:`LV2`. Para otros tipos, puedes "
+"editar tus parámetros en la página del inspector de plugins (ver :ref"
+":`plugin-inspector-page`)."
 
 #: ../../plugins-files/plugins/plugin-window.rst:38
 msgid "Bridging"
-msgstr ""
+msgstr "Puente"
 
 #: ../../plugins-files/plugins/plugin-window.rst:39
 msgid ""
@@ -400,6 +462,10 @@ msgid ""
 "not compatible with Zrythm and need to be bridged (ie, run as separate "
 "processes)."
 msgstr ""
+"Se crean instancias de la mayoría de los plugins en el mismo proceso que "
+"Zrythm. Esto tiene la ventaja de que :term:`DSP` es muy rápido. Sin embargo, "
+"algunas IU de los plugins no son compatibles con Zrythm y se deben puentear ("
+"es decir, ejecutarse como procesos separados)."
 
 #: ../../plugins-files/plugins/plugin-window.rst:46
 msgid ""
@@ -408,14 +474,20 @@ msgid ""
 "plugin is required, this will have some performance implications, since "
 "it is required to communicate with the plugin in another process."
 msgstr ""
+"Cuando solo sea posible puentear la interfaz de usuario, Zrythm lo llevará a "
+"cabo y no tendrá ninguna implicación en el rendimiento del DSP. Si es "
+"necesario puentear todo el plugin, sí que se verá afectado el rendimiento ya "
+"que necesita comunicarse con el plugin en otro proceso."
 
 #: ../../plugins-files/plugins/plugin-window.rst:53
 msgid "This process is transparent to the user and only mentioned for reference."
 msgstr ""
+"Este proceso es transparente para el usuario y solo se menciona como "
+"referencia."
 
 #: ../../plugins-files/plugins/plugin-window.rst:57
 msgid "Opening Plugins in Bridged Mode"
-msgstr ""
+msgstr "Abrir plugins en modo puente"
 
 #: ../../plugins-files/plugins/plugin-window.rst:58
 msgid ""
@@ -423,10 +495,14 @@ msgid ""
 "specific way. You can find the options available for each plugin by right"
 " clicking on the plugin in the :ref:`plugin-browser`."
 msgstr ""
+"A veces, es posible que tengas que especificar manualmente a Zrythm para que "
+"abra plugins de una manera específica. Puedes encontrar las opciones "
+"disponibles para cada plugin al hacer clic derecho en el plugin en el :ref"
+":`plugin-browser`."
 
 #: ../../plugins-files/plugins/scanning.rst:8
 msgid "Scanning for Plugins"
-msgstr ""
+msgstr "Buscador de plugins"
 
 #: ../../plugins-files/plugins/scanning.rst:10
 msgid ""
@@ -434,22 +510,29 @@ msgid ""
 "until it is closed. Zrythm supports :term:`LV2`, :term:`VST2`, "
 ":term:`VST3` and :term:`AU` plugins. LV2 is the recommended standard."
 msgstr ""
+"Zrythm busca los plugins al inicio y los recuerda hasta que se cierra. "
+"Admite los plugins :term:`LV2`, :term:`VST2`, :term:`VST3` y :term:`AU`. LV2 "
+"es el estándar recomendado."
 
 #: ../../plugins-files/plugins/scanning.rst:17
 msgid ""
 ":term:`SFZ` and :term:`SF2` instruments are also supported, and they are "
 "scanned as instrument plugins."
 msgstr ""
+"Los instrumentos :term:`SFZ` y :term:`SF2` también son compatibles y se "
+"escanean como plugins de instrumentos."
 
 #: ../../plugins-files/plugins/scanning.rst:21
 msgid ""
 "Plugin scanning can be disabled by passing :envvar:`NO_SCAN_PLUGINS` when"
 " running Zrythm."
 msgstr ""
+"El análisis de plugins se puede desactivar al pasar :envvar:`NO_SCAN_PLUGINS`"
+" cuando se ejecuta Zrythm."
 
 #: ../../plugins-files/plugins/scanning.rst:25
 msgid "LV2 Scan"
-msgstr ""
+msgstr "Escanear LV2"
 
 #: ../../plugins-files/plugins/scanning.rst:27
 msgid ""
@@ -457,22 +540,25 @@ msgid ""
 "<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. You can "
 "bypass this behavior by passing :envvar:`LV2_PATH`."
 msgstr ""
+"Zrythm buscará plugins LV2 en las `rutas estándar especificadas aquí "
+"<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>` _. Puedes "
+"omitir este comportamiento al pasar :envvar:`LV2_PATH`."
 
 #: ../../plugins-files/plugins/scanning.rst:33
 msgid "VST2/VST3 Scan"
-msgstr ""
+msgstr "Escanear VST2/VST3"
 
 #: ../../plugins-files/plugins/scanning.rst:36
 msgid "GNU/Linux and FreeBSD"
-msgstr ""
+msgstr "GNU/Linux y FreeBSD"
 
 #: ../../plugins-files/plugins/scanning.rst:37
 msgid "Zrythm will scan for VST2 plugins in the following paths,"
-msgstr ""
+msgstr "Zrythm buscará plugins VST2 en las siguientes rutas,"
 
 #: ../../plugins-files/plugins/scanning.rst:40
 msgid ":file:`{$HOME}/.vst`"
-msgstr ""
+msgstr ":file:`{$ HOME}/.vst`"
 
 #: ../../plugins-files/plugins/scanning.rst:41
 msgid ":file:`{$HOME}/vst`"
@@ -488,7 +574,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:45
 msgid "and VST3 plugins in the following paths."
-msgstr ""
+msgstr "y plugins VST3 en las siguientes rutas."
 
 #: ../../plugins-files/plugins/scanning.rst:47
 msgid ":file:`{$HOME}/.vst3`"
@@ -507,26 +593,31 @@ msgid ""
 "You can bypass this behavior by passing :envvar:`VST_PATH` and "
 ":envvar:`VST3_PATH`."
 msgstr ""
+"Puedes omitir este comportamiento al pasar :envvar:`VST_PATH` y "
+":envvar:`VST3_PATH`."
 
 #: ../../plugins-files/plugins/scanning.rst:54
 msgid ""
 "If your system uses a libdir other than ``lib`` (for example ``lib64``), "
 "Zrythm will scan for plugins in both locations."
 msgstr ""
+"Si tu sistema usa un libdir distinto de ``lib`` (por ejemplo, `` lib64``), "
+"Zrythm busca plugins en ambas ubicaciones."
 
 #: ../../plugins-files/plugins/scanning.rst:59
 msgid "Windows"
-msgstr ""
+msgstr "Ventanas"
 
 #: ../../plugins-files/plugins/scanning.rst:60
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in :ref:`vst-"
 "paths`."
 msgstr ""
+"Zrythm busca plugins VST en las rutas especificadas en :ref:`vst-paths`."
 
 #: ../../plugins-files/plugins/scanning.rst:64
 msgid "MacOS"
-msgstr ""
+msgstr "MacOS"
 
 #: ../../plugins-files/plugins/scanning.rst:65
 msgid ""
@@ -534,46 +625,58 @@ msgid ""
 "locations on Mac OS X and macOS <https://helpcenter.steinberg.de/hc/en-"
 "us/articles/115000171310>`_."
 msgstr ""
+"Zrythm buscará plugins VST en las rutas especificadas en `Ubicaciones de "
+"plugins VST en Mac OS X y macOS <https://helpcenter.steinberg.de/hc/en-us/"
+"articles/115000171310>` _."
 
 #: ../../plugins-files/plugins/scanning.rst:68
 msgid ":file:`/Library/Audio/Plug-Ins/VST` for VST2"
-msgstr ""
+msgstr ":file:`/Library/Audio/Plug-Ins/VST` para VST2"
 
 #: ../../plugins-files/plugins/scanning.rst:69
 msgid ":file:`/Library/Audio/Plug-Ins/VST3` for VST3"
-msgstr ""
+msgstr ":file:`/Library/Audio/Plug-Ins/VST3` para VST3"
 
 #: ../../plugins-files/plugins/scanning.rst:71
 msgid ""
 "Zrythm will remember scanned VST plugins and save this information in "
 ":file:`cached_plugin_descriptors.yaml` in the :term:`Zrythm user path`."
 msgstr ""
+"Zrythm recuerda los plugins VST escaneados y guarda esta información en "
+":file:`cached_plugin_descriptors.yaml` en la :term:`Zrythm user path`."
 
 #: ../../plugins-files/plugins/scanning.rst:77
 msgid ""
 "New plugins will be scanned on each start-up, and you can delete or edit "
 "this file to force a re-scan of previously scanned plugins."
 msgstr ""
+"Los nuevos plugins se analizan en cada inicio y puedes eliminar o editar "
+"este archivo para forzar un nuevo análisis de los plugins previamente "
+"analizados."
 
 #: ../../plugins-files/plugins/scanning.rst:82
 msgid "AU Scan"
-msgstr ""
+msgstr "Escaneo de AU"
 
 #: ../../plugins-files/plugins/scanning.rst:83
 msgid ""
 "On MacOS, :term:`AU` plugins will be scanned at their standard location "
 "at :file:`/Library/Audio/Plug-Ins/Components`."
 msgstr ""
+"En MacOS, los plugins :term:`AU` se escanean en su ubicación estándar en "
+":file:`/Library/Audio/Plug-Ins/Components`."
 
 #: ../../plugins-files/plugins/scanning.rst:88
 msgid "SFZ/SF2 Scan"
-msgstr ""
+msgstr "Escanear SFZ/SF2"
 
 #: ../../plugins-files/plugins/scanning.rst:89
 msgid ""
 ":term:`SFZ` and :term:`SF2` instruments will be scanned in all  "
 "directories and subdirectories specified in :ref:`vst-paths`."
 msgstr ""
+"Los instrumentos :term:`SFZ` y :term:`SF2` se escanean en todos los "
+"directorios y subdirectorios especificados en :ref:`vst-paths`."
 
 #~ msgid ""
 #~ "Filter Plugins by category based on "

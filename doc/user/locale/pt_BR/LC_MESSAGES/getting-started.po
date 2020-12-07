@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-11-21 12:50+0000\n"
+"PO-Revision-Date: 2020-12-02 23:29+0000\n"
 "Last-Translator: Arthur O. Reis <aor@cesar.school>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/manualgetting-started/pt_BR/>\n"
@@ -56,8 +56,8 @@ msgid ""
 "there are many plugins that can easily be installed via apt."
 msgstr ""
 "Para usuários de distribuições como Ubuntu e Linux Mint nós recomendamos "
-"usar o  `repositório KXstudio <https://kx.studio/>`_, nele se encontra "
-"vários plugins que podem ser facilmente instalados via apt."
+"usar o `repositório KXstudio <https://kx.studio/>`_, nele se encontra vários "
+"plugins que podem ser facilmente instalados via apt."
 
 #: ../../getting-started/getting-plugins.rst:31
 msgid ""
@@ -179,14 +179,17 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/installation.rst:18
+#, fuzzy
 msgid ""
 "This is the easiest and recommended way to install the latest version for"
 " most users, and we provide support for it."
 msgstr ""
+"Essa é a forma mais fácil e recomendada de instalar a última versão para a "
+"maioria dos usuários, além de darmos suporte a ela."
 
 #: ../../getting-started/installation.rst:22
 msgid "The installers also include bundled plugins."
-msgstr ""
+msgstr "Os instaladores também incluem plugins integrados."
 
 #: ../../getting-started/installation.rst:25
 msgid "Manual Installation"

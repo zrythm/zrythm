@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:30+0100\n"
-"PO-Revision-Date: 2020-11-16 19:28+0000\n"
+"PO-Revision-Date: 2020-12-06 19:23+0000\n"
 "Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/es/>\n"
@@ -129,7 +129,7 @@ msgstr "Bloquear"
 #: ../../tracks/instrument-track.rst:38
 #: ../../tracks/midi-track.rst:37
 msgid "Not used at the moment."
-msgstr ""
+msgstr "No se usa por el momento."
 
 #: ../../tracks/audio-track.rst:29
 #: ../../tracks/instrument-track.rst:41
@@ -200,7 +200,7 @@ msgstr "Propiedades"
 #: ../../tracks/master-track.rst:44
 #: ../../tracks/midi-track.rst:56
 msgid "Direct Out"
-msgstr ""
+msgstr "Direct Out"
 
 #: ../../tracks/audio-track.rst:44
 msgid "The track to route the output of the audio track to."
@@ -230,9 +230,8 @@ msgstr ""
 #: ../../tracks/audio-track.rst:55
 #: ../../tracks/midi-track.rst:132
 #: ../../tracks/midi-track.rst:140
-#, fuzzy
 msgid "TODO"
-msgstr "TODO"
+msgstr "PENDIENTE DE HACER"
 
 #: ../../tracks/audio-track.rst:58
 #: ../../tracks/instrument-track.rst:77
@@ -358,7 +357,7 @@ msgstr ""
 
 #: ../../tracks/chord-track.rst:8
 msgid "Chord Track"
-msgstr ""
+msgstr "Pista de acordes"
 
 #: ../../tracks/chord-track.rst:10
 #: ../../tracks/modulator-track.rst:10
@@ -511,9 +510,8 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:35
 #: ../../tracks/track-types.rst:18
-#, fuzzy
 msgid "Instrument"
-msgstr "Pista de instrumento"
+msgstr "Instrumento"
 
 #: ../../tracks/inspector-page.rst:36
 msgid ""
@@ -559,7 +557,7 @@ msgstr ""
 #: ../../tracks/tempo-track.rst:8
 #: ../../tracks/track-types.rst:31
 msgid "Todo"
-msgstr ""
+msgstr "Pendiente de hacer"
 
 #: ../../tracks/inspector-page.rst:70
 msgid "Separate MIDI FX/inserts and expand more."
@@ -905,7 +903,7 @@ msgstr ""
 #: ../../tracks/midi-track.rst:130
 #: ../../tracks/overview.rst:74
 msgid "Context Menu"
-msgstr ""
+msgstr "Menú contextual"
 
 #: ../../tracks/midi-track.rst:135
 msgid "MIDI Transformations"
@@ -1167,7 +1165,7 @@ msgstr "Maestro"
 
 #: ../../tracks/track-types.rst:21
 msgid "Modulators"
-msgstr ""
+msgstr "Moduladores"
 
 #: ../../tracks/track-types.rst:23
 msgid "MIDI Group"
