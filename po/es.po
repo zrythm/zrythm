@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-12-05 18:36+0000\n"
-"Last-Translator: miri24661 <miriam_g.r@hotmail.com>\n"
+"PO-Revision-Date: 2020-12-05 20:09+0000\n"
+"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -868,7 +868,7 @@ msgstr "Nombre"
 #: src/gui/widgets/project_assistant.c:276
 #: resources/ui/first_run_assistant.ui:148
 msgid "Path"
-msgstr "Directorio"
+msgstr "Ruta"
 
 #: src/gui/widgets/project_assistant.c:286
 msgid "Last Modified"
@@ -993,7 +993,7 @@ msgstr "Mostrar los carriles de la pista"
 
 #: src/gui/widgets/instrument_track.c:265 src/gui/widgets/midi_track.c:230
 msgid "Lock track"
-msgstr "Bloquea la pista."
+msgstr "Bloquea la pista"
 
 #: src/gui/widgets/instrument_track.c:271
 msgid "Freeze track"
@@ -1123,7 +1123,7 @@ msgstr "Desenganchar el transporte de JACK"
 
 #: src/gui/widgets/bot_bar.c:307
 msgid "playhead"
-msgstr "playhead"
+msgstr "cabezal de reproducción"
 
 #: src/gui/widgets/bot_bar.c:342
 msgid "JACK Transport client"
@@ -1307,7 +1307,6 @@ msgid "Chat (Matrix)"
 msgstr "Charla (Matrix)"
 
 #: src/gui/widgets/help_toolbar.c:40
-#, fuzzy
 msgid "Manual"
 msgstr "Manual"
 
@@ -2108,7 +2107,7 @@ msgstr "Se crearán los siguientes archivos:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:496
 msgid "in the directory:"
-msgstr "Directorio de padres"
+msgstr "en el directorio:"
 
 #: src/gui/widgets/dialogs/export_dialog.c:653
 msgid "<name>.<format>"
@@ -2530,7 +2529,7 @@ msgstr "Crear %s"
 #: src/actions/create_plugins_action.c:182
 #, c-format
 msgid "Create %d %ss"
-msgstr "Crear  %d %ss"
+msgstr "Crear %d %ss"
 
 #: src/actions/delete_tracks_action.c:430
 msgid "Delete Track"
@@ -3285,7 +3284,7 @@ msgstr "Diatónica"
 
 #: resources/ui/chord_selector_window.ui:898
 msgid "TODO"
-msgstr "Por hacer"
+msgstr "PENDIENTE DE HACER"
 
 #: resources/ui/chord_selector_window.ui:908
 msgid "Circle of Fifths"
@@ -3293,7 +3292,7 @@ msgstr "El Círculo de los Quintos"
 
 #: resources/ui/create_project_dialog.ui:70
 msgid "Parent directory"
-msgstr "Directorio de padres"
+msgstr "Directorio principal"
 
 #: resources/ui/create_project_dialog.ui:83
 msgid "Select parent directory to save the project in"
@@ -3427,7 +3426,7 @@ msgstr "Seleccione el archivo MIDI"
 
 #: resources/ui/export_midi_file_dialog.ui:69
 msgid "_Export"
-msgstr "Exportación."
+msgstr "_Exportación"
 
 #: resources/ui/export_midi_file_dialog.ui:104
 msgid "Region content"
@@ -3622,7 +3621,7 @@ msgstr "Cuantificar las opciones"
 
 #: resources/ui/quantize_dialog.ui:23
 msgid "_Quantize"
-msgstr "Cuantificar."
+msgstr "_Cuantificar"
 
 #: resources/ui/quantize_dialog.ui:77
 msgid "Quantize to"
