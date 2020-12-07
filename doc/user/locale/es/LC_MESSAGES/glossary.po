@@ -5,13 +5,14 @@
 # Gorro_Rojo <gorro.rojo@gmail.com>, 2020.
 # Bianca Roșu <bianca.rosu32@gmail.com>, 2020.
 # Alexandros Theodotou <alex@zrythm.org>, 2020.
+# miri24661 <miriam_g.r@hotmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-03 14:28+0100\n"
-"PO-Revision-Date: 2020-12-05 18:05+0000\n"
-"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
+"PO-Revision-Date: 2020-12-05 18:36+0000\n"
+"Last-Translator: miri24661 <miriam_g.r@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/glossary/"
 "es/>\n"
 "Language: es\n"
@@ -219,7 +220,7 @@ msgstr "Pan law"
 
 #: ../../glossary/intro.rst:95
 msgid "TODO"
-msgstr "PENDIENTE DE HACER"
+msgstr "Por hacer"
 
 #: ../../glossary/intro.rst:96
 msgid "Panning"

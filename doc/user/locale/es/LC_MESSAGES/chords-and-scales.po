@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 15:23+0000\n"
-"PO-Revision-Date: 2020-09-27 02:23+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2020-12-05 18:48+0000\n"
+"Last-Translator: miri24661 <miriam_g.r@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualchords-and-scales/es/>\n"
 "Language: es\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../chords-and-scales/intro.rst:6
@@ -33,6 +33,8 @@ msgid ""
 "Chords and scales can be used to easily try out various chords and to "
 "make it easier to follow chord progressions."
 msgstr ""
+"Los acordes y las escalas se pueden utilizar para probar varios acordes de "
+"una manera sencilla y facilitar el seguimiento de la progresión de acordes."
 
 #: ../../chords-and-scales/overview.rst:12
 msgid "Chord Pad"
@@ -44,15 +46,18 @@ msgid ""
 "can be used to trigger chords. The chord pad can be found in the bottom "
 "panel."
 msgstr ""
+"El pad de acordes contiene 12 pads (1 para cada tecla de un teclado de piano)"
+" que se pueden usar para hacer acordes. El pad de acordes se puede encontrar "
+"en el panel inferior."
 
 #: ../../chords-and-scales/overview.rst:18
 #: ../../chords-and-scales/overview.rst:74
 msgid "This is a TODO feature."
-msgstr ""
+msgstr "Función pendiente de hacer."
 
 #: ../../chords-and-scales/overview.rst:21
 msgid "Chord Track"
-msgstr ""
+msgstr "Pista de acordes"
 
 #: ../../chords-and-scales/overview.rst:23
 msgid ""
@@ -60,18 +65,24 @@ msgid ""
 "and these can then be used to dictate what chord and scale is active "
 "when. For example, you can specify a chord progression as follows."
 msgstr ""
+"Se pueden crear regiones de acordes y objetos de escala en la pista de "
+"acordes para determinar qué acordes están activos en qué momento, y lo mismo "
+"para las escalas. Por ejemplo, se puede especificar una progresión de "
+"acordes de la siguiente manera."
 
 #: ../../chords-and-scales/overview.rst:33
 msgid "Chord region and scale inside the chord track in the timeline."
 msgstr ""
+"Región de acordes y escala dentro de la pista de acordes en la línea de "
+"tiempo."
 
 #: ../../chords-and-scales/overview.rst:40
 msgid "Chord objects inside the chord region above."
-msgstr ""
+msgstr "Objetos de acordes en la región de acordes superior."
 
 #: ../../chords-and-scales/overview.rst:43
 msgid "Highlighting"
-msgstr ""
+msgstr "Resaltado"
 
 #: ../../chords-and-scales/overview.rst:45
 msgid ""
@@ -79,28 +90,33 @@ msgid ""
 "corresponding to the scale, chord, or both at the position of the "
 "playhead."
 msgstr ""
+"Después, puedes utilizar el resaltado en las regiones MIDI para las notas "
+"correspondientes a la escala, el acorde o ambos en la posición del cabezal "
+"de reproducción."
 
 #: ../../chords-and-scales/overview.rst:53
 msgid "Chord highlighting."
-msgstr ""
+msgstr "Resaltado de acordes."
 
 #: ../../chords-and-scales/overview.rst:59
 msgid "Scale highlighting."
-msgstr ""
+msgstr "Resaltado de escala."
 
 #: ../../chords-and-scales/overview.rst:65
 msgid "Scale and chord highlighting."
-msgstr ""
+msgstr "Resaltado de escalas y acordes."
 
 #: ../../chords-and-scales/overview.rst:68
 msgid "Live Audition"
-msgstr ""
+msgstr "Escuchar en directo"
 
 #: ../../chords-and-scales/overview.rst:70
 msgid ""
 "You can route the output of the chord track to a MIDI or Instrument track"
 " for live auditioning of the chord track's events."
 msgstr ""
+"Puedes enrutar la salida de la pista de acordes a una pista MIDI o de "
+"instrumento para escuchar en directo los eventos de la pista de acordes."
 
 #~ msgid "TODO"
 #~ msgstr ""

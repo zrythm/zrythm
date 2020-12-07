@@ -12,13 +12,14 @@
 # Gorro_Rojo <gorro.rojo@gmail.com>, 2020.
 # Theo Iturri <theoiturri@gmail.com>, 2020.
 # Bianca Roșu <bianca.rosu32@gmail.com>, 2020.
+# miri24661 <miriam_g.r@hotmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
 "PO-Revision-Date: 2020-12-05 18:36+0000\n"
-"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
+"Last-Translator: miri24661 <miriam_g.r@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -3283,9 +3284,8 @@ msgid "Diatonic"
 msgstr "Diatónica"
 
 #: resources/ui/chord_selector_window.ui:898
-#, fuzzy
 msgid "TODO"
-msgstr "TODO"
+msgstr "Por hacer"
 
 #: resources/ui/chord_selector_window.ui:908
 msgid "Circle of Fifths"
