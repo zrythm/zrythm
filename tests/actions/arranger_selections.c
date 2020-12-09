@@ -1185,6 +1185,47 @@ test_split ()
   undo_manager_redo (UNDO_MANAGER);
   undo_manager_undo (UNDO_MANAGER);
   undo_manager_undo (UNDO_MANAGER);
+
+  /* --- test audio region split --- */
+
+  Track * track =
+    tracklist_find_track_by_name (
+      TRACKLIST, AUDIO_TRACK_NAME);
+  TrackLane * lane = track->lanes[3];
+  g_assert_cmpint (
+    lane->num_regions, ==, 1);
+
+  ZRegion * region = lane->regions[0];
+  r_obj =
+    (ArrangerObject *) region;
+  arranger_object_select (
+    r_obj, F_SELECT, F_NO_APPEND);
+  AudioClip * clip =
+    audio_region_get_clip (region);
+  float first_frame = clip->frames[0];
+  g_assert_true (clip->frames[0] > 0.000001f);
+
+  position_set_to_bar (&pos, 2);
+  ua =
+    arranger_selections_action_new_split (
+      (ArrangerSelections *) TL_SELECTIONS, &pos);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  test_project_save_and_reload ();
+
+  /* check that clip frames are the same as
+   * before */
+  track =
+    tracklist_find_track_by_name (
+      TRACKLIST, AUDIO_TRACK_NAME);
+  lane = track->lanes[3];
+  region = lane->regions[0];
+  r_obj = (ArrangerObject *) region;
+  clip = audio_region_get_clip (region);
+  g_assert_cmpfloat_with_epsilon (
+    first_frame, clip->frames[0], 0.000001f);
+
+  undo_manager_undo (UNDO_MANAGER);
 }
 
 static void
@@ -1311,11 +1352,11 @@ main (int argc, char *argv[])
     TEST_PREFIX "test mute",
     (GTestFunc) test_mute);
   g_test_add_func (
-    TEST_PREFIX "test split",
-    (GTestFunc) test_split);
-  g_test_add_func (
     TEST_PREFIX "test audio functions",
     (GTestFunc) test_audio_functions);
+  g_test_add_func (
+    TEST_PREFIX "test split",
+    (GTestFunc) test_split);
 
   return g_test_run ();
 }

@@ -172,7 +172,7 @@ cdata.set (
   meson.build_root ())
 cdata.set_quoted (
   'ISSUE_TRACKER_URL',
-  'https://todo.sr.ht/~alextee')
+  'https://sr.ht/~alextee/zrythm/trackers')
 cdata.set_quoted (
   'NEW_ISSUE_URL',
   'https://todo.sr.ht/~alextee/zrythm-bug')

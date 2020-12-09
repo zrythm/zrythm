@@ -70,6 +70,10 @@ arranger_selections_action_init_loaded (
     {
       if (self->region_r1[j])
         {
+          arranger_object_init_loaded (
+            (ArrangerObject *) self->region_r1[j]);
+          arranger_object_init_loaded (
+            (ArrangerObject *) self->region_r2[j]);
           self->r1[j] =
             (ArrangerObject *)
             self->region_r1[j];
@@ -79,6 +83,10 @@ arranger_selections_action_init_loaded (
         }
       else if (self->mn_r1[j])
         {
+          arranger_object_init_loaded (
+            (ArrangerObject *) self->mn_r1[j]);
+          arranger_object_init_loaded (
+            (ArrangerObject *) self->mn_r2[j]);
           self->r1[j] =
             (ArrangerObject *) self->mn_r1[j];
           self->r2[j] =

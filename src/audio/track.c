@@ -1257,7 +1257,7 @@ track_insert_region (
     {
       AudioClip * clip =
         audio_region_get_clip (region);
-      audio_clip_write_to_pool (clip, true);
+      audio_clip_write_to_pool (clip, false);
     }
 
   if (fire_events)

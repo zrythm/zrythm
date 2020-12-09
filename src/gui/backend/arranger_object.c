@@ -2410,8 +2410,14 @@ arranger_object_split (
           (ZRegion *) *r1;
         ZRegion * region2 =
           (ZRegion *) *r2;
-        AutomationTrack * at =
-          region_get_automation_track (src_region);
+        AutomationTrack * at = NULL;
+        if (src_region->id.type ==
+              REGION_TYPE_AUTOMATION)
+          {
+            at =
+              region_get_automation_track (
+                src_region);
+          }
         track_add_region (
           track, region1, at,
           src_region->id.lane_pos,
@@ -2540,8 +2546,14 @@ arranger_object_unsplit (
     case ARRANGER_OBJECT_TYPE_REGION:
       {
         ZRegion * r1_region = (ZRegion *) r1;
-        AutomationTrack * at =
-          region_get_automation_track (r1_region);
+        AutomationTrack * at = NULL;
+        if (r1_region->id.type ==
+              REGION_TYPE_AUTOMATION)
+          {
+            at =
+              region_get_automation_track (
+                r1_region);
+          }
         track_add_region (
           arranger_object_get_track (r1),
           (ZRegion *) *obj, at,
