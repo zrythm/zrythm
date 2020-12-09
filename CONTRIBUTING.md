@@ -3,10 +3,9 @@ Contributing to Zrythm
 
 Zrythm is a project developed mostly by volunteers
 from all around the world. You are welcome to join
-us in the [development mailing list](https://lists.zrythm.org/lists/listinfo/dev)
-or in the #zrythm channel in IRC Freenode. Tell us
-how would you like to help, and we will do our best
-to guide you.
+us on our mailing lists or in the #zrythm channel in
+IRC Freenode. Tell us how would you like to help,
+and we will do our best to guide you.
 
 We want to provide a friendly and
 harassment-free environment so that anyone can
@@ -17,7 +16,7 @@ You can find the full pledge in the
 [CODE OF CONDUCT](CODE_OF_CONDUCT.md) file.
 
 # Project Management
-We use [Redmine](https://redmine.zrythm.org/)
+We use [Sourcehut](https://sr.ht/~alextee/zrythm/)
 as the central point for development, maintenance and
 issue tracking of Zrythm.
 
@@ -56,7 +55,7 @@ cooperation conventions used in the project.
 # Test and Bug Reports
 Install the software and send feedback to the
 community about your experience. Help the project
-by [reporting bugs](https://redmine.zrythm.org/projects/zrythm/issues/new).
+by reporting bugs.
 
 # Translation
 You can help translate the software, the website
