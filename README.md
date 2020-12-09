@@ -28,7 +28,7 @@ extended using [GNU Guile](https://www.gnu.org/software/guile/).
 
 Zrythm is currently in alpha. Most essential
 DAW features are implemented and we are working
-towards a stable release. [View the Roadmap](https://redmine.zrythm.org/projects/zrythm/roadmap)
+towards a stable release.
 
 ![screenshot](https://www.zrythm.org/static/images/jun-26-2020.png)
 
@@ -66,8 +66,8 @@ See [PACKAGING.md](PACKAGING.md).
 ## Mailing lists
 See [mailing lists on sr.ht](https://sr.ht/~alextee/zrythm/lists).
 
-## Bug Tracker
-<https://redmine.zrythm.org/projects/zrythm/issues>
+## Issue trackers
+See the [Feature tracker](https://todo.sr.ht/~alextee/zrythm-feature) and [Bug tracker](https://todo.sr.ht/~alextee/zrythm-bug).
 
 ## Releases
 <https://www.zrythm.org/releases>

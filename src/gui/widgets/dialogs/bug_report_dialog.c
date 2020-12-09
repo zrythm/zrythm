@@ -71,22 +71,29 @@ bug_report_dialog_new (
       report_template, NULL, FALSE);
   char * atag =
     g_strdup_printf (
-      "<a href=\"%s?issue[description]=%s\">",
-      NEW_ISSUE_URL,
+      "<a href=\"%s\">",
+      NEW_ISSUE_URL);
+  char * atag_email =
+    g_strdup_printf (
+      "<a href=\"mailto:%s?body=%s\">",
+      NEW_ISSUE_EMAIL,
       report_template_escaped);
   char * markup =
     g_strdup_printf (
       _("%sPlease help us fix "
         "this by "
-        "%ssubmitting a bug report%s."),
-      msg_prefix, atag, "</a>");
+        "%ssubmitting a bug report%s "
+        "using the template below or by "
+        "%ssending an email%s."),
+      msg_prefix, atag, "</a>",
+      atag_email, "</a>");
 
   gtk_message_dialog_set_markup (
     GTK_MESSAGE_DIALOG (dialog),
     markup);
   gtk_message_dialog_format_secondary_markup (
     GTK_MESSAGE_DIALOG (dialog),
-    "%s", backtrace);
+    "%s", report_template);
   GtkLabel * label =
     z_gtk_message_dialog_get_label (
       GTK_MESSAGE_DIALOG (dialog), 1);

@@ -40,7 +40,7 @@ Testing
 You are welcome to join us in testing
 the latest features in Zrythm and reporting
 bugs and feedback on
-`Redmine <https://redmine.zrythm.org/projects/zrythm/issues>`_.
+`Sourcehut <https://todo.sr.ht/~alextee>`_.
 
 The latest development branch for new features is
 ``development`` in our

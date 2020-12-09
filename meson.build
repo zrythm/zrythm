@@ -172,10 +172,13 @@ cdata.set (
   meson.build_root ())
 cdata.set_quoted (
   'ISSUE_TRACKER_URL',
-  'https://redmine.zrythm.org/projects/zrythm/issues')
+  'https://todo.sr.ht/~alextee')
 cdata.set_quoted (
   'NEW_ISSUE_URL',
-  'https://redmine.zrythm.org/projects/zrythm/issues/new')
+  'https://todo.sr.ht/~alextee/zrythm-bug')
+cdata.set_quoted (
+  'NEW_ISSUE_EMAIL',
+  '~alextee/zrythm-bug@todo.sr.ht')
 if (get_option ('user_manual'))
   cdata.set_quoted ('MANUAL_PATH', docdir)
 endif
