@@ -651,7 +651,9 @@ test_track_deletion_with_lv2_worker (void)
 static void
 test_ins_track_deletion_w_automation (void)
 {
-#if HAVE_TAL_FILTER && HAVE_NOIZE_MAKER
+#if defined (HAVE_TAL_FILTER) && \
+  defined (HAVE_NOIZE_MAKER)
+
   test_helper_zrythm_init ();
 
   engine_activate (AUDIO_ENGINE, false);

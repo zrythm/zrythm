@@ -19,7 +19,7 @@ and dragging on the integer counterpart will
 change the integer (e.g., from 140.24 to
 141.24) and clicking and dragging on the
 decimal counterpart will change the decimal
-value (e.g., frrom 140.24 to 140.25).
+value (e.g., from 140.24 to 140.25).
 
 Time Signature
 --------------
