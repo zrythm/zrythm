@@ -258,6 +258,12 @@ create_port (
   PortIdentifier * pi =
     &lv2_port->port->id;
 
+  /* set the symbol */
+  pi->sym =
+    g_strdup (
+      lv2_port_get_symbol_as_string (
+        lv2_plugin, lv2_port));
+
   /* Set the lv2_port flow (input or output) */
   if (lilv_port_is_a (
         lv2_plugin->lilv_plugin,

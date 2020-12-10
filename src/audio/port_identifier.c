@@ -18,6 +18,7 @@
  */
 
 #include "audio/port_identifier.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 
 void
@@ -29,6 +30,7 @@ port_identifier_copy (
   if (dest->label)
     g_free (dest->label);
   dest->label = g_strdup (src->label);
+  dest->sym = g_strdup (src->sym);
   dest->owner_type = src->owner_type;
   dest->type = src->type;
   dest->flow = src->flow;
@@ -56,14 +58,28 @@ port_identifier_is_equal (
     dest->flags == src->flags &&
     dest->track_pos == src->track_pos &&
     string_is_equal (
-      dest->ext_port_id, src->ext_port_id) &&
-    dest->port_index == src->port_index;
+      dest->ext_port_id, src->ext_port_id);
   if (dest->owner_type == PORT_OWNER_TYPE_PLUGIN)
     {
       eq =
         eq &&
         plugin_identifier_is_equal (
           &dest->plugin_id, &src->plugin_id);
+    }
+
+  /* if LV2 (has symbol) check symbol match,
+   * otherwise check index match */
+  if (dest->sym)
+    {
+      eq =
+        eq &&
+        string_is_equal (dest->sym, src->sym);
+    }
+  else
+    {
+      eq =
+        eq &&
+        dest->port_index == src->port_index;
     }
 
   return eq;
@@ -76,4 +92,12 @@ port_identifier_print (
   g_message (
     "[PortIdentifier]\nlabel: %s",
     self->label);
+}
+
+void
+port_identifier_free_members (
+  PortIdentifier * self)
+{
+  g_free_and_null (self->label);
+  g_free_and_null (self->sym);
 }

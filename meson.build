@@ -250,6 +250,12 @@ ext_lv2_plugins = {
   'midi_cc_map': [
     'MIDI CC Map',
     'http://gareus.org/oss/lv2/midifilter#mapcc'],
+  'noize_maker': [
+    'NoizeMak3r',
+    'http://kunz.corrupt.ch/products/tal-noisemaker'],
+  'tal_filter': [
+    'TAL Filter',
+    'urn:juce:TalFilter'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}

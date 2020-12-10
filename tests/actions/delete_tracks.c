@@ -648,6 +648,159 @@ test_track_deletion_with_lv2_worker (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_ins_track_deletion_w_automation (void)
+{
+#if HAVE_TAL_FILTER && HAVE_NOIZE_MAKER
+  test_helper_zrythm_init ();
+
+  engine_activate (AUDIO_ENGINE, false);
+
+  /* create the instrument track */
+  test_plugin_manager_create_tracks_from_plugin (
+    NOIZE_MAKER_BUNDLE, NOIZE_MAKER_URI, true,
+    false, 1);
+
+  /* select the track */
+  Track * track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    track, F_SELECT, F_EXCLUSIVE,
+    F_NO_PUBLISH_EVENTS);
+
+  /* add an effect */
+  PluginDescriptor * descr =
+    test_plugin_manager_get_plugin_descriptor (
+      TAL_FILTER_BUNDLE, TAL_FILTER_URI, false);
+  UndoableAction * ua =
+    create_plugins_action_new (
+      descr, PLUGIN_SLOT_INSERT, track->pos, 0, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  engine_activate (AUDIO_ENGINE, true);
+
+  /* get the instrument cutoff automation track */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  AutomationTrack * at = atl->ats[41];
+  at->created = true;
+  at->visible = true;
+
+  /* create an automation region */
+  Position start_pos, end_pos;
+  position_set_to_bar (&start_pos, 2);
+  position_set_to_bar (&end_pos, 4);
+  ZRegion * region =
+    automation_region_new (
+      &start_pos, &end_pos, track->pos,
+      at->index, at->num_regions);
+  track_add_region (
+    track, region, at, -1, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) region, true, false);
+  ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* create some automation points */
+  Port * port = automation_track_get_port (at);
+  position_set_to_bar (&start_pos, 1);
+  AutomationPoint * ap =
+    automation_point_new_float (
+      port->deff,
+      control_port_real_val_to_normalized (
+        port, port->deff),
+      &start_pos);
+  automation_region_add_ap (
+    region, ap, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) ap, true, false);
+  ua =
+    arranger_selections_action_new_create (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_true (
+    track_verify_identifiers (track));
+
+  /* get the filter cutoff automation track */
+  at = atl->ats[141];
+  at->created = true;
+  at->visible = true;
+
+  /* create an automation region */
+  position_set_to_bar (&start_pos, 2);
+  position_set_to_bar (&end_pos, 4);
+  region =
+    automation_region_new (
+      &start_pos, &end_pos, track->pos,
+      at->index, at->num_regions);
+  track_add_region (
+    track, region, at, -1, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) region, true, false);
+  ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* create some automation points */
+  port = automation_track_get_port (at);
+  position_set_to_bar (&start_pos, 1);
+  ap =
+    automation_point_new_float (
+      port->deff,
+      control_port_real_val_to_normalized (
+        port, port->deff),
+      &start_pos);
+  automation_region_add_ap (
+    region, ap, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) ap, true, false);
+  ua =
+    arranger_selections_action_new_create (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_true (
+    track_verify_identifiers (track));
+
+  /* save and reload the project */
+  test_project_save_and_reload ();
+
+  track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  g_assert_true (
+    track_verify_identifiers (track));
+
+  /* delete it */
+  ua =
+    delete_tracks_action_new (TRACKLIST_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* save and reload the project */
+  test_project_save_and_reload ();
+
+  /* undo deletion */
+  undo_manager_undo (UNDO_MANAGER);
+
+  /* save and reload the project */
+  test_project_save_and_reload ();
+
+  g_assert_true (
+    track_verify_identifiers (
+      TRACKLIST->tracks[TRACKLIST->num_tracks -1]));
+
+  /* let the engine run */
+  g_usleep (1000000);
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -655,6 +808,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/delete_tracks/"
 
+  g_test_add_func (
+    TEST_PREFIX "test ins track deletion with automation",
+    (GTestFunc) test_ins_track_deletion_w_automation);
   g_test_add_func (
     TEST_PREFIX "test undo track deletion",
     (GTestFunc) test_undo_track_deletion);

@@ -304,6 +304,8 @@ typedef struct PortIdentifier
 {
   /** Human readable label. */
   char *              label;
+  /** Symbol, if LV2 TODO. */
+  char *              sym;
   /** Owner type. */
   PortOwnerType       owner_type;
   /** Data type (e.g. AUDIO). */
@@ -351,6 +353,8 @@ port_identifier_fields_schema[] =
 {
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PortIdentifier, label),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    PortIdentifier, sym),
   YAML_FIELD_ENUM (
     PortIdentifier, owner_type,
     port_owner_type_strings),
@@ -406,6 +410,10 @@ port_identifier_is_equal (
 
 void
 port_identifier_print (
+  PortIdentifier * self);
+
+void
+port_identifier_free_members (
   PortIdentifier * self);
 
 /**

@@ -3594,7 +3594,7 @@ port_free (Port * self)
     }
 #endif
 
-  g_free_and_null (self->id.label);
+  port_identifier_free_members (&self->id);
 
   object_zero_and_free (self);
 }

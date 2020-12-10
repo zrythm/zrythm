@@ -294,11 +294,19 @@ automation_track_find_from_port (
                   Plugin * pl =
                     port_get_plugin (port, true);
                   g_warn_if_fail (pl);
-                  /* if lv2, only search port by
-                   * name */
+
+                  /* if lv2, make sure the symbol
+                   * matches (some plugins have
+                   * multiple ports with the same
+                   * label but different symbol) */
                   if (pl->descr->protocol ==
                         PROT_LV2)
                     {
+                      if (!string_is_equal (
+                            dest->sym, src->sym))
+                        {
+                          continue;
+                        }
                       return at;
                     }
                   /* if not lv2, also search by
