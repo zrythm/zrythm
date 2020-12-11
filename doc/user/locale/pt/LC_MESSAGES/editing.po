@@ -819,7 +819,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:77
 msgid "Edit Tool"
-msgstr ""
+msgstr "Ferramenta de Edição"
 
 #: ../../editing/edit-tools.rst:78
 msgid ""
@@ -1489,9 +1489,6 @@ msgstr ""
 #~ "selecionar e mover objetos, ela também"
 #~ " pode criar ou editar objetos de "
 #~ "várias maneiras."
-
-#~ msgid "Edit Tool"
-#~ msgstr "Ferramenta de Edição"
 
 #~ msgid ""
 #~ "Also known as the Pencil Tool, "

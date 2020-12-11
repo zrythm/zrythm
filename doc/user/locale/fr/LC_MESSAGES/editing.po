@@ -905,7 +905,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:77
 msgid "Edit Tool"
-msgstr ""
+msgstr "Outil d'édition"
 
 #: ../../editing/edit-tools.rst:78
 #, fuzzy
@@ -1656,9 +1656,6 @@ msgstr ""
 #~ " et de déplacer des objets, il "
 #~ "peut également créer ou modifier des "
 #~ "objets de diverses manières."
-
-#~ msgid "Edit Tool"
-#~ msgstr "Outil d'édition"
 
 #~ msgid ""
 #~ "Also known as the Pencil Tool, "

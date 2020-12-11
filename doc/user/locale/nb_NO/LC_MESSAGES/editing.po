@@ -813,7 +813,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:77
 msgid "Edit Tool"
-msgstr ""
+msgstr "Redigeringsverktøy"
 
 #: ../../editing/edit-tools.rst:78
 msgid ""
@@ -1405,9 +1405,6 @@ msgstr ""
 
 #~ msgid "Toolbox"
 #~ msgstr "Verktøyskiste"
-
-#~ msgid "Edit Tool"
-#~ msgstr "Redigeringsverktøy"
 
 #~ msgid "TODO"
 #~ msgstr "GJENSTÅR"

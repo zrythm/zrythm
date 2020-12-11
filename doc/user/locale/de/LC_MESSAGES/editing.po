@@ -827,7 +827,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:77
 msgid "Edit Tool"
-msgstr ""
+msgstr "Bearbeitungswerkzeug"
 
 #: ../../editing/edit-tools.rst:78
 msgid ""
@@ -1502,9 +1502,6 @@ msgstr ""
 #~ "Hauptfunktionalität ist, Objekte auszuwählen "
 #~ "und zu verschieben, kann es auch "
 #~ "Objekte erstellen oder bearbeiten."
-
-#~ msgid "Edit Tool"
-#~ msgstr "Bearbeitungswerkzeug"
 
 #~ msgid ""
 #~ "Also known as the Pencil Tool, "
