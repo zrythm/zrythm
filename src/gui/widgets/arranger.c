@@ -1108,6 +1108,9 @@ arranger_widget_select_all (
 
   if (select)
     {
+      /* TODO move array to ArrangerWidget struct
+       * and allocate a large value dynamically
+       * during initialization */
       ArrangerObject * objs[10000];
       int num_objs = 0;
       arranger_widget_get_all_objects (

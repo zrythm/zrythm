@@ -253,8 +253,6 @@ typedef struct _ArrangerWidget
    * cycle. */
   int            lane_diff;
 
-  int            last_timeline_obj_bars;
-
   /** Whether this TimelineArrangerWidget is for
    * the PinnedTracklist or not. */
   int            is_pinned;

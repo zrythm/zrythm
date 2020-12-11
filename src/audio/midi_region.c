@@ -456,14 +456,11 @@ midi_region_new_from_midi_file (
           position_print (&pos);
 
           if (ZRYTHM_HAVE_UI &&
-              pos.bars >
-                MW_TIMELINE->last_timeline_obj_bars -8)
+              pos.bars > TRANSPORT->total_bars -8)
             {
-              MW_TIMELINE->last_timeline_obj_bars =
-                pos.bars + 8;
-              EVENTS_PUSH (
-                ET_LAST_TIMELINE_OBJECT_CHANGED,
-                NULL);
+              transport_update_total_bars (
+                TRANSPORT, pos.bars + 8,
+                F_PUBLISH_EVENTS);
             }
 
           if (msg.bImpliedMsg)

@@ -976,75 +976,7 @@ timeline_arranger_widget_snap_range_r (
   position_set_to_pos (
     &TRANSPORT->range_2, pos);
   transport_set_has_range (TRANSPORT, true);
-
-  /*arranger_widget_refresh_all_backgrounds ();*/
 }
-
-#define COMPARE_AND_SET(pos) \
-  if ((pos)->bars > self->last_timeline_obj_bars) \
-    self->last_timeline_obj_bars = (pos)->bars;
-
-/**
- * Updates last timeline objet so that timeline can be
- * expanded/contracted accordingly.
- */
-/*static int*/
-/*update_last_timeline_object ()*/
-/*{*/
-  /*if (!ZRYTHM || !MAIN_WINDOW ||*/
-      /*!GTK_IS_WIDGET (MAIN_WINDOW))*/
-    /*return G_SOURCE_CONTINUE;*/
-
-  /*ArrangerWidget * self = MW_TIMELINE;*/
-
-  /*int prev = self->last_timeline_obj_bars;*/
-  /*self->last_timeline_obj_bars = 0;*/
-
-  /*Marker * end =*/
-    /*marker_track_get_end_marker (*/
-      /*P_MARKER_TRACK);*/
-  /*ArrangerObject * end_obj =*/
-    /*(ArrangerObject *) end;*/
-  /*COMPARE_AND_SET (&end_obj->pos);*/
-
-  /*Track * track;*/
-  /*ZRegion * region;*/
-  /*ArrangerObject * r_obj;*/
-  /*for (int i = 0; i < TRACKLIST->num_tracks; i++)*/
-    /*{*/
-      /*track = TRACKLIST->tracks[i];*/
-
-      /*region =*/
-        /*track_get_last_region (track);*/
-      /*r_obj = (ArrangerObject *) region;*/
-
-      /*if (region)*/
-        /*COMPARE_AND_SET (&r_obj->end_pos);*/
-    /*}*/
-
-  /*if (prev != self->last_timeline_obj_bars &&*/
-      /*self->last_timeline_obj_bars > 127)*/
-    /*EVENTS_PUSH (ET_LAST_TIMELINE_OBJECT_CHANGED,*/
-                 /*NULL);*/
-
-  /*return G_SOURCE_CONTINUE;*/
-/*}*/
-
-#undef COMPARE_AND_SET
-
-/**
- * To be called once at init time.
- */
-/*void*/
-/*timeline_arranger_widget_setup (*/
-  /*ArrangerWidget * self)*/
-/*{*/
-
-  /*g_timeout_add (*/
-    /*1000,*/
-    /*update_last_timeline_object,*/
-    /*NULL);*/
-/*}*/
 
 /**
  * Move the selected Regions to new Lanes.

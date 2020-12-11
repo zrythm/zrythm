@@ -1323,10 +1323,7 @@ process_events (void * data)
           on_plugin_state_changed (
             (Plugin *) ev->arg);
           break;
-        case ET_LAST_TIMELINE_OBJECT_CHANGED:
-          TRANSPORT->total_bars =
-            MW_TIMELINE->last_timeline_obj_bars +
-            8;
+        case ET_TRANSPORT_TOTAL_BARS_CHANGED:
           snap_grid_update_snap_points (
             SNAP_GRID_TIMELINE);
 

@@ -559,6 +559,23 @@ transport_position_is_inside_punch_range (
   Transport * self,
   Position *  pos);
 
+/**
+ * Recalculates the total bars based on the last
+ * object's position.
+ */
+void
+transport_recalculate_total_bars (
+  Transport * self);
+
+/**
+ * Updates the total bars.
+ */
+void
+transport_update_total_bars (
+  Transport * self,
+  int         total_bars,
+  bool        fire_events);
+
 void
 transport_free (
   Transport * self);

@@ -931,6 +931,40 @@ transport_position_is_inside_punch_range (
     pos->frames < self->punch_out_pos.frames;
 }
 
+/**
+ * Recalculates the total bars based on the last
+ * object's position.
+ */
+void
+transport_recalculate_total_bars (
+  Transport * self)
+{
+  if (!ZRYTHM_HAVE_UI)
+    return;
+
+  /* TODO */
+}
+
+/**
+ * Updates the total bars.
+ */
+void
+transport_update_total_bars (
+  Transport * self,
+  int         total_bars,
+  bool        fire_events)
+{
+  g_return_if_fail (self && total_bars > 0);
+
+  self->total_bars = total_bars;
+
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_TRANSPORT_TOTAL_BARS_CHANGED, NULL);
+    }
+}
+
 void
 transport_free (
   Transport * self)
