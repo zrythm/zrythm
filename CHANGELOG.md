@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.6.0.0] - 2020-12-11
+### Added
+- Audio selection and functions (invert, reverse, normalize) in audio editor
+
+### Changed
+- Update Spanish, Norwegian Bokmal, Portuguese, Chinese Simplified, Portuguese (Brazil), Danish, Greek translations
+- Move issue tracker from Redmine to Sourcehut
+- Change wording in user manual: edit modes -> edit tools
+
+### Fixed
+- Fix audio clip being offset by region size when splitting an audio region and saving the project
+- Fix crash when automating LV2 plugins that have multiple ports with the same label but different symbol
+- Fix not being able to scroll past 21 bars after importing a MIDI file
+
 ## [1.0.0-alpha.5.0.1] - 2020-11-15
 ### Added
 - Write audio files during recording (every 2 sec)
