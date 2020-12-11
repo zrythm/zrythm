@@ -58,7 +58,7 @@ chord editor.
 The chord editor contains `chord objects` that signify the
 start of a chord. Chord objects do not have a length.
 
-Editing in the chord arranger follows :ref:`edit-modes` and
+Editing in the chord arranger follows :ref:`edit-tools` and
 :ref:`common-operations`.
 
 Context Menu

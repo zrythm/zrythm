@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-03 14:28+0100\n"
+"POT-Creation-Date: 2020-12-11 19:05+0000\n"
 "PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -86,7 +86,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Editing inside the automation arranger generally follows :ref:`edit-"
-"modes` and :ref:`common-operations`, with the added feature that curves "
+"tools` and :ref:`common-operations`, with the added feature that curves "
 "can be dragged up or down to change their `curviness`."
 msgstr ""
 "オートメーションアレンジャーの内部での編集は、一般的に :ref:`edit-mode` と :ref:`common-operations` "
@@ -154,7 +154,7 @@ msgstr "コンテキストメニュー"
 #: ../../editing/common-operations.rst:84
 #: ../../editing/common-operations.rst:91
 #: ../../editing/common-operations.rst:98
-#: ../../editing/edit-modes.rst:27
+#: ../../editing/edit-tools.rst:29
 #: ../../editing/timeline/arranger.rst:24
 #: ../../editing/timeline/arranger.rst:50
 #: ../../editing/timeline/arranger.rst:54
@@ -273,8 +273,9 @@ msgid ""
 msgstr "コードエディタには、コードの開始を示す `コードオブジェクト` が含まれています。弦オブジェクトには長さが含まれていません。"
 
 #: ../../editing/clip-editors/chord-editor.rst:61
+#, fuzzy
 msgid ""
-"Editing in the chord arranger follows :ref:`edit-modes` and :ref:`common-"
+"Editing in the chord arranger follows :ref:`edit-tools` and :ref:`common-"
 "operations`."
 msgstr "コードアレンジャーでの編集は :ref:`edit-modes` と :ref:`common-operations` に従います。"
 
@@ -402,8 +403,9 @@ msgstr ""
 "ノートが含まれています。Zrythmは、ノートの開始位置に達すると信号にMIDIノートを送信し、ノートの終了位置に達するとノートオフ信号を送信します。"
 
 #: ../../editing/clip-editors/piano-roll.rst:76
+#, fuzzy
 msgid ""
-"Editing inside the MIDI arranger is covered in :ref:`edit-modes` and :ref"
+"Editing inside the MIDI arranger is covered in :ref:`edit-tools` and :ref"
 ":`common-operations`."
 msgstr ""
 "MIDIアレンジャー内での編集については :ref:`edit-modes` と :ref:`common-operations` "
@@ -754,52 +756,54 @@ msgstr "ループ選択"
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr "選択範囲の周囲にループマーカーを配置します。このショートカットは次のとおりです。 :zbutton:`コントロール` + :zbutton:`L`"
 
-#: ../../editing/edit-modes.rst:8
-msgid "Edit Modes"
+#: ../../editing/edit-tools.rst:8
+#, fuzzy
+msgid "Edit Tools"
 msgstr "編集モード"
 
-#: ../../editing/edit-modes.rst:10
+#: ../../editing/edit-tools.rst:10
 #, fuzzy
 msgid ""
 "When working in each editor or arranger, you will most likely be using "
 "the cursor tools provided by Zrythm to create, edit and delete objects. "
-"Each cursor signifies a separate edit mode, and Zrythm offers the "
-"following edit modes."
+"Each cursor signifies a separate tool, and Zrythm offers the following "
+"tools."
 msgstr ""
 "各エディタで作業する場合、Zrythm が提供するカーソル "
 "ツールを使用してオブジェクトを作成、編集、削除する場合がほとんどです。各カーソルは個別の編集モードを示し、Zrythm "
 "は次の編集モードを提供します。"
 
-#: ../../editing/edit-modes.rst:19
-msgid "Select/Stretch Mode"
+#: ../../editing/edit-tools.rst:20
+#, fuzzy
+msgid "Select/Stretch Tool"
 msgstr "選択/ストレッチ モード"
 
-#: ../../editing/edit-modes.rst:20
+#: ../../editing/edit-tools.rst:21
 msgid "This can be toggled to switch between Select and Stretch."
 msgstr "これを切り替えて、選択とストレッチを切り替えることができます。"
 
-#: ../../editing/edit-modes.rst:22
+#: ../../editing/edit-tools.rst:24
 msgid ""
 "In Select mode, you can make object selections and move, clone and resize"
 " objects. This is the most common mode and the most common operations can"
 " be accomplished by just using this."
 msgstr "選択モードでは、オブジェクトの選択やオブジェクトの移動、複製、サイズ変更ができます。これは最も一般的なモードであり、最も一般的な操作は、これを使用するだけで実行できます。"
 
-#: ../../editing/edit-modes.rst:27
+#: ../../editing/edit-tools.rst:29
 msgid "Add pic showing object selection."
 msgstr "オブジェクトの選択を示すイラストを追加。"
 
-#: ../../editing/edit-modes.rst:29
+#: ../../editing/edit-tools.rst:31
 msgid ""
 "Stretch mode is similar to the Select mode, with the exception that when "
 "you resize objects, their contents will be stretched to fit the new size."
 msgstr "ストレッチ モードは選択モードと似ていますが、オブジェクトのサイズを変更すると、その内容が新しいサイズに合わせて拡大されます。"
 
-#: ../../editing/edit-modes.rst:34
+#: ../../editing/edit-tools.rst:36
 msgid "Selecting Objects"
 msgstr "オブジェクトの選択"
 
-#: ../../editing/edit-modes.rst:35
+#: ../../editing/edit-tools.rst:37
 msgid ""
 "To select objects, you can either click on them, click in empty space and"
 " keep dragging to make a selection, or :kbd:`Control`-click to add/remove"
@@ -808,15 +812,15 @@ msgstr ""
 "オブジェクトを選択するには、オブジェクトをクリックするか、空のスペースをクリックしてドラッグし続けるか、または :kbd:`Control` + "
 "クリックして選択にオブジェクトを追加/削除します。"
 
-#: ../../editing/edit-modes.rst:40
+#: ../../editing/edit-tools.rst:42
 msgid "Selected objects will have brighter color than non-selected objects."
 msgstr "選択したオブジェクトは、選択されていないオブジェクトよりも明るい色になります。"
 
-#: ../../editing/edit-modes.rst:44
+#: ../../editing/edit-tools.rst:46
 msgid "Moving and Cloning Objects"
 msgstr "オブジェクトの移動と複製"
 
-#: ../../editing/edit-modes.rst:45
+#: ../../editing/edit-tools.rst:47
 #, fuzzy
 msgid ""
 "To move objects around, click on a selected object and keep dragging with"
@@ -828,55 +832,58 @@ msgstr ""
 ":kbd:`Control` "
 "を押したままにして、選択したオブジェクトの複製(クローン)を作成します。これは、複数のオブジェクトを素早く複製する効率的な方法です。"
 
-#: ../../editing/edit-modes.rst:52
+#: ../../editing/edit-tools.rst:54
 msgid "Resizing Objects"
 msgstr "オブジェクトのサイズ変更"
 
-#: ../../editing/edit-modes.rst:53
+#: ../../editing/edit-tools.rst:55
 msgid ""
 "Objects that have length, such as regions and MIDI notes, can be resized "
 "by clicking and dragging their edges."
 msgstr "リージョンや MIDI ノートなどの長さを持つオブジェクトは、その端をクリックしてドラッグすることでサイズ変更できます。"
 
-#: ../../editing/edit-modes.rst:56
+#: ../../editing/edit-tools.rst:58
 msgid ""
 "On objects that can be repeated, such as regions, moving the cursor on "
 "the bottom half of the object will allow you to resize the object by "
 "repeating it, instead of just resizing it."
 msgstr "クリップなど、繰り返し可能なオブジェクトでは、オブジェクトの下半分にカーソルを移動すると、オブジェクトのサイズを変更するのではなく、オブジェクトの内容を繰り返してサイズ変更できます。"
 
-#: ../../editing/edit-modes.rst:61
+#: ../../editing/edit-tools.rst:63
 msgid ""
 "When resizing, already repeated objects can only be repeated. To resize "
 "them instead of repeat them, their length must be changed or their clip "
 "markers must be moved so that they are not repeated anymore."
 msgstr "サイズ変更の場合、既に繰り返されているオブジェクトは繰り返ししかできません。繰り返しではなくサイズを変更するには、長さを変更するか、クリップマーカーを移動して繰り返し表示しないようにする必要があります。"
 
-#: ../../editing/edit-modes.rst:69
+#: ../../editing/edit-tools.rst:71
 msgid "Cutting Objects"
 msgstr "オブジェクトの切り取り"
 
-#: ../../editing/edit-modes.rst:70
+#: ../../editing/edit-tools.rst:72
 msgid ""
 "You can :kbd:`Alt`-click inside objects to break them up. Holding down "
 ":kbd:`Shift` while doing this will bypass snapping."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:75
-msgid "Edit Mode"
-msgstr "編集モード"
+#: ../../editing/edit-tools.rst:77
+#, fuzzy
+msgid "Edit Tool"
+msgstr "エディターツールバー"
 
-#: ../../editing/edit-modes.rst:76
+#: ../../editing/edit-tools.rst:78
+#, fuzzy
 msgid ""
-"This mode is used to quickly create or delete objects. While you can "
-"still create objects in Select mode by double clicking and dragging, in "
-"Edit mode this is accomplished by single clicking and dragging, which is "
-"more efficient when creating a large number of objects."
+"This tool is used to quickly create or delete objects. While you can "
+"still create objects using the Select tool by double clicking and "
+"dragging, with the Edit tool this is accomplished by single clicking and "
+"dragging, which is more efficient when creating a large number of "
+"objects."
 msgstr ""
 "このモードは、オブジェクトを素早く作成または削除するために使用されます。ダブルクリックとドラッグで選択モードでオブジェクトを作成することはできますが、編集モードではクリックとドラッグを"
 " 1 回だけ行うことで、多数のオブジェクトを作成する場合の方が効率的です。"
 
-#: ../../editing/edit-modes.rst:82
+#: ../../editing/edit-tools.rst:84
 #, fuzzy
 msgid ""
 "Holding down :kbd:`Control` while clicking will allow you to create "
@@ -886,46 +893,51 @@ msgstr ""
 "クリックしながら :kbd:`Control` "
 "を押したまま押下すると、各エディタに対応するスナップ設定で指定された長さで、複数のオブジェクトを(可能な場合は)行に作成できます。"
 
-#: ../../editing/edit-modes.rst:88
-msgid "Cut Mode"
-msgstr "カットモード"
+#: ../../editing/edit-tools.rst:90
+msgid "Cut Tool"
+msgstr ""
 
-#: ../../editing/edit-modes.rst:89
+#: ../../editing/edit-tools.rst:91
+#, fuzzy
 msgid ""
-"Cut mode behaves similarly to what is mentioned in :ref:`cutting-"
+"The Cut tool behaves similarly to what is mentioned in :ref:`cutting-"
 "objects`, with the exception that you can just click instead of "
 ":kbd:`Alt`-clicking."
 msgstr ""
 "カットモードは、 :ref:`cutting-objects` で述べられるものと同様に動作しますが、 :kbd:`Alt` + "
 "クリックの代わりにクリックするだけで済みます。"
 
-#: ../../editing/edit-modes.rst:94
-msgid "Erase Mode"
+#: ../../editing/edit-tools.rst:96
+#, fuzzy
+msgid "Erase Tool"
 msgstr "消去モード"
 
-#: ../../editing/edit-modes.rst:95
+#: ../../editing/edit-tools.rst:97
+#, fuzzy
 msgid ""
-"You can just click on objects to delete them, or click and drag to make a"
-" selection, deleting all objects inside it."
+"Using the Erase tool you can just click on objects to delete them, or "
+"click and drag to make a selection, deleting all objects inside it."
 msgstr "オブジェクトをクリックするだけで削除したり、クリックしてドラッグして選択を行ったりして、セレクション内のすべてのオブジェクトを削除することができます。"
 
-#: ../../editing/edit-modes.rst:101
-msgid "Ramp Mode"
-msgstr "ランプモード"
+#: ../../editing/edit-tools.rst:104
+msgid "Ramp Tool"
+msgstr ""
 
-#: ../../editing/edit-modes.rst:102
+#: ../../editing/edit-tools.rst:105
+#, fuzzy
 msgid ""
-"This mode is currently only used for editing velocities for MIDI notes. "
+"This tool is currently only used for editing velocities for MIDI notes. "
 "You can click and drag in the velocity editor to create velocity ramps."
 msgstr ""
 "このモードは現在、MIDI "
 "ノートのベロシティの編集にのみ使用されます。ベロシティエディターでクリックしてドラッグすると、ベロシティランプを作成できます。"
 
-#: ../../editing/edit-modes.rst:110
-msgid "Audition Mode"
+#: ../../editing/edit-tools.rst:113
+#, fuzzy
+msgid "Audition Tool"
 msgstr "オーディションモード"
 
-#: ../../editing/edit-modes.rst:111
+#: ../../editing/edit-tools.rst:114
 msgid "This feature is not implemented yet."
 msgstr "この機能はまだ実装されていません。"
 
@@ -1225,7 +1237,8 @@ msgid ""
 msgstr "選択（デフォルト）モードでは、アレンジャーの内側をダブルクリックしてドラッグし、位置/サイズに満足したら解放することで、オブジェクトが作成されます。"
 
 #: ../../editing/timeline/arranger.rst:110
-msgid "For creating objects in other modes, see :ref:`edit-modes`."
+#, fuzzy
+msgid "For creating objects in other modes, see :ref:`edit-tools`."
 msgstr "他のモードでオブジェクトを作成するには :ref:`edit-modes` を参照してください。"
 
 #: ../../editing/timeline/arranger.rst:114
@@ -1314,7 +1327,8 @@ msgid "Regions can be renamed by clicking on their name."
 msgstr "リージョン名を変更するには、その名前をクリックします。"
 
 #: ../../editing/timeline/arranger.rst:169
-msgid "Other editing capabilities were explained previously in :ref:`edit-modes`."
+#, fuzzy
+msgid "Other editing capabilities were explained previously in :ref:`edit-tools`."
 msgstr "その他の編集機能については、前に :ref:`edit-modes` で説明しました。"
 
 #: ../../editing/timeline/event-viewer.rst:10
@@ -1591,4 +1605,13 @@ msgstr "これがオンの場合、BPMが変わるたびに、オーディオリ
 #~ "in an :ref:`editor <editors>`. Regions "
 #~ "can be repeated, like below."
 #~ msgstr ""
+
+#~ msgid "Edit Mode"
+#~ msgstr "編集モード"
+
+#~ msgid "Cut Mode"
+#~ msgstr "カットモード"
+
+#~ msgid "Ramp Mode"
+#~ msgstr "ランプモード"
 

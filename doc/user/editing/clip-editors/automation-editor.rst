@@ -30,7 +30,7 @@ Zrythm will interpolate the value of the control being
 automated based on the curve.
 
 Editing inside the automation arranger generally follows
-:ref:`edit-modes` and :ref:`common-operations`, with the
+:ref:`edit-tools` and :ref:`common-operations`, with the
 added feature that curves can be dragged up or down to
 change their `curviness`.
 

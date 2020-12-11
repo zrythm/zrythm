@@ -2,22 +2,24 @@
    Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
-.. _edit-modes:
+.. _edit-tools:
 
-Edit Modes
+Edit Tools
 ==========
 
-When working in each editor or arranger, you will most likely be
-using the cursor tools provided by Zrythm to create,
-edit and delete objects. Each cursor signifies a separate
-edit mode, and Zrythm offers the following edit modes.
+When working in each editor or arranger, you will most
+likely be using the cursor tools provided by Zrythm
+to create, edit and delete objects. Each cursor
+signifies a separate tool, and Zrythm offers the
+following tools.
 
 .. image:: /_static/img/toolbox.png
    :align: center
 
-Select/Stretch Mode
+Select/Stretch Tool
 ~~~~~~~~~~~~~~~~~~~
-This can be toggled to switch between Select and Stretch.
+This can be toggled to switch between Select and
+Stretch.
 
 In Select mode, you can make object selections and
 move, clone and resize objects. This is the most
@@ -71,11 +73,11 @@ You can :kbd:`Alt`-click inside objects to break them up.
 Holding down :kbd:`Shift` while doing this will bypass
 snapping.
 
-Edit Mode
+Edit Tool
 ~~~~~~~~~
-This mode is used to quickly create or delete objects.
-While you can still create objects in Select mode by
-double clicking and dragging, in Edit mode this is
+This tool is used to quickly create or delete objects.
+While you can still create objects using the Select tool by
+double clicking and dragging, with the Edit tool this is
 accomplished by single clicking and dragging, which is
 more efficient when creating a large number of objects.
 
@@ -84,28 +86,29 @@ you to create multiple objects in a row (where applicable)
 with a length specified by the snap settings corresponding
 to each editor.
 
-Cut Mode
+Cut Tool
 ~~~~~~~~
-Cut mode behaves similarly to what is mentioned in
+The Cut tool behaves similarly to what is mentioned in
 :ref:`cutting-objects`, with the exception that you
 can just click instead of :kbd:`Alt`-clicking.
 
-Erase Mode
+Erase Tool
 ~~~~~~~~~~
-You can just click on objects to delete them, or click
-and drag to make a selection, deleting all objects inside it.
+Using the Erase tool you can just click on objects to
+delete them, or click and drag to make a selection,
+deleting all objects inside it.
 
 .. _ramp-mode:
 
-Ramp Mode
+Ramp Tool
 ~~~~~~~~~
-This mode is currently only used for editing velocities for
-MIDI notes. You can click and drag in the velocity editor
-to create velocity ramps.
+This tool is currently only used for editing
+velocities for MIDI notes. You can click and drag in
+the velocity editor to create velocity ramps.
 
 .. image:: /_static/img/ramp-tool.png
    :align: center
 
-Audition Mode
+Audition Tool
 ~~~~~~~~~~~~~
 This feature is not implemented yet.

@@ -74,7 +74,7 @@ of a note is reached, and a note off signal when the end
 position of a note is reached.
 
 Editing inside the MIDI arranger is covered in
-:ref:`edit-modes` and :ref:`common-operations`.
+:ref:`edit-tools` and :ref:`common-operations`.
 
 Drum Mode
 ---------

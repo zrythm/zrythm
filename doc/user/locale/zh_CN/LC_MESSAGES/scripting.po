@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-07 22:10+0000\n"
+"POT-Creation-Date: 2020-12-11 19:05+0000\n"
 "PO-Revision-Date: 2020-11-14 04:34+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: zh_CN\n"
@@ -19,17 +19,34 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
+#: ../../scripting/api/actions channel_send_action.rst:6
+msgid "Returns a new action for creating a send connection."
+msgstr ""
+
+#: ../../scripting/api/actions create_tracks_action.rst:6
+msgid "Returns a new Create Tracks action for a plugin."
+msgstr ""
+
+#: ../../scripting/api/actions create_tracks_action.rst:10
+msgid "Returns a new Create Tracks action for one or more empty Audio FX tracks."
+msgstr ""
+
+#: ../../scripting/api/actions port_connection_action.rst:6
+msgid "Creates an action for connecting 2 ports."
+msgstr ""
+
+#: ../../scripting/api/actions undo_manager.rst:6
+msgid "Performs the given action and adds it to the undo stack."
+msgstr ""
+
+#: ../../scripting/api/actions undo_manager.rst:10
+msgid "Undoes the last action."
+msgstr ""
+
+#: ../../scripting/api/actions undo_manager.rst:14
+msgid "Redoes the last undone action."
+msgstr ""
+
 #: ../../scripting/api/audio channel.rst:6
 msgid "Returns the plugin at the given insert slot"
 msgstr ""
@@ -46,9 +63,14 @@ msgstr ""
 msgid "Returns a new midi note."
 msgstr ""
 
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
+#: ../../scripting/api/audio midi_region.rst:6
+msgid "Returns a new midi region."
+msgstr ""
+
+#: ../../scripting/api/audio midi_region.rst:10
+msgid "Adds a midi note to region."
+msgstr ""
+
 #: ../../scripting/api/audio port.rst:6
 msgid "Returns the left or right port of the stereo pair."
 msgstr ""
@@ -65,8 +87,10 @@ msgstr ""
 msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
 msgstr ""
 
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
+#: ../../scripting/api/audio supported_file.rst:6
+msgid "Returns an instance of SupportedFile."
+msgstr ""
+
 #: ../../scripting/api/audio track.rst:6
 msgid ""
 "Returns a new track with name name to be placed at position idx in the "
@@ -95,15 +119,26 @@ msgstr ""
 msgid "Adds region to track track. To be used for regions with lanes (midi/audio)"
 msgstr ""
 
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
+#: ../../scripting/api/audio track_processor.rst:6
+msgid "Returns the stereo in ports instance of the track processor."
+msgstr ""
+
 #: ../../scripting/api/audio tracklist.rst:6
 msgid "Inserts track track at index idx in the tracklist."
 msgstr ""
 
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
+#: ../../scripting/api/audio tracklist.rst:10
+msgid "Returns the track at pos in the tracklist."
+msgstr ""
+
+#: ../../scripting/api/audio tracklist.rst:14
+msgid "Returns the number of tracks in the tracklist."
+msgstr ""
+
+#: ../../scripting/api/audio tracklist.rst:18
+msgid "Returns the tracklist for the current project."
+msgstr ""
+
 #: ../../scripting/api/intro.rst:6
 msgid "API"
 msgstr ""
@@ -116,8 +151,10 @@ msgstr ""
 msgid "Returns the output port of the plugin at the given index."
 msgstr ""
 
-#: ../../scripting/api/plugins
-#: ../../scripting/api/plugins
+#: ../../scripting/api/plugins plugin_manager.rst:6
+msgid "Returns the PluginDescriptor matching the given URI."
+msgstr ""
+
 #: ../../scripting/api/zrythm.rst:6
 msgid "Return the Zrythm version as a string."
 msgstr ""

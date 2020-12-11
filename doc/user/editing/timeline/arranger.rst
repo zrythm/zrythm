@@ -102,13 +102,13 @@ objects.
 
 Creating
 ~~~~~~~~
-In select (default) mode, all objects are created by
-double clicking inside the arranger and dragging,
-then releasing when you are satisfied with the
-position/size.
+Using the select (default) tool, all objects are
+created by double clicking inside the arranger and
+dragging, then releasing when you are satisfied
+with the position/size.
 
-For creating objects in other modes, see
-:ref:`edit-modes`.
+For creating objects using other tools, see
+:ref:`edit-tools`.
 
 Moving
 ~~~~~~
@@ -167,4 +167,4 @@ Regions can be renamed by clicking on their name.
 .. todo:: Illustrate.
 
 Other editing capabilities were explained
-previously in :ref:`edit-modes`.
+previously in :ref:`edit-tools`.

@@ -377,22 +377,22 @@ Args:
                  "timeline-object-length"
                  "note-length" "1/1"
                  "Timeline object length"
-                 "Default length to use when creating timeline objects, eg in edit mode.")
+                 "Default length to use when creating timeline objects.")
                (make-schema-key-with-enum
                  "timeline-object-length-type"
                  "note-type" "normal"
                  "Timeline object length type"
-                 "Default length type to use when creating timeline objects, eg in edit mode.")
+                 "Default length type to use when creating timeline objects (normal, dotted, triplet).")
                (make-schema-key-with-enum
                  "editor-object-length"
                  "note-length" "1/1"
                  "Editor object length"
-                 "Default length to use when creating timeline objects, eg in edit mode.")
+                 "Default length to use when creating editor objects.")
                (make-schema-key-with-enum
                  "editor-object-length-type"
                  "note-type" "normal"
                  "Editor object length type"
-                 "Default length type to use when creating timeline objects, eg in edit mode.")
+                 "Default length type to use when creating editor objects (normal, dotted, triplet).")
                (make-schema-key-with-enum
                  "piano-roll-note-notation"
                  "note-notation" "notes"

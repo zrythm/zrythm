@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-03 14:28+0100\n"
+"POT-Creation-Date: 2020-12-11 19:05+0000\n"
 "PO-Revision-Date: 2020-12-02 23:29+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualediting/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese "
+"<https://hosted.weblate.org/projects/zrythm/manualediting/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../editing/clip-editors/audio-editor.rst:8
@@ -45,8 +44,7 @@ msgstr "Arranjador de áudio"
 
 #: ../../editing/clip-editors/audio-editor.rst:21
 msgid "The audio arranger refers to the arranger section of the audio editor."
-msgstr ""
-"O arranjador de áudio refere-se à secção do arranjador do editor de áudio."
+msgstr "O arranjador de áudio refere-se à secção do arranjador do editor de áudio."
 
 #: ../../editing/clip-editors/automation-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:35
@@ -56,15 +54,16 @@ msgstr "Editor de automação"
 #: ../../editing/clip-editors/automation-editor.rst:9
 msgid "The automation editor is displayed when an automation region is selected."
 msgstr ""
-"O editor de automação é exibido quando uma região de automação é selecionada."
+"O editor de automação é exibido quando uma região de automação é "
+"selecionada."
 
 #: ../../editing/clip-editors/automation-editor.rst:15
 msgid ""
 "It is very similar to the piano roll, with the exception that the "
 "arranger contains automation points and curves instead of MIDI notes."
 msgstr ""
-"É muito semelhante aos cilindros de piano, com a exceção de que o arranjador "
-"contém pontos de automatização e curvas em vez de notas MIDI."
+"É muito semelhante aos cilindros de piano, com a exceção de que o "
+"arranjador contém pontos de automatização e curvas em vez de notas MIDI."
 
 #: ../../editing/clip-editors/automation-editor.rst:20
 msgid "Automation Arranger"
@@ -86,7 +85,7 @@ msgstr ""
 #: ../../editing/clip-editors/automation-editor.rst:32
 msgid ""
 "Editing inside the automation arranger generally follows :ref:`edit-"
-"modes` and :ref:`common-operations`, with the added feature that curves "
+"tools` and :ref:`common-operations`, with the added feature that curves "
 "can be dragged up or down to change their `curviness`."
 msgstr ""
 
@@ -151,7 +150,7 @@ msgstr "Menu de contexto"
 #: ../../editing/common-operations.rst:84
 #: ../../editing/common-operations.rst:91
 #: ../../editing/common-operations.rst:98
-#: ../../editing/edit-modes.rst:27
+#: ../../editing/edit-tools.rst:29
 #: ../../editing/timeline/arranger.rst:24
 #: ../../editing/timeline/arranger.rst:50
 #: ../../editing/timeline/arranger.rst:54
@@ -268,7 +267,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:61
 msgid ""
-"Editing in the chord arranger follows :ref:`edit-modes` and :ref:`common-"
+"Editing in the chord arranger follows :ref:`edit-tools` and :ref:`common-"
 "operations`."
 msgstr ""
 
@@ -391,7 +390,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:76
 msgid ""
-"Editing inside the MIDI arranger is covered in :ref:`edit-modes` and :ref"
+"Editing inside the MIDI arranger is covered in :ref:`edit-tools` and :ref"
 ":`common-operations`."
 msgstr ""
 
@@ -718,63 +717,65 @@ msgstr "Seleção de loop"
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:8
-msgid "Edit Modes"
+#: ../../editing/edit-tools.rst:8
+#, fuzzy
+msgid "Edit Tools"
 msgstr "Modos de edição"
 
-#: ../../editing/edit-modes.rst:10
+#: ../../editing/edit-tools.rst:10
 msgid ""
 "When working in each editor or arranger, you will most likely be using "
 "the cursor tools provided by Zrythm to create, edit and delete objects. "
-"Each cursor signifies a separate edit mode, and Zrythm offers the "
-"following edit modes."
+"Each cursor signifies a separate tool, and Zrythm offers the following "
+"tools."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:19
-msgid "Select/Stretch Mode"
+#: ../../editing/edit-tools.rst:20
+#, fuzzy
+msgid "Select/Stretch Tool"
 msgstr "Modo de selecionar/esticar"
 
-#: ../../editing/edit-modes.rst:20
+#: ../../editing/edit-tools.rst:21
 msgid "This can be toggled to switch between Select and Stretch."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:22
+#: ../../editing/edit-tools.rst:24
 msgid ""
 "In Select mode, you can make object selections and move, clone and resize"
 " objects. This is the most common mode and the most common operations can"
 " be accomplished by just using this."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:27
+#: ../../editing/edit-tools.rst:29
 msgid "Add pic showing object selection."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:29
+#: ../../editing/edit-tools.rst:31
 msgid ""
 "Stretch mode is similar to the Select mode, with the exception that when "
 "you resize objects, their contents will be stretched to fit the new size."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:34
+#: ../../editing/edit-tools.rst:36
 msgid "Selecting Objects"
 msgstr "Selecionar objetos"
 
-#: ../../editing/edit-modes.rst:35
+#: ../../editing/edit-tools.rst:37
 msgid ""
 "To select objects, you can either click on them, click in empty space and"
 " keep dragging to make a selection, or :kbd:`Control`-click to add/remove"
 " objects to/from the selection."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:40
+#: ../../editing/edit-tools.rst:42
 msgid "Selected objects will have brighter color than non-selected objects."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:44
+#: ../../editing/edit-tools.rst:46
 msgid "Moving and Cloning Objects"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:45
+#: ../../editing/edit-tools.rst:47
 msgid ""
 "To move objects around, click on a selected object and keep dragging with"
 " your cursor to where you want to move them. Holding down :kbd:`Control` "
@@ -782,97 +783,101 @@ msgid ""
 " This is an efficient way to quickly clone multiple objects."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:52
+#: ../../editing/edit-tools.rst:54
 msgid "Resizing Objects"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:53
+#: ../../editing/edit-tools.rst:55
 msgid ""
 "Objects that have length, such as regions and MIDI notes, can be resized "
 "by clicking and dragging their edges."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:56
+#: ../../editing/edit-tools.rst:58
 msgid ""
 "On objects that can be repeated, such as regions, moving the cursor on "
 "the bottom half of the object will allow you to resize the object by "
 "repeating it, instead of just resizing it."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:61
+#: ../../editing/edit-tools.rst:63
 msgid ""
 "When resizing, already repeated objects can only be repeated. To resize "
 "them instead of repeat them, their length must be changed or their clip "
 "markers must be moved so that they are not repeated anymore."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:69
+#: ../../editing/edit-tools.rst:71
 msgid "Cutting Objects"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:70
+#: ../../editing/edit-tools.rst:72
 msgid ""
 "You can :kbd:`Alt`-click inside objects to break them up. Holding down "
 ":kbd:`Shift` while doing this will bypass snapping."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:75
-msgid "Edit Mode"
-msgstr "Modo de Edição"
-
-#: ../../editing/edit-modes.rst:76
-msgid ""
-"This mode is used to quickly create or delete objects. While you can "
-"still create objects in Select mode by double clicking and dragging, in "
-"Edit mode this is accomplished by single clicking and dragging, which is "
-"more efficient when creating a large number of objects."
+#: ../../editing/edit-tools.rst:77
+msgid "Edit Tool"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:82
+#: ../../editing/edit-tools.rst:78
+msgid ""
+"This tool is used to quickly create or delete objects. While you can "
+"still create objects using the Select tool by double clicking and "
+"dragging, with the Edit tool this is accomplished by single clicking and "
+"dragging, which is more efficient when creating a large number of "
+"objects."
+msgstr ""
+
+#: ../../editing/edit-tools.rst:84
 msgid ""
 "Holding down :kbd:`Control` while clicking will allow you to create "
 "multiple objects in a row (where applicable) with a length specified by "
 "the snap settings corresponding to each editor."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:88
-msgid "Cut Mode"
-msgstr "Modo de corte"
+#: ../../editing/edit-tools.rst:90
+msgid "Cut Tool"
+msgstr ""
 
-#: ../../editing/edit-modes.rst:89
+#: ../../editing/edit-tools.rst:91
 msgid ""
-"Cut mode behaves similarly to what is mentioned in :ref:`cutting-"
+"The Cut tool behaves similarly to what is mentioned in :ref:`cutting-"
 "objects`, with the exception that you can just click instead of "
 ":kbd:`Alt`-clicking."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:94
-msgid "Erase Mode"
+#: ../../editing/edit-tools.rst:96
+#, fuzzy
+msgid "Erase Tool"
 msgstr "Modo de apagar"
 
-#: ../../editing/edit-modes.rst:95
+#: ../../editing/edit-tools.rst:97
+#, fuzzy
 msgid ""
-"You can just click on objects to delete them, or click and drag to make a"
-" selection, deleting all objects inside it."
+"Using the Erase tool you can just click on objects to delete them, or "
+"click and drag to make a selection, deleting all objects inside it."
 msgstr ""
 "Para apagar objetos basta apenas clicar neles ou clicar e arrastar para "
 "fazer uma seleção, a apagar todos os objetos dentro dela."
 
-#: ../../editing/edit-modes.rst:101
-msgid "Ramp Mode"
+#: ../../editing/edit-tools.rst:104
+msgid "Ramp Tool"
 msgstr ""
 
-#: ../../editing/edit-modes.rst:102
+#: ../../editing/edit-tools.rst:105
 msgid ""
-"This mode is currently only used for editing velocities for MIDI notes. "
+"This tool is currently only used for editing velocities for MIDI notes. "
 "You can click and drag in the velocity editor to create velocity ramps."
 msgstr ""
 
-#: ../../editing/edit-modes.rst:110
-msgid "Audition Mode"
+#: ../../editing/edit-tools.rst:113
+#, fuzzy
+msgid "Audition Tool"
 msgstr "Modo de Audição"
 
-#: ../../editing/edit-modes.rst:111
+#: ../../editing/edit-tools.rst:114
 msgid "This feature is not implemented yet."
 msgstr ""
 
@@ -1170,7 +1175,7 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:110
-msgid "For creating objects in other modes, see :ref:`edit-modes`."
+msgid "For creating objects in other modes, see :ref:`edit-tools`."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:114
@@ -1261,7 +1266,7 @@ msgid "Regions can be renamed by clicking on their name."
 msgstr "As regiões selecionadas podem ser movidas clicando e arrastando."
 
 #: ../../editing/timeline/arranger.rst:169
-msgid "Other editing capabilities were explained previously in :ref:`edit-modes`."
+msgid "Other editing capabilities were explained previously in :ref:`edit-tools`."
 msgstr ""
 
 #: ../../editing/timeline/event-viewer.rst:10
@@ -1981,3 +1986,78 @@ msgstr ""
 #~ "in an :ref:`editor <editors>`. Regions "
 #~ "can be repeated, like below."
 #~ msgstr ""
+
+#~ msgid ""
+#~ "Editing inside the automation arranger "
+#~ "generally follows :ref:`edit-modes` and "
+#~ ":ref:`common-operations`, with the added "
+#~ "feature that curves can be dragged "
+#~ "up or down to change their "
+#~ "`curviness`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Editing in the chord arranger follows"
+#~ " :ref:`edit-modes` and :ref:`common-"
+#~ "operations`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Editing inside the MIDI arranger is "
+#~ "covered in :ref:`edit-modes` and :ref"
+#~ ":`common-operations`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "When working in each editor or "
+#~ "arranger, you will most likely be "
+#~ "using the cursor tools provided by "
+#~ "Zrythm to create, edit and delete "
+#~ "objects. Each cursor signifies a "
+#~ "separate edit mode, and Zrythm offers"
+#~ " the following edit modes."
+#~ msgstr ""
+
+#~ msgid "Edit Mode"
+#~ msgstr "Modo de Edição"
+
+#~ msgid ""
+#~ "This mode is used to quickly "
+#~ "create or delete objects. While you "
+#~ "can still create objects in Select "
+#~ "mode by double clicking and dragging,"
+#~ " in Edit mode this is accomplished"
+#~ " by single clicking and dragging, "
+#~ "which is more efficient when creating"
+#~ " a large number of objects."
+#~ msgstr ""
+
+#~ msgid "Cut Mode"
+#~ msgstr "Modo de corte"
+
+#~ msgid ""
+#~ "Cut mode behaves similarly to what "
+#~ "is mentioned in :ref:`cutting-objects`, "
+#~ "with the exception that you can "
+#~ "just click instead of :kbd:`Alt`-clicking."
+#~ msgstr ""
+
+#~ msgid "Ramp Mode"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This mode is currently only used "
+#~ "for editing velocities for MIDI notes."
+#~ " You can click and drag in the"
+#~ " velocity editor to create velocity "
+#~ "ramps."
+#~ msgstr ""
+
+#~ msgid "For creating objects in other modes, see :ref:`edit-modes`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Other editing capabilities were explained "
+#~ "previously in :ref:`edit-modes`."
+#~ msgstr ""
+

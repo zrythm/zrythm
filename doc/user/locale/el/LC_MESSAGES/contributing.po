@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-22 12:22+0000\n"
+"POT-Creation-Date: 2020-12-11 19:05+0000\n"
 "PO-Revision-Date: 2020-09-25 22:42+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language: el\n"
@@ -77,8 +77,8 @@ msgstr ""
 #: ../../contributing/intro.rst:40
 msgid ""
 "You are welcome to join us in testing the latest features in Zrythm and "
-"reporting bugs and feedback on `Redmine "
-"<https://redmine.zrythm.org/projects/zrythm/issues>`_."
+"reporting bugs and feedback on `Sourcehut "
+"<https://todo.sr.ht/~alextee>`_."
 msgstr ""
 
 #: ../../contributing/intro.rst:45
@@ -543,5 +543,13 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "should be translated in Japanese as"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "You are welcome to join us in "
+#~ "testing the latest features in Zrythm"
+#~ " and reporting bugs and feedback on"
+#~ " `Redmine "
+#~ "<https://redmine.zrythm.org/projects/zrythm/issues>`_."
 #~ msgstr ""
 

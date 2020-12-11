@@ -11,7 +11,7 @@ Editing
    :maxdepth: 2
 
    overview
-   edit-modes
+   edit-tools
    common-operations
    snapping-grid-options
    quantization

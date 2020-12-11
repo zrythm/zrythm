@@ -1,17 +1,39 @@
 Zrythm User Manual
 ==================
 
-## Dependencies
+# Dependencies
 - Sphinx doc <http://sphinx-doc.org/>
 - sphinx-intl
 - guile
 - `guix build utils` guile module
 - texlive (for PDF)
 
-## Building
+# Building
 This is built using `ninja -C build bundle_manual`
 
-## License
+# Tips
+- To reference the ``Plugin Ports`` section in the
+file `plugin-info.rst`, use
+
+    :ref:`plugins-files/plugins/plugin-info:Plugin Ports`
+
+- To reference `editing/clip-editors/ruler.rst`,
+depending on where the current document is use
+
+    :doc:`../editing/clip-editors/ruler`
+
+- To reference a specific subsection anywhere, add
+`.. _audio-bus-track:` right before it, and
+reference it with
+
+    :ref:`audio-bus-track`
+
+
+Generally, prefer the 3rd option because files may
+move around, unless the reference needs to be
+more specific.
+
+# License
 This manual is licensed under the GNU Free Documentation License, version 1.3 or later. See the
 [index.rst](index.rst) file for details.
 

@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 19:09+0100\n"
+"POT-Creation-Date: 2020-12-11 19:05+0000\n"
 "PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
-"manualplayback-and-recording/ja/>\n"
 "Language: ja\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm"
+"/manualplayback-and-recording/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
@@ -35,13 +34,12 @@ msgid ""
 msgstr "BPMウィジェットをクリックしてドラッグすることで、BPMを40～360の間に設定することができます。"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:17
+#, fuzzy
 msgid ""
 "Clicking and dragging on the integer counterpart will change the integer "
 "(e.g., from 140.24 to 141.24) and clicking and dragging on the decimal "
-"counterpart will change the decimal value (e.g., frrom 140.24 to 140.25)."
-msgstr ""
-"整数の部分をクリックしてドラッグすると整数が変更され（例：140.24から141."
-"24へ）、10進数の部分をクリックしてドラッグすると10進数が変更されます（例：140.24から140.25へ）。"
+"counterpart will change the decimal value (e.g., from 140.24 to 140.25)."
+msgstr "整数の部分をクリックしてドラッグすると整数が変更され（例：140.24から141.24へ）、10進数の部分をクリックしてドラッグすると10進数が変更されます（例：140.24から140.25へ）。"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:25
 msgid "Time Signature"
@@ -118,8 +116,7 @@ msgid ""
 "The song start marker signifies the position in the timeline where the "
 "Song will start. This is mainly used for exporting the mixdown into "
 "audio."
-msgstr ""
-"ソングの開始マーカーは、ソングが開始されるタイムライン内の位置を示します。これは主に、オーディオにミックスダウンをエクスポートするために使用されます。"
+msgstr "ソングの開始マーカーは、ソングが開始されるタイムライン内の位置を示します。これは主に、オーディオにミックスダウンをエクスポートするために使用されます。"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:46
 #, fuzzy
@@ -127,8 +124,7 @@ msgid ""
 "The song end marker signifies the position in the timeline where the Song"
 " will end. Likewise, it is mainly used for exporting the mixdown into "
 "audio."
-msgstr ""
-"ソングエンドマーカーは、タイムライン上でソングが終了する位置を示します。同様に、主にミックスダウンをオーディオにエクスポートする際に使用します。"
+msgstr "ソングエンドマーカーは、タイムライン上でソングが終了する位置を示します。同様に、主にミックスダウンをオーディオにエクスポートする際に使用します。"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:51
 msgid "These markers are part of the :ref:`marker-track`."
@@ -148,8 +144,7 @@ msgid ""
 "These can be used to jump to when moving forwards or backwards, and are "
 "also generally useful visually to see where each part of the song begins "
 "and ends."
-msgstr ""
-"これらは、前後に移動するときにジャンプするために使用することができ、また、曲の各部分が開始し、終了する場所を視覚的に見るために一般的に有用です。"
+msgstr "これらは、前後に移動するときにジャンプするために使用することができ、また、曲の各部分が開始し、終了する場所を視覚的に見るために一般的に有用です。"
 
 #: ../../playback-and-recording/overview.rst:6
 msgid "Overview"
@@ -215,9 +210,7 @@ msgid ""
 "For example, if an instrument track is armed for recording and it has a "
 "MIDI keyboard connected in its inputs, you will hear sound when you press"
 " a key on your MIDI keyboard."
-msgstr ""
-"例えば、インストゥルメントトラックが録音のために武装していて、そのインプットにMIDIキーボードが接続されている場合、MIDIキーボードのキーを押すと音が"
-"聞こえます。"
+msgstr "例えば、インストゥルメントトラックが録音のために武装していて、そのインプットにMIDIキーボードが接続されている場合、MIDIキーボードのキーを押すと音が聞こえます。"
 
 #: ../../playback-and-recording/recording.rst:27
 msgid "Recording Audio & MIDI"
@@ -356,9 +349,7 @@ msgid ""
 "When metronome is enabled, you will hear metronome ticks during playback "
 "at each bar and each tick. The tick at each bar will be more emphasized. "
 "This is useful for making sure your song stays on beat."
-msgstr ""
-"メトロノームが有効になっていると、各バーと各ティックで再生中にメトロノームティックが聞こえます。各バーのティックがより強調されます。これは、曲がビートのま"
-"まであることを確認するのに便利です。"
+msgstr "メトロノームが有効になっていると、各バーと各ティックで再生中にメトロノームティックが聞こえます。各バーのティックがより強調されます。これは、曲がビートのままであることを確認するのに便利です。"
 
 #: ../../playback-and-recording/transport-controls.rst:50
 #, fuzzy
@@ -453,3 +444,4 @@ msgstr "メトロノームサンプルは、Zrythmディレクトリに独自の
 
 #~ msgid "Recording MIDI"
 #~ msgstr "MIDIを録音中"
+

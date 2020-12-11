@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-07 22:10+0000\n"
+"POT-Creation-Date: 2020-12-11 19:05+0000\n"
 "PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -19,22 +19,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
-#: ../../scripting/api/actions
+#: ../../scripting/api/actions channel_send_action.rst:7
+#, fuzzy
+msgid ""
+"Scheme Procedure: **channel-send-action-new-connect-audio** | *send "
+"stereo_ports*"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#: ../../scripting/api/actions channel_send_action.rst:6
+msgid "Returns a new action for creating a send connection."
+msgstr ""
+
+#: ../../scripting/api/actions create_tracks_action.rst:6
+msgid "Returns a new Create Tracks action for a plugin."
+msgstr ""
+
+#: ../../scripting/api/actions create_tracks_action.rst:12
+#, fuzzy
+msgid ""
+"Scheme Procedure: **create-tracks-action-new-audio-fx** | *track_pos "
+"num_tracks*"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#: ../../scripting/api/actions create_tracks_action.rst:10
+msgid "Returns a new Create Tracks action for one or more empty Audio FX tracks."
+msgstr ""
+
+#: ../../scripting/api/actions port_connection_action.rst:6
+msgid "Creates an action for connecting 2 ports."
+msgstr ""
+
+#: ../../scripting/api/actions undo_manager.rst:7
+#, fuzzy
+msgid "Scheme Procedure: **undo-manager-perform** | *action*"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#: ../../scripting/api/actions undo_manager.rst:6
+msgid "Performs the given action and adds it to the undo stack."
+msgstr ""
+
+#: ../../scripting/api/actions undo_manager.rst:11
+#, fuzzy
+msgid "Scheme Procedure: **undo-manager-undo** | *[action]*"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#: ../../scripting/api/actions undo_manager.rst:10
+msgid "Undoes the last action."
+msgstr ""
+
+#: ../../scripting/api/actions undo_manager.rst:15
+#, fuzzy
+msgid "Scheme Procedure: **undo-manager-redo** | *[action]*"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#: ../../scripting/api/actions undo_manager.rst:14
+msgid "Redoes the last undone action."
+msgstr ""
+
 #: ../../scripting/api/audio channel.rst:7
 #, fuzzy
 msgid "Scheme Procedure: **channel-get-insert** | *channel insert_slot*"
@@ -73,11 +114,27 @@ msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します�
 msgid "Returns a new midi note."
 msgstr "新しい MIDI ノートを返します。"
 
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
+#: ../../scripting/api/audio midi_region.rst:7
+#, fuzzy
+msgid ""
+"Scheme Procedure: **midi-region-new** | *start_pos end_pos track_idx "
+"lane_idx idx_inside_lane*"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#: ../../scripting/api/audio midi_region.rst:6
+#, fuzzy
+msgid "Returns a new midi region."
+msgstr "新しい MIDI ノートを返します。"
+
+#: ../../scripting/api/audio midi_region.rst:11
+#, fuzzy
+msgid "Scheme Procedure: **midi-region-add-midi-note** | *region midi_note*"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#: ../../scripting/api/audio midi_region.rst:10
+msgid "Adds a midi note to region."
+msgstr ""
+
 #: ../../scripting/api/audio port.rst:7
 #, fuzzy
 msgid "Scheme Procedure: **stereo-ports-get-port** | *stereo_ports left*"
@@ -116,9 +173,15 @@ msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します�
 msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
 msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
 
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
+#: ../../scripting/api/audio supported_file.rst:7
+#, fuzzy
+msgid "Scheme Procedure: **supported-file-new-from-path** | *path*"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#: ../../scripting/api/audio supported_file.rst:6
+msgid "Returns an instance of SupportedFile."
+msgstr ""
+
 #: ../../scripting/api/audio track.rst:8
 #, fuzzy
 msgid "Scheme Procedure: **midi-track-new** | *idx name*"
@@ -179,9 +242,16 @@ msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します�
 msgid "Adds region to track track. To be used for regions with lanes (midi/audio)"
 msgstr "トラックにリージョンを追加します。レーンのあるリージョン（MIDI/オーディオ）に使用します"
 
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
+#: ../../scripting/api/audio track_processor.rst:7
+#, fuzzy
+msgid "Scheme Procedure: **track-processor-get-stereo-in** | *track_processor*"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#: ../../scripting/api/audio track_processor.rst:6
+#, fuzzy
+msgid "Returns the stereo in ports instance of the track processor."
+msgstr "指定したスロットでのセンドインスタンスを返します"
+
 #: ../../scripting/api/audio tracklist.rst:7
 #, fuzzy
 msgid "Scheme Procedure: **tracklist-insert-track** | *track idx*"
@@ -191,12 +261,35 @@ msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します�
 msgid "Inserts track track at index idx in the tracklist."
 msgstr "トラックリストのidxインデックスにtrackトラックを挿入します。"
 
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
-#: ../../scripting/api/audio
+#: ../../scripting/api/audio tracklist.rst:11
+#, fuzzy
+msgid "Scheme Procedure: **tracklist-get-track-at-pos** | *pos*"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#: ../../scripting/api/audio tracklist.rst:10
+#, fuzzy
+msgid "Returns the track at pos in the tracklist."
+msgstr "トラックリストのidxインデックスにtrackトラックを挿入します。"
+
+#: ../../scripting/api/audio tracklist.rst:15
+#, fuzzy
+msgid "Scheme Procedure: **tracklist-get-num-tracks**"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#: ../../scripting/api/audio tracklist.rst:14
+#, fuzzy
+msgid "Returns the number of tracks in the tracklist."
+msgstr "トラックの名前を返します。"
+
+#: ../../scripting/api/audio tracklist.rst:19
+#, fuzzy
+msgid "Scheme Procedure: **tracklist-get**"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#: ../../scripting/api/audio tracklist.rst:18
+msgid "Returns the tracklist for the current project."
+msgstr ""
+
 #: ../../scripting/api/intro.rst:6
 msgid "API"
 msgstr "API"
@@ -221,9 +314,16 @@ msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します�
 msgid "Returns the output port of the plugin at the given index."
 msgstr "指定したインデックスのプラグインの出力ポートを返します。"
 
-#: ../../scripting/api/plugins
-#: ../../scripting/api/plugins
-#: ../../scripting/api/plugins
+#: ../../scripting/api/plugins plugin_manager.rst:7
+#, fuzzy
+msgid "Scheme Procedure: **plugin-manager-find-plugin-from-uri** | *uri*"
+msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+
+#: ../../scripting/api/plugins plugin_manager.rst:6
+#, fuzzy
+msgid "Returns the PluginDescriptor matching the given URI."
+msgstr "指定されたインサートスロットでプラグインを返します"
+
 #: ../../scripting/api/zrythm.rst:7
 #, fuzzy
 msgid "Scheme Procedure: **zrythm-get-ver**"
