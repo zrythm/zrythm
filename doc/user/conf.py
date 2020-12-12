@@ -30,7 +30,7 @@ author = 'The Zrythm contributors'
 from subprocess import check_output
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0-alpha.6.0.0'
+release = '1.0.0-alpha.6.0.1'
 # The short X.Y version
 version = release[:-4]
 
