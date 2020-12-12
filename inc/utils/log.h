@@ -82,6 +82,14 @@ typedef struct Log
 
   /** ID of the source function. */
   guint           writer_source_id;
+
+  /**
+   * Last timestamp a bug report popup was shown.
+   *
+   * This is used to avoid showing too many error popups
+   * at once.
+   */
+  gint64          last_popup_time;
 } Log;
 
 /** Global variable, available to all files. */

@@ -682,14 +682,20 @@ log_idle_cb (
                 "Backtrace: %s", ev->backtrace);
             }
 
+          gint64 time_now =
+            g_get_monotonic_time ();
           if (ev->log_level ==
                 G_LOG_LEVEL_CRITICAL &&
               ZRYTHM_HAVE_UI &&
+              (time_now - self->last_popup_time) >
+                8000000 &&
               !string_contains_substr (
                 ev->message,
                 "assertion 'size >= 0' failed in "
                 "GtkScrollbar", true))
             {
+              self->last_popup_time = time_now;
+
               char msg[500];
               sprintf (
                 msg,
