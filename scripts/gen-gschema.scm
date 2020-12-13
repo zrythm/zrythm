@@ -462,6 +462,21 @@ Args:
                  "Plugin browser filter"
                  "Selected plugin browser filter")
                (make-schema-key
+                 "plugin-browser-collections" "as"
+                 "[]"
+                 "Plugin browser collections"
+                 "Tree paths of the selected collections in the plugin browser.")
+               (make-schema-key
+                 "plugin-browser-categories" "as"
+                 "[]"
+                 "Plugin browser categories"
+                 "Tree paths of the selected categories in the plugin browser.")
+               (make-schema-key
+                 "plugin-browser-protocols" "as"
+                 "[]"
+                 "Plugin browser protocols"
+                 "Tree paths of the selected protocols in the plugin browser.")
+               (make-schema-key
                  "timeline-event-viewer-visible" "b"
                  "false"
                  "Timeline event viewer visibility"

@@ -70,6 +70,106 @@ plugin_browser_widget_refresh_collections (
   PluginBrowserWidget * self);
 
 static void
+save_tree_view_selection (
+  PluginBrowserWidget * self,
+  GtkTreeView *         tree_view,
+  const char *          key)
+{
+  GtkTreeSelection * selection;
+  GList * selected_rows;
+  char * path_strings[60000];
+  int num_path_strings = 0;
+
+  selection =
+    gtk_tree_view_get_selection (
+      GTK_TREE_VIEW (tree_view));
+  selected_rows =
+    gtk_tree_selection_get_selected_rows (
+      selection, NULL);
+  for (GList * l = selected_rows; l != NULL;
+       l = g_list_next (l))
+    {
+      GtkTreePath * tp =
+        (GtkTreePath *) l->data;
+      char * path_str =
+        gtk_tree_path_to_string (tp);
+      path_strings[num_path_strings++] = path_str;
+    }
+  path_strings[num_path_strings] = NULL;
+  g_settings_set_strv (
+    S_UI, key,
+    (const char * const *) path_strings);
+  for (int i = 0; i < num_path_strings; i++)
+    {
+      g_free (path_strings[i]);
+      path_strings[i] = NULL;
+    }
+}
+
+/**
+ * Save (remember) the current selections.
+ */
+static void
+save_tree_view_selections (
+  PluginBrowserWidget * self)
+{
+  save_tree_view_selection (
+    self, self->collection_tree_view,
+    "plugin-browser-collections");
+  save_tree_view_selection (
+    self, self->category_tree_view,
+    "plugin-browser-categories");
+  save_tree_view_selection (
+    self, self->protocol_tree_view,
+    "plugin-browser-protocols");
+}
+
+/**
+ * Restores a selection from the gsettings.
+ */
+static void
+restore_tree_view_selection (
+  PluginBrowserWidget * self,
+  GtkTreeView *         tree_view,
+  const char *          key)
+{
+  char ** selection_paths =
+    g_settings_get_strv (S_UI, key);
+
+  GtkTreeSelection * selection =
+    gtk_tree_view_get_selection (
+      GTK_TREE_VIEW (tree_view));
+  int i = 1;
+  for (char * selection_path = selection_paths[0];
+       selection_path != NULL;
+       selection_path = selection_paths[i++])
+    {
+      GtkTreePath * tp =
+        gtk_tree_path_new_from_string (
+          selection_path);
+      gtk_tree_selection_select_path (
+        selection, tp);
+    }
+
+  g_strfreev (selection_paths);
+}
+
+static void
+restore_tree_view_selections (
+  PluginBrowserWidget * self)
+{
+  restore_tree_view_selection (
+    self, self->collection_tree_view,
+    "plugin-browser-collections");
+  restore_tree_view_selection (
+    self, self->category_tree_view,
+    "plugin-browser-categories");
+  restore_tree_view_selection (
+    self, self->protocol_tree_view,
+    "plugin-browser-protocols");
+}
+
+static void
 activate_plugin_descr (
   PluginDescriptor * descr)
 {
@@ -844,38 +944,40 @@ on_selection_changed (
       gtk_tree_model_filter_refilter (
         self->plugin_tree_model);
     }
-  else if (selected_rows &&
-           model ==
+  else if (model ==
              GTK_TREE_MODEL (
                self->plugin_tree_model))
     {
-      GtkTreePath * tp =
-        (GtkTreePath *)
-        g_list_first (selected_rows)->data;
-      GtkTreeIter iter;
-      gtk_tree_model_get_iter (
-        model, &iter, tp);
-      PluginDescriptor * descr;
-      gtk_tree_model_get (
-        model, &iter, PL_COLUMN_DESCR, &descr, -1);
-      char * label = g_strdup_printf (
-        "%s\n%s, %s%s\nAudio: %d, %d\nMidi: %d, "
-        "%d\nControls: %d, %d\nCV: %d, %d",
-        descr->author,
-        descr->category_str,
-        plugin_protocol_to_str (
-          descr->protocol),
-        descr->arch == ARCH_32 ? " (32-bit)" : "",
-        descr->num_audio_ins,
-        descr->num_audio_outs,
-        descr->num_midi_ins,
-        descr->num_midi_outs,
-        descr->num_ctrl_ins,
-        descr->num_ctrl_outs,
-        descr->num_cv_ins,
-        descr->num_cv_outs);
-      update_plugin_info_label (
-        self, label);
+      if (selected_rows)
+        {
+          GtkTreePath * tp =
+            (GtkTreePath *)
+            g_list_first (selected_rows)->data;
+          GtkTreeIter iter;
+          gtk_tree_model_get_iter (
+            model, &iter, tp);
+          PluginDescriptor * descr;
+          gtk_tree_model_get (
+            model, &iter, PL_COLUMN_DESCR, &descr, -1);
+          char * label = g_strdup_printf (
+            "%s\n%s, %s%s\nAudio: %d, %d\nMidi: %d, "
+            "%d\nControls: %d, %d\nCV: %d, %d",
+            descr->author,
+            descr->category_str,
+            plugin_protocol_to_str (
+              descr->protocol),
+            descr->arch == ARCH_32 ? " (32-bit)" : "",
+            descr->num_audio_ins,
+            descr->num_audio_outs,
+            descr->num_midi_ins,
+            descr->num_midi_outs,
+            descr->num_ctrl_ins,
+            descr->num_ctrl_outs,
+            descr->num_cv_ins,
+            descr->num_cv_outs);
+          update_plugin_info_label (
+            self, label);
+        }
     }
   else if (model ==
              GTK_TREE_MODEL (
@@ -913,6 +1015,8 @@ on_selection_changed (
   g_list_free_full (
     selected_rows,
     (GDestroyNotify) gtk_tree_path_free);
+
+  save_tree_view_selections (self);
 }
 
 static void
@@ -1488,6 +1592,7 @@ plugin_browser_widget_new ()
     S_UI_GET_ENUM ("plugin-browser-tab");
   PluginBrowserFilter filter =
     S_UI_GET_ENUM ("plugin-browser-filter");
+  restore_tree_view_selections (self);
 
   switch (tab)
     {
