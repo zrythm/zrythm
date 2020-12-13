@@ -363,6 +363,44 @@ on_collection_add_activate (
 }
 
 static void
+on_collection_remove_activate (
+  GtkMenuItem *      menuitem,
+  PluginBrowserWidget * self)
+{
+  int result = GTK_RESPONSE_YES;
+  PluginCollection * collection =
+    self->current_collection;
+
+  if (collection->num_descriptors > 0)
+    {
+      GtkWidget * dialog =
+        gtk_message_dialog_new (
+          GTK_WINDOW (MAIN_WINDOW),
+          GTK_DIALOG_MODAL |
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+          GTK_MESSAGE_QUESTION,
+          GTK_BUTTONS_YES_NO,
+          _("This collection contains %d plugins. "
+          "Are you sure you want to remove it?"),
+          collection->num_descriptors);
+      gtk_widget_show_all (GTK_WIDGET (dialog));
+      result =
+        gtk_dialog_run (GTK_DIALOG (dialog));
+      gtk_widget_destroy (dialog);
+    }
+
+  if (result == GTK_RESPONSE_YES)
+    {
+      plugin_collections_remove (
+        PLUGIN_MANAGER->collections,
+        self->current_collection,
+        F_SERIALIZE);
+
+      refresh_collections (self);
+    }
+}
+
+static void
 show_collection_context_menu (
   PluginBrowserWidget * self,
   PluginCollection *    collection)
@@ -377,6 +415,8 @@ show_collection_context_menu (
 
   if (collection)
     {
+      self->current_collection = collection;
+
       menuitem =
         gtk_menu_item_new_with_label (_("Rename"));
       gtk_widget_set_visible (menuitem, true);
@@ -386,9 +426,15 @@ show_collection_context_menu (
         gtk_menu_item_new_with_label (_("Delete"));
       gtk_widget_set_visible (menuitem, true);
       APPEND;
+      g_signal_connect (
+        G_OBJECT (menuitem), "activate",
+        G_CALLBACK (on_collection_remove_activate),
+        self);
     }
   else
     {
+      self->current_collection = NULL;
+
       menuitem =
         gtk_menu_item_new_with_label (_("Add"));
       gtk_widget_set_visible (menuitem, true);

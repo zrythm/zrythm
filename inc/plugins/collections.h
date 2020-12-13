@@ -90,6 +90,18 @@ plugin_collections_add (
   const PluginCollection * collection,
   bool                     serialize);
 
+/**
+ * Removes the given collection.
+ *
+ * @param serialize Whether to serialize the updated
+ *   cache now.
+ */
+void
+plugin_collections_remove (
+  PluginCollections * self,
+  PluginCollection *  collection,
+  bool                serialize);
+
 void
 plugin_collections_free (
   PluginCollections * self);

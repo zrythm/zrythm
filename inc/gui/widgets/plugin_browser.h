@@ -39,6 +39,7 @@ G_DECLARE_FINAL_TYPE (
   GtkPaned)
 
 typedef struct _ExpanderBoxWidget ExpanderBoxWidget;
+typedef struct PluginCollection PluginCollection;
 
 /**
  * @addtogroup widgets
@@ -121,6 +122,14 @@ typedef struct _PluginBrowserWidget
   GtkTreeModel *       protocol_tree_model;
   GtkTreeModel *       category_tree_model;
   GtkTreeModelFilter * plugin_tree_model;
+
+  /**
+   * The currently selected collection.
+   *
+   * Used temporarily when right-clicking on
+   * collections.
+   */
+  PluginCollection *   current_collection;
 
   /**
    * A little hack to get the paned position to

@@ -177,6 +177,48 @@ plugin_collections_add (
     }
 }
 
+/**
+ * Removes the given collection.
+ *
+ * @param serialize Whether to serialize the updated
+ *   cache now.
+ */
+void
+plugin_collections_remove (
+  PluginCollections * self,
+  PluginCollection *  _collection,
+  bool                serialize)
+{
+  bool found = false;
+  for (int i = self->num_collections - 1; i >= 0;
+       i--)
+    {
+      PluginCollection * collection =
+        self->collections[i];
+
+      if (collection == _collection)
+        {
+          for (int j = i;
+               j < self->num_collections - 1; j++)
+            {
+              self->collections[j] =
+                self->collections[j + 1];
+            }
+          self->num_collections--;
+          found = true;
+          break;
+        }
+    }
+
+  g_warn_if_fail (found);
+
+  if (serialize)
+    {
+      plugin_collections_serialize_to_file (
+        self);
+    }
+}
+
 void
 plugin_collections_free (
   PluginCollections * self)
