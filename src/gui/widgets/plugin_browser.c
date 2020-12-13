@@ -205,7 +205,7 @@ delete_plugin_descr (
 }
 
 static void
-show_context_menu (
+show_plugin_context_menu (
   PluginBrowserWidget * self,
   PluginDescriptor *    descr)
 {
@@ -325,7 +325,76 @@ on_plugin_right_click (
   PluginDescriptor * descr =
     g_value_get_pointer (&value);
 
-  show_context_menu (self, descr);
+  show_plugin_context_menu (self, descr);
+}
+
+static void
+on_category_reset_activate (
+  GtkMenuItem *         menuitem,
+  PluginBrowserWidget * self)
+{
+  GtkTreeSelection * selection =
+    gtk_tree_view_get_selection (
+      (self->category_tree_view));
+  gtk_tree_selection_unselect_all (selection);
+}
+
+static void
+show_category_context_menu (
+  PluginBrowserWidget * self)
+{
+  GtkWidget *menuitem;
+  GtkWidget * menu = gtk_menu_new();
+
+  /* FIXME this is allocating memory every time */
+
+  menuitem =
+    gtk_menu_item_new_with_label (_("Reset"));
+  gtk_widget_set_visible (menuitem, true);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu),
+    GTK_WIDGET (menuitem));
+
+  g_signal_connect (
+    G_OBJECT (menuitem), "activate",
+    G_CALLBACK (on_category_reset_activate),
+    self);
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu),
+    GTK_WIDGET (self), NULL);
+  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+}
+
+static void
+on_category_right_click (
+  GtkGestureMultiPress * gesture,
+  gint                   n_press,
+  gdouble                x_dbl,
+  gdouble                y_dbl,
+  PluginBrowserWidget *  self)
+{
+  if (n_press != 1)
+    return;
+
+  GtkTreePath *path;
+  GtkTreeViewColumn *column;
+
+  int x, y;
+  gtk_tree_view_convert_widget_to_bin_window_coords (
+    GTK_TREE_VIEW (self->category_tree_view),
+    (int) x_dbl, (int) y_dbl, &x, &y);
+
+  if (!gtk_tree_view_get_path_at_pos (
+        GTK_TREE_VIEW (self->category_tree_view),
+        x, y,
+        &path, &column, NULL, NULL))
+    {
+      g_message ("no path at position %d %d", x, y);
+      return;
+    }
+
+  show_category_context_menu (self);
 }
 
 static int
@@ -486,6 +555,8 @@ create_model_for_categories ()
     gtk_list_store_new (
       1, G_TYPE_STRING);
 
+  GtkTreeIter iter;
+
   for (int i = 0;
        i < PLUGIN_MANAGER->num_plugin_categories;
        i++)
@@ -494,7 +565,6 @@ create_model_for_categories ()
         PLUGIN_MANAGER->plugin_categories[i];
 
       // Add a new row to the model
-      GtkTreeIter iter;
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
         list_store, &iter, 0, name, -1);
@@ -676,6 +746,24 @@ tree_view_setup (
       gtk_tree_view_append_column (
         GTK_TREE_VIEW (tree_view),
         column);
+
+      if (model ==
+            GTK_TREE_MODEL (
+              self->category_tree_model))
+        {
+          /* connect right click handler */
+          GtkGestureMultiPress * mp =
+            GTK_GESTURE_MULTI_PRESS (
+              gtk_gesture_multi_press_new (
+                GTK_WIDGET (tree_view)));
+          gtk_gesture_single_set_button (
+            GTK_GESTURE_SINGLE (mp),
+            GDK_BUTTON_SECONDARY);
+          g_signal_connect (
+            G_OBJECT (mp), "pressed",
+            G_CALLBACK (on_category_right_click),
+            self);
+        }
     }
 
   /* hide headers and allow multi-selection */
