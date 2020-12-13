@@ -54,6 +54,8 @@ typedef struct _PanelFileBrowserWidget
   GtkTreeView *          files_tree_view;
   GtkScrolledWindow *    file_scroll_window;
   SupportedFile *        selected_file_descr;
+
+  bool                   first_draw;
 } PanelFileBrowserWidget;
 
 PanelFileBrowserWidget *

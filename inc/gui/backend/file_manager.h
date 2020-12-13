@@ -68,6 +68,8 @@ typedef struct FileManager
    *
    * To be updated every time location / collection
    * selection changes.
+   *
+   * FIXME this should be allocated dynamically.
    */
   SupportedFile *          files[10000];
   int                      num_files;
