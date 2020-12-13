@@ -253,3 +253,22 @@ array_sort_long (
     array, (size_t) size, sizeof (long),
     cmp_long_func);
 }
+
+/**
+ * Gets the count of a NULL-terminated array.
+ */
+size_t
+_array_get_count (
+  void ** array,
+  size_t  element_size)
+{
+  size_t arr_size = 0;
+  size_t byte_size = 0;
+  while (array[byte_size] != NULL)
+    {
+      arr_size++;
+      byte_size += element_size;
+    }
+
+  return arr_size;
+}

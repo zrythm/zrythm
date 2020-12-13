@@ -19,8 +19,12 @@
 
 #include "zrythm-test-config.h"
 
+#include "tests/helpers/zrythm.h"
+
 #include <stdlib.h>
 
+#include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/io.h"
 
 #include <glib.h>
@@ -84,6 +88,32 @@ test_get_ext (void)
   g_assert_cmpstr (res, ==, "");
 }
 
+static void
+test_get_files_in_dir (void)
+{
+  test_helper_zrythm_init ();
+
+#ifdef __linux__
+  char ** files;
+
+  files =
+    io_get_files_in_dir_ending_in (
+      "/tmp", F_NO_RECURSIVE, ".wav");
+
+  g_test_expect_message (
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
+    "*should not be reached*");
+  files =
+    io_get_files_in_dir_ending_in (
+      "/non-existent", F_RECURSIVE, ".wav");
+  g_test_assert_expected_messages ();
+  g_assert_cmpuint (
+    array_get_count (files, sizeof (char *)), ==, 0);
+#endif
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -97,6 +127,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test get ext",
     (GTestFunc) test_get_ext);
+  g_test_add_func (
+    TEST_PREFIX "test get files in dir",
+    (GTestFunc) test_get_files_in_dir);
 
   return g_test_run ();
 }

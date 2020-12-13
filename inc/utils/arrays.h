@@ -282,4 +282,15 @@ array_sort_long (
   long * array,
   int    size);
 
+#define array_get_count(_arr,_sz) \
+  _array_get_count ((void **) _arr, _sz)
+
+/**
+ * Gets the count of a NULL-terminated array.
+ */
+size_t
+_array_get_count (
+  void ** array,
+  size_t  element_size);
+
 #endif /* __UTILS_ARRAYS_H__ */

@@ -56,6 +56,7 @@
 #include "utils/io.h"
 #include "utils/string.h"
 #include "utils/system.h"
+#include "zrythm.h"
 
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
@@ -276,11 +277,26 @@ append_files_from_dir_ending_in (
   const char * end_string)
 {
   GDir *dir;
-  GError *error;
+  GError *error = NULL;
   const gchar *filename;
   char * full_path;
 
   dir = g_dir_open (_dir, 0, &error);
+  if (error)
+    {
+      if (ZRYTHM_TESTING)
+        {
+          g_warn_if_reached ();
+        }
+      else
+        {
+          g_warning (
+            "Failed opening directory %s: %s",
+            _dir, error->message);
+        }
+      return;
+    }
+
   while ((filename = g_dir_read_name (dir)))
     {
       full_path =
