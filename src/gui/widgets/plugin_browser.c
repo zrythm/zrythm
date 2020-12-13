@@ -148,13 +148,16 @@ visible_func (
 
   /* no filter, all visible */
   if (self->num_selected_categories == 0 &&
+      !self->selected_collection &&
       !instruments_active &&
       !effects_active &&
       !modulators_active &&
       !midi_modifiers_active)
-    return TRUE;
+    {
+      return true;
+    }
 
-  int visible = FALSE;
+  int visible = false;
 
   /* not visible if category selected and plugin
    * doesn't match */
@@ -166,7 +169,7 @@ visible_func (
           if (descr->category ==
                 self->selected_categories[i])
             {
-              visible = TRUE;
+              visible = true;
               break;
             }
         }
@@ -174,24 +177,40 @@ visible_func (
       /* not visible if the category is not one
        * of the selected categories */
       if (!visible)
-        return FALSE;
+        return false;
+    }
+
+  /* not visible if plugin is not part of
+   * selected collection */
+  if (self->selected_collection)
+    {
+      if (plugin_collection_contains_descriptor (
+            self->selected_collection, descr,
+            false))
+        {
+          visible = true;
+        }
+      else
+        {
+          return false;
+        }
     }
 
   /* not visibile if plugin type doesn't match */
   if (instruments_active &&
       !plugin_descriptor_is_instrument (descr))
-    return FALSE;
+    return false;
   if (effects_active &&
       !plugin_descriptor_is_effect (descr))
-    return FALSE;
+    return false;
   if (modulators_active &&
       !plugin_descriptor_is_modulator (descr))
-    return FALSE;
+    return false;
   if (midi_modifiers_active &&
       !plugin_descriptor_is_midi_modifier (descr))
-    return FALSE;
+    return false;
 
-  return TRUE;
+  return true;
 }
 
 static void
@@ -680,8 +699,7 @@ on_selection_changed (
     gtk_tree_view_get_model (tv);
   GList * selected_rows =
     gtk_tree_selection_get_selected_rows (
-      ts,
-      NULL);
+      ts, NULL);
 
   if (model == self->category_tree_model)
     {
@@ -728,6 +746,38 @@ on_selection_changed (
         descr->num_cv_outs);
       update_plugin_info_label (
         self, label);
+    }
+  else if (model ==
+             GTK_TREE_MODEL (
+               self->collection_tree_model))
+    {
+      if (selected_rows)
+        {
+          GtkTreeIter iter;
+          gtk_tree_selection_get_selected (
+            ts, NULL, &iter);
+          int collection_idx = 0;
+          gtk_tree_model_get (
+            GTK_TREE_MODEL (
+              self->collection_tree_model),
+            &iter, 1, &collection_idx, -1);
+
+          self->selected_collection =
+            PLUGIN_MANAGER->collections->
+              collections[collection_idx];
+        }
+      else
+        {
+          self->selected_collection = NULL;
+        }
+      g_message (
+        "selected collection: %s",
+        self->selected_collection ?
+          self->selected_collection->name :
+          "none");
+
+      gtk_tree_model_filter_refilter (
+        self->plugin_tree_model);
     }
 
   g_list_free_full (
@@ -915,8 +965,8 @@ tree_view_setup (
   PluginBrowserWidget * self,
   GtkTreeView *         tree_view,
   GtkTreeModel *        model,
-  int                   allow_multi,
-  int                   dnd)
+  bool                  allow_multi,
+  bool                  dnd)
 {
   gtk_tree_view_set_model (tree_view, model);
 
@@ -1024,13 +1074,15 @@ tree_view_setup (
 
   /* hide headers and allow multi-selection */
   gtk_tree_view_set_headers_visible (
-    GTK_TREE_VIEW (tree_view), FALSE);
+    GTK_TREE_VIEW (tree_view), false);
 
   if (allow_multi)
-    gtk_tree_selection_set_mode (
-      gtk_tree_view_get_selection (
-        GTK_TREE_VIEW (tree_view)),
-      GTK_SELECTION_MULTIPLE);
+    {
+      gtk_tree_selection_set_mode (
+        gtk_tree_view_get_selection (
+          GTK_TREE_VIEW (tree_view)),
+        GTK_SELECTION_MULTIPLE);
+    }
 
   if (dnd)
     {
@@ -1070,7 +1122,7 @@ refresh_collections (
     create_model_for_favorites ();
   tree_view_setup (
     self, self->collection_tree_view,
-    self->collection_tree_model, 1,0);
+    self->collection_tree_model, false, false);
 }
 
 static void
@@ -1221,7 +1273,7 @@ on_map_event (
       self->first_time_position_set = 1;
     }
 
-  return FALSE;
+  return false;
 }
 
 static void
@@ -1444,7 +1496,7 @@ plugin_browser_widget_init (
   gtk_box_pack_start (
     self->stack_switcher_box,
     GTK_WIDGET (self->stack_switcher),
-    TRUE, TRUE, 0);
+    true, true, 0);
 
   /* set stackswitcher icons */
   GValue iconval1 = G_VALUE_INIT;
@@ -1507,7 +1559,7 @@ plugin_browser_widget_init (
 
       GtkWidget * radio = GTK_WIDGET (iter->data);
       g_object_set (
-        radio, "hexpand", TRUE, NULL);
+        radio, "hexpand", true, NULL);
     }
   g_list_free (children);
 

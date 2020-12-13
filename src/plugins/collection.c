@@ -29,6 +29,14 @@ plugin_collection_init_loaded (
 
   self->descriptors_size =
     (size_t) self->num_descriptors;
+  if (self->descriptors_size == 0)
+    {
+      self->descriptors_size = 1;
+      self->descriptors =
+        calloc (
+          self->descriptors_size,
+          sizeof (PluginDescriptor *));
+    }
   for (int i = 0; i < self->num_descriptors; i++)
     {
       self->descriptors[i]->category =
@@ -96,15 +104,26 @@ plugin_collection_set_name (
   self->name = g_strdup (name);
 }
 
-static bool
-descr_exists (
-  PluginCollection * self,
-  const PluginDescriptor * descr)
+/**
+ * Returns whether the collection contains the
+ * given descriptor.
+ *
+ * @param match_pointer Whether to check pointers
+ *   or the descriptor details.
+ */
+bool
+plugin_collection_contains_descriptor (
+  PluginCollection *       self,
+  const PluginDescriptor * descr,
+  bool                     match_pointer)
 {
   for (int i = 0; i < self->num_descriptors; i++)
     {
-      if (plugin_descriptor_is_same_plugin (
-            descr, self->descriptors[i]))
+      if ((match_pointer &&
+           descr == self->descriptors[i]) ||
+          (!match_pointer &&
+           plugin_descriptor_is_same_plugin (
+             descr, self->descriptors[i])))
         {
           return true;
         }
@@ -120,7 +139,8 @@ plugin_collection_add_descriptor (
   PluginCollection *       self,
   const PluginDescriptor * descr)
 {
-  if (descr_exists (self, descr))
+  if (plugin_collection_contains_descriptor (
+        self, descr, false))
     {
       return;
     }

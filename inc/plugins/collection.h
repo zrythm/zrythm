@@ -101,6 +101,19 @@ plugin_collection_set_name (
   const char *       name);
 
 /**
+ * Returns whether the collection contains the
+ * given descriptor.
+ *
+ * @param match_pointer Whether to check pointers
+ *   or the descriptor details.
+ */
+bool
+plugin_collection_contains_descriptor (
+  PluginCollection *       self,
+  const PluginDescriptor * descr,
+  bool                     match_pointer);
+
+/**
  * Appends a descriptor to the collection.
  */
 void
