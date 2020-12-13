@@ -204,6 +204,22 @@ on_plugin_descr_activate (
 }
 
 static void
+on_plugin_descr_add_to_collection (
+  GtkMenuItem *      menuitem,
+  PluginCollection * collection)
+{
+  g_return_if_fail (
+    MW_PLUGIN_BROWSER->num_current_descriptors > 0);
+
+  plugin_collection_add_descriptor (
+    collection,
+    MW_PLUGIN_BROWSER->current_descriptors[0]);
+
+  plugin_collections_serialize_to_file (
+    PLUGIN_MANAGER->collections);
+}
+
+static void
 delete_plugin_descr (
   PluginDescriptor * descr,
   GClosure *         closure)
@@ -216,6 +232,10 @@ show_plugin_context_menu (
   PluginBrowserWidget * self,
   PluginDescriptor *    descr)
 {
+  g_return_if_fail (self && descr);
+  self->current_descriptors[0] = descr;
+  self->num_current_descriptors = 1;
+
   GtkWidget *menuitem;
   GtkWidget * menu = gtk_menu_new();
   PluginDescriptor * new_descr;
@@ -273,6 +293,36 @@ show_plugin_context_menu (
       CONNECT_SIGNAL;
     }
 #endif
+
+  /* add to collection */
+  menuitem =
+    gtk_menu_item_new_with_label (
+      _("Add to collection"));
+  gtk_widget_set_visible (menuitem, true);
+  GtkWidget * submenu = gtk_menu_new ();
+  for (int i = 0;
+       i < PLUGIN_MANAGER->collections->
+         num_collections;
+       i++)
+    {
+      PluginCollection * coll =
+        PLUGIN_MANAGER->collections->collections[i];
+      GtkWidget * submenu_item =
+        gtk_menu_item_new_with_label (coll->name);
+      gtk_widget_set_visible (submenu_item, true);
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (submenu),
+        GTK_WIDGET (submenu_item));
+      g_signal_connect (
+        G_OBJECT (submenu_item), "activate",
+        G_CALLBACK (
+          on_plugin_descr_add_to_collection),
+        coll);
+    }
+  gtk_menu_item_set_submenu (
+    GTK_MENU_ITEM (menuitem),
+    GTK_WIDGET (submenu));
+  APPEND;
 
 #undef APPEND
 
@@ -367,9 +417,11 @@ on_collection_remove_activate (
   GtkMenuItem *      menuitem,
   PluginBrowserWidget * self)
 {
+  g_return_if_fail (
+    self->num_current_collections > 0);
   int result = GTK_RESPONSE_YES;
   PluginCollection * collection =
-    self->current_collection;
+    self->current_collections[0];
 
   if (collection->num_descriptors > 0)
     {
@@ -393,7 +445,7 @@ on_collection_remove_activate (
     {
       plugin_collections_remove (
         PLUGIN_MANAGER->collections,
-        self->current_collection,
+        self->current_collections[0],
         F_SERIALIZE);
 
       refresh_collections (self);
@@ -415,7 +467,8 @@ show_collection_context_menu (
 
   if (collection)
     {
-      self->current_collection = collection;
+      self->current_collections[0] = collection;
+      self->num_current_collections = 1;
 
       menuitem =
         gtk_menu_item_new_with_label (_("Rename"));
@@ -433,7 +486,7 @@ show_collection_context_menu (
     }
   else
     {
-      self->current_collection = NULL;
+      self->num_current_collections = 0;
 
       menuitem =
         gtk_menu_item_new_with_label (_("Add"));
@@ -1457,4 +1510,9 @@ plugin_browser_widget_init (
         radio, "hexpand", TRUE, NULL);
     }
   g_list_free (children);
+
+  self->current_collections =
+    calloc (40000, sizeof (PluginCollection *));
+  self->current_descriptors =
+    calloc (40000, sizeof (PluginDescriptor *));
 }

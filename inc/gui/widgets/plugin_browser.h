@@ -124,12 +124,28 @@ typedef struct _PluginBrowserWidget
   GtkTreeModelFilter * plugin_tree_model;
 
   /**
-   * The currently selected collection.
+   * The currently selected collections.
    *
    * Used temporarily when right-clicking on
    * collections.
+   *
+   * These are pointers to the actual collections and
+   * must not be deleted.
    */
-  PluginCollection *   current_collection;
+  PluginCollection **  current_collections;
+  int                  num_current_collections;
+
+  /**
+   * The currently selected plugin descriptors.
+   *
+   * Used temporarily when right-clicking on
+   * plugins.
+   *
+   * These are pointers to the actual descriptors and
+   * must not be deleted.
+   */
+  PluginDescriptor **  current_descriptors;
+  int                  num_current_descriptors;
 
   /**
    * A little hack to get the paned position to

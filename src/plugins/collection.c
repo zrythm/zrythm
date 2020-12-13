@@ -18,6 +18,7 @@
  */
 
 #include "plugins/collection.h"
+#include "utils/arrays.h"
 #include "utils/objects.h"
 
 void
@@ -26,6 +27,8 @@ plugin_collection_init_loaded (
 {
   g_return_if_fail (self);
 
+  self->descriptors_size =
+    (size_t) self->num_descriptors;
   for (int i = 0; i < self->num_descriptors; i++)
     {
       self->descriptors[i]->category =
@@ -44,6 +47,11 @@ plugin_collection_new (void)
     object_new (PluginCollection);
 
   self->name = g_strdup ("");
+  self->descriptors_size = 1;
+  self->descriptors =
+    calloc (
+      self->descriptors_size,
+      sizeof (PluginDescriptor *));
 
   return self;
 }
@@ -88,6 +96,22 @@ plugin_collection_set_name (
   self->name = g_strdup (name);
 }
 
+static bool
+descr_exists (
+  PluginCollection * self,
+  const PluginDescriptor * descr)
+{
+  for (int i = 0; i < self->num_descriptors; i++)
+    {
+      if (plugin_descriptor_is_same_plugin (
+            descr, self->descriptors[i]))
+        {
+          return true;
+        }
+    }
+  return false;
+}
+
 /**
  * Appends a descriptor to the collection.
  */
@@ -96,7 +120,10 @@ plugin_collection_add_descriptor (
   PluginCollection *       self,
   const PluginDescriptor * descr)
 {
-  /* TODO check if exists */
+  if (descr_exists (self, descr))
+    {
+      return;
+    }
 
   PluginDescriptor * new_descr =
     plugin_descriptor_clone (descr);
@@ -107,6 +134,9 @@ plugin_collection_add_descriptor (
       new_descr->ghash = g_file_hash (file);
       g_object_unref (file);
     }
+  array_double_size_if_full (
+    self->descriptors, self->num_descriptors,
+    self->descriptors_size, PluginDescriptor *);
   self->descriptors[self->num_descriptors++] =
     new_descr;
 }

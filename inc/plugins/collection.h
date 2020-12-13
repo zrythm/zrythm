@@ -47,8 +47,9 @@ typedef struct PluginCollection
   char *           description;
 
   /** Plugin descriptors. */
-  PluginDescriptor * descriptors[90000];
-  int                num_descriptors;
+  PluginDescriptor ** descriptors;
+  int              num_descriptors;
+  size_t           descriptors_size;
 } PluginCollection;
 
 static const cyaml_schema_field_t
@@ -58,7 +59,7 @@ plugin_collection_fields_schema[] =
     PluginCollection, name),
   YAML_FIELD_STRING_PTR_OPTIONAL (
     PluginCollection, description),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
     PluginCollection, descriptors,
     plugin_descriptor_schema),
 
