@@ -222,7 +222,7 @@ host_dispatcher (
       break;
 #endif
     case NATIVE_HOST_OPCODE_GET_FILE_PATH:
-      g_warning ("get file path");
+      g_debug ("get file path");
       g_return_val_if_fail (ptr, 0);
       if (string_is_equal ((char *) ptr, "carla"))
         {
