@@ -73,6 +73,7 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
+#include "gui/widgets/snap_box.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bot_box.h"
 #include "gui/widgets/timeline_minimap.h"
@@ -1781,6 +1782,20 @@ process_events (void * data)
         case ET_PLUGIN_COLLETIONS_CHANGED:
           plugin_browser_widget_refresh_collections (
             MW_PLUGIN_BROWSER);
+          break;
+        case ET_SNAP_GRID_OPTIONS_CHANGED:
+          {
+            SnapGrid * sg = (SnapGrid *) ev->arg;
+            if (sg == SNAP_GRID_TIMELINE)
+              {
+                snap_box_widget_refresh (
+                  MW_TIMELINE_TOOLBAR->snap_box);
+              }
+            else if (sg == SNAP_GRID_MIDI)
+              {
+                /* TODO */
+              }
+          }
           break;
         default:
           g_warning (

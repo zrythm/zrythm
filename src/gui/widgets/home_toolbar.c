@@ -24,7 +24,6 @@
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/snap_box.h"
 #include "gui/widgets/toolbox.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -111,8 +110,6 @@ static void
 home_toolbar_widget_init (
   HomeToolbarWidget * self)
 {
-  g_type_ensure (SNAP_BOX_WIDGET_TYPE);
-
   gtk_widget_init_template (GTK_WIDGET (self));
 
 #define SET_TOOLTIP(x, tooltip) \
@@ -168,7 +165,7 @@ home_toolbar_widget_class_init (
   BIND_CHILD (select_all);
   BIND_CHILD (loop_selection);
   BIND_CHILD (toolbox);
-  BIND_CHILD (snap_box);
+  /*BIND_CHILD (snap_box);*/
 
 #undef BIND_CHILD
 }

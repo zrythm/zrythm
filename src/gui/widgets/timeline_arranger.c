@@ -605,7 +605,8 @@ snap_region_l (
         arranger_object_get_track (
           (ArrangerObject *) region);
       position_snap (
-        NULL, new_pos, track,
+        &self->earliest_obj_start_pos,
+        new_pos, track,
         NULL, self->snap_grid);
     }
 
@@ -780,7 +781,8 @@ snap_region_r (
         arranger_object_get_track (
           (ArrangerObject *) region);
       position_snap (
-        NULL, new_pos, track,
+        &self->earliest_obj_start_pos,
+        new_pos, track,
         NULL, self->snap_grid);
     }
 
@@ -957,9 +959,11 @@ timeline_arranger_widget_snap_range_r (
       if (SNAP_GRID_ANY_SNAP (
             self->snap_grid) &&
           !self->shift_held)
-        position_snap_simple (
-          &TRANSPORT->range_1,
-          SNAP_GRID_TIMELINE);
+        {
+          position_snap_simple (
+            &TRANSPORT->range_1,
+            SNAP_GRID_TIMELINE);
+        }
       position_set_to_pos (
         &TRANSPORT->range_2,
         &TRANSPORT->range_1);

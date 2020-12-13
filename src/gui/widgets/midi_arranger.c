@@ -207,7 +207,8 @@ midi_arranger_widget_snap_midi_notes_l (
           !self->shift_held)
         {
           position_snap (
-            NULL, &new_global_start_pos,
+            &self->earliest_obj_start_pos,
+            &new_global_start_pos,
             NULL, clip_editor_region,
             self->snap_grid);
         }
@@ -355,7 +356,8 @@ midi_arranger_widget_snap_midi_notes_r (
             self->snap_grid) &&
           !self->shift_held)
         position_snap (
-          NULL, &new_global_end_pos, track,
+          &self->earliest_obj_start_pos,
+          &new_global_end_pos, track,
           NULL, self->snap_grid);
 
       /* convert it back to a local pos */

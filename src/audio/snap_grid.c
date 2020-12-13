@@ -240,7 +240,7 @@ snap_grid_init (
   self->snap_note_type = NOTE_TYPE_NORMAL;
   self->default_note_length = note_length;
   self->default_note_type = NOTE_TYPE_NORMAL;
-  self->snap_to_grid = 1;
+  self->snap_to_grid = true;
   self->link = true;
 
   self->snap_points =

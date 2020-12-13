@@ -426,10 +426,10 @@ main_window_widget_init (MainWindowWidget * self)
     { "best-fit", activate_best_fit },
 
     /* snapping, quantize */
-    { "snap-to-grid", activate_snap_to_grid },
+    { "snap-to-grid", activate_snap_to_grid, "s" },
     { "snap-keep-offset",
-      activate_snap_keep_offset },
-    { "snap-events", activate_snap_events },
+      activate_snap_keep_offset, "s" },
+    { "snap-events", activate_snap_events, "s" },
     { "quick-quantize",
       activate_quick_quantize, "s"},
     { "quantize-options", activate_quantize_options,

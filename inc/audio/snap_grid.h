@@ -42,8 +42,7 @@
   (&PROJECT->snap_grid_timeline == sg)
 /* if any snapping is enabled */
 #define SNAP_GRID_ANY_SNAP(sg) \
-  (sg->snap_to_grid || sg->snap_to_grid_keep_offset || \
-   sg->snap_to_events)
+  (sg->snap_to_grid || sg->snap_to_events)
 #define SNAP_GRID_TIMELINE \
   (&PROJECT->snap_grid_timeline)
 /* FIXME rename to snap grid editor */
@@ -89,8 +88,18 @@ typedef struct SnapGrid
   /** Snap note type. */
   NoteType         snap_note_type;
 
+  /** Whether to snap to the grid. */
   bool             snap_to_grid;
+
+  /**
+   * Whether to keep the offset when moving items.
+   *
+   * This requires @ref SnapGrid.snap_to_grid to be
+   * enabled.
+   */
   bool             snap_to_grid_keep_offset;
+
+  /** Whether to snap to events. */
   bool             snap_to_events;
 
   /** Default note length. */

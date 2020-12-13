@@ -64,7 +64,7 @@ typedef struct _HomeToolbarWidget
   GtkToolButton *    select_all;
   GtkToolButton *    loop_selection;
   ToolboxWidget *    toolbox;
-  SnapBoxWidget *    snap_box;
+  //SnapBoxWidget *    snap_box;
   //QuantizeMbWidget * quantize_mb;
 } HomeToolbarWidget;
 

@@ -1814,8 +1814,16 @@ create_item (
   if (!self->shift_held &&
       SNAP_GRID_ANY_SNAP (self->snap_grid))
     {
+      Track * track_for_snap = NULL;
+      if (self->type == TYPE (TIMELINE))
+        {
+          track_for_snap =
+            timeline_arranger_widget_get_track_at_y (
+              self, start_y);
+        }
       position_snap (
-        NULL, &pos, NULL, NULL,
+        &self->earliest_obj_start_pos,
+        &pos, track_for_snap, NULL,
         self->snap_grid);
       /*start_x =*/
         /*arranger_widget_pos_to_px (*/
@@ -2829,8 +2837,16 @@ drag_update (
       else if (!self->shift_held &&
           SNAP_GRID_ANY_SNAP (self->snap_grid))
         {
+          Track * track_for_snap = NULL;
+          if (self->type == TYPE (TIMELINE))
+            {
+              track_for_snap =
+                timeline_arranger_widget_get_track_at_y (
+                  self, self->start_y + offset_y);
+            }
           position_snap (
-            NULL, &earliest_obj_new_pos, NULL,
+            &self->earliest_obj_start_pos,
+            &earliest_obj_new_pos, track_for_snap,
             NULL, self->snap_grid);
         }
       self->adj_ticks_diff =
@@ -3946,8 +3962,10 @@ on_drag_end_timeline (
         if (SNAP_GRID_ANY_SNAP (
               self->snap_grid) &&
             !self->shift_held)
-          position_snap_simple (
-            &cut_pos, self->snap_grid);
+          {
+            position_snap_simple (
+              &cut_pos, self->snap_grid);
+          }
         UndoableAction * ua =
           arranger_selections_action_new_split (
             (ArrangerSelections *) TL_SELECTIONS,

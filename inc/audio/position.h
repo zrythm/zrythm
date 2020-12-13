@@ -52,7 +52,7 @@
   position_set_bar ( \
     _pos, (_pos)->bars + _b)
 #define position_snap_simple(pos, sg) \
-  position_snap (0, pos, 0, 0, sg)
+  position_snap (NULL, pos, NULL, NULL, sg)
 
 /**
  * Whether the position starts on or after f1 and
@@ -340,22 +340,27 @@ position_from_ticks (
 /**
  * Snaps position using given options.
  *
- * NOTE: Does not do negative Positions.
- *
- * @param prev_pos Previous Position.
- * @param pos Position moved to.
- * @param track Track at new Position (for Region
- *   moving) FIXME needed?.
- * @param region ZRegion at new Position (for
- *   MidiNote moving) FIXME needed?.
+ * @param start_pos The previous position (ie, the
+ *   position the drag started at. This is only used
+ *   when the "keep offset" setting is on.
+ * @param pos Position to edit.
+ * @param track Track, used when moving things in
+ *   the timeline. If keep offset is on and this is
+ *   passed, the objects in the track will be taken
+ *   into account. If keep offset is on and this is
+ *   NULL, all applicable objects will be taken into
+ *   account. Not used if keep offset is off.
+ * @param region Region, used when moving
+ *   things in the editor. Same behavior as @ref
+ *   track.
  * @param sg SnapGrid options.
  */
 void
 position_snap (
-  const Position * prev_pos,
-  Position * pos,
-  Track    * track,
-  ZRegion   * region,
+  Position *       start_pos,
+  Position *       pos,
+  Track    *       track,
+  ZRegion   *      region,
   const SnapGrid * sg);
 
 /**

@@ -27,12 +27,15 @@
     <property name="can_focus">False</property>
     <property name="spacing">1</property>
     <property name="layout_style">expand</property>
+    <property name="homogeneous">False</property>
     <child>
       <object class="GtkToggleButton" id="snap_to_grid">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
         <property name="action_name">win.snap-to-grid</property>
+        <property name="action_target">"timeline"</property>
+        <property name="tooltip-text" translatable="yes">Snap to grid</property>
         <child>
           <object class="GtkImage">
             <property name="visible">True</property>
@@ -52,7 +55,9 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="action_name">win.snap-to-grid</property>
+        <property name="action_name">win.snap-keep-offset</property>
+        <property name="action_target">"timeline"</property>
+        <property name="tooltip-text" translatable="yes">Keep offset</property>
         <child>
           <object class="GtkImage">
             <property name="visible">True</property>
@@ -72,7 +77,9 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="action_name">win.snap-to-events</property>
+        <property name="action_name">win.snap-events</property>
+        <property name="action_target">"timeline"</property>
+        <property name="tooltip-text" translatable="yes">Snap to events</property>
         <child>
           <object class="GtkImage">
             <property name="visible">True</property>

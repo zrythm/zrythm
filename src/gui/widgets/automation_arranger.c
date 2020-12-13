@@ -336,7 +336,8 @@ automation_arranger_move_hit_aps (
       SNAP_GRID_ANY_SNAP (self->snap_grid))
     {
       position_snap (
-        NULL, &pos, NULL, NULL,
+        &self->earliest_obj_start_pos,
+        &pos, NULL, NULL,
         self->snap_grid);
       x =
         arranger_widget_pos_to_px (

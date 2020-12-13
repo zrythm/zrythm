@@ -334,6 +334,27 @@ position_add_seconds (
 }
 
 /**
+ * Sets the end position to be 1 snap point away
+ * from  the start pos.
+ *
+ * FIXME rename to something more meaningful.
+ * @param start_pos Start Position.
+ * @param end_pos Position to set.
+ * @param snap The SnapGrid.
+ */
+void
+position_set_min_size (
+  const Position * start_pos,
+  Position * end_pos,
+  SnapGrid * snap)
+{
+  position_set_to_pos (end_pos, start_pos);
+  position_add_ticks (
+    end_pos,
+    snap_grid_get_default_ticks (snap));
+}
+
+/**
  * Returns closest snap point.
  */
 static inline Position *
@@ -356,14 +377,25 @@ closest_snap_point (Position * pos, ///< position
  * Gets the previous snap point.
  *
  * @param pos The position to reference.
+ * @param track Track, used when moving things in
+ *   the timeline. If keep offset is on and this is
+ *   passed, the objects in the track will be taken
+ *   into account. If keep offset is on and this is
+ *   NULL, all applicable objects will be taken into
+ *   account. Not used if keep offset is off.
+ * @param region Region, used when moving
+ *   things in the editor. Same behavior as @ref
+ *   track.
  * @param sg SnapGrid options.
  * @param prev_snap_point The position to set.
  */
 static inline void
 get_prev_snap_point (
   const Position * pos,
+  Track *          track,
+  ZRegion *        region,
   const SnapGrid * sg,
-  Position * prev_snap_point)
+  Position *       prev_sp)
 {
   const Position * snap_point;
   for (int i = sg->num_snap_points - 1; i >= 0; i--)
@@ -373,129 +405,214 @@ get_prev_snap_point (
             snap_point, pos))
         {
           position_set_to_pos (
-            prev_snap_point,
-            snap_point);
-          return;
+            prev_sp, snap_point);
+          break;
         }
     }
-  g_return_if_reached ();
+
+  if (track)
+    {
+      for (int i = 0; i < track->num_lanes; i++)
+        {
+          TrackLane * lane = track->lanes[i];
+          for (int j = 0; j < lane->num_regions;
+               j++)
+            {
+              ZRegion * r = lane->regions[j];
+              ArrangerObject * r_obj =
+                (ArrangerObject *) r;
+              snap_point = &r_obj->pos;
+              if (position_is_before_or_equal (
+                    snap_point, pos) &&
+                  position_is_after (
+                    snap_point, prev_sp))
+                {
+                  position_set_to_pos (
+                    prev_sp, snap_point);
+                }
+              snap_point = &r_obj->end_pos;
+              if (position_is_before_or_equal (
+                    snap_point, pos) &&
+                  position_is_after (
+                    snap_point, prev_sp))
+                {
+                  position_set_to_pos (
+                    prev_sp, snap_point);
+                }
+            }
+        }
+    }
+  else if (region)
+    {
+      /* TODO */
+    }
+  else
+    {
+    }
 }
 
 /**
  * Get next snap point.
  *
  * @param pos Position to reference.
+ * @param track Track, used when moving things in
+ *   the timeline. If keep offset is on and this is
+ *   passed, the objects in the track will be taken
+ *   into account. If keep offset is on and this is
+ *   NULL, all applicable objects will be taken into
+ *   account. Not used if keep offset is off.
+ * @param region Region, used when moving
+ *   things in the editor. Same behavior as @ref
+ *   track.
  * @param sg SnapGrid options.
  * @param next_snap_point Position to set.
  */
 static inline void
 get_next_snap_point (
   const Position * pos,
-  const SnapGrid *sg,
-  Position * next_snap_point)
+  Track *          track,
+  ZRegion *        region,
+  const SnapGrid * sg,
+  Position *       next_sp)
 {
   const Position * snap_point;
   for (int i = 0; i < sg->num_snap_points; i++)
     {
       snap_point = &sg->snap_points[i];
-      if (position_compare (snap_point,
-                            pos) > 0)
+      if (position_is_after (snap_point, pos))
         {
-          position_set_to_pos (next_snap_point,
-                               snap_point);
+          position_set_to_pos (next_sp, snap_point);
           return;
         }
     }
-  g_return_if_reached ();
-}
 
-/**
- * Snap the given Position using the options in the
- * given SnapGrid.
- */
-static void
-snap_pos (
-  Position * pos,
-  const SnapGrid * sg)
-{
-  Position prev_snap_point;
-  get_prev_snap_point (
-    pos, sg, &prev_snap_point);
-  Position next_snap_point;
-  get_next_snap_point (
-    pos, sg, &next_snap_point);
-  Position * csp =
-    closest_snap_point (
-      pos,
-      &prev_snap_point,
-      &next_snap_point);
-  position_set_to_pos (
-    pos, csp);
-}
-
-/**
- * Sets the end position to be 1 snap point away
- * from  the start pos.
- *
- * FIXME rename to something more meaningful.
- * @param start_pos Start Position.
- * @param end_pos Position to set.
- * @param snap The SnapGrid.
- */
-void
-position_set_min_size (
-  const Position * start_pos,
-  Position * end_pos,
-  SnapGrid * snap)
-{
-  position_set_to_pos (end_pos, start_pos);
-  position_add_ticks (
-    end_pos,
-    snap_grid_get_default_ticks (snap));
+  if (track)
+    {
+      for (int i = 0; i < track->num_lanes; i++)
+        {
+          TrackLane * lane = track->lanes[i];
+          for (int j = 0; j < lane->num_regions;
+               j++)
+            {
+              ZRegion * r = lane->regions[j];
+              ArrangerObject * r_obj =
+                (ArrangerObject *) r;
+              snap_point = &r_obj->pos;
+              if (position_is_after (
+                    snap_point, pos) &&
+                  position_is_before (
+                    snap_point, next_sp))
+                {
+                  position_set_to_pos (
+                    next_sp, snap_point);
+                }
+              snap_point = &r_obj->end_pos;
+              if (position_is_after (
+                    snap_point, pos) &&
+                  position_is_before (
+                    snap_point, next_sp))
+                {
+                  position_set_to_pos (
+                    next_sp, snap_point);
+                }
+            }
+        }
+    }
+  else if (region)
+    {
+      /* TODO */
+    }
+  else
+    {
+    }
 }
 
 /**
  * Snaps position using given options.
  *
- * @param prev_pos Previous Position.
- * @param pos Position moved to.
- * @param track Track at new Position (for Region
- *   moving) FIXME needed?.
- * @param region ZRegion at new Position (for
- *   MidiNote moving) FIXME needed?.
+ * @param start_pos The previous position (ie, the
+ *   position the drag started at. This is only used
+ *   when the "keep offset" setting is on.
+ * @param pos Position to edit.
+ * @param track Track, used when moving things in
+ *   the timeline. If snap to events is on and this is
+ *   passed, the objects in the track will be taken
+ *   into account. If snap to events is on and this is
+ *   NULL, all applicable objects will be taken into
+ *   account. Not used if snap to events is off.
+ * @param region Region, used when moving
+ *   things in the editor. Same behavior as @ref
+ *   track.
  * @param sg SnapGrid options.
  */
 void
 position_snap (
-  const Position * prev_pos,
-  Position * pos,
-  Track    * track,
-  ZRegion   * region,
+  Position *       start_pos,
+  Position *       pos,
+  Track *          track,
+  ZRegion *        region,
   const SnapGrid * sg)
 {
   /* this should only be called if snap is on.
    * the check should be done before calling */
   g_warn_if_fail (SNAP_GRID_ANY_SNAP (sg));
 
-  if ((sg->snap_to_grid &&
-       !sg->snap_to_grid_keep_offset &&
-      !sg->snap_to_events) ||
-      (!track && !region))
+  if (!sg->snap_to_events)
     {
-      snap_pos (pos, sg);
+      region = NULL;
+      track = NULL;
     }
-  else if (!sg->snap_to_grid && sg->snap_to_grid_keep_offset &&
-           !sg->snap_to_events)
+
+  /* snap to grid without offset */
+  if (!sg->snap_to_grid_keep_offset)
     {
-      g_warn_if_fail (prev_pos);
-      /* TODO */
-      /* get closest snap point to prev_pos */
+      /* get closest snap point */
+      Position prev_sp, next_sp;
+      get_prev_snap_point (
+        pos, track, region, sg, &prev_sp);
+      get_next_snap_point (
+        pos, track, region, sg, &next_sp);
+      Position * closest_sp =
+        closest_snap_point (
+          pos, &prev_sp, &next_sp);
 
-      /* get diff from closest snap point */
+      /* move to it */
+      position_set_to_pos (
+        pos, closest_sp);
+    }
+  /* snap to grid with offset */
+  else
+    {
+      /* get closest snap point */
+      Position prev_sp, next_sp;
+      get_prev_snap_point (
+        pos, track, region, sg, &prev_sp);
+      get_next_snap_point (
+        pos, track, region, sg, &next_sp);
+      Position * closest_sp =
+        closest_snap_point (
+          pos, &prev_sp, &next_sp);
 
-      /* snap pos*/
+      /* get previous snap point from start pos */
+      Position prev_sp_from_start_pos;
+      get_prev_snap_point (
+        start_pos, track, region, sg,
+        &prev_sp_from_start_pos);
+
+      /* get diff from previous snap point */
+      double ticks_delta =
+        start_pos->total_ticks -
+        prev_sp_from_start_pos.total_ticks;
+
+      /*g_debug ("ticks delta %f", ticks_delta);*/
+
+      /* move to closest snap point */
+      position_set_to_pos (
+        pos, closest_sp);
 
       /* add diff */
+      position_add_ticks (
+        pos, ticks_delta);
     }
 }
 
@@ -664,6 +781,9 @@ position_get_midway_pos (
  * Position's, snapped based on the given SnapGrid
  * (if any).
  *
+ * TODO, refactor, too confusing on what it's
+ * supposed to do.
+ *
  * @param end_pos End position.
  * @param start_pos Start Position.
  * @param sg SnapGrid to snap with, or NULL to not
@@ -683,8 +803,10 @@ position_get_ticks_diff (
   position_add_ticks (
     &diff_pos, fabs (ticks_diff));
   if (sg && SNAP_GRID_ANY_SNAP(sg))
-    position_snap (
-      NULL, &diff_pos, NULL, NULL, sg);
+    {
+      position_snap (
+        NULL, &diff_pos, NULL, NULL, sg);
+    }
   ticks_diff = diff_pos.total_ticks;
   if (is_negative)
     ticks_diff = - ticks_diff;

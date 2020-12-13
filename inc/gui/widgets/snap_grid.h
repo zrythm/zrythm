@@ -24,11 +24,10 @@
 
 #define SNAP_GRID_WIDGET_TYPE \
   (snap_grid_widget_get_type ())
-G_DECLARE_FINAL_TYPE (SnapGridWidget,
-                      snap_grid_widget,
-                      Z,
-                      SNAP_GRID_WIDGET,
-                      GtkMenuButton)
+G_DECLARE_FINAL_TYPE (
+  SnapGridWidget, snap_grid_widget,
+  Z, SNAP_GRID_WIDGET,
+  GtkMenuButton)
 
 typedef struct _SnapGridPopoverWidget
   SnapGridPopoverWidget;

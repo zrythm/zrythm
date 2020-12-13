@@ -33,19 +33,35 @@ G_DEFINE_TYPE (SnapBoxWidget,
                GTK_TYPE_BUTTON_BOX)
 
 /**
- * Sets the snap_box toggled states after deactivating
- * the callbacks.
+ * Sets the snap_box toggled states after
+ * deactivating the callbacks.
  */
 void
 snap_box_widget_refresh (
+  SnapBoxWidget * self)
+{
+  gtk_widget_set_sensitive (
+    GTK_WIDGET (self->snap_to_grid_keep_offset),
+    self->snap_grid->snap_grid->snap_to_grid);
+  g_message ("%d",
+    self->snap_grid->snap_grid->snap_to_grid);
+}
+
+void
+snap_box_widget_setup (
   SnapBoxWidget * self,
   SnapGrid *      sg)
 {
   snap_grid_widget_setup (
-    self->snap_grid,
-    sg);
+    self->snap_grid, sg);
 
-  /* FIXME move to actions */
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (self->snap_to_grid), NULL);
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (self->snap_to_grid_keep_offset), NULL);
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (self->snap_to_events), NULL);
+
   gtk_toggle_button_set_active (
     self->snap_to_grid,
     sg->snap_to_grid);
@@ -55,6 +71,43 @@ snap_box_widget_refresh (
   gtk_toggle_button_set_active (
     self->snap_to_events,
     sg->snap_to_events);
+
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (self->snap_to_grid),
+    "win.snap-to-grid");
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (self->snap_to_grid_keep_offset),
+    "win.snap-keep-offset");
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (self->snap_to_events),
+    "win.snap-events");
+
+  if (sg == SNAP_GRID_TIMELINE)
+    {
+      gtk_actionable_set_action_target (
+        GTK_ACTIONABLE (self->snap_to_grid),
+        "s", "timeline");
+      gtk_actionable_set_action_target (
+        GTK_ACTIONABLE (self->snap_to_grid_keep_offset),
+        "s", "timeline");
+      gtk_actionable_set_action_target (
+        GTK_ACTIONABLE (self->snap_to_events),
+        "s", "timeline");
+    }
+  else if (sg == SNAP_GRID_MIDI)
+    {
+      gtk_actionable_set_action_target (
+        GTK_ACTIONABLE (self->snap_to_grid),
+        "s", "editor");
+      gtk_actionable_set_action_target (
+        GTK_ACTIONABLE (self->snap_to_grid_keep_offset),
+        "s", "editor");
+      gtk_actionable_set_action_target (
+        GTK_ACTIONABLE (self->snap_to_events),
+        "s", "editor");
+    }
+
+  snap_box_widget_refresh (self);
 }
 
 static void

@@ -54,12 +54,12 @@ typedef struct _SnapBoxWidget
   SnapGridWidget *      snap_grid;
 } SnapBoxWidget;
 
-/**
- * Sets the snap_box toggled states after deactivating
- * the callbacks.
- */
 void
 snap_box_widget_refresh (
+  SnapBoxWidget * self);
+
+void
+snap_box_widget_setup (
   SnapBoxWidget * self,
   SnapGrid *      sg);
 

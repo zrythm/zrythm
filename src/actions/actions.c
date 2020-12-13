@@ -1289,12 +1289,49 @@ DEFINE_SIMPLE (activate_fullscreen)
 }
 
 void
-activate_snap_to_grid (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_snap_to_grid (
+  GSimpleAction * action,
+  GVariant      * _variant,
+  gpointer         user_data)
 {
-  SNAP_GRID_TIMELINE->snap_to_grid =
-    !SNAP_GRID_TIMELINE->snap_to_grid;
+  g_return_if_fail (_variant);
+
+  gsize size;
+  const char * variant =
+    g_variant_get_string (_variant, &size);
+  if (string_is_equal (variant, "timeline"))
+    {
+      SNAP_GRID_TIMELINE->snap_to_grid =
+        !SNAP_GRID_TIMELINE->snap_to_grid;
+      EVENTS_PUSH (
+        ET_SNAP_GRID_OPTIONS_CHANGED,
+        SNAP_GRID_TIMELINE);
+    }
+  else if (string_is_equal (variant, "editor"))
+    {
+      SNAP_GRID_MIDI->snap_to_grid =
+        !SNAP_GRID_MIDI->snap_to_grid;
+      EVENTS_PUSH (
+        ET_SNAP_GRID_OPTIONS_CHANGED,
+        SNAP_GRID_MIDI);
+    }
+  else if (string_is_equal (variant, "global"))
+    {
+      if (PROJECT->last_selection ==
+            SELECTION_TYPE_TIMELINE)
+        {
+          UndoableAction * ua =
+            arranger_selections_action_new_quantize (
+              (ArrangerSelections *) TL_SELECTIONS,
+              QUANTIZE_OPTIONS_TIMELINE);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+    }
+  else
+    {
+      g_return_if_reached ();
+    }
 }
 
 void
@@ -1302,8 +1339,24 @@ activate_snap_keep_offset (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  SNAP_GRID_TIMELINE->snap_to_grid_keep_offset =
-    !SNAP_GRID_TIMELINE->snap_to_grid_keep_offset;
+  if (PROJECT->last_selection ==
+        SELECTION_TYPE_TIMELINE)
+    {
+      SNAP_GRID_TIMELINE->snap_to_grid_keep_offset =
+        !SNAP_GRID_TIMELINE->snap_to_grid_keep_offset;
+      EVENTS_PUSH (
+        ET_SNAP_GRID_OPTIONS_CHANGED,
+        SNAP_GRID_TIMELINE);
+    }
+  if (PROJECT->last_selection ==
+        SELECTION_TYPE_EDITOR)
+    {
+      SNAP_GRID_MIDI->snap_to_grid_keep_offset =
+        !SNAP_GRID_MIDI->snap_to_grid_keep_offset;
+      EVENTS_PUSH (
+        ET_SNAP_GRID_OPTIONS_CHANGED,
+        SNAP_GRID_MIDI);
+    }
 }
 
 void
@@ -1311,8 +1364,24 @@ activate_snap_events (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  SNAP_GRID_TIMELINE->snap_to_events =
-    !SNAP_GRID_TIMELINE->snap_to_events;
+  if (PROJECT->last_selection ==
+        SELECTION_TYPE_TIMELINE)
+    {
+      SNAP_GRID_TIMELINE->snap_to_events =
+        !SNAP_GRID_TIMELINE->snap_to_events;
+      EVENTS_PUSH (
+        ET_SNAP_GRID_OPTIONS_CHANGED,
+        SNAP_GRID_TIMELINE);
+    }
+  if (PROJECT->last_selection ==
+        SELECTION_TYPE_EDITOR)
+    {
+      SNAP_GRID_MIDI->snap_to_events =
+        !SNAP_GRID_MIDI->snap_to_events;
+      EVENTS_PUSH (
+        ET_SNAP_GRID_OPTIONS_CHANGED,
+        SNAP_GRID_MIDI);
+    }
 }
 
 void
@@ -1602,8 +1671,8 @@ activate_quick_quantize (
     }
   else if (string_is_equal (variant, "global"))
     {
-      if (MAIN_WINDOW->last_focused ==
-          GTK_WIDGET (MW_TIMELINE))
+      if (PROJECT->last_selection ==
+            SELECTION_TYPE_TIMELINE)
         {
           UndoableAction * ua =
             arranger_selections_action_new_quantize (
