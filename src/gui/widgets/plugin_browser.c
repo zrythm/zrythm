@@ -21,17 +21,20 @@
 
 #include "actions/create_tracks_action.h"
 #include "audio/engine.h"
+#include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/expander_box.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "plugins/carla/carla_discovery.h"
+#include "plugins/collections.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/err_codes.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "utils/string.h"
@@ -59,6 +62,10 @@ enum
   PL_COLUMN_DESCR,
   PL_NUM_COLUMNS
 };
+
+static void
+refresh_collections (
+  PluginBrowserWidget * self);
 
 static void
 activate_plugin_descr (
@@ -329,6 +336,137 @@ on_plugin_right_click (
 }
 
 static void
+on_collection_add_activate (
+  GtkMenuItem *         menuitem,
+  PluginBrowserWidget * self)
+{
+  PluginCollection * collection =
+    plugin_collection_new ();
+
+  StringEntryDialogWidget * dialog =
+    string_entry_dialog_widget_new (
+      _("Collection name"), collection,
+      (GenericStringGetter)
+        plugin_collection_get_name,
+      (GenericStringSetter)
+        plugin_collection_set_name);
+  gtk_widget_show_all (GTK_WIDGET (dialog));
+  gtk_dialog_run (GTK_DIALOG (dialog));
+
+  plugin_collections_add (
+    PLUGIN_MANAGER->collections, collection,
+    F_SERIALIZE);
+
+  refresh_collections (self);
+
+  plugin_collection_free (collection);
+}
+
+static void
+show_collection_context_menu (
+  PluginBrowserWidget * self,
+  PluginCollection *    collection)
+{
+  GtkWidget *menuitem;
+  GtkWidget * menu = gtk_menu_new();
+
+#define APPEND \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL (menu), \
+    GTK_WIDGET (menuitem));
+
+  if (collection)
+    {
+      menuitem =
+        gtk_menu_item_new_with_label (_("Rename"));
+      gtk_widget_set_visible (menuitem, true);
+      APPEND;
+
+      menuitem =
+        gtk_menu_item_new_with_label (_("Delete"));
+      gtk_widget_set_visible (menuitem, true);
+      APPEND;
+    }
+  else
+    {
+      menuitem =
+        gtk_menu_item_new_with_label (_("Add"));
+      gtk_widget_set_visible (menuitem, true);
+      APPEND;
+      g_signal_connect (
+        G_OBJECT (menuitem), "activate",
+        G_CALLBACK (on_collection_add_activate),
+        self);
+    }
+
+#undef APPEND
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu),
+    GTK_WIDGET (self), NULL);
+  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+}
+
+static void
+on_collection_right_click (
+  GtkGestureMultiPress * gesture,
+  gint                   n_press,
+  gdouble                x_dbl,
+  gdouble                y_dbl,
+  PluginBrowserWidget *  self)
+{
+  if (n_press != 1)
+    return;
+
+  GtkTreePath *path;
+  GtkTreeViewColumn *column;
+
+  int x, y;
+  gtk_tree_view_convert_widget_to_bin_window_coords (
+    GTK_TREE_VIEW (self->collection_tree_view),
+    (int) x_dbl, (int) y_dbl, &x, &y);
+
+  GtkTreeSelection * selection =
+    gtk_tree_view_get_selection (
+      (self->collection_tree_view));
+  bool have_selection = true;
+  if (!gtk_tree_view_get_path_at_pos (
+        GTK_TREE_VIEW (self->collection_tree_view),
+        x, y,
+        &path, &column, NULL, NULL))
+    {
+      /* no collection selected */
+      have_selection = false;
+    }
+
+  PluginCollection * collection = NULL;
+
+  gtk_tree_selection_unselect_all (selection);
+  if (have_selection)
+    {
+      gtk_tree_selection_select_path (
+        selection, path);
+      GtkTreeIter iter;
+      gtk_tree_model_get_iter (
+        GTK_TREE_MODEL (
+          self->collection_tree_model),
+        &iter, path);
+      int collection_idx = 0;
+      gtk_tree_model_get (
+        GTK_TREE_MODEL (
+          self->collection_tree_model),
+        &iter, 1, &collection_idx, -1);
+      gtk_tree_path_free (path);
+
+      collection =
+        PLUGIN_MANAGER->collections->collections[
+          collection_idx];
+    }
+
+  show_collection_context_menu (self, collection);
+}
+
+static void
 on_category_reset_activate (
   GtkMenuItem *         menuitem,
   PluginBrowserWidget * self)
@@ -397,9 +535,14 @@ on_category_right_click (
   show_category_context_menu (self);
 }
 
+/**
+ * Updates the label below the list of plugins with
+ * the plugin info.
+ */
 static int
-update_plugin_info_label (PluginBrowserWidget * self,
-                          gpointer user_data)
+update_plugin_info_label (
+  PluginBrowserWidget * self,
+  gpointer user_data)
 {
   char * label = (char *) user_data;
 
@@ -523,26 +666,25 @@ create_model_for_favorites ()
     gtk_list_store_new (
       2, G_TYPE_STRING, G_TYPE_INT);
 
-  gchar ** favorites =
-    g_settings_get_strv (
-      S_UI, "plugin-favorites");
-  int i = 0;
-  char * favorite_list;
-  while ((favorite_list = favorites[i++]))
+  PluginCollections * collections =
+    PLUGIN_MANAGER->collections;
+  g_return_val_if_fail (collections, NULL);
+
+  for (int i = 0;
+       i < collections->num_collections; i++)
     {
-      char ** split =
-        g_strsplit (favorite_list, "::", 2);
+      PluginCollection * collection =
+        collections->collections[i];
 
       /* add row to model */
       GtkTreeIter iter;
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
         list_store, &iter,
-        0, split[0], 1, i, -1);
-
-      g_strfreev (split);
+        0, collection->name,
+        1, i,
+        -1);
     }
-  g_strfreev (favorites);
 
   return GTK_TREE_MODEL (list_store);
 }
@@ -679,6 +821,8 @@ tree_view_setup (
 {
   gtk_tree_view_set_model (tree_view, model);
 
+  z_gtk_tree_view_remove_all_columns (tree_view);
+
   /* init tree view */
   GtkCellRenderer * renderer;
   GtkTreeViewColumn * column;
@@ -747,22 +891,35 @@ tree_view_setup (
         GTK_TREE_VIEW (tree_view),
         column);
 
+      /* connect right click handler */
+      GtkGestureMultiPress * mp =
+        GTK_GESTURE_MULTI_PRESS (
+          gtk_gesture_multi_press_new (
+            GTK_WIDGET (tree_view)));
+      gtk_gesture_single_set_button (
+        GTK_GESTURE_SINGLE (mp),
+        GDK_BUTTON_SECONDARY);
       if (model ==
             GTK_TREE_MODEL (
               self->category_tree_model))
         {
-          /* connect right click handler */
-          GtkGestureMultiPress * mp =
-            GTK_GESTURE_MULTI_PRESS (
-              gtk_gesture_multi_press_new (
-                GTK_WIDGET (tree_view)));
-          gtk_gesture_single_set_button (
-            GTK_GESTURE_SINGLE (mp),
-            GDK_BUTTON_SECONDARY);
           g_signal_connect (
             G_OBJECT (mp), "pressed",
             G_CALLBACK (on_category_right_click),
             self);
+        }
+      else if (model ==
+            GTK_TREE_MODEL (
+              self->collection_tree_model))
+        {
+          g_signal_connect (
+            G_OBJECT (mp), "pressed",
+            G_CALLBACK (on_collection_right_click),
+            self);
+        }
+      else
+        {
+          g_object_unref (mp);
         }
     }
 
@@ -804,6 +961,17 @@ tree_view_setup (
   g_signal_connect (
     G_OBJECT (sel), "changed",
     G_CALLBACK (on_selection_changed), self);
+}
+
+static void
+refresh_collections (
+  PluginBrowserWidget * self)
+{
+  self->collection_tree_model =
+    create_model_for_favorites ();
+  tree_view_setup (
+    self, self->collection_tree_view,
+    self->collection_tree_model, 1,0);
 }
 
 static void
@@ -1011,11 +1179,7 @@ plugin_browser_widget_new ()
   gtk_label_set_xalign (self->plugin_info, 0);
 
   /* setup collections */
-  self->collection_tree_model =
-    create_model_for_favorites ();
-  tree_view_setup (
-    self, self->collection_tree_view,
-    self->collection_tree_model, 1,0);
+  refresh_collections (self);
 
   /* setup categories */
   self->category_tree_model =

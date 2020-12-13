@@ -44,6 +44,7 @@
 #include "gui/widgets/main_window.h"
 #include "plugins/cached_plugin_descriptors.h"
 #include "plugins/carla/carla_discovery.h"
+#include "plugins/collections.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
@@ -548,6 +549,9 @@ plugin_manager_new (void)
   /* init vst/dssi/ladspa */
   self->cached_plugin_descriptors =
     cached_plugin_descriptors_new ();
+
+  /* fetch/create collections */
+  self->collections = plugin_collections_new ();
 
   return self;
 }

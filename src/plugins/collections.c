@@ -1,0 +1,195 @@
+/*
+ * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#include "plugins/collections.h"
+#include "utils/file.h"
+#include "utils/objects.h"
+#include "utils/string.h"
+#include "zrythm.h"
+
+#define PLUGIN_COLLECTIONS_VERSION 2
+
+static char *
+get_plugin_collections_file_path (void)
+{
+  char * zrythm_dir =
+    zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
+  g_return_val_if_fail (zrythm_dir, NULL);
+
+  return
+    g_build_filename (
+      zrythm_dir,
+      "plugin_collections.yaml", NULL);
+}
+
+void
+plugin_collections_serialize_to_file (
+  PluginCollections * self)
+{
+  self->version = PLUGIN_COLLECTIONS_VERSION;
+  g_message (
+    "Serializing plugin collections...");
+  char * yaml =
+    plugin_collections_serialize (self);
+  g_return_if_fail (yaml);
+  GError *err = NULL;
+  char * path =
+    get_plugin_collections_file_path ();
+  g_return_if_fail (path && strlen (path) > 2);
+  g_message (
+    "Writing plugin collections to %s...",
+    path);
+  g_file_set_contents (
+    path, yaml, -1, &err);
+  if (err != NULL)
+    {
+      g_warning (
+        "Unable to write plugin collections "
+        "file: %s",
+        err->message);
+      g_error_free (err);
+      g_free (path);
+      g_free (yaml);
+      g_return_if_reached ();
+    }
+  g_free (path);
+  g_free (yaml);
+}
+
+/**
+ * Reads the file and fills up the object.
+ */
+PluginCollections *
+plugin_collections_new (void)
+{
+  GError *err = NULL;
+  char * path =
+    get_plugin_collections_file_path ();
+  if (!file_exists (path))
+    {
+      g_message (
+        "Plugin collections file at %s does "
+        "not exist", path);
+return_new_instance:
+      return
+        calloc (1, sizeof (PluginCollections));
+    }
+  char * yaml = NULL;
+  g_file_get_contents (path, &yaml, NULL, &err);
+  if (err != NULL)
+    {
+      g_critical (
+        "Failed to create PluginCollections "
+        "from %s", path);
+      g_free (err);
+      g_free (yaml);
+      g_free (path);
+      return NULL;
+    }
+
+  /* if not same version, purge file and return
+   * a new instance */
+  char version_str[120];
+  sprintf (
+    version_str, "version: %d",
+    PLUGIN_COLLECTIONS_VERSION);
+  if (!g_str_has_prefix (yaml, version_str))
+    {
+      g_message (
+        "Found old plugin collections file version. "
+        "Backing up file and creating a new one.");
+      GFile * file =
+        g_file_new_for_path (path);
+      char * backup_path =
+        g_strdup_printf ("%s.bak", path);
+      GFile * backup_file =
+        g_file_new_for_path (backup_path);
+      g_file_move (
+        file, backup_file, G_FILE_COPY_OVERWRITE,
+        NULL, NULL, NULL, NULL);
+      g_object_unref (backup_file);
+      g_object_unref (file);
+      g_free (backup_path);
+      goto return_new_instance;
+    }
+
+  PluginCollections * self =
+    plugin_collections_deserialize (yaml);
+  if (!self)
+    {
+      g_critical (
+        "Failed to deserialize "
+        "PluginCollections from %s", path);
+      g_free (err);
+      g_free (yaml);
+      g_free (path);
+      return NULL;
+    }
+  g_free (yaml);
+  g_free (path);
+
+  for (int i = 0; i < self->num_collections; i++)
+    {
+      plugin_collection_init_loaded (
+        self->collections[i]);
+    }
+
+  return self;
+}
+
+/**
+ * Appends a collection.
+ *
+ * @param serialize Whether to serialize the updated
+ *   cache now.
+ */
+void
+plugin_collections_add (
+  PluginCollections *      self,
+  const PluginCollection * collection,
+  bool                     serialize)
+{
+  PluginCollection * new_collection =
+    plugin_collection_clone (collection);
+  self->collections[self->num_collections++] =
+    new_collection;
+
+  if (serialize)
+    {
+      plugin_collections_serialize_to_file (
+        self);
+    }
+}
+
+void
+plugin_collections_free (
+  PluginCollections * self)
+{
+  for (int i = 0; i < self->num_collections; i++)
+    {
+      object_free_w_func_and_null (
+        plugin_collection_free,
+        self->collections[i]);
+    }
+}
+
+SERIALIZE_SRC (
+  PluginCollections, plugin_collections);
+DESERIALIZE_SRC (
+  PluginCollections, plugin_collections);

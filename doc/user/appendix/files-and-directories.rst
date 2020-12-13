@@ -73,6 +73,22 @@ normally be installed under
    :term:`Zrythm user path`. See
    :doc:`../theming/intro` for details.
 
+User Files
+----------
+Cached Plugin Descriptors
+~~~~~~~~~~~~~~~~~~~~~~~~~
+Plugin descriptor cache for faster scanning.
+This is found at
+:file:`cached_plugin_descriptors.yaml` under the
+:term:`Zrythm user path`.
+
+Plugin Collections
+~~~~~~~~~~~~~~~~~~
+This file contains your plugin collections.
+It is found at
+:file:`plugin_collections.yaml` under the
+:term:`Zrythm user path`.
+
 Log File
 --------
 Zrythm will write to a log file on each run inside

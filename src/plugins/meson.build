@@ -18,6 +18,8 @@
 plugin_srcs = files ([
   'cached_plugin_descriptors.c',
   'carla_native_plugin.c',
+  'collection.c',
+  'collections.c',
   'lv2_plugin.c',
   'plugin.c',
   'plugin_descriptor.c',

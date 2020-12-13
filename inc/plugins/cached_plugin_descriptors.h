@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file
+ *
+ * Plugin descriptors.
+ */
+
 #ifndef __PLUGINS_CACHED_PLUGIN_DESCRIPTORS_H__
 #define __PLUGINS_CACHED_PLUGIN_DESCRIPTORS_H__
 
@@ -50,19 +56,14 @@ typedef struct CachedPluginDescriptors
 static const cyaml_schema_field_t
 cached_plugin_descriptors_fields_schema[] =
 {
-  CYAML_FIELD_UINT (
-    "version", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_UINT (
     CachedPluginDescriptors, version),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "descriptors", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
     CachedPluginDescriptors, descriptors,
-    num_descriptors,
-    &plugin_descriptor_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "blacklisted", CYAML_FLAG_DEFAULT,
+    plugin_descriptor_schema),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
     CachedPluginDescriptors, blacklisted,
-    num_blacklisted,
-    &plugin_descriptor_schema, 0, CYAML_UNLIMITED),
+    plugin_descriptor_schema),
 
   CYAML_FIELD_END
 };
@@ -70,8 +71,7 @@ cached_plugin_descriptors_fields_schema[] =
 static const cyaml_schema_value_t
 cached_plugin_descriptors_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     CachedPluginDescriptors,
     cached_plugin_descriptors_fields_schema),
 };

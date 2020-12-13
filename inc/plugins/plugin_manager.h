@@ -36,6 +36,7 @@
 
 typedef struct CachedPluginDescriptors
   CachedPluginDescriptors;
+typedef struct PluginCollections PluginCollections;
 
 /**
  * @addtogroup plugins
@@ -176,12 +177,13 @@ typedef struct PluginManager
   char *                 plugin_categories[500];
   int                    num_plugin_categories;
 
-  /** TODO collections. */
-  char *                 collections[500];
   Lv2Nodes               lv2_nodes;
 
   /** Cached VST descriptors */
   CachedPluginDescriptors * cached_plugin_descriptors;
+
+  /** Plugin collections. */
+  PluginCollections *    collections;
 
   /** URI map for URID feature. */
   Symap*                 symap;
