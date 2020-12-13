@@ -168,9 +168,29 @@ plugin_collection_add_descriptor (
 void
 plugin_collection_remove_descriptor (
   PluginCollection *       self,
-  const PluginDescriptor * descr)
+  const PluginDescriptor * _descr)
 {
-  /* TODO */
+  bool found = false;
+  for (int i = 0; i < self->num_descriptors; i++)
+    {
+      PluginDescriptor * descr =
+        self->descriptors[i];
+      if (plugin_descriptor_is_same_plugin (
+            _descr, descr))
+        {
+          for (int j = i;
+               j < self->num_descriptors - 1; j++)
+            {
+              self->descriptors[j] =
+                self->descriptors[j + 1];
+            }
+          self->num_descriptors--;
+          found = true;
+          break;
+        }
+    }
+
+  g_warn_if_fail (found);
 }
 
 /**

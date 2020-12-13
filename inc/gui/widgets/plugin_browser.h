@@ -118,6 +118,7 @@ typedef struct _PluginBrowserWidget
   ZPluginCategory      selected_categories[600];
   int                  num_selected_categories;
 
+  /** The selected collection. */
   PluginCollection *   selected_collection;
 
   GtkTreeModel *       collection_tree_model;
@@ -167,6 +168,10 @@ typedef struct _PluginBrowserWidget
  */
 PluginBrowserWidget *
 plugin_browser_widget_new (void);
+
+void
+plugin_browser_widget_refresh_collections (
+  PluginBrowserWidget * self);
 
 /**
  * @}

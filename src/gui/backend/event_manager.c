@@ -68,7 +68,9 @@
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/piano_roll_keys.h"
+#include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/plugin_strip_expander.h"
+#include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -1775,6 +1777,10 @@ process_events (void * data)
         case ET_AUDIO_SELECTIONS_RANGE_CHANGED:
           arranger_widget_redraw_whole (
             MW_AUDIO_ARRANGER);
+          break;
+        case ET_PLUGIN_COLLETIONS_CHANGED:
+          plugin_browser_widget_refresh_collections (
+            MW_PLUGIN_BROWSER);
           break;
         default:
           g_warning (

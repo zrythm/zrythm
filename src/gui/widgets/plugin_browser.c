@@ -21,6 +21,8 @@
 
 #include "actions/create_tracks_action.h"
 #include "audio/engine.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/expander_box.h"
 #include "gui/widgets/plugin_browser.h"
@@ -63,8 +65,8 @@ enum
   PL_NUM_COLUMNS
 };
 
-static void
-refresh_collections (
+void
+plugin_browser_widget_refresh_collections (
   PluginBrowserWidget * self);
 
 static void
@@ -236,6 +238,26 @@ on_plugin_descr_add_to_collection (
 
   plugin_collections_serialize_to_file (
     PLUGIN_MANAGER->collections);
+
+  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
+}
+
+static void
+on_plugin_descr_remove_from_collection (
+  GtkMenuItem *      menuitem,
+  PluginCollection * collection)
+{
+  g_return_if_fail (
+    MW_PLUGIN_BROWSER->num_current_descriptors > 0);
+
+  plugin_collection_remove_descriptor (
+    collection,
+    MW_PLUGIN_BROWSER->current_descriptors[0]);
+
+  plugin_collections_serialize_to_file (
+    PLUGIN_MANAGER->collections);
+
+  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
 }
 
 static void
@@ -319,6 +341,7 @@ show_plugin_context_menu (
       _("Add to collection"));
   gtk_widget_set_visible (menuitem, true);
   GtkWidget * submenu = gtk_menu_new ();
+  int num_added = 0;
   for (int i = 0;
        i < PLUGIN_MANAGER->collections->
          num_collections;
@@ -326,6 +349,12 @@ show_plugin_context_menu (
     {
       PluginCollection * coll =
         PLUGIN_MANAGER->collections->collections[i];
+      if (plugin_collection_contains_descriptor (
+            coll, descr, false))
+        {
+          continue;
+        }
+
       GtkWidget * submenu_item =
         gtk_menu_item_new_with_label (coll->name);
       gtk_widget_set_visible (submenu_item, true);
@@ -337,11 +366,66 @@ show_plugin_context_menu (
         G_CALLBACK (
           on_plugin_descr_add_to_collection),
         coll);
+      num_added++;
     }
   gtk_menu_item_set_submenu (
     GTK_MENU_ITEM (menuitem),
     GTK_WIDGET (submenu));
-  APPEND;
+  if (num_added > 0)
+    {
+      APPEND;
+    }
+  else
+    {
+      g_object_ref_sink (menuitem);
+      g_object_unref (menuitem);
+    }
+
+  /* remove from collection */
+  menuitem =
+    gtk_menu_item_new_with_label (
+      _("Remove from collection"));
+  gtk_widget_set_visible (menuitem, true);
+  submenu = gtk_menu_new ();
+  num_added = 0;
+  for (int i = 0;
+       i < PLUGIN_MANAGER->collections->
+         num_collections;
+       i++)
+    {
+      PluginCollection * coll =
+        PLUGIN_MANAGER->collections->collections[i];
+      if (!plugin_collection_contains_descriptor (
+            coll, descr, false))
+        {
+          continue;
+        }
+
+      GtkWidget * submenu_item =
+        gtk_menu_item_new_with_label (coll->name);
+      gtk_widget_set_visible (submenu_item, true);
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (submenu),
+        GTK_WIDGET (submenu_item));
+      g_signal_connect (
+        G_OBJECT (submenu_item), "activate",
+        G_CALLBACK (
+          on_plugin_descr_remove_from_collection),
+        coll);
+      num_added++;
+    }
+  gtk_menu_item_set_submenu (
+    GTK_MENU_ITEM (menuitem),
+    GTK_WIDGET (submenu));
+  if (num_added > 0)
+    {
+      APPEND;
+    }
+  else
+    {
+      g_object_ref_sink (menuitem);
+      g_object_unref (menuitem);
+    }
 
 #undef APPEND
 
@@ -426,9 +510,35 @@ on_collection_add_activate (
     PLUGIN_MANAGER->collections, collection,
     F_SERIALIZE);
 
-  refresh_collections (self);
+  plugin_browser_widget_refresh_collections (self);
 
   plugin_collection_free (collection);
+}
+
+static void
+on_collection_rename_activate (
+  GtkMenuItem *         menuitem,
+  PluginBrowserWidget * self)
+{
+  g_return_if_fail (
+    self->num_current_collections > 0);
+  PluginCollection * collection =
+    self->current_collections[0];
+
+  StringEntryDialogWidget * dialog =
+    string_entry_dialog_widget_new (
+      _("Collection name"), collection,
+      (GenericStringGetter)
+        plugin_collection_get_name,
+      (GenericStringSetter)
+        plugin_collection_set_name);
+  gtk_widget_show_all (GTK_WIDGET (dialog));
+  gtk_dialog_run (GTK_DIALOG (dialog));
+
+  plugin_collections_serialize_to_file (
+    PLUGIN_MANAGER->collections);
+
+  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
 }
 
 static void
@@ -467,7 +577,8 @@ on_collection_remove_activate (
         self->current_collections[0],
         F_SERIALIZE);
 
-      refresh_collections (self);
+      EVENTS_PUSH (
+        ET_PLUGIN_COLLETIONS_CHANGED, NULL);
     }
 }
 
@@ -493,6 +604,10 @@ show_collection_context_menu (
         gtk_menu_item_new_with_label (_("Rename"));
       gtk_widget_set_visible (menuitem, true);
       APPEND;
+      g_signal_connect (
+        G_OBJECT (menuitem), "activate",
+        G_CALLBACK (on_collection_rename_activate),
+        self);
 
       menuitem =
         gtk_menu_item_new_with_label (_("Delete"));
@@ -1114,8 +1229,8 @@ tree_view_setup (
     G_CALLBACK (on_selection_changed), self);
 }
 
-static void
-refresh_collections (
+void
+plugin_browser_widget_refresh_collections (
   PluginBrowserWidget * self)
 {
   self->collection_tree_model =
@@ -1330,7 +1445,7 @@ plugin_browser_widget_new ()
   gtk_label_set_xalign (self->plugin_info, 0);
 
   /* setup collections */
-  refresh_collections (self);
+  plugin_browser_widget_refresh_collections (self);
 
   /* setup categories */
   self->category_tree_model =
