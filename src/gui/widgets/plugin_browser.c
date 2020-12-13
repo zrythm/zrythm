@@ -250,6 +250,7 @@ visible_func (
 
   /* no filter, all visible */
   if (self->num_selected_categories == 0 &&
+      self->num_selected_protocols == 0 &&
       !self->selected_collection &&
       !instruments_active &&
       !effects_active &&
@@ -296,6 +297,27 @@ visible_func (
         {
           return false;
         }
+    }
+
+  /* not visible if plugin protocol is not one of
+   * selected protocols */
+  if (self->num_selected_protocols > 0)
+    {
+      for (int i = 0;
+           i < self->num_selected_protocols; i++)
+        {
+          if (descr->protocol ==
+                self->selected_protocols[i])
+            {
+              visible = true;
+              break;
+            }
+        }
+
+      /* not visible if the category is not one
+       * of the selected categories */
+      if (!visible)
+        return false;
     }
 
   /* not visibile if plugin type doesn't match */
@@ -919,6 +941,22 @@ cat_selected_foreach (
 }
 
 static void
+protocol_selected_foreach (
+  GtkTreeModel *model,
+  GtkTreePath *path,
+  GtkTreeIter *iter,
+  PluginBrowserWidget * self)
+{
+  PluginProtocol protocol;
+  gtk_tree_model_get (
+    model, iter, 2, &protocol, -1);
+
+  self->selected_protocols[
+    self->num_selected_protocols++] =
+      protocol;
+}
+
+static void
 on_selection_changed (
   GtkTreeSelection * ts,
   PluginBrowserWidget * self)
@@ -939,6 +977,21 @@ on_selection_changed (
         ts,
         (GtkTreeSelectionForeachFunc)
           cat_selected_foreach,
+        self);
+
+      gtk_tree_model_filter_refilter (
+        self->plugin_tree_model);
+    }
+  else if (model ==
+             GTK_TREE_MODEL (
+               self->protocol_tree_model))
+    {
+      self->num_selected_protocols = 0;
+
+      gtk_tree_selection_selected_foreach (
+        ts,
+        (GtkTreeSelectionForeachFunc)
+          protocol_selected_foreach,
         self);
 
       gtk_tree_model_filter_refilter (
@@ -1099,6 +1152,60 @@ create_model_for_categories ()
 }
 
 static GtkTreeModel *
+create_model_for_protocols ()
+{
+  /* protocol icon, string, enum */
+  GtkListStore * list_store =
+    gtk_list_store_new (
+      3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT);
+
+  GtkTreeIter iter;
+
+  for (PluginProtocol prot = PROT_LV2;
+       prot <= PROT_SF2; prot++)
+    {
+      const char * name =
+        plugin_protocol_to_str (prot);
+
+      const char * icon = NULL;
+      switch (prot)
+        {
+        case PROT_LV2:
+          icon = "logo-lv2";
+          break;
+        case PROT_LADSPA:
+          icon = "logo-ladspa";
+          break;
+        case PROT_AU:
+          icon = "logo-au";
+          break;
+        case PROT_VST:
+        case PROT_VST3:
+          icon = "logo-vst";
+          break;
+        default:
+          icon = "plug";
+          break;
+        }
+
+      /* Add a new row to the model */
+      gtk_list_store_append (list_store, &iter);
+      gtk_list_store_set (
+        list_store, &iter,
+        0, icon,
+        1, name,
+        2, prot,
+        -1);
+    }
+
+  GtkTreeModel * model =
+    gtk_tree_model_sort_new_with_model (
+      GTK_TREE_MODEL (list_store));
+
+  return model;
+}
+
+static GtkTreeModel *
 create_model_for_plugins (
   PluginBrowserWidget * self)
 {
@@ -1108,10 +1215,10 @@ create_model_for_plugins (
   gint i;
 
   /* plugin name, index */
-  list_store = gtk_list_store_new (PL_NUM_COLUMNS,
-                                   G_TYPE_STRING,
-                                   G_TYPE_STRING,
-                                   G_TYPE_POINTER);
+  list_store =
+    gtk_list_store_new (
+      PL_NUM_COLUMNS, G_TYPE_STRING,
+      G_TYPE_STRING, G_TYPE_POINTER);
 
   for (i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
     {
@@ -1139,7 +1246,7 @@ create_model_for_plugins (
         }
       else
         {
-          icon_name = "plugins";
+          icon_name = "plug";
         }
 
       /*else if (!strcmp (descr->category, "Distortion"))*/
@@ -1260,6 +1367,41 @@ tree_view_setup (
         G_OBJECT (mp), "pressed",
         G_CALLBACK (on_plugin_right_click), self);
     }
+  else if (model ==
+             GTK_TREE_MODEL (
+               self->protocol_tree_model))
+    {
+      /* column for icon */
+      renderer =
+        gtk_cell_renderer_pixbuf_new ();
+      column =
+        gtk_tree_view_column_new_with_attributes (
+          "icon", renderer,
+          "icon-name", 0,
+          NULL);
+      gtk_tree_view_append_column (
+        GTK_TREE_VIEW (tree_view), column);
+
+      /* column for name */
+      renderer =
+        gtk_cell_renderer_text_new ();
+      column =
+        gtk_tree_view_column_new_with_attributes (
+          "name", renderer,
+          "text", 1,
+          NULL);
+      gtk_tree_view_append_column (
+        GTK_TREE_VIEW (tree_view),
+        column);
+
+      /* set search column */
+      gtk_tree_view_set_search_column (
+        GTK_TREE_VIEW (tree_view), 1);
+
+      gtk_tree_sortable_set_sort_column_id (
+        GTK_TREE_SORTABLE (model), 1,
+        GTK_SORT_ASCENDING);
+    }
   else
     {
       /* column for name */
@@ -1356,7 +1498,8 @@ plugin_browser_widget_refresh_collections (
     create_model_for_favorites ();
   tree_view_setup (
     self, self->collection_tree_view,
-    self->collection_tree_model, false, false);
+    self->collection_tree_model,
+    F_NO_MULTI_SELECT, F_NO_DND);
 }
 
 static void
@@ -1566,12 +1709,22 @@ plugin_browser_widget_new ()
   /* setup collections */
   plugin_browser_widget_refresh_collections (self);
 
+  /* setup protocols */
+  self->protocol_tree_model =
+   GTK_TREE_MODEL_SORT (
+     create_model_for_protocols ());
+  tree_view_setup (
+    self, self->protocol_tree_view,
+    GTK_TREE_MODEL (self->protocol_tree_model),
+    F_MULTI_SELECT, F_NO_DND);
+
   /* setup categories */
   self->category_tree_model =
     create_model_for_categories ();
   tree_view_setup (
     self, self->category_tree_view,
-    self->category_tree_model, 1,0);
+    self->category_tree_model,
+    F_MULTI_SELECT, F_NO_DND);
 
   /* populate plugins */
   self->plugin_tree_model =
@@ -1580,7 +1733,8 @@ plugin_browser_widget_new ()
   tree_view_setup (
     self, self->plugin_tree_view,
     GTK_TREE_MODEL (
-      self->plugin_tree_model), 0, 1);
+      self->plugin_tree_model),
+    F_NO_MULTI_SELECT, F_DND);
   g_signal_connect (
     G_OBJECT (self->plugin_tree_view),
     "row-activated",

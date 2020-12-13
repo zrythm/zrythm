@@ -202,4 +202,10 @@
 #define F_PUSH_DOWN 1
 #define F_NO_PUSH_DOWN 0
 
+#define F_MULTI_SELECT 1
+#define F_NO_MULTI_SELECT 0
+
+#define F_DND 1
+#define F_NO_DND 0
+
 #endif
