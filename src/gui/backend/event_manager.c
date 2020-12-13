@@ -1793,7 +1793,8 @@ process_events (void * data)
               }
             else if (sg == SNAP_GRID_MIDI)
               {
-                /* TODO */
+                snap_box_widget_refresh (
+                  MW_EDITOR_TOOLBAR->snap_box);
               }
           }
           break;

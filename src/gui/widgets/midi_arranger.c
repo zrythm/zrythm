@@ -332,9 +332,6 @@ midi_arranger_widget_snap_midi_notes_r (
       ArrangerObject * mn_obj =
         (ArrangerObject *) midi_note;
 
-      Track * track =
-        arranger_object_get_track (mn_obj);
-
       /* get new end pos by adding delta
        * to the cached end pos */
       position_set_to_pos (
@@ -355,10 +352,12 @@ midi_arranger_widget_snap_midi_notes_r (
       if (SNAP_GRID_ANY_SNAP (
             self->snap_grid) &&
           !self->shift_held)
-        position_snap (
-          &self->earliest_obj_start_pos,
-          &new_global_end_pos, track,
-          NULL, self->snap_grid);
+        {
+          position_snap (
+            &self->earliest_obj_start_pos,
+            &new_global_end_pos, NULL,
+            (ZRegion *) r_obj, self->snap_grid);
+        }
 
       /* convert it back to a local pos */
       position_set_to_pos (

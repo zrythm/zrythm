@@ -388,8 +388,10 @@ closest_snap_point (Position * pos, ///< position
  *   track.
  * @param sg SnapGrid options.
  * @param prev_snap_point The position to set.
+ *
+ * @return Whether a snap point was found or not.
  */
-static inline void
+static inline bool
 get_prev_snap_point (
   const Position * pos,
   Track *          track,
@@ -398,15 +400,22 @@ get_prev_snap_point (
   Position *       prev_sp)
 {
   const Position * snap_point;
-  for (int i = sg->num_snap_points - 1; i >= 0; i--)
+
+  bool snapped = false;
+  if (sg->snap_to_grid)
     {
-      snap_point = &sg->snap_points[i];
-      if (position_is_before_or_equal (
-            snap_point, pos))
+      for (int i = sg->num_snap_points - 1; i >= 0;
+           i--)
         {
-          position_set_to_pos (
-            prev_sp, snap_point);
-          break;
+          snap_point = &sg->snap_points[i];
+          if (position_is_before_or_equal (
+                snap_point, pos))
+            {
+              position_set_to_pos (
+                prev_sp, snap_point);
+              snapped = true;
+              break;
+            }
         }
     }
 
@@ -429,6 +438,7 @@ get_prev_snap_point (
                 {
                   position_set_to_pos (
                     prev_sp, snap_point);
+                  snapped = true;
                 }
               snap_point = &r_obj->end_pos;
               if (position_is_before_or_equal (
@@ -438,6 +448,7 @@ get_prev_snap_point (
                 {
                   position_set_to_pos (
                     prev_sp, snap_point);
+                  snapped = true;
                 }
             }
         }
@@ -449,6 +460,14 @@ get_prev_snap_point (
   else
     {
     }
+
+  /* if no point to snap to, set to same position */
+  if (!snapped)
+    {
+      position_set_to_pos (prev_sp, pos);
+    }
+
+  return snapped;
 }
 
 /**
@@ -466,8 +485,10 @@ get_prev_snap_point (
  *   track.
  * @param sg SnapGrid options.
  * @param next_snap_point Position to set.
+ *
+ * @return Whether a snap point was found or not.
  */
-static inline void
+static inline bool
 get_next_snap_point (
   const Position * pos,
   Track *          track,
@@ -476,13 +497,20 @@ get_next_snap_point (
   Position *       next_sp)
 {
   const Position * snap_point;
-  for (int i = 0; i < sg->num_snap_points; i++)
+
+  bool snapped = false;
+  if (sg->snap_to_grid)
     {
-      snap_point = &sg->snap_points[i];
-      if (position_is_after (snap_point, pos))
+      for (int i = 0; i < sg->num_snap_points; i++)
         {
-          position_set_to_pos (next_sp, snap_point);
-          return;
+          snap_point = &sg->snap_points[i];
+          if (position_is_after (snap_point, pos))
+            {
+              position_set_to_pos (
+                next_sp, snap_point);
+              snapped = true;
+              break;
+            }
         }
     }
 
@@ -505,6 +533,7 @@ get_next_snap_point (
                 {
                   position_set_to_pos (
                     next_sp, snap_point);
+                  snapped = true;
                 }
               snap_point = &r_obj->end_pos;
               if (position_is_after (
@@ -514,6 +543,7 @@ get_next_snap_point (
                 {
                   position_set_to_pos (
                     next_sp, snap_point);
+                  snapped = true;
                 }
             }
         }
@@ -525,6 +555,14 @@ get_next_snap_point (
   else
     {
     }
+
+  /* if no point to snap to, set to same position */
+  if (!snapped)
+    {
+      position_set_to_pos (next_sp, pos);
+    }
+
+  return snapped;
 }
 
 /**
@@ -568,13 +606,31 @@ position_snap (
     {
       /* get closest snap point */
       Position prev_sp, next_sp;
-      get_prev_snap_point (
-        pos, track, region, sg, &prev_sp);
-      get_next_snap_point (
-        pos, track, region, sg, &next_sp);
-      Position * closest_sp =
-        closest_snap_point (
-          pos, &prev_sp, &next_sp);
+      bool prev_snapped =
+        get_prev_snap_point (
+          pos, track, region, sg, &prev_sp);
+      bool next_snapped =
+        get_next_snap_point (
+          pos, track, region, sg, &next_sp);
+      Position * closest_sp = NULL;
+      if (prev_snapped && next_snapped)
+        {
+          closest_sp =
+            closest_snap_point (
+              pos, &prev_sp, &next_sp);
+        }
+      else if (prev_snapped)
+        {
+          closest_sp = &prev_sp;
+        }
+      else if (next_snapped)
+        {
+          closest_sp = &next_sp;
+        }
+      else
+        {
+          closest_sp = pos;
+        }
 
       /* move to it */
       position_set_to_pos (
@@ -585,13 +641,31 @@ position_snap (
     {
       /* get closest snap point */
       Position prev_sp, next_sp;
-      get_prev_snap_point (
-        pos, track, region, sg, &prev_sp);
-      get_next_snap_point (
-        pos, track, region, sg, &next_sp);
-      Position * closest_sp =
-        closest_snap_point (
-          pos, &prev_sp, &next_sp);
+      bool prev_snapped =
+        get_prev_snap_point (
+          pos, track, region, sg, &prev_sp);
+      bool next_snapped =
+        get_next_snap_point (
+          pos, track, region, sg, &next_sp);
+      Position * closest_sp = NULL;
+      if (prev_snapped && next_snapped)
+        {
+          closest_sp =
+            closest_snap_point (
+              pos, &prev_sp, &next_sp);
+        }
+      else if (prev_snapped)
+        {
+          closest_sp = &prev_sp;
+        }
+      else if (next_snapped)
+        {
+          closest_sp = &next_sp;
+        }
+      else
+        {
+          closest_sp = pos;
+        }
 
       /* get previous snap point from start pos */
       Position prev_sp_from_start_pos;

@@ -33,8 +33,9 @@
       <object class="GtkToolItem">
         <property name="visible">True</property>
         <child>
-          <object class="SnapGridWidget" id="snap_grid_midi">
-            <property name="visible">1</property>
+          <object class="SnapBoxWidget" id="snap_box">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
           </object>
         </child>
       </object>

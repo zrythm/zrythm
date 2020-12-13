@@ -27,6 +27,7 @@
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/quantize_box.h"
+#include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -178,9 +179,8 @@ editor_toolbar_widget_setup (
   EditorToolbarWidget * self)
 {
   /* setup bot toolbar */
-  snap_grid_widget_setup (
-    self->snap_grid_midi,
-    &PROJECT->snap_grid_midi);
+  snap_box_widget_setup (
+    self->snap_box, SNAP_GRID_MIDI);
   quantize_box_widget_setup (
     self->quantize_box,
     QUANTIZE_OPTIONS_EDITOR);
@@ -253,7 +253,7 @@ static void
 editor_toolbar_widget_init (
   EditorToolbarWidget * self)
 {
-  g_type_ensure (SNAP_GRID_WIDGET_TYPE);
+  g_type_ensure (SNAP_BOX_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -309,7 +309,7 @@ editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
   BIND_CHILD (chord_highlighting);
   BIND_CHILD (chord_highlight_tool_item);
   BIND_CHILD (sep_after_chord_highlight);
-  BIND_CHILD (snap_grid_midi);
+  BIND_CHILD (snap_box);
   BIND_CHILD (quantize_box);
   BIND_CHILD (event_viewer_toggle);
   BIND_CHILD (automation_functions_menu);
