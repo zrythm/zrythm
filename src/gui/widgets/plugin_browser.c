@@ -277,15 +277,18 @@ show_plugin_context_menu (
   self->current_descriptors[0] = descr;
   self->num_current_descriptors = 1;
 
-  GtkWidget *menuitem;
+  GtkMenuItem * menuitem;
   GtkWidget * menu = gtk_menu_new();
   PluginDescriptor * new_descr;
 
   /* FIXME this is allocating memory every time */
 
 #define CREATE_WITH_LBL(lbl) \
-  menuitem = gtk_menu_item_new_with_label (lbl); \
-  gtk_widget_set_visible (menuitem, true); \
+  menuitem = \
+    GTK_MENU_ITEM ( \
+      gtk_menu_item_new_with_label (lbl)); \
+  gtk_widget_set_visible ( \
+    GTK_WIDGET (menuitem), true); \
   APPEND; \
   new_descr = plugin_descriptor_clone (descr)
 
@@ -337,9 +340,11 @@ show_plugin_context_menu (
 
   /* add to collection */
   menuitem =
-    gtk_menu_item_new_with_label (
-      _("Add to collection"));
-  gtk_widget_set_visible (menuitem, true);
+    z_gtk_create_menu_item (
+      _("Add to collection"), "favorite",
+      false, NULL);
+  gtk_widget_set_visible (
+    GTK_WIDGET (menuitem), true);
   GtkWidget * submenu = gtk_menu_new ();
   int num_added = 0;
   for (int i = 0;
@@ -357,7 +362,8 @@ show_plugin_context_menu (
 
       GtkWidget * submenu_item =
         gtk_menu_item_new_with_label (coll->name);
-      gtk_widget_set_visible (submenu_item, true);
+      gtk_widget_set_visible (
+        GTK_WIDGET (submenu_item), true);
       gtk_menu_shell_append (
         GTK_MENU_SHELL (submenu),
         GTK_WIDGET (submenu_item));
@@ -383,9 +389,11 @@ show_plugin_context_menu (
 
   /* remove from collection */
   menuitem =
-    gtk_menu_item_new_with_label (
-      _("Remove from collection"));
-  gtk_widget_set_visible (menuitem, true);
+    z_gtk_create_menu_item (
+      _("Remove from collection"), "unfavorite",
+      false, NULL);
+  gtk_widget_set_visible (
+    GTK_WIDGET (menuitem), true);
   submenu = gtk_menu_new ();
   num_added = 0;
   for (int i = 0;
@@ -403,7 +411,8 @@ show_plugin_context_menu (
 
       GtkWidget * submenu_item =
         gtk_menu_item_new_with_label (coll->name);
-      gtk_widget_set_visible (submenu_item, true);
+      gtk_widget_set_visible (
+        GTK_WIDGET (submenu_item), true);
       gtk_menu_shell_append (
         GTK_MENU_SHELL (submenu),
         GTK_WIDGET (submenu_item));
@@ -587,7 +596,7 @@ show_collection_context_menu (
   PluginBrowserWidget * self,
   PluginCollection *    collection)
 {
-  GtkWidget *menuitem;
+  GtkMenuItem * menuitem;
   GtkWidget * menu = gtk_menu_new();
 
 #define APPEND \
@@ -601,8 +610,10 @@ show_collection_context_menu (
       self->num_current_collections = 1;
 
       menuitem =
-        gtk_menu_item_new_with_label (_("Rename"));
-      gtk_widget_set_visible (menuitem, true);
+        z_gtk_create_menu_item (
+          _("Rename"), "edit-rename", false, NULL);
+      gtk_widget_set_visible (
+        GTK_WIDGET (menuitem), true);
       APPEND;
       g_signal_connect (
         G_OBJECT (menuitem), "activate",
@@ -610,8 +621,10 @@ show_collection_context_menu (
         self);
 
       menuitem =
-        gtk_menu_item_new_with_label (_("Delete"));
-      gtk_widget_set_visible (menuitem, true);
+        z_gtk_create_menu_item (
+          _("Delete"), "edit-delete", false, NULL);
+      gtk_widget_set_visible (
+        GTK_WIDGET (menuitem), true);
       APPEND;
       g_signal_connect (
         G_OBJECT (menuitem), "activate",
@@ -623,8 +636,10 @@ show_collection_context_menu (
       self->num_current_collections = 0;
 
       menuitem =
-        gtk_menu_item_new_with_label (_("Add"));
-      gtk_widget_set_visible (menuitem, true);
+        z_gtk_create_menu_item (
+          _("Add"), "add", false, NULL);
+      gtk_widget_set_visible (
+        GTK_WIDGET (menuitem), true);
       APPEND;
       g_signal_connect (
         G_OBJECT (menuitem), "activate",

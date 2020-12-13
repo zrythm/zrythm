@@ -1678,7 +1678,7 @@ show_context_menu (
               g_strdup (_("_Delete Tracks"));
           menuitem =
             z_gtk_create_menu_item (
-              str, "edit-delete", 0, NULL, 0,
+              str, "edit-delete", false,
               "win.delete-selected-tracks");
           g_free (str);
           APPEND (menuitem);
@@ -1692,11 +1692,7 @@ show_context_menu (
               g_strdup (_("_Duplicate Tracks"));
           menuitem =
             z_gtk_create_menu_item (
-              str,
-              "edit-copy",
-              0,
-              NULL,
-              0,
+              str, "edit-copy", false,
               "win.duplicate-selected-tracks");
           g_free (str);
           APPEND (menuitem);
@@ -1708,7 +1704,7 @@ show_context_menu (
           menuitem =
             z_gtk_create_menu_item (
               _("Add Region"), "list-add",
-              0, NULL, 0, "win.add-region");
+              false, "win.add-region");
           APPEND (menuitem);
         }
 
@@ -1717,7 +1713,7 @@ show_context_menu (
           num_selected == 1 ?
             _("Hide Track") :
             _("Hide Tracks"),
-          "view-hidden", 0, NULL, 0,
+          "view-hidden", false,
           "win.hide-selected-tracks");
       APPEND (menuitem);
 
@@ -1726,10 +1722,7 @@ show_context_menu (
           num_selected == 1 ?
             _("Pin/Unpin Track") :
             _("Pin/Unpin Tracks"),
-          "window-pin",
-          0,
-          NULL,
-          0,
+          "window-pin", false,
           "win.pin-selected-tracks");
       APPEND (menuitem);
     }

@@ -47,57 +47,41 @@
 
 #define CREATE_CUT_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    _("Cu_t"), \
-    "edit-cut", \
-    ICON_TYPE_ZRYTHM, NULL, 0, action)
+    _("Cu_t"), "edit-cut", false, action)
 
 #define CREATE_COPY_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    _("_Copy"), \
-    "edit-copy", \
-    ICON_TYPE_ZRYTHM, NULL, 0, action)
+    _("_Copy"), "edit-copy", false, action)
 
 #define CREATE_PASTE_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    _("_Paste"), \
-    "edit-paste", \
-    ICON_TYPE_ZRYTHM, NULL, 0, action)
+    _("_Paste"), "edit-paste", false, action)
 
 #define CREATE_DELETE_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    _("_Delete"), \
-    "edit-delete", \
-    ICON_TYPE_ZRYTHM, NULL, 0, action)
+    _("_Delete"), "edit-delete", false, action)
 
 #define CREATE_CLEAR_SELECTION_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    _("Cle_ar Selection"), \
-    "edit-clear", \
-    ICON_TYPE_ZRYTHM, NULL, 0, action)
+    _("Cle_ar Selection"), "edit-clear", \
+    false, action)
 
 #define CREATE_SELECT_ALL_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    _("Select A_ll"), \
-    "edit-select-all", \
-    ICON_TYPE_ZRYTHM, NULL, 0, action)
+    _("Select A_ll"), "edit-select-all", \
+    false, action)
 
 #define CREATE_DUPLICATE_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    _("Duplicate"), \
-    "edit-duplicate", \
-    ICON_TYPE_ZRYTHM, NULL, 0, action)
+    _("Duplicate"), "edit-duplicate", false, action)
 
 #define CREATE_MUTE_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    _("Mute"), \
-    NULL, \
-    ICON_TYPE_ZRYTHM, NULL, 0, action)
+    _("Mute"), "mute", false, action)
 
 #define CREATE_UNMUTE_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
-    _("Unmute"), \
-    NULL, \
-    ICON_TYPE_ZRYTHM, NULL, 0, action)
+    _("Unmute"), NULL, false, action)
 
 #define z_gtk_assistant_set_current_page_complete( \
   assistant, complete) \
@@ -245,13 +229,22 @@ z_gtk_toggle_button_new_with_resource (
   IconType  icon_type,
   const char * name);
 
+#define z_gtk_create_menu_item( \
+  lbl_name,icn_name,is_toggle,action_name) \
+  z_gtk_create_menu_item_full ( \
+    lbl_name, icn_name, 0, NULL, is_toggle, \
+    action_name)
+
+/**
+ * Creates a menu item.
+ */
 GtkMenuItem *
-z_gtk_create_menu_item (
+z_gtk_create_menu_item_full (
   const gchar *   label_name,
   const gchar *   icon_name,
   IconType        resource_icon_type,
   const gchar *   resource,
-  int             is_toggle,
+  bool            is_toggle,
   const char *    action_name);
 
 /**

@@ -388,11 +388,7 @@ show_context_menu (DragDestBoxWidget * self)
 
   menu_item =
     z_gtk_create_menu_item (
-      _("Add _MIDI Track"),
-      NULL,
-      ICON_TYPE_GNOME_BUILDER,
-      NULL,
-      0,
+      _("Add _MIDI Track"), NULL, false,
       "win.create-midi-track");
   gtk_menu_shell_append (
     GTK_MENU_SHELL(menu),
@@ -400,11 +396,7 @@ show_context_menu (DragDestBoxWidget * self)
 
   menu_item =
     z_gtk_create_menu_item (
-      _("Add Audio Track"),
-      NULL,
-      ICON_TYPE_GNOME_BUILDER,
-      NULL,
-      0,
+      _("Add Audio Track"), NULL, false,
       "win.create-audio-track");
   gtk_menu_shell_append (
     GTK_MENU_SHELL(menu),
@@ -415,8 +407,7 @@ show_context_menu (DragDestBoxWidget * self)
     z_gtk_create_menu_item (
       _(track_type_to_string (
           TRACK_TYPE_AUDIO_BUS)),
-      NULL, ICON_TYPE_GNOME_BUILDER, NULL, 0,
-      "win.create-audio-bus-track");
+      NULL, false, "win.create-audio-bus-track");
   gtk_menu_shell_append (
     GTK_MENU_SHELL (submenu),
     GTK_WIDGET (menu_item));
@@ -424,8 +415,7 @@ show_context_menu (DragDestBoxWidget * self)
     z_gtk_create_menu_item (
       _(track_type_to_string (
           TRACK_TYPE_MIDI_BUS)),
-      NULL, ICON_TYPE_GNOME_BUILDER, NULL, 0,
-      "win.create-midi-bus-track");
+      NULL, false, "win.create-midi-bus-track");
   gtk_menu_shell_append (
     GTK_MENU_SHELL (submenu),
     GTK_WIDGET (menu_item));
@@ -445,8 +435,7 @@ show_context_menu (DragDestBoxWidget * self)
     z_gtk_create_menu_item (
       _(track_type_to_string (
           TRACK_TYPE_AUDIO_GROUP)),
-      NULL, ICON_TYPE_GNOME_BUILDER, NULL, 0,
-      "win.create-audio-group-track");
+      NULL, false, "win.create-audio-group-track");
   gtk_menu_shell_append (
     GTK_MENU_SHELL (submenu),
     GTK_WIDGET (menu_item));
@@ -454,8 +443,7 @@ show_context_menu (DragDestBoxWidget * self)
     z_gtk_create_menu_item (
       _(track_type_to_string (
           TRACK_TYPE_MIDI_GROUP)),
-      NULL, ICON_TYPE_GNOME_BUILDER, NULL, 0,
-      "win.create-midi-group-track");
+      NULL, false, "win.create-midi-group-track");
   gtk_menu_shell_append (
     GTK_MENU_SHELL (submenu),
     GTK_WIDGET (menu_item));

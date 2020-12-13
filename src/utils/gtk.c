@@ -307,15 +307,15 @@ z_gtk_toggle_button_new_with_resource (
 }
 
 /**
- * TODO add description.
+ * Creates a menu item.
  */
 GtkMenuItem *
-z_gtk_create_menu_item (
+z_gtk_create_menu_item_full (
   const gchar *   label_name,
   const gchar *   icon_name,
   IconType        resource_icon_type,
   const gchar *   resource,
-  int             is_toggle,
+  bool            is_toggle,
   const char *    action_name)
 {
   GtkWidget *box =
