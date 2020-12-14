@@ -87,6 +87,7 @@
 #include "gui/widgets/track_visibility_tree.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/tracklist_header.h"
+#include "gui/widgets/transport_controls.h"
 #include "gui/widgets/visibility.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -1797,6 +1798,11 @@ process_events (void * data)
                   MW_EDITOR_TOOLBAR->snap_box);
               }
           }
+          break;
+        case ET_TRANSPORT_RECORDING_ON_OFF_CHANGED:
+          gtk_toggle_button_set_active (
+            MW_TRANSPORT_CONTROLS->trans_record_btn,
+            TRANSPORT->recording);
           break;
         default:
           g_warning (

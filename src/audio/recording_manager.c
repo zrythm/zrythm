@@ -182,6 +182,10 @@ handle_stop_recording (
   /* free the temporary selections */
   free_temp_selections (self);
 
+  /* disarm transport record button */
+  transport_set_recording (
+    TRANSPORT, false, F_PUBLISH_EVENTS);
+
   self->num_active_recordings--;
   self->num_recorded_ids = 0;
   g_warn_if_fail (self->num_active_recordings == 0);
@@ -1091,7 +1095,6 @@ handle_midi_event (
                position_is_after_or_equal (
                  &mn_obj->end_pos, &local_end_pos)))
             {
-              g_message ("REACHED");
               midi_region_remove_midi_note (
                 region, mn, F_FREE,
                 F_NO_PUBLISH_EVENTS);

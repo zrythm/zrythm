@@ -573,6 +573,15 @@ transport_update_total_bars (
   int         total_bars,
   bool        fire_events);
 
+/**
+ * Sets recording on/off.
+ */
+void
+transport_set_recording (
+  Transport * self,
+  bool        record,
+  bool        fire_events);
+
 void
 transport_free (
   Transport * self);

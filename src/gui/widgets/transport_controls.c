@@ -73,8 +73,9 @@ stop_clicked_cb (GtkButton *button,
 }
 
 static void
-record_toggled_cb (GtkToggleButton * tg,
-                   gpointer        user_data)
+record_toggled_cb (
+  GtkToggleButton * tg,
+  gpointer        user_data)
 {
   if (gtk_toggle_button_get_active (tg))
     {

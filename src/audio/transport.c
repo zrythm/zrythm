@@ -965,6 +965,24 @@ transport_update_total_bars (
     }
 }
 
+/**
+ * Sets recording on/off.
+ */
+void
+transport_set_recording (
+  Transport * self,
+  bool        record,
+  bool        fire_events)
+{
+  self->recording = record;
+
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_TRANSPORT_RECORDING_ON_OFF_CHANGED, NULL);
+    }
+}
+
 void
 transport_free (
   Transport * self)

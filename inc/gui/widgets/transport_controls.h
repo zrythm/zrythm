@@ -48,6 +48,9 @@ typedef struct _ButtonWithMenuWidget
  * @{
  */
 
+#define MW_TRANSPORT_CONTROLS \
+  MW_BOT_BAR->transport_controls
+
 /**
  * Transport controls.
  */
