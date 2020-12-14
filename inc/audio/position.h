@@ -111,6 +111,12 @@
   (position_is_after_or_equal (_pos, _start) && \
    position_is_before (_pos, _end))
 
+/** Returns if _pos is after _start and
+ * before _end. */
+#define position_is_between_excl_start(_pos,_start,_end) \
+  (position_is_after (_pos, _start) && \
+   position_is_before (_pos, _end))
+
 /** Inits the default position on the stack. */
 #define POSITION_INIT_ON_STACK(name) \
   Position name = POSITION_START;

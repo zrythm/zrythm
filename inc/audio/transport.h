@@ -98,9 +98,8 @@ typedef enum TransportRecordingMode
    * In the case of MIDI, this will remove existing
    * MIDI notes during recording.
    *
-   * In the case of audio, this will split the
-   * previous region while writing a new one, until
-   * the previous region is completely replaced.
+   * In the case of audio, this will act exactly
+   * the same as \ref RECORDING_MODE_TAKES_MUTED.
    */
   RECORDING_MODE_OVERWRITE_EVENTS,
 
@@ -228,7 +227,7 @@ typedef struct Transport
   bool          punch_mode;
 
   /** Recording or not. */
-  int           recording;
+  bool          recording;
 
   /** Metronome enabled or not. */
   bool          metronome_enabled;
@@ -298,8 +297,6 @@ transport_fields_schema[] =
     Transport, beat_unit),
   YAML_FIELD_INT (
     Transport, position),
-  YAML_FIELD_INT (
-    Transport, recording),
 
   CYAML_FIELD_END
 };

@@ -2720,18 +2720,10 @@ arranger_object_set_name_with_action (
   arranger_selections_free_full (after);
 }
 
-/**
- * Sets the end position of the ArrangerObject and
- * also sets the loop end and fade out to that
- * position.
- */
-void
-arranger_object_set_end_pos_full_size (
-  ArrangerObject * obj,
-  Position *       pos)
+static void
+set_loop_and_fade_to_full_size (
+  ArrangerObject * obj)
 {
-  arranger_object_end_pos_setter (obj, pos);
-
   if (arranger_object_type_can_loop (obj->type))
     {
       double ticks =
@@ -2746,6 +2738,36 @@ arranger_object_set_end_pos_full_size (
       position_from_ticks (
         &obj->fade_out_pos, ticks);
     }
+}
+
+/**
+ * Sets the end position of the ArrangerObject and
+ * also sets the loop end and fade out so that
+ * they are at the end.
+ */
+void
+arranger_object_set_start_pos_full_size (
+  ArrangerObject * obj,
+  Position *       pos)
+{
+  arranger_object_pos_setter (obj, pos);
+  set_loop_and_fade_to_full_size (obj);
+  g_warn_if_fail (
+    pos->frames == obj->pos.frames);
+}
+
+/**
+ * Sets the end position of the ArrangerObject and
+ * also sets the loop end and fade out to that
+ * position.
+ */
+void
+arranger_object_set_end_pos_full_size (
+  ArrangerObject * obj,
+  Position *       pos)
+{
+  arranger_object_end_pos_setter (obj, pos);
+  set_loop_and_fade_to_full_size (obj);
   g_warn_if_fail (
     pos->frames == obj->end_pos.frames);
 }

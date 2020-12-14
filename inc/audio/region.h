@@ -571,15 +571,6 @@ region_add_arranger_object (
   ArrangerObject * obj,
   bool             fire_events);
 
-/**
- * Removes the MIDI note and its components
- * completely.
- */
-void
-region_remove_midi_note (
-  ZRegion *   region,
-  MidiNote * midi_note);
-
 void
 region_create_link_group_if_none (
   ZRegion * region);

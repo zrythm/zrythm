@@ -641,6 +641,10 @@ create_automation_point (
   return ap;
 }
 
+/**
+ * This is called when recording is paused (eg,
+ * when playhead is not in recordable area).
+ */
 static void
 handle_pause_event (
   RecordingManager * self,
@@ -737,44 +741,89 @@ handle_resume_event (
 
       tr->recording_paused = false;
 
-      /* TODO split logic depending on recording
-       * mode */
-
-      /* start new region in new lane */
-      int new_lane_pos =
-        tr->last_lane_idx + 1;
-      int idx_inside_lane =
-        tr->num_lanes > new_lane_pos ?
-          tr->lanes[new_lane_pos]->num_regions : 0;
-      ZRegion * new_region = NULL;
-      if (tr->in_signal_type == TYPE_EVENT)
+      if (TRANSPORT->recording_mode ==
+            RECORDING_MODE_TAKES ||
+          TRANSPORT->recording_mode ==
+            RECORDING_MODE_TAKES_MUTED ||
+          ev->type == RECORDING_EVENT_TYPE_AUDIO)
         {
-          new_region =
-            midi_region_new (
-              &resume_pos, &end_pos, tr->pos,
-              new_lane_pos, idx_inside_lane);
-        }
-      else if (tr->in_signal_type == TYPE_AUDIO)
-        {
-          char * name =
-            audio_pool_gen_name_for_recording_clip (
-              AUDIO_POOL, tr, new_lane_pos);
-          new_region =
-            audio_region_new (
-              -1, NULL, NULL, 1, name, 2,
-              &resume_pos,
-              tr->pos, new_lane_pos,
-              idx_inside_lane);
-        }
-      g_return_val_if_fail (new_region, false);
-      track_add_region (
-        tr, new_region, NULL, new_lane_pos,
-        F_GEN_NAME, F_PUBLISH_EVENTS);
+          /* mute the previous region */
+          if ((TRANSPORT->recording_mode ==
+                RECORDING_MODE_TAKES_MUTED ||
+               (TRANSPORT->recording_mode ==
+                  RECORDING_MODE_OVERWRITE_EVENTS &&
+                ev->type ==
+                  RECORDING_EVENT_TYPE_AUDIO)) &&
+              tr->recording_region)
+            {
+              arranger_object_set_muted (
+                (ArrangerObject *)
+                tr->recording_region,
+                F_MUTE, F_PUBLISH_EVENTS);
+            }
 
-      /* remember region */
-      add_recorded_id (
-        self, new_region);
-      tr->recording_region = new_region;
+          /* start new region in new lane */
+          int new_lane_pos =
+            tr->last_lane_idx + 1;
+          int idx_inside_lane =
+            tr->num_lanes > new_lane_pos ?
+              tr->lanes[new_lane_pos]->
+                num_regions : 0;
+          ZRegion * new_region = NULL;
+          if (tr->in_signal_type == TYPE_EVENT)
+            {
+              new_region =
+                midi_region_new (
+                  &resume_pos, &end_pos, tr->pos,
+                  new_lane_pos, idx_inside_lane);
+            }
+          else if (tr->in_signal_type == TYPE_AUDIO)
+            {
+              char * name =
+                audio_pool_gen_name_for_recording_clip (
+                  AUDIO_POOL, tr, new_lane_pos);
+              new_region =
+                audio_region_new (
+                  -1, NULL, NULL, 1, name, 2,
+                  &resume_pos,
+                  tr->pos, new_lane_pos,
+                  idx_inside_lane);
+            }
+          g_return_val_if_fail (new_region, false);
+          track_add_region (
+            tr, new_region, NULL, new_lane_pos,
+            F_GEN_NAME, F_PUBLISH_EVENTS);
+
+          /* remember region */
+          add_recorded_id (
+            self, new_region);
+          tr->recording_region = new_region;
+        }
+      /* if MIDI and overwriting or merging
+       * events */
+      else if (tr->recording_region)
+        {
+          /* extend the previous region */
+          ArrangerObject * r_obj =
+            (ArrangerObject *) tr->recording_region;
+          if (position_is_before (
+                &resume_pos, &r_obj->pos))
+            {
+              double ticks_delta =
+                r_obj->pos.total_ticks -
+                  resume_pos.total_ticks;
+              arranger_object_set_start_pos_full_size (
+                r_obj, &resume_pos);
+              arranger_object_add_ticks_to_children (
+                r_obj, ticks_delta);
+            }
+          if (position_is_after (
+                &end_pos, &r_obj->end_pos))
+            {
+              arranger_object_set_end_pos_full_size (
+                r_obj, &end_pos);
+            }
+        }
     }
   else if (ev->type ==
              RECORDING_EVENT_TYPE_AUTOMATION)
@@ -984,16 +1033,29 @@ handle_midi_event (
     (ArrangerObject *) region;
 
   /* set region end pos */
-  arranger_object_set_end_pos_full_size (
-    r_obj, &end_pos);
+  bool set_end_pos = false;
+  switch (TRANSPORT->recording_mode)
+    {
+    case RECORDING_MODE_OVERWRITE_EVENTS:
+    case RECORDING_MODE_MERGE_EVENTS:
+      if (position_is_before (
+            &r_obj->end_pos, &end_pos))
+        {
+          set_end_pos = true;
+        }
+      break;
+    case RECORDING_MODE_TAKES:
+    case RECORDING_MODE_TAKES_MUTED:
+      set_end_pos = true;
+      break;
+    }
+  if (set_end_pos)
+    {
+      arranger_object_set_end_pos_full_size (
+        r_obj, &end_pos);
+    }
 
   tr->recording_region = region;
-
-  MidiNote * mn;
-  ArrangerObject * mn_obj;
-
-  if (!ev->has_midi_event)
-    return;
 
   /* get local positions */
   Position local_pos, local_end_pos;
@@ -1002,15 +1064,47 @@ handle_midi_event (
   position_set_to_pos (
     &local_end_pos, &end_pos);
   position_add_ticks (
-    &local_pos,
-    - ((ArrangerObject *) region)->pos.
-      total_ticks);
+    &local_pos, - r_obj->pos.total_ticks);
   position_add_ticks (
-    &local_end_pos,
-    - ((ArrangerObject *) region)->pos.
-      total_ticks);
+    &local_end_pos, - r_obj->pos.total_ticks);
+
+  /* if overwrite mode, clear any notes inside the
+   * range */
+  if (TRANSPORT->recording_mode ==
+        RECORDING_MODE_OVERWRITE_EVENTS)
+    {
+      for (int i = region->num_midi_notes - 1;
+           i >= 0; i--)
+        {
+          MidiNote * mn = region->midi_notes[i];
+          ArrangerObject * mn_obj =
+            (ArrangerObject *) mn;
+
+          if (position_is_between_excl_start (
+                &mn_obj->pos, &local_pos,
+                &local_end_pos) ||
+              position_is_between_excl_start (
+                &mn_obj->end_pos, &local_pos,
+                &local_end_pos) ||
+              (position_is_before (
+                 &mn_obj->pos, &local_pos) &&
+               position_is_after_or_equal (
+                 &mn_obj->end_pos, &local_end_pos)))
+            {
+              g_message ("REACHED");
+              midi_region_remove_midi_note (
+                region, mn, F_FREE,
+                F_NO_PUBLISH_EVENTS);
+            }
+        }
+    }
+
+  if (!ev->has_midi_event)
+    return;
 
   /* convert MIDI data to midi notes */
+  MidiNote * mn;
+  ArrangerObject * mn_obj;
   MidiEvent * mev = &ev->midi_event;
   switch (mev->type)
     {
@@ -1278,7 +1372,8 @@ handle_start_recording (
             midi_region_new (
               &start_pos, &end_pos, tr->pos,
               new_lane_pos,
-              tr->lanes[new_lane_pos]->num_regions);
+              tr->lanes[new_lane_pos]->
+                num_regions);
           g_return_if_fail (region);
           track_add_region (
             tr, region, NULL, new_lane_pos,

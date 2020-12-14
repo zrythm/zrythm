@@ -208,4 +208,7 @@
 #define F_DND 1
 #define F_NO_DND 0
 
+#define F_MUTE 1
+#define F_NO_MUTE 0
+
 #endif

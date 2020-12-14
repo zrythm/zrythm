@@ -957,6 +957,16 @@ arranger_object_set_name_with_action (
 
 /**
  * Sets the end position of the ArrangerObject and
+ * also sets the loop end and fade out so that
+ * they are at the end.
+ */
+void
+arranger_object_set_start_pos_full_size (
+  ArrangerObject * obj,
+  Position *       pos);
+
+/**
+ * Sets the end position of the ArrangerObject and
  * also sets the loop end and fade out to that
  * position.
  */
