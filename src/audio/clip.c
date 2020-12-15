@@ -137,6 +137,7 @@ audio_clip_new_from_float_array (
   self->num_frames = nframes;
   self->channels = channels;
   self->samplerate = (int) AUDIO_ENGINE->sample_rate;
+  g_return_val_if_fail (self->samplerate > 0, NULL);
   self->name = g_strdup (name);
   self->pool_id = -1;
   dsp_copy (
@@ -177,6 +178,8 @@ audio_clip_new_recording (
   self->pool_id = -1;
   self->bpm =
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
+  self->samplerate = (int) AUDIO_ENGINE->sample_rate;
+  g_return_val_if_fail (self->samplerate > 0, NULL);
   dsp_fill (
     self->frames, DENORMAL_PREVENTION_VAL,
     (size_t) nframes * (size_t) channels);
@@ -254,6 +257,7 @@ audio_clip_write_to_file (
   const char * filepath,
   bool         parts)
 {
+  g_return_val_if_fail (self->samplerate > 0, -1);
   int ret =
     audio_write_raw_file (
       self->frames, parts ? self->frames_written : 0,

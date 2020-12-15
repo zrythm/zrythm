@@ -54,7 +54,10 @@ audio_write_raw_file (
   unsigned int channels,
   const char * filename)
 {
-  g_return_val_if_fail (samplerate < 10000000, -1);
+  g_return_val_if_fail (
+    samplerate > 0 &&
+    channels > 0 &&
+    samplerate < 10000000, -1);
 
   SF_INFO info;
 
