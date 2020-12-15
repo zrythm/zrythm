@@ -2,15 +2,7 @@
    Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
-.. _scripting:
+Scripting Interface
+===================
 
-Scripting
-=========
-
-.. toctree::
-   :maxdepth: 4
-
-   overview
-   scripting-interface
-   examples
-   api/intro
+.. todo:: Explain the scripting window/interface.
