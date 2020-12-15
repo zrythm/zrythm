@@ -1166,7 +1166,8 @@ zrythm_app_new (
   const char * exe_path,
   char *       audio_backend,
   char *       midi_backend,
-  char *       buf_size)
+  char *       buf_size,
+  char *       samplerate)
 {
   ZrythmApp * self =  g_object_new (
     ZRYTHM_APP_TYPE,
@@ -1184,6 +1185,7 @@ zrythm_app_new (
   self->audio_backend = audio_backend;
   self->midi_backend = midi_backend;
   self->buf_size = buf_size;
+  self->samplerate = samplerate;
 
   /* allow maximum number of open files (taken from
    * ardour) */

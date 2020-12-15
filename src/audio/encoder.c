@@ -78,16 +78,16 @@ audio_encoder_new_from_file (
 void
 audio_encoder_decode (
   AudioEncoder * self,
-  const int      show_progress)
+  int            samplerate,
+  bool           show_progress)
 {
   g_message ("--audio decoding start--");
 
   self->out_frames = NULL;
   self->num_out_frames =
     audec_read (
-      self->audec_handle,
-      &self->out_frames,
-      (int) AUDIO_ENGINE->sample_rate);
+      self->audec_handle, &self->out_frames,
+      samplerate);
   if (self->num_out_frames < 0)
     {
       g_critical (

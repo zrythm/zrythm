@@ -127,12 +127,14 @@ engine_update_frames_per_tick (
     }
 }
 
+/**
+ * Sets up the audio engine before the project is
+ * initialized/loaded.
+ */
 void
-engine_setup (
+engine_pre_setup (
   AudioEngine * self)
 {
-  g_message ("Setting up...");
-
   /* init semaphores */
   zix_sem_init (&self->port_operation_lock, 1);
 
@@ -278,6 +280,17 @@ engine_setup (
       self->midi_backend = MIDI_BACKEND_DUMMY;
       engine_dummy_midi_setup (self);
     }
+}
+
+/**
+ * Sets up the audio engine after the project
+ * is initialized/loaded.
+ */
+void
+engine_setup (
+  AudioEngine * self)
+{
+  g_message ("Setting up...");
 
   hardware_processor_setup (
     self->hw_in_processor);

@@ -211,4 +211,7 @@
 #define F_MUTE 1
 #define F_NO_MUTE 0
 
+#define F_SHOW_PROGRESS 1
+#define F_NO_SHOW_PROGRESS 0
+
 #endif

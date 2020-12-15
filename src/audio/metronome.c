@@ -28,6 +28,7 @@
 #include "project.h"
 #include "utils/audio.h"
 #include "utils/dsp.h"
+#include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "settings/settings.h"
@@ -83,7 +84,9 @@ metronome_new (void)
         self->emphasis_path);
       return NULL;
     }
-  audio_encoder_decode (enc, 0);
+  audio_encoder_decode (
+    enc, (int) AUDIO_ENGINE->sample_rate,
+    F_NO_SHOW_PROGRESS);
   self->emphasis =
     calloc (
       (size_t)
@@ -103,7 +106,8 @@ metronome_new (void)
     audio_encoder_new_from_file (
       self->normal_path);
   audio_encoder_decode (
-    enc, 0);
+    enc, (int) AUDIO_ENGINE->sample_rate,
+    F_NO_SHOW_PROGRESS);
   self->normal =
     calloc (
       (size_t)

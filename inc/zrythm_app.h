@@ -119,6 +119,10 @@ struct _ZrythmApp
   /** Buffer size passed with --buf-size=, if any. */
   char *             buf_size;
 
+  /** Samplerate passed with --samplerate=, if
+   * any. */
+  char *             samplerate;
+
   /** Messages to show when the main window is
    * shown. */
   char *             startup_errors[24];
@@ -140,7 +144,8 @@ zrythm_app_new (
   const char * exe_path,
   char *       audio_backend,
   char *       midi_backend,
-  char *       buf_size);
+  char *       buf_size,
+  char *       samplerate);
 
 /**
  * Sets the current status and progress percentage

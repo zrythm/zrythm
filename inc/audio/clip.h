@@ -63,6 +63,12 @@ typedef struct AudioClip
    */
   bpm_t         bpm;
 
+  /**
+   * Samplerate of the clip, or samplerate when
+   * the clip was imported into the project.
+   */
+  int           samplerate;
+
   /** ID (index) in the audio pool. */
   int           pool_id;
 
@@ -91,11 +97,11 @@ audio_clip_fields_schema[] =
     "name", CYAML_FLAG_POINTER,
     AudioClip, name,
     0, CYAML_UNLIMITED),
-  CYAML_FIELD_FLOAT (
-    "bpm", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     AudioClip, bpm),
-  CYAML_FIELD_INT (
-    "pool_id", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
+    AudioClip, samplerate),
+  YAML_FIELD_INT (
     AudioClip, pool_id),
 
   CYAML_FIELD_END

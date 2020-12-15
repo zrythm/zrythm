@@ -38,6 +38,7 @@ static int num_cores = 0;
  * path.
  *
  * @param size The number of frames per channel.
+ * @param samplerate The samplerate of \ref buff.
  * @param frames_already_written Frames already
  *   written. If this is non-zero and the file
  *   exists, it will append to the existing file.
@@ -53,6 +54,8 @@ audio_write_raw_file (
   unsigned int channels,
   const char * filename)
 {
+  g_return_val_if_fail (samplerate < 10000000, -1);
+
   SF_INFO info;
 
   memset (&info, 0, sizeof (info));

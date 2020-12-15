@@ -619,7 +619,11 @@ create_default (Project * self)
   /* initialize selections */
   project_init_selections (self);
 
+  /* pre-setup engine */
   self->audio_engine = engine_new (self);
+  engine_pre_setup (self->audio_engine);
+
+  /* init undo manager */
   self->undo_manager = undo_manager_new ();
 
   /* init midi mappings */
@@ -994,6 +998,8 @@ load (
   g_free (dir);
 
   self->title = filepath_noext;
+
+  engine_pre_setup (self->audio_engine);
 
   engine_init_loaded (self->audio_engine);
   undo_manager_init_loaded (self->undo_manager);

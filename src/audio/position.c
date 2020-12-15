@@ -457,9 +457,6 @@ get_prev_snap_point (
     {
       /* TODO */
     }
-  else
-    {
-    }
 
   /* if no point to snap to, set to same position */
   if (!snapped)
@@ -551,9 +548,6 @@ get_next_snap_point (
   else if (region)
     {
       /* TODO */
-    }
-  else
-    {
     }
 
   /* if no point to snap to, set to same position */

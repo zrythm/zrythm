@@ -26,6 +26,8 @@
 #ifndef __AUDIO_ENCODER_H__
 #define __AUDIO_ENCODER_H__
 
+#include <stdbool.h>
+
 #include "zrythm-config.h"
 #include <audec/audec.h>
 
@@ -83,7 +85,8 @@ audio_encoder_new_from_file (
 void
 audio_encoder_decode (
   AudioEncoder * self,
-  const int      show_progress);
+  int            samplerate,
+  bool           show_progress);
 
 /**
  * Free's the AudioEncoder and its members.

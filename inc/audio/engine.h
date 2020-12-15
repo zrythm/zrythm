@@ -631,11 +631,9 @@ engine_fields_schema[] =
     AudioEngine, transport_type,
     jack_transport_type_strings,
     CYAML_ARRAY_LEN (jack_transport_type_strings)),
-  CYAML_FIELD_INT (
-    "sample_rate", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     AudioEngine, sample_rate),
-  CYAML_FIELD_FLOAT (
-    "frames_per_tick", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
     AudioEngine, frames_per_tick),
   YAML_FIELD_MAPPING_PTR (
     AudioEngine, monitor_out,
@@ -693,8 +691,16 @@ engine_new (
   Project * project);
 
 /**
- * Set up the audio engine, ie, connect to the
- * backend but does not start processing yet.
+ * Sets up the audio engine before the project is
+ * initialized/loaded.
+ */
+void
+engine_pre_setup (
+  AudioEngine * self);
+
+/**
+ * Sets up the audio engine after the project
+ * is initialized/loaded.
  */
 void
 engine_setup (

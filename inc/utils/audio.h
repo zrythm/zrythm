@@ -48,6 +48,7 @@
  * path.
  *
  * @param size The number of frames per channel.
+ * @param samplerate The samplerate of \ref buff.
  * @param frames_already_written Frames already
  *   written. If this is non-zero and the file
  *   exists, it will append to the existing file.

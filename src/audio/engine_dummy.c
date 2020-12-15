@@ -32,11 +32,15 @@ process_cb (gpointer data)
 {
   AudioEngine * self = (AudioEngine *) data;
 
+  double secs_per_block =
+    (double) self->block_length / self->sample_rate;
   gulong sleep_time =
-    (gulong)
-    (((double) self->block_length /
-       self->sample_rate) *
-       1000.0 * 1000);
+    (gulong) (secs_per_block * 1000.0 * 1000);
+
+  engine_update_frames_per_tick (
+    self, TRANSPORT->beats_per_bar,
+    tempo_track_get_current_bpm (P_TEMPO_TRACK),
+    self->sample_rate);
 
   g_message (
     "Running dummy audio engine for first time");
@@ -58,7 +62,6 @@ engine_dummy_setup (
   AudioEngine * self)
 {
   /* Set audio engine properties */
-  self->sample_rate = 44100;
   self->midi_buf_size = 4096;
 
   if (ZRYTHM_HAVE_UI && zrythm_app->buf_size)
@@ -73,10 +76,24 @@ engine_dummy_setup (
       self->block_length = 256;
     }
 
+  if (ZRYTHM_HAVE_UI && zrythm_app->samplerate)
+    {
+      self->sample_rate =
+        (nframes_t)
+        strtol (
+          zrythm_app->samplerate, (char **)NULL, 10);
+    }
+  else
+    {
+      self->sample_rate = 44100;
+    }
+
   g_warn_if_fail (
     TRANSPORT && TRANSPORT->beats_per_bar > 1);
 
-  g_message ("Dummy Engine set up");
+  g_message (
+    "Dummy Engine set up [samplerate: %u]",
+    self->sample_rate);
 
   return 0;
 }

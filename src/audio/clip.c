@@ -27,6 +27,7 @@
 #include "utils/audio.h"
 #include "utils/dsp.h"
 #include "utils/file.h"
+#include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/io.h"
 #include "zrythm_app.h"
@@ -38,9 +39,15 @@ audio_clip_init_from_file (
   AudioClip * self,
   const char * full_path)
 {
+  self->samplerate =
+    (int) AUDIO_ENGINE->sample_rate;
+  g_return_if_fail (self->samplerate > 0);
+
   AudioEncoder * enc =
     audio_encoder_new_from_file (full_path);
-  audio_encoder_decode (enc, 1);
+  audio_encoder_decode (
+    enc, self->samplerate, F_SHOW_PROGRESS);
+
 
   size_t arr_size =
     (size_t) enc->num_out_frames *
@@ -83,7 +90,7 @@ audio_clip_init_loaded (
 
   bpm_t bpm = self->bpm;
   audio_clip_init_from_file (self, filepath);
-  self->bpm  = bpm;
+  self->bpm = bpm;
 }
 
 /**
@@ -129,6 +136,7 @@ audio_clip_new_from_float_array (
       sizeof (sample_t));
   self->num_frames = nframes;
   self->channels = channels;
+  self->samplerate = (int) AUDIO_ENGINE->sample_rate;
   self->name = g_strdup (name);
   self->pool_id = -1;
   dsp_copy (
@@ -250,7 +258,7 @@ audio_clip_write_to_file (
     audio_write_raw_file (
       self->frames, parts ? self->frames_written : 0,
       self->num_frames,
-      AUDIO_ENGINE->sample_rate,
+      (uint32_t) self->samplerate,
       self->channels, filepath);
 
   if (parts && ret == 0)

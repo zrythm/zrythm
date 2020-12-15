@@ -141,6 +141,7 @@ print_help ()
     "  --midi-backend  override the MIDI backend to use\n"
     "  --dummy         overrides both the audio and MIDI backends to dummy\n"
     "  --buf-size      overrides the buffer size to use for the audio backend, if applicable\n"
+    "  --samplerate    overrides the samplerate to use for the audio backend, if applicable\n"
     "  --interactive   interactive mode, where applicable\n"
     "  -v, --version   output version information and exit\n\n"
     "Examples:\n"
@@ -148,7 +149,7 @@ print_help ()
     "  %s --callgrind --dummy --buf-size=8192  profile %s using the dummy backend and a buffer size of 8192\n"
     "  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  convert a compressed zpj project to YAML\n"
     "  %s -p --pretty  pretty-print current settings\n\n"
-    "Report bugs to %s\n"),
+    "Please report issues to %s\n"),
     PROGRAM_NAME_LOWERCASE, PROGRAM_NAME,
     PROGRAM_NAME, PROGRAM_NAME_LOWERCASE,
     PROGRAM_NAME_LOWERCASE, PROGRAM_NAME,
@@ -220,6 +221,7 @@ main (int    argc,
 #define OPT_MIDI_BACKEND 9197
 #define OPT_DUMMY 2311
 #define OPT_BUF_SIZE 39145
+#define OPT_SAMPLERATE 185130
 #define OPT_INTERACTIVE 34966
 
   int c, option_index;
@@ -249,6 +251,8 @@ main (int    argc,
       { "dummy", no_argument, 0, OPT_DUMMY },
       { "buf-size", required_argument, 0,
         OPT_BUF_SIZE },
+      { "samplerate", required_argument, 0,
+        OPT_SAMPLERATE },
       { "interactive", no_argument, 0,
         OPT_INTERACTIVE },
       { 0, 0, 0, 0 }
@@ -267,6 +271,7 @@ main (int    argc,
   char * audio_backend = NULL;
   char * midi_backend = NULL;
   char * buf_size = NULL;
+  char * samplerate = NULL;
   char * project_file = NULL;
   while (true)
     {
@@ -330,6 +335,9 @@ main (int    argc,
           break;
         case OPT_BUF_SIZE:
           buf_size = optarg;
+          break;
+        case OPT_SAMPLERATE:
+          samplerate = optarg;
           break;
         case '?':
           /* getopt_long already printed an error
@@ -536,7 +544,8 @@ main (int    argc,
   zrythm_app =
     zrythm_app_new (
       exe_path ? exe_path : argv[0],
-      audio_backend, midi_backend, buf_size);
+      audio_backend, midi_backend, buf_size,
+      samplerate);
 
   g_message ("running Zrythm...");
   int ret = 0;
