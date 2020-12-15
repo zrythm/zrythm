@@ -214,4 +214,10 @@
 #define F_SHOW_PROGRESS 1
 #define F_NO_SHOW_PROGRESS 0
 
+#define F_PARTS 1
+#define F_NO_PARTS 0
+
+#define F_IGNORE_FROZEN 1
+#define F_NO_IGNORE_FROZEN 0
+
 #endif

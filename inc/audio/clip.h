@@ -69,7 +69,7 @@ typedef struct AudioClip
    */
   int           samplerate;
 
-  /** ID (index) in the audio pool. */
+  /** ID in the audio pool. */
   int           pool_id;
 
   /**
@@ -183,6 +183,16 @@ void
 audio_clip_write_to_pool (
   AudioClip * self,
   bool        parts);
+
+/**
+ * To be called by audio_pool_remove_clip().
+ *
+ * Removes the file associated with the clip and
+ * frees the instance.
+ */
+void
+audio_clip_remove_and_free (
+  AudioClip * self);
 
 /**
  * Frees the audio clip.

@@ -3088,6 +3088,19 @@ arranger_object_remove_from_project (
     }
 }
 
+/**
+ * Returns whether the arranger object is part of
+ * a frozen track.
+ */
+bool
+arranger_object_is_frozen (
+  ArrangerObject * obj)
+{
+  Track * track =
+    arranger_object_get_track (obj);
+  return track->frozen;
+}
+
 static void
 free_region (
   ZRegion * self)

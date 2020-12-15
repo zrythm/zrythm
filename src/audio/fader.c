@@ -719,6 +719,7 @@ fader_update_track_pos (
 /**
  * Process the Fader.
  *
+ * @param g_start_frames Global frames.
  * @param start_frame The local offset in this
  *   cycle.
  * @param nframes The number of frames to process.
@@ -726,6 +727,7 @@ fader_update_track_pos (
 void
 fader_process (
   Fader *         self,
+  long            g_start_frames,
   nframes_t       start_frame,
   const nframes_t nframes)
 {
@@ -734,9 +736,17 @@ fader_process (
   float amp =
     port_get_control_value (self->amp, 0);
 
+  Track * track = NULL;
+  if (self->type == FADER_TYPE_AUDIO_CHANNEL)
+    {
+      track = fader_get_track (self);
+      g_return_if_fail (track);
+    }
+
   if (self->type == FADER_TYPE_AUDIO_CHANNEL ||
       self->type == FADER_TYPE_MONITOR)
     {
+      /* if prefader */
       if (self->passthrough)
         {
           /* copy the input to output */
@@ -748,6 +758,28 @@ fader_process (
             &self->stereo_out->r->buf[start_frame],
             &self->stereo_in->r->buf[start_frame],
             nframes);
+
+          /* if track frozen and transport is
+           * rolling */
+          if (track && track->frozen &&
+             TRANSPORT_IS_ROLLING)
+            {
+              /* get audio from clip */
+              AudioClip * clip =
+                audio_pool_get_clip (
+                  AUDIO_POOL, track->pool_id);
+              stereo_ports_fill_from_clip (
+                self->stereo_out, clip,
+                g_start_frames, start_frame,
+                nframes);
+              /*for (long i = 0; i < clip->num_frames; i++)*/
+                /*{*/
+                  /*if (clip->frames[i] > 0.001f)*/
+                    /*{*/
+                      /*g_warning ("filled from clip");*/
+                    /*}*/
+                /*}*/
+            }
         }
       else /* not prefader */
         {
@@ -755,13 +787,6 @@ fader_process (
           balance_control_get_calc_lr (
             BALANCE_CONTROL_ALGORITHM_LINEAR,
             pan, &calc_l, &calc_r);
-
-          Track * track = NULL;
-          if (self->type == FADER_TYPE_AUDIO_CHANNEL)
-            {
-              track = fader_get_track (self);
-              g_return_if_fail (track);
-            }
 
           /* clear it if any of the following is
            * true:

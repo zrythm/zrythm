@@ -66,6 +66,7 @@ typedef struct RtAudioDevice RtAudioDevice;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct TruePeakDsp TruePeakDsp;
 typedef struct ExtPort ExtPort;
+typedef struct AudioClip AudioClip;
 typedef enum PanAlgorithm PanAlgorithm;
 typedef enum PanLaw PanLaw;
 
@@ -656,6 +657,14 @@ stereo_ports_connect (
 void
 stereo_ports_disconnect (
   StereoPorts * self);
+
+void
+stereo_ports_fill_from_clip (
+  StereoPorts * self,
+  AudioClip *   clip,
+  long          g_start_frames,
+  nframes_t     start_frame,
+  nframes_t     nframes);
 
 void
 stereo_ports_free (

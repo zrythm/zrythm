@@ -116,6 +116,16 @@ audio_pool_get_clip (
   int         clip_id);
 
 /**
+ * Removes the clip with the given ID from the pool
+ * and optionally frees it (and removes the file).
+ */
+void
+audio_pool_remove_clip (
+  AudioPool * self,
+  int         clip_id,
+  bool        free_and_remove_file);
+
+/**
  * Ensures that the name of the clip is unique.
  *
  * The clip must not be part of the pool yet.

@@ -218,7 +218,7 @@ int
 io_remove (
   const char * path)
 {
-  g_message ("Removing %s", path);
+  g_message ("Removing %s...", path);
   return g_remove (path);
 }
 

@@ -723,6 +723,12 @@ track_processor_process (
 
   /*g_message ("processing %s", tr->name);*/
 
+  /* if frozen, skip */
+  if (tr->frozen)
+    {
+      return;
+    }
+
   /* set the audio clip contents to stereo out */
   if (tr->type == TRACK_TYPE_AUDIO)
     {

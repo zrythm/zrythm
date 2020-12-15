@@ -435,6 +435,12 @@ typedef struct Track
   int                  num_children;
   int                  children_size;
 
+  /** Whether the track is currently frozen. */
+  bool                 frozen;
+
+  /** Pool ID of the clip if track is frozen. */
+  int                  pool_id;
+
   int                  magic;
 
   /** Whether this is a project track (as opposed
@@ -449,25 +455,15 @@ track_fields_schema[] =
   YAML_FIELD_STRING_PTR (Track, icon_name),
   YAML_FIELD_ENUM (
     Track, type, track_type_strings),
-  YAML_FIELD_INT (
-    Track, pos),
-  YAML_FIELD_INT (
-    Track, pos_before_pinned),
-  YAML_FIELD_INT (
-    Track, lanes_visible),
-  YAML_FIELD_INT (
-    Track, automation_visible),
-  YAML_FIELD_INT (
-    Track, visible),
-  YAML_FIELD_INT (
-    Track, main_height),
-  YAML_FIELD_INT (
-    Track, passthrough_midi_input),
-  YAML_FIELD_INT (
-    Track, recording),
-  CYAML_FIELD_INT (
-    "pinned", CYAML_FLAG_DEFAULT,
-    Track, pinned),
+  YAML_FIELD_INT (Track, pos),
+  YAML_FIELD_INT (Track, pos_before_pinned),
+  YAML_FIELD_INT (Track, lanes_visible),
+  YAML_FIELD_INT (Track, automation_visible),
+  YAML_FIELD_INT (Track, visible),
+  YAML_FIELD_INT (Track, main_height),
+  YAML_FIELD_INT (Track, passthrough_midi_input),
+  YAML_FIELD_INT (Track, recording),
+  YAML_FIELD_INT (Track, pinned),
   YAML_FIELD_MAPPING_EMBEDDED (
     Track, color, gdk_rgba_fields_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
@@ -503,6 +499,8 @@ track_fields_schema[] =
     Track, comment),
   YAML_FIELD_DYN_ARRAY_VAR_COUNT_PRIMITIVES (
     Track, children, int_schema),
+  YAML_FIELD_INT (Track, frozen),
+  YAML_FIELD_INT (Track, pool_id),
 
   CYAML_FIELD_END
 };
@@ -1106,6 +1104,22 @@ track_append_all_ports (
   bool      is_dynamic,
   int *     max_size,
   bool      include_plugins);
+
+/**
+ * Freezes or unfreezes the track.
+ *
+ * When a track is frozen, it is bounced with
+ * effects to a temporary file in the pool, which
+ * is played back directly from disk.
+ *
+ * When the track is unfrozen, this file will be
+ * removed from the pool and the track will be
+ * played normally again.
+ */
+void
+track_freeze (
+  Track * self,
+  bool    freeze);
 
 /**
  * Disconnects the track from the processing

@@ -133,7 +133,8 @@ draw_background (
     region_is_selected (self),
     /* FIXME */
     false,
-    arranger_object_get_muted (obj));
+    arranger_object_get_muted (obj) ||
+      track->frozen);
   gdk_cairo_set_source_rgba (
     cr, &color);
 
@@ -218,6 +219,12 @@ draw_background (
       region_get_musical_mode (self))
     {
       DRAW_ICON ("music-note-16th");
+    }
+
+  /* if track is frozen, show frozen icon */
+  if (track->frozen)
+    {
+      DRAW_ICON ("fork-awesome-snowflake-o");
     }
 
 #undef DRAW_ICON

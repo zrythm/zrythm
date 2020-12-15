@@ -451,6 +451,7 @@ draw_buttons (
   CustomButtonWidget ** buttons =
     top? self->top_buttons :
     self->bot_buttons;
+  Track * track = self->track;
   for (int i = 0; i < num_buttons; i++)
     {
       CustomButtonWidget * cb = buttons[i];
@@ -469,7 +470,7 @@ draw_buttons (
               (BUTTON_SIZE + BUTTON_PADDING) *
               (self->num_bot_buttons - i);
           cb->y =
-            self->track->main_height -
+            track->main_height -
               (BUTTON_PADDING_FROM_EDGE +
                BUTTON_SIZE);
         }
@@ -486,54 +487,60 @@ draw_buttons (
             CUSTOM_BUTTON_WIDGET_STATE_ACTIVE;
         }
       else if (is_solo &&
-               track_get_soloed (self->track))
+               track_get_soloed (track))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (is_solo &&
                track_get_implied_soloed (
-                 self->track))
+                 track))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_SEMI_TOGGLED;
         }
       else if (CB_ICON_IS (SHOW_UI) &&
                instrument_track_is_plugin_visible (
-                 self->track))
+                 track))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (CB_ICON_IS (MUTE) &&
                track_get_muted (
-                 self->track))
+                 track))
+        {
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+        }
+      else if (CB_ICON_IS (FREEZE) &&
+                 track->frozen)
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (CB_ICON_IS (MONO_COMPAT) &&
                channel_get_mono_compat_enabled (
-                 self->track->channel))
+                 track->channel))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (CB_ICON_IS (RECORD) &&
-               self->track->recording)
+               track->recording)
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (CB_ICON_IS (SHOW_TRACK_LANES) &&
-               self->track->lanes_visible)
+               track->lanes_visible)
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (CB_ICON_IS (
                  SHOW_AUTOMATION_LANES) &&
-               self->track->automation_visible)
+               track->automation_visible)
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
@@ -2035,23 +2042,24 @@ multipress_released (
     {
       CustomButtonWidget * cb =
         self->clicked_button;
+      Track * track = self->track;
 
       /* if track not selected, select it */
-      if (!track_is_selected (self->track))
+      if (!track_is_selected (track))
         {
           track_select (
-            self->track, F_SELECT, F_EXCLUSIVE,
+            track, F_SELECT, F_EXCLUSIVE,
             F_PUBLISH_EVENTS);
         }
 
-      if ((Track *) cb->owner == self->track)
+      if ((Track *) cb->owner == track)
         {
           if (CB_ICON_IS (MONO_COMPAT))
             {
               channel_set_mono_compat_enabled (
-                self->track->channel,
+                track->channel,
                 !channel_get_mono_compat_enabled (
-                  self->track->channel),
+                  track->channel),
                 F_PUBLISH_EVENTS);
             }
           else if (CB_ICON_IS (RECORD))
@@ -2061,15 +2069,15 @@ multipress_released (
           else if (CB_ICON_IS (SOLO))
             {
               track_set_soloed (
-                self->track,
-                !track_get_soloed (self->track),
+                track,
+                !track_get_soloed (track),
                 true, true);
             }
           else if (CB_ICON_IS (MUTE))
             {
               track_set_muted (
-                self->track,
-                !track_get_muted (self->track),
+                track,
+                !track_get_muted (track),
                 true, true);
             }
           else if (CB_ICON_IS (SHOW_TRACK_LANES))
@@ -2080,13 +2088,18 @@ multipress_released (
           else if (CB_ICON_IS (SHOW_UI))
             {
               instrument_track_toggle_plugin_visible (
-                self->track);
+                track);
             }
           else if (CB_ICON_IS (
                      SHOW_AUTOMATION_LANES))
             {
               track_widget_on_show_automation_toggled (
                 self);
+            }
+          else if (CB_ICON_IS (FREEZE))
+            {
+              track_freeze (
+                track, !track->frozen);
             }
         }
       else if (cb->owner_type ==

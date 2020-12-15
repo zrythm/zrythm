@@ -198,7 +198,8 @@ audio_track_fill_stereo_ports_from_clip (
 
               buff_index = 0;
               AudioClip * clip =
-                AUDIO_POOL->clips[r->pool_id];
+                audio_pool_get_clip (
+                  AUDIO_POOL, r->pool_id);
 
               /* frames to skip if the region starts
                * somewhere within this cycle */

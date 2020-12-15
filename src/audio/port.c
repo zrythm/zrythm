@@ -26,6 +26,7 @@
 
 #include "project.h"
 #include "audio/channel.h"
+#include "audio/clip.h"
 #include "audio/control_port.h"
 #ifdef HAVE_JACK
 #include "audio/engine_jack.h"
@@ -630,6 +631,44 @@ stereo_ports_new_from_existing (
   sp->r = r;
 
   return sp;
+}
+
+void
+stereo_ports_fill_from_clip (
+  StereoPorts * self,
+  AudioClip *   clip,
+  long          g_start_frames,
+  nframes_t     start_frame,
+  nframes_t     nframes)
+{
+  channels_t max_channels = MAX (2, clip->channels);
+  for (nframes_t i = start_frame;
+       i < start_frame + nframes;
+       i++)
+    {
+      /* no more frames to read */
+      if (g_start_frames + i > clip->num_frames)
+        {
+          return;
+        }
+
+      if (max_channels == 1)
+        {
+          self->l->buf[i] =
+            clip->frames[g_start_frames + i];
+          self->r->buf[i] =
+            clip->frames[g_start_frames + i];
+        }
+      else if (max_channels == 2)
+        {
+          self->l->buf[i] =
+            clip->frames[
+              (g_start_frames + i) * 2];
+          self->r->buf[i] =
+            clip->frames[
+              (g_start_frames + i) * 2 + 1];
+        }
+    }
 }
 
 void
@@ -2928,8 +2967,7 @@ port_sum_signal_from_inputs (
             size);
         }
 
-      /* if track output (to be shown on mixer)
-       * calculate meter values */
+      /* if track output (to be shown on mixer) */
       if (port->id.owner_type ==
             PORT_OWNER_TYPE_TRACK &&
           (port->id.flags & PORT_FLAG_STEREO_L ||
@@ -2940,6 +2978,7 @@ port_sum_signal_from_inputs (
           Channel * ch = tr->channel;
           g_return_if_fail (ch);
 
+          /* calculate meter values */
           if (port == ch->stereo_out->l ||
               port == ch->stereo_out->r)
             {

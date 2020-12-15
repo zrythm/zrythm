@@ -807,6 +807,38 @@ arranger_widget_get_hit_objects_in_rect (
 }
 
 /**
+ * Filters out objects from frozen tracks.
+ */
+static void
+filter_out_frozen_objects (
+  ArrangerWidget *   self,
+  ArrangerObject **  objs,
+  int *              num_objs)
+{
+  if (self->type != ARRANGER_WIDGET_TYPE_TIMELINE)
+    {
+      return;
+    }
+
+  for (int i = *num_objs - 1; i >= 0; i--)
+    {
+      ArrangerObject * obj = objs[i];
+      Track * track =
+        arranger_object_get_track (obj);
+      g_return_if_fail (track);
+
+      if (track->frozen)
+        {
+          for (int j = i; j < *num_objs - 1; j++)
+            {
+              objs[j] = objs[j + 1];
+            }
+          (*num_objs)--;
+        }
+    }
+}
+
+/**
  * Fills in the given array with the ArrangerObject's
  * of the given type that appear in the given
  * ranger.
@@ -2098,7 +2130,8 @@ on_drag_begin_handle_hit_object (
     arranger_widget_get_hit_arranger_object (
       self, ARRANGER_OBJECT_TYPE_ALL, x, y);
 
-  if (!obj)
+  (void) filter_out_frozen_objects;
+  if (!obj || arranger_object_is_frozen (obj))
     {
       return false;
     }
@@ -2557,6 +2590,7 @@ drag_begin (
  * Selects objects for the given arranger in the
  * range from start_* to offset_*.
  *
+ * @param ignore_frozen Ignore frozen objects.
  * @param[in] delete Whether this is a select-delete
  *   operation.
  * @param[in] in_range Whether to select/delete
@@ -2569,6 +2603,7 @@ select_in_range (
   double           offset_x,
   double           offset_y,
   bool             in_range,
+  bool             ignore_frozen,
   bool             delete)
 {
   ArrangerSelections * prev_sel =
@@ -2581,6 +2616,11 @@ select_in_range (
       ArrangerObject ** objs =
         arranger_selections_get_all_objects (
           self->sel_to_delete, &num_objs);
+      if (ignore_frozen)
+        {
+          filter_out_frozen_objects (
+            self, objs, &num_objs);
+        }
       for (int i = 0; i < num_objs; i++)
         {
           objs[i]->deleted_temporarily = false;
@@ -2629,6 +2669,11 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_CHORD_OBJECT,
         &rect, objs, &num_objs);
+      if (ignore_frozen)
+        {
+          filter_out_frozen_objects (
+            self, objs, &num_objs);
+        }
       for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
@@ -2649,6 +2694,11 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT,
         &rect, objs, &num_objs);
+      if (ignore_frozen)
+        {
+          filter_out_frozen_objects (
+            self, objs, &num_objs);
+        }
       for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
@@ -2669,6 +2719,11 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_REGION,
         &rect, objs, &num_objs);
+      if (ignore_frozen)
+        {
+          filter_out_frozen_objects (
+            self, objs, &num_objs);
+        }
       for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
@@ -2688,6 +2743,11 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_SCALE_OBJECT,
         &rect, objs, &num_objs);
+      if (ignore_frozen)
+        {
+          filter_out_frozen_objects (
+            self, objs, &num_objs);
+        }
       for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
@@ -2706,6 +2766,11 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_MARKER,
         &rect, objs, &num_objs);
+      if (ignore_frozen)
+        {
+          filter_out_frozen_objects (
+            self, objs, &num_objs);
+        }
       for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
@@ -2726,6 +2791,11 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_MIDI_NOTE,
         &rect, objs, &num_objs);
+      if (ignore_frozen)
+        {
+          filter_out_frozen_objects (
+            self, objs, &num_objs);
+        }
       for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
@@ -2750,6 +2820,11 @@ select_in_range (
       arranger_widget_get_hit_objects_in_rect (
         self, ARRANGER_OBJECT_TYPE_VELOCITY,
         &rect, objs, &num_objs);
+      if (ignore_frozen)
+        {
+          filter_out_frozen_objects (
+            self, objs, &num_objs);
+        }
       for (int i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
@@ -2970,7 +3045,7 @@ drag_update (
       /* find and select objects inside selection */
       select_in_range (
         self, offset_x, offset_y, F_IN_RANGE,
-        F_NO_DELETE);
+        F_IGNORE_FROZEN, F_NO_DELETE);
       EVENTS_PUSH (
         ET_SELECTING_IN_ARRANGER, self);
       break;
@@ -2979,7 +3054,7 @@ drag_update (
        * selection */
       select_in_range (
         self, offset_x, offset_y, F_IN_RANGE,
-        F_DELETE);
+        F_IGNORE_FROZEN, F_DELETE);
       EVENTS_PUSH (
         ET_SELECTING_IN_ARRANGER, self);
       break;
@@ -2987,7 +3062,7 @@ drag_update (
       /* delete anything touched */
       select_in_range (
         self, offset_x, offset_y, F_NOT_IN_RANGE,
-        F_DELETE);
+        F_IGNORE_FROZEN, F_DELETE);
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_FADE:
     case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
@@ -4040,7 +4115,7 @@ drag_end (
         arranger_selections_clone (sel);
       select_in_range (
         self, offset_x, offset_y, F_IN_RANGE,
-        F_DELETE);
+        F_IGNORE_FROZEN, F_DELETE);
     }
 
   switch (self->type)
@@ -4690,6 +4765,10 @@ on_motion (
     arranger_widget_get_hit_arranger_object (
       self, ARRANGER_OBJECT_TYPE_ALL,
       self->hover_x, self->hover_y);
+  if (obj && arranger_object_is_frozen (obj))
+    {
+      obj = NULL;
+    }
   if (self->hovered_object != obj)
     {
       g_return_val_if_fail (
@@ -5179,6 +5258,18 @@ get_timeline_cursor (
       ARRANGER_OBJECT_TYPE_MARKER,
       self->hover_x, self->hover_y);
 
+  if (r_obj && arranger_object_is_frozen (r_obj))
+    {
+      r_obj = NULL;
+    }
+  if (s_obj && arranger_object_is_frozen (s_obj))
+    {
+      s_obj = NULL;
+    }
+  if (m_obj && arranger_object_is_frozen (m_obj))
+    {
+      m_obj = NULL;
+    }
   int is_hit = r_obj || s_obj || m_obj;
 
   switch (action)

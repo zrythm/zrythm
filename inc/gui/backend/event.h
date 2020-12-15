@@ -191,6 +191,13 @@ typedef enum EventType
   ET_SNAP_GRID_OPTIONS_CHANGED,
 
   ET_TRANSPORT_RECORDING_ON_OFF_CHANGED,
+
+  /**
+   * Track freeze status changed.
+   *
+   * Param: Track.
+   */
+  ET_TRACK_FREEZE_CHANGED,
 } EventType;
 
 /**

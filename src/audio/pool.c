@@ -107,6 +107,23 @@ audio_pool_ensure_unique_clip_name (
 }
 
 /**
+ * Returns the next available ID.
+ */
+static int
+get_next_id (
+  AudioPool * self)
+{
+  int next_id = -1;
+  for (int i = 0; i < self->num_clips; i++)
+    {
+      next_id =
+        MAX (self->clips[i]->pool_id, next_id);
+    }
+
+  return next_id + 1;
+}
+
+/**
  * Adds an audio clip to the pool.
  *
  * Changes the name of the clip if another clip with
@@ -125,12 +142,11 @@ audio_pool_add_clip (
 
   audio_pool_ensure_unique_clip_name (self, clip);
 
-  clip->pool_id = self->num_clips;
+  int next_id = get_next_id (self);
+  clip->pool_id = next_id;
 
   array_append (
-    self->clips,
-    self->num_clips,
-    clip);
+    self->clips, self->num_clips, clip);
 
   return clip->pool_id;
 }
@@ -147,7 +163,15 @@ audio_pool_get_clip (
     self && clip_id >= 0 &&
     clip_id < self->num_clips, NULL);
 
-  return self->clips[clip_id];
+  for (int i = 0; i < self->num_clips; i++)
+    {
+      if (self->clips[i]->pool_id == clip_id)
+        {
+          return self->clips[i];
+        }
+    }
+
+  g_return_val_if_reached (NULL);
 }
 
 /**
@@ -165,6 +189,30 @@ audio_pool_gen_name_for_recording_clip (
       track->name,
       /* add 1 to get human friendly index */
       lane + 1);
+}
+
+/**
+ * Removes the clip with the given ID from the pool
+ * and optionally frees it (and removes the file).
+ */
+void
+audio_pool_remove_clip (
+  AudioPool * self,
+  int         clip_id,
+  bool        free_and_remove_file)
+{
+  g_message ("removing clip with ID %d", clip_id);
+
+  AudioClip * clip =
+    audio_pool_get_clip (self, clip_id);
+  audio_clip_remove_and_free (clip);
+
+  for (int i = clip_id; i < self->num_clips - 1;
+       i++)
+    {
+      self->clips[i] = self->clips[i + 1];
+    }
+  self->num_clips--;
 }
 
 void

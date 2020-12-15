@@ -238,18 +238,21 @@ process_node (
   else if (node->type == ROUTE_NODE_TYPE_FADER)
     {
       fader_process (
-        node->fader, local_offset, nframes);
+        node->fader, g_start_frames,
+        local_offset, nframes);
     }
   else if (node->type ==
              ROUTE_NODE_TYPE_MONITOR_FADER)
     {
       fader_process (
-        node->fader, local_offset, nframes);
+        node->fader, g_start_frames,
+        local_offset, nframes);
     }
   else if (node->type == ROUTE_NODE_TYPE_PREFADER)
     {
       fader_process (
-        node->prefader, local_offset, nframes);
+        node->prefader, g_start_frames,
+        local_offset, nframes);
     }
   else if (node->type ==
            ROUTE_NODE_TYPE_SAMPLE_PROCESSOR)

@@ -383,12 +383,16 @@ fader_copy_values (
 /**
  * Process the Fader.
  *
+ * @param g_start_frames Global frames.
+ * @param start_frame The local offset in this
+ *   cycle.
  * @param nframes The number of frames to process.
  */
 void
 fader_process (
   Fader *         self,
-  nframes_t local_offset,
+  long            g_start_frames,
+  nframes_t       start_frame,
   const nframes_t nframes);
 
 /**

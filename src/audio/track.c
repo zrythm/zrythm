@@ -30,6 +30,7 @@
 #include "audio/channel.h"
 #include "audio/chord_track.h"
 #include "audio/control_port.h"
+#include "audio/exporter.h"
 #include "audio/group_target_track.h"
 #include "audio/instrument_track.h"
 #include "audio/marker_track.h"
@@ -48,6 +49,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -55,6 +57,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/io.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -1410,6 +1413,86 @@ track_set_pos (
           CLIP_EDITOR->region_id.track_pos = pos;
         }
     }
+}
+
+/**
+ * Freezes or unfreezes the track.
+ *
+ * When a track is frozen, it is bounced with
+ * effects to a temporary file in the pool, which
+ * is played back directly from disk.
+ *
+ * When the track is unfrozen, this file will be
+ * removed from the pool and the track will be
+ * played normally again.
+ */
+void
+track_freeze (
+  Track * self,
+  bool    freeze)
+{
+  g_message (
+    "%sfreezing %s...",
+    freeze ? "" : "un", self->name);
+
+  if (freeze)
+    {
+      ExportSettings settings;
+      track_mark_for_bounce (
+        self, true, true, false);
+      settings.mode = EXPORT_MODE_TRACKS;
+      export_settings_set_bounce_defaults (
+        &settings, NULL, self->name);
+
+      /* start exporting in a new thread */
+      GThread * thread =
+        g_thread_new (
+          "bounce_thread",
+          (GThreadFunc)
+            exporter_generic_export_thread,
+          &settings);
+
+      /* create a progress dialog and block */
+      ExportProgressDialogWidget * progress_dialog =
+        export_progress_dialog_widget_new (
+          &settings, 1, 0);
+      gtk_window_set_transient_for (
+        GTK_WINDOW (progress_dialog),
+        GTK_WINDOW (MAIN_WINDOW));
+      gtk_dialog_run (GTK_DIALOG (progress_dialog));
+      gtk_widget_destroy (
+        GTK_WIDGET (progress_dialog));
+
+      g_thread_join (thread);
+
+      /* assert exporting is finished */
+      g_return_if_fail (!AUDIO_ENGINE->exporting);
+
+      /* move the temporary file to the pool */
+      AudioClip * clip =
+        audio_clip_new_from_file (
+          settings.file_uri);
+      audio_pool_add_clip (AUDIO_POOL, clip);
+      audio_clip_write_to_pool (clip, F_NO_PARTS);
+      self->pool_id = clip->pool_id;
+
+      if (g_file_test (
+            settings.file_uri,
+            G_FILE_TEST_IS_REGULAR))
+        {
+          io_remove (settings.file_uri);
+        }
+
+      export_settings_free_members (&settings);
+    }
+  else
+    {
+      audio_pool_remove_clip (
+        AUDIO_POOL, self->pool_id, true);
+    }
+
+  self->frozen = freeze;
+  EVENTS_PUSH (ET_TRACK_FREEZE_CHANGED, self);
 }
 
 /**

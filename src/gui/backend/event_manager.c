@@ -1804,6 +1804,10 @@ process_events (void * data)
             MW_TRANSPORT_CONTROLS->trans_record_btn,
             TRANSPORT->recording);
           break;
+        case ET_TRACK_FREEZE_CHANGED:
+          arranger_selections_change_redraw_everything (
+            (ArrangerSelections *) TL_SELECTIONS);
+          break;
         default:
           g_warning (
             "event %d not implemented yet",
