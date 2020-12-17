@@ -11,4 +11,4 @@ Video
 French Tutorials
 ~~~~~~~~~~~~~~~~
 Till Parisot has compiled a playlist of Zrythm
-tutorials in French on `PeerTube TeDonum <https://video.tedomum.net/video-channels/thil_riposta/videos>`_.
+tutorials in French on `PeerTube TeDomum <https://video.tedomum.net/video-channels/thil_riposta/videos>`_.
