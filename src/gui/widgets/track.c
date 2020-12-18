@@ -2098,8 +2098,10 @@ multipress_released (
             }
           else if (CB_ICON_IS (FREEZE))
             {
+#if 0
               track_freeze (
                 track, !track->frozen);
+#endif
             }
         }
       else if (cb->owner_type ==
