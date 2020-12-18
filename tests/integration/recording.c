@@ -167,8 +167,10 @@ do_takes_no_loop_no_punch (
   g_assert_cmppos (&pos, &audio_r_obj->loop_end_pos);
 
   /* assert that audio is silent */
-  g_assert_cmpuint (
-    audio_r->num_frames, ==, CYCLE_SIZE);
+  AudioClip * clip =
+    audio_region_get_clip (audio_r);
+  g_assert_cmpint (
+    clip->num_frames, ==, CYCLE_SIZE);
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
     {
       g_assert_cmpfloat_with_epsilon (
@@ -278,8 +280,10 @@ do_takes_no_loop_no_punch (
 
   /* verify audio region contains the correct
    * audio data */
-  g_assert_cmpuint (
-    audio_r->num_frames, ==, CYCLE_SIZE * 2);
+  clip =
+    audio_region_get_clip (audio_r);
+  g_assert_cmpint (
+    clip->num_frames, ==, CYCLE_SIZE * 2);
   for (nframes_t i = CYCLE_SIZE;
        i < 2 * CYCLE_SIZE; i++)
     {
@@ -468,9 +472,10 @@ do_takes_loop_no_punch (
   position_from_frames (&pos, FRAMES_BEFORE_LOOP);
   g_assert_cmppos (&pos, &audio_r_obj->loop_end_pos);
   /* assert that audio is silent */
-  g_assert_cmpuint (
-    audio_r->num_frames, ==,
-    (nframes_t) FRAMES_BEFORE_LOOP);
+  AudioClip * clip =
+    audio_region_get_clip (audio_r);
+  g_assert_cmpint (
+    clip->num_frames, ==, FRAMES_BEFORE_LOOP);
   for (nframes_t i = 0;
        i < (nframes_t) FRAMES_BEFORE_LOOP; i++)
     {
@@ -491,9 +496,11 @@ do_takes_loop_no_punch (
     &pos, CYCLE_SIZE - FRAMES_BEFORE_LOOP);
   g_assert_cmppos (&pos, &audio_r_obj->loop_end_pos);
   /* assert that audio is silent */
-  g_assert_cmpuint (
-    audio_r->num_frames, ==,
-    CYCLE_SIZE - (nframes_t) FRAMES_BEFORE_LOOP);
+  clip =
+    audio_region_get_clip (audio_r);
+  g_assert_cmpint (
+    clip->num_frames, ==,
+    CYCLE_SIZE - FRAMES_BEFORE_LOOP);
   for (nframes_t i = 0;
        i < CYCLE_SIZE -
          (nframes_t) FRAMES_BEFORE_LOOP;

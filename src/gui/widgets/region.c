@@ -1160,18 +1160,21 @@ draw_audio_region (
                 index < 0 ||
                 index >=
                 (long)
-                  self->num_frames *
+                  clip->num_frames *
                   (long) clip->channels)
                 {
                   /* skip */
                   continue;
                 }
-              float val =
-                self->frames[index];
+              float val = clip->frames[index];
               if (val > max)
-                max = val;
+                {
+                  max = val;
+                }
               if (val < min)
-                min = val;
+                {
+                  min = val;
+                }
             }
         }
 #define DRAW_VLINE(cr,x,from_y,_height) \

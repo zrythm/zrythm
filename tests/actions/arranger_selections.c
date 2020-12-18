@@ -1270,7 +1270,8 @@ test_audio_functions ()
   undo_manager_perform (UNDO_MANAGER, ua);
 
   AudioClip * clip = audio_region_get_clip (region);
-  for (size_t i = 0; i < region->num_frames; i++)
+  for (size_t i = 0;
+       i < (size_t) clip->num_frames; i++)
     {
       for (size_t j = 0; j < channels; j++)
         {
@@ -1292,7 +1293,8 @@ test_audio_functions ()
   lane = track->lanes[3];
   region = lane->regions[0];
   clip = audio_region_get_clip (region);
-  for (size_t i = 0; i < region->num_frames; i++)
+  for (size_t i = 0;
+       i < (size_t) clip->num_frames; i++)
     {
       for (size_t j = 0; j < channels; j++)
         {
@@ -1306,7 +1308,8 @@ test_audio_functions ()
   undo_manager_redo (UNDO_MANAGER);
 
   /* verify that frames are edited again */
-  for (size_t i = 0; i < region->num_frames; i++)
+  for (size_t i = 0;
+       i < (size_t) clip->num_frames; i++)
     {
       for (size_t j = 0; j < channels; j++)
         {

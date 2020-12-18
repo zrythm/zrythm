@@ -53,10 +53,15 @@ audio_clip_init_from_file (
     (size_t) enc->num_out_frames *
     (size_t) enc->nfo.channels;
   self->frames =
-    calloc (arr_size, sizeof (float));
+    realloc (
+      self->frames, arr_size * sizeof (float));
   self->num_frames = enc->num_out_frames;
   dsp_copy (
     self->frames, enc->out_frames, arr_size);
+  if (self->name)
+    {
+      g_free (self->name);
+    }
   self->name = g_path_get_basename (full_path);
   self->channels = enc->nfo.channels;
   self->bpm =
@@ -268,6 +273,19 @@ audio_clip_write_to_file (
   /* TODO error handling */
 
   return ret;
+}
+
+/**
+ * Returns whether the clip is used inside the
+ * project (in actual project regions only, not
+ * in undo stack).
+ */
+bool
+audio_clip_is_in_use (
+  AudioClip * self)
+{
+  /* TODO */
+  return true;
 }
 
 /**

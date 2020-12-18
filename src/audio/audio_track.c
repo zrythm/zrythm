@@ -83,8 +83,9 @@ timestretch_buf (
     __func__, in_frame_offset, out_frame_offset,
     in_frames_to_process, frames_to_process);
   g_return_if_fail (
-    in_frame_offset + in_frames_to_process <=
-      r->num_frames);
+    (long)
+    (in_frame_offset + in_frames_to_process) <=
+      clip->num_frames);
   ssize_t retrieved =
     stretcher_stretch (
       self->rt_stretcher,
@@ -277,7 +278,7 @@ audio_track_fill_stereo_ports_from_clip (
                 frames_to_skip;
 
               size_t buff_index_start =
-                r->num_frames + 16;
+                (size_t) clip->num_frames + 16;
               size_t buff_size = 0;
               for (j = 0;
                    (long) j < frames_to_process;

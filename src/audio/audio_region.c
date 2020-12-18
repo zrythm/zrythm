@@ -151,6 +151,7 @@ audio_region_init_frame_caches (
   AudioRegion * self,
   AudioClip *   clip)
 {
+#if 0
   /* copy the clip frames to the cache. */
   self->frames =
     realloc (
@@ -161,6 +162,7 @@ audio_region_init_frame_caches (
   dsp_copy (
     &self->frames[0], &clip->frames[0],
     (size_t) clip->num_frames * clip->channels);
+#endif
 
   audio_region_update_channel_caches (self, clip);
 }
@@ -186,7 +188,7 @@ audio_region_update_channel_caches (
            j < (size_t) clip->num_frames; j++)
         {
           self->ch_frames[i][j] =
-            self->frames[j * clip->channels + i];
+            clip->frames[j * clip->channels + i];
         }
     }
 }
@@ -212,6 +214,20 @@ audio_region_get_clip (
     NULL);
 
   return clip;
+}
+
+/**
+ * Sets the clip ID on the region and updates any
+ * references.
+ */
+void
+audio_region_set_clip_id (
+  ZRegion * self,
+  int       clip_id)
+{
+  self->pool_id = clip_id;
+
+  /* TODO update identifier - needed? */
 }
 
 /**
@@ -246,7 +262,7 @@ audio_region_replace_frames (
 void
 audio_region_free_members (ZRegion * self)
 {
-  free (self->frames);
+  /*free (self->frames);*/
   for (int i = 0; i < 16; i++)
     {
       if (self->ch_frames[i])

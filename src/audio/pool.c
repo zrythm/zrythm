@@ -175,6 +175,30 @@ audio_pool_get_clip (
 }
 
 /**
+ * Duplicates the clip with the given ID and returns
+ * the duplicate.
+ *
+ * @return The ID in the pool.
+ */
+int
+audio_pool_duplicate_clip (
+  AudioPool * self,
+  int         clip_id)
+{
+  AudioClip * clip =
+    audio_pool_get_clip (self, clip_id);
+  g_return_val_if_fail (clip, -1);
+
+  AudioClip * new_clip =
+    audio_clip_new_from_float_array (
+      clip->frames, clip->num_frames, clip->channels,
+      clip->name);
+  audio_pool_add_clip (self, new_clip);
+
+  return new_clip->pool_id;
+}
+
+/**
  * Generates a name for a recording clip.
  */
 char *
@@ -213,6 +237,38 @@ audio_pool_remove_clip (
       self->clips[i] = self->clips[i + 1];
     }
   self->num_clips--;
+}
+
+/**
+ * Loads the frame buffers of clips currently in
+ * use in the project from their files and frees the
+ * buffers of clips not currently in use.
+ *
+ * This should be called whenever there is a relevant
+ * change in the project (eg, object added/removed).
+ */
+void
+audio_pool_reload_clip_frame_bufs (
+  AudioPool * self)
+{
+  for (int i = 0; i < self->num_clips; i++)
+    {
+      AudioClip * clip = self->clips[i];
+      bool in_use = audio_clip_is_in_use (clip);
+
+      if (in_use && clip->num_frames == 0)
+        {
+          /* load from the file */
+          audio_clip_init_loaded (clip);
+        }
+      else if (!in_use && clip->num_frames > 0)
+        {
+          /* unload frames */
+          clip->num_frames = 0;
+          free (clip->frames);
+          clip->frames = NULL;
+        }
+    }
 }
 
 void

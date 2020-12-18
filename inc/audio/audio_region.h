@@ -99,6 +99,15 @@ audio_region_get_clip (
   const ZRegion * self);
 
 /**
+ * Sets the clip ID on the region and updates any
+ * references.
+ */
+void
+audio_region_set_clip_id (
+  ZRegion * self,
+  int       clip_id);
+
+/**
  * Replaces the region's frames from \ref
  * start_frames with \ref frames.
  *

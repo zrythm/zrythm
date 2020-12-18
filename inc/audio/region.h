@@ -164,8 +164,10 @@ typedef struct ZRegion
    * Properties such as \ref AudioClip.channels can
    * be fetched from the AudioClip.
    */
+#if 0
   sample_t *        frames;
   size_t            num_frames;
+#endif
 
   /**
    * Per-channel frames for convenience.

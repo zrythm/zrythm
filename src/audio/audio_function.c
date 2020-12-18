@@ -97,7 +97,7 @@ audio_function_apply (
   float frames[num_frames * channels];
   dsp_copy (
     &frames[0],
-    &r->frames[start.frames * (long) channels],
+    &orig_clip->frames[start.frames * (long) channels],
     num_frames * channels);
 
   switch (type)
@@ -124,7 +124,7 @@ audio_function_apply (
           for (size_t j = 0; j < channels; j++)
             {
               frames[i * channels + j] =
-                r->frames[
+                orig_clip->frames[
                   ((size_t) start.frames +
                    ((num_frames - i) - 1)) *
                     channels + j];

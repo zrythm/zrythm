@@ -108,6 +108,17 @@ audio_pool_add_clip (
   AudioClip * clip);
 
 /**
+ * Duplicates the clip with the given ID and returns
+ * the duplicate.
+ *
+ * @return The ID in the pool.
+ */
+int
+audio_pool_duplicate_clip (
+  AudioPool * self,
+  int         clip_id);
+
+/**
  * Returns the clip for the given ID.
  */
 AudioClip *
@@ -146,6 +157,18 @@ audio_pool_gen_name_for_recording_clip (
   AudioPool * pool,
   Track *     track,
   int         lane);
+
+/**
+ * Loads the frame buffers of clips currently in
+ * use in the project from their files and frees the
+ * buffers of clips not currently in use.
+ *
+ * This should be called whenever there is a relevant
+ * change in the project (eg, object added/removed).
+ */
+void
+audio_pool_reload_clip_frame_bufs (
+  AudioPool * self);
 
 void
 audio_pool_free (

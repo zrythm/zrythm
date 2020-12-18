@@ -946,6 +946,7 @@ handle_audio_event (
       (clip->num_frames *
          (long) clip->channels) *
       sizeof (sample_t));
+#if 0
   region->frames =
     (sample_t *) realloc (
       region->frames,
@@ -957,6 +958,7 @@ handle_audio_event (
   dsp_copy (
     &region->frames[0], &clip->frames[0],
     (size_t) clip->num_frames * clip->channels);
+#endif
 
   position_from_frames (
     &r_obj->loop_end_pos,
@@ -976,15 +978,17 @@ handle_audio_event (
         cur_local_offset >= local_offset &&
         cur_local_offset < local_offset + nframes);
 
-      /* set both clip and region frames */
+      /* set clip frames */
       clip->frames[i * clip->channels] =
         ev->lbuf[cur_local_offset];
       clip->frames[i * clip->channels + 1] =
         ev->rbuf[cur_local_offset];
+#if 0
       region->frames[i * clip->channels] =
         ev->lbuf[cur_local_offset];
       region->frames[i * clip->channels + 1] =
         ev->rbuf[cur_local_offset];
+#endif
 
       cur_local_offset++;
     }

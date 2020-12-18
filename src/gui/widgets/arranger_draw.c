@@ -512,7 +512,7 @@ draw_audio_bg (
       for (long j = prev_frames;
            j < curr_frames; j++)
         {
-          if (j >= (long) ar->num_frames)
+          if (j >= (long) clip->num_frames)
             break;
           for (unsigned int k = 0;
                k < clip->channels; k++)
@@ -523,14 +523,17 @@ draw_audio_bg (
                 index >= 0 &&
                 index <
                   (long)
-                  (ar->num_frames *
+                  (clip->num_frames *
                      clip->channels));
-              float val =
-                ar->frames[index];
+              float val = clip->frames[index];
               if (val > max)
-                max = val;
+                {
+                  max = val;
+                }
               if (val < min)
-                min = val;
+                {
+                  min = val;
+                }
             }
         }
 #define DRAW_VLINE(cr,x,from_y,_height) \

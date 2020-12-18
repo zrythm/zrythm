@@ -1303,6 +1303,7 @@ arranger_object_resize (
                     new_length /
                     region->before_length;
                 }
+              /* else if as part of an action */
               else
                 {
                   /* stretch contents */
@@ -1986,6 +1987,7 @@ clone_region (
             region->id.lane_pos,
             region->id.idx);
 
+#if 0
         /* copy the actual frames - they might
          * be different from the clip due to
          * eg. stretching */
@@ -2002,6 +2004,7 @@ clone_region (
         memcpy (
           &ar->frames[0], &region->frames[0],
           frame_bytes_size);
+#endif
 
         new_region = ar;
         new_region->pool_id = region->pool_id;

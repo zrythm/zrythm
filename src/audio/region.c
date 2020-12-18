@@ -260,18 +260,27 @@ region_stretch (
       {
         AudioClip * clip =
           audio_region_get_clip (self);
+        int new_clip_id =
+          audio_pool_duplicate_clip (
+            AUDIO_POOL, clip->pool_id);
+        AudioClip * new_clip =
+          audio_pool_get_clip (
+            AUDIO_POOL, new_clip_id);
+        audio_region_set_clip_id (
+          self, new_clip->pool_id);
         Stretcher * stretcher =
           stretcher_new_rubberband (
             AUDIO_ENGINE->sample_rate,
-            clip->channels, ratio, 1.0, false);
+            new_clip->channels, ratio, 1.0, false);
         ssize_t returned_frames =
           stretcher_stretch_interleaved (
-            stretcher, self->frames,
-            (size_t) self->num_frames,
-            &self->frames);
+            stretcher, new_clip->frames,
+            (size_t) new_clip->num_frames,
+            &new_clip->frames);
         g_warn_if_fail (returned_frames > 0);
-        self->num_frames =
-          (size_t) returned_frames;
+        new_clip->num_frames = returned_frames;
+        audio_clip_write_to_pool (
+          new_clip, F_NO_PARTS);
         (void) obj;
         /* readjust end position to match the
          * number of frames exactly */

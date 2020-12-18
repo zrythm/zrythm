@@ -185,6 +185,15 @@ audio_clip_write_to_pool (
   bool        parts);
 
 /**
+ * Returns whether the clip is used inside the
+ * project (in actual project regions only, not
+ * in undo stack).
+ */
+bool
+audio_clip_is_in_use (
+  AudioClip * self);
+
+/**
  * To be called by audio_pool_remove_clip().
  *
  * Removes the file associated with the clip and
