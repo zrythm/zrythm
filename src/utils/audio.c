@@ -82,7 +82,9 @@ audio_write_raw_file (
         sndfile, frames_already_written, SEEK_SET);
     }
 
-  sf_writef_float (sndfile, buff, nframes);
+  sf_count_t count =
+    sf_writef_float (sndfile, buff, nframes);
+  g_warn_if_fail (count == nframes);
 
   sf_close (sndfile);
 

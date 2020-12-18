@@ -29,10 +29,40 @@
 #include "utils/file.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "utils/io.h"
 #include "zrythm_app.h"
 
 #include <gtk/gtk.h>
+
+/**
+ * Updates the channel caches.
+ *
+ * See @ref AudioClip.ch_frames.
+ */
+void
+audio_clip_update_channel_caches (
+  AudioClip * self)
+{
+  g_return_if_fail (
+    self->channels > 0 && self->num_frames > 0);
+
+  /* copy the frames to the channel caches */
+  for (unsigned int i = 0; i < self->channels; i++)
+    {
+      self->ch_frames[i] =
+        realloc (
+          self->ch_frames[i],
+          sizeof (float) *
+            (size_t) self->num_frames);
+      for (size_t j = 0;
+           j < (size_t) self->num_frames; j++)
+        {
+          self->ch_frames[i][j] =
+            self->frames[j * self->channels + i];
+        }
+    }
+}
 
 static void
 audio_clip_init_from_file (
@@ -68,6 +98,7 @@ audio_clip_init_from_file (
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
   /*g_message (*/
     /*"\n\n num frames %ld \n\n", self->num_frames);*/
+  audio_clip_update_channel_caches (self);
 
   audio_encoder_free (enc);
 }
@@ -150,6 +181,7 @@ audio_clip_new_from_float_array (
     (size_t) nframes * (size_t) channels);
   self->bpm =
     tempo_track_get_current_bpm (P_TEMPO_TRACK);
+  audio_clip_update_channel_caches (self);
 
   return self;
 }
@@ -188,6 +220,7 @@ audio_clip_new_recording (
   dsp_fill (
     self->frames, DENORMAL_PREVENTION_VAL,
     (size_t) nframes * (size_t) channels);
+  audio_clip_update_channel_caches (self);
 
   return self;
 }
@@ -263,6 +296,7 @@ audio_clip_write_to_file (
       self->num_frames,
       (uint32_t) self->samplerate,
       self->channels, filepath);
+  audio_clip_update_channel_caches (self);
 
   if (parts && ret == 0)
     {
@@ -312,10 +346,12 @@ void
 audio_clip_free (
   AudioClip * self)
 {
-  if (self->frames)
-    free (self->frames);
-  if (self->name)
-    free (self->name);
+  object_zero_and_free (self->frames);
+  for (unsigned int i = 0; i < self->channels; i++)
+    {
+      object_zero_and_free (self->ch_frames[i]);
+    }
+  g_free_and_null (self->name);
 
-  free (self);
+  object_zero_and_free (self);
 }

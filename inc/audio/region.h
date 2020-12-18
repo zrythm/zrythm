@@ -158,21 +158,21 @@ typedef struct ZRegion
   /** Used during arranger UI overlay actions. */
   double            stretch_ratio;
 
+#if 0
   /**
    * Frames to actually use, interleaved.
    *
    * Properties such as \ref AudioClip.channels can
    * be fetched from the AudioClip.
    */
-#if 0
   sample_t *        frames;
   size_t            num_frames;
-#endif
 
   /**
    * Per-channel frames for convenience.
    */
   sample_t *        ch_frames[16];
+#endif
 
   /** Musical mode setting. */
   RegionMusicalMode musical_mode;

@@ -174,9 +174,9 @@ do_takes_no_loop_no_punch (
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
     {
       g_assert_cmpfloat_with_epsilon (
-        audio_r->ch_frames[0][i], 0.f, 0.000001f);
+        clip->ch_frames[0][i], 0.f, 0.000001f);
       g_assert_cmpfloat_with_epsilon (
-        audio_r->ch_frames[1][i], 0.f, 0.000001f);
+        clip->ch_frames[1][i], 0.f, 0.000001f);
     }
 
   /* assert that automation events are created */
@@ -288,10 +288,10 @@ do_takes_no_loop_no_punch (
        i < 2 * CYCLE_SIZE; i++)
     {
       g_assert_cmpfloat_with_epsilon (
-        audio_r->ch_frames[0][i], AUDIO_VAL,
+        clip->ch_frames[0][i], AUDIO_VAL,
         0.000001f);
       g_assert_cmpfloat_with_epsilon (
-        audio_r->ch_frames[1][i], - AUDIO_VAL,
+        clip->ch_frames[1][i], - AUDIO_VAL,
         0.000001f);
     }
 
@@ -480,9 +480,9 @@ do_takes_loop_no_punch (
        i < (nframes_t) FRAMES_BEFORE_LOOP; i++)
     {
       g_assert_cmpfloat_with_epsilon (
-        audio_r->ch_frames[0][i], 0.f, 0.000001f);
+        clip->ch_frames[0][i], 0.f, 0.000001f);
       g_assert_cmpfloat_with_epsilon (
-        audio_r->ch_frames[1][i], 0.f, 0.000001f);
+        clip->ch_frames[1][i], 0.f, 0.000001f);
     }
   audio_r = audio_track->lanes[2]->regions[0];
   audio_r_obj = (ArrangerObject *) audio_r;
@@ -507,9 +507,9 @@ do_takes_loop_no_punch (
        i++)
     {
       g_assert_cmpfloat_with_epsilon (
-        audio_r->ch_frames[0][i], 0.f, 0.000001f);
+        clip->ch_frames[0][i], 0.f, 0.000001f);
       g_assert_cmpfloat_with_epsilon (
-        audio_r->ch_frames[1][i], 0.f, 0.000001f);
+        clip->ch_frames[1][i], 0.f, 0.000001f);
     }
 
   /* assert that automation events are created */

@@ -1889,9 +1889,11 @@ arranger_selections_merge (
                 r_obj);
 
             /* add all audio data */
+            AudioClip * clip =
+              audio_region_get_clip (r);
             dsp_add2 (
               &lframes[frames_diff],
-              r->ch_frames[0],
+              clip->ch_frames[0],
               (size_t) r_frames_length);
           }
 

@@ -875,9 +875,6 @@ init_loaded_region (
         AudioClip * clip =
           audio_region_get_clip (self);
         g_return_if_fail (clip);
-
-        audio_region_init_frame_caches (
-          self, clip);
       }
       break;
     case REGION_TYPE_MIDI:

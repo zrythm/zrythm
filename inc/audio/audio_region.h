@@ -72,6 +72,7 @@ audio_region_new (
   int              lane_pos,
   int              idx_inside_lane);
 
+#if 0
 /**
  * Allocates the frame caches from the frames in
  * the clip.
@@ -89,6 +90,7 @@ void
 audio_region_update_channel_caches (
   ZRegion *   self,
   AudioClip * clip);
+#endif
 
 /**
  * Returns the audio clip associated with the

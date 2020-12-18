@@ -54,6 +54,11 @@ typedef struct AudioClip
   /** Number of frames per channel. */
   long          num_frames;
 
+  /**
+   * Per-channel frames for convenience.
+   */
+  sample_t *    ch_frames[16];
+
   /** Number of channels. */
   channels_t    channels;
 
@@ -158,6 +163,15 @@ audio_clip_new_recording (
   const channels_t channels,
   const long       nframes,
   const char *     name);
+
+/**
+ * Updates the channel caches.
+ *
+ * See @ref AudioClip.ch_frames.
+ */
+void
+audio_clip_update_channel_caches (
+  AudioClip * self);
 
 /**
  * Writes the given audio clip data to a file.

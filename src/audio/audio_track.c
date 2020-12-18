@@ -89,10 +89,10 @@ timestretch_buf (
   ssize_t retrieved =
     stretcher_stretch (
       self->rt_stretcher,
-      &r->ch_frames[0][in_frame_offset],
+      &clip->ch_frames[0][in_frame_offset],
       clip->channels == 1 ?
-        &r->ch_frames[0][in_frame_offset] :
-        &r->ch_frames[1][in_frame_offset],
+        &clip->ch_frames[0][in_frame_offset] :
+        &clip->ch_frames[1][in_frame_offset],
       in_frames_to_process,
       &lbuf_after_ts[out_frame_offset],
       &rbuf_after_ts[out_frame_offset],
@@ -375,11 +375,11 @@ audio_track_fill_stereo_ports_from_clip (
                   if (!needs_rt_timestretch)
                     {
                       lbuf_after_ts[j] =
-                        r->ch_frames[0][buff_index];
+                        clip->ch_frames[0][buff_index];
                       rbuf_after_ts[j] =
                         clip->channels == 1 ?
-                        r->ch_frames[0][buff_index] :
-                        r->ch_frames[1][buff_index];
+                        clip->ch_frames[0][buff_index] :
+                        clip->ch_frames[1][buff_index];
                     }
                 }
 

@@ -114,8 +114,6 @@ audio_region_new (
   position_add_frames (
     &obj->end_pos, clip->num_frames);
 
-  audio_region_init_frame_caches (self, clip);
-
   /* init split points */
   self->split_points_size = 1;
   self->split_points =
@@ -142,6 +140,7 @@ audio_region_new (
   return self;
 }
 
+#if 0
 /**
  * Allocates the frame caches from the frames in
  * the clip.
@@ -192,6 +191,7 @@ audio_region_update_channel_caches (
         }
     }
 }
+#endif
 
 /**
  * Returns the audio clip associated with the
@@ -250,8 +250,6 @@ audio_region_replace_frames (
     frames, num_frames * clip->channels);
 
   audio_clip_write_to_pool (clip, false);
-
-  audio_region_init_frame_caches (self, clip);
 }
 
 /**
@@ -262,12 +260,4 @@ audio_region_replace_frames (
 void
 audio_region_free_members (ZRegion * self)
 {
-  /*free (self->frames);*/
-  for (int i = 0; i < 16; i++)
-    {
-      if (self->ch_frames[i])
-        {
-          free (self->ch_frames[i]);
-        }
-    }
 }

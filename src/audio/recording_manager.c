@@ -156,8 +156,6 @@ handle_stop_recording (
         {
           AudioClip * clip =
             audio_region_get_clip (r);
-          audio_region_init_frame_caches (
-            r, clip);
           audio_clip_write_to_pool (clip, true);
         }
     }
@@ -993,7 +991,7 @@ handle_audio_event (
       cur_local_offset++;
     }
 
-  audio_region_update_channel_caches (region, clip);
+  audio_clip_update_channel_caches (clip);
 
   /* write to pool if 2 seconds passed since last
    * write */

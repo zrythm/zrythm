@@ -149,7 +149,6 @@ track_lane_insert_region (
       AudioClip * clip =
         audio_region_get_clip (region);
       g_return_if_fail (clip);
-      audio_region_init_frame_caches (region, clip);
     }
 }
 
