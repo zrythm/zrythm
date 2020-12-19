@@ -48,8 +48,9 @@ on_closed (ActiveHardwarePopoverWidget *self,
 static void
 get_controllers (
   ActiveHardwarePopoverWidget * self,
-  char ** controllers,
-  int *   num_controllers)
+  char **                       controllers,
+  int *                         num_controllers,
+  int                           max_controllers)
 {
 #if 0
   ExtPort * ports[EXT_PORTS_MAX];
@@ -83,6 +84,12 @@ get_controllers (
           processor->ext_audio_ports[i];
       controllers[(*num_controllers)++] =
         ext_port_get_id (port);
+
+      if (*num_controllers == max_controllers)
+        {
+          g_warn_if_reached ();
+          return;
+        }
     }
 }
 
@@ -125,7 +132,8 @@ static void
 setup (
   ActiveHardwarePopoverWidget * self)
 {
-  char * controllers[60];
+  int max_controllers = 6000;
+  char * controllers[max_controllers];
   int num_controllers = 0;
   int i;
   GtkWidget * chkbtn;
@@ -136,7 +144,8 @@ setup (
 
   /* scan controllers and add them */
   get_controllers (
-    self, controllers, &num_controllers);
+    self, controllers, &num_controllers,
+    max_controllers);
   for (i = 0; i < num_controllers; i++)
     {
       chkbtn =
