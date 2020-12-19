@@ -875,6 +875,8 @@ init_loaded_region (
         AudioClip * clip =
           audio_region_get_clip (self);
         g_return_if_fail (clip);
+        self->last_clip_change =
+          g_get_monotonic_time ();
       }
       break;
     case REGION_TYPE_MIDI:

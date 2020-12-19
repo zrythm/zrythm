@@ -177,3 +177,14 @@ curve_get_normalized_y (
     }
   return val;
 }
+
+bool
+curve_options_are_equal (
+  CurveOptions * a,
+  CurveOptions * b)
+{
+  return
+    a->algo == b->algo &&
+    math_doubles_equal (
+      a->curviness, b->curviness);
+}

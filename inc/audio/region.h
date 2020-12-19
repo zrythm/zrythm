@@ -212,13 +212,6 @@ typedef struct ZRegion
 
   /* ==== CHORD REGION END ==== */
 
-  /** Cache layout for drawing the name. */
-  PangoLayout *      layout;
-
-  /** Cache layout for drawing the chord names
-   * inside the region. */
-  PangoLayout *      chords_layout;
-
   /**
    * Set to ON during bouncing if this
    * region should be included.
@@ -227,11 +220,57 @@ typedef struct ZRegion
    */
   int                bounce;
 
+  /* --- drawing caches --- */
+
+  /* New region drawing needs to be cached in the
+   * following situations:
+   *
+   * 1. when hidden part of the region is revealed
+   *   (on x axis).
+   *   TODO max 140% of the region should be
+   *   cached (20% before and 20% after if before/
+   *   after is not fully visible)
+   * 2. when full rect (x/width) changes
+   * 3. when a region marker is moved
+   * 4. when the clip actually changes (use
+   *   last-change timestamp on the clip or region)
+   * 5. when fades change
+   * 6. when region height changes (track/lane)
+   */
+
+  /** Cache layout for drawing the name. */
+  PangoLayout *      layout;
+
+  /** Cache layout for drawing the chord names
+   * inside the region. */
+  PangoLayout *      chords_layout;
+
   /* these are used for caching */
   GdkRectangle       last_main_full_rect;
 
   /** Last main draw rect. */
   GdkRectangle       last_main_draw_rect;
+
+  /** Last timestamp the audio clip or its contents
+   * changed. */
+  gint64             last_clip_change;
+
+  /** Last timestamp the region was cached. */
+  gint64             last_cache_time;
+
+  /** Extra px cached before the draw rect (x)
+   * TODO. */
+  int                extra_px_before_cached;
+
+  /** Extra px cached after the draw rect (x)
+   * TODO. */
+  int                extra_px_after_cached;
+
+  /** Last known marker positions (only positions
+   * are used). */
+  ArrangerObject     last_positions_obj;
+
+  /* --- drawing caches end --- */
 
   int                magic;
 } ZRegion;

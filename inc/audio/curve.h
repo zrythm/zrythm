@@ -26,6 +26,7 @@
 #ifndef __AUDIO_CURVE_H__
 #define __AUDIO_CURVE_H__
 
+#include <stdbool.h>
 #include "utils/yaml.h"
 
 /**
@@ -153,6 +154,11 @@ curve_get_normalized_y (
   double         x,
   CurveOptions * opts,
   int            start_higher);
+
+bool
+curve_options_are_equal (
+  CurveOptions * a,
+  CurveOptions * b);
 
 /**
  * @}
