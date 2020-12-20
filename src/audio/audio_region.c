@@ -27,6 +27,7 @@
 #include "project.h"
 #include "utils/audio.h"
 #include "utils/dsp.h"
+#include "utils/flags.h"
 #include "utils/io.h"
 #include "zrythm_app.h"
 
@@ -234,6 +235,8 @@ audio_region_set_clip_id (
  * Replaces the region's frames from \ref
  * start_frames with \ref frames.
  *
+ * @param duplicate_clip Whether to duplicate the
+ *   clip (eg, when other regions refer to it).
  * @param frames Frames, interleaved.
  */
 void
@@ -241,9 +244,27 @@ audio_region_replace_frames (
   ZRegion * self,
   float *   frames,
   size_t    start_frame,
-  size_t    num_frames)
+  size_t    num_frames,
+  bool      duplicate_clip)
 {
   AudioClip * clip = audio_region_get_clip (self);
+
+  if (duplicate_clip)
+    {
+      g_warn_if_reached ();
+
+      /* TODO delete */
+      int prev_id = clip->pool_id;
+      int id =
+        audio_pool_duplicate_clip (
+          AUDIO_POOL, clip->pool_id,
+          F_NO_WRITE_FILE);
+      g_return_if_fail (id != prev_id);
+      clip = audio_pool_get_clip (AUDIO_POOL, id);
+      g_return_if_fail (clip);
+
+      self->pool_id = clip->pool_id;
+    }
 
   dsp_copy (
     &clip->frames[start_frame * clip->channels],

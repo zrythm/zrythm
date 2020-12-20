@@ -262,7 +262,8 @@ region_stretch (
           audio_region_get_clip (self);
         int new_clip_id =
           audio_pool_duplicate_clip (
-            AUDIO_POOL, clip->pool_id);
+            AUDIO_POOL, clip->pool_id,
+            F_NO_WRITE_FILE);
         AudioClip * new_clip =
           audio_pool_get_clip (
             AUDIO_POOL, new_clip_id);
@@ -473,6 +474,9 @@ region_get_lane (
   g_return_val_if_reached (NULL);
 }
 
+/**
+ * Returns the region's link group.
+ */
 RegionLinkGroup *
 region_get_link_group (
   ZRegion * self)

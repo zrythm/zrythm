@@ -89,6 +89,23 @@ test_get_ext (void)
 }
 
 static void
+test_strip_ext (void)
+{
+  const char * res;
+
+  res = io_file_strip_ext ("abc.wav");
+  g_assert_cmpstr (res, ==, "abc");
+  res = io_file_strip_ext ("abc.test.wav");
+  g_assert_cmpstr (res, ==, "abc.test");
+  res = io_file_strip_ext ("abctestwav");
+  g_assert_cmpstr (res, ==, "abctestwav");
+  res = io_file_strip_ext ("abctestwav.");
+  g_assert_cmpstr (res, ==, "abctestwav");
+  res = io_file_strip_ext ("...");
+  g_assert_cmpstr (res, ==, "..");
+}
+
+static void
 test_get_files_in_dir (void)
 {
   test_helper_zrythm_init ();
@@ -130,6 +147,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test get files in dir",
     (GTestFunc) test_get_files_in_dir);
+  g_test_add_func (
+    TEST_PREFIX "test strip ext",
+    (GTestFunc) test_strip_ext);
 
   return g_test_run ();
 }

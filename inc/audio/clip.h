@@ -198,6 +198,14 @@ audio_clip_write_to_pool (
   AudioClip * self,
   bool        parts);
 
+char *
+audio_clip_get_path_in_pool_from_name (
+  const char * name);
+
+char *
+audio_clip_get_path_in_pool (
+  AudioClip * self);
+
 /**
  * Returns whether the clip is used inside the
  * project (in actual project regions only, not

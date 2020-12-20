@@ -1205,6 +1205,33 @@ do_or_undo_duplicate_or_link (
               region_set_link_group (
                 region, link_group, true);
             }
+          /* else if we are not linking and this
+           * is a region */
+          else if (obj->type ==
+                     ARRANGER_OBJECT_TYPE_REGION)
+            {
+              /* if this is an audio region,
+               * duplicate the clip */
+              ZRegion * region = (ZRegion *) obj;
+              if (region->id.type ==
+                    REGION_TYPE_AUDIO)
+                {
+                  AudioClip * clip =
+                    audio_region_get_clip (region);
+                  int prev_id = clip->pool_id;
+                  int id =
+                    audio_pool_duplicate_clip (
+                      AUDIO_POOL, clip->pool_id,
+                      F_WRITE_FILE);
+                  g_return_val_if_fail (
+                    id > prev_id, -1);
+                  clip =
+                    audio_pool_get_clip (
+                      AUDIO_POOL, id);
+                  g_return_val_if_fail (clip, -1);
+                  region->pool_id = clip->pool_id;
+                }
+            }
         } /* endif do */
       else /* if undo */
         {
@@ -1719,7 +1746,7 @@ do_or_undo_edit (
           audio_region_replace_frames (
             r, src_clip->frames,
             (size_t) start.frames,
-            num_frames);
+            num_frames, F_NO_DUPLICATE_CLIP);
         }
       else /* not audio function */
         {

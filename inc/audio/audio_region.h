@@ -113,6 +113,8 @@ audio_region_set_clip_id (
  * Replaces the region's frames from \ref
  * start_frames with \ref frames.
  *
+ * @param duplicate_clip Whether to duplicate the
+ *   clip (eg, when other regions refer to it).
  * @param frames Frames, interleaved.
  */
 void
@@ -120,7 +122,8 @@ audio_region_replace_frames (
   ZRegion * self,
   float *   frames,
   size_t    start_frame,
-  size_t    num_frames);
+  size_t    num_frames,
+  bool      duplicate_clip);
 
 /**
  * Frees members only but not the audio region itself.

@@ -220,4 +220,10 @@
 #define F_IGNORE_FROZEN 1
 #define F_NO_IGNORE_FROZEN 0
 
+#define F_DUPLICATE_CLIP 1
+#define F_NO_DUPLICATE_CLIP 0
+
+#define F_WRITE_FILE 1
+#define F_NO_WRITE_FILE 0
+
 #endif

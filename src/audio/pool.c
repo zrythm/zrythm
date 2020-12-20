@@ -23,6 +23,7 @@
 #include "audio/pool.h"
 #include "audio/track.h"
 #include "utils/arrays.h"
+#include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 
@@ -91,18 +92,36 @@ audio_pool_ensure_unique_clip_name (
   AudioClip * clip)
 {
   int i = 1;
-  char * orig_name = clip->name;
-  char * new_name = g_strdup (orig_name);
+  char * orig_name_without_ext =
+    io_file_strip_ext (clip->name);
+  char * orig_path_in_pool =
+    audio_clip_get_path_in_pool (clip);
+  char * new_name =
+    g_strdup (orig_name_without_ext);
 
+  bool changed = false;
   while (name_exists (self, new_name))
     {
       g_free (new_name);
       new_name =
         g_strdup_printf (
-          "%s (%d)", orig_name, i++);
+          "%s (%d)", orig_name_without_ext, i++);
+      changed = true;
+    }
+
+  char * new_path_in_pool =
+    audio_clip_get_path_in_pool_from_name (
+      new_name);
+  if (changed)
+    {
+      g_return_if_fail (
+        !string_is_equal (
+          new_path_in_pool, orig_path_in_pool));
     }
 
   g_free (clip->name);
+  g_free (orig_path_in_pool);
+  g_free (new_path_in_pool);
   clip->name = new_name;
 }
 
@@ -178,12 +197,15 @@ audio_pool_get_clip (
  * Duplicates the clip with the given ID and returns
  * the duplicate.
  *
+ * @param write_file Whether to also write the file.
+ *
  * @return The ID in the pool.
  */
 int
 audio_pool_duplicate_clip (
   AudioPool * self,
-  int         clip_id)
+  int         clip_id,
+  bool        write_file)
 {
   AudioClip * clip =
     audio_pool_get_clip (self, clip_id);
@@ -194,6 +216,20 @@ audio_pool_duplicate_clip (
       clip->frames, clip->num_frames, clip->channels,
       clip->name);
   audio_pool_add_clip (self, new_clip);
+
+  g_message (
+    "duplicating clip %s to %s...",
+    clip->name, new_clip->name);
+
+  /* assert clip names are not the same */
+  g_return_val_if_fail (
+    !string_is_equal (clip->name, new_clip->name),
+    -1);
+
+  if (write_file)
+    {
+      audio_clip_write_to_pool (new_clip, false);
+    }
 
   return new_clip->pool_id;
 }

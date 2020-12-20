@@ -225,9 +225,9 @@ audio_clip_new_recording (
   return self;
 }
 
-static char *
-get_path_in_pool (
-  AudioClip * self)
+char *
+audio_clip_get_path_in_pool_from_name (
+  const char * name)
 {
   char * prj_pool_dir =
     project_get_path (
@@ -235,7 +235,7 @@ get_path_in_pool (
   g_warn_if_fail (
     file_exists (prj_pool_dir));
   char * without_ext =
-    io_file_strip_ext (self->name);
+    io_file_strip_ext (name);
   char * basename =
     g_strdup_printf (
       "%s.wav", without_ext);
@@ -249,6 +249,15 @@ get_path_in_pool (
   g_free (prj_pool_dir);
 
   return new_path;
+}
+
+char *
+audio_clip_get_path_in_pool (
+  AudioClip * self)
+{
+  return
+    audio_clip_get_path_in_pool_from_name (
+      self->name);
 }
 
 /**
@@ -269,7 +278,8 @@ audio_clip_write_to_pool (
 
   /* generate a copy of the given filename in the
    * project dir */
-  char * new_path = get_path_in_pool (self);
+  char * new_path =
+    audio_clip_get_path_in_pool (self);
   audio_clip_write_to_file (
     self, new_path, parts);
   g_free (new_path);
@@ -332,7 +342,8 @@ void
 audio_clip_remove_and_free (
   AudioClip * self)
 {
-  char * path = get_path_in_pool (self);
+  char * path =
+    audio_clip_get_path_in_pool (self);
   g_debug ("removing clip at %s", path);
   io_remove (path);
 

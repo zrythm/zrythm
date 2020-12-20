@@ -121,11 +121,27 @@ io_file_strip_ext (const char * filename)
 {
   g_return_val_if_fail (filename, NULL);
 
-  char ** parts = g_strsplit (filename, ".", 2);
-  char * file_part =
-    g_strdup (parts[0]);
-  g_strfreev (parts);
-  return file_part;
+  /* if last char is a dot, return the string
+   * without the dot */
+  size_t len = strlen (filename);
+  if (filename[len - 1] == '.')
+    {
+      return g_strndup (filename, len - 1);
+    }
+
+  const char * dot = io_file_get_ext (filename);
+
+  /* if no dot, return filename */
+  if (string_is_equal (dot, ""))
+    {
+      return g_strdup (filename);
+    }
+
+  long size = (dot - filename) - 1;
+  char * new_str =
+    g_strndup (filename, (gsize) size);
+
+  return new_str;
 }
 
 /**

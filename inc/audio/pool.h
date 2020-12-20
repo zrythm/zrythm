@@ -111,12 +111,15 @@ audio_pool_add_clip (
  * Duplicates the clip with the given ID and returns
  * the duplicate.
  *
+ * @param write_file Whether to also write the file.
+ *
  * @return The ID in the pool.
  */
 int
 audio_pool_duplicate_clip (
   AudioPool * self,
-  int         clip_id);
+  int         clip_id,
+  bool        write_file);
 
 /**
  * Returns the clip for the given ID.

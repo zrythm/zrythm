@@ -354,6 +354,9 @@ TrackLane *
 region_get_lane (
   const ZRegion * region);
 
+/**
+ * Returns the region's link group.
+ */
 RegionLinkGroup *
 region_get_link_group (
   ZRegion * self);
