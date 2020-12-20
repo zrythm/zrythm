@@ -62,6 +62,12 @@ block_or_unblock_all_handlers (
       g_signal_handler_block (
         self->default_adaptive,
         self->default_adaptive_handler);
+      g_signal_handler_block (
+        self->link_toggle,
+        self->link_handler);
+      g_signal_handler_block (
+        self->last_object_toggle,
+        self->last_object_handler);
     }
   else
     {
@@ -83,19 +89,33 @@ block_or_unblock_all_handlers (
       g_signal_handler_unblock (
         self->default_adaptive,
         self->default_adaptive_handler);
+      g_signal_handler_unblock (
+        self->link_toggle,
+        self->link_handler);
+      g_signal_handler_unblock (
+        self->last_object_toggle,
+        self->last_object_handler);
     }
 }
 
 static void
-refresh_link (
+refresh_link_and_last_object (
   SnapGridPopoverWidget * self)
 {
   block_or_unblock_all_handlers (self, true);
 
   /* whether default controls should be visible */
-  bool visible = !self->owner->snap_grid->link;
+  bool visible =
+    self->owner->snap_grid->length_type ==
+      NOTE_LENGTH_CUSTOM;
   gtk_toggle_button_set_active (
-    self->link_toggle, !visible);
+    self->link_toggle,
+    self->owner->snap_grid->length_type ==
+      NOTE_LENGTH_LINK);
+  gtk_toggle_button_set_active (
+    self->last_object_toggle,
+    self->owner->snap_grid->length_type ==
+      NOTE_LENGTH_LAST_OBJECT);
   gtk_widget_set_visible (
     GTK_WIDGET (self->default_length_box), visible);
   gtk_widget_set_visible (
@@ -116,9 +136,39 @@ on_linked_toggled (
   SnapGridPopoverWidget * self)
 {
   bool link = gtk_toggle_button_get_active (btn);
-  self->owner->snap_grid->link = link;
+  if (link)
+    {
+      self->owner->snap_grid->length_type =
+        NOTE_LENGTH_LINK;
+    }
+  else
+    {
+      self->owner->snap_grid->length_type =
+        NOTE_LENGTH_CUSTOM;
+    }
 
-  refresh_link (self);
+  refresh_link_and_last_object (self);
+}
+
+static void
+on_last_object_toggled (
+  GtkToggleButton *       btn,
+  SnapGridPopoverWidget * self)
+{
+  bool last_object =
+    gtk_toggle_button_get_active (btn);
+  if (last_object)
+    {
+      self->owner->snap_grid->length_type =
+        NOTE_LENGTH_LAST_OBJECT;
+    }
+  else
+    {
+      self->owner->snap_grid->length_type =
+        NOTE_LENGTH_CUSTOM;
+    }
+
+  refresh_link_and_last_object (self);
 }
 
 static void
@@ -291,8 +341,13 @@ snap_grid_popover_widget_new (
     g_signal_connect (
       GTK_WIDGET (self->link_toggle), "toggled",
       G_CALLBACK (on_linked_toggled), self);
+  self->last_object_handler =
+    g_signal_connect (
+      GTK_WIDGET (self->last_object_toggle),
+      "toggled",
+      G_CALLBACK (on_last_object_toggled), self);
 
-  refresh_link (self);
+  refresh_link_and_last_object (self);
 
   return self;
 }
@@ -319,6 +374,7 @@ snap_grid_popover_widget_class_init (SnapGridPopoverWidgetClass * _klass)
   BIND_CHILD (default_dotted_toggle);
   BIND_CHILD (default_adaptive);
   BIND_CHILD (link_toggle);
+  BIND_CHILD (last_object_toggle);
 
 #undef BIND_CHILD
 

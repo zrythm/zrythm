@@ -323,6 +323,7 @@
                     <child>
                       <object class="GtkToggleButton" id="link_toggle">
                         <property name="label" translatable="yes">Link</property>
+                        <property name="tooltip_text" translatable="yes">Link length to snap setting</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
@@ -330,6 +331,20 @@
                       <packing>
                         <property name="left_attach">0</property>
                         <property name="top_attach">2</property>
+                        <property name="width">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToggleButton" id="last_object_toggle">
+                        <property name="label" translatable="yes">Last object</property>
+                        <property name="tooltip_text" translatable="yes">Use last created object's length</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">3</property>
                         <property name="width">2</property>
                       </packing>
                     </child>

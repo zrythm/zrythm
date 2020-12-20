@@ -261,9 +261,9 @@ Args:
              "coremidi-rtmidi"))
          (print-enum
            "language"
-           '("af_ZA" "ar" "cs" "da" "de" "en"
+           '("af_ZA" "ar" "de" "en"
              "en_GB" "el"
-             "es" "et" "fi" "fr" "gd" "gl" "hi" "it"
+             "es" "fr" "gl" "hi" "it"
              "ja" "ko" "nb_NO" "nl" "pl" "pt" "pt_BR"
              "ru" "sv" "zh_CN" "zh_TW"))
          (print-enum
@@ -361,6 +361,7 @@ Args:
                  "Last directory a project was created in.")
              ))) ;; general
 
+         ;; UI schema
          (schema-print
            (make-schema
              "ui"
@@ -383,6 +384,11 @@ Args:
                  "note-type" "normal"
                  "Timeline object length type"
                  "Default length type to use when creating timeline objects (normal, dotted, triplet).")
+               (make-schema-key-with-range
+                 "timeline-last-object-length" "d"
+                 "1.0" "10000000000.0" "3840.0"
+                 "Last timeline object's length"
+                 "The length of the last created timeline object (in ticks).")
                (make-schema-key-with-enum
                  "editor-object-length"
                  "note-length" "1/1"
@@ -393,6 +399,11 @@ Args:
                  "note-type" "normal"
                  "Editor object length type"
                  "Default length type to use when creating editor objects (normal, dotted, triplet).")
+               (make-schema-key-with-range
+                 "editor-last-object-length" "d"
+                 "1.0" "10000000000.0" "480.0"
+                 "Last editor object's length"
+                 "The length of the last created editor object (in ticks).")
                (make-schema-key-with-enum
                  "piano-roll-note-notation"
                  "note-notation" "notes"

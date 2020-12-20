@@ -69,8 +69,31 @@ typedef enum NoteType
   NOTE_TYPE_TRIPLET ///< 3/2 of its original size
 } NoteType;
 
+typedef enum NoteLengthType
+{
+  /** Custom length. */
+  NOTE_LENGTH_CUSTOM,
+
+  /** Link length with snap setting. */
+  NOTE_LENGTH_LINK,
+
+  /** Use last created object's length. */
+  NOTE_LENGTH_LAST_OBJECT,
+} NoteLengthType;
+
+/**
+ * Snap grid type.
+ */
+typedef enum SnapGridType
+{
+  SNAP_GRID_TYPE_TIMELINE,
+  SNAP_GRID_TYPE_EDITOR,
+} SnapGridType;
+
 typedef struct SnapGrid
 {
+  SnapGridType     type;
+
   /**
    * If this is on, the snap note length will be
    * determined automatically based on the current
@@ -118,9 +141,10 @@ typedef struct SnapGrid
    */
   bool             default_adaptive;
 
-  /** Whether to use the "snap" options as default
-   * length or not. */
-  bool             link;
+  /**
+   * See NoteLengthType.
+   */
+  NoteLengthType   length_type;
 
   /**
    * Snap points to be used by the grid and by
@@ -133,6 +157,13 @@ typedef struct SnapGrid
   int              num_snap_points;
   size_t           snap_points_size;
 } SnapGrid;
+
+static const cyaml_strval_t
+snap_grid_type_strings[] =
+{
+  { "timeline",     SNAP_GRID_TYPE_TIMELINE    },
+  { "editor",       SNAP_GRID_TYPE_EDITOR   },
+};
 
 static const cyaml_strval_t
 note_length_strings[] =
@@ -156,6 +187,14 @@ note_type_strings[] =
   { "triplet",      NOTE_TYPE_TRIPLET   },
 };
 
+static const cyaml_strval_t
+note_length_type_strings[] =
+{
+  { "custom",       NOTE_LENGTH_CUSTOM    },
+  { "link",         NOTE_LENGTH_LINK   },
+  { "last object",  NOTE_LENGTH_LAST_OBJECT   },
+};
+
 /**
  * These are not meant to be serialized, they are
  * only used for convenience.
@@ -172,6 +211,8 @@ static const cyaml_schema_field_t
   snap_grid_fields_schema[] =
 {
   YAML_FIELD_ENUM (
+    SnapGrid, type, snap_grid_type_strings),
+  YAML_FIELD_ENUM (
     SnapGrid, snap_note_length, note_length_strings),
   YAML_FIELD_ENUM (
     SnapGrid, snap_note_type, note_type_strings),
@@ -184,8 +225,9 @@ static const cyaml_schema_field_t
     SnapGrid, default_note_type, note_type_strings),
   YAML_FIELD_INT (
     SnapGrid, default_adaptive),
-  YAML_FIELD_INT (
-    SnapGrid, link),
+  YAML_FIELD_ENUM (
+    SnapGrid, length_type,
+    note_length_type_strings),
   YAML_FIELD_INT (
     SnapGrid, snap_to_grid),
   YAML_FIELD_INT (
@@ -206,6 +248,7 @@ snap_grid_schema = {
 void
 snap_grid_init (
   SnapGrid *   self,
+  SnapGridType type,
   NoteLength   note_length);
 
 int

@@ -21,6 +21,7 @@
 #include "audio/snap_grid.h"
 #include "audio/transport.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/algorithms.h"
 #include "utils/arrays.h"
 
@@ -183,9 +184,27 @@ int
 snap_grid_get_default_ticks (
   SnapGrid * self)
 {
-  if (self->link)
+  if (self->length_type == NOTE_LENGTH_LINK)
     {
       return snap_grid_get_snap_ticks (self);
+    }
+  else if (self->length_type ==
+             NOTE_LENGTH_LAST_OBJECT)
+    {
+      double last_obj_length = 0.0;
+      if (self->type == SNAP_GRID_TYPE_TIMELINE)
+        {
+          last_obj_length =
+            g_settings_get_double (
+              S_UI, "timeline-last-object-length");
+        }
+      else if (self->type == SNAP_GRID_TYPE_EDITOR)
+        {
+          last_obj_length =
+            g_settings_get_double (
+              S_UI, "editor-last-object-length");
+        }
+      return (int) last_obj_length;
     }
   else
     {
@@ -233,15 +252,17 @@ snap_grid_update_snap_points (SnapGrid * self)
 void
 snap_grid_init (
   SnapGrid *   self,
+  SnapGridType type,
   NoteLength   note_length)
 {
+  self->type = type;
   self->num_snap_points = 0;
   self->snap_note_length = note_length;
   self->snap_note_type = NOTE_TYPE_NORMAL;
   self->default_note_length = note_length;
   self->default_note_type = NOTE_TYPE_NORMAL;
   self->snap_to_grid = true;
-  self->link = true;
+  self->length_type = NOTE_LENGTH_LAST_OBJECT;
 
   self->snap_points =
     calloc (1, sizeof (Position));

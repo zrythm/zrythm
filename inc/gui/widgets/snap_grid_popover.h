@@ -84,6 +84,10 @@ typedef struct _SnapGridPopoverWidget
   GtkToggleButton *  link_toggle;
   gulong             link_handler;
 
+  /** Toggle to use last object's length. */
+  GtkToggleButton *  last_object_toggle;
+  gulong             last_object_handler;
+
 } SnapGridPopoverWidget;
 
 /**

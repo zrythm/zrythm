@@ -28,8 +28,10 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/arranger_selections.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/center_dock.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/object_utils.h"
@@ -1523,6 +1525,38 @@ do_or_undo_create_or_delete (
               /* remove it */
               arranger_object_remove_from_project (
                 obj);
+            }
+        }
+    }
+
+  /* if first time creating the object, save the
+   * length for use by SnapGrid */
+  if (ZRYTHM_HAVE_UI && self->first_run &&
+      create && _do && size == 1)
+    {
+      ArrangerObject * obj = objs[0];
+      obj = arranger_object_find (obj);
+      g_return_val_if_fail (obj, -1);
+      if (arranger_object_type_has_length (
+            obj->type))
+        {
+          double ticks =
+            arranger_object_get_length_in_ticks (
+              obj);
+          ArrangerWidget * arranger =
+            arranger_object_get_arranger (obj);
+          if (arranger->type ==
+                ARRANGER_WIDGET_TYPE_TIMELINE)
+            {
+              g_settings_set_double (
+                S_UI, "timeline-last-object-length",
+                ticks);
+            }
+          else
+            {
+              g_settings_set_double (
+                S_UI, "editor-last-object-length",
+                ticks);
             }
         }
     }

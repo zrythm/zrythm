@@ -735,12 +735,14 @@ create_default (Project * self)
 
   snap_grid_init (
     &self->snap_grid_timeline,
+    SNAP_GRID_TYPE_TIMELINE,
     NOTE_LENGTH_1_1);
   quantize_options_init (
     &self->quantize_opts_timeline,
     NOTE_LENGTH_1_1);
   snap_grid_init (
     &self->snap_grid_midi,
+    SNAP_GRID_TYPE_EDITOR,
     NOTE_LENGTH_1_8);
   quantize_options_init (
     &self->quantize_opts_editor,

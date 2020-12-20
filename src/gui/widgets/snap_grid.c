@@ -46,25 +46,31 @@ set_label (SnapGridWidget * self)
     snap_grid_stringize (
       sg->snap_note_length,
       sg->snap_note_type);
-  char * default_str =
-    snap_grid_stringize (
-      sg->default_note_length,
-      sg->default_note_type);
 
   char new_str[600];
-  if (sg->link)
+  if (sg->length_type == NOTE_LENGTH_LINK)
     {
-      sprintf (new_str, "%s", snap_str);
+      sprintf (new_str, "%s - 🔗", snap_str);
+    }
+  else if (sg->length_type ==
+             NOTE_LENGTH_LAST_OBJECT)
+    {
+      sprintf (
+        new_str, _("%s - Last object"), snap_str);
     }
   else
     {
+      char * default_str =
+        snap_grid_stringize (
+          sg->default_note_length,
+          sg->default_note_type);
       sprintf (
         new_str, "%s - %s", snap_str, default_str);
+      g_free (default_str);
     }
   gtk_label_set_text (self->label, new_str);
 
   g_free (snap_str);
-  g_free (default_str);
 }
 
 void
