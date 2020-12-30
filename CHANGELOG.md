@@ -1,6 +1,32 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.7.0.1] - 2020-12-30
+### Added
+- Add reset right click option in categories in plugin browser
+- Plugin collections
+- Filter by protocol in plugin browser
+- Snap to events and snap-and-keep-offset
+- Recording modes: overwrite events, merge events, takes (mute previous)
+- Projects are now samplerate agnostic
+- Snap length option: last object
+
+### Changed
+- Do not show bug report popup within 8 seconds of previous one
+- Move snap settings from main toolbar to each arranger
+- Disarm transport record after recording
+- Reference clip frames directly for audio regions instead of duplicating the buffers (lowers RAM usage)
+- Improved region drawing performance (better caching)
+
+### Fixed
+- Fix file browser divider position not being loaded properly
+- Fix preferences dialog crash when more than 60 audio input ports exist
+- Fix clip not being duplicated when duplicating audio regions
+- Fix selected language not being picked properly
+- Fix lane regions not being shown when main region is not visible
+- Fix MIDI notes being muted when region is looped and note starts before clip start marker
+- Fix crash when quantizing in audio editor
+
 ## [1.0.0-alpha.6.0.1] - 2020-12-11
 ### Added
 - Audio selection and functions (invert, reverse, normalize) in audio editor
