@@ -736,7 +736,9 @@ midi_track_fill_midi_events (
                     }
                   if (arranger_object_get_muted (
                         mn_obj))
-                    continue;
+                    {
+                      continue;
+                    }
 
                   /* add note ons during region
                    * loop */
@@ -753,10 +755,7 @@ midi_track_fill_midi_events (
                   /* add note ons in normal case */
                   else if (
                     region_hit_exclusive &&
-                    /* make sure note is after clip
-                     * start */
-                    mn_obj->pos.frames >=
-                      r_obj->clip_start_pos.frames &&
+                    mn_obj->pos.frames >= 0 &&
                     mn_obj->pos.frames >=
                       r_local_pos &&
                     mn_obj->pos.frames <
@@ -764,6 +763,20 @@ midi_track_fill_midi_events (
                     mn_obj->pos.frames <
                       r_local_end_pos)
                     {
+#if 0
+                      /* note: the following was
+                       * part of the "else if"
+                       * above - not sure why. it
+                       * doesn't work if the note
+                       * starts before the clip
+                       * start and should play eg,
+                       * in the 2nd loop */
+                      /* make sure note is after
+                       * clip start */
+                      mn_obj->pos.frames >=
+                        r_obj->clip_start_pos.
+                          frames;
+#endif
                       g_message (
                         "normal note on");
                       time =

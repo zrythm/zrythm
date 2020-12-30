@@ -625,6 +625,45 @@ test_fill_midi_events ()
   midi_events_clear (events, 1);
 
   /**
+   * Premise:
+   * ZRegion <2.1.1.0 ~ 4.1.1.0>
+   *   loop start <1.1.1.0>
+   *   clip start <1.3.1.0>
+   *   loop end <2.1.1.0>
+   * MidiNote <1.1.1.0 ~ (400 frames)>
+   * Playhead <3.1.1.0>
+   *
+   * Expected result:
+   * 1 MIDI note on.
+   */
+  position_set_to_bar (
+    &r_obj->pos, 2);
+  position_set_to_bar (
+    &r_obj->end_pos, 4);
+  position_set_to_bar (
+    &r_obj->loop_start_pos, 1);
+  position_set_to_bar (
+    &r_obj->loop_end_pos, 2);
+  position_set_to_bar (
+    &mn_obj->pos, 1);
+  position_set_to_bar (&pos, 1);
+  position_add_frames (&pos, 400);
+  position_set_to_pos (
+    &mn_obj->end_pos, &pos);
+  position_set_to_bar (&pos, 3);
+  midi_track_fill_midi_events (
+    track, pos.frames, 0, BUFFER_SIZE,
+    events);
+  midi_events_print (events, 1);
+  g_assert_cmpint (
+    events->num_queued_events, ==, 1);
+  ev = &events->queued_events[0];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
+  g_assert_cmpuint (ev->time, ==, 0);
+  midi_events_clear (events, 1);
+
+  /**
    * TODO
    * Premise: note starts on transport loop end.
    * Start: on transport loop end
