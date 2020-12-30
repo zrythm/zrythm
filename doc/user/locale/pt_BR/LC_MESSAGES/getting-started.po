@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-12-02 23:29+0000\n"
+"PO-Revision-Date: 2020-12-30 23:03+0000\n"
 "Last-Translator: Arthur O. Reis <aor@cesar.school>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/manualgetting-started/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../getting-started/getting-plugins.rst:8
@@ -34,6 +34,9 @@ msgid ""
 "users are expected to download and install their own plugins that suit "
 "their preferences."
 msgstr ""
+"Zrythm vem com alguns plugins que ajudam o usuário a começar, porém é "
+"esperado que o usuário faça o download e instalação de plugins externos de "
+"acordo com suas preferências e necessidades."
 
 #: ../../getting-started/getting-plugins.rst:18
 msgid ""
@@ -48,6 +51,8 @@ msgid ""
 "For other systems, you can find a `list of free software plugins here "
 "<https://github.com/webprofusion/OpenAudio>`_."
 msgstr ""
+"Para outros sistemas você encontra `uma lista com plugins grátis e livres "
+"aqui <https://github.com/webprofusion/OpenAudio>`_"
 
 #: ../../getting-started/getting-plugins.rst:26
 msgid ""
@@ -71,7 +76,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:37
 msgid "Recommended Plugin Bundles"
-msgstr ""
+msgstr "Pacotes de Plugins Recomendados"
 
 #: ../../getting-started/getting-plugins.rst:39
 msgid ""
@@ -104,6 +109,8 @@ msgid ""
 "`X42 Plugins <http://x42-plugins.com/x42/>`_ is a collection of various "
 "MIDI effect and meter plugins."
 msgstr ""
+"`X42 Plugins <http://x42-plugins.com/x42/>`_ é uma coleção de vários plugins "
+"de efeito MIDI e de métricas."
 
 #: ../../getting-started/getting-plugins.rst:54
 msgid "Synths"
@@ -114,13 +121,12 @@ msgid "`Helm <https://tytel.org/helm/>`_ is a powerful subtractive synthesizer."
 msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:59
-#, fuzzy
 msgid ""
 "`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synthesizer "
 "that is closely modeled on the Yamaha DX7."
 msgstr ""
-"`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed é um sintetizador FM que"
-" é modelado de forma muito próxima ao Yamaha DX7."
+"`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed é um sintetizador FM que é "
+"modelado de forma muito próxima ao Yamaha DX7."
 
 #: ../../getting-started/getting-plugins.rst:62
 msgid ""
@@ -145,23 +151,27 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:77
 msgid "SFZ/SF2 Instruments"
-msgstr ""
+msgstr "Instrumentos SFZ/SF2"
 
 #: ../../getting-started/getting-plugins.rst:79
 msgid ""
 "You can find a list of SFZ instruments under free licenses at `sfz "
 "instruments <https://sfzinstruments.github.io/>`_."
 msgstr ""
+"Você encontra uma lista de instrumentos SFZ sob licença permissiva em `sfz "
+"instruments <https://sfzinstruments.github.io/>`_."
 
 #: ../../getting-started/getting-plugins.rst:83
 msgid "Samples"
-msgstr ""
+msgstr "Samples"
 
 #: ../../getting-started/getting-plugins.rst:85
 msgid ""
 "We recommend using `Freesound <https://freesound.org/>`_ for collecting "
 "CC-licensed samples."
 msgstr ""
+"Nós recomendamos usar o site `Freesound <https://freesound.org/>`_ para "
+"encontrar samples sob a licença CC."
 
 #: ../../getting-started/installation.rst:6
 msgid "Installation"
@@ -177,6 +187,9 @@ msgid ""
 " system using an installer from the `Download "
 "<https://www.zrythm.org/en/download.html>`_ page on our website."
 msgstr ""
+"Você pode instalar a última versão do Zrythm para sua distro ou sistema "
+"operacional usando um instalador da pagina `Download <https://www.zrythm.org/"
+"en/download.html>`_ de nosso site."
 
 #: ../../getting-started/installation.rst:18
 #, fuzzy
@@ -193,7 +206,7 @@ msgstr "Os instaladores também incluem plugins integrados."
 
 #: ../../getting-started/installation.rst:25
 msgid "Manual Installation"
-msgstr ""
+msgstr "Instalação manual"
 
 #: ../../getting-started/installation.rst:26
 msgid ""
@@ -202,6 +215,9 @@ msgid ""
 "<https://www.zrythm.org/releases/>`_ or `git "
 "<https://git.zrythm.org/cgit/zrythm/>`_."
 msgstr ""
+"Se você for um usuário avançado, é possível compilar Zrythm usando o código "
+"fonte, usando tanto um `tarball <https://www.zrythm.org/releases/>`_ quanto `"
+"git <https://git.zrythm.org/cgit/zrythm/>`_."
 
 #: ../../getting-started/installation.rst:31
 msgid ""
@@ -213,7 +229,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:36
 msgid "GNU/Linux"
-msgstr ""
+msgstr "GNU/Linux"
 
 #: ../../getting-started/installation.rst:39
 msgid "Installer"
@@ -221,7 +237,7 @@ msgstr "Instalador"
 
 #: ../../getting-started/installation.rst:40
 msgid "The installer supports the following distributions (and derivatives):"
-msgstr ""
+msgstr "O instalador tem suporte às seguintes distribuições (e derivados):"
 
 #: ../../getting-started/installation.rst:43
 msgid "**Arch Linux** - x86_64"
