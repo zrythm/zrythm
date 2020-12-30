@@ -138,9 +138,12 @@ draw_arranger_object (
         obj, self);
 
       /* only draw if the object's rectangle is
-       * hit by the drawable region */
+       * hit by the drawable region (for regions,
+       * the logic is handled inside region_draw()
+       * so the check is skipped) */
       if (ui_rectangle_overlap (
-            &obj->full_rect, rect))
+            &obj->full_rect, rect) ||
+          obj->type == ARRANGER_OBJECT_TYPE_REGION)
         {
           arranger_object_draw (
             obj, self, cr, rect);

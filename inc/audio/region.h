@@ -251,20 +251,18 @@ typedef struct ZRegion
   /** Last main draw rect. */
   GdkRectangle       last_main_draw_rect;
 
+  /* these are used for caching */
+  GdkRectangle       last_lane_full_rect;
+
+  /** Last lane draw rect. */
+  GdkRectangle       last_lane_draw_rect;
+
   /** Last timestamp the audio clip or its contents
    * changed. */
   gint64             last_clip_change;
 
   /** Last timestamp the region was cached. */
   gint64             last_cache_time;
-
-  /** Extra px cached before the draw rect (x)
-   * TODO. */
-  int                extra_px_before_cached;
-
-  /** Extra px cached after the draw rect (x)
-   * TODO. */
-  int                extra_px_after_cached;
 
   /** Last known marker positions (only positions
    * are used). */

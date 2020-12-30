@@ -280,6 +280,9 @@ z_cairo_get_surface_from_icon_name (
  *
  * To be used inside draw calls of widgets that
  * use caching.
+ *
+ * @param width New surface width.
+ * @param height New surface height.
  */
 void
 z_cairo_reset_caches (
@@ -289,11 +292,17 @@ z_cairo_reset_caches (
   int                height,
   cairo_t *          new_cr)
 {
+  g_return_if_fail (width < 8000 && height < 8000);
+
   if (*surface_cache)
-    cairo_surface_destroy (
-      *surface_cache);
+    {
+      cairo_surface_destroy (
+        *surface_cache);
+    }
   if (*cr_cache)
-    cairo_destroy (*cr_cache);
+    {
+      cairo_destroy (*cr_cache);
+    }
 
   *surface_cache =
     cairo_surface_create_similar (

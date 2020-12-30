@@ -229,6 +229,9 @@ z_cairo_create_default_pango_layout (
  *
  * To be used inside draw calls of widgets that
  * use caching.
+ *
+ * @param width New surface width.
+ * @param height New surface height.
  */
 void
 z_cairo_reset_caches (

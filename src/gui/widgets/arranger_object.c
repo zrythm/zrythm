@@ -687,14 +687,19 @@ arranger_object_set_full_rectangle (
 
         self->full_rect.x =
           ui_pos_to_px_timeline (
-            &self->pos,
-            1);
+            &self->pos, true);
+        Position tmp;
+        position_from_ticks (
+          &tmp,
+          self->end_pos.total_ticks -
+            self->pos.total_ticks);
         self->full_rect.width =
-          (ui_pos_to_px_timeline (
-            &self->end_pos,
-            1) - self->full_rect.x) - 1;
+          ui_pos_to_px_timeline (
+            &tmp, false) - 1;
         if (self->full_rect.width < 1)
-          self->full_rect.width = 1;
+          {
+            self->full_rect.width = 1;
+          }
 
         gint wx, wy;
 
