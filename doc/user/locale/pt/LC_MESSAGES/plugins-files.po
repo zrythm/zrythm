@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-11-16 19:28+0000\n"
+"PO-Revision-Date: 2020-12-09 01:29+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/pt/>\n"
@@ -114,7 +114,6 @@ msgstr ""
 "permitir que faça alterações."
 
 #: ../../plugins-files/plugins/inspector-page.rst:22
-#, fuzzy
 msgid "Display"
 msgstr "Mostrar"
 
