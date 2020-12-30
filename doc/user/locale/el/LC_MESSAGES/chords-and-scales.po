@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 15:23+0000\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"PO-Revision-Date: 2020-12-09 01:29+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
 "manualchords-and-scales/el/>\n"
@@ -17,12 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../chords-and-scales/intro.rst:6
 msgid "Chords and Scales"
-msgstr ""
+msgstr "Συγχορδίες και κλίμακες"
 
 #: ../../chords-and-scales/overview.rst:6
 msgid "Overview"
@@ -33,6 +33,9 @@ msgid ""
 "Chords and scales can be used to easily try out various chords and to "
 "make it easier to follow chord progressions."
 msgstr ""
+"Οι συγχορδίες και οι κλίμακες μπορούν να χρησιμοποιηθούν για την εύκολη "
+"δοκιμή διάφορων συγχορδιών και για να γίνει ευκολότερη η σύνθεση ακολουθιών "
+"συγχορδιών."
 
 #: ../../chords-and-scales/overview.rst:12
 msgid "Chord Pad"
@@ -44,15 +47,18 @@ msgid ""
 "can be used to trigger chords. The chord pad can be found in the bottom "
 "panel."
 msgstr ""
+"Η ταμπλέτα συγχορδιών περιέχει 12 ταμπλέτες (1 για κάθε πλήκτρο "
+"πληκτρολόγιου πιάνου) που μπορεί να χρησιμοποιηθεί για την πυροδότηση "
+"συγχορδιών. Η ταμπλέτα συγχορδιών μπορεί να βρεθεί στο κάτω πάνελ."
 
 #: ../../chords-and-scales/overview.rst:18
 #: ../../chords-and-scales/overview.rst:74
 msgid "This is a TODO feature."
-msgstr ""
+msgstr "Αυτό είναι ένα χαρακτηριστικό ΓΙΑΝΑΓΙΝΕΙ."
 
 #: ../../chords-and-scales/overview.rst:21
 msgid "Chord Track"
-msgstr ""
+msgstr "Κομμάτι συγχορδιών"
 
 #: ../../chords-and-scales/overview.rst:23
 msgid ""
@@ -60,18 +66,23 @@ msgid ""
 "and these can then be used to dictate what chord and scale is active "
 "when. For example, you can specify a chord progression as follows."
 msgstr ""
+"Οι περιοχές συγχορδιών και τα αντικείμενα κλιμάκων μπορούν να "
+"χρησιμοποιηθούν μέσα στο κόμματι συγχορδιών, και στη συνέχεια μπορούν να "
+"υπαγορεύσουν ποια συγχορδία και κλίμακα είναι ενεργή και πότε. Για "
+"παράδειγμα, μπορείτε να προσδιορίσετε μια ακολουθία συγχορδιών ως εξής."
 
 #: ../../chords-and-scales/overview.rst:33
 msgid "Chord region and scale inside the chord track in the timeline."
 msgstr ""
+"Περιοχή συγχορδιών και κλιμάκων μέσα στο κομμάτι συγχορδιών στο χρονολόγιο."
 
 #: ../../chords-and-scales/overview.rst:40
 msgid "Chord objects inside the chord region above."
-msgstr ""
+msgstr "Αντικείμενα συγχορδιών μέσα στην περιοχή συγχορδιών από πάνω."
 
 #: ../../chords-and-scales/overview.rst:43
 msgid "Highlighting"
-msgstr ""
+msgstr "Επισήμανση"
 
 #: ../../chords-and-scales/overview.rst:45
 msgid ""
@@ -79,28 +90,34 @@ msgid ""
 "corresponding to the scale, chord, or both at the position of the "
 "playhead."
 msgstr ""
+"Μπορείτε στη συνέχεια να χρησιμοποιήσετε τη λειτουργία επισήμανσης μέσα σε "
+"περιοχές MIDI για να επισημάνετε τις νότες που αντιστοιχούν στην κλίμακα, "
+"συγχορδία, ή και στις δύο στη θέση της κεφαλής αναπαραγωγής."
 
 #: ../../chords-and-scales/overview.rst:53
 msgid "Chord highlighting."
-msgstr ""
+msgstr "Επισήμανση συγχορδιών."
 
 #: ../../chords-and-scales/overview.rst:59
 msgid "Scale highlighting."
-msgstr ""
+msgstr "Επισήμανση κλιμάκων."
 
 #: ../../chords-and-scales/overview.rst:65
 msgid "Scale and chord highlighting."
-msgstr ""
+msgstr "Επισήμανση κλιμάκων κα συγχορδιών."
 
 #: ../../chords-and-scales/overview.rst:68
 msgid "Live Audition"
-msgstr ""
+msgstr "Ζωντανή ακρόαση"
 
 #: ../../chords-and-scales/overview.rst:70
 msgid ""
 "You can route the output of the chord track to a MIDI or Instrument track"
 " for live auditioning of the chord track's events."
 msgstr ""
+"Μπορείτε να δρομολογήσετε το εξαγόμενο του κομματιού συγχορδιών σε ένα "
+"κομμάτι MIDI ή οργάνων για ζωντανή ακρόαση των γεγονότων του κομματιού "
+"συγχορδιών."
 
 #~ msgid "TODO"
 #~ msgstr ""

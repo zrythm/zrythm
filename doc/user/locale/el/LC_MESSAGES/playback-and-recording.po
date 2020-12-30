@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"PO-Revision-Date: 2020-12-11 00:29+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/el/>\n"
@@ -17,12 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
 msgid "BPM and Time Signatures"
-msgstr ""
+msgstr "Χτύποι ανά λεπτό (BPM) και μέτρα"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
 msgid "BPM"
@@ -33,6 +33,8 @@ msgid ""
 "The BPM can be set to between 40 and 360 by clicking and dragging the BPM"
 " widget."
 msgstr ""
+"Οι χτύποι ανά λεπτό (BPM) μπορούν να οριστούν μεταξύ 40 και 360 κάνοντας "
+"κλικ και σύροντας το γραφικό στοιχείο BPM."
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:17
 msgid ""
@@ -40,6 +42,9 @@ msgid ""
 "(e.g., from 140.24 to 141.24) and clicking and dragging on the decimal "
 "counterpart will change the decimal value (e.g., frrom 140.24 to 140.25)."
 msgstr ""
+"Κάνοντας κλικ και σύροντας το ακέραιο μέρος θα αλλάξει τον ακέραιο (π.χ., "
+"από 140.24 σε 141.24), ενώ κάνοντας κλικ και σύροντας το δεκαδικό μέρος θα "
+"αλλάξει τη δεκαδική τιμή (π.χ. από 140.24 σε 140.25)."
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:25
 msgid "Time Signature"
@@ -47,64 +52,75 @@ msgstr "Μέτρο"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:30
 msgid "The Time Signature is split into the following"
-msgstr ""
+msgstr "Το μέτρο διαχωρίζεται στα εξής"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:34
 msgid "Beats per Bar"
-msgstr ""
+msgstr "Χτύποι ανά μπάρα"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:33
 msgid ""
 "This is the top number that indicates the number of Beats that should be "
 "in a Bar. It can be set from 1 to 16."
 msgstr ""
+"Αυτός είναι ο πάνω αριθμός που υποδεικνύει τον αριθμό χτύπων που πρέπει να "
+"υπάρχουν σε μία μπάρα. Μπορεί να οριστεί από 1 έως 16."
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:38
 msgid "Beat Unit"
-msgstr ""
+msgstr "Μονάδα χτύπου"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:37
 msgid ""
 "This is the bottom number that indicates the beat unit to be used. It can"
 " be set to 2, 4, 8 or 16."
 msgstr ""
+"Αυτός είναι ο κάτω αριθμός που υποδεικνύει τη μονάδα χτύπου προς χρήση. "
+"Μπορεί να οριστεί σε 2, 4, 8 ή 16."
 
 #: ../../playback-and-recording/intro.rst:6
 msgid "Playback and Recording"
-msgstr ""
+msgstr "Αναπαραγωγή και ηχογράφηση"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:6
 msgid "Loop Points and Markers"
-msgstr ""
+msgstr "Σημεία λούπας και σημάδια"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:11
 msgid "Loop Points"
-msgstr ""
+msgstr "Σημεία λούπας"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:16
 msgid ""
 "The loop points indicate the area that will be looped during playback, if"
 " looping is enabled."
 msgstr ""
+"Τα σημεία λούπας υποδεικνύουν το μέρος που θα λουπαριστεί κατά την "
+"αναπαραγωγή, αν είναι ενεργοποιημένη η λούπα."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:19
 #: ../../playback-and-recording/loop-points-and-markers.rst:32
 msgid "This only applies to the timeline ruler, covered in :ref:`timeline-ruler`."
 msgstr ""
+"Αυτό ισχύει μόνο στον χάρακα χρονολογίου, ο οποίος καλύπτεται στο :ref"
+":`timeline-ruler`."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:23
 msgid "Cue Point"
-msgstr ""
+msgstr "Σημείο cue"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:28
 msgid ""
 "The cue point is where the playhead will move to when Play is clicked "
 "while playing or when Stop is clicked while paused."
 msgstr ""
+"Το σημείο cue είναι εκεί που θα μετακινηθεί η κεφαλή αναπαραγωγής όταν "
+"πατηθεί η έναρξη την ώρα της αναπαραγωγής ή όταν πατηθεί η παύση ενώ υπάρχει "
+"παύση."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:36
 msgid "Song Start & End Markers"
-msgstr ""
+msgstr "Έναρξη τραγουδιού & σημάδια τέλους"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:41
 msgid ""
@@ -112,6 +128,9 @@ msgid ""
 "Song will start. This is mainly used for exporting the mixdown into "
 "audio."
 msgstr ""
+"Το σημάδι αρχής τραγουδιού συμβολίζει τη θέση στο χρονολόγιο όπου το "
+"τραγούδι θα ξεκινήσει. Αυτό χρησιμοποιείται κυρίως για την εξαγωγή της μίξης "
+"σε ήχο."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:46
 msgid ""
@@ -119,18 +138,23 @@ msgid ""
 " will end. Likewise, it is mainly used for exporting the mixdown into "
 "audio."
 msgstr ""
+"Το σημάδι τέλους τραγουδιού συμβολίζει τη θέση στο χρονολόγιο όπου το "
+"τραγούδι θα τελειώσει. Παρομοίως, χρησιμοποιείται κυρίως για την εξαγωγή της "
+"μίξης σε ήχο."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:51
 msgid "These markers are part of the :ref:`marker-track`."
-msgstr ""
+msgstr "Αυτά τα σημάδια είναι μέρος από το :ref:`marker-track`."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:54
 msgid "Custom Markers"
-msgstr ""
+msgstr "Προσαρμοσμένα σημάδια"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:55
 msgid "Custom Markers can also be created inside the :ref:`marker-track`."
 msgstr ""
+"Τα προσαρμοσμένα σημάδια μπορούν επίσης να δημιουργηθούν μέσα στο :ref"
+":`marker-track`."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:61
 msgid ""
@@ -138,6 +162,9 @@ msgid ""
 "also generally useful visually to see where each part of the song begins "
 "and ends."
 msgstr ""
+"Αυτά μπορούν να χρησιμοποιηθούν ως γρήγορα σημεία αναπαραγωγής κατά τη "
+"μετακίνηση προς τα μπροστά ή πίσω, και είναι επίσης γενικά χρήσιμα οπτικά "
+"για να βλέπει κανείς πού ξεκινάει και τελειώνει κάθε μέρος του τραγουδιού."
 
 #: ../../playback-and-recording/overview.rst:6
 msgid "Overview"
@@ -148,6 +175,8 @@ msgid ""
 "Here is a list of terms and definitions that will be useful in the "
 "following sections."
 msgstr ""
+"Ορίστε μια λίστα όρων και ορισμών που θα είναι χρήσιμοι στις ακόλουθες "
+"ενότητες."
 
 #: ../../playback-and-recording/overview.rst:12
 msgid "Playhead"
@@ -158,6 +187,8 @@ msgid ""
 "The :dfn:`playhead` is the current position in the song. It is displayed "
 "as a red line inside arrangers."
 msgstr ""
+"Η :dfn:`playhead` είναι η τρέχουσα θέση στο τραγούδι. Προβάλλεται ως μια "
+"κόκκινη γραμμή μέσα στους ταξινόμους."
 
 #: ../../playback-and-recording/overview.rst:18
 msgid "Position"
@@ -165,19 +196,19 @@ msgstr "Θέση"
 
 #: ../../playback-and-recording/overview.rst:20
 msgid "Zrythm uses the following format for positions:"
-msgstr ""
+msgstr "Το Zrythm χρησιμοποιεί το εξής φορμάτ για τις θέσεις:"
 
 #: ../../playback-and-recording/overview.rst:26
 msgid "Each sixteenth note is fixed to have 240 ticks."
-msgstr ""
+msgstr "Κάθε δέκατο έκτο νότας έχει σταθερά 240 τικ."
 
 #: ../../playback-and-recording/recording.rst:6
 msgid "Recording"
-msgstr ""
+msgstr "Ηχογράφηση"
 
 #: ../../playback-and-recording/recording.rst:9
 msgid "Arming Tracks"
-msgstr ""
+msgstr "Οπλισμός κομματιών"
 
 #: ../../playback-and-recording/recording.rst:10
 msgid ""
@@ -187,15 +218,20 @@ msgid ""
 "recording, they start listening for signals in their :ref:`track-inputs` "
 "and these signals will be passed along in the processing chain."
 msgstr ""
+"Τα κομμάτια μπορούν να οπλιστούν για ηχογράφηση κάνοντας κλικ στο κουμπί "
+"ηχογράφησης είτε μέσα στο κομμάτι είτε στην ενότητα fader του κομματιού στο "
+"κανάλι είτε στον :ref:`επιθεωρητή κομματιών <track-inspector>`. Όταν τα "
+"κομμάτια οπλιστούν για ηχογράφηση, θα αρχίσουν να ακούνε για σήματα στις :ref"
+":`track-inputs` τους και αυτά τα σήματα θα περαστούν στην αλυσίδα διεργασίας."
 
 #: ../../playback-and-recording/recording.rst:19
 #: ../../playback-and-recording/recording.rst:32
 msgid "Todo"
-msgstr ""
+msgstr "Ναγίνει"
 
 #: ../../playback-and-recording/recording.rst:19
 msgid "Add illustration."
-msgstr ""
+msgstr "Προσθήκη εικόνας."
 
 #: ../../playback-and-recording/recording.rst:21
 msgid ""
@@ -203,45 +239,57 @@ msgid ""
 "MIDI keyboard connected in its inputs, you will hear sound when you press"
 " a key on your MIDI keyboard."
 msgstr ""
+"Για παράδειγμα, αν ένα κομμάτι οργάνου οπλιστεί για ηχογράφηση και έχει "
+"πληκτρολόγιο MIDI συνδεδεμένο στα εισαγόμενά του, θα ακούσετε ήχο όταν "
+"πατήσετε κάποιο πλήκτρο στο πληκτρολόγιο MIDI σας."
 
 #: ../../playback-and-recording/recording.rst:27
 msgid "Recording Audio & MIDI"
-msgstr ""
+msgstr "Ηχογράφηση ήχου & MIDI"
 
 #: ../../playback-and-recording/recording.rst:28
 msgid ""
 "After arming the tracks you want to record events into, enable recording "
 "in :ref:`transport-controls` and press play."
 msgstr ""
+"Αφού οπλίσετε τα κομμάτια στα οποία θέλετε να καταγράψετε γεγονότα, "
+"ενεργοποιήστε την ηχογράφηση στους :ref:`transport-controls` και πατήστε "
+"έναρξη."
 
 #: ../../playback-and-recording/recording.rst:32
 msgid "Expand, add illustrations, etc."
-msgstr ""
+msgstr "Επέκταση, προσθήκη εικόνων, κλπ."
 
 #: ../../playback-and-recording/recording.rst:34
 msgid "Any signals received will be recorded inside new regions in the timeline."
 msgstr ""
+"Οποιαδήποτε σήματα ληφθούν θα καταγραφούν μέσα σε καινούριες περιοχές στο "
+"χρονολόγιο."
 
 #: ../../playback-and-recording/recording.rst:38
 msgid "Recording Automation"
-msgstr ""
+msgstr "Αυτοματισμός ηχογράφησης"
 
 #: ../../playback-and-recording/recording.rst:39
 msgid ""
 "Automation can be recorded in `latch` mode or `touch` mode. The mode can "
 "be selected and toggled by clicking on it inside automation tracks."
 msgstr ""
+"Ο αυτοματισμός μπορεί να καταγραφεί σε λειτουργία `latch` ή λειτουργία "
+"`touch`. Αυτή η λειτουργία μπορεί να επιλεγεί και να εναλλαγεί κάνοντας κλικ "
+"πάνω της μέσα στα κομμάτια αυτοματισμού."
 
 #: ../../playback-and-recording/recording.rst:44
-#, fuzzy
 msgid "Latch"
-msgstr "Latch"
+msgstr "Κλείδωμα"
 
 #: ../../playback-and-recording/recording.rst:49
 msgid ""
 "In latch mode, automation will be written constantly and overwrite "
 "previous automation."
 msgstr ""
+"Σε λειτουργία κλειδώματος, ο αυτοματισμός θα γράφεται συνεχώς και θα "
+"επεγγράψει προηγούμενους αυτοματισμούς."
 
 #: ../../playback-and-recording/recording.rst:53
 msgid "Touch"
@@ -254,20 +302,26 @@ msgid ""
 "automation will stop being written until a change is received again. This"
 " is useful for making minor changes to existing automation."
 msgstr ""
+"Σε λειτουργία αγγίγματος, ο αυτοματισμός θα καταγραφεί μόνο όταν υπάρχουν "
+"αλλαγές. Όταν οι αλλαγές σταματήσουν να λαμβάνονται (μετά από λίγο χρόνο), ο "
+"αυτοματισμός θα σταματήσει να καταγράφεται μέχρι να ληφθεί κάποια αλλαγή "
+"ξανά. Αυτό είναι χρήσιμο για μικρές αλλαγές στον υπάρχοντα αυτοματισμό."
 
 #: ../../playback-and-recording/recording.rst:65
 msgid ""
 "Unlike MIDI/audio recording, automation recording does not require "
 "`Record` to be enabled in the :ref:`transport-controls`."
 msgstr ""
+"Αντίθετα με την ηχογράφηση MIDI/ήχου, η ηχογράφηση αυτοματισμών δεν απαιτεί "
+"να είναι ενεργοποιημένη η `Record` στους :ref:`transport-controls`."
 
 #: ../../playback-and-recording/transport-controls.rst:8
 msgid "Transport Controls"
-msgstr ""
+msgstr "Χειριστές μεταφοράς"
 
 #: ../../playback-and-recording/transport-controls.rst:10
 msgid "Playback is controlled by the following transport controls."
-msgstr ""
+msgstr "Η αναπαραγωγή ελέγχεται από τους εξής χειριστές μεταφοράς."
 
 #: ../../playback-and-recording/transport-controls.rst:16
 msgid "Record"
@@ -275,7 +329,7 @@ msgstr "Ηχογράφηση"
 
 #: ../../playback-and-recording/transport-controls.rst:17
 msgid "Arms the project for recording."
-msgstr ""
+msgstr "Οπλίζει το έργο για ηχογράφηση."
 
 #: ../../playback-and-recording/transport-controls.rst:20
 msgid "Play"
@@ -286,6 +340,8 @@ msgid ""
 "If stopped, the song will start playing. If already playing, the Playhead"
 " will move to the Cue point."
 msgstr ""
+"Αν σταματήσει, το τραγούδι θα αρχίσει να παίζει. Αν παίζει ήδη, η κεφαλή "
+"αναπαραγωγής θα μετακινηθεί στο σημείο cue."
 
 #: ../../playback-and-recording/transport-controls.rst:23
 msgid "Stop"
@@ -293,7 +349,7 @@ msgstr "Παύση"
 
 #: ../../playback-and-recording/transport-controls.rst:23
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
-msgstr ""
+msgstr "Παύει την αναπαραγωγή. Αν πατηθεί δύο φορές, επιστρέφει στο σημείο cue."
 
 #: ../../playback-and-recording/transport-controls.rst:26
 msgid "Backward"
@@ -302,6 +358,8 @@ msgstr "Πίσω"
 #: ../../playback-and-recording/transport-controls.rst:26
 msgid "Moves the Playhead backward by the size of 1 snap point."
 msgstr ""
+"Μετακινεί την κεφαλή αναπαραγωγής προς τα πίσω με μέγεθος 1 σημείου "
+"σναπαρίσματος."
 
 #: ../../playback-and-recording/transport-controls.rst:29
 msgid "Forward"
@@ -310,6 +368,8 @@ msgstr "Μπροστά"
 #: ../../playback-and-recording/transport-controls.rst:29
 msgid "Moves the Playhead forward by the size of 1 snap point."
 msgstr ""
+"Μετακινεί την κεφαλή αναπραγωγής προς τα μπροστά με μέγεθος 1 σημείου "
+"σναπαρίσματος."
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Loop"
@@ -320,6 +380,8 @@ msgid ""
 "If enabled, the Playhead will move back to the Loop Start point when it "
 "reaches the Loop End point."
 msgstr ""
+"Αν ενεργοποιηθεί, η κεφαλή αναπαραγωγής θα τοποθετηθεί πίσω στο σημείο αρχής "
+"λούπας όταν φτάσει το σημείο τέλους λούπας."
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid "Metronome"
@@ -328,6 +390,8 @@ msgstr "Μετρονόμος"
 #: ../../playback-and-recording/transport-controls.rst:38
 msgid "Clicking the metronome button will set metronome on/off."
 msgstr ""
+"Κάνοντας κλικ στο κουμπί μετρονόμου θα ενεργοποιήσει/απενεργοποιήσει τον "
+"μετρονόμο."
 
 #: ../../playback-and-recording/transport-controls.rst:44
 msgid ""
@@ -335,12 +399,18 @@ msgid ""
 "at each bar and each tick. The tick at each bar will be more emphasized. "
 "This is useful for making sure your song stays on beat."
 msgstr ""
+"Όταν ο μετρονόμος είναι ενεργοποιημένος, θα ακούτε τικ μετρονόμου κατά την "
+"αναπαραγωγή σε κάθε μπάρα και σε κάθε τικ. Το τικ σε κάθε μπάρα θα είναι πιο "
+"έντονο. Αυτό είναι χρήσιμο για να σιγουρευτείτε ότι το τραγούδι σας "
+"παραμένει εντός ρυθμού."
 
 #: ../../playback-and-recording/transport-controls.rst:50
 msgid ""
 "The metronome samples can be overridden by placing your own samples in "
 "your Zrythm directory. This is a TODO feature."
 msgstr ""
+"Τα δείγματα μετρονόμου μπορούν να παρακαμφθούν με τοποθέτηση δικών σας "
+"δειγμάτων στον κατάλογο Zrythm σας. Αυτό είναι χαρακτηριστικό ΓΙΑΝΑΓΙΝΕΙ."
 
 #~ msgid "Zrythm uses the following format for positions::"
 #~ msgstr ""

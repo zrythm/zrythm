@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 19:56+0100\n"
-"PO-Revision-Date: 2020-12-07 22:03+0000\n"
+"PO-Revision-Date: 2020-12-09 01:29+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
 "invoking-from-command-line/el/>\n"
@@ -46,35 +46,39 @@ msgstr "Εκτυπώνει μια λίστα διαθέσιμων επιλογώ
 
 #: ../../invoking-from-command-line/intro.rst:27
 msgid "Pretty-prints the output (where applicable)."
-msgstr ""
+msgstr "Προβάλλει φορμαρισμένο το εξαγόμενο (όπου είναι δυνατό)."
 
 #: ../../invoking-from-command-line/intro.rst:31
 msgid ""
 "Prints all the user settings. Can be combined with :option:`--pretty` to "
 "get pretty-printed output, like below."
 msgstr ""
+"Εκτυπώνει όλες τις ρυθμίσεις του χρήστη. Μπορεί να συνδυαστεί με το "
+":option:`--pretty` για να προβληθεί φορμαρισμένο το εξαγόμενο, όπως παρακάτω."
 
 #: ../../invoking-from-command-line/intro.rst:40
 msgid "Resets user settings to their default values."
-msgstr ""
+msgstr "Επαναφέρει τις ρυθμίσεις του χρήστη στις προεπιλεγμένες τιμές τους."
 
 #: ../../invoking-from-command-line/intro.rst:42
 msgid ""
 "Only affects the settings printed with :option:`-p`. This will *not* "
 "affect any files in the :term:`Zrythm user path`."
 msgstr ""
+"Επηρεάζει μόνο τις ρυθμίσεις που εκτυπώνονται με το :option:`-p`. Αυτό *δεν* "
+"θα επηρεάσει κανένα αρχείο στο :term:`Zrythm user path`."
 
 #: ../../invoking-from-command-line/intro.rst:47
 msgid "This will clear ALL your user settings."
-msgstr ""
+msgstr "Αυτό θα καθαρίσει ΟΛΕΣ τις ρυθμίσεις του χρήστη σας."
 
 #: ../../invoking-from-command-line/intro.rst:52
 msgid "Prints the Zrythm version."
-msgstr ""
+msgstr "Εκτυπώνει την έκδοση του Zrythm."
 
 #: ../../invoking-from-command-line/intro.rst:55
 msgid "zrythm_launch"
-msgstr ""
+msgstr "zrythm_launch"
 
 #: ../../invoking-from-command-line/intro.rst:56
 msgid ""
@@ -82,3 +86,6 @@ msgid ""
 "launching Zrythm. All of the options for :program:`zrythm` can also be "
 "passed to :program:`zrythm_launch`."
 msgstr ""
+"Ένα περιτύλιγμα γύρω από το :program:`zrythm` που θέτει τα σωστά μονοπάτια "
+"πριν την εκκίνηση του Zrythm. Όλες οι ρυθμίσεις για το :program:`zrythm` "
+"μπορούν επίσης να περαστούν στο :program:`zrythm_launch`."

@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-12-07 22:10+0000\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"PO-Revision-Date: 2020-12-11 00:29+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/scripting/"
+"el/>\n"
 "Language: el\n"
-"Language-Team: Greek "
-"<https://hosted.weblate.org/projects/zrythm/scripting/el/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../scripting/api/actions
@@ -32,38 +33,40 @@ msgstr ""
 #: ../../scripting/api/actions
 #: ../../scripting/api/audio channel.rst:6
 msgid "Returns the plugin at the given insert slot"
-msgstr ""
+msgstr "Επιστρέφει το πρόσθετο στη δοθείσα θέση εισαγόμενου"
 
 #: ../../scripting/api/audio channel.rst:10
 msgid "Returns the instrument at the given channel"
-msgstr ""
+msgstr "Επιστρέφει το όργανο στο δοθέν κανάλι"
 
 #: ../../scripting/api/audio channel.rst:14
 msgid "Returns the send instance at the given slot"
-msgstr ""
+msgstr "Επιστρέφει την περίπτωση αποστολής στη δοθείσα θέση"
 
 #: ../../scripting/api/audio midi_note.rst:6
 msgid "Returns a new midi note."
-msgstr ""
+msgstr "Επιστρέφει μια καινούρια νότα MIDI."
 
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio port.rst:6
 msgid "Returns the left or right port of the stereo pair."
-msgstr ""
+msgstr "Επιστρέφει την αριστερή ή δεξιά θύρα ενός ζευγαριού στέρεο."
 
 #: ../../scripting/api/audio port.rst:10
 msgid "Returns the identifier of port."
-msgstr ""
+msgstr "Επιστρέφει το αναγνωριστικό της θύρας."
 
 #: ../../scripting/api/audio position.rst:6
 msgid "Return a newly-created position as bars.beats.sixteenths.ticks.sub_tick."
 msgstr ""
+"Επιστρέφει μια θέση που μόλις δημιουργήθηκε ως bars.beats.sixteenths.ticks."
+"sub_tick."
 
 #: ../../scripting/api/audio position.rst:11
 msgid "Prints the position as ‘bars.beats.sixteenths.ticks.sub_tick‘."
-msgstr ""
+msgstr "Εκτυπώνει τη θέση ως ‘bars.beats.sixteenths.ticks.sub_tick‘."
 
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
@@ -72,67 +75,72 @@ msgid ""
 "Returns a new track with name name to be placed at position idx in the "
 "tracklist."
 msgstr ""
+"Επιστρέφει ένα καινούριο κομμάτι με όνομα προς τοποθέτηση στη θέση idx στη "
+"λίστα κομματιών."
 
 #: ../../scripting/api/audio track.rst:11
 msgid "Returns the name of track."
-msgstr ""
+msgstr "Επιστρέφει το όνομα του κομματιού."
 
 #: ../../scripting/api/audio track.rst:15
 msgid "Returns the processor of track."
-msgstr ""
+msgstr "Επιστρέφει τον επεξεργαστή του κομματιού."
 
 #: ../../scripting/api/audio track.rst:19
 msgid "Returns the channel of track."
-msgstr ""
+msgstr "Επιστρέφει το κανάλι του κομματιού."
 
 #: ../../scripting/api/audio track.rst:23
 msgid ""
 "Sets whether track is muted or not. This creates an undoable action and "
 "performs it."
 msgstr ""
+"Ορίζει αν το κομμάτι είναι σε σίγαση ή όχι. Αυτό δημιουργεί μια δράση που "
+"δεν μπορεί να αναιρεθεί και την εκτελεί."
 
 #: ../../scripting/api/audio track.rst:28
 msgid "Adds region to track track. To be used for regions with lanes (midi/audio)"
 msgstr ""
+"Προσθέτει περιοχή στο κομμάτι. Προς χρήση σε περιοχές με λωρίδες (MIDI/ήχος)"
 
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio tracklist.rst:6
 msgid "Inserts track track at index idx in the tracklist."
-msgstr ""
+msgstr "Εισάγει κομμάτι στον δείκτη idx στη λίστα κομματιών."
 
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/audio
 #: ../../scripting/api/intro.rst:6
 msgid "API"
-msgstr ""
+msgstr "Διεπαφή Προγραμματισμού Εφαρμογών (API)"
 
 #: ../../scripting/api/plugins plugin.rst:6
 msgid "Returns the input port of the plugin at the given index."
-msgstr ""
+msgstr "Επιστρέφει τη θύρα εισαγωγής του προσθέτου στον δοθέντα δείκτη."
 
 #: ../../scripting/api/plugins plugin.rst:10
 msgid "Returns the output port of the plugin at the given index."
-msgstr ""
+msgstr "Επιστρέφει τη θύρα εξαγόμενου του προσθέτου στον δοθέντα δείκτη."
 
 #: ../../scripting/api/plugins
 #: ../../scripting/api/plugins
 #: ../../scripting/api/zrythm.rst:6
 msgid "Return the Zrythm version as a string."
-msgstr ""
+msgstr "Επιστροφή της έκδοσης του Zrythm ως κλωστή (string)."
 
 #: ../../scripting/api/zrythm.rst:10
 msgid "Return the PluginManager instance."
-msgstr ""
+msgstr "Επιστροφή της περίπτωσης (instance) του PluginManager."
 
 #: ../../scripting/api/zrythm.rst:14
 msgid "Returns a NULL pointer."
-msgstr ""
+msgstr "Επιστρέφει έναν ΜΗΔΑΜΙΝΟ δείκτη."
 
 #: ../../scripting/examples.rst:6
 msgid "Examples"
-msgstr ""
+msgstr "Παραδείγματα"
 
 #: ../../scripting/examples.rst:8
 msgid ""
@@ -140,26 +148,31 @@ msgid ""
 "<https://creativecommons.org/publicdomain/zero/1.0/>`_). Feel free to "
 "copy and modify them."
 msgstr ""
+"Τα ακόλουθα παραδείγματα αποτελούν κοινό κτήμα (`CC 0 "
+"<https://creativecommons.org/publicdomain/zero/1.0/>`_). Αντιγράψτε και "
+"τροποποιήστε ελεύθερα."
 
 #: ../../scripting/examples.rst:13
 msgid "Hello World"
-msgstr ""
+msgstr "Γεια σου κόσμε"
 
 #: ../../scripting/examples.rst:22
 msgid "Print track names"
-msgstr ""
+msgstr "Εκτύπωση ονομάτων κομματιών"
 
 #: ../../scripting/examples.rst:39
 msgid "Create Geonkick track and route its mono output to an Audio FX track"
 msgstr ""
+"Δημιουργία κομματιού Geonkick και δρομολόγηση του μόνο εξαγόμενού του σε ένα "
+"κομμάτι εφέ ήχου"
 
 #: ../../scripting/examples.rst:98
 msgid "Create MIDI track with notes"
-msgstr ""
+msgstr "Δημιουργία κομματιού MIDI με νότες"
 
 #: ../../scripting/intro.rst:8
 msgid "Scripting"
-msgstr ""
+msgstr "Σύνταξη δέσμης ενεργειών (scripting)"
 
 #: ../../scripting/overview.rst:6
 msgid "Overview"
@@ -170,6 +183,9 @@ msgid ""
 "Zrythm offers a scripting interface using the `Guile language "
 "<https://www.gnu.org/software/guile/>`_, an implementation of Scheme."
 msgstr ""
+"Το Zrythm προσφέρει μια διεπαφή σύνταξης δέσμης ενεργειών (scripting) "
+"χρησιμοποιώντας τη `γλώσσα Guile <https://www.gnu.org/software/guile/>`_, "
+"μια ενσωμάτωση του Scheme."
 
 #: ../../scripting/overview.rst:11
 msgid ""
@@ -179,14 +195,20 @@ msgid ""
 "section, one would do :scheme:`(use-modules (audio track))` at the top of"
 " the script."
 msgstr ""
+"Η επόμενη ενότητα είναι μια περιεκτική λίστα όλων των διαθέσιμων διαδικασιών "
+"στη Διεπαφή Προγραμματισμού Εφαρμογών (API). Κάθε ενότητα στην API "
+"αντιστοιχεί σε μία συγκεκριμένη μονάδα Guile, οπότε για παράδειγμα, για να "
+"χρησιμοποιήσει κανείς τις διαδικασίες στην ενότητα :scheme:`audio position` "
+"section, θα πρέπει να κάνει :scheme:`(use-modules (audio track))` στην "
+"κορυφή της δέσμης ενεργειών."
 
 #: ../../scripting/overview.rst:19
 msgid "The Guile API is experimental."
-msgstr ""
+msgstr "Η API της Guile είναι πειραματική."
 
 #: ../../scripting/overview.rst:21
 msgid "The Guile API is not available on Windows."
-msgstr ""
+msgstr "Η API της Guile δεν είναι διαθέσιμη στα Windows."
 
 #~ msgid ""
 #~ "The next section is a comprehensive "
@@ -199,4 +221,3 @@ msgstr ""
 #~ "(audio track))`` at the top of the"
 #~ " script."
 #~ msgstr ""
-

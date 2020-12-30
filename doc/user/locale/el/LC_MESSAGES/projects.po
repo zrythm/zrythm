@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 19:56+0100\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2020-12-11 00:29+0000\n"
+"Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
 "manualprojects/el/>\n"
 "Language: el\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../projects/intro.rst:8
@@ -26,7 +26,7 @@ msgstr "Έργα"
 
 #: ../../projects/project-info.rst:6
 msgid "Project Info"
-msgstr ""
+msgstr "Πληροφορίες έργου"
 
 #: ../../projects/project-info.rst:8
 msgid ""
@@ -34,64 +34,69 @@ msgid ""
 "folder with a YAML file describing the Project and additional files used "
 "such as MIDI and audio files."
 msgstr ""
+"Στο Zrythm, η δουλειά σας αποθηκεύεται μέσα σε ένα έργο. Τα έργα "
+"αποτελούνται από έναν φάκελο με ένα αρχείο YAML που περιγράφει το έργο και "
+"τα επιπρόσθετα αρχεία που χρησιμοποιούνται, όπως τα αρχεία MIDI και ήχου."
 
 #: ../../projects/project-info.rst:14
 msgid "Project Structure"
-msgstr ""
+msgstr "Δομή έργου"
 
 #: ../../projects/project-info.rst:38
 msgid "backups"
-msgstr ""
+msgstr "αντίγραφα ασφαλείας"
 
 #: ../../projects/project-info.rst:39
 msgid "Regular backups taken automatically by Zrythm"
-msgstr ""
+msgstr "Τακτικά αντίγραφα ασφαλείας δημιουργούνται αυτόματα από το Zrythm"
 
 #: ../../projects/project-info.rst:40
 msgid "myproject.bak"
-msgstr ""
+msgstr "τοέργομου.bak"
 
 #: ../../projects/project-info.rst:41
 msgid "An example backup project"
-msgstr ""
+msgstr "Ένα παράδειγμα αντιγράφου ασφαλείας έργου"
 
 #: ../../projects/project-info.rst:43
 msgid "states"
-msgstr ""
+msgstr "καταστάσεις"
 
 #: ../../projects/project-info.rst:43
 msgid "Contains plugin states at the time of save (for LV2)"
-msgstr ""
+msgstr "Περιέχει καταστάσεις προσθέτων κατά τον χρόνο της αποθήκευσης (για LV2)"
 
 #: ../../projects/project-info.rst:46
 msgid "exports"
-msgstr ""
+msgstr "εξαγωγές"
 
 #: ../../projects/project-info.rst:46
 msgid "Default directory for exporting files related to the project"
-msgstr ""
+msgstr "Ο προεπιλεγμένος κατάλογος για την εξαγωγή αρχείων σχετικών με το έργο"
 
 #: ../../projects/project-info.rst:49
 msgid "pool"
-msgstr ""
+msgstr "σύνολο"
 
 #: ../../projects/project-info.rst:49
 msgid ""
 "Used by Zrythm to store and load files used by the Project, such as audio"
 " files"
 msgstr ""
+"Χρησιμοποιείται από το Zrythm για την αποθήκευση και φόρτωση αρχείων που "
+"χρησιμοποιούνται από το έργο, όπως αρχεία ήχου"
 
 #: ../../projects/project-info.rst:51
 msgid "project.yml"
-msgstr ""
+msgstr "έργο.yml"
 
 #: ../../projects/project-info.rst:52
 msgid "The Project file"
-msgstr ""
+msgstr "Το αρχείο έργου"
 
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
-msgstr ""
+msgstr "Διαχείρηση και συμβατότητα έργου"
 
 #: ../../projects/project-management-and-compatibility.rst:8
 msgid ""
@@ -100,6 +105,11 @@ msgid ""
 "compatibility will be maintained between version changes in order to give"
 " more time to feature development and fixes."
 msgstr ""
+"Τουλάχιστον για την ώρα, το Zrythm ακολουθεί ένα μοντέλο συνεχούς ροής "
+"εκδόσεων και η δομή του αρχείου έργου ενδέχεται να αλλάξει σε κάθε καινούρια "
+"έκδοση. Καμία συμβατότητα δεν θα διατηρηθεί μεταξύ των αλλαγών των εκδόσεων, "
+"προκειμένου να δοθεί περισσότερος χρόνος στον προγραμματισμό χαρακτηριστικών "
+"και διορθώσεων."
 
 #: ../../projects/project-management-and-compatibility.rst:19
 msgid ""
@@ -108,42 +118,54 @@ msgid ""
 "if you would like to open a project made using a previous version please "
 "install that version of Zrythm."
 msgstr ""
+"Είναι επίσης δυνατό να ανοίξει κανείς αρχεία από προηγούμενες εκδόσεις αν "
+"δεν υπήρξε καμία αλλαγή στη δομή του αρχείου έργου, αλλά δεν υπάρχει εγγύηση "
+"για αυτό, οπότε αν θα θέλατε να ανοίξετε ένα έργο που έγινε με προηγούμενη "
+"έκδοση, παρακαλούμε εγκαταστήστε εκείνη την έκδοση του Zrythm."
 
 #: ../../projects/project-management-and-compatibility.rst:28
 msgid ""
 "Each project file will mention the version of Zrythm it was made with and"
 " the date it was saved"
 msgstr ""
+"Κάθε αρχείο έργου θα αναφέρει την έκδοση του Zrythm με την οποία "
+"δημιουργήθηκε και την ημερομηνία που αποθηκεύτηκε"
 
 #: ../../projects/saving-loading.rst:6
 msgid "Saving & Loading"
-msgstr ""
+msgstr "Αποθήκευση & φόρτωση"
 
 #: ../../projects/saving-loading.rst:9
 msgid "Loading Projects"
-msgstr ""
+msgstr "Φόρτωση έργων"
 
 #: ../../projects/saving-loading.rst:11
 msgid ""
 "When Zrythm launches, it will ask you to select a project to load from a "
 "list of recent projects, or to create a new one."
 msgstr ""
+"Όταν ανοίξει το Zrythm, θα σας ζητήσει να επιλέξετε το έργο προς φόρτωση από "
+"μια λίστα πρόσφατων έργων, ή να δημιουργήσετε καινούριο."
 
 #: ../../projects/saving-loading.rst:18
 msgid ""
 "When you select a project and click :guilabel:`Apply`, Zrythm will load "
 "that project."
 msgstr ""
+"Όταν επιλέξετε το έργο και κάνετε κλικ στην :guilabel:`Apply`, το Zrythm θα "
+"φορτώσει εκείνο το έργο."
 
 #: ../../projects/saving-loading.rst:22
 msgid "Creating Projects"
-msgstr ""
+msgstr "Δημιουργία έργων"
 
 #: ../../projects/saving-loading.rst:24
 msgid ""
 "In the menu above, if you select :guilabel:`Create new project`, Zrythm "
 "will ask you for a template to use for creating the new Project."
 msgstr ""
+"Στο παραπάνω μενού, αν επιλέξετε :guilabel:`Create new project`, το Zrythm "
+"θα σας ζητήσει ένα πρότυπο προς χρήση για τη δημιουργία του καινούριου έργου."
 
 #: ../../projects/saving-loading.rst:31
 msgid ""
@@ -151,6 +173,9 @@ msgid ""
 "copying a project directory under :file:`templates` in the :term:`Zrythm "
 "user path`."
 msgstr ""
+"Ένα κενό πρότυπο είναι διαθέσιμο, και μπορείτε να δημιουργήσετε τα δικά σας "
+"πρότυπα αντιγράφοντας έναν κατάλογο έργου από τα :file:`templates` στο "
+":term:`Zrythm user path`."
 
 #: ../../projects/saving-loading.rst:36
 msgid ""
@@ -158,16 +183,19 @@ msgid ""
 "Zrythm will ask you for a parent directory to save the project in and a "
 "title for the project."
 msgstr ""
+"Όταν επιλεγεί ένα πρότυπο (ή κενό) και πατήσετε :guilabel:`Apply`, το Zrythm "
+"θα σας ζητήσει τον κατάλογο γονέα προς αποθήκευση του έργου και έναν τίτλο "
+"για το έργο."
 
 #: ../../projects/saving-loading.rst:44
 msgid ""
 "Once you accept, the new project will be set up and you will be ready to "
 "go."
-msgstr ""
+msgstr "Μόλις κάνετε αποδοχή, το νέο έργο θα στηθεί και θα είστε έτοιμοι."
 
 #: ../../projects/saving-loading.rst:48
 msgid "Saving Projects"
-msgstr ""
+msgstr "Αποθήκευση έργων"
 
 #: ../../projects/saving-loading.rst:50
 msgid ""
@@ -175,14 +203,19 @@ msgid ""
 "Project in a new location and :guilabel:`Save` will save the Project in "
 "the previous location."
 msgstr ""
+"Η αποθήκευση δουλεύει όπως θα περιμένατε: Η :guilabel:`Save As...` θα σώσει "
+"το έργο σε έναν νέο προορισμό και η :guilabel:`Save` θα αποθηκεύσει το έργο "
+"στον προηγούμενο προορισμό."
 
 #: ../../projects/saving-loading.rst:54
 msgid "When saving projects, Zrythm expects you to give it a directory"
 msgstr ""
+"Κατά την αποθήκευση έργων, το Zrythm αναμένει από εσάς να του δώσετε έναν "
+"κατάλογο"
 
 #: ../../projects/saving-loading.rst:58
 msgid "Automatic Backups"
-msgstr ""
+msgstr "Αυτόματα αντίγραφα ασφαλείας"
 
 #: ../../projects/saving-loading.rst:60
 msgid ""
@@ -191,16 +224,25 @@ msgid ""
 "know if there are newer back-ups of that project and ask you if you want "
 "to load them instead."
 msgstr ""
+"Το Zrythm έχει μια επιλογή για αυτόματη αποθήκευση του τρέχοντος έργου ως "
+"αντιγράφου ασφαλείας. Αφού εκκινήσετε το Zrythm και επιλέξετε τη φόρτωση του "
+"έργου σας, το Zrythm θα σας ενημερώσει αν υπάρχουν νεότερα αντίγραφα "
+"ασφαλείας εκείνου του έργου και θα σας ρωτήσει αν θέλετε να φορτώσετε εκείνα "
+"αντί αυτού."
 
 #: ../../projects/saving-loading.rst:68
 msgid ""
 "The auto-save interval can be changed (or disabled) in the preferences "
 "window."
 msgstr ""
+"Η χρονική απόσταση μεταξύ των αυτόματων αποθηκεύσεων μπορεί να αλλάξει (ή να "
+"απενεργοποιηθεί) στο παράθυρο ρυθμίσεων."
 
 #: ../../projects/saving-loading.rst:71
 msgid "The backups are saved in the project's directory, under :file:`backups`."
 msgstr ""
+"Τα αντίγραφα ασφαλείας αποθηκεύονται στον κατάλογο του έργου, στα "
+":file:`backups`."
 
 #~ msgid "Importing/Exporting Audio"
 #~ msgstr ""

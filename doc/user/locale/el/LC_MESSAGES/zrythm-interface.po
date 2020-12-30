@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"PO-Revision-Date: 2020-12-12 01:29+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/el/>\n"
@@ -17,18 +17,21 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
-msgstr ""
+msgstr "Κάτω πάνελ"
 
 #: ../../zrythm-interface/bottom-panel.rst:10
 msgid ""
 "The bottom panel contains various editors (such as the piano roll and "
 "automation editor) as well as the mixer and chord pads."
 msgstr ""
+"Το κάτω πάνελ περιέχει διάφορους επεξεργαστές (όπως το ρολό πιάνο και τον "
+"επεξεργαστή αυτοματισμού), καθώς επίσης τον μίκτη και τις ταμπλέτες "
+"συγχορδιών."
 
 #: ../../zrythm-interface/bottom-panel.rst:18
 msgid "Editor"
@@ -39,14 +42,18 @@ msgid ""
 "The Editor tab contains an arranger for editing regions, as well as "
 "various controls that vary depending on the type of region selected."
 msgstr ""
+"Η καρτέλα επεξεργαστή περιέχει έναν ταξινόμο για επεξεργασία περιοχών, καθώς "
+"επίσης διάφορους χειριστές που ποικίλουν ανάλογα τον τύπο περιοχής που "
+"επιλέγεται."
 
 #: ../../zrythm-interface/bottom-panel.rst:26
 msgid "Editing inside the Editor tab is covered in :ref:`editors`."
 msgstr ""
+"Η επεξεργασία μέσα στην καρτέλα επεξεργαστή καλύπτεται στους :ref:`editors`."
 
 #: ../../zrythm-interface/bottom-panel.rst:29
 msgid "Piano Roll"
-msgstr ""
+msgstr "Ρολό πιάνου"
 
 #: ../../zrythm-interface/bottom-panel.rst:31
 msgid ""
@@ -55,14 +62,19 @@ msgid ""
 "Region is selected, the Editor tab will display the Piano Roll, allowing "
 "you to edit that region."
 msgstr ""
+"Το ρολό πιάνου, ή αλλιώς ταξινόμος MIDI, είναι ο πιο χρησιμοποιημένος "
+"επεξεργαστής. Μπορεί να χρησιμοποιηθεί για την επεξεργασία περιοχών MIDI, οι "
+"οποίες περιέχουν νότες MIDI. Όταν επιλέγεται μια περιοχή MIDI, η καρτέλα "
+"επεξεργαστή θα προβάλει το ρολό πιάνου, επιτρέποντας την επεξεργασία εκείνης "
+"της περιοχής."
 
 #: ../../zrythm-interface/bottom-panel.rst:40
 msgid "The piano roll is covered in detail in :ref:`piano-roll`."
-msgstr ""
+msgstr "Το ρολό πιάνου καλύπτεται με λεπτομέρεια στο :ref:`piano-roll`."
 
 #: ../../zrythm-interface/bottom-panel.rst:43
 msgid "Automation Editor"
-msgstr ""
+msgstr "Επεξεργαστής αυτοματισμού"
 
 #: ../../zrythm-interface/bottom-panel.rst:45
 msgid ""
@@ -71,38 +83,51 @@ msgid ""
 "The Automation Editor will appear in the Editor tab when an Automation "
 "Region is selected."
 msgstr ""
+"Στο Zrythm, ο αυτοματισμός περικλείεται επίσης σε περιοχές (αποκαλούμενες "
+"περιοχές αυτοματισμού). Αυτό επιτρέπει στον αυτοματισμό να επαναλαμβάνεται, "
+"όπως οι περιοχές MIDI. Ο επεξεργαστής αυτοματισμού θα εμφανιστεί στην "
+"καρτέλα επεξεργαστή όταν επιλεγεί μία περιοχή αυτοματισμού."
 
 #: ../../zrythm-interface/bottom-panel.rst:53
 msgid "The automation editor is covered in detail in :ref:`automation-editor`."
 msgstr ""
+"Ο επεξεργαστής αυτοματισμού καλύπτεται με λεπτομέρεια στο :ref:`automation-"
+"editor`."
 
 #: ../../zrythm-interface/bottom-panel.rst:57
 msgid "Audio Editor"
-msgstr ""
+msgstr "Επεξεργαστής ήχου"
 
 #: ../../zrythm-interface/bottom-panel.rst:58
 msgid ""
 "The audio editor is used to view the contents of audio regions. The audio"
 " editor will appear in the Editor tab when an audio region is selected."
 msgstr ""
+"Ο επεξεργαστής ήχου χρησιμοποιείται για την προβολή των περιεχομένων των "
+"περιοχών ήχου. Ο επεξεργαστής ήχου θα εμφανιστεί στην καρτέλα επεξεργαστή "
+"όταν επιλεγεί μια περιοχή ήχου."
 
 #: ../../zrythm-interface/bottom-panel.rst:66
 msgid "The audio editor is covered in detail in :ref:`audio-editor`."
-msgstr ""
+msgstr "Ο επεξεργαστής ήχου καλύπτεται με λεπτομέρεια στο :ref:`audio-editor`."
 
 #: ../../zrythm-interface/bottom-panel.rst:70
 msgid "Chord Editor"
-msgstr ""
+msgstr "Επεξεργαστής συγχορδιών"
 
 #: ../../zrythm-interface/bottom-panel.rst:71
 msgid ""
 "The chord editor is used for editing chord regions. It will appear in the"
 " Editor tab when a chord region is selected in the chord track."
 msgstr ""
+"Ο επεξεργαστής συγχορδιών χρησιμοποιείται για την επεξεργασία περιοχών "
+"συγχορδιών. Θα εμφανιστεί στην καρτέλα επεξεργαστή όταν μια περιοχή επιλεγεί "
+"στο κομμάτι συγχορδιών."
 
 #: ../../zrythm-interface/bottom-panel.rst:78
 msgid "The chord editor is covered in detail in :ref:`chord-editor`."
 msgstr ""
+"Ο επεξεργαστής συγχορδιών καλύπτεται με λεπτομέρεια :ref:`chord-editor`."
 
 #: ../../zrythm-interface/bottom-panel.rst:82
 msgid "Mixer"
@@ -113,10 +138,12 @@ msgid ""
 "The Mixer tab contains each channel and various controls for changing the"
 " signal as it passes through the channel."
 msgstr ""
+"Η καρτέλα μίκτη περιέχει κάθε κανάλι και διάφορους χειριστές για την αλλαγή "
+"του σήματος καθώς περνάει μέσα από το κανάλι."
 
 #: ../../zrythm-interface/bottom-panel.rst:89
 msgid "Mixing is covered in :ref:`mixing`."
-msgstr ""
+msgstr "Η μίξη καλύπτεται στη :ref:`mixing`."
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Interface"
@@ -124,33 +151,39 @@ msgstr "Διεπαφή"
 
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
-msgstr ""
+msgstr "Αριστερό πάνελ"
 
 #: ../../zrythm-interface/left-panel.rst:10
 msgid "The left panel contains the inspectors and track visibility options."
 msgstr ""
+"Το αριστερό πάνελ περιέχει τους επιθεωρητές και τις ρυθμίσεις ορατότητας "
+"κομματιών."
 
 #: ../../zrythm-interface/left-panel.rst:17
 msgid "Track Inspector"
-msgstr ""
+msgstr "Επιθεωρητής κομματιών"
 
 #: ../../zrythm-interface/left-panel.rst:19
 msgid ""
 "The first tab is the track inspector, which shows various options about "
 "the selected track."
 msgstr ""
+"Η πρώτη καρτέλα είναι ο επιθεωρητής κομματιών, ο οποίος δείχνει διάφορους "
+"ρυθμίσεις σχετικά με το επιλεγόμενο κομμάτι."
 
 #: ../../zrythm-interface/left-panel.rst:22
 msgid "See :ref:`track-inspector` for more details."
-msgstr ""
+msgstr "Βλέπε :ref:`track-inspector` για περισσότερες λεπτομέρειες."
 
 #: ../../zrythm-interface/left-panel.rst:25
 msgid "Plugin Inspector"
-msgstr ""
+msgstr "Επιθεωρητής προσθέτων"
 
 #: ../../zrythm-interface/left-panel.rst:26
 msgid "The plugin inspector shows various options for the selected plugin."
 msgstr ""
+"Ο επιθεωρητής προσθέτων δείχνει διάφορες ρυθμίσεις για το επιλεγόμενο "
+"πρόσθετο."
 
 #: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
@@ -161,14 +194,16 @@ msgid ""
 "The plugin properties show the name and type of the plugin, as well as "
 "preset and bank selectors."
 msgstr ""
+"Οι ιδιότητες προσθέτου δείχνουν το όνομα και τον τύπο του προσθέτου, καθώς "
+"επίσης τους επιλογείς προρυθμίσεων και τραπεζών."
 
 #: ../../zrythm-interface/left-panel.rst:41
 msgid "Plugin Ports"
-msgstr ""
+msgstr "Θύρες προσθέτων"
 
 #: ../../zrythm-interface/left-panel.rst:42
 msgid "These are the ports that the plugin has."
-msgstr ""
+msgstr "Αυτές είναι οι θύρες που έχει το πρόσθετο."
 
 #: ../../zrythm-interface/left-panel.rst:47
 msgid ""
@@ -176,76 +211,90 @@ msgid ""
 " be automated using automation tracks. Ports can be routed to other ports"
 " anywhere within Zrythm by double clicking on them."
 msgstr ""
+"Οι θύρες εισόδου χειριστών μπορούν να αλλάξουν κάνοντας κλικ και σύροντας, "
+"και μπορούν επίσης να αυτοματοποιηθούν χρησιμοποιώντας κομμάτια "
+"αυτοματισμού. Οι θύρες μπορούν να δρομολογηθούν σε άλλες θύρες οπουδήποτε "
+"μέσα στο Zrythm κάνοντας διπλό κλικ πάνω τους."
 
 #: ../../zrythm-interface/left-panel.rst:52
 msgid "Ports are explained in more detail in :ref:`ports`."
-msgstr ""
+msgstr "Οι θύρες εξηγούνται με περισσότερη λεπτομέρεια στις :ref:`ports`."
 
 #: ../../zrythm-interface/left-panel.rst:54
 msgid ""
 "Depending on the type of plugin, there may be different categories of "
 "ports being shown."
 msgstr ""
+"Ανάλογα με τον τύπο του προσθέτου, μπορεί να υπάρχουν διαφορετικές "
+"κατηγορίες θυρών που προβάλλονται."
 
 #: ../../zrythm-interface/left-panel.rst:58
 msgid "Track Visibility"
-msgstr ""
+msgstr "Ορατότητα κομματιού"
 
 #: ../../zrythm-interface/left-panel.rst:60
 msgid "See :ref:`track-visibility`."
-msgstr ""
+msgstr "Βλέπε :ref:`track-visibility`."
 
 #: ../../zrythm-interface/main-toolbar.rst:8
 msgid "Main Toolbar"
-msgstr ""
+msgstr "Κύρια γραμμή εργαλείων"
 
 #: ../../zrythm-interface/main-toolbar.rst:10
 msgid ""
 "The main toolbar contains global actions, such as saving and loading a "
 "project or opening the preferences window."
 msgstr ""
+"Η κύρια γραμμή εργαλείων περιέχει γενικές ενέργειες, όπως την αποθήκευση και "
+"τη φόρτωση ενός έργου ή το άνοιγμα του παραθύρου ρυθμίσεων."
 
 #: ../../zrythm-interface/main-toolbar.rst:17
 msgid "About Dialog"
-msgstr ""
+msgstr "Παράθυρο «σχετικά με»"
 
 #: ../../zrythm-interface/main-toolbar.rst:19
 msgid ""
 "Clicking the Zrythm icon will show the About dialog, which contains "
 "information about authors and copyright."
 msgstr ""
+"Κάνοντας κλικ στο εικονίδιο Zrythm θα προβάλει το παράθυρο «σχετικά με», το "
+"οποίο περιέχει πληροφορίες για τους συγγραφείς και τα πνευματικά δικαιώματα."
 
 #: ../../zrythm-interface/main-toolbar.rst:26
 msgid "Global Menus"
-msgstr ""
+msgstr "Γενικά μενού"
 
 #: ../../zrythm-interface/main-toolbar.rst:27
 msgid "Zrythm has the following global menus at the top of its interface."
-msgstr ""
+msgstr "Το Zrythm έχει τα εξής γενικά μενού στο πάνω μέρος της διεπαφής του."
 
 #: ../../zrythm-interface/main-toolbar.rst:31
 msgid "Edit Menu"
-msgstr ""
+msgstr "Μενού επεξεργασίας"
 
 #: ../../zrythm-interface/main-toolbar.rst:32
 msgid ""
 "The Edit menu has various buttons and controls that are used often during"
 " editing and arranging."
 msgstr ""
+"Το μενού επεξεργασίας έχει διάφορα κουμπιά και χειριστές που "
+"χρησιμοποιούνται συχνά κατά τη διάρκεια επεξεργασίας και ταξινόμησης."
 
 #: ../../zrythm-interface/main-toolbar.rst:35
 msgid "The :ref:`editing` chapter explains these controls in detail."
-msgstr ""
+msgstr "Η ενότητα :ref:`editing` εξηγεί αυτούς τους χειριστές με λεπτομέρεια."
 
 #: ../../zrythm-interface/main-toolbar.rst:39
 msgid "Project Menu"
-msgstr ""
+msgstr "Μενού έργου"
 
 #: ../../zrythm-interface/main-toolbar.rst:40
 msgid ""
 "The Project menu contains various project-related actions such as saving,"
 " loading and exporting MIDI or audio."
 msgstr ""
+"Το μενού έργου περιέχει διάφορες ενέργειες σχετικά με το έργο, όπως την "
+"αποθήκευση, τη φόρτωση και την εξαγωγή MIDI ή ήχου."
 
 #: ../../zrythm-interface/main-toolbar.rst:45
 msgid "New Project"
@@ -253,7 +302,7 @@ msgstr "Άνοιγμα έργου"
 
 #: ../../zrythm-interface/main-toolbar.rst:46
 msgid "Create a new project."
-msgstr ""
+msgstr "Δημιουργία καινούριου έργου."
 
 #: ../../zrythm-interface/main-toolbar.rst:49
 msgid "Save"
@@ -261,7 +310,7 @@ msgstr "Αποθήκευση"
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save the current project at its current location."
-msgstr ""
+msgstr "Αποθήκευση του τρέχοντος έργου στον τρέχοντα προορισμό."
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Save As"
@@ -269,15 +318,15 @@ msgstr "Αποθήκευση ως"
 
 #: ../../zrythm-interface/main-toolbar.rst:54
 msgid "Save the current project at a new location."
-msgstr ""
+msgstr "Αποθήκευση του τρέχοντος έργου σε έναν καινούριο προορισμό."
 
 #: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Load"
-msgstr ""
+msgstr "Φόρτωση"
 
 #: ../../zrythm-interface/main-toolbar.rst:58
 msgid "Load a project."
-msgstr ""
+msgstr "Φόρτωση ενός έργου."
 
 #: ../../zrythm-interface/main-toolbar.rst:61
 msgid "Export As"
@@ -288,6 +337,8 @@ msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for"
 " more details."
 msgstr ""
+"Εξαγωγή του έργου ως ήχου ή MIDI. Βλέπε :ref:`export-audio-and-midi` για "
+"περισσότερες πληροφορίες."
 
 #: ../../zrythm-interface/main-toolbar.rst:66
 msgid "Export Graph"
@@ -298,20 +349,26 @@ msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-"
 "routing-graph` for more details."
 msgstr ""
+"Εξαγωγή του γραφήματος δρομολόγησης ως εικόνας ή γραφήματος .dot. Βλέπε :ref"
+":`export-routing-graph` για περισσότερες λεπτομέρειες."
 
 #: ../../zrythm-interface/main-toolbar.rst:70
 msgid "For more information about projects, see the :ref:`projects` chapter."
 msgstr ""
+"Για περισσότερες πληροφορίες σχετικά με τα έργα, βλέπε την ενότητα "
+":ref:`projects`."
 
 #: ../../zrythm-interface/main-toolbar.rst:74
 msgid "View Menu"
-msgstr ""
+msgstr "Μενού προβολής"
 
 #: ../../zrythm-interface/main-toolbar.rst:75
 msgid ""
 "The View menu contains controls to change the appearance of Zrythm and "
 "its various areas, such as zooming."
 msgstr ""
+"Το μενού προβολής περιέχει χειριστές για την αλλαγή της εμφάνισης του Zrythm "
+"και των διαφόρων περιοχών του, όπως το ζουμάρισμα."
 
 #: ../../zrythm-interface/main-toolbar.rst:79
 msgid "Zoom In"
@@ -319,7 +376,7 @@ msgstr "Ζουμάρισμα μέσα"
 
 #: ../../zrythm-interface/main-toolbar.rst:80
 msgid "Zooms in."
-msgstr ""
+msgstr "Ζουμάρει προς τα μέσα."
 
 #: ../../zrythm-interface/main-toolbar.rst:83
 msgid "Zoom Out"
@@ -327,7 +384,7 @@ msgstr "Ζουμάρισμα έξω"
 
 #: ../../zrythm-interface/main-toolbar.rst:84
 msgid "Zooms out."
-msgstr ""
+msgstr "Ζουμάρει προς τα έξω."
 
 #: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Original Size"
@@ -335,7 +392,7 @@ msgstr "Πρωτότυπο μέγεθος"
 
 #: ../../zrythm-interface/main-toolbar.rst:88
 msgid "Zooms back to the default zoom level."
-msgstr ""
+msgstr "Ζουμπάρει πίσω στο προεπιλεγόμενο επίπεδο ζουμ."
 
 #: ../../zrythm-interface/main-toolbar.rst:91
 msgid "Best Fit"
@@ -346,32 +403,36 @@ msgid ""
 "Zooms in or out as much as required to show all of the events in the "
 "timeline."
 msgstr ""
+"Ζουμάρει μέσα ή έξω όσο απαιτείται για την προβολή όλων των γεγονότων του "
+"χρονολογίου."
 
 #: ../../zrythm-interface/main-toolbar.rst:96
 msgid "Toggle Left/Right/Bottom Panels"
-msgstr ""
+msgstr "Εναλλαγή αριστερού/δεξιού/κάτω πάνελς"
 
 #: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Toggles the panel's visibility."
-msgstr ""
+msgstr "Εναλλάσσει την ορατότητα του πάνελ."
 
 #: ../../zrythm-interface/main-toolbar.rst:100
 msgid "Toggle Timeline Visibility"
-msgstr ""
+msgstr "Εναλλαγή ορατότητας χρονολογίου"
 
 #: ../../zrythm-interface/main-toolbar.rst:101
 msgid "Toggles the timeline's visibility."
-msgstr ""
+msgstr "Εναλλάσσει την ορατότητα του χρονολογίου."
 
 #: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Help Menu"
-msgstr ""
+msgstr "Μενού βοήθειας"
 
 #: ../../zrythm-interface/main-toolbar.rst:105
 msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
 msgstr ""
+"Το μενού βοήθειας περιέχει συνδέσμους για αναφορά σφαλμάτων, δωρεά, "
+"συνομιλία και άλλους χρήσιμους συνδέσμους."
 
 #: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Chat"
@@ -379,7 +440,7 @@ msgstr "Συνομιλία"
 
 #: ../../zrythm-interface/main-toolbar.rst:110
 msgid "Join the Zrythm chatroom on Matrix."
-msgstr ""
+msgstr "Εγγραφείτε στη συνομιλία του Zrythm στο Matrix."
 
 #: ../../zrythm-interface/main-toolbar.rst:113
 msgid "Manual"
@@ -387,7 +448,7 @@ msgstr "Εγχειρίδιο"
 
 #: ../../zrythm-interface/main-toolbar.rst:114
 msgid "View the user manual."
-msgstr ""
+msgstr "Προβολή του εγχειριδίου χρήστη."
 
 #: ../../zrythm-interface/main-toolbar.rst:117
 msgid "News"
@@ -395,7 +456,7 @@ msgstr "Νέα"
 
 #: ../../zrythm-interface/main-toolbar.rst:118
 msgid "Show the latest changelog."
-msgstr ""
+msgstr "Προβολή του αρχείου αλλαγών."
 
 #: ../../zrythm-interface/main-toolbar.rst:121
 msgid "Keyboard Shortcuts"
@@ -403,7 +464,7 @@ msgstr "Συντομεύσεις πληκτρολογίου"
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Show all the available keyboard shortcuts."
-msgstr ""
+msgstr "Προβολή όλων των διαθέσιμων συντομεύσεων πληκτρολογίου."
 
 #: ../../zrythm-interface/main-toolbar.rst:125
 msgid "Donate"
@@ -411,7 +472,7 @@ msgstr "Δωρεά"
 
 #: ../../zrythm-interface/main-toolbar.rst:126
 msgid "Donate to Zrythm through LiberaPay."
-msgstr ""
+msgstr "Δωρεά στο Zrythm με το LiberaPay."
 
 #: ../../zrythm-interface/main-toolbar.rst:129
 msgid "Report a Bug"
@@ -419,28 +480,30 @@ msgstr "Αναφορά σφάλματος"
 
 #: ../../zrythm-interface/main-toolbar.rst:130
 msgid "Opens the page to report a new bug."
-msgstr ""
+msgstr "Ανοίγει τη σελίδα για αναφορά ενός καινούριου σφάλματος."
 
 #: ../../zrythm-interface/main-toolbar.rst:133
 msgid "Additional Controls"
-msgstr ""
+msgstr "Επιπρόσθετοι χειριστές"
 
 #: ../../zrythm-interface/main-toolbar.rst:134
 msgid "The main toolbar also contains the following widgets."
-msgstr ""
+msgstr "Η κύρια γραμμή εργαλείων περιέχει επίσης τα εξής γραφικά στοιχεία."
 
 #: ../../zrythm-interface/main-toolbar.rst:139
 msgid "There are the following buttons next to the name of the current project."
 msgstr ""
+"Υπάρχουν επίσης τα ακόλουθα κουμπιά δίπλα στο όνομα του τρέχοντος έργου."
 
 #: ../../zrythm-interface/main-toolbar.rst:143
-#, fuzzy
 msgid "Scripting Interface"
-msgstr "Διεπαφή scripting"
+msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
 
 #: ../../zrythm-interface/main-toolbar.rst:144
 msgid "Shows the scripting interface. See :ref:`scripting` for more information."
 msgstr ""
+"Προβάλλει τη διεπαφή δέσμης ενεργειών (scripting). Βλέπε :ref:`scripting` "
+"για περισσότερες πληροφορίες."
 
 #: ../../zrythm-interface/main-toolbar.rst:148
 msgid "Log Viewer"
@@ -451,6 +514,9 @@ msgid ""
 "Displays the log, which gets updated real-time. Preferences Shows the "
 "preferences dialog. See :ref:`preferences` for more information."
 msgstr ""
+"Προβάλλει το αρχείο καταγραφής, το οποίο ενημερώνεται σε αληθινό χρόνο. Οι "
+"ρυθμίσεις δείχνουν το παράθυρο ρυθμίσεων. Βλέπε :ref:`preferences` για "
+"περισσότερες πληροφορίες."
 
 #: ../../zrythm-interface/main-toolbar.rst:154
 msgid ""
@@ -458,16 +524,21 @@ msgid ""
 " devices and the live waveform display shows the audio waveform from the "
 "master output."
 msgstr ""
+"Το γραφικό στοιχείο εισόδου MIDI δείχνει τη δραστηριότητα των αυτόματα "
+"συνδεδεμένων συσκευών MIDI και η οθόνη ζωντανής κυματομορφής δείχνει την "
+"κυματομορφή ήχου από την έξοδο μάστερ."
 
 #: ../../zrythm-interface/right-panel.rst:8
 msgid "Right Panel"
-msgstr ""
+msgstr "Δεξί πάνελ"
 
 #: ../../zrythm-interface/right-panel.rst:9
 msgid ""
 "The right panel contains plugin and sample browsers in addition to the "
 "control room."
 msgstr ""
+"Το δεξί πάνελ περιέχει περιηγητές προσθέτων και δειγμάτων καθώς και το "
+"δωμάτιο ελέγχου."
 
 #: ../../zrythm-interface/right-panel.rst:16
 msgid "Plugin Browser"
@@ -478,6 +549,8 @@ msgid ""
 "The first tab is the plugin browser, which is explained in :ref:`plugin-"
 "browser`."
 msgstr ""
+"Η πρώτη καρτέλα είναι ο περιηγητής προσθέτων, ο οποίος εξηγείται στο :ref"
+":`plugin-browser`."
 
 #: ../../zrythm-interface/right-panel.rst:21
 msgid "File Browser"
@@ -485,7 +558,7 @@ msgstr "Περιηγητής αρχείων"
 
 #: ../../zrythm-interface/right-panel.rst:22
 msgid "The file browser is covered in :ref:`file-browser`."
-msgstr ""
+msgstr "Ο περιηγητής αρχείων καλύπτεται στο :ref:`file-browser`."
 
 #: ../../zrythm-interface/right-panel.rst:25
 msgid "Control Room"
@@ -493,11 +566,11 @@ msgstr "Αίθουσα ελέγχου"
 
 #: ../../zrythm-interface/right-panel.rst:26
 msgid "The control room is covered in :ref:`control-room`."
-msgstr ""
+msgstr "Η αίθουσα ελέγχου καλύπτεται στην :ref:`control-room`."
 
 #: ../../zrythm-interface/timeline.rst:8
 msgid "Timeline"
-msgstr ""
+msgstr "Χρονολόγιο"
 
 #: ../../zrythm-interface/timeline.rst:10
 msgid ""
@@ -505,48 +578,57 @@ msgid ""
 "on the left side. It has a special toolbar at the top for timeline-"
 "specific actions."
 msgstr ""
+"Το χρονολόγιο αποτελείται από τον ταξινόμο χρονολογίου και τα κομμάτια του "
+"έργου στην αριστερή πλευρά. Έχει μια ειδική μπάρα εργαλείων στο πάνω μέρος "
+"για ενέργειες ειδικές προς το χρονολόγιο."
 
 #: ../../zrythm-interface/timeline.rst:17
 msgid ""
 "The :ref:`editing-timeline` section goes in depth about editing inside "
 "the timeline panel."
 msgstr ""
+"Η ενότητα :ref:`editing-timeline` εμβαθύνει σχετικά με την επεξεργασία μέσα "
+"στο πάνελ χρονολογίου."
 
 #: ../../zrythm-interface/transport-bar.rst:8
 msgid "Transport Bar"
-msgstr ""
+msgstr "Μπάρα μεταφοράς"
 
 #: ../../zrythm-interface/transport-bar.rst:10
 msgid ""
 "The transport bar contains information about the audio engine and "
 "transport controls."
 msgstr ""
+"Η μπάρα μεταφοράς περιέχει πληροφορέις σχετικά με τον κινητήρα ήχου και τους "
+"χειριστές μεταφοράς."
 
 #: ../../zrythm-interface/transport-bar.rst:17
 msgid "Transport Controls"
-msgstr ""
+msgstr "Χειριστές μεταφοράς"
 
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid ""
 "Transport controls change the behavior of playback. They include the "
 "following items."
 msgstr ""
+"Οι χειριστές μεταφοράς αλλάζουν τη συμπεριφορά της αναπαραγωγής. "
+"Περιλαμβάνουν τα εξής αντικείμενα."
 
 #: ../../zrythm-interface/transport-bar.rst:25
 msgid "Metronome toggle"
-msgstr ""
+msgstr "Εναλλαγή μετρονόμου"
 
 #: ../../zrythm-interface/transport-bar.rst:26
 msgid "Toggles the metronome on/off."
-msgstr ""
+msgstr "Εναλλάσσει την ενεργοποίηση/απενεργοποίηση του μετρονόμου."
 
 #: ../../zrythm-interface/transport-bar.rst:29
 msgid "Metronome options"
-msgstr ""
+msgstr "Ρυθμίσεις μετρονόμου"
 
 #: ../../zrythm-interface/transport-bar.rst:30
 msgid "Sets the volume of the metronome."
-msgstr ""
+msgstr "Ορίζει την ένταση του μετρονόμου."
 
 #: ../../zrythm-interface/transport-bar.rst:33
 msgid "Return to cue point on stop"
@@ -555,6 +637,8 @@ msgstr "Επιστροφή στο σημείο cue κατά την παύση"
 #: ../../zrythm-interface/transport-bar.rst:34
 msgid "Toggles whether to return to the cue point when playback stops."
 msgstr ""
+"Εναλλάσσει σχετικά με την επιστροφή στο σημείο cue όταν σταματάει η "
+"αναπαραγωγή."
 
 #: ../../zrythm-interface/transport-bar.rst:38
 msgid "BPM"
@@ -562,7 +646,7 @@ msgstr "BPM"
 
 #: ../../zrythm-interface/transport-bar.rst:39
 msgid "Song tempo (beats per minute)."
-msgstr ""
+msgstr "Τέμπο τραγουδιού (χτύποι ανά λεπτό)."
 
 #: ../../zrythm-interface/transport-bar.rst:42
 msgid "Playhead"
@@ -570,53 +654,59 @@ msgstr "Κεφαλή αναπαραγωγής"
 
 #: ../../zrythm-interface/transport-bar.rst:43
 msgid "Current playhead position, in bars.beats.sixteenths.ticks."
-msgstr ""
+msgstr "Η τρέχουσα θέση κεφαλής αναπαραγωγής σε bars.beats.sixteenths.ticks."
 
 #: ../../zrythm-interface/transport-bar.rst:46
 msgid "Transport buttons"
-msgstr ""
+msgstr "Κουμπιά μεταφοράς"
 
 #: ../../zrythm-interface/transport-bar.rst:47
 msgid "Controls for stopping, playback, recording, etc."
-msgstr ""
+msgstr "Χειριστές για παύση, αναπαραγωγή, ηχογράφηση, κλπ."
 
 #: ../../zrythm-interface/transport-bar.rst:49
 msgid ""
 "Widgets like the BPM meter can be changed by clicking and dragging, or by"
 " hovering over them with the cursor and scrolling"
 msgstr ""
+"Τα γραφικά στοιχεία όπως ο μετρητής BPM μπορούν να αλλάξουν κάνοντας κλικ "
+"και σύρσιμο ή τοποθετώντας τον κέρσορα πάνω τους και σκρολάροντας"
 
 #: ../../zrythm-interface/transport-bar.rst:53
 msgid ""
 "More information about working with the transport bar is covered in :ref"
 ":`transport-controls`."
 msgstr ""
+"Περισσότερες πληροφορίες όσον αφορά τη δουλειά με την μπάρα μεταφοράς "
+"καλύπτεται στους :ref:`transport-controls`."
 
 #: ../../zrythm-interface/transport-bar.rst:57
 msgid "Backend Information"
-msgstr ""
+msgstr "Πληροφορίες παρασκηνίου"
 
 #: ../../zrythm-interface/transport-bar.rst:58
 msgid ""
 "Information about the currently selected backend and options is visible "
 "in the bottom left corner."
 msgstr ""
+"Οι πληροφορίες σχετικά με το τρέχον επιλεγόμενο παρασκήνιο και τις ρυθμίσεις "
+"είναι ορατές στην κατώ αριστερή γωνία."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:6
 msgid "Interface Overview"
-msgstr ""
+msgstr "Επισκόπηση διεπαφής"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:8
 msgid "The Zrythm interface is split into various sub-modules."
-msgstr ""
+msgstr "Η διεπαφή του Zrythm διαχωρίζεται σε διάφορες υπομονάδες."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:12
 msgid "Each sub-module is explained in its own section."
-msgstr ""
+msgstr "Κάθε υπομονάδα εξηγείται στη δική της ενότητα."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:14
 msgid ":ref:`timeline` (1)"
-msgstr ""
+msgstr ":ref:`timeline` (1)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:15
 msgid ":ref:`main-toolbar` (2)"
@@ -628,7 +718,7 @@ msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:17
 msgid ":ref:`bottom-panel` (4)"
-msgstr ""
+msgstr ":ref:`bottom-panel` (4)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:18
 msgid ":ref:`transport-bar` (5)"
