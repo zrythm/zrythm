@@ -1323,6 +1323,36 @@ test_audio_functions ()
   undo_manager_undo (UNDO_MANAGER);
 }
 
+static void
+test_quantize ()
+{
+  /* clear undo/redo stacks */
+  undo_manager_clear_stacks (UNDO_MANAGER, true);
+
+  rebootstrap_timeline ();
+
+  Track * audio_track =
+    tracklist_find_track_by_name (
+      TRACKLIST, AUDIO_TRACK_NAME);
+  g_assert_true (
+    audio_track->type == TRACK_TYPE_AUDIO);
+
+  UndoableAction * ua =
+    arranger_selections_action_new_quantize (
+      (ArrangerSelections *) AUDIO_SELECTIONS,
+      QUANTIZE_OPTIONS_EDITOR);
+  undo_manager_perform (
+    UNDO_MANAGER, ua);
+
+  /* TODO test audio/MIDI quantization */
+  TrackLane * lane = audio_track->lanes[3];
+  ZRegion * region = lane->regions[0];
+  g_assert_true (IS_ARRANGER_OBJECT (region));
+
+  /* return to original state */
+  undo_manager_undo (UNDO_MANAGER);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1360,6 +1390,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test split",
     (GTestFunc) test_split);
+  g_test_add_func (
+    TEST_PREFIX "test quantize",
+    (GTestFunc) test_quantize);
 
   return g_test_run ();
 }

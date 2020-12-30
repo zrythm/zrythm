@@ -1072,6 +1072,11 @@ region_get_arranger_selections (
         (ArrangerSelections *)
         CHORD_SELECTIONS;
       break;
+    case REGION_TYPE_AUDIO:
+      sel =
+        (ArrangerSelections *)
+        AUDIO_SELECTIONS;
+      break;
     default:
       break;
     }
