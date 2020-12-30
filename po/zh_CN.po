@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-12-13 10:29+0000\n"
-"Last-Translator: yu zhang <zhangyu201510@gmail.com>\n"
+"PO-Revision-Date: 2020-12-30 23:03+0000\n"
+"Last-Translator: Gary Wang <wzc782970009@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
@@ -2645,11 +2645,11 @@ msgstr "复制%d个插件"
 
 #: src/actions/port_connection_action.c:140
 msgid "Connect ports"
-msgstr ""
+msgstr "连接端口"
 
 #: src/actions/port_connection_action.c:143
 msgid "Disconnect ports"
-msgstr ""
+msgstr "断开端口连接"
 
 #: src/actions/port_connection_action.c:146
 #, fuzzy
@@ -3108,18 +3108,16 @@ msgid "Custom"
 msgstr "自定义"
 
 #: resources/ui/bot_dock_edge.ui:66
-#, fuzzy
 msgid "Editor view"
-msgstr "编辑器"
+msgstr "编辑器视图"
 
 #: resources/ui/bot_dock_edge.ui:82
 msgid "Editor"
 msgstr "编辑器"
 
 #: resources/ui/bot_dock_edge.ui:105
-#, fuzzy
 msgid "Mixer view"
-msgstr "混合器面板"
+msgstr "混音器视图"
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Mixer"
@@ -3144,9 +3142,8 @@ msgid "Musical mode"
 msgstr "音乐模式"
 
 #: resources/ui/timeline_toolbar.ui:98
-#, fuzzy
 msgid "Merge selections"
-msgstr "清除选定内容"
+msgstr "合并选定内容"
 
 #: resources/ui/timeline_toolbar.ui:121 resources/ui/editor_toolbar.ui:120
 msgid "Toggle event viewer"
@@ -3335,9 +3332,8 @@ msgid "News"
 msgstr "新闻"
 
 #: resources/ui/modulator_inner.ui:20
-#, fuzzy
 msgid "Show/hide UI"
-msgstr "无乐器"
+msgstr "显示/隐藏 UI"
 
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
