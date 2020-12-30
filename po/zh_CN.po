@@ -4,13 +4,14 @@
 # alex <alex@zrythm.org>, 2019.
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
 # Gary Wang <wzc782970009@gmail.com>, 2020.
+# yu zhang <zhangyu201510@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-11-21 12:50+0000\n"
-"Last-Translator: Gary Wang <wzc782970009@gmail.com>\n"
+"PO-Revision-Date: 2020-12-13 10:29+0000\n"
+"Last-Translator: yu zhang <zhangyu201510@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -47,13 +48,12 @@ msgid "Region"
 msgstr "区域"
 
 #: inc/gui/backend/arranger_object.h:94
-#, fuzzy
 msgid "Midi Note"
-msgstr "Note"
+msgstr "midi记录"
 
 #: inc/gui/backend/arranger_object.h:96
 msgid "Chord Object"
-msgstr ""
+msgstr "chord工程"
 
 #: inc/gui/backend/arranger_object.h:98
 #, fuzzy
@@ -66,9 +66,8 @@ msgid "Marker"
 msgstr "标记"
 
 #: inc/gui/backend/arranger_object.h:102
-#, fuzzy
 msgid "Automation Point"
-msgstr "自动化点"
+msgstr "自动化轨关键点"
 
 #: inc/gui/backend/arranger_object.h:104 src/gui/widgets/event_viewer.c:548
 #: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
@@ -134,12 +133,12 @@ msgstr "乐器"
 #: src/gui/widgets/preferences.c:94 src/audio/region.c:397
 #: build/data/org.zrythm.Zrythm.gschema.xml:639
 msgid "Audio"
-msgstr "音讯"
+msgstr "声音"
 
 #: inc/audio/track.h:164 src/project.c:675
 #: src/gui/widgets/route_target_selector_popover.c:163
 msgid "Master"
-msgstr "Master"
+msgstr "控制"
 
 #: inc/audio/track.h:165 src/gui/widgets/event_viewer.c:118
 #: src/gui/widgets/event_viewer.c:589 src/audio/region.c:403
