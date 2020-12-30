@@ -4,8 +4,8 @@
 
 .. _timeline-ruler:
 
-Ruler
-=====
+Timeline Ruler
+==============
 
 The ruler is mainly used to control looping and
 playback.

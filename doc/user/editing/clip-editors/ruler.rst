@@ -4,8 +4,8 @@
 
 .. _editor-ruler:
 
-Ruler
-=====
+Editor Ruler
+============
 The editor ruler is similar to the timeline ruler
 explained in :ref:`timeline-ruler`, with some
 differences.
