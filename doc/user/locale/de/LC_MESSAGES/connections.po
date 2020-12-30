@@ -4,13 +4,14 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 # Christian B. <buerdman@googlemail.com>, 2020.
 # André Menrath <andre.menrath@posteo.de>, 2020.
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: 2020-10-06 02:26+0000\n"
-"Last-Translator: André Menrath <andre.menrath@posteo.de>\n"
+"PO-Revision-Date: 2020-12-30 23:03+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "connections/de/>\n"
 "Language: de\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../connections/intro.rst:6
@@ -53,6 +54,9 @@ msgid ""
 "edit existing connections. You can also drag the slider to adjust the "
 "level of the amount to send."
 msgstr ""
+"Per Doppelklick kannst ein Port mit einem anderen Port verbinden oder dessen "
+"Verbindungen bearbeitet werden. Per Slider kann die Signalstärke angepasst "
+"werden."
 
 #: ../../connections/making-connections.rst:28
 msgid "Routing Graph"
@@ -120,7 +124,7 @@ msgstr ""
 
 #: ../../connections/ports.rst:34
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: ../../connections/ports.rst:34
 msgid "Ports of this type receive or send raw audio signals."
