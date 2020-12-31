@@ -10,8 +10,8 @@ Timeline Arranger
 The timeline arranger is the main area where the
 song is composed. It consists of a collection of
 events, such as regions, positioned against time.
-Some events will open separate windows for further
-editing when clicked.
+Some events (such as regions) will open separate
+windows for further editing when clicked.
 
 .. image:: /_static/img/timeline-arranger.png
    :align: center
@@ -20,8 +20,6 @@ The timeline arranger is split into a top arranger
 that remains fixed on top and a bottom arranger
 below it. This way you can pin tracks you want to
 always be visible at the top.
-
-.. todo:: split the following to sub-pages
 
 Arranger Objects
 ----------------
@@ -43,36 +41,66 @@ like below.
 
 The following types of regions exist.
 
-Audio Region
+Audio Regions
++++++++++++++
+Audio regions contain audio clips from audio files.
+
+.. image:: /_static/img/audio-region.png
+   :align: center
+
+Audio regions belong to track lanes and appear inside
+Audio tracks.
+
+.. image:: /_static/img/audio-track-with-region.png
+   :align: center
+
+Double-clicking an audio region will bring up the
+:doc:`Audio Editor <../../editing/clip-editors/audio-editor>`.
+
+MIDI Regions
 ++++++++++++
-Contains audio clips.
+MIDI regions contain :term:`MIDI` notes.
 
-.. todo:: Expand + add pic.
+.. image:: /_static/img/midi-region.png
+   :align: center
 
-Fades
-^^^^^
-.. todo:: Explain how fades work.
+MIDI regions belong to track lanes and appear inside
+MIDI or Instrument tracks.
 
-.. todo:: Decide what to do about cross-fades
-   (just use fades?).
+.. image:: /_static/img/midi-track-with-region.png
+   :align: center
 
-MIDI Region
-+++++++++++
-Contains MIDI notes.
+Double-clicking a MIDI region will bring up the
+:doc:`Piano Roll <../../editing/clip-editors/piano-roll>`.
 
-.. todo:: Expand + add pic.
+Automation Regions
+++++++++++++++++++
+Automation regions contain automation events.
 
-Automation Region
-+++++++++++++++++
-Contains automation events.
+.. image:: /_static/img/automation-region.png
+   :align: center
 
-.. todo:: Expand + add pic.
+Automation regions appear inside automation lanes.
 
-Chord region
-++++++++++++
-Contains sequences of chords.
+.. image:: /_static/img/automation-lane-with-region.png
+   :align: center
 
-.. todo:: Expand + add pic.
+Double-clicking an automation region will bring up
+the
+:doc:`Automation Editor <../../editing/clip-editors/automation-editor>`.
+
+Chord regions
++++++++++++++
+Chord regions contain sequences of chords.
+
+.. todo:: Add pic.
+
+Chord regions appear inside the chord track.
+
+.. todo:: Add pic.
+
+Double-clicking a chord region will bring up the
+:doc:`Chord Editor <../../editing/clip-editors/chord-editor>`.
 
 Markers
 ~~~~~~~
@@ -83,44 +111,25 @@ section inside the song, such as `Chorus` or
 .. image:: /_static/img/marker.png
    :align: center
 
+Markers appear inside the marker track.
+
+.. todo:: Add pic.
+
 There are two special markers that signify the
 start and end of the song that are used for
 exporting the song and cannot be deleted.
 
 Scales
 ~~~~~~
-Scales are used in the Chord track to indicate the
+Scales are used to indicate the
 start of a section using a specific musical scale.
 
 .. image:: /_static/img/scale-object.png
    :align: center
 
-Editing Objects
----------------
-The following operations apply to all editable
-objects.
+Scales appear inside the Chord track.
 
-Creating
-~~~~~~~~
-Using the select (default) tool, all objects are
-created by double clicking inside the arranger and
-dragging, then releasing when you are satisfied
-with the position/size.
-
-For creating objects using other tools, see
-:ref:`edit-tools`.
-
-Moving
-~~~~~~
-Objects are moved by clicking and dragging them
-around. You can move regions to other tracks if
-the track types are compatible.
-
-Copy-Moving
-~~~~~~~~~~~
-Holding down :kbd:`Ctrl` while moving objects will
-allow you to copy-and-move the objects to the new
-location.
+.. todo:: Add pic.
 
 Editing Regions
 ---------------
@@ -162,9 +171,72 @@ the link icon that shows in the top right.
 
 Renaming
 ~~~~~~~~
-Regions can be renamed by clicking on their name.
+Regions can be renamed by selecting them and
+pressing :kbd:`F2`.
 
-.. todo:: Illustrate.
+.. figure:: /_static/img/region-rename.png
+   :align: center
 
-Other editing capabilities were explained
-previously in :ref:`edit-tools`.
+   Renaming a region
+
+Adjusting Fades
+~~~~~~~~~~~~~~~
+Audio regions can have fades.
+Fades are gradual increases or
+decreases in the level of the audio signal, and
+their positions can be adjusted by clicking and
+dragging the top left/right corners of the region.
+
+.. figure:: /_static/img/audio-region-fade-out1.png
+   :align: center
+
+   Adjusting fade out point (click & drag)
+
+.. figure:: /_static/img/audio-region-fade-out2.png
+   :align: center
+
+   Adjusting fade out point (drop)
+
+Clicking and dragging the grey part up or down
+will adjust the curviness of the fade.
+
+.. figure:: /_static/img/audio-region-fade-out-curviness.png
+   :align: center
+
+   Adjusting curviness
+
+The type of fade algorithm used can also be changed
+by right-clicking on the fade.
+
+.. figure:: /_static/img/audio-region-fade-context-menu.png
+   :align: center
+
+   Fade context menu
+
+The various types of fade algorithms available are
+illustrated below.
+
+.. list-table:: Fade algorithms
+
+   * - .. figure:: /_static/img/fade-linear.png
+          :align: center
+
+          Linear
+
+     - .. figure:: /_static/img/fade-exponential.png
+          :align: center
+
+          Exponential
+
+     - .. figure:: /_static/img/fade-superellipse.png
+          :align: center
+
+          Elliptic (Superellipse)
+
+     - .. figure:: /_static/img/fade-vital.png
+          :align: center
+
+          Vital
+
+.. todo:: Decide what to do about cross-fades
+   (just use fades?).

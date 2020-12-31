@@ -22,15 +22,25 @@ This can be toggled to switch between Select and
 Stretch.
 
 In Select mode, you can make object selections and
-move, clone and resize objects. This is the most
-common mode and the most common operations can be
-accomplished by just using this.
-
-.. todo:: Add pic showing object selection.
+create, move, clone and resize objects. This is the
+most common mode and the most common operations can
+be accomplished by just using this.
 
 Stretch mode is similar to the Select mode, with the
 exception that when you resize objects, their contents
 will be stretched to fit the new size.
+
+Creating Objects
+++++++++++++++++
+Using the select (default) tool, all objects are
+created by double clicking inside their
+corresponding arranger and dragging, then releasing
+when you are satisfied with the position/size.
+
+.. figure:: /_static/img/creating-midi-region.png
+   :align: center
+
+   Creating a region
 
 Selecting Objects
 +++++++++++++++++
@@ -42,13 +52,30 @@ selection.
 Selected objects will have brighter color than non-selected
 objects.
 
-Moving and Cloning Objects
-++++++++++++++++++++++++++
-To move objects around, click on a selected object and keep
-dragging with your cursor to where you want to move them.
-Holding down :kbd:`Control` while doing this will create
-duplicates (clones) of the selected objects. This is an
-efficient way to quickly clone multiple objects.
+.. todo:: Add pic showing object selection.
+
+Moving Objects
+++++++++++++++
+Objects are moved by clicking and dragging them
+around. You can move regions to other tracks if
+the track types are compatible.
+
+.. figure:: /_static/img/moving-midi-region.png
+   :align: center
+
+   Moving a region
+
+Cloning (Copy-Moving) Objects
++++++++++++++++++++++++++++++
+
+Holding down :kbd:`Ctrl` while moving objects will
+allow you to copy-and-move the objects to the new
+location.
+
+.. figure:: /_static/img/copy-moving-midi-region.png
+   :align: center
+
+   Copy-moving a region
 
 Resizing Objects
 ++++++++++++++++
@@ -70,8 +97,6 @@ resizing it.
 Cutting Objects
 ~~~~~~~~~~~~~~~
 You can :kbd:`Alt`-click inside objects to break them up.
-Holding down :kbd:`Shift` while doing this will bypass
-snapping.
 
 Edit Tool
 ~~~~~~~~~
@@ -112,3 +137,6 @@ the velocity editor to create velocity ramps.
 Audition Tool
 ~~~~~~~~~~~~~
 This feature is not implemented yet.
+
+.. tip:: Where applicable, hold :kbd:`Shift` to
+   bypass snapping.

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-31 01:00+0000\n"
+"POT-Creation-Date: 2020-12-31 12:18+0000\n"
 "PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language: ru\n"
@@ -128,6 +128,7 @@ msgid "Elliptical curve."
 msgstr "Эллиптическая кривая."
 
 #: ../../editing/clip-editors/automation-editor.rst:49
+#: ../../editing/timeline/arranger.rst:239
 msgid "Vital"
 msgstr "Vital"
 
@@ -160,21 +161,17 @@ msgstr "Контекстное меню (Context Menu)"
 #: ../../editing/clip-editors/ruler.rst:44
 #: ../../editing/clip-editors/toolbar.rst:12
 #: ../../editing/common-operations.rst:33
-#: ../../editing/common-operations.rst:70
-#: ../../editing/common-operations.rst:84
-#: ../../editing/common-operations.rst:91
-#: ../../editing/common-operations.rst:98
-#: ../../editing/edit-tools.rst:29
-#: ../../editing/timeline/arranger.rst:24
-#: ../../editing/timeline/arranger.rst:50
-#: ../../editing/timeline/arranger.rst:54
-#: ../../editing/timeline/arranger.rst:56
-#: ../../editing/timeline/arranger.rst:63
-#: ../../editing/timeline/arranger.rst:69
-#: ../../editing/timeline/arranger.rst:75
-#: ../../editing/timeline/arranger.rst:156
-#: ../../editing/timeline/arranger.rst:161
-#: ../../editing/timeline/arranger.rst:167
+#: ../../editing/common-operations.rst:87
+#: ../../editing/common-operations.rst:94
+#: ../../editing/common-operations.rst:101
+#: ../../editing/edit-tools.rst:55
+#: ../../editing/timeline/arranger.rst:96
+#: ../../editing/timeline/arranger.rst:100
+#: ../../editing/timeline/arranger.rst:116
+#: ../../editing/timeline/arranger.rst:132
+#: ../../editing/timeline/arranger.rst:165
+#: ../../editing/timeline/arranger.rst:170
+#: ../../editing/timeline/arranger.rst:241
 #: ../../editing/timeline/toolbar.rst:11
 msgid "Todo"
 msgstr "В разработке"
@@ -557,7 +554,7 @@ msgstr ""
 "маркеры и индикаторы."
 
 #: ../../editing/clip-editors/ruler.rst:21
-#: ../../editing/timeline/arranger.rst:78
+#: ../../editing/timeline/arranger.rst:106
 msgid "Markers"
 msgstr "Маркеры (Markers)"
 
@@ -576,6 +573,10 @@ msgstr ""
 #: ../../editing/clip-editors/ruler.rst:29
 #: ../../editing/clip-editors/ruler.rst:36
 #: ../../editing/clip-editors/ruler.rst:44
+#: ../../editing/timeline/arranger.rst:96
+#: ../../editing/timeline/arranger.rst:100
+#: ../../editing/timeline/arranger.rst:116
+#: ../../editing/timeline/arranger.rst:132
 msgid "Add pic."
 msgstr "Добавить картинку."
 
@@ -806,51 +807,54 @@ msgstr ""
 "Создать копию выбранных объектов рядом с ними. Горячая клавиша для "
 "дублирования: :zbutton:`Control` + :zbutton:`D`."
 
-#: ../../editing/common-operations.rst:70
-#: ../../editing/common-operations.rst:84
-#: ../../editing/common-operations.rst:91
-#: ../../editing/common-operations.rst:98
-#: ../../editing/timeline/arranger.rst:167
-msgid "Illustrate."
-msgstr "Проиллюстрируйте."
-
 #: ../../editing/common-operations.rst:73
+#, fuzzy
+msgid "Duplicating a region"
+msgstr "Редактирование регионов"
+
+#: ../../editing/common-operations.rst:76
 msgid "Delete"
 msgstr "Удалить (Delete)"
 
-#: ../../editing/common-operations.rst:74
+#: ../../editing/common-operations.rst:77
 #, fuzzy
 msgid "Delete the selected objects. You can also press :kbd:`Delete`."
 msgstr ""
 "Удалить выделенные объекты. Вы также можете нажать :zbutton:`Delete` на "
 "клавиатуре, чтобы сделать это."
 
-#: ../../editing/common-operations.rst:79
+#: ../../editing/common-operations.rst:82
 msgid "Selections"
 msgstr "Выделение (Selection)"
 
-#: ../../editing/common-operations.rst:81
+#: ../../editing/common-operations.rst:84
 msgid "Clear Selection"
 msgstr "Очистить выделение (Clear Selection)"
 
-#: ../../editing/common-operations.rst:82
+#: ../../editing/common-operations.rst:85
 msgid "Clear current selection (unselect all objects)."
 msgstr "Очистить выделение (снять выделение со всех объектов)."
 
 #: ../../editing/common-operations.rst:87
+#: ../../editing/common-operations.rst:94
+#: ../../editing/common-operations.rst:101
+msgid "Illustrate."
+msgstr "Проиллюстрируйте."
+
+#: ../../editing/common-operations.rst:90
 msgid "Select All"
 msgstr "Выделить всё (Select All)"
 
-#: ../../editing/common-operations.rst:88
+#: ../../editing/common-operations.rst:91
 #, fuzzy
 msgid "Select all objects in the current editor (:kbd:`Control-a`)."
 msgstr "Выделить все объекты в текущем редакторе."
 
-#: ../../editing/common-operations.rst:94
+#: ../../editing/common-operations.rst:97
 msgid "Loop Selection"
 msgstr "Цикл выделения"
 
-#: ../../editing/common-operations.rst:95
+#: ../../editing/common-operations.rst:98
 #, fuzzy
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr ""
@@ -887,10 +891,11 @@ msgstr ""
 "растяжения."
 
 #: ../../editing/edit-tools.rst:24
+#, fuzzy
 msgid ""
-"In Select mode, you can make object selections and move, clone and resize"
-" objects. This is the most common mode and the most common operations can"
-" be accomplished by just using this."
+"In Select mode, you can make object selections and create, move, clone "
+"and resize objects. This is the most common mode and the most common "
+"operations can be accomplished by just using this."
 msgstr ""
 "В режиме выделения вы можете выбирать объекты, а также перемещать, "
 "клонировать и изменять размер объектов. Это наиболее распространенный "
@@ -898,10 +903,6 @@ msgstr ""
 "используя его."
 
 #: ../../editing/edit-tools.rst:29
-msgid "Add pic showing object selection."
-msgstr "Добавить картинку, показывающую выделенный объект."
-
-#: ../../editing/edit-tools.rst:31
 msgid ""
 "Stretch mode is similar to the Select mode, with the exception that when "
 "you resize objects, their contents will be stretched to fit the new size."
@@ -910,11 +911,32 @@ msgstr ""
 "изменении размера объектов их содержимое будет растянуто, чтобы "
 "соответствовать новому размеру."
 
-#: ../../editing/edit-tools.rst:36
+#: ../../editing/edit-tools.rst:34
+#, fuzzy
+msgid "Creating Objects"
+msgstr "Выделение объектов"
+
+#: ../../editing/edit-tools.rst:35
+#, fuzzy
+msgid ""
+"Using the select (default) tool, all objects are created by double "
+"clicking inside their corresponding arranger and dragging, then releasing"
+" when you are satisfied with the position/size."
+msgstr ""
+"В режиме выделения (Select Mode) все объекты создаются внутри "
+"аранжировщика двойным щелчком, не отпуская мышь, и перемещением мыши, а "
+"затем отпусканием, когда вас устраивает положение иразмер."
+
+#: ../../editing/edit-tools.rst:43
+#, fuzzy
+msgid "Creating a region"
+msgstr "Редактирование регионов"
+
+#: ../../editing/edit-tools.rst:46
 msgid "Selecting Objects"
 msgstr "Выделение объектов"
 
-#: ../../editing/edit-tools.rst:37
+#: ../../editing/edit-tools.rst:47
 msgid ""
 "To select objects, you can either click on them, click in empty space and"
 " keep dragging to make a selection, or :kbd:`Control`-click to add/remove"
@@ -925,32 +947,54 @@ msgstr ""
 ":kbd:`Control` и кликнуть по объекту для того, чтобы добавить или убрать "
 "объект из выделения."
 
-#: ../../editing/edit-tools.rst:42
+#: ../../editing/edit-tools.rst:52
 msgid "Selected objects will have brighter color than non-selected objects."
 msgstr "Выделенные объекты будут иметь более яркий цвет, чем невыделенные."
 
-#: ../../editing/edit-tools.rst:46
-msgid "Moving and Cloning Objects"
-msgstr "Перемещение и клонирование объектов"
+#: ../../editing/edit-tools.rst:55
+msgid "Add pic showing object selection."
+msgstr "Добавить картинку, показывающую выделенный объект."
 
-#: ../../editing/edit-tools.rst:47
+#: ../../editing/edit-tools.rst:58
+#, fuzzy
+msgid "Moving Objects"
+msgstr "Редактирование объектов"
+
+#: ../../editing/edit-tools.rst:59
 msgid ""
-"To move objects around, click on a selected object and keep dragging with"
-" your cursor to where you want to move them. Holding down :kbd:`Control` "
-"while doing this will create duplicates (clones) of the selected objects."
-" This is an efficient way to quickly clone multiple objects."
+"Objects are moved by clicking and dragging them around. You can move "
+"regions to other tracks if the track types are compatible."
 msgstr ""
-"Чтобы переместить объект, зажмите левую кнопку мыши на выбранном объекте "
-"и продолжайте перетаскивать мышь туда, куда вы хотите его переместить. "
-"Удерживание :kbd:`Control` во время перемещения создаст дубликаты (клоны)"
-" выбранных объектов. Это эффективный способ быстро клонировать несколько "
-"объектов."
+"Объекты можно перемещать, зажимая и перемещая левую кнопку мыши на "
+"объекте. Вы можете перемещать регионы на другие треки, если типы треков "
+"совместимы."
 
-#: ../../editing/edit-tools.rst:54
+#: ../../editing/edit-tools.rst:66
+#, fuzzy
+msgid "Moving a region"
+msgstr "Редактирование регионов"
+
+#: ../../editing/edit-tools.rst:69
+msgid "Cloning (Copy-Moving) Objects"
+msgstr ""
+
+#: ../../editing/edit-tools.rst:71
+msgid ""
+"Holding down :kbd:`Ctrl` while moving objects will allow you to copy-and-"
+"move the objects to the new location."
+msgstr ""
+"Удерживание :kbd:`Ctrl` во время перемещения объекта позволит вам "
+"клонировать объект в новое место."
+
+#: ../../editing/edit-tools.rst:78
+msgid "Copy-moving a region"
+msgstr ""
+
+#: ../../editing/edit-tools.rst:81
 msgid "Resizing Objects"
 msgstr "Изменение размеров объектов"
 
-#: ../../editing/edit-tools.rst:55
+#: ../../editing/edit-tools.rst:82
 msgid ""
 "Objects that have length, such as regions and MIDI notes, can be resized "
 "by clicking and dragging their edges."
@@ -959,7 +1003,7 @@ msgstr ""
 " уменьшить, зажив левую кнопку мыши на левой или правой границе объекта и"
 " переместив границу."
 
-#: ../../editing/edit-tools.rst:58
+#: ../../editing/edit-tools.rst:85
 msgid ""
 "On objects that can be repeated, such as regions, moving the cursor on "
 "the bottom half of the object will allow you to resize the object by "
@@ -969,7 +1013,7 @@ msgstr ""
 "мыши в нижней половине объекта позволит вам изменить размер объекта, "
 "повторяя его, а не просто изменяя его размер."
 
-#: ../../editing/edit-tools.rst:63
+#: ../../editing/edit-tools.rst:90
 msgid ""
 "When resizing, already repeated objects can only be repeated. To resize "
 "them instead of repeat them, their length must be changed or their clip "
@@ -980,25 +1024,24 @@ msgstr ""
 " не повторять, необходимо изменить их длину или переместить их маркеры "
 "клипа (Clip Marker), чтобы они больше не повторялись."
 
-#: ../../editing/edit-tools.rst:71
+#: ../../editing/edit-tools.rst:98
 msgid "Cutting Objects"
 msgstr "Обрезание объектов"
 
-#: ../../editing/edit-tools.rst:72
-msgid ""
-"You can :kbd:`Alt`-click inside objects to break them up. Holding down "
-":kbd:`Shift` while doing this will bypass snapping."
+#: ../../editing/edit-tools.rst:99
+#, fuzzy
+msgid "You can :kbd:`Alt`-click inside objects to break them up."
 msgstr ""
 "Вы можете зажать :kbd:`Alt` и щелкнуть внутри объекта, чтобы разбить его "
 "на две части. Удерживая :kbd:`Shift` при обрезании, можно обойти привязку"
 " (Snapping)."
 
-#: ../../editing/edit-tools.rst:77
+#: ../../editing/edit-tools.rst:102
 #, fuzzy
 msgid "Edit Tool"
 msgstr "Панель инструментов редактора (Editor Toolbar)"
 
-#: ../../editing/edit-tools.rst:78
+#: ../../editing/edit-tools.rst:103
 #, fuzzy
 msgid ""
 "This tool is used to quickly create or delete objects. While you can "
@@ -1013,7 +1056,7 @@ msgstr ""
 "достигается одним щелчком и перемищением мыши, что более эффективно при "
 "создании большого количества объектов."
 
-#: ../../editing/edit-tools.rst:84
+#: ../../editing/edit-tools.rst:109
 msgid ""
 "Holding down :kbd:`Control` while clicking will allow you to create "
 "multiple objects in a row (where applicable) with a length specified by "
@@ -1023,11 +1066,11 @@ msgstr ""
 "объектов в ряду (если возможно) с длиной, определенной настройками "
 "привязки (Snapping Settings), соответствующими каждому редактору."
 
-#: ../../editing/edit-tools.rst:90
+#: ../../editing/edit-tools.rst:115
 msgid "Cut Tool"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:91
+#: ../../editing/edit-tools.rst:116
 #, fuzzy
 msgid ""
 "The Cut tool behaves similarly to what is mentioned in :ref:`cutting-"
@@ -1038,12 +1081,12 @@ msgstr ""
 ":`cutting-objects`, за исключением того, что вы можете просто щелкнуть "
 "вместо зажатия :kbd:`Alt`."
 
-#: ../../editing/edit-tools.rst:96
+#: ../../editing/edit-tools.rst:121
 #, fuzzy
 msgid "Erase Tool"
 msgstr "Режим стирания (Erase Mode)"
 
-#: ../../editing/edit-tools.rst:97
+#: ../../editing/edit-tools.rst:122
 #, fuzzy
 msgid ""
 "Using the Erase tool you can just click on objects to delete them, or "
@@ -1053,11 +1096,11 @@ msgstr ""
 "переместить левую кнопку мыши, чтобы обернуть объекты в прямоугольник и "
 "удалить их."
 
-#: ../../editing/edit-tools.rst:104
+#: ../../editing/edit-tools.rst:129
 msgid "Ramp Tool"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:105
+#: ../../editing/edit-tools.rst:130
 #, fuzzy
 msgid ""
 "This tool is currently only used for editing velocities for MIDI notes. "
@@ -1068,14 +1111,19 @@ msgstr ""
 "мыши в редакторе силы звучания, чтобы задать новую силу звучания на "
 "основе прямой, которую вы проведете."
 
-#: ../../editing/edit-tools.rst:113
+#: ../../editing/edit-tools.rst:138
 #, fuzzy
 msgid "Audition Tool"
 msgstr "Режим прослушивания (Audition Mode)"
 
-#: ../../editing/edit-tools.rst:114
+#: ../../editing/edit-tools.rst:139
 msgid "This feature is not implemented yet."
 msgstr "Эта функция еще не реализована."
+
+#: ../../editing/edit-tools.rst:141
+#, fuzzy
+msgid "Where applicable, hold :kbd:`Shift` to bypass snapping."
+msgstr "Удерживайте :kbd:`Shift`, чтобы временно отключить привязку (Snapping)."
 
 #: ../../editing/intro.rst:8
 msgid "Editing"
@@ -1259,11 +1307,12 @@ msgid "Timeline Arranger"
 msgstr "Аранжировщик таймлайна (Timeline Arranger)"
 
 #: ../../editing/timeline/arranger.rst:10
+#, fuzzy
 msgid ""
 "The timeline arranger is the main area where the song is composed. It "
 "consists of a collection of events, such as regions, positioned against "
-"time. Some events will open separate windows for further editing when "
-"clicked."
+"time. Some events (such as regions) will open separate windows for "
+"further editing when clicked."
 msgstr ""
 "Аранжировщик таймлайна - это основная область, в которой создается "
 "проект. Аранжировщик таймлайна состоит из набора событий, таких как "
@@ -1280,23 +1329,19 @@ msgstr ""
 " закрепленным сверху, и нижний аранжировщик под ним. Таким образом вы "
 "можете закрепить треки, чтобы они всегда были видны наверху."
 
-#: ../../editing/timeline/arranger.rst:24
-msgid "split the following to sub-pages"
-msgstr "разделить следующее на подстраницы"
-
-#: ../../editing/timeline/arranger.rst:27
+#: ../../editing/timeline/arranger.rst:25
 msgid "Arranger Objects"
 msgstr "Объекты аранжировщика"
 
-#: ../../editing/timeline/arranger.rst:28
+#: ../../editing/timeline/arranger.rst:26
 msgid "The following arranger objects can exist inside the timeline."
 msgstr "На таймлайне могут существовать следующие объекты аранжировщика."
 
-#: ../../editing/timeline/arranger.rst:34
+#: ../../editing/timeline/arranger.rst:32
 msgid "Regions"
 msgstr "Регионы (Region)"
 
-#: ../../editing/timeline/arranger.rst:35
+#: ../../editing/timeline/arranger.rst:33
 #, fuzzy
 msgid ""
 "Regions (or :term:`clips <Clip>`) are containers for events or data (such"
@@ -1307,64 +1352,94 @@ msgstr ""
 "данных, таких как MIDI ноты и аудиоклипы, которые можно редактировать в "
 ":ref:`editor <editors>`. Регионы можно повторять, как показано ниже."
 
-#: ../../editing/timeline/arranger.rst:44
+#: ../../editing/timeline/arranger.rst:42
 msgid "The following types of regions exist."
 msgstr "Существуют следующие типы регионов."
 
-#: ../../editing/timeline/arranger.rst:47
-msgid "Audio Region"
+#: ../../editing/timeline/arranger.rst:45
+#, fuzzy
+msgid "Audio Regions"
 msgstr "Аудио Регион (Audio Region)"
 
-#: ../../editing/timeline/arranger.rst:48
-msgid "Contains audio clips."
-msgstr "Содержит аудиоклипы."
-
-#: ../../editing/timeline/arranger.rst:50
-#: ../../editing/timeline/arranger.rst:63
-#: ../../editing/timeline/arranger.rst:69
-#: ../../editing/timeline/arranger.rst:75
-msgid "Expand + add pic."
-msgstr "Развернуть + добавить картинку."
-
-#: ../../editing/timeline/arranger.rst:53
-msgid "Fades"
-msgstr "Затухание (Fade)"
-
-#: ../../editing/timeline/arranger.rst:54
-msgid "Explain how fades work."
-msgstr "Объясните, как работают плавные переходы."
-
-#: ../../editing/timeline/arranger.rst:56
-msgid "Decide what to do about cross-fades (just use fades?)."
+#: ../../editing/timeline/arranger.rst:46
+msgid "Audio regions contain audio clips from audio files."
 msgstr ""
-"Решите, что делать с перекрестными затуханиями (просто использовать "
-"затухания?)."
 
-#: ../../editing/timeline/arranger.rst:60
-msgid "MIDI Region"
-msgstr "MIDI регион (MIDI Region)"
+#: ../../editing/timeline/arranger.rst:51
+msgid "Audio regions belong to track lanes and appear inside Audio tracks."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:57
+msgid ""
+"Double-clicking an audio region will bring up the :doc:`Audio Editor "
+"<../../editing/clip-editors/audio-editor>`."
+msgstr ""
 
 #: ../../editing/timeline/arranger.rst:61
-msgid "Contains MIDI notes."
-msgstr "Содержит MIDI ноты."
+#, fuzzy
+msgid "MIDI Regions"
+msgstr "Редактирование регионов"
 
-#: ../../editing/timeline/arranger.rst:66
-msgid "Automation Region"
-msgstr "Редактор автоматизации (Automation Editor)"
+#: ../../editing/timeline/arranger.rst:62
+msgid "MIDI regions contain :term:`MIDI` notes."
+msgstr ""
 
 #: ../../editing/timeline/arranger.rst:67
-msgid "Contains automation events."
-msgstr "Содержит события автоматизации."
-
-#: ../../editing/timeline/arranger.rst:72
-msgid "Chord region"
-msgstr "Регион аккордов (Chord region)"
+msgid ""
+"MIDI regions belong to track lanes and appear inside MIDI or Instrument "
+"tracks."
+msgstr ""
 
 #: ../../editing/timeline/arranger.rst:73
-msgid "Contains sequences of chords."
+msgid ""
+"Double-clicking a MIDI region will bring up the :doc:`Piano Roll "
+"<../../editing/clip-editors/piano-roll>`."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:77
+#, fuzzy
+msgid "Automation Regions"
+msgstr "Редактор автоматизации (Automation Editor)"
+
+#: ../../editing/timeline/arranger.rst:78
+#, fuzzy
+msgid "Automation regions contain automation events."
+msgstr "Содержит события автоматизации."
+
+#: ../../editing/timeline/arranger.rst:83
+msgid "Automation regions appear inside automation lanes."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:88
+msgid ""
+"Double-clicking an automation region will bring up the :doc:`Automation "
+"Editor <../../editing/clip-editors/automation-editor>`."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:93
+#, fuzzy
+msgid "Chord regions"
+msgstr "Регион аккордов (Chord region)"
+
+#: ../../editing/timeline/arranger.rst:94
+#, fuzzy
+msgid "Chord regions contain sequences of chords."
 msgstr "Содержит последовательности аккордов."
 
-#: ../../editing/timeline/arranger.rst:79
+#: ../../editing/timeline/arranger.rst:98
+msgid "Chord regions appear inside the chord track."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:102
+#, fuzzy
+msgid ""
+"Double-clicking a chord region will bring up the :doc:`Chord Editor "
+"<../../editing/clip-editors/chord-editor>`."
+msgstr ""
+"Двойной щелчок по аккорду вызовет селектор аккордов, который позволяет "
+"вам изменить этот аккорд."
+
+#: ../../editing/timeline/arranger.rst:107
 msgid ""
 "Markers are used to mark the start of a logical section inside the song, "
 "such as `Chorus` or `Intro`."
@@ -1372,7 +1447,11 @@ msgstr ""
 "Маркеры используются для обозначения начала логического раздела внутри "
 "проекта. Например `Вступление` или `Припев`."
 
-#: ../../editing/timeline/arranger.rst:86
+#: ../../editing/timeline/arranger.rst:114
+msgid "Markers appear inside the marker track."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:118
 msgid ""
 "There are two special markers that signify the start and end of the song "
 "that are used for exporting the song and cannot be deleted."
@@ -1380,84 +1459,36 @@ msgstr ""
 "Есть два специальных маркера, обозначающих начало и конец проекта, "
 "которые используются для экспорта проекта и не могут быть удалены."
 
-#: ../../editing/timeline/arranger.rst:91
+#: ../../editing/timeline/arranger.rst:123
 msgid "Scales"
 msgstr "Гаммы (Scale)"
 
-#: ../../editing/timeline/arranger.rst:92
+#: ../../editing/timeline/arranger.rst:124
+#, fuzzy
 msgid ""
-"Scales are used in the Chord track to indicate the start of a section "
-"using a specific musical scale."
+"Scales are used to indicate the start of a section using a specific "
+"musical scale."
 msgstr ""
 "Гаммы используются в треке аккордов (Chord Track) для обозначения начала "
 "использования определенной музыкальной гаммы."
 
-#: ../../editing/timeline/arranger.rst:99
-msgid "Editing Objects"
-msgstr "Редактирование объектов"
-
-#: ../../editing/timeline/arranger.rst:100
-msgid "The following operations apply to all editable objects."
-msgstr "Следующие операции применяются ко всем редактируемым объектам."
-
-#: ../../editing/timeline/arranger.rst:104
-msgid "Creating"
-msgstr "Создание"
-
-#: ../../editing/timeline/arranger.rst:105
-#, fuzzy
-msgid ""
-"Using the select (default) tool, all objects are created by double "
-"clicking inside the arranger and dragging, then releasing when you are "
-"satisfied with the position/size."
+#: ../../editing/timeline/arranger.rst:130
+msgid "Scales appear inside the Chord track."
 msgstr ""
-"В режиме выделения (Select Mode) все объекты создаются внутри "
-"аранжировщика двойным щелчком, не отпуская мышь, и перемещением мыши, а "
-"затем отпусканием, когда вас устраивает положение иразмер."
 
-#: ../../editing/timeline/arranger.rst:110
-#, fuzzy
-msgid "For creating objects using other tools, see :ref:`edit-tools`."
-msgstr "Для создания объектов в других режимах читайте :ref:`edit-modes`."
-
-#: ../../editing/timeline/arranger.rst:114
-msgid "Moving"
-msgstr "Перемещение"
-
-#: ../../editing/timeline/arranger.rst:115
-msgid ""
-"Objects are moved by clicking and dragging them around. You can move "
-"regions to other tracks if the track types are compatible."
-msgstr ""
-"Объекты можно перемещать, зажимая и перемещая левую кнопку мыши на "
-"объекте. Вы можете перемещать регионы на другие треки, если типы треков "
-"совместимы."
-
-#: ../../editing/timeline/arranger.rst:120
-msgid "Copy-Moving"
-msgstr "Перемещение с клонированием"
-
-#: ../../editing/timeline/arranger.rst:121
-msgid ""
-"Holding down :kbd:`Ctrl` while moving objects will allow you to copy-and-"
-"move the objects to the new location."
-msgstr ""
-"Удерживание :kbd:`Ctrl` во время перемещения объекта позволит вам "
-"клонировать объект в новое место."
-
-#: ../../editing/timeline/arranger.rst:126
+#: ../../editing/timeline/arranger.rst:135
 msgid "Editing Regions"
 msgstr "Редактирование регионов"
 
-#: ../../editing/timeline/arranger.rst:127
+#: ../../editing/timeline/arranger.rst:136
 msgid "The following operations apply to regions."
 msgstr "Следующие операции применимы к регионам."
 
-#: ../../editing/timeline/arranger.rst:130
+#: ../../editing/timeline/arranger.rst:139
 msgid "Looping"
 msgstr "Зацикливание"
 
-#: ../../editing/timeline/arranger.rst:131
+#: ../../editing/timeline/arranger.rst:140
 msgid ""
 "Regions can be repeated, and hence they have :ref:`editable loop points "
 "and a clip start position <editing/clip-editors/ruler:Loop Points>` in "
@@ -1470,7 +1501,7 @@ msgstr ""
 "(Editor Ruler) <../../editing/clip-editors/ruler>` для изменения "
 "поведения зацикливания."
 
-#: ../../editing/timeline/arranger.rst:137
+#: ../../editing/timeline/arranger.rst:146
 msgid ""
 "Regions can also be looped inside the timeline, by moving the cursor to "
 "the bottom-left or bottom-right edge of the region, then clicking and "
@@ -1480,11 +1511,11 @@ msgstr ""
 "левому или нижнему правому краю региона, а затем зажав и перетащив левую "
 "кнопку мыши."
 
-#: ../../editing/timeline/arranger.rst:145
+#: ../../editing/timeline/arranger.rst:154
 msgid "Looping (loop-resizing) a region"
 msgstr "Зацикливание (изменение размера цикла) региона"
 
-#: ../../editing/timeline/arranger.rst:147
+#: ../../editing/timeline/arranger.rst:156
 msgid ""
 "If the region is already repeated, it cannot be resized anymore until its"
 " loop points match exactly the region's start and end points."
@@ -1493,22 +1524,22 @@ msgstr ""
 "его точки цикла (loop point) не совпадут в точности с начальной и "
 "конечной точками региона (clip start/end)."
 
-#: ../../editing/timeline/arranger.rst:152
+#: ../../editing/timeline/arranger.rst:161
 msgid "Link-Moving"
 msgstr "Перемещение с созданием связи"
 
-#: ../../editing/timeline/arranger.rst:153
+#: ../../editing/timeline/arranger.rst:162
 msgid "Linked regions can be created by holding down :kbd:`Alt` while moving."
 msgstr ""
 "Связанный регион можно создать, удерживая :kbd:`Alt` во время перемещения"
 " региона."
 
-#: ../../editing/timeline/arranger.rst:156
-#: ../../editing/timeline/arranger.rst:161
+#: ../../editing/timeline/arranger.rst:165
+#: ../../editing/timeline/arranger.rst:170
 msgid "Add pic to show this."
 msgstr "Добавьте картинку, чтобы показать это."
 
-#: ../../editing/timeline/arranger.rst:158
+#: ../../editing/timeline/arranger.rst:167
 msgid ""
 "You can verify that a link exists on a region by the link icon that shows"
 " in the top right."
@@ -1516,20 +1547,86 @@ msgstr ""
 "Проверить, существует ли связь в регионе, можно по значку связи, который "
 "отображается в правом верхнем углу на связанных регионах."
 
-#: ../../editing/timeline/arranger.rst:164
+#: ../../editing/timeline/arranger.rst:173
 msgid "Renaming"
 msgstr "Переименование"
 
-#: ../../editing/timeline/arranger.rst:165
-msgid "Regions can be renamed by clicking on their name."
+#: ../../editing/timeline/arranger.rst:174
+#, fuzzy
+msgid "Regions can be renamed by selecting them and pressing :kbd:`F2`."
 msgstr "Регионы можно переименовать, нажав на их название."
 
-#: ../../editing/timeline/arranger.rst:169
-#, fuzzy
-msgid "Other editing capabilities were explained previously in :ref:`edit-tools`."
+#: ../../editing/timeline/arranger.rst:180
+msgid "Renaming a region"
 msgstr ""
-"Другие возможности редактирования были объяснены ранее в :ref:`edit-"
-"modes`."
+
+#: ../../editing/timeline/arranger.rst:183
+msgid "Adjusting Fades"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:184
+msgid ""
+"Audio regions can have fades. Fades are gradual increases or decreases in"
+" the level of the audio signal, and their positions can be adjusted by "
+"clicking and dragging the top left/right corners of the region."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:193
+msgid "Adjusting fade out point (click & drag)"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:198
+msgid "Adjusting fade out point (drop)"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:200
+msgid ""
+"Clicking and dragging the grey part up or down will adjust the curviness "
+"of the fade."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:206
+msgid "Adjusting curviness"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:208
+msgid ""
+"The type of fade algorithm used can also be changed by right-clicking on "
+"the fade."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:214
+#, fuzzy
+msgid "Fade context menu"
+msgstr "Контекстное меню (Context Menu)"
+
+#: ../../editing/timeline/arranger.rst:216
+msgid "The various types of fade algorithms available are illustrated below."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:219
+msgid "Fade algorithms"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:224
+msgid "Linear"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:229
+#, fuzzy
+msgid "Exponential"
+msgstr "Экспонента (Exponent)"
+
+#: ../../editing/timeline/arranger.rst:234
+#, fuzzy
+msgid "Elliptic (Superellipse)"
+msgstr "Суперэллипс (Superellipse)"
+
+#: ../../editing/timeline/arranger.rst:241
+msgid "Decide what to do about cross-fades (just use fades?)."
+msgstr ""
+"Решите, что делать с перекрестными затуханиями (просто использовать "
+"затухания?)."
 
 #: ../../editing/timeline/event-viewer.rst:10
 msgid "The event viewer displays all events in the timeline as a list."
@@ -1741,4 +1838,70 @@ msgstr ""
 
 #~ msgid "Ruler"
 #~ msgstr "Линейка (Ruler)"
+
+#~ msgid "Moving and Cloning Objects"
+#~ msgstr "Перемещение и клонирование объектов"
+
+#~ msgid ""
+#~ "To move objects around, click on a"
+#~ " selected object and keep dragging "
+#~ "with your cursor to where you want"
+#~ " to move them. Holding down "
+#~ ":kbd:`Control` while doing this will "
+#~ "create duplicates (clones) of the "
+#~ "selected objects. This is an efficient"
+#~ " way to quickly clone multiple "
+#~ "objects."
+#~ msgstr ""
+#~ "Чтобы переместить объект, зажмите левую "
+#~ "кнопку мыши на выбранном объекте и "
+#~ "продолжайте перетаскивать мышь туда, куда "
+#~ "вы хотите его переместить. Удерживание "
+#~ ":kbd:`Control` во время перемещения создаст"
+#~ " дубликаты (клоны) выбранных объектов. Это"
+#~ " эффективный способ быстро клонировать "
+#~ "несколько объектов."
+
+#~ msgid "split the following to sub-pages"
+#~ msgstr "разделить следующее на подстраницы"
+
+#~ msgid "Contains audio clips."
+#~ msgstr "Содержит аудиоклипы."
+
+#~ msgid "Expand + add pic."
+#~ msgstr "Развернуть + добавить картинку."
+
+#~ msgid "Fades"
+#~ msgstr "Затухание (Fade)"
+
+#~ msgid "Explain how fades work."
+#~ msgstr "Объясните, как работают плавные переходы."
+
+#~ msgid "MIDI Region"
+#~ msgstr "MIDI регион (MIDI Region)"
+
+#~ msgid "Contains MIDI notes."
+#~ msgstr "Содержит MIDI ноты."
+
+#~ msgid "The following operations apply to all editable objects."
+#~ msgstr "Следующие операции применяются ко всем редактируемым объектам."
+
+#~ msgid "Creating"
+#~ msgstr "Создание"
+
+#~ msgid "For creating objects using other tools, see :ref:`edit-tools`."
+#~ msgstr "Для создания объектов в других режимах читайте :ref:`edit-modes`."
+
+#~ msgid "Moving"
+#~ msgstr "Перемещение"
+
+#~ msgid "Copy-Moving"
+#~ msgstr "Перемещение с клонированием"
+
+#~ msgid ""
+#~ "Other editing capabilities were explained "
+#~ "previously in :ref:`edit-tools`."
+#~ msgstr ""
+#~ "Другие возможности редактирования были "
+#~ "объяснены ранее в :ref:`edit-modes`."
 

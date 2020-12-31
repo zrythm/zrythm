@@ -67,7 +67,10 @@ Create a copy of the selected objects adjacent to
 them. The shortcut for duplicating is
 :kbd:`Control-d`.
 
-.. todo:: Illustrate.
+.. figure:: /_static/img/duplicating-midi-region.png
+   :align: center
+
+   Duplicating a region
 
 Delete
 ~~~~~~

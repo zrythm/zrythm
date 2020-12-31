@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-31 01:00+0000\n"
+"POT-Creation-Date: 2020-12-31 12:18+0000\n"
 "PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -120,6 +120,7 @@ msgid "Elliptical curve."
 msgstr "楕円曲線。"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
+#: ../../editing/timeline/arranger.rst:239
 msgid "Vital"
 msgstr "Vital"
 
@@ -150,21 +151,17 @@ msgstr "コンテキストメニュー"
 #: ../../editing/clip-editors/ruler.rst:44
 #: ../../editing/clip-editors/toolbar.rst:12
 #: ../../editing/common-operations.rst:33
-#: ../../editing/common-operations.rst:70
-#: ../../editing/common-operations.rst:84
-#: ../../editing/common-operations.rst:91
-#: ../../editing/common-operations.rst:98
-#: ../../editing/edit-tools.rst:29
-#: ../../editing/timeline/arranger.rst:24
-#: ../../editing/timeline/arranger.rst:50
-#: ../../editing/timeline/arranger.rst:54
-#: ../../editing/timeline/arranger.rst:56
-#: ../../editing/timeline/arranger.rst:63
-#: ../../editing/timeline/arranger.rst:69
-#: ../../editing/timeline/arranger.rst:75
-#: ../../editing/timeline/arranger.rst:156
-#: ../../editing/timeline/arranger.rst:161
-#: ../../editing/timeline/arranger.rst:167
+#: ../../editing/common-operations.rst:87
+#: ../../editing/common-operations.rst:94
+#: ../../editing/common-operations.rst:101
+#: ../../editing/edit-tools.rst:55
+#: ../../editing/timeline/arranger.rst:96
+#: ../../editing/timeline/arranger.rst:100
+#: ../../editing/timeline/arranger.rst:116
+#: ../../editing/timeline/arranger.rst:132
+#: ../../editing/timeline/arranger.rst:165
+#: ../../editing/timeline/arranger.rst:170
+#: ../../editing/timeline/arranger.rst:241
 #: ../../editing/timeline/toolbar.rst:11
 msgid "Todo"
 msgstr "行うべきこと"
@@ -485,7 +482,7 @@ msgid ""
 msgstr "ルーラーは、現在のズームレベルに応じて多かれ少なかれ情報を表示します。また、以下のマーカーとインジケータも表示されます。"
 
 #: ../../editing/clip-editors/ruler.rst:21
-#: ../../editing/timeline/arranger.rst:78
+#: ../../editing/timeline/arranger.rst:106
 msgid "Markers"
 msgstr "マーカー"
 
@@ -502,6 +499,10 @@ msgstr "青色の右向き矢印で表示されます。これは、クリップ
 #: ../../editing/clip-editors/ruler.rst:29
 #: ../../editing/clip-editors/ruler.rst:36
 #: ../../editing/clip-editors/ruler.rst:44
+#: ../../editing/timeline/arranger.rst:96
+#: ../../editing/timeline/arranger.rst:100
+#: ../../editing/timeline/arranger.rst:116
+#: ../../editing/timeline/arranger.rst:132
 msgid "Add pic."
 msgstr "スクショを追加。"
 
@@ -709,49 +710,52 @@ msgid ""
 "duplicating is :kbd:`Control-d`."
 msgstr "コピーを作成し、選択したオブジェクトに隣接します。 複製のショートカットは :zbutton:`Control`+:zbutton:`D` です。"
 
-#: ../../editing/common-operations.rst:70
-#: ../../editing/common-operations.rst:84
-#: ../../editing/common-operations.rst:91
-#: ../../editing/common-operations.rst:98
-#: ../../editing/timeline/arranger.rst:167
-msgid "Illustrate."
-msgstr "説明。"
-
 #: ../../editing/common-operations.rst:73
+#, fuzzy
+msgid "Duplicating a region"
+msgstr "リージョンの編集"
+
+#: ../../editing/common-operations.rst:76
 msgid "Delete"
 msgstr "削除"
 
-#: ../../editing/common-operations.rst:74
+#: ../../editing/common-operations.rst:77
 #, fuzzy
 msgid "Delete the selected objects. You can also press :kbd:`Delete`."
 msgstr "選択したオブジェクトを削除します。キーボードの :zbutton:`Delete` を押してこれを行うこともできます。"
 
-#: ../../editing/common-operations.rst:79
+#: ../../editing/common-operations.rst:82
 msgid "Selections"
 msgstr "選択範囲"
 
-#: ../../editing/common-operations.rst:81
+#: ../../editing/common-operations.rst:84
 msgid "Clear Selection"
 msgstr "選択をクリア"
 
-#: ../../editing/common-operations.rst:82
+#: ../../editing/common-operations.rst:85
 msgid "Clear current selection (unselect all objects)."
 msgstr "現在の選択を解除します(すべてのオブジェクトの選択を解除)。"
 
 #: ../../editing/common-operations.rst:87
+#: ../../editing/common-operations.rst:94
+#: ../../editing/common-operations.rst:101
+msgid "Illustrate."
+msgstr "説明。"
+
+#: ../../editing/common-operations.rst:90
 msgid "Select All"
 msgstr "すべてを選択"
 
-#: ../../editing/common-operations.rst:88
+#: ../../editing/common-operations.rst:91
 #, fuzzy
 msgid "Select all objects in the current editor (:kbd:`Control-a`)."
 msgstr "現在のエディタですべてのオブジェクトを選択します。"
 
-#: ../../editing/common-operations.rst:94
+#: ../../editing/common-operations.rst:97
 msgid "Loop Selection"
 msgstr "ループ選択"
 
-#: ../../editing/common-operations.rst:95
+#: ../../editing/common-operations.rst:98
 #, fuzzy
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr "選択範囲の周囲にループマーカーを配置します。このショートカットは次のとおりです。 :zbutton:`コントロール` + :zbutton:`L`"
@@ -783,27 +787,42 @@ msgid "This can be toggled to switch between Select and Stretch."
 msgstr "これを切り替えて、選択とストレッチを切り替えることができます。"
 
 #: ../../editing/edit-tools.rst:24
+#, fuzzy
 msgid ""
-"In Select mode, you can make object selections and move, clone and resize"
-" objects. This is the most common mode and the most common operations can"
-" be accomplished by just using this."
+"In Select mode, you can make object selections and create, move, clone "
+"and resize objects. This is the most common mode and the most common "
+"operations can be accomplished by just using this."
 msgstr "選択モードでは、オブジェクトの選択やオブジェクトの移動、複製、サイズ変更ができます。これは最も一般的なモードであり、最も一般的な操作は、これを使用するだけで実行できます。"
 
 #: ../../editing/edit-tools.rst:29
-msgid "Add pic showing object selection."
-msgstr "オブジェクトの選択を示すイラストを追加。"
-
-#: ../../editing/edit-tools.rst:31
 msgid ""
 "Stretch mode is similar to the Select mode, with the exception that when "
 "you resize objects, their contents will be stretched to fit the new size."
 msgstr "ストレッチ モードは選択モードと似ていますが、オブジェクトのサイズを変更すると、その内容が新しいサイズに合わせて拡大されます。"
 
-#: ../../editing/edit-tools.rst:36
+#: ../../editing/edit-tools.rst:34
+#, fuzzy
+msgid "Creating Objects"
+msgstr "オブジェクトの選択"
+
+#: ../../editing/edit-tools.rst:35
+#, fuzzy
+msgid ""
+"Using the select (default) tool, all objects are created by double "
+"clicking inside their corresponding arranger and dragging, then releasing"
+" when you are satisfied with the position/size."
+msgstr "選択（デフォルト）モードでは、アレンジャーの内側をダブルクリックしてドラッグし、位置/サイズに満足したら解放することで、オブジェクトが作成されます。"
+
+#: ../../editing/edit-tools.rst:43
+#, fuzzy
+msgid "Creating a region"
+msgstr "リージョンの編集"
+
+#: ../../editing/edit-tools.rst:46
 msgid "Selecting Objects"
 msgstr "オブジェクトの選択"
 
-#: ../../editing/edit-tools.rst:37
+#: ../../editing/edit-tools.rst:47
 msgid ""
 "To select objects, you can either click on them, click in empty space and"
 " keep dragging to make a selection, or :kbd:`Control`-click to add/remove"
@@ -812,66 +831,82 @@ msgstr ""
 "オブジェクトを選択するには、オブジェクトをクリックするか、空のスペースをクリックしてドラッグし続けるか、または :kbd:`Control` + "
 "クリックして選択にオブジェクトを追加/削除します。"
 
-#: ../../editing/edit-tools.rst:42
+#: ../../editing/edit-tools.rst:52
 msgid "Selected objects will have brighter color than non-selected objects."
 msgstr "選択したオブジェクトは、選択されていないオブジェクトよりも明るい色になります。"
 
-#: ../../editing/edit-tools.rst:46
-msgid "Moving and Cloning Objects"
-msgstr "オブジェクトの移動と複製"
+#: ../../editing/edit-tools.rst:55
+msgid "Add pic showing object selection."
+msgstr "オブジェクトの選択を示すイラストを追加。"
 
-#: ../../editing/edit-tools.rst:47
+#: ../../editing/edit-tools.rst:58
 #, fuzzy
-msgid ""
-"To move objects around, click on a selected object and keep dragging with"
-" your cursor to where you want to move them. Holding down :kbd:`Control` "
-"while doing this will create duplicates (clones) of the selected objects."
-" This is an efficient way to quickly clone multiple objects."
-msgstr ""
-"オブジェクトを移動するには、選択したオブジェクトをクリックし、移動する位置にカーソルを置いたままドラッグします。これを行っている間に "
-":kbd:`Control` "
-"を押したままにして、選択したオブジェクトの複製(クローン)を作成します。これは、複数のオブジェクトを素早く複製する効率的な方法です。"
+msgid "Moving Objects"
+msgstr "オブジェクトの編集"
 
-#: ../../editing/edit-tools.rst:54
+#: ../../editing/edit-tools.rst:59
+msgid ""
+"Objects are moved by clicking and dragging them around. You can move "
+"regions to other tracks if the track types are compatible."
+msgstr "オブジェクトは、クリックしてドラッグすることで移動します。トラック種類に互換性がある場合は、リージョンを他のトラックに移動できます。"
+
+#: ../../editing/edit-tools.rst:66
+#, fuzzy
+msgid "Moving a region"
+msgstr "リージョンの編集"
+
+#: ../../editing/edit-tools.rst:69
+msgid "Cloning (Copy-Moving) Objects"
+msgstr ""
+
+#: ../../editing/edit-tools.rst:71
+msgid ""
+"Holding down :kbd:`Ctrl` while moving objects will allow you to copy-and-"
+"move the objects to the new location."
+msgstr "オブジェクトを移動中に :kbd:`Ctrl` を押したままにすると、オブジェクトを新しい場所にコピーして移動することができます。"
+
+#: ../../editing/edit-tools.rst:78
+msgid "Copy-moving a region"
+msgstr ""
+
+#: ../../editing/edit-tools.rst:81
 msgid "Resizing Objects"
 msgstr "オブジェクトのサイズ変更"
 
-#: ../../editing/edit-tools.rst:55
+#: ../../editing/edit-tools.rst:82
 msgid ""
 "Objects that have length, such as regions and MIDI notes, can be resized "
 "by clicking and dragging their edges."
 msgstr "リージョンや MIDI ノートなどの長さを持つオブジェクトは、その端をクリックしてドラッグすることでサイズ変更できます。"
 
-#: ../../editing/edit-tools.rst:58
+#: ../../editing/edit-tools.rst:85
 msgid ""
 "On objects that can be repeated, such as regions, moving the cursor on "
 "the bottom half of the object will allow you to resize the object by "
 "repeating it, instead of just resizing it."
 msgstr "クリップなど、繰り返し可能なオブジェクトでは、オブジェクトの下半分にカーソルを移動すると、オブジェクトのサイズを変更するのではなく、オブジェクトの内容を繰り返してサイズ変更できます。"
 
-#: ../../editing/edit-tools.rst:63
+#: ../../editing/edit-tools.rst:90
 msgid ""
 "When resizing, already repeated objects can only be repeated. To resize "
 "them instead of repeat them, their length must be changed or their clip "
 "markers must be moved so that they are not repeated anymore."
 msgstr "サイズ変更の場合、既に繰り返されているオブジェクトは繰り返ししかできません。繰り返しではなくサイズを変更するには、長さを変更するか、クリップマーカーを移動して繰り返し表示しないようにする必要があります。"
 
-#: ../../editing/edit-tools.rst:71
+#: ../../editing/edit-tools.rst:98
 msgid "Cutting Objects"
 msgstr "オブジェクトの切り取り"
 
-#: ../../editing/edit-tools.rst:72
-msgid ""
-"You can :kbd:`Alt`-click inside objects to break them up. Holding down "
-":kbd:`Shift` while doing this will bypass snapping."
+#: ../../editing/edit-tools.rst:99
+msgid "You can :kbd:`Alt`-click inside objects to break them up."
 msgstr ""
 
-#: ../../editing/edit-tools.rst:77
+#: ../../editing/edit-tools.rst:102
 #, fuzzy
 msgid "Edit Tool"
 msgstr "エディターツールバー"
 
-#: ../../editing/edit-tools.rst:78
+#: ../../editing/edit-tools.rst:103
 #, fuzzy
 msgid ""
 "This tool is used to quickly create or delete objects. While you can "
@@ -883,7 +918,7 @@ msgstr ""
 "このモードは、オブジェクトを素早く作成または削除するために使用されます。ダブルクリックとドラッグで選択モードでオブジェクトを作成することはできますが、編集モードではクリックとドラッグを"
 " 1 回だけ行うことで、多数のオブジェクトを作成する場合の方が効率的です。"
 
-#: ../../editing/edit-tools.rst:84
+#: ../../editing/edit-tools.rst:109
 #, fuzzy
 msgid ""
 "Holding down :kbd:`Control` while clicking will allow you to create "
@@ -893,11 +928,11 @@ msgstr ""
 "クリックしながら :kbd:`Control` "
 "を押したまま押下すると、各エディタに対応するスナップ設定で指定された長さで、複数のオブジェクトを(可能な場合は)行に作成できます。"
 
-#: ../../editing/edit-tools.rst:90
+#: ../../editing/edit-tools.rst:115
 msgid "Cut Tool"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:91
+#: ../../editing/edit-tools.rst:116
 #, fuzzy
 msgid ""
 "The Cut tool behaves similarly to what is mentioned in :ref:`cutting-"
@@ -907,23 +942,23 @@ msgstr ""
 "カットモードは、 :ref:`cutting-objects` で述べられるものと同様に動作しますが、 :kbd:`Alt` + "
 "クリックの代わりにクリックするだけで済みます。"
 
-#: ../../editing/edit-tools.rst:96
+#: ../../editing/edit-tools.rst:121
 #, fuzzy
 msgid "Erase Tool"
 msgstr "消去モード"
 
-#: ../../editing/edit-tools.rst:97
+#: ../../editing/edit-tools.rst:122
 #, fuzzy
 msgid ""
 "Using the Erase tool you can just click on objects to delete them, or "
 "click and drag to make a selection, deleting all objects inside it."
 msgstr "オブジェクトをクリックするだけで削除したり、クリックしてドラッグして選択を行ったりして、セレクション内のすべてのオブジェクトを削除することができます。"
 
-#: ../../editing/edit-tools.rst:104
+#: ../../editing/edit-tools.rst:129
 msgid "Ramp Tool"
 msgstr ""
 
-#: ../../editing/edit-tools.rst:105
+#: ../../editing/edit-tools.rst:130
 #, fuzzy
 msgid ""
 "This tool is currently only used for editing velocities for MIDI notes. "
@@ -932,14 +967,19 @@ msgstr ""
 "このモードは現在、MIDI "
 "ノートのベロシティの編集にのみ使用されます。ベロシティエディターでクリックしてドラッグすると、ベロシティランプを作成できます。"
 
-#: ../../editing/edit-tools.rst:113
+#: ../../editing/edit-tools.rst:138
 #, fuzzy
 msgid "Audition Tool"
 msgstr "オーディションモード"
 
-#: ../../editing/edit-tools.rst:114
+#: ../../editing/edit-tools.rst:139
 msgid "This feature is not implemented yet."
 msgstr "この機能はまだ実装されていません。"
+
+#: ../../editing/edit-tools.rst:141
+#, fuzzy
+msgid "Where applicable, hold :kbd:`Shift` to bypass snapping."
+msgstr "一時的にスナップを無効にするには、 :kbd:`Shift` を押します"
 
 #: ../../editing/intro.rst:8
 msgid "Editing"
@@ -1105,8 +1145,8 @@ msgstr "タイムラインアレンジャー"
 msgid ""
 "The timeline arranger is the main area where the song is composed. It "
 "consists of a collection of events, such as regions, positioned against "
-"time. Some events will open separate windows for further editing when "
-"clicked."
+"time. Some events (such as regions) will open separate windows for "
+"further editing when clicked."
 msgstr "タイムラインアレンジャーは、曲が作曲されるメインエリアです。これは、時間に対して配置されたリージョンなどのイベントのコレクションで構成されます。一部のイベントは、クリックすると別のウィンドウを開いて編集します。"
 
 #: ../../editing/timeline/arranger.rst:19
@@ -1117,164 +1157,154 @@ msgid ""
 "to always be visible at the top."
 msgstr "タイムラインアレンジャーは、上部に固定されたままの上部アレンジャーとその下のアレンジャーに分割されます。この方法では、常に上部に表示されるようにしたいトラックをピン留めできます。"
 
-#: ../../editing/timeline/arranger.rst:24
-msgid "split the following to sub-pages"
-msgstr "以下をサブページに分割"
-
-#: ../../editing/timeline/arranger.rst:27
+#: ../../editing/timeline/arranger.rst:25
 msgid "Arranger Objects"
 msgstr "アレンジャー オブジェクト"
 
-#: ../../editing/timeline/arranger.rst:28
+#: ../../editing/timeline/arranger.rst:26
 msgid "The following arranger objects can exist inside the timeline."
 msgstr "タイムライン内に次のアレンジャー オブジェクトを配置できます。"
 
-#: ../../editing/timeline/arranger.rst:34
+#: ../../editing/timeline/arranger.rst:32
 msgid "Regions"
 msgstr "リージョン"
 
-#: ../../editing/timeline/arranger.rst:35
+#: ../../editing/timeline/arranger.rst:33
 msgid ""
 "Regions (or :term:`clips <Clip>`) are containers for events or data (such"
 " as MIDI notes and audio clips - see below) that can be edited in an "
 ":ref:`editor <editors>`. Regions can be repeated, like below."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:44
+#: ../../editing/timeline/arranger.rst:42
 msgid "The following types of regions exist."
 msgstr "次の種類のリージョンがあります。"
 
-#: ../../editing/timeline/arranger.rst:47
-msgid "Audio Region"
+#: ../../editing/timeline/arranger.rst:45
+#, fuzzy
+msgid "Audio Regions"
 msgstr "オーディオリージョン"
 
-#: ../../editing/timeline/arranger.rst:48
-msgid "Contains audio clips."
-msgstr "オーディオクリップを収録。"
+#: ../../editing/timeline/arranger.rst:46
+msgid "Audio regions contain audio clips from audio files."
+msgstr ""
 
-#: ../../editing/timeline/arranger.rst:50
-#: ../../editing/timeline/arranger.rst:63
-#: ../../editing/timeline/arranger.rst:69
-#: ../../editing/timeline/arranger.rst:75
-msgid "Expand + add pic."
-msgstr "Expand + add pic."
+#: ../../editing/timeline/arranger.rst:51
+msgid "Audio regions belong to track lanes and appear inside Audio tracks."
+msgstr ""
 
-#: ../../editing/timeline/arranger.rst:53
-msgid "Fades"
-msgstr "フェード"
-
-#: ../../editing/timeline/arranger.rst:54
-msgid "Explain how fades work."
-msgstr "フェードの仕組みを説明。"
-
-#: ../../editing/timeline/arranger.rst:56
-msgid "Decide what to do about cross-fades (just use fades?)."
-msgstr "クロスフェードをどうするか決める（フェードを使うだけ？）。"
-
-#: ../../editing/timeline/arranger.rst:60
-msgid "MIDI Region"
-msgstr "MIDIリージョン"
+#: ../../editing/timeline/arranger.rst:57
+msgid ""
+"Double-clicking an audio region will bring up the :doc:`Audio Editor "
+"<../../editing/clip-editors/audio-editor>`."
+msgstr ""
 
 #: ../../editing/timeline/arranger.rst:61
-msgid "Contains MIDI notes."
-msgstr "MIDI音符を収録。"
+#, fuzzy
+msgid "MIDI Regions"
+msgstr "リージョンの編集"
 
-#: ../../editing/timeline/arranger.rst:66
-msgid "Automation Region"
-msgstr "オートメーションリージョン"
+#: ../../editing/timeline/arranger.rst:62
+msgid "MIDI regions contain :term:`MIDI` notes."
+msgstr ""
 
 #: ../../editing/timeline/arranger.rst:67
-msgid "Contains automation events."
-msgstr "オートメーションイベントを収録。"
-
-#: ../../editing/timeline/arranger.rst:72
-msgid "Chord region"
-msgstr "コードリージョン"
+msgid ""
+"MIDI regions belong to track lanes and appear inside MIDI or Instrument "
+"tracks."
+msgstr ""
 
 #: ../../editing/timeline/arranger.rst:73
-msgid "Contains sequences of chords."
+msgid ""
+"Double-clicking a MIDI region will bring up the :doc:`Piano Roll "
+"<../../editing/clip-editors/piano-roll>`."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:77
+#, fuzzy
+msgid "Automation Regions"
+msgstr "オートメーションリージョン"
+
+#: ../../editing/timeline/arranger.rst:78
+#, fuzzy
+msgid "Automation regions contain automation events."
+msgstr "オートメーションイベントを収録。"
+
+#: ../../editing/timeline/arranger.rst:83
+msgid "Automation regions appear inside automation lanes."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:88
+msgid ""
+"Double-clicking an automation region will bring up the :doc:`Automation "
+"Editor <../../editing/clip-editors/automation-editor>`."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:93
+#, fuzzy
+msgid "Chord regions"
+msgstr "コードリージョン"
+
+#: ../../editing/timeline/arranger.rst:94
+#, fuzzy
+msgid "Chord regions contain sequences of chords."
 msgstr "コードのシーケンスを収録。"
 
-#: ../../editing/timeline/arranger.rst:79
+#: ../../editing/timeline/arranger.rst:98
+msgid "Chord regions appear inside the chord track."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:102
+#, fuzzy
+msgid ""
+"Double-clicking a chord region will bring up the :doc:`Chord Editor "
+"<../../editing/clip-editors/chord-editor>`."
+msgstr "コードをダブルクリックすると、コードセレクタが表示され、コードを変更できます。"
+
+#: ../../editing/timeline/arranger.rst:107
 msgid ""
 "Markers are used to mark the start of a logical section inside the song, "
 "such as `Chorus` or `Intro`."
 msgstr "マーカーは、 `コーラス` や `イントロ` のような、曲の中の論理的なセクションの始まりをマークするために使われます。"
 
-#: ../../editing/timeline/arranger.rst:86
+#: ../../editing/timeline/arranger.rst:114
+msgid "Markers appear inside the marker track."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:118
 msgid ""
 "There are two special markers that signify the start and end of the song "
 "that are used for exporting the song and cannot be deleted."
 msgstr "曲の書き出しに使用され、削除できない曲の開始と終了を示す 2 つの特殊なマーカーがあります。"
 
-#: ../../editing/timeline/arranger.rst:91
+#: ../../editing/timeline/arranger.rst:123
 msgid "Scales"
 msgstr "スケール（音階）"
 
-#: ../../editing/timeline/arranger.rst:92
+#: ../../editing/timeline/arranger.rst:124
+#, fuzzy
 msgid ""
-"Scales are used in the Chord track to indicate the start of a section "
-"using a specific musical scale."
+"Scales are used to indicate the start of a section using a specific "
+"musical scale."
 msgstr "スケールは、特定の音階を使用してセクションの開始を示すためにコードトラックで使用されます。"
 
-#: ../../editing/timeline/arranger.rst:99
-msgid "Editing Objects"
-msgstr "オブジェクトの編集"
+#: ../../editing/timeline/arranger.rst:130
+msgid "Scales appear inside the Chord track."
+msgstr ""
 
-#: ../../editing/timeline/arranger.rst:100
-msgid "The following operations apply to all editable objects."
-msgstr "次の操作は、すべての編集可能なオブジェクトに適用されます。"
-
-#: ../../editing/timeline/arranger.rst:104
-msgid "Creating"
-msgstr "作成"
-
-#: ../../editing/timeline/arranger.rst:105
-#, fuzzy
-msgid ""
-"Using the select (default) tool, all objects are created by double "
-"clicking inside the arranger and dragging, then releasing when you are "
-"satisfied with the position/size."
-msgstr "選択（デフォルト）モードでは、アレンジャーの内側をダブルクリックしてドラッグし、位置/サイズに満足したら解放することで、オブジェクトが作成されます。"
-
-#: ../../editing/timeline/arranger.rst:110
-#, fuzzy
-msgid "For creating objects using other tools, see :ref:`edit-tools`."
-msgstr "他のモードでオブジェクトを作成するには :ref:`edit-modes` を参照してください。"
-
-#: ../../editing/timeline/arranger.rst:114
-msgid "Moving"
-msgstr "移動"
-
-#: ../../editing/timeline/arranger.rst:115
-msgid ""
-"Objects are moved by clicking and dragging them around. You can move "
-"regions to other tracks if the track types are compatible."
-msgstr "オブジェクトは、クリックしてドラッグすることで移動します。トラック種類に互換性がある場合は、リージョンを他のトラックに移動できます。"
-
-#: ../../editing/timeline/arranger.rst:120
-msgid "Copy-Moving"
-msgstr "コピー・移動"
-
-#: ../../editing/timeline/arranger.rst:121
-msgid ""
-"Holding down :kbd:`Ctrl` while moving objects will allow you to copy-and-"
-"move the objects to the new location."
-msgstr "オブジェクトを移動中に :kbd:`Ctrl` を押したままにすると、オブジェクトを新しい場所にコピーして移動することができます。"
-
-#: ../../editing/timeline/arranger.rst:126
+#: ../../editing/timeline/arranger.rst:135
 msgid "Editing Regions"
 msgstr "リージョンの編集"
 
-#: ../../editing/timeline/arranger.rst:127
+#: ../../editing/timeline/arranger.rst:136
 msgid "The following operations apply to regions."
 msgstr "次の操作はリージョンに適用されます。"
 
-#: ../../editing/timeline/arranger.rst:130
+#: ../../editing/timeline/arranger.rst:139
 msgid "Looping"
 msgstr "ループ"
 
-#: ../../editing/timeline/arranger.rst:131
+#: ../../editing/timeline/arranger.rst:140
 msgid ""
 "Regions can be repeated, and hence they have :ref:`editable loop points "
 "and a clip start position <editing/clip-editors/ruler:Loop Points>` in "
@@ -1282,55 +1312,121 @@ msgid ""
 "looping (repeating) behavior."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:137
+#: ../../editing/timeline/arranger.rst:146
 msgid ""
 "Regions can also be looped inside the timeline, by moving the cursor to "
 "the bottom-left or bottom-right edge of the region, then clicking and "
 "dragging."
 msgstr "リージョンは、カーソルをリージョンの左下または右下の端に移動し、クリックしてドラッグすることにより、タイムライン内でループすることもできます。"
 
-#: ../../editing/timeline/arranger.rst:145
+#: ../../editing/timeline/arranger.rst:154
 msgid "Looping (loop-resizing) a region"
 msgstr "リージョンのループ（ループ・リサイズ）"
 
-#: ../../editing/timeline/arranger.rst:147
+#: ../../editing/timeline/arranger.rst:156
 msgid ""
 "If the region is already repeated, it cannot be resized anymore until its"
 " loop points match exactly the region's start and end points."
 msgstr "リージョンがすでに繰り返されている場合は、そのループポイントがリージョンの開始点と終了点に正確に一致するまで、ループ・リサイズ以上のサイズ変更はできません。"
 
-#: ../../editing/timeline/arranger.rst:152
+#: ../../editing/timeline/arranger.rst:161
 msgid "Link-Moving"
 msgstr "リンク・移動"
 
-#: ../../editing/timeline/arranger.rst:153
+#: ../../editing/timeline/arranger.rst:162
 #, fuzzy
 msgid "Linked regions can be created by holding down :kbd:`Alt` while moving."
 msgstr "リンクされたリージョンは、移動中に :zbutton:`Alt` を押し続けることで作成することができます。"
 
-#: ../../editing/timeline/arranger.rst:156
-#: ../../editing/timeline/arranger.rst:161
+#: ../../editing/timeline/arranger.rst:165
+#: ../../editing/timeline/arranger.rst:170
 msgid "Add pic to show this."
 msgstr "これを示すイラストを追加。"
 
-#: ../../editing/timeline/arranger.rst:158
+#: ../../editing/timeline/arranger.rst:167
 msgid ""
 "You can verify that a link exists on a region by the link icon that shows"
 " in the top right."
 msgstr "リージョン上にリンクが存在することは、右上に表示されるリンク アイコンで確認できます。"
 
-#: ../../editing/timeline/arranger.rst:164
+#: ../../editing/timeline/arranger.rst:173
 msgid "Renaming"
 msgstr "名前の変更"
 
-#: ../../editing/timeline/arranger.rst:165
-msgid "Regions can be renamed by clicking on their name."
+#: ../../editing/timeline/arranger.rst:174
+#, fuzzy
+msgid "Regions can be renamed by selecting them and pressing :kbd:`F2`."
 msgstr "リージョン名を変更するには、その名前をクリックします。"
 
-#: ../../editing/timeline/arranger.rst:169
+#: ../../editing/timeline/arranger.rst:180
+msgid "Renaming a region"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:183
+msgid "Adjusting Fades"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:184
+msgid ""
+"Audio regions can have fades. Fades are gradual increases or decreases in"
+" the level of the audio signal, and their positions can be adjusted by "
+"clicking and dragging the top left/right corners of the region."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:193
+msgid "Adjusting fade out point (click & drag)"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:198
+msgid "Adjusting fade out point (drop)"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:200
+msgid ""
+"Clicking and dragging the grey part up or down will adjust the curviness "
+"of the fade."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:206
+msgid "Adjusting curviness"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:208
+msgid ""
+"The type of fade algorithm used can also be changed by right-clicking on "
+"the fade."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:214
 #, fuzzy
-msgid "Other editing capabilities were explained previously in :ref:`edit-tools`."
-msgstr "その他の編集機能については、前に :ref:`edit-modes` で説明しました。"
+msgid "Fade context menu"
+msgstr "コンテキストメニュー"
+
+#: ../../editing/timeline/arranger.rst:216
+msgid "The various types of fade algorithms available are illustrated below."
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:219
+msgid "Fade algorithms"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:224
+msgid "Linear"
+msgstr ""
+
+#: ../../editing/timeline/arranger.rst:229
+#, fuzzy
+msgid "Exponential"
+msgstr "指数"
+
+#: ../../editing/timeline/arranger.rst:234
+#, fuzzy
+msgid "Elliptic (Superellipse)"
+msgstr "超楕円"
+
+#: ../../editing/timeline/arranger.rst:241
+msgid "Decide what to do about cross-fades (just use fades?)."
+msgstr "クロスフェードをどうするか決める（フェードを使うだけ？）。"
 
 #: ../../editing/timeline/event-viewer.rst:10
 msgid "The event viewer displays all events in the timeline as a list."
@@ -1623,4 +1719,70 @@ msgstr "これがオンの場合、BPMが変わるたびに、オーディオリ
 
 #~ msgid "Ruler"
 #~ msgstr "ルーラー"
+
+#~ msgid "Moving and Cloning Objects"
+#~ msgstr "オブジェクトの移動と複製"
+
+#~ msgid ""
+#~ "To move objects around, click on a"
+#~ " selected object and keep dragging "
+#~ "with your cursor to where you want"
+#~ " to move them. Holding down "
+#~ ":kbd:`Control` while doing this will "
+#~ "create duplicates (clones) of the "
+#~ "selected objects. This is an efficient"
+#~ " way to quickly clone multiple "
+#~ "objects."
+#~ msgstr ""
+#~ "オブジェクトを移動するには、選択したオブジェクトをクリックし、移動する位置にカーソルを置いたままドラッグします。これを行っている間に "
+#~ ":kbd:`Control` "
+#~ "を押したままにして、選択したオブジェクトの複製(クローン)を作成します。これは、複数のオブジェクトを素早く複製する効率的な方法です。"
+
+#~ msgid ""
+#~ "You can :kbd:`Alt`-click inside objects "
+#~ "to break them up. Holding down "
+#~ ":kbd:`Shift` while doing this will "
+#~ "bypass snapping."
+#~ msgstr ""
+
+#~ msgid "split the following to sub-pages"
+#~ msgstr "以下をサブページに分割"
+
+#~ msgid "Contains audio clips."
+#~ msgstr "オーディオクリップを収録。"
+
+#~ msgid "Expand + add pic."
+#~ msgstr "Expand + add pic."
+
+#~ msgid "Fades"
+#~ msgstr "フェード"
+
+#~ msgid "Explain how fades work."
+#~ msgstr "フェードの仕組みを説明。"
+
+#~ msgid "MIDI Region"
+#~ msgstr "MIDIリージョン"
+
+#~ msgid "Contains MIDI notes."
+#~ msgstr "MIDI音符を収録。"
+
+#~ msgid "The following operations apply to all editable objects."
+#~ msgstr "次の操作は、すべての編集可能なオブジェクトに適用されます。"
+
+#~ msgid "Creating"
+#~ msgstr "作成"
+
+#~ msgid "For creating objects using other tools, see :ref:`edit-tools`."
+#~ msgstr "他のモードでオブジェクトを作成するには :ref:`edit-modes` を参照してください。"
+
+#~ msgid "Moving"
+#~ msgstr "移動"
+
+#~ msgid "Copy-Moving"
+#~ msgstr "コピー・移動"
+
+#~ msgid ""
+#~ "Other editing capabilities were explained "
+#~ "previously in :ref:`edit-tools`."
+#~ msgstr "その他の編集機能については、前に :ref:`edit-modes` で説明しました。"
 

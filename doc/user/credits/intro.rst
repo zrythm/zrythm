@@ -16,7 +16,7 @@ Translators
 -----------
 See the
 :download:`TRANSLATORS <../../../TRANSLATORS>`
-in the source distribution.
+file in the source distribution.
 These include translators of the software, the user manual
 and the website.
 
@@ -24,4 +24,4 @@ Other Contributors
 ------------------
 See the
 :download:`THANKS <../../../THANKS>`
-in the source distribution.
+file in the source distribution.

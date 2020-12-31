@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-03 14:28+0100\n"
+"POT-Creation-Date: 2020-12-31 12:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,9 +38,9 @@ msgstr ""
 
 #: ../../credits/intro.rst:17
 msgid ""
-"See the :download:`TRANSLATORS <../../../TRANSLATORS>` in the source "
-"distribution. These include translators of the software, the user manual "
-"and the website."
+"See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source"
+" distribution. These include translators of the software, the user manual"
+" and the website."
 msgstr ""
 
 #: ../../credits/intro.rst:24
@@ -48,7 +48,9 @@ msgid "Other Contributors"
 msgstr ""
 
 #: ../../credits/intro.rst:25
-msgid "See the :download:`THANKS <../../../THANKS>` in the source distribution."
+msgid ""
+"See the :download:`THANKS <../../../THANKS>` file in the source "
+"distribution."
 msgstr ""
 
 #~ msgid ""
@@ -71,5 +73,18 @@ msgstr ""
 #~ "See the `THANKS file "
 #~ "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in"
 #~ " the source distribution."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "See the :download:`TRANSLATORS "
+#~ "<../../../TRANSLATORS>` in the source "
+#~ "distribution. These include translators of "
+#~ "the software, the user manual and "
+#~ "the website."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "See the :download:`THANKS <../../../THANKS>` "
+#~ "in the source distribution."
 #~ msgstr ""
 
