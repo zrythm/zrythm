@@ -29,8 +29,9 @@ Protocol
   Allows you to filter plugins based their protocol
   (eg., LV2 or SFZ).
 
-.. note:: Filtering by collections and protocols is
-  not operational at the moment.
+.. hint:: Where applicable, you can
+   :kbd:`Control`-click to select multiple rows
+   or deselect a row.
 
 Filter Buttons
 --------------
