@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-07 22:10+0000\n"
-"PO-Revision-Date: 2020-09-29 22:22+0000\n"
+"POT-Creation-Date: 2020-12-31 01:00+0000\n"
+"PO-Revision-Date: 2020-12-09 01:29+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
@@ -29,14 +29,18 @@ msgstr "Vídeo"
 
 #: ../../user-media/intro.rst:12
 msgid "French Tutorials"
-msgstr ""
+msgstr "Tutoriais franceses"
 
 #: ../../user-media/intro.rst:13
+#, fuzzy
 msgid ""
 "Till Parisot has compiled a playlist of Zrythm tutorials in French on "
-"`PeerTube TeDonum <https://video.tedomum.net/video-"
+"`PeerTube TeDomum <https://video.tedomum.net/video-"
 "channels/thil_riposta/videos>`_."
 msgstr ""
+"Till Parisot compilou uma lista de reprodução de tutoriais do Zrythm em "
+"francês em `PeerTube TeDonum <https://video.tedomum.net/video-"
+"channels/thil_riposta/videos>`_."
 
 #~ msgid ""
 #~ "Till Parisot has compiled a playlist "

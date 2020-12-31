@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 # Gorro_Rojo <gorro.rojo@gmail.com>, 2020.
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-25 14:36+0100\n"
-"PO-Revision-Date: 2020-09-27 02:24+0000\n"
-"Last-Translator: Gorro_Rojo <gorro.rojo@gmail.com>\n"
+"PO-Revision-Date: 2020-12-30 23:03+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "invoking-from-command-line/es/>\n"
 "Language: es\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../invoking-from-command-line/intro.rst:10
@@ -32,7 +33,7 @@ msgstr ""
 
 #: ../../invoking-from-command-line/intro.rst:16
 msgid "zrythm"
-msgstr ""
+msgstr "zrythm"
 
 #: ../../invoking-from-command-line/intro.rst:17
 msgid "Zrythm executable."

@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-08 19:08+0100\n"
-"PO-Revision-Date: 2020-11-15 13:28+0000\n"
-"Last-Translator: Bianca Roșu <bianca.rosu32@gmail.com>\n"
+"PO-Revision-Date: 2020-12-30 23:03+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "connections/es/>\n"
 "Language: es\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../connections/intro.rst:6
@@ -116,7 +116,7 @@ msgstr ""
 
 #: ../../connections/ports.rst:34
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: ../../connections/ports.rst:34
 msgid "Ports of this type receive or send raw audio signals."

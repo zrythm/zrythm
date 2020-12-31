@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-11 19:05+0000\n"
+"POT-Creation-Date: 2020-12-31 01:15+0000\n"
 "PO-Revision-Date: 2020-11-16 19:29+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
@@ -30,6 +30,13 @@ msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 msgid "Returns a new action for creating a send connection."
 msgstr ""
 
+#: ../../scripting/api/actions create_tracks_action.rst:7
+#, fuzzy
+msgid ""
+"Scheme Procedure: **create-tracks-action-new-with-plugin** | *type "
+"pl_descr track_pos num_tracks*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
+
 #: ../../scripting/api/actions create_tracks_action.rst:6
 msgid "Returns a new Create Tracks action for a plugin."
 msgstr ""
@@ -44,6 +51,13 @@ msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 #: ../../scripting/api/actions create_tracks_action.rst:10
 msgid "Returns a new Create Tracks action for one or more empty Audio FX tracks."
 msgstr ""
+
+#: ../../scripting/api/actions port_connection_action.rst:7
+#, fuzzy
+msgid ""
+"Scheme Procedure: **port-connection-action-new-connect** | *src_port_id "
+"dest_port_id*"
+msgstr "Imprime a posição como 'barras.batidas.decimos-sextos.ticks'."
 
 #: ../../scripting/api/actions port_connection_action.rst:6
 msgid "Creates an action for connecting 2 ports."
@@ -425,6 +439,18 @@ msgstr "A API de Guile é experimental."
 #: ../../scripting/overview.rst:21
 msgid "The Guile API is not available on Windows."
 msgstr "A API de Guile não está disponível no Windows."
+
+#: ../../scripting/scripting-interface.rst:6
+msgid "Scripting Interface"
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:8
+msgid "Todo"
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:8
+msgid "Explain the scripting window/interface."
+msgstr ""
 
 #~ msgid ""
 #~ "The next section is a comprehensive "

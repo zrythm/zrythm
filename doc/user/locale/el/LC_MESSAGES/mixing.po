@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-26 19:09+0100\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"PO-Revision-Date: 2020-12-11 00:29+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
 "manualmixing/el/>\n"
@@ -17,16 +17,16 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../mixing/intro.rst:8
 msgid "Mixing"
-msgstr ""
+msgstr "Μίξη"
 
 #: ../../mixing/overview.rst:10
 msgid "Mixing Overview"
-msgstr ""
+msgstr "Επισκόπηση μίξης"
 
 #: ../../mixing/overview.rst:11
 msgid ""
@@ -34,6 +34,9 @@ msgid ""
 "signals around, controlling the fader level of various channels and "
 "setting their stereo balance."
 msgstr ""
+"Η μίξη αναφέρεται σε οποιεσδήποτε ενέργειες γίνονται μέσα στον μίκτη, όπως "
+"τη δρομολόγηση σημάτων, τον έλεγχο του επιπέδου έντασης διαφόρων καναλιών "
+"και τον ορισμό της ισορροπίας στέρεο."
 
 #: ../../mixing/overview.rst:22
 msgid "Mixer"
@@ -44,32 +47,44 @@ msgid ""
 "The mixer contains all of the channels in the project corresponding to "
 "visible tracks."
 msgstr ""
+"Ο μίκτης περιέχει όλα τα κανάλια μέσα στο έργο που αντιστοιχούν σε ορατά "
+"κανάλια."
 
 #: ../../mixing/overview.rst:26
 msgid ""
 "The master channel, a special channel used to route audio to the output "
 "audio device, is pinned on the right side of the mixer."
 msgstr ""
+"Το κανάλι μάστερ, ένα ειδικό κανάλι που χρησιμοποιείται για τη δρομολόγηση "
+"του ήχου σε μια εξωτερική συσκευή ήχου, βρίσκεται καρφιτσωμένο στη δεξιά "
+"πλευρά του μίκτη."
 
 #: ../../mixing/overview.rst:33
 msgid ""
 "The rest of the mixer shows the rest of the channels, along with some "
 "extra space used for drag-and-dropping plugins or files."
 msgstr ""
+"Το υπόλοιπο μέρος του μίκτη δείχνει τα υπόλοιπα κανάλια, καθώς και λίγο "
+"επιπρόσθετο χώρο που χρησιμοποιείται για τη ρίψη προσθέτων ή αρχείων."
 
 #: ../../mixing/overview.rst:37
 msgid ""
 "Most of the activities that can be performed in the mixer are also "
 "available in the track inspector described in :ref:`track-inspector`."
 msgstr ""
+"Οι περισσότερες δραστηριότητες που μπορούν να εφαρμοστούν στον μίκτη είναι "
+"επίσης διαθέσιμες στον επιθεωρητή καναλιών που εξηγείται στο :ref:`track-"
+"inspector`."
 
 #: ../../mixing/overview.rst:44
 msgid "Channels"
-msgstr ""
+msgstr "Κανάλια"
 
 #: ../../mixing/overview.rst:45
 msgid "A channel is part of a track, if the track type has a channel."
 msgstr ""
+"Ένα κανάλι είναι μέρος ενός κομματιού, αν ο τύπος κομματιού έχει κάποιο "
+"κανάλι."
 
 #: ../../mixing/overview.rst:51
 msgid ""
@@ -77,24 +92,29 @@ msgid ""
 "direct out selector and a strip of insert plugins. These are covered in "
 ":ref:`track-inspector`."
 msgstr ""
+"Τα κανάλια περιέχουν έναν fader, χειριστές όπως σίγαση και σόλο, έναν "
+"μετρητή, ενάν επιλογέα αποστολής έξω και μια λωρίδα προσθέτων εισαγωγής. "
+"Αυτά καλύπτονται στο :ref:`track-inspector`."
 
 #: ../../mixing/overview.rst:57
 msgid "Changing the Track Name"
-msgstr ""
+msgstr "Αλλαγή ονόματος κομματιού"
 
 #: ../../mixing/overview.rst:58
 msgid ""
 "The name of the track the channel corresponds to can be changed by double"
 " clicking the name at the top of the channel."
 msgstr ""
+"Το όνομα του κομματιού που αντιστοιχεί στο κανάλι μπορεί να αλλάξει κάνοντας "
+"διπλό κλικ στο όνομα που βρίσκεται στο πάνω μέρος του καναλιού."
 
 #: ../../mixing/overview.rst:62
 msgid "Todo"
-msgstr ""
+msgstr "Ναγίνει"
 
 #: ../../mixing/overview.rst:62
 msgid "Add pic."
-msgstr ""
+msgstr "Προσθήκη εικόνας."
 
 #: ../../mixing/routing.rst:6
 msgid "Routing"
@@ -102,23 +122,28 @@ msgstr "Δρομολόγηση"
 
 #: ../../mixing/routing.rst:9
 msgid "Groups"
-msgstr ""
+msgstr "Ομάδες"
 
 #: ../../mixing/routing.rst:10
 msgid ""
 "Audio and MIDI group tracks (covered in :ref:`audio-group-track` and :ref"
 ":`midi-group-track` respectively) can be created for grouping signals."
 msgstr ""
+"Τα κομμάτια ομάδων ήχου και MIDI (καλύπτονται στα :ref:`audio-group-track` "
+"και :ref:`midi-group-track` αντίστοιχα) μπορούν να δημιουργηθούν για την "
+"ομαδοποίηση σημάτων."
 
 #: ../../mixing/routing.rst:15
 msgid ""
 "To route channels to these tracks, you can click the direct out selector "
 "and choose them."
 msgstr ""
+"Για τη δρομολόγηση καναλιών σε αυτά τα κομμάτια, μπορείτε να κάνετε κλικ "
+"στον επιλογέα αποστολής έξω και να τα επιλέξετε."
 
 #: ../../mixing/routing.rst:22
 msgid "Buses/FX Tracks"
-msgstr ""
+msgstr "Δίαυλοι/Κομμάτια εφέ"
 
 #: ../../mixing/routing.rst:23
 msgid ""
@@ -126,18 +151,26 @@ msgid ""
 ":`midi-bus-track` respectively) can be created for sending additional "
 "signals to them, in addition to the channel's main direct output."
 msgstr ""
+"Κομμάτια εφέ ήχου και MIDI (καλύπτονται στα :ref:`audio-bus-track` και :ref"
+":`midi-bus-track` αντίστοιχα) μπορούν να δημιουργηθούν για την αποστολή "
+"επιπρόσθετων σημάτων προς αυτά, συμπεριλαμβανομένης της κύριας απευθείας "
+"εξόδου του καναλιού."
 
 #: ../../mixing/routing.rst:28
 msgid ""
 "This is useful for example for applying reverb and controlling the reverb"
 " signal separately."
 msgstr ""
+"Αυτό είναι χρήσιμο για παράδειγμα στην εφαρμογή αντήχησης (reverb) και στον "
+"ξεχωριστό έλεγχο του σήματος αντήχησης."
 
 #: ../../mixing/routing.rst:31
 msgid ""
 "You can send to these tracks/channels using the Sends section in the "
 "track inspector explained in :ref:`track-sends`."
 msgstr ""
+"Μπορείτε να αποστείλετε αυτά τα κομμάτια/κανάλια χρησιμοποιώντας το τμήμα "
+"αποστολών στον επιθεωρητή κομματιών που εξηγείται στις :ref:`track-sends`."
 
 #: ../../mixing/routing.rst:35
 msgid ""
@@ -145,10 +178,14 @@ msgid ""
 "`group`. Please keep this in mind if you are coming from other DAWs as "
 "they are different things in Zrythm."
 msgstr ""
+"Κάποιοι άλλοι ψηφιακοί σταθμοί επεξεργασίας ήχου χρησιμοποιούν τον όρο `bus` "
+"για να αναφερθούν σε αυτό που το Zrythm ονομάζει `group`. Παρακαλούμε "
+"κρατήστε το αυτό στον νου σας αν προέρχεστε από άλλους σταθμούς διότι είναι "
+"διαφορετικά πράγματα στο Zrythm."
 
 #: ../../mixing/routing.rst:41
 msgid "Sidechaining"
-msgstr ""
+msgstr "Πλευρική αλυσίδωση (sidechaining)"
 
 #: ../../mixing/routing.rst:42
 msgid ""
@@ -156,6 +193,9 @@ msgid ""
 "plugin sidechain ports, if the plugin has any. See :ref:`track-sends` for"
 " details."
 msgstr ""
+"Παρόμοιο με την αποστολή σημάτων σε κομμάτια εφέ, μπορείτε επίσης να "
+"αποστείλετε σήματα σε θύρες πλευρικής αλυσίδωσης προσθέτων, αν διαθέτει το "
+"πρόσθετο. Βλέπε :ref:`track-sends` για λεπτομέρειες."
 
 #~ msgid "TODO"
 #~ msgstr ""

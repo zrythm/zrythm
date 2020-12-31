@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-11 19:05+0000\n"
+"POT-Creation-Date: 2020-12-31 01:15+0000\n"
 "PO-Revision-Date: 2020-11-14 04:34+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: gl\n"
@@ -223,6 +223,18 @@ msgstr ""
 
 #: ../../scripting/overview.rst:21
 msgid "The Guile API is not available on Windows."
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:6
+msgid "Scripting Interface"
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:8
+msgid "Todo"
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:8
+msgid "Explain the scripting window/interface."
 msgstr ""
 
 #~ msgid ""

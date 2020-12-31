@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-11 19:05+0000\n"
+"POT-Creation-Date: 2020-12-31 01:00+0000\n"
 "PO-Revision-Date: 2020-10-03 13:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language: ja\n"
@@ -468,9 +468,9 @@ msgid "It displays information about each MIDI note in the MIDI arranger."
 msgstr "MIDI アレンジャーの各 MIDI ノートに関する情報を表示します。"
 
 #: ../../editing/clip-editors/ruler.rst:8
-#: ../../editing/timeline/ruler.rst:8
-msgid "Ruler"
-msgstr "ルーラー"
+#, fuzzy
+msgid "Editor Ruler"
+msgstr "エディターツールバー"
 
 #: ../../editing/clip-editors/ruler.rst:9
 msgid ""
@@ -1230,15 +1230,16 @@ msgid "Creating"
 msgstr "作成"
 
 #: ../../editing/timeline/arranger.rst:105
+#, fuzzy
 msgid ""
-"In select (default) mode, all objects are created by double clicking "
-"inside the arranger and dragging, then releasing when you are satisfied "
-"with the position/size."
+"Using the select (default) tool, all objects are created by double "
+"clicking inside the arranger and dragging, then releasing when you are "
+"satisfied with the position/size."
 msgstr "選択（デフォルト）モードでは、アレンジャーの内側をダブルクリックしてドラッグし、位置/サイズに満足したら解放することで、オブジェクトが作成されます。"
 
 #: ../../editing/timeline/arranger.rst:110
 #, fuzzy
-msgid "For creating objects in other modes, see :ref:`edit-tools`."
+msgid "For creating objects using other tools, see :ref:`edit-tools`."
 msgstr "他のモードでオブジェクトを作成するには :ref:`edit-modes` を参照してください。"
 
 #: ../../editing/timeline/arranger.rst:114
@@ -1394,6 +1395,11 @@ msgstr "タイムラインミニマップは、タイムラインの現在の表
 #: ../../editing/timeline/overview.rst:50
 msgid "The rest of the timeline elements are explained in the following sections."
 msgstr "タイムラインの残りの要素については、以下のセクションで説明します。"
+
+#: ../../editing/timeline/ruler.rst:8
+#, fuzzy
+msgid "Timeline Ruler"
+msgstr "タイムラインアレンジャー"
 
 #: ../../editing/timeline/ruler.rst:10
 msgid "The ruler is mainly used to control looping and playback."
@@ -1614,4 +1620,7 @@ msgstr "これがオンの場合、BPMが変わるたびに、オーディオリ
 
 #~ msgid "Ramp Mode"
 #~ msgstr "ランプモード"
+
+#~ msgid "Ruler"
+#~ msgstr "ルーラー"
 

@@ -8,13 +8,14 @@
 # Melairz1237 <mr.artem.snegov@mail.ru>, 2020.
 # iLyd <mrzarp@protonmail.com>, 2020.
 # Artem <KovalevArtem.ru@gmail.com>, 2020.
+# Artem <blinow99@mail.ru>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-10-04 19:41+0000\n"
-"Last-Translator: iLyd <mrzarp@protonmail.com>\n"
+"PO-Revision-Date: 2020-12-18 19:29+0000\n"
+"Last-Translator: Artem <blinow99@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -23,7 +24,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
@@ -53,11 +54,11 @@ msgstr "Регион (Region)"
 
 #: inc/gui/backend/arranger_object.h:94
 msgid "Midi Note"
-msgstr ""
+msgstr "Midi нота"
 
 #: inc/gui/backend/arranger_object.h:96
 msgid "Chord Object"
-msgstr ""
+msgstr "Объект Аккорда"
 
 #: inc/gui/backend/arranger_object.h:98
 msgid "Scale Object"
@@ -70,7 +71,7 @@ msgstr "Маркерный (Marker)"
 
 #: inc/gui/backend/arranger_object.h:102
 msgid "Automation Point"
-msgstr ""
+msgstr "Точка автоматизации"
 
 #: inc/gui/backend/arranger_object.h:104 src/gui/widgets/event_viewer.c:548
 #: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153

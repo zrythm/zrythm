@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-11 19:05+0000\n"
-"PO-Revision-Date: 2020-12-05 20:09+0000\n"
-"Last-Translator: Andrea Ibeas Martinez <andrea.ibeas@e-campus.uab.cat>\n"
+"POT-Creation-Date: 2020-12-31 01:00+0000\n"
+"PO-Revision-Date: 2020-12-09 01:29+0000\n"
+"Last-Translator: miri24661 <miriam_g.r@hotmail.com>\n"
 "Language: es\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/zrythm/manualediting/es/>\n"
@@ -100,7 +100,7 @@ msgid ""
 "can be dragged up or down to change their `curviness`."
 msgstr ""
 "La edición en el arreglador de automatización generalmente sigue a :ref"
-":`edit-modes` y :ref:`common-operations`, con la característica adicional"
+":`edit-tools` y :ref:`common-operations`, con la característica adicional"
 " de que las curvas se pueden arrastrar hacia arriba o hacia abajo para "
 "cambiar su \"curvatura\"."
 
@@ -315,7 +315,7 @@ msgid ""
 "Editing in the chord arranger follows :ref:`edit-tools` and :ref:`common-"
 "operations`."
 msgstr ""
-"La edición en el arreglador de acordes se incluye en :ref:`edit-modes` y "
+"La edición en el arreglador de acordes se incluye en :ref:`edit-tools` y "
 ":ref:`common-operations`."
 
 #: ../../editing/clip-editors/chord-editor.rst:70
@@ -471,7 +471,7 @@ msgid ""
 "Editing inside the MIDI arranger is covered in :ref:`edit-tools` and :ref"
 ":`common-operations`."
 msgstr ""
-"Editar en el arreglador MIDI se trata en :ref:`edit-modes` y en :ref"
+"Editar en el arreglador MIDI se trata en :ref:`edit-tools` y en :ref"
 ":`common-operations`."
 
 #: ../../editing/clip-editors/piano-roll.rst:80
@@ -547,9 +547,9 @@ msgid "It displays information about each MIDI note in the MIDI arranger."
 msgstr "Muestra información sobre cada nota MIDI en el arreglador MIDI."
 
 #: ../../editing/clip-editors/ruler.rst:8
-#: ../../editing/timeline/ruler.rst:8
-msgid "Ruler"
-msgstr "Regla"
+#, fuzzy
+msgid "Editor Ruler"
+msgstr "Barra de herramientas del editor"
 
 #: ../../editing/clip-editors/ruler.rst:9
 msgid ""
@@ -1403,10 +1403,11 @@ msgid "Creating"
 msgstr "Crear objetos"
 
 #: ../../editing/timeline/arranger.rst:105
+#, fuzzy
 msgid ""
-"In select (default) mode, all objects are created by double clicking "
-"inside the arranger and dragging, then releasing when you are satisfied "
-"with the position/size."
+"Using the select (default) tool, all objects are created by double "
+"clicking inside the arranger and dragging, then releasing when you are "
+"satisfied with the position/size."
 msgstr ""
 "En el modo de selección (predeterminado), todos los objetos se crean al "
 "hacer doble clic en el arreglador, arrastrándolos y soltándolos cuando la"
@@ -1414,8 +1415,8 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:110
 #, fuzzy
-msgid "For creating objects in other modes, see :ref:`edit-tools`."
-msgstr "Para crear objetos en otros modos, consulta :ref:`edit-modes`."
+msgid "For creating objects using other tools, see :ref:`edit-tools`."
+msgstr "Para crear objetos en otros modos, consulta :ref:`edit-tools`."
 
 #: ../../editing/timeline/arranger.rst:114
 msgid "Moving"
@@ -1462,8 +1463,8 @@ msgid ""
 msgstr ""
 "Las regiones se pueden repetir y, por lo tanto, tienen :ref:`editable "
 "loop points and a clip start position <editing/clip-editors/ruler:Loop "
-"Points>` en la :doc:`Editor Ruler <../../editing/clip-editors/ruler>` "
-"para modificar el comportamiento del bucle (repetición)."
+"Points>` en la :doc:`Regla del editor <../../editing/clip-editors/ruler>`"
+" para modificar el comportamiento del bucle (repetición)."
 
 #: ../../editing/timeline/arranger.rst:137
 msgid ""
@@ -1520,11 +1521,10 @@ msgid "Regions can be renamed by clicking on their name."
 msgstr "Se puede cambiar el nombre de las regiones al hacer clic en su nombre."
 
 #: ../../editing/timeline/arranger.rst:169
-#, fuzzy
 msgid "Other editing capabilities were explained previously in :ref:`edit-tools`."
 msgstr ""
 "Otras funciones de edición se han explicado anteriormente en :ref:`edit-"
-"modes`."
+"tools`."
 
 #: ../../editing/timeline/event-viewer.rst:10
 msgid "The event viewer displays all events in the timeline as a list."
@@ -1607,6 +1607,11 @@ msgid "The rest of the timeline elements are explained in the following sections
 msgstr ""
 "Más información sobre el resto de los elementos de la línea de tiempo en "
 "las siguientes secciones."
+
+#: ../../editing/timeline/ruler.rst:8
+#, fuzzy
+msgid "Timeline Ruler"
+msgstr "Arreglador de línea de tiempo"
 
 #: ../../editing/timeline/ruler.rst:10
 msgid "The ruler is mainly used to control looping and playback."
@@ -2009,4 +2014,7 @@ msgstr ""
 
 #~ msgid "Ramp Mode"
 #~ msgstr "Modo rampa"
+
+#~ msgid "Ruler"
+#~ msgstr "Regla"
 

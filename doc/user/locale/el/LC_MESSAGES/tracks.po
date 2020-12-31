@@ -8,26 +8,29 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-31 22:55+0000\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"PO-Revision-Date: 2020-12-12 01:29+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/el/>\n"
 "Language: el\n"
-"Language-Team: Greek "
-"<https://hosted.weblate.org/projects/zrythm/manualtracks/el/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../tracks/audio-track.rst:6
 msgid "Audio Track"
-msgstr ""
+msgstr "Κομμάτι ήχου"
 
 #: ../../tracks/audio-track.rst:8
 msgid ""
 "An Audio Track contains audio regions and can be used for recording and "
 "playing back audio clips."
 msgstr ""
+"Ένα κομμάτι ήχου περιέχει περιοχές ήχου και μπορεί να χρησιμοποιηθεί για "
+"ηχογράφηση και αναπαραγωγή κλιπς ήχων."
 
 #: ../../tracks/audio-track.rst:15
 #: ../../tracks/bus-track-audio.rst:17
@@ -40,7 +43,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:22
 #: ../../tracks/tempo-track.rst:22
 msgid "Top Buttons"
-msgstr ""
+msgstr "Πάνω κουμπιά"
 
 #: ../../tracks/audio-track.rst:17
 #: ../../tracks/chord-track.rst:25
@@ -56,7 +59,7 @@ msgstr "Ηχογράφηση"
 #: ../../tracks/instrument-track.rst:26
 #: ../../tracks/midi-track.rst:27
 msgid "Arms the track for recording."
-msgstr ""
+msgstr "Οπλίζει το κομμάτι για ηχογράφηση."
 
 #: ../../tracks/audio-track.rst:19
 #: ../../tracks/bus-track-audio.rst:19
@@ -80,7 +83,7 @@ msgstr "Σόλο"
 #: ../../tracks/master-track.rst:21
 #: ../../tracks/midi-track.rst:29
 msgid "Soloes the track."
-msgstr ""
+msgstr "Βάζει το κομμάτι σε σόλο."
 
 #: ../../tracks/audio-track.rst:22
 #: ../../tracks/bus-track-audio.rst:22
@@ -104,7 +107,7 @@ msgstr "Σίγαση"
 #: ../../tracks/master-track.rst:23
 #: ../../tracks/midi-track.rst:31
 msgid "Mutes the track."
-msgstr ""
+msgstr "Βάζει το κομμάτι σε σίγαση."
 
 #: ../../tracks/audio-track.rst:25
 #: ../../tracks/bus-track-audio.rst:25
@@ -114,31 +117,31 @@ msgstr ""
 #: ../../tracks/master-track.rst:26
 #: ../../tracks/midi-track.rst:34
 msgid "Bottom Buttons"
-msgstr ""
+msgstr "Κάτω κουμπιά"
 
 #: ../../tracks/audio-track.rst:27
 #: ../../tracks/instrument-track.rst:37
 #: ../../tracks/midi-track.rst:36
 msgid "Lock"
-msgstr ""
+msgstr "Κλείδωμα"
 
 #: ../../tracks/audio-track.rst:28
 #: ../../tracks/instrument-track.rst:38
 #: ../../tracks/midi-track.rst:37
 msgid "Not used at the moment."
-msgstr ""
+msgstr "Δεν χρησιμοποιείται προς το παρόν."
 
 #: ../../tracks/audio-track.rst:29
 #: ../../tracks/instrument-track.rst:41
 #: ../../tracks/midi-track.rst:38
 msgid "Show Lanes"
-msgstr ""
+msgstr "Προβολή λωρίδων"
 
 #: ../../tracks/audio-track.rst:30
 #: ../../tracks/instrument-track.rst:42
 #: ../../tracks/midi-track.rst:39
 msgid "Toggles the visibility of lanes."
-msgstr ""
+msgstr "Εναλλάσσει την ορατότητα των λωρίδων."
 
 #: ../../tracks/audio-track.rst:32
 #: ../../tracks/bus-track-audio.rst:28
@@ -148,7 +151,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:29
 #: ../../tracks/midi-track.rst:41
 msgid "Show Automation"
-msgstr ""
+msgstr "Προβολή αυτοματισμών"
 
 #: ../../tracks/audio-track.rst:32
 #: ../../tracks/bus-track-audio.rst:28
@@ -158,7 +161,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:29
 #: ../../tracks/midi-track.rst:41
 msgid "Toggles the visibility of automation tracks."
-msgstr ""
+msgstr "Εναλλάσσει την ορατότητα των κομματιών αυτοματισμού."
 
 #: ../../tracks/audio-track.rst:35
 #: ../../tracks/bus-track-audio.rst:31
@@ -172,7 +175,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:34
 #: ../../tracks/tempo-track.rst:34
 msgid "Inspector"
-msgstr ""
+msgstr "Επιθεωρητής"
 
 #: ../../tracks/audio-track.rst:41
 #: ../../tracks/bus-track-audio.rst:37
@@ -186,7 +189,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:40
 #: ../../tracks/tempo-track.rst:40
 msgid "Properties"
-msgstr ""
+msgstr "Ιδιότητες"
 
 #: ../../tracks/audio-track.rst:44
 #: ../../tracks/bus-track-audio.rst:42
@@ -201,7 +204,7 @@ msgstr "Απευθείας έξω"
 
 #: ../../tracks/audio-track.rst:44
 msgid "The track to route the output of the audio track to."
-msgstr ""
+msgstr "Το κομμάτι προς δρομολόγηση του εξαγόμενου ενός κομματιού ήχου."
 
 #: ../../tracks/audio-track.rst:47
 #: ../../tracks/inspector-page.rst:42
@@ -213,6 +216,8 @@ msgstr "Εισαγόμενα"
 #: ../../tracks/audio-track.rst:49
 msgid "Left and right audio input sources used when recording."
 msgstr ""
+"Πηγές εισόδου ήχου αριστερά και δεξιά που χρησιμοποιούνται κατά την "
+"ηχογράφηση."
 
 #: ../../tracks/audio-track.rst:53
 #: ../../tracks/bus-track-audio.rst:45
@@ -234,12 +239,12 @@ msgstr "ΝΑΓΙΝΕΙ"
 #: ../../tracks/instrument-track.rst:77
 #: ../../tracks/midi-track.rst:91
 msgid "Lanes"
-msgstr ""
+msgstr "Λωρίδες"
 
 #: ../../tracks/audio-track.rst:60
 #: ../../tracks/instrument-track.rst:79
 msgid "These are similar to :ref:`midi-track-lanes`."
-msgstr ""
+msgstr "Αυτές είναι παρόμοιες με τις :ref:`midi-track-lanes`."
 
 #: ../../tracks/audio-track.rst:63
 #: ../../tracks/bus-track-audio.rst:50
@@ -249,7 +254,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:52
 #: ../../tracks/midi-track.rst:115
 msgid "Automation Tracks"
-msgstr ""
+msgstr "Κομμάτια αυτοματισμού"
 
 #: ../../tracks/audio-track.rst:65
 #: ../../tracks/bus-track-audio.rst:52
@@ -258,7 +263,7 @@ msgstr ""
 #: ../../tracks/instrument-track.rst:84
 #: ../../tracks/master-track.rst:54
 msgid "These are similar to :ref:`midi-track-automation-tracks`."
-msgstr ""
+msgstr "Αυτά είναι παρόμοια με τα :ref:`midi-track-automation-tracks`."
 
 #: ../../tracks/automation.rst:8
 msgid "Automation"
@@ -266,7 +271,7 @@ msgstr "Αυτοματισμός"
 
 #: ../../tracks/automation.rst:11
 msgid "Automation Lanes"
-msgstr ""
+msgstr "Λωρίδες αυτοματισμού"
 
 #: ../../tracks/automation.rst:12
 msgid ""
@@ -274,16 +279,21 @@ msgid ""
 " of Plugins they contain will have an option to show their Automation "
 "Lanes."
 msgstr ""
+"Κομμάτια που έχουν αυτόματους χειριστές, όπως fader, πανάρισμα και "
+"παραμέτρους προσθέτων που περιέχουν θα έχουν μια επιλογή προβολής των "
+"λωρίδων αυτοματισμού τους."
 
 #: ../../tracks/automation.rst:17
 msgid ""
 "You can choose which parameter you want to automate in each Automation "
 "Lane."
 msgstr ""
+"Μπορείτε να επιλέξετε ποια παράμετρο θέλετε να αυτοματοποιήσετε σε κάθε "
+"λωρίδα αυτοματισμού."
 
 #: ../../tracks/automation.rst:24
 msgid "Editing Automation"
-msgstr ""
+msgstr "Επεξεργασία αυτοματισμών"
 
 #: ../../tracks/automation.rst:25
 msgid ""
@@ -291,16 +301,21 @@ msgid ""
 "creating automation events inside the automation editor. See the "
 ":ref:`editing` chapter for details."
 msgstr ""
+"Η επεξεργασία αυτοματισμών περιλαμβάνει τη δημιουργία περιοχών αυτοματισμού "
+"και τη δημιουργία γεγονότων αυτοματισμού μέσα στον επεξεργαστή αυτοματισμών. "
+"Βλέπε την ενότητα :ref:`editing` για λεπτομέρειες."
 
 #: ../../tracks/bus-track-audio.rst:8
 msgid "Audio FX Track"
-msgstr ""
+msgstr "Κομμάτι εφέ ήχου"
 
 #: ../../tracks/bus-track-audio.rst:10
 msgid ""
 "Audio FX tracks can be used for effects by sending audio signals to them "
 "with :ref:`track-sends`."
 msgstr ""
+"Τα κομμάτια εφέ ήχου μπορούν να χρησιμοποιηθούν για εφέ στέλνοντας σε αυτά "
+"σήματα ήχου με τις :ref:`track-sends`."
 
 #: ../../tracks/bus-track-audio.rst:39
 #: ../../tracks/bus-track-midi.rst:39
@@ -319,39 +334,43 @@ msgstr "Όνομα κομματιού"
 #: ../../tracks/bus-track-midi.rst:40
 #: ../../tracks/group-track-audio.rst:44
 msgid "The unique name of the track."
-msgstr ""
+msgstr "Το μοναδικό όνομα του κομματιού."
 
 #: ../../tracks/bus-track-audio.rst:42
 msgid "The track to route the output of the audio bus track to."
 msgstr ""
+"Το κομμάτι στο οποίο θα δρομολογηθεί το εξαγόμενο του κομματιού διαύλου ήχου."
 
 #: ../../tracks/bus-track-audio.rst:47
 #: ../../tracks/group-track-audio.rst:51
 #: ../../tracks/master-track.rst:49
 msgid "These are similar to :ref:`instrument-track-sends`."
-msgstr ""
+msgstr "Αυτά είναι παρόμοια με τις :ref:`instrument-track-sends`."
 
 #: ../../tracks/bus-track-midi.rst:8
 msgid "MIDI FX Track"
-msgstr ""
+msgstr "Κομμάτι εφέ MIDI"
 
 #: ../../tracks/bus-track-midi.rst:10
 msgid ""
 "MIDI FX tracks can be used for MIDI effects by sending MIDI signals to "
 "them using :ref:`track-sends`."
 msgstr ""
+"Τα κομμάτια εφέ MIDI μπορούν να χρησιμοποιηθούν για εφέ MIDI στέλνοντας σε "
+"αυτά σήματα MIDI χρησιμοποιώντας τις :ref:`track-sends`."
 
 #: ../../tracks/bus-track-midi.rst:42
 msgid "The track to route the output of the MIDI bus track to."
 msgstr ""
+"Το κομμάτι στο οποίο θα δρομολογηθεί το εξαγόμενο του κομματιού διαύλου MIDI."
 
 #: ../../tracks/bus-track-midi.rst:47
 msgid "These are similar to :ref:`midi-track-sends`."
-msgstr ""
+msgstr "Αυτά είναι παρόμοια με τις :ref:`midi-track-sends`."
 
 #: ../../tracks/chord-track.rst:8
 msgid "Chord Track"
-msgstr ""
+msgstr "Κομμάτι συγχορδιών"
 
 #: ../../tracks/chord-track.rst:10
 #: ../../tracks/modulator-track.rst:10
@@ -361,24 +380,30 @@ msgid ""
 " when the song is using a particular chord or scale. Its main purpose is "
 "to assist with chord progressions."
 msgstr ""
+"Το κομμάτι συγχορδιών περιλαμβάνει αντικείμενα συγχορδιών και κλιμάκων που "
+"χρησιμοποιούνται για να προσδιορίσουν πότε το τραγούδι χρησιμοποιεί μια "
+"συγκεκριμένη συγχορδία ή κλίμακα. Ο κύριος σκοπός του είναι να βοηθήσει στις "
+"ακολουθίες συγχορδιών."
 
 #: ../../tracks/chord-track.rst:18
 #: ../../tracks/modulator-track.rst:18
 #: ../../tracks/tempo-track.rst:18
 msgid "For more information, see the section :doc:`../chords-and-scales/intro`."
 msgstr ""
+"Για περισσότερες πληροφορίες, βλέπε την ενότητα :doc:`../chords-and-scales/"
+"intro`."
 
 #: ../../tracks/chord-track.rst:25
 #: ../../tracks/modulator-track.rst:25
 #: ../../tracks/tempo-track.rst:25
 msgid "Arms the track for recording. Not used at the moment."
-msgstr ""
+msgstr "Οπλίζει το κομμάτι για ηχογράφηση. Δεν χρησιμοποιείται προς το παρόν."
 
 #: ../../tracks/chord-track.rst:28
 #: ../../tracks/modulator-track.rst:28
 #: ../../tracks/tempo-track.rst:28
 msgid "Soloes the track. Not used at the moment."
-msgstr ""
+msgstr "Βάζει το κομμάτι σε σόλο. Δεν χρησιμοποιείται προς το παρόν."
 
 #: ../../tracks/chord-track.rst:30
 #: ../../tracks/modulator-track.rst:30
@@ -387,30 +412,34 @@ msgid ""
 "Mutes the track. This causes the project to ignore any scale or chord "
 "events."
 msgstr ""
+"Βάζει το κομμάτι σε σίγαση. Αυτό προκαλεί το έργο να αγνοήσει οποιαδήποτε "
+"γεγονότα κλιμάκων ή συγχορδιών."
 
 #: ../../tracks/chord-track.rst:43
 #: ../../tracks/modulator-track.rst:43
 #: ../../tracks/tempo-track.rst:43
 msgid "The name of the chord track."
-msgstr ""
+msgstr "Το όνομα του κομματιού συγχορδιών."
 
 #: ../../tracks/creating-tracks.rst:6
 msgid "Creating Tracks"
-msgstr ""
+msgstr "Δημιουργία κομματιών"
 
 #: ../../tracks/creating-tracks.rst:9
 msgid "Blank Tracks"
-msgstr ""
+msgstr "Κενά κομμάτια"
 
 #: ../../tracks/creating-tracks.rst:11
 msgid ""
 "To add an empty track, right click on empty space in the Tracklist and "
 "select the type of track you want to add."
 msgstr ""
+"Για την προσθήκη κενού κομματιού, κάνετε δεξί κλικ σε κενό χώρο στη λίστα "
+"κομματιών και επιλέξτε τον τύπο κομματιού που θέλετε να προσθέσετε."
 
 #: ../../tracks/creating-tracks.rst:18
 msgid "Creating Tracks From Plugins"
-msgstr ""
+msgstr "Δημιουργία κομματιών από πρόσθετα"
 
 #: ../../tracks/creating-tracks.rst:20
 msgid ""
@@ -419,14 +448,19 @@ msgid ""
 "plugin is an instrument plugin, an instrument Track will be created. If "
 "the plugin is an effect, a bus Track will be created."
 msgstr ""
+"Τα πρόσθετα μπορούν να πατηθούν και να συρθούν από τον περιηγητή προσθέτων "
+"και να ριχτούν στον κενό χώρο στην λίστα κομματιών ή στον μίκτη για να "
+"ενσαρκωθούν. Αν το πρόσθετο είναι πρόσθετο οργάνου, θα δημιουργηθεί ένα "
+"κομμάτι οργάνου. Αν το πρόσθετο είναι εφέ, θα δημιουργηθεί ένα κομμάτι "
+"διαύλου."
 
 #: ../../tracks/creating-tracks.rst:26
 msgid "See :ref:`instantiating-plugins` for how to instantiate plugins."
-msgstr ""
+msgstr "Βλέπε :ref:`instantiating-plugins` σχετικά με την ενσάρκωση προσθέτων."
 
 #: ../../tracks/creating-tracks.rst:30
 msgid "Creating Audio Tracks From Audio Files"
-msgstr ""
+msgstr "Δημιουργία κομματιών ήχου από αρχεία ήχου"
 
 #: ../../tracks/creating-tracks.rst:32
 msgid ""
@@ -435,20 +469,27 @@ msgid ""
 "Tracklist or Mixer. This will create an Audio Track containing a single "
 "Audio Clip at the current Playhead position."
 msgstr ""
+"Παρομοίως, για να δημιουργήσετε ένα κομμάτι ήχου από ένα αρχείο ήχου (WAV, "
+"FLAC, κλπ.), μπορείτε να σύρετε ένα αρχείο ήχου από τον περιηγητή αρχείων "
+"στον κενό χώρο στη λίστα κομματιών ή στον μίκτη. Αυτό θα δημιουργήσει ένα "
+"κομμάτι ήχου που θα περιλαμβάνει ένα κλιπ ήχου στην τρέχουσα θέσης της "
+"κεφαλής αναπαραγωγής."
 
 #: ../../tracks/creating-tracks.rst:39
 msgid "Creating Tracks by Duplicating"
-msgstr ""
+msgstr "Δημιουργία κομματιών με δημιουργία διπλοτύπου"
 
 #: ../../tracks/creating-tracks.rst:41
 msgid ""
 "Most Tracks can be duplicated by right clicking inside the Track and "
 "selecting :zbutton:`Duplicate`."
 msgstr ""
+"Τα περισσότερα κομμάτια μπορούν να δημιουργήσουν διπλότυπα κάνοντας δεξί "
+"κλικ μέσα στο κομμάτι και επιλέγοντας :zbutton:`Duplicate`."
 
 #: ../../tracks/group-track-audio.rst:8
 msgid "Audio Group Track"
-msgstr ""
+msgstr "Κομμάτι ομάδας ήχων"
 
 #: ../../tracks/group-track-audio.rst:10
 msgid ""
@@ -457,31 +498,41 @@ msgid ""
 "\"Drums\" audio group track so you can add effects and control their "
 "volume collectively instead of separately."
 msgstr ""
+"Τα κομμάτια ομάδας ήχων μπορούν να χρησιμοποιηθούν για την ομαδοποίηση "
+"σημάτων ήχου με απευθείας δρομολόγηση. Για παράδειγμα, τα μπάσα τύμπανα, τα "
+"ταμπούρα και τα κύμβαλα μπορούν να δρομολογηθούν σε ένα κομμάτι ομάδας ήχων "
+"με όνομα «Κρουστά», ώστε να μπορείτε να προσθέσετε εφέ και να ελέγχετε την "
+"έντασή τους συνολικά αντί για ξεχωριστά."
 
 #: ../../tracks/group-track-audio.rst:46
 msgid "The track to route the output of the audio group track to."
 msgstr ""
+"Το κομμάτι στο οποίο θα δρομολογηθεί το εξαγόμενο του κομματιού ομάδας ήχων."
 
 #: ../../tracks/group-track-midi.rst:8
 msgid "MIDI Group Track"
-msgstr ""
+msgstr "Κομμάτι ομάδας MIDI"
 
 #: ../../tracks/group-track-midi.rst:10
 msgid ""
 "These are similar to :ref:`audio-group-track`, except that they act on "
 "MIDI signals instead of audio signals."
 msgstr ""
+"Αυτά είναι παρόμοια με το :ref:`audio-group-track`, με τη διαφορά ότι "
+"δουλεύουν με σήματα MIDI αντί για σήματα ήχου."
 
 #: ../../tracks/inspector-page.rst:8
 #: ../../tracks/overview.rst:68
 msgid "Track Inspector"
-msgstr ""
+msgstr "Επιθεωρητής κομματιών"
 
 #: ../../tracks/inspector-page.rst:10
 msgid ""
 "Each track will display its page in the inspector when selected. "
 "Depending on the track, the properties shown will be different."
 msgstr ""
+"Κάθε κομμάτι θα προβάλει τη σελίδα του στον επιθεωρητή όταν επιλέγεται. "
+"Ανάλογα με το κομμάτι, οι ιδιότητες που φαίνονται θα είναι διαφορετικές."
 
 #: ../../tracks/inspector-page.rst:18
 msgid "Track Properties"
@@ -489,15 +540,15 @@ msgstr "Ιδιότητες κομματιού"
 
 #: ../../tracks/inspector-page.rst:20
 msgid "Track properties are basic properties that the track has."
-msgstr ""
+msgstr "Οι ιδιότητες κομματιών είναι οι βασικές ιδιότητες που έχει το κομμάτι."
 
 #: ../../tracks/inspector-page.rst:28
 msgid "Name of the track"
-msgstr ""
+msgstr "Όνομα του κομματιού"
 
 #: ../../tracks/inspector-page.rst:32
 msgid "The track that this track routes its output to."
-msgstr ""
+msgstr "Το κομμάτι στο οποίο αυτό το κομμάτι δρομολογεί το εξαγόμενό του."
 
 #: ../../tracks/inspector-page.rst:35
 #: ../../tracks/track-types.rst:18
@@ -509,20 +560,26 @@ msgid ""
 "If the track is an :ref:`instrument-track`, the instrument plugin for "
 "this track."
 msgstr ""
+"Αν το κομμάτι είναι :ref:`instrument-track`, τότε το πρόσθετο οργάνου για "
+"αυτό το κομμάτι."
 
 #: ../../tracks/inspector-page.rst:44
 msgid "If the track takes input, there will be an input selection section."
 msgstr ""
+"Αν το κομμάτι παίρνει εισαγόμενα, τότε θα υπάρξει ένα τμήμα επιλογής "
+"εισαγόμενων."
 
 #: ../../tracks/inspector-page.rst:51
 msgid "MIDI FX/Inserts"
-msgstr ""
+msgstr "Εφέ/εισαγόμενα MIDI"
 
 #: ../../tracks/inspector-page.rst:53
 msgid ""
 "These are slots for dropping audio or MIDI effects that will be applied "
 "to the signal as it passes through the track."
 msgstr ""
+"Αυτά είναι θέσεις για ρίψη εφέ ήχου ή MIDI που θα εφαρμοστούν στο σήμα καθώς "
+"περνάει μέσα από το κομμάτι."
 
 #: ../../tracks/inspector-page.rst:59
 msgid ""
@@ -530,10 +587,12 @@ msgid ""
 "the instruments in instrument tracks, or before the inserts in MIDI "
 "tracks."
 msgstr ""
+"Τα εφέ MIDI επεξεργάζονται μετά την εισαγωγή και τα γεγονότα ρολού πιάνο και "
+"πριν τα όργανα στα κομμάτια οργάνων ή πριν τα εισαγόμενα στα κομμάτια MIDI."
 
 #: ../../tracks/inspector-page.rst:63
 msgid "Only MIDI and Instrument tracks support MIDI FX."
-msgstr ""
+msgstr "Μόνο τα κομμάτια MIDI και οργάνων υποστηρίζουν εφέ MIDI."
 
 #: ../../tracks/inspector-page.rst:65
 msgid ""
@@ -541,6 +600,9 @@ msgid ""
 "be added onto the signal coming from the instrument, and for other tracks"
 " they will be added on the incoming signal."
 msgstr ""
+"Τα εισαγόμενα επεξεργάζονται σε σειρά. Για κομμάτια οργάνων, τα εισαγόμενα "
+"θα προστεθούν στο σήμα που έρχεται από το όργανο, και για τα άλλα κομμάτια "
+"θα προστεθούν στο εισερχόμενο σήμα."
 
 #: ../../tracks/inspector-page.rst:70
 #: ../../tracks/modulator-track.rst:8
@@ -548,15 +610,15 @@ msgstr ""
 #: ../../tracks/tempo-track.rst:8
 #: ../../tracks/track-types.rst:31
 msgid "Todo"
-msgstr ""
+msgstr "Ναγίνει"
 
 #: ../../tracks/inspector-page.rst:70
 msgid "Separate MIDI FX/inserts and expand more."
-msgstr ""
+msgstr "Να διαχωριστούν τα εισαγόμενα/εφέ MIDI και να επεκταθεί περισσότερο."
 
 #: ../../tracks/inspector-page.rst:75
 msgid "Aux Sends"
-msgstr ""
+msgstr "Αποστολές aux"
 
 #: ../../tracks/inspector-page.rst:77
 msgid ""
@@ -564,6 +626,9 @@ msgid ""
 "tracks or plugin side-chain inputs. These are generally useful for side-"
 "chaining or applying additional effects to channels, such as reverb."
 msgstr ""
+"Αυτές είναι οι προς άλλα κομμάτια ή εισαγωγές πλευρικής αλυσίδωσης "
+"προσθέτων. Αυτές είναι γενικά χρήσιμες στην πλευρική αλυσίδωση ή στην "
+"εφαρμογή επιπρόσθετων εφέ στα κανάλια, όπως αντήχηση (reverb)."
 
 #: ../../tracks/inspector-page.rst:87
 msgid ""
@@ -572,15 +637,18 @@ msgid ""
 "fader is processed, and the post-fader slots will send the signal after "
 "the fader is applied."
 msgstr ""
+"Οι πρώτες 6 θέσεις είναι για αποστολές πριν του fader και οι 3 τελευταίες "
+"θέσεις είναι για αποστολές μετά τον fader. Οι θέσεις πριν τον fader θα "
+"στείλουν το σήμα πριν επεξεργαστεί ο fader, και οι θέσεις μετά τον fader θα "
+"στείλουν το σήμα αφού εφαρμοστεί ο fader."
 
 #: ../../tracks/inspector-page.rst:94
-#, fuzzy
 msgid "Fader"
 msgstr "Fader"
 
 #: ../../tracks/inspector-page.rst:95
 msgid "Fader section to control the volume and stereo balance."
-msgstr ""
+msgstr "Το τμήμα fader για τον έλεγχο της έντασης και της ισορροπίας στέρεο."
 
 #: ../../tracks/inspector-page.rst:100
 msgid ""
@@ -588,6 +656,9 @@ msgid ""
 "respective widgets. You can reset them to their default positions with "
 ":menuselection:`Right click --> Reset`."
 msgstr ""
+"Για να αλλάξετε την ποσότητα του fader ή της ισορροπίας stereo, κάνετε κλικ "
+"και σύρετε τα αντίστοιχα γραφικά στοιχεία τους. Μπορείτε να τα επαναφέρετε "
+"στις προεπιλεγμένες θέσεις τους με :menuselection:`Right click --> Reset`."
 
 #: ../../tracks/inspector-page.rst:105
 msgid ""
@@ -595,6 +666,9 @@ msgid ""
 " live. The following values are displayed next to the meter for "
 "additional reference."
 msgstr ""
+"Ο μετρητής προβάλλει το πλάτος του σήματος σε dBFS όπως βρίσκεται σε "
+"επεξεργασία ζωντανά. Οι ακόλουθες τιμές προβάλλονται δίπλα στον μετρητή για "
+"περαιτέρω αναφορά."
 
 #: ../../tracks/inspector-page.rst:110
 msgid "Peak"
@@ -602,39 +676,47 @@ msgstr "Κορυφή"
 
 #: ../../tracks/inspector-page.rst:111
 msgid "Peak signal value."
-msgstr ""
+msgstr "Τιμή κορυφής σήματος."
 
 #: ../../tracks/inspector-page.rst:114
 msgid "RMS"
-msgstr ""
+msgstr "RMS"
 
 #: ../../tracks/inspector-page.rst:115
 msgid "Root Mean Square of the signal value."
-msgstr ""
+msgstr "Μέση τετραγωνική ρίζα (Root Mean Square) της τιμής του σήματος."
 
 #: ../../tracks/inspector-page.rst:117
 msgid "The following controls are available for controlling the signal flow."
 msgstr ""
+"Οι ακόλουθοι χειριστές είναι διαθέσιμοι για τον έλεγχο της ροής του σήματος."
 
 #: ../../tracks/inspector-page.rst:122
 msgid "Arm the track for recording."
-msgstr ""
+msgstr "Οπλισμός του κομματιού για ηχογράφηση."
 
 #: ../../tracks/inspector-page.rst:126
 msgid "Mutes the track, meaning no sound will be sent to its direct out."
 msgstr ""
+"Βάζει το κομμάτι σε σίγαση, που σημαίνει ότι δεν θα στέλνεται κανένας ήχος "
+"απευθείας έξω."
 
 #: ../../tracks/inspector-page.rst:129
 msgid ""
 "The track will still be processed, so if you are looking to decrease "
 ":term:`DSP` usage, try disabling plugins instead."
 msgstr ""
+"Το κομμάτι θα εξακολουθήσει να βρίσκεται σε επεξεργασία, οπότε αν ψάχνετε να "
+"μειώσετε τη :term:`DSP`, τότε προσπαθήστε να απενεργοποιήσετε κάποια "
+"πρόσθετα αντί αυτού."
 
 #: ../../tracks/inspector-page.rst:135
 msgid ""
 "Soloes the track. If any track is soloed, only the soloed tracks will "
 "produce sounds."
 msgstr ""
+"Βάζει το κομμάτι σε σίγαση. Αν οποιοδήποτε κομμάτι είναι σε σίγαση, μόνο τα "
+"κομμάτια που βρίσκονται σε σίγαση θα παράγουν ήχους."
 
 #: ../../tracks/inspector-page.rst:139
 msgid "Listen"
@@ -646,31 +728,34 @@ msgid ""
 "muting them. The dim amount can be controlled in the control room "
 "described in :ref:`control-room`."
 msgstr ""
+"Παρόμοια με το σόλο, με τη διαφορά ότι χαμηλώνει τον ήχο των άλλων κομματιών "
+"αντί να τα βάλει σε σίγαση. Η ποσότητα με την οποία χαμηλώνει μπορεί να "
+"ελεγχθεί στο δωμάτιο ελέγχου που εξηγείται στο :ref:`control-room`."
 
 #: ../../tracks/inspector-page.rst:145
 #: ../../tracks/inspector-page.rst:150
 msgid "Not operational at the moment."
-msgstr ""
+msgstr "Δεν είναι λειτουργικό προς το παρόν."
 
 #: ../../tracks/inspector-page.rst:148
 msgid "Channel Settings"
-msgstr ""
+msgstr "Ρυθμίσεις καναλιού"
 
 #: ../../tracks/inspector-page.rst:153
 msgid "Comments"
-msgstr ""
+msgstr "Σχόλια"
 
 #: ../../tracks/inspector-page.rst:154
 msgid "User comments."
-msgstr ""
+msgstr "Σχόλια χρήστη."
 
 #: ../../tracks/inspector-page.rst:159
 msgid "This is not implemented yet."
-msgstr ""
+msgstr "Αυτό δεν έχει ενσωματωθεί ακόμα."
 
 #: ../../tracks/instrument-track.rst:8
 msgid "Instrument Track"
-msgstr ""
+msgstr "Κομμάτι οργάνου"
 
 #: ../../tracks/instrument-track.rst:10
 msgid ""
@@ -678,60 +763,67 @@ msgid ""
 " tracks contain a special `instrument slot` in the mixer that will get "
 "processed `after` the MIDI FX section and `before` the Inserts section."
 msgstr ""
+"Το κομμάτι οργάνου χρησιμοποιείται για συνθεσάιζερς και άλλα όργανα. Τα "
+"κομμάτια οργάνου περιέχουν μία ειδική `θέση οργάνου` στον μίκτη, ώστε να "
+"βρίσκονται σε επεξεργασία `μετά` το τμήμα εφέ MIDI και `πριν` το τμήμα "
+"εισαγομένων."
 
 #: ../../tracks/instrument-track.rst:19
 msgid ""
 "Instrument tracks are similar to MIDI tracks, except that they produce "
 "audio instead of :term:`MIDI`."
 msgstr ""
+"Τα κομμάτια οργάνου είναι παρόμοια με τα κομμάτια MIDI, με τη διαφορά ότι "
+"παράγουν ήχο αντί για :term:`MIDI`."
 
 #: ../../tracks/instrument-track.rst:32
 msgid "Show UI"
-msgstr ""
+msgstr "Προβολή περιβάλλοντος χρήστη"
 
 #: ../../tracks/instrument-track.rst:32
 msgid "Displays the UI of the main plugin."
-msgstr ""
+msgstr "Προβάλλει το περιβάλλον χρήστη στο κύριο πρόσθετο."
 
 #: ../../tracks/instrument-track.rst:39
 msgid "Freeze"
-msgstr ""
+msgstr "Πάγωμα"
 
 #: ../../tracks/instrument-track.rst:40
 msgid "Freezes the track (not operational at the moment)."
-msgstr ""
+msgstr "Παγώνει το κομμάτι (μη λειτουργικό προς το παρόν)."
 
 #: ../../tracks/instrument-track.rst:56
 msgid "The track to route the audio output of the instrument track to."
 msgstr ""
+"Το κομμάτι στο οποίο θα δρομολογηθεί το εξαγόμενο ήχου του κομματιού οργάνου."
 
 #: ../../tracks/instrument-track.rst:61
 msgid "These are similar to :ref:`midi-track-inputs`."
-msgstr ""
+msgstr "Αυτά είναι παρόμοια με τα :ref:`midi-track-inputs`."
 
 #: ../../tracks/instrument-track.rst:69
 msgid "Pre-Fader Out L/R"
-msgstr ""
+msgstr "Έξοδος Α/Δ πριν τον fader"
 
 #: ../../tracks/instrument-track.rst:69
 msgid "The stereo audio signal before the fader is applied."
-msgstr ""
+msgstr "Το σήμα ήχου στέρεο πριν εφαρμοστεί ο fader."
 
 #: ../../tracks/instrument-track.rst:72
 msgid "Fader Out L/R"
-msgstr ""
+msgstr "Έξοδος Α/Δ fader"
 
 #: ../../tracks/instrument-track.rst:72
 msgid "The stereo audio signal after the fader is applied."
-msgstr ""
+msgstr "Το σήμα ήχου στέρεο αφού εφαρμοστεί ο fader."
 
 #: ../../tracks/instrument-track.rst:74
 msgid "You can use these for side-chaining."
-msgstr ""
+msgstr "Μπορείτε να τα χρησιμοποιήσετε αυτά για πλευρική αλυσίδωση."
 
 #: ../../tracks/instrument-track.rst:87
 msgid "Freezing"
-msgstr ""
+msgstr "Πάγωμα"
 
 #: ../../tracks/instrument-track.rst:89
 msgid ""
@@ -739,12 +831,18 @@ msgid ""
 "just want to save CPU power, instrument tracks can be frozen (temporarily"
 " converted to audio), which dramatically lowers their CPU usage."
 msgstr ""
+"Αν η χρήση :term:`DSP` είναι υψηλή και έχετε προβλήματα απόδοσης ή αν απλώς "
+"θέλετε να εξοικονομήσετε την ισχύ του επεξεργαστή, τα κομμάτια οργάνου "
+"μπορούν να παγώσουν (να μετατραπούν προσωρινά σε ήχο), το οποίο μειώνει "
+"δραματικά τη χρήση του επεξεργαστή."
 
 #: ../../tracks/instrument-track.rst:95
 msgid ""
 "Instruments can be frozen by clicking the Freeze button in the track "
 "interface."
 msgstr ""
+"Τα όργανα μπορούν να παγώσουν κάνοντας κλικ στο κουμπί παγώματος στη διεπαφή "
+"του κομματιού."
 
 #: ../../tracks/intro.rst:8
 msgid "Tracks"
@@ -752,7 +850,7 @@ msgstr "Κομμάτια"
 
 #: ../../tracks/marker-track.rst:10
 msgid "Marker Track"
-msgstr ""
+msgstr "Κομμάτι σημαδιού"
 
 #: ../../tracks/marker-track.rst:12
 msgid ""
@@ -761,14 +859,18 @@ msgid ""
 "song. Each project can only have one marker track and it cannot be "
 "deleted (but can be hidden)."
 msgstr ""
+"Το κομμάτι σημαδιών κρατάει σημάδια τραγουδιού - είτε προσαρμοσμένα είτε "
+"προεπιλεγμένα - τα οποία καθιστούν ευκολότερη τη γρήγορη αναπαραγωγή ή την "
+"εξαγωγή συγκεκριμένων τμημάτων του τραγουδιού. Κάθε έργο μπορεί να έχει μόνο "
+"ένα κομμάτι σημαδιών και δεν μπορεί να διαγραφεί (μπορεί όμως να κρυφτεί)."
 
 #: ../../tracks/marker-track.rst:32
 msgid "The name of the marker track."
-msgstr ""
+msgstr "Το όνομα του κομματιού σημαδιών."
 
 #: ../../tracks/master-track.rst:6
 msgid "Master Track"
-msgstr ""
+msgstr "Κομμάτι μάστερ"
 
 #: ../../tracks/master-track.rst:8
 msgid ""
@@ -776,18 +878,22 @@ msgid ""
 "Zrythm uses to route the resulting audio signal after all the processing "
 "is done to the audio backend."
 msgstr ""
+"Το κομμάτι μάστερ είναι ένας ειδικός τύπος από :ref:`audio-group-track` που "
+"χρησιμοποιεί το Zrythm προς δρομολόγηση του συνεπαγόμενου σήματος ήχου αφού "
+"γίνει όλη η διαδικασία επεξεργασίας στο παρασκήνιο ήχου."
 
 #: ../../tracks/master-track.rst:41
 msgid "The name of the track. This cannot be changed."
-msgstr ""
+msgstr "Το όνομα του κομματιού. Αυτό δεν μπορεί να αλλάξει."
 
 #: ../../tracks/master-track.rst:43
 msgid "This is automatically routed to the audio engine and cannot be changed."
 msgstr ""
+"Αυτό δρομολογείται αυτόματα στον κινητήρα ήχου και δεν μπορεί να αλλάξει."
 
 #: ../../tracks/midi-track.rst:6
 msgid "MIDI Track"
-msgstr ""
+msgstr "Κομμάτι MIDI"
 
 #: ../../tracks/midi-track.rst:8
 msgid ""
@@ -795,6 +901,9 @@ msgid ""
 "events and routing those MIDI signals to other instruments (including "
 "external instruments and hardware)."
 msgstr ""
+"Ένα κομμάτι MIDI περιέχει περιοχές MIDI και ο σκοπός του είναι να κάνει "
+"αναπαραγωγή γεγονότων MIDI και να δρομολογεί αυτά τα σήματα MIDI σε άλλα "
+"όργανα (συμπεριλαμβανομένων εξωτερικών οργάνων και υλικών)."
 
 #: ../../tracks/midi-track.rst:13
 msgid ""
@@ -802,62 +911,75 @@ msgid ""
 "channel strips will only have MIDI effects (plugins that change MIDI "
 "signals)."
 msgstr ""
+"Τα κομμάτια MIDI, αντίθετα με τα κομμάτια οργάνων, παράγουν εξαγόμενο MIDI "
+"και ως εκ τούτου οι λωρίδες του καναλιού τους θα έχουν μόνο εφέ MIDI ("
+"πρόσθετα που αλλάζουν σήματα MIDI)."
 
 #: ../../tracks/midi-track.rst:17
 msgid "MIDI tracks also have automation lanes for automating various parameters."
 msgstr ""
+"Τα κομμάτια MIDI θα έχουν επίσης λωρίδες αυτοματισμού για την αυτοματοποίηση "
+"διαφόρων παραμέτρων."
 
 #: ../../tracks/midi-track.rst:53
 msgid "The name of the track. You can double click to change it."
 msgstr ""
+"Το όνομα του κομματιού. Μπορείτε να κάνετε διπλό κλικ για να το αλλάξετε."
 
 #: ../../tracks/midi-track.rst:56
 msgid "The track to route the output of the MIDI track to."
-msgstr ""
+msgstr "Το κομμάτι στο οποίο θα δρομολογηθεί το εξαγόμενο του κομματιού MIDI."
 
 #: ../../tracks/midi-track.rst:65
 msgid "Input Device"
-msgstr ""
+msgstr "Συσκευή εισόδου"
 
 #: ../../tracks/midi-track.rst:64
 msgid "The input device(s) to receive MIDI signals from during recording."
 msgstr ""
+"Η/Οι συσκευή/ές εισόδου προς αποδοχή σημάτων MIDI κατά τη διάρκεια της "
+"ηχογράφησης."
 
 #: ../../tracks/midi-track.rst:70
 msgid "Input Channel"
-msgstr ""
+msgstr "Κανάλι εισόδου"
 
 #: ../../tracks/midi-track.rst:68
 msgid ""
 "The MIDI channel(s) to listen to for recording MIDI events. This acts as "
 "a filter so MIDI events on channels not selected will be ignored."
 msgstr ""
+"Το/Τα κανάλι/ια MIDI προς ακρόαση για την καταγραφή γεγονότων MIDI. Αυτό "
+"λειτουργεί ως φίλτρο, προκειμένου να αγνοηθούν τα γεγονότα MIDI σε κανάλια "
+"που δεν είναι επιλεγμένα."
 
 #: ../../tracks/midi-track.rst:78
 msgid "Pre-Fader Out"
-msgstr ""
+msgstr "Έξοδος πριν το fader"
 
 #: ../../tracks/midi-track.rst:78
 msgid "The MIDI signal before the MIDI fader is applied."
-msgstr ""
+msgstr "Εφαρμόζεται το σήμα MIDI πριν τον fader MIDI."
 
 #: ../../tracks/midi-track.rst:81
 msgid "Fader Out"
-msgstr ""
+msgstr "Έξοδος fader"
 
 #: ../../tracks/midi-track.rst:81
 msgid "The MIDI signal after the MIDI fader is applied."
-msgstr ""
+msgstr "Εφαρμόζεται το σήμα MIDI μετά τον fader MIDI."
 
 #: ../../tracks/midi-track.rst:83
 msgid "The MIDI fader uses MIDI volume CC."
-msgstr ""
+msgstr "Ο fader MIDI χρησιμοποιεί το CC της έντασης MIDI."
 
 #: ../../tracks/midi-track.rst:85
 msgid ""
 "The MIDI fader is a TODO feature and currently does nothing (it lets the "
 "signal pass through)."
 msgstr ""
+"Ο fader MIDI είναι χαρακτηρηστικό ΝΑΓΙΝΕΙ και προς το παρόν δεν κάνει τίποτα "
+"(σας επιτρέπει όμως να περάσετε το σήμα)."
 
 #: ../../tracks/midi-track.rst:93
 msgid ""
@@ -865,6 +987,10 @@ msgid ""
 "all regions you create will be created in lane 1. Additional lanes will "
 "be auto-created and deleted as you add regions to each lane."
 msgstr ""
+"Το κομμάτι MIDI μπορεί να έχει πολλαπλές λωρίδες για την αποθήκευση "
+"περιοχών. Από προεπιλογή, όλες οι περιοχές που δημιουργείτε θα δημιουργηθούν "
+"στη λωρίδα 1. Επιπρόσθετες λωρίδες θα δημιουργηθούν αυτόματα και θα "
+"διαγραφούν καθώς προσθέτετε περιοχές σε κάθε λωρίδα."
 
 #: ../../tracks/midi-track.rst:101
 msgid ""
@@ -873,10 +999,17 @@ msgid ""
 "Lanes are also useful for generally organizing your regions. For example "
 "you can keep high notes in lane 1 and bass notes in lane 2."
 msgstr ""
+"Οι λωρίδες είναι χρήσιμες κατά τη διάρκεια της ηχογράφησης, καθώς κάθε φορά "
+"που η αναπαραγωγή λουπάρει θα ξεκινήσει ηχογράφηση σε καινούρια λωρίδα και "
+"θα βάλει σε σίγαση την περιοχή της προηγούμενης λωρίδας. Οι λωρίδες είναι "
+"επίσης χρήσιμες στην οργάνωση γενικά των περιοχών. Για παράδειγμα, μπορείτε "
+"να κρατήσετε ψηλές νότες στη λωρίδα 1 και μπάσες νότες στη λωρίδα 2."
 
 #: ../../tracks/midi-track.rst:109
 msgid "Lanes can be made visible by clicking the \"hamburger\" icon."
 msgstr ""
+"Οι λωρίδες μπορούν να γίνουν ορατές κάνοντας κλικ στο εικονίδιο "
+"«χάμπουργκερ»."
 
 #: ../../tracks/midi-track.rst:117
 msgid ""
@@ -885,34 +1018,40 @@ msgid ""
 "channel. To show the automation tracks, click on the cusp icon in the "
 "MIDI track."
 msgstr ""
+"Τα κομμάτια αυτοματισμού χρησιμοποιούνται για να δημιουργήσουν γεγονότα "
+"αυτοματισμού για διάφορες παραμέτρους του κομματιού MIDI και οποιαδήποτε "
+"πρόσθετα στο κανάλι του κομματιού MIDI. Για την προβολή των κομματιών "
+"αυτοματισμού, κάνετε κλικ στο ακριανό εικονίδιο στο κομμάτι MIDI."
 
 #: ../../tracks/midi-track.rst:126
 msgid ""
 "More information about automation tracks can be found in the "
 ":ref:`automation` chapter."
 msgstr ""
+"Για περισσότερες πληροφορίες σχετικά με τα κομμάτια αυτοματισμού μπορούν να "
+"βρεθούν στην ενότητα :ref:`automation`."
 
 #: ../../tracks/midi-track.rst:130
 #: ../../tracks/overview.rst:74
 msgid "Context Menu"
-msgstr ""
+msgstr "Μενού περιβάλλοντος"
 
 #: ../../tracks/midi-track.rst:135
 msgid "MIDI Transformations"
-msgstr ""
+msgstr "Μεταμορφώσεις MIDI"
 
 #: ../../tracks/midi-track.rst:138
 msgid "Transpose"
-msgstr ""
+msgstr "Μετατόπιση"
 
 #: ../../tracks/modulator-track.rst:6
 msgid "Modulator Track"
-msgstr ""
+msgstr "Κομμάτι διαμορφωτών"
 
 #: ../../tracks/modulator-track.rst:8
 #: ../../tracks/tempo-track.rst:8
 msgid "Write this page."
-msgstr ""
+msgstr "Να γραφεί αυτή η σελίδα."
 
 #: ../../tracks/overview.rst:6
 msgid "Overview"
@@ -923,12 +1062,16 @@ msgid ""
 "Tracks are the main building blocks of projects. Tracks appear in the "
 "tracklist and contain various events such as :ref:`regions`."
 msgstr ""
+"Τα κομμάτια είναι οι κύριοι λίθοι των έργων. Τα κομμάτια εμφανίζονται στη "
+"λίστα κομματιών και περιέχουν διάφορα γεγονότα όπως τις :ref:`regions`."
 
 #: ../../tracks/overview.rst:15
 msgid ""
 "Most types of tracks have a corresponding channel that appears in the "
 ":ref:`mixer`. See :ref:`channels` for more info."
 msgstr ""
+"Οι περισσότεροι τύποι κομματιών έχουν ένα αντίστοιχο κανάλι που εμφανίζεται "
+"στον :ref:`mixer`. Βλέπε :ref:`channels` για περισσότερες πληροφορίες."
 
 #: ../../tracks/overview.rst:22
 msgid ""
@@ -937,6 +1080,10 @@ msgid ""
 ":ref:`chord-track` and the :ref:`marker-track`, which contain chords and "
 "markers respectively."
 msgstr ""
+"Υπάρχουν διάφορα είδη κομματιών σχεδιασμένα για διαφορετικούς λόγους, τα "
+"οποία εξηγούνται σε διαφορετικές ενότητες. Κάποια κομμάτια είναι ειδικά, "
+"όπως το :ref:`chord-track` και το :ref:`marker-track`, τα οποία περιέχουν "
+"συγχορδίες και σημάδια αντίστοιχα."
 
 #: ../../tracks/overview.rst:28
 msgid ""
@@ -945,6 +1092,11 @@ msgid ""
 " are  used for putting tracks under the same folder and performing common"
 " operations."
 msgstr ""
+"Στο Zrythm, τα κομμάτια ομάδων χρησιμοποιούνται για την ομαδοποίηση σημάτων ("
+"απευθείας δρομολόγηση), τα κομμάτια εφέ/διαύλων χρησιμοποιούνται για εφέ/"
+"αποστολές και τα κομμάτια φακέλων (έρχονται σύντομα) χρησιμοποιούνται στην "
+"τοποθέτηση κομματιών μέσα στον ίδιο φάκελο και την εκτέλεση κοινών "
+"διεργασιών."
 
 #: ../../tracks/overview.rst:35
 msgid ""
@@ -952,16 +1104,21 @@ msgid ""
 "synthesizers, and MIDI tracks for MIDI plugins, such as a MIDI "
 "arpegiator."
 msgstr ""
+"Επιπρόσθετα, το Zrythm χρησιμοποιεί κομμάτια οργάνων για πρόσθετα οργάνων, "
+"όπως συνθεσάιζερς και κομμάτια MIDI για πρόσθετα MIDI, όπως ένας "
+"αρπετζιέιτορ MIDI."
 
 #: ../../tracks/overview.rst:40
 msgid ""
 "This is different from what many other :term:`DAWs <DAW>` do, so please "
 "keep this in mind."
 msgstr ""
+"Αυτό είναι διαφορετικό απ' ό,τι κάνουν πολλοί άλλοι :term:`ψηφιακοί σταθμοί "
+"επεξεργασίας ήχου <DAW>`, οπότε κρατήστε το στον νου σας."
 
 #: ../../tracks/overview.rst:45
 msgid "Track Interface"
-msgstr ""
+msgstr "Διεπαφή κομματιών"
 
 #: ../../tracks/overview.rst:50
 msgid ""
@@ -970,54 +1127,70 @@ msgid ""
 " also have an option to display each lane as above. Tracks that can have "
 "automation will have an option to display automation tracks as above."
 msgstr ""
+"Κάθε κομμάτι έχει ένα χρώμα, ένα εικονίδιο (αντίστοιχο προς τον τύπο του), "
+"ένα όνομα και διάφορα κουμπιά. Τα κομμάτια που μπορούν να έχουν λωρίδες, "
+"όπως τα κομμάτια οργάνων, θα έχουν επίσης μια ρύθμιση να προβάλουν κάθε "
+"λωρίδα όπως παραπάνω. Τα κομμάτια που έχουν αυτοματισμό θα έχουν μια ρύθμιση "
+"να προβάλουν κομμάτια αυτοματισμού όπως παραπάνω."
 
 #: ../../tracks/overview.rst:56
 msgid ""
 "If the track produces output, it will have a meter on its right-hand side"
 " showing the current level."
 msgstr ""
+"Αν το κομμάτι παράγει εξαγόμενο, θα έχει έναν μετρητή στη δεξιά πλευρά "
+"δείχνοντας το τρέχον επίπεδο."
 
 #: ../../tracks/overview.rst:60
 msgid "Track Icon"
-msgstr ""
+msgstr "Εικονίδιο κομματιού"
 
 #: ../../tracks/overview.rst:61
 msgid "The icon can be changed by clicking on the icon in the tracklist."
 msgstr ""
+"Το εικονίδιο μπορεί να αλλάξει κάνοντας κλικ πάνω στο εικονίδιο στη λίστα "
+"κομματιών."
 
 #: ../../tracks/overview.rst:64
 msgid "Add pic and explain how to add custom icons."
 msgstr ""
+"Προσθήκη εικόνας και εξήγηση πώς να γίνει προσθήκη προσαρμοσμένων εικόνων."
 
 #: ../../tracks/overview.rst:70
 msgid ""
 "Each track will display its page in the inspector when selected. See :ref"
 ":`track-inspector` for more details."
 msgstr ""
+"Κάθε κομμάτι θα προβάλει τη σελίδα του στον επιθεωρητή όταν επιλεγεί. Βλέπε "
+":ref:`track-inspector` για περισσότερες πληροφορίες."
 
 #: ../../tracks/overview.rst:76
 msgid ""
 "Each tracks has a context menu with additional options depending on its "
 "type."
 msgstr ""
+"Κάθε κομμάτι έχει ένα μενού περιβάλλοντος με επιπρόσθετες ρυθμίσεις ανάλογα "
+"με τον τύπο του."
 
 #: ../../tracks/overview.rst:82
 msgid ""
 "The section :ref:`track-operations` explains the various track operations"
 " available."
 msgstr ""
+"Η ενότητα :ref:`track-operations` εξηγεί τις διάφορες διαθέσιμες διεργασίες "
+"κομματιών."
 
 #: ../../tracks/tempo-track.rst:6
 msgid "Tempo Track"
-msgstr ""
+msgstr "Κομμάτι τέμπο"
 
 #: ../../tracks/track-operations.rst:8
 msgid "Track Operations"
-msgstr ""
+msgstr "Διεργασίες κομματιών"
 
 #: ../../tracks/track-operations.rst:11
 msgid "Moving Tracks"
-msgstr ""
+msgstr "Μετακίνηση κομματιών"
 
 #: ../../tracks/track-operations.rst:12
 msgid ""
@@ -1025,50 +1198,57 @@ msgid ""
 "Track, and dropping it at another location. The drop locations will be "
 "highlighted as you move the Track."
 msgstr ""
+"Τα κομμάτια μπορούν να μετακινηθούν κάνοντας κλικ και σύροντας μέσα στον "
+"κενό χώρο στο κομμάτι, και ρίχνοντάς το σε άλλον προορισμό. Οι προορισμοί "
+"ρίψης θα επισημανθούν όπως μετακινείτε το κομμάτι."
 
 #: ../../tracks/track-operations.rst:18
 msgid "Deleting Tracks"
-msgstr ""
+msgstr "Διαγραφή κομματιών"
 
 #: ../../tracks/track-operations.rst:20
 msgid ""
 "Tracks can be deleted by right-clicking them and selecting "
 ":zbutton:`Delete`."
 msgstr ""
+"Τα κομμάτια μπορούν να διαγραφούν κάνοντας δεξί κλικ πάνω τους και "
+"επιλέγοντας :zbutton:`Delete`."
 
 #: ../../tracks/track-operations.rst:24
 msgid "All Track operations are undoable."
-msgstr ""
+msgstr "Όλες οι διεργασίες κομματιών μπορούν να αναιρεθούν."
 
 #: ../../tracks/track-types.rst:6
 msgid "Track Types"
-msgstr ""
+msgstr "Τύποι κομματιών"
 
 #: ../../tracks/track-types.rst:8
 msgid ""
 "Zrythm has the following types of Tracks, and they are explained further "
 "in their own sections."
 msgstr ""
+"Το Zrythm έχει τους εξής τύπους κομματιών και εξηγούνται περαιτέρω στις "
+"δικές τους ενότητες."
 
 #: ../../tracks/track-types.rst:12
 msgid "Track type"
-msgstr ""
+msgstr "Τύπος κομματιών"
 
 #: ../../tracks/track-types.rst:12
 msgid "Input"
-msgstr ""
+msgstr "Εισαγόμενο"
 
 #: ../../tracks/track-types.rst:12
 msgid "Output"
-msgstr ""
+msgstr "Εξαγόμενο"
 
 #: ../../tracks/track-types.rst:12
 msgid "Can record"
-msgstr ""
+msgstr "Δυνατότητα ηχογράφησης"
 
 #: ../../tracks/track-types.rst:12
 msgid "Objects"
-msgstr ""
+msgstr "Αντικείμενα"
 
 #: ../../tracks/track-types.rst:14
 #: ../../tracks/track-types.rst:15
@@ -1087,11 +1267,11 @@ msgstr "Ναι"
 
 #: ../../tracks/track-types.rst:14
 msgid "Audio regions"
-msgstr ""
+msgstr "Περιοχές ήχων"
 
 #: ../../tracks/track-types.rst:15
 msgid "Audio Group"
-msgstr "Ομάδα ήχου"
+msgstr "Ομάδα ήχων"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -1117,7 +1297,7 @@ msgstr "Κανένα"
 
 #: ../../tracks/track-types.rst:16
 msgid "Audio FX"
-msgstr "Εφέ ήχου"
+msgstr "Εφέ ήχων"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord"
@@ -1133,12 +1313,12 @@ msgstr "MIDI"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord regions & scales"
-msgstr ""
+msgstr "Περιοχές συγχορδιών & κλίμακες"
 
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:22
 msgid "MIDI regions"
-msgstr ""
+msgstr "Περιοχές MIDI"
 
 #: ../../tracks/track-types.rst:19
 msgid "Marker"
@@ -1146,7 +1326,7 @@ msgstr "Δείκτης"
 
 #: ../../tracks/track-types.rst:19
 msgid "Markers"
-msgstr ""
+msgstr "Σημάδια"
 
 #: ../../tracks/track-types.rst:20
 msgid "Master"
@@ -1171,26 +1351,32 @@ msgstr "Τέμπο"
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."
 msgstr ""
+"Όλα τα κομμάτια εκτός από το :doc:`chord-track` έχουν διαθέσιμες λωρίδες "
+"αυτοματισμού."
 
 #: ../../tracks/track-types.rst:31
 msgid "Add page for Modulators and Tempo track."
-msgstr ""
+msgstr "Προσθήκη σελίδας για διαμορφωτές και κομμάτι τέμπο."
 
 #: ../../tracks/track-visibility.rst:8
 msgid "Track Visibility"
-msgstr ""
+msgstr "Ορατότητα κομματιού"
 
 #: ../../tracks/track-visibility.rst:10
 msgid ""
 "The track visibility tab in the :ref:`left-panel` allows toggling the "
 "visibility of tracks."
 msgstr ""
+"Η καρτέλα ορατότητας κομματιού στο :ref:`left-panel` σας επιτρέπει την "
+"εναλλαγή ορατότητας των κομματιών."
 
 #: ../../tracks/track-visibility.rst:16
 msgid ""
 "Tracks can also be quickly hidden with :menuselection:`Right click --> "
 "Hide`."
 msgstr ""
+"Τα κομμάτια μπορούν επίσης να κρυφτούν γρήγορα με :menuselection:`Right "
+"click --> Hide`."
 
 #~ msgid "Duplicating Tracks"
 #~ msgstr ""
@@ -1576,4 +1762,3 @@ msgstr ""
 #~ "other DAWs (see :term:`DAW`) do, so "
 #~ "please keep this in mind."
 #~ msgstr ""
-

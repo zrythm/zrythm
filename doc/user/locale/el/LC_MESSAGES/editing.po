@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-11 19:05+0000\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"POT-Creation-Date: 2020-12-31 01:00+0000\n"
+"PO-Revision-Date: 2020-12-09 23:01+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language: el\n"
 "Language-Team: Greek "
@@ -22,11 +22,11 @@ msgstr ""
 #: ../../editing/clip-editors/audio-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:39
 msgid "Audio Editor"
-msgstr ""
+msgstr "Επεξεργαστής ήχου"
 
 #: ../../editing/clip-editors/audio-editor.rst:9
 msgid "The audio editor is displayed when an audio region is selected."
-msgstr ""
+msgstr "Ο επεξεργαστής ήχου προβάλλεται όταν επιλέγεται μια περιοχή ήχου."
 
 #: ../../editing/clip-editors/audio-editor.rst:15
 msgid ""
@@ -34,39 +34,48 @@ msgid ""
 "besides changing the points in the ruler, as discussed in :ref:`editor-"
 "ruler`."
 msgstr ""
+"Προς το παρόν, χρησιμοποιείται μόνο για την προβολή ήχου και δεν έχει "
+"άλλη λειτουργία, πέρα από την αλλαγή των σημείων στον χάρακα, όπως "
+"επισημαίνεται στο :ref:`editor-ruler`."
 
 #: ../../editing/clip-editors/audio-editor.rst:20
 msgid "Audio Arranger"
-msgstr ""
+msgstr "Ταξινόμος ήχου"
 
 #: ../../editing/clip-editors/audio-editor.rst:21
 msgid "The audio arranger refers to the arranger section of the audio editor."
-msgstr ""
+msgstr "Ο ταξινόμος ήχου αναφέρεται στο τμήμα ταξινόμου του επεξεργαστή ήχου."
 
 #: ../../editing/clip-editors/automation-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:35
 msgid "Automation Editor"
-msgstr ""
+msgstr "Επεξεργαστής αυτοματισμού"
 
 #: ../../editing/clip-editors/automation-editor.rst:9
 msgid "The automation editor is displayed when an automation region is selected."
 msgstr ""
+"Ο επεξεργαστής αυτοματισμού προβάλλεται όταν επιλέγεται μια περιοχή "
+"αυτοματισμού."
 
 #: ../../editing/clip-editors/automation-editor.rst:15
 msgid ""
 "It is very similar to the piano roll, with the exception that the "
 "arranger contains automation points and curves instead of MIDI notes."
 msgstr ""
+"Είναι αρκετά παρόμοιος με το ρολό πιάνου, με τη διαφορά ότι ο ταξινόμος "
+"περιέχει σημεία και καμπύλες αυτοματισμού αντί για νότες MIDI."
 
 #: ../../editing/clip-editors/automation-editor.rst:20
 msgid "Automation Arranger"
-msgstr ""
+msgstr "Ταξινόμος αυτοματισμού"
 
 #: ../../editing/clip-editors/automation-editor.rst:21
 msgid ""
 "The automation arranger refers to the arranger section of the automation "
 "editor."
 msgstr ""
+"Ο ταξινόμος αυτοματισμού αναφέρεται στο τμήμα ταξινόμου του επεξεργαστή "
+"αυτοματισμού."
 
 #: ../../editing/clip-editors/automation-editor.rst:27
 msgid ""
@@ -74,6 +83,10 @@ msgid ""
 "curves connecting them. During playback, Zrythm will interpolate the "
 "value of the control being automated based on the curve."
 msgstr ""
+"Ο ταξινόμος αυτοματισμού περιέχει σημεία αυτοματισμού που σχεδιάζονται ως"
+" κύκλοι και καμπύλες που τους ενώνουν. Κατά την αναπαραγωγή, το Zrythm θα"
+" παρεμβάλει την τιμή της παραμέτρου που αυτοματοποιείται σύμφωνα με την "
+"καμπύλη."
 
 #: ../../editing/clip-editors/automation-editor.rst:32
 msgid ""
@@ -81,58 +94,63 @@ msgid ""
 "tools` and :ref:`common-operations`, with the added feature that curves "
 "can be dragged up or down to change their `curviness`."
 msgstr ""
+"Η επεξεργασία εντός του ταξινόμου αυτοματισμού γενικά ακολουθεί τα :ref"
+":`edit-tools` και :ref:`common-operations`, με το επιπρόσθετο "
+"χαρακτηριστικό ότι οι καμπύλες μπορούν να συρθούν πάνω ή κάτω για να "
+"αλλάξει η `curviness` τους."
 
 #: ../../editing/clip-editors/automation-editor.rst:40
 msgid "Curves"
-msgstr ""
+msgstr "Καμπύλες"
 
 #: ../../editing/clip-editors/automation-editor.rst:41
 msgid ""
 "Right-clicking on a curve allows you to change the curve algorithm used. "
 "The following curve algorithms are available."
 msgstr ""
+"Κάνοντας δεξιό κλικ πάνω σε μια καμπύλη σας επιτρέπει να αλλάξετε τον "
+"αλγόριθμο καμπύλης που χρησιμοποιείται. Διαθέσιμοι είναι οι εξής "
+"αλγόριθμοι καμπύλης."
 
 #: ../../editing/clip-editors/automation-editor.rst:44
-#, fuzzy
 msgid "Exponent"
 msgstr "Εκθέτης"
 
 #: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponential curve."
-msgstr ""
+msgstr "Εκθετική καμπύλη."
 
 #: ../../editing/clip-editors/automation-editor.rst:46
-#, fuzzy
 msgid "Superellipse"
 msgstr "Superellipse"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."
-msgstr ""
+msgstr "Ελλειπτική καμπύλη."
 
 #: ../../editing/clip-editors/automation-editor.rst:49
-#, fuzzy
 msgid "Vital"
 msgstr "Vital"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "The curve that Vital synth uses, similar to exponential curve."
 msgstr ""
+"Η καμπύλη που χρησιμοποιεί το συνθεσάιζερ Vital, παρόμοια με την εκθετική"
+" καμπύλη."
 
 #: ../../editing/clip-editors/automation-editor.rst:52
-#, fuzzy
 msgid "Pulse"
-msgstr "Pulse"
+msgstr "Παλμός"
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse wave."
-msgstr ""
+msgstr "Παλμικό κύμα."
 
 #: ../../editing/clip-editors/automation-editor.rst:55
 #: ../../editing/clip-editors/chord-editor.rst:65
 #: ../../editing/clip-editors/piano-roll.rst:114
 msgid "Context Menu"
-msgstr ""
+msgstr "Μενού περιβάλλοντος"
 
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/chord-editor.rst:66
@@ -160,13 +178,13 @@ msgstr ""
 #: ../../editing/timeline/arranger.rst:167
 #: ../../editing/timeline/toolbar.rst:11
 msgid "Todo"
-msgstr ""
+msgstr "Ναγίνει"
 
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/chord-editor.rst:66
 #: ../../editing/clip-editors/piano-roll.rst:115
 msgid "Write this section."
-msgstr ""
+msgstr "Να γραφεί αυτό το τμήμα."
 
 #: ../../editing/clip-editors/automation-editor.rst:59
 #: ../../editing/clip-editors/chord-editor.rst:69
@@ -180,25 +198,32 @@ msgid ""
 "The event viewer in the automation editor is similar to the timeline "
 "event viewer discussed in :ref:`timeline-event-viewer`."
 msgstr ""
+"Ο προβολέας γεγονότων στον επεξεργαστή αυτοματισμού είναι παρόμοιος με "
+"τον προβολέα γεγονότων χρονολογίου όπως επισημαίνεται στο :ref:`timeline-"
+"event-viewer`."
 
 #: ../../editing/clip-editors/automation-editor.rst:67
 msgid "It displays information about each automation point and its curve."
-msgstr ""
+msgstr "Προβάλλει πληροφορίες σχετικά με κάθε σημείο αυτοματισμού και καμπύλη."
 
 #: ../../editing/clip-editors/chord-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:43
 msgid "Chord Editor"
-msgstr ""
+msgstr "Επεξεργαστής συγχορδιών"
 
 #: ../../editing/clip-editors/chord-editor.rst:9
 msgid "The chord editor is displayed when a chord region is selected."
 msgstr ""
+"Ο επεξεργαστής συγχορδιών προβάλλεται όταν επιλέγεται μια περιοχή "
+"συγχορδιών."
 
 #: ../../editing/clip-editors/chord-editor.rst:15
 msgid ""
 "Its ruler behaves similarly to the editor ruler explained in :ref"
 ":`editor-ruler`."
 msgstr ""
+"Ο χάρακάς του συμπεριφέρεται παρόμοια με τον επεξεργαστή χάρακα που "
+"εξηγείται στο :ref:`editor-ruler`."
 
 #: ../../editing/clip-editors/chord-editor.rst:18
 msgid ""
@@ -206,6 +231,9 @@ msgid ""
 "changed, and an arranger on the right side for creating chord "
 "progressions."
 msgstr ""
+"Ο επεξεργαστής συγχορδιών έχει μια λίστα συγχορδιών στην αριστερή πλευρά "
+"που μπορεί να αλλάξει, και έναν ταξινόμο στη δεξιά πλευρά για τη "
+"δημιουργία ακολουθιών συγχορδιών."
 
 #: ../../editing/clip-editors/chord-editor.rst:23
 msgid "Chords"
@@ -216,22 +244,28 @@ msgid ""
 "A chord in the context of the chord editor refers to a chord on the left "
 "side of the editor."
 msgstr ""
+"Μια συγχορδία στο πλαίσιο του επεξεργαστή συγχορδιών αναφέρεται στη "
+"συγχορδία που βρίσκεται στην αριστερή πλευρά του επεξεργαστή."
 
 #: ../../editing/clip-editors/chord-editor.rst:30
 msgid ""
 "These chords act similarly to the piano roll keys explained in :ref"
 ":`piano-roll-keys`."
 msgstr ""
+"Αυτές οι συγχορδίες συμπεριφέρονται παρόμοια με τα πλήκτρα ρολού πιάνου "
+"που εξηγούνται στο :ref:`piano-roll-keys`."
 
 #: ../../editing/clip-editors/chord-editor.rst:34
 msgid "Chord Selector"
-msgstr ""
+msgstr "Διαλογέας συγχορδιών"
 
 #: ../../editing/clip-editors/chord-editor.rst:35
 msgid ""
 "Double-clicking on a chord will bring up the chord selector, which allows"
 " you to change that chord."
 msgstr ""
+"Κάνοντας διπλό κλικ πάνω σε μια συγχορδία θα αναδείξει τον διαλογέα "
+"συγχορδιών, ο οποίος σας επιτρέπει να αλλάξετε εκείνη τη συγχορδία."
 
 #: ../../editing/clip-editors/chord-editor.rst:41
 msgid ""
@@ -239,6 +273,9 @@ msgid ""
 "created by selecting its root note, its type, its accent and its bass "
 "note."
 msgstr ""
+"Αυτή τη στιγμή, μόνο ο δημιουργός συγχορδιών είναι λειτουργικός. Μια "
+"συγχορδία μπορεί να δημιουργηθεί επιλέγοντας τη ριζική νότα της, τον τύπο"
+" της, τον τόνο της και την μπάσα νότα της."
 
 #: ../../editing/clip-editors/chord-editor.rst:45
 msgid ""
@@ -247,40 +284,53 @@ msgid ""
 "region. This makes it easy to create chords that stay in the current "
 "scale."
 msgstr ""
+"Επιλέγοντας :zbutton:`In scale` κάτω από την `Visibility` θα προβάλει "
+"μόνο ρυθμίσεις που αντιστοιχούν στις συγχορδίες μέσα στην ενεργή κλίμακα "
+"στην αρχή της περιοχής. Αυτό καταστά εύκολη τη δημιουργία συγχορδιών που "
+"μένουν στην τωρινή κλίμακα."
 
 #: ../../editing/clip-editors/chord-editor.rst:51
 msgid "Chord Arranger"
-msgstr ""
+msgstr "Ταξινόμος συγχορδιών"
 
 #: ../../editing/clip-editors/chord-editor.rst:52
 msgid "The chord arranger refers to the arranger section of the chord editor."
 msgstr ""
+"Ο ταξινόμος συγχορδιών αναφέρεται στο τμήμα ταξινόμου του επεξεργαστή "
+"συγχορδιών."
 
 #: ../../editing/clip-editors/chord-editor.rst:58
 msgid ""
 "The chord editor contains `chord objects` that signify the start of a "
 "chord. Chord objects do not have a length."
 msgstr ""
+"Ο επεξεργαστής συγχορδιών περιέχει `chord objects` που σηματοδοτούν την "
+"αρχή μιας συγχορδίας. Τα αντικείμενα συγχορδιών δεν έχουν μήκος."
 
 #: ../../editing/clip-editors/chord-editor.rst:61
 msgid ""
 "Editing in the chord arranger follows :ref:`edit-tools` and :ref:`common-"
 "operations`."
 msgstr ""
+"Η επεξεργασία στον ταξινόμο συγχορδιών ακολουθεί :ref:`edit-tools` και "
+":ref:`common-operations`."
 
 #: ../../editing/clip-editors/chord-editor.rst:70
 msgid ""
 "The event viewer in the chord editor is similar to the timeline event "
 "viewer discussed in :ref:`timeline-event-viewer`."
 msgstr ""
+"Ο προβολέας γεγονότων στον επεξεργαστή συγχορδιών είναι παρόμοιος με τον "
+"προβολέα γεγονότων χρονολογίου που εξηγείται στο :ref:`timeline-event-"
+"viewer`."
 
 #: ../../editing/clip-editors/chord-editor.rst:77
 msgid "It displays information about each chord object."
-msgstr ""
+msgstr "Προβάλλει πληροφορίες σχετικά με κάθε αντικείμενο συγχορδιών."
 
 #: ../../editing/clip-editors/intro.rst:8
 msgid "Editors"
-msgstr ""
+msgstr "Επεξεργαστές"
 
 #: ../../editing/clip-editors/overview.rst:6
 #: ../../editing/overview.rst:6
@@ -295,15 +345,22 @@ msgid ""
 " common elements shared amongst each type of editor, the editor section "
 "will differ depending on the type of region selected."
 msgstr ""
+"Όταν επιλέγονται περιοχές στο χρονολόγιο, τα περιεχόμενά τους θα "
+"προβληθούν μέσα στην καρτέλα επεξεργαστή στο :ref:`bottom-panel`. Παρόλο "
+"που υπάρχουν κάποια κοινά στοιχεία ανάμεσα σε κάθε τύπο επεξεργαστή, το "
+"τμήμα επεξεργαστή θα διαφέρει ανάλογα με τον τύπο περιοχής που "
+"επιλέγεται."
 
 #: ../../editing/clip-editors/piano-roll.rst:8
 #: ../../editing/clip-editors/toolbar.rst:18
 msgid "Piano Roll"
-msgstr ""
+msgstr "Ρολό πιάνου"
 
 #: ../../editing/clip-editors/piano-roll.rst:10
 msgid "The piano roll is the main editor for editing MIDI regions."
 msgstr ""
+"Το ρολό πιάνου είναι ο βασικός επεξεργαστής για την επεξεργασία περιοχών "
+"MIDI."
 
 #: ../../editing/clip-editors/piano-roll.rst:15
 msgid ""
@@ -312,18 +369,23 @@ msgid ""
 ":ref:`editor-ruler`, the piano roll keys on the left, the piano roll "
 "(MIDI) arranger on the right and the velocity editor at the bottom."
 msgstr ""
+"Αποτελείται από μια γραμμή εργαλείων στο πάνω μέρος που εξηγείται στο "
+":ref:`editor-toolbar`, ένα μικρότερο κενό που περιέχει επιπρόσθετους "
+"χειριστές, έναν χάρακα που εξηγείται στο :ref:`editor-ruler`, τα πλήκτρα "
+"ρολού πιάνου στα αριστερά, τον ταξινόμο ρολού πιάνου (MIDI) στα δεξιά και"
+" τον επεξεργαστή ταχύτητας στο κάτω μέρος."
 
 #: ../../editing/clip-editors/piano-roll.rst:22
 msgid "Additional Controls"
-msgstr ""
+msgstr "Επιπρόσθετοι χειριστές"
 
 #: ../../editing/clip-editors/piano-roll.rst:23
 msgid "The piano roll contains the following additional controls."
-msgstr ""
+msgstr "Το ρολό πιάνου περιέχει τους εξής επιπρόσθετους χειριστές."
 
 #: ../../editing/clip-editors/piano-roll.rst:29
 msgid "Drum View"
-msgstr ""
+msgstr "Προβολή κρουστών"
 
 #: ../../editing/clip-editors/piano-roll.rst:30
 msgid ""
@@ -331,30 +393,40 @@ msgid ""
 "view, where each :term:`MIDI note` is drawn as a diamond and the piano "
 "roll keys display the name of each drum."
 msgstr ""
+"Η ενεργοποίηση αυτού θα αλλάξει την προβολή του ταξινόμου στην προβολή "
+"επεξεργαστή κρουστών, όπου κάθε :term:`MIDI note` σχεδιάζεται ως ένα "
+"διαμάντι και τα πλήκτρα ρολού πιάνου προβάλλουν το όνομα κάθε κρουστού."
 
 #: ../../editing/clip-editors/piano-roll.rst:36
 msgid "Listen to notes"
-msgstr ""
+msgstr "Ακρόαση νοτών"
 
 #: ../../editing/clip-editors/piano-roll.rst:37
 msgid ""
 "Enabling this will play back each note as you drag it inside the piano "
 "roll. This is useful if you want to `hear` what you are doing."
 msgstr ""
+"Η ενεργοποίηση αυτού θα προκαλέσει αναπαραγωγή κάθε νότας καθώς τη σύρετε"
+" μέσα στο ρολό πιάνου. Αυτό είναι χρήσιμο αν θέλετε να `hear` αυτό που "
+"κάνετε."
 
 #: ../../editing/clip-editors/piano-roll.rst:44
 msgid "Piano Roll Keys"
-msgstr ""
+msgstr "Πλήκτρα ρολού πιάνου"
 
 #: ../../editing/clip-editors/piano-roll.rst:45
 msgid "These are the keys corresponding to each key found on a piano."
 msgstr ""
+"Αυτά είναι τα πλήκτρα που αντιστοιχούν σε κάθε πλήκτρο που βρίσκεται σε "
+"ένα πιάνο."
 
 #: ../../editing/clip-editors/piano-roll.rst:51
 msgid ""
 "Clicking on each key allows you to listen to it, much like pressing a key"
 " on a real piano."
 msgstr ""
+"Κάνοντας κλικ σε κάθε πλήκτρο σας επιτρέπει να το ακούσετε, όπως ακριβώς "
+"θα πατούσε κανείς ένα πλήκτρο σε ένα αληθινό πιάνο."
 
 #: ../../editing/clip-editors/piano-roll.rst:54
 msgid ""
@@ -362,20 +434,25 @@ msgid ""
 "in addition to any highlighting (if selected). See :ref:`chord-"
 "highlighting` for more information."
 msgstr ""
+"Για κάθε πλήκτρο προβάλλεται μια ετικέτα στην αριστερή πλευρά των "
+"μαύρων/άσπρων πλήκτρων, επιπρόσθετα προς οποιαδήποτε επισήμανση (αν "
+"επιλεγεί). Βλέπε :ref:`chord-highlighting` για περισσότερες πληροφορίες."
 
 #: ../../editing/clip-editors/piano-roll.rst:59
 msgid ""
 "The zoom level can be changed by holding down :kbd:`Ctrl` and "
 ":kbd:`Shift` and scrolling."
 msgstr ""
+"Το επίπεδο ζουμαρίσματος μπορεί να αλλάξει κρατώντας πατημένο το "
+":kbd:`Ctrl` και :kbd:`Shift` και σκρολάροντας."
 
 #: ../../editing/clip-editors/piano-roll.rst:63
 msgid "MIDI Arranger"
-msgstr ""
+msgstr "Ταξινόμος MIDI"
 
 #: ../../editing/clip-editors/piano-roll.rst:64
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
-msgstr ""
+msgstr "Ο ταξινόμος MIDI αναφέρεται στο τμήμα ταξινόμου στο ρολό πιάνου."
 
 #: ../../editing/clip-editors/piano-roll.rst:70
 msgid ""
@@ -384,30 +461,40 @@ msgid ""
 "signal when the start position of a note is reached, and a note off "
 "signal when the end position of a note is reached."
 msgstr ""
+"Ο ταξινόμος MIDI περιέχει νότες MIDI σχεδιασμένες ως ορθογώνια από τη "
+"θέση εκκίνησής τους μέχρι τη θέση λήξης τους. Το Zrythm θα στείλει μια "
+"νότα MIDI στο σήμα όταν φτάσει η θέση εκκίνησης μιας νότας, και ένα σήμα "
+"σβήσιμου νότας όταν φτάσει η θέση λήξης μιας νότας."
 
 #: ../../editing/clip-editors/piano-roll.rst:76
 msgid ""
 "Editing inside the MIDI arranger is covered in :ref:`edit-tools` and :ref"
 ":`common-operations`."
 msgstr ""
+"Η επεξεργασία μέσα στον ταξινόμο MIDI καλύπτεται στο :ref:`edit-tools` "
+"και :ref:`common-operations`."
 
 #: ../../editing/clip-editors/piano-roll.rst:80
 msgid "Drum Mode"
-msgstr ""
+msgstr "Λειτουργία κρουστών"
 
 #: ../../editing/clip-editors/piano-roll.rst:82
 msgid "Explain/show how the 2 sections above look in drum mode."
 msgstr ""
+"Να εξηγηθεί/δειχθεί πώς τα 2 τμήματα πάνω φαίνονται στη λειτουργία "
+"κρουστών."
 
 #: ../../editing/clip-editors/piano-roll.rst:86
 msgid "Velocity Editor"
-msgstr ""
+msgstr "Επεξεργαστής ταχύτητας"
 
 #: ../../editing/clip-editors/piano-roll.rst:87
 msgid ""
 "There is another arranger at the bottom of the MIDI arranger for editing "
 "the velocity of each note."
 msgstr ""
+"Υπάρχει ένας ακόμα ταξινόμος στο κάτω μέρος του ταξινόμου MIDI για την "
+"επεξεργασία της ταχύτητας κάθε νότας."
 
 #: ../../editing/clip-editors/piano-roll.rst:93
 msgid ""
@@ -416,6 +503,11 @@ msgid ""
 "a higher velocity will result in a louder or `stronger` note. Velocities "
 "are useful for adding expression to melodies."
 msgstr ""
+"Η ταχύτητα αναφέρεται στη δύναμη με την οποία παίζεται κάθε νότα. Κάθε "
+"όργανο χειρίζεται ποικίλες ταχύτητες για την ίδια νότα διαφορετικά, αλλά "
+"γενικά μια υψηλότερη ταχύτητα θα οδηγήσει σε μια δυνατότερη ή `stronger` "
+"νότα. Οι ταχύτητες είναι χρήσιμες για την προσθήκη έκφρασης στις "
+"μελωδίες."
 
 #: ../../editing/clip-editors/piano-roll.rst:99
 msgid ""
@@ -423,66 +515,83 @@ msgid ""
 "value. Clicking and dragging the tip of each velocity bar allows you to "
 "change it."
 msgstr ""
+"Η ταχύτητα κάθε νότας σχεδιάζεται ως μια μπάρα, όπου υψηλότερα σημαίνει "
+"μεγαλύτερη τιμή. Κάνοντας κλικ και σύροντας την κορυφή κάθε μπάρας "
+"ταχύτητας σας επιτρέπει να την αλλάξετε."
 
 #: ../../editing/clip-editors/piano-roll.rst:103
 msgid ""
 "You can also edit multiple velocities at once by selecting multiple MIDI "
 "notes before editing a velocity bar."
 msgstr ""
+"Μπορείτε επίσης να επεξεργαστείτε πολλαπλές ταχύτητες ταυτόχρονα "
+"επιλέγοντας πολλαπλές νότες MIDI πριν την επεξεργασία μιας μπάρας "
+"ταχύτητας."
 
 #: ../../editing/clip-editors/piano-roll.rst:107
 msgid ""
 "The :ref:`ramp-mode` can also be used in the velocity editor to `ramp` "
 "velocities."
 msgstr ""
+"Το :ref:`ramp-mode` μπορεί επίσης να χρησιμοποιηθεί στον επεξεργαστή "
+"ταχύτητας για να `ramp` ταχύτητες."
 
 #: ../../editing/clip-editors/piano-roll.rst:119
 msgid ""
 "The event viewer in the piano roll is similar to the timeline event "
 "viewer discussed in :ref:`timeline-event-viewer`."
 msgstr ""
+"Ο προβολέας γεγονότων στο ρολό πιάνου είναι παρόμοιος με τον προβολεά "
+"γεγονότων χρονολογίου που επισημαίνεται στο :ref:`timeline-event-viewer`."
 
 #: ../../editing/clip-editors/piano-roll.rst:126
 msgid "It displays information about each MIDI note in the MIDI arranger."
-msgstr ""
+msgstr "Προβάλλει πληροφορίες για κάθε νότα MIDI στον ταξινόμο MIDI."
 
 #: ../../editing/clip-editors/ruler.rst:8
-#: ../../editing/timeline/ruler.rst:8
-msgid "Ruler"
-msgstr ""
+#, fuzzy
+msgid "Editor Ruler"
+msgstr "Γραμμή εργαλείων επεξεργαστή"
 
 #: ../../editing/clip-editors/ruler.rst:9
 msgid ""
 "The editor ruler is similar to the timeline ruler explained in :ref"
 ":`timeline-ruler`, with some differences."
 msgstr ""
+"Ο επεξεργαστής χάρακας είναι παρόμοιος με τον χάρακα χρονολογίου που "
+"εξηγείται στο :ref:`timeline-ruler`, με κάποιες διαφορές."
 
 #: ../../editing/clip-editors/ruler.rst:16
 msgid ""
 "The ruler will display more or less information depending on the current "
 "zoom level. It will also display the following markers and indicators."
 msgstr ""
+"Ο χάρακας θα προβάλει περισσότερες ή λιγότερες πληροφορίες ανάλογα με το "
+"τρέχον επίπεδο ζουμαρίσματος. Θα προβάλει επίσης τα εξής σημάδια και "
+"δείκτες."
 
 #: ../../editing/clip-editors/ruler.rst:21
 #: ../../editing/timeline/arranger.rst:78
 msgid "Markers"
-msgstr ""
+msgstr "Σημάδια"
 
 #: ../../editing/clip-editors/ruler.rst:24
 msgid "Clip Start"
-msgstr ""
+msgstr "Εκκίνηση κλιπ"
 
 #: ../../editing/clip-editors/ruler.rst:25
 msgid ""
 "Displayed as a blue, right-pointing arrow. This controls the position "
 "where the clip will start playback from."
 msgstr ""
+"Προβάλλεται ως ένα μπλε, δεξιά στρεφόμενο βέλος. Αυτό ελέγχει τη θέση από"
+" την οποία θα ξεκινήσει την αναπαραγωγή το κλιπ."
 
 #: ../../editing/clip-editors/ruler.rst:29
 #: ../../editing/clip-editors/ruler.rst:36
 #: ../../editing/clip-editors/ruler.rst:44
 msgid "Add pic."
-msgstr ""
+msgstr "Προσθήκη εικόνας."
 
 #: ../../editing/clip-editors/ruler.rst:32
 msgid "Playhead"
@@ -493,99 +602,113 @@ msgid ""
 "Shown as a grey, down-facing arrow. This is the current position of the "
 "playhead."
 msgstr ""
+"Προβάλλεται ως ένα γκρι, κάτω στρεφόμενο βέλος. Αυτή είναι η τρέχουσα "
+"θέση της κεφαλής αναπαραγωγής."
 
 #: ../../editing/clip-editors/ruler.rst:39
 msgid "Loop Points"
-msgstr ""
+msgstr "Σημεία λούπας"
 
 #: ../../editing/clip-editors/ruler.rst:40
 msgid ""
 "Shown as 2 green arrows. These control where the clip will start looping "
 "at and where it will return to after looping."
 msgstr ""
+"Προβάλλονται ως 2 πράσινα βέλη. Αυτά ελέγχουν από πού θα αρχίσει το κλιπ "
+"να λουπάρει και πού θα επιστρέψει μετά τη λούπα."
 
 #: ../../editing/clip-editors/ruler.rst:47
 msgid "Setting Each Point"
-msgstr ""
+msgstr "Ορισμός κάθε σημείου"
 
 #: ../../editing/clip-editors/ruler.rst:48
 msgid ""
 "To set the position of each point, click on it and drag it to the desired"
 " position."
 msgstr ""
+"Για να ορίσετε τη θέση κάθε σημείου, κάνετε κλικ πάνω του και σύρετέ τη "
+"στην επιθυμητή θέση."
 
 #: ../../editing/clip-editors/ruler.rst:51
 msgid ""
 "Clicking and dragging on empty space will allow you to reposition the "
 "playhead."
 msgstr ""
+"Κάνοντας κλικ και σύροντας πάνω σε κενό χώρο θα σας επιτρέψει να "
+"επαναπροσδιορίσετε την κεφαλή αναπαραγωγής."
 
 #: ../../editing/clip-editors/ruler.rst:54
 msgid "Hold :kbd:`Shift` to temporarily disable snapping."
-msgstr ""
+msgstr "Κρατήστε :kbd:`Shift` για να απενεργοποιήσετε προσωρινά το σναπάρισμα."
 
 #: ../../editing/clip-editors/toolbar.rst:8
 msgid "Editor Toolbar"
-msgstr ""
+msgstr "Γραμμή εργαλείων επεξεργαστή"
 
 #: ../../editing/clip-editors/toolbar.rst:9
 msgid ""
 "The editor toolbar contains controls and buttons for actions specific to "
 "the current editor."
 msgstr ""
+"Η γραμμή εργαλείων επεξεργαστή περιέχει χειριστές και κουμπιά για δράσεις"
+" συγκεκριμένες προς τον τρέχοντα επεξεργαστή."
 
 #: ../../editing/clip-editors/toolbar.rst:12
 #: ../../editing/timeline/toolbar.rst:11
 msgid "Update this section/pic."
-msgstr ""
+msgstr "Ενημέρωση αυτού του τομέα/εικόνας."
 
 #: ../../editing/clip-editors/toolbar.rst:19
 msgid "The piano roll toolbar consists of the following controls."
-msgstr ""
+msgstr "Η γραμμή εργαλείων ρολού πιάννου αποτελείται από τους εξής χειριστές."
 
 #: ../../editing/clip-editors/toolbar.rst:22
 msgid "Grid/snap settings"
-msgstr ""
+msgstr "Ρυθμίσεις πλέγματος/σναπαρίσματος"
 
 #: ../../editing/clip-editors/toolbar.rst:23
 msgid "Snapping and grid options are covered in :ref:`snapping-grid-options`."
 msgstr ""
+"Οι ρυθμίσεις σναπαρίσματος και πλέγματος καλύπτονται στο :ref:`snapping-"
+"grid-options`."
 
 #: ../../editing/clip-editors/toolbar.rst:27
 msgid "Highlight"
-msgstr ""
+msgstr "Επισήμανση"
 
 #: ../../editing/clip-editors/toolbar.rst:28
 msgid "Chord highlighting is covered in :ref:`chords-scales`."
-msgstr ""
+msgstr "Η επισήμανση συγχορδιών καλύπτεται στο :ref:`chords-scales`."
 
 #: ../../editing/clip-editors/toolbar.rst:31
 msgid "Quantize options"
-msgstr ""
+msgstr "Ρυθμίσεις κβαντοποίησης"
 
 #: ../../editing/clip-editors/toolbar.rst:32
 msgid "Quantize options are covered in :ref:`quantization`."
-msgstr ""
+msgstr "Οι ρυθμίσεις κβαντοποίησης καλύπτονται στην :ref:`quantization`."
 
 #: ../../editing/clip-editors/toolbar.rst:36
 #: ../../editing/clip-editors/toolbar.rst:40
 #: ../../editing/clip-editors/toolbar.rst:44
 msgid "No controls at the moment."
-msgstr ""
+msgstr "Δεν υπάρχουν χειριστές αυτή τη στιγμή."
 
 #: ../../editing/common-operations.rst:8
 msgid "Common Operations"
-msgstr ""
+msgstr "Κοινές εργασίες"
 
 #: ../../editing/common-operations.rst:10
 msgid ""
 "These operations are common to most editors, and behave similarly to what"
 " you should be used to from other applications."
 msgstr ""
+"Αυτές οι εργασίες είναι κοινές στους περισσότερους επεξεργαστές και "
+"συμπεριφέρονται παρόμοια με ό,τι έχετε συνηθίσει από άλλα λογισμικά."
 
 #: ../../editing/common-operations.rst:15
 msgid "Undo/Redo"
-msgstr ""
+msgstr "Αναίρεση/Επανάληψη"
 
 #: ../../editing/common-operations.rst:16
 msgid ""
@@ -593,6 +716,9 @@ msgid ""
 "the state before that action was made, or you can come back to a state "
 "that you undo'ed from."
 msgstr ""
+"Οι περισσότερες δράσεις στο Zrythm είναι αναιρέσιμες, το οποίο σημαίνει "
+"ότι μπορείτε να κάνετε επαναφορά στην κατάσταση που προϋπήρχε της δράσης "
+"που έγινε, ή μπορείτε να επαναλάβετε την κατάσταση που αναιρέσατε."
 
 #: ../../editing/common-operations.rst:21
 msgid ""
@@ -602,32 +728,44 @@ msgid ""
 "and you can go back between :guilabel:`Undo` and :guilabel:`Redo` as many"
 " times as you want."
 msgstr ""
+"Για παράδειγμα, αν δημιουργήσετε μια νότα MIDI και πατήσετε αναίρεση, η "
+"νότα MIDI θα διαγραφεί (το Zrythm κάνει επαναφορά στην κατάσταση που "
+"βρισκόταν στην οποία η νότα MIDI δεν υπήρχε). Πατώντας το κουμπί "
+":guilabel:`Redo` θα δημιουργήσει τη νότα ξανά, και μπορείτε να "
+"επιστρέψετε ανάμεσα στην :guilabel:`Undo` και :guilabel:`Redo` στην όσες "
+"φορές θέλετε."
 
 #: ../../editing/common-operations.rst:29
 msgid ""
 "It is also possible to go back/forth more than one action, by clicking "
 "the arrow next to the :guilabel:`Undo` and :guilabel:`Redo` buttons."
 msgstr ""
+"Είναι επίσης δυνατό να πάτε μπρος/πίσω παραπάνω από μία δράση, κάνοντας "
+"κλικ το βέλος δίπλα στα κουμπιά :guilabel:`Undo` και :guilabel:`Redo`."
 
 #: ../../editing/common-operations.rst:33
 msgid "Show screenshot."
-msgstr ""
+msgstr "Προβολή στιγμιότυπου οθόνης."
 
 #: ../../editing/common-operations.rst:35
 msgid ""
 "The shortcuts for undo and redo are :kbd:`Control-z` and :kbd:`Control-"
 "Shift-z`."
 msgstr ""
+"Οι συντομεύσεις για την αναίρεση και την επαναφορά είναι :kbd:`Control-z`"
+" και :kbd:`Control-Shift-z`."
 
 #: ../../editing/common-operations.rst:38
 msgid ""
 "If you Undo and then perform a new action, the Redo history will be "
 "deleted."
 msgstr ""
+"Αν κάνετε αναίρεση και μετά κάνετε μια καινούρια δράση, το ιστορικό "
+"αναιρέσεων θα διαγραφεί."
 
 #: ../../editing/common-operations.rst:42
 msgid "Object Operations"
-msgstr ""
+msgstr "Εργασίες αντικειμένων"
 
 #: ../../editing/common-operations.rst:44
 msgid "Cut"
@@ -639,6 +777,9 @@ msgid ""
 "that they can be pasted elsewhere. The shortcut for cutting is "
 ":kbd:`Control-x`."
 msgstr ""
+"Διαγραφή και αντιγραφή των επιλεγμένων αντικειμένων και αποθήκευσή τους "
+"στο πρόχειρο ώστε να επικολληθούν αλλού. Η συντόμευση για την αποκοπή "
+"είναι :kbd:`Control-x`."
 
 #: ../../editing/common-operations.rst:51
 msgid "Copy"
@@ -649,6 +790,8 @@ msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
 "elsewhere. The shortcut for copying is :kbd:`Control-c`."
 msgstr ""
+"Αντιγραφή των επιλεγμένων αντικειμένων στο πρόχειρο ώστε να επικολληθούν "
+"αλλού. Η συντόμευση για την αντιγραφή είναι :kbd:`Control-c`."
 
 #: ../../editing/common-operations.rst:58
 msgid "Paste"
@@ -659,6 +802,9 @@ msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
 "position. The shortcut for pasting is :kbd:`Control-v`."
 msgstr ""
+"Επικόλληση των αντικειμένων που βρίσκονται εκείνη τη στιγμή από το "
+"πρόχειρο στην τρέχουσα θέση κεφαλής αναπαραγωγής. Η συντόμευση για την "
+"επικόλληση είναι :kbd:`Control-v`."
 
 #: ../../editing/common-operations.rst:65
 msgid "Duplicate"
@@ -669,6 +815,8 @@ msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
 "duplicating is :kbd:`Control-d`."
 msgstr ""
+"Δημιουργία ενός αντιγράφου των επιλεγμένων αντικειμένων δίπλα τους. Η "
+"συντόμευση για τη δημιουργία διπλότυπου είναι :kbd:`Control-d`."
 
 #: ../../editing/common-operations.rst:70
 #: ../../editing/common-operations.rst:84
@@ -676,7 +824,7 @@ msgstr ""
 #: ../../editing/common-operations.rst:98
 #: ../../editing/timeline/arranger.rst:167
 msgid "Illustrate."
-msgstr ""
+msgstr "Να απεικονιστεί."
 
 #: ../../editing/common-operations.rst:73
 msgid "Delete"
@@ -685,6 +833,8 @@ msgstr "Διαγραφή"
 #: ../../editing/common-operations.rst:74
 msgid "Delete the selected objects. You can also press :kbd:`Delete`."
 msgstr ""
+"Διαγραφή των επιλεγμένων αντικειμένων. Μπορείτε επίσης να πατήσετε "
+":kbd:`Delete`."
 
 #: ../../editing/common-operations.rst:79
 msgid "Selections"
@@ -696,7 +846,7 @@ msgstr "Καθαρισμός επιλογής"
 
 #: ../../editing/common-operations.rst:82
 msgid "Clear current selection (unselect all objects)."
-msgstr ""
+msgstr "Καθαρισμός τρέχουσας επιλογής (αποεπιλογή όλων των αντικειμένων)."
 
 #: ../../editing/common-operations.rst:87
 msgid "Select All"
@@ -705,6 +855,8 @@ msgstr "Επιλογή όλων"
 #: ../../editing/common-operations.rst:88
 msgid "Select all objects in the current editor (:kbd:`Control-a`)."
 msgstr ""
+"Επιλογή όλων των αντικειμένων στον τρέχοντα επεξεργαστή "
+"(:kbd:`Control-a`)."
 
 #: ../../editing/common-operations.rst:94
 msgid "Loop Selection"
@@ -712,11 +864,11 @@ msgstr "Επιλογή λούπας"
 
 #: ../../editing/common-operations.rst:95
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
-msgstr ""
+msgstr "Τοποθέτηση σημαδιών λούπας γύρω από την επιλογή (:kbd:`Control-l`)."
 
 #: ../../editing/edit-tools.rst:8
 msgid "Edit Tools"
-msgstr ""
+msgstr "Επεξεργασία λειτουργιών"
 
 #: ../../editing/edit-tools.rst:10
 msgid ""
@@ -725,14 +877,19 @@ msgid ""
 "Each cursor signifies a separate tool, and Zrythm offers the following "
 "tools."
 msgstr ""
+"Κατά τη χρήση κάθε επεξεργαστή ή ταξινόμου, θα χρησιμοποιήσετε πιθανότατα"
+" τα εργαλεία κέρσορα που παρέχονται από το Zrythm για τη δημιουργία, "
+"επεξεργασία και διαγραφή αντικειμένων. Κάθε κέρσορας συμβολίζει μια "
+"ξεχωριστή λειτουργία επεξεργασίας, και το Zrythm προσφέρει τις εξής "
+"λειτουργίες επεξεργασίας."
 
 #: ../../editing/edit-tools.rst:20
 msgid "Select/Stretch Tool"
-msgstr ""
+msgstr "Λειτουργία επιλογής/τεντώματος"
 
 #: ../../editing/edit-tools.rst:21
 msgid "This can be toggled to switch between Select and Stretch."
-msgstr ""
+msgstr "Αυτό μπορεί να εναλλαχθεί ανάμεσα σε Επιλογή και Τέντωμα."
 
 #: ../../editing/edit-tools.rst:24
 msgid ""
@@ -740,20 +897,27 @@ msgid ""
 " objects. This is the most common mode and the most common operations can"
 " be accomplished by just using this."
 msgstr ""
+"Στη λειτουργία επιλογής, μπορείτε να επιλέξετε αντικείμενα και να τα "
+"μετακινήσετε, να τα κλωνοποιήσετε και να αλλάξετε το μέγεθός τους. Αυτή "
+"είναι η πιο κοινή λειτουργία και οι περισσότερες εργασίες μπορούν να "
+"εκπληρωθούν με αυτή τη λειτουργία."
 
 #: ../../editing/edit-tools.rst:29
 msgid "Add pic showing object selection."
-msgstr ""
+msgstr "Να προστεθεί εικόνα που δείχνει επιλογή αντικειμένου."
 
 #: ../../editing/edit-tools.rst:31
 msgid ""
 "Stretch mode is similar to the Select mode, with the exception that when "
 "you resize objects, their contents will be stretched to fit the new size."
 msgstr ""
+"Η λειτουργία τεντώματος είναι παρόμοια με τη λειτουργία επιλογής, με τη "
+"διαφορά ότι όταν αλλάζετε το μέγεθος των αντικειμένων, το περιεχόμενό "
+"τους θα τεντωθεί ώστε να χωρέσει στο καινούριο μέγεθος."
 
 #: ../../editing/edit-tools.rst:36
 msgid "Selecting Objects"
-msgstr ""
+msgstr "Επιλογή αντικειμένων"
 
 #: ../../editing/edit-tools.rst:37
 msgid ""
@@ -761,14 +925,20 @@ msgid ""
 " keep dragging to make a selection, or :kbd:`Control`-click to add/remove"
 " objects to/from the selection."
 msgstr ""
+"Για την επιλογή αντικειμένων, μπορείτε είτε να κάνετε κλικ πάνω τους, "
+"είτε να πατήσετε σε κενό χώρο και να σύρετε τον κέρσορα για να κάνετε μια"
+" επιλογή, είτε :kbd:`Control`-κλικ για να προσθέσετε/αφαιρέσετε "
+"αντικείμενα προς/από την επιλογή."
 
 #: ../../editing/edit-tools.rst:42
 msgid "Selected objects will have brighter color than non-selected objects."
 msgstr ""
+"Τα επιλεγμένα αντικείμενα θα έχουν φωτεινότερο χρώμα από αντικείμενα που "
+"δεν είναι επιλεγμένα."
 
 #: ../../editing/edit-tools.rst:46
 msgid "Moving and Cloning Objects"
-msgstr ""
+msgstr "Μετακίνηση και κλωνοποίηση αντικειμένων"
 
 #: ../../editing/edit-tools.rst:47
 msgid ""
@@ -777,16 +947,25 @@ msgid ""
 "while doing this will create duplicates (clones) of the selected objects."
 " This is an efficient way to quickly clone multiple objects."
 msgstr ""
+"Για τη μετακίνηση αντικειμένων, κάνετε κλικ πάνω σε ενα επιλεγμένο "
+"αντικείμενο και σύρετε τον κέρσορά σας προς το σημείο που θέλετε να τα "
+"μεταφέρετε. Κρατώντας πατημένο το :kbd:`Control` ενώ το κάνετε αυτό θα "
+"δημιουργήσει διπλότυπα (κλώνους) των επιλεγμένων αντικειμένων. Αυτός "
+"είναι ένας αποτελεσματικός τρόπος να κλωνοποιήσετε γρήγορα πολλαπλά "
+"αντικείμενα."
 
 #: ../../editing/edit-tools.rst:54
 msgid "Resizing Objects"
-msgstr ""
+msgstr "Αλλαγή μεγέθους των αντικειμένων"
 
 #: ../../editing/edit-tools.rst:55
 msgid ""
 "Objects that have length, such as regions and MIDI notes, can be resized "
 "by clicking and dragging their edges."
 msgstr ""
+"Για τα αντικείμενα που έχουν μήκος, όπως οι περιοχές και οι νότες MIDI, "
+"μπορεί να αλλάξει το μέγεθός τους κάνοντας κλικ και σύροντας τις άκρες "
+"τους."
 
 #: ../../editing/edit-tools.rst:58
 msgid ""
@@ -794,6 +973,9 @@ msgid ""
 "the bottom half of the object will allow you to resize the object by "
 "repeating it, instead of just resizing it."
 msgstr ""
+"Στα αντικείμενα που μπορούν να επαναληφθούν, όπως οι περιοχές, η "
+"τοποθέτηση του κέρσορα στο κάτω μισό του αντικειμένου θα σας επιτρέψει να"
+" αλλάξετε το μέγεθός του με επανάληψή του, αντί για την επιμήκυνσή του."
 
 #: ../../editing/edit-tools.rst:63
 msgid ""
@@ -801,20 +983,27 @@ msgid ""
 "them instead of repeat them, their length must be changed or their clip "
 "markers must be moved so that they are not repeated anymore."
 msgstr ""
+"Κατά την αλλαγή μεγέθους, τα αντικείμενα που έχουν ήδη επαναληφθεί "
+"μπορούν μόνο να επαναληφθούν. Για να τα επιμηκύνετε αντί να τα "
+"επαναλάβετε, το μήκος τους πρέπει να αλλάξει ή τα σημάδια κλιπ τους "
+"πρέπει να μετακινηθούν ώστε να μην επαναλαμβάνονται άλλο."
 
 #: ../../editing/edit-tools.rst:71
 msgid "Cutting Objects"
-msgstr ""
+msgstr "Κόψιμο αντικειμένων"
 
 #: ../../editing/edit-tools.rst:72
 msgid ""
 "You can :kbd:`Alt`-click inside objects to break them up. Holding down "
 ":kbd:`Shift` while doing this will bypass snapping."
 msgstr ""
+"Μπορείτε να κάνετε :kbd:`Alt`-κλικ μέσα στα αντικείμενα για να τα "
+"χωρίσετε. Πατώντας πατημένο το :kbd:`Shift` ενώ το κάνετε αυτό θα "
+"παραβλεφθεί το σναπάρισμα."
 
 #: ../../editing/edit-tools.rst:77
 msgid "Edit Tool"
-msgstr ""
+msgstr "Λειτουργία επεξεργασίας"
 
 #: ../../editing/edit-tools.rst:78
 msgid ""
@@ -824,6 +1013,11 @@ msgid ""
 "dragging, which is more efficient when creating a large number of "
 "objects."
 msgstr ""
+"Αυτή η λειτουργία χρησιμοποιείται για τη γρήγορη δημιουργία ή διαγραφή "
+"αντικειμένων. Αν και μπορείτε με τη λειτουργία επιλογής να δημιουργήσετε "
+"αντικείμενα κάνοντας διπλό κλικ και σύροντας, στη λειτουργία επεξεργασίας"
+" αυτό μπορεί να επιτευχθεί με ένα μόνο κλικ και σύροντας, το οποίο είναι "
+"πιο αποτελεσματικό κατά τη δημιουργία μεγάλου αριθμού αντικειμένων."
 
 #: ../../editing/edit-tools.rst:84
 msgid ""
@@ -831,10 +1025,14 @@ msgid ""
 "multiple objects in a row (where applicable) with a length specified by "
 "the snap settings corresponding to each editor."
 msgstr ""
+"Κρατώντας πατημένο το :kbd:`Control` ενώ κάνετε κλικ θα σας επιτρέψει να "
+"δημιουργήσετε πολλαπλά αντικείμενα στη σειρά (όπου είναι δυνατόν) με "
+"μήκος που προσδιορίζεται από τις ρυθμίσεις σναπαρίσματος που αντιστοιχούν"
+" σε κάθε επεξεργαστή."
 
 #: ../../editing/edit-tools.rst:90
 msgid "Cut Tool"
-msgstr ""
+msgstr "Λειτουργία κοψίματος"
 
 #: ../../editing/edit-tools.rst:91
 msgid ""
@@ -842,34 +1040,43 @@ msgid ""
 "objects`, with the exception that you can just click instead of "
 ":kbd:`Alt`-clicking."
 msgstr ""
+"Η λειτουργία κοψίματος συμπεριφέρεται παρόμοια με ό,τι αναφέρεται στο "
+":ref:`cutting-objects`, με τη διαφορά ότι μπορείτε απλώς να κάνετε κλικ "
+"αντί για :kbd:`Alt`-κλικ."
 
 #: ../../editing/edit-tools.rst:96
 msgid "Erase Tool"
-msgstr ""
+msgstr "Λειτουργία σβησίματος"
 
 #: ../../editing/edit-tools.rst:97
 msgid ""
 "Using the Erase tool you can just click on objects to delete them, or "
 "click and drag to make a selection, deleting all objects inside it."
 msgstr ""
+"Μπορείτε απλώς να κάνετε κλικ πάνω στα αντικείμενα για να τα διαγράψετε, "
+"ή να κάνετε κλικ και να σύρετε για να κάνετε επιλογή, διαγράφοντας όλα τα"
+" αντικείμενα μέσα."
 
 #: ../../editing/edit-tools.rst:104
 msgid "Ramp Tool"
-msgstr ""
+msgstr "Λειτουργία ράμπας"
 
 #: ../../editing/edit-tools.rst:105
 msgid ""
 "This tool is currently only used for editing velocities for MIDI notes. "
 "You can click and drag in the velocity editor to create velocity ramps."
 msgstr ""
+"Αυτή η λειτουργία χρησιμοποιείται προς το παρόν μόνο για την επεξεργασία "
+"ταχυτήτων στις νότες MIDI. Μπορείτε να κάνετε κλικ και να σύρετε μέσα "
+"στον επεξεργαστή ταχυτήτων για να δημιουργήσετε ράμπες ταχυτήτων."
 
 #: ../../editing/edit-tools.rst:113
 msgid "Audition Tool"
-msgstr ""
+msgstr "Λειτουργία ακρόασης"
 
 #: ../../editing/edit-tools.rst:114
 msgid "This feature is not implemented yet."
-msgstr ""
+msgstr "Αυτό το χαρακτηριστικό δεν έχει ενσωματωθεί ακόμα."
 
 #: ../../editing/intro.rst:8
 msgid "Editing"
@@ -878,6 +1085,8 @@ msgstr "Επεξεργασία"
 #: ../../editing/overview.rst:8
 msgid "Editing refers to any work done in the timeline arranger and the editors."
 msgstr ""
+"Η επεξεργασία αναφέρεται σε οποιαδήποτε δουλειά γίνεται μέσα στον "
+"ταξινόμο χρονολογίου και στους επεξεργαστές."
 
 #: ../../editing/overview.rst:11
 msgid ""
@@ -885,16 +1094,22 @@ msgid ""
 "there is a global :guilabel:`Edit` section in the top toolbar that has "
 "common features shared by each editor."
 msgstr ""
+"Παρόλο που κάθε επεξεργαστής έχει τη δική του γραμμή εργαλείων προς "
+"υποστήριξη ποικίλων εργασιών, υπάρχει μια γενική ενότητα :guilabel:`Edit`"
+" στην πάνω γραμμή εργαλείων, η οποία έχει τα πιο κοινά χαρακτηριστικά που"
+" έχουν όλοι οι επεξεργαστές."
 
 #: ../../editing/quantization.rst:8
 msgid "Quantization"
-msgstr ""
+msgstr "Κβαντοποίηση"
 
 #: ../../editing/quantization.rst:10
 msgid ""
 "Objects can be quantized to specified positions by using the Quantize and"
 " Quick-Quantize actions."
 msgstr ""
+"Τα αντικείμενα μπορούν να κβαντοποιηθούν σε συγκεκριμένες θέσεις "
+"χρησιμοποιώντας τις ενέργειες κβαντοποίηση και γρήγορη κβαντοποίηση."
 
 #: ../../editing/quantization.rst:17
 msgid "Quantize"
@@ -905,6 +1120,9 @@ msgid ""
 "Clicking the Quantize button will open up a popup that will let you "
 "specify the settings to quantize the current selection with."
 msgstr ""
+"Κάνοντας κλικ στο κουμπί κβαντοποίησης θα ανοίξει ένα αναδυόμενο παράθυρο"
+" που θα σας επιτρέψει να προσδιορίσετε τις ρυθμίσεις σχετικά με την "
+"κβαντοποίηση της τρέχουσας επιλογής."
 
 #: ../../editing/quantization.rst:25
 msgid "Quantize to"
@@ -912,7 +1130,7 @@ msgstr "Κβαντοποίηση σε"
 
 #: ../../editing/quantization.rst:26
 msgid "Select the note length and type to quantize to."
-msgstr ""
+msgstr "Επιλέξτε το μήκος νότας και τον τύπο προς κβαντοποίηση."
 
 #: ../../editing/quantization.rst:28
 msgid "Adjust"
@@ -923,6 +1141,8 @@ msgid ""
 "Select if you want to quantize the start positions, the end positions (on"
 " objects that have length), or both."
 msgstr ""
+"Επιλέξτε αν θέλετε να κβαντοποιήσετε τις θέσεις εκκίνησης, τις θέσεις "
+"λήξης (στα αντικείμενα που έχουν μήκος), ή και τα δύο."
 
 #: ../../editing/quantization.rst:32
 msgid "Amount"
@@ -933,6 +1153,8 @@ msgid ""
 "Select the amount to quantize by. 100% will quantize to the given options"
 " fully, while 0% will perform no quantization."
 msgstr ""
+"Επιλέξτε το ποσό κβαντοποίησης. Το 100% θα κβαντοποιήσει τις δοθείσες "
+"επιλογές πλήρως, ενώ το 0% δεν θα εκτελέσει καμία κβαντοποίηση."
 
 #: ../../editing/quantization.rst:34
 msgid "Swing"
@@ -940,7 +1162,7 @@ msgstr "Ταλάντευση"
 
 #: ../../editing/quantization.rst:35
 msgid "Select a swing amount."
-msgstr ""
+msgstr "Επιλέξτε ένα ποσό ταλάντευσης."
 
 #: ../../editing/quantization.rst:39
 msgid "Randomization"
@@ -951,58 +1173,71 @@ msgid ""
 "This will randomize the resulting positions by the given amount of ticks,"
 " and is useful for adding a \"human feel\" to quantized events."
 msgstr ""
+"Αυτό θα τυχαιοποιήσει τις συνεπαγόμενες θέσεις σύμφωνα με το δοθέν ποσό "
+"τικ, και είναι χρήσιμο για να προσθέσει κανείς μια «ανθρώπινη αίσθηση» "
+"στα κβαντοποιημένα γεγονότα."
 
 #: ../../editing/quantization.rst:41
 msgid ""
 "Clicking Quantize will perform the quantization and save the settings for"
 " quick quantization with Quick-Quantize."
 msgstr ""
+"Κάνοντας κλικ στην κβαντοποίηση θα εκτελεστεί η κβαντοποίηση και θα "
+"αποθηκεύσει τις ρυθμίσεις για γρήγορη κβαντοποίηση."
 
 #: ../../editing/quantization.rst:45
 msgid "Quick-Quantize"
-msgstr ""
+msgstr "Γρήγορη κβαντοποίηση"
 
 #: ../../editing/quantization.rst:46
 msgid "This will perform quantization based on the last known settings."
-msgstr ""
+msgstr "Αυτό θα εκτελέσει κβαντοποίηση σύμφωνα με τις τελευταία γνωστές ρυθμίσεις."
 
 #: ../../editing/snapping-grid-options.rst:8
 msgid "Snapping and Grid Options"
-msgstr ""
+msgstr "Ρυθμίσεις σναπαρίσματος και πλέγματος"
 
 #: ../../editing/snapping-grid-options.rst:11
 msgid "Snap Toggles"
-msgstr ""
+msgstr "Εναλλαγές σναπαρίσματος"
 
 #: ../../editing/snapping-grid-options.rst:12
 msgid ""
 "Zrythm will snap according to the setting currently specified by the snap"
 " toolbar buttons."
 msgstr ""
+"Το Zrythm θα σναπάρει σύμφωνα με τη τρέχουσα ρύθμιση που είναι "
+"προσδιορισμένη από τα κουμπιά της γραμμής εργαλείων σναπαρίσματος."
 
 #: ../../editing/snapping-grid-options.rst:18
 msgid ""
 "These are not operational at the moment and Zrythm will snap by default. "
 "Use Shift to bypass snapping for now."
 msgstr ""
+"Αυτές δεν είναι οι λειτουργικές προς το παρόν και το Zrythm θα σναπάρει "
+"από προεπιλογή. Χρησιμοποιήστε Shift για να παραβλεφθεί το σναπάρισμα "
+"προς το παρόν."
 
 #: ../../editing/snapping-grid-options.rst:22
 msgid "Snap and Grid"
-msgstr ""
+msgstr "Σναπάρισμα και πλέγμα"
 
 #: ../../editing/snapping-grid-options.rst:23
 msgid ""
 "When snapping, Zrythm will follow the settings specified by the snap/grid"
 " widget on each editor."
 msgstr ""
+"Κατά το σναπάρισμα, το Zrythm θα ακολουθήσει τις ρυθμίσεις που έχουν "
+"προσδιοριστεί από το γραφικό στοιχείο σναπαρίσματος/πλέγματος σε κάθε "
+"επεξεργαστή."
 
 #: ../../editing/snapping-grid-options.rst:29
 msgid "Adaptive Grid"
-msgstr ""
+msgstr "Προσαρμοστικό πλέγμα"
 
 #: ../../editing/snapping-grid-options.rst:30
 msgid "Not used at the moment."
-msgstr ""
+msgstr "Δεν χρησιμοποιείται προς το παρόν."
 
 #: ../../editing/snapping-grid-options.rst:31
 msgid "Length"
@@ -1010,19 +1245,19 @@ msgstr "Διάρκεια"
 
 #: ../../editing/snapping-grid-options.rst:32
 msgid "Note length to snap to."
-msgstr ""
+msgstr "Διάρκεια νότας προς σναπάρισμα."
 
 #: ../../editing/snapping-grid-options.rst:33
 msgid "Note Type"
-msgstr ""
+msgstr "Τύπος νότας"
 
 #: ../../editing/snapping-grid-options.rst:34
 msgid "Note type (normal/dotted/triplet)"
-msgstr ""
+msgstr "Τύπος νότας (κανονικό/διάστικτο/τρίηχο)"
 
 #: ../../editing/timeline/arranger.rst:8
 msgid "Timeline Arranger"
-msgstr ""
+msgstr "Ταξινόμος χρονολογίου"
 
 #: ../../editing/timeline/arranger.rst:10
 msgid ""
@@ -1031,6 +1266,10 @@ msgid ""
 "time. Some events will open separate windows for further editing when "
 "clicked."
 msgstr ""
+"Ο ταξινόμος χρονολογίου είναι το κύριο μέρος όπου συντίθεται το τραγούδι."
+" Αποτελείται από μια συλλογή γεγονότων, όπως περιοχές, τοποθετημένα στον "
+"άξονα του χρόνου. Κάνοντας κλικ σε κάποια γεγονότα θα ανοίξουν ξεχωριστά "
+"παράθυρα για περαιτέρω επεξεργασία."
 
 #: ../../editing/timeline/arranger.rst:19
 msgid ""
@@ -1038,22 +1277,26 @@ msgid ""
 "top and a bottom arranger below it. This way you can pin tracks you want "
 "to always be visible at the top."
 msgstr ""
+"Ο ταξινόμος χρονολογίου διαχωρίζεται στον πάνω ταξινόμο που παραμένει "
+"σταθερά πάνω και στον κάτω ταξινόμο από κάτω του. Με αυτόν τον τρόπο "
+"μπορείτε να καρφιτσώσετε κομμάτια που θέλετε να παραμένουν πάντα ορατά "
+"πάνω."
 
 #: ../../editing/timeline/arranger.rst:24
 msgid "split the following to sub-pages"
-msgstr ""
+msgstr "να διαχωριστούν τα ακόλουθα σε υπο-σελίδες"
 
 #: ../../editing/timeline/arranger.rst:27
 msgid "Arranger Objects"
-msgstr ""
+msgstr "Ταξινόμος αντικειμένων"
 
 #: ../../editing/timeline/arranger.rst:28
 msgid "The following arranger objects can exist inside the timeline."
-msgstr ""
+msgstr "Μέσα στο χρονολόγιο υπάρχουν τα εξής αντικείμενα ταξινόμου."
 
 #: ../../editing/timeline/arranger.rst:34
 msgid "Regions"
-msgstr ""
+msgstr "Περιοχές"
 
 #: ../../editing/timeline/arranger.rst:35
 msgid ""
@@ -1061,134 +1304,158 @@ msgid ""
 " as MIDI notes and audio clips - see below) that can be edited in an "
 ":ref:`editor <editors>`. Regions can be repeated, like below."
 msgstr ""
+"Οι περιοχές (ή :term:`clips <Clip>`) είναι κοντέινερς για γεγονότα ή "
+"δεδομένα (όπως νότες MIDI και κλιπς ήχων - βλέπε παρακάτω) που μπορούν να"
+" επεξεργαστούν σε έναν :ref:`editor <editors>`. Οι περιοχές μπορούν να "
+"επαναληφθούν, όπως παρακάτω."
 
 #: ../../editing/timeline/arranger.rst:44
 msgid "The following types of regions exist."
-msgstr ""
+msgstr "Υπάρχουν οι εξής τύποι περιοχών."
 
 #: ../../editing/timeline/arranger.rst:47
 msgid "Audio Region"
-msgstr ""
+msgstr "Περιοχή ήχου"
 
 #: ../../editing/timeline/arranger.rst:48
 msgid "Contains audio clips."
-msgstr ""
+msgstr "Περιέχει κλιπς ήχων."
 
 #: ../../editing/timeline/arranger.rst:50
 #: ../../editing/timeline/arranger.rst:63
 #: ../../editing/timeline/arranger.rst:69
 #: ../../editing/timeline/arranger.rst:75
 msgid "Expand + add pic."
-msgstr ""
+msgstr "Επέκταση + προσθήκη εικόνας."
 
 #: ../../editing/timeline/arranger.rst:53
 msgid "Fades"
-msgstr ""
+msgstr "Fades"
 
 #: ../../editing/timeline/arranger.rst:54
 msgid "Explain how fades work."
-msgstr ""
+msgstr "Να εξηγηθεί πώς δουλεύουν τα fades."
 
 #: ../../editing/timeline/arranger.rst:56
 msgid "Decide what to do about cross-fades (just use fades?)."
-msgstr ""
+msgstr "Να αποφασίσω τι να κάνω με τα cross-fades (απλώς fades;)."
 
 #: ../../editing/timeline/arranger.rst:60
 msgid "MIDI Region"
-msgstr ""
+msgstr "Περιοχή MIDI"
 
 #: ../../editing/timeline/arranger.rst:61
 msgid "Contains MIDI notes."
-msgstr ""
+msgstr "Περιέχει νότες MIDI."
 
 #: ../../editing/timeline/arranger.rst:66
 msgid "Automation Region"
-msgstr ""
+msgstr "Περιοχή αυτοματισμού"
 
 #: ../../editing/timeline/arranger.rst:67
 msgid "Contains automation events."
-msgstr ""
+msgstr "Περιέχει γεγονότα αυτοματισμού."
 
 #: ../../editing/timeline/arranger.rst:72
 msgid "Chord region"
-msgstr ""
+msgstr "Περιοχή συγχορδιών"
 
 #: ../../editing/timeline/arranger.rst:73
 msgid "Contains sequences of chords."
-msgstr ""
+msgstr "Περιέχει ακολουθίες συγχορδιών."
 
 #: ../../editing/timeline/arranger.rst:79
 msgid ""
 "Markers are used to mark the start of a logical section inside the song, "
 "such as `Chorus` or `Intro`."
 msgstr ""
+"Τα σημάδια χρησιμοποιούνται για να σημειωθεί η αρχή ενός λογικού τμήματος"
+" μέσα σε ένα τραγούδι, όπως `Chorus` ή `Intro`."
 
 #: ../../editing/timeline/arranger.rst:86
 msgid ""
 "There are two special markers that signify the start and end of the song "
 "that are used for exporting the song and cannot be deleted."
 msgstr ""
+"Υπάρχουν δύο ειδικά σημάδια που συμβολίζουν την εκκίνηση και τη λήξη του "
+"τραγουδιού, τα οποία χρησιμοποιούνται στην εξαγωγή του τραγουδιού και δεν"
+" μπορούν να διαγραφούν."
 
 #: ../../editing/timeline/arranger.rst:91
 msgid "Scales"
-msgstr ""
+msgstr "Κλίμακες"
 
 #: ../../editing/timeline/arranger.rst:92
 msgid ""
 "Scales are used in the Chord track to indicate the start of a section "
 "using a specific musical scale."
 msgstr ""
+"Οι κλίμακες χρησιμοποιούνται στο κομμάτι συγχορδιών για να υποδείξουν την"
+" αρχή ενός τμήματος χρησιμοποιώντας μια συγκεκριμένη μουσική κλίμακα."
 
 #: ../../editing/timeline/arranger.rst:99
 msgid "Editing Objects"
-msgstr ""
+msgstr "Επεξεργασία αντικειμένων"
 
 #: ../../editing/timeline/arranger.rst:100
 msgid "The following operations apply to all editable objects."
-msgstr ""
+msgstr "Οι ακόλουθες εργασίες εφαρμόζονται σε όλα τα επεξεργάσιμα αντικείμενα."
 
 #: ../../editing/timeline/arranger.rst:104
 msgid "Creating"
-msgstr ""
+msgstr "Δημιουργία"
 
 #: ../../editing/timeline/arranger.rst:105
+#, fuzzy
 msgid ""
-"In select (default) mode, all objects are created by double clicking "
-"inside the arranger and dragging, then releasing when you are satisfied "
-"with the position/size."
+"Using the select (default) tool, all objects are created by double "
+"clicking inside the arranger and dragging, then releasing when you are "
+"satisfied with the position/size."
 msgstr ""
+"Στη λειτουργία επιλογής (προεπιλεγμένη), όλα τα αντικείμενα "
+"δημιουργούνται κάνοντας διπλό κλικ μέσα στον ταξινόμο και "
+"σύροντας/αφήνοντας όταν είστε ικανοποιημένος με τη θέση/μέγεθος."
 
 #: ../../editing/timeline/arranger.rst:110
-msgid "For creating objects in other modes, see :ref:`edit-tools`."
+#, fuzzy
+msgid "For creating objects using other tools, see :ref:`edit-tools`."
 msgstr ""
+"Για τη δημιουργία αντικειμένων σε άλλες λειτουργίες, βλέπε :ref:`edit-"
+"modes`."
 
 #: ../../editing/timeline/arranger.rst:114
 msgid "Moving"
-msgstr ""
+msgstr "Μετακίνηση"
 
 #: ../../editing/timeline/arranger.rst:115
 msgid ""
 "Objects are moved by clicking and dragging them around. You can move "
 "regions to other tracks if the track types are compatible."
 msgstr ""
+"Τα αντικείμενα μετακινούνται κάνοντας κλικ πάνω τους και σύροντάς τα. "
+"Μπορείτε να μετακινήσετε περιοχές σε άλλα κομμάτια αν οι τύποι κομματιών "
+"είναι συμβατοί."
 
 #: ../../editing/timeline/arranger.rst:120
 msgid "Copy-Moving"
-msgstr ""
+msgstr "Αντιγραφή με μετακίνηση"
 
 #: ../../editing/timeline/arranger.rst:121
 msgid ""
 "Holding down :kbd:`Ctrl` while moving objects will allow you to copy-and-"
 "move the objects to the new location."
 msgstr ""
+"Κρατώντας πατημένο το :kbd:`Ctrl` κατά τη μετακίνηση αντικειμένων θα σας "
+"επιτρέψει να κάνετε αντιγραφή-και-μετακίνηση των αντικειμένων σε νέο "
+"σημείο."
 
 #: ../../editing/timeline/arranger.rst:126
 msgid "Editing Regions"
-msgstr ""
+msgstr "Επεξεργασία περιοχών"
 
 #: ../../editing/timeline/arranger.rst:127
 msgid "The following operations apply to regions."
-msgstr ""
+msgstr "Οι ακόλουθες εργασίες εφαρμόζονται στις περιοχές."
 
 #: ../../editing/timeline/arranger.rst:130
 msgid "Looping"
@@ -1201,6 +1468,11 @@ msgid ""
 "the :doc:`Editor Ruler <../../editing/clip-editors/ruler>` to modify the "
 "looping (repeating) behavior."
 msgstr ""
+"Οι περιοχές μπορούν να επαναληφθούν, και ως εκ τούτου έχουν "
+":ref:`επεξεργάσιμα σημεία λούπας και μια θέση εκκίνησης κλιπ <editing"
+"/clip-editors/ruler:Loop Points>` στον :doc:`Επεξεργαστή Χάρακα "
+"<../../editing/clip-editors/ruler>` για την τροποποίηση της συμπεριφοράς "
+"λούπας (επανάληψης)."
 
 #: ../../editing/timeline/arranger.rst:137
 msgid ""
@@ -1208,55 +1480,69 @@ msgid ""
 "the bottom-left or bottom-right edge of the region, then clicking and "
 "dragging."
 msgstr ""
+"Οι περιοχές μπορούν επίσης να λουπαριστούν μέσα στο χρονολόγιο, "
+"τοποθετώντας τον κέρσορα στην κάτω αριστερά ή κάτω δεξιά άκρη της "
+"περιοχής και μετά κάνοντας κλικ και σύροντας."
 
 #: ../../editing/timeline/arranger.rst:145
 msgid "Looping (loop-resizing) a region"
-msgstr ""
+msgstr "Λουπάρισμα (αλλαγή μεγέθους λούπας) περιοχής"
 
 #: ../../editing/timeline/arranger.rst:147
 msgid ""
 "If the region is already repeated, it cannot be resized anymore until its"
 " loop points match exactly the region's start and end points."
 msgstr ""
+"Αν η περιοχή είναι ήδη σε επανάληψη, δεν μπορεί να αλλάξει το μέγεθός της"
+" πια μέχρι τα σημεία λούπας της να ταυτίζονται ακριβώς με τα σημεία "
+"εκκίνησης και λήξης της περιοχής."
 
 #: ../../editing/timeline/arranger.rst:152
 msgid "Link-Moving"
-msgstr ""
+msgstr "Συνδεόμενη μετακίνηση"
 
 #: ../../editing/timeline/arranger.rst:153
 msgid "Linked regions can be created by holding down :kbd:`Alt` while moving."
 msgstr ""
+"Οι συνδεόμενες περιοχές μπορούν να δημιουργηθούν κρατώντας πατημένο "
+":kbd:`Alt` κατά τη μετακίνηση."
 
 #: ../../editing/timeline/arranger.rst:156
 #: ../../editing/timeline/arranger.rst:161
 msgid "Add pic to show this."
-msgstr ""
+msgstr "Προσθήκη εικόνας για να εξηγηθεί αυτό."
 
 #: ../../editing/timeline/arranger.rst:158
 msgid ""
 "You can verify that a link exists on a region by the link icon that shows"
 " in the top right."
 msgstr ""
+"Μπορείτε να επιβεβαιώσετε ότι υπάρχει ένας σύνδεσμος σε μια περιοχή από "
+"το εικονίδιο συνδέσμου που φαίνεται πάνω δεξιά."
 
 #: ../../editing/timeline/arranger.rst:164
 msgid "Renaming"
-msgstr ""
+msgstr "Μετονομασία"
 
 #: ../../editing/timeline/arranger.rst:165
 msgid "Regions can be renamed by clicking on their name."
-msgstr ""
+msgstr "Οι περιοχές μπορούν να μετονομαστούν κάνοντας κλικ πάνω στο όνομά τους."
 
 #: ../../editing/timeline/arranger.rst:169
 msgid "Other editing capabilities were explained previously in :ref:`edit-tools`."
 msgstr ""
+"Άλλες δυνατότητες επεξεργασίας εξηγήθηκαν προηγούμενως στις :ref:`edit-"
+"tools`."
 
 #: ../../editing/timeline/event-viewer.rst:10
 msgid "The event viewer displays all events in the timeline as a list."
 msgstr ""
+"Ο προβολέας γεγονότων δείχνει όλα τα γεγονότα σε ένα χρονολόγιο σε μορφή "
+"λίστας."
 
 #: ../../editing/timeline/intro.rst:8
 msgid "Timeline"
-msgstr ""
+msgstr "Χρονολόγιο"
 
 #: ../../editing/timeline/overview.rst:7
 msgid ""
@@ -1264,16 +1550,21 @@ msgid ""
 "timeline section consists of the tracklist on the left and the "
 "ruler/arranger on the right side."
 msgstr ""
+"Η επεξεργασία μέσα στο χρονολόγιο είναι η πιο κοινή εργασία στο Zrythm. "
+"Το τμήμα του χρονολογίου αποτελείται από τη λίστα κομματιών στα αριστερά "
+"και τον χάρακα/ταξινόμο στα δεξιά."
 
 #: ../../editing/timeline/overview.rst:17
 msgid "Tracklist"
-msgstr ""
+msgstr "Λίστα κομματιών"
 
 #: ../../editing/timeline/overview.rst:19
 msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into"
 " the top (pinned) Tracklist and the bottom (main) Tracklist."
 msgstr ""
+"Η λίστα κομματιών περιέχει όλα τα κομμάτια μέσα στο έργο. Χωρίζεται στην "
+"πάνω (καρφιτσωμένη) λίστα κομματιών και την κάτω (κύρια) λίστα κομματιών."
 
 #: ../../editing/timeline/overview.rst:26
 msgid ""
@@ -1281,24 +1572,35 @@ msgid ""
 " of total tracks is shown, as well as a search box for searching tracks "
 "by name (not operational at the moment)."
 msgstr ""
+"Στο πάνω μέρος της λίστας κομματιών φαίνεται ο αριθμός ορατών κομματιών "
+"από τον συνολικό αριθμό κομματιών, καθώς επίσης και ένα κουτί αναζήτησης "
+"για την αναζήτηση κομματιών με το όνομά τους (μη λειτουργικό προς το "
+"παρόν)."
 
 #: ../../editing/timeline/overview.rst:31
 msgid ""
 "You can pin tracks to make them stick to the top, and this is useful for "
 "chord progressions and markers, so you can always see them."
 msgstr ""
+"Μπορείτε να καρφιτσώσετε κομμάτια για να τα κάνετε να κολλήσουν στο πάνω "
+"μέρος, κάτι που είναι χρήσιμο για ακολουθίες συγχορδιών και για σημάδια, "
+"καθώς έτσι μπορείτε να τα βλέπετε συνεχώς."
 
 #: ../../editing/timeline/overview.rst:35
 msgid "The rest of the tracklist is briefly touched upon in :ref:`tracklist`."
 msgstr ""
+"Το υπόλοιπο μέρος της λίστας κομματιών αναφέρεται συνοπτικά στη "
+":ref:`tracklist`."
 
 #: ../../editing/timeline/overview.rst:38
 msgid "For more details about track operations, see the :ref:`tracks` section."
 msgstr ""
+"Για περισσότερες λεπτομέρειες για τις εργασίες κομματιών, βλέπε την "
+"ενότητα :ref:`tracks`."
 
 #: ../../editing/timeline/overview.rst:42
 msgid "Minimap"
-msgstr ""
+msgstr "Μικροσκοπική επισκόπηση"
 
 #: ../../editing/timeline/overview.rst:43
 msgid ""
@@ -1306,14 +1608,22 @@ msgid ""
 "area of the timeline. It can be moved around and resized to change the "
 "visible area."
 msgstr ""
+"Η μικροσκοπική επισκόπηση χρονολογίου είναι ένα μικρό κουτί που "
+"αντιπροσωπεύει το τρέχον ορατό μέρος του χρονολογίου. Μπορεί να "
+"μετακινηθεί και να αλλάξει το μέγεθός της για να αλλάξει το ορατό μέρος."
 
 #: ../../editing/timeline/overview.rst:50
 msgid "The rest of the timeline elements are explained in the following sections."
-msgstr ""
+msgstr "Το υπόλοιπο μέρος του χρονολογίου εξηγούνται στις εξής ενότητες."
+
+#: ../../editing/timeline/ruler.rst:8
+#, fuzzy
+msgid "Timeline Ruler"
+msgstr "Ταξινόμος χρονολογίου"
 
 #: ../../editing/timeline/ruler.rst:10
 msgid "The ruler is mainly used to control looping and playback."
-msgstr ""
+msgstr "Ο χάρακας χρησιμοποιείται κυρίως για τον έλεγχο λούπας και αναπαραγωγής."
 
 #: ../../editing/timeline/ruler.rst:16
 msgid ""
@@ -1321,26 +1631,29 @@ msgid ""
 "zoom level. It will also display the following markers/indicators "
 "discussed in :ref:`loop-points-and-markers`."
 msgstr ""
+"Ο χάρακας θα προβάλει περισσότερες ή λιγότερες πληροφορίες ανάλογα με το "
+"τρέχον επίπεδο ζουμαρίσματος. Θα προβάλει επίσης τους εξής "
+"δείκτες/σημάδια που εξηγούνται στο :ref:`loop-points-and-markers`."
 
 #: ../../editing/timeline/ruler.rst:21
 msgid "Cue point"
-msgstr ""
+msgstr "Σημείο cue"
 
 #: ../../editing/timeline/ruler.rst:22
 msgid "Displayed as a blue, right-pointing arrow."
-msgstr ""
+msgstr "Προβάλλεται ως ένα μπλε, δεξιά στρεφόμενο βέλος."
 
 #: ../../editing/timeline/ruler.rst:23
 msgid "Playhead position"
-msgstr ""
+msgstr "Θέση κεφαλής αναπαραγωγής"
 
 #: ../../editing/timeline/ruler.rst:24
 msgid "Shown as a grey, down-facing arrow."
-msgstr ""
+msgstr "Προβάλλεται ως ένα γκρι, κάτω στρεφόμενο βέλος."
 
 #: ../../editing/timeline/ruler.rst:28
 msgid "Loop points"
-msgstr ""
+msgstr "Σημεία λούπας"
 
 #: ../../editing/timeline/ruler.rst:26
 msgid ""
@@ -1348,6 +1661,9 @@ msgid ""
 "green if loop is enabled, or grey if disabled. Can be dragged to "
 "reposition."
 msgstr ""
+"Προβάλλονται ως 2 πράσινα βέλη, και η περιοχή ανάμεσά τους προβάλλεται σε"
+" ανοιχτό πράσινο αν η λούπα είναι ενεργοποιημένη, ή σε γκρι αν είναι "
+"απενεργοποιημένη. Μπορεί να συρθεί για αλλαγή θέσης."
 
 #: ../../editing/timeline/ruler.rst:30
 msgid ""
@@ -1355,28 +1671,37 @@ msgid ""
 "part, which is used for selecting ranges - see :term:`Range`) will allow "
 "you to reposition the playhead."
 msgstr ""
+"Κάνοντας κλικ και σύροντας πάνω σε κενό χώρο στον χάρακα (εκτός από το "
+"πάνω μέρος, το οποίο χρησιμοποιείται για την επιλογή εύρους - βλέπε "
+":term:`Range`) θα σας επιτρέψει να αλλάξετε θέση την κεφαλή αναπαραγωγής."
 
 #: ../../editing/timeline/ruler.rst:35
 msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
 msgstr ""
+"Κρατήστε πατημένο το :zbutton:`Shift` για να απενεργοποιήσετε προσωρινά "
+"το σναπάρισμα"
 
 #: ../../editing/timeline/ruler.rst:38
 msgid "Setting the Cue Point"
-msgstr ""
+msgstr "Ορισμός του σημείου cue"
 
 #: ../../editing/timeline/ruler.rst:39
 msgid ""
 "Double click inside the ruler to set the cue point. This will be used to "
 "return to when playback is stopped."
 msgstr ""
+"Κάνετε διπλό κλικ μέσα στον χάρακα για να ορίσετε το σημείο cue. Αυτό θα "
+"χρησιμοποιηθεί ως σημείο επιστροφής όταν σταματάει η αναπαραγωγή."
 
 #: ../../editing/timeline/toolbar.rst:6
 msgid "Toolbar"
-msgstr ""
+msgstr "Γραμή εργαλείων"
 
 #: ../../editing/timeline/toolbar.rst:8
 msgid "The timeline has its own toolbar for timeline-specific operations."
 msgstr ""
+"Το χρονολόγιο έχει τη δική του γραμμή εργαλείων για εργασίες σχετικές με "
+"το χρονολόγιο."
 
 #: ../../editing/timeline/toolbar.rst:16
 msgid ""
@@ -1384,10 +1709,13 @@ msgid ""
 "section. For details about snapping and quantization, see the previous "
 "pages."
 msgstr ""
+"Περιέχει ένα τμήμα σναπαρίσματος, ένα τμήμα κβαντοποίησης, και ένα τμήμα "
+"περιοχής ήχου. Για λεπτομέρειες σχετικά με το σναπάρισμα και την "
+"κβαντοποίηση, βλέπε τις προηγούμενες σελίδες."
 
 #: ../../editing/timeline/toolbar.rst:21
 msgid "Audio Region Section"
-msgstr ""
+msgstr "Τμήμα περιοχής ήχου"
 
 #: ../../editing/timeline/toolbar.rst:24
 msgid "Musical Mode"
@@ -1400,174 +1728,11 @@ msgid ""
 "the BPM will cause audio regions to be repeated accordingly to match the "
 "new BPM without being time-stretched."
 msgstr ""
+"Όταν είναι ενεργοποιημένη, οι περιοχές ήχου αυτόματα θα τεντωθούν χρονικά"
+" (timestretching) για να ταυτίζονται με το νέο BPM, κάθε φορά που αλλάζει"
+" το BPM. Αν είναι απενεργοποιημένη, η αλλαγή του BPM θα προκαλέσει τις "
+"περιοχές ήχου να επαναλαμβάνονται έτσι, ώστε να ταυτίζονται με το νέο BPM"
+" χωρίς να τεντωθούν χρονικά."
 
-#~ msgid ""
-#~ "Enabling this will change the display"
-#~ " of the arranger into a drum "
-#~ "editor view, where each :term:`MIDI "
-#~ "Note` is drawn as a diamond and"
-#~ " the piano roll keys display the "
-#~ "name of each drum."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "For example, if you create a MIDI"
-#~ " note and press undo, the MIDI "
-#~ "note will be deleted (Zrythm goes "
-#~ "back into the state where the MIDI"
-#~ " note did not exist). Pressing the"
-#~ " Redo button will create the note "
-#~ "again, and you can go back between"
-#~ " Undo and Redo as many times as"
-#~ " you want."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Delete and copy the selected objects "
-#~ "and save them in the clipboard so"
-#~ " that they can be pasted elsewhere."
-#~ " The shortcut for cutting is "
-#~ ":zbutton:`Control` + :zbutton:`X`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Copy the selected objects to the "
-#~ "clipboard so that they can be "
-#~ "pasted elsewhere. The shortcut for "
-#~ "copying is :zbutton:`Control` + :zbutton:`C`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Paste the objects currently in the "
-#~ "clipboard to the current playhead "
-#~ "position. The shortcut for pasting is"
-#~ " :zbutton:`Control` + :zbutton:`V`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Create a copy of the selected "
-#~ "objects adjacent to them. The shortcut"
-#~ " for duplicating is :zbutton:`Control` +"
-#~ " :zbutton:`D`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Delete the selected objects. You can "
-#~ "also press :zbutton:`Delete` on your "
-#~ "keyboard to do this."
-#~ msgstr ""
-
-#~ msgid "Select all objects in the current editor."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Place the loop markers around the "
-#~ "selection. The shortcut for this is "
-#~ ":zbutton:`Control` + :zbutton:`L`."
-#~ msgstr ""
-
-#~ msgid "Note type for the note length (normal/dotted/triplet)"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Regions (or :term:`clips <clip>`) are "
-#~ "containers for events or data (such "
-#~ "as MIDI notes and audio clips -"
-#~ " see below) that can be edited "
-#~ "in an :ref:`editor <editors>`. Regions "
-#~ "can be repeated, like below."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Editing inside the automation arranger "
-#~ "generally follows :ref:`edit-modes` and "
-#~ ":ref:`common-operations`, with the added "
-#~ "feature that curves can be dragged "
-#~ "up or down to change their "
-#~ "`curviness`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Editing in the chord arranger follows"
-#~ " :ref:`edit-modes` and :ref:`common-"
-#~ "operations`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Editing inside the MIDI arranger is "
-#~ "covered in :ref:`edit-modes` and :ref"
-#~ ":`common-operations`."
-#~ msgstr ""
-
-#~ msgid "Edit Modes"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "When working in each editor or "
-#~ "arranger, you will most likely be "
-#~ "using the cursor tools provided by "
-#~ "Zrythm to create, edit and delete "
-#~ "objects. Each cursor signifies a "
-#~ "separate edit mode, and Zrythm offers"
-#~ " the following edit modes."
-#~ msgstr ""
-
-#~ msgid "Select/Stretch Mode"
-#~ msgstr ""
-
-#~ msgid "Edit Mode"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "This mode is used to quickly "
-#~ "create or delete objects. While you "
-#~ "can still create objects in Select "
-#~ "mode by double clicking and dragging,"
-#~ " in Edit mode this is accomplished"
-#~ " by single clicking and dragging, "
-#~ "which is more efficient when creating"
-#~ " a large number of objects."
-#~ msgstr ""
-
-#~ msgid "Cut Mode"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Cut mode behaves similarly to what "
-#~ "is mentioned in :ref:`cutting-objects`, "
-#~ "with the exception that you can "
-#~ "just click instead of :kbd:`Alt`-clicking."
-#~ msgstr ""
-
-#~ msgid "Erase Mode"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "You can just click on objects to"
-#~ " delete them, or click and drag "
-#~ "to make a selection, deleting all "
-#~ "objects inside it."
-#~ msgstr ""
-
-#~ msgid "Ramp Mode"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "This mode is currently only used "
-#~ "for editing velocities for MIDI notes."
-#~ " You can click and drag in the"
-#~ " velocity editor to create velocity "
-#~ "ramps."
-#~ msgstr ""
-
-#~ msgid "Audition Mode"
-#~ msgstr ""
-
-#~ msgid "For creating objects in other modes, see :ref:`edit-modes`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Other editing capabilities were explained "
-#~ "previously in :ref:`edit-modes`."
-#~ msgstr ""
-
+#~ msgid "Ruler"
+#~ msgstr "Χάρακας"

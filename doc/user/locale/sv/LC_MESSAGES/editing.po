@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-11 19:05+0000\n"
+"POT-Creation-Date: 2020-12-31 01:00+0000\n"
 "PO-Revision-Date: 2020-10-02 10:41+0000\n"
 "Last-Translator: Felix Paulsson <fpaulsson@protonmail.com>\n"
 "Language: sv\n"
@@ -443,8 +443,7 @@ msgid "It displays information about each MIDI note in the MIDI arranger."
 msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:8
-#: ../../editing/timeline/ruler.rst:8
-msgid "Ruler"
+msgid "Editor Ruler"
 msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:9
@@ -1149,13 +1148,13 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:105
 msgid ""
-"In select (default) mode, all objects are created by double clicking "
-"inside the arranger and dragging, then releasing when you are satisfied "
-"with the position/size."
+"Using the select (default) tool, all objects are created by double "
+"clicking inside the arranger and dragging, then releasing when you are "
+"satisfied with the position/size."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:110
-msgid "For creating objects in other modes, see :ref:`edit-tools`."
+msgid "For creating objects using other tools, see :ref:`edit-tools`."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:114
@@ -1305,6 +1304,10 @@ msgstr ""
 
 #: ../../editing/timeline/overview.rst:50
 msgid "The rest of the timeline elements are explained in the following sections."
+msgstr ""
+
+#: ../../editing/timeline/ruler.rst:8
+msgid "Timeline Ruler"
 msgstr ""
 
 #: ../../editing/timeline/ruler.rst:10
@@ -1769,5 +1772,19 @@ msgstr ""
 #~ msgid ""
 #~ "Other editing capabilities were explained "
 #~ "previously in :ref:`edit-modes`."
+#~ msgstr ""
+
+#~ msgid "Ruler"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "In select (default) mode, all objects"
+#~ " are created by double clicking "
+#~ "inside the arranger and dragging, then"
+#~ " releasing when you are satisfied "
+#~ "with the position/size."
+#~ msgstr ""
+
+#~ msgid "For creating objects in other modes, see :ref:`edit-tools`."
 #~ msgstr ""
 

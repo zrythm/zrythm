@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-11 19:05+0000\n"
+"POT-Creation-Date: 2020-12-31 01:00+0000\n"
 "PO-Revision-Date: 2020-06-29 20:41+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language: gl\n"
@@ -531,9 +531,9 @@ msgid "It displays information about each MIDI note in the MIDI arranger."
 msgstr "Amosa información de cada nota MIDI na xanela de MIDI."
 
 #: ../../editing/clip-editors/ruler.rst:8
-#: ../../editing/timeline/ruler.rst:8
-msgid "Ruler"
-msgstr "Regra"
+#, fuzzy
+msgid "Editor Ruler"
+msgstr "Barra de ferramentas do Editor"
 
 #: ../../editing/clip-editors/ruler.rst:9
 msgid ""
@@ -1398,10 +1398,11 @@ msgid "Creating"
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:105
+#, fuzzy
 msgid ""
-"In select (default) mode, all objects are created by double clicking "
-"inside the arranger and dragging, then releasing when you are satisfied "
-"with the position/size."
+"Using the select (default) tool, all objects are created by double "
+"clicking inside the arranger and dragging, then releasing when you are "
+"satisfied with the position/size."
 msgstr ""
 "En modo seleccionar (por defecto), tódolos obxectos son creados facendo "
 "dobre clic dentro da xanela e arrastrando, a continuación solta cando "
@@ -1409,7 +1410,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:110
 #, fuzzy
-msgid "For creating objects in other modes, see :ref:`edit-tools`."
+msgid "For creating objects using other tools, see :ref:`edit-tools`."
 msgstr "Para crear obxectos noutros modos, mira :ref:`edit-modes`."
 
 #: ../../editing/timeline/arranger.rst:114
@@ -1589,6 +1590,11 @@ msgstr ""
 #: ../../editing/timeline/overview.rst:50
 msgid "The rest of the timeline elements are explained in the following sections."
 msgstr "O resto dos elementos da liña de tempo explícanse nas seguintes seccións."
+
+#: ../../editing/timeline/ruler.rst:8
+#, fuzzy
+msgid "Timeline Ruler"
+msgstr "Xanela da Liña de Tempo"
 
 #: ../../editing/timeline/ruler.rst:10
 msgid "The ruler is mainly used to control looping and playback."
@@ -1898,4 +1904,7 @@ msgstr ""
 
 #~ msgid "Ramp Mode"
 #~ msgstr "Modo Rampla"
+
+#~ msgid "Ruler"
+#~ msgstr "Regra"
 

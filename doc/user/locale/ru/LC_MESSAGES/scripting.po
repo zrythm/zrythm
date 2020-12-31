@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-11 19:05+0000\n"
+"POT-Creation-Date: 2020-12-31 01:15+0000\n"
 "PO-Revision-Date: 2020-10-04 19:41+0000\n"
 "Last-Translator: iLyd <mrzarp@protonmail.com>\n"
 "Language: ru\n"
@@ -237,6 +237,18 @@ msgstr "Guile API является экспериментальным."
 #: ../../scripting/overview.rst:21
 msgid "The Guile API is not available on Windows."
 msgstr "Guile API недоступен в Windows."
+
+#: ../../scripting/scripting-interface.rst:6
+msgid "Scripting Interface"
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:8
+msgid "Todo"
+msgstr ""
+
+#: ../../scripting/scripting-interface.rst:8
+msgid "Explain the scripting window/interface."
+msgstr ""
 
 #~ msgid ""
 #~ "The next section is a comprehensive "

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2020-11-22 15:28+0000\n"
+"PO-Revision-Date: 2020-12-30 23:03+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/zrythm/zrythm/da/>"
 "\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 
 #: src/zrythm.c:242
 msgid "Initializing settings"
@@ -36,7 +36,7 @@ msgstr ""
 
 #: src/zrythm.c:272
 msgid "Loading project"
-msgstr ""
+msgstr "Indlæser projekt"
 
 #: src/project.c:159 src/audio/track.c:792
 msgid "Master"
@@ -49,7 +49,7 @@ msgstr "Unavngivet Projekt"
 
 #: src/project.c:437
 msgid "Project saved."
-msgstr ""
+msgstr "Projekt gemt."
 
 #: src/plugins/lv2_gtk.c:149
 msgid "Save State"
@@ -59,11 +59,11 @@ msgstr ""
 #: src/utils/dialogs.c:74 src/actions/actions.c:521
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
-msgstr ""
+msgstr "_Annuller"
 
 #: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
 msgid "_Save"
-msgstr ""
+msgstr "_Gem"
 
 #: src/plugins/lv2_gtk.c:467
 msgid "URI (Optional):"
@@ -75,7 +75,7 @@ msgstr ""
 
 #: src/plugins/lv2_gtk.c:562
 msgid "Delete Preset?"
-msgstr ""
+msgstr "Slet forudstilling?"
 
 #: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
 #: resources/ui/port_selector_popover.ui:207
@@ -100,11 +100,11 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:59
 msgid "INPUTS"
-msgstr ""
+msgstr "INDGANGE"
 
 #: src/gui/widgets/port_connections_popover.c:78
 msgid "OUTPUTS"
-msgstr ""
+msgstr "UDGANGE"
 
 #: src/gui/widgets/port_connections_popover.c:164
 msgid "Add"
@@ -117,7 +117,7 @@ msgstr ""
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
 msgid "Select..."
-msgstr ""
+msgstr "Vælg..."
 
 #: src/gui/widgets/midi_controller_mb.c:119
 msgid "Click to enable MIDI controllers to be connected automatically"
@@ -149,7 +149,7 @@ msgstr ""
 
 #: src/gui/widgets/left_dock_edge.c:56
 msgid "Visibility"
-msgstr ""
+msgstr "Synlighed"
 
 #: src/gui/widgets/port_selector_popover.c:209
 msgid "Track Ports"
@@ -194,7 +194,7 @@ msgstr ""
 
 #: src/gui/widgets/timeline_selection_info.c:93
 msgid "No object selected"
-msgstr ""
+msgstr "Intet objekt valgt"
 
 #: src/gui/widgets/piano_roll.c:232
 msgid "Select a region..."
@@ -232,7 +232,7 @@ msgstr ""
 
 #: src/gui/widgets/route_target_selector.c:118
 msgid "Stereo Out"
-msgstr ""
+msgstr "Stereo Ud"
 
 #: src/gui/widgets/snap_grid.c:94
 msgid "Snap/Grid options"
@@ -321,7 +321,7 @@ msgstr ""
 #: src/gui/widgets/track.c:448
 #, c-format
 msgid "_Delete Track"
-msgstr ""
+msgstr "_Slet Spor"
 
 #: src/gui/widgets/track.c:451
 #, c-format
@@ -331,7 +331,7 @@ msgstr ""
 #: src/gui/widgets/track.c:467
 #, c-format
 msgid "_Duplicate Track"
-msgstr ""
+msgstr "_Dublikér Spor"
 
 #: src/gui/widgets/track.c:471
 #, c-format
@@ -340,7 +340,7 @@ msgstr ""
 
 #: src/gui/widgets/track.c:490
 msgid "Add Region"
-msgstr ""
+msgstr "Tilføj Område"
 
 #: src/gui/widgets/fader.c:155
 msgid "Fader - Click and drag to change value"
@@ -369,11 +369,11 @@ msgstr ""
 
 #: src/utils/dialogs.c:41
 msgid "Open Project"
-msgstr ""
+msgstr "Åben Projekt"
 
 #: src/utils/dialogs.c:46
 msgid "_Open"
-msgstr ""
+msgstr "_Åben"
 
 #: src/utils/dialogs.c:69
 msgid "Overwrite Plugin"
@@ -443,11 +443,11 @@ msgstr ""
 
 #: src/audio/chord_track.c:42 resources/ui/inspector_chord.ui:31
 msgid "Chords"
-msgstr ""
+msgstr "Akkorder"
 
 #: src/audio/marker_track.c:42
 msgid "Markers"
-msgstr ""
+msgstr "Markører"
 
 #: src/audio/engine_pa.c:246 src/audio/engine_pa.c:266
 #: src/audio/engine_pa.c:277
@@ -462,7 +462,7 @@ msgstr ""
 
 #: src/audio/track.c:783
 msgid "Instrument"
-msgstr ""
+msgstr "Instrument"
 
 #: src/audio/track.c:786
 msgid "Audio"
@@ -474,11 +474,11 @@ msgstr ""
 
 #: src/audio/track.c:795
 msgid "Chord"
-msgstr ""
+msgstr "Akkord"
 
 #: src/audio/track.c:798
 msgid "Group"
-msgstr ""
+msgstr "Gruppe"
 
 #: src/audio/engine_jack.c:393
 #, c-format
@@ -504,7 +504,7 @@ msgstr ""
 
 #: src/audio/engine_jack.c:580
 msgid "Communication error with the JACK server"
-msgstr ""
+msgstr "Kommunikationsfejl med JACK serveren"
 
 #: src/audio/engine_jack.c:583
 msgid "Requested client does not exist"
@@ -551,16 +551,16 @@ msgstr ""
 
 #: src/actions/delete_tracks_action.c:113
 msgid "Delete Track"
-msgstr ""
+msgstr "Slet Spor"
 
 #: src/actions/delete_tracks_action.c:116
 #, c-format
 msgid "Delete %d Tracks"
-msgstr ""
+msgstr "Slet %d Spor"
 
 #: src/actions/actions.c:518
 msgid "Save Project"
-msgstr ""
+msgstr "Gem Projekt"
 
 #: src/actions/actions.c:583
 msgid ""
@@ -599,7 +599,7 @@ msgstr ""
 #: src/actions/move_plugins_action.c:147
 #, c-format
 msgid "Move %s"
-msgstr ""
+msgstr "Flyt %s"
 
 #: src/actions/move_plugins_action.c:151
 #, c-format
@@ -636,17 +636,17 @@ msgstr ""
 
 #: src/actions/move_tracks_action.c:128
 msgid "Move Track"
-msgstr ""
+msgstr "Flyt Spor"
 
 #: src/actions/move_tracks_action.c:131
 #, c-format
 msgid "Move %d Tracks"
-msgstr ""
+msgstr "Flyt %d Spor"
 
 #: src/actions/create_tracks_action.c:52
 #, c-format
 msgid "%s Track"
-msgstr ""
+msgstr "%s Spor"
 
 #: src/actions/create_tracks_action.c:81
 #, c-format
@@ -714,7 +714,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
 msgid "Language"
-msgstr ""
+msgstr "Sprog"
 
 #: resources/ui/first_run_assistant.ui:106
 msgid ""
@@ -736,7 +736,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:143
 msgid "Path"
-msgstr ""
+msgstr "Sti"
 
 #: resources/ui/first_run_assistant.ui:160
 msgid "Select the audio and MIDI engine backends to use"
@@ -752,7 +752,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:228
 msgid "Test"
-msgstr ""
+msgstr "Test"
 
 #: resources/ui/first_run_assistant.ui:232
 msgid "Tests the backends"
@@ -808,7 +808,7 @@ msgstr ""
 #. property name="can_focus">False</property
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
-msgstr ""
+msgstr "Vælg Projekt"
 
 #: resources/ui/project_assistant.ui:62 resources/ui/shortcuts.ui:84
 msgid "Create new project"
@@ -816,11 +816,11 @@ msgstr ""
 
 #: resources/ui/project_assistant.ui:78
 msgid "Remove"
-msgstr ""
+msgstr "Fjern"
 
 #: resources/ui/project_assistant.ui:82
 msgid "Removes selected project from the list"
-msgstr ""
+msgstr "Fjerner valgte projekt fra listen"
 
 #: resources/ui/project_assistant.ui:114
 msgid ""
@@ -851,7 +851,7 @@ msgstr ""
 #: resources/ui/inspector_ap.ui:101 resources/ui/inspector_midi.ui:101
 #: resources/ui/snap_grid_popover.ui:88
 msgid "Length"
-msgstr ""
+msgstr "Længde"
 
 #: resources/ui/quantize_mb_popover.ui:126
 #: resources/ui/snap_grid_popover.ui:126
@@ -885,7 +885,7 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:41
 msgid "Quit"
-msgstr ""
+msgstr "Afslut"
 
 #: resources/ui/shortcuts.ui:51
 msgid "Panels"
@@ -905,11 +905,11 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:79 resources/ui/header_notebook.ui:35
 msgid "Project"
-msgstr ""
+msgstr "Projekt"
 
 #: resources/ui/shortcuts.ui:91
 msgid "Open a project"
-msgstr ""
+msgstr "Åben et projekt"
 
 #: resources/ui/shortcuts.ui:98
 msgid "Save the project"
@@ -1061,7 +1061,7 @@ msgstr ""
 #: resources/ui/inspector_master.ui:67 resources/ui/inspector_ap.ui:67
 #: resources/ui/inspector_midi.ui:67
 msgid "Color"
-msgstr ""
+msgstr "Farve"
 
 #: resources/ui/inspector_master.ui:79 resources/ui/inspector_ap.ui:79
 #: resources/ui/inspector_midi.ui:79
@@ -1108,7 +1108,7 @@ msgstr ""
 
 #: resources/ui/port_selector_popover.ui:41
 msgid "Track"
-msgstr ""
+msgstr "Spor"
 
 #: resources/ui/port_selector_popover.ui:94
 msgid "Plugin"
@@ -1128,11 +1128,11 @@ msgstr ""
 
 #: resources/ui/transport_controls.ui:54
 msgid "Play"
-msgstr ""
+msgstr "Afspil"
 
 #: resources/ui/transport_controls.ui:69
 msgid "Stop"
-msgstr ""
+msgstr "Stop"
 
 #: resources/ui/transport_controls.ui:87
 msgid "Backward"
@@ -1176,15 +1176,15 @@ msgstr ""
 
 #: resources/ui/header_notebook.ui:73
 msgid "Help"
-msgstr ""
+msgstr "Hjælp"
 
 #: resources/ui/header_notebook.ui:149
 msgid "Project name"
-msgstr ""
+msgstr "Projekt navn"
 
 #: resources/ui/export_dialog.ui:30
 msgid "Export As..."
-msgstr ""
+msgstr "Eksporter Som..."
 
 #: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
 msgid "Cancel"
@@ -1204,7 +1204,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:109
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 #: resources/ui/export_dialog.ui:120
 msgid "Zrythm"
@@ -1243,7 +1243,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:238
 msgid "Song"
-msgstr ""
+msgstr "Sang"
 
 #: resources/ui/export_dialog.ui:262
 msgid "Custom"

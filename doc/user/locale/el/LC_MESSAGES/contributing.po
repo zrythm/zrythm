@@ -8,26 +8,29 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-12-11 19:05+0000\n"
-"PO-Revision-Date: 2020-09-25 22:42+0000\n"
+"PO-Revision-Date: 2020-12-09 01:29+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/"
+"manualcontributing/el/>\n"
 "Language: el\n"
-"Language-Team: Greek "
-"<https://hosted.weblate.org/projects/zrythm/manualcontributing/el/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.4-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../contributing/intro.rst:6
 msgid "Contributing"
-msgstr ""
+msgstr "Συνεισφορά"
 
 #: ../../contributing/intro.rst:7
 msgid ""
 "We appreciate contributions of any type and size. Tell us how you would "
 "like to help, and we will do our best to guide you."
 msgstr ""
+"Εκτιμούμε συνεισφορές οποιουδήποτε τύπου και μεγέθους. Πείτε μας πώς θα "
+"θέλατε να βοηθήσετε και θα βάλουμε τα δυνατά μας να σας καθοδηγήσουμε."
 
 #: ../../contributing/intro.rst:11
 msgid ""
@@ -37,30 +40,41 @@ msgid ""
 "://contributor-covenant.org/. You can find the full pledge in our `Code "
 "of Conduct <https://forum.zrythm.org/t/code-of-conduct>`_."
 msgstr ""
+"Θέλουμε να προσφέρουμε ένα φιλικό περιβάλλον, ώστε να μπορούν όλοι να "
+"συνεισφέρουν στο μέγιστο των δυνατοτήτων τους. Προς επίτευξη αυτού του "
+"σκοπού, το εγχείρημά μας χρησιμοποιεί ένα `Contributor Covenant` που "
+"υιοθετήθηκε από το https://contributor-covenant.org/. Μπορείτε να βρείτε την "
+"πλήρη δέσμευση στον `Δεοντολογικό Κώδικά <https://forum.zrythm.org/t/code-of-"
+"conduct>` _ μας."
 
 #: ../../contributing/intro.rst:18
 msgid "Coding"
-msgstr ""
+msgstr "Προγραμματισμός"
 
 #: ../../contributing/intro.rst:19
 msgid ""
 "Please see the :download:`HACKING <../../../HACKING.md>` file in the "
 "source distribution."
 msgstr ""
+"Παρακαλούμε βλέπετε το αρχείο :download:`HACKING <../../../HACKING.md>` στην "
+"πηγαία διανομή."
 
 #: ../../contributing/intro.rst:24
 msgid "Web Design"
-msgstr ""
+msgstr "Σχεδιασμός ιστοσελίδας"
 
 #: ../../contributing/intro.rst:25
 msgid ""
 "You are welcome to help us improve the looks and usability of the Zrythm "
 "website. Please join our chatrooms and talk to us."
 msgstr ""
+"Είστε ευπρόσδεκτοι να μας βοηθήσετε να βελτιώσουμε την εμφάνιση και τη "
+"χρηστικότητα της ιστοσελίδας του Zrythm. Σας παρακαλούμε ελάτε στα δωμάτια "
+"συνομιλιών μας και μιλήστε μας."
 
 #: ../../contributing/intro.rst:30
 msgid "Artwork and Themes"
-msgstr ""
+msgstr "Καλλιτεχνική επιμέλεια και θέματα"
 
 #: ../../contributing/intro.rst:31
 msgid ""
@@ -69,10 +83,16 @@ msgid ""
 "artwork such as icons you can start by creating your own themes and icons"
 " as discussed in :ref:`icon-themes` and :ref:`css`."
 msgstr ""
+"Η εμφάνιση του Zrythm είναι επεξεργάσιμη με CSS και χρησιμοποιεί πολλά "
+"εικονίδια, κάποια από τα οποία είναι προσαρμοσμένα και κάποια που είναι "
+"δανεισμένα από άλλα θέματα. Αν θα θέλατε να συνεισφέρετε στην καλλιτεχνική "
+"επιμέλεια, όπως για παράδειγμα στα εικονίδια, μπορείτε να αρχίσετε με τη "
+"δημιουργία δικών σας θεμάτων και εικονιδίων συμβουλευόμενοι τους συνδέσμους "
+":ref:`icon-themes` και :ref:`css`."
 
 #: ../../contributing/intro.rst:39
 msgid "Testing"
-msgstr ""
+msgstr "Δοκιμή και έλεγχος"
 
 #: ../../contributing/intro.rst:40
 msgid ""
@@ -80,16 +100,23 @@ msgid ""
 "reporting bugs and feedback on `Sourcehut "
 "<https://todo.sr.ht/~alextee>`_."
 msgstr ""
+"Είστε ευπρόσδεκτοι να βοηθήσετε στη δοκιμή και τον έλεγχο των τελευταίων "
+"χαρακτηριστικών στο Zrythm, καθώς και στην αναφορά σφαλμάτων και τη "
+"γενικότερη εποικοδομητική κριτική στο `Redmine <https://redmine.zrythm.org/"
+"projects/zrythm/issues>`_."
 
 #: ../../contributing/intro.rst:45
 msgid ""
 "The latest development branch for new features is ``development`` in our "
 "`git repository <https://git.zrythm.org/cgit/zrythm>`_."
 msgstr ""
+"Ο πιο πρόσφατος τομέας προγραμματισμού νέων λειτουργιών είναι το "
+"``development`` στην `αποθήκη git <https://git.zrythm.org/cgit/zrythm>` _ "
+"μας."
 
 #: ../../contributing/intro.rst:50
 msgid "Editing this Manual"
-msgstr ""
+msgstr "Επεξεργασία αυτού του εγχειριδίου"
 
 #: ../../contributing/intro.rst:51
 msgid ""
@@ -97,28 +124,37 @@ msgid ""
 "find which file the page exists in, find the file in the source "
 "distribution and edit it."
 msgstr ""
+"Κάντε κλικ στο κουμπί :guilabel:`Προβολή κώδικα` στο πάνω μέρος της σελίδας "
+"για να βρείτε σε ποιο αρχείο βρίσκεται η σελίδα, να βρείτε πού βρίσκεται το "
+"αρχείο στην πηγαία διανομή και να το επεξεργαστείτε."
 
 #: ../../contributing/intro.rst:56
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
 msgstr ""
+"Θα πρέπει να έχετε το `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
+"εγκατεστημένο για να μεταγλωττίσετε αυτό το εγχειρίδιο."
 
 #: ../../contributing/intro.rst:61
 msgid "Translation"
-msgstr ""
+msgstr "Μετάφραση"
 
 #: ../../contributing/intro.rst:62
 msgid ""
 "Zrythm is available for translation at `Weblate "
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
 msgstr ""
+"Το Zrythm είναι διαθέσιμο για μετάφραση στο `Weblate <https://hosted.weblate."
+"org/engage/zrythm/?utm_source=widget>`_."
 
 #: ../../contributing/intro.rst:65
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
 "program, the website as well as sections of this manual."
 msgstr ""
+"Το εγχείρημα μετάφρασης του Zrythm περιέχει τις μεταφράσεις για το πρόγραμμα "
+"Zrythm, την ιστοσελίδα, καθώς και τις ενότητες αυτού του εγχειριδίου."
 
 #: ../../contributing/intro.rst:69
 msgid ""
@@ -127,10 +163,15 @@ msgid ""
 "see the `official documentation "
 "<https://docs.weblate.org/en/latest/user/translating.html>`_."
 msgstr ""
+"Κάντε κλικ πάνω στο εγχείρημα στο οποίο επιθυμείτε να δουλέψετε, και στη "
+"συνέχεια επιλέξτε μια γλώσσα στην οθόνη που ακολουθεί. Για περισσότερες "
+"πληροφορίες σχετικά με τη χρήση του Weblate, παρακαλούμε συμβουλευτείτε τα `"
+"επίσημα εγχειρίδια <https://docs.weblate.org/en/latest/user/translating."
+"html>`_ του Weblate."
 
 #: ../../contributing/intro.rst:77
 msgid "User Manual"
-msgstr ""
+msgstr "Εγχειρίδιο χρήστη"
 
 #: ../../contributing/intro.rst:78
 msgid ""
@@ -138,10 +179,13 @@ msgid ""
 "following Sphinx/RST syntax, to avoid errors when applying your "
 "translations."
 msgstr ""
+"Κατά τη μετάφραση αυτού του εγχειρίδιου χρήστη, παρακαλούμε βεβαιωθείτε ότι "
+"ακολουθείτε τη σύνταξη Sphinx/RST, ώστε να αποφευχθούν σφάλματα κατά την "
+"εφαρμογή των μεταφράσεών σας."
 
 #: ../../contributing/intro.rst:83
 msgid "General Syntax"
-msgstr ""
+msgstr "Γενική σύνταξη"
 
 #: ../../contributing/intro.rst:84
 msgid ""
@@ -149,11 +193,14 @@ msgid ""
 "left untranslated. The part following should be left untranslated as "
 "well. For example:"
 msgstr ""
+"Όταν βλέπετε κάτι μέσα στο ``:``, όπως το ``:term:``, αυτό πρέπει να μείνει "
+"αμετάφραστο. Το μέρος που ακολουθεί πρέπει να μείνει επίσης αμετάφραστο. Για "
+"παράδειγμα:"
 
 #: ../../contributing/intro.rst:93
 #: ../../contributing/intro.rst:108
 msgid "should be translated in French as"
-msgstr ""
+msgstr "πρέπει να μεταφραστεί στα Γαλλικά ως"
 
 #: ../../contributing/intro.rst:99
 msgid ""
@@ -161,395 +208,70 @@ msgid ""
 " translation for ``Parameter``. The only exception to this rule is when "
 "you see the ``<>`` characters. For example:"
 msgstr ""
+"Ο λόγος που γίνεται αυτό είναι επειδή αυτή η τιμή θα αντικατασταθεί αυτόματα "
+"από το Sphinx με τη μετάφραση για το ``Parameter``. Η μόνη εξαίρεση σε αυτόν "
+"τον κανόνα είναι όταν βλέπετε τους χαρακτήρες ``<>``. Για παράδειγμα:"
 
 #: ../../contributing/intro.rst:115
 msgid ""
 "Please make sure you do not insert or remove spaces. The following "
 "examples will cause errors."
 msgstr ""
+"Παρακαλούμε βεβαιωθείτε ότι δεν εισάγετε ή δεν αφαιρείτε κενά. Τα ακόλουθα "
+"παραδείγματα θα προκαλέσουν σφάλματα."
 
 #: ../../contributing/intro.rst:127
 msgid ""
 "Also, there should be space, comma or period after such syntax, like "
 "below."
 msgstr ""
+"Επίσης, πρέπει να υπάρχει κενό, κόμμα ή περίοδος μετά από αντίστοιχη "
+"σύνταξη, όπως παρακάτω."
 
 #: ../../contributing/intro.rst:136
 msgid "The following examples will cause errors."
-msgstr ""
+msgstr "Τα ακόλουθα παραδείγματα θα προκαλέσουν σφάλματα."
 
 #: ../../contributing/intro.rst:143
 msgid ""
 "The following syntax usually refers to a path, so please keep it "
 "unchanged, otherwise the file it refers to will not be found."
 msgstr ""
+"Η ακόλουθη σύνταξη συνήθως αναφέρεται σε ένα μονοπάτι, οπότε παρακαλούμε "
+"αφήστε το χωρίς αλλαγή, αλλιώς το αρχείο στο οποίο αναφέρεται δεν θα βρεθεί."
 
 #: ../../contributing/intro.rst:152
 msgid "Donations"
-msgstr ""
+msgstr "Δωρεές"
 
 #: ../../contributing/intro.rst:153
 msgid ""
 "We use the following services for receiving donations. Any amount, small "
 "or large is appreciated and helps sustain continuous development:"
 msgstr ""
+"Χρησιμοποιούμε τις ακόλουθες υπηρεσίες για την αποδοχή δωρεών. Οποιοδήποτε "
+"ποσό, μικρό ή μεγάλο, είναι καλοδεχούμενο και βοηθάει στην αδιάκοπη ανάπτυξη "
+"του Zrythm:"
 
 #: ../../contributing/intro.rst:157
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
-msgstr ""
+msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
 #: ../../contributing/intro.rst:158
 msgid "`PayPal <https://paypal.me/zrythm>`_"
-msgstr ""
+msgstr "`PayPal <https://paypal.me/zrythm>`_"
 
 #: ../../contributing/intro.rst:159
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
-msgstr ""
+msgstr "`Open Collective <https://opencollective.com/zrythm>`_"
 
 #: ../../contributing/intro.rst:161
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer "
 "<https://www.zrythm.org/en/download.html>`_."
 msgstr ""
-
-#~ msgid ""
-#~ "If you would like to help design"
-#~ " Zrythm itself, the Zrythm website, "
-#~ "or this documentation, feel free to "
-#~ "reach us out in the `chatrooms "
-#~ "<https://git.zrythm.org/zrythm/zrythm#Chatrooms>`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Donations are very welcome and vital "
-#~ "to keep the project running smoothly."
-#~ " They can be made through:"
-#~ msgstr ""
-
-#~ msgid "`PayPal <https://paypal.me/alextee90>`_"
-#~ msgstr ""
-
-#~ msgid "direct donation to the lead developer"
-#~ msgstr ""
-
-#~ msgid "`Liberapay <https://liberapay.com/alextee>`_"
-#~ msgstr ""
-
-#~ msgid "libre recurring donations platform run by a French non-profit"
-#~ msgstr ""
-
-#~ msgid "anonoymous cryptocurrency donation (coming soon)"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Zrythm has a Weblate instance for "
-#~ "easy web-based translation. To start "
-#~ "translating, first visit the `Zrythm "
-#~ "project page "
-#~ "<https://translate.zrythm.org/projects/zrythm/>`_. You "
-#~ "should see the following screen."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Please see the `Contribution Guide "
-#~ "<https://git.zrythm.org/zrythm/zrythm/blob/master/CONTRIBUTING.md>`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Anonoymous cryptocurrency donation. Please "
-#~ "use: bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Please see the `Contribution Guide "
-#~ "<https://git.zrythm.org/zrythm/zrythm/blob/master/CONTRIBUTING.md>`_"
-#~ " and check out the `Developer Docs"
-#~ " <https://docs.zrythm.org/>`_.."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "You can fetch the latest master "
-#~ "branch from https://git.zrythm.org/zrythm/zrythm and"
-#~ " start testing the latest features. "
-#~ "You can report any bugs, ideas and"
-#~ " impressions by creating an issue "
-#~ "there."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "If you are on Arch Linux or "
-#~ "Debian, the latest master branch can "
-#~ "easily be installed via the zrythm-"
-#~ "git package on AUR or by "
-#~ "installing an auto-generated .deb file."
-#~ " More information at `Installation "
-#~ "Instructions "
-#~ "<https://git.zrythm.org/zrythm/zrythm#installation>`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Manual installation instructions can be "
-#~ "found `here "
-#~ "<https://git.zrythm.org/zrythm/zrythm/blob/master/INSTALL.md>`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "You can fetch the latest master "
-#~ "branch from https://git.zrythm.org/cgit/zrythm/snapshot"
-#~ "/zrythm-master.tar.gz and start testing the"
-#~ " latest features. You can report any"
-#~ " bugs, ideas and impressions by "
-#~ "creating an issue on `Savannah "
-#~ "<https://savannah.nongnu.org/support/?group=zrythm>`_."
-#~ msgstr ""
-
-#~ msgid "Designing"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "If you want to help improve the"
-#~ " appearance Zrythm itself and its "
-#~ "website, forum, manual, etc., please "
-#~ "come join the `chat "
-#~ "<https://riot.im/app/#/room/#freenode_#zrythm:matrix.org?action=chat>`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Zrythm itself is fully CSS-themable, "
-#~ "and the overall UI structure can "
-#~ "easily be edited in Glade without "
-#~ "touching any code."
-#~ msgstr ""
-
-#~ msgid "Donating"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Donations are vital to keep the "
-#~ "project running smoothly. If you can "
-#~ "afford to do so please consider "
-#~ "becoming a patron or supporting us "
-#~ "below."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "`PayPal <https://www.paypal.com/cgi-bin/webscr?cmd=_s-"
-#~ "xclick&hosted_button_id=LZWVK6228PQGE&source=url>`_"
-#~ msgstr ""
-
-#~ msgid "PayPal recurring or non-recurring donation."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "LiberaPay is a recurring donations "
-#~ "platform for funding developers and "
-#~ "creators, ran by a French non-"
-#~ "profit."
-#~ msgstr ""
-
-#~ msgid "Bitcoin"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Anonymous cryptocurrency donation. Please use:"
-#~ " bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j"
-#~ msgstr ""
-
-#~ msgid "Editing Documentation"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "This documentation can be edited via "
-#~ "https://git.zrythm.org/zrythm/zrythm-docs"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "You can fetch the latest master "
-#~ "branch from https://git.zrythm.org/cgit/zrythm/snapshot"
-#~ "/zrythm-master.tar.gz and start testing the"
-#~ " latest features. You can report any"
-#~ " bugs, ideas and impressions by "
-#~ "creating an issue on `Redmine "
-#~ "<https://redmine.zrythm.org/projects/zrythm/issues>`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "If you are on Arch Linux or "
-#~ "derivatives such as Parabola, the latest"
-#~ " master branch can be installed via"
-#~ " the ``zrythm-git`` package in AUR."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "See the ``README.md`` file in the "
-#~ "distribution for installation instructions."
-#~ msgstr ""
-
-#~ msgid "Translating"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Zrythm is available for translation at"
-#~ " Hosted Weblate. Visit the `Zrythm "
-#~ "project page "
-#~ "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ "
-#~ "to start translating."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Click on the project you wish to"
-#~ " work on, and then select a "
-#~ "language in the screen that follows. "
-#~ "For more information on using Weblate,"
-#~ " please see the `official documentation "
-#~ "<https://docs.weblate.org/en/latest/user/translating.html>`_ of"
-#~ " Weblate."
-#~ msgstr ""
-
-#~ msgid "Writing Code"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Please see the `Contribution Guide "
-#~ "<https://docs.zrythm.org/md_CONTRIBUTING.html>`_ and check"
-#~ " out the `Developer Docs "
-#~ "<https://docs.zrythm.org/>`_."
-#~ msgstr ""
-
-#~ msgid "Contributing Overview"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Please see the `Contributing Guide "
-#~ "<https://docs.zrythm.org/md_CONTRIBUTING.html>`_ and check"
-#~ " out the `Developer Docs "
-#~ "<https://docs.zrythm.org/>`_. These have a lot"
-#~ " of information about how to "
-#~ "contribute code and various guidelines "
-#~ "to follow."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Zrythm is mostly CSS themable and "
-#~ "also makes use of many icons, some"
-#~ " customized and some borrowed from "
-#~ "other themes. If you would like to"
-#~ " contribute artwork such as icons, "
-#~ "please discuss with us first as "
-#~ "icon preferences are very subjective."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "For making themes, you can take a"
-#~ " look in "
-#~ "https://git.zrythm.org/cgit/zrythm/tree/resources/theme.css to"
-#~ " get an idea of how CSS in "
-#~ "GTK+3 works. We also recommend looking"
-#~ " at the `CSS Overview "
-#~ "<https://developer.gnome.org/gtk3/stable/chap-css-"
-#~ "overview.html>`_ section in the GTK+3 "
-#~ "docs."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "We currently have a shortage of "
-#~ "testers and you are very welcome "
-#~ "to join us in testing the latest"
-#~ " features in Zrythm and reporting "
-#~ "bugs and feedback on `Redmine "
-#~ "<https://redmine.zrythm.org/projects/zrythm/issues>`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Zrythm is available for translation at"
-#~ " Hosted Weblate. Visit the `Zrythm "
-#~ "project page "
-#~ "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ "
-#~ "to get started."
-#~ msgstr ""
-
-#~ msgid "The Zrythm translation project contains the following components:"
-#~ msgstr ""
+"Εναλλακτικά, μπορείτε να `αγοράσετε έναν εγκαταστατή Zrythm <https://www."
+"zrythm.org/en/download.html>`_."
 
 #~ msgid "Zrythm"
 #~ msgstr "Zrythm"
-
-#~ msgid "The actual Zrythm program"
-#~ msgstr ""
-
-#~ msgid "website"
-#~ msgstr ""
-
-#~ msgid "The Zrythm website (https://www.zrythm.org)"
-#~ msgstr ""
-
-#~ msgid "Manual - *"
-#~ msgstr ""
-
-#~ msgid "Sections of this manual"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Click on the ``View Source`` button "
-#~ "at the top of the page to "
-#~ "find which file the page exists "
-#~ "in."
-#~ msgstr ""
-
-#~ msgid "TODO: add build instructions"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "We have a `Patreon "
-#~ "<https://www.patreon.com/alex_tee>`_ and `LiberaPay "
-#~ "<https://liberapay.com/Zrythm>`_ account for "
-#~ "recurrent donations. Alternatively, you can"
-#~ " purchase Zrythm binaries at "
-#~ "https://www.zrythm.org/en/download.html"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Click on the ``View Source`` button "
-#~ "at the top of the page to "
-#~ "find which file the page exists "
-#~ "in, find the file in the source"
-#~ " distribution and edit it."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Please see the `HACKING file "
-#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/HACKING.md>`_ in"
-#~ " the source distribution."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Also, There should be space, comma "
-#~ "or period after such syntax. The "
-#~ "following examples will cause errors."
-#~ msgstr ""
-
-#~ msgid "So please make sure there is correct punctuation, as shown below."
-#~ msgstr ""
-
-#~ msgid "Paths"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Also, when you see the following, "
-#~ "this usually refers to a path, so"
-#~ " please keep it unchanged, otherwise "
-#~ "the file it refers to will not "
-#~ "be found."
-#~ msgstr ""
-
-#~ msgid "should be translated in Japanese as"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "You are welcome to join us in "
-#~ "testing the latest features in Zrythm"
-#~ " and reporting bugs and feedback on"
-#~ " `Redmine "
-#~ "<https://redmine.zrythm.org/projects/zrythm/issues>`_."
-#~ msgstr ""
-

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-07 22:10+0000\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"POT-Creation-Date: 2020-12-31 01:00+0000\n"
+"PO-Revision-Date: 2020-12-09 23:01+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
 "Language: el\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/user-"
@@ -29,14 +29,18 @@ msgstr "Βίντεο"
 
 #: ../../user-media/intro.rst:12
 msgid "French Tutorials"
-msgstr ""
+msgstr "Γαλλικά μαθήματα"
 
 #: ../../user-media/intro.rst:13
+#, fuzzy
 msgid ""
 "Till Parisot has compiled a playlist of Zrythm tutorials in French on "
-"`PeerTube TeDonum <https://video.tedomum.net/video-"
+"`PeerTube TeDomum <https://video.tedomum.net/video-"
 "channels/thil_riposta/videos>`_."
 msgstr ""
+"Ο Till Parisot έχει δημιουργήσει μια λίστα αναπαραγωγής από μαθήματα για "
+"το Zrythm στα Γαλλικά στο `PeerTube TeDonum <https://video.tedomum.net"
+"/video-channels/thil_riposta/videos>`_."
 
 #~ msgid ""
 #~ "Till Parisot has compiled a playlist "

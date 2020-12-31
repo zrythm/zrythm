@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-01 00:27+0100\n"
-"PO-Revision-Date: 2020-11-21 12:50+0000\n"
-"Last-Translator: Gary Wang <wzc782970009@gmail.com>\n"
+"PO-Revision-Date: 2020-12-13 10:29+0000\n"
+"Last-Translator: yu zhang <zhangyu201510@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/manualplugins-files/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -263,7 +263,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
 msgid "Instrument"
-msgstr ""
+msgstr "乐器"
 
 #: ../../plugins-files/plugins/plugin-info.rst:24
 msgid "These plugins will create an instrument track when added to the project."

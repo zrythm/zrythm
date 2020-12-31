@@ -9,16 +9,16 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-10-08 23:04+0000\n"
+"PO-Revision-Date: 2020-12-12 01:29+0000\n"
 "Last-Translator: Panos Alevropoulos <panosalevropoulos@protonmail.com>\n"
-"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/"
-">\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/>"
+"\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
@@ -64,14 +64,12 @@ msgid "Marker"
 msgstr "Δείκτης"
 
 #: inc/gui/backend/arranger_object.h:102
-#, fuzzy
 msgid "Automation Point"
-msgstr "Προβολή Λωρίδων Αυτοματισμού"
+msgstr "Σημείο αυτοματισμού"
 
 #: inc/gui/backend/arranger_object.h:104 src/gui/widgets/event_viewer.c:548
 #: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:115
-#, fuzzy
 msgid "Velocity"
 msgstr "Ταχύτητα"
 
@@ -155,11 +153,11 @@ msgstr "Διαμορφωτής"
 
 #: inc/audio/track.h:169
 msgid "Audio FX"
-msgstr "Εφέ ήχου"
+msgstr "Εφέ ήχων"
 
 #: inc/audio/track.h:170
 msgid "Audio Group"
-msgstr "Ομάδα ήχου"
+msgstr "Ομάδα ήχων"
 
 #: inc/audio/track.h:171 src/audio/region.c:394
 msgid "MIDI"
@@ -174,25 +172,25 @@ msgid "MIDI Group"
 msgstr "Ομάδα MIDI"
 
 #: inc/audio/curve.h:90 src/audio/curve.c:39
-#, fuzzy, c-format
+#, c-format
 msgid "Exponent"
 msgstr "Εκθέτης"
 
 #: inc/audio/curve.h:92 src/audio/curve.c:42
-#, fuzzy, c-format
+#, c-format
 msgid "Superellipse"
 msgstr "Superellipse"
 
 #: inc/audio/curve.h:94 src/gui/widgets/timeline_arranger.c:1292
 #: src/audio/curve.c:45
-#, fuzzy, c-format
+#, c-format
 msgid "Vital"
 msgstr "Vital"
 
 #: inc/audio/curve.h:96 src/audio/curve.c:48
-#, fuzzy, c-format
+#, c-format
 msgid "Pulse"
-msgstr "Pulse"
+msgstr "Παλμός"
 
 #: inc/audio/engine.h:125
 msgid "1,024"
@@ -252,7 +250,7 @@ msgstr "Κρεσέντο"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:133
 msgid "Flam"
-msgstr ""
+msgstr "Flam"
 
 #: inc/audio/midi_function.h:58 inc/audio/automation_function.h:50
 msgid "Flip H"
@@ -275,9 +273,8 @@ msgid "Staccato"
 msgstr "Στακάτο"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:172
-#, fuzzy
 msgid "Strum"
-msgstr "Strum"
+msgstr "Παίξιμο"
 
 #: inc/audio/region.h:83 src/gui/widgets/track.c:1868
 msgid "Inherit"
@@ -388,7 +385,6 @@ msgid "Project saved."
 msgstr "Το έργο αποθηκεύτηκε."
 
 #: src/main.c:78
-#, fuzzy
 msgid "Error - Backtrace:\n"
 msgstr "Σφάλμα - Backtrace:\n"
 
@@ -492,7 +488,7 @@ msgstr ""
 "Το %s παρέχεται ΧΩΡΙΣ ΚΑΜΙΑ ΑΠΟΛΥΤΩΣ ΕΓΓΥΗΣΗ!\n"
 "\n"
 "Αυτό είναι ελεύθερο λογισμικό, και είστε ευπρόσδεκτοι να το αναδιανείμετε.\n"
-"Βλέπε το αρχείο `ΑΝΤΙΓΡΑΦΗ' για λεπτομέρειες.\n"
+"Βλέπε το αρχείο `COPYING' για λεπτομέρειες.\n"
 "\n"
 "Γράψτε σχόλια και bugs στο %s\n"
 "Υποστηρίξτε αυτό το έργο στο https://liberapay.com/Zrythm\n"
@@ -545,12 +541,10 @@ msgid "Waiting for project"
 msgstr "Φόρτωση έργου"
 
 #: src/plugins/carla_native_plugin.c:545 src/plugins/lv2_plugin.c:2513
-#, fuzzy
 msgid "Default bank"
-msgstr "Προεπιλεγμένη τράπεζα δεδομένων"
+msgstr "Προεπιλεγμένη τράπεζα"
 
 #: src/plugins/carla_native_plugin.c:552 src/plugins/lv2_plugin.c:2520
-#, fuzzy
 msgid "Init"
 msgstr "Αρχική κατάσταση"
 
@@ -611,7 +605,6 @@ msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "Αποτυχία δημιουργίας υπόστασης για το πρόσθετο '%s'. Απενεργοποίηση..."
 
 #: src/plugins/plugin.c:184
-#, fuzzy
 msgid "[Zrythm] Enabled"
 msgstr "[Zrythm] Ενεργοποιήθηκε"
 
@@ -1060,7 +1053,6 @@ msgid "Playhead"
 msgstr "Κεφαλή αναπαραγωγής"
 
 #: src/gui/widgets/bot_bar.c:56
-#, fuzzy
 msgid "Playhead [Jack Timebase Master]"
 msgstr "Κεφαλή αναπαραγωγής [Jack TImebase Master]"
 
@@ -1111,9 +1103,8 @@ msgstr "Κατάσταση"
 #. TRANSLATORS: buffer size, please keep the
 #. * translation short
 #: src/gui/widgets/bot_bar.c:521
-#, fuzzy
 msgid "Buf sz"
-msgstr "Buf sz"
+msgstr "Μέγ ενδ μν"
 
 #. TRANSLATORS: sample rate
 #: src/gui/widgets/bot_bar.c:527
@@ -1155,12 +1146,10 @@ msgid "end"
 msgstr "τέλος"
 
 #: src/gui/widgets/timeline_selection_info.c:285
-#, fuzzy
 msgid "clip start (rel.)"
 msgstr "έναρξη κλιπ (rel.)"
 
 #: src/gui/widgets/timeline_selection_info.c:295
-#, fuzzy
 msgid "loop start (rel.)"
 msgstr "έναρξη λούπας (rel.)"
 
@@ -1176,7 +1165,6 @@ msgid "position"
 msgstr "θέση"
 
 #: src/gui/widgets/transport_controls.c:196
-#, fuzzy
 msgid "Punch in/out"
 msgstr "Punch in/out"
 
@@ -1271,9 +1259,8 @@ msgid "Log viewer"
 msgstr "Προβολέας αρχείου καταγραφής"
 
 #: src/gui/widgets/header.c:108
-#, fuzzy
 msgid "Scripting interface"
-msgstr "Διεπαφή scripting"
+msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
@@ -1323,7 +1310,7 @@ msgstr "Αναίρεση"
 #: src/gui/widgets/home_toolbar.c:61 src/gui/widgets/home_toolbar.c:125
 #: resources/ui/home_toolbar.ui:48
 msgid "Redo"
-msgstr "Επανάληψη"
+msgstr "Επαναφορά"
 
 #: src/gui/widgets/home_toolbar.c:127
 msgid "Cut"
@@ -1403,7 +1390,6 @@ msgid "Stereo Out"
 msgstr "Στέρεο έξω"
 
 #: src/gui/widgets/fader_controls_expander.c:58 src/gui/widgets/fader.c:467
-#, fuzzy
 msgid "Fader"
 msgstr "Fader"
 
@@ -1587,9 +1573,8 @@ msgid "Script execution failed"
 msgstr "Αποτυχία εκτέλεσης δέσμης εντολών"
 
 #: src/gui/widgets/scripting_window.c:202
-#, fuzzy
 msgid "Scripting Interface"
-msgstr "Διεπαφή scripting"
+msgstr "Διεπαφή δέσμης ενεργειών (scripting)"
 
 #: src/gui/widgets/scripting_window.c:239
 msgid ""
@@ -1627,7 +1612,7 @@ msgstr "Επαναφορά"
 
 #: src/gui/widgets/live_waveform.c:286
 msgid "Live waveform indicator"
-msgstr "Ζωντανή ένδειξη κυμματομορφής"
+msgstr "Ζωντανή ένδειξη κυματομορφής"
 
 #: src/gui/widgets/clip_editor_inner.c:285
 msgid "Select a region..."
@@ -1680,7 +1665,6 @@ msgid "Pitch"
 msgstr "Τόνος"
 
 #: src/gui/widgets/event_viewer.c:619
-#, fuzzy
 msgid "Index"
 msgstr "Ευρετήριο"
 
@@ -1697,7 +1681,6 @@ msgid "Device"
 msgstr "Συσκευή"
 
 #: src/gui/widgets/cc_bindings_tree.c:277
-#, fuzzy
 msgid "Note/Control"
 msgstr "Νότα/χειριστής"
 
@@ -1751,7 +1734,6 @@ msgstr "Ομάδα"
 
 #: src/gui/widgets/route_target_selector_popover.c:242
 #: src/gui/widgets/route_target_selector_popover.c:430
-#, fuzzy
 msgid "No output selected"
 msgstr "Καμία επιλογή εξόδου"
 
@@ -1956,7 +1938,6 @@ msgid "Pin/Unpin Tracks"
 msgstr "Καρφίτσωμα/ξεκαρφίτσωμα κομματιών"
 
 #: src/gui/widgets/track.c:1771
-#, fuzzy
 msgid "Track MIDI Ch"
 msgstr "Κομμάτι MIDI Κα"
 
@@ -1970,7 +1951,7 @@ msgid "MIDI Channel %d"
 msgstr "Κανάλι MIDI %d"
 
 #: src/gui/widgets/track.c:1852
-#, fuzzy, c-format
+#, c-format
 msgid "Lane %d MIDI Ch"
 msgstr "Λωρίδα %d MIDI Κα"
 
@@ -2268,17 +2249,14 @@ msgid "Touch"
 msgstr "Άγγιγμα"
 
 #: src/audio/automation_track.c:122
-#, fuzzy
 msgid "Latch"
-msgstr "Latch"
+msgstr "Κλείδωμα"
 
 #: src/audio/channel_send.c:377
-#, fuzzy
 msgid "Pre-fader send"
 msgstr "Αποστολή προ-fader"
 
 #: src/audio/channel_send.c:379
-#, fuzzy
 msgid "Post-fader send"
 msgstr "Αποστολή μετα-fader"
 
@@ -2289,7 +2267,7 @@ msgstr "%s εισαγωγή"
 
 #: src/audio/marker_track.c:59
 msgid "Markers"
-msgstr "Δείκτες"
+msgstr "Σημάδια"
 
 #: src/audio/modulator_track.c:80 resources/ui/bot_dock_edge.ui:144
 #: resources/ui/bot_dock_edge.ui:160
@@ -2365,77 +2343,62 @@ msgid "Unimplemented"
 msgstr "Μη ενσωματωμένο"
 
 #: src/audio/fader.c:123
-#, fuzzy
 msgid "Prefader Volume"
 msgstr "Ένταση pre-fader"
 
 #: src/audio/fader.c:123
-#, fuzzy
 msgid "Fader Volume"
 msgstr "Ένταση fader"
 
 #: src/audio/fader.c:150
-#, fuzzy
 msgid "Prefader Balance"
 msgstr "Ισορροπία pre-fader"
 
 #: src/audio/fader.c:150
-#, fuzzy
 msgid "Fader Balance"
 msgstr "Ισορροπία fader"
 
 #: src/audio/fader.c:169
-#, fuzzy
 msgid "Prefader Mute"
 msgstr "Σίγαση pre-fader"
 
 #: src/audio/fader.c:169
-#, fuzzy
 msgid "Fader Mute"
 msgstr "Σίγαση fader"
 
 #: src/audio/fader.c:193
-#, fuzzy
 msgid "Ch Pre-Fader in"
 msgstr "Είσοδος pre-fader"
 
 #: src/audio/fader.c:197
-#, fuzzy
 msgid "Ch Fader in"
 msgstr "Είσοδος fader"
 
 #: src/audio/fader.c:202
-#, fuzzy
 msgid "Monitor Fader in"
 msgstr "Είσοδος μόνιτορ fader"
 
 #: src/audio/fader.c:218
-#, fuzzy
 msgid "Ch Pre-Fader out"
 msgstr "Έξοδος pre-fader"
 
 #: src/audio/fader.c:222
-#, fuzzy
 msgid "Ch Fader out"
 msgstr "Έξοδος fader"
 
 #: src/audio/fader.c:227
-#, fuzzy
 msgid "Monitor Fader out"
 msgstr "Έξοδος μόνιτορ fader"
 
 #: src/audio/fader.c:246
-#, fuzzy
 msgid "Ch MIDI Pre-Fader in"
 msgstr "Είσοδος MIDI pre-fader"
 
 #: src/audio/fader.c:250
-#, fuzzy
 msgid "Ch MIDI Fader in"
 msgstr "Είσοδος MIDI fader"
 
 #: src/audio/fader.c:261
-#, fuzzy
 msgid "Ch MIDI Pre-Fader out"
 msgstr "Έξοδος MIDI pre-fader"
 
@@ -2628,7 +2591,6 @@ msgid "Selections must be on the same lane"
 msgstr "Οι επιλογές πρέπει να βρίσκονται στην ίδια λωρίδα"
 
 #: src/actions/actions.c:2242
-#, fuzzy
 msgid "Region name"
 msgstr "όνομα_περιοχής"
 
@@ -2667,9 +2629,8 @@ msgid "Change BPM"
 msgstr "Αλλαγή BPM"
 
 #: src/actions/channel_send_action.c:194
-#, fuzzy
 msgid "Channel send connection"
-msgstr "Αποστολή σύνδεσης"
+msgstr "Σύνδεση αποστολής καναλιού"
 
 #: src/actions/move_plugins_action.c:258
 #, c-format
@@ -2706,7 +2667,6 @@ msgid "Unmute Track"
 msgstr "Ξεσίγαση κομματιού"
 
 #: src/actions/edit_tracks_action.c:473
-#, fuzzy
 msgid "Change Fader"
 msgstr "Αλλαγή fader"
 
@@ -2827,7 +2787,7 @@ msgstr "Επικόλληση από το πρόχειρο"
 
 #: resources/gtk/help-overlay.ui:154
 msgid "Undo and Redo"
-msgstr "Αναίρεση και επανάληψη"
+msgstr "Αναίρεση και επαναφορά"
 
 #: resources/gtk/help-overlay.ui:159
 msgid "Undo previous command"
@@ -2835,7 +2795,7 @@ msgstr "Αναίρεση προηγούμενης εντολής"
 
 #: resources/gtk/help-overlay.ui:166
 msgid "Redo previous command"
-msgstr "Επανάληψη προηγούμενης εντολής"
+msgstr "Επαναφορά προηγούμενης εντολής"
 
 #: resources/gtk/help-overlay.ui:175
 msgid "Selections"
@@ -3175,27 +3135,22 @@ msgid "min"
 msgstr "μινόρε"
 
 #: resources/ui/chord_selector_window.ui:291
-#, fuzzy
 msgid "dim"
-msgstr "dim"
+msgstr "χαμήλωμα"
 
 #: resources/ui/chord_selector_window.ui:304
-#, fuzzy
 msgid "sus4"
 msgstr "sus4"
 
 #: resources/ui/chord_selector_window.ui:317
-#, fuzzy
 msgid "sus2"
 msgstr "sus2"
 
 #: resources/ui/chord_selector_window.ui:330
-#, fuzzy
 msgid "aug"
 msgstr "aug"
 
 #: resources/ui/chord_selector_window.ui:347
-#, fuzzy
 msgid "Accent"
 msgstr "Τόνος"
 
@@ -3533,7 +3488,6 @@ msgid "Loop"
 msgstr "Λούπα"
 
 #: resources/ui/splash.ui:38
-#, fuzzy
 msgid "Splash"
 msgstr "Splash"
 
@@ -3559,7 +3513,7 @@ msgstr "Προβολέας γεγονότων"
 
 #: resources/ui/automation_track.ui:31
 msgid "Control this automation track is for"
-msgstr ""
+msgstr "Ο χειριστής αυτού του κομματιού αυτοματισμού είναι για"
 
 #: resources/ui/automation_track.ui:43
 msgid "Mute automation track"
@@ -3595,7 +3549,7 @@ msgstr "Ρυθμίσεις μετατροπής σε ήχο"
 
 #: resources/ui/bounce_dialog.ui:65
 msgid "Bounce"
-msgstr "Bounce"
+msgstr "Μετατροπή σε ήχο"
 
 #: resources/ui/bounce_dialog.ui:91
 msgid "Bounce with effect chain"
@@ -3716,9 +3670,8 @@ msgstr "Ηλεκτρονική"
 
 #: resources/ui/export_dialog.ui:345
 #: build/data/org.zrythm.Zrythm.gschema.xml:404
-#, fuzzy
 msgid "Dither"
-msgstr "Θόρυβος"
+msgstr "Θόρυβος διασποράς"
 
 #: resources/ui/export_dialog.ui:363
 #: build/data/org.zrythm.Zrythm.gschema.xml:414
@@ -3974,11 +3927,10 @@ msgstr "Διάρκεια αντικειμένου χρονολογίου"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:240
 #: build/data/org.zrythm.Zrythm.gschema.xml:250
-#, fuzzy
 msgid "Default length to use when creating timeline objects, eg in edit mode."
 msgstr ""
-"Προεπιλεγμένη διάρκεια προς χρήση κατά τη δημιουργία αντικειμένων "
-"χρονολογίου, πχ. σε λειτουργία επεξεργασίας."
+"Προεπιλεγμένο μήκος προς χρήση κατά τη δημιουργία αντικειμένων χρονολογίου, "
+"π.χ. σε λειτουργία επεξεργασίας."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:244
 msgid "Timeline object length type"
@@ -3986,12 +3938,11 @@ msgstr "Τύπος διάρκειας αντικειμένου χρονολογ�
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:245
 #: build/data/org.zrythm.Zrythm.gschema.xml:255
-#, fuzzy
 msgid ""
 "Default length type to use when creating timeline objects, eg in edit mode."
 msgstr ""
-"Προεπιλεγμένος τύπος διάρκειας προς χρήση κατά τη δημιουργία αντικειμένων "
-"χρονολογίου, πχ. σε λειτουργία επεξεργασίας."
+"Προεπιλεγμένος τύπος μήκους προς χρήση κατά τη δημιουργία αντικειμένων "
+"χρονολογίου, π.χ. σε λειτουργία επεξεργασίας."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:249
 msgid "Editor object length"
@@ -4071,12 +4022,11 @@ msgstr "Θέση της λαβής του αριστερού πάνελ για �
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:294
 msgid "Left panel tab index"
-msgstr ""
+msgstr "Ευρετήριο καρτελών αριστερού πάνελ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:295
-#, fuzzy
 msgid "Index of the currently opened left panel tab."
-msgstr "Θέση της λαβής του αριστερού πάνελ για μεταβολή μεγέθους."
+msgstr "Ευρετήριο της τρέχουσας ανοιχτής καρτέλας του αριστερού πάνελ."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:299
 msgid "Right panel divider position"
@@ -4087,14 +4037,12 @@ msgid "Position of the resize handle of the right panel."
 msgstr "Θέση της λαβής του δεξιού πάνελ για μεταβολή μεγέθους."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:304
-#, fuzzy
 msgid "Right panel tab index"
-msgstr "Θέση διαχωριστή του δεξιού πάνελ"
+msgstr "Ευρετήριο καρτελών δεξιού πάνελ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:305
-#, fuzzy
 msgid "Index of the currently opened right panel tab."
-msgstr "Θέση της λαβής του δεξιού πάνελ για μεταβολή μεγέθους."
+msgstr "Ευρετήριο της τρέχουσας ανοιχτής καρτέλας του δεξιού πάνελ."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:309
 msgid "Bot panel divider position"
@@ -4106,11 +4054,11 @@ msgstr "Θέση της λαβής του κάτω πάνελ για μεταβ�
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:314
 msgid "Bot panel tab index"
-msgstr ""
+msgstr "Ευρετήριο καρτελών του κάτω πάνελ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:315
 msgid "Index of the currently opened bottom panel tab."
-msgstr ""
+msgstr "Ευρετήριο της τρέχουσας ανοιχτής καρτέλας του κάτω πάνελ."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:319
 msgid "Plugin browser tab"
@@ -4201,18 +4149,16 @@ msgstr ""
 "ενέργεια λειτουργίας MIDI)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:370
-#, fuzzy
 msgid "Last used automation function"
-msgstr "Τελευταία χρήση λειτουργίας MIDI"
+msgstr "Τελευταία χρησιμοποιημένη λειτουργία αυτοματισμού"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:371
-#, fuzzy
 msgid ""
 "Last used automation function (index corresponding to enum in automation "
 "function action)."
 msgstr ""
-"Τελευταία χρήση λειτουργίας MIDI (δείκτης που αντιστοιχεί σε enum στην "
-"ενέργεια λειτουργίας MIDI)."
+"Τελευταία χρησιμοποιημένη λειτουργία αυτοματισμού (ευρετήριο που αντιστοιχεί "
+"σε απαρίθμηση των ενεργειών της λειτουργίας αυτοματισμού)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:380
 msgid "Genre to use when exporting, if the file type supports it."
@@ -4467,7 +4413,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:590
 msgid "Generic UIs"
-msgstr "Γενικές (κοινές) διεπαφές χρήστη"
+msgstr "Κοινές διεπαφές χρήστη"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:591
 msgid "Show generic plugin UIs generated by Zrythm instead of custom ones."
@@ -4535,7 +4481,6 @@ msgstr ""
 "αφαιρεθούν."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:643
-#, fuzzy
 msgid "Fade algorithm"
 msgstr "Αλγόριθμος fade"
 
