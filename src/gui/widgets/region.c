@@ -118,6 +118,8 @@ get_last_rects (
       *draw_rect = self->last_lane_draw_rect;
       *full_rect = self->last_lane_full_rect;
     }
+
+  g_return_if_fail ((*draw_rect).width < 40000);
 }
 
 /**
@@ -907,13 +909,13 @@ draw_automation_region (
  * @param full_rect Arranger object rect.
  */
 static void
-draw_fades (
+draw_fade_part (
   ZRegion *      self,
   cairo_t *      cr,
-  GdkRectangle * rect,
-  GdkRectangle * full_rect,
-  GdkRectangle * draw_rect,
-  RegionCounterpart counterpart)
+  int            vis_offset_x,
+  int            vis_width,
+  int            full_width,
+  int            height)
 {
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -925,16 +927,7 @@ draw_fades (
     cr, 0.2, 0.2, 0.2, 0.6);
   cairo_set_line_width (cr, 3);
 
-  int vis_offset_x =
-    draw_rect->x - full_rect->x;
-  /*int vis_offset_y =*/
-    /*draw_rect->y - full_rect->y;*/
-  int vis_width = draw_rect->width;
-  /*int vis_height = draw_rect->height;*/
-  /*int full_offset_x = full_rect->x;*/
-  /*int full_offset_y = full_rect->y;*/
-  int full_width = full_rect->width;
-  int full_height = full_rect->height;
+  int full_height = height;
 
   /* get fade in px */
   int fade_in_px =
@@ -964,8 +957,6 @@ draw_fades (
               (double) (i - start_px) /
                 local_px_diff,
               &obj->fade_in_opts, 1);
-          /* FIXME doesn't work when only the
-           * region is drawn (not whole arranger) */
           double next_val =
             1.0 -
             fade_get_y_normalized (
@@ -980,7 +971,7 @@ draw_fades (
           if (i == vis_start_px)
             {
               cairo_move_to (
-                cr, i - rect->x, val * full_height);
+                cr, i, val * full_height);
             }
 
           cairo_rel_line_to (
@@ -1076,6 +1067,8 @@ draw_audio_part (
   int       vis_width,
   int       full_height)
 {
+  g_return_if_fail (vis_width < 40000);
+
   AudioClip * clip = audio_region_get_clip (self);
 
   ArrangerObject * obj = (ArrangerObject *) self;
@@ -1264,6 +1257,8 @@ draw_audio_region (
   int               cache_applied_width,
   RegionCounterpart counterpart)
 {
+  g_return_if_fail (cache_applied_width < 40000);
+
   /*g_message ("drawing audio region");*/
   ArrangerObject * obj = (ArrangerObject *) self;
   if (self->stretching)
@@ -1314,6 +1309,9 @@ draw_audio_region (
           draw_audio_part (
             self, cr, vis_offset_x, new_vis_width,
             full_height);
+          draw_fade_part (
+            self, cr, vis_offset_x, new_vis_width,
+            full_rect->width, full_height);
         }
       /* if need to draw right part */
       if (
@@ -1333,6 +1331,10 @@ draw_audio_region (
           draw_audio_part (
             self, cr, new_vis_offset_x,
             new_vis_width, full_height);
+          draw_fade_part (
+            self, cr, new_vis_offset_x,
+            new_vis_width, full_rect->width,
+            full_height);
         }
     }
   /* if no cache applied, draw the whole thing */
@@ -1341,6 +1343,9 @@ draw_audio_region (
       draw_audio_part (
         self, cr, vis_offset_x,
         vis_width, full_height);
+      draw_fade_part (
+        self, cr, vis_offset_x,
+        vis_width, full_rect->width, full_height);
     }
 
   cairo_restore (cr);
@@ -1379,16 +1384,7 @@ draw_name (
         }
     }
 
-  /*int vis_offset_x =*/
-    /*draw_rect->x - full_rect->x;*/
-  /*int vis_offset_y =*/
-    /*draw_rect->y - full_rect->y;*/
-  /*int vis_width = draw_rect->width;*/
-  /*int vis_height = draw_rect->height;*/
-  /*int full_offset_x = full_rect->x;*/
-  /*int full_offset_y = full_rect->y;*/
   int full_width = full_rect->width;
-  /*int full_height = full_rect->height;*/
 
   /* draw dark bg behind text */
   recreate_pango_layouts (
@@ -1463,9 +1459,9 @@ is_cacheable (
  */
 static bool
 is_cache_usable (
-  ZRegion *      self,
-  GdkRectangle * main_full_rect,
-  GdkRectangle * main_draw_rect,
+  ZRegion *         self,
+  GdkRectangle *    full_rect,
+  GdkRectangle *    draw_rect,
   RegionCounterpart counterpart)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
@@ -1481,17 +1477,17 @@ is_cache_usable (
     {
       rects_equal =
         self->last_main_full_rect.width ==
-          main_full_rect->width &&
+          full_rect->width &&
         self->last_main_full_rect.height ==
-          main_full_rect->height;
+          full_rect->height;
     }
   else
     {
       rects_equal =
         self->last_lane_full_rect.width ==
-          main_full_rect->width &&
+          full_rect->width &&
         self->last_lane_full_rect.height ==
-          main_full_rect->height;
+          full_rect->height;
     }
 
   bool markers_equal =
@@ -1527,13 +1523,6 @@ is_cache_usable (
     rects_equal && markers_equal && fades_equal &&
     clip_changed_before_last_change;
 
-#if 0
-  if (self->id.type == REGION_TYPE_AUDIO)
-    {
-      g_warn_if_fail (region_params_equal);
-    }
-#endif
-
   return
     region_params_equal ||
     MW_TIMELINE->action ==
@@ -1557,7 +1546,6 @@ region_draw (
   ArrangerObject * obj = (ArrangerObject *) self;
 
   GdkRectangle draw_rect;
-  GdkRectangle main_draw_rect, main_full_rect;
   GdkRectangle last_draw_rect, last_full_rect;
   GdkRectangle full_rect = obj->full_rect;
   for (int i = REGION_COUNTERPART_MAIN;
@@ -1603,11 +1591,7 @@ region_draw (
       get_last_rects (
         self, i, &last_full_rect, &last_draw_rect);
 
-      if (i == REGION_COUNTERPART_MAIN)
-        {
-          main_draw_rect = draw_rect;
-          main_full_rect = full_rect;
-        }
+      g_return_if_fail (draw_rect.width < 40000);
 
       cairo_save (cr);
 
@@ -1628,7 +1612,7 @@ region_draw (
       cairo_t * cr_to_use = cr;
       cairo_surface_t * surface_to_use =
         cairo_get_target (cr);
-      if (!DEBUGGING && is_cacheable (self))
+      if (is_cacheable (self))
         {
           surface_to_use =
             cairo_surface_create_similar (
@@ -1642,7 +1626,7 @@ region_draw (
       /* if cache is usable, apply it */
       bool prev_cache_used = false;
       if (is_cache_usable (
-            self, &main_full_rect, &main_draw_rect,
+            self, &full_rect, &draw_rect,
             i))
         {
           int last_draw_offset = 0;
@@ -1728,27 +1712,17 @@ region_draw (
         default:
           break;
         }
-      if (arranger_object_can_fade (obj))
-        {
-          draw_fades (
-            self, cr_to_use, rect, &full_rect,
-            &draw_rect, i);
-        }
 
       /* remember rects */
       if (i == REGION_COUNTERPART_MAIN)
         {
-          self->last_main_full_rect =
-            main_full_rect;
-          self->last_main_draw_rect =
-            main_draw_rect;
+          self->last_main_full_rect = full_rect;
+          self->last_main_draw_rect = draw_rect;
         }
       else
         {
-          self->last_lane_full_rect =
-            main_full_rect;
-          self->last_lane_draw_rect =
-            main_draw_rect;
+          self->last_lane_full_rect = full_rect;
+          self->last_lane_draw_rect = draw_rect;
         }
 
       self->last_cache_time =
@@ -1756,7 +1730,7 @@ region_draw (
 
       /* replace the old cache with the new one
        * and draw the new cache */
-      if (!DEBUGGING && is_cacheable (self))
+      if (is_cacheable (self))
         {
           /* replace with new one */
           if (obj->cached_surface[i])
@@ -1798,11 +1772,8 @@ region_draw (
       cairo_restore (cr);
     }
 
-  if (!DEBUGGING)
-    {
-      self->last_positions_obj = *obj;
-      obj->use_cache = true;
-    }
+  self->last_positions_obj = *obj;
+  obj->use_cache = true;
 }
 
 /**

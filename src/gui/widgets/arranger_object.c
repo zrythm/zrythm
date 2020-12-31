@@ -417,6 +417,9 @@ arranger_object_is_rename (
   const int        x,
   const int        y)
 {
+  /* disable for now */
+  return false;
+
   if (self->type != ARRANGER_OBJECT_TYPE_REGION)
     return false;
 
