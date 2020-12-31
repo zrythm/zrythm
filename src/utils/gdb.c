@@ -119,7 +119,7 @@ gdb_exec (
 
   /* array of current env variables
    * + G_DEBUG */
-  size_t max_size = 100;
+  size_t max_size = 40000;
   const char ** gdb_env =
     calloc (max_size, sizeof (char *));
   size_t i = 1;
