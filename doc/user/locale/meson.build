@@ -16,58 +16,32 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 # Test PO files for errors.
 
-manual_po_files = [
-  'appendix.po',
-  'chords-and-scales.po',
-  'configuration.po',
-  'contributing.po',
-  'credits.po',
-  'editing.po',
-  'exporting.po',
-  'getting-started.po',
-  'glossary.po',
-  'index.po',
-  'invoking-from-command-line.po',
-  'mixing.po',
-  'modulators.po',
-  'playback-and-recording.po',
-  'plugins-files.po',
-  'projects.po',
-  'routing.po',
-  'scripting.po',
-  'theming.po',
-  'tracks.po',
-  'user-media.po',
-  'zrythm-interface.po',
-  ]
-
 # note: if this fails, run the manual_gettext
 # target to generate missing .po files
 foreach lang, lang_str : locales
   if msgfmt.found () and lang != 'en'
-    foreach po_file : manual_po_files
-      po_file_path = lang / 'LC_MESSAGES' / po_file
-      if fs.exists (po_file_path)
-        test (
-          'user-manual-' + lang + '-' + po_file,
-          msgfmt,
-          args: [
-            '-v', '-c', files (po_file_path) ,
-            ])
-        if os_gnu
-          foreach illegal_char : illegal_chars
-            test (
-              'user-manual-' + lang + '-' + po_file + '-illegal-char-' + illegal_char,
-              bash,
-              args: [
-                illegal_char_test_args, illegal_char,
-                files (po_file_path) ,
-                ])
-          endforeach
-        endif
-      else
-        warning ('file ' + po_file_path + ' does not exist')
+    po_file = 'zrythm-manual.po'
+    po_file_path = lang / 'LC_MESSAGES' / po_file
+    if fs.exists (po_file_path)
+      test (
+        'user-manual-' + lang + '-po',
+        msgfmt,
+        args: [
+          '-v', '-c', files (po_file_path) ,
+          ])
+      if os_gnu
+        foreach illegal_char : illegal_chars
+          test (
+            'user-manual-' + lang + '-po-illegal-char-' + illegal_char,
+            bash,
+            args: [
+              illegal_char_test_args, illegal_char,
+              files (po_file_path) ,
+              ])
+        endforeach
       endif
-    endforeach
+    else
+      warning ('file ' + po_file_path + ' does not exist')
+    endif
   endif
 endforeach

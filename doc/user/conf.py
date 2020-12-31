@@ -270,7 +270,7 @@ epub_exclude_files = ['search.html']
 locale_dirs = ['locale/']
 # TODO after 3.3, set this to 'zrythm-manual' to
 # compact all PO files into one
-gettext_compact = True
+gettext_compact = 'zrythm-manual'
 
 
 # -- Extension configuration -------------------------------------------------
