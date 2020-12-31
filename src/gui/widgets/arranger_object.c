@@ -235,7 +235,8 @@ arranger_object_is_fade (
   const int fade_pt_halfwidth =
     ARRANGER_OBJECT_FADE_POINT_HALFWIDTH;
   GdkRectangle full_rect;
-  if (check_lane)
+  Track * track = arranger_object_get_track (self);
+  if (check_lane && track->lanes_visible)
     {
       ZRegion * r = (ZRegion *) self;
       region_get_lane_full_rect (r, &full_rect);
