@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-29 18:03+0100\n"
-"PO-Revision-Date: 2020-10-03 13:25+0000\n"
+"PO-Revision-Date: 2020-12-31 22:54+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/theming/"
 "ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../theming/css.rst:8
@@ -166,12 +166,16 @@ msgid "Theming"
 msgstr "テーマ"
 
 #: ../../theming/overview.rst:7
+#, fuzzy
 msgid ""
 "Zrythm aims to allow extensive theming support. You can override many "
 "defaults that Zrythm uses by placing things in your Zrythm user "
 "directory. This directory can be found in the :ref:`preferences` and will"
 " be referred to as `the Zrythm directory` in this chapter."
 msgstr ""
+"Zrythm は、テーマのサポートを幅広く行えるようにすることを目的としています。Zrythm が使用する多くのデフォルトを上書きするには、Zrythm "
+"のユーザディレクトリに配置する必要があります。このディレクトリは :ref:`preferences` の中にあり、この章では `Zrythm "
+"ディレクトリ` と呼ぶことにします。"
 
 #: ../../theming/overview.rst:13
 msgid ""

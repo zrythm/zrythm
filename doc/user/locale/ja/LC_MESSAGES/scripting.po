@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-12-31 01:15+0000\n"
-"PO-Revision-Date: 2020-10-03 13:25+0000\n"
+"PO-Revision-Date: 2020-12-31 22:54+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"scripting/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/scripting/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../scripting/api/actions channel_send_action.rst:7
@@ -24,33 +25,41 @@ msgstr ""
 msgid ""
 "Scheme Procedure: **channel-send-action-new-connect-audio** | *send "
 "stereo_ports*"
-msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+msgstr ""
+"Scheme Procedure: **channel-send-action-new-connect-audio** | *send "
+"stereo_ports*"
 
 #: ../../scripting/api/actions channel_send_action.rst:6
+#, fuzzy
 msgid "Returns a new action for creating a send connection."
-msgstr ""
+msgstr "送信接続を作成するための新しいアクションを返します。"
 
 #: ../../scripting/api/actions create_tracks_action.rst:7
-#, fuzzy
 msgid ""
 "Scheme Procedure: **create-tracks-action-new-with-plugin** | *type "
 "pl_descr track_pos num_tracks*"
-msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+msgstr ""
+"Scheme Procedure: **create-tracks-action-new-with-plugin** | *type pl_descr "
+"track_pos num_tracks*"
 
 #: ../../scripting/api/actions create_tracks_action.rst:6
+#, fuzzy
 msgid "Returns a new Create Tracks action for a plugin."
-msgstr ""
+msgstr "プラグインの新しいCreate Tracksアクションを返します。"
 
 #: ../../scripting/api/actions create_tracks_action.rst:12
 #, fuzzy
 msgid ""
 "Scheme Procedure: **create-tracks-action-new-audio-fx** | *track_pos "
 "num_tracks*"
-msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
+msgstr ""
+"Scheme Procedure: **create-tracks-action-new-audio-fx** | *track_pos "
+"num_tracks*"
 
 #: ../../scripting/api/actions create_tracks_action.rst:10
+#, fuzzy
 msgid "Returns a new Create Tracks action for one or more empty Audio FX tracks."
-msgstr ""
+msgstr "1つ以上の空のAudio FXトラックの新しいCreate Tracksアクションを返します。"
 
 #: ../../scripting/api/actions port_connection_action.rst:7
 #, fuzzy
@@ -61,7 +70,7 @@ msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します�
 
 #: ../../scripting/api/actions port_connection_action.rst:6
 msgid "Creates an action for connecting 2 ports."
-msgstr ""
+msgstr "2ポートを接続するためのアクションを作成します。"
 
 #: ../../scripting/api/actions undo_manager.rst:7
 #, fuzzy
@@ -70,7 +79,7 @@ msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します�
 
 #: ../../scripting/api/actions undo_manager.rst:6
 msgid "Performs the given action and adds it to the undo stack."
-msgstr ""
+msgstr "指定されたアクションを実行し、元に戻すスタックに追加します。"
 
 #: ../../scripting/api/actions undo_manager.rst:11
 #, fuzzy
@@ -79,7 +88,7 @@ msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します�
 
 #: ../../scripting/api/actions undo_manager.rst:10
 msgid "Undoes the last action."
-msgstr ""
+msgstr "最後の操作を元に戻します。"
 
 #: ../../scripting/api/actions undo_manager.rst:15
 #, fuzzy
@@ -87,8 +96,9 @@ msgid "Scheme Procedure: **undo-manager-redo** | *[action]*"
 msgstr "位置を'bars.beats.sixteenths.ticks.sub_tick'として出力します。"
 
 #: ../../scripting/api/actions undo_manager.rst:14
+#, fuzzy
 msgid "Redoes the last undone action."
-msgstr ""
+msgstr "最後に元に戻した動作をやり直します。"
 
 #: ../../scripting/api/audio channel.rst:7
 #, fuzzy
@@ -430,11 +440,11 @@ msgstr "Guile APIはWindowsでは利用できません。"
 
 #: ../../scripting/scripting-interface.rst:6
 msgid "Scripting Interface"
-msgstr ""
+msgstr "スクリプティングインタフェース"
 
 #: ../../scripting/scripting-interface.rst:8
 msgid "Todo"
-msgstr ""
+msgstr "行うべきこと"
 
 #: ../../scripting/scripting-interface.rst:8
 msgid "Explain the scripting window/interface."
@@ -451,4 +461,3 @@ msgstr ""
 #~ "(audio track))`` at the top of the"
 #~ " script."
 #~ msgstr ""
-
