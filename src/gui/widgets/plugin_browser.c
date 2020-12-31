@@ -637,11 +637,19 @@ on_collection_add_activate (
   gtk_widget_show_all (GTK_WIDGET (dialog));
   gtk_dialog_run (GTK_DIALOG (dialog));
 
-  plugin_collections_add (
-    PLUGIN_MANAGER->collections, collection,
-    F_SERIALIZE);
-
-  plugin_browser_widget_refresh_collections (self);
+  if (strlen (collection->name) > 0)
+    {
+      g_debug ("accept collection");
+      plugin_collections_add (
+        PLUGIN_MANAGER->collections, collection,
+        F_SERIALIZE);
+      plugin_browser_widget_refresh_collections (
+        self);
+    }
+  else
+    {
+      g_message ("invalid collection name (empty)");
+    }
 
   plugin_collection_free (collection);
 }
@@ -1301,6 +1309,9 @@ plugin_search_equal_func (
   return !match;
 }
 
+/**
+ * Sets up the given treeview.
+ */
 static void
 tree_view_setup (
   PluginBrowserWidget * self,
@@ -1354,18 +1365,6 @@ tree_view_setup (
         (GtkTreeViewSearchEqualFunc)
           plugin_search_equal_func,
         self, NULL);
-
-      /* connect right click handler */
-      GtkGestureMultiPress * mp =
-        GTK_GESTURE_MULTI_PRESS (
-          gtk_gesture_multi_press_new (
-            GTK_WIDGET (tree_view)));
-      gtk_gesture_single_set_button (
-        GTK_GESTURE_SINGLE (mp),
-        GDK_BUTTON_SECONDARY);
-      g_signal_connect (
-        G_OBJECT (mp), "pressed",
-        G_CALLBACK (on_plugin_right_click), self);
     }
   else if (model ==
              GTK_TREE_MODEL (
@@ -1415,37 +1414,6 @@ tree_view_setup (
       gtk_tree_view_append_column (
         GTK_TREE_VIEW (tree_view),
         column);
-
-      /* connect right click handler */
-      GtkGestureMultiPress * mp =
-        GTK_GESTURE_MULTI_PRESS (
-          gtk_gesture_multi_press_new (
-            GTK_WIDGET (tree_view)));
-      gtk_gesture_single_set_button (
-        GTK_GESTURE_SINGLE (mp),
-        GDK_BUTTON_SECONDARY);
-      if (model ==
-            GTK_TREE_MODEL (
-              self->category_tree_model))
-        {
-          g_signal_connect (
-            G_OBJECT (mp), "pressed",
-            G_CALLBACK (on_category_right_click),
-            self);
-        }
-      else if (model ==
-            GTK_TREE_MODEL (
-              self->collection_tree_model))
-        {
-          g_signal_connect (
-            G_OBJECT (mp), "pressed",
-            G_CALLBACK (on_collection_right_click),
-            self);
-        }
-      else
-        {
-          g_object_unref (mp);
-        }
     }
 
   /* hide headers and allow multi-selection */
@@ -1709,6 +1677,18 @@ plugin_browser_widget_new ()
   /* setup collections */
   plugin_browser_widget_refresh_collections (self);
 
+  /* connect right click handler */
+  GtkGestureMultiPress * mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self->collection_tree_view)));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (mp),
+    GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    G_OBJECT (mp), "pressed",
+    G_CALLBACK (on_collection_right_click), self);
+
   /* setup protocols */
   self->protocol_tree_model =
    GTK_TREE_MODEL_SORT (
@@ -1726,6 +1706,18 @@ plugin_browser_widget_new ()
     self->category_tree_model,
     F_MULTI_SELECT, F_NO_DND);
 
+  /* connect right click handler */
+  mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self->category_tree_view)));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (mp),
+    GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    G_OBJECT (mp), "pressed",
+    G_CALLBACK (on_category_right_click), self);
+
   /* populate plugins */
   self->plugin_tree_model =
     GTK_TREE_MODEL_FILTER (
@@ -1740,6 +1732,18 @@ plugin_browser_widget_new ()
     "row-activated",
     G_CALLBACK (on_row_activated),
     self->plugin_tree_model);
+
+  /* connect right click handler */
+  mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self->plugin_tree_view)));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (mp),
+    GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    G_OBJECT (mp), "pressed",
+    G_CALLBACK (on_plugin_right_click), self);
 
   /* set the selected values */
   PluginBrowserTab tab =
