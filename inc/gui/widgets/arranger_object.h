@@ -42,8 +42,9 @@
 
 /**
  * Returns if the current position is for moving the
- * fade in mark.
+ * fade in/out mark.
  *
+ * @param in True for fade in, false for fade out.
  * @param x X in local coordinates.
  * @param only_handle Whether to only check if this
  *   is inside the fade handle. If this is false,
@@ -52,35 +53,36 @@
  *   is inside the fade's outter (unplayed) region.
  *   If this is false, the whole fade area will
  *   be considered.
+ * @param check_lane Whether to check the lane
+ *   region instead of the main one (if region).
  */
 bool
-arranger_object_is_fade_in (
+arranger_object_is_fade (
   ArrangerObject * self,
+  bool             in,
   const int        x,
-  const int        y,
+  int              y,
   bool             only_handle,
-  bool             only_outer);
+  bool             only_outer,
+  bool             check_lane);
 
-/**
- * Returns if the current position is for moving the
- * fade out mark.
- *
- * @param x X in local coordinates.
- * @param only_handle Whether to only check if this
- *   is inside the fade handle. If this is false,
- *   \ref only_outer will be considered.
- * @param only_outer Whether to only check if this
- *   is inside the fade's outter (unplayed) region.
- *   If this is false, the whole fade area will
- *   be considered.
- */
-bool
-arranger_object_is_fade_out (
-  ArrangerObject * self,
-  const int        x,
-  const int        y,
-  bool             only_handle,
-  bool             only_outer);
+#define arranger_object_is_fade_in( \
+  self,x,y,only_handle,only_outer) \
+  arranger_object_is_fade ( \
+    self, true, x, y, only_handle, only_outer, \
+    true) || \
+  arranger_object_is_fade ( \
+    self, true, x, y, only_handle, only_outer, \
+    false)
+
+#define arranger_object_is_fade_out( \
+  self,x,y,only_handle,only_outer) \
+  arranger_object_is_fade ( \
+    self, false, x, y, only_handle, only_outer, \
+    true) || \
+  arranger_object_is_fade ( \
+    self, false, x, y, only_handle, only_outer, \
+    false)
 
 /**
  * Returns if the current position is for resizing

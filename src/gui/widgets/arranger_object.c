@@ -201,8 +201,9 @@ arranger_object_is_resize_r (
 
 /**
  * Returns if the current position is for moving the
- * fade in mark.
+ * fade in/out mark.
  *
+ * @param in True for fade in, false for fade out.
  * @param x X in local coordinates.
  * @param only_handle Whether to only check if this
  *   is inside the fade handle. If this is false,
@@ -211,103 +212,100 @@ arranger_object_is_resize_r (
  *   is inside the fade's outter (unplayed) region.
  *   If this is false, the whole fade area will
  *   be considered.
+ * @param check_lane Whether to check the lane
+ *   region instead of the main one (if region).
  */
 bool
-arranger_object_is_fade_in (
+arranger_object_is_fade (
   ArrangerObject * self,
+  bool             in,
   const int        x,
-  const int        y,
+  int              y,
   bool             only_handle,
-  bool             only_outer)
+  bool             only_outer,
+  bool             check_lane)
 {
   if (!arranger_object_can_fade (self))
     return false;
 
-  int fade_in_px =
+  const int fade_in_px =
     ui_pos_to_px_timeline (&self->fade_in_pos, 0);
-
-  if (only_handle)
-    {
-      return
-        x >=
-          fade_in_px -
-            ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
-        x <=
-          fade_in_px +
-            ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
-        y <= ARRANGER_OBJECT_FADE_POINT_HALFWIDTH;
-    }
-  else if (only_outer)
-    {
-      return
-        x <= fade_in_px && fade_in_px > 0 &&
-        (double) y <=
-          self->full_rect.height *
-          (1.0 -
-            fade_get_y_normalized (
-              (double) x / fade_in_px, &self->fade_in_opts, 1));
-    }
-  else
-    {
-      return x <= fade_in_px;
-    }
-}
-
-/**
- * Returns if the current position is for moving the
- * fade out mark.
- *
- * @param x X in local coordinates.
- * @param only_handle Whether to only check if this
- *   is inside the fade handle. If this is false,
- *   \ref only_outer will be considered.
- * @param only_outer Whether to only check if this
- *   is inside the fade's outter (unplayed) region.
- *   If this is false, the whole fade area will
- *   be considered.
- */
-bool
-arranger_object_is_fade_out (
-  ArrangerObject * self,
-  const int        x,
-  const int        y,
-  bool             only_handle,
-  bool             only_outer)
-{
-  if (!arranger_object_can_fade (self))
-    return 0;
-
-  int fade_out_px =
+  const int fade_out_px =
     ui_pos_to_px_timeline (&self->fade_out_pos, 0);
-
-  if (only_handle)
+  const int fade_pt_halfwidth =
+    ARRANGER_OBJECT_FADE_POINT_HALFWIDTH;
+  GdkRectangle full_rect;
+  if (check_lane)
     {
-      return
-        x >=
-          fade_out_px -
-            ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
-        x <=
-          fade_out_px +
-            ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
-        y <= ARRANGER_OBJECT_FADE_POINT_HALFWIDTH;
-    }
-  else if (only_outer)
-    {
-      return
-        x >= fade_out_px &&
-        self->full_rect.width - fade_out_px > 0 &&
-        (double) y <=
-          self->full_rect.height *
-          (1.0 -
-            fade_get_y_normalized (
-              (double) (x - fade_out_px) /
-                (self->full_rect.width - fade_out_px),
-              &self->fade_out_opts, 0));
+      ZRegion * r = (ZRegion *) self;
+      region_get_lane_full_rect (r, &full_rect);
+      y -= full_rect.y - self->full_rect.y;
     }
   else
     {
-      return x >= fade_out_px;
+      full_rect = self->full_rect;
     }
+
+  bool ret = false;
+  if (only_handle)
+    {
+      if (in)
+        {
+          ret =
+            x >= fade_in_px - fade_pt_halfwidth &&
+            x <= fade_in_px + fade_pt_halfwidth &&
+            y <= fade_pt_halfwidth;
+        }
+      else
+        {
+          ret =
+            x >= fade_out_px - fade_pt_halfwidth &&
+            x <= fade_out_px + fade_pt_halfwidth &&
+            y <= fade_pt_halfwidth;
+        }
+    }
+  else if (only_outer)
+    {
+      if (in)
+        {
+          ret =
+            x <= fade_in_px && fade_in_px > 0 &&
+            (double) y <=
+              full_rect.height *
+              (1.0 -
+                fade_get_y_normalized (
+                  (double) x / fade_in_px,
+                  &self->fade_in_opts, 1));
+        }
+      else
+        {
+          ret =
+            x >= fade_out_px &&
+            full_rect.width -
+              fade_out_px > 0 &&
+            (double) y <=
+              full_rect.height *
+              (1.0 -
+                fade_get_y_normalized (
+                  (double) (x - fade_out_px) /
+                    (full_rect.width -
+                       fade_out_px),
+                  &self->fade_out_opts, 0));
+        }
+    }
+  else
+    {
+      if (in)
+        {
+          ret = x <= fade_in_px;
+        }
+      else
+        {
+          ret = x >= fade_out_px;
+        }
+    }
+
+  return ret;
 }
 
 /**
