@@ -792,9 +792,8 @@ msgid "Add pic showing object selection."
 msgstr ""
 
 #: ../../editing/edit-tools.rst:58
-#, fuzzy
 msgid "Moving Objects"
-msgstr "Criação de objetos"
+msgstr "Mover objetos"
 
 #: ../../editing/edit-tools.rst:59
 msgid ""
@@ -1997,9 +1996,6 @@ msgstr ""
 
 #~ msgid "MIDI region"
 #~ msgstr "Região MIDI"
-
-#~ msgid "Moving Objects"
-#~ msgstr "Mover objetos"
 
 #~ msgid ""
 #~ "Enabling this will change the display"

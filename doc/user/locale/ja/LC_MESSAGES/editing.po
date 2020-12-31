@@ -1684,12 +1684,6 @@ msgstr "これがオンの場合、BPMが変わるたびに、オーディオリ
 #~ msgid "MIDI region"
 #~ msgstr "MIDI リージョン"
 
-#~ msgid "Creating Objects"
-#~ msgstr "オブジェクトの選択"
-
-#~ msgid "Moving Objects"
-#~ msgstr "オブジェクトの切り取り"
-
 #~ msgid ""
 #~ "Enabling this will change the display"
 #~ " of the arranger into a drum "

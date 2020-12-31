@@ -910,9 +910,8 @@ msgstr ""
 " na largura nova."
 
 #: ../../editing/edit-tools.rst:34
-#, fuzzy
 msgid "Creating Objects"
-msgstr "Seleccionar Obxectos"
+msgstr "Creando Obxectos"
 
 #: ../../editing/edit-tools.rst:35
 #, fuzzy
@@ -956,9 +955,8 @@ msgid "Add pic showing object selection."
 msgstr ""
 
 #: ../../editing/edit-tools.rst:58
-#, fuzzy
 msgid "Moving Objects"
-msgstr "Redimensionar Obxectos"
+msgstr "Movendo Obxectos"
 
 #: ../../editing/edit-tools.rst:59
 msgid ""
@@ -1973,12 +1971,6 @@ msgstr ""
 #~ msgid "MIDI region"
 #~ msgstr "Rexión MIDI"
 
-#~ msgid "Creating Objects"
-#~ msgstr "Creando Obxectos"
-
-#~ msgid "Moving Objects"
-#~ msgstr "Movendo Obxectos"
-
 #~ msgid ""
 #~ "Regions (or :term:`clips <clip>`) are "
 #~ "containers for events or data (such "
@@ -2023,20 +2015,8 @@ msgstr ""
 #~ "xeito eficiente de clonar múltiples "
 #~ "obxectos rapidamente."
 
-#~ msgid "split the following to sub-pages"
-#~ msgstr ""
-
 #~ msgid "Contains audio clips."
 #~ msgstr "Contén clips de audio."
-
-#~ msgid "Expand + add pic."
-#~ msgstr ""
-
-#~ msgid "Fades"
-#~ msgstr ""
-
-#~ msgid "Explain how fades work."
-#~ msgstr ""
 
 #~ msgid "MIDI Region"
 #~ msgstr "Rexión de Audio"
@@ -2044,17 +2024,8 @@ msgstr ""
 #~ msgid "Contains MIDI notes."
 #~ msgstr "Contén notas MIDI."
 
-#~ msgid "The following operations apply to all editable objects."
-#~ msgstr ""
-
-#~ msgid "Creating"
-#~ msgstr ""
-
 #~ msgid "For creating objects using other tools, see :ref:`edit-tools`."
 #~ msgstr "Para crear obxectos noutros modos, mira :ref:`edit-modes`."
-
-#~ msgid "Moving"
-#~ msgstr ""
 
 #~ msgid "Copy-Moving"
 #~ msgstr "Copiando-Movendo Obxectos"

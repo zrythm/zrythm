@@ -815,7 +815,6 @@ msgstr ""
 "la nouvelle taille."
 
 #: ../../editing/edit-tools.rst:34
-#, fuzzy
 msgid "Creating Objects"
 msgstr "Sélectionner des objets"
 
@@ -858,9 +857,8 @@ msgid "Add pic showing object selection."
 msgstr ""
 
 #: ../../editing/edit-tools.rst:58
-#, fuzzy
 msgid "Moving Objects"
-msgstr "Redimensionnement d'objets"
+msgstr "Découpage d'objets"
 
 #: ../../editing/edit-tools.rst:59
 msgid ""
@@ -2088,12 +2086,6 @@ msgstr ""
 
 #~ msgid "MIDI region"
 #~ msgstr "Éditer des Régions"
-
-#~ msgid "Creating Objects"
-#~ msgstr "Sélectionner des objets"
-
-#~ msgid "Moving Objects"
-#~ msgstr "Découpage d'objets"
 
 #~ msgid ""
 #~ "Enabling this will change the display"

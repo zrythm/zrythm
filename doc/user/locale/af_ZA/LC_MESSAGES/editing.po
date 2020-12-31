@@ -1650,30 +1650,6 @@ msgstr ""
 #~ "Chord or Scale."
 #~ msgstr ""
 
-#~ msgid "Selection Info Bar"
-#~ msgstr ""
-
-#~ msgid "Regions are containers for events or data (such as audio clips)."
-#~ msgstr ""
-
-#~ msgid "Audio region"
-#~ msgstr ""
-
-#~ msgid "MIDI region"
-#~ msgstr ""
-
-#~ msgid "Automation region"
-#~ msgstr ""
-
-#~ msgid "Creating Objects"
-#~ msgstr ""
-
-#~ msgid "Moving Objects"
-#~ msgstr ""
-
-#~ msgid "Copy-Moving Objects"
-#~ msgstr ""
-
 #~ msgid ""
 #~ "Holding down :zbutton:`Ctrl` while moving "
 #~ "objects will allow you to copy-"

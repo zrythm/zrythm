@@ -1663,12 +1663,6 @@ msgstr ""
 #~ msgid "Automation region"
 #~ msgstr ""
 
-#~ msgid "Creating Objects"
-#~ msgstr ""
-
-#~ msgid "Moving Objects"
-#~ msgstr ""
-
 #~ msgid "Copy-Moving Objects"
 #~ msgstr ""
 

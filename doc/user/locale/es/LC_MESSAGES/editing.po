@@ -2005,15 +2005,6 @@ msgstr ""
 #~ msgid "MIDI region"
 #~ msgstr ""
 
-#~ msgid "Creating Objects"
-#~ msgstr ""
-
-#~ msgid "Moving Objects"
-#~ msgstr ""
-
-#~ msgid "Copy-Moving Objects"
-#~ msgstr ""
-
 #~ msgid ""
 #~ "Holding down :zbutton:`Ctrl` while moving "
 #~ "objects will allow you to copy-"

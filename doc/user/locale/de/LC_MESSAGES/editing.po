@@ -800,7 +800,6 @@ msgid "Add pic showing object selection."
 msgstr ""
 
 #: ../../editing/edit-tools.rst:58
-#, fuzzy
 msgid "Moving Objects"
 msgstr "Spuren auswählen"
 
@@ -2015,9 +2014,6 @@ msgstr ""
 
 #~ msgid "MIDI region"
 #~ msgstr "Regionen bearbeiten"
-
-#~ msgid "Moving Objects"
-#~ msgstr "Spuren auswählen"
 
 #~ msgid ""
 #~ "Enabling this will change the display"
