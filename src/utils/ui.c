@@ -62,6 +62,8 @@ ui_set_cursor_from_icon_name (
   if (!GDK_IS_WINDOW (win))
     return;
 
+  g_return_if_fail (offset_x >= 0 && offset_y >= 0);
+
   /* check the cache first */
   for (int i = 0; i < UI_CACHES->num_cursors; i++)
     {
@@ -83,16 +85,18 @@ ui_set_cursor_from_icon_name (
       18, 0, NULL);
   if (!GDK_IS_PIXBUF (pixbuf))
     {
-      g_warning ("no pixbuf for %s",
-                 name);
+      g_warning (
+        "no pixbuf for %s", name);
       return;
     }
+  offset_x =
+    MIN (offset_x, gdk_pixbuf_get_width (pixbuf));
+  offset_y =
+    MIN (offset_y, gdk_pixbuf_get_height (pixbuf));
   GdkCursor * gdk_cursor =
     gdk_cursor_new_from_pixbuf (
-      gdk_display_get_default (),
-      pixbuf,
-      offset_x,
-      offset_y);
+      gdk_display_get_default (), pixbuf,
+      offset_x, offset_y);
 
   /* add the cursor to the caches */
   UiCursor * cursor =

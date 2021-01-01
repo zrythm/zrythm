@@ -45,7 +45,7 @@ bug_report_dialog_new (
       NULL);
 
   char * log =
-    log_get_last_n_lines (LOG, 200);
+    log_get_last_n_lines (LOG, 120);
 
   /* %23 is hash, %0A is new line */
   char ver_with_caps[2000];
