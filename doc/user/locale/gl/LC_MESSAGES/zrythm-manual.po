@@ -1330,7 +1330,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:59
 msgid "Windows"
-msgstr ""
+msgstr "Windows"
 
 #: ../../plugins-files/plugins/scanning.rst:60
 msgid ""
@@ -1340,7 +1340,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:64
 msgid "MacOS"
-msgstr ""
+msgstr "MacOS"
 
 #: ../../plugins-files/plugins/scanning.rst:65
 #, fuzzy
@@ -1748,9 +1748,8 @@ msgid "See :ref:`export-routing-graph` for details."
 msgstr ""
 
 #: ../../routing/ports.rst:8
-#, fuzzy
 msgid "Ports"
-msgstr "exportacións"
+msgstr "Portos"
 
 #: ../../routing/ports.rst:10
 msgid ""
@@ -1810,7 +1809,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:43
 msgid "Event"
-msgstr ""
+msgstr "Evento"
 
 #: ../../routing/ports.rst:44
 msgid "Event ports are mainly used for routing MIDI signals."
@@ -2646,9 +2645,8 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/automation.rst:24
-#, fuzzy
 msgid "Editing Automation"
-msgstr "Automatización da Gravación"
+msgstr "Edición de Automatizacións"
 
 #: ../../tracks/automation.rst:25
 msgid ""
@@ -2985,7 +2983,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:94
 msgid "Fader"
-msgstr ""
+msgstr "Fader"
 
 #: ../../tracks/inspector-page.rst:95
 msgid "Fader section to control the volume and stereo balance."
@@ -4646,12 +4644,6 @@ msgstr ""
 #~ msgid "Connections"
 #~ msgstr "Conectores"
 
-#~ msgid "Ports"
-#~ msgstr "Portos"
-
-#~ msgid "Event"
-#~ msgstr "Evento"
-
 #~ msgid "Control"
 #~ msgstr "Control"
 
@@ -4853,9 +4845,6 @@ msgstr ""
 
 #~ msgid "Region Editing Operations"
 #~ msgstr "Operacións de Edición das Rexións"
-
-#~ msgid "Editing Automation"
-#~ msgstr "Edición de Automatizacións"
 
 #~ msgid "Editing MIDI Notes"
 #~ msgstr "Edición de Notas MIDI"
@@ -5220,9 +5209,6 @@ msgstr ""
 #~ msgid "GNU with Linux"
 #~ msgstr "GNU con Linux"
 
-#~ msgid "MacOS"
-#~ msgstr "MacOS"
-
 #~ msgid ""
 #~ "You can install the latest version "
 #~ "of Zrythm for MacOS from the "
@@ -5245,9 +5231,6 @@ msgstr ""
 #~ "recomendado para instalar a última "
 #~ "versión para a meirande parte dos "
 #~ "usuarios, e nós dámoslle soporte."
-
-#~ msgid "Windows"
-#~ msgstr "Windows"
 
 #~ msgid ""
 #~ "You can install the latest version "
@@ -5331,9 +5314,6 @@ msgstr ""
 
 #~ msgid "Controls"
 #~ msgstr "Controis"
-
-#~ msgid "Fader"
-#~ msgstr "Fader"
 
 #~ msgid "Meters"
 #~ msgstr "Medidores"

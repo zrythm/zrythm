@@ -1352,7 +1352,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:59
 msgid "Windows"
-msgstr ""
+msgstr "Windows"
 
 #: ../../plugins-files/plugins/scanning.rst:60
 msgid ""
@@ -1362,7 +1362,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:64
 msgid "MacOS"
-msgstr ""
+msgstr "MacOS"
 
 #: ../../plugins-files/plugins/scanning.rst:65
 #, fuzzy
@@ -2701,9 +2701,8 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/automation.rst:24
-#, fuzzy
 msgid "Editing Automation"
-msgstr "Automatisation d'enregistrement"
+msgstr "Édition de l'automatisation"
 
 #: ../../tracks/automation.rst:25
 msgid ""
@@ -3066,7 +3065,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:94
 msgid "Fader"
-msgstr ""
+msgstr "Charriots"
 
 #: ../../tracks/inspector-page.rst:95
 msgid "Fader section to control the volume and stereo balance."
@@ -4583,9 +4582,6 @@ msgstr ""
 #~ msgid "TODO add options"
 #~ msgstr "ÀFAIRE ajouter les options"
 
-#~ msgid "MacOS"
-#~ msgstr "MacOS"
-
 #~ msgid ""
 #~ "Use the installer from the `main "
 #~ "website <https://www.zrythm.org>`_. Note that "
@@ -4605,9 +4601,6 @@ msgstr ""
 #~ "Si vous trouvez des bogues, veuillez "
 #~ "les signaler <https://git.zrythm.org/zrythm/zrythm> "
 #~ "`_."
-
-#~ msgid "Windows"
-#~ msgstr "Windows"
 
 #~ msgid "http://www.upgradefromwindows.com"
 #~ msgstr "http://www.upgradefromwindows.com"
@@ -5826,9 +5819,6 @@ msgstr ""
 #~ msgid "Region Editing Operations"
 #~ msgstr "Opérations d'Édition de Région"
 
-#~ msgid "Editing Automation"
-#~ msgstr "Édition de l'automatisation"
-
 #~ msgid "Editing MIDI Notes"
 #~ msgstr "Éditer les notes MIDI"
 
@@ -6664,9 +6654,6 @@ msgstr ""
 
 #~ msgid "Controls"
 #~ msgstr "Contrôles"
-
-#~ msgid "Fader"
-#~ msgstr "Charriots"
 
 #~ msgid "Meters"
 #~ msgstr ""

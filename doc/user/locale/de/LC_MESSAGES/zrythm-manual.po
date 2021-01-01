@@ -1281,7 +1281,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:59
 msgid "Windows"
-msgstr ""
+msgstr "Windows"
 
 #: ../../plugins-files/plugins/scanning.rst:60
 msgid ""
@@ -1291,7 +1291,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:64
 msgid "MacOS"
-msgstr ""
+msgstr "MacOS"
 
 #: ../../plugins-files/plugins/scanning.rst:65
 msgid ""
@@ -1684,9 +1684,8 @@ msgid "See :ref:`export-routing-graph` for details."
 msgstr ""
 
 #: ../../routing/ports.rst:8
-#, fuzzy
 msgid "Ports"
-msgstr "Exporte"
+msgstr "Ports"
 
 #: ../../routing/ports.rst:10
 msgid ""
@@ -1746,7 +1745,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:43
 msgid "Event"
-msgstr ""
+msgstr "Ereignis"
 
 #: ../../routing/ports.rst:44
 msgid "Event ports are mainly used for routing MIDI signals."
@@ -2588,9 +2587,8 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/automation.rst:24
-#, fuzzy
 msgid "Editing Automation"
-msgstr "Automation aufnehmen"
+msgstr "Automation bearbeiten"
 
 #: ../../tracks/automation.rst:25
 msgid ""
@@ -2909,7 +2907,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:94
 msgid "Fader"
-msgstr ""
+msgstr "Fader"
 
 #: ../../tracks/inspector-page.rst:95
 msgid "Fader section to control the volume and stereo balance."
@@ -4285,9 +4283,6 @@ msgstr ""
 #~ msgid "TODO add options"
 #~ msgstr "ZU ERLEDIGEN Optionen hinzufügen"
 
-#~ msgid "MacOS"
-#~ msgstr "MacOS"
-
 #~ msgid ""
 #~ "Use the installer from the `main "
 #~ "website <https://www.zrythm.org>`_. Note that "
@@ -4307,9 +4302,6 @@ msgstr ""
 #~ "Falls du irgendwelche Fehler findest, "
 #~ "`melde sie <https://git.zrythm.org/zrythm/zrythm>`_ "
 #~ "bitte."
-
-#~ msgid "Windows"
-#~ msgstr "Windows"
 
 #~ msgid "http://www.upgradefromwindows.com"
 #~ msgstr "http://www.upgradefromwindows.com"
@@ -4666,12 +4658,6 @@ msgstr ""
 #~ " (Strg+Umschalt+P oder Datei->Präferenzen), also"
 #~ " mach dir keine Sorgen wenn du "
 #~ "die falschen Einstellungen gewählt hast."
-
-#~ msgid "Ports"
-#~ msgstr "Ports"
-
-#~ msgid "Event"
-#~ msgstr "Ereignis"
 
 #~ msgid "Control"
 #~ msgstr "Steuerung"
@@ -5171,9 +5157,6 @@ msgstr ""
 
 #~ msgid "Region Editing Operations"
 #~ msgstr "Regionsbearbeitungsoperationen"
-
-#~ msgid "Editing Automation"
-#~ msgstr "Automation bearbeiten"
 
 #~ msgid "Editing MIDI Notes"
 #~ msgstr "MIDI-Noten bearbeiten"
@@ -5849,9 +5832,6 @@ msgstr ""
 #~ "Steuerelemente\n"
 #~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
 #~ "Steuerungen"
-
-#~ msgid "Fader"
-#~ msgstr "Fader"
 
 #~ msgid "Meters"
 #~ msgstr "Meter"
