@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -593,16 +593,31 @@ project_init_selections (Project * self)
 }
 
 /**
- * Not to be used anywhere else. This is only made
- * public for testing.
+ * Creates a default project.
+ *
+ * This is only used internally or for generating
+ * projects from scripts.
+ *
+ * @param prj_dir The directory of the project to
+ *   create, including its title.
+ * @param headless Create the project assuming we
+ *   are running without a UI.
+ * @param start_engine Whether to also start the
+ *   engine after creating the project.
  */
-static void
-create_default (Project * self)
+Project *
+project_create_default (
+  Project *    self,
+  const char * prj_dir,
+  bool         headless,
+  bool         with_engine)
 {
   g_message ("creating default project...");
 
+  bool have_ui = !headless && ZRYTHM_HAVE_UI;
+
   MainWindowWidget * mww = NULL;
-  if (ZRYTHM_HAVE_UI)
+  if (have_ui)
     {
       g_message ("hiding prev window...");
       mww = hide_prev_main_window ();
@@ -619,9 +634,13 @@ create_default (Project * self)
   /* initialize selections */
   project_init_selections (self);
 
-  /* pre-setup engine */
   self->audio_engine = engine_new (self);
-  engine_pre_setup (self->audio_engine);
+
+  /* pre-setup engine */
+  if (with_engine)
+    {
+      engine_pre_setup (self->audio_engine);
+    }
 
   /* init undo manager */
   self->undo_manager = undo_manager_new ();
@@ -629,9 +648,7 @@ create_default (Project * self)
   /* init midi mappings */
   self->midi_mappings = midi_mappings_new ();
 
-  self->title =
-    g_path_get_basename (
-      ZRYTHM->create_project_path);
+  self->title = g_path_get_basename (prj_dir);
 
   /* init pinned tracks */
 
@@ -692,8 +709,11 @@ create_default (Project * self)
 
   engine_setup (self->audio_engine);
 
-  tracklist_expose_ports_to_backend (
-    self->tracklist);
+  if (with_engine)
+    {
+      tracklist_expose_ports_to_backend (
+        self->tracklist);
+    }
 
   /* init ports */
   int max_size = 20;
@@ -717,9 +737,9 @@ create_default (Project * self)
 
   /* create untitled project */
   create_and_set_dir_and_title (
-    self, ZRYTHM->create_project_path);
+    self, prj_dir);
 
-  if (ZRYTHM_HAVE_UI)
+  if (have_ui)
     {
       g_message ("recreating main window...");
       recreate_main_window ();
@@ -761,15 +781,23 @@ create_default (Project * self)
   region_link_group_manager_init (
     &self->region_link_group_manager);
 
-  g_message ("setting up main window...");
-  setup_main_window (self);
+  if (have_ui)
+    {
+      g_message ("setting up main window...");
+      setup_main_window (self);
+    }
 
-  /* recalculate the routing graph */
-  router_recalc_graph (ROUTER, F_NOT_SOFT);
+  if (with_engine)
+    {
+      /* recalculate the routing graph */
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
 
-  engine_set_run (self->audio_engine, true);
+      engine_set_run (self->audio_engine, true);
+    }
 
   g_message ("done");
+
+  return self;
 }
 
 /**
@@ -1150,12 +1178,16 @@ project_load (
           g_message (
             "%s: creating project %s",
             __func__, ZRYTHM->create_project_path);
-          create_default (PROJECT);
+          project_create_default (
+            PROJECT, ZRYTHM->create_project_path,
+            false, true);
         }
     }
   else
     {
-      create_default (PROJECT);
+      project_create_default (
+        PROJECT, ZRYTHM->create_project_path,
+        false, true);
     }
 
   engine_activate (AUDIO_ENGINE, true);
@@ -1171,10 +1203,6 @@ project_load (
 
       channel_reconnect_ext_input_ports (ch);
     }
-
-  /* set the version */
-  PROJECT->version =
-    zrythm_get_version (0);
 
   if (is_template || !filename)
     {
@@ -1349,6 +1377,7 @@ project_new (
       _zrythm->project = self;
     }
 
+  self->version = zrythm_get_version (0);
   self->clip_editor = clip_editor_new ();
   self->timeline = timeline_new ();
   self->tracklist_selections =
@@ -1442,7 +1471,8 @@ serialize_project_thread (
 
   /* set file contents */
   g_message (
-    "%s: saving project file...", __func__);
+    "%s: saving project file at %s...",
+    __func__, data->project_file_path);
   g_file_set_contents (
     data->project_file_path, compressed_yaml,
     (gssize) compressed_size, &err);
@@ -1546,7 +1576,9 @@ project_save (
 
   /* if backup, get next available backup dir */
   if (is_backup)
-    set_and_create_next_available_backup_dir (self);
+    {
+      set_and_create_next_available_backup_dir (self);
+    }
 
 #define MK_PROJECT_DIR(_path) \
   tmp = \

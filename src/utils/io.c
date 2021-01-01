@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -257,19 +257,19 @@ unlink_cb (
  * Removes a dir, optionally forcing deletion.
  *
  * For safety reasons, this only accepts an
- * absolute path with length greater than 25 if
+ * absolute path with length greater than 20 if
  * forced.
  */
 int
 io_rmdir (
   const char * path,
-  int          force)
+  bool         force)
 {
   if (force)
     {
       g_return_val_if_fail (
         g_path_is_absolute (path) &&
-        strlen (path) > 25, -1);
+        strlen (path) > 20, -1);
       nftw (
         path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
     }

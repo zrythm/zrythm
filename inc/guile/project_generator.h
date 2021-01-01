@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,42 +20,43 @@
 /**
  * \file
  *
- * Guile subsystem.
+ * Project/template generator.
  */
 
-#ifndef __GUILE_GUILE_H__
-#define __GUILE_GUILE_H__
+#ifndef __GUILE_PROJECT_GENERATOR_H__
+#define __GUILE_PROJECT_GENERATOR_H__
+
+typedef struct Project Project;
 
 /**
- * @addtogroup guile Guile scripting interface.
+ * @addtogroup guile
  *
  * @{
  */
 
 /**
- * Inits the guile subsystem.
- */
-int
-guile_init (
-  int     argc,
-  char ** argv);
-
-/**
- * Defines all available modules to be used
- * by scripts.
+ * Generates a Zrythm project from the script
+ * contained in @ref script.
  *
- * This must be called in guile mode.
+ * @param script Script content.
+ * @param prj_path Path to save the project at.
  */
 void
-guile_define_modules (void);
+guile_project_generator_generate_project_from_string (
+  const char * script,
+  const char * prj_path);
 
 /**
- * Runs the script and returns the output message
- * in Pango markup.
+ * Generates a Zrythm project from the @ref filepath
+ * containing a generator script.
+ *
+ * @param filepath Path of the script file.
+ * @param prj_path Path to save the project at.
  */
-char *
-guile_run_script (
-  const char * script);
+void
+guile_project_generator_generate_project_from_file (
+  const char * filepath,
+  const char * prj_path);
 
 /**
  * @}

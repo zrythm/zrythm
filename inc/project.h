@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -367,6 +367,26 @@ static const cyaml_schema_value_t
  */
 void
 project_sanity_check (Project * self);
+
+/**
+ * Creates a default project.
+ *
+ * This is only used internally or for generating
+ * projects from scripts.
+ *
+ * @param prj_dir The directory of the project to
+ *   create, including its title.
+ * @param headless Create the project assuming we
+ *   are running without a UI.
+ * @param start_engine Whether to also start the
+ *   engine after creating the project.
+ */
+Project *
+project_create_default (
+  Project *    self,
+  const char * prj_dir,
+  bool         headless,
+  bool         with_engine);
 
 /**
  * If project has a filename set, it loads that.

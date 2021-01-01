@@ -78,6 +78,8 @@ guile_plugins_plugin_define_module (void);
 void
 guile_plugins_plugin_manager_define_module (void);
 void
+guile_project_define_module (void);
+void
 guile_zrythm_define_module (void);
 
 /**

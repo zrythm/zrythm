@@ -26,6 +26,7 @@
 
 #include "zrythm-config.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 
 /**
@@ -97,13 +98,13 @@ io_remove (
  * Removes a dir, optionally forcing deletion.
  *
  * For safety reasons, this only accepts an
- * absolute path with length greater than 25 if
+ * absolute path with length greater than 20 if
  * forced.
  */
 int
 io_rmdir (
   const char * path,
-  int          force);
+  bool         force);
 
 /**
  * Returns a list of the files in the given

@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -37,6 +37,8 @@ if get_option ('tests')
   test_env.set ('VST3_PATH', '/tmp/zrythm_vst3')
 
   test_config = configuration_data ()
+  test_config.set_quoted (
+    'TESTS_SRC_ROOT_DIR', meson.source_root ())
   test_config.set_quoted (
     'TESTS_SRCDIR', meson.current_source_dir ())
   test_config.set_quoted (
@@ -183,10 +185,21 @@ if get_option ('tests')
       ]
   endif
 
-  if (chromaprint_dep.found ())
+  if chromaprint_dep.found ()
     tests += [
       ['audio/exporter', true],
       ]
+  endif
+
+  if have_guile
+    tests += [
+      ['guile/project_generator', true],
+      ]
+  endif
+
+  test_link_libs = [ zrythm_lib.get_shared_lib () ]
+  if have_guile
+    test_link_libs += guilelib
   endif
 
   foreach _test : tests
@@ -215,7 +228,7 @@ if get_option ('tests')
           zrythm_deps,
           ],
         export_dynamic : false,
-        link_with: zrythm_lib.get_shared_lib (),
+        link_with: test_link_libs,
         include_directories : all_inc,
       )
       test (
@@ -239,7 +252,7 @@ if get_option ('tests')
           zrythm_deps,
           ],
         export_dynamic : false,
-        link_with: zrythm_lib.get_shared_lib (),
+        link_with: test_link_libs,
         include_directories : all_inc,
         )
       test (

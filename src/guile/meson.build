@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -16,6 +16,7 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 guile_snarfable_srcs = [
+  meson.current_source_dir() / 'project.c',
   meson.current_source_dir() / 'zrythm.c',
   ]
 
@@ -25,6 +26,7 @@ subdir ('plugins')
 
 guile_srcs = [
   'guile.c',
+  'project_generator.c',
   guile_snarfable_srcs,
   ]
 

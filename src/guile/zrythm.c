@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,6 +24,7 @@
 #ifndef SNARF_MODE
 #include "zrythm-config.h"
 #include "plugins/plugin_manager.h"
+#include "project.h"
 #include "zrythm.h"
 #endif
 
@@ -72,6 +73,18 @@ SCM_DEFINE (
 #undef FUNC_NAME
 
 SCM_DEFINE (
+  s_zrythm_get_project,
+  "zrythm-get-project", 0, 0, 0,
+  (),
+  "Return the currently loaded Project instance.")
+#define FUNC_NAME s_
+{
+  return
+    scm_from_pointer (PROJECT, NULL);
+}
+#undef FUNC_NAME
+
+SCM_DEFINE (
   s_zrythm_null,
   "zrythm-null", 0, 0, 0,
   (),
@@ -91,6 +104,7 @@ init_module (void * data)
   scm_c_export (
     "zrythm-get-ver",
     "zrythm-get-plugin-manager",
+    "zrythm-get-project",
     "zrythm-null",
     NULL);
 }
