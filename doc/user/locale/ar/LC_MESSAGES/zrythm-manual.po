@@ -27,18 +27,22 @@
 # #-#-#-#-#  user-media.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
 # #-#-#-#-#  zrythm-interface.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-01-01 00:48+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2021-01-01 01:33+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Arabic <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ar/>\n"
+"Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../index.rst:60
@@ -2344,7 +2348,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:42
 #: ../../tracks/tempo-track.rst:42
 msgid "Track Name"
-msgstr ""
+msgstr "اسم المقطوعة"
 
 #: ../../tracks/bus-track-audio.rst:40
 #: ../../tracks/bus-track-midi.rst:40
@@ -2612,7 +2616,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:110
 msgid "Peak"
-msgstr ""
+msgstr "قمة"
 
 #: ../../tracks/inspector-page.rst:111
 msgid "Peak signal value."
@@ -3075,7 +3079,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:15
 msgid "Audio Group"
-msgstr ""
+msgstr "مجموعة صوتية"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -3101,7 +3105,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:16
 msgid "Audio FX"
-msgstr ""
+msgstr "صوت اف اكس"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord"
@@ -3118,7 +3122,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:19
 msgid "Marker"
-msgstr ""
+msgstr "علامة"
 
 #: ../../tracks/track-types.rst:20
 msgid "Master"
@@ -3126,15 +3130,15 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:23
 msgid "MIDI Group"
-msgstr ""
+msgstr "مجموعة MIDI"
 
 #: ../../tracks/track-types.rst:24
 msgid "MIDI FX"
-msgstr ""
+msgstr "MIDI اف اكس"
 
 #: ../../tracks/track-types.rst:25
 msgid "Tempo"
-msgstr ""
+msgstr "زمن"
 
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."
@@ -3511,7 +3515,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:113
 msgid "Manual"
-msgstr ""
+msgstr "يدوي"
 
 #: ../../zrythm-interface/main-toolbar.rst:114
 msgid "View the user manual."
@@ -3733,4 +3737,3 @@ msgstr ""
 #~ "Filtering by collections and protocols "
 #~ "is not operational at the moment."
 #~ msgstr ""
-
