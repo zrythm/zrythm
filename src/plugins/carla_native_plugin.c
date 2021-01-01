@@ -300,7 +300,7 @@ _create ()
 
   /* set resources dir */
   const char * carla_filename =
-    carla_utils_get_library_filename ();
+    carla_get_library_filename ();
   char * tmp = io_get_dir (carla_filename);
   char * dir = io_get_dir (tmp);
   g_free (tmp);
