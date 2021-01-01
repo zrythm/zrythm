@@ -1029,9 +1029,8 @@ load (
 
   self->title = filepath_noext;
 
-  engine_pre_setup (self->audio_engine);
-
   engine_init_loaded (self->audio_engine);
+  engine_pre_setup (self->audio_engine);
   undo_manager_init_loaded (self->undo_manager);
 
   clip_editor_init_loaded (self->clip_editor);

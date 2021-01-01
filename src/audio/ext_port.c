@@ -473,6 +473,14 @@ get_ext_ports_from_jack (
   if (!jtype)
     return;
 
+  if (!AUDIO_ENGINE->client)
+    {
+      g_critical (
+        "JACK client is NULL. make sure to call "
+        "engine_pre_setup() before calling this");
+      return;
+    }
+
   const char ** ports =
     jack_get_ports (
       AUDIO_ENGINE->client,
