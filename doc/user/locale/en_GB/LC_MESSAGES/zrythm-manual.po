@@ -1,14 +1,42 @@
+# #-#-#-#-#  appendix.po (Zrythm 0.4)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2019-2020 The Zrythm contributors
+# Copyright (C) 2019, Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
+# #-#-#-#-#  chords-and-scales.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  connections.po (Zrythm 0.8)  #-#-#-#-#
+# Copyright (C) 2019-2020 Alexandros Theodotou
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+# #-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  credits.po (Zrythm 0.6)  #-#-#-#-#
+# #-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  exporting.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# Copyright (C) 2019-2020 The Zrythm contributors
+# #-#-#-#-#  index.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  invoking-from-command-line.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  mixing.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  modulators.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  routing.po (Zrythm 0.8)  #-#-#-#-#
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
+# #-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  theming.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  user-media.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Zrythm 1.0.0-alpha.7\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-31 22:53+0000\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2021-01-01 00:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -763,7 +791,7 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:204
 #: ../../projects/intro.rst:8
 msgid "Projects"
-msgstr ""
+msgstr "Projects"
 
 #: ../../configuration/preferences/intro.rst:206
 msgid "Project settings."
@@ -4660,7 +4688,7 @@ msgstr ""
 #: ../../routing/control-room.rst:8
 #: ../../zrythm-interface/right-panel.rst:25
 msgid "Control Room"
-msgstr ""
+msgstr "Control Room"
 
 #: ../../routing/control-room.rst:9
 msgid ""
@@ -7049,4 +7077,30 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
+
+#~ msgid "Controls"
+#~ msgstr "Controls"
+
+#~ msgid "Connections"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Connections can be made by double "
+#~ "clicking on ports in the :ref:`track-"
+#~ "inspector` or the :ref:`plugin-inspector`."
+#~ msgstr ""
+
+#~ msgid "See :ref:`exporting-routing-graph` for details."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "CV ports handle continuous signals and"
+#~ " can be used to modulate control "
+#~ "ports."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Filtering by collections and protocols "
+#~ "is not operational at the moment."
+#~ msgstr ""
 

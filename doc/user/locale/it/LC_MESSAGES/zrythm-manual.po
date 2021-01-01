@@ -1,14 +1,42 @@
+# #-#-#-#-#  appendix.po (Zrythm 0.4)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2019-2020 The Zrythm contributors
+# Copyright (C) 2019, Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
+# #-#-#-#-#  chords-and-scales.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  connections.po (Zrythm 0.8)  #-#-#-#-#
+# Copyright (C) 2019-2020 Alexandros Theodotou
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
+# #-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  credits.po (Zrythm 0.6)  #-#-#-#-#
+# #-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  exporting.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# Copyright (C) 2019-2020 The Zrythm contributors
+# #-#-#-#-#  index.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  invoking-from-command-line.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  mixing.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  modulators.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  routing.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  theming.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  user-media.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Zrythm 1.0.0-alpha.7\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-31 22:53+0000\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2021-01-01 00:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -128,7 +156,7 @@ msgstr ""
 #: ../../appendix/files-and-directories.rst:47
 #: ../../getting-started/getting-plugins.rst:83
 msgid "Samples"
-msgstr ""
+msgstr "Campioni"
 
 #: ../../appendix/files-and-directories.rst:48
 msgid ""
@@ -221,7 +249,7 @@ msgstr ""
 
 #: ../../appendix/intro.rst:6
 msgid "Appendix"
-msgstr ""
+msgstr "Appendice"
 
 #: ../../appendix/menu-actions.rst:6
 msgid "Menu Actions"
@@ -290,7 +318,7 @@ msgstr ""
 
 #: ../../chords-and-scales/intro.rst:8
 msgid "Chords and Scales"
-msgstr ""
+msgstr "Accordi e Scale"
 
 #: ../../chords-and-scales/overview.rst:6
 #: ../../editing/clip-editors/overview.rst:6
@@ -301,7 +329,7 @@ msgstr ""
 #: ../../scripting/overview.rst:6
 #: ../../tracks/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Visione d’insieme"
 
 #: ../../chords-and-scales/overview.rst:8
 msgid ""
@@ -379,7 +407,7 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:6
 msgid "Additional Settings"
-msgstr ""
+msgstr "Impostazioni aggiuntive"
 
 #: ../../configuration/additional-settings.rst:8
 msgid ""
@@ -389,6 +417,12 @@ msgid ""
 "line, or the optional GUI tool `dconf-editor "
 "<https://wiki.gnome.org/Apps/DconfEditor>`_."
 msgstr ""
+"Zrythm conserva tutte le sue configurazioni utilizzando il meccanismo "
+"GSettings, che è disponibile nel comando `gsettings "
+"<https://developer.gnome.org/gio/stable/gsettings-tool.html>`_ che "
+"permette di cambiare le impostazioni dalla linea di comando o per mezzo "
+"dello strumento facoltativo con interfaccia grafica `dconf-editor "
+"<https://wiki.gnome.org/Apps/DconfEditor>`_."
 
 #: ../../configuration/additional-settings.rst:14
 msgid ""
@@ -399,10 +433,17 @@ msgid ""
 "manually for some reason - for example if your selected backend causes "
 "Zrythm to crash."
 msgstr ""
+"Generalmente non dovresti aver bisogno di accedere a nessuna di queste "
+"impostazioni in quanto la maggior parte di esse si trova all'interno "
+"dell'interfaccia di Zrythm e non è consigliato modificarle poiché Zrythm "
+"modifica alcune di queste impostazioni prima di salvarle o ne utilizza "
+"alcune internamente. In alcuni casi, comunque, potresti volerle cambiare "
+"manualmente per qualche ragione - per esempio se il tuo backend "
+"selezionato fa crashare Zrythm."
 
 #: ../../configuration/additional-settings.rst:25
 msgid "Viewing the Current Settings"
-msgstr ""
+msgstr "Visualizzare le impostazioni attuali"
 
 #: ../../configuration/additional-settings.rst:27
 msgid "See :option:`zrythm --print-settings`."
@@ -410,15 +451,19 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:30
 msgid "Reset to Factory Settings"
-msgstr ""
+msgstr "Ripristina alle impostazioni di fabbrica"
 
 #: ../../configuration/additional-settings.rst:32
 msgid "See :option:`zrythm --reset-to-factory`."
 msgstr ""
 
 #: ../../configuration/additional-settings.rst:34
+#, fuzzy
 msgid "This will be added to the UI soon."
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Questo verrà aggiunto all'Interfaccia Utente presto.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../configuration/device-setup/intro.rst:6
 msgid "Device Setup"
@@ -451,10 +496,16 @@ msgid ""
 msgstr ""
 
 #: ../../configuration/device-setup/intro.rst:33
+#, fuzzy
 msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
 "using :term:`a2jmidid`."
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"A seconda delle tue impostazioni i dispositivi MIDI potrebbero "
+"necessitare di essere interfacciati tramite JACK utilizzando "
+"``a2jmidid``.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../configuration/device-setup/intro.rst:36
 msgid "Zrythm will not remember connections made externally."
@@ -466,7 +517,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:10
 msgid "Preferences"
-msgstr ""
+msgstr "Preferenze"
 
 #: ../../configuration/preferences/intro.rst:12
 msgid ""
@@ -480,6 +531,8 @@ msgid ""
 "Each section in the preferences dialog is explained in the following "
 "sections."
 msgstr ""
+"Ogni parte della finestra di dialogo delle preferenze è spiegata nelle "
+"sezioni seguenti."
 
 #: ../../configuration/preferences/intro.rst:20
 msgid "General"
@@ -487,29 +540,35 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:22
 msgid "General settings."
-msgstr ""
+msgstr "Impostazioni generali."
 
 #: ../../configuration/preferences/intro.rst:30
 msgid "Engine"
-msgstr ""
+msgstr "Motore"
 
 #: ../../configuration/preferences/intro.rst:32
 msgid "Audio engine settings."
-msgstr ""
+msgstr "Impostazioni del motore audio."
 
 #: ../../configuration/preferences/intro.rst:35
 msgid "Audio backend"
-msgstr ""
+msgstr "Backend audio"
 
 #: ../../configuration/preferences/intro.rst:36
+#, fuzzy
 msgid ""
 "The audio backend to use. The available backends are JACK, RtAudio and "
 "SDL2. We recommend using :term:`JACK` when possible, otherwise RtAudio."
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Il backend audio da usare. I backend disponibili sono: JACK, RtAudio e "
+"SDL2. Raccomandiamo di utilizzare JACK quando possibile, diversamente "
+"RtAudio.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../configuration/preferences/intro.rst:41
 msgid "MIDI backend"
-msgstr ""
+msgstr "Backend MIDI"
 
 #: ../../configuration/preferences/intro.rst:42
 msgid ""
@@ -517,22 +576,29 @@ msgid ""
 " WindowsMME (Windows only). We recommend using JACK MIDI when possible, "
 "otherwise RtMidi."
 msgstr ""
+"Il backend MIDI da usare. I backend disponibili sono JACK MIDI, RtMidi e "
+"WindowsMME (solo su Windows). Raccomandiamo di utilizzare JACK MIDI "
+"quando possibile, diversamente RtMidi."
 
 #: ../../configuration/preferences/intro.rst:48
 msgid "MIDI controllers"
-msgstr ""
+msgstr "Controller MIDI"
 
 #: ../../configuration/preferences/intro.rst:49
 msgid "A list of controllers to auto-connect to."
-msgstr ""
+msgstr "Una lista di controller audio a cui autoconnettersi."
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "Audio inputs"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:53
+#, fuzzy
 msgid "A list of audio inputs to auto-connect to."
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Una lista di controller audio a cui autoconnettersi.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../configuration/preferences/intro.rst:56
 msgid "Paths (Global)"
@@ -544,7 +610,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:61
 msgid "Zrythm path"
-msgstr ""
+msgstr "Percorso di Zrythm"
 
 #: ../../configuration/preferences/intro.rst:62
 msgid "The :term:`Zrythm user path`."
@@ -557,8 +623,12 @@ msgid "Plugins"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:67
+#, fuzzy
 msgid ":term:`Plugin` settings."
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Impostazioni del plugin.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../configuration/preferences/intro.rst:73
 msgid "UIs"
@@ -587,7 +657,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:87
 msgid "Keep window on top"
-msgstr ""
+msgstr "Mantieni la finestra in cima"
 
 #: ../../configuration/preferences/intro.rst:88
 msgid "Always show plugin UIs on top of the main window."
@@ -605,27 +675,33 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:95
 msgid "This may lead to performance loss for some plugins."
-msgstr ""
+msgstr "Questo potrebbe causare una perdita di prestazioni in alcuni plugin."
 
 #: ../../configuration/preferences/intro.rst:99
 msgid "Refresh rate"
-msgstr ""
+msgstr "Frequenza d'aggiornamento"
 
 #: ../../configuration/preferences/intro.rst:100
 msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr ""
+"Frequenza d'aggiornamento in Hz. Se impostata a 0 verrà utilizzata la "
+"frequenza di aggiornamento dello schermo."
 
 #: ../../configuration/preferences/intro.rst:106
 msgid "Paths"
-msgstr ""
+msgstr "Percorso"
 
 #: ../../configuration/preferences/intro.rst:109
 msgid "VST plugins"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:110
+#, fuzzy
 msgid "The search paths to scan for :term:`VST2` plugins in."
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"I percorsi in cui cercare gli strumenti SF2.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../configuration/preferences/intro.rst:113
 msgid ""
@@ -635,19 +711,27 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:118
 msgid "SFZ instruments"
-msgstr ""
+msgstr "Strumenti SFZ"
 
 #: ../../configuration/preferences/intro.rst:119
+#, fuzzy
 msgid "The search paths to scan for :term:`SFZ` instruments in."
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"I percorsi in cui cercare gli strumenti SFZ.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../configuration/preferences/intro.rst:123
 msgid "SF2 instruments"
-msgstr ""
+msgstr "Strumenti SF2"
 
 #: ../../configuration/preferences/intro.rst:124
+#, fuzzy
 msgid "The search paths to scan for :term:`SF2` instruments in."
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"I percorsi in cui cercare gli strumenti SF2.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../configuration/preferences/intro.rst:128
 #: ../../glossary/intro.rst:52
@@ -655,8 +739,12 @@ msgid "DSP"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:130
+#, fuzzy
 msgid ":term:`DSP` settings."
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Impostazioni generali.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../configuration/preferences/intro.rst:136
 msgid "Pan"
@@ -699,7 +787,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:166
 msgid "Editing options."
-msgstr ""
+msgstr "Opzioni di modifica."
 
 #: ../../configuration/preferences/intro.rst:172
 #: ../../routing/ports.rst:38
@@ -713,7 +801,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:174
 msgid "Audio editing."
-msgstr ""
+msgstr "Modifica dell'audio."
 
 #: ../../configuration/preferences/intro.rst:177
 msgid "Fade algorithm"
@@ -726,27 +814,27 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:181
 #: ../../tracks/automation.rst:8
 msgid "Automation"
-msgstr ""
+msgstr "Automazione"
 
 #: ../../configuration/preferences/intro.rst:183
 msgid "Automation editing."
-msgstr ""
+msgstr "Modifica dell'automazione."
 
 #: ../../configuration/preferences/intro.rst:186
 msgid "Curve algorithm"
-msgstr ""
+msgstr "Algoritmo della curva"
 
 #: ../../configuration/preferences/intro.rst:187
 msgid "Default curve algorithm to use for automation curves."
-msgstr ""
+msgstr "Algoritmo di curva predefinito da utilizzare per le curve di automazione."
 
 #: ../../configuration/preferences/intro.rst:191
 msgid "Undo"
-msgstr ""
+msgstr "Annulla"
 
 #: ../../configuration/preferences/intro.rst:193
 msgid "Undo options."
-msgstr ""
+msgstr "Annulla opzioni."
 
 #: ../../configuration/preferences/intro.rst:196
 msgid "Undo stack length"
@@ -758,40 +846,48 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:200
 msgid "We recommend leaving it at 128."
-msgstr ""
+msgstr "Consigliamo di lasciarlo a 128."
 
 #: ../../configuration/preferences/intro.rst:204
 #: ../../projects/intro.rst:8
 msgid "Projects"
-msgstr ""
+msgstr "Progetti"
 
 #: ../../configuration/preferences/intro.rst:206
 msgid "Project settings."
-msgstr ""
+msgstr "Impostazioni del progetto."
 
 #: ../../configuration/preferences/intro.rst:212
+#, fuzzy
 msgid "General (Project)"
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Impostazioni generali del progetto.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../configuration/preferences/intro.rst:214
 msgid "General project settings."
-msgstr ""
+msgstr "Impostazioni generali del progetto."
 
 #: ../../configuration/preferences/intro.rst:217
 msgid "Autosave interval"
-msgstr ""
+msgstr "Intervallo di salvataggio automatico"
 
 #: ../../configuration/preferences/intro.rst:218
 msgid ""
 "Interval to auto-save projects, in minutes. Auto-saving will be disabled "
 "if this is set to 0."
 msgstr ""
+"Intervallo, in minuti, per autosalvare il progetto. L'autosalvataggio "
+"verrà disabilitato se impostato a 0."
 
 #: ../../configuration/preferences/intro.rst:221
 msgid ""
 "This refers to automatic back-ups. The main project will not be "
 "overwritten unless you explicitly save it."
 msgstr ""
+"Questo si riferisce ai back-up automatici. Il progetto principale non "
+"verrà sovrascritto se non lo salverai di proposito."
 
 #: ../../configuration/preferences/intro.rst:225
 msgid "UI"
@@ -799,7 +895,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:227
 msgid "User interface options."
-msgstr ""
+msgstr "Opzioni dell'interfaccia utente."
 
 #: ../../configuration/preferences/intro.rst:233
 msgid "General (UI)"
@@ -807,26 +903,33 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:235
 msgid "General user interface options."
-msgstr ""
+msgstr "Opzioni generali dell'interfaccia utente."
 
 #: ../../configuration/preferences/intro.rst:238
 msgid "User interface language"
-msgstr ""
+msgstr "Lingua dell'interfaccia utente"
 
 #: ../../configuration/preferences/intro.rst:239
 msgid "The language to use for the user interface."
-msgstr ""
+msgstr "La lingua da usare per l'interfaccia utente."
 
 #: ../../configuration/preferences/intro.rst:241
+#, fuzzy
 msgid ""
 "For a list of supported languages and their translation status, or to "
 "translate Zrythm into your language, see `Weblate "
 "<https://hosted.weblate.org/projects/zrythm/>`_."
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Per una lista delle lingue supportate e il loro stato di traduzione "
+"vedere `Weblate <https://hosted.weblate.org/projects/zrythm/>`_.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../configuration/preferences/intro.rst:246
 msgid "Some of these settings require a restart of Zrythm to take effect."
 msgstr ""
+"Alcune di queste opzioni necessitato un riavvio di Zrythm per avere "
+"effetto."
 
 #: ../../contributing/intro.rst:6
 msgid "Contributing"
@@ -837,6 +940,8 @@ msgid ""
 "We appreciate contributions of any type and size. Tell us how you would "
 "like to help, and we will do our best to guide you."
 msgstr ""
+"Apprezziamo contributi di qualsiasi tipo. Dicci come vorresti aiutare e "
+"faremo del nostro meglio per guidarti."
 
 #: ../../contributing/intro.rst:11
 msgid ""
@@ -884,11 +989,17 @@ msgid "Testing"
 msgstr ""
 
 #: ../../contributing/intro.rst:40
+#, fuzzy
 msgid ""
 "You are welcome to join us in testing the latest features in Zrythm and "
 "reporting bugs and feedback on `Sourcehut "
 "<https://todo.sr.ht/~alextee>`_."
 msgstr ""
+"#-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Sei il benvenuto a unirti per testare le ultime funzionalità di Zrythm e "
+"segnalare bug e riscontri su `Redmine "
+"<https://redmine.zrythm.org/projects/zrythm/issues>`_.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../contributing/intro.rst:45
 msgid ""
@@ -922,12 +1033,16 @@ msgid ""
 "Zrythm is available for translation at `Weblate "
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
 msgstr ""
+"È possibile tradurre Zrythm su `Weblate "
+"<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
 
 #: ../../contributing/intro.rst:65
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
 "program, the website as well as sections of this manual."
 msgstr ""
+"Il progetto di traduzione di Zrythm contiene le traduzioni del programma,"
+" del sito così come sezioni di questo manuale."
 
 #: ../../contributing/intro.rst:69
 msgid ""
@@ -1004,22 +1119,36 @@ msgid ""
 msgstr ""
 
 #: ../../contributing/intro.rst:157
+#, fuzzy
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr ""
+"#-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"`LiberaPay <https://liberapay.com/Zrythm>`_\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../contributing/intro.rst:158
+#, fuzzy
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr ""
+"#-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"`PayPal <https://paypal.me/zrythm>`_\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../contributing/intro.rst:159
+#, fuzzy
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr ""
+"#-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"`Open Collective <https://opencollective.com/zrythm>`_\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../contributing/intro.rst:161
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer "
 "<https://www.zrythm.org/en/download.html>`_."
 msgstr ""
+"In alternativa puoi `comprare un file di installazione di Zrythm "
+"<https://www.zrythm.org/en/download.html>`_."
 
 #: ../../credits/intro.rst:6
 msgid "Credits"
@@ -1061,11 +1190,13 @@ msgstr ""
 #: ../../editing/clip-editors/toolbar.rst:39
 #: ../../zrythm-interface/bottom-panel.rst:57
 msgid "Audio Editor"
-msgstr ""
+msgstr "Editor audio"
 
 #: ../../editing/clip-editors/audio-editor.rst:9
 msgid "The audio editor is displayed when an audio region is selected."
 msgstr ""
+"L'editor audio viene visualizzato quando viene selezionata una regione "
+"audio."
 
 #: ../../editing/clip-editors/audio-editor.rst:15
 msgid ""
@@ -1076,17 +1207,19 @@ msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:20
 msgid "Audio Arranger"
-msgstr ""
+msgstr "Arrangiatore audio"
 
 #: ../../editing/clip-editors/audio-editor.rst:21
 msgid "The audio arranger refers to the arranger section of the audio editor."
 msgstr ""
+"L'arrangiatore audio si riferisce alla sezione arrangiatore dell'editor "
+"audio."
 
 #: ../../editing/clip-editors/automation-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:35
 #: ../../zrythm-interface/bottom-panel.rst:43
 msgid "Automation Editor"
-msgstr ""
+msgstr "Editor di automazione"
 
 #: ../../editing/clip-editors/automation-editor.rst:9
 msgid "The automation editor is displayed when an automation region is selected."
@@ -1124,29 +1257,32 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:40
 msgid "Curves"
-msgstr ""
+msgstr "Curve"
 
 #: ../../editing/clip-editors/automation-editor.rst:41
 msgid ""
 "Right-clicking on a curve allows you to change the curve algorithm used. "
 "The following curve algorithms are available."
 msgstr ""
+"Facendo un click con il tasto destro su una curva ti permette di "
+"cambiarne l'algoritmo utilizzato. Sono disponibili i seguenti algoritmi "
+"di curva."
 
 #: ../../editing/clip-editors/automation-editor.rst:44
 msgid "Exponent"
-msgstr ""
+msgstr "Esponente"
 
 #: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponential curve."
-msgstr ""
+msgstr "Curva esponenziale."
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Superellipse"
-msgstr ""
+msgstr "Superellisse"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."
-msgstr ""
+msgstr "Curva ellittica."
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 #: ../../editing/timeline/arranger.rst:239
@@ -1155,7 +1291,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "The curve that Vital synth uses, similar to exponential curve."
-msgstr ""
+msgstr "La curva che il sintetizzatore Vital usa, simile alla curva esponenziale."
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse"
@@ -1171,7 +1307,7 @@ msgstr ""
 #: ../../tracks/midi-track.rst:130
 #: ../../tracks/overview.rst:74
 msgid "Context Menu"
-msgstr ""
+msgstr "Menù contestuale"
 
 #: ../../editing/clip-editors/automation-editor.rst:56
 #: ../../editing/clip-editors/chord-editor.rst:66
@@ -1183,8 +1319,12 @@ msgstr ""
 #: ../../editing/clip-editors/chord-editor.rst:69
 #: ../../editing/clip-editors/piano-roll.rst:118
 #: ../../editing/timeline/event-viewer.rst:8
+#, fuzzy
 msgid "Event Viewer"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Visione d’insieme\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../editing/clip-editors/automation-editor.rst:60
 msgid ""
@@ -1194,7 +1334,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:67
 msgid "It displays information about each automation point and its curve."
-msgstr ""
+msgstr "Mostra informazioni su ogni punto di automazione e la sua curva."
 
 #: ../../editing/clip-editors/chord-editor.rst:8
 #: ../../editing/clip-editors/toolbar.rst:43
@@ -1237,13 +1377,15 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:34
 msgid "Chord Selector"
-msgstr ""
+msgstr "Selettore di accordo"
 
 #: ../../editing/clip-editors/chord-editor.rst:35
 msgid ""
 "Double-clicking on a chord will bring up the chord selector, which allows"
 " you to change that chord."
 msgstr ""
+"Facendo doppio click su un accordo verrò avviato il selettore di accordo "
+"che ti permetterà di cambiarlo."
 
 #: ../../editing/clip-editors/chord-editor.rst:41
 msgid ""
@@ -1262,11 +1404,13 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:51
 msgid "Chord Arranger"
-msgstr ""
+msgstr "Arrangiatore di accordi"
 
 #: ../../editing/clip-editors/chord-editor.rst:52
 msgid "The chord arranger refers to the arranger section of the chord editor."
 msgstr ""
+"L'arrangiatore di accordi fa riferimento alla sezione arrangiatore "
+"dell'editor degli accordi."
 
 #: ../../editing/clip-editors/chord-editor.rst:58
 msgid ""
@@ -1323,11 +1467,11 @@ msgstr ""
 #: ../../editing/clip-editors/piano-roll.rst:22
 #: ../../zrythm-interface/main-toolbar.rst:133
 msgid "Additional Controls"
-msgstr ""
+msgstr "Controlli aggiuntivi"
 
 #: ../../editing/clip-editors/piano-roll.rst:23
 msgid "The piano roll contains the following additional controls."
-msgstr ""
+msgstr "Il piano roll contiene i seguenti controlli aggiuntivi."
 
 #: ../../editing/clip-editors/piano-roll.rst:29
 msgid "Drum View"
@@ -1342,7 +1486,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:36
 msgid "Listen to notes"
-msgstr ""
+msgstr "Ascolta le note"
 
 #: ../../editing/clip-editors/piano-roll.rst:37
 msgid ""
@@ -1352,11 +1496,11 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:44
 msgid "Piano Roll Keys"
-msgstr ""
+msgstr "Tasti del piano roll"
 
 #: ../../editing/clip-editors/piano-roll.rst:45
 msgid "These are the keys corresponding to each key found on a piano."
-msgstr ""
+msgstr "Questi sono i tasti corrispondenti a ciascun tasto di un pianoforte."
 
 #: ../../editing/clip-editors/piano-roll.rst:51
 msgid ""
@@ -1372,14 +1516,19 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:59
+#, fuzzy
 msgid ""
 "The zoom level can be changed by holding down :kbd:`Ctrl` and "
 ":kbd:`Shift` and scrolling."
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Il livello di zoom si può cambiare tenendo premuto :zbutton:`Ctrl` e "
+":zbutton:`Shift` e scorrendo.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../editing/clip-editors/piano-roll.rst:63
 msgid "MIDI Arranger"
-msgstr ""
+msgstr "Arrangiatore MIDI"
 
 #: ../../editing/clip-editors/piano-roll.rst:64
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
@@ -1452,11 +1601,15 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:126
 msgid "It displays information about each MIDI note in the MIDI arranger."
-msgstr ""
+msgstr "Visualizza le informazioni su ciascuna nota MIDI nell'arrangiatore MIDI."
 
 #: ../../editing/clip-editors/ruler.rst:8
+#, fuzzy
 msgid "Editor Ruler"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Barra degli strumenti dell'editor\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../editing/clip-editors/ruler.rst:9
 msgid ""
@@ -1522,7 +1675,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:47
 msgid "Setting Each Point"
-msgstr ""
+msgstr "Impostare ogni punto"
 
 #: ../../editing/clip-editors/ruler.rst:48
 msgid ""
@@ -1542,7 +1695,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:8
 msgid "Editor Toolbar"
-msgstr ""
+msgstr "Barra degli strumenti dell'editor"
 
 #: ../../editing/clip-editors/toolbar.rst:9
 msgid ""
@@ -1569,7 +1722,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/toolbar.rst:27
 msgid "Highlight"
-msgstr ""
+msgstr "Evidenziare"
 
 #: ../../editing/clip-editors/toolbar.rst:28
 msgid "Chord highlighting is covered in :ref:`chords-scales`."
@@ -1587,7 +1740,7 @@ msgstr ""
 #: ../../editing/clip-editors/toolbar.rst:40
 #: ../../editing/clip-editors/toolbar.rst:44
 msgid "No controls at the moment."
-msgstr ""
+msgstr "Nessun controllo al momento."
 
 #: ../../editing/common-operations.rst:8
 msgid "Common Operations"
@@ -1601,7 +1754,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:15
 msgid "Undo/Redo"
-msgstr ""
+msgstr "Annulla/Rifai"
 
 #: ../../editing/common-operations.rst:16
 msgid ""
@@ -1647,7 +1800,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:44
 msgid "Cut"
-msgstr ""
+msgstr "Taglia"
 
 #: ../../editing/common-operations.rst:45
 msgid ""
@@ -1658,7 +1811,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:51
 msgid "Copy"
-msgstr ""
+msgstr "Copia"
 
 #: ../../editing/common-operations.rst:52
 msgid ""
@@ -1668,7 +1821,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:58
 msgid "Paste"
-msgstr ""
+msgstr "Incolla"
 
 #: ../../editing/common-operations.rst:59
 msgid ""
@@ -1678,7 +1831,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:65
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplica"
 
 #: ../../editing/common-operations.rst:66
 msgid ""
@@ -1692,7 +1845,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:76
 msgid "Delete"
-msgstr ""
+msgstr "Cancella"
 
 #: ../../editing/common-operations.rst:77
 msgid "Delete the selected objects. You can also press :kbd:`Delete`."
@@ -1700,11 +1853,11 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:82
 msgid "Selections"
-msgstr ""
+msgstr "Selezioni"
 
 #: ../../editing/common-operations.rst:84
 msgid "Clear Selection"
-msgstr ""
+msgstr "Cancella selezione"
 
 #: ../../editing/common-operations.rst:85
 msgid "Clear current selection (unselect all objects)."
@@ -1718,7 +1871,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:90
 msgid "Select All"
-msgstr ""
+msgstr "Seleziona tutto"
 
 #: ../../editing/common-operations.rst:91
 msgid "Select all objects in the current editor (:kbd:`Control-a`)."
@@ -1860,8 +2013,12 @@ msgid "You can :kbd:`Alt`-click inside objects to break them up."
 msgstr ""
 
 #: ../../editing/edit-tools.rst:102
+#, fuzzy
 msgid "Edit Tool"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Barra degli strumenti dell'editor\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../editing/edit-tools.rst:103
 msgid ""
@@ -1911,8 +2068,12 @@ msgid ""
 msgstr ""
 
 #: ../../editing/edit-tools.rst:138
+#, fuzzy
 msgid "Audition Tool"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Controlli aggiuntivi\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../editing/edit-tools.rst:139
 msgid "This feature is not implemented yet."
@@ -2056,7 +2217,7 @@ msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:31
 msgid "Length"
-msgstr ""
+msgstr "Lunghezza"
 
 #: ../../editing/snapping-grid-options.rst:32
 msgid "Note length to snap to."
@@ -2113,8 +2274,12 @@ msgid "The following types of regions exist."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:45
+#, fuzzy
 msgid "Audio Regions"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Editor di automazione\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../editing/timeline/arranger.rst:46
 msgid "Audio regions contain audio clips from audio files."
@@ -2151,8 +2316,12 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:77
+#, fuzzy
 msgid "Automation Regions"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Editor di automazione\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../editing/timeline/arranger.rst:78
 msgid "Automation regions contain automation events."
@@ -2181,10 +2350,15 @@ msgid "Chord regions appear inside the chord track."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:102
+#, fuzzy
 msgid ""
 "Double-clicking a chord region will bring up the :doc:`Chord Editor "
 "<../../editing/clip-editors/chord-editor>`."
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Facendo doppio click su un accordo verrò avviato il selettore di accordo "
+"che ti permetterà di cambiarlo.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../editing/timeline/arranger.rst:107
 msgid ""
@@ -2320,8 +2494,12 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:214
+#, fuzzy
 msgid "Fade context menu"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Menù contestuale\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../editing/timeline/arranger.rst:216
 msgid "The various types of fade algorithms available are illustrated below."
@@ -2336,12 +2514,20 @@ msgid "Linear"
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:229
+#, fuzzy
 msgid "Exponential"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Esponente\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../editing/timeline/arranger.rst:234
+#, fuzzy
 msgid "Elliptic (Superellipse)"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Superellisse\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../editing/timeline/arranger.rst:241
 msgid "Decide what to do about cross-fades (just use fades?)."
@@ -2493,7 +2679,7 @@ msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:24
 msgid "Musical Mode"
-msgstr ""
+msgstr "Modalità musicale"
 
 #: ../../editing/timeline/toolbar.rst:25
 msgid ""
@@ -2664,10 +2850,13 @@ msgid ""
 "For large projects, it may take a while to generate the PNG graph and the"
 " resulting image will be extremely large."
 msgstr ""
+"Per progetti di grandi dimensioni potrebbe essere necessario un po' di "
+"tempo per generare il grafico PNG e l'immagine risultante sarà "
+"estremamente grande."
 
 #: ../../getting-started/getting-plugins.rst:8
 msgid "Getting Plugins, Instruments and Samples"
-msgstr ""
+msgstr "Ottenere plugin, strumenti e campioni"
 
 #: ../../getting-started/getting-plugins.rst:13
 msgid ""
@@ -2675,18 +2864,25 @@ msgid ""
 "users are expected to download and install their own plugins that suit "
 "their preferences."
 msgstr ""
+"Zrythm viene fornito con alcuni plugin per aiutare gli utenti a "
+"cominciare, ma ci si aspetta che questi scarichino e installino i propri "
+"in base alle rispettive esigenze."
 
 #: ../../getting-started/getting-plugins.rst:18
 msgid ""
 "There are many plugins to choose from. This guide will show you a few "
 "ways you can install plugins on GNU/Linux systems."
 msgstr ""
+"Ci sono molti plugin fra cui scegliere. Questa guida ti mostrerà alcuni "
+"modi per installare i plugin sui sistemi GNU/Linux."
 
 #: ../../getting-started/getting-plugins.rst:22
 msgid ""
 "For other systems, you can find a `list of free software plugins here "
 "<https://github.com/webprofusion/OpenAudio>`_."
 msgstr ""
+"Per gli altri sistemi puoi trovare una `lista dei plugin liberi "
+"<https://github.com/webprofusion/OpenAudio>`_."
 
 #: ../../getting-started/getting-plugins.rst:26
 msgid ""
@@ -2724,6 +2920,8 @@ msgid ""
 "The `LSP Project <https://lsp-plug.in/>`_ has a wide variety of effect "
 "plugins."
 msgstr ""
+"Il `Progetto LSP <https://lsp-plug.in/>`_ ha un'ampia varietà di effetti "
+"plugin."
 
 #: ../../getting-started/getting-plugins.rst:50
 msgid ""
@@ -2737,7 +2935,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:56
 msgid "`Helm <https://tytel.org/helm/>`_ is a powerful subtractive synthesizer."
-msgstr ""
+msgstr "`Helm <https://tytel.org/helm/>`_ è un potente sintetizzatore sottrattivo."
 
 #: ../../getting-started/getting-plugins.rst:59
 msgid ""
@@ -2768,23 +2966,27 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:77
 msgid "SFZ/SF2 Instruments"
-msgstr ""
+msgstr "Strumenti SFZ/SF2"
 
 #: ../../getting-started/getting-plugins.rst:79
 msgid ""
 "You can find a list of SFZ instruments under free licenses at `sfz "
 "instruments <https://sfzinstruments.github.io/>`_."
 msgstr ""
+"Puoi trovare una lista di strumenti SFZ sotto licenza libera su `sfz "
+"instruments <https://sfzinstruments.github.io/>`_."
 
 #: ../../getting-started/getting-plugins.rst:85
 msgid ""
 "We recommend using `Freesound <https://freesound.org/>`_ for collecting "
 "CC-licensed samples."
 msgstr ""
+"Raccomandiamo di usare `Freesound <https://freesound.org/>`_ per la "
+"raccolta di campioni con licenza CC."
 
 #: ../../getting-started/installation.rst:6
 msgid "Installation"
-msgstr ""
+msgstr "Installazione"
 
 #: ../../getting-started/installation.rst:11
 msgid "Installers"
@@ -2796,6 +2998,9 @@ msgid ""
 " system using an installer from the `Download "
 "<https://www.zrythm.org/en/download.html>`_ page on our website."
 msgstr ""
+"Puoi installare l'ultima versione di Zrythm per la tua distribuzione o "
+"sistema operativo utilizzando l'installatore dalla pagina di `Download "
+"<https://www.zrythm.org/en/download.html>`_ sul nostro sito."
 
 #: ../../getting-started/installation.rst:18
 msgid ""
@@ -2827,7 +3032,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:36
 msgid "GNU/Linux"
-msgstr ""
+msgstr "GNU/Linux"
 
 #: ../../getting-started/installation.rst:39
 msgid "Installer"
@@ -2842,16 +3047,24 @@ msgid "**Arch Linux** - x86_64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:44
+#, fuzzy
 msgid "**Debian 10 && 11** - amd64"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"**Debian 9 & 10** - amd64\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../getting-started/installation.rst:45
 msgid "**Fedora 31 && 32** - x86_64"
 msgstr ""
 
 #: ../../getting-started/installation.rst:46
+#, fuzzy
 msgid "**Ubuntu 18.04, 20.04 & 20.10** - amd64"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"**Debian 9 & 10** - amd64\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../getting-started/installation.rst:49
 msgid "Distribution Package"
@@ -2862,14 +3075,20 @@ msgid ""
 "If your distribution provides a Zrythm package you can also install it "
 "from there."
 msgstr ""
+"Se la tua distribuzione fornisce un pacchetto di Zrythm puoi anche "
+"installarlo da lì."
 
 #: ../../getting-started/installation.rst:54
+#, fuzzy
 msgid "Windows & MacOS"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Windows & MacOS\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../getting-started/installation.rst:55
 msgid "The installers above fully support Windows 64bit and MacOS."
-msgstr ""
+msgstr "L'installatore sopra supporta interamente Windows 64bit e MacOS."
 
 #: ../../getting-started/installation.rst:58
 msgid "FreeBSD"
@@ -2999,7 +3218,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:10
 msgid "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) or aarch64 (ARMv8)"
-msgstr ""
+msgstr "x86_64 (64-bit), i686 (32-bit), armhf (ARMv7) o aarch64 (ARMv8)"
 
 #: ../../getting-started/system-requirements.rst:13
 msgid "Operating System"
@@ -3007,7 +3226,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:14
 msgid "GNU/Linux, FreeBSD, Windows or MacOS"
-msgstr ""
+msgstr "GNU/Linux, FreeBSD, Windows o MacOS"
 
 #: ../../getting-started/system-requirements.rst:17
 msgid "Recommendations"
@@ -3018,10 +3237,15 @@ msgid "CPU"
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:20
+#, fuzzy
 msgid ""
 "For smooth operation, we recommend using a CPU with at least 2GHz clock "
 "speed and at least 4 cores in total."
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Per un'operatività fluida è raccomandato utilizzare un processore con "
+"almeno 2GHz di velocità e almeno 4 core in totale.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../getting-started/system-requirements.rst:24
 msgid "Monitor"
@@ -3032,6 +3256,8 @@ msgid ""
 "It is recommended to have at least 16 inches of monitor space to work "
 "efficiently with Zrythm."
 msgstr ""
+"Per lavorare efficientemente con Zrythm è raccomandato avere uno schermo "
+"di almeno 16 pollici."
 
 #: ../../getting-started/system-requirements.rst:28
 msgid "Audio interface"
@@ -3042,6 +3268,8 @@ msgid ""
 "An audio interface offers low latency and better quality than integrated "
 "sound cards (especially if recording audio)."
 msgstr ""
+"Un'interfaccia audio offre bassa latenza e una migliore qualità rispetto "
+"a una scheda audio integrata (soprattutto per registrare)."
 
 #: ../../getting-started/system-requirements.rst:31
 msgid "MIDI keyboard"
@@ -3049,7 +3277,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:31
 msgid "For quickly trying out melodies or recording."
-msgstr ""
+msgstr "Per provare rapidamente melodie o registrare."
 
 #: ../../getting-started/system-requirements.rst:35
 #, python-format
@@ -3260,7 +3488,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:110
 msgid "Project"
-msgstr ""
+msgstr "Progetto"
 
 #: ../../glossary/intro.rst:112
 msgid ""
@@ -3396,7 +3624,7 @@ msgstr ""
 #: ../../invoking-from-command-line/intro.rst:16
 #: ../../scripting/api/zrythm.rst:3
 msgid "zrythm"
-msgstr ""
+msgstr "zrythm"
 
 #: ../../invoking-from-command-line/intro.rst:17
 msgid "Zrythm executable."
@@ -3447,11 +3675,11 @@ msgstr ""
 
 #: ../../mixing/intro.rst:8
 msgid "Mixing"
-msgstr ""
+msgstr "Mixaggio"
 
 #: ../../mixing/overview.rst:10
 msgid "Mixing Overview"
-msgstr ""
+msgstr "Panoramica del mixaggio"
 
 #: ../../mixing/overview.rst:11
 msgid ""
@@ -3470,6 +3698,8 @@ msgid ""
 "The mixer contains all of the channels in the project corresponding to "
 "visible tracks."
 msgstr ""
+"Il mixer contiene tutti i canali del progetto corrispondenti alle tracce "
+"visibili."
 
 #: ../../mixing/overview.rst:26
 msgid ""
@@ -3506,7 +3736,7 @@ msgstr ""
 
 #: ../../mixing/overview.rst:57
 msgid "Changing the Track Name"
-msgstr ""
+msgstr "Cambiare il nome della traccia"
 
 #: ../../mixing/overview.rst:58
 msgid ""
@@ -3581,7 +3811,7 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-info.rst:34
 #: ../../tracks/track-types.rst:21
 msgid "Modulators"
-msgstr ""
+msgstr "Modulatori"
 
 #: ../../modulators/intro.rst:9
 msgid ""
@@ -3632,7 +3862,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:6
 msgid "BPM and Time Signatures"
-msgstr ""
+msgstr "BPM e Indicazione di Tempo"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
 #: ../../zrythm-interface/transport-bar.rst:38
@@ -3711,7 +3941,7 @@ msgstr ""
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:36
 msgid "Song Start & End Markers"
-msgstr ""
+msgstr "Marcatori di inizio e fine brano"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:41
 msgid ""
@@ -3928,7 +4158,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:38
 msgid "Clicking the metronome button will set metronome on/off."
-msgstr ""
+msgstr "Facendo clic sul pulsante del metronomo questo verrà attivato/disattivato."
 
 #: ../../playback-and-recording/transport-controls.rst:44
 msgid ""
@@ -3986,6 +4216,9 @@ msgid ""
 " imported by dragging and dropping from your computer or from the :ref"
 ":`file-browser` into a track."
 msgstr ""
+"Zrythm può importare file MIDI e audio nel progetto. I file possono "
+"essere importati trascinandoli e rilasciandoli dal computer o da :ref"
+":`file-browser` in una traccia."
 
 #: ../../plugins-files/audio-midi-files/overview.rst:14
 msgid "Supported Audio Formats"
@@ -4109,10 +4342,15 @@ msgid "Filtering by modulator plugins"
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:46
+#, fuzzy
 msgid ""
 "See :ref:`plugin-types` for more information about the various types of "
 "plugins there are."
 msgstr ""
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Oltre a quanto sopra, puoi filtrare i plugin in base al loro tipo. Vedi: "
+"ref: `plugin-types` per maggiori informazioni sui vari tipi di plugin.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:52
 msgid "Instantiating Plugins"
@@ -4154,8 +4392,12 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:6
+#, fuzzy
 msgid "Plugin Overview"
 msgstr ""
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Visione d’insieme\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../plugins-files/plugins/plugin-info.rst:8
 msgid ""
@@ -4164,22 +4406,26 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:12
+#, fuzzy
 msgid "In Zrythm, :term:`SFZ`/:term:`SF2` are also used as plugins."
 msgstr ""
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"In Zrythm anche SFZ/SF2 sono usati come plugin.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../plugins-files/plugins/plugin-info.rst:18
 msgid "Plugin Types"
-msgstr ""
+msgstr "Tipi di plugin"
 
 #: ../../plugins-files/plugins/plugin-info.rst:20
 msgid "Plugins are classified into the following categories."
-msgstr ""
+msgstr "I plugin sono classificati nelle seguenti categorie."
 
 #: ../../plugins-files/plugins/plugin-info.rst:23
 #: ../../tracks/inspector-page.rst:35
 #: ../../tracks/track-types.rst:18
 msgid "Instrument"
-msgstr ""
+msgstr "Strumento"
 
 #: ../../plugins-files/plugins/plugin-info.rst:24
 msgid "These plugins will create an instrument track when added to the project."
@@ -4330,7 +4576,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:8
 msgid "Scanning for Plugins"
-msgstr ""
+msgstr "Ricerca di plugin"
 
 #: ../../plugins-files/plugins/scanning.rst:10
 msgid ""
@@ -4340,20 +4586,30 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:17
+#, fuzzy
 msgid ""
 ":term:`SFZ` and :term:`SF2` instruments are also supported, and they are "
 "scanned as instrument plugins."
 msgstr ""
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Anche gli strumenti SFZ e SF2 sono supportati e vengono scansionati come "
+"plugin strumenti.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../plugins-files/plugins/scanning.rst:21
+#, fuzzy
 msgid ""
 "Plugin scanning can be disabled by passing :envvar:`NO_SCAN_PLUGINS` when"
 " running Zrythm."
 msgstr ""
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"La scansione dei plugin può essere disabilitata passando "
+"``NO_SCAN_PLUGINS=1`` durante l'esecuzione di Zrythm.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../plugins-files/plugins/scanning.rst:25
 msgid "LV2 Scan"
-msgstr ""
+msgstr "Scansione LV2"
 
 #: ../../plugins-files/plugins/scanning.rst:27
 msgid ""
@@ -4364,15 +4620,15 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:33
 msgid "VST2/VST3 Scan"
-msgstr ""
+msgstr "Scansione VST2/VST3"
 
 #: ../../plugins-files/plugins/scanning.rst:36
 msgid "GNU/Linux and FreeBSD"
-msgstr ""
+msgstr "GNU/Linux e FreeBSD"
 
 #: ../../plugins-files/plugins/scanning.rst:37
 msgid "Zrythm will scan for VST2 plugins in the following paths,"
-msgstr ""
+msgstr "Zrythm cercherà i plug-in VST2 nei seguenti percorsi,"
 
 #: ../../plugins-files/plugins/scanning.rst:40
 msgid ":file:`{$HOME}/.vst`"
@@ -4426,7 +4682,7 @@ msgstr ""
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in :ref:`vst-"
 "paths`."
-msgstr ""
+msgstr "Zrythm cercherà i plugin VST nei percorsi specificati in :ref:`vst-paths`."
 
 #: ../../plugins-files/plugins/scanning.rst:64
 msgid "MacOS"
@@ -4458,26 +4714,39 @@ msgid ""
 "New plugins will be scanned on each start-up, and you can delete or edit "
 "this file to force a re-scan of previously scanned plugins."
 msgstr ""
+"I nuovi plugin verranno scansionati a ogni avvio ed è possibile eliminare"
+" o modificare questo file per forzare una nuova scansione dei plugin "
+"scansionati in precedenza."
 
 #: ../../plugins-files/plugins/scanning.rst:82
 msgid "AU Scan"
-msgstr ""
+msgstr "Scansione AU"
 
 #: ../../plugins-files/plugins/scanning.rst:83
+#, fuzzy
 msgid ""
 "On MacOS, :term:`AU` plugins will be scanned at their standard location "
 "at :file:`/Library/Audio/Plug-Ins/Components`."
 msgstr ""
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Su MacOS, gli AU verranno scansionati nella loro posizione predefinita "
+"``/Library/Audio/Plug-Ins/Components``.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../plugins-files/plugins/scanning.rst:88
 msgid "SFZ/SF2 Scan"
-msgstr ""
+msgstr "Scansione SFZ/SF2"
 
 #: ../../plugins-files/plugins/scanning.rst:89
+#, fuzzy
 msgid ""
 ":term:`SFZ` and :term:`SF2` instruments will be scanned in all  "
 "directories and subdirectories specified in :ref:`vst-paths`."
 msgstr ""
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Gli strumenti SFZ e SF2 verranno scansionati in tutte le cartelle e "
+"sottocartelle specificate in: ref: `vst-path`.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../projects/project-info.rst:6
 msgid "Project Info"
@@ -4752,7 +5021,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:8
 msgid "Ports"
-msgstr ""
+msgstr "Porte"
 
 #: ../../routing/ports.rst:10
 msgid ""
@@ -4781,7 +5050,7 @@ msgstr ""
 #: ../../routing/ports.rst:27
 #: ../../tracks/track-types.rst:12
 msgid "Input"
-msgstr ""
+msgstr "Ingresso"
 
 #: ../../routing/ports.rst:28
 msgid "The port receives signals."
@@ -4790,7 +5059,7 @@ msgstr ""
 #: ../../routing/ports.rst:31
 #: ../../tracks/track-types.rst:12
 msgid "Output"
-msgstr ""
+msgstr "Uscita"
 
 #: ../../routing/ports.rst:32
 msgid "The port sends signals."
@@ -5834,15 +6103,17 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:18
 msgid "Track Properties"
-msgstr ""
+msgstr "Proprietà della traccia"
 
 #: ../../tracks/inspector-page.rst:20
 msgid "Track properties are basic properties that the track has."
 msgstr ""
+"Le proprietà della traccia sono le proprietà basiche che la traccia "
+"possiede."
 
 #: ../../tracks/inspector-page.rst:28
 msgid "Name of the track"
-msgstr ""
+msgstr "Nome della traccia"
 
 #: ../../tracks/inspector-page.rst:32
 msgid "The track that this track routes its output to."
@@ -5950,6 +6221,8 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:117
 msgid "The following controls are available for controlling the signal flow."
 msgstr ""
+"I seguenti controlli sono disponibili per controllare il flusso del "
+"segnale."
 
 #: ../../tracks/inspector-page.rst:122
 msgid "Arm the track for recording."
@@ -5973,7 +6246,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:139
 msgid "Listen"
-msgstr ""
+msgstr "Ascolta"
 
 #: ../../tracks/inspector-page.rst:140
 msgid ""
@@ -5993,11 +6266,11 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:153
 msgid "Comments"
-msgstr ""
+msgstr "Commenti"
 
 #: ../../tracks/inspector-page.rst:154
 msgid "User comments."
-msgstr ""
+msgstr "Commenti dell'utente."
 
 #: ../../tracks/inspector-page.rst:159
 msgid "This is not implemented yet."
@@ -6468,7 +6741,7 @@ msgstr ""
 #: ../../tracks/track-visibility.rst:8
 #: ../../zrythm-interface/left-panel.rst:58
 msgid "Track Visibility"
-msgstr ""
+msgstr "Visibilità della traccia"
 
 #: ../../tracks/track-visibility.rst:10
 msgid ""
@@ -6503,7 +6776,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:8
 msgid "Bottom Panel"
-msgstr ""
+msgstr "Pannello inferiore"
 
 #: ../../zrythm-interface/bottom-panel.rst:10
 msgid ""
@@ -6581,11 +6854,11 @@ msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Interface"
-msgstr ""
+msgstr "Interfaccia"
 
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
-msgstr ""
+msgstr "Pannello di sinistra"
 
 #: ../../zrythm-interface/left-panel.rst:10
 msgid "The left panel contains the inspectors and track visibility options."
@@ -6607,11 +6880,11 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:26
 msgid "The plugin inspector shows various options for the selected plugin."
-msgstr ""
+msgstr "L'ispettore dei plugin mostra varie opzioni per il plugin selezionato."
 
 #: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
-msgstr ""
+msgstr "Proprietà del plugin"
 
 #: ../../zrythm-interface/left-panel.rst:34
 msgid ""
@@ -6646,13 +6919,16 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:8
 msgid "Main Toolbar"
-msgstr ""
+msgstr "Barra degli strumenti principale"
 
 #: ../../zrythm-interface/main-toolbar.rst:10
 msgid ""
 "The main toolbar contains global actions, such as saving and loading a "
 "project or opening the preferences window."
 msgstr ""
+"La barra degli strumenti principale contiene azioni globali, come il "
+"salvataggio e il caricamento di un progetto o l'apertura della finestra "
+"delle preferenze."
 
 #: ../../zrythm-interface/main-toolbar.rst:17
 msgid "About Dialog"
@@ -6688,59 +6964,63 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:39
 msgid "Project Menu"
-msgstr ""
+msgstr "Menù del progetto"
 
 #: ../../zrythm-interface/main-toolbar.rst:40
 msgid ""
 "The Project menu contains various project-related actions such as saving,"
 " loading and exporting MIDI or audio."
 msgstr ""
+"Il menù del Progetto contiene alcune operazioni riguardo al progetto come"
+" il salvataggio, il caricamento e l'esportazione MIDI o audio."
 
 #: ../../zrythm-interface/main-toolbar.rst:45
 msgid "New Project"
-msgstr ""
+msgstr "Nuovo progetto"
 
 #: ../../zrythm-interface/main-toolbar.rst:46
 msgid "Create a new project."
-msgstr ""
+msgstr "Crea un nuovo progetto."
 
 #: ../../zrythm-interface/main-toolbar.rst:49
 msgid "Save"
-msgstr ""
+msgstr "Salva"
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save the current project at its current location."
-msgstr ""
+msgstr "Salva il progetto corrente nella sua posizione attuale."
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Save As"
-msgstr ""
+msgstr "Salva come"
 
 #: ../../zrythm-interface/main-toolbar.rst:54
 msgid "Save the current project at a new location."
-msgstr ""
+msgstr "Salva il progetto corrente in una nuova posizione."
 
 #: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Load"
-msgstr ""
+msgstr "Carica"
 
 #: ../../zrythm-interface/main-toolbar.rst:58
 msgid "Load a project."
-msgstr ""
+msgstr "Carica un progetto."
 
 #: ../../zrythm-interface/main-toolbar.rst:61
 msgid "Export As"
-msgstr ""
+msgstr "Esporta come"
 
 #: ../../zrythm-interface/main-toolbar.rst:62
 msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for"
 " more details."
 msgstr ""
+"Esporta il progetto come audio o MIDI. Vedere :ref:`export-audio-and-"
+"midi` per maggiori dettagli."
 
 #: ../../zrythm-interface/main-toolbar.rst:66
 msgid "Export Graph"
-msgstr ""
+msgstr "Esporta grafico"
 
 #: ../../zrythm-interface/main-toolbar.rst:67
 msgid ""
@@ -6764,27 +7044,27 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:79
 msgid "Zoom In"
-msgstr ""
+msgstr "Ingrandire"
 
 #: ../../zrythm-interface/main-toolbar.rst:80
 msgid "Zooms in."
-msgstr ""
+msgstr "Ingrandisce."
 
 #: ../../zrythm-interface/main-toolbar.rst:83
 msgid "Zoom Out"
-msgstr ""
+msgstr "Rimpicciolire"
 
 #: ../../zrythm-interface/main-toolbar.rst:84
 msgid "Zooms out."
-msgstr ""
+msgstr "Rimpicciolisce."
 
 #: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Original Size"
-msgstr ""
+msgstr "Dimensione originale"
 
 #: ../../zrythm-interface/main-toolbar.rst:88
 msgid "Zooms back to the default zoom level."
-msgstr ""
+msgstr "Torna al livello di zoom predefinito."
 
 #: ../../zrythm-interface/main-toolbar.rst:91
 msgid "Best Fit"
@@ -6814,13 +7094,15 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:104
 msgid "Help Menu"
-msgstr ""
+msgstr "Menù aiuto"
 
 #: ../../zrythm-interface/main-toolbar.rst:105
 msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
 msgstr ""
+"Il menù Aiuto contiene collegamenti per segnalare bug, donare, chattare e"
+" altri collegamenti utili."
 
 #: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Chat"
@@ -6832,23 +7114,23 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:113
 msgid "Manual"
-msgstr ""
+msgstr "Manuale"
 
 #: ../../zrythm-interface/main-toolbar.rst:114
 msgid "View the user manual."
-msgstr ""
+msgstr "Visualizza il manuale utente."
 
 #: ../../zrythm-interface/main-toolbar.rst:117
 msgid "News"
-msgstr ""
+msgstr "Novità"
 
 #: ../../zrythm-interface/main-toolbar.rst:118
 msgid "Show the latest changelog."
-msgstr ""
+msgstr "Mostra la lista degli ultimi cambiamenti."
 
 #: ../../zrythm-interface/main-toolbar.rst:121
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Tasti rapidi"
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Show all the available keyboard shortcuts."
@@ -6856,19 +7138,19 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:125
 msgid "Donate"
-msgstr ""
+msgstr "Dona"
 
 #: ../../zrythm-interface/main-toolbar.rst:126
 msgid "Donate to Zrythm through LiberaPay."
-msgstr ""
+msgstr "Dona a Zrythm attraverso LiberaPay."
 
 #: ../../zrythm-interface/main-toolbar.rst:129
 msgid "Report a Bug"
-msgstr ""
+msgstr "Riporta un bug"
 
 #: ../../zrythm-interface/main-toolbar.rst:130
 msgid "Opens the page to report a new bug."
-msgstr ""
+msgstr "Apre la pagina per riportare un nuovo bug."
 
 #: ../../zrythm-interface/main-toolbar.rst:134
 msgid "The main toolbar also contains the following widgets."
@@ -6884,7 +7166,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:148
 msgid "Log Viewer"
-msgstr ""
+msgstr "Visualizzatore registro"
 
 #: ../../zrythm-interface/main-toolbar.rst:149
 msgid ""
@@ -7016,15 +7298,15 @@ msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:6
 msgid "Interface Overview"
-msgstr ""
+msgstr "Panoramica dell'interfaccia"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:8
 msgid "The Zrythm interface is split into various sub-modules."
-msgstr ""
+msgstr "L'interfaccia di Zrythm è suddivisa in vari sotto-moduli."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:12
 msgid "Each sub-module is explained in its own section."
-msgstr ""
+msgstr "Ogni sotto-modulo è spiegato nella propria sezione."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:14
 msgid ":ref:`timeline` (1)"
@@ -7049,4 +7331,133 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
+
+#~ msgid "The directory to save user data in."
+#~ msgstr "La cartella in cui salvare i dati utente."
+
+#~ msgid "Digital signal processing."
+#~ msgstr "Elaborazione numerica dei segnali."
+
+#~ msgid ""
+#~ "This feature is mostly added for "
+#~ "debugging purposes and to help us "
+#~ "identify problems with user configurations,"
+#~ " but feel free to use it if "
+#~ "you are curious."
+#~ msgstr ""
+#~ "Questa funzione è aggiunta prevalentemente "
+#~ "per il debugging e per aiutarci a"
+#~ " identificare i problemi con le "
+#~ "configurazioni dell'utente, ma sentiti libero"
+#~ " di usarla se sei curioso."
+
+#~ msgid "This will clear ALL your settings."
+#~ msgstr "Questo cancellerà TUTTE le tue impostazioni."
+
+#~ msgid "For most users, everything can be accomplished from within Zrythm."
+#~ msgstr ""
+#~ "Per la maggior parte degli utenti "
+#~ "tutto può essere realizzato all'interno "
+#~ "di Zrythm."
+
+#~ msgid "You must have a locale enabled for the language you want to use."
+#~ msgstr ""
+#~ "Devi avere la localizzazione abilitata "
+#~ "per la lingua che vuoi utilizzare."
+
+#~ msgid ""
+#~ "If JACK is not available on your"
+#~ " system, we recommend RtAudio and "
+#~ "RtMidi."
+#~ msgstr "Se JACK non è disponibile sul tuo sistema consigliamo RtAudio e RtMidi."
+
+#~ msgid ""
+#~ "If you choose to use JACK, JACK"
+#~ " MIDI and the JACK audio backend "
+#~ "must be chosen together."
+#~ msgstr ""
+#~ "Se scegli di usare JACK, i backend"
+#~ " JACK MIDI e JACK AUDIO devono "
+#~ "essere scelti insieme."
+
+#~ msgid ""
+#~ "All of the settings mentioned here "
+#~ "are also available in the "
+#~ ":ref:`preferences`, so don't worry if "
+#~ "you selected the wrong settings."
+#~ msgstr ""
+#~ "Tutte le impostazioni qui menzionate "
+#~ "sono anche disponbiili nelle "
+#~ ":ref:`preferences` quindi non preoccuparti se"
+#~ " selezioni le impostazioni errate."
+
+#~ msgid "Forum"
+#~ msgstr "Forum"
+
+#~ msgid ""
+#~ "In the usual Composing -> Mixing "
+#~ "-> Mastering workflow, Zrythm puts the"
+#~ " most focus on the Composing part."
+#~ " It allows musicians to quickly lay"
+#~ " down and process their musical ideas"
+#~ " without taking too much time for "
+#~ "unnecessary work."
+#~ msgstr ""
+#~ "Nel consueto processo di composizione-> "
+#~ "mixing-> mastering, Zrythm mette il "
+#~ "massimo focus sulla parte di "
+#~ "composizione. Esso consente ai musicisti "
+#~ "di stabilire rapidamente e elaborare le"
+#~ " loro idee musicali senza prendere "
+#~ "troppo tempo per il lavoro inutile."
+
+#~ msgid "Source Code"
+#~ msgstr "Codice Sorgente"
+
+#~ msgid "**LinuxMint 19.3** - amd64"
+#~ msgstr "**LinuxMint 19.3** - amd64"
+
+#~ msgid "**OpenSUSE Tumbleweed** - x86_64"
+#~ msgstr "**OpenSUSE Tumbleweed** - x86_64"
+
+#~ msgid ""
+#~ "You can also install Zrythm from "
+#~ "`freshports <https://www.freshports.org/audio/zrythm/>`_."
+#~ msgstr ""
+#~ "Puoi anche installare Zrythm da "
+#~ "`freshports <https://www.freshports.org/audio/zrythm/>`_."
+
+#~ msgid "This feature is not available at the moment."
+#~ msgstr "Questa funzione non è disponibile al momento."
+
+#~ msgid ""
+#~ "If you have used Cubase before, "
+#~ "you might find this easy to get"
+#~ " used to."
+#~ msgstr ""
+#~ "Se hai utilizzato Cubase in precedenza,"
+#~ " potresti trovare facile abituarti."
+
+#~ msgid "Connections"
+#~ msgstr "Connessioni"
+
+#~ msgid ""
+#~ "Connections can be made by double "
+#~ "clicking on ports in the :ref:`track-"
+#~ "inspector` or the :ref:`plugin-inspector`."
+#~ msgstr ""
+
+#~ msgid "See :ref:`exporting-routing-graph` for details."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "CV ports handle continuous signals and"
+#~ " can be used to modulate control "
+#~ "ports."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Filtering by collections and protocols "
+#~ "is not operational at the moment."
+#~ msgstr ""
 

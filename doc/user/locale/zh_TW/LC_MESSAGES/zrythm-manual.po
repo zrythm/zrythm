@@ -1,14 +1,38 @@
+# #-#-#-#-#  appendix.po (Zrythm 0.8)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2019-2020 The Zrythm contributors
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
+# #-#-#-#-#  chords-and-scales.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  configuration.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  contributing.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  credits.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  exporting.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  getting-started.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
+# #-#-#-#-#  index.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  invoking-from-command-line.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  mixing.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  modulators.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  playback-and-recording.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  plugins-files.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  projects.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  routing.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  theming.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  tracks.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  user-media.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Zrythm 1.0.0-alpha.7\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-31 22:53+0000\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2021-01-01 00:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -301,7 +325,7 @@ msgstr ""
 #: ../../scripting/overview.rst:6
 #: ../../tracks/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "概述"
 
 #: ../../chords-and-scales/overview.rst:8
 msgid ""
@@ -311,7 +335,7 @@ msgstr ""
 
 #: ../../chords-and-scales/overview.rst:12
 msgid "Chord Pad"
-msgstr ""
+msgstr "和弦墊"
 
 #: ../../chords-and-scales/overview.rst:14
 msgid ""
@@ -483,7 +507,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:20
 msgid "General"
-msgstr ""
+msgstr "一般"
 
 #: ../../configuration/preferences/intro.rst:22
 msgid "General settings."
@@ -491,7 +515,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:30
 msgid "Engine"
-msgstr ""
+msgstr "音效系統"
 
 #: ../../configuration/preferences/intro.rst:32
 msgid "Audio engine settings."
@@ -499,7 +523,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:35
 msgid "Audio backend"
-msgstr ""
+msgstr "音訊後端"
 
 #: ../../configuration/preferences/intro.rst:36
 msgid ""
@@ -509,7 +533,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:41
 msgid "MIDI backend"
-msgstr ""
+msgstr "MIDI 後端"
 
 #: ../../configuration/preferences/intro.rst:42
 msgid ""
@@ -520,7 +544,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:48
 msgid "MIDI controllers"
-msgstr ""
+msgstr "MIDI 控制器"
 
 #: ../../configuration/preferences/intro.rst:49
 msgid "A list of controllers to auto-connect to."
@@ -544,7 +568,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:61
 msgid "Zrythm path"
-msgstr ""
+msgstr "Zrythm 路徑"
 
 #: ../../configuration/preferences/intro.rst:62
 msgid "The :term:`Zrythm user path`."
@@ -554,7 +578,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:11
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
-msgstr ""
+msgstr "外掛"
 
 #: ../../configuration/preferences/intro.rst:67
 msgid ":term:`Plugin` settings."
@@ -591,7 +615,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:88
 msgid "Always show plugin UIs on top of the main window."
-msgstr ""
+msgstr "總是將外掛程式的視窗顯示在主視窗的上層。"
 
 #: ../../configuration/preferences/intro.rst:91
 msgid "Bridge unsupported UIs"
@@ -609,15 +633,15 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:99
 msgid "Refresh rate"
-msgstr ""
+msgstr "刷新頻率"
 
 #: ../../configuration/preferences/intro.rst:100
 msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
-msgstr ""
+msgstr "以 Hz 單位。若頻率為零，則使用電腦螢幕的刷新頻率。"
 
 #: ../../configuration/preferences/intro.rst:106
 msgid "Paths"
-msgstr ""
+msgstr "路徑"
 
 #: ../../configuration/preferences/intro.rst:109
 msgid "VST plugins"
@@ -652,7 +676,7 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:128
 #: ../../glossary/intro.rst:52
 msgid "DSP"
-msgstr ""
+msgstr "訊號處理"
 
 #: ../../configuration/preferences/intro.rst:130
 msgid ":term:`DSP` settings."
@@ -695,7 +719,7 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:164
 #: ../../editing/intro.rst:8
 msgid "Editing"
-msgstr ""
+msgstr "編輯"
 
 #: ../../configuration/preferences/intro.rst:166
 msgid "Editing options."
@@ -709,7 +733,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:20
 msgid "Audio"
-msgstr ""
+msgstr "音訊"
 
 #: ../../configuration/preferences/intro.rst:174
 msgid "Audio editing."
@@ -717,7 +741,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:177
 msgid "Fade algorithm"
-msgstr ""
+msgstr "淡入/淡出演算法"
 
 #: ../../configuration/preferences/intro.rst:178
 msgid "Default fade algorithm to use for fade in/outs."
@@ -726,7 +750,7 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:181
 #: ../../tracks/automation.rst:8
 msgid "Automation"
-msgstr ""
+msgstr "自動化控制"
 
 #: ../../configuration/preferences/intro.rst:183
 msgid "Automation editing."
@@ -734,7 +758,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:186
 msgid "Curve algorithm"
-msgstr ""
+msgstr "曲線演算法"
 
 #: ../../configuration/preferences/intro.rst:187
 msgid "Default curve algorithm to use for automation curves."
@@ -742,7 +766,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:191
 msgid "Undo"
-msgstr ""
+msgstr "復原"
 
 #: ../../configuration/preferences/intro.rst:193
 msgid "Undo options."
@@ -750,7 +774,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:196
 msgid "Undo stack length"
-msgstr ""
+msgstr "復原次數限制"
 
 #: ../../configuration/preferences/intro.rst:197
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
@@ -779,7 +803,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:217
 msgid "Autosave interval"
-msgstr ""
+msgstr "自動儲存時間間隔"
 
 #: ../../configuration/preferences/intro.rst:218
 msgid ""
@@ -802,8 +826,12 @@ msgid "User interface options."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:233
+#, fuzzy
 msgid "General (UI)"
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.8)  #-#-#-#-#\n"
+"一般\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../configuration/preferences/intro.rst:235
 msgid "General user interface options."
@@ -811,7 +839,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:238
 msgid "User interface language"
-msgstr ""
+msgstr "使用者界面語言"
 
 #: ../../configuration/preferences/intro.rst:239
 msgid "The language to use for the user interface."
@@ -1134,7 +1162,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:44
 msgid "Exponent"
-msgstr ""
+msgstr "Exponent"
 
 #: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponential curve."
@@ -1142,7 +1170,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Superellipse"
-msgstr ""
+msgstr "Superellipse"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."
@@ -1151,7 +1179,7 @@ msgstr ""
 #: ../../editing/clip-editors/automation-editor.rst:49
 #: ../../editing/timeline/arranger.rst:239
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "The curve that Vital synth uses, similar to exponential curve."
@@ -1159,7 +1187,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse"
-msgstr ""
+msgstr "Pulse"
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse wave."
@@ -1221,7 +1249,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:23
 msgid "Chords"
-msgstr ""
+msgstr "和弦"
 
 #: ../../editing/clip-editors/chord-editor.rst:24
 msgid ""
@@ -1474,7 +1502,7 @@ msgstr ""
 #: ../../editing/timeline/arranger.rst:106
 #: ../../tracks/track-types.rst:19
 msgid "Markers"
-msgstr ""
+msgstr "標記"
 
 #: ../../editing/clip-editors/ruler.rst:24
 msgid "Clip Start"
@@ -1647,7 +1675,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:44
 msgid "Cut"
-msgstr ""
+msgstr "剪下"
 
 #: ../../editing/common-operations.rst:45
 msgid ""
@@ -1658,7 +1686,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:51
 msgid "Copy"
-msgstr ""
+msgstr "複製"
 
 #: ../../editing/common-operations.rst:52
 msgid ""
@@ -1668,7 +1696,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:58
 msgid "Paste"
-msgstr ""
+msgstr "貼上"
 
 #: ../../editing/common-operations.rst:59
 msgid ""
@@ -1678,7 +1706,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:65
 msgid "Duplicate"
-msgstr ""
+msgstr "拷貝"
 
 #: ../../editing/common-operations.rst:66
 msgid ""
@@ -1692,7 +1720,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:76
 msgid "Delete"
-msgstr ""
+msgstr "刪除"
 
 #: ../../editing/common-operations.rst:77
 msgid "Delete the selected objects. You can also press :kbd:`Delete`."
@@ -1700,11 +1728,11 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:82
 msgid "Selections"
-msgstr ""
+msgstr "選取"
 
 #: ../../editing/common-operations.rst:84
 msgid "Clear Selection"
-msgstr ""
+msgstr "取消選取"
 
 #: ../../editing/common-operations.rst:85
 msgid "Clear current selection (unselect all objects)."
@@ -1718,7 +1746,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:90
 msgid "Select All"
-msgstr ""
+msgstr "全選"
 
 #: ../../editing/common-operations.rst:91
 msgid "Select all objects in the current editor (:kbd:`Control-a`)."
@@ -1726,7 +1754,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:97
 msgid "Loop Selection"
-msgstr ""
+msgstr "循環選擇"
 
 #: ../../editing/common-operations.rst:98
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
@@ -1945,7 +1973,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:17
 msgid "Quantize"
-msgstr ""
+msgstr "量化"
 
 #: ../../editing/quantization.rst:18
 msgid ""
@@ -1955,7 +1983,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:25
 msgid "Quantize to"
-msgstr ""
+msgstr "量化成"
 
 #: ../../editing/quantization.rst:26
 msgid "Select the note length and type to quantize to."
@@ -1963,7 +1991,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:28
 msgid "Adjust"
-msgstr ""
+msgstr "調整"
 
 #: ../../editing/quantization.rst:28
 msgid ""
@@ -1973,7 +2001,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:32
 msgid "Amount"
-msgstr ""
+msgstr "程度"
 
 #: ../../editing/quantization.rst:31
 msgid ""
@@ -1991,7 +2019,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:39
 msgid "Randomization"
-msgstr ""
+msgstr "隨機性"
 
 #: ../../editing/quantization.rst:37
 msgid ""
@@ -2056,7 +2084,7 @@ msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:31
 msgid "Length"
-msgstr ""
+msgstr "長度"
 
 #: ../../editing/snapping-grid-options.rst:32
 msgid "Note length to snap to."
@@ -2336,12 +2364,20 @@ msgid "Linear"
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:229
+#, fuzzy
 msgid "Exponential"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Exponent\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../editing/timeline/arranger.rst:234
+#, fuzzy
 msgid "Elliptic (Superellipse)"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.8)  #-#-#-#-#\n"
+"Superellipse\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../editing/timeline/arranger.rst:241
 msgid "Decide what to do about cross-fades (just use fades?)."
@@ -2493,7 +2529,7 @@ msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:24
 msgid "Musical Mode"
-msgstr ""
+msgstr "音樂模式"
 
 #: ../../editing/timeline/toolbar.rst:25
 msgid ""
@@ -2827,7 +2863,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:36
 msgid "GNU/Linux"
-msgstr ""
+msgstr "GNU/Linux"
 
 #: ../../getting-started/installation.rst:39
 msgid "Installer"
@@ -2961,8 +2997,12 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:68
+#, fuzzy
 msgid "Plugin Scan"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.8)  #-#-#-#-#\n"
+"外掛\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../getting-started/running-zrythm.rst:69
 msgid ""
@@ -3098,7 +3138,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:23
 msgid "Bounce"
-msgstr ""
+msgstr "轉換"
 
 #: ../../glossary/intro.rst:25
 msgid "Bouncing means exporting to audio."
@@ -3196,7 +3236,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:24
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:79
 msgid ""
@@ -3206,7 +3246,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:82
 msgid "MIDI note"
-msgstr ""
+msgstr "MIDI 音符"
 
 #: ../../glossary/intro.rst:84
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
@@ -3214,7 +3254,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:89
 msgid "Mono"
-msgstr ""
+msgstr "單聲道"
 
 #: ../../glossary/intro.rst:91
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
@@ -3249,7 +3289,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:104
 msgid "Plugin"
-msgstr ""
+msgstr "外掛"
 
 #: ../../glossary/intro.rst:106
 msgid ""
@@ -3260,7 +3300,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:110
 msgid "Project"
-msgstr ""
+msgstr "專案"
 
 #: ../../glossary/intro.rst:112
 msgid ""
@@ -3279,7 +3319,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:123
 msgid "Region"
-msgstr ""
+msgstr "片段"
 
 #: ../../glossary/intro.rst:125
 msgid ""
@@ -3396,7 +3436,7 @@ msgstr ""
 #: ../../invoking-from-command-line/intro.rst:16
 #: ../../scripting/api/zrythm.rst:3
 msgid "zrythm"
-msgstr ""
+msgstr "zrythm"
 
 #: ../../invoking-from-command-line/intro.rst:17
 msgid "Zrythm executable."
@@ -3463,7 +3503,7 @@ msgstr ""
 #: ../../mixing/overview.rst:22
 #: ../../zrythm-interface/bottom-panel.rst:82
 msgid "Mixer"
-msgstr ""
+msgstr "混音器"
 
 #: ../../mixing/overview.rst:23
 msgid ""
@@ -3517,7 +3557,7 @@ msgstr ""
 #: ../../mixing/routing.rst:6
 #: ../../routing/intro.rst:6
 msgid "Routing"
-msgstr ""
+msgstr "訊號串接 (Routing)"
 
 #: ../../mixing/routing.rst:9
 msgid "Groups"
@@ -3581,7 +3621,7 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-info.rst:34
 #: ../../tracks/track-types.rst:21
 msgid "Modulators"
-msgstr ""
+msgstr "調變器"
 
 #: ../../modulators/intro.rst:9
 msgid ""
@@ -3828,7 +3868,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:44
 msgid "Latch"
-msgstr ""
+msgstr "鎖定"
 
 #: ../../playback-and-recording/recording.rst:49
 msgid ""
@@ -3838,7 +3878,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:53
 msgid "Touch"
-msgstr ""
+msgstr "觸碰"
 
 #: ../../playback-and-recording/recording.rst:58
 msgid ""
@@ -3946,7 +3986,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 #: ../../zrythm-interface/right-panel.rst:21
 msgid "File Browser"
-msgstr ""
+msgstr "檔案瀏覽器"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:10
 msgid ""
@@ -4044,7 +4084,7 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-browser.rst:8
 #: ../../zrythm-interface/right-panel.rst:16
 msgid "Plugin Browser"
-msgstr ""
+msgstr "外掛瀏覽器"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:10
 msgid ""
@@ -4179,7 +4219,7 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:35
 #: ../../tracks/track-types.rst:18
 msgid "Instrument"
-msgstr ""
+msgstr "樂器"
 
 #: ../../plugins-files/plugins/plugin-info.rst:24
 msgid "These plugins will create an instrument track when added to the project."
@@ -4660,7 +4700,7 @@ msgstr ""
 #: ../../routing/control-room.rst:8
 #: ../../zrythm-interface/right-panel.rst:25
 msgid "Control Room"
-msgstr ""
+msgstr "控制室"
 
 #: ../../routing/control-room.rst:9
 msgid ""
@@ -5260,7 +5300,7 @@ msgstr ""
 #: ../../scripting/scripting-interface.rst:6
 #: ../../zrythm-interface/main-toolbar.rst:143
 msgid "Scripting Interface"
-msgstr ""
+msgstr "腳本界面"
 
 #: ../../scripting/scripting-interface.rst:8
 msgid "Explain the scripting window/interface."
@@ -5559,7 +5599,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:44
 #: ../../tracks/midi-track.rst:56
 msgid "Direct Out"
-msgstr ""
+msgstr "直通輸出"
 
 #: ../../tracks/audio-track.rst:44
 msgid "The track to route the output of the audio track to."
@@ -5584,7 +5624,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:47
 #: ../../tracks/midi-track.rst:75
 msgid "Sends"
-msgstr ""
+msgstr "輔助傳送"
 
 #: ../../tracks/audio-track.rst:58
 #: ../../tracks/instrument-track.rst:77
@@ -5834,7 +5874,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:18
 msgid "Track Properties"
-msgstr ""
+msgstr "音軌屬性"
 
 #: ../../tracks/inspector-page.rst:20
 msgid "Track properties are basic properties that the track has."
@@ -5911,7 +5951,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:94
 msgid "Fader"
-msgstr ""
+msgstr "推桿"
 
 #: ../../tracks/inspector-page.rst:95
 msgid "Fader section to control the volume and stereo balance."
@@ -5933,7 +5973,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:110
 msgid "Peak"
-msgstr ""
+msgstr "峰值"
 
 #: ../../tracks/inspector-page.rst:111
 msgid "Peak signal value."
@@ -6513,7 +6553,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:18
 msgid "Editor"
-msgstr ""
+msgstr "編輯器"
 
 #: ../../zrythm-interface/bottom-panel.rst:19
 msgid ""
@@ -6581,7 +6621,7 @@ msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Interface"
-msgstr ""
+msgstr "介面"
 
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
@@ -6611,7 +6651,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
-msgstr ""
+msgstr "外掛屬性"
 
 #: ../../zrythm-interface/left-panel.rst:34
 msgid ""
@@ -6698,7 +6738,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:45
 msgid "New Project"
-msgstr ""
+msgstr "建立新專案"
 
 #: ../../zrythm-interface/main-toolbar.rst:46
 msgid "Create a new project."
@@ -6706,7 +6746,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:49
 msgid "Save"
-msgstr ""
+msgstr "儲存"
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save the current project at its current location."
@@ -6714,7 +6754,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Save As"
-msgstr ""
+msgstr "另存新檔"
 
 #: ../../zrythm-interface/main-toolbar.rst:54
 msgid "Save the current project at a new location."
@@ -6730,7 +6770,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:61
 msgid "Export As"
-msgstr ""
+msgstr "輸出成"
 
 #: ../../zrythm-interface/main-toolbar.rst:62
 msgid ""
@@ -6764,7 +6804,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:79
 msgid "Zoom In"
-msgstr ""
+msgstr "放大"
 
 #: ../../zrythm-interface/main-toolbar.rst:80
 msgid "Zooms in."
@@ -6772,7 +6812,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:83
 msgid "Zoom Out"
-msgstr ""
+msgstr "缩小"
 
 #: ../../zrythm-interface/main-toolbar.rst:84
 msgid "Zooms out."
@@ -6780,7 +6820,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Original Size"
-msgstr ""
+msgstr "原始大小"
 
 #: ../../zrythm-interface/main-toolbar.rst:88
 msgid "Zooms back to the default zoom level."
@@ -6788,7 +6828,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:91
 msgid "Best Fit"
-msgstr ""
+msgstr "最適大小"
 
 #: ../../zrythm-interface/main-toolbar.rst:92
 msgid ""
@@ -6824,7 +6864,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Chat"
-msgstr ""
+msgstr "聊天"
 
 #: ../../zrythm-interface/main-toolbar.rst:110
 msgid "Join the Zrythm chatroom on Matrix."
@@ -6832,7 +6872,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:113
 msgid "Manual"
-msgstr ""
+msgstr "使用手冊"
 
 #: ../../zrythm-interface/main-toolbar.rst:114
 msgid "View the user manual."
@@ -6840,7 +6880,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:117
 msgid "News"
-msgstr ""
+msgstr "最新資訊"
 
 #: ../../zrythm-interface/main-toolbar.rst:118
 msgid "Show the latest changelog."
@@ -6848,7 +6888,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:121
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "鍵盤快速鍵"
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Show all the available keyboard shortcuts."
@@ -6856,7 +6896,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:125
 msgid "Donate"
-msgstr ""
+msgstr "捐款"
 
 #: ../../zrythm-interface/main-toolbar.rst:126
 msgid "Donate to Zrythm through LiberaPay."
@@ -6864,7 +6904,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:129
 msgid "Report a Bug"
-msgstr ""
+msgstr "回報錯誤"
 
 #: ../../zrythm-interface/main-toolbar.rst:130
 msgid "Opens the page to report a new bug."
@@ -6883,8 +6923,12 @@ msgid "Shows the scripting interface. See :ref:`scripting` for more information.
 msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:148
+#, fuzzy
 msgid "Log Viewer"
 msgstr ""
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#\n"
+"事件檢視器\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../zrythm-interface/main-toolbar.rst:149
 msgid ""
@@ -7049,4 +7093,12 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
+
+#~ msgid "Preferences"
+#~ msgstr "選項"
+
+#~ msgid ""
+#~ "Filtering by collections and protocols "
+#~ "is not operational at the moment."
+#~ msgstr ""
 

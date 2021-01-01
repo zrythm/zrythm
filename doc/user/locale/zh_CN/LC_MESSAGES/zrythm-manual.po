@@ -1,14 +1,44 @@
+# #-#-#-#-#  appendix.po (Zrythm 0.4)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2019-2020 The Zrythm contributors
+# Copyright (C) 2019, Alexandros Theodotou
 # This file is distributed under the same license as the Zrythm package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
+# #-#-#-#-#  chords-and-scales.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  connections.po (Zrythm 0.8)  #-#-#-#-#
+# Copyright (C) 2019-2020 Alexandros Theodotou
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+# yu zhang <zhangyu201510@gmail.com>, 2020.
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
+# #-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  credits.po (Zrythm 0.6)  #-#-#-#-#
+# #-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  exporting.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#
+# Weblate Admin <weblate.admin@zrythm.org>, 2019.
+# #-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# Copyright (C) 2019-2020 The Zrythm contributors
+# #-#-#-#-#  index.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  invoking-from-command-line.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  mixing.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  modulators.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  routing.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  scripting.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  theming.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#
+# #-#-#-#-#  user-media.po (Zrythm 0.8)  #-#-#-#-#
+# #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
+# #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Zrythm 1.0.0-alpha.7\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-31 22:53+0000\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2021-01-01 00:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -221,15 +251,19 @@ msgstr ""
 
 #: ../../appendix/intro.rst:6
 msgid "Appendix"
-msgstr ""
+msgstr "附录"
 
 #: ../../appendix/menu-actions.rst:6
+#, fuzzy
 msgid "Menu Actions"
 msgstr ""
+"#-#-#-#-#  appendix.po (Zrythm 0.4)  #-#-#-#-#\n"
+"操作菜单\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../appendix/shortcut-keys.rst:6
 msgid "Shortcut Keys"
-msgstr ""
+msgstr "快捷键"
 
 #: ../../appendix/shortcut-keys.rst:9
 msgid "Global Shortcuts"
@@ -301,7 +335,7 @@ msgstr ""
 #: ../../scripting/overview.rst:6
 #: ../../tracks/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "概述"
 
 #: ../../chords-and-scales/overview.rst:8
 msgid ""
@@ -652,7 +686,7 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:128
 #: ../../glossary/intro.rst:52
 msgid "DSP"
-msgstr ""
+msgstr "DSP"
 
 #: ../../configuration/preferences/intro.rst:130
 msgid ":term:`DSP` settings."
@@ -686,7 +720,7 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:159
 #: ../../glossary/intro.rst:93
 msgid "Pan law"
-msgstr ""
+msgstr "Pan定律"
 
 #: ../../configuration/preferences/intro.rst:160
 msgid "The :term:`Pan law` to use when applying pan on mono signals."
@@ -708,8 +742,19 @@ msgstr ""
 #: ../../tracks/track-types.rst:16
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:20
+#, fuzzy
 msgid "Audio"
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"声音\n"
+"#-#-#-#-#  connections.po (Zrythm 0.8)  #-#-#-#-#\n"
+"音讯\n"
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"音讯\n"
+"#-#-#-#-#  routing.po (Zrythm 0.8)  #-#-#-#-#\n"
+"音讯\n"
+"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
+"声音"
 
 #: ../../configuration/preferences/intro.rst:174
 msgid "Audio editing."
@@ -3098,7 +3143,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:23
 msgid "Bounce"
-msgstr ""
+msgstr "导出"
 
 #: ../../glossary/intro.rst:25
 msgid "Bouncing means exporting to audio."
@@ -3196,7 +3241,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:24
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:79
 msgid ""
@@ -3206,7 +3251,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:82
 msgid "MIDI note"
-msgstr ""
+msgstr "MIDI note"
 
 #: ../../glossary/intro.rst:84
 msgid ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
@@ -3227,7 +3272,7 @@ msgstr ""
 #: ../../tracks/midi-track.rst:132
 #: ../../tracks/midi-track.rst:140
 msgid "TODO"
-msgstr ""
+msgstr "确定"
 
 #: ../../glossary/intro.rst:96
 msgid "Panning"
@@ -3249,7 +3294,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:104
 msgid "Plugin"
-msgstr ""
+msgstr "插件"
 
 #: ../../glossary/intro.rst:106
 msgid ""
@@ -3260,7 +3305,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:110
 msgid "Project"
-msgstr ""
+msgstr "项目"
 
 #: ../../glossary/intro.rst:112
 msgid ""
@@ -3271,7 +3316,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:116
 msgid "Range"
-msgstr ""
+msgstr "范围"
 
 #: ../../glossary/intro.rst:118
 msgid "A Range is a selection of time between two positions."
@@ -3279,7 +3324,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:123
 msgid "Region"
-msgstr ""
+msgstr "区域"
 
 #: ../../glossary/intro.rst:125
 msgid ""
@@ -3356,7 +3401,7 @@ msgstr ""
 
 #: ../../index.rst:8
 msgid "Zrythm"
-msgstr ""
+msgstr "自旋律"
 
 #: ../../index.rst:10
 msgid "Welcome to the Zrythm manual."
@@ -3396,7 +3441,7 @@ msgstr ""
 #: ../../invoking-from-command-line/intro.rst:16
 #: ../../scripting/api/zrythm.rst:3
 msgid "zrythm"
-msgstr ""
+msgstr "zrythm"
 
 #: ../../invoking-from-command-line/intro.rst:17
 msgid "Zrythm executable."
@@ -3463,7 +3508,7 @@ msgstr ""
 #: ../../mixing/overview.rst:22
 #: ../../zrythm-interface/bottom-panel.rst:82
 msgid "Mixer"
-msgstr ""
+msgstr "混音器"
 
 #: ../../mixing/overview.rst:23
 msgid ""
@@ -3643,7 +3688,7 @@ msgstr ""
 msgid ""
 "The BPM can be set to between 40 and 360 by clicking and dragging the BPM"
 " widget."
-msgstr ""
+msgstr "单击并拖拽bpm控件可以设定360到40的上下限范围"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:17
 msgid ""
@@ -3682,7 +3727,7 @@ msgstr ""
 
 #: ../../playback-and-recording/intro.rst:6
 msgid "Playback and Recording"
-msgstr ""
+msgstr "重放和录制"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:6
 msgid "Loop Points and Markers"
@@ -3692,7 +3737,7 @@ msgstr ""
 msgid ""
 "The loop points indicate the area that will be looped during playback, if"
 " looping is enabled."
-msgstr ""
+msgstr "若循环已经被启用了，循环点标记的区域则会不断的循环回放"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:19
 #: ../../playback-and-recording/loop-points-and-markers.rst:32
@@ -3771,8 +3816,12 @@ msgid "Each sixteenth note is fixed to have 240 ticks."
 msgstr ""
 
 #: ../../playback-and-recording/recording.rst:6
+#, fuzzy
 msgid "Recording"
 msgstr ""
+"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
+"录制\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../playback-and-recording/recording.rst:9
 msgid "Arming Tracks"
@@ -3872,7 +3921,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:25
 #: ../../tracks/tempo-track.rst:25
 msgid "Record"
-msgstr ""
+msgstr "录制"
 
 #: ../../playback-and-recording/transport-controls.rst:17
 msgid "Arms the project for recording."
@@ -3880,7 +3929,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:20
 msgid "Play"
-msgstr ""
+msgstr "重放"
 
 #: ../../playback-and-recording/transport-controls.rst:19
 msgid ""
@@ -4179,7 +4228,7 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:35
 #: ../../tracks/track-types.rst:18
 msgid "Instrument"
-msgstr ""
+msgstr "乐器"
 
 #: ../../plugins-files/plugins/plugin-info.rst:24
 msgid "These plugins will create an instrument track when added to the project."
@@ -4247,7 +4296,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:68
 msgid "Gain"
-msgstr ""
+msgstr "增益"
 
 #: ../../plugins-files/plugins/plugin-info.rst:69
 msgid "Increases the output volume of the plugin (if applicable)."
@@ -4660,7 +4709,7 @@ msgstr ""
 #: ../../routing/control-room.rst:8
 #: ../../zrythm-interface/right-panel.rst:25
 msgid "Control Room"
-msgstr ""
+msgstr "控制室"
 
 #: ../../routing/control-room.rst:9
 msgid ""
@@ -5438,7 +5487,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:27
 #: ../../tracks/tempo-track.rst:27
 msgid "Solo"
-msgstr ""
+msgstr "独奏"
 
 #: ../../tracks/audio-track.rst:20
 #: ../../tracks/bus-track-audio.rst:20
@@ -6396,7 +6445,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:15
 msgid "Audio Group"
-msgstr ""
+msgstr "音频组"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -6422,11 +6471,11 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:16
 msgid "Audio FX"
-msgstr ""
+msgstr "音频FX"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord"
-msgstr ""
+msgstr "和弦"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord regions & scales"
@@ -6443,19 +6492,19 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:20
 msgid "Master"
-msgstr ""
+msgstr "控制"
 
 #: ../../tracks/track-types.rst:23
 msgid "MIDI Group"
-msgstr ""
+msgstr "MIDI组"
 
 #: ../../tracks/track-types.rst:24
 msgid "MIDI FX"
-msgstr ""
+msgstr "MIDI FX"
 
 #: ../../tracks/track-types.rst:25
 msgid "Tempo"
-msgstr ""
+msgstr "节奏"
 
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."
@@ -7049,4 +7098,60 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
+
+#~ msgid "/bin/zrythm"
+#~ msgstr "/bin/zrythm"
+
+#~ msgid "/usr/share/fonts/Segment7Standard"
+#~ msgstr "/usr/share/fonts/Segment7Standard"
+
+#~ msgid "/usr/share/glib-2.0/schemas/org.zrythm.gschema.xml"
+#~ msgstr "/usr/share/glib-2.0/schemas/org.zrythm.gschema.xml"
+
+#~ msgid "Forum"
+#~ msgstr "论坛"
+
+#~ msgid ""
+#~ "In the usual Composing -> Mixing "
+#~ "-> Mastering workflow, Zrythm puts the"
+#~ " most focus on the Composing part."
+#~ " It allows musicians to quickly lay"
+#~ " down and process their musical ideas"
+#~ " without taking too much time for "
+#~ "unnecessary work."
+#~ msgstr ""
+#~ "在通常的Composing  - &gt; Mixing  - &gt; "
+#~ "Mastering工作流程中，Zrythm最关注的是Composing部分"
+
+#~ msgid "Source Code"
+#~ msgstr "源代码"
+
+#~ msgid "File"
+#~ msgstr "文件"
+
+#~ msgid "Help"
+#~ msgstr "帮助"
+
+#~ msgid "Connections"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Connections can be made by double "
+#~ "clicking on ports in the :ref:`track-"
+#~ "inspector` or the :ref:`plugin-inspector`."
+#~ msgstr ""
+
+#~ msgid "See :ref:`exporting-routing-graph` for details."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "CV ports handle continuous signals and"
+#~ " can be used to modulate control "
+#~ "ports."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Filtering by collections and protocols "
+#~ "is not operational at the moment."
+#~ msgstr ""
 

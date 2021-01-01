@@ -1,14 +1,38 @@
+# #-#-#-#-#  appendix.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2019-2020 The Zrythm contributors
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
+# #-#-#-#-#  chords-and-scales.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  configuration.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  contributing.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  credits.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# Ma Ho <mhojo74@gmail.com>, 2020.
+# #-#-#-#-#  editing.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  exporting.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  getting-started.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  index.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  invoking-from-command-line.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  mixing.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  modulators.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  playback-and-recording.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  plugins-files.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  projects.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  routing.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  theming.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  tracks.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  user-media.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  zrythm-interface.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Zrythm 1.0.0-alpha.7\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-31 22:53+0000\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2021-01-01 00:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -221,7 +245,7 @@ msgstr ""
 
 #: ../../appendix/intro.rst:6
 msgid "Appendix"
-msgstr ""
+msgstr "bijlage"
 
 #: ../../appendix/menu-actions.rst:6
 msgid "Menu Actions"
@@ -379,7 +403,7 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:6
 msgid "Additional Settings"
-msgstr ""
+msgstr "Aanvullende instellingen"
 
 #: ../../configuration/additional-settings.rst:8
 msgid ""
@@ -399,10 +423,17 @@ msgid ""
 "manually for some reason - for example if your selected backend causes "
 "Zrythm to crash."
 msgstr ""
+"Normaal gesproken hoeft u geen van deze instellingen te openen aangezien "
+"de meeste ervan te vinden zijn in de gebruikersinterface van Zrythm en "
+"het wordt niet aanbevolen om ze te bewerken omdat Zrythm sommige "
+"instellingen valideert voordat het ze opslaat of sommige instellingen "
+"intern gebruikt. In enkele gevallen kan het nodig zijn om handmatig te "
+"wijzigen - bijvoorbeeld als je geselecteerde backend ervoor zorgt dat "
+"Zrythm crasht."
 
 #: ../../configuration/additional-settings.rst:25
 msgid "Viewing the Current Settings"
-msgstr ""
+msgstr "Huidige instellingen bekijken"
 
 #: ../../configuration/additional-settings.rst:27
 msgid "See :option:`zrythm --print-settings`."
@@ -410,7 +441,7 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:30
 msgid "Reset to Factory Settings"
-msgstr ""
+msgstr "Fabrieksinstellingen terugzetten"
 
 #: ../../configuration/additional-settings.rst:32
 msgid "See :option:`zrythm --reset-to-factory`."
@@ -455,6 +486,8 @@ msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
 "using :term:`a2jmidid`."
 msgstr ""
+"Afhankelijk van uw setup kan het nodig zijn MIDI apparaten te koppelen "
+"aan JACK door middel van :term:`a2jmidid`."
 
 #: ../../configuration/device-setup/intro.rst:36
 msgid "Zrythm will not remember connections made externally."
@@ -554,7 +587,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:11
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: ../../configuration/preferences/intro.rst:67
 msgid ":term:`Plugin` settings."
@@ -1023,33 +1056,47 @@ msgstr ""
 
 #: ../../credits/intro.rst:6
 msgid "Credits"
-msgstr ""
+msgstr "Credits"
 
 #: ../../credits/intro.rst:9
 msgid "Authors"
-msgstr ""
+msgstr "Auteurs"
 
 #: ../../credits/intro.rst:10
+#, fuzzy
 msgid ""
 "See the :download:`AUTHORS <../../../AUTHORS>` file in the source "
 "distribution. These include developers, graphic artists and other authors"
 " of copyrightable work."
 msgstr ""
+"#-#-#-#-#  credits.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
+"Bekijk het auteursbestand "
+"<https://git.sr.ht/~alextee/zrythm/tree/master/AUTHORS> in de "
+"brondistributie. Dit zijn onder meer ontwikkelaars, grafische artiesten "
+"en andere auteurs van auteursrechtelijk beschermd werk.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../credits/intro.rst:16
 msgid "Translators"
-msgstr ""
+msgstr "Vertalers"
 
 #: ../../credits/intro.rst:17
+#, fuzzy
 msgid ""
 "See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source"
 " distribution. These include translators of the software, the user manual"
 " and the website."
 msgstr ""
+"#-#-#-#-#  credits.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
+"Bekijk het vertalersbestand "
+"<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS> in de "
+"brondistributie. Dit zijn onder meer vertalers van de software, de "
+"gebruikershandleiding en de website.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../credits/intro.rst:24
 msgid "Other Contributors"
-msgstr ""
+msgstr "Overige bijdragers"
 
 #: ../../credits/intro.rst:25
 msgid ""
@@ -2505,7 +2552,7 @@ msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:8
 msgid "Audio & MIDI"
-msgstr ""
+msgstr "Audio & MIDI"
 
 #: ../../exporting/audio-and-midi.rst:10
 msgid ""
@@ -2961,8 +3008,12 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:68
+#, fuzzy
 msgid "Plugin Scan"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
+"Plugins\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../getting-started/running-zrythm.rst:69
 msgid ""
@@ -3356,11 +3407,11 @@ msgstr ""
 
 #: ../../index.rst:8
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: ../../index.rst:10
 msgid "Welcome to the Zrythm manual."
-msgstr ""
+msgstr "Welkom bij de Zrythm handleiding."
 
 #: ../../index.rst:16 ../../../../../doc/user/index.rst:60
 msgid "Copyright © 2019-2020 The Zrythm contributors"
@@ -3459,17 +3510,22 @@ msgid ""
 "signals around, controlling the fader level of various channels and "
 "setting their stereo balance."
 msgstr ""
+"Mixen zijn alle acties die in de mixer worden gedaan, zoals het "
+"\"routen\" van signalen, het regelen van het faderniveau van de "
+"verschillende kanalen en het instellen van hun stereobalans."
 
 #: ../../mixing/overview.rst:22
 #: ../../zrythm-interface/bottom-panel.rst:82
 msgid "Mixer"
-msgstr ""
+msgstr "Mengpaneel"
 
 #: ../../mixing/overview.rst:23
 msgid ""
 "The mixer contains all of the channels in the project corresponding to "
 "visible tracks."
 msgstr ""
+"Het mengpaneel bevat alle kanalen van het project die overeenkomen met de"
+" zichtbare tracks (sporen)."
 
 #: ../../mixing/overview.rst:26
 msgid ""
@@ -3581,7 +3637,7 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-info.rst:34
 #: ../../tracks/track-types.rst:21
 msgid "Modulators"
-msgstr ""
+msgstr "Modulatoren"
 
 #: ../../modulators/intro.rst:9
 msgid ""
@@ -3946,7 +4002,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 #: ../../zrythm-interface/right-panel.rst:21
 msgid "File Browser"
-msgstr ""
+msgstr "Bestandsverkenner"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:10
 msgid ""
@@ -5399,7 +5455,7 @@ msgstr ""
 
 #: ../../tracks/audio-track.rst:6
 msgid "Audio Track"
-msgstr ""
+msgstr "Audio spoor"
 
 #: ../../tracks/audio-track.rst:8
 msgid ""
@@ -7049,4 +7105,21 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
+
+#~ msgid "For most users, everything can be accomplished from within Zrythm."
+#~ msgstr "Voor de meeste gebruikers kan alles vanuit Zrythm gedaan worden."
+
+#~ msgid ""
+#~ "See the `THANKS file "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ in"
+#~ " the source distribution."
+#~ msgstr ""
+#~ "Bekijk het bedankbestand "
+#~ "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS> in"
+#~ " de brondistributie."
+
+#~ msgid ""
+#~ "Filtering by collections and protocols "
+#~ "is not operational at the moment."
+#~ msgstr ""
 

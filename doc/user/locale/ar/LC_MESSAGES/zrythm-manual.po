@@ -1,14 +1,38 @@
+# #-#-#-#-#  appendix.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2019-2020 The Zrythm contributors
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
+# #-#-#-#-#  chords-and-scales.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  configuration.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  contributing.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  credits.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  editing.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  exporting.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  getting-started.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# Alexandros Theodotou <alex@zrythm.org>, 2020.
+# #-#-#-#-#  index.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  invoking-from-command-line.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  mixing.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  modulators.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  playback-and-recording.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  plugins-files.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  projects.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  routing.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  scripting.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  theming.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  tracks.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  user-media.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  zrythm-interface.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
+# #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Zrythm 1.0.0-alpha.7\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-31 22:53+0000\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2021-01-01 00:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -554,7 +578,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:11
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
-msgstr ""
+msgstr "الإضافات"
 
 #: ../../configuration/preferences/intro.rst:67
 msgid ":term:`Plugin` settings."
@@ -2961,8 +2985,12 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:68
+#, fuzzy
 msgid "Plugin Scan"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
+"الإضافات\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../getting-started/running-zrythm.rst:69
 msgid ""
@@ -3196,7 +3224,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:24
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:79
 msgid ""
@@ -3260,7 +3288,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:110
 msgid "Project"
-msgstr ""
+msgstr "المشروع"
 
 #: ../../glossary/intro.rst:112
 msgid ""
@@ -3517,7 +3545,7 @@ msgstr ""
 #: ../../mixing/routing.rst:6
 #: ../../routing/intro.rst:6
 msgid "Routing"
-msgstr ""
+msgstr "التوجيه"
 
 #: ../../mixing/routing.rst:9
 msgid "Groups"
@@ -7049,4 +7077,9 @@ msgstr ""
 #: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ":ref:`right-panel` (6)"
 msgstr ""
+
+#~ msgid ""
+#~ "Filtering by collections and protocols "
+#~ "is not operational at the moment."
+#~ msgstr ""
 
