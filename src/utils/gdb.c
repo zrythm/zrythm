@@ -147,6 +147,17 @@ gdb_exec (
       gdb_env[i - 2] = NULL;
     }
 
+  char args_str[80000];
+  args_str[0] = '\0';
+  i = 0;
+  const char * gdb_arg = NULL;
+  while ((gdb_arg = gdb_args[i++]))
+    {
+      strcat (args_str, gdb_arg);
+      strcat (args_str, " ");
+    }
+  g_message ("running `%s`", args_str);
+
   /* run gdb */
   execvpe (
     "gdb", (char * const *) gdb_args,
