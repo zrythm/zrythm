@@ -9,6 +9,8 @@ The following examples are in the public domain
 (`CC 0 <https://creativecommons.org/publicdomain/zero/1.0/>`_).
 Feel free to copy and modify them.
 
+.. todo:: API changed - check that these work.
+
 Hello World
 -----------
 

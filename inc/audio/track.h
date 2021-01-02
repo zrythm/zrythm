@@ -1147,6 +1147,10 @@ track_type_to_string (
   return track_type_strings[type].str;
 }
 
+TrackType
+track_type_get_from_string (
+  const char * str);
+
 /**
  * Wrapper for each track type.
  */

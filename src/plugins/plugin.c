@@ -1132,7 +1132,7 @@ plugin_set_ui_refresh_rate (
 {
   g_message ("setting refresh rate...");
 
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_GENERATING_PROJECT)
     {
       self->ui_update_hz = 30.f;
       return;

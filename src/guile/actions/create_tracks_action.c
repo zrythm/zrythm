@@ -32,9 +32,13 @@ SCM_DEFINE (
   "Returns a new Create Tracks action for a plugin.")
 #define FUNC_NAME s_
 {
+  TrackType track_type =
+    track_type_get_from_string (
+      scm_to_locale_string (type));
+
   UndoableAction * ua =
     create_tracks_action_new (
-      scm_to_int (type),
+      track_type,
       scm_to_pointer (pl_descr),
       NULL,
       scm_to_int (track_pos),

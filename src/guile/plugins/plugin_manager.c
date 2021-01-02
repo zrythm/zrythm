@@ -26,18 +26,47 @@
 
 SCM_DEFINE (
   s_plugin_manager_find_plugin_from_uri,
-  "plugin-manager-find-plugin-from-uri", 1, 0, 0,
-  (SCM uri),
+  "plugin-manager-find-plugin-from-uri", 2, 0, 0,
+  (SCM plugin_manager, SCM uri),
   "Returns the PluginDescriptor matching the given URI.")
 #define FUNC_NAME s_
 {
+  PluginManager * pm =
+    (PluginManager *)
+    scm_to_pointer (plugin_manager);
+
+  g_return_val_if_fail (pm, SCM_BOOL_F);
+
   const PluginDescriptor * descr =
     plugin_manager_find_plugin_from_uri (
-      PLUGIN_MANAGER,
-      scm_to_locale_string (uri));
+      pm, scm_to_locale_string (uri));
 
-  return
-    scm_from_pointer ((void *) descr, NULL);
+  if (descr)
+    {
+      return
+        scm_from_pointer ((void *) descr, NULL);
+    }
+  else
+    {
+      return SCM_BOOL_F;
+    }
+}
+#undef FUNC_NAME
+
+SCM_DEFINE (
+  s_plugin_manager_scan_plugins,
+  "plugin-manager-scan-plugins", 1, 0, 0,
+  (SCM plugin_manager),
+  "Scans the system for plugins.")
+#define FUNC_NAME s_
+{
+  PluginManager * pm =
+    (PluginManager *)
+    scm_to_pointer (plugin_manager);
+
+  plugin_manager_scan_plugins (pm, 1.0, NULL);
+
+  return SCM_BOOL_T;
 }
 #undef FUNC_NAME
 
@@ -49,7 +78,9 @@ init_module (void * data)
 #endif
 
   scm_c_export (
-    "plugin-manager-find-plugin-from-uri", NULL);
+    "plugin-manager-find-plugin-from-uri",
+    "plugin-manager-scan-plugins",
+    NULL);
 }
 
 void

@@ -95,6 +95,19 @@ SCM_DEFINE (
 }
 #undef FUNC_NAME
 
+SCM_DEFINE (
+  s_zrythm_message,
+  "zrythm-message", 1, 0, 0,
+  (SCM message),
+  "Writes the message to the log.")
+#define FUNC_NAME s_
+{
+  g_message ("%s", scm_to_locale_string (message));
+
+  return SCM_BOOL_T;
+}
+#undef FUNC_NAME
+
 static void
 init_module (void * data)
 {
@@ -105,6 +118,7 @@ init_module (void * data)
     "zrythm-get-ver",
     "zrythm-get-plugin-manager",
     "zrythm-get-project",
+    "zrythm-message",
     "zrythm-null",
     NULL);
 }

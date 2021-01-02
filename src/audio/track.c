@@ -2368,6 +2368,21 @@ track_set_is_project (
   g_debug ("done");
 }
 
+TrackType
+track_type_get_from_string (
+  const char * str)
+{
+  for (int i = 0; i <= TRACK_TYPE_MIDI_GROUP; i++)
+    {
+      if (string_is_equal (
+            track_type_strings[i].str, str))
+        {
+          return (TrackType) i;
+        }
+    }
+  g_return_val_if_reached (-1);
+}
+
 /**
  * Marks the track for bouncing.
  *
