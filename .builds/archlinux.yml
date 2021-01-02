@@ -1,37 +1,38 @@
 image: archlinux
 packages:
-  - cmake
-  - meson
-  - gtk3
-  - chromaprint
-  - lilv
-  - libx11
-  - jack
-  - libsndfile
-  - libyaml
-  - libsamplerate
   - alsa-lib
+  - cmake
+  - chromaprint
   - fftw
-  - suil
   - ffmpeg
-  - python
+  - gtk3
   - gettext
+  - gcovr
   - graphviz
   - gtksourceview4
   - helm-synth
-  - ninja
   - help2man
-  - python-sphinx
+  - jack
   - ladspa
+  - lilv
+  - libx11
+  - libsndfile
+  - libyaml
+  - libsamplerate
+  - lcov
   - lv2
+  - meson
+  - ninja
+  - npm
+  - python
+  - python-sphinx
   - python-pip
   - rubberband
-  - sed
-  - xdg-utils
-  - lcov
-  - gcovr
   - rtaudio
+  - sed
+  - suil
   - vim
+  - xdg-utils
   - zstd
 sources:
   - https://git.sr.ht/~alextee/zrythm
@@ -41,6 +42,7 @@ secrets:
 tasks:
   - setup: |
       sudo pip3 install sphinx-intl
+      sudo npm install -g sass
       cd zrythm
       ../meson/meson.py build -Dtests=true -Dmanpage=true -Dffmpeg=enabled -Db_coverage=true
   - build: |
