@@ -257,6 +257,7 @@ visible_func (
       !modulators_active &&
       !midi_modifiers_active)
     {
+      g_debug ("no filters");
       return true;
     }
 
@@ -303,6 +304,7 @@ visible_func (
    * selected protocols */
   if (self->num_selected_protocols > 0)
     {
+      visible = false;
       for (int i = 0;
            i < self->num_selected_protocols; i++)
         {
@@ -314,8 +316,6 @@ visible_func (
             }
         }
 
-      /* not visible if the category is not one
-       * of the selected categories */
       if (!visible)
         return false;
     }
