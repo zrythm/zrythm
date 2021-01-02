@@ -30,14 +30,16 @@
  *
  * @param script Script content.
  * @param prj_path Path to save the project at.
+ *
+ * @return Non-zero if fail.
  */
-void
+int
 guile_project_generator_generate_project_from_string (
   const char * script,
   const char * prj_path)
 {
-  g_return_if_fail (
-    ZRYTHM && prj_path && script);
+  g_return_val_if_fail (
+    ZRYTHM && prj_path && script, -1);
 
   bool use_tmp_project = false;
   if (!PROJECT)
@@ -73,6 +75,11 @@ guile_project_generator_generate_project_from_string (
     (char *) guile_run_script (script);
   g_message ("\nResult:\n%s", markup);
 
+  if (!guile_script_succeeded (markup))
+    {
+      return -1;
+    }
+
   /* set back the previous project (if any) */
   if (prev_prj)
     {
@@ -89,6 +96,8 @@ guile_project_generator_generate_project_from_string (
   /* remove temporary path */
   io_rmdir (tmp_path, true);
   g_free (tmp_path);
+
+  return 0;
 }
 
 /**
@@ -97,8 +106,10 @@ guile_project_generator_generate_project_from_string (
  *
  * @param filepath Path of the script file.
  * @param prj_path Path to save the project at.
+ *
+ * @return Non-zero if fail.
  */
-void
+int
 guile_project_generator_generate_project_from_file (
   const char * filepath,
   const char * prj_path)
@@ -112,9 +123,10 @@ guile_project_generator_generate_project_from_file (
     {
       g_warning (
         "Failed to open file: %s", err->message);
-      return;
+      return -1;
     }
 
-  guile_project_generator_generate_project_from_string (
-    contents, prj_path);
+  return
+      guile_project_generator_generate_project_from_string (
+      contents, prj_path);
 }

@@ -339,7 +339,7 @@ int
 hardware_processor_setup (
   HardwareProcessor * self)
 {
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_GENERATING_PROJECT)
     return 0;
 
   g_return_val_if_fail (

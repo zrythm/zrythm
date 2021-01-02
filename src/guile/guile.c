@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 #include "guile/modules.h"
+#include "utils/string.h"
 #include "utils/io.h"
 
 #include <gtk/gtk.h>
@@ -31,6 +32,12 @@
 SCM position_type;
 SCM track_type;
 SCM tracklist_type;
+
+#define SUCCESS_TEXT_TRANSLATED \
+  _("Script execution successful")
+
+#define FAILURE_TEXT_TRANSLATED \
+  _("Script execution failed")
 
 /**
  * Inits the guile subsystem.
@@ -183,8 +190,7 @@ guile_mode_func (void* data)
         g_markup_printf_escaped (
           "<span foreground=\"green\" size=\"large\">"
           "<b>%s</b></span>\n%s",
-          _("Script execution successful"),
-          str);
+          SUCCESS_TEXT_TRANSLATED, str);
     }
   else
     {
@@ -192,8 +198,7 @@ guile_mode_func (void* data)
         g_markup_printf_escaped (
           "<span foreground=\"red\" size=\"large\">"
           "<b>%s</b></span>\n%s",
-          _("Script execution failed"),
-          err_str);
+          FAILURE_TEXT_TRANSLATED, err_str);
     }
 
   io_rmdir (tmp_dir, true);
@@ -212,4 +217,17 @@ guile_run_script (
   return
     scm_with_guile (
       &guile_mode_func, (void *) script);
+}
+
+/**
+ * Returns whether the script succeeded based on
+ * the markup.
+ */
+bool
+guile_script_succeeded (
+  const char * pango_markup)
+{
+  return
+    string_contains_substr (
+      pango_markup, SUCCESS_TEXT_TRANSLATED, true);
 }

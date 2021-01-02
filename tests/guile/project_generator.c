@@ -46,8 +46,10 @@ test_gen_project_from_string ()
     g_build_filename (
       TESTS_SRC_ROOT_DIR, "scripts",
       "gen-test-project.scm", NULL);
-  guile_project_generator_generate_project_from_file (
-    script_path, tmp_prj_path);
+  int res =
+    guile_project_generator_generate_project_from_file (
+      script_path, tmp_prj_path);
+  g_assert_cmpint (res, ==, 0);
 
   char * prj_file =
     g_build_filename (

@@ -26,13 +26,16 @@
 
 SCM_DEFINE (
   s_undo_manager_perform,
-  "undo-manager-perform", 1, 0, 0,
-  (SCM action),
+  "undo-manager-perform", 2, 0, 0,
+  (SCM undo_manager, SCM action),
   "Performs the given action and adds it to the undo stack.")
 #define FUNC_NAME s_
 {
+  UndoManager * undo_mgr =
+    (UndoManager *) scm_to_pointer (undo_manager);
+
   undo_manager_perform (
-    UNDO_MANAGER,
+    undo_mgr,
     (UndoableAction *) scm_to_pointer (action));
 
   return SCM_BOOL_T;
@@ -41,12 +44,15 @@ SCM_DEFINE (
 
 SCM_DEFINE (
   s_undo_manager_undo,
-  "undo-manager-undo", 0, 1, 0,
-  (SCM action),
+  "undo-manager-undo", 1, 0, 0,
+  (SCM undo_manager),
   "Undoes the last action.")
 #define FUNC_NAME s_
 {
-  undo_manager_undo (UNDO_MANAGER);
+  UndoManager * undo_mgr =
+    (UndoManager *) scm_to_pointer (undo_manager);
+
+  undo_manager_undo (undo_mgr);
 
   return SCM_BOOL_T;
 }
@@ -54,12 +60,15 @@ SCM_DEFINE (
 
 SCM_DEFINE (
   s_undo_manager_redo,
-  "undo-manager-redo", 0, 1, 0,
-  (SCM action),
+  "undo-manager-redo", 1, 0, 0,
+  (SCM undo_manager),
   "Redoes the last undone action.")
 #define FUNC_NAME s_
 {
-  undo_manager_redo (UNDO_MANAGER);
+  UndoManager * undo_mgr =
+    (UndoManager *) scm_to_pointer (undo_manager);
+
+  undo_manager_redo (undo_mgr);
 
   return SCM_BOOL_T;
 }

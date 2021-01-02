@@ -30,9 +30,13 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifdef HAVE_GUILE
+#include "guile/project_generator.h"
+#endif
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/dialogs/bug_report_dialog.h"
 #include "utils/backtrace.h"
+#include "utils/flags.h"
 #include "utils/gdb.h"
 #include "guile/guile.h"
 #include "utils/gtk.h"
@@ -137,6 +141,7 @@ print_help ()
     "  --reset-to-factory  reset to factory settings\n"
     "  --gdb           run %s through GDB (debugger)\n"
     "  --callgrind     run %s through callgrind (profiler)\n"
+    "  --gen-project   generate a project from a script\n"
     "  --audio-backend  override the audio backend to use\n"
     "  --midi-backend  override the MIDI backend to use\n"
     "  --dummy         overrides both the audio and MIDI backends to dummy\n"
@@ -148,12 +153,14 @@ print_help ()
     "  %s -v       print version\n"
     "  %s --callgrind --dummy --buf-size=8192  profile %s using the dummy backend and a buffer size of 8192\n"
     "  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  convert a compressed zpj project to YAML\n"
+    "  %s --gen-project --input myscript.scm --output myproject  generate a project using myscript.scm\n"
     "  %s -p --pretty  pretty-print current settings\n\n"
     "Please report issues to %s\n"),
     PROGRAM_NAME_LOWERCASE, PROGRAM_NAME,
     PROGRAM_NAME, PROGRAM_NAME_LOWERCASE,
     PROGRAM_NAME_LOWERCASE, PROGRAM_NAME,
     PROGRAM_NAME_LOWERCASE, PROGRAM_NAME_LOWERCASE,
+    PROGRAM_NAME_LOWERCASE,
     ISSUE_TRACKER_URL);
 }
 
@@ -210,6 +217,7 @@ main (int    argc,
 #define OPT_VERSION 'v'
 #define OPT_HELP 'h'
 #define OPT_PRINT_SETTINGS 'p'
+#define OPT_INPUT 'i'
 #define OPT_OUTPUT 'o'
 #define OPT_RESET_TO_FACTORY 6492
 #define OPT_PRETTY_PRINT 5914
@@ -223,6 +231,7 @@ main (int    argc,
 #define OPT_BUF_SIZE 39145
 #define OPT_SAMPLERATE 185130
 #define OPT_INTERACTIVE 34966
+#define OPT_GEN_PROJECT 985134
 
   int c, option_index;
   static struct option long_options[] =
@@ -233,6 +242,7 @@ main (int    argc,
         OPT_CONVERT_ZPJ_TO_YAML },
       { "convert-yaml-to-zpj", required_argument, 0,
         OPT_CONVERT_YAML_TO_ZPJ },
+      { "input", required_argument, 0, OPT_INPUT },
       { "output", required_argument, 0,
         OPT_OUTPUT },
       { "print-settings", no_argument, 0,
@@ -255,6 +265,8 @@ main (int    argc,
         OPT_SAMPLERATE },
       { "interactive", no_argument, 0,
         OPT_INTERACTIVE },
+      { "gen-project", no_argument, 0,
+        OPT_GEN_PROJECT },
       { 0, 0, 0, 0 }
     };
   opterr = 0;
@@ -266,7 +278,9 @@ main (int    argc,
   bool run_gdb = false;
   bool run_callgrind = false;
   bool interactive = false;
+  bool gen_project = false;
   char * from_file = NULL;
+  char * input = NULL;
   char * output = NULL;
   char * audio_backend = NULL;
   char * midi_backend = NULL;
@@ -301,6 +315,9 @@ main (int    argc,
           convert_yaml_to_zpj = true;
           from_file = optarg;
           break;
+        case OPT_INPUT:
+          input = optarg;
+          break;
         case OPT_OUTPUT:
           output = optarg;
           break;
@@ -310,6 +327,9 @@ main (int    argc,
         case OPT_RESET_TO_FACTORY:
           settings_reset_to_factory (1, 1);
           return EXIT_SUCCESS;
+          break;
+        case OPT_GEN_PROJECT:
+          gen_project = true;
           break;
         case OPT_PRETTY_PRINT:
           pretty_print = true;
@@ -365,7 +385,7 @@ main (int    argc,
     {
 #ifdef __linux__
       ZRYTHM =
-        zrythm_new (argv[0], TRUE, FALSE, true);
+        zrythm_new (argv[0], true, false, true);
       gdb_exec (argv, true, interactive);
 #else
       g_error (
@@ -377,7 +397,7 @@ main (int    argc,
     {
 #ifdef __linux__
       ZRYTHM =
-        zrythm_new (argv[0], TRUE, FALSE, true);
+        zrythm_new (argv[0], true, false, true);
       valgrind_exec_callgrind (argv);
 #else
       g_error (
@@ -439,6 +459,33 @@ main (int    argc,
             "decompressed.\n"));
           return EXIT_SUCCESS;
         }
+    }
+  else if (gen_project)
+    {
+      verify_output_exists (output);
+      verify_file_exists (input);
+#ifdef HAVE_GUILE
+      zrythm_app =
+        g_object_new (
+          ZRYTHM_APP_TYPE,
+          "resource-base-path", "/org/zrythm/Zrythm",
+          "flags", G_APPLICATION_HANDLES_OPEN,
+          NULL);
+      ZRYTHM =
+        zrythm_new (
+          argv[0], false, false, F_NOT_OPTIMIZED);
+      ZRYTHM->generating_project = true;
+      int script_res =
+        guile_project_generator_generate_project_from_file (
+          input, output);
+      return script_res;
+#else
+      fprintf (
+        stderr,
+        _("libguile is required for this "
+          "option\n"));
+      return EXIT_FAILURE;
+#endif
     }
 
   char * ver = zrythm_get_version (0);

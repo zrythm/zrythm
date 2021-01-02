@@ -26,6 +26,8 @@
 #ifndef __GUILE_GUILE_H__
 #define __GUILE_GUILE_H__
 
+#include <stdbool.h>
+
 /**
  * @addtogroup guile Guile scripting interface.
  *
@@ -56,6 +58,14 @@ guile_define_modules (void);
 char *
 guile_run_script (
   const char * script);
+
+/**
+ * Returns whether the script succeeded based on
+ * the markup.
+ */
+bool
+guile_script_succeeded (
+  const char * pango_markup);
 
 /**
  * @}

@@ -42,6 +42,36 @@ SCM_DEFINE (
 }
 #undef FUNC_NAME
 
+SCM_DEFINE (
+  s_project_get_tracklist, "project-get-tracklist",
+  1, 0, 0,
+  (SCM project),
+  "Returns the tracklist for the project.")
+#define FUNC_NAME s_
+{
+  Project * prj =
+    (Project *) scm_to_pointer (project);
+
+  return
+    scm_from_pointer (prj->tracklist, NULL);
+}
+#undef FUNC_NAME
+
+SCM_DEFINE (
+  s_project_get_undo_manager, "project-get-undo-manager",
+  1, 0, 0,
+  (SCM project),
+  "Returns the undo manager for the project.")
+#define FUNC_NAME s_
+{
+  Project * prj =
+    (Project *) scm_to_pointer (project);
+
+  return
+    scm_from_pointer (prj->undo_manager, NULL);
+}
+#undef FUNC_NAME
+
 static void
 init_module (void * data)
 {
@@ -50,6 +80,8 @@ init_module (void * data)
 #endif
   scm_c_export (
     "project-get-title",
+    "project-get-tracklist",
+    "project-get-undo-manager",
     NULL);
 }
 

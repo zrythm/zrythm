@@ -226,4 +226,7 @@
 #define F_WRITE_FILE 1
 #define F_NO_WRITE_FILE 0
 
+#define F_OPTIMIZED 1
+#define F_NOT_OPTIMIZED 0
+
 #endif

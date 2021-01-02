@@ -27,14 +27,17 @@
 
 SCM_DEFINE (
   s_tracklist_insert_track,
-  "tracklist-insert-track", 2, 0, 0,
-  (SCM track, SCM idx),
+  "tracklist-insert-track", 3, 0, 0,
+  (SCM tracklist, SCM track, SCM idx),
   "Inserts track @var{track} at index @var{idx} in "
   "the tracklist.")
 #define FUNC_NAME s_
 {
+  Tracklist * tl =
+    (Tracklist *) scm_to_pointer (tracklist);
+
   tracklist_insert_track (
-    TRACKLIST, scm_to_pointer (track),
+    tl, scm_to_pointer (track),
     scm_to_int (idx), true, true);
 
   return SCM_BOOL_T;
@@ -42,37 +45,32 @@ SCM_DEFINE (
 #undef FUNC_NAME
 
 SCM_DEFINE (
-  get_track_at_pos, "tracklist-get-track-at-pos",
-  1, 0, 0,
-  (SCM pos),
+  s_tracklist_get_track_at_pos, "tracklist-get-track-at-pos",
+  2, 0, 0,
+  (SCM tracklist, SCM pos),
   "Returns the track at @var{pos} in the tracklist.")
 #define FUNC_NAME s_
 {
+  Tracklist * tl =
+    (Tracklist *) scm_to_pointer (tracklist);
+
   return
     scm_from_pointer (
-      TRACKLIST->tracks[scm_to_int (pos)], NULL);
+      tl->tracks[scm_to_int (pos)], NULL);
 }
 #undef FUNC_NAME
 
 SCM_DEFINE (
-  get_num_tracks, "tracklist-get-num-tracks", 0, 0, 0,
-  (),
+  s_tracklist_get_num_tracks, "tracklist-get-num-tracks", 1, 0, 0,
+  (SCM tracklist),
   "Returns the number of tracks in the tracklist.")
 #define FUNC_NAME s_
 {
-  return
-    scm_from_int (TRACKLIST->num_tracks);
-}
-#undef FUNC_NAME
+  Tracklist * tl =
+    (Tracklist *) scm_to_pointer (tracklist);
 
-SCM_DEFINE (
-  get_tracklist, "tracklist-get", 0, 0, 0,
-  (),
-  "Returns the tracklist for the current project.")
-#define FUNC_NAME s_
-{
   return
-    scm_from_pointer (TRACKLIST, NULL);
+    scm_from_int (tl->num_tracks);
 }
 #undef FUNC_NAME
 
@@ -86,7 +84,6 @@ init_module (void * data)
     "tracklist-insert-track",
     "tracklist-get-track-at-pos",
     "tracklist-get-num-tracks",
-    "tracklist-get",
     NULL);
 }
 

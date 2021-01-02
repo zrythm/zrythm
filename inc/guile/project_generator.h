@@ -40,8 +40,10 @@ typedef struct Project Project;
  *
  * @param script Script content.
  * @param prj_path Path to save the project at.
+ *
+ * @return Non-zero if fail.
  */
-void
+int
 guile_project_generator_generate_project_from_string (
   const char * script,
   const char * prj_path);
@@ -52,8 +54,10 @@ guile_project_generator_generate_project_from_string (
  *
  * @param filepath Path of the script file.
  * @param prj_path Path to save the project at.
+ *
+ * @return Non-zero if fail.
  */
-void
+int
 guile_project_generator_generate_project_from_file (
   const char * filepath,
   const char * prj_path);

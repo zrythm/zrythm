@@ -52,6 +52,8 @@ typedef struct CairoCaches CairoCaches;
 #define MAX_RECENT_PROJECTS 20
 #define DEBUGGING (ZRYTHM->debug)
 #define ZRYTHM_TESTING (ZRYTHM->testing)
+#define ZRYTHM_GENERATING_PROJECT \
+  (ZRYTHM->generating_project)
 #define ZRYTHM_HAVE_UI (ZRYTHM->have_ui)
 #define ZRYTHM_USE_OPTIMIZED_DSP \
   (ZRYTHM->use_optimized_dsp)
@@ -214,6 +216,10 @@ typedef struct Zrythm
    * This is set by the TESTING environment variable.
    */
   bool                testing;
+
+  /** Whether this is a dummy instance used when
+   * generating projects. */
+  bool                generating_project;
 
   /** Log settings. */
   //Log *               log;

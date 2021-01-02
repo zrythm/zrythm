@@ -64,6 +64,24 @@ SCM_DEFINE (
 }
 #undef FUNC_NAME
 
+SCM_DEFINE (
+  s_create_tracks_action_new_midi,
+  "create-tracks-action-new-midi", 2, 0, 0,
+  (SCM track_pos, SCM num_tracks),
+  "Returns a new Create Tracks action for one or more empty MIDI tracks.")
+#define FUNC_NAME s_
+{
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_MIDI, NULL, NULL,
+      scm_to_int (track_pos), NULL,
+      scm_to_int (num_tracks));
+
+  return
+    scm_from_pointer (ua, NULL);
+}
+#undef FUNC_NAME
+
 static void
 init_module (void * data)
 {
@@ -72,8 +90,9 @@ init_module (void * data)
 #endif
 
   scm_c_export (
-    "create-tracks-action-new-with-plugin",
     "create-tracks-action-new-audio-fx",
+    "create-tracks-action-new-midi",
+    "create-tracks-action-new-with-plugin",
     NULL);
 }
 
