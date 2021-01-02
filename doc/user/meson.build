@@ -120,8 +120,7 @@ custom_css_target = custom_target (
     'mkdir', '-p',
     meson.current_source_dir () / '_static/css',
     '&&',
-    sass, '--sourcemap=none',
-    '@INPUT@',
+    sass, '@INPUT@',
     meson.current_source_dir () / '_static/css/custom.css',
     '&&', 'touch', '@OUTPUT@' ]
   )
