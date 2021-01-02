@@ -191,7 +191,9 @@ if get_option ('tests')
       ]
   endif
 
-  if have_guile
+  # disable for now until we have a way to load/pass
+  # plugin bundles
+  if have_guile and false
     tests += [
       ['guile/project_generator', true],
       ]

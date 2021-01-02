@@ -258,6 +258,9 @@ ext_lv2_plugins = {
   'tal_filter': [
     'TAL Filter',
     'urn:juce:TalFilter'],
+  'geonkick': [
+    'Geonkick',
+    'http://geontime.com/geonkick'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}
