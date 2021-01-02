@@ -27,12 +27,13 @@
 # #-#-#-#-#  user-media.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
 # #-#-#-#-#  zrythm-interface.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
+# #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-02 12:06+0000\n"
+"POT-Creation-Date: 2021-01-02 16:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -245,7 +246,7 @@ msgstr ""
 
 #: ../../appendix/intro.rst:6
 msgid "Appendix"
-msgstr ""
+msgstr "bijlage"
 
 #: ../../appendix/menu-actions.rst:6
 msgid "Menu Actions"
@@ -297,6 +298,7 @@ msgstr ""
 #: ../../playback-and-recording/recording.rst:32
 #: ../../routing/control-room.rst:31
 #: ../../routing/making-connections.rst:30
+#: ../../scripting/examples.rst:12
 #: ../../scripting/scripting-interface.rst:8
 #: ../../tracks/inspector-page.rst:70
 #: ../../tracks/modulator-track.rst:8
@@ -403,7 +405,7 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:6
 msgid "Additional Settings"
-msgstr ""
+msgstr "Aanvullende instellingen"
 
 #: ../../configuration/additional-settings.rst:8
 msgid ""
@@ -423,10 +425,17 @@ msgid ""
 "manually for some reason - for example if your selected backend causes "
 "Zrythm to crash."
 msgstr ""
+"Normaal gesproken hoeft u geen van deze instellingen te openen aangezien "
+"de meeste ervan te vinden zijn in de gebruikersinterface van Zrythm en "
+"het wordt niet aanbevolen om ze te bewerken omdat Zrythm sommige "
+"instellingen valideert voordat het ze opslaat of sommige instellingen "
+"intern gebruikt. In enkele gevallen kan het nodig zijn om handmatig te "
+"wijzigen - bijvoorbeeld als je geselecteerde backend ervoor zorgt dat "
+"Zrythm crasht."
 
 #: ../../configuration/additional-settings.rst:25
 msgid "Viewing the Current Settings"
-msgstr ""
+msgstr "Huidige instellingen bekijken"
 
 #: ../../configuration/additional-settings.rst:27
 msgid "See :option:`zrythm --print-settings`."
@@ -434,7 +443,7 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:30
 msgid "Reset to Factory Settings"
-msgstr ""
+msgstr "Fabrieksinstellingen terugzetten"
 
 #: ../../configuration/additional-settings.rst:32
 msgid "See :option:`zrythm --reset-to-factory`."
@@ -479,6 +488,8 @@ msgid ""
 "Depending on your setup, MIDI devices might need to be bridged to JACK "
 "using :term:`a2jmidid`."
 msgstr ""
+"Afhankelijk van uw setup kan het nodig zijn MIDI apparaten te koppelen "
+"aan JACK door middel van :term:`a2jmidid`."
 
 #: ../../configuration/device-setup/intro.rst:36
 msgid "Zrythm will not remember connections made externally."
@@ -524,7 +535,11 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:35
 #, fuzzy
 msgid "Audio backend"
-msgstr "Audio spoor"
+msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Audio spoor"
 
 #: ../../configuration/preferences/intro.rst:36
 msgid ""
@@ -579,7 +594,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:11
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: ../../configuration/preferences/intro.rst:67
 msgid ":term:`Plugin` settings."
@@ -1048,33 +1063,49 @@ msgstr ""
 
 #: ../../credits/intro.rst:6
 msgid "Credits"
-msgstr ""
+msgstr "Credits"
 
 #: ../../credits/intro.rst:9
 msgid "Authors"
-msgstr ""
+msgstr "Auteurs"
 
 #: ../../credits/intro.rst:10
+#, fuzzy
 msgid ""
 "See the :download:`AUTHORS <../../../AUTHORS>` file in the source "
 "distribution. These include developers, graphic artists and other authors"
 " of copyrightable work."
 msgstr ""
+"#-#-#-#-#  credits.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
+"Bekijk het auteursbestand "
+"<https://git.sr.ht/~alextee/zrythm/tree/master/AUTHORS> in de "
+"brondistributie. Dit zijn onder meer ontwikkelaars, grafische artiesten "
+"en andere auteurs van auteursrechtelijk beschermd werk.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../credits/intro.rst:16
 msgid "Translators"
-msgstr ""
+msgstr "Vertalers"
 
 #: ../../credits/intro.rst:17
+#, fuzzy
 msgid ""
 "See the :download:`TRANSLATORS <../../../TRANSLATORS>` file in the source"
 " distribution. These include translators of the software, the user manual"
 " and the website."
 msgstr ""
+"#-#-#-#-#  credits.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
+"Bekijk het vertalersbestand "
+"<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS> in de "
+"brondistributie. Dit zijn onder meer vertalers van de software, de "
+"gebruikershandleiding en de website.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../credits/intro.rst:24
 msgid "Other Contributors"
-msgstr ""
+msgstr "Overige bijdragers"
 
 #: ../../credits/intro.rst:25
 msgid ""
@@ -2530,7 +2561,7 @@ msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:8
 msgid "Audio & MIDI"
-msgstr ""
+msgstr "Audio & MIDI"
 
 #: ../../exporting/audio-and-midi.rst:10
 msgid ""
@@ -2986,8 +3017,13 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:68
+#, fuzzy
 msgid "Plugin Scan"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
+"Plugins\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../getting-started/running-zrythm.rst:69
 msgid ""
@@ -3061,7 +3097,11 @@ msgstr ""
 #: ../../getting-started/system-requirements.rst:28
 #, fuzzy
 msgid "Audio interface"
-msgstr "Audio spoor"
+msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Audio spoor"
 
 #: ../../getting-started/system-requirements.rst:27
 msgid ""
@@ -3382,11 +3422,11 @@ msgstr ""
 
 #: ../../index.rst:8
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: ../../index.rst:10
 msgid "Welcome to the Zrythm manual."
-msgstr ""
+msgstr "Welkom bij de Zrythm handleiding."
 
 #: ../../index.rst:16 ../../../../../doc/user/index.rst:60
 msgid "Copyright © 2019-2020 The Zrythm contributors"
@@ -4910,6 +4950,16 @@ msgstr ""
 msgid "Returns a new Create Tracks action for one or more empty Audio FX tracks."
 msgstr ""
 
+#: ../../scripting/api/actions create_tracks_action.rst:16
+msgid ""
+"Scheme Procedure: **create-tracks-action-new-midi** | *track_pos "
+"num_tracks*"
+msgstr ""
+
+#: ../../scripting/api/actions create_tracks_action.rst:15
+msgid "Returns a new Create Tracks action for one or more empty MIDI tracks."
+msgstr ""
+
 #: ../../scripting/api/actions port_connection_action.rst:3
 msgid "actions port-connection-action"
 msgstr ""
@@ -4929,7 +4979,7 @@ msgid "actions undo-manager"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:7
-msgid "Scheme Procedure: **undo-manager-perform** | *action*"
+msgid "Scheme Procedure: **undo-manager-perform** | *undo_manager action*"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:6
@@ -4937,7 +4987,7 @@ msgid "Performs the given action and adds it to the undo stack."
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:11
-msgid "Scheme Procedure: **undo-manager-undo** | *[action]*"
+msgid "Scheme Procedure: **undo-manager-undo** | *undo_manager*"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:10
@@ -4945,7 +4995,7 @@ msgid "Undoes the last action."
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:15
-msgid "Scheme Procedure: **undo-manager-redo** | *[action]*"
+msgid "Scheme Procedure: **undo-manager-redo** | *undo_manager*"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:14
@@ -5143,7 +5193,7 @@ msgid "audio tracklist"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:7
-msgid "Scheme Procedure: **tracklist-insert-track** | *track idx*"
+msgid "Scheme Procedure: **tracklist-insert-track** | *tracklist track idx*"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:6
@@ -5151,7 +5201,7 @@ msgid "Inserts track track at index idx in the tracklist."
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:11
-msgid "Scheme Procedure: **tracklist-get-track-at-pos** | *pos*"
+msgid "Scheme Procedure: **tracklist-get-track-at-pos** | *tracklist pos*"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:10
@@ -5159,19 +5209,11 @@ msgid "Returns the track at pos in the tracklist."
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:15
-msgid "Scheme Procedure: **tracklist-get-num-tracks**"
+msgid "Scheme Procedure: **tracklist-get-num-tracks** | *tracklist*"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:14
 msgid "Returns the number of tracks in the tracklist."
-msgstr ""
-
-#: ../../scripting/api/audio tracklist.rst:19
-msgid "Scheme Procedure: **tracklist-get**"
-msgstr ""
-
-#: ../../scripting/api/audio tracklist.rst:18
-msgid "Returns the tracklist for the current project."
 msgstr ""
 
 #: ../../scripting/api/intro.rst:6
@@ -5203,11 +5245,21 @@ msgid "plugins plugin-manager"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:7
-msgid "Scheme Procedure: **plugin-manager-find-plugin-from-uri** | *uri*"
+msgid ""
+"Scheme Procedure: **plugin-manager-find-plugin-from-uri** | "
+"*plugin_manager uri*"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:6
 msgid "Returns the PluginDescriptor matching the given URI."
+msgstr ""
+
+#: ../../scripting/api/plugins plugin_manager.rst:11
+msgid "Scheme Procedure: **plugin-manager-scan-plugins** | *plugin_manager*"
+msgstr ""
+
+#: ../../scripting/api/plugins plugin_manager.rst:10
+msgid "Scans the system for plugins."
 msgstr ""
 
 #: ../../scripting/api/project.rst:3
@@ -5220,6 +5272,22 @@ msgstr ""
 
 #: ../../scripting/api/project.rst:6
 msgid "Return the project’s title."
+msgstr ""
+
+#: ../../scripting/api/project.rst:11
+msgid "Scheme Procedure: **project-get-tracklist** | *project*"
+msgstr ""
+
+#: ../../scripting/api/project.rst:10
+msgid "Returns the tracklist for the project."
+msgstr ""
+
+#: ../../scripting/api/project.rst:15
+msgid "Scheme Procedure: **project-get-undo-manager** | *project*"
+msgstr ""
+
+#: ../../scripting/api/project.rst:14
+msgid "Returns the undo manager for the project."
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:7
@@ -5254,6 +5322,14 @@ msgstr ""
 msgid "Returns a NULL pointer."
 msgstr ""
 
+#: ../../scripting/api/zrythm.rst:23
+msgid "Scheme Procedure: **zrythm-message** | *message*"
+msgstr ""
+
+#: ../../scripting/api/zrythm.rst:22
+msgid "Writes the message to the log."
+msgstr ""
+
 #: ../../scripting/examples.rst:6
 msgid "Examples"
 msgstr ""
@@ -5265,19 +5341,23 @@ msgid ""
 "copy and modify them."
 msgstr ""
 
-#: ../../scripting/examples.rst:13
+#: ../../scripting/examples.rst:12
+msgid "API changed - check that these work."
+msgstr ""
+
+#: ../../scripting/examples.rst:15
 msgid "Hello World"
 msgstr ""
 
-#: ../../scripting/examples.rst:22
+#: ../../scripting/examples.rst:24
 msgid "Print track names"
 msgstr ""
 
-#: ../../scripting/examples.rst:39
+#: ../../scripting/examples.rst:41
 msgid "Create Geonkick track and route its mono output to an Audio FX track"
 msgstr ""
 
-#: ../../scripting/examples.rst:98
+#: ../../scripting/examples.rst:100
 msgid "Create MIDI track with notes"
 msgstr ""
 

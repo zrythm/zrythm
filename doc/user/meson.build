@@ -117,6 +117,9 @@ custom_css_target = custom_target (
     ],
   output: 'custom_css_created',
   command: [
+    'mkdir', '-p',
+    meson.current_source_dir () / '_static/css',
+    '&&',
     sass, '--sourcemap=none',
     '@INPUT@',
     meson.current_source_dir () / '_static/css/custom.css',

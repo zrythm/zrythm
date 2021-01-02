@@ -31,12 +31,13 @@
 # #-#-#-#-#  user-media.po (Zrythm 0.8)  #-#-#-#-#
 # #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
+# #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-02 12:06+0000\n"
+"POT-Creation-Date: 2021-01-02 16:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -301,6 +302,7 @@ msgstr ""
 #: ../../playback-and-recording/recording.rst:32
 #: ../../routing/control-room.rst:31
 #: ../../routing/making-connections.rst:30
+#: ../../scripting/examples.rst:12
 #: ../../scripting/scripting-interface.rst:8
 #: ../../tracks/inspector-page.rst:70
 #: ../../tracks/modulator-track.rst:8
@@ -791,7 +793,7 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:204
 #: ../../projects/intro.rst:8
 msgid "Projects"
-msgstr ""
+msgstr "Projects"
 
 #: ../../configuration/preferences/intro.rst:206
 msgid "Project settings."
@@ -3154,7 +3156,14 @@ msgstr ""
 #: ../../routing/ports.rst:48
 #, fuzzy
 msgid "Control"
-msgstr "Control Room"
+msgstr ""
+"#-#-#-#-#  connections.po (Zrythm 0.8)  #-#-#-#-#\n"
+"#-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"#-#-#-#-#  routing.po (Zrythm 0.8)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Control Room"
 
 #: ../../glossary/intro.rst:37
 msgid ""
@@ -4908,6 +4917,16 @@ msgstr ""
 msgid "Returns a new Create Tracks action for one or more empty Audio FX tracks."
 msgstr ""
 
+#: ../../scripting/api/actions create_tracks_action.rst:16
+msgid ""
+"Scheme Procedure: **create-tracks-action-new-midi** | *track_pos "
+"num_tracks*"
+msgstr ""
+
+#: ../../scripting/api/actions create_tracks_action.rst:15
+msgid "Returns a new Create Tracks action for one or more empty MIDI tracks."
+msgstr ""
+
 #: ../../scripting/api/actions port_connection_action.rst:3
 msgid "actions port-connection-action"
 msgstr ""
@@ -4927,7 +4946,7 @@ msgid "actions undo-manager"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:7
-msgid "Scheme Procedure: **undo-manager-perform** | *action*"
+msgid "Scheme Procedure: **undo-manager-perform** | *undo_manager action*"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:6
@@ -4935,7 +4954,7 @@ msgid "Performs the given action and adds it to the undo stack."
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:11
-msgid "Scheme Procedure: **undo-manager-undo** | *[action]*"
+msgid "Scheme Procedure: **undo-manager-undo** | *undo_manager*"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:10
@@ -4943,7 +4962,7 @@ msgid "Undoes the last action."
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:15
-msgid "Scheme Procedure: **undo-manager-redo** | *[action]*"
+msgid "Scheme Procedure: **undo-manager-redo** | *undo_manager*"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:14
@@ -5141,7 +5160,7 @@ msgid "audio tracklist"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:7
-msgid "Scheme Procedure: **tracklist-insert-track** | *track idx*"
+msgid "Scheme Procedure: **tracklist-insert-track** | *tracklist track idx*"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:6
@@ -5149,7 +5168,7 @@ msgid "Inserts track track at index idx in the tracklist."
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:11
-msgid "Scheme Procedure: **tracklist-get-track-at-pos** | *pos*"
+msgid "Scheme Procedure: **tracklist-get-track-at-pos** | *tracklist pos*"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:10
@@ -5157,19 +5176,11 @@ msgid "Returns the track at pos in the tracklist."
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:15
-msgid "Scheme Procedure: **tracklist-get-num-tracks**"
+msgid "Scheme Procedure: **tracklist-get-num-tracks** | *tracklist*"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:14
 msgid "Returns the number of tracks in the tracklist."
-msgstr ""
-
-#: ../../scripting/api/audio tracklist.rst:19
-msgid "Scheme Procedure: **tracklist-get**"
-msgstr ""
-
-#: ../../scripting/api/audio tracklist.rst:18
-msgid "Returns the tracklist for the current project."
 msgstr ""
 
 #: ../../scripting/api/intro.rst:6
@@ -5201,11 +5212,21 @@ msgid "plugins plugin-manager"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:7
-msgid "Scheme Procedure: **plugin-manager-find-plugin-from-uri** | *uri*"
+msgid ""
+"Scheme Procedure: **plugin-manager-find-plugin-from-uri** | "
+"*plugin_manager uri*"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:6
 msgid "Returns the PluginDescriptor matching the given URI."
+msgstr ""
+
+#: ../../scripting/api/plugins plugin_manager.rst:11
+msgid "Scheme Procedure: **plugin-manager-scan-plugins** | *plugin_manager*"
+msgstr ""
+
+#: ../../scripting/api/plugins plugin_manager.rst:10
+msgid "Scans the system for plugins."
 msgstr ""
 
 #: ../../scripting/api/project.rst:3
@@ -5218,6 +5239,22 @@ msgstr ""
 
 #: ../../scripting/api/project.rst:6
 msgid "Return the project’s title."
+msgstr ""
+
+#: ../../scripting/api/project.rst:11
+msgid "Scheme Procedure: **project-get-tracklist** | *project*"
+msgstr ""
+
+#: ../../scripting/api/project.rst:10
+msgid "Returns the tracklist for the project."
+msgstr ""
+
+#: ../../scripting/api/project.rst:15
+msgid "Scheme Procedure: **project-get-undo-manager** | *project*"
+msgstr ""
+
+#: ../../scripting/api/project.rst:14
+msgid "Returns the undo manager for the project."
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:7
@@ -5252,6 +5289,14 @@ msgstr ""
 msgid "Returns a NULL pointer."
 msgstr ""
 
+#: ../../scripting/api/zrythm.rst:23
+msgid "Scheme Procedure: **zrythm-message** | *message*"
+msgstr ""
+
+#: ../../scripting/api/zrythm.rst:22
+msgid "Writes the message to the log."
+msgstr ""
+
 #: ../../scripting/examples.rst:6
 msgid "Examples"
 msgstr ""
@@ -5263,19 +5308,23 @@ msgid ""
 "copy and modify them."
 msgstr ""
 
-#: ../../scripting/examples.rst:13
+#: ../../scripting/examples.rst:12
+msgid "API changed - check that these work."
+msgstr ""
+
+#: ../../scripting/examples.rst:15
 msgid "Hello World"
 msgstr ""
 
-#: ../../scripting/examples.rst:22
+#: ../../scripting/examples.rst:24
 msgid "Print track names"
 msgstr ""
 
-#: ../../scripting/examples.rst:39
+#: ../../scripting/examples.rst:41
 msgid "Create Geonkick track and route its mono output to an Audio FX track"
 msgstr ""
 
-#: ../../scripting/examples.rst:98
+#: ../../scripting/examples.rst:100
 msgid "Create MIDI track with notes"
 msgstr ""
 

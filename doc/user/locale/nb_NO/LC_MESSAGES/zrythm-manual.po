@@ -32,12 +32,13 @@
 # #-#-#-#-#  user-media.po (Zrythm 0.8)  #-#-#-#-#
 # #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
+# #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-02 12:06+0000\n"
+"POT-Creation-Date: 2021-01-02 16:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -222,6 +223,8 @@ msgstr ""
 #, fuzzy
 msgid "Plugin Collections"
 msgstr ""
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Programtillegg\n"
 "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
@@ -255,19 +258,24 @@ msgstr ""
 
 #: ../../appendix/intro.rst:6
 msgid "Appendix"
-msgstr ""
+msgstr "Addendum"
 
 #: ../../appendix/menu-actions.rst:6
 msgid "Menu Actions"
-msgstr ""
+msgstr "Menyhandlinger"
 
 #: ../../appendix/shortcut-keys.rst:6
 msgid "Shortcut Keys"
-msgstr ""
+msgstr "Snarveistaster"
 
 #: ../../appendix/shortcut-keys.rst:9
+#, fuzzy
 msgid "Global Shortcuts"
 msgstr ""
+"#-#-#-#-#  appendix.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Programvide snarveier\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../appendix/shortcut-keys.rst:15
 msgid "Editor Shortcuts"
@@ -275,7 +283,7 @@ msgstr ""
 
 #: ../../appendix/troubleshooting.rst:8
 msgid "Troubleshooting"
-msgstr ""
+msgstr "Problemløsing"
 
 #: ../../appendix/troubleshooting.rst:10
 #: ../../configuration/additional-settings.rst:34
@@ -307,6 +315,7 @@ msgstr ""
 #: ../../playback-and-recording/recording.rst:32
 #: ../../routing/control-room.rst:31
 #: ../../routing/making-connections.rst:30
+#: ../../scripting/examples.rst:12
 #: ../../scripting/scripting-interface.rst:8
 #: ../../tracks/inspector-page.rst:70
 #: ../../tracks/modulator-track.rst:8
@@ -334,12 +343,8 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/overview.rst:6
 #: ../../scripting/overview.rst:6
 #: ../../tracks/overview.rst:6
-#, fuzzy
 msgid "Overview"
-msgstr ""
-"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
-"Programtilleggsutforsker\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+msgstr "Oversikt"
 
 #: ../../chords-and-scales/overview.rst:8
 msgid ""
@@ -480,7 +485,14 @@ msgstr ""
 #: ../../glossary/intro.rst:62
 #, fuzzy
 msgid "JACK"
-msgstr "Spor"
+msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Spor\n"
+"#-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Spor"
 
 #: ../../configuration/device-setup/intro.rst:25
 msgid ""
@@ -505,7 +517,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:10
 msgid "Preferences"
-msgstr ""
+msgstr "Innstillinger"
 
 #: ../../configuration/preferences/intro.rst:12
 msgid ""
@@ -539,7 +551,11 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:35
 #, fuzzy
 msgid "Audio backend"
-msgstr "Lydspor"
+msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Lydspor"
 
 #: ../../configuration/preferences/intro.rst:36
 msgid ""
@@ -585,7 +601,11 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:61
 #, fuzzy
 msgid "Zrythm path"
-msgstr "zrythm"
+msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"zrythm"
 
 #: ../../configuration/preferences/intro.rst:62
 msgid "The :term:`Zrythm user path`."
@@ -594,12 +614,8 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:65
 #: ../../getting-started/getting-plugins.rst:11
 #: ../../plugins-files/plugins/intro.rst:6
-#, fuzzy
 msgid "Plugins"
-msgstr ""
-"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
-"Programtillegg\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+msgstr "Programtillegg"
 
 #: ../../configuration/preferences/intro.rst:67
 msgid ":term:`Plugin` settings."
@@ -613,6 +629,9 @@ msgstr ""
 #, fuzzy
 msgid "Plugin UIs."
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Programtillegg\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
@@ -665,8 +684,14 @@ msgid "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:106
+#, fuzzy
 msgid "Paths"
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Sti\n"
+"#-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../configuration/preferences/intro.rst:109
 msgid "VST plugins"
@@ -686,6 +711,9 @@ msgstr ""
 #, fuzzy
 msgid "SFZ instruments"
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Instrumentspor\n"
@@ -700,6 +728,9 @@ msgstr ""
 #, fuzzy
 msgid "SF2 instruments"
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Instrumentspor\n"
@@ -758,6 +789,10 @@ msgstr ""
 #, fuzzy
 msgid "Editing"
 msgstr ""
+"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Opptak av MIDI\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
@@ -774,7 +809,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:20
 msgid "Audio"
-msgstr ""
+msgstr "Lyd"
 
 #: ../../configuration/preferences/intro.rst:174
 msgid "Audio editing."
@@ -827,12 +862,8 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:204
 #: ../../projects/intro.rst:8
-#, fuzzy
 msgid "Projects"
-msgstr ""
-"#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Prosjekter\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+msgstr "Prosjekter"
 
 #: ../../configuration/preferences/intro.rst:206
 msgid "Project settings."
@@ -899,7 +930,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:6
 msgid "Contributing"
-msgstr ""
+msgstr "Bidrag"
 
 #: ../../contributing/intro.rst:7
 msgid ""
@@ -920,6 +951,10 @@ msgstr ""
 #, fuzzy
 msgid "Coding"
 msgstr ""
+"#-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"bitcoin\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Opptak av MIDI\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
@@ -954,7 +989,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:39
 msgid "Testing"
-msgstr ""
+msgstr "Testing"
 
 #: ../../contributing/intro.rst:40
 msgid ""
@@ -970,8 +1005,13 @@ msgid ""
 msgstr ""
 
 #: ../../contributing/intro.rst:50
+#, fuzzy
 msgid "Editing this Manual"
 msgstr ""
+"#-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Avsnitt i denne manualen\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../contributing/intro.rst:51
 msgid ""
@@ -987,14 +1027,27 @@ msgid ""
 msgstr ""
 
 #: ../../contributing/intro.rst:61
+#, fuzzy
 msgid "Translation"
 msgstr ""
+"#-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Oversetting\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../contributing/intro.rst:62
+#, fuzzy
 msgid ""
 "Zrythm is available for translation at `Weblate "
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_."
 msgstr ""
+"#-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Zrythm er tilgjengelig for oversettelse på Hosted Weblate. Besøk `Zrythm-"
+"prosjektsiden "
+"<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ for å "
+"bistå i oversettelsen.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../contributing/intro.rst:65
 msgid ""
@@ -1003,12 +1056,19 @@ msgid ""
 msgstr ""
 
 #: ../../contributing/intro.rst:69
+#, fuzzy
 msgid ""
 "Click on the project you wish to work on, and then select a language in "
 "the screen that follows. For more information on using Weblate, please "
 "see the `official documentation "
 "<https://docs.weblate.org/en/latest/user/translating.html>`_."
 msgstr ""
+"#-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Klikk på prosjektet du ønsker å arbeide på, og velg så påfølgende et "
+"språk. For mer info om Weblate, sjekk deres `offisielle dokumentasjon "
+"<https://docs.weblate.org/en/latest/user/translating.html>`_\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../contributing/intro.rst:77
 msgid "User Manual"
@@ -1067,8 +1127,13 @@ msgid ""
 msgstr ""
 
 #: ../../contributing/intro.rst:152
+#, fuzzy
 msgid "Donations"
 msgstr ""
+"#-#-#-#-#  contributing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Donering\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../contributing/intro.rst:153
 msgid ""
@@ -1078,7 +1143,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:157
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
-msgstr ""
+msgstr "`Liberapay <https://liberapay.com/Zrythm>`_"
 
 #: ../../contributing/intro.rst:158
 msgid "`PayPal <https://paypal.me/zrythm>`_"
@@ -1231,8 +1296,13 @@ msgid "The curve that Vital synth uses, similar to exponential curve."
 msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:52
+#, fuzzy
 msgid "Pulse"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Linjal\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse wave."
@@ -1256,8 +1326,13 @@ msgstr ""
 #: ../../editing/clip-editors/chord-editor.rst:69
 #: ../../editing/clip-editors/piano-roll.rst:118
 #: ../../editing/timeline/event-viewer.rst:8
+#, fuzzy
 msgid "Event Viewer"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Oversikt\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../editing/clip-editors/automation-editor.rst:60
 msgid ""
@@ -1295,7 +1370,11 @@ msgstr ""
 #: ../../editing/clip-editors/chord-editor.rst:23
 #, fuzzy
 msgid "Chords"
-msgstr "Ta opp"
+msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Ta opp"
 
 #: ../../editing/clip-editors/chord-editor.rst:24
 msgid ""
@@ -1773,8 +1852,13 @@ msgid "Delete the selected objects. You can also press :kbd:`Delete`."
 msgstr ""
 
 #: ../../editing/common-operations.rst:82
+#, fuzzy
 msgid "Selections"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Utvalgsverktøy\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../editing/common-operations.rst:84
 msgid "Clear Selection"
@@ -1842,7 +1926,11 @@ msgstr ""
 #: ../../editing/edit-tools.rst:34
 #, fuzzy
 msgid "Creating Objects"
-msgstr "Opprettelse av prosjekter"
+msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Opprettelse av prosjekter"
 
 #: ../../editing/edit-tools.rst:35
 msgid ""
@@ -1858,7 +1946,11 @@ msgstr ""
 #: ../../editing/edit-tools.rst:46
 #, fuzzy
 msgid "Selecting Objects"
-msgstr "Opprettelse av prosjekter"
+msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Opprettelse av prosjekter"
 
 #: ../../editing/edit-tools.rst:47
 msgid ""
@@ -1879,6 +1971,9 @@ msgstr ""
 #, fuzzy
 msgid "Moving Objects"
 msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
 "Opprettelse av prosjekter\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
@@ -1910,7 +2005,11 @@ msgstr ""
 #: ../../editing/edit-tools.rst:81
 #, fuzzy
 msgid "Resizing Objects"
-msgstr "Opprettelse av prosjekter"
+msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Opprettelse av prosjekter"
 
 #: ../../editing/edit-tools.rst:82
 msgid ""
@@ -1935,7 +2034,11 @@ msgstr ""
 #: ../../editing/edit-tools.rst:98
 #, fuzzy
 msgid "Cutting Objects"
-msgstr "Opprettelse av prosjekter"
+msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Opprettelse av prosjekter"
 
 #: ../../editing/edit-tools.rst:99
 msgid "You can :kbd:`Alt`-click inside objects to break them up."
@@ -1943,7 +2046,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:102
 msgid "Edit Tool"
-msgstr ""
+msgstr "Redigeringsverktøy"
 
 #: ../../editing/edit-tools.rst:103
 msgid ""
@@ -2174,7 +2277,11 @@ msgstr ""
 #: ../../editing/timeline/arranger.rst:25
 #, fuzzy
 msgid "Arranger Objects"
-msgstr "Opprettelse av prosjekter"
+msgstr ""
+"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Opprettelse av prosjekter"
 
 #: ../../editing/timeline/arranger.rst:26
 msgid "The following arranger objects can exist inside the timeline."
@@ -2309,7 +2416,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:139
 msgid "Looping"
-msgstr ""
+msgstr "Gjentagelse"
 
 #: ../../editing/timeline/arranger.rst:140
 msgid ""
@@ -2437,7 +2544,7 @@ msgstr ""
 #: ../../editing/timeline/intro.rst:8
 #: ../../zrythm-interface/timeline.rst:8
 msgid "Timeline"
-msgstr ""
+msgstr "Tidslinje"
 
 #: ../../editing/timeline/overview.rst:7
 msgid ""
@@ -2598,8 +2705,13 @@ msgid ""
 msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:18
+#, fuzzy
 msgid "Export dialog"
 msgstr ""
+"#-#-#-#-#  exporting.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Eksportering\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../exporting/audio-and-midi.rst:21
 msgid "Fields"
@@ -2664,7 +2776,7 @@ msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:54
 msgid "Time Range"
-msgstr ""
+msgstr "Tidsrom"
 
 #: ../../exporting/audio-and-midi.rst:55
 msgid ""
@@ -2721,12 +2833,8 @@ msgid "Exported files"
 msgstr ""
 
 #: ../../exporting/intro.rst:6
-#, fuzzy
 msgid "Exporting"
-msgstr ""
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"Opptak av MIDI\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+msgstr "Eksportering"
 
 #: ../../exporting/routing-graph.rst:8
 #: ../../routing/making-connections.rst:34
@@ -2857,6 +2965,9 @@ msgstr ""
 #, fuzzy
 msgid "SFZ/SF2 Instruments"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Instrumentspor\n"
@@ -2877,7 +2988,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:6
 msgid "Installation"
-msgstr ""
+msgstr "Installasjon"
 
 #: ../../getting-started/installation.rst:11
 msgid "Installers"
@@ -2983,7 +3094,11 @@ msgstr ""
 #: ../../getting-started/running-zrythm.rst:8
 #, fuzzy
 msgid "Running Zrythm"
-msgstr "zrythm"
+msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"zrythm"
 
 #: ../../getting-started/running-zrythm.rst:11
 msgid "First Run Wizard"
@@ -3058,6 +3173,9 @@ msgstr ""
 #, fuzzy
 msgid "Plugin Scan"
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Programtillegg\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
@@ -3134,7 +3252,11 @@ msgstr ""
 #: ../../getting-started/system-requirements.rst:28
 #, fuzzy
 msgid "Audio interface"
-msgstr "Lydspor"
+msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Lydspor"
 
 #: ../../getting-started/system-requirements.rst:27
 msgid ""
@@ -3225,7 +3347,13 @@ msgstr ""
 #: ../../routing/ports.rst:48
 #, fuzzy
 msgid "Control"
-msgstr "Kontrollrom"
+msgstr ""
+"#-#-#-#-#  connections.po (Zrythm 0.8)  #-#-#-#-#\n"
+"#-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
+"#-#-#-#-#  routing.po (Zrythm 0.8)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"Kontrollrom"
 
 #: ../../glossary/intro.rst:37
 msgid ""
@@ -3296,7 +3424,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:24
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:79
 msgid ""
@@ -3327,7 +3455,7 @@ msgstr ""
 #: ../../tracks/midi-track.rst:132
 #: ../../tracks/midi-track.rst:140
 msgid "TODO"
-msgstr ""
+msgstr "GJENSTÅR"
 
 #: ../../glossary/intro.rst:96
 msgid "Panning"
@@ -3349,7 +3477,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:104
 msgid "Plugin"
-msgstr ""
+msgstr "Programtillegg"
 
 #: ../../glossary/intro.rst:106
 msgid ""
@@ -3359,12 +3487,8 @@ msgid ""
 msgstr ""
 
 #: ../../glossary/intro.rst:110
-#, fuzzy
 msgid "Project"
-msgstr ""
-"#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Prosjekter\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+msgstr "Prosjekt"
 
 #: ../../glossary/intro.rst:112
 msgid ""
@@ -3374,8 +3498,14 @@ msgid ""
 msgstr ""
 
 #: ../../glossary/intro.rst:116
+#, fuzzy
 msgid "Range"
 msgstr ""
+"#-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
+"Tidsrom\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../glossary/intro.rst:118
 msgid "A Range is a selection of time between two positions."
@@ -3710,6 +3840,12 @@ msgstr ""
 "modulatorer. Modulatorer er tilknyttet spor, så hvert spor vil ha sin "
 "egen liste med modulatorer.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  modulators.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Zrythm har en modulatorfane i bunnpanelet som kan ha et antall "
+"modulatorer. Modulatorer er tilknyttet spor, så hvert spor vil ha sin "
+"egen liste med modulatorer.\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../modulators/intro.rst:23
 msgid ""
@@ -3887,6 +4023,10 @@ msgstr ""
 "#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Opptak av MIDI\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Opptak av MIDI\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../playback-and-recording/recording.rst:9
 msgid "Arming Tracks"
@@ -3916,6 +4056,10 @@ msgstr ""
 #, fuzzy
 msgid "Recording Audio & MIDI"
 msgstr ""
+"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Opptak av lyd\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Opptak av lyd\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
@@ -4278,6 +4422,10 @@ msgstr ""
 "#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Programtilleggsutforsker\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Programtilleggsutforsker\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../plugins-files/plugins/plugin-info.rst:8
 msgid ""
@@ -4296,6 +4444,10 @@ msgstr ""
 "#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Programtillegg\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Programtillegg\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../plugins-files/plugins/plugin-info.rst:20
 msgid "Plugins are classified into the following categories."
@@ -4307,6 +4459,12 @@ msgstr ""
 #, fuzzy
 msgid "Instrument"
 msgstr ""
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Instrumentspor\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Instrumentspor\n"
@@ -4356,6 +4514,11 @@ msgstr ""
 #, fuzzy
 msgid "Plugin Ports"
 msgstr ""
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Programtillegg\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Programtillegg\n"
 "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
@@ -4680,6 +4843,10 @@ msgstr ""
 "#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
 "Prosjekter\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Prosjekter\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../projects/project-info.rst:52
 msgid "The Project file"
@@ -4719,6 +4886,10 @@ msgstr ""
 #, fuzzy
 msgid "Loading Projects"
 msgstr ""
+"#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Opprettelse av prosjekter\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
 "Opprettelse av prosjekter\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
@@ -4769,6 +4940,10 @@ msgstr ""
 #, fuzzy
 msgid "Saving Projects"
 msgstr ""
+"#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Opprettelse av prosjekter\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  projects.po (Zrythm 0.4)  #-#-#-#-#\n"
 "Opprettelse av prosjekter\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
@@ -5028,6 +5203,16 @@ msgstr ""
 msgid "Returns a new Create Tracks action for one or more empty Audio FX tracks."
 msgstr ""
 
+#: ../../scripting/api/actions create_tracks_action.rst:16
+msgid ""
+"Scheme Procedure: **create-tracks-action-new-midi** | *track_pos "
+"num_tracks*"
+msgstr ""
+
+#: ../../scripting/api/actions create_tracks_action.rst:15
+msgid "Returns a new Create Tracks action for one or more empty MIDI tracks."
+msgstr ""
+
 #: ../../scripting/api/actions port_connection_action.rst:3
 msgid "actions port-connection-action"
 msgstr ""
@@ -5047,7 +5232,7 @@ msgid "actions undo-manager"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:7
-msgid "Scheme Procedure: **undo-manager-perform** | *action*"
+msgid "Scheme Procedure: **undo-manager-perform** | *undo_manager action*"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:6
@@ -5055,7 +5240,7 @@ msgid "Performs the given action and adds it to the undo stack."
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:11
-msgid "Scheme Procedure: **undo-manager-undo** | *[action]*"
+msgid "Scheme Procedure: **undo-manager-undo** | *undo_manager*"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:10
@@ -5063,7 +5248,7 @@ msgid "Undoes the last action."
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:15
-msgid "Scheme Procedure: **undo-manager-redo** | *[action]*"
+msgid "Scheme Procedure: **undo-manager-redo** | *undo_manager*"
 msgstr ""
 
 #: ../../scripting/api/actions undo_manager.rst:14
@@ -5261,7 +5446,7 @@ msgid "audio tracklist"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:7
-msgid "Scheme Procedure: **tracklist-insert-track** | *track idx*"
+msgid "Scheme Procedure: **tracklist-insert-track** | *tracklist track idx*"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:6
@@ -5269,7 +5454,7 @@ msgid "Inserts track track at index idx in the tracklist."
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:11
-msgid "Scheme Procedure: **tracklist-get-track-at-pos** | *pos*"
+msgid "Scheme Procedure: **tracklist-get-track-at-pos** | *tracklist pos*"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:10
@@ -5277,19 +5462,11 @@ msgid "Returns the track at pos in the tracklist."
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:15
-msgid "Scheme Procedure: **tracklist-get-num-tracks**"
+msgid "Scheme Procedure: **tracklist-get-num-tracks** | *tracklist*"
 msgstr ""
 
 #: ../../scripting/api/audio tracklist.rst:14
 msgid "Returns the number of tracks in the tracklist."
-msgstr ""
-
-#: ../../scripting/api/audio tracklist.rst:19
-msgid "Scheme Procedure: **tracklist-get**"
-msgstr ""
-
-#: ../../scripting/api/audio tracklist.rst:18
-msgid "Returns the tracklist for the current project."
 msgstr ""
 
 #: ../../scripting/api/intro.rst:6
@@ -5321,11 +5498,21 @@ msgid "plugins plugin-manager"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:7
-msgid "Scheme Procedure: **plugin-manager-find-plugin-from-uri** | *uri*"
+msgid ""
+"Scheme Procedure: **plugin-manager-find-plugin-from-uri** | "
+"*plugin_manager uri*"
 msgstr ""
 
 #: ../../scripting/api/plugins plugin_manager.rst:6
 msgid "Returns the PluginDescriptor matching the given URI."
+msgstr ""
+
+#: ../../scripting/api/plugins plugin_manager.rst:11
+msgid "Scheme Procedure: **plugin-manager-scan-plugins** | *plugin_manager*"
+msgstr ""
+
+#: ../../scripting/api/plugins plugin_manager.rst:10
+msgid "Scans the system for plugins."
 msgstr ""
 
 #: ../../scripting/api/project.rst:3
@@ -5342,6 +5529,22 @@ msgstr ""
 
 #: ../../scripting/api/project.rst:6
 msgid "Return the project’s title."
+msgstr ""
+
+#: ../../scripting/api/project.rst:11
+msgid "Scheme Procedure: **project-get-tracklist** | *project*"
+msgstr ""
+
+#: ../../scripting/api/project.rst:10
+msgid "Returns the tracklist for the project."
+msgstr ""
+
+#: ../../scripting/api/project.rst:15
+msgid "Scheme Procedure: **project-get-undo-manager** | *project*"
+msgstr ""
+
+#: ../../scripting/api/project.rst:14
+msgid "Returns the undo manager for the project."
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:7
@@ -5376,6 +5579,14 @@ msgstr ""
 msgid "Returns a NULL pointer."
 msgstr ""
 
+#: ../../scripting/api/zrythm.rst:23
+msgid "Scheme Procedure: **zrythm-message** | *message*"
+msgstr ""
+
+#: ../../scripting/api/zrythm.rst:22
+msgid "Writes the message to the log."
+msgstr ""
+
 #: ../../scripting/examples.rst:6
 msgid "Examples"
 msgstr ""
@@ -5387,19 +5598,23 @@ msgid ""
 "copy and modify them."
 msgstr ""
 
-#: ../../scripting/examples.rst:13
+#: ../../scripting/examples.rst:12
+msgid "API changed - check that these work."
+msgstr ""
+
+#: ../../scripting/examples.rst:15
 msgid "Hello World"
 msgstr ""
 
-#: ../../scripting/examples.rst:22
+#: ../../scripting/examples.rst:24
 msgid "Print track names"
 msgstr ""
 
-#: ../../scripting/examples.rst:39
+#: ../../scripting/examples.rst:41
 msgid "Create Geonkick track and route its mono output to an Audio FX track"
 msgstr ""
 
-#: ../../scripting/examples.rst:98
+#: ../../scripting/examples.rst:100
 msgid "Create MIDI track with notes"
 msgstr ""
 
@@ -5824,6 +6039,10 @@ msgstr ""
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Lydspor\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Lydspor\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../tracks/bus-track-audio.rst:10
 msgid ""
@@ -5975,6 +6194,10 @@ msgstr ""
 #, fuzzy
 msgid "Audio Group Track"
 msgstr ""
+"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Lydspor\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Lydspor\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
@@ -6308,6 +6531,10 @@ msgstr ""
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Lydspor\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Lydspor\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../tracks/midi-track.rst:8
 msgid ""
@@ -6563,6 +6790,10 @@ msgstr ""
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Sportyper\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Sportyper\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../tracks/track-types.rst:12
 msgid "Can record"
@@ -6587,6 +6818,10 @@ msgstr ""
 #, fuzzy
 msgid "Audio Group"
 msgstr ""
+"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Lydspor\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 "#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
 "Lydspor\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
@@ -7214,6 +7449,10 @@ msgstr ""
 "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
 "Grensesnittsoversikt i Zrythm\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Grensesnittsoversikt i Zrythm\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:8
 msgid "The Zrythm interface is split into various sub-modules."
@@ -7439,6 +7678,11 @@ msgstr ""
 
 #~ msgid "Channel"
 #~ msgstr ""
+#~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Kanal\n"
+#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+#~ "Kanaler\n"
+#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 #~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
 #~ "Kanal\n"
 #~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"

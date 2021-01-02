@@ -11,3 +11,7 @@ Scheme Procedure: **create-tracks-action-new-audio-fx** | *track_pos num_tracks*
    tracks.
 
 
+Scheme Procedure: **create-tracks-action-new-midi** | *track_pos num_tracks*
+   Returns a new Create Tracks action for one or more empty MIDI tracks.
+
+

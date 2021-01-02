@@ -18,3 +18,7 @@ Scheme Procedure: **zrythm-null**
    Returns a NULL pointer.
 
 
+Scheme Procedure: **zrythm-message** | *message*
+   Writes the message to the log.
+
+
