@@ -41,7 +41,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-02 10:51+0000\n"
+"POT-Creation-Date: 2021-01-02 12:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1474,7 +1474,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:63
 msgid "MIDI Arranger"
-msgstr ""
+msgstr "MIDI-Arranger"
 
 #: ../../editing/clip-editors/piano-roll.rst:64
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
@@ -2199,6 +2199,9 @@ msgid ""
 "top and a bottom arranger below it. This way you can pin tracks you want "
 "to always be visible at the top."
 msgstr ""
+"Die Zeitachse ist unterteilt in eine obere Zeitachse, die oben fixiert "
+"bleibt, und eine scrollbare Zeitachse darunter. Auf diese Weise können "
+"Sie Spuren anheften, die Sie immer oben sichtbar haben möchten."
 
 #: ../../editing/timeline/arranger.rst:25
 #, fuzzy
@@ -2211,7 +2214,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:32
 msgid "Regions"
-msgstr ""
+msgstr "Regionen"
 
 #: ../../editing/timeline/arranger.rst:33
 msgid ""
@@ -2495,6 +2498,12 @@ msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into"
 " the top (pinned) Tracklist and the bottom (main) Tracklist."
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Die Spurenliste beinhaltet alle Spuren im Projekt. Sie ist unterteilt in "
+"die obere (pinned) Spurenliste und die untere (main) Spurenliste.\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Die Spurliste enthält alle Spuren im Projekt. Es ist unterteilt in die "
+"obere (festgesteckte) Spurliste und die untere (Haupt-)Spurliste."
 
 #: ../../editing/timeline/overview.rst:26
 msgid ""
@@ -2519,7 +2528,7 @@ msgstr ""
 
 #: ../../editing/timeline/overview.rst:42
 msgid "Minimap"
-msgstr ""
+msgstr "Zeitachsenminikarte"
 
 #: ../../editing/timeline/overview.rst:43
 msgid ""
@@ -2527,6 +2536,9 @@ msgid ""
 "area of the timeline. It can be moved around and resized to change the "
 "visible area."
 msgstr ""
+"Die Zeitachsenminikarte ist ein kleines Kästchen, das den aktuellen "
+"sichtbaren Bereich der Zeitachse darstellt. Sie kann verschoben und in "
+"der Größe verändert werden, um den sichtbaren Bereich zu ändern."
 
 #: ../../editing/timeline/overview.rst:50
 msgid "The rest of the timeline elements are explained in the following sections."
@@ -2548,25 +2560,24 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/ruler.rst:21
-#, fuzzy
 msgid "Cue point"
-msgstr "Cue-Point"
+msgstr "Cue-Punkt"
 
 #: ../../editing/timeline/ruler.rst:22
 msgid "Displayed as a blue, right-pointing arrow."
-msgstr ""
+msgstr "Wird als blauer, nach rechts zeigender Pfeil angezeigt."
 
 #: ../../editing/timeline/ruler.rst:23
 msgid "Playhead position"
-msgstr ""
+msgstr "Abspielposition"
 
 #: ../../editing/timeline/ruler.rst:24
 msgid "Shown as a grey, down-facing arrow."
-msgstr ""
+msgstr "Wird als grauer, nach unten zeigender Pfeil dargestellt."
 
 #: ../../editing/timeline/ruler.rst:28
 msgid "Loop points"
-msgstr ""
+msgstr "Schleifenpunkte"
 
 #: ../../editing/timeline/ruler.rst:26
 msgid ""
@@ -2574,6 +2585,9 @@ msgid ""
 "green if loop is enabled, or grey if disabled. Can be dragged to "
 "reposition."
 msgstr ""
+"Wird als 2 grüne Pfeile dargestellt, der Bereich zwischen ihnen wird "
+"hellgrün angezeigt, wenn die Schleife aktiviert ist oder grau, wenn "
+"deaktiviert. Kann zur Neupositionierung gezogen werden."
 
 #: ../../editing/timeline/ruler.rst:30
 msgid ""
@@ -2729,7 +2743,7 @@ msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:64
 msgid "Mixdown"
-msgstr ""
+msgstr "Mixdown"
 
 #: ../../exporting/audio-and-midi.rst:65
 msgid ""
@@ -3031,7 +3045,7 @@ msgstr "zrythm"
 
 #: ../../getting-started/running-zrythm.rst:11
 msgid "First Run Wizard"
-msgstr ""
+msgstr "Erststart-Wizard"
 
 #: ../../getting-started/running-zrythm.rst:13
 msgid ""
@@ -3043,7 +3057,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:20
 msgid "Language Selection"
-msgstr ""
+msgstr "Sprachauswahl"
 
 #: ../../getting-started/running-zrythm.rst:25
 msgid ""
@@ -3056,10 +3070,12 @@ msgstr ""
 #: ../../getting-started/running-zrythm.rst:30
 msgid "You must have a locale enabled for the language you want to use."
 msgstr ""
+"Du musst eine Locale für die Sprache, die du benutzen willst aktiviert "
+"haben."
 
 #: ../../getting-started/running-zrythm.rst:34
 msgid "Path"
-msgstr ""
+msgstr "Pfad"
 
 #: ../../getting-started/running-zrythm.rst:39
 msgid "This is the :term:`Zrythm user path`."
@@ -3067,7 +3083,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:42
 msgid "Audio/MIDI Backends"
-msgstr ""
+msgstr "Audio-/MIDI-Backends"
 
 #: ../../getting-started/running-zrythm.rst:47
 msgid ""
@@ -3085,6 +3101,8 @@ msgid ""
 "Click :guilabel:`Test` to try connecting to the backend to see if it is "
 "functional."
 msgstr ""
+"Klick :zbutton:`Test`, um zu versuchen dich mit dem Backend zu verbinden "
+"und zu sehen, ob es funktioniert."
 
 #: ../../getting-started/running-zrythm.rst:58
 msgid ""
@@ -3097,6 +3115,9 @@ msgid ""
 "All of the settings mentioned here are also available in the "
 ":ref:`preferences`, so don't worry if you selected the wrong settings."
 msgstr ""
+"Jede der hier genannten Einstellungen ist auch in den Präferenzen "
+"verfügbar (Strg+Umschalt+P oder Datei->Präferenzen), also mach dir keine "
+"Sorgen wenn du die falschen Einstellungen gewählt hast."
 
 #: ../../getting-started/running-zrythm.rst:68
 #, fuzzy
@@ -3172,12 +3193,8 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:24
-#, fuzzy
 msgid "Monitor"
-msgstr ""
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Editoren\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+msgstr "Monitor"
 
 #: ../../getting-started/system-requirements.rst:24
 msgid ""
@@ -3277,9 +3294,8 @@ msgstr ""
 
 #: ../../glossary/intro.rst:35
 #: ../../routing/ports.rst:48
-#, fuzzy
 msgid "Control"
-msgstr "Kontrollraum"
+msgstr "Steuerung"
 
 #: ../../glossary/intro.rst:37
 msgid ""
@@ -3291,7 +3307,7 @@ msgstr ""
 #: ../../glossary/intro.rst:42
 #: ../../routing/ports.rst:53
 msgid "CV"
-msgstr ""
+msgstr "CV"
 
 #: ../../glossary/intro.rst:44
 msgid ""
@@ -3385,7 +3401,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:96
 msgid "Panning"
-msgstr ""
+msgstr "Panning"
 
 #: ../../glossary/intro.rst:98
 msgid ""
@@ -3431,6 +3447,10 @@ msgstr ""
 #: ../../glossary/intro.rst:118
 msgid "A Range is a selection of time between two positions."
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Ein Bereich ist eine Zeitauswahl zwischen zwei Positionen.\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Ein Bereich ist eine Auswahl der Zeit zwischen zwei Positionen."
 
 #: ../../glossary/intro.rst:123
 msgid "Region"
@@ -8077,9 +8097,6 @@ msgstr ""
 #~ " automatische Verbindung hergestellt werden "
 #~ "soll."
 
-#~ msgid "First Run Wizard"
-#~ msgstr "Erststart-Wizard"
-
 #~ msgid ""
 #~ "When you first run Zrythm, it will"
 #~ " display a wizard that lets you "
@@ -8097,30 +8114,6 @@ msgstr ""
 #~ "Zrythm-Pfad, Oberflächensprache und Audio"
 #~ "-/MIDI-Backends."
 
-#~ msgid "Language Selection"
-#~ msgstr "Sprachauswahl"
-
-#~ msgid "You must have a locale enabled for the language you want to use."
-#~ msgstr ""
-#~ "Du musst eine Locale für die "
-#~ "Sprache, die du benutzen willst "
-#~ "aktiviert haben."
-
-#~ msgid "Path"
-#~ msgstr "Pfad"
-
-#~ msgid "Audio/MIDI Backends"
-#~ msgstr "Audio-/MIDI-Backends"
-
-#~ msgid ""
-#~ "Click :guilabel:`Test` to try connecting "
-#~ "to the backend to see if it "
-#~ "is functional."
-#~ msgstr ""
-#~ "Klick :zbutton:`Test`, um zu versuchen "
-#~ "dich mit dem Backend zu verbinden "
-#~ "und zu sehen, ob es funktioniert."
-
 #~ msgid "MIDI Devices"
 #~ msgstr "MIDI-Geräte"
 
@@ -8137,24 +8130,6 @@ msgstr ""
 #~ "bereit sein werden. Klick „Erneut "
 #~ "suchen“, um nochmal nach Geräten zu "
 #~ "suchen."
-
-#~ msgid ""
-#~ "All of the settings mentioned here "
-#~ "are also available in the "
-#~ ":ref:`preferences`, so don't worry if "
-#~ "you selected the wrong settings."
-#~ msgstr ""
-#~ "Jede der hier genannten Einstellungen "
-#~ "ist auch in den Präferenzen verfügbar"
-#~ " (Strg+Umschalt+P oder Datei->Präferenzen), also"
-#~ " mach dir keine Sorgen wenn du "
-#~ "die falschen Einstellungen gewählt hast."
-
-#~ msgid "Control"
-#~ msgstr "Steuerung"
-
-#~ msgid "CV"
-#~ msgstr "CV"
 
 #~ msgid ""
 #~ "If you are on Arch Linux or "
@@ -8337,89 +8312,6 @@ msgstr ""
 
 #~ msgid "Sections of this manual"
 #~ msgstr "Abschnitte des Handbuchs"
-
-#~ msgid "MIDI Arranger"
-#~ msgstr "MIDI-Arranger"
-
-#~ msgid ""
-#~ "The timeline arranger is split into "
-#~ "a top arranger that remains fixed "
-#~ "on top and a bottom arranger below"
-#~ " it. This way you can pin "
-#~ "tracks you want to always be "
-#~ "visible at the top."
-#~ msgstr ""
-#~ "Die Zeitachse ist unterteilt in eine "
-#~ "obere Zeitachse, die oben fixiert "
-#~ "bleibt, und eine scrollbare Zeitachse "
-#~ "darunter. Auf diese Weise können Sie "
-#~ "Spuren anheften, die Sie immer oben "
-#~ "sichtbar haben möchten."
-
-#~ msgid "Regions"
-#~ msgstr "Regionen"
-
-#~ msgid ""
-#~ "The Tracklist contains all of the "
-#~ "Tracks in the project. It is split"
-#~ " into the top (pinned) Tracklist and"
-#~ " the bottom (main) Tracklist."
-#~ msgstr ""
-#~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-#~ "Die Spurenliste beinhaltet alle Spuren "
-#~ "im Projekt. Sie ist unterteilt in "
-#~ "die obere (pinned) Spurenliste und die"
-#~ " untere (main) Spurenliste.\n"
-#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-#~ "Die Spurliste enthält alle Spuren im "
-#~ "Projekt. Es ist unterteilt in die "
-#~ "obere (festgesteckte) Spurliste und die "
-#~ "untere (Haupt-)Spurliste."
-
-#~ msgid "Minimap"
-#~ msgstr "Zeitachsenminikarte"
-
-#~ msgid ""
-#~ "The timeline minimap is a little "
-#~ "box that represents the current visible"
-#~ " area of the timeline. It can "
-#~ "be moved around and resized to "
-#~ "change the visible area."
-#~ msgstr ""
-#~ "Die Zeitachsenminikarte ist ein kleines "
-#~ "Kästchen, das den aktuellen sichtbaren "
-#~ "Bereich der Zeitachse darstellt. Sie "
-#~ "kann verschoben und in der Größe "
-#~ "verändert werden, um den sichtbaren "
-#~ "Bereich zu ändern."
-
-#~ msgid "Cue point"
-#~ msgstr "Cue-Punkt"
-
-#~ msgid "Displayed as a blue, right-pointing arrow."
-#~ msgstr "Wird als blauer, nach rechts zeigender Pfeil angezeigt."
-
-#~ msgid "Playhead position"
-#~ msgstr "Abspielposition"
-
-#~ msgid "Shown as a grey, down-facing arrow."
-#~ msgstr "Wird als grauer, nach unten zeigender Pfeil dargestellt."
-
-#~ msgid "Loop points"
-#~ msgstr "Schleifenpunkte"
-
-#~ msgid ""
-#~ "Shown as 2 green arrows, and the"
-#~ " area between them is shown in "
-#~ "bright green if loop is enabled, "
-#~ "or grey if disabled. Can be "
-#~ "dragged to reposition."
-#~ msgstr ""
-#~ "Wird als 2 grüne Pfeile dargestellt, "
-#~ "der Bereich zwischen ihnen wird hellgrün"
-#~ " angezeigt, wenn die Schleife aktiviert "
-#~ "ist oder grau, wenn deaktiviert. Kann"
-#~ " zur Neupositionierung gezogen werden."
 
 #~ msgid "Piano Roll Editing"
 #~ msgstr "Notenrollenbearbeitung"
@@ -8736,9 +8628,6 @@ msgstr ""
 #~ msgid "Copy-Moving"
 #~ msgstr "Spuren auswählen"
 
-#~ msgid "Mixdown"
-#~ msgstr "Mixdown"
-
 #~ msgid "Exporting MIDI Files"
 #~ msgstr "MIDI-Dateien exportieren"
 
@@ -8760,9 +8649,6 @@ msgstr ""
 #~ "Verzeichnis zu öffnen, in dem die "
 #~ "Datei mit Ihrem Standard-Dateibrowser "
 #~ "gespeichert wurde."
-
-#~ msgid "Monitor"
-#~ msgstr "Monitor"
 
 #~ msgid "PeerTube"
 #~ msgstr "PeerTube"
@@ -8952,13 +8838,6 @@ msgstr ""
 #~ "Der Mixer beinhaltet alle Kanäle im "
 #~ "Projekt und wird benutzt, um das "
 #~ "Audiosignal von jedem Kanal zu mischen."
-
-#~ msgid "A Range is a selection of time between two positions."
-#~ msgstr ""
-#~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-#~ "Ein Bereich ist eine Zeitauswahl zwischen zwei Positionen.\n"
-#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-#~ "Ein Bereich ist eine Auswahl der Zeit zwischen zwei Positionen."
 
 #~ msgid "MIDI Note"
 #~ msgstr "MIDI-Note"
@@ -9289,9 +9168,6 @@ msgstr ""
 
 #~ msgid "x86_64, i686 or ARM processor"
 #~ msgstr "x86_64, i686 oder ARM Prozessor"
-
-#~ msgid "Panning"
-#~ msgstr "Panning"
 
 #~ msgid ""
 #~ "A Region (Clip) is a container for"
@@ -10030,15 +9906,6 @@ msgstr ""
 #~ " auf  :ref:`track-inspector`oder :ref:`plugin-"
 #~ "inspector`hergestellt werden."
 
-#~ msgid "See :ref:`exporting-routing-graph` for details."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "CV ports handle continuous signals and"
-#~ " can be used to modulate control "
-#~ "ports."
-#~ msgstr ""
-
 #~ msgid ""
 #~ "Filtering by collections and protocols "
 #~ "is not operational at the moment."
@@ -10046,7 +9913,4 @@ msgstr ""
 #~ "Ermöglicht es Ihnen, Plugins nach ihrem"
 #~ " Protokoll (LV2 oder VST) zu filtern."
 #~ " Zurzeit nicht verwendbar."
-
-#~ msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
-#~ msgstr ""
 

@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-02 10:51+0000\n"
+"POT-Creation-Date: 2021-01-02 12:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -7101,35 +7101,4 @@ msgstr ""
 
 #~ msgid "Controls"
 #~ msgstr "Controls"
-
-#~ msgid "Connections"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Connections can be made by double "
-#~ "clicking on ports in the :ref:`track-"
-#~ "inspector` or the :ref:`plugin-inspector`."
-#~ msgstr ""
-
-#~ msgid "See :ref:`exporting-routing-graph` for details."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "CV ports handle continuous signals and"
-#~ " can be used to modulate control "
-#~ "ports."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Filtering by collections and protocols "
-#~ "is not operational at the moment."
-#~ msgstr ""
-
-#~ msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Tracks can be deleted by right-"
-#~ "clicking them and selecting :zbutton:`Delete`."
-#~ msgstr ""
 

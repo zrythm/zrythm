@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-02 10:51+0000\n"
+"POT-Creation-Date: 2021-01-02 12:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2182,7 +2182,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:32
 msgid "Regions"
-msgstr ""
+msgstr "Regioner"
 
 #: ../../editing/timeline/arranger.rst:33
 msgid ""
@@ -2447,9 +2447,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/overview.rst:17
-#, fuzzy
 msgid "Tracklist"
-msgstr "Spor"
+msgstr "Sporliste"
 
 #: ../../editing/timeline/overview.rst:19
 msgid ""
@@ -3016,7 +3015,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:34
 msgid "Path"
-msgstr ""
+msgstr "Sti"
 
 #: ../../getting-started/running-zrythm.rst:39
 msgid "This is the :term:`Zrythm user path`."
@@ -3124,7 +3123,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:24
 msgid "Monitor"
-msgstr ""
+msgstr "Monitor"
 
 #: ../../getting-started/system-requirements.rst:24
 msgid ""
@@ -3460,9 +3459,8 @@ msgid "the directory for local application data on Windows"
 msgstr ""
 
 #: ../../index.rst:8
-#, fuzzy
 msgid "Zrythm"
-msgstr "zrythm"
+msgstr "Zrythm"
 
 #: ../../index.rst:10
 msgid "Welcome to the Zrythm manual."
@@ -7275,9 +7273,6 @@ msgstr ""
 #~ msgid "GUI"
 #~ msgstr "Grafisk grensesnitt"
 
-#~ msgid "Path"
-#~ msgstr "Sti"
-
 #~ msgid "MIDI Devices"
 #~ msgstr "MIDI-enheter"
 
@@ -7409,9 +7404,6 @@ msgstr ""
 #~ msgid "The Zrythm translation project contains the following components:"
 #~ msgstr "Zrythm-oversettelsesprosjektet inneholder følgende komponenter:"
 
-#~ msgid "Zrythm"
-#~ msgstr "Zrythm"
-
 #~ msgid "The actual Zrythm program"
 #~ msgstr "Selve Zrythm-programmet"
 
@@ -7427,12 +7419,6 @@ msgstr ""
 #~ msgid "Sections of this manual"
 #~ msgstr "Avsnitt i denne manualen"
 
-#~ msgid "Regions"
-#~ msgstr "Regioner"
-
-#~ msgid "Tracklist"
-#~ msgstr "Sporliste"
-
 #~ msgid "Tools"
 #~ msgstr "Verktøy"
 
@@ -7444,9 +7430,6 @@ msgstr ""
 
 #~ msgid "Exporting MIDI Files"
 #~ msgstr "Eksportering av MIDI-filer"
-
-#~ msgid "Monitor"
-#~ msgstr "Monitor"
 
 #~ msgid "Basic Concepts and Terminology"
 #~ msgstr "Grunnleggende konsepter og terminologi"
@@ -7532,35 +7515,4 @@ msgstr ""
 
 #~ msgid "Toolbar (5)"
 #~ msgstr "Verktøyslinje (5)"
-
-#~ msgid "Connections"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Connections can be made by double "
-#~ "clicking on ports in the :ref:`track-"
-#~ "inspector` or the :ref:`plugin-inspector`."
-#~ msgstr ""
-
-#~ msgid "See :ref:`exporting-routing-graph` for details."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "CV ports handle continuous signals and"
-#~ " can be used to modulate control "
-#~ "ports."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Filtering by collections and protocols "
-#~ "is not operational at the moment."
-#~ msgstr ""
-
-#~ msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Tracks can be deleted by right-"
-#~ "clicking them and selecting :zbutton:`Delete`."
-#~ msgstr ""
 

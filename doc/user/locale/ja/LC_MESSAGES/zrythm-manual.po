@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-02 10:51+0000\n"
+"POT-Creation-Date: 2021-01-02 12:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2201,7 +2201,7 @@ msgid ""
 "The timeline arranger is split into a top arranger that remains fixed on "
 "top and a bottom arranger below it. This way you can pin tracks you want "
 "to always be visible at the top."
-msgstr ""
+msgstr "タイムラインは上部に固定された上のタイムラインと、その下にスクロール可能なタイムラインに分割されます。これにより、常に一番上に表示するトラックをピン留めできます。"
 
 #: ../../editing/timeline/arranger.rst:25
 #, fuzzy
@@ -8984,15 +8984,6 @@ msgstr ":ref:`right-panel` (6)"
 #~ "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ "
 #~ "を参照してください。"
 
-#~ msgid ""
-#~ "The timeline arranger is split into "
-#~ "a top arranger that remains fixed "
-#~ "on top and a bottom arranger below"
-#~ " it. This way you can pin "
-#~ "tracks you want to always be "
-#~ "visible at the top."
-#~ msgstr "タイムラインは上部に固定された上のタイムラインと、その下にスクロール可能なタイムラインに分割されます。これにより、常に一番上に表示するトラックをピン留めできます。"
-
 #~ msgid "Drum view"
 #~ msgstr "ドラムビュー"
 
@@ -10034,7 +10025,4 @@ msgstr ":ref:`right-panel` (6)"
 #~ "Filtering by collections and protocols "
 #~ "is not operational at the moment."
 #~ msgstr "コレクションとプロトコルによるフィルタリングは、現時点では動作しません。"
-
-#~ msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
-#~ msgstr ""
 

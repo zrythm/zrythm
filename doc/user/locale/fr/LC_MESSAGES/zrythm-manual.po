@@ -43,7 +43,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-02 10:51+0000\n"
+"POT-Creation-Date: 2021-01-02 12:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1489,7 +1489,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:63
 msgid "MIDI Arranger"
-msgstr ""
+msgstr "Arrangeur MIDI"
 
 #: ../../editing/clip-editors/piano-roll.rst:64
 msgid "The MIDI arranger refers to the arranger section of the piano roll."
@@ -2225,6 +2225,10 @@ msgid ""
 "top and a bottom arranger below it. This way you can pin tracks you want "
 "to always be visible at the top."
 msgstr ""
+"La ligne temporelle est divisée en une ligne temporelle supérieure qui "
+"reste fixe sur le dessus et une ligne temporelle déroulante en dessous. "
+"De cette façon, vous pouvez épingler les pistes que vous voulez toujours "
+"voir en haut."
 
 #: ../../editing/timeline/arranger.rst:25
 #, fuzzy
@@ -2237,7 +2241,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:32
 msgid "Regions"
-msgstr ""
+msgstr "Régions"
 
 #: ../../editing/timeline/arranger.rst:33
 msgid ""
@@ -2526,6 +2530,14 @@ msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into"
 " the top (pinned) Tracklist and the bottom (main) Tracklist."
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"La liste de pistes contient toutes les pistes du projet. Elle est divisée"
+" en la liste de pistes supérieure (épinglée) et la liste de pistes "
+"inférieure (principale).\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"La liste de piste contient toutes les pistes du projet. Elle est divisée "
+"en une liste de piste supérieure (épinglée) et une liste de piste "
+"inférieure (principale)."
 
 #: ../../editing/timeline/overview.rst:26
 msgid ""
@@ -2550,7 +2562,7 @@ msgstr ""
 
 #: ../../editing/timeline/overview.rst:42
 msgid "Minimap"
-msgstr ""
+msgstr "Mini carte de la ligne temporelle"
 
 #: ../../editing/timeline/overview.rst:43
 msgid ""
@@ -2558,6 +2570,9 @@ msgid ""
 "area of the timeline. It can be moved around and resized to change the "
 "visible area."
 msgstr ""
+"La ligne temporelle minimap est une petite boîte qui représente la zone "
+"visible actuelle de la ligne temporelle. Elle peut être déplacée et "
+"redimensionnée pour modifier la zone visible."
 
 #: ../../editing/timeline/overview.rst:50
 msgid "The rest of the timeline elements are explained in the following sections."
@@ -2579,25 +2594,24 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/ruler.rst:21
-#, fuzzy
 msgid "Cue point"
 msgstr "Point de repère"
 
 #: ../../editing/timeline/ruler.rst:22
 msgid "Displayed as a blue, right-pointing arrow."
-msgstr ""
+msgstr "Affiché sous la forme d'une flèche bleue pointant vers la droite."
 
 #: ../../editing/timeline/ruler.rst:23
 msgid "Playhead position"
-msgstr ""
+msgstr "Position de la tête de lecture"
 
 #: ../../editing/timeline/ruler.rst:24
 msgid "Shown as a grey, down-facing arrow."
-msgstr ""
+msgstr "Représenté par une flèche grise orientée vers le bas."
 
 #: ../../editing/timeline/ruler.rst:28
 msgid "Loop points"
-msgstr ""
+msgstr "Points de bouclage"
 
 #: ../../editing/timeline/ruler.rst:26
 msgid ""
@@ -2605,6 +2619,9 @@ msgid ""
 "green if loop is enabled, or grey if disabled. Can be dragged to "
 "reposition."
 msgstr ""
+"Représenté par 2 flèches vertes, et la zone entre elles est affichée en "
+"vert vif si la boucle est activée, ou en gris si elle est désactivée. "
+"Peut être glissé pour être repositionné."
 
 #: ../../editing/timeline/ruler.rst:30
 msgid ""
@@ -3063,7 +3080,7 @@ msgstr "zrythm"
 
 #: ../../getting-started/running-zrythm.rst:11
 msgid "First Run Wizard"
-msgstr ""
+msgstr "Assistant de premier lancement"
 
 #: ../../getting-started/running-zrythm.rst:13
 msgid ""
@@ -3075,7 +3092,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:20
 msgid "Language Selection"
-msgstr ""
+msgstr "Sélection de la langue"
 
 #: ../../getting-started/running-zrythm.rst:25
 msgid ""
@@ -3087,7 +3104,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:30
 msgid "You must have a locale enabled for the language you want to use."
-msgstr ""
+msgstr "Vous devez avoir une locale pour la langue que vous voulez utiliser."
 
 #: ../../getting-started/running-zrythm.rst:34
 #, fuzzy
@@ -3096,11 +3113,11 @@ msgstr "Relâcher"
 
 #: ../../getting-started/running-zrythm.rst:39
 msgid "This is the :term:`Zrythm user path`."
-msgstr ""
+msgstr "C'est le :term:`Zrythm user path`."
 
 #: ../../getting-started/running-zrythm.rst:42
 msgid "Audio/MIDI Backends"
-msgstr ""
+msgstr "Systèmes audio/MIDI"
 
 #: ../../getting-started/running-zrythm.rst:47
 msgid ""
@@ -3108,28 +3125,42 @@ msgid ""
 "the recommended one for both, but it takes some time to set up if this is"
 " your first time using it."
 msgstr ""
+"Zrythm prend en charge plusieurs systèmes audio et MIDI. :term:`JACK` est"
+" celui qui est recommandé pour les deux, mais il faut un certain temps "
+"pour le configurer si c'est la première fois que vous l'utilisez. Si vous"
+" ne voulez pas utiliser JACK pour une raison quelconque, vous pouvez "
+"sélectionner d'autres systèmes tels que ALSA ou SDL2."
 
 #: ../../getting-started/running-zrythm.rst:52
 msgid "If JACK is not available on your system, we recommend RtAudio and RtMidi."
 msgstr ""
+"Si JACK n'est pas disponible sur votre système, nous recommendons RtAudio"
+" et RtMidi."
 
 #: ../../getting-started/running-zrythm.rst:55
 msgid ""
 "Click :guilabel:`Test` to try connecting to the backend to see if it is "
 "functional."
 msgstr ""
+"Cliquez sur :zbutton:`Test` pour essayer de se connecter au système pour "
+"voir s'il est fonctionnel."
 
 #: ../../getting-started/running-zrythm.rst:58
 msgid ""
 "If you choose to use JACK, JACK MIDI and the JACK audio backend must be "
 "chosen together."
 msgstr ""
+"Si vous choisissez d'utiliser JACK, alors JACK MIDI et le système audio "
+"JACK devront être choisis ensemble."
 
 #: ../../getting-started/running-zrythm.rst:63
 msgid ""
 "All of the settings mentioned here are also available in the "
 ":ref:`preferences`, so don't worry if you selected the wrong settings."
 msgstr ""
+"Tous les paramètres mentionnés ici sont également disponibles dans les "
+"préférences (Ctr+Maj+Maj+P ou :ref:`preferences`), donc ne vous inquiétez"
+" pas si vous avez sélectionné les mauvais paramètres."
 
 #: ../../getting-started/running-zrythm.rst:68
 #, fuzzy
@@ -3205,9 +3236,8 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:24
-#, fuzzy
 msgid "Monitor"
-msgstr "Éditeur"
+msgstr "Moniteur"
 
 #: ../../getting-started/system-requirements.rst:24
 msgid ""
@@ -3416,7 +3446,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:96
 msgid "Panning"
-msgstr ""
+msgstr "Panoramique"
 
 #: ../../glossary/intro.rst:98
 msgid ""
@@ -3463,6 +3493,10 @@ msgstr "Lignes"
 #: ../../glossary/intro.rst:118
 msgid "A Range is a selection of time between two positions."
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Un intervalle est une sélection de temps entre deux positions.\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"Une plage est une sélection de temps entre deux positions."
 
 #: ../../glossary/intro.rst:123
 msgid "Region"
@@ -8558,9 +8592,6 @@ msgstr ""
 #~ " peut être effectué directement dans "
 #~ "Zrythm."
 
-#~ msgid "First Run Wizard"
-#~ msgstr "Assistant de premier lancement"
-
 #~ msgid ""
 #~ "When you first run Zrythm, it will"
 #~ " display a wizard that lets you "
@@ -8579,64 +8610,6 @@ msgstr ""
 #~ "défaut de Zrythm, de la langue de"
 #~ " l'interface et des systèmes audio/MIDI."
 
-#~ msgid "Language Selection"
-#~ msgstr "Sélection de la langue"
-
-#~ msgid "You must have a locale enabled for the language you want to use."
-#~ msgstr "Vous devez avoir une locale pour la langue que vous voulez utiliser."
-
-#~ msgid "This is the :term:`Zrythm user path`."
-#~ msgstr "C'est le :term:`Zrythm user path`."
-
-#~ msgid "Audio/MIDI Backends"
-#~ msgstr "Systèmes audio/MIDI"
-
-#~ msgid ""
-#~ "Zrythm supports multiple audio and MIDI"
-#~ " backend engines. :term:`JACK` is the "
-#~ "recommended one for both, but it "
-#~ "takes some time to set up if "
-#~ "this is your first time using it."
-#~ msgstr ""
-#~ "Zrythm prend en charge plusieurs "
-#~ "systèmes audio et MIDI. :term:`JACK` est"
-#~ " celui qui est recommandé pour les"
-#~ " deux, mais il faut un certain "
-#~ "temps pour le configurer si c'est "
-#~ "la première fois que vous l'utilisez."
-#~ " Si vous ne voulez pas utiliser "
-#~ "JACK pour une raison quelconque, vous"
-#~ " pouvez sélectionner d'autres systèmes tels"
-#~ " que ALSA ou SDL2."
-
-#~ msgid ""
-#~ "If JACK is not available on your"
-#~ " system, we recommend RtAudio and "
-#~ "RtMidi."
-#~ msgstr ""
-#~ "Si JACK n'est pas disponible sur "
-#~ "votre système, nous recommendons RtAudio "
-#~ "et RtMidi."
-
-#~ msgid ""
-#~ "Click :guilabel:`Test` to try connecting "
-#~ "to the backend to see if it "
-#~ "is functional."
-#~ msgstr ""
-#~ "Cliquez sur :zbutton:`Test` pour essayer "
-#~ "de se connecter au système pour "
-#~ "voir s'il est fonctionnel."
-
-#~ msgid ""
-#~ "If you choose to use JACK, JACK"
-#~ " MIDI and the JACK audio backend "
-#~ "must be chosen together."
-#~ msgstr ""
-#~ "Si vous choisissez d'utiliser JACK, "
-#~ "alors JACK MIDI et le système "
-#~ "audio JACK devront être choisis "
-#~ "ensemble."
-
 #~ msgid "MIDI Devices"
 #~ msgstr "Périphériques MIDI"
 
@@ -8653,18 +8626,6 @@ msgstr ""
 #~ "que vous lancez Zrythm. Cliquez sur "
 #~ "\"Rescan\" pour rechercher à nouveau les"
 #~ " périphériques."
-
-#~ msgid ""
-#~ "All of the settings mentioned here "
-#~ "are also available in the "
-#~ ":ref:`preferences`, so don't worry if "
-#~ "you selected the wrong settings."
-#~ msgstr ""
-#~ "Tous les paramètres mentionnés ici sont"
-#~ " également disponibles dans les préférences"
-#~ " (Ctr+Maj+Maj+P ou :ref:`preferences`), donc "
-#~ "ne vous inquiétez pas si vous avez"
-#~ " sélectionné les mauvais paramètres."
 
 #~ msgid ""
 #~ "If you would like to help design"
@@ -8965,93 +8926,6 @@ msgstr ""
 #~ "Voir le fichier `THANKS "
 #~ "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ "
 #~ "dans la distribution source."
-
-#~ msgid "MIDI Arranger"
-#~ msgstr "Arrangeur MIDI"
-
-#~ msgid ""
-#~ "The timeline arranger is split into "
-#~ "a top arranger that remains fixed "
-#~ "on top and a bottom arranger below"
-#~ " it. This way you can pin "
-#~ "tracks you want to always be "
-#~ "visible at the top."
-#~ msgstr ""
-#~ "La ligne temporelle est divisée en "
-#~ "une ligne temporelle supérieure qui "
-#~ "reste fixe sur le dessus et une"
-#~ " ligne temporelle déroulante en dessous."
-#~ " De cette façon, vous pouvez épingler"
-#~ " les pistes que vous voulez toujours"
-#~ " voir en haut."
-
-#~ msgid "Regions"
-#~ msgstr "Régions"
-
-#~ msgid ""
-#~ "The Tracklist contains all of the "
-#~ "Tracks in the project. It is split"
-#~ " into the top (pinned) Tracklist and"
-#~ " the bottom (main) Tracklist."
-#~ msgstr ""
-#~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-#~ "La liste de pistes contient toutes "
-#~ "les pistes du projet. Elle est "
-#~ "divisée en la liste de pistes "
-#~ "supérieure (épinglée) et la liste de "
-#~ "pistes inférieure (principale).\n"
-#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-#~ "La liste de piste contient toutes "
-#~ "les pistes du projet. Elle est "
-#~ "divisée en une liste de piste "
-#~ "supérieure (épinglée) et une liste de"
-#~ " piste inférieure (principale)."
-
-#~ msgid "Minimap"
-#~ msgstr "Mini carte de la ligne temporelle"
-
-#~ msgid ""
-#~ "The timeline minimap is a little "
-#~ "box that represents the current visible"
-#~ " area of the timeline. It can "
-#~ "be moved around and resized to "
-#~ "change the visible area."
-#~ msgstr ""
-#~ "La ligne temporelle minimap est une "
-#~ "petite boîte qui représente la zone "
-#~ "visible actuelle de la ligne temporelle."
-#~ " Elle peut être déplacée et "
-#~ "redimensionnée pour modifier la zone "
-#~ "visible."
-
-#~ msgid "Cue point"
-#~ msgstr "Point de repère"
-
-#~ msgid "Displayed as a blue, right-pointing arrow."
-#~ msgstr "Affiché sous la forme d'une flèche bleue pointant vers la droite."
-
-#~ msgid "Playhead position"
-#~ msgstr "Position de la tête de lecture"
-
-#~ msgid "Shown as a grey, down-facing arrow."
-#~ msgstr "Représenté par une flèche grise orientée vers le bas."
-
-#~ msgid "Loop points"
-#~ msgstr "Points de bouclage"
-
-#~ msgid ""
-#~ "Shown as 2 green arrows, and the"
-#~ " area between them is shown in "
-#~ "bright green if loop is enabled, "
-#~ "or grey if disabled. Can be "
-#~ "dragged to reposition."
-#~ msgstr ""
-#~ "Représenté par 2 flèches vertes, et "
-#~ "la zone entre elles est affichée "
-#~ "en vert vif si la boucle est "
-#~ "activée, ou en gris si elle est"
-#~ " désactivée. Peut être glissé pour "
-#~ "être repositionné."
 
 #~ msgid "Piano Roll Editing"
 #~ msgstr "Édition piano-roll"
@@ -9479,9 +9353,6 @@ msgstr ""
 #~ "enregistré à l'aide de votre navigateur"
 #~ " de fichiers par défaut."
 
-#~ msgid "Monitor"
-#~ msgstr "Moniteur"
-
 #~ msgid "Clips"
 #~ msgstr "Clips"
 
@@ -9690,13 +9561,6 @@ msgstr ""
 #~ "du projet et est utilisé pour "
 #~ "mixer les signaux audio de chaque "
 #~ "canal."
-
-#~ msgid "A Range is a selection of time between two positions."
-#~ msgstr ""
-#~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-#~ "Un intervalle est une sélection de temps entre deux positions.\n"
-#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-#~ "Une plage est une sélection de temps entre deux positions."
 
 #~ msgid "MIDI Note"
 #~ msgstr "Note MIDI"
@@ -10141,9 +10005,6 @@ msgstr ""
 #~ " <https://www.freshports.org/audio/zrythm/>`_ mais il"
 #~ " peut être vieux et manquer de "
 #~ "fonctionnalités et d'optimisations."
-
-#~ msgid "Panning"
-#~ msgstr "Panoramique"
 
 #~ msgid ""
 #~ "A Region (Clip) is a container for"
@@ -11161,7 +11022,4 @@ msgstr ""
 #~ msgstr ""
 #~ "Les collections et les protocoles ne "
 #~ "sont pas opérationnels pour le moment."
-
-#~ msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
-#~ msgstr ""
 

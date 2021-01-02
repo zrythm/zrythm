@@ -217,6 +217,8 @@ cc = meson.get_compiler ('c')
 
 find_program ('sed')
 find_program ('gettext')
+msgattrib = find_program ('msgattrib')
+msguniq = find_program ('msguniq')
 bash = find_program ('bash')
 grep = find_program ('grep')
 msgfmt = find_program ('msgfmt', required: false)

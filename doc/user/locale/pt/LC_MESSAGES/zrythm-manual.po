@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-02 10:51+0000\n"
+"POT-Creation-Date: 2021-01-02 12:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2192,6 +2192,9 @@ msgid ""
 "top and a bottom arranger below it. This way you can pin tracks you want "
 "to always be visible at the top."
 msgstr ""
+"A Cronologia é dividida numa cronologia superior que permanece fixa no "
+"topo e uma cronologia rolável abaixo dela. Desta forma, pode fixar faixas"
+" que deseja que estejam sempre visíveis no topo."
 
 #: ../../editing/timeline/arranger.rst:25
 #, fuzzy
@@ -2489,6 +2492,14 @@ msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into"
 " the top (pinned) Tracklist and the bottom (main) Tracklist."
 msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"A Lista de faixas contém todas as Faixas do projeto. Ela é dividida na "
+"Lista de faixas superior (fixa) e na Lista de faixas inferior "
+"(principal).\n"
+"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
+"A Lista de Faixas contém todas as Faixas do projeto. Ela é dividida na "
+"Lista de Faixas superior (fixa) e na Lista de Faixas inferior "
+"(principal)."
 
 #: ../../editing/timeline/overview.rst:26
 msgid ""
@@ -2513,7 +2524,7 @@ msgstr ""
 
 #: ../../editing/timeline/overview.rst:42
 msgid "Minimap"
-msgstr ""
+msgstr "Minimapa da Cronologia"
 
 #: ../../editing/timeline/overview.rst:43
 msgid ""
@@ -2521,6 +2532,9 @@ msgid ""
 "area of the timeline. It can be moved around and resized to change the "
 "visible area."
 msgstr ""
+"O minimapa da cronologia é uma pequena caixa que representa a área "
+"visível atual da cronologia. Pode ser deslocado e redimensionado para "
+"alterar a área visível."
 
 #: ../../editing/timeline/overview.rst:50
 msgid "The rest of the timeline elements are explained in the following sections."
@@ -2542,25 +2556,24 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/ruler.rst:21
-#, fuzzy
 msgid "Cue point"
-msgstr "Ponto de Sinalização"
+msgstr "Ponto de sinalização"
 
 #: ../../editing/timeline/ruler.rst:22
 msgid "Displayed as a blue, right-pointing arrow."
-msgstr ""
+msgstr "Exibido como uma seta azul, apontando para a direita."
 
 #: ../../editing/timeline/ruler.rst:23
 msgid "Playhead position"
-msgstr ""
+msgstr "Posição da cabeça de reprodução"
 
 #: ../../editing/timeline/ruler.rst:24
 msgid "Shown as a grey, down-facing arrow."
-msgstr ""
+msgstr "Mostrada como uma seta cinzenta, virada para baixo."
 
 #: ../../editing/timeline/ruler.rst:28
 msgid "Loop points"
-msgstr ""
+msgstr "Pontos de loop"
 
 #: ../../editing/timeline/ruler.rst:26
 msgid ""
@@ -2568,6 +2581,9 @@ msgid ""
 "green if loop is enabled, or grey if disabled. Can be dragged to "
 "reposition."
 msgstr ""
+"Mostrado como 2 setas verdes e a área entre elas é mostrada em verde "
+"brilhante, se o loop estiver ativado, ou cinzenta se desativado. Pode ser"
+" arrastado para o reposicionamento."
 
 #: ../../editing/timeline/ruler.rst:30
 msgid ""
@@ -3374,7 +3390,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:96
 msgid "Panning"
-msgstr ""
+msgstr "Panning"
 
 #: ../../glossary/intro.rst:98
 msgid ""
@@ -3420,7 +3436,7 @@ msgstr "Pistas"
 
 #: ../../glossary/intro.rst:118
 msgid "A Range is a selection of time between two positions."
-msgstr ""
+msgstr "Um Intervalo é uma seleção de tempo entre duas posições."
 
 #: ../../glossary/intro.rst:123
 #, fuzzy
@@ -8765,84 +8781,6 @@ msgstr ":ref:`right-panel` (6)"
 #~ "<https://git.sr.ht/~alextee/zrythm/tree/master/TRANSLATORS>`_ na"
 #~ " distribuição da fonte."
 
-#~ msgid ""
-#~ "The timeline arranger is split into "
-#~ "a top arranger that remains fixed "
-#~ "on top and a bottom arranger below"
-#~ " it. This way you can pin "
-#~ "tracks you want to always be "
-#~ "visible at the top."
-#~ msgstr ""
-#~ "A Cronologia é dividida numa cronologia"
-#~ " superior que permanece fixa no topo"
-#~ " e uma cronologia rolável abaixo "
-#~ "dela. Desta forma, pode fixar faixas "
-#~ "que deseja que estejam sempre visíveis"
-#~ " no topo."
-
-#~ msgid ""
-#~ "The Tracklist contains all of the "
-#~ "Tracks in the project. It is split"
-#~ " into the top (pinned) Tracklist and"
-#~ " the bottom (main) Tracklist."
-#~ msgstr ""
-#~ "#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-#~ "A Lista de faixas contém todas as"
-#~ " Faixas do projeto. Ela é dividida"
-#~ " na Lista de faixas superior (fixa)"
-#~ " e na Lista de faixas inferior "
-#~ "(principal).\n"
-#~ "#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-#~ "A Lista de Faixas contém todas as"
-#~ " Faixas do projeto. Ela é dividida"
-#~ " na Lista de Faixas superior (fixa)"
-#~ " e na Lista de Faixas inferior "
-#~ "(principal)."
-
-#~ msgid "Minimap"
-#~ msgstr "Minimapa da Cronologia"
-
-#~ msgid ""
-#~ "The timeline minimap is a little "
-#~ "box that represents the current visible"
-#~ " area of the timeline. It can "
-#~ "be moved around and resized to "
-#~ "change the visible area."
-#~ msgstr ""
-#~ "O minimapa da cronologia é uma "
-#~ "pequena caixa que representa a área "
-#~ "visível atual da cronologia. Pode ser"
-#~ " deslocado e redimensionado para alterar"
-#~ " a área visível."
-
-#~ msgid "Cue point"
-#~ msgstr "Ponto de sinalização"
-
-#~ msgid "Displayed as a blue, right-pointing arrow."
-#~ msgstr "Exibido como uma seta azul, apontando para a direita."
-
-#~ msgid "Playhead position"
-#~ msgstr "Posição da cabeça de reprodução"
-
-#~ msgid "Shown as a grey, down-facing arrow."
-#~ msgstr "Mostrada como uma seta cinzenta, virada para baixo."
-
-#~ msgid "Loop points"
-#~ msgstr "Pontos de loop"
-
-#~ msgid ""
-#~ "Shown as 2 green arrows, and the"
-#~ " area between them is shown in "
-#~ "bright green if loop is enabled, "
-#~ "or grey if disabled. Can be "
-#~ "dragged to reposition."
-#~ msgstr ""
-#~ "Mostrado como 2 setas verdes e a"
-#~ " área entre elas é mostrada em "
-#~ "verde brilhante, se o loop estiver "
-#~ "ativado, ou cinzenta se desativado. Pode"
-#~ " ser arrastado para o reposicionamento."
-
 #~ msgid "Piano Roll Editing"
 #~ msgstr "Edição de Cílindros de Piano"
 
@@ -9295,9 +9233,6 @@ msgstr ":ref:`right-panel` (6)"
 #~ "do Projeto e é usado para misturar"
 #~ " os sinais de áudio de cada "
 #~ "Canal."
-
-#~ msgid "A Range is a selection of time between two positions."
-#~ msgstr "Um Intervalo é uma seleção de tempo entre duas posições."
 
 #~ msgid "MIDI Note"
 #~ msgstr "Nota MIDI"
@@ -9760,9 +9695,6 @@ msgstr ":ref:`right-panel` (6)"
 #~ "Veja o ficheiro ``INSTALL.md``` na "
 #~ "distribuição da fonte para instruções de"
 #~ " instalação."
-
-#~ msgid "Panning"
-#~ msgstr "Panning"
 
 #~ msgid ""
 #~ "A Region (Clip) is a container for"
@@ -10724,7 +10656,4 @@ msgstr ":ref:`right-panel` (6)"
 #~ "Filtering by collections and protocols "
 #~ "is not operational at the moment."
 #~ msgstr "A filtragem por coleções e protocolos não está operacional no momento."
-
-#~ msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
-#~ msgstr ""
 

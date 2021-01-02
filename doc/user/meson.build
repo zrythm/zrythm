@@ -214,10 +214,19 @@ sphinx_intl_update_targets = []
 foreach lang, lang_str : locales
   if lang != 'en'
     # note: this updates source files
+    po_file = meson.current_source_dir () / 'locale' / lang / 'LC_MESSAGES/zrythm-manual.po'
     sphinx_intl_update_target = custom_target (
       lang + '-intl-update',
       output: lang + '-intl-update',
       command: [
+        # merge duplicate translations
+        msguniq, '--use-first', '--output=' + po_file,
+        po_file, '&&',
+        # remove empty obsolete translations and
+        # set the remaining as non-obsolete (so
+        # they can be processed by sphinx)
+        msgattrib, '--clear-obsolete', '--output=' + po_file,
+        po_file, '&&',
         sphinx_intl, 'update', '-p',
         sphinx_builddir / 'gettext',
         '-l', lang,
