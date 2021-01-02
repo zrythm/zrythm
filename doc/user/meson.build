@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-if sphinx_build.found () and sphinx_intl.found ()
+if sphinx_build.found () and sphinx_intl.found () and sass.found ()
 
 sphinx_builddir = meson.current_build_dir () / '_build'
 sphinx_build_opts = []
@@ -110,8 +110,32 @@ copy_guile_docs_target = custom_target (
     guile_docs,
     ])
 
+custom_css_target = custom_target (
+  'custom-css',
+  input: [
+    'custom_css.scss',
+    ],
+  output: 'custom_css_created',
+  command: [
+    sass, '--sourcemap=none',
+    '@INPUT@',
+    meson.current_source_dir () / '_static/css/custom.css',
+    '&&', 'touch', '@OUTPUT@' ]
+  )
+run_target (
+  'manual_compile_css',
+  command : [
+    'echo', 'Compiled custom CSS',
+    ],
+  depends: custom_css_target)
+
 src_rst_files = files ([
   'index.rst',
+  ])
+
+rtd_theme_files = files ([
+  'sphinx_zrythm_theme/layout.html',
+  'sphinx_zrythm_theme/search.html',
   ])
 
 # create run targets for each lang/format combination
@@ -136,9 +160,9 @@ foreach lang, lang_str : locales
       output_dir, '&&', 'touch', '@OUTPUT@',
       ]
 
-    deps = []
+    deps = [ custom_css_target ]
     if can_make_guile_docs
-      deps = copy_guile_docs_target
+      deps += copy_guile_docs_target
     endif
 
     run_target (
@@ -151,6 +175,7 @@ foreach lang, lang_str : locales
         name,
         depend_files: [
           'conf.py', src_rst_files,
+          rtd_theme_files,
           ],
         output: name,
         command: command,

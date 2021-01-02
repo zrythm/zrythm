@@ -18,7 +18,7 @@ Deleting Tracks
 ---------------
 
 Tracks can be deleted by right-clicking them and
-selecting :zbutton:`Delete`.
+selecting :guilabel:`Delete`.
 
 .. tip::
   All Track operations are undoable.

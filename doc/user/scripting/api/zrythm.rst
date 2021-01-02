@@ -10,6 +10,10 @@ Scheme Procedure: **zrythm-get-plugin-manager**
    Return the PluginManager instance.
 
 
+Scheme Procedure: **zrythm-get-project**
+   Return the currently loaded Project instance.
+
+
 Scheme Procedure: **zrythm-null**
    Returns a NULL pointer.
 

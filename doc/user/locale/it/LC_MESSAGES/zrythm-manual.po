@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-01-01 00:48+0000\n"
+"POT-Creation-Date: 2021-01-02 10:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1903,6 +1903,19 @@ msgstr ""
 msgid "Returns the PluginDescriptor matching the given URI."
 msgstr ""
 
+#: ../../scripting/api/project.rst:3
+#, fuzzy
+msgid "project"
+msgstr "Nuovo progetto"
+
+#: ../../scripting/api/project.rst:7
+msgid "Scheme Procedure: **project-get-title** | *project*"
+msgstr ""
+
+#: ../../scripting/api/project.rst:6
+msgid "Return the project’s title."
+msgstr ""
+
 #: ../../scripting/api/zrythm.rst:7
 msgid "Scheme Procedure: **zrythm-get-ver**"
 msgstr ""
@@ -1920,10 +1933,18 @@ msgid "Return the PluginManager instance."
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:15
-msgid "Scheme Procedure: **zrythm-null**"
+msgid "Scheme Procedure: **zrythm-get-project**"
 msgstr ""
 
 #: ../../scripting/api/zrythm.rst:14
+msgid "Return the currently loaded Project instance."
+msgstr ""
+
+#: ../../scripting/api/zrythm.rst:19
+msgid "Scheme Procedure: **zrythm-null**"
+msgstr ""
+
+#: ../../scripting/api/zrythm.rst:18
 msgid "Returns a NULL pointer."
 msgstr ""
 
@@ -3082,7 +3103,7 @@ msgstr ""
 #: ../../tracks/track-operations.rst:20
 msgid ""
 "Tracks can be deleted by right-clicking them and selecting "
-":zbutton:`Delete`."
+":guilabel:`Delete`."
 msgstr ""
 
 #: ../../tracks/track-operations.rst:24
@@ -3914,5 +3935,13 @@ msgstr ""
 #~ msgid ""
 #~ "Filtering by collections and protocols "
 #~ "is not operational at the moment."
+#~ msgstr ""
+
+#~ msgid "Hold :zbutton:`Shift` to temporarily disable snapping"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Tracks can be deleted by right-"
+#~ "clicking them and selecting :zbutton:`Delete`."
 #~ msgstr ""
 

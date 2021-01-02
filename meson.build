@@ -336,6 +336,8 @@ sphinx_build = find_program (
 sphinx_intl = find_program (
   'sphinx-intl',
   required: get_option ('user_manual'))
+sass = find_program (
+  'sass', required: get_option ('user_manual'))
 help2man = find_program (
   ['help2man'],
   required: get_option ('manpage'))

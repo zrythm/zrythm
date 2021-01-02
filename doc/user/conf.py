@@ -24,7 +24,7 @@ import os
 # --- Project information ---
 
 project = 'Zrythm'
-copyright = '2019-2020 The Zrythm contributors'
+copyright = '2019-2021 The Zrythm contributors'
 author = 'The Zrythm contributors'
 
 from subprocess import check_output

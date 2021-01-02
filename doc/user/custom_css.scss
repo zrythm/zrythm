@@ -1,0 +1,367 @@
+/*
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Affero Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Copyright (c) 2019 Juca Crispim
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+/*
+ * This file provides custom CSS for the Sphinx RTD
+ * theme (html only).
+ */
+
+$bg_color: #2D2D2D;
+$bg_dark_variant1: #262626;
+$bg_dark_variant2: #1F1F1F;
+$bg_darker_variant1: #202020;
+$bg_darker_variant2: #121212;
+$bg_light_variant1: #3A3A3A;
+$bg_light_variant2: #343434;
+$bg_lighter_variant1: #444444;
+$bg_lighter_variant2: #393939;
+$dark_variant1: #000000;
+$dark_variant2: #030202;
+$light_variant1: #656464;
+$light_variant2: #989797;
+$bright_green: #1DDD6A;
+$darkish_green: #19664c;
+$dark_orange: #D68A0C;
+$darker_orange: #D8690B;
+$z_yellow: #F9CA1B;
+$bright_orange: #F79616;
+$z_purple: #9D3955;
+$matcha: #2eb398;
+$hover_color: alpha (white, 0.1);
+$selection_color: alpha (white, 0.07);
+$light_blueish: alpha (#1aa3ff, 0.8);
+$prefader_send: #D21E6D;
+$postfader_send: #901ed2;
+$body_text_color: rgb(209, 206, 199);
+/* see https://coolors.co/ to generate more or use
+ * GPick */
+
+body, .entry-container,
+.wy-nav-side,
+.wy-side-nav-search,
+.fundo-claro,
+.wy-menu-vertical li.current,
+.rst-content dl:not(.docutils) dt,
+code, .rst-content tt,
+.wy-side-nav-search > a:hover, .wy-side-nav-search .wy-dropdown > a:hover,
+.wy-nav-content{
+    background-color: rgb(24, 26, 27) !important;
+}
+
+h2 a, h2 a:visited, h2 a:hover {
+    color: $body_text_color;
+}
+
+body {
+    color: $body_text_color;
+}
+
+
+a,
+a:hover,
+a:visited {
+    color: rgb(113, 178, 234);
+}
+
+.wy-menu-vertical a {
+    color: #b3b3b3;
+}
+
+code,
+.rst-content tt {
+    color: #fff8f8;
+    border: 0;
+}
+
+codeblock,
+pre.literal-block,
+.rst-content .literal-block,
+.rst-content pre.literal-block,
+div[class^="highlight"] {
+    border: 1px solid #000;
+ }
+
+/* FIXME doesn't work - try to make font under current
+ selection darker and rest brighter */
+.current > .wy-menu-vertical li.toctree-l2 a,
+.current > .wy-menu-vertical li.toctree-l3 a,
+.current > .wy-menu-vertical li.toctree-l4 a {
+  //color: #404040;
+}
+.wy-menu-vertical li.toctree-l2 a,
+.wy-menu-vertical li.toctree-l3 a,
+.wy-menu-vertical li.toctree-l4 a {
+  //color: #5f5f5f;
+}
+
+.rst-content dl:not(.docutils) dl dt {
+    background: rgb(24, 26, 27) !important;
+}
+
+.wy-side-nav-search > a,
+.wy-side-nav-search .wy-dropdown > a {
+    color: #fcfcfc;
+}
+
+
+.wy-alert.wy-alert-info,
+.rst-content .note,
+.rst-content .wy-alert-info.attention,
+.rst-content .wy-alert-info.caution,
+.rst-content .wy-alert-info.danger,
+.rst-content .wy-alert-info.error,
+.rst-content .wy-alert-info.hint,
+.rst-content .wy-alert-info.important,
+.rst-content .wy-alert-info.tip,
+.rst-content .wy-alert-info.warning,
+.rst-content .seealso,
+.rst-content .wy-alert-info.admonition-todo,
+.admonition.note code{
+    background: #535050 !important;
+}
+
+@media screen and (min-width: 768px) {
+  .wy-nav-side {
+    //width: 224px;
+  }
+  .wy-nav-content-wrap {
+    //margin-left: 200px;
+    background:rgb(24, 26, 27);
+  }
+}
+
+.wy-nav-content-wrap{
+  //margin-left: 200px;
+  //background: #343131;
+  background:rgb(24, 26, 27);
+}
+
+.hentry {
+     border-bottom: 2px solid rgb(24, 26, 27);
+}
+
+.wy-alert.wy-alert-danger .wy-alert-title,
+.rst-content .wy-alert-danger.note .wy-alert-title,
+.rst-content .wy-alert-danger.attention .wy-alert-title,
+.rst-content .wy-alert-danger.caution .wy-alert-title,
+.rst-content .danger .wy-alert-title,
+.rst-content .error .wy-alert-title,
+.rst-content .wy-alert-danger.hint .wy-alert-title,
+.rst-content .wy-alert-danger.important .wy-alert-title,
+.rst-content .wy-alert-danger.tip .wy-alert-title,
+.rst-content .wy-alert-danger.warning .wy-alert-title,
+.rst-content .wy-alert-danger.seealso .wy-alert-title,
+.rst-content .wy-alert-danger.admonition-todo .wy-alert-title,
+.wy-alert.wy-alert-danger .rst-content .admonition-title,
+.rst-content .wy-alert.wy-alert-danger .admonition-title,
+.rst-content .wy-alert-danger.note .admonition-title,
+.rst-content .wy-alert-danger.attention .admonition-title,
+.rst-content .wy-alert-danger.caution .admonition-title,
+.rst-content .danger .admonition-title,
+.rst-content .error .admonition-title,
+.rst-content .wy-alert-danger.hint .admonition-title,
+.rst-content .wy-alert-danger.important .admonition-title,
+.rst-content .wy-alert-danger.tip .admonition-title,
+.rst-content .wy-alert-danger.warning .admonition-title,
+.rst-content .wy-alert-danger.seealso .admonition-title,
+.rst-content .wy-alert-danger.admonition-todo .admonition-title {
+	background: #db655a;
+}
+
+.wy-alert.wy-alert-danger,
+.rst-content .wy-alert-danger.note,
+.rst-content .wy-alert-danger.attention,
+.rst-content .wy-alert-danger.caution,
+.rst-content .danger,
+.rst-content .error,
+.rst-content .wy-alert-danger.hint,
+.rst-content .wy-alert-danger.important,
+.rst-content .wy-alert-danger.tip,
+.rst-content .wy-alert-danger.warning,
+.rst-content .wy-alert-danger.seealso,
+.rst-content .wy-alert-danger.admonition-todo {
+	background: #e18279;
+	color: #fff;
+}
+
+.wy-alert.wy-alert-warning,
+.rst-content .wy-alert-warning.note,
+.rst-content .attention,
+.rst-content .caution,
+.rst-content .wy-alert-warning.danger,
+.rst-content .wy-alert-warning.error,
+.rst-content .wy-alert-warning.hint,
+.rst-content .wy-alert-warning.important,
+.rst-content .wy-alert-warning.tip,
+.rst-content .warning,
+.rst-content .wy-alert-warning.seealso,
+.rst-content .admonition-todo {
+	background: #ca9f52;
+	color: #fff;
+}
+
+.wy-alert.wy-alert-warning .wy-alert-title,
+.rst-content .wy-alert-warning.note .wy-alert-title,
+.rst-content .attention .wy-alert-title,
+.rst-content .caution .wy-alert-title,
+.rst-content .wy-alert-warning.danger .wy-alert-title,
+.rst-content .wy-alert-warning.error .wy-alert-title,
+.rst-content .wy-alert-warning.hint .wy-alert-title,
+.rst-content .wy-alert-warning.important .wy-alert-title,
+.rst-content .wy-alert-warning.tip .wy-alert-title,
+.rst-content .warning .wy-alert-title,
+.rst-content .wy-alert-warning.seealso .wy-alert-title,
+.rst-content .admonition-todo .wy-alert-title,
+.wy-alert.wy-alert-warning .rst-content .admonition-title,
+.rst-content .wy-alert.wy-alert-warning .admonition-title,
+.rst-content .wy-alert-warning.note .admonition-title,
+.rst-content .attention .admonition-title,
+.rst-content .caution .admonition-title,
+.rst-content .wy-alert-warning.danger .admonition-title,
+.rst-content .wy-alert-warning.error .admonition-title,
+.rst-content .wy-alert-warning.hint .admonition-title,
+.rst-content .wy-alert-warning.important .admonition-title,
+.rst-content .wy-alert-warning.tip .admonition-title,
+.rst-content .warning .admonition-title,
+.rst-content .wy-alert-warning.seealso .admonition-title,
+.rst-content .admonition-todo .admonition-title {
+	background: #ca7a35;
+}
+
+/* tip box backgrounds */
+.rst-content .tip,
+.rst-content .important {
+	background: #555f5d;
+}
+
+/* hint box backgrounds */
+.rst-content .hint {
+  background: #545f5c;
+}
+
+.rst-content table.docutils thead,
+.rst-content table.docutils caption {
+  color: $body_text_color;
+}
+
+.rst-content table.docutils:not(.field-list) tr:nth-child(2n-1) td {
+  color: #404040;
+}
+
+.rst-content table.docutils {
+  background: #545f5c;
+}
+
+/* code links */
+.rst-content tt.xref,
+a .rst-content tt,
+.rst-content tt.xref,
+.rst-content code.xref,
+a .rst-content tt,
+a .rst-content code {
+  font-weight: bold;
+  color: #E74C3C;
+}
+
+/* code */
+code,
+.rst-content tt,
+.rst-content code {
+  white-space: nowrap;
+  max-width: 100%;
+  background: #fff;
+  //border: solid 1px #e1e4e5;
+  border: none;
+  font-size: 75%;
+  padding: 0 5px;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", Courier, monospace;
+  color: #E74C3C;
+  overflow-x: auto;
+}
+
+pre {
+  color: $bg_darker_variant1;
+}
+
+.wy-body-for-nav {
+	//background-image: none !important;
+}
+
+.zbutton,
+.rst-content .guilabel {
+  //text-decoration: none;
+  border-color: $light_variant2;
+  background: $bg_lighter_variant1;
+  color: white;
+  padding: 2px 6px 2px 6px;
+  //border-radius: 3px;
+}
+
+/*
+.btn-neutral {
+  //background-color: $darker_orange !important;
+  background-color: #27AE60 !important;
+  //color: $body_text_color !important;
+}
+.btn-neutral:hover {
+  //background-color: $bright_orange !important;
+  background: #2cc36b !important;
+  //color: $body_text_color;
+}
+.btn-neutral:focus {
+  background: #2cc36b !important;
+}
+.btn-neutral:visited {
+  //color: $body_text_color !important;
+}
+*/
+
+.red {
+  color: red;
+}
+
+.green {
+  color: green;
+}
+
+.blue {
+  color: blue;
+}

@@ -32,7 +32,7 @@ Clicking and dragging on empty space in the ruler
 selecting ranges - see :term:`Range`) will allow
 you to reposition the playhead.
 
-.. tip:: Hold :zbutton:`Shift` to temporarily disable snapping
+.. tip:: Hold :guilabel:`Shift` to temporarily disable snapping
 
 Setting the Cue Point
 ---------------------

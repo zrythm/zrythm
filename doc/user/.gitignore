@@ -9,3 +9,6 @@ _build
 *.mo
 _rendered
 *~
+
+# Generated CSS file
+_static/css/custom.css
