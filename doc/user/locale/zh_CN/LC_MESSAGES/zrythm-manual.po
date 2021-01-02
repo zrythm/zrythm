@@ -33,18 +33,21 @@
 # #-#-#-#-#  user-media.po (Zrythm 0.8)  #-#-#-#-#
 # #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-01-01 00:48+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2021-01-02 02:29+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"zrythm/user-manual/zh_Hans/>\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../index.rst:60
@@ -266,7 +269,7 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-info.rst:34
 #: ../../tracks/track-types.rst:21
 msgid "Modulators"
-msgstr ""
+msgstr "调制器"
 
 #: ../../modulators/intro.rst:9
 msgid ""
@@ -322,7 +325,7 @@ msgstr ""
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:9
 #: ../../zrythm-interface/transport-bar.rst:38
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:11
 msgid ""
@@ -339,7 +342,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:25
 msgid "Time Signature"
-msgstr ""
+msgstr "时间符号"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:30
 msgid "The Time Signature is split into the following"
@@ -445,7 +448,7 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:18
 msgid "Position"
-msgstr ""
+msgstr "位置"
 
 #: ../../playback-and-recording/overview.rst:20
 msgid "Zrythm uses the following format for positions:"
@@ -517,7 +520,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:44
 msgid "Latch"
-msgstr ""
+msgstr "锁存器"
 
 #: ../../playback-and-recording/recording.rst:49
 msgid ""
@@ -527,7 +530,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:53
 msgid "Touch"
-msgstr ""
+msgstr "触摸"
 
 #: ../../playback-and-recording/recording.rst:58
 msgid ""
@@ -579,7 +582,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:23
 msgid "Stop"
-msgstr ""
+msgstr "停止"
 
 #: ../../playback-and-recording/transport-controls.rst:23
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
@@ -587,7 +590,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:26
 msgid "Backward"
-msgstr ""
+msgstr "向后"
 
 #: ../../playback-and-recording/transport-controls.rst:26
 msgid "Moves the Playhead backward by the size of 1 snap point."
@@ -595,7 +598,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:29
 msgid "Forward"
-msgstr ""
+msgstr "转发"
 
 #: ../../playback-and-recording/transport-controls.rst:29
 msgid "Moves the Playhead forward by the size of 1 snap point."
@@ -603,7 +606,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Loop"
-msgstr ""
+msgstr "循环"
 
 #: ../../playback-and-recording/transport-controls.rst:32
 msgid ""
@@ -613,7 +616,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid "Metronome"
-msgstr ""
+msgstr "节拍器"
 
 #: ../../playback-and-recording/transport-controls.rst:38
 msgid "Clicking the metronome button will set metronome on/off."
@@ -635,7 +638,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 #: ../../zrythm-interface/right-panel.rst:21
 msgid "File Browser"
-msgstr ""
+msgstr "文件浏览器"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:10
 msgid ""
@@ -733,7 +736,7 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-browser.rst:8
 #: ../../zrythm-interface/right-panel.rst:16
 msgid "Plugin Browser"
-msgstr ""
+msgstr "插件浏览器"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:10
 msgid ""
@@ -753,7 +756,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:23
 msgid "Collection"
-msgstr ""
+msgstr "集合"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:22
 msgid ""
@@ -763,7 +766,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid "Category"
-msgstr ""
+msgstr "类别"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid ""
@@ -773,7 +776,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Protocol"
-msgstr ""
+msgstr "协议"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:29
 msgid "Allows you to filter plugins based their protocol (eg., LV2 or SFZ)."
@@ -1949,7 +1952,7 @@ msgstr ""
 #: ../../scripting/scripting-interface.rst:6
 #: ../../zrythm-interface/main-toolbar.rst:143
 msgid "Scripting Interface"
-msgstr ""
+msgstr "脚本接口"
 
 #: ../../scripting/scripting-interface.rst:8
 msgid "Explain the scripting window/interface."
@@ -2151,7 +2154,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:31
 #: ../../tracks/tempo-track.rst:31
 msgid "Mute"
-msgstr ""
+msgstr "静音"
 
 #: ../../tracks/audio-track.rst:22
 #: ../../tracks/bus-track-audio.rst:22
@@ -2248,7 +2251,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:44
 #: ../../tracks/midi-track.rst:56
 msgid "Direct Out"
-msgstr ""
+msgstr "直接输出"
 
 #: ../../tracks/audio-track.rst:44
 msgid "The track to route the output of the audio track to."
@@ -2259,7 +2262,7 @@ msgstr ""
 #: ../../tracks/instrument-track.rst:59
 #: ../../tracks/midi-track.rst:61
 msgid "Inputs"
-msgstr ""
+msgstr "输入"
 
 #: ../../tracks/audio-track.rst:49
 msgid "Left and right audio input sources used when recording."
@@ -2273,7 +2276,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:47
 #: ../../tracks/midi-track.rst:75
 msgid "Sends"
-msgstr ""
+msgstr "发送"
 
 #: ../../tracks/audio-track.rst:58
 #: ../../tracks/instrument-track.rst:77
@@ -2354,7 +2357,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:42
 #: ../../tracks/tempo-track.rst:42
 msgid "Track Name"
-msgstr ""
+msgstr "曲目名称"
 
 #: ../../tracks/bus-track-audio.rst:40
 #: ../../tracks/bus-track-midi.rst:40
@@ -2523,7 +2526,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:18
 msgid "Track Properties"
-msgstr ""
+msgstr "音轨属性"
 
 #: ../../tracks/inspector-page.rst:20
 msgid "Track properties are basic properties that the track has."
@@ -2600,7 +2603,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:94
 msgid "Fader"
-msgstr ""
+msgstr "推子"
 
 #: ../../tracks/inspector-page.rst:95
 msgid "Fader section to control the volume and stereo balance."
@@ -2622,7 +2625,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:110
 msgid "Peak"
-msgstr ""
+msgstr "峰值"
 
 #: ../../tracks/inspector-page.rst:111
 msgid "Peak signal value."
@@ -2772,7 +2775,7 @@ msgstr ""
 
 #: ../../tracks/intro.rst:8
 msgid "Tracks"
-msgstr ""
+msgstr "音轨"
 
 #: ../../tracks/marker-track.rst:10
 msgid "Marker Track"
@@ -3077,7 +3080,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:22
 msgid "Yes"
-msgstr ""
+msgstr "是"
 
 #: ../../tracks/track-types.rst:14
 msgid "Audio regions"
@@ -3096,7 +3099,7 @@ msgstr "音频组"
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "No"
-msgstr ""
+msgstr "否"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -3107,7 +3110,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "None"
-msgstr ""
+msgstr "无"
 
 #: ../../tracks/track-types.rst:16
 msgid "Audio FX"
@@ -3128,7 +3131,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:19
 msgid "Marker"
-msgstr ""
+msgstr "标记"
 
 #: ../../tracks/track-types.rst:20
 msgid "Master"
@@ -3202,7 +3205,7 @@ msgstr ""
 
 #: ../../zrythm-interface/bottom-panel.rst:18
 msgid "Editor"
-msgstr ""
+msgstr "编辑器"
 
 #: ../../zrythm-interface/bottom-panel.rst:19
 msgid ""
@@ -3270,7 +3273,7 @@ msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Interface"
-msgstr ""
+msgstr "接口"
 
 #: ../../zrythm-interface/left-panel.rst:8
 msgid "Left Panel"
@@ -3300,7 +3303,7 @@ msgstr ""
 
 #: ../../zrythm-interface/left-panel.rst:33
 msgid "Plugin Properties"
-msgstr ""
+msgstr "插件属性"
 
 #: ../../zrythm-interface/left-panel.rst:34
 msgid ""
@@ -3387,7 +3390,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:45
 msgid "New Project"
-msgstr ""
+msgstr "新项目"
 
 #: ../../zrythm-interface/main-toolbar.rst:46
 msgid "Create a new project."
@@ -3395,7 +3398,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:49
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 #: ../../zrythm-interface/main-toolbar.rst:50
 msgid "Save the current project at its current location."
@@ -3403,7 +3406,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Save As"
-msgstr ""
+msgstr "保存为"
 
 #: ../../zrythm-interface/main-toolbar.rst:54
 msgid "Save the current project at a new location."
@@ -3419,7 +3422,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:61
 msgid "Export As"
-msgstr ""
+msgstr "导出为"
 
 #: ../../zrythm-interface/main-toolbar.rst:62
 msgid ""
@@ -3429,7 +3432,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:66
 msgid "Export Graph"
-msgstr ""
+msgstr "导出图"
 
 #: ../../zrythm-interface/main-toolbar.rst:67
 msgid ""
@@ -3453,7 +3456,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:79
 msgid "Zoom In"
-msgstr ""
+msgstr "放大"
 
 #: ../../zrythm-interface/main-toolbar.rst:80
 msgid "Zooms in."
@@ -3461,7 +3464,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:83
 msgid "Zoom Out"
-msgstr ""
+msgstr "缩小"
 
 #: ../../zrythm-interface/main-toolbar.rst:84
 msgid "Zooms out."
@@ -3469,7 +3472,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Original Size"
-msgstr ""
+msgstr "原始大小"
 
 #: ../../zrythm-interface/main-toolbar.rst:88
 msgid "Zooms back to the default zoom level."
@@ -3477,7 +3480,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:91
 msgid "Best Fit"
-msgstr ""
+msgstr "最佳匹配"
 
 #: ../../zrythm-interface/main-toolbar.rst:92
 msgid ""
@@ -3513,7 +3516,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Chat"
-msgstr ""
+msgstr "聊天"
 
 #: ../../zrythm-interface/main-toolbar.rst:110
 msgid "Join the Zrythm chatroom on Matrix."
@@ -3521,7 +3524,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:113
 msgid "Manual"
-msgstr ""
+msgstr "手册"
 
 #: ../../zrythm-interface/main-toolbar.rst:114
 msgid "View the user manual."
@@ -3529,7 +3532,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:117
 msgid "News"
-msgstr ""
+msgstr "新闻"
 
 #: ../../zrythm-interface/main-toolbar.rst:118
 msgid "Show the latest changelog."
@@ -3537,7 +3540,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:121
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "键盘快捷键"
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Show all the available keyboard shortcuts."
@@ -3545,7 +3548,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:125
 msgid "Donate"
-msgstr ""
+msgstr "捐赠"
 
 #: ../../zrythm-interface/main-toolbar.rst:126
 msgid "Donate to Zrythm through LiberaPay."
@@ -3553,7 +3556,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:129
 msgid "Report a Bug"
-msgstr ""
+msgstr "报告错误"
 
 #: ../../zrythm-interface/main-toolbar.rst:130
 msgid "Opens the page to report a new bug."
@@ -3573,7 +3576,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:148
 msgid "Log Viewer"
-msgstr ""
+msgstr "日志查看器"
 
 #: ../../zrythm-interface/main-toolbar.rst:149
 msgid ""
@@ -3659,7 +3662,7 @@ msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:33
 msgid "Return to cue point on stop"
-msgstr ""
+msgstr "停止时返回提示点"
 
 #: ../../zrythm-interface/transport-bar.rst:34
 msgid "Toggles whether to return to the cue point when playback stops."
@@ -3794,4 +3797,3 @@ msgstr ""
 #~ "Filtering by collections and protocols "
 #~ "is not operational at the moment."
 #~ msgstr ""
-

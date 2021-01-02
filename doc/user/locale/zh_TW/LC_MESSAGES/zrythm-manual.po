@@ -27,18 +27,21 @@
 # #-#-#-#-#  user-media.po (Zrythm 0.8)  #-#-#-#-#
 # #-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-01-01 00:48+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2021-01-02 02:29+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
+"zrythm/user-manual/zh_Hant/>\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../index.rst:60
@@ -333,7 +336,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:25
 msgid "Time Signature"
-msgstr ""
+msgstr "拍號"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:30
 msgid "The Time Signature is split into the following"
@@ -551,7 +554,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:25
 #: ../../tracks/tempo-track.rst:25
 msgid "Record"
-msgstr ""
+msgstr "錄音"
 
 #: ../../playback-and-recording/transport-controls.rst:17
 msgid "Arms the project for recording."
@@ -559,7 +562,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:20
 msgid "Play"
-msgstr ""
+msgstr "播放"
 
 #: ../../playback-and-recording/transport-controls.rst:19
 msgid ""
@@ -569,7 +572,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:23
 msgid "Stop"
-msgstr ""
+msgstr "停止"
 
 #: ../../playback-and-recording/transport-controls.rst:23
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
@@ -577,7 +580,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:26
 msgid "Backward"
-msgstr ""
+msgstr "倒退"
 
 #: ../../playback-and-recording/transport-controls.rst:26
 msgid "Moves the Playhead backward by the size of 1 snap point."
@@ -585,7 +588,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:29
 msgid "Forward"
-msgstr ""
+msgstr "前進"
 
 #: ../../playback-and-recording/transport-controls.rst:29
 msgid "Moves the Playhead forward by the size of 1 snap point."
@@ -603,7 +606,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid "Metronome"
-msgstr ""
+msgstr "節拍器"
 
 #: ../../playback-and-recording/transport-controls.rst:38
 msgid "Clicking the metronome button will set metronome on/off."
@@ -743,7 +746,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:23
 msgid "Collection"
-msgstr ""
+msgstr "收藏"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:22
 msgid ""
@@ -753,7 +756,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid "Category"
-msgstr ""
+msgstr "類別"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid ""
@@ -763,7 +766,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Protocol"
-msgstr ""
+msgstr "協定"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:29
 msgid "Allows you to filter plugins based their protocol (eg., LV2 or SFZ)."
@@ -926,7 +929,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:68
 msgid "Gain"
-msgstr ""
+msgstr "增益"
 
 #: ../../plugins-files/plugins/plugin-info.rst:69
 msgid "Increases the output volume of the plugin (if applicable)."
@@ -2141,7 +2144,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:31
 #: ../../tracks/tempo-track.rst:31
 msgid "Mute"
-msgstr ""
+msgstr "靜音"
 
 #: ../../tracks/audio-track.rst:22
 #: ../../tracks/bus-track-audio.rst:22
@@ -2344,7 +2347,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:42
 #: ../../tracks/tempo-track.rst:42
 msgid "Track Name"
-msgstr ""
+msgstr "音軌名稱"
 
 #: ../../tracks/bus-track-audio.rst:40
 #: ../../tracks/bus-track-midi.rst:40
@@ -2762,7 +2765,7 @@ msgstr ""
 
 #: ../../tracks/intro.rst:8
 msgid "Tracks"
-msgstr ""
+msgstr "音軌"
 
 #: ../../tracks/marker-track.rst:10
 msgid "Marker Track"
@@ -3067,7 +3070,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:22
 msgid "Yes"
-msgstr ""
+msgstr "是"
 
 #: ../../tracks/track-types.rst:14
 msgid "Audio regions"
@@ -3075,7 +3078,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:15
 msgid "Audio Group"
-msgstr ""
+msgstr "音訊組"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -3086,7 +3089,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "No"
-msgstr ""
+msgstr "否"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -3097,15 +3100,15 @@ msgstr ""
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "None"
-msgstr ""
+msgstr "無"
 
 #: ../../tracks/track-types.rst:16
 msgid "Audio FX"
-msgstr ""
+msgstr "音訊效果"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord"
-msgstr ""
+msgstr "和弦"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord regions & scales"
@@ -3118,23 +3121,23 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:19
 msgid "Marker"
-msgstr ""
+msgstr "標記"
 
 #: ../../tracks/track-types.rst:20
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #: ../../tracks/track-types.rst:23
 msgid "MIDI Group"
-msgstr ""
+msgstr "MIDI 組"
 
 #: ../../tracks/track-types.rst:24
 msgid "MIDI FX"
-msgstr ""
+msgstr "MIDI 效果"
 
 #: ../../tracks/track-types.rst:25
 msgid "Tempo"
-msgstr ""
+msgstr "節拍"
 
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."
@@ -3740,4 +3743,3 @@ msgstr ""
 #~ "Filtering by collections and protocols "
 #~ "is not operational at the moment."
 #~ msgstr ""
-
