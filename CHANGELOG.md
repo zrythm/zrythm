@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.7.1.1] - 2021-01-03
+### Added
+- Add `--gen-project` option to generate projects from Guile scripts
+- Expose more Guile API
+- Filter plugin list during search
+
+### Changed
+- User manual: Add more info about timeline editing
+- User manual: Compact translations into 1 file for each language
+- User manual: Use dark theme for html output
+- Update Greek, Spanish, Portuguese, Chinese (Simplified), Ukranian, Russian, Italian, Portuguese (Brazil), Japanese, Galician, German translations
+- Cache audio region fades
+
+### Fixed
+- Fix audio region fades not showing
+- Fix not being able to change fade points in lane regions
+- Fix plugin browser collection context menu being shown multiple times
+- Fix crash when using `--gdb` and more than 100 env variables exist
+- Fix compilation errors when building with latest carla-git
+- Fix projects not being loaded properly when using JACK
+- Fix protocol selection not working in plugin browser when collection or category is selected
+
 ## [1.0.0-alpha.7.0.1] - 2020-12-30
 ### Added
 - Add reset right click option in categories in plugin browser
