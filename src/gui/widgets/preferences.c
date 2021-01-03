@@ -789,8 +789,7 @@ add_group (
     {
       if (!string_contains_substr (
             schema_str,
-            GSETTINGS_ZRYTHM_PREFIX ".preferences",
-            0))
+            GSETTINGS_ZRYTHM_PREFIX ".preferences"))
         continue;
 
       /* get the preferences.x.y schema */

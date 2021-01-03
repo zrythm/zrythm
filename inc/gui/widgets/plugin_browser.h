@@ -165,6 +165,9 @@ typedef struct _PluginBrowserWidget
   int                  start_saving_pos;
   int                  first_time_position_set;
   gint64               first_time_position_set_time;
+
+  /** Current search string. */
+  char *               current_search;
 } PluginBrowserWidget;
 
 /**

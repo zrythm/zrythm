@@ -209,7 +209,7 @@ print_or_reset (
   while ((schema_str = non_relocatable[i++]))
     {
       if (string_contains_substr (
-            schema_str, GSETTINGS_ZRYTHM_PREFIX, 0))
+            schema_str, GSETTINGS_ZRYTHM_PREFIX))
         {
           GSettingsSchema * schema =
             g_settings_schema_source_lookup (

@@ -54,6 +54,29 @@ test_get_int_after_last_space ()
   g_assert_cmpint (ret, ==, 56);
 }
 
+static void
+test_contains_substr ()
+{
+  const char * strs[] = {
+    "helloЧитатьハロー・ワールド 1",
+    "testハロー・ワールドABc 22",
+    "testハロー22",
+    "",
+    "testハロー 34 56",
+  };
+
+  g_assert_true (
+    string_contains_substr (strs[0], "Читать"));
+  g_assert_true (
+    string_contains_substr_case_insensitive (
+      strs[1], "abc"));
+  g_assert_false (
+    string_contains_substr (strs[0], "Чатитать"));
+  g_assert_false (
+    string_contains_substr_case_insensitive (
+      strs[1], "abd"));
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -64,6 +87,9 @@ main (int argc, char *argv[])
   g_test_add_func (
     TEST_PREFIX "test get int after last space",
     (GTestFunc) test_get_int_after_last_space);
+  g_test_add_func (
+    TEST_PREFIX "test contains substr",
+    (GTestFunc) test_contains_substr);
 
   return g_test_run ();
 }

@@ -54,15 +54,28 @@ string_array_contains_substr (
 /**
  * Returns if the given string contains the given
  * substring.
- *
- * @param accept_alternatives Accept ASCII
- *   alternatives.
  */
 bool
 string_contains_substr (
   const char * str,
-  const char * substr,
-  const bool   accept_alternatives);
+  const char * substr);
+
+bool
+string_contains_substr_case_insensitive (
+  const char * str,
+  const char * substr);
+
+/**
+ * Converts the given string to uppercase in \ref
+ * out.
+ *
+ * Assumes \ref out is already allocated to as many
+ * chars as \ref in.
+ */
+void
+string_to_upper (
+  const char * in,
+  char *       out);
 
 /**
  * Returns if the two strings are exactly equal.

@@ -923,7 +923,7 @@ tracklist_handle_file_drop (
         {
           /* strip "file://" */
           if (!string_contains_substr (
-                uri, "file://", 0))
+                uri, "file://"))
             continue;
 
           if (filepath)

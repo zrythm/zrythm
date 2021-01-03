@@ -790,8 +790,7 @@ engine_jack_is_pipewire (
         (*jack_get_version_string) ();
       g_message ("ver %s", ver);
       return
-        string_contains_substr (
-          ver, "PipeWire", true);
+        string_contains_substr (ver, "PipeWire");
     }
 #endif
 }

@@ -106,21 +106,51 @@ string_is_equal_ignore_case (
 /**
  * Returns if the given string contains the given
  * substring.
- *
- * @param accept_alternatives Accept ASCII
- *   alternatives.
  */
 bool
 string_contains_substr (
   const char * str,
-  const char * substr,
-  const bool   accept_alternatives)
+  const char * substr)
 {
+  return g_strrstr (str, substr) != NULL;
+}
+
+bool
+string_contains_substr_case_insensitive (
+  const char * str,
+  const char * substr)
+{
+  char new_str[strlen (str) + 1];
+  new_str[strlen (str)] = '\0';
+  string_to_upper (str, new_str);
+  char new_substr[strlen (substr) + 1];
+  new_substr[strlen (substr)] = '\0';
+  string_to_upper (substr, new_substr);
+
   return
-    g_str_match_string (
-      substr,
-      str,
-      accept_alternatives);
+    string_contains_substr (new_str, new_substr);
+}
+
+/**
+ * Converts the given string to uppercase in \ref
+ * out.
+ *
+ * Assumes \ref out is already allocated to as many
+ * chars as \ref in.
+ */
+void
+string_to_upper (
+  const char * in,
+  char *       out)
+{
+  const char * src = in;
+  char * dest = out;
+  while (*src)
+    {
+      *dest = g_ascii_toupper (*src);
+      src++;
+      dest++;
+    }
 }
 
 /**

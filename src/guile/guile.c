@@ -229,5 +229,5 @@ guile_script_succeeded (
 {
   return
     string_contains_substr (
-      pango_markup, SUCCESS_TEXT_TRANSLATED, true);
+      pango_markup, SUCCESS_TEXT_TRANSLATED);
 }

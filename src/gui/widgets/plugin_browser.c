@@ -38,6 +38,7 @@
 #include "utils/err_codes.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -252,12 +253,12 @@ visible_func (
   if (self->num_selected_categories == 0 &&
       self->num_selected_protocols == 0 &&
       !self->selected_collection &&
+      !self->current_search &&
       !instruments_active &&
       !effects_active &&
       !modulators_active &&
       !midi_modifiers_active)
     {
-      g_debug ("no filters");
       return true;
     }
 
@@ -333,6 +334,13 @@ visible_func (
   if (midi_modifiers_active &&
       !plugin_descriptor_is_midi_modifier (descr))
     return false;
+
+  if (self->current_search &&
+      !string_contains_substr_case_insensitive (
+        descr->name, self->current_search))
+    {
+      return false;
+    }
 
   return true;
 }
@@ -1282,6 +1290,16 @@ create_model_for_plugins (
   return model;
 }
 
+static bool
+refilter_source (
+  PluginBrowserWidget * self)
+{
+  gtk_tree_model_filter_refilter (
+    self->plugin_tree_model);
+
+  return G_SOURCE_REMOVE;
+}
+
 static gboolean
 plugin_search_equal_func (
   GtkTreeModel *model,
@@ -1298,9 +1316,25 @@ plugin_search_equal_func (
     g_utf8_strdown (key, -1);
   char * down_str =
     g_utf8_strdown (str, -1);
+  /*g_debug ("key '%s' str '%s'", key, str);*/
 
-  int match =
-    g_strrstr (down_str, down_key) != NULL;
+  g_free_and_null (self->current_search);
+  self->current_search = g_strdup (key);
+
+  bool match =
+    string_contains_substr_case_insensitive (
+      down_str, down_key);
+
+  /* refilter treeview if this is the last
+   * iteration of this func */
+  GtkTreeIter next_iter = *iter;
+  bool has_next =
+    gtk_tree_model_iter_next (model, &next_iter);
+  if (match || !has_next)
+    {
+      g_idle_add (
+        (GSourceFunc) refilter_source, self);
+    }
 
   g_free (str);
   g_free (down_key);
@@ -1665,6 +1699,22 @@ on_position_change (
     }
 }
 
+static bool
+on_key_release (
+  GtkWidget *           widget,
+  GdkEvent *            event,
+  PluginBrowserWidget * self)
+{
+  g_free_and_null (self->current_search);
+
+  gtk_tree_model_filter_refilter (
+    self->plugin_tree_model);
+
+  g_message ("key release");
+
+  return false;
+}
+
 PluginBrowserWidget *
 plugin_browser_widget_new ()
 {
@@ -1822,6 +1872,9 @@ plugin_browser_widget_new ()
   g_signal_connect (
     G_OBJECT (self), "map-event",
     G_CALLBACK (on_map_event), self);
+  g_signal_connect (
+    G_OBJECT (self), "key-release-event",
+    G_CALLBACK (on_key_release), self);
 
   return self;
 }
