@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2021-01-02 02:29+0000\n"
+"PO-Revision-Date: 2021-01-03 23:56+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -1618,6 +1618,10 @@ msgid ""
 ";;; See https://manual.zrythm.org/en/scripting/intro.html for a list of\n"
 ";;; modules provided by Zrythm\n"
 msgstr ""
+";;;これは、Zrythmが提供するモジュールを使用したGNUGuileスクリプトの例です。\n"
+";;; GNU Guileの詳細については、https://www.gnu.org/software/guile/を参照してください。\n"
+";;; Zrythmが提供するモジュールについては、https://manual.zrythm.org/ja/scripting/intro."
+"htmlを参照してください。\n"
 
 #: src/gui/widgets/scripting_window.c:247
 msgid "    ;; loop through all tracks and print them\n"
@@ -4068,12 +4072,13 @@ msgid "Position of the resize handle of the bot panel."
 msgstr "下パネルのリサイズハンドルの位置。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:314
+#, fuzzy
 msgid "Bot panel tab index"
-msgstr ""
+msgstr "下パネルのタブインデックス"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:315
 msgid "Index of the currently opened bottom panel tab."
-msgstr ""
+msgstr "現在開いている下部パネルのタブのインデックス。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:319
 msgid "Plugin browser tab"

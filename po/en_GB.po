@@ -2,13 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
+# Alexandros Theodotou <alex@zrythm.org>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://redmine.zrythm.org/projects/zrythm/issues/new\n"
 "POT-Creation-Date: 2020-10-25 15:35+0000\n"
-"PO-Revision-Date: 2020-04-30 23:31+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2021-01-03 23:56+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: English (United Kingdom) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/en_GB/>\n"
 "Language: en_GB\n"
@@ -16,13 +17,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0.2\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:154 inc/audio/engine.h:214
 #: inc/audio/engine.h:280
 msgid "Dummy"
-msgstr ""
+msgstr "Dummy"
 
 #: inc/gui/backend/arranger_object.h:88
 #: src/gui/widgets/channel_send_selector.c:185
@@ -31,87 +32,81 @@ msgstr ""
 #: src/gui/widgets/route_target_selector.c:55
 #: src/gui/widgets/route_target_selector_popover.c:152
 msgid "None"
-msgstr ""
+msgstr "None"
 
 #: inc/gui/backend/arranger_object.h:90
 #: resources/ui/chord_selector_window.ui:701
 msgid "All"
-msgstr ""
+msgstr "All"
 
 #: inc/gui/backend/arranger_object.h:92 src/gui/widgets/event_viewer.c:106
 #: resources/ui/inspector_master.ui:31 resources/ui/inspector_ap.ui:31
 #: resources/ui/inspector_midi.ui:31
 msgid "Region"
-msgstr ""
+msgstr "Region"
 
 #: inc/gui/backend/arranger_object.h:94
 msgid "Midi Note"
-msgstr ""
+msgstr "Midi Note"
 
 #: inc/gui/backend/arranger_object.h:96
 msgid "Chord Object"
-msgstr ""
+msgstr "Chord Object"
 
 #: inc/gui/backend/arranger_object.h:98
 msgid "Scale Object"
-msgstr ""
+msgstr "Scale Object"
 
 #: inc/gui/backend/arranger_object.h:100 inc/audio/track.h:166
 #: src/gui/widgets/event_viewer.c:109
 msgid "Marker"
-msgstr ""
+msgstr "Marker"
 
 #: inc/gui/backend/arranger_object.h:102
 msgid "Automation Point"
-msgstr ""
+msgstr "Automation Point"
 
 #: inc/gui/backend/arranger_object.h:104 src/gui/widgets/event_viewer.c:548
 #: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:115
 msgid "Velocity"
-msgstr ""
+msgstr "Velocity"
 
 #: inc/utils/ui.h:75
 msgid "High"
-msgstr ""
+msgstr "High"
 
 #: inc/utils/ui.h:76
-#, fuzzy
 msgid "Normal"
-msgstr "normal"
+msgstr "Normal"
 
 #: inc/utils/ui.h:77
 msgid "Low"
-msgstr ""
+msgstr "Low"
 
 #: inc/utils/gtk.h:50
 msgid "Cu_t"
-msgstr ""
+msgstr "Cu_t"
 
 #: inc/utils/gtk.h:56
-#, fuzzy
 msgid "_Copy"
-msgstr "Copy"
+msgstr "_Copy"
 
 #: inc/utils/gtk.h:62
-#, fuzzy
 msgid "_Paste"
-msgstr "Paste"
+msgstr "_Paste"
 
 #: inc/utils/gtk.h:68
-#, fuzzy
 msgid "_Delete"
-msgstr "Delete"
+msgstr "_Delete"
 
 #: inc/utils/gtk.h:74
-#, fuzzy
 msgid "Cle_ar Selection"
-msgstr "Clear Selection"
+msgstr "Cle_ar Selection"
 
 #: inc/utils/gtk.h:80
-#, fuzzy
 msgid "Select A_ll"
-msgstr "Select All"
+msgstr "Select A_ll"
 
 #: inc/utils/gtk.h:86 src/gui/widgets/home_toolbar.c:133
 msgid "Duplicate"
@@ -120,22 +115,22 @@ msgstr "Duplicate"
 #: inc/utils/gtk.h:92 src/gui/widgets/track.c:1190
 #: resources/ui/fader_buttons.ui:99
 msgid "Mute"
-msgstr ""
+msgstr "Mute"
 
 #: inc/utils/gtk.h:98 src/gui/widgets/track.c:1186
 msgid "Unmute"
-msgstr ""
+msgstr "Unmute"
 
 #: inc/audio/track.h:162 src/gui/widgets/track_properties_expander.c:133
 #: src/gui/widgets/route_target_selector_popover.c:186
 msgid "Instrument"
-msgstr ""
+msgstr "Instrument"
 
 #: inc/audio/track.h:163 src/gui/widgets/bot_bar.c:502
 #: src/gui/widgets/preferences.c:94 src/audio/region.c:397
 #: build/data/org.zrythm.Zrythm.gschema.xml:639
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: inc/audio/track.h:164 src/project.c:675
 #: src/gui/widgets/route_target_selector_popover.c:163
@@ -145,21 +140,19 @@ msgstr "Master"
 #: inc/audio/track.h:165 src/gui/widgets/event_viewer.c:118
 #: src/gui/widgets/event_viewer.c:589 src/audio/region.c:403
 msgid "Chord"
-msgstr ""
+msgstr "Chord"
 
 #: inc/audio/track.h:167 src/audio/tempo_track.c:91
-#, fuzzy
 msgid "Tempo"
-msgstr "Tempo/BPM"
+msgstr "Tempo"
 
 #: inc/audio/track.h:168
 msgid "Modulator"
-msgstr ""
+msgstr "Modulator"
 
 #: inc/audio/track.h:169
-#, fuzzy
 msgid "Audio FX"
-msgstr "Audio Bus"
+msgstr "Audio FX"
 
 #: inc/audio/track.h:170
 msgid "Audio Group"
@@ -167,182 +160,181 @@ msgstr "Audio Group"
 
 #: inc/audio/track.h:171 src/audio/region.c:394
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: inc/audio/track.h:172
-#, fuzzy
 msgid "MIDI FX"
-msgstr "MIDI Bus"
+msgstr "MIDI FX"
 
 #: inc/audio/track.h:173
 msgid "MIDI Group"
 msgstr "MIDI Group"
 
 #: inc/audio/curve.h:90 src/audio/curve.c:39
-#, fuzzy, c-format
+#, c-format
 msgid "Exponent"
-msgstr "Exported"
+msgstr "Exponent"
 
 #: inc/audio/curve.h:92 src/audio/curve.c:42
 #, c-format
 msgid "Superellipse"
-msgstr ""
+msgstr "Superellipse"
 
 #: inc/audio/curve.h:94 src/gui/widgets/timeline_arranger.c:1292
 #: src/audio/curve.c:45
 #, c-format
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: inc/audio/curve.h:96 src/audio/curve.c:48
 #, c-format
 msgid "Pulse"
-msgstr ""
+msgstr "Pulse"
 
 #: inc/audio/engine.h:125
 msgid "1,024"
-msgstr ""
+msgstr "1,024"
 
 #: inc/audio/engine.h:126
 msgid "2,048"
-msgstr ""
+msgstr "2,048"
 
 #: inc/audio/engine.h:127
 msgid "4,096"
-msgstr ""
+msgstr "4,096"
 
 #: inc/audio/engine.h:154
 msgid "22,050"
-msgstr ""
+msgstr "22,050"
 
 #: inc/audio/engine.h:155
 msgid "32,000"
-msgstr ""
+msgstr "32,000"
 
 #: inc/audio/engine.h:156
 msgid "44,100"
-msgstr ""
+msgstr "44,100"
 
 #: inc/audio/engine.h:157
 msgid "48,000"
-msgstr ""
+msgstr "48,000"
 
 #: inc/audio/engine.h:158
 msgid "88,200"
-msgstr ""
+msgstr "88,200"
 
 #: inc/audio/engine.h:159
 msgid "96,000"
-msgstr ""
+msgstr "96,000"
 
 #: inc/audio/engine.h:160
 msgid "192,000"
-msgstr ""
+msgstr "192,000"
 
 #: inc/audio/engine.h:215
 msgid "Dummy (libsoundio)"
-msgstr ""
+msgstr "Dummy (libsoundio)"
 
 #: inc/audio/engine.h:281
 msgid "ALSA Sequencer (not working)"
-msgstr ""
+msgstr "ALSA Sequencer (not working)"
 
 #: inc/audio/engine.h:282
 msgid "ALSA Sequencer (rtmidi)"
-msgstr ""
+msgstr "ALSA Sequencer (rtmidi)"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:127
 msgid "Crescendo"
-msgstr ""
+msgstr "Crescendo"
 
 #: inc/audio/midi_function.h:57 resources/ui/editor_toolbar.ui:133
 msgid "Flam"
-msgstr ""
+msgstr "Flam"
 
 #: inc/audio/midi_function.h:58 inc/audio/automation_function.h:50
 msgid "Flip H"
-msgstr ""
+msgstr "Flip H"
 
 #: inc/audio/midi_function.h:59 inc/audio/automation_function.h:51
 msgid "Flip V"
-msgstr ""
+msgstr "Flip V"
 
 #: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:154
 msgid "Legato"
-msgstr ""
+msgstr "Legato"
 
 #: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:160
 msgid "Portato"
-msgstr ""
+msgstr "Portato"
 
 #: inc/audio/midi_function.h:62 resources/ui/editor_toolbar.ui:166
 msgid "Staccato"
-msgstr ""
+msgstr "Staccato"
 
 #: inc/audio/midi_function.h:63 resources/ui/editor_toolbar.ui:172
 msgid "Strum"
-msgstr ""
+msgstr "Strum"
 
 #: inc/audio/region.h:83 src/gui/widgets/track.c:1868
 msgid "Inherit"
-msgstr ""
+msgstr "Inherit"
 
 #: inc/audio/region.h:85 src/gui/widgets/bot_bar.c:517
 #: src/audio/automation_track.c:101
 msgid "Off"
-msgstr ""
+msgstr "Off"
 
 #: inc/audio/region.h:87 src/gui/widgets/bot_bar.c:517
 #: src/gui/widgets/port_connections_tree.c:264
 #: src/gui/widgets/cc_bindings_tree.c:252 src/audio/automation_track.c:95
 msgid "On"
-msgstr ""
+msgstr "On"
 
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:52
 msgid "0dB"
-msgstr ""
+msgstr "0db"
 
 #: inc/audio/pan.h:53
 msgid "-3dB"
-msgstr ""
+msgstr "-3dB"
 
 #: inc/audio/pan.h:54
 msgid "-6dB"
-msgstr ""
+msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:76 src/gui/widgets/timeline_arranger.c:1289
 #: src/utils/ui.c:834
 msgid "Linear"
-msgstr ""
+msgstr "Linear"
 
 #: inc/audio/pan.h:77 src/utils/ui.c:835
 msgid "Square Root"
-msgstr ""
+msgstr "Square Root"
 
 #: inc/audio/pan.h:78
 msgid "Sine"
-msgstr ""
+msgstr "Sine"
 
 #: src/project.c:142
 #, c-format
 msgid "Failed to open file: %s"
-msgstr ""
+msgstr "Failed to open file: %s"
 
 #: src/project.c:186
 msgid "Project not compressed by zstd"
-msgstr ""
+msgstr "Project not compressed by zstd"
 
 #: src/project.c:199
 #, c-format
 msgid "Failed to decompress project file: %s"
-msgstr ""
+msgstr "Failed to decompress project file: %s"
 
 #: src/project.c:240
 #, c-format
 msgid "Failed to write file: %s"
-msgstr ""
+msgstr "Failed to write file: %s"
 
 #: src/project.c:809
 #, c-format
@@ -356,22 +348,21 @@ msgstr ""
 "Use the newer backup?"
 
 #: src/project.c:814
-#, fuzzy
 msgid "Backup found"
-msgstr "Backup saved."
+msgstr "Backup found"
 
 #: src/project.c:872
 #, c-format
 msgid "Unable to read file: %s"
-msgstr ""
+msgstr "Unable to read file: %s"
 
 #: src/project.c:924
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "This project was created with a different version of %s (%s). It may not "
 "work correctly."
 msgstr ""
-"This project was created with a different version of Zrythm (%s). It may not "
+"This project was created with a different version of %s (%s). It may not "
 "work correctly."
 
 #: src/project.c:939
@@ -379,9 +370,8 @@ msgid "Failed to load project. Please check the logs for more information."
 msgstr "Failed to load project. Please check the logs for more information."
 
 #: src/project.c:1122
-#, fuzzy
 msgid "Failed to load project. Will create a new one instead."
-msgstr "Failed to load project. Please check the logs for more information."
+msgstr "Failed to load project. Will create a new one instead."
 
 #: src/project.c:1467
 msgid "Backup saved."
@@ -392,22 +382,21 @@ msgid "Project saved."
 msgstr "Project saved."
 
 #: src/main.c:78
-#, fuzzy
 msgid "Error - Backtrace:\n"
-msgstr "Error: signal %d - Backtrace:"
+msgstr "Error - Backtrace:\n"
 
 #: src/main.c:82
-#, fuzzy, c-format
+#, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr "Error: signal %d - Backtrace:"
+msgstr "Error: %s - Backtrace:\n"
 
 #: src/main.c:96
 #, c-format
 msgid "%s has crashed. "
-msgstr ""
+msgstr "%s has crashed. "
 
 #: src/main.c:129
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage: %s [ OPTIONS ] [ PROJECT-FILE-PATH ]\n"
 "\n"
@@ -439,58 +428,76 @@ msgid ""
 "\n"
 "Report bugs to %s\n"
 msgstr ""
-"Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
+"Usage: %s [ OPTIONS ] [ PROJECT-FILE-PATH ]\n"
 "\n"
 "Options:\n"
-"  -h, --help      display this help and exit\n"
+"  -h, --help      display this help message and exit\n"
+"  --convert-yaml-to-zpj  convert a yaml project to the .zpj format\n"
+"  --convert-zpj-to-yaml  convert a zpj project to the YAML format\n"
+"  -o, --output    specify an output file\n"
+"  -p, --print-settings  print current settings\n"
+"  --pretty        print output in user-friendly way\n"
+"  --reset-to-factory  reset to factory settings\n"
+"  --gdb           run %s through GDB (debugger)\n"
+"  --callgrind     run %s through callgrind (profiler)\n"
+"  --audio-backend  override the audio backend to use\n"
+"  --midi-backend  override the MIDI backend to use\n"
+"  --dummy         overrides both the audio and MIDI backends to dummy\n"
+"  --buf-size      overrides the buffer size to use for the audio backend, if "
+"applicable\n"
+"  --interactive   interactive mode, where applicable\n"
 "  -v, --version   output version information and exit\n"
 "\n"
 "Examples:\n"
-"  zrythm          run normally\n"
+"  %s -v       print version\n"
+"  %s --callgrind --dummy --buf-size=8192  profile %s using the dummy backend "
+"and a buffer size of 8192\n"
+"  %s --convert-zpj-to-yaml myproject.zpj --output myproject.yaml  convert a "
+"compressed zpj project to YAML\n"
+"  %s -p --pretty  pretty-print current settings\n"
 "\n"
-"Write comments and bugs to %s\n"
-"Support this project at https://liberapay.com/Zrythm\n"
-"Website https://www.zrythm.org\n"
+"Report bugs to %s\n"
 
 #: src/main.c:172
 #, c-format
 msgid "File %s not found."
-msgstr ""
+msgstr "File %s not found."
 
 #: src/main.c:193
 msgid ""
 "An output file was not specified. Please pass one with `--output [FILE]`."
 msgstr ""
+"An output file was not specified. Please pass one with `--output [FILE]`."
 
 #. getopt_long already printed an error
 #. * message
 #: src/main.c:337
 #, c-format
 msgid "Unknown option\n"
-msgstr ""
+msgstr "Unknown option\n"
 
 #: src/main.c:394
 #, c-format
 msgid "Project failed to compress: %s\n"
-msgstr ""
+msgstr "Project failed to compress: %s\n"
 
 #: src/main.c:403
 #, c-format
 msgid "Project successfully compressed.\n"
-msgstr ""
+msgstr "Project successfully compressed.\n"
 
 #: src/main.c:421
 #, c-format
 msgid "Project failed to decompress: %s\n"
-msgstr ""
+msgstr "Project failed to decompress: %s\n"
 
 #: src/main.c:430
 #, c-format
 msgid "Project successfully decompressed.\n"
-msgstr ""
+msgstr "Project successfully decompressed.\n"
 
 #: src/main.c:439
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s Copyright (C) 2018-2020 The Zrythm contributors\n"
 "\n"
@@ -503,13 +510,12 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
+"%s-%s Copyright (C) 2018-2020 The Zrythm contributors\n"
 "\n"
-"Zrythm comes with ABSOLUTELY NO WARRANTY!\n"
+"%s comes with ABSOLUTELY NO WARRANTY!\n"
 "\n"
 "This is free software, and you are welcome to redistribute it\n"
-"under certain conditions. Look at the file `COPYING' within this\n"
-"distribution for details.\n"
+"under certain conditions. See the file `COPYING' for details.\n"
 "\n"
 "Write comments and bugs to %s\n"
 "Support this project at https://liberapay.com/Zrythm\n"
@@ -526,16 +532,16 @@ msgstr "Loading project"
 #: src/zrythm_app.c:276
 #, c-format
 msgid "No project has been selected. %s will now close."
-msgstr ""
+msgstr "No project has been selected. %s will now close."
 
 #: src/zrythm_app.c:299
 msgid "Initializing settings"
 msgstr "Initialising settings"
 
 #: src/zrythm_app.c:307
-#, fuzzy, c-format
+#, c-format
 msgid "Initializing %s directories"
-msgstr "Initialising Zrythm directories"
+msgstr "Initialising %s directories"
 
 #: src/zrythm_app.c:317
 msgid "Initializing logging system"
@@ -546,7 +552,6 @@ msgid "Initializing caches"
 msgstr "Initialising caches"
 
 #: src/zrythm_app.c:331
-#, fuzzy
 msgid "Initializing file manager"
 msgstr "Initialising plugin manager"
 
@@ -564,11 +569,11 @@ msgstr "Waiting for project"
 
 #: src/plugins/carla_native_plugin.c:545 src/plugins/lv2_plugin.c:2513
 msgid "Default bank"
-msgstr ""
+msgstr "Default bank"
 
 #: src/plugins/carla_native_plugin.c:552 src/plugins/lv2_plugin.c:2520
 msgid "Init"
-msgstr ""
+msgstr "Init"
 
 #: src/plugins/carla_native_plugin.c:993
 #, fuzzy
@@ -615,7 +620,7 @@ msgstr "Scanning plugins"
 #: src/plugins/plugin_manager.c:1264
 #, c-format
 msgid "Skipped LV2 plugin at %s"
-msgstr ""
+msgstr "Skipped LV2 plugin at %s"
 
 #: src/plugins/plugin_manager.c:1339
 #, fuzzy
@@ -625,20 +630,20 @@ msgstr "Scanning plugins"
 #: src/plugins/plugin_manager.c:1346
 #, c-format
 msgid "Skipped AU plugin at %u"
-msgstr ""
+msgstr "Skipped AU plugin at %u"
 
 #: src/plugins/plugin.c:138
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
-msgstr ""
+msgstr "Instantiation failed for plugin '%s'. Disabling..."
 
 #: src/plugins/plugin.c:184
 msgid "[Zrythm] Enabled"
-msgstr ""
+msgstr "[Zrythm] Enabled"
 
 #: src/plugins/plugin.c:207
 msgid "[Zrythm] Gain"
-msgstr ""
+msgstr "[Zrythm] Gain"
 
 #: src/plugins/plugin_gtk.c:81 src/plugins/lv2/lv2_gtk.c:105
 msgid "Save State"
@@ -662,11 +667,11 @@ msgstr "_Save"
 #: src/plugins/lv2_plugin.c:1746
 #, c-format
 msgid "Failed to find plugin with URI: %s"
-msgstr ""
+msgstr "Failed to find plugin with URI: %s"
 
 #: src/plugins/lv2_plugin.c:2552
 msgid "Unnamed bank"
-msgstr ""
+msgstr "Unnamed bank"
 
 #: src/plugins/lv2/lv2_gtk.c:256
 msgid "URI (Optional):"
@@ -700,7 +705,7 @@ msgstr "Close"
 
 #: src/gui/widgets/fader_controls_grid.c:92
 msgid "Peak"
-msgstr ""
+msgstr "Peak"
 
 #: src/gui/widgets/port_connections_popover.c:72
 msgid "INPUTS"
@@ -721,7 +726,7 @@ msgstr "Bind MIDI CC"
 
 #: src/gui/widgets/inspector_port.c:195 src/gui/widgets/midi_arranger.c:519
 msgid "View info"
-msgstr ""
+msgstr "View info"
 
 #: src/gui/widgets/inspector_port.c:380
 msgid "Incoming signals"
@@ -749,7 +754,7 @@ msgstr "Expose port to JACK"
 
 #: src/gui/widgets/log_viewer.c:127
 msgid "Log Viewer"
-msgstr ""
+msgstr "Log Viewer"
 
 #: src/gui/widgets/track_properties_expander.c:110
 #: src/gui/widgets/track_visibility_tree.c:163
@@ -822,11 +827,11 @@ msgstr "MIDI channel to filter to"
 
 #: src/gui/widgets/track_input_expander.c:704
 msgid "Mono"
-msgstr ""
+msgstr "Mono"
 
 #: src/gui/widgets/track_input_expander.c:736
 msgid "Gain"
-msgstr ""
+msgstr "Gain"
 
 #: src/gui/widgets/track_input_expander.c:749
 msgid "Inputs"
@@ -842,7 +847,7 @@ msgstr "The selected backends are operational"
 
 #: src/gui/widgets/first_run_assistant.c:177
 msgid "JACK MIDI can only be used with JACK audio"
-msgstr ""
+msgstr "JACK MIDI can only be used with JACK audio"
 
 #: src/gui/widgets/project_assistant.c:266
 #: src/gui/widgets/plugin_properties_expander.c:134
@@ -886,7 +891,7 @@ msgstr "Visibility"
 
 #: src/gui/widgets/left_dock_edge.c:258
 msgid "CC Bindings"
-msgstr ""
+msgstr "CC Bindings"
 
 #: src/gui/widgets/left_dock_edge.c:285
 #, fuzzy
@@ -913,7 +918,7 @@ msgstr "Track Ports"
 #: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:24
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: src/gui/widgets/editor_selection_info.c:58
 msgid "start position"
@@ -1010,16 +1015,16 @@ msgstr "No inputs"
 #: src/gui/widgets/channel_slot.c:188
 #, c-format
 msgid "Slot #%d"
-msgstr ""
+msgstr "Slot #%d"
 
 #: src/gui/widgets/channel_slot.c:341
 #, c-format
 msgid "Plugin %s cannot be added to this slot"
-msgstr ""
+msgstr "Plugin %s cannot be added to this slot"
 
 #: src/gui/widgets/channel_slot.c:686
 msgid "Bypass"
-msgstr ""
+msgstr "Bypass"
 
 #: src/gui/widgets/channel_slot.c:699
 #, fuzzy
@@ -1032,7 +1037,7 @@ msgstr "empty slot"
 
 #: src/gui/widgets/arranger.c:3107 resources/ui/string_entry_dialog.ui:94
 msgid "Marker name"
-msgstr ""
+msgstr "Marker name"
 
 #: src/gui/widgets/arranger.c:4821
 #, c-format
