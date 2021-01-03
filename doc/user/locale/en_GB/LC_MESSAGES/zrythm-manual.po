@@ -32,23 +32,26 @@
 # #-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-01-02 16:31+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2021-01-03 23:56+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: English (United Kingdom) <https://hosted.weblate.org/projects/"
+"zrythm/user-manual/en_GB/>\n"
+"Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../appendix/environment.rst:10
 msgid "Environment Variables"
-msgstr ""
+msgstr "Environment Variables"
 
 #: ../../appendix/environment.rst:12
 msgid ""
@@ -58,18 +61,23 @@ msgid ""
 ":program:`zrythm` or :program:`zrythm_launch`, like: "
 "``LV2_PATH=/my/custom/path zrythm_launch``"
 msgstr ""
+"Zrythm understands the following environment variables. They can be "
+"configured in :file:`.bashrc` or a similar shell configuration file, the "
+"operating system's settings, or they can be passed directly when running "
+":program:`zrythm` or :program:`zrythm_launch`, like: ``LV2_PATH=/my/custom/"
+"path zrythm_launch``"
 
 #: ../../appendix/environment.rst:22
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
-msgstr ""
+msgstr "Set this to the locations to scan for :term:`LV2` plugins."
 
 #: ../../appendix/environment.rst:25
 msgid "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
-msgstr ""
+msgstr "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
 
 #: ../../appendix/environment.rst:30
 msgid "Set to 1 to disable plugin scanning."
-msgstr ""
+msgstr "Set to 1 to disable plugin scanning."
 
 #: ../../appendix/environment.rst:32
 msgid "Example: ``NO_SCAN_PLUGINS=1``"
@@ -739,7 +747,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:18
 #: ../../tracks/track-types.rst:20
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: ../../configuration/preferences/intro.rst:174
 msgid "Audio editing."
@@ -1164,7 +1172,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:44
 msgid "Exponent"
-msgstr ""
+msgstr "Exponent"
 
 #: ../../editing/clip-editors/automation-editor.rst:45
 msgid "Exponential curve."
@@ -1172,7 +1180,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Superellipse"
-msgstr ""
+msgstr "Superellipse"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Elliptical curve."
@@ -1181,7 +1189,7 @@ msgstr ""
 #: ../../editing/clip-editors/automation-editor.rst:49
 #: ../../editing/timeline/arranger.rst:239
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "The curve that Vital synth uses, similar to exponential curve."
@@ -1189,7 +1197,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse"
-msgstr ""
+msgstr "Pulse"
 
 #: ../../editing/clip-editors/automation-editor.rst:52
 msgid "Pulse wave."
@@ -1708,7 +1716,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:65
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplicate"
 
 #: ../../editing/common-operations.rst:66
 msgid ""
@@ -2363,7 +2371,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:224
 msgid "Linear"
-msgstr ""
+msgstr "Linear"
 
 #: ../../editing/timeline/arranger.rst:229
 msgid "Exponential"
@@ -3234,7 +3242,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:23
 #: ../../tracks/track-types.rst:24
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:79
 msgid ""
@@ -3252,7 +3260,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:89
 msgid "Mono"
-msgstr ""
+msgstr "Mono"
 
 #: ../../glossary/intro.rst:91
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
@@ -3317,7 +3325,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:123
 msgid "Region"
-msgstr ""
+msgstr "Region"
 
 #: ../../glossary/intro.rst:125
 msgid ""
@@ -4217,7 +4225,7 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:35
 #: ../../tracks/track-types.rst:18
 msgid "Instrument"
-msgstr ""
+msgstr "Instrument"
 
 #: ../../plugins-files/plugins/plugin-info.rst:24
 msgid "These plugins will create an instrument track when added to the project."
@@ -4285,7 +4293,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:68
 msgid "Gain"
-msgstr ""
+msgstr "Gain"
 
 #: ../../plugins-files/plugins/plugin-info.rst:69
 msgid "Increases the output volume of the plugin (if applicable)."
@@ -5560,7 +5568,7 @@ msgstr ""
 #: ../../tracks/modulator-track.rst:31
 #: ../../tracks/tempo-track.rst:31
 msgid "Mute"
-msgstr ""
+msgstr "Mute"
 
 #: ../../tracks/audio-track.rst:22
 #: ../../tracks/bus-track-audio.rst:22
@@ -6031,7 +6039,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:110
 msgid "Peak"
-msgstr ""
+msgstr "Peak"
 
 #: ../../tracks/inspector-page.rst:111
 msgid "Peak signal value."
@@ -6494,7 +6502,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:15
 msgid "Audio Group"
-msgstr ""
+msgstr "Audio Group"
 
 #: ../../tracks/track-types.rst:15
 #: ../../tracks/track-types.rst:16
@@ -6516,15 +6524,15 @@ msgstr ""
 #: ../../tracks/track-types.rst:24
 #: ../../tracks/track-types.rst:25
 msgid "None"
-msgstr ""
+msgstr "None"
 
 #: ../../tracks/track-types.rst:16
 msgid "Audio FX"
-msgstr ""
+msgstr "Audio FX"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord"
-msgstr ""
+msgstr "Chord"
 
 #: ../../tracks/track-types.rst:17
 msgid "Chord regions & scales"
@@ -6537,23 +6545,23 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:19
 msgid "Marker"
-msgstr ""
+msgstr "Marker"
 
 #: ../../tracks/track-types.rst:20
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #: ../../tracks/track-types.rst:23
 msgid "MIDI Group"
-msgstr ""
+msgstr "MIDI Group"
 
 #: ../../tracks/track-types.rst:24
 msgid "MIDI FX"
-msgstr ""
+msgstr "MIDI FX"
 
 #: ../../tracks/track-types.rst:25
 msgid "Tempo"
-msgstr ""
+msgstr "Tempo"
 
 #: ../../tracks/track-types.rst:28
 msgid "All tracks except the :doc:`chord-track` have automation lanes available."
@@ -6982,7 +6990,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:148
 msgid "Log Viewer"
-msgstr ""
+msgstr "Log Viewer"
 
 #: ../../zrythm-interface/main-toolbar.rst:149
 msgid ""
@@ -7150,4 +7158,3 @@ msgstr ""
 
 #~ msgid "Controls"
 #~ msgstr "Controls"
-
