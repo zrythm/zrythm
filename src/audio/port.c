@@ -2645,7 +2645,7 @@ stereo_ports_new_generic (
  *   range.
  */
 void
-port_sum_signal_from_inputs (
+port_process (
   Port *          port,
   const long      g_start_frames,
   const nframes_t local_offset,

@@ -223,7 +223,9 @@ automation_track_get_ap_before_pos (
     automation_track_get_region_before_pos (
       self, pos);
 
-  if (!r)
+  if (!r ||
+      arranger_object_get_muted (
+        (ArrangerObject *) r))
     {
       return NULL;
     }

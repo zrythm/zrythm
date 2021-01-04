@@ -306,7 +306,7 @@ process_node (
 
       else
         {
-          port_sum_signal_from_inputs (
+          port_process (
             port, g_start_frames, local_offset,
             nframes, false);
         }

@@ -1059,7 +1059,7 @@ port_apply_fader (
  *   range.
  */
 void
-port_sum_signal_from_inputs (
+port_process (
   Port *          port,
   const long      g_start_frames,
   const nframes_t start_frame,
