@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -177,6 +177,26 @@ _test_port_and_plugin_track_pos_after_move (
       MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
       src_track, 1);
   undo_manager_perform (UNDO_MANAGER, ua);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+
+  /* let the engine run */
+  g_usleep (1000000);
+
+  /* move the plugin to a new track */
+  mixer_selections_clear (
+    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+  src_track = TRACKLIST->tracks[src_track_pos];
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, src_track,
+    PLUGIN_SLOT_INSERT, 1);
+  ua =
+    move_plugins_action_new (
+      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+      NULL, 0);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
 
   /* let the engine run */
   g_usleep (1000000);

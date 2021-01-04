@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -674,7 +674,8 @@ plugin_move (
   Plugin *       pl,
   Track *        track,
   PluginSlotType slot_type,
-  int            slot)
+  int            slot,
+  bool           fire_events)
 {
   g_return_if_fail (pl && track);
 
@@ -730,9 +731,13 @@ plugin_move (
     F_NO_GEN_AUTOMATABLES, F_RECALC_GRAPH,
     F_PUBLISH_EVENTS);
 
-  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, prev_ch);
-  EVENTS_PUSH (
-    ET_CHANNEL_SLOTS_CHANGED, track->channel);
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_CHANNEL_SLOTS_CHANGED, prev_ch);
+      EVENTS_PUSH (
+        ET_CHANNEL_SLOTS_CHANGED, track->channel);
+    }
 }
 
 /**
@@ -1788,7 +1793,10 @@ plugin_clone (
           ret =
             plugin_instantiate (
               pl, src_is_project, NULL);
-          g_return_val_if_fail (ret == 0, NULL);
+          g_return_val_if_fail (
+            ret == 0 &&
+            pl->num_in_ports ==
+              clone->num_in_ports, NULL);
         }
 
       /* save the state of the original plugin */

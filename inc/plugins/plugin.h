@@ -367,7 +367,8 @@ plugin_move (
   Plugin *       pl,
   Track *        track,
   PluginSlotType slot_type,
-  int            slot);
+  int            slot,
+  bool           fire_events);
 
 /**
  * Sets the channel and slot on the plugin and

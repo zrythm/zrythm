@@ -131,6 +131,25 @@ _test_copy_plugins (
           g_assert_true (
             new_track->channel->instrument->lv2->ui);
         }
+      ua =
+        create_plugins_action_new (
+          descr, PLUGIN_SLOT_INSERT,
+          new_track->pos, 0, 1);
+      undo_manager_perform (UNDO_MANAGER, ua);
+
+      mixer_selections_clear (
+        MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+      mixer_selections_add_slot (
+        MIXER_SELECTIONS, new_track,
+        PLUGIN_SLOT_INSERT, 0);
+      ua =
+        copy_plugins_action_new (
+          MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+          NULL, 0);
+      undo_manager_perform (UNDO_MANAGER, ua);
+      undo_manager_undo (UNDO_MANAGER);
+      undo_manager_redo (UNDO_MANAGER);
+      undo_manager_undo (UNDO_MANAGER);
     }
   else
     {

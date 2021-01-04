@@ -1519,8 +1519,16 @@ process_events (void * data)
           EVENTS_PUSH (ET_REFRESH_ARRANGER, NULL);
           break;
         case ET_CHANNEL_SLOTS_CHANGED:
-          channel_widget_update_inserts (
-            ((Channel *)ev->arg)->widget);
+          {
+            Channel * ch = (Channel *) ev->arg;
+            ChannelWidget * cw =
+              ch ? ch->widget : NULL;
+            if (cw)
+              {
+                channel_widget_update_inserts (
+                  cw);
+              }
+          }
           break;
         case ET_DRUM_MODE_CHANGED:
           midi_editor_space_widget_refresh (

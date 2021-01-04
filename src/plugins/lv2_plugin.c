@@ -2101,8 +2101,8 @@ lv2_plugin_cleanup (
   Lv2Plugin * self)
 {
   g_message (
-    "Cleaning up LV2 plugin %s...",
-    self->plugin->descr->name);
+    "Cleaning up LV2 plugin %s (%p)...",
+    self->plugin->descr->name, self);
 
   if (self->plugin->instantiated)
     {

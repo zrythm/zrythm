@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -60,9 +60,13 @@ move_plugins_action_new (
   self->to_slot = to_slot;
   self->from_track_pos = ms->track_pos;
   if (to_tr)
-    self->to_track_pos = to_tr->pos;
+    {
+      self->to_track_pos = to_tr->pos;
+    }
   else
-    self->is_new_channel = 1;
+    {
+      self->is_new_channel = true;
+    }
 
   self->ms =
     mixer_selections_clone (
@@ -96,9 +100,6 @@ move_plugins_action_do (
           clone_pl->descr->name);
       Track * new_track =
         track_new (
-          plugin_descriptor_is_instrument (
-            clone_pl->descr) ?
-          TRACK_TYPE_INSTRUMENT :
           TRACK_TYPE_AUDIO_BUS,
           TRACKLIST->num_tracks, str,
           F_WITH_LANE);
@@ -168,7 +169,8 @@ move_plugins_action_do (
       /* move and select plugin to to_slot + diff */
       to_slot = self->to_slot + i;
       plugin_move (
-        pl, to_tr, self->slot_type, to_slot);
+        pl, to_tr, self->slot_type, to_slot,
+        F_NO_PUBLISH_EVENTS);
 
       mixer_selections_add_slot (
         MIXER_SELECTIONS, to_tr, self->slot_type,
@@ -228,7 +230,8 @@ move_plugins_action_undo (
       /* move plugin to its original slot */
       plugin_move (
         pl, track, self->ms->type,
-        self->ms->plugins[i]->id.slot);
+        self->ms->plugins[i]->id.slot,
+        F_NO_PUBLISH_EVENTS);
 
       /* add to mixer selections */
       mixer_selections_add_slot (
@@ -241,7 +244,7 @@ move_plugins_action_undo (
       tracklist_remove_track (
         TRACKLIST, current_ch->track, F_REMOVE_PL,
         F_FREE, F_PUBLISH_EVENTS,
-        F_NO_RECALC_GRAPH);
+        F_RECALC_GRAPH);
     }
 
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);

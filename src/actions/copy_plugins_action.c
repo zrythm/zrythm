@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -65,9 +65,13 @@ copy_plugins_action_new (
   self->slot = slot;
 
   if (tr)
-    self->track_pos = tr->pos;
+    {
+      self->track_pos = tr->pos;
+    }
   else
-    self->is_new_channel = 1;
+    {
+      self->is_new_channel = true;
+    }
 
   return ua;
 }
@@ -93,22 +97,15 @@ copy_plugins_action_do (
           orig_pl->descr->name);
       track =
         track_new (
-          plugin_descriptor_is_instrument (
-            orig_pl->descr) ?
-          TRACK_TYPE_INSTRUMENT :
           TRACK_TYPE_AUDIO_BUS,
           TRACKLIST->num_tracks, str,
           F_WITH_LANE);
       g_free (str);
       g_return_val_if_fail (track, -1);
 
-      /* create a track and add it to
-       * tracklist */
-      tracklist_insert_track (
-        TRACKLIST,
-        track,
-        TRACKLIST->num_tracks,
-        F_NO_PUBLISH_EVENTS,
+      /* add the track to the tracklist */
+      tracklist_append_track (
+        TRACKLIST, track, F_NO_PUBLISH_EVENTS,
         F_NO_RECALC_GRAPH);
 
       EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
@@ -149,6 +146,10 @@ copy_plugins_action_do (
       channel_add_plugin (
         ch, self->slot_type, new_slot, pl, 1, 1,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
+
+      g_return_val_if_fail (
+        pl->num_in_ports ==
+          self->ms->plugins[i]->num_in_ports, -1);
 
       /* copy the automation regions from the
        * original plugin */

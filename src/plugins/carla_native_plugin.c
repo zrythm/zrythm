@@ -981,6 +981,8 @@ create_ports (
   CarlaNativePlugin * self,
   bool                loading)
 {
+  g_debug ("%s: loading: %d", __func__, loading);
+
   Port * port;
   char tmp[500];
   char name[4000];
@@ -1095,6 +1097,11 @@ carla_native_plugin_instantiate (
 {
   g_return_val_if_fail (self, -1);
 
+  g_debug (
+    "loading: %i, use state file: %d, "
+    "ports_created: %d",
+    loading, use_state_file, self->ports_created);
+
   if (use_state_file)
     {
       /* recreate the plugin to create the native
@@ -1107,9 +1114,10 @@ carla_native_plugin_instantiate (
         self->plugin->carla, NULL);
 
       /* free the previous instance */
+      Plugin * pl = self->plugin;
       carla_native_plugin_free (self);
 
-      self = self->plugin->carla;
+      self = pl->carla;
     }
 
   g_return_val_if_fail (
@@ -1119,7 +1127,8 @@ carla_native_plugin_instantiate (
     -1);
 
   /* create ports */
-  if (!loading && !self->ports_created)
+  if (!loading && !use_state_file &&
+      !self->ports_created)
     {
       create_ports (self, false);
     }
@@ -1129,8 +1138,8 @@ carla_native_plugin_instantiate (
     self->native_plugin_handle);
   g_message ("carla plugin activated");
 
-  /* load ports */
-  if (loading)
+  /* load data into existing ports */
+  if (loading || use_state_file)
     {
       create_ports (self, true);
     }
