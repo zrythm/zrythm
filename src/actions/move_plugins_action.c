@@ -130,52 +130,51 @@ move_plugins_action_do (
       g_return_val_if_fail (to_tr, -1);
     }
 
-  /*int highest_slot =*/
-    /*mixer_selections_get_highest_slot (self->ms);*/
-
   /* clear selections to readd each plugin moved */
   mixer_selections_clear (
     MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
 
-  /*int diff;*/
-  int to_slot;
-  for (int i = 0; i < self->ms->num_slots; i++)
+  /* sort own selections */
+  mixer_selections_sort (self->ms, F_ASCENDING);
+
+  bool move_downwards_same_track =
+    to_tr == from_tr &&
+    self->ms->num_slots > 0 &&
+    self->to_slot > self->ms->plugins[0]->id.slot;
+  for (int i =
+         move_downwards_same_track ?
+           self->ms->num_slots - 1 : 0;
+       move_downwards_same_track ?
+         (i >= 0) : (i < self->ms->num_slots);
+       move_downwards_same_track ? i-- : i++)
     {
       /* get the plugin */
-      switch (self->ms->type)
-        {
-        case PLUGIN_SLOT_MIDI_FX:
-          pl =
-            from_ch->midi_fx[
-              self->ms->plugins[i]->id.slot];
-          break;
-        case PLUGIN_SLOT_INSTRUMENT:
-          pl = from_ch->instrument;
-          break;
-        case PLUGIN_SLOT_INSERT:
-          pl =
-            from_ch->inserts[
-              self->ms->plugins[i]->id.slot];
-          break;
-        case PLUGIN_SLOT_MODULATOR:
-          pl =
-            from_tr->modulators[
-              self->ms->plugins[i]->id.slot];
-          break;
-        }
+      int from_slot = self->ms->plugins[i]->id.slot;
+      pl =
+        track_get_plugin_at_slot (
+          from_tr, self->ms->type, from_slot);
       g_warn_if_fail (
         pl && pl->id.track_pos == from_tr->pos);
 
       /* move and select plugin to to_slot + diff */
-      to_slot = self->to_slot + i;
-      plugin_move (
-        pl, to_tr, self->slot_type, to_slot,
-        F_NO_PUBLISH_EVENTS);
+      int to_slot = self->to_slot + i;
+      g_message (
+        "moving plugin from %d to %d",
+        from_slot, to_slot);
+      if (from_tr != to_tr ||
+          from_slot != to_slot)
+        {
+          plugin_move (
+            pl, to_tr, self->slot_type, to_slot,
+            F_NO_PUBLISH_EVENTS);
+        }
 
       mixer_selections_add_slot (
         MIXER_SELECTIONS, to_tr, self->slot_type,
         to_slot);
     }
+
+  track_verify_identifiers (to_tr);
 
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, to_ch);
 
@@ -202,36 +201,40 @@ move_plugins_action_undo (
   mixer_selections_clear (
     MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
 
-  for (int i = 0; i < self->ms->num_slots; i++)
+  /* sort own selections */
+  mixer_selections_sort (self->ms, F_ASCENDING);
+
+  bool move_downwards_same_track =
+    current_tr == track &&
+    self->ms->num_slots > 0 &&
+    self->to_slot < self->ms->plugins[0]->id.slot;
+  for (int i =
+         move_downwards_same_track ?
+           self->ms->num_slots - 1 : 0;
+       move_downwards_same_track ?
+         (i >= 0) : (i < self->ms->num_slots);
+       move_downwards_same_track ? i-- : i++)
     {
       /* get the actual plugin */
-      Plugin * pl = NULL;
-      switch (self->slot_type)
-        {
-        case PLUGIN_SLOT_MIDI_FX:
-          pl =
-            current_ch->midi_fx[self->to_slot + i];
-          break;
-        case PLUGIN_SLOT_INSTRUMENT:
-          pl = current_ch->instrument;
-          break;
-        case PLUGIN_SLOT_INSERT:
-          pl =
-            current_ch->inserts[self->to_slot + i];
-          break;
-        case PLUGIN_SLOT_MODULATOR:
-          pl =
-            current_tr->modulators[
-              self->to_slot + i];
-          break;
-        }
+      int from_slot = self->to_slot + i;
+      Plugin * pl =
+        track_get_plugin_at_slot (
+          current_tr, self->slot_type,
+          from_slot);
       g_return_val_if_fail (pl, -1);
 
       /* move plugin to its original slot */
-      plugin_move (
-        pl, track, self->ms->type,
-        self->ms->plugins[i]->id.slot,
-        F_NO_PUBLISH_EVENTS);
+      int to_slot = self->ms->plugins[i]->id.slot;
+      g_message (
+        "moving plugin from %d to %d",
+        from_slot, to_slot);
+      if (track != current_tr ||
+          from_slot != to_slot)
+        {
+          plugin_move (
+            pl, track, self->ms->type, to_slot,
+            F_NO_PUBLISH_EVENTS);
+        }
 
       /* add to mixer selections */
       mixer_selections_add_slot (

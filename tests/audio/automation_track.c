@@ -58,8 +58,9 @@ test_set_at_index ()
     automation_region_new (
       &start, &end, master->pos,
       first_vis_at->index, 0);
-  automation_track_add_region (
-    first_vis_at, region);
+  track_add_region  (
+    master, region, first_vis_at, -1, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, F_SELECT,
     F_NO_APPEND);

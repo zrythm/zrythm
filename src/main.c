@@ -515,6 +515,7 @@ main (int    argc,
   /* install segfault handler */
   g_message ("Installing signal handler...");
   signal (SIGSEGV, segv_handler);
+  signal (SIGABRT, segv_handler);
 
 #ifdef HAVE_X11
   /* init xlib threads */

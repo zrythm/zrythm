@@ -1537,7 +1537,10 @@ channel_disconnect_plugin_from_strip (
 /**
  * Removes a plugin at pos from the channel.
  *
- * @param deleting_plugin
+ * @param moving_plugin Whether or not we are
+ *   moving the plugin.
+ * @param deleting_plugin Whether or not we are
+ *   deleting the plugin.
  * @param deleting_channel If true, the automation
  *   tracks associated with the plugin are not
  *   deleted at this time.
@@ -1548,6 +1551,7 @@ channel_remove_plugin (
   Channel *      channel,
   PluginSlotType slot_type,
   int            slot,
+  bool           moving_plugin,
   bool           deleting_plugin,
   bool           deleting_channel,
   bool           recalc_graph)
@@ -1570,14 +1574,20 @@ channel_remove_plugin (
   g_warn_if_fail (
     plugin->id.track_pos == channel->track_pos);
 
-  plugin_remove_ats_from_automation_tracklist (
-    plugin, deleting_plugin,
-    !deleting_channel && !deleting_plugin);
-
   Track * track = channel_get_track (channel);
   g_message (
     "Removing %s from %s:%d",
     plugin->descr->name, track->name, slot);
+
+  /* if moving, the move is already handled in
+   * plugin_move_automation() inside
+   * plugin_move(). */
+  if (!moving_plugin)
+    {
+      plugin_remove_ats_from_automation_tracklist (
+        plugin, deleting_plugin,
+        !deleting_channel && !deleting_plugin);
+    }
 
   channel_disconnect_plugin_from_strip (
     channel, slot, plugin);
@@ -1657,6 +1667,8 @@ channel_remove_plugin (
  * @param plugin The plugin to add.
  * @param confirm Confirm if an existing plugin
  *   will be overwritten.
+ * @param moving_plugin Whether or not we are
+ *   moving the plugin.
  * @param gen_automatables Generatate plugin
  *   automatables.
  *   To be used when creating a new plugin only.
@@ -1672,6 +1684,7 @@ channel_add_plugin (
   int       slot,
   Plugin *  plugin,
   bool      confirm,
+  bool      moving_plugin,
   bool      gen_automatables,
   bool      recalc_graph,
   bool      pub_events)
@@ -1720,7 +1733,9 @@ channel_add_plugin (
   if (existing_pl)
     {
       channel_remove_plugin (
-        self, slot_type, slot, 1, 0,
+        self, slot_type, slot,
+        F_NOT_MOVING_PLUGIN, F_DELETING_PLUGIN,
+        F_NOT_DELETING_CHANNEL,
         F_NO_RECALC_GRAPH);
     }
 
@@ -1843,10 +1858,16 @@ channel_add_plugin (
   track->active = prev_active;
 
   if (gen_automatables)
-    plugin_generate_automation_tracks (
-      plugin, track);
+    {
+      plugin_generate_automation_tracks (
+        plugin, track);
+    }
 
-  if (track->is_project)
+  if (track->is_project &&
+      /* only verify if not moving plugin because
+       * track is in an "incorrect" state during
+       * the move */
+      !moving_plugin)
     {
       track_verify_identifiers (track);
     }
@@ -1857,7 +1878,9 @@ channel_add_plugin (
     }
 
   if (recalc_graph)
-    router_recalc_graph (ROUTER, F_NOT_SOFT);
+    {
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
+    }
 
   return 1;
 }
@@ -2011,6 +2034,7 @@ channel_clone (
           channel_add_plugin (
             clone, PLUGIN_SLOT_INSERT,
             i, clone_pl, F_NO_CONFIRM,
+            F_NOT_MOVING_PLUGIN,
             F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
             F_NO_PUBLISH_EVENTS);
         }
@@ -2025,6 +2049,7 @@ channel_clone (
           channel_add_plugin (
             clone, PLUGIN_SLOT_MIDI_FX,
             i, clone_pl, F_NO_CONFIRM,
+            F_NOT_MOVING_PLUGIN,
             F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
             F_NO_PUBLISH_EVENTS);
         }
@@ -2037,6 +2062,7 @@ channel_clone (
       channel_add_plugin (
         clone, PLUGIN_SLOT_INSTRUMENT,
         0, clone_pl, F_NO_CONFIRM,
+        F_NOT_MOVING_PLUGIN,
         F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
         F_NO_PUBLISH_EVENTS);
     }
@@ -2114,7 +2140,8 @@ channel_disconnect (
               channel_remove_plugin (
                 self,
                 PLUGIN_SLOT_INSERT,
-                i, remove_pl, false,
+                i, F_NOT_MOVING_PLUGIN,
+                remove_pl, false,
                 F_NO_RECALC_GRAPH);
             }
           if (self->midi_fx[i])
@@ -2122,7 +2149,8 @@ channel_disconnect (
               channel_remove_plugin (
                 self,
                 PLUGIN_SLOT_MIDI_FX,
-                i, remove_pl, false,
+                i, F_NOT_MOVING_PLUGIN,
+                remove_pl, false,
                 F_NO_RECALC_GRAPH);
             }
         }
@@ -2131,7 +2159,8 @@ channel_disconnect (
           channel_remove_plugin (
             self,
             PLUGIN_SLOT_INSTRUMENT,
-            0, remove_pl, false,
+            0, F_NOT_MOVING_PLUGIN,
+            remove_pl, false,
             F_NO_RECALC_GRAPH);
         }
     }

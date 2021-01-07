@@ -45,6 +45,9 @@ mixer_selections_init_loaded (
             self->plugins[i], false);
         }
     }
+
+  /* sort the selections */
+  mixer_selections_sort (self, F_ASCENDING);
 }
 
 MixerSelections *
@@ -64,6 +67,72 @@ mixer_selections_has_any (
   MixerSelections * self)
 {
   return self->has_any;
+}
+
+static int
+sort_plugins_asc_func (
+  const void * _a,
+  const void * _b)
+{
+  Plugin * a =
+    *(Plugin * const *) _a;
+  Plugin * b =
+    *(Plugin * const *)_b;
+  return a->id.slot - b->id.slot;
+}
+
+static int
+sort_plugins_desc_func (
+  const void * _a,
+  const void * _b)
+{
+  return - sort_plugins_asc_func (_a, _b);
+}
+
+static int
+sort_slots_asc_func (
+  const void * _a,
+  const void * _b)
+{
+  int a = *(int const *) _a;
+  int b = *(int const *) _b;
+  return a - b;
+}
+
+static int
+sort_slots_desc_func (
+  const void * _a,
+  const void * _b)
+{
+  return - sort_slots_asc_func (_a, _b);
+}
+
+/**
+ * Sorts the selections by slot index.
+ *
+ * @param asc Ascending or not.
+ */
+void
+mixer_selections_sort (
+  MixerSelections * self,
+  bool              asc)
+{
+  if (!self->has_any)
+    {
+      return;
+    }
+
+  qsort (
+    self->slots, (size_t) self->num_slots,
+    sizeof (int),
+    asc ?
+      sort_slots_asc_func : sort_slots_desc_func);
+  qsort (
+    self->plugins, (size_t) self->num_slots,
+    sizeof (Plugin *),
+    asc ?
+      sort_plugins_asc_func :
+      sort_plugins_desc_func);
 }
 
 /**

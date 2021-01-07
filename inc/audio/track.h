@@ -1074,6 +1074,18 @@ track_set_is_project (
   bool    is_project);
 
 /**
+ * Returns the plugin at the given slot, if any.
+ *
+ * @param slot The slot (ignored if instrument is
+ *   selected.
+ */
+Plugin *
+track_get_plugin_at_slot (
+  Track *           track,
+  PluginSlotType    slot_type,
+  int               slot);
+
+/**
  * Marks the track for bouncing.
  *
  * @param mark_children Whether to mark all

@@ -154,7 +154,8 @@ create (
                 PLUGIN_SLOT_INSTRUMENT :
                 PLUGIN_SLOT_INSERT,
             pl->id.slot, pl,
-            1, 1, F_NO_RECALC_GRAPH,
+            F_CONFIRM, F_NOT_MOVING_PLUGIN,
+            F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
             F_NO_PUBLISH_EVENTS);
           g_warn_if_fail (
             pl->id.track_pos == track->pos);

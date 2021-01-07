@@ -123,12 +123,6 @@ automation_tracklist_add_at (
   AutomationTracklist * self,
   AutomationTrack *     at);
 
-void
-automation_tracklist_delete_at (
-  AutomationTracklist * self,
-  AutomationTrack *     at,
-  int                   free);
-
 /**
  * Updates the frames of each position in each child
  * of the automation tracklist recursively.

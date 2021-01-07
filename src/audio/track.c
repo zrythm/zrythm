@@ -1184,6 +1184,7 @@ track_insert_region (
       region_gen_name (region, NULL, at, track);
     }
 
+  g_return_if_fail (region->name);
   g_message (
     "inserting region %s to track %s at lane %d "
     "(idx %d)",
@@ -2381,6 +2382,33 @@ track_type_get_from_string (
         }
     }
   g_return_val_if_reached (-1);
+}
+
+/**
+ * Returns the plugin at the given slot, if any.
+ *
+ * @param slot The slot (ignored if instrument is
+ *   selected.
+ */
+Plugin *
+track_get_plugin_at_slot (
+  Track *           track,
+  PluginSlotType    slot_type,
+  int               slot)
+{
+  switch (slot_type)
+    {
+    case PLUGIN_SLOT_MIDI_FX:
+      return track->channel->midi_fx[slot];
+    case PLUGIN_SLOT_INSTRUMENT:
+      return track->channel->instrument;
+    case PLUGIN_SLOT_INSERT:
+      return track->channel->inserts[slot];
+    case PLUGIN_SLOT_MODULATOR:
+      return track->modulators[slot];
+    }
+
+  return NULL;
 }
 
 /**

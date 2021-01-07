@@ -144,7 +144,9 @@ copy_plugins_action_do (
       /* add it to the channel */
       int new_slot = self->slot + i;
       channel_add_plugin (
-        ch, self->slot_type, new_slot, pl, 1, 1,
+        ch, self->slot_type, new_slot, pl,
+        F_CONFIRM, F_NOT_MOVING_PLUGIN,
+        F_GEN_AUTOMATABLES,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
       g_return_val_if_fail (
@@ -255,7 +257,9 @@ copy_plugins_action_undo (
         {
           channel_remove_plugin (
             ch, self->slot_type,
-            self->slot + i, 1, 0,
+            self->slot + i, F_NOT_MOVING_PLUGIN,
+            F_DELETING_PLUGIN,
+            F_NOT_DELETING_CHANNEL,
             F_NO_RECALC_GRAPH);
         }
     }

@@ -696,7 +696,7 @@ plugin_move (
       existing_pl = track->modulators[slot];
       break;
     }
-  if (existing_pl)
+  if (existing_pl && ZRYTHM_HAVE_UI)
     {
       GtkDialog * dialog =
         dialogs_get_overwrite_plugin_dialog (
@@ -707,7 +707,9 @@ plugin_move (
 
       /* do nothing if not accepted */
       if (result != GTK_RESPONSE_ACCEPT)
-        return;
+        {
+          return;
+        }
     }
 
   int prev_slot = pl->id.slot;
@@ -723,13 +725,14 @@ plugin_move (
   /* remove plugin from its channel */
   channel_remove_plugin (
     prev_ch, prev_slot_type, prev_slot,
-    0, 0, F_NO_RECALC_GRAPH);
+    F_MOVING_PLUGIN, F_NOT_DELETING_PLUGIN,
+    F_NOT_DELETING_CHANNEL, F_NO_RECALC_GRAPH);
 
   /* add plugin to its new channel */
   channel_add_plugin (
     track->channel, slot_type, slot, pl, 0,
-    F_NO_GEN_AUTOMATABLES, F_RECALC_GRAPH,
-    F_PUBLISH_EVENTS);
+    F_MOVING_PLUGIN, F_NO_GEN_AUTOMATABLES,
+    F_RECALC_GRAPH, F_PUBLISH_EVENTS);
 
   if (fire_events)
     {
@@ -1083,6 +1086,12 @@ plugin_move_automation (
   PluginSlotType new_slot_type,
   int            new_slot)
 {
+  g_message (
+    "moving plugin '%s' automation from "
+    "%s to %s -> slot#%d",
+    pl->descr->name, prev_track->name,
+    track->name, new_slot);
+
   AutomationTracklist * prev_atl =
     track_get_automation_tracklist (prev_track);
   AutomationTracklist * atl =
@@ -1094,14 +1103,11 @@ plugin_move_automation (
       Port * port =
         automation_track_get_port (at);
       g_return_if_fail (IS_PORT (port));
-        /*g_message (*/
-          /*"before port %s", port->id.label);*/
       if (!port)
         continue;
       if (port->id.owner_type ==
             PORT_OWNER_TYPE_PLUGIN)
         {
-          /*g_message ("port %s", port->id.label);*/
           Plugin * port_pl =
             port_get_plugin (port, 1);
           if (port_pl != pl)
@@ -1111,13 +1117,16 @@ plugin_move_automation (
         continue;
 
       /* delete from prev channel */
-      automation_tracklist_delete_at (
-        prev_atl, at, F_NO_FREE);
-      /*g_message ("deleted %s, num ats after for track %s: %d", port->id.label, prev_ch->track->name,*/
-        /*prev_atl->num_ats);*/
+      int num_regions_before = at->num_regions;
+      automation_tracklist_remove_at (
+        prev_atl, at, F_NO_FREE,
+        F_NO_PUBLISH_EVENTS);
 
       /* add to new channel */
       automation_tracklist_add_at (atl, at);
+      g_warn_if_fail (
+        at == atl->ats[at->index] &&
+        at->num_regions == num_regions_before);
 
       /* update the automation track port
        * identifier */

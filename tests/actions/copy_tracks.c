@@ -101,7 +101,9 @@ _test_port_and_plugin_track_pos_after_duplication (
     automation_region_new (
       &start_pos, &end_pos, src_track->pos,
       at->index, at->num_regions);
-  automation_track_add_region (at, region);
+  track_add_region  (
+    src_track, region, at, -1, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, true, false);
   ua =

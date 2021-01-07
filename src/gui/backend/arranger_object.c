@@ -129,8 +129,8 @@ arranger_object_get_selections_for_type (
 void
 arranger_object_select (
   ArrangerObject * self,
-  const int        select,
-  const int        append)
+  const bool       select,
+  const bool       append)
 {
   g_return_if_fail (IS_ARRANGER_OBJECT (self));
 

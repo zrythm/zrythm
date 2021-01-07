@@ -229,4 +229,10 @@
 #define F_OPTIMIZED 1
 #define F_NOT_OPTIMIZED 0
 
+#define F_ASCENDING 1
+#define F_NOT_ASCENDING 0
+
+#define F_MOVING_PLUGIN 1
+#define F_NOT_MOVING_PLUGIN 0
+
 #endif

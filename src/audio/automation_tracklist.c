@@ -57,14 +57,10 @@ automation_tracklist_add_at (
   AutomationTrack *     at)
 {
   array_double_size_if_full (
-    self->ats,
-    self->num_ats,
-    self->ats_size,
+    self->ats, self->num_ats, self->ats_size,
     AutomationTrack *);
   array_append (
-    self->ats,
-    self->num_ats,
-    at);
+    self->ats, self->num_ats, at);
 
   at->index = self->num_ats - 1;
   at->port_id.track_pos = self->track_pos;
@@ -74,21 +70,6 @@ automation_tracklist_add_at (
     {
       ZRegion * region = at->regions[i];
       region_set_automation_track (region, at);
-    }
-}
-
-void
-automation_tracklist_delete_at (
-  AutomationTracklist * self,
-  AutomationTrack *     at,
-  int                   free_at)
-{
-  array_delete (
-    self->ats, self->num_ats, at);
-
-  if (free_at)
-    {
-      free_later (at, automation_track_free);
     }
 }
 
@@ -489,13 +470,29 @@ void
 automation_tracklist_remove_at (
   AutomationTracklist * self,
   AutomationTrack *     at,
-  bool                  free,
+  bool                  free_at,
   bool                  fire_events)
 {
-  automation_track_clear (at);
+  int deleted_idx = 0;
+  array_delete_return_pos (
+    self->ats, self->num_ats, at, deleted_idx);
+  g_debug (
+    "%s: removing automation track at: %d (%s)",
+    __func__, deleted_idx, at->port_id.label);
 
-  array_delete (
-    self->ats, self->num_ats, at);
+  /* move automation track regions for automation
+   * tracks after the deleted one*/
+  for (int j = deleted_idx; j < self->num_ats; j++)
+    {
+      AutomationTrack * cur_at = self->ats[j];
+      cur_at->index = j;
+      for (int i = 0; i < cur_at->num_regions; i++)
+        {
+          ZRegion * region = cur_at->regions[i];
+          region_set_automation_track (
+            region, cur_at);
+        }
+    }
 
   /* if the deleted at was the last visible/created
    * at, make the next one visible */
@@ -522,8 +519,11 @@ automation_tracklist_remove_at (
         }
     }
 
-  if (free)
-    free_later (at, automation_track_free);
+  if (free_at)
+    {
+      automation_track_clear (at);
+      free_later (at, automation_track_free);
+    }
 
   if (fire_events)
     {
@@ -568,8 +568,9 @@ automation_tracklist_verify_identifiers (
   for (int i = 0; i < self->num_ats; i++)
     {
       AutomationTrack * at = self->ats[i];
-      g_assert_cmpint (
-        at->port_id.track_pos, ==, track_pos);
+      g_return_val_if_fail (
+        at->port_id.track_pos == track_pos &&
+        at->index == i, false);
       if (at->port_id.owner_type ==
             PORT_OWNER_TYPE_PLUGIN)
         {

@@ -240,6 +240,23 @@ Delete build dir and reconfigure. This is likely
 an optimization problem with meson/ninja that
 appears rarely.
 
+## How to read cyaml backtraces
+Backtrace:
+```
+Save: Backtrace:
+in mapping field: pool_id <- member in region after name
+in sequence entry: 1 <- first region in automation track
+in mapping field: created <- member after regions in automation track
+in sequence entry: 39
+in mapping field: track_pos <- member after ats in automation tracklist
+in mapping field: in_signal_type <- member after automation tracklist in track
+in sequence entry: 6 <- ???
+in mapping field: (null) <- ???
+in mapping field: clip_editor
+error Invalid value
+```
+Problem: region name was NULL.
+
 ----
 
 Copyright (C) 2018-2020 Alexandros Theodotou

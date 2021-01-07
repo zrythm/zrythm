@@ -156,6 +156,7 @@ automation_track_insert_region (
 {
   g_return_if_fail (self && idx >= 0);
   g_return_if_fail (
+    region->name &&
     region->id.type == REGION_TYPE_AUTOMATION);
 
   array_double_size_if_full (

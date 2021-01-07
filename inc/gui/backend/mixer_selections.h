@@ -202,6 +202,16 @@ mixer_selections_remove_slot (
   int               publish_events);
 
 /**
+ * Sorts the selections by slot index.
+ *
+ * @param asc Ascending or not.
+ */
+void
+mixer_selections_sort (
+  MixerSelections * self,
+  bool              asc);
+
+/**
  * Returns the first selected plugin if any is
  * selected, otherwise NULL.
  */

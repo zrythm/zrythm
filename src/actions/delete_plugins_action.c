@@ -112,7 +112,9 @@ delete_plugins_action_do (
           /* remove the plugin at given slot */
           channel_remove_plugin (
             ch, self->ms->type,
-            self->ms->plugins[i]->id.slot, 1, 0,
+            self->ms->plugins[i]->id.slot,
+            F_NOT_MOVING_PLUGIN, F_DELETING_PLUGIN,
+            F_NOT_DELETING_CHANNEL,
             F_NO_RECALC_GRAPH);
         }
     }
@@ -186,7 +188,8 @@ delete_plugins_action_undo (
         {
           channel_add_plugin (
             ch, self->ms->type, slot, pl,
-            F_NO_CONFIRM, F_GEN_AUTOMATABLES,
+            F_NO_CONFIRM, F_NOT_MOVING_PLUGIN,
+            F_GEN_AUTOMATABLES,
             F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
         }
 

@@ -95,7 +95,7 @@ create_plugins_action_do (
           channel_add_plugin (
             ch, self->slot_type,
             self->slot + i, pl, F_CONFIRM,
-            F_GEN_AUTOMATABLES,
+            F_NOT_MOVING_PLUGIN, F_GEN_AUTOMATABLES,
             F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
         }
 
@@ -156,6 +156,7 @@ create_plugins_action_undo (
         {
           channel_remove_plugin (
             ch, self->slot_type, self->slot + i,
+            F_NOT_MOVING_PLUGIN,
             F_DELETING_PLUGIN,
             F_NOT_DELETING_CHANNEL,
             F_NO_RECALC_GRAPH);

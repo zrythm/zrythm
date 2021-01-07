@@ -478,6 +478,8 @@ channel_process (Channel * channel);
  * @param plugin The plugin to add.
  * @param confirm Confirm if an existing plugin
  *   will be overwritten.
+ * @param moving_plugin Whether or not we are
+ *   moving the plugin.
  * @param gen_automatables Generatate plugin
  *   automatables.
  *   To be used when creating a new plugin only.
@@ -493,6 +495,7 @@ channel_add_plugin (
   int       pos,
   Plugin *  plugin,
   bool      confirm,
+  bool      moving_plugin,
   bool      gen_automatables,
   bool      recalc_graph,
   bool      pub_events);
@@ -536,7 +539,10 @@ channel_get_automation_track (
 /**
  * Removes a plugin at pos from the channel.
  *
- * @param deleting_plugin
+ * @param moving_plugin Whether or not we are
+ *   moving the plugin.
+ * @param deleting_plugin Whether or not we are
+ *   deleting the plugin.
  * @param deleting_channel If true, the automation
  *   tracks associated with the plugin are not
  *   deleted at this time.
@@ -547,6 +553,7 @@ channel_remove_plugin (
   Channel *      channel,
   PluginSlotType slot_type,
   int            slot,
+  bool           moving_plugin,
   bool           deleting_plugin,
   bool           deleting_channel,
   bool           recalc_graph);

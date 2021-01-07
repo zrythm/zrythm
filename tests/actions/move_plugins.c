@@ -83,7 +83,9 @@ _test_port_and_plugin_track_pos_after_move (
     automation_region_new (
       &start_pos, &end_pos, src_track->pos,
       at->index, at->num_regions);
-  automation_track_add_region (at, region);
+  track_add_region  (
+    src_track, region, at, -1, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) region, true, false);
   ua =
@@ -240,6 +242,255 @@ test_port_and_plugin_track_pos_after_move_with_carla (void)
 }
 #endif
 
+static void
+test_move_two_plugins_one_slot_up (void)
+{
+  test_helper_zrythm_init ();
+
+#ifdef HAVE_LSP_COMPRESSOR
+  /* create a track with an insert */
+  PluginDescriptor * descr =
+    test_plugin_manager_get_plugin_descriptor (
+      LSP_COMPRESSOR_BUNDLE,
+      LSP_COMPRESSOR_URI, false);
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_AUDIO_BUS, descr, NULL,
+      TRACKLIST->num_tracks, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  plugin_descriptor_free (descr);
+
+  int track_pos = TRACKLIST->num_tracks - 1;
+
+  /* select it */
+  Track * track =
+    TRACKLIST->tracks[track_pos];
+  track_select (
+    track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
+
+  /* save and reload the project */
+  test_project_save_and_reload ();
+  track = TRACKLIST->tracks[track_pos];
+  g_assert_true (track_verify_identifiers (track));
+
+  /* get an automation track */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  AutomationTrack * at = atl->ats[atl->num_ats - 1];
+  g_message (
+    "automation track %s", at->port_id.label);
+  at->created = true;
+  at->visible = true;
+
+  /* create an automation region */
+  Position start_pos, end_pos;
+  position_set_to_bar (&start_pos, 2);
+  position_set_to_bar (&end_pos, 4);
+  ZRegion * region =
+    automation_region_new (
+      &start_pos, &end_pos, track->pos,
+      at->index, at->num_regions);
+  track_add_region  (
+    track, region, at, -1, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) region, true, false);
+  ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* save and reload the project */
+  test_project_save_and_reload ();
+  track = TRACKLIST->tracks[track_pos];
+  g_assert_true (track_verify_identifiers (track));
+
+  /* create some automation points */
+  Port * port = automation_track_get_port (at);
+  position_set_to_bar (&start_pos, 1);
+  atl = track_get_automation_tracklist (track);
+  at = atl->ats[atl->num_ats - 1];
+  g_assert_cmpint (at->num_regions, >, 0);
+  region = at->regions[0];
+  AutomationPoint * ap =
+    automation_point_new_float (
+      port->deff,
+      control_port_real_val_to_normalized (
+        port, port->deff),
+      &start_pos);
+  automation_region_add_ap (
+    region, ap, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) ap, true, false);
+  ua =
+    arranger_selections_action_new_create (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* save and reload the project */
+  test_project_save_and_reload ();
+  track = TRACKLIST->tracks[track_pos];
+  g_assert_true (track_verify_identifiers (track));
+
+  /* duplicate the plugin to the 2nd slot */
+  mixer_selections_clear (
+    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, track,
+    PLUGIN_SLOT_INSERT, 0);
+  ua =
+    copy_plugins_action_new (
+      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+      track, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* at this point we have a plugin at slot#0 and
+   * its clone at slot#1 */
+
+  /* remove slot #0 and undo */
+  mixer_selections_clear (
+    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, track,
+    PLUGIN_SLOT_INSERT, 0);
+  ua =
+    delete_plugins_action_new (MIXER_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  undo_manager_undo (UNDO_MANAGER);
+
+  /* save and reload the project */
+  test_project_save_and_reload ();
+  track = TRACKLIST->tracks[track_pos];
+  g_assert_true (track_verify_identifiers (track));
+
+  /* move the 2 plugins to start at slot#1 (2nd
+   * slot) */
+  mixer_selections_clear (
+    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, track,
+    PLUGIN_SLOT_INSERT, 0);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, track,
+    PLUGIN_SLOT_INSERT, 1);
+  ua =
+    move_plugins_action_new (
+      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+      track, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_true (
+    track_verify_identifiers (track));
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_true (
+    track_verify_identifiers (track));
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_true (
+    track_verify_identifiers (track));
+
+  /* save and reload the project */
+  test_project_save_and_reload ();
+  track = TRACKLIST->tracks[track_pos];
+  g_assert_true (track_verify_identifiers (track));
+
+  /* move the 2 plugins to start at slot 2 (3rd
+   * slot) */
+  mixer_selections_clear (
+    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, track,
+    PLUGIN_SLOT_INSERT, 1);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, track,
+    PLUGIN_SLOT_INSERT, 2);
+  ua =
+    move_plugins_action_new (
+      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+      track, 2);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_true (
+    track_verify_identifiers (track));
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_true (
+    track_verify_identifiers (track));
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_true (
+    track_verify_identifiers (track));
+
+  /* save and reload the project */
+  test_project_save_and_reload ();
+  track = TRACKLIST->tracks[track_pos];
+  g_assert_true (track_verify_identifiers (track));
+
+  /* move the 2 plugins to start at slot 1 (2nd
+   * slot) */
+  mixer_selections_clear (
+    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, track,
+    PLUGIN_SLOT_INSERT, 2);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, track,
+    PLUGIN_SLOT_INSERT, 3);
+  ua =
+    move_plugins_action_new (
+      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+      track, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  g_assert_true (
+    track_verify_identifiers (track));
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_true (
+    track_verify_identifiers (track));
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_true (
+    track_verify_identifiers (track));
+
+  /* save and reload the project */
+  test_project_save_and_reload ();
+  track = TRACKLIST->tracks[track_pos];
+  g_assert_true (track_verify_identifiers (track));
+
+  /* move the 2 plugins to start back at slot 0 (1st
+   * slot) */
+  mixer_selections_clear (
+    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, track,
+    PLUGIN_SLOT_INSERT, 2);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, track,
+    PLUGIN_SLOT_INSERT, 1);
+  ua =
+    move_plugins_action_new (
+      MIXER_SELECTIONS, PLUGIN_SLOT_INSERT,
+      track, 0);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  g_assert_true (
+    track_verify_identifiers (track));
+
+  /* let the engine run */
+  g_usleep (1000000);
+
+  g_assert_true (
+    track_verify_identifiers (track));
+
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_true (
+    track_verify_identifiers (track));
+
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_true (
+    track_verify_identifiers (track));
+
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_undo (UNDO_MANAGER);
+#endif
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -259,6 +510,11 @@ main (int argc, char *argv[])
     (GTestFunc)
     test_port_and_plugin_track_pos_after_move_with_carla);
 #endif
+  g_test_add_func (
+    TEST_PREFIX
+    "test move two plugins one slot up",
+    (GTestFunc)
+    test_move_two_plugins_one_slot_up);
 
   return g_test_run ();
 }

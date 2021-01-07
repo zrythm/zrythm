@@ -517,8 +517,8 @@ arranger_object_get_selections_for_type (
 void
 arranger_object_select (
   ArrangerObject * self,
-  const int        select,
-  const int        append);
+  const bool       select,
+  const bool       append);
 
 /**
  * Returns whether the given object is hit by the

@@ -375,13 +375,25 @@ region_set_automation_track (
 {
   g_return_if_fail (IS_REGION (self) && at);
 
-  /*int is_clip_editor_region = 0;*/
+  g_debug (
+    "setting region automation track to %d %s",
+    at->index, at->port_id.label);
+
+  /* if clip editor region or region selected,
+   * unselect it */
   if (region_identifier_is_equal (
         &self->id, &CLIP_EDITOR->region_id))
     {
-      /*is_clip_editor_region = 1;*/
       clip_editor_set_region (
         CLIP_EDITOR, NULL, true);
+    }
+  bool was_selected = false;
+  if (region_is_selected (self))
+    {
+      was_selected = true;
+      arranger_object_select (
+        (ArrangerObject *) self, F_NO_SELECT,
+        F_NO_APPEND);
     }
   self->id.at_idx = at->index;
   Track * track =
@@ -389,6 +401,14 @@ region_set_automation_track (
   self->id.track_pos = track->pos;
 
   region_update_identifier (self);
+
+  /* reselect it if was selected */
+  if (was_selected)
+    {
+      arranger_object_select (
+        (ArrangerObject *) self, F_SELECT,
+        F_APPEND);
+    }
 }
 
 void
