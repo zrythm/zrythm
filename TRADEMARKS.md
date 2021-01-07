@@ -70,33 +70,39 @@ provided that alterations solely serve the purposes
 of:
 - porting the software to a free system distribution
 currently approved by the Free Software Foundation at
-https://www.gnu.org/distros/free-distros.html, OR
+<https://www.gnu.org/distros/free-distros.html>, OR
 - porting the software to the Debian operating
 system, as published by the Debian project at
-https://debian.org/, OR
+<https://debian.org/>, OR
 - porting the software to the Fedora Workstation
 operating system, as published by the Fedora Project
-at https://getfedora.org/, OR
+at <https://getfedora.org/>, OR
 - porting the software to the FreeBSD operating
 system, as published by the The FreeBSD Project at
-https://www.freebsd.org/, OR
+<https://www.freebsd.org/>, OR
+- porting the software to the Arch Linux operating
+system, as published by Levente Polyak and others at
+<https://archlinux.org/>, OR
 - fixing a bug in the software that has already been
 acknowledged by Alexandros Theodotou or CVE
-(https://cve.mitre.org/)
+(<https://cve.mitre.org/>)
 
 You may further redistribute copies of the software
 as published by the aforementioned software
 distributors, namely:
 - any free system distribution currently approved
 by the Free Software Foundation at
-https://www.gnu.org/distros/free-distros.html, OR
+<https://www.gnu.org/distros/free-distros.html>, OR
 - the Debian operating system, as published by the
-Debian project at https://debian.org/, OR
+Debian project at <https://debian.org/>, OR
 - the Fedora Workstation operating system, as
 published by the Fedora Project at
-https://getfedora.org/, OR
+<https://getfedora.org/>, OR
 - the FreeBSD operating system, as published by The
-FreeBSD Project at https://www.freebsd.org/,
+FreeBSD Project at <https://www.freebsd.org/>, OR
+- porting the software to the Arch Linux operating
+system, as published by Levente Polyak and others at
+<https://archlinux.org/>,
 
 provided that no further modifications are made.
 
@@ -134,7 +140,7 @@ current policy at the time of each release.
 
 ----
 
-Copyright (C) 2020 Alexandros Theodotou
+Copyright (C) 2020-2021 Alexandros Theodotou
 
 Everyone is permitted to copy and distribute
 verbatim copies of this document, but changing it is
