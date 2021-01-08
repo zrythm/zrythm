@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -490,16 +490,16 @@ recording_manager_handle_recording (
       re->g_start_frames = g_start_frames;
       re->local_offset = local_offset;
       re->nframes = nframes;
-      memcpy (
+      dsp_copy (
         &re->lbuf[local_offset],
-        &track_processor->stereo_in->l->buf[
+        &track_processor->stereo_out->l->buf[
           local_offset],
-        sizeof (float) * (size_t) nframes);
-      memcpy (
+        nframes);
+      dsp_copy (
         &re->rbuf[local_offset],
-        &track_processor->stereo_in->r->buf[
+        &track_processor->stereo_out->r->buf[
           local_offset],
-        sizeof (float) * (size_t) nframes);
+        nframes);
       strcpy (re->track_name, tr->name);
       recording_event_queue_push_back_event (
         self->event_queue, re);

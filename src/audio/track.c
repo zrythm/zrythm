@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1860,6 +1860,33 @@ track_stringize_type (
   TrackType type)
 {
   return _(track_type_strings[type].str);
+}
+
+/**
+ * Returns the Fader (if applicable).
+ *
+ * @param post_fader True to get post fader,
+ *   false to get pre fader.
+ */
+Fader *
+track_get_fader (
+  Track * self,
+  bool    post_fader)
+{
+  Channel * ch = track_get_channel (self);
+  if (ch)
+    {
+      if (post_fader)
+        {
+          return ch->fader;
+        }
+      else
+        {
+          return ch->prefader;
+        }
+    }
+
+  return NULL;
 }
 
 /**

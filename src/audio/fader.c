@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -839,17 +839,12 @@ fader_process (
                * (L+R) /2 (-6.02dB) */
               if (self->mono_compat_enabled)
                 {
-                  dsp_mix2 (
+                  dsp_make_mono (
                     &self->stereo_out->l->buf[
                       start_frame],
                     &self->stereo_out->r->buf[
-                      start_frame],
-                    0.5f, 0.5f, nframes);
-                  dsp_copy (
-                    &self->stereo_out->r->buf[
-                      start_frame],
-                    &self->stereo_out->r->buf[
-                      start_frame], nframes);
+                      start_frame], nframes,
+                      false);
                 }
             }
 

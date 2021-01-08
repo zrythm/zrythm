@@ -832,17 +832,6 @@ track_processor_process (
         nframes, false);
     }
 
-  if (track_type_can_record (tr->type) ||
-      tr->automation_tracklist.num_ats > 0)
-    {
-      /* handle recording. this will only create
-       * events in regions. it will not copy the
-       * input content to the output ports */
-      handle_recording (
-        self, g_start_frames, local_offset,
-        nframes);
-    }
-
   /* add inputs to outputs */
   switch (tr->in_signal_type)
     {
@@ -890,6 +879,17 @@ track_processor_process (
       break;
     default:
       break;
+    }
+
+  if (track_type_can_record (tr->type) ||
+      tr->automation_tracklist.num_ats > 0)
+    {
+      /* handle recording. this will only create
+       * events in regions. it will not copy the
+       * input content to the output ports */
+      handle_recording (
+        self, g_start_frames, local_offset,
+        nframes);
     }
 }
 

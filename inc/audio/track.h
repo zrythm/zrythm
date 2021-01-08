@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -977,6 +977,17 @@ track_type_is_compatible_for_moving (
 void
 track_update_frames (
   Track * track);
+
+/**
+ * Returns the Fader (if applicable).
+ *
+ * @param post_fader True to get post fader,
+ *   false to get pre fader.
+ */
+Fader *
+track_get_fader (
+  Track * track,
+  bool    post_fader);
 
 /**
  * Returns the FaderType corresponding to the given

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -774,6 +774,109 @@ test_recording ()
 }
 #endif
 
+static void
+test_mono_recording (void)
+{
+  test_helper_zrythm_init ();
+
+  /* stop dummy audio engine processing so we can
+   * process manually */
+  AUDIO_ENGINE->stop_dummy_audio_thread = true;
+  g_usleep (1000000);
+
+  /* create an audio track */
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_AUDIO, NULL, NULL,
+      TRACKLIST->num_tracks, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  Track * audio_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+  prepare ();
+  TRANSPORT->recording = true;
+  transport_request_roll (TRANSPORT);
+
+  /* disable loop & punch */
+  transport_set_loop (TRANSPORT, false);
+  transport_set_punch_mode_enabled (
+    TRANSPORT, false);
+
+  /* move playhead to 2.1.1.0 */
+  Position pos;
+  position_set_to_bar (&pos, PLAYHEAD_START_BAR);
+  transport_set_playhead_pos (TRANSPORT, &pos);
+
+  /* enable recording for audio track */
+  track_set_recording (audio_track, true, false);
+
+  /* set mono */
+  TrackProcessor * audio_track_processor =
+    audio_track->processor;
+  port_set_control_value (
+    audio_track_processor->mono, 1.f, true,
+    F_NO_PUBLISH_EVENTS);
+
+  for (nframes_t i = 0; i < CYCLE_SIZE; i++)
+    {
+      AUDIO_ENGINE->dummy_input->l->buf[i] =
+        AUDIO_VAL;
+      AUDIO_ENGINE->dummy_input->r->buf[i] = 0.f;
+    }
+
+  /* run the engine for 1 cycle */
+  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  recording_manager_process_events (
+    RECORDING_MANAGER);
+
+  ZRegion * audio_r;
+  ArrangerObject * audio_r_obj;
+
+  /* assert that audio events are created */
+  g_assert_cmpint (
+    audio_track->lanes[0]->num_regions, ==, 1);
+  audio_r = audio_track->lanes[0]->regions[0];
+  audio_r_obj = (ArrangerObject *) audio_r;
+  position_set_to_pos (
+    &pos, &TRANSPORT->playhead_pos);
+  g_assert_cmppos (&pos, &audio_r_obj->end_pos);
+  position_add_frames (&pos, - CYCLE_SIZE);
+  g_assert_cmppos (&pos, &audio_r_obj->pos);
+  position_from_frames (&pos, CYCLE_SIZE);
+  g_assert_cmppos (
+    &pos, &audio_r_obj->loop_end_pos);
+
+  /* assert that audio is correct */
+  AudioClip * clip =
+    audio_region_get_clip (audio_r);
+  g_assert_cmpint (
+    clip->num_frames, ==, CYCLE_SIZE);
+  for (nframes_t i = 0; i < CYCLE_SIZE; i++)
+    {
+      g_assert_cmpfloat_with_epsilon (
+        clip->ch_frames[0][i], AUDIO_VAL,
+        0.000001f);
+      g_assert_cmpfloat_with_epsilon (
+        clip->ch_frames[1][i], AUDIO_VAL,
+        0.000001f);
+    }
+
+  /* stop recording */
+  track_set_recording (audio_track, false, false);
+
+  /* run engine 1 more cycle to finalize recording */
+  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  recording_manager_process_events (
+    RECORDING_MANAGER);
+
+  /* save and undo/redo */
+  test_project_save_and_reload ();
+  undo_manager_undo (UNDO_MANAGER);
+  undo_manager_redo (UNDO_MANAGER);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -786,6 +889,9 @@ main (int argc, char *argv[])
     TEST_PREFIX "test_recording",
     (GTestFunc) test_recording);
 #endif
+  g_test_add_func (
+    TEST_PREFIX "test mono recording",
+    (GTestFunc) test_mono_recording);
 
   return g_test_run ();
 }
