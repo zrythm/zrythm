@@ -47,15 +47,17 @@
 void
 editor_ruler_on_drag_begin_no_marker_hit (
   RulerWidget * self,
-  gdouble             start_x,
-  gdouble             start_y)
+  gdouble       start_x,
+  gdouble       start_y)
 {
   Position pos;
   ui_px_to_pos_editor (
     start_x, &pos, 1);
   if (!self->shift_held)
-    position_snap_simple (
-      &pos, SNAP_GRID_MIDI);
+    {
+      position_snap_simple (
+        &pos, SNAP_GRID_MIDI);
+    }
   transport_move_playhead (
     TRANSPORT, &pos, F_PANIC, F_NO_SET_CUE_POINT);
   self->last_set_pos = pos;
@@ -82,15 +84,16 @@ editor_ruler_on_drag_update (
         (ArrangerObject *) r;
 
       /* convert px to position */
-      if (self)
-        ui_px_to_pos_editor (
-          self->start_x + offset_x,
-          &editor_pos, 1);
+      ui_px_to_pos_editor (
+        self->start_x + offset_x,
+        &editor_pos, 1);
 
       /* snap if not shift held */
       if (!self->shift_held)
-        position_snap_simple (
-          &editor_pos, SNAP_GRID_MIDI);
+        {
+          position_snap_simple (
+            &editor_pos, SNAP_GRID_MIDI);
+        }
 
       position_from_ticks (
         &region_local_pos,
@@ -195,23 +198,63 @@ void
 editor_ruler_on_drag_end (
   RulerWidget * self)
 {
-  /* hide tooltips */
-  /*if (TARGET_IS (PLAYHEAD))*/
-    /*{*/
-      /*ruler_marker_widget_update_tooltip (*/
-        /*self->playhead, 0);*/
-    /*}*/
-  if ((ACTION_IS (MOVING) ||
-         ACTION_IS (STARTING_MOVING)) &&
-      TARGET_IS (PLAYHEAD))
-    {
-      /* set cue point */
-      position_set_to_pos (
-        &TRANSPORT->cue_pos,
-        &self->last_set_pos);
+  /* prepare selections for edit action */
+  ArrangerSelections * before_sel =
+    (ArrangerSelections *)
+    timeline_selections_new ();
+  ArrangerSelections * after_sel =
+    (ArrangerSelections *)
+    timeline_selections_new ();
+  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  g_return_if_fail (r);
+  ArrangerObject * r_clone_obj_before =
+    arranger_object_clone (
+      (ArrangerObject *) r,
+      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+  arranger_selections_add_object (
+    before_sel, r_clone_obj_before);
+  ArrangerObject * r_clone_obj_after =
+    arranger_object_clone (
+      (ArrangerObject *) r,
+      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+  arranger_selections_add_object (
+    after_sel, r_clone_obj_after);
 
-      EVENTS_PUSH (
-        ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
+#define PERFORM_ACTION(pos_member) \
+  r_clone_obj_before->pos_member = \
+    self->drag_start_pos; \
+  UndoableAction * ua = \
+    arranger_selections_action_new_edit ( \
+      before_sel, after_sel, \
+      ARRANGER_SELECTIONS_ACTION_EDIT_POS, \
+      F_NOT_ALREADY_EDITED); \
+  undo_manager_perform (UNDO_MANAGER, ua)
+
+  if ((ACTION_IS (MOVING) ||
+         ACTION_IS (STARTING_MOVING)))
+    {
+      if (TARGET_IS (PLAYHEAD))
+        {
+          /* set cue point */
+          position_set_to_pos (
+            &TRANSPORT->cue_pos,
+            &self->last_set_pos);
+
+          EVENTS_PUSH (
+            ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
+        }
+      else if (TARGET_IS (LOOP_START))
+        {
+          PERFORM_ACTION (loop_start_pos);
+        }
+      else if (TARGET_IS (LOOP_END))
+        {
+          PERFORM_ACTION (loop_end_pos);
+        }
+      else if (TARGET_IS (CLIP_START))
+        {
+          PERFORM_ACTION (clip_start_pos);
+        }
     }
 }
 

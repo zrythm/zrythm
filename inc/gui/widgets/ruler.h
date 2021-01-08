@@ -177,6 +177,9 @@ typedef struct _RulerWidget
    */
   Position          last_set_pos;
 
+  /** Position at start of drag. */
+  Position          drag_start_pos;
+
   cairo_t *         cached_cr;
 
   cairo_surface_t * cached_surface;

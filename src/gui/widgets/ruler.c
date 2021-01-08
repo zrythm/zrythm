@@ -1626,6 +1626,11 @@ drag_begin (
   int clip_start_hit =
     is_clip_start_hit (self, start_x, start_y);
 
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
+
   /* if one of the markers hit */
   if (punch_in_hit)
     {
@@ -1647,6 +1652,12 @@ drag_begin (
         UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target =
         RW_TARGET_LOOP_START;
+    if (self->type == TYPE (EDITOR))
+      {
+        g_return_if_fail (region);
+        self->drag_start_pos =
+          r_obj->loop_start_pos;
+      }
     }
   else if (loop_end_hit)
     {
@@ -1654,22 +1665,37 @@ drag_begin (
         UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target =
         RW_TARGET_LOOP_END;
+    if (self->type == TYPE (EDITOR))
+      {
+        g_return_if_fail (region);
+        self->drag_start_pos =
+          r_obj->loop_end_pos;
+      }
     }
   else if (clip_start_hit)
     {
       self->action =
         UI_OVERLAY_ACTION_STARTING_MOVING;
-      self->target =
-        RW_TARGET_CLIP_START;
+      self->target = RW_TARGET_CLIP_START;
+    if (self->type == TYPE (EDITOR))
+      {
+        g_return_if_fail (region);
+        self->drag_start_pos =
+          r_obj->clip_start_pos;
+      }
     }
   else
     {
       if (self->type == TYPE (TIMELINE))
-        timeline_ruler_on_drag_begin_no_marker_hit (
-          self, start_x, start_y, height);
+        {
+          timeline_ruler_on_drag_begin_no_marker_hit (
+            self, start_x, start_y, height);
+        }
       else if (self->type == TYPE (EDITOR))
-        editor_ruler_on_drag_begin_no_marker_hit (
-          self, start_x, start_y);
+        {
+          editor_ruler_on_drag_begin_no_marker_hit (
+            self, start_x, start_y);
+        }
     }
 
   self->last_offset_x = 0;
