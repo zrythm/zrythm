@@ -44,6 +44,10 @@
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
 
+#define marker_is_deletable(m) \
+  ((m)->type != MARKER_TYPE_START && \
+   (m)->type != MARKER_TYPE_END)
+
 /**
  * Marker type.
  */

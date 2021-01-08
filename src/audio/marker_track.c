@@ -85,19 +85,23 @@ marker_track_default (
  */
 Marker *
 marker_track_get_start_marker (
-  const Track * track)
+  const Track * self)
 {
   g_return_val_if_fail (
-    track->type == TRACK_TYPE_MARKER, NULL);
+    self->type == TRACK_TYPE_MARKER, NULL);
 
   Marker * marker;
-  for (int i = 0; i < track->num_markers; i++)
+  for (int i = 0; i < self->num_markers; i++)
     {
-      marker = track->markers[i];
+      marker = self->markers[i];
       if (marker->type == MARKER_TYPE_START)
         return marker;
     }
-  g_return_val_if_reached (NULL);
+  g_critical (
+    "start marker not found in track '%s' "
+    "(num markers %d)",
+    self->name, self->num_markers);
+  return NULL;
 }
 
 /**
@@ -105,19 +109,23 @@ marker_track_get_start_marker (
  */
 Marker *
 marker_track_get_end_marker (
-  const Track * track)
+  const Track * self)
 {
   g_return_val_if_fail (
-    track->type == TRACK_TYPE_MARKER, NULL);
+    self->type == TRACK_TYPE_MARKER, NULL);
 
   Marker * marker;
-  for (int i = 0; i < track->num_markers; i++)
+  for (int i = 0; i < self->num_markers; i++)
     {
-      marker = track->markers[i];
+      marker = self->markers[i];
       if (marker->type == MARKER_TYPE_END)
         return marker;
     }
-  g_return_val_if_reached (NULL);
+  g_critical (
+    "end marker not found in track '%s' "
+    "(num markers %d)",
+    self->name, self->num_markers);
+  return NULL;
 }
 
 /**

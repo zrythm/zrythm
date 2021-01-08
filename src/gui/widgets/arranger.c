@@ -2776,9 +2776,13 @@ select_in_range (
           ArrangerObject * obj = objs[i];
           if (delete)
             {
-              arranger_selections_add_object (
-                self->sel_to_delete, obj);
-              obj->deleted_temporarily = true;
+              if (arranger_object_is_deletable (
+                    obj))
+                {
+                  arranger_selections_add_object (
+                    self->sel_to_delete, obj);
+                  obj->deleted_temporarily = true;
+                }
             }
           else
             {
@@ -4015,6 +4019,8 @@ on_drag_end_timeline (
       {
         if (self->sel_to_delete &&
             arranger_selections_has_any (
+              self->sel_to_delete) &&
+            !arranger_selections_contains_undeletable_object (
               self->sel_to_delete))
           {
             UndoableAction * ua =

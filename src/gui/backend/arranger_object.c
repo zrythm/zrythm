@@ -3103,6 +3103,28 @@ arranger_object_is_frozen (
   return track->frozen;
 }
 
+/**
+ * Returns whether the given object is deletable
+ * or not (eg, start marker).
+ */
+bool
+arranger_object_is_deletable (
+  ArrangerObject * obj)
+{
+  switch (obj->type)
+    {
+    case ARRANGER_OBJECT_TYPE_MARKER:
+      {
+        Marker * m = (Marker *) obj;
+        return marker_is_deletable (m);
+      }
+      break;
+    default:
+      break;
+    }
+  return true;
+}
+
 static void
 free_region (
   ZRegion * self)

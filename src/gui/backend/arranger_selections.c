@@ -1635,6 +1635,37 @@ arranger_selections_contains_object (
 }
 
 /**
+ * Returns if the selections contain an undeletable
+ * object (such as the start marker).
+ */
+bool
+arranger_selections_contains_undeletable_object (
+  ArrangerSelections * self)
+{
+  switch (self->type)
+    {
+    case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+      {
+        TimelineSelections * tl_sel =
+          (TimelineSelections *) self;
+        for (int i = 0; i < tl_sel->num_markers;
+             i++)
+          {
+            Marker * m = tl_sel->markers[i];
+            if (!marker_is_deletable (m))
+              {
+                return true;
+              }
+          }
+      }
+      break;
+    default:
+      return false;
+    }
+  return false;
+}
+
+/**
  * Removes the arranger object from the selections.
  */
 void

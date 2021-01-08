@@ -406,11 +406,22 @@ arranger_selections_action_new_create_or_delete (
     IS_ARRANGER_SELECTIONS (sel) &&
     arranger_selections_has_any (sel), NULL);
 
+  if (arranger_selections_contains_undeletable_object (
+        sel))
+    {
+      g_warning (
+        "attempted to delete an undeletable "
+        "object");
+      return NULL;
+    }
+
   ArrangerSelectionsAction * self =
     _create_action (sel);
   UndoableAction * ua = (UndoableAction *) self;
   if (create)
-    ua->type = UA_CREATE_ARRANGER_SELECTIONS;
+    {
+      ua->type = UA_CREATE_ARRANGER_SELECTIONS;
+    }
   else
     {
       ua->type = UA_DELETE_ARRANGER_SELECTIONS;

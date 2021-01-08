@@ -331,6 +331,14 @@ arranger_selections_contains_object (
   ArrangerObject *     obj);
 
 /**
+ * Returns if the selections contain an undeletable
+ * object (such as the start marker).
+ */
+bool
+arranger_selections_contains_undeletable_object (
+  ArrangerSelections * self);
+
+/**
  * Removes the arranger object from the selections.
  */
 void

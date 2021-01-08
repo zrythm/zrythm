@@ -1017,6 +1017,14 @@ arranger_object_is_frozen (
   ArrangerObject * obj);
 
 /**
+ * Returns whether the given object is deletable
+ * or not (eg, start marker).
+ */
+bool
+arranger_object_is_deletable (
+  ArrangerObject * obj);
+
+/**
  * @}
  */
 

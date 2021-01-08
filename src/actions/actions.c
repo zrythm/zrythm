@@ -1126,13 +1126,18 @@ activate_delete (
     main_window_get_last_focused_arranger_selections (
       MAIN_WINDOW);
 
-  if (sel)
+  if (sel &&
+      !arranger_selections_contains_undeletable_object (
+        sel))
     {
       UndoableAction * action =
         arranger_selections_action_new_delete (
           sel);
-      undo_manager_perform (
-        UNDO_MANAGER, action);
+      if (action)
+        {
+          undo_manager_perform (
+            UNDO_MANAGER, action);
+        }
     }
 }
 
