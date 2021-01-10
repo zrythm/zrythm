@@ -100,21 +100,21 @@ sample_processor_remove_sample_playback (
 
 
 /**
- * Process the samples for the given number of frames.
+ * Process the samples for the given number of
+ * frames.
  *
- * @param offset The local offset in the processing
- *   cycle.
+ * @param cycle_offset The local offset in the
+ *   processing cycle.
  */
 void
 sample_processor_process (
   SampleProcessor * self,
-  const nframes_t   offset,
+  const nframes_t   cycle_offset,
   const nframes_t   nframes)
 {
   nframes_t j;
   nframes_t max_frames;
   SamplePlayback * sp;
-  /*g_message ("num current samples %d",self->num_current_samples);*/
   g_return_if_fail (
     self && self->stereo_out &&
     self->num_current_samples < 256 &&
@@ -124,9 +124,6 @@ sample_processor_process (
     self->stereo_out->r->buf);
   float * l = self->stereo_out->l->buf,
         * r = self->stereo_out->r->buf;
-  /*g_message ("current offset %d", offset);*/
-  /*g_message ("processing %d samples",*/
-             /*self->num_current_samples);*/
   for (int i = self->num_current_samples - 1;
        i >= 0; i--)
     {
@@ -136,34 +133,36 @@ sample_processor_process (
       /* if sample is already playing */
       if (sp->offset > 0)
         {
-          /* fill in the buffer for as many frames as
-           * possible */
+          /* fill in the buffer for as many frames
+           * as possible */
           max_frames =
             MIN (
               (nframes_t)
                 (sp->buf_size - sp->offset),
-              (nframes_t) (nframes - offset));
-          /*g_message ("already playing at %d - %d",*/
-                     /*offset,*/
-                     /*offset + max_frames);*/
-          for (j = offset;
-               j < offset + max_frames; j++)
+              nframes);
+          for (j = 0; j < max_frames; j++)
             {
+              nframes_t buf_offset =
+                j + cycle_offset;
+              g_return_if_fail (
+                buf_offset <
+                  AUDIO_ENGINE->block_length &&
+                sp->offset < sp->buf_size);
               if (sp->channels == 1)
                 {
-                  l[j] +=
+                  l[buf_offset] +=
                     (*sp->buf)[sp->offset] *
                     sp->volume;
-                  r[j] +=
+                  r[buf_offset] +=
                     (*sp->buf)[sp->offset++] *
                     sp->volume;
                 }
               else if (sp->channels == 2)
                 {
-                  l[j] +=
+                  l[buf_offset] +=
                     (*sp->buf)[sp->offset++] *
                     sp->volume;
-                  r[j] +=
+                  r[buf_offset] +=
                     (*sp->buf)[sp->offset++] *
                     sp->volume;
                 }
@@ -171,57 +170,53 @@ sample_processor_process (
         }
       /* else if we can start playback in this
        * cycle */
-      else if (sp->start_offset >= offset)
+      else if (sp->start_offset >= cycle_offset)
         {
-          /* fill in the buffer for as many frames as
-           * possible */
+          g_return_if_fail (
+            sp->offset == 0 &&
+            (cycle_offset + nframes) >=
+               sp->start_offset);
+
+          /* fill in the buffer for as many frames
+           * as possible */
           max_frames =
             MIN (
-              (nframes_t)
-                (sp->buf_size - sp->offset),
-              nframes - sp->start_offset);
-          /*g_message ("starting at %d - %d",*/
-                     /*sp->start_offset,*/
-                     /*sp->start_offset + max_frames);*/
-          for (j = sp->start_offset;
-               j < sp->start_offset + max_frames;
-               j++)
+              (nframes_t) sp->buf_size,
+              (cycle_offset + nframes) -
+                sp->start_offset);
+          for (j = 0; j < max_frames; j++)
             {
+              nframes_t buf_offset =
+                j + sp->start_offset;
+              g_return_if_fail (
+                buf_offset <
+                  AUDIO_ENGINE->block_length &&
+                sp->offset < sp->buf_size);
               if (sp->channels == 1)
                 {
-                  l[j] +=
+                  l[buf_offset] +=
                     (*sp->buf)[sp->offset] *
                     sp->volume;
-                  r[j] +=
+                  r[buf_offset] +=
                     (*sp->buf)[sp->offset++] *
                     sp->volume;
                 }
               else if (sp->channels == 2)
                 {
-                  l[j] +=
+                  l[buf_offset] +=
                     (*sp->buf)[sp->offset++] *
                     sp->volume;
-                  r[j] +=
+                  r[buf_offset] +=
                     (*sp->buf)[sp->offset++] *
                     sp->volume;
                 }
             }
         }
-      /* if the offset is greater than the size of
-       * the sample, simply add the frames */
-      /*else if (sp->offset > sp->buf_size)*/
-        /*{*/
-          /*sp->offset += nframes;*/
-        /*}*/
 
-      /* if sample finished playing */
-      /*g_message (*/
-        /*"[sample %d] start offset %u, offset %lu, buf size %lu",*/
-        /*i, sp->start_offset,*/
-        /*sp->offset, sp->buf_size);*/
+      /* if the sample is finished playing, remove
+       * it */
       if (sp->offset >= sp->buf_size)
         {
-          /*g_message ("removed %d", i);*/
           sample_processor_remove_sample_playback (
             self, sp);
         }
