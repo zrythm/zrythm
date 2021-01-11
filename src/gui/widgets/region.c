@@ -1591,7 +1591,15 @@ region_draw (
       get_last_rects (
         self, i, &last_full_rect, &last_draw_rect);
 
-      g_return_if_fail (draw_rect.width < 40000);
+      /* skip if draw rect has 0 width */
+      if (draw_rect.width == 0)
+        {
+          continue;
+        }
+
+      g_return_if_fail (
+        draw_rect.width > 0 &&
+        draw_rect.width < 40000);
 
       cairo_save (cr);
 
